@@ -9,6 +9,7 @@ export default class Spitter extends EnemyBase {
   }
 
   update(dt, player, spawnProjectile) {
+    this.animTime = (this.animTime || 0) + dt;
     const dist = player.x - this.x;
     this.facing = Math.sign(dist) || this.facing;
     this.cooldown -= dt;
@@ -22,11 +23,29 @@ export default class Spitter extends EnemyBase {
   draw(ctx) {
     ctx.save();
     ctx.translate(this.x, this.y);
-    ctx.strokeStyle = '#fff';
+    const glow = this.stagger > 0.6 ? 1 : 0.8;
+    ctx.strokeStyle = `rgba(255,255,255,${glow})`;
+    ctx.lineWidth = 2;
+    const pulse = Math.sin(this.animTime * 6) * 2;
     ctx.beginPath();
-    ctx.rect(-10, -10, 20, 20);
-    ctx.moveTo(-12, 0);
-    ctx.lineTo(12, 0);
+    ctx.rect(-14, -12 - pulse, 28, 24 + pulse);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(0, -4, 6, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-12, 6);
+    ctx.lineTo(12, 6);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(-6, -6, 2, 0, Math.PI * 2);
+    ctx.arc(6, -6, 2, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-16, -10);
+    ctx.lineTo(-20, -16);
+    ctx.moveTo(16, -10);
+    ctx.lineTo(20, -16);
     ctx.stroke();
     ctx.restore();
   }

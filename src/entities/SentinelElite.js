@@ -9,6 +9,7 @@ export default class SentinelElite extends EnemyBase {
   }
 
   update(dt, player, spawnProjectile) {
+    this.animTime = (this.animTime || 0) + dt;
     this.phase += dt;
     const dir = Math.sign(player.x - this.x) || this.facing;
     this.facing = dir;
@@ -22,14 +23,28 @@ export default class SentinelElite extends EnemyBase {
   draw(ctx) {
     ctx.save();
     ctx.translate(this.x, this.y);
-    ctx.strokeStyle = '#fff';
+    const glow = this.stagger > 0.6 ? 1 : 0.8;
+    ctx.strokeStyle = `rgba(255,255,255,${glow})`;
     ctx.lineWidth = 2;
+    const wobble = Math.sin(this.animTime * 3) * 2;
     ctx.beginPath();
-    ctx.arc(0, 0, 20, 0, Math.PI * 2);
-    ctx.moveTo(-20, 0);
-    ctx.lineTo(20, 0);
-    ctx.moveTo(0, -20);
-    ctx.lineTo(0, 20);
+    ctx.arc(0, 0, 20 + wobble, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-22, 0);
+    ctx.lineTo(22, 0);
+    ctx.moveTo(0, -22);
+    ctx.lineTo(0, 22);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-10, -16);
+    ctx.lineTo(-18, -26);
+    ctx.moveTo(10, -16);
+    ctx.lineTo(18, -26);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(-6, -2, 2, 0, Math.PI * 2);
+    ctx.arc(6, -2, 2, 0, Math.PI * 2);
     ctx.stroke();
     ctx.restore();
   }

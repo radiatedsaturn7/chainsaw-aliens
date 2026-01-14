@@ -1,0 +1,22 @@
+export const LEGEND = {
+  player: { label: 'Player', glyph: 'P', minimap: '◎' },
+  skitter: { label: 'Skitter', glyph: 'SK', minimap: '✦' },
+  spitter: { label: 'Spitter', glyph: 'SP', minimap: '✧' },
+  bulwark: { label: 'Bulwark', glyph: 'BW', minimap: '■' },
+  floater: { label: 'Floater', glyph: 'FL', minimap: '○' },
+  slicer: { label: 'Slicer', glyph: 'SL', minimap: '◇' },
+  hivenode: { label: 'Hive Node', glyph: 'HN', minimap: '▣' },
+  sentinel: { label: 'Sentinel', glyph: 'SE', minimap: '✶' },
+  finalboss: { label: 'Rift Tyrant', glyph: 'RT', minimap: '✹' },
+  ability: { label: 'Ability Cache', glyph: '⚙', minimap: '⬡' },
+  save: { label: 'Save Node', glyph: 'SV', minimap: '⬟' },
+  shop: { label: 'Shop', glyph: '$', minimap: '▵' },
+  anchor: { label: 'Grapple Anchor', glyph: '⚓', minimap: '⊙' },
+  gateG: { label: 'Gate: Grapple', glyph: 'G', minimap: 'G' },
+  gateP: { label: 'Gate: Phase', glyph: 'P', minimap: 'P' },
+  gateM: { label: 'Gate: Mag Boots', glyph: 'M', minimap: 'M' },
+  gateR: { label: 'Gate: Resonance', glyph: 'R', minimap: 'R' },
+  bossGate: { label: 'Rift Gate', glyph: 'B', minimap: 'B' },
+  objective: { label: 'Objective', glyph: '◈', minimap: '◈' },
+  loot: { label: 'Loot', glyph: '✪', minimap: '✪' }
+};

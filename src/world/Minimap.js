@@ -3,6 +3,7 @@ export default class Minimap {
     this.world = world;
     this.explored = new Set();
     this.scale = 2;
+    this.showLegend = false;
   }
 
   update(player) {
@@ -11,7 +12,7 @@ export default class Minimap {
     this.explored.add(`${tileX},${tileY}`);
   }
 
-  draw(ctx, x, y, width, height, player) {
+  draw(ctx, x, y, width, height, player, options = {}) {
     const tileW = this.world.width;
     const tileH = this.world.height;
     const pixel = Math.min(width / tileW, height / tileH);
@@ -27,10 +28,67 @@ export default class Minimap {
         }
       }
     }
-    const playerTileX = Math.floor(player.x / this.world.tileSize);
-    const playerTileY = Math.floor(player.y / this.world.tileSize);
-    ctx.fillStyle = 'rgba(255,255,255,0.9)';
-    ctx.fillRect(playerTileX * pixel - pixel, playerTileY * pixel - pixel, pixel * 2, pixel * 2);
+    this.drawIcon(ctx, player.x, player.y, pixel, 'rgba(255,255,255,0.9)');
+    if (options.objective) {
+      this.drawIcon(ctx, options.objective.x, options.objective.y, pixel, 'rgba(255,255,255,0.8)', true);
+    }
+    this.world.savePoints.forEach((save) => this.drawIcon(ctx, save.x, save.y, pixel, 'rgba(255,255,255,0.6)'));
+    this.world.shops.forEach((shop) => this.drawIcon(ctx, shop.x, shop.y, pixel, 'rgba(255,255,255,0.6)'));
+    this.world.abilityPickups.forEach((pickup) => {
+      if (!pickup.collected) this.drawIcon(ctx, pickup.x, pickup.y, pixel, 'rgba(255,255,255,0.7)');
+    });
+    this.world.gates.forEach((gate) => this.drawGateIcon(ctx, gate, pixel));
+    if (this.world.bossGate) this.drawIcon(ctx, this.world.bossGate.x, this.world.bossGate.y, pixel, 'rgba(255,255,255,0.7)');
+    ctx.restore();
+
+    if (options.showLegend) {
+      this.drawLegend(ctx, x + width + 12, y);
+    }
+  }
+
+  drawIcon(ctx, worldX, worldY, pixel, color, pulse = false) {
+    const tileX = Math.floor(worldX / this.world.tileSize);
+    const tileY = Math.floor(worldY / this.world.tileSize);
+    ctx.save();
+    ctx.fillStyle = color;
+    const size = pulse ? pixel * 2 : pixel * 1.4;
+    ctx.fillRect(tileX * pixel - size / 2, tileY * pixel - size / 2, size, size);
+    ctx.restore();
+  }
+
+  drawLegend(ctx, x, y) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(x, y, 140, 120);
+    ctx.strokeStyle = '#fff';
+    ctx.strokeRect(x, y, 140, 120);
+    ctx.fillStyle = '#fff';
+    ctx.font = '10px Courier New';
+    const items = [
+      ['◎', 'Player'],
+      ['◈', 'Objective'],
+      ['⬡', 'Ability'],
+      ['⬟', 'Save'],
+      ['▵', 'Shop'],
+      ['G/P/M/R', 'Gates'],
+      ['B', 'Boss Gate']
+    ];
+    items.forEach((item, index) => {
+      ctx.fillText(`${item[0]} ${item[1]}`, x + 8, y + 18 + index * 14);
+    });
+    ctx.restore();
+  }
+
+  drawGateIcon(ctx, gate, pixel) {
+    const tileX = Math.floor(gate.x / this.world.tileSize);
+    const tileY = Math.floor(gate.y / this.world.tileSize);
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillRect(tileX * pixel - pixel * 0.6, tileY * pixel - pixel * 0.6, pixel * 1.2, pixel * 1.2);
+    ctx.fillStyle = '#000';
+    ctx.font = `${Math.max(6, pixel * 1.2)}px Courier New`;
+    ctx.textAlign = 'center';
+    ctx.fillText(gate.type, tileX * pixel, tileY * pixel + pixel * 0.4);
     ctx.restore();
   }
 }

@@ -14,6 +14,7 @@ export default class FinalBoss extends EnemyBase {
 
   update(dt, player, spawnProjectile) {
     if (this.completed) return;
+    this.animTime = (this.animTime || 0) + dt;
     this.attackTimer -= dt;
     if (this.attackTimer <= 0) {
       this.attackTimer = 1.6;
@@ -46,13 +47,27 @@ export default class FinalBoss extends EnemyBase {
   draw(ctx) {
     ctx.save();
     ctx.translate(this.x, this.y);
-    ctx.strokeStyle = '#fff';
+    const glow = this.coreExposed ? 1 : 0.8;
+    ctx.strokeStyle = `rgba(255,255,255,${glow})`;
     ctx.lineWidth = 2;
+    const pulse = Math.sin(this.animTime * 2) * 4;
     ctx.beginPath();
-    ctx.rect(-28, -28, 56, 56);
+    ctx.rect(-32, -28, 64, 56);
     ctx.stroke();
     ctx.beginPath();
-    ctx.arc(0, 0, this.coreExposed ? 12 : 6, 0, Math.PI * 2);
+    ctx.arc(0, 0, this.coreExposed ? 14 : 8, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-28, -24);
+    ctx.lineTo(-40, -36 - pulse);
+    ctx.moveTo(28, -24);
+    ctx.lineTo(40, -36 - pulse);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-20, 20);
+    ctx.lineTo(-30, 34 + pulse);
+    ctx.moveTo(20, 20);
+    ctx.lineTo(30, 34 + pulse);
     ctx.stroke();
     ctx.restore();
   }

@@ -31,6 +31,8 @@ export default class Player {
     this.cosmetics = [];
     this.blueprints = 0;
     this.dead = false;
+    this.animTime = 0;
+    this.hurtTimer = 0;
   }
 
   get rect() {
@@ -64,6 +66,7 @@ export default class Player {
 
   update(dt, input, world, abilities) {
     if (this.dead) return;
+    this.animTime += dt;
     const move = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
     this.vx = move * this.speed;
     if (move !== 0) {
@@ -122,6 +125,7 @@ export default class Player {
         this.fuelRegen = 0;
       }
     }
+    this.hurtTimer = Math.max(0, this.hurtTimer - dt);
   }
 
   moveAndCollide(dt, world, abilities) {
@@ -171,6 +175,7 @@ export default class Player {
 
   takeDamage(amount) {
     this.health -= amount;
+    this.hurtTimer = 0.3;
     if (this.health <= 0) {
       this.dead = true;
     }
@@ -198,28 +203,49 @@ export default class Player {
   draw(ctx) {
     ctx.save();
     ctx.translate(this.x, this.y);
-    ctx.strokeStyle = '#fff';
+    const walk = Math.sin(this.animTime * 10) * 2;
+    ctx.strokeStyle = this.hurtTimer > 0 ? '#fff' : 'rgba(255,255,255,0.9)';
     ctx.lineWidth = 2;
+    // Head
     ctx.beginPath();
-    ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
+    ctx.arc(0, -this.height / 2 + 8, 6, 0, Math.PI * 2);
     ctx.stroke();
+    // Torso
     ctx.beginPath();
-    ctx.moveTo(0, -this.height / 2);
-    ctx.lineTo(this.facing * this.width * 0.8, 0);
-    ctx.lineTo(0, this.height / 2);
+    ctx.moveTo(-8, -8);
+    ctx.lineTo(8, -8);
+    ctx.lineTo(10, 10);
+    ctx.lineTo(-10, 10);
+    ctx.closePath();
+    ctx.stroke();
+    // Legs
+    ctx.beginPath();
+    ctx.rect(-10, 10, 6, 12 + walk);
+    ctx.rect(4, 10, 6, 12 - walk);
+    ctx.stroke();
+    // Arms
+    ctx.beginPath();
+    ctx.rect(-14, -4, 6, 10);
+    ctx.rect(8, -4, 6, 10);
+    ctx.stroke();
+    // Chainsaw bar
+    ctx.beginPath();
+    ctx.moveTo(0, -4);
+    ctx.lineTo(this.facing * (this.width * 0.9), 0);
+    ctx.lineTo(0, 6);
     ctx.stroke();
     if (this.cosmetics.length > 0) {
       ctx.beginPath();
-      ctx.moveTo(-4, -this.height / 2);
-      ctx.lineTo(this.facing * this.width * 0.9, 0);
-      ctx.lineTo(-4, this.height / 2);
+      ctx.moveTo(-4, -6);
+      ctx.lineTo(this.facing * this.width * 0.8, 0);
+      ctx.lineTo(-4, 8);
       ctx.stroke();
     }
     if (this.cosmetics.length > 1) {
       ctx.beginPath();
-      ctx.moveTo(-8, -this.height / 3);
+      ctx.moveTo(-8, -4);
       ctx.lineTo(this.facing * this.width * 0.7, 0);
-      ctx.lineTo(-8, this.height / 3);
+      ctx.lineTo(-8, 6);
       ctx.stroke();
     }
     ctx.restore();

@@ -9,6 +9,7 @@ export default class HiveNode extends EnemyBase {
   }
 
   update(dt, player, spawnMinion) {
+    this.animTime = (this.animTime || 0) + dt;
     this.spawnTimer -= dt;
     if (this.spawnTimer <= 0) {
       this.spawnTimer = 3.5;
@@ -21,11 +22,21 @@ export default class HiveNode extends EnemyBase {
   draw(ctx) {
     ctx.save();
     ctx.translate(this.x, this.y);
-    ctx.strokeStyle = '#fff';
+    const glow = this.stagger > 0.6 ? 1 : 0.8;
+    ctx.strokeStyle = `rgba(255,255,255,${glow})`;
+    ctx.lineWidth = 2;
+    const pulse = Math.sin(this.animTime * 4) * 3;
     ctx.beginPath();
-    ctx.rect(-18, -18, 36, 36);
-    ctx.moveTo(-18, -18);
-    ctx.lineTo(18, 18);
+    ctx.rect(-20, -18, 40, 36);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(0, 0, 8 + pulse * 0.2, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-18, -14);
+    ctx.lineTo(18, -6);
+    ctx.moveTo(-18, 14);
+    ctx.lineTo(18, 6);
     ctx.stroke();
     ctx.restore();
   }
