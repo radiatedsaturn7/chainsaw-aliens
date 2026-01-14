@@ -47,7 +47,8 @@ export default class Title {
     ctx.fillStyle = '#fff';
     ctx.fillText('Chainsaw Aliens', width / 2, 120);
     ctx.font = '18px Courier New';
-    ctx.fillText('Press SPACE to begin', width / 2, height - 120 + Math.sin(this.timer * 4) * 6);
+    ctx.fillText('Press SPACE to begin', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
+    ctx.fillText('Press T for TEST MODE', width / 2, height - 110);
     ctx.restore();
   }
 }

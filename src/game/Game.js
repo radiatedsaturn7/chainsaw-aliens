@@ -14,11 +14,17 @@ import SentinelElite from '../entities/SentinelElite.js';
 import FinalBoss from '../entities/FinalBoss.js';
 import Projectile from '../entities/Projectile.js';
 import { DebrisPiece, Shard } from '../entities/Debris.js';
+import LootDrop from '../entities/LootDrop.js';
+import PracticeDrone from '../entities/PracticeDrone.js';
 import Title from '../ui/Title.js';
 import Dialog from '../ui/Dialog.js';
 import HUD from '../ui/HUD.js';
 import Shop from '../ui/Shop.js';
 import Pause from '../ui/Pause.js';
+import TestHarness from '../debug/TestHarness.js';
+import Validator from '../debug/Validator.js';
+import ConsoleOverlay from '../debug/ConsoleOverlay.js';
+import Checklist from '../debug/Checklist.js';
 
 const INTRO_LINES = [
   'Captain! The entire planet of earth has literally run out of all our ammunition, and the aliens are still coming! What do we do?',
@@ -63,6 +69,7 @@ export default class Game {
     this.projectiles = [];
     this.debris = [];
     this.shards = [];
+    this.lootDrops = [];
     this.abilities = {
       grapple: false,
       phase: false,
@@ -81,29 +88,49 @@ export default class Game {
       magboots: false,
       resonance: false
     };
+    this.testHarness = new TestHarness();
+    this.validator = new Validator(this.world, this.player);
+    this.consoleOverlay = new ConsoleOverlay();
+    this.checklist = new Checklist();
+    this.validatorPending = false;
 
     this.init();
   }
 
   async init() {
     await this.world.load();
-    this.minimap = new Minimap(this.world);
+    this.resetWorldSystems();
     this.spawnEnemies();
     this.state = 'title';
   }
 
+  resetWorldSystems() {
+    this.minimap = new Minimap(this.world);
+    this.validator = new Validator(this.world, this.player);
+  }
+
   spawnEnemies() {
     this.enemies = [
-      new Skitter(32 * 8, 32 * 18),
-      new Skitter(32 * 12, 32 * 18),
-      new Spitter(32 * 52, 32 * 18),
-      new Bulwark(32 * 54, 32 * 18),
-      new Floater(32 * 30, 32 * 8),
-      new Slicer(32 * 36, 32 * 18),
-      new HiveNode(32 * 6, 32 * 16),
-      new SentinelElite(32 * 50, 32 * 8)
+      new PracticeDrone(32 * 30, 32 * 19),
+      new Skitter(32 * 10, 32 * 19),
+      new Skitter(32 * 14, 32 * 19),
+      new Spitter(32 * 50, 32 * 19),
+      new Bulwark(32 * 56, 32 * 19),
+      new Floater(32 * 30, 32 * 9),
+      new Slicer(32 * 34, 32 * 19),
+      new HiveNode(32 * 8, 32 * 19),
+      new SentinelElite(32 * 52, 32 * 9)
     ];
-    this.boss = new FinalBoss(32 * 56, 32 * 8);
+    this.boss = new FinalBoss(32 * 58, 32 * 9);
+  }
+
+  spawnTestEnemies() {
+    this.enemies = [
+      new PracticeDrone(32 * 10, 32 * 8),
+      new Skitter(32 * 20, 32 * 8),
+      new Spitter(32 * 24, 32 * 8)
+    ];
+    this.boss = null;
   }
 
   update(dt) {
@@ -121,6 +148,13 @@ export default class Game {
         this.state = 'dialog';
         this.audio.ping();
       }
+      if (this.input.wasPressed('test')) {
+        this.testHarness.enable(this.world, this.player);
+        this.resetWorldSystems();
+        this.spawnTestEnemies();
+        this.state = 'playing';
+        this.validatorPending = true;
+      }
       this.input.flush();
       return;
     }
@@ -130,6 +164,7 @@ export default class Game {
         const finished = this.dialog.next();
         if (finished) {
           this.state = 'playing';
+          this.validatorPending = true;
         }
         this.audio.ping();
       }
@@ -184,11 +219,14 @@ export default class Game {
       return;
     }
 
-    const timeScale = this.slowTimer > 0 ? 0.25 : 1;
+    this.testHarness.update(this.input, this);
+    const debugSlow = this.testHarness.active && this.testHarness.slowMotion;
+    const timeScale = this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1;
     this.slowTimer = Math.max(0, this.slowTimer - dt);
 
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
     this.attemptGrapple();
+    this.testHarness.applyCheats(this);
 
     if (this.player.dead) {
       this.respawn();
@@ -213,15 +251,28 @@ export default class Game {
     this.updateEnemies(dt * timeScale);
     this.updateProjectiles(dt * timeScale);
     this.updateDebris(dt * timeScale);
+    this.updateLootDrops(dt * timeScale);
     this.checkPickups();
     this.checkShops();
     this.updateObjective();
+    this.consoleOverlay.update(dt * timeScale);
 
     this.camera.follow(this.player, dt);
     this.minimap.update(this.player);
 
     if (this.shakeTimer > 0) {
       this.shakeTimer -= dt;
+    }
+
+    if (this.input.wasPressed('validator')) {
+      this.runValidator();
+    }
+    if (this.input.wasPressed('legend')) {
+      this.checklist.toggle();
+    }
+    if (this.validatorPending) {
+      this.runValidator();
+      this.validatorPending = false;
     }
 
     this.input.flush();
@@ -297,9 +348,14 @@ export default class Game {
   }
 
   executeEnemy(enemy, variant) {
-    enemy.dead = true;
-    this.awardLoot(enemy, true);
-    this.spawnExecutionDebris(enemy, variant);
+    this.testHarness.recordExecution(variant);
+    if (!enemy.training) {
+      enemy.dead = true;
+      this.awardLoot(enemy, true);
+      this.spawnExecutionDebris(enemy, variant);
+    } else {
+      enemy.stagger = 0;
+    }
     this.slowTimer = 0.12;
     if (this.pauseMenu.shake) {
       this.shakeTimer = 0.2;
@@ -309,14 +365,8 @@ export default class Game {
   }
 
   awardLoot(enemy, execution = false) {
-    this.player.loot += enemy.lootValue + (execution ? 1 : 0);
-    if (Math.random() < 0.2) {
-      this.player.blueprints += 1;
-      if (this.player.blueprints >= 3) {
-        this.player.blueprints = 0;
-        this.player.cosmetics.push(`Blueprint Style ${this.player.cosmetics.length + 1}`);
-      }
-    }
+    const total = enemy.lootValue + (execution ? 1 : 0);
+    this.lootDrops.push(new LootDrop(enemy.x, enemy.y, total));
   }
 
   spawnExecutionDebris(enemy, variant) {
@@ -376,7 +426,9 @@ export default class Game {
       const dx = enemy.x - this.player.x;
       const dy = enemy.y - this.player.y;
       if (Math.hypot(dx, dy) < 24) {
-        this.player.takeDamage(1);
+        if (!enemy.training) {
+          this.player.takeDamage(1);
+        }
       }
     });
 
@@ -428,6 +480,25 @@ export default class Game {
     this.shards = this.shards.filter((shard) => shard.life > 0);
   }
 
+  updateLootDrops(dt) {
+    this.lootDrops.forEach((drop) => drop.update(dt));
+    this.lootDrops = this.lootDrops.filter((drop) => drop.life > 0 && !drop.collected);
+    this.lootDrops.forEach((drop) => {
+      const dist = Math.hypot(drop.x - this.player.x, drop.y - this.player.y);
+      if (dist < 24) {
+        drop.collect();
+        this.player.loot += drop.value;
+        if (Math.random() < 0.2) {
+          this.player.blueprints += 1;
+          if (this.player.blueprints >= 3) {
+            this.player.blueprints = 0;
+            this.player.cosmetics.push(`Blueprint Style ${this.player.cosmetics.length + 1}`);
+          }
+        }
+      }
+    });
+  }
+
   spawnProjectile(x, y, vx, vy, damage) {
     this.projectiles.push(new Projectile(x, y, vx, vy, damage));
   }
@@ -475,7 +546,7 @@ export default class Game {
     if (!this.abilities.grapple) {
       this.objective = 'Find the Grapple Spike in the Tangle.';
     } else if (!this.abilities.phase) {
-      this.objective = 'Phase through the Foundry gate for the Phase Wedge.';
+      this.objective = 'Enter the Foundry and claim the Phase Wedge.';
     } else if (!this.abilities.magboots) {
       this.objective = 'Climb the Spire for the Mag Boots.';
     } else if (!this.abilities.resonance) {
@@ -520,30 +591,9 @@ export default class Game {
     ctx.translate(-this.camera.x + shakeX, -this.camera.y + shakeY);
 
     this.drawWorld(ctx);
-    this.world.savePoints.forEach((save) => {
-      ctx.strokeStyle = save.active ? '#fff' : 'rgba(255,255,255,0.4)';
-      ctx.strokeRect(save.x - 8, save.y - 24, 16, 24);
-    });
-
-    this.world.shops.forEach((shop) => {
-      ctx.strokeStyle = '#fff';
-      ctx.beginPath();
-      ctx.arc(shop.x, shop.y - 12, 12, 0, Math.PI * 2);
-      ctx.stroke();
-    });
-
-    this.world.abilityPickups.forEach((pickup) => {
-      if (pickup.collected) return;
-      ctx.strokeStyle = '#fff';
-      ctx.beginPath();
-      ctx.arc(pickup.x, pickup.y - 12, 10, 0, Math.PI * 2);
-      ctx.stroke();
-    });
-
-    this.world.anchors.forEach((anchor) => {
-      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-      ctx.strokeRect(anchor.x - 6, anchor.y - 6, 12, 12);
-    });
+    this.drawInteractables(ctx);
+    this.drawObjectiveBeacon(ctx);
+    this.drawTutorialHints(ctx);
 
     this.enemies.forEach((enemy) => {
       if (!enemy.dead) enemy.draw(ctx);
@@ -556,13 +606,33 @@ export default class Game {
     this.projectiles.forEach((projectile) => projectile.draw(ctx));
     this.debris.forEach((piece) => piece.draw(ctx));
     this.shards.forEach((shard) => shard.draw(ctx));
+    this.lootDrops.forEach((drop) => {
+      const dist = Math.hypot(drop.x - this.player.x, drop.y - this.player.y);
+      drop.draw(ctx, dist < 40);
+      if (dist < 40) {
+        ctx.save();
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px Courier New';
+        ctx.textAlign = 'center';
+        ctx.fillText('LOOT', drop.x, drop.y - 16);
+        ctx.restore();
+      }
+    });
     this.player.draw(ctx);
+    if (this.testHarness.active && this.testHarness.showCollision) {
+      this.drawCollisionBoxes(ctx);
+    }
     this.drawBloom(ctx);
     ctx.restore();
 
     const region = this.world.regionAt(this.player.x, this.player.y);
     this.hud.draw(ctx, this.player, this.objective, region.name, { shake: this.pauseMenu.shake });
-    this.minimap.draw(ctx, canvas.width - 180, 20, 160, 90, this.player);
+    const objectiveTarget = this.getObjectiveTarget();
+    this.minimap.draw(ctx, canvas.width - 180, 20, 160, 90, this.player, {
+      objective: objectiveTarget,
+      showLegend: this.checklist.active
+    });
+    this.drawWaypoint(ctx, canvas.width, canvas.height, objectiveTarget);
 
     if (this.state === 'shop') {
       this.shopUI.draw(ctx, canvas.width, canvas.height, this.player);
@@ -571,6 +641,10 @@ export default class Game {
     if (this.state === 'pause') {
       this.pauseMenu.draw(ctx, canvas.width, canvas.height);
     }
+
+    this.consoleOverlay.draw(ctx, canvas.width, canvas.height);
+    this.checklist.draw(ctx, this, canvas.width, canvas.height);
+    this.testHarness.draw(ctx, this, canvas.width, canvas.height);
   }
 
   drawBloom(ctx) {
@@ -604,8 +678,199 @@ export default class Game {
           ctx.moveTo(x * tileSize + 6, y * tileSize + 6);
           ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + tileSize - 6);
           ctx.stroke();
+          ctx.save();
+          ctx.fillStyle = '#fff';
+          ctx.font = '12px Courier New';
+          ctx.textAlign = 'center';
+          ctx.fillText(tile, x * tileSize + tileSize / 2, y * tileSize + tileSize / 2 + 4);
+          ctx.restore();
+        }
+        if (tile === 'B') {
+          ctx.strokeStyle = '#fff';
+          ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.beginPath();
+          ctx.arc(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2, 10, 0, Math.PI * 2);
+          ctx.stroke();
         }
       }
     }
+  }
+
+  drawInteractables(ctx) {
+    this.world.savePoints.forEach((save) => {
+      ctx.strokeStyle = save.active ? '#fff' : 'rgba(255,255,255,0.4)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.rect(save.x - 10, save.y - 24, 20, 24);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(save.x - 10, save.y - 12);
+      ctx.lineTo(save.x + 10, save.y - 12);
+      ctx.stroke();
+      this.drawLabel(ctx, save.x, save.y - 30, 'SAVE', save);
+    });
+
+    this.world.shops.forEach((shop) => {
+      ctx.strokeStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(shop.x, shop.y - 12, 12, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(shop.x - 4, shop.y - 16);
+      ctx.lineTo(shop.x + 4, shop.y - 8);
+      ctx.stroke();
+      this.drawLabel(ctx, shop.x, shop.y - 30, 'SHOP', shop);
+    });
+
+    this.world.abilityPickups.forEach((pickup) => {
+      if (pickup.collected) return;
+      ctx.strokeStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(pickup.x, pickup.y - 12, 10, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(pickup.x - 6, pickup.y - 16);
+      ctx.lineTo(pickup.x + 6, pickup.y - 8);
+      ctx.stroke();
+      this.drawLabel(ctx, pickup.x, pickup.y - 30, `ABILITY: ${pickup.ability.toUpperCase()}`, pickup);
+    });
+
+    this.world.anchors.forEach((anchor) => {
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.strokeRect(anchor.x - 6, anchor.y - 6, 12, 12);
+      this.drawLabel(ctx, anchor.x, anchor.y - 16, 'ANCHOR', anchor);
+    });
+
+    this.world.gates.forEach((gate) => {
+      const labelMap = {
+        G: 'GATE: GRAPPLE',
+        P: 'GATE: PHASE',
+        M: 'GATE: MAG BOOTS',
+        R: 'GATE: RESONANCE'
+      };
+      this.drawLabel(ctx, gate.x, gate.y - 24, labelMap[gate.type], gate, 90);
+      if (this.testHarness.active && this.testHarness.showGateReqs) {
+        this.drawLabel(ctx, gate.x, gate.y - 40, `REQ ${gate.type}`, gate, 140);
+      }
+    });
+
+    if (this.world.bossGate) {
+      this.drawLabel(ctx, this.world.bossGate.x, this.world.bossGate.y - 24, 'RIFT GATE', this.world.bossGate, 120);
+    }
+  }
+
+  drawLabel(ctx, x, y, text, source, range = 80) {
+    const dist = Math.hypot(source.x - this.player.x, source.y - this.player.y);
+    if (dist > range) return;
+    ctx.save();
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText(text, x, y);
+    ctx.restore();
+  }
+
+  drawObjectiveBeacon(ctx) {
+    const target = this.getObjectiveTarget();
+    if (!target) return;
+    const pulse = 6 + Math.sin(performance.now() * 0.006) * 3;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(target.x, target.y - 12, 16 + pulse, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  drawTutorialHints(ctx) {
+    const trainer = this.enemies.find((enemy) => enemy.type === 'practice');
+    if (!trainer || trainer.dead) return;
+    const dist = Math.hypot(trainer.x - this.player.x, trainer.y - this.player.y);
+    if (dist > 140) return;
+    ctx.save();
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('EXECUTION TUTORIAL', trainer.x, trainer.y - 40);
+    ctx.fillText('Attack (J) to stagger, hold K to execute', trainer.x, trainer.y - 24);
+    ctx.restore();
+  }
+
+  drawWaypoint(ctx, width, height, target) {
+    if (!target) return;
+    const screenX = target.x - this.camera.x;
+    const screenY = target.y - this.camera.y;
+    if (screenX > 40 && screenX < width - 40 && screenY > 40 && screenY < height - 40) return;
+    const clampedX = Math.min(Math.max(screenX, 40), width - 40);
+    const clampedY = Math.min(Math.max(screenY, 40), height - 40);
+    const angle = Math.atan2(screenY - height / 2, screenX - width / 2);
+    ctx.save();
+    ctx.translate(clampedX, clampedY);
+    ctx.rotate(angle);
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, -10);
+    ctx.lineTo(16, 0);
+    ctx.lineTo(0, 10);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  drawCollisionBoxes(ctx) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.strokeRect(this.player.rect.x, this.player.rect.y, this.player.rect.w, this.player.rect.h);
+    this.enemies.forEach((enemy) => {
+      if (enemy.dead) return;
+      ctx.strokeRect(enemy.rect.x, enemy.rect.y, enemy.rect.w, enemy.rect.h);
+    });
+    this.world.gates.forEach((gate) => {
+      ctx.strokeRect(gate.x - this.world.tileSize / 2, gate.y - this.world.tileSize / 2, this.world.tileSize, this.world.tileSize);
+    });
+    ctx.restore();
+  }
+
+  getObjectiveTargetsByAbility() {
+    const lookup = {};
+    this.world.abilityPickups.forEach((pickup) => {
+      lookup[pickup.ability] = {
+        x: pickup.x,
+        y: pickup.y,
+        tx: Math.floor(pickup.x / this.world.tileSize),
+        ty: Math.floor(pickup.y / this.world.tileSize)
+      };
+    });
+    if (this.world.bossGate) {
+      lookup.boss = {
+        x: this.world.bossGate.x,
+        y: this.world.bossGate.y,
+        tx: Math.floor(this.world.bossGate.x / this.world.tileSize),
+        ty: Math.floor(this.world.bossGate.y / this.world.tileSize)
+      };
+    }
+    return lookup;
+  }
+
+  getObjectiveTarget() {
+    const order = ['grapple', 'phase', 'magboots', 'resonance'];
+    for (let i = 0; i < order.length; i += 1) {
+      const ability = order[i];
+      if (!this.abilities[ability]) {
+        const target = this.world.abilityPickups.find((pickup) => pickup.ability === ability && !pickup.collected);
+        return target || null;
+      }
+    }
+    if (this.boss && !this.boss.dead) return this.world.bossGate;
+    return null;
+  }
+
+  runValidator() {
+    const targets = this.getObjectiveTargetsByAbility();
+    const report = this.validator.run(this.abilities, targets);
+    this.consoleOverlay.setReport(report.status, report.lines);
+    console.log('Autoplay Validator Report:', report);
   }
 }

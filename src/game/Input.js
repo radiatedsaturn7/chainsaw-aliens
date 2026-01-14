@@ -8,7 +8,10 @@ export const KEYMAP = {
   attack: ['KeyJ'],
   rev: ['KeyK'],
   pause: ['Escape'],
-  interact: ['Space']
+  interact: ['Space'],
+  test: ['KeyT'],
+  validator: ['KeyV'],
+  legend: ['KeyL']
 };
 
 export default class Input {
@@ -38,6 +41,14 @@ export default class Input {
 
   wasReleased(action) {
     return KEYMAP[action].some((code) => this.released.has(code));
+  }
+
+  wasPressedCode(code) {
+    return this.pressed.has(code);
+  }
+
+  isDownCode(code) {
+    return this.keys.get(code);
   }
 
   flush() {

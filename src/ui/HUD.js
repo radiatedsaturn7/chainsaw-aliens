@@ -11,6 +11,8 @@ export default class HUD {
     ctx.fillText(`Blueprint Shards: ${player.blueprints}`, 20, 104);
     ctx.fillText(`Region: ${regionName}`, 20, 126);
     ctx.fillText(`Objective: ${objective}`, 20, 150);
+    ctx.strokeStyle = '#fff';
+    ctx.strokeRect(14, 108, 420, 56);
 
     if (options.shake === false) {
       ctx.fillText('Screen Shake: OFF', 20, 172);
