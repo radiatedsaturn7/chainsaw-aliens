@@ -9,6 +9,7 @@ export const LEGEND = {
   sentinel: { label: 'Sentinel', glyph: 'SE', minimap: '✶' },
   finalboss: { label: 'Rift Tyrant', glyph: 'RT', minimap: '✹' },
   ability: { label: 'Ability Cache', glyph: '⚙', minimap: '⬡' },
+  vitality: { label: 'Vitality Core', glyph: 'HP', minimap: '✚' },
   save: { label: 'Save Node', glyph: 'SV', minimap: '⬟' },
   shop: { label: 'Shop', glyph: '$', minimap: '▵' },
   anchor: { label: 'Grapple Anchor', glyph: '⚓', minimap: '⊙' },

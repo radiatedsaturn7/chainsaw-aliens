@@ -66,6 +66,10 @@ export default class AudioSystem {
     this.tone(420, 0.1, 'triangle');
   }
 
+  ui() {
+    this.tone(340, 0.06, 'triangle');
+  }
+
   footstep() {
     this.tone(140, 0.08, 'square');
   }
@@ -109,6 +113,12 @@ export default class AudioSystem {
   pickup() {
     this.tone(520, 0.08, 'triangle');
     this.tone(700, 0.06, 'triangle');
+  }
+
+  save() {
+    this.tone(520, 0.12, 'triangle');
+    this.tone(620, 0.1, 'triangle');
+    this.noise(0.06, 0.06);
   }
 
   interact() {

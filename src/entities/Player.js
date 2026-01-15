@@ -35,6 +35,7 @@ export default class Player {
     this.dead = false;
     this.animTime = 0;
     this.hurtTimer = 0;
+    this.invulnTimer = 0;
     this.state = 'idle';
     this.revving = false;
     this.justJumped = false;
@@ -146,6 +147,7 @@ export default class Player {
       }
     }
     this.hurtTimer = Math.max(0, this.hurtTimer - dt);
+    this.invulnTimer = Math.max(0, this.invulnTimer - dt);
 
     if (this.onGround && Math.abs(this.vx) > 10) {
       this.stepTimer -= dt;
@@ -220,11 +222,18 @@ export default class Player {
   }
 
   takeDamage(amount) {
+    if (this.invulnTimer > 0) return;
     this.health -= amount;
     this.hurtTimer = 0.3;
+    this.invulnTimer = 0.6;
     if (this.health <= 0) {
       this.dead = true;
     }
+  }
+
+  gainMaxHealth(amount = 1) {
+    this.maxHealth = Math.min(12, this.maxHealth + amount);
+    this.health = this.maxHealth;
   }
 
   canRev() {

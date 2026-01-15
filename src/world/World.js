@@ -12,7 +12,7 @@ const FALLBACK_WORLD = {
     "#######################...................###.................##",
     "#######################...................###.................##",
     "#######################...................###.................##",
-    "#######################...m...S...........###.......S.....B...##",
+    "#######################...m...S...H.......###.......S.....B...##",
     "#######################...#############...###.................##",
     "#######################.....a.......a.....###.................##",
     "#######################...................###.................##",
@@ -22,7 +22,7 @@ const FALLBACK_WORLD = {
     "##.................####.......#####.......###.......#####.....##",
     "##............a.a..####...................###...a.............##",
     "##........................#########...............#######.....##",
-    "##....g...S...................S.....$......G......S.p...$.....##",
+    "##....g...S.......H...........S.....$......G......S.p...$.....##",
     "##.................####...................###.................##",
     "##.................####...................###.................##",
     "##.................####...................###.................##",
@@ -30,7 +30,7 @@ const FALLBACK_WORLD = {
     "################################M###############################",
     "################################.###############################",
     "#######################...................######################",
-    "#######################...r...............######################",
+    "#######################...r...H...........######################",
     "#######################...#############...######################",
     "#######################.......S...........######################",
     "#######################...................######################",
@@ -58,11 +58,13 @@ export default class World {
     this.tiles = [];
     this.regions = [];
     this.abilityPickups = [];
+    this.healthUpgrades = [];
     this.savePoints = [];
     this.shops = [];
     this.anchors = [];
     this.gates = [];
     this.bossGate = null;
+    this.data = null;
   }
 
   async load() {
@@ -86,11 +88,16 @@ export default class World {
     this.tiles = data.tiles;
     this.regions = data.regions || [];
     this.abilityPickups = [];
+    this.healthUpgrades = [];
     this.savePoints = [];
     this.shops = [];
     this.anchors = [];
     this.gates = [];
     this.bossGate = null;
+    this.data = data;
+
+    let saveIndex = 0;
+    let healthIndex = 0;
 
     for (let y = 0; y < this.height; y += 1) {
       for (let x = 0; x < this.width; x += 1) {
@@ -98,14 +105,31 @@ export default class World {
         const worldX = x * this.tileSize + this.tileSize / 2;
         const worldY = y * this.tileSize + this.tileSize / 2;
         if (tile === 'S') {
-          this.savePoints.push({ x: worldX, y: worldY, active: false });
+          const region = this.regionAt(worldX, worldY).id;
+          this.savePoints.push({
+            id: `save-${region}-${saveIndex}`,
+            x: worldX,
+            y: worldY,
+            active: false
+          });
+          saveIndex += 1;
         }
         if (tile === '$') {
           this.shops.push({ x: worldX, y: worldY });
         }
         if (tile === 'g' || tile === 'p' || tile === 'm' || tile === 'r') {
           const ability = { g: 'grapple', p: 'phase', m: 'magboots', r: 'resonance' }[tile];
-          this.abilityPickups.push({ x: worldX, y: worldY, ability, collected: false });
+          this.abilityPickups.push({ id: `ability-${ability}`, x: worldX, y: worldY, ability, collected: false });
+        }
+        if (tile === 'H') {
+          const region = this.regionAt(worldX, worldY).id;
+          this.healthUpgrades.push({
+            id: `vital-${region}-${healthIndex}`,
+            x: worldX,
+            y: worldY,
+            collected: false
+          });
+          healthIndex += 1;
         }
         if (tile === 'a') {
           this.anchors.push({ x: worldX, y: worldY });
@@ -114,9 +138,15 @@ export default class World {
           this.gates.push({ x: worldX, y: worldY, type: tile });
         }
         if (tile === 'B') {
-          this.bossGate = { x: worldX, y: worldY };
+          this.bossGate = { id: 'boss-gate', x: worldX, y: worldY };
         }
       }
+    }
+  }
+
+  reset() {
+    if (this.data) {
+      this.applyData(this.data);
     }
   }
 
@@ -134,6 +164,7 @@ export default class World {
     if (tile === 'P') return !abilities.phase;
     if (tile === 'M') return !abilities.magboots;
     if (tile === 'R') return !abilities.resonance;
+    if (tile === 'B') return !(abilities.grapple && abilities.phase && abilities.magboots && abilities.resonance);
     return false;
   }
 

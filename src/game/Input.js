@@ -11,8 +11,9 @@ export const KEYMAP = {
   interact: ['Space'],
   test: ['KeyT'],
   validator: ['KeyV'],
-  legend: ['KeyL'],
-  debug: ['F1']
+  legend: ['F1'],
+  debug: ['KeyL'],
+  golden: ['KeyG']
 };
 
 export default class Input {
@@ -20,6 +21,9 @@ export default class Input {
     this.keys = new Map();
     this.pressed = new Set();
     this.released = new Set();
+    this.virtualDown = new Map();
+    this.virtualPressed = new Set();
+    this.virtualReleased = new Set();
     window.addEventListener('keydown', (e) => {
       if (!this.keys.get(e.code)) {
         this.pressed.add(e.code);
@@ -33,15 +37,15 @@ export default class Input {
   }
 
   isDown(action) {
-    return KEYMAP[action].some((code) => this.keys.get(code));
+    return KEYMAP[action].some((code) => this.keys.get(code)) || this.virtualDown.get(action);
   }
 
   wasPressed(action) {
-    return KEYMAP[action].some((code) => this.pressed.has(code));
+    return KEYMAP[action].some((code) => this.pressed.has(code)) || this.virtualPressed.has(action);
   }
 
   wasReleased(action) {
-    return KEYMAP[action].some((code) => this.released.has(code));
+    return KEYMAP[action].some((code) => this.released.has(code)) || this.virtualReleased.has(action);
   }
 
   wasPressedCode(code) {
@@ -56,8 +60,30 @@ export default class Input {
     return this.keys.get('ShiftLeft') || this.keys.get('ShiftRight');
   }
 
+  setVirtual(actions = {}) {
+    Object.keys(KEYMAP).forEach((action) => {
+      const prev = this.virtualDown.get(action) || false;
+      const next = Boolean(actions[action]);
+      if (next && !prev) {
+        this.virtualPressed.add(action);
+      }
+      if (!next && prev) {
+        this.virtualReleased.add(action);
+      }
+      this.virtualDown.set(action, next);
+    });
+  }
+
+  clearVirtual() {
+    this.virtualDown.clear();
+    this.virtualPressed.clear();
+    this.virtualReleased.clear();
+  }
+
   flush() {
     this.pressed.clear();
     this.released.clear();
+    this.virtualPressed.clear();
+    this.virtualReleased.clear();
   }
 }

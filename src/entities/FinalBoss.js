@@ -10,11 +10,17 @@ export default class FinalBoss extends EnemyBase {
     this.coreExposed = false;
     this.attackTimer = 1.2;
     this.completed = false;
+    this.simMode = false;
   }
 
   update(dt, player, spawnProjectile) {
     if (this.completed) return;
     this.animTime = (this.animTime || 0) + dt;
+    if (this.simMode) {
+      this.facing = Math.sign(player.x - this.x) || this.facing;
+      this.stagger = Math.max(0, this.stagger - dt * 0.2);
+      return;
+    }
     this.attackTimer -= dt;
     if (this.attackTimer <= 0) {
       this.attackTimer = 1.6;

@@ -24,6 +24,7 @@ export default class Checklist {
     const legendItems = [
       'player',
       'ability',
+      'vitality',
       'save',
       'shop',
       'anchor',
@@ -48,18 +49,19 @@ export default class Checklist {
     });
     ctx.restore();
 
-    this.drawHighlights(ctx, player, enemies, world);
+    this.drawHighlights(ctx, game);
   }
 
-  drawHighlights(ctx, player, enemies, world) {
-    const highlight = (x, y, label) => {
+  drawHighlights(ctx, game) {
+    const { player, enemies, world } = game;
+    const highlight = (x, y, label, style = '#fff') => {
       ctx.save();
-      ctx.strokeStyle = '#fff';
+      ctx.strokeStyle = style;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(x, y, 20, 0, Math.PI * 2);
       ctx.stroke();
-      ctx.fillStyle = '#fff';
+      ctx.fillStyle = style;
       ctx.font = '12px Courier New';
       ctx.fillText(label, x + 24, y - 12);
       ctx.restore();
@@ -87,6 +89,12 @@ export default class Checklist {
         highlight(pickup.x, pickup.y - 16, LEGEND.ability.label);
       }
     });
+    world.healthUpgrades.forEach((upgrade) => {
+      if (upgrade.collected) return;
+      if (Math.hypot(upgrade.x - player.x, upgrade.y - player.y) < this.radius) {
+        highlight(upgrade.x, upgrade.y - 16, LEGEND.vitality.label);
+      }
+    });
     world.anchors.forEach((anchor) => {
       if (Math.hypot(anchor.x - player.x, anchor.y - player.y) < this.radius) {
         highlight(anchor.x, anchor.y - 12, LEGEND.anchor.label);
@@ -95,5 +103,41 @@ export default class Checklist {
     if (world.bossGate) {
       highlight(world.bossGate.x, world.bossGate.y - 16, LEGEND.bossGate.label);
     }
+
+    const objective = game.getObjectiveTarget();
+    if (objective) {
+      highlight(objective.x, objective.y - 20, LEGEND.objective.label, 'rgba(255,255,255,0.9)');
+    }
+    const nearest = this.findNearestInteractable(game);
+    if (nearest) {
+      highlight(nearest.x, nearest.y - 18, nearest.label, 'rgba(255,255,255,0.7)');
+    }
+  }
+
+  findNearestInteractable(game) {
+    const { player, world } = game;
+    const candidates = [];
+    world.savePoints.forEach((save) => candidates.push({ x: save.x, y: save.y, label: LEGEND.save.label }));
+    world.shops.forEach((shop) => candidates.push({ x: shop.x, y: shop.y, label: LEGEND.shop.label }));
+    world.abilityPickups.forEach((pickup) => {
+      if (!pickup.collected) {
+        candidates.push({ x: pickup.x, y: pickup.y, label: LEGEND.ability.label });
+      }
+    });
+    world.healthUpgrades.forEach((upgrade) => {
+      if (!upgrade.collected) {
+        candidates.push({ x: upgrade.x, y: upgrade.y, label: LEGEND.vitality.label });
+      }
+    });
+    world.gates.forEach((gate) => candidates.push({ x: gate.x, y: gate.y, label: LEGEND[`gate${gate.type}`]?.label || 'Gate' }));
+    if (world.bossGate) candidates.push({ x: world.bossGate.x, y: world.bossGate.y, label: LEGEND.bossGate.label });
+    let best = null;
+    candidates.forEach((item) => {
+      const dist = Math.hypot(item.x - player.x, item.y - player.y);
+      if (!best || dist < best.dist) {
+        best = { ...item, dist };
+      }
+    });
+    return best;
   }
 }
