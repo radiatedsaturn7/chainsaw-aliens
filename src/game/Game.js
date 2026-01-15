@@ -28,6 +28,8 @@ import ConsoleOverlay from '../debug/ConsoleOverlay.js';
 import Checklist from '../debug/Checklist.js';
 import ActionFeedback from '../debug/ActionFeedback.js';
 import PlayabilityLayer from '../debug/PlayabilityLayer.js';
+import FeasibilityValidator from '../debug/FeasibilityValidator.js';
+import GoldenPathRunner from '../debug/GoldenPathRunner.js';
 
 const INTRO_LINES = [
   'Captain! The entire planet of earth has literally run out of all our ammunition, and the aliens are still coming! What do we do?',
@@ -60,7 +62,8 @@ export default class Game {
     this.world = new World();
     this.camera = new Camera(canvas.width, canvas.height);
     this.minimap = new Minimap(this.world);
-    this.player = new Player(32 * 28, 32 * 18);
+    this.spawnPoint = { x: 32 * 28, y: 32 * 18 };
+    this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.title = new Title();
     this.dialog = new Dialog(INTRO_LINES);
@@ -68,6 +71,7 @@ export default class Game {
     this.pauseMenu = new Pause();
     this.shopUI = new Shop(UPGRADE_LIST);
     this.state = 'loading';
+    this.victory = false;
     this.enemies = [];
     this.projectiles = [];
     this.debris = [];
@@ -87,6 +91,7 @@ export default class Game {
     this.shakeMagnitude = 0;
     this.slowTimer = 0;
     this.boss = null;
+    this.bossActive = false;
     this.bossInteractions = {
       grapple: false,
       phase: false,
@@ -95,10 +100,12 @@ export default class Game {
     };
     this.testHarness = new TestHarness();
     this.validator = new Validator(this.world, this.player);
+    this.feasibilityValidator = new FeasibilityValidator(this.world, this.player);
     this.consoleOverlay = new ConsoleOverlay();
     this.checklist = new Checklist();
     this.actionFeedback = new ActionFeedback();
     this.playability = new PlayabilityLayer(this.world, this.player, this.validator);
+    this.goldenPath = new GoldenPathRunner();
     this.validatorPending = false;
     this.menuFlashTimer = 0;
     this.spawnRules = {
@@ -110,12 +117,14 @@ export default class Game {
     this.spawnCooldowns = new Map();
     this.prevHealth = this.player.health;
     this.revActive = false;
+    this.simulationActive = false;
 
     this.init();
   }
 
   async init() {
     await this.world.load();
+    await this.goldenPath.load();
     this.resetWorldSystems();
     this.spawnEnemies();
     this.state = 'title';
@@ -124,7 +133,49 @@ export default class Game {
   resetWorldSystems() {
     this.minimap = new Minimap(this.world);
     this.validator = new Validator(this.world, this.player);
+    this.feasibilityValidator = new FeasibilityValidator(this.world, this.player);
     this.playability = new PlayabilityLayer(this.world, this.player, this.validator);
+  }
+
+  resetRun() {
+    this.world.reset();
+    this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
+    this.player.applyUpgrades(this.player.equippedUpgrades);
+    this.abilities = {
+      grapple: false,
+      phase: false,
+      magboots: false,
+      resonance: false
+    };
+    this.objective = 'Reach the Hub Pylon.';
+    this.lastSave = { x: this.player.x, y: this.player.y };
+    this.victory = false;
+    this.enemies = [];
+    this.projectiles = [];
+    this.debris = [];
+    this.shards = [];
+    this.lootDrops = [];
+    this.effects = [];
+    this.spawnEnemies();
+    this.bossInteractions = {
+      grapple: false,
+      phase: false,
+      magboots: false,
+      resonance: false
+    };
+    this.prevHealth = this.player.health;
+    this.testHarness.active = false;
+    this.simulationActive = false;
+    this.resetWorldSystems();
+  }
+
+  startGoldenPath() {
+    this.resetRun();
+    this.state = 'playing';
+    this.simulationActive = true;
+    this.goldenPath.start(this);
+    this.audio.ui();
+    this.triggerMenuFlash();
   }
 
   spawnEnemies() {
@@ -140,6 +191,7 @@ export default class Game {
       new SentinelElite(32 * 52, 32 * 9)
     ];
     this.boss = new FinalBoss(32 * 58, 32 * 9);
+    this.bossActive = false;
   }
 
   spawnTestEnemies() {
@@ -175,7 +227,12 @@ export default class Game {
       this.title.update(dt);
       if (this.input.wasPressed('interact')) {
         this.state = 'dialog';
-        this.audio.interact();
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+      }
+      if (this.input.wasPressed('golden')) {
+        this.startGoldenPath();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
       }
@@ -186,6 +243,7 @@ export default class Game {
         this.actionFeedback.reset();
         this.state = 'playing';
         this.validatorPending = true;
+        this.simulationActive = false;
         this.triggerMenuFlash();
         this.audio.menu();
         this.recordFeedback('menu navigate', 'audio');
@@ -201,8 +259,9 @@ export default class Game {
         if (finished) {
           this.state = 'playing';
           this.validatorPending = true;
+          this.simulationActive = false;
         }
-        this.audio.interact();
+        this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
       }
@@ -271,9 +330,15 @@ export default class Game {
       return;
     }
 
+    this.goldenPath.preUpdate(dt, this);
+    if (this.goldenPath.freeze) {
+      this.input.flush();
+      return;
+    }
     this.testHarness.update(this.input, this);
     const debugSlow = this.testHarness.active && this.testHarness.slowMotion;
-    const timeScale = this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1;
+    const simScale = this.goldenPath.getTimeScale();
+    const timeScale = (this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1) * simScale;
     this.slowTimer = Math.max(0, this.slowTimer - dt);
     this.updateSpawnCooldowns(dt * timeScale);
 
@@ -322,8 +387,10 @@ export default class Game {
       this.recordFeedback('interact', 'visual');
     }
     this.updateObjective();
+    this.updateBossState();
     this.consoleOverlay.update(dt * timeScale);
     this.playability.update(dt * timeScale, this);
+    this.goldenPath.postUpdate(dt * timeScale, this);
 
     this.camera.follow(this.player, dt);
     this.minimap.update(this.player);
@@ -356,6 +423,7 @@ export default class Game {
     this.player.y = this.lastSave.y;
     this.player.credits = Math.max(0, this.player.credits - 10);
     this.player.loot = 0;
+    this.player.invulnTimer = 1;
     this.prevHealth = this.player.health;
   }
 
@@ -686,7 +754,8 @@ export default class Game {
       }
     });
 
-    if (this.boss && !this.boss.dead) {
+    if (this.boss && !this.boss.dead && this.bossActive) {
+      this.boss.simMode = this.simulationActive && this.goldenPath.active;
       this.boss.update(dt, this.player, this.spawnProjectile.bind(this));
       this.handleBossInteractions();
     }
@@ -696,6 +765,7 @@ export default class Game {
     if (!this.boss || this.boss.dead) return;
     const dist = Math.hypot(this.player.x - this.boss.x, this.player.y - this.boss.y);
     if (dist > 200) return;
+    const simAssist = this.simulationActive && this.goldenPath.active;
     if (this.boss.phase === 0 && this.abilities.grapple && this.input.isDown('rev')) {
       this.boss.triggerExposure();
       this.bossInteractions.grapple = true;
@@ -704,7 +774,7 @@ export default class Game {
       this.boss.triggerExposure();
       this.bossInteractions.phase = true;
     }
-    if (this.boss.phase === 2 && this.abilities.magboots && this.player.onWall !== 0) {
+    if (this.boss.phase === 2 && this.abilities.magboots && (this.player.onWall !== 0 || simAssist && this.input.isDown('rev'))) {
       this.boss.triggerExposure();
       this.bossInteractions.magboots = true;
     }
@@ -780,6 +850,19 @@ export default class Game {
         this.recordFeedback('pickup', 'visual');
       }
     });
+
+    this.world.healthUpgrades.forEach((upgrade) => {
+      if (upgrade.collected) return;
+      const dist = Math.hypot(upgrade.x - this.player.x, upgrade.y - this.player.y);
+      if (dist < 30) {
+        upgrade.collected = true;
+        this.player.gainMaxHealth(1);
+        this.audio.pickup();
+        this.spawnEffect('pickup', upgrade.x, upgrade.y - 8);
+        this.recordFeedback('pickup', 'audio');
+        this.recordFeedback('pickup', 'visual');
+      }
+    });
   }
 
   checkSavePoints() {
@@ -792,7 +875,8 @@ export default class Game {
         });
         save.active = true;
         this.lastSave = { x: save.x, y: save.y - 40 };
-        this.audio.interact();
+        this.player.health = this.player.maxHealth;
+        this.audio.save();
         this.spawnEffect('interact', save.x, save.y - 16);
         this.recordFeedback('interact', 'audio');
         this.recordFeedback('interact', 'visual');
@@ -828,6 +912,22 @@ export default class Game {
       this.objective = 'Enter the Rift and defeat the final boss.';
     } else {
       this.objective = 'Mission complete: Earth reclaimed.';
+    }
+  }
+
+  updateBossState() {
+    if (!this.boss || this.boss.dead) {
+      this.bossActive = false;
+      if (this.boss && this.boss.dead) {
+        this.victory = true;
+      }
+      return;
+    }
+    const region = this.world.regionAt(this.player.x, this.player.y);
+    if (region.id === 'rift') {
+      this.bossActive = true;
+    } else {
+      this.bossActive = false;
     }
   }
 
@@ -930,6 +1030,26 @@ export default class Game {
     this.playability.drawScreen(ctx, canvas.width, canvas.height);
     this.checklist.draw(ctx, this, canvas.width, canvas.height);
     this.testHarness.draw(ctx, this, canvas.width, canvas.height);
+    this.goldenPath.draw(ctx, canvas.width, canvas.height, this);
+    if (this.victory) {
+      this.drawVictory(ctx, canvas.width, canvas.height);
+    }
+  }
+
+  drawVictory(ctx, width, height) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(0, 0, width, height);
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(40, 40, width - 80, height - 80);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 36px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('VICTORY', width / 2, height / 2 - 20);
+    ctx.font = '16px Courier New';
+    ctx.fillText('Mission complete: Earth reclaimed.', width / 2, height / 2 + 20);
+    ctx.restore();
   }
 
   drawBloom(ctx) {
@@ -977,6 +1097,16 @@ export default class Game {
           ctx.arc(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2, 10, 0, Math.PI * 2);
           ctx.stroke();
         }
+        if (tile === 'H') {
+          ctx.strokeStyle = '#fff';
+          ctx.strokeRect(x * tileSize + 4, y * tileSize + 4, tileSize - 8, tileSize - 8);
+          ctx.beginPath();
+          ctx.moveTo(x * tileSize + tileSize / 2, y * tileSize + 8);
+          ctx.lineTo(x * tileSize + tileSize / 2, y * tileSize + tileSize - 8);
+          ctx.moveTo(x * tileSize + 8, y * tileSize + tileSize / 2);
+          ctx.lineTo(x * tileSize + tileSize - 8, y * tileSize + tileSize / 2);
+          ctx.stroke();
+        }
       }
     }
   }
@@ -1018,6 +1148,21 @@ export default class Game {
       ctx.lineTo(pickup.x + 6, pickup.y - 8);
       ctx.stroke();
       this.drawLabel(ctx, pickup.x, pickup.y - 30, `ABILITY: ${pickup.ability.toUpperCase()}`, pickup);
+    });
+
+    this.world.healthUpgrades.forEach((upgrade) => {
+      if (upgrade.collected) return;
+      ctx.strokeStyle = '#fff';
+      ctx.beginPath();
+      ctx.rect(upgrade.x - 8, upgrade.y - 20, 16, 16);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(upgrade.x, upgrade.y - 18);
+      ctx.lineTo(upgrade.x, upgrade.y - 6);
+      ctx.moveTo(upgrade.x - 6, upgrade.y - 12);
+      ctx.lineTo(upgrade.x + 6, upgrade.y - 12);
+      ctx.stroke();
+      this.drawLabel(ctx, upgrade.x, upgrade.y - 30, 'VITALITY CORE', upgrade);
     });
 
     this.world.anchors.forEach((anchor) => {
@@ -1155,8 +1300,8 @@ export default class Game {
   runValidator(staged = false) {
     const targets = this.getObjectiveTargetsByAbility();
     if (staged) {
-      const report = this.validator.runStaged(targets);
-      this.consoleOverlay.setReport(report.status, report.summary, 'STAGED VALIDATOR');
+      const report = this.feasibilityValidator.runStaged(targets);
+      this.consoleOverlay.setReport(report.status, report.summary, 'STAGED FEASIBILITY');
       console.log('Staged Validator Summary:', report.summary);
       console.log('Staged Validator Detail:', report.detail);
       return;
@@ -1171,8 +1316,8 @@ export default class Game {
         ty: Math.floor(target.y / this.world.tileSize)
       };
     }
-    const report = this.validator.runSingleStage(this.abilities, stageTargets, 'Current Stage');
-    this.consoleOverlay.setReport(report.status, report.lines, 'VALIDATOR');
-    console.log('Validator Report:', report);
+    const report = this.feasibilityValidator.runSingleStage(this.abilities, stageTargets, 'Current Stage');
+    this.consoleOverlay.setReport(report.status, report.lines, 'FEASIBILITY');
+    console.log('Feasibility Report:', report);
   }
 }

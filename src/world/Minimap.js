@@ -37,6 +37,9 @@ export default class Minimap {
     this.world.abilityPickups.forEach((pickup) => {
       if (!pickup.collected) this.drawIcon(ctx, pickup.x, pickup.y, pixel, 'rgba(255,255,255,0.7)');
     });
+    this.world.healthUpgrades.forEach((upgrade) => {
+      if (!upgrade.collected) this.drawIcon(ctx, upgrade.x, upgrade.y, pixel, 'rgba(255,255,255,0.7)');
+    });
     this.world.gates.forEach((gate) => this.drawGateIcon(ctx, gate, pixel));
     if (this.world.bossGate) this.drawIcon(ctx, this.world.bossGate.x, this.world.bossGate.y, pixel, 'rgba(255,255,255,0.7)');
     ctx.restore();
@@ -68,6 +71,7 @@ export default class Minimap {
       ['◎', 'Player'],
       ['◈', 'Objective'],
       ['⬡', 'Ability'],
+      ['✚', 'Vitality'],
       ['⬟', 'Save'],
       ['▵', 'Shop'],
       ['G/P/M/R', 'Gates'],
