@@ -1,0 +1,12 @@
+{
+  "name": "chainsaw-aliens",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Static Chainsaw Aliens game with optional dev test harness",
+  "devDependencies": {
+    "playwright": "^1.46.0"
+  },
+  "scripts": {
+    "test:dashboard": "node tools/test-runner/run.js"
+  }
+}
