@@ -11,7 +11,8 @@ export const KEYMAP = {
   interact: ['Space'],
   test: ['KeyT'],
   validator: ['KeyV'],
-  legend: ['KeyL']
+  legend: ['KeyL'],
+  debug: ['F1']
 };
 
 export default class Input {
@@ -49,6 +50,10 @@ export default class Input {
 
   isDownCode(code) {
     return this.keys.get(code);
+  }
+
+  isShiftDown() {
+    return this.keys.get('ShiftLeft') || this.keys.get('ShiftRight');
   }
 
   flush() {

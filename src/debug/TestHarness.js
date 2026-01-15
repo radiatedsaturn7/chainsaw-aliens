@@ -20,6 +20,11 @@ export default class TestHarness {
     this.showBoxes = false;
     this.seeded = false;
     this.executionVariants = new Set();
+    this.combatChecks = {
+      hit: false,
+      stagger: false,
+      execute: false
+    };
     this.originalRandom = Math.random;
   }
 
@@ -28,6 +33,12 @@ export default class TestHarness {
     world.applyData(TEST_MAP);
     player.x = world.tileSize * 4;
     player.y = world.tileSize * 9;
+    this.executionVariants.clear();
+    this.combatChecks = {
+      hit: false,
+      stagger: false,
+      execute: false
+    };
   }
 
   toggleSeeded() {
@@ -42,6 +53,15 @@ export default class TestHarness {
 
   recordExecution(variant) {
     this.executionVariants.add(variant);
+    this.combatChecks.execute = true;
+  }
+
+  recordHit() {
+    this.combatChecks.hit = true;
+  }
+
+  recordStagger() {
+    this.combatChecks.stagger = true;
   }
 
   update(input, game) {
@@ -107,6 +127,8 @@ export default class TestHarness {
     ctx.restore();
 
     this.drawExecutionChecklist(ctx, width, height);
+    this.drawActionFeedback(ctx, game, width, height);
+    this.drawCombatChecklist(ctx, width, height);
   }
 
   drawExecutionChecklist(ctx, width, height) {
@@ -127,6 +149,44 @@ export default class TestHarness {
     if (missing.length) {
       ctx.fillText(`Missing: ${missing.join(', ')}`, 32, 122);
     }
+    ctx.restore();
+  }
+
+  drawActionFeedback(ctx, game, width, height) {
+    const results = game.actionFeedback.summary(game.clock);
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(width - 280, height - 240, 260, 220);
+    ctx.strokeStyle = '#fff';
+    ctx.strokeRect(width - 280, height - 240, 260, 220);
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px Courier New';
+    ctx.fillText('ACTION FEEDBACK', width - 268, height - 220);
+    results.forEach((item, index) => {
+      const icon = item.status === 'pass' ? '✓' : item.status === 'warn' ? '!' : '✗';
+      ctx.fillText(`${icon} ${item.action}`, width - 268, height - 200 + index * 14);
+    });
+    ctx.restore();
+  }
+
+  drawCombatChecklist(ctx, width, height) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(20, height - 120, 220, 92);
+    ctx.strokeStyle = '#fff';
+    ctx.strokeRect(20, height - 120, 220, 92);
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px Courier New';
+    ctx.fillText('COMBAT CHECK', 32, height - 100);
+    const lines = [
+      ['Damage enemy', this.combatChecks.hit],
+      ['Stagger enemy', this.combatChecks.stagger],
+      ['Execute enemy', this.combatChecks.execute]
+    ];
+    lines.forEach((line, index) => {
+      const icon = line[1] ? '✓' : '✗';
+      ctx.fillText(`${icon} ${line[0]}`, 32, height - 80 + index * 16);
+    });
     ctx.restore();
   }
 }

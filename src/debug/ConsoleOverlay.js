@@ -3,12 +3,14 @@ export default class ConsoleOverlay {
     this.lines = [];
     this.status = 'idle';
     this.timer = 0;
+    this.title = 'VALIDATOR';
   }
 
-  setReport(status, lines) {
+  setReport(status, lines, title = 'VALIDATOR') {
     this.status = status;
     this.lines = lines;
     this.timer = 6;
+    this.title = title;
   }
 
   update(dt) {
@@ -29,7 +31,7 @@ export default class ConsoleOverlay {
     ctx.fillStyle = '#fff';
     ctx.font = '12px Courier New';
     ctx.textAlign = 'left';
-    const title = this.status === 'pass' ? 'VALIDATOR: PASS' : 'VALIDATOR: FAIL';
+    const title = `${this.title}: ${this.status === 'pass' ? 'PASS' : this.status === 'fail' ? 'FAIL' : 'WARN'}`;
     ctx.fillText(title, width - boxWidth - padding + 12, height - boxHeight - padding + 18);
     this.lines.forEach((line, i) => {
       ctx.fillText(line, width - boxWidth - padding + 12, height - boxHeight - padding + 36 + i * 16);
