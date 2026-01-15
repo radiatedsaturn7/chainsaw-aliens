@@ -1,6 +1,6 @@
 const DEFAULT_CLEARANCE_TILES = 2;
 
-export default class WorldValidityGate {
+export default class WorldValidityTest {
   constructor(world, player) {
     this.world = world;
     this.player = player;
@@ -12,42 +12,34 @@ export default class WorldValidityGate {
   run(spawnPoint, abilities, enemies = []) {
     this.lines = [];
     this.status = 'pass';
-    const startTile = this.toTile(spawnPoint.x, spawnPoint.y);
-    let spawn = { ...spawnPoint };
-    const spawnResult = this.validateSpawn(spawnPoint, abilities);
-    if (!spawnResult.valid) {
-      this.lines.push('✗ Spawn invalid. Attempting relocation.');
-      const relocated = this.findNearestStandable(startTile.tx, startTile.ty, abilities);
-      if (!relocated) {
-        this.status = 'fail';
-        this.lines.push('✗ No valid spawn location found.');
-        this.report = { status: this.status, lines: this.lines, spawnPoint: spawn };
-        return this.report;
-      }
-      spawn = this.toWorld(relocated.tx, relocated.ty);
-      this.lines.push(`✓ Spawn relocated to ${relocated.tx},${relocated.ty}.`);
-    } else {
-      this.lines.push('✓ Spawn valid.');
-    }
-
-    const playerResult = this.ensureEntityClear(this.player, spawn, abilities, 'player');
-    if (!playerResult.valid) {
+    const spawnCheck = this.validateSpawn(spawnPoint, abilities);
+    const fixes = {};
+    if (!spawnCheck.valid) {
       this.status = 'fail';
-      this.lines.push(`✗ Player collision unresolved: ${playerResult.reason}`);
+      this.lines.push(`✗ Spawn invalid: ${spawnCheck.reason}.`);
+      const startTile = this.toTile(spawnPoint.x, spawnPoint.y);
+      const relocated = this.findNearestStandable(startTile.tx, startTile.ty, abilities);
+      if (relocated) {
+        fixes.spawnOverride = { tx: relocated.tx, ty: relocated.ty };
+        this.lines.push(`  Suggested spawn override: ${relocated.tx},${relocated.ty}.`);
+      } else {
+        this.lines.push('  No standable fallback found for spawn override.');
+      }
+    } else {
+      this.lines.push('✓ Spawn valid and standable.');
     }
 
     const enemyCollisions = enemies.filter((enemy) => enemy.solid && this.intersectsSolid(enemy.rect, abilities));
     if (enemyCollisions.length > 0) {
-      this.lines.push(`✗ ${enemyCollisions.length} solid enemies intersect walls. Attempting fix.`);
-      enemyCollisions.forEach((enemy) => {
-        const fixed = this.resolveEnemy(enemy, abilities);
-        if (fixed) {
-          this.lines.push(`✓ Enemy ${enemy.type} relocated.`);
-        } else {
-          this.status = 'fail';
-          this.lines.push(`✗ Enemy ${enemy.type} still embedded.`);
-        }
+      this.status = 'fail';
+      this.lines.push(`✗ ${enemyCollisions.length} solid enemies intersect walls.`);
+      enemyCollisions.slice(0, 4).forEach((enemy) => {
+        const tile = this.toTile(enemy.x, enemy.y);
+        this.lines.push(`  Enemy ${enemy.type} stuck near ${tile.tx},${tile.ty}.`);
       });
+      if (enemyCollisions.length > 4) {
+        this.lines.push('  Additional enemy collisions omitted.');
+      }
     } else {
       this.lines.push('✓ Enemies clear of solids.');
     }
@@ -55,7 +47,8 @@ export default class WorldValidityGate {
     if (this.status === 'pass') {
       this.lines.push('✓ World validity pass.');
     }
-    this.report = { status: this.status, lines: this.lines, spawnPoint: spawn };
+
+    this.report = { status: this.status, lines: this.lines, fixes };
     return this.report;
   }
 
@@ -69,34 +62,6 @@ export default class WorldValidityGate {
       return { valid: false, reason: 'collision at spawn' };
     }
     return { valid: true };
-  }
-
-  ensureEntityClear(entity, spawn, abilities, label) {
-    entity.x = spawn.x;
-    entity.y = spawn.y;
-    const rect = this.rectFor(entity.x, entity.y, entity.width, entity.height);
-    if (!this.intersectsSolid(rect, abilities)) {
-      return { valid: true };
-    }
-    const tile = this.toTile(entity.x, entity.y);
-    const relocated = this.findNearestStandable(tile.tx, tile.ty, abilities, entity.width, entity.height);
-    if (!relocated) {
-      return { valid: false, reason: `${label} stuck in solid` };
-    }
-    const worldPos = this.toWorld(relocated.tx, relocated.ty);
-    entity.x = worldPos.x;
-    entity.y = worldPos.y;
-    return { valid: true };
-  }
-
-  resolveEnemy(enemy, abilities) {
-    const tile = this.toTile(enemy.x, enemy.y);
-    const relocated = this.findNearestStandable(tile.tx, tile.ty, abilities, enemy.width, enemy.height);
-    if (!relocated) return false;
-    const worldPos = this.toWorld(relocated.tx, relocated.ty);
-    enemy.x = worldPos.x;
-    enemy.y = worldPos.y;
-    return true;
   }
 
   isStandable(tx, ty, abilities, width = this.player.width, height = this.player.height) {

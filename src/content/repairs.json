@@ -1,4 +1,5 @@
 {
+  "enabled": false,
   "spawnOverride": {
     "tx": 28,
     "ty": 22

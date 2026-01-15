@@ -1,4 +1,4 @@
-export default class RoomCoverageValidator {
+export default class RoomCoverageTest {
   constructor(world, player, feasibilityValidator) {
     this.world = world;
     this.player = player;
@@ -13,7 +13,7 @@ export default class RoomCoverageValidator {
     this.showOverlay = !this.showOverlay;
   }
 
-  run(abilities) {
+  run(abilities, stagedTargets = null) {
     this.lines = [];
     this.roomStatus.clear();
     this.status = 'pass';
@@ -52,6 +52,19 @@ export default class RoomCoverageValidator {
         this.lines.push(`✓ ${region.name} reachable.`);
       }
     });
+
+    if (stagedTargets) {
+      const staged = this.validator.runStaged(stagedTargets);
+      this.lines.push('');
+      this.lines.push('Stage Reachability:');
+      staged.summary.forEach((line) => this.lines.push(line));
+      if (staged.status === 'fail') {
+        this.status = 'fail';
+        this.lines.push('✗ Stage traversal failed for one or more objectives.');
+      } else {
+        this.lines.push('✓ Stage traversal pass.');
+      }
+    }
 
     if (this.status === 'pass') {
       this.lines.push('✓ Room coverage pass.');

@@ -1,6 +1,7 @@
-const GROUNDED_TYPES = new Set(['skitter', 'bulwark', 'slicer', 'practice']);
+const GROUNDED_TYPES = new Set(['skitter', 'bulwark', 'slicer', 'practice', 'spitter', 'hivenode']);
+const AIRBORNE_TYPES = new Set(['floater', 'sentinel', 'finalboss']);
 
-export default class EncounterAudit {
+export default class EncounterAuditTest {
   constructor(world, player, feasibilityValidator) {
     this.world = world;
     this.player = player;
@@ -13,20 +14,34 @@ export default class EncounterAudit {
     this.lines = [];
     this.status = 'pass';
 
-    const grounded = game.enemies.filter((enemy) => GROUNDED_TYPES.has(enemy.type));
+    const activeEnemies = game.enemies.filter((enemy) => !enemy.dead);
+    const grounded = activeEnemies.filter((enemy) => GROUNDED_TYPES.has(enemy.type));
+    const airborne = activeEnemies.filter((enemy) => AIRBORNE_TYPES.has(enemy.type));
+
+    if (grounded.length === 0) {
+      this.status = 'fail';
+      this.lines.push('✗ No grounded enemy archetypes present.');
+    } else {
+      this.lines.push(`✓ Grounded enemies active: ${grounded.length}.`);
+    }
+
     const groundedOnFloor = grounded.filter((enemy) => {
       const tile = this.toTile(enemy.x, enemy.y);
       return this.world.isSolid(tile.tx, tile.ty + 1, abilities);
     });
-
-    if (groundedOnFloor.length === 0) {
+    if (grounded.length > 0 && groundedOnFloor.length === 0) {
       this.status = 'fail';
-      this.lines.push('✗ No grounded enemies occupying floor tiles.');
-    } else {
-      this.lines.push(`✓ Grounded enemies active: ${groundedOnFloor.length}.`);
+      this.lines.push('✗ Grounded enemies are not anchored to floor tiles.');
     }
 
-    const encounterReport = this.checkEncounters(game, abilities);
+    if (airborne.length === 0) {
+      this.status = 'fail';
+      this.lines.push('✗ No airborne enemy archetypes present.');
+    } else {
+      this.lines.push(`✓ Airborne enemies active: ${airborne.length}.`);
+    }
+
+    const encounterReport = this.checkEncounters(activeEnemies, abilities);
     if (encounterReport.status === 'fail') {
       this.status = 'fail';
     }
@@ -45,33 +60,36 @@ export default class EncounterAudit {
     return { status: this.status, lines: this.lines };
   }
 
-  checkEncounters(game, abilities) {
+  checkEncounters(enemies, abilities) {
     const lines = [];
     let status = 'pass';
-    const enemiesByRegion = new Map();
-    game.enemies.forEach((enemy) => {
-      if (enemy.dead) return;
-      const region = this.world.regionAt(enemy.x, enemy.y).id;
-      if (!enemiesByRegion.has(region)) {
-        enemiesByRegion.set(region, []);
-      }
-      enemiesByRegion.get(region).push(enemy);
-    });
+    if (enemies.length === 0) {
+      return { status: 'fail', lines: ['✗ No active enemies to audit.'] };
+    }
 
-    enemiesByRegion.forEach((enemies, regionId) => {
-      const attackable = enemies.some((enemy) => this.isAttackable(enemy, abilities));
-      if (!attackable) {
-        status = 'fail';
-        lines.push(`✗ Region ${regionId}: no attackable encounters.`);
-        lines.push('  Cause: enemies unreachable or out of range.');
+    const reachable = [];
+    const unreachable = [];
+    enemies.forEach((enemy) => {
+      if (this.isAttackable(enemy, abilities)) {
+        reachable.push(enemy);
       } else {
-        lines.push(`✓ Region ${regionId}: attackable encounter found.`);
+        unreachable.push(enemy);
       }
     });
 
-    if (enemiesByRegion.size === 0) {
+    const attackableRatio = reachable.length / enemies.length;
+    if (attackableRatio < 0.6) {
       status = 'fail';
-      lines.push('✗ No active enemies to audit.');
+      lines.push(`✗ Only ${reachable.length}/${enemies.length} encounters are attackable.`);
+      unreachable.slice(0, 4).forEach((enemy) => {
+        const tile = this.toTile(enemy.x, enemy.y);
+        lines.push(`  Unreachable: ${enemy.type} near ${tile.tx},${tile.ty}.`);
+      });
+      if (unreachable.length > 4) {
+        lines.push('  Additional unreachable encounters omitted.');
+      }
+    } else {
+      lines.push(`✓ Attackable encounters: ${reachable.length}/${enemies.length}.`);
     }
 
     return { status, lines };

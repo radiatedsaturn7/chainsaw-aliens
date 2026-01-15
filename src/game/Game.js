@@ -30,11 +30,12 @@ import ActionFeedback from '../debug/ActionFeedback.js';
 import PlayabilityLayer from '../debug/PlayabilityLayer.js';
 import FeasibilityValidator from '../debug/FeasibilityValidator.js';
 import GoldenPathRunner from '../debug/GoldenPathRunner.js';
-import WorldValidityGate from '../debug/WorldValidityGate.js';
-import RoomCoverageValidator from '../debug/RoomCoverageValidator.js';
 import AutoRepair from '../debug/AutoRepair.js';
-import EncounterAudit from '../debug/EncounterAudit.js';
 import TestDashboard from '../debug/TestDashboard.js';
+import WorldValidityTest from '../debug/validators/WorldValidityTest.js';
+import RoomCoverageTest from '../debug/validators/RoomCoverageTest.js';
+import EncounterAuditTest from '../debug/validators/EncounterAuditTest.js';
+import GoldenPathTest from '../debug/validators/GoldenPathTest.js';
 
 const INTRO_LINES = [
   'Captain! The entire planet of earth has literally run out of all our ammunition, and the aliens are still coming! What do we do?',
@@ -111,19 +112,18 @@ export default class Game {
     this.actionFeedback = new ActionFeedback();
     this.playability = new PlayabilityLayer(this.world, this.player, this.validator);
     this.goldenPath = new GoldenPathRunner();
-    this.worldValidityGate = new WorldValidityGate(this.world, this.player);
-    this.roomCoverageValidator = new RoomCoverageValidator(this.world, this.player, this.feasibilityValidator);
-    this.encounterAudit = new EncounterAudit(this.world, this.player, this.feasibilityValidator);
+    this.worldValidityTest = new WorldValidityTest(this.world, this.player);
+    this.roomCoverageTest = new RoomCoverageTest(this.world, this.player, this.feasibilityValidator);
+    this.encounterAuditTest = new EncounterAuditTest(this.world, this.player, this.feasibilityValidator);
     this.autoRepair = new AutoRepair(this.world);
     this.testDashboard = new TestDashboard();
+    this.goldenPathTest = new GoldenPathTest(this.goldenPath);
     this.testResults = {
-      validity: 'pending',
-      coverage: 'pending',
-      encounter: 'pending',
+      validity: 'idle',
+      coverage: 'idle',
+      encounter: 'idle',
       golden: 'idle'
     };
-    this.hardFail = false;
-    this.validatorPending = false;
     this.menuFlashTimer = 0;
     this.spawnRules = {
       globalMax: 12,
@@ -147,7 +147,6 @@ export default class Game {
     this.resetWorldSystems();
     this.spawnEnemies();
     this.autoRepair.applySpawnOverride(this);
-    this.runAutomatedTests();
     this.state = 'title';
   }
 
@@ -156,9 +155,10 @@ export default class Game {
     this.validator = new Validator(this.world, this.player);
     this.feasibilityValidator = new FeasibilityValidator(this.world, this.player);
     this.playability = new PlayabilityLayer(this.world, this.player, this.validator);
-    this.worldValidityGate = new WorldValidityGate(this.world, this.player);
-    this.roomCoverageValidator = new RoomCoverageValidator(this.world, this.player, this.feasibilityValidator);
-    this.encounterAudit = new EncounterAudit(this.world, this.player, this.feasibilityValidator);
+    this.worldValidityTest = new WorldValidityTest(this.world, this.player);
+    this.roomCoverageTest = new RoomCoverageTest(this.world, this.player, this.feasibilityValidator);
+    this.encounterAuditTest = new EncounterAuditTest(this.world, this.player, this.feasibilityValidator);
+    this.goldenPathTest = new GoldenPathTest(this.goldenPath);
   }
 
   resetRun() {
@@ -236,10 +236,6 @@ export default class Game {
 
   update(dt) {
     if (this.state === 'loading') return;
-    if (this.hardFail) {
-      this.input.flush();
-      return;
-    }
     this.clock += dt;
     this.menuFlashTimer = Math.max(0, this.menuFlashTimer - dt);
 
@@ -255,6 +251,16 @@ export default class Game {
 
     if (this.state === 'title') {
       this.title.update(dt);
+      if (this.input.wasPressed('test') && !this.testDashboard.visible) {
+        this.openTestDashboard();
+        this.input.flush();
+        return;
+      }
+      if (this.testDashboard.visible) {
+        this.handleTestDashboard();
+        this.input.flush();
+        return;
+      }
       if (this.input.wasPressed('interact')) {
         this.state = 'dialog';
         this.audio.ui();
@@ -270,19 +276,6 @@ export default class Game {
           this.consoleOverlay.setReport('warn', ['Golden path locked: run tests first.'], 'AUTO-TEST');
         }
       }
-      if (this.input.wasPressed('test')) {
-        this.testHarness.enable(this.world, this.player);
-        this.resetWorldSystems();
-        this.spawnTestEnemies();
-        this.actionFeedback.reset();
-        this.state = 'playing';
-        this.validatorPending = true;
-        this.simulationActive = false;
-        this.triggerMenuFlash();
-        this.audio.menu();
-        this.recordFeedback('menu navigate', 'audio');
-        this.recordFeedback('menu navigate', 'visual');
-      }
       this.input.flush();
       return;
     }
@@ -292,7 +285,6 @@ export default class Game {
         const finished = this.dialog.next();
         if (finished) {
           this.state = 'playing';
-          this.validatorPending = true;
           this.simulationActive = false;
         }
         this.audio.ui();
@@ -426,8 +418,10 @@ export default class Game {
     this.playability.update(dt * timeScale, this);
     this.goldenPath.postUpdate(dt * timeScale, this);
     if (this.goldenPath.status === 'pass' || this.goldenPath.status === 'fail') {
-      this.testResults.golden = this.goldenPath.status;
-      this.testDashboard.setResults({ golden: this.goldenPath.status });
+      const report = this.goldenPathTest.buildReport(this);
+      this.testResults.golden = report.status;
+      this.testDashboard.setResults({ golden: report.status });
+      this.testDashboard.setDetails('golden', report.lines);
     }
 
     this.camera.follow(this.player, dt);
@@ -441,11 +435,11 @@ export default class Game {
       this.runValidator(this.input.isShiftDown());
     }
     if (this.input.wasPressed('coverage')) {
-      this.runCoverageValidator();
-      this.roomCoverageValidator.toggleOverlay();
+      this.runRoomCoverageTest();
+      this.roomCoverageTest.toggleOverlay();
     }
     if (this.input.wasPressed('encounter')) {
-      this.runEncounterAudit();
+      this.runEncounterAuditTest();
     }
     if (this.input.wasPressed('golden') && this.state === 'playing') {
       if (this.canRunGolden()) {
@@ -460,11 +454,6 @@ export default class Game {
     if (this.input.wasPressed('debug')) {
       this.playability.toggle();
     }
-    if (this.validatorPending) {
-      this.runValidator();
-      this.validatorPending = false;
-    }
-
     this.input.flush();
   }
 
@@ -1016,7 +1005,7 @@ export default class Game {
     ctx.translate(-this.camera.x + shakeX, -this.camera.y + shakeY);
 
     this.drawWorld(ctx);
-    this.roomCoverageValidator.drawWorld(ctx);
+    this.roomCoverageTest.drawWorld(ctx);
     this.drawInteractables(ctx);
     this.drawObjectiveBeacon(ctx);
     this.drawTutorialHints(ctx);
@@ -1383,104 +1372,142 @@ export default class Game {
     console.log('Feasibility Report:', report);
   }
 
-  runCoverageValidator() {
+  runWorldValidityTest(applyFixes = false) {
+    const report = this.worldValidityTest.run(this.spawnPoint, this.abilities, this.enemies);
+    this.testResults.validity = report.status;
+    this.testDashboard.setResults({ validity: report.status });
+    this.testDashboard.setDetails('validity', report.lines);
+    this.consoleOverlay.setReport(report.status, report.lines, 'WORLD VALIDITY');
+    if (applyFixes && report.fixes?.spawnOverride) {
+      const repairData = this.autoRepair.buildRepairData({ spawnOverride: report.fixes.spawnOverride });
+      this.autoRepair.writeRepairs(repairData).then((result) => {
+        const message = result.ok ? 'Repairs saved. Reload to apply.' : result.message;
+        this.testDashboard.setNotice(message);
+      });
+    } else if (applyFixes) {
+      this.testDashboard.setNotice('No repairs generated for World Validity.');
+    }
+    console.log('World Validity Report:', report);
+  }
+
+  runRoomCoverageTest() {
     const abilities = {
       grapple: true,
       phase: true,
       magboots: true,
       resonance: true
     };
-    const report = this.roomCoverageValidator.run(abilities);
+    const stagedTargets = this.getObjectiveTargetsByAbility();
+    const report = this.roomCoverageTest.run(abilities, stagedTargets);
     this.testResults.coverage = report.status;
     this.testDashboard.setResults({ coverage: report.status });
+    this.testDashboard.setDetails('coverage', report.lines);
     this.consoleOverlay.setReport(report.status, report.lines, 'ROOM COVERAGE');
     console.log('Room Coverage Report:', report);
   }
 
-  runEncounterAudit() {
+  runEncounterAuditTest() {
     const abilities = {
       grapple: true,
       phase: true,
       magboots: true,
       resonance: true
     };
-    const report = this.encounterAudit.run(this, abilities);
+    const report = this.encounterAuditTest.run(this, abilities);
     this.testResults.encounter = report.status;
     this.testDashboard.setResults({ encounter: report.status });
+    this.testDashboard.setDetails('encounter', report.lines);
     this.consoleOverlay.setReport(report.status, report.lines, 'ENCOUNTER AUDIT');
     console.log('Encounter Audit Report:', report);
   }
 
-  runAutomatedTests() {
-    const fullAbilities = {
-      grapple: true,
-      phase: true,
-      magboots: true,
-      resonance: true
-    };
-    const runSuite = () => {
-      const summaryLines = [];
-      const validity = this.worldValidityGate.run(this.spawnPoint, this.abilities, this.enemies);
-      this.spawnPoint = { ...validity.spawnPoint };
-      this.player.x = this.spawnPoint.x;
-      this.player.y = this.spawnPoint.y;
-      this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
-      this.testResults.validity = validity.status;
-      summaryLines.push(...validity.lines);
-      if (validity.status === 'fail') {
-        return {
-          overall: 'fail',
-          lines: summaryLines,
-          logs: []
-        };
-      }
-
-      const coverage = this.roomCoverageValidator.run(fullAbilities);
-      this.testResults.coverage = coverage.status;
-      summaryLines.push(...coverage.lines);
-      if (coverage.status === 'fail') {
-        return {
-          overall: 'fail',
-          lines: summaryLines,
-          logs: []
-        };
-      }
-
-      const encounter = this.encounterAudit.run(this, fullAbilities);
-      this.testResults.encounter = encounter.status;
-      summaryLines.push(...encounter.lines);
-      if (encounter.status === 'fail') {
-        return {
-          overall: 'fail',
-          lines: summaryLines,
-          logs: []
-        };
-      }
-
-      return {
-        overall: 'pass',
-        lines: summaryLines,
-        logs: []
-      };
-    };
-
-    const report = this.autoRepair.runRepairLoop(runSuite, 3);
-    this.testDashboard.setResults({
-      validity: this.testResults.validity,
-      coverage: this.testResults.coverage,
-      encounter: this.testResults.encounter,
-      golden: this.testResults.golden
-    });
-    this.testDashboard.setLines(report.lines);
-    this.testDashboard.setHardFail(Boolean(report.hardFail));
-    if (report.overall === 'pass') {
-      this.consoleOverlay.setReport('pass', ['✓ Automated checks complete.'], 'AUTO-TEST');
-    } else {
-      this.consoleOverlay.setReport('fail', report.lines, 'AUTO-TEST');
-    }
-    if (report.hardFail) {
-      console.error('AUTO-TEST HARD FAIL', report.lines);
-      this.hardFail = true;
+  runGoldenPathTest() {
+    if (this.goldenPath.status === 'running') return;
+    this.resetRun();
+    this.state = 'playing';
+    this.simulationActive = true;
+    const report = this.goldenPathTest.start(this);
+    this.testResults.golden = report.status;
+    this.testDashboard.setResults({ golden: report.status });
+    this.testDashboard.setDetails('golden', report.lines);
+    if (report.status === 'fail') {
+      this.simulationActive = false;
     }
   }
+
+  runAllTests(applyFixes = false) {
+    this.runWorldValidityTest(applyFixes);
+    this.runRoomCoverageTest();
+    this.runEncounterAuditTest();
+    this.runGoldenPathTest();
+  }
+
+  openTestDashboard() {
+    this.testDashboard.open();
+    this.testDashboard.clearNotice();
+    this.audio.menu();
+  }
+
+  handleTestDashboard() {
+    const action = this.testDashboard.handleInput(this.input);
+    if (!action) return;
+    if (action.type === 'close') {
+      this.testDashboard.close();
+      this.audio.menu();
+      return;
+    }
+    if (action.type === 'toggleFixes') {
+      this.testDashboard.setApplyFixes(!this.testDashboard.applyFixes);
+      this.testDashboard.setNotice(this.testDashboard.applyFixes ? 'Apply Fixes enabled.' : 'Dry run enabled.');
+      this.audio.ui();
+      return;
+    }
+    if (action.type === 'run') {
+      if (action.test === 'validity') this.runWorldValidityTest(this.testDashboard.applyFixes);
+      if (action.test === 'coverage') this.runRoomCoverageTest();
+      if (action.test === 'encounter') this.runEncounterAuditTest();
+      if (action.test === 'golden') this.runGoldenPathTest();
+      this.audio.ui();
+      return;
+    }
+    if (action.type === 'runAll') {
+      this.runAllTests(this.testDashboard.applyFixes);
+      this.audio.ui();
+    }
+  }
+
+  handleClick(x, y) {
+    if (this.state === 'title' && this.title.isRunTestsHit(x, y) && !this.testDashboard.visible) {
+      this.openTestDashboard();
+      return;
+    }
+    if (this.testDashboard.visible) {
+      const action = this.testDashboard.handleClick(x, y);
+      if (!action) return;
+      if (action.type === 'close') {
+        this.testDashboard.close();
+        this.audio.menu();
+        return;
+      }
+      if (action.type === 'toggleFixes') {
+        this.testDashboard.setApplyFixes(!this.testDashboard.applyFixes);
+        this.testDashboard.setNotice(this.testDashboard.applyFixes ? 'Apply Fixes enabled.' : 'Dry run enabled.');
+        this.audio.ui();
+        return;
+      }
+      if (action.type === 'run') {
+        if (action.test === 'validity') this.runWorldValidityTest(this.testDashboard.applyFixes);
+        if (action.test === 'coverage') this.runRoomCoverageTest();
+        if (action.test === 'encounter') this.runEncounterAuditTest();
+        if (action.test === 'golden') this.runGoldenPathTest();
+        this.audio.ui();
+        return;
+      }
+      if (action.type === 'runAll') {
+        this.runAllTests(this.testDashboard.applyFixes);
+        this.audio.ui();
+      }
+    }
+  }
+
 }
