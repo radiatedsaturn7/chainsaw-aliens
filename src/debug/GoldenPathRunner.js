@@ -74,6 +74,10 @@ export default class GoldenPathRunner {
     if (game?.input) {
       game.input.clearVirtual();
     }
+    if (game?.testResults) {
+      game.testResults.golden = 'idle';
+      game.testDashboard?.setResults({ golden: 'idle' });
+    }
   }
 
   applySeed() {
@@ -289,6 +293,10 @@ export default class GoldenPathRunner {
     console.log('Golden Path FAIL', this.failReport);
     game.input.clearVirtual();
     game.simulationActive = false;
+    if (game?.testResults) {
+      game.testResults.golden = 'fail';
+      game.testDashboard?.setResults({ golden: 'fail' });
+    }
   }
 
   pass(game) {
@@ -298,6 +306,10 @@ export default class GoldenPathRunner {
     game.input.clearVirtual();
     game.victory = true;
     game.simulationActive = false;
+    if (game?.testResults) {
+      game.testResults.golden = 'pass';
+      game.testDashboard?.setResults({ golden: 'pass' });
+    }
   }
 
   toTile(x, y, tileSize) {

@@ -1,0 +1,9 @@
+{
+  "spawnOverride": {
+    "tx": 28,
+    "ty": 22
+  },
+  "tilePatches": [],
+  "movementTweaks": {},
+  "autoFixes": []
+}
