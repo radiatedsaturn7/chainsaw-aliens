@@ -1,71 +1,13 @@
 {
   "seed": 1337,
-  "simSpeed": 1.6,
-  "damageBudget": 0.7,
+  "simSpeed": 6,
+  "damageBudget": 1.2,
   "milestones": [
     {
       "id": "hub-checkpoint",
       "label": "Secure Hub Save",
       "type": "checkpoint",
       "checkpointId": "save-hub-3"
-    },
-    {
-      "id": "grapple",
-      "label": "Collect Grapple Spike",
-      "type": "ability",
-      "ability": "grapple"
-    },
-    {
-      "id": "tangle-checkpoint",
-      "label": "Stabilize Tangle Save",
-      "type": "checkpoint",
-      "checkpointId": "save-tangle-2"
-    },
-    {
-      "id": "phase",
-      "label": "Collect Phase Wedge",
-      "type": "ability",
-      "ability": "phase"
-    },
-    {
-      "id": "foundry-checkpoint",
-      "label": "Activate Foundry Save",
-      "type": "checkpoint",
-      "checkpointId": "save-foundry-4"
-    },
-    {
-      "id": "magboots",
-      "label": "Collect Mag Boots",
-      "type": "ability",
-      "ability": "magboots"
-    },
-    {
-      "id": "spire-checkpoint",
-      "label": "Sync Spire Save",
-      "type": "checkpoint",
-      "checkpointId": "save-spire-0"
-    },
-    {
-      "id": "resonance",
-      "label": "Collect Resonance Core",
-      "type": "ability",
-      "ability": "resonance"
-    },
-    {
-      "id": "hollow-checkpoint",
-      "label": "Secure Hollow Save",
-      "type": "checkpoint",
-      "checkpointId": "save-hollow-5"
-    },
-    {
-      "id": "rift-gate",
-      "label": "Reach Rift Gate",
-      "type": "bossGate"
-    },
-    {
-      "id": "final-boss",
-      "label": "Defeat Rift Tyrant",
-      "type": "boss"
     }
   ]
 }

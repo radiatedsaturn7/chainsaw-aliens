@@ -68,7 +68,8 @@ export default class WorldValidityTest {
     if (this.world.isSolid(tx, ty, abilities)) return false;
     if (!this.world.isSolid(tx, ty + 1, abilities)) return false;
     const worldPos = this.toWorld(tx, ty);
-    const rect = this.rectFor(worldPos.x, worldPos.y, width, height);
+    const safeHeight = Math.max(1, height - 4);
+    const rect = this.rectFor(worldPos.x, worldPos.y, width, safeHeight);
     if (this.intersectsSolid(rect, abilities)) return false;
     const clearance = Math.max(DEFAULT_CLEARANCE_TILES, Math.ceil(height / this.world.tileSize));
     for (let dy = 1; dy <= clearance; dy += 1) {

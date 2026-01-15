@@ -68,7 +68,7 @@ export default class Game {
     this.world = new World();
     this.camera = new Camera(canvas.width, canvas.height);
     this.minimap = new Minimap(this.world);
-    this.spawnPoint = { x: 32 * 28, y: 32 * 18 };
+    this.spawnPoint = { x: 32 * 28, y: 32 * 19 };
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.title = new Title();
@@ -127,7 +127,7 @@ export default class Game {
     this.menuFlashTimer = 0;
     this.spawnRules = {
       globalMax: 12,
-      perRegion: 4,
+      perRegion: 6,
       cooldown: 1.4,
       backoffLowHealth: 2.4
     };
@@ -206,14 +206,14 @@ export default class Game {
 
   spawnEnemies() {
     this.enemies = [
-      new PracticeDrone(32 * 30, 32 * 19),
-      new Skitter(32 * 10, 32 * 19),
-      new Skitter(32 * 14, 32 * 19),
+      new PracticeDrone(32 * 40, 32 * 19),
+      new Skitter(32 * 38, 32 * 19),
+      new Skitter(32 * 60, 32 * 19),
       new Spitter(32 * 50, 32 * 19),
       new Bulwark(32 * 56, 32 * 19),
       new Floater(32 * 30, 32 * 9),
       new Slicer(32 * 34, 32 * 19),
-      new HiveNode(32 * 8, 32 * 19),
+      new HiveNode(32 * 58, 32 * 19),
       new SentinelElite(32 * 52, 32 * 9)
     ];
     this.boss = new FinalBoss(32 * 58, 32 * 9);

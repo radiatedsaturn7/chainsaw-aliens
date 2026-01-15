@@ -7,7 +7,7 @@
     "playwright": "^1.46.0"
   },
   "scripts": {
-    "prepare:playwright": "npx playwright install --with-deps",
+    "prepare:playwright": "npx playwright install",
     "test:dashboard": "npm run prepare:playwright && node tools/test-runner/run.js"
   }
 }
