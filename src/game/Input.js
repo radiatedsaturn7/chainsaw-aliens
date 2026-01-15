@@ -36,6 +36,12 @@ export default class Input {
       this.keys.set(e.code, false);
       this.released.add(e.code);
     });
+    window.addEventListener('blur', () => this.reset());
+    window.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.reset();
+      }
+    });
   }
 
   isDown(action) {
@@ -80,6 +86,13 @@ export default class Input {
     this.virtualDown.clear();
     this.virtualPressed.clear();
     this.virtualReleased.clear();
+  }
+
+  reset() {
+    this.keys.clear();
+    this.pressed.clear();
+    this.released.clear();
+    this.clearVirtual();
   }
 
   flush() {
