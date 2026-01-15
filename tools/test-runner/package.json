@@ -1,0 +1,9 @@
+{
+  "name": "chainsaw-aliens-test-runner",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Dev-only Playwright harness for Chainsaw Aliens",
+  "dependencies": {
+    "playwright": "^1.46.0"
+  }
+}

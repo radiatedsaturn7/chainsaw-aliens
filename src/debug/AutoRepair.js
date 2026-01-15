@@ -1,6 +1,7 @@
 import { MOVEMENT_MODEL } from '../game/MovementModel.js';
 
 const DEFAULT_DATA = {
+  enabled: false,
   spawnOverride: null,
   tilePatches: [],
   movementTweaks: {},
@@ -27,6 +28,7 @@ export default class AutoRepair {
 
   applyPersistentPatches() {
     this.logs = [];
+    if (!this.data.enabled) return;
     if (this.data.movementTweaks) {
       this.applyMovementTweaks(this.data.movementTweaks);
     }
@@ -39,6 +41,7 @@ export default class AutoRepair {
   }
 
   applySpawnOverride(game) {
+    if (!this.data.enabled) return false;
     const override = this.data.spawnOverride;
     if (!override) return false;
     const x = override.tx * this.world.tileSize + this.world.tileSize / 2;
@@ -115,5 +118,63 @@ export default class AutoRepair {
       return true;
     }
     return false;
+  }
+
+  getSnapshot() {
+    return {
+      enabled: Boolean(this.data.enabled),
+      spawnOverride: this.data.spawnOverride || null,
+      tilePatches: Array.isArray(this.data.tilePatches) ? [...this.data.tilePatches] : [],
+      movementTweaks: this.data.movementTweaks ? { ...this.data.movementTweaks } : {},
+      autoFixes: Array.isArray(this.data.autoFixes) ? [...this.data.autoFixes] : []
+    };
+  }
+
+  buildRepairData({ spawnOverride }) {
+    const base = this.getSnapshot();
+    if (spawnOverride) {
+      base.spawnOverride = spawnOverride;
+    }
+    base.enabled = true;
+    return base;
+  }
+
+  serializeRepairs(data) {
+    const sortedMovement = {};
+    Object.keys(data.movementTweaks || {})
+      .sort()
+      .forEach((key) => {
+        sortedMovement[key] = data.movementTweaks[key];
+      });
+    const sortedPatches = [...(data.tilePatches || [])].sort((a, b) => (a.id || '').localeCompare(b.id || ''));
+    const sortedFixes = [...(data.autoFixes || [])].sort((a, b) => (a.id || '').localeCompare(b.id || ''));
+    const payload = {
+      enabled: Boolean(data.enabled),
+      spawnOverride: data.spawnOverride || null,
+      tilePatches: sortedPatches,
+      movementTweaks: sortedMovement,
+      autoFixes: sortedFixes
+    };
+    return JSON.stringify(payload, null, 2);
+  }
+
+  async writeRepairs(data) {
+    const body = this.serializeRepairs(data);
+    try {
+      const response = await fetch('/__repair__', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body
+      });
+      if (!response.ok) {
+        return { ok: false, message: `Repair write failed (${response.status}).` };
+      }
+      this.data = data;
+      return { ok: true, message: 'Repairs saved.' };
+    } catch (error) {
+      return { ok: false, message: 'Repair write unavailable (no dev server).' };
+    }
   }
 }

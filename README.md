@@ -23,7 +23,7 @@ Then visit `http://localhost:8000/index.html`.
 - Rev / Execute: **K** (hold)
 - Interact / Advance dialog: **Space**
 - Pause: **Esc**
-- Test Mode (title screen): **T**
+- Test Dashboard (title screen): **T** (or click **Run Tests**)
 - Golden Path Simulation (title screen or in-game after tests pass): **G**
 - Feasibility Validator: **V** (current stage)
 - Staged Feasibility Validator: **Shift+V** (all stages summary)
@@ -32,28 +32,21 @@ Then visit `http://localhost:8000/index.html`.
 - Readability Validation Overlay + Minimap Legend: **F1**
 - Debug Overlay (Playability Verification Layer): **L**
 
-## Test Mode & Validation
-- On boot, the game runs automated tests (World Validity → Room Coverage → Encounter Audit). Results are shown in the on-screen **Test Dashboard** overlay.
-- If a test fails, the auto-repair loop applies deterministic patches (from `repairs.json`) and reruns the suite up to the configured attempt limit, then hard-fails with diagnostics if still unresolved.
-- From the title screen, press **T** to enter TEST MODE with a controlled map.
-- Press **G** to run the automated Golden Path Simulation (unlocked after the first three tests pass).
-- Press **V** in-game to run the feasibility validator for the current objective (also runs once on new game start).
+## Test Dashboard & Validation
+- Tests never run automatically on boot. Open the **Test Dashboard** from the title screen (press **T** or click **Run Tests**) to run them explicitly.
+- Run each test from the menu:
+  - **World Validity Test**
+  - **Full Room Coverage Test**
+  - **Combat/Encounter Feasibility Audit**
+  - **Golden Path Run**
+- The dashboard defaults to **Dry Run (report only)**. Toggle **Apply Fixes** to write deterministic patches to `src/content/repairs.json`, then reload to apply them. (Apply Fixes requires a dev server or the Playwright harness.)
+- Press **G** from the title screen to run the Golden Path Simulation after the first three tests pass.
+- Press **V** in-game to run the feasibility validator for the current objective.
 - Press **Shift+V** to run the staged feasibility validator across every ability stage with a summary table.
 - Press **C** to run the Room Coverage Validator (also toggles the room reachability overlay).
 - Press **E** to run the Encounter Audit.
 - Press **F1** to toggle the Readability Validation Overlay + minimap legend overlay.
 - Press **L** to toggle the Playability Verification Overlay (collision boxes, solid tiles, invariant status, log panel).
-- Test Mode also shows the Execution Checklist, Combat Checklist, and Action Feedback checklist panels.
-
-### Test Mode Toggles
-- **I**: Invulnerable
-- **F**: Infinite fuel
-- **O**: Slow motion
-- **C**: Show collision boxes
-- **H**: Show gate requirements
-- **Y**: Seeded RNG (deterministic)
-- **G / P / M / R**: Toggle Grapple / Phase / Mag Boots / Resonance
-- **1–6**: Teleport to regions (in order listed by the minimap legend)
 
 ## Gameplay Tips
 - Hunt for the four abilities to unlock new areas:
@@ -69,3 +62,12 @@ Then visit `http://localhost:8000/index.html`.
 ## Known Limitations
 - PASS/WARN/FAIL indicates whether critical invariants and feasibility checks are satisfied; FAIL entries list the target, stage, nearest reachable node, and a suggested fix category.
 - The feasibility validator uses a conservative movement envelope with short input-search probes and does not simulate full enemy combat AI.
+
+## Automated Test Harness (dev-only)
+Run a full automated pass of the Test Dashboard (including the Golden Path) in a real browser context:
+
+```bash
+node tools/test-runner/run.js
+```
+
+The harness will start a local static server, open `index.html`, run the tests, and write artifacts to `tools/test-runner/output/` (console logs, JSON report, and final screenshot). If Playwright is not installed, run `npm install --prefix tools/test-runner` first.

@@ -4,6 +4,8 @@ const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 
 const game = new Game(canvas, ctx);
+window.__game = game;
+window.__gameReady = true;
 
 function resize() {
   const scale = Math.min(window.innerWidth / canvas.width, window.innerHeight / canvas.height);
@@ -12,6 +14,17 @@ function resize() {
 
 window.addEventListener('resize', resize);
 resize();
+
+canvas.addEventListener('click', (event) => {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const x = (event.clientX - rect.left) * scaleX;
+  const y = (event.clientY - rect.top) * scaleY;
+  if (game.handleClick) {
+    game.handleClick(x, y);
+  }
+});
 
 let last = performance.now();
 function loop(now) {
