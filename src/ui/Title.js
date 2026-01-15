@@ -2,6 +2,7 @@ export default class Title {
   constructor() {
     this.timer = 0;
     this.runTestsBounds = { x: 0, y: 0, w: 0, h: 0 };
+    this.editorBounds = { x: 0, y: 0, w: 0, h: 0 };
     this.aliens = Array.from({ length: 12 }, (_, i) => ({
       x: 120 + i * 80,
       y: -Math.random() * 400,
@@ -51,11 +52,21 @@ export default class Title {
     ctx.fillText('Press SPACE to begin', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
     ctx.fillText('Press T for TEST DASHBOARD', width / 2, height - 110);
     ctx.fillText('Press G for GOLDEN PATH SIM', width / 2, height - 86);
+    ctx.fillText('Press F2 for LEVEL EDITOR', width / 2, height - 62);
 
     const buttonWidth = 180;
     const buttonHeight = 32;
     const buttonX = width / 2 - buttonWidth / 2;
-    const buttonY = height - 70;
+    const editorY = height - 70;
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.fillRect(buttonX, editorY, buttonWidth, buttonHeight);
+    ctx.strokeStyle = '#fff';
+    ctx.strokeRect(buttonX, editorY, buttonWidth, buttonHeight);
+    ctx.fillStyle = '#fff';
+    ctx.fillText('LEVEL EDITOR', width / 2, editorY + 22);
+    this.editorBounds = { x: buttonX, y: editorY, w: buttonWidth, h: buttonHeight };
+
+    const buttonY = height - 32;
     ctx.fillStyle = 'rgba(255,255,255,0.12)';
     ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
     ctx.strokeStyle = '#fff';
@@ -68,6 +79,11 @@ export default class Title {
 
   isRunTestsHit(x, y) {
     const bounds = this.runTestsBounds;
+    return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
+  }
+
+  isEditorHit(x, y) {
+    const bounds = this.editorBounds;
     return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
   }
 }

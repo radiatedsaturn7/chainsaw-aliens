@@ -1,7 +1,9 @@
 const FALLBACK_WORLD = {
+  schemaVersion: 1,
   tileSize: 32,
   width: 64,
   height: 36,
+  spawn: { x: 28, y: 19 },
   tiles: [
     "################################################################",
     "################################################################",
@@ -50,6 +52,8 @@ const FALLBACK_WORLD = {
   ]
 };
 
+const DEFAULT_SPAWN = { x: 28, y: 19 };
+
 export default class World {
   constructor() {
     this.tileSize = 32;
@@ -57,6 +61,8 @@ export default class World {
     this.height = 0;
     this.tiles = [];
     this.regions = [];
+    this.spawn = null;
+    this.spawnPoint = null;
     this.abilityPickups = [];
     this.healthUpgrades = [];
     this.savePoints = [];
@@ -64,6 +70,7 @@ export default class World {
     this.anchors = [];
     this.gates = [];
     this.bossGate = null;
+    this.objectives = [];
     this.data = null;
   }
 
@@ -87,6 +94,12 @@ export default class World {
     this.height = data.height;
     this.tiles = data.tiles;
     this.regions = data.regions || [];
+    const spawn = data.spawn || DEFAULT_SPAWN;
+    this.spawn = { x: spawn.x ?? DEFAULT_SPAWN.x, y: spawn.y ?? DEFAULT_SPAWN.y };
+    this.spawnPoint = {
+      x: (this.spawn.x + 0.5) * this.tileSize,
+      y: (this.spawn.y + 0.5) * this.tileSize
+    };
     this.abilityPickups = [];
     this.healthUpgrades = [];
     this.savePoints = [];
@@ -94,8 +107,20 @@ export default class World {
     this.anchors = [];
     this.gates = [];
     this.bossGate = null;
+    this.objectives = [];
     this.data = data;
+    this.rebuildCaches();
+  }
 
+  rebuildCaches() {
+    this.abilityPickups = [];
+    this.healthUpgrades = [];
+    this.savePoints = [];
+    this.shops = [];
+    this.anchors = [];
+    this.gates = [];
+    this.bossGate = null;
+    this.objectives = [];
     let saveIndex = 0;
     let healthIndex = 0;
 
@@ -116,6 +141,9 @@ export default class World {
         }
         if (tile === '$') {
           this.shops.push({ x: worldX, y: worldY });
+        }
+        if (tile === 'O') {
+          this.objectives.push({ x: worldX, y: worldY });
         }
         if (tile === 'g' || tile === 'p' || tile === 'm' || tile === 'r') {
           const ability = { g: 'grapple', p: 'phase', m: 'magboots', r: 'resonance' }[tile];
@@ -157,15 +185,43 @@ export default class World {
     return this.tiles[y][x];
   }
 
-  isSolid(x, y, abilities) {
+  isSolid(x, y, abilities, options = {}) {
     const tile = this.getTile(x, y);
     if (tile === '#') return true;
+    if (tile === 'D') return true;
     if (tile === 'G') return !abilities.grapple;
     if (tile === 'P') return !abilities.phase;
     if (tile === 'M') return !abilities.magboots;
     if (tile === 'R') return !abilities.resonance;
     if (tile === 'B') return !(abilities.grapple && abilities.phase && abilities.magboots && abilities.resonance);
+    if (tile === '=') return !options.ignoreOneWay;
     return false;
+  }
+
+  isHazard(x, y) {
+    return this.getTile(x, y) === '!';
+  }
+
+  setTile(x, y, char) {
+    if (x < 0 || y < 0 || x >= this.width || y >= this.height) return false;
+    const row = this.tiles[y];
+    const next = `${row.substring(0, x)}${char}${row.substring(x + 1)}`;
+    this.tiles[y] = next;
+    if (this.data?.tiles) {
+      this.data.tiles[y] = next;
+    }
+    return true;
+  }
+
+  setSpawnTile(x, y) {
+    this.spawn = { x, y };
+    this.spawnPoint = {
+      x: (x + 0.5) * this.tileSize,
+      y: (y + 0.5) * this.tileSize
+    };
+    if (this.data) {
+      this.data.spawn = { x, y };
+    }
   }
 
   regionAt(x, y) {

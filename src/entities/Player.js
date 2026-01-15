@@ -134,6 +134,11 @@ export default class Player {
     if (!wasGrounded && this.onGround) {
       this.justLanded = true;
     }
+    const hazardX = Math.floor(this.x / world.tileSize);
+    const hazardY = Math.floor(this.y / world.tileSize);
+    if (world.isHazard(hazardX, hazardY)) {
+      this.takeDamage(1);
+    }
 
     this.heat = Math.max(0, this.heat - dt * 0.2);
     if (this.overheat > 0) {
@@ -172,17 +177,17 @@ export default class Player {
     this.onGround = false;
     this.onWall = 0;
 
-    const check = (x, y) => {
+    const check = (x, y, options = {}) => {
       const tileX = Math.floor(x / world.tileSize);
       const tileY = Math.floor(y / world.tileSize);
-      return world.isSolid(tileX, tileY, abilities);
+      return world.isSolid(tileX, tileY, abilities, options);
     };
 
     // Horizontal
     const signX = Math.sign(this.vx);
     if (signX !== 0) {
       const testX = nextX + (signX * rect.w) / 2;
-      if (check(testX, rect.y + 4) || check(testX, rect.y + rect.h - 4)) {
+      if (check(testX, rect.y + 4, { ignoreOneWay: true }) || check(testX, rect.y + rect.h - 4, { ignoreOneWay: true })) {
         this.vx = 0;
         this.onWall = signX;
       } else {
@@ -196,7 +201,8 @@ export default class Player {
     const signY = Math.sign(this.vy);
     if (signY !== 0) {
       const testY = nextY + (signY * rect.h) / 2;
-      if (check(rect.x + 4, testY) || check(rect.x + rect.w - 4, testY)) {
+      const ignoreOneWay = signY < 0;
+      if (check(rect.x + 4, testY, { ignoreOneWay }) || check(rect.x + rect.w - 4, testY, { ignoreOneWay })) {
         if (signY > 0) {
           this.onGround = true;
         }

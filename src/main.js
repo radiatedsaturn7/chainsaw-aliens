@@ -7,6 +7,16 @@ const game = new Game(canvas, ctx);
 window.__game = game;
 window.__gameReady = true;
 
+function getCanvasPosition(event) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  return {
+    x: (event.clientX - rect.left) * scaleX,
+    y: (event.clientY - rect.top) * scaleY
+  };
+}
+
 function resize() {
   const scale = Math.min(window.innerWidth / canvas.width, window.innerHeight / canvas.height);
   canvas.style.transform = `scale(${scale})`;
@@ -16,14 +26,43 @@ window.addEventListener('resize', resize);
 resize();
 
 canvas.addEventListener('click', (event) => {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  const x = (event.clientX - rect.left) * scaleX;
-  const y = (event.clientY - rect.top) * scaleY;
+  const { x, y } = getCanvasPosition(event);
   if (game.handleClick) {
     game.handleClick(x, y);
   }
+});
+
+canvas.addEventListener('mousedown', (event) => {
+  const { x, y } = getCanvasPosition(event);
+  if (game.handlePointerDown) {
+    game.handlePointerDown({ x, y, button: event.button, buttons: event.buttons });
+  }
+});
+
+canvas.addEventListener('mousemove', (event) => {
+  const { x, y } = getCanvasPosition(event);
+  if (game.handlePointerMove) {
+    game.handlePointerMove({ x, y, buttons: event.buttons });
+  }
+});
+
+window.addEventListener('mouseup', (event) => {
+  const { x, y } = getCanvasPosition(event);
+  if (game.handlePointerUp) {
+    game.handlePointerUp({ x, y, button: event.button });
+  }
+});
+
+canvas.addEventListener('wheel', (event) => {
+  event.preventDefault();
+  const { x, y } = getCanvasPosition(event);
+  if (game.handleWheel) {
+    game.handleWheel({ x, y, deltaY: event.deltaY });
+  }
+}, { passive: false });
+
+canvas.addEventListener('contextmenu', (event) => {
+  event.preventDefault();
 });
 
 let last = performance.now();

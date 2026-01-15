@@ -14,6 +14,7 @@ export const KEYMAP = {
   coverage: ['KeyC'],
   encounter: ['KeyE'],
   legend: ['F1'],
+  editor: ['F2'],
   debug: ['KeyL'],
   golden: ['KeyG']
 };
