@@ -11,6 +11,8 @@ export const KEYMAP = {
   interact: ['Space'],
   test: ['KeyT'],
   validator: ['KeyV'],
+  coverage: ['KeyC'],
+  encounter: ['KeyE'],
   legend: ['F1'],
   debug: ['KeyL'],
   golden: ['KeyG']

@@ -24,17 +24,23 @@ Then visit `http://localhost:8000/index.html`.
 - Interact / Advance dialog: **Space**
 - Pause: **Esc**
 - Test Mode (title screen): **T**
-- Golden Path Simulation (title screen): **G**
+- Golden Path Simulation (title screen or in-game after tests pass): **G**
 - Feasibility Validator: **V** (current stage)
 - Staged Feasibility Validator: **Shift+V** (all stages summary)
+- Room Coverage Validator: **C**
+- Encounter Audit: **E**
 - Readability Validation Overlay + Minimap Legend: **F1**
 - Debug Overlay (Playability Verification Layer): **L**
 
 ## Test Mode & Validation
+- On boot, the game runs automated tests (World Validity → Room Coverage → Encounter Audit). Results are shown in the on-screen **Test Dashboard** overlay.
+- If a test fails, the auto-repair loop applies deterministic patches (from `repairs.json`) and reruns the suite up to the configured attempt limit, then hard-fails with diagnostics if still unresolved.
 - From the title screen, press **T** to enter TEST MODE with a controlled map.
-- From the title screen, press **G** to run the automated Golden Path Simulation.
+- Press **G** to run the automated Golden Path Simulation (unlocked after the first three tests pass).
 - Press **V** in-game to run the feasibility validator for the current objective (also runs once on new game start).
 - Press **Shift+V** to run the staged feasibility validator across every ability stage with a summary table.
+- Press **C** to run the Room Coverage Validator (also toggles the room reachability overlay).
+- Press **E** to run the Encounter Audit.
 - Press **F1** to toggle the Readability Validation Overlay + minimap legend overlay.
 - Press **L** to toggle the Playability Verification Overlay (collision boxes, solid tiles, invariant status, log panel).
 - Test Mode also shows the Execution Checklist, Combat Checklist, and Action Feedback checklist panels.
