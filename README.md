@@ -24,13 +24,18 @@ Then visit `http://localhost:8000/index.html`.
 - Interact / Advance dialog: **Space**
 - Pause: **Esc**
 - Test Mode (title screen): **T**
-- Validator: **V**
+- Validator: **V** (current stage)
+- Staged Validator: **Shift+V** (all stages summary)
 - Visual Readability Checklist + Minimap Legend: **L**
+- Debug Overlay (Playability Verification Layer): **F1**
 
 ## Test Mode & Validation
 - From the title screen, press **T** to enter TEST MODE with a controlled map.
-- Press **V** in-game to run the Autoplay Validator (also runs once on new game start).
+- Press **V** in-game to run the playability validator for the current objective (also runs once on new game start).
+- Press **Shift+V** to run the staged validator across every ability stage with a summary table.
 - Press **L** to toggle the Visual Readability Checklist + minimap legend overlay.
+- Press **F1** to toggle the Playability Verification Overlay (collision boxes, solid tiles, invariant status, log panel).
+- Test Mode also shows the Execution Checklist, Combat Checklist, and Action Feedback checklist panels.
 
 ### Test Mode Toggles
 - **I**: Invulnerable
@@ -53,4 +58,5 @@ Then visit `http://localhost:8000/index.html`.
 - Find save pylons to set checkpoints.
 
 ## Known Limitations
+- PASS/WARN/FAIL indicates whether critical invariants and reachability checks are satisfied; FAIL entries list the target, stage, nearest reachable node, and a suggested fix category.
 - The validator is a conservative reachability approximation and does not simulate full physics or enemy combat.

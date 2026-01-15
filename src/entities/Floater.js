@@ -6,6 +6,7 @@ export default class Floater extends EnemyBase {
     this.type = 'floater';
     this.baseY = y;
     this.phase = Math.random() * Math.PI * 2;
+    this.solid = false;
   }
 
   update(dt, player) {

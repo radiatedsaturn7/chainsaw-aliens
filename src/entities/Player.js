@@ -1,3 +1,5 @@
+import { MOVEMENT_MODEL } from '../game/MovementModel.js';
+
 export default class Player {
   constructor(x, y) {
     this.x = x;
@@ -6,8 +8,8 @@ export default class Player {
     this.vy = 0;
     this.width = 22;
     this.height = 34;
-    this.speed = 240;
-    this.jumpPower = 460;
+    this.speed = MOVEMENT_MODEL.baseSpeed;
+    this.jumpPower = MOVEMENT_MODEL.baseJumpPower;
     this.revEfficiency = 1;
     this.heatCap = 1;
     this.dashCooldownBase = 0.6;
@@ -33,6 +35,14 @@ export default class Player {
     this.dead = false;
     this.animTime = 0;
     this.hurtTimer = 0;
+    this.state = 'idle';
+    this.revving = false;
+    this.justJumped = false;
+    this.justDashed = false;
+    this.justLanded = false;
+    this.justStepped = false;
+    this.stepTimer = 0;
+    this.attackTimer = 0;
   }
 
   get rect() {
@@ -45,8 +55,8 @@ export default class Player {
   }
 
   applyUpgrades(upgrades) {
-    let speed = 240;
-    let jumpPower = 460;
+    let speed = MOVEMENT_MODEL.baseSpeed;
+    let jumpPower = MOVEMENT_MODEL.baseJumpPower;
     let revEfficiency = 1;
     let heatCap = 1;
     let dashCooldown = 0.6;
@@ -66,6 +76,10 @@ export default class Player {
 
   update(dt, input, world, abilities) {
     if (this.dead) return;
+    this.justJumped = false;
+    this.justDashed = false;
+    this.justLanded = false;
+    this.justStepped = false;
     this.animTime += dt;
     const move = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
     this.vx = move * this.speed;
@@ -75,11 +89,11 @@ export default class Player {
 
     this.jumpBuffer = Math.max(0, this.jumpBuffer - dt);
     if (input.wasPressed('jump')) {
-      this.jumpBuffer = 0.12;
+      this.jumpBuffer = MOVEMENT_MODEL.jumpBuffer;
     }
 
     if (this.onGround) {
-      this.coyote = 0.1;
+      this.coyote = MOVEMENT_MODEL.coyoteTime;
     } else {
       this.coyote = Math.max(0, this.coyote - dt);
     }
@@ -94,25 +108,31 @@ export default class Player {
       this.onGround = false;
       this.coyote = 0;
       this.jumpBuffer = 0;
+      this.justJumped = true;
     }
 
     if (this.dashCooldown > 0) {
       this.dashCooldown -= dt;
     }
     if (input.wasPressed('dash') && this.dashCooldown <= 0) {
-      this.dashTimer = 0.12;
+      this.dashTimer = MOVEMENT_MODEL.dashDuration;
       this.dashCooldown = this.dashCooldownBase || 0.6;
-      this.vx = this.facing * 620;
+      this.vx = this.facing * MOVEMENT_MODEL.dashSpeed;
       this.vy = 0;
+      this.justDashed = true;
     }
 
     if (this.dashTimer > 0) {
       this.dashTimer -= dt;
     } else {
-      this.vy += 1200 * dt;
+      this.vy += MOVEMENT_MODEL.gravity * dt;
     }
 
+    const wasGrounded = this.onGround;
     this.moveAndCollide(dt, world, abilities);
+    if (!wasGrounded && this.onGround) {
+      this.justLanded = true;
+    }
 
     this.heat = Math.max(0, this.heat - dt * 0.2);
     if (this.overheat > 0) {
@@ -126,6 +146,20 @@ export default class Player {
       }
     }
     this.hurtTimer = Math.max(0, this.hurtTimer - dt);
+
+    if (this.onGround && Math.abs(this.vx) > 10) {
+      this.stepTimer -= dt;
+      if (this.stepTimer <= 0) {
+        this.justStepped = true;
+        this.stepTimer = 0.35;
+      }
+    } else {
+      this.stepTimer = Math.max(this.stepTimer, 0.1);
+    }
+
+    this.revving = input.isDown('rev') && this.canRev();
+    this.attackTimer = Math.max(0, this.attackTimer - dt);
+    this.updateState();
   }
 
   moveAndCollide(dt, world, abilities) {
@@ -173,6 +207,18 @@ export default class Player {
     }
   }
 
+  updateState() {
+    if (this.dashTimer > 0) {
+      this.state = 'dash';
+    } else if (!this.onGround) {
+      this.state = this.vy < 0 ? 'jump' : 'fall';
+    } else if (Math.abs(this.vx) > 10) {
+      this.state = 'run';
+    } else {
+      this.state = 'idle';
+    }
+  }
+
   takeDamage(amount) {
     this.health -= amount;
     this.hurtTimer = 0.3;
@@ -203,9 +249,12 @@ export default class Player {
   draw(ctx) {
     ctx.save();
     ctx.translate(this.x, this.y);
-    const walk = Math.sin(this.animTime * 10) * 2;
+    const walk = this.state === 'run' ? Math.sin(this.animTime * 10) * 3 : 0;
+    const legLift = this.state === 'jump' || this.state === 'fall' ? -4 : 0;
+    const dashTilt = this.state === 'dash' ? this.facing * 6 : 0;
     ctx.strokeStyle = this.hurtTimer > 0 ? '#fff' : 'rgba(255,255,255,0.9)';
     ctx.lineWidth = 2;
+    ctx.rotate((dashTilt * Math.PI) / 180);
     // Head
     ctx.beginPath();
     ctx.arc(0, -this.height / 2 + 8, 6, 0, Math.PI * 2);
@@ -220,20 +269,27 @@ export default class Player {
     ctx.stroke();
     // Legs
     ctx.beginPath();
-    ctx.rect(-10, 10, 6, 12 + walk);
-    ctx.rect(4, 10, 6, 12 - walk);
+    ctx.rect(-10, 10 + legLift, 6, 12 + walk);
+    ctx.rect(4, 10 - legLift, 6, 12 - walk);
     ctx.stroke();
     // Arms
     ctx.beginPath();
-    ctx.rect(-14, -4, 6, 10);
-    ctx.rect(8, -4, 6, 10);
+    const armOffset = this.revving ? -6 : 0;
+    ctx.rect(-14, -4 + armOffset, 6, 10);
+    ctx.rect(8, -4 + armOffset, 6, 10);
     ctx.stroke();
     // Chainsaw bar
     ctx.beginPath();
     ctx.moveTo(0, -4);
-    ctx.lineTo(this.facing * (this.width * 0.9), 0);
-    ctx.lineTo(0, 6);
+    const barLength = this.revving ? this.width * 1.1 : this.width * 0.9;
+    ctx.lineTo(this.facing * barLength, 0);
+    ctx.lineTo(0, 6 + (this.revving ? 2 : 0));
     ctx.stroke();
+    if (this.revving) {
+      ctx.beginPath();
+      ctx.arc(this.facing * barLength, 0, 8, -0.8, 0.8);
+      ctx.stroke();
+    }
     if (this.cosmetics.length > 0) {
       ctx.beginPath();
       ctx.moveTo(-4, -6);

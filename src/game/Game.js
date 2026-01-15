@@ -16,6 +16,7 @@ import Projectile from '../entities/Projectile.js';
 import { DebrisPiece, Shard } from '../entities/Debris.js';
 import LootDrop from '../entities/LootDrop.js';
 import PracticeDrone from '../entities/PracticeDrone.js';
+import Effect from '../entities/Effect.js';
 import Title from '../ui/Title.js';
 import Dialog from '../ui/Dialog.js';
 import HUD from '../ui/HUD.js';
@@ -25,6 +26,8 @@ import TestHarness from '../debug/TestHarness.js';
 import Validator from '../debug/Validator.js';
 import ConsoleOverlay from '../debug/ConsoleOverlay.js';
 import Checklist from '../debug/Checklist.js';
+import ActionFeedback from '../debug/ActionFeedback.js';
+import PlayabilityLayer from '../debug/PlayabilityLayer.js';
 
 const INTRO_LINES = [
   'Captain! The entire planet of earth has literally run out of all our ammunition, and the aliens are still coming! What do we do?',
@@ -70,6 +73,8 @@ export default class Game {
     this.debris = [];
     this.shards = [];
     this.lootDrops = [];
+    this.effects = [];
+    this.clock = 0;
     this.abilities = {
       grapple: false,
       phase: false,
@@ -92,7 +97,19 @@ export default class Game {
     this.validator = new Validator(this.world, this.player);
     this.consoleOverlay = new ConsoleOverlay();
     this.checklist = new Checklist();
+    this.actionFeedback = new ActionFeedback();
+    this.playability = new PlayabilityLayer(this.world, this.player, this.validator);
     this.validatorPending = false;
+    this.menuFlashTimer = 0;
+    this.spawnRules = {
+      globalMax: 12,
+      perRegion: 4,
+      cooldown: 1.4,
+      backoffLowHealth: 2.4
+    };
+    this.spawnCooldowns = new Map();
+    this.prevHealth = this.player.health;
+    this.revActive = false;
 
     this.init();
   }
@@ -107,6 +124,7 @@ export default class Game {
   resetWorldSystems() {
     this.minimap = new Minimap(this.world);
     this.validator = new Validator(this.world, this.player);
+    this.playability = new PlayabilityLayer(this.world, this.player, this.validator);
   }
 
   spawnEnemies() {
@@ -126,15 +144,22 @@ export default class Game {
 
   spawnTestEnemies() {
     this.enemies = [
-      new PracticeDrone(32 * 10, 32 * 8),
-      new Skitter(32 * 20, 32 * 8),
-      new Spitter(32 * 24, 32 * 8)
+      new PracticeDrone(32 * 8, 32 * 8),
+      new Skitter(32 * 16, 32 * 8),
+      new Spitter(32 * 20, 32 * 8),
+      new Bulwark(32 * 24, 32 * 8),
+      new Floater(32 * 14, 32 * 4),
+      new Slicer(32 * 28, 32 * 8),
+      new HiveNode(32 * 22, 32 * 12),
+      new SentinelElite(32 * 26, 32 * 4)
     ];
     this.boss = null;
   }
 
   update(dt) {
     if (this.state === 'loading') return;
+    this.clock += dt;
+    this.menuFlashTimer = Math.max(0, this.menuFlashTimer - dt);
 
     if (this.input.wasPressed('pause') && this.state === 'playing') {
       this.state = 'pause';
@@ -142,18 +167,29 @@ export default class Game {
       this.state = 'playing';
     }
 
+    if (this.state !== 'playing') {
+      this.setRevAudio(false);
+    }
+
     if (this.state === 'title') {
       this.title.update(dt);
       if (this.input.wasPressed('interact')) {
         this.state = 'dialog';
-        this.audio.ping();
+        this.audio.interact();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
       }
       if (this.input.wasPressed('test')) {
         this.testHarness.enable(this.world, this.player);
         this.resetWorldSystems();
         this.spawnTestEnemies();
+        this.actionFeedback.reset();
         this.state = 'playing';
         this.validatorPending = true;
+        this.triggerMenuFlash();
+        this.audio.menu();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
       }
       this.input.flush();
       return;
@@ -166,7 +202,9 @@ export default class Game {
           this.state = 'playing';
           this.validatorPending = true;
         }
-        this.audio.ping();
+        this.audio.interact();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
       }
       this.input.flush();
       return;
@@ -177,6 +215,12 @@ export default class Game {
       if (this.input.wasPressed('right')) this.shopUI.move(1);
       if (this.input.wasPressed('up')) this.shopUI.move(-1);
       if (this.input.wasPressed('down')) this.shopUI.move(1);
+      if (this.input.wasPressed('left') || this.input.wasPressed('right') || this.input.wasPressed('up') || this.input.wasPressed('down')) {
+        this.audio.menu();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        this.triggerMenuFlash();
+      }
       if (this.input.wasPressed('interact')) {
         if (this.player.loot > 0 && this.shopUI.selection === this.shopUI.upgrades.length) {
           this.player.credits += this.player.loot * 5;
@@ -197,7 +241,9 @@ export default class Game {
             this.player.applyUpgrades(this.player.equippedUpgrades);
           }
         }
-        this.audio.ping();
+        this.audio.interact();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
       }
       if (this.input.wasPressed('pause')) {
         this.state = 'playing';
@@ -211,6 +257,12 @@ export default class Game {
       if (this.input.wasPressed('down')) this.pauseMenu.move(1);
       if (this.input.wasPressed('left')) this.pauseMenu.adjust(-1);
       if (this.input.wasPressed('right')) this.pauseMenu.adjust(1);
+      if (this.input.wasPressed('up') || this.input.wasPressed('down') || this.input.wasPressed('left') || this.input.wasPressed('right')) {
+        this.audio.menu();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        this.triggerMenuFlash();
+      }
       this.audio.setVolume(this.pauseMenu.volume);
       if (this.input.wasPressed('pause')) {
         this.state = 'playing';
@@ -223,13 +275,16 @@ export default class Game {
     const debugSlow = this.testHarness.active && this.testHarness.slowMotion;
     const timeScale = this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1;
     this.slowTimer = Math.max(0, this.slowTimer - dt);
+    this.updateSpawnCooldowns(dt * timeScale);
 
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
     this.attemptGrapple();
     this.testHarness.applyCheats(this);
+    this.handleMovementFeedback();
 
     if (this.player.dead) {
       this.respawn();
+      this.setRevAudio(false);
       this.input.flush();
       return;
     }
@@ -237,25 +292,38 @@ export default class Game {
     if (this.input.wasPressed('attack')) {
       this.handleAttack();
     }
-    if (this.input.isDown('rev')) {
-      if (this.player.canRev()) {
-        this.player.addHeat(0.4 * dt / (this.player.revEfficiency || 1));
-        this.handleRev();
-      }
+    if (this.input.isDown('rev') && this.player.canRev()) {
+      this.player.addHeat(0.4 * dt / (this.player.revEfficiency || 1));
+      this.handleRev();
+      this.setRevAudio(true);
+      this.recordFeedback('chainsaw rev', 'audio');
+      this.recordFeedback('chainsaw rev', 'visual');
+    } else {
+      this.setRevAudio(false);
     }
 
+    let interacted = false;
     if (this.input.wasPressed('interact')) {
-      this.checkSavePoints();
+      interacted = this.checkSavePoints();
     }
 
     this.updateEnemies(dt * timeScale);
     this.updateProjectiles(dt * timeScale);
     this.updateDebris(dt * timeScale);
+    this.updateEffects(dt * timeScale);
     this.updateLootDrops(dt * timeScale);
+    this.checkPlayerDamage();
     this.checkPickups();
-    this.checkShops();
+    const shopped = this.checkShops();
+    if (this.input.wasPressed('interact') && !interacted && !shopped) {
+      this.audio.interact();
+      this.spawnEffect('interact', this.player.x, this.player.y - 16);
+      this.recordFeedback('interact', 'audio');
+      this.recordFeedback('interact', 'visual');
+    }
     this.updateObjective();
     this.consoleOverlay.update(dt * timeScale);
+    this.playability.update(dt * timeScale, this);
 
     this.camera.follow(this.player, dt);
     this.minimap.update(this.player);
@@ -265,10 +333,13 @@ export default class Game {
     }
 
     if (this.input.wasPressed('validator')) {
-      this.runValidator();
+      this.runValidator(this.input.isShiftDown());
     }
     if (this.input.wasPressed('legend')) {
       this.checklist.toggle();
+    }
+    if (this.input.wasPressed('debug')) {
+      this.playability.toggle();
     }
     if (this.validatorPending) {
       this.runValidator();
@@ -285,10 +356,160 @@ export default class Game {
     this.player.y = this.lastSave.y;
     this.player.credits = Math.max(0, this.player.credits - 10);
     this.player.loot = 0;
+    this.prevHealth = this.player.health;
+  }
+
+  handleMovementFeedback() {
+    if (this.player.justJumped) {
+      this.audio.jump();
+      this.spawnEffect('jump', this.player.x, this.player.y + 16);
+      this.recordFeedback('jump', 'audio');
+      this.recordFeedback('jump', 'visual');
+    }
+    if (this.player.justLanded) {
+      this.audio.land();
+      this.spawnEffect('land', this.player.x, this.player.y + 18);
+      this.recordFeedback('land', 'audio');
+      this.recordFeedback('land', 'visual');
+    }
+    if (this.player.justDashed) {
+      this.audio.dash();
+      this.spawnEffect('dash', this.player.x + this.player.facing * 10, this.player.y);
+      this.recordFeedback('dash', 'audio');
+      this.recordFeedback('dash', 'visual');
+    }
+    if (this.player.justStepped) {
+      this.audio.footstep();
+      this.spawnEffect('move', this.player.x, this.player.y + 18);
+      this.recordFeedback('move', 'audio');
+      this.recordFeedback('move', 'visual');
+    }
+  }
+
+  setRevAudio(active) {
+    const intensity = 0.2 + this.player.heat * 0.6;
+    if (active) {
+      this.audio.setRev(true, intensity);
+      this.revActive = true;
+    } else if (this.revActive) {
+      this.audio.setRev(false);
+      this.revActive = false;
+    }
+  }
+
+  recordFeedback(action, type) {
+    this.actionFeedback.record(action, type, this.clock);
+  }
+
+  spawnEffect(type, x, y) {
+    this.effects.push(new Effect(x, y, type));
+  }
+
+  updateEffects(dt) {
+    this.effects.forEach((effect) => effect.update(dt));
+    this.effects = this.effects.filter((effect) => effect.alive);
+  }
+
+  checkPlayerDamage() {
+    if (this.player.health < this.prevHealth) {
+      this.audio.damage();
+      this.spawnEffect('damage', this.player.x, this.player.y - 8);
+      this.recordFeedback('take damage', 'audio');
+      this.recordFeedback('take damage', 'visual');
+    }
+    this.prevHealth = this.player.health;
+  }
+
+  triggerMenuFlash() {
+    this.menuFlashTimer = 0.2;
+  }
+
+  updateSpawnCooldowns(dt) {
+    this.spawnCooldowns.forEach((value, key) => {
+      const next = Math.max(0, value - dt);
+      this.spawnCooldowns.set(key, next);
+    });
+  }
+
+  requestSpawn(type, x, y) {
+    const activeEnemies = this.enemies.filter((enemy) => !enemy.dead);
+    if (activeEnemies.length >= this.spawnRules.globalMax) {
+      return false;
+    }
+    const regionId = this.world.regionAt(x, y).id;
+    const regionCount = activeEnemies.filter((enemy) => this.world.regionAt(enemy.x, enemy.y).id === regionId).length;
+    if (regionCount >= this.spawnRules.perRegion) {
+      return false;
+    }
+    const cooldown = this.spawnCooldowns.get(regionId) || 0;
+    if (cooldown > 0) {
+      return false;
+    }
+    if (this.player.health <= 2 || this.isPlayerConfined()) {
+      this.spawnCooldowns.set(regionId, this.spawnRules.backoffLowHealth);
+      return false;
+    }
+    if (type === 'skitter') {
+      this.enemies.push(new Skitter(x, y));
+    }
+    this.spawnCooldowns.set(regionId, this.spawnRules.cooldown);
+    return true;
+  }
+
+  isPlayerConfined() {
+    const tileSize = this.world.tileSize;
+    const tx = Math.floor(this.player.x / tileSize);
+    const ty = Math.floor(this.player.y / tileSize);
+    let solidCount = 0;
+    for (let y = ty - 1; y <= ty + 1; y += 1) {
+      for (let x = tx - 1; x <= tx + 1; x += 1) {
+        if (this.world.isSolid(x, y, this.abilities)) {
+          solidCount += 1;
+        }
+      }
+    }
+    return solidCount >= 6;
+  }
+
+  resolveEnemyCollision(enemy) {
+    const tileSize = this.world.tileSize;
+    let rect = enemy.rect;
+    const overlaps = [];
+    const startX = Math.floor(rect.x / tileSize);
+    const endX = Math.floor((rect.x + rect.w) / tileSize);
+    const startY = Math.floor(rect.y / tileSize);
+    const endY = Math.floor((rect.y + rect.h) / tileSize);
+    for (let ty = startY; ty <= endY; ty += 1) {
+      for (let tx = startX; tx <= endX; tx += 1) {
+        if (this.world.isSolid(tx, ty, this.abilities)) {
+          overlaps.push({ tx, ty });
+        }
+      }
+    }
+    overlaps.forEach(({ tx, ty }) => {
+      const tileRect = {
+        x: tx * tileSize,
+        y: ty * tileSize,
+        w: tileSize,
+        h: tileSize
+      };
+      const overlapX = Math.min(rect.x + rect.w - tileRect.x, tileRect.x + tileRect.w - rect.x);
+      const overlapY = Math.min(rect.y + rect.h - tileRect.y, tileRect.y + tileRect.h - rect.y);
+      if (overlapX < overlapY) {
+        enemy.x += rect.x < tileRect.x ? -overlapX : overlapX;
+      } else {
+        enemy.y += rect.y < tileRect.y ? -overlapY : overlapY;
+      }
+      rect = enemy.rect;
+    });
   }
 
   handleAttack() {
     const range = 40;
+    this.spawnEffect('bite', this.player.x + this.player.facing * 18, this.player.y - 8);
+    this.audio.bite();
+    this.recordFeedback('chainsaw bite', 'audio');
+    this.recordFeedback('chainsaw bite', 'visual');
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
       const dx = enemy.x - this.player.x;
@@ -298,7 +519,20 @@ export default class Game {
           return;
         }
         enemy.damage(1);
-        this.audio.tone(180, 0.1, 'square');
+        this.audio.hit();
+        this.spawnEffect('hit', enemy.x, enemy.y);
+        this.recordFeedback('hit', 'audio');
+        this.recordFeedback('hit', 'visual');
+        this.testHarness.recordHit();
+        this.playability.recordEnemyHit(this.clock);
+        if (enemy.justStaggered) {
+          this.audio.stagger();
+          this.spawnEffect('stagger', enemy.x, enemy.y);
+          this.recordFeedback('stagger', 'audio');
+          this.recordFeedback('stagger', 'visual');
+          this.testHarness.recordStagger();
+          enemy.justStaggered = false;
+        }
         if (enemy.dead) {
           this.awardLoot(enemy);
         }
@@ -310,7 +544,11 @@ export default class Game {
       const dy = Math.abs(this.boss.y - this.player.y);
       if (Math.abs(dx) < range && dy < 60) {
         this.boss.damage(1);
-        this.audio.tone(160, 0.1, 'square');
+        this.audio.hit();
+        this.spawnEffect('hit', this.boss.x, this.boss.y);
+        this.recordFeedback('hit', 'audio');
+        this.recordFeedback('hit', 'visual');
+        this.playability.recordEnemyHit(this.clock);
       }
     }
   }
@@ -361,7 +599,11 @@ export default class Game {
       this.shakeTimer = 0.2;
       this.shakeMagnitude = 10;
     }
-    this.audio.rumble();
+    this.audio.execute();
+    this.spawnEffect('execute', enemy.x, enemy.y);
+    this.recordFeedback('execute', 'audio');
+    this.recordFeedback('execute', 'visual');
+    this.playability.recordEnemyHit(this.clock);
   }
 
   awardLoot(enemy, execution = false) {
@@ -416,11 +658,14 @@ export default class Game {
       if (enemy.type === 'spitter') {
         enemy.update(dt, this.player, this.spawnProjectile.bind(this));
       } else if (enemy.type === 'hivenode') {
-        enemy.update(dt, this.player, (x, y) => this.enemies.push(new Skitter(x, y)));
+        enemy.update(dt, this.player, (x, y) => this.requestSpawn('skitter', x, y));
       } else if (enemy.type === 'sentinel') {
         enemy.update(dt, this.player, this.spawnProjectile.bind(this));
       } else {
         enemy.update(dt, this.player);
+      }
+      if (enemy.solid) {
+        this.resolveEnemyCollision(enemy);
       }
 
       const dx = enemy.x - this.player.x;
@@ -429,6 +674,15 @@ export default class Game {
         if (!enemy.training) {
           this.player.takeDamage(1);
         }
+      }
+
+      if (enemy.justStaggered) {
+        this.audio.stagger();
+        this.spawnEffect('stagger', enemy.x, enemy.y);
+        this.recordFeedback('stagger', 'audio');
+        this.recordFeedback('stagger', 'visual');
+        this.testHarness.recordStagger();
+        enemy.justStaggered = false;
       }
     });
 
@@ -488,6 +742,10 @@ export default class Game {
       if (dist < 24) {
         drop.collect();
         this.player.loot += drop.value;
+        this.audio.pickup();
+        this.spawnEffect('pickup', drop.x, drop.y - 8);
+        this.recordFeedback('pickup', 'audio');
+        this.recordFeedback('pickup', 'visual');
         if (Math.random() < 0.2) {
           this.player.blueprints += 1;
           if (this.player.blueprints >= 3) {
@@ -516,12 +774,16 @@ export default class Game {
         if (pickup.ability === 'resonance') {
           this.player.upgradeSlots = 4;
         }
-        this.audio.ping();
+        this.audio.pickup();
+        this.spawnEffect('pickup', pickup.x, pickup.y - 8);
+        this.recordFeedback('pickup', 'audio');
+        this.recordFeedback('pickup', 'visual');
       }
     });
   }
 
   checkSavePoints() {
+    let saved = false;
     this.world.savePoints.forEach((save) => {
       const dist = Math.hypot(save.x - this.player.x, save.y - this.player.y);
       if (dist < 40) {
@@ -530,16 +792,27 @@ export default class Game {
         });
         save.active = true;
         this.lastSave = { x: save.x, y: save.y - 40 };
-        this.audio.ping();
+        this.audio.interact();
+        this.spawnEffect('interact', save.x, save.y - 16);
+        this.recordFeedback('interact', 'audio');
+        this.recordFeedback('interact', 'visual');
+        saved = true;
       }
     });
+    return saved;
   }
 
   checkShops() {
     const nearShop = this.world.shops.find((shop) => Math.hypot(shop.x - this.player.x, shop.y - this.player.y) < 40);
     if (nearShop && this.input.wasPressed('interact')) {
       this.state = 'shop';
+      this.audio.interact();
+      this.spawnEffect('interact', nearShop.x, nearShop.y - 16);
+      this.recordFeedback('interact', 'audio');
+      this.recordFeedback('interact', 'visual');
+      return true;
     }
+    return false;
   }
 
   updateObjective() {
@@ -566,7 +839,7 @@ export default class Game {
       this.player.x = anchor.x;
       this.player.y = anchor.y + 20;
       this.player.vy = -200;
-      this.audio.ping();
+      this.audio.interact();
     }
   }
 
@@ -606,6 +879,7 @@ export default class Game {
     this.projectiles.forEach((projectile) => projectile.draw(ctx));
     this.debris.forEach((piece) => piece.draw(ctx));
     this.shards.forEach((shard) => shard.draw(ctx));
+    this.effects.forEach((effect) => effect.draw(ctx));
     this.lootDrops.forEach((drop) => {
       const dist = Math.hypot(drop.x - this.player.x, drop.y - this.player.y);
       drop.draw(ctx, dist < 40);
@@ -622,6 +896,7 @@ export default class Game {
     if (this.testHarness.active && this.testHarness.showCollision) {
       this.drawCollisionBoxes(ctx);
     }
+    this.playability.drawWorld(ctx, this);
     this.drawBloom(ctx);
     ctx.restore();
 
@@ -642,7 +917,17 @@ export default class Game {
       this.pauseMenu.draw(ctx, canvas.width, canvas.height);
     }
 
+    if (this.menuFlashTimer > 0) {
+      ctx.save();
+      ctx.globalAlpha = 0.2;
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+      ctx.restore();
+    }
+
     this.consoleOverlay.draw(ctx, canvas.width, canvas.height);
+    this.playability.drawScreen(ctx, canvas.width, canvas.height);
     this.checklist.draw(ctx, this, canvas.width, canvas.height);
     this.testHarness.draw(ctx, this, canvas.width, canvas.height);
   }
@@ -867,10 +1152,27 @@ export default class Game {
     return null;
   }
 
-  runValidator() {
+  runValidator(staged = false) {
     const targets = this.getObjectiveTargetsByAbility();
-    const report = this.validator.run(this.abilities, targets);
-    this.consoleOverlay.setReport(report.status, report.lines);
-    console.log('Autoplay Validator Report:', report);
+    if (staged) {
+      const report = this.validator.runStaged(targets);
+      this.consoleOverlay.setReport(report.status, report.summary, 'STAGED VALIDATOR');
+      console.log('Staged Validator Summary:', report.summary);
+      console.log('Staged Validator Detail:', report.detail);
+      return;
+    }
+    const target = this.getObjectiveTarget();
+    const stageTargets = {};
+    if (target) {
+      stageTargets['current objective'] = {
+        x: target.x,
+        y: target.y,
+        tx: Math.floor(target.x / this.world.tileSize),
+        ty: Math.floor(target.y / this.world.tileSize)
+      };
+    }
+    const report = this.validator.runSingleStage(this.abilities, stageTargets, 'Current Stage');
+    this.consoleOverlay.setReport(report.status, report.lines, 'VALIDATOR');
+    console.log('Validator Report:', report);
   }
 }

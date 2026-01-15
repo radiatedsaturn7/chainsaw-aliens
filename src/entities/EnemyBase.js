@@ -1,3 +1,5 @@
+let ENEMY_ID = 0;
+
 export default class EnemyBase {
   constructor(x, y) {
     this.x = x;
@@ -12,6 +14,10 @@ export default class EnemyBase {
     this.facing = 1;
     this.type = 'enemy';
     this.lootValue = 1;
+    this.solid = true;
+    this.justStaggered = false;
+    this.id = ENEMY_ID;
+    ENEMY_ID += 1;
   }
 
   get rect() {
@@ -24,8 +30,10 @@ export default class EnemyBase {
   }
 
   damage(amount) {
+    const wasStaggered = this.stagger >= 0.6;
     this.health -= amount;
     this.stagger = Math.min(1, this.stagger + 0.5);
+    this.justStaggered = !wasStaggered && this.stagger >= 0.6;
     if (this.health <= 0) {
       this.dead = true;
     }
