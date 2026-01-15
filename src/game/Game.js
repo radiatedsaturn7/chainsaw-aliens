@@ -36,6 +36,7 @@ import WorldValidityTest from '../debug/validators/WorldValidityTest.js';
 import RoomCoverageTest from '../debug/validators/RoomCoverageTest.js';
 import EncounterAuditTest from '../debug/validators/EncounterAuditTest.js';
 import GoldenPathTest from '../debug/validators/GoldenPathTest.js';
+import Editor from '../editor/Editor.js';
 
 const INTRO_LINES = [
   'Captain! The entire planet of earth has literally run out of all our ammunition, and the aliens are still coming! What do we do?',
@@ -135,6 +136,8 @@ export default class Game {
     this.prevHealth = this.player.health;
     this.revActive = false;
     this.simulationActive = false;
+    this.editor = new Editor(this);
+    this.editorReturnState = 'title';
 
     this.init();
   }
@@ -144,6 +147,10 @@ export default class Game {
     await this.autoRepair.load();
     this.autoRepair.applyPersistentPatches();
     await this.goldenPath.load();
+    this.syncSpawnPoint();
+    this.player.x = this.spawnPoint.x;
+    this.player.y = this.spawnPoint.y;
+    this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
     this.resetWorldSystems();
     this.spawnEnemies();
     this.autoRepair.applySpawnOverride(this);
@@ -159,6 +166,68 @@ export default class Game {
     this.roomCoverageTest = new RoomCoverageTest(this.world, this.player, this.feasibilityValidator);
     this.encounterAuditTest = new EncounterAuditTest(this.world, this.player, this.feasibilityValidator);
     this.goldenPathTest = new GoldenPathTest(this.goldenPath);
+  }
+
+  syncSpawnPoint() {
+    const spawn = this.world.spawnPoint || this.spawnPoint;
+    this.spawnPoint = { x: spawn.x, y: spawn.y };
+  }
+
+  refreshWorldCaches() {
+    this.world.rebuildCaches();
+    this.minimap = new Minimap(this.world);
+    this.syncSpawnPoint();
+    this.resetWorldSystems();
+  }
+
+  buildWorldData() {
+    return {
+      schemaVersion: 1,
+      tileSize: this.world.tileSize,
+      width: this.world.width,
+      height: this.world.height,
+      spawn: this.world.spawn || { x: 28, y: 19 },
+      tiles: this.world.tiles,
+      regions: this.world.regions
+    };
+  }
+
+  applyWorldData(data) {
+    const migrated = {
+      schemaVersion: data.schemaVersion ?? 1,
+      tileSize: data.tileSize,
+      width: data.width,
+      height: data.height,
+      spawn: data.spawn || { x: 28, y: 19 },
+      tiles: data.tiles,
+      regions: data.regions || []
+    };
+    this.world.applyData(migrated);
+    this.syncSpawnPoint();
+    this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
+    this.refreshWorldCaches();
+  }
+
+  enterEditor() {
+    this.editorReturnState = this.state;
+    this.state = 'editor';
+    this.setRevAudio(false);
+    this.editor.activate();
+  }
+
+  exitEditor({ playtest }) {
+    this.editor.deactivate();
+    if (playtest) {
+      this.syncSpawnPoint();
+      this.resetRun();
+      this.state = 'playing';
+      return;
+    }
+    if (this.editorReturnState === 'playing' || this.editorReturnState === 'pause') {
+      this.state = 'pause';
+    } else {
+      this.state = 'title';
+    }
   }
 
   resetRun() {
@@ -238,6 +307,22 @@ export default class Game {
     if (this.state === 'loading') return;
     this.clock += dt;
     this.menuFlashTimer = Math.max(0, this.menuFlashTimer - dt);
+
+    if (this.input.wasPressed('editor')) {
+      if (this.state === 'editor') {
+        this.exitEditor({ playtest: false });
+      } else {
+        this.enterEditor();
+      }
+      this.input.flush();
+      return;
+    }
+
+    if (this.state === 'editor') {
+      this.editor.update(this.input, dt);
+      this.input.flush();
+      return;
+    }
 
     if (this.input.wasPressed('pause') && this.state === 'playing') {
       this.state = 'pause';
@@ -941,6 +1026,10 @@ export default class Game {
   }
 
   updateObjective() {
+    if (this.world.objectives.length > 0) {
+      this.objective = 'Reach the objective marker.';
+      return;
+    }
     if (!this.abilities.grapple) {
       this.objective = 'Find the Grapple Spike in the Tangle.';
     } else if (!this.abilities.phase) {
@@ -995,6 +1084,11 @@ export default class Game {
 
     if (this.state === 'dialog') {
       this.dialog.draw(ctx, canvas.width, canvas.height);
+      return;
+    }
+
+    if (this.state === 'editor') {
+      this.editor.draw(ctx);
       return;
     }
 
@@ -1119,6 +1213,30 @@ export default class Game {
           ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
           ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
         }
+        if (tile === '=') {
+          ctx.strokeStyle = '#fff';
+          ctx.beginPath();
+          ctx.moveTo(x * tileSize + 4, y * tileSize + tileSize / 2);
+          ctx.lineTo(x * tileSize + tileSize - 4, y * tileSize + tileSize / 2);
+          ctx.stroke();
+        }
+        if (tile === '!') {
+          ctx.strokeStyle = '#fff';
+          ctx.beginPath();
+          ctx.moveTo(x * tileSize + 6, y * tileSize + 6);
+          ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + tileSize - 6);
+          ctx.moveTo(x * tileSize + tileSize - 6, y * tileSize + 6);
+          ctx.lineTo(x * tileSize + 6, y * tileSize + tileSize - 6);
+          ctx.stroke();
+        }
+        if (tile === 'D') {
+          ctx.strokeStyle = '#fff';
+          ctx.strokeRect(x * tileSize + 4, y * tileSize + 4, tileSize - 8, tileSize - 8);
+          ctx.beginPath();
+          ctx.moveTo(x * tileSize + tileSize / 2, y * tileSize + 6);
+          ctx.lineTo(x * tileSize + tileSize / 2, y * tileSize + tileSize - 6);
+          ctx.stroke();
+        }
         if (['G', 'P', 'M', 'R'].includes(tile)) {
           ctx.strokeStyle = '#fff';
           ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
@@ -1138,6 +1256,12 @@ export default class Game {
           ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
           ctx.beginPath();
           ctx.arc(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2, 10, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        if (tile === 'O') {
+          ctx.strokeStyle = '#fff';
+          ctx.beginPath();
+          ctx.arc(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2, 8, 0, Math.PI * 2);
           ctx.stroke();
         }
         if (tile === 'H') {
@@ -1178,6 +1302,14 @@ export default class Game {
       ctx.lineTo(shop.x + 4, shop.y - 8);
       ctx.stroke();
       this.drawLabel(ctx, shop.x, shop.y - 30, 'SHOP', shop);
+    });
+
+    this.world.objectives.forEach((objective) => {
+      ctx.strokeStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(objective.x, objective.y - 12, 12, 0, Math.PI * 2);
+      ctx.stroke();
+      this.drawLabel(ctx, objective.x, objective.y - 30, 'OBJECTIVE', objective, 160);
     });
 
     this.world.abilityPickups.forEach((pickup) => {
@@ -1328,6 +1460,9 @@ export default class Game {
   }
 
   getObjectiveTarget() {
+    if (this.world.objectives.length > 0) {
+      return this.world.objectives[0];
+    }
     const order = ['grapple', 'phase', 'magboots', 'resonance'];
     for (let i = 0; i < order.length; i += 1) {
       const ability = order[i];
@@ -1481,6 +1616,10 @@ export default class Game {
       this.openTestDashboard();
       return;
     }
+    if (this.state === 'title' && this.title.isEditorHit(x, y) && !this.testDashboard.visible) {
+      this.enterEditor();
+      return;
+    }
     if (this.testDashboard.visible) {
       const action = this.testDashboard.handleClick(x, y);
       if (!action) return;
@@ -1508,6 +1647,26 @@ export default class Game {
         this.audio.ui();
       }
     }
+  }
+
+  handlePointerDown(payload) {
+    if (this.state !== 'editor') return;
+    this.editor.handlePointerDown(payload);
+  }
+
+  handlePointerMove(payload) {
+    if (this.state !== 'editor') return;
+    this.editor.handlePointerMove(payload);
+  }
+
+  handlePointerUp(payload) {
+    if (this.state !== 'editor') return;
+    this.editor.handlePointerUp(payload);
+  }
+
+  handleWheel(payload) {
+    if (this.state !== 'editor') return;
+    this.editor.handleWheel(payload);
   }
 
 }
