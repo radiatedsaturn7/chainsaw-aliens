@@ -71,6 +71,7 @@ export default class World {
     this.bossGate = null;
     this.objectives = [];
     this.enemies = [];
+    this.boxes = [];
     this.data = null;
   }
 
@@ -120,6 +121,7 @@ export default class World {
     this.anchors = [];
     this.bossGate = null;
     this.objectives = [];
+    this.boxes = [];
     let saveIndex = 0;
     let healthIndex = 0;
 
@@ -163,6 +165,9 @@ export default class World {
         }
         if (tile === 'B') {
           this.bossGate = { id: 'boss-gate', x: worldX, y: worldY };
+        }
+        if (tile === 'K') {
+          this.boxes.push({ x: worldX, y: worldY });
         }
       }
     }
