@@ -49,6 +49,28 @@ const INTRO_LINES = [
   'Chainsaw Aliens.'
 ];
 
+const ABILITY_DIALOG_LINES = {
+  anchor: [
+    'Tool acquired: Chainsaw Throw rig.',
+    'Press L to throw into a wall. Press L again to retract.',
+    'Hold UP while anchored to climb.'
+  ],
+  flame: [
+    'Tool acquired: Flame-Saw attachment.',
+    'Press F to toggle flame mode.',
+    'Hold K to rev and burn wood or melt metal.'
+  ],
+  magboots: [
+    'Tool acquired: Mag Boots.',
+    'Press into a wall to stick, then jump to wall-launch.',
+    'Mag heat builds while engaged.'
+  ],
+  resonance: [
+    'Tool acquired: Resonance Core.',
+    'Hold K to rev and shatter brittle walls or rift seals.'
+  ]
+};
+
 const UPGRADE_LIST = [
   { id: 'tooth-razor', name: 'Tooth Profile: Razor Edge', slot: 'tooth', cost: 15, modifiers: { revEfficiency: 0.2 } },
   { id: 'tooth-serrated', name: 'Tooth Profile: Serrated Bite', slot: 'tooth', cost: 20, modifiers: { revEfficiency: 0.3 } },
@@ -1104,6 +1126,16 @@ export default class Game {
     this.projectiles.push(new Projectile(x, y, vx, vy, damage));
   }
 
+  showAbilityDialog(ability) {
+    const lines = ABILITY_DIALOG_LINES[ability];
+    if (!lines) return;
+    this.dialog = new Dialog(lines);
+    this.state = 'dialog';
+    this.audio.ui();
+    this.recordFeedback('menu navigate', 'audio');
+    this.recordFeedback('menu navigate', 'visual');
+  }
+
   checkPickups() {
     this.world.abilityPickups.forEach((pickup) => {
       if (pickup.collected) return;
@@ -1121,6 +1153,7 @@ export default class Game {
         this.spawnEffect('pickup', pickup.x, pickup.y - 8);
         this.recordFeedback('pickup', 'audio');
         this.recordFeedback('pickup', 'visual');
+        this.showAbilityDialog(pickup.ability);
       }
     });
 
