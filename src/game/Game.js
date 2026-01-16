@@ -52,8 +52,8 @@ const INTRO_LINES = [
 const ABILITY_DIALOG_LINES = {
   anchor: [
     'Tool acquired: Chainsaw Throw rig.',
-    'Double-tap Attack to fire the tethered chainsaw.',
-    'Hold Attack while embedded to climb. The saw retracts automatically.'
+    'Tap Attack to fire the tethered chainsaw.',
+    'Hold Attack while embedded to climb. Tap Attack to untether.'
   ],
   flame: [
     'Tool acquired: Flame-Saw attachment.',
@@ -141,10 +141,13 @@ export default class Game {
       autoRetractTimer: 0,
       embedded: false,
       attachedBox: null,
+      attachedEnemy: null,
       damageTimer: 0
     };
     this.attackTapTimer = 0;
     this.attackTapWindow = 0.28;
+    this.attackHoldTimer = 0;
+    this.attackHoldThreshold = 0.22;
     this.obstacleDamage = new Map();
     this.obstacleCooldown = 0;
     this.noiseCooldown = 0;
@@ -343,12 +346,15 @@ export default class Game {
       autoRetractTimer: 0,
       embedded: false,
       attachedBox: null,
+      attachedEnemy: null,
       damageTimer: 0
     };
     this.spawnBoxes();
     this.obstacleDamage.clear();
     this.obstacleCooldown = 0;
     this.noiseCooldown = 0;
+    this.attackTapTimer = 0;
+    this.attackHoldTimer = 0;
     this.prevHealth = this.player.health;
     this.testHarness.active = false;
     this.simulationActive = false;
@@ -603,6 +609,12 @@ export default class Game {
     this.slowTimer = Math.max(0, this.slowTimer - dt);
     this.updateSpawnCooldowns(dt * timeScale);
     this.attackTapTimer = Math.max(0, this.attackTapTimer - dt * timeScale);
+    if (this.input.wasPressed('attack')) {
+      this.attackHoldTimer = 0;
+    }
+    if (this.input.isDown('attack')) {
+      this.attackHoldTimer += dt * timeScale;
+    }
 
     if (!this.abilities.flame) {
       this.player.flameMode = false;
@@ -631,26 +643,33 @@ export default class Game {
       return;
     }
 
-    if (this.input.wasPressed('attack')) {
-      const doubleTap = this.attackTapTimer > 0;
-      this.attackTapTimer = doubleTap ? 0 : this.attackTapWindow;
-      if (this.sawAnchor.active) {
-        if (doubleTap) {
+    if (this.input.wasReleased('attack')) {
+      const heldDuration = this.attackHoldTimer;
+      this.attackHoldTimer = 0;
+      if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold) {
+        const doubleTap = this.attackTapTimer > 0;
+        this.attackTapTimer = doubleTap ? 0 : this.attackTapWindow;
+        if (this.sawAnchor.active) {
           this.startAnchorRetract(0.2);
-        } else if (!this.sawAnchor.embedded || this.sawAnchor.attachedBox) {
-          this.triggerTetherPull();
+        } else if (doubleTap) {
+          if (!this.tryObstacleInteraction('attack')) {
+            this.handleAttack();
+          }
+        } else if (this.abilities.anchor) {
+          this.handleAnchorShot();
+        } else if (!this.tryObstacleInteraction('attack')) {
+          this.handleAttack();
         }
-      } else if (doubleTap && this.abilities.anchor) {
-        this.handleAnchorShot();
-      } else if (!this.tryObstacleInteraction('attack')) {
-        this.handleAttack();
       }
+    } else if (!this.input.isDown('attack')) {
+      this.attackHoldTimer = 0;
     }
     if (this.sawAnchor.embedded && this.input.wasPressed('jump')) {
       this.startAnchorRetract(0.2);
     }
-    const anchorRevActive = this.sawAnchor.active && this.sawAnchor.embedded && this.input.isDown('attack');
-    if (this.input.isDown('rev') && this.player.canRev() && !this.sawAnchor.active) {
+    const revHeld = this.isRevHeld(this.input);
+    const anchorRevActive = this.sawAnchor.active && this.sawAnchor.embedded && revHeld;
+    if (revHeld && this.player.canRev() && !this.sawAnchor.active) {
       this.player.addHeat(0.4 * dt / (this.player.revEfficiency || 1));
       this.handleRev();
       this.tryObstacleInteraction('rev');
@@ -894,6 +913,10 @@ export default class Game {
       }
       rect = enemy.rect;
     });
+  }
+
+  isRevHeld(input) {
+    return input.isDown('attack') || input.isDown('rev');
   }
 
   handleAttack() {
@@ -1161,15 +1184,15 @@ export default class Game {
       this.boss.triggerExposure();
       this.bossInteractions.anchor = true;
     }
-    if (this.boss.phase === 1 && this.abilities.flame && this.player.flameMode && this.input.isDown('rev')) {
+    if (this.boss.phase === 1 && this.abilities.flame && this.player.flameMode && this.isRevHeld(this.input)) {
       this.boss.triggerExposure();
       this.bossInteractions.flame = true;
     }
-    if (this.boss.phase === 2 && this.abilities.magboots && (this.player.onWall !== 0 || simAssist && this.input.isDown('rev'))) {
+    if (this.boss.phase === 2 && this.abilities.magboots && (this.player.onWall !== 0 || simAssist && this.isRevHeld(this.input))) {
       this.boss.triggerExposure();
       this.bossInteractions.magboots = true;
     }
-    if (this.boss.phase === 3 && this.abilities.resonance && this.input.isDown('rev')) {
+    if (this.boss.phase === 3 && this.abilities.resonance && this.isRevHeld(this.input)) {
       this.boss.triggerExposure();
       this.bossInteractions.resonance = true;
     }
@@ -1362,7 +1385,7 @@ export default class Game {
     }
     const hit = this.findAnchorHit();
     if (!hit) return;
-    this.activateAnchor(hit, true);
+    this.activateAnchor(hit, !hit.hit);
   }
 
   findAnchorHit() {
@@ -1372,9 +1395,13 @@ export default class Game {
     for (let dist = 24; dist <= range; dist += step) {
       const testX = this.player.x + dir * dist;
       const testY = this.player.y - 6;
+      const enemyHit = this.findAnchorEnemyHit(testX, testY);
+      if (enemyHit) {
+        return { x: enemyHit.target.x, y: enemyHit.target.y, hit: true, box: null, enemy: enemyHit.target, isBoss: enemyHit.isBoss };
+      }
       const boxHit = this.findAnchorBoxHit(testX, testY);
       if (boxHit) {
-        return { x: boxHit.x, y: boxHit.y, hit: true, box: boxHit };
+        return { x: boxHit.x, y: boxHit.y, hit: true, box: boxHit, enemy: null, isBoss: false };
       }
       const tileX = Math.floor(testX / this.world.tileSize);
       const tileY = Math.floor(testY / this.world.tileSize);
@@ -1383,7 +1410,9 @@ export default class Game {
           x: tileX * this.world.tileSize + this.world.tileSize / 2,
           y: tileY * this.world.tileSize + this.world.tileSize / 2,
           hit: true,
-          box: null
+          box: null,
+          enemy: null,
+          isBoss: false
         };
       }
     }
@@ -1391,8 +1420,26 @@ export default class Game {
       x: this.player.x + dir * range,
       y: this.player.y - 6,
       hit: false,
-      box: null
+      box: null,
+      enemy: null,
+      isBoss: false
     };
+  }
+
+  findAnchorEnemyHit(testX, testY) {
+    const radius = 18;
+    for (const enemy of this.enemies) {
+      if (enemy.dead) continue;
+      if (Math.abs(enemy.x - testX) <= radius && Math.abs(enemy.y - testY) <= radius) {
+        return { target: enemy, isBoss: false };
+      }
+    }
+    if (this.boss && !this.boss.dead) {
+      if (Math.abs(this.boss.x - testX) <= radius + 14 && Math.abs(this.boss.y - testY) <= radius + 14) {
+        return { target: this.boss, isBoss: true };
+      }
+    }
+    return null;
   }
 
   findAnchorBoxHit(testX, testY) {
@@ -1415,8 +1462,12 @@ export default class Game {
     this.sawAnchor.autoRetractTimer = autoRetract ? 0.35 : 0;
     this.sawAnchor.embedded = Boolean(hit.hit && !hit.box);
     this.sawAnchor.attachedBox = hit.box || null;
+    this.sawAnchor.attachedEnemy = hit.enemy || null;
     this.sawAnchor.damageTimer = 0;
     this.player.sawDeployed = true;
+    if (hit.enemy) {
+      this.applyAnchorImpactDamage(hit.enemy, hit.isBoss);
+    }
   }
 
   startAnchorRetract(duration = 0.4) {
@@ -1424,6 +1475,7 @@ export default class Game {
     this.sawAnchor.autoRetractTimer = 0;
     this.sawAnchor.embedded = false;
     this.sawAnchor.attachedBox = null;
+    this.sawAnchor.attachedEnemy = null;
   }
 
   triggerTetherPull() {
@@ -1462,12 +1514,21 @@ export default class Game {
         this.player.sawDeployed = false;
         this.sawAnchor.embedded = false;
         this.sawAnchor.attachedBox = null;
+        this.sawAnchor.attachedEnemy = null;
       }
       return;
     }
     if (this.sawAnchor.attachedBox) {
       this.sawAnchor.x = this.sawAnchor.attachedBox.x;
       this.sawAnchor.y = this.sawAnchor.attachedBox.y;
+    }
+    if (this.sawAnchor.attachedEnemy) {
+      if (this.sawAnchor.attachedEnemy.dead) {
+        this.startAnchorRetract(0.2);
+        return;
+      }
+      this.sawAnchor.x = this.sawAnchor.attachedEnemy.x;
+      this.sawAnchor.y = this.sawAnchor.attachedEnemy.y;
     }
     this.sawAnchor.fuelDrain += dt;
     if (this.sawAnchor.fuelDrain >= 0.6) {
@@ -1480,6 +1541,7 @@ export default class Game {
       this.player.sawDeployed = false;
       this.sawAnchor.embedded = false;
       this.sawAnchor.attachedBox = null;
+      this.sawAnchor.attachedEnemy = null;
     }
     if (this.sawAnchor.autoRetractTimer > 0) {
       this.sawAnchor.autoRetractTimer = Math.max(0, this.sawAnchor.autoRetractTimer - dt);
@@ -1496,8 +1558,10 @@ export default class Game {
     if (this.sawAnchor.attachedBox) {
       this.pullBoxTowardPlayer(dt, input);
     }
-    if (this.sawAnchor.embedded && input.isDown('attack')) {
-      this.climbSawAnchor(dt, 140);
+    if (this.sawAnchor.embedded && this.isRevHeld(input)) {
+      if (!this.sawAnchor.attachedEnemy) {
+        this.climbSawAnchor(dt, 140);
+      }
       this.applySawAnchorDamage();
     }
   }
@@ -1506,7 +1570,8 @@ export default class Game {
     if (!this.sawAnchor.active) return;
     if (!this.sawAnchor.embedded) return;
     const pulling = this.sawAnchor.pullTimer > 0;
-    if (!this.input.isDown('attack') && !pulling) return;
+    if (!this.isRevHeld(this.input) && !pulling) return;
+    if (this.sawAnchor.attachedEnemy) return;
     const dx = Math.abs(this.player.x - this.sawAnchor.x);
     const dy = this.player.y - this.sawAnchor.y;
     if (dx > 20 || dy < -40 || dy > 80) return;
@@ -1558,6 +1623,25 @@ export default class Game {
       this.recordFeedback('hit', 'audio');
       this.recordFeedback('hit', 'visual');
       this.sawAnchor.damageTimer = 0.12;
+    }
+  }
+
+  applyAnchorImpactDamage(target, isBoss) {
+    if (!target || target.dead) return;
+    if (!isBoss && target.type === 'bulwark' && !target.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
+      return;
+    }
+    target.damage(1);
+    this.audio.hit();
+    this.spawnEffect('hit', target.x, target.y);
+    this.spawnEffect('oil', target.x, target.y + (isBoss ? 10 : 6));
+    this.recordFeedback('hit', 'audio');
+    this.recordFeedback('hit', 'visual');
+    this.playability.recordEnemyHit(this.clock);
+    this.sawAnchor.damageTimer = 0.12;
+    if (!isBoss && target.dead && !target.training) {
+      this.spawnDeathDebris(target);
+      this.awardLoot(target);
     }
   }
 
@@ -1659,7 +1743,7 @@ export default class Game {
 
   pullBoxTowardPlayer(dt, input) {
     if (!this.sawAnchor.attachedBox) return;
-    const pulling = this.sawAnchor.pullTimer > 0 || input.isDown('attack');
+    const pulling = this.sawAnchor.pullTimer > 0 || this.isRevHeld(input);
     if (!pulling) return;
     const box = this.sawAnchor.attachedBox;
     const dx = this.player.x - box.x;
@@ -2169,7 +2253,7 @@ export default class Game {
     ctx.font = '12px Courier New';
     ctx.textAlign = 'center';
     ctx.fillText('EXECUTION TUTORIAL', trainer.x, trainer.y - 40);
-    ctx.fillText('Tap Attack to lunge, hold Attack to execute', trainer.x, trainer.y - 24);
+    ctx.fillText('Double-tap Attack to dash attack, hold Attack to execute', trainer.x, trainer.y - 24);
     ctx.restore();
   }
 
@@ -2358,6 +2442,7 @@ export default class Game {
     this.sawAnchor.active = false;
     this.sawAnchor.embedded = false;
     this.sawAnchor.attachedBox = null;
+    this.sawAnchor.attachedEnemy = null;
     this.sawAnchor.pullTimer = 0;
     this.sawAnchor.retractTimer = 0;
     this.sawAnchor.autoRetractTimer = 0;

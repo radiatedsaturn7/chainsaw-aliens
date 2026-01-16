@@ -3,7 +3,6 @@ const DEFAULT_STATE_LIST = ['playing', 'dialog', 'title', 'shop', 'pause'];
 const HOLD_THRESHOLD = 320;
 const SWIPE_THRESHOLD = 42;
 const DASH_WINDOW = 320;
-const TAP_WINDOW = 260;
 const MULTI_TAP_WINDOW = 240;
 const MOVE_PULSE_DURATION = 220;
 
@@ -28,7 +27,6 @@ export default class MobileControls {
     this.pulseActions = new Set();
     this.movementPulse = { left: 0, right: 0, up: 0, down: 0 };
     this.lastSwipe = { dir: null, time: 0 };
-    this.lastAttackTap = 0;
     this.attackHold = { id: null, startTime: 0, timer: null, active: false };
     this.multiTouch = { active: false, count: 0, startTime: 0, ids: new Set() };
     this.lastMoveDir = 1;
@@ -244,16 +242,11 @@ export default class MobileControls {
     }
 
     if (duration < HOLD_THRESHOLD) {
-      const doubleTap = now - this.lastAttackTap <= TAP_WINDOW;
-      if (doubleTap) {
-        this.pulseAction('throw');
-      }
       this.pulseAction('attack');
       const forward = this.joystick.dx * this.facing > 0.2 || this.lastMoveDir === this.facing;
       if (forward) {
         this.pulseAction('flame');
       }
-      this.lastAttackTap = now;
     }
     this.attackHold.id = null;
   }
