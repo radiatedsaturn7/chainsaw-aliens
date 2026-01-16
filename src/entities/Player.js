@@ -263,11 +263,15 @@ export default class Player {
 
   draw(ctx) {
     ctx.save();
-    ctx.translate(this.x, this.y);
+    const hurtShake = this.hurtTimer > 0 ? 1 : 0;
+    const shakeX = hurtShake ? Math.sin(this.animTime * 50) * 2 : 0;
+    const shakeY = hurtShake ? Math.cos(this.animTime * 60) * 2 : 0;
+    ctx.translate(this.x + shakeX, this.y + shakeY);
     const walk = this.state === 'run' ? Math.sin(this.animTime * 10) * 3 : 0;
     const legLift = this.state === 'jump' || this.state === 'fall' ? -4 : 0;
     const dashTilt = this.state === 'dash' ? this.facing * 6 : 0;
-    ctx.strokeStyle = this.hurtTimer > 0 ? '#fff' : 'rgba(255,255,255,0.9)';
+    const flash = this.hurtTimer > 0 && Math.floor(this.animTime * 20) % 2 === 0;
+    ctx.strokeStyle = flash ? '#fff' : 'rgba(255,255,255,0.9)';
     ctx.lineWidth = 2;
     ctx.rotate((dashTilt * Math.PI) / 180);
     // Head

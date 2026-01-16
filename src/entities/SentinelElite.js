@@ -21,10 +21,12 @@ export default class SentinelElite extends EnemyBase {
   }
 
   draw(ctx) {
+    const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
     ctx.save();
-    ctx.translate(this.x, this.y);
+    ctx.translate(this.x + offsetX, this.y + offsetY);
     const glow = this.stagger > 0.6 ? 1 : 0.8;
-    ctx.strokeStyle = `rgba(255,255,255,${glow})`;
+    const alpha = flash ? 1 : glow;
+    ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
     ctx.lineWidth = 2;
     const wobble = Math.sin(this.animTime * 3) * 2;
     ctx.beginPath();

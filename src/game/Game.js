@@ -188,7 +188,8 @@ export default class Game {
       height: this.world.height,
       spawn: this.world.spawn || { x: 28, y: 19 },
       tiles: this.world.tiles,
-      regions: this.world.regions
+      regions: this.world.regions,
+      enemies: this.world.enemies
     };
   }
 
@@ -200,7 +201,8 @@ export default class Game {
       height: data.height,
       spawn: data.spawn || { x: 28, y: 19 },
       tiles: data.tiles,
-      regions: data.regions || []
+      regions: data.regions || [],
+      enemies: data.enemies || []
     };
     this.world.applyData(migrated);
     this.syncSpawnPoint();
@@ -274,6 +276,49 @@ export default class Game {
   }
 
   spawnEnemies() {
+    if (this.world.enemies && this.world.enemies.length > 0) {
+      this.enemies = [];
+      this.boss = null;
+      const tileSize = this.world.tileSize;
+      this.world.enemies.forEach((spawn) => {
+        const worldX = (spawn.x + 0.5) * tileSize;
+        const worldY = (spawn.y + 0.5) * tileSize;
+        switch (spawn.type) {
+          case 'practice':
+            this.enemies.push(new PracticeDrone(worldX, worldY));
+            break;
+          case 'skitter':
+            this.enemies.push(new Skitter(worldX, worldY));
+            break;
+          case 'spitter':
+            this.enemies.push(new Spitter(worldX, worldY));
+            break;
+          case 'bulwark':
+            this.enemies.push(new Bulwark(worldX, worldY));
+            break;
+          case 'floater':
+            this.enemies.push(new Floater(worldX, worldY));
+            break;
+          case 'slicer':
+            this.enemies.push(new Slicer(worldX, worldY));
+            break;
+          case 'hivenode':
+            this.enemies.push(new HiveNode(worldX, worldY));
+            break;
+          case 'sentinel':
+            this.enemies.push(new SentinelElite(worldX, worldY));
+            break;
+          case 'finalboss':
+            this.boss = new FinalBoss(worldX, worldY);
+            break;
+          default:
+            break;
+        }
+      });
+      this.bossActive = false;
+      return;
+    }
+
     this.enemies = [
       new PracticeDrone(32 * 40, 32 * 19),
       new Skitter(32 * 38, 32 * 19),
@@ -878,11 +923,18 @@ export default class Game {
         this.testHarness.recordStagger();
         enemy.justStaggered = false;
       }
+
+      if (enemy.tickDamage) {
+        enemy.tickDamage(dt);
+      }
     });
 
     if (this.boss && !this.boss.dead && this.bossActive) {
       this.boss.simMode = this.simulationActive && this.goldenPath.active;
       this.boss.update(dt, this.player, this.spawnProjectile.bind(this));
+      if (this.boss.tickDamage) {
+        this.boss.tickDamage(dt);
+      }
       this.handleBossInteractions();
     }
   }
@@ -1163,7 +1215,6 @@ export default class Game {
     }
 
     this.consoleOverlay.draw(ctx, canvas.width, canvas.height);
-    this.playability.drawScreen(ctx, canvas.width, canvas.height);
     this.checklist.draw(ctx, this, canvas.width, canvas.height);
     this.testHarness.draw(ctx, this, canvas.width, canvas.height);
     this.goldenPath.draw(ctx, canvas.width, canvas.height, this);
