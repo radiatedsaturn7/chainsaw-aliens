@@ -33,21 +33,47 @@ const ENEMY_TYPES = [
   { id: 'finalboss', label: 'Rift Tyrant', glyph: 'RT' }
 ];
 
+const SHAPE_TOOLS = [
+  { id: 'rect', label: 'Rectangle Fill', short: 'RECT' },
+  { id: 'hollow', label: 'Hollow Rectangle', short: 'HOLL' },
+  { id: 'line', label: 'Line', short: 'LINE' },
+  { id: 'stair', label: 'Stair Generator', short: 'ST' },
+  { id: 'triangle', label: 'Triangle Placeholder', short: 'TRI', placeholder: true }
+];
+
+const PREFAB_TYPES = [
+  { id: 'room', label: 'Room', short: 'RM' },
+  { id: 'corridor', label: 'Corridor', short: 'CR' },
+  { id: 'staircase', label: 'Staircase', short: 'SC' },
+  { id: 'platform', label: 'Platform Run', short: 'PL' },
+  { id: 'arena', label: 'Arena', short: 'AR' },
+  { id: 'puzzle', label: 'Puzzle Kit', short: 'PZ' }
+];
+
 const MODE_LABELS = {
+  tile: 'Tile',
+  enemy: 'Enemies',
+  prefab: 'Structures',
+  shape: 'Shapes'
+};
+
+const TILE_TOOL_LABELS = {
   paint: 'Paint',
   erase: 'Erase',
-  enemy: 'Enemies',
-  move: 'Move/Pan'
+  move: 'Move'
 };
 
 export default class Editor {
   constructor(game) {
     this.game = game;
     this.active = false;
-    this.mode = 'paint';
+    this.mode = 'tile';
+    this.tileTool = 'paint';
     this.tileType = DEFAULT_TILE_TYPES[0];
     this.customTile = null;
     this.enemyType = ENEMY_TYPES[0];
+    this.shapeTool = SHAPE_TOOLS[0];
+    this.prefabType = PREFAB_TYPES[0];
     this.camera = { x: 0, y: 0 };
     this.zoom = 1;
     this.dragging = false;
@@ -67,11 +93,17 @@ export default class Editor {
     this.regionName = 'Unknown';
     this.lastPointer = { x: 0, y: 0 };
     this.uiButtons = [];
-    this.uiSections = { tools: true, tiles: true, enemies: true };
+    this.uiSections = {
+      tools: true,
+      tiles: true,
+      enemies: true,
+      prefabs: true,
+      shapes: true
+    };
     this.drawer = {
       open: true,
       tabIndex: 0,
-      tabs: ['tools', 'tiles', 'enemies'],
+      tabs: ['tools', 'tiles', 'enemies', 'prefabs', 'shapes'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -86,14 +118,20 @@ export default class Editor {
     this.radialMenu = { active: false, x: 0, y: 0, items: [] };
     this.recentTiles = [];
     this.recentEnemies = [];
+    this.recentPrefabs = [];
+    this.recentShapes = [];
     this.rotation = 0;
     this.playtestPressTimer = null;
     this.playtestPressActive = false;
     this.playtestSpawnOverride = null;
     this.precisionZoom = null;
     this.playButtonBounds = null;
+    this.dragStart = null;
+    this.dragTarget = null;
     this.recordRecent('tiles', this.tileType);
     this.recordRecent('enemies', this.enemyType);
+    this.recordRecent('prefabs', this.prefabType);
+    this.recordRecent('shapes', this.shapeTool);
 
     this.fileInput = document.createElement('input');
     this.fileInput.type = 'file';
@@ -142,6 +180,8 @@ export default class Editor {
     this.pendingEnemies.clear();
     this.moveSelection = null;
     this.moveTarget = null;
+    this.dragStart = null;
+    this.dragTarget = null;
   }
 
   resetView() {
@@ -161,17 +201,29 @@ export default class Editor {
   }
 
   handleKeyboard(input, dt = 0) {
-    if (input.wasPressedCode('KeyQ')) this.mode = 'paint';
-    if (input.wasPressedCode('KeyE')) this.mode = 'erase';
-    if (input.wasPressedCode('KeyM')) this.mode = 'move';
+    if (input.wasPressedCode('KeyQ')) {
+      this.mode = 'tile';
+      this.tileTool = 'paint';
+    }
+    if (input.wasPressedCode('KeyE')) {
+      this.mode = 'tile';
+      this.tileTool = 'erase';
+    }
+    if (input.wasPressedCode('KeyM')) {
+      this.mode = 'tile';
+      this.tileTool = 'move';
+    }
     if (input.wasPressedCode('KeyT')) this.mode = 'enemy';
+    if (input.wasPressedCode('KeyR')) this.mode = 'prefab';
+    if (input.wasPressedCode('KeyG')) this.mode = 'shape';
 
     for (let i = 1; i <= 9; i += 1) {
       if (input.wasPressedCode(`Digit${i}`)) {
         const type = DEFAULT_TILE_TYPES[i - 1];
         if (type) {
           this.setTileType(type);
-          this.mode = 'paint';
+          this.mode = 'tile';
+          this.tileTool = 'paint';
         }
       }
     }
@@ -207,6 +259,18 @@ export default class Editor {
       if (input.isDownCode('ArrowUp')) this.adjustZoom(0.8, this.game.canvas.width / 2, this.game.canvas.height / 2);
       if (input.isDownCode('ArrowDown')) this.adjustZoom(-0.8, this.game.canvas.width / 2, this.game.canvas.height / 2);
     }
+  }
+
+  resolveDragMode(mode, tileTool = this.tileTool) {
+    if (mode === 'tile') {
+      if (tileTool === 'move') return 'move';
+      if (tileTool === 'erase') return 'erase';
+      return 'paint';
+    }
+    if (mode === 'enemy') return 'enemy';
+    if (mode === 'prefab') return 'prefab';
+    if (mode === 'shape') return 'shape';
+    return 'paint';
   }
 
   openFileDialog() {
@@ -301,6 +365,11 @@ export default class Editor {
       this.dragMode = 'pan';
       return;
     }
+    if (mode === 'shape' || mode === 'prefab') {
+      this.dragStart = { x: tileX, y: tileY };
+      this.dragTarget = { x: tileX, y: tileY };
+      return;
+    }
     if (mode === 'enemy') {
       const paintMode = this.dragButton === 2 ? 'erase' : 'paint';
       this.applyEnemy(tileX, tileY, paintMode);
@@ -328,6 +397,12 @@ export default class Editor {
     if (this.dragMode === 'move' && this.moveSelection && this.moveTarget) {
       this.applyMove(this.moveTarget.x, this.moveTarget.y);
     }
+    if (this.dragMode === 'shape' && this.dragStart && this.dragTarget) {
+      this.applyShape(this.dragStart, this.dragTarget);
+    }
+    if (this.dragMode === 'prefab' && this.dragStart && this.dragTarget) {
+      this.applyPrefab(this.dragStart, this.dragTarget);
+    }
 
     const tiles = Array.from(this.pendingChanges.values());
     const enemies = Array.from(this.pendingEnemies.values());
@@ -353,6 +428,8 @@ export default class Editor {
     this.zoomStart = null;
     this.moveSelection = null;
     this.moveTarget = null;
+    this.dragStart = null;
+    this.dragTarget = null;
     this.endPrecisionZoom();
   }
 
@@ -395,7 +472,10 @@ export default class Editor {
         y: payload.y,
         tileX,
         tileY,
-        mode: this.mode
+        mode: this.mode,
+        tileTool: this.tileTool,
+        shapeTool: this.shapeTool,
+        prefabType: this.prefabType
       };
       this.longPressFired = false;
       if (this.longPressTimer) clearTimeout(this.longPressTimer);
@@ -420,28 +500,21 @@ export default class Editor {
       if (this.mode === 'enemy') {
         this.beginStroke('enemy', tileX, tileY);
       } else {
-        this.mode = 'erase';
+        this.mode = 'tile';
+        this.tileTool = 'erase';
         this.beginStroke('erase', tileX, tileY);
       }
       return;
     }
 
-    if (this.mode === 'move') {
-      this.beginStroke('move', tileX, tileY);
+    const dragMode = this.resolveDragMode(this.mode);
+    if (dragMode === 'move' || dragMode === 'erase' || dragMode === 'enemy' || dragMode === 'prefab' || dragMode === 'shape') {
+      this.beginStroke(dragMode, tileX, tileY);
       return;
     }
 
-    if (this.mode === 'erase') {
-      this.beginStroke('erase', tileX, tileY);
-      return;
-    }
-
-    if (this.mode === 'enemy') {
-      this.beginStroke('enemy', tileX, tileY);
-      return;
-    }
-
-    this.mode = 'paint';
+    this.mode = 'tile';
+    this.tileTool = 'paint';
     this.beginStroke('paint', tileX, tileY);
   }
 
@@ -470,8 +543,15 @@ export default class Editor {
         }
         const { tileX, tileY } = this.screenToTile(this.pendingPointer.x, this.pendingPointer.y);
         this.dragButton = 0;
-        this.beginStroke(this.pendingPointer.mode, tileX, tileY);
-        if (['paint', 'erase', 'enemy'].includes(this.pendingPointer.mode)) {
+        const dragMode = this.resolveDragMode(this.pendingPointer.mode, this.pendingPointer.tileTool);
+        if (this.pendingPointer.shapeTool) {
+          this.shapeTool = this.pendingPointer.shapeTool;
+        }
+        if (this.pendingPointer.prefabType) {
+          this.prefabType = this.pendingPointer.prefabType;
+        }
+        this.beginStroke(dragMode, tileX, tileY);
+        if (['paint', 'erase', 'enemy'].includes(dragMode)) {
           this.startPrecisionZoom();
         }
         this.pendingPointer = null;
@@ -502,6 +582,11 @@ export default class Editor {
 
     if (this.dragMode === 'move') {
       this.moveTarget = { x: tileX, y: tileY };
+      return;
+    }
+
+    if (this.dragMode === 'shape' || this.dragMode === 'prefab') {
+      this.dragTarget = { x: tileX, y: tileY };
       return;
     }
 
@@ -539,7 +624,14 @@ export default class Editor {
     if (this.pendingPointer) {
       const { tileX, tileY } = this.screenToTile(this.pendingPointer.x, this.pendingPointer.y);
       if (!this.longPressFired) {
-        this.beginStroke(this.pendingPointer.mode, tileX, tileY);
+        const dragMode = this.resolveDragMode(this.pendingPointer.mode, this.pendingPointer.tileTool);
+        if (this.pendingPointer.shapeTool) {
+          this.shapeTool = this.pendingPointer.shapeTool;
+        }
+        if (this.pendingPointer.prefabType) {
+          this.prefabType = this.pendingPointer.prefabType;
+        }
+        this.beginStroke(dragMode, tileX, tileY);
         this.endStroke();
       }
       this.pendingPointer = null;
@@ -625,14 +717,36 @@ export default class Editor {
     this.recordRecent('enemies', enemy);
   }
 
+  setShapeTool(tool) {
+    this.shapeTool = tool;
+    this.recordRecent('shapes', tool);
+  }
+
+  setPrefabType(prefab) {
+    this.prefabType = prefab;
+    this.recordRecent('prefabs', prefab);
+  }
+
   recordRecent(kind, item) {
-    const list = kind === 'tiles' ? this.recentTiles : this.recentEnemies;
+    const listMap = {
+      tiles: this.recentTiles,
+      enemies: this.recentEnemies,
+      prefabs: this.recentPrefabs,
+      shapes: this.recentShapes
+    };
+    const list = listMap[kind] || [];
     const next = [item, ...list.filter((entry) => entry.id !== item.id)];
     const trimmed = next.slice(0, 6);
     if (kind === 'tiles') {
       this.recentTiles = trimmed;
     } else {
-      this.recentEnemies = trimmed;
+      if (kind === 'enemies') {
+        this.recentEnemies = trimmed;
+      } else if (kind === 'prefabs') {
+        this.recentPrefabs = trimmed;
+      } else if (kind === 'shapes') {
+        this.recentShapes = trimmed;
+      }
     }
   }
 
@@ -645,7 +759,8 @@ export default class Editor {
         tooltip: tile.label,
         action: () => {
           this.setTileType(tile);
-          this.mode = 'paint';
+          this.mode = 'tile';
+          this.tileTool = 'paint';
         }
       });
     });
@@ -660,12 +775,35 @@ export default class Editor {
         }
       });
     });
+    this.recentPrefabs.slice(0, 2).forEach((prefab) => {
+      items.push({
+        id: `prefab-${prefab.id}`,
+        label: prefab.short || 'PF',
+        tooltip: `Prefab: ${prefab.label}`,
+        action: () => {
+          this.setPrefabType(prefab);
+          this.mode = 'prefab';
+        }
+      });
+    });
+    this.recentShapes.slice(0, 2).forEach((shape) => {
+      items.push({
+        id: `shape-${shape.id}`,
+        label: shape.short || 'SH',
+        tooltip: `Shape: ${shape.label}`,
+        action: () => {
+          this.setShapeTool(shape);
+          this.mode = 'shape';
+        }
+      });
+    });
     items.push({
       id: 'quick-erase',
       label: 'ER',
       tooltip: 'Erase',
       action: () => {
-        this.mode = 'erase';
+        this.mode = 'tile';
+        this.tileTool = 'erase';
       }
     });
     items.push({
@@ -746,6 +884,155 @@ export default class Editor {
 
     const char = this.tileType.char || '.';
     this.setTile(safeX, safeY, char);
+  }
+
+  getDragBounds(start, end) {
+    const x1 = Math.min(start.x, end.x);
+    const x2 = Math.max(start.x, end.x);
+    const y1 = Math.min(start.y, end.y);
+    const y2 = Math.max(start.y, end.y);
+    return {
+      x1,
+      x2,
+      y1,
+      y2,
+      width: x2 - x1 + 1,
+      height: y2 - y1 + 1
+    };
+  }
+
+  buildShapeTiles(start, end, char) {
+    const tool = this.shapeTool;
+    const bounds = this.getDragBounds(start, end);
+    const tiles = [];
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const signX = Math.sign(dx) || 1;
+    const signY = Math.sign(dy) || 1;
+    const widthSpan = Math.max(bounds.width - 1, 1);
+    const heightSpan = Math.max(bounds.height - 1, 1);
+
+    if (tool.id === 'rect') {
+      for (let y = bounds.y1; y <= bounds.y2; y += 1) {
+        for (let x = bounds.x1; x <= bounds.x2; x += 1) {
+          tiles.push({ x, y, char });
+        }
+      }
+    } else if (tool.id === 'hollow') {
+      for (let y = bounds.y1; y <= bounds.y2; y += 1) {
+        for (let x = bounds.x1; x <= bounds.x2; x += 1) {
+          if (x === bounds.x1 || x === bounds.x2 || y === bounds.y1 || y === bounds.y2) {
+            tiles.push({ x, y, char });
+          }
+        }
+      }
+    } else if (tool.id === 'line') {
+      if (Math.abs(dx) >= Math.abs(dy)) {
+        for (let x = bounds.x1; x <= bounds.x2; x += 1) {
+          tiles.push({ x, y: start.y, char });
+        }
+      } else {
+        for (let y = bounds.y1; y <= bounds.y2; y += 1) {
+          tiles.push({ x: start.x, y, char });
+        }
+      }
+    } else if (tool.id === 'stair') {
+      const steps = Math.max(Math.abs(dx), Math.abs(dy));
+      for (let i = 0; i <= steps; i += 1) {
+        const x = start.x + signX * i;
+        const y = start.y + signY * i;
+        tiles.push({ x, y, char });
+      }
+    } else if (tool.id === 'triangle') {
+      for (let y = bounds.y1; y <= bounds.y2; y += 1) {
+        for (let x = bounds.x1; x <= bounds.x2; x += 1) {
+          const relX = signX * (x - start.x);
+          const relY = signY * (y - start.y);
+          if (relX >= 0 && relY >= 0 && (relX / widthSpan + relY / heightSpan <= 1)) {
+            tiles.push({ x, y, char });
+          }
+        }
+      }
+    }
+    return tiles;
+  }
+
+  buildPrefabTiles(start, end) {
+    const bounds = this.getDragBounds(start, end);
+    const tiles = [];
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const signX = Math.sign(dx) || 1;
+    const signY = Math.sign(dy) || 1;
+
+    if (this.prefabType.id === 'room' || this.prefabType.id === 'arena') {
+      for (let y = bounds.y1; y <= bounds.y2; y += 1) {
+        for (let x = bounds.x1; x <= bounds.x2; x += 1) {
+          const wall = x === bounds.x1 || x === bounds.x2 || y === bounds.y1 || y === bounds.y2;
+          tiles.push({ x, y, char: wall ? '#' : '.' });
+        }
+      }
+    } else if (this.prefabType.id === 'corridor') {
+      if (Math.abs(dx) >= Math.abs(dy)) {
+        for (let x = bounds.x1; x <= bounds.x2; x += 1) {
+          tiles.push({ x, y: start.y, char: '.' });
+        }
+      } else {
+        for (let y = bounds.y1; y <= bounds.y2; y += 1) {
+          tiles.push({ x: start.x, y, char: '.' });
+        }
+      }
+    } else if (this.prefabType.id === 'staircase') {
+      const steps = Math.max(Math.abs(dx), Math.abs(dy));
+      for (let i = 0; i <= steps; i += 1) {
+        tiles.push({ x: start.x + signX * i, y: start.y + signY * i, char: '#' });
+      }
+    } else if (this.prefabType.id === 'platform') {
+      for (let x = bounds.x1; x <= bounds.x2; x += 1) {
+        tiles.push({ x, y: start.y, char: '=' });
+      }
+    } else if (this.prefabType.id === 'puzzle') {
+      const switchTile = { x: start.x, y: start.y, char: 'T' };
+      const doorTile = { x: end.x, y: end.y, char: 'B' };
+      tiles.push(switchTile, doorTile);
+      if (Math.abs(dx) >= Math.abs(dy)) {
+        const minX = Math.min(start.x, end.x);
+        const maxX = Math.max(start.x, end.x);
+        for (let x = minX + 1; x < maxX; x += 1) {
+          tiles.push({ x, y: start.y, char: 'a' });
+        }
+      } else {
+        const minY = Math.min(start.y, end.y);
+        const maxY = Math.max(start.y, end.y);
+        for (let y = minY + 1; y < maxY; y += 1) {
+          tiles.push({ x: start.x, y, char: 'a' });
+        }
+      }
+    }
+    return tiles;
+  }
+
+  applyShape(start, end) {
+    const char = this.tileType.char || '.';
+    const tiles = this.buildShapeTiles(start, end, char);
+    tiles.forEach((tile) => {
+      const ensured = this.ensureInBounds(tile.x, tile.y);
+      if (!ensured) return;
+      this.setTile(ensured.tileX, ensured.tileY, tile.char);
+    });
+    if (this.shapeTool.placeholder) {
+      this.activeTooltip = `${this.shapeTool.label}: tile art pending`;
+      this.tooltipTimer = 2;
+    }
+  }
+
+  applyPrefab(start, end) {
+    const tiles = this.buildPrefabTiles(start, end);
+    tiles.forEach((tile) => {
+      const ensured = this.ensureInBounds(tile.x, tile.y);
+      if (!ensured) return;
+      this.setTile(ensured.tileX, ensured.tileY, tile.char);
+    });
   }
 
   setTile(tileX, tileY, char) {
@@ -872,6 +1159,8 @@ export default class Editor {
       const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
       if (spawnTile) {
         this.setTileType(spawnTile);
+        this.mode = 'tile';
+        this.tileTool = 'paint';
       }
       return;
     }
@@ -879,10 +1168,14 @@ export default class Editor {
     const known = DEFAULT_TILE_TYPES.find((tile) => tile.char === char);
     if (known) {
       this.setTileType(known);
+      this.mode = 'tile';
+      this.tileTool = 'paint';
       return;
     }
     this.customTile = { id: 'custom', label: `Tile ${char}`, char };
     this.tileType = this.customTile;
+    this.mode = 'tile';
+    this.tileTool = 'paint';
   }
 
   updateHover() {
@@ -1072,10 +1365,32 @@ export default class Editor {
       return;
     }
 
+    const drawGhostTiles = (tiles, color) => {
+      ctx.save();
+      ctx.fillStyle = color;
+      tiles.forEach((tile) => {
+        if (!this.isInBounds(tile.x, tile.y)) return;
+        ctx.fillRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
+      });
+      ctx.restore();
+    };
+
+    if (this.mode === 'shape' || this.mode === 'prefab') {
+      const previewStart = this.dragStart || { x: this.hoverTile.x, y: this.hoverTile.y };
+      const previewEnd = this.dragTarget || { x: this.hoverTile.x, y: this.hoverTile.y };
+      const previewTiles = this.mode === 'shape'
+        ? this.buildShapeTiles(previewStart, previewEnd, this.tileType.char || '.')
+        : this.buildPrefabTiles(previewStart, previewEnd);
+      const previewColor = this.mode === 'shape'
+        ? 'rgba(100,200,255,0.2)'
+        : 'rgba(190,170,255,0.2)';
+      drawGhostTiles(previewTiles, previewColor);
+    }
+
     const ghostX = this.hoverTile.x * tileSize;
     const ghostY = this.hoverTile.y * tileSize;
     ctx.save();
-    if (this.mode === 'erase') {
+    if (this.mode === 'tile' && this.tileTool === 'erase') {
       ctx.fillStyle = 'rgba(255,80,80,0.25)';
       ctx.fillRect(ghostX, ghostY, tileSize, tileSize);
     } else if (this.mode === 'enemy') {
@@ -1085,7 +1400,7 @@ export default class Editor {
       ctx.font = '10px Courier New';
       ctx.textAlign = 'center';
       ctx.fillText(this.enemyType?.glyph || 'EN', ghostX + tileSize / 2, ghostY + tileSize / 2 + 4);
-    } else if (this.mode === 'paint') {
+    } else if (this.mode === 'tile') {
       ctx.fillStyle = 'rgba(140,200,255,0.2)';
       ctx.fillRect(ghostX, ghostY, tileSize, tileSize);
       if (this.tileType.char) {
@@ -1097,20 +1412,57 @@ export default class Editor {
     }
     ctx.restore();
 
-    const color = this.mode === 'erase' ? '#ff6b6b' : this.mode === 'enemy' ? '#ff9a9a' : '#ffffff';
+    const color = this.mode === 'tile' && this.tileTool === 'erase'
+      ? '#ff6b6b'
+      : this.mode === 'enemy'
+        ? '#ff9a9a'
+        : this.mode === 'prefab'
+          ? '#bba8ff'
+          : this.mode === 'shape'
+            ? '#7fd9ff'
+            : '#ffffff';
     drawHighlight(this.hoverTile.x, this.hoverTile.y, color);
   }
 
   drawHUD(ctx, width, height) {
     const tileSize = this.game.world.tileSize;
     const tileLabel = this.tileType.label || 'Unknown';
-    const modeLabel = MODE_LABELS[this.mode] || 'Paint';
+    const modeLabel = MODE_LABELS[this.mode] || 'Tile';
+    const tileToolLabel = TILE_TOOL_LABELS[this.tileTool] || 'Paint';
     const enemyLabel = this.enemyType?.label || 'Enemy';
-    const toolButtons = [
+    const prefabLabel = this.prefabType?.label || 'Prefab';
+    const shapeLabel = this.shapeTool?.label || 'Shape';
+    const modeButtons = [
+      { id: 'tile', label: 'Tile', tooltip: 'Tile mode. (Q/E/M)' },
+      { id: 'enemy', label: 'Enemy', tooltip: 'Enemy mode. (T)' },
+      { id: 'prefab', label: 'Prefab', tooltip: 'Structure mode. (R)' },
+      { id: 'shape', label: 'Shape', tooltip: 'Shape mode. (G)' }
+    ];
+    const tileToolButtons = [
       { id: 'paint', label: 'Paint', tooltip: 'Paint tiles. (Q)' },
-      { id: 'erase', label: 'Erase', tooltip: 'Erase tiles/enemies. (E)' },
-      { id: 'enemy', label: 'Enemy', tooltip: 'Place enemies. (T)' },
-      { id: 'move', label: 'Move/Pan', tooltip: 'Move items or pan. (M)' }
+      { id: 'erase', label: 'Erase', tooltip: 'Erase tiles. (E)' },
+      { id: 'move', label: 'Move', tooltip: 'Move items or pan. (M)' }
+    ];
+    const toolItems = [
+      ...modeButtons.map((tool) => ({
+        id: `mode-${tool.id}`,
+        label: `Mode: ${tool.label}`,
+        active: this.mode === tool.id,
+        tooltip: tool.tooltip,
+        onClick: () => {
+          this.mode = tool.id;
+        }
+      })),
+      ...tileToolButtons.map((tool) => ({
+        id: `tile-${tool.id}`,
+        label: `Tile: ${tool.label}`,
+        active: this.mode === 'tile' && this.tileTool === tool.id,
+        tooltip: tool.tooltip,
+        onClick: () => {
+          this.mode = 'tile';
+          this.tileTool = tool.id;
+        }
+      }))
     ];
 
     ctx.save();
@@ -1172,12 +1524,24 @@ export default class Editor {
       if (!this.drawer.open) {
         ctx.fillStyle = '#fff';
         ctx.textAlign = 'center';
-        ctx.fillText(`${modeLabel} • ${tileLabel}`, panelW / 2, panelY + 42);
+        let summary = `${modeLabel}`;
+        if (this.mode === 'tile') {
+          summary = `${modeLabel} (${tileToolLabel}) • ${tileLabel}`;
+        } else if (this.mode === 'enemy') {
+          summary = `${modeLabel} • ${enemyLabel}`;
+        } else if (this.mode === 'prefab') {
+          summary = `${modeLabel} • ${prefabLabel}`;
+        } else if (this.mode === 'shape') {
+          summary = `${modeLabel} • ${shapeLabel}`;
+        }
+        ctx.fillText(summary, panelW / 2, panelY + 42);
       } else {
         const tabs = [
           { id: 'tools', label: 'TOOLS' },
           { id: 'tiles', label: 'TILES' },
-          { id: 'enemies', label: 'ENEMIES' }
+          { id: 'enemies', label: 'ENEMIES' },
+          { id: 'prefabs', label: 'STRUCTURES' },
+          { id: 'shapes', label: 'SHAPES' }
         ];
         const activeTab = this.drawer.tabs[this.drawer.tabIndex];
         const tabMargin = 16;
@@ -1212,13 +1576,23 @@ export default class Editor {
 
         if (activeTab === 'tools') {
           items = [
-            ...toolButtons.map((tool) => ({
-              id: tool.id,
-              label: tool.label.toUpperCase(),
+            ...modeButtons.map((tool) => ({
+              id: `mode-${tool.id}`,
+              label: `MODE: ${tool.label.toUpperCase()}`,
               active: this.mode === tool.id,
               tooltip: tool.tooltip,
               onClick: () => {
                 this.mode = tool.id;
+              }
+            })),
+            ...tileToolButtons.map((tool) => ({
+              id: `tile-${tool.id}`,
+              label: `${tool.label.toUpperCase()} TOOL`,
+              active: this.tileTool === tool.id && this.mode === 'tile',
+              tooltip: tool.tooltip,
+              onClick: () => {
+                this.mode = 'tile';
+                this.tileTool = tool.id;
               }
             })),
             {
@@ -1252,11 +1626,12 @@ export default class Editor {
             tooltip: `Tile: ${tile.label}`,
             onClick: () => {
               this.setTileType(tile);
-              this.mode = 'paint';
+              this.mode = 'tile';
+              this.tileTool = 'paint';
             }
           }));
           columns = 2;
-        } else {
+        } else if (activeTab === 'enemies') {
           items = ENEMY_TYPES.map((enemy) => ({
             id: enemy.id,
             label: `${enemy.label} [${enemy.glyph}]`,
@@ -1265,6 +1640,30 @@ export default class Editor {
             onClick: () => {
               this.setEnemyType(enemy);
               this.mode = 'enemy';
+            }
+          }));
+          columns = 2;
+        } else if (activeTab === 'prefabs') {
+          items = PREFAB_TYPES.map((prefab) => ({
+            id: prefab.id,
+            label: prefab.label,
+            active: this.prefabType.id === prefab.id,
+            tooltip: `Prefab: ${prefab.label}`,
+            onClick: () => {
+              this.setPrefabType(prefab);
+              this.mode = 'prefab';
+            }
+          }));
+          columns = 2;
+        } else {
+          items = SHAPE_TOOLS.map((shape) => ({
+            id: shape.id,
+            label: shape.label,
+            active: this.shapeTool.id === shape.id,
+            tooltip: `Shape: ${shape.label}`,
+            onClick: () => {
+              this.setShapeTool(shape);
+              this.mode = 'shape';
             }
           }));
           columns = 2;
@@ -1326,18 +1725,16 @@ export default class Editor {
       drawSectionHeader('TOOLS', 'tools');
       if (this.uiSections.tools) {
         const columns = 2;
-        const rows = Math.ceil(toolButtons.length / columns);
+        const rows = Math.ceil(toolItems.length / columns);
         const sectionHeight = rows * (buttonHeight + buttonGap) + sectionPadding;
         drawSectionBody(sectionHeight);
-        toolButtons.forEach((tool, index) => {
+        toolItems.forEach((tool, index) => {
           const col = index % columns;
           const row = Math.floor(index / columns);
           const columnWidth = (panelWidth - sectionPadding * 2 - buttonGap) / columns;
           const x = panelX + sectionPadding + col * (columnWidth + buttonGap);
           const y = cursorY + 6 + row * (buttonHeight + buttonGap);
-          drawButton(x, y, columnWidth, buttonHeight, tool.label, this.mode === tool.id, () => {
-            this.mode = tool.id;
-          }, tool.tooltip);
+          drawButton(x, y, columnWidth, buttonHeight, tool.label, tool.active, tool.onClick, tool.tooltip);
         });
         cursorY += sectionHeight + 10;
       }
@@ -1354,7 +1751,8 @@ export default class Editor {
           const label = tile.char ? `${tile.label} [${tile.char}]` : tile.label;
           drawButton(x, y, panelWidth - sectionPadding * 2, buttonHeight, label, this.tileType.id === tile.id, () => {
             this.setTileType(tile);
-            this.mode = 'paint';
+            this.mode = 'tile';
+            this.tileTool = 'paint';
           }, `Tile: ${tile.label}`);
         });
         cursorY += sectionHeight + 10;
@@ -1378,9 +1776,44 @@ export default class Editor {
         cursorY += sectionHeight + 10;
       }
 
+      drawSectionHeader('STRUCTURES', 'prefabs');
+      if (this.uiSections.prefabs) {
+        const columns = 1;
+        const rows = PREFAB_TYPES.length;
+        const sectionHeight = rows * (buttonHeight + buttonGap) + sectionPadding;
+        drawSectionBody(sectionHeight);
+        PREFAB_TYPES.forEach((prefab, index) => {
+          const x = panelX + sectionPadding;
+          const y = cursorY + 6 + index * (buttonHeight + buttonGap);
+          drawButton(x, y, panelWidth - sectionPadding * 2, buttonHeight, prefab.label, this.prefabType.id === prefab.id, () => {
+            this.setPrefabType(prefab);
+            this.mode = 'prefab';
+          }, `Prefab: ${prefab.label}`);
+        });
+        cursorY += sectionHeight + 10;
+      }
+
+      drawSectionHeader('SHAPES', 'shapes');
+      if (this.uiSections.shapes) {
+        const columns = 1;
+        const rows = SHAPE_TOOLS.length;
+        const sectionHeight = rows * (buttonHeight + buttonGap) + sectionPadding;
+        drawSectionBody(sectionHeight);
+        SHAPE_TOOLS.forEach((shape, index) => {
+          const x = panelX + sectionPadding;
+          const y = cursorY + 6 + index * (buttonHeight + buttonGap);
+          drawButton(x, y, panelWidth - sectionPadding * 2, buttonHeight, shape.label, this.shapeTool.id === shape.id, () => {
+            this.setShapeTool(shape);
+            this.mode = 'shape';
+          }, `Shape: ${shape.label}`);
+        });
+        cursorY += sectionHeight + 10;
+      }
+
       const infoLines = [
-        `Mode: ${modeLabel} | Tile: ${tileLabel}`,
-        `Enemy: ${enemyLabel}`,
+        `Mode: ${modeLabel} | Tool: ${tileToolLabel}`,
+        `Tile: ${tileLabel} | Enemy: ${enemyLabel}`,
+        `Prefab: ${prefabLabel} | Shape: ${shapeLabel}`,
         `Grid: ${tileSize}px | Region: ${this.regionName}`,
         `Zoom: ${this.zoom.toFixed(2)}x`,
         `Drag: LMB paint | RMB erase | Space+drag pan`,
@@ -1466,7 +1899,7 @@ export default class Editor {
     ctx.restore();
 
     const tooltip = hoverTooltip || (this.tooltipTimer > 0 ? this.activeTooltip : '');
-    const fallbackTooltip = `Mode: ${modeLabel} | Tile: ${tileLabel} | Enemy: ${enemyLabel}`;
+    const fallbackTooltip = `Mode: ${modeLabel} | Tile: ${tileLabel} | Enemy: ${enemyLabel} | Prefab: ${prefabLabel} | Shape: ${shapeLabel}`;
     const tooltipText = tooltip || fallbackTooltip;
     const tooltipHeight = this.isMobileLayout() ? 22 : 24;
     const tooltipY = this.isMobileLayout()

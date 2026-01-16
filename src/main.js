@@ -160,7 +160,13 @@ canvas.addEventListener('touchstart', (event) => {
     const position = getCanvasPosition(touch);
     activeTouches.set(touch.identifier, position);
     if (game.handlePointerDown) {
-      game.handlePointerDown({ ...position, button: 0, buttons: 1, id: touch.identifier });
+      game.handlePointerDown({
+        ...position,
+        button: 0,
+        buttons: 1,
+        id: touch.identifier,
+        touchCount: event.touches.length
+      });
     }
   });
 }, { passive: false });
@@ -179,7 +185,7 @@ canvas.addEventListener('touchmove', (event) => {
     const position = getCanvasPosition(touch);
     activeTouches.set(touch.identifier, position);
     if (game.handlePointerMove) {
-      game.handlePointerMove({ ...position, buttons: 1, id: touch.identifier });
+      game.handlePointerMove({ ...position, buttons: 1, id: touch.identifier, touchCount: event.touches.length });
     }
   });
 }, { passive: false });
@@ -199,7 +205,7 @@ canvas.addEventListener('touchend', (event) => {
   Array.from(event.changedTouches).forEach((touch) => {
     const position = activeTouches.get(touch.identifier) || getCanvasPosition(touch);
     if (position && game.handlePointerUp) {
-      game.handlePointerUp({ ...position, button: 0, id: touch.identifier });
+      game.handlePointerUp({ ...position, button: 0, id: touch.identifier, touchCount: event.touches.length });
     }
     activeTouches.delete(touch.identifier);
   });
@@ -210,7 +216,7 @@ canvas.addEventListener('touchcancel', (event) => {
   Array.from(event.changedTouches).forEach((touch) => {
     const position = activeTouches.get(touch.identifier) || getCanvasPosition(touch);
     if (position && game.handlePointerUp) {
-      game.handlePointerUp({ ...position, button: 0, id: touch.identifier });
+      game.handlePointerUp({ ...position, button: 0, id: touch.identifier, touchCount: event.touches.length });
     }
     activeTouches.delete(touch.identifier);
   });

@@ -10,6 +10,7 @@ export const KEYMAP = {
   flame: ['KeyF'],
   throw: ['KeyL'],
   pause: ['Escape'],
+  cancel: ['Backspace'],
   interact: ['Space'],
   test: ['KeyT'],
   validator: ['KeyV'],

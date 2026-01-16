@@ -44,6 +44,9 @@ export default class Player {
     this.justStepped = false;
     this.stepTimer = 0;
     this.attackTimer = 0;
+    this.attackLungeTimer = 0;
+    this.attackLungeSpeed = 0;
+    this.attackLungeDir = 1;
     this.flameMode = false;
     this.sawDeployed = false;
     this.magBootsHeat = 0;
@@ -78,6 +81,14 @@ export default class Player {
     this.revEfficiency = revEfficiency;
     this.heatCap = heatCap;
     this.dashCooldownBase = dashCooldown;
+  }
+
+  startLunge(targetX) {
+    const direction = Math.sign(targetX - this.x) || this.facing;
+    this.attackLungeDir = direction;
+    this.attackLungeSpeed = MOVEMENT_MODEL.dashSpeed * 0.45;
+    this.attackLungeTimer = 0.18;
+    this.facing = direction;
   }
 
   update(dt, input, world, abilities) {
@@ -137,6 +148,13 @@ export default class Player {
       this.dashTimer -= dt;
     } else {
       this.vy += MOVEMENT_MODEL.gravity * dt;
+    }
+
+    if (this.attackLungeTimer > 0) {
+      this.attackLungeTimer = Math.max(0, this.attackLungeTimer - dt);
+      if (this.dashTimer <= 0) {
+        this.vx = this.attackLungeDir * this.attackLungeSpeed;
+      }
     }
 
     const wasGrounded = this.onGround;
