@@ -4,6 +4,7 @@ const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 const enterFullscreenButton = document.getElementById('enter-fullscreen');
 const exitFullscreenButton = document.getElementById('exit-fullscreen');
+const hint = document.querySelector('.hint');
 
 const game = new Game(canvas, ctx);
 window.__game = game;
@@ -70,6 +71,9 @@ function resize() {
   if (game.setViewport) {
     isMobile = detectMobile();
     document.body.classList.toggle('mobile', isMobile);
+    if (hint) {
+      hint.textContent = isMobile ? 'Tap to continue' : 'Press SPACE for dialog / confirm';
+    }
     game.setViewport({
       width: window.innerWidth,
       height: window.innerHeight,

@@ -233,6 +233,7 @@ export default class Game {
     this.setRevAudio(false);
     this.editor.activate();
     this.playtestActive = false;
+    document.body.classList.add('editor-active');
   }
 
   exitEditor({ playtest }) {
@@ -242,6 +243,7 @@ export default class Game {
       this.resetRun();
       this.state = 'playing';
       this.playtestActive = true;
+      document.body.classList.remove('editor-active');
       return;
     }
     this.playtestActive = false;
@@ -250,6 +252,7 @@ export default class Game {
     } else {
       this.state = 'title';
     }
+    document.body.classList.remove('editor-active');
   }
 
   returnToEditorFromPlaytest() {
@@ -257,6 +260,7 @@ export default class Game {
     this.state = 'editor';
     this.editor.activate();
     this.playtestActive = false;
+    document.body.classList.add('editor-active');
   }
 
   resetRun() {
@@ -1183,7 +1187,7 @@ export default class Game {
     }
 
     if (this.state === 'dialog') {
-      this.dialog.draw(ctx, canvas.width, canvas.height);
+      this.dialog.draw(ctx, canvas.width, canvas.height, this.isMobile);
       this.mobileControls.draw(ctx, this.state);
       return;
     }

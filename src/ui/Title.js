@@ -49,7 +49,7 @@ export default class Title {
     ctx.fillText('Chainsaw Aliens', width / 2, 120);
     ctx.font = '18px Courier New';
     if (isMobile) {
-      ctx.fillText('Tap to begin', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
+      ctx.fillText('Tap to continue', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
     } else {
       ctx.fillText('Press SPACE to begin', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
     }
