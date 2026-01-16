@@ -69,6 +69,11 @@ export default class Editor {
     this.regionName = 'Unknown';
     this.lastPointer = { x: 0, y: 0 };
     this.uiButtons = [];
+    this.uiSections = { tools: true, tiles: true, enemies: true };
+    this.mobileTab = 'tools';
+    this.activeTooltip = '';
+    this.tooltipTimer = 0;
+    this.editorBounds = { x: 0, y: 0, w: 0, h: 0 };
     this.moveSelection = null;
     this.moveTarget = null;
 
@@ -131,6 +136,9 @@ export default class Editor {
   update(input, dt) {
     this.handleKeyboard(input, dt);
     this.updateHover();
+    if (this.tooltipTimer > 0) {
+      this.tooltipTimer = Math.max(0, this.tooltipTimer - dt);
+    }
   }
 
   handleKeyboard(input, dt = 0) {
@@ -345,6 +353,7 @@ export default class Editor {
     if (!this.active) return;
     this.lastPointer = { x: payload.x, y: payload.y };
     if (this.handleUIClick(payload.x, payload.y)) return;
+    if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
     this.dragButton = payload.button;
     const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
 
@@ -378,6 +387,11 @@ export default class Editor {
       return;
     }
 
+    if (this.tool === 'erase') {
+      this.beginStroke('erase', tileX, tileY);
+      return;
+    }
+
     if (this.tool === 'move') {
       this.beginStroke('move', tileX, tileY);
       return;
@@ -395,6 +409,7 @@ export default class Editor {
   handlePointerMove(payload) {
     if (!this.active) return;
     this.lastPointer = { x: payload.x, y: payload.y };
+    if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y) && !this.dragging) return;
     const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
 
     if (!this.dragging) return;
@@ -471,14 +486,18 @@ export default class Editor {
     this.setZoom(this.zoom * zoomFactor, payload.x, payload.y);
   }
 
-  addUIButton(bounds, onClick) {
-    this.uiButtons.push({ ...bounds, onClick });
+  addUIButton(bounds, onClick, tooltip = '') {
+    this.uiButtons.push({ ...bounds, onClick, tooltip });
   }
 
   handleUIClick(x, y) {
     for (const button of this.uiButtons) {
       if (x >= button.x && x <= button.x + button.w && y >= button.y && y <= button.y + button.h) {
         button.onClick();
+        if (button.tooltip) {
+          this.activeTooltip = button.tooltip;
+          this.tooltipTimer = 3;
+        }
         return true;
       }
     }
@@ -641,6 +660,15 @@ export default class Editor {
     this.hoverTile = { x: tileX, y: tileY, worldX, worldY };
     const region = this.game.world.regionAt(worldX, worldY);
     this.regionName = region.name || region.id;
+  }
+
+  isMobileLayout() {
+    return Boolean(this.game.isMobile);
+  }
+
+  isPointerInEditorArea(x, y) {
+    if (!this.isMobileLayout()) return true;
+    return y <= this.editorBounds.h;
   }
 
   adjustZoom(delta, anchorX, anchorY) {
@@ -809,26 +837,27 @@ export default class Editor {
     const toolLabel = TOOL_LABELS[this.tool] || 'Paint';
     const enemyLabel = this.enemyType?.label || 'Enemy';
     const toolButtons = [
-      { id: 'paint', label: 'Paint (Q)' },
-      { id: 'erase', label: 'Erase (E)' },
-      { id: 'select', label: 'Pick (R)' },
-      { id: 'move', label: 'Move (M)' },
-      { id: 'enemy', label: 'Enemy (T)' },
-      { id: 'pan', label: 'Pan (X)' },
-      { id: 'zoom', label: 'Zoom (Z)' }
+      { id: 'paint', label: 'Paint', tooltip: 'Paint tiles. (Q)' },
+      { id: 'erase', label: 'Erase', tooltip: 'Erase tiles/enemies. (E)' },
+      { id: 'select', label: 'Pick', tooltip: 'Pick tile under cursor. (R)' },
+      { id: 'move', label: 'Move', tooltip: 'Move tile, spawn, or enemy. (M)' },
+      { id: 'enemy', label: 'Enemy', tooltip: 'Place enemies. (T)' },
+      { id: 'pan', label: 'Pan', tooltip: 'Pan the camera. (X)' },
+      { id: 'zoom', label: 'Zoom', tooltip: 'Drag to zoom. (Z)' }
     ];
 
     ctx.save();
     ctx.font = '13px Courier New';
     ctx.textAlign = 'left';
     this.uiButtons = [];
+    let hoverTooltip = '';
+    const pointer = this.lastPointer;
 
-    const panelX = 12;
-    let cursorY = 12;
-    const panelWidth = 360;
-    const buttonHeight = 22;
-    const buttonGap = 6;
-    const drawButton = (x, y, w, h, label, active, onClick) => {
+    const isHovered = (x, y, w, h) => (
+      pointer && pointer.x >= x && pointer.x <= x + w && pointer.y >= y && pointer.y <= y + h
+    );
+
+    const drawButton = (x, y, w, h, label, active, onClick, tooltip = '') => {
       ctx.globalAlpha = 0.9;
       ctx.fillStyle = active ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.6)';
       ctx.fillRect(x, y, w, h);
@@ -836,94 +865,229 @@ export default class Editor {
       ctx.strokeRect(x, y, w, h);
       ctx.fillStyle = '#fff';
       ctx.fillText(label, x + 6, y + 15);
-      this.addUIButton({ x, y, w, h }, onClick);
+      this.addUIButton({ x, y, w, h }, onClick, tooltip);
+      if (tooltip && isHovered(x, y, w, h)) {
+        hoverTooltip = tooltip;
+      }
     };
 
-    const drawSection = (title, height) => {
-      ctx.globalAlpha = 0.85;
-      ctx.fillStyle = 'rgba(0,0,0,0.7)';
-      ctx.fillRect(panelX, cursorY, panelWidth, height);
+    if (this.isMobileLayout()) {
+      const menuHeight = Math.max(240, height * 0.45);
+      const menuY = height - menuHeight;
+      this.editorBounds = { x: 0, y: 0, w: width, h: menuY };
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = 'rgba(0,0,0,0.75)';
+      ctx.fillRect(0, menuY, width, menuHeight);
       ctx.strokeStyle = '#fff';
-      ctx.strokeRect(panelX, cursorY, panelWidth, height);
+      ctx.strokeRect(6, menuY + 6, width - 12, menuHeight - 12);
+
+      const tabs = [
+        { id: 'tools', label: 'TOOLS' },
+        { id: 'tiles', label: 'TILES' },
+        { id: 'enemies', label: 'ENEMIES' }
+      ];
+      const tabMargin = 16;
+      const tabGap = 10;
+      const tabHeight = 26;
+      const tabWidth = (width - tabMargin * 2 - tabGap * (tabs.length - 1)) / tabs.length;
+      const tabY = menuY + 12;
+      tabs.forEach((tab, index) => {
+        const x = tabMargin + index * (tabWidth + tabGap);
+        drawButton(x, tabY, tabWidth, tabHeight, tab.label, this.mobileTab === tab.id, () => {
+          this.mobileTab = tab.id;
+        }, `${tab.label} tab`);
+      });
+
+      const contentY = tabY + tabHeight + 14;
+      const contentHeight = height - contentY - 48;
+      const buttonHeight = 26;
+      const buttonGap = 8;
+      const contentX = 16;
+      const contentW = width - 32;
+
+      ctx.globalAlpha = 0.7;
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fillRect(contentX, contentY, contentW, contentHeight);
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+      ctx.strokeRect(contentX, contentY, contentW, contentHeight);
+
+      let items = [];
+      let columns = 2;
+      if (this.mobileTab === 'tools') {
+        items = toolButtons.map((tool) => ({
+          id: tool.id,
+          label: tool.label,
+          active: this.tool === tool.id,
+          tooltip: tool.tooltip,
+          onClick: () => {
+            this.tool = tool.id;
+          }
+        }));
+        columns = 3;
+      } else if (this.mobileTab === 'tiles') {
+        items = DEFAULT_TILE_TYPES.map((tile) => ({
+          id: tile.id,
+          label: tile.char ? `${tile.label} [${tile.char}]` : tile.label,
+          active: this.tileType.id === tile.id,
+          tooltip: `Tile: ${tile.label}`,
+          onClick: () => {
+            this.tileType = tile;
+            this.customTile = null;
+            this.tool = 'paint';
+          }
+        }));
+      } else {
+        items = ENEMY_TYPES.map((enemy) => ({
+          id: enemy.id,
+          label: `${enemy.label} [${enemy.glyph}]`,
+          active: this.enemyType.id === enemy.id,
+          tooltip: `Enemy: ${enemy.label}`,
+          onClick: () => {
+            this.enemyType = enemy;
+            this.tool = 'enemy';
+          }
+        }));
+      }
+      const columnWidth = (contentW - buttonGap * (columns - 1)) / columns;
+      items.forEach((item, index) => {
+        const col = index % columns;
+        const row = Math.floor(index / columns);
+        const x = contentX + col * (columnWidth + buttonGap);
+        const y = contentY + 8 + row * (buttonHeight + buttonGap);
+        if (y + buttonHeight > contentY + contentHeight - 8) return;
+        drawButton(x, y, columnWidth, buttonHeight, item.label, item.active, item.onClick, item.tooltip);
+      });
+    } else {
+      this.editorBounds = { x: 0, y: 0, w: width, h: height };
+      const panelWidth = 360;
+      const panelX = width - panelWidth - 12;
+      let cursorY = 12;
+      const buttonHeight = 22;
+      const buttonGap = 6;
+      const sectionPadding = 12;
+
+      const drawSectionHeader = (title, sectionKey) => {
+        const headerHeight = 24;
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = 'rgba(0,0,0,0.75)';
+        ctx.fillRect(panelX, cursorY, panelWidth, headerHeight);
+        ctx.strokeStyle = '#fff';
+        ctx.strokeRect(panelX, cursorY, panelWidth, headerHeight);
+        ctx.fillStyle = '#fff';
+        const indicator = this.uiSections[sectionKey] ? '▾' : '▸';
+        ctx.fillText(`${indicator} ${title}`, panelX + 12, cursorY + 16);
+        this.addUIButton(
+          { x: panelX, y: cursorY, w: panelWidth, h: headerHeight },
+          () => {
+            this.uiSections[sectionKey] = !this.uiSections[sectionKey];
+          },
+          `${title} panel`
+        );
+        cursorY += headerHeight + 6;
+      };
+
+      const drawSectionBody = (height) => {
+        ctx.globalAlpha = 0.85;
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(panelX, cursorY, panelWidth, height);
+        ctx.strokeStyle = '#fff';
+        ctx.strokeRect(panelX, cursorY, panelWidth, height);
+      };
+
+      drawSectionHeader('TOOLS', 'tools');
+      if (this.uiSections.tools) {
+        const columns = 2;
+        const rows = Math.ceil(toolButtons.length / columns);
+        const sectionHeight = rows * (buttonHeight + buttonGap) + sectionPadding;
+        drawSectionBody(sectionHeight);
+        toolButtons.forEach((tool, index) => {
+          const col = index % columns;
+          const row = Math.floor(index / columns);
+          const columnWidth = (panelWidth - sectionPadding * 2 - buttonGap) / columns;
+          const x = panelX + sectionPadding + col * (columnWidth + buttonGap);
+          const y = cursorY + 6 + row * (buttonHeight + buttonGap);
+          drawButton(x, y, columnWidth, buttonHeight, tool.label, this.tool === tool.id, () => {
+            this.tool = tool.id;
+          }, tool.tooltip);
+        });
+        cursorY += sectionHeight + 10;
+      }
+
+      drawSectionHeader('TILES', 'tiles');
+      if (this.uiSections.tiles) {
+        const columns = 1;
+        const rows = DEFAULT_TILE_TYPES.length;
+        const sectionHeight = rows * (buttonHeight + buttonGap) + sectionPadding;
+        drawSectionBody(sectionHeight);
+        DEFAULT_TILE_TYPES.forEach((tile, index) => {
+          const x = panelX + sectionPadding;
+          const y = cursorY + 6 + index * (buttonHeight + buttonGap);
+          const label = tile.char ? `${tile.label} [${tile.char}]` : tile.label;
+          drawButton(x, y, panelWidth - sectionPadding * 2, buttonHeight, label, this.tileType.id === tile.id, () => {
+            this.tileType = tile;
+            this.customTile = null;
+            this.tool = 'paint';
+          }, `Tile: ${tile.label}`);
+        });
+        cursorY += sectionHeight + 10;
+      }
+
+      drawSectionHeader('ENEMIES', 'enemies');
+      if (this.uiSections.enemies) {
+        const columns = 1;
+        const rows = ENEMY_TYPES.length;
+        const sectionHeight = rows * (buttonHeight + buttonGap) + sectionPadding;
+        drawSectionBody(sectionHeight);
+        ENEMY_TYPES.forEach((enemy, index) => {
+          const x = panelX + sectionPadding;
+          const y = cursorY + 6 + index * (buttonHeight + buttonGap);
+          const label = `${enemy.label} [${enemy.glyph}]`;
+          drawButton(x, y, panelWidth - sectionPadding * 2, buttonHeight, label, this.enemyType.id === enemy.id, () => {
+            this.enemyType = enemy;
+            this.tool = 'enemy';
+          }, `Enemy: ${enemy.label}`);
+        });
+        cursorY += sectionHeight + 10;
+      }
+
+      const infoLines = [
+        `Tool: ${toolLabel} | Tile: ${tileLabel}`,
+        `Enemy: ${enemyLabel}`,
+        `Grid: ${tileSize}px | Region: ${this.regionName}`,
+        `Zoom: ${this.zoom.toFixed(2)}x`,
+        `Drag: LMB paint | RMB erase | Space+drag pan`,
+        `Zoom/Pan tools: click + drag`,
+        `Arrows: pan | Shift+Arrows: zoom`,
+        `Ctrl+Z / Ctrl+Y: undo/redo`,
+        `S: save JSON | L: load JSON`,
+        `P: playtest | F2: toggle editor | Esc: exit`
+      ];
+      const infoHeight = infoLines.length * 18 + 12;
+      ctx.globalAlpha = 0.85;
+      const infoX = 12;
+      const infoY = 12;
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.fillRect(infoX, infoY, panelWidth, infoHeight);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(infoX, infoY, panelWidth, infoHeight);
       ctx.fillStyle = '#fff';
-      ctx.fillText(title, panelX + 12, cursorY + 18);
-    };
-
-    const toolRows = Math.ceil(toolButtons.length / 3);
-    const toolSectionHeight = 28 + toolRows * (buttonHeight + buttonGap) + 6;
-    drawSection('TOOLS', toolSectionHeight);
-    cursorY += 28;
-    toolButtons.forEach((tool, index) => {
-      const col = index % 3;
-      const row = Math.floor(index / 3);
-      const x = panelX + 12 + col * 112;
-      const y = cursorY + row * (buttonHeight + buttonGap);
-      drawButton(x, y, 104, buttonHeight, tool.label, this.tool === tool.id, () => {
-        this.tool = tool.id;
+      infoLines.forEach((line, index) => {
+        ctx.fillText(line, infoX + 12, infoY + 22 + index * 18);
       });
-    });
-    cursorY += toolRows * (buttonHeight + buttonGap) + 18;
+    }
 
-    const tileCols = 2;
-    const tileRows = Math.ceil(DEFAULT_TILE_TYPES.length / tileCols);
-    const tileSectionHeight = 28 + tileRows * (buttonHeight + buttonGap) + 6;
-    drawSection('TILES', tileSectionHeight);
-    cursorY += 28;
-    DEFAULT_TILE_TYPES.forEach((tile, index) => {
-      const col = index % tileCols;
-      const row = Math.floor(index / tileCols);
-      const x = panelX + 12 + col * 176;
-      const y = cursorY + row * (buttonHeight + buttonGap);
-      const label = tile.char ? `${tile.label} [${tile.char}]` : tile.label;
-      drawButton(x, y, 168, buttonHeight, label, this.tileType.id === tile.id, () => {
-        this.tileType = tile;
-        this.customTile = null;
-        this.tool = 'paint';
-      });
-    });
-    cursorY += tileRows * (buttonHeight + buttonGap) + 18;
-
-    const enemyRows = Math.ceil(ENEMY_TYPES.length / tileCols);
-    const enemySectionHeight = 28 + enemyRows * (buttonHeight + buttonGap) + 6;
-    drawSection('ENEMIES', enemySectionHeight);
-    cursorY += 28;
-    ENEMY_TYPES.forEach((enemy, index) => {
-      const col = index % tileCols;
-      const row = Math.floor(index / tileCols);
-      const x = panelX + 12 + col * 176;
-      const y = cursorY + row * (buttonHeight + buttonGap);
-      const label = `${enemy.label} [${enemy.glyph}]`;
-      drawButton(x, y, 168, buttonHeight, label, this.enemyType.id === enemy.id, () => {
-        this.enemyType = enemy;
-        this.tool = 'enemy';
-      });
-    });
-    cursorY += enemyRows * (buttonHeight + buttonGap) + 18;
-
-    const infoLines = [
-      `Tool: ${toolLabel} | Tile: ${tileLabel}`,
-      `Enemy: ${enemyLabel}`,
-      `Grid: ${tileSize}px | Region: ${this.regionName}`,
-      `Zoom: ${this.zoom.toFixed(2)}x`,
-      `Drag: LMB paint | RMB erase | Space+drag pan`,
-      `Zoom/Pan tools: click + drag`,
-      `Arrows: pan | Shift+Arrows: zoom`,
-      `Ctrl+Z / Ctrl+Y: undo/redo`,
-      `S: save JSON | L: load JSON`,
-      `P: playtest | F2: toggle editor | Esc: exit`
-    ];
-    const infoHeight = infoLines.length * 18 + 12;
+    const tooltip = hoverTooltip || (this.tooltipTimer > 0 ? this.activeTooltip : '');
+    const fallbackTooltip = `Tool: ${toolLabel} | Tile: ${tileLabel} | Enemy: ${enemyLabel}`;
+    const tooltipText = tooltip || fallbackTooltip;
+    const tooltipHeight = 24;
     ctx.globalAlpha = 0.85;
-    const infoX = width - panelWidth - 12;
-    const infoY = 12;
-    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    ctx.fillRect(infoX, infoY, panelWidth, infoHeight);
-    ctx.strokeStyle = '#fff';
-    ctx.strokeRect(infoX, infoY, panelWidth, infoHeight);
+    ctx.fillStyle = 'rgba(0,0,0,0.8)';
+    ctx.fillRect(0, height - tooltipHeight, width, tooltipHeight);
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.strokeRect(0, height - tooltipHeight, width, tooltipHeight);
     ctx.fillStyle = '#fff';
-    infoLines.forEach((line, index) => {
-      ctx.fillText(line, infoX + 12, infoY + 22 + index * 18);
-    });
+    ctx.textAlign = 'center';
+    ctx.fillText(tooltipText, width / 2, height - 7);
     ctx.restore();
   }
 }
