@@ -9,6 +9,17 @@
 <body>
   <main class="frame">
     <canvas id="game" width="1280" height="720"></canvas>
+    <button id="enter-fullscreen" class="fullscreen-button fullscreen-enter is-hidden" type="button">
+      Enter Fullscreen
+    </button>
+    <button
+      id="exit-fullscreen"
+      class="fullscreen-button fullscreen-exit is-hidden"
+      type="button"
+      aria-label="Exit fullscreen"
+    >
+      ✕
+    </button>
     <div class="hint">Press SPACE for dialog / confirm</div>
   </main>
   <script type="module" src="src/main.js"></script>

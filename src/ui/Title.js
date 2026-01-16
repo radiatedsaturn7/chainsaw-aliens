@@ -1,7 +1,6 @@
 export default class Title {
   constructor() {
     this.timer = 0;
-    this.runTestsBounds = { x: 0, y: 0, w: 0, h: 0 };
     this.editorBounds = { x: 0, y: 0, w: 0, h: 0 };
     this.aliens = Array.from({ length: 12 }, (_, i) => ({
       x: 120 + i * 80,
@@ -65,21 +64,7 @@ export default class Title {
     ctx.fillStyle = '#fff';
     ctx.fillText('LEVEL EDITOR', width / 2, editorY + 22);
     this.editorBounds = { x: buttonX, y: editorY, w: buttonWidth, h: buttonHeight };
-
-    const buttonY = height - 32;
-    ctx.fillStyle = 'rgba(255,255,255,0.12)';
-    ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
-    ctx.strokeStyle = '#fff';
-    ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
-    ctx.fillStyle = '#fff';
-    ctx.fillText('RUN TESTS', width / 2, buttonY + 22);
-    this.runTestsBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
     ctx.restore();
-  }
-
-  isRunTestsHit(x, y) {
-    const bounds = this.runTestsBounds;
-    return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
   }
 
   isEditorHit(x, y) {
