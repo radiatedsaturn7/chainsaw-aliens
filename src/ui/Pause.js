@@ -18,7 +18,7 @@ export default class Pause {
     }
   }
 
-  draw(ctx, width, height) {
+  draw(ctx, width, height, objective) {
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.7)';
     ctx.fillRect(0, 0, width, height);
@@ -36,6 +36,11 @@ export default class Pause {
       const prefix = index === this.selection ? '> ' : '  ';
       ctx.fillText(prefix + text, width / 2 - 120, 200 + index * 30);
     });
+    if (objective) {
+      ctx.textAlign = 'center';
+      ctx.fillText(`Objective: ${objective}`, width / 2, 200 + items.length * 30 + 20);
+      ctx.textAlign = 'left';
+    }
     ctx.textAlign = 'center';
     ctx.fillText('Arrow keys to change, Esc to resume', width / 2, height - 80);
     ctx.restore();

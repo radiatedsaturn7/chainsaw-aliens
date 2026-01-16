@@ -40,7 +40,7 @@ export default class MobileControls {
     this.joystick.knobRadius = knobRadius;
 
     const buttonRadius = Math.min(54, base * 0.1);
-    const buttonGap = Math.max(buttonRadius * 1.15, buttonRadius + 12);
+    const buttonGap = Math.max(buttonRadius * 1.35, buttonRadius + 20);
     const rightX = width - margin - buttonRadius;
     const lowerY = height - margin - buttonRadius;
     const upperY = lowerY - buttonGap;
@@ -67,7 +67,7 @@ export default class MobileControls {
 
   getVisibleButtons(state) {
     const visible = [...this.buttons];
-    if (state === 'dialog' || state === 'title' || state === 'shop') {
+    if (state === 'dialog' || state === 'shop') {
       visible.push({ ...this.contextButtons[0], label: state === 'shop' ? 'BUY' : 'OK' });
     }
     visible.push(this.contextButtons[1]);

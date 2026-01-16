@@ -9,6 +9,7 @@ const game = new Game(canvas, ctx);
 window.__game = game;
 window.__gameReady = true;
 let isMobile = false;
+let fullscreenPending = false;
 
 function detectMobile() {
   const uaMobile = navigator.userAgentData?.mobile;
@@ -29,6 +30,8 @@ function requestFullscreen() {
   if (root.requestFullscreen) {
     root.requestFullscreen().catch(() => {});
   }
+  fullscreenPending = true;
+  updateFullscreenButtons();
 }
 
 function exitFullscreen() {
@@ -36,11 +39,13 @@ function exitFullscreen() {
   if (document.exitFullscreen) {
     document.exitFullscreen().catch(() => {});
   }
+  fullscreenPending = false;
+  updateFullscreenButtons();
 }
 
 function updateFullscreenButtons() {
   const showControls = Boolean(isMobile);
-  const isFullscreen = Boolean(document.fullscreenElement);
+  const isFullscreen = Boolean(document.fullscreenElement) || fullscreenPending;
   if (enterFullscreenButton) {
     enterFullscreenButton.classList.toggle('is-hidden', !showControls || isFullscreen);
   }
@@ -91,7 +96,10 @@ function getTouchGesture(touches) {
 }
 
 window.addEventListener('resize', resize);
-document.addEventListener('fullscreenchange', updateFullscreenButtons);
+document.addEventListener('fullscreenchange', () => {
+  fullscreenPending = false;
+  updateFullscreenButtons();
+});
 resize();
 
 canvas.addEventListener('click', (event) => {

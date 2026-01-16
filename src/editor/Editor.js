@@ -668,7 +668,10 @@ export default class Editor {
 
   isPointerInEditorArea(x, y) {
     if (!this.isMobileLayout()) return true;
-    return y <= this.editorBounds.h;
+    return x >= this.editorBounds.x
+      && x <= this.editorBounds.x + this.editorBounds.w
+      && y >= this.editorBounds.y
+      && y <= this.editorBounds.y + this.editorBounds.h;
   }
 
   adjustZoom(delta, anchorX, anchorY) {
@@ -864,7 +867,10 @@ export default class Editor {
       ctx.strokeStyle = active ? '#fff' : 'rgba(255,255,255,0.4)';
       ctx.strokeRect(x, y, w, h);
       ctx.fillStyle = '#fff';
-      ctx.fillText(label, x + 6, y + 15);
+      ctx.save();
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, x + 8, y + h / 2);
+      ctx.restore();
       this.addUIButton({ x, y, w, h }, onClick, tooltip);
       if (tooltip && isHovered(x, y, w, h)) {
         hoverTooltip = tooltip;
@@ -872,14 +878,21 @@ export default class Editor {
     };
 
     if (this.isMobileLayout()) {
-      const menuHeight = Math.max(240, height * 0.45);
-      const menuY = height - menuHeight;
-      this.editorBounds = { x: 0, y: 0, w: width, h: menuY };
+      const isLandscape = this.game.viewport.width >= this.game.viewport.height;
+      const panelSize = Math.max(240, (isLandscape ? width : height) * 0.5);
+      const panelX = 0;
+      const panelY = isLandscape ? 0 : height - panelSize;
+      const panelW = isLandscape ? panelSize : width;
+      const panelH = isLandscape ? height : panelSize;
+      this.editorBounds = isLandscape
+        ? { x: panelW, y: 0, w: width - panelW, h: height }
+        : { x: 0, y: 0, w: width, h: height - panelH };
       ctx.globalAlpha = 0.9;
       ctx.fillStyle = 'rgba(0,0,0,0.75)';
-      ctx.fillRect(0, menuY, width, menuHeight);
+      ctx.fillRect(panelX, panelY, panelW, panelH);
       ctx.strokeStyle = '#fff';
-      ctx.strokeRect(6, menuY + 6, width - 12, menuHeight - 12);
+      ctx.strokeRect(panelX + 6, panelY + 6, panelW - 12, panelH - 12);
+      ctx.font = '15px Courier New';
 
       const tabs = [
         { id: 'tools', label: 'TOOLS' },
@@ -888,22 +901,22 @@ export default class Editor {
       ];
       const tabMargin = 16;
       const tabGap = 10;
-      const tabHeight = 26;
-      const tabWidth = (width - tabMargin * 2 - tabGap * (tabs.length - 1)) / tabs.length;
-      const tabY = menuY + 12;
+      const tabHeight = 30;
+      const tabWidth = (panelW - tabMargin * 2 - tabGap * (tabs.length - 1)) / tabs.length;
+      const tabY = panelY + 12;
       tabs.forEach((tab, index) => {
-        const x = tabMargin + index * (tabWidth + tabGap);
+        const x = panelX + tabMargin + index * (tabWidth + tabGap);
         drawButton(x, tabY, tabWidth, tabHeight, tab.label, this.mobileTab === tab.id, () => {
           this.mobileTab = tab.id;
         }, `${tab.label} tab`);
       });
 
       const contentY = tabY + tabHeight + 14;
-      const contentHeight = height - contentY - 48;
-      const buttonHeight = 26;
+      const contentHeight = panelY + panelH - contentY - 18;
+      const buttonHeight = 34;
       const buttonGap = 8;
-      const contentX = 16;
-      const contentW = width - 32;
+      const contentX = panelX + 16;
+      const contentW = panelW - 32;
 
       ctx.globalAlpha = 0.7;
       ctx.fillStyle = 'rgba(0,0,0,0.55)';
@@ -914,16 +927,36 @@ export default class Editor {
       let items = [];
       let columns = 2;
       if (this.mobileTab === 'tools') {
-        items = toolButtons.map((tool) => ({
-          id: tool.id,
-          label: tool.label,
-          active: this.tool === tool.id,
-          tooltip: tool.tooltip,
-          onClick: () => {
-            this.tool = tool.id;
-          }
-        }));
-        columns = 3;
+        items = [
+          {
+            id: 'playtest',
+            label: 'PLAYTEST',
+            active: false,
+            tooltip: 'Start playtest run.',
+            onClick: () => {
+              this.game.exitEditor({ playtest: true });
+            }
+          },
+          {
+            id: 'exit',
+            label: 'EXIT EDITOR',
+            active: false,
+            tooltip: 'Exit editor.',
+            onClick: () => {
+              this.game.exitEditor({ playtest: false });
+            }
+          },
+          ...toolButtons.map((tool) => ({
+            id: tool.id,
+            label: tool.label.toUpperCase(),
+            active: this.tool === tool.id,
+            tooltip: tool.tooltip,
+            onClick: () => {
+              this.tool = tool.id;
+            }
+          }))
+        ];
+        columns = 2;
       } else if (this.mobileTab === 'tiles') {
         items = DEFAULT_TILE_TYPES.map((tile) => ({
           id: tile.id,

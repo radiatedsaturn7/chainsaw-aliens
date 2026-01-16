@@ -228,13 +228,14 @@ export default class Player {
   }
 
   takeDamage(amount) {
-    if (this.invulnTimer > 0) return;
+    if (this.invulnTimer > 0) return false;
     this.health -= amount;
     this.hurtTimer = 0.3;
     this.invulnTimer = 0.6;
     if (this.health <= 0) {
       this.dead = true;
     }
+    return true;
   }
 
   gainMaxHealth(amount = 1) {

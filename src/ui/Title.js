@@ -19,7 +19,7 @@ export default class Title {
     });
   }
 
-  draw(ctx, width, height) {
+  draw(ctx, width, height, isMobile) {
     ctx.save();
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, width, height);
@@ -48,10 +48,11 @@ export default class Title {
     ctx.fillStyle = '#fff';
     ctx.fillText('Chainsaw Aliens', width / 2, 120);
     ctx.font = '18px Courier New';
-    ctx.fillText('Press SPACE to begin', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
-    ctx.fillText('Press T for TEST DASHBOARD', width / 2, height - 110);
-    ctx.fillText('Press G for GOLDEN PATH SIM', width / 2, height - 86);
-    ctx.fillText('Press F2 for LEVEL EDITOR', width / 2, height - 62);
+    if (isMobile) {
+      ctx.fillText('Tap to begin', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
+    } else {
+      ctx.fillText('Press SPACE to begin', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
+    }
 
     const buttonWidth = 180;
     const buttonHeight = 32;
