@@ -52,13 +52,13 @@ const INTRO_LINES = [
 const ABILITY_DIALOG_LINES = {
   anchor: [
     'Tool acquired: Chainsaw Throw rig.',
-    'Press L to throw into a wall. Press L again to retract.',
+    'Double-tap Attack to throw into a wall. Double-tap again to retract.',
     'Hold UP while anchored to climb.'
   ],
   flame: [
     'Tool acquired: Flame-Saw attachment.',
-    'Press F to toggle flame mode.',
-    'Hold K to rev and burn wood or melt metal.'
+    'Forward + Attack to toggle flame mode.',
+    'Hold Attack to rev and burn wood or melt metal.'
   ],
   magboots: [
     'Tool acquired: Mag Boots.',
@@ -67,7 +67,7 @@ const ABILITY_DIALOG_LINES = {
   ],
   resonance: [
     'Tool acquired: Resonance Core.',
-    'Hold K to rev and shatter brittle walls or rift seals.'
+    'Hold Attack to rev and shatter brittle walls or rift seals.'
   ]
 };
 
@@ -426,7 +426,7 @@ export default class Game {
     if (this.state === 'editor') {
       this.input.clearVirtual();
     } else {
-      const mobileActions = this.mobileControls.getActions(this.state);
+      const mobileActions = this.mobileControls.getActions(this.state, this.player?.facing ?? 1);
       this.input.setVirtual(mobileActions);
     }
     this.clock += dt;
@@ -452,6 +452,14 @@ export default class Game {
       this.state = 'pause';
     } else if (this.input.wasPressed('pause') && this.state === 'pause') {
       this.state = 'playing';
+    }
+    if (this.input.wasPressed('cancel') && ['dialog', 'shop', 'pause'].includes(this.state)) {
+      this.state = 'playing';
+      this.audio.menu();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
+      this.input.flush();
+      return;
     }
 
     if (this.state !== 'playing') {
@@ -847,6 +855,32 @@ export default class Game {
 
   handleAttack() {
     if (this.sawAnchor.active) return;
+    const lungeRange = 220;
+    let lungeTarget = null;
+    let bestDist = Infinity;
+    this.enemies.forEach((enemy) => {
+      if (enemy.dead) return;
+      const dx = enemy.x - this.player.x;
+      const dy = enemy.y - this.player.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < bestDist && dist <= lungeRange) {
+        bestDist = dist;
+        lungeTarget = enemy;
+      }
+    });
+    if (this.boss && !this.boss.dead) {
+      const dx = this.boss.x - this.player.x;
+      const dy = this.boss.y - this.player.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < bestDist && dist <= lungeRange) {
+        bestDist = dist;
+        lungeTarget = this.boss;
+      }
+    }
+    if (this.player.dashTimer <= 0) {
+      const targetX = lungeTarget ? lungeTarget.x : this.player.x + this.player.facing * 60;
+      this.player.startLunge(targetX);
+    }
     const range = 40;
     this.spawnEffect('bite', this.player.x + this.player.facing * 18, this.player.y - 8);
     this.audio.bite();
@@ -1755,7 +1789,7 @@ export default class Game {
     ctx.font = '12px Courier New';
     ctx.textAlign = 'center';
     ctx.fillText('EXECUTION TUTORIAL', trainer.x, trainer.y - 40);
-    ctx.fillText('Attack (J) to stagger, hold K to execute', trainer.x, trainer.y - 24);
+    ctx.fillText('Tap Attack to lunge, hold Attack to execute', trainer.x, trainer.y - 24);
     ctx.restore();
   }
 
@@ -2065,7 +2099,7 @@ export default class Game {
       this.editor.handlePointerUp(payload);
       return;
     }
-    this.mobileControls.handlePointerUp(payload);
+    this.mobileControls.handlePointerUp(payload, this.state);
   }
 
   handleWheel(payload) {
