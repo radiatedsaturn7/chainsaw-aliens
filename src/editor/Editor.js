@@ -8,6 +8,7 @@ const DEFAULT_TILE_TYPES = [
   { id: 'metal', label: 'Welded Metal Plate', char: 'X' },
   { id: 'brittle', label: 'Brittle Wall', char: 'C' },
   { id: 'debris', label: 'Heavy Debris', char: 'U' },
+  { id: 'box', label: 'Pull Box', char: 'K' },
   { id: 'switch', label: 'Counterweight Switch', char: 'T' },
   { id: 'bossGate', label: 'Rift Seal', char: 'B' },
   { id: 'abilityG', label: 'Tools: Chainsaw Throw', char: 'g' },

@@ -53,7 +53,7 @@ const ABILITY_DIALOG_LINES = {
   anchor: [
     'Tool acquired: Chainsaw Throw rig.',
     'Double-tap Attack to fire the tethered chainsaw.',
-    'Press Attack while tethered to climb. The saw retracts automatically.'
+    'Hold Attack while embedded to climb. The saw retracts automatically.'
   ],
   flame: [
     'Tool acquired: Flame-Saw attachment.',
@@ -138,7 +138,10 @@ export default class Game {
       fuelDrain: 0,
       pullTimer: 0,
       retractTimer: 0,
-      autoRetractTimer: 0
+      autoRetractTimer: 0,
+      embedded: false,
+      attachedBox: null,
+      damageTimer: 0
     };
     this.attackTapTimer = 0;
     this.attackTapWindow = 0.28;
@@ -183,6 +186,8 @@ export default class Game {
     this.isMobile = false;
     this.viewport = { width: window.innerWidth, height: window.innerHeight, scale: 1 };
     this.mobileControls = new MobileControls();
+    this.boxes = [];
+    this.boxSize = 26;
 
     this.init();
   }
@@ -208,6 +213,7 @@ export default class Game {
     this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
     this.resetWorldSystems();
     this.spawnEnemies();
+    this.spawnBoxes();
     this.autoRepair.applySpawnOverride(this);
     this.state = 'title';
   }
@@ -331,8 +337,15 @@ export default class Game {
       active: false,
       x: 0,
       y: 0,
-      fuelDrain: 0
+      fuelDrain: 0,
+      pullTimer: 0,
+      retractTimer: 0,
+      autoRetractTimer: 0,
+      embedded: false,
+      attachedBox: null,
+      damageTimer: 0
     };
+    this.spawnBoxes();
     this.obstacleDamage.clear();
     this.obstacleCooldown = 0;
     this.noiseCooldown = 0;
@@ -600,10 +613,12 @@ export default class Game {
       this.handleThrow();
     }
 
+    const prevPlayer = { x: this.player.x, y: this.player.y };
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
     this.player.sawDeployed = this.sawAnchor.active;
-    this.updateSawAnchor(dt * timeScale);
+    this.updateSawAnchor(dt * timeScale, this.input);
     this.applyAnchorClimb(dt * timeScale);
+    this.resolveBoxCollisions(prevPlayer);
     this.obstacleCooldown = Math.max(0, this.obstacleCooldown - dt * timeScale);
     this.noiseCooldown = Math.max(0, this.noiseCooldown - dt * timeScale);
     this.testHarness.applyCheats(this);
@@ -619,19 +634,31 @@ export default class Game {
     if (this.input.wasPressed('attack')) {
       const doubleTap = this.attackTapTimer > 0;
       this.attackTapTimer = doubleTap ? 0 : this.attackTapWindow;
-      if (doubleTap && this.abilities.anchor) {
+      if (this.sawAnchor.active) {
+        if (doubleTap) {
+          this.startAnchorRetract(0.2);
+        } else if (!this.sawAnchor.embedded || this.sawAnchor.attachedBox) {
+          this.triggerTetherPull();
+        }
+      } else if (doubleTap && this.abilities.anchor) {
         this.handleAnchorShot();
-      } else if (this.sawAnchor.active) {
-        this.triggerTetherPull();
       } else if (!this.tryObstacleInteraction('attack')) {
         this.handleAttack();
       }
     }
+    if (this.sawAnchor.embedded && this.input.wasPressed('jump')) {
+      this.startAnchorRetract(0.2);
+    }
+    const anchorRevActive = this.sawAnchor.active && this.sawAnchor.embedded && this.input.isDown('attack');
     if (this.input.isDown('rev') && this.player.canRev() && !this.sawAnchor.active) {
       this.player.addHeat(0.4 * dt / (this.player.revEfficiency || 1));
       this.handleRev();
       this.tryObstacleInteraction('rev');
       this.handleFlameSawDrain(dt);
+      this.setRevAudio(true);
+      this.recordFeedback('chainsaw rev', 'audio');
+      this.recordFeedback('chainsaw rev', 'visual');
+    } else if (anchorRevActive) {
       this.setRevAudio(true);
       this.recordFeedback('chainsaw rev', 'audio');
       this.recordFeedback('chainsaw rev', 'visual');
@@ -745,6 +772,10 @@ export default class Game {
       this.recordFeedback('move', 'audio');
       this.recordFeedback('move', 'visual');
     }
+  }
+
+  spawnBoxes() {
+    this.boxes = this.world.boxes.map((box) => ({ x: box.x, y: box.y }));
   }
 
   setRevAudio(active) {
@@ -1315,7 +1346,11 @@ export default class Game {
     }
     const hit = this.findAnchorHit();
     if (!hit) return;
-    this.activateAnchor(hit, false);
+    if (hit.hit) {
+      this.activateAnchor(hit, false);
+    } else {
+      this.activateAnchor(hit, true);
+    }
     this.audio.interact();
   }
 
@@ -1331,24 +1366,43 @@ export default class Game {
   }
 
   findAnchorHit() {
-    const range = 220;
+    const range = this.world.tileSize * 3;
     const step = 8;
     const dir = this.player.facing || 1;
-    let hit = null;
     for (let dist = 24; dist <= range; dist += step) {
       const testX = this.player.x + dir * dist;
       const testY = this.player.y - 6;
+      const boxHit = this.findAnchorBoxHit(testX, testY);
+      if (boxHit) {
+        return { x: boxHit.x, y: boxHit.y, hit: true, box: boxHit };
+      }
       const tileX = Math.floor(testX / this.world.tileSize);
       const tileY = Math.floor(testY / this.world.tileSize);
       if (this.world.isSolid(tileX, tileY, this.abilities)) {
-        hit = {
+        return {
           x: tileX * this.world.tileSize + this.world.tileSize / 2,
-          y: tileY * this.world.tileSize + this.world.tileSize / 2
+          y: tileY * this.world.tileSize + this.world.tileSize / 2,
+          hit: true,
+          box: null
         };
-        break;
       }
     }
-    return hit;
+    return {
+      x: this.player.x + dir * range,
+      y: this.player.y - 6,
+      hit: false,
+      box: null
+    };
+  }
+
+  findAnchorBoxHit(testX, testY) {
+    const radius = this.boxSize / 2;
+    for (const box of this.boxes) {
+      if (Math.abs(box.x - testX) <= radius && Math.abs(box.y - testY) <= radius) {
+        return box;
+      }
+    }
+    return null;
   }
 
   activateAnchor(hit, autoRetract) {
@@ -1359,12 +1413,17 @@ export default class Game {
     this.sawAnchor.pullTimer = 0;
     this.sawAnchor.retractTimer = 0;
     this.sawAnchor.autoRetractTimer = autoRetract ? 0.35 : 0;
+    this.sawAnchor.embedded = Boolean(hit.hit && !hit.box);
+    this.sawAnchor.attachedBox = hit.box || null;
+    this.sawAnchor.damageTimer = 0;
     this.player.sawDeployed = true;
   }
 
   startAnchorRetract(duration = 0.4) {
     this.sawAnchor.retractTimer = Math.max(this.sawAnchor.retractTimer, duration);
     this.sawAnchor.autoRetractTimer = 0;
+    this.sawAnchor.embedded = false;
+    this.sawAnchor.attachedBox = null;
   }
 
   triggerTetherPull() {
@@ -1381,10 +1440,13 @@ export default class Game {
     }
   }
 
-  updateSawAnchor(dt) {
+  updateSawAnchor(dt, input) {
     if (!this.sawAnchor.active) return;
     if (this.sawAnchor.pullTimer > 0) {
       this.sawAnchor.pullTimer = Math.max(0, this.sawAnchor.pullTimer - dt);
+    }
+    if (this.sawAnchor.damageTimer > 0) {
+      this.sawAnchor.damageTimer = Math.max(0, this.sawAnchor.damageTimer - dt);
     }
     if (this.sawAnchor.retractTimer > 0) {
       this.sawAnchor.retractTimer = Math.max(0, this.sawAnchor.retractTimer - dt);
@@ -1398,8 +1460,14 @@ export default class Game {
       if (this.sawAnchor.retractTimer <= 0 || dist < 12) {
         this.sawAnchor.active = false;
         this.player.sawDeployed = false;
+        this.sawAnchor.embedded = false;
+        this.sawAnchor.attachedBox = null;
       }
       return;
+    }
+    if (this.sawAnchor.attachedBox) {
+      this.sawAnchor.x = this.sawAnchor.attachedBox.x;
+      this.sawAnchor.y = this.sawAnchor.attachedBox.y;
     }
     this.sawAnchor.fuelDrain += dt;
     if (this.sawAnchor.fuelDrain >= 0.6) {
@@ -1410,6 +1478,8 @@ export default class Game {
     if (this.player.fuel <= 0 || this.player.overheat > 0) {
       this.sawAnchor.active = false;
       this.player.sawDeployed = false;
+      this.sawAnchor.embedded = false;
+      this.sawAnchor.attachedBox = null;
     }
     if (this.sawAnchor.autoRetractTimer > 0) {
       this.sawAnchor.autoRetractTimer = Math.max(0, this.sawAnchor.autoRetractTimer - dt);
@@ -1417,19 +1487,30 @@ export default class Game {
         this.startAnchorRetract(0.45);
       }
     }
+    const tetherMax = this.world.tileSize * 3;
+    const tetherDist = Math.hypot(this.player.x - this.sawAnchor.x, this.player.y - this.sawAnchor.y);
+    if (tetherDist > tetherMax) {
+      this.startAnchorRetract(0.2);
+      return;
+    }
+    if (this.sawAnchor.attachedBox) {
+      this.pullBoxTowardPlayer(dt, input);
+    }
+    if (this.sawAnchor.embedded && input.isDown('attack')) {
+      this.climbSawAnchor(dt, 140);
+      this.applySawAnchorDamage();
+    }
   }
 
   applyAnchorClimb(dt) {
     if (!this.sawAnchor.active) return;
+    if (!this.sawAnchor.embedded) return;
     const pulling = this.sawAnchor.pullTimer > 0;
-    if (!this.input.isDown('up') && !pulling) return;
+    if (!this.input.isDown('attack') && !pulling) return;
     const dx = Math.abs(this.player.x - this.sawAnchor.x);
     const dy = this.player.y - this.sawAnchor.y;
     if (dx > 20 || dy < -40 || dy > 80) return;
     const climbSpeed = pulling ? 200 : 120;
-    if (pulling) {
-      this.climbSawAnchor(dt, climbSpeed);
-    }
     const nextY = this.player.y - climbSpeed * dt;
     const tileX = Math.floor(this.player.x / this.world.tileSize);
     const tileY = Math.floor((nextY - this.player.height / 2) / this.world.tileSize);
@@ -1438,6 +1519,159 @@ export default class Game {
       this.player.vy = Math.min(this.player.vy, -climbSpeed);
       this.player.onGround = false;
     }
+  }
+
+  applySawAnchorDamage() {
+    if (this.sawAnchor.damageTimer > 0) return;
+    const range = 26;
+    let hit = false;
+    this.enemies.forEach((enemy) => {
+      if (enemy.dead) return;
+      const dx = Math.abs(enemy.x - this.sawAnchor.x);
+      const dy = Math.abs(enemy.y - this.sawAnchor.y);
+      if (dx < range && dy < range) {
+        if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
+          return;
+        }
+        enemy.damage(1);
+        this.spawnEffect('hit', enemy.x, enemy.y);
+        this.spawnEffect('oil', enemy.x, enemy.y + 6);
+        hit = true;
+        if (enemy.dead && !enemy.training) {
+          this.spawnDeathDebris(enemy);
+          this.awardLoot(enemy);
+        }
+      }
+    });
+    if (this.boss && !this.boss.dead) {
+      const dx = Math.abs(this.boss.x - this.sawAnchor.x);
+      const dy = Math.abs(this.boss.y - this.sawAnchor.y);
+      if (dx < range + 10 && dy < range + 10) {
+        this.boss.damage(1);
+        this.spawnEffect('hit', this.boss.x, this.boss.y);
+        this.spawnEffect('oil', this.boss.x, this.boss.y + 10);
+        hit = true;
+      }
+    }
+    if (hit) {
+      this.audio.hit();
+      this.recordFeedback('hit', 'audio');
+      this.recordFeedback('hit', 'visual');
+      this.sawAnchor.damageTimer = 0.12;
+    }
+  }
+
+  getBoxRect(box) {
+    const half = this.boxSize / 2;
+    return {
+      x: box.x - half,
+      y: box.y - half,
+      w: this.boxSize,
+      h: this.boxSize
+    };
+  }
+
+  isBoxBlockedAt(x, y, ignoreBox = null) {
+    const half = this.boxSize / 2;
+    const points = [
+      { x: x - half, y: y - half },
+      { x: x + half, y: y - half },
+      { x: x - half, y: y + half },
+      { x: x + half, y: y + half }
+    ];
+    for (const point of points) {
+      const tileX = Math.floor(point.x / this.world.tileSize);
+      const tileY = Math.floor(point.y / this.world.tileSize);
+      if (this.world.isSolid(tileX, tileY, this.abilities, { ignoreOneWay: true })) {
+        return true;
+      }
+    }
+    const rect = { x: x - half, y: y - half, w: this.boxSize, h: this.boxSize };
+    for (const other of this.boxes) {
+      if (other === ignoreBox) continue;
+      const otherRect = this.getBoxRect(other);
+      if (rect.x < otherRect.x + otherRect.w
+        && rect.x + rect.w > otherRect.x
+        && rect.y < otherRect.y + otherRect.h
+        && rect.y + rect.h > otherRect.y) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  moveBoxBy(box, dx, dy) {
+    let movedX = 0;
+    let movedY = 0;
+    const stepSize = 2;
+    let remainingX = dx;
+    while (Math.abs(remainingX) > 0.01) {
+      const step = Math.sign(remainingX) * Math.min(stepSize, Math.abs(remainingX));
+      if (this.isBoxBlockedAt(box.x + step, box.y, box)) break;
+      box.x += step;
+      movedX += step;
+      remainingX -= step;
+    }
+    let remainingY = dy;
+    while (Math.abs(remainingY) > 0.01) {
+      const step = Math.sign(remainingY) * Math.min(stepSize, Math.abs(remainingY));
+      if (this.isBoxBlockedAt(box.x, box.y + step, box)) break;
+      box.y += step;
+      movedY += step;
+      remainingY -= step;
+    }
+    return { movedX, movedY };
+  }
+
+  resolveBoxCollisions(prevPlayer) {
+    if (this.boxes.length === 0) return;
+    const deltaX = this.player.x - prevPlayer.x;
+    for (const box of this.boxes) {
+      const playerRect = this.player.rect;
+      const boxRect = this.getBoxRect(box);
+      const overlaps = playerRect.x < boxRect.x + boxRect.w
+        && playerRect.x + playerRect.w > boxRect.x
+        && playerRect.y < boxRect.y + boxRect.h
+        && playerRect.y + playerRect.h > boxRect.y;
+      if (!overlaps) continue;
+      const overlapX = Math.min(playerRect.x + playerRect.w - boxRect.x, boxRect.x + boxRect.w - playerRect.x);
+      const overlapY = Math.min(playerRect.y + playerRect.h - boxRect.y, boxRect.y + boxRect.h - playerRect.y);
+      if (overlapX < overlapY) {
+        const pushDir = Math.sign(deltaX) || (this.player.x < box.x ? -1 : 1);
+        const desired = overlapX * pushDir;
+        const { movedX } = this.moveBoxBy(box, desired, 0);
+        const remaining = desired - movedX;
+        if (Math.abs(remaining) > 0.01) {
+          this.player.x -= remaining;
+        }
+      } else {
+        const pushDir = this.player.y < box.y ? -1 : 1;
+        this.player.y -= overlapY * pushDir;
+        if (pushDir < 0) {
+          this.player.vy = Math.min(this.player.vy, 0);
+          this.player.onGround = true;
+        } else {
+          this.player.vy = Math.max(this.player.vy, 0);
+        }
+      }
+    }
+  }
+
+  pullBoxTowardPlayer(dt, input) {
+    if (!this.sawAnchor.attachedBox) return;
+    const pulling = this.sawAnchor.pullTimer > 0 || input.isDown('attack');
+    if (!pulling) return;
+    const box = this.sawAnchor.attachedBox;
+    const dx = this.player.x - box.x;
+    const dy = this.player.y - box.y;
+    const dist = Math.hypot(dx, dy) || 1;
+    const pullSpeed = 200;
+    const step = Math.min(dist, pullSpeed * dt);
+    const moveX = (dx / dist) * step;
+    const moveY = (dy / dist) * step;
+    this.moveBoxBy(box, moveX, moveY);
+    this.sawAnchor.x = box.x;
+    this.sawAnchor.y = box.y;
   }
 
   drawTether(ctx) {
@@ -1586,6 +1820,7 @@ export default class Game {
     ctx.translate(-this.camera.x + shakeX, -this.camera.y + shakeY);
 
     this.drawWorld(ctx);
+    this.drawBoxes(ctx);
     this.roomCoverageTest.drawWorld(ctx);
     this.drawInteractables(ctx);
     if (this.sawAnchor.active) {
@@ -1727,6 +1962,21 @@ export default class Game {
       this.boss.draw(ctx);
     }
     this.player.draw(ctx);
+    ctx.restore();
+  }
+
+  drawBoxes(ctx) {
+    if (!this.boxes.length) return;
+    ctx.save();
+    this.boxes.forEach((box) => {
+      const rect = this.getBoxRect(box);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(rect.x + 2, rect.y + 2, rect.w - 4, rect.h - 4);
+      ctx.beginPath();
+      ctx.moveTo(rect.x + 6, rect.y + rect.h - 6);
+      ctx.lineTo(rect.x + rect.w - 6, rect.y + 6);
+      ctx.stroke();
+    });
     ctx.restore();
   }
 
@@ -2106,10 +2356,16 @@ export default class Game {
     };
     this.player.flameMode = false;
     this.sawAnchor.active = false;
+    this.sawAnchor.embedded = false;
+    this.sawAnchor.attachedBox = null;
+    this.sawAnchor.pullTimer = 0;
+    this.sawAnchor.retractTimer = 0;
+    this.sawAnchor.autoRetractTimer = 0;
     this.player.x = this.world.spawnPoint.x;
     this.player.y = this.world.spawnPoint.y;
     this.lastSave = { x: this.player.x, y: this.player.y };
     this.enemies = [];
+    this.spawnBoxes();
     this.boss = null;
     this.objective = 'Test obstacle interactions.';
     this.audio.ui();
