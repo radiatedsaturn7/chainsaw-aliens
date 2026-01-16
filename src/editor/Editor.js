@@ -57,6 +57,7 @@ export default class Editor {
     this.dragStart = null;
     this.panStart = null;
     this.zoomStart = null;
+    this.gestureStart = null;
     this.dragButton = null;
     this.pendingChanges = new Map();
     this.pendingSpawn = null;
@@ -431,6 +432,37 @@ export default class Editor {
   handlePointerUp() {
     if (!this.active) return;
     this.endStroke();
+  }
+
+  handleGestureStart(payload) {
+    if (!this.active) return;
+    this.dragging = false;
+    this.dragMode = null;
+    this.panStart = null;
+    this.zoomStart = null;
+    this.gestureStart = {
+      x: payload.x,
+      y: payload.y,
+      camX: this.camera.x,
+      camY: this.camera.y,
+      zoom: this.zoom,
+      distance: payload.distance
+    };
+  }
+
+  handleGestureMove(payload) {
+    if (!this.active || !this.gestureStart) return;
+    const zoomFactor = payload.distance / this.gestureStart.distance;
+    this.setZoom(this.gestureStart.zoom * zoomFactor, payload.x, payload.y);
+    const dx = (payload.x - this.gestureStart.x) / this.zoom;
+    const dy = (payload.y - this.gestureStart.y) / this.zoom;
+    this.camera.x = Math.max(0, this.gestureStart.camX - dx);
+    this.camera.y = Math.max(0, this.gestureStart.camY - dy);
+  }
+
+  handleGestureEnd() {
+    if (!this.active) return;
+    this.gestureStart = null;
   }
 
   handleWheel(payload) {
