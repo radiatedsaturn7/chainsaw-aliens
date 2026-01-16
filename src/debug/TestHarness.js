@@ -16,7 +16,6 @@ export default class TestHarness {
     this.infiniteFuel = false;
     this.slowMotion = false;
     this.showCollision = false;
-    this.showGateReqs = false;
     this.showBoxes = false;
     this.seeded = false;
     this.executionVariants = new Set();
@@ -70,11 +69,10 @@ export default class TestHarness {
     if (input.wasPressedCode('KeyF')) this.infiniteFuel = !this.infiniteFuel;
     if (input.wasPressedCode('KeyO')) this.slowMotion = !this.slowMotion;
     if (input.wasPressedCode('KeyC')) this.showCollision = !this.showCollision;
-    if (input.wasPressedCode('KeyH')) this.showGateReqs = !this.showGateReqs;
     if (input.wasPressedCode('KeyY')) this.toggleSeeded();
 
-    if (input.wasPressedCode('KeyG')) game.abilities.grapple = !game.abilities.grapple;
-    if (input.wasPressedCode('KeyP')) game.abilities.phase = !game.abilities.phase;
+    if (input.wasPressedCode('KeyG')) game.abilities.anchor = !game.abilities.anchor;
+    if (input.wasPressedCode('KeyP')) game.abilities.flame = !game.abilities.flame;
     if (input.wasPressedCode('KeyM')) game.abilities.magboots = !game.abilities.magboots;
     if (input.wasPressedCode('KeyR')) game.abilities.resonance = !game.abilities.resonance;
 
@@ -119,11 +117,10 @@ export default class TestHarness {
     ctx.fillText(`Infinite Fuel (F): ${this.infiniteFuel ? 'ON' : 'OFF'}`, width - 268, 74);
     ctx.fillText(`Slow Motion (O): ${this.slowMotion ? 'ON' : 'OFF'}`, width - 268, 90);
     ctx.fillText(`Show Collision (C): ${this.showCollision ? 'ON' : 'OFF'}`, width - 268, 106);
-    ctx.fillText(`Show Gate Reqs (H): ${this.showGateReqs ? 'ON' : 'OFF'}`, width - 268, 122);
-    ctx.fillText(`Seeded RNG (Y): ${this.seeded ? 'ON' : 'OFF'}`, width - 268, 138);
-    ctx.fillText(`Jump Height: ${jumpTiles} tiles`, width - 268, 154);
-    ctx.fillText(`Dash Distance: ${dashDistance.toFixed(1)} tiles`, width - 268, 170);
-    ctx.fillText('Teleport: 1-6 (regions)', width - 268, 186);
+    ctx.fillText(`Seeded RNG (Y): ${this.seeded ? 'ON' : 'OFF'}`, width - 268, 122);
+    ctx.fillText(`Jump Height: ${jumpTiles} tiles`, width - 268, 138);
+    ctx.fillText(`Dash Distance: ${dashDistance.toFixed(1)} tiles`, width - 268, 154);
+    ctx.fillText('Teleport: 1-6 (regions)', width - 268, 170);
     ctx.restore();
 
     this.drawExecutionChecklist(ctx, width, height);

@@ -15,12 +15,12 @@ export default class Checklist {
     const { player, enemies, world } = game;
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    ctx.fillRect(12, height - 220, 240, 208);
+    ctx.fillRect(12, height - 260, 240, 248);
     ctx.strokeStyle = '#fff';
-    ctx.strokeRect(12, height - 220, 240, 208);
+    ctx.strokeRect(12, height - 260, 240, 248);
     ctx.fillStyle = '#fff';
     ctx.font = '12px Courier New';
-    ctx.fillText('VISUAL READABILITY', 24, height - 198);
+    ctx.fillText('VISUAL READABILITY', 24, height - 238);
     const legendItems = [
       'player',
       'ability',
@@ -28,10 +28,11 @@ export default class Checklist {
       'save',
       'shop',
       'anchor',
-      'gateG',
-      'gateP',
-      'gateM',
-      'gateR',
+      'wood',
+      'metal',
+      'brittle',
+      'debris',
+      'switch',
       'bossGate',
       'skitter',
       'spitter',
@@ -45,7 +46,7 @@ export default class Checklist {
     legendItems.forEach((key, index) => {
       const item = LEGEND[key];
       if (!item) return;
-      ctx.fillText(`${item.glyph} ${item.label}`, 24, height - 178 + index * 12);
+      ctx.fillText(`${item.glyph} ${item.label}`, 24, height - 218 + index * 12);
     });
     ctx.restore();
 
@@ -129,7 +130,6 @@ export default class Checklist {
         candidates.push({ x: upgrade.x, y: upgrade.y, label: LEGEND.vitality.label });
       }
     });
-    world.gates.forEach((gate) => candidates.push({ x: gate.x, y: gate.y, label: LEGEND[`gate${gate.type}`]?.label || 'Gate' }));
     if (world.bossGate) candidates.push({ x: world.bossGate.x, y: world.bossGate.y, label: LEGEND.bossGate.label });
     let best = null;
     candidates.forEach((item) => {

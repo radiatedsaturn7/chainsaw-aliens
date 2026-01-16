@@ -21,6 +21,8 @@ Then visit `http://localhost:8000/index.html`.
 - Dash: **Shift**
 - Attack (bite): **J**
 - Rev / Execute: **K** (hold)
+- Flame-Saw Mode Toggle: **F**
+- Throw Chainsaw (embed anchor): **L**
 - Interact / Advance dialog: **Space**
 - Pause: **Esc**
 - Test Dashboard (title screen): **T** (or click **Run Tests**)
@@ -30,7 +32,8 @@ Then visit `http://localhost:8000/index.html`.
 - Room Coverage Validator: **C**
 - Encounter Audit: **E**
 - Readability Validation Overlay + Minimap Legend: **F1**
-- Debug Overlay (Playability Verification Layer): **L**
+- Debug Overlay (Playability Verification Layer): **F3**
+- Obstacle Test Room (debug): **B**
 
 ## Test Dashboard & Validation
 - Tests never run automatically on boot. Open the **Test Dashboard** from the title screen (press **T** or click **Run Tests**) to run them explicitly.
@@ -46,14 +49,21 @@ Then visit `http://localhost:8000/index.html`.
 - Press **C** to run the Room Coverage Validator (also toggles the room reachability overlay).
 - Press **E** to run the Encounter Audit.
 - Press **F1** to toggle the Readability Validation Overlay + minimap legend overlay.
-- Press **L** to toggle the Playability Verification Overlay (collision boxes, solid tiles, invariant status, log panel).
+- Press **F3** to toggle the Playability Verification Overlay (collision boxes, solid tiles, invariant status, log panel).
 
 ## Gameplay Tips
-- Hunt for the four abilities to unlock new areas:
-  - Grapple Spike
-  - Phase Wedge
-  - Mag Boots
-  - Resonance Core
+- Hunt for tool upgrades that unlock material interactions:
+  - Chainsaw Throw rig (anchors into walls for vertical rides)
+  - Flame-Saw attachment (burns wood, melts metal, noisy + fuel-heavy)
+  - Mag Boots (push-to-stick wall jumps; heat risk)
+  - Resonance Core (shatters brittle walls, ruptures the rift seal)
+- Materials block paths instead of key gates: wood barricades, welded plates, brittle walls, heavy debris.
+- Material interaction quick guide:
+  - **Wood Barricade**: cut with the chainsaw (slow/quiet) or burn in Flame-Saw mode (fast/loud/fuel-heavy).
+  - **Welded Metal Plate**: melt with Flame-Saw mode.
+  - **Brittle Wall / Rift Seal**: shatter with Resonance (rev pulses).
+  - **Heavy Debris**: clear by triggering nearby counterweight switches.
+- Mag Boots engage only while pressing into a wall; wall jumps always kick away and build heat toward a brief overheat lockout.
 - Enemies drop weapon loot — sell it at shops for credits.
 - Equip modular chainsaw upgrades at shops to customize your build.
 - Find save pylons to set checkpoints.

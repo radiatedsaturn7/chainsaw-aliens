@@ -1,6 +1,6 @@
 import { getDashDistance, getJumpHeight, MOVEMENT_MODEL } from '../game/MovementModel.js';
 
-const ABILITY_ORDER = ['grapple', 'phase', 'magboots', 'resonance'];
+const ABILITY_ORDER = ['anchor', 'flame', 'magboots', 'resonance'];
 
 export default class FeasibilityValidator {
   constructor(world, player) {
@@ -46,8 +46,8 @@ export default class FeasibilityValidator {
     const summary = [];
     const detail = [];
     let abilities = {
-      grapple: false,
-      phase: false,
+      anchor: false,
+      flame: false,
       magboots: false,
       resonance: false
     };
@@ -63,7 +63,7 @@ export default class FeasibilityValidator {
     });
     const finalTargets = {};
     if (objectiveTargets.boss) {
-      finalTargets['final boss gate'] = objectiveTargets.boss;
+      finalTargets['final rift seal'] = objectiveTargets.boss;
     }
     const finalReport = this.runSingleStage(abilities, finalTargets, 'Final Stage');
     summary.push(`${finalReport.status === 'pass' ? '✓' : '✗'} Final Stage`);
@@ -151,10 +151,6 @@ export default class FeasibilityValidator {
       const node = this.nodeFromWorld(anchor.x, anchor.y);
       this.addNode(nodes, node.tx, node.ty, 'anchor');
     });
-    this.world.gates.forEach((gate) => {
-      const node = this.nodeFromWorld(gate.x, gate.y);
-      this.addNode(nodes, node.tx, node.ty, 'gate');
-    });
     if (this.world.bossGate) {
       const node = this.nodeFromWorld(this.world.bossGate.x, this.world.bossGate.y);
       this.addNode(nodes, node.tx, node.ty, 'boss');
@@ -200,16 +196,6 @@ export default class FeasibilityValidator {
         if (!nodes.has(`${tx},${ty}`)) continue;
         if (!this.clearTrajectory(node.tx, node.ty, tx, ty, abilities)) continue;
         list.push(`${tx},${ty}`);
-      }
-      if (abilities.grapple) {
-        nodeKeys.forEach((anchorKey) => {
-          const anchor = nodes.get(anchorKey);
-          if (anchor.type !== 'anchor') return;
-          const dist = Math.hypot(anchor.tx - node.tx, anchor.ty - node.ty);
-          if (dist <= profile.grappleRange) {
-            list.push(anchorKey);
-          }
-        });
       }
       edges.set(key, list);
     });
@@ -262,14 +248,13 @@ export default class FeasibilityValidator {
     const jumpHeight = getJumpHeight(this.player.jumpPower || MOVEMENT_MODEL.baseJumpPower);
     const maxJumpHeight = Math.max(2, Math.ceil(jumpHeight / this.world.tileSize));
     const maxJumpDistance = Math.max(3, Math.ceil((this.player.speed * 0.45) / this.world.tileSize));
-    const maxDropDistance = abilities.phase ? 9 : 6;
+    const maxDropDistance = 6;
     const dashDistance = Math.max(3, Math.ceil(getDashDistance() / this.world.tileSize));
     return {
-      maxJumpHeight: abilities.magboots ? maxJumpHeight + 1 : maxJumpHeight,
-      maxJumpDistance: abilities.grapple ? maxJumpDistance + 1 : maxJumpDistance,
+      maxJumpHeight: abilities.magboots ? maxJumpHeight + 1 : maxJumpHeight + (abilities.anchor ? 1 : 0),
+      maxJumpDistance,
       maxDropDistance,
       dashDistance,
-      grappleRange: abilities.grapple ? 5 : 0,
       speed: this.player.speed || MOVEMENT_MODEL.baseSpeed,
       jumpPower: this.player.jumpPower || MOVEMENT_MODEL.baseJumpPower
     };
@@ -326,12 +311,6 @@ export default class FeasibilityValidator {
 
   diagnoseFailure(nearest, target, abilities) {
     const tile = this.world.getTile(target.tx, target.ty);
-    if (['G', 'P', 'M', 'R', 'B'].includes(tile)) {
-      return {
-        constraint: `gate requires ${tile}`,
-        suggestion: 'gate ordering'
-      };
-    }
     if (!nearest) return { constraint: 'no reachable nodes', suggestion: 'layout' };
     const dx = Math.abs(target.tx - nearest.tx);
     const dy = target.ty - nearest.ty;

@@ -19,19 +19,19 @@ const FALLBACK_WORLD = {
     "#######################.....a.......a.....###.................##",
     "#######################...m...............###.................##",
     "################################a###################.###########",
-    "################################P###################R###########",
+    "################################X###################C###########",
     "################################.###################.###########",
     "##.................####.......##.##.......###.......#####.....##",
     "##............a.a..####...................###...a.............##",
     "##........................#....##..................####.......##",
-    "##....g...S.......H..........S......$...p..G......S.....$.....##",
+    "##....g...S.......H..........S......$...p.TU......S.....$.....##",
     "#######################.....#.#...#...#.#.###.#.#.#.#...#.#.#.##",
     "##.................####...................###.................##",
     "##.................####...................###.................##",
     "################################.###############################",
-    "################################M###############################",
+    "################################U###############################",
     "################################.###############################",
-    "#######################...................######################",
+    "#######################.........T.........######################",
     "#######################...r...H...........######################",
     "#######################...#############...######################",
     "#######################.......S...........######################",
@@ -68,7 +68,6 @@ export default class World {
     this.savePoints = [];
     this.shops = [];
     this.anchors = [];
-    this.gates = [];
     this.bossGate = null;
     this.objectives = [];
     this.enemies = [];
@@ -106,7 +105,6 @@ export default class World {
     this.savePoints = [];
     this.shops = [];
     this.anchors = [];
-    this.gates = [];
     this.bossGate = null;
     this.objectives = [];
     this.enemies = (data.enemies || []).map((enemy) => ({ ...enemy }));
@@ -120,7 +118,6 @@ export default class World {
     this.savePoints = [];
     this.shops = [];
     this.anchors = [];
-    this.gates = [];
     this.bossGate = null;
     this.objectives = [];
     let saveIndex = 0;
@@ -148,7 +145,7 @@ export default class World {
           this.objectives.push({ x: worldX, y: worldY });
         }
         if (tile === 'g' || tile === 'p' || tile === 'm' || tile === 'r') {
-          const ability = { g: 'grapple', p: 'phase', m: 'magboots', r: 'resonance' }[tile];
+          const ability = { g: 'anchor', p: 'flame', m: 'magboots', r: 'resonance' }[tile];
           this.abilityPickups.push({ id: `ability-${ability}`, x: worldX, y: worldY, ability, collected: false });
         }
         if (tile === 'H') {
@@ -163,9 +160,6 @@ export default class World {
         }
         if (tile === 'a') {
           this.anchors.push({ x: worldX, y: worldY });
-        }
-        if (['G', 'P', 'M', 'R'].includes(tile)) {
-          this.gates.push({ x: worldX, y: worldY, type: tile });
         }
         if (tile === 'B') {
           this.bossGate = { id: 'boss-gate', x: worldX, y: worldY };
@@ -191,11 +185,8 @@ export default class World {
     const tile = this.getTile(x, y);
     if (tile === '#') return true;
     if (tile === 'D') return true;
-    if (tile === 'G') return !abilities.grapple;
-    if (tile === 'P') return !abilities.phase;
-    if (tile === 'M') return !abilities.magboots;
-    if (tile === 'R') return !abilities.resonance;
-    if (tile === 'B') return !(abilities.grapple && abilities.phase && abilities.magboots && abilities.resonance);
+    if (tile === 'B') return true;
+    if (tile === 'W' || tile === 'X' || tile === 'C' || tile === 'U') return true;
     if (tile === '=') return !options.ignoreOneWay;
     return false;
   }

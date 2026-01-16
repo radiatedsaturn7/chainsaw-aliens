@@ -40,7 +40,6 @@ export default class Minimap {
     this.world.healthUpgrades.forEach((upgrade) => {
       if (!upgrade.collected) this.drawIcon(ctx, upgrade.x, upgrade.y, pixel, 'rgba(255,255,255,0.7)');
     });
-    this.world.gates.forEach((gate) => this.drawGateIcon(ctx, gate, pixel));
     if (this.world.bossGate) this.drawIcon(ctx, this.world.bossGate.x, this.world.bossGate.y, pixel, 'rgba(255,255,255,0.7)');
     ctx.restore();
 
@@ -62,9 +61,9 @@ export default class Minimap {
   drawLegend(ctx, x, y) {
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    ctx.fillRect(x, y, 140, 120);
+    ctx.fillRect(x, y, 140, 140);
     ctx.strokeStyle = '#fff';
-    ctx.strokeRect(x, y, 140, 120);
+    ctx.strokeRect(x, y, 140, 140);
     ctx.fillStyle = '#fff';
     ctx.font = '10px Courier New';
     const items = [
@@ -74,8 +73,9 @@ export default class Minimap {
       ['✚', 'Vitality'],
       ['⬟', 'Save'],
       ['▵', 'Shop'],
-      ['G/P/M/R', 'Gates'],
-      ['B', 'Boss Gate']
+      ['W/X/C/U', 'Obstacles'],
+      ['T', 'Switch'],
+      ['B', 'Rift Seal']
     ];
     items.forEach((item, index) => {
       ctx.fillText(`${item[0]} ${item[1]}`, x + 8, y + 18 + index * 14);
@@ -83,16 +83,4 @@ export default class Minimap {
     ctx.restore();
   }
 
-  drawGateIcon(ctx, gate, pixel) {
-    const tileX = Math.floor(gate.x / this.world.tileSize);
-    const tileY = Math.floor(gate.y / this.world.tileSize);
-    ctx.save();
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.fillRect(tileX * pixel - pixel * 0.6, tileY * pixel - pixel * 0.6, pixel * 1.2, pixel * 1.2);
-    ctx.fillStyle = '#000';
-    ctx.font = `${Math.max(6, pixel * 1.2)}px Courier New`;
-    ctx.textAlign = 'center';
-    ctx.fillText(gate.type, tileX * pixel, tileY * pixel + pixel * 0.4);
-    ctx.restore();
-  }
 }
