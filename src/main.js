@@ -6,6 +6,30 @@ const ctx = canvas.getContext('2d');
 const game = new Game(canvas, ctx);
 window.__game = game;
 window.__gameReady = true;
+let isMobile = false;
+let fullscreenRequested = false;
+
+function detectMobile() {
+  const uaMobile = navigator.userAgentData?.mobile;
+  if (typeof uaMobile === 'boolean') {
+    return uaMobile;
+  }
+  const ua = navigator.userAgent || '';
+  const uaHint = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  const noHover = window.matchMedia('(hover: none)').matches;
+  const smallScreen = window.matchMedia('(max-width: 900px)').matches;
+  return uaHint || (coarsePointer && noHover && smallScreen);
+}
+
+function requestFullscreen() {
+  if (fullscreenRequested || !isMobile || document.fullscreenElement) return;
+  const root = document.documentElement;
+  if (root.requestFullscreen) {
+    root.requestFullscreen().catch(() => {});
+    fullscreenRequested = true;
+  }
+}
 
 function getCanvasPosition(event) {
   const rect = canvas.getBoundingClientRect();
@@ -21,7 +45,8 @@ function resize() {
   const scale = Math.min(window.innerWidth / canvas.width, window.innerHeight / canvas.height);
   canvas.style.transform = `scale(${scale})`;
   if (game.setViewport) {
-    const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 900;
+    isMobile = detectMobile();
+    document.body.classList.toggle('mobile', isMobile);
     game.setViewport({
       width: window.innerWidth,
       height: window.innerHeight,
@@ -97,6 +122,7 @@ function getTouchById(touches, id) {
 }
 
 canvas.addEventListener('touchstart', (event) => {
+  requestFullscreen();
   if (event.touches.length >= 2) {
     if (activeTouchId !== null && game.handlePointerUp) {
       game.handlePointerUp({ ...lastTouchPosition, button: 0, id: activeTouchId });
@@ -180,6 +206,10 @@ canvas.addEventListener('touchcancel', (event) => {
 
 canvas.addEventListener('contextmenu', (event) => {
   event.preventDefault();
+});
+
+canvas.addEventListener('click', () => {
+  requestFullscreen();
 });
 
 let last = performance.now();

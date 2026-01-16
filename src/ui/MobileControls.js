@@ -40,12 +40,12 @@ export default class MobileControls {
     this.joystick.knobRadius = knobRadius;
 
     const buttonRadius = Math.min(54, base * 0.1);
-    const buttonGap = buttonRadius * 0.9;
+    const buttonGap = Math.max(buttonRadius * 1.15, buttonRadius + 12);
     const rightX = width - margin - buttonRadius;
     const lowerY = height - margin - buttonRadius;
     const upperY = lowerY - buttonGap;
     const leftX = rightX - buttonGap;
-    const upperLeftY = upperY - buttonGap * 0.9;
+    const upperLeftY = upperY - buttonGap;
 
     this.buttons = [
       { id: 'jump', label: 'JUMP', action: 'jump', x: rightX, y: upperY, r: buttonRadius },
