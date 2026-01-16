@@ -126,6 +126,20 @@ export default class Editor {
     this.playtestSpawnOverride = null;
     this.precisionZoom = null;
     this.playButtonBounds = null;
+    this.panJoystick = {
+      center: { x: 0, y: 0 },
+      radius: 0,
+      knobRadius: 0,
+      dx: 0,
+      dy: 0,
+      active: false,
+      id: null
+    };
+    this.zoomSlider = {
+      bounds: { x: 0, y: 0, w: 0, h: 0 },
+      active: false,
+      id: null
+    };
     this.dragStart = null;
     this.dragTarget = null;
     this.recordRecent('tiles', this.tileType);
@@ -194,6 +208,11 @@ export default class Editor {
 
   update(input, dt) {
     this.handleKeyboard(input, dt);
+    if (Math.abs(this.panJoystick.dx) > 0.01 || Math.abs(this.panJoystick.dy) > 0.01) {
+      const panSpeed = 320 * dt * (1 / this.zoom);
+      this.camera.x = Math.max(0, this.camera.x + this.panJoystick.dx * panSpeed);
+      this.camera.y = Math.max(0, this.camera.y + this.panJoystick.dy * panSpeed);
+    }
     this.updateHover();
     if (this.tooltipTimer > 0) {
       this.tooltipTimer = Math.max(0, this.tooltipTimer - dt);
@@ -451,6 +470,20 @@ export default class Editor {
       return;
     }
 
+    if (this.isPointInCircle(payload.x, payload.y, this.panJoystick.center, this.panJoystick.radius * 1.2)) {
+      this.panJoystick.active = true;
+      this.panJoystick.id = payload.id ?? null;
+      this.updatePanJoystick(payload.x, payload.y);
+      return;
+    }
+
+    if (this.isPointInBounds(payload.x, payload.y, this.zoomSlider.bounds)) {
+      this.zoomSlider.active = true;
+      this.zoomSlider.id = payload.id ?? null;
+      this.updateZoomFromSlider(payload.x);
+      return;
+    }
+
     if (this.radialMenu.active) {
       if (this.handleUIClick(payload.x, payload.y)) return;
       this.closeRadialMenu();
@@ -521,6 +554,14 @@ export default class Editor {
   handlePointerMove(payload) {
     if (!this.active) return;
     this.lastPointer = { x: payload.x, y: payload.y };
+    if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
+      this.updatePanJoystick(payload.x, payload.y);
+      return;
+    }
+    if (this.zoomSlider.active && (payload.id === undefined || this.zoomSlider.id === payload.id)) {
+      this.updateZoomFromSlider(payload.x);
+      return;
+    }
     if (this.isMobileLayout() && this.drawer.swipeStart) {
       const dx = payload.x - this.drawer.swipeStart.x;
       const dy = payload.y - this.drawer.swipeStart.y;
@@ -600,7 +641,7 @@ export default class Editor {
     }
   }
 
-  handlePointerUp() {
+  handlePointerUp(payload = {}) {
     if (!this.active) return;
     if (this.playtestPressActive) {
       this.playtestPressActive = false;
@@ -609,6 +650,20 @@ export default class Editor {
         this.playtestPressTimer = null;
         this.game.exitEditor({ playtest: true });
       }
+      return;
+    }
+
+    if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
+      this.panJoystick.active = false;
+      this.panJoystick.id = null;
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+      return;
+    }
+
+    if (this.zoomSlider.active && (payload.id === undefined || this.zoomSlider.id === payload.id)) {
+      this.zoomSlider.active = false;
+      this.zoomSlider.id = null;
       return;
     }
 
@@ -704,6 +759,39 @@ export default class Editor {
   isPointInBounds(x, y, bounds) {
     if (!bounds) return false;
     return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
+  }
+
+  isPointInCircle(x, y, center, radius) {
+    const dx = x - center.x;
+    const dy = y - center.y;
+    return Math.hypot(dx, dy) <= radius;
+  }
+
+  updatePanJoystick(x, y) {
+    const { center, radius } = this.panJoystick;
+    const dx = x - center.x;
+    const dy = y - center.y;
+    const distance = Math.hypot(dx, dy);
+    if (distance <= 0.01) {
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+      return;
+    }
+    const clamped = Math.min(distance, radius);
+    const angle = Math.atan2(dy, dx);
+    const scaled = clamped / radius;
+    this.panJoystick.dx = Math.cos(angle) * scaled;
+    this.panJoystick.dy = Math.sin(angle) * scaled;
+  }
+
+  updateZoomFromSlider(x) {
+    const { bounds } = this.zoomSlider;
+    if (!bounds || bounds.w <= 0) return;
+    const t = Math.min(1, Math.max(0, (x - bounds.x) / bounds.w));
+    const minZoom = 0.5;
+    const maxZoom = 3;
+    const nextZoom = minZoom + (maxZoom - minZoom) * t;
+    this.setZoom(nextZoom, this.game.canvas.width / 2, this.game.canvas.height / 2);
   }
 
   setTileType(tile) {
@@ -1239,6 +1327,8 @@ export default class Editor {
   draw(ctx) {
     const { canvas } = this.game;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.scale(this.zoom, this.zoom);
     ctx.translate(-this.camera.x, -this.camera.y);
@@ -1493,14 +1583,43 @@ export default class Editor {
       }
     };
 
+    const controlMargin = 18;
+    const controlBase = Math.min(width, height);
+    const joystickRadius = this.isMobileLayout()
+      ? Math.min(78, controlBase * 0.14)
+      : Math.min(70, controlBase * 0.12);
+    const knobRadius = Math.max(22, joystickRadius * 0.45);
+    const joystickCenter = {
+      x: controlMargin + joystickRadius,
+      y: height - controlMargin - joystickRadius
+    };
+    this.panJoystick.center = joystickCenter;
+    this.panJoystick.radius = joystickRadius;
+    this.panJoystick.knobRadius = knobRadius;
+
+    let sliderX = joystickCenter.x + joystickRadius + 24;
+    let sliderWidth = width - sliderX - controlMargin;
+    const sliderHeight = 10;
+    const sliderY = height - controlMargin - sliderHeight;
+    if (sliderWidth < 160) {
+      sliderX = controlMargin;
+      sliderWidth = width - controlMargin * 2;
+    }
+    this.zoomSlider.bounds = {
+      x: sliderX,
+      y: sliderY - 14,
+      w: sliderWidth,
+      h: sliderHeight + 28
+    };
+
     if (this.isMobileLayout()) {
-      const drawerHeight = Math.min(260, height * 0.36);
-      const collapsedHeight = 56;
-      const panelH = this.drawer.open ? drawerHeight : collapsedHeight;
+      const drawerWidth = Math.floor(width * 0.5);
+      const collapsedWidth = 64;
+      const panelW = this.drawer.open ? drawerWidth : collapsedWidth;
       const panelX = 0;
-      const panelY = height - panelH;
-      const panelW = width;
-      this.editorBounds = { x: 0, y: 0, w: width, h: height - panelH };
+      const panelY = 0;
+      const panelH = height;
+      this.editorBounds = { x: panelW, y: 0, w: width - panelW, h: height };
       this.drawerBounds = { x: panelX, y: panelY, w: panelW, h: panelH };
       ctx.globalAlpha = 0.92;
       ctx.fillStyle = 'rgba(8,10,12,0.9)';
@@ -1508,11 +1627,11 @@ export default class Editor {
       ctx.strokeStyle = 'rgba(255,255,255,0.2)';
       ctx.strokeRect(panelX, panelY, panelW, panelH);
 
-      const handleAreaH = 24;
+      const handleAreaH = 28;
       ctx.fillStyle = 'rgba(255,255,255,0.12)';
       ctx.fillRect(panelX, panelY, panelW, handleAreaH);
       ctx.fillStyle = 'rgba(255,255,255,0.35)';
-      ctx.fillRect(panelX + panelW / 2 - 24, panelY + 9, 48, 5);
+      ctx.fillRect(panelX + panelW / 2 - 18, panelY + 10, 36, 4);
       this.addUIButton(
         { x: panelX, y: panelY, w: panelW, h: handleAreaH },
         () => {
@@ -1526,15 +1645,15 @@ export default class Editor {
         ctx.textAlign = 'center';
         let summary = `${modeLabel}`;
         if (this.mode === 'tile') {
-          summary = `${modeLabel} (${tileToolLabel}) • ${tileLabel}`;
+          summary = `${modeLabel} (${tileToolLabel})`;
         } else if (this.mode === 'enemy') {
-          summary = `${modeLabel} • ${enemyLabel}`;
+          summary = `${modeLabel}`;
         } else if (this.mode === 'prefab') {
-          summary = `${modeLabel} • ${prefabLabel}`;
+          summary = `${modeLabel}`;
         } else if (this.mode === 'shape') {
-          summary = `${modeLabel} • ${shapeLabel}`;
+          summary = `${modeLabel}`;
         }
-        ctx.fillText(summary, panelW / 2, panelY + 42);
+        ctx.fillText(summary, panelW / 2, panelY + 46);
       } else {
         const tabs = [
           { id: 'tools', label: 'TOOLS' },
@@ -1544,11 +1663,11 @@ export default class Editor {
           { id: 'shapes', label: 'SHAPES' }
         ];
         const activeTab = this.drawer.tabs[this.drawer.tabIndex];
-        const tabMargin = 16;
-        const tabGap = 10;
-        const tabHeight = 28;
+        const tabMargin = 12;
+        const tabGap = 6;
+        const tabHeight = 26;
         const tabWidth = (panelW - tabMargin * 2 - tabGap * (tabs.length - 1)) / tabs.length;
-        const tabY = panelY + handleAreaH + 10;
+        const tabY = panelY + handleAreaH + 8;
         tabs.forEach((tab, index) => {
           const x = panelX + tabMargin + index * (tabWidth + tabGap);
           drawButton(
@@ -1565,12 +1684,13 @@ export default class Editor {
           );
         });
 
-        const contentY = tabY + tabHeight + 12;
-        const contentHeight = panelY + panelH - contentY - 16;
+        const contentY = tabY + tabHeight + 10;
+        const reservedBottom = joystickRadius * 2 + 32;
+        const contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom);
         const buttonHeight = 44;
         const buttonGap = 10;
-        const contentX = panelX + 16;
-        const contentW = panelW - 32;
+        const contentX = panelX + 12;
+        const contentW = panelW - 24;
         let items = [];
         let columns = 2;
 
@@ -1837,6 +1957,48 @@ export default class Editor {
       });
     }
 
+    const zoomMin = 0.5;
+    const zoomMax = 3;
+    const zoomT = Math.min(1, Math.max(0, (this.zoom - zoomMin) / (zoomMax - zoomMin)));
+    const sliderKnobX = sliderX + zoomT * sliderWidth;
+    const sliderCenterY = sliderY + sliderHeight / 2;
+    const sliderKnobRadius = sliderHeight * 1.6;
+    ctx.save();
+    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(sliderX, sliderCenterY - sliderHeight / 2, sliderWidth, sliderHeight);
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(sliderX, sliderCenterY);
+    ctx.lineTo(sliderX + sliderWidth, sliderCenterY);
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(sliderKnobX, sliderCenterY, sliderKnobRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+    ctx.stroke();
+    ctx.restore();
+
+    const joystickKnobX = joystickCenter.x + this.panJoystick.dx * joystickRadius;
+    const joystickKnobY = joystickCenter.y + this.panJoystick.dy * joystickRadius;
+    ctx.save();
+    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.beginPath();
+    ctx.arc(joystickCenter.x, joystickCenter.y, joystickRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.beginPath();
+    ctx.arc(joystickKnobX, joystickKnobY, knobRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+    ctx.stroke();
+    ctx.restore();
+
     if (this.radialMenu.active && this.radialMenu.items.length > 0) {
       const centerX = this.radialMenu.x;
       const centerY = this.radialMenu.y;
@@ -1902,9 +2064,11 @@ export default class Editor {
     const fallbackTooltip = `Mode: ${modeLabel} | Tile: ${tileLabel} | Enemy: ${enemyLabel} | Prefab: ${prefabLabel} | Shape: ${shapeLabel}`;
     const tooltipText = tooltip || fallbackTooltip;
     const tooltipHeight = this.isMobileLayout() ? 22 : 24;
-    const tooltipY = this.isMobileLayout()
+    const baseTooltipY = this.isMobileLayout()
       ? this.editorBounds.y + this.editorBounds.h - tooltipHeight
       : height - tooltipHeight;
+    const sliderSafeY = sliderY - tooltipHeight - 12;
+    const tooltipY = Math.max(0, Math.min(baseTooltipY, sliderSafeY));
     ctx.globalAlpha = 0.85;
     ctx.fillStyle = 'rgba(0,0,0,0.8)';
     ctx.fillRect(0, tooltipY, width, tooltipHeight);
