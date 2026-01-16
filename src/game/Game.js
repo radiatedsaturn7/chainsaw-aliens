@@ -22,6 +22,7 @@ import Dialog from '../ui/Dialog.js';
 import HUD from '../ui/HUD.js';
 import Shop from '../ui/Shop.js';
 import Pause from '../ui/Pause.js';
+import MobileControls from '../ui/MobileControls.js';
 import TestHarness from '../debug/TestHarness.js';
 import Validator from '../debug/Validator.js';
 import ConsoleOverlay from '../debug/ConsoleOverlay.js';
@@ -138,8 +139,21 @@ export default class Game {
     this.simulationActive = false;
     this.editor = new Editor(this);
     this.editorReturnState = 'title';
+    this.isMobile = false;
+    this.viewport = { width: window.innerWidth, height: window.innerHeight, scale: 1 };
+    this.mobileControls = new MobileControls();
 
     this.init();
+  }
+
+  setViewport({ width, height, scale, isMobile }) {
+    this.viewport = { width, height, scale };
+    this.isMobile = Boolean(isMobile);
+    this.mobileControls.setViewport({
+      width: this.canvas.width,
+      height: this.canvas.height,
+      isMobile: this.isMobile
+    });
   }
 
   async init() {
@@ -350,6 +364,12 @@ export default class Game {
 
   update(dt) {
     if (this.state === 'loading') return;
+    if (this.state === 'editor') {
+      this.input.clearVirtual();
+    } else {
+      const mobileActions = this.mobileControls.getActions(this.state);
+      this.input.setVirtual(mobileActions);
+    }
     this.clock += dt;
     this.menuFlashTimer = Math.max(0, this.menuFlashTimer - dt);
 
@@ -1131,11 +1151,13 @@ export default class Game {
 
     if (this.state === 'title') {
       this.title.draw(ctx, canvas.width, canvas.height);
+      this.mobileControls.draw(ctx, this.state);
       return;
     }
 
     if (this.state === 'dialog') {
       this.dialog.draw(ctx, canvas.width, canvas.height);
+      this.mobileControls.draw(ctx, this.state);
       return;
     }
 
@@ -1214,6 +1236,7 @@ export default class Game {
       ctx.restore();
     }
 
+    this.mobileControls.draw(ctx, this.state);
     this.consoleOverlay.draw(ctx, canvas.width, canvas.height);
     this.checklist.draw(ctx, this, canvas.width, canvas.height);
     this.testHarness.draw(ctx, this, canvas.width, canvas.height);
@@ -1701,18 +1724,27 @@ export default class Game {
   }
 
   handlePointerDown(payload) {
-    if (this.state !== 'editor') return;
-    this.editor.handlePointerDown(payload);
+    if (this.state === 'editor') {
+      this.editor.handlePointerDown(payload);
+      return;
+    }
+    this.mobileControls.handlePointerDown(payload, this.state);
   }
 
   handlePointerMove(payload) {
-    if (this.state !== 'editor') return;
-    this.editor.handlePointerMove(payload);
+    if (this.state === 'editor') {
+      this.editor.handlePointerMove(payload);
+      return;
+    }
+    this.mobileControls.handlePointerMove(payload);
   }
 
   handlePointerUp(payload) {
-    if (this.state !== 'editor') return;
-    this.editor.handlePointerUp(payload);
+    if (this.state === 'editor') {
+      this.editor.handlePointerUp(payload);
+      return;
+    }
+    this.mobileControls.handlePointerUp(payload);
   }
 
   handleWheel(payload) {
