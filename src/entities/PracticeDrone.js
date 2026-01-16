@@ -19,13 +19,17 @@ export default class PracticeDrone extends EnemyBase {
   damage(amount) {
     this.stagger = Math.min(1, this.stagger + 0.4);
     this.health = Math.max(1, this.health - amount);
+    this.hurtTimer = 0.25;
+    this.shakePhase = 0;
   }
 
   draw(ctx) {
+    const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
     ctx.save();
-    ctx.translate(this.x, this.y + Math.sin(this.pulse) * 4);
+    ctx.translate(this.x + offsetX, this.y + Math.sin(this.pulse) * 4 + offsetY);
     const glow = this.stagger > 0.6 ? 1 : 0.8;
-    ctx.strokeStyle = `rgba(255,255,255,${glow})`;
+    const alpha = flash ? 1 : glow;
+    ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.rect(-18, -12, 36, 24);

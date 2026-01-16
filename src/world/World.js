@@ -71,6 +71,7 @@ export default class World {
     this.gates = [];
     this.bossGate = null;
     this.objectives = [];
+    this.enemies = [];
     this.data = null;
   }
 
@@ -108,6 +109,7 @@ export default class World {
     this.gates = [];
     this.bossGate = null;
     this.objectives = [];
+    this.enemies = (data.enemies || []).map((enemy) => ({ ...enemy }));
     this.data = data;
     this.rebuildCaches();
   }
@@ -222,6 +224,90 @@ export default class World {
     if (this.data) {
       this.data.spawn = { x, y };
     }
+  }
+
+  enemyAt(tileX, tileY) {
+    return this.enemies.find((enemy) => enemy.x === tileX && enemy.y === tileY) || null;
+  }
+
+  setEnemy(tileX, tileY, type) {
+    const existing = this.enemyAt(tileX, tileY);
+    if (existing) {
+      existing.type = type;
+    } else {
+      this.enemies.push({ x: tileX, y: tileY, type });
+    }
+    if (this.data) {
+      this.data.enemies = this.enemies;
+    }
+  }
+
+  removeEnemy(tileX, tileY) {
+    const before = this.enemies.length;
+    this.enemies = this.enemies.filter((enemy) => !(enemy.x === tileX && enemy.y === tileY));
+    if (this.enemies.length !== before && this.data) {
+      this.data.enemies = this.enemies;
+    }
+  }
+
+  expandToInclude(tileX, tileY, fillChar = '.') {
+    const left = Math.max(0, -tileX);
+    const top = Math.max(0, -tileY);
+    const right = Math.max(0, tileX - (this.width - 1));
+    const bottom = Math.max(0, tileY - (this.height - 1));
+    if (left + top + right + bottom === 0) {
+      return { offsetX: 0, offsetY: 0 };
+    }
+
+    const newWidth = this.width + left + right;
+    const newHeight = this.height + top + bottom;
+    const fillRow = fillChar.repeat(newWidth);
+    const nextTiles = [];
+    for (let y = 0; y < top; y += 1) {
+      nextTiles.push(fillRow);
+    }
+    const leftFill = fillChar.repeat(left);
+    const rightFill = fillChar.repeat(right);
+    this.tiles.forEach((row) => {
+      nextTiles.push(`${leftFill}${row}${rightFill}`);
+    });
+    for (let y = 0; y < bottom; y += 1) {
+      nextTiles.push(fillRow);
+    }
+
+    this.tiles = nextTiles;
+    this.width = newWidth;
+    this.height = newHeight;
+
+    if (left || top) {
+      if (this.spawn) {
+        this.spawn = { x: this.spawn.x + left, y: this.spawn.y + top };
+        this.spawnPoint = {
+          x: (this.spawn.x + 0.5) * this.tileSize,
+          y: (this.spawn.y + 0.5) * this.tileSize
+        };
+      }
+      this.regions.forEach((region) => {
+        const [rx, ry, rw, rh] = region.rect;
+        region.rect = [rx + left, ry + top, rw, rh];
+      });
+      this.enemies.forEach((enemy) => {
+        enemy.x += left;
+        enemy.y += top;
+      });
+    }
+
+    if (this.data) {
+      this.data.tiles = this.tiles;
+      this.data.width = this.width;
+      this.data.height = this.height;
+      if (this.spawn) {
+        this.data.spawn = { x: this.spawn.x, y: this.spawn.y };
+      }
+      this.data.enemies = this.enemies;
+    }
+
+    return { offsetX: left, offsetY: top };
   }
 
   regionAt(x, y) {

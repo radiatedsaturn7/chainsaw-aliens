@@ -3,17 +3,43 @@ const DEFAULT_TILE_TYPES = [
   { id: 'empty', label: 'Empty', char: '.' },
   { id: 'hazard', label: 'Hazard', char: '!' },
   { id: 'oneway', label: 'One-Way Platform', char: '=' },
-  { id: 'gate', label: 'Gate (Grapple)', char: 'G' },
+  { id: 'anchor', label: 'Grapple Anchor', char: 'a' },
+  { id: 'gateG', label: 'Gate (Grapple)', char: 'G' },
+  { id: 'gateP', label: 'Gate (Phase)', char: 'P' },
+  { id: 'gateM', label: 'Gate (Mag Boots)', char: 'M' },
+  { id: 'gateR', label: 'Gate (Resonance)', char: 'R' },
+  { id: 'bossGate', label: 'Rift Gate', char: 'B' },
+  { id: 'abilityG', label: 'Ability: Grapple', char: 'g' },
+  { id: 'abilityP', label: 'Ability: Phase', char: 'p' },
+  { id: 'abilityM', label: 'Ability: Mag Boots', char: 'm' },
+  { id: 'abilityR', label: 'Ability: Resonance', char: 'r' },
+  { id: 'health', label: 'Vitality Core', char: 'H' },
   { id: 'spawn', label: 'Player Spawn', char: null, special: 'spawn' },
   { id: 'checkpoint', label: 'Checkpoint', char: 'S' },
   { id: 'shop', label: 'Shop', char: '$' },
   { id: 'objective', label: 'Objective', char: 'O' }
 ];
 
+const ENEMY_TYPES = [
+  { id: 'practice', label: 'Practice Drone', glyph: 'PD' },
+  { id: 'skitter', label: 'Skitter', glyph: 'SK' },
+  { id: 'spitter', label: 'Spitter', glyph: 'SP' },
+  { id: 'bulwark', label: 'Bulwark', glyph: 'BW' },
+  { id: 'floater', label: 'Floater', glyph: 'FL' },
+  { id: 'slicer', label: 'Slicer', glyph: 'SL' },
+  { id: 'hivenode', label: 'Hive Node', glyph: 'HN' },
+  { id: 'sentinel', label: 'Sentinel', glyph: 'SE' },
+  { id: 'finalboss', label: 'Rift Tyrant', glyph: 'RT' }
+];
+
 const TOOL_LABELS = {
   paint: 'Paint',
   erase: 'Erase',
-  select: 'Select'
+  select: 'Select',
+  move: 'Move',
+  enemy: 'Enemy',
+  pan: 'Pan',
+  zoom: 'Zoom'
 };
 
 export default class Editor {
@@ -23,20 +49,27 @@ export default class Editor {
     this.tool = 'paint';
     this.tileType = DEFAULT_TILE_TYPES[0];
     this.customTile = null;
+    this.enemyType = ENEMY_TYPES[0];
     this.camera = { x: 0, y: 0 };
     this.zoom = 1;
     this.dragging = false;
     this.dragMode = null;
     this.dragStart = null;
     this.panStart = null;
+    this.zoomStart = null;
+    this.dragButton = null;
     this.pendingChanges = new Map();
     this.pendingSpawn = null;
+    this.pendingEnemies = new Map();
     this.undoStack = [];
     this.redoStack = [];
     this.maxHistory = 50;
     this.hoverTile = null;
     this.regionName = 'Unknown';
     this.lastPointer = { x: 0, y: 0 };
+    this.uiButtons = [];
+    this.moveSelection = null;
+    this.moveTarget = null;
 
     this.fileInput = document.createElement('input');
     this.fileInput.type = 'file';
@@ -81,6 +114,9 @@ export default class Editor {
     this.dragMode = null;
     this.pendingChanges.clear();
     this.pendingSpawn = null;
+    this.pendingEnemies.clear();
+    this.moveSelection = null;
+    this.moveTarget = null;
   }
 
   resetView() {
@@ -91,15 +127,24 @@ export default class Editor {
     this.camera.y = Math.max(0, focus.y - canvas.height / 2);
   }
 
-  update(input) {
-    this.handleKeyboard(input);
+  update(input, dt) {
+    this.handleKeyboard(input, dt);
     this.updateHover();
   }
 
-  handleKeyboard(input) {
+  handleKeyboard(input, dt = 0) {
     if (input.wasPressedCode('KeyQ')) this.tool = 'paint';
     if (input.wasPressedCode('KeyE')) this.tool = 'erase';
     if (input.wasPressedCode('KeyR')) this.tool = 'select';
+    if (input.wasPressedCode('KeyM')) this.tool = 'move';
+    if (input.wasPressedCode('KeyT')) this.tool = 'enemy';
+    if (input.wasPressedCode('KeyZ')
+      && !input.isShiftDown()
+      && !input.isDownCode('ControlLeft')
+      && !input.isDownCode('ControlRight')) {
+      this.tool = 'zoom';
+    }
+    if (input.wasPressedCode('KeyX')) this.tool = 'pan';
 
     for (let i = 1; i <= 9; i += 1) {
       if (input.wasPressedCode(`Digit${i}`)) {
@@ -131,6 +176,17 @@ export default class Editor {
     }
     if ((input.isDownCode('ControlLeft') || input.isDownCode('ControlRight')) && input.wasPressedCode('KeyY')) {
       this.redo();
+    }
+
+    const panSpeed = 320 * dt * (1 / this.zoom);
+    if (!input.isShiftDown()) {
+      if (input.isDownCode('ArrowLeft')) this.camera.x = Math.max(0, this.camera.x - panSpeed);
+      if (input.isDownCode('ArrowRight')) this.camera.x = Math.max(0, this.camera.x + panSpeed);
+      if (input.isDownCode('ArrowUp')) this.camera.y = Math.max(0, this.camera.y - panSpeed);
+      if (input.isDownCode('ArrowDown')) this.camera.y = Math.max(0, this.camera.y + panSpeed);
+    } else {
+      if (input.isDownCode('ArrowUp')) this.adjustZoom(0.8, this.game.canvas.width / 2, this.game.canvas.height / 2);
+      if (input.isDownCode('ArrowDown')) this.adjustZoom(-0.8, this.game.canvas.width / 2, this.game.canvas.height / 2);
     }
   }
 
@@ -179,6 +235,19 @@ export default class Editor {
       }
     }
 
+    if (action.enemies) {
+      const changes = direction === 'undo'
+        ? action.enemies.map((enemy) => ({ x: enemy.x, y: enemy.y, type: enemy.prev }))
+        : action.enemies.map((enemy) => ({ x: enemy.x, y: enemy.y, type: enemy.next }));
+      changes.forEach((enemy) => {
+        if (enemy.type) {
+          this.game.world.setEnemy(enemy.x, enemy.y, enemy.type);
+        } else {
+          this.game.world.removeEnemy(enemy.x, enemy.y);
+        }
+      });
+    }
+
     this.game.refreshWorldCaches();
   }
 
@@ -187,14 +256,41 @@ export default class Editor {
     this.dragMode = mode;
     this.pendingChanges.clear();
     this.pendingSpawn = null;
+    this.pendingEnemies.clear();
+    this.moveSelection = null;
+    this.moveTarget = null;
     if (mode === 'pan') {
       this.panStart = { x: this.lastPointer.x, y: this.lastPointer.y, camX: this.camera.x, camY: this.camera.y };
+      return;
+    }
+    if (mode === 'zoom') {
+      this.zoomStart = {
+        x: this.lastPointer.x,
+        y: this.lastPointer.y,
+        zoom: this.zoom
+      };
       return;
     }
     if (mode === 'select') {
       this.selectTile(tileX, tileY);
       this.dragging = false;
       this.dragMode = null;
+      return;
+    }
+    if (mode === 'move') {
+      const selection = this.pickMoveSelection(tileX, tileY);
+      if (!selection) {
+        this.dragging = false;
+        this.dragMode = null;
+        return;
+      }
+      this.moveSelection = selection;
+      this.moveTarget = { x: tileX, y: tileY };
+      return;
+    }
+    if (mode === 'enemy') {
+      const paintMode = this.dragButton === 2 ? 'erase' : 'paint';
+      this.applyEnemy(tileX, tileY, paintMode);
       return;
     }
     this.applyPaint(tileX, tileY, mode);
@@ -205,14 +301,26 @@ export default class Editor {
     if (this.dragMode === 'pan') {
       this.dragging = false;
       this.dragMode = null;
+      this.panStart = null;
       return;
+    }
+    if (this.dragMode === 'zoom') {
+      this.dragging = false;
+      this.dragMode = null;
+      this.zoomStart = null;
+      return;
+    }
+    if (this.dragMode === 'move' && this.moveSelection && this.moveTarget) {
+      this.applyMove(this.moveTarget.x, this.moveTarget.y);
     }
 
     const tiles = Array.from(this.pendingChanges.values());
-    if (tiles.length > 0 || this.pendingSpawn) {
+    const enemies = Array.from(this.pendingEnemies.values());
+    if (tiles.length > 0 || this.pendingSpawn || enemies.length > 0) {
       const action = {
         tiles,
-        spawn: this.pendingSpawn
+        spawn: this.pendingSpawn,
+        enemies
       };
       this.undoStack.push(action);
       if (this.undoStack.length > this.maxHistory) {
@@ -223,13 +331,20 @@ export default class Editor {
     }
     this.pendingChanges.clear();
     this.pendingSpawn = null;
+    this.pendingEnemies.clear();
     this.dragging = false;
     this.dragMode = null;
+    this.dragButton = null;
+    this.zoomStart = null;
+    this.moveSelection = null;
+    this.moveTarget = null;
   }
 
   handlePointerDown(payload) {
     if (!this.active) return;
     this.lastPointer = { x: payload.x, y: payload.y };
+    if (this.handleUIClick(payload.x, payload.y)) return;
+    this.dragButton = payload.button;
     const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
 
     if (payload.button === 1 || (payload.button === 0 && this.game.input.isDownCode('Space'))) {
@@ -238,13 +353,37 @@ export default class Editor {
     }
 
     if (payload.button === 2) {
-      this.tool = 'erase';
-      this.beginStroke('erase', tileX, tileY);
+      if (this.tool === 'enemy') {
+        this.beginStroke('enemy', tileX, tileY);
+      } else {
+        this.tool = 'erase';
+        this.beginStroke('erase', tileX, tileY);
+      }
       return;
     }
 
     if (this.tool === 'select') {
       this.beginStroke('select', tileX, tileY);
+      return;
+    }
+
+    if (this.tool === 'pan') {
+      this.beginStroke('pan', tileX, tileY);
+      return;
+    }
+
+    if (this.tool === 'zoom') {
+      this.beginStroke('zoom', tileX, tileY);
+      return;
+    }
+
+    if (this.tool === 'move') {
+      this.beginStroke('move', tileX, tileY);
+      return;
+    }
+
+    if (this.tool === 'enemy') {
+      this.beginStroke('enemy', tileX, tileY);
       return;
     }
 
@@ -267,8 +406,25 @@ export default class Editor {
       return;
     }
 
+    if (this.dragMode === 'zoom' && this.zoomStart) {
+      const dy = payload.y - this.zoomStart.y;
+      const factor = 1 - dy * 0.005;
+      this.setZoom(this.zoomStart.zoom * factor, this.zoomStart.x, this.zoomStart.y);
+      return;
+    }
+
+    if (this.dragMode === 'move') {
+      this.moveTarget = { x: tileX, y: tileY };
+      return;
+    }
+
     if (this.dragMode === 'paint' || this.dragMode === 'erase') {
       this.applyPaint(tileX, tileY, this.dragMode);
+    }
+
+    if (this.dragMode === 'enemy') {
+      const paintMode = this.dragButton === 2 ? 'erase' : 'paint';
+      this.applyEnemy(tileX, tileY, paintMode);
     }
   }
 
@@ -280,29 +436,40 @@ export default class Editor {
   handleWheel(payload) {
     if (!this.active) return;
     const zoomFactor = payload.deltaY > 0 ? 0.9 : 1.1;
-    const nextZoom = Math.min(3, Math.max(0.5, this.zoom * zoomFactor));
-    if (Math.abs(nextZoom - this.zoom) < 0.001) return;
-    const worldPos = this.screenToWorld(payload.x, payload.y);
-    this.zoom = nextZoom;
-    this.camera.x = worldPos.x - payload.x / this.zoom;
-    this.camera.y = worldPos.y - payload.y / this.zoom;
+    this.setZoom(this.zoom * zoomFactor, payload.x, payload.y);
+  }
+
+  addUIButton(bounds, onClick) {
+    this.uiButtons.push({ ...bounds, onClick });
+  }
+
+  handleUIClick(x, y) {
+    for (const button of this.uiButtons) {
+      if (x >= button.x && x <= button.x + button.w && y >= button.y && y <= button.y + button.h) {
+        button.onClick();
+        return true;
+      }
+    }
+    return false;
   }
 
   applyPaint(tileX, tileY, mode) {
-    if (!this.isInBounds(tileX, tileY)) return;
+    const ensured = this.ensureInBounds(tileX, tileY);
+    if (!ensured) return;
+    const { tileX: safeX, tileY: safeY } = ensured;
 
     if (mode === 'erase') {
-      this.setTile(tileX, tileY, '.');
+      this.setTile(safeX, safeY, '.');
       return;
     }
 
     if (this.tileType.special === 'spawn') {
-      this.setSpawn(tileX, tileY);
+      this.setSpawn(safeX, safeY);
       return;
     }
 
     const char = this.tileType.char || '.';
-    this.setTile(tileX, tileY, char);
+    this.setTile(safeX, safeY, char);
   }
 
   setTile(tileX, tileY, char) {
@@ -332,6 +499,92 @@ export default class Editor {
     }
   }
 
+  ensureInBounds(tileX, tileY) {
+    if (this.isInBounds(tileX, tileY)) {
+      return { tileX, tileY };
+    }
+    const { offsetX, offsetY } = this.game.world.expandToInclude(tileX, tileY);
+    if (offsetX || offsetY) {
+      const tileSize = this.game.world.tileSize;
+      this.camera.x += offsetX * tileSize;
+      this.camera.y += offsetY * tileSize;
+    }
+    return { tileX: tileX + offsetX, tileY: tileY + offsetY };
+  }
+
+  recordEnemyChange(tileX, tileY, prev, next) {
+    const key = `${tileX},${tileY}`;
+    if (!this.pendingEnemies.has(key)) {
+      this.pendingEnemies.set(key, { x: tileX, y: tileY, prev, next });
+    } else {
+      const entry = this.pendingEnemies.get(key);
+      entry.next = next;
+    }
+  }
+
+  setEnemy(tileX, tileY, type) {
+    const prev = this.game.world.enemyAt(tileX, tileY);
+    if (prev?.type === type) return;
+    this.game.world.setEnemy(tileX, tileY, type);
+    this.recordEnemyChange(tileX, tileY, prev?.type || null, type);
+  }
+
+  removeEnemy(tileX, tileY) {
+    const prev = this.game.world.enemyAt(tileX, tileY);
+    if (!prev) return;
+    this.game.world.removeEnemy(tileX, tileY);
+    this.recordEnemyChange(tileX, tileY, prev.type, null);
+  }
+
+  applyEnemy(tileX, tileY, mode) {
+    const ensured = this.ensureInBounds(tileX, tileY);
+    if (!ensured) return;
+    const { tileX: safeX, tileY: safeY } = ensured;
+    if (mode === 'erase') {
+      this.removeEnemy(safeX, safeY);
+      return;
+    }
+    this.setEnemy(safeX, safeY, this.enemyType.id);
+  }
+
+  pickMoveSelection(tileX, tileY) {
+    if (!this.isInBounds(tileX, tileY)) return null;
+    const enemy = this.game.world.enemyAt(tileX, tileY);
+    if (enemy) {
+      return { kind: 'enemy', type: enemy.type, origin: { x: tileX, y: tileY } };
+    }
+    const spawn = this.game.world.spawn;
+    if (spawn && spawn.x === tileX && spawn.y === tileY) {
+      return { kind: 'spawn', origin: { x: tileX, y: tileY } };
+    }
+    const char = this.game.world.getTile(tileX, tileY);
+    if (char && char !== '.') {
+      return { kind: 'tile', char, origin: { x: tileX, y: tileY } };
+    }
+    return null;
+  }
+
+  applyMove(tileX, tileY) {
+    const ensured = this.ensureInBounds(tileX, tileY);
+    if (!ensured || !this.moveSelection) return;
+    const { tileX: safeX, tileY: safeY } = ensured;
+    const { kind, origin } = this.moveSelection;
+    if (origin.x === safeX && origin.y === safeY) return;
+    if (kind === 'enemy') {
+      this.removeEnemy(origin.x, origin.y);
+      this.setEnemy(safeX, safeY, this.moveSelection.type);
+      return;
+    }
+    if (kind === 'spawn') {
+      this.setSpawn(safeX, safeY);
+      return;
+    }
+    if (kind === 'tile') {
+      this.setTile(origin.x, origin.y, '.');
+      this.setTile(safeX, safeY, this.moveSelection.char);
+    }
+  }
+
   selectTile(tileX, tileY) {
     if (!this.isInBounds(tileX, tileY)) return;
     const spawn = this.game.world.spawn;
@@ -356,6 +609,19 @@ export default class Editor {
     this.hoverTile = { x: tileX, y: tileY, worldX, worldY };
     const region = this.game.world.regionAt(worldX, worldY);
     this.regionName = region.name || region.id;
+  }
+
+  adjustZoom(delta, anchorX, anchorY) {
+    this.setZoom(this.zoom + delta * 0.02, anchorX, anchorY);
+  }
+
+  setZoom(nextZoom, anchorX, anchorY) {
+    const clamped = Math.min(3, Math.max(0.5, nextZoom));
+    if (Math.abs(clamped - this.zoom) < 0.001) return;
+    const worldPos = this.screenToWorld(anchorX, anchorY);
+    this.zoom = clamped;
+    this.camera.x = worldPos.x - anchorX / this.zoom;
+    this.camera.y = worldPos.y - anchorY / this.zoom;
   }
 
   screenToWorld(x, y) {
@@ -417,8 +683,38 @@ export default class Editor {
           ctx.arc(cx, cy - 4, 12, 0, Math.PI * 2);
           ctx.stroke();
         }
+        if (tile === 'a') {
+          ctx.strokeStyle = '#6cf';
+          ctx.beginPath();
+          ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(cx, cy - 6);
+          ctx.lineTo(cx, cy + 6);
+          ctx.stroke();
+        }
+        if (['g', 'p', 'm', 'r'].includes(tile)) {
+          ctx.fillStyle = '#fff';
+          ctx.font = '12px Courier New';
+          ctx.textAlign = 'center';
+          ctx.fillText(tile.toUpperCase(), cx, cy + 4);
+        }
       }
     }
+
+    this.game.world.enemies.forEach((enemy) => {
+      const cx = enemy.x * tileSize + tileSize / 2;
+      const cy = enemy.y * tileSize + tileSize / 2;
+      const marker = ENEMY_TYPES.find((entry) => entry.id === enemy.type);
+      ctx.save();
+      ctx.strokeStyle = '#f66';
+      ctx.strokeRect(cx - 10, cy - 10, 20, 20);
+      ctx.fillStyle = '#f66';
+      ctx.font = '10px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText(marker?.glyph || 'EN', cx, cy + 4);
+      ctx.restore();
+    });
 
     const spawn = this.game.world.spawn;
     if (spawn) {
@@ -456,47 +752,145 @@ export default class Editor {
 
   drawCursor(ctx) {
     if (!this.hoverTile) return;
-    if (!this.isInBounds(this.hoverTile.x, this.hoverTile.y)) return;
     const tileSize = this.game.world.tileSize;
-    ctx.save();
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(this.hoverTile.x * tileSize, this.hoverTile.y * tileSize, tileSize, tileSize);
-    ctx.restore();
+    const drawHighlight = (tileX, tileY, color) => {
+      if (!this.isInBounds(tileX, tileY)) return;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(tileX * tileSize, tileY * tileSize, tileSize, tileSize);
+      ctx.restore();
+    };
+
+    if (this.dragMode === 'move' && this.moveSelection && this.moveTarget) {
+      drawHighlight(this.moveSelection.origin.x, this.moveSelection.origin.y, '#f66');
+      drawHighlight(this.moveTarget.x, this.moveTarget.y, '#6f6');
+      return;
+    }
+
+    drawHighlight(this.hoverTile.x, this.hoverTile.y, '#fff');
   }
 
   drawHUD(ctx, width, height) {
     const tileSize = this.game.world.tileSize;
     const tileLabel = this.tileType.label || 'Unknown';
     const toolLabel = TOOL_LABELS[this.tool] || 'Paint';
+    const enemyLabel = this.enemyType?.label || 'Enemy';
+    const toolButtons = [
+      { id: 'paint', label: 'Paint (Q)' },
+      { id: 'erase', label: 'Erase (E)' },
+      { id: 'select', label: 'Pick (R)' },
+      { id: 'move', label: 'Move (M)' },
+      { id: 'enemy', label: 'Enemy (T)' },
+      { id: 'pan', label: 'Pan (X)' },
+      { id: 'zoom', label: 'Zoom (Z)' }
+    ];
 
-    const lines = [
-      `EDITOR MODE`,
-      `Tool: ${toolLabel}`,
-      `Tile: ${tileLabel}`,
-      `Grid: ${tileSize}px`,
-      `Region: ${this.regionName}`,
+    ctx.save();
+    ctx.font = '13px Courier New';
+    ctx.textAlign = 'left';
+    this.uiButtons = [];
+
+    const panelX = 12;
+    let cursorY = 12;
+    const panelWidth = 360;
+    const buttonHeight = 22;
+    const buttonGap = 6;
+    const drawButton = (x, y, w, h, label, active, onClick) => {
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = active ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.6)';
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = active ? '#fff' : 'rgba(255,255,255,0.4)';
+      ctx.strokeRect(x, y, w, h);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(label, x + 6, y + 15);
+      this.addUIButton({ x, y, w, h }, onClick);
+    };
+
+    const drawSection = (title, height) => {
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.fillRect(panelX, cursorY, panelWidth, height);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(panelX, cursorY, panelWidth, height);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(title, panelX + 12, cursorY + 18);
+    };
+
+    const toolRows = Math.ceil(toolButtons.length / 3);
+    const toolSectionHeight = 28 + toolRows * (buttonHeight + buttonGap) + 6;
+    drawSection('TOOLS', toolSectionHeight);
+    cursorY += 28;
+    toolButtons.forEach((tool, index) => {
+      const col = index % 3;
+      const row = Math.floor(index / 3);
+      const x = panelX + 12 + col * 112;
+      const y = cursorY + row * (buttonHeight + buttonGap);
+      drawButton(x, y, 104, buttonHeight, tool.label, this.tool === tool.id, () => {
+        this.tool = tool.id;
+      });
+    });
+    cursorY += toolRows * (buttonHeight + buttonGap) + 18;
+
+    const tileCols = 2;
+    const tileRows = Math.ceil(DEFAULT_TILE_TYPES.length / tileCols);
+    const tileSectionHeight = 28 + tileRows * (buttonHeight + buttonGap) + 6;
+    drawSection('TILES', tileSectionHeight);
+    cursorY += 28;
+    DEFAULT_TILE_TYPES.forEach((tile, index) => {
+      const col = index % tileCols;
+      const row = Math.floor(index / tileCols);
+      const x = panelX + 12 + col * 176;
+      const y = cursorY + row * (buttonHeight + buttonGap);
+      const label = tile.char ? `${tile.label} [${tile.char}]` : tile.label;
+      drawButton(x, y, 168, buttonHeight, label, this.tileType.id === tile.id, () => {
+        this.tileType = tile;
+        this.customTile = null;
+        this.tool = 'paint';
+      });
+    });
+    cursorY += tileRows * (buttonHeight + buttonGap) + 18;
+
+    const enemyRows = Math.ceil(ENEMY_TYPES.length / tileCols);
+    const enemySectionHeight = 28 + enemyRows * (buttonHeight + buttonGap) + 6;
+    drawSection('ENEMIES', enemySectionHeight);
+    cursorY += 28;
+    ENEMY_TYPES.forEach((enemy, index) => {
+      const col = index % tileCols;
+      const row = Math.floor(index / tileCols);
+      const x = panelX + 12 + col * 176;
+      const y = cursorY + row * (buttonHeight + buttonGap);
+      const label = `${enemy.label} [${enemy.glyph}]`;
+      drawButton(x, y, 168, buttonHeight, label, this.enemyType.id === enemy.id, () => {
+        this.enemyType = enemy;
+        this.tool = 'enemy';
+      });
+    });
+    cursorY += enemyRows * (buttonHeight + buttonGap) + 18;
+
+    const infoLines = [
+      `Tool: ${toolLabel} | Tile: ${tileLabel}`,
+      `Enemy: ${enemyLabel}`,
+      `Grid: ${tileSize}px | Region: ${this.regionName}`,
       `Zoom: ${this.zoom.toFixed(2)}x`,
-      ``,
-      `Mouse: LMB paint | RMB erase | MMB or Space+drag pan`,
-      `Wheel: zoom`,
-      `1-9: tile types | Q/E/R: tools`,
+      `Drag: LMB paint | RMB erase | Space+drag pan`,
+      `Zoom/Pan tools: click + drag`,
+      `Arrows: pan | Shift+Arrows: zoom`,
       `Ctrl+Z / Ctrl+Y: undo/redo`,
       `S: save JSON | L: load JSON`,
       `P: playtest | F2: toggle editor | Esc: exit`
     ];
-
-    ctx.save();
+    const infoHeight = infoLines.length * 18 + 12;
     ctx.globalAlpha = 0.85;
-    ctx.fillStyle = '#000';
-    ctx.fillRect(12, 12, 360, lines.length * 18 + 12);
+    const infoX = width - panelWidth - 12;
+    const infoY = 12;
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(infoX, infoY, panelWidth, infoHeight);
     ctx.strokeStyle = '#fff';
-    ctx.strokeRect(12, 12, 360, lines.length * 18 + 12);
+    ctx.strokeRect(infoX, infoY, panelWidth, infoHeight);
     ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
-    ctx.textAlign = 'left';
-    lines.forEach((line, index) => {
-      ctx.fillText(line, 24, 36 + index * 18);
+    infoLines.forEach((line, index) => {
+      ctx.fillText(line, infoX + 12, infoY + 22 + index * 18);
     });
     ctx.restore();
   }
