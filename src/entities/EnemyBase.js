@@ -20,6 +20,7 @@ export default class EnemyBase {
     ENEMY_ID += 1;
     this.hurtTimer = 0;
     this.shakePhase = 0;
+    this.hitPause = 0;
   }
 
   get rect() {

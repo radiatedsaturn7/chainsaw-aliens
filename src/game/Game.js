@@ -40,7 +40,8 @@ import GoldenPathTest from '../debug/validators/GoldenPathTest.js';
 import Editor from '../editor/Editor.js';
 
 const INTRO_LINES = [
-  'Captain! The entire planet of earth has literally run out of all our ammunition, and the aliens are still coming! What do we do?',
+  'Captain! The entire planet of earth has literally run out of all our ammunition...',
+  '...and the aliens are still coming! What do we do?',
   'There is only one solution left...',
   'We have to...',
   'Chainsaw Aliens.'
@@ -139,6 +140,8 @@ export default class Game {
     this.simulationActive = false;
     this.editor = new Editor(this);
     this.editorReturnState = 'title';
+    this.playtestActive = false;
+    this.playtestButtonBounds = null;
     this.isMobile = false;
     this.viewport = { width: window.innerWidth, height: window.innerHeight, scale: 1 };
     this.mobileControls = new MobileControls();
@@ -229,6 +232,7 @@ export default class Game {
     this.state = 'editor';
     this.setRevAudio(false);
     this.editor.activate();
+    this.playtestActive = false;
   }
 
   exitEditor({ playtest }) {
@@ -237,13 +241,22 @@ export default class Game {
       this.syncSpawnPoint();
       this.resetRun();
       this.state = 'playing';
+      this.playtestActive = true;
       return;
     }
+    this.playtestActive = false;
     if (this.editorReturnState === 'playing' || this.editorReturnState === 'pause') {
       this.state = 'pause';
     } else {
       this.state = 'title';
     }
+  }
+
+  returnToEditorFromPlaytest() {
+    if (!this.playtestActive) return;
+    this.state = 'editor';
+    this.editor.activate();
+    this.playtestActive = false;
   }
 
   resetRun() {
@@ -914,6 +927,13 @@ export default class Game {
   updateEnemies(dt) {
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
+      if (enemy.hitPause > 0) {
+        enemy.hitPause = Math.max(0, enemy.hitPause - dt);
+        if (enemy.tickDamage) {
+          enemy.tickDamage(dt);
+        }
+        return;
+      }
       if (enemy.type === 'spitter') {
         enemy.update(dt, this.player, this.spawnProjectile.bind(this));
       } else if (enemy.type === 'hivenode') {
@@ -931,7 +951,14 @@ export default class Game {
       const dy = enemy.y - this.player.y;
       if (Math.hypot(dx, dy) < 24) {
         if (!enemy.training) {
-          this.player.takeDamage(1);
+          const tookDamage = this.player.takeDamage(1);
+          if (tookDamage) {
+            const knockback = Math.sign(this.player.x - enemy.x) || 1;
+            this.player.vx = knockback * 180;
+            this.player.vy = -140;
+            this.player.onGround = false;
+            enemy.hitPause = 0.2;
+          }
         }
       }
 
@@ -1150,7 +1177,7 @@ export default class Game {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (this.state === 'title') {
-      this.title.draw(ctx, canvas.width, canvas.height);
+      this.title.draw(ctx, canvas.width, canvas.height, this.isMobile);
       this.mobileControls.draw(ctx, this.state);
       return;
     }
@@ -1217,6 +1244,31 @@ export default class Game {
       objective: objectiveTarget,
       showLegend: this.checklist.active
     });
+    ctx.save();
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    ctx.textAlign = 'left';
+    ctx.fillText(`Credits: ${this.player.credits}`, canvas.width - 180, 130);
+    ctx.restore();
+    if (this.playtestActive && this.state === 'playing') {
+      const buttonWidth = 170;
+      const buttonHeight = 28;
+      const buttonX = 20;
+      const buttonY = 176;
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
+      ctx.fillStyle = '#fff';
+      ctx.font = '14px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText('STOP PLAYTEST', buttonX + buttonWidth / 2, buttonY + 19);
+      ctx.restore();
+      this.playtestButtonBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
+    } else {
+      this.playtestButtonBounds = null;
+    }
     this.drawWaypoint(ctx, canvas.width, canvas.height, objectiveTarget);
 
     if (this.state === 'shop') {
@@ -1224,7 +1276,7 @@ export default class Game {
     }
 
     if (this.state === 'pause') {
-      this.pauseMenu.draw(ctx, canvas.width, canvas.height);
+      this.pauseMenu.draw(ctx, canvas.width, canvas.height, this.objective);
     }
 
     if (this.menuFlashTimer > 0) {
@@ -1685,7 +1737,17 @@ export default class Game {
     }
   }
 
+  isPlaytestButtonHit(x, y) {
+    const bounds = this.playtestButtonBounds;
+    if (!bounds) return false;
+    return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
+  }
+
   handleClick(x, y) {
+    if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(x, y)) {
+      this.returnToEditorFromPlaytest();
+      return;
+    }
     if (this.state === 'title' && this.title.isEditorHit(x, y) && !this.testDashboard.visible) {
       this.enterEditor();
       return;
@@ -1724,8 +1786,19 @@ export default class Game {
       this.editor.handlePointerDown(payload);
       return;
     }
+    if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(payload.x, payload.y)) {
+      this.returnToEditorFromPlaytest();
+      return;
+    }
     if (this.state === 'title' && this.mobileControls.enabled && this.title.isEditorHit(payload.x, payload.y)) {
       this.enterEditor();
+      return;
+    }
+    if (this.state === 'title' && this.mobileControls.enabled && !this.testDashboard.visible) {
+      this.state = 'dialog';
+      this.audio.ui();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
       return;
     }
     this.mobileControls.handlePointerDown(payload, this.state);
