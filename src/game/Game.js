@@ -1001,12 +1001,13 @@ export default class Game {
   }
 
   handleRev() {
-    const range = 46;
+    const range = this.world.tileSize * 1.5;
+    const verticalRange = this.world.tileSize * 1.2;
     const candidates = this.enemies.filter((enemy) => {
       if (enemy.dead) return false;
       const dx = enemy.x - this.player.x;
       const dy = Math.abs(enemy.y - this.player.y);
-      return Math.abs(dx) < range && dy < 50 && enemy.stagger >= 0.6;
+      return Math.abs(dx) < range && dy < verticalRange && enemy.stagger >= 0.6;
     });
     if (candidates.length === 0) return;
     const enemy = candidates[0];
@@ -1551,8 +1552,7 @@ export default class Game {
     }
     const tetherMax = this.world.tileSize * 3;
     const tetherDist = Math.hypot(this.player.x - this.sawAnchor.x, this.player.y - this.sawAnchor.y);
-    if (tetherDist > tetherMax) {
-      this.startAnchorRetract(0.2);
+    if (this.applyTetherConstraint(dt, input, tetherDist, tetherMax)) {
       return;
     }
     if (this.sawAnchor.attachedBox) {
@@ -1564,6 +1564,48 @@ export default class Game {
       }
       this.applySawAnchorDamage();
     }
+  }
+
+  applyTetherConstraint(dt, input, tetherDist, tetherMax) {
+    const tetherSlack = this.world.tileSize * 0.25;
+    const tetherLimit = tetherMax + tetherSlack;
+    if (tetherDist > tetherLimit
+      && !this.sawAnchor.embedded
+      && !this.sawAnchor.attachedBox
+      && !this.sawAnchor.attachedEnemy) {
+      this.startAnchorRetract(0.2);
+      return true;
+    }
+    if (tetherDist <= 0.01) return false;
+    const dx = this.player.x - this.sawAnchor.x;
+    const dy = this.player.y - this.sawAnchor.y;
+    const dist = Math.max(0.01, tetherDist);
+    if (dist > tetherLimit) {
+      const excess = dist - tetherLimit;
+      const nx = dx / dist;
+      const ny = dy / dist;
+      this.player.x -= nx * excess;
+      this.player.y -= ny * excess;
+      const radialVelocity = this.player.vx * nx + this.player.vy * ny;
+      if (radialVelocity > 0) {
+        this.player.vx -= radialVelocity * nx;
+        this.player.vy -= radialVelocity * ny;
+      }
+      this.player.onGround = false;
+    }
+    const pullHeld = input.isDown('attack');
+    if (this.sawAnchor.embedded && pullHeld && !this.sawAnchor.attachedEnemy && !this.sawAnchor.attachedBox) {
+      if (dist >= tetherMax * 0.96) {
+        const pullSpeed = 220;
+        const step = Math.min(dist, pullSpeed * dt);
+        this.player.x -= (dx / dist) * step;
+        this.player.y -= (dy / dist) * step;
+        this.player.vx = Math.min(this.player.vx, -(dx / dist) * pullSpeed * 0.6);
+        this.player.vy = Math.min(this.player.vy, -(dy / dist) * pullSpeed * 0.6);
+        this.player.onGround = false;
+      }
+    }
+    return false;
   }
 
   applyAnchorClimb(dt) {
