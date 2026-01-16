@@ -26,6 +26,8 @@ export default class GoldenPathRunner {
     this.attackTimer = 0;
     this.jumpCooldown = 0;
     this.interactCooldown = 0;
+    this.throwCooldown = 0;
+    this.flameToggleCooldown = 0;
     this.damageTaken = 0;
     this.lastHealth = 0;
     this.lastDistance = null;
@@ -59,6 +61,8 @@ export default class GoldenPathRunner {
     this.attackTimer = 0;
     this.jumpCooldown = 0;
     this.interactCooldown = 0;
+    this.throwCooldown = 0;
+    this.flameToggleCooldown = 0;
     this.damageTaken = 0;
     this.lastHealth = game.player.health;
     this.lastDistance = null;
@@ -181,6 +185,8 @@ export default class GoldenPathRunner {
     const player = game.player;
     const target = this.path[this.pathIndex];
     if (!target) return actions;
+    this.throwCooldown = Math.max(0, this.throwCooldown - dt);
+    this.flameToggleCooldown = Math.max(0, this.flameToggleCooldown - dt);
     const dx = target.x - player.x;
     const dy = target.y - player.y;
     const distance = Math.hypot(dx, dy);
@@ -224,6 +230,14 @@ export default class GoldenPathRunner {
     }
 
     if (milestone.type === 'boss') {
+      if (game.boss?.phase === 0 && game.abilities.anchor && this.throwCooldown <= 0) {
+        actions.throw = true;
+        this.throwCooldown = 0.6;
+      }
+      if (game.boss?.phase === 1 && game.abilities.flame && !player.flameMode && this.flameToggleCooldown <= 0) {
+        actions.flame = true;
+        this.flameToggleCooldown = 0.6;
+      }
       actions.rev = true;
       if (game.boss?.coreExposed && this.attackTimer <= 0) {
         actions.attack = true;
@@ -243,7 +257,7 @@ export default class GoldenPathRunner {
       return Boolean(save && save.active);
     }
     if (milestone.type === 'bossGate') {
-      if (!game.world.bossGate) return false;
+      if (!game.world.bossGate) return true;
       const dist = Math.hypot(game.world.bossGate.x - game.player.x, game.world.bossGate.y - game.player.y);
       return dist < 40;
     }
@@ -263,7 +277,7 @@ export default class GoldenPathRunner {
       return this.resolveCheckpoint(game, milestone);
     }
     if (milestone.type === 'bossGate') {
-      return game.world.bossGate;
+      return game.world.bossGate || game.boss;
     }
     if (milestone.type === 'boss') {
       return game.boss;

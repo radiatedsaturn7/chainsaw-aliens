@@ -7,6 +7,8 @@ export const KEYMAP = {
   dash: ['ShiftLeft', 'ShiftRight'],
   attack: ['KeyJ'],
   rev: ['KeyK'],
+  flame: ['KeyF'],
+  throw: ['KeyL'],
   pause: ['Escape'],
   interact: ['Space'],
   test: ['KeyT'],
@@ -15,7 +17,7 @@ export const KEYMAP = {
   encounter: ['KeyE'],
   legend: ['F1'],
   editor: ['F2'],
-  debug: ['KeyL'],
+  debug: ['F3'],
   golden: ['KeyG']
 };
 

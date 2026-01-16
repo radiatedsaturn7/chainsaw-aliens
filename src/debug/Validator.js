@@ -1,6 +1,6 @@
 import { getDashDistance, getJumpHeight } from '../game/MovementModel.js';
 
-const ABILITY_ORDER = ['grapple', 'phase', 'magboots', 'resonance'];
+const ABILITY_ORDER = ['anchor', 'flame', 'magboots', 'resonance'];
 
 export default class Validator {
   constructor(world, player) {
@@ -43,8 +43,8 @@ export default class Validator {
     const summary = [];
     const detail = [];
     let abilities = {
-      grapple: false,
-      phase: false,
+      anchor: false,
+      flame: false,
       magboots: false,
       resonance: false
     };
@@ -57,40 +57,16 @@ export default class Validator {
       summary.push(`${cacheReport.status === 'pass' ? '✓' : '✗'} ${stageLabel}`);
       detail.push(...cacheReport.lines);
       abilities = { ...abilities, [ability]: true };
-      const gateTargets = this.collectGateTargets(ability);
-      if (gateTargets.length) {
-        const gateStageLabel = `Stage ${index} gates (${ability} unlocked)`;
-        const gateStageTargets = {};
-        gateTargets.forEach((gate, gateIndex) => {
-          gateStageTargets[`gate ${ability} ${gateIndex + 1}`] = gate;
-        });
-        const gateReport = this.runSingleStage(abilities, gateStageTargets, gateStageLabel);
-        summary.push(`${gateReport.status === 'pass' ? '✓' : '✗'} ${gateStageLabel}`);
-        detail.push(...gateReport.lines);
-      }
     });
     const finalTargets = {};
     if (objectiveTargets.boss) {
-      finalTargets['final boss gate'] = objectiveTargets.boss;
+      finalTargets['final rift seal'] = objectiveTargets.boss;
     }
     const finalReport = this.runSingleStage(abilities, finalTargets, 'Final Stage');
     summary.push(`${finalReport.status === 'pass' ? '✓' : '✗'} Final Stage`);
     detail.push(...finalReport.lines);
     const status = summary.every((line) => line.startsWith('✓')) ? 'pass' : 'fail';
     return { status, summary, detail };
-  }
-
-  collectGateTargets(ability) {
-    const gateMap = { grapple: 'G', phase: 'P', magboots: 'M', resonance: 'R' };
-    const type = gateMap[ability];
-    return this.world.gates
-      .filter((gate) => gate.type === type)
-      .map((gate) => ({
-        x: gate.x,
-        y: gate.y,
-        tx: Math.floor(gate.x / this.world.tileSize),
-        ty: Math.floor(gate.y / this.world.tileSize)
-      }));
   }
 
   walkGraph(nodes, edges, abilities) {
@@ -138,10 +114,6 @@ export default class Validator {
       const node = this.nodeFromWorld(anchor.x, anchor.y);
       this.addNode(nodes, node.tx, node.ty, 'anchor');
     });
-    this.world.gates.forEach((gate) => {
-      const node = this.nodeFromWorld(gate.x, gate.y);
-      this.addNode(nodes, node.tx, node.ty, 'gate');
-    });
     if (this.world.bossGate) {
       const node = this.nodeFromWorld(this.world.bossGate.x, this.world.bossGate.y);
       this.addNode(nodes, node.tx, node.ty, 'boss');
@@ -158,7 +130,7 @@ export default class Validator {
 
   buildEdges(nodes, abilities) {
     const edges = new Map();
-    const { maxJumpHeight, maxJumpDistance, maxDropDistance, dashDistance, grappleRange } = this.getMovementProfile(abilities);
+    const { maxJumpHeight, maxJumpDistance, maxDropDistance, dashDistance } = this.getMovementProfile(abilities);
     const nodeKeys = Array.from(nodes.keys());
     nodeKeys.forEach((key) => {
       const node = nodes.get(key);
@@ -187,16 +159,6 @@ export default class Validator {
         if (!this.clearTrajectory(node.tx, node.ty, tx, ty, abilities)) continue;
         list.push(`${tx},${ty}`);
       }
-      if (abilities.grapple) {
-        nodeKeys.forEach((anchorKey) => {
-          const anchor = nodes.get(anchorKey);
-          if (anchor.type !== 'anchor') return;
-          const dist = Math.hypot(anchor.tx - node.tx, anchor.ty - node.ty);
-          if (dist <= grappleRange) {
-            list.push(anchorKey);
-          }
-        });
-      }
       edges.set(key, list);
     });
     return edges;
@@ -206,14 +168,13 @@ export default class Validator {
     const jumpHeight = getJumpHeight(this.player.jumpPower || 0);
     const maxJumpHeight = Math.max(2, Math.ceil(jumpHeight / this.world.tileSize));
     const maxJumpDistance = Math.max(3, Math.ceil((this.player.speed * 0.45) / this.world.tileSize));
-    const maxDropDistance = abilities.phase ? 9 : 6;
+    const maxDropDistance = 6;
     const dashDistance = Math.max(3, Math.ceil(getDashDistance() / this.world.tileSize));
     return {
-      maxJumpHeight: abilities.magboots ? maxJumpHeight + 1 : maxJumpHeight,
-      maxJumpDistance: abilities.grapple ? maxJumpDistance + 1 : maxJumpDistance,
+      maxJumpHeight: abilities.magboots ? maxJumpHeight + 1 : maxJumpHeight + (abilities.anchor ? 1 : 0),
+      maxJumpDistance,
       maxDropDistance,
-      dashDistance,
-      grappleRange: abilities.grapple ? 5 : 0
+      dashDistance
     };
   }
 
@@ -248,9 +209,6 @@ export default class Validator {
 
   suggestFix(nearest, target, abilities) {
     const tile = this.world.getTile(target.tx, target.ty);
-    if (['G', 'P', 'M', 'R'].includes(tile)) {
-      return `gate requires ${tile}`;
-    }
     if (!nearest) return 'no reachable nodes found';
     const dx = Math.abs(target.tx - nearest.tx);
     const dy = target.ty - nearest.ty;

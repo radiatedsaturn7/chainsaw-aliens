@@ -38,6 +38,8 @@ import RoomCoverageTest from '../debug/validators/RoomCoverageTest.js';
 import EncounterAuditTest from '../debug/validators/EncounterAuditTest.js';
 import GoldenPathTest from '../debug/validators/GoldenPathTest.js';
 import Editor from '../editor/Editor.js';
+import ObstacleTestMap from '../debug/ObstacleTestMap.js';
+import { OBSTACLES } from '../world/Obstacles.js';
 
 const INTRO_LINES = [
   'Captain! The entire planet of earth has literally run out of all our ammunition...',
@@ -53,8 +55,8 @@ const UPGRADE_LIST = [
   { id: 'drive-torque', name: 'Drivetrain: Torque Lube', slot: 'drivetrain', cost: 25, modifiers: { speed: 20 } },
   { id: 'drive-pulse', name: 'Drivetrain: Pulse Drive', slot: 'drivetrain', cost: 30, modifiers: { dashCooldown: -0.1 } },
   { id: 'coolant-mist', name: 'Coolant: Mist Jet', slot: 'coolant', cost: 18, modifiers: { heatCap: 0.3 } },
-  { id: 'coolant-phase', name: 'Coolant: Phase Vapor', slot: 'coolant', cost: 24, modifiers: { heatCap: 0.5 } },
-  { id: 'bar-grapple', name: 'Bar Attachment: Grapple Hook', slot: 'bar', cost: 28, modifiers: { speed: 10 } },
+  { id: 'coolant-phase', name: 'Coolant: Thermal Vapor', slot: 'coolant', cost: 24, modifiers: { heatCap: 0.5 } },
+  { id: 'bar-grapple', name: 'Bar Attachment: Anchor Latch', slot: 'bar', cost: 28, modifiers: { speed: 10 } },
   { id: 'bar-piercer', name: 'Bar Attachment: Piercer', slot: 'bar', cost: 32, tags: ['pierce'] },
   { id: 'gadget-shock', name: 'Gadget: Shock Emitters', slot: 'gadget', cost: 26, tags: ['shock'] },
   { id: 'gadget-echo', name: 'Gadget: Resonant Echo', slot: 'gadget', cost: 22, modifiers: { jump: 30 } },
@@ -89,8 +91,8 @@ export default class Game {
     this.effects = [];
     this.clock = 0;
     this.abilities = {
-      grapple: false,
-      phase: false,
+      anchor: false,
+      flame: false,
       magboots: false,
       resonance: false
     };
@@ -102,11 +104,20 @@ export default class Game {
     this.boss = null;
     this.bossActive = false;
     this.bossInteractions = {
-      grapple: false,
-      phase: false,
+      anchor: false,
+      flame: false,
       magboots: false,
       resonance: false
     };
+    this.sawAnchor = {
+      active: false,
+      x: 0,
+      y: 0,
+      fuelDrain: 0
+    };
+    this.obstacleDamage = new Map();
+    this.obstacleCooldown = 0;
+    this.noiseCooldown = 0;
     this.testHarness = new TestHarness();
     this.validator = new Validator(this.world, this.player);
     this.feasibilityValidator = new FeasibilityValidator(this.world, this.player);
@@ -268,8 +279,8 @@ export default class Game {
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.abilities = {
-      grapple: false,
-      phase: false,
+      anchor: false,
+      flame: false,
       magboots: false,
       resonance: false
     };
@@ -284,11 +295,20 @@ export default class Game {
     this.effects = [];
     this.spawnEnemies();
     this.bossInteractions = {
-      grapple: false,
-      phase: false,
+      anchor: false,
+      flame: false,
       magboots: false,
       resonance: false
     };
+    this.sawAnchor = {
+      active: false,
+      x: 0,
+      y: 0,
+      fuelDrain: 0
+    };
+    this.obstacleDamage.clear();
+    this.obstacleCooldown = 0;
+    this.noiseCooldown = 0;
     this.prevHealth = this.player.health;
     this.testHarness.active = false;
     this.simulationActive = false;
@@ -535,8 +555,21 @@ export default class Game {
     this.slowTimer = Math.max(0, this.slowTimer - dt);
     this.updateSpawnCooldowns(dt * timeScale);
 
+    if (!this.abilities.flame) {
+      this.player.flameMode = false;
+    } else if (this.input.wasPressed('flame')) {
+      this.player.flameMode = !this.player.flameMode;
+    }
+    if (this.input.wasPressed('throw')) {
+      this.handleThrow();
+    }
+
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
-    this.attemptGrapple();
+    this.player.sawDeployed = this.sawAnchor.active;
+    this.updateSawAnchor(dt * timeScale);
+    this.applyAnchorClimb(dt * timeScale);
+    this.obstacleCooldown = Math.max(0, this.obstacleCooldown - dt * timeScale);
+    this.noiseCooldown = Math.max(0, this.noiseCooldown - dt * timeScale);
     this.testHarness.applyCheats(this);
     this.handleMovementFeedback();
 
@@ -548,11 +581,15 @@ export default class Game {
     }
 
     if (this.input.wasPressed('attack')) {
-      this.handleAttack();
+      if (!this.tryObstacleInteraction('attack')) {
+        this.handleAttack();
+      }
     }
-    if (this.input.isDown('rev') && this.player.canRev()) {
+    if (this.input.isDown('rev') && this.player.canRev() && !this.sawAnchor.active) {
       this.player.addHeat(0.4 * dt / (this.player.revEfficiency || 1));
       this.handleRev();
+      this.tryObstacleInteraction('rev');
+      this.handleFlameSawDrain(dt);
       this.setRevAudio(true);
       this.recordFeedback('chainsaw rev', 'audio');
       this.recordFeedback('chainsaw rev', 'visual');
@@ -563,6 +600,9 @@ export default class Game {
     let interacted = false;
     if (this.input.wasPressed('interact')) {
       interacted = this.checkSavePoints();
+      if (!interacted) {
+        interacted = this.handleSwitchInteraction();
+      }
     }
 
     this.updateEnemies(dt * timeScale);
@@ -620,6 +660,9 @@ export default class Game {
     }
     if (this.input.wasPressed('debug')) {
       this.playability.toggle();
+    }
+    if (this.input.wasPressedCode('KeyB')) {
+      this.loadObstacleTestRoom();
     }
     this.input.flush();
   }
@@ -781,6 +824,7 @@ export default class Game {
   }
 
   handleAttack() {
+    if (this.sawAnchor.active) return;
     const range = 40;
     this.spawnEffect('bite', this.player.x + this.player.facing * 18, this.player.y - 8);
     this.audio.bite();
@@ -995,13 +1039,13 @@ export default class Game {
     const dist = Math.hypot(this.player.x - this.boss.x, this.player.y - this.boss.y);
     if (dist > 200) return;
     const simAssist = this.simulationActive && this.goldenPath.active;
-    if (this.boss.phase === 0 && this.abilities.grapple && this.input.isDown('rev')) {
+    if (this.boss.phase === 0 && this.abilities.anchor && this.input.wasPressed('throw')) {
       this.boss.triggerExposure();
-      this.bossInteractions.grapple = true;
+      this.bossInteractions.anchor = true;
     }
-    if (this.boss.phase === 1 && this.abilities.phase && this.input.isDown('rev')) {
+    if (this.boss.phase === 1 && this.abilities.flame && this.player.flameMode && this.input.isDown('rev')) {
       this.boss.triggerExposure();
-      this.bossInteractions.phase = true;
+      this.bossInteractions.flame = true;
     }
     if (this.boss.phase === 2 && this.abilities.magboots && (this.player.onWall !== 0 || simAssist && this.input.isDown('rev'))) {
       this.boss.triggerExposure();
@@ -1133,10 +1177,10 @@ export default class Game {
       this.objective = 'Reach the objective marker.';
       return;
     }
-    if (!this.abilities.grapple) {
-      this.objective = 'Find the Grapple Spike in the Tangle.';
-    } else if (!this.abilities.phase) {
-      this.objective = 'Enter the Foundry and claim the Phase Wedge.';
+    if (!this.abilities.anchor) {
+      this.objective = 'Recover the Chainsaw Throw rig in the Tangle.';
+    } else if (!this.abilities.flame) {
+      this.objective = 'Enter the Foundry and claim the Flame-Saw attachment.';
     } else if (!this.abilities.magboots) {
       this.objective = 'Climb the Spire for the Mag Boots.';
     } else if (!this.abilities.resonance) {
@@ -1164,16 +1208,158 @@ export default class Game {
     }
   }
 
-  attemptGrapple() {
-    if (!this.abilities.grapple) return;
-    if (!this.input.wasPressed('jump')) return;
-    const anchor = this.world.anchors.find((point) => Math.hypot(point.x - this.player.x, point.y - this.player.y) < 140);
-    if (anchor) {
-      this.player.x = anchor.x;
-      this.player.y = anchor.y + 20;
-      this.player.vy = -200;
+  handleThrow() {
+    if (!this.abilities.anchor) return;
+    if (this.sawAnchor.active) {
+      this.sawAnchor.active = false;
+      this.player.sawDeployed = false;
+      this.audio.interact();
+      return;
+    }
+    const range = 220;
+    const step = 8;
+    const dir = this.player.facing || 1;
+    let hit = null;
+    for (let dist = 24; dist <= range; dist += step) {
+      const testX = this.player.x + dir * dist;
+      const testY = this.player.y - 6;
+      const tileX = Math.floor(testX / this.world.tileSize);
+      const tileY = Math.floor(testY / this.world.tileSize);
+      if (this.world.isSolid(tileX, tileY, this.abilities)) {
+        hit = {
+          x: tileX * this.world.tileSize + this.world.tileSize / 2,
+          y: tileY * this.world.tileSize + this.world.tileSize / 2
+        };
+        break;
+      }
+    }
+    if (hit) {
+      this.sawAnchor.active = true;
+      this.sawAnchor.x = hit.x;
+      this.sawAnchor.y = hit.y;
+      this.sawAnchor.fuelDrain = 0;
       this.audio.interact();
     }
+  }
+
+  updateSawAnchor(dt) {
+    if (!this.sawAnchor.active) return;
+    this.sawAnchor.fuelDrain += dt;
+    if (this.sawAnchor.fuelDrain >= 0.6) {
+      this.player.fuel = Math.max(0, this.player.fuel - 0.2);
+      this.sawAnchor.fuelDrain = 0;
+    }
+    this.player.addHeat(dt * 0.08);
+    if (this.player.fuel <= 0 || this.player.overheat > 0) {
+      this.sawAnchor.active = false;
+      this.player.sawDeployed = false;
+    }
+  }
+
+  applyAnchorClimb(dt) {
+    if (!this.sawAnchor.active) return;
+    if (!this.input.isDown('up')) return;
+    const dx = Math.abs(this.player.x - this.sawAnchor.x);
+    const dy = this.player.y - this.sawAnchor.y;
+    if (dx > 20 || dy < -40 || dy > 80) return;
+    const climbSpeed = 120;
+    const nextY = this.player.y - climbSpeed * dt;
+    const tileX = Math.floor(this.player.x / this.world.tileSize);
+    const tileY = Math.floor((nextY - this.player.height / 2) / this.world.tileSize);
+    if (!this.world.isSolid(tileX, tileY, this.abilities)) {
+      this.player.y = nextY;
+      this.player.vy = Math.min(this.player.vy, -climbSpeed);
+      this.player.onGround = false;
+    }
+  }
+
+  handleFlameSawDrain(dt) {
+    if (!this.player.flameMode || !this.abilities.flame) return;
+    const drain = dt * 0.12;
+    this.player.fuel = Math.max(0, this.player.fuel - drain);
+    this.player.addHeat(dt * 0.08);
+    this.triggerNoiseSpike('flame-saw');
+  }
+
+  triggerNoiseSpike(source) {
+    if (this.noiseCooldown > 0) return;
+    this.noiseCooldown = 0.6;
+    console.log(`Noise spike: ${source} (TODO: hook into enemy aggro).`);
+  }
+
+  handleSwitchInteraction() {
+    const tileSize = this.world.tileSize;
+    const tileX = Math.floor(this.player.x / tileSize);
+    const tileY = Math.floor(this.player.y / tileSize);
+    if (this.world.getTile(tileX, tileY) !== 'T') return false;
+    const cleared = this.clearHeavyDebris(tileX, tileY);
+    if (cleared) {
+      this.audio.interact();
+      this.spawnEffect('interact', this.player.x, this.player.y - 16);
+    }
+    return cleared;
+  }
+
+  clearHeavyDebris(originX, originY) {
+    let cleared = false;
+    for (let y = originY - 4; y <= originY + 4; y += 1) {
+      for (let x = originX - 6; x <= originX + 6; x += 1) {
+        if (this.world.getTile(x, y) === 'U') {
+          this.world.setTile(x, y, '.');
+          cleared = true;
+        }
+      }
+    }
+    return cleared;
+  }
+
+  tryObstacleInteraction(mode) {
+    if (this.sawAnchor.active) return false;
+    if (this.obstacleCooldown > 0) return false;
+    const tileSize = this.world.tileSize;
+    const checkX = this.player.x + this.player.facing * tileSize * 0.55;
+    const checkY = this.player.y - 6;
+    const tileX = Math.floor(checkX / tileSize);
+    const tileY = Math.floor(checkY / tileSize);
+    const tile = this.world.getTile(tileX, tileY);
+    const obstacle = OBSTACLES[tile];
+    if (!obstacle) return false;
+    let tool = null;
+    if (mode === 'attack') {
+      tool = 'chainsaw';
+    } else if (mode === 'rev') {
+      if (this.player.flameMode && this.abilities.flame) {
+        tool = 'flame';
+      } else if (this.abilities.resonance) {
+        tool = 'resonance';
+      }
+    }
+    const interaction = obstacle.interactions?.[tool];
+    if (!interaction) return false;
+
+    const key = `${tileX},${tileY}`;
+    const prev = this.obstacleDamage.get(key) || 0;
+    const next = prev + 1;
+    this.obstacleDamage.set(key, next);
+    this.player.addHeat(interaction.heat || 0);
+    if (interaction.fuel) {
+      this.player.fuel = Math.max(0, this.player.fuel - interaction.fuel);
+    }
+    if (interaction.noise) {
+      this.triggerNoiseSpike(interaction.verb);
+    }
+    this.spawnEffect('hit', tileX * tileSize + tileSize / 2, tileY * tileSize + tileSize / 2);
+    this.audio.hit();
+    this.obstacleCooldown = 0.2;
+    if (next >= (interaction.hits || 1)) {
+      this.world.setTile(tileX, tileY, '.');
+      if (tile === 'B') {
+        this.world.bossGate = null;
+      }
+      this.obstacleDamage.delete(key);
+      this.spawnEffect('interact', tileX * tileSize + tileSize / 2, tileY * tileSize + tileSize / 2);
+    }
+    return true;
   }
 
   draw() {
@@ -1206,6 +1392,16 @@ export default class Game {
     this.drawWorld(ctx);
     this.roomCoverageTest.drawWorld(ctx);
     this.drawInteractables(ctx);
+    if (this.sawAnchor.active) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+      ctx.strokeRect(this.sawAnchor.x - 8, this.sawAnchor.y - 8, 16, 16);
+      ctx.beginPath();
+      ctx.moveTo(this.sawAnchor.x - 10, this.sawAnchor.y + 10);
+      ctx.lineTo(this.sawAnchor.x + 10, this.sawAnchor.y - 10);
+      ctx.stroke();
+      ctx.restore();
+    }
     this.drawObjectiveBeacon(ctx);
     this.drawTutorialHints(ctx);
 
@@ -1242,7 +1438,11 @@ export default class Game {
     ctx.restore();
 
     const region = this.world.regionAt(this.player.x, this.player.y);
-    this.hud.draw(ctx, this.player, this.objective, region.name, { shake: this.pauseMenu.shake });
+    this.hud.draw(ctx, this.player, this.objective, region.name, {
+      shake: this.pauseMenu.shake,
+      sawEmbedded: this.sawAnchor.active,
+      flameMode: this.player.flameMode && this.abilities.flame
+    });
     const objectiveTarget = this.getObjectiveTarget();
     this.minimap.draw(ctx, canvas.width - 180, 20, 160, 90, this.player, {
       objective: objectiveTarget,
@@ -1367,25 +1567,26 @@ export default class Game {
           ctx.lineTo(x * tileSize + tileSize / 2, y * tileSize + tileSize - 6);
           ctx.stroke();
         }
-        if (['G', 'P', 'M', 'R'].includes(tile)) {
+        if (OBSTACLES[tile]) {
           ctx.strokeStyle = '#fff';
-          ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
           ctx.beginPath();
-          ctx.moveTo(x * tileSize + 6, y * tileSize + 6);
-          ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + tileSize - 6);
+          ctx.moveTo(x * tileSize + 6, y * tileSize + tileSize - 6);
+          ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + 6);
           ctx.stroke();
           ctx.save();
           ctx.fillStyle = '#fff';
-          ctx.font = '12px Courier New';
+          ctx.font = '10px Courier New';
           ctx.textAlign = 'center';
           ctx.fillText(tile, x * tileSize + tileSize / 2, y * tileSize + tileSize / 2 + 4);
           ctx.restore();
         }
-        if (tile === 'B') {
+        if (tile === 'T') {
           ctx.strokeStyle = '#fff';
-          ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeRect(x * tileSize + 6, y * tileSize + 6, tileSize - 12, tileSize - 12);
           ctx.beginPath();
-          ctx.arc(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2, 10, 0, Math.PI * 2);
+          ctx.moveTo(x * tileSize + 10, y * tileSize + tileSize / 2);
+          ctx.lineTo(x * tileSize + tileSize - 10, y * tileSize + tileSize / 2);
           ctx.stroke();
         }
         if (tile === 'O') {
@@ -1442,6 +1643,12 @@ export default class Game {
       this.drawLabel(ctx, objective.x, objective.y - 30, 'OBJECTIVE', objective, 160);
     });
 
+    const abilityLabels = {
+      anchor: 'TOOLS: CHAINSAW THROW',
+      flame: 'TOOLS: FLAME-SAW',
+      magboots: 'TOOLS: MAG BOOTS',
+      resonance: 'TOOLS: RESONANCE CORE'
+    };
     this.world.abilityPickups.forEach((pickup) => {
       if (pickup.collected) return;
       ctx.strokeStyle = '#fff';
@@ -1452,7 +1659,7 @@ export default class Game {
       ctx.moveTo(pickup.x - 6, pickup.y - 16);
       ctx.lineTo(pickup.x + 6, pickup.y - 8);
       ctx.stroke();
-      this.drawLabel(ctx, pickup.x, pickup.y - 30, `ABILITY: ${pickup.ability.toUpperCase()}`, pickup);
+      this.drawLabel(ctx, pickup.x, pickup.y - 30, abilityLabels[pickup.ability] || 'TOOLS: UPGRADE', pickup);
     });
 
     this.world.healthUpgrades.forEach((upgrade) => {
@@ -1473,24 +1680,11 @@ export default class Game {
     this.world.anchors.forEach((anchor) => {
       ctx.strokeStyle = 'rgba(255,255,255,0.5)';
       ctx.strokeRect(anchor.x - 6, anchor.y - 6, 12, 12);
-      this.drawLabel(ctx, anchor.x, anchor.y - 16, 'ANCHOR', anchor);
-    });
-
-    this.world.gates.forEach((gate) => {
-      const labelMap = {
-        G: 'GATE: GRAPPLE',
-        P: 'GATE: PHASE',
-        M: 'GATE: MAG BOOTS',
-        R: 'GATE: RESONANCE'
-      };
-      this.drawLabel(ctx, gate.x, gate.y - 24, labelMap[gate.type], gate, 90);
-      if (this.testHarness.active && this.testHarness.showGateReqs) {
-        this.drawLabel(ctx, gate.x, gate.y - 40, `REQ ${gate.type}`, gate, 140);
-      }
+      this.drawLabel(ctx, anchor.x, anchor.y - 16, 'ANCHOR SOCKET', anchor);
     });
 
     if (this.world.bossGate) {
-      this.drawLabel(ctx, this.world.bossGate.x, this.world.bossGate.y - 24, 'RIFT GATE', this.world.bossGate, 120);
+      this.drawLabel(ctx, this.world.bossGate.x, this.world.bossGate.y - 24, 'RIFT SEAL', this.world.bossGate, 120);
     }
   }
 
@@ -1562,9 +1756,6 @@ export default class Game {
       if (enemy.dead) return;
       ctx.strokeRect(enemy.rect.x, enemy.rect.y, enemy.rect.w, enemy.rect.h);
     });
-    this.world.gates.forEach((gate) => {
-      ctx.strokeRect(gate.x - this.world.tileSize / 2, gate.y - this.world.tileSize / 2, this.world.tileSize, this.world.tileSize);
-    });
     ctx.restore();
   }
 
@@ -1593,7 +1784,7 @@ export default class Game {
     if (this.world.objectives.length > 0) {
       return this.world.objectives[0];
     }
-    const order = ['grapple', 'phase', 'magboots', 'resonance'];
+    const order = ['anchor', 'flame', 'magboots', 'resonance'];
     for (let i = 0; i < order.length; i += 1) {
       const ability = order[i];
       if (!this.abilities[ability]) {
@@ -1601,7 +1792,7 @@ export default class Game {
         return target || null;
       }
     }
-    if (this.boss && !this.boss.dead) return this.world.bossGate;
+    if (this.boss && !this.boss.dead) return this.world.bossGate || this.boss;
     return null;
   }
 
@@ -1657,8 +1848,8 @@ export default class Game {
 
   runRoomCoverageTest() {
     const abilities = {
-      grapple: true,
-      phase: true,
+      anchor: true,
+      flame: true,
       magboots: true,
       resonance: true
     };
@@ -1673,8 +1864,8 @@ export default class Game {
 
   runEncounterAuditTest() {
     const abilities = {
-      grapple: true,
-      phase: true,
+      anchor: true,
+      flame: true,
       magboots: true,
       resonance: true
     };
@@ -1705,6 +1896,26 @@ export default class Game {
     this.runRoomCoverageTest();
     this.runEncounterAuditTest();
     this.runGoldenPathTest();
+  }
+
+  loadObstacleTestRoom() {
+    this.world.applyData(ObstacleTestMap);
+    this.refreshWorldCaches();
+    this.abilities = {
+      anchor: true,
+      flame: true,
+      magboots: true,
+      resonance: true
+    };
+    this.player.flameMode = false;
+    this.sawAnchor.active = false;
+    this.player.x = this.world.spawnPoint.x;
+    this.player.y = this.world.spawnPoint.y;
+    this.lastSave = { x: this.player.x, y: this.player.y };
+    this.enemies = [];
+    this.boss = null;
+    this.objective = 'Test obstacle interactions.';
+    this.audio.ui();
   }
 
   openTestDashboard() {

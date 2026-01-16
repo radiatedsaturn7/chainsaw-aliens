@@ -44,14 +44,35 @@ export default class HUD {
       ctx.restore();
     }
 
-    ctx.fillText(`Blueprint Shards: ${player.blueprints}`, 20, 88);
-    ctx.fillText(`Region: ${regionName}`, 20, 108);
-    ctx.fillText(`Objective: ${objective}`, 20, 132);
-    ctx.strokeStyle = '#fff';
-    ctx.strokeRect(14, 96, 420, 48);
+    let infoStartY = 88;
+    if (player.magBootsHeat > 0 || player.magBootsOverheat > 0) {
+      const bootsRatio = Math.min(1, Math.max(0, player.magBootsHeat));
+      ctx.fillText('Mag Boots Heat', 20, 84);
+      ctx.strokeRect(90, 74, barWidth, barHeight);
+      ctx.fillRect(90, 74, barWidth * bootsRatio, barHeight);
+      if (player.magBootsOverheat > 0) {
+        ctx.fillText('OVERHEAT', 240, 84);
+      }
+      infoStartY = 108;
+    }
 
+    ctx.fillText(`Blueprint Shards: ${player.blueprints}`, 20, infoStartY);
+    ctx.fillText(`Region: ${regionName}`, 20, infoStartY + 20);
+    ctx.fillText(`Objective: ${objective}`, 20, infoStartY + 44);
+    ctx.strokeStyle = '#fff';
+    ctx.strokeRect(14, infoStartY + 8, 420, 48);
+
+    let statusY = infoStartY + 68;
+    if (options.flameMode) {
+      ctx.fillText('Flame Mode: ON', 20, statusY);
+      statusY += 20;
+    }
+    if (options.sawEmbedded) {
+      ctx.fillText('SAW EMBEDDED', 20, statusY);
+      statusY += 20;
+    }
     if (options.shake === false) {
-      ctx.fillText('Screen Shake: OFF', 20, 156);
+      ctx.fillText('Screen Shake: OFF', 20, statusY);
     }
     ctx.restore();
   }

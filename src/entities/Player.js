@@ -44,6 +44,11 @@ export default class Player {
     this.justStepped = false;
     this.stepTimer = 0;
     this.attackTimer = 0;
+    this.flameMode = false;
+    this.sawDeployed = false;
+    this.magBootsHeat = 0;
+    this.magBootsOverheat = 0;
+    this.magBootsEngaged = false;
   }
 
   get rect() {
@@ -99,10 +104,15 @@ export default class Player {
       this.coyote = Math.max(0, this.coyote - dt);
     }
 
-    if ((this.coyote > 0 || (abilities.magboots && this.onWall !== 0)) && this.jumpBuffer > 0) {
-      if (this.onWall !== 0 && abilities.magboots) {
+    const pressingIntoWall = this.onWall !== 0
+      && ((this.onWall === 1 && input.isDown('right')) || (this.onWall === -1 && input.isDown('left')));
+    this.magBootsEngaged = abilities.magboots && pressingIntoWall && this.magBootsOverheat <= 0;
+
+    if ((this.coyote > 0 || this.magBootsEngaged) && this.jumpBuffer > 0) {
+      if (this.magBootsEngaged && this.onWall !== 0) {
         this.vx = -this.onWall * this.speed * 1.3;
         this.vy = -this.jumpPower * 0.9;
+        this.magBootsHeat += 0.2;
       } else {
         this.vy = -this.jumpPower;
       }
@@ -143,6 +153,18 @@ export default class Player {
     this.heat = Math.max(0, this.heat - dt * 0.2);
     if (this.overheat > 0) {
       this.overheat -= dt;
+    }
+    if (this.magBootsOverheat > 0) {
+      this.magBootsOverheat = Math.max(0, this.magBootsOverheat - dt);
+    }
+    if (this.magBootsEngaged) {
+      this.magBootsHeat += dt * 0.3;
+    } else {
+      this.magBootsHeat = Math.max(0, this.magBootsHeat - dt * 0.2);
+    }
+    if (this.magBootsHeat >= 1) {
+      this.magBootsHeat = 0;
+      this.magBootsOverheat = 1.1;
     }
     if (this.fuel < 3) {
       this.fuelRegen += dt;
