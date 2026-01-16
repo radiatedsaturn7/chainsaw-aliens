@@ -5,10 +5,25 @@ export default class Effect {
     this.type = type;
     this.age = 0;
     this.life = 0.4;
+    if (this.type === 'oil') {
+      this.life = 0.6;
+      this.drips = Array.from({ length: 5 }, () => ({
+        x: (Math.random() - 0.5) * 12,
+        y: 0,
+        vy: 80 + Math.random() * 140,
+        length: 6 + Math.random() * 8
+      }));
+    }
   }
 
   update(dt) {
     this.age += dt;
+    if (this.type === 'oil') {
+      this.drips.forEach((drip) => {
+        drip.vy += 240 * dt;
+        drip.y += drip.vy * dt;
+      });
+    }
   }
 
   get alive() {
@@ -81,6 +96,15 @@ export default class Effect {
       ctx.beginPath();
       ctx.arc(0, 0, 12, -0.7, 0.7);
       ctx.stroke();
+    } else if (this.type === 'oil') {
+      ctx.strokeStyle = 'rgba(76, 255, 120, 0.9)';
+      ctx.lineWidth = 2;
+      this.drips.forEach((drip) => {
+        ctx.beginPath();
+        ctx.moveTo(drip.x, drip.y);
+        ctx.lineTo(drip.x, drip.y + drip.length);
+        ctx.stroke();
+      });
     }
     ctx.restore();
   }
