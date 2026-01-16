@@ -55,9 +55,9 @@ body {
 }
 
 .fullscreen-enter {
-  bottom: 18px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 16px;
+  left: 16px;
+  transform: none;
 }
 
 .fullscreen-exit {
@@ -93,6 +93,10 @@ body.mobile #game {
 
 body.mobile .fullscreen-button {
   display: inline-flex;
+}
+
+body.editor-active .fullscreen-enter {
+  display: none;
 }
 
 body.mobile .hint {

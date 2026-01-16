@@ -29,9 +29,9 @@ export default class MobileControls {
     const { width, height } = this.viewport;
     if (!width || !height) return;
     const base = Math.min(width, height);
-    const margin = Math.max(26, base * 0.05);
-    const joystickRadius = Math.min(80, base * 0.14);
-    const knobRadius = Math.max(22, joystickRadius * 0.45);
+    const margin = Math.max(34, base * 0.06);
+    const joystickRadius = Math.min(88, base * 0.15);
+    const knobRadius = Math.max(26, joystickRadius * 0.48);
     this.joystick.center = {
       x: margin + joystickRadius,
       y: height - margin - joystickRadius
@@ -39,8 +39,8 @@ export default class MobileControls {
     this.joystick.radius = joystickRadius;
     this.joystick.knobRadius = knobRadius;
 
-    const buttonRadius = Math.min(54, base * 0.1);
-    const buttonGap = Math.max(buttonRadius * 1.35, buttonRadius + 20);
+    const buttonRadius = Math.min(70, base * 0.125);
+    const buttonGap = Math.max(buttonRadius * 1.6, buttonRadius + 28);
     const rightX = width - margin - buttonRadius;
     const lowerY = height - margin - buttonRadius;
     const upperY = lowerY - buttonGap;
