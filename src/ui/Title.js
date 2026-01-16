@@ -27,18 +27,74 @@ export default class Title {
     ctx.lineWidth = 2;
 
     // Earth
+    const earthX = width / 2;
+    const earthY = height / 2 + 120;
+    const earthRadius = 120;
+    const oceanGradient = ctx.createRadialGradient(
+      earthX - 40,
+      earthY - 60,
+      30,
+      earthX,
+      earthY,
+      earthRadius + 10
+    );
+    oceanGradient.addColorStop(0, '#2d8de6');
+    oceanGradient.addColorStop(0.6, '#0b4fa3');
+    oceanGradient.addColorStop(1, '#032a5c');
+    ctx.fillStyle = oceanGradient;
     ctx.beginPath();
-    ctx.arc(width / 2, height / 2 + 120, 120, 0, Math.PI * 2);
+    ctx.arc(earthX, earthY, earthRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#2fb26a';
+    ctx.beginPath();
+    ctx.moveTo(earthX - 60, earthY - 30);
+    ctx.bezierCurveTo(earthX - 90, earthY - 80, earthX - 30, earthY - 90, earthX - 10, earthY - 60);
+    ctx.bezierCurveTo(earthX + 10, earthY - 40, earthX - 20, earthY - 10, earthX - 55, earthY);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(earthX + 20, earthY - 10);
+    ctx.bezierCurveTo(earthX + 60, earthY - 40, earthX + 90, earthY - 10, earthX + 70, earthY + 20);
+    ctx.bezierCurveTo(earthX + 50, earthY + 40, earthX + 10, earthY + 30, earthX + 5, earthY + 5);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.beginPath();
+    ctx.ellipse(earthX - 30, earthY - 70, 42, 12, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(earthX + 50, earthY + 10, 48, 14, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(155,205,255,0.7)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(earthX, earthY, earthRadius + 6, 0, Math.PI * 2);
     ctx.stroke();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
 
     this.aliens.forEach((alien) => {
       ctx.save();
       ctx.translate(alien.x, alien.y + 80 + Math.sin(this.timer + alien.x) * 4);
+      ctx.strokeStyle = '#fff';
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
       ctx.beginPath();
-      ctx.moveTo(-12, 12);
-      ctx.lineTo(0, -16);
-      ctx.lineTo(12, 12);
-      ctx.closePath();
+      ctx.ellipse(0, 6, 18, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 8, 5, 0, Math.PI, 0, true);
+      ctx.fill();
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+      ctx.beginPath();
+      ctx.moveTo(-10, 8);
+      ctx.lineTo(10, 8);
       ctx.stroke();
       ctx.restore();
     });
