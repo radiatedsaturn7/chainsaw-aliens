@@ -42,8 +42,8 @@ import ObstacleTestMap from '../debug/ObstacleTestMap.js';
 import { OBSTACLES } from '../world/Obstacles.js';
 
 const INTRO_LINES = [
-  'Captain! The entire planet of earth has literally run out of all our ammunition...',
-  '...and the aliens are still coming! What do we do?',
+  'The entire planet of earth has literally run out of all our ammunition...',
+  '...and the aliens are still coming!',
   'There is only one solution left...',
   'We have to...',
   'Chainsaw Aliens.'

@@ -44,6 +44,8 @@ const SHAPE_TOOLS = [
 
 const PREFAB_TYPES = [
   { id: 'room', label: 'Room', short: 'RM' },
+  { id: 'circular', label: 'Circular Room', short: 'CIR' },
+  { id: 'cave', label: 'Cave Room', short: 'CAV' },
   { id: 'corridor', label: 'Corridor', short: 'CR' },
   { id: 'staircase', label: 'Staircase', short: 'SC' },
   { id: 'platform', label: 'Platform Run', short: 'PL' },
@@ -1061,14 +1063,74 @@ export default class Editor {
           tiles.push({ x, y, char: wall ? '#' : '.' });
         }
       }
+    } else if (this.prefabType.id === 'circular') {
+      const centerX = (bounds.x1 + bounds.x2) / 2;
+      const centerY = (bounds.y1 + bounds.y2) / 2;
+      const radiusX = Math.max((bounds.x2 - bounds.x1) / 2, 1);
+      const radiusY = Math.max((bounds.y2 - bounds.y1) / 2, 1);
+      const isInside = (x, y) => {
+        const dxNorm = (x - centerX) / radiusX;
+        const dyNorm = (y - centerY) / radiusY;
+        return dxNorm * dxNorm + dyNorm * dyNorm <= 1;
+      };
+
+      for (let y = bounds.y1; y <= bounds.y2; y += 1) {
+        for (let x = bounds.x1; x <= bounds.x2; x += 1) {
+          if (!isInside(x, y)) continue;
+          const wall = !isInside(x + 1, y)
+            || !isInside(x - 1, y)
+            || !isInside(x, y + 1)
+            || !isInside(x, y - 1);
+          tiles.push({ x, y, char: wall ? '#' : '.' });
+        }
+      }
+    } else if (this.prefabType.id === 'cave') {
+      const width = bounds.x2 - bounds.x1 + 1;
+      const height = bounds.y2 - bounds.y1 + 1;
+      const maxSideInset = Math.min(2, Math.max(0, Math.floor(width / 2) - 1));
+      const maxBottomInset = Math.min(2, Math.max(0, Math.floor(height / 2) - 1));
+      const leftInsetByRow = [];
+      const rightInsetByRow = [];
+      const bottomInsetByColumn = [];
+
+      for (let y = bounds.y1; y <= bounds.y2; y += 1) {
+        const rowIndex = y - bounds.y1;
+        let leftInset = Math.floor(Math.random() * (maxSideInset + 1));
+        let rightInset = Math.floor(Math.random() * (maxSideInset + 1));
+        if (leftInset + rightInset >= width - 1) {
+          rightInset = Math.max(0, width - 2 - leftInset);
+        }
+        leftInsetByRow[rowIndex] = leftInset;
+        rightInsetByRow[rowIndex] = rightInset;
+      }
+
+      for (let x = bounds.x1; x <= bounds.x2; x += 1) {
+        const columnIndex = x - bounds.x1;
+        bottomInsetByColumn[columnIndex] = Math.floor(Math.random() * (maxBottomInset + 1));
+      }
+
+      for (let y = bounds.y1; y <= bounds.y2; y += 1) {
+        const rowIndex = y - bounds.y1;
+        const leftEdge = bounds.x1 + leftInsetByRow[rowIndex];
+        const rightEdge = bounds.x2 - rightInsetByRow[rowIndex];
+        for (let x = bounds.x1; x <= bounds.x2; x += 1) {
+          const columnIndex = x - bounds.x1;
+          const bottomEdge = bounds.y2 - bottomInsetByColumn[columnIndex];
+          if (x < leftEdge || x > rightEdge || y > bottomEdge) continue;
+          const wall = x === leftEdge || x === rightEdge || y === bounds.y1 || y === bottomEdge;
+          tiles.push({ x, y, char: wall ? '#' : '.' });
+        }
+      }
     } else if (this.prefabType.id === 'corridor') {
       if (Math.abs(dx) >= Math.abs(dy)) {
         for (let x = bounds.x1; x <= bounds.x2; x += 1) {
           tiles.push({ x, y: start.y, char: '.' });
+          tiles.push({ x, y: start.y + signY, char: '.' });
         }
       } else {
         for (let y = bounds.y1; y <= bounds.y2; y += 1) {
           tiles.push({ x: start.x, y, char: '.' });
+          tiles.push({ x: start.x + signX, y, char: '.' });
         }
       }
     } else if (this.prefabType.id === 'staircase') {
