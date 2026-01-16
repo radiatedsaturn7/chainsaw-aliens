@@ -2,12 +2,13 @@ import Game from './game/Game.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
+const enterFullscreenButton = document.getElementById('enter-fullscreen');
+const exitFullscreenButton = document.getElementById('exit-fullscreen');
 
 const game = new Game(canvas, ctx);
 window.__game = game;
 window.__gameReady = true;
 let isMobile = false;
-let fullscreenRequested = false;
 
 function detectMobile() {
   const uaMobile = navigator.userAgentData?.mobile;
@@ -23,11 +24,28 @@ function detectMobile() {
 }
 
 function requestFullscreen() {
-  if (fullscreenRequested || !isMobile || document.fullscreenElement) return;
+  if (!isMobile || document.fullscreenElement) return;
   const root = document.documentElement;
   if (root.requestFullscreen) {
     root.requestFullscreen().catch(() => {});
-    fullscreenRequested = true;
+  }
+}
+
+function exitFullscreen() {
+  if (!document.fullscreenElement) return;
+  if (document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+
+function updateFullscreenButtons() {
+  const showControls = Boolean(isMobile);
+  const isFullscreen = Boolean(document.fullscreenElement);
+  if (enterFullscreenButton) {
+    enterFullscreenButton.classList.toggle('is-hidden', !showControls || isFullscreen);
+  }
+  if (exitFullscreenButton) {
+    exitFullscreenButton.classList.toggle('is-hidden', !showControls || !isFullscreen);
   }
 }
 
@@ -54,6 +72,7 @@ function resize() {
       isMobile
     });
   }
+  updateFullscreenButtons();
 }
 
 function getTouchGesture(touches) {
@@ -72,6 +91,7 @@ function getTouchGesture(touches) {
 }
 
 window.addEventListener('resize', resize);
+document.addEventListener('fullscreenchange', updateFullscreenButtons);
 resize();
 
 canvas.addEventListener('click', (event) => {
@@ -111,24 +131,10 @@ canvas.addEventListener('wheel', (event) => {
 }, { passive: false });
 
 let gestureActive = false;
-let activeTouchId = null;
-let lastTouchPosition = null;
-
-function getTouchById(touches, id) {
-  for (let i = 0; i < touches.length; i += 1) {
-    if (touches[i].identifier === id) return touches[i];
-  }
-  return null;
-}
+const activeTouches = new Map();
 
 canvas.addEventListener('touchstart', (event) => {
-  requestFullscreen();
-  if (event.touches.length >= 2) {
-    if (activeTouchId !== null && game.handlePointerUp) {
-      game.handlePointerUp({ ...lastTouchPosition, button: 0, id: activeTouchId });
-      activeTouchId = null;
-      lastTouchPosition = null;
-    }
+  if (game.state === 'editor' && event.touches.length >= 2) {
     event.preventDefault();
     const gesture = getTouchGesture(event.touches);
     gestureActive = true;
@@ -137,15 +143,14 @@ canvas.addEventListener('touchstart', (event) => {
     }
     return;
   }
-  if (event.touches.length === 1) {
-    const touch = event.touches[0];
-    activeTouchId = touch.identifier;
-    lastTouchPosition = getCanvasPosition(touch);
-    event.preventDefault();
+  event.preventDefault();
+  Array.from(event.changedTouches).forEach((touch) => {
+    const position = getCanvasPosition(touch);
+    activeTouches.set(touch.identifier, position);
     if (game.handlePointerDown) {
-      game.handlePointerDown({ ...lastTouchPosition, button: 0, buttons: 1, id: activeTouchId });
+      game.handlePointerDown({ ...position, button: 0, buttons: 1, id: touch.identifier });
     }
-  }
+  });
 }, { passive: false });
 
 canvas.addEventListener('touchmove', (event) => {
@@ -157,15 +162,14 @@ canvas.addEventListener('touchmove', (event) => {
     }
     return;
   }
-  if (activeTouchId !== null && event.touches.length === 1) {
-    const touch = getTouchById(event.touches, activeTouchId);
-    if (!touch) return;
-    lastTouchPosition = getCanvasPosition(touch);
-    event.preventDefault();
+  event.preventDefault();
+  Array.from(event.changedTouches).forEach((touch) => {
+    const position = getCanvasPosition(touch);
+    activeTouches.set(touch.identifier, position);
     if (game.handlePointerMove) {
-      game.handlePointerMove({ ...lastTouchPosition, buttons: 1, id: activeTouchId });
+      game.handlePointerMove({ ...position, buttons: 1, id: touch.identifier });
     }
-  }
+  });
 }, { passive: false });
 
 const endGesture = () => {
@@ -180,37 +184,41 @@ canvas.addEventListener('touchend', (event) => {
   if (gestureActive && event.touches.length < 2) {
     endGesture();
   }
-  if (activeTouchId !== null) {
-    const touch = getTouchById(event.changedTouches, activeTouchId);
-    const position = touch ? getCanvasPosition(touch) : lastTouchPosition;
+  Array.from(event.changedTouches).forEach((touch) => {
+    const position = activeTouches.get(touch.identifier) || getCanvasPosition(touch);
     if (position && game.handlePointerUp) {
-      game.handlePointerUp({ ...position, button: 0, id: activeTouchId });
+      game.handlePointerUp({ ...position, button: 0, id: touch.identifier });
     }
-    activeTouchId = null;
-    lastTouchPosition = null;
-  }
+    activeTouches.delete(touch.identifier);
+  });
 });
 
 canvas.addEventListener('touchcancel', (event) => {
   endGesture();
-  if (activeTouchId !== null) {
-    const touch = getTouchById(event.changedTouches, activeTouchId);
-    const position = touch ? getCanvasPosition(touch) : lastTouchPosition;
+  Array.from(event.changedTouches).forEach((touch) => {
+    const position = activeTouches.get(touch.identifier) || getCanvasPosition(touch);
     if (position && game.handlePointerUp) {
-      game.handlePointerUp({ ...position, button: 0, id: activeTouchId });
+      game.handlePointerUp({ ...position, button: 0, id: touch.identifier });
     }
-    activeTouchId = null;
-    lastTouchPosition = null;
-  }
+    activeTouches.delete(touch.identifier);
+  });
 });
 
 canvas.addEventListener('contextmenu', (event) => {
   event.preventDefault();
 });
 
-canvas.addEventListener('click', () => {
-  requestFullscreen();
-});
+if (enterFullscreenButton) {
+  enterFullscreenButton.addEventListener('click', () => {
+    requestFullscreen();
+  });
+}
+
+if (exitFullscreenButton) {
+  exitFullscreenButton.addEventListener('click', () => {
+    exitFullscreen();
+  });
+}
 
 let last = performance.now();
 function loop(now) {

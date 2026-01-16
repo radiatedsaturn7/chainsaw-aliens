@@ -36,6 +36,42 @@ body {
   opacity: 0.6;
 }
 
+.fullscreen-button {
+  position: absolute;
+  z-index: 5;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.fullscreen-button.is-hidden {
+  display: none;
+}
+
+.fullscreen-enter {
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.fullscreen-exit {
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 18px;
+}
+
 body.mobile {
   place-items: stretch;
   min-height: 100dvh;
@@ -53,6 +89,10 @@ body.mobile #game {
   border: none;
   box-shadow: none;
   touch-action: none;
+}
+
+body.mobile .fullscreen-button {
+  display: inline-flex;
 }
 
 body.mobile .hint {

@@ -1686,10 +1686,6 @@ export default class Game {
   }
 
   handleClick(x, y) {
-    if (this.state === 'title' && this.title.isRunTestsHit(x, y) && !this.testDashboard.visible) {
-      this.openTestDashboard();
-      return;
-    }
     if (this.state === 'title' && this.title.isEditorHit(x, y) && !this.testDashboard.visible) {
       this.enterEditor();
       return;
@@ -1726,6 +1722,10 @@ export default class Game {
   handlePointerDown(payload) {
     if (this.state === 'editor') {
       this.editor.handlePointerDown(payload);
+      return;
+    }
+    if (this.state === 'title' && this.mobileControls.enabled && this.title.isEditorHit(payload.x, payload.y)) {
+      this.enterEditor();
       return;
     }
     this.mobileControls.handlePointerDown(payload, this.state);

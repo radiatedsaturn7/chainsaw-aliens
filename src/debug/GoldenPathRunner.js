@@ -321,29 +321,6 @@ export default class GoldenPathRunner {
 
   draw(ctx, width, height, game) {
     if (!this.data) return;
-    const milestone = this.currentMilestone();
-    const region = game ? game.world.regionAt(game.player.x, game.player.y) : null;
-    ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    ctx.fillRect(width - 320, 20, 300, 130);
-    ctx.strokeStyle = '#fff';
-    ctx.strokeRect(width - 320, 20, 300, 130);
-    ctx.fillStyle = '#fff';
-    ctx.font = '12px Courier New';
-    ctx.fillText('GOLDEN PATH SIM', width - 304, 40);
-    ctx.fillText(`Status: ${this.status.toUpperCase()}`, width - 304, 58);
-    ctx.fillText(`Stage: ${this.stageIndex + 1}/${this.data.milestones.length}`, width - 304, 74);
-    ctx.fillText(`Objective: ${milestone?.label || 'None'}`, width - 304, 90);
-    if (region) {
-      ctx.fillText(`Region: ${region.name}`, width - 304, 106);
-    }
-    ctx.fillText(`Sim Speed: ${this.simSpeed.toFixed(1)}x`, width - 304, 122);
-    if (this.failReport) {
-      ctx.fillText('FAIL REPORT:', width - 304, 138);
-      ctx.fillText(`${this.failReport.stage}`, width - 304, 154);
-    }
-    ctx.restore();
-
     if (this.failMarker) {
       ctx.save();
       ctx.strokeStyle = '#fff';
