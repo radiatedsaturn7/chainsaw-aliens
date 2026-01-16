@@ -22,6 +22,21 @@ function resize() {
   canvas.style.transform = `scale(${scale})`;
 }
 
+function getTouchGesture(touches) {
+  const [first, second] = touches;
+  const firstPos = getCanvasPosition(first);
+  const secondPos = getCanvasPosition(second);
+  const centerX = (firstPos.x + secondPos.x) / 2;
+  const centerY = (firstPos.y + secondPos.y) / 2;
+  const dx = firstPos.x - secondPos.x;
+  const dy = firstPos.y - secondPos.y;
+  return {
+    x: centerX,
+    y: centerY,
+    distance: Math.hypot(dx, dy)
+  };
+}
+
 window.addEventListener('resize', resize);
 resize();
 
@@ -60,6 +75,43 @@ canvas.addEventListener('wheel', (event) => {
     game.handleWheel({ x, y, deltaY: event.deltaY });
   }
 }, { passive: false });
+
+let gestureActive = false;
+
+canvas.addEventListener('touchstart', (event) => {
+  if (event.touches.length < 2) return;
+  event.preventDefault();
+  const gesture = getTouchGesture(event.touches);
+  gestureActive = true;
+  if (game.handleGestureStart) {
+    game.handleGestureStart(gesture);
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchmove', (event) => {
+  if (!gestureActive || event.touches.length < 2) return;
+  event.preventDefault();
+  const gesture = getTouchGesture(event.touches);
+  if (game.handleGestureMove) {
+    game.handleGestureMove(gesture);
+  }
+}, { passive: false });
+
+const endGesture = () => {
+  if (!gestureActive) return;
+  gestureActive = false;
+  if (game.handleGestureEnd) {
+    game.handleGestureEnd();
+  }
+};
+
+canvas.addEventListener('touchend', () => {
+  endGesture();
+});
+
+canvas.addEventListener('touchcancel', () => {
+  endGesture();
+});
 
 canvas.addEventListener('contextmenu', (event) => {
   event.preventDefault();

@@ -1720,4 +1720,19 @@ export default class Game {
     this.editor.handleWheel(payload);
   }
 
+  handleGestureStart(payload) {
+    if (this.state !== 'editor') return;
+    this.editor.handleGestureStart(payload);
+  }
+
+  handleGestureMove(payload) {
+    if (this.state !== 'editor') return;
+    this.editor.handleGestureMove(payload);
+  }
+
+  handleGestureEnd() {
+    if (this.state !== 'editor') return;
+    this.editor.handleGestureEnd();
+  }
+
 }
