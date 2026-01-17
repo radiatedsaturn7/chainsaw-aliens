@@ -12,6 +12,7 @@ export const KEYMAP = {
   pause: ['Escape'],
   cancel: ['Backspace'],
   interact: ['Space'],
+  endless: ['KeyN'],
   test: ['KeyT'],
   validator: ['KeyV'],
   coverage: ['KeyC'],

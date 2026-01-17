@@ -6,6 +6,7 @@ export default class SentinelElite extends EnemyBase {
     this.type = 'sentinel';
     this.health = 10;
     this.phase = 0;
+    this.gravity = false;
   }
 
   update(dt, player, spawnProjectile) {
@@ -26,7 +27,7 @@ export default class SentinelElite extends EnemyBase {
     ctx.translate(this.x + offsetX, this.y + offsetY);
     const glow = this.stagger > 0.6 ? 1 : 0.8;
     const alpha = flash ? 1 : glow;
-    ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+    ctx.strokeStyle = `rgba(255, 90, 90,${alpha})`;
     ctx.lineWidth = 2;
     const wobble = Math.sin(this.animTime * 3) * 2;
     ctx.beginPath();

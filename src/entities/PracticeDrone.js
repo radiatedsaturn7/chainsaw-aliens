@@ -29,7 +29,7 @@ export default class PracticeDrone extends EnemyBase {
     ctx.translate(this.x + offsetX, this.y + Math.sin(this.pulse) * 4 + offsetY);
     const glow = this.stagger > 0.6 ? 1 : 0.8;
     const alpha = flash ? 1 : glow;
-    ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+    ctx.strokeStyle = `rgba(255, 90, 90,${alpha})`;
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.rect(-18, -12, 36, 24);

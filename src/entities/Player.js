@@ -56,9 +56,15 @@ export default class Player {
     this.sawRideMomentum = 0;
     this.sawRideSpeed = MOVEMENT_MODEL.dashSpeed * 0.75;
     this.sawRideDamageTimer = 0;
+    this.sawRideBurstTimer = 0;
     this.magBootsHeat = 0;
     this.magBootsOverheat = 0;
     this.magBootsEngaged = false;
+    this.aimingDiagonal = false;
+    this.aimingDown = false;
+    this.aimX = 1;
+    this.aimY = 0;
+    this.aimAngle = 0;
   }
 
   get rect() {
@@ -116,6 +122,7 @@ export default class Player {
     this.justLanded = false;
     this.justStepped = false;
     this.animTime += dt;
+    this.sawRideBurstTimer = Math.max(0, this.sawRideBurstTimer - dt);
     const moveInput = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
     let exitRide = false;
     let exitRideMomentum = 0;
@@ -123,7 +130,10 @@ export default class Player {
       if (moveInput !== 0) {
         this.facing = moveInput;
       }
-      const rideMoving = input.isDown('attack');
+      if (input.wasPressed('attack')) {
+        this.sawRideBurstTimer = 0.15;
+      }
+      const rideMoving = input.isDown('attack') || this.sawRideBurstTimer > 0;
       const rideVx = rideMoving ? this.facing * this.sawRideSpeed : 0;
       if (input.wasPressed('jump')) {
         exitRide = true;
@@ -260,7 +270,23 @@ export default class Player {
     }
 
     this.ducking = this.onGround && input.isDown('down') && !this.sawRideActive;
-    this.aimingUp = input.isDown('up') && !this.ducking && !this.sawRideActive;
+    const aimHorizontal = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
+    const aimingUp = input.isDown('up') && !this.ducking && !this.sawRideActive;
+    this.aimingUp = aimingUp;
+    this.aimingDiagonal = aimingUp && aimHorizontal !== 0;
+    this.aimingDown = !this.onGround && input.isDown('down') && !this.sawRideActive;
+    if (aimingUp) {
+      this.aimX = this.aimingDiagonal ? aimHorizontal : 0;
+      this.aimY = -1;
+    } else {
+      this.aimX = this.facing || 1;
+      this.aimY = 0;
+    }
+    if (aimingUp) {
+      this.aimAngle = Math.atan2(this.aimY, this.aimX);
+    } else {
+      this.aimAngle = 0;
+    }
     this.revving = input.isDown('rev') && this.canRev();
     this.attackTimer = Math.max(0, this.attackTimer - dt);
     this.sawRideDamageTimer = Math.max(0, this.sawRideDamageTimer - dt);
@@ -375,7 +401,7 @@ export default class Player {
     const dashTilt = this.state === 'dash' ? this.facing * 6 : 0;
     const crouchOffset = this.state === 'duck' ? 6 : 0;
     const crouchShrink = this.state === 'duck' ? 6 : 0;
-    const aimTilt = this.aimingUp ? (-Math.PI / 3) * this.facing : 0;
+    const aimTilt = this.aimingUp ? this.aimAngle : 0;
     const flash = this.hurtTimer > 0 && Math.floor(this.animTime * 20) % 2 === 0;
     ctx.strokeStyle = flash ? '#fff' : 'rgba(255,255,255,0.9)';
     ctx.lineWidth = 2;
@@ -409,26 +435,27 @@ export default class Player {
     ctx.beginPath();
     ctx.moveTo(0, -4 + crouchOffset);
     const barLength = this.revving ? this.width * 1.1 : this.width * 0.9;
-    ctx.lineTo(this.facing * barLength, 0 + crouchOffset);
+    const barDir = this.aimingUp ? 1 : this.facing;
+    ctx.lineTo(barDir * barLength, 0 + crouchOffset);
     ctx.lineTo(0, 6 + (this.revving ? 2 : 0) + crouchOffset);
     ctx.stroke();
     if (this.revving) {
       ctx.beginPath();
-      ctx.arc(this.facing * barLength, 0 + crouchOffset, 8, -0.8, 0.8);
+      ctx.arc(barDir * barLength, 0 + crouchOffset, 8, -0.8, 0.8);
       ctx.stroke();
     }
     ctx.restore();
     if (this.cosmetics.length > 0) {
       ctx.beginPath();
       ctx.moveTo(-4, -6);
-      ctx.lineTo(this.facing * this.width * 0.8, 0);
+      ctx.lineTo(barDir * this.width * 0.8, 0);
       ctx.lineTo(-4, 8);
       ctx.stroke();
     }
     if (this.cosmetics.length > 1) {
       ctx.beginPath();
       ctx.moveTo(-8, -4);
-      ctx.lineTo(this.facing * this.width * 0.7, 0);
+      ctx.lineTo(barDir * this.width * 0.7, 0);
       ctx.lineTo(-8, 6);
       ctx.stroke();
     }

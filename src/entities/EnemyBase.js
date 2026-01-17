@@ -16,6 +16,7 @@ export default class EnemyBase {
     this.lootValue = 1;
     this.solid = true;
     this.justStaggered = false;
+    this.gravity = true;
     this.id = ENEMY_ID;
     ENEMY_ID += 1;
     this.hurtTimer = 0;
@@ -67,7 +68,7 @@ export default class EnemyBase {
     ctx.save();
     const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
     ctx.translate(this.x + offsetX, this.y + offsetY);
-    ctx.strokeStyle = flash ? '#fff' : '#fff';
+    ctx.strokeStyle = flash ? '#ffd5d5' : '#ff6b6b';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);

@@ -40,6 +40,7 @@ import GoldenPathTest from '../debug/validators/GoldenPathTest.js';
 import Editor from '../editor/Editor.js';
 import ObstacleTestMap from '../debug/ObstacleTestMap.js';
 import { OBSTACLES } from '../world/Obstacles.js';
+import { MOVEMENT_MODEL } from './MovementModel.js';
 
 const INTRO_LINES = [
   'The entire planet of earth has literally run out of all our ammunition...',
@@ -179,6 +180,14 @@ export default class Game {
       backoffLowHealth: 2.4
     };
     this.spawnCooldowns = new Map();
+    this.gameMode = 'story';
+    this.endlessData = null;
+    this.storyData = null;
+    this.endlessState = {
+      active: false,
+      wave: 0,
+      timer: 0
+    };
     this.prevHealth = this.player.health;
     this.revActive = false;
     this.simulationActive = false;
@@ -213,6 +222,8 @@ export default class Game {
     await this.autoRepair.load();
     this.autoRepair.applyPersistentPatches();
     await this.goldenPath.load();
+    this.storyData = this.world.data;
+    this.endlessData = await this.loadWorldData('./src/content/endless.json');
     this.syncSpawnPoint();
     this.player.x = this.spawnPoint.x;
     this.player.y = this.spawnPoint.y;
@@ -222,6 +233,19 @@ export default class Game {
     this.spawnBoxes();
     this.autoRepair.applySpawnOverride(this);
     this.state = 'title';
+  }
+
+  async loadWorldData(path) {
+    try {
+      const response = await fetch(path);
+      if (!response.ok) {
+        throw new Error(`Failed to load ${path}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.warn(error);
+      return null;
+    }
   }
 
   resetWorldSystems() {
@@ -317,14 +341,29 @@ export default class Game {
   resetRun() {
     this.world.reset();
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
+    if (this.gameMode === 'endless') {
+      this.player.equippedUpgrades = [...UPGRADE_LIST];
+      this.player.upgradeSlots = UPGRADE_LIST.length;
+      this.player.maxHealth = 12;
+      this.player.health = 12;
+    }
     this.player.applyUpgrades(this.player.equippedUpgrades);
-    this.abilities = {
-      anchor: false,
-      flame: false,
-      magboots: false,
-      resonance: false
-    };
-    this.objective = 'Reach the Hub Pylon.';
+    this.abilities = this.gameMode === 'endless'
+      ? {
+        anchor: true,
+        flame: true,
+        magboots: true,
+        resonance: true
+      }
+      : {
+        anchor: false,
+        flame: false,
+        magboots: false,
+        resonance: false
+      };
+    this.objective = this.gameMode === 'endless'
+      ? 'Survive the endless horde.'
+      : 'Reach the Hub Pylon.';
     this.lastSave = { x: this.player.x, y: this.player.y };
     this.victory = false;
     this.enemies = [];
@@ -363,6 +402,22 @@ export default class Game {
     this.deathTimer = 0;
     this.gameOverTimer = 0;
     this.spawnPauseTimer = 0;
+    this.endlessState = {
+      active: this.gameMode === 'endless',
+      wave: 0,
+      timer: 1.5
+    };
+    if (this.gameMode === 'endless') {
+      this.spawnRules.globalMax = 20;
+      this.spawnRules.perRegion = 20;
+      this.spawnRules.cooldown = 0.8;
+      this.spawnRules.backoffLowHealth = 1.2;
+    } else {
+      this.spawnRules.globalMax = 12;
+      this.spawnRules.perRegion = 6;
+      this.spawnRules.cooldown = 1.4;
+      this.spawnRules.backoffLowHealth = 2.4;
+    }
     this.testHarness.active = false;
     this.simulationActive = false;
     this.resetWorldSystems();
@@ -377,6 +432,99 @@ export default class Game {
     this.testDashboard.setResults({ golden: 'running' });
     this.audio.ui();
     this.triggerMenuFlash();
+  }
+
+  startEndlessMode() {
+    if (!this.endlessData) return;
+    this.gameMode = 'endless';
+    this.applyWorldData(this.endlessData);
+    this.resetRun();
+    this.state = 'playing';
+    this.simulationActive = false;
+    this.startSpawnPause();
+  }
+
+  updateEndlessMode(dt) {
+    if (!this.endlessState.active) return;
+    this.endlessState.timer = Math.max(0, this.endlessState.timer - dt);
+    if (this.endlessState.timer > 0) return;
+    this.endlessState.wave += 1;
+    const wave = this.endlessState.wave;
+    const spawnCount = Math.min(4 + Math.floor(wave * 1.2), 24);
+    this.spawnRules.globalMax = Math.min(18 + wave * 2, 60);
+    this.spawnRules.perRegion = this.spawnRules.globalMax;
+    this.spawnRules.cooldown = Math.max(0.4, 1.1 - wave * 0.05);
+    this.endlessState.timer = Math.max(2.2, 6 - wave * 0.12);
+    for (let i = 0; i < spawnCount; i += 1) {
+      const activeEnemies = this.enemies.filter((enemy) => !enemy.dead);
+      if (activeEnemies.length >= this.spawnRules.globalMax) {
+        break;
+      }
+      this.spawnEndlessEnemy(wave);
+    }
+  }
+
+  spawnEndlessEnemy(wave) {
+    const pool = ['skitter'];
+    if (wave >= 2) pool.push('spitter');
+    if (wave >= 4) pool.push('slicer');
+    if (wave >= 6) pool.push('bulwark');
+    if (wave >= 8) pool.push('hivenode');
+    if (wave >= 10) pool.push('floater');
+    if (wave >= 12) pool.push('sentinel');
+    const type = pool[Math.floor(Math.random() * pool.length)];
+    const spawn = this.getEndlessSpawnPoint();
+    this.spawnEnemyByType(type, spawn.x, spawn.y);
+  }
+
+  spawnEnemyByType(type, worldX, worldY) {
+    switch (type) {
+      case 'practice':
+        this.enemies.push(new PracticeDrone(worldX, worldY));
+        break;
+      case 'skitter':
+        this.enemies.push(new Skitter(worldX, worldY));
+        break;
+      case 'spitter':
+        this.enemies.push(new Spitter(worldX, worldY));
+        break;
+      case 'bulwark':
+        this.enemies.push(new Bulwark(worldX, worldY));
+        break;
+      case 'floater':
+        this.enemies.push(new Floater(worldX, worldY));
+        break;
+      case 'slicer':
+        this.enemies.push(new Slicer(worldX, worldY));
+        break;
+      case 'hivenode':
+        this.enemies.push(new HiveNode(worldX, worldY));
+        break;
+      case 'sentinel':
+        this.enemies.push(new SentinelElite(worldX, worldY));
+        break;
+      default:
+        break;
+    }
+  }
+
+  getEndlessSpawnPoint() {
+    const tileSize = this.world.tileSize;
+    const tries = 40;
+    for (let i = 0; i < tries; i += 1) {
+      const tx = 2 + Math.floor(Math.random() * (this.world.width - 4));
+      const ty = 2 + Math.floor(Math.random() * (this.world.height - 6));
+      if (this.world.isSolid(tx, ty, this.abilities)) continue;
+      if (!this.world.isSolid(tx, ty + 1, this.abilities)) continue;
+      const x = (tx + 0.5) * tileSize;
+      const y = (ty + 0.5) * tileSize;
+      if (Math.hypot(this.player.x - x, this.player.y - y) < 160) continue;
+      return { x, y };
+    }
+    return {
+      x: this.player.x + (Math.random() - 0.5) * 240,
+      y: this.player.y - 80
+    };
   }
 
   spawnEnemies() {
@@ -419,6 +567,13 @@ export default class Game {
             break;
         }
       });
+      this.bossActive = false;
+      return;
+    }
+
+    if (this.gameMode === 'endless') {
+      this.enemies = [];
+      this.boss = null;
       this.bossActive = false;
       return;
     }
@@ -510,7 +665,20 @@ export default class Game {
         return;
       }
       if (this.input.wasPressed('interact')) {
+        if (this.gameMode !== 'story' && this.storyData) {
+          this.gameMode = 'story';
+          this.applyWorldData(this.storyData);
+          this.resetRun();
+        } else {
+          this.gameMode = 'story';
+        }
         this.state = 'dialog';
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+      }
+      if (this.input.wasPressed('endless')) {
+        this.startEndlessMode();
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
@@ -623,6 +791,7 @@ export default class Game {
       return;
     }
     this.updateSpawnCooldowns(dt * timeScale);
+    this.updateEndlessMode(dt * timeScale);
     this.attackTapTimer = Math.max(0, this.attackTapTimer - dt * timeScale);
     if (this.input.wasPressed('attack')) {
       this.attackHoldTimer = 0;
@@ -994,9 +1163,43 @@ export default class Game {
         enemy.x += rect.x < tileRect.x ? -overlapX : overlapX;
       } else {
         enemy.y += rect.y < tileRect.y ? -overlapY : overlapY;
+        enemy.vy = 0;
       }
       rect = enemy.rect;
     });
+  }
+
+  applyEnemyGravity(enemy, dt) {
+    if (!enemy.gravity) return;
+    enemy.vy += MOVEMENT_MODEL.gravity * dt;
+    const nextY = enemy.y + enemy.vy * dt;
+    const rect = enemy.rect;
+    const signY = Math.sign(enemy.vy);
+    if (signY === 0) {
+      enemy.y = nextY;
+      return;
+    }
+    const testY = nextY + (signY * rect.h) / 2;
+    const ignoreOneWay = signY < 0;
+    const leftX = rect.x + 4;
+    const rightX = rect.x + rect.w - 4;
+    const hitLeft = this.world.isSolid(
+      Math.floor(leftX / this.world.tileSize),
+      Math.floor(testY / this.world.tileSize),
+      this.abilities,
+      { ignoreOneWay }
+    );
+    const hitRight = this.world.isSolid(
+      Math.floor(rightX / this.world.tileSize),
+      Math.floor(testY / this.world.tileSize),
+      this.abilities,
+      { ignoreOneWay }
+    );
+    if (hitLeft || hitRight) {
+      enemy.vy = 0;
+      return;
+    }
+    enemy.y = nextY;
   }
 
   isRevHeld(input) {
@@ -1005,6 +1208,56 @@ export default class Game {
 
   handleAttack() {
     if (this.sawAnchor.active) return;
+    if (!this.player.onGround && this.player.aimingDown) {
+      this.player.attackTimer = Math.max(this.player.attackTimer, 0.3);
+      this.player.attackLungeTimer = 0;
+      const thrustSpeed = MOVEMENT_MODEL.dashSpeed * 0.85;
+      this.player.vx *= 0.4;
+      this.player.vy = Math.max(this.player.vy, thrustSpeed);
+      const range = 32;
+      this.spawnEffect('bite', this.player.x, this.player.y + 18);
+      this.audio.bite();
+      this.recordFeedback('chainsaw bite', 'audio');
+      this.recordFeedback('chainsaw bite', 'visual');
+      this.enemies.forEach((enemy) => {
+        if (enemy.dead) return;
+        const dx = Math.abs(enemy.x - this.player.x);
+        const dy = enemy.y - this.player.y;
+        if (dx < range && dy > 0 && dy < 60) {
+          if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
+            return;
+          }
+          enemy.damage(1);
+          this.audio.hit();
+          this.spawnEffect('hit', enemy.x, enemy.y);
+          this.spawnEffect('oil', enemy.x, enemy.y + 6);
+          this.recordFeedback('hit', 'audio');
+          this.recordFeedback('hit', 'visual');
+          this.testHarness.recordHit();
+          this.playability.recordEnemyHit(this.clock);
+          if (enemy.dead) {
+            if (!enemy.training) {
+              this.spawnDeathDebris(enemy);
+            }
+            this.awardLoot(enemy);
+          }
+        }
+      });
+      if (this.boss && !this.boss.dead) {
+        const dx = Math.abs(this.boss.x - this.player.x);
+        const dy = this.boss.y - this.player.y;
+        if (dx < range + 10 && dy > 0 && dy < 80) {
+          this.boss.damage(1);
+          this.audio.hit();
+          this.spawnEffect('hit', this.boss.x, this.boss.y);
+          this.spawnEffect('oil', this.boss.x, this.boss.y + 10);
+          this.recordFeedback('hit', 'audio');
+          this.recordFeedback('hit', 'visual');
+          this.playability.recordEnemyHit(this.clock);
+        }
+      }
+      return;
+    }
     this.player.attackTimer = Math.max(this.player.attackTimer, 0.25);
     const lungeRange = 220;
     let lungeTarget = null;
@@ -1218,6 +1471,7 @@ export default class Game {
       } else {
         enemy.update(dt, this.player);
       }
+      this.applyEnemyGravity(enemy, dt);
       if (enemy.solid) {
         this.resolveEnemyCollision(enemy);
       }
@@ -1437,6 +1691,10 @@ export default class Game {
   }
 
   updateObjective() {
+    if (this.gameMode === 'endless') {
+      this.objective = 'Survive the endless horde.';
+      return;
+    }
     if (this.world.objectives.length > 0) {
       this.objective = 'Reach the objective marker.';
       return;
@@ -1505,9 +1763,11 @@ export default class Game {
   findAnchorHit() {
     const range = this.world.tileSize * 3;
     const step = 8;
-    const aimingUp = this.player.aimingUp;
-    const dirX = aimingUp ? 0 : (this.player.facing || 1);
-    const dirY = aimingUp ? -1 : 0;
+    const aimX = this.player.aimX ?? (this.player.facing || 1);
+    const aimY = this.player.aimY ?? 0;
+    const aimLength = Math.hypot(aimX, aimY) || 1;
+    const dirX = aimX / aimLength;
+    const dirY = aimY / aimLength;
     const originX = this.player.x;
     const originY = this.player.y - 6;
     for (let dist = 24; dist <= range; dist += step) {
@@ -1605,6 +1865,15 @@ export default class Game {
     const tileX = Math.floor(this.sawAnchor.x / tileSize);
     const nextY = this.sawAnchor.y - climbSpeed * dt;
     const tileY = Math.floor(nextY / tileSize);
+    if (nextY < this.sawAnchor.y) {
+      const playerNextY = this.player.y - climbSpeed * dt;
+      if (this.isPlayerBlockedAt(this.player.x, playerNextY, { ignoreOneWay: true })) {
+        return;
+      }
+      if (!this.canPlayerMaintainTether(this.sawAnchor.x, nextY)) {
+        return;
+      }
+    }
     if (this.world.isSolid(tileX, tileY, this.abilities)) {
       if (this.wouldSawAnchorPullIntoWall(this.sawAnchor.x, nextY)) {
         return;
@@ -1754,6 +2023,9 @@ export default class Game {
       this.player.vy = Math.min(this.player.vy, Math.min(-jumpBoost, anchorBoostY));
       this.player.onGround = false;
     }
+    if (this.sawAnchor.active && !this.player.onGround) {
+      this.player.vy += MOVEMENT_MODEL.gravity * dt * 0.35;
+    }
     return false;
   }
 
@@ -1769,6 +2041,20 @@ export default class Game {
     const xOnlyOk = !this.isPlayerBlockedAt(targetX, this.player.y);
     const yOnlyOk = !this.isPlayerBlockedAt(this.player.x, targetY);
     return !(xOnlyOk || yOnlyOk);
+  }
+
+  canPlayerMaintainTether(nextX, nextY) {
+    const tetherMax = this.world.tileSize * 3;
+    const dx = this.player.x - nextX;
+    const dy = this.player.y - nextY;
+    const dist = Math.hypot(dx, dy);
+    if (dist <= tetherMax) return true;
+    const targetX = nextX + dx * (tetherMax / dist);
+    const targetY = nextY + dy * (tetherMax / dist);
+    if (!this.isPlayerBlockedAt(targetX, targetY, { ignoreOneWay: true })) return true;
+    const xOnlyOk = !this.isPlayerBlockedAt(targetX, this.player.y, { ignoreOneWay: true });
+    const yOnlyOk = !this.isPlayerBlockedAt(this.player.x, targetY, { ignoreOneWay: true });
+    return xOnlyOk || yOnlyOk;
   }
 
   applyAnchorClimb(dt) {
@@ -2801,11 +3087,18 @@ export default class Game {
       this.returnToEditorFromPlaytest();
       return;
     }
-    if (this.state === 'title' && this.mobileControls.enabled && this.title.isEditorHit(payload.x, payload.y)) {
+    if (this.state === 'title' && this.title.isEndlessHit(payload.x, payload.y)) {
+      this.startEndlessMode();
+      this.audio.ui();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
+      return;
+    }
+    if (this.state === 'title' && this.title.isEditorHit(payload.x, payload.y) && !this.testDashboard.visible) {
       this.enterEditor();
       return;
     }
-    if (this.state === 'title' && this.mobileControls.enabled && !this.testDashboard.visible) {
+    if (this.state === 'title' && !this.testDashboard.visible) {
       this.state = 'dialog';
       this.audio.ui();
       this.recordFeedback('menu navigate', 'audio');
