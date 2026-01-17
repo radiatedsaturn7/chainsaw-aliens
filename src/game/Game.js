@@ -113,6 +113,7 @@ export default class Game {
     this.spawnPoint = { x: 32 * 28, y: 32 * 19 };
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
     this.player.applyUpgrades(this.player.equippedUpgrades);
+    this.snapCameraToPlayer();
     this.title = new Title();
     this.dialog = new Dialog(INTRO_LINES);
     this.hud = new HUD();
@@ -163,6 +164,8 @@ export default class Game {
     this.attackTapWindow = 0.28;
     this.attackHoldTimer = 0;
     this.attackHoldThreshold = 0.22;
+    this.lastAttackFromGamepad = false;
+    this.sawRidePrimed = false;
     this.obstacleDamage = new Map();
     this.obstacleCooldown = 0;
     this.noiseCooldown = 0;
@@ -273,6 +276,7 @@ export default class Game {
       this.syncSpawnPoint();
       this.player.x = this.spawnPoint.x;
       this.player.y = this.spawnPoint.y;
+      this.snapCameraToPlayer();
       this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
       this.resetWorldSystems();
       this.spawnEnemies();
@@ -406,6 +410,7 @@ export default class Game {
       this.player.health = 12;
     }
     this.player.applyUpgrades(this.player.equippedUpgrades);
+    this.snapCameraToPlayer();
     this.abilities = this.gameMode === 'endless'
       ? {
         anchor: true,
@@ -456,6 +461,8 @@ export default class Game {
     this.noiseCooldown = 0;
     this.attackTapTimer = 0;
     this.attackHoldTimer = 0;
+    this.lastAttackFromGamepad = false;
+    this.sawRidePrimed = false;
     this.prevHealth = this.player.health;
     this.damageFlashTimer = 0;
     this.revCharge = 0;
@@ -1025,12 +1032,20 @@ export default class Game {
     this.attackTapTimer = Math.max(0, this.attackTapTimer - dt * timeScale);
     if (this.input.wasPressed('attack')) {
       this.attackHoldTimer = 0;
+      this.lastAttackFromGamepad = this.gamepadConnected && this.input.wasGamepadPressed('attack');
     }
     if (this.input.isDown('attack')) {
       this.attackHoldTimer += dt * timeScale;
     }
-    if (!this.player.sawRideActive && this.player.onGround && this.input.isDown('down') && this.input.wasPressed('attack')) {
+    if (this.input.wasPressed('down')) {
+      this.sawRidePrimed = true;
+    }
+    if (!this.input.isDown('down')) {
+      this.sawRidePrimed = false;
+    }
+    if (!this.player.sawRideActive && this.player.onGround && this.sawRidePrimed && this.input.isDown('down') && this.input.wasPressed('attack')) {
       this.player.startSawRide();
+      this.sawRidePrimed = false;
     }
 
     if (!this.abilities.flame) {
@@ -1074,6 +1089,7 @@ export default class Game {
       this.attackHoldTimer = 0;
       if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold) {
         const doubleTap = this.attackTapTimer > 0;
+        const allowAnchorShot = !this.gamepadConnected || !this.lastAttackFromGamepad;
         this.attackTapTimer = doubleTap ? 0 : this.attackTapWindow;
         if (this.sawAnchor.active) {
           this.startAnchorRetract(0.2);
@@ -1081,7 +1097,7 @@ export default class Game {
           if (!this.tryObstacleInteraction('attack')) {
             this.handleAttack();
           }
-        } else if (this.abilities.anchor) {
+        } else if (this.abilities.anchor && allowAnchorShot) {
           this.handleAnchorShot();
         } else if (!this.tryObstacleInteraction('attack')) {
           this.handleAttack();
@@ -1190,6 +1206,7 @@ export default class Game {
     this.player.health = this.player.maxHealth;
     this.player.x = this.lastSave.x;
     this.player.y = this.lastSave.y;
+    this.snapCameraToPlayer();
     this.player.credits = Math.max(0, this.player.credits - 10);
     this.player.loot = 0;
     this.player.oilLevel = 0;
@@ -1217,6 +1234,11 @@ export default class Game {
     this.audio.spawnTune();
   }
 
+  snapCameraToPlayer() {
+    this.camera.x = this.player.x - this.camera.width / 2;
+    this.camera.y = this.player.y - this.camera.height / 2;
+  }
+
   handleMovementFeedback() {
     if (this.player.justJumped) {
       this.audio.jump();
@@ -1235,12 +1257,32 @@ export default class Game {
       this.spawnEffect('dash', this.player.x + this.player.facing * 10, this.player.y);
       this.recordFeedback('dash', 'audio');
       this.recordFeedback('dash', 'visual');
+      this.applyStaggerPulse();
     }
     if (this.player.justStepped) {
       this.audio.footstep();
       this.spawnEffect('move', this.player.x, this.player.y + 18);
       this.recordFeedback('move', 'audio');
       this.recordFeedback('move', 'visual');
+    }
+  }
+
+  applyStaggerPulse() {
+    const range = this.world.tileSize * 5;
+    const staggerEnemy = (enemy) => {
+      if (!enemy || enemy.dead) return;
+      const dx = enemy.x - this.player.x;
+      const dy = enemy.y - this.player.y;
+      if (Math.hypot(dx, dy) > range) return;
+      const wasStaggered = enemy.stagger >= 0.6;
+      enemy.stagger = Math.max(enemy.stagger, 0.6);
+      if (!wasStaggered) {
+        enemy.justStaggered = true;
+      }
+    };
+    this.enemies.forEach(staggerEnemy);
+    if (this.boss && !this.boss.dead && this.bossActive) {
+      staggerEnemy(this.boss);
     }
   }
 
@@ -1902,7 +1944,7 @@ export default class Game {
       const dist = Math.hypot(dx, dy);
       let handledRideHit = false;
       if (this.player.sawRideActive) {
-        const rideAttacking = this.input.isDown('attack') || this.player.sawRideBurstTimer > 0;
+        const rideAttacking = this.player.sawRideActive || this.player.sawRideBurstTimer > 0;
         if (!enemy.solid && dist < 24) {
           this.player.stopSawRide(false);
         } else if (enemy.solid && dist < 28) {

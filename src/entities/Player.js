@@ -136,8 +136,7 @@ export default class Player {
       if (input.wasPressed('attack')) {
         this.sawRideBurstTimer = 0.15;
       }
-      const rideMoving = input.isDown('attack') || this.sawRideBurstTimer > 0;
-      const rideVx = rideMoving ? this.facing * this.sawRideSpeed : 0;
+      const rideVx = this.facing * this.sawRideSpeed;
       if (input.wasPressed('jump')) {
         exitRide = true;
         exitRideMomentum = rideVx;
@@ -230,9 +229,6 @@ export default class Player {
     if (this.sawRideActive && !this.onGround) {
       this.sawRideActive = false;
       this.sawRideMomentum = this.vx;
-    }
-    if (this.sawRideActive && this.onGround && !input.isDown('attack')) {
-      this.stopSawRide(false);
     }
     const hazardX = Math.floor(this.x / world.tileSize);
     const hazardY = Math.floor(this.y / world.tileSize);
