@@ -1322,13 +1322,14 @@ export default class Game {
 
   handleAttack() {
     if (this.sawAnchor.active) return;
+    const attackRange = this.world.tileSize * 2.5;
     if (!this.player.onGround && this.player.aimingDown) {
       this.player.attackTimer = Math.max(this.player.attackTimer, 0.3);
       this.player.attackLungeTimer = 0;
       const thrustSpeed = MOVEMENT_MODEL.dashSpeed * 0.85;
       this.player.vx *= 0.4;
       this.player.vy = Math.max(this.player.vy, thrustSpeed);
-      const range = 32;
+      const range = attackRange;
       this.spawnEffect('bite', this.player.x, this.player.y + 18);
       this.audio.bite();
       this.recordFeedback('chainsaw bite', 'audio');
@@ -1342,6 +1343,7 @@ export default class Game {
             return;
           }
           enemy.damage(1);
+          this.applyChainsawSlow(enemy);
           this.audio.hit();
           this.spawnEffect('hit', enemy.x, enemy.y);
           this.spawnEffect('oil', enemy.x, enemy.y + 6);
@@ -1362,6 +1364,7 @@ export default class Game {
         const dy = this.boss.y - this.player.y;
         if (dx < range + 10 && dy > 0 && dy < 80) {
           this.boss.damage(1);
+          this.applyChainsawSlow(this.boss);
           this.audio.hit();
           this.spawnEffect('hit', this.boss.x, this.boss.y);
           this.spawnEffect('oil', this.boss.x, this.boss.y + 10);
@@ -1399,7 +1402,7 @@ export default class Game {
       const targetX = lungeTarget ? lungeTarget.x : this.player.x + this.player.facing * 60;
       this.player.startLunge(targetX);
     }
-    const range = 40;
+    const range = attackRange;
     this.spawnEffect('bite', this.player.x + this.player.facing * 18, this.player.y - 8);
     this.audio.bite();
     this.recordFeedback('chainsaw bite', 'audio');
@@ -1413,6 +1416,7 @@ export default class Game {
           return;
         }
         enemy.damage(1);
+        this.applyChainsawSlow(enemy);
         this.audio.hit();
         this.spawnEffect('hit', enemy.x, enemy.y);
         this.spawnEffect('oil', enemy.x, enemy.y + 6);
@@ -1442,6 +1446,7 @@ export default class Game {
       const dy = Math.abs(this.boss.y - this.player.y);
       if (Math.abs(dx) < range && dy < 60) {
         this.boss.damage(1);
+        this.applyChainsawSlow(this.boss);
         this.audio.hit();
         this.spawnEffect('hit', this.boss.x, this.boss.y);
         this.spawnEffect('oil', this.boss.x, this.boss.y + 10);
@@ -1566,10 +1571,13 @@ export default class Game {
       isVisible: (enemy, padding = 80) => this.isEnemyVisible(enemy, padding)
     };
     const revHeld = this.isRevHeld(this.input) && this.player.canRev();
-    const revRange = 38;
-    const revVerticalRange = 40;
+    const revRange = this.world.tileSize * 2.5;
+    const revVerticalRange = this.world.tileSize * 2.2;
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
+      if (enemy.slowTimer > 0) {
+        enemy.slowTimer = Math.max(0, enemy.slowTimer - dt);
+      }
       if (enemy.hitPause > 0) {
         enemy.hitPause = Math.max(0, enemy.hitPause - dt);
         if (enemy.tickDamage) {
@@ -1577,8 +1585,10 @@ export default class Game {
         }
         return;
       }
-      enemy.update(dt, this.player, context);
-      this.applyEnemyGravity(enemy, dt);
+      const slowScale = enemy.slowTimer > 0 ? enemy.slowFactor : 1;
+      const scaledDt = dt * slowScale;
+      enemy.update(scaledDt, this.player, context);
+      this.applyEnemyGravity(enemy, scaledDt);
       if (enemy.solid) {
         this.resolveEnemyCollision(enemy);
       }
@@ -1595,6 +1605,7 @@ export default class Game {
           handledRideHit = true;
           if (rideAttacking && this.player.sawRideDamageTimer <= 0) {
             enemy.damage(1);
+            this.applyChainsawSlow(enemy);
             this.player.sawRideDamageTimer = 0.2;
             enemy.hitPause = 0.1;
             this.audio.hit();
@@ -1631,6 +1642,7 @@ export default class Game {
         if (Math.abs(dx) < revRange && Math.abs(dy) < revVerticalRange) {
           if (!(enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce')))) {
             enemy.damage(1);
+            this.applyChainsawSlow(enemy);
             this.player.revDamageTimer = 0.2;
             enemy.hitPause = 0.08;
             this.audio.hit();
@@ -1666,7 +1678,11 @@ export default class Game {
 
     if (this.boss && !this.boss.dead && this.bossActive) {
       this.boss.simMode = this.simulationActive && this.goldenPath.active;
-      this.boss.update(dt, this.player, this.spawnProjectile.bind(this));
+      if (this.boss.slowTimer > 0) {
+        this.boss.slowTimer = Math.max(0, this.boss.slowTimer - dt);
+      }
+      const bossSlowScale = this.boss.slowTimer > 0 ? this.boss.slowFactor : 1;
+      this.boss.update(dt * bossSlowScale, this.player, this.spawnProjectile.bind(this));
       if (this.boss.tickDamage) {
         this.boss.tickDamage(dt);
       }
@@ -1902,7 +1918,7 @@ export default class Game {
   }
 
   findAnchorHit() {
-    const range = this.world.tileSize * 3;
+    const range = this.world.tileSize * 5;
     const step = 8;
     const aimX = this.player.aimX ?? (this.player.facing || 1);
     const aimY = this.player.aimY ?? 0;
@@ -2023,6 +2039,8 @@ export default class Game {
         return;
       }
       this.sawAnchor.y = nextY;
+    } else {
+      this.pullPlayerTowardAnchor(tileSize * 2);
     }
   }
 
@@ -2083,7 +2101,7 @@ export default class Game {
         this.startAnchorRetract(0.45);
       }
     }
-    const tetherMax = this.world.tileSize * 3;
+    const tetherMax = this.world.tileSize * 5;
     const tetherDist = Math.hypot(this.player.x - this.sawAnchor.x, this.player.y - this.sawAnchor.y);
     if (this.applyTetherConstraint(dt, input, tetherDist, tetherMax)) {
       return;
@@ -2174,7 +2192,7 @@ export default class Game {
   }
 
   wouldSawAnchorPullIntoWall(nextX, nextY) {
-    const tetherMax = this.world.tileSize * 3;
+    const tetherMax = this.world.tileSize * 5;
     const dx = this.player.x - nextX;
     const dy = this.player.y - nextY;
     const dist = Math.hypot(dx, dy);
@@ -2188,7 +2206,7 @@ export default class Game {
   }
 
   canPlayerMaintainTether(nextX, nextY) {
-    const tetherMax = this.world.tileSize * 3;
+    const tetherMax = this.world.tileSize * 5;
     const dx = this.player.x - nextX;
     const dy = this.player.y - nextY;
     const dist = Math.hypot(dx, dy);
@@ -2238,6 +2256,7 @@ export default class Game {
           return;
         }
         enemy.damage(1);
+        this.applyChainsawSlow(enemy);
         this.spawnEffect('hit', enemy.x, enemy.y);
         this.spawnEffect('oil', enemy.x, enemy.y + 6);
         hit = true;
@@ -2252,6 +2271,7 @@ export default class Game {
       const dy = Math.abs(this.boss.y - this.sawAnchor.y);
       if (dx < range + 10 && dy < range + 10) {
         this.boss.damage(1);
+        this.applyChainsawSlow(this.boss);
         this.spawnEffect('hit', this.boss.x, this.boss.y);
         this.spawnEffect('oil', this.boss.x, this.boss.y + 10);
         hit = true;
@@ -2271,6 +2291,7 @@ export default class Game {
       return;
     }
     target.damage(1);
+    this.applyChainsawSlow(target);
     this.audio.hit();
     this.spawnEffect('hit', target.x, target.y);
     this.spawnEffect('oil', target.x, target.y + (isBoss ? 10 : 6));
@@ -2282,6 +2303,41 @@ export default class Game {
       this.spawnDeathDebris(target);
       this.awardLoot(target);
     }
+  }
+
+  applyChainsawSlow(target) {
+    if (!target) return;
+    target.slowTimer = Math.max(target.slowTimer || 0, 0.4);
+    target.vx *= 0.5;
+    target.vy *= 0.5;
+  }
+
+  pullPlayerTowardAnchor(tetherLimit) {
+    const dx = this.player.x - this.sawAnchor.x;
+    const dy = this.player.y - this.sawAnchor.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist <= tetherLimit || dist <= 0.01) return false;
+    const targetX = this.sawAnchor.x + dx * (tetherLimit / dist);
+    const targetY = this.sawAnchor.y + dy * (tetherLimit / dist);
+    if (!this.isPlayerBlockedAt(targetX, targetY)) {
+      this.player.x = targetX;
+      this.player.y = targetY;
+    } else {
+      const xOnlyOk = !this.isPlayerBlockedAt(targetX, this.player.y);
+      const yOnlyOk = !this.isPlayerBlockedAt(this.player.x, targetY);
+      if (xOnlyOk) {
+        this.player.x = targetX;
+      } else if (yOnlyOk) {
+        this.player.y = targetY;
+      }
+    }
+    const radialVelocity = this.player.vx * (dx / dist) + this.player.vy * (dy / dist);
+    if (radialVelocity > 0) {
+      this.player.vx -= radialVelocity * (dx / dist);
+      this.player.vy -= radialVelocity * (dy / dist);
+    }
+    this.player.onGround = false;
+    return true;
   }
 
   getBoxRect(box) {
@@ -2758,9 +2814,22 @@ export default class Game {
       for (let x = 0; x < this.world.width; x += 1) {
         const tile = this.world.getTile(x, y);
         if (tile === '#') {
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
           ctx.strokeStyle = '#fff';
           ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
           ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
+        }
+        if (tile === '^') {
+          ctx.fillStyle = '#fff';
+          ctx.beginPath();
+          ctx.moveTo(x * tileSize, (y + 1) * tileSize);
+          ctx.lineTo((x + 1) * tileSize, (y + 1) * tileSize);
+          ctx.lineTo((x + 1) * tileSize, y * tileSize);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = '#fff';
+          ctx.stroke();
         }
         if (tile === '=') {
           ctx.strokeStyle = '#fff';
