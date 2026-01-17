@@ -767,11 +767,13 @@ export default class Game {
       this.title.update(dt);
       return;
     }
+    this.input.updateGamepad();
     if (this.state === 'editor') {
       this.input.clearVirtual();
     } else {
       const mobileActions = this.mobileControls.getActions(this.state, this.player?.facing ?? 1);
-      this.input.setVirtual(mobileActions);
+      const combinedActions = this.input.combineActions(mobileActions, this.input.getGamepadActions());
+      this.input.setVirtual(combinedActions);
     }
     this.clock += dt;
     this.menuFlashTimer = Math.max(0, this.menuFlashTimer - dt);

@@ -31,6 +31,9 @@ export default class Input {
     this.virtualDown = new Map();
     this.virtualPressed = new Set();
     this.virtualReleased = new Set();
+    this.gamepadIndex = null;
+    this.gamepadActions = {};
+    this.gamepadDeadzone = 0.3;
     window.addEventListener('keydown', (e) => {
       if (!this.keys.get(e.code)) {
         this.pressed.add(e.code);
@@ -45,6 +48,16 @@ export default class Input {
     window.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         this.reset();
+      }
+    });
+    window.addEventListener('gamepadconnected', (event) => {
+      if (this.gamepadIndex === null) {
+        this.gamepadIndex = event.gamepad.index;
+      }
+    });
+    window.addEventListener('gamepaddisconnected', (event) => {
+      if (this.gamepadIndex === event.gamepad.index) {
+        this.gamepadIndex = null;
       }
     });
   }
@@ -73,6 +86,69 @@ export default class Input {
     return this.keys.get('ShiftLeft') || this.keys.get('ShiftRight');
   }
 
+  updateGamepad() {
+    this.gamepadActions = {};
+    if (!navigator.getGamepads) return;
+    const pads = navigator.getGamepads();
+    if (!pads) return;
+    let pad = null;
+    if (this.gamepadIndex !== null && pads[this.gamepadIndex]?.connected) {
+      pad = pads[this.gamepadIndex];
+    } else {
+      pad = Array.from(pads).find((candidate) => candidate?.connected) || null;
+      if (pad) {
+        this.gamepadIndex = pad.index;
+      }
+    }
+    if (!pad) return;
+
+    const isButtonActive = (index, threshold = 0.5) => {
+      const button = pad.buttons?.[index];
+      if (!button) return false;
+      return Boolean(button.pressed || button.value > threshold);
+    };
+
+    const axisX = pad.axes?.[0] ?? 0;
+    const axisY = pad.axes?.[1] ?? 0;
+    const leftStickLeft = axisX < -this.gamepadDeadzone;
+    const leftStickRight = axisX > this.gamepadDeadzone;
+    const leftStickUp = axisY < -this.gamepadDeadzone;
+    const leftStickDown = axisY > this.gamepadDeadzone;
+
+    const dpadUp = isButtonActive(12);
+    const dpadDown = isButtonActive(13);
+    const dpadLeft = isButtonActive(14);
+    const dpadRight = isButtonActive(15);
+
+    this.gamepadActions = {
+      left: leftStickLeft || dpadLeft,
+      right: leftStickRight || dpadRight,
+      up: leftStickUp || dpadUp,
+      down: leftStickDown || dpadDown,
+      jump: isButtonActive(0),
+      dash: isButtonActive(1),
+      attack: isButtonActive(2),
+      throw: isButtonActive(3),
+      flame: isButtonActive(4) || isButtonActive(6, 0.2),
+      rev: isButtonActive(5) || isButtonActive(7, 0.2),
+      pause: isButtonActive(9),
+      cancel: isButtonActive(8),
+      interact: isButtonActive(0)
+    };
+  }
+
+  getGamepadActions() {
+    return this.gamepadActions;
+  }
+
+  combineActions(...sources) {
+    const combined = {};
+    Object.keys(KEYMAP).forEach((action) => {
+      combined[action] = sources.some((source) => Boolean(source?.[action]));
+    });
+    return combined;
+  }
+
   setVirtual(actions = {}) {
     Object.keys(KEYMAP).forEach((action) => {
       const prev = this.virtualDown.get(action) || false;
@@ -98,6 +174,7 @@ export default class Input {
     this.pressed.clear();
     this.released.clear();
     this.clearVirtual();
+    this.gamepadActions = {};
   }
 
   flush() {
