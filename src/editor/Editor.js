@@ -161,6 +161,7 @@ export default class Editor {
     this.playtestSpawnOverride = null;
     this.precisionZoom = null;
     this.playButtonBounds = null;
+    this.dragSource = null;
     this.panJoystick = {
       center: { x: 0, y: 0 },
       radius: 0,
@@ -174,6 +175,11 @@ export default class Editor {
       bounds: { x: 0, y: 0, w: 0, h: 0 },
       active: false,
       id: null
+    };
+    this.gamepadCursor = {
+      x: 0,
+      y: 0,
+      active: false
     };
     this.dragStart = null;
     this.dragTarget = null;
@@ -231,6 +237,8 @@ export default class Editor {
     this.moveTarget = null;
     this.dragStart = null;
     this.dragTarget = null;
+    this.dragSource = null;
+    this.gamepadCursor.active = false;
   }
 
   resetView() {
@@ -243,6 +251,7 @@ export default class Editor {
 
   update(input, dt) {
     this.handleKeyboard(input, dt);
+    this.handleGamepad(input, dt);
     if (Math.abs(this.panJoystick.dx) > 0.01 || Math.abs(this.panJoystick.dy) > 0.01) {
       const panSpeed = 320 * dt * (1 / this.zoom);
       this.camera.x = Math.max(0, this.camera.x + this.panJoystick.dx * panSpeed);
@@ -312,6 +321,198 @@ export default class Editor {
     } else {
       if (input.isDownCode('ArrowUp')) this.adjustZoom(0.8, this.game.canvas.width / 2, this.game.canvas.height / 2);
       if (input.isDownCode('ArrowDown')) this.adjustZoom(-0.8, this.game.canvas.width / 2, this.game.canvas.height / 2);
+    }
+  }
+
+  handleGamepad(input, dt) {
+    if (!input.isGamepadConnected()) {
+      if (this.dragging && this.dragSource === 'gamepad') {
+        this.endStroke();
+      }
+      this.gamepadCursor.active = false;
+      return;
+    }
+
+    if (!this.gamepadCursor.active) {
+      const centerX = this.game.canvas.width / 2;
+      const centerY = this.game.canvas.height / 2;
+      const worldCenter = this.screenToWorld(centerX, centerY);
+      this.gamepadCursor = { x: worldCenter.x, y: worldCenter.y, active: true };
+      this.lastPointer = { x: centerX, y: centerY };
+    }
+
+    const axes = input.getGamepadAxes();
+    const tileSize = this.game.world.tileSize;
+    const moveSpeed = 420 * dt * (1 / this.zoom);
+    const panSpeed = 320 * dt * (1 / this.zoom);
+    const deadzone = 0.18;
+    const stickX = Math.abs(axes.leftX) > deadzone ? axes.leftX : 0;
+    const stickY = Math.abs(axes.leftY) > deadzone ? axes.leftY : 0;
+    const lookX = Math.abs(axes.rightX) > deadzone ? axes.rightX : 0;
+    const lookY = Math.abs(axes.rightY) > deadzone ? axes.rightY : 0;
+
+    this.gamepadCursor.x += stickX * moveSpeed;
+    this.gamepadCursor.y += stickY * moveSpeed;
+
+    if (stickX === 0 && stickY === 0) {
+      const digitalSpeed = tileSize * 6 * dt;
+      if (input.isGamepadDown('left')) this.gamepadCursor.x -= digitalSpeed;
+      if (input.isGamepadDown('right')) this.gamepadCursor.x += digitalSpeed;
+      if (input.isGamepadDown('up')) this.gamepadCursor.y -= digitalSpeed;
+      if (input.isGamepadDown('down')) this.gamepadCursor.y += digitalSpeed;
+    }
+
+    if (lookX !== 0 || lookY !== 0) {
+      this.camera.x = Math.max(0, this.camera.x + lookX * panSpeed);
+      this.camera.y = Math.max(0, this.camera.y + lookY * panSpeed);
+    }
+
+    const zoomDelta = (axes.rightTrigger - axes.leftTrigger) * dt * 1.4;
+    if (Math.abs(zoomDelta) > 0.0001) {
+      this.setZoom(this.zoom + zoomDelta, this.lastPointer.x, this.lastPointer.y);
+    }
+
+    const maxWorldX = this.game.world.width * tileSize - 1;
+    const maxWorldY = this.game.world.height * tileSize - 1;
+    this.gamepadCursor.x = clamp(this.gamepadCursor.x, 0, maxWorldX);
+    this.gamepadCursor.y = clamp(this.gamepadCursor.y, 0, maxWorldY);
+
+    this.keepCursorInView();
+    const screenPos = this.worldToScreen(this.gamepadCursor.x, this.gamepadCursor.y);
+    this.lastPointer = { x: screenPos.x, y: screenPos.y };
+
+    if (input.wasGamepadPressed('throw')) {
+      this.cycleMode(1);
+    }
+    if (input.wasGamepadPressed('dash')) {
+      this.cycleTileTool();
+    }
+    if (input.wasGamepadPressed('flame')) {
+      this.cycleSelection(-1);
+    }
+    if (input.wasGamepadPressed('rev')) {
+      this.cycleSelection(1);
+    }
+
+    if (input.wasGamepadPressed('pause')) {
+      this.game.exitEditor({ playtest: false });
+      return;
+    }
+    if (input.wasGamepadPressed('cancel')) {
+      this.startPlaytestFromCursor();
+      return;
+    }
+
+    const primaryDown = input.isGamepadDown('jump');
+    const secondaryDown = input.isGamepadDown('attack');
+    const pressPrimary = input.wasGamepadPressed('jump');
+    const pressSecondary = input.wasGamepadPressed('attack');
+
+    if (pressPrimary || pressSecondary) {
+      if (this.handleUIClick(this.lastPointer.x, this.lastPointer.y)) {
+        return;
+      }
+      if (this.isPointInBounds(this.lastPointer.x, this.lastPointer.y, this.playButtonBounds)) {
+        this.game.exitEditor({ playtest: true });
+        return;
+      }
+    }
+
+    if ((pressPrimary || pressSecondary) && (!this.dragging || this.dragSource === 'gamepad')) {
+      this.dragButton = pressSecondary ? 2 : 0;
+      const { tileX, tileY } = this.screenToTile(this.lastPointer.x, this.lastPointer.y);
+      const dragMode = pressSecondary
+        ? (this.mode === 'enemy' ? 'enemy' : 'erase')
+        : this.resolveDragMode(this.mode);
+      this.beginStroke(dragMode, tileX, tileY, 'gamepad');
+    }
+
+    if (this.dragging && this.dragSource === 'gamepad') {
+      if (primaryDown || secondaryDown) {
+        const { tileX, tileY } = this.screenToTile(this.lastPointer.x, this.lastPointer.y);
+        if (this.dragMode === 'paint' || this.dragMode === 'erase') {
+          this.applyPaint(tileX, tileY, this.dragMode);
+        }
+        if (this.dragMode === 'enemy') {
+          const paintMode = this.dragButton === 2 ? 'erase' : 'paint';
+          this.applyEnemy(tileX, tileY, paintMode);
+        }
+        if (this.dragMode === 'move') {
+          this.moveTarget = { x: tileX, y: tileY };
+        }
+        if (this.dragMode === 'shape' || this.dragMode === 'prefab') {
+          this.dragTarget = { x: tileX, y: tileY };
+        }
+      } else {
+        this.endStroke();
+      }
+    }
+  }
+
+  keepCursorInView() {
+    const margin = 80;
+    const viewW = this.game.canvas.width;
+    const viewH = this.game.canvas.height;
+    const minX = this.camera.x + margin / this.zoom;
+    const maxX = this.camera.x + viewW / this.zoom - margin / this.zoom;
+    const minY = this.camera.y + margin / this.zoom;
+    const maxY = this.camera.y + viewH / this.zoom - margin / this.zoom;
+    if (this.gamepadCursor.x < minX) {
+      this.camera.x = Math.max(0, this.gamepadCursor.x - margin / this.zoom);
+    } else if (this.gamepadCursor.x > maxX) {
+      this.camera.x = Math.max(0, this.gamepadCursor.x - viewW / this.zoom + margin / this.zoom);
+    }
+    if (this.gamepadCursor.y < minY) {
+      this.camera.y = Math.max(0, this.gamepadCursor.y - margin / this.zoom);
+    } else if (this.gamepadCursor.y > maxY) {
+      this.camera.y = Math.max(0, this.gamepadCursor.y - viewH / this.zoom + margin / this.zoom);
+    }
+  }
+
+  cycleMode(direction) {
+    const modes = ['tile', 'enemy', 'prefab', 'shape'];
+    const currentIndex = Math.max(0, modes.indexOf(this.mode));
+    const nextIndex = (currentIndex + direction + modes.length) % modes.length;
+    this.mode = modes[nextIndex];
+    if (this.mode === 'tile') {
+      this.tileTool = 'paint';
+    }
+  }
+
+  cycleTileTool() {
+    if (this.mode !== 'tile') {
+      this.mode = 'tile';
+    }
+    const tools = ['paint', 'erase', 'move'];
+    const currentIndex = Math.max(0, tools.indexOf(this.tileTool));
+    this.tileTool = tools[(currentIndex + 1) % tools.length];
+  }
+
+  cycleSelection(direction) {
+    if (this.mode === 'tile') {
+      const tiles = DEFAULT_TILE_TYPES;
+      const index = Math.max(0, tiles.findIndex((tile) => tile.id === this.tileType.id));
+      const next = tiles[(index + direction + tiles.length) % tiles.length];
+      this.setTileType(next);
+      this.tileTool = 'paint';
+      return;
+    }
+    if (this.mode === 'enemy') {
+      const index = Math.max(0, ENEMY_TYPES.findIndex((enemy) => enemy.id === this.enemyType.id));
+      const next = ENEMY_TYPES[(index + direction + ENEMY_TYPES.length) % ENEMY_TYPES.length];
+      this.setEnemyType(next);
+      return;
+    }
+    if (this.mode === 'prefab') {
+      const index = Math.max(0, PREFAB_TYPES.findIndex((prefab) => prefab.id === this.prefabType.id));
+      const next = PREFAB_TYPES[(index + direction + PREFAB_TYPES.length) % PREFAB_TYPES.length];
+      this.setPrefabType(next);
+      return;
+    }
+    if (this.mode === 'shape') {
+      const index = Math.max(0, SHAPE_TOOLS.findIndex((shape) => shape.id === this.shapeTool.id));
+      const next = SHAPE_TOOLS[(index + direction + SHAPE_TOOLS.length) % SHAPE_TOOLS.length];
+      this.setShapeTool(next);
     }
   }
 
@@ -786,9 +987,10 @@ export default class Editor {
     this.game.refreshWorldCaches();
   }
 
-  beginStroke(mode, tileX, tileY) {
+  beginStroke(mode, tileX, tileY, source = 'pointer') {
     this.dragging = true;
     this.dragMode = mode;
+    this.dragSource = source;
     this.pendingChanges.clear();
     this.pendingSpawn = null;
     this.pendingEnemies.clear();
@@ -877,6 +1079,7 @@ export default class Editor {
     this.dragging = false;
     this.dragMode = null;
     this.dragButton = null;
+    this.dragSource = null;
     this.zoomStart = null;
     this.moveSelection = null;
     this.moveTarget = null;
@@ -1818,6 +2021,13 @@ export default class Editor {
     this.camera.y = worldPos.y - anchorY / this.zoom;
   }
 
+  worldToScreen(x, y) {
+    return {
+      x: (x - this.camera.x) * this.zoom,
+      y: (y - this.camera.y) * this.zoom
+    };
+  }
+
   screenToWorld(x, y) {
     return {
       x: x / this.zoom + this.camera.x,
@@ -2469,6 +2679,8 @@ export default class Editor {
         `Drag: LMB paint | RMB erase | Space+drag pan`,
         `Move: drag to reposition | Two-finger: pan/zoom`,
         `Arrows: pan | Shift+Arrows: zoom`,
+        `Gamepad: LS cursor | A paint | B erase | X tool | Y mode`,
+        `LB/RB cycle selection | LT/RT zoom | Start exit | Back playtest`,
         `Ctrl+Z / Ctrl+Y: undo/redo`,
         `S: save JSON | L: load JSON`,
         `P: playtest | F2: toggle editor | Esc: exit`
