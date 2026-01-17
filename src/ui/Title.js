@@ -1,11 +1,16 @@
 export default class Title {
   constructor() {
     this.timer = 0;
-    this.startBounds = { x: 0, y: 0, w: 0, h: 0 };
-    this.editorBounds = { x: 0, y: 0, w: 0, h: 0 };
-    this.endlessBounds = { x: 0, y: 0, w: 0, h: 0 };
-    this.menuOrder = ['start', 'endless', 'editor'];
-    this.selectionIndex = 0;
+    this.screen = 'intro';
+    this.transition = null;
+    this.menuOrder = ['campaign', 'endless', 'editor', 'options'];
+    this.controlsOrder = ['mobile', 'gamepad', 'keyboard', 'back'];
+    this.menuSelection = 0;
+    this.controlsSelection = 0;
+    this.menuBounds = new Map();
+    this.controlsBounds = new Map();
+    this.explosions = [];
+    this.nextExplosion = 1.4;
     this.aliens = Array.from({ length: 12 }, (_, i) => ({
       x: 120 + i * 80,
       y: -Math.random() * 400,
@@ -15,15 +20,33 @@ export default class Title {
 
   update(dt) {
     this.timer += dt;
+    if (this.transition) {
+      this.transition.progress += dt / this.transition.duration;
+      if (this.transition.progress >= 1) {
+        this.transition = null;
+      }
+    }
     this.aliens.forEach((alien) => {
       alien.y += alien.speed * dt;
       if (alien.y > 500) {
         alien.y = -200;
       }
     });
+
+    if (this.screen !== 'intro' || (this.transition && this.transition.to !== 'intro')) {
+      this.nextExplosion -= dt;
+      if (this.nextExplosion <= 0) {
+        this.spawnExplosion();
+        this.nextExplosion = 1.2 + Math.random() * 2.4;
+      }
+      this.explosions.forEach((explosion) => {
+        explosion.age += dt;
+      });
+      this.explosions = this.explosions.filter((explosion) => explosion.age < explosion.duration);
+    }
   }
 
-  draw(ctx, width, height, isMobile) {
+  draw(ctx, width, height, inputMode) {
     ctx.save();
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, width, height);
@@ -103,33 +126,87 @@ export default class Title {
       ctx.restore();
     });
 
+    if (this.screen !== 'intro' || (this.transition && this.transition.to !== 'intro')) {
+      this.drawExplosions(ctx, earthX, earthY, earthRadius);
+    }
+
     ctx.font = 'bold 48px Courier New';
     ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
     ctx.fillText('Chainsaw Aliens', width / 2, 120);
-    ctx.font = '18px Courier New';
-    if (isMobile) {
-      ctx.fillText('Tap START to begin', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
+
+    if (this.transition) {
+      const t = Math.min(1, this.transition.progress);
+      this.drawScreen(ctx, width, height, this.transition.from, inputMode, 1 - t, (t - 1) * 24);
+      this.drawScreen(ctx, width, height, this.transition.to, inputMode, t, (1 - t) * 24);
     } else {
-      ctx.fillText('Press SPACE or START to begin', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
+      this.drawScreen(ctx, width, height, this.screen, inputMode, 1, 0);
     }
 
-    const buttonWidth = 180;
-    const buttonHeight = 32;
-    const buttonX = width / 2 - buttonWidth / 2;
-    const startY = height - 154;
-    const endlessY = height - 112;
-    const editorY = height - 70;
+    ctx.restore();
+  }
 
-    const drawButton = (label, action, y) => {
-      const selected = this.menuOrder[this.selectionIndex] === action;
+  drawScreen(ctx, width, height, screen, inputMode, alpha, offsetY) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(0, offsetY);
+    if (screen === 'intro') {
+      this.drawIntro(ctx, width, height);
+    } else if (screen === 'controls') {
+      this.drawControls(ctx, width, height, inputMode);
+    } else {
+      this.drawMainMenu(ctx, width, height);
+    }
+    ctx.restore();
+  }
+
+  drawIntro(ctx, width, height) {
+    ctx.fillStyle = '#fff';
+    ctx.font = '20px Courier New';
+    ctx.textAlign = 'center';
+    const pulse = Math.sin(this.timer * 4) * 6;
+    ctx.fillText('Press START to Begin (Gamepad)', width / 2, height - 170 + pulse);
+    ctx.fillText('Press SPACE to Begin (Keyboard)', width / 2, height - 140 + pulse);
+    ctx.fillText('Tap to Begin (Mobile)', width / 2, height - 110 + pulse);
+  }
+
+  drawMainMenu(ctx, width, height) {
+    ctx.fillStyle = '#fff';
+    ctx.font = '22px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('Main Menu', width / 2, 180);
+
+    const buttonWidth = 320;
+    const buttonHeight = 34;
+    const buttonX = width / 2 - buttonWidth / 2;
+    const startY = 240;
+    const gap = 48;
+
+    this.menuBounds.clear();
+    this.menuOrder.forEach((action, index) => {
+      const y = startY + index * gap;
+      const selected = this.menuOrder[this.menuSelection] === action;
       ctx.fillStyle = selected ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)';
       ctx.fillRect(buttonX, y, buttonWidth, buttonHeight);
       ctx.strokeStyle = '#fff';
       ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
       ctx.fillStyle = '#fff';
+      ctx.font = '18px Courier New';
+      const label = action === 'campaign'
+        ? 'Campaign'
+        : action === 'endless'
+          ? 'Endless Mode'
+          : action === 'editor'
+            ? 'Level Editor'
+            : 'Options';
       ctx.fillText(label, width / 2, y + 22);
+      if (action === 'options') {
+        ctx.font = '12px Courier New';
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.fillText('Controls', width / 2, y + 40);
+      }
       if (selected) {
+        ctx.fillStyle = '#fff';
         ctx.beginPath();
         ctx.moveTo(buttonX - 14, y + buttonHeight / 2);
         ctx.lineTo(buttonX - 6, y + buttonHeight / 2 - 6);
@@ -137,39 +214,152 @@ export default class Title {
         ctx.closePath();
         ctx.fill();
       }
-    };
+      this.menuBounds.set(action, { x: buttonX, y, w: buttonWidth, h: buttonHeight });
+    });
+  }
 
-    drawButton('START', 'start', startY);
-    this.startBounds = { x: buttonX, y: startY, w: buttonWidth, h: buttonHeight };
-    drawButton('ENDLESS MODE', 'endless', endlessY);
-    this.endlessBounds = { x: buttonX, y: endlessY, w: buttonWidth, h: buttonHeight };
-    drawButton('LEVEL EDITOR', 'editor', editorY);
-    this.editorBounds = { x: buttonX, y: editorY, w: buttonWidth, h: buttonHeight };
-    ctx.restore();
+  drawControls(ctx, width, height, inputMode) {
+    ctx.fillStyle = '#fff';
+    ctx.font = '22px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('Controls', width / 2, 180);
+    ctx.font = '14px Courier New';
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.fillText('Select an input mode', width / 2, 206);
+
+    const buttonWidth = 360;
+    const buttonHeight = 34;
+    const buttonX = width / 2 - buttonWidth / 2;
+    const startY = 250;
+    const gap = 46;
+
+    this.controlsBounds.clear();
+    this.controlsOrder.forEach((action, index) => {
+      const y = startY + index * gap;
+      const selected = this.controlsOrder[this.controlsSelection] === action;
+      const active = inputMode === action;
+      ctx.fillStyle = selected ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)';
+      ctx.fillRect(buttonX, y, buttonWidth, buttonHeight);
+      ctx.strokeStyle = active ? '#ffe16a' : '#fff';
+      ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
+      ctx.fillStyle = '#fff';
+      ctx.font = '18px Courier New';
+      const label = action === 'mobile'
+        ? 'Mobile Touch'
+        : action === 'gamepad'
+          ? 'Controller / Gamepad'
+          : action === 'keyboard'
+            ? 'Keyboard'
+            : 'Back';
+      ctx.fillText(label, width / 2, y + 22);
+      if (active && action !== 'back') {
+        ctx.font = '12px Courier New';
+        ctx.fillStyle = '#ffe16a';
+        ctx.fillText('Active', width / 2, y + 40);
+      }
+      if (selected) {
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.moveTo(buttonX - 14, y + buttonHeight / 2);
+        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 - 6);
+        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 + 6);
+        ctx.closePath();
+        ctx.fill();
+      }
+      this.controlsBounds.set(action, { x: buttonX, y, w: buttonWidth, h: buttonHeight });
+    });
+  }
+
+  spawnExplosion() {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = Math.random() * 0.8 + 0.1;
+    this.explosions.push({
+      angle,
+      radius,
+      age: 0,
+      duration: 0.8 + Math.random() * 0.6
+    });
+  }
+
+  drawExplosions(ctx, earthX, earthY, earthRadius) {
+    this.explosions.forEach((explosion) => {
+      const progress = explosion.age / explosion.duration;
+      const pulse = Math.sin(progress * Math.PI);
+      const sparkRadius = earthRadius * explosion.radius;
+      const x = earthX + Math.cos(explosion.angle) * sparkRadius;
+      const y = earthY + Math.sin(explosion.angle) * sparkRadius;
+      const size = 6 + pulse * 10;
+      ctx.save();
+      ctx.globalAlpha = 0.8 * (1 - progress);
+      ctx.fillStyle = '#ffcc6a';
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ff6b6b';
+      ctx.beginPath();
+      ctx.arc(x, y, size * 1.3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    });
   }
 
   moveSelection(direction) {
+    if (this.screen === 'intro') {
+      return;
+    }
+    if (this.screen === 'controls') {
+      const count = this.controlsOrder.length;
+      if (!count) return;
+      this.controlsSelection = (this.controlsSelection + direction + count) % count;
+      return;
+    }
     const count = this.menuOrder.length;
     if (!count) return;
-    this.selectionIndex = (this.selectionIndex + direction + count) % count;
+    this.menuSelection = (this.menuSelection + direction + count) % count;
   }
 
   getSelectedAction() {
-    return this.menuOrder[this.selectionIndex] || 'start';
+    if (this.screen === 'controls') {
+      return this.controlsOrder[this.controlsSelection] || 'back';
+    }
+    return this.menuOrder[this.menuSelection] || 'campaign';
   }
 
-  isStartHit(x, y) {
-    const bounds = this.startBounds;
-    return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
+  getActionAt(x, y) {
+    if (this.screen === 'intro') {
+      return null;
+    }
+    if (this.screen === 'controls') {
+      for (const [action, bounds] of this.controlsBounds.entries()) {
+        if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
+          return action;
+        }
+      }
+      return null;
+    }
+    for (const [action, bounds] of this.menuBounds.entries()) {
+      if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
+        return action;
+      }
+    }
+    return null;
   }
 
-  isEditorHit(x, y) {
-    const bounds = this.editorBounds;
-    return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
+  setScreen(target) {
+    if (this.screen === target) return;
+    this.transition = {
+      from: this.screen,
+      to: target,
+      progress: 0,
+      duration: 0.35
+    };
+    this.screen = target;
   }
 
-  isEndlessHit(x, y) {
-    const bounds = this.endlessBounds;
-    return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
+  setControlsSelectionByMode(mode) {
+    const index = this.controlsOrder.indexOf(mode);
+    if (index >= 0) {
+      this.controlsSelection = index;
+    }
   }
 }
