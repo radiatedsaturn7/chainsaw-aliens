@@ -152,7 +152,7 @@ export default class AudioSystem {
       this.revOsc = this.ctx.createOscillator();
       this.revGain = this.ctx.createGain();
       this.revOsc.type = 'sawtooth';
-      this.revOsc.frequency.value = 80;
+      this.revOsc.frequency.value = 110;
       this.revGain.gain.value = 0.0001;
       this.revOsc.connect(this.revGain);
       this.revGain.connect(this.master);
@@ -160,8 +160,8 @@ export default class AudioSystem {
     }
     if (active) {
       const now = this.ctx.currentTime;
-      this.revGain.gain.exponentialRampToValueAtTime(Math.max(0.08, intensity), now + 0.05);
-      this.revOsc.frequency.setTargetAtTime(80 + intensity * 220, now, 0.05);
+      this.revGain.gain.exponentialRampToValueAtTime(Math.max(0.12, intensity), now + 0.03);
+      this.revOsc.frequency.setTargetAtTime(110 + intensity * 320, now, 0.02);
     }
     if (!active && this.revActive && this.revGain) {
       const now = this.ctx.currentTime;

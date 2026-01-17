@@ -13,7 +13,6 @@ export default class TestHarness {
   constructor() {
     this.active = false;
     this.invulnerable = false;
-    this.infiniteFuel = false;
     this.slowMotion = false;
     this.showCollision = false;
     this.showBoxes = false;
@@ -66,7 +65,6 @@ export default class TestHarness {
   update(input, game) {
     if (!this.active) return;
     if (input.wasPressedCode('KeyI')) this.invulnerable = !this.invulnerable;
-    if (input.wasPressedCode('KeyF')) this.infiniteFuel = !this.infiniteFuel;
     if (input.wasPressedCode('KeyO')) this.slowMotion = !this.slowMotion;
     if (input.wasPressedCode('KeyC')) this.showCollision = !this.showCollision;
     if (input.wasPressedCode('KeyY')) this.toggleSeeded();
@@ -95,9 +93,6 @@ export default class TestHarness {
       game.player.health = game.player.maxHealth;
       game.player.dead = false;
     }
-    if (this.infiniteFuel) {
-      game.player.fuel = 3;
-    }
   }
 
   draw(ctx, game, width, height) {
@@ -114,10 +109,9 @@ export default class TestHarness {
     ctx.font = '12px Courier New';
     ctx.fillText('TEST MODE', width - 268, 40);
     ctx.fillText(`Invulnerable (I): ${this.invulnerable ? 'ON' : 'OFF'}`, width - 268, 58);
-    ctx.fillText(`Infinite Fuel (F): ${this.infiniteFuel ? 'ON' : 'OFF'}`, width - 268, 74);
-    ctx.fillText(`Slow Motion (O): ${this.slowMotion ? 'ON' : 'OFF'}`, width - 268, 90);
-    ctx.fillText(`Show Collision (C): ${this.showCollision ? 'ON' : 'OFF'}`, width - 268, 106);
-    ctx.fillText(`Seeded RNG (Y): ${this.seeded ? 'ON' : 'OFF'}`, width - 268, 122);
+    ctx.fillText(`Slow Motion (O): ${this.slowMotion ? 'ON' : 'OFF'}`, width - 268, 74);
+    ctx.fillText(`Show Collision (C): ${this.showCollision ? 'ON' : 'OFF'}`, width - 268, 90);
+    ctx.fillText(`Seeded RNG (Y): ${this.seeded ? 'ON' : 'OFF'}`, width - 268, 106);
     ctx.fillText(`Jump Height: ${jumpTiles} tiles`, width - 268, 138);
     ctx.fillText(`Dash Distance: ${dashDistance.toFixed(1)} tiles`, width - 268, 154);
     ctx.fillText('Teleport: 1-6 (regions)', width - 268, 170);

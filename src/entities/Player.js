@@ -11,7 +11,6 @@ export default class Player {
     this.speed = MOVEMENT_MODEL.baseSpeed;
     this.jumpPower = MOVEMENT_MODEL.baseJumpPower;
     this.revEfficiency = 1;
-    this.heatCap = 1;
     this.dashCooldownBase = 0.6;
     this.onGround = false;
     this.onWall = 0;
@@ -23,16 +22,11 @@ export default class Player {
     this.facing = 1;
     this.health = 5;
     this.maxHealth = 5;
-    this.heat = 0;
-    this.overheat = 0;
-    this.fuel = 3;
-    this.fuelRegen = 0;
     this.loot = 0;
     this.credits = 0;
     this.upgradeSlots = 2;
     this.equippedUpgrades = [];
     this.cosmetics = [];
-    this.blueprints = 0;
     this.dead = false;
     this.animTime = 0;
     this.hurtTimer = 0;
@@ -68,6 +62,9 @@ export default class Player {
     this.aimAngle = 0;
     this.chainsawFacing = this.facing;
     this.chainsawHeld = false;
+    this.oilLevel = 0;
+    this.superCharge = 0;
+    this.superReady = false;
   }
 
   get rect() {
@@ -83,19 +80,16 @@ export default class Player {
     let speed = MOVEMENT_MODEL.baseSpeed;
     let jumpPower = MOVEMENT_MODEL.baseJumpPower;
     let revEfficiency = 1;
-    let heatCap = 1;
     let dashCooldown = 0.6;
     upgrades.forEach((upgrade) => {
       if (upgrade.modifiers?.speed) speed += upgrade.modifiers.speed;
       if (upgrade.modifiers?.jump) jumpPower += upgrade.modifiers.jump;
       if (upgrade.modifiers?.revEfficiency) revEfficiency += upgrade.modifiers.revEfficiency;
-      if (upgrade.modifiers?.heatCap) heatCap += upgrade.modifiers.heatCap;
       if (upgrade.modifiers?.dashCooldown) dashCooldown += upgrade.modifiers.dashCooldown;
     });
     this.speed = speed;
     this.jumpPower = jumpPower;
     this.revEfficiency = revEfficiency;
-    this.heatCap = heatCap;
     this.dashCooldownBase = dashCooldown;
   }
 
@@ -240,10 +234,6 @@ export default class Player {
       this.takeDamage(1);
     }
 
-    this.heat = Math.max(0, this.heat - dt * 0.2);
-    if (this.overheat > 0) {
-      this.overheat -= dt;
-    }
     if (this.magBootsOverheat > 0) {
       this.magBootsOverheat = Math.max(0, this.magBootsOverheat - dt);
     }
@@ -256,12 +246,9 @@ export default class Player {
       this.magBootsHeat = 0;
       this.magBootsOverheat = 1.1;
     }
-    if (this.fuel < 3) {
-      this.fuelRegen += dt;
-      if (this.fuelRegen > 4) {
-        this.fuel += 1;
-        this.fuelRegen = 0;
-      }
+    this.oilLevel = Math.max(0, this.oilLevel - dt * 0.05);
+    if (this.oilLevel < 0.02) {
+      this.oilLevel = 0;
     }
     this.hurtTimer = Math.max(0, this.hurtTimer - dt);
     this.invulnTimer = Math.max(0, this.invulnTimer - dt);
@@ -327,8 +314,19 @@ export default class Player {
     if (signX !== 0) {
       const testX = nextX + (signX * rect.w) / 2;
       if (check(testX, rect.y + 4, { ignoreOneWay: true }) || check(testX, rect.y + rect.h - 4, { ignoreOneWay: true })) {
-        this.vx = 0;
-        this.onWall = signX;
+        const stepHeight = 8;
+        const steppedTop = rect.y - stepHeight;
+        const canStep = this.onGround
+          && !check(testX, steppedTop + 4, { ignoreOneWay: true })
+          && !check(testX, steppedTop + rect.h - 4, { ignoreOneWay: true });
+        if (canStep) {
+          this.x = nextX;
+          this.y -= stepHeight;
+          this.onGround = true;
+        } else {
+          this.vx = 0;
+          this.onWall = signX;
+        }
       } else {
         this.x = nextX;
       }
@@ -387,21 +385,16 @@ export default class Player {
   }
 
   canRev() {
-    return this.overheat <= 0;
+    return true;
   }
 
-  addHeat(amount) {
-    const cap = this.heatCap || 1;
-    this.heat = Math.min(1 * cap, this.heat + amount);
-    if (this.heat >= 1 * cap) {
-      this.overheat = 1.2;
-      this.heat = 0;
-    }
+  addOil(amount = 0.15) {
+    this.oilLevel = Math.min(1, this.oilLevel + amount);
   }
 
-  spendFuel() {
-    if (this.fuel <= 0) return false;
-    this.fuel -= 1;
+  addSuperCharge(amount = 0.15) {
+    this.superCharge = Math.min(1, this.superCharge + amount);
+    this.superReady = this.superCharge >= 1;
     return true;
   }
 
@@ -410,8 +403,12 @@ export default class Player {
     const hurtShake = this.hurtTimer > 0 ? 1 : 0;
     const shakeX = hurtShake ? Math.sin(this.animTime * 50) * 2 : 0;
     const shakeY = hurtShake ? Math.cos(this.animTime * 60) * 2 : 0;
-    ctx.translate(this.x + shakeX, this.y + shakeY);
-    const walk = this.state === 'run' ? Math.sin(this.animTime * 10) * 3 : 0;
+    const healthRatio = this.maxHealth ? Math.max(0, this.health) / this.maxHealth : 1;
+    const injury = Math.min(1, Math.max(0, 1 - healthRatio));
+    const stagger = injury > 0 ? Math.sin(this.animTime * 6) * 3 * injury : 0;
+    ctx.translate(this.x + shakeX + stagger, this.y + shakeY);
+    const walkPhase = this.state === 'run' ? this.animTime * 10 : 0;
+    const walkSwing = this.state === 'run' ? Math.sin(walkPhase) * (4 + injury * 4) : 0;
     const legLift = this.state === 'jump' || this.state === 'fall' ? -4 : 0;
     const dashTilt = this.state === 'dash' ? this.facing * 6 : 0;
     const crouchOffset = this.state === 'duck' ? 6 : 0;
@@ -421,36 +418,86 @@ export default class Player {
     ctx.strokeStyle = flash ? '#fff' : 'rgba(255,255,255,0.9)';
     ctx.lineWidth = 2;
     ctx.rotate((dashTilt * Math.PI) / 180);
+    const hipY = 10 + crouchOffset;
+    const shoulderY = -8 + crouchOffset;
+    const holdingArm = injury > 0.45;
+    const armSwing = this.state === 'run' ? Math.sin(walkPhase + Math.PI) * (4 + injury * 2) : 0;
     // Head
     ctx.beginPath();
     ctx.arc(0, -this.height / 2 + 8 + crouchOffset, 6, 0, Math.PI * 2);
     ctx.stroke();
     // Torso
     ctx.beginPath();
-    ctx.moveTo(-8, -8 + crouchOffset);
-    ctx.lineTo(8, -8 + crouchOffset);
-    ctx.lineTo(10, 10 + crouchOffset);
-    ctx.lineTo(-10, 10 + crouchOffset);
+    ctx.moveTo(-6, shoulderY);
+    ctx.lineTo(6, shoulderY);
+    ctx.lineTo(8, hipY);
+    ctx.lineTo(-8, hipY);
     ctx.closePath();
     ctx.stroke();
-    // Legs
+    // Legs with joints
     ctx.beginPath();
-    ctx.rect(-10, 10 + legLift + crouchOffset, 6, 12 + walk - crouchShrink);
-    ctx.rect(4, 10 - legLift + crouchOffset, 6, 12 - walk - crouchShrink);
+    const leftHipX = -6;
+    const rightHipX = 6;
+    const leftKneeY = hipY + 10 + legLift;
+    const rightKneeY = hipY + 10 - legLift;
+    const leftFootY = hipY + 20 + walkSwing - crouchShrink;
+    const rightFootY = hipY + 20 - walkSwing - crouchShrink;
+    const leftKneeX = leftHipX + walkSwing * 0.4;
+    const rightKneeX = rightHipX - walkSwing * 0.4;
+    ctx.moveTo(leftHipX, hipY);
+    ctx.lineTo(leftKneeX, leftKneeY);
+    ctx.lineTo(leftHipX - 2, leftFootY);
+    ctx.moveTo(rightHipX, hipY);
+    ctx.lineTo(rightKneeX, rightKneeY);
+    ctx.lineTo(rightHipX + 2, rightFootY);
     ctx.stroke();
-    // Arms
     ctx.beginPath();
+    ctx.arc(leftKneeX, leftKneeY, 2, 0, Math.PI * 2);
+    ctx.arc(rightKneeX, rightKneeY, 2, 0, Math.PI * 2);
+    ctx.stroke();
+    // Arms with joints
     const armOffset = this.revving ? -6 : 0;
     ctx.save();
     ctx.rotate(aimTilt);
-    ctx.rect(-14, -4 + armOffset + crouchOffset, 6, 10);
-    ctx.rect(8, -4 + armOffset + crouchOffset, 6, 10);
+    ctx.beginPath();
+    const leftShoulderX = -10;
+    const rightShoulderX = 10;
+    const leftElbowX = leftShoulderX - 4 + armSwing;
+    const rightElbowX = rightShoulderX + 4 - armSwing;
+    const leftHandX = holdingArm ? -2 : leftElbowX - 2;
+    const rightHandX = holdingArm ? 6 : rightElbowX + 2;
+    const armBaseY = shoulderY + armOffset;
+    const leftHandY = holdingArm ? armBaseY + 6 : armBaseY + 10;
+    const rightHandY = holdingArm ? armBaseY + 4 : armBaseY + 10;
+    ctx.moveTo(leftShoulderX, armBaseY);
+    ctx.lineTo(leftElbowX, armBaseY + 4);
+    ctx.lineTo(leftHandX, leftHandY);
+    ctx.moveTo(rightShoulderX, armBaseY);
+    ctx.lineTo(rightElbowX, armBaseY + 4);
+    ctx.lineTo(rightHandX, rightHandY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(leftElbowX, armBaseY + 4, 2, 0, Math.PI * 2);
+    ctx.arc(rightElbowX, armBaseY + 4, 2, 0, Math.PI * 2);
     ctx.stroke();
     // Chainsaw bar
     ctx.beginPath();
     ctx.moveTo(0, -4 + crouchOffset);
     const barLength = this.revving ? this.width * 1.1 : this.width * 0.9;
     const barDir = this.aimingUp ? 1 : (this.chainsawHeld ? this.chainsawFacing : this.facing);
+    if (this.superReady) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(120,255,180,0.8)';
+      ctx.lineWidth = 4;
+      ctx.shadowColor = 'rgba(120,255,180,0.8)';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(0, -4 + crouchOffset);
+      ctx.lineTo(barDir * barLength, 0 + crouchOffset);
+      ctx.lineTo(0, 6 + (this.revving ? 2 : 0) + crouchOffset);
+      ctx.stroke();
+      ctx.restore();
+    }
     ctx.lineTo(barDir * barLength, 0 + crouchOffset);
     ctx.lineTo(0, 6 + (this.revving ? 2 : 0) + crouchOffset);
     ctx.stroke();
@@ -473,6 +520,21 @@ export default class Player {
       ctx.lineTo(barDir * this.width * 0.7, 0);
       ctx.lineTo(-8, 6);
       ctx.stroke();
+    }
+    if (this.oilLevel > 0) {
+      ctx.save();
+      ctx.globalAlpha = 0.5 * this.oilLevel;
+      ctx.strokeStyle = '#38e073';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(0, -this.height / 2 + 8 + crouchOffset, 6, 0, Math.PI * 2);
+      ctx.moveTo(-6, shoulderY);
+      ctx.lineTo(6, shoulderY);
+      ctx.lineTo(8, hipY);
+      ctx.lineTo(-8, hipY);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.restore();
     }
     ctx.restore();
   }

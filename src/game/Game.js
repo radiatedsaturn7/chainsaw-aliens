@@ -30,6 +30,7 @@ import CataclysmColossus from '../entities/CataclysmColossus.js';
 import Projectile from '../entities/Projectile.js';
 import { DebrisPiece, Shard } from '../entities/Debris.js';
 import LootDrop from '../entities/LootDrop.js';
+import HealthDrop from '../entities/HealthDrop.js';
 import PracticeDrone from '../entities/PracticeDrone.js';
 import Effect from '../entities/Effect.js';
 import Title from '../ui/Title.js';
@@ -92,8 +93,6 @@ const UPGRADE_LIST = [
   { id: 'tooth-serrated', name: 'Tooth Profile: Serrated Bite', slot: 'tooth', cost: 20, modifiers: { revEfficiency: 0.3 } },
   { id: 'drive-torque', name: 'Drivetrain: Torque Lube', slot: 'drivetrain', cost: 25, modifiers: { speed: 20 } },
   { id: 'drive-pulse', name: 'Drivetrain: Pulse Drive', slot: 'drivetrain', cost: 30, modifiers: { dashCooldown: -0.1 } },
-  { id: 'coolant-mist', name: 'Coolant: Mist Jet', slot: 'coolant', cost: 18, modifiers: { heatCap: 0.3 } },
-  { id: 'coolant-phase', name: 'Coolant: Thermal Vapor', slot: 'coolant', cost: 24, modifiers: { heatCap: 0.5 } },
   { id: 'bar-grapple', name: 'Bar Attachment: Anchor Latch', slot: 'bar', cost: 28, modifiers: { speed: 10 } },
   { id: 'bar-piercer', name: 'Bar Attachment: Piercer', slot: 'bar', cost: 32, tags: ['pierce'] },
   { id: 'gadget-shock', name: 'Gadget: Shock Emitters', slot: 'gadget', cost: 26, tags: ['shock'] },
@@ -126,6 +125,7 @@ export default class Game {
     this.debris = [];
     this.shards = [];
     this.lootDrops = [];
+    this.healthDrops = [];
     this.effects = [];
     this.clock = 0;
     this.abilities = {
@@ -151,7 +151,6 @@ export default class Game {
       active: false,
       x: 0,
       y: 0,
-      fuelDrain: 0,
       pullTimer: 0,
       retractTimer: 0,
       autoRetractTimer: 0,
@@ -204,6 +203,8 @@ export default class Game {
       timer: 0
     };
     this.prevHealth = this.player.health;
+    this.damageFlashTimer = 0;
+    this.revCharge = 0;
     this.revActive = false;
     this.simulationActive = false;
     this.deathTimer = 0;
@@ -386,6 +387,7 @@ export default class Game {
     this.debris = [];
     this.shards = [];
     this.lootDrops = [];
+    this.healthDrops = [];
     this.effects = [];
     this.spawnEnemies();
     this.bossInteractions = {
@@ -398,7 +400,6 @@ export default class Game {
       active: false,
       x: 0,
       y: 0,
-      fuelDrain: 0,
       pullTimer: 0,
       retractTimer: 0,
       autoRetractTimer: 0,
@@ -414,6 +415,8 @@ export default class Game {
     this.attackTapTimer = 0;
     this.attackHoldTimer = 0;
     this.prevHealth = this.player.health;
+    this.damageFlashTimer = 0;
+    this.revCharge = 0;
     this.deathTimer = 0;
     this.gameOverTimer = 0;
     this.spawnPauseTimer = 0;
@@ -921,6 +924,7 @@ export default class Game {
     const simScale = this.goldenPath.getTimeScale();
     const timeScale = (this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1) * simScale;
     this.slowTimer = Math.max(0, this.slowTimer - dt);
+    this.damageFlashTimer = Math.max(0, this.damageFlashTimer - dt * timeScale);
     if (this.spawnPauseTimer > 0) {
       this.spawnPauseTimer = Math.max(0, this.spawnPauseTimer - dt);
       this.updateEffects(dt);
@@ -1006,11 +1010,14 @@ export default class Game {
     }
     const revHeld = this.isRevHeld(this.input);
     const anchorRevActive = this.sawAnchor.active && this.sawAnchor.embedded && revHeld;
+    if (revHeld || anchorRevActive) {
+      this.revCharge = Math.min(1, this.revCharge + dt * timeScale * 2.2);
+    } else {
+      this.revCharge = Math.max(0, this.revCharge - dt * timeScale * 1.6);
+    }
     if (revHeld && this.player.canRev() && !this.sawAnchor.active) {
-      this.player.addHeat(0.4 * dt / (this.player.revEfficiency || 1));
       this.handleRev();
       this.tryObstacleInteraction('rev');
-      this.handleFlameSawDrain(dt);
       this.setRevAudio(true);
       this.recordFeedback('chainsaw rev', 'audio');
       this.recordFeedback('chainsaw rev', 'visual');
@@ -1035,6 +1042,7 @@ export default class Game {
     this.updateDebris(dt * timeScale);
     this.updateEffects(dt * timeScale);
     this.updateLootDrops(dt * timeScale);
+    this.updateHealthDrops(dt * timeScale);
     this.checkPlayerDamage();
     this.checkPickups();
     const shopped = this.checkShops();
@@ -1099,6 +1107,9 @@ export default class Game {
     this.player.y = this.lastSave.y;
     this.player.credits = Math.max(0, this.player.credits - 10);
     this.player.loot = 0;
+    this.player.oilLevel = 0;
+    this.player.superCharge = 0;
+    this.player.superReady = false;
     this.player.invulnTimer = 1;
     this.prevHealth = this.player.health;
   }
@@ -1153,7 +1164,7 @@ export default class Game {
   }
 
   setRevAudio(active) {
-    const intensity = 0.2 + this.player.heat * 0.6;
+    const intensity = 0.3 + this.revCharge * 0.7;
     if (active) {
       this.audio.setRev(true, intensity);
       this.revActive = true;
@@ -1180,6 +1191,7 @@ export default class Game {
     if (this.player.health < this.prevHealth) {
       this.audio.damage();
       this.spawnEffect('damage', this.player.x, this.player.y - 8);
+      this.damageFlashTimer = 0.6;
       this.recordFeedback('take damage', 'audio');
       this.recordFeedback('take damage', 'visual');
     }
@@ -1253,6 +1265,10 @@ export default class Game {
       const tileY = Math.floor(point.y / this.world.tileSize);
       return this.world.isSolid(tileX, tileY, this.abilities, { ignoreOneWay });
     });
+  }
+
+  isPlayerPositionClear(x, y) {
+    return !this.isPlayerBlockedAt(x, y, { ignoreOneWay: true });
   }
 
   hasCeilingAbovePlayer(maxTiles = 1) {
@@ -1430,14 +1446,20 @@ export default class Game {
     }
     if (overlapX < overlapY) {
       const dir = playerRect.x < enemyRect.x ? -1 : 1;
-      this.player.x += overlapX * dir;
-      this.player.vx = 0;
+      const targetX = this.player.x + overlapX * dir;
+      if (this.isPlayerPositionClear(targetX, this.player.y)) {
+        this.player.x = targetX;
+        this.player.vx = 0;
+      }
     } else {
       const dir = playerRect.y < enemyRect.y ? -1 : 1;
-      this.player.y += overlapY * dir;
-      this.player.vy = 0;
-      if (dir < 0) {
-        this.player.onGround = true;
+      const targetY = this.player.y + overlapY * dir;
+      if (this.isPlayerPositionClear(this.player.x, targetY)) {
+        this.player.y = targetY;
+        this.player.vy = 0;
+        if (dir < 0) {
+          this.player.onGround = true;
+        }
       }
     }
     return true;
@@ -1644,6 +1666,11 @@ export default class Game {
   awardLoot(enemy, execution = false) {
     const total = enemy.lootValue + (execution ? 1 : 0);
     this.lootDrops.push(new LootDrop(enemy.x, enemy.y, total));
+    if (!enemy.training) {
+      this.healthDrops.push(new HealthDrop(enemy.x, enemy.y));
+      this.player.addOil(0.18);
+      this.player.addSuperCharge(execution ? 0.25 : 0.18);
+    }
   }
 
   spawnExecutionDebris(enemy, variant) {
@@ -1889,12 +1916,24 @@ export default class Game {
         this.spawnEffect('pickup', drop.x, drop.y - 8);
         this.recordFeedback('pickup', 'audio');
         this.recordFeedback('pickup', 'visual');
-        if (Math.random() < 0.2) {
-          this.player.blueprints += 1;
-          if (this.player.blueprints >= 3) {
-            this.player.blueprints = 0;
-            this.player.cosmetics.push(`Blueprint Style ${this.player.cosmetics.length + 1}`);
-          }
+      }
+    });
+  }
+
+  updateHealthDrops(dt) {
+    this.healthDrops.forEach((drop) => drop.update(dt));
+    this.healthDrops = this.healthDrops.filter((drop) => drop.life > 0 && !drop.collected);
+    this.healthDrops.forEach((drop) => {
+      const dist = Math.hypot(drop.x - this.player.x, drop.y - this.player.y);
+      if (dist < 26) {
+        drop.collect();
+        const before = this.player.health;
+        this.player.health = Math.min(this.player.maxHealth, this.player.health + 1);
+        if (this.player.health > before) {
+          this.audio.pickup();
+          this.spawnEffect('pickup', drop.x, drop.y - 8);
+          this.recordFeedback('pickup', 'audio');
+          this.recordFeedback('pickup', 'visual');
         }
       }
     });
@@ -2053,14 +2092,44 @@ export default class Game {
     this.activateAnchor(hit, !hit.hit);
   }
 
-  findAnchorHit() {
-    const range = this.world.tileSize * 5;
-    const step = 8;
+  getAutoAimVector() {
     const aimX = this.player.aimX ?? (this.player.facing || 1);
     const aimY = this.player.aimY ?? 0;
     const aimLength = Math.hypot(aimX, aimY) || 1;
-    const dirX = aimX / aimLength;
-    const dirY = aimY / aimLength;
+    const baseX = aimX / aimLength;
+    const baseY = aimY / aimLength;
+    const range = 180;
+    let best = null;
+    let bestScore = -Infinity;
+    const candidates = [...this.enemies];
+    if (this.boss && !this.boss.dead) {
+      candidates.push(this.boss);
+    }
+    candidates.forEach((enemy) => {
+      if (!enemy || enemy.dead) return;
+      const dx = enemy.x - this.player.x;
+      const dy = enemy.y - this.player.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist > range || dist <= 0.01) return;
+      const dirX = dx / dist;
+      const dirY = dy / dist;
+      const dot = dirX * baseX + dirY * baseY;
+      if (dot < 0.2) return;
+      const score = dot * 2 - dist / range;
+      if (score > bestScore) {
+        bestScore = score;
+        best = { x: dirX, y: dirY };
+      }
+    });
+    return best || { x: baseX, y: baseY };
+  }
+
+  findAnchorHit() {
+    const range = this.world.tileSize * 5;
+    const step = 8;
+    const aimVector = this.getAutoAimVector();
+    const dirX = aimVector.x;
+    const dirY = aimVector.y;
     const originX = this.player.x;
     const originY = this.player.y - 6;
     for (let dist = 24; dist <= range; dist += step) {
@@ -2127,7 +2196,6 @@ export default class Game {
     this.sawAnchor.active = true;
     this.sawAnchor.x = hit.x;
     this.sawAnchor.y = hit.y;
-    this.sawAnchor.fuelDrain = 0;
     this.sawAnchor.pullTimer = 0;
     this.sawAnchor.retractTimer = 0;
     this.sawAnchor.autoRetractTimer = autoRetract ? 0.35 : 0;
@@ -2218,19 +2286,6 @@ export default class Game {
       this.sawAnchor.x = this.sawAnchor.attachedEnemy.x;
       this.sawAnchor.y = this.sawAnchor.attachedEnemy.y;
     }
-    this.sawAnchor.fuelDrain += dt;
-    if (this.sawAnchor.fuelDrain >= 0.6) {
-      this.player.fuel = Math.max(0, this.player.fuel - 0.2);
-      this.sawAnchor.fuelDrain = 0;
-    }
-    this.player.addHeat(dt * 0.08);
-    if (this.player.fuel <= 0 || this.player.overheat > 0) {
-      this.sawAnchor.active = false;
-      this.player.sawDeployed = false;
-      this.sawAnchor.embedded = false;
-      this.sawAnchor.attachedBox = null;
-      this.sawAnchor.attachedEnemy = null;
-    }
     if (this.sawAnchor.autoRetractTimer > 0) {
       this.sawAnchor.autoRetractTimer = Math.max(0, this.sawAnchor.autoRetractTimer - dt);
       if (this.sawAnchor.autoRetractTimer <= 0) {
@@ -2268,12 +2323,13 @@ export default class Game {
     const dy = this.player.y - this.sawAnchor.y;
     const dist = Math.max(0.01, tetherDist);
     if (dist > tetherLimit) {
-      const prevX = this.player.x;
-      const prevY = this.player.y;
       const nx = dx / dist;
       const ny = dy / dist;
-      const targetX = this.sawAnchor.x + dx * (tetherLimit / dist);
-      const targetY = this.sawAnchor.y + dy * (tetherLimit / dist);
+      const holdFactor = Math.min(1, this.attackHoldTimer / 1.2);
+      const pullSpeed = 120 + holdFactor * 240;
+      const step = Math.min(dist - tetherLimit, pullSpeed * dt);
+      const targetX = this.player.x - nx * step;
+      const targetY = this.player.y - ny * step;
       if (!this.isPlayerBlockedAt(targetX, targetY)) {
         this.player.x = targetX;
         this.player.y = targetY;
@@ -2285,11 +2341,6 @@ export default class Game {
         } else if (yOnlyOk) {
           this.player.y = targetY;
         }
-      }
-      const moved = this.player.x !== prevX || this.player.y !== prevY;
-      if (!moved && this.sawAnchor.embedded) {
-        this.startAnchorRetract(0.2);
-        return true;
       }
       const radialVelocity = this.player.vx * nx + this.player.vy * ny;
       if (radialVelocity > 0) {
@@ -2651,14 +2702,6 @@ export default class Game {
     ctx.restore();
   }
 
-  handleFlameSawDrain(dt) {
-    if (!this.player.flameMode || !this.abilities.flame) return;
-    const drain = dt * 0.12;
-    this.player.fuel = Math.max(0, this.player.fuel - drain);
-    this.player.addHeat(dt * 0.08);
-    this.triggerNoiseSpike('flame-saw');
-  }
-
   triggerNoiseSpike(source) {
     if (this.noiseCooldown > 0) return;
     this.noiseCooldown = 0.6;
@@ -2719,10 +2762,6 @@ export default class Game {
     const prev = this.obstacleDamage.get(key) || 0;
     const next = prev + 1;
     this.obstacleDamage.set(key, next);
-    this.player.addHeat(interaction.heat || 0);
-    if (interaction.fuel) {
-      this.player.fuel = Math.max(0, this.player.fuel - interaction.fuel);
-    }
     if (interaction.noise) {
       this.triggerNoiseSpike(interaction.verb);
     }
@@ -2801,6 +2840,7 @@ export default class Game {
         ctx.restore();
       }
     });
+    this.healthDrops.forEach((drop) => drop.draw(ctx));
     if (!this.player.dead) {
       this.player.draw(ctx);
     }
@@ -2811,14 +2851,23 @@ export default class Game {
     this.drawBloom(ctx);
     ctx.restore();
 
-    const region = this.world.regionAt(this.player.x, this.player.y);
+    if (this.damageFlashTimer > 0) {
+      const pulse = Math.sin((1 - this.damageFlashTimer / 0.6) * Math.PI);
+      ctx.save();
+      ctx.globalAlpha = 0.2 + pulse * 0.35;
+      ctx.fillStyle = '#ff4b4b';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+    }
+
     const sawUsing = this.player.attackTimer > 0 || this.player.sawRideActive || this.sawAnchor.active;
     const sawBuzzing = this.revActive || (this.player.sawRideActive && this.input.isDown('attack'));
-    this.hud.draw(ctx, this.player, this.objective, region.name, {
+    this.hud.draw(ctx, this.player, this.objective, {
       shake: this.pauseMenu.shake,
       sawEmbedded: this.sawAnchor.embedded,
       sawUsing,
       sawBuzzing,
+      sawHeld: this.player.chainsawHeld || this.sawAnchor.active,
       flameMode: this.player.flameMode && this.abilities.flame
     });
     const objectiveTarget = this.getObjectiveTarget();
