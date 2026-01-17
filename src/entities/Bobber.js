@@ -1,22 +1,22 @@
 import EnemyBase from './EnemyBase.js';
 
-export default class HiveNode extends EnemyBase {
+export default class Bobber extends EnemyBase {
   constructor(x, y) {
     super(x, y);
-    this.type = 'hivenode';
-    this.health = 6;
-    this.spawnTimer = 2.5;
+    this.type = 'bobber';
+    this.health = 2;
+    this.baseY = y;
+    this.phase = Math.random() * Math.PI * 2;
+    this.solid = false;
+    this.gravity = false;
   }
 
-  update(dt, player, context = {}) {
+  update(dt, player) {
     this.animTime = (this.animTime || 0) + dt;
-    this.spawnTimer -= dt;
-    if (this.spawnTimer <= 0) {
-      this.spawnTimer = 3.5;
-      context.spawnMinion?.(this.x + (Math.random() - 0.5) * 80, this.y - 20);
-    }
+    this.phase += dt * 2.2;
+    this.y = this.baseY + Math.sin(this.phase) * 26;
     this.facing = Math.sign(player.x - this.x) || this.facing;
-    this.stagger = Math.max(0, this.stagger - dt * 0.2);
+    this.stagger = Math.max(0, this.stagger - dt * 0.55);
   }
 
   draw(ctx) {
@@ -27,18 +27,19 @@ export default class HiveNode extends EnemyBase {
     const alpha = flash ? 1 : glow;
     ctx.strokeStyle = `rgba(255, 90, 90,${alpha})`;
     ctx.lineWidth = 2;
-    const pulse = Math.sin(this.animTime * 4) * 3;
     ctx.beginPath();
-    ctx.rect(-20, -18, 40, 36);
+    ctx.rect(-12, -10, 24, 20);
     ctx.stroke();
     ctx.beginPath();
-    ctx.arc(0, 0, 8 + pulse * 0.2, 0, Math.PI * 2);
+    ctx.moveTo(-12, 0);
+    ctx.lineTo(12, 0);
+    ctx.moveTo(-6, -10);
+    ctx.lineTo(0, -16);
+    ctx.lineTo(6, -10);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(-18, -14);
-    ctx.lineTo(18, -6);
-    ctx.moveTo(-18, 14);
-    ctx.lineTo(18, 6);
+    ctx.arc(-4, 4, 2, 0, Math.PI * 2);
+    ctx.arc(4, 4, 2, 0, Math.PI * 2);
     ctx.stroke();
     ctx.restore();
   }

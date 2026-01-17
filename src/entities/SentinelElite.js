@@ -9,14 +9,18 @@ export default class SentinelElite extends EnemyBase {
     this.gravity = false;
   }
 
-  update(dt, player, spawnProjectile) {
+  update(dt, player, context = {}) {
     this.animTime = (this.animTime || 0) + dt;
     this.phase += dt;
     const dir = Math.sign(player.x - this.x) || this.facing;
     this.facing = dir;
     this.x += Math.sin(this.phase * 2) * 40 * dt;
-    if (Math.sin(this.phase * 1.5) > 0.8) {
-      spawnProjectile(this.x, this.y, dir * 260, -60, 1);
+    if (Math.sin(this.phase * 1.5) > 0.8 && context.canShoot?.(this, 360)) {
+      const dx = player.x - this.x;
+      const dy = player.y - this.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const speed = 260;
+      context.spawnProjectile?.(this.x, this.y, (dx / dist) * speed, (dy / dist) * speed, 1);
     }
     this.stagger = Math.max(0, this.stagger - dt * 0.4);
   }

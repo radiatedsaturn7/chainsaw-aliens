@@ -8,14 +8,17 @@ export default class Spitter extends EnemyBase {
     this.cooldown = 1.4;
   }
 
-  update(dt, player, spawnProjectile) {
+  update(dt, player, context = {}) {
     this.animTime = (this.animTime || 0) + dt;
     const dist = player.x - this.x;
     this.facing = Math.sign(dist) || this.facing;
     this.cooldown -= dt;
-    if (Math.abs(dist) < 320 && this.cooldown <= 0) {
+    if (context.canShoot?.(this, 320) && this.cooldown <= 0) {
       this.cooldown = 1.6;
-      spawnProjectile(this.x, this.y, this.facing * 220, 0, 1);
+      const dy = player.y - this.y;
+      const aimDist = Math.hypot(dist, dy) || 1;
+      const speed = 220;
+      context.spawnProjectile?.(this.x, this.y, (dist / aimDist) * speed, (dy / aimDist) * speed, 1);
     }
     this.stagger = Math.max(0, this.stagger - dt * 0.4);
   }
