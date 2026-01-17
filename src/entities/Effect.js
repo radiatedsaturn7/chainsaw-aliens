@@ -24,6 +24,14 @@ export default class Effect {
         };
       });
     }
+    if (this.type === 'splat') {
+      this.life = 0.9;
+      this.blobs = Array.from({ length: 5 }, () => ({
+        angle: Math.random() * Math.PI * 2,
+        radius: 10 + Math.random() * 12,
+        size: 10 + Math.random() * 14
+      }));
+    }
   }
 
   update(dt) {
@@ -132,6 +140,19 @@ export default class Effect {
         ctx.moveTo(Math.cos(spark.angle) * (blast * 0.3), Math.sin(spark.angle) * (blast * 0.3));
         ctx.lineTo(Math.cos(spark.angle) * length, Math.sin(spark.angle) * length);
         ctx.stroke();
+      });
+    } else if (this.type === 'splat') {
+      const spread = 18 + t * 30;
+      ctx.fillStyle = `rgba(76, 255, 120, ${0.85 - t * 0.6})`;
+      ctx.beginPath();
+      ctx.arc(0, 0, 16 + t * 10, 0, Math.PI * 2);
+      ctx.fill();
+      this.blobs.forEach((blob) => {
+        const bx = Math.cos(blob.angle) * (spread + blob.radius);
+        const by = Math.sin(blob.angle) * (spread + blob.radius);
+        ctx.beginPath();
+        ctx.arc(bx, by, Math.max(4, blob.size * (1 - t * 0.6)), 0, Math.PI * 2);
+        ctx.fill();
       });
     }
     ctx.restore();

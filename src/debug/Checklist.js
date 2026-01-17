@@ -15,12 +15,6 @@ export default class Checklist {
     const { player, enemies, world } = game;
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    ctx.fillRect(12, height - 260, 240, 248);
-    ctx.strokeStyle = '#fff';
-    ctx.strokeRect(12, height - 260, 240, 248);
-    ctx.fillStyle = '#fff';
-    ctx.font = '12px Courier New';
-    ctx.fillText('VISUAL READABILITY', 24, height - 238);
     const legendItems = [
       'player',
       'ability',
@@ -38,15 +32,29 @@ export default class Checklist {
       'spitter',
       'bulwark',
       'floater',
+      'drifter',
+      'bobber',
+      'harrier',
       'slicer',
       'hivenode',
+      'bouncer',
+      'coward',
+      'ranger',
       'sentinel',
       'finalboss'
     ];
+    const panelHeight = 44 + 12 * legendItems.length;
+    const panelTop = height - panelHeight - 12;
+    ctx.fillRect(12, panelTop, 240, panelHeight);
+    ctx.strokeStyle = '#fff';
+    ctx.strokeRect(12, panelTop, 240, panelHeight);
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px Courier New';
+    ctx.fillText('VISUAL READABILITY', 24, panelTop + 22);
     legendItems.forEach((key, index) => {
       const item = LEGEND[key];
       if (!item) return;
-      ctx.fillText(`${item.glyph} ${item.label}`, 24, height - 218 + index * 12);
+      ctx.fillText(`${item.glyph} ${item.label}`, 24, panelTop + 42 + index * 12);
     });
     ctx.restore();
 

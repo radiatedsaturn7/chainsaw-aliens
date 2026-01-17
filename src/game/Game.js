@@ -11,6 +11,12 @@ import Floater from '../entities/Floater.js';
 import Slicer from '../entities/Slicer.js';
 import HiveNode from '../entities/HiveNode.js';
 import SentinelElite from '../entities/SentinelElite.js';
+import Drifter from '../entities/Drifter.js';
+import Bobber from '../entities/Bobber.js';
+import Harrier from '../entities/Harrier.js';
+import Bouncer from '../entities/Bouncer.js';
+import Coward from '../entities/Coward.js';
+import Ranger from '../entities/Ranger.js';
 import FinalBoss from '../entities/FinalBoss.js';
 import Projectile from '../entities/Projectile.js';
 import { DebrisPiece, Shard } from '../entities/Debris.js';
@@ -469,8 +475,12 @@ export default class Game {
     if (wave >= 2) pool.push('spitter');
     if (wave >= 4) pool.push('slicer');
     if (wave >= 6) pool.push('bulwark');
+    if (wave >= 6) pool.push('bouncer');
+    if (wave >= 7) pool.push('coward');
     if (wave >= 8) pool.push('hivenode');
-    if (wave >= 10) pool.push('floater');
+    if (wave >= 9) pool.push('ranger');
+    if (wave >= 10) pool.push('floater', 'drifter', 'bobber');
+    if (wave >= 11) pool.push('harrier');
     if (wave >= 12) pool.push('sentinel');
     const type = pool[Math.floor(Math.random() * pool.length)];
     const spawn = this.getEndlessSpawnPoint();
@@ -502,6 +512,24 @@ export default class Game {
         break;
       case 'sentinel':
         this.enemies.push(new SentinelElite(worldX, worldY));
+        break;
+      case 'drifter':
+        this.enemies.push(new Drifter(worldX, worldY));
+        break;
+      case 'bobber':
+        this.enemies.push(new Bobber(worldX, worldY));
+        break;
+      case 'harrier':
+        this.enemies.push(new Harrier(worldX, worldY));
+        break;
+      case 'bouncer':
+        this.enemies.push(new Bouncer(worldX, worldY));
+        break;
+      case 'coward':
+        this.enemies.push(new Coward(worldX, worldY));
+        break;
+      case 'ranger':
+        this.enemies.push(new Ranger(worldX, worldY));
         break;
       default:
         break;
@@ -560,6 +588,24 @@ export default class Game {
           case 'sentinel':
             this.enemies.push(new SentinelElite(worldX, worldY));
             break;
+          case 'drifter':
+            this.enemies.push(new Drifter(worldX, worldY));
+            break;
+          case 'bobber':
+            this.enemies.push(new Bobber(worldX, worldY));
+            break;
+          case 'harrier':
+            this.enemies.push(new Harrier(worldX, worldY));
+            break;
+          case 'bouncer':
+            this.enemies.push(new Bouncer(worldX, worldY));
+            break;
+          case 'coward':
+            this.enemies.push(new Coward(worldX, worldY));
+            break;
+          case 'ranger':
+            this.enemies.push(new Ranger(worldX, worldY));
+            break;
           case 'finalboss':
             this.boss = new FinalBoss(worldX, worldY);
             break;
@@ -585,9 +631,15 @@ export default class Game {
       new Spitter(32 * 50, 32 * 19),
       new Bulwark(32 * 56, 32 * 19),
       new Floater(32 * 30, 32 * 9),
+      new Drifter(32 * 26, 32 * 11),
+      new Bobber(32 * 44, 32 * 11),
+      new Harrier(32 * 48, 32 * 7),
       new Slicer(32 * 34, 32 * 19),
       new HiveNode(32 * 58, 32 * 19),
-      new SentinelElite(32 * 52, 32 * 9)
+      new SentinelElite(32 * 52, 32 * 9),
+      new Bouncer(32 * 46, 32 * 19),
+      new Coward(32 * 42, 32 * 19),
+      new Ranger(32 * 54, 32 * 19)
     ];
     this.boss = new FinalBoss(32 * 58, 32 * 9);
     this.bossActive = false;
@@ -600,9 +652,15 @@ export default class Game {
       new Spitter(32 * 20, 32 * 8),
       new Bulwark(32 * 24, 32 * 8),
       new Floater(32 * 14, 32 * 4),
+      new Drifter(32 * 18, 32 * 4),
+      new Bobber(32 * 22, 32 * 4),
+      new Harrier(32 * 30, 32 * 4),
       new Slicer(32 * 28, 32 * 8),
       new HiveNode(32 * 22, 32 * 12),
-      new SentinelElite(32 * 26, 32 * 4)
+      new SentinelElite(32 * 26, 32 * 4),
+      new Bouncer(32 * 12, 32 * 8),
+      new Coward(32 * 34, 32 * 8),
+      new Ranger(32 * 38, 32 * 8)
     ];
     this.boss = null;
   }
@@ -800,6 +858,9 @@ export default class Game {
       this.attackHoldTimer += dt * timeScale;
     }
     if (!this.player.sawRideActive && this.player.onGround && this.input.isDown('down') && this.input.wasPressed('attack')) {
+      this.player.startSawRide();
+    }
+    if (!this.player.sawRideActive && this.player.onGround && this.input.isDown('attack') && this.attackHoldTimer > this.attackHoldThreshold && !this.input.isDown('down')) {
       this.player.startSawRide();
     }
 
@@ -1161,6 +1222,10 @@ export default class Game {
       const overlapY = Math.min(rect.y + rect.h - tileRect.y, tileRect.y + tileRect.h - rect.y);
       if (overlapX < overlapY) {
         enemy.x += rect.x < tileRect.x ? -overlapX : overlapX;
+        if (enemy.bounceOnWalls) {
+          enemy.vx = -enemy.vx;
+          enemy.facing = Math.sign(enemy.vx) || enemy.facing;
+        }
       } else {
         enemy.y += rect.y < tileRect.y ? -overlapY : overlapY;
         enemy.vy = 0;
@@ -1204,6 +1269,55 @@ export default class Game {
 
   isRevHeld(input) {
     return input.isDown('attack') || input.isDown('rev');
+  }
+
+  isEnemyVisible(enemy, padding = 80) {
+    const left = this.camera.x - padding;
+    const right = this.camera.x + this.canvas.width + padding;
+    const top = this.camera.y - padding;
+    const bottom = this.camera.y + this.canvas.height + padding;
+    return enemy.x > left && enemy.x < right && enemy.y > top && enemy.y < bottom;
+  }
+
+  canEnemyShoot(enemy, range = 320, padding = 80) {
+    if (!this.isEnemyVisible(enemy, padding)) return false;
+    const dx = enemy.x - this.player.x;
+    const dy = enemy.y - this.player.y;
+    return Math.hypot(dx, dy) <= range;
+  }
+
+  resolvePlayerEnemyOverlap(enemy) {
+    const playerRect = this.player.rect;
+    const enemyRect = enemy.rect;
+    const overlapX = Math.min(
+      playerRect.x + playerRect.w - enemyRect.x,
+      enemyRect.x + enemyRect.w - playerRect.x
+    );
+    const overlapY = Math.min(
+      playerRect.y + playerRect.h - enemyRect.y,
+      enemyRect.y + enemyRect.h - playerRect.y
+    );
+    if (overlapX <= 0 || overlapY <= 0) return false;
+    if (overlapX < overlapY) {
+      const dir = playerRect.x < enemyRect.x ? -1 : 1;
+      this.player.x += overlapX * dir;
+      this.player.vx = 0;
+    } else {
+      const dir = playerRect.y < enemyRect.y ? -1 : 1;
+      this.player.y += overlapY * dir;
+      this.player.vy = 0;
+      if (dir < 0) {
+        this.player.onGround = true;
+      }
+    }
+    return true;
+  }
+
+  applyPlayerKnockback(enemy, strengthX = 180, strengthY = 140) {
+    const knockback = Math.sign(this.player.x - enemy.x) || 1;
+    this.player.vx = knockback * strengthX;
+    this.player.vy = -strengthY;
+    this.player.onGround = false;
   }
 
   handleAttack() {
@@ -1416,17 +1530,9 @@ export default class Game {
   }
 
   spawnDeathDebris(enemy) {
-    const base = this.getEnemyPolygon(enemy);
-    const normal = [this.player.facing || 1, 0.2];
-    const halves = this.splitPolygon(base, normal);
-    halves.forEach((points, index) => {
-      const offset = index === 0 ? -1 : 1;
-      const debris = new DebrisPiece(points, enemy.x, enemy.y, offset * 160 + Math.random() * 60, -120 + Math.random() * 60);
-      this.debris.push(debris);
-    });
-    for (let i = 0; i < 12; i += 1) {
-      this.shards.push(new Shard(enemy.x, enemy.y));
-    }
+    this.spawnEffect('splat', enemy.x, enemy.y);
+    this.spawnEffect('splat', enemy.x + (Math.random() - 0.5) * 30, enemy.y + (Math.random() - 0.5) * 20);
+    this.spawnEffect('splat', enemy.x + (Math.random() - 0.5) * 20, enemy.y + (Math.random() - 0.5) * 30);
   }
 
   getEnemyPolygon(enemy) {
@@ -1453,6 +1559,15 @@ export default class Game {
   }
 
   updateEnemies(dt) {
+    const context = {
+      spawnProjectile: this.spawnProjectile.bind(this),
+      spawnMinion: (x, y) => this.requestSpawn('skitter', x, y),
+      canShoot: (enemy, range = 320, padding = 80) => this.canEnemyShoot(enemy, range, padding),
+      isVisible: (enemy, padding = 80) => this.isEnemyVisible(enemy, padding)
+    };
+    const revHeld = this.isRevHeld(this.input) && this.player.canRev();
+    const revRange = 38;
+    const revVerticalRange = 40;
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
       if (enemy.hitPause > 0) {
@@ -1462,15 +1577,7 @@ export default class Game {
         }
         return;
       }
-      if (enemy.type === 'spitter') {
-        enemy.update(dt, this.player, this.spawnProjectile.bind(this));
-      } else if (enemy.type === 'hivenode') {
-        enemy.update(dt, this.player, (x, y) => this.requestSpawn('skitter', x, y));
-      } else if (enemy.type === 'sentinel') {
-        enemy.update(dt, this.player, this.spawnProjectile.bind(this));
-      } else {
-        enemy.update(dt, this.player);
-      }
+      enemy.update(dt, this.player, context);
       this.applyEnemyGravity(enemy, dt);
       if (enemy.solid) {
         this.resolveEnemyCollision(enemy);
@@ -1481,11 +1588,12 @@ export default class Game {
       const dist = Math.hypot(dx, dy);
       let handledRideHit = false;
       if (this.player.sawRideActive) {
+        const rideAttacking = this.input.isDown('attack') || this.player.sawRideBurstTimer > 0;
         if (!enemy.solid && dist < 24) {
           this.player.stopSawRide(false);
         } else if (enemy.solid && dist < 28) {
           handledRideHit = true;
-          if (this.player.sawRideDamageTimer <= 0) {
+          if (rideAttacking && this.player.sawRideDamageTimer <= 0) {
             enemy.damage(1);
             this.player.sawRideDamageTimer = 0.2;
             enemy.hitPause = 0.1;
@@ -1501,6 +1609,12 @@ export default class Game {
               }
               this.awardLoot(enemy);
             }
+          } else if (!rideAttacking && enemy.gravity && !enemy.training) {
+            const tookDamage = this.player.takeDamage(1);
+            if (tookDamage) {
+              this.applyPlayerKnockback(enemy);
+              enemy.hitPause = 0.2;
+            }
           }
         }
       }
@@ -1508,14 +1622,33 @@ export default class Game {
         if (!enemy.training) {
           const tookDamage = this.player.takeDamage(1);
           if (tookDamage) {
-            const knockback = Math.sign(this.player.x - enemy.x) || 1;
-            this.player.vx = knockback * 180;
-            this.player.vy = -140;
-            this.player.onGround = false;
+            this.applyPlayerKnockback(enemy);
             enemy.hitPause = 0.2;
           }
         }
       }
+      if (revHeld && !this.player.sawRideActive && this.player.revDamageTimer <= 0) {
+        if (Math.abs(dx) < revRange && Math.abs(dy) < revVerticalRange) {
+          if (!(enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce')))) {
+            enemy.damage(1);
+            this.player.revDamageTimer = 0.2;
+            enemy.hitPause = 0.08;
+            this.audio.hit();
+            this.spawnEffect('hit', enemy.x, enemy.y);
+            this.spawnEffect('oil', enemy.x, enemy.y + 6);
+            this.recordFeedback('hit', 'audio');
+            this.recordFeedback('hit', 'visual');
+            this.playability.recordEnemyHit(this.clock);
+            if (enemy.dead) {
+              if (!enemy.training) {
+                this.spawnDeathDebris(enemy);
+              }
+              this.awardLoot(enemy);
+            }
+          }
+        }
+      }
+      this.resolvePlayerEnemyOverlap(enemy);
 
       if (enemy.justStaggered) {
         this.audio.stagger();
@@ -1565,7 +1698,15 @@ export default class Game {
   }
 
   updateProjectiles(dt) {
-    this.projectiles.forEach((projectile) => projectile.update(dt));
+    this.projectiles.forEach((projectile) => {
+      projectile.update(dt);
+      if (projectile.dead) return;
+      const tileX = Math.floor(projectile.x / this.world.tileSize);
+      const tileY = Math.floor(projectile.y / this.world.tileSize);
+      if (this.world.isSolid(tileX, tileY, this.abilities)) {
+        projectile.dead = true;
+      }
+    });
     this.projectiles = this.projectiles.filter((projectile) => !projectile.dead);
     this.projectiles.forEach((projectile) => {
       const dx = projectile.x - this.player.x;
@@ -1843,6 +1984,9 @@ export default class Game {
     this.sawAnchor.attachedEnemy = hit.enemy || null;
     this.sawAnchor.damageTimer = 0;
     this.player.sawDeployed = true;
+    if (!this.player.onGround) {
+      this.player.jumpsRemaining = Math.max(this.player.jumpsRemaining, 1);
+    }
     if (hit.enemy) {
       this.applyAnchorImpactDamage(hit.enemy, hit.isBoss);
     }

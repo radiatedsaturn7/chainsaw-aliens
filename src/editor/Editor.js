@@ -28,8 +28,14 @@ const ENEMY_TYPES = [
   { id: 'spitter', label: 'Spitter', glyph: 'SP' },
   { id: 'bulwark', label: 'Bulwark', glyph: 'BW' },
   { id: 'floater', label: 'Floater', glyph: 'FL' },
+  { id: 'drifter', label: 'Drifter', glyph: 'DF' },
+  { id: 'bobber', label: 'Bobber', glyph: 'BB' },
+  { id: 'harrier', label: 'Harrier', glyph: 'HR' },
   { id: 'slicer', label: 'Slicer', glyph: 'SL' },
   { id: 'hivenode', label: 'Hive Node', glyph: 'HN' },
+  { id: 'bouncer', label: 'Bouncer', glyph: 'BO' },
+  { id: 'coward', label: 'Coward', glyph: 'CW' },
+  { id: 'ranger', label: 'Ranger', glyph: 'RG' },
   { id: 'sentinel', label: 'Sentinel', glyph: 'SE' },
   { id: 'finalboss', label: 'Rift Tyrant', glyph: 'RT' }
 ];

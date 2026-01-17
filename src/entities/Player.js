@@ -57,6 +57,7 @@ export default class Player {
     this.sawRideSpeed = MOVEMENT_MODEL.dashSpeed * 0.75;
     this.sawRideDamageTimer = 0;
     this.sawRideBurstTimer = 0;
+    this.revDamageTimer = 0;
     this.magBootsHeat = 0;
     this.magBootsOverheat = 0;
     this.magBootsEngaged = false;
@@ -227,6 +228,9 @@ export default class Player {
       this.sawRideActive = false;
       this.sawRideMomentum = this.vx;
     }
+    if (this.sawRideActive && this.onGround && !input.isDown('attack')) {
+      this.stopSawRide(false);
+    }
     const hazardX = Math.floor(this.x / world.tileSize);
     const hazardY = Math.floor(this.y / world.tileSize);
     if (world.isHazard(hazardX, hazardY)) {
@@ -290,6 +294,7 @@ export default class Player {
     this.revving = input.isDown('rev') && this.canRev();
     this.attackTimer = Math.max(0, this.attackTimer - dt);
     this.sawRideDamageTimer = Math.max(0, this.sawRideDamageTimer - dt);
+    this.revDamageTimer = Math.max(0, this.revDamageTimer - dt);
     this.updateState();
   }
 

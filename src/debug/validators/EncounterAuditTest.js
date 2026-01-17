@@ -1,5 +1,5 @@
-const GROUNDED_TYPES = new Set(['skitter', 'bulwark', 'slicer', 'practice', 'spitter', 'hivenode']);
-const AIRBORNE_TYPES = new Set(['floater', 'sentinel', 'finalboss']);
+const GROUNDED_TYPES = new Set(['skitter', 'bulwark', 'slicer', 'practice', 'spitter', 'hivenode', 'bouncer', 'coward', 'ranger']);
+const AIRBORNE_TYPES = new Set(['floater', 'drifter', 'bobber', 'harrier', 'sentinel', 'finalboss']);
 
 export default class EncounterAuditTest {
   constructor(world, player, feasibilityValidator) {
