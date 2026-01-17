@@ -571,6 +571,10 @@ export default class Editor {
     const rooms = [];
     const roomPrefabs = PREFAB_TYPES.filter((prefab) => prefab.roomType);
     const spawn = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
+    const minRoomWidth = 32;
+    const minRoomHeight = 18;
+    const maxRoomWidth = Math.min(96, width - 4);
+    const maxRoomHeight = Math.min(96, height - 4);
 
     const setTile = (x, y, char) => {
       if (x < 0 || y < 0 || x >= width || y >= height) return;
@@ -742,6 +746,34 @@ export default class Editor {
       }
     };
 
+    const addPlatformRun = (room) => {
+      if (room.h < 24 || room.w < 18) return;
+      const runCount = clamp(Math.floor(room.h / 18), 2, 4);
+      for (let i = 0; i < runCount; i += 1) {
+        const platformY = randInt(room.y + 2, room.y + room.h - 3);
+        const minSpan = Math.max(8, Math.floor(room.w * 0.45));
+        const platformStart = randInt(room.x + 2, room.x + room.w - minSpan - 2);
+        const platformEnd = randInt(platformStart + minSpan, room.x + room.w - 2);
+        for (let x = platformStart; x <= platformEnd; x += 1) {
+          if (tiles[platformY]?.[x] === '.') setTile(x, platformY, '=');
+        }
+      }
+    };
+
+    const addStaircase = (room) => {
+      if (room.h < 24 || room.w < 12) return;
+      const maxSteps = Math.min(room.h - 4, room.w - 4, 18);
+      const startLeft = Math.random() < 0.5;
+      const stepX = startLeft ? 1 : -1;
+      const startX = startLeft ? room.x + 2 : room.x + room.w - 3;
+      const startY = room.y + room.h - 3;
+      for (let i = 0; i < maxSteps; i += 1) {
+        const x = startX + stepX * i;
+        const y = startY - i;
+        if (tiles[y]?.[x] === '.') setTile(x, y, '=');
+      }
+    };
+
     const addTraps = (room) => {
       const traps = clamp(Math.floor(room.area / 180), 1, 4);
       for (let i = 0; i < traps; i += 1) {
@@ -790,11 +822,13 @@ export default class Editor {
     };
 
     const ensureSpawnRoom = () => {
+      const spawnRoomWidth = clamp(32, minRoomWidth, maxRoomWidth);
+      const spawnRoomHeight = clamp(18, minRoomHeight, maxRoomHeight);
       const room = {
-        x: clamp(spawn.x - 9, 1, width - 20),
-        y: clamp(spawn.y - 9, 1, height - 20),
-        w: clamp(18, 12, width - 2),
-        h: clamp(18, 12, height - 2),
+        x: clamp(spawn.x - Math.floor(spawnRoomWidth / 2), 1, width - spawnRoomWidth - 1),
+        y: clamp(spawn.y - Math.floor(spawnRoomHeight / 2), 1, height - spawnRoomHeight - 1),
+        w: spawnRoomWidth,
+        h: spawnRoomHeight,
         type: 'room'
       };
       room.area = room.w * room.h;
@@ -806,6 +840,10 @@ export default class Editor {
     const addRoomDetails = (room) => {
       addPillars(room);
       if (Math.random() < 0.65) addPlatform(room);
+      if (room.h >= 28) {
+        addPlatformRun(room);
+        addStaircase(room);
+      }
       addTraps(room);
       addTriangleBlocks(room);
     };
@@ -813,9 +851,21 @@ export default class Editor {
     const spawnRoom = ensureSpawnRoom();
 
     const requiredRooms = [
-      { kind: 'tall', wRange: [12, 18], hRange: [28, 52] },
-      { kind: 'long', wRange: [28, 52], hRange: [12, 18] },
-      { kind: 'triangle', wRange: [18, 32], hRange: [18, 32] }
+      {
+        kind: 'tall',
+        wRange: [Math.min(minRoomWidth, maxRoomWidth), Math.min(48, maxRoomWidth)],
+        hRange: [Math.min(32, maxRoomHeight), maxRoomHeight]
+      },
+      {
+        kind: 'long',
+        wRange: [Math.min(Math.max(48, minRoomWidth), maxRoomWidth), maxRoomWidth],
+        hRange: [Math.min(minRoomHeight, maxRoomHeight), Math.min(32, maxRoomHeight)]
+      },
+      {
+        kind: 'triangle',
+        wRange: [Math.min(minRoomWidth, maxRoomWidth), Math.min(64, maxRoomWidth)],
+        hRange: [Math.min(Math.max(minRoomHeight, 24), maxRoomHeight), Math.min(64, maxRoomHeight)]
+      }
     ];
 
     requiredRooms.forEach((spec) => {
@@ -850,8 +900,8 @@ export default class Editor {
     while (rooms.length < targetRooms && attempts < targetRooms * 20) {
       attempts += 1;
       const prefab = pickOne(roomPrefabs);
-      const w = randInt(12, Math.min(64, width - 4));
-      const h = randInt(12, Math.min(64, height - 4));
+      const w = randInt(minRoomWidth, maxRoomWidth);
+      const h = randInt(minRoomHeight, maxRoomHeight);
       const room = {
         x: randInt(1, width - w - 2),
         y: randInt(1, height - h - 2),
@@ -878,9 +928,34 @@ export default class Editor {
       room.area = room.w * room.h;
     });
 
-    for (let i = 1; i < rooms.length; i += 1) {
-      carveCorridor(rooms[i - 1].center, rooms[i].center);
-    }
+    const maxCorridorLength = 10;
+    const maxCorridorDistance = maxCorridorLength;
+    const linkedPairs = new Set();
+    const pairKey = (a, b) => {
+      const left = Math.min(a, b);
+      const right = Math.max(a, b);
+      return `${left}:${right}`;
+    };
+    const roomDistance = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    rooms.forEach((room, index) => {
+      let closest = null;
+      let closestIndex = -1;
+      let closestDist = Infinity;
+      rooms.forEach((candidate, candidateIndex) => {
+        if (candidate === room) return;
+        const dist = roomDistance(room.center, candidate.center);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = candidate;
+          closestIndex = candidateIndex;
+        }
+      });
+      if (!closest || closestDist > maxCorridorDistance) return;
+      const key = pairKey(index, closestIndex);
+      if (linkedPairs.has(key)) return;
+      linkedPairs.add(key);
+      carveCorridor(room.center, closest.center);
+    });
 
     setTile(spawn.x, spawn.y, '.');
 
