@@ -38,7 +38,15 @@ const ENEMY_TYPES = [
   { id: 'coward', label: 'Coward', glyph: 'CW' },
   { id: 'ranger', label: 'Ranger', glyph: 'RG' },
   { id: 'sentinel', label: 'Sentinel', glyph: 'SE' },
-  { id: 'finalboss', label: 'Rift Tyrant', glyph: 'RT' }
+  { id: 'finalboss', label: 'Rift Tyrant', glyph: 'RT' },
+  { id: 'sunderbehemoth', label: 'Sunder Behemoth', glyph: 'SB' },
+  { id: 'riftram', label: 'Rift Ram', glyph: 'RR' },
+  { id: 'broodtitan', label: 'Brood Titan', glyph: 'BT' },
+  { id: 'nullaegis', label: 'Null Aegis', glyph: 'NA' },
+  { id: 'hexmatron', label: 'Hex Matron', glyph: 'HM' },
+  { id: 'gravewarden', label: 'Grave Warden', glyph: 'GW' },
+  { id: 'obsidiancrown', label: 'Obsidian Crown', glyph: 'OC' },
+  { id: 'cataclysmcolossus', label: 'Cataclysm Colossus', glyph: 'CC' }
 ];
 
 const SHAPE_TOOLS = [

@@ -18,6 +18,14 @@ import Bouncer from '../entities/Bouncer.js';
 import Coward from '../entities/Coward.js';
 import Ranger from '../entities/Ranger.js';
 import FinalBoss from '../entities/FinalBoss.js';
+import SunderBehemoth from '../entities/SunderBehemoth.js';
+import RiftRam from '../entities/RiftRam.js';
+import BroodTitan from '../entities/BroodTitan.js';
+import NullAegis from '../entities/NullAegis.js';
+import HexMatron from '../entities/HexMatron.js';
+import GraveWarden from '../entities/GraveWarden.js';
+import ObsidianCrown from '../entities/ObsidianCrown.js';
+import CataclysmColossus from '../entities/CataclysmColossus.js';
 import Projectile from '../entities/Projectile.js';
 import { DebrisPiece, Shard } from '../entities/Debris.js';
 import LootDrop from '../entities/LootDrop.js';
@@ -531,6 +539,30 @@ export default class Game {
       case 'ranger':
         this.enemies.push(new Ranger(worldX, worldY));
         break;
+      case 'sunderbehemoth':
+        this.enemies.push(new SunderBehemoth(worldX, worldY));
+        break;
+      case 'riftram':
+        this.enemies.push(new RiftRam(worldX, worldY));
+        break;
+      case 'broodtitan':
+        this.enemies.push(new BroodTitan(worldX, worldY));
+        break;
+      case 'nullaegis':
+        this.enemies.push(new NullAegis(worldX, worldY));
+        break;
+      case 'hexmatron':
+        this.enemies.push(new HexMatron(worldX, worldY));
+        break;
+      case 'gravewarden':
+        this.enemies.push(new GraveWarden(worldX, worldY));
+        break;
+      case 'obsidiancrown':
+        this.enemies.push(new ObsidianCrown(worldX, worldY));
+        break;
+      case 'cataclysmcolossus':
+        this.enemies.push(new CataclysmColossus(worldX, worldY));
+        break;
       default:
         break;
     }
@@ -603,14 +635,38 @@ export default class Game {
           case 'coward':
             this.enemies.push(new Coward(worldX, worldY));
             break;
-          case 'ranger':
-            this.enemies.push(new Ranger(worldX, worldY));
-            break;
-          case 'finalboss':
-            this.boss = new FinalBoss(worldX, worldY);
-            break;
-          default:
-            break;
+      case 'ranger':
+        this.enemies.push(new Ranger(worldX, worldY));
+        break;
+      case 'sunderbehemoth':
+        this.enemies.push(new SunderBehemoth(worldX, worldY));
+        break;
+      case 'riftram':
+        this.enemies.push(new RiftRam(worldX, worldY));
+        break;
+      case 'broodtitan':
+        this.enemies.push(new BroodTitan(worldX, worldY));
+        break;
+      case 'nullaegis':
+        this.enemies.push(new NullAegis(worldX, worldY));
+        break;
+      case 'hexmatron':
+        this.enemies.push(new HexMatron(worldX, worldY));
+        break;
+      case 'gravewarden':
+        this.enemies.push(new GraveWarden(worldX, worldY));
+        break;
+      case 'obsidiancrown':
+        this.enemies.push(new ObsidianCrown(worldX, worldY));
+        break;
+      case 'cataclysmcolossus':
+        this.enemies.push(new CataclysmColossus(worldX, worldY));
+        break;
+      case 'finalboss':
+        this.boss = new FinalBoss(worldX, worldY);
+        break;
+      default:
+        break;
         }
       });
       this.bossActive = false;
@@ -639,7 +695,15 @@ export default class Game {
       new SentinelElite(32 * 52, 32 * 9),
       new Bouncer(32 * 46, 32 * 19),
       new Coward(32 * 42, 32 * 19),
-      new Ranger(32 * 54, 32 * 19)
+      new Ranger(32 * 54, 32 * 19),
+      new SunderBehemoth(32 * 20, 32 * 12),
+      new RiftRam(32 * 10, 32 * 12),
+      new BroodTitan(32 * 44, 32 * 13),
+      new NullAegis(32 * 26, 32 * 7),
+      new HexMatron(32 * 36, 32 * 7),
+      new GraveWarden(32 * 18, 32 * 25),
+      new ObsidianCrown(32 * 48, 32 * 25),
+      new CataclysmColossus(32 * 32, 32 * 17)
     ];
     this.boss = new FinalBoss(32 * 58, 32 * 9);
     this.bossActive = false;
@@ -660,7 +724,15 @@ export default class Game {
       new SentinelElite(32 * 26, 32 * 4),
       new Bouncer(32 * 12, 32 * 8),
       new Coward(32 * 34, 32 * 8),
-      new Ranger(32 * 38, 32 * 8)
+      new Ranger(32 * 38, 32 * 8),
+      new SunderBehemoth(32 * 12, 32 * 18),
+      new RiftRam(32 * 20, 32 * 18),
+      new BroodTitan(32 * 28, 32 * 18),
+      new NullAegis(32 * 36, 32 * 18),
+      new HexMatron(32 * 44, 32 * 18),
+      new GraveWarden(32 * 52, 32 * 18),
+      new ObsidianCrown(32 * 20, 32 * 26),
+      new CataclysmColossus(32 * 36, 32 * 26)
     ];
     this.boss = null;
   }
@@ -1574,7 +1646,12 @@ export default class Game {
     const revRange = this.world.tileSize * 2.5;
     const revVerticalRange = this.world.tileSize * 2.2;
     this.enemies.forEach((enemy) => {
-      if (enemy.dead) return;
+      if (enemy.dead) {
+        if (enemy.deathTimer > 0 && enemy.updateDeath) {
+          enemy.updateDeath(dt);
+        }
+        return;
+      }
       if (enemy.slowTimer > 0) {
         enemy.slowTimer = Math.max(0, enemy.slowTimer - dt);
       }
@@ -2642,7 +2719,7 @@ export default class Game {
     this.drawTutorialHints(ctx);
 
     this.enemies.forEach((enemy) => {
-      if (!enemy.dead) enemy.draw(ctx);
+      if (!enemy.dead || enemy.deathTimer > 0) enemy.draw(ctx);
     });
 
     if (this.boss && !this.boss.dead) {
@@ -2784,7 +2861,7 @@ export default class Game {
     ctx.globalAlpha = 0.25;
     ctx.lineWidth = 4;
     this.enemies.forEach((enemy) => {
-      if (!enemy.dead) enemy.draw(ctx);
+      if (!enemy.dead || enemy.deathTimer > 0) enemy.draw(ctx);
     });
     if (this.boss && !this.boss.dead) {
       this.boss.draw(ctx);
