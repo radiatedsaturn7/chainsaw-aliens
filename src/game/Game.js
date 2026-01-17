@@ -1763,7 +1763,6 @@ export default class Game {
     });
     if (candidates.length === 0) return;
     const enemy = candidates[0];
-    if (!this.player.spendFuel()) return;
     const variant = this.getExecutionVariant(enemy);
     this.executeEnemy(enemy, variant);
   }
