@@ -1,4 +1,5 @@
 import BossBase from './BossBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class CataclysmColossus extends BossBase {
   constructor(x, y) {
@@ -61,14 +62,17 @@ export default class CataclysmColossus extends BossBase {
     if (this.dead && this.deathTimer > 0) {
       ctx.globalAlpha = Math.max(0, 1 - this.deathProgress * 0.65);
     }
-    ctx.strokeStyle = '#ff6b6b';
+    applyEnemyPalette(ctx, false);
     ctx.lineWidth = Math.max(4, this.width * 0.004);
     ctx.beginPath();
     ctx.arc(0, 0, size + pulse, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
     ctx.beginPath();
     ctx.arc(0, 0, size * 0.7 + pulse * 0.5, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.moveTo(-size * 1.1, -size * 0.2 - pulse);
     ctx.lineTo(-size * 0.6, -size * 0.8 - pulse);
@@ -76,6 +80,7 @@ export default class CataclysmColossus extends BossBase {
     ctx.lineTo(size * 0.6, -size * 0.8 - pulse);
     ctx.lineTo(size * 1.1, -size * 0.2 - pulse);
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     this.drawDeadEyes(ctx, size, -size * 0.1);
     ctx.restore();
     if (this.dead && this.deathTimer > 0) {

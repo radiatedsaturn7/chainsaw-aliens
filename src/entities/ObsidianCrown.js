@@ -1,4 +1,5 @@
 import BossBase from './BossBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class ObsidianCrown extends BossBase {
   constructor(x, y) {
@@ -60,7 +61,7 @@ export default class ObsidianCrown extends BossBase {
     if (this.dead && this.deathTimer > 0) {
       ctx.globalAlpha = Math.max(0, 1 - this.deathProgress * 0.7);
     }
-    ctx.strokeStyle = '#ff6f92';
+    applyEnemyPalette(ctx, false);
     ctx.lineWidth = Math.max(3, this.width * 0.004);
     ctx.beginPath();
     ctx.moveTo(-size, size * 0.6 + pulse);
@@ -71,10 +72,14 @@ export default class ObsidianCrown extends BossBase {
     ctx.lineTo(size * 0.8, -size * 0.4 - pulse);
     ctx.lineTo(size, size * 0.6 + pulse);
     ctx.closePath();
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.arc(0, size * 0.1, size * 0.45, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     this.drawDeadEyes(ctx, size, -size * 0.05);
     ctx.restore();
     if (this.dead && this.deathTimer > 0) {

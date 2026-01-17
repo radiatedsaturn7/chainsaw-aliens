@@ -38,6 +38,7 @@ export default class Checklist {
       'slicer',
       'hivenode',
       'bouncer',
+      'pouncer',
       'coward',
       'ranger',
       'sentinel',

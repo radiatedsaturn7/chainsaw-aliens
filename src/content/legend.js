@@ -10,6 +10,7 @@ export const LEGEND = {
   slicer: { label: 'Slicer', glyph: 'SL', minimap: '◇' },
   hivenode: { label: 'Hive Node', glyph: 'HN', minimap: '▣' },
   bouncer: { label: 'Bouncer', glyph: 'BO', minimap: '◍' },
+  pouncer: { label: 'Pouncer', glyph: 'PN', minimap: '◒' },
   coward: { label: 'Coward', glyph: 'CW', minimap: '◐' },
   ranger: { label: 'Ranger', glyph: 'RG', minimap: '◑' },
   sentinel: { label: 'Sentinel', glyph: 'SE', minimap: '✶' },

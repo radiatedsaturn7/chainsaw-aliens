@@ -1,4 +1,5 @@
 import BossBase from './BossBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class RiftRam extends BossBase {
   constructor(x, y) {
@@ -68,11 +69,13 @@ export default class RiftRam extends BossBase {
     if (this.dead && this.deathTimer > 0) {
       ctx.globalAlpha = Math.max(0, 1 - this.deathProgress * 0.8);
     }
-    ctx.strokeStyle = '#ff7a7a';
+    applyEnemyPalette(ctx, false);
     ctx.lineWidth = Math.max(3, this.width * 0.004);
     ctx.beginPath();
     ctx.rect(-size, -size * 0.7 + tilt, size * 2, size * 1.4);
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.moveTo(-size * 1.1, -size * 0.6 + tilt);
     ctx.lineTo(-size * 1.6, -size * 0.9 + tilt);
@@ -87,7 +90,9 @@ export default class RiftRam extends BossBase {
     ctx.stroke();
     ctx.beginPath();
     ctx.arc(0, 0 + tilt * 0.3, size * 0.5, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     this.drawDeadEyes(ctx, size, tilt * 0.2);
     ctx.restore();
     if (this.dead && this.deathTimer > 0) {

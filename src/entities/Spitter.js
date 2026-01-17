@@ -1,4 +1,5 @@
 import EnemyBase from './EnemyBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class Spitter extends EnemyBase {
   constructor(x, y) {
@@ -29,15 +30,18 @@ export default class Spitter extends EnemyBase {
     ctx.translate(this.x + offsetX, this.y + offsetY);
     const glow = this.stagger > 0.6 ? 1 : 0.8;
     const alpha = flash ? 1 : glow;
-    ctx.strokeStyle = `rgba(255, 90, 90,${alpha})`;
+    applyEnemyPalette(ctx, flash, alpha);
     ctx.lineWidth = 2;
     const pulse = Math.sin(this.animTime * 6) * 2;
     ctx.beginPath();
     ctx.rect(-14, -12 - pulse, 28, 24 + pulse);
+    ctx.fill();
     ctx.stroke();
     ctx.beginPath();
     ctx.arc(0, -4, 6, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.moveTo(-12, 6);
     ctx.lineTo(12, 6);
@@ -45,6 +49,8 @@ export default class Spitter extends EnemyBase {
     ctx.beginPath();
     ctx.arc(-6, -6, 2, 0, Math.PI * 2);
     ctx.arc(6, -6, 2, 0, Math.PI * 2);
+    ctx.fillStyle = ENEMY_PALETTE.accent;
+    ctx.fill();
     ctx.stroke();
     ctx.beginPath();
     ctx.moveTo(-16, -10);

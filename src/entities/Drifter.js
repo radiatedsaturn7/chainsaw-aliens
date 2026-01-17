@@ -1,4 +1,5 @@
 import EnemyBase from './EnemyBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class Drifter extends EnemyBase {
   constructor(x, y) {
@@ -27,11 +28,13 @@ export default class Drifter extends EnemyBase {
     ctx.translate(this.x + offsetX, this.y + offsetY);
     const glow = this.stagger > 0.6 ? 1 : 0.8;
     const alpha = flash ? 1 : glow;
-    ctx.strokeStyle = `rgba(255, 90, 90,${alpha})`;
+    applyEnemyPalette(ctx, flash, alpha);
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(0, 0, 12, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.moveTo(-10, 0);
     ctx.lineTo(10, 0);

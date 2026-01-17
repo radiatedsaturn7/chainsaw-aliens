@@ -35,6 +35,7 @@ const ENEMY_TYPES = [
   { id: 'slicer', label: 'Slicer', glyph: 'SL' },
   { id: 'hivenode', label: 'Hive Node', glyph: 'HN' },
   { id: 'bouncer', label: 'Bouncer', glyph: 'BO' },
+  { id: 'pouncer', label: 'Pouncer', glyph: 'PN' },
   { id: 'coward', label: 'Coward', glyph: 'CW' },
   { id: 'ranger', label: 'Ranger', glyph: 'RG' },
   { id: 'sentinel', label: 'Sentinel', glyph: 'SE' },

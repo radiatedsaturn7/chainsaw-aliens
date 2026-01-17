@@ -1,4 +1,5 @@
 import EnemyBase from './EnemyBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class Ranger extends EnemyBase {
   constructor(x, y) {
@@ -41,12 +42,14 @@ export default class Ranger extends EnemyBase {
     ctx.translate(this.x + offsetX, this.y + offsetY);
     const glow = this.stagger > 0.6 ? 1 : 0.8;
     const alpha = flash ? 1 : glow;
-    ctx.strokeStyle = `rgba(255, 90, 90,${alpha})`;
+    applyEnemyPalette(ctx, flash, alpha);
     ctx.lineWidth = 2;
     const pulse = Math.sin(this.animTime * 5) * 2;
     ctx.beginPath();
     ctx.rect(-14, -12, 28, 24);
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.moveTo(-10, -4);
     ctx.lineTo(10, -4);
@@ -57,6 +60,8 @@ export default class Ranger extends EnemyBase {
     ctx.beginPath();
     ctx.arc(-4, -4, 2, 0, Math.PI * 2);
     ctx.arc(4, -4, 2, 0, Math.PI * 2);
+    ctx.fillStyle = ENEMY_PALETTE.accent;
+    ctx.fill();
     ctx.stroke();
     ctx.restore();
   }

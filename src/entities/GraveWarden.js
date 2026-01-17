@@ -1,4 +1,5 @@
 import BossBase from './BossBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class GraveWarden extends BossBase {
   constructor(x, y) {
@@ -43,11 +44,13 @@ export default class GraveWarden extends BossBase {
     if (this.dead && this.deathTimer > 0) {
       ctx.globalAlpha = Math.max(0, 1 - this.deathProgress * 0.74);
     }
-    ctx.strokeStyle = '#ff8f8f';
+    applyEnemyPalette(ctx, false);
     ctx.lineWidth = Math.max(3, this.width * 0.004);
     ctx.beginPath();
     ctx.rect(-size * 1.1, -size * 0.7, size * 2.2, size * 1.4);
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.moveTo(-size * 0.9, size * 0.1 + maw);
     ctx.lineTo(-size * 0.4, size * 0.5 + maw);
@@ -58,6 +61,7 @@ export default class GraveWarden extends BossBase {
     ctx.moveTo(-size * 0.6, size * 0.3 + maw);
     ctx.lineTo(size * 0.6, size * 0.3 + maw);
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     this.drawDeadEyes(ctx, size, -size * 0.08);
     ctx.restore();
     if (this.dead && this.deathTimer > 0) {
