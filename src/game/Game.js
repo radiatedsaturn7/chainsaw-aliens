@@ -1452,7 +1452,8 @@ export default class Game {
     );
     if (overlapX <= 0 || overlapY <= 0) return false;
     if (pushEnemy && overlapX < overlapY) {
-      const dir = Math.sign(this.player.vx) || this.player.facing;
+      const relativeDir = Math.sign(enemy.x - this.player.x);
+      const dir = relativeDir || Math.sign(this.player.vx) || this.player.facing;
       if (dir !== 0) {
         const targetX = enemy.x + overlapX * dir;
         if (this.isEnemyPositionClear(enemy, targetX, enemy.y)) {
