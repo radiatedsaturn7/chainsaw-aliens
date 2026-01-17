@@ -1610,7 +1610,7 @@ export default class Game {
   }
 
   applyTetherConstraint(dt, input, tetherDist, tetherMax) {
-    const tetherSlack = this.world.tileSize * 0.25;
+    const tetherSlack = 0;
     const tetherLimit = tetherMax + tetherSlack;
     if (tetherDist > tetherLimit
       && !this.sawAnchor.embedded
@@ -1624,15 +1624,21 @@ export default class Game {
     const dy = this.player.y - this.sawAnchor.y;
     const dist = Math.max(0.01, tetherDist);
     if (dist > tetherLimit) {
-      const excess = dist - tetherLimit;
       const nx = dx / dist;
       const ny = dy / dist;
-      const targetX = this.player.x - nx * excess;
-      const targetY = this.player.y - ny * excess;
-      const ignoreOneWay = targetY < this.player.y;
-      if (!this.isPlayerBlockedAt(targetX, targetY, { ignoreOneWay })) {
+      const targetX = this.sawAnchor.x + dx * (tetherLimit / dist);
+      const targetY = this.sawAnchor.y + dy * (tetherLimit / dist);
+      if (!this.isPlayerBlockedAt(targetX, targetY)) {
         this.player.x = targetX;
         this.player.y = targetY;
+      } else {
+        const xOnlyOk = !this.isPlayerBlockedAt(targetX, this.player.y);
+        const yOnlyOk = !this.isPlayerBlockedAt(this.player.x, targetY);
+        if (xOnlyOk) {
+          this.player.x = targetX;
+        } else if (yOnlyOk) {
+          this.player.y = targetY;
+        }
       }
       const radialVelocity = this.player.vx * nx + this.player.vy * ny;
       if (radialVelocity > 0) {
@@ -1648,8 +1654,7 @@ export default class Game {
         const step = Math.min(dist, pullSpeed * dt);
         const targetX = this.player.x - (dx / dist) * step;
         const targetY = this.player.y - (dy / dist) * step;
-        const ignoreOneWay = targetY < this.player.y;
-        if (!this.isPlayerBlockedAt(targetX, targetY, { ignoreOneWay })) {
+        if (!this.isPlayerBlockedAt(targetX, targetY)) {
           this.player.x = targetX;
           this.player.y = targetY;
           this.player.vx = Math.min(this.player.vx, -(dx / dist) * pullSpeed * 0.6);
@@ -1657,6 +1662,13 @@ export default class Game {
           this.player.onGround = false;
         }
       }
+    }
+    if (this.sawAnchor.active && !this.player.onGround && input.wasPressed('jump')) {
+      const jumpBoost = this.player.jumpPower * 0.85;
+      this.player.vx -= (dx / dist) * jumpBoost * 0.35;
+      const anchorBoostY = -(dy / dist) * jumpBoost;
+      this.player.vy = Math.min(this.player.vy, Math.min(-jumpBoost, anchorBoostY));
+      this.player.onGround = false;
     }
     return false;
   }
