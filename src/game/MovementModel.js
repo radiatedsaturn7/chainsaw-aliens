@@ -1,5 +1,5 @@
 export const MOVEMENT_MODEL = {
-  gravity: 1200,
+  gravity: 1500,
   baseSpeed: 240,
   baseJumpPower: 520,
   dashSpeed: 620,
