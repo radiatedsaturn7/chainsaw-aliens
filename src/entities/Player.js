@@ -93,11 +93,11 @@ export default class Player {
     this.dashCooldownBase = dashCooldown;
   }
 
-  startLunge(targetX) {
+  startLunge(targetX, options = {}) {
     const direction = Math.sign(targetX - this.x) || this.facing;
     this.attackLungeDir = direction;
-    this.attackLungeSpeed = MOVEMENT_MODEL.dashSpeed * 0.45;
-    this.attackLungeTimer = 0.18;
+    this.attackLungeSpeed = options.speed ?? MOVEMENT_MODEL.dashSpeed * 0.45;
+    this.attackLungeTimer = options.duration ?? 0.18;
     this.facing = direction;
   }
 

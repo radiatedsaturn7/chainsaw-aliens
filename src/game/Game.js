@@ -1483,6 +1483,48 @@ export default class Game {
     return true;
   }
 
+  resolvePlayerTileOverlap(options = {}) {
+    const ignoreOneWay = options.ignoreOneWay ?? true;
+    const tileSize = this.world.tileSize;
+    let rect = this.player.rect;
+    const overlaps = [];
+    const startX = Math.floor(rect.x / tileSize);
+    const endX = Math.floor((rect.x + rect.w) / tileSize);
+    const startY = Math.floor(rect.y / tileSize);
+    const endY = Math.floor((rect.y + rect.h) / tileSize);
+    for (let ty = startY; ty <= endY; ty += 1) {
+      for (let tx = startX; tx <= endX; tx += 1) {
+        if (this.world.isSolid(tx, ty, this.abilities, { ignoreOneWay })) {
+          overlaps.push({ tx, ty });
+        }
+      }
+    }
+    overlaps.forEach(({ tx, ty }) => {
+      const tileRect = {
+        x: tx * tileSize,
+        y: ty * tileSize,
+        w: tileSize,
+        h: tileSize
+      };
+      const overlapX = Math.min(rect.x + rect.w - tileRect.x, tileRect.x + tileRect.w - rect.x);
+      const overlapY = Math.min(rect.y + rect.h - tileRect.y, tileRect.y + tileRect.h - rect.y);
+      if (overlapX < overlapY) {
+        const dir = rect.x < tileRect.x ? -1 : 1;
+        this.player.x += overlapX * dir;
+        this.player.vx = 0;
+      } else {
+        const dir = rect.y < tileRect.y ? -1 : 1;
+        this.player.y += overlapY * dir;
+        this.player.vy = 0;
+        if (dir < 0) {
+          this.player.onGround = true;
+        }
+      }
+      rect = this.player.rect;
+    });
+    return overlaps.length > 0;
+  }
+
   applyPlayerKnockback(enemy, strengthX = 180, strengthY = 140) {
     const knockback = Math.sign(this.player.x - enemy.x) || 1;
     this.player.vx = this.isPlayerKnockbackBlocked(knockback) ? 0 : knockback * strengthX;
@@ -1570,7 +1612,12 @@ export default class Game {
     }
     if (this.player.dashTimer <= 0) {
       const targetX = lungeTarget ? lungeTarget.x : this.player.x + this.player.facing * 60;
-      this.player.startLunge(targetX);
+      const lungeDistance = this.world.tileSize * 5;
+      const lungeDuration = lungeDistance / MOVEMENT_MODEL.dashSpeed;
+      this.player.startLunge(targetX, {
+        speed: MOVEMENT_MODEL.dashSpeed,
+        duration: lungeDuration
+      });
     }
     const range = attackRange;
     this.spawnEffect('bite', this.player.x + this.player.facing * 18, this.player.y - 8);
@@ -1842,6 +1889,9 @@ export default class Game {
       }
       const canPushEnemy = revHeld && Math.abs(dx) < revRange && Math.abs(dy) < revVerticalRange;
       this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: canPushEnemy });
+      if (this.isPlayerBlockedAt(this.player.x, this.player.y, { ignoreOneWay: true })) {
+        this.resolvePlayerTileOverlap({ ignoreOneWay: true });
+      }
 
       if (enemy.justStaggered) {
         this.audio.stagger();
@@ -1923,7 +1973,7 @@ export default class Game {
   }
 
   updateLootDrops(dt) {
-    this.lootDrops.forEach((drop) => drop.update(dt));
+    this.lootDrops.forEach((drop) => drop.update(dt, this.world, this.abilities));
     this.lootDrops = this.lootDrops.filter((drop) => drop.life > 0 && !drop.collected);
     this.lootDrops.forEach((drop) => {
       const dist = Math.hypot(drop.x - this.player.x, drop.y - this.player.y);
@@ -1939,7 +1989,7 @@ export default class Game {
   }
 
   updateHealthDrops(dt) {
-    this.healthDrops.forEach((drop) => drop.update(dt));
+    this.healthDrops.forEach((drop) => drop.update(dt, this.world, this.abilities));
     this.healthDrops = this.healthDrops.filter((drop) => drop.life > 0 && !drop.collected);
     this.healthDrops.forEach((drop) => {
       const dist = Math.hypot(drop.x - this.player.x, drop.y - this.player.y);
