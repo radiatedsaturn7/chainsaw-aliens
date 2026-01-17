@@ -91,7 +91,7 @@ body.mobile #game {
   touch-action: none;
 }
 
-body.mobile .fullscreen-button {
+body.mobile .fullscreen-button:not(.is-hidden) {
   display: inline-flex;
 }
 

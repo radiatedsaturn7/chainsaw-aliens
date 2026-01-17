@@ -630,6 +630,9 @@ export default class Game {
     if (this.input.isDown('attack')) {
       this.attackHoldTimer += dt * timeScale;
     }
+    if (!this.player.sawRideActive && this.player.onGround && this.input.isDown('down') && this.input.wasPressed('attack')) {
+      this.player.startSawRide();
+    }
 
     if (!this.abilities.flame) {
       this.player.flameMode = false;
@@ -667,7 +670,7 @@ export default class Game {
       return;
     }
 
-    if (this.input.wasReleased('attack')) {
+    if (!this.player.sawRideActive && this.input.wasReleased('attack')) {
       const heldDuration = this.attackHoldTimer;
       this.attackHoldTimer = 0;
       if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold) {
@@ -685,7 +688,7 @@ export default class Game {
           this.handleAttack();
         }
       }
-    } else if (!this.input.isDown('attack')) {
+    } else if (!this.player.sawRideActive && !this.input.isDown('attack')) {
       this.attackHoldTimer = 0;
     }
     if (this.sawAnchor.embedded && this.input.wasPressed('jump')) {
@@ -1002,6 +1005,7 @@ export default class Game {
 
   handleAttack() {
     if (this.sawAnchor.active) return;
+    this.player.attackTimer = Math.max(this.player.attackTimer, 0.25);
     const lungeRange = 220;
     let lungeTarget = null;
     let bestDist = Infinity;
@@ -1220,7 +1224,33 @@ export default class Game {
 
       const dx = enemy.x - this.player.x;
       const dy = enemy.y - this.player.y;
-      if (Math.hypot(dx, dy) < 24) {
+      const dist = Math.hypot(dx, dy);
+      let handledRideHit = false;
+      if (this.player.sawRideActive) {
+        if (!enemy.solid && dist < 24) {
+          this.player.stopSawRide(false);
+        } else if (enemy.solid && dist < 28) {
+          handledRideHit = true;
+          if (this.player.sawRideDamageTimer <= 0) {
+            enemy.damage(1);
+            this.player.sawRideDamageTimer = 0.2;
+            enemy.hitPause = 0.1;
+            this.audio.hit();
+            this.spawnEffect('hit', enemy.x, enemy.y);
+            this.spawnEffect('oil', enemy.x, enemy.y + 6);
+            this.recordFeedback('hit', 'audio');
+            this.recordFeedback('hit', 'visual');
+            this.playability.recordEnemyHit(this.clock);
+            if (enemy.dead) {
+              if (!enemy.training) {
+                this.spawnDeathDebris(enemy);
+              }
+              this.awardLoot(enemy);
+            }
+          }
+        }
+      }
+      if (!handledRideHit && dist < 24) {
         if (!enemy.training) {
           const tookDamage = this.player.takeDamage(1);
           if (tookDamage) {
@@ -1444,6 +1474,7 @@ export default class Game {
 
   handleThrow() {
     if (!this.abilities.anchor) return;
+    this.player.attackTimer = Math.max(this.player.attackTimer, 0.25);
     if (this.sawAnchor.active) {
       this.startAnchorRetract(0.05);
       this.audio.interact();
@@ -1461,6 +1492,7 @@ export default class Game {
 
   handleAnchorShot() {
     if (!this.abilities.anchor) return;
+    this.player.attackTimer = Math.max(this.player.attackTimer, 0.25);
     if (this.sawAnchor.active) {
       this.startAnchorRetract(0.2);
       return;
@@ -1669,6 +1701,8 @@ export default class Game {
     const dy = this.player.y - this.sawAnchor.y;
     const dist = Math.max(0.01, tetherDist);
     if (dist > tetherLimit) {
+      const prevX = this.player.x;
+      const prevY = this.player.y;
       const nx = dx / dist;
       const ny = dy / dist;
       const targetX = this.sawAnchor.x + dx * (tetherLimit / dist);
@@ -1684,6 +1718,11 @@ export default class Game {
         } else if (yOnlyOk) {
           this.player.y = targetY;
         }
+      }
+      const moved = this.player.x !== prevX || this.player.y !== prevY;
+      if (!moved && this.sawAnchor.embedded) {
+        this.startAnchorRetract(0.2);
+        return true;
       }
       const radialVelocity = this.player.vx * nx + this.player.vy * ny;
       if (radialVelocity > 0) {
@@ -2151,9 +2190,13 @@ export default class Game {
     ctx.restore();
 
     const region = this.world.regionAt(this.player.x, this.player.y);
+    const sawUsing = this.player.attackTimer > 0 || this.player.sawRideActive || this.sawAnchor.active;
+    const sawBuzzing = this.revActive || (this.player.sawRideActive && this.input.isDown('attack'));
     this.hud.draw(ctx, this.player, this.objective, region.name, {
       shake: this.pauseMenu.shake,
-      sawEmbedded: this.sawAnchor.active,
+      sawEmbedded: this.sawAnchor.embedded,
+      sawUsing,
+      sawBuzzing,
       flameMode: this.player.flameMode && this.abilities.flame
     });
     const objectiveTarget = this.getObjectiveTarget();

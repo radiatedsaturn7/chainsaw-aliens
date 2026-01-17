@@ -52,6 +52,10 @@ export default class Player {
     this.attackLungeDir = 1;
     this.flameMode = false;
     this.sawDeployed = false;
+    this.sawRideActive = false;
+    this.sawRideMomentum = 0;
+    this.sawRideSpeed = MOVEMENT_MODEL.dashSpeed * 0.75;
+    this.sawRideDamageTimer = 0;
     this.magBootsHeat = 0;
     this.magBootsOverheat = 0;
     this.magBootsEngaged = false;
@@ -94,6 +98,17 @@ export default class Player {
     this.facing = direction;
   }
 
+  startSawRide() {
+    this.sawRideActive = true;
+    this.sawRideMomentum = 0;
+  }
+
+  stopSawRide(preserveMomentum = false) {
+    if (!this.sawRideActive) return;
+    this.sawRideActive = false;
+    this.sawRideMomentum = preserveMomentum ? this.vx : 0;
+  }
+
   update(dt, input, world, abilities) {
     if (this.dead) return;
     this.justJumped = false;
@@ -101,10 +116,36 @@ export default class Player {
     this.justLanded = false;
     this.justStepped = false;
     this.animTime += dt;
-    const move = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
-    this.vx = move * this.speed;
-    if (move !== 0) {
-      this.facing = move;
+    const moveInput = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
+    let exitRide = false;
+    let exitRideMomentum = 0;
+    if (this.sawRideActive) {
+      if (moveInput !== 0) {
+        this.facing = moveInput;
+      }
+      const rideMoving = input.isDown('attack');
+      const rideVx = rideMoving ? this.facing * this.sawRideSpeed : 0;
+      if (input.wasPressed('jump')) {
+        exitRide = true;
+        exitRideMomentum = rideVx;
+        this.sawRideActive = false;
+        this.sawRideMomentum = exitRideMomentum;
+      } else {
+        this.vx = rideVx;
+      }
+    }
+    if (!this.sawRideActive) {
+      if (moveInput !== 0) {
+        this.facing = moveInput;
+      }
+      if ((exitRide && moveInput === 0) || (this.sawRideMomentum && !this.onGround && moveInput === 0)) {
+        this.vx = exitRide ? exitRideMomentum : this.sawRideMomentum;
+      } else {
+        this.vx = moveInput * this.speed;
+        if (moveInput !== 0 || this.onGround) {
+          this.sawRideMomentum = 0;
+        }
+      }
     }
 
     this.jumpBuffer = Math.max(0, this.jumpBuffer - dt);
@@ -172,6 +213,10 @@ export default class Player {
       this.justLanded = true;
       this.jumpsRemaining = 1;
     }
+    if (this.sawRideActive && !this.onGround) {
+      this.sawRideActive = false;
+      this.sawRideMomentum = this.vx;
+    }
     const hazardX = Math.floor(this.x / world.tileSize);
     const hazardY = Math.floor(this.y / world.tileSize);
     if (world.isHazard(hazardX, hazardY)) {
@@ -214,10 +259,11 @@ export default class Player {
       this.stepTimer = Math.max(this.stepTimer, 0.1);
     }
 
-    this.ducking = this.onGround && input.isDown('down');
-    this.aimingUp = input.isDown('up') && !this.ducking;
+    this.ducking = this.onGround && input.isDown('down') && !this.sawRideActive;
+    this.aimingUp = input.isDown('up') && !this.ducking && !this.sawRideActive;
     this.revving = input.isDown('rev') && this.canRev();
     this.attackTimer = Math.max(0, this.attackTimer - dt);
+    this.sawRideDamageTimer = Math.max(0, this.sawRideDamageTimer - dt);
     this.updateState();
   }
 
@@ -286,6 +332,8 @@ export default class Player {
     this.health -= amount;
     this.hurtTimer = 0.3;
     this.invulnTimer = 0.6;
+    this.sawRideActive = false;
+    this.sawRideMomentum = 0;
     if (this.health <= 0) {
       this.dead = true;
     }

@@ -4,6 +4,7 @@ const HOLD_THRESHOLD = 320;
 const SWIPE_THRESHOLD = 42;
 const DASH_WINDOW = 320;
 const MULTI_TAP_WINDOW = 240;
+const TAP_THRESHOLD = 260;
 const MOVE_PULSE_DURATION = 220;
 
 export default class MobileControls {
@@ -80,8 +81,8 @@ export default class MobileControls {
 
   getVisibleButtons(state) {
     const visible = [...this.buttons];
-    if (state === 'dialog' || state === 'shop') {
-      visible.push({ ...this.contextButtons[0], label: state === 'shop' ? 'BUY' : 'OK' });
+    if (state === 'shop') {
+      visible.push({ ...this.contextButtons[0], label: 'BUY' });
     }
     visible.push(this.contextButtons[1]);
     return visible;
@@ -184,6 +185,10 @@ export default class MobileControls {
     const gesture = this.gesturePointers.get(id);
     if (gesture) {
       this.handleSwipeGesture(gesture, payload.x, payload.y, now, state);
+      const duration = now - gesture.startTime;
+      if (!gesture.moved && duration <= TAP_THRESHOLD && (state === 'dialog' || state === 'title')) {
+        this.pulseAction('interact');
+      }
       this.gesturePointers.delete(id);
     }
 

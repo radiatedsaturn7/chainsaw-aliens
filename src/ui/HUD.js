@@ -52,6 +52,37 @@ export default class HUD {
       ctx.restore();
     }
 
+    const showSawIcon = options.sawEmbedded || options.sawUsing;
+    if (showSawIcon) {
+      const buzz = options.sawBuzzing;
+      const iconX = 258;
+      const iconY = 34;
+      const jitterX = buzz ? Math.sin(player.animTime * 60) * 1.5 : 0;
+      const jitterY = buzz ? Math.cos(player.animTime * 55) * 1.5 : 0;
+      ctx.save();
+      ctx.translate(iconX + jitterX, iconY + jitterY);
+      ctx.strokeStyle = options.sawUsing ? '#f25c2a' : '#cfd5dc';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.rect(-8, -6, 10, 12);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(2, -2);
+      ctx.lineTo(12, -2);
+      ctx.lineTo(12, 2);
+      ctx.lineTo(2, 2);
+      ctx.stroke();
+      if (options.sawUsing) {
+        ctx.beginPath();
+        ctx.moveTo(12, -4);
+        ctx.lineTo(16, -6);
+        ctx.moveTo(12, 4);
+        ctx.lineTo(16, 6);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
     let infoStartY = 88;
     if (hasBootsHeat) {
       const bootsRatio = Math.min(1, Math.max(0, player.magBootsHeat));
@@ -77,7 +108,9 @@ export default class HUD {
     if (options.flameMode) {
       statusLines.push('Flame Mode: ON');
     }
-    if (options.sawEmbedded) {
+    if (options.sawUsing) {
+      statusLines.push('SAW ACTIVE');
+    } else if (options.sawEmbedded) {
       statusLines.push('SAW EMBEDDED');
     }
     if (options.shake === false) {
