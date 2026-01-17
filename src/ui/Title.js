@@ -2,6 +2,7 @@ export default class Title {
   constructor() {
     this.timer = 0;
     this.editorBounds = { x: 0, y: 0, w: 0, h: 0 };
+    this.endlessBounds = { x: 0, y: 0, w: 0, h: 0 };
     this.aliens = Array.from({ length: 12 }, (_, i) => ({
       x: 120 + i * 80,
       y: -Math.random() * 400,
@@ -80,7 +81,7 @@ export default class Title {
     this.aliens.forEach((alien) => {
       ctx.save();
       ctx.translate(alien.x, alien.y + 80 + Math.sin(this.timer + alien.x) * 4);
-      ctx.strokeStyle = '#fff';
+      ctx.strokeStyle = '#ff6b6b';
       ctx.fillStyle = 'rgba(0,0,0,0.55)';
       ctx.beginPath();
       ctx.ellipse(0, 6, 18, 6, 0, 0, Math.PI * 2);
@@ -113,7 +114,16 @@ export default class Title {
     const buttonWidth = 180;
     const buttonHeight = 32;
     const buttonX = width / 2 - buttonWidth / 2;
+    const endlessY = height - 112;
     const editorY = height - 70;
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.fillRect(buttonX, endlessY, buttonWidth, buttonHeight);
+    ctx.strokeStyle = '#fff';
+    ctx.strokeRect(buttonX, endlessY, buttonWidth, buttonHeight);
+    ctx.fillStyle = '#fff';
+    ctx.fillText('ENDLESS MODE', width / 2, endlessY + 22);
+    this.endlessBounds = { x: buttonX, y: endlessY, w: buttonWidth, h: buttonHeight };
+
     ctx.fillStyle = 'rgba(255,255,255,0.12)';
     ctx.fillRect(buttonX, editorY, buttonWidth, buttonHeight);
     ctx.strokeStyle = '#fff';
@@ -126,6 +136,11 @@ export default class Title {
 
   isEditorHit(x, y) {
     const bounds = this.editorBounds;
+    return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
+  }
+
+  isEndlessHit(x, y) {
+    const bounds = this.endlessBounds;
     return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
   }
 }
