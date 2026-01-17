@@ -22,6 +22,8 @@ export default class EnemyBase {
     this.hurtTimer = 0;
     this.shakePhase = 0;
     this.hitPause = 0;
+    this.slowTimer = 0;
+    this.slowFactor = 0.5;
   }
 
   get rect() {

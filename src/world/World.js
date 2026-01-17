@@ -189,6 +189,7 @@ export default class World {
   isSolid(x, y, abilities, options = {}) {
     const tile = this.getTile(x, y);
     if (tile === '#') return true;
+    if (tile === '^') return true;
     if (tile === 'D') return true;
     if (tile === 'B') return true;
     if (tile === 'W' || tile === 'X' || tile === 'C' || tile === 'U') return true;

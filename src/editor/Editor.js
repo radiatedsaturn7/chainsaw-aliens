@@ -1,5 +1,6 @@
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
+  { id: 'triangle', label: 'Triangle Block', char: '^' },
   { id: 'empty', label: 'Empty', char: '.' },
   { id: 'hazard', label: 'Hazard', char: '!' },
   { id: 'oneway', label: 'One-Way Platform', char: '=' },
