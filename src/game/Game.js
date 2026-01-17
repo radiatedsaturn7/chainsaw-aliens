@@ -219,6 +219,7 @@ export default class Game {
     this.mobileControls = new MobileControls();
     this.boxes = [];
     this.boxSize = 26;
+    this.loading = true;
 
     this.init();
   }
@@ -234,21 +235,34 @@ export default class Game {
   }
 
   async init() {
-    await this.world.load();
-    await this.autoRepair.load();
-    this.autoRepair.applyPersistentPatches();
-    await this.goldenPath.load();
-    this.storyData = this.world.data;
-    this.endlessData = await this.loadWorldData('./src/content/endless.json');
-    this.syncSpawnPoint();
-    this.player.x = this.spawnPoint.x;
-    this.player.y = this.spawnPoint.y;
-    this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
-    this.resetWorldSystems();
-    this.spawnEnemies();
-    this.spawnBoxes();
-    this.autoRepair.applySpawnOverride(this);
-    this.state = 'title';
+    try {
+      await this.world.load();
+      await this.autoRepair.load();
+      this.autoRepair.applyPersistentPatches();
+      await this.goldenPath.load();
+      this.storyData = this.world.data;
+      this.endlessData = await this.loadWorldData('./src/content/endless.json');
+      this.syncSpawnPoint();
+      this.player.x = this.spawnPoint.x;
+      this.player.y = this.spawnPoint.y;
+      this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
+      this.resetWorldSystems();
+      this.spawnEnemies();
+      this.spawnBoxes();
+      this.autoRepair.applySpawnOverride(this);
+    } catch (error) {
+      console.error('Failed to initialize game.', error);
+      this.consoleOverlay.setReport(
+        'warn',
+        ['Initialization failed. Falling back to a safe title screen.'],
+        'BOOT'
+      );
+    } finally {
+      this.loading = false;
+      if (this.state === 'loading') {
+        this.state = 'title';
+      }
+    }
   }
 
   async loadWorldData(path) {
@@ -749,7 +763,10 @@ export default class Game {
   }
 
   update(dt) {
-    if (this.state === 'loading') return;
+    if (this.state === 'loading') {
+      this.title.update(dt);
+      return;
+    }
     if (this.state === 'editor') {
       this.input.clearVirtual();
     } else {
@@ -2782,6 +2799,17 @@ export default class Game {
   draw() {
     const { ctx, canvas } = this;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (this.state === 'loading') {
+      this.title.draw(ctx, canvas.width, canvas.height, this.isMobile);
+      ctx.save();
+      ctx.fillStyle = '#fff';
+      ctx.font = '16px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText('Loading...', canvas.width / 2, canvas.height - 180);
+      ctx.restore();
+      return;
+    }
 
     if (this.state === 'title') {
       this.title.draw(ctx, canvas.width, canvas.height, this.isMobile);
