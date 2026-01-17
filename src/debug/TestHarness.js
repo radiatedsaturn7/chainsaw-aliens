@@ -1,4 +1,5 @@
 import TEST_MAP from './TestMap.js';
+import { getDashDistance } from '../game/MovementModel.js';
 
 function createSeededRandom(seed) {
   let value = seed % 2147483647;
@@ -99,7 +100,7 @@ export default class TestHarness {
     if (!this.active) return;
     const jumpHeight = (game.player.jumpPower ** 2) / (2 * 1200);
     const jumpTiles = (jumpHeight / game.world.tileSize).toFixed(1);
-    const dashDistance = (620 * 0.12) / game.world.tileSize;
+    const dashDistance = getDashDistance() / game.world.tileSize;
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.7)';
     ctx.fillRect(width - 280, 20, 260, 190);

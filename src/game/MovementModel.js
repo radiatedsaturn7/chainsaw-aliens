@@ -3,7 +3,7 @@ export const MOVEMENT_MODEL = {
   baseSpeed: 240,
   baseJumpPower: 520,
   dashSpeed: 620,
-  dashDuration: 0.12,
+  dashDuration: 0.206,
   coyoteTime: 0.1,
   jumpBuffer: 0.12
 };
