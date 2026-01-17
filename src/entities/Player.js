@@ -17,6 +17,7 @@ export default class Player {
     this.onWall = 0;
     this.coyote = 0;
     this.jumpBuffer = 0;
+    this.jumpsRemaining = 1;
     this.dashTimer = 0;
     this.dashCooldown = 0;
     this.facing = 1;
@@ -42,6 +43,8 @@ export default class Player {
     this.justDashed = false;
     this.justLanded = false;
     this.justStepped = false;
+    this.aimingUp = false;
+    this.ducking = false;
     this.stepTimer = 0;
     this.attackTimer = 0;
     this.attackLungeTimer = 0;
@@ -111,6 +114,7 @@ export default class Player {
 
     if (this.onGround) {
       this.coyote = MOVEMENT_MODEL.coyoteTime;
+      this.jumpsRemaining = 1;
     } else {
       this.coyote = Math.max(0, this.coyote - dt);
     }
@@ -119,7 +123,9 @@ export default class Player {
       && ((this.onWall === 1 && input.isDown('right')) || (this.onWall === -1 && input.isDown('left')));
     this.magBootsEngaged = abilities.magboots && pressingIntoWall && this.magBootsOverheat <= 0;
 
-    if ((this.coyote > 0 || this.magBootsEngaged) && this.jumpBuffer > 0) {
+    const canGroundJump = this.coyote > 0 || this.magBootsEngaged;
+    const canAirJump = !canGroundJump && this.jumpsRemaining > 0;
+    if ((canGroundJump || canAirJump) && this.jumpBuffer > 0) {
       if (this.magBootsEngaged && this.onWall !== 0) {
         this.vx = -this.onWall * this.speed * 1.3;
         this.vy = -this.jumpPower * 0.9;
@@ -131,6 +137,9 @@ export default class Player {
       this.coyote = 0;
       this.jumpBuffer = 0;
       this.justJumped = true;
+      if (canAirJump) {
+        this.jumpsRemaining = Math.max(0, this.jumpsRemaining - 1);
+      }
     }
 
     if (this.dashCooldown > 0) {
@@ -161,6 +170,7 @@ export default class Player {
     this.moveAndCollide(dt, world, abilities);
     if (!wasGrounded && this.onGround) {
       this.justLanded = true;
+      this.jumpsRemaining = 1;
     }
     const hazardX = Math.floor(this.x / world.tileSize);
     const hazardY = Math.floor(this.y / world.tileSize);
@@ -204,6 +214,8 @@ export default class Player {
       this.stepTimer = Math.max(this.stepTimer, 0.1);
     }
 
+    this.ducking = this.onGround && input.isDown('down');
+    this.aimingUp = input.isDown('up') && !this.ducking;
     this.revving = input.isDown('rev') && this.canRev();
     this.attackTimer = Math.max(0, this.attackTimer - dt);
     this.updateState();
@@ -258,6 +270,8 @@ export default class Player {
   updateState() {
     if (this.dashTimer > 0) {
       this.state = 'dash';
+    } else if (this.ducking) {
+      this.state = 'duck';
     } else if (!this.onGround) {
       this.state = this.vy < 0 ? 'jump' : 'fall';
     } else if (Math.abs(this.vx) > 10) {
@@ -311,45 +325,51 @@ export default class Player {
     const walk = this.state === 'run' ? Math.sin(this.animTime * 10) * 3 : 0;
     const legLift = this.state === 'jump' || this.state === 'fall' ? -4 : 0;
     const dashTilt = this.state === 'dash' ? this.facing * 6 : 0;
+    const crouchOffset = this.state === 'duck' ? 6 : 0;
+    const crouchShrink = this.state === 'duck' ? 6 : 0;
+    const aimTilt = this.aimingUp ? -Math.PI / 3 : 0;
     const flash = this.hurtTimer > 0 && Math.floor(this.animTime * 20) % 2 === 0;
     ctx.strokeStyle = flash ? '#fff' : 'rgba(255,255,255,0.9)';
     ctx.lineWidth = 2;
     ctx.rotate((dashTilt * Math.PI) / 180);
     // Head
     ctx.beginPath();
-    ctx.arc(0, -this.height / 2 + 8, 6, 0, Math.PI * 2);
+    ctx.arc(0, -this.height / 2 + 8 + crouchOffset, 6, 0, Math.PI * 2);
     ctx.stroke();
     // Torso
     ctx.beginPath();
-    ctx.moveTo(-8, -8);
-    ctx.lineTo(8, -8);
-    ctx.lineTo(10, 10);
-    ctx.lineTo(-10, 10);
+    ctx.moveTo(-8, -8 + crouchOffset);
+    ctx.lineTo(8, -8 + crouchOffset);
+    ctx.lineTo(10, 10 + crouchOffset);
+    ctx.lineTo(-10, 10 + crouchOffset);
     ctx.closePath();
     ctx.stroke();
     // Legs
     ctx.beginPath();
-    ctx.rect(-10, 10 + legLift, 6, 12 + walk);
-    ctx.rect(4, 10 - legLift, 6, 12 - walk);
+    ctx.rect(-10, 10 + legLift + crouchOffset, 6, 12 + walk - crouchShrink);
+    ctx.rect(4, 10 - legLift + crouchOffset, 6, 12 - walk - crouchShrink);
     ctx.stroke();
     // Arms
     ctx.beginPath();
     const armOffset = this.revving ? -6 : 0;
-    ctx.rect(-14, -4 + armOffset, 6, 10);
-    ctx.rect(8, -4 + armOffset, 6, 10);
+    ctx.save();
+    ctx.rotate(aimTilt);
+    ctx.rect(-14, -4 + armOffset + crouchOffset, 6, 10);
+    ctx.rect(8, -4 + armOffset + crouchOffset, 6, 10);
     ctx.stroke();
     // Chainsaw bar
     ctx.beginPath();
-    ctx.moveTo(0, -4);
+    ctx.moveTo(0, -4 + crouchOffset);
     const barLength = this.revving ? this.width * 1.1 : this.width * 0.9;
-    ctx.lineTo(this.facing * barLength, 0);
-    ctx.lineTo(0, 6 + (this.revving ? 2 : 0));
+    ctx.lineTo(this.facing * barLength, 0 + crouchOffset);
+    ctx.lineTo(0, 6 + (this.revving ? 2 : 0) + crouchOffset);
     ctx.stroke();
     if (this.revving) {
       ctx.beginPath();
-      ctx.arc(this.facing * barLength, 0, 8, -0.8, 0.8);
+      ctx.arc(this.facing * barLength, 0 + crouchOffset, 8, -0.8, 0.8);
       ctx.stroke();
     }
+    ctx.restore();
     if (this.cosmetics.length > 0) {
       ctx.beginPath();
       ctx.moveTo(-4, -6);

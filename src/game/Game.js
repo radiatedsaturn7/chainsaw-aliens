@@ -882,6 +882,37 @@ export default class Game {
     return solidCount >= 6;
   }
 
+  isPlayerBlockedAt(x, y, options = {}) {
+    const halfW = this.player.width / 2;
+    const halfH = this.player.height / 2;
+    const inset = 2;
+    const ignoreOneWay = options.ignoreOneWay || false;
+    const points = [
+      { x: x - halfW + inset, y: y - halfH + inset },
+      { x: x + halfW - inset, y: y - halfH + inset },
+      { x: x - halfW + inset, y: y + halfH - inset },
+      { x: x + halfW - inset, y: y + halfH - inset }
+    ];
+    return points.some((point) => {
+      const tileX = Math.floor(point.x / this.world.tileSize);
+      const tileY = Math.floor(point.y / this.world.tileSize);
+      return this.world.isSolid(tileX, tileY, this.abilities, { ignoreOneWay });
+    });
+  }
+
+  hasCeilingAbovePlayer(maxTiles = 3) {
+    const tileSize = this.world.tileSize;
+    const tileX = Math.floor(this.player.x / tileSize);
+    const headY = this.player.y - this.player.height / 2;
+    for (let i = 1; i <= maxTiles; i += 1) {
+      const tileY = Math.floor((headY - i * tileSize) / tileSize);
+      if (this.world.isSolid(tileX, tileY, this.abilities)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   resolveEnemyCollision(enemy) {
     const tileSize = this.world.tileSize;
     let rect = enemy.rect;
@@ -1488,6 +1519,9 @@ export default class Game {
     const tileX = Math.floor(this.sawAnchor.x / tileSize);
     const nextY = this.sawAnchor.y - climbSpeed * dt;
     const tileY = Math.floor(nextY / tileSize);
+    if (this.hasCeilingAbovePlayer()) {
+      return;
+    }
     if (this.world.isSolid(tileX, tileY, this.abilities)) {
       this.sawAnchor.y = nextY;
     }
@@ -1584,8 +1618,13 @@ export default class Game {
       const excess = dist - tetherLimit;
       const nx = dx / dist;
       const ny = dy / dist;
-      this.player.x -= nx * excess;
-      this.player.y -= ny * excess;
+      const targetX = this.player.x - nx * excess;
+      const targetY = this.player.y - ny * excess;
+      const ignoreOneWay = targetY < this.player.y;
+      if (!this.isPlayerBlockedAt(targetX, targetY, { ignoreOneWay })) {
+        this.player.x = targetX;
+        this.player.y = targetY;
+      }
       const radialVelocity = this.player.vx * nx + this.player.vy * ny;
       if (radialVelocity > 0) {
         this.player.vx -= radialVelocity * nx;
@@ -1598,11 +1637,16 @@ export default class Game {
       if (dist >= tetherMax * 0.96) {
         const pullSpeed = 220;
         const step = Math.min(dist, pullSpeed * dt);
-        this.player.x -= (dx / dist) * step;
-        this.player.y -= (dy / dist) * step;
-        this.player.vx = Math.min(this.player.vx, -(dx / dist) * pullSpeed * 0.6);
-        this.player.vy = Math.min(this.player.vy, -(dy / dist) * pullSpeed * 0.6);
-        this.player.onGround = false;
+        const targetX = this.player.x - (dx / dist) * step;
+        const targetY = this.player.y - (dy / dist) * step;
+        const ignoreOneWay = targetY < this.player.y;
+        if (!this.isPlayerBlockedAt(targetX, targetY, { ignoreOneWay })) {
+          this.player.x = targetX;
+          this.player.y = targetY;
+          this.player.vx = Math.min(this.player.vx, -(dx / dist) * pullSpeed * 0.6);
+          this.player.vy = Math.min(this.player.vy, -(dy / dist) * pullSpeed * 0.6);
+          this.player.onGround = false;
+        }
       }
     }
     return false;
@@ -1617,11 +1661,15 @@ export default class Game {
     const dx = Math.abs(this.player.x - this.sawAnchor.x);
     const dy = this.player.y - this.sawAnchor.y;
     if (dx > 20 || dy < -40 || dy > 80) return;
+    if (this.hasCeilingAbovePlayer()) return;
     const climbSpeed = pulling ? 200 : 120;
     const nextY = this.player.y - climbSpeed * dt;
     const tileX = Math.floor(this.player.x / this.world.tileSize);
     const tileY = Math.floor((nextY - this.player.height / 2) / this.world.tileSize);
     if (!this.world.isSolid(tileX, tileY, this.abilities)) {
+      if (this.isPlayerBlockedAt(this.player.x, nextY, { ignoreOneWay: true })) {
+        return;
+      }
       this.player.y = nextY;
       this.player.vy = Math.min(this.player.vy, -climbSpeed);
       this.player.onGround = false;
