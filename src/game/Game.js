@@ -2930,7 +2930,10 @@ export default class Game {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (this.state === 'loading') {
-      this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode);
+      this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode, {
+        isMobile: this.deviceIsMobile,
+        gamepadConnected: this.gamepadConnected
+      });
       ctx.save();
       ctx.fillStyle = '#fff';
       ctx.font = '16px Courier New';
@@ -2941,7 +2944,10 @@ export default class Game {
     }
 
     if (this.state === 'title') {
-      this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode);
+      this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode, {
+        isMobile: this.deviceIsMobile,
+        gamepadConnected: this.gamepadConnected
+      });
       this.mobileControls.draw(ctx, this.state);
       return;
     }
