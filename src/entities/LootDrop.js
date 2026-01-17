@@ -10,13 +10,47 @@ export default class LootDrop {
     this.collected = false;
   }
 
-  update(dt) {
+  update(dt, world, abilities) {
     this.vy += 600 * dt;
-    this.x += this.vx * dt;
-    this.y += this.vy * dt;
+    let nextX = this.x + this.vx * dt;
+    let nextY = this.y + this.vy * dt;
+    if (world) {
+      const radius = 6;
+      const tileSize = world.tileSize;
+      const check = (x, y, options = {}) => {
+        const tileX = Math.floor(x / tileSize);
+        const tileY = Math.floor(y / tileSize);
+        return world.isSolid(tileX, tileY, abilities, options);
+      };
+      if (this.vx !== 0) {
+        const signX = Math.sign(this.vx);
+        const testX = nextX + signX * radius;
+        if (check(testX, this.y - radius * 0.6, { ignoreOneWay: true }) || check(testX, this.y + radius * 0.6, { ignoreOneWay: true })) {
+          this.vx = 0;
+          nextX = this.x;
+        }
+      }
+      if (this.vy !== 0) {
+        const signY = Math.sign(this.vy);
+        const testY = nextY + signY * radius;
+        const ignoreOneWay = signY < 0;
+        if (check(nextX - radius * 0.6, testY, { ignoreOneWay }) || check(nextX + radius * 0.6, testY, { ignoreOneWay })) {
+          if (signY > 0) {
+            const tileY = Math.floor(testY / tileSize);
+            nextY = tileY * tileSize - radius;
+          }
+          this.vy = 0;
+        }
+      }
+    }
+    this.x = nextX;
+    this.y = nextY;
     if (this.y > 1200) this.life = 0;
     this.life -= dt;
     this.pulse += dt * 4;
+    if (this.vy === 0) {
+      this.vx *= Math.pow(0.2, dt * 8);
+    }
   }
 
   collect() {
