@@ -421,7 +421,10 @@ export default class Player {
     const crouchShrink = this.state === 'duck' ? 6 : 0;
     const aimTilt = this.aimingUp ? this.aimAngle : 0;
     const flash = this.hurtTimer > 0 && Math.floor(this.animTime * 20) % 2 === 0;
-    ctx.strokeStyle = flash ? '#fff' : 'rgba(255,255,255,0.9)';
+    const bodyFill = '#ffffff';
+    const accentStroke = flash ? '#ffffff' : '#111111';
+    ctx.fillStyle = bodyFill;
+    ctx.strokeStyle = accentStroke;
     ctx.lineWidth = 2;
     ctx.rotate((dashTilt * Math.PI) / 180);
     const hipY = 10 + crouchOffset;
@@ -431,6 +434,7 @@ export default class Player {
     // Head
     ctx.beginPath();
     ctx.arc(0, -this.height / 2 + 8 + crouchOffset, 6, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
     // Torso
     ctx.beginPath();
@@ -439,6 +443,7 @@ export default class Player {
     ctx.lineTo(8, hipY);
     ctx.lineTo(-8, hipY);
     ctx.closePath();
+    ctx.fill();
     ctx.stroke();
     // Legs with joints
     ctx.beginPath();
