@@ -900,15 +900,23 @@ export default class Game {
     });
   }
 
-  hasCeilingAbovePlayer(maxTiles = 3) {
+  hasCeilingAbovePlayer(maxTiles = 1) {
     const tileSize = this.world.tileSize;
-    const tileX = Math.floor(this.player.x / tileSize);
     const headY = this.player.y - this.player.height / 2;
+    const halfW = this.player.width / 2 - 2;
     for (let i = 1; i <= maxTiles; i += 1) {
-      const tileY = Math.floor((headY - i * tileSize) / tileSize);
-      if (this.world.isSolid(tileX, tileY, this.abilities)) {
-        return true;
-      }
+      const sampleY = headY - i * tileSize + 1;
+      const points = [
+        this.player.x - halfW,
+        this.player.x,
+        this.player.x + halfW
+      ];
+      const hit = points.some((x) => {
+        const tileX = Math.floor(x / tileSize);
+        const tileY = Math.floor(sampleY / tileSize);
+        return this.world.isSolid(tileX, tileY, this.abilities);
+      });
+      if (hit) return true;
     }
     return false;
   }
@@ -1423,10 +1431,14 @@ export default class Game {
   findAnchorHit() {
     const range = this.world.tileSize * 3;
     const step = 8;
-    const dir = this.player.facing || 1;
+    const aimingUp = this.player.aimingUp;
+    const dirX = aimingUp ? 0 : (this.player.facing || 1);
+    const dirY = aimingUp ? -1 : 0;
+    const originX = this.player.x;
+    const originY = this.player.y - 6;
     for (let dist = 24; dist <= range; dist += step) {
-      const testX = this.player.x + dir * dist;
-      const testY = this.player.y - 6;
+      const testX = originX + dirX * dist;
+      const testY = originY + dirY * dist;
       const enemyHit = this.findAnchorEnemyHit(testX, testY);
       if (enemyHit) {
         return { x: enemyHit.target.x, y: enemyHit.target.y, hit: true, box: null, enemy: enemyHit.target, isBoss: enemyHit.isBoss };
@@ -1449,8 +1461,8 @@ export default class Game {
       }
     }
     return {
-      x: this.player.x + dir * range,
-      y: this.player.y - 6,
+      x: originX + dirX * range,
+      y: originY + dirY * range,
       hit: false,
       box: null,
       enemy: null,
@@ -1519,9 +1531,6 @@ export default class Game {
     const tileX = Math.floor(this.sawAnchor.x / tileSize);
     const nextY = this.sawAnchor.y - climbSpeed * dt;
     const tileY = Math.floor(nextY / tileSize);
-    if (this.hasCeilingAbovePlayer()) {
-      return;
-    }
     if (this.world.isSolid(tileX, tileY, this.abilities)) {
       this.sawAnchor.y = nextY;
     }
