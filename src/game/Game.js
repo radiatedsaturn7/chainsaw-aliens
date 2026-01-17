@@ -215,6 +215,11 @@ export default class Game {
     this.playtestActive = false;
     this.playtestButtonBounds = null;
     this.isMobile = false;
+    this.deviceIsMobile = false;
+    this.inputMode = 'keyboard';
+    this.inputModeInitialized = false;
+    this.effectiveInputMode = 'keyboard';
+    this.gamepadConnected = false;
     this.viewport = { width: window.innerWidth, height: window.innerHeight, scale: 1 };
     this.mobileControls = new MobileControls();
     this.boxes = [];
@@ -226,12 +231,35 @@ export default class Game {
 
   setViewport({ width, height, scale, isMobile }) {
     this.viewport = { width, height, scale };
-    this.isMobile = Boolean(isMobile);
+    this.deviceIsMobile = Boolean(isMobile);
+    if (!this.inputModeInitialized) {
+      this.inputMode = this.deviceIsMobile ? 'mobile' : 'keyboard';
+      this.inputModeInitialized = true;
+    }
+    this.updateControlScheme();
     this.mobileControls.setViewport({
       width: this.canvas.width,
       height: this.canvas.height,
       isMobile: this.isMobile
     });
+  }
+
+  updateControlScheme() {
+    if (this.gamepadConnected) {
+      this.effectiveInputMode = 'gamepad';
+    } else if (this.inputMode === 'mobile' || this.inputMode === 'gamepad' || this.inputMode === 'keyboard') {
+      this.effectiveInputMode = this.inputMode;
+    } else {
+      this.effectiveInputMode = this.deviceIsMobile ? 'mobile' : 'keyboard';
+    }
+    this.isMobile = this.effectiveInputMode === 'mobile';
+    this.mobileControls.setEnabled(this.isMobile);
+  }
+
+  setInputMode(mode) {
+    if (!['mobile', 'gamepad', 'keyboard'].includes(mode)) return;
+    this.inputMode = mode;
+    this.updateControlScheme();
   }
 
   async init() {
@@ -768,6 +796,8 @@ export default class Game {
       return;
     }
     this.input.updateGamepad();
+    this.gamepadConnected = this.input.isGamepadConnected();
+    this.updateControlScheme();
     if (this.state === 'editor') {
       this.input.clearVirtual();
     } else {
@@ -824,6 +854,16 @@ export default class Game {
         this.input.flush();
         return;
       }
+      if (this.title.screen === 'intro') {
+        if (this.input.wasPressed('interact') || (this.gamepadConnected && this.input.wasPressed('pause'))) {
+          this.title.setScreen('main');
+          this.audio.ui();
+          this.recordFeedback('menu navigate', 'audio');
+          this.recordFeedback('menu navigate', 'visual');
+        }
+        this.input.flush();
+        return;
+      }
       if (this.input.wasPressed('up')) {
         this.title.moveSelection(-1);
         this.audio.menu();
@@ -838,7 +878,17 @@ export default class Game {
       }
       if (this.input.wasPressed('interact')) {
         const action = this.title.getSelectedAction();
-        if (action === 'endless') {
+        if (this.title.screen === 'controls') {
+          if (action === 'back') {
+            this.title.setScreen('main');
+          } else {
+            this.setInputMode(action);
+          }
+          this.title.setControlsSelectionByMode(this.inputMode);
+        } else if (action === 'options') {
+          this.title.setControlsSelectionByMode(this.inputMode);
+          this.title.setScreen('controls');
+        } else if (action === 'endless') {
           this.startEndlessMode();
         } else if (action === 'editor') {
           this.enterEditor();
@@ -2880,7 +2930,7 @@ export default class Game {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (this.state === 'loading') {
-      this.title.draw(ctx, canvas.width, canvas.height, this.isMobile);
+      this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode);
       ctx.save();
       ctx.fillStyle = '#fff';
       ctx.font = '16px Courier New';
@@ -2891,7 +2941,7 @@ export default class Game {
     }
 
     if (this.state === 'title') {
-      this.title.draw(ctx, canvas.width, canvas.height, this.isMobile);
+      this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode);
       this.mobileControls.draw(ctx, this.state);
       return;
     }
@@ -3551,10 +3601,6 @@ export default class Game {
       this.returnToEditorFromPlaytest();
       return;
     }
-    if (this.state === 'title' && this.title.isEditorHit(x, y) && !this.testDashboard.visible) {
-      this.enterEditor();
-      return;
-    }
     if (this.testDashboard.visible) {
       const action = this.testDashboard.handleClick(x, y);
       if (!action) return;
@@ -3582,6 +3628,51 @@ export default class Game {
         this.audio.ui();
       }
     }
+    if (this.state === 'title' && !this.testDashboard.visible) {
+      if (this.title.screen === 'intro') {
+        this.title.setScreen('main');
+        this.audio.ui();
+        return;
+      }
+      const action = this.title.getActionAt(x, y);
+      if (!action) return;
+      if (this.title.screen === 'controls') {
+        if (action === 'back') {
+          this.title.setScreen('main');
+        } else {
+          this.setInputMode(action);
+          this.title.setControlsSelectionByMode(this.inputMode);
+        }
+        this.audio.ui();
+        return;
+      }
+      if (action === 'options') {
+        this.title.setControlsSelectionByMode(this.inputMode);
+        this.title.setScreen('controls');
+        this.audio.ui();
+        return;
+      }
+      if (action === 'editor') {
+        this.enterEditor();
+        return;
+      }
+      if (action === 'endless') {
+        this.startEndlessMode();
+        this.audio.ui();
+        return;
+      }
+      if (action === 'campaign') {
+        if (this.gameMode !== 'story' && this.storyData) {
+          this.gameMode = 'story';
+          this.applyWorldData(this.storyData);
+          this.resetRun();
+        } else {
+          this.gameMode = 'story';
+        }
+        this.state = 'dialog';
+        this.audio.ui();
+      }
+    }
   }
 
   handlePointerDown(payload) {
@@ -3593,37 +3684,64 @@ export default class Game {
       this.returnToEditorFromPlaytest();
       return;
     }
-    if (this.state === 'title' && this.title.isStartHit(payload.x, payload.y) && !this.testDashboard.visible) {
-      if (this.gameMode !== 'story' && this.storyData) {
-        this.gameMode = 'story';
-        this.applyWorldData(this.storyData);
-        this.resetRun();
-      } else {
-        this.gameMode = 'story';
-      }
-      this.state = 'dialog';
-      this.audio.ui();
-      this.recordFeedback('menu navigate', 'audio');
-      this.recordFeedback('menu navigate', 'visual');
-      return;
-    }
-    if (this.state === 'title' && this.title.isEndlessHit(payload.x, payload.y)) {
-      this.startEndlessMode();
-      this.audio.ui();
-      this.recordFeedback('menu navigate', 'audio');
-      this.recordFeedback('menu navigate', 'visual');
-      return;
-    }
-    if (this.state === 'title' && this.title.isEditorHit(payload.x, payload.y) && !this.testDashboard.visible) {
-      this.enterEditor();
-      return;
-    }
     if (this.state === 'title' && !this.testDashboard.visible) {
-      this.state = 'dialog';
-      this.audio.ui();
-      this.recordFeedback('menu navigate', 'audio');
-      this.recordFeedback('menu navigate', 'visual');
-      return;
+      if (this.title.screen === 'intro') {
+        this.title.setScreen('main');
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
+      const action = this.title.getActionAt(payload.x, payload.y);
+      if (!action) {
+        this.mobileControls.handlePointerDown(payload, this.state);
+        return;
+      }
+      if (this.title.screen === 'controls') {
+        if (action === 'back') {
+          this.title.setScreen('main');
+        } else {
+          this.setInputMode(action);
+          this.title.setControlsSelectionByMode(this.inputMode);
+        }
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
+      if (action === 'options') {
+        this.title.setControlsSelectionByMode(this.inputMode);
+        this.title.setScreen('controls');
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
+      if (action === 'endless') {
+        this.startEndlessMode();
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
+      if (action === 'editor') {
+        this.enterEditor();
+        return;
+      }
+      if (action === 'campaign') {
+        if (this.gameMode !== 'story' && this.storyData) {
+          this.gameMode = 'story';
+          this.applyWorldData(this.storyData);
+          this.resetRun();
+        } else {
+          this.gameMode = 'story';
+        }
+        this.state = 'dialog';
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
     }
     this.mobileControls.handlePointerDown(payload, this.state);
   }

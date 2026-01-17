@@ -11,7 +11,7 @@ export const KEYMAP = {
   throw: ['KeyL'],
   pause: ['Escape'],
   cancel: ['Backspace'],
-  interact: ['Space'],
+  interact: ['Space', 'Enter', 'NumpadEnter'],
   endless: ['KeyN'],
   test: ['KeyT'],
   validator: ['KeyV'],
@@ -34,6 +34,7 @@ export default class Input {
     this.gamepadIndex = null;
     this.gamepadActions = {};
     this.gamepadDeadzone = 0.3;
+    this.gamepadConnected = false;
     window.addEventListener('keydown', (e) => {
       if (!this.keys.get(e.code)) {
         this.pressed.add(e.code);
@@ -88,6 +89,7 @@ export default class Input {
 
   updateGamepad() {
     this.gamepadActions = {};
+    this.gamepadConnected = false;
     if (!navigator.getGamepads) return;
     const pads = navigator.getGamepads();
     if (!pads) return;
@@ -101,6 +103,7 @@ export default class Input {
       }
     }
     if (!pad) return;
+    this.gamepadConnected = true;
 
     const isButtonActive = (index, threshold = 0.5) => {
       const button = pad.buttons?.[index];
@@ -139,6 +142,10 @@ export default class Input {
 
   getGamepadActions() {
     return this.gamepadActions;
+  }
+
+  isGamepadConnected() {
+    return this.gamepadConnected;
   }
 
   combineActions(...sources) {

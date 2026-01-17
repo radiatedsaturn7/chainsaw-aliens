@@ -41,6 +41,10 @@ export default class MobileControls {
     this.layout();
   }
 
+  setEnabled(enabled) {
+    this.enabled = Boolean(enabled);
+  }
+
   layout() {
     const { width, height } = this.viewport;
     if (!width || !height) return;
