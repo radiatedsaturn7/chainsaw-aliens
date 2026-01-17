@@ -5,8 +5,16 @@ export default class HUD {
     ctx.font = '14px Courier New';
     ctx.textAlign = 'left';
 
+    const panelColor = 'rgba(0, 0, 0, 0.7)';
     const barWidth = 140;
     const barHeight = 10;
+    const hasBootsHeat = player.magBootsHeat > 0 || player.magBootsOverheat > 0;
+    const barsTop = 8;
+    const barsBottom = hasBootsHeat ? 92 : 72;
+    ctx.fillStyle = panelColor;
+    ctx.fillRect(12, barsTop, 268, barsBottom - barsTop);
+    ctx.fillStyle = '#fff';
+
     const healthRatio = Math.max(0, player.health) / player.maxHealth;
     ctx.fillText('Health', 20, 24);
     ctx.strokeStyle = '#fff';
@@ -45,7 +53,7 @@ export default class HUD {
     }
 
     let infoStartY = 88;
-    if (player.magBootsHeat > 0 || player.magBootsOverheat > 0) {
+    if (hasBootsHeat) {
       const bootsRatio = Math.min(1, Math.max(0, player.magBootsHeat));
       ctx.fillText('Mag Boots Heat', 20, 84);
       ctx.strokeRect(90, 74, barWidth, barHeight);
@@ -56,23 +64,34 @@ export default class HUD {
       infoStartY = 108;
     }
 
+    ctx.fillStyle = panelColor;
+    ctx.fillRect(14, infoStartY + 8, 420, 48);
+    ctx.fillStyle = '#fff';
     ctx.fillText(`Blueprint Shards: ${player.blueprints}`, 20, infoStartY);
     ctx.fillText(`Region: ${regionName}`, 20, infoStartY + 20);
     ctx.fillText(`Objective: ${objective}`, 20, infoStartY + 44);
     ctx.strokeStyle = '#fff';
     ctx.strokeRect(14, infoStartY + 8, 420, 48);
 
-    let statusY = infoStartY + 68;
+    const statusLines = [];
     if (options.flameMode) {
-      ctx.fillText('Flame Mode: ON', 20, statusY);
-      statusY += 20;
+      statusLines.push('Flame Mode: ON');
     }
     if (options.sawEmbedded) {
-      ctx.fillText('SAW EMBEDDED', 20, statusY);
-      statusY += 20;
+      statusLines.push('SAW EMBEDDED');
     }
     if (options.shake === false) {
-      ctx.fillText('Screen Shake: OFF', 20, statusY);
+      statusLines.push('Screen Shake: OFF');
+    }
+    if (statusLines.length) {
+      const statusY = infoStartY + 68;
+      const statusHeight = statusLines.length * 20 + 8;
+      ctx.fillStyle = panelColor;
+      ctx.fillRect(14, statusY - 12, 260, statusHeight);
+      ctx.fillStyle = '#fff';
+      statusLines.forEach((line, index) => {
+        ctx.fillText(line, 20, statusY + index * 20);
+      });
     }
     ctx.restore();
   }
