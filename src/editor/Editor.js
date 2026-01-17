@@ -39,17 +39,20 @@ const SHAPE_TOOLS = [
   { id: 'hollow', label: 'Hollow Rectangle', short: 'HOLL' },
   { id: 'line', label: 'Line', short: 'LINE' },
   { id: 'stair', label: 'Stair Generator', short: 'ST' },
-  { id: 'triangle', label: 'Triangle Placeholder', short: 'TRI', placeholder: true }
+  { id: 'triangle', label: 'Triangle Fill', short: 'TRI' },
+  { id: 'triangle-1x1', label: 'Triangle Block 1x1', short: 'T1' },
+  { id: 'triangle-2x1', label: 'Triangle Block 2x1', short: 'T2W' },
+  { id: 'triangle-1x2', label: 'Triangle Block 1x2', short: 'T2H' }
 ];
 
 const PREFAB_TYPES = [
-  { id: 'room', label: 'Room', short: 'RM' },
-  { id: 'circular', label: 'Circular Room', short: 'CIR' },
-  { id: 'cave', label: 'Cave Room', short: 'CAV' },
+  { id: 'room', label: 'Room', short: 'RM', roomType: true },
+  { id: 'circular', label: 'Circular Room', short: 'CIR', roomType: true },
+  { id: 'cave', label: 'Cave Room', short: 'CAV', roomType: true },
   { id: 'corridor', label: 'Corridor', short: 'CR' },
   { id: 'staircase', label: 'Staircase', short: 'SC' },
   { id: 'platform', label: 'Platform Run', short: 'PL' },
-  { id: 'arena', label: 'Arena', short: 'AR' },
+  { id: 'arena', label: 'Arena', short: 'AR', roomType: true },
   { id: 'puzzle', label: 'Puzzle Kit', short: 'PZ' }
 ];
 
@@ -65,6 +68,19 @@ const TILE_TOOL_LABELS = {
   erase: 'Erase',
   move: 'Move'
 };
+
+const BIOME_THEMES = [
+  { id: 'white', name: 'White', color: '#ffffff' },
+  { id: 'light-blue', name: 'Light Blue', color: '#9ad9ff' },
+  { id: 'dark-green', name: 'Dark Green', color: '#1f6b3a' },
+  { id: 'light-grey', name: 'Light Grey', color: '#c7c7c7' },
+  { id: 'red', name: 'Red', color: '#e04646' },
+  { id: 'purple', name: 'Purple', color: '#8b4cc7' }
+];
+
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const pickOne = (list) => list[randInt(0, list.length - 1)];
 
 export default class Editor {
   constructor(game) {
@@ -308,6 +324,404 @@ export default class Editor {
     anchor.download = 'chainsaw-world.json';
     anchor.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  promptRandomLevel() {
+    const currentSize = `${this.game.world.width}x${this.game.world.height}`;
+    const input = window.prompt('Enter level size (width x height):', currentSize);
+    if (!input) return;
+    const size = this.parseLevelSize(input);
+    if (!size) {
+      this.activeTooltip = 'Invalid size. Use format: width x height (e.g. 96x64).';
+      this.tooltipTimer = 2;
+      return;
+    }
+    this.createRandomLevel(size.width, size.height);
+  }
+
+  parseLevelSize(value) {
+    if (!value) return null;
+    const match = value.toLowerCase().match(/(\d+)\s*[x,]\s*(\d+)/);
+    if (!match) return null;
+    const width = clamp(parseInt(match[1], 10), 48, 256);
+    const height = clamp(parseInt(match[2], 10), 48, 256);
+    if (!Number.isFinite(width) || !Number.isFinite(height)) return null;
+    return { width, height };
+  }
+
+  createRandomLevel(width, height) {
+    const tiles = Array.from({ length: height }, () => Array.from({ length: width }, () => '#'));
+    const rooms = [];
+    const roomPrefabs = PREFAB_TYPES.filter((prefab) => prefab.roomType);
+    const spawn = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
+
+    const setTile = (x, y, char) => {
+      if (x < 0 || y < 0 || x >= width || y >= height) return;
+      tiles[y][x] = char;
+    };
+
+    const carveRectRoom = (room) => {
+      for (let y = room.y; y < room.y + room.h; y += 1) {
+        for (let x = room.x; x < room.x + room.w; x += 1) {
+          const wall = x === room.x || x === room.x + room.w - 1 || y === room.y || y === room.y + room.h - 1;
+          setTile(x, y, wall ? '#' : '.');
+        }
+      }
+    };
+
+    const carveCircularRoom = (room) => {
+      const centerX = room.x + room.w / 2;
+      const centerY = room.y + room.h / 2;
+      const radiusX = Math.max(room.w / 2, 1);
+      const radiusY = Math.max(room.h / 2, 1);
+      const isInside = (x, y) => {
+        const dx = (x + 0.5 - centerX) / radiusX;
+        const dy = (y + 0.5 - centerY) / radiusY;
+        return dx * dx + dy * dy <= 1;
+      };
+      for (let y = room.y; y < room.y + room.h; y += 1) {
+        for (let x = room.x; x < room.x + room.w; x += 1) {
+          if (!isInside(x, y)) continue;
+          const wall = !isInside(x + 1, y)
+            || !isInside(x - 1, y)
+            || !isInside(x, y + 1)
+            || !isInside(x, y - 1);
+          setTile(x, y, wall ? '#' : '.');
+        }
+      }
+    };
+
+    const carveCaveRoom = (room) => {
+      const widthSpan = room.w;
+      const heightSpan = room.h;
+      const maxSideInset = Math.min(2, Math.max(0, Math.floor(widthSpan / 2) - 1));
+      const maxBottomInset = Math.min(2, Math.max(0, Math.floor(heightSpan / 2) - 1));
+      const leftInsetByRow = [];
+      const rightInsetByRow = [];
+      const bottomInsetByColumn = [];
+
+      for (let y = 0; y < heightSpan; y += 1) {
+        let leftInset = Math.floor(Math.random() * (maxSideInset + 1));
+        let rightInset = Math.floor(Math.random() * (maxSideInset + 1));
+        if (leftInset + rightInset >= widthSpan - 1) {
+          rightInset = Math.max(0, widthSpan - 2 - leftInset);
+        }
+        leftInsetByRow[y] = leftInset;
+        rightInsetByRow[y] = rightInset;
+      }
+
+      for (let x = 0; x < widthSpan; x += 1) {
+        bottomInsetByColumn[x] = Math.floor(Math.random() * (maxBottomInset + 1));
+      }
+
+      for (let y = 0; y < heightSpan; y += 1) {
+        const leftEdge = room.x + leftInsetByRow[y];
+        const rightEdge = room.x + widthSpan - 1 - rightInsetByRow[y];
+        for (let x = room.x; x < room.x + widthSpan; x += 1) {
+          const columnIndex = x - room.x;
+          const bottomEdge = room.y + heightSpan - 1 - bottomInsetByColumn[columnIndex];
+          if (x < leftEdge || x > rightEdge || y + room.y > bottomEdge) continue;
+          const wall = x === leftEdge || x === rightEdge || y + room.y === room.y || y + room.y === bottomEdge;
+          setTile(x, y + room.y, wall ? '#' : '.');
+        }
+      }
+    };
+
+    const carveTriangleRoom = (room, orientation) => {
+      const widthSpan = Math.max(room.w - 1, 1);
+      const heightSpan = Math.max(room.h - 1, 1);
+      const signX = orientation.x;
+      const signY = orientation.y;
+      const origin = {
+        x: signX > 0 ? room.x : room.x + room.w - 1,
+        y: signY > 0 ? room.y : room.y + room.h - 1
+      };
+      const isInside = (x, y) => {
+        const relX = signX * (x - origin.x);
+        const relY = signY * (y - origin.y);
+        return relX >= 0 && relY >= 0 && (relX / widthSpan + relY / heightSpan <= 1);
+      };
+      for (let y = room.y; y < room.y + room.h; y += 1) {
+        for (let x = room.x; x < room.x + room.w; x += 1) {
+          if (!isInside(x, y)) continue;
+          const wall = !isInside(x + 1, y)
+            || !isInside(x - 1, y)
+            || !isInside(x, y + 1)
+            || !isInside(x, y - 1);
+          setTile(x, y, wall ? '#' : '.');
+        }
+      }
+    };
+
+    const roomsOverlap = (room) => rooms.some((other) => (
+      room.x - 2 < other.x + other.w
+      && room.x + room.w + 2 > other.x
+      && room.y - 2 < other.y + other.h
+      && room.y + room.h + 2 > other.y
+    ));
+
+    const placeRoom = (room) => {
+      if (room.x < 1 || room.y < 1 || room.x + room.w >= width - 1 || room.y + room.h >= height - 1) {
+        return false;
+      }
+      if (roomsOverlap(room)) return false;
+      room.area = room.w * room.h;
+      rooms.push(room);
+      return true;
+    };
+
+    const findFloorInRoom = (room, attempts = 40) => {
+      for (let i = 0; i < attempts; i += 1) {
+        const x = randInt(room.x + 1, room.x + room.w - 2);
+        const y = randInt(room.y + 1, room.y + room.h - 2);
+        if (tiles[y]?.[x] === '.') return { x, y };
+      }
+      return null;
+    };
+
+    const carveCorridor = (start, end) => {
+      const widen = (x, y) => {
+        setTile(x, y, '.');
+        setTile(x + 1, y, '.');
+      };
+      const carveLine = (x1, y1, x2, y2) => {
+        const dx = Math.sign(x2 - x1);
+        const dy = Math.sign(y2 - y1);
+        let x = x1;
+        let y = y1;
+        widen(x, y);
+        while (x !== x2 || y !== y2) {
+          if (x !== x2) x += dx;
+          if (y !== y2) y += dy;
+          widen(x, y);
+        }
+      };
+      if (Math.random() < 0.5) {
+        carveLine(start.x, start.y, end.x, start.y);
+        carveLine(end.x, start.y, end.x, end.y);
+      } else {
+        carveLine(start.x, start.y, start.x, end.y);
+        carveLine(start.x, end.y, end.x, end.y);
+      }
+    };
+
+    const addPillars = (room) => {
+      if (room.w < 16 || room.h < 16) return;
+      const pillars = randInt(1, 3);
+      for (let i = 0; i < pillars; i += 1) {
+        const spot = findFloorInRoom(room);
+        if (!spot) continue;
+        setTile(spot.x, spot.y, '#');
+      }
+    };
+
+    const addPlatform = (room) => {
+      if (room.w < 14 || room.h < 10) return;
+      const platformY = randInt(room.y + 2, room.y + room.h - 3);
+      const platformStart = randInt(room.x + 2, room.x + Math.floor(room.w / 2));
+      const platformEnd = randInt(platformStart + 3, room.x + room.w - 3);
+      for (let x = platformStart; x <= platformEnd; x += 1) {
+        if (tiles[platformY]?.[x] === '.') setTile(x, platformY, '=');
+      }
+    };
+
+    const addTraps = (room) => {
+      const traps = clamp(Math.floor(room.area / 180), 1, 4);
+      for (let i = 0; i < traps; i += 1) {
+        const spot = findFloorInRoom(room);
+        if (!spot) continue;
+        if (spot.x === spawn.x && spot.y === spawn.y) continue;
+        setTile(spot.x, spot.y, '!');
+      }
+    };
+
+    const addTriangleBlocks = (room) => {
+      const count = randInt(1, 3);
+      const triangleSizes = [
+        { w: 1, h: 1 },
+        { w: 2, h: 1 },
+        { w: 1, h: 2 }
+      ];
+      for (let i = 0; i < count; i += 1) {
+        const spot = findFloorInRoom(room);
+        if (!spot) continue;
+        const size = pickOne(triangleSizes);
+        const orientation = pickOne([
+          { x: 1, y: 1 },
+          { x: -1, y: 1 },
+          { x: 1, y: -1 },
+          { x: -1, y: -1 }
+        ]);
+        const origin = {
+          x: orientation.x > 0 ? spot.x : spot.x + size.w - 1,
+          y: orientation.y > 0 ? spot.y : spot.y + size.h - 1
+        };
+        const widthSpan = Math.max(size.w - 1, 1);
+        const heightSpan = Math.max(size.h - 1, 1);
+        for (let y = 0; y < size.h; y += 1) {
+          for (let x = 0; x < size.w; x += 1) {
+            const tileX = origin.x + orientation.x * x;
+            const tileY = origin.y + orientation.y * y;
+            const relX = orientation.x * (tileX - origin.x);
+            const relY = orientation.y * (tileY - origin.y);
+            if (relX / widthSpan + relY / heightSpan <= 1) {
+              if (tiles[tileY]?.[tileX] === '.') setTile(tileX, tileY, '#');
+            }
+          }
+        }
+      }
+    };
+
+    const ensureSpawnRoom = () => {
+      const room = {
+        x: clamp(spawn.x - 9, 1, width - 20),
+        y: clamp(spawn.y - 9, 1, height - 20),
+        w: clamp(18, 12, width - 2),
+        h: clamp(18, 12, height - 2),
+        type: 'room'
+      };
+      room.area = room.w * room.h;
+      rooms.push(room);
+      carveRectRoom(room);
+      return room;
+    };
+
+    const addRoomDetails = (room) => {
+      addPillars(room);
+      if (Math.random() < 0.65) addPlatform(room);
+      addTraps(room);
+      addTriangleBlocks(room);
+    };
+
+    const spawnRoom = ensureSpawnRoom();
+
+    const requiredRooms = [
+      { kind: 'tall', wRange: [12, 18], hRange: [28, 52] },
+      { kind: 'long', wRange: [28, 52], hRange: [12, 18] },
+      { kind: 'triangle', wRange: [18, 32], hRange: [18, 32] }
+    ];
+
+    requiredRooms.forEach((spec) => {
+      for (let attempt = 0; attempt < 40; attempt += 1) {
+        const w = randInt(spec.wRange[0], spec.wRange[1]);
+        const h = randInt(spec.hRange[0], spec.hRange[1]);
+        const room = {
+          x: randInt(1, width - w - 2),
+          y: randInt(1, height - h - 2),
+          w,
+          h,
+          type: spec.kind
+        };
+        if (!placeRoom(room)) continue;
+        if (spec.kind === 'triangle') {
+          carveTriangleRoom(room, pickOne([
+            { x: 1, y: 1 },
+            { x: -1, y: 1 },
+            { x: 1, y: -1 },
+            { x: -1, y: -1 }
+          ]));
+        } else {
+          carveRectRoom(room);
+        }
+        addRoomDetails(room);
+        break;
+      }
+    });
+
+    const targetRooms = clamp(Math.floor((width * height) / 900), 8, 18);
+    let attempts = 0;
+    while (rooms.length < targetRooms && attempts < targetRooms * 20) {
+      attempts += 1;
+      const prefab = pickOne(roomPrefabs);
+      const w = randInt(12, Math.min(64, width - 4));
+      const h = randInt(12, Math.min(64, height - 4));
+      const room = {
+        x: randInt(1, width - w - 2),
+        y: randInt(1, height - h - 2),
+        w,
+        h,
+        type: prefab.id
+      };
+      if (!placeRoom(room)) continue;
+      if (prefab.id === 'circular') {
+        carveCircularRoom(room);
+      } else if (prefab.id === 'cave') {
+        carveCaveRoom(room);
+      } else {
+        carveRectRoom(room);
+      }
+      addRoomDetails(room);
+    }
+
+    rooms.forEach((room) => {
+      room.center = {
+        x: Math.floor(room.x + room.w / 2),
+        y: Math.floor(room.y + room.h / 2)
+      };
+      room.area = room.w * room.h;
+    });
+
+    for (let i = 1; i < rooms.length; i += 1) {
+      carveCorridor(rooms[i - 1].center, rooms[i].center);
+    }
+
+    setTile(spawn.x, spawn.y, '.');
+
+    const enemies = [];
+    const difficultyOrder = ['practice', 'skitter', 'spitter', 'bulwark', 'floater', 'slicer', 'hivenode', 'sentinel'];
+    const maxDist = Math.hypot(width / 2, height / 2) || 1;
+    rooms.forEach((room) => {
+      if (room === spawnRoom) return;
+      const enemyCount = clamp(Math.floor(room.area / 220), 1, 5);
+      const distance = Math.hypot(room.center.x - spawn.x, room.center.y - spawn.y);
+      const ratio = clamp(distance / maxDist, 0, 1);
+      const baseIndex = Math.floor(ratio * (difficultyOrder.length - 1));
+      for (let i = 0; i < enemyCount; i += 1) {
+        const spot = findFloorInRoom(room);
+        if (!spot) continue;
+        const index = clamp(baseIndex + randInt(0, 1), 0, difficultyOrder.length - 1);
+        enemies.push({ x: spot.x, y: spot.y, type: difficultyOrder[index] });
+      }
+    });
+
+    const regions = [];
+    const cols = 3;
+    const rows = 2;
+    const regionWidth = Math.floor(width / cols);
+    const regionHeight = Math.floor(height / rows);
+    BIOME_THEMES.forEach((theme, index) => {
+      const col = index % cols;
+      const row = Math.floor(index / cols);
+      const x = col * regionWidth;
+      const y = row * regionHeight;
+      const w = col === cols - 1 ? width - x : regionWidth;
+      const h = row === rows - 1 ? height - y : regionHeight;
+      regions.push({
+        id: theme.id,
+        name: theme.name,
+        color: theme.color,
+        rect: [x, y, w, h]
+      });
+    });
+
+    const data = {
+      schemaVersion: 1,
+      tileSize: this.game.world.tileSize,
+      width,
+      height,
+      spawn,
+      tiles: tiles.map((row) => row.join('')),
+      regions,
+      enemies
+    };
+
+    this.game.applyWorldData(data);
+    this.pendingChanges.clear();
+    this.pendingSpawn = null;
+    this.pendingEnemies.clear();
+    this.undoStack = [];
+    this.redoStack = [];
+    this.resetView();
   }
 
   undo() {
@@ -1044,6 +1458,29 @@ export default class Editor {
           }
         }
       }
+    } else if (tool.id === 'triangle-1x1' || tool.id === 'triangle-2x1' || tool.id === 'triangle-1x2') {
+      const sizeMap = {
+        'triangle-1x1': { w: 1, h: 1 },
+        'triangle-2x1': { w: 2, h: 1 },
+        'triangle-1x2': { w: 1, h: 2 }
+      };
+      const size = sizeMap[tool.id];
+      const widthSpanFixed = Math.max(size.w - 1, 1);
+      const heightSpanFixed = Math.max(size.h - 1, 1);
+      const target = {
+        x: start.x + signX * (size.w - 1),
+        y: start.y + signY * (size.h - 1)
+      };
+      const fixedBounds = this.getDragBounds(start, target);
+      for (let y = fixedBounds.y1; y <= fixedBounds.y2; y += 1) {
+        for (let x = fixedBounds.x1; x <= fixedBounds.x2; x += 1) {
+          const relX = signX * (x - start.x);
+          const relY = signY * (y - start.y);
+          if (relX >= 0 && relY >= 0 && (relX / widthSpanFixed + relY / heightSpanFixed <= 1)) {
+            tiles.push({ x, y, char });
+          }
+        }
+      }
     }
     return tiles;
   }
@@ -1615,7 +2052,14 @@ export default class Editor {
           this.mode = 'tile';
           this.tileTool = tool.id;
         }
-      }))
+      })),
+      {
+        id: 'random-level',
+        label: 'Random Level',
+        active: false,
+        tooltip: 'Create a random level layout',
+        onClick: () => this.promptRandomLevel()
+      }
     ];
 
     ctx.save();
@@ -1778,6 +2222,13 @@ export default class Editor {
                 this.tileTool = tool.id;
               }
             })),
+            {
+              id: 'random-level',
+              label: 'RANDOM LEVEL',
+              active: false,
+              tooltip: 'Create a random level layout',
+              onClick: () => this.promptRandomLevel()
+            },
             {
               id: 'save',
               label: 'SAVE',
