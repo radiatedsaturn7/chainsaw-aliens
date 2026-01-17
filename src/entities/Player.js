@@ -112,8 +112,14 @@ export default class Player {
     this.sawRideMomentum = preserveMomentum ? this.vx : 0;
   }
 
-  update(dt, input, world, abilities) {
+  update(dt, input, world, abilities = {}) {
     if (this.dead) return;
+    if (!Number.isFinite(this.magBootsHeat)) {
+      this.magBootsHeat = 0;
+    }
+    if (!Number.isFinite(this.magBootsOverheat)) {
+      this.magBootsOverheat = 0;
+    }
     this.justJumped = false;
     this.justDashed = false;
     this.justLanded = false;
