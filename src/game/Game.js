@@ -1532,6 +1532,9 @@ export default class Game {
     const nextY = this.sawAnchor.y - climbSpeed * dt;
     const tileY = Math.floor(nextY / tileSize);
     if (this.world.isSolid(tileX, tileY, this.abilities)) {
+      if (this.wouldSawAnchorPullIntoWall(this.sawAnchor.x, nextY)) {
+        return;
+      }
       this.sawAnchor.y = nextY;
     }
   }
@@ -1671,6 +1674,20 @@ export default class Game {
       this.player.onGround = false;
     }
     return false;
+  }
+
+  wouldSawAnchorPullIntoWall(nextX, nextY) {
+    const tetherMax = this.world.tileSize * 3;
+    const dx = this.player.x - nextX;
+    const dy = this.player.y - nextY;
+    const dist = Math.hypot(dx, dy);
+    if (dist <= tetherMax || dist <= 0.01) return false;
+    const targetX = nextX + dx * (tetherMax / dist);
+    const targetY = nextY + dy * (tetherMax / dist);
+    if (!this.isPlayerBlockedAt(targetX, targetY)) return false;
+    const xOnlyOk = !this.isPlayerBlockedAt(targetX, this.player.y);
+    const yOnlyOk = !this.isPlayerBlockedAt(this.player.x, targetY);
+    return !(xOnlyOk || yOnlyOk);
   }
 
   applyAnchorClimb(dt) {
@@ -1898,6 +1915,39 @@ export default class Game {
     ctx.restore();
   }
 
+  drawSawAnchor(ctx) {
+    if (!this.sawAnchor.active) return;
+    this.drawTether(ctx);
+    ctx.save();
+    if (this.sawAnchor.embedded) {
+      const startX = this.player.x;
+      const startY = this.player.y - 8;
+      const angle = Math.atan2(this.sawAnchor.y - startY, this.sawAnchor.x - startX);
+      ctx.translate(this.sawAnchor.x, this.sawAnchor.y);
+      ctx.rotate(angle);
+      ctx.fillStyle = '#cfd5dc';
+      ctx.fillRect(2, -3, 20, 6);
+      ctx.fillStyle = '#9aa3ad';
+      for (let i = 0; i < 5; i += 1) {
+        ctx.fillRect(4 + i * 4, 2, 2, 3);
+      }
+      ctx.fillStyle = '#f25c2a';
+      ctx.fillRect(-10, -7, 12, 14);
+      ctx.fillStyle = '#2c2f38';
+      ctx.fillRect(-14, -8, 5, 6);
+      ctx.fillStyle = '#1b1e24';
+      ctx.fillRect(-6, -3, 4, 6);
+    } else {
+      ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+      ctx.strokeRect(this.sawAnchor.x - 8, this.sawAnchor.y - 8, 16, 16);
+      ctx.beginPath();
+      ctx.moveTo(this.sawAnchor.x - 10, this.sawAnchor.y + 10);
+      ctx.lineTo(this.sawAnchor.x + 10, this.sawAnchor.y - 10);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
   handleFlameSawDrain(dt) {
     if (!this.player.flameMode || !this.abilities.flame) return;
     const drain = dt * 0.12;
@@ -2019,15 +2069,7 @@ export default class Game {
     this.roomCoverageTest.drawWorld(ctx);
     this.drawInteractables(ctx);
     if (this.sawAnchor.active) {
-      this.drawTether(ctx);
-      ctx.save();
-      ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-      ctx.strokeRect(this.sawAnchor.x - 8, this.sawAnchor.y - 8, 16, 16);
-      ctx.beginPath();
-      ctx.moveTo(this.sawAnchor.x - 10, this.sawAnchor.y + 10);
-      ctx.lineTo(this.sawAnchor.x + 10, this.sawAnchor.y - 10);
-      ctx.stroke();
-      ctx.restore();
+      this.drawSawAnchor(ctx);
     }
     this.drawObjectiveBeacon(ctx);
     this.drawTutorialHints(ctx);
