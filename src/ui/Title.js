@@ -1,8 +1,11 @@
 export default class Title {
   constructor() {
     this.timer = 0;
+    this.startBounds = { x: 0, y: 0, w: 0, h: 0 };
     this.editorBounds = { x: 0, y: 0, w: 0, h: 0 };
     this.endlessBounds = { x: 0, y: 0, w: 0, h: 0 };
+    this.menuOrder = ['start', 'endless', 'editor'];
+    this.selectionIndex = 0;
     this.aliens = Array.from({ length: 12 }, (_, i) => ({
       x: 120 + i * 80,
       y: -Math.random() * 400,
@@ -106,32 +109,58 @@ export default class Title {
     ctx.fillText('Chainsaw Aliens', width / 2, 120);
     ctx.font = '18px Courier New';
     if (isMobile) {
-      ctx.fillText('Tap to continue', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
+      ctx.fillText('Tap START to begin', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
     } else {
-      ctx.fillText('Press SPACE to begin', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
+      ctx.fillText('Press SPACE or START to begin', width / 2, height - 140 + Math.sin(this.timer * 4) * 6);
     }
 
     const buttonWidth = 180;
     const buttonHeight = 32;
     const buttonX = width / 2 - buttonWidth / 2;
+    const startY = height - 154;
     const endlessY = height - 112;
     const editorY = height - 70;
-    ctx.fillStyle = 'rgba(255,255,255,0.12)';
-    ctx.fillRect(buttonX, endlessY, buttonWidth, buttonHeight);
-    ctx.strokeStyle = '#fff';
-    ctx.strokeRect(buttonX, endlessY, buttonWidth, buttonHeight);
-    ctx.fillStyle = '#fff';
-    ctx.fillText('ENDLESS MODE', width / 2, endlessY + 22);
-    this.endlessBounds = { x: buttonX, y: endlessY, w: buttonWidth, h: buttonHeight };
 
-    ctx.fillStyle = 'rgba(255,255,255,0.12)';
-    ctx.fillRect(buttonX, editorY, buttonWidth, buttonHeight);
-    ctx.strokeStyle = '#fff';
-    ctx.strokeRect(buttonX, editorY, buttonWidth, buttonHeight);
-    ctx.fillStyle = '#fff';
-    ctx.fillText('LEVEL EDITOR', width / 2, editorY + 22);
+    const drawButton = (label, action, y) => {
+      const selected = this.menuOrder[this.selectionIndex] === action;
+      ctx.fillStyle = selected ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)';
+      ctx.fillRect(buttonX, y, buttonWidth, buttonHeight);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(label, width / 2, y + 22);
+      if (selected) {
+        ctx.beginPath();
+        ctx.moveTo(buttonX - 14, y + buttonHeight / 2);
+        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 - 6);
+        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 + 6);
+        ctx.closePath();
+        ctx.fill();
+      }
+    };
+
+    drawButton('START', 'start', startY);
+    this.startBounds = { x: buttonX, y: startY, w: buttonWidth, h: buttonHeight };
+    drawButton('ENDLESS MODE', 'endless', endlessY);
+    this.endlessBounds = { x: buttonX, y: endlessY, w: buttonWidth, h: buttonHeight };
+    drawButton('LEVEL EDITOR', 'editor', editorY);
     this.editorBounds = { x: buttonX, y: editorY, w: buttonWidth, h: buttonHeight };
     ctx.restore();
+  }
+
+  moveSelection(direction) {
+    const count = this.menuOrder.length;
+    if (!count) return;
+    this.selectionIndex = (this.selectionIndex + direction + count) % count;
+  }
+
+  getSelectedAction() {
+    return this.menuOrder[this.selectionIndex] || 'start';
+  }
+
+  isStartHit(x, y) {
+    const bounds = this.startBounds;
+    return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
   }
 
   isEditorHit(x, y) {

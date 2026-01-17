@@ -824,15 +824,34 @@ export default class Game {
         this.input.flush();
         return;
       }
+      if (this.input.wasPressed('up')) {
+        this.title.moveSelection(-1);
+        this.audio.menu();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+      }
+      if (this.input.wasPressed('down')) {
+        this.title.moveSelection(1);
+        this.audio.menu();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+      }
       if (this.input.wasPressed('interact')) {
-        if (this.gameMode !== 'story' && this.storyData) {
-          this.gameMode = 'story';
-          this.applyWorldData(this.storyData);
-          this.resetRun();
+        const action = this.title.getSelectedAction();
+        if (action === 'endless') {
+          this.startEndlessMode();
+        } else if (action === 'editor') {
+          this.enterEditor();
         } else {
-          this.gameMode = 'story';
+          if (this.gameMode !== 'story' && this.storyData) {
+            this.gameMode = 'story';
+            this.applyWorldData(this.storyData);
+            this.resetRun();
+          } else {
+            this.gameMode = 'story';
+          }
+          this.state = 'dialog';
         }
-        this.state = 'dialog';
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
@@ -961,9 +980,6 @@ export default class Game {
       this.attackHoldTimer += dt * timeScale;
     }
     if (!this.player.sawRideActive && this.player.onGround && this.input.isDown('down') && this.input.wasPressed('attack')) {
-      this.player.startSawRide();
-    }
-    if (!this.player.sawRideActive && this.player.onGround && this.input.isDown('attack') && this.attackHoldTimer > this.attackHoldThreshold && !this.input.isDown('down')) {
       this.player.startSawRide();
     }
 
@@ -1470,6 +1486,11 @@ export default class Game {
       if (this.isPlayerPositionClear(targetX, this.player.y)) {
         this.player.x = targetX;
         this.player.vx = 0;
+      } else {
+        const enemyTargetX = enemy.x - overlapX * dir;
+        if (this.isEnemyPositionClear(enemy, enemyTargetX, enemy.y)) {
+          enemy.x = enemyTargetX;
+        }
       }
     } else {
       const dir = playerRect.y < enemyRect.y ? -1 : 1;
@@ -1479,6 +1500,11 @@ export default class Game {
         this.player.vy = 0;
         if (dir < 0) {
           this.player.onGround = true;
+        }
+      } else {
+        const enemyTargetY = enemy.y - overlapY * dir;
+        if (this.isEnemyPositionClear(enemy, enemy.x, enemyTargetY)) {
+          enemy.y = enemyTargetY;
         }
       }
     }
@@ -3565,6 +3591,20 @@ export default class Game {
     }
     if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(payload.x, payload.y)) {
       this.returnToEditorFromPlaytest();
+      return;
+    }
+    if (this.state === 'title' && this.title.isStartHit(payload.x, payload.y) && !this.testDashboard.visible) {
+      if (this.gameMode !== 'story' && this.storyData) {
+        this.gameMode = 'story';
+        this.applyWorldData(this.storyData);
+        this.resetRun();
+      } else {
+        this.gameMode = 'story';
+      }
+      this.state = 'dialog';
+      this.audio.ui();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
       return;
     }
     if (this.state === 'title' && this.title.isEndlessHit(payload.x, payload.y)) {
