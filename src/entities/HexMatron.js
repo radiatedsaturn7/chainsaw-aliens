@@ -1,4 +1,5 @@
 import BossBase from './BossBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class HexMatron extends BossBase {
   constructor(x, y) {
@@ -47,12 +48,15 @@ export default class HexMatron extends BossBase {
     if (this.dead && this.deathTimer > 0) {
       ctx.globalAlpha = Math.max(0, 1 - this.deathProgress * 0.76);
     }
-    ctx.strokeStyle = '#ff7f9f';
+    applyEnemyPalette(ctx, false);
     ctx.lineWidth = Math.max(3, this.width * 0.004);
     ctx.beginPath();
     ctx.arc(0, 0, size, Math.PI * 0.1, Math.PI * 0.9);
     ctx.arc(0, 0, size * 0.7, Math.PI * 0.9, Math.PI * 0.1, true);
+    ctx.closePath();
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.moveTo(-size * 0.8, -size * 0.1 + sway);
     ctx.lineTo(-size * 1.1, -size * 0.5 + sway);
@@ -63,6 +67,7 @@ export default class HexMatron extends BossBase {
     ctx.moveTo(-size * 0.6, size * 0.4 + sway);
     ctx.lineTo(size * 0.6, size * 0.4 + sway);
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     this.drawDeadEyes(ctx, size, sway * 0.2);
     ctx.restore();
     if (this.dead && this.deathTimer > 0) {

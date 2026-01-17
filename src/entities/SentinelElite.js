@@ -1,4 +1,5 @@
 import EnemyBase from './EnemyBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class SentinelElite extends EnemyBase {
   constructor(x, y) {
@@ -31,12 +32,14 @@ export default class SentinelElite extends EnemyBase {
     ctx.translate(this.x + offsetX, this.y + offsetY);
     const glow = this.stagger > 0.6 ? 1 : 0.8;
     const alpha = flash ? 1 : glow;
-    ctx.strokeStyle = `rgba(255, 90, 90,${alpha})`;
+    applyEnemyPalette(ctx, flash, alpha);
     ctx.lineWidth = 2;
     const wobble = Math.sin(this.animTime * 3) * 2;
     ctx.beginPath();
     ctx.arc(0, 0, 20 + wobble, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.moveTo(-22, 0);
     ctx.lineTo(22, 0);
@@ -52,6 +55,8 @@ export default class SentinelElite extends EnemyBase {
     ctx.beginPath();
     ctx.arc(-6, -2, 2, 0, Math.PI * 2);
     ctx.arc(6, -2, 2, 0, Math.PI * 2);
+    ctx.fillStyle = ENEMY_PALETTE.accent;
+    ctx.fill();
     ctx.stroke();
     ctx.restore();
   }

@@ -1,4 +1,5 @@
 import EnemyBase from './EnemyBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class PracticeDrone extends EnemyBase {
   constructor(x, y) {
@@ -29,14 +30,17 @@ export default class PracticeDrone extends EnemyBase {
     ctx.translate(this.x + offsetX, this.y + Math.sin(this.pulse) * 4 + offsetY);
     const glow = this.stagger > 0.6 ? 1 : 0.8;
     const alpha = flash ? 1 : glow;
-    ctx.strokeStyle = `rgba(255, 90, 90,${alpha})`;
+    applyEnemyPalette(ctx, flash, alpha);
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.rect(-18, -12, 36, 24);
+    ctx.fill();
     ctx.stroke();
+    ctx.fillStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.arc(-8, -6, 4, 0, Math.PI * 2);
     ctx.arc(8, -6, 4, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
     ctx.beginPath();
     ctx.moveTo(-20, 0);

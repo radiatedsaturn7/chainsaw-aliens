@@ -1,4 +1,5 @@
 import EnemyBase from './EnemyBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class HiveNode extends EnemyBase {
   constructor(x, y) {
@@ -25,15 +26,18 @@ export default class HiveNode extends EnemyBase {
     ctx.translate(this.x + offsetX, this.y + offsetY);
     const glow = this.stagger > 0.6 ? 1 : 0.8;
     const alpha = flash ? 1 : glow;
-    ctx.strokeStyle = `rgba(255, 90, 90,${alpha})`;
+    applyEnemyPalette(ctx, flash, alpha);
     ctx.lineWidth = 2;
     const pulse = Math.sin(this.animTime * 4) * 3;
     ctx.beginPath();
     ctx.rect(-20, -18, 40, 36);
+    ctx.fill();
     ctx.stroke();
     ctx.beginPath();
     ctx.arc(0, 0, 8 + pulse * 0.2, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.moveTo(-18, -14);
     ctx.lineTo(18, -6);

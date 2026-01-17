@@ -1,4 +1,5 @@
 import BossBase from './BossBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class BroodTitan extends BossBase {
   constructor(x, y) {
@@ -56,21 +57,25 @@ export default class BroodTitan extends BossBase {
     if (this.dead && this.deathTimer > 0) {
       ctx.globalAlpha = Math.max(0, 1 - this.deathProgress * 0.75);
     }
-    ctx.strokeStyle = '#ff8686';
+    applyEnemyPalette(ctx, false);
     ctx.lineWidth = Math.max(3, this.width * 0.004);
     ctx.beginPath();
     ctx.ellipse(0, 0, size, size * 0.7 + pulse, 0, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
     ctx.beginPath();
     ctx.arc(-size * 0.55, -size * 0.1, size * 0.25, 0, Math.PI * 2);
     ctx.arc(size * 0.55, -size * 0.1, size * 0.25, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.moveTo(-size * 0.9, size * 0.2);
     ctx.lineTo(-size * 1.2, size * 0.6 + pulse);
     ctx.moveTo(size * 0.9, size * 0.2);
     ctx.lineTo(size * 1.2, size * 0.6 + pulse);
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     this.drawDeadEyes(ctx, size, -size * 0.05);
     ctx.restore();
     if (this.dead && this.deathTimer > 0) {

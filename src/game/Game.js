@@ -17,6 +17,7 @@ import Harrier from '../entities/Harrier.js';
 import Bouncer from '../entities/Bouncer.js';
 import Coward from '../entities/Coward.js';
 import Ranger from '../entities/Ranger.js';
+import Pouncer from '../entities/Pouncer.js';
 import FinalBoss from '../entities/FinalBoss.js';
 import SunderBehemoth from '../entities/SunderBehemoth.js';
 import RiftRam from '../entities/RiftRam.js';
@@ -484,6 +485,7 @@ export default class Game {
     if (wave >= 4) pool.push('slicer');
     if (wave >= 6) pool.push('bulwark');
     if (wave >= 6) pool.push('bouncer');
+    if (wave >= 6) pool.push('pouncer');
     if (wave >= 7) pool.push('coward');
     if (wave >= 8) pool.push('hivenode');
     if (wave >= 9) pool.push('ranger');
@@ -538,6 +540,9 @@ export default class Game {
         break;
       case 'ranger':
         this.enemies.push(new Ranger(worldX, worldY));
+        break;
+      case 'pouncer':
+        this.enemies.push(new Pouncer(worldX, worldY));
         break;
       case 'sunderbehemoth':
         this.enemies.push(new SunderBehemoth(worldX, worldY));
@@ -635,38 +640,41 @@ export default class Game {
           case 'coward':
             this.enemies.push(new Coward(worldX, worldY));
             break;
-      case 'ranger':
-        this.enemies.push(new Ranger(worldX, worldY));
-        break;
-      case 'sunderbehemoth':
-        this.enemies.push(new SunderBehemoth(worldX, worldY));
-        break;
-      case 'riftram':
-        this.enemies.push(new RiftRam(worldX, worldY));
-        break;
-      case 'broodtitan':
-        this.enemies.push(new BroodTitan(worldX, worldY));
-        break;
-      case 'nullaegis':
-        this.enemies.push(new NullAegis(worldX, worldY));
-        break;
-      case 'hexmatron':
-        this.enemies.push(new HexMatron(worldX, worldY));
-        break;
-      case 'gravewarden':
-        this.enemies.push(new GraveWarden(worldX, worldY));
-        break;
-      case 'obsidiancrown':
-        this.enemies.push(new ObsidianCrown(worldX, worldY));
-        break;
-      case 'cataclysmcolossus':
-        this.enemies.push(new CataclysmColossus(worldX, worldY));
-        break;
-      case 'finalboss':
-        this.boss = new FinalBoss(worldX, worldY);
-        break;
-      default:
-        break;
+          case 'pouncer':
+            this.enemies.push(new Pouncer(worldX, worldY));
+            break;
+          case 'ranger':
+            this.enemies.push(new Ranger(worldX, worldY));
+            break;
+          case 'sunderbehemoth':
+            this.enemies.push(new SunderBehemoth(worldX, worldY));
+            break;
+          case 'riftram':
+            this.enemies.push(new RiftRam(worldX, worldY));
+            break;
+          case 'broodtitan':
+            this.enemies.push(new BroodTitan(worldX, worldY));
+            break;
+          case 'nullaegis':
+            this.enemies.push(new NullAegis(worldX, worldY));
+            break;
+          case 'hexmatron':
+            this.enemies.push(new HexMatron(worldX, worldY));
+            break;
+          case 'gravewarden':
+            this.enemies.push(new GraveWarden(worldX, worldY));
+            break;
+          case 'obsidiancrown':
+            this.enemies.push(new ObsidianCrown(worldX, worldY));
+            break;
+          case 'cataclysmcolossus':
+            this.enemies.push(new CataclysmColossus(worldX, worldY));
+            break;
+          case 'finalboss':
+            this.boss = new FinalBoss(worldX, worldY);
+            break;
+          default:
+            break;
         }
       });
       this.bossActive = false;
@@ -1358,7 +1366,47 @@ export default class Game {
     return Math.hypot(dx, dy) <= range;
   }
 
-  resolvePlayerEnemyOverlap(enemy) {
+  isEnemyPositionClear(enemy, x, y) {
+    const tileSize = this.world.tileSize;
+    const rect = {
+      x: x - enemy.width / 2,
+      y: y - enemy.height / 2,
+      w: enemy.width,
+      h: enemy.height
+    };
+    const startX = Math.floor(rect.x / tileSize);
+    const endX = Math.floor((rect.x + rect.w) / tileSize);
+    const startY = Math.floor(rect.y / tileSize);
+    const endY = Math.floor((rect.y + rect.h) / tileSize);
+    for (let ty = startY; ty <= endY; ty += 1) {
+      for (let tx = startX; tx <= endX; tx += 1) {
+        if (this.world.isSolid(tx, ty, this.abilities, { ignoreOneWay: true })) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  isPlayerKnockbackBlocked(dir) {
+    const rect = this.player.rect;
+    const tileSize = this.world.tileSize;
+    const testX = this.player.x + (rect.w / 2 + 2) * dir;
+    const topY = rect.y + 4;
+    const bottomY = rect.y + rect.h - 4;
+    const tileX = Math.floor(testX / tileSize);
+    const tileTop = Math.floor(topY / tileSize);
+    const tileBottom = Math.floor(bottomY / tileSize);
+    if (this.world.isSolid(tileX, tileTop, this.abilities, { ignoreOneWay: true })) {
+      return true;
+    }
+    if (this.world.isSolid(tileX, tileBottom, this.abilities, { ignoreOneWay: true })) {
+      return true;
+    }
+    return false;
+  }
+
+  resolvePlayerEnemyOverlap(enemy, { pushEnemy = false } = {}) {
     const playerRect = this.player.rect;
     const enemyRect = enemy.rect;
     const overlapX = Math.min(
@@ -1370,6 +1418,16 @@ export default class Game {
       enemyRect.y + enemyRect.h - playerRect.y
     );
     if (overlapX <= 0 || overlapY <= 0) return false;
+    if (pushEnemy && overlapX < overlapY) {
+      const dir = Math.sign(this.player.vx) || this.player.facing;
+      if (dir !== 0) {
+        const targetX = enemy.x + overlapX * dir;
+        if (this.isEnemyPositionClear(enemy, targetX, enemy.y)) {
+          enemy.x = targetX;
+          return true;
+        }
+      }
+    }
     if (overlapX < overlapY) {
       const dir = playerRect.x < enemyRect.x ? -1 : 1;
       this.player.x += overlapX * dir;
@@ -1387,7 +1445,7 @@ export default class Game {
 
   applyPlayerKnockback(enemy, strengthX = 180, strengthY = 140) {
     const knockback = Math.sign(this.player.x - enemy.x) || 1;
-    this.player.vx = knockback * strengthX;
+    this.player.vx = this.isPlayerKnockbackBlocked(knockback) ? 0 : knockback * strengthX;
     this.player.vy = -strengthY;
     this.player.onGround = false;
   }
@@ -1737,7 +1795,8 @@ export default class Game {
           }
         }
       }
-      this.resolvePlayerEnemyOverlap(enemy);
+      const canPushEnemy = revHeld && Math.abs(dx) < revRange && Math.abs(dy) < revVerticalRange;
+      this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: canPushEnemy });
 
       if (enemy.justStaggered) {
         this.audio.stagger();
@@ -2891,10 +2950,11 @@ export default class Game {
       for (let x = 0; x < this.world.width; x += 1) {
         const tile = this.world.getTile(x, y);
         if (tile === '#') {
-          ctx.fillStyle = '#fff';
+          ctx.fillStyle = '#3a3a3a';
           ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-          ctx.strokeStyle = '#fff';
+          ctx.strokeStyle = '#2b2b2b';
           ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#1f1f1f';
           ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
         }
         if (tile === '^') {

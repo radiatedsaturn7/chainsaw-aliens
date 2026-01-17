@@ -1,4 +1,5 @@
 import EnemyBase from './EnemyBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class Bulwark extends EnemyBase {
   constructor(x, y) {
@@ -30,12 +31,14 @@ export default class Bulwark extends EnemyBase {
     ctx.translate(this.x + offsetX, this.y + offsetY);
     const glow = this.stagger > 0.6 ? 1 : 0.8;
     const alpha = flash ? 1 : glow;
-    ctx.strokeStyle = `rgba(255, 90, 90,${alpha})`;
+    applyEnemyPalette(ctx, flash, alpha);
     ctx.lineWidth = 2;
     const sway = Math.sin(this.animTime * 2) * 2;
     ctx.beginPath();
     ctx.rect(-16, -16 + sway, 32, 32);
+    ctx.fill();
     ctx.stroke();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     if (this.isOpen()) {
       ctx.moveTo(-16, 0);
@@ -51,6 +54,8 @@ export default class Bulwark extends EnemyBase {
     ctx.stroke();
     ctx.beginPath();
     ctx.rect(-8, -2, 16, 10);
+    ctx.fillStyle = ENEMY_PALETTE.accent;
+    ctx.fill();
     ctx.stroke();
     ctx.restore();
   }

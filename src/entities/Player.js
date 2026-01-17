@@ -66,6 +66,8 @@ export default class Player {
     this.aimX = 1;
     this.aimY = 0;
     this.aimAngle = 0;
+    this.chainsawFacing = this.facing;
+    this.chainsawHeld = false;
   }
 
   get rect() {
@@ -179,8 +181,9 @@ export default class Player {
     const canAirJump = !canGroundJump && this.jumpsRemaining > 0;
     if ((canGroundJump || canAirJump) && this.jumpBuffer > 0) {
       if (this.magBootsEngaged && this.onWall !== 0) {
-        this.vx = -this.onWall * this.speed * 1.3;
-        this.vy = -this.jumpPower * 0.9;
+        this.vx = -this.onWall * this.speed * 1.4;
+        this.vy = -this.jumpPower;
+        this.onWall = 0;
         this.magBootsHeat += 0.2;
       } else {
         this.vy = -this.jumpPower;
@@ -291,6 +294,13 @@ export default class Player {
     } else {
       this.aimAngle = 0;
     }
+    const chainsawHeld = input.isDown('attack') || input.isDown('rev');
+    if (chainsawHeld && !this.chainsawHeld) {
+      this.chainsawFacing = this.facing || 1;
+    } else if (!chainsawHeld) {
+      this.chainsawFacing = this.facing || 1;
+    }
+    this.chainsawHeld = chainsawHeld;
     this.revving = input.isDown('rev') && this.canRev();
     this.attackTimer = Math.max(0, this.attackTimer - dt);
     this.sawRideDamageTimer = Math.max(0, this.sawRideDamageTimer - dt);
@@ -440,7 +450,7 @@ export default class Player {
     ctx.beginPath();
     ctx.moveTo(0, -4 + crouchOffset);
     const barLength = this.revving ? this.width * 1.1 : this.width * 0.9;
-    const barDir = this.aimingUp ? 1 : this.facing;
+    const barDir = this.aimingUp ? 1 : (this.chainsawHeld ? this.chainsawFacing : this.facing);
     ctx.lineTo(barDir * barLength, 0 + crouchOffset);
     ctx.lineTo(0, 6 + (this.revving ? 2 : 0) + crouchOffset);
     ctx.stroke();

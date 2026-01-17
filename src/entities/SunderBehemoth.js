@@ -1,4 +1,5 @@
 import BossBase from './BossBase.js';
+import { applyEnemyPalette, ENEMY_PALETTE } from './enemyPalette.js';
 
 export default class SunderBehemoth extends BossBase {
   constructor(x, y) {
@@ -50,7 +51,7 @@ export default class SunderBehemoth extends BossBase {
     if (this.dead && this.deathTimer > 0) {
       ctx.globalAlpha = Math.max(0, 1 - this.deathProgress * 0.8);
     }
-    ctx.strokeStyle = '#ff8b8b';
+    applyEnemyPalette(ctx, false);
     ctx.lineWidth = Math.max(3, this.width * 0.004);
     ctx.beginPath();
     ctx.moveTo(0, -size - pulse);
@@ -58,12 +59,15 @@ export default class SunderBehemoth extends BossBase {
     ctx.lineTo(0, size + pulse);
     ctx.lineTo(-size * 0.9, 0);
     ctx.closePath();
+    ctx.fill();
     ctx.stroke();
     ctx.beginPath();
     ctx.arc(0, 0, size * 0.45 + pulse * 0.3, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
     ctx.save();
     ctx.rotate(this.spinAngle);
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     ctx.beginPath();
     ctx.moveTo(-size * 0.7, -size * 0.2);
     ctx.lineTo(-size * 1.1, -size * 0.6);
@@ -75,6 +79,7 @@ export default class SunderBehemoth extends BossBase {
     ctx.lineTo(size * 1.1, size * 0.6);
     ctx.stroke();
     ctx.restore();
+    ctx.strokeStyle = ENEMY_PALETTE.accent;
     this.drawDeadEyes(ctx, size, pulse * 0.2);
     ctx.restore();
     if (this.dead && this.deathTimer > 0) {

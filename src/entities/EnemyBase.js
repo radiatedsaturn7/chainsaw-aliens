@@ -1,3 +1,5 @@
+import { applyEnemyPalette } from './enemyPalette.js';
+
 let ENEMY_ID = 0;
 
 export default class EnemyBase {
@@ -70,10 +72,11 @@ export default class EnemyBase {
     ctx.save();
     const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
     ctx.translate(this.x + offsetX, this.y + offsetY);
-    ctx.strokeStyle = flash ? '#ffd5d5' : '#ff6b6b';
+    applyEnemyPalette(ctx, flash);
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
+    ctx.fill();
     ctx.stroke();
     ctx.restore();
   }
