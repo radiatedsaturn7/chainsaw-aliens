@@ -105,6 +105,12 @@ export default class AudioSystem {
     this.noise(0.12, 0.16);
   }
 
+  explosion() {
+    this.tone(70, 0.3, 'square');
+    this.tone(110, 0.25, 'sawtooth');
+    this.noise(0.22, 0.2);
+  }
+
   damage() {
     this.tone(80, 0.12, 'square');
     this.noise(0.08, 0.1);
@@ -127,6 +133,15 @@ export default class AudioSystem {
 
   menu() {
     this.tone(300, 0.06, 'triangle');
+  }
+
+  spawnTune() {
+    this.ensure();
+    const notes = [392, 523, 659, 784, 659, 523, 494, 587, 659, 523];
+    const interval = 300;
+    notes.forEach((freq, index) => {
+      window.setTimeout(() => this.tone(freq, 0.18, 'triangle'), index * interval);
+    });
   }
 
   setRev(active, intensity = 0.4) {

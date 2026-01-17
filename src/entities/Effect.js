@@ -14,6 +14,16 @@ export default class Effect {
         length: 6 + Math.random() * 8
       }));
     }
+    if (this.type === 'explosion') {
+      this.life = 0.9;
+      this.sparks = Array.from({ length: 14 }, (_, index) => {
+        const angle = (Math.PI * 2 * index) / 14 + Math.random() * 0.2;
+        return {
+          angle,
+          length: 18 + Math.random() * 16
+        };
+      });
+    }
   }
 
   update(dt) {
@@ -103,6 +113,24 @@ export default class Effect {
         ctx.beginPath();
         ctx.moveTo(drip.x, drip.y);
         ctx.lineTo(drip.x, drip.y + drip.length);
+        ctx.stroke();
+      });
+    } else if (this.type === 'explosion') {
+      const blast = 16 + t * 50;
+      ctx.fillStyle = `rgba(255, 180, 80, ${0.6 * (1 - t)})`;
+      ctx.beginPath();
+      ctx.arc(0, 0, blast * 0.6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(0, 0, blast, 0, Math.PI * 2);
+      ctx.stroke();
+      this.sparks.forEach((spark) => {
+        const length = spark.length + t * 20;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(spark.angle) * (blast * 0.3), Math.sin(spark.angle) * (blast * 0.3));
+        ctx.lineTo(Math.cos(spark.angle) * length, Math.sin(spark.angle) * length);
         ctx.stroke();
       });
     }
