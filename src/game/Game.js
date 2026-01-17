@@ -182,6 +182,9 @@ export default class Game {
     this.prevHealth = this.player.health;
     this.revActive = false;
     this.simulationActive = false;
+    this.deathTimer = 0;
+    this.gameOverTimer = 0;
+    this.spawnPauseTimer = 0;
     this.editor = new Editor(this);
     this.editorReturnState = 'title';
     this.playtestActive = false;
@@ -290,6 +293,7 @@ export default class Game {
       this.resetRun();
       this.state = 'playing';
       this.playtestActive = true;
+      this.startSpawnPause();
       document.body.classList.remove('editor-active');
       return;
     }
@@ -356,6 +360,9 @@ export default class Game {
     this.attackTapTimer = 0;
     this.attackHoldTimer = 0;
     this.prevHealth = this.player.health;
+    this.deathTimer = 0;
+    this.gameOverTimer = 0;
+    this.spawnPauseTimer = 0;
     this.testHarness.active = false;
     this.simulationActive = false;
     this.resetWorldSystems();
@@ -527,6 +534,7 @@ export default class Game {
         if (finished) {
           this.state = 'playing';
           this.simulationActive = false;
+          this.startSpawnPause();
         }
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
@@ -607,6 +615,13 @@ export default class Game {
     const simScale = this.goldenPath.getTimeScale();
     const timeScale = (this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1) * simScale;
     this.slowTimer = Math.max(0, this.slowTimer - dt);
+    if (this.spawnPauseTimer > 0) {
+      this.spawnPauseTimer = Math.max(0, this.spawnPauseTimer - dt);
+      this.updateEffects(dt);
+      this.setRevAudio(false);
+      this.input.flush();
+      return;
+    }
     this.updateSpawnCooldowns(dt * timeScale);
     this.attackTapTimer = Math.max(0, this.attackTapTimer - dt * timeScale);
     if (this.input.wasPressed('attack')) {
@@ -637,7 +652,16 @@ export default class Game {
     this.handleMovementFeedback();
 
     if (this.player.dead) {
-      this.respawn();
+      if (this.deathTimer <= 0) {
+        this.startDeathSequence();
+      }
+      this.deathTimer = Math.max(0, this.deathTimer - dt);
+      this.gameOverTimer = Math.max(0, this.gameOverTimer - dt);
+      this.updateEffects(dt);
+      if (this.deathTimer <= 0) {
+        this.respawn();
+        this.startSpawnPause();
+      }
       this.setRevAudio(false);
       this.input.flush();
       return;
@@ -764,6 +788,24 @@ export default class Game {
     this.player.loot = 0;
     this.player.invulnTimer = 1;
     this.prevHealth = this.player.health;
+  }
+
+  startDeathSequence() {
+    this.deathTimer = 1.1;
+    this.gameOverTimer = 1.1;
+    this.spawnEffect('explosion', this.player.x, this.player.y - 4);
+    this.spawnEffect('explosion', this.player.x + 16, this.player.y + 6);
+    this.spawnEffect('explosion', this.player.x - 14, this.player.y + 10);
+    this.audio.explosion();
+    this.shakeTimer = Math.max(this.shakeTimer, 0.6);
+    this.shakeMagnitude = Math.max(this.shakeMagnitude, 16);
+  }
+
+  startSpawnPause() {
+    if (this.simulationActive) return;
+    this.spawnPauseTimer = 3;
+    this.player.invulnTimer = Math.max(this.player.invulnTimer, this.spawnPauseTimer);
+    this.audio.spawnTune();
   }
 
   handleMovementFeedback() {
@@ -2098,7 +2140,9 @@ export default class Game {
         ctx.restore();
       }
     });
-    this.player.draw(ctx);
+    if (!this.player.dead) {
+      this.player.draw(ctx);
+    }
     if (this.testHarness.active && this.testHarness.showCollision) {
       this.drawCollisionBoxes(ctx);
     }
@@ -2170,6 +2214,9 @@ export default class Game {
     if (this.victory) {
       this.drawVictory(ctx, canvas.width, canvas.height);
     }
+    if (this.gameOverTimer > 0) {
+      this.drawGameOver(ctx, canvas.width, canvas.height);
+    }
   }
 
   drawVictory(ctx, width, height) {
@@ -2185,6 +2232,21 @@ export default class Game {
     ctx.fillText('VICTORY', width / 2, height / 2 - 20);
     ctx.font = '16px Courier New';
     ctx.fillText('Mission complete: Earth reclaimed.', width / 2, height / 2 + 20);
+    ctx.restore();
+  }
+
+  drawGameOver(ctx, width, height) {
+    const alpha = Math.min(1, this.gameOverTimer / 1.1);
+    ctx.save();
+    ctx.fillStyle = `rgba(0,0,0,${0.65 * alpha})`;
+    ctx.fillRect(0, 0, width, height);
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(40, 40, width - 80, height - 80);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 42px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('GAME OVER', width / 2, height / 2);
     ctx.restore();
   }
 
