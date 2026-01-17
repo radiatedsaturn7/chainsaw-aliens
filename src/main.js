@@ -29,7 +29,10 @@ function requestFullscreen() {
   if (!isMobile || document.fullscreenElement) return;
   const root = document.documentElement;
   if (root.requestFullscreen) {
-    root.requestFullscreen().catch(() => {});
+    root.requestFullscreen().catch(() => {
+      fullscreenPending = false;
+      updateFullscreenButtons();
+    });
   }
   fullscreenPending = true;
   updateFullscreenButtons();
@@ -46,9 +49,9 @@ function exitFullscreen() {
 
 function updateFullscreenButtons() {
   const showControls = Boolean(isMobile);
-  const isFullscreen = Boolean(document.fullscreenElement) || fullscreenPending;
+  const isFullscreen = Boolean(document.fullscreenElement);
   if (enterFullscreenButton) {
-    enterFullscreenButton.classList.toggle('is-hidden', !showControls || isFullscreen);
+    enterFullscreenButton.classList.toggle('is-hidden', !showControls || isFullscreen || fullscreenPending);
   }
   if (exitFullscreenButton) {
     exitFullscreenButton.classList.toggle('is-hidden', !showControls || !isFullscreen);
