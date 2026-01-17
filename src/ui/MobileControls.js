@@ -1,4 +1,4 @@
-const DEFAULT_STATE_LIST = ['playing', 'dialog', 'title', 'shop', 'pause'];
+const DEFAULT_STATE_LIST = ['playing', 'dialog', 'shop', 'pause'];
 
 const HOLD_THRESHOLD = 320;
 const SWIPE_THRESHOLD = 42;

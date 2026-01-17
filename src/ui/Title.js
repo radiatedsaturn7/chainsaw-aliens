@@ -46,7 +46,7 @@ export default class Title {
     }
   }
 
-  draw(ctx, width, height, inputMode) {
+  draw(ctx, width, height, inputMode, inputHints = {}) {
     ctx.save();
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, width, height);
@@ -137,21 +137,21 @@ export default class Title {
 
     if (this.transition) {
       const t = Math.min(1, this.transition.progress);
-      this.drawScreen(ctx, width, height, this.transition.from, inputMode, 1 - t, (t - 1) * 24);
-      this.drawScreen(ctx, width, height, this.transition.to, inputMode, t, (1 - t) * 24);
+      this.drawScreen(ctx, width, height, this.transition.from, inputMode, inputHints, 1 - t, (t - 1) * 24);
+      this.drawScreen(ctx, width, height, this.transition.to, inputMode, inputHints, t, (1 - t) * 24);
     } else {
-      this.drawScreen(ctx, width, height, this.screen, inputMode, 1, 0);
+      this.drawScreen(ctx, width, height, this.screen, inputMode, inputHints, 1, 0);
     }
 
     ctx.restore();
   }
 
-  drawScreen(ctx, width, height, screen, inputMode, alpha, offsetY) {
+  drawScreen(ctx, width, height, screen, inputMode, inputHints, alpha, offsetY) {
     ctx.save();
     ctx.globalAlpha = alpha;
     ctx.translate(0, offsetY);
     if (screen === 'intro') {
-      this.drawIntro(ctx, width, height);
+      this.drawIntro(ctx, width, height, inputHints);
     } else if (screen === 'controls') {
       this.drawControls(ctx, width, height, inputMode);
     } else {
@@ -160,14 +160,17 @@ export default class Title {
     ctx.restore();
   }
 
-  drawIntro(ctx, width, height) {
+  drawIntro(ctx, width, height, { isMobile = false, gamepadConnected = false } = {}) {
     ctx.fillStyle = '#fff';
     ctx.font = '20px Courier New';
     ctx.textAlign = 'center';
     const pulse = Math.sin(this.timer * 4) * 6;
-    ctx.fillText('Press START to Begin (Gamepad)', width / 2, height - 170 + pulse);
-    ctx.fillText('Press SPACE to Begin (Keyboard)', width / 2, height - 140 + pulse);
-    ctx.fillText('Tap to Begin (Mobile)', width / 2, height - 110 + pulse);
+    const message = gamepadConnected
+      ? 'Press START to Begin'
+      : isMobile
+        ? 'Tap to Begin'
+        : 'Press SPACE to Begin';
+    ctx.fillText(message, width / 2, height - 140 + pulse);
   }
 
   drawMainMenu(ctx, width, height) {
