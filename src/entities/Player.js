@@ -327,7 +327,7 @@ export default class Player {
     const dashTilt = this.state === 'dash' ? this.facing * 6 : 0;
     const crouchOffset = this.state === 'duck' ? 6 : 0;
     const crouchShrink = this.state === 'duck' ? 6 : 0;
-    const aimTilt = this.aimingUp ? -Math.PI / 3 : 0;
+    const aimTilt = this.aimingUp ? (-Math.PI / 3) * this.facing : 0;
     const flash = this.hurtTimer > 0 && Math.floor(this.animTime * 20) % 2 === 0;
     ctx.strokeStyle = flash ? '#fff' : 'rgba(255,255,255,0.9)';
     ctx.lineWidth = 2;
