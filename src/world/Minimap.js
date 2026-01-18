@@ -2,6 +2,7 @@ export default class Minimap {
   constructor(world) {
     this.world = world;
     this.explored = new Set();
+    this.exploredRooms = new Set();
     this.scale = 2;
     this.showLegend = false;
   }
@@ -10,6 +11,20 @@ export default class Minimap {
     const tileX = Math.floor(player.x / this.world.tileSize);
     const tileY = Math.floor(player.y / this.world.tileSize);
     this.explored.add(`${tileX},${tileY}`);
+    const roomIndex = this.world.roomAtTile?.(tileX, tileY);
+    if (roomIndex !== null && roomIndex !== undefined && !this.exploredRooms.has(roomIndex)) {
+      const room = this.world.getRoomBounds?.(roomIndex);
+      if (room) {
+        for (let y = room.minY; y <= room.maxY; y += 1) {
+          for (let x = room.minX; x <= room.maxX; x += 1) {
+            const tile = this.world.getTile(x, y);
+            if (!this.isRoomTile(tile)) continue;
+            this.explored.add(`${x},${y}`);
+          }
+        }
+        this.exploredRooms.add(roomIndex);
+      }
+    }
   }
 
   draw(ctx, x, y, width, height, player, options = {}) {
@@ -20,10 +35,10 @@ export default class Minimap {
     ctx.translate(x, y);
     ctx.strokeStyle = 'rgba(255,255,255,0.4)';
     ctx.strokeRect(0, 0, tileW * pixel, tileH * pixel);
-    ctx.fillStyle = '#fff';
     for (let ty = 0; ty < tileH; ty += 1) {
       for (let tx = 0; tx < tileW; tx += 1) {
         if (this.explored.has(`${tx},${ty}`)) {
+          ctx.fillStyle = this.getTileColor(tx, ty) || '#fff';
           ctx.fillRect(tx * pixel, ty * pixel, pixel, pixel);
         }
       }
@@ -46,6 +61,24 @@ export default class Minimap {
     if (options.showLegend) {
       this.drawLegend(ctx, x + width + 12, y);
     }
+  }
+
+  isRoomTile(tile) {
+    const blockers = new Set(['#', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>']);
+    return tile && tile !== 'D' && !blockers.has(tile);
+  }
+
+  getTileColor(tileX, tileY) {
+    const tile = this.world.getTile(tileX, tileY);
+    if (tile === '~') return '#4aa3ff';
+    if (tile === 'L') return '#ff7a3c';
+    if (tile === 'A') return '#39d98a';
+    if (tile === '*') return '#ff4b4b';
+    if (tile === 'I') return '#9ad9ff';
+    if (tile === '<' || tile === '>') return '#bfbfbf';
+    if (tile === '=') return '#f3f3f3';
+    if (tile === '#') return '#6b6b6b';
+    return '#ffffff';
   }
 
   drawIcon(ctx, worldX, worldY, pixel, color, pulse = false) {
