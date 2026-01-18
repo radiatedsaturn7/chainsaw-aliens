@@ -380,7 +380,7 @@ export default class Game {
     this.editor.deactivate();
     if (playtest) {
       this.syncSpawnPoint();
-      this.resetRun();
+      this.resetRun({ playtest: true });
       this.state = 'playing';
       this.playtestActive = true;
       this.startSpawnPause();
@@ -404,10 +404,10 @@ export default class Game {
     document.body.classList.add('editor-active');
   }
 
-  resetRun() {
+  resetRun({ playtest = false } = {}) {
     this.world.reset();
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
-    if (this.gameMode === 'endless') {
+    if (this.gameMode === 'endless' || playtest) {
       this.player.equippedUpgrades = [...UPGRADE_LIST];
       this.player.upgradeSlots = UPGRADE_LIST.length;
       this.player.maxHealth = 12;
@@ -415,7 +415,7 @@ export default class Game {
     }
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
-    this.abilities = this.gameMode === 'endless'
+    this.abilities = this.gameMode === 'endless' || playtest
       ? {
         anchor: true,
         flame: true,
@@ -831,6 +831,12 @@ export default class Game {
 
     if (this.state === 'editor') {
       this.editor.update(this.input, dt);
+      this.input.flush();
+      return;
+    }
+
+    if (this.playtestActive && this.state === 'playing' && this.input.wasPressed('cancel')) {
+      this.returnToEditorFromPlaytest();
       this.input.flush();
       return;
     }
@@ -1274,10 +1280,13 @@ export default class Game {
       this.cameraBounds = null;
       return;
     }
-    const left = room.minX * tileSize;
-    const top = room.minY * tileSize;
-    const right = (room.maxX + 1) * tileSize;
-    const bottom = (room.maxY + 1) * tileSize;
+    const doorPadding = tileSize * 2;
+    const worldRight = this.world.width * tileSize;
+    const worldBottom = this.world.height * tileSize;
+    const left = Math.max(0, room.minX * tileSize - doorPadding);
+    const top = Math.max(0, room.minY * tileSize - doorPadding);
+    const right = Math.min(worldRight, (room.maxX + 1) * tileSize + doorPadding);
+    const bottom = Math.min(worldBottom, (room.maxY + 1) * tileSize + doorPadding);
     const roomWidth = right - left;
     const roomHeight = bottom - top;
     let minX = left;
@@ -3255,7 +3264,7 @@ export default class Game {
     ctx.restore();
   }
 
-  drawWorld(ctx) {
+  drawWorld(ctx, { showDoors = false } = {}) {
     const tileSize = this.world.tileSize;
     for (let y = 0; y < this.world.height; y += 1) {
       for (let x = 0; x < this.world.width; x += 1) {
@@ -3295,7 +3304,7 @@ export default class Game {
           ctx.lineTo(x * tileSize + 6, y * tileSize + tileSize - 6);
           ctx.stroke();
         }
-        if (tile === 'D') {
+        if (tile === 'D' && showDoors) {
           ctx.strokeStyle = '#fff';
           ctx.strokeRect(x * tileSize + 4, y * tileSize + 4, tileSize - 8, tileSize - 8);
           ctx.beginPath();
