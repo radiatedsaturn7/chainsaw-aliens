@@ -1,5 +1,7 @@
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
+  { id: 'ice-solid', label: 'Icy Solid Block', char: 'F' },
+  { id: 'rock-solid', label: 'Rock Solid Block', char: 'R' },
   { id: 'triangle', label: 'Triangle Block', char: '^' },
   { id: 'triangle-flip', label: 'Triangle Block (Flipped)', char: 'v' },
   { id: 'empty', label: 'Empty', char: '.' },
@@ -856,12 +858,13 @@ export default class Editor {
       elevatorSet.add(key);
       elevators.push({ x, y });
     };
+    const getRoomWallTile = (room) => room.wallTile || '#';
 
     const carveRectRoom = (room) => {
       for (let y = room.y; y < room.y + room.h; y += 1) {
         for (let x = room.x; x < room.x + room.w; x += 1) {
           const wall = x === room.x || x === room.x + room.w - 1 || y === room.y || y === room.y + room.h - 1;
-          setTile(x, y, wall ? '#' : '.');
+          setTile(x, y, wall ? getRoomWallTile(room) : '.');
         }
       }
     };
@@ -883,7 +886,7 @@ export default class Editor {
             || !isInside(x - 1, y)
             || !isInside(x, y + 1)
             || !isInside(x, y - 1);
-          setTile(x, y, wall ? '#' : '.');
+          setTile(x, y, wall ? getRoomWallTile(room) : '.');
         }
       }
     };
@@ -919,7 +922,7 @@ export default class Editor {
           const bottomEdge = room.y + heightSpan - 1 - bottomInsetByColumn[columnIndex];
           if (x < leftEdge || x > rightEdge || y + room.y > bottomEdge) continue;
           const wall = x === leftEdge || x === rightEdge || y + room.y === room.y || y + room.y === bottomEdge;
-          setTile(x, y + room.y, wall ? '#' : '.');
+          setTile(x, y + room.y, wall ? getRoomWallTile(room) : '.');
         }
       }
     };
@@ -945,7 +948,7 @@ export default class Editor {
             || !isInside(x - 1, y)
             || !isInside(x, y + 1)
             || !isInside(x, y - 1);
-          setTile(x, y, wall ? '#' : '.');
+          setTile(x, y, wall ? getRoomWallTile(room) : '.');
         }
       }
     };
@@ -1008,7 +1011,7 @@ export default class Editor {
       for (let i = 0; i < pillars; i += 1) {
         const spot = findFloorInRoom(room);
         if (!spot) continue;
-        setTile(spot.x, spot.y, '#');
+        setTile(spot.x, spot.y, getRoomWallTile(room));
       }
     };
 
@@ -1097,6 +1100,7 @@ export default class Editor {
       const { width, height, coords } = pattern;
       if (room.w < width + 2 || room.h < height + 2) return false;
       const attempts = options.attempts ?? 30;
+      const tileChar = options.tileChar || getRoomWallTile(room);
       const minX = room.x + 1;
       const maxX = room.x + room.w - width - 1;
       const minY = room.y + 1;
@@ -1112,7 +1116,7 @@ export default class Editor {
         }
         const canPlace = coords.every(({ dx, dy }) => tiles[originY + dy]?.[originX + dx] === '.');
         if (!canPlace) continue;
-        coords.forEach(({ dx, dy }) => setTile(originX + dx, originY + dy, '#'));
+        coords.forEach(({ dx, dy }) => setTile(originX + dx, originY + dy, tileChar));
         return true;
       }
       return false;
@@ -1171,6 +1175,7 @@ export default class Editor {
       const pitWidth = 6;
       const pitHeight = 2;
       if (room.w < pitWidth + 2 || room.h < pitHeight + 2) return;
+      const wallTile = getRoomWallTile(room);
       const startX = randInt(room.x + 1, room.x + room.w - pitWidth - 1);
       const startY = randInt(room.y + 1, room.y + room.h - pitHeight - 1);
       for (let y = 0; y < pitHeight; y += 1) {
@@ -1179,7 +1184,7 @@ export default class Editor {
           const tileY = startY + y;
           const isBottom = y === pitHeight - 1;
           const isWall = x === 0 || x === pitWidth - 1;
-          const char = isBottom || isWall ? '#' : hazard;
+          const char = isBottom || isWall ? wallTile : hazard;
           setTile(tileX, tileY, char);
         }
       }
@@ -1200,6 +1205,7 @@ export default class Editor {
 
     const addTriangleBlocks = (room) => {
       const count = randInt(1, 3);
+      const wallTile = getRoomWallTile(room);
       const triangleSizes = [
         { w: 1, h: 1 },
         { w: 2, h: 1 },
@@ -1228,7 +1234,7 @@ export default class Editor {
             const relX = orientation.x * (tileX - origin.x);
             const relY = orientation.y * (tileY - origin.y);
             if (relX / widthSpan + relY / heightSpan <= 1) {
-              if (tiles[tileY]?.[tileX] === '.') setTile(tileX, tileY, '#');
+              if (tiles[tileY]?.[tileX] === '.') setTile(tileX, tileY, wallTile);
             }
           }
         }
@@ -1391,6 +1397,11 @@ export default class Editor {
       industrial: ['room'],
       ice: ['room', 'circular']
     };
+    const biomeWallTiles = {
+      cave: 'R',
+      ice: 'F',
+      industrial: '#'
+    };
 
     occupied.forEach((index) => {
       const { col, row } = cellFromIndex(index);
@@ -1407,6 +1418,7 @@ export default class Editor {
         h: roomH,
         type: roomType,
         biome,
+        wallTile: biomeWallTiles[biome] || '#',
         cellIndex: index
       };
       placeRoom(room);
@@ -1461,30 +1473,86 @@ export default class Editor {
       });
     });
 
-    const clearDoorFronts = () => {
-      for (let y = 0; y < height; y += 1) {
-        for (let x = 0; x < width; x += 1) {
-          if (tiles[y]?.[x] !== 'D') continue;
-          const neighbors = [
-            { dx: 1, dy: 0 },
-            { dx: -1, dy: 0 },
-            { dx: 0, dy: 1 },
-            { dx: 0, dy: -1 }
-          ];
-          neighbors.forEach(({ dx, dy }) => {
-            const nx = x + dx;
-            const ny = y + dy;
-            if (nx < 0 || ny < 0 || nx >= width || ny >= height) return;
-            const tile = tiles[ny]?.[nx];
-            if (tile && tile !== '.' && tile !== 'D') {
-              setTile(nx, ny, '.');
-            }
-          });
-        }
+    const findRoomDoorTiles = (room) => {
+      const doors = [];
+      const topY = room.y;
+      const bottomY = room.y + room.h - 1;
+      const leftX = room.x;
+      const rightX = room.x + room.w - 1;
+      for (let x = leftX; x <= rightX; x += 1) {
+        if (tiles[topY]?.[x] === 'D') doors.push({ x, y: topY, side: 'top' });
+        if (tiles[bottomY]?.[x] === 'D') doors.push({ x, y: bottomY, side: 'bottom' });
       }
+      for (let y = topY; y <= bottomY; y += 1) {
+        if (tiles[y]?.[leftX] === 'D') doors.push({ x: leftX, y, side: 'left' });
+        if (tiles[y]?.[rightX] === 'D') doors.push({ x: rightX, y, side: 'right' });
+      }
+      return doors;
+    };
+
+    const clearDoorFronts = () => {
+      const clearDepth = 2;
+      const clearSpan = 2;
+      rooms.forEach((room) => {
+        const doors = findRoomDoorTiles(room);
+        doors.forEach((door) => {
+          if (door.side === 'top' || door.side === 'bottom') {
+            const dir = door.side === 'top' ? 1 : -1;
+            for (let dy = 1; dy <= clearDepth; dy += 1) {
+              for (let dx = -clearSpan; dx <= clearSpan; dx += 1) {
+                const nx = door.x + dx;
+                const ny = door.y + dir * dy;
+                if (nx < room.x + 1 || nx > room.x + room.w - 2) continue;
+                if (ny < room.y + 1 || ny > room.y + room.h - 2) continue;
+                if (tiles[ny]?.[nx] !== 'D') setTile(nx, ny, '.');
+              }
+            }
+          } else {
+            const dir = door.side === 'left' ? 1 : -1;
+            for (let dx = 1; dx <= clearDepth; dx += 1) {
+              for (let dy = -clearSpan; dy <= clearSpan; dy += 1) {
+                const nx = door.x + dir * dx;
+                const ny = door.y + dy;
+                if (nx < room.x + 1 || nx > room.x + room.w - 2) continue;
+                if (ny < room.y + 1 || ny > room.y + room.h - 2) continue;
+                if (tiles[ny]?.[nx] !== 'D') setTile(nx, ny, '.');
+              }
+            }
+          }
+        });
+      });
+    };
+
+    const addUpperDoorSupports = () => {
+      const supportChance = 0.9;
+      rooms.forEach((room) => {
+        const topY = room.y;
+        const supportY = room.y + 2;
+        if (supportY >= room.y + room.h - 1) return;
+        let segmentStart = null;
+        for (let x = room.x; x <= room.x + room.w - 1; x += 1) {
+          const isDoor = tiles[topY]?.[x] === 'D';
+          if (isDoor && segmentStart === null) {
+            segmentStart = x;
+          }
+          if ((!isDoor || x === room.x + room.w - 1) && segmentStart !== null) {
+            const segmentEnd = isDoor ? x : x - 1;
+            if (Math.random() < supportChance) {
+              const supportChar = Math.random() < 0.55 ? '=' : getRoomWallTile(room);
+              for (let sx = segmentStart; sx <= segmentEnd; sx += 1) {
+                if (tiles[supportY]?.[sx] === '.') {
+                  setTile(sx, supportY, supportChar);
+                }
+              }
+            }
+            segmentStart = null;
+          }
+        }
+      });
     };
 
     clearDoorFronts();
+    addUpperDoorSupports();
 
     let spawnRoom = rooms[0];
     let bestDistance = Infinity;

@@ -3789,6 +3789,25 @@ export default class Game {
           ctx.strokeStyle = '#1f1f1f';
           ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
         }
+        if (tile === 'F') {
+          ctx.fillStyle = '#bfe9ff';
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#86c9f0';
+          ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+          ctx.beginPath();
+          ctx.moveTo(x * tileSize + 4, y * tileSize + tileSize - 6);
+          ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + 6);
+          ctx.stroke();
+        }
+        if (tile === 'R') {
+          ctx.fillStyle = '#8a5a2b';
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#6d4221';
+          ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#4b2f17';
+          ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
+        }
         if (tile === '^' || tile === 'v') {
           ctx.fillStyle = '#fff';
           ctx.beginPath();

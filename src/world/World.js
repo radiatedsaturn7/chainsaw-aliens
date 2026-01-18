@@ -54,8 +54,8 @@ const FALLBACK_WORLD = {
 
 const DEFAULT_SPAWN = { x: 28, y: 19 };
 const DOOR_TILE = 'D';
-const ROOM_BLOCKERS = new Set(['#', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>']);
-const SOLID_TILES = new Set(['#', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>']);
+const ROOM_BLOCKERS = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>']);
+const SOLID_TILES = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>']);
 const ONE_WAY_TILES = new Set(['=']);
 const HAZARD_TILES = new Set(['!', 'A', 'L', '*']);
 
