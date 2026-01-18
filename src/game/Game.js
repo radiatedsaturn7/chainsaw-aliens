@@ -220,6 +220,8 @@ export default class Game {
     this.editorReturnState = 'title';
     this.playtestActive = false;
     this.playtestButtonBounds = null;
+    this.elevatorPlatforms = [];
+    this.elevatorGraph = null;
     this.isMobile = false;
     this.deviceIsMobile = false;
     this.inputMode = 'keyboard';
@@ -322,6 +324,7 @@ export default class Game {
     this.roomCoverageTest = new RoomCoverageTest(this.world, this.player, this.feasibilityValidator);
     this.encounterAuditTest = new EncounterAuditTest(this.world, this.player, this.feasibilityValidator);
     this.goldenPathTest = new GoldenPathTest(this.goldenPath);
+    this.initElevators();
   }
 
   syncSpawnPoint() {
@@ -336,6 +339,48 @@ export default class Game {
     this.resetWorldSystems();
     this.activeRoomIndex = null;
     this.cameraBounds = null;
+  }
+
+  buildElevatorGraph() {
+    const pathSet = new Set();
+    (this.world.elevatorPaths || []).forEach((path) => pathSet.add(`${path.x},${path.y}`));
+    (this.world.elevators || []).forEach((platform) => pathSet.add(`${platform.x},${platform.y}`));
+    const neighborsMap = new Map();
+    const directions = [
+      { dx: 1, dy: 0 },
+      { dx: -1, dy: 0 },
+      { dx: 0, dy: 1 },
+      { dx: 0, dy: -1 }
+    ];
+    pathSet.forEach((key) => {
+      const [x, y] = key.split(',').map((value) => Number(value));
+      const neighbors = directions
+        .map((dir) => ({ x: x + dir.dx, y: y + dir.dy }))
+        .filter((pos) => pathSet.has(`${pos.x},${pos.y}`));
+      neighborsMap.set(key, neighbors);
+    });
+    return { pathSet, neighborsMap };
+  }
+
+  initElevators() {
+    this.elevatorGraph = this.buildElevatorGraph();
+    const { tileSize } = this.world;
+    const getNeighbors = (x, y) => this.elevatorGraph?.neighborsMap.get(`${x},${y}`) || [];
+    this.elevatorPlatforms = (this.world.elevators || []).map((platform, index) => {
+      const neighbors = getNeighbors(platform.x, platform.y);
+      const nextTile = neighbors[0] || null;
+      return {
+        id: `elevator-${index}`,
+        x: (platform.x + 0.5) * tileSize,
+        y: (platform.y + 0.5) * tileSize,
+        tileX: platform.x,
+        tileY: platform.y,
+        prevTile: null,
+        nextTile,
+        dir: nextTile ? { dx: nextTile.x - platform.x, dy: nextTile.y - platform.y } : { dx: 0, dy: 0 },
+        speed: tileSize * 0.9
+      };
+    });
   }
 
   buildWorldData() {
@@ -1080,6 +1125,7 @@ export default class Game {
 
     const prevPlayer = { x: this.player.x, y: this.player.y };
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
+    this.updateElevators(dt * timeScale, prevPlayer);
     this.player.sawDeployed = this.sawAnchor.active;
     this.updateSawAnchor(dt * timeScale, this.input);
     this.applyAnchorClimb(dt * timeScale);
@@ -1291,7 +1337,7 @@ export default class Game {
       this.cameraBounds = null;
       return;
     }
-    const doorPadding = tileSize * (this.isMobile ? 3 : 2);
+    const doorPadding = tileSize * (this.isMobile ? 4 : 2);
     const worldRight = this.world.width * tileSize;
     const worldBottom = this.world.height * tileSize;
     const left = Math.max(0, room.minX * tileSize - doorPadding);
@@ -2905,6 +2951,102 @@ export default class Game {
     }
   }
 
+  getElevatorRectAt(x, y) {
+    const width = this.world.tileSize - 12;
+    const height = 12;
+    return {
+      x: x - width / 2,
+      y: y - height / 2,
+      w: width,
+      h: height
+    };
+  }
+
+  isPlayerOnElevator(playerRect, elevatorRect) {
+    const footY = playerRect.y + playerRect.h;
+    const withinX = playerRect.x + playerRect.w > elevatorRect.x + 2
+      && playerRect.x < elevatorRect.x + elevatorRect.w - 2;
+    return withinX && footY >= elevatorRect.y - 4 && footY <= elevatorRect.y + 6;
+  }
+
+  advanceElevator(platform, dt) {
+    if (!platform.nextTile) return;
+    const tileSize = this.world.tileSize;
+    const targetX = (platform.nextTile.x + 0.5) * tileSize;
+    const targetY = (platform.nextTile.y + 0.5) * tileSize;
+    const dx = targetX - platform.x;
+    const dy = targetY - platform.y;
+    const distance = Math.hypot(dx, dy);
+    const step = platform.speed * dt;
+    if (distance <= step || distance === 0) {
+      platform.x = targetX;
+      platform.y = targetY;
+      platform.prevTile = { x: platform.tileX, y: platform.tileY };
+      platform.tileX = platform.nextTile.x;
+      platform.tileY = platform.nextTile.y;
+      const neighbors = this.elevatorGraph?.neighborsMap.get(`${platform.tileX},${platform.tileY}`) || [];
+      let nextTile = null;
+      if (neighbors.length === 1) {
+        nextTile = neighbors[0];
+      } else if (neighbors.length > 1) {
+        const preferred = {
+          x: platform.tileX + platform.dir.dx,
+          y: platform.tileY + platform.dir.dy
+        };
+        nextTile = neighbors.find((neighbor) => neighbor.x === preferred.x && neighbor.y === preferred.y)
+          || neighbors.find((neighbor) => !platform.prevTile
+            || neighbor.x !== platform.prevTile.x
+            || neighbor.y !== platform.prevTile.y)
+          || neighbors[0];
+      }
+      platform.nextTile = nextTile || platform.prevTile;
+      if (platform.nextTile) {
+        platform.dir = {
+          dx: platform.nextTile.x - platform.tileX,
+          dy: platform.nextTile.y - platform.tileY
+        };
+      } else {
+        platform.dir = { dx: 0, dy: 0 };
+      }
+    } else {
+      platform.x += (dx / distance) * step;
+      platform.y += (dy / distance) * step;
+    }
+  }
+
+  updateElevators(dt, prevPlayer) {
+    if (!this.elevatorPlatforms.length) return;
+    const prevPlayerRect = {
+      x: prevPlayer.x - this.player.width / 2,
+      y: prevPlayer.y - this.player.height / 2,
+      w: this.player.width,
+      h: this.player.height
+    };
+    for (const platform of this.elevatorPlatforms) {
+      const prevX = platform.x;
+      const prevY = platform.y;
+      const prevElevatorRect = this.getElevatorRectAt(prevX, prevY);
+      this.advanceElevator(platform, dt);
+      const nextElevatorRect = this.getElevatorRectAt(platform.x, platform.y);
+      const deltaX = platform.x - prevX;
+      const deltaY = platform.y - prevY;
+      if (this.isPlayerOnElevator(prevPlayerRect, prevElevatorRect)) {
+        this.player.x += deltaX;
+        this.player.y += deltaY;
+        this.player.onGround = true;
+        this.player.vy = Math.min(this.player.vy, 0);
+      }
+      const currentRect = this.player.rect;
+      const wasAbove = prevPlayerRect.y + prevPlayerRect.h <= nextElevatorRect.y + 2;
+      const nowOnTop = this.isPlayerOnElevator(currentRect, nextElevatorRect);
+      if (this.player.vy >= 0 && wasAbove && nowOnTop) {
+        this.player.y = nextElevatorRect.y - this.player.height / 2;
+        this.player.vy = 0;
+        this.player.onGround = true;
+      }
+    }
+  }
+
   pullBoxTowardPlayer(dt, input) {
     if (!this.sawAnchor.attachedBox) return;
     const pulling = this.sawAnchor.pullTimer > 0 || this.isRevHeld(input);
@@ -3106,6 +3248,7 @@ export default class Game {
     ctx.translate(-this.camera.x + shakeX, -this.camera.y + shakeY);
 
     this.drawWorld(ctx);
+    this.drawElevators(ctx);
     this.drawBoxes(ctx);
     this.roomCoverageTest.drawWorld(ctx);
     this.drawInteractables(ctx);
@@ -3288,6 +3431,40 @@ export default class Game {
       ctx.moveTo(rect.x + 6, rect.y + rect.h - 6);
       ctx.lineTo(rect.x + rect.w - 6, rect.y + 6);
       ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  drawElevators(ctx) {
+    const tileSize = this.world.tileSize;
+    if (this.world.elevatorPaths?.length) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(120,220,255,0.75)';
+      ctx.lineWidth = 2;
+      this.world.elevatorPaths.forEach((path) => {
+        const cx = path.x * tileSize + tileSize / 2;
+        const cy = path.y * tileSize + tileSize / 2;
+        ctx.beginPath();
+        ctx.moveTo(cx - 6, cy);
+        ctx.lineTo(cx + 6, cy);
+        ctx.moveTo(cx, cy - 6);
+        ctx.lineTo(cx, cy + 6);
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+    const platforms = this.elevatorPlatforms?.length ? this.elevatorPlatforms : (this.world.elevators || []);
+    if (!platforms.length) return;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,211,106,0.3)';
+    ctx.strokeStyle = '#ffd36a';
+    ctx.lineWidth = 2;
+    platforms.forEach((platform) => {
+      const x = platform.tileX !== undefined ? platform.x : (platform.x + 0.5) * tileSize;
+      const y = platform.tileY !== undefined ? platform.y : (platform.y + 0.5) * tileSize;
+      const rect = this.getElevatorRectAt(x, y);
+      ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
     });
     ctx.restore();
   }
