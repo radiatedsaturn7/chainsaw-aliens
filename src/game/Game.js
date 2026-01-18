@@ -129,6 +129,7 @@ export default class Game {
     this.healthDrops = [];
     this.effects = [];
     this.clock = 0;
+    this.worldTime = 0;
     this.abilities = {
       anchor: false,
       flame: false,
@@ -817,6 +818,7 @@ export default class Game {
       this.input.setVirtual(combinedActions);
     }
     this.clock += dt;
+    this.worldTime += dt;
     this.menuFlashTimer = Math.max(0, this.menuFlashTimer - dt);
 
     if (this.input.wasPressed('editor')) {
@@ -2681,6 +2683,13 @@ export default class Game {
       this.player.y = nextY;
       this.player.vy = Math.min(this.player.vy, -climbSpeed);
       this.player.onGround = false;
+      const horizontalDir = Math.sign(this.sawAnchor.x - this.player.x);
+      if (horizontalDir !== 0 && Math.abs(this.sawAnchor.x - this.player.x) > 4) {
+        const nextX = this.player.x + horizontalDir * climbSpeed * 0.25 * dt;
+        if (!this.isPlayerBlockedAt(nextX, this.player.y, { ignoreOneWay: true })) {
+          this.player.x = nextX;
+        }
+      }
     }
   }
 
@@ -2857,6 +2866,16 @@ export default class Game {
       const overlapX = Math.min(playerRect.x + playerRect.w - boxRect.x, boxRect.x + boxRect.w - playerRect.x);
       const overlapY = Math.min(playerRect.y + playerRect.h - boxRect.y, boxRect.y + boxRect.h - playerRect.y);
       if (overlapX < overlapY) {
+        const distanceToTop = playerRect.y + playerRect.h - boxRect.y;
+        if (this.player.onGround && distanceToTop <= 14) {
+          const targetY = boxRect.y - this.player.height / 2;
+          if (this.isPlayerPositionClear(this.player.x, targetY)) {
+            this.player.y = targetY;
+            this.player.onGround = true;
+            this.player.vy = Math.min(this.player.vy, 0);
+            continue;
+          }
+        }
         const pushDir = Math.sign(deltaX) || (this.player.x < box.x ? -1 : 1);
         const desired = overlapX * pushDir;
         const { movedX } = this.moveBoxBy(box, desired, 0);
@@ -3266,6 +3285,65 @@ export default class Game {
 
   drawWorld(ctx, { showDoors = false } = {}) {
     const tileSize = this.world.tileSize;
+    const time = this.worldTime;
+    const isSolidTile = (tx, ty) => this.world.isSolid(tx, ty, this.abilities);
+    const drawLiquid = (x, y, fill, highlight) => {
+      const baseX = x * tileSize;
+      const baseY = y * tileSize;
+      const wave = Math.sin(time * 2 + x * 0.7 + y * 0.4);
+      const surface = baseY + tileSize * 0.35 + wave * 2;
+      ctx.fillStyle = fill;
+      ctx.fillRect(baseX, baseY, tileSize, tileSize);
+      ctx.fillStyle = highlight;
+      ctx.fillRect(baseX, surface, tileSize, baseY + tileSize - surface);
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.beginPath();
+      ctx.moveTo(baseX, surface);
+      ctx.lineTo(baseX + tileSize, surface);
+      ctx.stroke();
+    };
+    const drawSpikeTile = (x, y) => {
+      const hasFloor = isSolidTile(x, y + 1);
+      const hasCeiling = isSolidTile(x, y - 1);
+      const hasLeft = isSolidTile(x - 1, y);
+      const hasRight = isSolidTile(x + 1, y);
+      let orientation = 'up';
+      if (hasFloor) orientation = 'up';
+      else if (hasCeiling) orientation = 'down';
+      else if (hasLeft) orientation = 'right';
+      else if (hasRight) orientation = 'left';
+      const baseX = x * tileSize;
+      const baseY = y * tileSize;
+      const teeth = 4;
+      ctx.fillStyle = '#fff';
+      for (let i = 0; i < teeth; i += 1) {
+        if (orientation === 'up' || orientation === 'down') {
+          const spikeW = tileSize / teeth;
+          const spikeX = baseX + i * spikeW;
+          const tipX = spikeX + spikeW / 2;
+          const baseYPos = orientation === 'up' ? baseY + tileSize : baseY;
+          const tipY = orientation === 'up' ? baseY + tileSize * 0.35 : baseY + tileSize * 0.65;
+          ctx.beginPath();
+          ctx.moveTo(spikeX, baseYPos);
+          ctx.lineTo(spikeX + spikeW, baseYPos);
+          ctx.lineTo(tipX, tipY);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          const spikeH = tileSize / teeth;
+          const spikeY = baseY + i * spikeH;
+          const tipY = spikeY + spikeH / 2;
+          const baseXPos = orientation === 'right' ? baseX : baseX + tileSize;
+          const tipX = orientation === 'right' ? baseX + tileSize * 0.65 : baseX + tileSize * 0.35;
+          ctx.beginPath();
+          ctx.moveTo(baseXPos, spikeY);
+          ctx.lineTo(baseXPos, spikeY + spikeH);
+          ctx.lineTo(tipX, tipY);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+    };
     for (let y = 0; y < this.world.height; y += 1) {
       for (let x = 0; x < this.world.width; x += 1) {
         const tile = this.world.getTile(x, y);
@@ -3277,12 +3355,18 @@ export default class Game {
           ctx.strokeStyle = '#1f1f1f';
           ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
         }
-        if (tile === '^') {
+        if (tile === '^' || tile === 'v') {
           ctx.fillStyle = '#fff';
           ctx.beginPath();
-          ctx.moveTo(x * tileSize, (y + 1) * tileSize);
-          ctx.lineTo((x + 1) * tileSize, (y + 1) * tileSize);
-          ctx.lineTo((x + 1) * tileSize, y * tileSize);
+          if (tile === '^') {
+            ctx.moveTo(x * tileSize, (y + 1) * tileSize);
+            ctx.lineTo((x + 1) * tileSize, (y + 1) * tileSize);
+            ctx.lineTo((x + 1) * tileSize, y * tileSize);
+          } else {
+            ctx.moveTo(x * tileSize, y * tileSize);
+            ctx.lineTo(x * tileSize, (y + 1) * tileSize);
+            ctx.lineTo((x + 1) * tileSize, (y + 1) * tileSize);
+          }
           ctx.closePath();
           ctx.fill();
           ctx.strokeStyle = '#fff';
@@ -3295,13 +3379,64 @@ export default class Game {
           ctx.lineTo(x * tileSize + tileSize - 4, y * tileSize + tileSize / 2);
           ctx.stroke();
         }
-        if (tile === '!') {
+        if (tile === 'e' || tile === 'E') {
+          ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(x * tileSize + tileSize / 2, y * tileSize + 4);
+          ctx.lineTo(x * tileSize + tileSize / 2, y * tileSize + tileSize - 4);
+          ctx.stroke();
+          if (tile === 'E') {
+            ctx.beginPath();
+            ctx.moveTo(x * tileSize + 6, y * tileSize + 6);
+            ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + 6);
+            ctx.moveTo(x * tileSize + 6, y * tileSize + tileSize - 6);
+            ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + tileSize - 6);
+            ctx.stroke();
+          }
+          ctx.lineWidth = 1;
+        }
+        if (tile === '~') {
+          drawLiquid(x, y, '#1f66aa', '#3b9fe0');
+        }
+        if (tile === 'A') {
+          drawLiquid(x, y, '#166d3b', '#36c777');
+        }
+        if (tile === 'L') {
+          drawLiquid(x, y, '#7f1c14', '#f25a42');
+        }
+        if (tile === '*') {
+          drawSpikeTile(x, y);
+        }
+        if (tile === 'I') {
+          ctx.fillStyle = '#8fd6ff';
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+          ctx.beginPath();
+          ctx.moveTo(x * tileSize + 4, y * tileSize + tileSize - 6);
+          ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + 6);
+          ctx.stroke();
+        }
+        if (tile === '<' || tile === '>') {
+          ctx.fillStyle = '#2b2b2b';
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#1f1f1f';
+          ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
           ctx.strokeStyle = '#fff';
           ctx.beginPath();
-          ctx.moveTo(x * tileSize + 6, y * tileSize + 6);
-          ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + tileSize - 6);
-          ctx.moveTo(x * tileSize + tileSize - 6, y * tileSize + 6);
-          ctx.lineTo(x * tileSize + 6, y * tileSize + tileSize - 6);
+          if (tile === '<') {
+            ctx.moveTo(x * tileSize + tileSize - 8, y * tileSize + tileSize / 2);
+            ctx.lineTo(x * tileSize + 8, y * tileSize + tileSize / 2);
+            ctx.lineTo(x * tileSize + 14, y * tileSize + tileSize / 2 - 6);
+            ctx.moveTo(x * tileSize + 8, y * tileSize + tileSize / 2);
+            ctx.lineTo(x * tileSize + 14, y * tileSize + tileSize / 2 + 6);
+          } else {
+            ctx.moveTo(x * tileSize + 8, y * tileSize + tileSize / 2);
+            ctx.lineTo(x * tileSize + tileSize - 8, y * tileSize + tileSize / 2);
+            ctx.lineTo(x * tileSize + tileSize - 14, y * tileSize + tileSize / 2 - 6);
+            ctx.moveTo(x * tileSize + tileSize - 8, y * tileSize + tileSize / 2);
+            ctx.lineTo(x * tileSize + tileSize - 14, y * tileSize + tileSize / 2 + 6);
+          }
           ctx.stroke();
         }
         if (tile === 'D' && showDoors) {

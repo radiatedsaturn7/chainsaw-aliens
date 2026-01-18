@@ -55,6 +55,8 @@ export default class Player {
     this.magBootsHeat = 0;
     this.magBootsOverheat = 0;
     this.magBootsEngaged = false;
+    this.dropTimer = 0;
+    this.downTapTimer = 0;
     this.aimingDiagonal = false;
     this.aimingDown = false;
     this.aimX = 1;
@@ -127,6 +129,12 @@ export default class Player {
     this.animTime += dt;
     this.sawRideBurstTimer = Math.max(0, this.sawRideBurstTimer - dt);
     const moveInput = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
+    const tileSize = world.tileSize;
+    const footTileX = Math.floor(this.x / tileSize);
+    const footTileY = Math.floor((this.y + this.height / 2 + 1) / tileSize);
+    const footTile = world.getTile(footTileX, footTileY);
+    const onIce = this.onGround && footTile === 'I';
+    const onOneWay = this.onGround && world.isOneWay(footTileX, footTileY);
     let exitRide = false;
     let exitRideMomentum = 0;
     if (this.sawRideActive) {
@@ -153,9 +161,18 @@ export default class Player {
       if ((exitRide && moveInput === 0) || (this.sawRideMomentum && !this.onGround && moveInput === 0)) {
         this.vx = exitRide ? exitRideMomentum : this.sawRideMomentum;
       } else {
-        this.vx = moveInput * this.speed;
-        if (moveInput !== 0 || this.onGround) {
-          this.sawRideMomentum = 0;
+        const targetVx = moveInput * this.speed;
+        if (onIce) {
+          const accel = moveInput !== 0 ? 0.12 : 0.04;
+          this.vx += (targetVx - this.vx) * accel;
+          if (moveInput === 0) {
+            this.vx *= 0.98;
+          }
+        } else {
+          this.vx = targetVx;
+          if (moveInput !== 0 || this.onGround) {
+            this.sawRideMomentum = 0;
+          }
         }
       }
     }
@@ -163,6 +180,26 @@ export default class Player {
     this.jumpBuffer = Math.max(0, this.jumpBuffer - dt);
     if (input.wasPressed('jump')) {
       this.jumpBuffer = MOVEMENT_MODEL.jumpBuffer;
+    }
+    this.dropTimer = Math.max(0, this.dropTimer - dt);
+    this.downTapTimer = Math.max(0, this.downTapTimer - dt);
+
+    if (input.wasPressed('down')) {
+      if (this.downTapTimer > 0 && onOneWay) {
+        this.dropTimer = 0.2;
+        this.onGround = false;
+        this.vy = Math.max(this.vy, 120);
+        this.downTapTimer = 0;
+      } else {
+        this.downTapTimer = 0.3;
+      }
+    }
+
+    if (onOneWay && input.isDown('down') && input.wasPressed('jump')) {
+      this.dropTimer = 0.2;
+      this.onGround = false;
+      this.vy = Math.max(this.vy, 120);
+      this.jumpBuffer = 0;
     }
 
     if (this.onGround) {
@@ -222,6 +259,24 @@ export default class Player {
 
     const wasGrounded = this.onGround;
     this.moveAndCollide(dt, world, abilities);
+    if (this.onGround) {
+      const currentFootX = Math.floor(this.x / tileSize);
+      const currentFootY = Math.floor((this.y + this.height / 2 + 1) / tileSize);
+      const conveyor = world.getTile(currentFootX, currentFootY);
+      const conveyorDir = conveyor === '>' ? 1 : conveyor === '<' ? -1 : 0;
+      if (conveyorDir !== 0) {
+        const push = conveyorDir * 80 * dt;
+        const rect = this.rect;
+        const testX = this.x + push;
+        const signX = Math.sign(push);
+        const testEdge = testX + (signX * rect.w) / 2;
+        const canMove = !world.isSolid(Math.floor(testEdge / tileSize), Math.floor((rect.y + 4) / tileSize), abilities, { ignoreOneWay: this.dropTimer > 0 })
+          && !world.isSolid(Math.floor(testEdge / tileSize), Math.floor((rect.y + rect.h - 4) / tileSize), abilities, { ignoreOneWay: this.dropTimer > 0 });
+        if (canMove) {
+          this.x = testX;
+        }
+      }
+    }
     if (!wasGrounded && this.onGround) {
       this.justLanded = true;
       this.jumpsRemaining = 1;
@@ -302,13 +357,15 @@ export default class Player {
     const nextY = this.y + this.vy * dt;
     const rect = this.rect;
 
+    const wasOnGround = this.onGround;
     this.onGround = false;
     this.onWall = 0;
 
     const check = (x, y, options = {}) => {
       const tileX = Math.floor(x / world.tileSize);
       const tileY = Math.floor(y / world.tileSize);
-      return world.isSolid(tileX, tileY, abilities, options);
+      const ignoreOneWay = options.ignoreOneWay || this.dropTimer > 0;
+      return world.isSolid(tileX, tileY, abilities, { ...options, ignoreOneWay });
     };
 
     // Horizontal
@@ -316,15 +373,19 @@ export default class Player {
     if (signX !== 0) {
       const testX = nextX + (signX * rect.w) / 2;
       if (check(testX, rect.y + 4, { ignoreOneWay: true }) || check(testX, rect.y + rect.h - 4, { ignoreOneWay: true })) {
-        const stepHeight = 8;
+        const stepHeight = wasOnGround ? 8 : 12;
         const steppedTop = rect.y - stepHeight;
-        const canStep = this.onGround
+        const canStep = wasOnGround
           && !check(testX, steppedTop + 4, { ignoreOneWay: true })
           && !check(testX, steppedTop + rect.h - 4, { ignoreOneWay: true });
         if (canStep) {
           this.x = nextX;
           this.y -= stepHeight;
           this.onGround = true;
+        } else if (!this.onGround && !check(testX, steppedTop + 4, { ignoreOneWay: true })) {
+          this.x = nextX;
+          this.y -= stepHeight;
+          this.onGround = false;
         } else {
           this.vx = 0;
           this.onWall = signX;
