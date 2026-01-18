@@ -193,6 +193,8 @@ export default class Game {
       golden: 'idle'
     };
     this.menuFlashTimer = 0;
+    this.minimapSelected = false;
+    this.minimapBounds = null;
     this.spawnRules = {
       globalMax: 12,
       perRegion: 6,
@@ -440,6 +442,7 @@ export default class Game {
     this.playtestActive = false;
     if (this.editorReturnState === 'playing' || this.editorReturnState === 'pause') {
       this.state = 'pause';
+      this.minimapSelected = false;
     } else {
       this.state = 'title';
     }
@@ -899,11 +902,19 @@ export default class Game {
 
     if (this.input.wasPressed('pause') && this.state === 'playing') {
       this.state = 'pause';
+      this.minimapSelected = true;
+      this.audio.menu();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
     } else if (this.input.wasPressed('pause') && this.state === 'pause') {
-      this.state = 'playing';
+      this.minimapSelected = !this.minimapSelected;
+      this.audio.menu();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
     }
     if (this.input.wasPressed('cancel') && ['dialog', 'shop', 'pause'].includes(this.state)) {
       this.state = 'playing';
+      this.minimapSelected = false;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
@@ -1057,19 +1068,18 @@ export default class Game {
     }
 
     if (this.state === 'pause') {
-      if (this.input.wasPressed('up')) this.pauseMenu.move(-1);
-      if (this.input.wasPressed('down')) this.pauseMenu.move(1);
-      if (this.input.wasPressed('left')) this.pauseMenu.adjust(-1);
-      if (this.input.wasPressed('right')) this.pauseMenu.adjust(1);
-      if (this.input.wasPressed('up') || this.input.wasPressed('down') || this.input.wasPressed('left') || this.input.wasPressed('right')) {
-        this.audio.menu();
-        this.recordFeedback('menu navigate', 'audio');
-        this.recordFeedback('menu navigate', 'visual');
-        this.triggerMenuFlash();
-      }
-      this.audio.setVolume(this.pauseMenu.volume);
-      if (this.input.wasPressed('pause')) {
-        this.state = 'playing';
+      if (!this.minimapSelected) {
+        if (this.input.wasPressed('up')) this.pauseMenu.move(-1);
+        if (this.input.wasPressed('down')) this.pauseMenu.move(1);
+        if (this.input.wasPressed('left')) this.pauseMenu.adjust(-1);
+        if (this.input.wasPressed('right')) this.pauseMenu.adjust(1);
+        if (this.input.wasPressed('up') || this.input.wasPressed('down') || this.input.wasPressed('left') || this.input.wasPressed('right')) {
+          this.audio.menu();
+          this.recordFeedback('menu navigate', 'audio');
+          this.recordFeedback('menu navigate', 'visual');
+          this.triggerMenuFlash();
+        }
+        this.audio.setVolume(this.pauseMenu.volume);
       }
       this.input.flush();
       return;
@@ -3313,10 +3323,15 @@ export default class Game {
       flameMode: this.player.flameMode && this.abilities.flame
     });
     const objectiveTarget = this.getObjectiveTarget();
-    this.minimap.draw(ctx, canvas.width - 180, 20, 160, 90, this.player, {
+    const minimapX = canvas.width - 180;
+    const minimapY = 20;
+    const minimapW = 160;
+    const minimapH = 90;
+    this.minimap.draw(ctx, minimapX, minimapY, minimapW, minimapH, this.player, {
       objective: objectiveTarget,
       showLegend: this.checklist.active
     });
+    this.minimapBounds = { x: minimapX, y: minimapY, w: minimapW, h: minimapH };
     ctx.save();
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
@@ -3348,7 +3363,9 @@ export default class Game {
       this.shopUI.draw(ctx, canvas.width, canvas.height, this.player);
     }
 
-    if (this.state === 'pause') {
+    if (this.state === 'pause' && this.minimapSelected) {
+      this.drawMinimapOverlay(ctx, canvas.width, canvas.height, objectiveTarget);
+    } else if (this.state === 'pause') {
       this.pauseMenu.draw(ctx, canvas.width, canvas.height, this.objective);
     }
 
@@ -3775,6 +3792,27 @@ export default class Game {
     ctx.restore();
   }
 
+  drawMinimapOverlay(ctx, width, height, objectiveTarget) {
+    const mapWidth = Math.min(width * 0.72, 540);
+    const mapHeight = Math.min(height * 0.6, 360);
+    const mapX = (width - mapWidth) / 2;
+    const mapY = (height - mapHeight) / 2;
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+    ctx.fillRect(0, 0, width, height);
+    this.minimap.draw(ctx, mapX, mapY, mapWidth, mapHeight, this.player, {
+      objective: objectiveTarget,
+      showLegend: true
+    });
+    ctx.fillStyle = '#fff';
+    ctx.font = '16px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('MAP', width / 2, mapY - 14);
+    ctx.font = '12px Courier New';
+    ctx.fillText('Pause toggles menu • Esc resumes', width / 2, mapY + mapHeight + 22);
+    ctx.restore();
+  }
+
   drawWaypoint(ctx, width, height, target) {
     if (!target) return;
     const screenX = target.x - this.camera.x;
@@ -4096,6 +4134,21 @@ export default class Game {
   handlePointerDown(payload) {
     if (this.state === 'editor') {
       this.editor.handlePointerDown(payload);
+      return;
+    }
+    if (
+      (this.state === 'playing' || this.state === 'pause')
+      && this.minimapBounds
+      && payload.x >= this.minimapBounds.x
+      && payload.x <= this.minimapBounds.x + this.minimapBounds.w
+      && payload.y >= this.minimapBounds.y
+      && payload.y <= this.minimapBounds.y + this.minimapBounds.h
+    ) {
+      this.state = 'pause';
+      this.minimapSelected = true;
+      this.audio.menu();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
       return;
     }
     if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(payload.x, payload.y)) {

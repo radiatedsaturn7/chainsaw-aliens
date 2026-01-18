@@ -831,6 +831,8 @@ export default class Editor {
     const spawn = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
     const blockWidth = 38;
     const blockHeight = 18;
+    const minRoomSpacing = 6;
+    const roomPadding = Math.max(1, Math.floor(minRoomSpacing / 2));
     const cols = Math.max(1, Math.floor((width - 2) / blockWidth));
     const rows = Math.max(1, Math.floor((height - 2) / blockHeight));
     const maxRooms = cols * rows;
@@ -1169,7 +1171,7 @@ export default class Editor {
       const horizontal = from.y === to.y;
       const wideJoin = Math.random() < 0.3;
       const span = wideJoin ? 4 : 2;
-      const doorwayTile = wideJoin ? '.' : 'D';
+      const doorwayTile = 'D';
 
       if (horizontal) {
         const doorX = to.x > from.x ? from.x + from.w - 1 : from.x;
@@ -1180,6 +1182,13 @@ export default class Editor {
         for (let i = 0; i < span; i += 1) {
           setTile(doorX, startY + i, doorwayTile);
           setTile(otherDoorX, startY + i, doorwayTile);
+        }
+        const startX = Math.min(doorX, otherDoorX) + 1;
+        const endX = Math.max(doorX, otherDoorX) - 1;
+        for (let i = 0; i < span; i += 1) {
+          for (let x = startX; x <= endX; x += 1) {
+            setTile(x, startY + i, doorwayTile);
+          }
         }
         return;
       }
@@ -1192,6 +1201,13 @@ export default class Editor {
       for (let i = 0; i < span; i += 1) {
         setTile(startX + i, doorY, doorwayTile);
         setTile(startX + i, otherDoorY, doorwayTile);
+      }
+      const startY = Math.min(doorY, otherDoorY) + 1;
+      const endY = Math.max(doorY, otherDoorY) - 1;
+      for (let i = 0; i < span; i += 1) {
+        for (let y = startY; y <= endY; y += 1) {
+          setTile(startX + i, y, doorwayTile);
+        }
       }
     };
 
@@ -1279,11 +1295,15 @@ export default class Editor {
       const { col, row } = cellFromIndex(index);
       const biome = biomeMap[row]?.[col] || 'industrial';
       const roomType = pickOne(biomeRoomTypes[biome] || ['room']);
+      const roomX = 1 + col * blockWidth + roomPadding;
+      const roomY = 1 + row * blockHeight + roomPadding;
+      const roomW = Math.max(6, blockWidth - roomPadding * 2);
+      const roomH = Math.max(6, blockHeight - roomPadding * 2);
       const room = {
-        x: 1 + col * blockWidth,
-        y: 1 + row * blockHeight,
-        w: blockWidth,
-        h: blockHeight,
+        x: roomX,
+        y: roomY,
+        w: roomW,
+        h: roomH,
         type: roomType,
         biome,
         cellIndex: index
