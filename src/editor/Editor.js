@@ -80,7 +80,22 @@ const PREFAB_TYPES = [
   { id: 'platform', label: 'Platform Run', short: 'PL' },
   { id: 'arena', label: 'Arena', short: 'AR', roomType: true },
   { id: 'puzzle', label: 'Puzzle Kit', short: 'PZ' },
-  { id: 'door', label: 'Door', short: 'DR' }
+  { id: 'door', label: 'Door', short: 'DR' },
+  { id: 'water-pit', label: 'Water Pit', short: 'WP' },
+  { id: 'lava-pit', label: 'Lava Pit', short: 'LP' },
+  { id: 'acid-pit', label: 'Acid Pit', short: 'AP' },
+  { id: 'spike-pit', label: 'Spike Pit', short: 'SP' },
+  { id: 'spike-wall-pit', label: 'Spike Wall Pit', short: 'SW' },
+  { id: 'spike-ceiling-pit', label: 'Spike Ceiling Pit', short: 'SC' },
+  { id: 'large-t-solid', label: 'Large T Solid', short: 'TS' },
+  { id: 'large-t-ice', label: 'Large T Ice', short: 'TI' },
+  { id: 'solid-platform', label: 'Platform (Solid)', short: 'PS' },
+  { id: 'conveyor-belt', label: 'Conveyor Belt', short: 'CB' },
+  { id: 'elevator', label: 'Elevator', short: 'EL' },
+  { id: 'moving-platform', label: 'Moving Platform', short: 'MP' },
+  { id: 'stalactite', label: 'Stalactite', short: 'ST' },
+  { id: 'stalagmite', label: 'Stalagmite', short: 'SM' },
+  { id: 'cave-platform', label: 'Cave Platform', short: 'CP' }
 ];
 
 const MODE_LABELS = {
@@ -809,6 +824,10 @@ export default class Editor {
   createRandomLevel(width, height) {
     const tiles = Array.from({ length: height }, () => Array.from({ length: width }, () => '#'));
     const rooms = [];
+    const elevatorPaths = [];
+    const elevators = [];
+    const elevatorPathSet = new Set();
+    const elevatorSet = new Set();
     const spawn = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
     const blockWidth = 38;
     const blockHeight = 18;
@@ -819,6 +838,20 @@ export default class Editor {
     const setTile = (x, y, char) => {
       if (x < 0 || y < 0 || x >= width || y >= height) return;
       tiles[y][x] = char;
+    };
+    const addElevatorPath = (x, y) => {
+      if (x < 0 || y < 0 || x >= width || y >= height) return;
+      const key = `${x},${y}`;
+      if (elevatorPathSet.has(key)) return;
+      elevatorPathSet.add(key);
+      elevatorPaths.push({ x, y });
+    };
+    const addElevatorPlatform = (x, y) => {
+      if (x < 0 || y < 0 || x >= width || y >= height) return;
+      const key = `${x},${y}`;
+      if (elevatorSet.has(key)) return;
+      elevatorSet.add(key);
+      elevators.push({ x, y });
     };
 
     const carveRectRoom = (room) => {
@@ -1014,18 +1047,6 @@ export default class Editor {
       }
     };
 
-    const addTraps = (room) => {
-      const traps = clamp(Math.floor(room.area / 180), 1, 4);
-      const hazardTiles = ['~', 'A', 'L', '*'];
-      for (let i = 0; i < traps; i += 1) {
-        const spot = findFloorInRoom(room);
-        if (!spot) continue;
-        if (spot.x === spawn.x && spot.y === spawn.y) continue;
-        const hazard = pickOne(hazardTiles);
-        setTile(spot.x, spot.y, hazard);
-      }
-    };
-
     const addIcePatch = (room) => {
       if (room.w < 8) return;
       const spot = findFloorInRoom(room);
@@ -1047,6 +1068,37 @@ export default class Editor {
       for (let x = startX; x < startX + length; x += 1) {
         if (tiles[spot.y]?.[x] === '.') setTile(x, spot.y, dir);
       }
+    };
+
+    const addPit = (room, hazard) => {
+      const pitWidth = 6;
+      const pitHeight = 2;
+      if (room.w < pitWidth + 2 || room.h < pitHeight + 2) return;
+      const startX = randInt(room.x + 1, room.x + room.w - pitWidth - 1);
+      const startY = randInt(room.y + 1, room.y + room.h - pitHeight - 1);
+      for (let y = 0; y < pitHeight; y += 1) {
+        for (let x = 0; x < pitWidth; x += 1) {
+          const tileX = startX + x;
+          const tileY = startY + y;
+          const isBottom = y === pitHeight - 1;
+          const isWall = x === 0 || x === pitWidth - 1;
+          const char = isBottom || isWall ? '#' : hazard;
+          setTile(tileX, tileY, char);
+        }
+      }
+    };
+
+    const addElevator = (room) => {
+      const shaftHeight = 6;
+      if (room.h < shaftHeight + 4) return;
+      const shaftX = randInt(room.x + 2, room.x + room.w - 3);
+      const shaftY = randInt(room.y + 2, room.y + room.h - shaftHeight - 2);
+      for (let y = 0; y < shaftHeight; y += 1) {
+        const tileY = shaftY + y;
+        setTile(shaftX, tileY, '.');
+        addElevatorPath(shaftX, tileY);
+      }
+      addElevatorPlatform(shaftX, shaftY + shaftHeight - 1);
     };
 
     const addTriangleBlocks = (room) => {
@@ -1086,6 +1138,33 @@ export default class Editor {
       }
     };
 
+    const biomeTypes = ['cave', 'industrial', 'ice'];
+    const biomeSeeds = [];
+    const usedSeedKeys = new Set();
+    while (biomeSeeds.length < biomeTypes.length) {
+      const seedCol = randInt(0, cols - 1);
+      const seedRow = randInt(0, rows - 1);
+      const key = `${seedCol},${seedRow}`;
+      if (usedSeedKeys.has(key)) continue;
+      usedSeedKeys.add(key);
+      biomeSeeds.push({ col: seedCol, row: seedRow, type: biomeTypes[biomeSeeds.length] });
+    }
+    const biomeMap = Array.from({ length: rows }, () => Array.from({ length: cols }, () => biomeTypes[0]));
+    for (let row = 0; row < rows; row += 1) {
+      for (let col = 0; col < cols; col += 1) {
+        let bestSeed = biomeSeeds[0];
+        let bestDistance = Infinity;
+        biomeSeeds.forEach((seed) => {
+          const distance = Math.abs(seed.col - col) + Math.abs(seed.row - row);
+          if (distance < bestDistance) {
+            bestDistance = distance;
+            bestSeed = seed;
+          }
+        });
+        biomeMap[row][col] = bestSeed.type;
+      }
+    }
+
     const carveConnection = (from, to) => {
       const horizontal = from.y === to.y;
       const wideJoin = Math.random() < 0.3;
@@ -1123,10 +1202,18 @@ export default class Editor {
         addPlatformRun(room);
         addStaircase(room);
       }
-      addTraps(room);
-      if (Math.random() < 0.5) addIcePatch(room);
-      if (Math.random() < 0.4) addConveyor(room);
       addTriangleBlocks(room);
+      if (room.biome === 'cave') {
+        if (Math.random() < 0.6) addPit(room, pickOne(['~', 'L']));
+      } else if (room.biome === 'industrial') {
+        if (Math.random() < 0.5) addConveyor(room);
+        if (Math.random() < 0.35) addElevator(room);
+        if (Math.random() < 0.45) addPit(room, '*');
+      } else if (room.biome === 'ice') {
+        if (Math.random() < 0.6) addIcePatch(room);
+        if (Math.random() < 0.4) addPit(room, '~');
+        if (Math.random() < 0.35) addPit(room, '*');
+      }
     };
 
     const cellIndex = (col, row) => row * cols + col;
@@ -1182,18 +1269,33 @@ export default class Editor {
       adjacency.get(nextIndex).add(fromIndex);
     }
 
+    const biomeRoomTypes = {
+      cave: ['cave', 'circular'],
+      industrial: ['room'],
+      ice: ['room', 'circular']
+    };
+
     occupied.forEach((index) => {
       const { col, row } = cellFromIndex(index);
+      const biome = biomeMap[row]?.[col] || 'industrial';
+      const roomType = pickOne(biomeRoomTypes[biome] || ['room']);
       const room = {
         x: 1 + col * blockWidth,
         y: 1 + row * blockHeight,
         w: blockWidth,
         h: blockHeight,
-        type: 'room',
+        type: roomType,
+        biome,
         cellIndex: index
       };
       placeRoom(room);
-      carveRectRoom(room);
+      if (roomType === 'cave') {
+        carveCaveRoom(room);
+      } else if (roomType === 'circular') {
+        carveCircularRoom(room);
+      } else {
+        carveRectRoom(room);
+      }
       addRoomDetails(room);
     });
 
@@ -1297,8 +1399,8 @@ export default class Editor {
       tiles: tiles.map((row) => row.join('')),
       regions,
       enemies,
-      elevatorPaths: [],
-      elevators: []
+      elevatorPaths,
+      elevators
     };
 
     this.game.applyWorldData(data);
@@ -2207,17 +2309,40 @@ export default class Editor {
 
   buildPrefabTiles(start, end) {
     const bounds = this.getDragBounds(start, end);
-    const tiles = [];
+    const prefab = {
+      tiles: [],
+      elevatorPaths: [],
+      elevators: []
+    };
     const dx = end.x - start.x;
     const dy = end.y - start.y;
     const signX = Math.sign(dx) || 1;
     const signY = Math.sign(dy) || 1;
+    const addTile = (x, y, char) => {
+      prefab.tiles.push({ x, y, char });
+    };
+    const addElevatorPath = (x, y) => {
+      prefab.elevatorPaths.push({ x, y });
+    };
+    const addElevatorPlatform = (x, y) => {
+      prefab.elevators.push({ x, y });
+    };
+    const buildFixed = (width, height, callback) => {
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          const tileX = start.x + signX * x;
+          const tileY = start.y + signY * y;
+          const char = callback(x, y, width, height);
+          if (char) addTile(tileX, tileY, char);
+        }
+      }
+    };
 
     if (this.prefabType.id === 'room' || this.prefabType.id === 'arena') {
       for (let y = bounds.y1; y <= bounds.y2; y += 1) {
         for (let x = bounds.x1; x <= bounds.x2; x += 1) {
           const wall = x === bounds.x1 || x === bounds.x2 || y === bounds.y1 || y === bounds.y2;
-          tiles.push({ x, y, char: wall ? '#' : '.' });
+          addTile(x, y, wall ? '#' : '.');
         }
       }
     } else if (this.prefabType.id === 'circular') {
@@ -2238,7 +2363,7 @@ export default class Editor {
             || !isInside(x - 1, y)
             || !isInside(x, y + 1)
             || !isInside(x, y - 1);
-          tiles.push({ x, y, char: wall ? '#' : '.' });
+          addTile(x, y, wall ? '#' : '.');
         }
       }
     } else if (this.prefabType.id === 'cave') {
@@ -2275,55 +2400,143 @@ export default class Editor {
           const bottomEdge = bounds.y2 - bottomInsetByColumn[columnIndex];
           if (x < leftEdge || x > rightEdge || y > bottomEdge) continue;
           const wall = x === leftEdge || x === rightEdge || y === bounds.y1 || y === bottomEdge;
-          tiles.push({ x, y, char: wall ? '#' : '.' });
+          addTile(x, y, wall ? '#' : '.');
         }
       }
     } else if (this.prefabType.id === 'corridor') {
       if (Math.abs(dx) >= Math.abs(dy)) {
         for (let x = bounds.x1; x <= bounds.x2; x += 1) {
-          tiles.push({ x, y: start.y, char: '.' });
-          tiles.push({ x, y: start.y + signY, char: '.' });
+          addTile(x, start.y, '.');
+          addTile(x, start.y + signY, '.');
         }
       } else {
         for (let y = bounds.y1; y <= bounds.y2; y += 1) {
-          tiles.push({ x: start.x, y, char: '.' });
-          tiles.push({ x: start.x + signX, y, char: '.' });
+          addTile(start.x, y, '.');
+          addTile(start.x + signX, y, '.');
         }
       }
     } else if (this.prefabType.id === 'staircase') {
       const steps = Math.max(Math.abs(dx), Math.abs(dy));
       for (let i = 0; i <= steps; i += 1) {
-        tiles.push({ x: start.x + signX * i, y: start.y + signY * i, char: '#' });
+        addTile(start.x + signX * i, start.y + signY * i, '#');
       }
     } else if (this.prefabType.id === 'platform') {
       for (let x = bounds.x1; x <= bounds.x2; x += 1) {
-        tiles.push({ x, y: start.y, char: '=' });
+        addTile(x, start.y, '=');
       }
     } else if (this.prefabType.id === 'puzzle') {
       const switchTile = { x: start.x, y: start.y, char: 'T' };
       const doorTile = { x: end.x, y: end.y, char: 'B' };
-      tiles.push(switchTile, doorTile);
+      addTile(switchTile.x, switchTile.y, switchTile.char);
+      addTile(doorTile.x, doorTile.y, doorTile.char);
       if (Math.abs(dx) >= Math.abs(dy)) {
         const minX = Math.min(start.x, end.x);
         const maxX = Math.max(start.x, end.x);
         for (let x = minX + 1; x < maxX; x += 1) {
-          tiles.push({ x, y: start.y, char: 'a' });
+          addTile(x, start.y, 'a');
         }
       } else {
         const minY = Math.min(start.y, end.y);
         const maxY = Math.max(start.y, end.y);
         for (let y = minY + 1; y < maxY; y += 1) {
-          tiles.push({ x: start.x, y, char: 'a' });
+          addTile(start.x, y, 'a');
         }
       }
     } else if (this.prefabType.id === 'door') {
       for (let y = bounds.y1; y <= bounds.y2; y += 1) {
         for (let x = bounds.x1; x <= bounds.x2; x += 1) {
-          tiles.push({ x, y, char: 'D' });
+          addTile(x, y, 'D');
         }
       }
+    } else if (this.prefabType.id === 'water-pit') {
+      buildFixed(6, 2, (x, y, width, height) => {
+        const wall = y === height - 1 || x === 0 || x === width - 1;
+        return wall ? '#' : '~';
+      });
+    } else if (this.prefabType.id === 'lava-pit') {
+      buildFixed(6, 2, (x, y, width, height) => {
+        const wall = y === height - 1 || x === 0 || x === width - 1;
+        return wall ? '#' : 'L';
+      });
+    } else if (this.prefabType.id === 'acid-pit') {
+      buildFixed(6, 2, (x, y, width, height) => {
+        const wall = y === height - 1 || x === 0 || x === width - 1;
+        return wall ? '#' : 'A';
+      });
+    } else if (this.prefabType.id === 'spike-pit') {
+      buildFixed(6, 2, (x, y, width, height) => {
+        const wall = y === height - 1 || x === 0 || x === width - 1;
+        return wall ? '#' : '*';
+      });
+    } else if (this.prefabType.id === 'spike-wall-pit') {
+      buildFixed(6, 3, (x, y, width, height) => {
+        if (y === height - 1) return '#';
+        if (y === 0) return x === 0 || x === width - 1 ? '#' : '.';
+        return x === 0 || x === width - 1 ? '*' : '.';
+      });
+    } else if (this.prefabType.id === 'spike-ceiling-pit') {
+      buildFixed(6, 3, (x, y, width, height) => {
+        if (y === height - 1) return '#';
+        if (y === 0) return x === 0 || x === width - 1 ? '#' : '*';
+        return x === 0 || x === width - 1 ? '#' : '.';
+      });
+    } else if (this.prefabType.id === 'large-t-solid') {
+      buildFixed(7, 6, (x, y) => {
+        if (y === 0) return '#';
+        return x >= 2 && x <= 4 ? '#' : null;
+      });
+    } else if (this.prefabType.id === 'large-t-ice') {
+      buildFixed(7, 6, (x, y) => {
+        if (y === 0) return 'I';
+        return x >= 2 && x <= 4 ? 'I' : null;
+      });
+    } else if (this.prefabType.id === 'solid-platform') {
+      buildFixed(6, 1, () => '#');
+    } else if (this.prefabType.id === 'conveyor-belt') {
+      const dir = signX < 0 ? '<' : '>';
+      buildFixed(6, 1, () => dir);
+    } else if (this.prefabType.id === 'elevator') {
+      const height = 6;
+      for (let y = 0; y < height; y += 1) {
+        const tileX = start.x;
+        const tileY = start.y + signY * y;
+        addTile(tileX, tileY, '.');
+        addElevatorPath(tileX, tileY);
+      }
+      addElevatorPlatform(start.x, start.y + signY * (height - 1));
+    } else if (this.prefabType.id === 'moving-platform') {
+      const width = 6;
+      for (let x = 0; x < width; x += 1) {
+        const tileX = start.x + signX * x;
+        const tileY = start.y;
+        addTile(tileX, tileY, '.');
+        addElevatorPath(tileX, tileY);
+      }
+      addElevatorPlatform(start.x, start.y);
+    } else if (this.prefabType.id === 'stalactite') {
+      const widths = [7, 7, 5, 5, 3, 3, 1];
+      buildFixed(7, 7, (x, y, width) => {
+        const rowWidth = widths[y] || 1;
+        const left = Math.floor((width - rowWidth) / 2);
+        return x >= left && x < left + rowWidth ? '#' : null;
+      });
+    } else if (this.prefabType.id === 'stalagmite') {
+      const widths = [1, 3, 3, 5, 5, 7, 7];
+      buildFixed(7, 7, (x, y, width) => {
+        const rowWidth = widths[y] || 1;
+        const left = Math.floor((width - rowWidth) / 2);
+        return x >= left && x < left + rowWidth ? '#' : null;
+      });
+    } else if (this.prefabType.id === 'cave-platform') {
+      buildFixed(6, 4, (x, y, width, height) => {
+        const edgeRows = y === 0 || y === height - 1;
+        if (edgeRows) {
+          return x >= 1 && x <= width - 2 ? '#' : null;
+        }
+        return '#';
+      });
     }
-    return tiles;
+    return prefab;
   }
 
   applyShape(start, end) {
@@ -2341,11 +2554,21 @@ export default class Editor {
   }
 
   applyPrefab(start, end) {
-    const tiles = this.buildPrefabTiles(start, end);
-    tiles.forEach((tile) => {
+    const prefab = this.buildPrefabTiles(start, end);
+    prefab.tiles.forEach((tile) => {
       const ensured = this.ensureInBounds(tile.x, tile.y);
       if (!ensured) return;
       this.setTile(ensured.tileX, ensured.tileY, tile.char);
+    });
+    prefab.elevatorPaths.forEach((path) => {
+      const ensured = this.ensureInBounds(path.x, path.y);
+      if (!ensured) return;
+      this.setElevatorPath(ensured.tileX, ensured.tileY, true);
+    });
+    prefab.elevators.forEach((platform) => {
+      const ensured = this.ensureInBounds(platform.x, platform.y);
+      if (!ensured) return;
+      this.setElevatorPlatform(ensured.tileX, ensured.tileY, true);
     });
   }
 
@@ -2794,10 +3017,17 @@ export default class Editor {
       const previewTiles = this.mode === 'shape'
         ? this.buildShapeTiles(previewStart, previewEnd, this.tileType.char || '.')
         : this.buildPrefabTiles(previewStart, previewEnd);
+      const prefabPreviewTiles = Array.isArray(previewTiles)
+        ? previewTiles
+        : [
+          ...previewTiles.tiles,
+          ...previewTiles.elevatorPaths.map((tile) => ({ ...tile, char: '.' })),
+          ...previewTiles.elevators.map((tile) => ({ ...tile, char: '.' }))
+        ];
       const previewColor = this.mode === 'shape'
         ? 'rgba(100,200,255,0.2)'
         : 'rgba(190,170,255,0.2)';
-      drawGhostTiles(previewTiles, previewColor);
+      drawGhostTiles(prefabPreviewTiles, previewColor);
     }
 
     const ghostX = this.hoverTile.x * tileSize;
