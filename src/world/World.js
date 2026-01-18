@@ -56,7 +56,7 @@ const DEFAULT_SPAWN = { x: 28, y: 19 };
 const DOOR_TILE = 'D';
 const ROOM_BLOCKERS = new Set(['#', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>']);
 const SOLID_TILES = new Set(['#', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>']);
-const ONE_WAY_TILES = new Set(['=', 'E', 'e']);
+const ONE_WAY_TILES = new Set(['=']);
 const HAZARD_TILES = new Set(['!', '~', 'A', 'L', '*']);
 
 const isRoomTile = (tile) => tile && tile !== DOOR_TILE && !ROOM_BLOCKERS.has(tile);
@@ -79,6 +79,10 @@ export default class World {
     this.objectives = [];
     this.enemies = [];
     this.boxes = [];
+    this.elevatorPaths = [];
+    this.elevatorPathSet = new Set();
+    this.elevators = [];
+    this.elevatorSet = new Set();
     this.data = null;
     this.rooms = [];
     this.roomIndexByTile = [];
@@ -118,7 +122,15 @@ export default class World {
     this.bossGate = null;
     this.objectives = [];
     this.enemies = (data.enemies || []).map((enemy) => ({ ...enemy }));
+    this.elevatorPaths = (data.elevatorPaths || []).map((path) => ({ ...path }));
+    this.elevatorPathSet = new Set(this.elevatorPaths.map((path) => `${path.x},${path.y}`));
+    this.elevators = (data.elevators || []).map((elevator) => ({ ...elevator }));
+    this.elevatorSet = new Set(this.elevators.map((elevator) => `${elevator.x},${elevator.y}`));
     this.data = data;
+    if (this.data) {
+      this.data.elevatorPaths = this.elevatorPaths;
+      this.data.elevators = this.elevators;
+    }
     this.rebuildCaches();
   }
 
@@ -278,6 +290,50 @@ export default class World {
     }
   }
 
+  hasElevatorPath(x, y) {
+    return this.elevatorPathSet.has(`${x},${y}`);
+  }
+
+  hasElevatorPlatform(x, y) {
+    return this.elevatorSet.has(`${x},${y}`);
+  }
+
+  setElevatorPath(x, y, active = true) {
+    if (x < 0 || y < 0 || x >= this.width || y >= this.height) return false;
+    const key = `${x},${y}`;
+    if (active) {
+      if (this.elevatorPathSet.has(key)) return false;
+      this.elevatorPathSet.add(key);
+      this.elevatorPaths.push({ x, y });
+    } else {
+      if (!this.elevatorPathSet.has(key)) return false;
+      this.elevatorPathSet.delete(key);
+      this.elevatorPaths = this.elevatorPaths.filter((path) => !(path.x === x && path.y === y));
+    }
+    if (this.data) {
+      this.data.elevatorPaths = this.elevatorPaths;
+    }
+    return true;
+  }
+
+  setElevatorPlatform(x, y, active = true) {
+    if (x < 0 || y < 0 || x >= this.width || y >= this.height) return false;
+    const key = `${x},${y}`;
+    if (active) {
+      if (this.elevatorSet.has(key)) return false;
+      this.elevatorSet.add(key);
+      this.elevators.push({ x, y });
+    } else {
+      if (!this.elevatorSet.has(key)) return false;
+      this.elevatorSet.delete(key);
+      this.elevators = this.elevators.filter((platform) => !(platform.x === x && platform.y === y));
+    }
+    if (this.data) {
+      this.data.elevators = this.elevators;
+    }
+    return true;
+  }
+
   enemyAt(tileX, tileY) {
     return this.enemies.find((enemy) => enemy.x === tileX && enemy.y === tileY) || null;
   }
@@ -347,6 +403,20 @@ export default class World {
         enemy.x += left;
         enemy.y += top;
       });
+      this.elevatorPaths.forEach((path) => {
+        path.x += left;
+        path.y += top;
+      });
+      this.elevators.forEach((platform) => {
+        platform.x += left;
+        platform.y += top;
+      });
+      if (this.elevatorPaths.length) {
+        this.elevatorPathSet = new Set(this.elevatorPaths.map((path) => `${path.x},${path.y}`));
+      }
+      if (this.elevators.length) {
+        this.elevatorSet = new Set(this.elevators.map((platform) => `${platform.x},${platform.y}`));
+      }
     }
 
     if (this.data) {
@@ -357,6 +427,8 @@ export default class World {
         this.data.spawn = { x: this.spawn.x, y: this.spawn.y };
       }
       this.data.enemies = this.enemies;
+      this.data.elevatorPaths = this.elevatorPaths;
+      this.data.elevators = this.elevators;
     }
 
     return { offsetX: left, offsetY: top };

@@ -4,8 +4,8 @@ const DEFAULT_TILE_TYPES = [
   { id: 'triangle-flip', label: 'Triangle Block (Flipped)', char: 'v' },
   { id: 'empty', label: 'Empty', char: '.' },
   { id: 'oneway', label: 'One-Way Platform', char: '=' },
-  { id: 'elevator-open', label: 'Elevator Run (Open)', char: 'e' },
-  { id: 'elevator-closed', label: 'Elevator Run (Closed)', char: 'E' },
+  { id: 'elevator-path', label: 'Elevator Path', char: null, special: 'elevator-path' },
+  { id: 'elevator-platform', label: 'Elevator Platform', char: null, special: 'elevator-platform' },
   { id: 'water', label: 'Water', char: '~' },
   { id: 'acid', label: 'Acid', char: 'A' },
   { id: 'lava', label: 'Lava', char: 'L' },
@@ -78,7 +78,6 @@ const PREFAB_TYPES = [
   { id: 'corridor', label: 'Corridor', short: 'CR' },
   { id: 'staircase', label: 'Staircase', short: 'SC' },
   { id: 'platform', label: 'Platform Run', short: 'PL' },
-  { id: 'elevator', label: 'Elevator Run', short: 'EL' },
   { id: 'arena', label: 'Arena', short: 'AR', roomType: true },
   { id: 'puzzle', label: 'Puzzle Kit', short: 'PZ' },
   { id: 'door', label: 'Door', short: 'DR' }
@@ -133,6 +132,8 @@ export default class Editor {
     this.pendingChanges = new Map();
     this.pendingSpawn = null;
     this.pendingEnemies = new Map();
+    this.pendingElevatorPaths = new Map();
+    this.pendingElevators = new Map();
     this.undoStack = [];
     this.redoStack = [];
     this.maxHistory = 50;
@@ -221,6 +222,7 @@ export default class Editor {
         height: null
       }
     };
+    this.randomLevelDialog = { open: false };
     this.gamepadCursor = {
       x: 0,
       y: 0,
@@ -278,6 +280,8 @@ export default class Editor {
     this.pendingChanges.clear();
     this.pendingSpawn = null;
     this.pendingEnemies.clear();
+    this.pendingElevatorPaths.clear();
+    this.pendingElevators.clear();
     this.moveSelection = null;
     this.moveTarget = null;
     this.dragStart = null;
@@ -409,12 +413,6 @@ export default class Editor {
   }
 
   getPanelConfig(tabId, { includeExtras = false } = {}) {
-    const modeButtons = [
-      { id: 'tile', label: 'Tile', tooltip: 'Tile mode. (Q/E/M)' },
-      { id: 'enemy', label: 'Enemy', tooltip: 'Enemy mode. (T)' },
-      { id: 'prefab', label: 'Structure', tooltip: 'Structure mode. (R)' },
-      { id: 'shape', label: 'Shape', tooltip: 'Shape mode. (G)' }
-    ];
     const tileToolButtons = [
       { id: 'paint', label: 'Paint', tooltip: 'Paint tiles. (Q)' },
       { id: 'erase', label: 'Erase', tooltip: 'Erase tiles. (E)' },
@@ -425,14 +423,6 @@ export default class Editor {
 
     if (tabId === 'tools') {
       items = [
-        ...modeButtons.map((tool) => ({
-          id: `mode-${tool.id}`,
-          label: `Mode: ${tool.label}`,
-          tooltip: tool.tooltip,
-          onClick: () => {
-            this.mode = tool.id;
-          }
-        })),
         ...tileToolButtons.map((tool) => ({
           id: `tile-${tool.id}`,
           label: `Tool: ${tool.label}`,
@@ -442,6 +432,18 @@ export default class Editor {
             this.tileTool = tool.id;
           }
         })),
+        {
+          id: 'undo',
+          label: 'Undo',
+          tooltip: 'Undo last change (Ctrl+Z)',
+          onClick: () => this.undo()
+        },
+        {
+          id: 'redo',
+          label: 'Redo',
+          tooltip: 'Redo last change (Ctrl+Y)',
+          onClick: () => this.redo()
+        },
         {
           id: 'random-level',
           label: 'Random Level',
@@ -782,7 +784,16 @@ export default class Editor {
   }
 
   promptRandomLevel() {
+    this.randomLevelDialog.open = true;
+  }
+
+  confirmRandomLevel() {
+    this.randomLevelDialog.open = false;
     this.createRandomLevel(this.randomLevelSize.width, this.randomLevelSize.height);
+  }
+
+  cancelRandomLevel() {
+    this.randomLevelDialog.open = false;
   }
 
   parseLevelSize(value) {
@@ -1038,17 +1049,6 @@ export default class Editor {
       }
     };
 
-    const addElevatorRun = (room) => {
-      if (room.h < 12) return;
-      const x = randInt(room.x + 2, room.x + room.w - 3);
-      const top = randInt(room.y + 2, room.y + Math.floor(room.h / 2));
-      const bottom = randInt(Math.floor(room.y + room.h / 2), room.y + room.h - 3);
-      for (let y = top; y <= bottom; y += 1) {
-        const char = y === top || y === bottom ? 'E' : 'e';
-        if (tiles[y]?.[x] === '.') setTile(x, y, char);
-      }
-    };
-
     const addTriangleBlocks = (room) => {
       const count = randInt(1, 3);
       const triangleSizes = [
@@ -1126,7 +1126,6 @@ export default class Editor {
       addTraps(room);
       if (Math.random() < 0.5) addIcePatch(room);
       if (Math.random() < 0.4) addConveyor(room);
-      if (Math.random() < 0.35) addElevatorRun(room);
       addTriangleBlocks(room);
     };
 
@@ -1297,7 +1296,9 @@ export default class Editor {
       spawn,
       tiles: tiles.map((row) => row.join('')),
       regions,
-      enemies
+      enemies,
+      elevatorPaths: [],
+      elevators: []
     };
 
     this.game.applyWorldData(data);
@@ -1349,6 +1350,24 @@ export default class Editor {
         } else {
           this.game.world.removeEnemy(enemy.x, enemy.y);
         }
+      });
+    }
+
+    if (action.elevatorPaths) {
+      const changes = direction === 'undo'
+        ? action.elevatorPaths.map((path) => ({ x: path.x, y: path.y, active: path.prev }))
+        : action.elevatorPaths.map((path) => ({ x: path.x, y: path.y, active: path.next }));
+      changes.forEach((path) => {
+        this.game.world.setElevatorPath(path.x, path.y, path.active);
+      });
+    }
+
+    if (action.elevators) {
+      const changes = direction === 'undo'
+        ? action.elevators.map((platform) => ({ x: platform.x, y: platform.y, active: platform.prev }))
+        : action.elevators.map((platform) => ({ x: platform.x, y: platform.y, active: platform.next }));
+      changes.forEach((platform) => {
+        this.game.world.setElevatorPlatform(platform.x, platform.y, platform.active);
       });
     }
 
@@ -1428,11 +1447,15 @@ export default class Editor {
 
     const tiles = Array.from(this.pendingChanges.values());
     const enemies = Array.from(this.pendingEnemies.values());
-    if (tiles.length > 0 || this.pendingSpawn || enemies.length > 0) {
+    const elevatorPaths = Array.from(this.pendingElevatorPaths.values());
+    const elevators = Array.from(this.pendingElevators.values());
+    if (tiles.length > 0 || this.pendingSpawn || enemies.length > 0 || elevatorPaths.length > 0 || elevators.length > 0) {
       const action = {
         tiles,
         spawn: this.pendingSpawn,
-        enemies
+        enemies,
+        elevatorPaths,
+        elevators
       };
       this.undoStack.push(action);
       if (this.undoStack.length > this.maxHistory) {
@@ -1444,6 +1467,8 @@ export default class Editor {
     this.pendingChanges.clear();
     this.pendingSpawn = null;
     this.pendingEnemies.clear();
+    this.pendingElevatorPaths.clear();
+    this.pendingElevators.clear();
     this.dragging = false;
     this.dragMode = null;
     this.dragButton = null;
@@ -1459,6 +1484,20 @@ export default class Editor {
   handlePointerDown(payload) {
     if (!this.active) return;
     this.lastPointer = { x: payload.x, y: payload.y };
+    if (this.randomLevelDialog.open) {
+      if (this.isPointInBounds(payload.x, payload.y, this.randomLevelSlider.bounds.width)) {
+        this.randomLevelSlider.active = 'width';
+        this.updateRandomLevelSlider('width', payload.x);
+        return;
+      }
+      if (this.isPointInBounds(payload.x, payload.y, this.randomLevelSlider.bounds.height)) {
+        this.randomLevelSlider.active = 'height';
+        this.updateRandomLevelSlider('height', payload.x);
+        return;
+      }
+      this.handleUIClick(payload.x, payload.y);
+      return;
+    }
     if (this.isPointInBounds(payload.x, payload.y, this.playButtonBounds)) {
       this.playtestPressActive = true;
       if (this.playtestPressTimer) {
@@ -1488,18 +1527,6 @@ export default class Editor {
         this.updateZoomFromSlider(payload.x);
         return;
       }
-    }
-
-    if (this.isPointInBounds(payload.x, payload.y, this.randomLevelSlider.bounds.width)) {
-      this.randomLevelSlider.active = 'width';
-      this.updateRandomLevelSlider('width', payload.x);
-      return;
-    }
-
-    if (this.isPointInBounds(payload.x, payload.y, this.randomLevelSlider.bounds.height)) {
-      this.randomLevelSlider.active = 'height';
-      this.updateRandomLevelSlider('height', payload.x);
-      return;
     }
 
     if (this.radialMenu.active) {
@@ -1583,10 +1610,11 @@ export default class Editor {
       }
     }
 
-    if (this.randomLevelSlider.active) {
+    if (this.randomLevelDialog.open && this.randomLevelSlider.active) {
       this.updateRandomLevelSlider(this.randomLevelSlider.active, payload.x);
       return;
     }
+    if (this.randomLevelDialog.open) return;
     if (this.isMobileLayout() && this.drawer.swipeStart) {
       const dx = payload.x - this.drawer.swipeStart.x;
       const dy = payload.y - this.drawer.swipeStart.y;
@@ -1695,7 +1723,7 @@ export default class Editor {
       }
     }
 
-    if (this.randomLevelSlider.active) {
+    if (this.randomLevelDialog.open && this.randomLevelSlider.active) {
       this.randomLevelSlider.active = null;
     }
 
@@ -2044,12 +2072,30 @@ export default class Editor {
     const { tileX: safeX, tileY: safeY } = ensured;
 
     if (mode === 'erase') {
+      if (this.tileType.special === 'elevator-path') {
+        this.setElevatorPath(safeX, safeY, false);
+        return;
+      }
+      if (this.tileType.special === 'elevator-platform') {
+        this.setElevatorPlatform(safeX, safeY, false);
+        return;
+      }
       this.setTile(safeX, safeY, '.');
       return;
     }
 
     if (this.tileType.special === 'spawn') {
       this.setSpawn(safeX, safeY);
+      return;
+    }
+
+    if (this.tileType.special === 'elevator-path') {
+      this.setElevatorPath(safeX, safeY, true);
+      return;
+    }
+
+    if (this.tileType.special === 'elevator-platform') {
+      this.setElevatorPlatform(safeX, safeY, true);
       return;
     }
 
@@ -2253,13 +2299,6 @@ export default class Editor {
       for (let x = bounds.x1; x <= bounds.x2; x += 1) {
         tiles.push({ x, y: start.y, char: '=' });
       }
-    } else if (this.prefabType.id === 'elevator') {
-      const minY = Math.min(start.y, end.y);
-      const maxY = Math.max(start.y, end.y);
-      for (let y = minY; y <= maxY; y += 1) {
-        const char = y === minY || y === maxY ? 'E' : 'e';
-        tiles.push({ x: start.x, y, char });
-      }
     } else if (this.prefabType.id === 'puzzle') {
       const switchTile = { x: start.x, y: start.y, char: 'T' };
       const doorTile = { x: end.x, y: end.y, char: 'B' };
@@ -2323,6 +2362,42 @@ export default class Editor {
       const entry = this.pendingChanges.get(key);
       entry.next = char;
     }
+  }
+
+  recordElevatorPathChange(tileX, tileY, prev, next) {
+    const key = `${tileX},${tileY}`;
+    if (!this.pendingElevatorPaths.has(key)) {
+      this.pendingElevatorPaths.set(key, { x: tileX, y: tileY, prev, next });
+    } else {
+      const entry = this.pendingElevatorPaths.get(key);
+      entry.next = next;
+    }
+  }
+
+  recordElevatorPlatformChange(tileX, tileY, prev, next) {
+    const key = `${tileX},${tileY}`;
+    if (!this.pendingElevators.has(key)) {
+      this.pendingElevators.set(key, { x: tileX, y: tileY, prev, next });
+    } else {
+      const entry = this.pendingElevators.get(key);
+      entry.next = next;
+    }
+  }
+
+  setElevatorPath(tileX, tileY, active) {
+    const prev = this.game.world.hasElevatorPath(tileX, tileY);
+    if (prev === active) return;
+    this.game.world.setElevatorPath(tileX, tileY, active);
+    this.triggerHaptic();
+    this.recordElevatorPathChange(tileX, tileY, prev, active);
+  }
+
+  setElevatorPlatform(tileX, tileY, active) {
+    const prev = this.game.world.hasElevatorPlatform(tileX, tileY);
+    if (prev === active) return;
+    this.game.world.setElevatorPlatform(tileX, tileY, active);
+    this.triggerHaptic();
+    this.recordElevatorPlatformChange(tileX, tileY, prev, active);
   }
 
   setSpawn(tileX, tileY) {
@@ -2395,6 +2470,9 @@ export default class Editor {
     if (enemy) {
       return { kind: 'enemy', type: enemy.type, origin: { x: tileX, y: tileY } };
     }
+    if (this.game.world.hasElevatorPlatform(tileX, tileY)) {
+      return { kind: 'elevator', origin: { x: tileX, y: tileY } };
+    }
     const spawn = this.game.world.spawn;
     if (spawn && spawn.x === tileX && spawn.y === tileY) {
       return { kind: 'spawn', origin: { x: tileX, y: tileY } };
@@ -2417,6 +2495,11 @@ export default class Editor {
       this.setEnemy(safeX, safeY, this.moveSelection.type);
       return;
     }
+    if (kind === 'elevator') {
+      this.setElevatorPlatform(origin.x, origin.y, false);
+      this.setElevatorPlatform(safeX, safeY, true);
+      return;
+    }
     if (kind === 'spawn') {
       this.setSpawn(safeX, safeY);
       return;
@@ -2429,6 +2512,24 @@ export default class Editor {
 
   selectTile(tileX, tileY) {
     if (!this.isInBounds(tileX, tileY)) return;
+    if (this.game.world.hasElevatorPlatform(tileX, tileY)) {
+      const platformTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'elevator-platform');
+      if (platformTile) {
+        this.setTileType(platformTile);
+        this.mode = 'tile';
+        this.tileTool = 'paint';
+      }
+      return;
+    }
+    if (this.game.world.hasElevatorPath(tileX, tileY)) {
+      const pathTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'elevator-path');
+      if (pathTile) {
+        this.setTileType(pathTile);
+        this.mode = 'tile';
+        this.tileTool = 'paint';
+      }
+      return;
+    }
     const spawn = this.game.world.spawn;
     if (spawn && spawn.x === tileX && spawn.y === tileY) {
       const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
@@ -2537,6 +2638,33 @@ export default class Editor {
 
   drawEditorMarkers(ctx) {
     const { tileSize } = this.game.world;
+    if (this.game.world.elevatorPaths?.length) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(120,220,255,0.7)';
+      ctx.lineWidth = 2;
+      this.game.world.elevatorPaths.forEach((path) => {
+        const cx = path.x * tileSize + tileSize / 2;
+        const cy = path.y * tileSize + tileSize / 2;
+        ctx.beginPath();
+        ctx.moveTo(cx - 6, cy);
+        ctx.lineTo(cx + 6, cy);
+        ctx.moveTo(cx, cy - 6);
+        ctx.lineTo(cx, cy + 6);
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+    if (this.game.world.elevators?.length) {
+      ctx.save();
+      ctx.strokeStyle = '#ffd36a';
+      ctx.lineWidth = 2;
+      this.game.world.elevators.forEach((platform) => {
+        const x = platform.x * tileSize + 6;
+        const y = platform.y * tileSize + tileSize / 2 - 6;
+        ctx.strokeRect(x, y, tileSize - 12, 12);
+      });
+      ctx.restore();
+    }
     for (let y = 0; y < this.game.world.height; y += 1) {
       for (let x = 0; x < this.game.world.width; x += 1) {
         const tile = this.game.world.getTile(x, y);
@@ -2688,7 +2816,20 @@ export default class Editor {
     } else if (this.mode === 'tile') {
       ctx.fillStyle = 'rgba(140,200,255,0.2)';
       ctx.fillRect(ghostX, ghostY, tileSize, tileSize);
-      if (this.tileType.char) {
+      if (this.tileType.special === 'elevator-path') {
+        ctx.strokeStyle = 'rgba(180,240,255,0.9)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(ghostX + tileSize / 2 - 6, ghostY + tileSize / 2);
+        ctx.lineTo(ghostX + tileSize / 2 + 6, ghostY + tileSize / 2);
+        ctx.moveTo(ghostX + tileSize / 2, ghostY + tileSize / 2 - 6);
+        ctx.lineTo(ghostX + tileSize / 2, ghostY + tileSize / 2 + 6);
+        ctx.stroke();
+      } else if (this.tileType.special === 'elevator-platform') {
+        ctx.strokeStyle = 'rgba(255,220,140,0.9)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(ghostX + 6, ghostY + tileSize / 2 - 6, tileSize - 12, 12);
+      } else if (this.tileType.char) {
         ctx.fillStyle = 'rgba(220,240,255,0.8)';
         ctx.font = '12px Courier New';
         ctx.textAlign = 'center';
@@ -2717,12 +2858,6 @@ export default class Editor {
     const enemyLabel = this.enemyType?.label || 'Enemy';
     const prefabLabel = this.prefabType?.label || 'Prefab';
     const shapeLabel = this.shapeTool?.label || 'Shape';
-    const modeButtons = [
-      { id: 'tile', label: 'Tile', tooltip: 'Tile mode. (Q/E/M)' },
-      { id: 'enemy', label: 'Enemy', tooltip: 'Enemy mode. (T)' },
-      { id: 'prefab', label: 'Prefab', tooltip: 'Structure mode. (R)' },
-      { id: 'shape', label: 'Shape', tooltip: 'Shape mode. (G)' }
-    ];
     const tileToolButtons = [
       { id: 'paint', label: 'Paint', tooltip: 'Paint tiles. (Q)' },
       { id: 'erase', label: 'Erase', tooltip: 'Erase tiles. (E)' },
@@ -2757,6 +2892,19 @@ export default class Editor {
         ctx.moveTo(centerX, y + 4);
         ctx.lineTo(centerX, y + size - 4);
         ctx.stroke();
+      } else if (tile?.special === 'elevator-path') {
+        ctx.strokeStyle = 'rgba(140,220,255,0.9)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(centerX - size * 0.25, centerY);
+        ctx.lineTo(centerX + size * 0.25, centerY);
+        ctx.moveTo(centerX, centerY - size * 0.25);
+        ctx.lineTo(centerX, centerY + size * 0.25);
+        ctx.stroke();
+      } else if (tile?.special === 'elevator-platform') {
+        ctx.strokeStyle = 'rgba(255,220,140,0.9)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x + 4, centerY - size * 0.15, size - 8, size * 0.3);
       } else if (char === '#') {
         ctx.fillStyle = '#3a3a3a';
         ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
@@ -3042,15 +3190,6 @@ export default class Editor {
 
         if (activeTab === 'tools') {
           items = [
-            ...modeButtons.map((tool) => ({
-              id: `mode-${tool.id}`,
-              label: `MODE: ${tool.label.toUpperCase()}`,
-              active: this.mode === tool.id,
-              tooltip: tool.tooltip,
-              onClick: () => {
-                this.mode = tool.id;
-              }
-            })),
             ...tileToolButtons.map((tool) => ({
               id: `tile-${tool.id}`,
               label: `${tool.label.toUpperCase()} TOOL`,
@@ -3061,6 +3200,20 @@ export default class Editor {
                 this.tileTool = tool.id;
               }
             })),
+            {
+              id: 'undo',
+              label: 'UNDO',
+              active: false,
+              tooltip: 'Undo last change (Ctrl+Z)',
+              onClick: () => this.undo()
+            },
+            {
+              id: 'redo',
+              label: 'REDO',
+              active: false,
+              tooltip: 'Redo last change (Ctrl+Y)',
+              onClick: () => this.redo()
+            },
             {
               id: 'random-level',
               label: 'RANDOM LEVEL',
@@ -3160,13 +3313,6 @@ export default class Editor {
           drawButton(x, y, columnWidth, buttonHeight, item.label, item.active, item.onClick, item.tooltip, item.preview);
         });
 
-        if (activeTab === 'tools') {
-          const sliderW = contentW - 16;
-          const sliderX = contentX + 8;
-          const sliderY = contentY + contentHeight - 64;
-          drawSlider(sliderX, sliderY, sliderW, 'Width', this.randomLevelSize.width, 50, 256, 'width');
-          drawSlider(sliderX, sliderY + 26, sliderW, 'Height', this.randomLevelSize.height, 30, 256, 'height');
-        }
       }
       this.panelScrollBounds = null;
       this.panelScrollView = null;
@@ -3267,14 +3413,6 @@ export default class Editor {
         drawButton(x, y, columnWidth, buttonHeight, item.label, getActiveState(item), item.onClick, item.tooltip, preview);
       });
 
-      if (activeTab === 'tools') {
-        const sliderW = contentW - contentPadding * 2;
-        const sliderX = contentX + contentPadding;
-        const sliderY = contentY + contentHeight - 64;
-        drawSlider(sliderX, sliderY, sliderW, 'Width', this.randomLevelSize.width, 50, 256, 'width');
-        drawSlider(sliderX, sliderY + 26, sliderW, 'Height', this.randomLevelSize.height, 30, 256, 'height');
-      }
-
       const infoLines = [
         `Mode: ${modeLabel} | Tool: ${tileToolLabel}`,
         `Tile: ${tileLabel} | Enemy: ${enemyLabel}`,
@@ -3345,6 +3483,58 @@ export default class Editor {
       ctx.fill();
       ctx.strokeStyle = 'rgba(0,0,0,0.6)';
       ctx.stroke();
+      ctx.restore();
+    }
+
+    if (this.randomLevelDialog.open) {
+      const dialogW = Math.min(420, width * 0.8);
+      const dialogH = 170;
+      const dialogX = (width - dialogW) / 2;
+      const dialogY = (height - dialogH) / 2;
+      ctx.save();
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = 'rgba(12,14,18,0.95)';
+      ctx.fillRect(dialogX, dialogY, dialogW, dialogH);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(dialogX, dialogY, dialogW, dialogH);
+      ctx.fillStyle = '#fff';
+      ctx.font = '14px Courier New';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText('Random Level Size', dialogX + dialogW / 2, dialogY + 12);
+
+      const sliderW = dialogW - 40;
+      const sliderX = dialogX + 20;
+      const sliderY = dialogY + 56;
+      drawSlider(sliderX, sliderY, sliderW, 'Width', this.randomLevelSize.width, 50, 256, 'width');
+      drawSlider(sliderX, sliderY + 32, sliderW, 'Height', this.randomLevelSize.height, 30, 256, 'height');
+
+      const buttonW = 110;
+      const buttonH = 28;
+      const buttonY = dialogY + dialogH - 42;
+      drawButton(
+        dialogX + dialogW / 2 - buttonW - 10,
+        buttonY,
+        buttonW,
+        buttonH,
+        'CANCEL',
+        false,
+        () => this.cancelRandomLevel(),
+        'Cancel random level'
+      );
+      drawButton(
+        dialogX + dialogW / 2 + 10,
+        buttonY,
+        buttonW,
+        buttonH,
+        'OK',
+        false,
+        () => this.confirmRandomLevel(),
+        'Generate random level'
+      );
       ctx.restore();
     }
 

@@ -347,7 +347,9 @@ export default class Game {
       spawn: this.world.spawn || { x: 28, y: 19 },
       tiles: this.world.tiles,
       regions: this.world.regions,
-      enemies: this.world.enemies
+      enemies: this.world.enemies,
+      elevatorPaths: this.world.elevatorPaths,
+      elevators: this.world.elevators
     };
   }
 
@@ -360,7 +362,9 @@ export default class Game {
       spawn: data.spawn || { x: 28, y: 19 },
       tiles: data.tiles,
       regions: data.regions || [],
-      enemies: data.enemies || []
+      enemies: data.enemies || [],
+      elevatorPaths: data.elevatorPaths || [],
+      elevators: data.elevators || []
     };
     this.world.applyData(migrated);
     this.syncSpawnPoint();
@@ -3383,23 +3387,6 @@ export default class Game {
           ctx.moveTo(x * tileSize + 4, y * tileSize + tileSize / 2);
           ctx.lineTo(x * tileSize + tileSize - 4, y * tileSize + tileSize / 2);
           ctx.stroke();
-        }
-        if (tile === 'e' || tile === 'E') {
-          ctx.strokeStyle = 'rgba(255,255,255,0.7)';
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(x * tileSize + tileSize / 2, y * tileSize + 4);
-          ctx.lineTo(x * tileSize + tileSize / 2, y * tileSize + tileSize - 4);
-          ctx.stroke();
-          if (tile === 'E') {
-            ctx.beginPath();
-            ctx.moveTo(x * tileSize + 6, y * tileSize + 6);
-            ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + 6);
-            ctx.moveTo(x * tileSize + 6, y * tileSize + tileSize - 6);
-            ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + tileSize - 6);
-            ctx.stroke();
-          }
-          ctx.lineWidth = 1;
         }
         if (tile === '~') {
           drawLiquid(x, y, '#1f66aa', '#3b9fe0');
