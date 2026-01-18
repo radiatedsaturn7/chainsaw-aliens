@@ -3,6 +3,7 @@ export const KEYMAP = {
   right: ['ArrowRight', 'KeyD'],
   up: ['ArrowUp', 'KeyW'],
   down: ['ArrowDown', 'KeyS'],
+  drop: [],
   jump: ['ArrowUp', 'KeyW', 'Space'],
   dash: ['ShiftLeft', 'ShiftRight'],
   attack: ['KeyJ'],

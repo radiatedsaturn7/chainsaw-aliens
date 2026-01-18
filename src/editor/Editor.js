@@ -1241,6 +1241,19 @@ export default class Editor {
       }
     };
 
+    const addHazardFloor = (room, hazard) => {
+      const minSize = 8;
+      if (room.w < minSize || room.h < minSize) return;
+      const floorY = room.y + room.h - 2;
+      const depth = randInt(1, 2);
+      const topY = Math.max(room.y + 1, floorY - depth + 1);
+      for (let y = topY; y <= floorY; y += 1) {
+        for (let x = room.x + 1; x <= room.x + room.w - 2; x += 1) {
+          if (tiles[y]?.[x] === '.') setTile(x, y, hazard);
+        }
+      }
+    };
+
     const addElevator = (room) => {
       const shaftHeight = 6;
       if (room.h < shaftHeight + 4) return;
@@ -1657,6 +1670,20 @@ export default class Editor {
     spawn.x = spawnRoom.center.x;
     spawn.y = spawnRoom.center.y;
     setTile(spawn.x, spawn.y, '.');
+
+    const addHazardRooms = () => {
+      const hazardTypes = ['L', 'A', '~'];
+      const candidates = rooms.filter((room) => room !== spawnRoom && room.w >= 8 && room.h >= 8);
+      if (candidates.length === 0) return;
+      const targetCount = clamp(Math.floor(candidates.length * 0.3), 1, Math.min(4, candidates.length));
+      for (let i = 0; i < targetCount; i += 1) {
+        const index = randInt(0, candidates.length - 1);
+        const room = candidates.splice(index, 1)[0];
+        addHazardFloor(room, pickOne(hazardTypes));
+      }
+    };
+
+    addHazardRooms();
 
     const addSpawnPitPlatform = () => {
       const wallTile = getRoomWallTile(spawnRoom);

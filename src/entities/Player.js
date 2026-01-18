@@ -189,6 +189,14 @@ export default class Player {
     this.dropTimer = Math.max(0, this.dropTimer - dt);
     this.downTapTimer = Math.max(0, this.downTapTimer - dt);
 
+    if (input.wasPressed('drop') && onOneWay) {
+      this.dropTimer = 0.2;
+      this.onGround = false;
+      this.vy = Math.max(this.vy, 120);
+      this.downTapTimer = 0;
+      this.jumpBuffer = 0;
+    }
+
     if (input.wasPressed('down')) {
       if (this.downTapTimer > 0 && onOneWay) {
         this.dropTimer = 0.2;

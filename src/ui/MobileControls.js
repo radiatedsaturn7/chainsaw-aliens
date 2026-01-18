@@ -282,6 +282,9 @@ export default class MobileControls {
       const dir = dy < 0 ? 'up' : 'down';
       if (state === 'playing' && dir === 'up') {
         this.pulseAction('jump');
+      } else if (state === 'playing' && dir === 'down') {
+        this.pulseAction('drop');
+        this.setMovementPulse(dir, now);
       } else {
         this.setMovementPulse(dir, now);
       }
