@@ -1533,11 +1533,16 @@ export default class Game {
     const target = this.findDoorExit(tileX, tileY, primaryDir);
     if (!target) return false;
     const tileSize = this.world.tileSize;
+    const exitDir = {
+      dx: Math.sign(target.x - tileX),
+      dy: Math.sign(target.y - tileY)
+    };
     this.doorTransition = {
       from: { x: this.player.x, y: this.player.y },
       to: { x: (target.x + 0.5) * tileSize, y: (target.y + 0.5) * tileSize },
       progress: 0,
-      duration: 0.35
+      duration: 0.35,
+      exitDir
     };
     this.player.vx = 0;
     this.player.vy = 0;
@@ -1555,6 +1560,10 @@ export default class Game {
     this.player.x = transition.from.x + (transition.to.x - transition.from.x) * eased;
     this.player.y = transition.from.y + (transition.to.y - transition.from.y) * eased;
     if (t >= 1) {
+      if (transition.exitDir?.dy < 0) {
+        this.player.vy = Math.min(this.player.vy, -this.player.jumpPower);
+        this.player.onGround = false;
+      }
       this.doorTransition = null;
     }
   }
