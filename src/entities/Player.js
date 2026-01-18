@@ -388,19 +388,15 @@ export default class Player {
     if (signX !== 0) {
       const testX = nextX + (signX * rect.w) / 2;
       if (check(testX, rect.y + 4, { ignoreOneWay: true }) || check(testX, rect.y + rect.h - 4, { ignoreOneWay: true })) {
-        const stepHeight = wasOnGround ? 8 : 12;
+        const stepHeight = wasOnGround ? tileSize - 2 : 0;
         const steppedTop = rect.y - stepHeight;
-        const canStep = wasOnGround
+        const canStep = stepHeight > 0
           && !check(testX, steppedTop + 4, { ignoreOneWay: true })
           && !check(testX, steppedTop + rect.h - 4, { ignoreOneWay: true });
         if (canStep) {
           this.x = nextX;
           this.y -= stepHeight;
           this.onGround = true;
-        } else if (!this.onGround && !check(testX, steppedTop + 4, { ignoreOneWay: true })) {
-          this.x = nextX;
-          this.y -= stepHeight;
-          this.onGround = false;
         } else {
           this.vx = 0;
           this.onWall = signX;

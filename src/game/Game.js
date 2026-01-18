@@ -364,24 +364,115 @@ export default class Game {
     return { pathSet, neighborsMap };
   }
 
+  buildElevatorGroups() {
+    const tiles = this.world.elevators || [];
+    const tileSet = new Set(tiles.map((tile) => `${tile.x},${tile.y}`));
+    const visited = new Set();
+    const groups = [];
+    const directions = [
+      { dx: 1, dy: 0 },
+      { dx: -1, dy: 0 },
+      { dx: 0, dy: 1 },
+      { dx: 0, dy: -1 }
+    ];
+    tiles.forEach((tile) => {
+      const key = `${tile.x},${tile.y}`;
+      if (visited.has(key)) return;
+      const group = [];
+      const queue = [tile];
+      visited.add(key);
+      while (queue.length) {
+        const current = queue.shift();
+        group.push({ x: current.x, y: current.y });
+        directions.forEach((dir) => {
+          const nx = current.x + dir.dx;
+          const ny = current.y + dir.dy;
+          const nKey = `${nx},${ny}`;
+          if (!tileSet.has(nKey) || visited.has(nKey)) return;
+          visited.add(nKey);
+          queue.push({ x: nx, y: ny });
+        });
+      }
+      groups.push(group);
+    });
+    return groups;
+  }
+
+  getElevatorGroupPositions(platform) {
+    return platform.tiles.map((tile) => ({
+      x: platform.tileX + tile.dx,
+      y: platform.tileY + tile.dy
+    }));
+  }
+
+  getElevatorGroupNeighbors(platform) {
+    if (!this.elevatorGraph) return [];
+    const positions = this.getElevatorGroupPositions(platform);
+    const groupSet = new Set(positions.map((pos) => `${pos.x},${pos.y}`));
+    const directions = [
+      { dx: 1, dy: 0 },
+      { dx: -1, dy: 0 },
+      { dx: 0, dy: 1 },
+      { dx: 0, dy: -1 }
+    ];
+    const candidates = new Map();
+    positions.forEach((pos) => {
+      directions.forEach((dir) => {
+        const nx = pos.x + dir.dx;
+        const ny = pos.y + dir.dy;
+        const key = `${nx},${ny}`;
+        if (!this.elevatorGraph.pathSet.has(key)) return;
+        if (groupSet.has(key)) return;
+        const dirKey = `${dir.dx},${dir.dy}`;
+        if (candidates.has(dirKey)) return;
+        candidates.set(dirKey, {
+          x: platform.tileX + dir.dx,
+          y: platform.tileY + dir.dy,
+          dx: dir.dx,
+          dy: dir.dy
+        });
+      });
+    });
+    return Array.from(candidates.values());
+  }
+
   initElevators() {
     this.elevatorGraph = this.buildElevatorGraph();
     const { tileSize } = this.world;
-    const getNeighbors = (x, y) => this.elevatorGraph?.neighborsMap.get(`${x},${y}`) || [];
-    this.elevatorPlatforms = (this.world.elevators || []).map((platform, index) => {
-      const neighbors = getNeighbors(platform.x, platform.y);
-      const nextTile = neighbors[0] || null;
-      return {
+    const pathTileSet = this.world.elevatorPathSet
+      || new Set((this.world.elevatorPaths || []).map((path) => `${path.x},${path.y}`));
+    const directions = [
+      { dx: 1, dy: 0 },
+      { dx: -1, dy: 0 },
+      { dx: 0, dy: 1 },
+      { dx: 0, dy: -1 }
+    ];
+    const groups = this.buildElevatorGroups();
+    this.elevatorPlatforms = groups.map((group, index) => {
+      const sortedGroup = [...group].sort((a, b) => (a.y - b.y) || (a.x - b.x));
+      const anchor = sortedGroup.find((tile) => directions.some((dir) => pathTileSet.has(`${tile.x + dir.dx},${tile.y + dir.dy}`)))
+        || sortedGroup[0];
+      const tiles = group.map((tile) => ({
+        dx: tile.x - anchor.x,
+        dy: tile.y - anchor.y
+      }));
+      const platform = {
         id: `elevator-${index}`,
-        x: (platform.x + 0.5) * tileSize,
-        y: (platform.y + 0.5) * tileSize,
-        tileX: platform.x,
-        tileY: platform.y,
+        x: (anchor.x + 0.5) * tileSize,
+        y: (anchor.y + 0.5) * tileSize,
+        tileX: anchor.x,
+        tileY: anchor.y,
         prevTile: null,
-        nextTile,
-        dir: nextTile ? { dx: nextTile.x - platform.x, dy: nextTile.y - platform.y } : { dx: 0, dy: 0 },
-        speed: tileSize * 0.9
+        nextTile: null,
+        dir: { dx: 0, dy: 0 },
+        speed: tileSize * 0.9,
+        tiles
       };
+      const neighbors = this.getElevatorGroupNeighbors(platform);
+      const nextTile = neighbors[0] || null;
+      platform.nextTile = nextTile;
+      platform.dir = nextTile ? { dx: nextTile.x - platform.tileX, dy: nextTile.y - platform.tileY } : { dx: 0, dy: 0 };
+      return platform;
     });
   }
 
@@ -2994,7 +3085,7 @@ export default class Game {
       platform.prevTile = { x: platform.tileX, y: platform.tileY };
       platform.tileX = platform.nextTile.x;
       platform.tileY = platform.nextTile.y;
-      const neighbors = this.elevatorGraph?.neighborsMap.get(`${platform.tileX},${platform.tileY}`) || [];
+      const neighbors = this.getElevatorGroupNeighbors(platform);
       let nextTile = null;
       if (neighbors.length === 1) {
         nextTile = neighbors[0];
@@ -3032,27 +3123,39 @@ export default class Game {
       w: this.player.width,
       h: this.player.height
     };
+    const tileSize = this.world.tileSize;
     for (const platform of this.elevatorPlatforms) {
       const prevX = platform.x;
       const prevY = platform.y;
-      const prevElevatorRect = this.getElevatorRectAt(prevX, prevY);
+      const tileOffsets = platform.tiles || [{ dx: 0, dy: 0 }];
+      const prevElevatorRects = tileOffsets.map((tile) => this.getElevatorRectAt(
+        prevX + tile.dx * tileSize,
+        prevY + tile.dy * tileSize
+      ));
       this.advanceElevator(platform, dt);
-      const nextElevatorRect = this.getElevatorRectAt(platform.x, platform.y);
+      const nextElevatorRects = tileOffsets.map((tile) => this.getElevatorRectAt(
+        platform.x + tile.dx * tileSize,
+        platform.y + tile.dy * tileSize
+      ));
       const deltaX = platform.x - prevX;
       const deltaY = platform.y - prevY;
-      if (this.isPlayerOnElevator(prevPlayerRect, prevElevatorRect)) {
+      const wasOnElevator = prevElevatorRects.some((rect) => this.isPlayerOnElevator(prevPlayerRect, rect));
+      if (wasOnElevator) {
         this.player.x += deltaX;
         this.player.y += deltaY;
         this.player.onGround = true;
         this.player.vy = Math.min(this.player.vy, 0);
       }
       const currentRect = this.player.rect;
-      const wasAbove = prevPlayerRect.y + prevPlayerRect.h <= nextElevatorRect.y + 2;
-      const nowOnTop = this.isPlayerOnElevator(currentRect, nextElevatorRect);
-      if (this.player.vy >= 0 && wasAbove && nowOnTop) {
-        this.player.y = nextElevatorRect.y - this.player.height / 2;
-        this.player.vy = 0;
-        this.player.onGround = true;
+      for (const nextElevatorRect of nextElevatorRects) {
+        const wasAbove = prevPlayerRect.y + prevPlayerRect.h <= nextElevatorRect.y + 2;
+        const nowOnTop = this.isPlayerOnElevator(currentRect, nextElevatorRect);
+        if (this.player.vy >= 0 && wasAbove && nowOnTop) {
+          this.player.y = nextElevatorRect.y - this.player.height / 2;
+          this.player.vy = 0;
+          this.player.onGround = true;
+          break;
+        }
       }
     }
   }
@@ -3477,11 +3580,16 @@ export default class Game {
     ctx.strokeStyle = '#ffd36a';
     ctx.lineWidth = 2;
     platforms.forEach((platform) => {
-      const x = platform.tileX !== undefined ? platform.x : (platform.x + 0.5) * tileSize;
-      const y = platform.tileY !== undefined ? platform.y : (platform.y + 0.5) * tileSize;
-      const rect = this.getElevatorRectAt(x, y);
-      ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      const baseX = platform.tileX !== undefined ? platform.x : (platform.x + 0.5) * tileSize;
+      const baseY = platform.tileY !== undefined ? platform.y : (platform.y + 0.5) * tileSize;
+      const tileOffsets = platform.tiles || [{ dx: 0, dy: 0 }];
+      tileOffsets.forEach((tile) => {
+        const x = baseX + tile.dx * tileSize;
+        const y = baseY + tile.dy * tileSize;
+        const rect = this.getElevatorRectAt(x, y);
+        ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+        ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      });
     });
     ctx.restore();
   }
