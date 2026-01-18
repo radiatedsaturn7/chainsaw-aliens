@@ -1272,7 +1272,7 @@ export default class Editor {
       const horizontal = from.y === to.y;
       const wideJoin = Math.random() < 0.3;
       const span = wideJoin ? 4 : 2;
-      const doorwayTile = 'D';
+      const doorwayTile = span === 2 ? 'D' : '.';
 
       if (horizontal) {
         const doorX = to.x > from.x ? from.x + from.w - 1 : from.x;
@@ -1492,7 +1492,7 @@ export default class Editor {
 
     const clearDoorFronts = () => {
       const clearDepth = 2;
-      const clearSpan = 2;
+      const clearSpan = 0;
       rooms.forEach((room) => {
         const doors = findRoomDoorTiles(room);
         doors.forEach((door) => {
@@ -1551,8 +1551,33 @@ export default class Editor {
       });
     };
 
+    const addLowerDoorPlatforms = () => {
+      rooms.forEach((room) => {
+        const bottomY = room.y + room.h - 1;
+        const platformY = bottomY - 2;
+        if (platformY <= room.y) return;
+        let segmentStart = null;
+        for (let x = room.x; x <= room.x + room.w - 1; x += 1) {
+          const isDoor = tiles[bottomY]?.[x] === 'D';
+          if (isDoor && segmentStart === null) {
+            segmentStart = x;
+          }
+          if ((!isDoor || x === room.x + room.w - 1) && segmentStart !== null) {
+            const segmentEnd = isDoor ? x : x - 1;
+            for (let sx = segmentStart; sx <= segmentEnd; sx += 1) {
+              if (tiles[platformY]?.[sx] === '.') {
+                setTile(sx, platformY, '=');
+              }
+            }
+            segmentStart = null;
+          }
+        }
+      });
+    };
+
     clearDoorFronts();
     addUpperDoorSupports();
+    addLowerDoorPlatforms();
 
     let spawnRoom = rooms[0];
     let bestDistance = Infinity;
