@@ -3512,7 +3512,16 @@ export default class Game {
 
     if (this.doorTransition) {
       const t = Math.min(1, this.doorTransition.progress / this.doorTransition.duration);
-      const fade = Math.sin(t * Math.PI);
+      const fadeOutEnd = 0.25;
+      const fadeInStart = 0.82;
+      let fade = 0;
+      if (t <= fadeOutEnd) {
+        fade = t / fadeOutEnd;
+      } else if (t < fadeInStart) {
+        fade = 1;
+      } else {
+        fade = 1 - (t - fadeInStart) / (1 - fadeInStart);
+      }
       ctx.save();
       ctx.globalAlpha = fade;
       ctx.fillStyle = '#000';
