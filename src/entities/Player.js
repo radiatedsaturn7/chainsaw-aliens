@@ -356,16 +356,31 @@ export default class Player {
     const nextX = this.x + this.vx * dt;
     const nextY = this.y + this.vy * dt;
     const rect = this.rect;
+    const tileSize = world.tileSize;
 
     const wasOnGround = this.onGround;
     this.onGround = false;
     this.onWall = 0;
 
     const check = (x, y, options = {}) => {
-      const tileX = Math.floor(x / world.tileSize);
-      const tileY = Math.floor(y / world.tileSize);
+      const tileX = Math.floor(x / tileSize);
+      const tileY = Math.floor(y / tileSize);
+      const tile = world.getTile(tileX, tileY);
+      if (tile === '^' || tile === 'v') {
+        const localX = (x - tileX * tileSize) / tileSize;
+        const localY = (y - tileY * tileSize) / tileSize;
+        if (tile === '^') {
+          return localY >= 1 - localX;
+        }
+        return localY >= localX;
+      }
       const ignoreOneWay = options.ignoreOneWay || this.dropTimer > 0;
       return world.isSolid(tileX, tileY, abilities, { ...options, ignoreOneWay });
+    };
+    const slopeSurface = (tile, tileX, tileY, worldX) => {
+      const localX = (worldX - tileX * tileSize) / tileSize;
+      const offset = tile === '^' ? (1 - localX) : localX;
+      return tileY * tileSize + offset * tileSize;
     };
 
     // Horizontal
@@ -412,6 +427,32 @@ export default class Player {
       }
     } else {
       this.y = nextY;
+    }
+
+    if (this.vy >= 0 || wasOnGround) {
+      const footY = this.y + this.height / 2;
+      const sampleXs = [
+        this.x - this.width / 2 + 6,
+        this.x + this.width / 2 - 6
+      ];
+      let bestSurface = null;
+      sampleXs.forEach((sampleX) => {
+        const tileX = Math.floor(sampleX / tileSize);
+        const tileY = Math.floor(footY / tileSize);
+        const tile = world.getTile(tileX, tileY);
+        if (tile !== '^' && tile !== 'v') return;
+        const surfaceY = slopeSurface(tile, tileX, tileY, sampleX);
+        if (footY >= surfaceY - 6 && footY <= surfaceY + tileSize * 0.6) {
+          if (bestSurface === null || surfaceY < bestSurface) {
+            bestSurface = surfaceY;
+          }
+        }
+      });
+      if (bestSurface !== null) {
+        this.y = bestSurface - this.height / 2;
+        this.onGround = true;
+        this.vy = Math.min(this.vy, 0);
+      }
     }
   }
 
