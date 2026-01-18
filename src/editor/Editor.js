@@ -181,6 +181,7 @@ export default class Editor {
       y: 0,
       active: false
     };
+    this.toolsMenuIndex = 0;
     this.dragStart = null;
     this.dragTarget = null;
     this.recordRecent('tiles', this.tileType);
@@ -252,7 +253,18 @@ export default class Editor {
   update(input, dt) {
     this.handleKeyboard(input, dt);
     this.handleGamepad(input, dt);
-    if (Math.abs(this.panJoystick.dx) > 0.01 || Math.abs(this.panJoystick.dy) > 0.01) {
+    if (!this.isMobileLayout()) {
+      if (this.panJoystick.active || this.panJoystick.dx !== 0 || this.panJoystick.dy !== 0) {
+        this.panJoystick.active = false;
+        this.panJoystick.id = null;
+        this.panJoystick.dx = 0;
+        this.panJoystick.dy = 0;
+      }
+      if (this.zoomSlider.active) {
+        this.zoomSlider.active = false;
+        this.zoomSlider.id = null;
+      }
+    } else if (Math.abs(this.panJoystick.dx) > 0.01 || Math.abs(this.panJoystick.dy) > 0.01) {
       const panSpeed = 320 * dt * (1 / this.zoom);
       this.camera.x = Math.max(0, this.camera.x + this.panJoystick.dx * panSpeed);
       this.camera.y = Math.max(0, this.camera.y + this.panJoystick.dy * panSpeed);
@@ -324,6 +336,92 @@ export default class Editor {
     }
   }
 
+  getToolsMenuItems({ includeExtras = false } = {}) {
+    const modeButtons = [
+      { id: 'tile', tooltip: 'Tile mode. (Q/E/M)' },
+      { id: 'enemy', tooltip: 'Enemy mode. (T)' },
+      { id: 'prefab', tooltip: 'Structure mode. (R)' },
+      { id: 'shape', tooltip: 'Shape mode. (G)' }
+    ];
+    const tileToolButtons = [
+      { id: 'paint', tooltip: 'Paint tiles. (Q)' },
+      { id: 'erase', tooltip: 'Erase tiles. (E)' },
+      { id: 'move', tooltip: 'Move items or pan. (M)' }
+    ];
+    const items = [
+      ...modeButtons.map((tool) => ({
+        id: `mode-${tool.id}`,
+        tooltip: tool.tooltip,
+        onClick: () => {
+          this.mode = tool.id;
+        }
+      })),
+      ...tileToolButtons.map((tool) => ({
+        id: `tile-${tool.id}`,
+        tooltip: tool.tooltip,
+        onClick: () => {
+          this.mode = 'tile';
+          this.tileTool = tool.id;
+        }
+      })),
+      {
+        id: 'random-level',
+        tooltip: 'Create a random level layout',
+        onClick: () => this.promptRandomLevel()
+      }
+    ];
+
+    if (includeExtras) {
+      items.push(
+        {
+          id: 'save',
+          tooltip: 'Save world JSON',
+          onClick: () => this.saveToFile()
+        },
+        {
+          id: 'load',
+          tooltip: 'Load world JSON',
+          onClick: () => this.openFileDialog()
+        },
+        {
+          id: 'exit',
+          tooltip: 'Exit editor',
+          onClick: () => this.game.exitEditor({ playtest: false })
+        }
+      );
+    }
+
+    return items;
+  }
+
+  navigateToolsMenu(input) {
+    const items = this.getToolsMenuItems({ includeExtras: this.isMobileLayout() });
+    if (items.length === 0) return false;
+    if (!input.wasGamepadPressed('up')
+      && !input.wasGamepadPressed('down')
+      && !input.wasGamepadPressed('left')
+      && !input.wasGamepadPressed('right')) {
+      return false;
+    }
+    const total = items.length;
+    const columns = 2;
+    const index = Math.max(0, Math.min(this.toolsMenuIndex, total - 1));
+    let nextIndex = index;
+    if (input.wasGamepadPressed('up')) nextIndex -= columns;
+    else if (input.wasGamepadPressed('down')) nextIndex += columns;
+    else if (input.wasGamepadPressed('left')) nextIndex -= 1;
+    else if (input.wasGamepadPressed('right')) nextIndex += 1;
+    nextIndex = ((nextIndex % total) + total) % total;
+    this.toolsMenuIndex = nextIndex;
+    const nextItem = items[nextIndex];
+    nextItem.onClick();
+    if (nextItem.tooltip) {
+      this.activeTooltip = nextItem.tooltip;
+      this.tooltipTimer = 2;
+    }
+    return true;
+  }
+
   handleGamepad(input, dt) {
     if (!input.isGamepadConnected()) {
       if (this.dragging && this.dragSource === 'gamepad') {
@@ -355,11 +453,7 @@ export default class Editor {
     this.gamepadCursor.y += stickY * moveSpeed;
 
     if (stickX === 0 && stickY === 0) {
-      const digitalSpeed = tileSize * 6 * dt;
-      if (input.isGamepadDown('left')) this.gamepadCursor.x -= digitalSpeed;
-      if (input.isGamepadDown('right')) this.gamepadCursor.x += digitalSpeed;
-      if (input.isGamepadDown('up')) this.gamepadCursor.y -= digitalSpeed;
-      if (input.isGamepadDown('down')) this.gamepadCursor.y += digitalSpeed;
+      this.navigateToolsMenu(input);
     }
 
     if (lookX !== 0 || lookY !== 0) {
@@ -992,17 +1086,17 @@ export default class Editor {
     });
 
     const regions = [];
-    const cols = 3;
-    const rows = 2;
-    const regionWidth = Math.floor(width / cols);
-    const regionHeight = Math.floor(height / rows);
+    const regionCols = 3;
+    const regionRows = 2;
+    const regionWidth = Math.floor(width / regionCols);
+    const regionHeight = Math.floor(height / regionRows);
     BIOME_THEMES.forEach((theme, index) => {
-      const col = index % cols;
-      const row = Math.floor(index / cols);
+      const col = index % regionCols;
+      const row = Math.floor(index / regionCols);
       const x = col * regionWidth;
       const y = row * regionHeight;
-      const w = col === cols - 1 ? width - x : regionWidth;
-      const h = row === rows - 1 ? height - y : regionHeight;
+      const w = col === regionCols - 1 ? width - x : regionWidth;
+      const h = row === regionRows - 1 ? height - y : regionHeight;
       regions.push({
         id: theme.id,
         name: theme.name,
@@ -1196,18 +1290,20 @@ export default class Editor {
       return;
     }
 
-    if (this.isPointInCircle(payload.x, payload.y, this.panJoystick.center, this.panJoystick.radius * 1.2)) {
-      this.panJoystick.active = true;
-      this.panJoystick.id = payload.id ?? null;
-      this.updatePanJoystick(payload.x, payload.y);
-      return;
-    }
+    if (this.isMobileLayout()) {
+      if (this.isPointInCircle(payload.x, payload.y, this.panJoystick.center, this.panJoystick.radius * 1.2)) {
+        this.panJoystick.active = true;
+        this.panJoystick.id = payload.id ?? null;
+        this.updatePanJoystick(payload.x, payload.y);
+        return;
+      }
 
-    if (this.isPointInBounds(payload.x, payload.y, this.zoomSlider.bounds)) {
-      this.zoomSlider.active = true;
-      this.zoomSlider.id = payload.id ?? null;
-      this.updateZoomFromSlider(payload.x);
-      return;
+      if (this.isPointInBounds(payload.x, payload.y, this.zoomSlider.bounds)) {
+        this.zoomSlider.active = true;
+        this.zoomSlider.id = payload.id ?? null;
+        this.updateZoomFromSlider(payload.x);
+        return;
+      }
     }
 
     if (this.radialMenu.active) {
@@ -1280,13 +1376,15 @@ export default class Editor {
   handlePointerMove(payload) {
     if (!this.active) return;
     this.lastPointer = { x: payload.x, y: payload.y };
-    if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
-      this.updatePanJoystick(payload.x, payload.y);
-      return;
-    }
-    if (this.zoomSlider.active && (payload.id === undefined || this.zoomSlider.id === payload.id)) {
-      this.updateZoomFromSlider(payload.x);
-      return;
+    if (this.isMobileLayout()) {
+      if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
+        this.updatePanJoystick(payload.x, payload.y);
+        return;
+      }
+      if (this.zoomSlider.active && (payload.id === undefined || this.zoomSlider.id === payload.id)) {
+        this.updateZoomFromSlider(payload.x);
+        return;
+      }
     }
     if (this.isMobileLayout() && this.drawer.swipeStart) {
       const dx = payload.x - this.drawer.swipeStart.x;
@@ -1379,18 +1477,20 @@ export default class Editor {
       return;
     }
 
-    if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
-      this.panJoystick.active = false;
-      this.panJoystick.id = null;
-      this.panJoystick.dx = 0;
-      this.panJoystick.dy = 0;
-      return;
-    }
+    if (this.isMobileLayout()) {
+      if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
+        this.panJoystick.active = false;
+        this.panJoystick.id = null;
+        this.panJoystick.dx = 0;
+        this.panJoystick.dy = 0;
+        return;
+      }
 
-    if (this.zoomSlider.active && (payload.id === undefined || this.zoomSlider.id === payload.id)) {
-      this.zoomSlider.active = false;
-      this.zoomSlider.id = null;
-      return;
+      if (this.zoomSlider.active && (payload.id === undefined || this.zoomSlider.id === payload.id)) {
+        this.zoomSlider.active = false;
+        this.zoomSlider.id = null;
+        return;
+      }
     }
 
     if (this.drawer.swipeStart) {
@@ -2408,32 +2508,44 @@ export default class Editor {
 
     const controlMargin = 18;
     const controlBase = Math.min(width, height);
-    const joystickRadius = this.isMobileLayout()
-      ? Math.min(78, controlBase * 0.14)
-      : Math.min(70, controlBase * 0.12);
-    const knobRadius = Math.max(22, joystickRadius * 0.45);
-    const joystickCenter = {
-      x: controlMargin + joystickRadius,
-      y: height - controlMargin - joystickRadius
-    };
-    this.panJoystick.center = joystickCenter;
-    this.panJoystick.radius = joystickRadius;
-    this.panJoystick.knobRadius = knobRadius;
-
-    let sliderX = joystickCenter.x + joystickRadius + 24;
-    let sliderWidth = width - sliderX - controlMargin;
+    let joystickRadius = 0;
+    let knobRadius = 0;
+    let joystickCenter = { x: 0, y: 0 };
+    let sliderX = 0;
+    let sliderWidth = 0;
     const sliderHeight = 10;
-    const sliderY = height - controlMargin - sliderHeight;
-    if (sliderWidth < 160) {
-      sliderX = controlMargin;
-      sliderWidth = width - controlMargin * 2;
+    let sliderY = height;
+
+    if (this.isMobileLayout()) {
+      joystickRadius = Math.min(78, controlBase * 0.14);
+      knobRadius = Math.max(22, joystickRadius * 0.45);
+      joystickCenter = {
+        x: controlMargin + joystickRadius,
+        y: height - controlMargin - joystickRadius
+      };
+      this.panJoystick.center = joystickCenter;
+      this.panJoystick.radius = joystickRadius;
+      this.panJoystick.knobRadius = knobRadius;
+
+      sliderX = joystickCenter.x + joystickRadius + 24;
+      sliderWidth = width - sliderX - controlMargin;
+      sliderY = height - controlMargin - sliderHeight;
+      if (sliderWidth < 160) {
+        sliderX = controlMargin;
+        sliderWidth = width - controlMargin * 2;
+      }
+      this.zoomSlider.bounds = {
+        x: sliderX,
+        y: sliderY - 14,
+        w: sliderWidth,
+        h: sliderHeight + 28
+      };
+    } else {
+      this.panJoystick.center = { x: 0, y: 0 };
+      this.panJoystick.radius = 0;
+      this.panJoystick.knobRadius = 0;
+      this.zoomSlider.bounds = { x: 0, y: 0, w: 0, h: 0 };
     }
-    this.zoomSlider.bounds = {
-      x: sliderX,
-      y: sliderY - 14,
-      w: sliderWidth,
-      h: sliderHeight + 28
-    };
 
     if (this.isMobileLayout()) {
       const drawerWidth = Math.floor(width * 0.5);
@@ -2769,7 +2881,7 @@ export default class Editor {
         `Drag: LMB paint | RMB erase | Space+drag pan`,
         `Move: drag to reposition | Two-finger: pan/zoom`,
         `Arrows: pan | Shift+Arrows: zoom`,
-        `Gamepad: LS cursor | A paint | B erase | X tool | Y mode`,
+        `Gamepad: LS cursor | D-pad tools | A paint | B erase | X tool | Y mode`,
         `LB/RB cycle selection | LT/RT zoom | Start exit | Back playtest`,
         `Ctrl+Z / Ctrl+Y: undo/redo`,
         `S: save JSON | L: load JSON`,
@@ -2789,47 +2901,49 @@ export default class Editor {
       });
     }
 
-    const zoomMin = 0.5;
-    const zoomMax = 3;
-    const zoomT = Math.min(1, Math.max(0, (this.zoom - zoomMin) / (zoomMax - zoomMin)));
-    const sliderKnobX = sliderX + zoomT * sliderWidth;
-    const sliderCenterY = sliderY + sliderHeight / 2;
-    const sliderKnobRadius = sliderHeight * 1.6;
-    ctx.save();
-    ctx.globalAlpha = 0.85;
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect(sliderX, sliderCenterY - sliderHeight / 2, sliderWidth, sliderHeight);
-    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(sliderX, sliderCenterY);
-    ctx.lineTo(sliderX + sliderWidth, sliderCenterY);
-    ctx.stroke();
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.arc(sliderKnobX, sliderCenterY, sliderKnobRadius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(0,0,0,0.7)';
-    ctx.stroke();
-    ctx.restore();
+    if (this.isMobileLayout()) {
+      const zoomMin = 0.5;
+      const zoomMax = 3;
+      const zoomT = Math.min(1, Math.max(0, (this.zoom - zoomMin) / (zoomMax - zoomMin)));
+      const sliderKnobX = sliderX + zoomT * sliderWidth;
+      const sliderCenterY = sliderY + sliderHeight / 2;
+      const sliderKnobRadius = sliderHeight * 1.6;
+      ctx.save();
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(sliderX, sliderCenterY - sliderHeight / 2, sliderWidth, sliderHeight);
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sliderX, sliderCenterY);
+      ctx.lineTo(sliderX + sliderWidth, sliderCenterY);
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(sliderKnobX, sliderCenterY, sliderKnobRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+      ctx.stroke();
+      ctx.restore();
 
-    const joystickKnobX = joystickCenter.x + this.panJoystick.dx * joystickRadius;
-    const joystickKnobY = joystickCenter.y + this.panJoystick.dy * joystickRadius;
-    ctx.save();
-    ctx.globalAlpha = 0.85;
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.beginPath();
-    ctx.arc(joystickCenter.x, joystickCenter.y, joystickRadius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-    ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.beginPath();
-    ctx.arc(joystickKnobX, joystickKnobY, knobRadius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-    ctx.stroke();
-    ctx.restore();
+      const joystickKnobX = joystickCenter.x + this.panJoystick.dx * joystickRadius;
+      const joystickKnobY = joystickCenter.y + this.panJoystick.dy * joystickRadius;
+      ctx.save();
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.beginPath();
+      ctx.arc(joystickCenter.x, joystickCenter.y, joystickRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.beginPath();
+      ctx.arc(joystickKnobX, joystickKnobY, knobRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+      ctx.stroke();
+      ctx.restore();
+    }
 
     if (this.radialMenu.active && this.radialMenu.items.length > 0) {
       const centerX = this.radialMenu.x;
@@ -2899,7 +3013,9 @@ export default class Editor {
     const baseTooltipY = this.isMobileLayout()
       ? this.editorBounds.y + this.editorBounds.h - tooltipHeight
       : height - tooltipHeight;
-    const sliderSafeY = sliderY - tooltipHeight - 12;
+    const sliderSafeY = this.isMobileLayout()
+      ? sliderY - tooltipHeight - 12
+      : baseTooltipY;
     const tooltipY = Math.max(0, Math.min(baseTooltipY, sliderSafeY));
     ctx.globalAlpha = 0.85;
     ctx.fillStyle = 'rgba(0,0,0,0.8)';
