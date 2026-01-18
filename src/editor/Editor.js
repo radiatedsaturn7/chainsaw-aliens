@@ -1,9 +1,18 @@
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
   { id: 'triangle', label: 'Triangle Block', char: '^' },
+  { id: 'triangle-flip', label: 'Triangle Block (Flipped)', char: 'v' },
   { id: 'empty', label: 'Empty', char: '.' },
-  { id: 'hazard', label: 'Hazard', char: '!' },
   { id: 'oneway', label: 'One-Way Platform', char: '=' },
+  { id: 'elevator-open', label: 'Elevator Run (Open)', char: 'e' },
+  { id: 'elevator-closed', label: 'Elevator Run (Closed)', char: 'E' },
+  { id: 'water', label: 'Water', char: '~' },
+  { id: 'acid', label: 'Acid', char: 'A' },
+  { id: 'lava', label: 'Lava', char: 'L' },
+  { id: 'spikes', label: 'Spikes', char: '*' },
+  { id: 'ice', label: 'Ice Block', char: 'I' },
+  { id: 'conveyor-left', label: 'Conveyor Left', char: '<' },
+  { id: 'conveyor-right', label: 'Conveyor Right', char: '>' },
   { id: 'anchor', label: 'Anchor Socket', char: 'a' },
   { id: 'wood', label: 'Wood Barricade', char: 'W' },
   { id: 'metal', label: 'Welded Metal Plate', char: 'X' },
@@ -69,6 +78,7 @@ const PREFAB_TYPES = [
   { id: 'corridor', label: 'Corridor', short: 'CR' },
   { id: 'staircase', label: 'Staircase', short: 'SC' },
   { id: 'platform', label: 'Platform Run', short: 'PL' },
+  { id: 'elevator', label: 'Elevator Run', short: 'EL' },
   { id: 'arena', label: 'Arena', short: 'AR', roomType: true },
   { id: 'puzzle', label: 'Puzzle Kit', short: 'PZ' },
   { id: 'door', label: 'Door', short: 'DR' }
@@ -203,6 +213,14 @@ export default class Editor {
       active: false,
       id: null
     };
+    this.randomLevelSize = { width: 100, height: 50 };
+    this.randomLevelSlider = {
+      active: null,
+      bounds: {
+        width: null,
+        height: null
+      }
+    };
     this.gamepadCursor = {
       x: 0,
       y: 0,
@@ -272,8 +290,9 @@ export default class Editor {
     const { canvas } = this.game;
     const focus = this.game.player || { x: 0, y: 0 };
     this.zoom = 1;
-    this.camera.x = Math.max(0, focus.x - canvas.width / 2);
-    this.camera.y = Math.max(0, focus.y - canvas.height / 2);
+    const bounds = this.getCameraBounds();
+    this.camera.x = clamp(focus.x - canvas.width / 2, bounds.minX, bounds.maxX);
+    this.camera.y = clamp(focus.y - canvas.height / 2, bounds.minY, bounds.maxY);
   }
 
   update(input, dt) {
@@ -292,8 +311,9 @@ export default class Editor {
       }
     } else if (Math.abs(this.panJoystick.dx) > 0.01 || Math.abs(this.panJoystick.dy) > 0.01) {
       const panSpeed = 320 * dt * (1 / this.zoom);
-      this.camera.x = Math.max(0, this.camera.x + this.panJoystick.dx * panSpeed);
-      this.camera.y = Math.max(0, this.camera.y + this.panJoystick.dy * panSpeed);
+      this.camera.x += this.panJoystick.dx * panSpeed;
+      this.camera.y += this.panJoystick.dy * panSpeed;
+      this.clampCamera();
     }
     this.updateHover();
     if (this.tooltipTimer > 0) {
@@ -352,10 +372,11 @@ export default class Editor {
 
     const panSpeed = 320 * dt * (1 / this.zoom);
     if (!input.isShiftDown()) {
-      if (input.isDownCode('ArrowLeft')) this.camera.x = Math.max(0, this.camera.x - panSpeed);
-      if (input.isDownCode('ArrowRight')) this.camera.x = Math.max(0, this.camera.x + panSpeed);
-      if (input.isDownCode('ArrowUp')) this.camera.y = Math.max(0, this.camera.y - panSpeed);
-      if (input.isDownCode('ArrowDown')) this.camera.y = Math.max(0, this.camera.y + panSpeed);
+      if (input.isDownCode('ArrowLeft')) this.camera.x -= panSpeed;
+      if (input.isDownCode('ArrowRight')) this.camera.x += panSpeed;
+      if (input.isDownCode('ArrowUp')) this.camera.y -= panSpeed;
+      if (input.isDownCode('ArrowDown')) this.camera.y += panSpeed;
+      this.clampCamera();
     } else {
       if (input.isDownCode('ArrowUp')) this.adjustZoom(0.8, this.game.canvas.width / 2, this.game.canvas.height / 2);
       if (input.isDownCode('ArrowDown')) this.adjustZoom(-0.8, this.game.canvas.width / 2, this.game.canvas.height / 2);
@@ -578,8 +599,9 @@ export default class Editor {
     }
 
     if (lookX !== 0 || lookY !== 0) {
-      this.camera.x = Math.max(0, this.camera.x + lookX * panSpeed);
-      this.camera.y = Math.max(0, this.camera.y + lookY * panSpeed);
+      this.camera.x += lookX * panSpeed;
+      this.camera.y += lookY * panSpeed;
+      this.clampCamera();
     }
 
     const zoomDelta = (axes.rightTrigger - axes.leftTrigger) * dt * 1.4;
@@ -673,15 +695,16 @@ export default class Editor {
     const minY = this.camera.y + margin / this.zoom;
     const maxY = this.camera.y + viewH / this.zoom - margin / this.zoom;
     if (this.gamepadCursor.x < minX) {
-      this.camera.x = Math.max(0, this.gamepadCursor.x - margin / this.zoom);
+      this.camera.x = this.gamepadCursor.x - margin / this.zoom;
     } else if (this.gamepadCursor.x > maxX) {
-      this.camera.x = Math.max(0, this.gamepadCursor.x - viewW / this.zoom + margin / this.zoom);
+      this.camera.x = this.gamepadCursor.x - viewW / this.zoom + margin / this.zoom;
     }
     if (this.gamepadCursor.y < minY) {
-      this.camera.y = Math.max(0, this.gamepadCursor.y - margin / this.zoom);
+      this.camera.y = this.gamepadCursor.y - margin / this.zoom;
     } else if (this.gamepadCursor.y > maxY) {
-      this.camera.y = Math.max(0, this.gamepadCursor.y - viewH / this.zoom + margin / this.zoom);
+      this.camera.y = this.gamepadCursor.y - viewH / this.zoom + margin / this.zoom;
     }
+    this.clampCamera();
   }
 
   cycleMode(direction) {
@@ -759,16 +782,7 @@ export default class Editor {
   }
 
   promptRandomLevel() {
-    const currentSize = `${this.game.world.width}x${this.game.world.height}`;
-    const input = window.prompt('Enter level size (width x height):', currentSize);
-    if (!input) return;
-    const size = this.parseLevelSize(input);
-    if (!size) {
-      this.activeTooltip = 'Invalid size. Use format: width x height (e.g. 96x64).';
-      this.tooltipTimer = 2;
-      return;
-    }
-    this.createRandomLevel(size.width, size.height);
+    this.createRandomLevel(this.randomLevelSize.width, this.randomLevelSize.height);
   }
 
   parseLevelSize(value) {
@@ -991,11 +1005,47 @@ export default class Editor {
 
     const addTraps = (room) => {
       const traps = clamp(Math.floor(room.area / 180), 1, 4);
+      const hazardTiles = ['~', 'A', 'L', '*'];
       for (let i = 0; i < traps; i += 1) {
         const spot = findFloorInRoom(room);
         if (!spot) continue;
         if (spot.x === spawn.x && spot.y === spawn.y) continue;
-        setTile(spot.x, spot.y, '!');
+        const hazard = pickOne(hazardTiles);
+        setTile(spot.x, spot.y, hazard);
+      }
+    };
+
+    const addIcePatch = (room) => {
+      if (room.w < 8) return;
+      const spot = findFloorInRoom(room);
+      if (!spot) return;
+      const length = randInt(3, Math.min(8, room.w - 4));
+      const startX = clamp(spot.x - Math.floor(length / 2), room.x + 1, room.x + room.w - length - 1);
+      for (let x = startX; x < startX + length; x += 1) {
+        if (tiles[spot.y]?.[x] === '.') setTile(x, spot.y, 'I');
+      }
+    };
+
+    const addConveyor = (room) => {
+      if (room.w < 10) return;
+      const spot = findFloorInRoom(room);
+      if (!spot) return;
+      const length = randInt(4, Math.min(10, room.w - 4));
+      const startX = clamp(spot.x - Math.floor(length / 2), room.x + 1, room.x + room.w - length - 1);
+      const dir = Math.random() < 0.5 ? '<' : '>';
+      for (let x = startX; x < startX + length; x += 1) {
+        if (tiles[spot.y]?.[x] === '.') setTile(x, spot.y, dir);
+      }
+    };
+
+    const addElevatorRun = (room) => {
+      if (room.h < 12) return;
+      const x = randInt(room.x + 2, room.x + room.w - 3);
+      const top = randInt(room.y + 2, room.y + Math.floor(room.h / 2));
+      const bottom = randInt(Math.floor(room.y + room.h / 2), room.y + room.h - 3);
+      for (let y = top; y <= bottom; y += 1) {
+        const char = y === top || y === bottom ? 'E' : 'e';
+        if (tiles[y]?.[x] === '.') setTile(x, y, char);
       }
     };
 
@@ -1074,6 +1124,9 @@ export default class Editor {
         addStaircase(room);
       }
       addTraps(room);
+      if (Math.random() < 0.5) addIcePatch(room);
+      if (Math.random() < 0.4) addConveyor(room);
+      if (Math.random() < 0.35) addElevatorRun(room);
       addTriangleBlocks(room);
     };
 
@@ -1437,6 +1490,18 @@ export default class Editor {
       }
     }
 
+    if (this.isPointInBounds(payload.x, payload.y, this.randomLevelSlider.bounds.width)) {
+      this.randomLevelSlider.active = 'width';
+      this.updateRandomLevelSlider('width', payload.x);
+      return;
+    }
+
+    if (this.isPointInBounds(payload.x, payload.y, this.randomLevelSlider.bounds.height)) {
+      this.randomLevelSlider.active = 'height';
+      this.updateRandomLevelSlider('height', payload.x);
+      return;
+    }
+
     if (this.radialMenu.active) {
       if (this.handleUIClick(payload.x, payload.y)) return;
       this.closeRadialMenu();
@@ -1517,6 +1582,11 @@ export default class Editor {
         return;
       }
     }
+
+    if (this.randomLevelSlider.active) {
+      this.updateRandomLevelSlider(this.randomLevelSlider.active, payload.x);
+      return;
+    }
     if (this.isMobileLayout() && this.drawer.swipeStart) {
       const dx = payload.x - this.drawer.swipeStart.x;
       const dy = payload.y - this.drawer.swipeStart.y;
@@ -1564,8 +1634,9 @@ export default class Editor {
     if (this.dragMode === 'pan' && this.panStart) {
       const dx = (payload.x - this.panStart.x) / this.zoom;
       const dy = (payload.y - this.panStart.y) / this.zoom;
-      this.camera.x = Math.max(0, this.panStart.camX - dx);
-      this.camera.y = Math.max(0, this.panStart.camY - dy);
+      this.camera.x = this.panStart.camX - dx;
+      this.camera.y = this.panStart.camY - dy;
+      this.clampCamera();
       return;
     }
 
@@ -1624,6 +1695,10 @@ export default class Editor {
       }
     }
 
+    if (this.randomLevelSlider.active) {
+      this.randomLevelSlider.active = null;
+    }
+
     if (this.drawer.swipeStart) {
       this.drawer.swipeStart = null;
     }
@@ -1680,8 +1755,9 @@ export default class Editor {
     this.setZoom(this.gestureStart.zoom * zoomFactor, payload.x, payload.y);
     const dx = (payload.x - this.gestureStart.x) / this.zoom;
     const dy = (payload.y - this.gestureStart.y) / this.zoom;
-    this.camera.x = Math.max(0, this.gestureStart.camX - dx);
-    this.camera.y = Math.max(0, this.gestureStart.camY - dy);
+    this.camera.x = this.gestureStart.camX - dx;
+    this.camera.y = this.gestureStart.camY - dy;
+    this.clampCamera();
   }
 
   handleGestureEnd() {
@@ -1759,6 +1835,46 @@ export default class Editor {
     const maxZoom = 3;
     const nextZoom = minZoom + (maxZoom - minZoom) * t;
     this.setZoom(nextZoom, this.game.canvas.width / 2, this.game.canvas.height / 2);
+  }
+
+  updateRandomLevelSlider(kind, x) {
+    const bounds = this.randomLevelSlider.bounds[kind];
+    if (!bounds || bounds.w <= 0) return;
+    const t = clamp((x - bounds.x) / bounds.w, 0, 1);
+    const min = bounds.min;
+    const max = bounds.max;
+    const value = Math.round(min + (max - min) * t);
+    if (kind === 'width') {
+      this.randomLevelSize.width = value;
+    } else {
+      this.randomLevelSize.height = value;
+    }
+  }
+
+  getCameraBounds() {
+    const tileSize = this.game.world.tileSize;
+    const worldW = this.game.world.width * tileSize;
+    const worldH = this.game.world.height * tileSize;
+    const viewW = this.game.canvas.width / this.zoom;
+    const viewH = this.game.canvas.height / this.zoom;
+    let extraLeft = 0;
+    let extraRight = 0;
+    if (this.isMobileLayout()) {
+      extraLeft = (this.drawerBounds?.w || 0) / this.zoom;
+    } else {
+      extraRight = 372 / this.zoom;
+    }
+    const minX = -extraLeft;
+    const maxX = Math.max(worldW - viewW + extraRight, minX);
+    const minY = 0;
+    const maxY = Math.max(worldH - viewH, minY);
+    return { minX, maxX, minY, maxY };
+  }
+
+  clampCamera() {
+    const bounds = this.getCameraBounds();
+    this.camera.x = clamp(this.camera.x, bounds.minX, bounds.maxX);
+    this.camera.y = clamp(this.camera.y, bounds.minY, bounds.maxY);
   }
 
   setTileType(tile) {
@@ -1966,6 +2082,14 @@ export default class Editor {
     const signY = Math.sign(dy) || 1;
     const widthSpan = Math.max(bounds.width - 1, 1);
     const heightSpan = Math.max(bounds.height - 1, 1);
+    let triangleChar = char;
+    if (char === '^' || char === 'v') {
+      const highPoint = start.y <= end.y ? start : end;
+      const lowPoint = start.y <= end.y ? end : start;
+      if (lowPoint.x !== highPoint.x) {
+        triangleChar = lowPoint.x > highPoint.x ? 'v' : '^';
+      }
+    }
 
     if (tool.id === 'rect') {
       for (let y = bounds.y1; y <= bounds.y2; y += 1) {
@@ -2004,7 +2128,7 @@ export default class Editor {
           const relX = signX * (x - start.x);
           const relY = signY * (y - start.y);
           if (relX >= 0 && relY >= 0 && (relX / widthSpan + relY / heightSpan <= 1)) {
-            tiles.push({ x, y, char });
+            tiles.push({ x, y, char: triangleChar });
           }
         }
       }
@@ -2027,7 +2151,7 @@ export default class Editor {
           const relX = signX * (x - start.x);
           const relY = signY * (y - start.y);
           if (relX >= 0 && relY >= 0 && (relX / widthSpanFixed + relY / heightSpanFixed <= 1)) {
-            tiles.push({ x, y, char });
+            tiles.push({ x, y, char: triangleChar });
           }
         }
       }
@@ -2128,6 +2252,13 @@ export default class Editor {
     } else if (this.prefabType.id === 'platform') {
       for (let x = bounds.x1; x <= bounds.x2; x += 1) {
         tiles.push({ x, y: start.y, char: '=' });
+      }
+    } else if (this.prefabType.id === 'elevator') {
+      const minY = Math.min(start.y, end.y);
+      const maxY = Math.max(start.y, end.y);
+      for (let y = minY; y <= maxY; y += 1) {
+        const char = y === minY || y === maxY ? 'E' : 'e';
+        tiles.push({ x: start.x, y, char });
       }
     } else if (this.prefabType.id === 'puzzle') {
       const switchTile = { x: start.x, y: start.y, char: 'T' };
@@ -2356,6 +2487,7 @@ export default class Editor {
     this.zoom = clamped;
     this.camera.x = worldPos.x - anchorX / this.zoom;
     this.camera.y = worldPos.y - anchorY / this.zoom;
+    this.clampCamera();
   }
 
   worldToScreen(x, y) {
@@ -2602,6 +2734,8 @@ export default class Editor {
     this.uiButtons = [];
     let hoverTooltip = '';
     const pointer = this.lastPointer;
+    this.randomLevelSlider.bounds.width = null;
+    this.randomLevelSlider.bounds.height = null;
 
     const isHovered = (x, y, w, h) => (
       pointer && pointer.x >= x && pointer.x <= x + w && pointer.y >= y && pointer.y <= y + h
@@ -2634,19 +2768,63 @@ export default class Editor {
         ctx.lineTo(x + size - 2, y + 2);
         ctx.closePath();
         ctx.fill();
+      } else if (char === 'v') {
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.moveTo(x + 2, y + 2);
+        ctx.lineTo(x + 2, y + size - 2);
+        ctx.lineTo(x + size - 2, y + size - 2);
+        ctx.closePath();
+        ctx.fill();
       } else if (char === '=') {
         ctx.strokeStyle = '#fff';
         ctx.beginPath();
         ctx.moveTo(x + 3, centerY);
         ctx.lineTo(x + size - 3, centerY);
         ctx.stroke();
-      } else if (char === '!') {
+      } else if (char === 'e' || char === 'E') {
         ctx.strokeStyle = '#fff';
         ctx.beginPath();
-        ctx.moveTo(x + 4, y + 4);
+        ctx.moveTo(centerX, y + 4);
+        ctx.lineTo(centerX, y + size - 4);
+        ctx.stroke();
+        if (char === 'E') {
+          ctx.beginPath();
+          ctx.moveTo(x + 4, y + 4);
+          ctx.lineTo(x + size - 4, y + 4);
+          ctx.moveTo(x + 4, y + size - 4);
+          ctx.lineTo(x + size - 4, y + size - 4);
+          ctx.stroke();
+        }
+      } else if (char === '~' || char === 'A' || char === 'L') {
+        ctx.fillStyle = char === '~' ? '#3b9fe0' : char === 'A' ? '#36c777' : '#f25a42';
+        ctx.fillRect(x + 2, y + size / 2, size - 4, size / 2 - 2);
+      } else if (char === '*') {
+        ctx.strokeStyle = '#fff';
+        ctx.beginPath();
+        ctx.moveTo(x + 4, y + size - 4);
+        ctx.lineTo(centerX, y + size / 2);
         ctx.lineTo(x + size - 4, y + size - 4);
-        ctx.moveTo(x + size - 4, y + 4);
-        ctx.lineTo(x + 4, y + size - 4);
+        ctx.stroke();
+      } else if (char === 'I') {
+        ctx.fillStyle = '#8fd6ff';
+        ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+      } else if (char === '<' || char === '>') {
+        ctx.strokeStyle = '#fff';
+        ctx.beginPath();
+        if (char === '<') {
+          ctx.moveTo(x + size - 4, centerY);
+          ctx.lineTo(x + 4, centerY);
+          ctx.lineTo(x + 8, centerY - 4);
+          ctx.moveTo(x + 4, centerY);
+          ctx.lineTo(x + 8, centerY + 4);
+        } else {
+          ctx.moveTo(x + 4, centerY);
+          ctx.lineTo(x + size - 4, centerY);
+          ctx.lineTo(x + size - 8, centerY - 4);
+          ctx.moveTo(x + size - 4, centerY);
+          ctx.lineTo(x + size - 8, centerY + 4);
+        }
         ctx.stroke();
       } else if (char === 'D') {
         ctx.strokeStyle = '#fff';
@@ -2712,6 +2890,30 @@ export default class Editor {
       if (tooltip && !this.isMobileLayout() && isHovered(x, y, w, h)) {
         hoverTooltip = tooltip;
       }
+    };
+
+    const drawSlider = (x, y, w, label, value, min, max, kind) => {
+      const clampedValue = clamp(value, min, max);
+      const t = max === min ? 0 : (clampedValue - min) / (max - min);
+      const h = 10;
+      const knobX = x + t * w;
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.strokeRect(x, y, w, h);
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(knobX, y + h / 2, h * 0.9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = '12px Courier New';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(`${label}: ${Math.round(clampedValue)}`, x, y - 4);
+      ctx.restore();
+      this.randomLevelSlider.bounds[kind] = { x, y: y - 16, w, h: h + 26, min, max };
     };
 
     const controlMargin = 18;
@@ -2957,6 +3159,14 @@ export default class Editor {
           if (y + buttonHeight > contentY + contentHeight - 8) return;
           drawButton(x, y, columnWidth, buttonHeight, item.label, item.active, item.onClick, item.tooltip, item.preview);
         });
+
+        if (activeTab === 'tools') {
+          const sliderW = contentW - 16;
+          const sliderX = contentX + 8;
+          const sliderY = contentY + contentHeight - 64;
+          drawSlider(sliderX, sliderY, sliderW, 'Width', this.randomLevelSize.width, 50, 256, 'width');
+          drawSlider(sliderX, sliderY + 26, sliderW, 'Height', this.randomLevelSize.height, 30, 256, 'height');
+        }
       }
       this.panelScrollBounds = null;
       this.panelScrollView = null;
@@ -3056,6 +3266,14 @@ export default class Editor {
             : null;
         drawButton(x, y, columnWidth, buttonHeight, item.label, getActiveState(item), item.onClick, item.tooltip, preview);
       });
+
+      if (activeTab === 'tools') {
+        const sliderW = contentW - contentPadding * 2;
+        const sliderX = contentX + contentPadding;
+        const sliderY = contentY + contentHeight - 64;
+        drawSlider(sliderX, sliderY, sliderW, 'Width', this.randomLevelSize.width, 50, 256, 'width');
+        drawSlider(sliderX, sliderY + 26, sliderW, 'Height', this.randomLevelSize.height, 30, 256, 'height');
+      }
 
       const infoLines = [
         `Mode: ${modeLabel} | Tool: ${tileToolLabel}`,

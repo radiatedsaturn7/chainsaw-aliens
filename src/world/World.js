@@ -54,7 +54,10 @@ const FALLBACK_WORLD = {
 
 const DEFAULT_SPAWN = { x: 28, y: 19 };
 const DOOR_TILE = 'D';
-const ROOM_BLOCKERS = new Set(['#', '^', 'B', 'W', 'X', 'C', 'U']);
+const ROOM_BLOCKERS = new Set(['#', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>']);
+const SOLID_TILES = new Set(['#', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>']);
+const ONE_WAY_TILES = new Set(['=', 'E', 'e']);
+const HAZARD_TILES = new Set(['!', '~', 'A', 'L', '*']);
 
 const isRoomTile = (tile) => tile && tile !== DOOR_TILE && !ROOM_BLOCKERS.has(tile);
 
@@ -240,16 +243,17 @@ export default class World {
 
   isSolid(x, y, abilities, options = {}) {
     const tile = this.getTile(x, y);
-    if (tile === '#') return true;
-    if (tile === '^') return true;
-    if (tile === 'B') return true;
-    if (tile === 'W' || tile === 'X' || tile === 'C' || tile === 'U') return true;
-    if (tile === '=') return !options.ignoreOneWay;
+    if (SOLID_TILES.has(tile)) return true;
+    if (ONE_WAY_TILES.has(tile)) return !options.ignoreOneWay;
     return false;
   }
 
   isHazard(x, y) {
-    return this.getTile(x, y) === '!';
+    return HAZARD_TILES.has(this.getTile(x, y));
+  }
+
+  isOneWay(x, y) {
+    return ONE_WAY_TILES.has(this.getTile(x, y));
   }
 
   setTile(x, y, char) {
