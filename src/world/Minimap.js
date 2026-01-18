@@ -132,7 +132,7 @@ export default class Minimap {
   }
 
   isRoomTile(tile) {
-    const blockers = new Set(['#', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>']);
+    const blockers = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>']);
     return tile && tile !== 'D' && !blockers.has(tile);
   }
 
@@ -143,6 +143,8 @@ export default class Minimap {
     if (tile === 'A') return '#39d98a';
     if (tile === '*') return '#ff4b4b';
     if (tile === 'I') return '#9ad9ff';
+    if (tile === 'F') return '#c7efff';
+    if (tile === 'R') return '#8a5a2b';
     if (tile === '<' || tile === '>') return '#bfbfbf';
     if (tile === '=') return '#f3f3f3';
     if (tile === '#') return '#6b6b6b';
