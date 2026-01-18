@@ -90,6 +90,7 @@ const PREFAB_TYPES = [
   { id: 'large-t-solid', label: 'Large T Solid', short: 'TS' },
   { id: 'large-t-ice', label: 'Large T Ice', short: 'TI' },
   { id: 'solid-platform', label: 'Platform (Solid)', short: 'PS' },
+  { id: 'industrial-platform', label: 'Industrial Platform', short: 'IP' },
   { id: 'conveyor-belt', label: 'Conveyor Belt', short: 'CB' },
   { id: 'elevator', label: 'Elevator', short: 'EL' },
   { id: 'moving-platform', label: 'Moving Platform', short: 'MP' },
@@ -1049,6 +1050,74 @@ export default class Editor {
       }
     };
 
+    const buildCenteredPattern = (widths) => {
+      const height = widths.length;
+      const width = Math.max(...widths);
+      const coords = [];
+      widths.forEach((rowWidth, rowIndex) => {
+        const left = Math.floor((width - rowWidth) / 2);
+        for (let x = 0; x < rowWidth; x += 1) {
+          coords.push({ dx: left + x, dy: rowIndex });
+        }
+      });
+      return { coords, width, height };
+    };
+
+    const prefabPatterns = {
+      stalactite: buildCenteredPattern([7, 7, 5, 5, 3, 3, 1]),
+      stalagmite: buildCenteredPattern([1, 3, 3, 5, 5, 7, 7]),
+      largeT: {
+        width: 7,
+        height: 6,
+        coords: [
+          ...Array.from({ length: 7 }, (_, x) => ({ dx: x, dy: 0 })),
+          ...Array.from({ length: 5 }, (_, y) => ({ dx: 2, dy: y + 1 })),
+          ...Array.from({ length: 5 }, (_, y) => ({ dx: 3, dy: y + 1 })),
+          ...Array.from({ length: 5 }, (_, y) => ({ dx: 4, dy: y + 1 }))
+        ]
+      },
+      cavePlatform: {
+        width: 6,
+        height: 4,
+        coords: [
+          ...Array.from({ length: 4 }, (_, x) => ({ dx: x + 1, dy: 0 })),
+          ...Array.from({ length: 6 }, (_, x) => ({ dx: x, dy: 1 })),
+          ...Array.from({ length: 6 }, (_, x) => ({ dx: x, dy: 2 })),
+          ...Array.from({ length: 4 }, (_, x) => ({ dx: x + 1, dy: 3 }))
+        ]
+      },
+      industrialPlatform: {
+        width: 6,
+        height: 1,
+        coords: Array.from({ length: 6 }, (_, x) => ({ dx: x, dy: 0 }))
+      }
+    };
+
+    const placePatternInRoom = (room, pattern, options = {}) => {
+      const { width, height, coords } = pattern;
+      if (room.w < width + 2 || room.h < height + 2) return false;
+      const attempts = options.attempts ?? 30;
+      const minX = room.x + 1;
+      const maxX = room.x + room.w - width - 1;
+      const minY = room.y + 1;
+      const maxY = room.y + room.h - height - 1;
+      if (maxX < minX || maxY < minY) return false;
+      for (let i = 0; i < attempts; i += 1) {
+        const originX = randInt(minX, maxX);
+        let originY = randInt(minY, maxY);
+        if (options.anchor === 'ceiling') {
+          originY = room.y + 1;
+        } else if (options.anchor === 'floor') {
+          originY = room.y + room.h - height - 1;
+        }
+        const canPlace = coords.every(({ dx, dy }) => tiles[originY + dy]?.[originX + dx] === '.');
+        if (!canPlace) continue;
+        coords.forEach(({ dx, dy }) => setTile(originX + dx, originY + dy, '#'));
+        return true;
+      }
+      return false;
+    };
+
     const addIcePatch = (room) => {
       if (room.w < 8) return;
       const spot = findFloorInRoom(room);
@@ -1058,6 +1127,32 @@ export default class Editor {
       for (let x = startX; x < startX + length; x += 1) {
         if (tiles[spot.y]?.[x] === '.') setTile(x, spot.y, 'I');
       }
+    };
+
+    const addStalactite = (room) => {
+      placePatternInRoom(room, prefabPatterns.stalactite, { anchor: 'ceiling' });
+    };
+
+    const addStalagmite = (room) => {
+      placePatternInRoom(room, prefabPatterns.stalagmite, { anchor: 'floor' });
+    };
+
+    const addCavePlatform = (room) => {
+      placePatternInRoom(room, prefabPatterns.cavePlatform);
+    };
+
+    const addIndustrialPlatform = (room) => {
+      placePatternInRoom(room, prefabPatterns.industrialPlatform);
+    };
+
+    const addIndustrialT = (room) => {
+      placePatternInRoom(room, prefabPatterns.largeT, { anchor: 'floor' });
+    };
+
+    const addSwitchTile = (room) => {
+      const spot = findFloorInRoom(room);
+      if (!spot) return;
+      setTile(spot.x, spot.y, 'T');
     };
 
     const addConveyor = (room) => {
@@ -1220,8 +1315,14 @@ export default class Editor {
       }
       addTriangleBlocks(room);
       if (room.biome === 'cave') {
+        if (Math.random() < 0.5) addStalactite(room);
+        if (Math.random() < 0.5) addStalagmite(room);
+        if (Math.random() < 0.45) addCavePlatform(room);
         if (Math.random() < 0.6) addPit(room, pickOne(['~', 'L']));
       } else if (room.biome === 'industrial') {
+        if (Math.random() < 0.5) addIndustrialPlatform(room);
+        if (Math.random() < 0.4) addIndustrialT(room);
+        if (Math.random() < 0.35) addSwitchTile(room);
         if (Math.random() < 0.5) addConveyor(room);
         if (Math.random() < 0.35) addElevator(room);
         if (Math.random() < 0.45) addPit(room, '*');
@@ -1359,6 +1460,31 @@ export default class Editor {
         if (Math.random() < 0.25) addConnection(room.cellIndex, neighbor);
       });
     });
+
+    const clearDoorFronts = () => {
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          if (tiles[y]?.[x] !== 'D') continue;
+          const neighbors = [
+            { dx: 1, dy: 0 },
+            { dx: -1, dy: 0 },
+            { dx: 0, dy: 1 },
+            { dx: 0, dy: -1 }
+          ];
+          neighbors.forEach(({ dx, dy }) => {
+            const nx = x + dx;
+            const ny = y + dy;
+            if (nx < 0 || ny < 0 || nx >= width || ny >= height) return;
+            const tile = tiles[ny]?.[nx];
+            if (tile && tile !== '.' && tile !== 'D') {
+              setTile(nx, ny, '.');
+            }
+          });
+        }
+      }
+    };
+
+    clearDoorFronts();
 
     let spawnRoom = rooms[0];
     let bestDistance = Infinity;
@@ -2511,6 +2637,8 @@ export default class Editor {
         return x >= 2 && x <= 4 ? 'I' : null;
       });
     } else if (this.prefabType.id === 'solid-platform') {
+      buildFixed(6, 1, () => '#');
+    } else if (this.prefabType.id === 'industrial-platform') {
       buildFixed(6, 1, () => '#');
     } else if (this.prefabType.id === 'conveyor-belt') {
       const dir = signX < 0 ? '<' : '>';

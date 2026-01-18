@@ -135,6 +135,11 @@ export default class Player {
     const footTile = world.getTile(footTileX, footTileY);
     const onIce = this.onGround && footTile === 'I';
     const onOneWay = this.onGround && world.isOneWay(footTileX, footTileY);
+    const bodyTileX = Math.floor(this.x / tileSize);
+    const bodyTileY = Math.floor(this.y / tileSize);
+    const inWater = footTile === '~' || world.getTile(bodyTileX, bodyTileY) === '~';
+    const waterSlow = inWater ? 0.6 : 1;
+    const waterJumpScale = inWater ? 0.75 : 1;
     let exitRide = false;
     let exitRideMomentum = 0;
     if (this.sawRideActive) {
@@ -161,7 +166,7 @@ export default class Player {
       if ((exitRide && moveInput === 0) || (this.sawRideMomentum && !this.onGround && moveInput === 0)) {
         this.vx = exitRide ? exitRideMomentum : this.sawRideMomentum;
       } else {
-        const targetVx = moveInput * this.speed;
+        const targetVx = moveInput * this.speed * waterSlow;
         if (onIce) {
           const accel = moveInput !== 0 ? 0.12 : 0.04;
           this.vx += (targetVx - this.vx) * accel;
@@ -215,14 +220,15 @@ export default class Player {
 
     const canGroundJump = this.coyote > 0 || this.magBootsEngaged;
     const canAirJump = !canGroundJump && this.jumpsRemaining > 0;
+    const jumpPower = this.jumpPower * waterJumpScale;
     if ((canGroundJump || canAirJump) && this.jumpBuffer > 0) {
       if (this.magBootsEngaged && this.onWall !== 0) {
         this.vx = -this.onWall * this.speed * 1.4;
-        this.vy = -this.jumpPower;
+        this.vy = -jumpPower;
         this.onWall = 0;
         this.magBootsHeat += 0.2;
       } else {
-        this.vy = -this.jumpPower;
+        this.vy = -jumpPower;
       }
       this.onGround = false;
       this.coyote = 0;
