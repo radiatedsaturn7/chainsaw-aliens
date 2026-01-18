@@ -837,7 +837,12 @@ export default class Game {
       return;
     }
 
-    if (this.playtestActive && this.state === 'playing' && this.input.wasPressed('cancel')) {
+    if (
+      this.playtestActive
+      && this.state === 'playing'
+      && this.input.wasPressed('cancel')
+      && !this.isMobile
+    ) {
       this.returnToEditorFromPlaytest();
       this.input.flush();
       return;
@@ -1282,7 +1287,7 @@ export default class Game {
       this.cameraBounds = null;
       return;
     }
-    const doorPadding = tileSize * 2;
+    const doorPadding = tileSize * (this.isMobile ? 3 : 2);
     const worldRight = this.world.width * tileSize;
     const worldBottom = this.world.height * tileSize;
     const left = Math.max(0, room.minX * tileSize - doorPadding);
