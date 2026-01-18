@@ -143,6 +143,8 @@ export default class Game {
     this.activeRoomIndex = null;
     this.cameraBounds = null;
     this.slowTimer = 0;
+    this.doorTransition = null;
+    this.doorCooldown = 0;
     this.boss = null;
     this.bossActive = false;
     this.bossInteractions = {
@@ -1187,10 +1189,20 @@ export default class Game {
     const timeScale = (this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1) * simScale;
     this.slowTimer = Math.max(0, this.slowTimer - dt);
     this.damageFlashTimer = Math.max(0, this.damageFlashTimer - dt * timeScale);
+    this.doorCooldown = Math.max(0, this.doorCooldown - dt * timeScale);
     if (this.spawnPauseTimer > 0) {
       this.spawnPauseTimer = Math.max(0, this.spawnPauseTimer - dt);
       this.updateEffects(dt);
       this.setRevAudio(false);
+      this.input.flush();
+      return;
+    }
+    if (this.doorTransition) {
+      this.updateDoorTransition(dt * timeScale);
+      this.updateEffects(dt * timeScale);
+      this.updateRoomCameraBounds();
+      this.camera.follow(this.player, dt, this.cameraBounds);
+      this.minimap.update(this.player);
       this.input.flush();
       return;
     }
@@ -1227,6 +1239,16 @@ export default class Game {
     const prevPlayer = { x: this.player.x, y: this.player.y };
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
     this.updateElevators(dt * timeScale, prevPlayer);
+    const tileSize = this.world.tileSize;
+    const tileX = Math.floor(this.player.x / tileSize);
+    const tileY = Math.floor(this.player.y / tileSize);
+    if (this.world.getTile(tileX, tileY) === 'D' && this.startDoorTransition(tileX, tileY, this.input)) {
+      this.updateRoomCameraBounds();
+      this.camera.follow(this.player, dt, this.cameraBounds);
+      this.minimap.update(this.player);
+      this.input.flush();
+      return;
+    }
     this.player.sawDeployed = this.sawAnchor.active;
     this.updateSawAnchor(dt * timeScale, this.input);
     this.applyAnchorClimb(dt * timeScale);
@@ -1462,6 +1484,79 @@ export default class Game {
       maxY = centerY;
     }
     this.cameraBounds = { minX, maxX, minY, maxY };
+  }
+
+  findDoorExit(tileX, tileY, primaryDir) {
+    const directions = [
+      primaryDir,
+      { dx: 1, dy: 0 },
+      { dx: -1, dy: 0 },
+      { dx: 0, dy: 1 },
+      { dx: 0, dy: -1 }
+    ].filter((dir, index, self) => dir && self.findIndex((d) => d.dx === dir.dx && d.dy === dir.dy) === index);
+    const maxSteps = Math.max(this.world.width, this.world.height);
+    for (const dir of directions) {
+      let x = tileX;
+      let y = tileY;
+      for (let step = 0; step < maxSteps; step += 1) {
+        x += dir.dx;
+        y += dir.dy;
+        if (x < 0 || y < 0 || x >= this.world.width || y >= this.world.height) break;
+        const tile = this.world.getTile(x, y);
+        if (tile === 'D') continue;
+        if (!this.world.isSolid(x, y, this.abilities)) {
+          return { x, y };
+        }
+        break;
+      }
+    }
+    return null;
+  }
+
+  startDoorTransition(tileX, tileY, input) {
+    if (this.doorTransition || this.doorCooldown > 0) return false;
+    const inputH = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
+    const inputV = (input.isDown('down') ? 1 : 0) - (input.isDown('up') ? 1 : 0);
+    let primaryDir = { dx: 0, dy: 0 };
+    if (Math.abs(this.player.vx) > Math.abs(this.player.vy) && Math.abs(this.player.vx) > 5) {
+      primaryDir = { dx: Math.sign(this.player.vx), dy: 0 };
+    } else if (Math.abs(this.player.vy) > 5) {
+      primaryDir = { dx: 0, dy: Math.sign(this.player.vy) };
+    } else if (inputH !== 0) {
+      primaryDir = { dx: inputH, dy: 0 };
+    } else if (inputV !== 0) {
+      primaryDir = { dx: 0, dy: inputV };
+    }
+    if (primaryDir.dx === 0 && primaryDir.dy === 0) {
+      primaryDir = null;
+    }
+    const target = this.findDoorExit(tileX, tileY, primaryDir);
+    if (!target) return false;
+    const tileSize = this.world.tileSize;
+    this.doorTransition = {
+      from: { x: this.player.x, y: this.player.y },
+      to: { x: (target.x + 0.5) * tileSize, y: (target.y + 0.5) * tileSize },
+      progress: 0,
+      duration: 0.35
+    };
+    this.player.vx = 0;
+    this.player.vy = 0;
+    this.player.onGround = false;
+    this.doorCooldown = 0.45;
+    return true;
+  }
+
+  updateDoorTransition(dt) {
+    if (!this.doorTransition) return;
+    const transition = this.doorTransition;
+    transition.progress = Math.min(transition.progress + dt, transition.duration);
+    const t = transition.duration > 0 ? transition.progress / transition.duration : 1;
+    const eased = t * t * (3 - 2 * t);
+    this.player.x = transition.from.x + (transition.to.x - transition.from.x) * eased;
+    this.player.y = transition.from.y + (transition.to.y - transition.from.y) * eased;
+    if (t >= 1) {
+      this.doorTransition = null;
+    }
   }
 
   handleMovementFeedback() {
@@ -3406,6 +3501,16 @@ export default class Game {
     this.drawBloom(ctx);
     ctx.restore();
 
+    if (this.doorTransition) {
+      const t = Math.min(1, this.doorTransition.progress / this.doorTransition.duration);
+      const fade = Math.sin(t * Math.PI);
+      ctx.save();
+      ctx.globalAlpha = 0.25 * fade;
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+    }
+
     if (this.damageFlashTimer > 0) {
       const pulse = Math.sin((1 - this.damageFlashTimer / 0.6) * Math.PI);
       ctx.save();
@@ -3557,22 +3662,6 @@ export default class Game {
 
   drawElevators(ctx) {
     const tileSize = this.world.tileSize;
-    if (this.world.elevatorPaths?.length) {
-      ctx.save();
-      ctx.strokeStyle = 'rgba(120,220,255,0.75)';
-      ctx.lineWidth = 2;
-      this.world.elevatorPaths.forEach((path) => {
-        const cx = path.x * tileSize + tileSize / 2;
-        const cy = path.y * tileSize + tileSize / 2;
-        ctx.beginPath();
-        ctx.moveTo(cx - 6, cy);
-        ctx.lineTo(cx + 6, cy);
-        ctx.moveTo(cx, cy - 6);
-        ctx.lineTo(cx, cy + 6);
-        ctx.stroke();
-      });
-      ctx.restore();
-    }
     const platforms = this.elevatorPlatforms?.length ? this.elevatorPlatforms : (this.world.elevators || []);
     if (!platforms.length) return;
     ctx.save();
@@ -3612,6 +3701,40 @@ export default class Game {
       ctx.moveTo(baseX, surface);
       ctx.lineTo(baseX + tileSize, surface);
       ctx.stroke();
+    };
+    const drawBubbles = (x, y, color) => {
+      const baseX = x * tileSize;
+      const baseY = y * tileSize;
+      ctx.save();
+      ctx.fillStyle = color;
+      for (let i = 0; i < 3; i += 1) {
+        const phase = (time * 0.6 + i * 1.3 + x * 0.2 + y * 0.15) % 1;
+        const bubbleX = baseX + tileSize * (0.2 + 0.6 * ((i * 0.37) % 1)) + Math.sin(time + i) * 1.5;
+        const bubbleY = baseY + tileSize * (0.75 - phase * 0.5);
+        const radius = 1.5 + (1 - phase) * 1.5;
+        ctx.globalAlpha = 0.3 + (1 - phase) * 0.4;
+        ctx.beginPath();
+        ctx.arc(bubbleX, bubbleY, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    };
+    const drawSteam = (x, y, color) => {
+      const baseX = x * tileSize;
+      const baseY = y * tileSize;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < 3; i += 1) {
+        const offsetX = tileSize * (0.2 + i * 0.3) + Math.sin(time * 1.2 + i + x * 0.4) * 2;
+        const offsetY = Math.sin(time * 1.6 + y * 0.3 + i) * 2;
+        ctx.globalAlpha = 0.2 + (Math.sin(time * 2 + i) + 1) * 0.15;
+        ctx.beginPath();
+        ctx.moveTo(baseX + offsetX, baseY + offsetY - 2);
+        ctx.lineTo(baseX + offsetX + 2, baseY + offsetY - 10);
+        ctx.stroke();
+      }
+      ctx.restore();
     };
     const drawSpikeTile = (x, y) => {
       const hasFloor = isSolidTile(x, y + 1);
@@ -3694,10 +3817,12 @@ export default class Game {
           drawLiquid(x, y, '#1f66aa', '#3b9fe0');
         }
         if (tile === 'A') {
-          drawLiquid(x, y, '#166d3b', '#36c777');
+          drawLiquid(x, y, '#1c7a46', '#4fe18b');
+          drawBubbles(x, y, 'rgba(188,255,214,0.7)');
         }
         if (tile === 'L') {
-          drawLiquid(x, y, '#7f1c14', '#f25a42');
+          drawLiquid(x, y, '#ff3b1e', '#ffb347');
+          drawSteam(x, y, 'rgba(255,220,200,0.6)');
         }
         if (tile === '*') {
           drawSpikeTile(x, y);
