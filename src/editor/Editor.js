@@ -123,6 +123,8 @@ const BIOME_THEMES = [
   { id: 'purple', name: 'Purple', color: '#8b4cc7' }
 ];
 
+const EDITOR_AUTOSAVE_KEY = 'chainsaw-editor-autosave';
+
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const pickOne = (list) => list[randInt(0, list.length - 1)];
@@ -232,7 +234,7 @@ export default class Editor {
       active: false,
       id: null
     };
-    this.randomLevelSize = { width: 100, height: 50 };
+    this.randomLevelSize = { width: 150, height: 100 };
     this.randomLevelSlider = {
       active: null,
       bounds: {
@@ -241,6 +243,8 @@ export default class Editor {
       }
     };
     this.randomLevelDialog = { open: false };
+    this.autosaveKey = EDITOR_AUTOSAVE_KEY;
+    this.autosaveLoaded = false;
     this.gamepadCursor = {
       x: 0,
       y: 0,
@@ -267,6 +271,7 @@ export default class Editor {
         try {
           const data = JSON.parse(reader.result);
           this.game.applyWorldData(data);
+          this.persistAutosave();
           this.resetView();
         } catch (error) {
           console.error('Failed to load world data:', error);
@@ -287,8 +292,9 @@ export default class Editor {
 
   activate() {
     this.active = true;
-    this.resetView();
+    this.loadAutosaveOrSeed();
     this.restorePlaytestSpawn();
+    this.resetView();
   }
 
   deactivate() {
@@ -308,9 +314,54 @@ export default class Editor {
     this.gamepadCursor.active = false;
   }
 
+  loadAutosaveOrSeed() {
+    if (this.autosaveLoaded) return;
+    this.autosaveLoaded = true;
+    if (this.loadAutosave()) return;
+    this.createRandomLevel(150, 100);
+  }
+
+  getStorage() {
+    if (typeof window === 'undefined') return null;
+    try {
+      return window.localStorage;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  loadAutosave() {
+    const storage = this.getStorage();
+    if (!storage) return false;
+    const raw = storage.getItem(this.autosaveKey);
+    if (!raw) return false;
+    try {
+      const data = JSON.parse(raw);
+      if (!data || !data.tiles || !data.width || !data.height) {
+        storage.removeItem(this.autosaveKey);
+        return false;
+      }
+      this.game.applyWorldData(data);
+      return true;
+    } catch (error) {
+      storage.removeItem(this.autosaveKey);
+      return false;
+    }
+  }
+
+  persistAutosave() {
+    const storage = this.getStorage();
+    if (!storage) return;
+    try {
+      storage.setItem(this.autosaveKey, JSON.stringify(this.game.buildWorldData()));
+    } catch (error) {
+      console.warn('Unable to save editor autosave:', error);
+    }
+  }
+
   resetView() {
     const { canvas } = this.game;
-    const focus = this.game.player || { x: 0, y: 0 };
+    const focus = this.game.world.spawnPoint || this.game.spawnPoint || this.game.player || { x: 0, y: 0 };
     this.zoom = 1;
     const bounds = this.getCameraBounds();
     this.camera.x = clamp(focus.x - canvas.width / 2, bounds.minX, bounds.maxX);
@@ -1627,6 +1678,24 @@ export default class Editor {
 
     addSpawnPitPlatform();
 
+    const isSpawnBufferTile = (x, y) => Math.abs(x - spawn.x) <= 3 && Math.abs(y - spawn.y) <= 3;
+    const isSpawnPlatformTile = (x, y) => {
+      const dx = x - spawn.x;
+      const dy = y - spawn.y;
+      return (dy === 1 && Math.abs(dx) <= 2) || (dy === 2 && Math.abs(dx) <= 2);
+    };
+    const clearSpawnBufferTiles = () => {
+      for (let y = spawn.y - 3; y <= spawn.y + 3; y += 1) {
+        for (let x = spawn.x - 3; x <= spawn.x + 3; x += 1) {
+          if (x < 0 || y < 0 || x >= width || y >= height) continue;
+          if (isSpawnPlatformTile(x, y)) continue;
+          setTile(x, y, '.');
+        }
+      }
+    };
+
+    clearSpawnBufferTiles();
+
     const enemies = [];
     const difficultyOrder = ['practice', 'skitter', 'spitter', 'bulwark', 'floater', 'slicer', 'hivenode', 'sentinel'];
     const maxDist = Math.hypot(width / 2, height / 2) || 1;
@@ -1664,6 +1733,10 @@ export default class Editor {
       });
     });
 
+    const filteredEnemies = enemies.filter((enemy) => !isSpawnBufferTile(enemy.x, enemy.y));
+    const filteredElevatorPaths = elevatorPaths.filter((path) => !isSpawnBufferTile(path.x, path.y));
+    const filteredElevators = elevators.filter((platform) => !isSpawnBufferTile(platform.x, platform.y));
+
     const data = {
       schemaVersion: 1,
       tileSize: this.game.world.tileSize,
@@ -1672,9 +1745,9 @@ export default class Editor {
       spawn,
       tiles: tiles.map((row) => row.join('')),
       regions,
-      enemies,
-      elevatorPaths,
-      elevators
+      enemies: filteredEnemies,
+      elevatorPaths: filteredElevatorPaths,
+      elevators: filteredElevators
     };
 
     this.game.applyWorldData(data);
@@ -1683,6 +1756,7 @@ export default class Editor {
     this.pendingEnemies.clear();
     this.undoStack = [];
     this.redoStack = [];
+    this.persistAutosave();
     this.resetView();
   }
 
@@ -1691,6 +1765,7 @@ export default class Editor {
     if (!action) return;
     this.applyAction(action, 'undo');
     this.redoStack.push(action);
+    this.persistAutosave();
   }
 
   redo() {
@@ -1698,6 +1773,7 @@ export default class Editor {
     if (!action) return;
     this.applyAction(action, 'redo');
     this.undoStack.push(action);
+    this.persistAutosave();
   }
 
   applyAction(action, direction) {
@@ -1839,6 +1915,7 @@ export default class Editor {
       }
       this.redoStack = [];
       this.game.refreshWorldCaches();
+      this.persistAutosave();
     }
     this.pendingChanges.clear();
     this.pendingSpawn = null;
@@ -2910,6 +2987,32 @@ export default class Editor {
       };
     } else {
       this.pendingSpawn.next = { x: tileX, y: tileY };
+    }
+    this.clearSpawnBuffer(tileX, tileY);
+  }
+
+  isSpawnPlatformTile(spawnX, spawnY, tileX, tileY) {
+    const dx = tileX - spawnX;
+    const dy = tileY - spawnY;
+    return (dy === 1 && Math.abs(dx) <= 2) || (dy === 2 && Math.abs(dx) <= 2);
+  }
+
+  clearSpawnBuffer(spawnX, spawnY) {
+    for (let y = spawnY - 3; y <= spawnY + 3; y += 1) {
+      for (let x = spawnX - 3; x <= spawnX + 3; x += 1) {
+        if (!this.isInBounds(x, y)) continue;
+        if (this.isSpawnPlatformTile(spawnX, spawnY, x, y)) continue;
+        if (this.game.world.hasElevatorPath(x, y)) {
+          this.setElevatorPath(x, y, false);
+        }
+        if (this.game.world.hasElevatorPlatform(x, y)) {
+          this.setElevatorPlatform(x, y, false);
+        }
+        if (this.game.world.enemyAt(x, y)) {
+          this.removeEnemy(x, y);
+        }
+        this.setTile(x, y, '.');
+      }
     }
   }
 
