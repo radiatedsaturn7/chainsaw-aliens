@@ -569,12 +569,12 @@ export default class Editor {
   createRandomLevel(width, height) {
     const tiles = Array.from({ length: height }, () => Array.from({ length: width }, () => '#'));
     const rooms = [];
-    const roomPrefabs = PREFAB_TYPES.filter((prefab) => prefab.roomType);
     const spawn = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
-    const minRoomWidth = 32;
-    const minRoomHeight = 18;
-    const maxRoomWidth = Math.min(96, width - 4);
-    const maxRoomHeight = Math.min(96, height - 4);
+    const blockWidth = 38;
+    const blockHeight = 18;
+    const cols = Math.max(1, Math.floor((width - 2) / blockWidth));
+    const rows = Math.max(1, Math.floor((height - 2) / blockHeight));
+    const maxRooms = cols * rows;
 
     const setTile = (x, y, char) => {
       if (x < 0 || y < 0 || x >= width || y >= height) return;
@@ -675,10 +675,10 @@ export default class Editor {
     };
 
     const roomsOverlap = (room) => rooms.some((other) => (
-      room.x - 2 < other.x + other.w
-      && room.x + room.w + 2 > other.x
-      && room.y - 2 < other.y + other.h
-      && room.y + room.h + 2 > other.y
+      room.x < other.x + other.w
+      && room.x + room.w > other.x
+      && room.y < other.y + other.h
+      && room.y + room.h > other.y
     ));
 
     const placeRoom = (room) => {
@@ -821,20 +821,24 @@ export default class Editor {
       }
     };
 
-    const ensureSpawnRoom = () => {
-      const spawnRoomWidth = clamp(32, minRoomWidth, maxRoomWidth);
-      const spawnRoomHeight = clamp(18, minRoomHeight, maxRoomHeight);
-      const room = {
-        x: clamp(spawn.x - Math.floor(spawnRoomWidth / 2), 1, width - spawnRoomWidth - 1),
-        y: clamp(spawn.y - Math.floor(spawnRoomHeight / 2), 1, height - spawnRoomHeight - 1),
-        w: spawnRoomWidth,
-        h: spawnRoomHeight,
-        type: 'room'
-      };
-      room.area = room.w * room.h;
-      rooms.push(room);
-      carveRectRoom(room);
-      return room;
+    const carveDoorway = (from, to) => {
+      const midX = from.x + Math.floor(from.w / 2);
+      const midY = from.y + Math.floor(from.h / 2);
+      if (from.x === to.x) {
+        const doorX = midX;
+        const doorY = to.y > from.y ? from.y + from.h - 1 : from.y;
+        setTile(doorX, doorY, '.');
+        setTile(doorX + 1, doorY, '.');
+        setTile(doorX, doorY + (to.y > from.y ? 1 : -1), '.');
+        setTile(doorX + 1, doorY + (to.y > from.y ? 1 : -1), '.');
+      } else if (from.y === to.y) {
+        const doorY = midY;
+        const doorX = to.x > from.x ? from.x + from.w - 1 : from.x;
+        setTile(doorX, doorY, '.');
+        setTile(doorX, doorY + 1, '.');
+        setTile(doorX + (to.x > from.x ? 1 : -1), doorY, '.');
+        setTile(doorX + (to.x > from.x ? 1 : -1), doorY + 1, '.');
+      }
     };
 
     const addRoomDetails = (room) => {
@@ -848,77 +852,73 @@ export default class Editor {
       addTriangleBlocks(room);
     };
 
-    const spawnRoom = ensureSpawnRoom();
-
-    const requiredRooms = [
-      {
-        kind: 'tall',
-        wRange: [Math.min(minRoomWidth, maxRoomWidth), Math.min(48, maxRoomWidth)],
-        hRange: [Math.min(32, maxRoomHeight), maxRoomHeight]
-      },
-      {
-        kind: 'long',
-        wRange: [Math.min(Math.max(48, minRoomWidth), maxRoomWidth), maxRoomWidth],
-        hRange: [Math.min(minRoomHeight, maxRoomHeight), Math.min(32, maxRoomHeight)]
-      },
-      {
-        kind: 'triangle',
-        wRange: [Math.min(minRoomWidth, maxRoomWidth), Math.min(64, maxRoomWidth)],
-        hRange: [Math.min(Math.max(minRoomHeight, 24), maxRoomHeight), Math.min(64, maxRoomHeight)]
-      }
-    ];
-
-    requiredRooms.forEach((spec) => {
-      for (let attempt = 0; attempt < 40; attempt += 1) {
-        const w = randInt(spec.wRange[0], spec.wRange[1]);
-        const h = randInt(spec.hRange[0], spec.hRange[1]);
-        const room = {
-          x: randInt(1, width - w - 2),
-          y: randInt(1, height - h - 2),
-          w,
-          h,
-          type: spec.kind
-        };
-        if (!placeRoom(room)) continue;
-        if (spec.kind === 'triangle') {
-          carveTriangleRoom(room, pickOne([
-            { x: 1, y: 1 },
-            { x: -1, y: 1 },
-            { x: 1, y: -1 },
-            { x: -1, y: -1 }
-          ]));
-        } else {
-          carveRectRoom(room);
+    const cellIndex = (col, row) => row * cols + col;
+    const cellFromIndex = (index) => ({ col: index % cols, row: Math.floor(index / cols) });
+    const cellCenterDistance = (col, row) => {
+      const centerX = 1 + col * blockWidth + Math.floor(blockWidth / 2);
+      const centerY = 1 + row * blockHeight + Math.floor(blockHeight / 2);
+      return Math.hypot(centerX - spawn.x, centerY - spawn.y);
+    };
+    const targetRooms = clamp(Math.floor(maxRooms * 0.7), 3, maxRooms);
+    const occupied = new Set();
+    const adjacency = new Map();
+    const startCellIndex = (() => {
+      let bestIndex = 0;
+      let bestDistance = Infinity;
+      for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < cols; col += 1) {
+          const dist = cellCenterDistance(col, row);
+          if (dist < bestDistance) {
+            bestDistance = dist;
+            bestIndex = cellIndex(col, row);
+          }
         }
-        addRoomDetails(room);
-        break;
       }
-    });
-
-    const targetRooms = clamp(Math.floor((width * height) / 900), 8, 18);
-    let attempts = 0;
-    while (rooms.length < targetRooms && attempts < targetRooms * 20) {
-      attempts += 1;
-      const prefab = pickOne(roomPrefabs);
-      const w = randInt(minRoomWidth, maxRoomWidth);
-      const h = randInt(minRoomHeight, maxRoomHeight);
-      const room = {
-        x: randInt(1, width - w - 2),
-        y: randInt(1, height - h - 2),
-        w,
-        h,
-        type: prefab.id
-      };
-      if (!placeRoom(room)) continue;
-      if (prefab.id === 'circular') {
-        carveCircularRoom(room);
-      } else if (prefab.id === 'cave') {
-        carveCaveRoom(room);
-      } else {
-        carveRectRoom(room);
-      }
-      addRoomDetails(room);
+      return bestIndex;
+    })();
+    occupied.add(startCellIndex);
+    adjacency.set(startCellIndex, new Set());
+    while (occupied.size < targetRooms) {
+      const frontier = Array.from(occupied).filter((index) => {
+        const { col, row } = cellFromIndex(index);
+        return (
+          (col > 0 && !occupied.has(cellIndex(col - 1, row)))
+          || (col < cols - 1 && !occupied.has(cellIndex(col + 1, row)))
+          || (row > 0 && !occupied.has(cellIndex(col, row - 1)))
+          || (row < rows - 1 && !occupied.has(cellIndex(col, row + 1)))
+        );
+      });
+      if (frontier.length === 0) break;
+      const fromIndex = pickOne(frontier);
+      const { col, row } = cellFromIndex(fromIndex);
+      const neighbors = [];
+      if (col > 0 && !occupied.has(cellIndex(col - 1, row))) neighbors.push(cellIndex(col - 1, row));
+      if (col < cols - 1 && !occupied.has(cellIndex(col + 1, row))) neighbors.push(cellIndex(col + 1, row));
+      if (row > 0 && !occupied.has(cellIndex(col, row - 1))) neighbors.push(cellIndex(col, row - 1));
+      if (row < rows - 1 && !occupied.has(cellIndex(col, row + 1))) neighbors.push(cellIndex(col, row + 1));
+      if (neighbors.length === 0) break;
+      const nextIndex = pickOne(neighbors);
+      occupied.add(nextIndex);
+      if (!adjacency.has(fromIndex)) adjacency.set(fromIndex, new Set());
+      if (!adjacency.has(nextIndex)) adjacency.set(nextIndex, new Set());
+      adjacency.get(fromIndex).add(nextIndex);
+      adjacency.get(nextIndex).add(fromIndex);
     }
+
+    occupied.forEach((index) => {
+      const { col, row } = cellFromIndex(index);
+      const room = {
+        x: 1 + col * blockWidth,
+        y: 1 + row * blockHeight,
+        w: blockWidth,
+        h: blockHeight,
+        type: 'room',
+        cellIndex: index
+      };
+      placeRoom(room);
+      carveRectRoom(room);
+      addRoomDetails(room);
+    });
 
     rooms.forEach((room) => {
       room.center = {
@@ -928,35 +928,50 @@ export default class Editor {
       room.area = room.w * room.h;
     });
 
-    const maxCorridorLength = 10;
-    const maxCorridorDistance = maxCorridorLength;
     const linkedPairs = new Set();
     const pairKey = (a, b) => {
       const left = Math.min(a, b);
       const right = Math.max(a, b);
       return `${left}:${right}`;
     };
-    const roomDistance = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-    rooms.forEach((room, index) => {
-      let closest = null;
-      let closestIndex = -1;
-      let closestDist = Infinity;
-      rooms.forEach((candidate, candidateIndex) => {
-        if (candidate === room) return;
-        const dist = roomDistance(room.center, candidate.center);
-        if (dist < closestDist) {
-          closestDist = dist;
-          closest = candidate;
-          closestIndex = candidateIndex;
-        }
-      });
-      if (!closest || closestDist > maxCorridorDistance) return;
-      const key = pairKey(index, closestIndex);
+    const roomByCell = new Map(rooms.map((room) => [room.cellIndex, room]));
+    const addConnection = (aIndex, bIndex) => {
+      const key = pairKey(aIndex, bIndex);
       if (linkedPairs.has(key)) return;
       linkedPairs.add(key);
-      carveCorridor(room.center, closest.center);
+      const fromRoom = roomByCell.get(aIndex);
+      const toRoom = roomByCell.get(bIndex);
+      if (!fromRoom || !toRoom) return;
+      carveDoorway(fromRoom, toRoom);
+    };
+    adjacency.forEach((neighbors, index) => {
+      neighbors.forEach((neighbor) => addConnection(index, neighbor));
     });
 
+    rooms.forEach((room) => {
+      const { col, row } = cellFromIndex(room.cellIndex);
+      const extraNeighbors = [];
+      if (col > 0) extraNeighbors.push(cellIndex(col - 1, row));
+      if (col < cols - 1) extraNeighbors.push(cellIndex(col + 1, row));
+      if (row > 0) extraNeighbors.push(cellIndex(col, row - 1));
+      if (row < rows - 1) extraNeighbors.push(cellIndex(col, row + 1));
+      extraNeighbors.forEach((neighbor) => {
+        if (!occupied.has(neighbor)) return;
+        if (Math.random() < 0.25) addConnection(room.cellIndex, neighbor);
+      });
+    });
+
+    let spawnRoom = rooms[0];
+    let bestDistance = Infinity;
+    rooms.forEach((room) => {
+      const dist = Math.hypot(room.center.x - spawn.x, room.center.y - spawn.y);
+      if (dist < bestDistance) {
+        bestDistance = dist;
+        spawnRoom = room;
+      }
+    });
+    spawn.x = spawnRoom.center.x;
+    spawn.y = spawnRoom.center.y;
     setTile(spawn.x, spawn.y, '.');
 
     const enemies = [];
