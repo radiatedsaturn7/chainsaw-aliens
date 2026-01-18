@@ -1492,7 +1492,9 @@ export default class Editor {
 
     const clearDoorFronts = () => {
       const clearDepth = 2;
+      const extraSolidDepth = 3;
       const clearSpan = 0;
+      const isSolidBlock = (room, tile) => tile === getRoomWallTile(room);
       rooms.forEach((room) => {
         const doors = findRoomDoorTiles(room);
         doors.forEach((door) => {
@@ -1505,6 +1507,19 @@ export default class Editor {
                 if (nx < room.x + 1 || nx > room.x + room.w - 2) continue;
                 if (ny < room.y + 1 || ny > room.y + room.h - 2) continue;
                 if (tiles[ny]?.[nx] !== 'D') setTile(nx, ny, '.');
+              }
+            }
+            if (door.side === 'top') {
+              for (let dy = clearDepth + 1; dy <= extraSolidDepth; dy += 1) {
+                for (let dx = -clearSpan; dx <= clearSpan; dx += 1) {
+                  const nx = door.x + dx;
+                  const ny = door.y + dir * dy;
+                  if (nx < room.x + 1 || nx > room.x + room.w - 2) continue;
+                  if (ny < room.y + 1 || ny > room.y + room.h - 2) continue;
+                  if (tiles[ny]?.[nx] !== 'D' && isSolidBlock(room, tiles[ny]?.[nx])) {
+                    setTile(nx, ny, '.');
+                  }
+                }
               }
             }
           } else {
@@ -1591,6 +1606,26 @@ export default class Editor {
     spawn.x = spawnRoom.center.x;
     spawn.y = spawnRoom.center.y;
     setTile(spawn.x, spawn.y, '.');
+
+    const addSpawnPitPlatform = () => {
+      const wallTile = getRoomWallTile(spawnRoom);
+      const topY = spawn.y + 1;
+      const bottomY = spawn.y + 2;
+      const leftX = spawn.x - 2;
+      const rightX = spawn.x + 2;
+      if (topY >= height || bottomY >= height) return;
+      for (let x = leftX; x <= rightX; x += 1) {
+        if (x < 0 || x >= width) continue;
+        if (tiles[bottomY]?.[x] !== 'D') setTile(x, bottomY, wallTile);
+        if (x === leftX || x === rightX) {
+          if (tiles[topY]?.[x] !== 'D') setTile(x, topY, wallTile);
+        } else if (tiles[topY]?.[x] !== 'D') {
+          setTile(x, topY, '=');
+        }
+      }
+    };
+
+    addSpawnPitPlatform();
 
     const enemies = [];
     const difficultyOrder = ['practice', 'skitter', 'spitter', 'bulwark', 'floater', 'slicer', 'hivenode', 'sentinel'];
