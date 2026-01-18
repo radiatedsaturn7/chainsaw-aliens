@@ -12,6 +12,7 @@ const DEFAULT_TILE_TYPES = [
   { id: 'box', label: 'Pull Box', char: 'K' },
   { id: 'switch', label: 'Counterweight Switch', char: 'T' },
   { id: 'bossGate', label: 'Rift Seal', char: 'B' },
+  { id: 'door', label: 'Door', char: 'D' },
   { id: 'abilityG', label: 'Tools: Chainsaw Throw', char: 'g' },
   { id: 'abilityP', label: 'Tools: Flame-Saw', char: 'p' },
   { id: 'abilityM', label: 'Ability: Mag Boots', char: 'm' },
@@ -69,7 +70,8 @@ const PREFAB_TYPES = [
   { id: 'staircase', label: 'Staircase', short: 'SC' },
   { id: 'platform', label: 'Platform Run', short: 'PL' },
   { id: 'arena', label: 'Arena', short: 'AR', roomType: true },
-  { id: 'puzzle', label: 'Puzzle Kit', short: 'PZ' }
+  { id: 'puzzle', label: 'Puzzle Kit', short: 'PZ' },
+  { id: 'door', label: 'Door', short: 'DR' }
 ];
 
 const MODE_LABELS = {
@@ -2003,6 +2005,12 @@ export default class Editor {
         const maxY = Math.max(start.y, end.y);
         for (let y = minY + 1; y < maxY; y += 1) {
           tiles.push({ x: start.x, y, char: 'a' });
+        }
+      }
+    } else if (this.prefabType.id === 'door') {
+      for (let y = bounds.y1; y <= bounds.y2; y += 1) {
+        for (let x = bounds.x1; x <= bounds.x2; x += 1) {
+          tiles.push({ x, y, char: 'D' });
         }
       }
     }
