@@ -137,6 +137,31 @@ export default class Editor {
       prefabs: true,
       shapes: true
     };
+    this.panelTabs = ['tools', 'tiles', 'enemies', 'prefabs', 'shapes'];
+    this.panelTabIndex = 0;
+    this.panelScroll = {
+      tools: 0,
+      tiles: 0,
+      enemies: 0,
+      prefabs: 0,
+      shapes: 0
+    };
+    this.panelScrollMax = {
+      tools: 0,
+      tiles: 0,
+      enemies: 0,
+      prefabs: 0,
+      shapes: 0
+    };
+    this.panelScrollBounds = null;
+    this.panelScrollView = null;
+    this.panelMenuIndex = {
+      tools: 0,
+      tiles: 0,
+      enemies: 0,
+      prefabs: 0,
+      shapes: 0
+    };
     this.drawer = {
       open: true,
       tabIndex: 0,
@@ -183,7 +208,6 @@ export default class Editor {
       y: 0,
       active: false
     };
-    this.toolsMenuIndex = 0;
     this.dragStart = null;
     this.dragTarget = null;
     this.recordRecent('tiles', this.tileType);
@@ -338,66 +362,149 @@ export default class Editor {
     }
   }
 
-  getToolsMenuItems({ includeExtras = false } = {}) {
+  getActivePanelTab() {
+    return this.panelTabs[this.panelTabIndex] || 'tools';
+  }
+
+  setPanelTab(tabId) {
+    const index = this.panelTabs.indexOf(tabId);
+    if (index === -1) return;
+    this.panelTabIndex = index;
+  }
+
+  cyclePanelTab(direction) {
+    const cycleTabs = ['tools', 'tiles', 'enemies'];
+    const current = this.getActivePanelTab();
+    const currentIndex = Math.max(0, cycleTabs.indexOf(current));
+    const nextIndex = (currentIndex + direction + cycleTabs.length) % cycleTabs.length;
+    const nextTab = cycleTabs[nextIndex];
+    this.setPanelTab(nextTab);
+    if (nextTab === 'tiles') {
+      this.mode = 'tile';
+      this.tileTool = 'paint';
+    } else if (nextTab === 'enemies') {
+      this.mode = 'enemy';
+    }
+  }
+
+  getPanelConfig(tabId, { includeExtras = false } = {}) {
     const modeButtons = [
-      { id: 'tile', tooltip: 'Tile mode. (Q/E/M)' },
-      { id: 'enemy', tooltip: 'Enemy mode. (T)' },
-      { id: 'prefab', tooltip: 'Structure mode. (R)' },
-      { id: 'shape', tooltip: 'Shape mode. (G)' }
+      { id: 'tile', label: 'Tile', tooltip: 'Tile mode. (Q/E/M)' },
+      { id: 'enemy', label: 'Enemy', tooltip: 'Enemy mode. (T)' },
+      { id: 'prefab', label: 'Structure', tooltip: 'Structure mode. (R)' },
+      { id: 'shape', label: 'Shape', tooltip: 'Shape mode. (G)' }
     ];
     const tileToolButtons = [
-      { id: 'paint', tooltip: 'Paint tiles. (Q)' },
-      { id: 'erase', tooltip: 'Erase tiles. (E)' },
-      { id: 'move', tooltip: 'Move items or pan. (M)' }
+      { id: 'paint', label: 'Paint', tooltip: 'Paint tiles. (Q)' },
+      { id: 'erase', label: 'Erase', tooltip: 'Erase tiles. (E)' },
+      { id: 'move', label: 'Move', tooltip: 'Move items or pan. (M)' }
     ];
-    const items = [
-      ...modeButtons.map((tool) => ({
-        id: `mode-${tool.id}`,
-        tooltip: tool.tooltip,
-        onClick: () => {
-          this.mode = tool.id;
+    let items = [];
+    let columns = 1;
+
+    if (tabId === 'tools') {
+      items = [
+        ...modeButtons.map((tool) => ({
+          id: `mode-${tool.id}`,
+          label: `Mode: ${tool.label}`,
+          tooltip: tool.tooltip,
+          onClick: () => {
+            this.mode = tool.id;
+          }
+        })),
+        ...tileToolButtons.map((tool) => ({
+          id: `tile-${tool.id}`,
+          label: `Tool: ${tool.label}`,
+          tooltip: tool.tooltip,
+          onClick: () => {
+            this.mode = 'tile';
+            this.tileTool = tool.id;
+          }
+        })),
+        {
+          id: 'random-level',
+          label: 'Random Level',
+          tooltip: 'Create a random level layout',
+          onClick: () => this.promptRandomLevel()
         }
-      })),
-      ...tileToolButtons.map((tool) => ({
-        id: `tile-${tool.id}`,
-        tooltip: tool.tooltip,
+      ];
+      columns = 2;
+    } else if (tabId === 'tiles') {
+      items = DEFAULT_TILE_TYPES.map((tile) => ({
+        id: tile.id,
+        label: tile.char ? `${tile.label} [${tile.char}]` : tile.label,
+        tile,
+        tooltip: `Tile: ${tile.label}`,
         onClick: () => {
+          this.setTileType(tile);
           this.mode = 'tile';
-          this.tileTool = tool.id;
+          this.tileTool = 'paint';
         }
-      })),
-      {
-        id: 'random-level',
-        tooltip: 'Create a random level layout',
-        onClick: () => this.promptRandomLevel()
-      }
-    ];
+      }));
+    } else if (tabId === 'enemies') {
+      items = ENEMY_TYPES.map((enemy) => ({
+        id: enemy.id,
+        label: `${enemy.label} [${enemy.glyph}]`,
+        enemy,
+        tooltip: `Enemy: ${enemy.label}`,
+        onClick: () => {
+          this.setEnemyType(enemy);
+          this.mode = 'enemy';
+        }
+      }));
+    } else if (tabId === 'prefabs') {
+      items = PREFAB_TYPES.map((prefab) => ({
+        id: prefab.id,
+        label: prefab.label,
+        prefab,
+        tooltip: `Prefab: ${prefab.label}`,
+        onClick: () => {
+          this.setPrefabType(prefab);
+          this.mode = 'prefab';
+        }
+      }));
+    } else if (tabId === 'shapes') {
+      items = SHAPE_TOOLS.map((shape) => ({
+        id: shape.id,
+        label: shape.label,
+        shape,
+        tooltip: `Shape: ${shape.label}`,
+        onClick: () => {
+          this.setShapeTool(shape);
+          this.mode = 'shape';
+        }
+      }));
+    }
 
     if (includeExtras) {
       items.push(
         {
           id: 'save',
+          label: 'Save',
           tooltip: 'Save world JSON',
           onClick: () => this.saveToFile()
         },
         {
           id: 'load',
+          label: 'Load',
           tooltip: 'Load world JSON',
           onClick: () => this.openFileDialog()
         },
         {
           id: 'exit',
+          label: 'Exit',
           tooltip: 'Exit editor',
           onClick: () => this.game.exitEditor({ playtest: false })
         }
       );
     }
 
-    return items;
+    return { items, columns };
   }
 
-  navigateToolsMenu(input) {
-    const items = this.getToolsMenuItems({ includeExtras: this.isMobileLayout() });
+  navigatePanelMenu(input) {
+    const activeTab = this.getActivePanelTab();
+    const { items, columns } = this.getPanelConfig(activeTab, { includeExtras: this.isMobileLayout() });
     if (items.length === 0) return false;
     if (!input.wasGamepadPressed('up')
       && !input.wasGamepadPressed('down')
@@ -406,16 +513,28 @@ export default class Editor {
       return false;
     }
     const total = items.length;
-    const columns = 2;
-    const index = Math.max(0, Math.min(this.toolsMenuIndex, total - 1));
+    const index = Math.max(0, Math.min(this.panelMenuIndex[activeTab] ?? 0, total - 1));
     let nextIndex = index;
     if (input.wasGamepadPressed('up')) nextIndex -= columns;
     else if (input.wasGamepadPressed('down')) nextIndex += columns;
     else if (input.wasGamepadPressed('left')) nextIndex -= 1;
     else if (input.wasGamepadPressed('right')) nextIndex += 1;
     nextIndex = ((nextIndex % total) + total) % total;
-    this.toolsMenuIndex = nextIndex;
+    this.panelMenuIndex[activeTab] = nextIndex;
     const nextItem = items[nextIndex];
+    if (this.panelScrollView) {
+      const { contentHeight, buttonHeight, buttonGap, columns, padding } = this.panelScrollView;
+      const row = Math.floor(nextIndex / columns);
+      const itemTop = padding + row * (buttonHeight + buttonGap);
+      const itemBottom = itemTop + buttonHeight;
+      let scrollY = this.panelScroll[activeTab] || 0;
+      if (itemTop < scrollY) {
+        scrollY = itemTop;
+      } else if (itemBottom > scrollY + contentHeight - padding) {
+        scrollY = itemBottom - (contentHeight - padding);
+      }
+      this.panelScroll[activeTab] = clamp(scrollY, 0, this.panelScrollMax[activeTab] || 0);
+    }
     nextItem.onClick();
     if (nextItem.tooltip) {
       this.activeTooltip = nextItem.tooltip;
@@ -455,7 +574,7 @@ export default class Editor {
     this.gamepadCursor.y += stickY * moveSpeed;
 
     if (stickX === 0 && stickY === 0) {
-      this.navigateToolsMenu(input);
+      this.navigatePanelMenu(input);
     }
 
     if (lookX !== 0 || lookY !== 0) {
@@ -484,10 +603,10 @@ export default class Editor {
       this.cycleTileTool();
     }
     if (input.wasGamepadPressed('flame')) {
-      this.cycleSelection(-1);
+      this.cyclePanelTab(-1);
     }
     if (input.wasGamepadPressed('rev')) {
-      this.cycleSelection(1);
+      this.cyclePanelTab(1);
     }
 
     if (input.wasGamepadPressed('pause')) {
@@ -917,23 +1036,33 @@ export default class Editor {
       }
     };
 
-    const carveDoorway = (from, to) => {
-      const midX = from.x + Math.floor(from.w / 2);
-      const midY = from.y + Math.floor(from.h / 2);
-      if (from.x === to.x) {
-        const doorX = midX;
-        const doorY = to.y > from.y ? from.y + from.h - 1 : from.y;
-        setTile(doorX, doorY, '.');
-        setTile(doorX + 1, doorY, '.');
-        setTile(doorX, doorY + (to.y > from.y ? 1 : -1), '.');
-        setTile(doorX + 1, doorY + (to.y > from.y ? 1 : -1), '.');
-      } else if (from.y === to.y) {
-        const doorY = midY;
+    const carveConnection = (from, to) => {
+      const horizontal = from.y === to.y;
+      const wideJoin = Math.random() < 0.3;
+      const span = wideJoin ? 4 : 2;
+      const doorwayTile = wideJoin ? '.' : 'D';
+
+      if (horizontal) {
         const doorX = to.x > from.x ? from.x + from.w - 1 : from.x;
-        setTile(doorX, doorY, '.');
-        setTile(doorX, doorY + 1, '.');
-        setTile(doorX + (to.x > from.x ? 1 : -1), doorY, '.');
-        setTile(doorX + (to.x > from.x ? 1 : -1), doorY + 1, '.');
+        const otherDoorX = to.x > from.x ? to.x : to.x + to.w - 1;
+        const minY = Math.max(from.y + 1, to.y + 1);
+        const maxY = Math.min(from.y + from.h - 2, to.y + to.h - 2);
+        const startY = clamp(Math.floor(from.y + from.h / 2) - Math.floor(span / 2), minY, maxY - (span - 1));
+        for (let i = 0; i < span; i += 1) {
+          setTile(doorX, startY + i, doorwayTile);
+          setTile(otherDoorX, startY + i, doorwayTile);
+        }
+        return;
+      }
+
+      const doorY = to.y > from.y ? from.y + from.h - 1 : from.y;
+      const otherDoorY = to.y > from.y ? to.y : to.y + to.h - 1;
+      const minX = Math.max(from.x + 1, to.x + 1);
+      const maxX = Math.min(from.x + from.w - 2, to.x + to.w - 2);
+      const startX = clamp(Math.floor(from.x + from.w / 2) - Math.floor(span / 2), minX, maxX - (span - 1));
+      for (let i = 0; i < span; i += 1) {
+        setTile(startX + i, doorY, doorwayTile);
+        setTile(startX + i, otherDoorY, doorwayTile);
       }
     };
 
@@ -1038,7 +1167,7 @@ export default class Editor {
       const fromRoom = roomByCell.get(aIndex);
       const toRoom = roomByCell.get(bIndex);
       if (!fromRoom || !toRoom) return;
-      carveDoorway(fromRoom, toRoom);
+      carveConnection(fromRoom, toRoom);
     };
     adjacency.forEach((neighbors, index) => {
       neighbors.forEach((neighbor) => addConnection(index, neighbor));
@@ -1562,6 +1691,16 @@ export default class Editor {
 
   handleWheel(payload) {
     if (!this.active) return;
+    if (!this.isMobileLayout() && this.panelScrollBounds) {
+      const { x, y, w, h } = this.panelScrollBounds;
+      if (payload.x >= x && payload.x <= x + w && payload.y >= y && payload.y <= y + h) {
+        const activeTab = this.getActivePanelTab();
+        const maxScroll = this.panelScrollMax[activeTab] || 0;
+        const nextScroll = clamp((this.panelScroll[activeTab] || 0) + payload.deltaY, 0, maxScroll);
+        this.panelScroll[activeTab] = nextScroll;
+        return;
+      }
+    }
     const zoomFactor = payload.deltaY > 0 ? 0.9 : 1.1;
     this.setZoom(this.zoom * zoomFactor, payload.x, payload.y);
   }
@@ -2256,7 +2395,7 @@ export default class Editor {
     ctx.save();
     ctx.scale(this.zoom, this.zoom);
     ctx.translate(-this.camera.x, -this.camera.y);
-    this.game.drawWorld(ctx);
+    this.game.drawWorld(ctx, { showDoors: true });
     this.drawEditorMarkers(ctx);
     this.drawGrid(ctx);
     this.drawCursor(ctx);
@@ -2457,35 +2596,6 @@ export default class Editor {
       { id: 'erase', label: 'Erase', tooltip: 'Erase tiles. (E)' },
       { id: 'move', label: 'Move', tooltip: 'Move items or pan. (M)' }
     ];
-    const toolItems = [
-      ...modeButtons.map((tool) => ({
-        id: `mode-${tool.id}`,
-        label: `Mode: ${tool.label}`,
-        active: this.mode === tool.id,
-        tooltip: tool.tooltip,
-        onClick: () => {
-          this.mode = tool.id;
-        }
-      })),
-      ...tileToolButtons.map((tool) => ({
-        id: `tile-${tool.id}`,
-        label: `Tile: ${tool.label}`,
-        active: this.mode === 'tile' && this.tileTool === tool.id,
-        tooltip: tool.tooltip,
-        onClick: () => {
-          this.mode = 'tile';
-          this.tileTool = tool.id;
-        }
-      })),
-      {
-        id: 'random-level',
-        label: 'Random Level',
-        active: false,
-        tooltip: 'Create a random level layout',
-        onClick: () => this.promptRandomLevel()
-      }
-    ];
-
     ctx.save();
     ctx.font = '13px Courier New';
     ctx.textAlign = 'left';
@@ -2497,7 +2607,88 @@ export default class Editor {
       pointer && pointer.x >= x && pointer.x <= x + w && pointer.y >= y && pointer.y <= y + h
     );
 
-    const drawButton = (x, y, w, h, label, active, onClick, tooltip = '') => {
+    const drawTilePreview = (x, y, size, tile) => {
+      const char = tile?.char;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.strokeRect(x, y, size, size);
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      ctx.fillRect(x, y, size, size);
+      const centerX = x + size / 2;
+      const centerY = y + size / 2;
+      if (tile?.special === 'spawn') {
+        ctx.strokeStyle = '#ff6';
+        ctx.strokeRect(x + 4, y + 4, size - 8, size - 8);
+        ctx.beginPath();
+        ctx.moveTo(centerX, y + 4);
+        ctx.lineTo(centerX, y + size - 4);
+        ctx.stroke();
+      } else if (char === '#') {
+        ctx.fillStyle = '#3a3a3a';
+        ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+      } else if (char === '^') {
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.moveTo(x + 2, y + size - 2);
+        ctx.lineTo(x + size - 2, y + size - 2);
+        ctx.lineTo(x + size - 2, y + 2);
+        ctx.closePath();
+        ctx.fill();
+      } else if (char === '=') {
+        ctx.strokeStyle = '#fff';
+        ctx.beginPath();
+        ctx.moveTo(x + 3, centerY);
+        ctx.lineTo(x + size - 3, centerY);
+        ctx.stroke();
+      } else if (char === '!') {
+        ctx.strokeStyle = '#fff';
+        ctx.beginPath();
+        ctx.moveTo(x + 4, y + 4);
+        ctx.lineTo(x + size - 4, y + size - 4);
+        ctx.moveTo(x + size - 4, y + 4);
+        ctx.lineTo(x + 4, y + size - 4);
+        ctx.stroke();
+      } else if (char === 'D') {
+        ctx.strokeStyle = '#fff';
+        ctx.strokeRect(x + 4, y + 4, size - 8, size - 8);
+        ctx.beginPath();
+        ctx.moveTo(centerX, y + 5);
+        ctx.lineTo(centerX, y + size - 5);
+        ctx.stroke();
+      } else if (char === 'a') {
+        ctx.strokeStyle = '#6cf';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, size * 0.25, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY - size * 0.18);
+        ctx.lineTo(centerX, centerY + size * 0.18);
+        ctx.stroke();
+      } else if (char) {
+        ctx.fillStyle = '#fff';
+        ctx.font = '10px Courier New';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(char.toUpperCase(), centerX, centerY + 1);
+      }
+      ctx.restore();
+    };
+
+    const drawPrefabPreview = (x, y, size, prefab) => {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.strokeRect(x, y, size, size);
+      ctx.fillStyle = 'rgba(180,180,255,0.12)';
+      ctx.fillRect(x, y, size, size);
+      ctx.fillStyle = '#fff';
+      ctx.font = '10px Courier New';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(prefab?.short || prefab?.label?.slice(0, 2) || 'PR', x + size / 2, y + size / 2);
+      ctx.restore();
+    };
+
+    const drawButton = (x, y, w, h, label, active, onClick, tooltip = '', preview = null) => {
       ctx.globalAlpha = 0.9;
       ctx.fillStyle = active ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.6)';
       ctx.fillRect(x, y, w, h);
@@ -2506,7 +2697,16 @@ export default class Editor {
       ctx.fillStyle = '#fff';
       ctx.save();
       ctx.textBaseline = 'middle';
-      ctx.fillText(label, x + 8, y + h / 2);
+      const previewSize = preview ? Math.min(22, h - 8) : 0;
+      const previewX = x + 8;
+      const previewY = y + (h - previewSize) / 2;
+      if (preview?.type === 'tile') {
+        drawTilePreview(previewX, previewY, previewSize, preview.tile);
+      } else if (preview?.type === 'prefab') {
+        drawPrefabPreview(previewX, previewY, previewSize, preview.prefab);
+      }
+      const textOffset = preview ? previewSize + 14 : 8;
+      ctx.fillText(label, x + textOffset, y + h / 2);
       ctx.restore();
       this.addUIButton({ x, y, w, h }, onClick, tooltip);
       if (tooltip && !this.isMobileLayout() && isHovered(x, y, w, h)) {
@@ -2630,7 +2830,8 @@ export default class Editor {
         const contentY = tabY + tabHeight + 10;
         const reservedBottom = joystickRadius * 2 + 32;
         const contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom);
-        const buttonHeight = 44;
+        const isPreviewTab = activeTab === 'tiles' || activeTab === 'prefabs';
+        const buttonHeight = isPreviewTab ? 52 : 44;
         const buttonGap = 10;
         const contentX = panelX + 12;
         const contentW = panelW - 24;
@@ -2693,6 +2894,7 @@ export default class Editor {
             id: tile.id,
             label: tile.char ? `${tile.label} [${tile.char}]` : tile.label,
             active: this.tileType.id === tile.id,
+            preview: { type: 'tile', tile },
             tooltip: `Tile: ${tile.label}`,
             onClick: () => {
               this.setTileType(tile);
@@ -2718,6 +2920,7 @@ export default class Editor {
             id: prefab.id,
             label: prefab.label,
             active: this.prefabType.id === prefab.id,
+            preview: { type: 'prefab', prefab },
             tooltip: `Prefab: ${prefab.label}`,
             onClick: () => {
               this.setPrefabType(prefab);
@@ -2752,133 +2955,107 @@ export default class Editor {
           const x = contentX + col * (columnWidth + buttonGap);
           const y = contentY + 8 + row * (buttonHeight + buttonGap);
           if (y + buttonHeight > contentY + contentHeight - 8) return;
-          drawButton(x, y, columnWidth, buttonHeight, item.label, item.active, item.onClick, item.tooltip);
+          drawButton(x, y, columnWidth, buttonHeight, item.label, item.active, item.onClick, item.tooltip, item.preview);
         });
       }
+      this.panelScrollBounds = null;
+      this.panelScrollView = null;
     } else {
       this.editorBounds = { x: 0, y: 0, w: width, h: height };
       const panelWidth = 360;
       const panelX = width - panelWidth - 12;
-      let cursorY = 12;
-      const buttonHeight = 22;
-      const buttonGap = 6;
-      const sectionPadding = 12;
+      const panelY = 12;
+      const panelH = height - 24;
+      const tabs = [
+        { id: 'tools', label: 'TOOLS' },
+        { id: 'tiles', label: 'TILES' },
+        { id: 'enemies', label: 'ENEMIES' },
+        { id: 'prefabs', label: 'STRUCTURES' },
+        { id: 'shapes', label: 'SHAPES' }
+      ];
+      const tabMargin = 12;
+      const tabGap = 6;
+      const tabHeight = 26;
+      const tabWidth = (panelWidth - tabMargin * 2 - tabGap * (tabs.length - 1)) / tabs.length;
+      const tabY = panelY;
+      const activeTab = this.getActivePanelTab();
 
-      const drawSectionHeader = (title, sectionKey) => {
-        const headerHeight = 24;
-        ctx.globalAlpha = 0.9;
-        ctx.fillStyle = 'rgba(0,0,0,0.75)';
-        ctx.fillRect(panelX, cursorY, panelWidth, headerHeight);
-        ctx.strokeStyle = '#fff';
-        ctx.strokeRect(panelX, cursorY, panelWidth, headerHeight);
-        ctx.fillStyle = '#fff';
-        const indicator = this.uiSections[sectionKey] ? '▾' : '▸';
-        ctx.fillText(`${indicator} ${title}`, panelX + 12, cursorY + 16);
-        this.addUIButton(
-          { x: panelX, y: cursorY, w: panelWidth, h: headerHeight },
-          () => {
-            this.uiSections[sectionKey] = !this.uiSections[sectionKey];
-          },
-          `${title} panel`
+      tabs.forEach((tab, index) => {
+        const x = panelX + tabMargin + index * (tabWidth + tabGap);
+        drawButton(
+          x,
+          tabY,
+          tabWidth,
+          tabHeight,
+          tab.label,
+          activeTab === tab.id,
+          () => this.setPanelTab(tab.id),
+          `${tab.label} panel`
         );
-        cursorY += headerHeight + 6;
+      });
+
+      const contentY = tabY + tabHeight + 10;
+      const contentHeight = Math.max(0, panelY + panelH - contentY);
+      const contentX = panelX;
+      const contentW = panelWidth;
+      const contentPadding = 12;
+      const buttonGap = 8;
+      const isTallButtons = activeTab === 'tiles' || activeTab === 'prefabs';
+      const buttonHeight = isTallButtons ? 36 : 28;
+      const { items, columns } = this.getPanelConfig(activeTab);
+
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.fillRect(contentX, contentY, contentW, contentHeight);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(contentX, contentY, contentW, contentHeight);
+
+      const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
+      const rows = Math.ceil(items.length / columns);
+      const totalHeight = rows * (buttonHeight + buttonGap) - buttonGap + contentPadding * 2;
+      const maxScroll = Math.max(0, totalHeight - contentHeight);
+      this.panelScrollMax[activeTab] = maxScroll;
+      const scrollY = clamp(this.panelScroll[activeTab] || 0, 0, maxScroll);
+      this.panelScroll[activeTab] = scrollY;
+      this.panelScrollBounds = { x: contentX, y: contentY, w: contentW, h: contentHeight };
+      this.panelScrollView = {
+        contentHeight,
+        buttonHeight,
+        buttonGap,
+        columns,
+        padding: contentPadding
       };
 
-      const drawSectionBody = (height) => {
-        ctx.globalAlpha = 0.85;
-        ctx.fillStyle = 'rgba(0,0,0,0.7)';
-        ctx.fillRect(panelX, cursorY, panelWidth, height);
-        ctx.strokeStyle = '#fff';
-        ctx.strokeRect(panelX, cursorY, panelWidth, height);
+      const getActiveState = (item) => {
+        if (activeTab === 'tools') {
+          if (item.id.startsWith('mode-')) {
+            return this.mode === item.id.replace('mode-', '');
+          }
+          if (item.id.startsWith('tile-')) {
+            return this.mode === 'tile' && this.tileTool === item.id.replace('tile-', '');
+          }
+          return false;
+        }
+        if (activeTab === 'tiles') return this.tileType.id === item.id;
+        if (activeTab === 'enemies') return this.enemyType.id === item.id;
+        if (activeTab === 'prefabs') return this.prefabType.id === item.id;
+        if (activeTab === 'shapes') return this.shapeTool.id === item.id;
+        return false;
       };
 
-      drawSectionHeader('TOOLS', 'tools');
-      if (this.uiSections.tools) {
-        const columns = 2;
-        const rows = Math.ceil(toolItems.length / columns);
-        const sectionHeight = rows * (buttonHeight + buttonGap) + sectionPadding;
-        drawSectionBody(sectionHeight);
-        toolItems.forEach((tool, index) => {
-          const col = index % columns;
-          const row = Math.floor(index / columns);
-          const columnWidth = (panelWidth - sectionPadding * 2 - buttonGap) / columns;
-          const x = panelX + sectionPadding + col * (columnWidth + buttonGap);
-          const y = cursorY + 6 + row * (buttonHeight + buttonGap);
-          drawButton(x, y, columnWidth, buttonHeight, tool.label, tool.active, tool.onClick, tool.tooltip);
-        });
-        cursorY += sectionHeight + 10;
-      }
-
-      drawSectionHeader('TILES', 'tiles');
-      if (this.uiSections.tiles) {
-        const columns = 1;
-        const rows = DEFAULT_TILE_TYPES.length;
-        const sectionHeight = rows * (buttonHeight + buttonGap) + sectionPadding;
-        drawSectionBody(sectionHeight);
-        DEFAULT_TILE_TYPES.forEach((tile, index) => {
-          const x = panelX + sectionPadding;
-          const y = cursorY + 6 + index * (buttonHeight + buttonGap);
-          const label = tile.char ? `${tile.label} [${tile.char}]` : tile.label;
-          drawButton(x, y, panelWidth - sectionPadding * 2, buttonHeight, label, this.tileType.id === tile.id, () => {
-            this.setTileType(tile);
-            this.mode = 'tile';
-            this.tileTool = 'paint';
-          }, `Tile: ${tile.label}`);
-        });
-        cursorY += sectionHeight + 10;
-      }
-
-      drawSectionHeader('ENEMIES', 'enemies');
-      if (this.uiSections.enemies) {
-        const columns = 1;
-        const rows = ENEMY_TYPES.length;
-        const sectionHeight = rows * (buttonHeight + buttonGap) + sectionPadding;
-        drawSectionBody(sectionHeight);
-        ENEMY_TYPES.forEach((enemy, index) => {
-          const x = panelX + sectionPadding;
-          const y = cursorY + 6 + index * (buttonHeight + buttonGap);
-          const label = `${enemy.label} [${enemy.glyph}]`;
-          drawButton(x, y, panelWidth - sectionPadding * 2, buttonHeight, label, this.enemyType.id === enemy.id, () => {
-            this.setEnemyType(enemy);
-            this.mode = 'enemy';
-          }, `Enemy: ${enemy.label}`);
-        });
-        cursorY += sectionHeight + 10;
-      }
-
-      drawSectionHeader('STRUCTURES', 'prefabs');
-      if (this.uiSections.prefabs) {
-        const columns = 1;
-        const rows = PREFAB_TYPES.length;
-        const sectionHeight = rows * (buttonHeight + buttonGap) + sectionPadding;
-        drawSectionBody(sectionHeight);
-        PREFAB_TYPES.forEach((prefab, index) => {
-          const x = panelX + sectionPadding;
-          const y = cursorY + 6 + index * (buttonHeight + buttonGap);
-          drawButton(x, y, panelWidth - sectionPadding * 2, buttonHeight, prefab.label, this.prefabType.id === prefab.id, () => {
-            this.setPrefabType(prefab);
-            this.mode = 'prefab';
-          }, `Prefab: ${prefab.label}`);
-        });
-        cursorY += sectionHeight + 10;
-      }
-
-      drawSectionHeader('SHAPES', 'shapes');
-      if (this.uiSections.shapes) {
-        const columns = 1;
-        const rows = SHAPE_TOOLS.length;
-        const sectionHeight = rows * (buttonHeight + buttonGap) + sectionPadding;
-        drawSectionBody(sectionHeight);
-        SHAPE_TOOLS.forEach((shape, index) => {
-          const x = panelX + sectionPadding;
-          const y = cursorY + 6 + index * (buttonHeight + buttonGap);
-          drawButton(x, y, panelWidth - sectionPadding * 2, buttonHeight, shape.label, this.shapeTool.id === shape.id, () => {
-            this.setShapeTool(shape);
-            this.mode = 'shape';
-          }, `Shape: ${shape.label}`);
-        });
-        cursorY += sectionHeight + 10;
-      }
+      items.forEach((item, index) => {
+        const col = index % columns;
+        const row = Math.floor(index / columns);
+        const x = contentX + contentPadding + col * (columnWidth + buttonGap);
+        const y = contentY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
+        if (y + buttonHeight < contentY + 4 || y > contentY + contentHeight - 4) return;
+        const preview = item.tile
+          ? { type: 'tile', tile: item.tile }
+          : item.prefab
+            ? { type: 'prefab', prefab: item.prefab }
+            : null;
+        drawButton(x, y, columnWidth, buttonHeight, item.label, getActiveState(item), item.onClick, item.tooltip, preview);
+      });
 
       const infoLines = [
         `Mode: ${modeLabel} | Tool: ${tileToolLabel}`,
@@ -2890,7 +3067,7 @@ export default class Editor {
         `Move: drag to reposition | Two-finger: pan/zoom`,
         `Arrows: pan | Shift+Arrows: zoom`,
         `Gamepad: LS cursor | D-pad tools | A paint | B erase | X tool | Y mode`,
-        `LB/RB cycle selection | LT/RT zoom | Start exit | Back playtest`,
+        `LB/RB tabs | LT/RT zoom | Start exit | Back playtest`,
         `Ctrl+Z / Ctrl+Y: undo/redo`,
         `S: save JSON | L: load JSON`,
         `P: playtest | F2: toggle editor | Esc: exit`
