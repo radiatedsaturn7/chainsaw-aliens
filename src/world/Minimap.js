@@ -5,6 +5,7 @@ export default class Minimap {
     this.exploredRooms = new Set();
     this.scale = 2;
     this.showLegend = false;
+    this.doorClusters = null;
   }
 
   update(player) {
@@ -35,14 +36,8 @@ export default class Minimap {
     ctx.translate(x, y);
     ctx.strokeStyle = 'rgba(255,255,255,0.4)';
     ctx.strokeRect(0, 0, tileW * pixel, tileH * pixel);
-    for (let ty = 0; ty < tileH; ty += 1) {
-      for (let tx = 0; tx < tileW; tx += 1) {
-        if (this.explored.has(`${tx},${ty}`)) {
-          ctx.fillStyle = this.getTileColor(tx, ty) || '#fff';
-          ctx.fillRect(tx * pixel, ty * pixel, pixel, pixel);
-        }
-      }
-    }
+    this.drawRooms(ctx, pixel);
+    this.drawDoors(ctx, pixel);
     this.drawIcon(ctx, player.x, player.y, pixel, 'rgba(255,255,255,0.9)');
     if (options.objective) {
       this.drawIcon(ctx, options.objective.x, options.objective.y, pixel, 'rgba(255,255,255,0.8)', true);
@@ -61,6 +56,79 @@ export default class Minimap {
     if (options.showLegend) {
       this.drawLegend(ctx, x + width + 12, y);
     }
+  }
+
+  drawRooms(ctx, pixel) {
+    this.world.rooms.forEach((room, index) => {
+      if (!this.exploredRooms.has(index)) return;
+      const width = (room.maxX - room.minX + 1) * pixel;
+      const height = (room.maxY - room.minY + 1) * pixel;
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.fillRect(room.minX * pixel, room.minY * pixel, width, height);
+      ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+      ctx.strokeRect(room.minX * pixel + 0.5, room.minY * pixel + 0.5, width - 1, height - 1);
+    });
+  }
+
+  drawDoors(ctx, pixel) {
+    const clusters = this.getDoorClusters();
+    clusters.forEach((cluster) => {
+      const shouldShow = cluster.rooms.some((roomIndex) => this.exploredRooms.has(roomIndex));
+      if (!shouldShow) return;
+      ctx.fillStyle = '#9ad9ff';
+      cluster.tiles.forEach((tile) => {
+        ctx.fillRect(tile.x * pixel, tile.y * pixel, pixel, pixel);
+      });
+    });
+  }
+
+  getDoorClusters() {
+    if (this.doorClusters) return this.doorClusters;
+    const clusters = [];
+    const visited = new Set();
+    const { width, height } = this.world;
+    const keyFor = (x, y) => `${x},${y}`;
+    const directions = [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1]
+    ];
+
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        if (this.world.getTile(x, y) !== 'D') continue;
+        const key = keyFor(x, y);
+        if (visited.has(key)) continue;
+        const queue = [{ x, y }];
+        const tiles = [];
+        const rooms = new Set();
+        visited.add(key);
+        while (queue.length) {
+          const current = queue.shift();
+          tiles.push({ x: current.x, y: current.y });
+          directions.forEach(([dx, dy]) => {
+            const nx = current.x + dx;
+            const ny = current.y + dy;
+            if (nx < 0 || ny < 0 || nx >= width || ny >= height) return;
+            const roomIndex = this.world.roomAtTile?.(nx, ny);
+            if (roomIndex !== null && roomIndex !== undefined) {
+              rooms.add(roomIndex);
+            }
+            if (this.world.getTile(nx, ny) !== 'D') return;
+            const nextKey = keyFor(nx, ny);
+            if (visited.has(nextKey)) return;
+            visited.add(nextKey);
+            queue.push({ x: nx, y: ny });
+          });
+        }
+        if (rooms.size) {
+          clusters.push({ tiles, rooms: Array.from(rooms) });
+        }
+      }
+    }
+    this.doorClusters = clusters;
+    return clusters;
   }
 
   isRoomTile(tile) {
