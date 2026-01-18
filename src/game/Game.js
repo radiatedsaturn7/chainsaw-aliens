@@ -139,6 +139,8 @@ export default class Game {
     this.lastSave = { x: this.player.x, y: this.player.y };
     this.shakeTimer = 0;
     this.shakeMagnitude = 0;
+    this.activeRoomIndex = null;
+    this.cameraBounds = null;
     this.slowTimer = 0;
     this.boss = null;
     this.bossActive = false;
@@ -331,6 +333,8 @@ export default class Game {
     this.minimap = new Minimap(this.world);
     this.syncSpawnPoint();
     this.resetWorldSystems();
+    this.activeRoomIndex = null;
+    this.cameraBounds = null;
   }
 
   buildWorldData() {
@@ -1165,7 +1169,8 @@ export default class Game {
       this.testDashboard.setDetails('golden', report.lines);
     }
 
-    this.camera.follow(this.player, dt);
+    this.updateRoomCameraBounds();
+    this.camera.follow(this.player, dt, this.cameraBounds);
     this.minimap.update(this.player);
 
     if (this.shakeTimer > 0) {
@@ -1235,8 +1240,61 @@ export default class Game {
   }
 
   snapCameraToPlayer() {
-    this.camera.x = this.player.x - this.camera.width / 2;
-    this.camera.y = this.player.y - this.camera.height / 2;
+    this.updateRoomCameraBounds();
+    const desiredX = this.player.x - this.camera.width / 2;
+    const desiredY = this.player.y - this.camera.height / 2;
+    if (this.cameraBounds) {
+      const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+      this.camera.x = clamp(desiredX, this.cameraBounds.minX, this.cameraBounds.maxX);
+      this.camera.y = clamp(desiredY, this.cameraBounds.minY, this.cameraBounds.maxY);
+    } else {
+      this.camera.x = desiredX;
+      this.camera.y = desiredY;
+    }
+  }
+
+  updateRoomCameraBounds() {
+    const tileSize = this.world.tileSize;
+    const tileX = Math.floor(this.player.x / tileSize);
+    const tileY = Math.floor(this.player.y / tileSize);
+    const currentTile = this.world.getTile(tileX, tileY);
+    const roomIndex = this.world.roomAtTile(tileX, tileY);
+    if (currentTile !== 'D' && roomIndex !== null) {
+      this.activeRoomIndex = roomIndex;
+    } else if (this.activeRoomIndex === null && roomIndex !== null) {
+      this.activeRoomIndex = roomIndex;
+    }
+
+    if (this.activeRoomIndex === null) {
+      this.cameraBounds = null;
+      return;
+    }
+    const room = this.world.getRoomBounds(this.activeRoomIndex);
+    if (!room) {
+      this.cameraBounds = null;
+      return;
+    }
+    const left = room.minX * tileSize;
+    const top = room.minY * tileSize;
+    const right = (room.maxX + 1) * tileSize;
+    const bottom = (room.maxY + 1) * tileSize;
+    const roomWidth = right - left;
+    const roomHeight = bottom - top;
+    let minX = left;
+    let maxX = right - this.camera.width;
+    let minY = top;
+    let maxY = bottom - this.camera.height;
+    if (roomWidth <= this.camera.width) {
+      const centerX = left + (roomWidth - this.camera.width) / 2;
+      minX = centerX;
+      maxX = centerX;
+    }
+    if (roomHeight <= this.camera.height) {
+      const centerY = top + (roomHeight - this.camera.height) / 2;
+      minY = centerY;
+      maxY = centerY;
+    }
+    this.cameraBounds = { minX, maxX, minY, maxY };
   }
 
   handleMovementFeedback() {

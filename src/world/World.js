@@ -53,6 +53,10 @@ const FALLBACK_WORLD = {
 };
 
 const DEFAULT_SPAWN = { x: 28, y: 19 };
+const DOOR_TILE = 'D';
+const ROOM_BLOCKERS = new Set(['#', '^', 'B', 'W', 'X', 'C', 'U']);
+
+const isRoomTile = (tile) => tile && tile !== DOOR_TILE && !ROOM_BLOCKERS.has(tile);
 
 export default class World {
   constructor() {
@@ -73,6 +77,8 @@ export default class World {
     this.enemies = [];
     this.boxes = [];
     this.data = null;
+    this.rooms = [];
+    this.roomIndexByTile = [];
   }
 
   async load() {
@@ -122,6 +128,8 @@ export default class World {
     this.bossGate = null;
     this.objectives = [];
     this.boxes = [];
+    this.rooms = [];
+    this.roomIndexByTile = [];
     let saveIndex = 0;
     let healthIndex = 0;
 
@@ -171,6 +179,50 @@ export default class World {
         }
       }
     }
+
+    const roomIndexByTile = Array.from({ length: this.height }, () => Array(this.width).fill(-1));
+    const rooms = [];
+    const directions = [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1]
+    ];
+
+    for (let y = 0; y < this.height; y += 1) {
+      for (let x = 0; x < this.width; x += 1) {
+        if (roomIndexByTile[y][x] !== -1) continue;
+        const tile = this.getTile(x, y);
+        if (!isRoomTile(tile)) continue;
+        const queue = [{ x, y }];
+        roomIndexByTile[y][x] = rooms.length;
+        let minX = x;
+        let maxX = x;
+        let minY = y;
+        let maxY = y;
+        while (queue.length) {
+          const current = queue.shift();
+          minX = Math.min(minX, current.x);
+          maxX = Math.max(maxX, current.x);
+          minY = Math.min(minY, current.y);
+          maxY = Math.max(maxY, current.y);
+          directions.forEach(([dx, dy]) => {
+            const nx = current.x + dx;
+            const ny = current.y + dy;
+            if (nx < 0 || ny < 0 || nx >= this.width || ny >= this.height) return;
+            if (roomIndexByTile[ny][nx] !== -1) return;
+            const neighborTile = this.getTile(nx, ny);
+            if (!isRoomTile(neighborTile)) return;
+            roomIndexByTile[ny][nx] = rooms.length;
+            queue.push({ x: nx, y: ny });
+          });
+        }
+        rooms.push({ minX, maxX, minY, maxY });
+      }
+    }
+
+    this.rooms = rooms;
+    this.roomIndexByTile = roomIndexByTile;
   }
 
   reset() {
@@ -190,7 +242,6 @@ export default class World {
     const tile = this.getTile(x, y);
     if (tile === '#') return true;
     if (tile === '^') return true;
-    if (tile === 'D') return true;
     if (tile === 'B') return true;
     if (tile === 'W' || tile === 'X' || tile === 'C' || tile === 'U') return true;
     if (tile === '=') return !options.ignoreOneWay;
@@ -315,5 +366,20 @@ export default class World {
       return tileX >= rx && tileX <= rx + rw && tileY >= ry && tileY <= ry + rh;
     });
     return region || { id: 'wilds', name: 'Unknown' };
+  }
+
+  roomAtTile(tileX, tileY) {
+    if (tileX < 0 || tileY < 0 || tileX >= this.width || tileY >= this.height) {
+      return null;
+    }
+    const index = this.roomIndexByTile?.[tileY]?.[tileX];
+    if (index === undefined || index === -1) return null;
+    return index;
+  }
+
+  getRoomBounds(index) {
+    const room = this.rooms?.[index];
+    if (!room) return null;
+    return { ...room };
   }
 }
