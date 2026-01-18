@@ -3514,8 +3514,8 @@ export default class Game {
       const t = Math.min(1, this.doorTransition.progress / this.doorTransition.duration);
       const fade = Math.sin(t * Math.PI);
       ctx.save();
-      ctx.globalAlpha = 0.25 * fade;
-      ctx.fillStyle = '#050505';
+      ctx.globalAlpha = fade;
+      ctx.fillStyle = '#000';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.restore();
     }

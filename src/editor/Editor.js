@@ -1593,7 +1593,7 @@ export default class Editor {
       const supportChance = 0.9;
       rooms.forEach((room) => {
         const topY = room.y;
-        const supportY = room.y + 2;
+        const supportY = room.y + 3;
         if (supportY >= room.y + room.h - 1) return;
         let segmentStart = null;
         for (let x = room.x; x <= room.x + room.w - 1; x += 1) {
