@@ -1537,11 +1537,15 @@ export default class Game {
       dx: Math.sign(target.x - tileX),
       dy: Math.sign(target.y - tileY)
     };
+    const targetPos = { x: (target.x + 0.5) * tileSize, y: (target.y + 0.5) * tileSize };
+    const distance = Math.hypot(targetPos.x - this.player.x, targetPos.y - this.player.y);
+    const maxSpeed = Math.max(this.player.speed || MOVEMENT_MODEL.baseSpeed, MOVEMENT_MODEL.baseSpeed);
+    const duration = Math.max(0.35, distance / maxSpeed);
     this.doorTransition = {
       from: { x: this.player.x, y: this.player.y },
-      to: { x: (target.x + 0.5) * tileSize, y: (target.y + 0.5) * tileSize },
+      to: targetPos,
       progress: 0,
-      duration: 0.35,
+      duration,
       exitDir
     };
     this.player.vx = 0;
@@ -1556,7 +1560,9 @@ export default class Game {
     const transition = this.doorTransition;
     transition.progress = Math.min(transition.progress + dt, transition.duration);
     const t = transition.duration > 0 ? transition.progress / transition.duration : 1;
-    const eased = t * t * (3 - 2 * t);
+    const eased = t < 0.5
+      ? 4 * t * t * t
+      : 1 - Math.pow(-2 * t + 2, 3) / 2;
     this.player.x = transition.from.x + (transition.to.x - transition.from.x) * eased;
     this.player.y = transition.from.y + (transition.to.y - transition.from.y) * eased;
     if (t >= 1) {
@@ -3512,8 +3518,8 @@ export default class Game {
 
     if (this.doorTransition) {
       const t = Math.min(1, this.doorTransition.progress / this.doorTransition.duration);
-      const fadeOutEnd = 0.25;
-      const fadeInStart = 0.82;
+      const fadeOutEnd = 0.3;
+      const fadeInStart = 0.72;
       let fade = 0;
       if (t <= fadeOutEnd) {
         fade = t / fadeOutEnd;

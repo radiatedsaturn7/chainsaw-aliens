@@ -1241,7 +1241,7 @@ export default class Editor {
       }
     };
 
-    const addHazardFloor = (room, hazard) => {
+    const addHazardFloor = (room, hazard, reservedTiles = new Set()) => {
       const minSize = 8;
       if (room.w < minSize || room.h < minSize) return;
       const floorY = room.y + room.h - 2;
@@ -1249,6 +1249,7 @@ export default class Editor {
       const topY = Math.max(room.y + 1, floorY - depth + 1);
       for (let y = topY; y <= floorY; y += 1) {
         for (let x = room.x + 1; x <= room.x + room.w - 2; x += 1) {
+          if (reservedTiles.has(`${x},${y}`)) continue;
           if (tiles[y]?.[x] === '.') setTile(x, y, hazard);
         }
       }
@@ -1332,28 +1333,60 @@ export default class Editor {
       }
     }
 
+    const addCorridorDetails = (room) => {
+      if (room.w < 6 || room.h < 6) return;
+      if (Math.random() < 0.6) addPlatform(room);
+      if (Math.random() < 0.4) addTriangleBlocks(room);
+      if (room.biome === 'cave') {
+        if (Math.random() < 0.4) addStalactite(room);
+        if (Math.random() < 0.4) addStalagmite(room);
+        if (Math.random() < 0.4) addCavePlatform(room);
+      } else if (room.biome === 'industrial') {
+        if (Math.random() < 0.45) addIndustrialPlatform(room);
+        if (Math.random() < 0.25) addIndustrialT(room);
+        if (Math.random() < 0.3) addConveyor(room);
+      } else if (room.biome === 'ice') {
+        if (Math.random() < 0.45) addIcePatch(room);
+      }
+    };
+
     const carveConnection = (from, to) => {
       const horizontal = from.y === to.y;
       const wideJoin = Math.random() < 0.3;
-      const span = wideJoin ? 4 : 2;
-      const doorwayTile = span === 2 ? 'D' : '.';
+      const isCorridor = wideJoin;
+      const span = isCorridor
+        ? (horizontal ? Math.min(from.h - 2, to.h - 2) : Math.min(from.w - 2, to.w - 2))
+        : 2;
+      const doorwayTile = isCorridor ? '.' : 'D';
 
       if (horizontal) {
         const doorX = to.x > from.x ? from.x + from.w - 1 : from.x;
         const otherDoorX = to.x > from.x ? to.x : to.x + to.w - 1;
         const minY = Math.max(from.y + 1, to.y + 1);
         const maxY = Math.min(from.y + from.h - 2, to.y + to.h - 2);
-        const startY = clamp(Math.floor(from.y + from.h / 2) - Math.floor(span / 2), minY, maxY - (span - 1));
-        for (let i = 0; i < span; i += 1) {
+        const maxSpan = Math.max(1, maxY - minY + 1);
+        const corridorSpan = Math.min(span, maxSpan);
+        const startY = clamp(from.y + 1, minY, maxY - (corridorSpan - 1));
+        for (let i = 0; i < corridorSpan; i += 1) {
           setTile(doorX, startY + i, doorwayTile);
           setTile(otherDoorX, startY + i, doorwayTile);
         }
         const startX = Math.min(doorX, otherDoorX) + 1;
         const endX = Math.max(doorX, otherDoorX) - 1;
-        for (let i = 0; i < span; i += 1) {
+        for (let i = 0; i < corridorSpan; i += 1) {
           for (let x = startX; x <= endX; x += 1) {
             setTile(x, startY + i, doorwayTile);
           }
+        }
+        if (isCorridor) {
+          addCorridorDetails({
+            x: startX,
+            y: startY,
+            w: endX - startX + 1,
+            h: corridorSpan,
+            biome: from.biome,
+            wallTile: from.wallTile
+          });
         }
         return;
       }
@@ -1362,17 +1395,29 @@ export default class Editor {
       const otherDoorY = to.y > from.y ? to.y : to.y + to.h - 1;
       const minX = Math.max(from.x + 1, to.x + 1);
       const maxX = Math.min(from.x + from.w - 2, to.x + to.w - 2);
-      const startX = clamp(Math.floor(from.x + from.w / 2) - Math.floor(span / 2), minX, maxX - (span - 1));
-      for (let i = 0; i < span; i += 1) {
+      const maxSpan = Math.max(1, maxX - minX + 1);
+      const corridorSpan = Math.min(span, maxSpan);
+      const startX = clamp(from.x + 1, minX, maxX - (corridorSpan - 1));
+      for (let i = 0; i < corridorSpan; i += 1) {
         setTile(startX + i, doorY, doorwayTile);
         setTile(startX + i, otherDoorY, doorwayTile);
       }
       const startY = Math.min(doorY, otherDoorY) + 1;
       const endY = Math.max(doorY, otherDoorY) - 1;
-      for (let i = 0; i < span; i += 1) {
+      for (let i = 0; i < corridorSpan; i += 1) {
         for (let y = startY; y <= endY; y += 1) {
           setTile(startX + i, y, doorwayTile);
         }
+      }
+      if (isCorridor) {
+        addCorridorDetails({
+          x: startX,
+          y: startY,
+          w: corridorSpan,
+          h: endY - startY + 1,
+          biome: from.biome,
+          wallTile: from.wallTile
+        });
       }
     };
 
@@ -1671,15 +1716,56 @@ export default class Editor {
     spawn.y = spawnRoom.center.y;
     setTile(spawn.x, spawn.y, '.');
 
+    const getDoorLandingPads = (room) => {
+      const pads = [];
+      const doors = findRoomDoorTiles(room);
+      doors.forEach((door) => {
+        if (door.side === 'bottom') return;
+        let padX = door.x;
+        let padY = door.y;
+        if (door.side === 'top') {
+          padY = door.y + 1;
+        } else if (door.side === 'left') {
+          padX = door.x + 1;
+        } else if (door.side === 'right') {
+          padX = door.x - 1;
+        } else if (door.side === 'bottom') {
+          padY = door.y - 1;
+        }
+        if (padX < room.x + 1 || padX > room.x + room.w - 2) return;
+        if (padY < room.y + 1 || padY > room.y + room.h - 2) return;
+        pads.push({ x: padX, y: padY, type: 'clear' });
+        const platformY = Math.min(room.y + room.h - 2, padY + 1);
+        if (platformY >= room.y + 1 && platformY <= room.y + room.h - 2) {
+          pads.push({ x: padX, y: platformY, type: 'platform' });
+        }
+      });
+      return pads;
+    };
+
     const addHazardRooms = () => {
       const hazardTypes = ['L', 'A', '~'];
-      const candidates = rooms.filter((room) => room !== spawnRoom && room.w >= 8 && room.h >= 8);
+      const candidates = rooms.filter((room) => {
+        if (room === spawnRoom) return false;
+        if (room.w < 8 || room.h < 8) return false;
+        const doors = findRoomDoorTiles(room);
+        return !doors.some((door) => door.side === 'bottom');
+      });
       if (candidates.length === 0) return;
       const targetCount = clamp(Math.floor(candidates.length * 0.3), 1, Math.min(4, candidates.length));
       for (let i = 0; i < targetCount; i += 1) {
         const index = randInt(0, candidates.length - 1);
         const room = candidates.splice(index, 1)[0];
-        addHazardFloor(room, pickOne(hazardTypes));
+        const landingPads = getDoorLandingPads(room);
+        const reserved = new Set(landingPads.map((pad) => `${pad.x},${pad.y}`));
+        addHazardFloor(room, pickOne(hazardTypes), reserved);
+        landingPads.forEach((pad) => {
+          if (pad.type === 'platform') {
+            if (tiles[pad.y]?.[pad.x] !== 'D') setTile(pad.x, pad.y, '=');
+          } else if (tiles[pad.y]?.[pad.x] !== 'D') {
+            setTile(pad.x, pad.y, '.');
+          }
+        });
       }
     };
 
@@ -2339,7 +2425,7 @@ export default class Editor {
     const { bounds } = this.zoomSlider;
     if (!bounds || bounds.w <= 0) return;
     const t = Math.min(1, Math.max(0, (x - bounds.x) / bounds.w));
-    const minZoom = 0.5;
+    const minZoom = 0.35;
     const maxZoom = 3;
     const nextZoom = minZoom + (maxZoom - minZoom) * t;
     this.setZoom(nextZoom, this.game.canvas.width / 2, this.game.canvas.height / 2);
@@ -3211,7 +3297,7 @@ export default class Editor {
   }
 
   setZoom(nextZoom, anchorX, anchorY) {
-    const clamped = Math.min(3, Math.max(0.5, nextZoom));
+    const clamped = Math.min(3, Math.max(0.35, nextZoom));
     if (Math.abs(clamped - this.zoom) < 0.001) return;
     const worldPos = this.screenToWorld(anchorX, anchorY);
     this.zoom = clamped;
@@ -3756,7 +3842,7 @@ export default class Editor {
       ctx.strokeStyle = 'rgba(255,255,255,0.2)';
       ctx.strokeRect(panelX, panelY, panelW, panelH);
 
-      const handleAreaH = 28;
+      const handleAreaH = 34;
       ctx.fillStyle = 'rgba(255,255,255,0.12)';
       ctx.fillRect(panelX, panelY, panelW, handleAreaH);
       ctx.fillStyle = 'rgba(255,255,255,0.35)';
@@ -3794,7 +3880,7 @@ export default class Editor {
         const activeTab = this.drawer.tabs[this.drawer.tabIndex];
         const tabMargin = 12;
         const tabGap = 6;
-        const tabHeight = 26;
+        const tabHeight = 32;
         const tabWidth = (panelW - tabMargin * 2 - tabGap * (tabs.length - 1)) / tabs.length;
         const tabY = panelY + handleAreaH + 8;
         tabs.forEach((tab, index) => {
@@ -3817,8 +3903,8 @@ export default class Editor {
         const reservedBottom = joystickRadius * 2 + 32;
         const contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom);
         const isPreviewTab = activeTab === 'tiles' || activeTab === 'prefabs';
-        const buttonHeight = isPreviewTab ? 52 : 44;
-        const buttonGap = 10;
+        const buttonHeight = isPreviewTab ? 60 : 52;
+        const buttonGap = 12;
         const contentX = panelX + 12;
         const contentW = panelW - 24;
         let items = [];
@@ -3991,9 +4077,9 @@ export default class Editor {
       const contentX = panelX;
       const contentW = panelWidth;
       const contentPadding = 12;
-      const buttonGap = 8;
+      const buttonGap = 10;
       const isTallButtons = activeTab === 'tiles' || activeTab === 'prefabs';
-      const buttonHeight = isTallButtons ? 36 : 28;
+      const buttonHeight = isTallButtons ? 40 : 32;
       const { items, columns } = this.getPanelConfig(activeTab);
 
       ctx.globalAlpha = 0.85;
@@ -4079,7 +4165,7 @@ export default class Editor {
     }
 
     if (this.isMobileLayout()) {
-      const zoomMin = 0.5;
+      const zoomMin = 0.35;
       const zoomMax = 3;
       const zoomT = Math.min(1, Math.max(0, (this.zoom - zoomMin) / (zoomMax - zoomMin)));
       const sliderKnobX = sliderX + zoomT * sliderWidth;
@@ -4148,8 +4234,8 @@ export default class Editor {
       drawSlider(sliderX, sliderY, sliderW, 'Width', this.randomLevelSize.width, 50, 256, 'width');
       drawSlider(sliderX, sliderY + 32, sliderW, 'Height', this.randomLevelSize.height, 30, 256, 'height');
 
-      const buttonW = 110;
-      const buttonH = 28;
+      const buttonW = 120;
+      const buttonH = 34;
       const buttonY = dialogY + dialogH - 42;
       drawButton(
         dialogX + dialogW / 2 - buttonW - 10,

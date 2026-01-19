@@ -59,8 +59,8 @@ export default class MobileControls {
     this.joystick.radius = joystickRadius;
     this.joystick.knobRadius = knobRadius;
 
-    const buttonRadius = Math.min(74, base * 0.14);
-    const buttonGap = Math.max(buttonRadius * 1.6, buttonRadius + 28);
+    const buttonRadius = Math.min(82, base * 0.16);
+    const buttonGap = Math.max(buttonRadius * 1.7, buttonRadius + 32);
     const rightX = width - margin - buttonRadius;
     const lowerY = height - margin - buttonRadius;
     const upperY = lowerY - buttonGap;
@@ -72,7 +72,7 @@ export default class MobileControls {
       { id: 'attack', label: 'ATK', action: 'attack', x: rightX, y: lowerY, r: buttonRadius }
     ];
 
-    const pauseRadius = Math.max(20, buttonRadius * 0.5);
+    const pauseRadius = Math.max(24, buttonRadius * 0.55);
     this.contextButtons = [
       { id: 'interact', label: 'OK', action: 'interact', x: rightX, y: upperLeftY, r: pauseRadius },
       { id: 'pause', label: 'PAUSE', action: 'pause', x: width - margin - pauseRadius, y: margin + pauseRadius, r: pauseRadius }
