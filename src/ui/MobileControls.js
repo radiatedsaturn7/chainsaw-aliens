@@ -33,6 +33,7 @@ export default class MobileControls {
     this.lastMoveDir = 1;
     this.facing = 1;
     this.attackPad = { x: 0, y: 0, r: 0 };
+    this.flameToggleEnabled = true;
   }
 
   setViewport({ width, height, isMobile }) {
@@ -43,6 +44,10 @@ export default class MobileControls {
 
   setEnabled(enabled) {
     this.enabled = Boolean(enabled);
+  }
+
+  setFlameToggleEnabled(enabled) {
+    this.flameToggleEnabled = Boolean(enabled);
   }
 
   layout() {
@@ -253,7 +258,7 @@ export default class MobileControls {
         this.pulseAction('attack');
       }
       const forward = this.joystick.dx * this.facing > 0.2 || this.lastMoveDir === this.facing;
-      if (forward) {
+      if (forward && this.flameToggleEnabled) {
         this.pulseAction('flame');
       }
     }
@@ -320,11 +325,11 @@ export default class MobileControls {
     });
 
     this.getVisibleButtons(state).forEach((button) => {
-      const attackHeld = button.id === 'attack' && this.attackHold.id;
+      const attackHeld = button.id === 'attack' && this.attackHold.id !== null;
       actions[button.action] = this.buttonStates.get(button.action) || attackHeld || false;
     });
 
-    if (this.attackHold.id) {
+    if (this.attackHold.id !== null) {
       this.attackHold.registered = true;
     }
 
@@ -364,7 +369,7 @@ export default class MobileControls {
     const buttons = this.getVisibleButtons(state);
     buttons.forEach((button) => {
       const isAttack = button.id === 'attack';
-      const active = this.buttonStates.get(button.action) || (isAttack && this.attackHold.id);
+      const active = this.buttonStates.get(button.action) || (isAttack && this.attackHold.id !== null);
       const pulse = isAttack && this.attackHold.active;
       ctx.fillStyle = active || pulse ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.45)';
       ctx.strokeStyle = active || pulse ? '#fff' : 'rgba(255,255,255,0.6)';

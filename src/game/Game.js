@@ -1000,6 +1000,8 @@ export default class Game {
     if (this.state === 'editor') {
       this.input.clearVirtual();
     } else {
+      const activeWeaponId = this.getActiveWeapon()?.id;
+      this.mobileControls.setFlameToggleEnabled(activeWeaponId === 'chainsaw');
       const mobileActions = this.mobileControls.getActions(this.state, this.player?.facing ?? 1);
       const combinedActions = this.input.combineActions(mobileActions, this.input.getGamepadActions());
       this.input.setVirtual(combinedActions);
