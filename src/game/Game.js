@@ -2223,14 +2223,15 @@ export default class Game {
     const sequence = this.ignitirSequence;
     if (!sequence || !this.player || this.player.dead) return;
     const time = sequence.time;
-    if (time < 3.3) {
-      this.player.gravityLockTimer = Math.max(this.player.gravityLockTimer || 0, 0.12);
-    }
     if (time <= 2.6) {
       const ramp = Math.min(1, time / 2.6);
-      const recoilSpeed = 140 + ramp * 200;
+      const easedRamp = 0.5 - 0.5 * Math.cos(Math.PI * ramp);
+      const recoilSpeed = 160 + easedRamp * 360;
       this.player.addImpulse(-sequence.dirX * recoilSpeed, -sequence.dirY * recoilSpeed * 0.6);
       this.player.onGround = false;
+      if (easedRamp >= 0.55) {
+        this.player.gravityLockTimer = Math.max(this.player.gravityLockTimer || 0, 0.12);
+      }
     } else if (time >= 3.3 && time <= 4.4) {
       const dx = this.player.x - sequence.targetX;
       const dy = this.player.y - sequence.targetY;
@@ -2239,6 +2240,7 @@ export default class Game {
       const blastSpeed = 280 + ramp * 260;
       this.player.addImpulse((dx / dist) * blastSpeed, (dy / dist) * blastSpeed);
       this.player.onGround = false;
+      this.player.gravityLockTimer = Math.max(this.player.gravityLockTimer || 0, 0.12);
     }
   }
 

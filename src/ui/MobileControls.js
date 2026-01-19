@@ -28,7 +28,7 @@ export default class MobileControls {
     this.pulseActions = new Set();
     this.movementPulse = { left: 0, right: 0, up: 0, down: 0 };
     this.lastSwipe = { dir: null, time: 0 };
-    this.attackHold = { id: null, startTime: 0, timer: null, active: false };
+    this.attackHold = { id: null, startTime: 0, timer: null, active: false, registered: false };
     this.multiTouch = { active: false, count: 0, startTime: 0, ids: new Set() };
     this.lastMoveDir = 1;
     this.facing = 1;
@@ -228,7 +228,7 @@ export default class MobileControls {
     if (this.attackHold.timer) {
       clearTimeout(this.attackHold.timer);
     }
-    this.attackHold = { id, startTime: now, timer: null, active: false };
+    this.attackHold = { id, startTime: now, timer: null, active: false, registered: false };
     this.attackHold.timer = setTimeout(() => {
       if (this.attackHold.id === id) {
         this.attackHold.active = true;
@@ -249,7 +249,9 @@ export default class MobileControls {
     }
 
     if (duration < HOLD_THRESHOLD) {
-      this.pulseAction('attack');
+      if (!this.attackHold.registered) {
+        this.pulseAction('attack');
+      }
       const forward = this.joystick.dx * this.facing > 0.2 || this.lastMoveDir === this.facing;
       if (forward) {
         this.pulseAction('flame');
@@ -318,8 +320,13 @@ export default class MobileControls {
     });
 
     this.getVisibleButtons(state).forEach((button) => {
-      actions[button.action] = this.buttonStates.get(button.action) || false;
+      const attackHeld = button.id === 'attack' && this.attackHold.id;
+      actions[button.action] = this.buttonStates.get(button.action) || attackHeld || false;
     });
+
+    if (this.attackHold.id) {
+      this.attackHold.registered = true;
+    }
 
     if (this.attackHold.active) {
       actions.rev = true;
@@ -356,8 +363,8 @@ export default class MobileControls {
 
     const buttons = this.getVisibleButtons(state);
     buttons.forEach((button) => {
-      const active = this.buttonStates.get(button.action);
       const isAttack = button.id === 'attack';
+      const active = this.buttonStates.get(button.action) || (isAttack && this.attackHold.id);
       const pulse = isAttack && this.attackHold.active;
       ctx.fillStyle = active || pulse ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.45)';
       ctx.strokeStyle = active || pulse ? '#fff' : 'rgba(255,255,255,0.6)';
