@@ -63,6 +63,7 @@ export default class Player {
     this.aimX = 1;
     this.aimY = 0;
     this.aimAngle = 0;
+    this.gravityLockTimer = 0;
     this.chainsawFacing = this.facing;
     this.chainsawHeld = false;
     this.oilLevel = 0;
@@ -259,9 +260,13 @@ export default class Player {
       this.justDashed = true;
     }
 
+    if (this.gravityLockTimer > 0) {
+      this.gravityLockTimer = Math.max(0, this.gravityLockTimer - dt);
+    }
+
     if (this.dashTimer > 0) {
       this.dashTimer -= dt;
-    } else {
+    } else if (this.gravityLockTimer <= 0) {
       this.vy += MOVEMENT_MODEL.gravity * dt;
     }
 

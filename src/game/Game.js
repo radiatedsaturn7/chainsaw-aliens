@@ -1825,8 +1825,9 @@ export default class Game {
     const aimVector = this.getAutoAimVector();
     const dirX = aimVector.x;
     const dirY = aimVector.y;
-    const originX = this.player.x;
-    const originY = this.player.y - 6;
+    const muzzleOffset = this.player.width * 0.9;
+    const originX = this.player.x + dirX * muzzleOffset;
+    const originY = this.player.y - 4 + dirY * muzzleOffset;
     const maxRange = tileSize * 12;
     const step = 8;
     let targetX = originX + dirX * maxRange;
@@ -1909,16 +1910,33 @@ export default class Game {
 
   collectIgnitirTargets(roomBounds, targetX, targetY) {
     const maxDistance = this.world.tileSize * 5;
+    const expandedBounds = roomBounds
+      ? {
+          minX: roomBounds.minX - 5,
+          maxX: roomBounds.maxX + 5,
+          minY: roomBounds.minY - 5,
+          maxY: roomBounds.maxY + 5
+        }
+      : null;
     const targets = [];
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
-      if (!this.isInRoomBounds(enemy.x, enemy.y, roomBounds)) return;
-      if (Math.hypot(enemy.x - targetX, enemy.y - targetY) > maxDistance) return;
+      if (expandedBounds) {
+        if (!this.isInRoomBounds(enemy.x, enemy.y, expandedBounds)) return;
+      } else if (Math.hypot(enemy.x - targetX, enemy.y - targetY) > maxDistance) {
+        return;
+      }
       targets.push(enemy);
     });
-    if (this.boss && !this.boss.dead && this.isInRoomBounds(this.boss.x, this.boss.y, roomBounds)) {
-      if (Math.hypot(this.boss.x - targetX, this.boss.y - targetY) <= maxDistance) {
-        targets.push(this.boss);
+    if (this.boss && !this.boss.dead) {
+      if (expandedBounds) {
+        if (this.isInRoomBounds(this.boss.x, this.boss.y, expandedBounds)) {
+          targets.push(this.boss);
+        }
+      } else if (this.isInRoomBounds(this.boss.x, this.boss.y, roomBounds)) {
+        if (Math.hypot(this.boss.x - targetX, this.boss.y - targetY) <= maxDistance) {
+          targets.push(this.boss);
+        }
       }
     }
     targets.sort((a, b) => {
@@ -1979,7 +1997,6 @@ export default class Game {
         color: 'rgba(255, 255, 255, 0.9)',
         fillColor: 'rgba(210, 235, 255, 0.45)'
       });
-      this.spawnIgnitirFlames(sequence.roomBounds);
       this.audio.ignitirBlast();
       this.recordFeedback('ignitir blast', 'audio');
       this.recordFeedback('ignitir blast', 'visual');
@@ -2058,26 +2075,57 @@ export default class Game {
     const dirY = aimY / aimLength;
     const originX = this.player.x + dirX * 18;
     const originY = this.player.y - 6 + dirY * 8;
-    const range = this.world.tileSize * 10;
+    const maxRange = this.world.tileSize * 15;
     const coneDot = 0.55;
     const tileX = Math.floor(this.player.x / this.world.tileSize);
     const tileY = Math.floor(this.player.y / this.world.tileSize);
     const roomIndex = this.world.roomAtTile(tileX, tileY);
     const roomBounds = roomIndex !== null && roomIndex !== undefined ? this.world.getRoomBounds(roomIndex) : null;
-    const arcDrop = range * 0.12;
-    const streamDx = dirX * range;
-    const streamDy = dirY * range + arcDrop;
-    const controlX = streamDx * 0.5;
-    const controlY = streamDy * 0.5 + arcDrop * 0.4;
-    const impactX = originX + streamDx;
-    const impactY = originY + streamDy;
-    const getQuadraticPoint = (t) => {
+    const getQuadraticPoint = (t, startX, startY, dx, dy, curveX, curveY) => {
       const inv = 1 - t;
       return {
-        x: inv * inv * originX + 2 * inv * t * (originX + controlX) + t * t * (originX + streamDx),
-        y: inv * inv * originY + 2 * inv * t * (originY + controlY) + t * t * (originY + streamDy)
+        x: inv * inv * startX + 2 * inv * t * (startX + curveX) + t * t * (startX + dx),
+        y: inv * inv * startY + 2 * inv * t * (startY + curveY) + t * t * (startY + dy)
       };
     };
+    const initialArcDrop = maxRange * 0.12;
+    let streamDx = dirX * maxRange;
+    let streamDy = dirY * maxRange + initialArcDrop;
+    let controlX = streamDx * 0.5;
+    let controlY = streamDy * 0.5 + initialArcDrop * 0.4;
+    let impactX = originX + streamDx;
+    let impactY = originY + streamDy;
+    let impactTile = null;
+    let lastPoint = { x: originX, y: originY };
+    for (let t = 0.05; t <= 1.0001; t += 0.05) {
+      const point = getQuadraticPoint(t, originX, originY, streamDx, streamDy, controlX, controlY);
+      const pointTileX = Math.floor(point.x / this.world.tileSize);
+      const pointTileY = Math.floor(point.y / this.world.tileSize);
+      if (
+        roomBounds
+        && (pointTileX < roomBounds.minX
+          || pointTileX > roomBounds.maxX
+          || pointTileY < roomBounds.minY
+          || pointTileY > roomBounds.maxY)
+      ) {
+        impactX = lastPoint.x;
+        impactY = lastPoint.y;
+        break;
+      }
+      if (this.world.isSolid(pointTileX, pointTileY, this.abilities)) {
+        impactTile = { x: pointTileX, y: pointTileY };
+        impactX = (pointTileX + 0.5) * this.world.tileSize;
+        impactY = (pointTileY + 0.5) * this.world.tileSize;
+        break;
+      }
+      lastPoint = point;
+    }
+    streamDx = impactX - originX;
+    streamDy = impactY - originY;
+    const adjustedRange = Math.hypot(streamDx, streamDy);
+    const arcDrop = adjustedRange * 0.12;
+    controlX = streamDx * 0.5;
+    controlY = streamDy * 0.5 + arcDrop * 0.4;
 
     if (this.flamethrowerSoundTimer <= 0) {
       this.audio.flamethrower();
@@ -2108,7 +2156,7 @@ export default class Game {
       }
       for (let i = 0; i < 3; i += 1) {
         const t = 0.25 + Math.random() * 0.65;
-        const point = getQuadraticPoint(t);
+        const point = getQuadraticPoint(t, originX, originY, streamDx, streamDy, controlX, controlY);
         this.spawnEffect('flamethrower-burn', point.x, point.y, {
           life: 0.8 + Math.random() * 0.4,
           height: 16 + Math.random() * 12,
@@ -2119,6 +2167,18 @@ export default class Game {
         life: 0.35 + Math.random() * 0.2,
         size: 20 + Math.random() * 12
       });
+      this.spawnEffect('flamethrower-flame', impactX, impactY, {
+        vx: (Math.random() - 0.5) * 40,
+        vy: -120 - Math.random() * 40,
+        life: 0.5 + Math.random() * 0.2
+      });
+      if (impactTile) {
+        this.spawnEffect('flamethrower-burn', impactX, impactY, {
+          life: 1.1 + Math.random() * 0.4,
+          height: 22 + Math.random() * 10,
+          size: 14 + Math.random() * 6
+        });
+      }
     }
 
     const applyDamage = (entity) => {
@@ -2127,7 +2187,7 @@ export default class Game {
       const dx = entity.x - originX;
       const dy = entity.y - originY;
       const dist = Math.hypot(dx, dy);
-      if (dist > range || dist <= 0.01) return;
+      if (dist > maxRange || dist <= 0.01) return;
       const dot = (dx / dist) * dirX + (dy / dist) * dirY;
       if (dot < coneDot) return;
       if (this.flamethrowerDamageCooldowns.has(entity)) return;
@@ -2163,6 +2223,9 @@ export default class Game {
     const sequence = this.ignitirSequence;
     if (!sequence || !this.player || this.player.dead) return;
     const time = sequence.time;
+    if (time < 3.3) {
+      this.player.gravityLockTimer = Math.max(this.player.gravityLockTimer || 0, 0.12);
+    }
     if (time <= 2.6) {
       const ramp = Math.min(1, time / 2.6);
       const recoilSpeed = 140 + ramp * 200;
