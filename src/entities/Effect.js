@@ -34,11 +34,12 @@ export default class Effect {
       }));
     }
     if (this.type === 'ignitir-blast') {
-      this.life = 1.15;
+      this.life = this.options.life ?? 1.15;
       this.flares = Array.from({ length: 8 }, () => ({
         angle: Math.random() * Math.PI * 2,
         radius: 50 + Math.random() * 60
       }));
+      this.blastRadius = this.options.radius ?? 240;
     }
     if (this.type === 'ignitir-flame') {
       this.life = 5.6;
@@ -48,26 +49,44 @@ export default class Effect {
       this.vy = -120 - Math.random() * 80;
     }
     if (this.type === 'ignitir-fog') {
-      this.life = 1.4;
+      this.life = this.options.life ?? 1.4;
       this.swirl = Math.random() * Math.PI * 2;
     }
     if (this.type === 'ignitir-beam') {
-      this.life = 0.28;
+      this.life = this.options.life ?? 0.28;
       this.angle = this.options.angle ?? 0;
       this.length = Math.max(40, this.options.length ?? 160);
       this.flicker = Math.random() * Math.PI * 2;
+      this.startWidth = this.options.startWidth ?? 12;
+      this.endWidth = this.options.endWidth ?? 18;
+      this.coreStart = this.options.coreStart ?? 4;
+      this.coreEnd = this.options.coreEnd ?? 6;
     }
     if (this.type === 'ignitir-implosion') {
-      this.life = 0.45;
+      this.life = this.options.life ?? 0.45;
+      this.implosionRadius = this.options.radius ?? 80;
       this.implosion = Array.from({ length: 16 }, () => ({
         angle: Math.random() * Math.PI * 2,
-        radius: 60 + Math.random() * 50,
+        radius: (this.implosionRadius * 0.6) + Math.random() * (this.implosionRadius * 0.4),
         size: 2 + Math.random() * 3
       }));
     }
     if (this.type === 'ignitir-shockwave') {
-      this.life = 0.9;
+      this.life = this.options.life ?? 0.9;
+      this.startRadius = this.options.startRadius ?? 70;
+      this.endRadius = this.options.endRadius ?? 290;
+      this.waveLineWidth = this.options.lineWidth ?? 6;
+      this.waveColor = this.options.color ?? 'rgba(150, 200, 220, 0.6)';
+      this.waveFill = this.options.fillColor ?? 'rgba(110, 150, 180, 0.4)';
       this.waveJitter = Math.random() * Math.PI * 2;
+    }
+    if (this.type === 'ignitir-target') {
+      this.life = this.options.life ?? 1;
+      this.pulse = Math.random() * Math.PI * 2;
+    }
+    if (this.type === 'ignitir-lens') {
+      this.life = this.options.life ?? 0.9;
+      this.lensSpin = Math.random() * Math.PI * 2;
     }
   }
 
@@ -197,7 +216,7 @@ export default class Effect {
         ctx.fill();
       });
     } else if (this.type === 'ignitir-blast') {
-      const blast = 50 + t * 190;
+      const blast = this.blastRadius * (0.25 + t * 0.75);
       const glow = 0.85 - t * 0.6;
       ctx.globalAlpha = glow;
       ctx.fillStyle = `rgba(80, 190, 255, ${0.55 - t * 0.25})`;
@@ -214,7 +233,7 @@ export default class Effect {
       ctx.arc(0, 0, blast, 0, Math.PI * 2);
       ctx.stroke();
       this.flares.forEach((flare) => {
-        const length = flare.radius + t * 90;
+        const length = flare.radius + t * (this.blastRadius * 0.5);
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(Math.cos(flare.angle) * (blast * 0.2), Math.sin(flare.angle) * (blast * 0.2));
@@ -255,17 +274,21 @@ export default class Effect {
     } else if (this.type === 'ignitir-beam') {
       ctx.save();
       ctx.rotate(this.angle);
-      const flicker = 0.7 + Math.sin(this.flicker + t * 18) * 0.3;
+      const ease = (v) => v * v * (3 - 2 * v);
+      const flicker = 0.7 + Math.sin(this.flicker + t * 16) * 0.3;
+      const grow = ease(Math.min(1, t * 1.1));
+      const beamWidth = this.startWidth + (this.endWidth - this.startWidth) * grow;
+      const coreWidth = this.coreStart + (this.coreEnd - this.coreStart) * grow;
       const beamLength = this.length;
       ctx.globalAlpha = 0.9 - t * 0.6;
       ctx.strokeStyle = `rgba(90, 200, 255, ${0.7 - t * 0.5})`;
-      ctx.lineWidth = 12 * flicker;
+      ctx.lineWidth = beamWidth * flicker;
       ctx.beginPath();
       ctx.moveTo(0, 0);
       ctx.lineTo(beamLength, 0);
       ctx.stroke();
       ctx.strokeStyle = `rgba(255, 255, 255, ${0.9 - t * 0.6})`;
-      ctx.lineWidth = 4 * flicker;
+      ctx.lineWidth = coreWidth * flicker;
       ctx.beginPath();
       ctx.moveTo(0, 0);
       ctx.lineTo(beamLength, 0);
@@ -277,7 +300,7 @@ export default class Effect {
       ctx.strokeStyle = `rgba(120, 210, 255, ${0.9 - t * 0.7})`;
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(0, 0, 30 * pull, 0, Math.PI * 2);
+      ctx.arc(0, 0, this.implosionRadius * 0.4 * pull, 0, Math.PI * 2);
       ctx.stroke();
       this.implosion.forEach((particle) => {
         const radius = particle.radius * pull;
@@ -289,18 +312,49 @@ export default class Effect {
         ctx.fill();
       });
     } else if (this.type === 'ignitir-shockwave') {
-      const wave = 70 + t * 220;
+      const wave = this.startRadius + t * (this.endRadius - this.startRadius);
       ctx.globalAlpha = 0.55 - t * 0.45;
-      ctx.strokeStyle = `rgba(150, 200, 220, ${0.6 - t * 0.5})`;
-      ctx.lineWidth = 6;
+      ctx.strokeStyle = this.waveColor;
+      ctx.lineWidth = this.waveLineWidth;
       ctx.beginPath();
       ctx.arc(0, 0, wave, 0, Math.PI * 2);
       ctx.stroke();
       ctx.globalAlpha = 0.35 - t * 0.3;
-      ctx.fillStyle = 'rgba(110, 150, 180, 0.4)';
+      ctx.fillStyle = this.waveFill;
       ctx.beginPath();
       ctx.arc(0, 0, wave * 0.75 + Math.sin(this.waveJitter + t * 8) * 6, 0, Math.PI * 2);
       ctx.fill();
+    } else if (this.type === 'ignitir-target') {
+      const pulse = 0.7 + Math.sin(this.pulse + t * 12) * 0.3;
+      const radius = 4 + t * 10;
+      ctx.globalAlpha = 0.9 - t * 0.6;
+      ctx.fillStyle = 'rgba(80, 190, 255, 0.8)';
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * pulse, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = `rgba(200, 240, 255, ${0.9 - t * 0.7})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 1.6 * pulse, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (this.type === 'ignitir-lens') {
+      const flare = 120 + t * 240;
+      ctx.globalAlpha = 0.9 - t * 0.8;
+      ctx.fillStyle = `rgba(255, 255, 255, ${0.85 - t * 0.6})`;
+      ctx.beginPath();
+      ctx.arc(0, 0, flare * 0.25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = `rgba(200, 240, 255, ${0.9 - t * 0.7})`;
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(0, 0, flare * 0.6, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = 0.6 - t * 0.5;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, flare * 0.9, this.lensSpin, this.lensSpin + Math.PI * 1.5);
+      ctx.stroke();
     }
     ctx.restore();
   }
