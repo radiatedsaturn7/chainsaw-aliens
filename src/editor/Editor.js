@@ -101,6 +101,11 @@ const PREFAB_TYPES = [
   { id: 'cave-platform', label: 'Cave Platform', short: 'CP' }
 ];
 
+const POWERUP_TYPES = [
+  { id: 'powerup-chainsaw', label: 'Tool: Chainsaw Rig', char: 'g' },
+  { id: 'powerup-ignitir', label: 'Weapon: Ignitir', char: 'i' }
+];
+
 const MODE_LABELS = {
   tile: 'Tile',
   enemy: 'Enemies',
@@ -140,6 +145,7 @@ export default class Editor {
     this.enemyType = ENEMY_TYPES[0];
     this.shapeTool = SHAPE_TOOLS[0];
     this.prefabType = PREFAB_TYPES[0];
+    this.startWithEverything = true;
     this.camera = { x: 0, y: 0 };
     this.zoom = 1;
     this.dragging = false;
@@ -168,11 +174,12 @@ export default class Editor {
       prefabs: true,
       shapes: true
     };
-    this.panelTabs = ['tools', 'tiles', 'enemies', 'prefabs', 'shapes'];
+    this.panelTabs = ['tools', 'tiles', 'powerups', 'enemies', 'prefabs', 'shapes'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       tools: 0,
       tiles: 0,
+      powerups: 0,
       enemies: 0,
       prefabs: 0,
       shapes: 0
@@ -180,6 +187,7 @@ export default class Editor {
     this.panelScrollMax = {
       tools: 0,
       tiles: 0,
+      powerups: 0,
       enemies: 0,
       prefabs: 0,
       shapes: 0
@@ -189,6 +197,7 @@ export default class Editor {
     this.panelMenuIndex = {
       tools: 0,
       tiles: 0,
+      powerups: 0,
       enemies: 0,
       prefabs: 0,
       shapes: 0
@@ -196,7 +205,7 @@ export default class Editor {
     this.drawer = {
       open: true,
       tabIndex: 0,
-      tabs: ['tools', 'tiles', 'enemies', 'prefabs', 'shapes'],
+      tabs: ['tools', 'tiles', 'powerups', 'enemies', 'prefabs', 'shapes'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -467,7 +476,7 @@ export default class Editor {
   }
 
   cyclePanelTab(direction) {
-    const cycleTabs = ['tools', 'tiles', 'enemies'];
+    const cycleTabs = ['tools', 'tiles', 'powerups', 'enemies'];
     const current = this.getActivePanelTab();
     const currentIndex = Math.max(0, cycleTabs.indexOf(current));
     const nextIndex = (currentIndex + direction + cycleTabs.length) % cycleTabs.length;
@@ -501,6 +510,14 @@ export default class Editor {
             this.tileTool = tool.id;
           }
         })),
+        {
+          id: 'start-everything',
+          label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
+          tooltip: 'Toggle playtest loadout',
+          onClick: () => {
+            this.startWithEverything = !this.startWithEverything;
+          }
+        },
         {
           id: 'undo',
           label: 'Undo',
@@ -544,6 +561,19 @@ export default class Editor {
           this.mode = 'enemy';
         }
       }));
+    } else if (tabId === 'powerups') {
+      items = POWERUP_TYPES.map((powerup) => ({
+        id: powerup.id,
+        label: `${powerup.label} [${powerup.char.toUpperCase()}]`,
+        tile: powerup,
+        tooltip: `Powerup: ${powerup.label}`,
+        onClick: () => {
+          this.setTileType(powerup);
+          this.mode = 'tile';
+          this.tileTool = 'paint';
+        }
+      }));
+      columns = 2;
     } else if (tabId === 'prefabs') {
       items = PREFAB_TYPES.map((prefab) => ({
         id: prefab.id,
@@ -3411,7 +3441,7 @@ export default class Editor {
           ctx.lineTo(cx, cy + 6);
           ctx.stroke();
         }
-        if (['g', 'p', 'm', 'r'].includes(tile)) {
+        if (['g', 'p', 'm', 'r', 'i'].includes(tile)) {
           ctx.fillStyle = '#fff';
           ctx.font = '12px Courier New';
           ctx.textAlign = 'center';
@@ -3712,6 +3742,15 @@ export default class Editor {
         ctx.moveTo(centerX, centerY - size * 0.18);
         ctx.lineTo(centerX, centerY + size * 0.18);
         ctx.stroke();
+      } else if (char === 'i') {
+        ctx.fillStyle = 'rgba(90, 190, 255, 0.85)';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, size * 0.28, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, size * 0.32, 0, Math.PI * 2);
+        ctx.stroke();
       } else if (char) {
         ctx.fillStyle = '#fff';
         ctx.font = '10px Courier New';
@@ -3873,6 +3912,7 @@ export default class Editor {
         const tabs = [
           { id: 'tools', label: 'TOOLS' },
           { id: 'tiles', label: 'TILES' },
+          { id: 'powerups', label: 'POWERUPS' },
           { id: 'enemies', label: 'ENEMIES' },
           { id: 'prefabs', label: 'STRUCTURES' },
           { id: 'shapes', label: 'SHAPES' }
@@ -3902,7 +3942,7 @@ export default class Editor {
         const contentY = tabY + tabHeight + 10;
         const reservedBottom = joystickRadius * 2 + 32;
         const contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom);
-        const isPreviewTab = activeTab === 'tiles' || activeTab === 'prefabs';
+        const isPreviewTab = activeTab === 'tiles' || activeTab === 'prefabs' || activeTab === 'powerups';
         const buttonHeight = isPreviewTab ? 60 : 52;
         const buttonGap = 12;
         const contentX = panelX + 12;
@@ -3922,6 +3962,15 @@ export default class Editor {
                 this.tileTool = tool.id;
               }
             })),
+            {
+              id: 'start-everything',
+              label: `START WITH EVERYTHING: ${this.startWithEverything ? 'ON' : 'OFF'}`,
+              active: false,
+              tooltip: 'Toggle playtest loadout',
+              onClick: () => {
+                this.startWithEverything = !this.startWithEverything;
+              }
+            },
             {
               id: 'undo',
               label: 'UNDO',
@@ -3992,6 +4041,20 @@ export default class Editor {
             }
           }));
           columns = 2;
+        } else if (activeTab === 'powerups') {
+          items = POWERUP_TYPES.map((powerup) => ({
+            id: powerup.id,
+            label: `${powerup.label} [${powerup.char.toUpperCase()}]`,
+            active: this.tileType.id === powerup.id,
+            preview: { type: 'tile', tile: powerup },
+            tooltip: `Powerup: ${powerup.label}`,
+            onClick: () => {
+              this.setTileType(powerup);
+              this.mode = 'tile';
+              this.tileTool = 'paint';
+            }
+          }));
+          columns = 2;
         } else if (activeTab === 'prefabs') {
           items = PREFAB_TYPES.map((prefab) => ({
             id: prefab.id,
@@ -4047,6 +4110,7 @@ export default class Editor {
       const tabs = [
         { id: 'tools', label: 'TOOLS' },
         { id: 'tiles', label: 'TILES' },
+        { id: 'powerups', label: 'POWERUPS' },
         { id: 'enemies', label: 'ENEMIES' },
         { id: 'prefabs', label: 'STRUCTURES' },
         { id: 'shapes', label: 'SHAPES' }
@@ -4114,7 +4178,7 @@ export default class Editor {
           }
           return false;
         }
-        if (activeTab === 'tiles') return this.tileType.id === item.id;
+        if (activeTab === 'tiles' || activeTab === 'powerups') return this.tileType.id === item.id;
         if (activeTab === 'enemies') return this.enemyType.id === item.id;
         if (activeTab === 'prefabs') return this.prefabType.id === item.id;
         if (activeTab === 'shapes') return this.shapeTool.id === item.id;

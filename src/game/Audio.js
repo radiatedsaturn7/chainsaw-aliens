@@ -121,6 +121,13 @@ export default class AudioSystem {
     this.tone(700, 0.06, 'triangle');
   }
 
+  lowHealthAlarm() {
+    this.ensure();
+    this.tone(520, 0.12, 'square');
+    this.tone(260, 0.18, 'sawtooth');
+    this.noise(0.12, 0.1);
+  }
+
   save() {
     this.tone(520, 0.12, 'triangle');
     this.tone(620, 0.1, 'triangle');
@@ -129,6 +136,17 @@ export default class AudioSystem {
 
   interact() {
     this.tone(360, 0.08, 'triangle');
+  }
+
+  ignitirBlast() {
+    this.tone(90, 0.4, 'square');
+    this.tone(160, 0.32, 'sawtooth');
+    this.noise(0.3, 0.22);
+  }
+
+  ignitirReady() {
+    this.tone(640, 0.14, 'triangle');
+    this.tone(880, 0.1, 'triangle');
   }
 
   menu() {
