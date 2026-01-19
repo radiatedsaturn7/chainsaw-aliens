@@ -2076,7 +2076,6 @@ export default class Game {
     const originX = this.player.x + dirX * 18;
     const originY = this.player.y - 6 + dirY * 8;
     const maxRange = this.world.tileSize * 15;
-    const coneDot = 0.55;
     const tileX = Math.floor(this.player.x / this.world.tileSize);
     const tileY = Math.floor(this.player.y / this.world.tileSize);
     const roomIndex = this.world.roomAtTile(tileX, tileY);
@@ -2088,11 +2087,11 @@ export default class Game {
         y: inv * inv * startY + 2 * inv * t * (startY + curveY) + t * t * (startY + dy)
       };
     };
-    const initialArcDrop = maxRange * 0.12;
+    const initialArcDrop = maxRange * 0.18;
     let streamDx = dirX * maxRange;
     let streamDy = dirY * maxRange + initialArcDrop;
     let controlX = streamDx * 0.5;
-    let controlY = streamDy * 0.5 + initialArcDrop * 0.4;
+    let controlY = streamDy * 0.5 - initialArcDrop * 1.1;
     let impactX = originX + streamDx;
     let impactY = originY + streamDy;
     let impactTile = null;
@@ -2123,9 +2122,9 @@ export default class Game {
     streamDx = impactX - originX;
     streamDy = impactY - originY;
     const adjustedRange = Math.hypot(streamDx, streamDy);
-    const arcDrop = adjustedRange * 0.12;
+    const arcDrop = adjustedRange * 0.18;
     controlX = streamDx * 0.5;
-    controlY = streamDy * 0.5 + arcDrop * 0.4;
+    controlY = streamDy * 0.5 - arcDrop * 1.1;
 
     if (this.flamethrowerSoundTimer <= 0) {
       this.audio.flamethrower();
@@ -2147,7 +2146,7 @@ export default class Game {
         const angle = baseAngle + (Math.random() - 0.5) * 0.35;
         const speed = 260 + Math.random() * 140;
         const vx = Math.cos(angle) * speed;
-        const vy = Math.sin(angle) * speed + 40;
+        const vy = Math.sin(angle) * speed - 40;
         this.spawnEffect('flamethrower-flame', originX, originY, {
           vx,
           vy,
@@ -2181,6 +2180,7 @@ export default class Game {
       }
     }
 
+    const streamRadius = 18;
     const applyDamage = (entity) => {
       if (!entity || entity.dead) return;
       if (!this.isInRoomBounds(entity.x, entity.y, roomBounds)) return;
@@ -2189,7 +2189,16 @@ export default class Game {
       const dist = Math.hypot(dx, dy);
       if (dist > maxRange || dist <= 0.01) return;
       const dot = (dx / dist) * dirX + (dy / dist) * dirY;
-      if (dot < coneDot) return;
+      if (dot <= 0) return;
+      let closest = Infinity;
+      for (let t = 0; t <= 1.0001; t += 0.07) {
+        const point = getQuadraticPoint(t, originX, originY, streamDx, streamDy, controlX, controlY);
+        const distance = Math.hypot(entity.x - point.x, entity.y - point.y);
+        if (distance < closest) {
+          closest = distance;
+        }
+      }
+      if (closest > streamRadius) return;
       if (this.flamethrowerDamageCooldowns.has(entity)) return;
       entity.damage?.(1);
       this.spawnEffect('flamethrower-flame', entity.x, entity.y, { life: 0.22 });
