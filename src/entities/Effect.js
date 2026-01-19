@@ -32,6 +32,21 @@ export default class Effect {
         size: 10 + Math.random() * 14
       }));
     }
+    if (this.type === 'ignitir-blast') {
+      this.life = 1.1;
+      this.flares = Array.from({ length: 6 }, () => ({
+        angle: Math.random() * Math.PI * 2,
+        radius: 40 + Math.random() * 40
+      }));
+    }
+    if (this.type === 'ignitir-flame') {
+      this.life = 6.5;
+      this.flicker = Math.random() * Math.PI * 2;
+      this.height = 16 + Math.random() * 18;
+    }
+    if (this.type === 'ignitir-fog') {
+      this.life = 1.8;
+    }
   }
 
   update(dt) {
@@ -154,6 +169,52 @@ export default class Effect {
         ctx.arc(bx, by, Math.max(4, blob.size * (1 - t * 0.6)), 0, Math.PI * 2);
         ctx.fill();
       });
+    } else if (this.type === 'ignitir-blast') {
+      const blast = 40 + t * 160;
+      ctx.globalAlpha = 0.9 - t * 0.6;
+      ctx.fillStyle = `rgba(90, 200, 255, ${0.5 - t * 0.3})`;
+      ctx.beginPath();
+      ctx.arc(0, 0, blast * 0.65, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = `rgba(255, 255, 255, ${0.9 - t * 0.7})`;
+      ctx.beginPath();
+      ctx.arc(0, 0, blast * 0.25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = `rgba(150, 220, 255, ${0.9 - t * 0.7})`;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(0, 0, blast, 0, Math.PI * 2);
+      ctx.stroke();
+      this.flares.forEach((flare) => {
+        const length = flare.radius + t * 80;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(flare.angle) * (blast * 0.2), Math.sin(flare.angle) * (blast * 0.2));
+        ctx.lineTo(Math.cos(flare.angle) * length, Math.sin(flare.angle) * length);
+        ctx.stroke();
+      });
+    } else if (this.type === 'ignitir-flame') {
+      const flicker = 0.7 + Math.sin(this.flicker + t * 12) * 0.2;
+      const height = this.height * flicker * (1 - t * 0.6);
+      ctx.globalAlpha = 0.8 - t * 0.5;
+      ctx.fillStyle = 'rgba(120, 210, 255, 0.8)';
+      ctx.beginPath();
+      ctx.moveTo(0, -height);
+      ctx.quadraticCurveTo(-6, -height * 0.4, -4, 0);
+      ctx.quadraticCurveTo(0, 4, 4, 0);
+      ctx.quadraticCurveTo(6, -height * 0.4, 0, -height);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(40, 120, 255, 0.6)';
+      ctx.beginPath();
+      ctx.arc(0, 0, 5, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (this.type === 'ignitir-fog') {
+      const fog = 60 + t * 200;
+      ctx.globalAlpha = 0.25 - t * 0.2;
+      ctx.fillStyle = 'rgba(120, 200, 255, 0.6)';
+      ctx.beginPath();
+      ctx.arc(0, 0, fog, 0, Math.PI * 2);
+      ctx.fill();
     }
     ctx.restore();
   }

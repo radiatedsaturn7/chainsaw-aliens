@@ -169,8 +169,14 @@ export default class World {
         if (tile === 'O') {
           this.objectives.push({ x: worldX, y: worldY });
         }
-        if (tile === 'g' || tile === 'p' || tile === 'm' || tile === 'r') {
-          const ability = { g: 'anchor', p: 'flame', m: 'magboots', r: 'resonance' }[tile];
+        if (tile === 'g' || tile === 'p' || tile === 'm' || tile === 'r' || tile === 'i') {
+          const ability = {
+            g: 'anchor',
+            p: 'flame',
+            m: 'magboots',
+            r: 'resonance',
+            i: 'ignitir'
+          }[tile];
           this.abilityPickups.push({ id: `ability-${ability}`, x: worldX, y: worldY, ability, collected: false });
         }
         if (tile === 'H') {

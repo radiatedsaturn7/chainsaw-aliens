@@ -85,6 +85,11 @@ const ABILITY_DIALOG_LINES = {
   resonance: [
     'Tool acquired: Resonance Core.',
     'Hold Attack to rev and shatter brittle walls or rift seals.'
+  ],
+  ignitir: [
+    'Weapon acquired: Ignitir.',
+    'Charges for 10 seconds while selected.',
+    'Tap Attack to unleash the blast.'
   ]
 };
 
@@ -134,8 +139,20 @@ export default class Game {
       anchor: false,
       flame: false,
       magboots: false,
-      resonance: false
+      resonance: false,
+      ignitir: false
     };
+    this.weaponSlots = [
+      { id: 'ignitir', label: 'Ignitir', key: '1', ability: 'ignitir' },
+      { id: 'chainsaw', label: 'Chainsaw Rig', key: '2', ability: null },
+      { id: null, label: 'Empty', key: '3', ability: null },
+      { id: null, label: 'Empty', key: '4', ability: null }
+    ];
+    this.activeWeaponIndex = 1;
+    this.ignitirCharge = 0;
+    this.ignitirReady = false;
+    this.ignitirFlashTimer = 0;
+    this.lowHealthAlarmTimer = 0;
     this.objective = 'Reach the Hub Pylon.';
     this.lastSave = { x: this.player.x, y: this.player.y };
     this.shakeTimer = 0;
@@ -151,7 +168,8 @@ export default class Game {
       anchor: false,
       flame: false,
       magboots: false,
-      resonance: false
+      resonance: false,
+      ignitir: false
     };
     this.sawAnchor = {
       active: false,
@@ -525,7 +543,7 @@ export default class Game {
     this.editor.deactivate();
     if (playtest) {
       this.syncSpawnPoint();
-      this.resetRun({ playtest: true });
+      this.resetRun({ playtest: true, startWithEverything: this.editor.startWithEverything });
       this.state = 'playing';
       this.playtestActive = true;
       this.startSpawnPause();
@@ -550,10 +568,11 @@ export default class Game {
     document.body.classList.add('editor-active');
   }
 
-  resetRun({ playtest = false } = {}) {
+  resetRun({ playtest = false, startWithEverything = true } = {}) {
     this.world.reset();
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
-    if (this.gameMode === 'endless' || playtest) {
+    const startLoaded = this.gameMode === 'endless' || (playtest && startWithEverything);
+    if (startLoaded) {
       this.player.equippedUpgrades = [...UPGRADE_LIST];
       this.player.upgradeSlots = UPGRADE_LIST.length;
       this.player.maxHealth = 12;
@@ -561,18 +580,20 @@ export default class Game {
     }
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
-    this.abilities = this.gameMode === 'endless' || playtest
+    this.abilities = startLoaded
       ? {
         anchor: true,
         flame: true,
         magboots: true,
-        resonance: true
+        resonance: true,
+        ignitir: true
       }
       : {
         anchor: false,
         flame: false,
         magboots: false,
-        resonance: false
+        resonance: false,
+        ignitir: false
       };
     this.objective = this.gameMode === 'endless'
       ? 'Survive the endless horde.'
@@ -591,7 +612,8 @@ export default class Game {
       anchor: false,
       flame: false,
       magboots: false,
-      resonance: false
+      resonance: false,
+      ignitir: false
     };
     this.sawAnchor = {
       active: false,
@@ -615,10 +637,15 @@ export default class Game {
     this.sawRidePrimed = false;
     this.prevHealth = this.player.health;
     this.damageFlashTimer = 0;
+    this.ignitirFlashTimer = 0;
     this.revCharge = 0;
     this.deathTimer = 0;
     this.gameOverTimer = 0;
     this.spawnPauseTimer = 0;
+    this.ignitirCharge = 0;
+    this.ignitirReady = false;
+    this.lowHealthAlarmTimer = 0;
+    this.ensureActiveWeaponAvailable();
     this.endlessState = {
       active: this.gameMode === 'endless',
       wave: 0,
@@ -1189,6 +1216,7 @@ export default class Game {
     const timeScale = (this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1) * simScale;
     this.slowTimer = Math.max(0, this.slowTimer - dt);
     this.damageFlashTimer = Math.max(0, this.damageFlashTimer - dt * timeScale);
+    this.ignitirFlashTimer = Math.max(0, this.ignitirFlashTimer - dt * timeScale);
     this.doorCooldown = Math.max(0, this.doorCooldown - dt * timeScale);
     if (this.spawnPauseTimer > 0) {
       this.spawnPauseTimer = Math.max(0, this.spawnPauseTimer - dt);
@@ -1209,6 +1237,10 @@ export default class Game {
     this.updateSpawnCooldowns(dt * timeScale);
     this.updateEndlessMode(dt * timeScale);
     this.attackTapTimer = Math.max(0, this.attackTapTimer - dt * timeScale);
+    this.updateWeaponSelection(this.input);
+    this.ensureActiveWeaponAvailable();
+    const usingIgnitir = this.getActiveWeapon()?.id === 'ignitir';
+    this.updateIgnitirCharge(dt * timeScale);
     if (this.input.wasPressed('attack')) {
       this.attackHoldTimer = 0;
       this.lastAttackFromGamepad = this.gamepadConnected && this.input.wasGamepadPressed('attack');
@@ -1232,7 +1264,7 @@ export default class Game {
     } else if (this.input.wasPressed('flame')) {
       this.player.flameMode = !this.player.flameMode;
     }
-    if (this.input.wasPressed('throw')) {
+    if (!usingIgnitir && this.input.wasPressed('throw')) {
       this.handleThrow();
     }
 
@@ -1277,7 +1309,11 @@ export default class Game {
     if (!this.player.sawRideActive && this.input.wasReleased('attack')) {
       const heldDuration = this.attackHoldTimer;
       this.attackHoldTimer = 0;
-      if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold) {
+      if (usingIgnitir) {
+        if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold && this.ignitirReady) {
+          this.fireIgnitir();
+        }
+      } else if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold) {
         const doubleTap = this.attackTapTimer > 0;
         const allowAnchorShot = !this.gamepadConnected || !this.lastAttackFromGamepad;
         this.attackTapTimer = doubleTap ? 0 : this.attackTapWindow;
@@ -1299,23 +1335,27 @@ export default class Game {
     if (this.sawAnchor.embedded && this.input.wasPressed('jump')) {
       this.startAnchorRetract(0.2);
     }
-    const revHeld = this.isRevHeld(this.input);
-    const anchorRevActive = this.sawAnchor.active && this.sawAnchor.embedded && revHeld;
-    if (revHeld || anchorRevActive) {
-      this.revCharge = Math.min(1, this.revCharge + dt * timeScale * 2.2);
-    } else {
-      this.revCharge = Math.max(0, this.revCharge - dt * timeScale * 1.6);
-    }
-    if (revHeld && this.player.canRev() && !this.sawAnchor.active) {
-      this.handleRev();
-      this.tryObstacleInteraction('rev');
-      this.setRevAudio(true);
-      this.recordFeedback('chainsaw rev', 'audio');
-      this.recordFeedback('chainsaw rev', 'visual');
-    } else if (anchorRevActive) {
-      this.setRevAudio(true);
-      this.recordFeedback('chainsaw rev', 'audio');
-      this.recordFeedback('chainsaw rev', 'visual');
+    if (!usingIgnitir) {
+      const revHeld = this.isRevHeld(this.input);
+      const anchorRevActive = this.sawAnchor.active && this.sawAnchor.embedded && revHeld;
+      if (revHeld || anchorRevActive) {
+        this.revCharge = Math.min(1, this.revCharge + dt * timeScale * 2.2);
+      } else {
+        this.revCharge = Math.max(0, this.revCharge - dt * timeScale * 1.6);
+      }
+      if (revHeld && this.player.canRev() && !this.sawAnchor.active) {
+        this.handleRev();
+        this.tryObstacleInteraction('rev');
+        this.setRevAudio(true);
+        this.recordFeedback('chainsaw rev', 'audio');
+        this.recordFeedback('chainsaw rev', 'visual');
+      } else if (anchorRevActive) {
+        this.setRevAudio(true);
+        this.recordFeedback('chainsaw rev', 'audio');
+        this.recordFeedback('chainsaw rev', 'visual');
+      } else {
+        this.setRevAudio(false);
+      }
     } else {
       this.setRevAudio(false);
     }
@@ -1335,6 +1375,7 @@ export default class Game {
     this.updateLootDrops(dt * timeScale);
     this.updateHealthDrops(dt * timeScale);
     this.checkPlayerDamage();
+    this.updateLowHealthWarning(dt * timeScale);
     this.checkPickups();
     const shopped = this.checkShops();
     if (this.input.wasPressed('interact') && !interacted && !shopped) {
@@ -1405,6 +1446,9 @@ export default class Game {
     this.player.superReady = false;
     this.player.invulnTimer = 1;
     this.prevHealth = this.player.health;
+    this.ignitirCharge = 0;
+    this.ignitirReady = false;
+    this.lowHealthAlarmTimer = 0;
   }
 
   startDeathSequence() {
@@ -1644,6 +1688,153 @@ export default class Game {
     this.effects.push(new Effect(x, y, type));
   }
 
+  isWeaponAvailable(slot) {
+    if (!slot?.id) return false;
+    if (!slot.ability) return true;
+    return Boolean(this.abilities?.[slot.ability]);
+  }
+
+  getWeaponSlots() {
+    return this.weaponSlots.map((slot) => ({
+      ...slot,
+      available: this.isWeaponAvailable(slot)
+    }));
+  }
+
+  getActiveWeapon() {
+    return this.weaponSlots[this.activeWeaponIndex] || null;
+  }
+
+  ensureActiveWeaponAvailable() {
+    if (this.isWeaponAvailable(this.getActiveWeapon())) return;
+    const index = this.weaponSlots.findIndex((slot) => this.isWeaponAvailable(slot));
+    this.activeWeaponIndex = index >= 0 ? index : 0;
+  }
+
+  selectWeapon(index) {
+    if (!this.weaponSlots[index]) return;
+    if (!this.isWeaponAvailable(this.weaponSlots[index])) return;
+    this.activeWeaponIndex = index;
+  }
+
+  updateWeaponSelection(input) {
+    let nextIndex = null;
+    if (input.wasPressedCode('Digit1')) nextIndex = 0;
+    if (input.wasPressedCode('Digit2')) nextIndex = 1;
+    if (input.wasPressedCode('Digit3')) nextIndex = 2;
+    if (input.wasPressedCode('Digit4')) nextIndex = 3;
+    if (input.wasGamepadPressed('left')) nextIndex = this.activeWeaponIndex - 1;
+    if (input.wasGamepadPressed('right')) nextIndex = this.activeWeaponIndex + 1;
+    if (nextIndex !== null) {
+      const total = this.weaponSlots.length;
+      const clamped = ((nextIndex % total) + total) % total;
+      this.selectWeapon(clamped);
+    }
+  }
+
+  updateIgnitirCharge(dt) {
+    if (!this.player || this.player.dead) return;
+    if (!this.abilities.ignitir) {
+      this.ignitirCharge = 0;
+      this.ignitirReady = false;
+      return;
+    }
+    const activeWeapon = this.getActiveWeapon();
+    if (activeWeapon?.id !== 'ignitir') return;
+    if (this.ignitirReady) return;
+    this.ignitirCharge = Math.min(1, this.ignitirCharge + dt / 10);
+    if (this.ignitirCharge >= 1) {
+      this.ignitirReady = true;
+      this.audio.ignitirReady();
+      this.recordFeedback('ignitir ready', 'audio');
+      this.recordFeedback('ignitir ready', 'visual');
+    }
+  }
+
+  findIgnitirLandingTile(targetX, targetY, roomBounds) {
+    const { minX, maxX, minY, maxY } = roomBounds;
+    for (let radius = 0; radius <= 4; radius += 1) {
+      for (let dy = -radius; dy <= radius; dy += 1) {
+        for (let dx = -radius; dx <= radius; dx += 1) {
+          const tileX = targetX + dx;
+          const tileY = targetY + dy;
+          if (tileX < minX || tileX > maxX || tileY < minY || tileY > maxY) continue;
+          if (!this.world.isSolid(tileX, tileY)) {
+            return { x: tileX, y: tileY };
+          }
+        }
+      }
+    }
+    return { x: targetX, y: targetY };
+  }
+
+  spawnIgnitirFlames(roomBounds) {
+    if (!roomBounds) return;
+    const tileSize = this.world.tileSize;
+    const width = roomBounds.maxX - roomBounds.minX + 1;
+    const height = roomBounds.maxY - roomBounds.minY + 1;
+    const count = Math.min(80, Math.floor((width * height) / 4));
+    for (let i = 0; i < count; i += 1) {
+      const tileX = roomBounds.minX + Math.floor(Math.random() * width);
+      const tileY = roomBounds.minY + Math.floor(Math.random() * height);
+      if (this.world.isSolid(tileX, tileY)) continue;
+      this.spawnEffect('ignitir-flame', (tileX + 0.5) * tileSize, (tileY + 0.5) * tileSize);
+    }
+  }
+
+  fireIgnitir() {
+    const tileSize = this.world.tileSize;
+    const tileX = Math.floor(this.player.x / tileSize);
+    const tileY = Math.floor(this.player.y / tileSize);
+    const roomIndex = this.world.roomAtTile(tileX, tileY);
+    const roomBounds = roomIndex !== null && roomIndex !== undefined ? this.world.getRoomBounds(roomIndex) : null;
+
+    this.ignitirCharge = 0;
+    this.ignitirReady = false;
+    this.ignitirFlashTimer = 0.9;
+    this.spawnEffect('ignitir-blast', this.player.x, this.player.y - 6);
+    this.spawnEffect('ignitir-fog', this.player.x, this.player.y - 6);
+    this.spawnIgnitirFlames(roomBounds);
+    this.audio.ignitirBlast();
+    this.recordFeedback('ignitir blast', 'audio');
+    this.recordFeedback('ignitir blast', 'visual');
+    this.shakeTimer = Math.max(this.shakeTimer, 0.9);
+    this.shakeMagnitude = Math.max(this.shakeMagnitude, 24);
+
+    const applyIgnitirDamage = (target) => {
+      if (!target || target.dead) return;
+      target.damage?.(999);
+      this.spawnEffect('ignitir-fog', target.x, target.y);
+      this.spawnEffect('ignitir-blast', target.x, target.y);
+    };
+
+    const isInRoom = (x, y) => {
+      if (!roomBounds) return true;
+      const tx = Math.floor(x / tileSize);
+      const ty = Math.floor(y / tileSize);
+      return tx >= roomBounds.minX && tx <= roomBounds.maxX && ty >= roomBounds.minY && ty <= roomBounds.maxY;
+    };
+
+    this.enemies.forEach((enemy) => {
+      if (isInRoom(enemy.x, enemy.y)) applyIgnitirDamage(enemy);
+    });
+    if (this.boss && isInRoom(this.boss.x, this.boss.y)) {
+      applyIgnitirDamage(this.boss);
+    }
+
+    if (roomBounds) {
+      const centerX = (roomBounds.minX + roomBounds.maxX + 1) / 2;
+      const centerY = (roomBounds.minY + roomBounds.maxY + 1) / 2;
+      const targetTileX = tileX < centerX ? roomBounds.maxX - 1 : roomBounds.minX + 1;
+      const targetTileY = tileY < centerY ? roomBounds.maxY - 1 : roomBounds.minY + 1;
+      const landingTile = this.findIgnitirLandingTile(targetTileX, targetTileY, roomBounds);
+      this.player.x = (landingTile.x + 0.5) * tileSize;
+      this.player.y = (landingTile.y + 0.5) * tileSize;
+      this.player.vx = 0;
+      this.player.vy = 0;
+    }
+  }
+
   updateEffects(dt) {
     this.effects.forEach((effect) => effect.update(dt));
     this.effects = this.effects.filter((effect) => effect.alive);
@@ -1658,6 +1849,21 @@ export default class Game {
       this.recordFeedback('take damage', 'visual');
     }
     this.prevHealth = this.player.health;
+  }
+
+  updateLowHealthWarning(dt) {
+    if (!this.player || this.player.dead) return;
+    const lowHealth = this.player.health <= 2;
+    if (!lowHealth) {
+      this.lowHealthAlarmTimer = 0;
+      return;
+    }
+    this.lowHealthAlarmTimer = Math.max(0, this.lowHealthAlarmTimer - dt);
+    if (this.lowHealthAlarmTimer <= 0) {
+      this.audio.lowHealthAlarm();
+      this.lowHealthAlarmTimer = 2.4;
+      this.recordFeedback('low health alarm', 'audio');
+    }
   }
 
   triggerMenuFlash() {
@@ -2488,6 +2694,10 @@ export default class Game {
         if (pickup.ability === 'resonance') {
           this.player.upgradeSlots = 4;
         }
+        if (pickup.ability === 'ignitir') {
+          this.selectWeapon(0);
+        }
+        this.ensureActiveWeaponAvailable();
         this.audio.pickup();
         this.spawnEffect('pickup', pickup.x, pickup.y - 8);
         this.recordFeedback('pickup', 'audio');
@@ -3507,6 +3717,17 @@ export default class Game {
     });
     this.healthDrops.forEach((drop) => drop.draw(ctx));
     if (!this.player.dead) {
+      if (this.getActiveWeapon()?.id === 'ignitir' && this.ignitirReady) {
+        ctx.save();
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = 'rgba(120, 210, 255, 0.35)';
+        ctx.shadowColor = 'rgba(120, 210, 255, 0.9)';
+        ctx.shadowBlur = 18;
+        ctx.beginPath();
+        ctx.arc(this.player.x, this.player.y - 6, 22 + Math.sin(this.clock * 8) * 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
       this.player.draw(ctx);
     }
     if (this.testHarness.active && this.testHarness.showCollision) {
@@ -3543,6 +3764,14 @@ export default class Game {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.restore();
     }
+    if (this.ignitirFlashTimer > 0) {
+      const pulse = Math.sin((1 - this.ignitirFlashTimer / 0.9) * Math.PI);
+      ctx.save();
+      ctx.globalAlpha = 0.25 + pulse * 0.4;
+      ctx.fillStyle = 'rgba(80, 180, 255, 0.9)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+    }
 
     const sawUsing = this.player.attackTimer > 0 || this.player.sawRideActive || this.sawAnchor.active;
     const sawBuzzing = this.revActive || (this.player.sawRideActive && this.input.isDown('attack'));
@@ -3552,7 +3781,11 @@ export default class Game {
       sawUsing,
       sawBuzzing,
       sawHeld: this.player.chainsawHeld || this.sawAnchor.active,
-      flameMode: this.player.flameMode && this.abilities.flame
+      flameMode: this.player.flameMode && this.abilities.flame,
+      weapons: this.getWeaponSlots(),
+      activeWeaponIndex: this.activeWeaponIndex,
+      ignitirCharge: this.ignitirCharge,
+      ignitirReady: this.ignitirReady
     });
     const objectiveTarget = this.getObjectiveTarget();
     const minimapX = canvas.width - 180;
@@ -3989,7 +4222,8 @@ export default class Game {
       anchor: 'TOOLS: CHAINSAW THROW',
       flame: 'TOOLS: FLAME-SAW',
       magboots: 'TOOLS: MAG BOOTS',
-      resonance: 'TOOLS: RESONANCE CORE'
+      resonance: 'TOOLS: RESONANCE CORE',
+      ignitir: 'WEAPON: IGNITIR'
     };
     this.world.abilityPickups.forEach((pickup) => {
       if (pickup.collected) return;
@@ -4411,6 +4645,16 @@ export default class Game {
     if (this.state === 'editor') {
       this.editor.handlePointerDown(payload);
       return;
+    }
+    if (this.state === 'playing') {
+      const weaponIndex = this.hud.getWeaponButtonAt(payload.x, payload.y);
+      if (weaponIndex !== null && weaponIndex !== undefined) {
+        this.selectWeapon(weaponIndex);
+        this.audio.ui();
+        this.recordFeedback('weapon select', 'audio');
+        this.recordFeedback('weapon select', 'visual');
+        return;
+      }
     }
     if (
       (this.state === 'playing' || this.state === 'pause')
