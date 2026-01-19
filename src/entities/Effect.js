@@ -1,8 +1,9 @@
 export default class Effect {
-  constructor(x, y, type) {
+  constructor(x, y, type, options = {}) {
     this.x = x;
     this.y = y;
     this.type = type;
+    this.options = options || {};
     this.age = 0;
     this.life = 0.4;
     if (this.type === 'oil') {
@@ -33,19 +34,40 @@ export default class Effect {
       }));
     }
     if (this.type === 'ignitir-blast') {
-      this.life = 1.1;
-      this.flares = Array.from({ length: 6 }, () => ({
+      this.life = 1.15;
+      this.flares = Array.from({ length: 8 }, () => ({
         angle: Math.random() * Math.PI * 2,
-        radius: 40 + Math.random() * 40
+        radius: 50 + Math.random() * 60
       }));
     }
     if (this.type === 'ignitir-flame') {
-      this.life = 6.5;
+      this.life = 5.6;
       this.flicker = Math.random() * Math.PI * 2;
-      this.height = 16 + Math.random() * 18;
+      this.height = 22 + Math.random() * 20;
+      this.vx = (Math.random() - 0.5) * 40;
+      this.vy = -120 - Math.random() * 80;
     }
     if (this.type === 'ignitir-fog') {
-      this.life = 1.8;
+      this.life = 1.4;
+      this.swirl = Math.random() * Math.PI * 2;
+    }
+    if (this.type === 'ignitir-beam') {
+      this.life = 0.28;
+      this.angle = this.options.angle ?? 0;
+      this.length = Math.max(40, this.options.length ?? 160);
+      this.flicker = Math.random() * Math.PI * 2;
+    }
+    if (this.type === 'ignitir-implosion') {
+      this.life = 0.45;
+      this.implosion = Array.from({ length: 16 }, () => ({
+        angle: Math.random() * Math.PI * 2,
+        radius: 60 + Math.random() * 50,
+        size: 2 + Math.random() * 3
+      }));
+    }
+    if (this.type === 'ignitir-shockwave') {
+      this.life = 0.9;
+      this.waveJitter = Math.random() * Math.PI * 2;
     }
   }
 
@@ -56,6 +78,11 @@ export default class Effect {
         drip.vy += 240 * dt;
         drip.y += drip.vy * dt;
       });
+    }
+    if (this.type === 'ignitir-flame') {
+      this.vy += 260 * dt;
+      this.x += this.vx * dt;
+      this.y += this.vy * dt;
     }
   }
 
@@ -170,23 +197,24 @@ export default class Effect {
         ctx.fill();
       });
     } else if (this.type === 'ignitir-blast') {
-      const blast = 40 + t * 160;
-      ctx.globalAlpha = 0.9 - t * 0.6;
-      ctx.fillStyle = `rgba(90, 200, 255, ${0.5 - t * 0.3})`;
+      const blast = 50 + t * 190;
+      const glow = 0.85 - t * 0.6;
+      ctx.globalAlpha = glow;
+      ctx.fillStyle = `rgba(80, 190, 255, ${0.55 - t * 0.25})`;
       ctx.beginPath();
-      ctx.arc(0, 0, blast * 0.65, 0, Math.PI * 2);
+      ctx.arc(0, 0, blast * 0.6, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = `rgba(255, 255, 255, ${0.9 - t * 0.7})`;
+      ctx.fillStyle = `rgba(255, 255, 255, ${0.95 - t * 0.7})`;
       ctx.beginPath();
-      ctx.arc(0, 0, blast * 0.25, 0, Math.PI * 2);
+      ctx.arc(0, 0, blast * 0.22, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = `rgba(150, 220, 255, ${0.9 - t * 0.7})`;
+      ctx.strokeStyle = `rgba(140, 220, 255, ${0.9 - t * 0.7})`;
       ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.arc(0, 0, blast, 0, Math.PI * 2);
       ctx.stroke();
       this.flares.forEach((flare) => {
-        const length = flare.radius + t * 80;
+        const length = flare.radius + t * 90;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(Math.cos(flare.angle) * (blast * 0.2), Math.sin(flare.angle) * (blast * 0.2));
@@ -194,26 +222,84 @@ export default class Effect {
         ctx.stroke();
       });
     } else if (this.type === 'ignitir-flame') {
-      const flicker = 0.7 + Math.sin(this.flicker + t * 12) * 0.2;
-      const height = this.height * flicker * (1 - t * 0.6);
-      ctx.globalAlpha = 0.8 - t * 0.5;
-      ctx.fillStyle = 'rgba(120, 210, 255, 0.8)';
+      const flicker = 0.75 + Math.sin(this.flicker + t * 10) * 0.25;
+      const height = this.height * flicker * (1 - t * 0.5);
+      ctx.globalAlpha = 0.85 - t * 0.6;
+      ctx.fillStyle = 'rgba(90, 210, 255, 0.85)';
       ctx.beginPath();
       ctx.moveTo(0, -height);
-      ctx.quadraticCurveTo(-6, -height * 0.4, -4, 0);
-      ctx.quadraticCurveTo(0, 4, 4, 0);
-      ctx.quadraticCurveTo(6, -height * 0.4, 0, -height);
+      ctx.quadraticCurveTo(-7, -height * 0.3, -5, 2);
+      ctx.quadraticCurveTo(0, 6, 5, 2);
+      ctx.quadraticCurveTo(7, -height * 0.3, 0, -height);
       ctx.fill();
-      ctx.fillStyle = 'rgba(40, 120, 255, 0.6)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
       ctx.beginPath();
-      ctx.arc(0, 0, 5, 0, Math.PI * 2);
+      ctx.arc(0, -height * 0.35, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(40, 120, 255, 0.65)';
+      ctx.beginPath();
+      ctx.arc(0, 2, 6, 0, Math.PI * 2);
       ctx.fill();
     } else if (this.type === 'ignitir-fog') {
-      const fog = 60 + t * 200;
-      ctx.globalAlpha = 0.25 - t * 0.2;
-      ctx.fillStyle = 'rgba(120, 200, 255, 0.6)';
+      const fog = 40 + t * 120;
+      ctx.globalAlpha = 0.3 - t * 0.25;
+      ctx.fillStyle = 'rgba(120, 200, 255, 0.45)';
       ctx.beginPath();
       ctx.arc(0, 0, fog, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = `rgba(160, 220, 255, ${0.35 - t * 0.25})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, fog * 0.7 + Math.sin(this.swirl + t * 6) * 6, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (this.type === 'ignitir-beam') {
+      ctx.save();
+      ctx.rotate(this.angle);
+      const flicker = 0.7 + Math.sin(this.flicker + t * 18) * 0.3;
+      const beamLength = this.length;
+      ctx.globalAlpha = 0.9 - t * 0.6;
+      ctx.strokeStyle = `rgba(90, 200, 255, ${0.7 - t * 0.5})`;
+      ctx.lineWidth = 12 * flicker;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(beamLength, 0);
+      ctx.stroke();
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.9 - t * 0.6})`;
+      ctx.lineWidth = 4 * flicker;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(beamLength, 0);
+      ctx.stroke();
+      ctx.restore();
+    } else if (this.type === 'ignitir-implosion') {
+      const pull = 1 - t;
+      ctx.globalAlpha = 0.95 - t * 0.7;
+      ctx.strokeStyle = `rgba(120, 210, 255, ${0.9 - t * 0.7})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, 30 * pull, 0, Math.PI * 2);
+      ctx.stroke();
+      this.implosion.forEach((particle) => {
+        const radius = particle.radius * pull;
+        const px = Math.cos(particle.angle) * radius;
+        const py = Math.sin(particle.angle) * radius;
+        ctx.fillStyle = `rgba(160, 230, 255, ${0.9 - t * 0.6})`;
+        ctx.beginPath();
+        ctx.arc(px, py, particle.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    } else if (this.type === 'ignitir-shockwave') {
+      const wave = 70 + t * 220;
+      ctx.globalAlpha = 0.55 - t * 0.45;
+      ctx.strokeStyle = `rgba(150, 200, 220, ${0.6 - t * 0.5})`;
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(0, 0, wave, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = 0.35 - t * 0.3;
+      ctx.fillStyle = 'rgba(110, 150, 180, 0.4)';
+      ctx.beginPath();
+      ctx.arc(0, 0, wave * 0.75 + Math.sin(this.waveJitter + t * 8) * 6, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();

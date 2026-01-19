@@ -151,21 +151,29 @@ export default class Input {
     const dpadDown = isButtonActive(13);
     const dpadLeft = isButtonActive(14);
     const dpadRight = isButtonActive(15);
+    const aimUp = isButtonActive(4);
+    const aimDown = isButtonActive(5);
 
     const nextActions = {
-      left: leftStickLeft || dpadLeft,
-      right: leftStickRight || dpadRight,
-      up: leftStickUp || dpadUp,
-      down: leftStickDown || dpadDown,
+      left: leftStickLeft,
+      right: leftStickRight,
+      up: leftStickUp,
+      down: leftStickDown,
       jump: isButtonActive(0),
       dash: isButtonActive(1),
       attack: isButtonActive(2),
       throw: isButtonActive(3),
-      flame: isButtonActive(4) || isButtonActive(6, 0.2),
-      rev: isButtonActive(5) || isButtonActive(7, 0.2),
+      flame: isButtonActive(6, 0.2),
+      rev: isButtonActive(7, 0.2),
       pause: isButtonActive(9),
       cancel: isButtonActive(8),
-      interact: isButtonActive(0)
+      interact: isButtonActive(0),
+      dpadUp,
+      dpadDown,
+      dpadLeft,
+      dpadRight,
+      aimUp,
+      aimDown
     };
     Object.keys(nextActions).forEach((action) => {
       const prev = Boolean(this.gamepadPrevActions[action]);

@@ -336,10 +336,12 @@ export default class Player {
 
     this.ducking = this.onGround && input.isDown('down') && !this.sawRideActive;
     const aimHorizontal = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
-    const aimingUp = input.isDown('up') && !this.ducking && !this.sawRideActive;
+    const aimUpInput = input.isDown('up') || input.isGamepadDown('aimUp');
+    const aimDownInput = input.isDown('down') || input.isGamepadDown('aimDown');
+    const aimingUp = aimUpInput && !this.ducking && !this.sawRideActive;
     this.aimingUp = aimingUp;
     this.aimingDiagonal = aimingUp && aimHorizontal !== 0;
-    this.aimingDown = !this.onGround && input.isDown('down') && !this.sawRideActive;
+    this.aimingDown = !this.onGround && aimDownInput && !this.sawRideActive;
     if (aimingUp) {
       this.aimX = this.aimingDiagonal ? aimHorizontal : 0;
       this.aimY = -1;

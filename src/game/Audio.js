@@ -149,6 +149,12 @@ export default class AudioSystem {
     this.tone(880, 0.1, 'triangle');
   }
 
+  ignitirDud() {
+    this.tone(220, 0.08, 'square');
+    this.tone(140, 0.12, 'sawtooth');
+    this.noise(0.08, 0.12);
+  }
+
   menu() {
     this.tone(300, 0.06, 'triangle');
   }
