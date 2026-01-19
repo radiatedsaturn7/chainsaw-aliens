@@ -2067,7 +2067,9 @@ export default class Game {
       this.flamethrowerSoundTimer = 0;
       return;
     }
-    if (!this.input.isDown('attack') || !this.player || this.player.dead) {
+    const attackHeld = this.input.isDown('attack')
+      || (this.gamepadConnected && this.input.isGamepadDown('jump'));
+    if (!attackHeld || !this.player || this.player.dead) {
       this.flamethrowerEmitTimer = 0;
       this.flamethrowerSoundTimer = 0;
       return;
