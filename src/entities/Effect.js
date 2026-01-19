@@ -59,6 +59,27 @@ export default class Effect {
       this.size = 6 + Math.random() * 6;
       this.flicker = Math.random() * Math.PI * 2;
     }
+    if (this.type === 'flamethrower-stream') {
+      this.life = this.options.life ?? 0.12;
+      this.dx = this.options.dx ?? 0;
+      this.dy = this.options.dy ?? 0;
+      this.controlX = this.options.controlX ?? (this.dx * 0.5);
+      this.controlY = this.options.controlY ?? (this.dy * 0.6);
+      this.width = this.options.width ?? 14;
+      this.coreWidth = this.options.coreWidth ?? 6;
+      this.flicker = Math.random() * Math.PI * 2;
+    }
+    if (this.type === 'flamethrower-impact') {
+      this.life = this.options.life ?? 0.4;
+      this.size = this.options.size ?? (18 + Math.random() * 10);
+      this.flicker = Math.random() * Math.PI * 2;
+    }
+    if (this.type === 'flamethrower-burn') {
+      this.life = this.options.life ?? 0.9;
+      this.height = this.options.height ?? (18 + Math.random() * 10);
+      this.size = this.options.size ?? (10 + Math.random() * 6);
+      this.flicker = Math.random() * Math.PI * 2;
+    }
     if (this.type === 'ignitir-beam') {
       this.life = this.options.life ?? 0.28;
       this.angle = this.options.angle ?? 0;
@@ -317,6 +338,63 @@ export default class Effect {
       ctx.fillStyle = 'rgba(255, 240, 200, 0.7)';
       ctx.beginPath();
       ctx.ellipse(0, -size * 0.2, size * 0.35, size * 0.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (this.type === 'flamethrower-stream') {
+      const flicker = 0.75 + Math.sin(this.flicker + t * 18) * 0.25;
+      ctx.globalAlpha = 0.9 - t * 0.7;
+      ctx.strokeStyle = `rgba(255, 120, 60, ${0.75 - t * 0.4})`;
+      ctx.lineWidth = this.width * flicker;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(this.controlX, this.controlY, this.dx, this.dy);
+      ctx.stroke();
+      ctx.strokeStyle = `rgba(255, 220, 170, ${0.85 - t * 0.5})`;
+      ctx.lineWidth = this.coreWidth * flicker;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(this.controlX, this.controlY, this.dx, this.dy);
+      ctx.stroke();
+      ctx.fillStyle = `rgba(255, 110, 50, ${0.6 - t * 0.3})`;
+      for (let i = 0; i < 4; i += 1) {
+        const step = (i + 1) / 5;
+        const bx = (1 - step) * (1 - step) * 0 + 2 * (1 - step) * step * this.controlX + step * step * this.dx;
+        const by = (1 - step) * (1 - step) * 0 + 2 * (1 - step) * step * this.controlY + step * step * this.dy;
+        ctx.beginPath();
+        ctx.ellipse(bx, by, (this.width * 0.3) * flicker, (this.width * 0.45) * flicker, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (this.type === 'flamethrower-impact') {
+      const flicker = 0.75 + Math.sin(this.flicker + t * 14) * 0.25;
+      const size = this.size * (1 - t * 0.4) * flicker;
+      ctx.globalAlpha = 0.85 - t * 0.6;
+      ctx.fillStyle = 'rgba(255, 120, 60, 0.7)';
+      ctx.beginPath();
+      ctx.arc(0, 0, size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255, 240, 200, 0.8)';
+      ctx.beginPath();
+      ctx.arc(0, 0, size * 0.45, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = `rgba(255, 190, 120, ${0.7 - t * 0.5})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, size * 1.1, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (this.type === 'flamethrower-burn') {
+      const flicker = 0.75 + Math.sin(this.flicker + t * 10) * 0.25;
+      const height = this.height * (1 - t * 0.5) * flicker;
+      const base = this.size * (1 - t * 0.2);
+      ctx.globalAlpha = 0.9 - t * 0.65;
+      ctx.fillStyle = 'rgba(255, 70, 40, 0.85)';
+      ctx.beginPath();
+      ctx.moveTo(-base * 0.6, 2);
+      ctx.quadraticCurveTo(-base * 0.4, -height * 0.3, 0, -height);
+      ctx.quadraticCurveTo(base * 0.4, -height * 0.3, base * 0.6, 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255, 200, 140, 0.8)';
+      ctx.beginPath();
+      ctx.arc(0, -height * 0.35, base * 0.35, 0, Math.PI * 2);
       ctx.fill();
     } else if (this.type === 'ignitir-implosion') {
       const pull = 1 - t;
