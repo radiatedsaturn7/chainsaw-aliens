@@ -2144,9 +2144,7 @@ export default class Game {
     }
 
     const emitInterval = 0.05;
-    const maxBursts = 6;
-    let bursts = 0;
-    while (this.flamethrowerEmitTimer <= 0 && bursts < maxBursts) {
+    if (this.flamethrowerEmitTimer <= 0) {
       this.flamethrowerEmitTimer += emitInterval;
       this.spawnEffect('flamethrower-stream', originX, originY, {
         dx: streamDx,
@@ -2156,18 +2154,6 @@ export default class Game {
         width: 16,
         coreWidth: 7
       });
-      const baseAngle = Math.atan2(dirY, dirX);
-      for (let i = 0; i < 6; i += 1) {
-        const angle = baseAngle + (Math.random() - 0.5) * 0.35;
-        const speed = 260 + Math.random() * 140;
-        const vx = Math.cos(angle) * speed;
-        const vy = Math.sin(angle) * speed - 40;
-        this.spawnEffect('flamethrower-flame', originX, originY, {
-          vx,
-          vy,
-          life: 0.45 + Math.random() * 0.2
-        });
-      }
       for (let i = 0; i < 3; i += 1) {
         const t = 0.25 + Math.random() * 0.65;
         const point = getQuadraticPoint(t, originX, originY, streamDx, streamDy, controlX, controlY);
@@ -2181,11 +2167,6 @@ export default class Game {
         life: 0.35 + Math.random() * 0.2,
         size: 20 + Math.random() * 12
       });
-      this.spawnEffect('flamethrower-flame', impactX, impactY, {
-        vx: (Math.random() - 0.5) * 40,
-        vy: -120 - Math.random() * 40,
-        life: 0.5 + Math.random() * 0.2
-      });
       if (impactTile) {
         this.spawnEffect('flamethrower-burn', impactX, impactY, {
           life: 1.1 + Math.random() * 0.4,
@@ -2193,7 +2174,6 @@ export default class Game {
           size: 14 + Math.random() * 6
         });
       }
-      bursts += 1;
     }
 
     const streamRadius = 18;
@@ -2217,7 +2197,6 @@ export default class Game {
       if (closest > streamRadius) return;
       if (this.flamethrowerDamageCooldowns.has(entity)) return;
       entity.damage?.(1);
-      this.spawnEffect('flamethrower-flame', entity.x, entity.y, { life: 0.22 });
       this.spawnEffect('flamethrower-impact', entity.x, entity.y, {
         life: 0.3,
         size: 16 + Math.random() * 10
