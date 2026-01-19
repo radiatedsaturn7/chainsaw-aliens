@@ -39,6 +39,9 @@ export default class Input {
     this.gamepadPressed = new Set();
     this.gamepadReleased = new Set();
     this.gamepadPrevActions = {};
+    this.gamepadAvailable = false;
+    this.gamepadScanIntervalMs = 250;
+    this.lastGamepadScanTime = 0;
     this.gamepadAxes = {
       leftX: 0,
       leftY: 0,
@@ -112,6 +115,13 @@ export default class Input {
       leftTrigger: 0,
       rightTrigger: 0
     };
+    const now = performance.now();
+    if (!this.gamepadAvailable && this.gamepadIndex === null) {
+      if (now - this.lastGamepadScanTime < this.gamepadScanIntervalMs) {
+        return;
+      }
+    }
+    this.lastGamepadScanTime = now;
     if (!navigator.getGamepads) return;
     const pads = navigator.getGamepads();
     if (!pads) return;
@@ -126,8 +136,10 @@ export default class Input {
     }
     if (!pad) {
       this.gamepadPrevActions = {};
+      this.gamepadAvailable = false;
       return;
     }
+    this.gamepadAvailable = true;
     this.gamepadConnected = true;
 
     const isButtonActive = (index, threshold = 0.5) => {
