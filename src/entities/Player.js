@@ -45,6 +45,7 @@ export default class Player {
     this.attackLungeSpeed = 0;
     this.attackLungeDir = 1;
     this.flameMode = false;
+    this.pendingImpulse = { x: 0, y: 0 };
     this.sawDeployed = false;
     this.sawRideActive = false;
     this.sawRideMomentum = 0;
@@ -269,6 +270,13 @@ export default class Player {
       if (this.dashTimer <= 0) {
         this.vx = this.attackLungeDir * this.attackLungeSpeed;
       }
+    }
+
+    if (this.pendingImpulse.x !== 0 || this.pendingImpulse.y !== 0) {
+      this.vx += this.pendingImpulse.x;
+      this.vy += this.pendingImpulse.y;
+      this.pendingImpulse.x = 0;
+      this.pendingImpulse.y = 0;
     }
 
     const wasGrounded = this.onGround;
@@ -502,6 +510,11 @@ export default class Player {
 
   canRev() {
     return true;
+  }
+
+  addImpulse(x, y) {
+    this.pendingImpulse.x += x;
+    this.pendingImpulse.y += y;
   }
 
   addOil(amount = 0.15) {

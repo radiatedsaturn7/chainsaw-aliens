@@ -152,6 +152,7 @@ export default class Game {
     this.ignitirCharge = 0;
     this.ignitirReady = false;
     this.ignitirFlashTimer = 0;
+    this.ignitirSequence = null;
     this.lowHealthAlarmTimer = 0;
     this.objective = 'Reach the Hub Pylon.';
     this.lastSave = { x: this.player.x, y: this.player.y };
@@ -1241,6 +1242,7 @@ export default class Game {
     this.ensureActiveWeaponAvailable();
     const usingIgnitir = this.getActiveWeapon()?.id === 'ignitir';
     this.updateIgnitirCharge(dt * timeScale);
+    this.updateIgnitirSequence(dt * timeScale);
     if (this.input.wasPressed('attack')) {
       this.attackHoldTimer = 0;
       this.lastAttackFromGamepad = this.gamepadConnected && this.input.wasGamepadPressed('attack');
@@ -1268,6 +1270,9 @@ export default class Game {
       this.handleThrow();
     }
 
+    if (this.ignitirSequence) {
+      this.applyIgnitirPlayerImpulse();
+    }
     const prevPlayer = { x: this.player.x, y: this.player.y };
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
     this.updateElevators(dt * timeScale, prevPlayer);
@@ -1372,6 +1377,7 @@ export default class Game {
     }
 
     this.updateEnemies(dt * timeScale);
+    this.applyIgnitirEnemyPull(dt * timeScale);
     this.updateProjectiles(dt * timeScale);
     this.updateDebris(dt * timeScale);
     this.updateEffects(dt * timeScale);
@@ -1742,6 +1748,11 @@ export default class Game {
       this.ignitirReady = false;
       return;
     }
+    if (this.ignitirSequence) {
+      this.ignitirCharge = 0;
+      this.ignitirReady = false;
+      return;
+    }
     const activeWeapon = this.getActiveWeapon();
     if (activeWeapon?.id !== 'ignitir') return;
     if (this.ignitirReady) return;
@@ -1786,6 +1797,7 @@ export default class Game {
   }
 
   fireIgnitir() {
+    if (this.ignitirSequence) return;
     const tileSize = this.world.tileSize;
     const tileX = Math.floor(this.player.x / tileSize);
     const tileY = Math.floor(this.player.y / tileSize);
@@ -1828,48 +1840,257 @@ export default class Game {
 
     this.ignitirCharge = 0;
     this.ignitirReady = false;
-    this.ignitirFlashTimer = 0.9;
-    this.spawnEffect('ignitir-beam', originX, originY, { angle: Math.atan2(dirY, dirX), length: Math.hypot(targetX - originX, targetY - originY) });
-    this.spawnEffect('ignitir-implosion', targetX, targetY);
-    this.spawnEffect('ignitir-shockwave', targetX, targetY);
-    this.spawnEffect('ignitir-blast', targetX, targetY);
-    this.spawnIgnitirFlames(roomBounds);
-    this.audio.ignitirBlast();
-    this.recordFeedback('ignitir blast', 'audio');
-    this.recordFeedback('ignitir blast', 'visual');
-    this.shakeTimer = Math.max(this.shakeTimer, 0.9);
-    this.shakeMagnitude = Math.max(this.shakeMagnitude, 24);
+    this.ignitirFlashTimer = 1.3;
 
-    const applyIgnitirDamage = (target) => {
-      if (!target || target.dead) return;
-      target.damage?.(999);
-      this.spawnEffect('ignitir-fog', target.x, target.y);
-      this.spawnEffect('ignitir-blast', target.x, target.y);
-    };
-
-    const isInRoom = (x, y) => {
-      if (!roomBounds) return true;
-      const tx = Math.floor(x / tileSize);
-      const ty = Math.floor(y / tileSize);
-      return tx >= roomBounds.minX && tx <= roomBounds.maxX && ty >= roomBounds.minY && ty <= roomBounds.maxY;
-    };
-
-    this.enemies.forEach((enemy) => {
-      if (isInRoom(enemy.x, enemy.y)) applyIgnitirDamage(enemy);
+    this.startIgnitirSequence({
+      originX,
+      originY,
+      targetX,
+      targetY,
+      dirX,
+      dirY,
+      roomBounds
     });
-    if (this.boss && isInRoom(this.boss.x, this.boss.y)) {
-      applyIgnitirDamage(this.boss);
+  }
+
+  startIgnitirSequence({ originX, originY, targetX, targetY, dirX, dirY, roomBounds }) {
+    const beamLength = Math.max(40, Math.hypot(targetX - originX, targetY - originY));
+    const targets = this.collectIgnitirTargets(roomBounds, targetX, targetY);
+    this.ignitirSequence = {
+      time: 0,
+      duration: 10,
+      originX,
+      originY,
+      targetX,
+      targetY,
+      dirX,
+      dirY,
+      beamLength,
+      roomBounds,
+      targets,
+      implosionSpawned: false,
+      explosionSpawned: false,
+      dissolveStarted: false,
+      residualShockwaveA: false,
+      residualShockwaveB: false
+    };
+
+    this.spawnEffect('ignitir-target', targetX, targetY, { life: 1.1 });
+    this.spawnEffect('ignitir-beam', originX, originY, {
+      angle: Math.atan2(dirY, dirX),
+      length: beamLength,
+      life: 3.1,
+      startWidth: 2,
+      endWidth: 34,
+      coreStart: 1,
+      coreEnd: 12
+    });
+    this.player.invulnTimer = Math.max(this.player.invulnTimer, 0.9);
+  }
+
+  collectIgnitirTargets(roomBounds, targetX, targetY) {
+    const targets = [];
+    this.enemies.forEach((enemy) => {
+      if (enemy.dead) return;
+      if (!this.isInRoomBounds(enemy.x, enemy.y, roomBounds)) return;
+      targets.push(enemy);
+    });
+    if (this.boss && !this.boss.dead && this.isInRoomBounds(this.boss.x, this.boss.y, roomBounds)) {
+      targets.push(this.boss);
+    }
+    targets.sort((a, b) => {
+      const aDist = Math.hypot(a.x - targetX, a.y - targetY);
+      const bDist = Math.hypot(b.x - targetX, b.y - targetY);
+      return aDist - bDist;
+    });
+    return targets.map((entity, index) => ({
+      entity,
+      explodeAt: 5 + index * 0.12 + Math.random() * 0.35,
+      exploded: false
+    }));
+  }
+
+  isInRoomBounds(x, y, roomBounds) {
+    if (!roomBounds) return true;
+    const tileSize = this.world.tileSize;
+    const tx = Math.floor(x / tileSize);
+    const ty = Math.floor(y / tileSize);
+    return tx >= roomBounds.minX && tx <= roomBounds.maxX && ty >= roomBounds.minY && ty <= roomBounds.maxY;
+  }
+
+  updateIgnitirSequence(dt) {
+    const sequence = this.ignitirSequence;
+    if (!sequence) return;
+    sequence.time += dt;
+    const time = sequence.time;
+
+    if (time < 1.2) {
+      this.player.invulnTimer = Math.max(this.player.invulnTimer, 0.8);
     }
 
-    const recoilSpeed = 320;
-    const recoilX = -dirX;
-    const recoilY = -dirY;
-    this.player.vx = recoilX * recoilSpeed;
-    this.player.vy = recoilY * recoilSpeed;
-    if (Math.abs(recoilY) < 0.2) {
-      this.player.vy = Math.min(this.player.vy, -180);
+    if (!sequence.implosionSpawned && time >= 3) {
+      this.spawnEffect('ignitir-implosion', sequence.targetX, sequence.targetY, { life: 1.3, radius: 110 });
+      sequence.implosionSpawned = true;
     }
-    this.player.onGround = false;
+
+    if (!sequence.explosionSpawned && time >= 4) {
+      this.spawnEffect('ignitir-blast', sequence.targetX, sequence.targetY, { life: 1.7, radius: 280 });
+      this.spawnEffect('ignitir-lens', sequence.targetX, sequence.targetY, { life: 1.1 });
+      this.spawnEffect('ignitir-shockwave', sequence.targetX, sequence.targetY, {
+        life: 1.3,
+        startRadius: 80,
+        endRadius: 380,
+        lineWidth: 8,
+        color: 'rgba(210, 240, 255, 0.85)',
+        fillColor: 'rgba(170, 215, 255, 0.5)'
+      });
+      this.spawnEffect('ignitir-shockwave', sequence.targetX, sequence.targetY, {
+        life: 1.6,
+        startRadius: 120,
+        endRadius: 460,
+        lineWidth: 6,
+        color: 'rgba(255, 255, 255, 0.9)',
+        fillColor: 'rgba(210, 235, 255, 0.45)'
+      });
+      this.spawnIgnitirFlames(sequence.roomBounds);
+      this.audio.ignitirBlast();
+      this.recordFeedback('ignitir blast', 'audio');
+      this.recordFeedback('ignitir blast', 'visual');
+      this.shakeTimer = Math.max(this.shakeTimer, 1.1);
+      this.shakeMagnitude = Math.max(this.shakeMagnitude, 30);
+      sequence.explosionSpawned = true;
+    }
+
+    if (!sequence.dissolveStarted && time >= 4) {
+      sequence.targets.forEach((target) => {
+        const entity = target.entity;
+        if (!entity || entity.dead) return;
+        entity.ignitirDissolveTimer = 1.4;
+        entity.ignitirDissolveDuration = 1.4;
+      });
+      sequence.dissolveStarted = true;
+    }
+
+    sequence.targets.forEach((target) => {
+      if (target.exploded) return;
+      if (time >= target.explodeAt) {
+        this.explodeIgnitirTarget(target.entity);
+        target.exploded = true;
+      }
+    });
+
+    if (!sequence.residualShockwaveA && time >= 6) {
+      this.spawnEffect('ignitir-shockwave', sequence.targetX, sequence.targetY, {
+        life: 4,
+        startRadius: 200,
+        endRadius: 720,
+        lineWidth: 4,
+        color: 'rgba(255, 255, 255, 0.85)',
+        fillColor: 'rgba(255, 255, 255, 0.3)'
+      });
+      sequence.residualShockwaveA = true;
+    }
+
+    if (!sequence.residualShockwaveB && time >= 8) {
+      this.spawnEffect('ignitir-shockwave', sequence.targetX, sequence.targetY, {
+        life: 3.2,
+        startRadius: 260,
+        endRadius: 820,
+        lineWidth: 3,
+        color: 'rgba(255, 255, 255, 0.7)',
+        fillColor: 'rgba(255, 255, 255, 0.25)'
+      });
+      sequence.residualShockwaveB = true;
+    }
+
+    if (time >= sequence.duration) {
+      this.ignitirSequence = null;
+    }
+  }
+
+  applyIgnitirPlayerImpulse() {
+    const sequence = this.ignitirSequence;
+    if (!sequence || !this.player || this.player.dead) return;
+    const time = sequence.time;
+    if (time <= 3) {
+      const ramp = Math.min(1, time / 3);
+      const recoilSpeed = 140 + ramp * 200;
+      this.player.addImpulse(-sequence.dirX * recoilSpeed, -sequence.dirY * recoilSpeed * 0.6);
+      this.player.onGround = false;
+    } else if (time >= 4 && time <= 5.1) {
+      const dx = this.player.x - sequence.targetX;
+      const dy = this.player.y - sequence.targetY;
+      const dist = Math.hypot(dx, dy) || 1;
+      const ramp = Math.min(1, (time - 4) / 1.1);
+      const blastSpeed = 280 + ramp * 260;
+      this.player.addImpulse((dx / dist) * blastSpeed, (dy / dist) * blastSpeed);
+      this.player.onGround = false;
+    }
+  }
+
+  applyIgnitirEnemyPull(dt) {
+    const sequence = this.ignitirSequence;
+    if (!sequence) return;
+    const time = sequence.time;
+    if (time < 3 || time > 4.2) return;
+    const ramp = Math.min(1, (time - 3) / 1.2);
+    const pullStrength = 180 + ramp * 220;
+    sequence.targets.forEach((target) => {
+      const entity = target.entity;
+      if (!entity || entity.dead) return;
+      const dx = sequence.targetX - entity.x;
+      const dy = sequence.targetY - entity.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 4) return;
+      const pull = (pullStrength * dt * Math.min(1, 300 / dist));
+      entity.x += (dx / dist) * pull;
+      entity.y += (dy / dist) * pull;
+      if (Number.isFinite(entity.vx)) {
+        entity.vx *= 0.85;
+      }
+      if (Number.isFinite(entity.vy)) {
+        entity.vy *= 0.85;
+      }
+    });
+  }
+
+  explodeIgnitirTarget(target) {
+    if (!target || target.dead) return;
+    target.noLootDrops = true;
+    target.damage?.(999);
+    this.spawnEffect('ignitir-fog', target.x, target.y);
+    this.spawnEffect('ignitir-blast', target.x, target.y, { life: 1.1, radius: 160 });
+    this.spawnEffect('ignitir-shockwave', target.x, target.y, {
+      life: 0.9,
+      startRadius: 30,
+      endRadius: 160,
+      lineWidth: 3,
+      color: 'rgba(200, 230, 255, 0.8)',
+      fillColor: 'rgba(150, 200, 240, 0.4)'
+    });
+  }
+
+  drawIgnitirDissolve(ctx, enemy) {
+    if (!enemy?.ignitirDissolveTimer) return;
+    const duration = enemy.ignitirDissolveDuration || 1.4;
+    const progress = 1 - Math.max(0, enemy.ignitirDissolveTimer) / duration;
+    const width = enemy.width || 24;
+    const height = enemy.height || 24;
+    const count = Math.max(6, Math.floor(6 + progress * 26));
+    ctx.save();
+    ctx.translate(enemy.x, enemy.y);
+    ctx.beginPath();
+    ctx.rect(-width / 2, -height / 2, width, height);
+    ctx.clip();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+    for (let i = 0; i < count; i += 1) {
+      const size = 2 + Math.random() * 4;
+      const px = (Math.random() - 0.5) * width;
+      const py = (Math.random() - 0.5) * height;
+      ctx.fillRect(px, py, size, size);
+    }
+    ctx.restore();
   }
 
   updateEffects(dt) {
@@ -2426,6 +2647,7 @@ export default class Game {
   }
 
   awardLoot(enemy, execution = false) {
+    if (enemy?.noLootDrops) return;
     const total = enemy.lootValue + (execution ? 1 : 0);
     this.lootDrops.push(new LootDrop(enemy.x, enemy.y, total));
     if (!enemy.training) {
@@ -2493,6 +2715,9 @@ export default class Game {
     const revRange = this.world.tileSize * 2.5;
     const revVerticalRange = this.world.tileSize * 2.2;
     this.enemies.forEach((enemy) => {
+      if (enemy.ignitirDissolveTimer > 0) {
+        enemy.ignitirDissolveTimer = Math.max(0, enemy.ignitirDissolveTimer - dt);
+      }
       if (enemy.dead) {
         if (enemy.deathTimer > 0 && enemy.updateDeath) {
           enemy.updateDeath(dt);
@@ -2605,6 +2830,9 @@ export default class Game {
     });
 
     if (this.boss && !this.boss.dead && this.bossActive) {
+      if (this.boss.ignitirDissolveTimer > 0) {
+        this.boss.ignitirDissolveTimer = Math.max(0, this.boss.ignitirDissolveTimer - dt);
+      }
       this.boss.simMode = this.simulationActive && this.goldenPath.active;
       if (this.boss.slowTimer > 0) {
         this.boss.slowTimer = Math.max(0, this.boss.slowTimer - dt);
@@ -3729,11 +3957,15 @@ export default class Game {
     this.drawTutorialHints(ctx);
 
     this.enemies.forEach((enemy) => {
-      if (!enemy.dead || enemy.deathTimer > 0) enemy.draw(ctx);
+      if (!enemy.dead || enemy.deathTimer > 0) {
+        enemy.draw(ctx);
+        this.drawIgnitirDissolve(ctx, enemy);
+      }
     });
 
     if (this.boss && !this.boss.dead) {
       this.boss.draw(ctx);
+      this.drawIgnitirDissolve(ctx, this.boss);
     }
 
     this.projectiles.forEach((projectile) => projectile.draw(ctx));
@@ -3925,6 +4157,15 @@ export default class Game {
     ctx.restore();
   }
 
+  getIgnitirTint() {
+    if (!this.ignitirSequence) return 0;
+    const time = this.ignitirSequence.time;
+    if (time < 3 || time > 4.6) return 0;
+    const rise = Math.min(1, (time - 3) / 0.4);
+    const fall = time > 4 ? Math.max(0, 1 - (time - 4) / 0.6) : 1;
+    return rise * fall;
+  }
+
   drawBloom(ctx) {
     ctx.save();
     ctx.globalAlpha = 0.25;
@@ -3980,6 +4221,7 @@ export default class Game {
   drawWorld(ctx, { showDoors = false } = {}) {
     const tileSize = this.world.tileSize;
     const time = this.worldTime;
+    const ignitirTint = this.getIgnitirTint();
     const isSolidTile = (tx, ty) => this.world.isSolid(tx, ty, this.abilities);
     const drawLiquid = (x, y, fill, highlight) => {
       const baseX = x * tileSize;
@@ -4216,6 +4458,10 @@ export default class Game {
           ctx.moveTo(x * tileSize + 8, y * tileSize + tileSize / 2);
           ctx.lineTo(x * tileSize + tileSize - 8, y * tileSize + tileSize / 2);
           ctx.stroke();
+        }
+        if (ignitirTint > 0 && isSolidTile(x, y)) {
+          ctx.fillStyle = `rgba(90, 180, 255, ${0.35 * ignitirTint})`;
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
         }
       }
     }
