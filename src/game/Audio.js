@@ -162,8 +162,9 @@ export default class AudioSystem {
   }
 
   flamethrower() {
-    this.tone(180, 0.18, 'sawtooth');
-    this.noise(0.12, 0.08);
+    this.tone(80, 0.28, 'sawtooth');
+    this.tone(120, 0.22, 'triangle');
+    this.noise(0.2, 0.12);
   }
 
   menu() {

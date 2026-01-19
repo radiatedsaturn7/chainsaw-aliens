@@ -53,14 +53,15 @@ export default class Effect {
       this.swirl = Math.random() * Math.PI * 2;
     }
     if (this.type === 'flamethrower-flame') {
-      this.life = this.options.life ?? 0.45;
+      this.life = this.options.life ?? 0.3;
       this.vx = this.options.vx ?? ((Math.random() - 0.5) * 80);
       this.vy = this.options.vy ?? (-120 - Math.random() * 60);
       this.size = 6 + Math.random() * 6;
       this.flicker = Math.random() * Math.PI * 2;
+      this.angle = Math.atan2(this.vy, this.vx);
     }
     if (this.type === 'flamethrower-stream') {
-      this.life = this.options.life ?? 0.12;
+      this.life = this.options.life ?? 0.1;
       this.dx = this.options.dx ?? 0;
       this.dy = this.options.dy ?? 0;
       this.controlX = this.options.controlX ?? (this.dx * 0.5);
@@ -79,6 +80,7 @@ export default class Effect {
       this.height = this.options.height ?? (18 + Math.random() * 10);
       this.size = this.options.size ?? (10 + Math.random() * 6);
       this.flicker = Math.random() * Math.PI * 2;
+      this.intensity = this.options.intensity ?? 1;
     }
     if (this.type === 'ignitir-beam') {
       this.life = this.options.life ?? 0.28;
@@ -333,11 +335,17 @@ export default class Effect {
       ctx.globalAlpha = 0.85 - t * 0.6;
       ctx.fillStyle = 'rgba(255, 150, 80, 0.8)';
       ctx.beginPath();
-      ctx.ellipse(0, 0, size * 0.8, size, 0, 0, Math.PI * 2);
+      ctx.save();
+      ctx.rotate(this.angle);
+      ctx.ellipse(0, 0, size * 0.6, size * 1.2, 0, 0, Math.PI * 2);
+      ctx.restore();
       ctx.fill();
       ctx.fillStyle = 'rgba(255, 240, 200, 0.7)';
       ctx.beginPath();
-      ctx.ellipse(0, -size * 0.2, size * 0.35, size * 0.5, 0, 0, Math.PI * 2);
+      ctx.save();
+      ctx.rotate(this.angle);
+      ctx.ellipse(0, -size * 0.1, size * 0.25, size * 0.5, 0, 0, Math.PI * 2);
+      ctx.restore();
       ctx.fill();
     } else if (this.type === 'flamethrower-stream') {
       const flicker = 0.75 + Math.sin(this.flicker + t * 18) * 0.25;
@@ -383,7 +391,7 @@ export default class Effect {
       ctx.stroke();
     } else if (this.type === 'flamethrower-burn') {
       const flicker = 0.75 + Math.sin(this.flicker + t * 10) * 0.25;
-      const height = this.height * (1 - t * 0.5) * flicker;
+      const height = this.height * (1 - t * 0.5) * flicker * this.intensity;
       const base = this.size * (1 - t * 0.2);
       ctx.globalAlpha = 0.9 - t * 0.65;
       ctx.fillStyle = 'rgba(255, 70, 40, 0.85)';
