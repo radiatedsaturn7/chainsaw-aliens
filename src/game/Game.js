@@ -2058,12 +2058,26 @@ export default class Game {
     const dirY = aimY / aimLength;
     const originX = this.player.x + dirX * 18;
     const originY = this.player.y - 6 + dirY * 8;
-    const range = this.world.tileSize * 5;
+    const range = this.world.tileSize * 10;
     const coneDot = 0.55;
     const tileX = Math.floor(this.player.x / this.world.tileSize);
     const tileY = Math.floor(this.player.y / this.world.tileSize);
     const roomIndex = this.world.roomAtTile(tileX, tileY);
     const roomBounds = roomIndex !== null && roomIndex !== undefined ? this.world.getRoomBounds(roomIndex) : null;
+    const arcDrop = range * 0.12;
+    const streamDx = dirX * range;
+    const streamDy = dirY * range + arcDrop;
+    const controlX = streamDx * 0.5;
+    const controlY = streamDy * 0.5 + arcDrop * 0.4;
+    const impactX = originX + streamDx;
+    const impactY = originY + streamDy;
+    const getQuadraticPoint = (t) => {
+      const inv = 1 - t;
+      return {
+        x: inv * inv * originX + 2 * inv * t * (originX + controlX) + t * t * (originX + streamDx),
+        y: inv * inv * originY + 2 * inv * t * (originY + controlY) + t * t * (originY + streamDy)
+      };
+    };
 
     if (this.flamethrowerSoundTimer <= 0) {
       this.audio.flamethrower();
@@ -2072,18 +2086,39 @@ export default class Game {
 
     if (this.flamethrowerEmitTimer <= 0) {
       this.flamethrowerEmitTimer = 0.05;
+      this.spawnEffect('flamethrower-stream', originX, originY, {
+        dx: streamDx,
+        dy: streamDy,
+        controlX,
+        controlY,
+        width: 16,
+        coreWidth: 7
+      });
       const baseAngle = Math.atan2(dirY, dirX);
-      for (let i = 0; i < 3; i += 1) {
-        const angle = baseAngle + (Math.random() - 0.5) * 0.5;
-        const speed = 220 + Math.random() * 120;
+      for (let i = 0; i < 6; i += 1) {
+        const angle = baseAngle + (Math.random() - 0.5) * 0.35;
+        const speed = 260 + Math.random() * 140;
         const vx = Math.cos(angle) * speed;
-        const vy = Math.sin(angle) * speed;
+        const vy = Math.sin(angle) * speed + 40;
         this.spawnEffect('flamethrower-flame', originX, originY, {
           vx,
           vy,
-          life: 0.35 + Math.random() * 0.2
+          life: 0.45 + Math.random() * 0.2
         });
       }
+      for (let i = 0; i < 3; i += 1) {
+        const t = 0.25 + Math.random() * 0.65;
+        const point = getQuadraticPoint(t);
+        this.spawnEffect('flamethrower-burn', point.x, point.y, {
+          life: 0.8 + Math.random() * 0.4,
+          height: 16 + Math.random() * 12,
+          size: 10 + Math.random() * 8
+        });
+      }
+      this.spawnEffect('flamethrower-impact', impactX, impactY, {
+        life: 0.35 + Math.random() * 0.2,
+        size: 20 + Math.random() * 12
+      });
     }
 
     const applyDamage = (entity) => {
@@ -2098,6 +2133,15 @@ export default class Game {
       if (this.flamethrowerDamageCooldowns.has(entity)) return;
       entity.damage?.(1);
       this.spawnEffect('flamethrower-flame', entity.x, entity.y, { life: 0.22 });
+      this.spawnEffect('flamethrower-impact', entity.x, entity.y, {
+        life: 0.3,
+        size: 16 + Math.random() * 10
+      });
+      this.spawnEffect('flamethrower-burn', entity.x, entity.y, {
+        life: 1.1 + Math.random() * 0.5,
+        height: 20 + Math.random() * 10,
+        size: 12 + Math.random() * 6
+      });
       this.flamethrowerDamageCooldowns.set(entity, 0.2);
       this.testHarness.recordHit();
       this.recordFeedback('hit', 'visual');
