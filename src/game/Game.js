@@ -1012,7 +1012,7 @@ export default class Game {
     if (
       this.playtestActive
       && this.state === 'playing'
-      && this.input.wasPressed('cancel')
+      && this.input.wasPressed('pause')
       && !this.isMobile
     ) {
       this.returnToEditorFromPlaytest();
@@ -1312,6 +1312,9 @@ export default class Game {
       if (usingIgnitir) {
         if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold && this.ignitirReady) {
           this.fireIgnitir();
+        } else if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold && !this.ignitirReady) {
+          this.audio.ignitirDud();
+          this.recordFeedback('ignitir dud', 'audio');
         }
       } else if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold) {
         const doubleTap = this.attackTapTimer > 0;
@@ -1684,8 +1687,8 @@ export default class Game {
     this.actionFeedback.record(action, type, this.clock);
   }
 
-  spawnEffect(type, x, y) {
-    this.effects.push(new Effect(x, y, type));
+  spawnEffect(type, x, y, options = null) {
+    this.effects.push(new Effect(x, y, type, options));
   }
 
   isWeaponAvailable(slot) {
@@ -1723,8 +1726,8 @@ export default class Game {
     if (input.wasPressedCode('Digit2')) nextIndex = 1;
     if (input.wasPressedCode('Digit3')) nextIndex = 2;
     if (input.wasPressedCode('Digit4')) nextIndex = 3;
-    if (input.wasGamepadPressed('left')) nextIndex = this.activeWeaponIndex - 1;
-    if (input.wasGamepadPressed('right')) nextIndex = this.activeWeaponIndex + 1;
+    if (input.wasGamepadPressed('dpadLeft')) nextIndex = this.activeWeaponIndex - 1;
+    if (input.wasGamepadPressed('dpadRight')) nextIndex = this.activeWeaponIndex + 1;
     if (nextIndex !== null) {
       const total = this.weaponSlots.length;
       const clamped = ((nextIndex % total) + total) % total;
@@ -1788,12 +1791,48 @@ export default class Game {
     const tileY = Math.floor(this.player.y / tileSize);
     const roomIndex = this.world.roomAtTile(tileX, tileY);
     const roomBounds = roomIndex !== null && roomIndex !== undefined ? this.world.getRoomBounds(roomIndex) : null;
+    const aimVector = this.getAutoAimVector();
+    const dirX = aimVector.x;
+    const dirY = aimVector.y;
+    const originX = this.player.x;
+    const originY = this.player.y - 6;
+    const maxRange = tileSize * 12;
+    const step = 8;
+    let targetX = originX + dirX * maxRange;
+    let targetY = originY + dirY * maxRange;
+    let lastX = originX;
+    let lastY = originY;
+    for (let dist = 24; dist <= maxRange; dist += step) {
+      const testX = originX + dirX * dist;
+      const testY = originY + dirY * dist;
+      const testTileX = Math.floor(testX / tileSize);
+      const testTileY = Math.floor(testY / tileSize);
+      if (roomBounds) {
+        if (
+          testTileX < roomBounds.minX
+          || testTileX > roomBounds.maxX
+          || testTileY < roomBounds.minY
+          || testTileY > roomBounds.maxY
+        ) {
+          break;
+        }
+      }
+      if (this.world.isSolid(testTileX, testTileY, this.abilities)) {
+        break;
+      }
+      lastX = testX;
+      lastY = testY;
+    }
+    targetX = lastX;
+    targetY = lastY;
 
     this.ignitirCharge = 0;
     this.ignitirReady = false;
     this.ignitirFlashTimer = 0.9;
-    this.spawnEffect('ignitir-blast', this.player.x, this.player.y - 6);
-    this.spawnEffect('ignitir-fog', this.player.x, this.player.y - 6);
+    this.spawnEffect('ignitir-beam', originX, originY, { angle: Math.atan2(dirY, dirX), length: Math.hypot(targetX - originX, targetY - originY) });
+    this.spawnEffect('ignitir-implosion', targetX, targetY);
+    this.spawnEffect('ignitir-shockwave', targetX, targetY);
+    this.spawnEffect('ignitir-blast', targetX, targetY);
     this.spawnIgnitirFlames(roomBounds);
     this.audio.ignitirBlast();
     this.recordFeedback('ignitir blast', 'audio');
@@ -1822,17 +1861,15 @@ export default class Game {
       applyIgnitirDamage(this.boss);
     }
 
-    if (roomBounds) {
-      const centerX = (roomBounds.minX + roomBounds.maxX + 1) / 2;
-      const centerY = (roomBounds.minY + roomBounds.maxY + 1) / 2;
-      const targetTileX = tileX < centerX ? roomBounds.maxX - 1 : roomBounds.minX + 1;
-      const targetTileY = tileY < centerY ? roomBounds.maxY - 1 : roomBounds.minY + 1;
-      const landingTile = this.findIgnitirLandingTile(targetTileX, targetTileY, roomBounds);
-      this.player.x = (landingTile.x + 0.5) * tileSize;
-      this.player.y = (landingTile.y + 0.5) * tileSize;
-      this.player.vx = 0;
-      this.player.vy = 0;
+    const recoilSpeed = 320;
+    const recoilX = -dirX;
+    const recoilY = -dirY;
+    this.player.vx = recoilX * recoilSpeed;
+    this.player.vy = recoilY * recoilSpeed;
+    if (Math.abs(recoilY) < 0.2) {
+      this.player.vy = Math.min(this.player.vy, -180);
     }
+    this.player.onGround = false;
   }
 
   updateEffects(dt) {

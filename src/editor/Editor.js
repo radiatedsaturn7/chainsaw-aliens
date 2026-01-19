@@ -202,6 +202,7 @@ export default class Editor {
       prefabs: 0,
       shapes: 0
     };
+    this.panelMenuFocused = false;
     this.drawer = {
       open: true,
       tabIndex: 0,
@@ -252,6 +253,7 @@ export default class Editor {
       }
     };
     this.randomLevelDialog = { open: false };
+    this.randomLevelSliderRepeat = 0;
     this.autosaveKey = EDITOR_AUTOSAVE_KEY;
     this.autosaveLoaded = false;
     this.gamepadCursor = {
@@ -628,19 +630,19 @@ export default class Editor {
     const activeTab = this.getActivePanelTab();
     const { items, columns } = this.getPanelConfig(activeTab, { includeExtras: this.isMobileLayout() });
     if (items.length === 0) return false;
-    if (!input.wasGamepadPressed('up')
-      && !input.wasGamepadPressed('down')
-      && !input.wasGamepadPressed('left')
-      && !input.wasGamepadPressed('right')) {
+    if (!input.wasGamepadPressed('dpadUp')
+      && !input.wasGamepadPressed('dpadDown')
+      && !input.wasGamepadPressed('dpadLeft')
+      && !input.wasGamepadPressed('dpadRight')) {
       return false;
     }
     const total = items.length;
     const index = Math.max(0, Math.min(this.panelMenuIndex[activeTab] ?? 0, total - 1));
     let nextIndex = index;
-    if (input.wasGamepadPressed('up')) nextIndex -= columns;
-    else if (input.wasGamepadPressed('down')) nextIndex += columns;
-    else if (input.wasGamepadPressed('left')) nextIndex -= 1;
-    else if (input.wasGamepadPressed('right')) nextIndex += 1;
+    if (input.wasGamepadPressed('dpadUp')) nextIndex -= columns;
+    else if (input.wasGamepadPressed('dpadDown')) nextIndex += columns;
+    else if (input.wasGamepadPressed('dpadLeft')) nextIndex -= 1;
+    else if (input.wasGamepadPressed('dpadRight')) nextIndex += 1;
     nextIndex = ((nextIndex % total) + total) % total;
     this.panelMenuIndex[activeTab] = nextIndex;
     const nextItem = items[nextIndex];
@@ -657,6 +659,20 @@ export default class Editor {
       }
       this.panelScroll[activeTab] = clamp(scrollY, 0, this.panelScrollMax[activeTab] || 0);
     }
+    if (nextItem.tooltip) {
+      this.activeTooltip = nextItem.tooltip;
+      this.tooltipTimer = 2;
+    }
+    return true;
+  }
+
+  activatePanelSelection() {
+    const activeTab = this.getActivePanelTab();
+    const { items } = this.getPanelConfig(activeTab, { includeExtras: this.isMobileLayout() });
+    if (items.length === 0) return false;
+    const index = Math.max(0, Math.min(this.panelMenuIndex[activeTab] ?? 0, items.length - 1));
+    const nextItem = items[index];
+    if (!nextItem) return false;
     nextItem.onClick();
     if (nextItem.tooltip) {
       this.activeTooltip = nextItem.tooltip;
@@ -691,12 +707,38 @@ export default class Editor {
     const stickY = Math.abs(axes.leftY) > deadzone ? axes.leftY : 0;
     const lookX = Math.abs(axes.rightX) > deadzone ? axes.rightX : 0;
     const lookY = Math.abs(axes.rightY) > deadzone ? axes.rightY : 0;
+    const dialogOpen = this.randomLevelDialog.open;
 
-    this.gamepadCursor.x += stickX * moveSpeed;
-    this.gamepadCursor.y += stickY * moveSpeed;
+    if (dialogOpen) {
+      this.randomLevelSliderRepeat = Math.max(0, this.randomLevelSliderRepeat - dt);
+      if (input.wasGamepadPressed('dpadUp')) {
+        this.randomLevelSlider.active = 'width';
+      }
+      if (input.wasGamepadPressed('dpadDown')) {
+        this.randomLevelSlider.active = 'height';
+      }
+      if (!this.randomLevelSlider.active) {
+        this.randomLevelSlider.active = 'width';
+      }
+      const sliderInput = stickX;
+      if (Math.abs(sliderInput) > 0 && this.randomLevelSliderRepeat <= 0) {
+        this.adjustRandomLevelSlider(this.randomLevelSlider.active, Math.sign(sliderInput));
+        this.randomLevelSliderRepeat = 0.08;
+      }
+    }
 
-    if (stickX === 0 && stickY === 0) {
-      this.navigatePanelMenu(input);
+    const moveX = dialogOpen ? 0 : stickX;
+    const moveY = dialogOpen ? 0 : stickY;
+
+    this.gamepadCursor.x += moveX * moveSpeed;
+    this.gamepadCursor.y += moveY * moveSpeed;
+
+    if (moveX === 0 && moveY === 0) {
+      if (this.navigatePanelMenu(input)) {
+        this.panelMenuFocused = true;
+      }
+    } else {
+      this.panelMenuFocused = false;
     }
 
     if (lookX !== 0 || lookY !== 0) {
@@ -725,19 +767,29 @@ export default class Editor {
     if (input.wasGamepadPressed('dash')) {
       this.cycleTileTool();
     }
-    if (input.wasGamepadPressed('flame')) {
+    if (input.wasGamepadPressed('aimUp')) {
       this.cyclePanelTab(-1);
     }
-    if (input.wasGamepadPressed('rev')) {
+    if (input.wasGamepadPressed('aimDown')) {
       this.cyclePanelTab(1);
     }
 
+    if (dialogOpen && this.randomLevelDialog.justOpened) {
+      this.randomLevelDialog.justOpened = false;
+    } else if (dialogOpen && input.wasGamepadPressed('jump')) {
+      this.confirmRandomLevel();
+      return;
+    } else if (dialogOpen && input.wasGamepadPressed('attack')) {
+      this.cancelRandomLevel();
+      return;
+    }
+
     if (input.wasGamepadPressed('pause')) {
-      this.game.exitEditor({ playtest: false });
+      this.startPlaytestFromCursor();
       return;
     }
     if (input.wasGamepadPressed('cancel')) {
-      this.startPlaytestFromCursor();
+      this.game.exitEditor({ playtest: false });
       return;
     }
 
@@ -747,6 +799,9 @@ export default class Editor {
     const pressSecondary = input.wasGamepadPressed('attack');
 
     if (pressPrimary || pressSecondary) {
+      if (this.panelMenuFocused && pressPrimary && this.activatePanelSelection()) {
+        return;
+      }
       if (this.handleUIClick(this.lastPointer.x, this.lastPointer.y)) {
         return;
       }
@@ -884,15 +939,22 @@ export default class Editor {
 
   promptRandomLevel() {
     this.randomLevelDialog.open = true;
+    this.randomLevelDialog.justOpened = true;
+    this.randomLevelSlider.active = 'width';
+    this.randomLevelSliderRepeat = 0;
   }
 
   confirmRandomLevel() {
     this.randomLevelDialog.open = false;
+    this.randomLevelDialog.justOpened = false;
+    this.randomLevelSlider.active = null;
     this.createRandomLevel(this.randomLevelSize.width, this.randomLevelSize.height);
   }
 
   cancelRandomLevel() {
     this.randomLevelDialog.open = false;
+    this.randomLevelDialog.justOpened = false;
+    this.randomLevelSlider.active = null;
   }
 
   parseLevelSize(value) {
@@ -2410,7 +2472,8 @@ export default class Editor {
   }
 
   handleUIClick(x, y) {
-    for (const button of this.uiButtons) {
+    for (let index = this.uiButtons.length - 1; index >= 0; index -= 1) {
+      const button = this.uiButtons[index];
       if (x >= button.x && x <= button.x + button.w && y >= button.y && y <= button.y + button.h) {
         button.onClick();
         if (button.tooltip) {
@@ -2472,6 +2535,18 @@ export default class Editor {
       this.randomLevelSize.width = value;
     } else {
       this.randomLevelSize.height = value;
+    }
+  }
+
+  adjustRandomLevelSlider(kind, step) {
+    if (!kind) return;
+    const bounds = this.randomLevelSlider.bounds[kind];
+    const min = bounds?.min ?? (kind === 'width' ? 50 : 30);
+    const max = bounds?.max ?? 256;
+    if (kind === 'width') {
+      this.randomLevelSize.width = clamp(this.randomLevelSize.width + step, min, max);
+    } else {
+      this.randomLevelSize.height = clamp(this.randomLevelSize.height + step, min, max);
     }
   }
 
@@ -4209,7 +4284,7 @@ export default class Editor {
         `Move: drag to reposition | Two-finger: pan/zoom`,
         `Arrows: pan | Shift+Arrows: zoom`,
         `Gamepad: LS cursor | D-pad tools | A paint | B erase | X tool | Y mode`,
-        `LB/RB tabs | LT/RT zoom | Start exit | Back playtest`,
+        `LB/RB tabs | LT/RT zoom | Start playtest | Back exit`,
         `Ctrl+Z / Ctrl+Y: undo/redo`,
         `S: save JSON | L: load JSON`,
         `P: playtest | F2: toggle editor | Esc: exit`
