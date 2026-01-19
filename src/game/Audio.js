@@ -70,6 +70,12 @@ export default class AudioSystem {
     this.tone(340, 0.06, 'triangle');
   }
 
+  showcase() {
+    this.tone(520, 0.18, 'triangle');
+    window.setTimeout(() => this.tone(520, 0.12, 'triangle'), 120);
+    window.setTimeout(() => this.tone(420, 0.1, 'triangle'), 220);
+  }
+
   footstep() {
     this.tone(140, 0.08, 'square');
   }
@@ -153,6 +159,11 @@ export default class AudioSystem {
     this.tone(220, 0.08, 'square');
     this.tone(140, 0.12, 'sawtooth');
     this.noise(0.08, 0.12);
+  }
+
+  flamethrower() {
+    this.tone(180, 0.18, 'sawtooth');
+    this.noise(0.12, 0.08);
   }
 
   menu() {

@@ -90,6 +90,11 @@ const ABILITY_DIALOG_LINES = {
     'Weapon acquired: Ignitir.',
     'Charges for 10 seconds while selected.',
     'Tap Attack to unleash the blast.'
+  ],
+  flamethrower: [
+    'Weapon acquired: Flamethrower.',
+    'Hold Attack to pour liquid fire.',
+    'Short-range stream scorches anything in front of you.'
   ]
 };
 
@@ -140,12 +145,13 @@ export default class Game {
       flame: false,
       magboots: false,
       resonance: false,
-      ignitir: false
+      ignitir: false,
+      flamethrower: false
     };
     this.weaponSlots = [
       { id: 'ignitir', label: 'Ignitir', key: '1', ability: 'ignitir' },
       { id: 'chainsaw', label: 'Chainsaw Rig', key: '2', ability: null },
-      { id: null, label: 'Empty', key: '3', ability: null },
+      { id: 'flamethrower', label: 'Flamethrower', key: '3', ability: 'flamethrower' },
       { id: null, label: 'Empty', key: '4', ability: null }
     ];
     this.activeWeaponIndex = 1;
@@ -153,6 +159,9 @@ export default class Game {
     this.ignitirReady = false;
     this.ignitirFlashTimer = 0;
     this.ignitirSequence = null;
+    this.flamethrowerEmitTimer = 0;
+    this.flamethrowerSoundTimer = 0;
+    this.flamethrowerDamageCooldowns = new Map();
     this.lowHealthAlarmTimer = 0;
     this.objective = 'Reach the Hub Pylon.';
     this.lastSave = { x: this.player.x, y: this.player.y };
@@ -170,7 +179,8 @@ export default class Game {
       flame: false,
       magboots: false,
       resonance: false,
-      ignitir: false
+      ignitir: false,
+      flamethrower: false
     };
     this.sawAnchor = {
       active: false,
@@ -216,6 +226,7 @@ export default class Game {
     this.menuFlashTimer = 0;
     this.minimapSelected = false;
     this.minimapBounds = null;
+    this.minimapBackBounds = null;
     this.spawnRules = {
       globalMax: 12,
       perRegion: 6,
@@ -587,14 +598,16 @@ export default class Game {
         flame: true,
         magboots: true,
         resonance: true,
-        ignitir: true
+        ignitir: true,
+        flamethrower: true
       }
       : {
         anchor: false,
         flame: false,
         magboots: false,
         resonance: false,
-        ignitir: false
+        ignitir: false,
+        flamethrower: false
       };
     this.objective = this.gameMode === 'endless'
       ? 'Survive the endless horde.'
@@ -614,7 +627,8 @@ export default class Game {
       flame: false,
       magboots: false,
       resonance: false,
-      ignitir: false
+      ignitir: false,
+      flamethrower: false
     };
     this.sawAnchor = {
       active: false,
@@ -1241,6 +1255,7 @@ export default class Game {
     this.updateWeaponSelection(this.input);
     this.ensureActiveWeaponAvailable();
     const usingIgnitir = this.getActiveWeapon()?.id === 'ignitir';
+    const usingFlamethrower = this.getActiveWeapon()?.id === 'flamethrower';
     this.updateIgnitirCharge(dt * timeScale);
     this.updateIgnitirSequence(dt * timeScale);
     if (this.input.wasPressed('attack')) {
@@ -1321,6 +1336,8 @@ export default class Game {
           this.audio.ignitirDud();
           this.recordFeedback('ignitir dud', 'audio');
         }
+      } else if (usingFlamethrower) {
+        // Flamethrower pours while held; no tap action on release.
       } else if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold) {
         const doubleTap = this.attackTapTimer > 0;
         const allowAnchorShot = !this.gamepadConnected || !this.lastAttackFromGamepad;
@@ -1343,7 +1360,7 @@ export default class Game {
     if (this.sawAnchor.embedded && this.input.wasPressed('jump')) {
       this.startAnchorRetract(0.2);
     }
-    if (!usingIgnitir) {
+    if (!usingIgnitir && !usingFlamethrower) {
       const revHeld = this.isRevHeld(this.input);
       const anchorRevActive = this.sawAnchor.active && this.sawAnchor.embedded && revHeld;
       if (revHeld || anchorRevActive) {
@@ -1367,6 +1384,8 @@ export default class Game {
     } else {
       this.setRevAudio(false);
     }
+
+    this.updateFlamethrower(dt * timeScale, usingFlamethrower);
 
     let interacted = false;
     if (this.input.wasPressed('interact')) {
@@ -1858,7 +1877,7 @@ export default class Game {
     const targets = this.collectIgnitirTargets(roomBounds, targetX, targetY);
     this.ignitirSequence = {
       time: 0,
-      duration: 10,
+      duration: 8.6,
       originX,
       originY,
       targetX,
@@ -1889,14 +1908,18 @@ export default class Game {
   }
 
   collectIgnitirTargets(roomBounds, targetX, targetY) {
+    const maxDistance = this.world.tileSize * 5;
     const targets = [];
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
       if (!this.isInRoomBounds(enemy.x, enemy.y, roomBounds)) return;
+      if (Math.hypot(enemy.x - targetX, enemy.y - targetY) > maxDistance) return;
       targets.push(enemy);
     });
     if (this.boss && !this.boss.dead && this.isInRoomBounds(this.boss.x, this.boss.y, roomBounds)) {
-      targets.push(this.boss);
+      if (Math.hypot(this.boss.x - targetX, this.boss.y - targetY) <= maxDistance) {
+        targets.push(this.boss);
+      }
     }
     targets.sort((a, b) => {
       const aDist = Math.hypot(a.x - targetX, a.y - targetY);
@@ -1905,7 +1928,7 @@ export default class Game {
     });
     return targets.map((entity, index) => ({
       entity,
-      explodeAt: 5 + index * 0.12 + Math.random() * 0.35,
+      explodeAt: 3.6 + index * 0.12 + Math.random() * 0.35,
       exploded: false
     }));
   }
@@ -1923,17 +1946,21 @@ export default class Game {
     if (!sequence) return;
     sequence.time += dt;
     const time = sequence.time;
+    const implosionTime = 2.6;
+    const explosionTime = 3.3;
+    const residualTimeA = 5.1;
+    const residualTimeB = 6.6;
 
     if (time < 1.2) {
       this.player.invulnTimer = Math.max(this.player.invulnTimer, 0.8);
     }
 
-    if (!sequence.implosionSpawned && time >= 3) {
+    if (!sequence.implosionSpawned && time >= implosionTime) {
       this.spawnEffect('ignitir-implosion', sequence.targetX, sequence.targetY, { life: 1.3, radius: 110 });
       sequence.implosionSpawned = true;
     }
 
-    if (!sequence.explosionSpawned && time >= 4) {
+    if (!sequence.explosionSpawned && time >= explosionTime) {
       this.spawnEffect('ignitir-blast', sequence.targetX, sequence.targetY, { life: 1.7, radius: 280 });
       this.spawnEffect('ignitir-lens', sequence.targetX, sequence.targetY, { life: 1.1 });
       this.spawnEffect('ignitir-shockwave', sequence.targetX, sequence.targetY, {
@@ -1961,7 +1988,7 @@ export default class Game {
       sequence.explosionSpawned = true;
     }
 
-    if (!sequence.dissolveStarted && time >= 4) {
+    if (!sequence.dissolveStarted && time >= explosionTime) {
       sequence.targets.forEach((target) => {
         const entity = target.entity;
         if (!entity || entity.dead) return;
@@ -1979,7 +2006,7 @@ export default class Game {
       }
     });
 
-    if (!sequence.residualShockwaveA && time >= 6) {
+    if (!sequence.residualShockwaveA && time >= residualTimeA) {
       this.spawnEffect('ignitir-shockwave', sequence.targetX, sequence.targetY, {
         life: 4,
         startRadius: 200,
@@ -1991,7 +2018,7 @@ export default class Game {
       sequence.residualShockwaveA = true;
     }
 
-    if (!sequence.residualShockwaveB && time >= 8) {
+    if (!sequence.residualShockwaveB && time >= residualTimeB) {
       this.spawnEffect('ignitir-shockwave', sequence.targetX, sequence.targetY, {
         life: 3.2,
         startRadius: 260,
@@ -2008,20 +2035,100 @@ export default class Game {
     }
   }
 
+  updateFlamethrower(dt, usingFlamethrower) {
+    this.flamethrowerEmitTimer = Math.max(0, this.flamethrowerEmitTimer - dt);
+    this.flamethrowerSoundTimer = Math.max(0, this.flamethrowerSoundTimer - dt);
+    for (const [entity, timer] of this.flamethrowerDamageCooldowns.entries()) {
+      const next = timer - dt;
+      if (next <= 0) {
+        this.flamethrowerDamageCooldowns.delete(entity);
+      } else {
+        this.flamethrowerDamageCooldowns.set(entity, next);
+      }
+    }
+
+    if (!usingFlamethrower || !this.abilities.flamethrower) return;
+    if (!this.input.isDown('attack')) return;
+    if (!this.player || this.player.dead) return;
+
+    const aimX = this.player.aimX ?? (this.player.facing || 1);
+    const aimY = this.player.aimY ?? 0;
+    const aimLength = Math.hypot(aimX, aimY) || 1;
+    const dirX = aimX / aimLength;
+    const dirY = aimY / aimLength;
+    const originX = this.player.x + dirX * 18;
+    const originY = this.player.y - 6 + dirY * 8;
+    const range = this.world.tileSize * 5;
+    const coneDot = 0.55;
+    const tileX = Math.floor(this.player.x / this.world.tileSize);
+    const tileY = Math.floor(this.player.y / this.world.tileSize);
+    const roomIndex = this.world.roomAtTile(tileX, tileY);
+    const roomBounds = roomIndex !== null && roomIndex !== undefined ? this.world.getRoomBounds(roomIndex) : null;
+
+    if (this.flamethrowerSoundTimer <= 0) {
+      this.audio.flamethrower();
+      this.flamethrowerSoundTimer = 0.24;
+    }
+
+    if (this.flamethrowerEmitTimer <= 0) {
+      this.flamethrowerEmitTimer = 0.05;
+      const baseAngle = Math.atan2(dirY, dirX);
+      for (let i = 0; i < 3; i += 1) {
+        const angle = baseAngle + (Math.random() - 0.5) * 0.5;
+        const speed = 220 + Math.random() * 120;
+        const vx = Math.cos(angle) * speed;
+        const vy = Math.sin(angle) * speed;
+        this.spawnEffect('flamethrower-flame', originX, originY, {
+          vx,
+          vy,
+          life: 0.35 + Math.random() * 0.2
+        });
+      }
+    }
+
+    const applyDamage = (entity) => {
+      if (!entity || entity.dead) return;
+      if (!this.isInRoomBounds(entity.x, entity.y, roomBounds)) return;
+      const dx = entity.x - originX;
+      const dy = entity.y - originY;
+      const dist = Math.hypot(dx, dy);
+      if (dist > range || dist <= 0.01) return;
+      const dot = (dx / dist) * dirX + (dy / dist) * dirY;
+      if (dot < coneDot) return;
+      if (this.flamethrowerDamageCooldowns.has(entity)) return;
+      entity.damage?.(1);
+      this.spawnEffect('flamethrower-flame', entity.x, entity.y, { life: 0.22 });
+      this.flamethrowerDamageCooldowns.set(entity, 0.2);
+      this.testHarness.recordHit();
+      this.recordFeedback('hit', 'visual');
+      this.playability.recordEnemyHit(this.clock);
+      if (entity.dead && entity !== this.boss && !entity.training) {
+        this.spawnDeathDebris(entity);
+        this.awardLoot(entity);
+      }
+    };
+
+    this.player.attackTimer = Math.max(this.player.attackTimer, 0.12);
+    this.enemies.forEach(applyDamage);
+    if (this.boss && !this.boss.dead) {
+      applyDamage(this.boss);
+    }
+  }
+
   applyIgnitirPlayerImpulse() {
     const sequence = this.ignitirSequence;
     if (!sequence || !this.player || this.player.dead) return;
     const time = sequence.time;
-    if (time <= 3) {
-      const ramp = Math.min(1, time / 3);
+    if (time <= 2.6) {
+      const ramp = Math.min(1, time / 2.6);
       const recoilSpeed = 140 + ramp * 200;
       this.player.addImpulse(-sequence.dirX * recoilSpeed, -sequence.dirY * recoilSpeed * 0.6);
       this.player.onGround = false;
-    } else if (time >= 4 && time <= 5.1) {
+    } else if (time >= 3.3 && time <= 4.4) {
       const dx = this.player.x - sequence.targetX;
       const dy = this.player.y - sequence.targetY;
       const dist = Math.hypot(dx, dy) || 1;
-      const ramp = Math.min(1, (time - 4) / 1.1);
+      const ramp = Math.min(1, (time - 3.3) / 1.1);
       const blastSpeed = 280 + ramp * 260;
       this.player.addImpulse((dx / dist) * blastSpeed, (dy / dist) * blastSpeed);
       this.player.onGround = false;
@@ -2032,8 +2139,8 @@ export default class Game {
     const sequence = this.ignitirSequence;
     if (!sequence) return;
     const time = sequence.time;
-    if (time < 3 || time > 4.2) return;
-    const ramp = Math.min(1, (time - 3) / 1.2);
+    if (time < 2.6 || time > 3.8) return;
+    const ramp = Math.min(1, (time - 2.6) / 1.2);
     const pullStrength = 180 + ramp * 220;
     sequence.targets.forEach((target) => {
       const entity = target.entity;
@@ -2941,7 +3048,7 @@ export default class Game {
     if (!lines) return;
     this.dialog = new Dialog(lines);
     this.state = 'dialog';
-    this.audio.ui();
+    this.audio.showcase();
     this.recordFeedback('menu navigate', 'audio');
     this.recordFeedback('menu navigate', 'visual');
   }
@@ -2961,6 +3068,9 @@ export default class Game {
         }
         if (pickup.ability === 'ignitir') {
           this.selectWeapon(0);
+        }
+        if (pickup.ability === 'flamethrower') {
+          this.selectWeapon(2);
         }
         this.ensureActiveWeaponAvailable();
         this.audio.pickup();
@@ -4097,6 +4207,7 @@ export default class Game {
       this.shopUI.draw(ctx, canvas.width, canvas.height, this.player);
     }
 
+    this.minimapBackBounds = null;
     if (this.state === 'pause' && this.minimapSelected) {
       this.drawMinimapOverlay(ctx, canvas.width, canvas.height, objectiveTarget);
     } else if (this.state === 'pause') {
@@ -4506,7 +4617,8 @@ export default class Game {
       flame: 'TOOLS: FLAME-SAW',
       magboots: 'TOOLS: MAG BOOTS',
       resonance: 'TOOLS: RESONANCE CORE',
-      ignitir: 'WEAPON: IGNITIR'
+      ignitir: 'WEAPON: IGNITIR',
+      flamethrower: 'WEAPON: FLAMETHROWER'
     };
     this.world.abilityPickups.forEach((pickup) => {
       if (pickup.collected) return;
@@ -4590,6 +4702,10 @@ export default class Game {
     const mapHeight = Math.min(height * 0.6, 360);
     const mapX = (width - mapWidth) / 2;
     const mapY = (height - mapHeight) / 2;
+    const buttonWidth = 140;
+    const buttonHeight = 32;
+    const buttonX = mapX;
+    const buttonY = mapY + mapHeight + 28;
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.75)';
     ctx.fillRect(0, 0, width, height);
@@ -4602,8 +4718,16 @@ export default class Game {
     ctx.textAlign = 'center';
     ctx.fillText('MAP', width / 2, mapY - 14);
     ctx.font = '12px Courier New';
-    ctx.fillText('Pause toggles menu • Esc resumes', width / 2, mapY + mapHeight + 22);
+    ctx.fillText('Back closes map • Esc resumes', width / 2, mapY + mapHeight + 18);
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+    ctx.strokeStyle = '#fff';
+    ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    ctx.fillText('BACK', buttonX + buttonWidth / 2, buttonY + 21);
     ctx.restore();
+    this.minimapBackBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
   }
 
   drawWaypoint(ctx, width, height, target) {
@@ -4664,7 +4788,7 @@ export default class Game {
     if (this.world.objectives.length > 0) {
       return this.world.objectives[0];
     }
-    const order = ['anchor', 'flame', 'magboots', 'resonance'];
+    const order = ['anchor', 'flame', 'magboots', 'resonance', 'flamethrower', 'ignitir'];
     for (let i = 0; i < order.length; i += 1) {
       const ability = order[i];
       if (!this.abilities[ability]) {
@@ -4731,7 +4855,8 @@ export default class Game {
       anchor: true,
       flame: true,
       magboots: true,
-      resonance: true
+      resonance: true,
+      flamethrower: true
     };
     const stagedTargets = this.getObjectiveTargetsByAbility();
     const report = this.roomCoverageTest.run(abilities, stagedTargets);
@@ -4747,7 +4872,8 @@ export default class Game {
       anchor: true,
       flame: true,
       magboots: true,
-      resonance: true
+      resonance: true,
+      flamethrower: true
     };
     const report = this.encounterAuditTest.run(this, abilities);
     this.testResults.encounter = report.status;
@@ -4785,7 +4911,8 @@ export default class Game {
       anchor: true,
       flame: true,
       magboots: true,
-      resonance: true
+      resonance: true,
+      flamethrower: true
     };
     this.player.flameMode = false;
     this.sawAnchor.active = false;
@@ -4927,6 +5054,22 @@ export default class Game {
   handlePointerDown(payload) {
     if (this.state === 'editor') {
       this.editor.handlePointerDown(payload);
+      return;
+    }
+    if (
+      this.state === 'pause'
+      && this.minimapSelected
+      && this.minimapBackBounds
+      && payload.x >= this.minimapBackBounds.x
+      && payload.x <= this.minimapBackBounds.x + this.minimapBackBounds.w
+      && payload.y >= this.minimapBackBounds.y
+      && payload.y <= this.minimapBackBounds.y + this.minimapBackBounds.h
+    ) {
+      this.state = 'playing';
+      this.minimapSelected = false;
+      this.audio.menu();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
       return;
     }
     if (this.state === 'playing') {

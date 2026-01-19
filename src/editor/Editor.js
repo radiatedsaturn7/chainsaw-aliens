@@ -28,6 +28,7 @@ const DEFAULT_TILE_TYPES = [
   { id: 'abilityP', label: 'Tools: Flame-Saw', char: 'p' },
   { id: 'abilityM', label: 'Ability: Mag Boots', char: 'm' },
   { id: 'abilityR', label: 'Ability: Resonance', char: 'r' },
+  { id: 'abilityF', label: 'Weapon: Flamethrower', char: 'f' },
   { id: 'health', label: 'Vitality Core', char: 'H' },
   { id: 'spawn', label: 'Player Spawn', char: null, special: 'spawn' },
   { id: 'checkpoint', label: 'Checkpoint', char: 'S' },
@@ -103,7 +104,8 @@ const PREFAB_TYPES = [
 
 const POWERUP_TYPES = [
   { id: 'powerup-chainsaw', label: 'Tool: Chainsaw Rig', char: 'g' },
-  { id: 'powerup-ignitir', label: 'Weapon: Ignitir', char: 'i' }
+  { id: 'powerup-ignitir', label: 'Weapon: Ignitir', char: 'i' },
+  { id: 'powerup-flamethrower', label: 'Weapon: Flamethrower', char: 'f' }
 ];
 
 const MODE_LABELS = {

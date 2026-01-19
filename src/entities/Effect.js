@@ -52,6 +52,13 @@ export default class Effect {
       this.life = this.options.life ?? 1.4;
       this.swirl = Math.random() * Math.PI * 2;
     }
+    if (this.type === 'flamethrower-flame') {
+      this.life = this.options.life ?? 0.45;
+      this.vx = this.options.vx ?? ((Math.random() - 0.5) * 80);
+      this.vy = this.options.vy ?? (-120 - Math.random() * 60);
+      this.size = 6 + Math.random() * 6;
+      this.flicker = Math.random() * Math.PI * 2;
+    }
     if (this.type === 'ignitir-beam') {
       this.life = this.options.life ?? 0.28;
       this.angle = this.options.angle ?? 0;
@@ -100,6 +107,11 @@ export default class Effect {
     }
     if (this.type === 'ignitir-flame') {
       this.vy += 260 * dt;
+      this.x += this.vx * dt;
+      this.y += this.vy * dt;
+    }
+    if (this.type === 'flamethrower-flame') {
+      this.vy += 220 * dt;
       this.x += this.vx * dt;
       this.y += this.vy * dt;
     }
@@ -294,6 +306,18 @@ export default class Effect {
       ctx.lineTo(beamLength, 0);
       ctx.stroke();
       ctx.restore();
+    } else if (this.type === 'flamethrower-flame') {
+      const flicker = 0.7 + Math.sin(this.flicker + t * 12) * 0.3;
+      const size = this.size * (1 - t * 0.6) * flicker;
+      ctx.globalAlpha = 0.85 - t * 0.6;
+      ctx.fillStyle = 'rgba(255, 150, 80, 0.8)';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, size * 0.8, size, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255, 240, 200, 0.7)';
+      ctx.beginPath();
+      ctx.ellipse(0, -size * 0.2, size * 0.35, size * 0.5, 0, 0, Math.PI * 2);
+      ctx.fill();
     } else if (this.type === 'ignitir-implosion') {
       const pull = 1 - t;
       ctx.globalAlpha = 0.95 - t * 0.7;
