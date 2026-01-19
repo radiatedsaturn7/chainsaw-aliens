@@ -2053,8 +2053,6 @@ export default class Game {
   }
 
   updateFlamethrower(dt, usingFlamethrower) {
-    this.flamethrowerEmitTimer = Math.max(0, this.flamethrowerEmitTimer - dt);
-    this.flamethrowerSoundTimer = Math.max(0, this.flamethrowerSoundTimer - dt);
     for (const [entity, timer] of this.flamethrowerDamageCooldowns.entries()) {
       const next = timer - dt;
       if (next <= 0) {
@@ -2064,9 +2062,19 @@ export default class Game {
       }
     }
 
-    if (!usingFlamethrower || !this.abilities.flamethrower) return;
-    if (!this.input.isDown('attack')) return;
-    if (!this.player || this.player.dead) return;
+    if (!usingFlamethrower || !this.abilities.flamethrower) {
+      this.flamethrowerEmitTimer = 0;
+      this.flamethrowerSoundTimer = 0;
+      return;
+    }
+    if (!this.input.isDown('attack') || !this.player || this.player.dead) {
+      this.flamethrowerEmitTimer = 0;
+      this.flamethrowerSoundTimer = 0;
+      return;
+    }
+
+    this.flamethrowerEmitTimer -= dt;
+    this.flamethrowerSoundTimer -= dt;
 
     const aimX = this.player.aimX ?? (this.player.facing || 1);
     const aimY = this.player.aimY ?? 0;
@@ -2128,11 +2136,14 @@ export default class Game {
 
     if (this.flamethrowerSoundTimer <= 0) {
       this.audio.flamethrower();
-      this.flamethrowerSoundTimer = 0.24;
+      this.flamethrowerSoundTimer += 0.24;
     }
 
-    if (this.flamethrowerEmitTimer <= 0) {
-      this.flamethrowerEmitTimer = 0.05;
+    const emitInterval = 0.05;
+    const maxBursts = 6;
+    let bursts = 0;
+    while (this.flamethrowerEmitTimer <= 0 && bursts < maxBursts) {
+      this.flamethrowerEmitTimer += emitInterval;
       this.spawnEffect('flamethrower-stream', originX, originY, {
         dx: streamDx,
         dy: streamDy,
@@ -2178,6 +2189,7 @@ export default class Game {
           size: 14 + Math.random() * 6
         });
       }
+      bursts += 1;
     }
 
     const streamRadius = 18;
