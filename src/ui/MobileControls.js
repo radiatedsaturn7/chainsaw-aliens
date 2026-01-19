@@ -74,8 +74,7 @@ export default class MobileControls {
 
     const pauseRadius = Math.max(24, buttonRadius * 0.55);
     this.contextButtons = [
-      { id: 'interact', label: 'OK', action: 'interact', x: rightX, y: upperLeftY, r: pauseRadius },
-      { id: 'pause', label: 'PAUSE', action: 'pause', x: width - margin - pauseRadius, y: margin + pauseRadius, r: pauseRadius }
+      { id: 'interact', label: 'OK', action: 'interact', x: rightX, y: upperLeftY, r: pauseRadius }
     ];
   }
 
@@ -88,7 +87,6 @@ export default class MobileControls {
     if (state === 'shop') {
       visible.push({ ...this.contextButtons[0], label: 'BUY' });
     }
-    visible.push(this.contextButtons[1]);
     return visible;
   }
 

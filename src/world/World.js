@@ -169,13 +169,14 @@ export default class World {
         if (tile === 'O') {
           this.objectives.push({ x: worldX, y: worldY });
         }
-        if (tile === 'g' || tile === 'p' || tile === 'm' || tile === 'r' || tile === 'i') {
+        if (tile === 'g' || tile === 'p' || tile === 'm' || tile === 'r' || tile === 'i' || tile === 'f') {
           const ability = {
             g: 'anchor',
             p: 'flame',
             m: 'magboots',
             r: 'resonance',
-            i: 'ignitir'
+            i: 'ignitir',
+            f: 'flamethrower'
           }[tile];
           this.abilityPickups.push({ id: `ability-${ability}`, x: worldX, y: worldY, ability, collected: false });
         }
