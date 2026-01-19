@@ -162,6 +162,7 @@ export default class Game {
     this.flamethrowerEmitTimer = 0;
     this.flamethrowerSoundTimer = 0;
     this.flamethrowerDamageCooldowns = new Map();
+    this.flamethrowerImpactHeat = new Map();
     this.lowHealthAlarmTimer = 0;
     this.objective = 'Reach the Hub Pylon.';
     this.lastSave = { x: this.player.x, y: this.player.y };
@@ -2063,6 +2064,14 @@ export default class Game {
         this.flamethrowerDamageCooldowns.set(entity, next);
       }
     }
+    for (const [key, data] of this.flamethrowerImpactHeat.entries()) {
+      const next = data.heat - dt * 0.7;
+      if (next <= 0) {
+        this.flamethrowerImpactHeat.delete(key);
+      } else {
+        this.flamethrowerImpactHeat.set(key, { ...data, heat: next });
+      }
+    }
 
     if (!usingFlamethrower || !this.abilities.flamethrower) {
       this.flamethrowerEmitTimer = 0;
@@ -2099,11 +2108,11 @@ export default class Game {
         y: inv * inv * startY + 2 * inv * t * (startY + curveY) + t * t * (startY + dy)
       };
     };
-    const initialArcDrop = maxRange * 0.18;
+    const initialArcDrop = maxRange * 0.22;
     let streamDx = dirX * maxRange;
     let streamDy = dirY * maxRange + initialArcDrop;
     let controlX = streamDx * 0.5;
-    let controlY = streamDy * 0.5 - initialArcDrop * 1.1;
+    let controlY = streamDy * 0.5 - initialArcDrop * 0.9;
     let impactX = originX + streamDx;
     let impactY = originY + streamDy;
     let impactTile = null;
@@ -2134,13 +2143,16 @@ export default class Game {
     streamDx = impactX - originX;
     streamDy = impactY - originY;
     const adjustedRange = Math.hypot(streamDx, streamDy);
-    const arcDrop = adjustedRange * 0.18;
-    controlX = streamDx * 0.5;
-    controlY = streamDy * 0.5 - arcDrop * 1.1;
+    const arcDrop = adjustedRange * 0.22;
+    const wobbleScale = Math.min(40, adjustedRange * 0.18);
+    const wobbleX = (Math.random() - 0.5) * wobbleScale;
+    const wobbleY = (Math.random() - 0.5) * (wobbleScale * 0.65);
+    controlX = streamDx * 0.5 + wobbleX;
+    controlY = streamDy * 0.5 - arcDrop * 0.95 + wobbleY;
 
     if (this.flamethrowerSoundTimer <= 0) {
       this.audio.flamethrower();
-      this.flamethrowerSoundTimer += 0.24;
+      this.flamethrowerSoundTimer += 0.2;
     }
 
     const emitInterval = 0.05;
@@ -2154,24 +2166,38 @@ export default class Game {
         width: 16,
         coreWidth: 7
       });
-      for (let i = 0; i < 3; i += 1) {
-        const t = 0.25 + Math.random() * 0.65;
+      for (let i = 0; i < 4; i += 1) {
+        const t = 0.18 + Math.random() * 0.7;
         const point = getQuadraticPoint(t, originX, originY, streamDx, streamDy, controlX, controlY);
-        this.spawnEffect('flamethrower-burn', point.x, point.y, {
-          life: 0.8 + Math.random() * 0.4,
-          height: 16 + Math.random() * 12,
-          size: 10 + Math.random() * 8
+        const inv = 1 - t;
+        const tangentX = 2 * inv * controlX + 2 * t * (streamDx - controlX);
+        const tangentY = 2 * inv * controlY + 2 * t * (streamDy - controlY);
+        const tangentLength = Math.hypot(tangentX, tangentY) || 1;
+        const speed = 180 + Math.random() * 120;
+        this.spawnEffect('flamethrower-flame', point.x, point.y, {
+          life: 0.22 + Math.random() * 0.18,
+          vx: (tangentX / tangentLength) * speed,
+          vy: (tangentY / tangentLength) * speed,
+          size: 5 + Math.random() * 4
         });
       }
+      const impactKey = impactTile ? `${impactTile.x},${impactTile.y}` : null;
+      const currentHeat = impactKey ? (this.flamethrowerImpactHeat.get(impactKey)?.heat ?? 0) : 0;
+      const nextHeat = impactKey ? Math.min(4.5, currentHeat + 1.1) : currentHeat;
+      if (impactKey) {
+        this.flamethrowerImpactHeat.set(impactKey, { heat: nextHeat, x: impactX, y: impactY });
+      }
+      const impactHeat = impactKey ? nextHeat : 0;
       this.spawnEffect('flamethrower-impact', impactX, impactY, {
-        life: 0.35 + Math.random() * 0.2,
-        size: 20 + Math.random() * 12
+        life: 0.55 + Math.random() * 0.25 + impactHeat * 0.08,
+        size: 20 + Math.random() * 12 + impactHeat * 3
       });
       if (impactTile) {
         this.spawnEffect('flamethrower-burn', impactX, impactY, {
-          life: 1.1 + Math.random() * 0.4,
-          height: 22 + Math.random() * 10,
-          size: 14 + Math.random() * 6
+          life: 1.4 + Math.random() * 0.5 + impactHeat * 0.2,
+          height: 24 + Math.random() * 12 + impactHeat * 6,
+          size: 14 + Math.random() * 6 + impactHeat * 1.5,
+          intensity: 1 + impactHeat * 0.08
         });
       }
     }
