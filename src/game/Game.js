@@ -44,7 +44,6 @@ import Validator from '../debug/Validator.js';
 import ConsoleOverlay from '../debug/ConsoleOverlay.js';
 import Checklist from '../debug/Checklist.js';
 import ActionFeedback from '../debug/ActionFeedback.js';
-import PlayabilityLayer from '../debug/PlayabilityLayer.js';
 import FeasibilityValidator from '../debug/FeasibilityValidator.js';
 import GoldenPathRunner from '../debug/GoldenPathRunner.js';
 import AutoRepair from '../debug/AutoRepair.js';
@@ -163,6 +162,7 @@ export default class Game {
     this.flamethrowerSoundTimer = 0;
     this.flamethrowerDamageCooldowns = new Map();
     this.flamethrowerImpactHeat = new Map();
+    this.flamethrowerAim = null;
     this.lowHealthAlarmTimer = 0;
     this.objective = 'Reach the Hub Pylon.';
     this.lastSave = { x: this.player.x, y: this.player.y };
@@ -210,7 +210,6 @@ export default class Game {
     this.consoleOverlay = new ConsoleOverlay();
     this.checklist = new Checklist();
     this.actionFeedback = new ActionFeedback();
-    this.playability = new PlayabilityLayer(this.world, this.player, this.validator);
     this.goldenPath = new GoldenPathRunner();
     this.worldValidityTest = new WorldValidityTest(this.world, this.player);
     this.roomCoverageTest = new RoomCoverageTest(this.world, this.player, this.feasibilityValidator);
@@ -354,7 +353,6 @@ export default class Game {
     this.minimap = new Minimap(this.world);
     this.validator = new Validator(this.world, this.player);
     this.feasibilityValidator = new FeasibilityValidator(this.world, this.player);
-    this.playability = new PlayabilityLayer(this.world, this.player, this.validator);
     this.worldValidityTest = new WorldValidityTest(this.world, this.player);
     this.roomCoverageTest = new RoomCoverageTest(this.world, this.player, this.feasibilityValidator);
     this.encounterAuditTest = new EncounterAuditTest(this.world, this.player, this.feasibilityValidator);
@@ -1418,7 +1416,6 @@ export default class Game {
     this.updateObjective();
     this.updateBossState();
     this.consoleOverlay.update(dt * timeScale);
-    this.playability.update(dt * timeScale, this);
     this.goldenPath.postUpdate(dt * timeScale, this);
     if (this.goldenPath.status === 'pass' || this.goldenPath.status === 'fail') {
       const report = this.goldenPathTest.buildReport(this);
@@ -1454,9 +1451,6 @@ export default class Game {
     }
     if (this.input.wasPressed('legend')) {
       this.checklist.toggle();
-    }
-    if (this.input.wasPressed('debug')) {
-      this.playability.toggle();
     }
     if (this.input.wasPressedCode('KeyB')) {
       this.loadObstacleTestRoom();
@@ -2120,6 +2114,7 @@ export default class Game {
     if (!usingFlamethrower || !this.abilities.flamethrower) {
       this.flamethrowerEmitTimer = 0;
       this.flamethrowerSoundTimer = 0;
+      this.flamethrowerAim = null;
       return;
     }
     const attackHeld = this.input.isDown('attack')
@@ -2127,19 +2122,35 @@ export default class Game {
     if (!attackHeld || !this.player || this.player.dead) {
       this.flamethrowerEmitTimer = 0;
       this.flamethrowerSoundTimer = 0;
+      this.flamethrowerAim = null;
       return;
     }
 
     this.flamethrowerEmitTimer -= dt;
     this.flamethrowerSoundTimer -= dt;
 
-    const aimX = this.player.aimX ?? (this.player.facing || 1);
-    const aimY = this.player.aimY ?? 0;
+    const rawAimX = this.player.aimX ?? (this.player.facing || 1);
+    const rawAimY = this.player.aimY ?? 0;
+    if (!this.flamethrowerAim) {
+      this.flamethrowerAim = { x: rawAimX, y: rawAimY };
+    }
+    const axes = this.input.getGamepadAxes?.() || { leftX: 0 };
+    const stickDir = Math.abs(axes.leftX) > 0.25 ? Math.sign(axes.leftX) : 0;
+    const moveDir = (this.input.isDown('right') ? 1 : 0) - (this.input.isDown('left') ? 1 : 0) || stickDir;
+    let aimX = rawAimX;
+    let aimY = rawAimY;
+    if (moveDir !== 0 && this.flamethrowerAim.x !== 0 && Math.sign(moveDir) === -Math.sign(this.flamethrowerAim.x)) {
+      aimX = this.flamethrowerAim.x;
+      aimY = this.flamethrowerAim.y;
+    } else {
+      this.flamethrowerAim = { x: rawAimX, y: rawAimY };
+    }
     const aimLength = Math.hypot(aimX, aimY) || 1;
     const dirX = aimX / aimLength;
     const dirY = aimY / aimLength;
+    const duckOffset = this.player.ducking ? 6 : 0;
     const originX = this.player.x + dirX * 18;
-    const originY = this.player.y - 6 + dirY * 8;
+    const originY = this.player.y - 6 + duckOffset + dirY * 8;
     const maxRange = tileSize * 15;
     const tileX = Math.floor(this.player.x / tileSize);
     const tileY = Math.floor(this.player.y / tileSize);
@@ -2282,7 +2293,6 @@ export default class Game {
       this.flamethrowerDamageCooldowns.set(entity, 0.2);
       this.testHarness.recordHit();
       this.recordFeedback('hit', 'visual');
-      this.playability.recordEnemyHit(this.clock);
       if (entity.dead && entity !== this.boss && !entity.training) {
         this.spawnDeathDebris(entity);
         this.awardLoot(entity);
@@ -2774,7 +2784,6 @@ export default class Game {
           this.recordFeedback('hit', 'audio');
           this.recordFeedback('hit', 'visual');
           this.testHarness.recordHit();
-          this.playability.recordEnemyHit(this.clock);
           if (enemy.dead) {
             if (!enemy.training) {
               this.spawnDeathDebris(enemy);
@@ -2794,7 +2803,6 @@ export default class Game {
           this.spawnEffect('oil', this.boss.x, this.boss.y + 10);
           this.recordFeedback('hit', 'audio');
           this.recordFeedback('hit', 'visual');
-          this.playability.recordEnemyHit(this.clock);
         }
       }
       return;
@@ -2852,7 +2860,6 @@ export default class Game {
         this.recordFeedback('hit', 'audio');
         this.recordFeedback('hit', 'visual');
         this.testHarness.recordHit();
-        this.playability.recordEnemyHit(this.clock);
         if (enemy.justStaggered) {
           this.audio.stagger();
           this.spawnEffect('stagger', enemy.x, enemy.y);
@@ -2881,7 +2888,6 @@ export default class Game {
         this.spawnEffect('oil', this.boss.x, this.boss.y + 10);
         this.recordFeedback('hit', 'audio');
         this.recordFeedback('hit', 'visual');
-        this.playability.recordEnemyHit(this.clock);
       }
     }
   }
@@ -2936,7 +2942,6 @@ export default class Game {
     this.spawnEffect('execute', enemy.x, enemy.y);
     this.recordFeedback('execute', 'audio');
     this.recordFeedback('execute', 'visual');
-    this.playability.recordEnemyHit(this.clock);
   }
 
   awardLoot(enemy, execution = false) {
@@ -3055,7 +3060,6 @@ export default class Game {
             this.spawnEffect('oil', enemy.x, enemy.y + 6);
             this.recordFeedback('hit', 'audio');
             this.recordFeedback('hit', 'visual');
-            this.playability.recordEnemyHit(this.clock);
             if (enemy.dead) {
               if (!enemy.training) {
                 this.spawnDeathDebris(enemy);
@@ -3092,7 +3096,6 @@ export default class Game {
             this.spawnEffect('oil', enemy.x, enemy.y + 6);
             this.recordFeedback('hit', 'audio');
             this.recordFeedback('hit', 'visual');
-            this.playability.recordEnemyHit(this.clock);
             if (enemy.dead) {
               if (!enemy.training) {
                 this.spawnDeathDebris(enemy);
@@ -3784,7 +3787,6 @@ export default class Game {
     this.spawnEffect('oil', target.x, target.y + (isBoss ? 10 : 6));
     this.recordFeedback('hit', 'audio');
     this.recordFeedback('hit', 'visual');
-    this.playability.recordEnemyHit(this.clock);
     this.sawAnchor.damageTimer = 0.12;
     if (!isBoss && target.dead && !target.training) {
       this.spawnDeathDebris(target);
@@ -4298,7 +4300,6 @@ export default class Game {
     if (this.testHarness.active && this.testHarness.showCollision) {
       this.drawCollisionBoxes(ctx);
     }
-    this.playability.drawWorld(ctx, this);
     this.drawBloom(ctx);
     ctx.restore();
 

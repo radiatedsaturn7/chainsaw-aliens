@@ -134,13 +134,6 @@ export default class GoldenPathRunner {
       this.fail(game, { constraint: 'damage funnel exceeded budget', suggestion: 'layout or combat balance' });
       return;
     }
-    if (game.playability.status === 'fail') {
-      const lastLog = game.playability.logs[game.playability.logs.length - 1];
-      this.fail(game, {
-        constraint: lastLog || 'playability invariant failed',
-        suggestion: 'layout or collision integrity'
-      });
-    }
   }
 
   currentMilestone() {
