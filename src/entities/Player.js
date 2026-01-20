@@ -352,17 +352,21 @@ export default class Player {
       const aimUpInput = input.isDown('up') || input.isGamepadDown('aimUp');
       const aimDownInput = input.isDown('down') || input.isGamepadDown('aimDown');
       const aimingUp = aimUpInput && !this.ducking && !this.sawRideActive;
+      const aimingDown = !this.onGround && aimDownInput && !this.sawRideActive;
       this.aimingUp = aimingUp;
-      this.aimingDiagonal = aimingUp && aimHorizontal !== 0;
-      this.aimingDown = !this.onGround && aimDownInput && !this.sawRideActive;
+      this.aimingDown = aimingDown;
+      this.aimingDiagonal = (aimingUp || aimingDown) && aimHorizontal !== 0;
       if (aimingUp) {
         this.aimX = this.aimingDiagonal ? aimHorizontal : 0;
         this.aimY = -1;
+      } else if (aimingDown) {
+        this.aimX = this.aimingDiagonal ? aimHorizontal : 0;
+        this.aimY = 1;
       } else {
         this.aimX = this.facing || 1;
         this.aimY = 0;
       }
-      if (aimingUp) {
+      if (aimingUp || aimingDown) {
         this.aimAngle = Math.atan2(this.aimY, this.aimX);
       } else {
         this.aimAngle = 0;
