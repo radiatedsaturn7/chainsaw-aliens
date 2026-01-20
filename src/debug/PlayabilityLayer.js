@@ -49,13 +49,21 @@ export default class PlayabilityLayer {
   runChecks(game, now) {
     this.status = 'ok';
     this.overlapHighlights = [];
+    const traversal = this.buildTraversal(game);
     this.checkCollisionIntegrity(game);
-    this.checkSpawns(game);
-    this.checkRecovery(game);
+    this.checkSpawns(game, traversal);
+    this.checkRecovery(game, traversal);
     this.checkCombatLock(game, now);
     this.checkSpawnCaps(game);
     this.checkRegionExits(game);
     this.checkActionFeedback(game, now);
+  }
+
+  buildTraversal(game) {
+    const nodes = this.validator.collectNodes(game.abilities);
+    const edges = this.validator.buildEdges(nodes, game.abilities);
+    const reachable = this.validator.walkGraph(nodes, edges, game.abilities);
+    return { nodes, reachable };
   }
 
   checkCollisionIntegrity(game) {
@@ -82,11 +90,14 @@ export default class PlayabilityLayer {
     });
   }
 
-  checkSpawns(game) {
+  checkSpawns(game, traversal) {
     const entities = [this.player, ...game.enemies];
-    const nodes = this.validator.collectNodes(game.abilities);
-    const edges = this.validator.buildEdges(nodes, game.abilities);
-    const reachable = this.validator.walkGraph(nodes, edges, game.abilities);
+    const nodes = traversal?.nodes ?? this.validator.collectNodes(game.abilities);
+    const reachable = traversal?.reachable ?? this.validator.walkGraph(
+      nodes,
+      this.validator.buildEdges(nodes, game.abilities),
+      game.abilities
+    );
     entities.forEach((entity, index) => {
       if (this.seenEntities.has(entity)) return;
       this.seenEntities.add(entity);
@@ -106,10 +117,13 @@ export default class PlayabilityLayer {
     });
   }
 
-  checkRecovery(game) {
-    const nodes = this.validator.collectNodes(game.abilities);
-    const edges = this.validator.buildEdges(nodes, game.abilities);
-    const reachable = this.validator.walkGraph(nodes, edges, game.abilities);
+  checkRecovery(game, traversal) {
+    const nodes = traversal?.nodes ?? this.validator.collectNodes(game.abilities);
+    const reachable = traversal?.reachable ?? this.validator.walkGraph(
+      nodes,
+      this.validator.buildEdges(nodes, game.abilities),
+      game.abilities
+    );
     const playerTile = this.worldToTile(game.player.x, game.player.y);
     const saves = this.world.savePoints.map((save) => this.worldToTile(save.x, save.y));
     const safeNode = saves.find((save) => reachable.has(`${save.tx},${save.ty}`) && this.tileDistance(save, playerTile) < 18);

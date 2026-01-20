@@ -1901,7 +1901,8 @@ export default class Editor {
 
     addSpawnPitPlatform();
 
-    const ensureTwoDoorReachability = () => {
+    const ensureDoorConnectivity = () => {
+      const blockers = new Set(['#', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', '^', 'v']);
       const carveLine = (room, start, end) => {
         const dx = Math.sign(end.x - start.x);
         const dy = Math.sign(end.y - start.y);
@@ -1929,14 +1930,52 @@ export default class Editor {
         if (pad.y < room.y + 1 || pad.y > room.y + room.h - 2) return null;
         return pad;
       };
+      const isPassable = (room, tx, ty) => {
+        const tile = tiles[ty]?.[tx];
+        if (!tile) return false;
+        const wallTile = getRoomWallTile(room);
+        if (tile === wallTile) return false;
+        return !blockers.has(tile);
+      };
+      const floodFrom = (room, start) => {
+        const visited = new Set();
+        const queue = [start];
+        const keyFor = (tx, ty) => `${tx},${ty}`;
+        while (queue.length) {
+          const current = queue.shift();
+          const key = keyFor(current.x, current.y);
+          if (visited.has(key)) continue;
+          visited.add(key);
+          const neighbors = [
+            { x: current.x + 1, y: current.y },
+            { x: current.x - 1, y: current.y },
+            { x: current.x, y: current.y + 1 },
+            { x: current.x, y: current.y - 1 }
+          ];
+          neighbors.forEach((next) => {
+            if (next.x < room.x + 1 || next.x > room.x + room.w - 2) return;
+            if (next.y < room.y + 1 || next.y > room.y + room.h - 2) return;
+            if (!isPassable(room, next.x, next.y)) return;
+            queue.push(next);
+          });
+        }
+        return visited;
+      };
 
       rooms.forEach((room) => {
         const doors = findRoomDoorTiles(room);
-        if (doors.length !== 2) return;
         const pads = doors.map((door) => getDoorPad(room, door)).filter(Boolean);
-        if (pads.length !== 2) return;
-        carveLine(room, pads[0], { x: pads[1].x, y: pads[0].y });
-        carveLine(room, { x: pads[1].x, y: pads[0].y }, pads[1]);
+        if (pads.length < 2) return;
+        let anchor = pads[0];
+        let reachable = floodFrom(room, anchor);
+        const keyFor = (pad) => `${pad.x},${pad.y}`;
+        pads.slice(1).forEach((pad) => {
+          if (!reachable.has(keyFor(pad))) {
+            carveLine(room, anchor, { x: pad.x, y: anchor.y });
+            carveLine(room, { x: pad.x, y: anchor.y }, pad);
+            reachable = floodFrom(room, anchor);
+          }
+        });
       });
     };
 
@@ -1969,7 +2008,7 @@ export default class Editor {
     };
 
     clearSpawnBufferTiles();
-    ensureTwoDoorReachability();
+    ensureDoorConnectivity();
     enforceAcidSupports();
 
     const enemies = [];
@@ -2033,6 +2072,8 @@ export default class Editor {
     this.undoStack = [];
     this.redoStack = [];
     this.persistAutosave();
+    this.resetView();
+    this.game.runGoldenPathSimulation({ restoreState: 'editor' });
     this.resetView();
   }
 

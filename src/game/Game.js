@@ -163,6 +163,7 @@ export default class Game {
     this.flamethrowerSoundTimer = 0;
     this.flamethrowerDamageCooldowns = new Map();
     this.flamethrowerImpactHeat = new Map();
+    this.flamethrowerAim = null;
     this.lowHealthAlarmTimer = 0;
     this.objective = 'Reach the Hub Pylon.';
     this.lastSave = { x: this.player.x, y: this.player.y };
@@ -556,11 +557,15 @@ export default class Game {
     this.editor.deactivate();
     if (playtest) {
       this.syncSpawnPoint();
-      this.resetRun({ playtest: true, startWithEverything: this.editor.startWithEverything });
       this.state = 'playing';
       this.playtestActive = true;
-      this.startSpawnPause();
       document.body.classList.remove('editor-active');
+      this.runGoldenPathSimulation({
+        restoreState: 'playtest',
+        playtest: true,
+        startWithEverything: this.editor.startWithEverything
+      });
+      this.startSpawnPause();
       return;
     }
     this.playtestActive = false;
@@ -1134,15 +1139,6 @@ export default class Game {
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
       }
-      if (this.input.wasPressed('golden')) {
-        if (this.canRunGolden()) {
-          this.startGoldenPath();
-          this.recordFeedback('menu navigate', 'audio');
-          this.recordFeedback('menu navigate', 'visual');
-        } else {
-          this.consoleOverlay.setReport('warn', ['Golden path locked: run tests first.'], 'AUTO-TEST');
-        }
-      }
       this.input.flush();
       return;
     }
@@ -1223,15 +1219,9 @@ export default class Game {
       return;
     }
 
-    this.goldenPath.preUpdate(dt, this);
-    if (this.goldenPath.freeze) {
-      this.input.flush();
-      return;
-    }
     this.testHarness.update(this.input, this);
     const debugSlow = this.testHarness.active && this.testHarness.slowMotion;
-    const simScale = this.goldenPath.getTimeScale();
-    const timeScale = (this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1) * simScale;
+    const timeScale = this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1;
     this.slowTimer = Math.max(0, this.slowTimer - dt);
     this.damageFlashTimer = Math.max(0, this.damageFlashTimer - dt * timeScale);
     this.ignitirFlashTimer = Math.max(0, this.ignitirFlashTimer - dt * timeScale);
@@ -1419,13 +1409,6 @@ export default class Game {
     this.updateBossState();
     this.consoleOverlay.update(dt * timeScale);
     this.playability.update(dt * timeScale, this);
-    this.goldenPath.postUpdate(dt * timeScale, this);
-    if (this.goldenPath.status === 'pass' || this.goldenPath.status === 'fail') {
-      const report = this.goldenPathTest.buildReport(this);
-      this.testResults.golden = report.status;
-      this.testDashboard.setResults({ golden: report.status });
-      this.testDashboard.setDetails('golden', report.lines);
-    }
 
     this.updateRoomCameraBounds();
     this.camera.follow(this.player, dt, this.cameraBounds);
@@ -1444,13 +1427,6 @@ export default class Game {
     }
     if (this.input.wasPressed('encounter')) {
       this.runEncounterAuditTest();
-    }
-    if (this.input.wasPressed('golden') && this.state === 'playing') {
-      if (this.canRunGolden()) {
-        this.startGoldenPath();
-      } else {
-        this.consoleOverlay.setReport('warn', ['Golden path locked: run tests first.'], 'AUTO-TEST');
-      }
     }
     if (this.input.wasPressed('legend')) {
       this.checklist.toggle();
@@ -2120,6 +2096,7 @@ export default class Game {
     if (!usingFlamethrower || !this.abilities.flamethrower) {
       this.flamethrowerEmitTimer = 0;
       this.flamethrowerSoundTimer = 0;
+      this.flamethrowerAim = null;
       return;
     }
     const attackHeld = this.input.isDown('attack')
@@ -2127,19 +2104,35 @@ export default class Game {
     if (!attackHeld || !this.player || this.player.dead) {
       this.flamethrowerEmitTimer = 0;
       this.flamethrowerSoundTimer = 0;
+      this.flamethrowerAim = null;
       return;
     }
 
     this.flamethrowerEmitTimer -= dt;
     this.flamethrowerSoundTimer -= dt;
 
-    const aimX = this.player.aimX ?? (this.player.facing || 1);
-    const aimY = this.player.aimY ?? 0;
+    const rawAimX = this.player.aimX ?? (this.player.facing || 1);
+    const rawAimY = this.player.aimY ?? 0;
+    if (!this.flamethrowerAim) {
+      this.flamethrowerAim = { x: rawAimX, y: rawAimY };
+    }
+    const axes = this.input.getGamepadAxes?.() || { leftX: 0 };
+    const stickDir = Math.abs(axes.leftX) > 0.25 ? Math.sign(axes.leftX) : 0;
+    const moveDir = (this.input.isDown('right') ? 1 : 0) - (this.input.isDown('left') ? 1 : 0) || stickDir;
+    let aimX = rawAimX;
+    let aimY = rawAimY;
+    if (moveDir !== 0 && this.flamethrowerAim.x !== 0 && Math.sign(moveDir) === -Math.sign(this.flamethrowerAim.x)) {
+      aimX = this.flamethrowerAim.x;
+      aimY = this.flamethrowerAim.y;
+    } else {
+      this.flamethrowerAim = { x: rawAimX, y: rawAimY };
+    }
     const aimLength = Math.hypot(aimX, aimY) || 1;
     const dirX = aimX / aimLength;
     const dirY = aimY / aimLength;
+    const duckOffset = this.player.ducking ? 6 : 0;
     const originX = this.player.x + dirX * 18;
-    const originY = this.player.y - 6 + dirY * 8;
+    const originY = this.player.y - 6 + duckOffset + dirY * 8;
     const maxRange = tileSize * 15;
     const tileX = Math.floor(this.player.x / tileSize);
     const tileY = Math.floor(this.player.y / tileSize);
@@ -2936,7 +2929,6 @@ export default class Game {
     this.spawnEffect('execute', enemy.x, enemy.y);
     this.recordFeedback('execute', 'audio');
     this.recordFeedback('execute', 'visual');
-    this.playability.recordEnemyHit(this.clock);
   }
 
   awardLoot(enemy, execution = false) {
@@ -3768,6 +3760,7 @@ export default class Game {
       this.audio.hit();
       this.recordFeedback('hit', 'audio');
       this.recordFeedback('hit', 'visual');
+      this.playability.recordEnemyHit(this.clock);
       this.sawAnchor.damageTimer = 0.12;
     }
   }
@@ -4413,7 +4406,6 @@ export default class Game {
     this.consoleOverlay.draw(ctx, canvas.width, canvas.height);
     this.checklist.draw(ctx, this, canvas.width, canvas.height);
     this.testHarness.draw(ctx, this, canvas.width, canvas.height);
-    this.goldenPath.draw(ctx, canvas.width, canvas.height, this);
     this.testDashboard.draw(ctx, canvas.width, canvas.height);
     if (this.victory) {
       this.drawVictory(ctx, canvas.width, canvas.height);
@@ -5069,25 +5061,73 @@ export default class Game {
     console.log('Encounter Audit Report:', report);
   }
 
-  runGoldenPathTest() {
-    if (this.goldenPath.status === 'running') return;
-    this.resetRun();
+  runGoldenPathSimulation({ restoreState = null, playtest = false, startWithEverything = true } = {}) {
+    if (this.goldenPath.status === 'running') return null;
+    const worldData = this.buildWorldData();
+    const savedState = {
+      state: this.state,
+      playtestActive: this.playtestActive,
+      editorActive: this.editor?.active ?? false,
+      inputMode: this.inputMode
+    };
+    this.resetRun({ playtest, startWithEverything });
     this.state = 'playing';
     this.simulationActive = true;
-    const report = this.goldenPathTest.start(this);
+    let report = this.goldenPathTest.start(this);
     this.testResults.golden = report.status;
     this.testDashboard.setResults({ golden: report.status });
     this.testDashboard.setDetails('golden', report.lines);
-    if (report.status === 'fail') {
+    if (report.status === 'running') {
+      const maxSeconds = this.goldenPath.data?.maxSimSeconds ?? 120;
+      const maxSteps = Math.floor(maxSeconds * 60);
+      const dt = 1 / 60;
+      for (let step = 0; step < maxSteps && this.goldenPath.status === 'running'; step += 1) {
+        this.goldenPath.preUpdate(dt, this);
+        if (this.goldenPath.freeze) break;
+        this.update(dt);
+        this.goldenPath.postUpdate(dt, this);
+      }
+      report = this.goldenPathTest.buildReport(this);
+      this.testResults.golden = report.status;
+      this.testDashboard.setResults({ golden: report.status });
+      this.testDashboard.setDetails('golden', report.lines);
+    } else if (report.status === 'fail') {
       this.simulationActive = false;
     }
+    this.goldenPath.restoreSeed();
+    this.goldenPath.active = false;
+    this.goldenPath.freeze = false;
+    this.simulationActive = false;
+    if (restoreState) {
+      this.applyWorldData(worldData);
+      if (restoreState === 'editor') {
+        this.state = 'editor';
+        this.playtestActive = false;
+        this.editor.activate();
+        document.body.classList.add('editor-active');
+      } else if (restoreState === 'playtest') {
+        this.state = 'playing';
+        this.playtestActive = true;
+        this.resetRun({ playtest: true, startWithEverything });
+      } else {
+        this.state = savedState.state;
+        this.playtestActive = savedState.playtestActive;
+        if (savedState.editorActive) {
+          this.editor.activate();
+          document.body.classList.add('editor-active');
+        }
+      }
+      if (savedState.inputMode) {
+        this.inputMode = savedState.inputMode;
+      }
+    }
+    return report;
   }
 
   runAllTests(applyFixes = false) {
     this.runWorldValidityTest(applyFixes);
     this.runRoomCoverageTest();
     this.runEncounterAuditTest();
-    this.runGoldenPathTest();
   }
 
   loadObstacleTestRoom() {
@@ -5142,7 +5182,6 @@ export default class Game {
       if (action.test === 'validity') this.runWorldValidityTest(this.testDashboard.applyFixes);
       if (action.test === 'coverage') this.runRoomCoverageTest();
       if (action.test === 'encounter') this.runEncounterAuditTest();
-      if (action.test === 'golden') this.runGoldenPathTest();
       this.audio.ui();
       return;
     }
@@ -5181,7 +5220,6 @@ export default class Game {
         if (action.test === 'validity') this.runWorldValidityTest(this.testDashboard.applyFixes);
         if (action.test === 'coverage') this.runRoomCoverageTest();
         if (action.test === 'encounter') this.runEncounterAuditTest();
-        if (action.test === 'golden') this.runGoldenPathTest();
         this.audio.ui();
         return;
       }
