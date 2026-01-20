@@ -80,7 +80,7 @@ const ABILITY_DIALOG_LINES = {
   magboots: [
     'Tool acquired: Mag Boots.',
     'Press into a wall to stick, then jump to wall-launch.',
-    'Mag heat builds while engaged.'
+    'Wall-jump as often as you need.'
   ],
   resonance: [
     'Tool acquired: Resonance Core.',
@@ -95,6 +95,10 @@ const ABILITY_DIALOG_LINES = {
     'Weapon acquired: Flamethrower.',
     'Hold Attack to pour liquid fire.',
     'Short-range stream scorches anything in front of you.'
+  ],
+  map: [
+    'Map cache acquired.',
+    'Nearby rooms are now revealed.'
   ]
 };
 
@@ -232,6 +236,8 @@ export default class Game {
     this.minimapSelected = false;
     this.minimapBounds = null;
     this.minimapBackBounds = null;
+    this.minimapExitBounds = null;
+    this.minimapExitBounds = null;
     this.spawnRules = {
       globalMax: 12,
       perRegion: 6,
@@ -1534,6 +1540,9 @@ export default class Game {
     if (previousRoom !== this.activeRoomIndex) {
       if (previousRoom !== null && previousRoom !== undefined) {
         this.roomExitTimes.set(previousRoom, this.clock);
+        if (this.roomVisited.has(previousRoom) && this.hasMissingRoomEnemies(previousRoom)) {
+          this.roomRespawnTimers.set(previousRoom, 4);
+        }
       }
       if (this.activeRoomIndex !== null && this.activeRoomIndex !== undefined) {
         this.handleRoomEntry(this.activeRoomIndex);
@@ -1575,39 +1584,37 @@ export default class Game {
     this.cameraBounds = { minX, maxX, minY, maxY };
   }
 
-  handleRoomEntry(roomIndex) {
+  hasMissingRoomEnemies(roomIndex) {
     const spawns = this.roomEnemySpawns.get(roomIndex) || [];
-    if (!spawns.length) return;
-    if (!this.roomVisited.has(roomIndex)) {
-      this.roomVisited.add(roomIndex);
-      return;
-    }
+    if (!spawns.length) return false;
     const tileSize = this.world.tileSize;
     const activeKeys = new Set(this.enemies.filter((enemy) => !enemy.dead).map((enemy) => {
       const tx = Math.floor(enemy.x / tileSize);
       const ty = Math.floor(enemy.y / tileSize);
       return `${tx},${ty}`;
     }));
-    const missing = spawns.some((spawn) => !activeKeys.has(`${spawn.x},${spawn.y}`));
-    if (missing) {
-      this.roomRespawnTimers.set(roomIndex, 2.6);
+    return spawns.some((spawn) => !activeKeys.has(`${spawn.x},${spawn.y}`));
+  }
+
+  handleRoomEntry(roomIndex) {
+    if (!this.roomVisited.has(roomIndex)) {
+      this.roomVisited.add(roomIndex);
     }
   }
 
   updateRoomRespawns(dt) {
     if (!this.roomRespawnTimers.size) return;
     for (const [roomIndex, timer] of this.roomRespawnTimers.entries()) {
+      if (this.activeRoomIndex === roomIndex) {
+        continue;
+      }
       const next = timer - dt;
       if (next > 0) {
         this.roomRespawnTimers.set(roomIndex, next);
         continue;
       }
-      if (this.activeRoomIndex === roomIndex) {
-        this.respawnRoomEnemies(roomIndex);
-        this.roomRespawnTimers.delete(roomIndex);
-      } else {
-        this.roomRespawnTimers.set(roomIndex, 0.6);
-      }
+      this.respawnRoomEnemies(roomIndex);
+      this.roomRespawnTimers.delete(roomIndex);
     }
   }
 
@@ -2162,8 +2169,7 @@ export default class Game {
       this.flamethrowerAim = null;
       return;
     }
-    const attackHeld = this.input.isDown('attack')
-      || (this.gamepadConnected && this.input.isGamepadDown('jump'));
+    const attackHeld = this.input.isDown('attack');
     if (!attackHeld || !this.player || this.player.dead) {
       this.flamethrowerEmitTimer = 0;
       this.flamethrowerSoundTimer = 0;
@@ -3266,6 +3272,24 @@ export default class Game {
       }
     });
 
+    this.world.mapPickups?.forEach((pickup) => {
+      if (pickup.collected) return;
+      const dist = Math.hypot(pickup.x - this.player.x, pickup.y - this.player.y);
+      if (dist < 30) {
+        pickup.collected = true;
+        const roomIndex = this.world.roomAtTile?.(
+          Math.floor(this.player.x / this.world.tileSize),
+          Math.floor(this.player.y / this.world.tileSize)
+        );
+        this.minimap.revealNearbyRooms(roomIndex, 7);
+        this.audio.pickup();
+        this.spawnEffect('pickup', pickup.x, pickup.y - 8);
+        this.recordFeedback('pickup', 'audio');
+        this.recordFeedback('pickup', 'visual');
+        this.showAbilityDialog('map');
+      }
+    });
+
     this.world.healthUpgrades.forEach((upgrade) => {
       if (upgrade.collected) return;
       const dist = Math.hypot(upgrade.x - this.player.x, upgrade.y - this.player.y);
@@ -4338,6 +4362,19 @@ export default class Game {
         ctx.restore();
       }
       this.player.draw(ctx);
+      const tileSize = this.world.tileSize;
+      const playerTileX = Math.floor(this.player.x / tileSize);
+      const playerTileY = Math.floor(this.player.y / tileSize);
+      if (this.world.getTile(playerTileX, playerTileY) === 'Z') {
+        ctx.save();
+        ctx.fillStyle = '#3a3a3a';
+        ctx.fillRect(playerTileX * tileSize, playerTileY * tileSize, tileSize, tileSize);
+        ctx.strokeStyle = '#2b2b2b';
+        ctx.strokeRect(playerTileX * tileSize, playerTileY * tileSize, tileSize, tileSize);
+        ctx.strokeStyle = '#1f1f1f';
+        ctx.strokeRect(playerTileX * tileSize + 2, playerTileY * tileSize + 2, tileSize - 4, tileSize - 4);
+        ctx.restore();
+      }
     }
     if (this.testHarness.active && this.testHarness.showCollision) {
       this.drawCollisionBoxes(ctx);
@@ -4563,13 +4600,14 @@ export default class Game {
     const time = this.worldTime;
     const ignitirTint = this.getIgnitirTint();
     const isSolidTile = (tx, ty) => this.world.isSolid(tx, ty, this.abilities);
-    const drawLiquid = (x, y, fill, highlight) => {
+    const drawLiquid = (x, y, fill, highlight, surfaceActive = true) => {
       const baseX = x * tileSize;
       const baseY = y * tileSize;
-      const wave = Math.sin(time * 2 + x * 0.7 + y * 0.4);
-      const surface = baseY + tileSize * 0.35 + wave * 2;
       ctx.fillStyle = fill;
       ctx.fillRect(baseX, baseY, tileSize, tileSize);
+      if (!surfaceActive) return;
+      const wave = Math.sin(time * 2 + x * 0.7 + y * 0.4);
+      const surface = baseY + tileSize * 0.35 + wave * 2;
       ctx.fillStyle = highlight;
       ctx.fillRect(baseX, surface, tileSize, baseY + tileSize - surface);
       ctx.strokeStyle = 'rgba(255,255,255,0.4)';
@@ -4739,15 +4777,30 @@ export default class Game {
           ctx.stroke();
         }
         if (tile === '~') {
-          drawLiquid(x, y, '#1f66aa', '#3b9fe0');
+          const isSurface = this.world.getTile(x, y - 1) !== '~';
+          drawLiquid(x, y, '#1f66aa', '#3b9fe0', isSurface);
         }
         if (tile === 'A') {
-          drawLiquid(x, y, '#1c7a46', '#4fe18b');
-          drawBubbles(x, y, 'rgba(188,255,214,0.7)');
+          const isSurface = this.world.getTile(x, y - 1) !== 'A';
+          drawLiquid(x, y, '#1c7a46', '#4fe18b', isSurface);
+          if (isSurface) {
+            drawBubbles(x, y, 'rgba(188,255,214,0.7)');
+          }
         }
         if (tile === 'L') {
-          drawLiquid(x, y, '#ff3b1e', '#ffb347');
-          drawSteam(x, y, 'rgba(255,220,200,0.6)');
+          const isSurface = this.world.getTile(x, y - 1) !== 'L';
+          drawLiquid(x, y, '#ff3b1e', '#ffb347', isSurface);
+          if (isSurface) {
+            drawSteam(x, y, 'rgba(255,220,200,0.6)');
+          }
+        }
+        if (tile === 'Z') {
+          ctx.fillStyle = '#3a3a3a';
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#2b2b2b';
+          ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#1f1f1f';
+          ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
         }
         if (tile === '*') {
           drawSpikeTile(x, y);
@@ -4892,6 +4945,21 @@ export default class Game {
       this.drawLabel(ctx, pickup.x, pickup.y - 30, abilityLabels[pickup.ability] || 'TOOLS: UPGRADE', pickup);
     });
 
+    this.world.mapPickups?.forEach((pickup) => {
+      if (pickup.collected) return;
+      ctx.strokeStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(pickup.x, pickup.y - 12, 10, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(pickup.x - 6, pickup.y - 12);
+      ctx.lineTo(pickup.x + 6, pickup.y - 12);
+      ctx.moveTo(pickup.x, pickup.y - 18);
+      ctx.lineTo(pickup.x, pickup.y - 6);
+      ctx.stroke();
+      this.drawLabel(ctx, pickup.x, pickup.y - 30, 'MAP CACHE', pickup);
+    });
+
     this.world.healthUpgrades.forEach((upgrade) => {
       if (upgrade.collected) return;
       ctx.strokeStyle = '#fff';
@@ -4962,9 +5030,11 @@ export default class Game {
     const mapX = (width - mapWidth) / 2;
     const mapY = (height - mapHeight) / 2;
     this.minimap.update(this.player);
-    const buttonWidth = 140;
+    const buttonWidth = 130;
     const buttonHeight = 32;
-    const buttonX = mapX;
+    const buttonGap = 16;
+    const buttonsTotal = buttonWidth * 2 + buttonGap;
+    const buttonX = mapX + Math.max(0, (mapWidth - buttonsTotal) / 2);
     const buttonY = mapY + mapHeight + 28;
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.75)';
@@ -4981,13 +5051,22 @@ export default class Game {
     ctx.fillText('Back closes map • Esc resumes', width / 2, mapY + mapHeight + 18);
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+    ctx.fillRect(buttonX + buttonWidth + buttonGap, buttonY, buttonWidth, buttonHeight);
     ctx.strokeStyle = '#fff';
     ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
+    ctx.strokeRect(buttonX + buttonWidth + buttonGap, buttonY, buttonWidth, buttonHeight);
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
     ctx.fillText('BACK', buttonX + buttonWidth / 2, buttonY + 21);
+    ctx.fillText('EXIT', buttonX + buttonWidth + buttonGap + buttonWidth / 2, buttonY + 21);
     ctx.restore();
     this.minimapBackBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
+    this.minimapExitBounds = {
+      x: buttonX + buttonWidth + buttonGap,
+      y: buttonY,
+      w: buttonWidth,
+      h: buttonHeight
+    };
   }
 
   drawWaypoint(ctx, width, height, target) {
@@ -5370,6 +5449,22 @@ export default class Game {
       && payload.x <= this.minimapBackBounds.x + this.minimapBackBounds.w
       && payload.y >= this.minimapBackBounds.y
       && payload.y <= this.minimapBackBounds.y + this.minimapBackBounds.h
+    ) {
+      this.state = 'playing';
+      this.minimapSelected = false;
+      this.audio.menu();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
+      return;
+    }
+    if (
+      this.state === 'pause'
+      && this.minimapSelected
+      && this.minimapExitBounds
+      && payload.x >= this.minimapExitBounds.x
+      && payload.x <= this.minimapExitBounds.x + this.minimapExitBounds.w
+      && payload.y >= this.minimapExitBounds.y
+      && payload.y <= this.minimapExitBounds.y + this.minimapExitBounds.h
     ) {
       this.state = 'playing';
       this.minimapSelected = false;

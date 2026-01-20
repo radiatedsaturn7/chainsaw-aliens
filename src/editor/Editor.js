@@ -1,5 +1,6 @@
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
+  { id: 'hidden-path', label: 'Hidden Path Block', char: 'Z' },
   { id: 'ice-solid', label: 'Icy Solid Block', char: 'F' },
   { id: 'rock-solid', label: 'Rock Solid Block', char: 'R' },
   { id: 'triangle', label: 'Triangle Block', char: '^' },
@@ -98,6 +99,7 @@ const PREFAB_TYPES = [
   { id: 'spike-pit', label: 'Spike Pit', short: 'SP' },
   { id: 'spike-wall-pit', label: 'Spike Wall Pit', short: 'SW' },
   { id: 'spike-ceiling-pit', label: 'Spike Ceiling Pit', short: 'SC' },
+  { id: 'powerup-t', label: 'Powerup T', short: 'PT' },
   { id: 'large-t-solid', label: 'Large T Solid', short: 'TS' },
   { id: 'large-t-ice', label: 'Large T Ice', short: 'TI' },
   { id: 'solid-platform', label: 'Platform (Solid)', short: 'PS' },
@@ -114,7 +116,8 @@ const PREFAB_TYPES = [
 const POWERUP_TYPES = [
   { id: 'powerup-chainsaw', label: 'Tool: Chainsaw Rig', char: 'g' },
   { id: 'powerup-ignitir', label: 'Weapon: Ignitir', char: 'i' },
-  { id: 'powerup-flamethrower', label: 'Weapon: Flamethrower', char: 'f' }
+  { id: 'powerup-flamethrower', label: 'Weapon: Flamethrower', char: 'f' },
+  { id: 'powerup-map', label: 'Map Cache', char: 'M' }
 ];
 
 const MODE_LABELS = {
@@ -264,8 +267,9 @@ export default class Editor {
         height: null
       }
     };
-    this.randomLevelDialog = { open: false };
+    this.randomLevelDialog = { open: false, focus: 'width' };
     this.randomLevelSliderRepeat = 0;
+    this.randomLevelFocusRepeat = 0;
     this.autosaveKey = EDITOR_AUTOSAVE_KEY;
     this.autosaveLoaded = false;
     this.gamepadCursor = {
@@ -726,19 +730,49 @@ export default class Editor {
 
     if (dialogOpen) {
       this.randomLevelSliderRepeat = Math.max(0, this.randomLevelSliderRepeat - dt);
-      if (input.wasGamepadPressed('dpadUp')) {
-        this.randomLevelSlider.active = 'width';
+      this.randomLevelFocusRepeat = Math.max(0, this.randomLevelFocusRepeat - dt);
+      if (!this.randomLevelDialog.focus) {
+        this.randomLevelDialog.focus = 'width';
       }
-      if (input.wasGamepadPressed('dpadDown')) {
-        this.randomLevelSlider.active = 'height';
+      const focusOrder = ['width', 'height', 'cancel', 'ok'];
+      const moveFocus = (dir) => {
+        const currentIndex = Math.max(0, focusOrder.indexOf(this.randomLevelDialog.focus));
+        const nextIndex = clamp(currentIndex + dir, 0, focusOrder.length - 1);
+        this.randomLevelDialog.focus = focusOrder[nextIndex];
+        this.randomLevelSlider.active = ['width', 'height'].includes(this.randomLevelDialog.focus)
+          ? this.randomLevelDialog.focus
+          : null;
+      };
+      if (input.wasGamepadPressed('dpadUp') || (stickY < -0.5 && this.randomLevelFocusRepeat <= 0)) {
+        moveFocus(-1);
+        this.randomLevelFocusRepeat = 0.18;
       }
-      if (!this.randomLevelSlider.active) {
-        this.randomLevelSlider.active = 'width';
+      if (input.wasGamepadPressed('dpadDown') || (stickY > 0.5 && this.randomLevelFocusRepeat <= 0)) {
+        moveFocus(1);
+        this.randomLevelFocusRepeat = 0.18;
       }
-      const sliderInput = stickX;
-      if (Math.abs(sliderInput) > 0 && this.randomLevelSliderRepeat <= 0) {
-        this.adjustRandomLevelSlider(this.randomLevelSlider.active, Math.sign(sliderInput));
-        this.randomLevelSliderRepeat = 0.08;
+      if (['cancel', 'ok'].includes(this.randomLevelDialog.focus)) {
+        if (input.wasGamepadPressed('dpadLeft') || input.wasGamepadPressed('dpadRight')) {
+          this.randomLevelDialog.focus = this.randomLevelDialog.focus === 'cancel' ? 'ok' : 'cancel';
+        }
+      }
+      if (!this.randomLevelSlider.active && ['width', 'height'].includes(this.randomLevelDialog.focus)) {
+        this.randomLevelSlider.active = this.randomLevelDialog.focus;
+      }
+      if (this.randomLevelSlider.active) {
+        if (input.wasGamepadPressed('dpadLeft')) {
+          this.adjustRandomLevelSlider(this.randomLevelSlider.active, -1);
+        }
+        if (input.wasGamepadPressed('dpadRight')) {
+          this.adjustRandomLevelSlider(this.randomLevelSlider.active, 1);
+        }
+        const sliderInput = stickX;
+        if (Math.abs(sliderInput) > 0.3 && this.randomLevelSliderRepeat <= 0) {
+          const magnitude = Math.abs(sliderInput);
+          const step = magnitude > 0.75 ? 6 : 3;
+          this.adjustRandomLevelSlider(this.randomLevelSlider.active, Math.sign(sliderInput) * step);
+          this.randomLevelSliderRepeat = 0.05;
+        }
       }
     }
 
@@ -792,7 +826,11 @@ export default class Editor {
     if (dialogOpen && this.randomLevelDialog.justOpened) {
       this.randomLevelDialog.justOpened = false;
     } else if (dialogOpen && input.wasGamepadPressed('jump')) {
-      this.confirmRandomLevel();
+      if (this.randomLevelDialog.focus === 'cancel') {
+        this.cancelRandomLevel();
+      } else {
+        this.confirmRandomLevel();
+      }
       return;
     } else if (dialogOpen && input.wasGamepadPressed('attack')) {
       this.cancelRandomLevel();
@@ -955,13 +993,16 @@ export default class Editor {
   promptRandomLevel() {
     this.randomLevelDialog.open = true;
     this.randomLevelDialog.justOpened = true;
+    this.randomLevelDialog.focus = 'width';
     this.randomLevelSlider.active = 'width';
     this.randomLevelSliderRepeat = 0;
+    this.randomLevelFocusRepeat = 0;
   }
 
   confirmRandomLevel() {
     this.randomLevelDialog.open = false;
     this.randomLevelDialog.justOpened = false;
+    this.randomLevelDialog.focus = null;
     this.randomLevelSlider.active = null;
     this.createRandomLevel(this.randomLevelSize.width, this.randomLevelSize.height);
   }
@@ -969,6 +1010,7 @@ export default class Editor {
   cancelRandomLevel() {
     this.randomLevelDialog.open = false;
     this.randomLevelDialog.justOpened = false;
+    this.randomLevelDialog.focus = null;
     this.randomLevelSlider.active = null;
   }
 
@@ -1903,6 +1945,59 @@ export default class Editor {
     addUpperDoorSupports();
     addLowerDoorPlatforms();
 
+    const clearElevatorsInRoom = (room) => {
+      for (let i = elevatorPaths.length - 1; i >= 0; i -= 1) {
+        const path = elevatorPaths[i];
+        if (path.x >= room.x && path.x <= room.x + room.w - 1 && path.y >= room.y && path.y <= room.y + room.h - 1) {
+          elevatorPathSet.delete(`${path.x},${path.y}`);
+          elevatorPaths.splice(i, 1);
+        }
+      }
+      for (let i = elevators.length - 1; i >= 0; i -= 1) {
+        const platform = elevators[i];
+        if (
+          platform.x >= room.x
+          && platform.x <= room.x + room.w - 1
+          && platform.y >= room.y
+          && platform.y <= room.y + room.h - 1
+        ) {
+          elevatorSet.delete(`${platform.x},${platform.y}`);
+          elevators.splice(i, 1);
+        }
+      }
+    };
+
+    const carveSimpleRoom = (room, wallTile) => {
+      const doorTiles = new Set(findRoomDoorTiles(room).map((door) => `${door.x},${door.y}`));
+      for (let y = room.y; y < room.y + room.h; y += 1) {
+        for (let x = room.x; x < room.x + room.w; x += 1) {
+          const key = `${x},${y}`;
+          if (doorTiles.has(key)) {
+            setTile(x, y, 'D');
+            continue;
+          }
+          const wall = x === room.x || x === room.x + room.w - 1 || y === room.y || y === room.y + room.h - 1;
+          setTile(x, y, wall ? wallTile : '.');
+        }
+      }
+    };
+
+    const placeUpsideTPrefab = (centerX, centerY, tileChar) => {
+      const originX = centerX - 3;
+      const originY = centerY - 3;
+      for (let y = 0; y < 7; y += 1) {
+        for (let x = 0; x < 7; x += 1) {
+          if (y <= 2) {
+            if (x >= 2 && x <= 4) {
+              setTile(originX + x, originY + y, tileChar);
+            }
+          } else {
+            setTile(originX + x, originY + y, tileChar);
+          }
+        }
+      }
+    };
+
     let spawnRoom = rooms[0];
     let bestDistance = Infinity;
     rooms.forEach((room) => {
@@ -1990,6 +2085,293 @@ export default class Editor {
     };
 
     addSpawnPitPlatform();
+
+    const distanceFromSpawn = (() => {
+      const distances = new Map();
+      const queue = [spawnRoom.cellIndex];
+      distances.set(spawnRoom.cellIndex, 0);
+      while (queue.length) {
+        const current = queue.shift();
+        const dist = distances.get(current) ?? 0;
+        const neighbors = adjacency.get(current) || [];
+        Array.from(neighbors).forEach((neighbor) => {
+          if (distances.has(neighbor)) return;
+          distances.set(neighbor, dist + 1);
+          queue.push(neighbor);
+        });
+      }
+      return distances;
+    })();
+    const roomDistance = (room) => distanceFromSpawn.get(room.cellIndex) ?? Infinity;
+    const reservedRooms = new Set([spawnRoom.cellIndex]);
+    const selectedRooms = [];
+    const powerupPrefabTile = 'F';
+
+    const isRoomFarEnough = (room, minSteps = 3) => selectedRooms.every((entry) => {
+      const a = cellFromIndex(room.cellIndex);
+      const b = cellFromIndex(entry.cellIndex);
+      return Math.abs(a.col - b.col) + Math.abs(a.row - b.row) >= minSteps;
+    });
+
+    const placePowerupPrefabRoom = (room, options) => {
+      const {
+        powerupChar,
+        wallTile,
+        prefabTile = powerupPrefabTile,
+        blockChar = null,
+        prefabOffsetY = 0
+      } = options;
+      const centerX = Math.floor(room.x + room.w / 2);
+      const centerY = Math.floor(room.y + room.h / 2) + prefabOffsetY;
+      const originX = centerX - 3;
+      const originY = centerY - 3;
+      if (originX < room.x + 1 || originX + 6 > room.x + room.w - 2) return false;
+      if (originY < room.y + 1 || originY + 6 > room.y + room.h - 2) return false;
+      clearElevatorsInRoom(room);
+      carveSimpleRoom(room, wallTile);
+      placeUpsideTPrefab(centerX, centerY, prefabTile);
+      setTile(centerX, centerY, powerupChar);
+      if (blockChar) {
+        for (let dy = -1; dy <= 1; dy += 1) {
+          for (let dx = -1; dx <= 1; dx += 1) {
+            if (dx === 0 && dy === 0) continue;
+            const bx = centerX + dx;
+            const by = centerY + dy;
+            if (bx <= room.x || bx >= room.x + room.w - 1) continue;
+            if (by <= room.y || by >= room.y + room.h - 1) continue;
+            setTile(bx, by, blockChar);
+          }
+        }
+      }
+      return true;
+    };
+
+    const placeMapRoom = (room) => placePowerupPrefabRoom(room, {
+      powerupChar: 'M',
+      wallTile: 'F'
+    });
+
+    const powerupSpecs = [
+      {
+        id: 'chainsaw',
+        powerupChar: 'g',
+        wallTile: 'F',
+        minW: 10,
+        minH: 10
+      },
+      {
+        id: 'magboots',
+        powerupChar: 'm',
+        wallTile: 'F',
+        minW: 10,
+        minH: 10,
+        blockChar: 'Y'
+      },
+      {
+        id: 'flamethrower',
+        powerupChar: 'f',
+        wallTile: 'F',
+        minW: 10,
+        minH: 18,
+        prefabOffsetY: -4
+      },
+      {
+        id: 'ignitir',
+        powerupChar: 'i',
+        wallTile: 'N',
+        minW: 10,
+        minH: 10,
+        blockChar: 'N'
+      }
+    ];
+
+    const sortedRooms = rooms
+      .filter((room) => room !== spawnRoom)
+      .sort((a, b) => roomDistance(a) - roomDistance(b));
+
+    const maxSpecialRooms = Math.floor(rooms.length / 11);
+    const specialOrder = ['chainsaw', 'magboots', 'flamethrower', 'ignitir', 'boss'];
+    const specialsToPlace = specialOrder.slice(0, Math.min(maxSpecialRooms, specialOrder.length));
+    const powerupsToPlace = powerupSpecs.filter((spec) => specialsToPlace.includes(spec.id));
+
+    powerupsToPlace.forEach((spec, index) => {
+      const targetIndex = Math.min(sortedRooms.length - 1, (index + 1) * 10);
+      const tryPlace = (room) => {
+        if (reservedRooms.has(room.cellIndex)) return false;
+        if (room.w < spec.minW || room.h < spec.minH) return false;
+        if (!isRoomFarEnough(room, 3)) return false;
+        const placed = placePowerupPrefabRoom(room, spec);
+        if (!placed) return false;
+        reservedRooms.add(room.cellIndex);
+        selectedRooms.push(room);
+        return true;
+      };
+      let placed = false;
+      for (let i = targetIndex; i < sortedRooms.length; i += 1) {
+        if (tryPlace(sortedRooms[i])) {
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) {
+        for (let i = 0; i < targetIndex; i += 1) {
+          if (tryPlace(sortedRooms[i])) break;
+        }
+      }
+    });
+
+    if (specialsToPlace.includes('boss')) {
+      let bestBoss = null;
+      let bestDistance = -Infinity;
+      rooms.forEach((room) => {
+        const { col, row } = cellFromIndex(room.cellIndex);
+        if (col + 1 >= cols || row + 1 >= rows) return;
+        const indices = [
+          cellIndex(col, row),
+          cellIndex(col + 1, row),
+          cellIndex(col, row + 1),
+          cellIndex(col + 1, row + 1)
+        ];
+        if (indices.some((index) => reservedRooms.has(index))) return;
+        const roomGroup = indices.map((index) => roomByCell.get(index)).filter(Boolean);
+        if (roomGroup.length !== 4) return;
+        const groupCenter = { col: col + 0.5, row: row + 0.5 };
+        const farFromPowerups = selectedRooms.every((selected) => {
+          const selectedCell = cellFromIndex(selected.cellIndex);
+          return Math.abs(selectedCell.col - groupCenter.col) + Math.abs(selectedCell.row - groupCenter.row) >= 3;
+        });
+        if (!farFromPowerups) return;
+        const avgDistance = roomGroup.reduce((sum, entry) => sum + roomDistance(entry), 0) / roomGroup.length;
+        if (avgDistance > bestDistance) {
+          bestDistance = avgDistance;
+          bestBoss = { rooms: roomGroup };
+        }
+      });
+      if (bestBoss) {
+        bestBoss.rooms.forEach((room) => reservedRooms.add(room.cellIndex));
+        selectedRooms.push(...bestBoss.rooms);
+        const minX = Math.min(...bestBoss.rooms.map((room) => room.x));
+        const minY = Math.min(...bestBoss.rooms.map((room) => room.y));
+        const maxX = Math.max(...bestBoss.rooms.map((room) => room.x + room.w - 1));
+        const maxY = Math.max(...bestBoss.rooms.map((room) => room.y + room.h - 1));
+        const bossRoom = {
+          x: minX,
+          y: minY,
+          w: maxX - minX + 1,
+          h: maxY - minY + 1,
+          wallTile: '#'
+        };
+        clearElevatorsInRoom(bossRoom);
+        carveSimpleRoom(bossRoom, '#');
+        addElevator(bossRoom);
+        addHorizontalElevator(bossRoom);
+        addConveyor(bossRoom);
+        addPit(bossRoom, 'A');
+        addPit(bossRoom, 'L');
+        addPit(bossRoom, '*');
+        const spikeY = bossRoom.y + bossRoom.h - 2;
+        for (let x = bossRoom.x + 2; x < bossRoom.x + bossRoom.w - 2; x += 3) {
+          if (tiles[spikeY]?.[x] === '.') setTile(x, spikeY, '*');
+        }
+        const pads = getDoorLandingPads(bossRoom);
+        pads.forEach((pad) => {
+          if (tiles[pad.y]?.[pad.x] === '.') setTile(pad.x, pad.y, 'P');
+        });
+      }
+    }
+
+    const mapRoomCount = rooms.length >= 40 ? 2 : 1;
+    let placedMaps = 0;
+    for (let i = sortedRooms.length - 1; i >= 0 && placedMaps < mapRoomCount; i -= 1) {
+      const room = sortedRooms[i];
+      if (reservedRooms.has(room.cellIndex)) continue;
+      if (room.w < 10 || room.h < 10) continue;
+      if (!isRoomFarEnough(room, 2)) continue;
+      if (placeMapRoom(room)) {
+        reservedRooms.add(room.cellIndex);
+        selectedRooms.push(room);
+        placedMaps += 1;
+      }
+    }
+
+    const healthTarget = rooms.length >= 55
+      ? 13
+      : Math.max(3, Math.round(13 * (rooms.length / 55)));
+    const healthBlockTypes = ['N', 'Y', 'P'];
+    const healthCandidates = sortedRooms.filter((room) => (
+      !reservedRooms.has(room.cellIndex)
+      && room.w >= 8
+      && room.h >= 8
+    ));
+
+    const placeHealthSurrounded = (room, blockChar) => {
+      const spot = findFloorInRoom(room);
+      if (!spot) return false;
+      const cx = clamp(spot.x, room.x + 2, room.x + room.w - 3);
+      const cy = clamp(spot.y, room.y + 2, room.y + room.h - 3);
+      for (let dy = -1; dy <= 1; dy += 1) {
+        for (let dx = -1; dx <= 1; dx += 1) {
+          const tx = cx + dx;
+          const ty = cy + dy;
+          if (dx === 0 && dy === 0) continue;
+          if (tx <= room.x || tx >= room.x + room.w - 1) continue;
+          if (ty <= room.y || ty >= room.y + room.h - 1) continue;
+          setTile(tx, ty, blockChar);
+        }
+      }
+      setTile(cx, cy, 'H');
+      return true;
+    };
+
+    const placeHealthHigh = (room) => {
+      const x = clamp(Math.floor(room.x + room.w / 2), room.x + 1, room.x + room.w - 2);
+      const y = room.y + 2;
+      if (tiles[y]?.[x] !== '.') return false;
+      setTile(x, y, 'H');
+      return true;
+    };
+
+    const placeHealthHidden = (room, blockChar) => {
+      if (room.w < 10 || room.h < 8) return false;
+      const fromLeft = Math.random() < 0.5;
+      const dir = fromLeft ? 1 : -1;
+      const corridorStartX = fromLeft ? room.x + 2 : room.x + room.w - 3;
+      const entryY = randInt(room.y + 3, room.y + room.h - 3);
+      const corridorLength = 3;
+      for (let step = 0; step < corridorLength; step += 1) {
+        const cx = corridorStartX + dir * step;
+        for (let dy = 0; dy <= 1; dy += 1) {
+          setTile(cx, entryY - dy, 'Z');
+        }
+      }
+      const healthX = corridorStartX + dir * (corridorLength - 1);
+      const healthY = entryY - 1;
+      setTile(healthX, healthY, 'H');
+      if (Math.random() < 0.5) {
+        const entranceX = corridorStartX - dir;
+        for (let dy = 0; dy <= 1; dy += 1) {
+          if (entranceX <= room.x || entranceX >= room.x + room.w - 1) continue;
+          setTile(entranceX, entryY - dy, blockChar);
+        }
+      }
+      return true;
+    };
+
+    let placedHealth = 0;
+    let candidateIndex = 0;
+    while (placedHealth < healthTarget && candidateIndex < healthCandidates.length) {
+      const room = healthCandidates[candidateIndex];
+      candidateIndex += 1;
+      const mode = placedHealth % 3;
+      const blockChar = pickOne(healthBlockTypes);
+      let placed = false;
+      if (mode === 0) placed = placeHealthSurrounded(room, blockChar);
+      if (mode === 1) placed = placeHealthHidden(room, blockChar);
+      if (mode === 2) placed = placeHealthHigh(room);
+      if (placed) {
+        placedHealth += 1;
+      }
+    }
 
     const ensureDoorConnectivity = () => {
       const blockers = new Set(['#', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', '^', 'v', 'Y', 'N', 'P']);
@@ -2083,6 +2465,32 @@ export default class Editor {
       }
     };
 
+    const enforceSpikeSupports = () => {
+      const supports = new Set(['#', 'F', 'R', 'W', 'X', 'C', 'U', 'I', '<', '>', 'Y', 'N', 'P']);
+      const canSupport = (x, y) => {
+        const tile = tiles[y]?.[x];
+        return tile && tile !== 'D' && supports.has(tile);
+      };
+      const placeSupport = (x, y) => {
+        if (x < 0 || y < 0 || x >= width || y >= height) return false;
+        if (tiles[y]?.[x] === 'D') return false;
+        setTile(x, y, '#');
+        return true;
+      };
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          if (tiles[y][x] !== '*') continue;
+          if (canSupport(x, y + 1) || canSupport(x, y - 1) || canSupport(x - 1, y) || canSupport(x + 1, y)) {
+            continue;
+          }
+          if (placeSupport(x, y + 1)) continue;
+          if (placeSupport(x + 1, y)) continue;
+          if (placeSupport(x - 1, y)) continue;
+          placeSupport(x, y - 1);
+        }
+      }
+    };
+
     const isSpawnBufferTile = (x, y) => Math.abs(x - spawn.x) <= 3 && Math.abs(y - spawn.y) <= 3;
     const isSpawnPlatformTile = (x, y) => {
       const dx = x - spawn.x;
@@ -2102,6 +2510,7 @@ export default class Editor {
     clearSpawnBufferTiles();
     ensureDoorConnectivity();
     enforceAcidSupports();
+    enforceSpikeSupports();
 
     const enemies = [];
     const difficultyOrder = ['practice', 'skitter', 'spitter', 'bulwark', 'floater', 'slicer', 'hivenode', 'sentinel'];
@@ -2350,11 +2759,13 @@ export default class Editor {
     if (this.randomLevelDialog.open) {
       if (this.isPointInBounds(payload.x, payload.y, this.randomLevelSlider.bounds.width)) {
         this.randomLevelSlider.active = 'width';
+        this.randomLevelDialog.focus = 'width';
         this.updateRandomLevelSlider('width', payload.x);
         return;
       }
       if (this.isPointInBounds(payload.x, payload.y, this.randomLevelSlider.bounds.height)) {
         this.randomLevelSlider.active = 'height';
+        this.randomLevelDialog.focus = 'height';
         this.updateRandomLevelSlider('height', payload.x);
         return;
       }
@@ -3255,6 +3666,11 @@ export default class Editor {
         if (y === 0) return x === 0 || x === width - 1 ? '#' : '*';
         return x === 0 || x === width - 1 ? '#' : '.';
       });
+    } else if (this.prefabType.id === 'powerup-t') {
+      buildFixed(7, 7, (x, y) => {
+        if (y <= 2) return x >= 2 && x <= 4 ? '#' : null;
+        return '#';
+      });
     } else if (this.prefabType.id === 'large-t-solid') {
       buildFixed(7, 6, (x, y) => {
         if (y === 0) return '#';
@@ -4136,16 +4552,16 @@ export default class Editor {
       }
     };
 
-    const drawSlider = (x, y, w, label, value, min, max, kind) => {
+    const drawSlider = (x, y, w, label, value, min, max, kind, active = false) => {
       const clampedValue = clamp(value, min, max);
       const t = max === min ? 0 : (clampedValue - min) / (max - min);
       const h = 10;
       const knobX = x + t * w;
       ctx.save();
       ctx.globalAlpha = 0.9;
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillStyle = active ? 'rgba(18,60,90,0.8)' : 'rgba(0,0,0,0.6)';
       ctx.fillRect(x, y, w, h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.strokeStyle = active ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.4)';
       ctx.strokeRect(x, y, w, h);
       ctx.fillStyle = '#fff';
       ctx.beginPath();
@@ -4722,8 +5138,28 @@ export default class Editor {
       const sliderW = dialogW - 40;
       const sliderX = dialogX + 20;
       const sliderY = dialogY + 56;
-      drawSlider(sliderX, sliderY, sliderW, 'Width', this.randomLevelSize.width, 50, 256, 'width');
-      drawSlider(sliderX, sliderY + 32, sliderW, 'Height', this.randomLevelSize.height, 30, 256, 'height');
+      drawSlider(
+        sliderX,
+        sliderY,
+        sliderW,
+        'Width',
+        this.randomLevelSize.width,
+        50,
+        256,
+        'width',
+        this.randomLevelDialog.focus === 'width'
+      );
+      drawSlider(
+        sliderX,
+        sliderY + 32,
+        sliderW,
+        'Height',
+        this.randomLevelSize.height,
+        30,
+        256,
+        'height',
+        this.randomLevelDialog.focus === 'height'
+      );
 
       const buttonW = 120;
       const buttonH = 34;
@@ -4734,7 +5170,7 @@ export default class Editor {
         buttonW,
         buttonH,
         'CANCEL',
-        false,
+        this.randomLevelDialog.focus === 'cancel',
         () => this.cancelRandomLevel(),
         'Cancel random level'
       );
@@ -4744,10 +5180,17 @@ export default class Editor {
         buttonW,
         buttonH,
         'OK',
-        false,
+        this.randomLevelDialog.focus === 'ok',
         () => this.confirmRandomLevel(),
         'Generate random level'
       );
+      if (this.game.input.isGamepadConnected()) {
+        ctx.fillStyle = 'rgba(255,255,255,0.75)';
+        ctx.font = '12px Courier New';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('A: OK   B: Cancel', dialogX + dialogW / 2, buttonY + buttonH + 6);
+      }
       ctx.restore();
     }
 

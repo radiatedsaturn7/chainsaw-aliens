@@ -118,12 +118,6 @@ export default class Player {
 
   update(dt, input, world, abilities = {}) {
     if (this.dead) return;
-    if (!Number.isFinite(this.magBootsHeat)) {
-      this.magBootsHeat = 0;
-    }
-    if (!Number.isFinite(this.magBootsOverheat)) {
-      this.magBootsOverheat = 0;
-    }
     this.justJumped = false;
     this.justDashed = false;
     this.justLanded = false;
@@ -226,7 +220,7 @@ export default class Player {
 
     const pressingIntoWall = this.onWall !== 0
       && ((this.onWall === 1 && input.isDown('right')) || (this.onWall === -1 && input.isDown('left')));
-    this.magBootsEngaged = abilities.magboots && pressingIntoWall && this.magBootsOverheat <= 0;
+    this.magBootsEngaged = abilities.magboots && pressingIntoWall;
 
     const canGroundJump = this.coyote > 0 || this.magBootsEngaged;
     const canAirJump = !canGroundJump && this.jumpsRemaining > 0;
@@ -236,7 +230,6 @@ export default class Player {
         this.vx = -this.onWall * this.speed * 1.4;
         this.vy = -jumpPower;
         this.onWall = 0;
-        this.magBootsHeat += 0.2;
       } else {
         this.vy = -jumpPower;
       }
@@ -307,18 +300,8 @@ export default class Player {
       this.takeDamage(1);
     }
 
-    if (this.magBootsOverheat > 0) {
-      this.magBootsOverheat = Math.max(0, this.magBootsOverheat - dt);
-    }
-    if (this.magBootsEngaged) {
-      this.magBootsHeat += dt * 0.3;
-    } else {
-      this.magBootsHeat = Math.max(0, this.magBootsHeat - dt * 0.2);
-    }
-    if (this.magBootsHeat >= 1) {
-      this.magBootsHeat = 0;
-      this.magBootsOverheat = 1.1;
-    }
+    this.magBootsHeat = 0;
+    this.magBootsOverheat = 0;
     this.oilLevel = Math.max(0, this.oilLevel - dt * 0.05);
     if (this.oilLevel < 0.02) {
       this.oilLevel = 0;

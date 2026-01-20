@@ -3,6 +3,7 @@ export default class Minimap {
     this.world = world;
     this.explored = new Set();
     this.exploredRooms = new Set();
+    this.knownRooms = new Set();
     this.scale = 2;
     this.showLegend = false;
     this.doorClusters = null;
@@ -13,6 +14,9 @@ export default class Minimap {
     const tileY = Math.floor(player.y / this.world.tileSize);
     this.explored.add(`${tileX},${tileY}`);
     const roomIndex = this.world.roomAtTile?.(tileX, tileY);
+    if (roomIndex !== null && roomIndex !== undefined) {
+      this.knownRooms.add(roomIndex);
+    }
     if (roomIndex !== null && roomIndex !== undefined && !this.exploredRooms.has(roomIndex)) {
       const room = this.world.getRoomBounds?.(roomIndex);
       if (room) {
@@ -28,15 +32,50 @@ export default class Minimap {
     }
   }
 
+  revealNearbyRooms(roomIndex, count = 7) {
+    if (roomIndex === null || roomIndex === undefined) return;
+    const rooms = this.world.rooms || [];
+    const origin = rooms[roomIndex];
+    if (!origin) return;
+    const originCenter = {
+      x: (origin.minX + origin.maxX) / 2,
+      y: (origin.minY + origin.maxY) / 2
+    };
+    const sorted = rooms
+      .map((room, index) => {
+        const centerX = (room.minX + room.maxX) / 2;
+        const centerY = (room.minY + room.maxY) / 2;
+        return {
+          index,
+          distance: Math.hypot(centerX - originCenter.x, centerY - originCenter.y)
+        };
+      })
+      .sort((a, b) => a.distance - b.distance);
+    let revealed = 0;
+    for (const entry of sorted) {
+      if (entry.index === roomIndex) continue;
+      if (this.knownRooms.has(entry.index)) continue;
+      this.knownRooms.add(entry.index);
+      revealed += 1;
+      if (revealed >= count) break;
+    }
+  }
+
   draw(ctx, x, y, width, height, player, options = {}) {
     const tileW = this.world.width;
     const tileH = this.world.height;
     const pixel = Math.min(width / tileW, height / tileH);
+    const currentRoom = this.world.roomAtTile?.(
+      Math.floor(player.x / this.world.tileSize),
+      Math.floor(player.y / this.world.tileSize)
+    );
     ctx.save();
     ctx.translate(x, y);
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(0, 0, tileW * pixel, tileH * pixel);
     ctx.strokeStyle = 'rgba(255,255,255,0.4)';
     ctx.strokeRect(0, 0, tileW * pixel, tileH * pixel);
-    this.drawRooms(ctx, pixel);
+    this.drawRooms(ctx, pixel, currentRoom);
     this.drawDoors(ctx, pixel);
     this.drawIcon(ctx, player.x, player.y, pixel, 'rgba(255,255,255,0.9)');
     if (options.objective) {
@@ -47,10 +86,14 @@ export default class Minimap {
     this.world.abilityPickups.forEach((pickup) => {
       if (!pickup.collected) this.drawIcon(ctx, pickup.x, pickup.y, pixel, 'rgba(255,255,255,0.7)');
     });
+    this.world.mapPickups?.forEach((pickup) => {
+      if (!pickup.collected) this.drawIcon(ctx, pickup.x, pickup.y, pixel, 'rgba(255,255,255,0.7)');
+    });
     this.world.healthUpgrades.forEach((upgrade) => {
       if (!upgrade.collected) this.drawIcon(ctx, upgrade.x, upgrade.y, pixel, 'rgba(255,255,255,0.7)');
     });
     if (this.world.bossGate) this.drawIcon(ctx, this.world.bossGate.x, this.world.bossGate.y, pixel, 'rgba(255,255,255,0.7)');
+    this.drawPowerupMarkers(ctx, pixel, currentRoom);
     ctx.restore();
 
     if (options.showLegend) {
@@ -58,12 +101,21 @@ export default class Minimap {
     }
   }
 
-  drawRooms(ctx, pixel) {
+  drawRooms(ctx, pixel, currentRoom) {
+    const blink = 0.65 + 0.35 * Math.sin(performance.now() * 0.006);
     this.world.rooms.forEach((room, index) => {
-      if (!this.exploredRooms.has(index)) return;
+      const isExplored = this.exploredRooms.has(index);
+      const isKnown = this.knownRooms.has(index);
+      if (!isExplored && !isKnown) return;
       const width = (room.maxX - room.minX + 1) * pixel;
       const height = (room.maxY - room.minY + 1) * pixel;
-      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      if (index === currentRoom) {
+        ctx.fillStyle = `rgba(255,222,77,${blink})`;
+      } else if (isExplored) {
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      } else {
+        ctx.fillStyle = 'rgba(160,160,160,0.6)';
+      }
       ctx.fillRect(room.minX * pixel, room.minY * pixel, width, height);
       ctx.strokeStyle = 'rgba(0,0,0,0.35)';
       ctx.strokeRect(room.minX * pixel + 0.5, room.minY * pixel + 0.5, width - 1, height - 1);
@@ -73,12 +125,58 @@ export default class Minimap {
   drawDoors(ctx, pixel) {
     const clusters = this.getDoorClusters();
     clusters.forEach((cluster) => {
-      const shouldShow = cluster.rooms.some((roomIndex) => this.exploredRooms.has(roomIndex));
+      const shouldShow = cluster.rooms.some((roomIndex) => this.knownRooms.has(roomIndex));
       if (!shouldShow) return;
       ctx.fillStyle = '#9ad9ff';
       cluster.tiles.forEach((tile) => {
         ctx.fillRect(tile.x * pixel, tile.y * pixel, pixel, pixel);
       });
+    });
+  }
+
+  drawPowerupMarkers(ctx, pixel, currentRoom) {
+    const rooms = this.world.rooms || [];
+    const marked = new Set();
+    const addMarker = (roomIndex) => {
+      if (roomIndex === null || roomIndex === undefined) return;
+      if (!this.knownRooms.has(roomIndex)) return;
+      if (marked.has(roomIndex)) return;
+      marked.add(roomIndex);
+      const room = rooms[roomIndex];
+      if (!room) return;
+      const centerX = (room.minX + room.maxX + 1) / 2;
+      const centerY = (room.minY + room.maxY + 1) / 2;
+      ctx.save();
+      ctx.fillStyle = roomIndex === currentRoom ? '#2a1a00' : '#1a1a1a';
+      ctx.font = `${Math.max(8, Math.round(pixel * 3.4))}px Courier New`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('?', centerX * pixel, centerY * pixel);
+      ctx.restore();
+    };
+    this.world.abilityPickups.forEach((pickup) => {
+      if (pickup.collected) return;
+      const roomIndex = this.world.roomAtTile?.(
+        Math.floor(pickup.x / this.world.tileSize),
+        Math.floor(pickup.y / this.world.tileSize)
+      );
+      addMarker(roomIndex);
+    });
+    this.world.mapPickups?.forEach((pickup) => {
+      if (pickup.collected) return;
+      const roomIndex = this.world.roomAtTile?.(
+        Math.floor(pickup.x / this.world.tileSize),
+        Math.floor(pickup.y / this.world.tileSize)
+      );
+      addMarker(roomIndex);
+    });
+    this.world.healthUpgrades.forEach((upgrade) => {
+      if (upgrade.collected) return;
+      const roomIndex = this.world.roomAtTile?.(
+        Math.floor(upgrade.x / this.world.tileSize),
+        Math.floor(upgrade.y / this.world.tileSize)
+      );
+      addMarker(roomIndex);
     });
   }
 
@@ -151,6 +249,7 @@ export default class Minimap {
     if (tile === '<' || tile === '>') return '#bfbfbf';
     if (tile === '=') return '#f3f3f3';
     if (tile === '#') return '#6b6b6b';
+    if (tile === 'Z') return '#6b6b6b';
     return '#ffffff';
   }
 
