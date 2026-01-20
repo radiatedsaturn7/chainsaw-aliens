@@ -366,6 +366,11 @@ export default class Game {
     this.initElevators();
   }
 
+  runPlayabilityCheck() {
+    if (this.playtestActive || this.simulationActive) return;
+    this.playability.runOnce(this);
+  }
+
   syncSpawnPoint() {
     const spawn = this.world.spawnPoint || this.spawnPoint;
     this.spawnPoint = { x: spawn.x, y: spawn.y };
@@ -736,6 +741,7 @@ export default class Game {
     this.resetRun();
     this.state = 'playing';
     this.simulationActive = false;
+    this.runPlayabilityCheck();
     this.startSpawnPause();
   }
 
@@ -1179,6 +1185,7 @@ export default class Game {
         if (finished) {
           this.state = 'playing';
           this.simulationActive = false;
+          this.runPlayabilityCheck();
           this.startSpawnPause();
         }
         this.audio.ui();
