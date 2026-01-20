@@ -2124,7 +2124,9 @@ export default class Game {
 
   updateFlamethrower(dt, usingFlamethrower) {
     const tileSize = this.world.tileSize;
-    const maxHeat = 10;
+    const maxHeat = 5;
+    const heatGainRate = 1.8;
+    const heatCoolRate = 0.8;
     const minBurnRadius = tileSize * 0.45;
     const maxBurnRadius = tileSize * 1.5;
     const minBurnHeight = tileSize * 0.7;
@@ -2141,7 +2143,7 @@ export default class Game {
       }
     }
     for (const [key, data] of this.flamethrowerImpactHeat.entries()) {
-      const next = data.heat - dt * 0.8;
+      const next = data.heat - dt * heatCoolRate;
       if (next <= 0) {
         this.flamethrowerImpactHeat.delete(key);
       } else {
@@ -2218,7 +2220,7 @@ export default class Game {
     const duckOffset = this.player.ducking ? 6 : 0;
     const originX = this.player.x + dirX * 18;
     const originY = this.player.y - 6 + duckOffset + dirY * 8;
-    const maxRange = tileSize * 15;
+    const maxRange = tileSize * Math.max(this.world.width, this.world.height);
     const tileX = Math.floor(this.player.x / tileSize);
     const tileY = Math.floor(this.player.y / tileSize);
     const roomIndex = this.world.roomAtTile(tileX, tileY);
@@ -2230,7 +2232,7 @@ export default class Game {
         y: inv * inv * startY + 2 * inv * t * (startY + curveY) + t * t * (startY + dy)
       };
     };
-    const initialArcDrop = maxRange * 0.22;
+    const initialArcDrop = Math.min(maxRange * 0.22, tileSize * 8);
     let streamDx = dirX * maxRange;
     let streamDy = dirY * maxRange + initialArcDrop;
     let controlX = streamDx * 0.5;
@@ -2239,7 +2241,9 @@ export default class Game {
     let impactY = originY + streamDy;
     let impactTile = null;
     let lastPoint = { x: originX, y: originY };
-    for (let t = 0.05; t <= 1.0001; t += 0.05) {
+    const steps = Math.max(20, Math.ceil(maxRange / (tileSize * 0.5)));
+    for (let i = 1; i <= steps; i += 1) {
+      const t = i / steps;
       const point = getQuadraticPoint(t, originX, originY, streamDx, streamDy, controlX, controlY);
       const pointTileX = Math.floor(point.x / tileSize);
       const pointTileY = Math.floor(point.y / tileSize);
@@ -2254,7 +2258,7 @@ export default class Game {
     streamDx = impactX - originX;
     streamDy = impactY - originY;
     const adjustedRange = Math.hypot(streamDx, streamDy);
-    const arcDrop = adjustedRange * 0.22;
+    const arcDrop = Math.min(adjustedRange * 0.22, tileSize * 8);
     const wobbleScale = Math.min(40, adjustedRange * 0.18);
     const wobbleX = (Math.random() - 0.5) * wobbleScale;
     const wobbleY = (Math.random() - 0.5) * (wobbleScale * 0.65);
@@ -2294,7 +2298,9 @@ export default class Game {
       }
       const impactKey = impactTile ? `${impactTile.x},${impactTile.y}` : null;
       const currentHeat = impactKey ? (this.flamethrowerImpactHeat.get(impactKey)?.heat ?? 0) : 0;
-      const nextHeat = impactKey ? Math.min(maxHeat, currentHeat + emitInterval) : currentHeat;
+      const nextHeat = impactKey
+        ? Math.min(maxHeat, currentHeat + emitInterval * heatGainRate)
+        : currentHeat;
       if (impactKey) {
         this.flamethrowerImpactHeat.set(impactKey, { heat: nextHeat, x: impactX, y: impactY });
       }
@@ -2307,11 +2313,22 @@ export default class Game {
         size: 16 + Math.random() * 10 + heatProgress * 18
       });
       if (impactTile) {
-        this.applyObstacleDamage(impactTile.x, impactTile.y, 'flamethrower', {
-          cooldown: 0,
-          sound: false,
-          effect: false
-        });
+        const radius = minBurnRadius + (maxBurnRadius - minBurnRadius) * heatProgress;
+        const tileRadius = Math.max(1, Math.ceil(radius / tileSize));
+        const centerTileX = Math.floor(impactX / tileSize);
+        const centerTileY = Math.floor(impactY / tileSize);
+        for (let y = centerTileY - tileRadius; y <= centerTileY + tileRadius; y += 1) {
+          for (let x = centerTileX - tileRadius; x <= centerTileX + tileRadius; x += 1) {
+            const tileCenterX = (x + 0.5) * tileSize;
+            const tileCenterY = (y + 0.5) * tileSize;
+            if (Math.hypot(tileCenterX - impactX, tileCenterY - impactY) > radius) continue;
+            this.applyObstacleDamage(x, y, 'flamethrower', {
+              cooldown: 0,
+              sound: false,
+              effect: false
+            });
+          }
+        }
       }
       if (impactTile) {
         this.spawnEffect('flamethrower-burn', impactX, impactY, {
@@ -4027,7 +4044,7 @@ export default class Game {
     const footY = playerRect.y + playerRect.h;
     const withinX = playerRect.x + playerRect.w > elevatorRect.x + 2
       && playerRect.x < elevatorRect.x + elevatorRect.w - 2;
-    return withinX && footY >= elevatorRect.y - 4 && footY <= elevatorRect.y + 6;
+    return withinX && footY >= elevatorRect.y - 8 && footY <= elevatorRect.y + 12;
   }
 
   advanceElevator(platform, dt) {
@@ -4406,7 +4423,10 @@ export default class Game {
       const tileSize = this.world.tileSize;
       const playerTileX = Math.floor(this.player.x / tileSize);
       const playerTileY = Math.floor(this.player.y / tileSize);
-      if (this.world.getTile(playerTileX, playerTileY) === 'Z') {
+      const revealHiddenPaths = this.ignitirSequence
+        && this.ignitirSequence.time >= 2.4
+        && this.ignitirSequence.time <= 4.6;
+      if (!revealHiddenPaths && this.world.getTile(playerTileX, playerTileY) === 'Z') {
         ctx.save();
         ctx.fillStyle = '#3a3a3a';
         ctx.fillRect(playerTileX * tileSize, playerTileY * tileSize, tileSize, tileSize);
@@ -4623,8 +4643,7 @@ export default class Game {
     const platforms = this.elevatorPlatforms?.length ? this.elevatorPlatforms : (this.world.elevators || []);
     if (!platforms.length) return;
     ctx.save();
-    ctx.fillStyle = 'rgba(255,211,106,0.3)';
-    ctx.strokeStyle = '#ffd36a';
+    ctx.strokeStyle = '#5c5c5c';
     ctx.lineWidth = 2;
     platforms.forEach((platform) => {
       const baseX = platform.tileX !== undefined ? platform.x : (platform.x + 0.5) * tileSize;
@@ -4634,8 +4653,24 @@ export default class Game {
         const x = baseX + tile.dx * tileSize;
         const y = baseY + tile.dy * tileSize;
         const rect = this.getElevatorRectAt(x, y);
+        const gradient = ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.h);
+        gradient.addColorStop(0, '#909090');
+        gradient.addColorStop(0.55, '#6f6f6f');
+        gradient.addColorStop(1, '#4e4e4e');
+        ctx.fillStyle = gradient;
         ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
         ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+        const orbX = rect.x + rect.w / 2;
+        const orbY = rect.y + rect.h / 2;
+        const orbRadius = Math.min(rect.w, rect.h) * 0.22;
+        const orbGradient = ctx.createRadialGradient(orbX, orbY, orbRadius * 0.2, orbX, orbY, orbRadius);
+        orbGradient.addColorStop(0, '#c5f0ff');
+        orbGradient.addColorStop(0.6, '#55b8ff');
+        orbGradient.addColorStop(1, '#1f5aa8');
+        ctx.fillStyle = orbGradient;
+        ctx.beginPath();
+        ctx.arc(orbX, orbY, orbRadius, 0, Math.PI * 2);
+        ctx.fill();
       });
     });
     ctx.restore();
@@ -4645,6 +4680,9 @@ export default class Game {
     const tileSize = this.world.tileSize;
     const time = this.worldTime;
     const ignitirTint = this.getIgnitirTint();
+    const revealHiddenPaths = this.ignitirSequence
+      && this.ignitirSequence.time >= 2.4
+      && this.ignitirSequence.time <= 4.6;
     const isSolidTile = (tx, ty) => this.world.isSolid(tx, ty, this.abilities);
     const drawLiquid = (x, y, fill, highlight, surfaceActive = true) => {
       const baseX = x * tileSize;
@@ -4840,7 +4878,7 @@ export default class Game {
             drawSteam(x, y, 'rgba(255,220,200,0.6)');
           }
         }
-        if (tile === 'Z') {
+        if (tile === 'Z' && !revealHiddenPaths) {
           ctx.fillStyle = '#3a3a3a';
           ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
           ctx.strokeStyle = '#2b2b2b';
