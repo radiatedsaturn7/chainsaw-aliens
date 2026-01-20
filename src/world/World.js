@@ -71,6 +71,7 @@ export default class World {
     this.spawn = null;
     this.spawnPoint = null;
     this.abilityPickups = [];
+    this.mapPickups = [];
     this.healthUpgrades = [];
     this.savePoints = [];
     this.shops = [];
@@ -115,6 +116,7 @@ export default class World {
       y: (this.spawn.y + 0.5) * this.tileSize
     };
     this.abilityPickups = [];
+    this.mapPickups = [];
     this.healthUpgrades = [];
     this.savePoints = [];
     this.shops = [];
@@ -136,6 +138,7 @@ export default class World {
 
   rebuildCaches() {
     this.abilityPickups = [];
+    this.mapPickups = [];
     this.healthUpgrades = [];
     this.savePoints = [];
     this.shops = [];
@@ -179,6 +182,14 @@ export default class World {
             f: 'flamethrower'
           }[tile];
           this.abilityPickups.push({ id: `ability-${ability}`, x: worldX, y: worldY, ability, collected: false });
+        }
+        if (tile === 'M') {
+          this.mapPickups.push({
+            id: `map-${x}-${y}`,
+            x: worldX,
+            y: worldY,
+            collected: false
+          });
         }
         if (tile === 'H') {
           const region = this.regionAt(worldX, worldY).id;
