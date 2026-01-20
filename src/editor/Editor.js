@@ -189,13 +189,14 @@ export default class Editor {
       prefabs: true,
       shapes: true
     };
-    this.panelTabs = ['tools', 'tiles', 'powerups', 'enemies', 'prefabs', 'shapes'];
+    this.panelTabs = ['tools', 'tiles', 'powerups', 'enemies', 'bosses', 'prefabs', 'shapes'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       tools: 0,
       tiles: 0,
       powerups: 0,
       enemies: 0,
+      bosses: 0,
       prefabs: 0,
       shapes: 0
     };
@@ -204,6 +205,7 @@ export default class Editor {
       tiles: 0,
       powerups: 0,
       enemies: 0,
+      bosses: 0,
       prefabs: 0,
       shapes: 0
     };
@@ -214,6 +216,7 @@ export default class Editor {
       tiles: 0,
       powerups: 0,
       enemies: 0,
+      bosses: 0,
       prefabs: 0,
       shapes: 0
     };
@@ -221,7 +224,7 @@ export default class Editor {
     this.drawer = {
       open: true,
       tabIndex: 0,
-      tabs: ['tools', 'tiles', 'powerups', 'enemies', 'prefabs', 'shapes'],
+      tabs: ['tools', 'tiles', 'powerups', 'enemies', 'bosses', 'prefabs', 'shapes'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -277,6 +280,7 @@ export default class Editor {
       y: 0,
       active: false
     };
+    this.focusOverride = null;
     this.dragStart = null;
     this.dragTarget = null;
     this.recordRecent('tiles', this.tileType);
@@ -388,11 +392,16 @@ export default class Editor {
 
   resetView() {
     const { canvas } = this.game;
-    const focus = this.game.world.spawnPoint || this.game.spawnPoint || this.game.player || { x: 0, y: 0 };
+    const focus = this.focusOverride || this.game.world.spawnPoint || this.game.spawnPoint || this.game.player || { x: 0, y: 0 };
     this.zoom = 1;
     const bounds = this.getCameraBounds();
     this.camera.x = clamp(focus.x - canvas.width / 2, bounds.minX, bounds.maxX);
     this.camera.y = clamp(focus.y - canvas.height / 2, bounds.minY, bounds.maxY);
+    this.focusOverride = null;
+  }
+
+  setFocusOverride(point) {
+    this.focusOverride = point;
   }
 
   update(input, dt) {
@@ -491,19 +500,31 @@ export default class Editor {
     const index = this.panelTabs.indexOf(tabId);
     if (index === -1) return;
     this.panelTabIndex = index;
+    const drawerIndex = this.drawer.tabs.indexOf(tabId);
+    if (drawerIndex >= 0) {
+      this.drawer.tabIndex = drawerIndex;
+    }
+    if (tabId === 'bosses') {
+      this.enemyCategory = 'boss';
+    } else if (tabId === 'enemies') {
+      this.enemyCategory = 'standard';
+    }
   }
 
   cyclePanelTab(direction) {
-    const cycleTabs = ['tools', 'tiles', 'powerups', 'enemies'];
     const current = this.getActivePanelTab();
-    const currentIndex = Math.max(0, cycleTabs.indexOf(current));
-    const nextIndex = (currentIndex + direction + cycleTabs.length) % cycleTabs.length;
-    const nextTab = cycleTabs[nextIndex];
+    const currentIndex = Math.max(0, this.panelTabs.indexOf(current));
+    const nextIndex = (currentIndex + direction + this.panelTabs.length) % this.panelTabs.length;
+    const nextTab = this.panelTabs[nextIndex];
     this.setPanelTab(nextTab);
+    const drawerIndex = this.drawer.tabs.indexOf(nextTab);
+    if (drawerIndex >= 0) {
+      this.drawer.tabIndex = drawerIndex;
+    }
     if (nextTab === 'tiles') {
       this.mode = 'tile';
       this.tileTool = 'paint';
-    } else if (nextTab === 'enemies') {
+    } else if (nextTab === 'enemies' || nextTab === 'bosses') {
       this.mode = 'enemy';
     }
   }
@@ -516,7 +537,7 @@ export default class Editor {
     ];
     let items = [];
     let columns = 1;
-    const enemySource = this.enemyCategory === 'boss'
+    const enemySource = tabId === 'bosses'
       ? BOSS_ENEMY_TYPES
       : STANDARD_ENEMY_TYPES;
 
@@ -571,7 +592,7 @@ export default class Editor {
           this.tileTool = 'paint';
         }
       }));
-    } else if (tabId === 'enemies') {
+    } else if (tabId === 'enemies' || tabId === 'bosses') {
       items = enemySource.map((enemy) => ({
         id: enemy.id,
         label: `${enemy.label} [${enemy.glyph}]`,
@@ -791,8 +812,12 @@ export default class Editor {
     }
 
     if (lookX !== 0 || lookY !== 0) {
-      this.camera.x += lookX * panSpeed;
-      this.camera.y += lookY * panSpeed;
+      const deltaX = lookX * panSpeed;
+      const deltaY = lookY * panSpeed;
+      this.camera.x += deltaX;
+      this.camera.y += deltaY;
+      this.gamepadCursor.x += deltaX;
+      this.gamepadCursor.y += deltaY;
       this.clampCamera();
     }
 
@@ -2113,6 +2138,12 @@ export default class Editor {
       return Math.abs(a.col - b.col) + Math.abs(a.row - b.row) >= minSteps;
     });
 
+    const isRoomFarFrom = (room, list, minSteps = 2) => list.every((entry) => {
+      const a = cellFromIndex(room.cellIndex);
+      const b = cellFromIndex(entry.cellIndex);
+      return Math.abs(a.col - b.col) + Math.abs(a.row - b.row) >= minSteps;
+    });
+
     const placePowerupPrefabRoom = (room, options) => {
       const {
         powerupChar,
@@ -2294,15 +2325,14 @@ export default class Editor {
       }
     }
 
-    const healthTarget = rooms.length >= 55
-      ? 13
-      : Math.max(3, Math.round(13 * (rooms.length / 55)));
+    const healthTarget = 13;
     const healthBlockTypes = ['N', 'Y', 'P'];
     const healthCandidates = sortedRooms.filter((room) => (
       !reservedRooms.has(room.cellIndex)
       && room.w >= 8
       && room.h >= 8
     ));
+    const healthRooms = [];
 
     const placeHealthSurrounded = (room, blockChar) => {
       const spot = findFloorInRoom(room);
@@ -2357,20 +2387,29 @@ export default class Editor {
       return true;
     };
 
-    let placedHealth = 0;
-    let candidateIndex = 0;
-    while (placedHealth < healthTarget && candidateIndex < healthCandidates.length) {
-      const room = healthCandidates[candidateIndex];
-      candidateIndex += 1;
-      const mode = placedHealth % 3;
+    const placeHealthInRoom = (room) => {
+      const mode = healthRooms.length % 3;
       const blockChar = pickOne(healthBlockTypes);
-      let placed = false;
-      if (mode === 0) placed = placeHealthSurrounded(room, blockChar);
-      if (mode === 1) placed = placeHealthHidden(room, blockChar);
-      if (mode === 2) placed = placeHealthHigh(room);
-      if (placed) {
-        placedHealth += 1;
+      if (mode === 0) return placeHealthSurrounded(room, blockChar);
+      if (mode === 1) return placeHealthHidden(room, blockChar);
+      return placeHealthHigh(room);
+    };
+
+    let placedHealth = 0;
+    const placeWithSpacing = (minSteps) => {
+      for (let i = 0; i < healthCandidates.length && placedHealth < healthTarget; i += 1) {
+        const room = healthCandidates[i];
+        if (!isRoomFarFrom(room, healthRooms, minSteps)) continue;
+        if (placeHealthInRoom(room)) {
+          healthRooms.push(room);
+          placedHealth += 1;
+        }
       }
+    };
+
+    placeWithSpacing(2);
+    if (placedHealth < healthTarget) {
+      placeWithSpacing(1);
     }
 
     const ensureDoorConnectivity = () => {
@@ -2513,18 +2552,67 @@ export default class Editor {
     enforceSpikeSupports();
 
     const enemies = [];
-    const difficultyOrder = ['practice', 'skitter', 'spitter', 'bulwark', 'floater', 'slicer', 'hivenode', 'sentinel'];
+    const difficultyOrder = [
+      'practice',
+      'skitter',
+      'coward',
+      'slicer',
+      'pouncer',
+      'bouncer',
+      'spitter',
+      'ranger',
+      'bulwark',
+      'floater',
+      'drifter',
+      'bobber',
+      'harrier',
+      'hivenode',
+      'sentinel'
+    ];
+    const roomsByDistance = rooms
+      .filter((room) => room !== spawnRoom)
+      .sort((a, b) => roomDistance(a) - roomDistance(b));
     const maxDist = Math.hypot(width / 2, height / 2) || 1;
-    rooms.forEach((room) => {
-      if (room === spawnRoom) return;
-      const enemyCount = clamp(Math.floor(room.area / 220), 1, 5);
+    const usedRooms = new Set();
+    const placeEnemy = (room, type) => {
+      const spot = findFloorInRoom(room);
+      if (!spot) return false;
+      enemies.push({ x: spot.x, y: spot.y, type });
+      return true;
+    };
+
+    difficultyOrder.forEach((type, index) => {
+      if (!roomsByDistance.length) return;
+      const targetIndex = Math.floor((index / Math.max(1, difficultyOrder.length - 1)) * (roomsByDistance.length - 1));
+      let placed = false;
+      for (let offset = 0; offset < roomsByDistance.length; offset += 1) {
+        const candidate = roomsByDistance[(targetIndex + offset) % roomsByDistance.length];
+        if (usedRooms.has(candidate.cellIndex)) continue;
+        if (placeEnemy(candidate, type)) {
+          usedRooms.add(candidate.cellIndex);
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) {
+        for (let i = 0; i < roomsByDistance.length; i += 1) {
+          const candidate = roomsByDistance[i];
+          if (placeEnemy(candidate, type)) break;
+        }
+      }
+    });
+
+    roomsByDistance.forEach((room) => {
+      const enemyCount = clamp(Math.floor(room.area / 220) + Math.floor(Math.hypot(room.center.x - spawn.x, room.center.y - spawn.y) / maxDist * 3), 1, 7);
       const distance = Math.hypot(room.center.x - spawn.x, room.center.y - spawn.y);
       const ratio = clamp(distance / maxDist, 0, 1);
-      const baseIndex = Math.floor(ratio * (difficultyOrder.length - 1));
+      const centerIndex = Math.floor(ratio * (difficultyOrder.length - 1));
+      const minIndex = clamp(centerIndex - 2, 0, difficultyOrder.length - 1);
+      const maxIndex = clamp(centerIndex + 2, 0, difficultyOrder.length - 1);
       for (let i = 0; i < enemyCount; i += 1) {
         const spot = findFloorInRoom(room);
         if (!spot) continue;
-        const index = clamp(baseIndex + randInt(0, 1), 0, difficultyOrder.length - 1);
+        const index = randInt(minIndex, maxIndex);
         enemies.push({ x: spot.x, y: spot.y, type: difficultyOrder[index] });
       }
     });
@@ -4524,12 +4612,19 @@ export default class Editor {
       ctx.restore();
     };
 
-    const drawButton = (x, y, w, h, label, active, onClick, tooltip = '', preview = null) => {
+    const drawButton = (x, y, w, h, label, active, onClick, tooltip = '', preview = null, focused = false) => {
       ctx.globalAlpha = 0.9;
       ctx.fillStyle = active ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.6)';
       ctx.fillRect(x, y, w, h);
       ctx.strokeStyle = active ? '#fff' : 'rgba(255,255,255,0.4)';
       ctx.strokeRect(x, y, w, h);
+      if (focused) {
+        ctx.save();
+        ctx.strokeStyle = '#9ad9ff';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x - 2, y - 2, w + 4, h + 4);
+        ctx.restore();
+      }
       ctx.fillStyle = '#fff';
       ctx.save();
       ctx.textBaseline = 'middle';
@@ -4682,17 +4777,41 @@ export default class Editor {
           { id: 'tiles', label: 'TILES' },
           { id: 'powerups', label: 'POWERUPS' },
           { id: 'enemies', label: 'ENEMIES' },
+          { id: 'bosses', label: 'BOSSES' },
           { id: 'prefabs', label: 'STRUCTURES' },
           { id: 'shapes', label: 'SHAPES' }
         ];
-        const activeTab = this.drawer.tabs[this.drawer.tabIndex];
+        const activeTab = this.getActivePanelTab();
         const tabMargin = 12;
         const tabGap = 6;
+        const tabArrowW = 26;
+        const tabArrowGap = 6;
         const tabHeight = 32;
-        const tabWidth = (panelW - tabMargin * 2 - tabGap * (tabs.length - 1)) / tabs.length;
+        const tabRowW = panelW - tabMargin * 2 - (tabArrowW + tabArrowGap) * 2;
+        const tabWidth = (tabRowW - tabGap * (tabs.length - 1)) / tabs.length;
         const tabY = panelY + handleAreaH + 8;
+        drawButton(
+          panelX + tabMargin,
+          tabY,
+          tabArrowW,
+          tabHeight,
+          '◀',
+          false,
+          () => this.cyclePanelTab(-1),
+          'Previous tab'
+        );
+        drawButton(
+          panelX + panelW - tabMargin - tabArrowW,
+          tabY,
+          tabArrowW,
+          tabHeight,
+          '▶',
+          false,
+          () => this.cyclePanelTab(1),
+          'Next tab'
+        );
         tabs.forEach((tab, index) => {
-          const x = panelX + tabMargin + index * (tabWidth + tabGap);
+          const x = panelX + tabMargin + tabArrowW + tabArrowGap + index * (tabWidth + tabGap);
           drawButton(
             x,
             tabY,
@@ -4701,7 +4820,7 @@ export default class Editor {
             tab.label,
             activeTab === tab.id,
             () => {
-              this.drawer.tabIndex = index;
+              this.setPanelTab(tab.id);
             },
             `${tab.label} drawer`
           );
@@ -4713,44 +4832,15 @@ export default class Editor {
         let contentY = baseContentY;
         const reservedBottom = joystickRadius * 2 + 32;
         let contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom);
-        const isPreviewTab = activeTab === 'tiles' || activeTab === 'prefabs' || activeTab === 'powerups' || activeTab === 'enemies';
+        const isPreviewTab = activeTab === 'tiles'
+          || activeTab === 'prefabs'
+          || activeTab === 'powerups'
+          || activeTab === 'enemies'
+          || activeTab === 'bosses';
         const buttonHeight = isPreviewTab ? 60 : 52;
         const buttonGap = 12;
         let items = [];
         let columns = 2;
-
-        if (activeTab === 'enemies') {
-          const subTabHeight = 28;
-          const subTabGap = 10;
-          const subTabWidth = (contentW - subTabGap) / 2;
-          const subTabY = baseContentY;
-          drawButton(
-            contentX,
-            subTabY,
-            subTabWidth,
-            subTabHeight,
-            'STANDARD',
-            this.enemyCategory === 'standard',
-            () => {
-              this.enemyCategory = 'standard';
-            },
-            'Standard enemies'
-          );
-          drawButton(
-            contentX + subTabWidth + subTabGap,
-            subTabY,
-            subTabWidth,
-            subTabHeight,
-            'BOSSES',
-            this.enemyCategory === 'boss',
-            () => {
-              this.enemyCategory = 'boss';
-            },
-            'Boss enemies'
-          );
-          contentY += subTabHeight + 10;
-          contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom);
-        }
 
         if (activeTab === 'tools') {
           items = [
@@ -4831,8 +4921,8 @@ export default class Editor {
             }
           }));
           columns = 2;
-        } else if (activeTab === 'enemies') {
-          const enemySource = this.enemyCategory === 'boss'
+        } else if (activeTab === 'enemies' || activeTab === 'bosses') {
+          const enemySource = activeTab === 'bosses'
             ? BOSS_ENEMY_TYPES
             : STANDARD_ENEMY_TYPES;
           items = enemySource.map((enemy) => ({
@@ -4895,13 +4985,26 @@ export default class Editor {
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
 
         const columnWidth = (contentW - buttonGap * (columns - 1)) / columns;
+        const gamepadActive = this.game.input?.isGamepadConnected?.() ?? false;
+        const focusedIndex = this.panelMenuIndex[activeTab] ?? 0;
         items.forEach((item, index) => {
           const col = index % columns;
           const row = Math.floor(index / columns);
           const x = contentX + col * (columnWidth + buttonGap);
           const y = contentY + 8 + row * (buttonHeight + buttonGap);
           if (y + buttonHeight > contentY + contentHeight - 8) return;
-          drawButton(x, y, columnWidth, buttonHeight, item.label, item.active, item.onClick, item.tooltip, item.preview);
+          drawButton(
+            x,
+            y,
+            columnWidth,
+            buttonHeight,
+            item.label,
+            item.active,
+            item.onClick,
+            item.tooltip,
+            item.preview,
+            gamepadActive && index === focusedIndex
+          );
         });
 
       }
@@ -4918,18 +5021,42 @@ export default class Editor {
         { id: 'tiles', label: 'TILES' },
         { id: 'powerups', label: 'POWERUPS' },
         { id: 'enemies', label: 'ENEMIES' },
+        { id: 'bosses', label: 'BOSSES' },
         { id: 'prefabs', label: 'STRUCTURES' },
         { id: 'shapes', label: 'SHAPES' }
       ];
       const tabMargin = 12;
       const tabGap = 6;
+      const tabArrowW = 22;
+      const tabArrowGap = 6;
       const tabHeight = 26;
-      const tabWidth = (panelWidth - tabMargin * 2 - tabGap * (tabs.length - 1)) / tabs.length;
+      const tabRowW = panelWidth - tabMargin * 2 - (tabArrowW + tabArrowGap) * 2;
+      const tabWidth = (tabRowW - tabGap * (tabs.length - 1)) / tabs.length;
       const tabY = panelY;
       const activeTab = this.getActivePanelTab();
 
+      drawButton(
+        panelX + tabMargin,
+        tabY,
+        tabArrowW,
+        tabHeight,
+        '◀',
+        false,
+        () => this.cyclePanelTab(-1),
+        'Previous tab'
+      );
+      drawButton(
+        panelX + panelWidth - tabMargin - tabArrowW,
+        tabY,
+        tabArrowW,
+        tabHeight,
+        '▶',
+        false,
+        () => this.cyclePanelTab(1),
+        'Next tab'
+      );
       tabs.forEach((tab, index) => {
-        const x = panelX + tabMargin + index * (tabWidth + tabGap);
+        const x = panelX + tabMargin + tabArrowW + tabArrowGap + index * (tabWidth + tabGap);
         drawButton(
           x,
           tabY,
@@ -4948,7 +5075,10 @@ export default class Editor {
       const contentW = panelWidth;
       const contentPadding = 12;
       const buttonGap = 10;
-      const isTallButtons = activeTab === 'tiles' || activeTab === 'prefabs' || activeTab === 'enemies';
+      const isTallButtons = activeTab === 'tiles'
+        || activeTab === 'prefabs'
+        || activeTab === 'enemies'
+        || activeTab === 'bosses';
       const buttonHeight = isTallButtons ? 40 : 32;
       const { items, columns } = this.getPanelConfig(activeTab);
 
@@ -4957,41 +5087,6 @@ export default class Editor {
       ctx.fillRect(contentX, contentY, contentW, contentHeight);
       ctx.strokeStyle = '#fff';
       ctx.strokeRect(contentX, contentY, contentW, contentHeight);
-
-      if (activeTab === 'enemies') {
-        const subTabHeight = 24;
-        const subTabGap = 10;
-        const subTabWidth = (contentW - contentPadding * 2 - subTabGap) / 2;
-        const subTabY = contentY + 6;
-        const subTabX = contentX + contentPadding;
-        drawButton(
-          subTabX,
-          subTabY,
-          subTabWidth,
-          subTabHeight,
-          'STANDARD',
-          this.enemyCategory === 'standard',
-          () => {
-            this.enemyCategory = 'standard';
-          },
-          'Standard enemies'
-        );
-        drawButton(
-          subTabX + subTabWidth + subTabGap,
-          subTabY,
-          subTabWidth,
-          subTabHeight,
-          'BOSSES',
-          this.enemyCategory === 'boss',
-          () => {
-            this.enemyCategory = 'boss';
-          },
-          'Boss enemies'
-        );
-        const offset = subTabHeight + 14;
-        contentY += offset;
-        contentHeight = Math.max(0, panelY + panelH - contentY);
-      }
 
       const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
       const rows = Math.ceil(items.length / columns);
@@ -5020,12 +5115,14 @@ export default class Editor {
           return false;
         }
         if (activeTab === 'tiles' || activeTab === 'powerups') return this.tileType.id === item.id;
-        if (activeTab === 'enemies') return this.enemyType.id === item.id;
+        if (activeTab === 'enemies' || activeTab === 'bosses') return this.enemyType.id === item.id;
         if (activeTab === 'prefabs') return this.prefabType.id === item.id;
         if (activeTab === 'shapes') return this.shapeTool.id === item.id;
         return false;
       };
 
+      const gamepadActive = this.game.input?.isGamepadConnected?.() ?? false;
+      const focusedIndex = this.panelMenuIndex[activeTab] ?? 0;
       items.forEach((item, index) => {
         const col = index % columns;
         const row = Math.floor(index / columns);
@@ -5039,7 +5136,18 @@ export default class Editor {
             : item.enemy
               ? { type: 'enemy', enemy: item.enemy }
               : null;
-        drawButton(x, y, columnWidth, buttonHeight, item.label, getActiveState(item), item.onClick, item.tooltip, preview);
+        drawButton(
+          x,
+          y,
+          columnWidth,
+          buttonHeight,
+          item.label,
+          getActiveState(item),
+          item.onClick,
+          item.tooltip,
+          preview,
+          gamepadActive && index === focusedIndex
+        );
       });
 
       const infoLines = [
