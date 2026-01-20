@@ -31,6 +31,9 @@ export default class PlayabilityLayer {
 
   update(dt, game) {
     const now = game.clock;
+    if (!this.active && !game.testHarness?.active && !game.playtestActive && game.state !== 'editor') {
+      return;
+    }
     if (this.active) {
       this.runChecks(game, now);
     } else {
