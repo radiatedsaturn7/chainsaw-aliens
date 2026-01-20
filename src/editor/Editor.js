@@ -857,7 +857,7 @@ export default class Editor {
         this.confirmRandomLevel();
       }
       return;
-    } else if (dialogOpen && input.wasGamepadPressed('attack')) {
+    } else if (dialogOpen && input.wasGamepadPressed('dash')) {
       this.cancelRandomLevel();
       return;
     }
@@ -2663,7 +2663,11 @@ export default class Editor {
     this.redoStack = [];
     this.persistAutosave();
     this.resetView();
-    this.game.runGoldenPathSimulation({ restoreState: 'editor' });
+    this.game.runGoldenPathSimulation({
+      restoreState: 'editor',
+      maxSimSeconds: 5,
+      timeoutWarning: 'Random level playtest exceeded 5 seconds. Check the layout or shorten paths.'
+    });
     this.resetView();
   }
 

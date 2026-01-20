@@ -278,6 +278,12 @@ export default class World {
     return false;
   }
 
+  isEnemySolid(x, y, abilities, options = {}) {
+    const tile = this.getTile(x, y);
+    if (tile === DOOR_TILE) return true;
+    return this.isSolid(x, y, abilities, options);
+  }
+
   isHazard(x, y) {
     return HAZARD_TILES.has(this.getTile(x, y));
   }

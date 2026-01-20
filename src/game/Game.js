@@ -274,10 +274,12 @@ export default class Game {
     this.deathTimer = 0;
     this.gameOverTimer = 0;
     this.spawnPauseTimer = 0;
+    this.pickupPauseTimer = 0;
     this.editor = new Editor(this);
     this.editorReturnState = 'title';
     this.playtestActive = false;
     this.playtestButtonBounds = null;
+    this.playtestPauseLock = 0;
     this.elevatorPlatforms = [];
     this.elevatorGraph = null;
     this.isMobile = false;
@@ -614,6 +616,7 @@ export default class Game {
       this.syncSpawnPoint();
       this.state = 'playing';
       this.playtestActive = true;
+      this.playtestPauseLock = 0.35;
       document.body.classList.remove('editor-active');
       this.runGoldenPathSimulation({
         restoreState: 'playtest',
@@ -1083,6 +1086,7 @@ export default class Game {
     this.worldTime += dt;
     this.menuFlashTimer = Math.max(0, this.menuFlashTimer - dt);
     this.updateSystemPrompts(dt);
+    this.playtestPauseLock = Math.max(0, this.playtestPauseLock - dt);
 
     if (this.input.wasPressed('editor')) {
       if (this.state === 'editor') {
@@ -1104,6 +1108,7 @@ export default class Game {
       this.playtestActive
       && this.state === 'playing'
       && this.input.wasPressed('pause')
+      && this.playtestPauseLock <= 0
       && !this.isMobile
     ) {
       this.returnToEditorFromPlaytest();
@@ -1311,6 +1316,13 @@ export default class Game {
     this.doorCooldown = Math.max(0, this.doorCooldown - dt * timeScale);
     if (this.spawnPauseTimer > 0) {
       this.spawnPauseTimer = Math.max(0, this.spawnPauseTimer - dt);
+      this.updateEffects(dt);
+      this.setRevAudio(false);
+      this.input.flush();
+      return;
+    }
+    if (this.pickupPauseTimer > 0) {
+      this.pickupPauseTimer = Math.max(0, this.pickupPauseTimer - dt);
       this.updateEffects(dt);
       this.setRevAudio(false);
       this.input.flush();
@@ -2621,7 +2633,7 @@ export default class Game {
     const endY = Math.floor((rect.y + rect.h) / tileSize);
     for (let ty = startY; ty <= endY; ty += 1) {
       for (let tx = startX; tx <= endX; tx += 1) {
-        if (this.world.isSolid(tx, ty, this.abilities)) {
+        if (this.world.isEnemySolid(tx, ty, this.abilities)) {
           overlaps.push({ tx, ty });
         }
       }
@@ -2663,13 +2675,13 @@ export default class Game {
     const ignoreOneWay = signY < 0;
     const leftX = rect.x + 4;
     const rightX = rect.x + rect.w - 4;
-    const hitLeft = this.world.isSolid(
+    const hitLeft = this.world.isEnemySolid(
       Math.floor(leftX / this.world.tileSize),
       Math.floor(testY / this.world.tileSize),
       this.abilities,
       { ignoreOneWay }
     );
-    const hitRight = this.world.isSolid(
+    const hitRight = this.world.isEnemySolid(
       Math.floor(rightX / this.world.tileSize),
       Math.floor(testY / this.world.tileSize),
       this.abilities,
@@ -2715,7 +2727,7 @@ export default class Game {
     const endY = Math.floor((rect.y + rect.h) / tileSize);
     for (let ty = startY; ty <= endY; ty += 1) {
       for (let tx = startX; tx <= endX; tx += 1) {
-        if (this.world.isSolid(tx, ty, this.abilities, { ignoreOneWay: true })) {
+        if (this.world.isEnemySolid(tx, ty, this.abilities, { ignoreOneWay: true })) {
           return false;
         }
       }
@@ -3329,7 +3341,8 @@ export default class Game {
           this.selectWeapon(2);
         }
         this.ensureActiveWeaponAvailable();
-        this.audio.pickup();
+        const pickupPause = this.audio.pickup();
+        this.pickupPauseTimer = Math.max(this.pickupPauseTimer, pickupPause || 0);
         this.spawnEffect('pickup', pickup.x, pickup.y - 8);
         this.recordFeedback('pickup', 'audio');
         this.recordFeedback('pickup', 'visual');
@@ -5293,7 +5306,13 @@ export default class Game {
     console.log('Encounter Audit Report:', report);
   }
 
-  runGoldenPathSimulation({ restoreState = null, playtest = false, startWithEverything = true } = {}) {
+  runGoldenPathSimulation({
+    restoreState = null,
+    playtest = false,
+    startWithEverything = true,
+    maxSimSeconds = null,
+    timeoutWarning = ''
+  } = {}) {
     if (this.goldenPath.status === 'running') return null;
     const worldData = this.buildWorldData();
     const savedState = {
@@ -5306,11 +5325,12 @@ export default class Game {
     this.state = 'playing';
     this.simulationActive = true;
     let report = this.goldenPathTest.start(this);
+    let timedOut = false;
     this.testResults.golden = report.status;
     this.testDashboard.setResults({ golden: report.status });
     this.testDashboard.setDetails('golden', report.lines);
     if (report.status === 'running') {
-      const maxSeconds = this.goldenPath.data?.maxSimSeconds ?? 120;
+      const maxSeconds = maxSimSeconds ?? this.goldenPath.data?.maxSimSeconds ?? 120;
       const maxSteps = Math.floor(maxSeconds * 60);
       const dt = 1 / 60;
       for (let step = 0; step < maxSteps && this.goldenPath.status === 'running'; step += 1) {
@@ -5318,6 +5338,10 @@ export default class Game {
         if (this.goldenPath.freeze) break;
         this.update(dt);
         this.goldenPath.postUpdate(dt, this);
+      }
+      timedOut = this.goldenPath.status === 'running';
+      if (timedOut) {
+        this.goldenPath.stop(this);
       }
       report = this.goldenPathTest.buildReport(this);
       this.testResults.golden = report.status;
@@ -5352,6 +5376,9 @@ export default class Game {
       if (savedState.inputMode) {
         this.inputMode = savedState.inputMode;
       }
+    }
+    if (timeoutWarning && timedOut) {
+      this.showModalPrompt(timeoutWarning);
     }
     return report;
   }
