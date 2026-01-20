@@ -2073,6 +2073,8 @@ export default class Editor {
     this.redoStack = [];
     this.persistAutosave();
     this.resetView();
+    this.game.runGoldenPathSimulation({ restoreState: 'editor' });
+    this.resetView();
   }
 
   undo() {

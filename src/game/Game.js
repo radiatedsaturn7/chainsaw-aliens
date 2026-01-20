@@ -44,6 +44,7 @@ import Validator from '../debug/Validator.js';
 import ConsoleOverlay from '../debug/ConsoleOverlay.js';
 import Checklist from '../debug/Checklist.js';
 import ActionFeedback from '../debug/ActionFeedback.js';
+import PlayabilityLayer from '../debug/PlayabilityLayer.js';
 import FeasibilityValidator from '../debug/FeasibilityValidator.js';
 import GoldenPathRunner from '../debug/GoldenPathRunner.js';
 import AutoRepair from '../debug/AutoRepair.js';
@@ -210,6 +211,7 @@ export default class Game {
     this.consoleOverlay = new ConsoleOverlay();
     this.checklist = new Checklist();
     this.actionFeedback = new ActionFeedback();
+    this.playability = new PlayabilityLayer(this.world, this.player, this.validator);
     this.goldenPath = new GoldenPathRunner();
     this.worldValidityTest = new WorldValidityTest(this.world, this.player);
     this.roomCoverageTest = new RoomCoverageTest(this.world, this.player, this.feasibilityValidator);
@@ -353,6 +355,7 @@ export default class Game {
     this.minimap = new Minimap(this.world);
     this.validator = new Validator(this.world, this.player);
     this.feasibilityValidator = new FeasibilityValidator(this.world, this.player);
+    this.playability = new PlayabilityLayer(this.world, this.player, this.validator);
     this.worldValidityTest = new WorldValidityTest(this.world, this.player);
     this.roomCoverageTest = new RoomCoverageTest(this.world, this.player, this.feasibilityValidator);
     this.encounterAuditTest = new EncounterAuditTest(this.world, this.player, this.feasibilityValidator);
@@ -554,11 +557,15 @@ export default class Game {
     this.editor.deactivate();
     if (playtest) {
       this.syncSpawnPoint();
-      this.resetRun({ playtest: true, startWithEverything: this.editor.startWithEverything });
       this.state = 'playing';
       this.playtestActive = true;
-      this.startSpawnPause();
       document.body.classList.remove('editor-active');
+      this.runGoldenPathSimulation({
+        restoreState: 'playtest',
+        playtest: true,
+        startWithEverything: this.editor.startWithEverything
+      });
+      this.startSpawnPause();
       return;
     }
     this.playtestActive = false;
@@ -1132,15 +1139,6 @@ export default class Game {
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
       }
-      if (this.input.wasPressed('golden')) {
-        if (this.canRunGolden()) {
-          this.startGoldenPath();
-          this.recordFeedback('menu navigate', 'audio');
-          this.recordFeedback('menu navigate', 'visual');
-        } else {
-          this.consoleOverlay.setReport('warn', ['Golden path locked: run tests first.'], 'AUTO-TEST');
-        }
-      }
       this.input.flush();
       return;
     }
@@ -1221,15 +1219,9 @@ export default class Game {
       return;
     }
 
-    this.goldenPath.preUpdate(dt, this);
-    if (this.goldenPath.freeze) {
-      this.input.flush();
-      return;
-    }
     this.testHarness.update(this.input, this);
     const debugSlow = this.testHarness.active && this.testHarness.slowMotion;
-    const simScale = this.goldenPath.getTimeScale();
-    const timeScale = (this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1) * simScale;
+    const timeScale = this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1;
     this.slowTimer = Math.max(0, this.slowTimer - dt);
     this.damageFlashTimer = Math.max(0, this.damageFlashTimer - dt * timeScale);
     this.ignitirFlashTimer = Math.max(0, this.ignitirFlashTimer - dt * timeScale);
@@ -1416,13 +1408,7 @@ export default class Game {
     this.updateObjective();
     this.updateBossState();
     this.consoleOverlay.update(dt * timeScale);
-    this.goldenPath.postUpdate(dt * timeScale, this);
-    if (this.goldenPath.status === 'pass' || this.goldenPath.status === 'fail') {
-      const report = this.goldenPathTest.buildReport(this);
-      this.testResults.golden = report.status;
-      this.testDashboard.setResults({ golden: report.status });
-      this.testDashboard.setDetails('golden', report.lines);
-    }
+    this.playability.update(dt * timeScale, this);
 
     this.updateRoomCameraBounds();
     this.camera.follow(this.player, dt, this.cameraBounds);
@@ -1442,15 +1428,11 @@ export default class Game {
     if (this.input.wasPressed('encounter')) {
       this.runEncounterAuditTest();
     }
-    if (this.input.wasPressed('golden') && this.state === 'playing') {
-      if (this.canRunGolden()) {
-        this.startGoldenPath();
-      } else {
-        this.consoleOverlay.setReport('warn', ['Golden path locked: run tests first.'], 'AUTO-TEST');
-      }
-    }
     if (this.input.wasPressed('legend')) {
       this.checklist.toggle();
+    }
+    if (this.input.wasPressed('debug')) {
+      this.playability.toggle();
     }
     if (this.input.wasPressedCode('KeyB')) {
       this.loadObstacleTestRoom();
@@ -2293,6 +2275,7 @@ export default class Game {
       this.flamethrowerDamageCooldowns.set(entity, 0.2);
       this.testHarness.recordHit();
       this.recordFeedback('hit', 'visual');
+      this.playability.recordEnemyHit(this.clock);
       if (entity.dead && entity !== this.boss && !entity.training) {
         this.spawnDeathDebris(entity);
         this.awardLoot(entity);
@@ -2784,6 +2767,7 @@ export default class Game {
           this.recordFeedback('hit', 'audio');
           this.recordFeedback('hit', 'visual');
           this.testHarness.recordHit();
+          this.playability.recordEnemyHit(this.clock);
           if (enemy.dead) {
             if (!enemy.training) {
               this.spawnDeathDebris(enemy);
@@ -2803,6 +2787,7 @@ export default class Game {
           this.spawnEffect('oil', this.boss.x, this.boss.y + 10);
           this.recordFeedback('hit', 'audio');
           this.recordFeedback('hit', 'visual');
+          this.playability.recordEnemyHit(this.clock);
         }
       }
       return;
@@ -2860,6 +2845,7 @@ export default class Game {
         this.recordFeedback('hit', 'audio');
         this.recordFeedback('hit', 'visual');
         this.testHarness.recordHit();
+        this.playability.recordEnemyHit(this.clock);
         if (enemy.justStaggered) {
           this.audio.stagger();
           this.spawnEffect('stagger', enemy.x, enemy.y);
@@ -2888,6 +2874,7 @@ export default class Game {
         this.spawnEffect('oil', this.boss.x, this.boss.y + 10);
         this.recordFeedback('hit', 'audio');
         this.recordFeedback('hit', 'visual');
+        this.playability.recordEnemyHit(this.clock);
       }
     }
   }
@@ -3060,6 +3047,7 @@ export default class Game {
             this.spawnEffect('oil', enemy.x, enemy.y + 6);
             this.recordFeedback('hit', 'audio');
             this.recordFeedback('hit', 'visual');
+            this.playability.recordEnemyHit(this.clock);
             if (enemy.dead) {
               if (!enemy.training) {
                 this.spawnDeathDebris(enemy);
@@ -3096,6 +3084,7 @@ export default class Game {
             this.spawnEffect('oil', enemy.x, enemy.y + 6);
             this.recordFeedback('hit', 'audio');
             this.recordFeedback('hit', 'visual');
+            this.playability.recordEnemyHit(this.clock);
             if (enemy.dead) {
               if (!enemy.training) {
                 this.spawnDeathDebris(enemy);
@@ -3771,6 +3760,7 @@ export default class Game {
       this.audio.hit();
       this.recordFeedback('hit', 'audio');
       this.recordFeedback('hit', 'visual');
+      this.playability.recordEnemyHit(this.clock);
       this.sawAnchor.damageTimer = 0.12;
     }
   }
@@ -3787,6 +3777,7 @@ export default class Game {
     this.spawnEffect('oil', target.x, target.y + (isBoss ? 10 : 6));
     this.recordFeedback('hit', 'audio');
     this.recordFeedback('hit', 'visual');
+    this.playability.recordEnemyHit(this.clock);
     this.sawAnchor.damageTimer = 0.12;
     if (!isBoss && target.dead && !target.training) {
       this.spawnDeathDebris(target);
@@ -4300,6 +4291,7 @@ export default class Game {
     if (this.testHarness.active && this.testHarness.showCollision) {
       this.drawCollisionBoxes(ctx);
     }
+    this.playability.drawWorld(ctx, this);
     this.drawBloom(ctx);
     ctx.restore();
 
@@ -4414,7 +4406,6 @@ export default class Game {
     this.consoleOverlay.draw(ctx, canvas.width, canvas.height);
     this.checklist.draw(ctx, this, canvas.width, canvas.height);
     this.testHarness.draw(ctx, this, canvas.width, canvas.height);
-    this.goldenPath.draw(ctx, canvas.width, canvas.height, this);
     this.testDashboard.draw(ctx, canvas.width, canvas.height);
     if (this.victory) {
       this.drawVictory(ctx, canvas.width, canvas.height);
@@ -5070,25 +5061,73 @@ export default class Game {
     console.log('Encounter Audit Report:', report);
   }
 
-  runGoldenPathTest() {
-    if (this.goldenPath.status === 'running') return;
-    this.resetRun();
+  runGoldenPathSimulation({ restoreState = null, playtest = false, startWithEverything = true } = {}) {
+    if (this.goldenPath.status === 'running') return null;
+    const worldData = this.buildWorldData();
+    const savedState = {
+      state: this.state,
+      playtestActive: this.playtestActive,
+      editorActive: this.editor?.active ?? false,
+      inputMode: this.inputMode
+    };
+    this.resetRun({ playtest, startWithEverything });
     this.state = 'playing';
     this.simulationActive = true;
-    const report = this.goldenPathTest.start(this);
+    let report = this.goldenPathTest.start(this);
     this.testResults.golden = report.status;
     this.testDashboard.setResults({ golden: report.status });
     this.testDashboard.setDetails('golden', report.lines);
-    if (report.status === 'fail') {
+    if (report.status === 'running') {
+      const maxSeconds = this.goldenPath.data?.maxSimSeconds ?? 120;
+      const maxSteps = Math.floor(maxSeconds * 60);
+      const dt = 1 / 60;
+      for (let step = 0; step < maxSteps && this.goldenPath.status === 'running'; step += 1) {
+        this.goldenPath.preUpdate(dt, this);
+        if (this.goldenPath.freeze) break;
+        this.update(dt);
+        this.goldenPath.postUpdate(dt, this);
+      }
+      report = this.goldenPathTest.buildReport(this);
+      this.testResults.golden = report.status;
+      this.testDashboard.setResults({ golden: report.status });
+      this.testDashboard.setDetails('golden', report.lines);
+    } else if (report.status === 'fail') {
       this.simulationActive = false;
     }
+    this.goldenPath.restoreSeed();
+    this.goldenPath.active = false;
+    this.goldenPath.freeze = false;
+    this.simulationActive = false;
+    if (restoreState) {
+      this.applyWorldData(worldData);
+      if (restoreState === 'editor') {
+        this.state = 'editor';
+        this.playtestActive = false;
+        this.editor.activate();
+        document.body.classList.add('editor-active');
+      } else if (restoreState === 'playtest') {
+        this.state = 'playing';
+        this.playtestActive = true;
+        this.resetRun({ playtest: true, startWithEverything });
+      } else {
+        this.state = savedState.state;
+        this.playtestActive = savedState.playtestActive;
+        if (savedState.editorActive) {
+          this.editor.activate();
+          document.body.classList.add('editor-active');
+        }
+      }
+      if (savedState.inputMode) {
+        this.inputMode = savedState.inputMode;
+      }
+    }
+    return report;
   }
 
   runAllTests(applyFixes = false) {
     this.runWorldValidityTest(applyFixes);
     this.runRoomCoverageTest();
     this.runEncounterAuditTest();
-    this.runGoldenPathTest();
   }
 
   loadObstacleTestRoom() {
@@ -5143,7 +5182,6 @@ export default class Game {
       if (action.test === 'validity') this.runWorldValidityTest(this.testDashboard.applyFixes);
       if (action.test === 'coverage') this.runRoomCoverageTest();
       if (action.test === 'encounter') this.runEncounterAuditTest();
-      if (action.test === 'golden') this.runGoldenPathTest();
       this.audio.ui();
       return;
     }
@@ -5182,7 +5220,6 @@ export default class Game {
         if (action.test === 'validity') this.runWorldValidityTest(this.testDashboard.applyFixes);
         if (action.test === 'coverage') this.runRoomCoverageTest();
         if (action.test === 'encounter') this.runEncounterAuditTest();
-        if (action.test === 'golden') this.runGoldenPathTest();
         this.audio.ui();
         return;
       }
