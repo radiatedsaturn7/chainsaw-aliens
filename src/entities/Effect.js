@@ -91,6 +91,11 @@ export default class Effect {
       this.endWidth = this.options.endWidth ?? 18;
       this.coreStart = this.options.coreStart ?? 4;
       this.coreEnd = this.options.coreEnd ?? 6;
+      this.follow = this.options.follow ?? null;
+      this.followOffsetX = this.options.followOffsetX ?? 0;
+      this.followOffsetY = this.options.followOffsetY ?? 0;
+      this.targetX = this.options.targetX;
+      this.targetY = this.options.targetY;
     }
     if (this.type === 'ignitir-implosion') {
       this.life = this.options.life ?? 0.45;
@@ -137,6 +142,16 @@ export default class Effect {
       this.vy += 220 * dt;
       this.x += this.vx * dt;
       this.y += this.vy * dt;
+    }
+    if (this.type === 'ignitir-beam' && this.follow) {
+      this.x = this.follow.x + this.followOffsetX;
+      this.y = this.follow.y + this.followOffsetY;
+      if (Number.isFinite(this.targetX) && Number.isFinite(this.targetY)) {
+        const dx = this.targetX - this.x;
+        const dy = this.targetY - this.y;
+        this.angle = Math.atan2(dy, dx);
+        this.length = Math.max(40, Math.hypot(dx, dy));
+      }
     }
   }
 

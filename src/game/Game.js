@@ -1906,7 +1906,12 @@ export default class Game {
       startWidth: 2,
       endWidth: 34,
       coreStart: 1,
-      coreEnd: 12
+      coreEnd: 12,
+      follow: this.player,
+      followOffsetX: dirX * (this.player.width * 0.9),
+      followOffsetY: -4 + dirY * (this.player.width * 0.9),
+      targetX,
+      targetY
     });
     this.player.invulnTimer = Math.max(this.player.invulnTimer, 0.9);
   }
@@ -2056,6 +2061,15 @@ export default class Game {
   }
 
   updateFlamethrower(dt, usingFlamethrower) {
+    const tileSize = this.world.tileSize;
+    const maxHeat = 10;
+    const minBurnRadius = tileSize * 0.45;
+    const maxBurnRadius = tileSize * 1.5;
+    const minBurnHeight = tileSize * 0.7;
+    const maxBurnHeight = tileSize * 5;
+    const minBurnSize = tileSize * 0.5;
+    const maxBurnSize = (tileSize * 3) / 1.2;
+
     for (const [entity, timer] of this.flamethrowerDamageCooldowns.entries()) {
       const next = timer - dt;
       if (next <= 0) {
@@ -2065,12 +2079,42 @@ export default class Game {
       }
     }
     for (const [key, data] of this.flamethrowerImpactHeat.entries()) {
-      const next = data.heat - dt * 0.7;
+      const next = data.heat - dt * 0.8;
       if (next <= 0) {
         this.flamethrowerImpactHeat.delete(key);
       } else {
         this.flamethrowerImpactHeat.set(key, { ...data, heat: next });
       }
+    }
+
+    const burnFields = Array.from(this.flamethrowerImpactHeat.values());
+    const applyResidualBurn = (entity) => {
+      if (!entity || entity.dead || !burnFields.length) return;
+      if (this.flamethrowerDamageCooldowns.has(entity)) return;
+      for (const field of burnFields) {
+        const heatProgress = Math.min(1, field.heat / maxHeat);
+        const radius = minBurnRadius + (maxBurnRadius - minBurnRadius) * heatProgress;
+        if (Math.hypot(entity.x - field.x, entity.y - field.y) <= radius) {
+          entity.damage?.(1);
+          this.spawnEffect('flamethrower-impact', entity.x, entity.y, {
+            life: 0.25,
+            size: 12 + heatProgress * 12
+          });
+          this.spawnEffect('flamethrower-burn', entity.x, entity.y, {
+            life: 0.6,
+            height: minBurnHeight + (maxBurnHeight - minBurnHeight) * heatProgress * 0.6,
+            size: minBurnSize + (maxBurnSize - minBurnSize) * heatProgress * 0.4,
+            intensity: 0.7 + heatProgress * 0.3
+          });
+          this.flamethrowerDamageCooldowns.set(entity, 0.35);
+          return;
+        }
+      }
+    };
+
+    this.enemies.forEach(applyResidualBurn);
+    if (this.boss && !this.boss.dead) {
+      applyResidualBurn(this.boss);
     }
 
     if (!usingFlamethrower || !this.abilities.flamethrower) {
@@ -2096,9 +2140,9 @@ export default class Game {
     const dirY = aimY / aimLength;
     const originX = this.player.x + dirX * 18;
     const originY = this.player.y - 6 + dirY * 8;
-    const maxRange = this.world.tileSize * 15;
-    const tileX = Math.floor(this.player.x / this.world.tileSize);
-    const tileY = Math.floor(this.player.y / this.world.tileSize);
+    const maxRange = tileSize * 15;
+    const tileX = Math.floor(this.player.x / tileSize);
+    const tileY = Math.floor(this.player.y / tileSize);
     const roomIndex = this.world.roomAtTile(tileX, tileY);
     const roomBounds = roomIndex !== null && roomIndex !== undefined ? this.world.getRoomBounds(roomIndex) : null;
     const getQuadraticPoint = (t, startX, startY, dx, dy, curveX, curveY) => {
@@ -2119,8 +2163,8 @@ export default class Game {
     let lastPoint = { x: originX, y: originY };
     for (let t = 0.05; t <= 1.0001; t += 0.05) {
       const point = getQuadraticPoint(t, originX, originY, streamDx, streamDy, controlX, controlY);
-      const pointTileX = Math.floor(point.x / this.world.tileSize);
-      const pointTileY = Math.floor(point.y / this.world.tileSize);
+      const pointTileX = Math.floor(point.x / tileSize);
+      const pointTileY = Math.floor(point.y / tileSize);
       if (
         roomBounds
         && (pointTileX < roomBounds.minX
@@ -2134,8 +2178,8 @@ export default class Game {
       }
       if (this.world.isSolid(pointTileX, pointTileY, this.abilities)) {
         impactTile = { x: pointTileX, y: pointTileY };
-        impactX = (pointTileX + 0.5) * this.world.tileSize;
-        impactY = (pointTileY + 0.5) * this.world.tileSize;
+        impactX = (pointTileX + 0.5) * tileSize;
+        impactY = (pointTileY + 0.5) * tileSize;
         break;
       }
       lastPoint = point;
@@ -2166,7 +2210,7 @@ export default class Game {
         width: 16,
         coreWidth: 7
       });
-      for (let i = 0; i < 4; i += 1) {
+      for (let i = 0; i < 7; i += 1) {
         const t = 0.18 + Math.random() * 0.7;
         const point = getQuadraticPoint(t, originX, originY, streamDx, streamDy, controlX, controlY);
         const inv = 1 - t;
@@ -2183,21 +2227,24 @@ export default class Game {
       }
       const impactKey = impactTile ? `${impactTile.x},${impactTile.y}` : null;
       const currentHeat = impactKey ? (this.flamethrowerImpactHeat.get(impactKey)?.heat ?? 0) : 0;
-      const nextHeat = impactKey ? Math.min(4.5, currentHeat + 1.1) : currentHeat;
+      const nextHeat = impactKey ? Math.min(maxHeat, currentHeat + emitInterval) : currentHeat;
       if (impactKey) {
         this.flamethrowerImpactHeat.set(impactKey, { heat: nextHeat, x: impactX, y: impactY });
       }
       const impactHeat = impactKey ? nextHeat : 0;
+      const heatProgress = Math.min(1, impactHeat / maxHeat);
+      const burnHeight = minBurnHeight + (maxBurnHeight - minBurnHeight) * heatProgress;
+      const burnSize = minBurnSize + (maxBurnSize - minBurnSize) * heatProgress;
       this.spawnEffect('flamethrower-impact', impactX, impactY, {
         life: 0.55 + Math.random() * 0.25 + impactHeat * 0.08,
-        size: 20 + Math.random() * 12 + impactHeat * 3
+        size: 16 + Math.random() * 10 + heatProgress * 18
       });
       if (impactTile) {
         this.spawnEffect('flamethrower-burn', impactX, impactY, {
-          life: 1.4 + Math.random() * 0.5 + impactHeat * 0.2,
-          height: 24 + Math.random() * 12 + impactHeat * 6,
-          size: 14 + Math.random() * 6 + impactHeat * 1.5,
-          intensity: 1 + impactHeat * 0.08
+          life: 1.4 + Math.random() * 0.5 + heatProgress * 0.8,
+          height: burnHeight + Math.random() * 10,
+          size: burnSize + Math.random() * 6,
+          intensity: 0.8 + heatProgress * 0.6
         });
       }
     }
