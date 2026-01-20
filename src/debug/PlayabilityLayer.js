@@ -30,20 +30,11 @@ export default class PlayabilityLayer {
   }
 
   update(dt, game) {
-    const now = game.clock;
-    if (!this.active && !game.testHarness?.active && !game.playtestActive && game.state !== 'editor') {
-      return;
-    }
-    if (this.active) {
-      this.runChecks(game, now);
-    } else {
-      this.checkTimer -= dt;
-      if (this.checkTimer <= 0) {
-        this.runChecks(game, now);
-        this.checkTimer = 0.6;
-      }
-    }
     this.statusTimer = Math.max(0, this.statusTimer - dt);
+  }
+
+  runOnce(game) {
+    this.runChecks(game, game.clock);
   }
 
   runChecks(game, now) {

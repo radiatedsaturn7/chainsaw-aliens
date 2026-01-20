@@ -2158,6 +2158,7 @@ export default class Editor {
     };
 
     this.game.applyWorldData(data);
+    this.game.runPlayabilityCheck();
     this.pendingChanges.clear();
     this.pendingSpawn = null;
     this.pendingEnemies.clear();
