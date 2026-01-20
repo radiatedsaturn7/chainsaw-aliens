@@ -224,7 +224,7 @@ export default class Player {
     }
 
     const pressingIntoWall = this.onWall !== 0
-      && ((this.onWall === 1 && moveRight) || (this.onWall === -1 && moveLeft)));
+      && ((this.onWall === 1 && moveRight) || (this.onWall === -1 && moveLeft));
     this.magBootsEngaged = abilities.magboots && pressingIntoWall;
 
     const canGroundJump = this.coyote > 0 || this.magBootsEngaged;
