@@ -34,9 +34,12 @@ export default class HUD {
     ctx.fillStyle = '#fff';
 
     const healthRatio = player.maxHealth ? Math.max(0, player.health) / player.maxHealth : 0;
+    const lowHealth = player.health <= 3;
+    const blink = lowHealth && Math.floor(player.animTime * 4) % 2 === 0;
+    ctx.fillStyle = blink ? '#ff4b4b' : '#fff';
     ctx.fillText(`Health ${player.health}/${player.maxHealth}`, 20, barsTop + 18);
     ctx.strokeRect(20, barsTop + 22, barWidth, barHeight);
-    ctx.fillStyle = healthRatio <= 0.3 ? '#ff6b6b' : '#9ad9ff';
+    ctx.fillStyle = blink || healthRatio <= 0.3 ? '#ff4b4b' : '#9ad9ff';
     ctx.fillRect(20, barsTop + 22, barWidth * healthRatio, barHeight);
     ctx.fillStyle = '#fff';
 
@@ -116,12 +119,12 @@ export default class HUD {
     }
 
     if (weapons.length > 0) {
-      const buttonWidth = 100;
-      const buttonHeight = 26;
+      const buttonWidth = 130;
+      const buttonHeight = 34;
       const gap = 8;
       const totalWidth = weapons.length * buttonWidth + (weapons.length - 1) * gap;
       const startX = Math.max(12, ctx.canvas.width / 2 - totalWidth / 2);
-      const startY = 10;
+      const startY = 8;
       weapons.forEach((slot, index) => {
         const x = startX + index * (buttonWidth + gap);
         const y = startY;
@@ -142,7 +145,7 @@ export default class HUD {
         }
         ctx.shadowBlur = 0;
         ctx.fillStyle = '#fff';
-        ctx.font = '12px Courier New';
+        ctx.font = '13px Courier New';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const label = slot.label || 'EMPTY';

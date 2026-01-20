@@ -17,9 +17,12 @@ const DEFAULT_TILE_TYPES = [
   { id: 'conveyor-right', label: 'Conveyor Right', char: '>' },
   { id: 'anchor', label: 'Anchor Socket', char: 'a' },
   { id: 'wood', label: 'Wood Barricade', char: 'W' },
+  { id: 'wood-box', label: 'Wooden Box', char: 'Y' },
   { id: 'metal', label: 'Welded Metal Plate', char: 'X' },
   { id: 'brittle', label: 'Brittle Wall', char: 'C' },
   { id: 'debris', label: 'Heavy Debris', char: 'U' },
+  { id: 'snow', label: 'Snow Block', char: 'N' },
+  { id: 'lead', label: 'Lead Block', char: 'P' },
   { id: 'box', label: 'Pull Box', char: 'K' },
   { id: 'switch', label: 'Counterweight Switch', char: 'T' },
   { id: 'bossGate', label: 'Rift Seal', char: 'B' },
@@ -36,32 +39,37 @@ const DEFAULT_TILE_TYPES = [
   { id: 'objective', label: 'Objective', char: 'O' }
 ];
 
-const ENEMY_TYPES = [
-  { id: 'practice', label: 'Practice Drone', glyph: 'PD' },
-  { id: 'skitter', label: 'Skitter', glyph: 'SK' },
-  { id: 'spitter', label: 'Spitter', glyph: 'SP' },
-  { id: 'bulwark', label: 'Bulwark', glyph: 'BW' },
-  { id: 'floater', label: 'Floater', glyph: 'FL' },
-  { id: 'drifter', label: 'Drifter', glyph: 'DF' },
-  { id: 'bobber', label: 'Bobber', glyph: 'BB' },
-  { id: 'harrier', label: 'Harrier', glyph: 'HR' },
-  { id: 'slicer', label: 'Slicer', glyph: 'SL' },
-  { id: 'hivenode', label: 'Hive Node', glyph: 'HN' },
-  { id: 'bouncer', label: 'Bouncer', glyph: 'BO' },
-  { id: 'pouncer', label: 'Pouncer', glyph: 'PN' },
-  { id: 'coward', label: 'Coward', glyph: 'CW' },
-  { id: 'ranger', label: 'Ranger', glyph: 'RG' },
-  { id: 'sentinel', label: 'Sentinel', glyph: 'SE' },
-  { id: 'finalboss', label: 'Rift Tyrant', glyph: 'RT' },
-  { id: 'sunderbehemoth', label: 'Sunder Behemoth', glyph: 'SB' },
-  { id: 'riftram', label: 'Rift Ram', glyph: 'RR' },
-  { id: 'broodtitan', label: 'Brood Titan', glyph: 'BT' },
-  { id: 'nullaegis', label: 'Null Aegis', glyph: 'NA' },
-  { id: 'hexmatron', label: 'Hex Matron', glyph: 'HM' },
-  { id: 'gravewarden', label: 'Grave Warden', glyph: 'GW' },
-  { id: 'obsidiancrown', label: 'Obsidian Crown', glyph: 'OC' },
-  { id: 'cataclysmcolossus', label: 'Cataclysm Colossus', glyph: 'CC' }
+const STANDARD_ENEMY_TYPES = [
+  { id: 'practice', label: 'Practice Drone', glyph: 'PD', description: 'Training dummy that stays put for execution drills.' },
+  { id: 'skitter', label: 'Skitter', glyph: 'SK', description: 'Fast ground skimmer that rushes the player.' },
+  { id: 'spitter', label: 'Spitter', glyph: 'SP', description: 'Ranged turret that spits corrosive shots.' },
+  { id: 'bulwark', label: 'Bulwark', glyph: 'BW', description: 'Armored guard that opens when you get close.' },
+  { id: 'floater', label: 'Floater', glyph: 'FL', description: 'Hovering drone that drifts around the room.' },
+  { id: 'drifter', label: 'Drifter', glyph: 'DF', description: 'Slow-floating creep that stalks the player.' },
+  { id: 'bobber', label: 'Bobber', glyph: 'BB', description: 'Bouncy flier that bobbles left and right.' },
+  { id: 'harrier', label: 'Harrier', glyph: 'HR', description: 'Aggressive flier that strafes and dives.' },
+  { id: 'slicer', label: 'Slicer', glyph: 'SL', description: 'Swift melee threat that darts along the floor.' },
+  { id: 'hivenode', label: 'Hive Node', glyph: 'HN', description: 'Stationary nest that spawns skitters.' },
+  { id: 'bouncer', label: 'Bouncer', glyph: 'BO', description: 'Leaping brute that hops toward targets.' },
+  { id: 'pouncer', label: 'Pouncer', glyph: 'PN', description: 'Spring-loaded hunter that lunges forward.' },
+  { id: 'coward', label: 'Coward', glyph: 'CW', description: 'Shy skirmisher that backs away when you approach.' },
+  { id: 'ranger', label: 'Ranger', glyph: 'RG', description: 'Marksman that kites and fires precise shots.' },
+  { id: 'sentinel', label: 'Sentinel', glyph: 'SE', description: 'Orbital sentinel that fires in pulses.' }
 ];
+
+const BOSS_ENEMY_TYPES = [
+  { id: 'finalboss', label: 'Rift Tyrant', glyph: 'RT', description: 'Commanding rift entity that unleashes volatile blasts.' },
+  { id: 'sunderbehemoth', label: 'Sunder Behemoth', glyph: 'SB', description: 'Towering brute that smashes the arena.' },
+  { id: 'riftram', label: 'Rift Ram', glyph: 'RR', description: 'Charging juggernaut that barrels through obstacles.' },
+  { id: 'broodtitan', label: 'Brood Titan', glyph: 'BT', description: 'Massive brood carrier that floods the area.' },
+  { id: 'nullaegis', label: 'Null Aegis', glyph: 'NA', description: 'Shielded guardian that deflects incoming threats.' },
+  { id: 'hexmatron', label: 'Hex Matron', glyph: 'HM', description: 'Rift matron weaving hex fields and bursts.' },
+  { id: 'gravewarden', label: 'Grave Warden', glyph: 'GW', description: 'Cryptic sentinel that punishes careless movement.' },
+  { id: 'obsidiancrown', label: 'Obsidian Crown', glyph: 'OC', description: 'Regal boss that rains down obsidian strikes.' },
+  { id: 'cataclysmcolossus', label: 'Cataclysm Colossus', glyph: 'CC', description: 'Planet-cracking colossus with sweeping attacks.' }
+];
+
+const ENEMY_TYPES = [...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
 
 const SHAPE_TOOLS = [
   { id: 'rect', label: 'Rectangle Fill', short: 'RECT' },
@@ -96,6 +104,7 @@ const PREFAB_TYPES = [
   { id: 'industrial-platform', label: 'Industrial Platform', short: 'IP' },
   { id: 'conveyor-belt', label: 'Conveyor Belt', short: 'CB' },
   { id: 'elevator', label: 'Elevator', short: 'EL' },
+  { id: 'elevator-horizontal', label: 'Horizontal Elevator', short: 'EH' },
   { id: 'moving-platform', label: 'Moving Platform', short: 'MP' },
   { id: 'stalactite', label: 'Stalactite', short: 'ST' },
   { id: 'stalagmite', label: 'Stalagmite', short: 'SM' },
@@ -145,6 +154,7 @@ export default class Editor {
     this.tileType = DEFAULT_TILE_TYPES[0];
     this.customTile = null;
     this.enemyType = ENEMY_TYPES[0];
+    this.enemyCategory = 'standard';
     this.shapeTool = SHAPE_TOOLS[0];
     this.prefabType = PREFAB_TYPES[0];
     this.startWithEverything = true;
@@ -502,6 +512,9 @@ export default class Editor {
     ];
     let items = [];
     let columns = 1;
+    const enemySource = this.enemyCategory === 'boss'
+      ? BOSS_ENEMY_TYPES
+      : STANDARD_ENEMY_TYPES;
 
     if (tabId === 'tools') {
       items = [
@@ -555,7 +568,7 @@ export default class Editor {
         }
       }));
     } else if (tabId === 'enemies') {
-      items = ENEMY_TYPES.map((enemy) => ({
+      items = enemySource.map((enemy) => ({
         id: enemy.id,
         label: `${enemy.label} [${enemy.glyph}]`,
         enemy,
@@ -1304,16 +1317,26 @@ export default class Editor {
       setTile(spot.x, spot.y, 'T');
     };
 
-    const addConveyor = (room) => {
+    const addConveyor = (room, options = {}) => {
       if (room.w < 10) return;
       const spot = findFloorInRoom(room);
       if (!spot) return;
       const length = randInt(4, Math.min(10, room.w - 4));
-      const startX = clamp(spot.x - Math.floor(length / 2), room.x + 1, room.x + room.w - length - 1);
+      const anchorX = options.anchorX ?? spot.x;
+      const startX = clamp(anchorX - Math.floor(length / 2), room.x + 1, room.x + room.w - length - 1);
       const dir = Math.random() < 0.5 ? '<' : '>';
       for (let x = startX; x < startX + length; x += 1) {
         if (tiles[spot.y]?.[x] === '.') setTile(x, spot.y, dir);
       }
+      const spikeChance = 0.65;
+      if (Math.random() < spikeChance) {
+        const endX = dir === '<' ? startX : startX + length - 1;
+        const spikeX = dir === '<' ? endX - 1 : endX + 1;
+        if (spikeX >= room.x + 1 && spikeX <= room.x + room.w - 2) {
+          if (tiles[spot.y]?.[spikeX] === '.') setTile(spikeX, spot.y, '*');
+        }
+      }
+      return { x: startX, y: spot.y, length, dir };
     };
 
     const addPit = (room, hazard) => {
@@ -1349,17 +1372,71 @@ export default class Editor {
       }
     };
 
-    const addElevator = (room) => {
+    const addElevator = (room, options = {}) => {
       const shaftHeight = 6;
       if (room.h < shaftHeight + 4) return;
-      const shaftX = randInt(room.x + 2, room.x + room.w - 3);
+      const anchorX = options.anchorX ?? randInt(room.x + 2, room.x + room.w - 3);
+      const shaftX = clamp(anchorX, room.x + 2, room.x + room.w - 3);
       const shaftY = randInt(room.y + 2, room.y + room.h - shaftHeight - 2);
+      for (let y = 0; y < shaftHeight; y += 1) {
+        const tileY = shaftY + y;
+        for (let dx = -1; dx <= 1; dx += 1) {
+          const tileX = shaftX + dx;
+          if (tileX < room.x + 1 || tileX > room.x + room.w - 2) continue;
+          if (tiles[tileY]?.[tileX] !== 'D') setTile(tileX, tileY, '.');
+        }
+      }
       for (let y = 0; y < shaftHeight; y += 1) {
         const tileY = shaftY + y;
         setTile(shaftX, tileY, '.');
         addElevatorPath(shaftX, tileY);
       }
-      addElevatorPlatform(shaftX, shaftY + shaftHeight - 1);
+      const platformY = shaftY + shaftHeight - 1;
+      for (let dx = -1; dx <= 1; dx += 1) {
+        addElevatorPlatform(shaftX + dx, platformY);
+      }
+      const spikeChance = 0.7;
+      const spikeY = platformY + 1;
+      if (Math.random() < spikeChance && spikeY < room.y + room.h - 1) {
+        for (let dx = -1; dx <= 1; dx += 1) {
+          const spikeX = shaftX + dx;
+          if (tiles[spikeY]?.[spikeX] === '.') setTile(spikeX, spikeY, '*');
+        }
+      }
+      return { x: shaftX, y: platformY };
+    };
+
+    const addHorizontalElevator = (room, options = {}) => {
+      const shaftLength = 7;
+      if (room.w < shaftLength + 4) return;
+      const anchorY = options.anchorY ?? randInt(room.y + 2, room.y + room.h - 3);
+      const shaftY = clamp(anchorY, room.y + 2, room.y + room.h - 3);
+      const shaftX = randInt(room.x + 2, room.x + room.w - shaftLength - 2);
+      for (let x = 0; x < shaftLength; x += 1) {
+        const tileX = shaftX + x;
+        for (let dy = -1; dy <= 1; dy += 1) {
+          const tileY = shaftY + dy;
+          if (tileY < room.y + 1 || tileY > room.y + room.h - 2) continue;
+          if (tiles[tileY]?.[tileX] !== 'D') setTile(tileX, tileY, '.');
+        }
+      }
+      for (let x = 0; x < shaftLength; x += 1) {
+        const tileX = shaftX + x;
+        setTile(tileX, shaftY, '.');
+        addElevatorPath(tileX, shaftY);
+      }
+      const platformX = shaftX;
+      for (let dx = -1; dx <= 1; dx += 1) {
+        addElevatorPlatform(platformX + dx, shaftY);
+      }
+      const spikeChance = 0.55;
+      if (Math.random() < spikeChance) {
+        const spikeX = shaftX - 1;
+        if (spikeX >= room.x + 1 && tiles[shaftY]?.[spikeX] === '.') {
+          setTile(spikeX, shaftY, '*');
+        }
+      }
+      return { x: platformX, y: shaftY };
     };
 
     const addTriangleBlocks = (room) => {
@@ -1548,8 +1625,21 @@ export default class Editor {
         if (Math.random() < 0.5) addIndustrialPlatform(room);
         if (Math.random() < 0.4) addIndustrialT(room);
         if (Math.random() < 0.35) addSwitchTile(room);
-        if (Math.random() < 0.5) addConveyor(room);
-        if (Math.random() < 0.35) addElevator(room);
+        let elevatorSpot = null;
+        let conveyorSpot = null;
+        if (Math.random() < 0.45) {
+          elevatorSpot = addElevator(room);
+        } else if (Math.random() < 0.25) {
+          elevatorSpot = addHorizontalElevator(room);
+        }
+        if (Math.random() < 0.55) {
+          conveyorSpot = addConveyor(room, {
+            anchorX: elevatorSpot?.x
+          });
+        }
+        if (!elevatorSpot && conveyorSpot && Math.random() < 0.5) {
+          addElevator(room, { anchorX: conveyorSpot.x });
+        }
         if (Math.random() < 0.45) addPit(room, '*');
       } else if (room.biome === 'ice') {
         if (Math.random() < 0.6) addIcePatch(room);
@@ -1902,7 +1992,7 @@ export default class Editor {
     addSpawnPitPlatform();
 
     const ensureDoorConnectivity = () => {
-      const blockers = new Set(['#', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', '^', 'v']);
+      const blockers = new Set(['#', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', '^', 'v', 'Y', 'N', 'P']);
       const carveLine = (room, start, end) => {
         const dx = Math.sign(end.x - start.x);
         const dy = Math.sign(end.y - start.y);
@@ -1932,10 +2022,12 @@ export default class Editor {
       };
       const isPassable = (room, tx, ty) => {
         const tile = tiles[ty]?.[tx];
-        if (!tile) return false;
+        const headTile = tiles[ty - 1]?.[tx];
+        if (!tile || !headTile) return false;
         const wallTile = getRoomWallTile(room);
-        if (tile === wallTile) return false;
-        return !blockers.has(tile);
+        if (tile === wallTile || headTile === wallTile) return false;
+        if (blockers.has(tile) || blockers.has(headTile)) return false;
+        return true;
       };
       const floodFrom = (room, start) => {
         const visited = new Set();
@@ -2696,6 +2788,7 @@ export default class Editor {
 
   setEnemyType(enemy) {
     this.enemyType = enemy;
+    this.enemyCategory = BOSS_ENEMY_TYPES.some((entry) => entry.id === enemy.id) ? 'boss' : 'standard';
     this.recordRecent('enemies', enemy);
   }
 
@@ -3186,7 +3279,21 @@ export default class Editor {
         addTile(tileX, tileY, '.');
         addElevatorPath(tileX, tileY);
       }
-      addElevatorPlatform(start.x, start.y + signY * (height - 1));
+      const platformY = start.y + signY * (height - 1);
+      for (let dx = -1; dx <= 1; dx += 1) {
+        addElevatorPlatform(start.x + dx, platformY);
+      }
+    } else if (this.prefabType.id === 'elevator-horizontal') {
+      const width = 7;
+      for (let x = 0; x < width; x += 1) {
+        const tileX = start.x + signX * x;
+        const tileY = start.y;
+        addTile(tileX, tileY, '.');
+        addElevatorPath(tileX, tileY);
+      }
+      for (let dx = -1; dx <= 1; dx += 1) {
+        addElevatorPlatform(start.x + dx, start.y);
+      }
     } else if (this.prefabType.id === 'moving-platform') {
       const width = 6;
       for (let x = 0; x < width; x += 1) {
@@ -3641,10 +3748,12 @@ export default class Editor {
       const cx = enemy.x * tileSize + tileSize / 2;
       const cy = enemy.y * tileSize + tileSize / 2;
       const marker = ENEMY_TYPES.find((entry) => entry.id === enemy.type);
+      const isBoss = BOSS_ENEMY_TYPES.some((entry) => entry.id === enemy.type);
+      const color = isBoss ? '#ffb3d6' : '#f66';
       ctx.save();
-      ctx.strokeStyle = '#f66';
+      ctx.strokeStyle = color;
       ctx.strokeRect(cx - 10, cy - 10, 20, 20);
-      ctx.fillStyle = '#f66';
+      ctx.fillStyle = color;
       ctx.font = '10px Courier New';
       ctx.textAlign = 'center';
       ctx.fillText(marker?.glyph || 'EN', cx, cy + 4);
@@ -3896,6 +4005,28 @@ export default class Editor {
       } else if (char === 'I') {
         ctx.fillStyle = '#8fd6ff';
         ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+      } else if (char === 'Y') {
+        ctx.fillStyle = '#c08a58';
+        ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+        ctx.strokeStyle = '#7a4d24';
+        ctx.strokeRect(x + 4, y + 4, size - 8, size - 8);
+        ctx.beginPath();
+        ctx.moveTo(x + 6, y + size - 6);
+        ctx.lineTo(x + size - 6, y + 6);
+        ctx.stroke();
+      } else if (char === 'N') {
+        ctx.fillStyle = '#e4f4ff';
+        ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+        ctx.strokeStyle = '#9ad9ff';
+        ctx.beginPath();
+        ctx.moveTo(x + 4, y + size - 6);
+        ctx.lineTo(x + size - 6, y + 4);
+        ctx.stroke();
+      } else if (char === 'P') {
+        ctx.fillStyle = '#8c92a8';
+        ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+        ctx.strokeStyle = '#5e6270';
+        ctx.strokeRect(x + 4, y + 4, size - 8, size - 8);
       } else if (char === '<' || char === '>') {
         ctx.strokeStyle = '#fff';
         ctx.beginPath();
@@ -3962,6 +4093,20 @@ export default class Editor {
       ctx.restore();
     };
 
+    const drawEnemyPreview = (x, y, size, enemy) => {
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 120, 120, 0.18)';
+      ctx.fillRect(x, y, size, size);
+      ctx.strokeStyle = 'rgba(255, 140, 140, 0.8)';
+      ctx.strokeRect(x + 1, y + 1, size - 2, size - 2);
+      ctx.fillStyle = '#ffbfbf';
+      ctx.font = '10px Courier New';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(enemy?.glyph || 'EN', x + size / 2, y + size / 2 + 1);
+      ctx.restore();
+    };
+
     const drawButton = (x, y, w, h, label, active, onClick, tooltip = '', preview = null) => {
       ctx.globalAlpha = 0.9;
       ctx.fillStyle = active ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.6)';
@@ -3978,6 +4123,8 @@ export default class Editor {
         drawTilePreview(previewX, previewY, previewSize, preview.tile);
       } else if (preview?.type === 'prefab') {
         drawPrefabPreview(previewX, previewY, previewSize, preview.prefab);
+      } else if (preview?.type === 'enemy') {
+        drawEnemyPreview(previewX, previewY, previewSize, preview.enemy);
       }
       const textOffset = preview ? previewSize + 14 : 8;
       ctx.fillText(label, x + textOffset, y + h / 2);
@@ -4010,6 +4157,23 @@ export default class Editor {
       ctx.fillText(`${label}: ${Math.round(clampedValue)}`, x, y - 4);
       ctx.restore();
       this.randomLevelSlider.bounds[kind] = { x, y: y - 16, w, h: h + 26, min, max };
+    };
+
+    const wrapText = (text, maxWidth) => {
+      const words = text.split(' ');
+      const lines = [];
+      let line = '';
+      words.forEach((word) => {
+        const testLine = line ? `${line} ${word}` : word;
+        if (ctx.measureText(testLine).width > maxWidth && line) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = testLine;
+        }
+      });
+      if (line) lines.push(line);
+      return lines;
     };
 
     const controlMargin = 18;
@@ -4126,16 +4290,50 @@ export default class Editor {
           );
         });
 
-        const contentY = tabY + tabHeight + 10;
-        const reservedBottom = joystickRadius * 2 + 32;
-        const contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom);
-        const isPreviewTab = activeTab === 'tiles' || activeTab === 'prefabs' || activeTab === 'powerups';
-        const buttonHeight = isPreviewTab ? 60 : 52;
-        const buttonGap = 12;
         const contentX = panelX + 12;
         const contentW = panelW - 24;
+        const baseContentY = tabY + tabHeight + 10;
+        let contentY = baseContentY;
+        const reservedBottom = joystickRadius * 2 + 32;
+        let contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom);
+        const isPreviewTab = activeTab === 'tiles' || activeTab === 'prefabs' || activeTab === 'powerups' || activeTab === 'enemies';
+        const buttonHeight = isPreviewTab ? 60 : 52;
+        const buttonGap = 12;
         let items = [];
         let columns = 2;
+
+        if (activeTab === 'enemies') {
+          const subTabHeight = 28;
+          const subTabGap = 10;
+          const subTabWidth = (contentW - subTabGap) / 2;
+          const subTabY = baseContentY;
+          drawButton(
+            contentX,
+            subTabY,
+            subTabWidth,
+            subTabHeight,
+            'STANDARD',
+            this.enemyCategory === 'standard',
+            () => {
+              this.enemyCategory = 'standard';
+            },
+            'Standard enemies'
+          );
+          drawButton(
+            contentX + subTabWidth + subTabGap,
+            subTabY,
+            subTabWidth,
+            subTabHeight,
+            'BOSSES',
+            this.enemyCategory === 'boss',
+            () => {
+              this.enemyCategory = 'boss';
+            },
+            'Boss enemies'
+          );
+          contentY += subTabHeight + 10;
+          contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom);
+        }
 
         if (activeTab === 'tools') {
           items = [
@@ -4217,10 +4415,14 @@ export default class Editor {
           }));
           columns = 2;
         } else if (activeTab === 'enemies') {
-          items = ENEMY_TYPES.map((enemy) => ({
+          const enemySource = this.enemyCategory === 'boss'
+            ? BOSS_ENEMY_TYPES
+            : STANDARD_ENEMY_TYPES;
+          items = enemySource.map((enemy) => ({
             id: enemy.id,
             label: `${enemy.label} [${enemy.glyph}]`,
             active: this.enemyType.id === enemy.id,
+            preview: { type: 'enemy', enemy },
             tooltip: `Enemy: ${enemy.label}`,
             onClick: () => {
               this.setEnemyType(enemy);
@@ -4323,13 +4525,13 @@ export default class Editor {
         );
       });
 
-      const contentY = tabY + tabHeight + 10;
-      const contentHeight = Math.max(0, panelY + panelH - contentY);
+      let contentY = tabY + tabHeight + 10;
+      let contentHeight = Math.max(0, panelY + panelH - contentY);
       const contentX = panelX;
       const contentW = panelWidth;
       const contentPadding = 12;
       const buttonGap = 10;
-      const isTallButtons = activeTab === 'tiles' || activeTab === 'prefabs';
+      const isTallButtons = activeTab === 'tiles' || activeTab === 'prefabs' || activeTab === 'enemies';
       const buttonHeight = isTallButtons ? 40 : 32;
       const { items, columns } = this.getPanelConfig(activeTab);
 
@@ -4338,6 +4540,41 @@ export default class Editor {
       ctx.fillRect(contentX, contentY, contentW, contentHeight);
       ctx.strokeStyle = '#fff';
       ctx.strokeRect(contentX, contentY, contentW, contentHeight);
+
+      if (activeTab === 'enemies') {
+        const subTabHeight = 24;
+        const subTabGap = 10;
+        const subTabWidth = (contentW - contentPadding * 2 - subTabGap) / 2;
+        const subTabY = contentY + 6;
+        const subTabX = contentX + contentPadding;
+        drawButton(
+          subTabX,
+          subTabY,
+          subTabWidth,
+          subTabHeight,
+          'STANDARD',
+          this.enemyCategory === 'standard',
+          () => {
+            this.enemyCategory = 'standard';
+          },
+          'Standard enemies'
+        );
+        drawButton(
+          subTabX + subTabWidth + subTabGap,
+          subTabY,
+          subTabWidth,
+          subTabHeight,
+          'BOSSES',
+          this.enemyCategory === 'boss',
+          () => {
+            this.enemyCategory = 'boss';
+          },
+          'Boss enemies'
+        );
+        const offset = subTabHeight + 14;
+        contentY += offset;
+        contentHeight = Math.max(0, panelY + panelH - contentY);
+      }
 
       const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
       const rows = Math.ceil(items.length / columns);
@@ -4382,7 +4619,9 @@ export default class Editor {
           ? { type: 'tile', tile: item.tile }
           : item.prefab
             ? { type: 'prefab', prefab: item.prefab }
-            : null;
+            : item.enemy
+              ? { type: 'enemy', enemy: item.enemy }
+              : null;
         drawButton(x, y, columnWidth, buttonHeight, item.label, getActiveState(item), item.onClick, item.tooltip, preview);
       });
 
@@ -4571,6 +4810,38 @@ export default class Editor {
     ctx.closePath();
     ctx.fill();
     ctx.restore();
+
+    const enemyInfo = this.enemyType?.description;
+    const showEnemyInfo = enemyInfo && (this.getActivePanelTab() === 'enemies' || this.mode === 'enemy');
+    if (showEnemyInfo) {
+      ctx.save();
+      const boxWidth = this.isMobileLayout()
+        ? Math.min(260, this.editorBounds.w - 24)
+        : 320;
+      const boxX = this.isMobileLayout() ? this.editorBounds.x + 12 : 12;
+      const maxTextWidth = boxWidth - 20;
+      ctx.font = '12px Courier New';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      const title = `${this.enemyType.label}`;
+      const lines = wrapText(enemyInfo, maxTextWidth);
+      const boxHeight = 18 + lines.length * 16 + 16;
+      const tooltipHeight = this.isMobileLayout() ? 22 : 24;
+      const maxY = this.isMobileLayout()
+        ? this.editorBounds.y + 12
+        : Math.max(12, ctx.canvas.height - boxHeight - tooltipHeight - 12);
+      const boxY = maxY;
+      ctx.fillStyle = 'rgba(0,0,0,0.75)';
+      ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+      ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(title, boxX + 10, boxY + 8);
+      lines.forEach((line, index) => {
+        ctx.fillText(line, boxX + 10, boxY + 26 + index * 16);
+      });
+      ctx.restore();
+    }
 
     const tooltip = hoverTooltip || (this.tooltipTimer > 0 ? this.activeTooltip : '');
     const fallbackTooltip = `Mode: ${modeLabel} | Tile: ${tileLabel} | Enemy: ${enemyLabel} | Prefab: ${prefabLabel} | Shape: ${shapeLabel}`;

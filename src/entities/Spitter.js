@@ -7,12 +7,29 @@ export default class Spitter extends EnemyBase {
     this.type = 'spitter';
     this.health = 3;
     this.cooldown = 1.4;
+    this.speed = 90;
+    this.patrolDir = Math.random() < 0.5 ? -1 : 1;
+    this.patrolTimer = 0.6 + Math.random() * 1.2;
   }
 
   update(dt, player, context = {}) {
     this.animTime = (this.animTime || 0) + dt;
     const dist = player.x - this.x;
     this.facing = Math.sign(dist) || this.facing;
+    this.patrolTimer -= dt;
+    if (this.patrolTimer <= 0) {
+      this.patrolTimer = 0.8 + Math.random() * 1.4;
+      this.patrolDir = Math.random() < 0.5 ? -1 : 1;
+    }
+    const moveSpeed = this.speed * 0.6;
+    if (Math.abs(dist) < 120) {
+      this.vx = -this.facing * moveSpeed;
+    } else if (Math.abs(dist) > 220) {
+      this.vx = this.facing * moveSpeed;
+    } else {
+      this.vx = this.patrolDir * moveSpeed * 0.6;
+    }
+    this.x += this.vx * dt;
     this.cooldown -= dt;
     if (context.canShoot?.(this, 320) && this.cooldown <= 0) {
       this.cooldown = 1.6;

@@ -249,17 +249,6 @@ export default class Player {
       }
     }
 
-    if (this.dashCooldown > 0) {
-      this.dashCooldown -= dt;
-    }
-    if (input.wasPressed('dash') && this.dashCooldown <= 0) {
-      this.dashTimer = MOVEMENT_MODEL.dashDuration;
-      this.dashCooldown = this.dashCooldownBase || 0.6;
-      this.vx = this.facing * MOVEMENT_MODEL.dashSpeed;
-      this.vy = 0;
-      this.justDashed = true;
-    }
-
     if (this.gravityLockTimer > 0) {
       this.gravityLockTimer = Math.max(0, this.gravityLockTimer - dt);
     }

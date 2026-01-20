@@ -123,6 +123,14 @@ export default class Effect {
       this.life = this.options.life ?? 0.9;
       this.lensSpin = Math.random() * Math.PI * 2;
     }
+    if (this.type === 'ignitir-spark') {
+      this.life = this.options.life ?? 0.22;
+      const baseAngle = Math.atan2(this.options.dirY ?? 0, this.options.dirX ?? 1);
+      this.sparks = Array.from({ length: 6 }, () => ({
+        angle: baseAngle + (Math.random() - 0.5) * 1.2,
+        length: 6 + Math.random() * 10
+      }));
+    }
   }
 
   update(dt) {
@@ -480,6 +488,17 @@ export default class Effect {
       ctx.beginPath();
       ctx.arc(0, 0, flare * 0.9, this.lensSpin, this.lensSpin + Math.PI * 1.5);
       ctx.stroke();
+    } else if (this.type === 'ignitir-spark') {
+      ctx.globalAlpha = 0.9 - t * 0.7;
+      ctx.strokeStyle = `rgba(180, 230, 255, ${0.9 - t * 0.7})`;
+      ctx.lineWidth = 2;
+      this.sparks.forEach((spark) => {
+        const length = spark.length + t * 10;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(Math.cos(spark.angle) * length, Math.sin(spark.angle) * length);
+        ctx.stroke();
+      });
     }
     ctx.restore();
   }
