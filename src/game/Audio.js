@@ -123,8 +123,10 @@ export default class AudioSystem {
   }
 
   pickup() {
-    this.tone(520, 0.08, 'triangle');
+    const duration = 0.08;
+    this.tone(520, duration, 'triangle');
     this.tone(700, 0.06, 'triangle');
+    return duration;
   }
 
   download() {

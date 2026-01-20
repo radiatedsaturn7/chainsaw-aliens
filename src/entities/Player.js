@@ -124,7 +124,10 @@ export default class Player {
     this.justStepped = false;
     this.animTime += dt;
     this.sawRideBurstTimer = Math.max(0, this.sawRideBurstTimer - dt);
-    const moveInput = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
+    const aimingMode = input.isGamepadDown('aimMode');
+    const moveLeft = !aimingMode && input.isDown('left');
+    const moveRight = !aimingMode && input.isDown('right');
+    const moveInput = (moveRight ? 1 : 0) - (moveLeft ? 1 : 0);
     const tileSize = world.tileSize;
     const footTileX = Math.floor(this.x / tileSize);
     const footTileY = Math.floor((this.y + this.height / 2 + 1) / tileSize);
@@ -185,6 +188,8 @@ export default class Player {
     this.dropTimer = Math.max(0, this.dropTimer - dt);
     this.downTapTimer = Math.max(0, this.downTapTimer - dt);
 
+    const movementDown = !aimingMode && input.isDown('down');
+    const movementDownPressed = !aimingMode && input.wasPressed('down');
     if (input.wasPressed('drop') && onOneWay) {
       this.dropTimer = 0.2;
       this.onGround = false;
@@ -193,7 +198,7 @@ export default class Player {
       this.jumpBuffer = 0;
     }
 
-    if (input.wasPressed('down')) {
+    if (movementDownPressed) {
       if (this.downTapTimer > 0 && onOneWay) {
         this.dropTimer = 0.2;
         this.onGround = false;
@@ -204,7 +209,7 @@ export default class Player {
       }
     }
 
-    if (onOneWay && input.isDown('down') && input.wasPressed('jump')) {
+    if (onOneWay && movementDown && input.wasPressed('jump')) {
       this.dropTimer = 0.2;
       this.onGround = false;
       this.vy = Math.max(this.vy, 120);
@@ -219,7 +224,7 @@ export default class Player {
     }
 
     const pressingIntoWall = this.onWall !== 0
-      && ((this.onWall === 1 && input.isDown('right')) || (this.onWall === -1 && input.isDown('left')));
+      && ((this.onWall === 1 && moveRight) || (this.onWall === -1 && moveLeft)));
     this.magBootsEngaged = abilities.magboots && pressingIntoWall;
 
     const canGroundJump = this.coyote > 0 || this.magBootsEngaged;
@@ -319,25 +324,49 @@ export default class Player {
       this.stepTimer = Math.max(this.stepTimer, 0.1);
     }
 
-    this.ducking = this.onGround && input.isDown('down') && !this.sawRideActive;
-    const aimHorizontal = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
-    const aimUpInput = input.isDown('up') || input.isGamepadDown('aimUp');
-    const aimDownInput = input.isDown('down') || input.isGamepadDown('aimDown');
-    const aimingUp = aimUpInput && !this.ducking && !this.sawRideActive;
-    this.aimingUp = aimingUp;
-    this.aimingDiagonal = aimingUp && aimHorizontal !== 0;
-    this.aimingDown = !this.onGround && aimDownInput && !this.sawRideActive;
-    if (aimingUp) {
-      this.aimX = this.aimingDiagonal ? aimHorizontal : 0;
-      this.aimY = -1;
-    } else {
-      this.aimX = this.facing || 1;
-      this.aimY = 0;
-    }
-    if (aimingUp) {
+    this.ducking = this.onGround && !aimingMode && input.isDown('down') && !this.sawRideActive;
+    if (aimingMode) {
+      const axes = input.getGamepadAxes();
+      const stickDeadzone = 0.35;
+      const stickX = Math.abs(axes.leftX) > stickDeadzone ? axes.leftX : 0;
+      const stickY = Math.abs(axes.leftY) > stickDeadzone ? axes.leftY : 0;
+      const dpadX = (input.isGamepadDown('dpadRight') ? 1 : 0) - (input.isGamepadDown('dpadLeft') ? 1 : 0);
+      const dpadY = (input.isGamepadDown('dpadDown') ? 1 : 0) - (input.isGamepadDown('dpadUp') ? 1 : 0);
+      const aimInputX = stickX || dpadX;
+      const aimInputY = stickY || dpadY;
+      if (aimInputX !== 0 || aimInputY !== 0) {
+        const angle = Math.atan2(aimInputY, aimInputX);
+        const snapped = Math.round(angle / (Math.PI / 4)) * (Math.PI / 4);
+        this.aimX = Math.round(Math.cos(snapped));
+        this.aimY = Math.round(Math.sin(snapped));
+      } else {
+        this.aimX = this.facing || 1;
+        this.aimY = 0;
+      }
       this.aimAngle = Math.atan2(this.aimY, this.aimX);
+      this.aimingUp = this.aimY < 0 && !this.sawRideActive;
+      this.aimingDown = this.aimY > 0 && !this.sawRideActive;
+      this.aimingDiagonal = this.aimX !== 0 && this.aimY !== 0 && !this.sawRideActive;
     } else {
-      this.aimAngle = 0;
+      const aimHorizontal = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
+      const aimUpInput = input.isDown('up') || input.isGamepadDown('aimUp');
+      const aimDownInput = input.isDown('down') || input.isGamepadDown('aimDown');
+      const aimingUp = aimUpInput && !this.ducking && !this.sawRideActive;
+      this.aimingUp = aimingUp;
+      this.aimingDiagonal = aimingUp && aimHorizontal !== 0;
+      this.aimingDown = !this.onGround && aimDownInput && !this.sawRideActive;
+      if (aimingUp) {
+        this.aimX = this.aimingDiagonal ? aimHorizontal : 0;
+        this.aimY = -1;
+      } else {
+        this.aimX = this.facing || 1;
+        this.aimY = 0;
+      }
+      if (aimingUp) {
+        this.aimAngle = Math.atan2(this.aimY, this.aimX);
+      } else {
+        this.aimAngle = 0;
+      }
     }
     const chainsawHeld = input.isDown('attack') || input.isDown('rev');
     if (chainsawHeld && !this.chainsawHeld) {
