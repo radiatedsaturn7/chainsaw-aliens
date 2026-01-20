@@ -1444,6 +1444,16 @@ export default class Editor {
       }
     };
 
+    const pickSpanStart = (minValue, maxValue, span, positions) => {
+      const maxStart = maxValue - (span - 1);
+      const minStart = minValue;
+      if (maxStart < minStart) return minStart;
+      const choices = positions
+        .map((position) => clamp(position, minStart, maxStart))
+        .filter((value, index, list) => list.indexOf(value) === index);
+      return pickOne(choices.length ? choices : [minStart]);
+    };
+
     const carveConnection = (from, to) => {
       const horizontal = from.y === to.y;
       const wideJoin = Math.random() < 0.3;
@@ -1460,7 +1470,10 @@ export default class Editor {
         const maxY = Math.min(from.y + from.h - 2, to.y + to.h - 2);
         const maxSpan = Math.max(1, maxY - minY + 1);
         const corridorSpan = Math.min(span, maxSpan);
-        const startY = clamp(from.y + 1, minY, maxY - (corridorSpan - 1));
+        const minStart = minY;
+        const maxStart = maxY - (corridorSpan - 1);
+        const midStart = Math.floor((minStart + maxStart) / 2);
+        const startY = pickSpanStart(minY, maxY, corridorSpan, [minStart, midStart, maxStart]);
         for (let i = 0; i < corridorSpan; i += 1) {
           setTile(doorX, startY + i, doorwayTile);
           setTile(otherDoorX, startY + i, doorwayTile);
@@ -1491,7 +1504,10 @@ export default class Editor {
       const maxX = Math.min(from.x + from.w - 2, to.x + to.w - 2);
       const maxSpan = Math.max(1, maxX - minX + 1);
       const corridorSpan = Math.min(span, maxSpan);
-      const startX = clamp(from.x + 1, minX, maxX - (corridorSpan - 1));
+      const minStart = minX;
+      const maxStart = maxX - (corridorSpan - 1);
+      const midStart = Math.floor((minStart + maxStart) / 2);
+      const startX = pickSpanStart(minX, maxX, corridorSpan, [minStart, midStart, maxStart]);
       for (let i = 0; i < corridorSpan; i += 1) {
         setTile(startX + i, doorY, doorwayTile);
         setTile(startX + i, otherDoorY, doorwayTile);
@@ -1885,6 +1901,57 @@ export default class Editor {
 
     addSpawnPitPlatform();
 
+    const ensureTwoDoorReachability = () => {
+      const carveLine = (room, start, end) => {
+        const dx = Math.sign(end.x - start.x);
+        const dy = Math.sign(end.y - start.y);
+        let x = start.x;
+        let y = start.y;
+        const carveTile = (tx, ty) => {
+          if (tx < room.x + 1 || tx > room.x + room.w - 2) return;
+          if (ty < room.y + 1 || ty > room.y + room.h - 2) return;
+          if (tiles[ty]?.[tx] !== 'D') setTile(tx, ty, '.');
+        };
+        carveTile(x, y);
+        while (x !== end.x || y !== end.y) {
+          if (x !== end.x) x += dx;
+          if (y !== end.y) y += dy;
+          carveTile(x, y);
+        }
+      };
+      const getDoorPad = (room, door) => {
+        const pad = { x: door.x, y: door.y };
+        if (door.side === 'top') pad.y += 1;
+        if (door.side === 'bottom') pad.y -= 1;
+        if (door.side === 'left') pad.x += 1;
+        if (door.side === 'right') pad.x -= 1;
+        if (pad.x < room.x + 1 || pad.x > room.x + room.w - 2) return null;
+        if (pad.y < room.y + 1 || pad.y > room.y + room.h - 2) return null;
+        return pad;
+      };
+
+      rooms.forEach((room) => {
+        const doors = findRoomDoorTiles(room);
+        if (doors.length !== 2) return;
+        const pads = doors.map((door) => getDoorPad(room, door)).filter(Boolean);
+        if (pads.length !== 2) return;
+        carveLine(room, pads[0], { x: pads[1].x, y: pads[0].y });
+        carveLine(room, { x: pads[1].x, y: pads[0].y }, pads[1]);
+      });
+    };
+
+    const enforceAcidSupports = () => {
+      for (let y = 0; y < height - 1; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          if (tiles[y][x] !== 'A') continue;
+          const below = tiles[y + 1]?.[x];
+          if (below && below !== 'D') {
+            setTile(x, y + 1, '#');
+          }
+        }
+      }
+    };
+
     const isSpawnBufferTile = (x, y) => Math.abs(x - spawn.x) <= 3 && Math.abs(y - spawn.y) <= 3;
     const isSpawnPlatformTile = (x, y) => {
       const dx = x - spawn.x;
@@ -1902,6 +1969,8 @@ export default class Editor {
     };
 
     clearSpawnBufferTiles();
+    ensureTwoDoorReachability();
+    enforceAcidSupports();
 
     const enemies = [];
     const difficultyOrder = ['practice', 'skitter', 'spitter', 'bulwark', 'floater', 'slicer', 'hivenode', 'sentinel'];
