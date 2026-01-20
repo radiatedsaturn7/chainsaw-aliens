@@ -19,9 +19,10 @@ export default class Minimap {
     }
     if (roomIndex !== null && roomIndex !== undefined && !this.exploredRooms.has(roomIndex)) {
       const room = this.world.getRoomBounds?.(roomIndex);
-      if (room) {
+      if (room && this.world.roomIndexByTile) {
         for (let y = room.minY; y <= room.maxY; y += 1) {
           for (let x = room.minX; x <= room.maxX; x += 1) {
+            if (this.world.roomIndexByTile[y]?.[x] !== roomIndex) continue;
             const tile = this.world.getTile(x, y);
             if (!this.isRoomTile(tile)) continue;
             this.explored.add(`${x},${y}`);
@@ -103,23 +104,24 @@ export default class Minimap {
 
   drawRooms(ctx, pixel, currentRoom) {
     const blink = 0.65 + 0.35 * Math.sin(performance.now() * 0.006);
-    this.world.rooms.forEach((room, index) => {
-      const isExplored = this.exploredRooms.has(index);
-      const isKnown = this.knownRooms.has(index);
-      if (!isExplored && !isKnown) return;
-      const width = (room.maxX - room.minX + 1) * pixel;
-      const height = (room.maxY - room.minY + 1) * pixel;
-      if (index === currentRoom) {
-        ctx.fillStyle = `rgba(255,222,77,${blink})`;
-      } else if (isExplored) {
-        ctx.fillStyle = 'rgba(255,255,255,0.9)';
-      } else {
-        ctx.fillStyle = 'rgba(160,160,160,0.6)';
+    if (!this.world.roomIndexByTile) return;
+    for (let y = 0; y < this.world.height; y += 1) {
+      for (let x = 0; x < this.world.width; x += 1) {
+        const roomIndex = this.world.roomIndexByTile[y][x];
+        if (roomIndex === -1) continue;
+        const isExplored = this.exploredRooms.has(roomIndex);
+        const isKnown = this.knownRooms.has(roomIndex);
+        if (!isExplored && !isKnown) continue;
+        if (roomIndex === currentRoom) {
+          ctx.fillStyle = `rgba(255,222,77,${blink})`;
+        } else if (isExplored) {
+          ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        } else {
+          ctx.fillStyle = 'rgba(160,160,160,0.6)';
+        }
+        ctx.fillRect(x * pixel, y * pixel, pixel, pixel);
       }
-      ctx.fillRect(room.minX * pixel, room.minY * pixel, width, height);
-      ctx.strokeStyle = 'rgba(0,0,0,0.35)';
-      ctx.strokeRect(room.minX * pixel + 0.5, room.minY * pixel + 0.5, width - 1, height - 1);
-    });
+    }
   }
 
   drawDoors(ctx, pixel) {
