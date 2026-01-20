@@ -8,12 +8,20 @@ export default class Bulwark extends EnemyBase {
     this.health = 5;
     this.armored = true;
     this.openTimer = 0;
+    this.speed = 70;
   }
 
   update(dt, player) {
     this.animTime = (this.animTime || 0) + dt;
     const dist = player.x - this.x;
     this.facing = Math.sign(dist) || this.facing;
+    const absDist = Math.abs(dist);
+    if (absDist > 60) {
+      this.vx = this.facing * this.speed * 0.5;
+      this.x += this.vx * dt;
+    } else {
+      this.vx = 0;
+    }
     if (Math.abs(dist) < 120) {
       this.openTimer = 0.6;
     }

@@ -170,6 +170,10 @@ export default class Game {
     this.shakeTimer = 0;
     this.shakeMagnitude = 0;
     this.activeRoomIndex = null;
+    this.roomEnemySpawns = new Map();
+    this.roomVisited = new Set();
+    this.roomExitTimes = new Map();
+    this.roomRespawnTimers = new Map();
     this.cameraBounds = null;
     this.slowTimer = 0;
     this.doorTransition = null;
@@ -201,7 +205,6 @@ export default class Game {
     this.attackHoldTimer = 0;
     this.attackHoldThreshold = 0.22;
     this.lastAttackFromGamepad = false;
-    this.sawRidePrimed = false;
     this.obstacleDamage = new Map();
     this.obstacleCooldown = 0;
     this.noiseCooldown = 0;
@@ -374,7 +377,35 @@ export default class Game {
     this.syncSpawnPoint();
     this.resetWorldSystems();
     this.activeRoomIndex = null;
+    this.rebuildRoomEnemySpawns();
+    this.roomVisited.clear();
+    this.roomExitTimes.clear();
+    this.roomRespawnTimers.clear();
     this.cameraBounds = null;
+  }
+
+  rebuildRoomEnemySpawns() {
+    this.roomEnemySpawns.clear();
+    if (!this.world.enemies) return;
+    const bossTypes = new Set([
+      'finalboss',
+      'sunderbehemoth',
+      'riftram',
+      'broodtitan',
+      'nullaegis',
+      'hexmatron',
+      'gravewarden',
+      'obsidiancrown',
+      'cataclysmcolossus'
+    ]);
+    this.world.enemies.forEach((spawn) => {
+      if (!spawn || bossTypes.has(spawn.type)) return;
+      const roomIndex = this.world.roomAtTile(spawn.x, spawn.y);
+      if (roomIndex === null || roomIndex === undefined) return;
+      const list = this.roomEnemySpawns.get(roomIndex) || [];
+      list.push({ ...spawn });
+      this.roomEnemySpawns.set(roomIndex, list);
+    });
   }
 
   buildElevatorGraph() {
@@ -655,7 +686,6 @@ export default class Game {
     this.attackTapTimer = 0;
     this.attackHoldTimer = 0;
     this.lastAttackFromGamepad = false;
-    this.sawRidePrimed = false;
     this.prevHealth = this.player.health;
     this.damageFlashTimer = 0;
     this.ignitirFlashTimer = 0;
@@ -1258,17 +1288,6 @@ export default class Game {
     if (this.input.isDown('attack')) {
       this.attackHoldTimer += dt * timeScale;
     }
-    if (this.input.wasPressed('down')) {
-      this.sawRidePrimed = true;
-    }
-    if (!this.input.isDown('down')) {
-      this.sawRidePrimed = false;
-    }
-    if (!this.player.sawRideActive && this.player.onGround && this.sawRidePrimed && this.input.isDown('down') && this.input.wasPressed('attack')) {
-      this.player.startSawRide();
-      this.sawRidePrimed = false;
-    }
-
     if (!this.abilities.flame) {
       this.player.flameMode = false;
     } else if (this.input.wasPressed('flame')) {
@@ -1319,7 +1338,7 @@ export default class Game {
       return;
     }
 
-    if (!this.player.sawRideActive && this.input.wasReleased('attack')) {
+    if (this.input.wasReleased('attack')) {
       const heldDuration = this.attackHoldTimer;
       this.attackHoldTimer = 0;
       if (usingIgnitir) {
@@ -1328,6 +1347,7 @@ export default class Game {
         } else if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold && !this.ignitirReady) {
           this.audio.ignitirDud();
           this.recordFeedback('ignitir dud', 'audio');
+          this.spawnIgnitirSpark();
         }
       } else if (usingFlamethrower) {
         // Flamethrower pours while held; no tap action on release.
@@ -1347,7 +1367,7 @@ export default class Game {
           this.handleAttack();
         }
       }
-    } else if (!this.player.sawRideActive && !this.input.isDown('attack')) {
+    } else if (!this.input.isDown('attack')) {
       this.attackHoldTimer = 0;
     }
     if (this.sawAnchor.embedded && this.input.wasPressed('jump')) {
@@ -1411,6 +1431,7 @@ export default class Game {
     this.playability.update(dt * timeScale, this);
 
     this.updateRoomCameraBounds();
+    this.updateRoomRespawns(dt * timeScale);
     this.camera.follow(this.player, dt, this.cameraBounds);
     this.minimap.update(this.player);
 
@@ -1496,10 +1517,20 @@ export default class Game {
     const tileY = Math.floor(this.player.y / tileSize);
     const currentTile = this.world.getTile(tileX, tileY);
     const roomIndex = this.world.roomAtTile(tileX, tileY);
+    const previousRoom = this.activeRoomIndex;
     if (currentTile !== 'D' && roomIndex !== null) {
       this.activeRoomIndex = roomIndex;
     } else if (this.activeRoomIndex === null && roomIndex !== null) {
       this.activeRoomIndex = roomIndex;
+    }
+
+    if (previousRoom !== this.activeRoomIndex) {
+      if (previousRoom !== null && previousRoom !== undefined) {
+        this.roomExitTimes.set(previousRoom, this.clock);
+      }
+      if (this.activeRoomIndex !== null && this.activeRoomIndex !== undefined) {
+        this.handleRoomEntry(this.activeRoomIndex);
+      }
     }
 
     if (this.activeRoomIndex === null) {
@@ -1535,6 +1566,60 @@ export default class Game {
       maxY = centerY;
     }
     this.cameraBounds = { minX, maxX, minY, maxY };
+  }
+
+  handleRoomEntry(roomIndex) {
+    const spawns = this.roomEnemySpawns.get(roomIndex) || [];
+    if (!spawns.length) return;
+    if (!this.roomVisited.has(roomIndex)) {
+      this.roomVisited.add(roomIndex);
+      return;
+    }
+    const tileSize = this.world.tileSize;
+    const activeKeys = new Set(this.enemies.filter((enemy) => !enemy.dead).map((enemy) => {
+      const tx = Math.floor(enemy.x / tileSize);
+      const ty = Math.floor(enemy.y / tileSize);
+      return `${tx},${ty}`;
+    }));
+    const missing = spawns.some((spawn) => !activeKeys.has(`${spawn.x},${spawn.y}`));
+    if (missing) {
+      this.roomRespawnTimers.set(roomIndex, 2.6);
+    }
+  }
+
+  updateRoomRespawns(dt) {
+    if (!this.roomRespawnTimers.size) return;
+    for (const [roomIndex, timer] of this.roomRespawnTimers.entries()) {
+      const next = timer - dt;
+      if (next > 0) {
+        this.roomRespawnTimers.set(roomIndex, next);
+        continue;
+      }
+      if (this.activeRoomIndex === roomIndex) {
+        this.respawnRoomEnemies(roomIndex);
+        this.roomRespawnTimers.delete(roomIndex);
+      } else {
+        this.roomRespawnTimers.set(roomIndex, 0.6);
+      }
+    }
+  }
+
+  respawnRoomEnemies(roomIndex) {
+    const spawns = this.roomEnemySpawns.get(roomIndex) || [];
+    if (!spawns.length) return;
+    const tileSize = this.world.tileSize;
+    const activeKeys = new Set(this.enemies.filter((enemy) => !enemy.dead).map((enemy) => {
+      const tx = Math.floor(enemy.x / tileSize);
+      const ty = Math.floor(enemy.y / tileSize);
+      return `${tx},${ty}`;
+    }));
+    spawns.forEach((spawn) => {
+      const key = `${spawn.x},${spawn.y}`;
+      if (activeKeys.has(key)) return;
+      const worldX = (spawn.x + 0.5) * tileSize;
+      const worldY = (spawn.y + 0.5) * tileSize;
+      this.spawnEnemyByType(spawn.type, worldX, worldY);
+    });
   }
 
   findDoorExit(tileX, tileY, primaryDir) {
@@ -1643,32 +1728,12 @@ export default class Game {
       this.spawnEffect('dash', this.player.x + this.player.facing * 10, this.player.y);
       this.recordFeedback('dash', 'audio');
       this.recordFeedback('dash', 'visual');
-      this.applyStaggerPulse();
     }
     if (this.player.justStepped) {
       this.audio.footstep();
       this.spawnEffect('move', this.player.x, this.player.y + 18);
       this.recordFeedback('move', 'audio');
       this.recordFeedback('move', 'visual');
-    }
-  }
-
-  applyStaggerPulse() {
-    const range = this.world.tileSize * 5;
-    const staggerEnemy = (enemy) => {
-      if (!enemy || enemy.dead) return;
-      const dx = enemy.x - this.player.x;
-      const dy = enemy.y - this.player.y;
-      if (Math.hypot(dx, dy) > range) return;
-      const wasStaggered = enemy.stagger >= 0.6;
-      enemy.stagger = Math.max(enemy.stagger, 0.6);
-      if (!wasStaggered) {
-        enemy.justStaggered = true;
-      }
-    };
-    this.enemies.forEach(staggerEnemy);
-    if (this.boss && !this.boss.dead && this.bossActive) {
-      staggerEnemy(this.boss);
     }
   }
 
@@ -1818,16 +1883,6 @@ export default class Game {
       const testY = originY + dirY * dist;
       const testTileX = Math.floor(testX / tileSize);
       const testTileY = Math.floor(testY / tileSize);
-      if (roomBounds) {
-        if (
-          testTileX < roomBounds.minX
-          || testTileX > roomBounds.maxX
-          || testTileY < roomBounds.minY
-          || testTileY > roomBounds.maxY
-        ) {
-          break;
-        }
-      }
       if (this.world.isSolid(testTileX, testTileY, this.abilities)) {
         break;
       }
@@ -1986,6 +2041,7 @@ export default class Game {
       this.recordFeedback('ignitir blast', 'visual');
       this.shakeTimer = Math.max(this.shakeTimer, 1.1);
       this.shakeMagnitude = Math.max(this.shakeMagnitude, 30);
+      this.applyIgnitirObstacleBurst(sequence.targetX, sequence.targetY);
       sequence.explosionSpawned = true;
     }
 
@@ -2158,17 +2214,6 @@ export default class Game {
       const point = getQuadraticPoint(t, originX, originY, streamDx, streamDy, controlX, controlY);
       const pointTileX = Math.floor(point.x / tileSize);
       const pointTileY = Math.floor(point.y / tileSize);
-      if (
-        roomBounds
-        && (pointTileX < roomBounds.minX
-          || pointTileX > roomBounds.maxX
-          || pointTileY < roomBounds.minY
-          || pointTileY > roomBounds.maxY)
-      ) {
-        impactX = lastPoint.x;
-        impactY = lastPoint.y;
-        break;
-      }
       if (this.world.isSolid(pointTileX, pointTileY, this.abilities)) {
         impactTile = { x: pointTileX, y: pointTileY };
         impactX = (pointTileX + 0.5) * tileSize;
@@ -2232,6 +2277,13 @@ export default class Game {
         life: 0.55 + Math.random() * 0.25 + impactHeat * 0.08,
         size: 16 + Math.random() * 10 + heatProgress * 18
       });
+      if (impactTile) {
+        this.applyObstacleDamage(impactTile.x, impactTile.y, 'flamethrower', {
+          cooldown: 0,
+          sound: false,
+          effect: false
+        });
+      }
       if (impactTile) {
         this.spawnEffect('flamethrower-burn', impactX, impactY, {
           life: 1.4 + Math.random() * 0.5 + heatProgress * 0.8,
@@ -2397,7 +2449,7 @@ export default class Game {
 
   updateLowHealthWarning(dt) {
     if (!this.player || this.player.dead) return;
-    const lowHealth = this.player.health <= 2;
+    const lowHealth = this.player.health <= 3;
     if (!lowHealth) {
       this.lowHealthAlarmTimer = 0;
       return;
@@ -2405,7 +2457,7 @@ export default class Game {
     this.lowHealthAlarmTimer = Math.max(0, this.lowHealthAlarmTimer - dt);
     if (this.lowHealthAlarmTimer <= 0) {
       this.audio.lowHealthAlarm();
-      this.lowHealthAlarmTimer = 2.4;
+      this.lowHealthAlarmTimer = 2.8;
       this.recordFeedback('low health alarm', 'audio');
     }
   }
@@ -2846,14 +2898,6 @@ export default class Game {
         this.recordFeedback('hit', 'visual');
         this.testHarness.recordHit();
         this.playability.recordEnemyHit(this.clock);
-        if (enemy.justStaggered) {
-          this.audio.stagger();
-          this.spawnEffect('stagger', enemy.x, enemy.y);
-          this.recordFeedback('stagger', 'audio');
-          this.recordFeedback('stagger', 'visual');
-          this.testHarness.recordStagger();
-          enemy.justStaggered = false;
-        }
         if (enemy.dead) {
           if (!enemy.training) {
             this.spawnDeathDebris(enemy);
@@ -2886,7 +2930,7 @@ export default class Game {
       if (enemy.dead) return false;
       const dx = enemy.x - this.player.x;
       const dy = Math.abs(enemy.y - this.player.y);
-      return Math.abs(dx) < range && dy < verticalRange && enemy.stagger >= 0.6;
+      return Math.abs(dx) < range && dy < verticalRange && enemy.health <= 1;
     });
     if (candidates.length === 0) return;
     const enemy = candidates[0];
@@ -2917,8 +2961,6 @@ export default class Game {
       enemy.dead = true;
       this.awardLoot(enemy, true);
       this.spawnExecutionDebris(enemy, variant);
-    } else {
-      enemy.stagger = 0;
     }
     this.slowTimer = 0.12;
     if (this.pauseMenu.shake) {
@@ -3030,40 +3072,7 @@ export default class Game {
       const dx = enemy.x - this.player.x;
       const dy = enemy.y - this.player.y;
       const dist = Math.hypot(dx, dy);
-      let handledRideHit = false;
-      if (this.player.sawRideActive) {
-        const rideAttacking = this.player.sawRideActive || this.player.sawRideBurstTimer > 0;
-        if (!enemy.solid && dist < 24) {
-          this.player.stopSawRide(false);
-        } else if (enemy.solid && dist < 28) {
-          handledRideHit = true;
-          if (rideAttacking && this.player.sawRideDamageTimer <= 0) {
-            enemy.damage(1);
-            this.applyChainsawSlow(enemy);
-            this.player.sawRideDamageTimer = 0.2;
-            enemy.hitPause = 0.1;
-            this.audio.hit();
-            this.spawnEffect('hit', enemy.x, enemy.y);
-            this.spawnEffect('oil', enemy.x, enemy.y + 6);
-            this.recordFeedback('hit', 'audio');
-            this.recordFeedback('hit', 'visual');
-            this.playability.recordEnemyHit(this.clock);
-            if (enemy.dead) {
-              if (!enemy.training) {
-                this.spawnDeathDebris(enemy);
-              }
-              this.awardLoot(enemy);
-            }
-          } else if (!rideAttacking && enemy.gravity && !enemy.training) {
-            const tookDamage = this.player.takeDamage(1);
-            if (tookDamage) {
-              this.applyPlayerKnockback(enemy);
-              enemy.hitPause = 0.2;
-            }
-          }
-        }
-      }
-      if (!handledRideHit && dist < 24) {
+      if (dist < 24) {
         if (!enemy.training) {
           const tookDamage = this.player.takeDamage(1);
           if (tookDamage) {
@@ -3072,7 +3081,7 @@ export default class Game {
           }
         }
       }
-      if (revHeld && !this.player.sawRideActive && this.player.revDamageTimer <= 0) {
+      if (revHeld && this.player.revDamageTimer <= 0) {
         if (Math.abs(dx) < revRange && Math.abs(dy) < revVerticalRange) {
           if (!(enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce')))) {
             enemy.damage(1);
@@ -3098,15 +3107,6 @@ export default class Game {
       this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: canPushEnemy });
       if (this.isPlayerBlockedAt(this.player.x, this.player.y, { ignoreOneWay: true })) {
         this.resolvePlayerTileOverlap({ ignoreOneWay: true });
-      }
-
-      if (enemy.justStaggered) {
-        this.audio.stagger();
-        this.spawnEffect('stagger', enemy.x, enemy.y);
-        this.recordFeedback('stagger', 'audio');
-        this.recordFeedback('stagger', 'visual');
-        this.testHarness.recordStagger();
-        enemy.justStaggered = false;
       }
 
       if (enemy.tickDamage) {
@@ -3407,6 +3407,20 @@ export default class Game {
       }
     });
     return best || { x: baseX, y: baseY };
+  }
+
+  spawnIgnitirSpark() {
+    if (!this.player) return;
+    const aimVector = this.getAutoAimVector();
+    const dirX = aimVector.x;
+    const dirY = aimVector.y;
+    const muzzleOffset = this.player.width * 0.9;
+    const originX = this.player.x + dirX * muzzleOffset;
+    const originY = this.player.y - 4 + dirY * muzzleOffset;
+    this.spawnEffect('ignitir-spark', originX, originY, {
+      dirX,
+      dirY
+    });
   }
 
   findAnchorHit() {
@@ -4145,6 +4159,59 @@ export default class Game {
     return cleared;
   }
 
+  applyObstacleDamage(tileX, tileY, tool, options = {}) {
+    const tile = this.world.getTile(tileX, tileY);
+    const obstacle = OBSTACLES[tile];
+    if (!obstacle) return false;
+    let interaction = obstacle.interactions?.[tool];
+    if (!interaction && tool === 'flamethrower') {
+      interaction = obstacle.interactions?.flame;
+    }
+    if (!interaction) return false;
+    const key = `${tileX},${tileY}`;
+    const prev = this.obstacleDamage.get(key) || 0;
+    const next = prev + 1;
+    this.obstacleDamage.set(key, next);
+    if (interaction.noise) {
+      this.triggerNoiseSpike(interaction.verb);
+    }
+    if (options.effect !== false) {
+      this.spawnEffect('hit', tileX * this.world.tileSize + this.world.tileSize / 2, tileY * this.world.tileSize + this.world.tileSize / 2);
+    }
+    if (options.sound !== false) {
+      this.audio.hit();
+    }
+    if (options.cooldown) {
+      this.obstacleCooldown = options.cooldown;
+    }
+    if (next >= (interaction.hits || 1)) {
+      this.world.setTile(tileX, tileY, '.');
+      if (tile === 'B') {
+        this.world.bossGate = null;
+      }
+      this.obstacleDamage.delete(key);
+      this.spawnEffect('interact', tileX * this.world.tileSize + this.world.tileSize / 2, tileY * this.world.tileSize + this.world.tileSize / 2);
+    }
+    return true;
+  }
+
+  applyIgnitirObstacleBurst(targetX, targetY, radius = 6) {
+    const tileSize = this.world.tileSize;
+    const centerX = Math.floor(targetX / tileSize);
+    const centerY = Math.floor(targetY / tileSize);
+    for (let y = centerY - radius; y <= centerY + radius; y += 1) {
+      for (let x = centerX - radius; x <= centerX + radius; x += 1) {
+        const dist = Math.hypot(x - centerX, y - centerY);
+        if (dist > radius + 0.4) continue;
+        this.applyObstacleDamage(x, y, 'ignitir', {
+          cooldown: 0,
+          sound: false,
+          effect: false
+        });
+      }
+    }
+  }
+
   tryObstacleInteraction(mode) {
     if (this.sawAnchor.active) return false;
     if (this.obstacleCooldown > 0) return false;
@@ -4153,9 +4220,6 @@ export default class Game {
     const checkY = this.player.y - 6;
     const tileX = Math.floor(checkX / tileSize);
     const tileY = Math.floor(checkY / tileSize);
-    const tile = this.world.getTile(tileX, tileY);
-    const obstacle = OBSTACLES[tile];
-    if (!obstacle) return false;
     let tool = null;
     if (mode === 'attack') {
       tool = 'chainsaw';
@@ -4166,28 +4230,8 @@ export default class Game {
         tool = 'resonance';
       }
     }
-    const interaction = obstacle.interactions?.[tool];
-    if (!interaction) return false;
-
-    const key = `${tileX},${tileY}`;
-    const prev = this.obstacleDamage.get(key) || 0;
-    const next = prev + 1;
-    this.obstacleDamage.set(key, next);
-    if (interaction.noise) {
-      this.triggerNoiseSpike(interaction.verb);
-    }
-    this.spawnEffect('hit', tileX * tileSize + tileSize / 2, tileY * tileSize + tileSize / 2);
-    this.audio.hit();
-    this.obstacleCooldown = 0.2;
-    if (next >= (interaction.hits || 1)) {
-      this.world.setTile(tileX, tileY, '.');
-      if (tile === 'B') {
-        this.world.bossGate = null;
-      }
-      this.obstacleDamage.delete(key);
-      this.spawnEffect('interact', tileX * tileSize + tileSize / 2, tileY * tileSize + tileSize / 2);
-    }
-    return true;
+    if (!tool) return false;
+    return this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 });
   }
 
   draw() {
@@ -4331,8 +4375,8 @@ export default class Game {
       ctx.restore();
     }
 
-    const sawUsing = this.player.attackTimer > 0 || this.player.sawRideActive || this.sawAnchor.active;
-    const sawBuzzing = this.revActive || (this.player.sawRideActive && this.input.isDown('attack'));
+    const sawUsing = this.player.attackTimer > 0 || this.sawAnchor.active;
+    const sawBuzzing = this.revActive;
     this.hud.draw(ctx, this.player, this.objective, {
       shake: this.pauseMenu.shake,
       sawEmbedded: this.sawAnchor.embedded,
@@ -4633,6 +4677,36 @@ export default class Game {
           ctx.strokeStyle = '#4b2f17';
           ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
         }
+        if (tile === 'Y') {
+          ctx.fillStyle = '#c08a58';
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#7a4d24';
+          ctx.strokeRect(x * tileSize + 3, y * tileSize + 3, tileSize - 6, tileSize - 6);
+          ctx.strokeStyle = '#5a3617';
+          ctx.beginPath();
+          ctx.moveTo(x * tileSize + 6, y * tileSize + tileSize - 6);
+          ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + 6);
+          ctx.stroke();
+        }
+        if (tile === 'N') {
+          ctx.fillStyle = '#dff2ff';
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#9ad9ff';
+          ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+          ctx.beginPath();
+          ctx.moveTo(x * tileSize + 4, y * tileSize + tileSize - 6);
+          ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + 4);
+          ctx.stroke();
+        }
+        if (tile === 'P') {
+          ctx.fillStyle = '#8a8f9f';
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#646976';
+          ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#4a4e59';
+          ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
+        }
         if (tile === '^' || tile === 'v') {
           ctx.fillStyle = '#fff';
           ctx.beginPath();
@@ -4710,7 +4784,7 @@ export default class Game {
           ctx.lineTo(x * tileSize + tileSize / 2, y * tileSize + tileSize - 6);
           ctx.stroke();
         }
-        if (OBSTACLES[tile]) {
+        if (OBSTACLES[tile] && !['Y', 'N', 'P'].includes(tile)) {
           ctx.strokeStyle = '#fff';
           ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
           ctx.beginPath();
@@ -4880,6 +4954,7 @@ export default class Game {
     const mapHeight = Math.min(height * 0.6, 360);
     const mapX = (width - mapWidth) / 2;
     const mapY = (height - mapHeight) / 2;
+    this.minimap.update(this.player);
     const buttonWidth = 140;
     const buttonHeight = 32;
     const buttonX = mapX;

@@ -17,7 +17,6 @@ export default class EnemyBase {
     this.type = 'enemy';
     this.lootValue = 1;
     this.solid = true;
-    this.justStaggered = false;
     this.gravity = true;
     this.id = ENEMY_ID;
     ENEMY_ID += 1;
@@ -38,10 +37,7 @@ export default class EnemyBase {
   }
 
   damage(amount) {
-    const wasStaggered = this.stagger >= 0.6;
     this.health -= amount;
-    this.stagger = Math.min(1, this.stagger + 0.5);
-    this.justStaggered = !wasStaggered && this.stagger >= 0.6;
     this.hurtTimer = 0.25;
     this.shakePhase = 0;
     if (this.health <= 0) {
