@@ -4250,6 +4250,12 @@ export default class Editor {
           ctx.textAlign = 'center';
           ctx.fillText(tile.toUpperCase(), cx, cy + 4);
         }
+        if (tile === 'Z') {
+          ctx.fillStyle = '#fff';
+          ctx.font = '12px Courier New';
+          ctx.textAlign = 'center';
+          ctx.fillText('H', cx, cy + 4);
+        }
       }
     }
 
@@ -4311,6 +4317,7 @@ export default class Editor {
   drawCursor(ctx) {
     if (!this.hoverTile) return;
     const tileSize = this.game.world.tileSize;
+    const getTilePreviewChar = (tile) => (tile?.id === 'hidden-path' ? 'H' : tile?.char);
     const drawHighlight = (tileX, tileY, color) => {
       if (!this.isInBounds(tileX, tileY)) return;
       ctx.save();
@@ -4387,10 +4394,11 @@ export default class Editor {
         ctx.lineWidth = 2;
         ctx.strokeRect(ghostX + 6, ghostY + tileSize / 2 - 6, tileSize - 12, 12);
       } else if (this.tileType.char) {
+        const previewChar = getTilePreviewChar(this.tileType);
         ctx.fillStyle = 'rgba(220,240,255,0.8)';
         ctx.font = '12px Courier New';
         ctx.textAlign = 'center';
-        ctx.fillText(this.tileType.char.toUpperCase(), ghostX + tileSize / 2, ghostY + tileSize / 2 + 4);
+        ctx.fillText(previewChar.toUpperCase(), ghostX + tileSize / 2, ghostY + tileSize / 2 + 4);
       }
     }
     ctx.restore();
@@ -4434,7 +4442,7 @@ export default class Editor {
     );
 
     const drawTilePreview = (x, y, size, tile) => {
-      const char = tile?.char;
+      const char = tile?.id === 'hidden-path' ? 'H' : tile?.char;
       ctx.save();
       ctx.strokeStyle = 'rgba(255,255,255,0.5)';
       ctx.strokeRect(x, y, size, size);
