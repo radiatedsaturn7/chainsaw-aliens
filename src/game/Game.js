@@ -188,6 +188,7 @@ export default class Game {
     this.shakeMagnitude = 0;
     this.activeRoomIndex = null;
     this.roomEnemySpawns = new Map();
+    this.roomBossSpawns = new Map();
     this.roomVisited = new Set();
     this.roomExitTimes = new Map();
     this.roomRespawnTimers = new Map();
@@ -412,6 +413,7 @@ export default class Game {
 
   rebuildRoomEnemySpawns() {
     this.roomEnemySpawns.clear();
+    this.roomBossSpawns.clear();
     if (!this.world.enemies) return;
     const bossTypes = new Set([
       'finalboss',
@@ -425,12 +427,18 @@ export default class Game {
       'cataclysmcolossus'
     ]);
     this.world.enemies.forEach((spawn) => {
-      if (!spawn || bossTypes.has(spawn.type)) return;
+      if (!spawn) return;
       const roomIndex = this.world.roomAtTile(spawn.x, spawn.y);
       if (roomIndex === null || roomIndex === undefined) return;
-      const list = this.roomEnemySpawns.get(roomIndex) || [];
-      list.push({ ...spawn });
-      this.roomEnemySpawns.set(roomIndex, list);
+      if (bossTypes.has(spawn.type)) {
+        const list = this.roomBossSpawns.get(roomIndex) || [];
+        list.push({ ...spawn });
+        this.roomBossSpawns.set(roomIndex, list);
+      } else {
+        const list = this.roomEnemySpawns.get(roomIndex) || [];
+        list.push({ ...spawn });
+        this.roomEnemySpawns.set(roomIndex, list);
+      }
     });
   }
 
@@ -916,88 +924,15 @@ export default class Game {
     if (this.world.enemies && this.world.enemies.length > 0) {
       this.enemies = [];
       this.boss = null;
-      const tileSize = this.world.tileSize;
-      this.world.enemies.forEach((spawn) => {
-        const worldX = (spawn.x + 0.5) * tileSize;
-        const worldY = (spawn.y + 0.5) * tileSize;
-        switch (spawn.type) {
-          case 'practice':
-            this.enemies.push(new PracticeDrone(worldX, worldY));
-            break;
-          case 'skitter':
-            this.enemies.push(new Skitter(worldX, worldY));
-            break;
-          case 'spitter':
-            this.enemies.push(new Spitter(worldX, worldY));
-            break;
-          case 'bulwark':
-            this.enemies.push(new Bulwark(worldX, worldY));
-            break;
-          case 'floater':
-            this.enemies.push(new Floater(worldX, worldY));
-            break;
-          case 'slicer':
-            this.enemies.push(new Slicer(worldX, worldY));
-            break;
-          case 'hivenode':
-            this.enemies.push(new HiveNode(worldX, worldY));
-            break;
-          case 'sentinel':
-            this.enemies.push(new SentinelElite(worldX, worldY));
-            break;
-          case 'drifter':
-            this.enemies.push(new Drifter(worldX, worldY));
-            break;
-          case 'bobber':
-            this.enemies.push(new Bobber(worldX, worldY));
-            break;
-          case 'harrier':
-            this.enemies.push(new Harrier(worldX, worldY));
-            break;
-          case 'bouncer':
-            this.enemies.push(new Bouncer(worldX, worldY));
-            break;
-          case 'coward':
-            this.enemies.push(new Coward(worldX, worldY));
-            break;
-          case 'pouncer':
-            this.enemies.push(new Pouncer(worldX, worldY));
-            break;
-          case 'ranger':
-            this.enemies.push(new Ranger(worldX, worldY));
-            break;
-          case 'sunderbehemoth':
-            this.enemies.push(new SunderBehemoth(worldX, worldY));
-            break;
-          case 'riftram':
-            this.enemies.push(new RiftRam(worldX, worldY));
-            break;
-          case 'broodtitan':
-            this.enemies.push(new BroodTitan(worldX, worldY));
-            break;
-          case 'nullaegis':
-            this.enemies.push(new NullAegis(worldX, worldY));
-            break;
-          case 'hexmatron':
-            this.enemies.push(new HexMatron(worldX, worldY));
-            break;
-          case 'gravewarden':
-            this.enemies.push(new GraveWarden(worldX, worldY));
-            break;
-          case 'obsidiancrown':
-            this.enemies.push(new ObsidianCrown(worldX, worldY));
-            break;
-          case 'cataclysmcolossus':
-            this.enemies.push(new CataclysmColossus(worldX, worldY));
-            break;
-          case 'finalboss':
-            this.boss = new FinalBoss(worldX, worldY);
-            break;
-          default:
-            break;
-        }
-      });
       this.bossActive = false;
+      const tileSize = this.world.tileSize;
+      const tileX = Math.floor(this.player.x / tileSize);
+      const tileY = Math.floor(this.player.y / tileSize);
+      const roomIndex = this.world.roomAtTile(tileX, tileY);
+      if (roomIndex !== null && roomIndex !== undefined) {
+        this.activeRoomIndex = roomIndex;
+        this.handleRoomEntry(roomIndex);
+      }
       return;
     }
 
@@ -1649,9 +1584,12 @@ export default class Game {
   }
 
   handleRoomEntry(roomIndex) {
-    if (!this.roomVisited.has(roomIndex)) {
-      this.roomVisited.add(roomIndex);
+    if (this.roomVisited.has(roomIndex)) {
+      return;
     }
+    this.roomVisited.add(roomIndex);
+    this.respawnRoomEnemies(roomIndex);
+    this.spawnRoomBosses(roomIndex);
   }
 
   updateRoomRespawns(dt) {
@@ -1682,6 +1620,30 @@ export default class Game {
     spawns.forEach((spawn) => {
       const key = `${spawn.x},${spawn.y}`;
       if (activeKeys.has(key)) return;
+      const worldX = (spawn.x + 0.5) * tileSize;
+      const worldY = (spawn.y + 0.5) * tileSize;
+      this.spawnEnemyByType(spawn.type, worldX, worldY);
+    });
+  }
+
+  spawnRoomBosses(roomIndex) {
+    const spawns = this.roomBossSpawns.get(roomIndex) || [];
+    if (!spawns.length) return;
+    const tileSize = this.world.tileSize;
+    const existingKeys = new Set(this.enemies.map((enemy) => {
+      const tx = Math.floor(enemy.x / tileSize);
+      const ty = Math.floor(enemy.y / tileSize);
+      return `${tx},${ty}`;
+    }));
+    spawns.forEach((spawn) => {
+      const key = `${spawn.x},${spawn.y}`;
+      if (spawn.type === 'finalboss') {
+        if (this.boss) return;
+        this.boss = new FinalBoss((spawn.x + 0.5) * tileSize, (spawn.y + 0.5) * tileSize);
+        this.bossActive = false;
+        return;
+      }
+      if (existingKeys.has(key)) return;
       const worldX = (spawn.x + 0.5) * tileSize;
       const worldY = (spawn.y + 0.5) * tileSize;
       this.spawnEnemyByType(spawn.type, worldX, worldY);
