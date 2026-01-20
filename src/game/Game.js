@@ -35,6 +35,7 @@ import PracticeDrone from '../entities/PracticeDrone.js';
 import Effect from '../entities/Effect.js';
 import Title from '../ui/Title.js';
 import Dialog from '../ui/Dialog.js';
+import SystemPrompt from '../ui/SystemPrompt.js';
 import HUD from '../ui/HUD.js';
 import Shop from '../ui/Shop.js';
 import Pause from '../ui/Pause.js';
@@ -102,6 +103,15 @@ const ABILITY_DIALOG_LINES = {
   ]
 };
 
+const ABILITY_PICKUP_LABELS = {
+  anchor: 'Chainsaw Throw',
+  flame: 'Flame-Saw',
+  magboots: 'Mag Boots',
+  resonance: 'Resonance Core',
+  ignitir: 'Ignitir',
+  flamethrower: 'Flamethrower'
+};
+
 const UPGRADE_LIST = [
   { id: 'tooth-razor', name: 'Tooth Profile: Razor Edge', slot: 'tooth', cost: 15, modifiers: { revEfficiency: 0.2 } },
   { id: 'tooth-serrated', name: 'Tooth Profile: Serrated Bite', slot: 'tooth', cost: 20, modifiers: { revEfficiency: 0.3 } },
@@ -135,6 +145,9 @@ export default class Game {
     this.shopUI = new Shop(UPGRADE_LIST);
     this.state = 'loading';
     this.victory = false;
+    this.systemPrompts = [];
+    this.modalPrompt = null;
+    this.promptReturnState = 'playing';
     this.enemies = [];
     this.projectiles = [];
     this.debris = [];
@@ -622,6 +635,18 @@ export default class Game {
 
   returnToEditorFromPlaytest() {
     if (!this.playtestActive) return;
+    const tileSize = this.world.tileSize;
+    const tileX = Math.floor(this.player.x / tileSize);
+    const tileY = Math.floor(this.player.y / tileSize);
+    const roomIndex = this.world.roomAtTile(tileX, tileY);
+    const roomBounds = roomIndex !== null ? this.world.getRoomBounds(roomIndex) : null;
+    if (roomBounds) {
+      const focusX = (roomBounds.x + roomBounds.w / 2) * tileSize;
+      const focusY = (roomBounds.y + roomBounds.h / 2) * tileSize;
+      this.editor.setFocusOverride({ x: focusX, y: focusY });
+    } else {
+      this.editor.setFocusOverride({ x: this.player.x, y: this.player.y });
+    }
     this.state = 'editor';
     this.editor.activate();
     this.playtestActive = false;
@@ -1057,6 +1082,7 @@ export default class Game {
     this.clock += dt;
     this.worldTime += dt;
     this.menuFlashTimer = Math.max(0, this.menuFlashTimer - dt);
+    this.updateSystemPrompts(dt);
 
     if (this.input.wasPressed('editor')) {
       if (this.state === 'editor') {
@@ -1109,6 +1135,20 @@ export default class Game {
 
     if (this.state !== 'playing') {
       this.setRevAudio(false);
+    }
+
+    if (this.state === 'prompt') {
+      if (this.input.wasPressed('interact') || this.input.wasPressed('cancel')) {
+        if (this.modalPrompt) {
+          this.modalPrompt.dismiss();
+        }
+        this.state = this.promptReturnState || 'playing';
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+      }
+      this.input.flush();
+      return;
     }
 
     if (this.state === 'title') {
@@ -1811,6 +1851,8 @@ export default class Game {
     if (input.wasPressedCode('Digit4')) nextIndex = 3;
     if (input.wasGamepadPressed('dpadLeft')) nextIndex = this.activeWeaponIndex - 1;
     if (input.wasGamepadPressed('dpadRight')) nextIndex = this.activeWeaponIndex + 1;
+    if (input.wasGamepadPressed('aimUp')) nextIndex = this.activeWeaponIndex - 1;
+    if (input.wasGamepadPressed('aimDown')) nextIndex = this.activeWeaponIndex + 1;
     if (nextIndex !== null) {
       const total = this.weaponSlots.length;
       const clamped = ((nextIndex % total) + total) % total;
@@ -3244,6 +3286,29 @@ export default class Game {
     this.recordFeedback('menu navigate', 'visual');
   }
 
+  showSystemToast(message) {
+    if (!message) return;
+    this.systemPrompts.push(new SystemPrompt(message, { mode: 'toast', duration: 2 }));
+  }
+
+  showModalPrompt(message) {
+    if (!message) return;
+    this.modalPrompt = new SystemPrompt(message, { mode: 'modal' });
+    this.promptReturnState = this.state === 'prompt' ? 'playing' : this.state;
+    this.state = 'prompt';
+  }
+
+  updateSystemPrompts(dt) {
+    this.systemPrompts.forEach((prompt) => prompt.update(dt));
+    this.systemPrompts = this.systemPrompts.filter((prompt) => !prompt.done);
+    if (this.modalPrompt) {
+      this.modalPrompt.update(dt);
+      if (this.modalPrompt.done) {
+        this.modalPrompt = null;
+      }
+    }
+  }
+
   checkPickups() {
     this.world.abilityPickups.forEach((pickup) => {
       if (pickup.collected) return;
@@ -3268,7 +3333,8 @@ export default class Game {
         this.spawnEffect('pickup', pickup.x, pickup.y - 8);
         this.recordFeedback('pickup', 'audio');
         this.recordFeedback('pickup', 'visual');
-        this.showAbilityDialog(pickup.ability);
+        const label = ABILITY_PICKUP_LABELS[pickup.ability] || 'Upgrade';
+        this.showSystemToast(`${label} acquired`);
       }
     });
 
@@ -3282,11 +3348,11 @@ export default class Game {
           Math.floor(this.player.y / this.world.tileSize)
         );
         this.minimap.revealNearbyRooms(roomIndex, 7);
-        this.audio.pickup();
+        this.audio.download();
         this.spawnEffect('pickup', pickup.x, pickup.y - 8);
         this.recordFeedback('pickup', 'audio');
         this.recordFeedback('pickup', 'visual');
-        this.showAbilityDialog('map');
+        this.showModalPrompt('Map updated');
       }
     });
 
@@ -3296,7 +3362,7 @@ export default class Game {
       if (dist < 30) {
         upgrade.collected = true;
         this.player.gainMaxHealth(1);
-        this.audio.pickup();
+        this.audio.spawnTune();
         this.spawnEffect('pickup', upgrade.x, upgrade.y - 8);
         this.recordFeedback('pickup', 'audio');
         this.recordFeedback('pickup', 'visual');
@@ -4481,6 +4547,11 @@ export default class Game {
       this.pauseMenu.draw(ctx, canvas.width, canvas.height, this.objective);
     }
 
+    this.systemPrompts.forEach((prompt) => prompt.draw(ctx, canvas.width, canvas.height));
+    if (this.modalPrompt) {
+      this.modalPrompt.draw(ctx, canvas.width, canvas.height);
+    }
+
     if (this.menuFlashTimer > 0) {
       ctx.save();
       ctx.globalAlpha = 0.2;
@@ -5440,6 +5511,17 @@ export default class Game {
     if (this.state === 'editor') {
       this.editor.handlePointerDown(payload);
       return;
+    }
+    if (this.state === 'prompt' && this.modalPrompt?.okBounds) {
+      const { x, y, w, h } = this.modalPrompt.okBounds;
+      if (payload.x >= x && payload.x <= x + w && payload.y >= y && payload.y <= y + h) {
+        this.modalPrompt.dismiss();
+        this.state = this.promptReturnState || 'playing';
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
     }
     if (
       this.state === 'pause'

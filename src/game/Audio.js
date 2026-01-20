@@ -127,6 +127,14 @@ export default class AudioSystem {
     this.tone(700, 0.06, 'triangle');
   }
 
+  download() {
+    this.ensure();
+    this.noise(0.18, 0.12);
+    this.tone(320, 0.08, 'triangle');
+    window.setTimeout(() => this.tone(460, 0.1, 'triangle'), 120);
+    window.setTimeout(() => this.noise(0.08, 0.08), 180);
+  }
+
   lowHealthAlarm() {
     this.ensure();
     this.tone(520, 0.12, 'square');

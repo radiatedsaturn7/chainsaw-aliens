@@ -481,7 +481,7 @@ export default class Player {
   }
 
   gainMaxHealth(amount = 1) {
-    this.maxHealth = Math.min(12, this.maxHealth + amount);
+    this.maxHealth += amount;
     this.health = this.maxHealth;
   }
 
