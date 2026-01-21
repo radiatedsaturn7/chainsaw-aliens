@@ -190,15 +190,40 @@ const MUSIC_TRACKS = [
 
 const MIDI_INSTRUMENTS = [
   { id: 'piano', label: 'Piano' },
+  { id: 'electric-piano', label: 'E.Piano' },
+  { id: 'harpsichord', label: 'Harpsichord' },
+  { id: 'clav', label: 'Clav' },
+  { id: 'bell', label: 'Bell' },
+  { id: 'celesta', label: 'Celesta' },
+  { id: 'vibes', label: 'Vibes' },
+  { id: 'marimba', label: 'Marimba' },
   { id: 'organ', label: 'Organ' },
   { id: 'strings', label: 'Strings' },
+  { id: 'choir', label: 'Choir' },
   { id: 'bass', label: 'Bass' },
+  { id: 'guitar-nylon', label: 'Nylon Gtr' },
+  { id: 'guitar-steel', label: 'Steel Gtr' },
+  { id: 'guitar-electric', label: 'E.Guitar' },
+  { id: 'brass', label: 'Brass' },
+  { id: 'trumpet', label: 'Trumpet' },
+  { id: 'sax', label: 'Sax' },
+  { id: 'flute', label: 'Flute' },
+  { id: 'clarinet', label: 'Clarinet' },
   { id: 'synth-lead', label: 'Synth Lead' },
   { id: 'synth-pad', label: 'Synth Pad' },
+  { id: 'pluck', label: 'Pluck' },
   { id: 'sine', label: 'Sine' },
   { id: 'triangle', label: 'Triangle' },
   { id: 'square', label: 'Square' },
   { id: 'sawtooth', label: 'Saw' }
+];
+
+const MIDI_NOTE_LENGTHS = [
+  { id: 'whole', label: 'Whole', length: 16 },
+  { id: 'half', label: 'Half', length: 8 },
+  { id: 'quarter', label: 'Quarter', length: 4 },
+  { id: 'eighth', label: '1/8', length: 2 },
+  { id: 'sixteenth', label: '1/16', length: 1 }
 ];
 
 const EDITOR_AUTOSAVE_KEY = 'chainsaw-editor-autosave';
@@ -232,8 +257,14 @@ export default class Editor {
     this.musicDragStart = null;
     this.musicDragTarget = null;
     this.midiTrackIndex = 0;
-    this.midiNoteLength = 1;
+    this.midiNoteLength = 4;
     this.midiGridBounds = null;
+    this.midiNoteBounds = [];
+    this.midiNoteDrag = null;
+    this.midiNoteDirty = false;
+    this.midiInstrumentScroll = 0;
+    this.midiInstrumentScrollBounds = null;
+    this.midiInstrumentScrollMax = 0;
     this.startWithEverything = true;
     this.camera = { x: 0, y: 0 };
     this.previewMinimap = new Minimap(this.game.world);
@@ -918,24 +949,16 @@ export default class Editor {
           label: 'Remove Track',
           tooltip: 'Remove selected track',
           onClick: () => this.removeMidiTrack()
-        },
-        {
-          id: 'midi-length-up',
-          label: 'Length +',
-          tooltip: 'Increase note length',
-          onClick: () => {
-            this.midiNoteLength = clamp(this.midiNoteLength + 1, 1, 8);
-          }
-        },
-        {
-          id: 'midi-length-down',
-          label: 'Length -',
-          tooltip: 'Decrease note length',
-          onClick: () => {
-            this.midiNoteLength = clamp(this.midiNoteLength - 1, 1, 8);
-          }
         }
       ];
+      items.push(...MIDI_NOTE_LENGTHS.map((length) => ({
+        id: `midi-length-${length.id}`,
+        label: `Note: ${length.label}`,
+        tooltip: `Set ${length.label} note length`,
+        onClick: () => {
+          this.midiNoteLength = length.length;
+        }
+      })));
       items.push(...tracks.map((track, index) => ({
         id: `midi-track-${track.id}`,
         label: track.name || `Track ${index + 1}`,
@@ -1546,7 +1569,9 @@ export default class Editor {
     if (existingIndex >= 0) {
       track.notes.splice(existingIndex, 1);
     } else {
-      track.notes.push({ pitch, start, length });
+      const maxLength = this.midiGridBounds?.cols || 16;
+      const nextLength = clamp(length || 1, 1, maxLength);
+      track.notes.push({ pitch, start, length: nextLength });
       this.previewMidiNote(pitch, track.instrument);
     }
     this.persistAutosave();
@@ -3580,6 +3605,26 @@ export default class Editor {
     }
 
     if (this.mode === 'midi') {
+      const noteHit = this.getMidiNoteHit(payload.x, payload.y);
+      if (noteHit?.note) {
+        const cell = this.getMidiCellAt(payload.x, payload.y);
+        if (cell) {
+          const rows = this.midiGridBounds?.rows || 12;
+          const basePitch = 60;
+          const noteRow = rows - 1 - ((noteHit.note.pitch - basePitch + rows) % rows);
+          this.midiNoteDrag = {
+            note: noteHit.note,
+            type: noteHit.edge === 'end' ? 'resize' : 'move',
+            offsetCol: cell.col - noteHit.note.start,
+            offsetRow: cell.row - noteRow,
+            originStart: noteHit.note.start,
+            originLength: noteHit.note.length || 1,
+            originPitch: noteHit.note.pitch
+          };
+          this.midiNoteDirty = false;
+        }
+        return;
+      }
       const cell = this.getMidiCellAt(payload.x, payload.y);
       if (cell) {
         const rows = this.midiGridBounds?.rows || 12;
@@ -3671,6 +3716,29 @@ export default class Editor {
         const color = this.pixelTool === 'erase' ? null : selected?.color || null;
         this.setPixelCell(cell.col, cell.row, color);
       }
+      return;
+    }
+
+    if (this.mode === 'midi' && this.midiNoteDrag) {
+      const bounds = this.midiGridBounds;
+      if (!bounds) return;
+      const { x: gridX, y: gridY, cellSize, rows, cols } = bounds;
+      const col = clamp(Math.floor((payload.x - gridX) / cellSize), 0, cols - 1);
+      const row = clamp(Math.floor((payload.y - gridY) / cellSize), 0, rows - 1);
+      const basePitch = 60;
+      if (this.midiNoteDrag.type === 'resize') {
+        const start = this.midiNoteDrag.note.start;
+        const nextLength = clamp(col - start + 1, 1, cols - start);
+        this.midiNoteDrag.note.length = nextLength;
+      } else {
+        const length = clamp(this.midiNoteDrag.note.length || 1, 1, cols);
+        const nextStart = clamp(col - this.midiNoteDrag.offsetCol, 0, cols - length);
+        const nextRow = clamp(row - this.midiNoteDrag.offsetRow, 0, rows - 1);
+        const nextPitch = basePitch + (rows - 1 - nextRow);
+        this.midiNoteDrag.note.start = nextStart;
+        this.midiNoteDrag.note.pitch = nextPitch;
+      }
+      this.midiNoteDirty = true;
       return;
     }
 
@@ -3780,6 +3848,14 @@ export default class Editor {
     if (!this.active) return;
     if (this.pixelPaintActive && this.mode === 'pixel') {
       this.pixelPaintActive = false;
+      return;
+    }
+    if (this.mode === 'midi' && this.midiNoteDrag) {
+      this.midiNoteDrag = null;
+      if (this.midiNoteDirty) {
+        this.persistAutosave();
+        this.midiNoteDirty = false;
+      }
       return;
     }
     if (this.musicDragStart && this.mode === 'music') {
@@ -3896,6 +3972,14 @@ export default class Editor {
 
   handleWheel(payload) {
     if (!this.active) return;
+    if (this.mode === 'midi' && this.midiInstrumentScrollBounds) {
+      const { x, y, w, h } = this.midiInstrumentScrollBounds;
+      if (payload.x >= x && payload.x <= x + w && payload.y >= y && payload.y <= y + h) {
+        const delta = payload.deltaY > 0 ? 1 : -1;
+        this.midiInstrumentScroll = clamp(this.midiInstrumentScroll + delta, 0, this.midiInstrumentScrollMax);
+        return;
+      }
+    }
     if (!this.isMobileLayout() && this.panelScrollBounds) {
       const { x, y, w, h } = this.panelScrollBounds;
       if (payload.x >= x && payload.x <= x + w && payload.y >= y && payload.y <= y + h) {
@@ -3958,6 +4042,18 @@ export default class Editor {
     const row = Math.floor((y - gridY) / cellSize);
     if (col < 0 || row < 0 || col >= cols || row >= rows) return null;
     return { col, row };
+  }
+
+  getMidiNoteHit(x, y) {
+    if (!this.midiNoteBounds || this.midiNoteBounds.length === 0) return null;
+    for (let index = this.midiNoteBounds.length - 1; index >= 0; index -= 1) {
+      const bounds = this.midiNoteBounds[index];
+      if (x < bounds.x || x > bounds.x + bounds.w || y < bounds.y || y > bounds.y + bounds.h) continue;
+      const edgePadding = 5;
+      const isEndEdge = x >= bounds.x + bounds.w - edgePadding;
+      return { note: bounds.note, edge: isEndEdge ? 'end' : null };
+    }
+    return null;
   }
 
   updatePanJoystick(x, y) {
@@ -5244,6 +5340,8 @@ export default class Editor {
     this.pixelGridBounds = null;
     this.pixelFrameBounds = null;
     this.midiGridBounds = null;
+    this.midiNoteBounds = [];
+    this.midiInstrumentScrollBounds = null;
     let hoverTooltip = '';
     const pointer = this.lastPointer;
     this.randomLevelSlider.bounds.width = null;
@@ -6326,11 +6424,16 @@ export default class Editor {
       const instrumentButtonGap = 8;
       const instrumentRows = Math.ceil(MIDI_INSTRUMENTS.length / instrumentColumns);
       const instrumentRowHeight = instrumentButtonH + 6;
+      const visibleInstrumentRows = Math.min(3, instrumentRows);
       const gridRows = 12;
       const gridCols = 16;
       const gridCellSize = 14;
       const gridH = gridRows * gridCellSize;
-      const panelHeight = 110 + instrumentRows * instrumentRowHeight + gridH;
+      const noteButtonH = 20;
+      const noteButtonW = 60;
+      const noteButtonGap = 6;
+      const noteSectionHeight = 12 + noteButtonH + 6;
+      const panelHeight = 120 + noteSectionHeight + visibleInstrumentRows * instrumentRowHeight + gridH;
       ctx.save();
       ctx.globalAlpha = 0.9;
       ctx.fillStyle = 'rgba(0,0,0,0.7)';
@@ -6375,45 +6478,49 @@ export default class Editor {
         () => this.removeMidiTrack(),
         'Remove track'
       );
-      drawButton(
-        controlX,
-        panelY + 66,
-        38,
-        controlButtonH,
-        '+Len',
-        false,
-        () => {
-          this.midiNoteLength = clamp(this.midiNoteLength + 1, 1, 8);
-        },
-        'Increase length'
-      );
-      drawButton(
-        controlX + 42,
-        panelY + 66,
-        38,
-        controlButtonH,
-        '-Len',
-        false,
-        () => {
-          this.midiNoteLength = clamp(this.midiNoteLength - 1, 1, 8);
-        },
-        'Decrease length'
-      );
-      ctx.fillStyle = '#fff';
+      const noteLabelY = panelY + 72;
       ctx.font = '12px Courier New';
-      ctx.fillText(`Len: ${this.midiNoteLength}`, panelX + panelWidth - 150, panelY + 82);
+      ctx.fillStyle = '#fff';
+      ctx.fillText('Note Length:', panelX + 12, noteLabelY);
+      const noteButtonsY = noteLabelY + 12;
+      MIDI_NOTE_LENGTHS.forEach((entry, index) => {
+        const col = index % 5;
+        const x = panelX + 12 + col * (noteButtonW + noteButtonGap);
+        drawButton(
+          x,
+          noteButtonsY,
+          noteButtonW,
+          noteButtonH,
+          entry.label,
+          this.midiNoteLength === entry.length,
+          () => {
+            this.midiNoteLength = entry.length;
+          },
+          `${entry.label} note`
+        );
+      });
 
       const instrumentLabel = MIDI_INSTRUMENTS.find((entry) => entry.id === track?.instrument)?.label || 'Instrument';
-      const instrumentLabelY = panelY + 94;
-      ctx.font = '12px Courier New';
+      const instrumentLabelY = noteButtonsY + noteButtonH + 12;
       ctx.fillText(`Instrument: ${instrumentLabel}`, panelX + 12, instrumentLabelY);
       const instrumentStartY = instrumentLabelY + 14;
+      const visibleInstrumentHeight = visibleInstrumentRows * instrumentRowHeight;
+      this.midiInstrumentScrollMax = Math.max(0, instrumentRows - visibleInstrumentRows);
+      this.midiInstrumentScroll = clamp(this.midiInstrumentScroll, 0, this.midiInstrumentScrollMax);
+      this.midiInstrumentScrollBounds = {
+        x: panelX + 12,
+        y: instrumentStartY,
+        w: panelWidth - 24,
+        h: visibleInstrumentHeight
+      };
       MIDI_INSTRUMENTS.forEach((entry, index) => {
         const row = Math.floor(index / instrumentColumns);
+        if (row < this.midiInstrumentScroll || row >= this.midiInstrumentScroll + visibleInstrumentRows) return;
         const col = index % instrumentColumns;
+        const drawRow = row - this.midiInstrumentScroll;
         drawButton(
           panelX + 12 + col * (instrumentButtonW + instrumentButtonGap),
-          instrumentStartY + row * instrumentRowHeight,
+          instrumentStartY + drawRow * instrumentRowHeight,
           instrumentButtonW,
           instrumentButtonH,
           entry.label,
@@ -6427,9 +6534,36 @@ export default class Editor {
           `Set ${entry.label}`
         );
       });
+      if (instrumentRows > visibleInstrumentRows) {
+        const scrollButtonW = 28;
+        drawButton(
+          panelX + panelWidth - scrollButtonW - 10,
+          instrumentStartY - 2,
+          scrollButtonW,
+          instrumentButtonH,
+          '▲',
+          false,
+          () => {
+            this.midiInstrumentScroll = clamp(this.midiInstrumentScroll - 1, 0, this.midiInstrumentScrollMax);
+          },
+          'Scroll instruments up'
+        );
+        drawButton(
+          panelX + panelWidth - scrollButtonW - 10,
+          instrumentStartY + visibleInstrumentHeight - instrumentButtonH + 2,
+          scrollButtonW,
+          instrumentButtonH,
+          '▼',
+          false,
+          () => {
+            this.midiInstrumentScroll = clamp(this.midiInstrumentScroll + 1, 0, this.midiInstrumentScrollMax);
+          },
+          'Scroll instruments down'
+        );
+      }
 
       const gridX = panelX + 12;
-      const gridY = instrumentStartY + instrumentRows * instrumentRowHeight + 10;
+      const gridY = instrumentStartY + visibleInstrumentHeight + 10;
       const gridW = gridCols * gridCellSize;
       this.midiGridBounds = { x: gridX, y: gridY, cellSize: gridCellSize, rows: gridRows, cols: gridCols };
       ctx.fillStyle = 'rgba(255,255,255,0.05)';
@@ -6454,12 +6588,18 @@ export default class Editor {
           const col = note.start % gridCols;
           const length = clamp(note.length || 1, 1, gridCols - col);
           ctx.fillStyle = 'rgba(120,200,255,0.7)';
-          ctx.fillRect(
-            gridX + col * gridCellSize + 1,
-            gridY + row * gridCellSize + 1,
-            length * gridCellSize - 2,
-            gridCellSize - 2
-          );
+          const noteX = gridX + col * gridCellSize + 1;
+          const noteY = gridY + row * gridCellSize + 1;
+          const noteW = length * gridCellSize - 2;
+          const noteH = gridCellSize - 2;
+          ctx.fillRect(noteX, noteY, noteW, noteH);
+          this.midiNoteBounds.push({
+            x: noteX,
+            y: noteY,
+            w: noteW,
+            h: noteH,
+            note
+          });
         });
       }
       ctx.restore();
