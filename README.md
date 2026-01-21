@@ -36,16 +36,28 @@ Then visit `http://localhost:8000/index.html`.
 - Obstacle Test Room (debug): **B**
 
 ## MIDI Pattern Sequencer
-Open the sequencer from the title screen **Tools** menu (`MIDI Editor`). The editor is built around a Track → Pattern → Notes model:
-- **Track**: instrument, mute/solo, volume, and patterns.
+Open the sequencer from the title screen **Tools** menu (`MIDI Editor`). The editor is built around a Track → Pattern → Notes model, with full General MIDI (GM) program support:
+- **Track**: channel (1–16), GM program (1–128), optional bank MSB/LSB, mute/solo, volume, and patterns.
 - **Pattern**: a bar-length timeline that expands as you add notes (use an end marker to define a loop).
 - **Notes**: start tick, duration tick, pitch, velocity.
 
+### General MIDI Quick Notes
+- **128 melodic programs** are available in the instrument picker (grouped by family with search).
+- **Channel 10** (MIDI channel 9 in 0-based terms) is reserved for **drums** and uses the GM percussion map.
+- **SoundFont required**: audio playback uses a GM SoundFont sample pack (WebAudioFont-compatible). You can set a custom base URL from the Tools menu.
+
+If you hear no sound, wait for the “Loading instrument bank…” banner to finish or switch to another GM SoundFont.
+
 ### Core Workflow
-1. Add a track, select an instrument, and place notes in the expanding piano roll grid.
+1. Add a track, select a GM program (or set Channel 10 for drums), and place notes in the expanding piano roll grid.
 2. Press **Play**, adjust tempo/quantize, and choose the note length from the top ribbon.
 3. Set an end marker in the ruler (Shift + click) and toggle **Loop** in Settings if you want a repeat.
 4. Use **Export JSON** to save a song, or **Import JSON** to load one.
+
+### SoundFont Tips
+- Use **Tools → SoundFont URL** to point at a GM SoundFont bank (WebAudioFont data pack).
+- Use **Tools → Reset SoundFont** to restore the default bank.
+- The UI shows “Loading instrument bank…” until the bank and required programs are ready.
 
 ### Editor Controls (mouse/touch/keyboard)
 - **Click/drag on empty grid**: paint notes (snapped to quantize).
@@ -64,6 +76,7 @@ Open the sequencer from the title screen **Tools** menu (`MIDI Editor`). The edi
 Songs are stored as JSON with this schema:
 ```json
 {
+  "schemaVersion": 2,
   "tempo": 120,
   "loopBars": 4,
   "loopEndTick": null,
@@ -74,7 +87,10 @@ Songs are stored as JSON with this schema:
     {
       "id": "track-id",
       "name": "Lead",
-      "instrument": "lead",
+      "channel": 0,
+      "program": 0,
+      "bankMSB": 0,
+      "bankLSB": 0,
       "volume": 0.8,
       "mute": false,
       "solo": false,
