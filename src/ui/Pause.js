@@ -3,6 +3,7 @@ export default class Pause {
     this.volume = 0.4;
     this.shake = true;
     this.selection = 0;
+    this.exitBounds = null;
   }
 
   move(dir) {
@@ -41,6 +42,19 @@ export default class Pause {
       ctx.fillText(`Objective: ${objective}`, width / 2, 200 + items.length * 30 + 20);
       ctx.textAlign = 'left';
     }
+    const exitW = 180;
+    const exitH = 32;
+    const exitX = width / 2 - exitW / 2;
+    const exitY = height - 140;
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(exitX, exitY, exitW, exitH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.strokeRect(exitX, exitY, exitW, exitH);
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText('Exit to Title', exitX + exitW / 2, exitY + 22);
+    ctx.textAlign = 'left';
+    this.exitBounds = { x: exitX, y: exitY, w: exitW, h: exitH };
     ctx.textAlign = 'center';
     ctx.fillText('Arrow keys to change, Esc to resume', width / 2, height - 80);
     ctx.restore();

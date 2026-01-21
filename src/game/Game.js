@@ -650,9 +650,9 @@ export default class Game {
     document.body.classList.add('editor-active');
   }
 
-  exitPixelStudio() {
+  exitPixelStudio({ toTitle = false } = {}) {
     this.playtestActive = false;
-    this.state = this.pixelStudioReturnState || 'title';
+    this.state = toTitle ? 'title' : (this.pixelStudioReturnState || 'title');
     document.body.classList.remove('editor-active');
   }
 
@@ -711,7 +711,7 @@ export default class Game {
     document.body.classList.remove('editor-active');
   }
 
-  exitEditor({ playtest }) {
+  exitEditor({ playtest = false, toTitle = false } = {}) {
     this.editor.deactivate();
     this.editor.flushWorldRefresh();
     if (playtest) {
@@ -729,7 +729,9 @@ export default class Game {
       return;
     }
     this.playtestActive = false;
-    if (this.editorReturnState === 'playing' || this.editorReturnState === 'pause') {
+    if (toTitle) {
+      this.state = 'title';
+    } else if (this.editorReturnState === 'playing' || this.editorReturnState === 'pause') {
       this.state = 'pause';
       this.minimapSelected = false;
     } else {
@@ -6073,7 +6075,23 @@ export default class Game {
       && payload.y >= this.minimapExitBounds.y
       && payload.y <= this.minimapExitBounds.y + this.minimapExitBounds.h
     ) {
-      this.state = 'playing';
+      this.state = 'title';
+      this.minimapSelected = false;
+      this.audio.menu();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
+      return;
+    }
+    if (
+      this.state === 'pause'
+      && !this.minimapSelected
+      && this.pauseMenu?.exitBounds
+      && payload.x >= this.pauseMenu.exitBounds.x
+      && payload.x <= this.pauseMenu.exitBounds.x + this.pauseMenu.exitBounds.w
+      && payload.y >= this.pauseMenu.exitBounds.y
+      && payload.y <= this.pauseMenu.exitBounds.y + this.pauseMenu.exitBounds.h
+    ) {
+      this.state = 'title';
       this.minimapSelected = false;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');

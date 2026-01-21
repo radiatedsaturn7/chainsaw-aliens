@@ -967,7 +967,7 @@ export default class Editor {
           id: 'exit',
           label: 'Exit',
           tooltip: 'Exit editor',
-          onClick: () => this.game.exitEditor({ playtest: false })
+          onClick: () => this.game.exitEditor({ playtest: false, toTitle: true })
         }
       );
     }
@@ -5726,7 +5726,7 @@ export default class Editor {
               label: 'EXIT',
               active: false,
               tooltip: 'Exit editor',
-              onClick: () => this.game.exitEditor({ playtest: false })
+              onClick: () => this.game.exitEditor({ playtest: false, toTitle: true })
             }
           ];
           columns = 2;
