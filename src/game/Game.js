@@ -300,6 +300,9 @@ export default class Game {
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
     this.midiComposerReturnState = 'title';
+    this.pixelPreviewReturnState = null;
+    this.pixelPreviewSnapshot = null;
+    this.pixelPreviewTarget = null;
     this.playtestActive = false;
     this.playtestButtonBounds = null;
     this.playtestPauseLock = 0;
@@ -651,6 +654,47 @@ export default class Game {
     this.playtestActive = false;
     this.state = this.pixelStudioReturnState || 'title';
     document.body.classList.remove('editor-active');
+  }
+
+  enterPixelPreview(tile) {
+    if (!tile?.char) return;
+    const tileLocation = this.findTileInWorld(tile.char);
+    const tileSize = this.world.tileSize;
+    const focus = tileLocation
+      ? { x: (tileLocation.x + 0.5) * tileSize, y: (tileLocation.y + 0.5) * tileSize }
+      : { x: this.spawnPoint.x, y: this.spawnPoint.y };
+    this.pixelPreviewSnapshot = {
+      state: this.state,
+      player: { x: this.player.x, y: this.player.y }
+    };
+    this.pixelPreviewTarget = { tile, focus };
+    this.pixelPreviewReturnState = this.state;
+    this.state = 'pixel-preview';
+    this.player.x = focus.x;
+    this.player.y = focus.y;
+    this.snapCameraToPlayer();
+  }
+
+  exitPixelPreview() {
+    if (this.pixelPreviewSnapshot) {
+      this.player.x = this.pixelPreviewSnapshot.player.x;
+      this.player.y = this.pixelPreviewSnapshot.player.y;
+    }
+    this.state = this.pixelPreviewReturnState || 'pixel-editor';
+    this.pixelPreviewSnapshot = null;
+    this.pixelPreviewTarget = null;
+  }
+
+  findTileInWorld(tileChar) {
+    if (!tileChar) return null;
+    for (let y = 0; y < this.world.tiles.length; y += 1) {
+      const row = this.world.tiles[y];
+      const x = row?.indexOf(tileChar);
+      if (x >= 0) {
+        return { x, y };
+      }
+    }
+    return null;
   }
 
   enterMidiComposer() {
@@ -1146,11 +1190,26 @@ export default class Game {
 
     if (this.state === 'midi-editor') {
       if (this.input.wasPressed('cancel')) {
+        if (this.midiComposer?.isModalOpen?.()) {
+          this.midiComposer.closeModal();
+          this.input.flush();
+          return;
+        }
         this.exitMidiComposer();
         this.input.flush();
         return;
       }
       this.midiComposer.update(this.input, dt);
+      this.input.flush();
+      return;
+    }
+
+    if (this.state === 'pixel-preview') {
+      if (this.input.wasPressed('attack') || this.input.wasPressed('interact')) {
+        this.exitPixelPreview();
+        this.input.flush();
+        return;
+      }
       this.input.flush();
       return;
     }
@@ -4841,6 +4900,17 @@ export default class Game {
     }
     this.drawWaypoint(ctx, canvas.width, canvas.height, objectiveTarget);
 
+    if (this.state === 'pixel-preview') {
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fillRect(0, canvas.height - 48, canvas.width, 48);
+      ctx.fillStyle = '#fff';
+      ctx.font = '16px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText('Preview Mode • Press Attack/Space or Tap to Close', canvas.width / 2, canvas.height - 18);
+      ctx.restore();
+    }
+
     if (this.state === 'shop') {
       this.shopUI.draw(ctx, canvas.width, canvas.height, this.player);
     }
@@ -5951,6 +6021,10 @@ export default class Game {
   }
 
   handlePointerDown(payload) {
+    if (this.state === 'pixel-preview') {
+      this.exitPixelPreview();
+      return;
+    }
     if (this.state === 'editor') {
       this.editor.handlePointerDown(payload);
       return;

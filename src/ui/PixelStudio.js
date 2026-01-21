@@ -21,7 +21,7 @@ const TOOL_LIST = [
   { id: 'clone', label: 'Clone' },
   { id: 'rectangle', label: 'Rectangle' },
   { id: 'oval', label: 'Oval' },
-  { id: 'rounded-oval', label: 'Rounded Oval' },
+  { id: 'rounded-rect', label: 'Rounded Rectangle' },
   { id: 'polygon', label: 'Polygon' },
   { id: 'gradient', label: 'Gradient' },
   { id: 'dropper', label: 'Color Dropper' },
@@ -34,6 +34,50 @@ const TOOL_LIST = [
 
 const OBJECT_TYPES = ['Tiles', 'Enemies', 'Players', 'Animations'];
 const ZOOM_LEVELS = [8, 12, 16, 20, 24, 28, 32];
+const TILE_LIBRARY = [
+  { id: 'solid', label: 'Solid Block', char: '#' },
+  { id: 'hidden-path', label: 'Hidden Path Block', char: 'Z' },
+  { id: 'ice-solid', label: 'Icy Solid Block', char: 'F' },
+  { id: 'rock-solid', label: 'Rock Solid Block', char: 'R' },
+  { id: 'sand-solid', label: 'Sand Block', char: 'E' },
+  { id: 'purple-solid', label: 'Purple Solid Block', char: 'Q' },
+  { id: 'crystal-blue', label: 'Blue Crystal Block', char: 'J' },
+  { id: 'crystal-green', label: 'Green Crystal Block', char: 'G' },
+  { id: 'crystal-purple', label: 'Purple Crystal Block', char: 'V' },
+  { id: 'triangle', label: 'Triangle Block', char: '^' },
+  { id: 'triangle-flip', label: 'Triangle Block (Flipped)', char: 'v' },
+  { id: 'empty', label: 'Empty', char: '.' },
+  { id: 'oneway', label: 'One-Way Platform', char: '=' },
+  { id: 'sand-platform', label: 'Sand Platform', char: 's' },
+  { id: 'water', label: 'Water', char: '~' },
+  { id: 'acid', label: 'Acid', char: 'A' },
+  { id: 'lava', label: 'Lava', char: 'L' },
+  { id: 'spikes', label: 'Spikes', char: '*' },
+  { id: 'crystal-spikes', label: 'Crystal Spikes', char: '!' },
+  { id: 'ice', label: 'Ice Block', char: 'I' },
+  { id: 'conveyor-left', label: 'Conveyor Left', char: '<' },
+  { id: 'conveyor-right', label: 'Conveyor Right', char: '>' },
+  { id: 'anchor', label: 'Anchor Socket', char: 'a' },
+  { id: 'wood', label: 'Wood Barricade', char: 'W' },
+  { id: 'metal', label: 'Welded Metal Plate', char: 'X' },
+  { id: 'brittle', label: 'Brittle Wall', char: 'C' },
+  { id: 'debris', label: 'Heavy Debris', char: 'U' },
+  { id: 'snow', label: 'Snow Block', char: 'N' },
+  { id: 'lead', label: 'Lead Block', char: 'P' },
+  { id: 'box', label: 'Pull Box', char: 'K' },
+  { id: 'switch', label: 'Counterweight Switch', char: 'T' },
+  { id: 'bossGate', label: 'Rift Seal', char: 'B' },
+  { id: 'door', label: 'Door', char: 'D' },
+  { id: 'abilityG', label: 'Tools: Chainsaw Throw', char: 'g' },
+  { id: 'abilityP', label: 'Tools: Flame-Saw', char: 'p' },
+  { id: 'abilityM', label: 'Ability: Mag Boots', char: 'm' },
+  { id: 'abilityR', label: 'Ability: Resonance', char: 'r' },
+  { id: 'abilityF', label: 'Weapon: Flamethrower', char: 'f' },
+  { id: 'health', label: 'Vitality Core', char: 'H' },
+  { id: 'checkpoint', label: 'Checkpoint', char: 'S' },
+  { id: 'shop', label: 'Shop', char: '$' },
+  { id: 'objective', label: 'Objective', char: 'O' }
+];
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
@@ -53,6 +97,13 @@ const colorDistance = (a, b) => {
   return Math.hypot(a.r - b.r, a.g - b.g, a.b - b.b);
 };
 
+const rgbToHex = (rgb) => {
+  const toHex = (value) => value.toString(16).padStart(2, '0');
+  return `#${toHex(rgb.r)}${toHex(rgb.g)}${toHex(rgb.b)}`;
+};
+
+const lerp = (a, b, t) => a + (b - a) * t;
+
 export default class PixelStudio {
   constructor(game) {
     this.game = game;
@@ -60,8 +111,15 @@ export default class PixelStudio {
     this.toolIndex = 0;
     this.palette = DEFAULT_PALETTE;
     this.paletteIndex = 1;
+    this.secondaryPaletteIndex = 2;
+    this.lastPaletteIndex = this.paletteIndex;
     this.objectTypes = OBJECT_TYPES;
     this.objectIndex = 0;
+    this.tileLibrary = TILE_LIBRARY;
+    this.tileIndex = 0;
+    this.tileScroll = 0;
+    this.tileBounds = [];
+    this.activeTile = this.tileLibrary[0] || null;
     this.focus = 'tools';
     this.gridSize = 16;
     this.zoomIndex = 2;
@@ -69,10 +127,17 @@ export default class PixelStudio {
     this.pixels = Array(this.gridSize * this.gridSize).fill(null);
     this.clipboard = null;
     this.painting = false;
+    this.shapeActive = false;
+    this.shapeStart = null;
+    this.shapeEnd = null;
+    this.shapeTool = null;
     this.canvasBounds = null;
     this.paletteBounds = [];
     this.toolBounds = [];
     this.objectBounds = [];
+    this.axisCooldown = 0;
+    this.leftTriggerHeld = false;
+    this.rightTriggerHeld = false;
     this.cutBounds = null;
     this.cutImageRect = null;
     this.cutSelection = null;
@@ -96,31 +161,129 @@ export default class PixelStudio {
       };
       img.src = URL.createObjectURL(file);
     });
+    if (this.activeTile) {
+      this.setActiveTile(this.activeTile);
+    }
   }
 
   resetFocus() {
     this.focus = 'tools';
   }
 
-  update(input) {
-    const left = input.wasPressed('left') || input.wasGamepadPressed('dpadLeft');
-    const right = input.wasPressed('right') || input.wasGamepadPressed('dpadRight');
-    const up = input.wasPressed('up') || input.wasGamepadPressed('dpadUp');
-    const down = input.wasPressed('down') || input.wasGamepadPressed('dpadDown');
+  getTilePixels(tileChar) {
+    if (!tileChar) {
+      return { pixelData: null, frame: this.pixels };
+    }
+    if (!this.game?.world?.pixelArt) {
+      this.game.world.pixelArt = { tiles: {} };
+    }
+    if (!this.game.world.pixelArt.tiles) {
+      this.game.world.pixelArt.tiles = {};
+    }
+    const tiles = this.game.world.pixelArt.tiles;
+    if (!tiles[tileChar]) {
+      tiles[tileChar] = { size: this.gridSize, frames: [Array(this.gridSize * this.gridSize).fill(null)], fps: 6 };
+    }
+    const pixelData = tiles[tileChar];
+    if (!Array.isArray(pixelData.frames) || pixelData.frames.length === 0) {
+      pixelData.frames = [Array(pixelData.size * pixelData.size).fill(null)];
+    }
+    if (pixelData.size !== this.gridSize) {
+      pixelData.size = this.gridSize;
+      pixelData.frames = [Array(this.gridSize * this.gridSize).fill(null)];
+    }
+    return { pixelData, frame: pixelData.frames[0] };
+  }
+
+  setActiveTile(tile) {
+    this.activeTile = tile;
+    if (!tile?.char) {
+      this.pixels = Array(this.gridSize * this.gridSize).fill(null);
+      return;
+    }
+    const { frame } = this.getTilePixels(tile.char);
+    this.pixels = frame;
+  }
+
+  update(input, dt = 0) {
+    const left = input.wasPressed('left');
+    const right = input.wasPressed('right');
+    const up = input.wasPressed('up');
+    const down = input.wasPressed('down');
+    const dpadLeft = input.wasGamepadPressed('dpadLeft');
+    const dpadRight = input.wasGamepadPressed('dpadRight');
+    const dpadUp = input.wasGamepadPressed('dpadUp');
+    const dpadDown = input.wasGamepadPressed('dpadDown');
     const interact = input.wasPressed('interact');
+    const axes = input.getGamepadAxes?.() || {};
+    const axisX = axes.leftX || 0;
+    const leftTrigger = axes.leftTrigger || 0;
+    const rightTrigger = axes.rightTrigger || 0;
+
+    this.axisCooldown = Math.max(0, this.axisCooldown - dt);
+    if (Math.abs(axisX) > 0.55 && this.axisCooldown === 0) {
+      this.focus = 'palette';
+      this.paletteIndex = (this.paletteIndex + (axisX > 0 ? 1 : -1) + this.palette.length) % this.palette.length;
+      this.axisCooldown = 0.18;
+    }
+
+    if (leftTrigger > 0.6 && !this.leftTriggerHeld) {
+      this.zoomIndex = clamp(this.zoomIndex - 1, 0, ZOOM_LEVELS.length - 1);
+      this.leftTriggerHeld = true;
+    }
+    if (leftTrigger < 0.4) {
+      this.leftTriggerHeld = false;
+    }
+    if (rightTrigger > 0.6 && !this.rightTriggerHeld) {
+      this.zoomIndex = clamp(this.zoomIndex + 1, 0, ZOOM_LEVELS.length - 1);
+      this.rightTriggerHeld = true;
+    }
+    if (rightTrigger < 0.4) {
+      this.rightTriggerHeld = false;
+    }
 
     if (this.focus === 'tools') {
-      if (up) this.toolIndex = (this.toolIndex - 1 + this.tools.length) % this.tools.length;
-      if (down) this.toolIndex = (this.toolIndex + 1) % this.tools.length;
-      if (left) this.focus = 'object';
-      if (right) this.focus = 'canvas';
-      if (down && this.toolIndex === this.tools.length - 1) {
+      if (up || dpadUp) this.toolIndex = (this.toolIndex - 1 + this.tools.length) % this.tools.length;
+      if (down || dpadDown) this.toolIndex = (this.toolIndex + 1) % this.tools.length;
+      if (left || dpadLeft) this.focus = 'object';
+      if (right || dpadRight) this.focus = 'canvas';
+      if ((down || dpadDown) && this.toolIndex === this.tools.length - 1) {
         this.focus = 'palette';
       }
     } else if (this.focus === 'object') {
-      if (up) this.objectIndex = (this.objectIndex - 1 + this.objectTypes.length) % this.objectTypes.length;
-      if (down) this.objectIndex = (this.objectIndex + 1) % this.objectTypes.length;
-      if (right) this.focus = 'tools';
+      if (up || dpadUp) this.objectIndex = (this.objectIndex - 1 + this.objectTypes.length) % this.objectTypes.length;
+      if (down || dpadDown) this.objectIndex = (this.objectIndex + 1) % this.objectTypes.length;
+      if (right || dpadRight) this.focus = 'tools';
+      if ((right || dpadRight) && this.objectTypes[this.objectIndex] === 'Tiles') {
+        this.focus = 'tiles';
+      }
+      if (interact && this.objectTypes[this.objectIndex] === 'Tiles') {
+        this.focus = 'tiles';
+      }
+    } else if (this.focus === 'tiles') {
+      let moved = false;
+      if (up || dpadUp) {
+        this.tileIndex = clamp(this.tileIndex - 1, 0, this.tileLibrary.length - 1);
+        moved = true;
+      }
+      if (down || dpadDown) {
+        this.tileIndex = clamp(this.tileIndex + 1, 0, this.tileLibrary.length - 1);
+        moved = true;
+      }
+      if (left || dpadLeft) this.focus = 'object';
+      if (right || dpadRight) this.focus = 'tools';
+      if (moved) {
+        const tile = this.tileLibrary[this.tileIndex];
+        if (tile) {
+          this.setActiveTile(tile);
+        }
+      }
+      if (interact) {
+        const tile = this.tileLibrary[this.tileIndex];
+        if (tile) {
+          this.setActiveTile(tile);
+        }
+      }
     } else if (this.focus === 'palette') {
       if (left) this.paletteIndex = (this.paletteIndex - 1 + this.palette.length) % this.palette.length;
       if (right) this.paletteIndex = (this.paletteIndex + 1) % this.palette.length;
@@ -134,11 +297,16 @@ export default class PixelStudio {
       if (left) this.focus = 'tools';
     }
 
+    if (this.paletteIndex !== this.lastPaletteIndex) {
+      this.secondaryPaletteIndex = this.lastPaletteIndex;
+      this.lastPaletteIndex = this.paletteIndex;
+    }
+
     if (interact) {
       const tool = this.tools[this.toolIndex];
       if (!tool) return;
       if (tool.id === 'preview') {
-        this.previewEnabled = !this.previewEnabled;
+        this.startPreview();
       }
       if (tool.id === 'zoom-in') {
         this.zoomIndex = clamp(this.zoomIndex + 1, 0, ZOOM_LEVELS.length - 1);
@@ -157,8 +325,7 @@ export default class PixelStudio {
         this.pixels = [...this.clipboard];
       }
       if (tool.id === 'fill') {
-        const color = this.palette[this.paletteIndex]?.color ?? null;
-        this.pixels = this.pixels.map(() => color);
+        this.applyFillAll();
       }
       if (tool.id === 'cut-image') {
         if (!this.cutImage) {
@@ -170,11 +337,34 @@ export default class PixelStudio {
     }
   }
 
+  startPreview() {
+    if (!this.activeTile?.char) return;
+    if (this.game?.enterPixelPreview) {
+      this.game.enterPixelPreview(this.activeTile);
+    }
+  }
+
   handlePointerDown(payload) {
     const { x, y } = payload;
     if (this.canvasBounds && this.isPointInBounds(x, y, this.canvasBounds)) {
-      this.painting = true;
-      this.paintAt(x, y);
+      const tool = this.tools[this.toolIndex];
+      if (tool?.id === 'fill') {
+        const cell = this.getGridCellFromPoint(x, y);
+        if (cell) {
+          this.applyFillAt(cell.row, cell.col);
+        }
+      } else if (['rectangle', 'oval', 'rounded-rect', 'gradient'].includes(tool?.id)) {
+        const cell = this.getGridCellFromPoint(x, y);
+        if (cell) {
+          this.shapeActive = true;
+          this.shapeStart = cell;
+          this.shapeEnd = cell;
+          this.shapeTool = tool.id;
+        }
+      } else {
+        this.painting = true;
+        this.paintAt(x, y);
+      }
       this.focus = 'canvas';
       return;
     }
@@ -196,6 +386,15 @@ export default class PixelStudio {
       this.focus = 'object';
       return;
     }
+    const tileHit = this.tileBounds.find((bounds) => this.isPointInBounds(x, y, bounds));
+    if (tileHit) {
+      this.tileIndex = tileHit.index;
+      this.focus = 'tiles';
+      if (tileHit.tile) {
+        this.setActiveTile(tileHit.tile);
+      }
+      return;
+    }
     if (this.cutImageRect && this.isPointInBounds(x, y, this.cutImageRect)) {
       this.cutDragging = true;
       this.cutSelectionStart = { x, y };
@@ -207,6 +406,12 @@ export default class PixelStudio {
   handlePointerMove(payload) {
     if (this.painting) {
       this.paintAt(payload.x, payload.y);
+    }
+    if (this.shapeActive && this.canvasBounds) {
+      const cell = this.getGridCellFromPoint(payload.x, payload.y);
+      if (cell) {
+        this.shapeEnd = cell;
+      }
     }
     if (this.cutDragging && this.cutImageRect) {
       const start = this.cutSelectionStart;
@@ -224,14 +429,20 @@ export default class PixelStudio {
     this.painting = false;
     this.cutDragging = false;
     this.cutSelectionStart = null;
+    if (this.shapeActive && this.shapeStart && this.shapeEnd) {
+      this.applyShape(this.shapeStart, this.shapeEnd, this.shapeTool);
+    }
+    this.shapeActive = false;
+    this.shapeStart = null;
+    this.shapeEnd = null;
+    this.shapeTool = null;
   }
 
   paintAt(x, y) {
     if (!this.canvasBounds) return;
-    const { x: startX, y: startY, cellSize } = this.canvasBounds;
-    const col = Math.floor((x - startX) / cellSize);
-    const row = Math.floor((y - startY) / cellSize);
-    if (col < 0 || row < 0 || col >= this.gridSize || row >= this.gridSize) return;
+    const cell = this.getGridCellFromPoint(x, y);
+    if (!cell) return;
+    const { row, col } = cell;
     const tool = this.tools[this.toolIndex];
     if (!tool) return;
     if (!['paint', 'erase', 'dropper'].includes(tool.id)) return;
@@ -246,6 +457,131 @@ export default class PixelStudio {
     }
     const color = tool.id === 'erase' ? null : this.palette[this.paletteIndex]?.color ?? null;
     this.pixels[index] = color;
+  }
+
+  applyFillAll() {
+    const color = this.palette[this.paletteIndex]?.color ?? null;
+    this.pixels.forEach((_, index) => {
+      this.pixels[index] = color;
+    });
+  }
+
+  applyFillAt(row, col) {
+    const targetIndex = row * this.gridSize + col;
+    const targetColor = this.pixels[targetIndex];
+    const replacement = this.palette[this.paletteIndex]?.color ?? null;
+    if (targetColor === replacement) return;
+    const stack = [{ row, col }];
+    const visited = new Set();
+    while (stack.length) {
+      const current = stack.pop();
+      const key = `${current.row},${current.col}`;
+      if (visited.has(key)) continue;
+      visited.add(key);
+      const idx = current.row * this.gridSize + current.col;
+      if (this.pixels[idx] !== targetColor) continue;
+      this.pixels[idx] = replacement;
+      if (current.row > 0) stack.push({ row: current.row - 1, col: current.col });
+      if (current.row < this.gridSize - 1) stack.push({ row: current.row + 1, col: current.col });
+      if (current.col > 0) stack.push({ row: current.row, col: current.col - 1 });
+      if (current.col < this.gridSize - 1) stack.push({ row: current.row, col: current.col + 1 });
+    }
+  }
+
+  applyShape(start, end, toolId) {
+    if (!start || !end) return;
+    if (toolId === 'gradient') {
+      this.applyGradient(start, end);
+      return;
+    }
+    const color = this.palette[this.paletteIndex]?.color ?? null;
+    const [minRow, maxRow] = [Math.min(start.row, end.row), Math.max(start.row, end.row)];
+    const [minCol, maxCol] = [Math.min(start.col, end.col), Math.max(start.col, end.col)];
+    const width = maxCol - minCol + 1;
+    const height = maxRow - minRow + 1;
+    const radius = Math.max(1, Math.floor(Math.min(width, height) * 0.25));
+
+    for (let row = minRow; row <= maxRow; row += 1) {
+      for (let col = minCol; col <= maxCol; col += 1) {
+        let hit = false;
+        if (toolId === 'rectangle') {
+          hit = true;
+        } else if (toolId === 'oval') {
+          const rx = width / 2;
+          const ry = height / 2;
+          const cx = minCol + rx;
+          const cy = minRow + ry;
+          const dx = (col + 0.5 - cx) / rx;
+          const dy = (row + 0.5 - cy) / ry;
+          hit = dx * dx + dy * dy <= 1;
+        } else if (toolId === 'rounded-rect') {
+          const left = minCol;
+          const right = maxCol;
+          const top = minRow;
+          const bottom = maxRow;
+          const innerLeft = left + radius;
+          const innerRight = right - radius;
+          const innerTop = top + radius;
+          const innerBottom = bottom - radius;
+          if (col >= innerLeft && col <= innerRight) {
+            hit = row >= top && row <= bottom;
+          } else if (row >= innerTop && row <= innerBottom) {
+            hit = col >= left && col <= right;
+          } else {
+            const cornerX = col < innerLeft ? innerLeft : innerRight;
+            const cornerY = row < innerTop ? innerTop : innerBottom;
+            const dx = col - cornerX;
+            const dy = row - cornerY;
+            hit = dx * dx + dy * dy <= radius * radius;
+          }
+        }
+        if (hit) {
+          this.pixels[row * this.gridSize + col] = color;
+        }
+      }
+    }
+  }
+
+  applyGradient(start, end) {
+    const primary = this.palette[this.paletteIndex]?.color ?? null;
+    const secondary = this.palette[this.secondaryPaletteIndex]?.color ?? primary ?? null;
+    const [minRow, maxRow] = [Math.min(start.row, end.row), Math.max(start.row, end.row)];
+    const [minCol, maxCol] = [Math.min(start.col, end.col), Math.max(start.col, end.col)];
+    const startPoint = { x: start.col + 0.5, y: start.row + 0.5 };
+    const endPoint = { x: end.col + 0.5, y: end.row + 0.5 };
+    const dx = endPoint.x - startPoint.x;
+    const dy = endPoint.y - startPoint.y;
+    const lengthSq = dx * dx + dy * dy || 1;
+    const primaryRgb = hexToRgb(primary);
+    const secondaryRgb = hexToRgb(secondary);
+
+    for (let row = minRow; row <= maxRow; row += 1) {
+      for (let col = minCol; col <= maxCol; col += 1) {
+        const proj = ((col + 0.5 - startPoint.x) * dx + (row + 0.5 - startPoint.y) * dy) / lengthSq;
+        const t = clamp(proj, 0, 1);
+        let color = primary;
+        if (!primary || !secondary) {
+          color = t < 0.5 ? primary : secondary;
+        } else if (primaryRgb && secondaryRgb) {
+          const blended = {
+            r: Math.round(lerp(primaryRgb.r, secondaryRgb.r, t)),
+            g: Math.round(lerp(primaryRgb.g, secondaryRgb.g, t)),
+            b: Math.round(lerp(primaryRgb.b, secondaryRgb.b, t))
+          };
+          color = rgbToHex(blended);
+        }
+        this.pixels[row * this.gridSize + col] = color;
+      }
+    }
+  }
+
+  getGridCellFromPoint(x, y) {
+    if (!this.canvasBounds) return null;
+    const { x: startX, y: startY, cellSize } = this.canvasBounds;
+    const col = Math.floor((x - startX) / cellSize);
+    const row = Math.floor((y - startY) / cellSize);
+    if (col < 0 || row < 0 || col >= this.gridSize || row >= this.gridSize) return null;
+    return { row, col };
   }
 
   applyCutSelection() {
@@ -321,7 +657,8 @@ export default class PixelStudio {
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(panelX, panelY, leftWidth, panelH);
 
-    const objectBoxH = 140;
+    const objectBoxH = 120;
+    const tileBoxH = 180;
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(panelX + 12, panelY + 12, leftWidth - 24, objectBoxH);
     ctx.strokeStyle = this.focus === 'object' ? '#ffe16a' : 'rgba(255,255,255,0.2)';
@@ -345,12 +682,54 @@ export default class PixelStudio {
       });
     });
 
+    const tileBoxY = panelY + objectBoxH + 24;
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(panelX + 12, tileBoxY, leftWidth - 24, tileBoxH);
+    ctx.strokeStyle = this.focus === 'tiles' ? '#ffe16a' : 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(panelX + 12, tileBoxY, leftWidth - 24, tileBoxH);
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
-    ctx.fillText('Tools', panelX + 24, panelY + 182);
+    ctx.fillText('Tile Library', panelX + 24, tileBoxY + 20);
+
+    this.tileBounds = [];
+    if (this.objectTypes[this.objectIndex] === 'Tiles') {
+      const listStartY = tileBoxY + 40;
+      const lineHeight = 18;
+      const maxVisible = Math.floor((tileBoxH - 50) / lineHeight);
+      const maxScroll = Math.max(0, this.tileLibrary.length - maxVisible);
+      this.tileScroll = clamp(this.tileScroll, 0, maxScroll);
+      if (this.tileIndex < this.tileScroll) {
+        this.tileScroll = this.tileIndex;
+      } else if (this.tileIndex >= this.tileScroll + maxVisible) {
+        this.tileScroll = Math.min(maxScroll, this.tileIndex - maxVisible + 1);
+      }
+      this.tileLibrary.slice(this.tileScroll, this.tileScroll + maxVisible).forEach((tile, index) => {
+        const listIndex = this.tileScroll + index;
+        const y = listStartY + index * lineHeight;
+        const isSelected = listIndex === this.tileIndex;
+        ctx.fillStyle = isSelected ? '#ffe16a' : 'rgba(255,255,255,0.7)';
+        ctx.fillText(`${tile.label} [${tile.char}]`, panelX + 32, y);
+        this.tileBounds.push({
+          x: panelX + 20,
+          y: y - 12,
+          w: leftWidth - 40,
+          h: 16,
+          index: listIndex,
+          tile
+        });
+      });
+    } else {
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.font = '12px Courier New';
+      ctx.fillText('Select Tiles to edit.', panelX + 32, tileBoxY + 48);
+    }
+
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    ctx.fillText('Tools', panelX + 24, tileBoxY + tileBoxH + 28);
 
     this.toolBounds = [];
-    const toolStartY = panelY + 200;
+    const toolStartY = tileBoxY + tileBoxH + 46;
     const toolListHeight = panelH - toolStartY + panelY - 24;
     const toolGap = 20;
     this.tools.forEach((tool, index) => {
@@ -411,6 +790,21 @@ export default class PixelStudio {
       ctx.moveTo(gridX, gridY + i * pixelSize);
       ctx.lineTo(gridX + gridW, gridY + i * pixelSize);
       ctx.stroke();
+    }
+
+    if (this.shapeActive && this.shapeStart && this.shapeEnd) {
+      const minRow = Math.min(this.shapeStart.row, this.shapeEnd.row);
+      const maxRow = Math.max(this.shapeStart.row, this.shapeEnd.row);
+      const minCol = Math.min(this.shapeStart.col, this.shapeEnd.col);
+      const maxCol = Math.max(this.shapeStart.col, this.shapeEnd.col);
+      ctx.strokeStyle = '#ffcc6a';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(
+        gridX + minCol * pixelSize,
+        gridY + minRow * pixelSize,
+        (maxCol - minCol + 1) * pixelSize,
+        (maxRow - minRow + 1) * pixelSize
+      );
     }
 
     ctx.fillStyle = '#fff';
@@ -502,7 +896,7 @@ export default class PixelStudio {
 
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
     ctx.font = '12px Courier New';
-    ctx.fillText('D-pad: select tools/colors • Enter: apply tool • Esc: back', 24, height - 14);
+    ctx.fillText('Joystick: palette • D-pad: tools • Triggers: zoom • Enter: apply tool • Esc: back', 24, height - 14);
 
     ctx.restore();
   }
