@@ -20,6 +20,7 @@ const LOOP_OPTIONS = [1, 2, 4, 8];
 const INSTRUMENT_PRESETS = [
   { id: 'lead', label: 'Lead' },
   { id: 'bass', label: 'Bass' },
+  { id: 'guitar', label: 'Guitar' },
   { id: 'pad', label: 'Pad' },
   { id: 'keys', label: 'Keys' },
   { id: 'drums', label: 'Drums', isDrum: true }
@@ -115,7 +116,21 @@ export default class MidiComposer {
     this.longPressTimer = null;
     this.lastAuditionTime = 0;
     this.lastPointer = { x: 0, y: 0 };
+    this.settingsOpen = false;
+    this.instrumentPicker = {
+      open: false,
+      mode: null,
+      trackIndex: null,
+      bounds: [],
+      closeBounds: null
+    };
+    this.gridZoom = 1;
+    this.gridOffset = { x: 0, y: 0 };
+    this.gridGesture = null;
     this.bounds = {
+      settings: null,
+      settingsClose: null,
+      settingsDialog: null,
       transport: null,
       play: null,
       tempoDown: null,
@@ -225,13 +240,74 @@ export default class MidiComposer {
     return track.patterns[this.selectedPatternIndex];
   }
 
+  isMobileLayout() {
+    return Boolean(this.game?.isMobile);
+  }
+
+  getInstrumentLabel(instrumentId) {
+    return INSTRUMENT_PRESETS.find((preset) => preset.id === instrumentId)?.label || instrumentId;
+  }
+
+  getUniqueTrackName(baseName) {
+    const existing = new Set(this.song.tracks.map((track) => track.name));
+    if (!existing.has(baseName)) return baseName;
+    let counter = 2;
+    while (existing.has(`${baseName} ${counter}`)) {
+      counter += 1;
+    }
+    return `${baseName} ${counter}`;
+  }
+
+  openInstrumentPicker(mode, trackIndex = null) {
+    this.instrumentPicker.open = true;
+    this.instrumentPicker.mode = mode;
+    this.instrumentPicker.trackIndex = trackIndex;
+    this.instrumentPicker.bounds = [];
+    this.instrumentPicker.closeBounds = null;
+  }
+
+  applyInstrumentSelection(preset) {
+    if (!preset) return;
+    if (this.instrumentPicker.mode === 'add') {
+      const name = this.getUniqueTrackName(preset.label);
+      const track = {
+        id: `track-${uid()}`,
+        name,
+        instrument: preset.id,
+        volume: 0.8,
+        mute: false,
+        solo: false,
+        color: TRACK_COLORS[this.song.tracks.length % TRACK_COLORS.length],
+        patterns: [{ id: `pattern-${uid()}`, bars: this.song.loopBars, notes: [] }]
+      };
+      this.song.tracks.push(track);
+      this.selectedTrackIndex = this.song.tracks.length - 1;
+      this.persist();
+    } else if (this.instrumentPicker.mode === 'edit') {
+      const track = this.song.tracks[this.instrumentPicker.trackIndex];
+      if (track) {
+        track.instrument = preset.id;
+        this.persist();
+      }
+    }
+    this.instrumentPicker.open = false;
+    this.instrumentPicker.mode = null;
+    this.instrumentPicker.trackIndex = null;
+  }
+
   isModalOpen() {
-    return this.qaOverlayOpen;
+    return this.qaOverlayOpen || this.settingsOpen || this.instrumentPicker.open || this.toolsMenuOpen;
   }
 
   closeModal() {
     if (this.qaOverlayOpen) {
       this.qaOverlayOpen = false;
+    }
+    if (this.settingsOpen) {
+      this.settingsOpen = false;
+    }
+    if (this.instrumentPicker.open) {
+      this.instrumentPicker.open = false;
     }
     this.toolsMenuOpen = false;
   }
@@ -421,96 +497,128 @@ export default class MidiComposer {
       }
       return;
     }
-    if (this.toolsMenuOpen) {
-      const menuHit = this.toolsMenuBounds.find((bounds) => this.pointInBounds(x, y, bounds));
-      if (menuHit) {
-        this.handleToolsMenu(menuHit.id);
-      } else {
-        this.toolsMenuOpen = false;
+    if (this.instrumentPicker.open) {
+      if (this.instrumentPicker.closeBounds && this.pointInBounds(x, y, this.instrumentPicker.closeBounds)) {
+        this.instrumentPicker.open = false;
+        return;
+      }
+      const pickHit = this.instrumentPicker.bounds.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (pickHit) {
+        this.applyInstrumentSelection(pickHit.preset);
+        return;
+      }
+      if (this.instrumentPicker.bounds.length > 0) {
+        this.instrumentPicker.open = false;
       }
       return;
     }
-    if (this.bounds.play && this.pointInBounds(x, y, this.bounds.play)) {
-      this.togglePlayback();
+    if (this.settingsOpen) {
+      if (this.bounds.settingsClose && this.pointInBounds(x, y, this.bounds.settingsClose)) {
+        this.settingsOpen = false;
+        this.toolsMenuOpen = false;
+        return;
+      }
+      if (this.bounds.settingsDialog && !this.pointInBounds(x, y, this.bounds.settingsDialog)) {
+        this.settingsOpen = false;
+        this.toolsMenuOpen = false;
+        return;
+      }
+      if (this.toolsMenuOpen) {
+        const menuHit = this.toolsMenuBounds.find((bounds) => this.pointInBounds(x, y, bounds));
+        if (menuHit) {
+          this.handleToolsMenu(menuHit.id);
+        } else {
+          this.toolsMenuOpen = false;
+        }
+        return;
+      }
+      if (this.bounds.play && this.pointInBounds(x, y, this.bounds.play)) {
+        this.togglePlayback();
+        return;
+      }
+      if (this.bounds.tempoDown && this.pointInBounds(x, y, this.bounds.tempoDown)) {
+        this.setTempo(this.song.tempo - 1);
+        return;
+      }
+      if (this.bounds.tempoUp && this.pointInBounds(x, y, this.bounds.tempoUp)) {
+        this.setTempo(this.song.tempo + 1);
+        return;
+      }
+      if (this.bounds.loop && this.pointInBounds(x, y, this.bounds.loop)) {
+        this.cycleLoopLength();
+        return;
+      }
+      if (this.bounds.metronome && this.pointInBounds(x, y, this.bounds.metronome)) {
+        this.metronomeEnabled = !this.metronomeEnabled;
+        return;
+      }
+      if (this.bounds.quantizeToggle && this.pointInBounds(x, y, this.bounds.quantizeToggle)) {
+        this.quantizeEnabled = !this.quantizeEnabled;
+        return;
+      }
+      if (this.bounds.quantizeValue && this.pointInBounds(x, y, this.bounds.quantizeValue)) {
+        this.quantizeIndex = (this.quantizeIndex + 1) % this.quantizeOptions.length;
+        return;
+      }
+      if (this.bounds.swing && this.pointInBounds(x, y, this.bounds.swing)) {
+        this.dragState = { mode: 'swing', startX: x };
+        return;
+      }
+      if (this.bounds.preview && this.pointInBounds(x, y, this.bounds.preview)) {
+        this.previewOnEdit = !this.previewOnEdit;
+        return;
+      }
+      if (this.bounds.key && this.pointInBounds(x, y, this.bounds.key)) {
+        this.song.key = (this.song.key + 1) % 12;
+        this.persist();
+        return;
+      }
+      if (this.bounds.scale && this.pointInBounds(x, y, this.bounds.scale)) {
+        const currentIndex = SCALE_LIBRARY.findIndex((scale) => scale.id === this.song.scale);
+        const nextIndex = (currentIndex + 1) % SCALE_LIBRARY.length;
+        this.song.scale = SCALE_LIBRARY[nextIndex].id;
+        this.persist();
+        return;
+      }
+      if (this.bounds.scaleLock && this.pointInBounds(x, y, this.bounds.scaleLock)) {
+        this.scaleLock = !this.scaleLock;
+        return;
+      }
+      if (this.bounds.scrub && this.pointInBounds(x, y, this.bounds.scrub)) {
+        this.scrubAudition = !this.scrubAudition;
+        return;
+      }
+      if (this.bounds.tools && this.pointInBounds(x, y, this.bounds.tools)) {
+        this.toolsMenuOpen = !this.toolsMenuOpen;
+        return;
+      }
+      if (this.bounds.addTrack && this.pointInBounds(x, y, this.bounds.addTrack)) {
+        this.addTrack();
+        return;
+      }
+      if (this.bounds.removeTrack && this.pointInBounds(x, y, this.bounds.removeTrack)) {
+        this.removeTrack();
+        return;
+      }
+      if (this.bounds.duplicateTrack && this.pointInBounds(x, y, this.bounds.duplicateTrack)) {
+        this.duplicateTrack();
+        return;
+      }
+      const trackControlHit = this.trackControlBounds.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (trackControlHit) {
+        this.handleTrackControl(trackControlHit);
+        return;
+      }
+      const trackHit = this.trackBounds.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (trackHit) {
+        this.selectedTrackIndex = trackHit.index;
+        this.selection.clear();
+        return;
+      }
       return;
     }
-    if (this.bounds.tempoDown && this.pointInBounds(x, y, this.bounds.tempoDown)) {
-      this.setTempo(this.song.tempo - 1);
-      return;
-    }
-    if (this.bounds.tempoUp && this.pointInBounds(x, y, this.bounds.tempoUp)) {
-      this.setTempo(this.song.tempo + 1);
-      return;
-    }
-    if (this.bounds.loop && this.pointInBounds(x, y, this.bounds.loop)) {
-      this.cycleLoopLength();
-      return;
-    }
-    if (this.bounds.metronome && this.pointInBounds(x, y, this.bounds.metronome)) {
-      this.metronomeEnabled = !this.metronomeEnabled;
-      return;
-    }
-    if (this.bounds.quantizeToggle && this.pointInBounds(x, y, this.bounds.quantizeToggle)) {
-      this.quantizeEnabled = !this.quantizeEnabled;
-      return;
-    }
-    if (this.bounds.quantizeValue && this.pointInBounds(x, y, this.bounds.quantizeValue)) {
-      this.quantizeIndex = (this.quantizeIndex + 1) % this.quantizeOptions.length;
-      return;
-    }
-    if (this.bounds.swing && this.pointInBounds(x, y, this.bounds.swing)) {
-      this.dragState = { mode: 'swing', startX: x };
-      return;
-    }
-    if (this.bounds.preview && this.pointInBounds(x, y, this.bounds.preview)) {
-      this.previewOnEdit = !this.previewOnEdit;
-      return;
-    }
-    if (this.bounds.key && this.pointInBounds(x, y, this.bounds.key)) {
-      this.song.key = (this.song.key + 1) % 12;
-      this.persist();
-      return;
-    }
-    if (this.bounds.scale && this.pointInBounds(x, y, this.bounds.scale)) {
-      const currentIndex = SCALE_LIBRARY.findIndex((scale) => scale.id === this.song.scale);
-      const nextIndex = (currentIndex + 1) % SCALE_LIBRARY.length;
-      this.song.scale = SCALE_LIBRARY[nextIndex].id;
-      this.persist();
-      return;
-    }
-    if (this.bounds.scaleLock && this.pointInBounds(x, y, this.bounds.scaleLock)) {
-      this.scaleLock = !this.scaleLock;
-      return;
-    }
-    if (this.bounds.scrub && this.pointInBounds(x, y, this.bounds.scrub)) {
-      this.scrubAudition = !this.scrubAudition;
-      return;
-    }
-    if (this.bounds.tools && this.pointInBounds(x, y, this.bounds.tools)) {
-      this.toolsMenuOpen = !this.toolsMenuOpen;
-      return;
-    }
-    if (this.bounds.addTrack && this.pointInBounds(x, y, this.bounds.addTrack)) {
-      this.addTrack();
-      return;
-    }
-    if (this.bounds.removeTrack && this.pointInBounds(x, y, this.bounds.removeTrack)) {
-      this.removeTrack();
-      return;
-    }
-    if (this.bounds.duplicateTrack && this.pointInBounds(x, y, this.bounds.duplicateTrack)) {
-      this.duplicateTrack();
-      return;
-    }
-    const trackControlHit = this.trackControlBounds.find((bounds) => this.pointInBounds(x, y, bounds));
-    if (trackControlHit) {
-      this.handleTrackControl(trackControlHit);
-      return;
-    }
-    const trackHit = this.trackBounds.find((bounds) => this.pointInBounds(x, y, bounds));
-    if (trackHit) {
-      this.selectedTrackIndex = trackHit.index;
-      this.selection.clear();
+    if (this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings)) {
+      this.settingsOpen = true;
       return;
     }
     if (this.rulerBounds && this.pointInBounds(x, y, this.rulerBounds)) {
@@ -576,6 +684,53 @@ export default class MidiComposer {
     }
     this.dragState = null;
     this.draggingVolume = null;
+  }
+
+  handleGestureStart(payload) {
+    if (!this.gridBounds || this.settingsOpen || this.instrumentPicker.open || this.qaOverlayOpen) return;
+    if (!this.pointInBounds(payload.x, payload.y, this.gridBounds)) return;
+    this.gridGesture = {
+      startDistance: payload.distance,
+      startZoom: this.gridZoom,
+      startOffsetX: this.gridOffset.x,
+      startOffsetY: this.gridOffset.y,
+      startX: payload.x,
+      startY: payload.y,
+      viewX: this.gridBounds.x,
+      viewY: this.gridBounds.y,
+      cellWidth: this.gridBounds.cellWidth,
+      cellHeight: this.gridBounds.cellHeight,
+      originX: this.gridBounds.originX,
+      originY: this.gridBounds.originY,
+      cols: this.gridBounds.cols,
+      rows: this.gridBounds.rows,
+      viewW: this.gridBounds.w,
+      viewH: this.gridBounds.h
+    };
+  }
+
+  handleGestureMove(payload) {
+    if (!this.gridGesture?.startDistance) return;
+    const scale = payload.distance / this.gridGesture.startDistance;
+    const nextZoom = clamp(this.gridGesture.startZoom * scale, 0.6, 2.5);
+    const baseCellWidth = this.gridGesture.cellWidth / this.gridGesture.startZoom;
+    const baseCellHeight = this.gridGesture.cellHeight / this.gridGesture.startZoom;
+    const nextCellWidth = baseCellWidth * nextZoom;
+    const nextCellHeight = baseCellHeight * nextZoom;
+    const gridCoordX = (this.gridGesture.startX - this.gridGesture.originX) / this.gridGesture.cellWidth;
+    const gridCoordY = (this.gridGesture.startY - this.gridGesture.originY) / this.gridGesture.cellHeight;
+    const nextOriginX = payload.x - gridCoordX * nextCellWidth;
+    const nextOriginY = payload.y - gridCoordY * nextCellHeight;
+    this.gridZoom = nextZoom;
+    this.gridOffset.x = nextOriginX - this.gridGesture.viewX;
+    this.gridOffset.y = nextOriginY - this.gridGesture.viewY;
+    const nextGridW = nextCellWidth * this.gridGesture.cols;
+    const nextGridH = nextCellHeight * this.gridGesture.rows;
+    this.clampGridOffset(this.gridGesture.viewW, this.gridGesture.viewH, nextGridW, nextGridH);
+  }
+
+  handleGestureEnd() {
+    this.gridGesture = null;
   }
 
   handleGridPointerDown(payload) {
@@ -891,22 +1046,7 @@ export default class MidiComposer {
   }
 
   addTrack() {
-    const preset = INSTRUMENT_PRESETS[this.song.tracks.length % INSTRUMENT_PRESETS.length];
-    const name = window.prompt('Track name?', `Track ${this.song.tracks.length + 1}`);
-    if (!name) return;
-    const track = {
-      id: `track-${uid()}`,
-      name,
-      instrument: preset.id,
-      volume: 0.8,
-      mute: false,
-      solo: false,
-      color: TRACK_COLORS[this.song.tracks.length % TRACK_COLORS.length],
-      patterns: [{ id: `pattern-${uid()}`, bars: this.song.loopBars, notes: [] }]
-    };
-    this.song.tracks.push(track);
-    this.selectedTrackIndex = this.song.tracks.length - 1;
-    this.persist();
+    this.openInstrumentPicker('add');
   }
 
   removeTrack() {
@@ -942,9 +1082,8 @@ export default class MidiComposer {
     } else if (hit.control === 'solo') {
       track.solo = !track.solo;
     } else if (hit.control === 'instrument') {
-      const index = INSTRUMENT_PRESETS.findIndex((preset) => preset.id === track.instrument);
-      const nextIndex = (index + 1) % INSTRUMENT_PRESETS.length;
-      track.instrument = INSTRUMENT_PRESETS[nextIndex].id;
+      this.openInstrumentPicker('edit', hit.trackIndex);
+      return;
     } else if (hit.control === 'name') {
       const nextName = window.prompt('Track name?', track.name);
       if (nextName) track.name = nextName;
@@ -1096,10 +1235,10 @@ export default class MidiComposer {
 
   getGridCell(x, y) {
     if (!this.gridBounds) return null;
-    const { x: startX, y: startY, cellWidth, cellHeight, rows } = this.gridBounds;
-    const col = Math.floor((x - startX) / cellWidth);
-    const row = Math.floor((y - startY) / cellHeight);
-    if (col < 0 || row < 0 || col >= this.gridBounds.cols || row >= rows) return null;
+    const { originX, originY, cellWidth, cellHeight, rows, cols } = this.gridBounds;
+    const col = Math.floor((x - originX) / cellWidth);
+    const row = Math.floor((y - originY) / cellHeight);
+    if (col < 0 || row < 0 || col >= cols || row >= rows) return null;
     const tick = col;
     const pitch = this.getPitchFromRow(row);
     return { tick, pitch };
@@ -1107,8 +1246,8 @@ export default class MidiComposer {
 
   getTickFromX(x) {
     if (!this.gridBounds) return 0;
-    const { x: startX, cellWidth } = this.gridBounds;
-    return Math.floor((x - startX) / cellWidth);
+    const { originX, cellWidth } = this.gridBounds;
+    return Math.floor((x - originX) / cellWidth);
   }
 
   getPitchFromRow(row) {
@@ -1145,12 +1284,12 @@ export default class MidiComposer {
 
   getNoteRect(note) {
     if (!this.gridBounds) return null;
-    const { x: startX, y: startY, cellWidth, cellHeight } = this.gridBounds;
+    const { originX, originY, cellWidth, cellHeight } = this.gridBounds;
     const row = this.getRowFromPitch(note.pitch);
     if (row < 0) return null;
     return {
-      x: startX + note.startTick * cellWidth,
-      y: startY + row * cellHeight + 1,
+      x: originX + note.startTick * cellWidth,
+      y: originY + row * cellHeight + 1,
       w: Math.max(cellWidth * note.durationTicks, cellWidth),
       h: cellHeight - 2
     };
@@ -1158,6 +1297,16 @@ export default class MidiComposer {
 
   pointInBounds(x, y, bounds) {
     return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
+  }
+
+  clampGridOffset(viewW, viewH, gridW, gridH) {
+    if (!this.gridOffset) {
+      this.gridOffset = { x: 0, y: 0 };
+    }
+    const minX = Math.min(0, viewW - gridW);
+    const minY = Math.min(0, viewH - gridH);
+    this.gridOffset.x = clamp(this.gridOffset.x, minX, 0);
+    this.gridOffset.y = clamp(this.gridOffset.y, minY, 0);
   }
 
   draw(ctx, width, height) {
@@ -1172,19 +1321,28 @@ export default class MidiComposer {
     ctx.textAlign = 'left';
     ctx.fillText('Pattern Sequencer', 24, 40);
 
-    const transportH = 90;
-    const leftWidth = 300;
-    const panelX = 20;
-    const panelY = 70;
-    const transportX = panelX + leftWidth + 20;
-    const transportW = width - transportX - 20;
+    const headerH = this.isMobileLayout() ? 62 : 54;
+    this.bounds.settings = { x: width - 144, y: 16, w: 120, h: 32 };
+    this.drawSmallButton(ctx, this.bounds.settings, 'Settings', this.settingsOpen);
 
-    this.drawTransport(ctx, transportX, panelY, transportW, transportH);
-    this.drawTrackList(ctx, panelX, panelY, leftWidth, height - panelY - 20);
-    this.drawPatternEditor(ctx, transportX, panelY + transportH + 20, transportW, height - panelY - transportH - 40, track, pattern);
+    if (track) {
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '14px Courier New';
+      ctx.fillText(`Track: ${track.name}`, 24, headerH);
+    }
 
-    if (this.toolsMenuOpen) {
-      this.drawToolsMenu(ctx, transportX + transportW - 180, panelY + 14);
+    const contentX = 20;
+    const contentY = headerH + 12;
+    const contentW = width - 40;
+    const contentH = height - contentY - 24;
+    this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
+
+    if (this.settingsOpen) {
+      this.drawSettingsDialog(ctx, width, height);
+    }
+
+    if (this.instrumentPicker.open) {
+      this.drawInstrumentPicker(ctx, width, height);
     }
 
     if (this.qaOverlayOpen) {
@@ -1195,49 +1353,146 @@ export default class MidiComposer {
   }
 
   drawTransport(ctx, x, y, w, h) {
+    const scale = Math.min(1, w / 980);
+    const offset = (value) => value * scale;
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(x, y, w, h);
 
-    const buttonW = 92;
-    const buttonH = 36;
-    this.bounds.play = { x: x + 16, y: y + 18, w: buttonW, h: buttonH };
+    const buttonW = 92 * scale;
+    const buttonH = 36 * scale;
+    this.bounds.play = { x: x + offset(16), y: y + offset(18), w: buttonW, h: buttonH };
     ctx.fillStyle = this.isPlaying ? '#ffe16a' : 'rgba(0,0,0,0.6)';
     ctx.fillRect(this.bounds.play.x, this.bounds.play.y, buttonW, buttonH);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(this.bounds.play.x, this.bounds.play.y, buttonW, buttonH);
     ctx.fillStyle = this.isPlaying ? '#0b0b0b' : '#fff';
-    ctx.font = '16px Courier New';
+    ctx.font = `${Math.max(12, Math.round(16 * scale))}px Courier New`;
     ctx.textAlign = 'center';
-    ctx.fillText(this.isPlaying ? 'STOP' : 'PLAY', this.bounds.play.x + buttonW / 2, this.bounds.play.y + 22);
+    ctx.fillText(this.isPlaying ? 'STOP' : 'PLAY', this.bounds.play.x + buttonW / 2, this.bounds.play.y + buttonH * 0.65);
     ctx.textAlign = 'left';
 
     ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
-    ctx.fillText(`Tempo ${this.song.tempo} BPM`, x + 130, y + 32);
-    this.bounds.tempoDown = { x: x + 260, y: y + 16, w: 24, h: 24 };
-    this.bounds.tempoUp = { x: x + 292, y: y + 16, w: 24, h: 24 };
+    ctx.font = `${Math.max(11, Math.round(14 * scale))}px Courier New`;
+    ctx.fillText(`Tempo ${this.song.tempo} BPM`, x + offset(130), y + offset(32));
+    this.bounds.tempoDown = { x: x + offset(260), y: y + offset(16), w: offset(24), h: offset(24) };
+    this.bounds.tempoUp = { x: x + offset(292), y: y + offset(16), w: offset(24), h: offset(24) };
     this.drawSmallButton(ctx, this.bounds.tempoDown, '-', false);
     this.drawSmallButton(ctx, this.bounds.tempoUp, '+', false);
 
-    this.bounds.loop = { x: x + 340, y: y + 16, w: 100, h: 24 };
+    this.bounds.loop = { x: x + offset(340), y: y + offset(16), w: offset(100), h: offset(24) };
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(this.bounds.loop.x, this.bounds.loop.y, this.bounds.loop.w, this.bounds.loop.h);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(this.bounds.loop.x, this.bounds.loop.y, this.bounds.loop.w, this.bounds.loop.h);
     ctx.fillStyle = '#fff';
-    ctx.fillText(`Loop ${this.song.loopBars} bars`, this.bounds.loop.x + 8, this.bounds.loop.y + 16);
+    ctx.fillText(`Loop ${this.song.loopBars} bars`, this.bounds.loop.x + offset(8), this.bounds.loop.y + offset(16));
 
-    this.bounds.metronome = { x: x + 460, y: y + 16, w: 110, h: 24 };
+    this.bounds.metronome = { x: x + offset(460), y: y + offset(16), w: offset(110), h: offset(24) };
     this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
 
-    this.bounds.quantizeToggle = { x: x + 590, y: y + 16, w: 110, h: 24 };
+    this.bounds.quantizeToggle = { x: x + offset(590), y: y + offset(16), w: offset(110), h: offset(24) };
     this.drawToggle(ctx, this.bounds.quantizeToggle, `Quant ${this.quantizeEnabled ? 'On' : 'Off'}`, this.quantizeEnabled);
-    this.bounds.quantizeValue = { x: x + 710, y: y + 16, w: 70, h: 24 };
+    this.bounds.quantizeValue = { x: x + offset(710), y: y + offset(16), w: offset(70), h: offset(24) };
     this.drawToggle(ctx, this.bounds.quantizeValue, this.quantizeOptions[this.quantizeIndex].label, true);
 
-    this.bounds.swing = { x: x + 16, y: y + 58, w: 200, h: 16 };
+    this.bounds.swing = { x: x + offset(16), y: y + offset(58), w: offset(200), h: offset(16) };
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(this.bounds.swing.x, this.bounds.swing.y, this.bounds.swing.w, this.bounds.swing.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(this.bounds.swing.x, this.bounds.swing.y, this.bounds.swing.w, this.bounds.swing.h);
+    const knobX = this.bounds.swing.x + (this.swing / 60) * this.bounds.swing.w;
+    ctx.fillStyle = '#ffe16a';
+    ctx.fillRect(knobX - offset(4), this.bounds.swing.y - offset(2), offset(8), this.bounds.swing.h + offset(4));
+    ctx.fillStyle = '#fff';
+    ctx.font = `${Math.max(10, Math.round(12 * scale))}px Courier New`;
+    ctx.fillText(`Swing ${Math.round(this.swing)}%`, this.bounds.swing.x + offset(210), this.bounds.swing.y + offset(12));
+
+    this.bounds.preview = { x: x + offset(340), y: y + offset(54), w: offset(150), h: offset(24) };
+    this.drawToggle(ctx, this.bounds.preview, `Preview ${this.previewOnEdit ? 'On' : 'Off'}`, this.previewOnEdit);
+
+    this.bounds.scrub = { x: x + offset(500), y: y + offset(54), w: offset(150), h: offset(24) };
+    this.drawToggle(ctx, this.bounds.scrub, `Scrub ${this.scrubAudition ? 'On' : 'Off'}`, this.scrubAudition);
+
+    this.bounds.key = { x: x + offset(660), y: y + offset(54), w: offset(60), h: offset(24) };
+    this.drawToggle(ctx, this.bounds.key, KEY_LABELS[this.song.key], true);
+    const scaleLabel = SCALE_LIBRARY.find((scale) => scale.id === this.song.scale)?.label || 'Major';
+    this.bounds.scale = { x: x + offset(728), y: y + offset(54), w: offset(110), h: offset(24) };
+    this.drawToggle(ctx, this.bounds.scale, scaleLabel, true);
+    this.bounds.scaleLock = { x: x + offset(848), y: y + offset(54), w: offset(120), h: offset(24) };
+    this.drawToggle(ctx, this.bounds.scaleLock, `Scale Lock ${this.scaleLock ? 'On' : 'Off'}`, this.scaleLock);
+
+    this.bounds.tools = { x: x + w - offset(120), y: y + offset(18), w: offset(100), h: offset(28) };
+    this.drawToggle(ctx, this.bounds.tools, 'Tools', false);
+
+    const bar = Math.floor(this.playheadTick / (this.ticksPerBeat * this.beatsPerBar)) + 1;
+    const beat = Math.floor((this.playheadTick % (this.ticksPerBeat * this.beatsPerBar)) / this.ticksPerBeat) + 1;
+    ctx.fillStyle = '#ffe16a';
+    ctx.font = `${Math.max(11, Math.round(14 * scale))}px Courier New`;
+    ctx.fillText(`Position ${bar}:${beat}`, x + w - offset(160), y + offset(70));
+  }
+
+  drawTransportCompact(ctx, x, y, w, h) {
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, w, h);
+
+    const innerX = x + 12;
+    const innerW = w - 24;
+    const rowH = 30;
+    const gap = 8;
+    const colGap = 12;
+    const colW = (innerW - colGap) / 2;
+    let rowY = y + 12;
+
+    this.bounds.play = { x: innerX, y: rowY, w: colW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.play, this.isPlaying ? 'Stop' : 'Play', this.isPlaying);
+    this.bounds.tools = { x: innerX + colW + colGap, y: rowY, w: colW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.tools, 'Tools', false);
+    rowY += rowH + gap;
+
+    ctx.fillStyle = '#fff';
+    ctx.font = '13px Courier New';
+    ctx.fillText(`Tempo ${this.song.tempo} BPM`, innerX, rowY + 20);
+    const tempoButtonW = 36;
+    this.bounds.tempoDown = { x: innerX + innerW - tempoButtonW * 2 - 8, y: rowY, w: tempoButtonW, h: rowH };
+    this.bounds.tempoUp = { x: innerX + innerW - tempoButtonW, y: rowY, w: tempoButtonW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.tempoDown, '-', false);
+    this.drawSmallButton(ctx, this.bounds.tempoUp, '+', false);
+    rowY += rowH + gap;
+
+    this.bounds.loop = { x: innerX, y: rowY, w: innerW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.loop, `Loop ${this.song.loopBars} bars`, false);
+    rowY += rowH + gap;
+
+    this.bounds.metronome = { x: innerX, y: rowY, w: colW, h: rowH };
+    this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
+    this.bounds.quantizeToggle = { x: innerX + colW + colGap, y: rowY, w: colW, h: rowH };
+    this.drawToggle(ctx, this.bounds.quantizeToggle, `Quant ${this.quantizeEnabled ? 'On' : 'Off'}`, this.quantizeEnabled);
+    rowY += rowH + gap;
+
+    this.bounds.quantizeValue = { x: innerX, y: rowY, w: colW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.quantizeValue, this.quantizeOptions[this.quantizeIndex].label, true);
+    this.bounds.preview = { x: innerX + colW + colGap, y: rowY, w: colW, h: rowH };
+    this.drawToggle(ctx, this.bounds.preview, `Preview ${this.previewOnEdit ? 'On' : 'Off'}`, this.previewOnEdit);
+    rowY += rowH + gap;
+
+    this.bounds.scrub = { x: innerX, y: rowY, w: colW, h: rowH };
+    this.drawToggle(ctx, this.bounds.scrub, `Scrub ${this.scrubAudition ? 'On' : 'Off'}`, this.scrubAudition);
+    this.bounds.key = { x: innerX + colW + colGap, y: rowY, w: colW, h: rowH };
+    this.drawToggle(ctx, this.bounds.key, KEY_LABELS[this.song.key], true);
+    rowY += rowH + gap;
+
+    const scaleLabel = SCALE_LIBRARY.find((scale) => scale.id === this.song.scale)?.label || 'Major';
+    this.bounds.scale = { x: innerX, y: rowY, w: colW, h: rowH };
+    this.drawToggle(ctx, this.bounds.scale, scaleLabel, true);
+    this.bounds.scaleLock = { x: innerX + colW + colGap, y: rowY, w: colW, h: rowH };
+    this.drawToggle(ctx, this.bounds.scaleLock, `Scale Lock ${this.scaleLock ? 'On' : 'Off'}`, this.scaleLock);
+    rowY += rowH + gap;
+
+    this.bounds.swing = { x: innerX, y: rowY + 6, w: innerW, h: 16 };
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(this.bounds.swing.x, this.bounds.swing.y, this.bounds.swing.w, this.bounds.swing.h);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
@@ -1247,53 +1502,32 @@ export default class MidiComposer {
     ctx.fillRect(knobX - 4, this.bounds.swing.y - 2, 8, this.bounds.swing.h + 4);
     ctx.fillStyle = '#fff';
     ctx.font = '12px Courier New';
-    ctx.fillText(`Swing ${Math.round(this.swing)}%`, this.bounds.swing.x + 210, this.bounds.swing.y + 12);
-
-    this.bounds.preview = { x: x + 340, y: y + 54, w: 150, h: 24 };
-    this.drawToggle(ctx, this.bounds.preview, `Preview ${this.previewOnEdit ? 'On' : 'Off'}`, this.previewOnEdit);
-
-    this.bounds.scrub = { x: x + 500, y: y + 54, w: 150, h: 24 };
-    this.drawToggle(ctx, this.bounds.scrub, `Scrub ${this.scrubAudition ? 'On' : 'Off'}`, this.scrubAudition);
-
-    this.bounds.key = { x: x + 660, y: y + 54, w: 60, h: 24 };
-    this.drawToggle(ctx, this.bounds.key, KEY_LABELS[this.song.key], true);
-    const scaleLabel = SCALE_LIBRARY.find((scale) => scale.id === this.song.scale)?.label || 'Major';
-    this.bounds.scale = { x: x + 728, y: y + 54, w: 110, h: 24 };
-    this.drawToggle(ctx, this.bounds.scale, scaleLabel, true);
-    this.bounds.scaleLock = { x: x + 848, y: y + 54, w: 120, h: 24 };
-    this.drawToggle(ctx, this.bounds.scaleLock, `Scale Lock ${this.scaleLock ? 'On' : 'Off'}`, this.scaleLock);
-
-    this.bounds.tools = { x: x + w - 120, y: y + 18, w: 100, h: 28 };
-    this.drawToggle(ctx, this.bounds.tools, 'Tools', false);
-
-    const bar = Math.floor(this.playheadTick / (this.ticksPerBeat * this.beatsPerBar)) + 1;
-    const beat = Math.floor((this.playheadTick % (this.ticksPerBeat * this.beatsPerBar)) / this.ticksPerBeat) + 1;
-    ctx.fillStyle = '#ffe16a';
-    ctx.font = '14px Courier New';
-    ctx.fillText(`Position ${bar}:${beat}`, x + w - 160, y + 70);
+    ctx.fillText(`Swing ${Math.round(this.swing)}%`, this.bounds.swing.x + 6, this.bounds.swing.y + 30);
   }
 
   drawTrackList(ctx, x, y, w, h) {
+    const isMobile = this.isMobileLayout();
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(x, y, w, h);
     ctx.fillStyle = '#fff';
-    ctx.font = '16px Courier New';
+    ctx.font = `${isMobile ? 18 : 16}px Courier New`;
     ctx.fillText('Tracks', x + 16, y + 26);
 
     const buttonY = y + 36;
-    this.bounds.addTrack = { x: x + 16, y: buttonY, w: 70, h: 22 };
-    this.bounds.removeTrack = { x: x + 94, y: buttonY, w: 70, h: 22 };
-    this.bounds.duplicateTrack = { x: x + 172, y: buttonY, w: 110, h: 22 };
+    const buttonH = isMobile ? 28 : 22;
+    this.bounds.addTrack = { x: x + 16, y: buttonY, w: 80, h: buttonH };
+    this.bounds.removeTrack = { x: x + 104, y: buttonY, w: 90, h: buttonH };
+    this.bounds.duplicateTrack = { x: x + 202, y: buttonY, w: 120, h: buttonH };
     this.drawSmallButton(ctx, this.bounds.addTrack, 'Add', false);
     this.drawSmallButton(ctx, this.bounds.removeTrack, 'Remove', false);
     this.drawSmallButton(ctx, this.bounds.duplicateTrack, 'Duplicate', false);
 
     this.trackBounds = [];
     this.trackControlBounds = [];
-    const listY = y + 72;
-    const rowH = 62;
+    const listY = y + (isMobile ? 84 : 72);
+    const rowH = isMobile ? 86 : 62;
     this.song.tracks.forEach((track, index) => {
       const rowY = listY + index * rowH;
       const isActive = index === this.selectedTrackIndex;
@@ -1304,36 +1538,37 @@ export default class MidiComposer {
       ctx.fillStyle = track.color || '#fff';
       ctx.fillRect(x + 18, rowY + 8, 8, rowH - 24);
       ctx.fillStyle = '#fff';
-      ctx.font = '14px Courier New';
-      ctx.fillText(track.name, x + 32, rowY + 20);
+      ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+      ctx.fillText(track.name, x + 32, rowY + (isMobile ? 26 : 20));
       this.trackControlBounds.push({
         x: x + 30,
         y: rowY + 6,
-        w: 120,
-        h: 20,
+        w: w - 170,
+        h: isMobile ? 24 : 20,
         trackIndex: index,
         control: 'name'
       });
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.font = '12px Courier New';
-      ctx.fillText(track.instrument.toUpperCase(), x + 32, rowY + 38);
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.font = `${isMobile ? 14 : 12}px Courier New`;
+      const instrumentLabel = this.getInstrumentLabel(track.instrument);
+      ctx.fillText(instrumentLabel, x + 32, rowY + (isMobile ? 52 : 38));
       this.trackControlBounds.push({
         x: x + 30,
-        y: rowY + 26,
-        w: 140,
-        h: 18,
+        y: rowY + (isMobile ? 34 : 26),
+        w: w - 170,
+        h: isMobile ? 26 : 18,
         trackIndex: index,
         control: 'instrument'
       });
 
-      const muteBounds = { x: x + w - 120, y: rowY + 8, w: 26, h: 18 };
-      const soloBounds = { x: x + w - 86, y: rowY + 8, w: 26, h: 18 };
+      const muteBounds = { x: x + w - 120, y: rowY + 8, w: isMobile ? 32 : 26, h: isMobile ? 22 : 18 };
+      const soloBounds = { x: x + w - 82, y: rowY + 8, w: isMobile ? 32 : 26, h: isMobile ? 22 : 18 };
       this.drawSmallButton(ctx, muteBounds, 'M', track.mute);
       this.drawSmallButton(ctx, soloBounds, 'S', track.solo);
       this.trackControlBounds.push({ ...muteBounds, trackIndex: index, control: 'mute' });
       this.trackControlBounds.push({ ...soloBounds, trackIndex: index, control: 'solo' });
 
-      const volumeBounds = { x: x + 32, y: rowY + 44, w: w - 70, h: 10 };
+      const volumeBounds = { x: x + 32, y: rowY + (isMobile ? 66 : 44), w: w - 70, h: isMobile ? 12 : 10 };
       ctx.fillStyle = 'rgba(0,0,0,0.5)';
       ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
       ctx.fillStyle = '#ffe16a';
@@ -1350,34 +1585,51 @@ export default class MidiComposer {
     if (!track || !pattern) return;
     const loopTicks = this.getLoopTicks();
     const rows = track.instrument === 'drums' ? DRUM_ROWS.length : this.getPitchRange().max - this.getPitchRange().min + 1;
-    const cellWidth = w / loopTicks;
-    const cellHeight = Math.min(22, (h - 40) / rows);
+    const baseCellWidth = w / loopTicks;
+    const baseCellHeight = Math.min(22, (h - 40) / rows);
+    const cellWidth = baseCellWidth * this.gridZoom;
+    const cellHeight = baseCellHeight * this.gridZoom;
+    const gridW = cellWidth * loopTicks;
     const gridH = cellHeight * rows;
+    const viewH = Math.max(0, h - 26);
+    const viewW = w;
+    this.clampGridOffset(viewW, viewH, gridW, gridH);
+    const originX = x + this.gridOffset.x;
+    const originY = y + 26 + this.gridOffset.y;
 
     this.rulerBounds = { x, y, w, h: 24 };
     this.gridBounds = {
       x,
       y: y + 26,
-      w,
-      h: gridH,
+      w: viewW,
+      h: viewH,
       cols: loopTicks,
       rows,
       cellWidth,
-      cellHeight
+      cellHeight,
+      originX,
+      originY,
+      gridW,
+      gridH
     };
 
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(x, y, w, gridH + 26);
+    ctx.fillRect(x, y, w, viewH + 26);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(x, y, w, gridH + 26);
+    ctx.strokeRect(x, y, w, viewH + 26);
 
     this.drawRuler(ctx, x, y, w, loopTicks);
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y + 26, viewW, viewH);
+    ctx.clip();
     this.drawGrid(ctx, track, pattern, loopTicks);
     this.drawPlayhead(ctx);
+    ctx.restore();
 
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.font = '12px Courier New';
-    ctx.fillText('Alt/Right click: erase • Drag: paint • Ctrl/Cmd+Drag: box select • Shift+Drag: duplicate', x, y + gridH + 44);
+    ctx.fillText('Alt/Right click: erase • Drag: paint • Ctrl/Cmd+Drag: box select • Shift+Drag: duplicate', x, y + viewH + 44);
   }
 
   drawRuler(ctx, x, y, w, loopTicks) {
@@ -1388,14 +1640,21 @@ export default class MidiComposer {
     ctx.strokeRect(x, y, w, 24);
     ctx.fillStyle = '#fff';
     ctx.font = '12px Courier New';
+    if (!this.gridBounds) return;
+    const { originX, cellWidth } = this.gridBounds;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, w, 24);
+    ctx.clip();
     for (let bar = 0; bar < this.song.loopBars; bar += 1) {
-      const barX = x + (bar * ticksPerBar / loopTicks) * w;
+      const barX = originX + bar * ticksPerBar * cellWidth;
       ctx.fillText(`${bar + 1}`, barX + 4, y + 16);
     }
+    ctx.restore();
   }
 
   drawGrid(ctx, track, pattern, loopTicks) {
-    const { x, y, cellWidth, cellHeight, rows } = this.gridBounds;
+    const { originX, originY, cellWidth, cellHeight, rows } = this.gridBounds;
     const isDrumGrid = track.instrument === 'drums';
     const chord = this.getChordForTick(this.playheadTick || 0);
     const chordTones = this.getChordTones(chord);
@@ -1413,32 +1672,32 @@ export default class MidiComposer {
       } else {
         ctx.fillStyle = 'rgba(0,0,0,0.3)';
       }
-      ctx.fillRect(x, y + row * cellHeight, cellWidth * loopTicks, cellHeight);
+      ctx.fillRect(originX, originY + row * cellHeight, cellWidth * loopTicks, cellHeight);
       const label = track.instrument === 'drums'
         ? DRUM_ROWS[row]?.label
         : NOTE_LABELS[pitchClass];
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = '12px Courier New';
-      ctx.fillText(label, x + 6, y + row * cellHeight + cellHeight * 0.75);
+      ctx.fillText(label, originX + 6, originY + row * cellHeight + cellHeight * 0.75);
     }
 
     ctx.strokeStyle = 'rgba(255,255,255,0.12)';
     for (let tick = 0; tick <= loopTicks; tick += 1) {
-      const xPos = x + tick * cellWidth;
+      const xPos = originX + tick * cellWidth;
       const isBeat = tick % this.ticksPerBeat === 0;
       ctx.strokeStyle = isBeat ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.08)';
       ctx.beginPath();
-      ctx.moveTo(xPos, y);
-      ctx.lineTo(xPos, y + rows * cellHeight);
+      ctx.moveTo(xPos, originY);
+      ctx.lineTo(xPos, originY + rows * cellHeight);
       ctx.stroke();
     }
 
     ctx.strokeStyle = 'rgba(255,255,255,0.12)';
     for (let row = 0; row <= rows; row += 1) {
-      const yPos = y + row * cellHeight;
+      const yPos = originY + row * cellHeight;
       ctx.beginPath();
-      ctx.moveTo(x, yPos);
-      ctx.lineTo(x + loopTicks * cellWidth, yPos);
+      ctx.moveTo(originX, yPos);
+      ctx.lineTo(originX + loopTicks * cellWidth, yPos);
       ctx.stroke();
     }
 
@@ -1473,13 +1732,107 @@ export default class MidiComposer {
 
   drawPlayhead(ctx) {
     if (!this.gridBounds) return;
-    const { x, y, cellWidth, rows, cellHeight } = this.gridBounds;
-    const xPos = x + this.playheadTick * cellWidth;
+    const { originX, originY, cellWidth, rows, cellHeight } = this.gridBounds;
+    const xPos = originX + this.playheadTick * cellWidth;
     ctx.strokeStyle = '#ffe16a';
     ctx.beginPath();
-    ctx.moveTo(xPos, y);
-    ctx.lineTo(xPos, y + rows * cellHeight);
+    ctx.moveTo(xPos, originY);
+    ctx.lineTo(xPos, originY + rows * cellHeight);
     ctx.stroke();
+  }
+
+  drawSettingsDialog(ctx, width, height) {
+    const dialogW = Math.min(1020, width - 40);
+    const dialogH = Math.min(680, height - 40);
+    const dialogX = (width - dialogW) / 2;
+    const dialogY = (height - dialogH) / 2;
+    const padding = 16;
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = 'rgba(12,14,18,0.95)';
+    ctx.fillRect(dialogX, dialogY, dialogW, dialogH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(dialogX, dialogY, dialogW, dialogH);
+
+    ctx.fillStyle = '#fff';
+    ctx.font = '18px Courier New';
+    ctx.fillText('Settings', dialogX + padding, dialogY + 28);
+    this.bounds.settingsDialog = { x: dialogX, y: dialogY, w: dialogW, h: dialogH };
+    this.bounds.settingsClose = { x: dialogX + dialogW - 72, y: dialogY + 14, w: 56, h: 24 };
+    this.drawSmallButton(ctx, this.bounds.settingsClose, 'Close', false);
+
+    const contentY = dialogY + 48;
+    const stacked = dialogW < 820;
+    if (stacked) {
+      const transportX = dialogX + padding;
+      const transportY = contentY;
+      const transportW = dialogW - padding * 2;
+      const transportH = Math.min(340, dialogH * 0.55);
+      this.drawTransportCompact(ctx, transportX, transportY, transportW, transportH);
+
+      const trackX = transportX;
+      const trackY = transportY + transportH + 20;
+      const trackH = dialogH - (trackY - dialogY) - padding;
+      this.drawTrackList(ctx, trackX, trackY, transportW, trackH);
+
+      if (this.toolsMenuOpen) {
+        this.drawToolsMenu(ctx, transportX + transportW - 180, transportY + 12);
+      }
+    } else {
+      const trackW = 320;
+      const trackX = dialogX + padding;
+      const trackY = contentY;
+      const trackH = dialogH - (trackY - dialogY) - padding;
+      this.drawTrackList(ctx, trackX, trackY, trackW, trackH);
+
+      const transportX = trackX + trackW + 20;
+      const transportY = contentY;
+      const transportW = dialogX + dialogW - transportX - padding;
+      const transportH = 90;
+      this.drawTransport(ctx, transportX, transportY, transportW, transportH);
+
+      if (this.toolsMenuOpen) {
+        this.drawToolsMenu(ctx, transportX + transportW - 180, transportY + 12);
+      }
+    }
+  }
+
+  drawInstrumentPicker(ctx, width, height) {
+    const dialogW = Math.min(460, width - 40);
+    const dialogH = Math.min(420, height - 40);
+    const dialogX = (width - dialogW) / 2;
+    const dialogY = (height - dialogH) / 2;
+    const padding = 16;
+    const isMobile = this.isMobileLayout();
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = 'rgba(12,14,18,0.95)';
+    ctx.fillRect(dialogX, dialogY, dialogW, dialogH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(dialogX, dialogY, dialogW, dialogH);
+
+    ctx.fillStyle = '#fff';
+    ctx.font = '18px Courier New';
+    ctx.fillText('Select Instrument', dialogX + padding, dialogY + 28);
+
+    this.instrumentPicker.closeBounds = { x: dialogX + dialogW - 72, y: dialogY + 14, w: 56, h: 24 };
+    this.drawSmallButton(ctx, this.instrumentPicker.closeBounds, 'Close', false);
+
+    const columns = isMobile ? 1 : 2;
+    const rowH = isMobile ? 42 : 32;
+    const colGap = 12;
+    const colW = (dialogW - padding * 2 - (columns - 1) * colGap) / columns;
+    const startY = dialogY + 52;
+    this.instrumentPicker.bounds = [];
+    INSTRUMENT_PRESETS.forEach((preset, index) => {
+      const col = index % columns;
+      const row = Math.floor(index / columns);
+      const bx = dialogX + padding + col * (colW + colGap);
+      const by = startY + row * (rowH + 8);
+      const bounds = { x: bx, y: by, w: colW, h: rowH, preset };
+      this.drawSmallButton(ctx, bounds, preset.label, false);
+      this.instrumentPicker.bounds.push(bounds);
+    });
   }
 
   drawToolsMenu(ctx, x, y) {
@@ -1561,7 +1914,7 @@ export default class MidiComposer {
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.fillStyle = active ? '#0b0b0b' : '#fff';
-    ctx.font = '12px Courier New';
+    ctx.font = `${this.isMobileLayout() ? 14 : 12}px Courier New`;
     ctx.textAlign = 'center';
     ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 4);
     ctx.textAlign = 'left';
@@ -1573,7 +1926,7 @@ export default class MidiComposer {
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.fillStyle = '#fff';
-    ctx.font = '12px Courier New';
+    ctx.font = `${this.isMobileLayout() ? 14 : 12}px Courier New`;
     ctx.fillText(label, bounds.x + 6, bounds.y + 16);
   }
 }
