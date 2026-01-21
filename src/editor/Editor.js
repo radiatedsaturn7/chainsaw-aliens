@@ -136,7 +136,10 @@ const MODE_LABELS = {
   tile: 'Tile',
   enemy: 'Enemies',
   prefab: 'Structures',
-  shape: 'Shapes'
+  shape: 'Shapes',
+  pixel: 'Pixel Art',
+  music: 'Music Zones',
+  midi: 'MIDI'
 };
 
 const TILE_TOOL_LABELS = {
@@ -152,6 +155,34 @@ const BIOME_THEMES = [
   { id: 'light-grey', name: 'Light Grey', color: '#c7c7c7' },
   { id: 'red', name: 'Red', color: '#e04646' },
   { id: 'purple', name: 'Purple', color: '#8b4cc7' }
+];
+
+const PIXEL_GRID_SIZE = 16;
+const PIXEL_PALETTE = [
+  { id: 'clear', label: 'Clear', color: null },
+  { id: 'white', label: 'White', color: '#ffffff' },
+  { id: 'black', label: 'Black', color: '#101010' },
+  { id: 'gray', label: 'Gray', color: '#7b7b7b' },
+  { id: 'blue', label: 'Blue', color: '#4fb7ff' },
+  { id: 'red', label: 'Red', color: '#ff6a6a' },
+  { id: 'orange', label: 'Orange', color: '#ff9c42' },
+  { id: 'yellow', label: 'Yellow', color: '#ffd24a' },
+  { id: 'green', label: 'Green', color: '#55d68a' },
+  { id: 'purple', label: 'Purple', color: '#b48dff' }
+];
+
+const MUSIC_TRACKS = [
+  { id: 'ambient-rift', label: 'Ambient Rift' },
+  { id: 'industrial-hum', label: 'Industrial Hum' },
+  { id: 'glacier-drift', label: 'Glacier Drift' },
+  { id: 'boss-surge', label: 'Boss Surge' }
+];
+
+const MIDI_INSTRUMENTS = [
+  { id: 'sine', label: 'Sine Lead' },
+  { id: 'triangle', label: 'Triangle Pad' },
+  { id: 'square', label: 'Square Pulse' },
+  { id: 'sawtooth', label: 'Saw Lead' }
 ];
 
 const EDITOR_AUTOSAVE_KEY = 'chainsaw-editor-autosave';
@@ -172,6 +203,21 @@ export default class Editor {
     this.enemyCategory = 'standard';
     this.shapeTool = SHAPE_TOOLS[0];
     this.prefabType = PREFAB_TYPES[0];
+    this.pixelTool = 'paint';
+    this.pixelTarget = DEFAULT_TILE_TYPES.find((tile) => tile.char) || DEFAULT_TILE_TYPES[0];
+    this.pixelColorIndex = 1;
+    this.pixelFrameIndex = 0;
+    this.pixelPaintActive = false;
+    this.pixelGridBounds = null;
+    this.pixelPaletteBounds = [];
+    this.pixelFrameBounds = null;
+    this.musicTool = 'paint';
+    this.musicTrack = MUSIC_TRACKS[0];
+    this.musicDragStart = null;
+    this.musicDragTarget = null;
+    this.midiTrackIndex = 0;
+    this.midiNoteLength = 1;
+    this.midiGridBounds = null;
     this.startWithEverything = true;
     this.camera = { x: 0, y: 0 };
     this.zoom = 1;
@@ -201,7 +247,7 @@ export default class Editor {
       prefabs: true,
       shapes: true
     };
-    this.panelTabs = ['tools', 'tiles', 'powerups', 'enemies', 'bosses', 'prefabs', 'shapes'];
+    this.panelTabs = ['tools', 'tiles', 'powerups', 'enemies', 'bosses', 'prefabs', 'shapes', 'pixels', 'music', 'midi'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       tools: 0,
@@ -210,7 +256,10 @@ export default class Editor {
       enemies: 0,
       bosses: 0,
       prefabs: 0,
-      shapes: 0
+      shapes: 0,
+      pixels: 0,
+      music: 0,
+      midi: 0
     };
     this.panelScrollMax = {
       tools: 0,
@@ -219,7 +268,10 @@ export default class Editor {
       enemies: 0,
       bosses: 0,
       prefabs: 0,
-      shapes: 0
+      shapes: 0,
+      pixels: 0,
+      music: 0,
+      midi: 0
     };
     this.panelScrollBounds = null;
     this.panelScrollView = null;
@@ -230,13 +282,16 @@ export default class Editor {
       enemies: 0,
       bosses: 0,
       prefabs: 0,
-      shapes: 0
+      shapes: 0,
+      pixels: 0,
+      music: 0,
+      midi: 0
     };
     this.panelMenuFocused = false;
     this.drawer = {
       open: true,
       tabIndex: 0,
-      tabs: ['tools', 'tiles', 'powerups', 'enemies', 'bosses', 'prefabs', 'shapes'],
+      tabs: ['tools', 'tiles', 'powerups', 'enemies', 'bosses', 'prefabs', 'shapes', 'pixels', 'music', 'midi'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -355,6 +410,9 @@ export default class Editor {
     this.dragTarget = null;
     this.dragSource = null;
     this.gamepadCursor.active = false;
+    this.pixelPaintActive = false;
+    this.musicDragStart = null;
+    this.musicDragTarget = null;
   }
 
   loadAutosaveOrSeed() {
@@ -520,6 +578,12 @@ export default class Editor {
       this.enemyCategory = 'boss';
     } else if (tabId === 'enemies') {
       this.enemyCategory = 'standard';
+    } else if (tabId === 'pixels') {
+      this.mode = 'pixel';
+    } else if (tabId === 'music') {
+      this.mode = 'music';
+    } else if (tabId === 'midi') {
+      this.mode = 'midi';
     }
   }
 
@@ -538,6 +602,12 @@ export default class Editor {
       this.tileTool = 'paint';
     } else if (nextTab === 'enemies' || nextTab === 'bosses') {
       this.mode = 'enemy';
+    } else if (nextTab === 'pixels') {
+      this.mode = 'pixel';
+    } else if (nextTab === 'music') {
+      this.mode = 'music';
+    } else if (nextTab === 'midi') {
+      this.mode = 'midi';
     }
   }
 
@@ -650,6 +720,150 @@ export default class Editor {
           this.mode = 'shape';
         }
       }));
+    } else if (tabId === 'pixels') {
+      items = [
+        {
+          id: 'pixel-brush',
+          label: 'Pixel Brush',
+          tooltip: 'Paint pixels',
+          onClick: () => {
+            this.mode = 'pixel';
+            this.pixelTool = 'paint';
+          }
+        },
+        {
+          id: 'pixel-erase',
+          label: 'Pixel Erase',
+          tooltip: 'Erase pixels',
+          onClick: () => {
+            this.mode = 'pixel';
+            this.pixelTool = 'erase';
+            this.pixelColorIndex = 0;
+          }
+        },
+        {
+          id: 'pixel-prev-frame',
+          label: 'Prev Frame',
+          tooltip: 'Previous pixel frame',
+          onClick: () => this.cyclePixelFrame(-1)
+        },
+        {
+          id: 'pixel-next-frame',
+          label: 'Next Frame',
+          tooltip: 'Next pixel frame',
+          onClick: () => this.cyclePixelFrame(1)
+        },
+        {
+          id: 'pixel-add-frame',
+          label: 'Add Frame',
+          tooltip: 'Add a new frame',
+          onClick: () => this.addPixelFrame()
+        },
+        {
+          id: 'pixel-remove-frame',
+          label: 'Remove Frame',
+          tooltip: 'Remove current frame',
+          onClick: () => this.removePixelFrame()
+        },
+        {
+          id: 'pixel-fps-up',
+          label: 'FPS +',
+          tooltip: 'Increase animation FPS',
+          onClick: () => this.adjustPixelFps(1)
+        },
+        {
+          id: 'pixel-fps-down',
+          label: 'FPS -',
+          tooltip: 'Decrease animation FPS',
+          onClick: () => this.adjustPixelFps(-1)
+        }
+      ];
+      items.push(...DEFAULT_TILE_TYPES.filter((tile) => tile.char).map((tile) => ({
+        id: `pixel-${tile.id}`,
+        label: tile.char ? `${tile.label} [${tile.char}]` : tile.label,
+        tile,
+        tooltip: `Pixel target: ${tile.label}`,
+        onClick: () => {
+          this.pixelTarget = tile;
+          this.mode = 'pixel';
+        }
+      })));
+      columns = 2;
+    } else if (tabId === 'music') {
+      items = [
+        {
+          id: 'music-paint',
+          label: 'Zone Paint',
+          tooltip: 'Paint music zones',
+          onClick: () => {
+            this.mode = 'music';
+            this.musicTool = 'paint';
+          }
+        },
+        {
+          id: 'music-erase',
+          label: 'Zone Erase',
+          tooltip: 'Erase music zones',
+          onClick: () => {
+            this.mode = 'music';
+            this.musicTool = 'erase';
+          }
+        }
+      ];
+      items.push(...MUSIC_TRACKS.map((track) => ({
+        id: `music-${track.id}`,
+        label: track.label,
+        track,
+        tooltip: `Music: ${track.label}`,
+        onClick: () => {
+          this.musicTrack = track;
+          this.mode = 'music';
+        }
+      })));
+      columns = 2;
+    } else if (tabId === 'midi') {
+      const tracks = this.ensureMidiTracks();
+      items = [
+        {
+          id: 'midi-add-track',
+          label: 'Add Track',
+          tooltip: 'Add a new MIDI track',
+          onClick: () => this.addMidiTrack()
+        },
+        {
+          id: 'midi-remove-track',
+          label: 'Remove Track',
+          tooltip: 'Remove selected track',
+          onClick: () => this.removeMidiTrack()
+        },
+        {
+          id: 'midi-length-up',
+          label: 'Length +',
+          tooltip: 'Increase note length',
+          onClick: () => {
+            this.midiNoteLength = clamp(this.midiNoteLength + 1, 1, 8);
+          }
+        },
+        {
+          id: 'midi-length-down',
+          label: 'Length -',
+          tooltip: 'Decrease note length',
+          onClick: () => {
+            this.midiNoteLength = clamp(this.midiNoteLength - 1, 1, 8);
+          }
+        }
+      ];
+      items.push(...tracks.map((track, index) => ({
+        id: `midi-track-${track.id}`,
+        label: track.name || `Track ${index + 1}`,
+        trackIndex: index,
+        tooltip: `Edit ${track.name || `Track ${index + 1}`}`,
+        onClick: () => {
+          this.midiTrackIndex = index;
+          this.mode = 'midi';
+        }
+      })));
+      columns = 2;
     }
 
     if (includeExtras) {
@@ -901,7 +1115,9 @@ export default class Editor {
       }
     }
 
-    if ((pressPrimary || pressSecondary) && (!this.dragging || this.dragSource === 'gamepad')) {
+    if ((pressPrimary || pressSecondary)
+      && (!this.dragging || this.dragSource === 'gamepad')
+      && !['pixel', 'music', 'midi'].includes(this.mode)) {
       this.dragButton = pressSecondary ? 2 : 0;
       const { tileX, tileY } = this.screenToTile(this.lastPointer.x, this.lastPointer.y);
       const dragMode = pressSecondary
@@ -954,7 +1170,7 @@ export default class Editor {
   }
 
   cycleMode(direction) {
-    const modes = ['tile', 'enemy', 'prefab', 'shape'];
+    const modes = ['tile', 'enemy', 'prefab', 'shape', 'pixel', 'music', 'midi'];
     const currentIndex = Math.max(0, modes.indexOf(this.mode));
     const nextIndex = (currentIndex + direction + modes.length) % modes.length;
     this.mode = modes[nextIndex];
@@ -1025,6 +1241,174 @@ export default class Editor {
     anchor.download = 'chainsaw-world.json';
     anchor.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  ensurePixelArtStore() {
+    if (!this.game.world.pixelArt) {
+      this.game.world.pixelArt = { tiles: {} };
+    }
+    if (!this.game.world.pixelArt.tiles) {
+      this.game.world.pixelArt.tiles = {};
+    }
+    return this.game.world.pixelArt;
+  }
+
+  getPixelArtData(tileChar) {
+    if (!tileChar) return null;
+    const store = this.ensurePixelArtStore();
+    if (!store.tiles[tileChar]) {
+      store.tiles[tileChar] = {
+        size: PIXEL_GRID_SIZE,
+        fps: 6,
+        frames: [Array(PIXEL_GRID_SIZE * PIXEL_GRID_SIZE).fill(null)]
+      };
+    }
+    return store.tiles[tileChar];
+  }
+
+  getActivePixelFrame() {
+    const tileChar = this.pixelTarget?.char;
+    const pixelData = this.getPixelArtData(tileChar);
+    if (!pixelData) return null;
+    if (!Array.isArray(pixelData.frames) || pixelData.frames.length === 0) {
+      pixelData.frames = [Array(pixelData.size * pixelData.size).fill(null)];
+    }
+    if (this.pixelFrameIndex >= pixelData.frames.length) {
+      this.pixelFrameIndex = 0;
+    }
+    const frame = pixelData.frames[this.pixelFrameIndex];
+    return { pixelData, frame };
+  }
+
+  setPixelCell(cellX, cellY, color) {
+    const active = this.getActivePixelFrame();
+    if (!active) return;
+    const { pixelData, frame } = active;
+    const size = pixelData.size || PIXEL_GRID_SIZE;
+    if (cellX < 0 || cellY < 0 || cellX >= size || cellY >= size) return;
+    const index = cellY * size + cellX;
+    if (frame[index] === color) return;
+    frame[index] = color;
+    this.persistAutosave();
+  }
+
+  addPixelFrame() {
+    const active = this.getActivePixelFrame();
+    if (!active) return;
+    const { pixelData } = active;
+    const size = pixelData.size || PIXEL_GRID_SIZE;
+    pixelData.frames.push(Array(size * size).fill(null));
+    this.pixelFrameIndex = pixelData.frames.length - 1;
+    this.persistAutosave();
+  }
+
+  removePixelFrame() {
+    const active = this.getActivePixelFrame();
+    if (!active) return;
+    const { pixelData } = active;
+    if (pixelData.frames.length <= 1) return;
+    pixelData.frames.splice(this.pixelFrameIndex, 1);
+    this.pixelFrameIndex = clamp(this.pixelFrameIndex, 0, pixelData.frames.length - 1);
+    this.persistAutosave();
+  }
+
+  cyclePixelFrame(direction) {
+    const active = this.getActivePixelFrame();
+    if (!active) return;
+    const total = active.pixelData.frames.length;
+    this.pixelFrameIndex = ((this.pixelFrameIndex + direction) % total + total) % total;
+  }
+
+  adjustPixelFps(delta) {
+    const active = this.getActivePixelFrame();
+    if (!active) return;
+    active.pixelData.fps = clamp((active.pixelData.fps || 6) + delta, 1, 24);
+    this.persistAutosave();
+  }
+
+  ensureMusicZones() {
+    if (!this.game.world.musicZones) {
+      this.game.world.musicZones = [];
+    }
+    return this.game.world.musicZones;
+  }
+
+  addMusicZone(rect, trackId) {
+    const zones = this.ensureMusicZones();
+    zones.push({
+      id: `music-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
+      rect,
+      track: trackId
+    });
+    this.persistAutosave();
+  }
+
+  removeMusicZoneAt(tileX, tileY) {
+    const zones = this.ensureMusicZones();
+    const index = zones.findIndex((zone) => {
+      const [x, y, w, h] = zone.rect;
+      return tileX >= x && tileX < x + w && tileY >= y && tileY < y + h;
+    });
+    if (index === -1) return false;
+    zones.splice(index, 1);
+    this.persistAutosave();
+    return true;
+  }
+
+  ensureMidiTracks() {
+    if (!this.game.world.midiTracks) {
+      this.game.world.midiTracks = [];
+    }
+    if (this.game.world.midiTracks.length === 0) {
+      this.game.world.midiTracks.push({
+        id: `track-${Date.now()}`,
+        name: 'Track 1',
+        instrument: MIDI_INSTRUMENTS[0]?.id || 'sine',
+        notes: []
+      });
+    }
+    return this.game.world.midiTracks;
+  }
+
+  getActiveMidiTrack() {
+    const tracks = this.ensureMidiTracks();
+    if (this.midiTrackIndex >= tracks.length) {
+      this.midiTrackIndex = 0;
+    }
+    return tracks[this.midiTrackIndex];
+  }
+
+  addMidiTrack() {
+    const tracks = this.ensureMidiTracks();
+    const index = tracks.length + 1;
+    tracks.push({
+      id: `track-${Date.now()}-${index}`,
+      name: `Track ${index}`,
+      instrument: MIDI_INSTRUMENTS[0]?.id || 'sine',
+      notes: []
+    });
+    this.midiTrackIndex = tracks.length - 1;
+    this.persistAutosave();
+  }
+
+  removeMidiTrack() {
+    const tracks = this.ensureMidiTracks();
+    if (tracks.length <= 1) return;
+    tracks.splice(this.midiTrackIndex, 1);
+    this.midiTrackIndex = clamp(this.midiTrackIndex, 0, tracks.length - 1);
+    this.persistAutosave();
+  }
+
+  toggleMidiNote(pitch, start, length) {
+    const track = this.getActiveMidiTrack();
+    if (!track) return;
+    const existingIndex = track.notes.findIndex((note) => note.pitch === pitch && note.start === start);
+    if (existingIndex >= 0) {
+      track.notes.splice(existingIndex, 1);
+    } else {
+      track.notes.push({ pitch, start, length });
+    }
+    this.persistAutosave();
   }
 
   promptRandomLevel() {
@@ -2964,8 +3348,48 @@ export default class Editor {
 
     if (this.handleUIClick(payload.x, payload.y)) return;
 
+    if (this.mode === 'pixel') {
+      const paletteHit = this.pixelPaletteBounds.find((bounds) => this.isPointInBounds(payload.x, payload.y, bounds));
+      if (paletteHit) {
+        this.pixelColorIndex = paletteHit.index;
+        this.pixelTool = paletteHit.color ? 'paint' : 'erase';
+        return;
+      }
+      const cell = this.getPixelCellAt(payload.x, payload.y);
+      if (cell) {
+        this.pixelPaintActive = true;
+        const selected = PIXEL_PALETTE[this.pixelColorIndex];
+        const color = this.pixelTool === 'erase' ? null : selected?.color || null;
+        this.setPixelCell(cell.col, cell.row, color);
+        return;
+      }
+    }
+
+    if (this.mode === 'midi') {
+      const cell = this.getMidiCellAt(payload.x, payload.y);
+      if (cell) {
+        const rows = this.midiGridBounds?.rows || 12;
+        const basePitch = 60;
+        const pitch = basePitch + (rows - 1 - cell.row);
+        this.toggleMidiNote(pitch, cell.col, this.midiNoteLength);
+        return;
+      }
+    }
+
     if (this.isMobileLayout() && this.isPointInBounds(payload.x, payload.y, this.drawerBounds)) {
       this.drawer.swipeStart = { x: payload.x, y: payload.y };
+      return;
+    }
+
+    if (this.mode === 'music') {
+      if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
+      const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
+      if (this.musicTool === 'erase') {
+        this.removeMusicZoneAt(tileX, tileY);
+        return;
+      }
+      this.musicDragStart = { x: tileX, y: tileY };
+      this.musicDragTarget = { x: tileX, y: tileY };
       return;
     }
 
@@ -3026,6 +3450,22 @@ export default class Editor {
   handlePointerMove(payload) {
     if (!this.active) return;
     this.lastPointer = { x: payload.x, y: payload.y };
+    if (this.pixelPaintActive && this.mode === 'pixel') {
+      const cell = this.getPixelCellAt(payload.x, payload.y);
+      if (cell) {
+        const selected = PIXEL_PALETTE[this.pixelColorIndex];
+        const color = this.pixelTool === 'erase' ? null : selected?.color || null;
+        this.setPixelCell(cell.col, cell.row, color);
+      }
+      return;
+    }
+
+    if (this.musicDragStart && this.mode === 'music') {
+      const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
+      this.musicDragTarget = { x: tileX, y: tileY };
+      return;
+    }
+
     if (this.isMobileLayout()) {
       if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
         this.updatePanJoystick(payload.x, payload.y);
@@ -3124,6 +3564,24 @@ export default class Editor {
 
   handlePointerUp(payload = {}) {
     if (!this.active) return;
+    if (this.pixelPaintActive && this.mode === 'pixel') {
+      this.pixelPaintActive = false;
+      return;
+    }
+    if (this.musicDragStart && this.mode === 'music') {
+      const start = this.musicDragStart;
+      const end = this.musicDragTarget || start;
+      const minX = Math.min(start.x, end.x);
+      const minY = Math.min(start.y, end.y);
+      const maxX = Math.max(start.x, end.x);
+      const maxY = Math.max(start.y, end.y);
+      const width = Math.max(1, maxX - minX + 1);
+      const height = Math.max(1, maxY - minY + 1);
+      this.addMusicZone([minX, minY, width, height], this.musicTrack?.id || MUSIC_TRACKS[0]?.id);
+      this.musicDragStart = null;
+      this.musicDragTarget = null;
+      return;
+    }
     if (this.playtestPressActive) {
       this.playtestPressActive = false;
       if (this.playtestPressTimer) {
@@ -3264,6 +3722,26 @@ export default class Editor {
     const dx = x - center.x;
     const dy = y - center.y;
     return Math.hypot(dx, dy) <= radius;
+  }
+
+  getPixelCellAt(x, y) {
+    if (!this.pixelGridBounds) return null;
+    const { x: gridX, y: gridY, cellSize, size } = this.pixelGridBounds;
+    if (x < gridX || y < gridY) return null;
+    const col = Math.floor((x - gridX) / cellSize);
+    const row = Math.floor((y - gridY) / cellSize);
+    if (col < 0 || row < 0 || col >= size || row >= size) return null;
+    return { col, row };
+  }
+
+  getMidiCellAt(x, y) {
+    if (!this.midiGridBounds) return null;
+    const { x: gridX, y: gridY, cellSize, rows, cols } = this.midiGridBounds;
+    if (x < gridX || y < gridY) return null;
+    const col = Math.floor((x - gridX) / cellSize);
+    const row = Math.floor((y - gridY) / cellSize);
+    if (col < 0 || row < 0 || col >= cols || row >= rows) return null;
+    return { col, row };
   }
 
   updatePanJoystick(x, y) {
@@ -4274,6 +4752,48 @@ export default class Editor {
       });
       ctx.restore();
     }
+    const zones = this.game.world.musicZones || [];
+    if (zones.length > 0) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(120, 200, 255, 0.18)';
+      ctx.strokeStyle = 'rgba(120, 200, 255, 0.6)';
+      ctx.lineWidth = 2;
+      ctx.font = '12px Courier New';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      zones.forEach((zone) => {
+        const [x, y, w, h] = zone.rect;
+        const px = x * tileSize;
+        const py = y * tileSize;
+        const pw = w * tileSize;
+        const ph = h * tileSize;
+        ctx.fillRect(px, py, pw, ph);
+        ctx.strokeRect(px, py, pw, ph);
+        if (zone.track) {
+          ctx.fillStyle = 'rgba(255,255,255,0.85)';
+          ctx.fillText(zone.track, px + 6, py + 6);
+          ctx.fillStyle = 'rgba(120, 200, 255, 0.18)';
+        }
+      });
+      ctx.restore();
+    }
+    if (this.musicDragStart && this.musicDragTarget) {
+      const minX = Math.min(this.musicDragStart.x, this.musicDragTarget.x);
+      const minY = Math.min(this.musicDragStart.y, this.musicDragTarget.y);
+      const maxX = Math.max(this.musicDragStart.x, this.musicDragTarget.x);
+      const maxY = Math.max(this.musicDragStart.y, this.musicDragTarget.y);
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.strokeRect(
+        minX * tileSize,
+        minY * tileSize,
+        (maxX - minX + 1) * tileSize,
+        (maxY - minY + 1) * tileSize
+      );
+      ctx.restore();
+    }
     for (let y = 0; y < this.game.world.height; y += 1) {
       for (let x = 0; x < this.game.world.width; x += 1) {
         const tile = this.game.world.getTile(x, y);
@@ -4489,10 +5009,15 @@ export default class Editor {
       { id: 'erase', label: 'Erase', tooltip: 'Erase tiles. (E)' },
       { id: 'move', label: 'Move', tooltip: 'Move items or pan. (M)' }
     ];
+    let infoPanelBottom = 12;
     ctx.save();
     ctx.font = '13px Courier New';
     ctx.textAlign = 'left';
     this.uiButtons = [];
+    this.pixelPaletteBounds = [];
+    this.pixelGridBounds = null;
+    this.pixelFrameBounds = null;
+    this.midiGridBounds = null;
     let hoverTooltip = '';
     const pointer = this.lastPointer;
     this.randomLevelSlider.bounds.width = null;
@@ -4852,7 +5377,10 @@ export default class Editor {
           { id: 'enemies', label: 'ENEMIES' },
           { id: 'bosses', label: 'BOSSES' },
           { id: 'prefabs', label: 'STRUCTURES' },
-          { id: 'shapes', label: 'SHAPES' }
+          { id: 'shapes', label: 'SHAPES' },
+          { id: 'pixels', label: 'PIXELS' },
+          { id: 'music', label: 'MUSIC' },
+          { id: 'midi', label: 'MIDI' }
         ];
         const activeTab = this.getActivePanelTab();
         const tabMargin = 12;
@@ -4909,7 +5437,8 @@ export default class Editor {
           || activeTab === 'prefabs'
           || activeTab === 'powerups'
           || activeTab === 'enemies'
-          || activeTab === 'bosses';
+          || activeTab === 'bosses'
+          || activeTab === 'pixels';
         const buttonHeight = isPreviewTab ? 60 : 52;
         const buttonGap = 12;
         let items = [];
@@ -5037,6 +5566,133 @@ export default class Editor {
             }
           }));
           columns = 2;
+        } else if (activeTab === 'pixels') {
+          items = [
+            {
+              id: 'pixel-brush',
+              label: 'PIXEL BRUSH',
+              active: this.mode === 'pixel' && this.pixelTool === 'paint',
+              tooltip: 'Paint pixels',
+              onClick: () => {
+                this.mode = 'pixel';
+                this.pixelTool = 'paint';
+              }
+            },
+            {
+              id: 'pixel-erase',
+              label: 'PIXEL ERASE',
+              active: this.mode === 'pixel' && this.pixelTool === 'erase',
+              tooltip: 'Erase pixels',
+              onClick: () => {
+                this.mode = 'pixel';
+                this.pixelTool = 'erase';
+                this.pixelColorIndex = 0;
+              }
+            },
+            {
+              id: 'pixel-prev-frame',
+              label: 'PREV FRAME',
+              active: false,
+              tooltip: 'Previous frame',
+              onClick: () => this.cyclePixelFrame(-1)
+            },
+            {
+              id: 'pixel-next-frame',
+              label: 'NEXT FRAME',
+              active: false,
+              tooltip: 'Next frame',
+              onClick: () => this.cyclePixelFrame(1)
+            },
+            {
+              id: 'pixel-add-frame',
+              label: 'ADD FRAME',
+              active: false,
+              tooltip: 'Add frame',
+              onClick: () => this.addPixelFrame()
+            },
+            {
+              id: 'pixel-remove-frame',
+              label: 'REMOVE FRAME',
+              active: false,
+              tooltip: 'Remove frame',
+              onClick: () => this.removePixelFrame()
+            }
+          ];
+          items.push(...DEFAULT_TILE_TYPES.filter((tile) => tile.char).map((tile) => ({
+            id: tile.id,
+            label: tile.char ? `${tile.label} [${tile.char}]` : tile.label,
+            active: this.pixelTarget?.id === tile.id,
+            preview: { type: 'tile', tile },
+            tooltip: `Pixel target: ${tile.label}`,
+            onClick: () => {
+              this.pixelTarget = tile;
+              this.mode = 'pixel';
+            }
+          })));
+          columns = 2;
+        } else if (activeTab === 'music') {
+          items = [
+            {
+              id: 'music-paint',
+              label: 'ZONE PAINT',
+              active: this.mode === 'music' && this.musicTool === 'paint',
+              tooltip: 'Paint music zones',
+              onClick: () => {
+                this.mode = 'music';
+                this.musicTool = 'paint';
+              }
+            },
+            {
+              id: 'music-erase',
+              label: 'ZONE ERASE',
+              active: this.mode === 'music' && this.musicTool === 'erase',
+              tooltip: 'Erase music zones',
+              onClick: () => {
+                this.mode = 'music';
+                this.musicTool = 'erase';
+              }
+            }
+          ];
+          items.push(...MUSIC_TRACKS.map((track) => ({
+            id: track.id,
+            label: track.label,
+            active: this.musicTrack?.id === track.id,
+            tooltip: `Music: ${track.label}`,
+            onClick: () => {
+              this.musicTrack = track;
+              this.mode = 'music';
+            }
+          })));
+          columns = 2;
+        } else if (activeTab === 'midi') {
+          const tracks = this.ensureMidiTracks();
+          items = [
+            {
+              id: 'midi-add-track',
+              label: 'ADD TRACK',
+              active: false,
+              tooltip: 'Add MIDI track',
+              onClick: () => this.addMidiTrack()
+            },
+            {
+              id: 'midi-remove-track',
+              label: 'REMOVE TRACK',
+              active: false,
+              tooltip: 'Remove MIDI track',
+              onClick: () => this.removeMidiTrack()
+            }
+          ];
+          items.push(...tracks.map((track, index) => ({
+            id: track.id,
+            label: track.name || `Track ${index + 1}`,
+            active: this.midiTrackIndex === index,
+            tooltip: `Edit ${track.name || `Track ${index + 1}`}`,
+            onClick: () => {
+              this.midiTrackIndex = index;
+              this.mode = 'midi';
+            }
+          })));
+          columns = 2;
         } else {
           items = SHAPE_TOOLS.map((shape) => ({
             id: shape.id,
@@ -5096,7 +5752,10 @@ export default class Editor {
         { id: 'enemies', label: 'ENEMIES' },
         { id: 'bosses', label: 'BOSSES' },
         { id: 'prefabs', label: 'STRUCTURES' },
-        { id: 'shapes', label: 'SHAPES' }
+        { id: 'shapes', label: 'SHAPES' },
+        { id: 'pixels', label: 'PIXELS' },
+        { id: 'music', label: 'MUSIC' },
+        { id: 'midi', label: 'MIDI' }
       ];
       const tabMargin = 12;
       const tabGap = 6;
@@ -5191,6 +5850,23 @@ export default class Editor {
         if (activeTab === 'enemies' || activeTab === 'bosses') return this.enemyType.id === item.id;
         if (activeTab === 'prefabs') return this.prefabType.id === item.id;
         if (activeTab === 'shapes') return this.shapeTool.id === item.id;
+        if (activeTab === 'pixels') {
+          if (item.id === 'pixel-brush') return this.mode === 'pixel' && this.pixelTool === 'paint';
+          if (item.id === 'pixel-erase') return this.mode === 'pixel' && this.pixelTool === 'erase';
+          if (item.tile) return this.pixelTarget?.id === item.tile.id;
+          return false;
+        }
+        if (activeTab === 'music') {
+          if (item.id === 'music-paint') return this.mode === 'music' && this.musicTool === 'paint';
+          if (item.id === 'music-erase') return this.mode === 'music' && this.musicTool === 'erase';
+          if (item.track) return this.musicTrack?.id === item.track.id;
+          return false;
+        }
+        if (activeTab === 'midi') {
+          if (typeof item.trackIndex === 'number') {
+            return this.midiTrackIndex === item.trackIndex;
+          }
+        }
         return false;
       };
 
@@ -5250,6 +5926,302 @@ export default class Editor {
       infoLines.forEach((line, index) => {
         ctx.fillText(line, infoX + 12, infoY + 22 + index * 18);
       });
+      infoPanelBottom = infoY + infoHeight + 12;
+    }
+
+    if (this.mode === 'pixel') {
+      const panelWidth = 300;
+      const panelX = this.isMobileLayout()
+        ? this.editorBounds.x + this.editorBounds.w - panelWidth - 12
+        : 12;
+      const panelY = this.isMobileLayout()
+        ? this.editorBounds.y + 12
+        : infoPanelBottom;
+      const panelPadding = 12;
+      const panelHeight = 360;
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
+      ctx.fillStyle = '#fff';
+      ctx.font = '14px Courier New';
+      ctx.textAlign = 'left';
+      const targetLabel = this.pixelTarget?.label || 'Tile';
+      const targetChar = this.pixelTarget?.char ? ` [${this.pixelTarget.char}]` : '';
+      ctx.fillText(`Pixel Editor: ${targetLabel}${targetChar}`, panelX + panelPadding, panelY + 20);
+
+      const pixelData = this.getPixelArtData(this.pixelTarget?.char);
+      const size = pixelData?.size || PIXEL_GRID_SIZE;
+      const frame = pixelData?.frames?.[this.pixelFrameIndex] || [];
+      const cellSize = 12;
+      const gridX = panelX + panelPadding;
+      const gridY = panelY + 36;
+      const gridSize = size * cellSize;
+      this.pixelGridBounds = { x: gridX, y: gridY, cellSize, size };
+      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      ctx.fillRect(gridX, gridY, gridSize, gridSize);
+      for (let row = 0; row < size; row += 1) {
+        for (let col = 0; col < size; col += 1) {
+          const color = frame[row * size + col];
+          if (color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(gridX + col * cellSize, gridY + row * cellSize, cellSize, cellSize);
+          }
+        }
+      }
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      for (let row = 0; row <= size; row += 1) {
+        ctx.beginPath();
+        ctx.moveTo(gridX, gridY + row * cellSize);
+        ctx.lineTo(gridX + gridSize, gridY + row * cellSize);
+        ctx.stroke();
+      }
+      for (let col = 0; col <= size; col += 1) {
+        ctx.beginPath();
+        ctx.moveTo(gridX + col * cellSize, gridY);
+        ctx.lineTo(gridX + col * cellSize, gridY + gridSize);
+        ctx.stroke();
+      }
+
+      const paletteY = gridY + gridSize + 14;
+      const paletteSize = 20;
+      PIXEL_PALETTE.forEach((entry, index) => {
+        const px = panelX + panelPadding + index * (paletteSize + 6);
+        const py = paletteY;
+        ctx.strokeStyle = '#fff';
+        ctx.strokeRect(px, py, paletteSize, paletteSize);
+        if (entry.color) {
+          ctx.fillStyle = entry.color;
+          ctx.fillRect(px + 2, py + 2, paletteSize - 4, paletteSize - 4);
+        } else {
+          ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+          ctx.beginPath();
+          ctx.moveTo(px + 4, py + 4);
+          ctx.lineTo(px + paletteSize - 4, py + paletteSize - 4);
+          ctx.moveTo(px + paletteSize - 4, py + 4);
+          ctx.lineTo(px + 4, py + paletteSize - 4);
+          ctx.stroke();
+        }
+        if (this.pixelColorIndex === index) {
+          ctx.strokeStyle = '#9ad9ff';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(px - 2, py - 2, paletteSize + 4, paletteSize + 4);
+          ctx.lineWidth = 1;
+        }
+        this.pixelPaletteBounds.push({
+          x: px,
+          y: py,
+          w: paletteSize,
+          h: paletteSize,
+          index,
+          color: entry.color
+        });
+      });
+
+      const frameY = paletteY + paletteSize + 14;
+      drawButton(
+        panelX + panelPadding,
+        frameY,
+        70,
+        26,
+        'Prev',
+        false,
+        () => this.cyclePixelFrame(-1),
+        'Previous frame'
+      );
+      drawButton(
+        panelX + panelPadding + 78,
+        frameY,
+        70,
+        26,
+        'Next',
+        false,
+        () => this.cyclePixelFrame(1),
+        'Next frame'
+      );
+      drawButton(
+        panelX + panelPadding + 156,
+        frameY,
+        60,
+        26,
+        '+Frm',
+        false,
+        () => this.addPixelFrame(),
+        'Add frame'
+      );
+      drawButton(
+        panelX + panelPadding + 222,
+        frameY,
+        60,
+        26,
+        '-Frm',
+        false,
+        () => this.removePixelFrame(),
+        'Remove frame'
+      );
+      ctx.fillStyle = '#fff';
+      ctx.font = '12px Courier New';
+      ctx.fillText(
+        `Frame ${this.pixelFrameIndex + 1}/${pixelData?.frames?.length || 1} | FPS ${(pixelData?.fps || 6)}`,
+        panelX + panelPadding,
+        frameY + 48
+      );
+      drawButton(
+        panelX + panelPadding + 200,
+        frameY + 34,
+        40,
+        24,
+        'FPS+',
+        false,
+        () => this.adjustPixelFps(1),
+        'Increase FPS'
+      );
+      drawButton(
+        panelX + panelPadding + 244,
+        frameY + 34,
+        40,
+        24,
+        'FPS-',
+        false,
+        () => this.adjustPixelFps(-1),
+        'Decrease FPS'
+      );
+      ctx.restore();
+    }
+
+    if (this.mode === 'midi') {
+      const track = this.getActiveMidiTrack();
+      const panelWidth = 360;
+      const panelX = this.isMobileLayout()
+        ? this.editorBounds.x + 12
+        : 12;
+      const panelY = this.isMobileLayout()
+        ? this.editorBounds.y + this.editorBounds.h - 300
+        : infoPanelBottom;
+      const panelHeight = 280;
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
+      ctx.fillStyle = '#fff';
+      ctx.font = '14px Courier New';
+      ctx.textAlign = 'left';
+      ctx.fillText(`MIDI Editor: ${track?.name || 'Track'}`, panelX + 12, panelY + 20);
+
+      const instrumentLabel = MIDI_INSTRUMENTS.find((entry) => entry.id === track?.instrument)?.label || 'Instrument';
+      ctx.font = '12px Courier New';
+      ctx.fillText(`Instrument: ${instrumentLabel}`, panelX + 12, panelY + 40);
+      MIDI_INSTRUMENTS.forEach((entry, index) => {
+        drawButton(
+          panelX + 12 + index * 84,
+          panelY + 50,
+          80,
+          24,
+          entry.label.split(' ')[0],
+          track?.instrument === entry.id,
+          () => {
+            if (track) {
+              track.instrument = entry.id;
+              this.persistAutosave();
+            }
+          },
+          `Set ${entry.label}`
+        );
+      });
+
+      drawButton(
+        panelX + panelWidth - 92,
+        panelY + 18,
+        40,
+        20,
+        '+Trk',
+        false,
+        () => this.addMidiTrack(),
+        'Add track'
+      );
+      drawButton(
+        panelX + panelWidth - 46,
+        panelY + 18,
+        40,
+        20,
+        '-Trk',
+        false,
+        () => this.removeMidiTrack(),
+        'Remove track'
+      );
+
+      drawButton(
+        panelX + panelWidth - 92,
+        panelY + 46,
+        40,
+        20,
+        '+Len',
+        false,
+        () => {
+          this.midiNoteLength = clamp(this.midiNoteLength + 1, 1, 8);
+        },
+        'Increase length'
+      );
+      drawButton(
+        panelX + panelWidth - 46,
+        panelY + 46,
+        40,
+        20,
+        '-Len',
+        false,
+        () => {
+          this.midiNoteLength = clamp(this.midiNoteLength - 1, 1, 8);
+        },
+        'Decrease length'
+      );
+      ctx.fillStyle = '#fff';
+      ctx.fillText(`Len: ${this.midiNoteLength}`, panelX + panelWidth - 150, panelY + 62);
+
+      const rows = 12;
+      const cols = 16;
+      const cellSize = 14;
+      const gridX = panelX + 12;
+      const gridY = panelY + 80;
+      const gridW = cols * cellSize;
+      const gridH = rows * cellSize;
+      this.midiGridBounds = { x: gridX, y: gridY, cellSize, rows, cols };
+      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      ctx.fillRect(gridX, gridY, gridW, gridH);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      for (let row = 0; row <= rows; row += 1) {
+        ctx.beginPath();
+        ctx.moveTo(gridX, gridY + row * cellSize);
+        ctx.lineTo(gridX + gridW, gridY + row * cellSize);
+        ctx.stroke();
+      }
+      for (let col = 0; col <= cols; col += 1) {
+        ctx.beginPath();
+        ctx.moveTo(gridX + col * cellSize, gridY);
+        ctx.lineTo(gridX + col * cellSize, gridY + gridH);
+        ctx.stroke();
+      }
+      if (track?.notes) {
+        track.notes.forEach((note) => {
+          const pitchOffset = note.pitch - 60;
+          const row = rows - 1 - pitchOffset;
+          if (row < 0 || row >= rows) return;
+          const start = note.start;
+          if (start < 0 || start >= cols) return;
+          const length = clamp(note.length || 1, 1, cols - start);
+          ctx.fillStyle = 'rgba(120,200,255,0.7)';
+          ctx.fillRect(
+            gridX + start * cellSize + 1,
+            gridY + row * cellSize + 1,
+            length * cellSize - 2,
+            cellSize - 2
+          );
+        });
+      }
+      ctx.restore();
     }
 
     if (this.isMobileLayout()) {
