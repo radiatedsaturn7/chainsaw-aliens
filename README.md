@@ -35,6 +35,61 @@ Then visit `http://localhost:8000/index.html`.
 - Debug Overlay (Playability Verification Layer): **F3**
 - Obstacle Test Room (debug): **B**
 
+## MIDI Pattern Sequencer
+Open the sequencer from the title screen **Tools** menu (`MIDI Editor`). The editor is built around a Track → Pattern → Notes model:
+- **Track**: instrument, mute/solo, volume, and patterns.
+- **Pattern**: a bar-length loop (1–8 bars).
+- **Notes**: start tick, duration tick, pitch, velocity.
+
+### Core Workflow
+1. Add a track, select an instrument, and set the loop length (1/2/4/8 bars).
+2. Paint notes in the piano roll grid, press **Play**, and adjust tempo/quantize.
+3. Use **Export JSON** to save a song, or **Import JSON** to load one.
+
+### Editor Controls (mouse/touch/keyboard)
+- **Click/drag on empty grid**: paint notes (snapped to quantize).
+- **Alt/Option + drag** or **Right-click**: erase notes.
+- **Drag note body**: move note (snapped).
+- **Drag note edge**: resize note (snapped).
+- **Shift + drag note**: duplicate and move.
+- **Ctrl/Cmd + drag**: box select notes.
+- **Ctrl/Cmd + C / V**: copy/paste selection.
+- **Ctrl/Cmd + D**: duplicate selection forward.
+- **Ruler drag**: scrub playhead (optional audition toggle).
+
+### Import / Export Format
+Songs are stored as JSON with this schema:
+```json
+{
+  "tempo": 120,
+  "loopBars": 4,
+  "key": 0,
+  "scale": "minor",
+  "tracks": [
+    {
+      "id": "track-id",
+      "name": "Lead",
+      "instrument": "lead",
+      "volume": 0.8,
+      "mute": false,
+      "solo": false,
+      "patterns": [
+        {
+          "id": "pattern-id",
+          "bars": 4,
+          "notes": [
+            { "id": "note-id", "startTick": 0, "durationTicks": 4, "pitch": 60, "velocity": 0.8 }
+          ]
+        }
+      ]
+    }
+  ],
+  "progression": [
+    { "root": 0, "quality": "min", "startBar": 1, "lengthBars": 1 }
+  ]
+}
+```
+
 ## Test Dashboard & Validation
 - Tests never run automatically on boot. Open the **Test Dashboard** from the title screen (press **T** or click **Run Tests**) to run them explicitly.
 - Run each test from the menu:
