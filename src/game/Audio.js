@@ -1,3 +1,34 @@
+import { GM_PROGRAMS, isDrumChannel } from '../audio/gm.js';
+
+const DEFAULT_GM_SOUND_FONT_URL = 'https://surikov.github.io/webaudiofontdata/sound/';
+const GM_PLAYER_URL = 'https://cdn.jsdelivr.net/npm/webaudiofont@2.0.1/dist/WebAudioFontPlayer.js';
+const GM_DRUM_PRESET = '128_StandardDrumKit_sf2';
+
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const toWebAudioFontToken = (name) => name
+  .replace(/[^a-z0-9]+/gi, ' ')
+  .trim()
+  .split(' ')
+  .filter(Boolean)
+  .map((token) => (token.toUpperCase() === token ? token : token[0].toUpperCase() + token.slice(1)))
+  .join('');
+
+const getProgramFontInfo = (program) => {
+  const entry = GM_PROGRAMS[program];
+  const padded = String(program).padStart(4, '0');
+  const token = toWebAudioFontToken(entry?.name || `Program${program}`);
+  const base = `${padded}_${token}_sf2`;
+  return {
+    fileName: `${base}.js`,
+    variableName: `_tone_${base}`
+  };
+};
+
+const getDrumFontInfo = () => ({
+  fileName: `${GM_DRUM_PRESET}.js`,
+  variableName: `_drum_${GM_DRUM_PRESET}`
+});
+
 export default class AudioSystem {
   constructor() {
     this.ctx = null;
@@ -11,7 +42,17 @@ export default class AudioSystem {
     this.midiReverb = null;
     this.midiSamples = null;
     this.midiVoices = [];
-    this.midiVoiceLimit = 16;
+    this.midiVoiceLimit = 48;
+    this.gmPlayer = null;
+    this.gmPlayerPromise = null;
+    this.gmProgramPresets = new Map();
+    this.gmProgramPromises = new Map();
+    this.gmLoadedPrograms = new Set();
+    this.gmLoadingPrograms = new Set();
+    this.gmError = null;
+    this.gmDrumPreset = null;
+    this.gmDrumPromise = null;
+    this.gmBaseUrl = this.loadStoredSoundfontUrl();
   }
 
   ensure() {
@@ -40,6 +81,145 @@ export default class AudioSystem {
     this.midiReverb.buffer = this.buildImpulseResponse(1.4, 2.5);
     this.midiReverb.connect(this.midiLimiter);
     this.midiSamples = this.buildMidiSamples();
+  }
+
+  loadStoredSoundfontUrl() {
+    try {
+      return localStorage.getItem('chainsaw-gm-soundfont-url') || DEFAULT_GM_SOUND_FONT_URL;
+    } catch (error) {
+      return DEFAULT_GM_SOUND_FONT_URL;
+    }
+  }
+
+  setSoundfontUrl(url) {
+    if (!url) return;
+    this.gmBaseUrl = url.endsWith('/') ? url : `${url}/`;
+    try {
+      localStorage.setItem('chainsaw-gm-soundfont-url', this.gmBaseUrl);
+    } catch (error) {
+      // ignore
+    }
+    this.resetGmBank();
+  }
+
+  resetSoundfontUrl() {
+    this.setSoundfontUrl(DEFAULT_GM_SOUND_FONT_URL);
+  }
+
+  resetGmBank() {
+    this.gmProgramPresets.clear();
+    this.gmProgramPromises.clear();
+    this.gmLoadedPrograms.clear();
+    this.gmLoadingPrograms.clear();
+    this.gmDrumPreset = null;
+    this.gmDrumPromise = null;
+    this.gmError = null;
+  }
+
+  getGmStatus() {
+    return {
+      ready: Boolean(this.gmPlayer),
+      loading: Boolean(this.gmPlayerPromise) || this.gmLoadingPrograms.size > 0 || Boolean(this.gmDrumPromise),
+      loadedPrograms: this.gmLoadedPrograms.size,
+      error: this.gmError,
+      baseUrl: this.gmBaseUrl
+    };
+  }
+
+  ensureGmPlayer() {
+    if (this.gmPlayer) return Promise.resolve(this.gmPlayer);
+    if (this.gmPlayerPromise) return this.gmPlayerPromise;
+    this.ensureMidiSampler();
+    this.gmPlayerPromise = new Promise((resolve, reject) => {
+      if (window.WebAudioFontPlayer) {
+        this.gmPlayer = new window.WebAudioFontPlayer();
+        resolve(this.gmPlayer);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = GM_PLAYER_URL;
+      script.async = true;
+      script.onload = () => {
+        this.gmPlayer = new window.WebAudioFontPlayer();
+        resolve(this.gmPlayer);
+      };
+      script.onerror = () => {
+        this.gmError = 'Failed to load WebAudioFont player.';
+        reject(new Error(this.gmError));
+      };
+      document.head.appendChild(script);
+    }).finally(() => {
+      this.gmPlayerPromise = null;
+    });
+    return this.gmPlayerPromise;
+  }
+
+  loadGmProgram(program) {
+    if (this.gmProgramPresets.has(program)) {
+      return Promise.resolve(this.gmProgramPresets.get(program));
+    }
+    if (this.gmProgramPromises.has(program)) {
+      return this.gmProgramPromises.get(program);
+    }
+    const { fileName, variableName } = getProgramFontInfo(program);
+    const url = `${this.gmBaseUrl}${fileName}`;
+    this.gmLoadingPrograms.add(program);
+    const promise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = url;
+      script.async = true;
+      script.onload = () => {
+        const preset = window[variableName];
+        if (!preset) {
+          this.gmError = `Soundfont preset missing: ${fileName}`;
+          reject(new Error(this.gmError));
+          return;
+        }
+        this.gmProgramPresets.set(program, preset);
+        this.gmLoadedPrograms.add(program);
+        resolve(preset);
+      };
+      script.onerror = () => {
+        this.gmError = `Failed to load soundfont preset: ${fileName}`;
+        reject(new Error(this.gmError));
+      };
+      document.head.appendChild(script);
+    }).finally(() => {
+      this.gmLoadingPrograms.delete(program);
+      this.gmProgramPromises.delete(program);
+    });
+    this.gmProgramPromises.set(program, promise);
+    return promise;
+  }
+
+  loadGmDrumKit() {
+    if (this.gmDrumPreset) return Promise.resolve(this.gmDrumPreset);
+    if (this.gmDrumPromise) return this.gmDrumPromise;
+    const { fileName, variableName } = getDrumFontInfo();
+    const url = `${this.gmBaseUrl}${fileName}`;
+    this.gmDrumPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = url;
+      script.async = true;
+      script.onload = () => {
+        const preset = window[variableName] || window[variableName.replace('_drum_', '_tone_')];
+        if (!preset) {
+          this.gmError = `Drum kit preset missing: ${fileName}`;
+          reject(new Error(this.gmError));
+          return;
+        }
+        this.gmDrumPreset = preset;
+        resolve(preset);
+      };
+      script.onerror = () => {
+        this.gmError = `Failed to load drum kit preset: ${fileName}`;
+        reject(new Error(this.gmError));
+      };
+      document.head.appendChild(script);
+    }).finally(() => {
+      this.gmDrumPromise = null;
+    });
+    return this.gmDrumPromise;
   }
 
   setVolume(value) {
@@ -183,6 +363,45 @@ export default class AudioSystem {
     return presets[instrument] || presets.sine;
   }
 
+  playGmNote({
+    pitch = 60,
+    duration = 0.5,
+    volume = 0.8,
+    program = 0,
+    channel = 0
+  }) {
+    this.ensureMidiSampler();
+    const clampedProgram = clamp(program ?? 0, 0, GM_PROGRAMS.length - 1);
+    const clampedVolume = clamp(volume ?? 1, 0, 1);
+    const playWithPreset = (preset) => {
+      if (!preset || !this.gmPlayer) return;
+      const when = this.ctx.currentTime;
+      const voice = this.gmPlayer.queueWaveTable(
+        this.ctx,
+        this.midiBus,
+        preset,
+        when,
+        pitch,
+        duration,
+        clampedVolume
+      );
+      const stopTime = when + duration + 0.2;
+      this.registerMidiVoice({ voice, stopTime });
+    };
+    const fallback = () => {
+      this.playMidiNote(pitch, 'sine', duration, clampedVolume);
+    };
+    this.ensureGmPlayer()
+      .then(() => {
+        if (isDrumChannel(channel)) {
+          return this.loadGmDrumKit();
+        }
+        return this.loadGmProgram(clampedProgram);
+      })
+      .then(playWithPreset)
+      .catch(fallback);
+  }
+
   playMidiNote(pitch, instrument = 'piano', duration = 0.5, volume = 1) {
     this.ensure();
     const freq = 440 * (2 ** ((pitch - 69) / 12));
@@ -241,17 +460,27 @@ export default class AudioSystem {
     const now = this.ctx.currentTime;
     source.start(now);
     source.stop(now + duration + 0.1);
-    this.registerMidiVoice(source, gain, now + duration + 0.12);
+    this.registerMidiVoice({ source, gain, stopTime: now + duration + 0.12 });
   }
 
-  registerMidiVoice(source, gain, stopTime) {
-    this.midiVoices.push({ source, gain, stopTime });
+  registerMidiVoice({ source, gain, stopTime, voice }) {
+    const resolveStop = () => {
+      if (voice?.stop) return () => voice.stop();
+      if (voice?.audioBufferSourceNode?.stop) return () => voice.audioBufferSourceNode.stop();
+      if (source?.stop) return () => source.stop();
+      return null;
+    };
+    this.midiVoices.push({ source, gain, stopTime, stop: resolveStop() });
     if (this.midiVoices.length > this.midiVoiceLimit) {
       const oldest = this.midiVoices.shift();
       if (oldest) {
         try {
-          oldest.gain.gain.setTargetAtTime(0.0001, this.ctx.currentTime, 0.02);
-          oldest.source.stop();
+          if (oldest.gain) {
+            oldest.gain.gain.setTargetAtTime(0.0001, this.ctx.currentTime, 0.02);
+          }
+          if (oldest.stop) {
+            oldest.stop();
+          }
         } catch (error) {
           // ignore
         }
