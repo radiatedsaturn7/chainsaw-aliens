@@ -38,13 +38,14 @@ Then visit `http://localhost:8000/index.html`.
 ## MIDI Pattern Sequencer
 Open the sequencer from the title screen **Tools** menu (`MIDI Editor`). The editor is built around a Track → Pattern → Notes model:
 - **Track**: instrument, mute/solo, volume, and patterns.
-- **Pattern**: a bar-length loop (1–8 bars).
+- **Pattern**: a bar-length timeline that expands as you add notes (use an end marker to define a loop).
 - **Notes**: start tick, duration tick, pitch, velocity.
 
 ### Core Workflow
-1. Add a track, select an instrument, and set the loop length (1/2/4/8 bars).
-2. Paint notes in the piano roll grid, press **Play**, and adjust tempo/quantize.
-3. Use **Export JSON** to save a song, or **Import JSON** to load one.
+1. Add a track, select an instrument, and place notes in the expanding piano roll grid.
+2. Press **Play**, adjust tempo/quantize, and choose the note length from the top ribbon.
+3. Set an end marker in the ruler (Shift + click) and toggle **Loop** in Settings if you want a repeat.
+4. Use **Export JSON** to save a song, or **Import JSON** to load one.
 
 ### Editor Controls (mouse/touch/keyboard)
 - **Click/drag on empty grid**: paint notes (snapped to quantize).
@@ -56,6 +57,8 @@ Open the sequencer from the title screen **Tools** menu (`MIDI Editor`). The edi
 - **Ctrl/Cmd + C / V**: copy/paste selection.
 - **Ctrl/Cmd + D**: duplicate selection forward.
 - **Ruler drag**: scrub playhead (optional audition toggle).
+- **Shift + click ruler**: set end marker.
+- **Alt/Option + click ruler**: clear end marker.
 
 ### Import / Export Format
 Songs are stored as JSON with this schema:
@@ -63,6 +66,8 @@ Songs are stored as JSON with this schema:
 {
   "tempo": 120,
   "loopBars": 4,
+  "loopEndTick": null,
+  "loopEnabled": false,
   "key": 0,
   "scale": "minor",
   "tracks": [
