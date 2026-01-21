@@ -40,6 +40,54 @@ export default class AudioSystem {
     osc.stop(now + duration + 0.02);
   }
 
+  getMidiPreset(instrument) {
+    const presets = {
+      piano: { type: 'triangle', attack: 0.01, decay: 0.18, sustain: 0.35, release: 0.25, filter: 1800 },
+      organ: { type: 'sine', attack: 0.02, decay: 0.05, sustain: 0.85, release: 0.3, filter: 2200 },
+      strings: { type: 'sawtooth', attack: 0.08, decay: 0.2, sustain: 0.6, release: 0.4, filter: 1400 },
+      bass: { type: 'square', attack: 0.02, decay: 0.12, sustain: 0.5, release: 0.2, filter: 900 },
+      'synth-lead': { type: 'sawtooth', attack: 0.01, decay: 0.08, sustain: 0.6, release: 0.2, filter: 2000 },
+      'synth-pad': { type: 'triangle', attack: 0.08, decay: 0.18, sustain: 0.7, release: 0.4, filter: 1600 },
+      sine: { type: 'sine', attack: 0.01, decay: 0.1, sustain: 0.6, release: 0.2 },
+      triangle: { type: 'triangle', attack: 0.01, decay: 0.12, sustain: 0.6, release: 0.2 },
+      square: { type: 'square', attack: 0.01, decay: 0.1, sustain: 0.6, release: 0.18 },
+      sawtooth: { type: 'sawtooth', attack: 0.01, decay: 0.12, sustain: 0.6, release: 0.2 }
+    };
+    return presets[instrument] || presets.sine;
+  }
+
+  playMidiNote(pitch, instrument = 'piano', duration = 0.5) {
+    this.ensure();
+    const freq = 440 * (2 ** ((pitch - 69) / 12));
+    const preset = this.getMidiPreset(instrument);
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = preset.type || 'sine';
+    osc.frequency.value = freq;
+    let output = osc;
+    if (preset.filter) {
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = preset.filter;
+      output.connect(filter);
+      filter.connect(gain);
+    } else {
+      output.connect(gain);
+    }
+    gain.connect(this.master);
+    const now = this.ctx.currentTime;
+    const attack = preset.attack ?? 0.01;
+    const decay = preset.decay ?? 0.1;
+    const sustain = preset.sustain ?? 0.6;
+    const release = preset.release ?? 0.2;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.3, now + attack);
+    gain.gain.exponentialRampToValueAtTime(0.3 * sustain, now + attack + decay);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration + release);
+    osc.start(now);
+    osc.stop(now + duration + release + 0.02);
+  }
+
   noise(duration = 0.12, gainValue = 0.12) {
     this.ensure();
     const bufferSize = Math.floor(this.ctx.sampleRate * duration);
