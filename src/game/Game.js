@@ -618,17 +618,21 @@ export default class Game {
     this.refreshWorldCaches();
   }
 
-  enterEditor() {
+  enterEditor({ tab = null } = {}) {
     this.editorReturnState = this.state;
     this.state = 'editor';
     this.setRevAudio(false);
     this.editor.activate();
+    if (tab) {
+      this.editor.setPanelTab(tab);
+    }
     this.playtestActive = false;
     document.body.classList.add('editor-active');
   }
 
   exitEditor({ playtest }) {
     this.editor.deactivate();
+    this.editor.flushWorldRefresh();
     if (playtest) {
       this.syncSpawnPoint();
       this.state = 'playing';
@@ -774,6 +778,44 @@ export default class Game {
     this.testHarness.active = false;
     this.simulationActive = false;
     this.resetWorldSystems();
+  }
+
+  buildBlankWorldData() {
+    const width = this.world.width || 64;
+    const height = this.world.height || 36;
+    const tiles = Array.from({ length: height }, (_, y) => {
+      const row = Array.from({ length: width }, (_, x) => {
+        if (x === 0 || y === 0 || x === width - 1 || y === height - 1) {
+          return '#';
+        }
+        return '.';
+      }).join('');
+      return row;
+    });
+    const spawn = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
+    return {
+      schemaVersion: 1,
+      tileSize: this.world.tileSize || 32,
+      width,
+      height,
+      spawn,
+      tiles,
+      regions: [],
+      enemies: [],
+      elevatorPaths: [],
+      elevators: [],
+      pixelArt: { tiles: {} },
+      musicZones: [],
+      midiTracks: []
+    };
+  }
+
+  resetAllContent() {
+    const blank = this.buildBlankWorldData();
+    this.applyWorldData(blank);
+    this.editor.clearAutosave();
+    this.editor.syncPreviewMinimap();
+    this.showSystemToast('All graphics, music, and levels reset.');
   }
 
   startGoldenPath() {
@@ -1145,13 +1187,29 @@ export default class Game {
             this.setInputMode(action);
           }
           this.title.setControlsSelectionByMode(this.inputMode);
+        } else if (this.title.screen === 'tools') {
+          if (action === 'back') {
+            this.title.setScreen('main');
+          } else if (action === 'level-editor') {
+            this.enterEditor({ tab: 'tiles' });
+          } else if (action === 'pixel-editor') {
+            this.enterEditor({ tab: 'pixels' });
+          } else if (action === 'music-editor') {
+            this.enterEditor({ tab: 'music' });
+          } else if (action === 'midi-editor') {
+            this.enterEditor({ tab: 'midi' });
+          } else if (action === 'skin-editor') {
+            this.enterEditor({ tab: 'pixels' });
+          } else if (action === 'reset-all') {
+            this.resetAllContent();
+          }
         } else if (action === 'options') {
           this.title.setControlsSelectionByMode(this.inputMode);
           this.title.setScreen('controls');
+        } else if (action === 'tools') {
+          this.title.setScreen('tools');
         } else if (action === 'endless') {
           this.startEndlessMode();
-        } else if (action === 'editor') {
-          this.enterEditor();
         } else {
           if (this.gameMode !== 'story' && this.storyData) {
             this.gameMode = 'story';
@@ -5707,14 +5765,34 @@ export default class Game {
         this.audio.ui();
         return;
       }
+      if (this.title.screen === 'tools') {
+        if (action === 'back') {
+          this.title.setScreen('main');
+        } else if (action === 'level-editor') {
+          this.enterEditor({ tab: 'tiles' });
+        } else if (action === 'pixel-editor') {
+          this.enterEditor({ tab: 'pixels' });
+        } else if (action === 'music-editor') {
+          this.enterEditor({ tab: 'music' });
+        } else if (action === 'midi-editor') {
+          this.enterEditor({ tab: 'midi' });
+        } else if (action === 'skin-editor') {
+          this.enterEditor({ tab: 'pixels' });
+        } else if (action === 'reset-all') {
+          this.resetAllContent();
+        }
+        this.audio.ui();
+        return;
+      }
       if (action === 'options') {
         this.title.setControlsSelectionByMode(this.inputMode);
         this.title.setScreen('controls');
         this.audio.ui();
         return;
       }
-      if (action === 'editor') {
-        this.enterEditor();
+      if (action === 'tools') {
+        this.title.setScreen('tools');
+        this.audio.ui();
         return;
       }
       if (action === 'endless') {
@@ -5838,9 +5916,37 @@ export default class Game {
         this.recordFeedback('menu navigate', 'visual');
         return;
       }
+      if (this.title.screen === 'tools') {
+        if (action === 'back') {
+          this.title.setScreen('main');
+        } else if (action === 'level-editor') {
+          this.enterEditor({ tab: 'tiles' });
+        } else if (action === 'pixel-editor') {
+          this.enterEditor({ tab: 'pixels' });
+        } else if (action === 'music-editor') {
+          this.enterEditor({ tab: 'music' });
+        } else if (action === 'midi-editor') {
+          this.enterEditor({ tab: 'midi' });
+        } else if (action === 'skin-editor') {
+          this.enterEditor({ tab: 'pixels' });
+        } else if (action === 'reset-all') {
+          this.resetAllContent();
+        }
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
       if (action === 'options') {
         this.title.setControlsSelectionByMode(this.inputMode);
         this.title.setScreen('controls');
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
+      if (action === 'tools') {
+        this.title.setScreen('tools');
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
@@ -5851,10 +5957,6 @@ export default class Game {
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
-        return;
-      }
-      if (action === 'editor') {
-        this.enterEditor();
         return;
       }
       if (action === 'campaign') {

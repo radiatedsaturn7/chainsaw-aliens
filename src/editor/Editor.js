@@ -1,3 +1,5 @@
+import Minimap from '../world/Minimap.js';
+
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
   { id: 'hidden-path', label: 'Hidden Path Block', char: 'Z' },
@@ -187,10 +189,16 @@ const MUSIC_TRACKS = [
 ];
 
 const MIDI_INSTRUMENTS = [
-  { id: 'sine', label: 'Sine Lead' },
-  { id: 'triangle', label: 'Triangle Pad' },
-  { id: 'square', label: 'Square Pulse' },
-  { id: 'sawtooth', label: 'Saw Lead' }
+  { id: 'piano', label: 'Piano' },
+  { id: 'organ', label: 'Organ' },
+  { id: 'strings', label: 'Strings' },
+  { id: 'bass', label: 'Bass' },
+  { id: 'synth-lead', label: 'Synth Lead' },
+  { id: 'synth-pad', label: 'Synth Pad' },
+  { id: 'sine', label: 'Sine' },
+  { id: 'triangle', label: 'Triangle' },
+  { id: 'square', label: 'Square' },
+  { id: 'sawtooth', label: 'Saw' }
 ];
 
 const EDITOR_AUTOSAVE_KEY = 'chainsaw-editor-autosave';
@@ -220,7 +228,7 @@ export default class Editor {
     this.pixelPaletteBounds = [];
     this.pixelFrameBounds = null;
     this.musicTool = 'paint';
-    this.musicTrack = MUSIC_TRACKS[0];
+    this.musicTrack = null;
     this.musicDragStart = null;
     this.musicDragTarget = null;
     this.midiTrackIndex = 0;
@@ -228,6 +236,8 @@ export default class Editor {
     this.midiGridBounds = null;
     this.startWithEverything = true;
     this.camera = { x: 0, y: 0 };
+    this.previewMinimap = new Minimap(this.game.world);
+    this.pendingWorldRefresh = null;
     this.zoom = 1;
     this.dragging = false;
     this.dragMode = null;
@@ -369,6 +379,12 @@ export default class Editor {
     this.fileInput.style.display = 'none';
     document.body.appendChild(this.fileInput);
 
+    this.midiFileInput = document.createElement('input');
+    this.midiFileInput.type = 'file';
+    this.midiFileInput.accept = 'application/json';
+    this.midiFileInput.style.display = 'none';
+    document.body.appendChild(this.midiFileInput);
+
     this.fileInput.addEventListener('change', (event) => {
       const file = event.target.files?.[0];
       if (!file) return;
@@ -379,12 +395,29 @@ export default class Editor {
           this.game.applyWorldData(data);
           this.persistAutosave();
           this.resetView();
+          this.syncPreviewMinimap();
         } catch (error) {
           console.error('Failed to load world data:', error);
         }
       };
       reader.readAsText(file);
       this.fileInput.value = '';
+    });
+
+    this.midiFileInput.addEventListener('change', (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          this.replaceMidiTracks(data);
+        } catch (error) {
+          console.error('Failed to load MIDI tracks:', error);
+        }
+      };
+      reader.readAsText(file);
+      this.midiFileInput.value = '';
     });
 
     window.addEventListener('keydown', (event) => {
@@ -401,6 +434,8 @@ export default class Editor {
     this.loadAutosaveOrSeed();
     this.restorePlaytestSpawn();
     this.resetView();
+    this.getMusicTracks();
+    this.syncPreviewMinimap();
   }
 
   deactivate() {
@@ -421,6 +456,35 @@ export default class Editor {
     this.pixelPaintActive = false;
     this.musicDragStart = null;
     this.musicDragTarget = null;
+    if (this.pendingWorldRefresh) {
+      window.clearTimeout(this.pendingWorldRefresh);
+      this.pendingWorldRefresh = null;
+    }
+  }
+
+  syncPreviewMinimap() {
+    this.previewMinimap = new Minimap(this.game.world);
+    const rooms = this.game.world.rooms || [];
+    this.previewMinimap.knownRooms = new Set(rooms.map((_, index) => index));
+    this.previewMinimap.exploredRooms = new Set(rooms.map((_, index) => index));
+  }
+
+  scheduleWorldRefresh() {
+    if (this.pendingWorldRefresh) {
+      window.clearTimeout(this.pendingWorldRefresh);
+    }
+    this.pendingWorldRefresh = window.setTimeout(() => {
+      this.flushWorldRefresh();
+    }, 120);
+  }
+
+  flushWorldRefresh() {
+    if (this.pendingWorldRefresh) {
+      window.clearTimeout(this.pendingWorldRefresh);
+      this.pendingWorldRefresh = null;
+    }
+    this.game.refreshWorldCaches();
+    this.syncPreviewMinimap();
   }
 
   loadAutosaveOrSeed() {
@@ -428,6 +492,13 @@ export default class Editor {
     this.autosaveLoaded = true;
     if (this.loadAutosave()) return;
     this.createRandomLevel(150, 100);
+  }
+
+  clearAutosave() {
+    const storage = this.getStorage();
+    if (!storage) return;
+    storage.removeItem(this.autosaveKey);
+    this.autosaveLoaded = false;
   }
 
   getStorage() {
@@ -451,6 +522,7 @@ export default class Editor {
         return false;
       }
       this.game.applyWorldData(data);
+      this.syncPreviewMinimap();
       return true;
     } catch (error) {
       storage.removeItem(this.autosaveKey);
@@ -590,6 +662,7 @@ export default class Editor {
       this.mode = 'pixel';
     } else if (tabId === 'music') {
       this.mode = 'music';
+      this.getMusicTracks();
     } else if (tabId === 'midi') {
       this.mode = 'midi';
     }
@@ -614,6 +687,7 @@ export default class Editor {
       this.mode = 'pixel';
     } else if (nextTab === 'music') {
       this.mode = 'music';
+      this.getMusicTracks();
     } else if (nextTab === 'midi') {
       this.mode = 'midi';
     }
@@ -798,6 +872,7 @@ export default class Editor {
       })));
       columns = 2;
     } else if (tabId === 'music') {
+      const tracks = this.getMusicTracks();
       items = [
         {
           id: 'music-paint',
@@ -818,11 +893,11 @@ export default class Editor {
           }
         }
       ];
-      items.push(...MUSIC_TRACKS.map((track) => ({
+      items.push(...tracks.map((track) => ({
         id: `music-${track.id}`,
-        label: track.label,
+        label: track.name || track.label || track.id,
         track,
-        tooltip: `Music: ${track.label}`,
+        tooltip: `Music: ${track.name || track.label || track.id}`,
         onClick: () => {
           this.musicTrack = track;
           this.mode = 'music';
@@ -1368,14 +1443,71 @@ export default class Editor {
       this.game.world.midiTracks = [];
     }
     if (this.game.world.midiTracks.length === 0) {
-      this.game.world.midiTracks.push({
-        id: `track-${Date.now()}`,
-        name: 'Track 1',
-        instrument: MIDI_INSTRUMENTS[0]?.id || 'sine',
+      const defaultInstrument = MIDI_INSTRUMENTS[0]?.id || 'piano';
+      this.game.world.midiTracks = MUSIC_TRACKS.map((track) => ({
+        id: track.id,
+        name: track.label,
+        instrument: defaultInstrument,
         notes: []
-      });
+      }));
     }
     return this.game.world.midiTracks;
+  }
+
+  getMusicTracks() {
+    const tracks = this.ensureMidiTracks();
+    if (!tracks.length) return tracks;
+    if (!this.musicTrack || !tracks.some((entry) => entry.id === this.musicTrack.id)) {
+      this.musicTrack = tracks[0];
+    }
+    return tracks;
+  }
+
+  getMusicTrackLabel(trackId) {
+    if (!trackId) return '';
+    const tracks = this.getMusicTracks();
+    const match = tracks.find((track) => track.id === trackId);
+    return match?.name || match?.label || trackId;
+  }
+
+  normalizeMidiTracks(rawTracks) {
+    if (!Array.isArray(rawTracks)) return [];
+    const fallbackInstrument = MIDI_INSTRUMENTS[0]?.id || 'piano';
+    return rawTracks.map((track, index) => ({
+      id: track.id || `track-${Date.now()}-${index}`,
+      name: track.name || `Track ${index + 1}`,
+      instrument: track.instrument || fallbackInstrument,
+      notes: Array.isArray(track.notes)
+        ? track.notes.map((note) => ({
+          pitch: note.pitch,
+          start: note.start,
+          length: note.length || 1
+        }))
+        : []
+    }));
+  }
+
+  replaceMidiTracks(data) {
+    const tracks = Array.isArray(data) ? data : data?.midiTracks || data?.tracks || [];
+    const normalized = this.normalizeMidiTracks(tracks);
+    this.game.world.midiTracks = normalized.length > 0
+      ? normalized
+      : [{
+        id: `track-${Date.now()}`,
+        name: 'Track 1',
+        instrument: MIDI_INSTRUMENTS[0]?.id || 'piano',
+        notes: []
+      }];
+    this.midiTrackIndex = 0;
+    this.musicTrack = this.game.world.midiTracks[0] || null;
+    this.persistAutosave();
+    this.flushWorldRefresh();
+  }
+
+  openMidiFilePicker() {
+    if (this.midiFileInput) {
+      this.midiFileInput.click();
+    }
   }
 
   getActiveMidiTrack() {
@@ -1415,8 +1547,14 @@ export default class Editor {
       track.notes.splice(existingIndex, 1);
     } else {
       track.notes.push({ pitch, start, length });
+      this.previewMidiNote(pitch, track.instrument);
     }
     this.persistAutosave();
+  }
+
+  previewMidiNote(pitch, instrument) {
+    if (!this.game?.audio) return;
+    this.game.audio.playMidiNote(pitch, instrument);
   }
 
   promptRandomLevel() {
@@ -3175,6 +3313,7 @@ export default class Editor {
     };
 
     this.game.applyWorldData(data);
+    this.syncPreviewMinimap();
     this.game.runPlayabilityCheck();
     this.pendingChanges.clear();
     this.pendingSpawn = null;
@@ -3345,7 +3484,7 @@ export default class Editor {
         this.undoStack.shift();
       }
       this.redoStack = [];
-      this.game.refreshWorldCaches();
+      this.scheduleWorldRefresh();
       this.persistAutosave();
     }
     this.pendingChanges.clear();
@@ -3652,7 +3791,9 @@ export default class Editor {
       const maxY = Math.max(start.y, end.y);
       const width = Math.max(1, maxX - minX + 1);
       const height = Math.max(1, maxY - minY + 1);
-      this.addMusicZone([minX, minY, width, height], this.musicTrack?.id || MUSIC_TRACKS[0]?.id);
+      const tracks = this.getMusicTracks();
+      const trackId = this.musicTrack?.id || tracks[0]?.id;
+      this.addMusicZone([minX, minY, width, height], trackId);
       this.musicDragStart = null;
       this.musicDragTarget = null;
       return;
@@ -4856,7 +4997,7 @@ export default class Editor {
         ctx.strokeRect(px, py, pw, ph);
         if (zone.track) {
           ctx.fillStyle = 'rgba(255,255,255,0.85)';
-          ctx.fillText(zone.track, px + 6, py + 6);
+          ctx.fillText(this.getMusicTrackLabel(zone.track), px + 6, py + 6);
           ctx.fillStyle = 'rgba(120, 200, 255, 0.18)';
         }
       });
@@ -5469,14 +5610,14 @@ export default class Editor {
           { id: 'midi', label: 'MIDI' }
         ];
         const activeTab = this.getActivePanelTab();
+        const activeTabLabel = tabs.find((tab) => tab.id === activeTab)?.label || 'TOOLS';
         const tabMargin = 12;
-        const tabGap = 6;
-        const tabArrowW = 26;
+        const tabArrowW = 34;
         const tabArrowGap = 6;
-        const tabHeight = 32;
+        const tabHeight = 40;
         const tabRowW = panelW - tabMargin * 2 - (tabArrowW + tabArrowGap) * 2;
-        const tabWidth = (tabRowW - tabGap * (tabs.length - 1)) / tabs.length;
         const tabY = panelY + handleAreaH + 8;
+        ctx.font = '14px Courier New';
         drawButton(
           panelX + tabMargin,
           tabY,
@@ -5497,21 +5638,18 @@ export default class Editor {
           () => this.cyclePanelTab(1),
           'Next tab'
         );
-        tabs.forEach((tab, index) => {
-          const x = panelX + tabMargin + tabArrowW + tabArrowGap + index * (tabWidth + tabGap);
-          drawButton(
-            x,
-            tabY,
-            tabWidth,
-            tabHeight,
-            tab.label,
-            activeTab === tab.id,
-            () => {
-              this.setPanelTab(tab.id);
-            },
-            `${tab.label} drawer`
-          );
-        });
+        drawButton(
+          panelX + tabMargin + tabArrowW + tabArrowGap,
+          tabY,
+          tabRowW,
+          tabHeight,
+          activeTabLabel,
+          true,
+          () => {
+            this.setPanelTab(activeTab);
+          },
+          `${activeTabLabel} drawer`
+        );
 
         const contentX = panelX + 12;
         const contentW = panelW - 24;
@@ -5717,6 +5855,7 @@ export default class Editor {
           })));
           columns = 2;
         } else if (activeTab === 'music') {
+          const tracks = this.getMusicTracks();
           items = [
             {
               id: 'music-paint',
@@ -5739,11 +5878,11 @@ export default class Editor {
               }
             }
           ];
-          items.push(...MUSIC_TRACKS.map((track) => ({
+          items.push(...tracks.map((track) => ({
             id: track.id,
-            label: track.label,
+            label: track.name || track.label || track.id,
             active: this.musicTrack?.id === track.id,
-            tooltip: `Music: ${track.label}`,
+            tooltip: `Music: ${track.name || track.label || track.id}`,
             onClick: () => {
               this.musicTrack = track;
               this.mode = 'music';
@@ -6186,7 +6325,17 @@ export default class Editor {
       const panelY = this.isMobileLayout()
         ? this.editorBounds.y + this.editorBounds.h - 300
         : infoPanelBottom;
-      const panelHeight = 280;
+      const instrumentColumns = 4;
+      const instrumentButtonW = 80;
+      const instrumentButtonH = 24;
+      const instrumentButtonGap = 8;
+      const instrumentRows = Math.ceil(MIDI_INSTRUMENTS.length / instrumentColumns);
+      const instrumentRowHeight = instrumentButtonH + 6;
+      const gridRows = 12;
+      const gridCols = 16;
+      const gridCellSize = 14;
+      const gridH = gridRows * gridCellSize;
+      const panelHeight = 110 + instrumentRows * instrumentRowHeight + gridH;
       ctx.save();
       ctx.globalAlpha = 0.9;
       ctx.fillStyle = 'rgba(0,0,0,0.7)';
@@ -6198,16 +6347,81 @@ export default class Editor {
       ctx.textAlign = 'left';
       ctx.fillText(`MIDI Editor: ${track?.name || 'Track'}`, panelX + 12, panelY + 20);
 
-      const instrumentLabel = MIDI_INSTRUMENTS.find((entry) => entry.id === track?.instrument)?.label || 'Instrument';
+      const controlX = panelX + panelWidth - 92;
+      const controlButtonW = 80;
+      const controlButtonH = 20;
+      drawButton(
+        controlX,
+        panelY + 18,
+        controlButtonW,
+        controlButtonH,
+        'LOAD',
+        false,
+        () => this.openMidiFilePicker(),
+        'Load/replace MIDI tracks'
+      );
+      drawButton(
+        controlX,
+        panelY + 42,
+        38,
+        controlButtonH,
+        '+Trk',
+        false,
+        () => this.addMidiTrack(),
+        'Add track'
+      );
+      drawButton(
+        controlX + 42,
+        panelY + 42,
+        38,
+        controlButtonH,
+        '-Trk',
+        false,
+        () => this.removeMidiTrack(),
+        'Remove track'
+      );
+      drawButton(
+        controlX,
+        panelY + 66,
+        38,
+        controlButtonH,
+        '+Len',
+        false,
+        () => {
+          this.midiNoteLength = clamp(this.midiNoteLength + 1, 1, 8);
+        },
+        'Increase length'
+      );
+      drawButton(
+        controlX + 42,
+        panelY + 66,
+        38,
+        controlButtonH,
+        '-Len',
+        false,
+        () => {
+          this.midiNoteLength = clamp(this.midiNoteLength - 1, 1, 8);
+        },
+        'Decrease length'
+      );
+      ctx.fillStyle = '#fff';
       ctx.font = '12px Courier New';
-      ctx.fillText(`Instrument: ${instrumentLabel}`, panelX + 12, panelY + 40);
+      ctx.fillText(`Len: ${this.midiNoteLength}`, panelX + panelWidth - 150, panelY + 82);
+
+      const instrumentLabel = MIDI_INSTRUMENTS.find((entry) => entry.id === track?.instrument)?.label || 'Instrument';
+      const instrumentLabelY = panelY + 94;
+      ctx.font = '12px Courier New';
+      ctx.fillText(`Instrument: ${instrumentLabel}`, panelX + 12, instrumentLabelY);
+      const instrumentStartY = instrumentLabelY + 14;
       MIDI_INSTRUMENTS.forEach((entry, index) => {
+        const row = Math.floor(index / instrumentColumns);
+        const col = index % instrumentColumns;
         drawButton(
-          panelX + 12 + index * 84,
-          panelY + 50,
-          80,
-          24,
-          entry.label.split(' ')[0],
+          panelX + 12 + col * (instrumentButtonW + instrumentButtonGap),
+          instrumentStartY + row * instrumentRowHeight,
+          instrumentButtonW,
+          instrumentButtonH,
+          entry.label,
           track?.instrument === entry.id,
           () => {
             if (track) {
@@ -6219,91 +6433,37 @@ export default class Editor {
         );
       });
 
-      drawButton(
-        panelX + panelWidth - 92,
-        panelY + 18,
-        40,
-        20,
-        '+Trk',
-        false,
-        () => this.addMidiTrack(),
-        'Add track'
-      );
-      drawButton(
-        panelX + panelWidth - 46,
-        panelY + 18,
-        40,
-        20,
-        '-Trk',
-        false,
-        () => this.removeMidiTrack(),
-        'Remove track'
-      );
-
-      drawButton(
-        panelX + panelWidth - 92,
-        panelY + 46,
-        40,
-        20,
-        '+Len',
-        false,
-        () => {
-          this.midiNoteLength = clamp(this.midiNoteLength + 1, 1, 8);
-        },
-        'Increase length'
-      );
-      drawButton(
-        panelX + panelWidth - 46,
-        panelY + 46,
-        40,
-        20,
-        '-Len',
-        false,
-        () => {
-          this.midiNoteLength = clamp(this.midiNoteLength - 1, 1, 8);
-        },
-        'Decrease length'
-      );
-      ctx.fillStyle = '#fff';
-      ctx.fillText(`Len: ${this.midiNoteLength}`, panelX + panelWidth - 150, panelY + 62);
-
-      const rows = 12;
-      const cols = 16;
-      const cellSize = 14;
       const gridX = panelX + 12;
-      const gridY = panelY + 80;
-      const gridW = cols * cellSize;
-      const gridH = rows * cellSize;
-      this.midiGridBounds = { x: gridX, y: gridY, cellSize, rows, cols };
+      const gridY = instrumentStartY + instrumentRows * instrumentRowHeight + 10;
+      const gridW = gridCols * gridCellSize;
+      this.midiGridBounds = { x: gridX, y: gridY, cellSize: gridCellSize, rows: gridRows, cols: gridCols };
       ctx.fillStyle = 'rgba(255,255,255,0.05)';
       ctx.fillRect(gridX, gridY, gridW, gridH);
       ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-      for (let row = 0; row <= rows; row += 1) {
+      for (let row = 0; row <= gridRows; row += 1) {
         ctx.beginPath();
-        ctx.moveTo(gridX, gridY + row * cellSize);
-        ctx.lineTo(gridX + gridW, gridY + row * cellSize);
+        ctx.moveTo(gridX, gridY + row * gridCellSize);
+        ctx.lineTo(gridX + gridW, gridY + row * gridCellSize);
         ctx.stroke();
       }
-      for (let col = 0; col <= cols; col += 1) {
+      for (let col = 0; col <= gridCols; col += 1) {
         ctx.beginPath();
-        ctx.moveTo(gridX + col * cellSize, gridY);
-        ctx.lineTo(gridX + col * cellSize, gridY + gridH);
+        ctx.moveTo(gridX + col * gridCellSize, gridY);
+        ctx.lineTo(gridX + col * gridCellSize, gridY + gridH);
         ctx.stroke();
       }
       if (track?.notes) {
         track.notes.forEach((note) => {
           const pitchOffset = note.pitch - 60;
-          const row = rows - 1 - pitchOffset;
-          if (row < 0 || row >= rows) return;
-          const start = note.start;
-          if (start < 0 || start >= cols) return;
-          const length = clamp(note.length || 1, 1, cols - start);
+          const row = gridRows - 1 - ((pitchOffset % gridRows + gridRows) % gridRows);
+          const col = note.start % gridCols;
+          const length = clamp(note.length || 1, 1, gridCols - col);
           ctx.fillStyle = 'rgba(120,200,255,0.7)';
           ctx.fillRect(
-            gridX + start * cellSize + 1,
-            gridY + row * cellSize + 1,
-            length * cellSize - 2,
-            cellSize - 2
+            gridX + col * gridCellSize + 1,
+            gridY + row * gridCellSize + 1,
+            length * gridCellSize - 2,
+            gridCellSize - 2
           );
         });
       }
@@ -6469,6 +6629,23 @@ export default class Editor {
           item.tooltip
         );
       });
+      ctx.restore();
+    }
+
+    if (['pixel', 'music', 'midi'].includes(this.mode)) {
+      const mapSize = this.isMobileLayout() ? 140 : 180;
+      const mapX = this.editorBounds.x + this.editorBounds.w - mapSize - 16;
+      const mapY = this.editorBounds.y + 16;
+      const viewCenter = {
+        x: this.camera.x + (this.editorBounds.w / 2) / this.zoom,
+        y: this.camera.y + (this.editorBounds.h / 2) / this.zoom
+      };
+      ctx.save();
+      ctx.font = '12px Courier New';
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.textAlign = 'left';
+      ctx.fillText('Preview', mapX, mapY - 6);
+      this.previewMinimap.draw(ctx, mapX, mapY, mapSize, mapSize, viewCenter);
       ctx.restore();
     }
 
