@@ -2244,14 +2244,46 @@ export default class Game {
       };
     };
     const initialArcDrop = Math.min(maxRange * 0.22, tileSize * 8);
+    const targetArcRange = tileSize * 15;
+    const peakOffset = tileSize * 0.35;
+    const targetPoint = {
+      x: originX + dirX * targetArcRange,
+      y: originY + dirY * targetArcRange
+    };
+    const computeControl = (t, dx, dy, point) => {
+      const denom = 2 * (1 - t) * t || 1;
+      return {
+        x: (point.x - originX - t * t * dx) / denom,
+        y: (point.y - originY - t * t * dy) / denom
+      };
+    };
+    const pickControl = (dx, dy, point, tBase) => {
+      const peakTargetY = originY - peakOffset;
+      const baseControl = computeControl(tBase, dx, dy, point);
+      if (baseControl.y <= peakTargetY) {
+        return { controlX: baseControl.x, controlY: baseControl.y, t: tBase };
+      }
+      let best = null;
+      const steps = 24;
+      for (let i = 0; i <= steps; i += 1) {
+        const t = 0.15 + (0.7 * i) / steps;
+        const control = computeControl(t, dx, dy, point);
+        if (control.y > peakTargetY) continue;
+        const score = Math.abs(t - tBase);
+        if (!best || score < best.score) {
+          best = { controlX: control.x, controlY: control.y, t, score };
+        }
+      }
+      return best ? { controlX: best.controlX, controlY: best.controlY, t: best.t } : { controlX: baseControl.x, controlY: baseControl.y, t: tBase };
+    };
+
     let streamDx = dirX * maxRange;
     let streamDy = dirY * maxRange + initialArcDrop;
-    let controlX = streamDx * 0.5;
-    let controlY = streamDy * 0.5 - initialArcDrop * 0.9;
+    const baseT = Math.min(0.75, Math.max(0.25, targetArcRange / Math.max(1, Math.hypot(streamDx, streamDy))));
+    let { controlX, controlY } = pickControl(streamDx, streamDy, targetPoint, baseT);
     let impactX = originX + streamDx;
     let impactY = originY + streamDy;
     let impactTile = null;
-    let lastPoint = { x: originX, y: originY };
     const steps = Math.max(20, Math.ceil(maxRange / (tileSize * 0.5)));
     for (let i = 1; i <= steps; i += 1) {
       const t = i / steps;
@@ -2264,23 +2296,18 @@ export default class Game {
         impactY = (pointTileY + 0.5) * tileSize;
         break;
       }
-      lastPoint = point;
     }
+
     streamDx = impactX - originX;
     streamDy = impactY - originY;
-    const adjustedRange = Math.hypot(streamDx, streamDy);
-    const arcDrop = Math.min(adjustedRange * 0.22, tileSize * 8);
-    const targetArcRange = tileSize * 15;
-    const wobbleScale = Math.min(40, adjustedRange * 0.18);
-    const wobbleX = (Math.random() - 0.5) * wobbleScale;
-    const wobbleY = (Math.random() - 0.5) * (wobbleScale * 0.65);
-    controlX = streamDx * 0.5 + wobbleX;
-    let interceptControlY = streamDy * 0.5 - arcDrop * 0.95;
-    if (adjustedRange > targetArcRange * 0.9) {
-      const tIntercept = Math.min(0.85, Math.max(0.25, targetArcRange / Math.max(1, adjustedRange)));
-      interceptControlY = -(tIntercept * streamDy) / (2 * (1 - tIntercept));
-    }
-    controlY = interceptControlY + wobbleY;
+    const adjustedRange = Math.hypot(streamDx, streamDy) || 1;
+    const throughDistance = Math.min(targetArcRange, adjustedRange * 0.9);
+    const throughPoint = {
+      x: originX + dirX * throughDistance,
+      y: originY + dirY * throughDistance
+    };
+    const tThrough = Math.min(0.85, Math.max(0.2, throughDistance / adjustedRange));
+    ({ controlX, controlY } = pickControl(streamDx, streamDy, throughPoint, tThrough));
 
     if (this.flamethrowerSoundTimer <= 0) {
       this.audio.flamethrower();
@@ -4883,7 +4910,7 @@ export default class Game {
       }
       return true;
     };
-    const drawSpikeTile = (x, y) => {
+    const drawSpikeTile = (x, y, color = '#fff') => {
       const hasFloor = isSolidTile(x, y + 1);
       const hasCeiling = isSolidTile(x, y - 1);
       const hasLeft = isSolidTile(x - 1, y);
@@ -4896,7 +4923,7 @@ export default class Game {
       const baseX = x * tileSize;
       const baseY = y * tileSize;
       const teeth = 4;
-      ctx.fillStyle = '#fff';
+      ctx.fillStyle = color;
       for (let i = 0; i < teeth; i += 1) {
         if (orientation === 'up' || orientation === 'down') {
           const spikeW = tileSize / teeth;
@@ -4958,14 +4985,32 @@ export default class Game {
           ctx.strokeStyle = '#4b2f17';
           ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
         }
-        if (tile === 'Y') {
-          ctx.fillStyle = '#c08a58';
+        if (tile === 'E') {
+          ctx.fillStyle = '#d6b06d';
           ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-          ctx.strokeStyle = '#7a4d24';
-          ctx.strokeRect(x * tileSize + 3, y * tileSize + 3, tileSize - 6, tileSize - 6);
-          ctx.strokeStyle = '#5a3617';
+          ctx.strokeStyle = '#b58b4a';
+          ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#9b773d';
+          ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
+        }
+        if (tile === 'Q') {
+          ctx.fillStyle = '#6b2bbd';
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#4c1f8a';
+          ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = '#3a176a';
+          ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
+        }
+        if (tile === 'J' || tile === 'G' || tile === 'V') {
+          const crystalColor = tile === 'J' ? '#4fb7ff' : tile === 'G' ? '#4bd47e' : '#b35cff';
+          const innerColor = tile === 'J' ? '#2f7fb8' : tile === 'G' ? '#2f8a55' : '#7d36b8';
+          ctx.fillStyle = crystalColor;
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          ctx.strokeStyle = innerColor;
+          ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
+          ctx.strokeStyle = 'rgba(255,255,255,0.6)';
           ctx.beginPath();
-          ctx.moveTo(x * tileSize + 6, y * tileSize + tileSize - 6);
+          ctx.moveTo(x * tileSize + 4, y * tileSize + tileSize - 6);
           ctx.lineTo(x * tileSize + tileSize - 6, y * tileSize + 6);
           ctx.stroke();
         }
@@ -5005,8 +5050,8 @@ export default class Game {
           ctx.strokeStyle = '#fff';
           ctx.stroke();
         }
-        if (tile === '=') {
-          ctx.strokeStyle = '#fff';
+        if (tile === '=' || tile === 's') {
+          ctx.strokeStyle = tile === 's' ? '#d9b267' : '#fff';
           ctx.beginPath();
           ctx.moveTo(x * tileSize + 4, y * tileSize + tileSize / 2);
           ctx.lineTo(x * tileSize + tileSize - 4, y * tileSize + tileSize / 2);
@@ -5040,6 +5085,9 @@ export default class Game {
         }
         if (tile === '*') {
           drawSpikeTile(x, y);
+        }
+        if (tile === '!') {
+          drawSpikeTile(x, y, '#c98bff');
         }
         if (tile === 'I') {
           ctx.fillStyle = '#8fd6ff';
@@ -5080,7 +5128,7 @@ export default class Game {
           ctx.lineTo(x * tileSize + tileSize / 2, y * tileSize + tileSize - 6);
           ctx.stroke();
         }
-        if (OBSTACLES[tile] && !['Y', 'N', 'P'].includes(tile)) {
+        if (OBSTACLES[tile] && !['N', 'P'].includes(tile)) {
           ctx.strokeStyle = '#fff';
           ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
           ctx.beginPath();

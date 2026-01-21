@@ -29,7 +29,7 @@ export const LEGEND = {
   shop: { label: 'Shop', glyph: '$', minimap: '▵' },
   anchor: { label: 'Anchor Socket', glyph: '⚓', minimap: '⊙' },
   wood: { label: 'Wood Barricade', glyph: 'W', minimap: 'W' },
-  woodBox: { label: 'Wooden Box', glyph: 'Y', minimap: 'Y' },
+  box: { label: 'Pull Box', glyph: 'K', minimap: 'K' },
   metal: { label: 'Welded Metal', glyph: 'X', minimap: 'X' },
   brittle: { label: 'Brittle Wall', glyph: 'C', minimap: 'C' },
   debris: { label: 'Heavy Debris', glyph: 'U', minimap: 'U' },

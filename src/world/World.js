@@ -54,9 +54,9 @@ const FALLBACK_WORLD = {
 
 const DEFAULT_SPAWN = { x: 28, y: 19 };
 const DOOR_TILE = 'D';
-const ROOM_BLOCKERS = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', 'Y', 'N', 'P']);
-const SOLID_TILES = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', 'Y', 'N', 'P']);
-const ONE_WAY_TILES = new Set(['=']);
+const ROOM_BLOCKERS = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', 'N', 'P', 'Q', 'E', 'G', 'J', 'V']);
+const SOLID_TILES = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', 'N', 'P', 'Q', 'E', 'G', 'J', 'V']);
+const ONE_WAY_TILES = new Set(['=', 's']);
 const HAZARD_TILES = new Set(['!', 'A', 'L', '*']);
 
 const isRoomTile = (tile) => tile && tile !== DOOR_TILE && !ROOM_BLOCKERS.has(tile);
@@ -110,7 +110,8 @@ export default class World {
     this.tileSize = data.tileSize;
     this.width = data.width;
     this.height = data.height;
-    this.tiles = data.tiles;
+    const normalizedTiles = (data.tiles || []).map((row) => row.replace(/Y/g, 'K'));
+    this.tiles = normalizedTiles;
     this.regions = data.regions || [];
     const spawn = data.spawn || DEFAULT_SPAWN;
     this.spawn = { x: spawn.x ?? DEFAULT_SPAWN.x, y: spawn.y ?? DEFAULT_SPAWN.y };
@@ -137,7 +138,7 @@ export default class World {
       ...track,
       notes: (track.notes || []).map((note) => ({ ...note }))
     }));
-    this.data = data;
+    this.data = { ...data, tiles: normalizedTiles };
     if (this.data) {
       this.data.elevatorPaths = this.elevatorPaths;
       this.data.elevators = this.elevators;
