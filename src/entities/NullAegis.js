@@ -6,20 +6,31 @@ export default class NullAegis extends BossBase {
     super(x, y, {
       type: 'nullaegis',
       sizeTiles: 22,
-      health: 38,
+      health: 64,
       attackTimer: 2.0,
       deathDuration: 4.6
     });
     this.patternFlip = false;
+    this.originX = x;
+    this.originY = y;
+    this.pulseTimer = 1.6;
+    this.moveTime = 0;
   }
 
   update(dt, player, context = {}) {
-    this.animTime += dt;
-    this.attackTimer -= dt;
-    if (context.isVisible?.(this, 560) && this.attackTimer <= 0) {
-      this.attackTimer = 2.2;
+    this.updateVulnerability(dt);
+    const aggression = this.aggression;
+    const phase = this.phase;
+    this.animTime += dt * aggression;
+    this.moveTime += dt * (0.3 + aggression * 0.2);
+    this.attackTimer -= dt * aggression;
+    this.pulseTimer -= dt * aggression;
+    this.x = this.originX + Math.cos(this.moveTime * 0.35) * this.tileSize * (phase === 2 ? 16 : 12);
+    this.y = this.originY + Math.sin(this.moveTime * 0.45) * this.tileSize * (phase === 2 ? 12 : 8);
+    if (context.isVisible?.(this, 640) && this.attackTimer <= 0) {
+      this.attackTimer = 2.2 / aggression;
       this.patternFlip = !this.patternFlip;
-      const count = 4;
+      const count = 4 + phase;
       const baseAngle = this.patternFlip ? Math.PI / 4 : 0;
       for (let i = 0; i < count; i += 1) {
         const angle = baseAngle + (Math.PI / 2) * i;
@@ -32,6 +43,18 @@ export default class NullAegis extends BossBase {
         );
       }
     }
+    if (phase >= 1 && context.canShoot?.(this, 660) && this.pulseTimer <= 0) {
+      this.pulseTimer = 2.6 / aggression;
+      const ringCount = 10 + phase * 2;
+      const speed = 180 + phase * 20;
+      for (let i = 0; i < ringCount; i += 1) {
+        const angle = (Math.PI * 2 * i) / ringCount + Math.sin(this.animTime) * 0.3;
+        context.spawnProjectile?.(this.x, this.y, Math.cos(angle) * speed, Math.sin(angle) * speed, 1);
+      }
+      if (phase === 2) {
+        this.triggerVulnerability(1.1);
+      }
+    }
     this.facing = Math.sign(player.x - this.x) || this.facing;
     this.stagger = Math.max(0, this.stagger - dt * 0.18);
   }
@@ -40,11 +63,12 @@ export default class NullAegis extends BossBase {
     const size = this.width * 0.31;
     const pulse = Math.sin(this.animTime * 1.6) * size * 0.04;
     ctx.save();
-    ctx.translate(this.x, this.y);
+    const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
+    ctx.translate(this.x + offsetX, this.y + offsetY);
     if (this.dead && this.deathTimer > 0) {
       ctx.globalAlpha = Math.max(0, 1 - this.deathProgress * 0.78);
     }
-    applyEnemyPalette(ctx, false);
+    applyEnemyPalette(ctx, flash, ctx.globalAlpha, { color: '#ff7ad6', amount: this.getTintAmount() });
     ctx.lineWidth = Math.max(3, this.width * 0.004);
     ctx.beginPath();
     ctx.moveTo(-size * 1.1, -size * 0.2 - pulse);

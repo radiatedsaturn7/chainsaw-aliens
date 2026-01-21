@@ -6,40 +6,51 @@ export default class ObsidianCrown extends BossBase {
     super(x, y, {
       type: 'obsidiancrown',
       sizeTiles: 32,
-      health: 52,
+      health: 88,
       attackTimer: 3.2,
       deathDuration: 5.2
     });
     this.barrageTimer = 1.2;
+    this.originX = x;
+    this.originY = y;
+    this.moveTime = 0;
+    this.spearTimer = 2.6;
   }
 
   update(dt, player, context = {}) {
-    this.animTime += dt;
-    this.attackTimer -= dt;
-    this.barrageTimer -= dt;
+    this.updateVulnerability(dt);
+    const aggression = this.aggression;
+    const phase = this.phase;
+    this.animTime += dt * aggression;
+    this.moveTime += dt * (0.18 + aggression * 0.15);
+    this.attackTimer -= dt * aggression;
+    this.barrageTimer -= dt * aggression;
+    this.spearTimer -= dt * aggression;
+    this.x = this.originX + Math.sin(this.moveTime * 0.32) * this.tileSize * (phase === 2 ? 20 : 16);
+    this.y = this.originY + Math.cos(this.moveTime * 0.42) * this.tileSize * (phase === 2 ? 14 : 10);
 
     if (context.isVisible?.(this, 720) && this.barrageTimer <= 0) {
-      this.barrageTimer = 1.8;
-      const columns = 6;
-      const spread = this.width * 0.35;
+      this.barrageTimer = 1.8 / aggression;
+      const columns = 6 + phase * 2;
+      const spread = this.width * 0.35 + phase * 20;
       for (let i = 0; i < columns; i += 1) {
         const offset = -spread + (spread * 2 * i) / (columns - 1);
         context.spawnProjectile?.(
           this.x + offset,
           this.y - this.height * 0.2,
-          offset * 0.15,
-          260,
+          offset * 0.18,
+          260 + phase * 30,
           1
         );
       }
     }
 
     if (context.canShoot?.(this, 720) && this.attackTimer <= 0) {
-      this.attackTimer = 3.4;
+      this.attackTimer = 3.2 / aggression;
       const dx = player.x - this.x;
       const dy = player.y - this.y;
       const dist = Math.hypot(dx, dy) || 1;
-      const speed = 200;
+      const speed = 200 + phase * 30;
       context.spawnProjectile?.(
         this.x,
         this.y,
@@ -47,6 +58,22 @@ export default class ObsidianCrown extends BossBase {
         (dy / dist) * speed,
         1
       );
+    }
+    if (phase >= 1 && context.isVisible?.(this, 760) && this.spearTimer <= 0) {
+      this.spearTimer = 3.6 / aggression;
+      this.triggerVulnerability(1);
+      const count = 4 + phase;
+      const speed = 230 + phase * 30;
+      for (let i = 0; i < count; i += 1) {
+        const angle = (-Math.PI / 2) + (Math.PI * 2 * i) / count;
+        context.spawnProjectile?.(
+          this.x + Math.cos(angle) * this.width * 0.3,
+          this.y + Math.sin(angle) * this.height * 0.1,
+          Math.cos(angle) * speed,
+          Math.sin(angle) * speed,
+          1
+        );
+      }
     }
 
     this.facing = Math.sign(player.x - this.x) || this.facing;
@@ -57,11 +84,12 @@ export default class ObsidianCrown extends BossBase {
     const size = this.width * 0.28;
     const pulse = Math.sin(this.animTime * 1.4) * size * 0.05;
     ctx.save();
-    ctx.translate(this.x, this.y);
+    const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
+    ctx.translate(this.x + offsetX, this.y + offsetY);
     if (this.dead && this.deathTimer > 0) {
       ctx.globalAlpha = Math.max(0, 1 - this.deathProgress * 0.7);
     }
-    applyEnemyPalette(ctx, false);
+    applyEnemyPalette(ctx, flash, ctx.globalAlpha, { color: '#ff7ad6', amount: this.getTintAmount() });
     ctx.lineWidth = Math.max(3, this.width * 0.004);
     ctx.beginPath();
     ctx.moveTo(-size, size * 0.6 + pulse);

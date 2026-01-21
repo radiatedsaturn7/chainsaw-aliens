@@ -6,26 +6,36 @@ export default class SunderBehemoth extends BossBase {
     super(x, y, {
       type: 'sunderbehemoth',
       sizeTiles: 15,
-      health: 28,
+      health: 72,
       attackTimer: 1.4,
       deathDuration: 4.4
     });
     this.spinAngle = 0;
     this.originX = x;
     this.originY = y;
+    this.volleyTimer = 0.8;
+    this.patternTimer = 3.4;
+    this.moveTime = 0;
   }
 
   update(dt, player, context = {}) {
-    this.animTime += dt;
-    this.spinAngle += dt * 0.8;
-    const drift = Math.sin(this.animTime * 0.5) * 40;
-    this.x = this.originX + drift;
-    this.y = this.originY + Math.cos(this.animTime * 0.4) * 24;
+    this.updateVulnerability(dt);
+    const aggression = this.aggression;
+    const phase = this.phase;
+    this.animTime += dt * aggression;
+    this.moveTime += dt * (0.35 + aggression * 0.15);
+    this.spinAngle += dt * (0.8 + aggression * 0.4);
+    const driftX = Math.sin(this.moveTime * 0.6) * this.tileSize * (phase === 2 ? 18 : 14);
+    const driftY = Math.cos(this.moveTime * 0.45) * this.tileSize * (phase === 2 ? 12 : 9);
+    this.x = this.originX + driftX;
+    this.y = this.originY + driftY;
     this.attackTimer -= dt;
-    if (context.isVisible?.(this, 600) && this.attackTimer <= 0) {
-      this.attackTimer = 1.2;
-      const count = 8;
-      const speed = 220;
+    this.volleyTimer -= dt;
+    this.patternTimer -= dt;
+    if (context.isVisible?.(this, 700) && this.attackTimer <= 0) {
+      this.attackTimer = 1.2 / aggression;
+      const count = 8 + phase * 2;
+      const speed = 220 + phase * 40;
       for (let i = 0; i < count; i += 1) {
         const angle = this.spinAngle + (Math.PI * 2 * i) / count;
         const vx = Math.cos(angle) * speed;
@@ -39,6 +49,23 @@ export default class SunderBehemoth extends BossBase {
         );
       }
     }
+    if (phase >= 1 && context.canShoot?.(this, 720) && this.volleyTimer <= 0) {
+      this.volleyTimer = 1.6 / aggression;
+      const dx = player.x - this.x;
+      const dy = player.y - this.y;
+      const baseAngle = Math.atan2(dy, dx);
+      const speed = 260 + phase * 30;
+      for (let i = -1; i <= 1; i += 1) {
+        const angle = baseAngle + i * 0.2;
+        context.spawnProjectile?.(this.x, this.y, Math.cos(angle) * speed, Math.sin(angle) * speed, 1);
+      }
+    }
+    if (phase === 2 && this.patternTimer <= 0) {
+      this.patternTimer = 4.2 / aggression;
+      this.triggerVulnerability(1.2);
+      context.spawnMinion?.(this.x - this.width * 0.2, this.y + this.height * 0.2);
+      context.spawnMinion?.(this.x + this.width * 0.2, this.y - this.height * 0.1);
+    }
     this.facing = Math.sign(player.x - this.x) || this.facing;
     this.stagger = Math.max(0, this.stagger - dt * 0.2);
   }
@@ -47,11 +74,12 @@ export default class SunderBehemoth extends BossBase {
     const size = this.width * 0.34;
     const pulse = Math.sin(this.animTime * 2) * size * 0.06;
     ctx.save();
-    ctx.translate(this.x, this.y);
+    const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
+    ctx.translate(this.x + offsetX, this.y + offsetY);
     if (this.dead && this.deathTimer > 0) {
       ctx.globalAlpha = Math.max(0, 1 - this.deathProgress * 0.8);
     }
-    applyEnemyPalette(ctx, false);
+    applyEnemyPalette(ctx, flash, ctx.globalAlpha, { color: '#ff7ad6', amount: this.getTintAmount() });
     ctx.lineWidth = Math.max(3, this.width * 0.004);
     ctx.beginPath();
     ctx.moveTo(0, -size - pulse);

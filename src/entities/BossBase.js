@@ -9,6 +9,7 @@ export default class BossBase extends EnemyBase {
     this.width = this.sizeTiles * this.tileSize;
     this.height = this.sizeTiles * this.tileSize;
     this.health = options.health ?? 32;
+    this.maxHealth = this.health;
     this.lootValue = options.lootValue ?? 12;
     this.attackTimer = options.attackTimer ?? 2.4;
     this.gravity = false;
@@ -17,11 +18,13 @@ export default class BossBase extends EnemyBase {
     this.deathTimer = 0;
     this.deathTime = 0;
     this.animTime = 0;
+    this.vulnerableTimer = 0;
   }
 
   damage(amount) {
     if (this.dead) return;
-    super.damage(amount);
+    const vulnerabilityBoost = this.vulnerableTimer > 0 ? 1.35 : 1;
+    super.damage(amount * vulnerabilityBoost);
     if (this.dead && this.deathTimer <= 0) {
       this.deathTimer = this.deathDuration;
       this.deathTime = 0;
@@ -38,6 +41,35 @@ export default class BossBase extends EnemyBase {
   get deathProgress() {
     if (this.deathDuration <= 0) return 1;
     return 1 - this.deathTimer / this.deathDuration;
+  }
+
+  updateVulnerability(dt) {
+    if (this.vulnerableTimer > 0) {
+      this.vulnerableTimer = Math.max(0, this.vulnerableTimer - dt);
+    }
+  }
+
+  triggerVulnerability(duration = 1) {
+    this.vulnerableTimer = Math.max(this.vulnerableTimer, duration);
+  }
+
+  get healthRatio() {
+    if (this.maxHealth <= 0) return 0;
+    return Math.max(0, this.health) / this.maxHealth;
+  }
+
+  get aggression() {
+    return 1 + (1 - this.healthRatio) * 0.65;
+  }
+
+  get phase() {
+    if (this.healthRatio > 0.66) return 0;
+    if (this.healthRatio > 0.33) return 1;
+    return 2;
+  }
+
+  getTintAmount() {
+    return Math.min(0.85, 1 - this.healthRatio);
   }
 
   drawDeadEyes(ctx, size, offsetY = 0) {

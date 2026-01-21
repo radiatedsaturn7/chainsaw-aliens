@@ -41,7 +41,7 @@ const DEFAULT_TILE_TYPES = [
 ];
 
 const STANDARD_ENEMY_TYPES = [
-  { id: 'practice', label: 'Practice Drone', glyph: 'PD', description: 'Training dummy that stays put for execution drills.' },
+  { id: 'practice', label: 'Pulse Drone', glyph: 'PD', description: 'Restless drone that fires pulse volleys while circling the arena.' },
   { id: 'skitter', label: 'Skitter', glyph: 'SK', description: 'Fast ground skimmer that rushes the player.' },
   { id: 'spitter', label: 'Spitter', glyph: 'SP', description: 'Ranged turret that spits corrosive shots.' },
   { id: 'bulwark', label: 'Bulwark', glyph: 'BW', description: 'Armored guard that opens when you get close.' },
@@ -69,6 +69,18 @@ const BOSS_ENEMY_TYPES = [
   { id: 'obsidiancrown', label: 'Obsidian Crown', glyph: 'OC', description: 'Regal boss that rains down obsidian strikes.' },
   { id: 'cataclysmcolossus', label: 'Cataclysm Colossus', glyph: 'CC', description: 'Planet-cracking colossus with sweeping attacks.' }
 ];
+
+const BOSS_ROOM_PREFS = {
+  finalboss: { shape: 'large', theme: 'rift', hazards: ['A'] },
+  sunderbehemoth: { shape: 'long', theme: 'industrial', hazards: ['*'] },
+  riftram: { shape: 'long', theme: 'industrial', hazards: ['*'] },
+  broodtitan: { shape: 'square', theme: 'cave', hazards: ['L'] },
+  nullaegis: { shape: 'square', theme: 'rift', hazards: ['A'] },
+  hexmatron: { shape: 'tall', theme: 'ice', hazards: ['~'] },
+  gravewarden: { shape: 'tall', theme: 'cave', hazards: ['L'] },
+  obsidiancrown: { shape: 'large', theme: 'industrial', hazards: ['*'] },
+  cataclysmcolossus: { shape: 'large', theme: 'cave', hazards: ['L'] }
+};
 
 const ENEMY_TYPES = [...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
 
@@ -2252,21 +2264,56 @@ export default class Editor {
     });
 
     if (specialsToPlace.includes('boss')) {
-      let bestBoss = null;
-      let bestDistance = -Infinity;
-      rooms.forEach((room) => {
+      const selectedBossId = this.enemyType?.id;
+      const bossPref = BOSS_ROOM_PREFS[selectedBossId] || BOSS_ROOM_PREFS.finalboss;
+      const shape = bossPref.shape ?? 'large';
+      const buildRoomGroup = (room) => {
         const { col, row } = cellFromIndex(room.cellIndex);
-        if (col + 1 >= cols || row + 1 >= rows) return;
+        if (shape === 'small') {
+          return [room];
+        }
+        if (shape === 'long') {
+          if (col + 1 >= cols) return null;
+          const indices = [cellIndex(col, row), cellIndex(col + 1, row)];
+          if (indices.some((index) => reservedRooms.has(index))) return null;
+          const roomGroup = indices.map((index) => roomByCell.get(index)).filter(Boolean);
+          if (roomGroup.length !== 2) return null;
+          return roomGroup;
+        }
+        if (shape === 'tall') {
+          if (row + 1 >= rows) return null;
+          const indices = [cellIndex(col, row), cellIndex(col, row + 1)];
+          if (indices.some((index) => reservedRooms.has(index))) return null;
+          const roomGroup = indices.map((index) => roomByCell.get(index)).filter(Boolean);
+          if (roomGroup.length !== 2) return null;
+          return roomGroup;
+        }
+        if (col + 1 >= cols || row + 1 >= rows) return null;
         const indices = [
           cellIndex(col, row),
           cellIndex(col + 1, row),
           cellIndex(col, row + 1),
           cellIndex(col + 1, row + 1)
         ];
-        if (indices.some((index) => reservedRooms.has(index))) return;
+        if (indices.some((index) => reservedRooms.has(index))) return null;
         const roomGroup = indices.map((index) => roomByCell.get(index)).filter(Boolean);
-        if (roomGroup.length !== 4) return;
-        const groupCenter = { col: col + 0.5, row: row + 0.5 };
+        if (roomGroup.length !== 4) return null;
+        return roomGroup;
+      };
+      let bestBoss = null;
+      let bestDistance = -Infinity;
+      rooms.forEach((room) => {
+        if (reservedRooms.has(room.cellIndex)) return;
+        const roomGroup = buildRoomGroup(room);
+        if (!roomGroup) return;
+        const groupCenter = roomGroup.reduce((acc, entry) => {
+          const cell = cellFromIndex(entry.cellIndex);
+          acc.col += cell.col;
+          acc.row += cell.row;
+          return acc;
+        }, { col: 0, row: 0 });
+        groupCenter.col /= roomGroup.length;
+        groupCenter.row /= roomGroup.length;
         const farFromPowerups = selectedRooms.every((selected) => {
           const selectedCell = cellFromIndex(selected.cellIndex);
           return Math.abs(selectedCell.col - groupCenter.col) + Math.abs(selectedCell.row - groupCenter.row) >= 3;
@@ -2295,14 +2342,28 @@ export default class Editor {
         clearElevatorsInRoom(bossRoom);
         carveSimpleRoom(bossRoom, '#');
         addElevator(bossRoom);
-        addHorizontalElevator(bossRoom);
-        addConveyor(bossRoom);
-        addPit(bossRoom, 'A');
-        addPit(bossRoom, 'L');
-        addPit(bossRoom, '*');
-        const spikeY = bossRoom.y + bossRoom.h - 2;
-        for (let x = bossRoom.x + 2; x < bossRoom.x + bossRoom.w - 2; x += 3) {
-          if (tiles[spikeY]?.[x] === '.') setTile(x, spikeY, '*');
+        if (shape !== 'small') {
+          addHorizontalElevator(bossRoom);
+        }
+        if (bossPref.theme === 'industrial') {
+          addConveyor(bossRoom);
+        }
+        const hazards = bossPref.hazards ?? [];
+        hazards.forEach((hazard) => addPit(bossRoom, hazard));
+        if (bossPref.theme === 'industrial' && !hazards.includes('*')) {
+          addPit(bossRoom, '*');
+        }
+        if (bossPref.theme === 'ice') {
+          const iceY = bossRoom.y + bossRoom.h - 2;
+          for (let x = bossRoom.x + 2; x < bossRoom.x + bossRoom.w - 2; x += 2) {
+            if (tiles[iceY]?.[x] === '.') setTile(x, iceY, 'I');
+          }
+        }
+        if (hazards.includes('*')) {
+          const spikeY = bossRoom.y + bossRoom.h - 2;
+          for (let x = bossRoom.x + 2; x < bossRoom.x + bossRoom.w - 2; x += 3) {
+            if (tiles[spikeY]?.[x] === '.') setTile(x, spikeY, '*');
+          }
         }
         const pads = getDoorLandingPads(bossRoom);
         pads.forEach((pad) => {

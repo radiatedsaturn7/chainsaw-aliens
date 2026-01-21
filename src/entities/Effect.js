@@ -81,6 +81,12 @@ export default class Effect {
       this.size = this.options.size ?? (10 + Math.random() * 6);
       this.flicker = Math.random() * Math.PI * 2;
       this.intensity = this.options.intensity ?? 1;
+      this.tongues = Array.from({ length: 3 }, () => ({
+        offset: (Math.random() - 0.5) * this.size * 0.8,
+        sway: Math.random() * Math.PI * 2,
+        heightScale: 0.55 + Math.random() * 0.5,
+        widthScale: 0.35 + Math.random() * 0.45
+      }));
     }
     if (this.type === 'ignitir-beam') {
       this.life = this.options.life ?? 0.28;
@@ -413,19 +419,47 @@ export default class Effect {
       ctx.arc(0, 0, size * 1.1, 0, Math.PI * 2);
       ctx.stroke();
     } else if (this.type === 'flamethrower-burn') {
-      const flicker = 0.75 + Math.sin(this.flicker + t * 10) * 0.25;
+      const flicker = 0.72 + Math.sin(this.flicker + t * 12) * 0.28;
       const height = this.height * (1 - t * 0.5) * flicker * this.intensity;
-      const base = this.size * (1 - t * 0.2);
-      ctx.globalAlpha = 0.9 - t * 0.65;
-      ctx.fillStyle = 'rgba(255, 70, 40, 0.85)';
+      const base = this.size * (1 - t * 0.25);
+      const glow = 0.95 - t * 0.7;
+      ctx.globalAlpha = glow;
+      ctx.fillStyle = 'rgba(255, 90, 30, 0.85)';
       ctx.beginPath();
-      ctx.moveTo(-base * 0.6, 2);
-      ctx.quadraticCurveTo(-base * 0.4, -height * 0.3, 0, -height);
-      ctx.quadraticCurveTo(base * 0.4, -height * 0.3, base * 0.6, 2);
+      ctx.moveTo(-base * 0.7, 2);
+      ctx.bezierCurveTo(-base * 0.9, -height * 0.35, -base * 0.2, -height * 0.9, 0, -height);
+      ctx.bezierCurveTo(base * 0.2, -height * 0.9, base * 0.9, -height * 0.35, base * 0.7, 2);
       ctx.fill();
-      ctx.fillStyle = 'rgba(255, 200, 140, 0.8)';
+      ctx.globalAlpha = glow * 0.9;
+      ctx.fillStyle = 'rgba(255, 170, 80, 0.8)';
+      this.tongues.forEach((tongue, index) => {
+        const sway = Math.sin(tongue.sway + t * 10 + index) * base * 0.18;
+        const tongueHeight = height * tongue.heightScale;
+        const tongueWidth = base * tongue.widthScale;
+        ctx.beginPath();
+        ctx.moveTo(tongue.offset - tongueWidth * 0.4, 2);
+        ctx.bezierCurveTo(
+          tongue.offset - tongueWidth * 0.6,
+          -tongueHeight * 0.3,
+          tongue.offset + sway,
+          -tongueHeight * 0.9,
+          tongue.offset + sway * 0.7,
+          -tongueHeight
+        );
+        ctx.bezierCurveTo(
+          tongue.offset + tongueWidth * 0.6,
+          -tongueHeight * 0.35,
+          tongue.offset + tongueWidth * 0.4,
+          -tongueHeight * 0.1,
+          tongue.offset + tongueWidth * 0.2,
+          2
+        );
+        ctx.fill();
+      });
+      ctx.globalAlpha = glow * 0.85;
+      ctx.fillStyle = 'rgba(255, 235, 200, 0.85)';
       ctx.beginPath();
-      ctx.arc(0, -height * 0.35, base * 0.35, 0, Math.PI * 2);
+      ctx.ellipse(0, -height * 0.35, base * 0.32, base * 0.42, 0, 0, Math.PI * 2);
       ctx.fill();
     } else if (this.type === 'ignitir-implosion') {
       const pull = 1 - t;
