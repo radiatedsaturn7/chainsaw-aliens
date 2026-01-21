@@ -195,6 +195,8 @@ export default class Game {
     this.flamethrowerDamageCooldowns = new Map();
     this.flamethrowerImpactHeat = new Map();
     this.flamethrowerAim = null;
+    this.minimapPan = { x: 0, y: 0 };
+    this.minimapZoom = 1.25;
     this.lowHealthAlarmTimer = 0;
     this.objective = 'Reach the Hub Pylon.';
     this.lastSave = { x: this.player.x, y: this.player.y };
@@ -1168,16 +1170,33 @@ export default class Game {
     if (this.input.wasPressed('pause') && this.state === 'playing') {
       this.state = 'pause';
       this.minimapSelected = true;
+      this.minimapPan = { x: 0, y: 0 };
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
     } else if (this.input.wasPressed('pause') && this.state === 'pause') {
       this.minimapSelected = !this.minimapSelected;
+      if (this.minimapSelected) {
+        this.minimapPan = { x: 0, y: 0 };
+      }
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
     }
-    if (this.input.wasPressed('cancel') && ['dialog', 'shop', 'pause'].includes(this.state)) {
+    const cancelPressed = this.input.wasPressed('cancel') || this.input.wasGamepadPressed('dash');
+    if (cancelPressed && this.state === 'pause') {
+      if (this.minimapSelected) {
+        this.minimapSelected = false;
+      } else {
+        this.state = 'playing';
+      }
+      this.audio.menu();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
+      this.input.flush();
+      return;
+    }
+    if (cancelPressed && ['dialog', 'shop'].includes(this.state)) {
       this.state = 'playing';
       this.minimapSelected = false;
       this.audio.menu();
@@ -1227,13 +1246,13 @@ export default class Game {
         this.input.flush();
         return;
       }
-      if (this.input.wasPressed('up')) {
+      if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')) {
         this.title.moveSelection(-1);
         this.audio.menu();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
       }
-      if (this.input.wasPressed('down')) {
+      if (this.input.wasPressed('down') || this.input.wasGamepadPressed('dpadDown')) {
         this.title.moveSelection(1);
         this.audio.menu();
         this.recordFeedback('menu navigate', 'audio');
@@ -1313,11 +1332,15 @@ export default class Game {
     }
 
     if (this.state === 'shop') {
-      if (this.input.wasPressed('left')) this.shopUI.move(-1);
-      if (this.input.wasPressed('right')) this.shopUI.move(1);
-      if (this.input.wasPressed('up')) this.shopUI.move(-1);
-      if (this.input.wasPressed('down')) this.shopUI.move(1);
-      if (this.input.wasPressed('left') || this.input.wasPressed('right') || this.input.wasPressed('up') || this.input.wasPressed('down')) {
+      const leftPressed = this.input.wasPressed('left') || this.input.wasGamepadPressed('dpadLeft');
+      const rightPressed = this.input.wasPressed('right') || this.input.wasGamepadPressed('dpadRight');
+      const upPressed = this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp');
+      const downPressed = this.input.wasPressed('down') || this.input.wasGamepadPressed('dpadDown');
+      if (leftPressed) this.shopUI.move(-1);
+      if (rightPressed) this.shopUI.move(1);
+      if (upPressed) this.shopUI.move(-1);
+      if (downPressed) this.shopUI.move(1);
+      if (leftPressed || rightPressed || upPressed || downPressed) {
         this.audio.menu();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
@@ -1355,12 +1378,18 @@ export default class Game {
     }
 
     if (this.state === 'pause') {
-      if (!this.minimapSelected) {
-        if (this.input.wasPressed('up')) this.pauseMenu.move(-1);
-        if (this.input.wasPressed('down')) this.pauseMenu.move(1);
-        if (this.input.wasPressed('left')) this.pauseMenu.adjust(-1);
-        if (this.input.wasPressed('right')) this.pauseMenu.adjust(1);
-        if (this.input.wasPressed('up') || this.input.wasPressed('down') || this.input.wasPressed('left') || this.input.wasPressed('right')) {
+      if (this.minimapSelected) {
+        this.updateMinimapPan(dt);
+      } else {
+        const upPressed = this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp');
+        const downPressed = this.input.wasPressed('down') || this.input.wasGamepadPressed('dpadDown');
+        const leftPressed = this.input.wasPressed('left') || this.input.wasGamepadPressed('dpadLeft');
+        const rightPressed = this.input.wasPressed('right') || this.input.wasGamepadPressed('dpadRight');
+        if (upPressed) this.pauseMenu.move(-1);
+        if (downPressed) this.pauseMenu.move(1);
+        if (leftPressed) this.pauseMenu.adjust(-1);
+        if (rightPressed) this.pauseMenu.adjust(1);
+        if (upPressed || downPressed || leftPressed || rightPressed) {
           this.audio.menu();
           this.recordFeedback('menu navigate', 'audio');
           this.recordFeedback('menu navigate', 'visual');
@@ -2362,9 +2391,9 @@ export default class Game {
         y: inv * inv * startY + 2 * inv * t * (startY + curveY) + t * t * (startY + dy)
       };
     };
-    const initialArcDrop = Math.min(maxRange * 0.22, tileSize * 8);
+    const initialArcDrop = Math.min(maxRange * 0.18, tileSize * 6);
     const targetArcRange = tileSize * 15;
-    const peakOffset = tileSize * 0.35;
+    const peakOffset = tileSize * 0.7;
     const targetPoint = {
       x: originX + dirX * targetArcRange,
       y: originY + dirY * targetArcRange
@@ -2377,7 +2406,8 @@ export default class Game {
       };
     };
     const pickControl = (dx, dy, point, tBase) => {
-      const peakTargetY = originY - peakOffset;
+      const playerPeakY = this.player.y - this.player.height * 0.9;
+      const peakTargetY = Math.min(originY - peakOffset, playerPeakY);
       const baseControl = computeControl(tBase, dx, dy, point);
       if (baseControl.y <= peakTargetY) {
         return { controlX: baseControl.x, controlY: baseControl.y, t: tBase };
@@ -5437,11 +5467,42 @@ export default class Game {
     ctx.restore();
   }
 
-  drawMinimapOverlay(ctx, width, height, objectiveTarget) {
+  getMinimapOverlayMetrics(width, height, zoom = 1) {
     const mapWidth = Math.min(width * 0.72, 540);
     const mapHeight = Math.min(height * 0.6, 360);
+    const pixel = Math.min(mapWidth / this.world.width, mapHeight / this.world.height) * zoom;
+    const mapPixelWidth = this.world.width * pixel;
+    const mapPixelHeight = this.world.height * pixel;
+    const maxPanX = Math.max(0, (mapPixelWidth - mapWidth) / 2);
+    const maxPanY = Math.max(0, (mapPixelHeight - mapHeight) / 2);
     const mapX = (width - mapWidth) / 2;
     const mapY = (height - mapHeight) / 2;
+    return {
+      mapWidth,
+      mapHeight,
+      mapX,
+      mapY,
+      maxPanX,
+      maxPanY
+    };
+  }
+
+  updateMinimapPan(dt) {
+    const axes = this.input.getGamepadAxes?.() || { leftX: 0, leftY: 0 };
+    const deadzone = 0.2;
+    const panX = Math.abs(axes.leftX) > deadzone ? axes.leftX : 0;
+    const panY = Math.abs(axes.leftY) > deadzone ? axes.leftY : 0;
+    if (!panX && !panY) return;
+    const speed = 320;
+    const metrics = this.getMinimapOverlayMetrics(this.canvas.width, this.canvas.height, this.minimapZoom);
+    this.minimapPan.x += panX * speed * dt;
+    this.minimapPan.y += panY * speed * dt;
+    this.minimapPan.x = Math.max(-metrics.maxPanX, Math.min(metrics.maxPanX, this.minimapPan.x));
+    this.minimapPan.y = Math.max(-metrics.maxPanY, Math.min(metrics.maxPanY, this.minimapPan.y));
+  }
+
+  drawMinimapOverlay(ctx, width, height, objectiveTarget) {
+    const { mapWidth, mapHeight, mapX, mapY } = this.getMinimapOverlayMetrics(width, height, this.minimapZoom);
     this.minimap.update(this.player);
     const buttonWidth = 130;
     const buttonHeight = 32;
@@ -5454,7 +5515,11 @@ export default class Game {
     ctx.fillRect(0, 0, width, height);
     this.minimap.draw(ctx, mapX, mapY, mapWidth, mapHeight, this.player, {
       objective: objectiveTarget,
-      showLegend: true
+      showLegend: true,
+      zoom: this.minimapZoom,
+      offsetX: this.minimapPan.x,
+      offsetY: this.minimapPan.y,
+      center: true
     });
     ctx.fillStyle = '#fff';
     ctx.font = '16px Courier New';
@@ -5961,6 +6026,7 @@ export default class Game {
     ) {
       this.state = 'pause';
       this.minimapSelected = true;
+      this.minimapPan = { x: 0, y: 0 };
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
