@@ -183,7 +183,7 @@ export default class AudioSystem {
     return presets[instrument] || presets.sine;
   }
 
-  playMidiNote(pitch, instrument = 'piano', duration = 0.5) {
+  playMidiNote(pitch, instrument = 'piano', duration = 0.5, volume = 1) {
     this.ensure();
     const freq = 440 * (2 ** ((pitch - 69) / 12));
     const preset = this.getMidiPreset(instrument);
@@ -207,9 +207,11 @@ export default class AudioSystem {
     const decay = preset.decay ?? 0.1;
     const sustain = preset.sustain ?? 0.6;
     const release = preset.release ?? 0.2;
+    const baseLevel = 0.35;
+    const level = Math.max(0.02, Math.min(1, baseLevel * (volume ?? 1)));
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.3, now + attack);
-    gain.gain.exponentialRampToValueAtTime(0.3 * sustain, now + attack + decay);
+    gain.gain.exponentialRampToValueAtTime(level, now + attack);
+    gain.gain.exponentialRampToValueAtTime(level * sustain, now + attack + decay);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration + release);
     osc.start(now);
     osc.stop(now + duration + release + 0.02);

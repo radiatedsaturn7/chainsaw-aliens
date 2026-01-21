@@ -9,20 +9,47 @@ const SCALE_LIBRARY = [
 ];
 
 const QUANTIZE_OPTIONS = [
-  { id: '1/4', label: '1/4', ticks: 8 },
-  { id: '1/8', label: '1/8', ticks: 4 },
-  { id: '1/16', label: '1/16', ticks: 2 },
-  { id: '1/32', label: '1/32', ticks: 1 }
+  { id: '1/4', label: '1/4', divisor: 4 },
+  { id: '1/8', label: '1/8', divisor: 8 },
+  { id: '1/16', label: '1/16', divisor: 16 },
+  { id: '1/32', label: '1/32', divisor: 32 }
 ];
 
-const LOOP_OPTIONS = [1, 2, 4, 8];
+const NOTE_LENGTH_OPTIONS = [
+  { id: '1/4', label: '1/4', divisor: 4 },
+  { id: '1/8', label: '1/8', divisor: 8 },
+  { id: '1/16', label: '1/16', divisor: 16 },
+  { id: '1/32', label: '1/32', divisor: 32 }
+];
 
 const INSTRUMENT_PRESETS = [
-  { id: 'lead', label: 'Lead' },
+  { id: 'piano', label: 'Piano' },
+  { id: 'electric-piano', label: 'E.Piano' },
+  { id: 'harpsichord', label: 'Harpsichord' },
+  { id: 'clav', label: 'Clav' },
+  { id: 'bell', label: 'Bell' },
+  { id: 'celesta', label: 'Celesta' },
+  { id: 'vibes', label: 'Vibes' },
+  { id: 'marimba', label: 'Marimba' },
+  { id: 'organ', label: 'Organ' },
+  { id: 'strings', label: 'Strings' },
+  { id: 'choir', label: 'Choir' },
   { id: 'bass', label: 'Bass' },
-  { id: 'guitar', label: 'Guitar' },
-  { id: 'pad', label: 'Pad' },
-  { id: 'keys', label: 'Keys' },
+  { id: 'guitar-nylon', label: 'Nylon Gtr' },
+  { id: 'guitar-steel', label: 'Steel Gtr' },
+  { id: 'guitar-electric', label: 'E.Guitar' },
+  { id: 'brass', label: 'Brass' },
+  { id: 'trumpet', label: 'Trumpet' },
+  { id: 'sax', label: 'Sax' },
+  { id: 'flute', label: 'Flute' },
+  { id: 'clarinet', label: 'Clarinet' },
+  { id: 'synth-lead', label: 'Synth Lead' },
+  { id: 'synth-pad', label: 'Synth Pad' },
+  { id: 'pluck', label: 'Pluck' },
+  { id: 'sine', label: 'Sine' },
+  { id: 'triangle', label: 'Triangle' },
+  { id: 'square', label: 'Square' },
+  { id: 'sawtooth', label: 'Saw' },
   { id: 'drums', label: 'Drums', isDrum: true }
 ];
 
@@ -35,25 +62,28 @@ const DRUM_ROWS = [
 ];
 
 const TRACK_COLORS = ['#4fb7ff', '#ff9c42', '#55d68a', '#b48dff', '#ff6a6a', '#43d5d0'];
+const DEFAULT_GRID_BARS = 8;
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const uid = () => `note-${Math.floor(Math.random() * 1000000)}`;
 
 const createDefaultSong = () => ({
   tempo: 120,
-  loopBars: 4,
+  loopBars: DEFAULT_GRID_BARS,
+  loopEndTick: null,
+  loopEnabled: false,
   key: 0,
   scale: 'minor',
   tracks: [
     {
       id: 'track-lead',
       name: 'Lead',
-      instrument: 'lead',
+      instrument: 'piano',
       volume: 0.8,
       mute: false,
       solo: false,
       color: TRACK_COLORS[0],
-      patterns: [{ id: 'pattern-lead', bars: 4, notes: [] }]
+      patterns: [{ id: 'pattern-lead', bars: DEFAULT_GRID_BARS, notes: [] }]
     },
     {
       id: 'track-bass',
@@ -63,7 +93,7 @@ const createDefaultSong = () => ({
       mute: false,
       solo: false,
       color: TRACK_COLORS[1],
-      patterns: [{ id: 'pattern-bass', bars: 4, notes: [] }]
+      patterns: [{ id: 'pattern-bass', bars: DEFAULT_GRID_BARS, notes: [] }]
     },
     {
       id: 'track-drums',
@@ -73,7 +103,7 @@ const createDefaultSong = () => ({
       mute: false,
       solo: false,
       color: TRACK_COLORS[2],
-      patterns: [{ id: 'pattern-drums', bars: 4, notes: [] }]
+      patterns: [{ id: 'pattern-drums', bars: DEFAULT_GRID_BARS, notes: [] }]
     }
   ],
   progression: [
@@ -93,6 +123,7 @@ export default class MidiComposer {
     this.quantizeOptions = QUANTIZE_OPTIONS;
     this.quantizeIndex = 2;
     this.quantizeEnabled = true;
+    this.noteLengthIndex = 0;
     this.swing = 0;
     this.previewOnEdit = true;
     this.scrubAudition = false;
@@ -117,6 +148,7 @@ export default class MidiComposer {
     this.longPressTimer = null;
     this.lastAuditionTime = 0;
     this.lastPointer = { x: 0, y: 0 };
+    this.placingEndMarker = false;
     this.settingsOpen = false;
     this.instrumentPicker = {
       open: false,
@@ -137,9 +169,12 @@ export default class MidiComposer {
       tempoDown: null,
       tempoUp: null,
       loop: null,
+      loopToggle: null,
+      endMarker: null,
       metronome: null,
       quantizeToggle: null,
       quantizeValue: null,
+      noteLength: null,
       swing: null,
       preview: null,
       key: null,
@@ -221,7 +256,15 @@ export default class MidiComposer {
         track.color = TRACK_COLORS[index % TRACK_COLORS.length];
       }
     });
-    this.song.loopBars = clamp(this.song.loopBars || 4, 1, 8);
+    if (typeof this.song.loopBars !== 'number' || this.song.loopBars < 1) {
+      this.song.loopBars = DEFAULT_GRID_BARS;
+    }
+    if (typeof this.song.loopEndTick !== 'number') {
+      this.song.loopEndTick = null;
+    }
+    if (typeof this.song.loopEnabled !== 'boolean') {
+      this.song.loopEnabled = false;
+    }
     if (!this.song.progression) {
       this.song.progression = createDefaultSong().progression;
     }
@@ -257,7 +300,8 @@ export default class MidiComposer {
   }
 
   getInstrumentLabel(instrumentId) {
-    return INSTRUMENT_PRESETS.find((preset) => preset.id === instrumentId)?.label || instrumentId;
+    const mapped = this.getPlaybackInstrument(instrumentId);
+    return INSTRUMENT_PRESETS.find((preset) => preset.id === mapped)?.label || instrumentId;
   }
 
   getUniqueTrackName(baseName) {
@@ -325,12 +369,47 @@ export default class MidiComposer {
   }
 
   getLoopTicks() {
+    if (typeof this.song.loopEndTick === 'number') {
+      return Math.max(1, this.song.loopEndTick);
+    }
     return this.song.loopBars * this.beatsPerBar * this.ticksPerBeat;
   }
 
   getQuantizeTicks() {
     if (!this.quantizeEnabled) return 1;
-    return this.quantizeOptions[this.quantizeIndex]?.ticks || 1;
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    const divisor = this.quantizeOptions[this.quantizeIndex]?.divisor || 16;
+    return Math.max(1, Math.round(ticksPerBar / divisor));
+  }
+
+  getNoteLengthTicks() {
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    const divisor = NOTE_LENGTH_OPTIONS[this.noteLengthIndex]?.divisor || 4;
+    return Math.max(1, Math.round(ticksPerBar / divisor));
+  }
+
+  getPlaybackInstrument(instrument) {
+    const mapping = {
+      lead: 'synth-lead',
+      pad: 'synth-pad',
+      keys: 'piano',
+      guitar: 'guitar-electric'
+    };
+    return mapping[instrument] || instrument;
+  }
+
+  ensureGridCapacity(tickEnd) {
+    if (typeof this.song.loopEndTick === 'number') return;
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    const requiredBars = Math.max(1, Math.ceil((tickEnd + 1) / ticksPerBar));
+    if (requiredBars > this.song.loopBars) {
+      this.song.loopBars = requiredBars;
+      this.song.tracks.forEach((track) => {
+        track.patterns.forEach((pattern) => {
+          pattern.bars = this.song.loopBars;
+        });
+      });
+    }
   }
 
   getScaleSteps() {
@@ -412,17 +491,35 @@ export default class MidiComposer {
     const ticksPerSecond = (tempo / 60) * this.ticksPerBeat;
     const loopTicks = this.getLoopTicks();
     const previous = this.playheadTick;
-    this.playheadTick = (this.playheadTick + ticksPerSecond * dt) % loopTicks;
-    this.triggerPlayback(previous, this.playheadTick, loopTicks);
+    const nextTick = this.playheadTick + ticksPerSecond * dt;
+    if (typeof this.song.loopEndTick === 'number') {
+      if (this.song.loopEnabled) {
+        const wrappedTick = nextTick % loopTicks;
+        this.playheadTick = wrappedTick;
+        this.triggerPlayback(previous, this.playheadTick, loopTicks, true);
+      } else if (nextTick >= loopTicks) {
+        this.playheadTick = loopTicks;
+        this.triggerPlayback(previous, loopTicks, loopTicks, false);
+        this.isPlaying = false;
+      } else {
+        this.playheadTick = nextTick;
+        this.triggerPlayback(previous, this.playheadTick, loopTicks, false);
+      }
+    } else {
+      this.playheadTick = nextTick;
+      this.ensureGridCapacity(this.playheadTick);
+      this.triggerPlayback(previous, this.playheadTick, loopTicks, false);
+    }
   }
 
-  triggerPlayback(startTick, endTick, loopTicks) {
-    const crossed = startTick <= endTick
-      ? [{ start: startTick, end: endTick }]
-      : [
+  triggerPlayback(startTick, endTick, loopTicks, wrap) {
+    const shouldWrap = wrap && endTick < startTick;
+    const crossed = shouldWrap
+      ? [
         { start: startTick, end: loopTicks },
         { start: 0, end: endTick }
-      ];
+      ]
+      : [{ start: startTick, end: endTick }];
     crossed.forEach((range) => {
       this.song.tracks.forEach((track) => {
         if (this.isTrackMuted(track)) return;
@@ -481,12 +578,12 @@ export default class MidiComposer {
   playNote(track, note, startTick) {
     const duration = note.durationTicks / this.ticksPerBeat;
     const velocity = note.velocity ?? 0.8;
-    const instrument = track.instrument || 'lead';
+    const instrument = track.instrument || 'piano';
     if (instrument === 'drums') {
       const drum = DRUM_ROWS.find((row) => row.pitch === note.pitch) || DRUM_ROWS[0];
       this.playSampled(drum.pitch, duration, velocity * track.volume, drum.sample);
     } else {
-      this.playSampled(note.pitch, duration, velocity * track.volume, instrument);
+      this.playMidi(note.pitch, duration, velocity * track.volume, instrument);
     }
     const now = performance.now();
     this.activeNotes.set(note.id, { trackId: track.id, expires: now + duration * 1000 + 120 });
@@ -496,6 +593,15 @@ export default class MidiComposer {
   playSampled(pitch, duration, volume, instrument) {
     if (!this.game?.audio?.playSampledNote) return;
     this.game.audio.playSampledNote({ pitch, duration, volume, instrument });
+  }
+
+  playMidi(pitch, duration, volume, instrument) {
+    const playbackInstrument = this.getPlaybackInstrument(instrument);
+    if (this.game?.audio?.playMidiNote) {
+      this.game.audio.playMidiNote(pitch, playbackInstrument, duration, volume);
+      return;
+    }
+    this.playSampled(pitch, duration, volume, playbackInstrument);
   }
 
   cleanupActiveNotes() {
@@ -566,8 +672,17 @@ export default class MidiComposer {
         this.setTempo(this.song.tempo + 1);
         return;
       }
-      if (this.bounds.loop && this.pointInBounds(x, y, this.bounds.loop)) {
-        this.cycleLoopLength();
+      if (this.bounds.endMarker && this.pointInBounds(x, y, this.bounds.endMarker)) {
+        if (typeof this.song.loopEndTick === 'number') {
+          this.clearLoopEndTick();
+        } else {
+          this.placingEndMarker = true;
+          this.settingsOpen = false;
+        }
+        return;
+      }
+      if (this.bounds.loopToggle && this.pointInBounds(x, y, this.bounds.loopToggle)) {
+        this.toggleLoopEnabled();
         return;
       }
       if (this.bounds.metronome && this.pointInBounds(x, y, this.bounds.metronome)) {
@@ -580,6 +695,10 @@ export default class MidiComposer {
       }
       if (this.bounds.quantizeValue && this.pointInBounds(x, y, this.bounds.quantizeValue)) {
         this.quantizeIndex = (this.quantizeIndex + 1) % this.quantizeOptions.length;
+        return;
+      }
+      if (this.bounds.noteLength && this.pointInBounds(x, y, this.bounds.noteLength)) {
+        this.noteLengthIndex = (this.noteLengthIndex + 1) % NOTE_LENGTH_OPTIONS.length;
         return;
       }
       if (this.bounds.swing && this.pointInBounds(x, y, this.bounds.swing)) {
@@ -675,17 +794,50 @@ export default class MidiComposer {
       this.setTempo(this.song.tempo + 1);
       return;
     }
+    if (this.bounds.noteLength && this.pointInBounds(x, y, this.bounds.noteLength)) {
+      this.noteLengthIndex = (this.noteLengthIndex + 1) % NOTE_LENGTH_OPTIONS.length;
+      return;
+    }
+    if (this.bounds.endMarker && this.pointInBounds(x, y, this.bounds.endMarker)) {
+      if (typeof this.song.loopEndTick === 'number') {
+        this.clearLoopEndTick();
+      } else {
+        this.placingEndMarker = true;
+      }
+      return;
+    }
+    if (this.bounds.loopToggle && this.pointInBounds(x, y, this.bounds.loopToggle)) {
+      this.toggleLoopEnabled();
+      return;
+    }
     if (this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings)) {
       this.settingsOpen = true;
       return;
     }
     if (this.rulerBounds && this.pointInBounds(x, y, this.rulerBounds)) {
+      const modifiers = this.getModifiers();
+      if (this.placingEndMarker || modifiers.shift) {
+        const tick = this.getTickFromX(x);
+        this.setLoopEndTick(tick);
+        this.placingEndMarker = false;
+        return;
+      }
+      if (modifiers.alt) {
+        this.clearLoopEndTick();
+        return;
+      }
       const tick = this.getTickFromX(x);
       this.playheadTick = clamp(tick, 0, this.getLoopTicks());
       if (this.scrubAudition) {
         this.previewNotesAtTick(this.playheadTick);
       }
       this.dragState = { mode: 'scrub' };
+      return;
+    }
+    if (this.placingEndMarker && this.gridBounds && this.pointInBounds(x, y, this.gridBounds)) {
+      const tick = this.getTickFromX(x);
+      this.setLoopEndTick(tick);
+      this.placingEndMarker = false;
       return;
     }
     if (this.gridBounds && this.pointInBounds(x, y, this.gridBounds)) {
@@ -916,7 +1068,7 @@ export default class MidiComposer {
       }
       return;
     }
-    const duration = this.getQuantizeTicks();
+    const duration = this.getNoteLengthTicks();
     const note = {
       id: uid(),
       startTick: snappedTick,
@@ -928,6 +1080,7 @@ export default class MidiComposer {
     this.selection.clear();
     this.selection.add(note.id);
     this.cursor = { tick: snappedTick, pitch: snappedPitch };
+    this.ensureGridCapacity(snappedTick + duration);
     this.previewNote(note, snappedPitch);
     this.persist();
   }
@@ -961,6 +1114,8 @@ export default class MidiComposer {
       const nextPitch = clamp(original.pitch + deltaPitch, this.getPitchRange().min, this.getPitchRange().max);
       return { ...note, startTick: nextStart, pitch: this.snapPitchToScale(nextPitch) };
     });
+    const maxEndTick = Math.max(...this.getSelectedNotes().map((note) => note.startTick + note.durationTicks));
+    this.ensureGridCapacity(maxEndTick);
     this.persist();
     const previewTarget = this.getSelectedNotes()[0];
     if (previewTarget) {
@@ -987,6 +1142,8 @@ export default class MidiComposer {
       }
       return { ...note, startTick, durationTicks: duration };
     });
+    const maxEndTick = Math.max(...this.getSelectedNotes().map((note) => note.startTick + note.durationTicks));
+    this.ensureGridCapacity(maxEndTick);
     this.persist();
   }
 
@@ -1034,11 +1191,13 @@ export default class MidiComposer {
     const pattern = this.getActivePattern();
     if (!pattern || !this.clipboard) return;
     const loopTicks = this.getLoopTicks();
+    const hasLoopEnd = typeof this.song.loopEndTick === 'number';
     const baseTick = this.snapTick(this.cursor.tick || 0);
     const basePitch = this.snapPitchToScale(this.cursor.pitch || this.getPitchRange().min);
     const newIds = [];
     this.clipboard.notes.forEach((note) => {
-      const startTick = clamp(baseTick + note.startTick, 0, loopTicks - 1);
+      const rawStart = baseTick + note.startTick;
+      const startTick = hasLoopEnd ? clamp(rawStart, 0, loopTicks - 1) : Math.max(0, rawStart);
       const pitch = clamp(basePitch + note.pitch, this.getPitchRange().min, this.getPitchRange().max);
       const newNote = {
         id: uid(),
@@ -1051,6 +1210,11 @@ export default class MidiComposer {
       newIds.push(newNote.id);
     });
     this.selection = new Set(newIds);
+    const maxEndTick = Math.max(...newIds.map((id) => {
+      const note = pattern.notes.find((entry) => entry.id === id);
+      return note ? note.startTick + note.durationTicks : 0;
+    }));
+    this.ensureGridCapacity(maxEndTick);
     this.persist();
   }
 
@@ -1059,16 +1223,20 @@ export default class MidiComposer {
     if (notes.length === 0) return;
     const pattern = this.getActivePattern();
     const loopTicks = this.getLoopTicks();
+    const hasLoopEnd = typeof this.song.loopEndTick === 'number';
     const span = Math.max(...notes.map((note) => note.startTick + note.durationTicks))
       - Math.min(...notes.map((note) => note.startTick));
     const newIds = [];
     notes.forEach((note) => {
-      const startTick = clamp(note.startTick + span, 0, loopTicks - 1);
+      const rawStart = note.startTick + span;
+      const startTick = hasLoopEnd ? clamp(rawStart, 0, loopTicks - 1) : Math.max(0, rawStart);
       const newNote = { ...note, id: uid(), startTick };
       pattern.notes.push(newNote);
       newIds.push(newNote.id);
     });
     this.selection = new Set(newIds);
+    const maxEndTick = Math.max(...notes.map((note) => note.startTick + span + note.durationTicks));
+    this.ensureGridCapacity(maxEndTick);
     this.persist();
   }
 
@@ -1099,7 +1267,7 @@ export default class MidiComposer {
       this.playSampled(drum.pitch, duration, track.volume, drum.sample);
       return;
     }
-    this.playSampled(pitch, duration, track.volume, track.instrument);
+    this.playMidi(pitch, duration, track.volume, track.instrument);
   }
 
   previewNotesAtTick(tick) {
@@ -1136,19 +1304,33 @@ export default class MidiComposer {
     }
   }
 
-  cycleLoopLength() {
-    const currentIndex = LOOP_OPTIONS.indexOf(this.song.loopBars);
-    const nextIndex = (currentIndex + 1) % LOOP_OPTIONS.length;
-    this.song.loopBars = LOOP_OPTIONS[nextIndex];
-    this.song.tracks.forEach((track) => {
-      track.patterns.forEach((pattern) => {
-        pattern.bars = this.song.loopBars;
-        const loopTicks = this.getLoopTicks();
-        pattern.notes = pattern.notes.filter((note) => note.startTick < loopTicks);
-      });
-    });
+  setLoopEndTick(tick) {
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    const snapped = Math.max(1, Math.round(tick / ticksPerBar) * ticksPerBar);
+    this.song.loopEndTick = snapped;
+    this.ensureGridCapacity(snapped);
     this.playheadTick = clamp(this.playheadTick, 0, this.getLoopTicks());
     this.persist();
+  }
+
+  clearLoopEndTick() {
+    this.song.loopEndTick = null;
+    this.song.loopEnabled = false;
+    this.placingEndMarker = false;
+    this.persist();
+  }
+
+  toggleLoopEnabled() {
+    if (typeof this.song.loopEndTick !== 'number') return;
+    this.song.loopEnabled = !this.song.loopEnabled;
+    this.persist();
+  }
+
+  getEndMarkerLabel() {
+    if (typeof this.song.loopEndTick !== 'number') return 'End ∞';
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    const bar = Math.max(1, Math.round(this.song.loopEndTick / ticksPerBar));
+    return `End ${bar} bar${bar === 1 ? '' : 's'}`;
   }
 
   addTrack() {
@@ -1382,7 +1564,7 @@ export default class MidiComposer {
     if (!hit) return null;
     const rect = this.getNoteRect(hit);
     if (!rect) return null;
-    const edgeMargin = Math.min(6, rect.w / 3);
+    const edgeMargin = Math.min(10, rect.w / 3);
     const isStartEdge = this.lastPointer.x <= rect.x + edgeMargin;
     const isEndEdge = this.lastPointer.x >= rect.x + rect.w - edgeMargin;
     return { note: hit, edge: isStartEdge ? 'start' : isEndEdge ? 'end' : null };
@@ -1454,6 +1636,8 @@ export default class MidiComposer {
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(x, y, w, h);
+    this.bounds.endMarker = null;
+    this.bounds.loopToggle = null;
 
     const isMobile = this.isMobileLayout();
     const rowGap = 8;
@@ -1506,7 +1690,12 @@ export default class MidiComposer {
     this.bounds.slur = { x: slurX, y: controlsRowY, w: 90, h: rowH };
     this.drawToggle(ctx, this.bounds.slur, `Slur ${this.slurEnabled ? 'On' : 'Off'}`, this.slurEnabled);
 
-    const tempoX = slurX + 100;
+    const noteLengthX = slurX + 100;
+    const noteLengthLabel = `Note ${NOTE_LENGTH_OPTIONS[this.noteLengthIndex].label}`;
+    this.bounds.noteLength = { x: noteLengthX, y: controlsRowY, w: 96, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.noteLength, noteLengthLabel, false);
+
+    const tempoX = noteLengthX + 110;
     ctx.fillStyle = '#fff';
     ctx.font = '12px Courier New';
     ctx.fillText(`Tempo ${this.song.tempo} BPM`, tempoX, controlsRowY + rowH * 0.7);
@@ -1546,20 +1735,24 @@ export default class MidiComposer {
     this.drawSmallButton(ctx, this.bounds.tempoDown, '-', false);
     this.drawSmallButton(ctx, this.bounds.tempoUp, '+', false);
 
-    this.bounds.loop = { x: x + offset(340), y: y + offset(16), w: offset(100), h: offset(24) };
+    this.bounds.endMarker = { x: x + offset(340), y: y + offset(16), w: offset(140), h: offset(24) };
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.fillRect(this.bounds.loop.x, this.bounds.loop.y, this.bounds.loop.w, this.bounds.loop.h);
+    ctx.fillRect(this.bounds.endMarker.x, this.bounds.endMarker.y, this.bounds.endMarker.w, this.bounds.endMarker.h);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(this.bounds.loop.x, this.bounds.loop.y, this.bounds.loop.w, this.bounds.loop.h);
+    ctx.strokeRect(this.bounds.endMarker.x, this.bounds.endMarker.y, this.bounds.endMarker.w, this.bounds.endMarker.h);
     ctx.fillStyle = '#fff';
-    ctx.fillText(`Loop ${this.song.loopBars} bars`, this.bounds.loop.x + offset(8), this.bounds.loop.y + offset(16));
+    const endLabel = this.placingEndMarker ? 'Set End...' : this.getEndMarkerLabel();
+    ctx.fillText(endLabel, this.bounds.endMarker.x + offset(8), this.bounds.endMarker.y + offset(16));
 
-    this.bounds.metronome = { x: x + offset(460), y: y + offset(16), w: offset(110), h: offset(24) };
+    this.bounds.loopToggle = { x: x + offset(490), y: y + offset(16), w: offset(110), h: offset(24) };
+    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+
+    this.bounds.metronome = { x: x + offset(610), y: y + offset(16), w: offset(110), h: offset(24) };
     this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
 
-    this.bounds.quantizeToggle = { x: x + offset(590), y: y + offset(16), w: offset(110), h: offset(24) };
+    this.bounds.quantizeToggle = { x: x + offset(740), y: y + offset(16), w: offset(110), h: offset(24) };
     this.drawToggle(ctx, this.bounds.quantizeToggle, `Quant ${this.quantizeEnabled ? 'On' : 'Off'}`, this.quantizeEnabled);
-    this.bounds.quantizeValue = { x: x + offset(710), y: y + offset(16), w: offset(70), h: offset(24) };
+    this.bounds.quantizeValue = { x: x + offset(860), y: y + offset(16), w: offset(70), h: offset(24) };
     this.drawToggle(ctx, this.bounds.quantizeValue, this.quantizeOptions[this.quantizeIndex].label, true);
 
     this.bounds.swing = { x: x + offset(16), y: y + offset(58), w: offset(200), h: offset(16) };
@@ -1628,18 +1821,25 @@ export default class MidiComposer {
     this.drawSmallButton(ctx, this.bounds.tempoUp, '+', false);
     rowY += rowH + gap;
 
-    this.bounds.loop = { x: innerX, y: rowY, w: innerW, h: rowH };
-    this.drawSmallButton(ctx, this.bounds.loop, `Loop ${this.song.loopBars} bars`, false);
+    this.bounds.endMarker = { x: innerX, y: rowY, w: innerW, h: rowH };
+    const endLabel = this.placingEndMarker ? 'Set End...' : this.getEndMarkerLabel();
+    this.drawSmallButton(ctx, this.bounds.endMarker, endLabel, false);
     rowY += rowH + gap;
 
-    this.bounds.metronome = { x: innerX, y: rowY, w: colW, h: rowH };
+    this.bounds.loopToggle = { x: innerX, y: rowY, w: colW, h: rowH };
+    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+    this.bounds.metronome = { x: innerX + colW + colGap, y: rowY, w: colW, h: rowH };
     this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
-    this.bounds.quantizeToggle = { x: innerX + colW + colGap, y: rowY, w: colW, h: rowH };
-    this.drawToggle(ctx, this.bounds.quantizeToggle, `Quant ${this.quantizeEnabled ? 'On' : 'Off'}`, this.quantizeEnabled);
     rowY += rowH + gap;
 
-    this.bounds.quantizeValue = { x: innerX, y: rowY, w: colW, h: rowH };
+    this.bounds.quantizeToggle = { x: innerX, y: rowY, w: colW, h: rowH };
+    this.drawToggle(ctx, this.bounds.quantizeToggle, `Quant ${this.quantizeEnabled ? 'On' : 'Off'}`, this.quantizeEnabled);
+    this.bounds.quantizeValue = { x: innerX + colW + colGap, y: rowY, w: colW, h: rowH };
     this.drawSmallButton(ctx, this.bounds.quantizeValue, this.quantizeOptions[this.quantizeIndex].label, true);
+    rowY += rowH + gap;
+
+    this.bounds.noteLength = { x: innerX, y: rowY, w: colW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.noteLength, `Note ${NOTE_LENGTH_OPTIONS[this.noteLengthIndex].label}`, false);
     this.bounds.preview = { x: innerX + colW + colGap, y: rowY, w: colW, h: rowH };
     this.drawToggle(ctx, this.bounds.preview, `Preview ${this.previewOnEdit ? 'On' : 'Off'}`, this.previewOnEdit);
     rowY += rowH + gap;
@@ -1794,7 +1994,7 @@ export default class MidiComposer {
 
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.font = '12px Courier New';
-    ctx.fillText('Alt/Right click: erase • Drag: paint • Ctrl/Cmd+Drag: box select • Shift+Drag: duplicate', x, y + viewH + 44);
+    ctx.fillText('Alt/Right click: erase • Drag: paint • Drag note edges: resize • Ctrl/Cmd+Drag: box select • Shift+Drag: duplicate • Shift+Click ruler: set End • Alt+Click ruler: clear End', x, y + viewH + 44);
   }
 
   drawRuler(ctx, x, y, w, loopTicks) {
@@ -1811,9 +2011,20 @@ export default class MidiComposer {
     ctx.beginPath();
     ctx.rect(x, y, w, 24);
     ctx.clip();
-    for (let bar = 0; bar < this.song.loopBars; bar += 1) {
+    const totalBars = Math.max(1, Math.ceil(loopTicks / ticksPerBar));
+    for (let bar = 0; bar < totalBars; bar += 1) {
       const barX = originX + bar * ticksPerBar * cellWidth;
       ctx.fillText(`${bar + 1}`, barX + 4, y + 16);
+    }
+    if (typeof this.song.loopEndTick === 'number') {
+      const endX = originX + this.song.loopEndTick * cellWidth;
+      ctx.strokeStyle = '#ff6a6a';
+      ctx.beginPath();
+      ctx.moveTo(endX, y);
+      ctx.lineTo(endX, y + 24);
+      ctx.stroke();
+      ctx.fillStyle = '#ff6a6a';
+      ctx.fillText('END', endX + 4, y + 16);
     }
     ctx.restore();
   }
@@ -1854,6 +2065,15 @@ export default class MidiComposer {
       ctx.beginPath();
       ctx.moveTo(xPos, originY);
       ctx.lineTo(xPos, originY + rows * cellHeight);
+      ctx.stroke();
+    }
+
+    if (typeof this.song.loopEndTick === 'number') {
+      const endX = originX + this.song.loopEndTick * cellWidth;
+      ctx.strokeStyle = '#ff6a6a';
+      ctx.beginPath();
+      ctx.moveTo(endX, originY);
+      ctx.lineTo(endX, originY + rows * cellHeight);
       ctx.stroke();
     }
 
@@ -1963,8 +2183,8 @@ export default class MidiComposer {
   }
 
   drawInstrumentPicker(ctx, width, height) {
-    const dialogW = Math.min(460, width - 40);
-    const dialogH = Math.min(420, height - 40);
+    const dialogW = Math.min(640, width - 40);
+    const dialogH = Math.min(520, height - 40);
     const dialogX = (width - dialogW) / 2;
     const dialogY = (height - dialogH) / 2;
     const padding = 16;
@@ -1983,8 +2203,8 @@ export default class MidiComposer {
     this.instrumentPicker.closeBounds = { x: dialogX + dialogW - 72, y: dialogY + 14, w: 56, h: 24 };
     this.drawSmallButton(ctx, this.instrumentPicker.closeBounds, 'Close', false);
 
-    const columns = isMobile ? 1 : 2;
-    const rowH = isMobile ? 42 : 32;
+    const columns = isMobile ? 1 : 3;
+    const rowH = isMobile ? 42 : 30;
     const colGap = 12;
     const colW = (dialogW - padding * 2 - (columns - 1) * colGap) / columns;
     const startY = dialogY + 52;
