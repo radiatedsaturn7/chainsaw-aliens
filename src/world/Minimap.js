@@ -65,17 +65,29 @@ export default class Minimap {
   draw(ctx, x, y, width, height, player, options = {}) {
     const tileW = this.world.width;
     const tileH = this.world.height;
-    const pixel = Math.min(width / tileW, height / tileH);
+    const zoom = options.zoom ?? 1;
+    const pixel = Math.min(width / tileW, height / tileH) * zoom;
+    const mapWidth = tileW * pixel;
+    const mapHeight = tileH * pixel;
+    const offsetX = options.offsetX ?? 0;
+    const offsetY = options.offsetY ?? 0;
+    const center = Boolean(options.center);
+    const startX = (center ? (width - mapWidth) / 2 : 0) + offsetX;
+    const startY = (center ? (height - mapHeight) / 2 : 0) + offsetY;
     const currentRoom = this.world.roomAtTile?.(
       Math.floor(player.x / this.world.tileSize),
       Math.floor(player.y / this.world.tileSize)
     );
     ctx.save();
     ctx.translate(x, y);
+    ctx.beginPath();
+    ctx.rect(0, 0, width, height);
+    ctx.clip();
+    ctx.translate(startX, startY);
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.fillRect(0, 0, tileW * pixel, tileH * pixel);
+    ctx.fillRect(0, 0, mapWidth, mapHeight);
     ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-    ctx.strokeRect(0, 0, tileW * pixel, tileH * pixel);
+    ctx.strokeRect(0, 0, mapWidth, mapHeight);
     this.drawRooms(ctx, pixel, currentRoom);
     this.drawDoors(ctx, pixel);
     this.drawIcon(ctx, player.x, player.y, pixel, 'rgba(255,255,255,0.9)');
