@@ -3,22 +3,28 @@ const DEFAULT_TILE_TYPES = [
   { id: 'hidden-path', label: 'Hidden Path Block', char: 'Z' },
   { id: 'ice-solid', label: 'Icy Solid Block', char: 'F' },
   { id: 'rock-solid', label: 'Rock Solid Block', char: 'R' },
+  { id: 'sand-solid', label: 'Sand Block', char: 'E' },
+  { id: 'purple-solid', label: 'Purple Solid Block', char: 'Q' },
+  { id: 'crystal-blue', label: 'Blue Crystal Block', char: 'J' },
+  { id: 'crystal-green', label: 'Green Crystal Block', char: 'G' },
+  { id: 'crystal-purple', label: 'Purple Crystal Block', char: 'V' },
   { id: 'triangle', label: 'Triangle Block', char: '^' },
   { id: 'triangle-flip', label: 'Triangle Block (Flipped)', char: 'v' },
   { id: 'empty', label: 'Empty', char: '.' },
   { id: 'oneway', label: 'One-Way Platform', char: '=' },
+  { id: 'sand-platform', label: 'Sand Platform', char: 's' },
   { id: 'elevator-path', label: 'Elevator Path', char: null, special: 'elevator-path' },
   { id: 'elevator-platform', label: 'Elevator Platform', char: null, special: 'elevator-platform' },
   { id: 'water', label: 'Water', char: '~' },
   { id: 'acid', label: 'Acid', char: 'A' },
   { id: 'lava', label: 'Lava', char: 'L' },
   { id: 'spikes', label: 'Spikes', char: '*' },
+  { id: 'crystal-spikes', label: 'Crystal Spikes', char: '!' },
   { id: 'ice', label: 'Ice Block', char: 'I' },
   { id: 'conveyor-left', label: 'Conveyor Left', char: '<' },
   { id: 'conveyor-right', label: 'Conveyor Right', char: '>' },
   { id: 'anchor', label: 'Anchor Socket', char: 'a' },
   { id: 'wood', label: 'Wood Barricade', char: 'W' },
-  { id: 'wood-box', label: 'Wooden Box', char: 'Y' },
   { id: 'metal', label: 'Welded Metal Plate', char: 'X' },
   { id: 'brittle', label: 'Brittle Wall', char: 'C' },
   { id: 'debris', label: 'Heavy Debris', char: 'U' },
@@ -122,7 +128,9 @@ const PREFAB_TYPES = [
   { id: 'moving-platform', label: 'Moving Platform', short: 'MP' },
   { id: 'stalactite', label: 'Stalactite', short: 'ST' },
   { id: 'stalagmite', label: 'Stalagmite', short: 'SM' },
-  { id: 'cave-platform', label: 'Cave Platform', short: 'CP' }
+  { id: 'cave-platform', label: 'Cave Platform', short: 'CP' },
+  { id: 'sand-mound', label: 'Sand Mound', short: 'SD' },
+  { id: 'sand-platform', label: 'Sand Platform', short: 'SP' }
 ];
 
 const POWERUP_TYPES = [
@@ -1690,6 +1698,20 @@ export default class Editor {
     const prefabPatterns = {
       stalactite: buildCenteredPattern([7, 7, 5, 5, 3, 3, 1]),
       stalagmite: buildCenteredPattern([1, 3, 3, 5, 5, 7, 7]),
+      sandMound: {
+        width: 7,
+        height: 4,
+        coords: [
+          { dx: 0, dy: 0 },
+          { dx: 6, dy: 0 },
+          { dx: 1, dy: 1 },
+          { dx: 5, dy: 1 },
+          { dx: 2, dy: 2 },
+          { dx: 4, dy: 2 },
+          { dx: 3, dy: 3 }
+        ]
+      },
+      sandDune: buildCenteredPattern([3, 5, 7, 5, 3]),
       largeT: {
         width: 7,
         height: 6,
@@ -1714,7 +1736,14 @@ export default class Editor {
         width: 6,
         height: 1,
         coords: Array.from({ length: 6 }, (_, x) => ({ dx: x, dy: 0 }))
-      }
+      },
+      sandPlatform: {
+        width: 7,
+        height: 1,
+        coords: Array.from({ length: 7 }, (_, x) => ({ dx: x, dy: 0 }))
+      },
+      crystalShard: buildCenteredPattern([1, 3, 5, 3, 1]),
+      crystalSpire: buildCenteredPattern([1, 3, 5, 5, 3, 1])
     };
 
     const placePatternInRoom = (room, pattern, options = {}) => {
@@ -1752,6 +1781,32 @@ export default class Editor {
       for (let x = startX; x < startX + length; x += 1) {
         if (tiles[spot.y]?.[x] === '.') setTile(x, spot.y, 'I');
       }
+    };
+
+    const addSandPlatform = (room) => {
+      placePatternInRoom(room, prefabPatterns.sandPlatform, { tileChar: 's' });
+    };
+
+    const addSandMound = (room) => {
+      placePatternInRoom(room, prefabPatterns.sandMound, { tileChar: 'E' });
+    };
+
+    const addSandDune = (room) => {
+      placePatternInRoom(room, prefabPatterns.sandDune, { tileChar: 'E' });
+    };
+
+    const addSandStalactite = (room) => {
+      placePatternInRoom(room, prefabPatterns.stalactite, { anchor: 'ceiling', tileChar: 'E' });
+    };
+
+    const addSandStalagmite = (room) => {
+      placePatternInRoom(room, prefabPatterns.stalagmite, { anchor: 'floor', tileChar: 'E' });
+    };
+
+    const addCrystalCluster = (room) => {
+      const crystalTiles = ['J', 'G', 'V'];
+      const pattern = pickOne([prefabPatterns.crystalShard, prefabPatterns.crystalSpire]);
+      placePatternInRoom(room, pattern, { tileChar: pickOne(crystalTiles) });
     };
 
     const addStalactite = (room) => {
@@ -1940,7 +1995,7 @@ export default class Editor {
       }
     };
 
-    const biomeTypes = ['cave', 'industrial', 'ice'];
+    const biomeTypes = ['cave', 'industrial', 'ice', 'desert', 'crystal'];
     const biomeSeeds = [];
     const usedSeedKeys = new Set();
     while (biomeSeeds.length < biomeTypes.length) {
@@ -1981,6 +2036,11 @@ export default class Editor {
         if (Math.random() < 0.3) addConveyor(room);
       } else if (room.biome === 'ice') {
         if (Math.random() < 0.45) addIcePatch(room);
+      } else if (room.biome === 'desert') {
+        if (Math.random() < 0.45) addSandPlatform(room);
+        if (Math.random() < 0.35) addSandDune(room);
+      } else if (room.biome === 'crystal') {
+        if (Math.random() < 0.5) addCrystalCluster(room);
       }
     };
 
@@ -2108,6 +2168,17 @@ export default class Editor {
         if (Math.random() < 0.6) addIcePatch(room);
         if (Math.random() < 0.4) addPit(room, '~');
         if (Math.random() < 0.35) addPit(room, '*');
+      } else if (room.biome === 'desert') {
+        if (Math.random() < 0.55) addSandPlatform(room);
+        if (Math.random() < 0.5) addSandMound(room);
+        if (Math.random() < 0.45) addSandDune(room);
+        if (Math.random() < 0.5) addSandStalactite(room);
+        if (Math.random() < 0.5) addSandStalagmite(room);
+        if (Math.random() < 0.35) addPit(room, '~');
+      } else if (room.biome === 'crystal') {
+        if (Math.random() < 0.65) addCrystalCluster(room);
+        if (Math.random() < 0.5) addCrystalCluster(room);
+        if (Math.random() < 0.35) addHazardFloor(room, '!');
       }
     };
 
@@ -2167,12 +2238,16 @@ export default class Editor {
     const biomeRoomTypes = {
       cave: ['cave', 'circular'],
       industrial: ['room'],
-      ice: ['room', 'circular']
+      ice: ['room', 'circular'],
+      desert: ['room', 'circular'],
+      crystal: ['room', 'circular']
     };
     const biomeWallTiles = {
       cave: 'R',
       ice: 'F',
-      industrial: '#'
+      industrial: '#',
+      desert: 'E',
+      crystal: 'Q'
     };
 
     occupied.forEach((index) => {
@@ -2592,7 +2667,7 @@ export default class Editor {
         wallTile: 'F',
         minW: 10,
         minH: 10,
-        blockChar: 'Y'
+        blockChar: 'Q'
       },
       {
         id: 'flamethrower',
@@ -2771,7 +2846,7 @@ export default class Editor {
     }
 
     const healthTarget = 13;
-    const healthBlockTypes = ['N', 'Y', 'P'];
+    const healthBlockTypes = ['N', 'P', 'Q'];
     const healthCandidates = sortedRooms.filter((room) => (
       !reservedRooms.has(room.cellIndex)
       && room.w >= 8
@@ -2858,7 +2933,7 @@ export default class Editor {
     }
 
     const ensureDoorConnectivity = () => {
-      const blockers = new Set(['#', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', '^', 'v', 'Y', 'N', 'P']);
+      const blockers = new Set(['#', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', '^', 'v', 'N', 'P', 'Q', 'E', 'G', 'J', 'V']);
       const carveLine = (room, start, end) => {
         const dx = Math.sign(end.x - start.x);
         const dy = Math.sign(end.y - start.y);
@@ -2950,7 +3025,7 @@ export default class Editor {
     };
 
     const enforceSpikeSupports = () => {
-      const supports = new Set(['#', 'F', 'R', 'W', 'X', 'C', 'U', 'I', '<', '>', 'Y', 'N', 'P']);
+      const supports = new Set(['#', 'F', 'R', 'W', 'X', 'C', 'U', 'I', '<', '>', 'N', 'P', 'Q', 'E', 'G', 'J', 'V']);
       const canSupport = (x, y) => {
         const tile = tiles[y]?.[x];
         return tile && tile !== 'D' && supports.has(tile);
@@ -2963,7 +3038,7 @@ export default class Editor {
       };
       for (let y = 0; y < height; y += 1) {
         for (let x = 0; x < width; x += 1) {
-          if (tiles[y][x] !== '*') continue;
+          if (tiles[y][x] !== '*' && tiles[y][x] !== '!') continue;
           if (canSupport(x, y + 1) || canSupport(x, y - 1) || canSupport(x - 1, y) || canSupport(x + 1, y)) {
             continue;
           }
@@ -4373,6 +4448,16 @@ export default class Editor {
         }
         return '#';
       });
+    } else if (this.prefabType.id === 'sand-mound') {
+      const moundRows = [
+        new Set([0, 6]),
+        new Set([1, 5]),
+        new Set([2, 4]),
+        new Set([3])
+      ];
+      buildFixed(7, 4, (x, y) => (moundRows[y]?.has(x) ? 'E' : null));
+    } else if (this.prefabType.id === 'sand-platform') {
+      buildFixed(7, 1, () => 's');
     }
     return prefab;
   }
@@ -5075,31 +5160,23 @@ export default class Editor {
         ctx.lineTo(x + size - 2, y + size - 2);
         ctx.closePath();
         ctx.fill();
-      } else if (char === '=') {
+      } else if (char === '=' || char === 's') {
         ctx.strokeStyle = '#fff';
         ctx.beginPath();
         ctx.moveTo(x + 3, centerY);
         ctx.lineTo(x + size - 3, centerY);
         ctx.stroke();
-      } else if (char === 'e' || char === 'E') {
+      } else if (char === 'e') {
         ctx.strokeStyle = '#fff';
         ctx.beginPath();
         ctx.moveTo(centerX, y + 4);
         ctx.lineTo(centerX, y + size - 4);
         ctx.stroke();
-        if (char === 'E') {
-          ctx.beginPath();
-          ctx.moveTo(x + 4, y + 4);
-          ctx.lineTo(x + size - 4, y + 4);
-          ctx.moveTo(x + 4, y + size - 4);
-          ctx.lineTo(x + size - 4, y + size - 4);
-          ctx.stroke();
-        }
       } else if (char === '~' || char === 'A' || char === 'L') {
         ctx.fillStyle = char === '~' ? '#3b9fe0' : char === 'A' ? '#36c777' : '#f25a42';
         ctx.fillRect(x + 2, y + size / 2, size - 4, size / 2 - 2);
-      } else if (char === '*') {
-        ctx.strokeStyle = '#fff';
+      } else if (char === '*' || char === '!') {
+        ctx.strokeStyle = char === '!' ? '#c98bff' : '#fff';
         ctx.beginPath();
         ctx.moveTo(x + 4, y + size - 4);
         ctx.lineTo(centerX, y + size / 2);
@@ -5108,14 +5185,23 @@ export default class Editor {
       } else if (char === 'I') {
         ctx.fillStyle = '#8fd6ff';
         ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
-      } else if (char === 'Y') {
-        ctx.fillStyle = '#c08a58';
+      } else if (char === 'E') {
+        ctx.fillStyle = '#d6b06d';
         ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
-        ctx.strokeStyle = '#7a4d24';
+        ctx.strokeStyle = '#b58b4a';
         ctx.strokeRect(x + 4, y + 4, size - 8, size - 8);
+      } else if (char === 'Q') {
+        ctx.fillStyle = '#6b2bbd';
+        ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+        ctx.strokeStyle = '#4c1f8a';
+        ctx.strokeRect(x + 4, y + 4, size - 8, size - 8);
+      } else if (char === 'J' || char === 'G' || char === 'V') {
+        ctx.fillStyle = char === 'J' ? '#4fb7ff' : char === 'G' ? '#4bd47e' : '#b35cff';
+        ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+        ctx.strokeStyle = 'rgba(255,255,255,0.6)';
         ctx.beginPath();
-        ctx.moveTo(x + 6, y + size - 6);
-        ctx.lineTo(x + size - 6, y + 6);
+        ctx.moveTo(x + 4, y + size - 6);
+        ctx.lineTo(x + size - 6, y + 4);
         ctx.stroke();
       } else if (char === 'N') {
         ctx.fillStyle = '#e4f4ff';

@@ -232,7 +232,7 @@ export default class Minimap {
   }
 
   isRoomTile(tile) {
-    const blockers = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', 'Y', 'N', 'P']);
+    const blockers = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', 'N', 'P', 'Q', 'E', 'G', 'J', 'V']);
     return tile && tile !== 'D' && !blockers.has(tile);
   }
 
@@ -242,13 +242,19 @@ export default class Minimap {
     if (tile === 'L') return '#ff7a3c';
     if (tile === 'A') return '#39d98a';
     if (tile === '*') return '#ff4b4b';
+    if (tile === '!') return '#c98bff';
     if (tile === 'I') return '#9ad9ff';
     if (tile === 'F') return '#c7efff';
     if (tile === 'R') return '#8a5a2b';
-    if (tile === 'Y') return '#c18b59';
+    if (tile === 'E') return '#d9b267';
+    if (tile === 'Q') return '#7a3cc9';
+    if (tile === 'G') return '#4bd47e';
+    if (tile === 'J') return '#4fb7ff';
+    if (tile === 'V') return '#b35cff';
     if (tile === 'N') return '#e8f4ff';
     if (tile === 'P') return '#9a9fb2';
     if (tile === '<' || tile === '>') return '#bfbfbf';
+    if (tile === 's') return '#d9b267';
     if (tile === '=') return '#f3f3f3';
     if (tile === '#') return '#6b6b6b';
     if (tile === 'Z') return '#6b6b6b';
@@ -280,7 +286,7 @@ export default class Minimap {
       ['✚', 'Vitality'],
       ['⬟', 'Save'],
       ['▵', 'Shop'],
-      ['W/X/C/U/Y/N/P', 'Obstacles'],
+      ['W/X/C/U/N/P/Q/E/G/J/V', 'Obstacles'],
       ['T', 'Switch'],
       ['B', 'Rift Seal']
     ];

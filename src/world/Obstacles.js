@@ -8,16 +8,6 @@ export const OBSTACLES = {
       flame: { hits: 1, noise: 0.5, verb: 'burn' }
     }
   },
-  Y: {
-    id: 'wooden-box',
-    label: 'Wooden Box',
-    material: 'wood',
-    interactions: {
-      chainsaw: { hits: 1, noise: 0.1, verb: 'cut' },
-      flamethrower: { hits: 1, noise: 0.25, verb: 'burn' },
-      ignitir: { hits: 1, noise: 0.35, verb: 'evaporate' }
-    }
-  },
   X: {
     id: 'welded-metal-plate',
     label: 'Welded Metal Plate',
