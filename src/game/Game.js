@@ -40,6 +40,8 @@ import HUD from '../ui/HUD.js';
 import Shop from '../ui/Shop.js';
 import Pause from '../ui/Pause.js';
 import MobileControls from '../ui/MobileControls.js';
+import PixelStudio from '../ui/PixelStudio.js';
+import MidiComposer from '../ui/MidiComposer.js';
 import TestHarness from '../debug/TestHarness.js';
 import Validator from '../debug/Validator.js';
 import ConsoleOverlay from '../debug/ConsoleOverlay.js';
@@ -291,7 +293,11 @@ export default class Game {
     this.spawnPauseTimer = 0;
     this.pickupPauseTimer = 0;
     this.editor = new Editor(this);
+    this.pixelStudio = new PixelStudio(this);
+    this.midiComposer = new MidiComposer(this);
     this.editorReturnState = 'title';
+    this.pixelStudioReturnState = 'title';
+    this.midiComposerReturnState = 'title';
     this.playtestActive = false;
     this.playtestButtonBounds = null;
     this.playtestPauseLock = 0;
@@ -628,6 +634,35 @@ export default class Game {
     }
     this.playtestActive = false;
     document.body.classList.add('editor-active');
+  }
+
+  enterPixelStudio() {
+    this.pixelStudioReturnState = this.state;
+    this.state = 'pixel-editor';
+    this.setRevAudio(false);
+    this.pixelStudio.resetFocus();
+    this.playtestActive = false;
+    document.body.classList.add('editor-active');
+  }
+
+  exitPixelStudio() {
+    this.playtestActive = false;
+    this.state = this.pixelStudioReturnState || 'title';
+    document.body.classList.remove('editor-active');
+  }
+
+  enterMidiComposer() {
+    this.midiComposerReturnState = this.state;
+    this.state = 'midi-editor';
+    this.setRevAudio(false);
+    this.playtestActive = false;
+    document.body.classList.add('editor-active');
+  }
+
+  exitMidiComposer() {
+    this.playtestActive = false;
+    this.state = this.midiComposerReturnState || 'title';
+    document.body.classList.remove('editor-active');
   }
 
   exitEditor({ playtest }) {
@@ -1061,7 +1096,7 @@ export default class Game {
     this.input.updateGamepad();
     this.gamepadConnected = this.input.isGamepadConnected();
     this.updateControlScheme();
-    if (this.state === 'editor') {
+    if (this.state === 'editor' || this.state === 'pixel-editor' || this.state === 'midi-editor') {
       this.input.clearVirtual();
     } else {
       const activeWeaponId = this.getActiveWeapon()?.id;
@@ -1079,6 +1114,10 @@ export default class Game {
     if (this.input.wasPressed('editor')) {
       if (this.state === 'editor') {
         this.exitEditor({ playtest: false });
+      } else if (this.state === 'pixel-editor') {
+        this.exitPixelStudio();
+      } else if (this.state === 'midi-editor') {
+        this.exitMidiComposer();
       } else {
         this.enterEditor();
       }
@@ -1088,6 +1127,28 @@ export default class Game {
 
     if (this.state === 'editor') {
       this.editor.update(this.input, dt);
+      this.input.flush();
+      return;
+    }
+
+    if (this.state === 'pixel-editor') {
+      if (this.input.wasPressed('cancel')) {
+        this.exitPixelStudio();
+        this.input.flush();
+        return;
+      }
+      this.pixelStudio.update(this.input, dt);
+      this.input.flush();
+      return;
+    }
+
+    if (this.state === 'midi-editor') {
+      if (this.input.wasPressed('cancel')) {
+        this.exitMidiComposer();
+        this.input.flush();
+        return;
+      }
+      this.midiComposer.update(this.input, dt);
       this.input.flush();
       return;
     }
@@ -1193,11 +1254,11 @@ export default class Game {
           } else if (action === 'level-editor') {
             this.enterEditor({ tab: 'tiles' });
           } else if (action === 'pixel-editor') {
-            this.enterEditor({ tab: 'pixels' });
+            this.enterPixelStudio();
           } else if (action === 'music-editor') {
             this.enterEditor({ tab: 'music' });
           } else if (action === 'midi-editor') {
-            this.enterEditor({ tab: 'midi' });
+            this.enterMidiComposer();
           } else if (action === 'skin-editor') {
             this.enterEditor({ tab: 'pixels' });
           } else if (action === 'reset-all') {
@@ -4570,6 +4631,16 @@ export default class Game {
       return;
     }
 
+    if (this.state === 'pixel-editor') {
+      this.pixelStudio.draw(ctx, canvas.width, canvas.height);
+      return;
+    }
+
+    if (this.state === 'midi-editor') {
+      this.midiComposer.draw(ctx, canvas.width, canvas.height);
+      return;
+    }
+
     const shakeX = this.shakeTimer > 0 ? (Math.random() - 0.5) * this.shakeMagnitude : 0;
     const shakeY = this.shakeTimer > 0 ? (Math.random() - 0.5) * this.shakeMagnitude : 0;
 
@@ -5771,11 +5842,11 @@ export default class Game {
         } else if (action === 'level-editor') {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'pixel-editor') {
-          this.enterEditor({ tab: 'pixels' });
+          this.enterPixelStudio();
         } else if (action === 'music-editor') {
           this.enterEditor({ tab: 'music' });
         } else if (action === 'midi-editor') {
-          this.enterEditor({ tab: 'midi' });
+          this.enterMidiComposer();
         } else if (action === 'skin-editor') {
           this.enterEditor({ tab: 'pixels' });
         } else if (action === 'reset-all') {
@@ -5817,6 +5888,14 @@ export default class Game {
   handlePointerDown(payload) {
     if (this.state === 'editor') {
       this.editor.handlePointerDown(payload);
+      return;
+    }
+    if (this.state === 'pixel-editor') {
+      this.pixelStudio.handlePointerDown(payload);
+      return;
+    }
+    if (this.state === 'midi-editor') {
+      this.midiComposer.handlePointerDown(payload);
       return;
     }
     if (this.state === 'prompt' && this.modalPrompt?.okBounds) {
@@ -5922,11 +6001,11 @@ export default class Game {
         } else if (action === 'level-editor') {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'pixel-editor') {
-          this.enterEditor({ tab: 'pixels' });
+          this.enterPixelStudio();
         } else if (action === 'music-editor') {
           this.enterEditor({ tab: 'music' });
         } else if (action === 'midi-editor') {
-          this.enterEditor({ tab: 'midi' });
+          this.enterMidiComposer();
         } else if (action === 'skin-editor') {
           this.enterEditor({ tab: 'pixels' });
         } else if (action === 'reset-all') {
@@ -5982,12 +6061,26 @@ export default class Game {
       this.editor.handlePointerMove(payload);
       return;
     }
+    if (this.state === 'pixel-editor') {
+      this.pixelStudio.handlePointerMove(payload);
+      return;
+    }
+    if (this.state === 'midi-editor') {
+      return;
+    }
     this.mobileControls.handlePointerMove(payload);
   }
 
   handlePointerUp(payload) {
     if (this.state === 'editor') {
       this.editor.handlePointerUp(payload);
+      return;
+    }
+    if (this.state === 'pixel-editor') {
+      this.pixelStudio.handlePointerUp(payload);
+      return;
+    }
+    if (this.state === 'midi-editor') {
       return;
     }
     this.mobileControls.handlePointerUp(payload, this.state);
