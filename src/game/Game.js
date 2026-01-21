@@ -589,7 +589,10 @@ export default class Game {
       regions: this.world.regions,
       enemies: this.world.enemies,
       elevatorPaths: this.world.elevatorPaths,
-      elevators: this.world.elevators
+      elevators: this.world.elevators,
+      pixelArt: this.world.pixelArt,
+      musicZones: this.world.musicZones,
+      midiTracks: this.world.midiTracks
     };
   }
 
@@ -604,7 +607,10 @@ export default class Game {
       regions: data.regions || [],
       enemies: data.enemies || [],
       elevatorPaths: data.elevatorPaths || [],
-      elevators: data.elevators || []
+      elevators: data.elevators || [],
+      pixelArt: data.pixelArt || { tiles: {} },
+      musicZones: data.musicZones || [],
+      midiTracks: data.midiTracks || []
     };
     this.world.applyData(migrated);
     this.syncSpawnPoint();
@@ -4852,6 +4858,31 @@ export default class Game {
       }
       ctx.restore();
     };
+    const pixelTiles = this.world.pixelArt?.tiles || {};
+    const drawPixelTile = (x, y, tile) => {
+      const pixelData = pixelTiles[tile];
+      if (!pixelData || !Array.isArray(pixelData.frames) || pixelData.frames.length === 0) {
+        return false;
+      }
+      const size = pixelData.size || 16;
+      const frames = pixelData.frames;
+      const fps = Math.max(1, pixelData.fps || 6);
+      const frameIndex = Math.floor(time * fps) % frames.length;
+      const frame = frames[frameIndex] || frames[0];
+      if (!frame) return false;
+      const pixelSize = tileSize / size;
+      const baseX = x * tileSize;
+      const baseY = y * tileSize;
+      for (let py = 0; py < size; py += 1) {
+        for (let px = 0; px < size; px += 1) {
+          const color = frame[py * size + px];
+          if (!color) continue;
+          ctx.fillStyle = color;
+          ctx.fillRect(baseX + px * pixelSize, baseY + py * pixelSize, pixelSize, pixelSize);
+        }
+      }
+      return true;
+    };
     const drawSpikeTile = (x, y) => {
       const hasFloor = isSolidTile(x, y + 1);
       const hasCeiling = isSolidTile(x, y - 1);
@@ -4897,6 +4928,9 @@ export default class Game {
     for (let y = 0; y < this.world.height; y += 1) {
       for (let x = 0; x < this.world.width; x += 1) {
         const tile = this.world.getTile(x, y);
+        if (drawPixelTile(x, y, tile)) {
+          continue;
+        }
         if (tile === '#') {
           ctx.fillStyle = '#3a3a3a';
           ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
