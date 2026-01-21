@@ -5,23 +5,59 @@ export default class PracticeDrone extends EnemyBase {
   constructor(x, y) {
     super(x, y);
     this.type = 'practice';
-    this.health = 999;
-    this.lootValue = 0;
+    this.health = 6;
+    this.maxHealth = this.health;
+    this.lootValue = 3;
     this.pulse = 0;
-    this.training = true;
+    this.attackTimer = 1.4;
+    this.volleyTimer = 0.6;
+    this.originX = x;
+    this.originY = y;
+    this.gravity = false;
   }
 
-  update(dt, player) {
+  update(dt, player, context = {}) {
     this.pulse += dt * 2;
+    this.attackTimer -= dt;
+    this.volleyTimer -= dt;
+    const driftX = Math.sin(this.pulse * 0.6) * 60;
+    const driftY = Math.cos(this.pulse * 0.8) * 40;
+    this.x = this.originX + driftX;
+    this.y = this.originY + driftY;
+    if (context.canShoot?.(this, 360) && this.attackTimer <= 0) {
+      this.attackTimer = 1.6;
+      this.volleyTimer = 0.4;
+      const dx = player.x - this.x;
+      const dy = player.y - this.y;
+      const baseAngle = Math.atan2(dy, dx);
+      const speed = 200;
+      for (let i = -1; i <= 1; i += 1) {
+        const angle = baseAngle + i * 0.25;
+        context.spawnProjectile?.(
+          this.x,
+          this.y,
+          Math.cos(angle) * speed,
+          Math.sin(angle) * speed,
+          1
+        );
+      }
+    } else if (context.isVisible?.(this, 280) && this.volleyTimer <= 0 && this.attackTimer <= 1.1) {
+      this.volleyTimer = 0.35;
+      const dir = Math.sign(player.x - this.x) || 1;
+      context.spawnProjectile?.(this.x, this.y, dir * 220, -40 + Math.random() * 80, 1);
+    }
     this.facing = Math.sign(player.x - this.x) || this.facing;
-    this.stagger = Math.max(0, this.stagger - dt * 0.25);
+    this.stagger = Math.max(0, this.stagger - dt * 0.3);
   }
 
   damage(amount) {
     this.stagger = Math.min(1, this.stagger + 0.4);
-    this.health = Math.max(1, this.health - amount);
+    this.health -= amount;
     this.hurtTimer = 0.25;
     this.shakePhase = 0;
+    if (this.health <= 0) {
+      this.dead = true;
+    }
   }
 
   draw(ctx) {

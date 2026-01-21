@@ -627,8 +627,9 @@ export default class Player {
     // Chainsaw bar
     ctx.beginPath();
     ctx.moveTo(0, -4 + crouchOffset);
-    const barLength = this.revving ? this.width * 1.1 : this.width * 0.9;
+    const barLength = this.revving ? this.width * 1.15 : this.width * 0.95;
     const barDir = this.aimingUp ? 1 : (this.chainsawHeld ? this.chainsawFacing : this.facing);
+    const curveHeight = this.revving ? 10 : 7;
     if (this.superReady) {
       ctx.save();
       ctx.strokeStyle = 'rgba(120,255,180,0.8)';
@@ -637,19 +638,63 @@ export default class Player {
       ctx.shadowBlur = 10;
       ctx.beginPath();
       ctx.moveTo(0, -4 + crouchOffset);
-      ctx.lineTo(barDir * barLength, 0 + crouchOffset);
-      ctx.lineTo(0, 6 + (this.revving ? 2 : 0) + crouchOffset);
+      ctx.quadraticCurveTo(barDir * barLength * 0.55, -curveHeight + crouchOffset, barDir * barLength, 0 + crouchOffset);
+      ctx.quadraticCurveTo(barDir * barLength * 0.55, curveHeight + crouchOffset, 0, 6 + (this.revving ? 2 : 0) + crouchOffset);
       ctx.stroke();
       ctx.restore();
     }
-    ctx.lineTo(barDir * barLength, 0 + crouchOffset);
-    ctx.lineTo(0, 6 + (this.revving ? 2 : 0) + crouchOffset);
+    ctx.quadraticCurveTo(barDir * barLength * 0.55, -curveHeight + crouchOffset, barDir * barLength, 0 + crouchOffset);
+    ctx.quadraticCurveTo(barDir * barLength * 0.55, curveHeight + crouchOffset, 0, 6 + (this.revving ? 2 : 0) + crouchOffset);
     ctx.stroke();
     if (this.revving) {
       ctx.beginPath();
       ctx.arc(barDir * barLength, 0 + crouchOffset, 8, -0.8, 0.8);
       ctx.stroke();
     }
+    const toothCount = this.revving ? 8 : 6;
+    const chainOffset = (this.animTime * (this.revving ? 6 : 3)) % 1;
+    const quadraticPoint = (t, startX, startY, controlX, controlY, endX, endY) => {
+      const inv = 1 - t;
+      return {
+        x: inv * inv * startX + 2 * inv * t * controlX + t * t * endX,
+        y: inv * inv * startY + 2 * inv * t * controlY + t * t * endY
+      };
+    };
+    ctx.save();
+    ctx.strokeStyle = '#1b1b1b';
+    ctx.lineWidth = 1.5;
+    for (let i = 0; i < toothCount; i += 1) {
+      const t = (i / toothCount + chainOffset) % 1;
+      const point = quadraticPoint(
+        t,
+        0,
+        -4 + crouchOffset,
+        barDir * barLength * 0.55,
+        -curveHeight + crouchOffset,
+        barDir * barLength,
+        0 + crouchOffset
+      );
+      const tangent = quadraticPoint(
+        Math.min(1, t + 0.02),
+        0,
+        -4 + crouchOffset,
+        barDir * barLength * 0.55,
+        -curveHeight + crouchOffset,
+        barDir * barLength,
+        0 + crouchOffset
+      );
+      const tx = tangent.x - point.x;
+      const ty = tangent.y - point.y;
+      const length = Math.hypot(tx, ty) || 1;
+      const nx = -ty / length;
+      const ny = tx / length;
+      const toothSize = this.revving ? 5 : 4;
+      ctx.beginPath();
+      ctx.moveTo(point.x + nx * toothSize, point.y + ny * toothSize);
+      ctx.lineTo(point.x - nx * toothSize, point.y - ny * toothSize);
+      ctx.stroke();
+    }
+    ctx.restore();
     ctx.restore();
     if (this.cosmetics.length > 0) {
       ctx.beginPath();

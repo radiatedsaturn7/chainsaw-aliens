@@ -59,6 +59,18 @@ import ObstacleTestMap from '../debug/ObstacleTestMap.js';
 import { OBSTACLES } from '../world/Obstacles.js';
 import { MOVEMENT_MODEL } from './MovementModel.js';
 
+const BOSS_TYPES = new Set([
+  'finalboss',
+  'sunderbehemoth',
+  'riftram',
+  'broodtitan',
+  'nullaegis',
+  'hexmatron',
+  'gravewarden',
+  'obsidiancrown',
+  'cataclysmcolossus'
+]);
+
 const INTRO_LINES = [
   'The entire planet of earth has literally run out of all our ammunition...',
   '...and the aliens are still coming!',
@@ -216,7 +228,9 @@ export default class Game {
       embedded: false,
       attachedBox: null,
       attachedEnemy: null,
-      damageTimer: 0
+      damageTimer: 0,
+      swingAngle: null,
+      swingVelocity: 0
     };
     this.attackTapTimer = 0;
     this.attackTapWindow = 0.28;
@@ -415,22 +429,11 @@ export default class Game {
     this.roomEnemySpawns.clear();
     this.roomBossSpawns.clear();
     if (!this.world.enemies) return;
-    const bossTypes = new Set([
-      'finalboss',
-      'sunderbehemoth',
-      'riftram',
-      'broodtitan',
-      'nullaegis',
-      'hexmatron',
-      'gravewarden',
-      'obsidiancrown',
-      'cataclysmcolossus'
-    ]);
     this.world.enemies.forEach((spawn) => {
       if (!spawn) return;
       const roomIndex = this.world.roomAtTile(spawn.x, spawn.y);
       if (roomIndex === null || roomIndex === undefined) return;
-      if (bossTypes.has(spawn.type)) {
+      if (BOSS_TYPES.has(spawn.type)) {
         const list = this.roomBossSpawns.get(roomIndex) || [];
         list.push({ ...spawn });
         this.roomBossSpawns.set(roomIndex, list);
@@ -724,7 +727,9 @@ export default class Game {
       embedded: false,
       attachedBox: null,
       attachedEnemy: null,
-      damageTimer: 0
+      damageTimer: 0,
+      swingAngle: null,
+      swingVelocity: 0
     };
     this.spawnBoxes();
     this.obstacleDamage.clear();
@@ -1766,7 +1771,7 @@ export default class Game {
   }
 
   spawnBoxes() {
-    this.boxes = this.world.boxes.map((box) => ({ x: box.x, y: box.y }));
+    this.boxes = this.world.boxes.map((box) => ({ x: box.x, y: box.y, hp: 1 }));
   }
 
   setRevAudio(active) {
@@ -2259,11 +2264,17 @@ export default class Game {
     streamDy = impactY - originY;
     const adjustedRange = Math.hypot(streamDx, streamDy);
     const arcDrop = Math.min(adjustedRange * 0.22, tileSize * 8);
+    const targetArcRange = tileSize * 15;
     const wobbleScale = Math.min(40, adjustedRange * 0.18);
     const wobbleX = (Math.random() - 0.5) * wobbleScale;
     const wobbleY = (Math.random() - 0.5) * (wobbleScale * 0.65);
     controlX = streamDx * 0.5 + wobbleX;
-    controlY = streamDy * 0.5 - arcDrop * 0.95 + wobbleY;
+    let interceptControlY = streamDy * 0.5 - arcDrop * 0.95;
+    if (adjustedRange > targetArcRange * 0.9) {
+      const tIntercept = Math.min(0.85, Math.max(0.25, targetArcRange / Math.max(1, adjustedRange)));
+      interceptControlY = -(tIntercept * streamDy) / (2 * (1 - tIntercept));
+    }
+    controlY = interceptControlY + wobbleY;
 
     if (this.flamethrowerSoundTimer <= 0) {
       this.audio.flamethrower();
@@ -2440,8 +2451,22 @@ export default class Game {
 
   explodeIgnitirTarget(target) {
     if (!target || target.dead) return;
-    target.noLootDrops = true;
-    target.damage?.(999);
+    const isBoss = target === this.boss || BOSS_TYPES.has(target.type);
+    if (!isBoss) {
+      target.noLootDrops = true;
+    }
+    if (isBoss) {
+      const maxHealth = target.maxHealth ?? target.health ?? 1;
+      const scaled = 0.2 - (maxHealth - 40) / 400;
+      const factor = Math.min(0.2, Math.max(0.1, scaled));
+      const rawDamage = Math.max(1, Math.round(maxHealth * factor));
+      const safeDamage = target.health > 1 ? Math.min(rawDamage, target.health - 1) : 0;
+      if (safeDamage > 0) {
+        target.damage?.(safeDamage);
+      }
+    } else {
+      target.damage?.(999);
+    }
     this.spawnEffect('ignitir-fog', target.x, target.y);
     this.spawnEffect('ignitir-blast', target.x, target.y, { life: 1.1, radius: 160 });
     this.spawnEffect('ignitir-shockwave', target.x, target.y, {
@@ -2888,6 +2913,7 @@ export default class Game {
           this.playability.recordEnemyHit(this.clock);
         }
       }
+      this.applyChainsawBoxDamage(this.player.x, this.player.y + 20, range, 70);
       return;
     }
     this.player.attackTimer = Math.max(this.player.attackTimer, 0.25);
@@ -2967,6 +2993,7 @@ export default class Game {
         this.playability.recordEnemyHit(this.clock);
       }
     }
+    this.applyChainsawBoxDamage(this.player.x + this.player.facing * 12, this.player.y - 6, range, 50);
   }
 
   handleRev() {
@@ -3159,6 +3186,18 @@ export default class Game {
         enemy.tickDamage(dt);
       }
     });
+
+    if (revHeld && this.player.revDamageTimer <= 0) {
+      const hits = this.applyChainsawBoxDamage(
+        this.player.x + this.player.facing * 12,
+        this.player.y,
+        revRange,
+        revVerticalRange
+      );
+      if (hits > 0) {
+        this.player.revDamageTimer = 0.2;
+      }
+    }
 
     if (this.boss && !this.boss.dead && this.bossActive) {
       if (this.boss.ignitirDissolveTimer > 0) {
@@ -3591,6 +3630,8 @@ export default class Game {
     this.sawAnchor.attachedBox = hit.box || null;
     this.sawAnchor.attachedEnemy = hit.enemy || null;
     this.sawAnchor.damageTimer = 0;
+    this.sawAnchor.swingAngle = null;
+    this.sawAnchor.swingVelocity = 0;
     this.player.sawDeployed = true;
     if (!this.player.onGround) {
       this.player.jumpsRemaining = Math.max(this.player.jumpsRemaining, 1);
@@ -3606,6 +3647,8 @@ export default class Game {
     this.sawAnchor.embedded = false;
     this.sawAnchor.attachedBox = null;
     this.sawAnchor.attachedEnemy = null;
+    this.sawAnchor.swingAngle = null;
+    this.sawAnchor.swingVelocity = 0;
   }
 
   triggerTetherPull() {
@@ -3659,6 +3702,8 @@ export default class Game {
         this.sawAnchor.embedded = false;
         this.sawAnchor.attachedBox = null;
         this.sawAnchor.attachedEnemy = null;
+        this.sawAnchor.swingAngle = null;
+        this.sawAnchor.swingVelocity = 0;
       }
       return;
     }
@@ -3760,8 +3805,56 @@ export default class Game {
       this.player.vy = Math.min(this.player.vy, Math.min(-jumpBoost, anchorBoostY));
       this.player.onGround = false;
     }
-    if (this.sawAnchor.active && !this.player.onGround) {
+    const swinging = this.updateSawSwing(dt, input, tetherDist, tetherMax);
+    if (!swinging && this.sawAnchor.active && !this.player.onGround) {
       this.player.vy += MOVEMENT_MODEL.gravity * dt * 0.35;
+    }
+    return false;
+  }
+
+  updateSawSwing(dt, input, tetherDist, tetherMax) {
+    if (!this.sawAnchor.active) return false;
+    if (!this.sawAnchor.embedded) return false;
+    if (this.sawAnchor.attachedBox || this.sawAnchor.attachedEnemy) return false;
+    if (this.player.onGround) {
+      this.sawAnchor.swingAngle = null;
+      this.sawAnchor.swingVelocity = 0;
+      return false;
+    }
+    const length = Math.min(tetherDist, tetherMax);
+    if (length <= 0.01) return false;
+    const axes = this.input.getGamepadAxes?.() || { leftX: 0 };
+    const stickDir = Math.abs(axes.leftX) > 0.25 ? Math.sign(axes.leftX) : 0;
+    const swingInput = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0) || stickDir;
+    if (this.sawAnchor.swingAngle === null) {
+      this.sawAnchor.swingAngle = Math.atan2(this.player.x - this.sawAnchor.x, this.player.y - this.sawAnchor.y);
+      this.sawAnchor.swingVelocity = 0;
+    }
+    const angle = this.sawAnchor.swingAngle;
+    const gravity = MOVEMENT_MODEL.gravity;
+    const pendulumAccel = -Math.sin(angle) * (gravity / Math.max(120, length));
+    const inputAccel = swingInput * 2.8;
+    const decay = swingInput === 0 ? 1.6 : 0.6;
+    this.sawAnchor.swingVelocity += (pendulumAccel + inputAccel) * dt;
+    this.sawAnchor.swingVelocity *= Math.exp(-decay * dt);
+    this.sawAnchor.swingAngle += this.sawAnchor.swingVelocity * dt;
+
+    if (swingInput === 0
+      && Math.abs(this.sawAnchor.swingAngle) < 0.04
+      && Math.abs(this.sawAnchor.swingVelocity) < 0.05) {
+      this.sawAnchor.swingAngle = 0;
+      this.sawAnchor.swingVelocity = 0;
+    }
+
+    const targetX = this.sawAnchor.x + Math.sin(this.sawAnchor.swingAngle) * length;
+    const targetY = this.sawAnchor.y + Math.cos(this.sawAnchor.swingAngle) * length;
+    if (!this.isPlayerBlockedAt(targetX, targetY)) {
+      this.player.vx = (targetX - this.player.x) / Math.max(0.016, dt);
+      this.player.vy = (targetY - this.player.y) / Math.max(0.016, dt);
+      this.player.x = targetX;
+      this.player.y = targetY;
+      this.player.onGround = false;
+      return true;
     }
     return false;
   }
@@ -3931,6 +4024,31 @@ export default class Game {
       w: this.boxSize,
       h: this.boxSize
     };
+  }
+
+  damageBox(box, amount = 1) {
+    if (!box) return;
+    box.hp = (box.hp ?? 1) - amount;
+    if (box.hp > 0) return;
+    const index = this.boxes.indexOf(box);
+    if (index >= 0) {
+      this.boxes.splice(index, 1);
+    }
+    const worldIndex = this.world.boxes.findIndex((entry) => entry.x === box.x && entry.y === box.y);
+    if (worldIndex >= 0) {
+      this.world.boxes.splice(worldIndex, 1);
+    }
+    this.spawnEffect('hit', box.x, box.y);
+    this.spawnEffect('splat', box.x, box.y);
+    this.audio.hit();
+  }
+
+  applyChainsawBoxDamage(originX, originY, rangeX, rangeY) {
+    const targets = this.boxes.filter((box) => (
+      Math.abs(box.x - originX) <= rangeX && Math.abs(box.y - originY) <= rangeY
+    ));
+    targets.forEach((box) => this.damageBox(box, 1));
+    return targets.length;
   }
 
   isBoxBlockedAt(x, y, ignoreBox = null) {
@@ -5407,6 +5525,8 @@ export default class Game {
     this.sawAnchor.pullTimer = 0;
     this.sawAnchor.retractTimer = 0;
     this.sawAnchor.autoRetractTimer = 0;
+    this.sawAnchor.swingAngle = null;
+    this.sawAnchor.swingVelocity = 0;
     this.player.x = this.world.spawnPoint.x;
     this.player.y = this.world.spawnPoint.y;
     this.lastSave = { x: this.player.x, y: this.player.y };
