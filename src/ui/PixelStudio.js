@@ -147,6 +147,7 @@ export default class PixelStudio {
     this.axisCooldown = 0;
     this.leftTriggerHeld = false;
     this.rightTriggerHeld = false;
+    this.exitBounds = null;
     this.cutBounds = null;
     this.cutImageRect = null;
     this.cutSelection = null;
@@ -407,6 +408,10 @@ export default class PixelStudio {
 
   handlePointerDown(payload) {
     const { x, y } = payload;
+    if (this.exitBounds && this.isPointInBounds(x, y, this.exitBounds)) {
+      this.game.exitPixelStudio({ toTitle: true });
+      return;
+    }
     if (this.canvasBounds && this.isPointInBounds(x, y, this.canvasBounds)) {
       const tool = this.tools[this.toolIndex];
       if (tool?.id === 'fill') {
@@ -753,6 +758,18 @@ export default class PixelStudio {
     return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
   }
 
+  drawButton(ctx, bounds, label, active = false) {
+    ctx.fillStyle = active ? 'rgba(255,225,106,0.6)' : 'rgba(0,0,0,0.6)';
+    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.fillStyle = active ? '#0b0b0b' : '#fff';
+    ctx.font = '12px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 4);
+    ctx.textAlign = 'left';
+  }
+
   draw(ctx, width, height) {
     ctx.save();
     ctx.fillStyle = '#0b0b0b';
@@ -762,6 +779,8 @@ export default class PixelStudio {
     ctx.font = '24px Courier New';
     ctx.textAlign = 'left';
     ctx.fillText('Pixel Editor', 24, 40);
+    this.exitBounds = { x: width - 124, y: 24, w: 92, h: 28 };
+    this.drawButton(ctx, this.exitBounds, 'Exit');
 
     const leftWidth = 300;
     const bottomHeight = 140;

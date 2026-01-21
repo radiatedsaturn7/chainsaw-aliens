@@ -98,6 +98,7 @@ export default class MidiComposer {
     this.scrubAudition = false;
     this.metronomeEnabled = false;
     this.scaleLock = true;
+    this.slurEnabled = false;
     this.song = this.loadSong();
     this.selectedTrackIndex = 0;
     this.selectedPatternIndex = 0;
@@ -146,9 +147,13 @@ export default class MidiComposer {
       scaleLock: null,
       tools: null,
       scrub: null,
+      slur: null,
       addTrack: null,
       removeTrack: null,
-      duplicateTrack: null
+      duplicateTrack: null,
+      instrumentPrev: null,
+      instrumentNext: null,
+      instrumentLabel: null
     };
     this.trackBounds = [];
     this.trackControlBounds = [];
@@ -238,6 +243,13 @@ export default class MidiComposer {
     const track = this.getActiveTrack();
     if (!track) return null;
     return track.patterns[this.selectedPatternIndex];
+  }
+
+  selectTrackDelta(delta) {
+    const total = this.song.tracks.length;
+    if (!total) return;
+    this.selectedTrackIndex = (this.selectedTrackIndex + delta + total) % total;
+    this.selection.clear();
   }
 
   isMobileLayout() {
@@ -419,6 +431,7 @@ export default class MidiComposer {
         pattern.notes.forEach((note) => {
           const noteStart = this.getSwingedTick(note.startTick);
           if (noteStart >= range.start && noteStart < range.end) {
+            if (this.shouldSlurNote(track, pattern, note)) return;
             this.playNote(track, note, noteStart);
           }
         });
@@ -454,6 +467,15 @@ export default class MidiComposer {
       return tick + swingAmount;
     }
     return tick;
+  }
+
+  shouldSlurNote(track, pattern, note) {
+    if (!this.slurEnabled || track.instrument === 'drums') return false;
+    return pattern.notes.some((other) => {
+      if (other.id === note.id || other.pitch !== note.pitch) return false;
+      const otherEnd = other.startTick + other.durationTicks;
+      return other.startTick < note.startTick && otherEnd >= note.startTick;
+    });
   }
 
   playNote(track, note, startTick) {
@@ -617,6 +639,42 @@ export default class MidiComposer {
       }
       return;
     }
+    if (this.bounds.instrumentPrev && this.pointInBounds(x, y, this.bounds.instrumentPrev)) {
+      this.selectTrackDelta(-1);
+      return;
+    }
+    if (this.bounds.instrumentNext && this.pointInBounds(x, y, this.bounds.instrumentNext)) {
+      this.selectTrackDelta(1);
+      return;
+    }
+    if (this.bounds.instrumentLabel && this.pointInBounds(x, y, this.bounds.instrumentLabel)) {
+      this.openInstrumentPicker('edit', this.selectedTrackIndex);
+      return;
+    }
+    if (this.bounds.addTrack && this.pointInBounds(x, y, this.bounds.addTrack)) {
+      this.addTrack();
+      return;
+    }
+    if (this.bounds.removeTrack && this.pointInBounds(x, y, this.bounds.removeTrack)) {
+      this.removeTrack();
+      return;
+    }
+    if (this.bounds.play && this.pointInBounds(x, y, this.bounds.play)) {
+      this.togglePlayback();
+      return;
+    }
+    if (this.bounds.slur && this.pointInBounds(x, y, this.bounds.slur)) {
+      this.slurEnabled = !this.slurEnabled;
+      return;
+    }
+    if (this.bounds.tempoDown && this.pointInBounds(x, y, this.bounds.tempoDown)) {
+      this.setTempo(this.song.tempo - 1);
+      return;
+    }
+    if (this.bounds.tempoUp && this.pointInBounds(x, y, this.bounds.tempoUp)) {
+      this.setTempo(this.song.tempo + 1);
+      return;
+    }
     if (this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings)) {
       this.settingsOpen = true;
       return;
@@ -649,6 +707,25 @@ export default class MidiComposer {
       return;
     }
     if (!this.dragState || !this.gridBounds) return;
+    if (this.dragState.mode === 'touch-pan') {
+      const dx = payload.x - this.dragState.startX;
+      const dy = payload.y - this.dragState.startY;
+      const threshold = 6;
+      if (!this.dragState.moved && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) {
+        this.dragState.moved = true;
+        if (this.longPressTimer) {
+          clearTimeout(this.longPressTimer);
+          this.longPressTimer = null;
+        }
+      }
+      if (this.dragState.moved) {
+        this.gridOffset.x = this.dragState.startOffsetX + dx;
+        this.gridOffset.y = this.dragState.startOffsetY + dy;
+        const { gridW, gridH, w, h } = this.gridBounds;
+        this.clampGridOffset(w, h, gridW, gridH);
+      }
+      return;
+    }
     if (this.dragState.mode === 'scrub') {
       const tick = this.getTickFromX(payload.x);
       this.playheadTick = clamp(tick, 0, this.getLoopTicks());
@@ -678,6 +755,21 @@ export default class MidiComposer {
     if (this.longPressTimer) {
       clearTimeout(this.longPressTimer);
       this.longPressTimer = null;
+    }
+    if (this.dragState?.mode === 'touch-pan') {
+      if (!this.dragState.moved) {
+        const { cell, hit } = this.dragState;
+        if (hit?.note) {
+          this.selection.clear();
+          this.selection.add(hit.note.id);
+          this.previewNote(hit.note, hit.note.pitch);
+        } else if (cell) {
+          this.selection.clear();
+          this.paintNoteAt(cell.tick, cell.pitch, false);
+        }
+      }
+      this.dragState = null;
+      return;
     }
     if (this.dragState?.mode === 'select') {
       this.finalizeSelectionBox();
@@ -737,6 +829,20 @@ export default class MidiComposer {
     const { x, y, button } = payload;
     const cell = this.getGridCell(x, y);
     if (!cell) return;
+    if (payload.touchCount) {
+      const hit = this.getNoteAtCell(cell.tick, cell.pitch);
+      this.dragState = {
+        mode: 'touch-pan',
+        startX: x,
+        startY: y,
+        startOffsetX: this.gridOffset.x,
+        startOffsetY: this.gridOffset.y,
+        moved: false,
+        cell,
+        hit
+      };
+      return;
+    }
     const modifiers = this.getModifiers();
     const hit = this.getNoteAtCell(cell.tick, cell.pitch);
     if (button === 2 || modifiers.alt) {
@@ -1316,23 +1422,14 @@ export default class MidiComposer {
     ctx.fillStyle = '#070707';
     ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = '#fff';
-    ctx.font = '24px Courier New';
-    ctx.textAlign = 'left';
-    ctx.fillText('Pattern Sequencer', 24, 40);
-
-    const headerH = this.isMobileLayout() ? 62 : 54;
-    this.bounds.settings = { x: width - 144, y: 16, w: 120, h: 32 };
-    this.drawSmallButton(ctx, this.bounds.settings, 'Settings', this.settingsOpen);
-
-    if (track) {
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.font = '14px Courier New';
-      ctx.fillText(`Track: ${track.name}`, 24, headerH);
-    }
+    const headerH = this.isMobileLayout() ? 124 : 72;
+    const headerX = 20;
+    const headerY = 12;
+    const headerW = width - 40;
+    this.drawTopBar(ctx, headerX, headerY, headerW, headerH, track);
 
     const contentX = 20;
-    const contentY = headerH + 12;
+    const contentY = headerY + headerH + 12;
     const contentW = width - 40;
     const contentH = height - contentY - 24;
     this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
@@ -1350,6 +1447,74 @@ export default class MidiComposer {
     }
 
     ctx.restore();
+  }
+
+  drawTopBar(ctx, x, y, w, h, track) {
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, w, h);
+
+    const isMobile = this.isMobileLayout();
+    const rowGap = 8;
+    const rowH = isMobile ? 30 : 28;
+    const titleRowY = y + 10;
+    const instrumentRowY = isMobile ? titleRowY + rowH + rowGap : titleRowY;
+    const controlsRowY = isMobile ? instrumentRowY + rowH + rowGap : titleRowY;
+
+    ctx.fillStyle = '#fff';
+    ctx.font = isMobile ? '16px Courier New' : '18px Courier New';
+    ctx.textAlign = 'left';
+    ctx.fillText('Pattern Sequencer', x + 12, titleRowY - 6);
+
+    const settingsW = isMobile ? 96 : 110;
+    this.bounds.settings = { x: x + w - settingsW - 12, y: titleRowY, w: settingsW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.settings, 'Settings', this.settingsOpen);
+
+    let cursorX = x + 12;
+    const buttonSize = rowH;
+    this.bounds.instrumentPrev = { x: cursorX, y: instrumentRowY, w: buttonSize, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.instrumentPrev, '<', false);
+    cursorX += buttonSize + 6;
+
+    const instrumentLabel = track
+      ? `${track.name || 'Track'}: ${this.getInstrumentLabel(track.instrument)}`
+      : 'Instrument';
+    ctx.font = '13px Courier New';
+    const labelWidth = Math.min(260, Math.max(140, ctx.measureText(instrumentLabel).width + 24));
+    this.bounds.instrumentLabel = { x: cursorX, y: instrumentRowY, w: labelWidth, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.instrumentLabel, instrumentLabel, false);
+    cursorX += labelWidth + 6;
+
+    this.bounds.instrumentNext = { x: cursorX, y: instrumentRowY, w: buttonSize, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
+    cursorX += buttonSize + 10;
+
+    this.bounds.addTrack = { x: cursorX, y: instrumentRowY, w: 64, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.addTrack, 'Add', false);
+    cursorX += 70;
+
+    this.bounds.removeTrack = { x: cursorX, y: instrumentRowY, w: 78, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.removeTrack, 'Remove', false);
+
+    const controlStartX = isMobile ? x + 12 : x + w - 400;
+    const playW = isMobile ? 90 : 100;
+    this.bounds.play = { x: controlStartX, y: controlsRowY, w: playW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.play, this.isPlaying ? 'Stop' : 'Play', this.isPlaying);
+
+    const slurX = controlStartX + playW + 10;
+    this.bounds.slur = { x: slurX, y: controlsRowY, w: 90, h: rowH };
+    this.drawToggle(ctx, this.bounds.slur, `Slur ${this.slurEnabled ? 'On' : 'Off'}`, this.slurEnabled);
+
+    const tempoX = slurX + 100;
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px Courier New';
+    ctx.fillText(`Tempo ${this.song.tempo} BPM`, tempoX, controlsRowY + rowH * 0.7);
+    const tempoButtonW = 28;
+    this.bounds.tempoDown = { x: tempoX + 130, y: controlsRowY, w: tempoButtonW, h: rowH };
+    this.bounds.tempoUp = { x: tempoX + 130 + tempoButtonW + 6, y: controlsRowY, w: tempoButtonW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.tempoDown, '-', false);
+    this.drawSmallButton(ctx, this.bounds.tempoUp, '+', false);
   }
 
   drawTransport(ctx, x, y, w, h) {
