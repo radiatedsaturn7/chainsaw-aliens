@@ -6206,6 +6206,7 @@ export default class Game {
       return;
     }
     if (this.state === 'midi-editor') {
+      this.midiComposer.handlePointerMove(payload);
       return;
     }
     this.mobileControls.handlePointerMove(payload);
@@ -6221,6 +6222,7 @@ export default class Game {
       return;
     }
     if (this.state === 'midi-editor') {
+      this.midiComposer.handlePointerUp(payload);
       return;
     }
     this.mobileControls.handlePointerUp(payload, this.state);

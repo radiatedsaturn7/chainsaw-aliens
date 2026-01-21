@@ -27,12 +27,12 @@ const TOOL_LIST = [
   { id: 'dropper', label: 'Color Dropper' },
   { id: 'fill', label: 'Fill' },
   { id: 'preview', label: 'Preview' },
+  { id: 'tiled', label: 'Tiled Mode' },
   { id: 'zoom-in', label: 'Zoom In' },
   { id: 'zoom-out', label: 'Zoom Out' },
   { id: 'cut-image', label: 'Cut From Image' }
 ];
 
-const OBJECT_TYPES = ['Tiles', 'Enemies', 'Players', 'Animations'];
 const ZOOM_LEVELS = [8, 12, 16, 20, 24, 28, 32];
 const TILE_LIBRARY = [
   { id: 'solid', label: 'Solid Block', char: '#' },
@@ -103,6 +103,7 @@ const rgbToHex = (rgb) => {
 };
 
 const lerp = (a, b, t) => a + (b - a) * t;
+const POINT_IN_POLYGON_EPSILON = 1e-6;
 
 export default class PixelStudio {
   constructor(game) {
@@ -113,8 +114,9 @@ export default class PixelStudio {
     this.paletteIndex = 1;
     this.secondaryPaletteIndex = 2;
     this.lastPaletteIndex = this.paletteIndex;
-    this.objectTypes = OBJECT_TYPES;
+    this.objectEntries = [];
     this.objectIndex = 0;
+    this.objectScroll = 0;
     this.tileLibrary = TILE_LIBRARY;
     this.tileIndex = 0;
     this.tileScroll = 0;
@@ -124,8 +126,12 @@ export default class PixelStudio {
     this.gridSize = 16;
     this.zoomIndex = 2;
     this.previewEnabled = true;
+    this.tiledMode = false;
     this.pixels = Array(this.gridSize * this.gridSize).fill(null);
     this.clipboard = null;
+    this.cloneSource = null;
+    this.cloneOffset = null;
+    this.clonePainting = false;
     this.painting = false;
     this.shapeActive = false;
     this.shapeStart = null;
@@ -135,6 +141,9 @@ export default class PixelStudio {
     this.paletteBounds = [];
     this.toolBounds = [];
     this.objectBounds = [];
+    this.toolScroll = 0;
+    this.toolVisibleCount = 0;
+    this.objectVisibleCount = 0;
     this.axisCooldown = 0;
     this.leftTriggerHeld = false;
     this.rightTriggerHeld = false;
@@ -164,10 +173,43 @@ export default class PixelStudio {
     if (this.activeTile) {
       this.setActiveTile(this.activeTile);
     }
+    this.getObjectEntries();
   }
 
   resetFocus() {
     this.focus = 'tools';
+  }
+
+  getObjectEntries() {
+    const entries = [];
+    const pushEntry = (label, indent, selectable = false, tile = null) => {
+      entries.push({ label, indent, selectable, tile });
+    };
+
+    pushEntry('Tiles', 0, false);
+    this.tileLibrary.forEach((tile) => {
+      pushEntry(tile.label, 1, true, tile);
+    });
+    pushEntry('Entities', 0, false);
+    pushEntry('Player', 1, false);
+    pushEntry('Idle', 2, false);
+    pushEntry('Running', 2, false);
+    pushEntry('Enemy', 1, false);
+    pushEntry('Idle', 2, false);
+    pushEntry('Moving', 2, false);
+    pushEntry('Attacking', 2, false);
+
+    this.objectEntries = entries;
+    return entries;
+  }
+
+  getSelectableObjectEntries() {
+    return this.objectEntries.filter((entry) => entry.selectable);
+  }
+
+  getSelectedObjectEntry() {
+    const selectable = this.getSelectableObjectEntries();
+    return selectable[this.objectIndex] || null;
   }
 
   getTilePixels(tileChar) {
@@ -245,43 +287,27 @@ export default class PixelStudio {
     if (this.focus === 'tools') {
       if (up || dpadUp) this.toolIndex = (this.toolIndex - 1 + this.tools.length) % this.tools.length;
       if (down || dpadDown) this.toolIndex = (this.toolIndex + 1) % this.tools.length;
-      if (left || dpadLeft) this.focus = 'object';
+      if (left || dpadLeft) this.focus = 'objects';
       if (right || dpadRight) this.focus = 'canvas';
       if ((down || dpadDown) && this.toolIndex === this.tools.length - 1) {
         this.focus = 'palette';
       }
-    } else if (this.focus === 'object') {
-      if (up || dpadUp) this.objectIndex = (this.objectIndex - 1 + this.objectTypes.length) % this.objectTypes.length;
-      if (down || dpadDown) this.objectIndex = (this.objectIndex + 1) % this.objectTypes.length;
+    } else if (this.focus === 'objects') {
+      this.getObjectEntries();
+      const selectable = this.getSelectableObjectEntries();
+      if (selectable.length) {
+        if (up || dpadUp) this.objectIndex = (this.objectIndex - 1 + selectable.length) % selectable.length;
+        if (down || dpadDown) this.objectIndex = (this.objectIndex + 1) % selectable.length;
+      }
       if (right || dpadRight) this.focus = 'tools';
-      if ((right || dpadRight) && this.objectTypes[this.objectIndex] === 'Tiles') {
-        this.focus = 'tiles';
-      }
-      if (interact && this.objectTypes[this.objectIndex] === 'Tiles') {
-        this.focus = 'tiles';
-      }
-    } else if (this.focus === 'tiles') {
-      let moved = false;
-      if (up || dpadUp) {
-        this.tileIndex = clamp(this.tileIndex - 1, 0, this.tileLibrary.length - 1);
-        moved = true;
-      }
-      if (down || dpadDown) {
-        this.tileIndex = clamp(this.tileIndex + 1, 0, this.tileLibrary.length - 1);
-        moved = true;
-      }
-      if (left || dpadLeft) this.focus = 'object';
-      if (right || dpadRight) this.focus = 'tools';
-      if (moved) {
-        const tile = this.tileLibrary[this.tileIndex];
-        if (tile) {
-          this.setActiveTile(tile);
-        }
-      }
       if (interact) {
-        const tile = this.tileLibrary[this.tileIndex];
-        if (tile) {
-          this.setActiveTile(tile);
+        const selected = this.getSelectedObjectEntry();
+        if (selected?.tile) {
+          const tileIndex = this.tileLibrary.findIndex((tile) => tile.id === selected.tile.id);
+          if (tileIndex >= 0) {
+            this.tileIndex = tileIndex;
+          }
+          this.setActiveTile(selected.tile);
         }
       }
     } else if (this.focus === 'palette') {
@@ -321,8 +347,9 @@ export default class PixelStudio {
         this.pixels = [...this.clipboard];
       }
       if (tool.id === 'clone') {
-        this.clipboard = [...this.pixels];
-        this.pixels = [...this.clipboard];
+        this.cloneSource = null;
+        this.cloneOffset = null;
+        this.clonePainting = false;
       }
       if (tool.id === 'fill') {
         this.applyFillAll();
@@ -333,6 +360,9 @@ export default class PixelStudio {
         } else if (this.cutSelection) {
           this.applyCutSelection();
         }
+      }
+      if (tool.id === 'tiled') {
+        this.tiledMode = !this.tiledMode;
       }
     }
   }
@@ -353,13 +383,23 @@ export default class PixelStudio {
         if (cell) {
           this.applyFillAt(cell.row, cell.col);
         }
-      } else if (['rectangle', 'oval', 'rounded-rect', 'gradient'].includes(tool?.id)) {
+      } else if (['rectangle', 'oval', 'rounded-rect', 'polygon', 'gradient'].includes(tool?.id)) {
         const cell = this.getGridCellFromPoint(x, y);
         if (cell) {
           this.shapeActive = true;
           this.shapeStart = cell;
           this.shapeEnd = cell;
           this.shapeTool = tool.id;
+        }
+      } else if (tool?.id === 'clone') {
+        const cell = this.getGridCellFromPoint(x, y);
+        if (!cell) return;
+        if (!this.cloneSource) {
+          this.cloneSource = cell;
+        } else {
+          this.cloneOffset = { row: this.cloneSource.row - cell.row, col: this.cloneSource.col - cell.col };
+          this.clonePainting = true;
+          this.paintAt(x, y);
         }
       } else {
         this.painting = true;
@@ -378,20 +418,25 @@ export default class PixelStudio {
     if (toolHit) {
       this.toolIndex = toolHit.index;
       this.focus = 'tools';
+      const tool = this.tools[this.toolIndex];
+      if (tool?.id === 'clone') {
+        this.cloneSource = null;
+        this.cloneOffset = null;
+        this.clonePainting = false;
+      }
       return;
     }
     const objectHit = this.objectBounds.find((bounds) => this.isPointInBounds(x, y, bounds));
     if (objectHit) {
       this.objectIndex = objectHit.index;
-      this.focus = 'object';
-      return;
-    }
-    const tileHit = this.tileBounds.find((bounds) => this.isPointInBounds(x, y, bounds));
-    if (tileHit) {
-      this.tileIndex = tileHit.index;
-      this.focus = 'tiles';
-      if (tileHit.tile) {
-        this.setActiveTile(tileHit.tile);
+      this.focus = 'objects';
+      const selected = this.getSelectedObjectEntry();
+      if (selected?.tile) {
+        const tileIndex = this.tileLibrary.findIndex((tile) => tile.id === selected.tile.id);
+        if (tileIndex >= 0) {
+          this.tileIndex = tileIndex;
+        }
+        this.setActiveTile(selected.tile);
       }
       return;
     }
@@ -404,7 +449,7 @@ export default class PixelStudio {
   }
 
   handlePointerMove(payload) {
-    if (this.painting) {
+    if (this.painting || this.clonePainting) {
       this.paintAt(payload.x, payload.y);
     }
     if (this.shapeActive && this.canvasBounds) {
@@ -427,6 +472,7 @@ export default class PixelStudio {
 
   handlePointerUp() {
     this.painting = false;
+    this.clonePainting = false;
     this.cutDragging = false;
     this.cutSelectionStart = null;
     if (this.shapeActive && this.shapeStart && this.shapeEnd) {
@@ -445,8 +491,17 @@ export default class PixelStudio {
     const { row, col } = cell;
     const tool = this.tools[this.toolIndex];
     if (!tool) return;
-    if (!['paint', 'erase', 'dropper'].includes(tool.id)) return;
     const index = row * this.gridSize + col;
+    if (tool.id === 'clone') {
+      if (!this.cloneOffset) return;
+      const sourceRow = row + this.cloneOffset.row;
+      const sourceCol = col + this.cloneOffset.col;
+      if (sourceRow < 0 || sourceCol < 0 || sourceRow >= this.gridSize || sourceCol >= this.gridSize) return;
+      const sourceIndex = sourceRow * this.gridSize + sourceCol;
+      this.pixels[index] = this.pixels[sourceIndex];
+      return;
+    }
+    if (!['paint', 'erase', 'dropper'].includes(tool.id)) return;
     if (tool.id === 'dropper') {
       const current = this.pixels[index];
       const paletteIndex = this.palette.findIndex((entry) => entry.color === current);
@@ -534,12 +589,45 @@ export default class PixelStudio {
             const dy = row - cornerY;
             hit = dx * dx + dy * dy <= radius * radius;
           }
+        } else if (toolId === 'polygon') {
+          const polygon = this.getPolygonVertices(minRow, maxRow, minCol, maxCol, 6);
+          hit = this.isPointInPolygon({ x: col + 0.5, y: row + 0.5 }, polygon);
         }
         if (hit) {
           this.pixels[row * this.gridSize + col] = color;
         }
       }
     }
+  }
+
+  getPolygonVertices(minRow, maxRow, minCol, maxCol, sides) {
+    const cx = (minCol + maxCol + 1) / 2;
+    const cy = (minRow + maxRow + 1) / 2;
+    const radiusX = Math.max(1, (maxCol - minCol + 1) / 2);
+    const radiusY = Math.max(1, (maxRow - minRow + 1) / 2);
+    const vertices = [];
+    for (let i = 0; i < sides; i += 1) {
+      const angle = (Math.PI * 2 * i) / sides - Math.PI / 2;
+      vertices.push({
+        x: cx + Math.cos(angle) * radiusX,
+        y: cy + Math.sin(angle) * radiusY
+      });
+    }
+    return vertices;
+  }
+
+  isPointInPolygon(point, polygon) {
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i, i += 1) {
+      const xi = polygon[i].x;
+      const yi = polygon[i].y;
+      const xj = polygon[j].x;
+      const yj = polygon[j].y;
+      const intersect = ((yi > point.y) !== (yj > point.y))
+        && point.x < ((xj - xi) * (point.y - yi)) / (yj - yi + POINT_IN_POLYGON_EPSILON) + xi;
+      if (intersect) inside = !inside;
+    }
+    return inside;
   }
 
   applyGradient(start, end) {
@@ -644,7 +732,7 @@ export default class PixelStudio {
     ctx.textAlign = 'left';
     ctx.fillText('Pixel Editor', 24, 40);
 
-    const leftWidth = 260;
+    const leftWidth = 300;
     const bottomHeight = 140;
     const panelPadding = 16;
 
@@ -657,94 +745,90 @@ export default class PixelStudio {
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(panelX, panelY, leftWidth, panelH);
 
-    const objectBoxH = 120;
-    const tileBoxH = 180;
+    const sectionGap = 18;
+    const toolsBoxH = Math.floor(panelH * 0.4);
+    const objectsBoxH = panelH - toolsBoxH - sectionGap - 12;
+
+    const toolsBoxY = panelY + 12;
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(panelX + 12, panelY + 12, leftWidth - 24, objectBoxH);
-    ctx.strokeStyle = this.focus === 'object' ? '#ffe16a' : 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(panelX + 12, panelY + 12, leftWidth - 24, objectBoxH);
+    ctx.fillRect(panelX + 12, toolsBoxY, leftWidth - 24, toolsBoxH);
+    ctx.strokeStyle = this.focus === 'tools' ? '#ffe16a' : 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(panelX + 12, toolsBoxY, leftWidth - 24, toolsBoxH);
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
-    ctx.fillText('Object Selector', panelX + 24, panelY + 34);
-
-    this.objectBounds = [];
-    this.objectTypes.forEach((label, index) => {
-      const y = panelY + 52 + index * 20;
-      const isSelected = index === this.objectIndex;
-      ctx.fillStyle = isSelected ? '#ffe16a' : 'rgba(255,255,255,0.7)';
-      ctx.fillText(label, panelX + 32, y);
-      this.objectBounds.push({
-        x: panelX + 20,
-        y: y - 12,
-        w: leftWidth - 40,
-        h: 18,
-        index
-      });
-    });
-
-    const tileBoxY = panelY + objectBoxH + 24;
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(panelX + 12, tileBoxY, leftWidth - 24, tileBoxH);
-    ctx.strokeStyle = this.focus === 'tiles' ? '#ffe16a' : 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(panelX + 12, tileBoxY, leftWidth - 24, tileBoxH);
-    ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
-    ctx.fillText('Tile Library', panelX + 24, tileBoxY + 20);
-
-    this.tileBounds = [];
-    if (this.objectTypes[this.objectIndex] === 'Tiles') {
-      const listStartY = tileBoxY + 40;
-      const lineHeight = 18;
-      const maxVisible = Math.floor((tileBoxH - 50) / lineHeight);
-      const maxScroll = Math.max(0, this.tileLibrary.length - maxVisible);
-      this.tileScroll = clamp(this.tileScroll, 0, maxScroll);
-      if (this.tileIndex < this.tileScroll) {
-        this.tileScroll = this.tileIndex;
-      } else if (this.tileIndex >= this.tileScroll + maxVisible) {
-        this.tileScroll = Math.min(maxScroll, this.tileIndex - maxVisible + 1);
-      }
-      this.tileLibrary.slice(this.tileScroll, this.tileScroll + maxVisible).forEach((tile, index) => {
-        const listIndex = this.tileScroll + index;
-        const y = listStartY + index * lineHeight;
-        const isSelected = listIndex === this.tileIndex;
-        ctx.fillStyle = isSelected ? '#ffe16a' : 'rgba(255,255,255,0.7)';
-        ctx.fillText(`${tile.label} [${tile.char}]`, panelX + 32, y);
-        this.tileBounds.push({
-          x: panelX + 20,
-          y: y - 12,
-          w: leftWidth - 40,
-          h: 16,
-          index: listIndex,
-          tile
-        });
-      });
-    } else {
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
-      ctx.font = '12px Courier New';
-      ctx.fillText('Select Tiles to edit.', panelX + 32, tileBoxY + 48);
-    }
-
-    ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
-    ctx.fillText('Tools', panelX + 24, tileBoxY + tileBoxH + 28);
+    ctx.fillText('Tools', panelX + 24, toolsBoxY + 20);
 
     this.toolBounds = [];
-    const toolStartY = tileBoxY + tileBoxH + 46;
-    const toolListHeight = panelH - toolStartY + panelY - 24;
-    const toolGap = 20;
-    this.tools.forEach((tool, index) => {
-      const y = toolStartY + index * toolGap;
-      if (y > toolStartY + toolListHeight - 10) return;
-      const isSelected = index === this.toolIndex;
+    const toolListStartY = toolsBoxY + 36;
+    const toolLineHeight = 18;
+    this.toolVisibleCount = Math.max(1, Math.floor((toolsBoxH - 44) / toolLineHeight));
+    const toolMaxScroll = Math.max(0, this.tools.length - this.toolVisibleCount);
+    this.toolScroll = clamp(this.toolScroll, 0, toolMaxScroll);
+    if (this.toolIndex < this.toolScroll) {
+      this.toolScroll = this.toolIndex;
+    } else if (this.toolIndex >= this.toolScroll + this.toolVisibleCount) {
+      this.toolScroll = Math.min(toolMaxScroll, this.toolIndex - this.toolVisibleCount + 1);
+    }
+    this.tools.slice(this.toolScroll, this.toolScroll + this.toolVisibleCount).forEach((tool, index) => {
+      const listIndex = this.toolScroll + index;
+      const y = toolListStartY + index * toolLineHeight;
+      const isSelected = listIndex === this.toolIndex;
       ctx.fillStyle = isSelected ? '#ffe16a' : 'rgba(255,255,255,0.7)';
       ctx.fillText(tool.label, panelX + 32, y);
       this.toolBounds.push({
         x: panelX + 20,
         y: y - 12,
         w: leftWidth - 40,
-        h: 18,
-        index
+        h: 16,
+        index: listIndex
       });
+    });
+
+    const objectsBoxY = toolsBoxY + toolsBoxH + sectionGap;
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(panelX + 12, objectsBoxY, leftWidth - 24, objectsBoxH);
+    ctx.strokeStyle = this.focus === 'objects' ? '#ffe16a' : 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(panelX + 12, objectsBoxY, leftWidth - 24, objectsBoxH);
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    ctx.fillText('Objects', panelX + 24, objectsBoxY + 20);
+
+    const objectListStartY = objectsBoxY + 36;
+    const objectLineHeight = 18;
+    this.objectVisibleCount = Math.max(1, Math.floor((objectsBoxH - 44) / objectLineHeight));
+    const entries = this.getObjectEntries();
+    const selectable = this.getSelectableObjectEntries();
+    const selectedEntry = selectable[this.objectIndex] || null;
+    const objectMaxScroll = Math.max(0, entries.length - this.objectVisibleCount);
+    this.objectScroll = clamp(this.objectScroll, 0, objectMaxScroll);
+    const selectedIndex = entries.findIndex((entry) => entry === selectedEntry);
+    if (selectedIndex >= 0) {
+      if (selectedIndex < this.objectScroll) {
+        this.objectScroll = selectedIndex;
+      } else if (selectedIndex >= this.objectScroll + this.objectVisibleCount) {
+        this.objectScroll = Math.min(objectMaxScroll, selectedIndex - this.objectVisibleCount + 1);
+      }
+    }
+
+    this.objectBounds = [];
+    entries.slice(this.objectScroll, this.objectScroll + this.objectVisibleCount).forEach((entry, index) => {
+      const listIndex = this.objectScroll + index;
+      const y = objectListStartY + index * objectLineHeight;
+      const isSelected = entries[listIndex] === selectedEntry;
+      ctx.fillStyle = entry.selectable ? (isSelected ? '#ffe16a' : 'rgba(255,255,255,0.7)') : 'rgba(255,255,255,0.5)';
+      const indentX = panelX + 32 + entry.indent * 14;
+      const label = entry.tile?.char ? `${entry.label} [${entry.tile.char}]` : entry.label;
+      ctx.fillText(label, indentX, y);
+      if (entry.selectable) {
+        const selectableIndex = selectable.findIndex((item) => item === entry);
+        this.objectBounds.push({
+          x: panelX + 20,
+          y: y - 12,
+          w: leftWidth - 40,
+          h: 16,
+          index: selectableIndex
+        });
+      }
     });
 
     const canvasX = leftWidth + 60;
@@ -765,6 +849,10 @@ export default class PixelStudio {
     const gridY = canvasY + 40;
 
     this.canvasBounds = { x: gridX, y: gridY, w: gridW, h: gridH, cellSize: pixelSize };
+
+    if (this.tiledMode) {
+      this.drawTiledPreview(ctx, canvasX, canvasY, canvasW, canvasH, gridX, gridY, pixelSize, gridW, gridH);
+    }
 
     ctx.fillStyle = '#101010';
     ctx.fillRect(gridX, gridY, gridW, gridH);
@@ -811,6 +899,14 @@ export default class PixelStudio {
     ctx.font = '14px Courier New';
     ctx.fillText(`Zoom: ${pixelSize}px`, canvasX + 20, canvasY + 24);
     ctx.fillText(`Tool: ${this.tools[this.toolIndex]?.label || ''}`, canvasX + 180, canvasY + 24);
+    if (this.tiledMode) {
+      ctx.fillStyle = '#ffe16a';
+      ctx.fillText('Tiled Mode On', canvasX + 360, canvasY + 24);
+    }
+    if (this.cloneSource && this.tools[this.toolIndex]?.id === 'clone') {
+      ctx.fillStyle = '#9ddcff';
+      ctx.fillText('Clone Source Set', canvasX + 20, canvasY + 44);
+    }
 
     if (this.previewEnabled) {
       const previewSize = 80;
@@ -896,8 +992,30 @@ export default class PixelStudio {
 
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
     ctx.font = '12px Courier New';
-    ctx.fillText('Joystick: palette • D-pad: tools • Triggers: zoom • Enter: apply tool • Esc: back', 24, height - 14);
+    ctx.fillText('Joystick: palette • D-pad: tools/objects • Triggers: zoom • Enter: apply tool • Esc: back', 24, height - 14);
 
+    ctx.restore();
+  }
+
+  drawTiledPreview(ctx, canvasX, canvasY, canvasW, canvasH, gridX, gridY, pixelSize, gridW, gridH) {
+    const startX = gridX - gridW * 2;
+    const startY = gridY - gridH * 2;
+    const endX = canvasX + canvasW;
+    const endY = canvasY + canvasH;
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    for (let tileY = startY; tileY < endY; tileY += gridH) {
+      for (let tileX = startX; tileX < endX; tileX += gridW) {
+        for (let row = 0; row < this.gridSize; row += 1) {
+          for (let col = 0; col < this.gridSize; col += 1) {
+            const color = this.pixels[row * this.gridSize + col];
+            if (!color) continue;
+            ctx.fillStyle = color;
+            ctx.fillRect(tileX + col * pixelSize, tileY + row * pixelSize, pixelSize, pixelSize);
+          }
+        }
+      }
+    }
     ctx.restore();
   }
 }

@@ -6,6 +6,12 @@ export default class AudioSystem {
     this.revOsc = null;
     this.revGain = null;
     this.revActive = false;
+    this.midiBus = null;
+    this.midiLimiter = null;
+    this.midiReverb = null;
+    this.midiSamples = null;
+    this.midiVoices = [];
+    this.midiVoiceLimit = 16;
   }
 
   ensure() {
@@ -15,6 +21,25 @@ export default class AudioSystem {
       this.master.gain.value = this.volume;
       this.master.connect(this.ctx.destination);
     }
+  }
+
+  ensureMidiSampler() {
+    this.ensure();
+    if (this.midiBus) return;
+    this.midiBus = this.ctx.createGain();
+    this.midiBus.gain.value = 0.8;
+    this.midiLimiter = this.ctx.createDynamicsCompressor();
+    this.midiLimiter.threshold.value = -12;
+    this.midiLimiter.knee.value = 8;
+    this.midiLimiter.ratio.value = 6;
+    this.midiLimiter.attack.value = 0.002;
+    this.midiLimiter.release.value = 0.12;
+    this.midiBus.connect(this.midiLimiter);
+    this.midiLimiter.connect(this.master);
+    this.midiReverb = this.ctx.createConvolver();
+    this.midiReverb.buffer = this.buildImpulseResponse(1.4, 2.5);
+    this.midiReverb.connect(this.midiLimiter);
+    this.midiSamples = this.buildMidiSamples();
   }
 
   setVolume(value) {
@@ -38,6 +63,90 @@ export default class AudioSystem {
     gain.gain.exponentialRampToValueAtTime(0.2, now + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     osc.stop(now + duration + 0.02);
+  }
+
+  buildImpulseResponse(duration, decay) {
+    const length = Math.floor(this.ctx.sampleRate * duration);
+    const impulse = this.ctx.createBuffer(2, length, this.ctx.sampleRate);
+    for (let channel = 0; channel < 2; channel += 1) {
+      const data = impulse.getChannelData(channel);
+      for (let i = 0; i < length; i += 1) {
+        data[i] = (Math.random() * 2 - 1) * ((1 - i / length) ** decay);
+      }
+    }
+    return impulse;
+  }
+
+  buildMidiSamples() {
+    return {
+      lead: this.createWaveSample('sawtooth', 1.2, 0.02, 0.2, 0.6, 0.4, 72),
+      bass: this.createWaveSample('square', 1.1, 0.01, 0.12, 0.6, 0.25, 48),
+      pad: this.createWaveSample('triangle', 1.4, 0.08, 0.2, 0.7, 0.5, 60),
+      keys: this.createWaveSample('triangle', 1.0, 0.02, 0.1, 0.5, 0.3, 64),
+      kick: this.createDrumSample('kick', 0.5),
+      snare: this.createDrumSample('snare', 0.4),
+      hat: this.createDrumSample('hat', 0.2),
+      tom: this.createDrumSample('tom', 0.4),
+      crash: this.createDrumSample('crash', 1.0)
+    };
+  }
+
+  createWaveSample(type, duration, attack, decay, sustain, release, baseNote) {
+    const length = Math.floor(this.ctx.sampleRate * duration);
+    const buffer = this.ctx.createBuffer(1, length, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    const frequency = 440 * (2 ** ((baseNote - 69) / 12));
+    for (let i = 0; i < length; i += 1) {
+      const t = i / this.ctx.sampleRate;
+      let sample = 0;
+      if (type === 'square') {
+        sample = Math.sign(Math.sin(2 * Math.PI * frequency * t));
+      } else if (type === 'sawtooth') {
+        sample = 2 * (t * frequency - Math.floor(0.5 + t * frequency));
+      } else if (type === 'triangle') {
+        sample = 2 * Math.abs(2 * (t * frequency - Math.floor(t * frequency + 0.5))) - 1;
+      } else {
+        sample = Math.sin(2 * Math.PI * frequency * t);
+      }
+      const env = this.envelopeAt(t, duration, attack, decay, sustain, release);
+      data[i] = sample * env;
+    }
+    return { buffer, baseNote };
+  }
+
+  createDrumSample(type, duration) {
+    const length = Math.floor(this.ctx.sampleRate * duration);
+    const buffer = this.ctx.createBuffer(1, length, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < length; i += 1) {
+      const t = i / this.ctx.sampleRate;
+      const noise = (Math.random() * 2 - 1) * (1 - t / duration);
+      if (type === 'kick') {
+        const freq = 120 * (1 - t / duration) + 40;
+        data[i] = Math.sin(2 * Math.PI * freq * t) * (1 - t / duration);
+      } else if (type === 'tom') {
+        const freq = 220 * (1 - t / duration) + 80;
+        data[i] = Math.sin(2 * Math.PI * freq * t) * (1 - t / duration) * 0.7 + noise * 0.2;
+      } else if (type === 'snare') {
+        data[i] = noise * 0.8;
+      } else if (type === 'hat') {
+        data[i] = noise * 0.4;
+      } else if (type === 'crash') {
+        data[i] = noise * 0.6;
+      }
+    }
+    return { buffer, baseNote: 60 };
+  }
+
+  envelopeAt(t, duration, attack, decay, sustain, release) {
+    if (t < attack) return t / attack;
+    if (t < attack + decay) {
+      const decayProgress = (t - attack) / decay;
+      return 1 - (1 - sustain) * decayProgress;
+    }
+    if (t < duration - release) return sustain;
+    const releaseProgress = (t - (duration - release)) / release;
+    return sustain * (1 - releaseProgress);
   }
 
   getMidiPreset(instrument) {
@@ -86,6 +195,49 @@ export default class AudioSystem {
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration + release);
     osc.start(now);
     osc.stop(now + duration + release + 0.02);
+  }
+
+  playSampledNote({ pitch = 60, duration = 0.4, volume = 0.8, instrument = 'lead' }) {
+    this.ensureMidiSampler();
+    const sample = this.midiSamples[instrument] || this.midiSamples.lead;
+    if (!sample?.buffer) return;
+    const source = this.ctx.createBufferSource();
+    source.buffer = sample.buffer;
+    const isDrum = ['kick', 'snare', 'hat', 'tom', 'crash'].includes(instrument);
+    const rate = isDrum ? 1 : 2 ** ((pitch - sample.baseNote) / 12);
+    source.playbackRate.value = rate;
+    const gain = this.ctx.createGain();
+    gain.gain.value = Math.max(0, Math.min(1, volume));
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 9000;
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.midiBus);
+    const reverbSend = this.ctx.createGain();
+    reverbSend.gain.value = 0.2;
+    gain.connect(reverbSend);
+    reverbSend.connect(this.midiReverb);
+    const now = this.ctx.currentTime;
+    source.start(now);
+    source.stop(now + duration + 0.1);
+    this.registerMidiVoice(source, gain, now + duration + 0.12);
+  }
+
+  registerMidiVoice(source, gain, stopTime) {
+    this.midiVoices.push({ source, gain, stopTime });
+    if (this.midiVoices.length > this.midiVoiceLimit) {
+      const oldest = this.midiVoices.shift();
+      if (oldest) {
+        try {
+          oldest.gain.gain.setTargetAtTime(0.0001, this.ctx.currentTime, 0.02);
+          oldest.source.stop();
+        } catch (error) {
+          // ignore
+        }
+      }
+    }
+    this.midiVoices = this.midiVoices.filter((voice) => voice.stopTime > this.ctx.currentTime);
   }
 
   noise(duration = 0.12, gainValue = 0.12) {
