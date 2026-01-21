@@ -265,7 +265,7 @@ export default class Editor {
       prefabs: true,
       shapes: true
     };
-    this.panelTabs = ['tools', 'tiles', 'powerups', 'enemies', 'bosses', 'prefabs', 'shapes', 'pixels', 'music', 'midi'];
+    this.panelTabs = ['tools', 'tiles', 'powerups', 'enemies', 'bosses', 'prefabs', 'shapes', 'music'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       tools: 0,
@@ -309,7 +309,7 @@ export default class Editor {
     this.drawer = {
       open: true,
       tabIndex: 0,
-      tabs: ['tools', 'tiles', 'powerups', 'enemies', 'bosses', 'prefabs', 'shapes', 'pixels', 'music', 'midi'],
+      tabs: ['tools', 'tiles', 'powerups', 'enemies', 'bosses', 'prefabs', 'shapes', 'music'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -5605,9 +5605,7 @@ export default class Editor {
           { id: 'bosses', label: 'BOSSES' },
           { id: 'prefabs', label: 'STRUCTURES' },
           { id: 'shapes', label: 'SHAPES' },
-          { id: 'pixels', label: 'PIXELS' },
-          { id: 'music', label: 'MUSIC' },
-          { id: 'midi', label: 'MIDI' }
+          { id: 'music', label: 'MUSIC' }
         ];
         const activeTab = this.getActivePanelTab();
         const activeTabLabel = tabs.find((tab) => tab.id === activeTab)?.label || 'TOOLS';
@@ -5661,8 +5659,7 @@ export default class Editor {
           || activeTab === 'prefabs'
           || activeTab === 'powerups'
           || activeTab === 'enemies'
-          || activeTab === 'bosses'
-          || activeTab === 'pixels';
+          || activeTab === 'bosses';
         const buttonHeight = isPreviewTab ? 60 : 52;
         const buttonGap = 12;
         let items = [];
@@ -5978,9 +5975,7 @@ export default class Editor {
         { id: 'bosses', label: 'BOSSES' },
         { id: 'prefabs', label: 'STRUCTURES' },
         { id: 'shapes', label: 'SHAPES' },
-        { id: 'pixels', label: 'PIXELS' },
-        { id: 'music', label: 'MUSIC' },
-        { id: 'midi', label: 'MIDI' }
+        { id: 'music', label: 'MUSIC' }
       ];
       const tabMargin = 12;
       const tabGap = 6;
