@@ -6234,18 +6234,33 @@ export default class Game {
   }
 
   handleGestureStart(payload) {
-    if (this.state !== 'editor') return;
-    this.editor.handleGestureStart(payload);
+    if (this.state === 'editor') {
+      this.editor.handleGestureStart(payload);
+    } else if (this.state === 'pixel-editor') {
+      this.pixelStudio.handleGestureStart(payload);
+    } else if (this.state === 'midi-editor') {
+      this.midiComposer.handleGestureStart(payload);
+    }
   }
 
   handleGestureMove(payload) {
-    if (this.state !== 'editor') return;
-    this.editor.handleGestureMove(payload);
+    if (this.state === 'editor') {
+      this.editor.handleGestureMove(payload);
+    } else if (this.state === 'pixel-editor') {
+      this.pixelStudio.handleGestureMove(payload);
+    } else if (this.state === 'midi-editor') {
+      this.midiComposer.handleGestureMove(payload);
+    }
   }
 
   handleGestureEnd() {
-    if (this.state !== 'editor') return;
-    this.editor.handleGestureEnd();
+    if (this.state === 'editor') {
+      this.editor.handleGestureEnd();
+    } else if (this.state === 'pixel-editor') {
+      this.pixelStudio.handleGestureEnd();
+    } else if (this.state === 'midi-editor') {
+      this.midiComposer.handleGestureEnd();
+    }
   }
 
 }

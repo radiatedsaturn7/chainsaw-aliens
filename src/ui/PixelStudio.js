@@ -153,6 +153,7 @@ export default class PixelStudio {
     this.cutDragging = false;
     this.cutSelectionStart = null;
     this.cutImage = null;
+    this.gesture = null;
     this.cutCanvas = document.createElement('canvas');
     this.cutCanvasCtx = this.cutCanvas.getContext('2d');
     this.imageInput = document.createElement('input');
@@ -372,6 +373,36 @@ export default class PixelStudio {
     if (this.game?.enterPixelPreview) {
       this.game.enterPixelPreview(this.activeTile);
     }
+  }
+
+  handleGestureStart(payload) {
+    if (!this.canvasBounds || !this.isPointInBounds(payload.x, payload.y, this.canvasBounds)) return;
+    this.gesture = {
+      startDistance: payload.distance,
+      startZoom: ZOOM_LEVELS[this.zoomIndex]
+    };
+  }
+
+  handleGestureMove(payload) {
+    if (!this.gesture?.startDistance) return;
+    const scale = payload.distance / this.gesture.startDistance;
+    const minZoom = ZOOM_LEVELS[0];
+    const maxZoom = ZOOM_LEVELS[ZOOM_LEVELS.length - 1];
+    const targetZoom = clamp(this.gesture.startZoom * scale, minZoom, maxZoom);
+    let closestIndex = 0;
+    let closestDelta = Infinity;
+    ZOOM_LEVELS.forEach((level, index) => {
+      const delta = Math.abs(level - targetZoom);
+      if (delta < closestDelta) {
+        closestDelta = delta;
+        closestIndex = index;
+      }
+    });
+    this.zoomIndex = closestIndex;
+  }
+
+  handleGestureEnd() {
+    this.gesture = null;
   }
 
   handlePointerDown(payload) {

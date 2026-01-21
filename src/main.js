@@ -149,7 +149,7 @@ let gestureActive = false;
 const activeTouches = new Map();
 
 canvas.addEventListener('touchstart', (event) => {
-  if (game.state === 'editor' && event.touches.length >= 2) {
+  if (['editor', 'pixel-editor', 'midi-editor'].includes(game.state) && event.touches.length >= 2) {
     event.preventDefault();
     const gesture = getTouchGesture(event.touches);
     gestureActive = true;

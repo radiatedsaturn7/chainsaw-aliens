@@ -81,6 +81,7 @@ export default class AudioSystem {
     return {
       lead: this.createWaveSample('sawtooth', 1.2, 0.02, 0.2, 0.6, 0.4, 72),
       bass: this.createWaveSample('square', 1.1, 0.01, 0.12, 0.6, 0.25, 48),
+      guitar: this.createWaveSample('sawtooth', 1.0, 0.02, 0.12, 0.55, 0.28, 64),
       pad: this.createWaveSample('triangle', 1.4, 0.08, 0.2, 0.7, 0.5, 60),
       keys: this.createWaveSample('triangle', 1.0, 0.02, 0.1, 0.5, 0.3, 64),
       kick: this.createDrumSample('kick', 0.5),
