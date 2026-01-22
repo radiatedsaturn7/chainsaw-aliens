@@ -18,14 +18,22 @@ const SCALE_LIBRARY = [
 ];
 
 const QUANTIZE_OPTIONS = [
+  { id: '1', label: '1', divisor: 1 },
+  { id: '1/2', label: '1/2', divisor: 2 },
+  { id: '1/3', label: '1/3', divisor: 3 },
   { id: '1/4', label: '1/4', divisor: 4 },
+  { id: '1/6', label: '1/6', divisor: 6 },
   { id: '1/8', label: '1/8', divisor: 8 },
   { id: '1/16', label: '1/16', divisor: 16 },
   { id: '1/32', label: '1/32', divisor: 32 }
 ];
 
 const NOTE_LENGTH_OPTIONS = [
+  { id: '1', label: '1', divisor: 1 },
+  { id: '1/2', label: '1/2', divisor: 2 },
+  { id: '1/3', label: '1/3', divisor: 3 },
   { id: '1/4', label: '1/4', divisor: 4 },
+  { id: '1/6', label: '1/6', divisor: 6 },
   { id: '1/8', label: '1/8', divisor: 8 },
   { id: '1/16', label: '1/16', divisor: 16 },
   { id: '1/32', label: '1/32', divisor: 32 }
@@ -115,9 +123,121 @@ const GENRE_OPTIONS = [
   { id: 'synthwave', label: 'Synthwave' },
   { id: 'rock', label: 'Rock' }
 ];
+const CHORD_PROGRESSION_LIBRARY = [
+  {
+    theme: 'happy',
+    scale: 'major',
+    chords: ['C', 'G', 'Am', 'F']
+  },
+  {
+    theme: 'bright',
+    scale: 'major',
+    chords: ['C', 'F', 'G', 'C']
+  },
+  {
+    theme: 'uplift',
+    scale: 'major',
+    chords: ['C', 'Am', 'F', 'G']
+  },
+  {
+    theme: 'moody',
+    scale: 'minor',
+    chords: ['Am', 'F', 'C', 'G']
+  },
+  {
+    theme: 'dark',
+    scale: 'minor',
+    chords: ['Am', 'G', 'F', 'E']
+  }
+];
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const uid = () => `note-${Math.floor(Math.random() * 1000000)}`;
+const findNoteLengthIndex = (id) => {
+  const index = NOTE_LENGTH_OPTIONS.findIndex((option) => option.id === id);
+  return index >= 0 ? index : 0;
+};
+const NOTE_NAME_ALIASES = {
+  'C#': 1,
+  'Db': 1,
+  'D#': 3,
+  'Eb': 3,
+  'F#': 6,
+  'Gb': 6,
+  'G#': 8,
+  'Ab': 8,
+  'A#': 10,
+  'Bb': 10
+};
+const isBlackKey = (pitchClass) => [1, 3, 6, 8, 10].includes(pitchClass);
+const parseChordToken = (token) => {
+  if (!token) return null;
+  const trimmed = token.trim();
+  if (!trimmed) return null;
+  const quality = /dim/i.test(trimmed)
+    ? 'dim'
+    : /m(in)?$/i.test(trimmed) || trimmed === trimmed.toLowerCase()
+      ? 'min'
+      : 'maj';
+  const rootToken = trimmed.replace(/(dim|maj|min|m)$/i, '');
+  const normalized = rootToken.length > 1
+    ? `${rootToken[0].toUpperCase()}${rootToken[1]}`
+    : rootToken.toUpperCase();
+  const root = NOTE_NAME_ALIASES[normalized] ?? KEY_LABELS.indexOf(normalized);
+  if (root < 0) return null;
+  return { root, quality };
+};
+const parseChordProgressionInput = (input, loopBars) => {
+  if (!input) return null;
+  const segments = input
+    .split(/[\n;]+/)
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+  if (!segments.length) return null;
+  const progression = [];
+  segments.forEach((segment) => {
+    const tokens = segment.split(/\s+/).filter(Boolean);
+    if (tokens.length < 2) return;
+    const rangeToken = tokens[0];
+    const [startRaw, endRaw] = rangeToken.split('-').map((value) => parseInt(value, 10));
+    const startBar = Number.isInteger(startRaw) ? Math.max(1, startRaw) : 1;
+    const endBar = Number.isInteger(endRaw) ? Math.max(startBar, endRaw) : startBar;
+    const chords = tokens.slice(1).map(parseChordToken).filter(Boolean);
+    if (!chords.length) return;
+    const maxBars = Math.max(endBar, loopBars || endBar);
+    for (let bar = startBar; bar <= Math.min(endBar, maxBars); bar += 1) {
+      const chord = chords[(bar - startBar) % chords.length] || chords[chords.length - 1];
+      if (!chord) continue;
+      progression.push({
+        root: chord.root,
+        quality: chord.quality,
+        startBar: bar,
+        lengthBars: 1
+      });
+    }
+  });
+  return progression.length ? progression : null;
+};
+const formatChordToken = (chord) => {
+  if (!chord) return '';
+  const name = KEY_LABELS[chord.root] || 'C';
+  if (chord.quality === 'min') return `${name}m`;
+  if (chord.quality === 'dim') return `${name}dim`;
+  return name;
+};
+const toRgba = (hex, alpha) => {
+  if (!hex || !hex.startsWith('#') || (hex.length !== 7 && hex.length !== 4)) {
+    return `rgba(255,255,255,${alpha})`;
+  }
+  const normalized = hex.length === 4
+    ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`
+    : hex;
+  const value = parseInt(normalized.slice(1), 16);
+  const r = (value >> 16) & 255;
+  const g = (value >> 8) & 255;
+  const b = value & 255;
+  return `rgba(${r},${g},${b},${alpha})`;
+};
 
 const createDefaultSong = () => ({
   schemaVersion: GM_SCHEMA_VERSION,
@@ -129,7 +249,8 @@ const createDefaultSong = () => ({
   timeSignature: { beats: 4, unit: 4 },
   highContrast: false,
   key: 0,
-  scale: 'minor',
+  scale: 'major',
+  chordMode: false,
   tracks: [
     {
       id: 'track-lead',
@@ -362,9 +483,9 @@ export default class MidiComposer {
     this.ticksPerBeat = 8;
     this.beatsPerBar = 4;
     this.quantizeOptions = QUANTIZE_OPTIONS;
-    this.quantizeIndex = 0;
+    this.quantizeIndex = findNoteLengthIndex('1/4');
     this.quantizeEnabled = true;
-    this.noteLengthIndex = 0;
+    this.noteLengthIndex = findNoteLengthIndex('1/4');
     this.swing = 0;
     this.previewOnEdit = true;
     this.scrubAudition = false;
@@ -376,6 +497,7 @@ export default class MidiComposer {
     this.activeTool = 'draw';
     this.song = this.loadSong();
     this.highContrast = Boolean(this.song?.highContrast);
+    this.chordMode = Boolean(this.song?.chordMode);
     this.selectedTrackIndex = 0;
     this.selectedPatternIndex = 0;
     this.playheadTick = 0;
@@ -601,6 +723,7 @@ export default class MidiComposer {
       library.unshift(payload);
     }
     this.saveSongLibrary(library);
+    this.selection.clear();
     this.persist();
   }
 
@@ -821,10 +944,20 @@ export default class MidiComposer {
     if (typeof this.song.highContrast !== 'boolean') {
       this.song.highContrast = false;
     }
+    if (!Number.isInteger(this.song.key)) {
+      this.song.key = 0;
+    }
+    if (!SCALE_LIBRARY.find((entry) => entry.id === this.song.scale)) {
+      this.song.scale = 'major';
+    }
+    if (typeof this.song.chordMode !== 'boolean') {
+      this.song.chordMode = false;
+    }
     if (!this.song.progression) {
       this.song.progression = createDefaultSong().progression;
     }
     this.highContrast = Boolean(this.song.highContrast);
+    this.chordMode = Boolean(this.song.chordMode);
     this.beatsPerBar = this.song.timeSignature.beats;
     this.ensureDefaultLoopRegion();
     this.selectedTrackIndex = clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
@@ -842,6 +975,8 @@ export default class MidiComposer {
     if (typeof this.song.loopStartTick === 'number' || typeof this.song.loopEndTick === 'number') return;
     this.song.loopStartTick = 0;
     this.song.loopEndTick = this.getDefaultLoopEndTick();
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    this.song.loopBars = Math.max(this.song.loopBars || 1, Math.ceil(this.song.loopEndTick / ticksPerBar));
   }
 
   preloadTrackPrograms() {
@@ -1298,6 +1433,55 @@ export default class MidiComposer {
     const thirdInterval = chord.quality === 'min' ? 3 : chord.quality === 'dim' ? 3 : 4;
     const fifthInterval = chord.quality === 'dim' ? 6 : 7;
     return [root, (root + thirdInterval) % 12, (root + fifthInterval) % 12];
+  }
+
+  setChordMode(enabled) {
+    this.chordMode = Boolean(enabled);
+    this.song.chordMode = this.chordMode;
+    this.persist();
+  }
+
+  promptChordProgression() {
+    const loopBars = Math.max(1, this.song.loopBars || DEFAULT_GRID_BARS);
+    const perBar = [];
+    for (let bar = 1; bar <= loopBars; bar += 1) {
+      const chord = this.song.progression.find((entry) => bar >= entry.startBar && bar < entry.startBar + entry.lengthBars)
+        || this.song.progression[0];
+      perBar.push(formatChordToken(chord));
+    }
+    const suggested = `1-${loopBars} ${perBar.join(' ')}`.trim();
+    const input = window.prompt(
+      'Enter chord progressions by bar (e.g. "1-4 C C D G; 5-6 D G; 7-9 C D G").',
+      suggested
+    );
+    if (!input) return;
+    const progression = parseChordProgressionInput(input, loopBars);
+    if (!progression) {
+      window.alert('Could not parse chord progression. Try format: 1-4 C C D G');
+      return;
+    }
+    this.song.progression = progression;
+    this.persist();
+  }
+
+  buildProgressionFromLibrary(loopBars) {
+    const template = CHORD_PROGRESSION_LIBRARY[Math.floor(Math.random() * CHORD_PROGRESSION_LIBRARY.length)];
+    const chords = template?.chords?.length ? template.chords : ['C', 'F', 'G', 'C'];
+    const progression = [];
+    for (let bar = 1; bar <= loopBars; bar += 1) {
+      const chord = parseChordToken(chords[(bar - 1) % chords.length]) || { root: 0, quality: 'maj' };
+      progression.push({
+        root: chord.root,
+        quality: chord.quality,
+        startBar: bar,
+        lengthBars: 1
+      });
+    }
+    return {
+      progression,
+      scale: template?.scale || 'major',
+      theme: template?.theme || 'random'
+    };
   }
 
   update(input, dt) {
@@ -1765,6 +1949,22 @@ export default class MidiComposer {
         this.setNoteLengthIndex(this.noteLengthIndex + 1);
         return;
       }
+      if (this.bounds.chordMode && this.pointInBounds(x, y, this.bounds.chordMode)) {
+        this.setChordMode(!this.chordMode);
+        return;
+      }
+      if (this.bounds.chordEdit && this.pointInBounds(x, y, this.bounds.chordEdit)) {
+        this.promptChordProgression();
+        return;
+      }
+      if (this.bounds.barsMinus && this.pointInBounds(x, y, this.bounds.barsMinus)) {
+        this.adjustLoopBars(-1);
+        return;
+      }
+      if (this.bounds.barsPlus && this.pointInBounds(x, y, this.bounds.barsPlus)) {
+        this.adjustLoopBars(1);
+        return;
+      }
       if (this.bounds.zoomOutX && this.pointInBounds(x, y, this.bounds.zoomOutX)) {
         const { minZoom, maxZoom } = this.getGridZoomLimitsX();
         this.gridZoomX = clamp(this.gridZoomX - 0.1, minZoom, maxZoom);
@@ -1796,6 +1996,15 @@ export default class MidiComposer {
         if (this.isNearLoopMarker(x, 'end')) {
           this.dragState = { mode: 'loop-end' };
           this.setLoopEndTick(tick);
+          return;
+        }
+        if (this.isInsideLoopRegion(x)) {
+          this.dragState = {
+            mode: 'loop-shift',
+            startTick: tick,
+            originStart: this.song.loopStartTick,
+            originEnd: this.song.loopEndTick
+          };
           return;
         }
         if (this.placingStartMarker) {
@@ -1886,6 +2095,18 @@ export default class MidiComposer {
     }
     if (this.dragState.mode === 'loop-end') {
       this.setLoopEndTick(this.getTickFromX(payload.x));
+      return;
+    }
+    if (this.dragState.mode === 'loop-shift') {
+      const tick = this.getTickFromX(payload.x);
+      const delta = tick - this.dragState.startTick;
+      const start = this.dragState.originStart;
+      const end = this.dragState.originEnd;
+      if (typeof start === 'number' && typeof end === 'number') {
+        this.song.loopStartTick = start;
+        this.song.loopEndTick = end;
+      }
+      this.shiftLoopRegion(delta);
       return;
     }
     if (!this.pointInBounds(payload.x, payload.y, this.gridBounds)) return;
@@ -2057,6 +2278,27 @@ export default class MidiComposer {
         cell,
         hit
       };
+      if (payload.touchCount) {
+        this.longPressTimer = window.setTimeout(() => {
+          const heldCell = this.getGridCell(this.lastPointer.x, this.lastPointer.y);
+          if (!heldCell) return;
+          const heldNote = this.getNoteAtCell(heldCell.tick, heldCell.pitch, this.lastPointer.x);
+          if (heldNote) {
+            this.selection.add(heldNote.note.id);
+          }
+          if (navigator?.vibrate) {
+            navigator.vibrate(20);
+          }
+          this.dragState = {
+            mode: 'select',
+            startX: this.lastPointer.x,
+            startY: this.lastPointer.y,
+            currentX: this.lastPointer.x,
+            currentY: this.lastPointer.y,
+            appendSelection: this.selection.size > 0 || Boolean(heldNote)
+          };
+        }, 450);
+      }
       return;
     }
     if (this.pastePreview) {
@@ -2064,7 +2306,7 @@ export default class MidiComposer {
       this.dragState = { mode: 'paste-preview' };
       return;
     }
-    const hit = this.getNoteAtCell(cell.tick, cell.pitch);
+    const hit = this.getNoteAtCell(cell.tick, cell.pitch, x);
     if (hit) {
       if (modifiers.meta) {
         this.toggleSelection(hit.note.id);
@@ -2114,16 +2356,6 @@ export default class MidiComposer {
       cell,
       moved: false
     };
-    if (payload.touchCount) {
-      this.longPressTimer = window.setTimeout(() => {
-        const heldCell = this.getGridCell(this.lastPointer.x, this.lastPointer.y);
-        if (!heldCell) return;
-        const heldNote = this.getNoteAtCell(heldCell.tick, heldCell.pitch);
-        if (heldNote) {
-          this.deleteNote(heldNote.note);
-        }
-      }, 500);
-    }
   }
 
   toggleNoteAt(tick, pitch) {
@@ -2273,7 +2505,9 @@ export default class MidiComposer {
     const maxY = Math.max(startY, currentY);
     const pattern = this.getActivePattern();
     if (!pattern) return;
-    this.selection.clear();
+    if (!this.dragState.appendSelection) {
+      this.selection.clear();
+    }
     pattern.notes.forEach((note) => {
       const rect = this.getNoteRect(note);
       if (rect && rect.x + rect.w >= minX && rect.x <= maxX && rect.y + rect.h >= minY && rect.y <= maxY) {
@@ -2541,6 +2775,12 @@ export default class MidiComposer {
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
     const snapped = Math.max(1, Math.round(tick / ticksPerBar) * ticksPerBar);
     this.song.loopEndTick = snapped;
+    this.song.loopBars = Math.max(1, Math.ceil(snapped / ticksPerBar));
+    this.song.tracks.forEach((track) => {
+      track.patterns.forEach((pattern) => {
+        pattern.bars = this.song.loopBars;
+      });
+    });
     this.ensureGridCapacity(snapped);
     this.playheadTick = clamp(this.playheadTick, this.getLoopStartTick(), this.getLoopTicks());
     this.persist();
@@ -2569,6 +2809,31 @@ export default class MidiComposer {
       return;
     }
     this.song.loopEnabled = !this.song.loopEnabled;
+    this.persist();
+  }
+
+  adjustLoopBars(delta) {
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    if (typeof this.song.loopEndTick === 'number') {
+      const nextEnd = Math.max(ticksPerBar, this.song.loopEndTick + delta * ticksPerBar);
+      this.song.loopEndTick = nextEnd;
+      this.song.loopBars = Math.max(1, Math.ceil(nextEnd / ticksPerBar));
+      this.song.tracks.forEach((track) => {
+        track.patterns.forEach((pattern) => {
+          pattern.bars = this.song.loopBars;
+        });
+      });
+      this.ensureGridCapacity(nextEnd);
+      this.persist();
+      return;
+    }
+    const nextBars = clamp(this.song.loopBars + delta, 1, 128);
+    this.song.loopBars = nextBars;
+    this.song.tracks.forEach((track) => {
+      track.patterns.forEach((pattern) => {
+        pattern.bars = this.song.loopBars;
+      });
+    });
     this.persist();
   }
 
@@ -2758,6 +3023,14 @@ export default class MidiComposer {
     }
     if (control.id === 'grid-scale-lock') {
       this.scaleLock = !this.scaleLock;
+      return;
+    }
+    if (control.id === 'grid-chord-mode') {
+      this.setChordMode(!this.chordMode);
+      return;
+    }
+    if (control.id === 'grid-chord-progression') {
+      this.promptChordProgression();
       return;
     }
     if (control.id === 'playback-loop') {
@@ -2973,64 +3246,95 @@ export default class MidiComposer {
   }
 
   generatePattern(genre = this.selectedGenre) {
-    const pattern = this.getActivePattern();
-    const track = this.getActiveTrack();
-    if (!pattern || !track) return;
-    const loopTicks = this.getLoopTicks();
-    pattern.notes = [];
     const style = genre || 'random';
     const resolvedStyle = style === 'random'
       ? GENRE_OPTIONS[Math.floor(Math.random() * (GENRE_OPTIONS.length - 1)) + 1]?.id || 'ambient'
       : style;
-    if (isDrumChannel(track.channel)) {
-      const drumRows = this.getDrumRows();
-      for (let bar = 0; bar < this.song.loopBars; bar += 1) {
-        const base = bar * this.beatsPerBar * this.ticksPerBeat;
-        drumRows.forEach((drum, index) => {
-          const density = resolvedStyle === 'drum-bass' ? 1 : resolvedStyle === 'hip-hop' ? 2 : 3;
-          if (index % density === 0) {
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    const loopBars = Math.max(1, this.song.loopBars || DEFAULT_GRID_BARS);
+    const theme = this.buildProgressionFromLibrary(loopBars);
+    this.song.progression = theme.progression;
+    this.song.scale = theme.scale;
+    this.song.key = 0;
+
+    this.song.tracks.forEach((track) => {
+      const pattern = track.patterns[this.selectedPatternIndex];
+      if (!pattern) return;
+      pattern.notes = [];
+      if (isDrumChannel(track.channel)) {
+        const kick = 36;
+        const snare = 38;
+        const hat = 42;
+        const crash = 49;
+        const eighth = Math.max(1, Math.round(ticksPerBar / 8));
+        for (let bar = 0; bar < loopBars; bar += 1) {
+          const base = bar * ticksPerBar;
+          const isFinalBar = bar === loopBars - 1;
+          if (isFinalBar) {
+            pattern.notes.push({ id: uid(), startTick: base, durationTicks: 2, pitch: kick, velocity: 0.95 });
+            pattern.notes.push({ id: uid(), startTick: base, durationTicks: 2, pitch: crash, velocity: 0.85 });
+            for (let beat = 1; beat < this.beatsPerBar; beat += 1) {
+              pattern.notes.push({
+                id: uid(),
+                startTick: base + beat * this.ticksPerBeat,
+                durationTicks: 2,
+                pitch: snare,
+                velocity: 0.9
+              });
+            }
+          } else {
+            pattern.notes.push({ id: uid(), startTick: base, durationTicks: 2, pitch: kick, velocity: 0.95 });
+            pattern.notes.push({ id: uid(), startTick: base + this.ticksPerBeat * 2, durationTicks: 2, pitch: kick, velocity: 0.95 });
+            pattern.notes.push({ id: uid(), startTick: base + this.ticksPerBeat, durationTicks: 2, pitch: snare, velocity: 0.9 });
+            pattern.notes.push({ id: uid(), startTick: base + this.ticksPerBeat * 3, durationTicks: 2, pitch: snare, velocity: 0.9 });
+          }
+          for (let step = 0; step < this.beatsPerBar * 2; step += 1) {
             pattern.notes.push({
               id: uid(),
-              startTick: base + index * 2,
-              durationTicks: 2,
-              pitch: drum.pitch,
+              startTick: base + step * eighth,
+              durationTicks: 1,
+              pitch: hat,
+              velocity: 0.55
+            });
+          }
+        }
+        return;
+      }
+
+      const isBass = /bass/i.test(track.name || '');
+      const basePitch = isBass ? 36 : resolvedStyle === 'hip-hop' ? 48 : 60;
+      for (let bar = 0; bar < loopBars; bar += 1) {
+        const chord = this.getChordForTick(bar * ticksPerBar);
+        const chordRoot = chord?.root ?? 0;
+        const chordTones = this.getChordTones({ ...chord, root: chordRoot });
+        const barStart = bar * ticksPerBar;
+        if (isBass) {
+          const step = Math.random() > 0.5 ? this.ticksPerBeat : Math.max(1, Math.round(this.ticksPerBeat / 2));
+          for (let tick = barStart; tick < barStart + ticksPerBar; tick += step) {
+            pattern.notes.push({
+              id: uid(),
+              startTick: tick,
+              durationTicks: step,
+              pitch: basePitch + chordRoot,
               velocity: 0.8
             });
           }
-        });
-        if (resolvedStyle === 'house') {
-          pattern.notes.push({
-            id: uid(),
-            startTick: base,
-            durationTicks: 2,
-            pitch: 36,
-            velocity: 0.95
-          });
-          pattern.notes.push({
-            id: uid(),
-            startTick: base + this.ticksPerBeat * 2,
-            durationTicks: 2,
-            pitch: 36,
-            velocity: 0.95
+        } else {
+          const eighth = Math.max(1, Math.round(ticksPerBar / 8));
+          const patternSteps = [0, 2, 4, 6, 7];
+          patternSteps.forEach((stepIndex, index) => {
+            const pitchClass = chordTones[index % chordTones.length] ?? chordRoot;
+            pattern.notes.push({
+              id: uid(),
+              startTick: barStart + stepIndex * eighth,
+              durationTicks: eighth,
+              pitch: basePitch + pitchClass + (index > 2 ? 12 : 0),
+              velocity: 0.75
+            });
           });
         }
       }
-    } else {
-      const scale = this.getScalePitchClasses();
-      const step = resolvedStyle === 'ambient' ? this.getQuantizeTicks() * 3 : this.getQuantizeTicks() * 2;
-      const basePitch = resolvedStyle === 'hip-hop' ? 48 : 60;
-      for (let tick = 0; tick < loopTicks; tick += step) {
-        const pitchClass = scale[(tick / this.getQuantizeTicks()) % scale.length];
-        const pitch = basePitch + pitchClass + (resolvedStyle === 'synthwave' ? 12 : 0);
-        pattern.notes.push({
-          id: uid(),
-          startTick: tick,
-          durationTicks: resolvedStyle === 'ambient' ? this.getQuantizeTicks() * 2 : this.getQuantizeTicks(),
-          pitch,
-          velocity: resolvedStyle === 'ambient' ? 0.6 : 0.8
-        });
-      }
-    }
+    });
     this.persist();
   }
 
@@ -3119,7 +3423,7 @@ export default class MidiComposer {
   }
 
   getDefaultGridZoomY() {
-    return 1;
+    return DEFAULT_VISIBLE_ROWS / 8;
   }
 
   getOctaveLabel(pitch) {
@@ -3200,16 +3504,40 @@ export default class MidiComposer {
     return Math.abs(x - markerX) <= threshold;
   }
 
-  getNoteAtCell(tick, pitch) {
+  isInsideLoopRegion(x) {
+    if (!this.gridBounds) return false;
+    if (!this.song.loopEnabled) return false;
+    if (typeof this.song.loopStartTick !== 'number' || typeof this.song.loopEndTick !== 'number') return false;
+    const startX = this.gridBounds.originX + this.song.loopStartTick * this.gridBounds.cellWidth;
+    const endX = this.gridBounds.originX + this.song.loopEndTick * this.gridBounds.cellWidth;
+    return x > Math.min(startX, endX) && x < Math.max(startX, endX);
+  }
+
+  shiftLoopRegion(deltaTicks) {
+    if (typeof this.song.loopStartTick !== 'number' || typeof this.song.loopEndTick !== 'number') return;
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    const loopLength = Math.max(1, this.song.loopEndTick - this.song.loopStartTick);
+    const gridTicks = Math.max(this.song.loopBars * ticksPerBar, this.song.loopEndTick);
+    const maxStart = Math.max(0, gridTicks - loopLength);
+    const nextStart = clamp(this.song.loopStartTick + deltaTicks, 0, maxStart);
+    const nextEnd = nextStart + loopLength;
+    this.song.loopStartTick = nextStart;
+    this.song.loopEndTick = nextEnd;
+    this.playheadTick = clamp(this.playheadTick, this.getLoopStartTick(), this.getLoopTicks());
+    this.persist();
+  }
+
+  getNoteAtCell(tick, pitch, pointerX = null) {
     const pattern = this.getActivePattern();
     if (!pattern) return null;
     const hit = pattern.notes.find((note) => tick >= note.startTick && tick < note.startTick + note.durationTicks && note.pitch === pitch);
     if (!hit) return null;
     const rect = this.getNoteRect(hit);
     if (!rect) return null;
-    const edgeMargin = Math.min(16, Math.max(8, rect.w * 0.45));
-    const isStartEdge = this.lastPointer.x <= rect.x + edgeMargin;
-    const isEndEdge = this.lastPointer.x >= rect.x + rect.w - edgeMargin;
+    const handleSize = Math.max(6, Math.min(12, rect.h - 2, rect.w / 2));
+    const cursorX = typeof pointerX === 'number' ? pointerX : this.lastPointer.x;
+    const isStartEdge = cursorX <= rect.x + handleSize;
+    const isEndEdge = cursorX >= rect.x + rect.w - handleSize;
     return { note: hit, edge: isStartEdge ? 'start' : isEndEdge ? 'end' : null };
   }
 
@@ -3592,8 +3920,32 @@ export default class MidiComposer {
     const noteW = Math.min(160, Math.max(120, ctx.measureText(noteLabel).width + 28));
     this.bounds.noteLength = { x: cursorX, y, w: noteW, h: rowH };
     this.drawButton(ctx, this.bounds.noteLength, noteLabel, false, false);
+    const row2Y = y + rowH + gap;
+    let row2X = x;
+    const chordLabel = this.chordMode ? 'Chord Mode' : 'Piano Mode';
+    const chordW = Math.min(180, Math.max(140, ctx.measureText(chordLabel).width + 28));
+    this.bounds.chordMode = { x: row2X, y: row2Y, w: chordW, h: rowH };
+    this.drawButton(ctx, this.bounds.chordMode, chordLabel, this.chordMode, false);
+    row2X += chordW + gap;
 
-    return rowH;
+    const editLabel = 'Edit Chords';
+    const editW = Math.min(150, Math.max(120, ctx.measureText(editLabel).width + 28));
+    this.bounds.chordEdit = { x: row2X, y: row2Y, w: editW, h: rowH };
+    this.drawButton(ctx, this.bounds.chordEdit, editLabel, false, false);
+    row2X += editW + gap;
+
+    const barsLabel = `Bars ${Math.max(1, this.song.loopBars || DEFAULT_GRID_BARS)}`;
+    const barsLabelW = Math.min(140, Math.max(96, ctx.measureText(barsLabel).width + 28));
+    this.bounds.barsMinus = { x: row2X, y: row2Y, w: buttonSize, h: rowH };
+    this.drawButton(ctx, this.bounds.barsMinus, '−', false, false);
+    row2X += buttonSize + gap;
+    this.bounds.barsLabel = { x: row2X, y: row2Y, w: barsLabelW, h: rowH };
+    this.drawButton(ctx, this.bounds.barsLabel, barsLabel, false, true);
+    row2X += barsLabelW + gap;
+    this.bounds.barsPlus = { x: row2X, y: row2Y, w: buttonSize, h: rowH };
+    this.drawButton(ctx, this.bounds.barsPlus, '+', false, false);
+
+    return rowH * 2 + gap;
   }
 
   drawGridZoomControls(ctx, x, y, w, h) {
@@ -4046,6 +4398,8 @@ export default class MidiComposer {
       'Cycle the time signature used for measure length.'
     );
     drawToggle('Snap', this.scaleLock, 'grid-scale-lock', 'Snap pitches to the current scale.');
+    drawToggle('Chord Mode', this.chordMode, 'grid-chord-mode', 'Show chord tones and highlight chord notes.');
+    drawAction('Chords', 'Edit', 'grid-chord-progression', 'Define chord progressions by bar range.');
     drawToggle('Quant', this.quantizeEnabled, 'grid-quantize-toggle', 'Enable quantized placement.');
     drawToggle('Scrub', this.scrubAudition, 'grid-scrub', 'Audition notes while scrubbing.');
     drawAction('All', 'Select', 'grid-select-all', 'Select all notes in the current pattern.');
@@ -4644,6 +4998,12 @@ export default class MidiComposer {
     ctx.beginPath();
     ctx.rect(x, y, w, 24);
     ctx.clip();
+    if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
+      const loopStartX = originX + this.song.loopStartTick * cellWidth;
+      const loopEndX = originX + this.song.loopEndTick * cellWidth;
+      ctx.fillStyle = 'rgba(255,225,106,0.25)';
+      ctx.fillRect(loopStartX, y, loopEndX - loopStartX, 24);
+    }
     const totalBars = Math.max(1, Math.ceil(loopTicks / ticksPerBar));
     for (let bar = 0; bar < totalBars; bar += 1) {
       const barX = originX + bar * ticksPerBar * cellWidth;
@@ -4675,8 +5035,7 @@ export default class MidiComposer {
   drawGrid(ctx, track, pattern, loopTicks) {
     const { originX, originY, cellWidth, cellHeight, rows } = this.gridBounds;
     const isDrumGrid = isDrumChannel(track.channel);
-    const chord = this.getChordForTick(this.playheadTick || 0);
-    const chordTones = this.getChordTones(chord);
+    const chordMode = this.chordMode;
     const scalePitchClasses = this.getScalePitchClasses();
     this.bounds.pasteAction = null;
 
@@ -4684,9 +5043,10 @@ export default class MidiComposer {
       const pitch = this.getPitchFromRow(row);
       const pitchClass = pitch % 12;
       const isScaleTone = !isDrumGrid && scalePitchClasses.includes(pitchClass);
-      const isChordTone = !isDrumGrid && chordTones.includes(pitchClass);
-      if (isChordTone) {
-        ctx.fillStyle = 'rgba(79,183,255,0.12)';
+      if (!isDrumGrid && !chordMode) {
+        ctx.fillStyle = isBlackKey(pitchClass)
+          ? 'rgba(0,0,0,0.4)'
+          : 'rgba(255,255,255,0.06)';
       } else if (isScaleTone) {
         ctx.fillStyle = 'rgba(255,255,255,0.05)';
       } else {
@@ -4696,6 +5056,28 @@ export default class MidiComposer {
     }
 
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    if (!isDrumGrid && chordMode) {
+      for (let barTick = 0; barTick < loopTicks; barTick += ticksPerBar) {
+        const chord = this.getChordForTick(barTick);
+        const chordTones = this.getChordTones(chord);
+        if (!chordTones.length) continue;
+        const barEnd = Math.min(loopTicks, barTick + ticksPerBar);
+        const barWidth = (barEnd - barTick) * cellWidth;
+        for (let row = 0; row < rows; row += 1) {
+          const pitch = this.getPitchFromRow(row);
+          const pitchClass = pitch % 12;
+          if (!chordTones.includes(pitchClass)) continue;
+          ctx.fillStyle = 'rgba(79,183,255,0.16)';
+          ctx.fillRect(originX + barTick * cellWidth, originY + row * cellHeight, barWidth, cellHeight);
+        }
+      }
+    }
+    if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
+      const loopStartX = originX + this.song.loopStartTick * cellWidth;
+      const loopEndX = originX + this.song.loopEndTick * cellWidth;
+      ctx.fillStyle = 'rgba(255,225,106,0.18)';
+      ctx.fillRect(loopStartX, originY, loopEndX - loopStartX, rows * cellHeight);
+    }
     const divisor = this.quantizeOptions[this.quantizeIndex]?.divisor || 16;
     const gridStep = Math.max(1, Math.round(ticksPerBar / divisor));
     for (let barTick = 0; barTick <= loopTicks; barTick += ticksPerBar) {
@@ -4755,11 +5137,27 @@ export default class MidiComposer {
     pattern.notes.forEach((note) => {
       const rect = this.getNoteRect(note);
       if (!rect) return;
-      ctx.fillStyle = this.selection.has(note.id) ? '#ffe16a' : track.color || '#4fb7ff';
+      const baseColor = track.color || '#4fb7ff';
+      let noteFill = baseColor;
+      if (!isDrumGrid && !chordMode) {
+        const pitchClass = note.pitch % 12;
+        noteFill = isBlackKey(pitchClass)
+          ? toRgba(baseColor, 0.7)
+          : toRgba(baseColor, 0.95);
+      }
+      ctx.fillStyle = this.selection.has(note.id) ? '#ffe16a' : noteFill;
       ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
       if (this.activeNotes.has(note.id)) {
         ctx.strokeStyle = '#fff';
         ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      }
+      if (!isDrumGrid && chordMode) {
+        const chord = this.getChordForTick(note.startTick);
+        const chordTones = this.getChordTones(chord);
+        if (chordTones.includes(note.pitch % 12)) {
+          ctx.strokeStyle = '#ffe16a';
+          ctx.strokeRect(rect.x + 1, rect.y + 1, rect.w - 2, rect.h - 2);
+        }
       }
       if (this.selection.has(note.id)) {
         ctx.fillStyle = '#0b0b0b';
