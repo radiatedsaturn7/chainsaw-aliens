@@ -42,6 +42,7 @@ const TOOL_OPTIONS = [
 ];
 
 const INSTRUMENT_FAMILY_TABS = [
+  { id: 'favorites', label: 'Favorites' },
   { id: 'piano-keys', label: 'Piano/Keys' },
   { id: 'guitars', label: 'Guitars' },
   { id: 'bass', label: 'Bass' },
@@ -371,10 +372,13 @@ export default class MidiComposer {
       familyTab: INSTRUMENT_FAMILY_TABS[0]?.id || 'piano-keys',
       trackIndex: null,
       mode: null,
+      selectedProgram: null,
       bounds: [],
       favoriteBounds: [],
       sectionBounds: [],
       tabBounds: [],
+      confirmBounds: null,
+      cancelBounds: null,
       scroll: 0,
       scrollMax: 0
     };
@@ -407,6 +411,7 @@ export default class MidiComposer {
       prevBar: null,
       nextBar: null,
       goEnd: null,
+      instrumentLauncher: null,
       metronome: null,
       timeDisplay: null,
       tempoDown: null,
@@ -438,6 +443,9 @@ export default class MidiComposer {
       instrumentPrev: null,
       instrumentNext: null,
       instrumentLabel: null,
+      instrumentAdd: null,
+      instrumentList: [],
+      instrumentSettingsControls: [],
       selectionMenu: []
     };
     this.trackBounds = [];
@@ -819,6 +827,17 @@ export default class MidiComposer {
 
   getProgramsForFamily(familyId, query = '') {
     const search = query.trim().toLowerCase();
+    if (familyId === 'favorites') {
+      const favorites = this.favoriteInstruments
+        .map((program) => GM_PROGRAMS[program])
+        .filter(Boolean);
+      return favorites.filter((entry) => {
+        if (!search) return true;
+        const nameMatch = entry.name.toLowerCase().includes(search);
+        const numberMatch = formatProgramNumber(entry.program).includes(search);
+        return nameMatch || numberMatch;
+      });
+    }
     return GM_PROGRAMS.filter((entry) => {
       const matchesFamily = this.getInstrumentCategory(entry.program) === familyId;
       if (!matchesFamily) return false;
@@ -851,10 +870,15 @@ export default class MidiComposer {
     this.activeTab = 'instruments';
     this.instrumentPicker.mode = mode;
     this.instrumentPicker.trackIndex = trackIndex ?? this.selectedTrackIndex;
+    const track = this.song.tracks[this.instrumentPicker.trackIndex];
+    this.instrumentPicker.selectedProgram = mode === 'add' ? null : track?.program ?? null;
+    this.instrumentPicker.familyTab = INSTRUMENT_FAMILY_TABS[0]?.id || 'favorites';
     this.instrumentPicker.bounds = [];
     this.instrumentPicker.favoriteBounds = [];
     this.instrumentPicker.sectionBounds = [];
     this.instrumentPicker.tabBounds = [];
+    this.instrumentPicker.confirmBounds = null;
+    this.instrumentPicker.cancelBounds = null;
     this.instrumentPicker.scroll = 0;
   }
 
@@ -895,6 +919,7 @@ export default class MidiComposer {
     }
     this.addRecentInstrument(program);
     this.instrumentPicker.mode = null;
+    this.instrumentPicker.selectedProgram = null;
     this.preloadTrackPrograms();
   }
 
@@ -1355,34 +1380,69 @@ export default class MidiComposer {
       this.goToEnd();
       return;
     }
+    if (this.bounds.instrumentLauncher && this.pointInBounds(x, y, this.bounds.instrumentLauncher)) {
+      this.activeTab = 'instruments';
+      return;
+    }
     if (this.bounds.metronome && this.pointInBounds(x, y, this.bounds.metronome)) {
       this.metronomeEnabled = !this.metronomeEnabled;
       return;
     }
 
     if (this.activeTab === 'instruments') {
-      const familyHit = this.instrumentPicker.tabBounds.find((bounds) => this.pointInBounds(x, y, bounds));
-      if (familyHit) {
-        this.instrumentPicker.familyTab = familyHit.id;
-        this.instrumentPicker.scroll = 0;
+      if (this.instrumentPicker.mode) {
+        const familyHit = this.instrumentPicker.tabBounds.find((bounds) => this.pointInBounds(x, y, bounds));
+        if (familyHit) {
+          this.instrumentPicker.familyTab = familyHit.id;
+          this.instrumentPicker.scroll = 0;
+          return;
+        }
+        const favHit = this.instrumentPicker.favoriteBounds.find((bounds) => this.pointInBounds(x, y, bounds));
+        if (favHit) {
+          this.toggleFavoriteInstrument(favHit.program);
+          return;
+        }
+        const pickHit = this.instrumentPicker.bounds.find((bounds) => this.pointInBounds(x, y, bounds));
+        if (pickHit) {
+          this.instrumentPicker.selectedProgram = pickHit.program;
+          this.previewInstrument(pickHit.program);
+          return;
+        }
+        if (this.instrumentPicker.confirmBounds && this.pointInBounds(x, y, this.instrumentPicker.confirmBounds)) {
+          if (Number.isInteger(this.instrumentPicker.selectedProgram)) {
+            this.applyInstrumentSelection(this.instrumentPicker.selectedProgram);
+          }
+          return;
+        }
+        if (this.instrumentPicker.cancelBounds && this.pointInBounds(x, y, this.instrumentPicker.cancelBounds)) {
+          this.instrumentPicker.mode = null;
+          this.instrumentPicker.selectedProgram = null;
+          return;
+        }
+        if (this.instrumentPicker.sectionBounds.find((bounds) => this.pointInBounds(x, y, bounds))) {
+          this.dragState = {
+            mode: 'instrument-scroll',
+            startY: y,
+            startScroll: this.instrumentPicker.scroll
+          };
+        }
         return;
       }
-      const favHit = this.instrumentPicker.favoriteBounds.find((bounds) => this.pointInBounds(x, y, bounds));
-      if (favHit) {
-        this.toggleFavoriteInstrument(favHit.program);
+
+      const listHit = this.bounds.instrumentList?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (listHit) {
+        this.selectedTrackIndex = listHit.trackIndex;
+        this.selection.clear();
         return;
       }
-      const pickHit = this.instrumentPicker.bounds.find((bounds) => this.pointInBounds(x, y, bounds));
-      if (pickHit) {
-        this.applyInstrumentSelection(pickHit.program);
+      if (this.bounds.instrumentAdd && this.pointInBounds(x, y, this.bounds.instrumentAdd)) {
+        this.openInstrumentPicker('add', this.selectedTrackIndex);
         return;
       }
-      if (this.instrumentPicker.sectionBounds.find((bounds) => this.pointInBounds(x, y, bounds))) {
-        this.dragState = {
-          mode: 'instrument-scroll',
-          startY: y,
-          startScroll: this.instrumentPicker.scroll
-        };
+      const settingHit = this.bounds.instrumentSettingsControls?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (settingHit) {
+        this.handleTrackControl(settingHit);
+        return;
       }
       return;
     }
@@ -2041,6 +2101,21 @@ export default class MidiComposer {
     this.playGmNote(pitch, duration, track.volume, track);
   }
 
+  previewInstrument(program) {
+    if (!Number.isInteger(program)) return;
+    const now = performance.now();
+    if (now - this.lastAuditionTime < 120) return;
+    this.lastAuditionTime = now;
+    const track = this.getActiveTrack();
+    const volume = track?.volume ?? 0.8;
+    this.playGmNote(60, 0.5, Math.min(1, volume + 0.1), {
+      program,
+      channel: track?.channel ?? 0,
+      bankMSB: DEFAULT_BANK_MSB,
+      bankLSB: DEFAULT_BANK_LSB
+    });
+  }
+
   previewNotesAtTick(tick) {
     const pattern = this.getActivePattern();
     if (!pattern) return;
@@ -2190,6 +2265,9 @@ export default class MidiComposer {
       track.mute = !track.mute;
     } else if (hit.control === 'solo') {
       track.solo = !track.solo;
+    } else if (hit.control === 'remove') {
+      this.removeTrack();
+      return;
     } else if (hit.control === 'instrument') {
       if (isDrumChannel(track.channel)) {
         window.alert('Drum tracks are tied to Channel 10.');
@@ -2760,24 +2838,66 @@ export default class MidiComposer {
     ctx.strokeRect(x, y, w, h);
     this.bounds.transportBar = { x, y, w, h };
     const isMobile = this.isMobileLayout();
-    const gap = 10;
-    const buttonH = Math.max(44, h - 24);
-    const buttonW = Math.min(80, (w - gap * 6) / 5);
-    const totalW = buttonW * 5 + gap * 4;
+    const gap = 12;
+    const buttonH = Math.max(48, h - 26);
+    const baseButtonW = Math.min(72, (w - gap * 7) / 6);
+    const buttonSpecs = [
+      {
+        id: 'instrumentLauncher',
+        label: 'INST',
+        w: baseButtonW * 1.3,
+        active: this.activeTab === 'instruments'
+      },
+      { id: 'returnStart', label: '⏮', w: baseButtonW },
+      { id: 'prevBar', label: '⏪', w: baseButtonW },
+      { id: 'play', label: this.isPlaying ? '❚❚' : '▶', w: baseButtonW * 1.3, active: this.isPlaying, emphasis: true },
+      { id: 'nextBar', label: '⏩', w: baseButtonW },
+      { id: 'goEnd', label: '⏭', w: baseButtonW }
+    ];
+    const totalW = buttonSpecs.reduce((sum, button) => sum + button.w, 0) + gap * (buttonSpecs.length - 1);
     const startX = x + (w - totalW) / 2;
     const centerY = y + (h - buttonH) / 2;
-    const buttons = [
-      { id: 'returnStart', label: '<<' },
-      { id: 'prevBar', label: '<' },
-      { id: 'play', label: 'O', active: this.isPlaying },
-      { id: 'nextBar', label: '>' },
-      { id: 'goEnd', label: '>>' }
-    ];
-    buttons.forEach((button, index) => {
-      const bx = startX + index * (buttonW + gap);
-      const bounds = { x: bx, y: centerY, w: buttonW, h: buttonH };
+    const radius = Math.min(14, buttonH / 2);
+    const drawRoundedRect = (bx, by, bw, bh) => {
+      ctx.beginPath();
+      ctx.moveTo(bx + radius, by);
+      ctx.arcTo(bx + bw, by, bx + bw, by + bh, radius);
+      ctx.arcTo(bx + bw, by + bh, bx, by + bh, radius);
+      ctx.arcTo(bx, by + bh, bx, by, radius);
+      ctx.arcTo(bx, by, bx + bw, by, radius);
+      ctx.closePath();
+    };
+    const drawTransportButton = (button, bx) => {
+      const bounds = { x: bx, y: centerY, w: button.w, h: buttonH };
       this.bounds[button.id] = bounds;
-      this.drawButton(ctx, bounds, button.label, Boolean(button.active), false);
+      const isActive = Boolean(button.active);
+      const baseFill = isActive ? '#ffe16a' : 'rgba(10,10,10,0.7)';
+      const highlight = button.emphasis ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.12)';
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      ctx.shadowBlur = 6;
+      drawRoundedRect(bounds.x, bounds.y, bounds.w, bounds.h);
+      ctx.fillStyle = baseFill;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      drawRoundedRect(bounds.x, bounds.y, bounds.w, bounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.stroke();
+      ctx.globalAlpha = 0.7;
+      drawRoundedRect(bounds.x + 1, bounds.y + 1, bounds.w - 2, bounds.h / 2);
+      ctx.fillStyle = highlight;
+      ctx.fill();
+      ctx.restore();
+      ctx.fillStyle = isActive ? '#0b0b0b' : '#fff';
+      ctx.font = `${button.emphasis ? 20 : 16}px Courier New`;
+      ctx.textAlign = 'center';
+      ctx.fillText(button.label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 6);
+      ctx.textAlign = 'left';
+    };
+    let cursorX = startX;
+    buttonSpecs.forEach((button) => {
+      drawTransportButton(button, cursorX);
+      cursorX += button.w + gap;
     });
 
     const position = this.getPositionLabel();
@@ -2835,99 +2955,261 @@ export default class MidiComposer {
 
     const isMobile = this.isMobileLayout();
     const padding = 12;
-    const tabY = y + padding;
-    const tabH = 44;
-    const tabRows = isMobile ? 2 : 1;
-    const tabsPerRow = Math.ceil(INSTRUMENT_FAMILY_TABS.length / tabRows);
-    this.instrumentPicker.tabBounds = [];
-    for (let row = 0; row < tabRows; row += 1) {
-      for (let col = 0; col < tabsPerRow; col += 1) {
-        const index = row * tabsPerRow + col;
-        const tab = INSTRUMENT_FAMILY_TABS[index];
-        if (!tab) continue;
-        const tabW = (w - padding * 2 - (tabsPerRow - 1) * 6) / tabsPerRow;
-        const tabX = x + padding + col * (tabW + 6);
-        const tabRowY = tabY + row * (tabH + 6);
-        const bounds = { x: tabX, y: tabRowY, w: tabW, h: tabH, id: tab.id };
-        this.instrumentPicker.tabBounds.push(bounds);
-        this.drawButton(ctx, bounds, tab.label, this.instrumentPicker.familyTab === tab.id, false);
-      }
-    }
+    const panelGap = 12;
+    const leftW = Math.min(320, Math.max(220, w * 0.32));
+    const rightW = w - padding * 2 - leftW - panelGap;
+    const leftX = x + padding;
+    const leftY = y + padding;
+    const panelH = h - padding * 2;
+    const rightX = leftX + leftW + panelGap;
+    const rightY = leftY;
+    const rowH = isMobile ? 54 : 48;
+    const addButtonH = 36;
 
-    const sectionsY = tabY + tabRows * (tabH + 6) + 12;
-    const scrollY = sectionsY;
-    const scrollH = y + h - scrollY - padding;
-    this.instrumentPicker.sectionBounds = [{ x: x + padding, y: scrollY, w: w - padding * 2, h: scrollH }];
+    this.bounds.instrumentList = [];
+    this.bounds.instrumentSettingsControls = [];
 
-    const tiles = [];
-    const makeTile = (program) => ({
-      program,
-      label: `${formatProgramNumber(program)} ${GM_PROGRAMS[program]?.name || 'Program'}`
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(leftX, leftY, leftW, panelH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(leftX, leftY, leftW, panelH);
+
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    ctx.fillText('Instruments', leftX + 10, leftY + 18);
+    const listStartY = leftY + 28;
+    const listH = panelH - addButtonH - 20;
+    const listEndY = listStartY + listH;
+    let cursorY = listStartY;
+    this.song.tracks.forEach((listTrack, index) => {
+      if (cursorY + rowH > listEndY) return;
+      const bounds = { x: leftX + 8, y: cursorY, w: leftW - 16, h: rowH, trackIndex: index };
+      const isActive = index === this.selectedTrackIndex;
+      ctx.fillStyle = isActive ? 'rgba(255,225,106,0.18)' : 'rgba(0,0,0,0.45)';
+      ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+      ctx.strokeStyle = listTrack.color || 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+      ctx.fillStyle = '#fff';
+      ctx.font = '13px Courier New';
+      ctx.fillText(listTrack.name, bounds.x + 10, bounds.y + 18);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '11px Courier New';
+      const label = isDrumChannel(listTrack.channel)
+        ? 'Drums (Ch 10)'
+        : this.getProgramLabel(listTrack.program);
+      ctx.fillText(label, bounds.x + 10, bounds.y + 36);
+      this.bounds.instrumentList.push(bounds);
+      cursorY += rowH + 6;
     });
 
-    if (this.favoriteInstruments.length > 0) {
-      tiles.push({ type: 'section', label: 'Favorites' });
-      this.favoriteInstruments.forEach((program) => tiles.push(makeTile(program)));
+    this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - 8, w: leftW - 16, h: addButtonH };
+    this.drawButton(ctx, this.bounds.instrumentAdd, 'Add Instrument', false, false);
+
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fillRect(rightX, rightY, rightW, panelH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(rightX, rightY, rightW, panelH);
+
+    if (this.instrumentPicker.mode) {
+      const header = this.instrumentPicker.mode === 'add' ? 'Add Instrument' : 'Change Instrument';
+      ctx.fillStyle = '#fff';
+      ctx.font = '15px Courier New';
+      ctx.fillText(header, rightX + 12, rightY + 22);
+
+      const tabY = rightY + 34;
+      const tabH = 36;
+      const tabRows = rightW < 540 ? 2 : 1;
+      const tabsPerRow = Math.ceil(INSTRUMENT_FAMILY_TABS.length / tabRows);
+      this.instrumentPicker.tabBounds = [];
+      for (let row = 0; row < tabRows; row += 1) {
+        for (let col = 0; col < tabsPerRow; col += 1) {
+          const index = row * tabsPerRow + col;
+          const tab = INSTRUMENT_FAMILY_TABS[index];
+          if (!tab) continue;
+          const tabW = (rightW - padding * 2 - (tabsPerRow - 1) * 6) / tabsPerRow;
+          const tabX = rightX + padding + col * (tabW + 6);
+          const tabRowY = tabY + row * (tabH + 6);
+          const bounds = { x: tabX, y: tabRowY, w: tabW, h: tabH, id: tab.id };
+          this.instrumentPicker.tabBounds.push(bounds);
+          this.drawButton(ctx, bounds, tab.label, this.instrumentPicker.familyTab === tab.id, false);
+        }
+      }
+
+      const selectorY = tabY + tabRows * (tabH + 6) + 10;
+      const footerH = 52;
+      const scrollY = selectorY;
+      const scrollH = rightY + panelH - scrollY - footerH;
+      this.instrumentPicker.sectionBounds = [{ x: rightX + padding, y: scrollY, w: rightW - padding * 2, h: scrollH }];
+
+      const programs = this.getProgramsForFamily(this.instrumentPicker.familyTab);
+      const tiles = programs.length
+        ? programs.map((entry) => ({
+          program: entry.program,
+          label: `${formatProgramNumber(entry.program)} ${entry.name}`
+        }))
+        : [{ type: 'empty', label: 'No instruments in this tab yet.' }];
+
+      const columns = rightW > 720 ? 3 : 2;
+      const tileGap = 10;
+      const tileW = (rightW - padding * 2 - tileGap * (columns - 1)) / columns;
+      const tileH = 56;
+      let tileX = rightX + padding;
+      let tileY = scrollY - this.instrumentPicker.scroll;
+      this.instrumentPicker.bounds = [];
+      this.instrumentPicker.favoriteBounds = [];
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(rightX + padding, scrollY, rightW - padding * 2, scrollH);
+      ctx.clip();
+      tiles.forEach((item) => {
+        if (item.type === 'empty') {
+          ctx.fillStyle = 'rgba(255,255,255,0.6)';
+          ctx.font = '12px Courier New';
+          ctx.fillText(item.label, rightX + padding, tileY + 18);
+          tileY += 28;
+          tileX = rightX + padding;
+          return;
+        }
+        const bounds = { x: tileX, y: tileY, w: tileW, h: tileH, program: item.program };
+        if (tileY + tileH >= scrollY - tileH && tileY <= scrollY + scrollH + tileH) {
+          const isSelected = this.instrumentPicker.selectedProgram === item.program;
+          this.drawButton(ctx, bounds, item.label, isSelected, true);
+          this.instrumentPicker.bounds.push(bounds);
+          const favoriteBounds = { x: bounds.x + bounds.w - 40, y: bounds.y + 6, w: 34, h: 34, program: item.program };
+          this.instrumentPicker.favoriteBounds.push(favoriteBounds);
+          ctx.fillStyle = this.favoriteInstruments.includes(item.program) ? '#ffe16a' : 'rgba(255,255,255,0.35)';
+          ctx.font = '18px Courier New';
+          ctx.fillText('★', favoriteBounds.x + 8, favoriteBounds.y + 22);
+        }
+        tileX += tileW + tileGap;
+        if ((tileX + tileW) > rightX + rightW - padding + 1) {
+          tileX = rightX + padding;
+          tileY += tileH + tileGap;
+        }
+      });
+      const totalHeight = tileY - scrollY + tileH + this.instrumentPicker.scroll;
+      ctx.restore();
+
+      this.instrumentPicker.scrollMax = Math.max(0, totalHeight - scrollH);
+      this.instrumentPicker.scroll = clamp(this.instrumentPicker.scroll, 0, this.instrumentPicker.scrollMax);
+
+      const footerY = rightY + panelH - footerH + 6;
+      const buttonW = (rightW - padding * 2 - 12) / 2;
+      this.instrumentPicker.confirmBounds = {
+        x: rightX + padding,
+        y: footerY,
+        w: buttonW,
+        h: 32
+      };
+      this.instrumentPicker.cancelBounds = {
+        x: rightX + padding + buttonW + 12,
+        y: footerY,
+        w: buttonW,
+        h: 32
+      };
+      const confirmLabel = this.instrumentPicker.mode === 'add' ? 'Add' : 'Apply';
+      this.drawButton(ctx, this.instrumentPicker.confirmBounds, confirmLabel, false, false);
+      this.drawButton(ctx, this.instrumentPicker.cancelBounds, 'Cancel', false, false);
+      return;
     }
-    if (this.recentInstruments.length > 0) {
-      tiles.push({ type: 'section', label: 'Recent' });
-      this.recentInstruments.forEach((program) => tiles.push(makeTile(program)));
-    }
-    const mainPrograms = this.getProgramsForFamily(this.instrumentPicker.familyTab);
-    tiles.push({ type: 'section', label: 'All Instruments' });
-    mainPrograms.forEach((entry) => tiles.push(makeTile(entry.program)));
 
-    const columns = isMobile ? 2 : w > 880 ? 4 : 3;
-    const tileGap = 10;
-    const tileW = (w - padding * 2 - tileGap * (columns - 1)) / columns;
-    const tileH = 64;
-    let cursorX = x + padding;
-    let cursorY = scrollY - this.instrumentPicker.scroll;
-    this.instrumentPicker.bounds = [];
-    this.instrumentPicker.favoriteBounds = [];
+    ctx.fillStyle = '#fff';
+    ctx.font = '15px Courier New';
+    ctx.fillText('Instrument Settings', rightX + 12, rightY + 22);
+    if (!track) return;
 
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(x + padding, scrollY, w - padding * 2, scrollH);
-    ctx.clip();
-    tiles.forEach((item) => {
-      if (item.type === 'section') {
-        ctx.fillStyle = 'rgba(255,255,255,0.7)';
-        ctx.font = '13px Courier New';
-        ctx.fillText(item.label, x + padding, cursorY + 16);
-        cursorY += 26;
-        cursorX = x + padding;
-        return;
-      }
-      if (item.type === 'empty') {
-        ctx.fillStyle = 'rgba(255,255,255,0.6)';
-        ctx.font = '12px Courier New';
-        ctx.fillText(item.label, x + padding, cursorY + 18);
-        cursorY += 28;
-        cursorX = x + padding;
-        return;
-      }
-      const bounds = { x: cursorX, y: cursorY, w: tileW, h: tileH, program: item.program };
-      if (cursorY + tileH >= scrollY - tileH && cursorY <= scrollY + scrollH + tileH) {
-        this.drawButton(ctx, bounds, item.label, track?.program === item.program, true);
-        this.instrumentPicker.bounds.push(bounds);
-        const favoriteBounds = { x: bounds.x + bounds.w - 46, y: bounds.y + 6, w: 44, h: 44, program: item.program };
-        this.instrumentPicker.favoriteBounds.push(favoriteBounds);
-        ctx.fillStyle = this.favoriteInstruments.includes(item.program) ? '#ffe16a' : 'rgba(255,255,255,0.4)';
-        ctx.font = '20px Courier New';
-        ctx.fillText('★', favoriteBounds.x + 12, favoriteBounds.y + 28);
-      }
-      cursorX += tileW + tileGap;
-      if ((cursorX + tileW) > x + w - padding + 1) {
-        cursorX = x + padding;
-        cursorY += tileH + tileGap;
-      }
-    });
-    const totalHeight = cursorY - scrollY + tileH + this.instrumentPicker.scroll;
-    ctx.restore();
+    const infoY = rightY + 40;
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = '12px Courier New';
+    ctx.fillText(track.name, rightX + 12, infoY + 12);
+    const instrumentLabel = isDrumChannel(track.channel)
+      ? 'Drums (Ch 10)'
+      : this.getProgramLabel(track.program);
+    ctx.fillText(instrumentLabel, rightX + 12, infoY + 28);
 
-    this.instrumentPicker.scrollMax = Math.max(0, totalHeight - scrollH);
-    this.instrumentPicker.scroll = clamp(this.instrumentPicker.scroll, 0, this.instrumentPicker.scrollMax);
+    const buttonRowY = infoY + 40;
+    const buttonW = (rightW - padding * 2 - 10) / 2;
+    const changeBounds = {
+      x: rightX + padding,
+      y: buttonRowY,
+      w: buttonW,
+      h: 32,
+      trackIndex: this.selectedTrackIndex,
+      control: 'instrument'
+    };
+    const removeBounds = {
+      x: rightX + padding + buttonW + 10,
+      y: buttonRowY,
+      w: buttonW,
+      h: 32,
+      trackIndex: this.selectedTrackIndex,
+      control: 'remove'
+    };
+    this.drawButton(ctx, changeBounds, 'Change', false, false);
+    this.drawButton(ctx, removeBounds, 'Remove', false, false);
+    this.bounds.instrumentSettingsControls.push(changeBounds, removeBounds);
+
+    const toggleRowY = buttonRowY + 44;
+    const muteBounds = {
+      x: rightX + padding,
+      y: toggleRowY,
+      w: 80,
+      h: 32,
+      trackIndex: this.selectedTrackIndex,
+      control: 'mute'
+    };
+    const soloBounds = {
+      x: rightX + padding + 90,
+      y: toggleRowY,
+      w: 80,
+      h: 32,
+      trackIndex: this.selectedTrackIndex,
+      control: 'solo'
+    };
+    this.drawButton(ctx, muteBounds, 'Mute', track.mute, false);
+    this.drawButton(ctx, soloBounds, 'Solo', track.solo, false);
+    this.bounds.instrumentSettingsControls.push(muteBounds, soloBounds);
+
+    const sliderX = rightX + padding;
+    const sliderW = rightW - padding * 2;
+    const volumeBounds = {
+      x: sliderX,
+      y: toggleRowY + 50,
+      w: sliderW,
+      h: 18,
+      trackIndex: this.selectedTrackIndex,
+      control: 'volume'
+    };
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
+    ctx.fillStyle = '#ffe16a';
+    ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w * track.volume, volumeBounds.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font = '11px Courier New';
+    ctx.fillText('Volume', sliderX, volumeBounds.y - 6);
+    this.bounds.instrumentSettingsControls.push(volumeBounds);
+
+    const panBounds = {
+      x: sliderX,
+      y: volumeBounds.y + 36,
+      w: sliderW,
+      h: 16,
+      trackIndex: this.selectedTrackIndex,
+      control: 'pan'
+    };
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
+    ctx.fillStyle = '#4fb7ff';
+    ctx.fillRect(panBounds.x, panBounds.y, panBounds.w * ((track.pan + 1) / 2), panBounds.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font = '11px Courier New';
+    ctx.fillText('Pan', sliderX, panBounds.y - 6);
+    this.bounds.instrumentSettingsControls.push(panBounds);
   }
 
   drawSettingsPanel(ctx, x, y, w, h) {
