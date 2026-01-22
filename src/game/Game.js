@@ -2452,109 +2452,87 @@ export default class Game {
     const tileY = Math.floor(this.player.y / tileSize);
     const roomIndex = this.world.roomAtTile(tileX, tileY);
     const roomBounds = roomIndex !== null && roomIndex !== undefined ? this.world.getRoomBounds(roomIndex) : null;
-    const getQuadraticPoint = (t, startX, startY, dx, dy, curveX, curveY) => {
-      const inv = 1 - t;
-      return {
-        x: inv * inv * startX + 2 * inv * t * (startX + curveX) + t * t * (startX + dx),
-        y: inv * inv * startY + 2 * inv * t * (startY + curveY) + t * t * (startY + dy)
-      };
-    };
-    const initialArcDrop = Math.min(maxRange * 0.18, tileSize * 6);
-    const targetArcRange = tileSize * 15;
-    const peakOffset = tileSize;
-    const targetPoint = {
-      x: originX + dirX * targetArcRange,
-      y: originY + dirY * targetArcRange
-    };
-    const computeControl = (t, dx, dy, point) => {
-      const denom = 2 * (1 - t) * t || 1;
-      return {
-        x: (point.x - originX - t * t * dx) / denom,
-        y: (point.y - originY - t * t * dy) / denom
-      };
-    };
-    const pickControl = (dx, dy, point, tBase) => {
-      const peakTargetY = this.player.y - peakOffset;
-      const peakTargetOffset = peakTargetY - originY;
-      const desiredControlY = peakTargetOffset * 2;
-      const baseControl = computeControl(tBase, dx, dy, point);
-      if (baseControl.y <= desiredControlY) {
-        return { controlX: baseControl.x, controlY: baseControl.y, t: tBase };
-      }
-      let best = null;
-      const steps = 24;
-      for (let i = 0; i <= steps; i += 1) {
-        const t = 0.15 + (0.7 * i) / steps;
-        const control = computeControl(t, dx, dy, point);
-        if (control.y > desiredControlY) continue;
-        const score = Math.abs(control.y - desiredControlY) + Math.abs(t - tBase) * 0.2;
-        if (!best || score < best.score) {
-          best = { controlX: control.x, controlY: control.y, t, score };
-        }
-      }
-      return best ? { controlX: best.controlX, controlY: best.controlY, t: best.t } : { controlX: baseControl.x, controlY: baseControl.y, t: tBase };
-    };
+    const targetRange = tileSize * 15;
+    const speed = tileSize * 18;
+    const gravity = tileSize * 20;
+    const vx = dirX * speed;
+    const horizontalSpeed = Math.abs(vx);
+    const travelTime = targetRange / Math.max(1, horizontalSpeed || speed);
+    const liftScale = Math.max(0.2, Math.min(1, Math.abs(dirX)));
+    const vy = dirY * speed - 0.5 * gravity * travelTime * liftScale;
 
-    let streamDx = dirX * maxRange;
-    let streamDy = dirY * maxRange + initialArcDrop;
-    const baseT = Math.min(0.75, Math.max(0.25, targetArcRange / Math.max(1, Math.hypot(streamDx, streamDy))));
-    let { controlX, controlY } = pickControl(streamDx, streamDy, targetPoint, baseT);
-    let impactX = originX + streamDx;
-    let impactY = originY + streamDy;
+    const baseSpeed = Math.hypot(vx, vy) || 1;
+    const stepDistance = tileSize * 0.35;
+    const stepTime = Math.max(0.02, Math.min(0.06, stepDistance / baseSpeed));
+    const maxTime = maxRange / baseSpeed;
+    const streamPoints = [{ x: originX, y: originY }];
+    let impactX = originX + dirX * maxRange;
+    let impactY = originY + dirY * maxRange;
     let impactTile = null;
-    const steps = Math.max(20, Math.ceil(maxRange / (tileSize * 0.5)));
-    for (let i = 1; i <= steps; i += 1) {
-      const t = i / steps;
-      const point = getQuadraticPoint(t, originX, originY, streamDx, streamDy, controlX, controlY);
-      const pointTileX = Math.floor(point.x / tileSize);
-      const pointTileY = Math.floor(point.y / tileSize);
+
+    for (let t = stepTime; t <= maxTime; t += stepTime) {
+      const xPos = originX + vx * t;
+      const yPos = originY + vy * t + 0.5 * gravity * t * t;
+      streamPoints.push({ x: xPos, y: yPos });
+      const dist = Math.hypot(xPos - originX, yPos - originY);
+      if (dist > maxRange) break;
+      const pointTileX = Math.floor(xPos / tileSize);
+      const pointTileY = Math.floor(yPos / tileSize);
       if (this.world.isSolid(pointTileX, pointTileY, this.abilities)) {
         impactTile = { x: pointTileX, y: pointTileY };
         impactX = (pointTileX + 0.5) * tileSize;
         impactY = (pointTileY + 0.5) * tileSize;
+        streamPoints[streamPoints.length - 1] = { x: impactX, y: impactY };
         break;
       }
     }
-
-    streamDx = impactX - originX;
-    streamDy = impactY - originY;
-    const adjustedRange = Math.hypot(streamDx, streamDy) || 1;
-    const throughDistance = Math.min(targetArcRange, adjustedRange * 0.9);
-    const throughPoint = {
-      x: originX + dirX * throughDistance,
-      y: originY + dirY * throughDistance
-    };
-    const tThrough = Math.min(0.85, Math.max(0.2, throughDistance / adjustedRange));
-    ({ controlX, controlY } = pickControl(streamDx, streamDy, throughPoint, tThrough));
 
     if (this.flamethrowerSoundTimer <= 0) {
       this.audio.flamethrower();
       this.flamethrowerSoundTimer += 0.2;
     }
 
+    const relativeStreamPoints = streamPoints.map((point) => ({
+      x: point.x - originX,
+      y: point.y - originY
+    }));
+    const getStreamSample = (t) => {
+      if (streamPoints.length < 2) {
+        return { x: originX, y: originY, dx: dirX, dy: dirY };
+      }
+      const total = streamPoints.length - 1;
+      const scaled = Math.min(total - 1, Math.max(0, t * total));
+      const index = Math.floor(scaled);
+      const localT = scaled - index;
+      const start = streamPoints[index];
+      const end = streamPoints[index + 1] || start;
+      const dx = end.x - start.x;
+      const dy = end.y - start.y;
+      return {
+        x: start.x + dx * localT,
+        y: start.y + dy * localT,
+        dx,
+        dy
+      };
+    };
+
     const emitInterval = 0.05;
     if (this.flamethrowerEmitTimer <= 0) {
       this.flamethrowerEmitTimer += emitInterval;
       this.spawnEffect('flamethrower-stream', originX, originY, {
-        dx: streamDx,
-        dy: streamDy,
-        controlX,
-        controlY,
+        path: relativeStreamPoints,
         width: 16,
         coreWidth: 7
       });
       for (let i = 0; i < 7; i += 1) {
-        const t = 0.18 + Math.random() * 0.7;
-        const point = getQuadraticPoint(t, originX, originY, streamDx, streamDy, controlX, controlY);
-        const inv = 1 - t;
-        const tangentX = 2 * inv * controlX + 2 * t * (streamDx - controlX);
-        const tangentY = 2 * inv * controlY + 2 * t * (streamDy - controlY);
-        const tangentLength = Math.hypot(tangentX, tangentY) || 1;
+        const t = 0.1 + Math.random() * 0.8;
+        const sample = getStreamSample(t);
+        const tangentLength = Math.hypot(sample.dx, sample.dy) || 1;
         const speed = 180 + Math.random() * 120;
-        this.spawnEffect('flamethrower-flame', point.x, point.y, {
+        this.spawnEffect('flamethrower-flame', sample.x, sample.y, {
           life: 0.22 + Math.random() * 0.18,
-          vx: (tangentX / tangentLength) * speed,
-          vy: (tangentY / tangentLength) * speed,
+          vx: (sample.dx / tangentLength) * speed,
+          vy: (sample.dy / tangentLength) * speed,
           size: 5 + Math.random() * 4
         });
       }
@@ -2613,9 +2591,17 @@ export default class Game {
       const dot = (dx / dist) * dirX + (dy / dist) * dirY;
       if (dot <= 0) return;
       let closest = Infinity;
-      for (let t = 0; t <= 1.0001; t += 0.07) {
-        const point = getQuadraticPoint(t, originX, originY, streamDx, streamDy, controlX, controlY);
-        const distance = Math.hypot(entity.x - point.x, entity.y - point.y);
+      for (let i = 1; i < streamPoints.length; i += 1) {
+        const start = streamPoints[i - 1];
+        const end = streamPoints[i];
+        const segmentDx = end.x - start.x;
+        const segmentDy = end.y - start.y;
+        const segLengthSq = segmentDx * segmentDx + segmentDy * segmentDy || 1;
+        const t = ((entity.x - start.x) * segmentDx + (entity.y - start.y) * segmentDy) / segLengthSq;
+        const clampedT = Math.max(0, Math.min(1, t));
+        const closestX = start.x + segmentDx * clampedT;
+        const closestY = start.y + segmentDy * clampedT;
+        const distance = Math.hypot(entity.x - closestX, entity.y - closestY);
         if (distance < closest) {
           closest = distance;
         }
