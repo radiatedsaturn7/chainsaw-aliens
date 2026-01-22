@@ -107,8 +107,10 @@ const DEFAULT_BANK_LSB = 0;
 const TRACK_COLORS = ['#4fb7ff', '#ff9c42', '#55d68a', '#b48dff', '#ff6a6a', '#43d5d0'];
 const DEFAULT_GRID_BARS = 8;
 const DEFAULT_VISIBLE_ROWS = 12;
-const MIN_VISIBLE_ROWS = 7;
+const MIN_VISIBLE_ROWS = 5;
 const MAX_VISIBLE_ROWS = 60;
+const DEFAULT_GRID_TOP_PITCH = 59;
+const DEFAULT_RULER_HEIGHT = 32;
 const FILE_MENU_WIDTH = 240;
 const DEFAULT_LOOP_BARS = 4;
 const SONG_LIBRARY_KEY = 'chainsaw-midi-library';
@@ -555,6 +557,7 @@ export default class MidiComposer {
     this.gridZoomX = null;
     this.gridZoomY = null;
     this.gridOffset = { x: 0, y: 0 };
+    this.gridOffsetInitialized = false;
     this.gridGesture = null;
     this.bounds = {
       headerInstrument: null,
@@ -610,7 +613,9 @@ export default class MidiComposer {
       zoomInX: null,
       zoomOutX: null,
       zoomInY: null,
-      zoomOutY: null
+      zoomOutY: null,
+      loopStartHandle: null,
+      loopEndHandle: null
     };
     this.trackBounds = [];
     this.trackControlBounds = [];
@@ -1988,6 +1993,16 @@ export default class MidiComposer {
       if (this.rulerBounds && this.pointInBounds(x, y, this.rulerBounds)) {
         const modifiers = this.getModifiers();
         const tick = this.getTickFromX(x);
+        if (this.bounds.loopStartHandle && this.pointInBounds(x, y, this.bounds.loopStartHandle)) {
+          this.dragState = { mode: 'loop-start' };
+          this.setLoopStartTick(tick);
+          return;
+        }
+        if (this.bounds.loopEndHandle && this.pointInBounds(x, y, this.bounds.loopEndHandle)) {
+          this.dragState = { mode: 'loop-end' };
+          this.setLoopEndTick(tick);
+          return;
+        }
         if (this.isNearLoopMarker(x, 'start')) {
           this.dragState = { mode: 'loop-start' };
           this.setLoopStartTick(tick);
@@ -2266,8 +2281,36 @@ export default class MidiComposer {
     const cell = this.getGridCell(x, y);
     if (!cell) return;
     const modifiers = this.getModifiers();
+    const hit = this.getNoteAtCell(cell.tick, cell.pitch, x);
+    if (payload.touchCount && hit && payload.touchCount === 1) {
+      if (!this.selection.has(hit.note.id)) {
+        this.selection.clear();
+        this.selection.add(hit.note.id);
+      }
+      if (hit.edge) {
+        this.dragState = {
+          mode: 'resize',
+          edge: hit.edge,
+          startTick: cell.tick,
+          originalNotes: this.getSelectedNotes().map((note) => ({ ...note }))
+        };
+        return;
+      }
+      this.dragState = {
+        mode: 'move',
+        startTick: cell.tick,
+        startPitch: cell.pitch,
+        startX: x,
+        startY: y,
+        moved: false,
+        cell,
+        hit,
+        originalNotes: this.getSelectedNotes().map((note) => ({ ...note }))
+      };
+      this.previewNote(hit.note, cell.pitch);
+      return;
+    }
     if (payload.touchCount || modifiers.alt || payload.button === 1 || payload.button === 2) {
-      const hit = this.getNoteAtCell(cell.tick, cell.pitch);
       this.dragState = {
         mode: payload.touchCount ? 'touch-pan' : 'pan',
         startX: x,
@@ -2306,7 +2349,6 @@ export default class MidiComposer {
       this.dragState = { mode: 'paste-preview' };
       return;
     }
-    const hit = this.getNoteAtCell(cell.tick, cell.pitch, x);
     if (hit) {
       if (modifiers.meta) {
         this.toggleSelection(hit.note.id);
@@ -3367,6 +3409,7 @@ export default class MidiComposer {
     this.selectedTrackIndex = 0;
     this.selectedPatternIndex = 0;
     this.ensureState();
+    this.gridOffsetInitialized = false;
     this.gridZoomX = this.getDefaultGridZoomX();
     this.gridZoomY = this.getDefaultGridZoomY();
     this.persist();
@@ -3375,6 +3418,7 @@ export default class MidiComposer {
   loadDemoSong() {
     this.song = createDemoSong();
     this.ensureState();
+    this.gridOffsetInitialized = false;
     this.gridZoomX = this.getDefaultGridZoomX();
     this.gridZoomY = this.getDefaultGridZoomY();
     this.qaResults = [{ label: 'Demo loaded', status: 'pass' }];
@@ -3417,13 +3461,24 @@ export default class MidiComposer {
     return Math.max(1, Math.min(DEFAULT_VISIBLE_ROWS, rows));
   }
 
+  initializeGridOffset(track, rows, cellHeight) {
+    if (this.gridOffsetInitialized) return;
+    this.gridOffsetInitialized = true;
+    if (!track || isDrumChannel(track.channel)) {
+      this.gridOffset.y = 0;
+      return;
+    }
+    const topRow = clamp(this.getRowFromPitch(DEFAULT_GRID_TOP_PITCH), 0, Math.max(0, rows - 1));
+    this.gridOffset.y = -topRow * cellHeight;
+  }
+
   getDefaultGridZoomX() {
     const bars = Math.max(1, this.song?.loopBars || DEFAULT_GRID_BARS);
     return Math.max(1, bars / 4);
   }
 
   getDefaultGridZoomY() {
-    return DEFAULT_VISIBLE_ROWS / 8;
+    return 1;
   }
 
   getOctaveLabel(pitch) {
@@ -4922,7 +4977,7 @@ export default class MidiComposer {
       : this.getPitchRange().max - this.getPitchRange().min + 1;
     const isMobile = this.isMobileLayout();
     const labelW = isMobile ? 76 : 96;
-    const rulerH = 28;
+    const rulerH = DEFAULT_RULER_HEIGHT;
     const viewW = w - labelW;
     const baseCellWidth = viewW / loopTicks;
     const baseVisibleRows = this.getBaseVisibleRows(rows);
@@ -4936,6 +4991,7 @@ export default class MidiComposer {
     const totalGridW = cellWidth * loopTicks;
     const gridH = cellHeight * rows;
     const viewH = Math.max(0, h - rulerH);
+    this.initializeGridOffset(track, rows, cellHeight);
     this.clampGridOffset(viewW, viewH, totalGridW, gridH);
     const originX = x + labelW + this.gridOffset.x;
     const originY = y + rulerH + this.gridOffset.y;
@@ -4963,7 +5019,7 @@ export default class MidiComposer {
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(x, y, w, viewH + rulerH);
 
-    this.drawRuler(ctx, x + labelW, y, viewW, loopTicks);
+    this.drawRuler(ctx, x + labelW, y, viewW, rulerH, loopTicks);
     ctx.save();
     ctx.beginPath();
     ctx.rect(x + labelW, y + rulerH, viewW, viewH);
@@ -4984,50 +5040,75 @@ export default class MidiComposer {
     this.drawSelectionMenu(ctx);
   }
 
-  drawRuler(ctx, x, y, w, loopTicks) {
+  drawRuler(ctx, x, y, w, h, loopTicks) {
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect(x, y, w, 24);
+    ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(x, y, w, 24);
+    ctx.strokeRect(x, y, w, h);
     ctx.fillStyle = '#fff';
     ctx.font = '12px Courier New';
     if (!this.gridBounds) return;
     const { originX, cellWidth } = this.gridBounds;
     ctx.save();
     ctx.beginPath();
-    ctx.rect(x, y, w, 24);
+    ctx.rect(x, y, w, h);
     ctx.clip();
     if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
       const loopStartX = originX + this.song.loopStartTick * cellWidth;
       const loopEndX = originX + this.song.loopEndTick * cellWidth;
       ctx.fillStyle = 'rgba(255,225,106,0.25)';
-      ctx.fillRect(loopStartX, y, loopEndX - loopStartX, 24);
+      ctx.fillRect(loopStartX, y, loopEndX - loopStartX, h);
+      const handleW = 14;
+      const handleH = Math.max(8, Math.round(h * 0.4));
+      const handleY = y + 2;
+      this.bounds.loopStartHandle = {
+        x: loopStartX - handleW / 2,
+        y: handleY,
+        w: handleW,
+        h: handleH
+      };
+      this.bounds.loopEndHandle = {
+        x: loopEndX - handleW / 2,
+        y: handleY,
+        w: handleW,
+        h: handleH
+      };
+      ctx.fillStyle = '#55d68a';
+      ctx.fillRect(this.bounds.loopStartHandle.x, this.bounds.loopStartHandle.y, handleW, handleH);
+      ctx.fillStyle = '#ff6a6a';
+      ctx.fillRect(this.bounds.loopEndHandle.x, this.bounds.loopEndHandle.y, handleW, handleH);
+      ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+      ctx.strokeRect(this.bounds.loopStartHandle.x, this.bounds.loopStartHandle.y, handleW, handleH);
+      ctx.strokeRect(this.bounds.loopEndHandle.x, this.bounds.loopEndHandle.y, handleW, handleH);
+    } else {
+      this.bounds.loopStartHandle = null;
+      this.bounds.loopEndHandle = null;
     }
     const totalBars = Math.max(1, Math.ceil(loopTicks / ticksPerBar));
     for (let bar = 0; bar < totalBars; bar += 1) {
       const barX = originX + bar * ticksPerBar * cellWidth;
-      ctx.fillText(`${bar + 1}`, barX + 4, y + 16);
+      ctx.fillText(`${bar + 1}`, barX + 4, y + h - 8);
     }
     if (typeof this.song.loopStartTick === 'number') {
       const startX = originX + this.song.loopStartTick * cellWidth;
       ctx.strokeStyle = '#55d68a';
       ctx.beginPath();
       ctx.moveTo(startX, y);
-      ctx.lineTo(startX, y + 24);
+      ctx.lineTo(startX, y + h);
       ctx.stroke();
       ctx.fillStyle = '#55d68a';
-      ctx.fillText('START', startX + 4, y + 16);
+      ctx.fillText('START', startX + 4, y + h - 8);
     }
     if (typeof this.song.loopEndTick === 'number') {
       const endX = originX + this.song.loopEndTick * cellWidth;
       ctx.strokeStyle = '#ff6a6a';
       ctx.beginPath();
       ctx.moveTo(endX, y);
-      ctx.lineTo(endX, y + 24);
+      ctx.lineTo(endX, y + h);
       ctx.stroke();
       ctx.fillStyle = '#ff6a6a';
-      ctx.fillText('END', endX + 4, y + 16);
+      ctx.fillText('END', endX + 4, y + h - 8);
     }
     ctx.restore();
   }
