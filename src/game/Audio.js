@@ -43,6 +43,10 @@ export default class AudioSystem {
     this.midiSamples = null;
     this.midiVoices = [];
     this.midiVoiceLimit = 48;
+    this.midiLatency = 0.03;
+    this.midiReverbEnabled = true;
+    this.midiReverbLevel = 0.18;
+    this.midiReverbSend = null;
     this.gmPlayer = null;
     this.gmPlayerPromise = null;
     this.gmProgramPresets = new Map();
@@ -79,6 +83,10 @@ export default class AudioSystem {
     this.midiLimiter.connect(this.master);
     this.midiReverb = this.ctx.createConvolver();
     this.midiReverb.buffer = this.buildImpulseResponse(1.4, 2.5);
+    this.midiReverbSend = this.ctx.createGain();
+    this.midiReverbSend.gain.value = this.midiReverbEnabled ? this.midiReverbLevel : 0;
+    this.midiBus.connect(this.midiReverbSend);
+    this.midiReverbSend.connect(this.midiReverb);
     this.midiReverb.connect(this.midiLimiter);
     this.midiSamples = this.buildMidiSamples();
   }
@@ -229,6 +237,24 @@ export default class AudioSystem {
     }
   }
 
+  setMidiLatency(value = 0) {
+    this.midiLatency = Math.max(0, Number(value) || 0);
+  }
+
+  setMidiReverbEnabled(enabled) {
+    this.midiReverbEnabled = Boolean(enabled);
+    if (this.midiReverbSend) {
+      this.midiReverbSend.gain.value = this.midiReverbEnabled ? this.midiReverbLevel : 0;
+    }
+  }
+
+  setMidiReverbLevel(value) {
+    this.midiReverbLevel = clamp(Number(value) || 0, 0, 1);
+    if (this.midiReverbSend && this.midiReverbEnabled) {
+      this.midiReverbSend.gain.value = this.midiReverbLevel;
+    }
+  }
+
   tone(freq, duration = 0.12, type = 'sawtooth') {
     this.ensure();
     const osc = this.ctx.createOscillator();
@@ -375,7 +401,7 @@ export default class AudioSystem {
     const clampedVolume = clamp(volume ?? 1, 0, 1);
     const playWithPreset = (preset) => {
       if (!preset || !this.gmPlayer) return;
-      const when = this.ctx.currentTime;
+      const when = this.ctx.currentTime + this.midiLatency;
       const voice = this.gmPlayer.queueWaveTable(
         this.ctx,
         this.midiBus,
@@ -389,7 +415,18 @@ export default class AudioSystem {
       this.registerMidiVoice({ voice, stopTime });
     };
     const fallback = () => {
-      this.playMidiNote(pitch, 'sine', duration, clampedVolume);
+      if (isDrumChannel(channel)) {
+        this.playSampledNote({
+          pitch,
+          duration,
+          volume: clampedVolume,
+          instrument: this.getFallbackDrum(pitch),
+          when: this.ctx.currentTime + this.midiLatency
+        });
+        return;
+      }
+      const fallbackInstrument = this.getFallbackInstrument(clampedProgram);
+      this.playMidiNote(pitch, fallbackInstrument, duration, clampedVolume, this.ctx.currentTime + this.midiLatency);
     };
     this.ensureGmPlayer()
       .then(() => {
@@ -402,7 +439,7 @@ export default class AudioSystem {
       .catch(fallback);
   }
 
-  playMidiNote(pitch, instrument = 'piano', duration = 0.5, volume = 1) {
+  playMidiNote(pitch, instrument = 'piano', duration = 0.5, volume = 1, when = null) {
     this.ensure();
     const freq = 440 * (2 ** ((pitch - 69) / 12));
     const preset = this.getMidiPreset(instrument);
@@ -421,7 +458,7 @@ export default class AudioSystem {
       output.connect(gain);
     }
     gain.connect(this.master);
-    const now = this.ctx.currentTime;
+    const now = when ?? this.ctx.currentTime;
     const attack = preset.attack ?? 0.01;
     const decay = preset.decay ?? 0.1;
     const sustain = preset.sustain ?? 0.6;
@@ -436,7 +473,7 @@ export default class AudioSystem {
     osc.stop(now + duration + release + 0.02);
   }
 
-  playSampledNote({ pitch = 60, duration = 0.4, volume = 0.8, instrument = 'lead' }) {
+  playSampledNote({ pitch = 60, duration = 0.4, volume = 0.8, instrument = 'lead', when = null }) {
     this.ensureMidiSampler();
     const sample = this.midiSamples[instrument] || this.midiSamples.lead;
     if (!sample?.buffer) return;
@@ -457,10 +494,45 @@ export default class AudioSystem {
     reverbSend.gain.value = 0.2;
     gain.connect(reverbSend);
     reverbSend.connect(this.midiReverb);
-    const now = this.ctx.currentTime;
+    const now = when ?? this.ctx.currentTime;
     source.start(now);
     source.stop(now + duration + 0.1);
     this.registerMidiVoice({ source, gain, stopTime: now + duration + 0.12 });
+  }
+
+  getFallbackInstrument(program) {
+    const entry = GM_PROGRAMS[program];
+    const family = entry?.family || '';
+    if (family === 'Piano') return 'piano';
+    if (family === 'Chromatic Percussion') return 'bell';
+    if (family === 'Organ') return 'organ';
+    if (family === 'Guitar') return program < 28 ? 'guitar-nylon' : 'guitar-electric';
+    if (family === 'Bass') return 'bass';
+    if (family === 'Strings' || family === 'Ensemble') {
+      if (entry?.name?.includes('Choir') || entry?.name?.includes('Voice')) {
+        return 'choir';
+      }
+      return 'strings';
+    }
+    if (family === 'Brass') return program < 60 ? 'trumpet' : 'brass';
+    if (family === 'Reed') return 'sax';
+    if (family === 'Pipe') return 'flute';
+    if (family === 'Synth Lead') return 'synth-lead';
+    if (family === 'Synth Pad') return 'synth-pad';
+    if (family === 'Synth FX') return 'pluck';
+    if (family === 'Ethnic') return 'guitar-nylon';
+    if (family === 'Percussive') return 'marimba';
+    if (family === 'Sound Effects') return 'sine';
+    return 'triangle';
+  }
+
+  getFallbackDrum(pitch) {
+    if (pitch <= 36) return 'kick';
+    if (pitch <= 38) return 'snare';
+    if (pitch <= 42) return 'hat';
+    if (pitch <= 46) return 'tom';
+    if (pitch <= 49) return 'crash';
+    return 'hat';
   }
 
   registerMidiVoice({ source, gain, stopTime, voice }) {

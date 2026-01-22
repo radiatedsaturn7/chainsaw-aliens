@@ -44,19 +44,49 @@ Open the sequencer from the title screen **Tools** menu (`MIDI Editor`). The edi
 ### General MIDI Quick Notes
 - **128 melodic programs** are available in the instrument picker (grouped by family with search).
 - **Channel 10** (MIDI channel 9 in 0-based terms) is reserved for **drums** and uses the GM percussion map.
-- **SoundFont required**: audio playback uses a GM SoundFont sample pack (WebAudioFont-compatible). You can set a custom base URL from the Tools menu.
+- **SoundFont required**: audio playback uses a GM SoundFont sample pack (WebAudioFont-compatible). You can set a custom base URL from **Settings → Audio**.
 
 If you hear no sound, wait for the “Loading instrument bank…” banner to finish or switch to another GM SoundFont.
 
+### Mobile + Controller Controls
+- **Tabs**: switch between **Grid**, **Instruments**, **Settings**, and **Help**.
+- **Transport bar (bottom)**: Play/Pause, Stop, Loop, Prev/Next bar, Return to Start, Set Start, Set End, Metronome, and time display.
+- **Grid controls (Grid tab)**: tool selection (Draw/Erase/Select), quantize grid, note length, and snap/scale lock.
+- **Ruler gestures**: tap/drag to scrub, **long-press** to set Start, **Shift + click** to set End, **Alt/right-click** to clear markers.
+
+**Controller mapping (default)**
+- Move cursor: D-pad / Left stick
+- Place note: **A**
+- Erase note: **B**
+- Switch tool: **X**
+- Open Instruments: **Y**
+- Octave up/down: **LB / RB**
+- Scrub time: **LT / RT**
+- Play/Pause: **Start**
+- Stop/Return: **Back**
+
+Remap controller buttons from **Settings → Controller**.
+
+### Instrument Selection
+- **Family tabs** across the top (Piano/Keys, Guitars, Bass, Strings, Brass, Woodwinds, Synth, Drums/Perc, FX, Choir/Voice, Ethnic, Misc).
+- **Large tiles** for selection (2 columns on mobile, 3–4 on larger screens).
+- **Recent** and **Favorites** sections at the top; tap the star on a tile to favorite.
+- **Search** is optional and never auto-focuses.
+
+### Looping + Start/End
+- Use **Set Start** / **Set End** in the Transport bar or set them from the ruler.
+- Enable **Loop** to repeat between Start and End markers.
+- **Return** jumps the playhead back to the Start marker (or bar 1 if not set).
+
 ### Core Workflow
 1. Add a track, select a GM program (or set Channel 10 for drums), and place notes in the expanding piano roll grid.
-2. Press **Play**, adjust tempo/quantize, and choose the note length from the top ribbon.
-3. Set an end marker in the ruler (Shift + click) and toggle **Loop** in Settings if you want a repeat.
+2. Press **Play**, adjust tempo/quantize, and choose the note length from the Grid tab controls.
+3. Set Start/End markers from the ruler or Transport bar, and toggle **Loop** if you want a repeat.
 4. Use **Export JSON** to save a song, or **Import JSON** to load one.
 
 ### SoundFont Tips
-- Use **Tools → SoundFont URL** to point at a GM SoundFont bank (WebAudioFont data pack).
-- Use **Tools → Reset SoundFont** to restore the default bank.
+- Use **Settings → Audio → SoundFont URL** to point at a GM SoundFont bank (WebAudioFont data pack).
+- Use **Settings → Audio → Reset SoundFont** to restore the default bank.
 - The UI shows “Loading instrument bank…” until the bank and required programs are ready.
 
 ### Editor Controls (mouse/touch/keyboard)
@@ -69,8 +99,9 @@ If you hear no sound, wait for the “Loading instrument bank…” banner to fi
 - **Ctrl/Cmd + C / V**: copy/paste selection.
 - **Ctrl/Cmd + D**: duplicate selection forward.
 - **Ruler drag**: scrub playhead (optional audition toggle).
+- **Long-press ruler**: set start marker.
 - **Shift + click ruler**: set end marker.
-- **Alt/Option + click ruler**: clear end marker.
+- **Alt/Option + click ruler**: clear start/end markers.
 
 ### Import / Export Format
 Songs are stored as JSON with this schema:
@@ -79,8 +110,10 @@ Songs are stored as JSON with this schema:
   "schemaVersion": 2,
   "tempo": 120,
   "loopBars": 4,
+  "loopStartTick": null,
   "loopEndTick": null,
   "loopEnabled": false,
+  "highContrast": false,
   "key": 0,
   "scale": "minor",
   "tracks": [
@@ -89,6 +122,7 @@ Songs are stored as JSON with this schema:
       "name": "Lead",
       "channel": 0,
       "program": 0,
+      "instrumentFamily": "Piano",
       "bankMSB": 0,
       "bankLSB": 0,
       "volume": 0.8,
