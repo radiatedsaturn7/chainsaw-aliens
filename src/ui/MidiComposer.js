@@ -525,8 +525,6 @@ export default class MidiComposer {
     this.gamepadMoveCooldown = 0;
     this.gamepadCursorActive = false;
     this.lastPointer = { x: 0, y: 0 };
-    this.lastTapTime = 0;
-    this.lastTapNoteId = null;
     this.placingEndMarker = false;
     this.placingStartMarker = false;
     this.settingsOpen = false;
@@ -629,6 +627,7 @@ export default class MidiComposer {
     this.noteLabelBounds = [];
     this.gridBounds = null;
     this.rulerBounds = null;
+    this.gridZoomInitialized = false;
     this.fileInput = document.createElement('input');
     this.fileInput.type = 'file';
     this.fileInput.accept = 'application/json';
@@ -654,6 +653,7 @@ export default class MidiComposer {
     this.ensureState();
     this.gridZoomX = this.getDefaultGridZoomX();
     this.gridZoomY = this.getDefaultGridZoomY();
+    this.gridZoomInitialized = false;
     this.preloadDefaultInstruments();
   }
 
@@ -2131,15 +2131,18 @@ export default class MidiComposer {
     if (!cell) return;
     if (this.dragState.mode === 'paint') {
       this.paintNoteAt(cell.tick, cell.pitch, true);
-    } else if (this.dragState.mode === 'paint-or-select') {
+    } else if (this.dragState.mode === 'pan-or-tap') {
       const dx = payload.x - this.dragState.startX;
       const dy = payload.y - this.dragState.startY;
       const threshold = 6;
       if (!this.dragState.moved && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) {
         this.dragState.moved = true;
-        this.dragState.mode = 'select';
-        this.dragState.currentX = payload.x;
-        this.dragState.currentY = payload.y;
+      }
+      if (this.dragState.moved) {
+        this.gridOffset.x = this.dragState.startOffsetX + dx;
+        this.gridOffset.y = this.dragState.startOffsetY + dy;
+        const { gridW, gridH, w, h } = this.gridBounds;
+        this.clampGridOffset(w, h, gridW, gridH);
       }
     } else if (this.dragState.mode === 'paste-preview') {
       this.updatePastePreviewPosition(cell.tick, cell.pitch);
@@ -2168,14 +2171,10 @@ export default class MidiComposer {
     }
     if (this.dragState?.mode === 'touch-pan' || this.dragState?.mode === 'pan') {
       if (!this.dragState.moved) {
-        const { cell, hit } = this.dragState;
-        if (this.dragState.mode === 'touch-pan') {
-          if (hit?.note) {
-            this.deleteNote(hit.note);
-          } else if (cell) {
-            this.selection.clear();
-            this.toggleNoteAt(cell.tick, cell.pitch);
-          }
+        const { cell } = this.dragState;
+        if (this.dragState.mode === 'touch-pan' && cell) {
+          this.selection.clear();
+          this.toggleNoteAt(cell.tick, cell.pitch);
         }
       }
       this.dragState = null;
@@ -2192,10 +2191,13 @@ export default class MidiComposer {
       return;
     }
     if (this.dragState?.mode === 'move') {
+      if (!this.dragState.moved && this.dragState.startedSelected && this.dragState.hit?.note) {
+        this.deleteNote(this.dragState.hit.note);
+      }
       this.dragState = null;
       return;
     }
-    if (this.dragState?.mode === 'paint-or-select') {
+    if (this.dragState?.mode === 'pan-or-tap') {
       if (!this.dragState.moved && this.dragState.cell) {
         this.toggleNoteAt(this.dragState.cell.tick, this.dragState.cell.pitch);
       }
@@ -2284,48 +2286,7 @@ export default class MidiComposer {
     if (!cell) return;
     const modifiers = this.getModifiers();
     const hit = this.getNoteAtCell(cell.tick, cell.pitch, x);
-    if (payload.touchCount && hit && payload.touchCount === 1) {
-      const now = Date.now();
-      const isDoubleTap = this.lastTapNoteId === hit.note.id && now - this.lastTapTime < 350;
-      this.lastTapTime = now;
-      this.lastTapNoteId = hit.note.id;
-      if (isDoubleTap) {
-        this.deleteNote(hit.note);
-        this.dragState = null;
-        this.lastTapNoteId = null;
-        return;
-      }
-      if (!this.selection.has(hit.note.id)) {
-        this.selection.clear();
-        this.selection.add(hit.note.id);
-      }
-      if (hit.edge) {
-        this.dragState = {
-          mode: 'resize',
-          edge: hit.edge,
-          startTick: cell.tick,
-          originalNotes: this.getSelectedNotes().map((note) => ({ ...note }))
-        };
-        return;
-      }
-      this.dragState = {
-        mode: 'move',
-        startTick: cell.tick,
-        startPitch: cell.pitch,
-        startX: x,
-        startY: y,
-        moved: false,
-        cell,
-        hit,
-        originalNotes: this.getSelectedNotes().map((note) => ({ ...note }))
-      };
-      this.previewNote(hit.note, cell.pitch);
-      return;
-    }
-    if (payload.touchCount && !hit) {
-      this.lastTapNoteId = null;
-    }
-    if (payload.touchCount || modifiers.alt || payload.button === 1 || payload.button === 2) {
+    if ((payload.touchCount && !hit) || modifiers.alt || payload.button === 1 || payload.button === 2) {
       this.dragState = {
         mode: payload.touchCount ? 'touch-pan' : 'pan',
         startX: x,
@@ -2369,7 +2330,8 @@ export default class MidiComposer {
         this.toggleSelection(hit.note.id);
         return;
       }
-      if (!this.selection.has(hit.note.id)) {
+      const startedSelected = this.selection.has(hit.note.id);
+      if (!startedSelected) {
         this.selection.clear();
         this.selection.add(hit.note.id);
       }
@@ -2394,6 +2356,7 @@ export default class MidiComposer {
         moved: false,
         cell,
         hit,
+        startedSelected,
         originalNotes: this.getSelectedNotes().map((note) => ({ ...note }))
       };
       this.previewNote(hit.note, cell.pitch);
@@ -2405,9 +2368,11 @@ export default class MidiComposer {
     }
     this.selection.clear();
     this.dragState = {
-      mode: 'paint-or-select',
+      mode: 'pan-or-tap',
       startX: x,
       startY: y,
+      startOffsetX: this.gridOffset.x,
+      startOffsetY: this.gridOffset.y,
       currentX: x,
       currentY: y,
       cell,
@@ -3427,6 +3392,7 @@ export default class MidiComposer {
     this.gridOffsetInitialized = false;
     this.gridZoomX = this.getDefaultGridZoomX();
     this.gridZoomY = this.getDefaultGridZoomY();
+    this.gridZoomInitialized = false;
     this.persist();
   }
 
@@ -3436,6 +3402,7 @@ export default class MidiComposer {
     this.gridOffsetInitialized = false;
     this.gridZoomX = this.getDefaultGridZoomX();
     this.gridZoomY = this.getDefaultGridZoomY();
+    this.gridZoomInitialized = false;
     this.qaResults = [{ label: 'Demo loaded', status: 'pass' }];
     if (!this.isPlaying) {
       this.togglePlayback();
@@ -3604,11 +3571,16 @@ export default class MidiComposer {
     if (!hit) return null;
     const rect = this.getNoteRect(hit);
     if (!rect) return null;
-    const handleSize = Math.max(6, Math.min(12, rect.h - 2, rect.w / 2));
+    const handleWidth = this.getNoteHandleWidth(rect);
+    const handleSize = Math.max(6, Math.min(handleWidth, rect.w / 2));
     const cursorX = typeof pointerX === 'number' ? pointerX : this.lastPointer.x;
     const isStartEdge = cursorX <= rect.x + handleSize;
     const isEndEdge = cursorX >= rect.x + rect.w - handleSize;
     return { note: hit, edge: isStartEdge ? 'start' : isEndEdge ? 'end' : null };
+  }
+
+  getNoteHandleWidth(rect) {
+    return Math.max(8, Math.round(rect.h * 2));
   }
 
   getNoteRect(note) {
@@ -5001,11 +4973,16 @@ export default class MidiComposer {
     this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
     this.gridZoomY = clamp(this.gridZoomY, minZoom, maxZoom);
     const baseCellHeight = Math.min(24, (h - rulerH - 16) / baseVisibleRows);
+    const viewH = Math.max(0, h - rulerH);
+    if (!this.gridZoomInitialized) {
+      const desiredVisibleRows = 12;
+      this.gridZoomY = clamp(viewH / (desiredVisibleRows * baseCellHeight), minZoom, maxZoom);
+      this.gridZoomInitialized = true;
+    }
     const cellWidth = baseCellWidth * this.gridZoomX;
     const cellHeight = baseCellHeight * this.gridZoomY;
     const totalGridW = cellWidth * loopTicks;
     const gridH = cellHeight * rows;
-    const viewH = Math.max(0, h - rulerH);
     this.initializeGridOffset(track, rows, cellHeight);
     this.clampGridOffset(viewW, viewH, totalGridW, gridH);
     const originX = x + labelW + this.gridOffset.x;
@@ -5260,7 +5237,7 @@ export default class MidiComposer {
         ctx.fillRect(rect.x, rect.y, 4, rect.h);
         ctx.fillRect(rect.x + rect.w - 4, rect.y, 4, rect.h);
         const handleHeight = rect.h;
-        const handleWidth = Math.max(8, Math.round(handleHeight * 4));
+        const handleWidth = this.getNoteHandleWidth(rect);
         const handleY = rect.y;
         ctx.fillStyle = '#ffe16a';
         ctx.fillRect(rect.x - handleWidth, handleY, handleWidth, handleHeight);
