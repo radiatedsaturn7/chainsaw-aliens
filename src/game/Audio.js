@@ -168,6 +168,15 @@ export default class AudioSystem {
     return this.soundfont.loadDrumKit();
   }
 
+  cacheGmProgram(program, channel = 0) {
+    if (!this.gmEnabled) return Promise.resolve({ cached: false, reason: 'GM disabled' });
+    this.ensureMidiSampler();
+    if (isDrumChannel(channel)) {
+      return this.soundfont.cacheDrumKit();
+    }
+    return this.soundfont.cacheInstrument(program);
+  }
+
   preloadSoundfontProgram(program, channel = 0) {
     if (!this.gmEnabled) return;
     if (isDrumChannel(channel)) {

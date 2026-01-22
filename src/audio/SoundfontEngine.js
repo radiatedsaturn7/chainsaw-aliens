@@ -143,6 +143,43 @@ export default class SoundfontEngine {
     return this.drumPromise;
   }
 
+  async cacheInstrument(program) {
+    const name = this.getProgramName(program);
+    return this.cacheInstrumentByName(String(program), name);
+  }
+
+  async cacheDrumKit() {
+    return this.cacheInstrumentByName('drum-kit', DRUM_KIT_NAME);
+  }
+
+  async cacheInstrumentByName(key, name) {
+    if (!globalThis?.caches) {
+      throw new Error('Cache API unavailable.');
+    }
+    const cache = await caches.open('chainsaw-soundfonts');
+    const primaryUrl = this.buildUrl(this.baseUrl, name, this.format);
+    const fallbackUrl = this.buildUrl(this.fallbackUrl, name, this.format);
+    const urls = [primaryUrl, fallbackUrl];
+    for (const url of urls) {
+      const cached = await cache.match(url);
+      if (cached) {
+        return { cached: true, url };
+      }
+    }
+    for (const url of urls) {
+      try {
+        const response = await fetch(url, { mode: 'cors' });
+        if (response.ok) {
+          await cache.put(url, response.clone());
+          return { cached: true, url };
+        }
+      } catch (error) {
+        this.lastError = error?.message ? String(error.message) : String(error);
+      }
+    }
+    throw new Error(`Failed to cache SoundFont: ${name}`);
+  }
+
   loadInstrumentByName(key, name) {
     if (this.instrumentCache.has(key)) {
       return Promise.resolve(this.instrumentCache.get(key));
