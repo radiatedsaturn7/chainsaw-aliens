@@ -3,8 +3,7 @@ import { GM_SOUNDFONT_NAMES, isDrumChannel } from './gm.js';
 const PRIMARY_SOUNDFONT_BASE = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
 const FALLBACK_SOUNDFONT_BASE = 'https://cdn.jsdelivr.net/gh/gleitz/midi-js-soundfonts/FluidR3_GM/';
 const SOUNDFONT_PLAYER_GLOBAL = 'Soundfont';
-// midi-js-soundfonts does not publish a standard_kit file for FluidR3_GM, so use a valid drum patch.
-const DRUM_KIT_NAME = 'synth_drum';
+const DRUM_KIT_NAME = 'standard_kit';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const normalizeBaseUrl = (url) => (url.endsWith('/') ? url : `${url}/`);
