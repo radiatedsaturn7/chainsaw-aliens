@@ -67,6 +67,8 @@ export default class AudioSystem {
       this.master = this.ctx.createGain();
       this.master.gain.value = this.volume;
       this.master.connect(this.ctx.destination);
+    } else if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
     }
   }
 

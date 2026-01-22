@@ -227,6 +227,7 @@ const MIDI_NOTE_LENGTHS = [
 ];
 
 const EDITOR_AUTOSAVE_KEY = 'chainsaw-editor-autosave';
+const MIDI_SONG_LIBRARY_KEY = 'chainsaw-midi-library';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -1477,13 +1478,34 @@ export default class Editor {
     return this.game.world.midiTracks;
   }
 
+  loadSavedSongLibrary() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(MIDI_SONG_LIBRARY_KEY));
+      if (!Array.isArray(stored)) return [];
+      return stored.filter((entry) => entry && entry.id && entry.name);
+    } catch (error) {
+      return [];
+    }
+  }
+
+  getLibraryTracks() {
+    const library = this.loadSavedSongLibrary();
+    return library.map((entry) => ({
+      id: entry.id,
+      name: entry.name,
+      source: 'library'
+    }));
+  }
+
   getMusicTracks() {
     const tracks = this.ensureMidiTracks();
-    if (!tracks.length) return tracks;
-    if (!this.musicTrack || !tracks.some((entry) => entry.id === this.musicTrack.id)) {
-      this.musicTrack = tracks[0];
+    const libraryTracks = this.getLibraryTracks();
+    const merged = [...libraryTracks, ...tracks.filter((track) => !libraryTracks.some((entry) => entry.id === track.id))];
+    if (!merged.length) return merged;
+    if (!this.musicTrack || !merged.some((entry) => entry.id === this.musicTrack.id)) {
+      this.musicTrack = merged[0];
     }
-    return tracks;
+    return merged;
   }
 
   getMusicTrackLabel(trackId) {

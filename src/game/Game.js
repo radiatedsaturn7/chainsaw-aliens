@@ -42,6 +42,7 @@ import Pause from '../ui/Pause.js';
 import MobileControls from '../ui/MobileControls.js';
 import PixelStudio from '../ui/PixelStudio.js';
 import MidiComposer from '../ui/MidiComposer.js';
+import MidiSongPlayer from './MidiSongPlayer.js';
 import TestHarness from '../debug/TestHarness.js';
 import Validator from '../debug/Validator.js';
 import ConsoleOverlay from '../debug/ConsoleOverlay.js';
@@ -61,6 +62,7 @@ import ObstacleTestMap from '../debug/ObstacleTestMap.js';
 import { OBSTACLES } from '../world/Obstacles.js';
 import { MOVEMENT_MODEL } from './MovementModel.js';
 
+const MIDI_SONG_LIBRARY_KEY = 'chainsaw-midi-library';
 const BOSS_TYPES = new Set([
   'finalboss',
   'sunderbehemoth',
@@ -145,6 +147,9 @@ export default class Game {
     this.ctx = ctx;
     this.input = new Input();
     this.audio = new AudioSystem();
+    this.musicPlayers = [];
+    this.activeMusicTrackId = null;
+    this.musicFadeDuration = 1.2;
     this.world = new World();
     this.camera = new Camera(canvas.width, canvas.height);
     this.minimap = new Minimap(this.world);
@@ -1534,6 +1539,7 @@ export default class Game {
       this.input.flush();
       return;
     }
+    this.updateMusicZones(dt * timeScale, tileX, tileY);
     this.player.sawDeployed = this.sawAnchor.active;
     this.updateSawAnchor(dt * timeScale, this.input);
     this.applyAnchorClimb(dt * timeScale);
@@ -3718,6 +3724,52 @@ export default class Game {
     } else {
       this.bossActive = false;
     }
+  }
+
+  loadSongLibrary() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(MIDI_SONG_LIBRARY_KEY));
+      if (!Array.isArray(stored)) return [];
+      return stored.filter((entry) => entry && entry.id && entry.song);
+    } catch (error) {
+      return [];
+    }
+  }
+
+  getLibrarySong(trackId) {
+    if (!trackId) return null;
+    const library = this.loadSongLibrary();
+    return library.find((entry) => entry.id === trackId) || null;
+  }
+
+  getMusicZoneAt(tileX, tileY) {
+    const zones = this.world.musicZones || [];
+    return zones.find((zone) => {
+      const [x, y, w, h] = zone.rect;
+      return tileX >= x && tileX < x + w && tileY >= y && tileY < y + h;
+    });
+  }
+
+  setActiveMusicTrack(trackId) {
+    if (trackId === this.activeMusicTrackId) return;
+    this.musicPlayers.forEach((player) => {
+      player.setFade(0, this.musicFadeDuration);
+    });
+    this.activeMusicTrackId = trackId || null;
+    if (!trackId) return;
+    const libraryEntry = this.getLibrarySong(trackId);
+    if (!libraryEntry) return;
+    const player = new MidiSongPlayer(this.audio);
+    player.setSong(libraryEntry.song, trackId);
+    player.setFade(1, this.musicFadeDuration);
+    this.musicPlayers.push(player);
+  }
+
+  updateMusicZones(dt, tileX, tileY) {
+    const zone = this.getMusicZoneAt(tileX, tileY);
+    this.setActiveMusicTrack(zone?.track || null);
+    this.musicPlayers.forEach((player) => player.update(dt));
+    this.musicPlayers = this.musicPlayers.filter((player) => !(player.volume <= 0 && player.targetVolume === 0));
   }
 
   handleThrow() {
