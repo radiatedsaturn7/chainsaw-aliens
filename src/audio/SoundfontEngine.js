@@ -2,7 +2,7 @@ import { GM_SOUNDFONT_NAMES, isDrumChannel } from './gm.js';
 
 const PRIMARY_SOUNDFONT_BASE = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
 const FALLBACK_SOUNDFONT_BASE = 'https://cdn.jsdelivr.net/gh/gleitz/midi-js-soundfonts/FluidR3_GM/';
-const SOUNDFONT_PLAYER_URL = 'https://cdn.jsdelivr.net/npm/soundfont-player/+esm';
+const SOUNDFONT_PLAYER_GLOBAL = 'Soundfont';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const normalizeBaseUrl = (url) => (url.endsWith('/') ? url : `${url}/`);
@@ -97,19 +97,20 @@ export default class SoundfontEngine {
   async ensurePlayer() {
     if (this.player) return this.player;
     if (this.playerPromise) return this.playerPromise;
-    this.playerPromise = import(SOUNDFONT_PLAYER_URL)
-      .then((module) => {
-        this.player = module.default || module;
+    this.playerPromise = new Promise((resolve, reject) => {
+      const globalPlayer = window?.[SOUNDFONT_PLAYER_GLOBAL];
+      if (globalPlayer) {
+        this.player = globalPlayer;
         this.error = null;
-        return this.player;
-      })
-      .catch((error) => {
-        this.error = 'Failed to load SoundFont player.';
-        throw error;
-      })
-      .finally(() => {
-        this.playerPromise = null;
-      });
+        resolve(this.player);
+        return;
+      }
+      const error = new Error('SoundFont player script not loaded.');
+      this.error = 'Failed to load SoundFont player.';
+      reject(error);
+    }).finally(() => {
+      this.playerPromise = null;
+    });
     return this.playerPromise;
   }
 
