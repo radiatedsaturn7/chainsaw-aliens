@@ -38,7 +38,7 @@ const SOUNDFONT_CDNS = [
 
 const TAB_OPTIONS = [
   { id: 'grid', label: 'Grid' },
-  { id: 'instruments', label: 'Instruments' },
+  { id: 'instruments', label: 'Tracks' },
   { id: 'settings', label: 'Settings' }
 ];
 
@@ -1122,6 +1122,15 @@ export default class MidiComposer {
     return Math.max(1, Math.round(ticksPerBar / divisor));
   }
 
+  setNoteLengthIndex(index) {
+    const total = NOTE_LENGTH_OPTIONS.length;
+    const nextIndex = ((index % total) + total) % total;
+    this.noteLengthIndex = nextIndex;
+    if (this.quantizeOptions.length > 0) {
+      this.quantizeIndex = Math.min(nextIndex, this.quantizeOptions.length - 1);
+    }
+  }
+
   getNextAvailableChannel() {
     const used = new Set(this.song.tracks.map((track) => track.channel));
     for (let channel = 0; channel < 16; channel += 1) {
@@ -1656,7 +1665,7 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.noteLength && this.pointInBounds(x, y, this.bounds.noteLength)) {
-        this.noteLengthIndex = (this.noteLengthIndex + 1) % NOTE_LENGTH_OPTIONS.length;
+        this.setNoteLengthIndex(this.noteLengthIndex + 1);
         return;
       }
       if (this.bounds.zoomOut && this.pointInBounds(x, y, this.bounds.zoomOut)) {
@@ -2630,7 +2639,7 @@ export default class MidiComposer {
       return;
     }
     if (control.id === 'grid-note-length') {
-      this.noteLengthIndex = (this.noteLengthIndex + 1) % NOTE_LENGTH_OPTIONS.length;
+      this.setNoteLengthIndex(this.noteLengthIndex + 1);
       return;
     }
     if (control.id === 'song-tempo') {
@@ -3030,30 +3039,34 @@ export default class MidiComposer {
     ctx.fillRect(0, 0, width, height);
 
     const isMobile = this.isMobileLayout();
-    const padding = isMobile ? 12 : 16;
-    const headerH = isMobile ? 42 : 40;
-    const tabsH = isMobile ? 48 : 44;
-    const transportH = isMobile ? 132 : 96;
-    const headerY = padding;
-    const tabsX = padding;
-    const tabsY = headerY + headerH + 8;
-    const tabsW = width - padding * 2;
-    this.drawHeader(ctx, padding, headerY, tabsW, headerH, track);
-    this.drawTabs(ctx, tabsX, tabsY, tabsW, tabsH);
+    if (isMobile) {
+      this.drawMobileLayout(ctx, width, height, track, pattern);
+    } else {
+      const padding = 16;
+      const headerH = 40;
+      const tabsH = 44;
+      const transportH = 96;
+      const headerY = padding;
+      const tabsX = padding;
+      const tabsY = headerY + headerH + 8;
+      const tabsW = width - padding * 2;
+      this.drawHeader(ctx, padding, headerY, tabsW, headerH, track);
+      this.drawTabs(ctx, tabsX, tabsY, tabsW, tabsH);
 
-    const contentX = padding;
-    const contentY = tabsY + tabsH + 8;
-    const contentW = width - padding * 2;
-    const contentH = height - contentY - transportH - padding;
-    const transportY = height - transportH - padding;
-    this.drawTransportBar(ctx, padding, transportY, width - padding * 2, transportH);
+      const contentX = padding;
+      const contentY = tabsY + tabsH + 8;
+      const contentW = width - padding * 2;
+      const contentH = height - contentY - transportH - padding;
+      const transportY = height - transportH - padding;
+      this.drawTransportBar(ctx, padding, transportY, width - padding * 2, transportH);
 
-    if (this.activeTab === 'grid') {
-      this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
-    } else if (this.activeTab === 'instruments') {
-      this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
-    } else if (this.activeTab === 'settings') {
-      this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
+      if (this.activeTab === 'grid') {
+        this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
+      } else if (this.activeTab === 'instruments') {
+        this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
+      } else if (this.activeTab === 'settings') {
+        this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
+      }
     }
 
     if (this.fileMenuOpen && this.bounds.fileButton) {
@@ -3065,6 +3078,130 @@ export default class MidiComposer {
     }
 
     ctx.restore();
+  }
+
+  drawMobileLayout(ctx, width, height, track, pattern) {
+    const padding = 10;
+    const gap = 10;
+    const sidebarW = Math.min(240, Math.max(140, width * 0.32));
+    const sidebarX = padding;
+    const sidebarY = padding;
+    const sidebarH = height - padding * 2;
+    const contentX = sidebarX + sidebarW + gap;
+    const contentY = padding;
+    const contentW = width - contentX - padding;
+    const contentH = height - padding * 2;
+
+    this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track);
+
+    if (this.activeTab === 'grid') {
+      this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
+      this.drawGridZoomControls(ctx, contentX, contentY, contentW, contentH);
+    } else if (this.activeTab === 'instruments') {
+      this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
+    } else if (this.activeTab === 'settings') {
+      this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
+    }
+  }
+
+  drawMobileSidebar(ctx, x, y, w, h, track) {
+    const panelGap = 10;
+    const rowH = 38;
+    const rowGap = 8;
+    const panelPadding = 10;
+    const menuRows = TAB_OPTIONS.length + 1;
+    const menuH = Math.min(h * 0.46, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
+    const menuX = x;
+    const menuY = y;
+    const controlsX = x;
+    const controlsY = y + menuH + panelGap;
+    const controlsH = Math.max(0, h - menuH - panelGap);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(menuX, menuY, w, menuH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(menuX, menuY, w, menuH);
+
+    const innerX = menuX + panelPadding;
+    const innerW = w - panelPadding * 2;
+    let cursorY = menuY + panelPadding;
+    this.bounds.tabs = [];
+    this.bounds.fileButton = { x: innerX, y: cursorY, w: innerW, h: rowH };
+    this.drawButton(ctx, this.bounds.fileButton, 'File', this.fileMenuOpen, false);
+    cursorY += rowH + rowGap;
+
+    TAB_OPTIONS.forEach((tab) => {
+      const bounds = { x: innerX, y: cursorY, w: innerW, h: rowH, id: tab.id };
+      this.bounds.tabs.push(bounds);
+      this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
+      cursorY += rowH + rowGap;
+    });
+
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(controlsX, controlsY, w, controlsH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(controlsX, controlsY, w, controlsH);
+
+    const controlX = controlsX + panelPadding;
+    const controlW = w - panelPadding * 2;
+    let controlY = controlsY + panelPadding;
+    const buttonSize = rowH;
+    const compactLayout = controlW < 220;
+    const noteW = compactLayout ? controlW : Math.min(110, Math.max(76, controlW * 0.45));
+    const labelW = Math.max(60, controlW - (buttonSize * 2 + rowGap * 2 + (compactLayout ? 0 : noteW + rowGap)));
+    const instrumentLabel = this.getTrackInstrumentLabel(track);
+    const clippedLabel = this.truncateLabel(ctx, instrumentLabel, labelW - 12);
+
+    this.bounds.instrumentPrev = { x: controlX, y: controlY, w: buttonSize, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.instrumentPrev, '<', false);
+    this.bounds.instrumentLabel = {
+      x: controlX + buttonSize + rowGap,
+      y: controlY,
+      w: labelW,
+      h: rowH
+    };
+    this.drawSmallButton(ctx, this.bounds.instrumentLabel, clippedLabel, false);
+    this.bounds.instrumentNext = {
+      x: controlX + buttonSize + rowGap + labelW + rowGap,
+      y: controlY,
+      w: buttonSize,
+      h: rowH
+    };
+    this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
+    if (compactLayout) {
+      controlY += rowH + rowGap;
+      this.bounds.noteLength = { x: controlX, y: controlY, w: noteW, h: rowH };
+      this.drawSmallButton(ctx, this.bounds.noteLength, `Note ${NOTE_LENGTH_OPTIONS[this.noteLengthIndex].label}`, false);
+    } else {
+      this.bounds.noteLength = {
+        x: controlX + buttonSize + rowGap + labelW + rowGap + buttonSize + rowGap,
+        y: controlY,
+        w: noteW,
+        h: rowH
+      };
+      this.drawSmallButton(ctx, this.bounds.noteLength, `Note ${NOTE_LENGTH_OPTIONS[this.noteLengthIndex].label}`, false);
+    }
+
+    controlY += rowH + rowGap * 2;
+    const transportGap = 6;
+    const transportW = (controlW - transportGap * 4) / 5;
+    const transportButtons = [
+      { id: 'returnStart', label: '⏮' },
+      { id: 'prevBar', label: '⏪' },
+      { id: 'play', label: this.isPlaying ? '❚❚' : '▶' },
+      { id: 'nextBar', label: '⏩' },
+      { id: 'goEnd', label: '⏭' }
+    ];
+    transportButtons.forEach((button, index) => {
+      const bounds = {
+        x: controlX + index * (transportW + transportGap),
+        y: controlY,
+        w: transportW,
+        h: rowH
+      };
+      this.bounds[button.id] = bounds;
+      this.drawSmallButton(ctx, bounds, button.label, button.id === 'play' && this.isPlaying);
+    });
   }
 
   truncateLabel(ctx, label, maxWidth) {

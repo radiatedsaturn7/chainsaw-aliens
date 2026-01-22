@@ -66,6 +66,7 @@ export default class Effect {
       this.dy = this.options.dy ?? 0;
       this.controlX = this.options.controlX ?? (this.dx * 0.5);
       this.controlY = this.options.controlY ?? (this.dy * 0.6);
+      this.path = Array.isArray(this.options.path) ? this.options.path : null;
       this.width = this.options.width ?? 14;
       this.coreWidth = this.options.coreWidth ?? 6;
       this.flicker = Math.random() * Math.PI * 2;
@@ -379,26 +380,50 @@ export default class Effect {
     } else if (this.type === 'flamethrower-stream') {
       const flicker = 0.75 + Math.sin(this.flicker + t * 18) * 0.25;
       ctx.globalAlpha = 0.9 - t * 0.7;
-      ctx.strokeStyle = `rgba(255, 120, 60, ${0.75 - t * 0.4})`;
-      ctx.lineWidth = this.width * flicker;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.quadraticCurveTo(this.controlX, this.controlY, this.dx, this.dy);
-      ctx.stroke();
-      ctx.strokeStyle = `rgba(255, 220, 170, ${0.85 - t * 0.5})`;
-      ctx.lineWidth = this.coreWidth * flicker;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.quadraticCurveTo(this.controlX, this.controlY, this.dx, this.dy);
-      ctx.stroke();
+      const path = Array.isArray(this.path) && this.path.length > 1 ? this.path : null;
+      const drawPath = (lineWidth, strokeStyle) => {
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = lineWidth;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        if (path) {
+          ctx.moveTo(path[0].x, path[0].y);
+          for (let i = 1; i < path.length; i += 1) {
+            ctx.lineTo(path[i].x, path[i].y);
+          }
+        } else {
+          ctx.moveTo(0, 0);
+          ctx.quadraticCurveTo(this.controlX, this.controlY, this.dx, this.dy);
+        }
+        ctx.stroke();
+      };
+      drawPath(this.width * flicker, `rgba(255, 120, 60, ${0.75 - t * 0.4})`);
+      drawPath(this.coreWidth * flicker, `rgba(255, 220, 170, ${0.85 - t * 0.5})`);
       ctx.fillStyle = `rgba(255, 110, 50, ${0.6 - t * 0.3})`;
+      const samplePathPoint = (step) => {
+        if (!path) {
+          const inv = 1 - step;
+          return {
+            x: inv * inv * 0 + 2 * inv * step * this.controlX + step * step * this.dx,
+            y: inv * inv * 0 + 2 * inv * step * this.controlY + step * step * this.dy
+          };
+        }
+        const total = path.length - 1;
+        const scaled = Math.min(total - 1, Math.max(0, step * total));
+        const index = Math.floor(scaled);
+        const localT = scaled - index;
+        const start = path[index];
+        const end = path[index + 1] || start;
+        return {
+          x: start.x + (end.x - start.x) * localT,
+          y: start.y + (end.y - start.y) * localT
+        };
+      };
       for (let i = 0; i < 4; i += 1) {
         const step = (i + 1) / 5;
-        const bx = (1 - step) * (1 - step) * 0 + 2 * (1 - step) * step * this.controlX + step * step * this.dx;
-        const by = (1 - step) * (1 - step) * 0 + 2 * (1 - step) * step * this.controlY + step * step * this.dy;
+        const sample = samplePathPoint(step);
         ctx.beginPath();
-        ctx.ellipse(bx, by, (this.width * 0.3) * flicker, (this.width * 0.45) * flicker, 0, 0, Math.PI * 2);
+        ctx.ellipse(sample.x, sample.y, (this.width * 0.3) * flicker, (this.width * 0.45) * flicker, 0, 0, Math.PI * 2);
         ctx.fill();
       }
     } else if (this.type === 'flamethrower-impact') {
