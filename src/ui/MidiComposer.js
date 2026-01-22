@@ -2282,11 +2282,12 @@ export default class MidiComposer {
 
   handleGridPointerDown(payload) {
     const { x, y } = payload;
-    const cell = this.getGridCell(x, y);
-    if (!cell) return;
     const modifiers = this.getModifiers();
-    const hit = this.getNoteAtCell(cell.tick, cell.pitch, x);
+    const hit = this.getNoteHitAt(x, y);
+    const cell = this.getGridCell(x, y);
+    if (!cell && !hit) return;
     if ((payload.touchCount && !hit) || modifiers.alt || payload.button === 1 || payload.button === 2) {
+      if (!cell) return;
       this.dragState = {
         mode: payload.touchCount ? 'touch-pan' : 'pan',
         startX: x,
@@ -2301,7 +2302,7 @@ export default class MidiComposer {
         this.longPressTimer = window.setTimeout(() => {
           const heldCell = this.getGridCell(this.lastPointer.x, this.lastPointer.y);
           if (!heldCell) return;
-          const heldNote = this.getNoteAtCell(heldCell.tick, heldCell.pitch, this.lastPointer.x);
+          const heldNote = this.getNoteHitAt(this.lastPointer.x, this.lastPointer.y);
           if (heldNote) {
             this.selection.add(heldNote.note.id);
           }
@@ -2321,6 +2322,7 @@ export default class MidiComposer {
       return;
     }
     if (this.pastePreview) {
+      if (!cell) return;
       this.updatePastePreviewPosition(cell.tick, cell.pitch);
       this.dragState = { mode: 'paste-preview' };
       return;
@@ -2339,11 +2341,11 @@ export default class MidiComposer {
         this.dragState = {
           mode: 'resize',
           edge: hit.edge,
-          startTick: cell.tick,
           originalNotes: this.getSelectedNotes().map((note) => ({ ...note }))
         };
         return;
       }
+      if (!cell) return;
       if (modifiers.shift) {
         this.duplicateSelection();
       }
@@ -3564,6 +3566,32 @@ export default class MidiComposer {
     this.persist();
   }
 
+  getNoteHitAt(x, y) {
+    if (!this.gridBounds) return null;
+    const pattern = this.getActivePattern();
+    if (!pattern) return null;
+    let handleHit = null;
+    let bodyHit = null;
+    pattern.notes.forEach((note) => {
+      const rect = this.getNoteRect(note);
+      if (!rect) return;
+      if (y < rect.y || y > rect.y + rect.h) return;
+      const handleWidth = this.getNoteHandleWidth(rect);
+      if (x >= rect.x - handleWidth && x <= rect.x) {
+        handleHit = { note, edge: 'start' };
+        return;
+      }
+      if (x >= rect.x + rect.w && x <= rect.x + rect.w + handleWidth) {
+        handleHit = { note, edge: 'end' };
+        return;
+      }
+      if (x >= rect.x && x <= rect.x + rect.w) {
+        bodyHit = { note, edge: null };
+      }
+    });
+    return handleHit || bodyHit;
+  }
+
   getNoteAtCell(tick, pitch, pointerX = null) {
     const pattern = this.getActivePattern();
     if (!pattern) return null;
@@ -3580,7 +3608,7 @@ export default class MidiComposer {
   }
 
   getNoteHandleWidth(rect) {
-    return Math.max(8, Math.round(rect.h * 2));
+    return Math.max(8, Math.min(18, Math.round(rect.h * 0.7)));
   }
 
   getNoteRect(note) {
@@ -5233,18 +5261,36 @@ export default class MidiComposer {
         }
       }
       if (this.selection.has(note.id)) {
-        ctx.fillStyle = '#0b0b0b';
-        ctx.fillRect(rect.x, rect.y, 4, rect.h);
-        ctx.fillRect(rect.x + rect.w - 4, rect.y, 4, rect.h);
         const handleHeight = rect.h;
         const handleWidth = this.getNoteHandleWidth(rect);
         const handleY = rect.y;
-        ctx.fillStyle = '#ffe16a';
-        ctx.fillRect(rect.x - handleWidth, handleY, handleWidth, handleHeight);
-        ctx.fillRect(rect.x + rect.w, handleY, handleWidth, handleHeight);
+        const leftHandleX = rect.x - handleWidth;
+        const rightHandleX = rect.x + rect.w;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1);
+        ctx.lineWidth = 1;
+        ctx.fillStyle = '#ffe9b3';
+        ctx.fillRect(leftHandleX, handleY, handleWidth, handleHeight);
+        ctx.fillRect(rightHandleX, handleY, handleWidth, handleHeight);
         ctx.strokeStyle = '#0b0b0b';
-        ctx.strokeRect(rect.x - handleWidth, handleY, handleWidth, handleHeight);
-        ctx.strokeRect(rect.x + rect.w, handleY, handleWidth, handleHeight);
+        ctx.strokeRect(leftHandleX, handleY, handleWidth, handleHeight);
+        ctx.strokeRect(rightHandleX, handleY, handleWidth, handleHeight);
+        ctx.strokeStyle = 'rgba(11, 11, 11, 0.65)';
+        const ridgeCount = 3;
+        const ridgeGap = handleWidth / (ridgeCount + 1);
+        for (let ridge = 1; ridge <= ridgeCount; ridge += 1) {
+          const ridgeXLeft = leftHandleX + ridge * ridgeGap;
+          const ridgeXRight = rightHandleX + ridge * ridgeGap;
+          ctx.beginPath();
+          ctx.moveTo(ridgeXLeft, handleY + 3);
+          ctx.lineTo(ridgeXLeft, handleY + handleHeight - 3);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(ridgeXRight, handleY + 3);
+          ctx.lineTo(ridgeXRight, handleY + handleHeight - 3);
+          ctx.stroke();
+        }
       }
       this.noteBounds.push({ ...rect, noteId: note.id });
     });
