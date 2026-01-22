@@ -99,9 +99,10 @@ const DEFAULT_BANK_LSB = 0;
 const TRACK_COLORS = ['#4fb7ff', '#ff9c42', '#55d68a', '#b48dff', '#ff6a6a', '#43d5d0'];
 const DEFAULT_GRID_BARS = 8;
 const DEFAULT_VISIBLE_ROWS = 12;
-const MIN_VISIBLE_ROWS = 5;
+const MIN_VISIBLE_ROWS = 7;
 const MAX_VISIBLE_ROWS = 60;
 const FILE_MENU_WIDTH = 240;
+const DEFAULT_LOOP_BARS = 4;
 const SONG_LIBRARY_KEY = 'chainsaw-midi-library';
 const CACHED_SOUND_FONT_KEY = 'chainsaw-midi-cached-programs';
 const DEFAULT_PRELOAD_PROGRAMS = [0, 24, 32, 52];
@@ -429,7 +430,8 @@ export default class MidiComposer {
       bounds: []
     };
     this.pastePreview = null;
-    this.gridZoom = null;
+    this.gridZoomX = null;
+    this.gridZoomY = null;
     this.gridOffset = { x: 0, y: 0 };
     this.gridGesture = null;
     this.bounds = {
@@ -483,8 +485,10 @@ export default class MidiComposer {
       instrumentSettingsControls: [],
       selectionMenu: [],
       pasteAction: null,
-      zoomIn: null,
-      zoomOut: null
+      zoomInX: null,
+      zoomOutX: null,
+      zoomInY: null,
+      zoomOutY: null
     };
     this.trackBounds = [];
     this.trackControlBounds = [];
@@ -519,7 +523,8 @@ export default class MidiComposer {
     this.audioSettings = this.loadAudioSettings();
     this.applyAudioSettings();
     this.ensureState();
-    this.gridZoom = this.getDefaultGridZoom();
+    this.gridZoomX = this.getDefaultGridZoomX();
+    this.gridZoomY = this.getDefaultGridZoomY();
     this.preloadDefaultInstruments();
   }
 
@@ -821,6 +826,7 @@ export default class MidiComposer {
     }
     this.highContrast = Boolean(this.song.highContrast);
     this.beatsPerBar = this.song.timeSignature.beats;
+    this.ensureDefaultLoopRegion();
     this.selectedTrackIndex = clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
     const activeTrack = this.getActiveTrack();
     if (activeTrack) {
@@ -830,6 +836,12 @@ export default class MidiComposer {
     }
     this.preloadTrackPrograms();
     this.persist();
+  }
+
+  ensureDefaultLoopRegion() {
+    if (typeof this.song.loopStartTick === 'number' || typeof this.song.loopEndTick === 'number') return;
+    this.song.loopStartTick = 0;
+    this.song.loopEndTick = this.getDefaultLoopEndTick();
   }
 
   preloadTrackPrograms() {
@@ -1129,6 +1141,11 @@ export default class MidiComposer {
     const start = this.getLoopStartTick();
     const end = this.getLoopTicks();
     return { start, end, length: Math.max(1, end - start) };
+  }
+
+  getDefaultLoopEndTick() {
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    return ticksPerBar * DEFAULT_LOOP_BARS;
   }
 
   getSongLastNoteTick() {
@@ -1748,19 +1765,39 @@ export default class MidiComposer {
         this.setNoteLengthIndex(this.noteLengthIndex + 1);
         return;
       }
-      if (this.bounds.zoomOut && this.pointInBounds(x, y, this.bounds.zoomOut)) {
-        const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridBounds?.rows || 1);
-        this.gridZoom = clamp(this.gridZoom - 0.1, minZoom, maxZoom);
+      if (this.bounds.zoomOutX && this.pointInBounds(x, y, this.bounds.zoomOutX)) {
+        const { minZoom, maxZoom } = this.getGridZoomLimitsX();
+        this.gridZoomX = clamp(this.gridZoomX - 0.1, minZoom, maxZoom);
         return;
       }
-      if (this.bounds.zoomIn && this.pointInBounds(x, y, this.bounds.zoomIn)) {
+      if (this.bounds.zoomInX && this.pointInBounds(x, y, this.bounds.zoomInX)) {
+        const { minZoom, maxZoom } = this.getGridZoomLimitsX();
+        this.gridZoomX = clamp(this.gridZoomX + 0.1, minZoom, maxZoom);
+        return;
+      }
+      if (this.bounds.zoomOutY && this.pointInBounds(x, y, this.bounds.zoomOutY)) {
         const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridBounds?.rows || 1);
-        this.gridZoom = clamp(this.gridZoom + 0.1, minZoom, maxZoom);
+        this.gridZoomY = clamp(this.gridZoomY - 0.1, minZoom, maxZoom);
+        return;
+      }
+      if (this.bounds.zoomInY && this.pointInBounds(x, y, this.bounds.zoomInY)) {
+        const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridBounds?.rows || 1);
+        this.gridZoomY = clamp(this.gridZoomY + 0.1, minZoom, maxZoom);
         return;
       }
       if (this.rulerBounds && this.pointInBounds(x, y, this.rulerBounds)) {
         const modifiers = this.getModifiers();
         const tick = this.getTickFromX(x);
+        if (this.isNearLoopMarker(x, 'start')) {
+          this.dragState = { mode: 'loop-start' };
+          this.setLoopStartTick(tick);
+          return;
+        }
+        if (this.isNearLoopMarker(x, 'end')) {
+          this.dragState = { mode: 'loop-end' };
+          this.setLoopEndTick(tick);
+          return;
+        }
         if (this.placingStartMarker) {
           this.setLoopStartTick(tick);
           this.placingStartMarker = false;
@@ -1816,7 +1853,7 @@ export default class MidiComposer {
       return;
     }
     if (!this.dragState || !this.gridBounds) return;
-    if (this.dragState.mode === 'touch-pan') {
+    if (this.dragState.mode === 'touch-pan' || this.dragState.mode === 'pan') {
       const dx = payload.x - this.dragState.startX;
       const dy = payload.y - this.dragState.startY;
       const threshold = 6;
@@ -1841,6 +1878,14 @@ export default class MidiComposer {
       if (this.scrubAudition) {
         this.previewNotesAtTick(this.playheadTick);
       }
+      return;
+    }
+    if (this.dragState.mode === 'loop-start') {
+      this.setLoopStartTick(this.getTickFromX(payload.x));
+      return;
+    }
+    if (this.dragState.mode === 'loop-end') {
+      this.setLoopEndTick(this.getTickFromX(payload.x));
       return;
     }
     if (!this.pointInBounds(payload.x, payload.y, this.gridBounds)) return;
@@ -1883,14 +1928,16 @@ export default class MidiComposer {
       clearTimeout(this.longPressTimer);
       this.longPressTimer = null;
     }
-    if (this.dragState?.mode === 'touch-pan') {
+    if (this.dragState?.mode === 'touch-pan' || this.dragState?.mode === 'pan') {
       if (!this.dragState.moved) {
         const { cell, hit } = this.dragState;
-        if (hit?.note) {
-          this.deleteNote(hit.note);
-        } else if (cell) {
-          this.selection.clear();
-          this.toggleNoteAt(cell.tick, cell.pitch);
+        if (this.dragState.mode === 'touch-pan') {
+          if (hit?.note) {
+            this.deleteNote(hit.note);
+          } else if (cell) {
+            this.selection.clear();
+            this.toggleNoteAt(cell.tick, cell.pitch);
+          }
         }
       }
       this.dragState = null;
@@ -1907,12 +1954,6 @@ export default class MidiComposer {
       return;
     }
     if (this.dragState?.mode === 'move') {
-      if (!this.dragState.moved && this.dragState.cell) {
-        const { hit } = this.dragState;
-        if (hit?.note) {
-          this.deleteNote(hit.note);
-        }
-      }
       this.dragState = null;
       return;
     }
@@ -1930,12 +1971,30 @@ export default class MidiComposer {
     this.draggingTrackControl = null;
   }
 
+  handleWheel(payload) {
+    this.lastPointer = { x: payload.x, y: payload.y };
+    if (this.qaOverlayOpen) return;
+    if (this.activeTab !== 'grid' || !this.gridBounds) return;
+    const inGrid = this.pointInBounds(payload.x, payload.y, this.gridBounds);
+    const inRuler = this.rulerBounds && this.pointInBounds(payload.x, payload.y, this.rulerBounds);
+    if (!inGrid && !inRuler) return;
+    const modifiers = this.getModifiers();
+    const delta = payload.deltaY;
+    if (modifiers.shift) {
+      this.gridOffset.x -= delta;
+    } else {
+      this.gridOffset.y -= delta;
+    }
+    this.clampGridOffset(this.gridBounds.w, this.gridBounds.h, this.gridBounds.gridW, this.gridBounds.gridH);
+  }
+
   handleGestureStart(payload) {
     if (!this.gridBounds || this.qaOverlayOpen || this.activeTab !== 'grid') return;
     if (!this.pointInBounds(payload.x, payload.y, this.gridBounds)) return;
     this.gridGesture = {
       startDistance: payload.distance,
-      startZoom: this.gridZoom,
+      startZoomX: this.gridZoomX,
+      startZoomY: this.gridZoomY,
       startOffsetX: this.gridOffset.x,
       startOffsetY: this.gridOffset.y,
       startX: payload.x,
@@ -1957,16 +2016,19 @@ export default class MidiComposer {
     if (!this.gridGesture?.startDistance) return;
     const scale = payload.distance / this.gridGesture.startDistance;
     const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridGesture.rows || 1);
-    const nextZoom = clamp(this.gridGesture.startZoom * scale, minZoom, maxZoom);
-    const baseCellWidth = this.gridGesture.cellWidth / this.gridGesture.startZoom;
-    const baseCellHeight = this.gridGesture.cellHeight / this.gridGesture.startZoom;
-    const nextCellWidth = baseCellWidth * nextZoom;
-    const nextCellHeight = baseCellHeight * nextZoom;
+    const zoomXLimits = this.getGridZoomLimitsX();
+    const nextZoomX = clamp(this.gridGesture.startZoomX * scale, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+    const nextZoomY = clamp(this.gridGesture.startZoomY * scale, minZoom, maxZoom);
+    const baseCellWidth = this.gridGesture.cellWidth / this.gridGesture.startZoomX;
+    const baseCellHeight = this.gridGesture.cellHeight / this.gridGesture.startZoomY;
+    const nextCellWidth = baseCellWidth * nextZoomX;
+    const nextCellHeight = baseCellHeight * nextZoomY;
     const gridCoordX = (this.gridGesture.startX - this.gridGesture.originX) / this.gridGesture.cellWidth;
     const gridCoordY = (this.gridGesture.startY - this.gridGesture.originY) / this.gridGesture.cellHeight;
     const nextOriginX = payload.x - gridCoordX * nextCellWidth;
     const nextOriginY = payload.y - gridCoordY * nextCellHeight;
-    this.gridZoom = nextZoom;
+    this.gridZoomX = nextZoomX;
+    this.gridZoomY = nextZoomY;
     this.gridOffset.x = nextOriginX - this.gridGesture.viewX;
     this.gridOffset.y = nextOriginY - this.gridGesture.viewY;
     const nextGridW = nextCellWidth * this.gridGesture.cols;
@@ -1982,10 +2044,11 @@ export default class MidiComposer {
     const { x, y } = payload;
     const cell = this.getGridCell(x, y);
     if (!cell) return;
-    if (payload.touchCount) {
+    const modifiers = this.getModifiers();
+    if (payload.touchCount || modifiers.alt || payload.button === 1 || payload.button === 2) {
       const hit = this.getNoteAtCell(cell.tick, cell.pitch);
       this.dragState = {
-        mode: 'touch-pan',
+        mode: payload.touchCount ? 'touch-pan' : 'pan',
         startX: x,
         startY: y,
         startOffsetX: this.gridOffset.x,
@@ -1996,7 +2059,6 @@ export default class MidiComposer {
       };
       return;
     }
-    const modifiers = this.getModifiers();
     if (this.pastePreview) {
       this.updatePastePreviewPosition(cell.tick, cell.pitch);
       this.dragState = { mode: 'paste-preview' };
@@ -2498,7 +2560,14 @@ export default class MidiComposer {
   }
 
   toggleLoopEnabled() {
-    if (typeof this.song.loopEndTick !== 'number') return;
+    if (typeof this.song.loopEndTick !== 'number') {
+      this.song.loopStartTick = 0;
+      this.song.loopEndTick = this.getDefaultLoopEndTick();
+      this.song.loopEnabled = true;
+      this.ensureGridCapacity(this.song.loopEndTick);
+      this.persist();
+      return;
+    }
     this.song.loopEnabled = !this.song.loopEnabled;
     this.persist();
   }
@@ -2994,14 +3063,16 @@ export default class MidiComposer {
     this.selectedTrackIndex = 0;
     this.selectedPatternIndex = 0;
     this.ensureState();
-    this.gridZoom = this.getDefaultGridZoom();
+    this.gridZoomX = this.getDefaultGridZoomX();
+    this.gridZoomY = this.getDefaultGridZoomY();
     this.persist();
   }
 
   loadDemoSong() {
     this.song = createDemoSong();
     this.ensureState();
-    this.gridZoom = this.getDefaultGridZoom();
+    this.gridZoomX = this.getDefaultGridZoomX();
+    this.gridZoomY = this.getDefaultGridZoomY();
     this.qaResults = [{ label: 'Demo loaded', status: 'pass' }];
     if (!this.isPlaying) {
       this.togglePlayback();
@@ -3042,9 +3113,13 @@ export default class MidiComposer {
     return Math.max(1, Math.min(DEFAULT_VISIBLE_ROWS, rows));
   }
 
-  getDefaultGridZoom() {
+  getDefaultGridZoomX() {
     const bars = Math.max(1, this.song?.loopBars || DEFAULT_GRID_BARS);
     return Math.max(1, bars / 4);
+  }
+
+  getDefaultGridZoomY() {
+    return 1;
   }
 
   getOctaveLabel(pitch) {
@@ -3059,6 +3134,14 @@ export default class MidiComposer {
     return {
       minZoom: clamp(minZoom, 0.2, 1),
       maxZoom: Math.max(1, maxZoom)
+    };
+  }
+
+  getGridZoomLimitsX() {
+    const bars = Math.max(1, this.song?.loopBars || DEFAULT_GRID_BARS);
+    return {
+      minZoom: 1,
+      maxZoom: Math.max(1, bars)
     };
   }
 
@@ -3108,6 +3191,15 @@ export default class MidiComposer {
     return range.max - pitch;
   }
 
+  isNearLoopMarker(x, marker) {
+    if (!this.gridBounds) return false;
+    const tick = marker === 'start' ? this.song.loopStartTick : this.song.loopEndTick;
+    if (typeof tick !== 'number') return false;
+    const markerX = this.gridBounds.originX + tick * this.gridBounds.cellWidth;
+    const threshold = Math.max(6, this.gridBounds.cellWidth * 0.35);
+    return Math.abs(x - markerX) <= threshold;
+  }
+
   getNoteAtCell(tick, pitch) {
     const pattern = this.getActivePattern();
     if (!pattern) return null;
@@ -3115,7 +3207,7 @@ export default class MidiComposer {
     if (!hit) return null;
     const rect = this.getNoteRect(hit);
     if (!rect) return null;
-    const edgeMargin = Math.min(10, rect.w / 3);
+    const edgeMargin = Math.min(16, Math.max(8, rect.w * 0.45));
     const isStartEdge = this.lastPointer.x <= rect.x + edgeMargin;
     const isEndEdge = this.lastPointer.x >= rect.x + rect.w - edgeMargin;
     return { note: hit, edge: isStartEdge ? 'start' : isEndEdge ? 'end' : null };
@@ -3507,22 +3599,42 @@ export default class MidiComposer {
   drawGridZoomControls(ctx, x, y, w, h) {
     const buttonSize = 30;
     const gap = 6;
-    const zoomOutBounds = {
+    const zoomOutXBounds = {
       x: x + w - buttonSize - 10,
       y: y + h - buttonSize - 10,
       w: buttonSize,
       h: buttonSize
     };
-    const zoomInBounds = {
-      x: zoomOutBounds.x,
-      y: zoomOutBounds.y - buttonSize - gap,
+    const zoomInXBounds = {
+      x: zoomOutXBounds.x,
+      y: zoomOutXBounds.y - buttonSize - gap,
       w: buttonSize,
       h: buttonSize
     };
-    this.bounds.zoomIn = zoomInBounds;
-    this.bounds.zoomOut = zoomOutBounds;
-    this.drawSmallButton(ctx, zoomInBounds, '+', false);
-    this.drawSmallButton(ctx, zoomOutBounds, '−', false);
+    const zoomOutYBounds = {
+      x: zoomOutXBounds.x - buttonSize - gap,
+      y: zoomOutXBounds.y,
+      w: buttonSize,
+      h: buttonSize
+    };
+    const zoomInYBounds = {
+      x: zoomOutYBounds.x,
+      y: zoomOutYBounds.y - buttonSize - gap,
+      w: buttonSize,
+      h: buttonSize
+    };
+    this.bounds.zoomInX = zoomInXBounds;
+    this.bounds.zoomOutX = zoomOutXBounds;
+    this.bounds.zoomInY = zoomInYBounds;
+    this.bounds.zoomOutY = zoomOutYBounds;
+    this.drawSmallButton(ctx, zoomInXBounds, '+', false);
+    this.drawSmallButton(ctx, zoomOutXBounds, '−', false);
+    this.drawSmallButton(ctx, zoomInYBounds, '+', false);
+    this.drawSmallButton(ctx, zoomOutYBounds, '−', false);
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '11px Courier New';
+    ctx.fillText('X', zoomOutXBounds.x + 9, zoomOutXBounds.y - 6);
+    ctx.fillText('Y', zoomOutYBounds.x + 9, zoomOutYBounds.y - 6);
   }
 
   drawInstrumentPanel(ctx, x, y, w, h, track) {
@@ -4457,22 +4569,24 @@ export default class MidiComposer {
     const isMobile = this.isMobileLayout();
     const labelW = isMobile ? 76 : 96;
     const rulerH = 28;
-    const gridW = w - labelW;
-    const baseCellWidth = gridW / loopTicks;
+    const viewW = w - labelW;
+    const baseCellWidth = viewW / loopTicks;
     const baseVisibleRows = this.getBaseVisibleRows(rows);
     const { minZoom, maxZoom } = this.getGridZoomLimits(rows);
-    this.gridZoom = clamp(this.gridZoom, minZoom, maxZoom);
+    const zoomXLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+    this.gridZoomY = clamp(this.gridZoomY, minZoom, maxZoom);
     const baseCellHeight = Math.min(24, (h - rulerH - 16) / baseVisibleRows);
-    const cellWidth = baseCellWidth * this.gridZoom;
-    const cellHeight = baseCellHeight * this.gridZoom;
+    const cellWidth = baseCellWidth * this.gridZoomX;
+    const cellHeight = baseCellHeight * this.gridZoomY;
+    const totalGridW = cellWidth * loopTicks;
     const gridH = cellHeight * rows;
     const viewH = Math.max(0, h - rulerH);
-    const viewW = gridW;
-    this.clampGridOffset(viewW, viewH, gridW, gridH);
+    this.clampGridOffset(viewW, viewH, totalGridW, gridH);
     const originX = x + labelW + this.gridOffset.x;
     const originY = y + rulerH + this.gridOffset.y;
 
-    this.rulerBounds = { x: x + labelW, y, w: gridW, h: rulerH };
+    this.rulerBounds = { x: x + labelW, y, w: viewW, h: rulerH };
     this.gridBounds = {
       x: x + labelW,
       y: y + rulerH,
@@ -4484,7 +4598,7 @@ export default class MidiComposer {
       cellHeight,
       originX,
       originY,
-      gridW,
+      gridW: totalGridW,
       gridH,
       labelX: x,
       labelW
@@ -4495,7 +4609,7 @@ export default class MidiComposer {
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(x, y, w, viewH + rulerH);
 
-    this.drawRuler(ctx, x + labelW, y, gridW, loopTicks);
+    this.drawRuler(ctx, x + labelW, y, viewW, loopTicks);
     ctx.save();
     ctx.beginPath();
     ctx.rect(x + labelW, y + rulerH, viewW, viewH);
@@ -4651,7 +4765,7 @@ export default class MidiComposer {
         ctx.fillStyle = '#0b0b0b';
         ctx.fillRect(rect.x, rect.y, 4, rect.h);
         ctx.fillRect(rect.x + rect.w - 4, rect.y, 4, rect.h);
-        const handleSize = Math.max(4, Math.min(8, rect.h - 2, rect.w / 2));
+        const handleSize = Math.max(6, Math.min(12, rect.h - 2, rect.w / 2));
         const handleY = rect.y + (rect.h - handleSize) / 2;
         ctx.fillStyle = '#ffe16a';
         ctx.fillRect(rect.x - 2, handleY, handleSize, handleSize);

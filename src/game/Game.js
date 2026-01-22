@@ -6287,8 +6287,13 @@ export default class Game {
   }
 
   handleWheel(payload) {
-    if (this.state !== 'editor') return;
-    this.editor.handleWheel(payload);
+    if (this.state === 'editor') {
+      this.editor.handleWheel(payload);
+      return;
+    }
+    if (this.state === 'midi-editor') {
+      this.midiComposer.handleWheel(payload);
+    }
   }
 
   handleGestureStart(payload) {
