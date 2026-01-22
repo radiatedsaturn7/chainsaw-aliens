@@ -141,6 +141,7 @@ export default class AudioSystem {
     this.gmPlayerPromise = new Promise((resolve, reject) => {
       if (window.WebAudioFontPlayer) {
         this.gmPlayer = new window.WebAudioFontPlayer();
+        this.gmError = null;
         resolve(this.gmPlayer);
         return;
       }
@@ -149,6 +150,7 @@ export default class AudioSystem {
       script.async = true;
       script.onload = () => {
         this.gmPlayer = new window.WebAudioFontPlayer();
+        this.gmError = null;
         resolve(this.gmPlayer);
       };
       script.onerror = () => {
@@ -185,6 +187,7 @@ export default class AudioSystem {
         }
         this.gmProgramPresets.set(program, preset);
         this.gmLoadedPrograms.add(program);
+        this.gmError = null;
         resolve(preset);
       };
       script.onerror = () => {
@@ -217,6 +220,7 @@ export default class AudioSystem {
           return;
         }
         this.gmDrumPreset = preset;
+        this.gmError = null;
         resolve(preset);
       };
       script.onerror = () => {
@@ -394,17 +398,25 @@ export default class AudioSystem {
     duration = 0.5,
     volume = 0.8,
     program = 0,
-    channel = 0
+    channel = 0,
+    pan = 0
   }) {
     this.ensureMidiSampler();
     const clampedProgram = clamp(program ?? 0, 0, GM_PROGRAMS.length - 1);
     const clampedVolume = clamp(volume ?? 1, 0, 1);
+    const clampedPan = clamp(pan ?? 0, -1, 1);
+    const panNode = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
+    if (panNode) {
+      panNode.pan.value = clampedPan;
+      panNode.connect(this.midiBus);
+    }
+    const outputBus = panNode || this.midiBus;
     const playWithPreset = (preset) => {
       if (!preset || !this.gmPlayer) return;
       const when = this.ctx.currentTime + this.midiLatency;
       const voice = this.gmPlayer.queueWaveTable(
         this.ctx,
-        this.midiBus,
+        outputBus,
         preset,
         when,
         pitch,
@@ -421,12 +433,13 @@ export default class AudioSystem {
           duration,
           volume: clampedVolume,
           instrument: this.getFallbackDrum(pitch),
-          when: this.ctx.currentTime + this.midiLatency
+          when: this.ctx.currentTime + this.midiLatency,
+          pan: clampedPan
         });
         return;
       }
       const fallbackInstrument = this.getFallbackInstrument(clampedProgram);
-      this.playMidiNote(pitch, fallbackInstrument, duration, clampedVolume, this.ctx.currentTime + this.midiLatency);
+      this.playMidiNote(pitch, fallbackInstrument, duration, clampedVolume, this.ctx.currentTime + this.midiLatency, clampedPan);
     };
     this.ensureGmPlayer()
       .then(() => {
@@ -439,7 +452,7 @@ export default class AudioSystem {
       .catch(fallback);
   }
 
-  playMidiNote(pitch, instrument = 'piano', duration = 0.5, volume = 1, when = null) {
+  playMidiNote(pitch, instrument = 'piano', duration = 0.5, volume = 1, when = null, pan = 0) {
     this.ensure();
     const freq = 440 * (2 ** ((pitch - 69) / 12));
     const preset = this.getMidiPreset(instrument);
@@ -457,7 +470,14 @@ export default class AudioSystem {
     } else {
       output.connect(gain);
     }
-    gain.connect(this.master);
+    const panNode = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
+    if (panNode) {
+      panNode.pan.value = clamp(pan ?? 0, -1, 1);
+      gain.connect(panNode);
+      panNode.connect(this.master);
+    } else {
+      gain.connect(this.master);
+    }
     const now = when ?? this.ctx.currentTime;
     const attack = preset.attack ?? 0.01;
     const decay = preset.decay ?? 0.1;
@@ -473,7 +493,7 @@ export default class AudioSystem {
     osc.stop(now + duration + release + 0.02);
   }
 
-  playSampledNote({ pitch = 60, duration = 0.4, volume = 0.8, instrument = 'lead', when = null }) {
+  playSampledNote({ pitch = 60, duration = 0.4, volume = 0.8, instrument = 'lead', when = null, pan = 0 }) {
     this.ensureMidiSampler();
     const sample = this.midiSamples[instrument] || this.midiSamples.lead;
     if (!sample?.buffer) return;
@@ -489,7 +509,14 @@ export default class AudioSystem {
     filter.frequency.value = 9000;
     source.connect(filter);
     filter.connect(gain);
-    gain.connect(this.midiBus);
+    const panNode = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
+    if (panNode) {
+      panNode.pan.value = clamp(pan ?? 0, -1, 1);
+      gain.connect(panNode);
+      panNode.connect(this.midiBus);
+    } else {
+      gain.connect(this.midiBus);
+    }
     const reverbSend = this.ctx.createGain();
     reverbSend.gain.value = 0.2;
     gain.connect(reverbSend);
