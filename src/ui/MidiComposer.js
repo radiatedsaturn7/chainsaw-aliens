@@ -36,6 +36,14 @@ const SOUNDFONT_CDNS = [
   { id: 'jsdelivr', label: 'jsDelivr' }
 ];
 
+const TIME_SIGNATURE_OPTIONS = [
+  { id: '3/4', beats: 3, unit: 4 },
+  { id: '4/4', beats: 4, unit: 4 },
+  { id: '5/4', beats: 5, unit: 4 },
+  { id: '6/4', beats: 6, unit: 4 },
+  { id: '7/4', beats: 7, unit: 4 }
+];
+
 const TAB_OPTIONS = [
   { id: 'grid', label: 'Grid' },
   { id: 'instruments', label: 'Tracks' },
@@ -117,6 +125,7 @@ const createDefaultSong = () => ({
   loopStartTick: null,
   loopEndTick: null,
   loopEnabled: false,
+  timeSignature: { beats: 4, unit: 4 },
   highContrast: false,
   key: 0,
   scale: 'minor',
@@ -179,6 +188,7 @@ const createDemoSong = () => ({
   loopStartTick: null,
   loopEndTick: null,
   loopEnabled: true,
+  timeSignature: { beats: 4, unit: 4 },
   highContrast: false,
   key: 0,
   scale: 'major',
@@ -358,7 +368,7 @@ export default class MidiComposer {
     this.previewOnEdit = true;
     this.scrubAudition = false;
     this.metronomeEnabled = false;
-    this.scaleLock = true;
+    this.scaleLock = false;
     this.slurEnabled = false;
     this.drumAdvanced = false;
     this.activeTab = 'grid';
@@ -419,7 +429,7 @@ export default class MidiComposer {
       bounds: []
     };
     this.pastePreview = null;
-    this.gridZoom = 1;
+    this.gridZoom = null;
     this.gridOffset = { x: 0, y: 0 };
     this.gridGesture = null;
     this.bounds = {
@@ -509,6 +519,7 @@ export default class MidiComposer {
     this.audioSettings = this.loadAudioSettings();
     this.applyAudioSettings();
     this.ensureState();
+    this.gridZoom = this.getDefaultGridZoom();
     this.preloadDefaultInstruments();
   }
 
@@ -727,6 +738,13 @@ export default class MidiComposer {
     if (typeof song.tempo !== 'number' || typeof song.loopBars !== 'number') {
       return { valid: false, error: 'Song tempo and loop bars must be numbers.' };
     }
+    if (song.timeSignature) {
+      const beats = song.timeSignature?.beats;
+      const unit = song.timeSignature?.unit;
+      if (!Number.isInteger(beats) || beats < 1 || beats > 12 || !Number.isInteger(unit)) {
+        return { valid: false, error: 'Song time signature must include valid beats and unit values.' };
+      }
+    }
     for (const track of song.tracks) {
       const channel = track.channel ?? (track.instrument === 'drums' ? 9 : 0);
       const program = track.program ?? 0;
@@ -786,6 +804,15 @@ export default class MidiComposer {
     if (typeof this.song.loopEnabled !== 'boolean') {
       this.song.loopEnabled = false;
     }
+    if (!this.song.timeSignature || typeof this.song.timeSignature !== 'object') {
+      this.song.timeSignature = { beats: 4, unit: 4 };
+    }
+    if (!Number.isInteger(this.song.timeSignature.beats) || this.song.timeSignature.beats < 1) {
+      this.song.timeSignature.beats = 4;
+    }
+    if (!Number.isInteger(this.song.timeSignature.unit) || this.song.timeSignature.unit < 1) {
+      this.song.timeSignature.unit = 4;
+    }
     if (typeof this.song.highContrast !== 'boolean') {
       this.song.highContrast = false;
     }
@@ -793,6 +820,7 @@ export default class MidiComposer {
       this.song.progression = createDefaultSong().progression;
     }
     this.highContrast = Boolean(this.song.highContrast);
+    this.beatsPerBar = this.song.timeSignature.beats;
     this.selectedTrackIndex = clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
     const activeTrack = this.getActiveTrack();
     if (activeTrack) {
@@ -1146,6 +1174,20 @@ export default class MidiComposer {
     if (this.quantizeOptions.length > 0) {
       this.quantizeIndex = Math.min(nextIndex, this.quantizeOptions.length - 1);
     }
+  }
+
+  cycleTimeSignature() {
+    const current = this.song.timeSignature || { beats: 4, unit: 4 };
+    const currentIndex = TIME_SIGNATURE_OPTIONS.findIndex(
+      (option) => option.beats === current.beats && option.unit === current.unit
+    );
+    const nextIndex = currentIndex >= 0
+      ? (currentIndex + 1) % TIME_SIGNATURE_OPTIONS.length
+      : 0;
+    const next = TIME_SIGNATURE_OPTIONS[nextIndex];
+    this.song.timeSignature = { beats: next.beats, unit: next.unit };
+    this.beatsPerBar = next.beats;
+    this.persist();
   }
 
   getNextAvailableChannel() {
@@ -1845,14 +1887,7 @@ export default class MidiComposer {
       if (!this.dragState.moved) {
         const { cell, hit } = this.dragState;
         if (hit?.note) {
-          if (cell && cell.tick === hit.note.startTick && cell.pitch === hit.note.pitch) {
-            this.selection.clear();
-            this.toggleNoteAt(cell.tick, cell.pitch);
-          } else {
-            this.selection.clear();
-            this.selection.add(hit.note.id);
-            this.previewNote(hit.note, hit.note.pitch);
-          }
+          this.deleteNote(hit.note);
         } else if (cell) {
           this.selection.clear();
           this.toggleNoteAt(cell.tick, cell.pitch);
@@ -1873,11 +1908,9 @@ export default class MidiComposer {
     }
     if (this.dragState?.mode === 'move') {
       if (!this.dragState.moved && this.dragState.cell) {
-        const { cell, hit } = this.dragState;
-        if (hit?.note && cell.tick === hit.note.startTick && cell.pitch === hit.note.pitch) {
-          this.toggleNoteAt(cell.tick, cell.pitch);
-        } else if (hit?.note) {
-          this.previewNote(hit.note, cell.pitch);
+        const { hit } = this.dragState;
+        if (hit?.note) {
+          this.deleteNote(hit.note);
         }
       }
       this.dragState = null;
@@ -2692,6 +2725,10 @@ export default class MidiComposer {
       this.setNoteLengthIndex(this.noteLengthIndex + 1);
       return;
     }
+    if (control.id === 'grid-time-signature') {
+      this.cycleTimeSignature();
+      return;
+    }
     if (control.id === 'song-tempo') {
       this.dragState = { mode: 'slider', id: control.id, bounds: control };
       this.updateSliderValue(pointer.x, pointer.y, control.id, control);
@@ -2957,12 +2994,14 @@ export default class MidiComposer {
     this.selectedTrackIndex = 0;
     this.selectedPatternIndex = 0;
     this.ensureState();
+    this.gridZoom = this.getDefaultGridZoom();
     this.persist();
   }
 
   loadDemoSong() {
     this.song = createDemoSong();
     this.ensureState();
+    this.gridZoom = this.getDefaultGridZoom();
     this.qaResults = [{ label: 'Demo loaded', status: 'pass' }];
     if (!this.isPlaying) {
       this.togglePlayback();
@@ -3001,6 +3040,15 @@ export default class MidiComposer {
 
   getBaseVisibleRows(rows) {
     return Math.max(1, Math.min(DEFAULT_VISIBLE_ROWS, rows));
+  }
+
+  getDefaultGridZoom() {
+    const bars = Math.max(1, this.song?.loopBars || DEFAULT_GRID_BARS);
+    return Math.max(1, bars / 4);
+  }
+
+  getOctaveLabel(pitch) {
+    return Math.floor(pitch / 12) - 1;
   }
 
   getGridZoomLimits(rows) {
@@ -3879,6 +3927,12 @@ export default class MidiComposer {
     drawSectionTitle('Grid & Editing');
     drawToggle('Preview On', this.previewOnEdit, 'grid-preview', 'Audition notes as you place them.');
     drawAction('Grid', this.quantizeOptions[this.quantizeIndex].label, 'grid-quantize-value', 'Quantize grid step size.');
+    drawAction(
+      'Time Sig',
+      `${this.song.timeSignature?.beats || 4}/${this.song.timeSignature?.unit || 4}`,
+      'grid-time-signature',
+      'Cycle the time signature used for measure length.'
+    );
     drawToggle('Snap', this.scaleLock, 'grid-scale-lock', 'Snap pitches to the current scale.');
     drawToggle('Quant', this.quantizeEnabled, 'grid-quantize-toggle', 'Enable quantized placement.');
     drawToggle('Scrub', this.scrubAudition, 'grid-scrub', 'Audition notes while scrubbing.');
@@ -4530,7 +4584,16 @@ export default class MidiComposer {
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
     const divisor = this.quantizeOptions[this.quantizeIndex]?.divisor || 16;
     const gridStep = Math.max(1, Math.round(ticksPerBar / divisor));
-    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    for (let barTick = 0; barTick <= loopTicks; barTick += ticksPerBar) {
+      const xPos = originX + barTick * cellWidth;
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(xPos, originY);
+      ctx.lineTo(xPos, originY + rows * cellHeight);
+      ctx.stroke();
+    }
+    ctx.lineWidth = 1;
     for (let tick = 0; tick <= loopTicks; tick += gridStep) {
       const xPos = originX + tick * cellWidth;
       const isBeat = tick % this.ticksPerBeat === 0;
@@ -4558,14 +4621,21 @@ export default class MidiComposer {
       ctx.stroke();
     }
 
-    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
     for (let row = 0; row <= rows; row += 1) {
       const yPos = originY + row * cellHeight;
+      let isOctave = false;
+      if (!isDrumGrid && row < rows) {
+        const pitch = this.getPitchFromRow(row);
+        isOctave = pitch % 12 === 0;
+      }
+      ctx.strokeStyle = isOctave ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)';
+      ctx.lineWidth = isOctave ? 2 : 1;
       ctx.beginPath();
       ctx.moveTo(originX, yPos);
       ctx.lineTo(originX + loopTicks * cellWidth, yPos);
       ctx.stroke();
     }
+    ctx.lineWidth = 1;
 
     this.noteBounds = [];
     pattern.notes.forEach((note) => {
@@ -4581,6 +4651,14 @@ export default class MidiComposer {
         ctx.fillStyle = '#0b0b0b';
         ctx.fillRect(rect.x, rect.y, 4, rect.h);
         ctx.fillRect(rect.x + rect.w - 4, rect.y, 4, rect.h);
+        const handleSize = Math.max(4, Math.min(8, rect.h - 2, rect.w / 2));
+        const handleY = rect.y + (rect.h - handleSize) / 2;
+        ctx.fillStyle = '#ffe16a';
+        ctx.fillRect(rect.x - 2, handleY, handleSize, handleSize);
+        ctx.fillRect(rect.x + rect.w - handleSize + 2, handleY, handleSize, handleSize);
+        ctx.strokeStyle = '#0b0b0b';
+        ctx.strokeRect(rect.x - 2, handleY, handleSize, handleSize);
+        ctx.strokeRect(rect.x + rect.w - handleSize + 2, handleY, handleSize, handleSize);
       }
       this.noteBounds.push({ ...rect, noteId: note.id });
     });
@@ -4651,9 +4729,12 @@ export default class MidiComposer {
     ctx.clip();
     for (let row = 0; row < rows; row += 1) {
       const pitch = this.getPitchFromRow(row);
-      const label = isDrumGrid
+      let label = isDrumGrid
         ? this.getDrumRows()[row]?.label
         : NOTE_LABELS[pitch % 12];
+      if (!isDrumGrid && pitch % 12 === 0) {
+        label = `${label}${this.getOctaveLabel(pitch)}`;
+      }
       this.noteLabelBounds.push({
         x: labelX,
         y: originY + row * cellHeight,
