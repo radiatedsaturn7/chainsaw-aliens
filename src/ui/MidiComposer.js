@@ -90,9 +90,22 @@ const DEFAULT_BANK_LSB = 0;
 
 const TRACK_COLORS = ['#4fb7ff', '#ff9c42', '#55d68a', '#b48dff', '#ff6a6a', '#43d5d0'];
 const DEFAULT_GRID_BARS = 8;
+const DEFAULT_VISIBLE_ROWS = 12;
+const MIN_VISIBLE_ROWS = 5;
+const MAX_VISIBLE_ROWS = 60;
+const FILE_MENU_WIDTH = 240;
 const SONG_LIBRARY_KEY = 'chainsaw-midi-library';
 const CACHED_SOUND_FONT_KEY = 'chainsaw-midi-cached-programs';
 const DEFAULT_PRELOAD_PROGRAMS = [0, 24, 32, 52];
+const GENRE_OPTIONS = [
+  { id: 'random', label: 'Random' },
+  { id: 'ambient', label: 'Ambient' },
+  { id: 'house', label: 'House' },
+  { id: 'hip-hop', label: 'Hip-Hop' },
+  { id: 'drum-bass', label: 'Drum & Bass' },
+  { id: 'synthwave', label: 'Synthwave' },
+  { id: 'rock', label: 'Rock' }
+];
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const uid = () => `note-${Math.floor(Math.random() * 1000000)}`;
@@ -367,6 +380,8 @@ export default class MidiComposer {
     this.instrumentDownload = { loading: false, key: null };
     this.toolsMenuOpen = false;
     this.fileMenuOpen = false;
+    this.genreMenuOpen = false;
+    this.selectedGenre = 'random';
     this.qaOverlayOpen = false;
     this.qaResults = [];
     this.draggingTrackControl = null;
@@ -467,6 +482,8 @@ export default class MidiComposer {
     this.noteBounds = [];
     this.toolsMenuBounds = [];
     this.fileMenuBounds = [];
+    this.genreMenuBounds = [];
+    this.noteLabelBounds = [];
     this.gridBounds = null;
     this.rulerBounds = null;
     this.fileInput = document.createElement('input');
@@ -1486,6 +1503,21 @@ export default class MidiComposer {
       this.fileMenuOpen = false;
     }
 
+    if (this.genreMenuOpen) {
+      const genreHit = this.genreMenuBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (genreHit) {
+        if (genreHit.id === 'cancel') {
+          this.genreMenuOpen = false;
+          return;
+        }
+        this.selectedGenre = genreHit.id;
+        this.generatePattern(genreHit.id);
+        this.genreMenuOpen = false;
+        return;
+      }
+      this.genreMenuOpen = false;
+    }
+
     const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
     if (tabHit) {
       this.activeTab = tabHit.id;
@@ -1497,6 +1529,7 @@ export default class MidiComposer {
     if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
       this.fileMenuOpen = !this.fileMenuOpen;
       this.toolsMenuOpen = false;
+      this.genreMenuOpen = false;
       return;
     }
 
@@ -1644,6 +1677,11 @@ export default class MidiComposer {
         this.applyPastePreview();
         return;
       }
+      const labelHit = this.noteLabelBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (labelHit) {
+        this.auditionPitch(labelHit.pitch);
+        return;
+      }
       const menuHit = this.bounds.selectionMenu?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (menuHit) {
         this.handleSelectionMenuAction(menuHit.action);
@@ -1669,11 +1707,13 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.zoomOut && this.pointInBounds(x, y, this.bounds.zoomOut)) {
-        this.gridZoom = clamp(this.gridZoom - 0.1, 0.6, 2.5);
+        const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridBounds?.rows || 1);
+        this.gridZoom = clamp(this.gridZoom - 0.1, minZoom, maxZoom);
         return;
       }
       if (this.bounds.zoomIn && this.pointInBounds(x, y, this.bounds.zoomIn)) {
-        this.gridZoom = clamp(this.gridZoom + 0.1, 0.6, 2.5);
+        const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridBounds?.rows || 1);
+        this.gridZoom = clamp(this.gridZoom + 0.1, minZoom, maxZoom);
         return;
       }
       if (this.rulerBounds && this.pointInBounds(x, y, this.rulerBounds)) {
@@ -1883,7 +1923,8 @@ export default class MidiComposer {
   handleGestureMove(payload) {
     if (!this.gridGesture?.startDistance) return;
     const scale = payload.distance / this.gridGesture.startDistance;
-    const nextZoom = clamp(this.gridGesture.startZoom * scale, 0.6, 2.5);
+    const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridGesture.rows || 1);
+    const nextZoom = clamp(this.gridGesture.startZoom * scale, minZoom, maxZoom);
     const baseCellWidth = this.gridGesture.cellWidth / this.gridGesture.startZoom;
     const baseCellHeight = this.gridGesture.cellHeight / this.gridGesture.startZoom;
     const nextCellWidth = baseCellWidth * nextZoom;
@@ -2294,6 +2335,15 @@ export default class MidiComposer {
     this.playGmNote(pitch, duration, track.volume, track);
   }
 
+  auditionPitch(pitch) {
+    const now = performance.now();
+    if (now - this.lastAuditionTime < 90) return;
+    this.lastAuditionTime = now;
+    const track = this.getActiveTrack();
+    if (!track) return;
+    this.playGmNote(pitch, 0.4, track.volume, track);
+  }
+
   previewInstrument(program, trackOverride = null) {
     if (!Number.isInteger(program)) return;
     const now = performance.now();
@@ -2700,7 +2750,9 @@ export default class MidiComposer {
 
   handleToolsMenu(action) {
     if (action === 'generate') {
-      this.generatePattern();
+      this.genreMenuOpen = true;
+      this.toolsMenuOpen = false;
+      return;
     }
     if (action === 'export') {
       this.exportSong();
@@ -2814,18 +2866,23 @@ export default class MidiComposer {
     this.persist();
   }
 
-  generatePattern() {
+  generatePattern(genre = this.selectedGenre) {
     const pattern = this.getActivePattern();
     const track = this.getActiveTrack();
     if (!pattern || !track) return;
     const loopTicks = this.getLoopTicks();
     pattern.notes = [];
+    const style = genre || 'random';
+    const resolvedStyle = style === 'random'
+      ? GENRE_OPTIONS[Math.floor(Math.random() * (GENRE_OPTIONS.length - 1)) + 1]?.id || 'ambient'
+      : style;
     if (isDrumChannel(track.channel)) {
       const drumRows = this.getDrumRows();
       for (let bar = 0; bar < this.song.loopBars; bar += 1) {
         const base = bar * this.beatsPerBar * this.ticksPerBeat;
         drumRows.forEach((drum, index) => {
-          if (index % 2 === 0) {
+          const density = resolvedStyle === 'drum-bass' ? 1 : resolvedStyle === 'hip-hop' ? 2 : 3;
+          if (index % density === 0) {
             pattern.notes.push({
               id: uid(),
               startTick: base + index * 2,
@@ -2835,18 +2892,36 @@ export default class MidiComposer {
             });
           }
         });
+        if (resolvedStyle === 'house') {
+          pattern.notes.push({
+            id: uid(),
+            startTick: base,
+            durationTicks: 2,
+            pitch: 36,
+            velocity: 0.95
+          });
+          pattern.notes.push({
+            id: uid(),
+            startTick: base + this.ticksPerBeat * 2,
+            durationTicks: 2,
+            pitch: 36,
+            velocity: 0.95
+          });
+        }
       }
     } else {
       const scale = this.getScalePitchClasses();
-      for (let tick = 0; tick < loopTicks; tick += this.getQuantizeTicks() * 2) {
+      const step = resolvedStyle === 'ambient' ? this.getQuantizeTicks() * 3 : this.getQuantizeTicks() * 2;
+      const basePitch = resolvedStyle === 'hip-hop' ? 48 : 60;
+      for (let tick = 0; tick < loopTicks; tick += step) {
         const pitchClass = scale[(tick / this.getQuantizeTicks()) % scale.length];
-        const pitch = 60 + pitchClass;
+        const pitch = basePitch + pitchClass + (resolvedStyle === 'synthwave' ? 12 : 0);
         pattern.notes.push({
           id: uid(),
           startTick: tick,
-          durationTicks: this.getQuantizeTicks(),
+          durationTicks: resolvedStyle === 'ambient' ? this.getQuantizeTicks() * 2 : this.getQuantizeTicks(),
           pitch,
-          velocity: 0.8
+          velocity: resolvedStyle === 'ambient' ? 0.6 : 0.8
         });
       }
     }
@@ -2922,6 +2997,21 @@ export default class MidiComposer {
 
   getDrumRows() {
     return this.drumAdvanced ? GM_DRUMS : GM_DRUM_ROWS;
+  }
+
+  getBaseVisibleRows(rows) {
+    return Math.max(1, Math.min(DEFAULT_VISIBLE_ROWS, rows));
+  }
+
+  getGridZoomLimits(rows) {
+    const baseVisibleRows = this.getBaseVisibleRows(rows);
+    const maxVisibleRows = Math.min(rows, MAX_VISIBLE_ROWS);
+    const minZoom = maxVisibleRows > 0 ? baseVisibleRows / maxVisibleRows : 1;
+    const maxZoom = baseVisibleRows / MIN_VISIBLE_ROWS;
+    return {
+      minZoom: clamp(minZoom, 0.2, 1),
+      maxZoom: Math.max(1, maxZoom)
+    };
   }
 
   getPitchRange() {
@@ -3070,7 +3160,14 @@ export default class MidiComposer {
     }
 
     if (this.fileMenuOpen && this.bounds.fileButton) {
-      this.drawFileMenu(ctx, this.bounds.fileButton.x, this.bounds.fileButton.y + this.bounds.fileButton.h + 6);
+      const panelPadding = this.isMobileLayout() ? 10 : 16;
+      const menuX = Math.max(panelPadding, width - FILE_MENU_WIDTH - panelPadding);
+      const menuY = this.bounds.fileButton.y + this.bounds.fileButton.h + 6;
+      this.drawFileMenu(ctx, menuX, menuY);
+    }
+
+    if (this.genreMenuOpen) {
+      this.drawGenreMenu(ctx, width, height);
     }
 
     if (this.qaOverlayOpen) {
@@ -3083,7 +3180,7 @@ export default class MidiComposer {
   drawMobileLayout(ctx, width, height, track, pattern) {
     const padding = 10;
     const gap = 10;
-    const sidebarW = Math.min(240, Math.max(140, width * 0.32));
+    const sidebarW = Math.min(280, Math.max(200, width * 0.38));
     const sidebarX = padding;
     const sidebarY = padding;
     const sidebarH = height - padding * 2;
@@ -3168,21 +3265,12 @@ export default class MidiComposer {
       h: rowH
     };
     this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
-    if (compactLayout) {
-      controlY += rowH + rowGap;
-      this.bounds.noteLength = { x: controlX, y: controlY, w: noteW, h: rowH };
-      this.drawSmallButton(ctx, this.bounds.noteLength, `Note ${NOTE_LENGTH_OPTIONS[this.noteLengthIndex].label}`, false);
-    } else {
-      this.bounds.noteLength = {
-        x: controlX + buttonSize + rowGap + labelW + rowGap + buttonSize + rowGap,
-        y: controlY,
-        w: noteW,
-        h: rowH
-      };
-      this.drawSmallButton(ctx, this.bounds.noteLength, `Note ${NOTE_LENGTH_OPTIONS[this.noteLengthIndex].label}`, false);
-    }
-
-    controlY += rowH + rowGap * 2;
+    controlY += rowH + rowGap;
+    this.bounds.noteLength = { x: controlX, y: controlY, w: noteW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.noteLength, `Note ${NOTE_LENGTH_OPTIONS[this.noteLengthIndex].label}`, false);
+    controlY += rowH + rowGap;
+    this.bounds.loopToggle = { x: controlX, y: controlY, w: noteW, h: rowH };
+    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
     const transportGap = 6;
     const transportW = (controlW - transportGap * 4) / 5;
     const transportButtons = [
@@ -3192,10 +3280,11 @@ export default class MidiComposer {
       { id: 'nextBar', label: '⏩' },
       { id: 'goEnd', label: '⏭' }
     ];
+    const transportY = controlsY + controlsH - panelPadding - rowH;
     transportButtons.forEach((button, index) => {
       const bounds = {
         x: controlX + index * (transportW + transportGap),
-        y: controlY,
+        y: transportY,
         w: transportW,
         h: rowH
       };
@@ -4316,7 +4405,10 @@ export default class MidiComposer {
     const rulerH = 28;
     const gridW = w - labelW;
     const baseCellWidth = gridW / loopTicks;
-    const baseCellHeight = Math.min(24, (h - rulerH - 16) / rows);
+    const baseVisibleRows = this.getBaseVisibleRows(rows);
+    const { minZoom, maxZoom } = this.getGridZoomLimits(rows);
+    this.gridZoom = clamp(this.gridZoom, minZoom, maxZoom);
+    const baseCellHeight = Math.min(24, (h - rulerH - 16) / baseVisibleRows);
     const cellWidth = baseCellWidth * this.gridZoom;
     const cellHeight = baseCellHeight * this.gridZoom;
     const gridH = cellHeight * rows;
@@ -4552,6 +4644,7 @@ export default class MidiComposer {
     if (!this.gridBounds || !track) return;
     const { labelX, labelW, originY, cellHeight, rows } = this.gridBounds;
     const isDrumGrid = isDrumChannel(track.channel);
+    this.noteLabelBounds = [];
     ctx.save();
     ctx.beginPath();
     ctx.rect(labelX, originY, labelW, rows * cellHeight);
@@ -4561,6 +4654,13 @@ export default class MidiComposer {
       const label = isDrumGrid
         ? this.getDrumRows()[row]?.label
         : NOTE_LABELS[pitch % 12];
+      this.noteLabelBounds.push({
+        x: labelX,
+        y: originY + row * cellHeight,
+        w: labelW,
+        h: cellHeight,
+        pitch
+      });
       ctx.fillStyle = 'rgba(255,255,255,0.8)';
       ctx.font = '12px Courier New';
       ctx.fillText(label, labelX + 8, originY + row * cellHeight + cellHeight * 0.75);
@@ -4815,26 +4915,58 @@ export default class MidiComposer {
       { id: 'theme', label: 'Generate Theme' },
       { id: 'sample', label: 'Load Sample Song' }
     ];
-    const width = 200;
-    const height = items.length * 22 + 16;
+    const width = FILE_MENU_WIDTH;
+    const rowH = 44;
+    const gap = 10;
+    const height = items.length * rowH + gap * 2;
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(x, y, width, height);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(x, y, width, height);
     ctx.fillStyle = '#fff';
-    ctx.font = '12px Courier New';
+    ctx.font = '13px Courier New';
     this.fileMenuBounds = [];
     items.forEach((item, index) => {
-      const itemY = y + 18 + index * 22;
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
-      ctx.fillText(item.label, x + 12, itemY);
-      this.fileMenuBounds.push({
-        x: x + 8,
-        y: itemY - 12,
-        w: width - 16,
-        h: 18,
+      const itemY = y + gap + index * rowH;
+      const bounds = {
+        x: x + gap,
+        y: itemY,
+        w: width - gap * 2,
+        h: rowH - 8,
         id: item.id
-      });
+      };
+      this.drawButton(ctx, bounds, item.label, false, true);
+      this.fileMenuBounds.push(bounds);
+    });
+  }
+
+  drawGenreMenu(ctx, width, height) {
+    const panelW = 260;
+    const rowH = 46;
+    const gap = 10;
+    const items = [...GENRE_OPTIONS, { id: 'cancel', label: 'Cancel' }];
+    const panelH = items.length * rowH + gap * 2;
+    const panelX = width - panelW - gap;
+    const panelY = Math.min(height - panelH - gap, gap + 40);
+    ctx.fillStyle = 'rgba(12,14,18,0.95)';
+    ctx.fillRect(panelX, panelY, panelW, panelH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(panelX, panelY, panelW, panelH);
+    ctx.fillStyle = '#fff';
+    ctx.font = '13px Courier New';
+    this.genreMenuBounds = [];
+    items.forEach((item, index) => {
+      const itemY = panelY + gap + index * rowH;
+      const bounds = {
+        x: panelX + gap,
+        y: itemY,
+        w: panelW - gap * 2,
+        h: rowH - 8,
+        id: item.id
+      };
+      const active = item.id === this.selectedGenre;
+      this.drawButton(ctx, bounds, item.label, active, true);
+      this.genreMenuBounds.push(bounds);
     });
   }
 
