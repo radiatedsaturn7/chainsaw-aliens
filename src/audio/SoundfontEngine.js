@@ -24,6 +24,8 @@ export default class SoundfontEngine {
     this.drumInstrument = null;
     this.drumPromise = null;
     this.error = null;
+    this.lastError = null;
+    this.lastUrl = null;
   }
 
   initAudio({ audioContext = null, destination = null } = {}) {
@@ -76,6 +78,8 @@ export default class SoundfontEngine {
     this.drumInstrument = null;
     this.drumPromise = null;
     this.error = null;
+    this.lastError = null;
+    this.lastUrl = null;
   }
 
   getStatus() {
@@ -83,6 +87,8 @@ export default class SoundfontEngine {
       ready: Boolean(this.player),
       loading: this.loadingPromises.size > 0 || Boolean(this.playerPromise) || Boolean(this.drumPromise),
       error: this.error,
+      lastError: this.lastError,
+      lastUrl: this.lastUrl,
       baseUrl: this.baseUrl,
       fallbackUrl: this.fallbackUrl
     };
@@ -141,32 +147,50 @@ export default class SoundfontEngine {
     if (this.loadingPromises.has(key)) {
       return this.loadingPromises.get(key);
     }
+    const primaryFormat = this.format;
+    const primaryUrl = this.buildUrl(this.baseUrl, name, primaryFormat);
+    const fallbackUrl = this.buildUrl(this.fallbackUrl, name, primaryFormat);
     const promise = this.ensurePlayer()
       .then(() => {
+        this.lastUrl = primaryUrl;
         return this.player.instrument(this.ctx, name, {
           format: this.format,
           destination: this.masterGain || this.destination,
-          nameToUrl: (instrumentName, soundfont, format) => this.buildUrl(this.baseUrl, instrumentName, format)
+          nameToUrl: (instrumentName, soundfont, format) => {
+            const url = this.buildUrl(this.baseUrl, instrumentName, format);
+            this.lastUrl = url;
+            return url;
+          }
         });
       })
       .catch(() => {
+        this.lastUrl = fallbackUrl;
         return this.ensurePlayer().then(() => this.player.instrument(this.ctx, name, {
           format: this.format,
           destination: this.masterGain || this.destination,
-          nameToUrl: (instrumentName, soundfont, format) => this.buildUrl(this.fallbackUrl, instrumentName, format)
+          nameToUrl: (instrumentName, soundfont, format) => {
+            const url = this.buildUrl(this.fallbackUrl, instrumentName, format);
+            this.lastUrl = url;
+            return url;
+          }
         }));
       })
       .then((instrument) => {
         if (!instrument) {
           this.error = `Failed to load SoundFont: ${name}`;
+          this.lastError = this.error;
           return null;
         }
         this.instrumentCache.set(key, instrument);
         this.error = null;
+        this.lastError = null;
         return instrument;
       })
       .catch((error) => {
-        this.error = `SoundFont load error: ${name}`;
+        const reason = error?.message ? String(error.message) : String(error);
+        const details = this.lastUrl ? `${reason}. URL: ${this.lastUrl}` : reason;
+        this.error = `SoundFont load error: ${name} (${details})`;
+        this.lastError = details;
         throw error;
       })
       .finally(() => {
