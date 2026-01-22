@@ -525,6 +525,8 @@ export default class MidiComposer {
     this.gamepadMoveCooldown = 0;
     this.gamepadCursorActive = false;
     this.lastPointer = { x: 0, y: 0 };
+    this.lastTapTime = 0;
+    this.lastTapNoteId = null;
     this.placingEndMarker = false;
     this.placingStartMarker = false;
     this.settingsOpen = false;
@@ -2283,6 +2285,16 @@ export default class MidiComposer {
     const modifiers = this.getModifiers();
     const hit = this.getNoteAtCell(cell.tick, cell.pitch, x);
     if (payload.touchCount && hit && payload.touchCount === 1) {
+      const now = Date.now();
+      const isDoubleTap = this.lastTapNoteId === hit.note.id && now - this.lastTapTime < 350;
+      this.lastTapTime = now;
+      this.lastTapNoteId = hit.note.id;
+      if (isDoubleTap) {
+        this.deleteNote(hit.note);
+        this.dragState = null;
+        this.lastTapNoteId = null;
+        return;
+      }
       if (!this.selection.has(hit.note.id)) {
         this.selection.clear();
         this.selection.add(hit.note.id);
@@ -2309,6 +2321,9 @@ export default class MidiComposer {
       };
       this.previewNote(hit.note, cell.pitch);
       return;
+    }
+    if (payload.touchCount && !hit) {
+      this.lastTapNoteId = null;
     }
     if (payload.touchCount || modifiers.alt || payload.button === 1 || payload.button === 2) {
       this.dragState = {
@@ -5244,14 +5259,15 @@ export default class MidiComposer {
         ctx.fillStyle = '#0b0b0b';
         ctx.fillRect(rect.x, rect.y, 4, rect.h);
         ctx.fillRect(rect.x + rect.w - 4, rect.y, 4, rect.h);
-        const handleSize = Math.max(6, Math.min(12, rect.h - 2, rect.w / 2));
-        const handleY = rect.y + (rect.h - handleSize) / 2;
+        const handleHeight = rect.h;
+        const handleWidth = Math.max(8, Math.round(handleHeight * 4));
+        const handleY = rect.y;
         ctx.fillStyle = '#ffe16a';
-        ctx.fillRect(rect.x - 2, handleY, handleSize, handleSize);
-        ctx.fillRect(rect.x + rect.w - handleSize + 2, handleY, handleSize, handleSize);
+        ctx.fillRect(rect.x - handleWidth, handleY, handleWidth, handleHeight);
+        ctx.fillRect(rect.x + rect.w, handleY, handleWidth, handleHeight);
         ctx.strokeStyle = '#0b0b0b';
-        ctx.strokeRect(rect.x - 2, handleY, handleSize, handleSize);
-        ctx.strokeRect(rect.x + rect.w - handleSize + 2, handleY, handleSize, handleSize);
+        ctx.strokeRect(rect.x - handleWidth, handleY, handleWidth, handleHeight);
+        ctx.strokeRect(rect.x + rect.w, handleY, handleWidth, handleHeight);
       }
       this.noteBounds.push({ ...rect, noteId: note.id });
     });
