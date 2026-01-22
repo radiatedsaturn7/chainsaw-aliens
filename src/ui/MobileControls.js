@@ -46,6 +46,24 @@ export default class MobileControls {
     this.enabled = Boolean(enabled);
   }
 
+  reset() {
+    if (this.attackHold.timer) {
+      clearTimeout(this.attackHold.timer);
+    }
+    this.joystick.active = false;
+    this.joystick.id = null;
+    this.joystick.dx = 0;
+    this.joystick.dy = 0;
+    this.buttonStates.clear();
+    this.pointerButtonMap.clear();
+    this.gesturePointers.clear();
+    this.pulseActions.clear();
+    this.movementPulse = { left: 0, right: 0, up: 0, down: 0 };
+    this.lastSwipe = { dir: null, time: 0 };
+    this.attackHold = { id: null, startTime: 0, timer: null, active: false, registered: false };
+    this.multiTouch = { active: false, count: 0, startTime: 0, ids: new Set() };
+  }
+
   setFlameToggleEnabled(enabled) {
     this.flameToggleEnabled = Boolean(enabled);
   }

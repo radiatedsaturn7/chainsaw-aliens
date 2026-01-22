@@ -757,6 +757,7 @@ export default class Game {
     this.state = 'editor';
     this.editor.activate();
     this.playtestActive = false;
+    this.mobileControls.reset();
     document.body.classList.add('editor-active');
   }
 
@@ -2454,7 +2455,7 @@ export default class Game {
     };
     const initialArcDrop = Math.min(maxRange * 0.18, tileSize * 6);
     const targetArcRange = tileSize * 15;
-    const peakOffset = tileSize * 0.7;
+    const peakOffset = tileSize;
     const targetPoint = {
       x: originX + dirX * targetArcRange,
       y: originY + dirY * targetArcRange
@@ -2467,10 +2468,11 @@ export default class Game {
       };
     };
     const pickControl = (dx, dy, point, tBase) => {
-      const playerPeakY = this.player.y - this.player.height * 0.9;
-      const peakTargetY = Math.min(originY - peakOffset, playerPeakY);
+      const peakTargetY = this.player.y - peakOffset;
+      const peakTargetOffset = peakTargetY - originY;
+      const desiredControlY = peakTargetOffset * 2;
       const baseControl = computeControl(tBase, dx, dy, point);
-      if (baseControl.y <= peakTargetY) {
+      if (baseControl.y <= desiredControlY) {
         return { controlX: baseControl.x, controlY: baseControl.y, t: tBase };
       }
       let best = null;
@@ -2478,8 +2480,8 @@ export default class Game {
       for (let i = 0; i <= steps; i += 1) {
         const t = 0.15 + (0.7 * i) / steps;
         const control = computeControl(t, dx, dy, point);
-        if (control.y > peakTargetY) continue;
-        const score = Math.abs(t - tBase);
+        if (control.y > desiredControlY) continue;
+        const score = Math.abs(control.y - desiredControlY) + Math.abs(t - tBase) * 0.2;
         if (!best || score < best.score) {
           best = { controlX: control.x, controlY: control.y, t, score };
         }
