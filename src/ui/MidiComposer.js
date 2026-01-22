@@ -31,6 +31,11 @@ const NOTE_LENGTH_OPTIONS = [
   { id: '1/32', label: '1/32', divisor: 32 }
 ];
 
+const SOUNDFONT_CDNS = [
+  { id: 'github', label: 'GitHub Pages' },
+  { id: 'jsdelivr', label: 'jsDelivr' }
+];
+
 const TAB_OPTIONS = [
   { id: 'grid', label: 'Grid' },
   { id: 'instruments', label: 'Instruments' },
@@ -573,7 +578,9 @@ export default class MidiComposer {
       masterVolume: this.game?.audio?.volume ?? 0.4,
       reverbEnabled: true,
       reverbLevel: 0.18,
-      latencyMs: 30
+      latencyMs: 30,
+      useSoundfont: true,
+      soundfontCdn: 'github'
     };
     try {
       const stored = JSON.parse(localStorage.getItem('chainsaw-midi-audio'));
@@ -582,7 +589,9 @@ export default class MidiComposer {
         masterVolume: typeof stored.masterVolume === 'number' ? stored.masterVolume : defaults.masterVolume,
         reverbEnabled: typeof stored.reverbEnabled === 'boolean' ? stored.reverbEnabled : defaults.reverbEnabled,
         reverbLevel: typeof stored.reverbLevel === 'number' ? stored.reverbLevel : defaults.reverbLevel,
-        latencyMs: typeof stored.latencyMs === 'number' ? stored.latencyMs : defaults.latencyMs
+        latencyMs: typeof stored.latencyMs === 'number' ? stored.latencyMs : defaults.latencyMs,
+        useSoundfont: typeof stored.useSoundfont === 'boolean' ? stored.useSoundfont : defaults.useSoundfont,
+        soundfontCdn: typeof stored.soundfontCdn === 'string' ? stored.soundfontCdn : defaults.soundfontCdn
       };
     } catch (error) {
       return defaults;
@@ -604,6 +613,8 @@ export default class MidiComposer {
     audio.setMidiLatency?.(Math.max(0, this.audioSettings.latencyMs / 1000));
     audio.setMidiReverbEnabled?.(this.audioSettings.reverbEnabled);
     audio.setMidiReverbLevel?.(clamp(this.audioSettings.reverbLevel, 0, 1));
+    audio.setSoundfontEnabled?.(this.audioSettings.useSoundfont);
+    audio.setSoundfontCdn?.(this.audioSettings.soundfontCdn);
   }
 
   validateSong(song) {
@@ -693,6 +704,7 @@ export default class MidiComposer {
   preloadTrackPrograms() {
     const audio = this.game?.audio;
     if (!audio?.ensureGmPlayer) return;
+    if (audio.getGmStatus?.().enabled === false) return;
     audio.ensureGmPlayer()
       .then(() => {
         this.song.tracks.forEach((track) => {
@@ -1627,7 +1639,15 @@ export default class MidiComposer {
     } else if (this.dragState.mode === 'paste-preview') {
       this.updatePastePreviewPosition(cell.tick, cell.pitch);
     } else if (this.dragState.mode === 'move') {
-      this.moveSelectionTo(cell.tick, cell.pitch);
+      const dx = payload.x - this.dragState.startX;
+      const dy = payload.y - this.dragState.startY;
+      const threshold = 6;
+      if (!this.dragState.moved && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) {
+        this.dragState.moved = true;
+      }
+      if (this.dragState.moved) {
+        this.moveSelectionTo(cell.tick, cell.pitch);
+      }
     } else if (this.dragState.mode === 'resize') {
       this.resizeSelectionTo(cell.tick);
     } else if (this.dragState.mode === 'select') {
@@ -1645,12 +1665,17 @@ export default class MidiComposer {
       if (!this.dragState.moved) {
         const { cell, hit } = this.dragState;
         if (hit?.note) {
-          this.selection.clear();
-          this.selection.add(hit.note.id);
-          this.previewNote(hit.note, hit.note.pitch);
+          if (cell && cell.tick === hit.note.startTick && cell.pitch === hit.note.pitch) {
+            this.selection.clear();
+            this.toggleNoteAt(cell.tick, cell.pitch);
+          } else {
+            this.selection.clear();
+            this.selection.add(hit.note.id);
+            this.previewNote(hit.note, hit.note.pitch);
+          }
         } else if (cell) {
           this.selection.clear();
-          this.paintNoteAt(cell.tick, cell.pitch, false);
+          this.toggleNoteAt(cell.tick, cell.pitch);
         }
       }
       this.dragState = null;
@@ -1667,9 +1692,21 @@ export default class MidiComposer {
       this.dragState = null;
       return;
     }
+    if (this.dragState?.mode === 'move') {
+      if (!this.dragState.moved && this.dragState.cell) {
+        const { cell, hit } = this.dragState;
+        if (hit?.note && cell.tick === hit.note.startTick && cell.pitch === hit.note.pitch) {
+          this.toggleNoteAt(cell.tick, cell.pitch);
+        } else if (hit?.note) {
+          this.previewNote(hit.note, cell.pitch);
+        }
+      }
+      this.dragState = null;
+      return;
+    }
     if (this.dragState?.mode === 'paint-or-select') {
       if (!this.dragState.moved && this.dragState.cell) {
-        this.paintNoteAt(this.dragState.cell.tick, this.dragState.cell.pitch, false);
+        this.toggleNoteAt(this.dragState.cell.tick, this.dragState.cell.pitch);
       }
       this.dragState = null;
       return;
@@ -1778,6 +1815,11 @@ export default class MidiComposer {
         mode: 'move',
         startTick: cell.tick,
         startPitch: cell.pitch,
+        startX: x,
+        startY: y,
+        moved: false,
+        cell,
+        hit,
         originalNotes: this.getSelectedNotes().map((note) => ({ ...note }))
       };
       this.previewNote(hit.note, cell.pitch);
@@ -1807,6 +1849,42 @@ export default class MidiComposer {
         }
       }, 500);
     }
+  }
+
+  toggleNoteAt(tick, pitch) {
+    if (this.selectionMenu.open) {
+      this.closeSelectionMenu();
+    }
+    const pattern = this.getActivePattern();
+    if (!pattern) return;
+    const snappedTick = this.snapTick(tick);
+    const snappedPitch = this.snapPitchToScale(pitch);
+    const existingIndex = pattern.notes.findIndex(
+      (note) => note.startTick === snappedTick && note.pitch === snappedPitch
+    );
+    if (existingIndex >= 0) {
+      const [removed] = pattern.notes.splice(existingIndex, 1);
+      if (removed) {
+        this.selection.delete(removed.id);
+      }
+      this.persist();
+      return;
+    }
+    const duration = this.getNoteLengthTicks();
+    const note = {
+      id: uid(),
+      startTick: snappedTick,
+      durationTicks: duration,
+      pitch: snappedPitch,
+      velocity: 0.9
+    };
+    pattern.notes.push(note);
+    this.selection.clear();
+    this.selection.add(note.id);
+    this.cursor = { tick: snappedTick, pitch: snappedPitch };
+    this.ensureGridCapacity(snappedTick + duration);
+    this.previewNote(note, snappedPitch);
+    this.persist();
   }
 
   paintNoteAt(tick, pitch, continuous) {
@@ -2357,16 +2435,24 @@ export default class MidiComposer {
       this.applyAudioSettings();
       return;
     }
-    if (control.id === 'audio-engine-url') {
-      const currentUrl = this.game?.audio?.getGmStatus?.().baseUrl || '';
-      const nextUrl = window.prompt('GM SoundFont base URL', currentUrl);
-      if (nextUrl && this.game?.audio?.setSoundfontUrl) {
-        this.game.audio.setSoundfontUrl(nextUrl);
-      }
+    if (control.id === 'audio-soundfont-toggle') {
+      this.audioSettings.useSoundfont = !this.audioSettings.useSoundfont;
+      this.saveAudioSettings();
+      this.applyAudioSettings();
       return;
     }
-    if (control.id === 'audio-engine-reset') {
-      this.game?.audio?.resetSoundfontUrl?.();
+    if (control.id === 'audio-soundfont-cdn') {
+      const currentIndex = SOUNDFONT_CDNS.findIndex((entry) => entry.id === this.audioSettings.soundfontCdn);
+      const nextIndex = (currentIndex + 1) % SOUNDFONT_CDNS.length;
+      this.audioSettings.soundfontCdn = SOUNDFONT_CDNS[nextIndex].id;
+      this.saveAudioSettings();
+      this.applyAudioSettings();
+      return;
+    }
+    if (control.id === 'audio-soundfont-preload') {
+      const track = this.getActiveTrack();
+      if (!track) return;
+      this.game?.audio?.preloadSoundfontProgram?.(track.program, track.channel);
       return;
     }
     if (control.id === 'grid-preview') {
@@ -2493,17 +2579,17 @@ export default class MidiComposer {
       this.loadDemoSong();
     }
     if (action === 'soundfont') {
-      const currentUrl = this.game?.audio?.getGmStatus?.().baseUrl || '';
-      const nextUrl = window.prompt('GM SoundFont base URL', currentUrl);
-      if (nextUrl && this.game?.audio?.setSoundfontUrl) {
-        this.game.audio.setSoundfontUrl(nextUrl);
-      }
+      const currentIndex = SOUNDFONT_CDNS.findIndex((entry) => entry.id === this.audioSettings.soundfontCdn);
+      const nextIndex = (currentIndex + 1) % SOUNDFONT_CDNS.length;
+      this.audioSettings.soundfontCdn = SOUNDFONT_CDNS[nextIndex].id;
+      this.saveAudioSettings();
+      this.applyAudioSettings();
       this.toolsMenuOpen = false;
     }
     if (action === 'soundfont-reset') {
-      if (this.game?.audio?.resetSoundfontUrl) {
-        this.game.audio.resetSoundfontUrl();
-      }
+      this.audioSettings.soundfontCdn = 'github';
+      this.saveAudioSettings();
+      this.applyAudioSettings();
       this.toolsMenuOpen = false;
     }
   }
@@ -2803,11 +2889,13 @@ export default class MidiComposer {
     const tempoX = x + w - 180;
     const gmStatus = this.game?.audio?.getGmStatus?.();
     if (gmStatus) {
-      const statusText = gmStatus.error
-        ? 'GM Bank Error'
-        : gmStatus.loading
-          ? 'Loading instrument bank…'
-          : 'GM Bank Ready';
+      const statusText = !gmStatus.enabled
+        ? 'SoundFont Off'
+        : gmStatus.error
+          ? 'SoundFont Error'
+          : gmStatus.loading
+            ? 'Loading SoundFont…'
+            : 'SoundFont Ready';
       ctx.fillStyle = gmStatus.error ? '#ff6a6a' : 'rgba(255,255,255,0.6)';
       ctx.font = isMobile ? '11px Courier New' : '12px Courier New';
       ctx.fillText(statusText, tempoX, y + padding + 12);
@@ -3292,25 +3380,29 @@ export default class MidiComposer {
       cursorY += rowH + 10;
     };
 
+    const gmStatus = this.game?.audio?.getGmStatus?.();
+
     drawSectionTitle('Audio');
     drawSlider('Master Volume', `${Math.round(this.audioSettings.masterVolume * 100)}%`, this.audioSettings.masterVolume, 'audio-volume', 'Overall output level.');
     drawToggle('Reverb', this.audioSettings.reverbEnabled, 'audio-reverb-toggle', 'Adds space to GM playback.');
     drawSlider('Reverb Level', `${Math.round(this.audioSettings.reverbLevel * 100)}%`, this.audioSettings.reverbLevel, 'audio-reverb-level', 'Wet mix for the reverb bus.');
     drawSlider('Output Latency', `${this.audioSettings.latencyMs} ms`, this.audioSettings.latencyMs / 120, 'audio-latency', 'Increase if audio crackles.');
-    const soundfontBounds = { x: x + padding, y: cursorY, w: w - padding * 2, h: rowH, id: 'audio-engine-url' };
-    this.drawButton(ctx, soundfontBounds, 'SoundFont URL', false, false);
-    this.bounds.settingsControls.push(soundfontBounds);
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.font = '11px Courier New';
-    ctx.fillText('Point to a WebAudioFont-compatible GM bank.', x + padding, cursorY + rowH + 16);
-    cursorY += rowH + 28;
-    const soundfontResetBounds = { x: x + padding, y: cursorY, w: w - padding * 2, h: rowH, id: 'audio-engine-reset' };
-    this.drawButton(ctx, soundfontResetBounds, 'Reset SoundFont', false, false);
-    this.bounds.settingsControls.push(soundfontResetBounds);
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.font = '11px Courier New';
-    ctx.fillText('Restore the default GM soundfont URL.', x + padding, cursorY + rowH + 16);
-    cursorY += rowH + sectionGap;
+    drawToggle('SoundFont Instruments', this.audioSettings.useSoundfont, 'audio-soundfont-toggle', 'Use sample-based GM instruments (recommended).');
+    const cdnLabel = SOUNDFONT_CDNS.find((entry) => entry.id === this.audioSettings.soundfontCdn)?.label || 'GitHub Pages';
+    drawAction('SoundFont CDN', cdnLabel, 'audio-soundfont-cdn', 'Switch CDN source for the FluidR3_GM bank.');
+    drawAction('Preload Instrument', 'Load', 'audio-soundfont-preload', 'Preload the active track SoundFont.');
+    if (gmStatus) {
+      ctx.fillStyle = gmStatus.error ? '#ff8a8a' : 'rgba(255,255,255,0.55)';
+      ctx.font = '11px Courier New';
+      const statusText = gmStatus.error
+        ? `SoundFont error: ${gmStatus.error}`
+        : gmStatus.loading
+          ? 'SoundFont status: Loading…'
+          : 'SoundFont status: Ready';
+      ctx.fillText(statusText, x + padding, cursorY + 16);
+      cursorY += 28;
+    }
+    cursorY += sectionGap;
 
     drawSectionTitle('Grid & Editing');
     drawToggle('Preview On', this.previewOnEdit, 'grid-preview', 'Audition notes as you place them.');
@@ -4304,8 +4396,8 @@ export default class MidiComposer {
       { id: 'export', label: 'Export JSON' },
       { id: 'import', label: 'Import JSON' },
       { id: 'demo', label: 'Play Demo' },
-      { id: 'soundfont', label: 'SoundFont URL' },
-      { id: 'soundfont-reset', label: 'Reset SoundFont' },
+      { id: 'soundfont', label: 'SoundFont CDN' },
+      { id: 'soundfont-reset', label: 'SoundFont Default' },
       { id: 'qa', label: 'QA Overlay' }
     ];
     const width = 180;

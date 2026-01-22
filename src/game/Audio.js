@@ -1,33 +1,39 @@
 import { GM_PROGRAMS, isDrumChannel } from '../audio/gm.js';
+import SoundfontEngine from '../audio/SoundfontEngine.js';
 
-const DEFAULT_GM_SOUND_FONT_URL = 'https://surikov.github.io/webaudiofontdata/sound/';
-const GM_PLAYER_URL = 'https://cdn.jsdelivr.net/npm/webaudiofont@2.0.1/dist/WebAudioFontPlayer.js';
-const GM_DRUM_PRESET = '128_StandardDrumKit_sf2';
+const DEFAULT_GM_SOUND_FONT_URL = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
+const FALLBACK_GM_SOUND_FONT_URL = 'https://cdn.jsdelivr.net/gh/gleitz/midi-js-soundfonts/FluidR3_GM/';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-const toWebAudioFontToken = (name) => name
-  .replace(/[^a-z0-9]+/gi, ' ')
-  .trim()
-  .split(' ')
-  .filter(Boolean)
-  .map((token) => (token.toUpperCase() === token ? token : token[0].toUpperCase() + token.slice(1)))
-  .join('');
-
-const getProgramFontInfo = (program) => {
-  const entry = GM_PROGRAMS[program];
-  const padded = String(program).padStart(4, '0');
-  const token = toWebAudioFontToken(entry?.name || `Program${program}`);
-  const base = `${padded}_${token}_sf2`;
-  return {
-    fileName: `${base}.js`,
-    variableName: `_tone_${base}`
-  };
+const LEGACY_INSTRUMENT_TO_PROGRAM = {
+  piano: 0,
+  'electric-piano': 4,
+  harpsichord: 6,
+  clav: 7,
+  bell: 9,
+  celesta: 8,
+  vibes: 11,
+  marimba: 12,
+  organ: 16,
+  strings: 48,
+  choir: 52,
+  bass: 33,
+  'guitar-nylon': 24,
+  'guitar-steel': 25,
+  'guitar-electric': 27,
+  brass: 61,
+  trumpet: 56,
+  sax: 65,
+  flute: 73,
+  clarinet: 71,
+  'synth-lead': 80,
+  'synth-pad': 88,
+  pluck: 45,
+  sine: 80,
+  triangle: 81,
+  square: 80,
+  sawtooth: 81
 };
-
-const getDrumFontInfo = () => ({
-  fileName: `${GM_DRUM_PRESET}.js`,
-  variableName: `_drum_${GM_DRUM_PRESET}`
-});
 
 export default class AudioSystem {
   constructor() {
@@ -47,16 +53,12 @@ export default class AudioSystem {
     this.midiReverbEnabled = true;
     this.midiReverbLevel = 0.18;
     this.midiReverbSend = null;
-    this.gmPlayer = null;
-    this.gmPlayerPromise = null;
-    this.gmProgramPresets = new Map();
-    this.gmProgramPromises = new Map();
-    this.gmLoadedPrograms = new Set();
-    this.gmLoadingPrograms = new Set();
+    this.gmEnabled = true;
     this.gmError = null;
-    this.gmDrumPreset = null;
-    this.gmDrumPromise = null;
-    this.gmBaseUrl = this.loadStoredSoundfontUrl();
+    this.soundfont = new SoundfontEngine({
+      baseUrl: this.loadStoredSoundfontUrl(),
+      fallbackUrl: FALLBACK_GM_SOUND_FONT_URL
+    });
   }
 
   ensure() {
@@ -89,6 +91,7 @@ export default class AudioSystem {
     this.midiReverbSend.connect(this.midiReverb);
     this.midiReverb.connect(this.midiLimiter);
     this.midiSamples = this.buildMidiSamples();
+    this.soundfont.initAudio({ audioContext: this.ctx, destination: this.midiBus });
   }
 
   loadStoredSoundfontUrl() {
@@ -101,137 +104,75 @@ export default class AudioSystem {
 
   setSoundfontUrl(url) {
     if (!url) return;
-    this.gmBaseUrl = url.endsWith('/') ? url : `${url}/`;
+    const nextUrl = url.endsWith('/') ? url : `${url}/`;
     try {
-      localStorage.setItem('chainsaw-gm-soundfont-url', this.gmBaseUrl);
+      localStorage.setItem('chainsaw-gm-soundfont-url', nextUrl);
     } catch (error) {
       // ignore
     }
-    this.resetGmBank();
+    this.soundfont.setBaseUrl(nextUrl);
+    this.gmError = null;
   }
 
   resetSoundfontUrl() {
     this.setSoundfontUrl(DEFAULT_GM_SOUND_FONT_URL);
   }
 
+  setSoundfontEnabled(enabled) {
+    this.gmEnabled = Boolean(enabled);
+    if (!this.gmEnabled) {
+      this.gmError = null;
+    }
+  }
+
+  setSoundfontCdn(cdnId) {
+    const nextUrl = cdnId === 'jsdelivr'
+      ? FALLBACK_GM_SOUND_FONT_URL
+      : DEFAULT_GM_SOUND_FONT_URL;
+    this.setSoundfontUrl(nextUrl);
+    this.gmError = null;
+  }
+
   resetGmBank() {
-    this.gmProgramPresets.clear();
-    this.gmProgramPromises.clear();
-    this.gmLoadedPrograms.clear();
-    this.gmLoadingPrograms.clear();
-    this.gmDrumPreset = null;
-    this.gmDrumPromise = null;
+    this.soundfont.reset();
     this.gmError = null;
   }
 
   getGmStatus() {
+    const status = this.soundfont.getStatus();
     return {
-      ready: Boolean(this.gmPlayer),
-      loading: Boolean(this.gmPlayerPromise) || this.gmLoadingPrograms.size > 0 || Boolean(this.gmDrumPromise),
-      loadedPrograms: this.gmLoadedPrograms.size,
-      error: this.gmError,
-      baseUrl: this.gmBaseUrl
+      ready: status.ready,
+      loading: status.loading,
+      loadedPrograms: this.soundfont.instrumentCache.size,
+      error: this.gmError || status.error,
+      baseUrl: status.baseUrl,
+      fallbackUrl: status.fallbackUrl,
+      enabled: this.gmEnabled
     };
   }
 
   ensureGmPlayer() {
-    if (this.gmPlayer) return Promise.resolve(this.gmPlayer);
-    if (this.gmPlayerPromise) return this.gmPlayerPromise;
     this.ensureMidiSampler();
-    this.gmPlayerPromise = new Promise((resolve, reject) => {
-      if (window.WebAudioFontPlayer) {
-        this.gmPlayer = new window.WebAudioFontPlayer();
-        this.gmError = null;
-        resolve(this.gmPlayer);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = GM_PLAYER_URL;
-      script.async = true;
-      script.onload = () => {
-        this.gmPlayer = new window.WebAudioFontPlayer();
-        this.gmError = null;
-        resolve(this.gmPlayer);
-      };
-      script.onerror = () => {
-        this.gmError = 'Failed to load WebAudioFont player.';
-        reject(new Error(this.gmError));
-      };
-      document.head.appendChild(script);
-    }).finally(() => {
-      this.gmPlayerPromise = null;
-    });
-    return this.gmPlayerPromise;
+    return this.soundfont.ensurePlayer();
   }
 
   loadGmProgram(program) {
-    if (this.gmProgramPresets.has(program)) {
-      return Promise.resolve(this.gmProgramPresets.get(program));
-    }
-    if (this.gmProgramPromises.has(program)) {
-      return this.gmProgramPromises.get(program);
-    }
-    const { fileName, variableName } = getProgramFontInfo(program);
-    const url = `${this.gmBaseUrl}${fileName}`;
-    this.gmLoadingPrograms.add(program);
-    const promise = new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = url;
-      script.async = true;
-      script.onload = () => {
-        const preset = window[variableName];
-        if (!preset) {
-          this.gmError = `Soundfont preset missing: ${fileName}`;
-          reject(new Error(this.gmError));
-          return;
-        }
-        this.gmProgramPresets.set(program, preset);
-        this.gmLoadedPrograms.add(program);
-        this.gmError = null;
-        resolve(preset);
-      };
-      script.onerror = () => {
-        this.gmError = `Failed to load soundfont preset: ${fileName}`;
-        reject(new Error(this.gmError));
-      };
-      document.head.appendChild(script);
-    }).finally(() => {
-      this.gmLoadingPrograms.delete(program);
-      this.gmProgramPromises.delete(program);
-    });
-    this.gmProgramPromises.set(program, promise);
-    return promise;
+    this.ensureMidiSampler();
+    return this.soundfont.loadInstrument(program);
   }
 
   loadGmDrumKit() {
-    if (this.gmDrumPreset) return Promise.resolve(this.gmDrumPreset);
-    if (this.gmDrumPromise) return this.gmDrumPromise;
-    const { fileName, variableName } = getDrumFontInfo();
-    const url = `${this.gmBaseUrl}${fileName}`;
-    this.gmDrumPromise = new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = url;
-      script.async = true;
-      script.onload = () => {
-        const preset = window[variableName] || window[variableName.replace('_drum_', '_tone_')];
-        if (!preset) {
-          this.gmError = `Drum kit preset missing: ${fileName}`;
-          reject(new Error(this.gmError));
-          return;
-        }
-        this.gmDrumPreset = preset;
-        this.gmError = null;
-        resolve(preset);
-      };
-      script.onerror = () => {
-        this.gmError = `Failed to load drum kit preset: ${fileName}`;
-        reject(new Error(this.gmError));
-      };
-      document.head.appendChild(script);
-    }).finally(() => {
-      this.gmDrumPromise = null;
-    });
-    return this.gmDrumPromise;
+    this.ensureMidiSampler();
+    return this.soundfont.loadDrumKit();
+  }
+
+  preloadSoundfontProgram(program, channel = 0) {
+    if (!this.gmEnabled) return;
+    if (isDrumChannel(channel)) {
+      this.loadGmDrumKit().catch(() => {});
+      return;
+    }
+    this.loadGmProgram(program).catch(() => {});
   }
 
   setVolume(value) {
@@ -405,28 +346,8 @@ export default class AudioSystem {
     const clampedProgram = clamp(program ?? 0, 0, GM_PROGRAMS.length - 1);
     const clampedVolume = clamp(volume ?? 1, 0, 1);
     const clampedPan = clamp(pan ?? 0, -1, 1);
-    const panNode = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
-    if (panNode) {
-      panNode.pan.value = clampedPan;
-      panNode.connect(this.midiBus);
-    }
-    const outputBus = panNode || this.midiBus;
-    const playWithPreset = (preset) => {
-      if (!preset || !this.gmPlayer) return;
-      const when = this.ctx.currentTime + this.midiLatency;
-      const voice = this.gmPlayer.queueWaveTable(
-        this.ctx,
-        outputBus,
-        preset,
-        when,
-        pitch,
-        duration,
-        clampedVolume
-      );
-      const stopTime = when + duration + 0.2;
-      this.registerMidiVoice({ voice, stopTime });
-    };
     const fallback = () => {
+      this.gmError = 'SoundFont failed; using fallback synth.';
       if (isDrumChannel(channel)) {
         this.playSampledNote({
           pitch,
@@ -441,18 +362,34 @@ export default class AudioSystem {
       const fallbackInstrument = this.getFallbackInstrument(clampedProgram);
       this.playMidiNote(pitch, fallbackInstrument, duration, clampedVolume, this.ctx.currentTime + this.midiLatency, clampedPan);
     };
-    this.ensureGmPlayer()
-      .then(() => {
-        if (isDrumChannel(channel)) {
-          return this.loadGmDrumKit();
-        }
-        return this.loadGmProgram(clampedProgram);
+    if (!this.gmEnabled) {
+      fallback();
+      return;
+    }
+    this.soundfont.setProgram(clampedProgram, channel);
+    const when = this.ctx.currentTime + this.midiLatency;
+    this.soundfont.noteOn(pitch, clampedVolume, when, duration, channel)
+      .then((voice) => {
+        if (!voice) return;
+        const stopTime = when + duration + 0.2;
+        this.registerMidiVoice({ voice, stopTime });
+        this.gmError = null;
       })
-      .then(playWithPreset)
       .catch(fallback);
   }
 
   playMidiNote(pitch, instrument = 'piano', duration = 0.5, volume = 1, when = null, pan = 0) {
+    if (this.gmEnabled && LEGACY_INSTRUMENT_TO_PROGRAM[instrument] !== undefined) {
+      this.playGmNote({
+        pitch,
+        duration,
+        volume,
+        program: LEGACY_INSTRUMENT_TO_PROGRAM[instrument],
+        channel: 0,
+        pan
+      });
+      return;
+    }
     this.ensure();
     const freq = 440 * (2 ** ((pitch - 69) / 12));
     const preset = this.getMidiPreset(instrument);
