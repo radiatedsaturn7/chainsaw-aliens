@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "description": "Static Chainsaw Aliens game with optional dev test harness",
+  "dependencies": {
+    "soundfont-player": "^0.12.0"
+  },
   "devDependencies": {
     "playwright": "^1.46.0"
   },

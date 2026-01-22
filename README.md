@@ -44,7 +44,7 @@ Open the sequencer from the title screen **Tools** menu (`MIDI Editor`). The edi
 ### General MIDI Quick Notes
 - **128 melodic programs** are available in the instrument picker (grouped by family with search).
 - **Channel 10** (MIDI channel 9 in 0-based terms) is reserved for **drums** and uses the GM percussion map.
-- **SoundFont required**: audio playback uses a GM SoundFont sample pack (WebAudioFont-compatible). You can set a custom base URL from **Settings → Audio**.
+- **SoundFont required**: audio playback uses the FluidR3_GM SoundFont sample pack via CDN (no files committed to the repo). Audio starts after a user gesture; configure it in **Settings → Audio**.
 
 If you hear no sound, wait for the “Loading instrument bank…” banner to finish or switch to another GM SoundFont.
 
@@ -85,11 +85,13 @@ Remap controller buttons from **Settings → Controller**.
 4. Use **Export JSON** to save a song, or **Import JSON** to load one.
 
 ### SoundFont Tips
-- Use **Settings → Audio → SoundFont URL** to point at a GM SoundFont bank (WebAudioFont data pack).
-- Use **Settings → Audio → Reset SoundFont** to restore the default bank.
-- The UI shows “Loading instrument bank…” until the bank and required programs are ready.
+- Use **Settings → Audio → SoundFont Instruments** to enable/disable sample playback (fallback synth is used when off).
+- Use **Settings → Audio → SoundFont CDN** to switch between GitHub Pages and jsDelivr hosting for FluidR3_GM.
+- Use **Settings → Audio → Preload Instrument** to fetch the active track’s SoundFont on demand.
+- The UI shows “Loading SoundFont…” until the bank and required programs are ready.
 
 ### Editor Controls (mouse/touch/keyboard)
+- **Click/tap on a grid cell**: toggle a note on/off (snapped to quantize).
 - **Click/drag on empty grid**: paint notes (snapped to quantize).
 - **Alt/Option + drag** or **Right-click**: erase notes.
 - **Drag note body**: move note (snapped).
