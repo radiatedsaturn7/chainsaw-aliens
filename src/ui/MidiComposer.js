@@ -615,7 +615,9 @@ export default class MidiComposer {
       zoomInY: null,
       zoomOutY: null,
       loopStartHandle: null,
-      loopEndHandle: null
+      loopEndHandle: null,
+      loopShiftStartHandle: null,
+      loopShiftEndHandle: null
     };
     this.trackBounds = [];
     this.trackControlBounds = [];
@@ -2283,6 +2285,26 @@ export default class MidiComposer {
   handleGridPointerDown(payload) {
     const { x, y } = payload;
     const modifiers = this.getModifiers();
+    if (this.song.loopEnabled && this.bounds.loopShiftStartHandle && this.pointInBounds(x, y, this.bounds.loopShiftStartHandle)) {
+      const tick = this.getTickFromX(x);
+      this.dragState = {
+        mode: 'loop-shift',
+        startTick: tick,
+        originStart: this.song.loopStartTick,
+        originEnd: this.song.loopEndTick
+      };
+      return;
+    }
+    if (this.song.loopEnabled && this.bounds.loopShiftEndHandle && this.pointInBounds(x, y, this.bounds.loopShiftEndHandle)) {
+      const tick = this.getTickFromX(x);
+      this.dragState = {
+        mode: 'loop-shift',
+        startTick: tick,
+        originStart: this.song.loopStartTick,
+        originEnd: this.song.loopEndTick
+      };
+      return;
+    }
     const hit = this.getNoteHitAt(x, y);
     const cell = this.getGridCell(x, y);
     if (!cell && !hit) return;
@@ -3608,7 +3630,7 @@ export default class MidiComposer {
   }
 
   getNoteHandleWidth(rect) {
-    return Math.max(8, Math.min(18, Math.round(rect.h * 0.7)));
+    return Math.max(16, Math.min(36, Math.round(rect.h * 1.4)));
   }
 
   getNoteRect(note) {
@@ -3809,6 +3831,18 @@ export default class MidiComposer {
     controlY += rowH + rowGap;
     this.bounds.loopToggle = { x: controlX, y: controlY, w: noteW, h: rowH };
     this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+    controlY += rowH + rowGap;
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px Courier New';
+    ctx.fillText(`Tempo ${this.song.tempo} BPM`, controlX, controlY + rowH * 0.7);
+    const tempoButtonW = 28;
+    this.bounds.tempoDown = { x: controlX + controlW - tempoButtonW * 2 - rowGap, y: controlY, w: tempoButtonW, h: rowH };
+    this.bounds.tempoUp = { x: controlX + controlW - tempoButtonW, y: controlY, w: tempoButtonW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.tempoDown, '-', false);
+    this.drawSmallButton(ctx, this.bounds.tempoUp, '+', false);
+    controlY += rowH + rowGap;
+    this.bounds.metronome = { x: controlX, y: controlY, w: controlW, h: rowH };
+    this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
     const transportGap = 6;
     const transportW = (controlW - transportGap * 4) / 5;
     const transportButtons = [
@@ -4477,9 +4511,7 @@ export default class MidiComposer {
     cursorY += sectionGap;
 
     drawSectionTitle('Tempo & Playback');
-    drawSlider('Tempo', `${this.song.tempo} BPM`, (this.song.tempo - 40) / 200, 'song-tempo', 'Song playback tempo.');
     drawToggle('Loop Enabled', this.song.loopEnabled, 'playback-loop', 'Loops between Start and End markers.');
-    drawToggle('Metronome', this.metronomeEnabled, 'playback-metronome', 'Click on beats during playback.');
     drawSlider('Swing', `${Math.round(this.swing)}%`, this.swing / 60, 'playback-swing', 'Delays off-beats for groove.');
     cursorY += sectionGap;
 
@@ -5217,7 +5249,6 @@ export default class MidiComposer {
       ctx.lineTo(endX, originY + rows * cellHeight);
       ctx.stroke();
     }
-
     for (let row = 0; row <= rows; row += 1) {
       const yPos = originY + row * cellHeight;
       let isOctave = false;
@@ -5297,6 +5328,31 @@ export default class MidiComposer {
 
     if (this.pastePreview) {
       this.drawPastePreview(ctx, track);
+    }
+
+    if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
+      const loopStartX = originX + this.song.loopStartTick * cellWidth;
+      const loopEndX = originX + this.song.loopEndTick * cellWidth;
+      const handleW = Math.max(10, Math.min(18, Math.round(cellWidth * 0.6)));
+      const handleH = Math.max(18, Math.min(36, Math.round(cellHeight * 3)));
+      const handleY = originY + (rows * cellHeight - handleH) / 2;
+      const gap = 4;
+      const minX = originX;
+      const maxX = originX + loopTicks * cellWidth - handleW;
+      const startHandleX = clamp(loopStartX - handleW - gap, minX, maxX);
+      const endHandleX = clamp(loopEndX + gap, minX, maxX);
+      this.bounds.loopShiftStartHandle = { x: startHandleX, y: handleY, w: handleW, h: handleH };
+      this.bounds.loopShiftEndHandle = { x: endHandleX, y: handleY, w: handleW, h: handleH };
+      ctx.fillStyle = '#55d68a';
+      ctx.fillRect(startHandleX, handleY, handleW, handleH);
+      ctx.fillStyle = '#ff6a6a';
+      ctx.fillRect(endHandleX, handleY, handleW, handleH);
+      ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+      ctx.strokeRect(startHandleX, handleY, handleW, handleH);
+      ctx.strokeRect(endHandleX, handleY, handleW, handleH);
+    } else {
+      this.bounds.loopShiftStartHandle = null;
+      this.bounds.loopShiftEndHandle = null;
     }
 
     if (this.dragState?.mode === 'select') {
