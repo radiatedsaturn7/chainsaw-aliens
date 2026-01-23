@@ -24,6 +24,7 @@ body {
   background: #000;
   border: 2px solid #fff;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  touch-action: none;
 }
 
 .hint {
@@ -88,7 +89,6 @@ body.mobile .frame {
 body.mobile #game {
   border: none;
   box-shadow: none;
-  touch-action: none;
 }
 
 body.mobile .fullscreen-button:not(.is-hidden) {
