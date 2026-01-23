@@ -5111,9 +5111,9 @@ export default class MidiComposer {
       const loopEndX = originX + this.song.loopEndTick * cellWidth;
       ctx.fillStyle = 'rgba(255,225,106,0.25)';
       ctx.fillRect(loopStartX, y, loopEndX - loopStartX, h);
-      const handleW = 20;
-      const handleH = Math.max(10, Math.round(h * 0.6));
-      const handleY = y + 2;
+      const handleW = Math.max(26, Math.round(h * 0.9));
+      const handleH = Math.max(14, Math.round(h * 0.8));
+      const handleY = y + Math.max(1, Math.round((h - handleH) / 2));
       const gap = 3;
       const minX = originX;
       const maxX = originX + loopTicks * cellWidth - handleW;
@@ -5136,6 +5136,19 @@ export default class MidiComposer {
       ctx.strokeStyle = 'rgba(0,0,0,0.7)';
       ctx.strokeRect(this.bounds.loopStartHandle.x, this.bounds.loopStartHandle.y, handleW, handleH);
       ctx.strokeRect(this.bounds.loopEndHandle.x, this.bounds.loopEndHandle.y, handleW, handleH);
+      ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+      [this.bounds.loopStartHandle, this.bounds.loopEndHandle].forEach((handle) => {
+        const ridgeXLeft = handle.x + Math.round(handleW * 0.35);
+        const ridgeXRight = handle.x + Math.round(handleW * 0.65);
+        ctx.beginPath();
+        ctx.moveTo(ridgeXLeft, handle.y + 3);
+        ctx.lineTo(ridgeXLeft, handle.y + handleH - 3);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(ridgeXRight, handle.y + 3);
+        ctx.lineTo(ridgeXRight, handle.y + handleH - 3);
+        ctx.stroke();
+      });
     } else {
       this.bounds.loopStartHandle = null;
       this.bounds.loopEndHandle = null;
