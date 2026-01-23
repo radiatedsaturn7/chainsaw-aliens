@@ -544,6 +544,7 @@ export default class MidiComposer {
     this.recorder = new MidiRecorder({ getTime: () => this.getRecordingTime() });
     this.recordGridSnapshot = null;
     this.recordGridZoomedOut = false;
+    this.recordCountIn = null;
     this.registerInputHandlers();
     this.qaResults = [];
     this.draggingTrackControl = null;
@@ -1636,6 +1637,15 @@ export default class MidiComposer {
     const countInBars = this.recordCountInEnabled ? 1 : 0;
     const countInSeconds = countInBars * this.beatsPerBar * (60 / tempo);
     const startTime = this.getRecordingTime() + countInSeconds;
+    this.recordCountIn = countInBars
+      ? {
+        startTime: this.getRecordingTime(),
+        endTime: startTime,
+        lastBeat: -1,
+        beats: countInBars * this.beatsPerBar,
+        tempo
+      }
+      : null;
     this.recorder.startRecording({
       tempo,
       ticksPerBeat: this.ticksPerBeat,
@@ -1649,6 +1659,8 @@ export default class MidiComposer {
 
   stopRecording() {
     if (!this.recordModeActive) return;
+    this.stopPlayback();
+    this.recordCountIn = null;
     if (this.recorder.isRecording) {
       this.recorder.stopRecording(this.getRecordingTime());
       const { track, pattern } = this.getRecordingTarget();
@@ -1660,17 +1672,6 @@ export default class MidiComposer {
           this.playNote(track, lastNote, this.playheadTick);
         }
       }
-    }
-    this.recordModeActive = false;
-    if (this.recordGridSnapshot) {
-      this.gridZoomX = this.recordGridSnapshot.gridZoomX;
-      this.gridZoomY = this.recordGridSnapshot.gridZoomY;
-      this.gridZoomInitialized = this.recordGridSnapshot.gridZoomInitialized;
-      if (this.recordGridSnapshot.gridOffset) {
-        this.gridOffset = { ...this.recordGridSnapshot.gridOffset };
-      }
-      this.recordGridSnapshot = null;
-      this.recordGridZoomedOut = false;
     }
   }
 
@@ -1773,6 +1774,7 @@ export default class MidiComposer {
       this.gamepadInput.setEnabled(false);
       return;
     }
+    this.updateCountInMetronome();
     this.keyboardInput.setEnabled(true);
     const scale = SCALE_LIBRARY.find((entry) => entry.id === this.song.scale) || SCALE_LIBRARY[0];
     this.gamepadInput.setEnabled(true);
@@ -1804,6 +1806,27 @@ export default class MidiComposer {
       const ticks = (elapsed * this.song.tempo / 60) * this.ticksPerBeat;
       this.playheadTick = clamp(ticks, 0, this.getLoopTicks());
     }
+  }
+
+  updateCountInMetronome() {
+    if (!this.recordCountIn) return;
+    const now = this.getRecordingTime();
+    if (now >= this.recordCountIn.endTime) {
+      this.recordCountIn = null;
+      return;
+    }
+    const beatDuration = 60 / (this.recordCountIn.tempo || this.song.tempo || 120);
+    const elapsed = Math.max(0, now - this.recordCountIn.startTime);
+    const beatIndex = Math.floor(elapsed / beatDuration);
+    const cappedBeat = Math.min(this.recordCountIn.beats - 1, beatIndex);
+    if (cappedBeat <= this.recordCountIn.lastBeat) return;
+    for (let beat = this.recordCountIn.lastBeat + 1; beat <= cappedBeat; beat += 1) {
+      const pitch = beat % this.beatsPerBar === 0 ? 84 : 72;
+      if (this.game?.audio?.playMidiNote) {
+        this.game.audio.playMidiNote(pitch, 'sine', 0.15, 0.45);
+      }
+    }
+    this.recordCountIn.lastBeat = cappedBeat;
   }
 
   handleKeyboardShortcuts(input) {
@@ -4200,7 +4223,20 @@ export default class MidiComposer {
   }
 
   drawRecordMode(ctx, width, height, track, pattern) {
-    const layout = this.recordLayout.layout(width, height);
+    const padding = 16;
+    const gap = 12;
+    const sidebarW = Math.min(280, Math.max(200, width * 0.26));
+    const sidebarX = padding;
+    const sidebarY = padding;
+    const sidebarH = height - padding * 2;
+    const contentX = sidebarX + sidebarW + gap;
+    const contentY = padding;
+    const contentW = width - contentX - padding;
+    const contentH = height - padding * 2;
+
+    this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track);
+
+    const layout = this.recordLayout.layout(contentW, contentH, contentX, contentY);
     const grid = layout.grid;
     const instrument = layout.instrument;
     if (!this.recordGridZoomedOut && track) {
@@ -4216,7 +4252,11 @@ export default class MidiComposer {
       this.recordGridZoomedOut = true;
     }
     if (grid) {
-      this.drawPatternEditor(ctx, grid.x, grid.y, grid.w, grid.h, track, pattern);
+      this.drawPatternEditor(ctx, grid.x, grid.y, grid.w, grid.h, track, pattern, {
+        summary: true,
+        hideLabels: true,
+        uniformNotes: true
+      });
       this.drawGhostNotes(ctx);
     }
     const deviceLabel = this.gamepadInput.connected
@@ -4254,6 +4294,13 @@ export default class MidiComposer {
         layout.stop.y + layout.stop.h / 2 + 6
       );
       ctx.textAlign = 'left';
+    }
+
+    if (this.fileMenuOpen && this.bounds.fileButton) {
+      const panelPadding = 10;
+      const menuX = Math.max(panelPadding, sidebarX + sidebarW - FILE_MENU_WIDTH - panelPadding);
+      const menuY = this.bounds.fileButton.y + this.bounds.fileButton.h + 6;
+      this.drawFileMenu(ctx, menuX, menuY);
     }
   }
 
@@ -5767,14 +5814,14 @@ export default class MidiComposer {
     });
   }
 
-  drawPatternEditor(ctx, x, y, w, h, track, pattern) {
+  drawPatternEditor(ctx, x, y, w, h, track, pattern, options = {}) {
     if (!track || !pattern) return;
     const loopTicks = this.getLoopTicks();
     const rows = isDrumChannel(track.channel)
       ? this.getDrumRows().length
       : this.getPitchRange().max - this.getPitchRange().min + 1;
     const isMobile = this.isMobileLayout();
-    const labelW = isMobile ? 76 : 96;
+    const labelW = options.hideLabels ? 0 : (isMobile ? 76 : 96);
     const rulerH = DEFAULT_RULER_HEIGHT;
     const viewW = w - labelW;
     const baseCellWidth = viewW / loopTicks;
@@ -5827,19 +5874,21 @@ export default class MidiComposer {
     ctx.beginPath();
     ctx.rect(x + labelW, y + rulerH, viewW, viewH);
     ctx.clip();
-    this.drawGrid(ctx, track, pattern, loopTicks);
+    this.drawGrid(ctx, track, pattern, loopTicks, options);
     this.drawPlayhead(ctx);
     this.drawCursor(ctx);
     ctx.restore();
 
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect(x, y, labelW, viewH + rulerH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(x, y, labelW, viewH + rulerH);
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = '12px Courier New';
-    ctx.fillText(isMobile ? 'Notes' : 'Note', x + 8, y + 18);
-    this.drawLabelColumn(ctx, track);
+    if (!options.hideLabels) {
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(x, y, labelW, viewH + rulerH);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(x, y, labelW, viewH + rulerH);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '12px Courier New';
+      ctx.fillText(isMobile ? 'Notes' : 'Note', x + 8, y + 18);
+      this.drawLabelColumn(ctx, track);
+    }
     this.drawSelectionMenu(ctx);
   }
 
@@ -5932,7 +5981,7 @@ export default class MidiComposer {
     ctx.restore();
   }
 
-  drawGrid(ctx, track, pattern, loopTicks) {
+  drawGrid(ctx, track, pattern, loopTicks, options = {}) {
     const { originX, originY, cellWidth, cellHeight, rows } = this.gridBounds;
     const isDrumGrid = isDrumChannel(track.channel);
     const chordMode = this.chordMode;
@@ -5940,23 +5989,27 @@ export default class MidiComposer {
     this.bounds.pasteAction = null;
 
     for (let row = 0; row < rows; row += 1) {
-      const pitch = this.getPitchFromRow(row);
-      const pitchClass = pitch % 12;
-      const isScaleTone = !isDrumGrid && scalePitchClasses.includes(pitchClass);
-      if (!isDrumGrid && !chordMode) {
-        ctx.fillStyle = isBlackKey(pitchClass)
-          ? 'rgba(0,0,0,0.4)'
-          : 'rgba(255,255,255,0.06)';
-      } else if (isScaleTone) {
-        ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      if (options.summary) {
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
       } else {
-        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        const pitch = this.getPitchFromRow(row);
+        const pitchClass = pitch % 12;
+        const isScaleTone = !isDrumGrid && scalePitchClasses.includes(pitchClass);
+        if (!isDrumGrid && !chordMode) {
+          ctx.fillStyle = isBlackKey(pitchClass)
+            ? 'rgba(0,0,0,0.4)'
+            : 'rgba(255,255,255,0.06)';
+        } else if (isScaleTone) {
+          ctx.fillStyle = 'rgba(255,255,255,0.05)';
+        } else {
+          ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        }
       }
       ctx.fillRect(originX, originY + row * cellHeight, cellWidth * loopTicks, cellHeight);
     }
 
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
-    if (!isDrumGrid && chordMode) {
+    if (!options.summary && !isDrumGrid && chordMode) {
       for (let barTick = 0; barTick < loopTicks; barTick += ticksPerBar) {
         const chord = this.getChordForTick(barTick);
         const chordTones = this.getChordTones(chord);
@@ -6019,12 +6072,16 @@ export default class MidiComposer {
     for (let row = 0; row <= rows; row += 1) {
       const yPos = originY + row * cellHeight;
       let isOctave = false;
-      if (!isDrumGrid && row < rows) {
+      if (!options.summary && !isDrumGrid && row < rows) {
         const pitch = this.getPitchFromRow(row);
         isOctave = pitch % 12 === 0;
       }
-      ctx.strokeStyle = isOctave ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)';
-      ctx.lineWidth = isOctave ? 2 : 1;
+      ctx.strokeStyle = options.summary
+        ? 'rgba(255,255,255,0.12)'
+        : isOctave
+          ? 'rgba(255,255,255,0.35)'
+          : 'rgba(255,255,255,0.12)';
+      ctx.lineWidth = options.summary ? 1 : (isOctave ? 2 : 1);
       ctx.beginPath();
       ctx.moveTo(originX, yPos);
       ctx.lineTo(originX + loopTicks * cellWidth, yPos);
@@ -6038,7 +6095,7 @@ export default class MidiComposer {
       if (!rect) return;
       const baseColor = track.color || '#4fb7ff';
       let noteFill = baseColor;
-      if (!isDrumGrid && !chordMode) {
+      if (!options.uniformNotes && !isDrumGrid && !chordMode) {
         const pitchClass = note.pitch % 12;
         noteFill = isBlackKey(pitchClass)
           ? toRgba(baseColor, 0.7)
@@ -6050,7 +6107,7 @@ export default class MidiComposer {
         ctx.strokeStyle = '#fff';
         ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
       }
-      if (!isDrumGrid && chordMode) {
+      if (!options.summary && !isDrumGrid && chordMode) {
         const chord = this.getChordForTick(note.startTick);
         const chordTones = this.getChordTones(chord);
         if (chordTones.includes(note.pitch % 12)) {

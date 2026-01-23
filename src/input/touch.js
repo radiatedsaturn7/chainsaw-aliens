@@ -61,9 +61,9 @@ export default class TouchInput {
   computeKeyboardLayout(bounds) {
     const whiteKeys = 14;
     const keyW = bounds.w / whiteKeys;
-    const keyH = bounds.h * 0.7;
+    const keyH = bounds.h * 0.98;
     const blackKeyW = keyW * 0.6;
-    const blackKeyH = bounds.h * 0.45;
+    const blackKeyH = bounds.h * 0.6;
     const basePitch = 60;
     const whiteOffsets = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23];
     const blackLayout = [
@@ -107,15 +107,16 @@ export default class TouchInput {
     const rows = 3;
     const padW = bounds.w / cols;
     const padH = bounds.h / rows;
+    const padGap = 4;
     this.drumPads = DRUM_MAP.map((pad, index) => {
       const row = Math.floor(index / cols);
       const col = index % cols;
       return {
         ...pad,
-        x: bounds.x + col * padW + 8,
-        y: bounds.y + row * padH + 8,
-        w: padW - 16,
-        h: padH - 16
+        x: bounds.x + col * padW + padGap,
+        y: bounds.y + row * padH + padGap,
+        w: padW - padGap * 2,
+        h: padH - padGap * 2
       };
     });
   }
@@ -333,41 +334,50 @@ export default class TouchInput {
       ctx.fillText(`${noteName}${octave}`, this.bounds.x + 4, y + 4);
     });
     const now = performance.now();
-    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
     for (let i = 0; i < stringCount; i += 1) {
       const y = this.bounds.y + (i + 1) * stringGap;
       const thicknessIndex = this.reverseStrings ? (stringCount - 1 - i) : i;
-      ctx.lineWidth = 1 + (thicknessIndex / Math.max(1, stringCount - 1)) * 2.6;
+      const baseThickness = 1 + (thicknessIndex / Math.max(1, stringCount - 1)) * 2.6;
+      ctx.lineWidth = baseThickness;
       const vibration = this.stringVibrations.get(i);
       let amplitude = 0;
-      let phase = 0;
+      let pulse = 0;
       if (vibration) {
         const elapsed = (now - vibration.start) / 1000;
-        amplitude = vibration.amplitude * Math.exp(-elapsed * 2.8);
-        phase = elapsed * 14;
-        if (amplitude < 0.12) {
+        amplitude = vibration.amplitude * Math.exp(-elapsed * 2.1);
+        pulse = 0.5 + 0.5 * Math.sin(elapsed * 28);
+        if (amplitude < 0.08) {
           this.stringVibrations.delete(i);
           amplitude = 0;
         }
       }
-      ctx.beginPath();
-      if (amplitude > 0.1) {
-        const segments = 24;
-        for (let s = 0; s <= segments; s += 1) {
-          const x = boardX + (boardW * s) / segments;
-          const wave = Math.sin((s / segments) * Math.PI * 4 + phase) * amplitude;
-          const yOffset = y + wave;
-          if (s === 0) {
-            ctx.moveTo(x, yOffset);
-          } else {
-            ctx.lineTo(x, yOffset);
-          }
+      if (amplitude > 0.02) {
+        const bulgeStrength = amplitude * 0.12 * pulse;
+        const decay = Math.min(1, amplitude / vibration.amplitude);
+        ctx.strokeStyle = `rgba(255,255,255,${0.2 + decay * 0.4})`;
+        const segments = 20;
+        for (let s = 0; s < segments; s += 1) {
+          const startT = s / segments;
+          const endT = (s + 1) / segments;
+          const x1 = boardX + boardW * startT;
+          const x2 = boardX + boardW * endT;
+          const tMid = (startT + endT) * 0.5;
+          const bulge = Math.pow(Math.sin(Math.PI * tMid), 2);
+          ctx.lineWidth = baseThickness + bulge * bulgeStrength;
+          ctx.beginPath();
+          ctx.moveTo(x1, y);
+          ctx.lineTo(x2, y);
+          ctx.stroke();
         }
       } else {
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+        ctx.lineWidth = baseThickness;
+        ctx.beginPath();
         ctx.moveTo(boardX, y);
         ctx.lineTo(boardX + boardW, y);
+        ctx.stroke();
       }
-      ctx.stroke();
     }
     ctx.lineWidth = 1;
     this.stringRects.forEach((cell) => {

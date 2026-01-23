@@ -26,6 +26,7 @@ export default class RecordModeLayout {
     this.countInEnabled = false;
     this.metronomeEnabled = false;
     this.instrumentMenuOpen = false;
+    this.instrumentModalBounds = null;
   }
 
   setDevice(device) {
@@ -39,16 +40,16 @@ export default class RecordModeLayout {
     }
   }
 
-  layout(width, height) {
+  layout(width, height, originX = 0, originY = 0) {
     const padding = 16;
     const topBarH = 56;
     const gridGap = 12;
     const availableH = height - padding * 2 - topBarH - gridGap;
     const gridH = Math.round(availableH * 0.42);
-    const gridY = padding + topBarH;
-    this.bounds.grid = { x: padding, y: gridY, w: width - padding * 2, h: gridH };
+    const gridY = originY + padding + topBarH;
+    this.bounds.grid = { x: originX + padding, y: gridY, w: width - padding * 2, h: gridH };
     this.bounds.instrument = {
-      x: padding,
+      x: originX + padding,
       y: gridY + gridH + gridGap,
       w: width - padding * 2,
       h: height - (gridY + gridH + gridGap) - padding
@@ -56,15 +57,14 @@ export default class RecordModeLayout {
     const stopW = 190;
     const stopH = 40;
     this.bounds.stop = {
-      x: width - stopW - padding,
-      y: padding + Math.round((topBarH - stopH) / 2),
+      x: originX + width - stopW - padding,
+      y: originY + padding + Math.round((topBarH - stopH) / 2),
       w: stopW,
       h: stopH
     };
     const textBlockH = 36;
     const headerPadding = 12;
-    const headerH = headerPadding + textBlockH + this.header.rowH
-      + (this.instrumentMenuOpen ? this.header.rowGap + this.header.rowH : 0) + 10;
+    const headerH = headerPadding + textBlockH + this.header.rowH + 10;
     this.header = {
       x: this.bounds.instrument.x + 12,
       y: this.bounds.instrument.y + 12,
@@ -105,8 +105,8 @@ export default class RecordModeLayout {
     ctx.font = '12px Courier New';
     ctx.fillText(metaText, instrument.x + 12, instrument.y + 40);
 
-    this.drawInstrumentButtons(ctx, gamepadConnected);
     this.drawSettingButtons(ctx);
+    this.drawInstrumentModal(ctx, gamepadConnected);
 
     if (showGamepadHints) {
       this.drawGamepadHints(ctx);
@@ -140,17 +140,17 @@ export default class RecordModeLayout {
     }
     const instruments = ['guitar', 'bass', 'keyboard', 'drums'];
     const gap = 10;
-    const totalW = this.bounds.instrument.w - 24;
+    const totalW = this.instrumentModalBounds?.w ? this.instrumentModalBounds.w - 32 : this.bounds.instrument.w - 24;
     const buttonW = Math.max(80, (totalW - gap * (instruments.length - 1)) / instruments.length);
-    const x = this.header.x;
-    const y = this.header.instrumentY;
+    const startX = this.instrumentModalBounds?.x ? this.instrumentModalBounds.x + 16 : this.header.x;
+    const startY = this.instrumentModalBounds?.y ? this.instrumentModalBounds.y + 54 : this.header.instrumentY;
     this.bounds.instrumentButtons = instruments.map((instrument, index) => {
       const w = Math.min(buttonW, totalW);
       return ({
         id: instrument,
         label: instrument[0].toUpperCase() + instrument.slice(1),
-        x: x + index * (w + gap),
-        y,
+        x: startX + index * (w + gap),
+        y: startY,
         w,
         h: this.header.rowH,
         active: this.instrument === instrument
@@ -159,6 +159,33 @@ export default class RecordModeLayout {
     this.bounds.instrumentButtons.forEach((btn) => {
       this.drawButton(ctx, btn, btn.label, btn.active);
     });
+  }
+
+  drawInstrumentModal(ctx, gamepadConnected) {
+    this.instrumentModalBounds = null;
+    if (!this.instrumentMenuOpen) return;
+    if (this.device === 'gamepad' && gamepadConnected) return;
+    const { instrument } = this.bounds;
+    if (!instrument) return;
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(instrument.x, instrument.y, instrument.w, instrument.h);
+
+    const modalW = Math.min(520, instrument.w - 40);
+    const modalH = 150;
+    const modalX = instrument.x + (instrument.w - modalW) / 2;
+    const modalY = instrument.y + (instrument.h - modalH) / 2;
+    this.instrumentModalBounds = { x: modalX, y: modalY, w: modalW, h: modalH };
+    ctx.fillStyle = 'rgba(12,14,18,0.96)';
+    ctx.fillRect(modalX, modalY, modalW, modalH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.strokeRect(modalX, modalY, modalW, modalH);
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    ctx.fillText('Virtual Instruments', modalX + 16, modalY + 28);
+
+    this.drawInstrumentButtons(ctx, gamepadConnected);
+    ctx.restore();
   }
 
   drawSettingButtons(ctx) {
@@ -236,6 +263,10 @@ export default class RecordModeLayout {
       this.setInstrument(hitInstrument.id);
       this.instrumentMenuOpen = false;
       return { type: 'instrument', value: hitInstrument.id };
+    }
+    if (this.instrumentMenuOpen && this.instrumentModalBounds && !this.pointInBounds(x, y, this.instrumentModalBounds)) {
+      this.instrumentMenuOpen = false;
+      return { type: 'instrument-dismiss' };
     }
     const hitSetting = this.bounds.settingsButtons.find((btn) => this.pointInBounds(x, y, btn));
     if (hitSetting) {
