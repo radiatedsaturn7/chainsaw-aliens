@@ -1,5 +1,7 @@
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
+const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
 const DRUM_MAP = [
   { label: 'Kick', pitch: 36 },
   { label: 'Snare', pitch: 38 },
@@ -21,6 +23,8 @@ export default class TouchInput {
     this.keyRects = [];
     this.drumPads = [];
     this.stringRects = [];
+    this.reverseStrings = false;
+    this.stringLayout = null;
   }
 
   setInstrument(instrument) {
@@ -33,6 +37,13 @@ export default class TouchInput {
   setBounds(bounds) {
     this.bounds = bounds;
     this.computeLayout(bounds);
+  }
+
+  setReverseStrings(value) {
+    this.reverseStrings = Boolean(value);
+    if (this.bounds) {
+      this.computeLayout(this.bounds);
+    }
   }
 
   computeLayout(bounds) {
@@ -110,13 +121,28 @@ export default class TouchInput {
 
   computeStringLayout(bounds) {
     const stringCount = this.instrument === 'bass' ? 4 : 6;
-    const fretCount = 8;
+    const fretCount = 12;
     const stringGap = bounds.h / (stringCount + 1);
-    const fretW = bounds.w / fretCount;
-    const tuning = this.instrument === 'bass'
+    const labelW = Math.min(44, bounds.w * 0.12);
+    const boardPadding = 8;
+    const boardX = bounds.x + labelW + boardPadding;
+    const boardW = bounds.w - labelW - boardPadding * 2;
+    const fretW = boardW / fretCount;
+    const tuningLowToHigh = this.instrument === 'bass'
       ? [28, 33, 38, 43]
       : [40, 45, 50, 55, 59, 64];
+    const tuning = this.reverseStrings ? tuningLowToHigh : [...tuningLowToHigh].reverse();
     this.stringRects = [];
+    this.stringLayout = {
+      stringCount,
+      fretCount,
+      stringGap,
+      fretW,
+      labelW,
+      boardX,
+      boardW,
+      tuning
+    };
     tuning.forEach((basePitch, stringIndex) => {
       const y = bounds.y + (stringIndex + 1) * stringGap;
       for (let fret = 0; fret < fretCount; fret += 1) {
@@ -124,7 +150,7 @@ export default class TouchInput {
           pitch: basePitch + fret,
           stringIndex,
           fret,
-          x: bounds.x + fret * fretW,
+          x: boardX + fret * fretW,
           y: y - stringGap * 0.35,
           w: fretW,
           h: stringGap * 0.7
@@ -245,16 +271,70 @@ export default class TouchInput {
     ctx.fillStyle = '#101010';
     ctx.fillRect(this.bounds.x, this.bounds.y, this.bounds.w, this.bounds.h);
     const activePitches = new Set(Array.from(this.activeTouches.values()).map((touch) => touch.pitch));
-    const stringCount = this.instrument === 'bass' ? 4 : 6;
-    const stringGap = this.bounds.h / (stringCount + 1);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    for (let i = 0; i < stringCount; i += 1) {
-      const y = this.bounds.y + (i + 1) * stringGap;
+    const layout = this.stringLayout;
+    if (!layout) {
+      ctx.restore();
+      return;
+    }
+    const {
+      stringCount,
+      stringGap,
+      fretCount,
+      fretW,
+      labelW,
+      boardX,
+      boardW,
+      tuning
+    } = layout;
+    const boardY = this.bounds.y + 6;
+    const boardH = this.bounds.h - 12;
+    ctx.fillStyle = '#151515';
+    ctx.fillRect(boardX, boardY, boardW, boardH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    for (let fret = 0; fret <= fretCount; fret += 1) {
+      const x = boardX + fret * fretW;
       ctx.beginPath();
-      ctx.moveTo(this.bounds.x + 8, y);
-      ctx.lineTo(this.bounds.x + this.bounds.w - 8, y);
+      ctx.moveTo(x, boardY);
+      ctx.lineTo(x, boardY + boardH);
       ctx.stroke();
     }
+    const markerFrets = [3, 5, 7, 9, 12];
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    markerFrets.forEach((marker) => {
+      if (marker > fretCount) return;
+      const markerX = boardX + (marker - 0.5) * fretW;
+      if (marker === 12) {
+        ctx.beginPath();
+        ctx.arc(markerX, boardY + boardH * 0.35, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(markerX, boardY + boardH * 0.65, 4, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.arc(markerX, boardY + boardH / 2, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '12px Courier New';
+    tuning.forEach((basePitch, stringIndex) => {
+      const y = this.bounds.y + (stringIndex + 1) * stringGap;
+      const noteName = NOTE_NAMES[basePitch % 12] || 'E';
+      const octave = Math.floor(basePitch / 12) - 1;
+      ctx.fillText(`${noteName}${octave}`, this.bounds.x + 4, y + 4);
+    });
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    for (let i = 0; i < stringCount; i += 1) {
+      const y = this.bounds.y + (i + 1) * stringGap;
+      const thicknessIndex = this.reverseStrings ? (stringCount - 1 - i) : i;
+      ctx.lineWidth = 1 + (thicknessIndex / Math.max(1, stringCount - 1)) * 2.6;
+      ctx.beginPath();
+      ctx.moveTo(boardX, y);
+      ctx.lineTo(boardX + boardW, y);
+      ctx.stroke();
+    }
+    ctx.lineWidth = 1;
     this.stringRects.forEach((cell) => {
       if (!activePitches.has(cell.pitch)) return;
       ctx.fillStyle = 'rgba(255,225,106,0.6)';

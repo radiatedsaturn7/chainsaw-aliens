@@ -256,6 +256,7 @@ const createDefaultSong = () => ({
   loopEnabled: false,
   timeSignature: { beats: 4, unit: 4 },
   highContrast: false,
+  reverseStrings: false,
   key: 0,
   scale: 'major',
   chordMode: false,
@@ -320,6 +321,7 @@ const createDemoSong = () => ({
   loopEnabled: true,
   timeSignature: { beats: 4, unit: 4 },
   highContrast: false,
+  reverseStrings: false,
   key: 0,
   scale: 'major',
   tracks: [
@@ -536,6 +538,8 @@ export default class MidiComposer {
     this.keyboardInput = new KeyboardInput(this.inputBus);
     this.gamepadInput = new GamepadInput(this.inputBus);
     this.touchInput = new TouchInput(this.inputBus);
+    this.reverseStrings = Boolean(this.song?.reverseStrings);
+    this.touchInput.setReverseStrings(this.reverseStrings);
     this.recordLayout = new RecordModeLayout({ touchInput: this.touchInput });
     this.recorder = new MidiRecorder({ getTime: () => this.getRecordingTime() });
     this.registerInputHandlers();
@@ -1011,6 +1015,9 @@ export default class MidiComposer {
     if (typeof this.song.highContrast !== 'boolean') {
       this.song.highContrast = false;
     }
+    if (typeof this.song.reverseStrings !== 'boolean') {
+      this.song.reverseStrings = false;
+    }
     if (!Number.isInteger(this.song.key)) {
       this.song.key = 0;
     }
@@ -1025,6 +1032,8 @@ export default class MidiComposer {
     }
     this.highContrast = Boolean(this.song.highContrast);
     this.chordMode = Boolean(this.song.chordMode);
+    this.reverseStrings = Boolean(this.song.reverseStrings);
+    this.touchInput.setReverseStrings(this.reverseStrings);
     this.beatsPerBar = this.song.timeSignature.beats;
     this.ensureDefaultLoopRegion();
     this.selectedTrackIndex = clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
@@ -1546,6 +1555,13 @@ export default class MidiComposer {
     this.persist();
   }
 
+  setReverseStrings(enabled) {
+    this.reverseStrings = Boolean(enabled);
+    this.song.reverseStrings = this.reverseStrings;
+    this.touchInput.setReverseStrings(this.reverseStrings);
+    this.persist();
+  }
+
   promptChordProgression() {
     const loopBars = Math.max(1, this.song.loopBars || DEFAULT_GRID_BARS);
     const perBar = [];
@@ -1593,6 +1609,9 @@ export default class MidiComposer {
     if (this.recordModeActive) return;
     this.recordModeActive = true;
     this.activeTab = 'grid';
+    if (!this.isPlaying) {
+      this.togglePlayback();
+    }
     const tempo = this.song.tempo || 120;
     const countInBars = this.recordCountInEnabled ? 1 : 0;
     const countInSeconds = countInBars * this.beatsPerBar * (60 / tempo);
@@ -3471,6 +3490,10 @@ export default class MidiComposer {
       this.persist();
       return;
     }
+    if (control.id === 'touch-reverse-strings') {
+      this.setReverseStrings(!this.reverseStrings);
+      return;
+    }
     if (control.id === 'grid-select-all') {
       const pattern = this.getActivePattern();
       if (!pattern) return;
@@ -5111,6 +5134,15 @@ export default class MidiComposer {
     drawToggle('Scrub', this.scrubAudition, 'grid-scrub', 'Audition notes while scrubbing.');
     drawAction('All', 'Select', 'grid-select-all', 'Select all notes in the current pattern.');
     drawToggle('High Contrast', this.highContrast, 'ui-contrast', 'Boosts UI contrast for clarity.');
+    cursorY += sectionGap;
+
+    drawSectionTitle('Touch Input');
+    drawToggle(
+      'Reverse Strings',
+      this.reverseStrings,
+      'touch-reverse-strings',
+      'Place the lowest string at the top for guitar/bass.'
+    );
     cursorY += sectionGap;
 
     drawSectionTitle('Tempo & Playback');

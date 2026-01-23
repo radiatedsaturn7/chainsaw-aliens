@@ -11,6 +11,14 @@ export default class RecordModeLayout {
       instrumentButtons: [],
       settingsButtons: []
     };
+    this.header = {
+      x: 0,
+      y: 0,
+      rowH: 28,
+      rowGap: 10,
+      settingsY: 0,
+      deviceY: 0
+    };
     this.device = 'auto';
     this.instrument = 'keyboard';
     this.quantizeEnabled = false;
@@ -31,23 +39,44 @@ export default class RecordModeLayout {
   }
 
   layout(width, height) {
-    const gridH = Math.round(height * 0.58);
-    this.bounds.grid = { x: 16, y: 16, w: width - 32, h: gridH - 24 };
-    this.bounds.instrument = { x: 16, y: gridH + 4, w: width - 32, h: height - gridH - 20 };
-    const stopW = 180;
-    const stopH = 44;
+    const padding = 16;
+    const topBarH = 56;
+    const gridGap = 12;
+    const availableH = height - padding * 2 - topBarH - gridGap;
+    const gridH = Math.round(availableH * 0.56);
+    const gridY = padding + topBarH;
+    this.bounds.grid = { x: padding, y: gridY, w: width - padding * 2, h: gridH };
+    this.bounds.instrument = {
+      x: padding,
+      y: gridY + gridH + gridGap,
+      w: width - padding * 2,
+      h: height - (gridY + gridH + gridGap) - padding
+    };
+    const stopW = 190;
+    const stopH = 40;
     this.bounds.stop = {
-      x: width - stopW - 24,
-      y: height - stopH - 24,
+      x: width - stopW - padding,
+      y: padding + Math.round((topBarH - stopH) / 2),
       w: stopW,
       h: stopH
     };
+    const headerH = 92;
+    this.header = {
+      x: this.bounds.instrument.x + 12,
+      y: this.bounds.instrument.y + 12,
+      rowH: 28,
+      rowGap: 10,
+      settingsY: this.bounds.instrument.y + 12,
+      deviceY: this.bounds.instrument.y + 12 + 28 + 10,
+      headerH
+    };
     if (this.touchInput) {
+      const touchH = Math.max(0, this.bounds.instrument.h - headerH - 24);
       this.touchInput.setBounds({
         x: this.bounds.instrument.x + 12,
-        y: this.bounds.instrument.y + 54,
+        y: this.bounds.instrument.y + headerH + 12,
         w: this.bounds.instrument.w - 24,
-        h: this.bounds.instrument.h - 72
+        h: touchH
       });
     }
     return this.bounds;
@@ -99,11 +128,11 @@ export default class RecordModeLayout {
 
   drawDeviceButtons(ctx, gamepadConnected) {
     const buttons = [];
-    const x = this.bounds.instrument.x + 12;
-    const y = this.bounds.instrument.y + 54 - 34;
-    const w = 100;
-    const h = 24;
-    const gap = 8;
+    const x = this.header.x;
+    const y = this.header.deviceY;
+    const w = 110;
+    const h = this.header.rowH;
+    const gap = 10;
     const gamepadLabel = gamepadConnected ? 'Gamepad' : 'No Pad';
     buttons.push({ id: 'gamepad', label: gamepadLabel, x, y, w, h, disabled: !gamepadConnected });
     buttons.push({ id: 'touch', label: 'Touch', x: x + w + gap, y, w, h });
@@ -122,17 +151,17 @@ export default class RecordModeLayout {
       return;
     }
     const instruments = ['guitar', 'bass', 'keyboard', 'drums'];
-    const buttonW = 90;
-    const gap = 8;
-    const x = this.bounds.instrument.x + 12 + 220;
-    const y = this.bounds.instrument.y + 54 - 34;
+    const buttonW = 96;
+    const gap = 10;
+    const x = this.header.x + 2 * (110 + gap) + 24;
+    const y = this.header.deviceY;
     this.bounds.instrumentButtons = instruments.map((instrument, index) => ({
       id: instrument,
       label: instrument[0].toUpperCase() + instrument.slice(1),
       x: x + index * (buttonW + gap),
       y,
       w: buttonW,
-      h: 24,
+      h: this.header.rowH,
       active: this.instrument === instrument
     }));
     this.bounds.instrumentButtons.forEach((btn) => {
@@ -141,36 +170,36 @@ export default class RecordModeLayout {
   }
 
   drawSettingButtons(ctx) {
-    const buttonW = 90;
-    const gap = 8;
-    const x = this.bounds.instrument.x + 12;
-    const y = this.bounds.instrument.y + 20;
+    const buttonW = 110;
+    const gap = 10;
+    const x = this.header.x;
+    const y = this.header.settingsY;
     this.bounds.settingsButtons = [
       {
         id: 'quantize',
         label: this.quantizeEnabled ? `Quant ${this.quantizeLabel}` : 'Quant Off',
-        x: x + 340,
+        x,
         y,
-        w: buttonW + 20,
-        h: 24,
+        w: buttonW + 10,
+        h: this.header.rowH,
         active: this.quantizeEnabled
       },
       {
         id: 'countin',
         label: this.countInEnabled ? 'Count-in On' : 'Count-in Off',
-        x: x + 470,
+        x: x + buttonW + gap + 10,
         y,
-        w: buttonW + 20,
-        h: 24,
+        w: buttonW + 10,
+        h: this.header.rowH,
         active: this.countInEnabled
       },
       {
         id: 'metronome',
         label: this.metronomeEnabled ? 'Click On' : 'Click Off',
-        x: x + 600,
+        x: x + (buttonW + gap + 10) * 2,
         y,
         w: buttonW + 10,
-        h: 24,
+        h: this.header.rowH,
         active: this.metronomeEnabled
       }
     ];
