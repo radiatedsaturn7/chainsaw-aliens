@@ -553,6 +553,11 @@ export default class MidiComposer {
       y: 0,
       bounds: []
     };
+    this.noteLengthMenu = {
+      open: false,
+      anchor: null
+    };
+    this.tempoSliderOpen = false;
     this.pastePreview = null;
     this.gridZoomX = null;
     this.gridZoomY = null;
@@ -581,6 +586,8 @@ export default class MidiComposer {
       timeDisplay: null,
       tempoDown: null,
       tempoUp: null,
+      tempoButton: null,
+      tempoSlider: null,
       instrumentTile: null,
       instrumentFavorite: null,
       instrumentSection: null,
@@ -609,6 +616,7 @@ export default class MidiComposer {
       instrumentList: [],
       instrumentSettingsControls: [],
       selectionMenu: [],
+      noteLengthMenu: [],
       pasteAction: null,
       zoomInX: null,
       zoomOutX: null,
@@ -1150,9 +1158,14 @@ export default class MidiComposer {
   getTrackInstrumentLabel(track) {
     if (!track) return 'Instrument';
     if (isDrumChannel(track.channel)) {
-      return `${track.name || 'Track'}: Drums (Ch 10)`;
+      return `${track.name || 'Track'}: ${this.getDrumKitLabel(track)}`;
     }
     return `${track.name || 'Track'}: ${this.getProgramLabel(track.program)}`;
+  }
+
+  getDrumKitLabel(track) {
+    if (!track) return 'Drum Kit';
+    return `Drum Kit ${formatProgramNumber(track.program)}`;
   }
 
   getCacheKeyForTrack(track) {
@@ -1770,11 +1783,25 @@ export default class MidiComposer {
       this.genreMenuOpen = false;
     }
 
+    const noteLengthHit = this.bounds.noteLengthMenu?.find((bounds) => this.pointInBounds(x, y, bounds));
+    if (noteLengthHit) {
+      this.setNoteLengthIndex(noteLengthHit.index);
+      this.noteLengthMenu.open = false;
+      return;
+    }
+    if (this.tempoSliderOpen && this.bounds.tempoSlider && this.pointInBounds(x, y, this.bounds.tempoSlider)) {
+      this.dragState = { mode: 'slider', id: 'song-tempo', bounds: this.bounds.tempoSlider };
+      this.updateSliderValue(x, y, 'song-tempo', this.bounds.tempoSlider);
+      return;
+    }
+
     const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
     if (tabHit) {
       this.activeTab = tabHit.id;
       this.closeSelectionMenu();
       this.pastePreview = null;
+      this.noteLengthMenu.open = false;
+      this.tempoSliderOpen = false;
       return;
     }
 
@@ -1824,6 +1851,23 @@ export default class MidiComposer {
     if (this.bounds.metronome && this.pointInBounds(x, y, this.bounds.metronome)) {
       this.metronomeEnabled = !this.metronomeEnabled;
       return;
+    }
+    if (this.bounds.tempoButton && this.pointInBounds(x, y, this.bounds.tempoButton)) {
+      this.tempoSliderOpen = !this.tempoSliderOpen;
+      this.noteLengthMenu.open = false;
+      return;
+    }
+    if (this.tempoSliderOpen) {
+      this.tempoSliderOpen = false;
+    }
+    if (this.bounds.noteLength && this.pointInBounds(x, y, this.bounds.noteLength)) {
+      this.noteLengthMenu.open = !this.noteLengthMenu.open;
+      this.noteLengthMenu.anchor = { ...this.bounds.noteLength };
+      this.tempoSliderOpen = false;
+      return;
+    }
+    if (this.noteLengthMenu.open) {
+      this.noteLengthMenu.open = false;
     }
 
     if (this.activeTab === 'instruments') {
@@ -1952,10 +1996,6 @@ export default class MidiComposer {
       }
       if (this.bounds.instrumentLabel && this.pointInBounds(x, y, this.bounds.instrumentLabel)) {
         this.openInstrumentPicker('edit', this.selectedTrackIndex);
-        return;
-      }
-      if (this.bounds.noteLength && this.pointInBounds(x, y, this.bounds.noteLength)) {
-        this.setNoteLengthIndex(this.noteLengthIndex + 1);
         return;
       }
       if (this.bounds.chordMode && this.pointInBounds(x, y, this.bounds.chordMode)) {
@@ -2945,8 +2985,7 @@ export default class MidiComposer {
       return;
     } else if (hit.control === 'instrument') {
       if (isDrumChannel(track.channel)) {
-        window.alert('Drum tracks are tied to Channel 10.');
-        return;
+        this.instrumentPicker.familyTab = 'drums-perc';
       }
       this.openInstrumentPicker('edit', hit.trackIndex);
       return;
@@ -3687,6 +3726,9 @@ export default class MidiComposer {
     ctx.save();
     ctx.fillStyle = this.highContrast ? '#000' : '#070707';
     ctx.fillRect(0, 0, width, height);
+    this.bounds.tempoButton = null;
+    this.bounds.tempoSlider = null;
+    this.bounds.noteLengthMenu = [];
 
     const isMobile = this.isMobileLayout();
     if (isMobile) {
@@ -3718,6 +3760,9 @@ export default class MidiComposer {
         this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
       }
     }
+
+    this.drawNoteLengthMenu(ctx, width, height);
+    this.drawTempoSlider(ctx, width, height);
 
     if (this.fileMenuOpen && this.bounds.fileButton) {
       const panelPadding = this.isMobileLayout() ? 10 : 16;
@@ -3832,14 +3877,9 @@ export default class MidiComposer {
     this.bounds.loopToggle = { x: controlX, y: controlY, w: noteW, h: rowH };
     this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
     controlY += rowH + rowGap;
-    ctx.fillStyle = '#fff';
-    ctx.font = '12px Courier New';
-    ctx.fillText(`Tempo ${this.song.tempo} BPM`, controlX, controlY + rowH * 0.7);
-    const tempoButtonW = 28;
-    this.bounds.tempoDown = { x: controlX + controlW - tempoButtonW * 2 - rowGap, y: controlY, w: tempoButtonW, h: rowH };
-    this.bounds.tempoUp = { x: controlX + controlW - tempoButtonW, y: controlY, w: tempoButtonW, h: rowH };
-    this.drawSmallButton(ctx, this.bounds.tempoDown, '-', false);
-    this.drawSmallButton(ctx, this.bounds.tempoUp, '+', false);
+    const tempoLabel = `Tempo ${this.song.tempo}BPM`;
+    this.bounds.tempoButton = { x: controlX, y: controlY, w: controlW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.tempoButton, tempoLabel, this.tempoSliderOpen);
     controlY += rowH + rowGap;
     this.bounds.metronome = { x: controlX, y: controlY, w: controlW, h: rowH };
     this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
@@ -4004,7 +4044,7 @@ export default class MidiComposer {
     ctx.font = '13px Courier New';
     const label = track
       ? isDrumChannel(track.channel)
-        ? '[Drum Kit]'
+        ? `[${this.getDrumKitLabel(track)}]`
         : `[${this.getProgramLabel(track.program)}]`
       : '[No Track]';
     this.bounds.instrumentPrev = { x: cursorX, y, w: buttonSize, h: rowH };
@@ -4111,6 +4151,7 @@ export default class MidiComposer {
     const rightY = leftY;
     const rowH = isMobile ? 54 : 48;
     const addButtonH = 36;
+    const controlsH = track ? (isMobile ? 118 : 106) : 0;
 
     this.bounds.instrumentList = [];
     this.bounds.instrumentSettingsControls = [];
@@ -4124,7 +4165,7 @@ export default class MidiComposer {
     ctx.font = '14px Courier New';
     ctx.fillText('Instruments', leftX + 10, leftY + 18);
     const listStartY = leftY + 28;
-    const listH = panelH - addButtonH - 20;
+    const listH = Math.max(0, panelH - addButtonH - 20 - controlsH);
     const listEndY = listStartY + listH;
     let cursorY = listStartY;
     this.song.tracks.forEach((listTrack, index) => {
@@ -4141,12 +4182,85 @@ export default class MidiComposer {
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = '11px Courier New';
       const label = isDrumChannel(listTrack.channel)
-        ? 'Drums (Ch 10)'
+        ? this.getDrumKitLabel(listTrack)
         : this.getProgramLabel(listTrack.program);
       ctx.fillText(label, bounds.x + 10, bounds.y + 36);
       this.bounds.instrumentList.push(bounds);
       cursorY += rowH + 6;
     });
+
+    if (track) {
+      const controlsY = listStartY + listH + 8;
+      const controlsX = leftX + 8;
+      const controlsW = leftW - 16;
+      ctx.fillStyle = 'rgba(0,0,0,0.45)';
+      ctx.fillRect(controlsX, controlsY, controlsW, controlsH - 6);
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.strokeRect(controlsX, controlsY, controlsW, controlsH - 6);
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
+      ctx.font = '11px Courier New';
+      ctx.fillText('Mix Controls', controlsX + 8, controlsY + 16);
+
+      const buttonH = isMobile ? 26 : 22;
+      const muteBounds = {
+        x: controlsX + 8,
+        y: controlsY + 24,
+        w: 60,
+        h: buttonH,
+        trackIndex: this.selectedTrackIndex,
+        control: 'mute'
+      };
+      const soloBounds = {
+        x: muteBounds.x + 70,
+        y: muteBounds.y,
+        w: 60,
+        h: buttonH,
+        trackIndex: this.selectedTrackIndex,
+        control: 'solo'
+      };
+      this.drawSmallButton(ctx, muteBounds, 'Mute', track.mute);
+      this.drawSmallButton(ctx, soloBounds, 'Solo', track.solo);
+      this.bounds.instrumentSettingsControls.push(muteBounds, soloBounds);
+
+      const sliderW = controlsW - 16;
+      const volumeBounds = {
+        x: controlsX + 8,
+        y: muteBounds.y + buttonH + 10,
+        w: sliderW,
+        h: isMobile ? 14 : 12,
+        trackIndex: this.selectedTrackIndex,
+        control: 'volume'
+      };
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
+      ctx.fillStyle = '#ffe16a';
+      ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w * track.volume, volumeBounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '10px Courier New';
+      ctx.fillText('Volume', volumeBounds.x, volumeBounds.y - 4);
+      this.bounds.instrumentSettingsControls.push(volumeBounds);
+
+      const panBounds = {
+        x: controlsX + 8,
+        y: volumeBounds.y + volumeBounds.h + 18,
+        w: sliderW,
+        h: isMobile ? 12 : 10,
+        trackIndex: this.selectedTrackIndex,
+        control: 'pan'
+      };
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
+      ctx.fillStyle = '#4fb7ff';
+      ctx.fillRect(panBounds.x, panBounds.y, panBounds.w * ((track.pan + 1) / 2), panBounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '10px Courier New';
+      ctx.fillText('Pan', panBounds.x, panBounds.y - 4);
+      this.bounds.instrumentSettingsControls.push(panBounds);
+    }
 
     this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - 8, w: leftW - 16, h: addButtonH };
     this.drawButton(ctx, this.bounds.instrumentAdd, 'Add Instrument', false, false);
@@ -4276,7 +4390,7 @@ export default class MidiComposer {
     ctx.font = '12px Courier New';
     ctx.fillText(track.name, rightX + 12, infoY + 12);
     const instrumentLabel = isDrumChannel(track.channel)
-      ? 'Drums (Ch 10)'
+      ? this.getDrumKitLabel(track)
       : this.getProgramLabel(track.program);
     ctx.fillText(instrumentLabel, rightX + 12, infoY + 28);
     const activePreview = this.instrumentPreview.loading
@@ -4740,14 +4854,11 @@ export default class MidiComposer {
     }
 
     const tempoX = noteLengthX;
-    ctx.fillStyle = '#fff';
+    const tempoLabel = `Tempo ${this.song.tempo}BPM`;
     ctx.font = '12px Courier New';
-    ctx.fillText(`Tempo ${this.song.tempo} BPM`, tempoX, controlsRowY + rowH * 0.7);
-    const tempoButtonW = 28;
-    this.bounds.tempoDown = { x: tempoX + 130, y: controlsRowY, w: tempoButtonW, h: rowH };
-    this.bounds.tempoUp = { x: tempoX + 130 + tempoButtonW + 6, y: controlsRowY, w: tempoButtonW, h: rowH };
-    this.drawSmallButton(ctx, this.bounds.tempoDown, '-', false);
-    this.drawSmallButton(ctx, this.bounds.tempoUp, '+', false);
+    const tempoW = Math.min(180, Math.max(120, ctx.measureText(tempoLabel).width + 28));
+    this.bounds.tempoButton = { x: tempoX, y: controlsRowY, w: tempoW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.tempoButton, tempoLabel, this.tempoSliderOpen);
   }
 
   drawTransport(ctx, x, y, w, h) {
@@ -4771,13 +4882,12 @@ export default class MidiComposer {
     ctx.fillText(this.isPlaying ? 'STOP' : 'PLAY', this.bounds.play.x + buttonW / 2, this.bounds.play.y + buttonH * 0.65);
     ctx.textAlign = 'left';
 
+    const tempoLabel = `Tempo ${this.song.tempo}BPM`;
     ctx.fillStyle = '#fff';
     ctx.font = `${Math.max(11, Math.round(14 * scale))}px Courier New`;
-    ctx.fillText(`Tempo ${this.song.tempo} BPM`, x + offset(130), y + offset(32));
-    this.bounds.tempoDown = { x: x + offset(260), y: y + offset(16), w: offset(24), h: offset(24) };
-    this.bounds.tempoUp = { x: x + offset(292), y: y + offset(16), w: offset(24), h: offset(24) };
-    this.drawSmallButton(ctx, this.bounds.tempoDown, '-', false);
-    this.drawSmallButton(ctx, this.bounds.tempoUp, '+', false);
+    const tempoW = Math.min(offset(200), Math.max(offset(120), ctx.measureText(tempoLabel).width + offset(24)));
+    this.bounds.tempoButton = { x: x + offset(130), y: y + offset(16), w: tempoW, h: offset(24) };
+    this.drawSmallButton(ctx, this.bounds.tempoButton, tempoLabel, this.tempoSliderOpen);
 
     this.bounds.endMarker = { x: x + offset(340), y: y + offset(16), w: offset(140), h: offset(24) };
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -4855,14 +4965,9 @@ export default class MidiComposer {
     this.drawSmallButton(ctx, this.bounds.tools, 'Tools', false);
     rowY += rowH + gap;
 
-    ctx.fillStyle = '#fff';
-    ctx.font = '13px Courier New';
-    ctx.fillText(`Tempo ${this.song.tempo} BPM`, innerX, rowY + 20);
-    const tempoButtonW = 36;
-    this.bounds.tempoDown = { x: innerX + innerW - tempoButtonW * 2 - 8, y: rowY, w: tempoButtonW, h: rowH };
-    this.bounds.tempoUp = { x: innerX + innerW - tempoButtonW, y: rowY, w: tempoButtonW, h: rowH };
-    this.drawSmallButton(ctx, this.bounds.tempoDown, '-', false);
-    this.drawSmallButton(ctx, this.bounds.tempoUp, '+', false);
+    const tempoLabel = `Tempo ${this.song.tempo}BPM`;
+    this.bounds.tempoButton = { x: innerX, y: rowY, w: innerW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.tempoButton, tempoLabel, this.tempoSliderOpen);
     rowY += rowH + gap;
 
     this.bounds.endMarker = { x: innerX, y: rowY, w: innerW, h: rowH };
@@ -4961,19 +5066,17 @@ export default class MidiComposer {
       ctx.font = `${isMobile ? 14 : 12}px Courier New`;
       const isDrums = isDrumChannel(track.channel);
       const instrumentLabel = isDrums
-        ? 'Drums (Ch 10)'
+        ? this.getDrumKitLabel(track)
         : this.getProgramLabel(track.program);
       ctx.fillText(instrumentLabel, x + 32, rowY + (isMobile ? 50 : 38));
-      if (!isDrums) {
-        this.trackControlBounds.push({
-          x: x + 30,
-          y: rowY + (isMobile ? 34 : 26),
-          w: w - 170,
-          h: isMobile ? 26 : 18,
-          trackIndex: index,
-          control: 'instrument'
-        });
-      }
+      this.trackControlBounds.push({
+        x: x + 30,
+        y: rowY + (isMobile ? 34 : 26),
+        w: w - 170,
+        h: isMobile ? 26 : 18,
+        trackIndex: index,
+        control: 'instrument'
+      });
 
       const channelButtonH = isMobile ? 22 : 18;
       const channelDownBounds = { x: x + w - 170, y: rowY + 8, w: 20, h: channelButtonH };
@@ -4994,7 +5097,7 @@ export default class MidiComposer {
       this.trackControlBounds.push({ ...soloBounds, trackIndex: index, control: 'solo' });
 
       const bankBounds = { x: x + 32, y: rowY + (isMobile ? 64 : 50), w: 120, h: isMobile ? 20 : 18 };
-      const bankLabel = isDrums ? 'Kit: Standard' : `Bank ${track.bankMSB}/${track.bankLSB}`;
+      const bankLabel = isDrums ? this.getDrumKitLabel(track) : `Bank ${track.bankMSB}/${track.bankLSB}`;
       this.drawSmallButton(ctx, bankBounds, bankLabel, false);
       this.trackControlBounds.push({ ...bankBounds, trackIndex: index, control: 'bank' });
       if (!isDrums) {
@@ -5349,9 +5452,9 @@ export default class MidiComposer {
     if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
       const loopStartX = originX + this.song.loopStartTick * cellWidth;
       const loopEndX = originX + this.song.loopEndTick * cellWidth;
-      const handleW = Math.max(14, Math.min(24, Math.round(cellWidth * 0.75)));
-      const handleH = Math.max(22, Math.min(42, Math.round(cellHeight * 3.5)));
-      const handleY = originY + (rows * cellHeight - handleH) / 2;
+      const handleW = Math.max(26, Math.round(DEFAULT_RULER_HEIGHT * 0.9));
+      const handleH = Math.max(14, Math.round(DEFAULT_RULER_HEIGHT * 0.8));
+      const handleY = this.gridBounds.y + Math.max(1, Math.round((this.gridBounds.h - handleH) / 2));
       const gap = 4;
       const minX = originX;
       const maxX = originX + loopTicks * cellWidth - handleW;
@@ -5366,6 +5469,19 @@ export default class MidiComposer {
       ctx.strokeStyle = 'rgba(0,0,0,0.7)';
       ctx.strokeRect(startHandleX, handleY, handleW, handleH);
       ctx.strokeRect(endHandleX, handleY, handleW, handleH);
+      ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+      [this.bounds.loopShiftStartHandle, this.bounds.loopShiftEndHandle].forEach((handle) => {
+        const ridgeXLeft = handle.x + Math.round(handleW * 0.35);
+        const ridgeXRight = handle.x + Math.round(handleW * 0.65);
+        ctx.beginPath();
+        ctx.moveTo(ridgeXLeft, handle.y + 3);
+        ctx.lineTo(ridgeXLeft, handle.y + handleH - 3);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(ridgeXRight, handle.y + 3);
+        ctx.lineTo(ridgeXRight, handle.y + handleH - 3);
+        ctx.stroke();
+      });
     } else {
       this.bounds.loopShiftStartHandle = null;
       this.bounds.loopShiftEndHandle = null;
@@ -5515,6 +5631,104 @@ export default class MidiComposer {
       this.drawSmallButton(ctx, bounds, entry.label, false);
       this.bounds.selectionMenu.push(bounds);
     });
+  }
+
+  drawNoteLengthMenu(ctx, width, height) {
+    if (!this.noteLengthMenu.open || !this.noteLengthMenu.anchor) {
+      this.bounds.noteLengthMenu = [];
+      return;
+    }
+    const options = NOTE_LENGTH_OPTIONS;
+    const anchor = this.noteLengthMenu.anchor;
+    const columns = 4;
+    const rows = Math.ceil(options.length / columns);
+    const gap = 6;
+    const padding = 8;
+    ctx.font = '12px Courier New';
+    const maxLabelW = Math.max(...options.map((option) => ctx.measureText(option.label).width));
+    const cellW = Math.max(60, Math.round(maxLabelW + 28));
+    const cellH = 30;
+    const menuW = columns * cellW + gap * (columns - 1) + padding * 2;
+    const menuH = rows * cellH + gap * (rows - 1) + padding * 2;
+    let menuX = anchor.x;
+    let menuY = anchor.y + anchor.h + 8;
+    if (menuX + menuW > width - 8) {
+      menuX = width - menuW - 8;
+    }
+    if (menuX < 8) {
+      menuX = 8;
+    }
+    if (menuY + menuH > height - 8) {
+      menuY = anchor.y - menuH - 8;
+    }
+    if (menuY < 8) {
+      menuY = 8;
+    }
+
+    ctx.fillStyle = 'rgba(12,14,18,0.95)';
+    ctx.fillRect(menuX, menuY, menuW, menuH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(menuX, menuY, menuW, menuH);
+
+    this.bounds.noteLengthMenu = [];
+    options.forEach((option, index) => {
+      const col = index % columns;
+      const row = Math.floor(index / columns);
+      const cellX = menuX + padding + col * (cellW + gap);
+      const cellY = menuY + padding + row * (cellH + gap);
+      const bounds = { x: cellX, y: cellY, w: cellW, h: cellH, index };
+      const isActive = index === this.noteLengthIndex;
+      this.drawSmallButton(ctx, bounds, option.label, isActive);
+      this.bounds.noteLengthMenu.push(bounds);
+    });
+  }
+
+  drawTempoSlider(ctx, width, height) {
+    if (!this.tempoSliderOpen || !this.bounds.tempoButton) {
+      this.bounds.tempoSlider = null;
+      return;
+    }
+    const anchor = this.bounds.tempoButton;
+    const padding = 10;
+    const sliderW = Math.min(260, Math.max(180, anchor.w * 1.6));
+    const sliderH = 56;
+    let sliderX = anchor.x + anchor.w / 2 - sliderW / 2;
+    let sliderY = anchor.y + anchor.h + 8;
+    if (sliderX + sliderW > width - 8) {
+      sliderX = width - sliderW - 8;
+    }
+    if (sliderX < 8) {
+      sliderX = 8;
+    }
+    if (sliderY + sliderH > height - 8) {
+      sliderY = anchor.y - sliderH - 8;
+    }
+    if (sliderY < 8) {
+      sliderY = 8;
+    }
+
+    ctx.fillStyle = 'rgba(12,14,18,0.95)';
+    ctx.fillRect(sliderX, sliderY, sliderW, sliderH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(sliderX, sliderY, sliderW, sliderH);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = '12px Courier New';
+    ctx.fillText(`Tempo ${this.song.tempo}BPM`, sliderX + padding, sliderY + 16);
+
+    const barBounds = {
+      x: sliderX + padding,
+      y: sliderY + 26,
+      w: sliderW - padding * 2,
+      h: 14
+    };
+    const ratio = clamp((this.song.tempo - 40) / 200, 0, 1);
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(barBounds.x, barBounds.y, barBounds.w, barBounds.h);
+    ctx.fillStyle = '#ffe16a';
+    ctx.fillRect(barBounds.x, barBounds.y, barBounds.w * ratio, barBounds.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(barBounds.x, barBounds.y, barBounds.w, barBounds.h);
+    this.bounds.tempoSlider = barBounds;
   }
 
   drawSettingsDialog(ctx, width, height) {
