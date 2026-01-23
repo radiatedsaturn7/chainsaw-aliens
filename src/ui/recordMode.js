@@ -6,7 +6,6 @@ export default class RecordModeLayout {
     this.bounds = {
       grid: null,
       instrument: null,
-      stop: null,
       instrumentButtons: [],
       settingsButtons: []
     };
@@ -54,14 +53,6 @@ export default class RecordModeLayout {
       w: width - padding * 2,
       h: height - (gridY + gridH + gridGap) - padding
     };
-    const stopW = 190;
-    const stopH = 40;
-    this.bounds.stop = {
-      x: originX + width - stopW - padding,
-      y: originY + padding + Math.round((topBarH - stopH) / 2),
-      w: stopW,
-      h: stopH
-    };
     const headerPadding = 12;
     const headerH = headerPadding + this.header.rowH + 10;
     this.header = {
@@ -85,7 +76,7 @@ export default class RecordModeLayout {
     return this.bounds;
   }
 
-  draw(ctx, { showGamepadHints, isPlaying }) {
+  draw(ctx, { showGamepadHints, isPlaying, isRecording }) {
     const { instrument } = this.bounds;
     if (!instrument) return;
 
@@ -95,7 +86,7 @@ export default class RecordModeLayout {
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(instrument.x, instrument.y, instrument.w, instrument.h);
 
-    this.drawSettingButtons(ctx, isPlaying);
+    this.drawSettingButtons(ctx, isPlaying, isRecording);
 
     if (showGamepadHints) {
       this.drawGamepadHints(ctx);
@@ -174,10 +165,10 @@ export default class RecordModeLayout {
     ctx.restore();
   }
 
-  drawSettingButtons(ctx, isPlaying) {
+  drawSettingButtons(ctx, isPlaying, isRecording) {
     const gap = 10;
     const totalW = this.bounds.instrument.w - 24;
-    const buttonW = Math.max(80, (totalW - gap * 5) / 6);
+    const buttonW = Math.max(72, (totalW - gap * 6) / 7);
     const x = this.header.x;
     const y = this.header.settingsY;
     this.bounds.settingsButtons = [
@@ -218,9 +209,18 @@ export default class RecordModeLayout {
         active: this.instrumentMenuOpen
       },
       {
+        id: 'record-toggle',
+        label: '●',
+        x: x + (buttonW + gap) * 4,
+        y,
+        w: buttonW,
+        h: this.header.rowH,
+        active: isRecording
+      },
+      {
         id: 'playback-play',
         label: isPlaying ? '❚❚' : '▶',
-        x: x + (buttonW + gap) * 4,
+        x: x + (buttonW + gap) * 5,
         y,
         w: buttonW,
         h: this.header.rowH,
@@ -229,7 +229,7 @@ export default class RecordModeLayout {
       {
         id: 'playback-stop',
         label: '⏹',
-        x: x + (buttonW + gap) * 5,
+        x: x + (buttonW + gap) * 6,
         y,
         w: buttonW,
         h: this.header.rowH,
@@ -266,10 +266,14 @@ export default class RecordModeLayout {
     if (hitInstrument) {
       this.setInstrument(hitInstrument.id);
       this.instrumentMenuOpen = false;
+      this.instrumentModalBounds = null;
+      this.bounds.instrumentButtons = [];
       return { type: 'instrument', value: hitInstrument.id };
     }
     if (this.instrumentMenuOpen && this.instrumentModalBounds && !this.pointInBounds(x, y, this.instrumentModalBounds)) {
       this.instrumentMenuOpen = false;
+      this.instrumentModalBounds = null;
+      this.bounds.instrumentButtons = [];
       return { type: 'instrument-dismiss' };
     }
     const hitSetting = this.bounds.settingsButtons.find((btn) => this.pointInBounds(x, y, btn));
@@ -286,11 +290,18 @@ export default class RecordModeLayout {
       if (hitSetting.id === 'virtual') {
         this.instrumentMenuOpen = !this.instrumentMenuOpen;
       }
+      if (!this.instrumentMenuOpen) {
+        this.instrumentModalBounds = null;
+        this.bounds.instrumentButtons = [];
+      }
       if (hitSetting.id === 'playback-play') {
         return { type: 'playback-play' };
       }
       if (hitSetting.id === 'playback-stop') {
         return { type: 'playback-stop' };
+      }
+      if (hitSetting.id === 'record-toggle') {
+        return { type: 'record-toggle' };
       }
       return { type: hitSetting.id, value: hitSetting.active };
     }

@@ -20,6 +20,10 @@ export default class TouchInput {
     this.instrument = 'keyboard';
     this.bounds = null;
     this.activeTouches = new Map();
+    this.activeFrets = new Map();
+    this.activeStrums = new Map();
+    this.activeStrings = new Map();
+    this.stringNoteTimers = new Map();
     this.keyRects = [];
     this.drumPads = [];
     this.stringRects = [];
@@ -29,6 +33,9 @@ export default class TouchInput {
   }
 
   setInstrument(instrument) {
+    if (this.instrument !== instrument) {
+      this.releaseAllNotes();
+    }
     this.instrument = instrument;
     if (this.bounds) {
       this.computeLayout(this.bounds);
@@ -130,6 +137,8 @@ export default class TouchInput {
     const boardX = bounds.x + labelW + boardPadding;
     const boardW = bounds.w - labelW - boardPadding * 2;
     const fretW = boardW / fretCount;
+    const headX = bounds.x + labelW;
+    const headW = Math.max(12, boardX - headX);
     const tuningLowToHigh = this.instrument === 'bass'
       ? [28, 33, 38, 43]
       : [40, 45, 50, 55, 59, 64];
@@ -143,10 +152,28 @@ export default class TouchInput {
       labelW,
       boardX,
       boardW,
+      headX,
+      headW,
+      strumZone: {
+        x: boardX + boardW * 0.72,
+        y: bounds.y,
+        w: Math.max(44, boardW * 0.28),
+        h: bounds.h
+      },
       tuning
     };
     tuning.forEach((basePitch, stringIndex) => {
       const y = bounds.y + (stringIndex + 1) * stringGap;
+      this.stringRects.push({
+        pitch: basePitch,
+        stringIndex,
+        fret: 0,
+        x: headX,
+        y: y - stringGap * 0.35,
+        w: headW,
+        h: stringGap * 0.7,
+        open: true
+      });
       for (let fret = 0; fret < fretCount; fret += 1) {
         this.stringRects.push({
           pitch: basePitch + fret,
@@ -178,9 +205,28 @@ export default class TouchInput {
 
   handlePointerDown({ x, y, id }) {
     if (!this.bounds) return;
+    const pointerId = id ?? 'mouse';
+    if (this.instrument === 'guitar' || this.instrument === 'bass') {
+      const layout = this.stringLayout;
+      if (!layout) return;
+      const strumZone = layout.strumZone;
+      if (strumZone && x >= strumZone.x && x <= strumZone.x + strumZone.w
+        && y >= strumZone.y && y <= strumZone.y + strumZone.h) {
+        this.activeStrums.set(pointerId, { lastStringIndex: null, playedOpen: false });
+        this.handleStrum(pointerId, y);
+        return;
+      }
+      const hit = this.findHit(x, y);
+      if (!hit) return;
+      this.activeFrets.set(pointerId, { ...hit, time: performance.now() });
+      this.updateFrettedNotes(hit.stringIndex);
+      if (this.activeStrings.has(hit.stringIndex)) {
+        this.playStringNote(hit.stringIndex, hit.pitch);
+      }
+      return;
+    }
     const hit = this.findHit(x, y);
     if (!hit) return;
-    const pointerId = id ?? 'mouse';
     const noteId = `touch-${pointerId}-${hit.pitch}-${Date.now()}`;
     this.activeTouches.set(pointerId, { id: noteId, pitch: hit.pitch, hit });
     this.triggerStringVibration(hit);
@@ -195,6 +241,23 @@ export default class TouchInput {
   handlePointerMove({ x, y, id }) {
     if (!this.bounds) return;
     const pointerId = id ?? 'mouse';
+    if (this.instrument === 'guitar' || this.instrument === 'bass') {
+      if (this.activeStrums.has(pointerId)) {
+        this.handleStrum(pointerId, y);
+        return;
+      }
+      if (!this.activeFrets.has(pointerId)) return;
+      const current = this.activeFrets.get(pointerId);
+      const hit = this.findHit(x, y);
+      if (!hit) return;
+      if (hit.stringIndex === current.stringIndex && hit.fret === current.fret) return;
+      this.activeFrets.set(pointerId, { ...hit, time: performance.now() });
+      this.updateFrettedNotes(hit.stringIndex);
+      if (this.activeStrings.has(hit.stringIndex)) {
+        this.playStringNote(hit.stringIndex, hit.pitch);
+      }
+      return;
+    }
     if (!this.activeTouches.has(pointerId)) return;
     const current = this.activeTouches.get(pointerId);
     const hit = this.findHit(x, y);
@@ -213,6 +276,21 @@ export default class TouchInput {
 
   handlePointerUp({ id }) {
     const pointerId = id ?? 'mouse';
+    if (this.instrument === 'guitar' || this.instrument === 'bass') {
+      if (this.activeStrums.has(pointerId)) {
+        this.activeStrums.delete(pointerId);
+      }
+      if (this.activeFrets.has(pointerId)) {
+        const { stringIndex } = this.activeFrets.get(pointerId);
+        this.activeFrets.delete(pointerId);
+        this.updateFrettedNotes(stringIndex);
+        if (!this.hasFretOnString(stringIndex) && this.activeStrings.has(stringIndex)) {
+          const openPitch = this.getOpenPitch(stringIndex);
+          this.playStringNote(stringIndex, openPitch);
+        }
+      }
+      return;
+    }
     const current = this.activeTouches.get(pointerId);
     if (!current) return;
     this.bus.emit('noteoff', { id: current.id, source: 'touch' });
@@ -293,12 +371,16 @@ export default class TouchInput {
       labelW,
       boardX,
       boardW,
-      tuning
+      tuning,
+      headX,
+      headW
     } = layout;
     const boardY = this.bounds.y + 6;
     const boardH = this.bounds.h - 12;
     ctx.fillStyle = '#151515';
     ctx.fillRect(boardX, boardY, boardW, boardH);
+    ctx.fillStyle = '#0f0f0f';
+    ctx.fillRect(headX, boardY, headW, boardH);
     ctx.strokeStyle = 'rgba(255,255,255,0.15)';
     for (let fret = 0; fret <= fretCount; fret += 1) {
       const x = boardX + fret * fretW;
@@ -395,5 +477,116 @@ export default class TouchInput {
       start: performance.now(),
       amplitude: 6
     });
+  }
+
+  releaseAllNotes() {
+    this.activeTouches.forEach((touch) => {
+      this.bus.emit('noteoff', { id: touch.id, source: 'touch' });
+    });
+    this.activeTouches.clear();
+    this.activeFrets.clear();
+    this.activeStrums.clear();
+    this.activeStrings.forEach((note) => {
+      this.bus.emit('noteoff', { id: note.id, source: 'touch' });
+    });
+    this.activeStrings.clear();
+    this.stringNoteTimers.forEach((timer) => clearTimeout(timer));
+    this.stringNoteTimers.clear();
+  }
+
+  getOpenPitch(stringIndex) {
+    const layout = this.stringLayout;
+    if (!layout) return null;
+    return layout.tuning[stringIndex];
+  }
+
+  hasFretOnString(stringIndex) {
+    for (const fret of this.activeFrets.values()) {
+      if (fret.stringIndex === stringIndex) return true;
+    }
+    return false;
+  }
+
+  getFrettedPitch(stringIndex) {
+    let selected = null;
+    this.activeFrets.forEach((fret) => {
+      if (fret.stringIndex !== stringIndex) return;
+      if (!selected || fret.time > selected.time) {
+        selected = fret;
+      }
+    });
+    return selected ? selected.pitch : null;
+  }
+
+  updateFrettedNotes(stringIndex) {
+    const layout = this.stringLayout;
+    if (!layout) return;
+    if (!this.hasFretOnString(stringIndex)) {
+      return;
+    }
+    if (this.activeStrings.has(stringIndex)) {
+      const pitch = this.getFrettedPitch(stringIndex);
+      if (pitch) {
+        this.playStringNote(stringIndex, pitch);
+      }
+    }
+  }
+
+  handleStrum(pointerId, y) {
+    const layout = this.stringLayout;
+    if (!layout) return;
+    const stringIndex = Math.min(
+      layout.stringCount - 1,
+      Math.max(0, Math.floor((y - this.bounds.y) / layout.stringGap))
+    );
+    const strum = this.activeStrums.get(pointerId);
+    if (!strum) return;
+    if (strum.lastStringIndex === stringIndex) return;
+    strum.lastStringIndex = stringIndex;
+    const hasFrets = this.activeFrets.size > 0;
+    if (hasFrets) {
+      const pitch = this.getFrettedPitch(stringIndex);
+      if (!pitch) return;
+      this.playStringNote(stringIndex, pitch);
+      return;
+    }
+    if (!strum.playedOpen) {
+      const openPitch = Math.min(...layout.tuning);
+      const openStringIndex = layout.tuning.indexOf(openPitch);
+      if (openStringIndex >= 0) {
+        this.playStringNote(openStringIndex, openPitch);
+      }
+      strum.playedOpen = true;
+    }
+  }
+
+  playStringNote(stringIndex, pitch) {
+    if (pitch == null) return;
+    const existing = this.activeStrings.get(stringIndex);
+    if (existing) {
+      this.bus.emit('noteoff', { id: existing.id, source: 'touch' });
+      if (this.stringNoteTimers.has(existing.id)) {
+        clearTimeout(this.stringNoteTimers.get(existing.id));
+        this.stringNoteTimers.delete(existing.id);
+      }
+    }
+    const noteId = `touch-string-${stringIndex}-${pitch}-${Date.now()}`;
+    this.activeStrings.set(stringIndex, { id: noteId, pitch });
+    this.triggerStringVibration({ stringIndex });
+    this.bus.emit('noteon', {
+      id: noteId,
+      pitch,
+      velocity: 112,
+      source: 'touch'
+    });
+    const durationMs = this.instrument === 'bass' ? 900 : 1100;
+    const timer = setTimeout(() => {
+      this.bus.emit('noteoff', { id: noteId, source: 'touch' });
+      if (this.activeStrings.get(stringIndex)?.id === noteId) {
+        this.activeStrings.delete(stringIndex);
+      }
+      this.stringNoteTimers.delete(noteId);
+    }, durationMs);
+    this.stringNoteTimers.set(noteId, timer);
   }
 }
