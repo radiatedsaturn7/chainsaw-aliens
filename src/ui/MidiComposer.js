@@ -1356,10 +1356,16 @@ export default class MidiComposer {
   }
 
   getLoopTicks() {
+    const gridTicks = this.getGridTicks();
     if (typeof this.song.loopEndTick === 'number') {
-      return Math.max(1, this.song.loopEndTick);
+      return clamp(this.song.loopEndTick, 1, gridTicks);
     }
-    return this.song.loopBars * this.beatsPerBar * this.ticksPerBeat;
+    return gridTicks;
+  }
+
+  getGridTicks() {
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    return Math.max(1, (this.song.loopBars || DEFAULT_GRID_BARS) * ticksPerBar);
   }
 
   getLoopStartTick() {
@@ -3177,10 +3183,14 @@ export default class MidiComposer {
 
   setLoopStartTick(tick) {
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
-    const snapped = Math.max(0, Math.round(tick / ticksPerBar) * ticksPerBar);
+    const gridTicks = this.getGridTicks();
+    const maxStart = Math.max(0, gridTicks - ticksPerBar);
+    const snapped = clamp(Math.round(tick / ticksPerBar) * ticksPerBar, 0, maxStart);
     this.song.loopStartTick = snapped;
     if (typeof this.song.loopEndTick === 'number' && this.song.loopEndTick <= snapped) {
-      this.song.loopEndTick = snapped + ticksPerBar;
+      this.song.loopEndTick = clamp(snapped + ticksPerBar, ticksPerBar, gridTicks);
+    } else if (typeof this.song.loopEndTick === 'number' && this.song.loopEndTick > gridTicks) {
+      this.song.loopEndTick = gridTicks;
     }
     this.playheadTick = clamp(this.playheadTick, this.getLoopStartTick(), this.getLoopTicks());
     this.persist();
@@ -3188,15 +3198,11 @@ export default class MidiComposer {
 
   setLoopEndTick(tick) {
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
-    const snapped = Math.max(1, Math.round(tick / ticksPerBar) * ticksPerBar);
+    const gridTicks = this.getGridTicks();
+    const start = typeof this.song.loopStartTick === 'number' ? this.song.loopStartTick : 0;
+    const minEnd = Math.min(gridTicks, start + ticksPerBar);
+    const snapped = clamp(Math.round(tick / ticksPerBar) * ticksPerBar, minEnd, gridTicks);
     this.song.loopEndTick = snapped;
-    this.song.loopBars = Math.max(1, Math.ceil(snapped / ticksPerBar));
-    this.song.tracks.forEach((track) => {
-      track.patterns.forEach((pattern) => {
-        pattern.bars = this.song.loopBars;
-      });
-    });
-    this.ensureGridCapacity(snapped);
     this.playheadTick = clamp(this.playheadTick, this.getLoopStartTick(), this.getLoopTicks());
     this.persist();
   }
@@ -3946,7 +3952,7 @@ export default class MidiComposer {
     if (typeof this.song.loopStartTick !== 'number' || typeof this.song.loopEndTick !== 'number') return;
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
     const loopLength = Math.max(1, this.song.loopEndTick - this.song.loopStartTick);
-    const gridTicks = Math.max(this.song.loopBars * ticksPerBar, this.song.loopEndTick);
+    const gridTicks = this.song.loopBars * ticksPerBar;
     const maxStart = Math.max(0, gridTicks - loopLength);
     const nextStart = clamp(this.song.loopStartTick + deltaTicks, 0, maxStart);
     const nextEnd = nextStart + loopLength;
@@ -4283,6 +4289,10 @@ export default class MidiComposer {
     const clippedInstrument = this.truncateLabel(ctx, instrumentName, this.bounds.instrumentLabel.w - 8);
     ctx.fillText(clippedInstrument, this.bounds.instrumentLabel.x + this.bounds.instrumentLabel.w / 2, controlY + 30);
     ctx.textAlign = 'left';
+    controlY += rowH + rowGap;
+
+    this.bounds.record = { x: controlX, y: controlY, w: controlW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.record, 'Record', false);
     controlY += rowH + rowGap;
 
     if (track) {
