@@ -5111,17 +5111,20 @@ export default class MidiComposer {
       const loopEndX = originX + this.song.loopEndTick * cellWidth;
       ctx.fillStyle = 'rgba(255,225,106,0.25)';
       ctx.fillRect(loopStartX, y, loopEndX - loopStartX, h);
-      const handleW = 14;
-      const handleH = Math.max(8, Math.round(h * 0.4));
+      const handleW = 20;
+      const handleH = Math.max(10, Math.round(h * 0.6));
       const handleY = y + 2;
+      const gap = 3;
+      const minX = originX;
+      const maxX = originX + loopTicks * cellWidth - handleW;
       this.bounds.loopStartHandle = {
-        x: loopStartX - handleW / 2,
+        x: clamp(loopStartX - handleW - gap, minX, maxX),
         y: handleY,
         w: handleW,
         h: handleH
       };
       this.bounds.loopEndHandle = {
-        x: loopEndX - handleW / 2,
+        x: clamp(loopEndX + gap, minX, maxX),
         y: handleY,
         w: handleW,
         h: handleH
@@ -5333,8 +5336,8 @@ export default class MidiComposer {
     if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
       const loopStartX = originX + this.song.loopStartTick * cellWidth;
       const loopEndX = originX + this.song.loopEndTick * cellWidth;
-      const handleW = Math.max(10, Math.min(18, Math.round(cellWidth * 0.6)));
-      const handleH = Math.max(18, Math.min(36, Math.round(cellHeight * 3)));
+      const handleW = Math.max(14, Math.min(24, Math.round(cellWidth * 0.75)));
+      const handleH = Math.max(22, Math.min(42, Math.round(cellHeight * 3.5)));
       const handleY = originY + (rows * cellHeight - handleH) / 2;
       const gap = 4;
       const minX = originX;
