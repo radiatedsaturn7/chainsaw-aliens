@@ -48,6 +48,33 @@ Open the sequencer from the title screen **Tools** menu (`MIDI Editor`). The edi
 
 If you hear no sound, wait for the “Loading instrument bank…” banner to finish or switch to another GM SoundFont.
 
+### Recording Mode (Live Input)
+1. Open the **MIDI Editor**, then press the **Record** button in the transport bar.
+2. The layout switches to **Record Mode** (grid on top, live instrument UI on bottom). Use **Stop Recording** in the lower-right corner to finish.
+3. Notes are captured with start time, duration, pitch, and velocity and are placed onto the grid automatically.
+
+**Gamepad mapping (Xbox/Backbone)**
+- **Left Stick**: choose scale degree (silent). **L3** toggles **Latch Root**.
+- **A**: triad · **X**: open voicing · **Y**: 7th · **B**: power/bass.
+- **LB** = minor, **RB** = spice (add9 by default).
+- **LT** held = **Note Mode** (A/X/Y/B = root/+1/+2/+3 scale steps).
+- **D-Pad Up/Down** = octave ±1.
+- **RT** = velocity for new notes.
+- **Right Stick X** = pitch bend, **Right Stick Y** = mod (CC1 or CC74).
+
+**Keyboard mapping (desktop)**
+- **White keys**: `A S D F G H J K L ;`
+- **Black keys**: `W E T Y U O P`
+- **Z/X**: octave down/up
+- **C/V**: velocity down/up
+- **Space**: sustain (optional)
+- **Enter**: start/stop recording
+
+**Touch / mobile fallback**
+- If no gamepad is connected, the bottom panel shows an instrument selector: **Guitar / Bass / Keyboard / Drums**.
+- Tap the instrument to trigger notes; visuals animate on interaction.
+- Drums use a GM-style mapping (kick/snare/hats/toms/crash/ride) and record to the drum channel when available.
+
 ### Mobile + Controller Controls
 - **Tabs**: switch between **Grid**, **Instruments**, **Settings**, and **Help**.
 - **Transport bar (bottom)**: Play/Pause, Stop, Loop, Prev/Next bar, Return to Start, Set Start, Set End, Metronome, and time display.

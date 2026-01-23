@@ -6,6 +6,12 @@ import {
   formatProgramNumber,
   isDrumChannel
 } from '../audio/gm.js';
+import InputEventBus from '../input/eventBus.js';
+import GamepadInput from '../input/gamepad.js';
+import KeyboardInput from '../input/keyboard.js';
+import TouchInput from '../input/touch.js';
+import MidiRecorder from '../recording/recorder.js';
+import RecordModeLayout from './recordMode.js';
 
 const NOTE_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const KEY_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -518,6 +524,21 @@ export default class MidiComposer {
     this.genreMenuOpen = false;
     this.selectedGenre = 'random';
     this.qaOverlayOpen = false;
+    this.recordModeActive = false;
+    this.recordQuantizeEnabled = false;
+    this.recordQuantizeDivisor = 16;
+    this.recordCountInEnabled = false;
+    this.recordMetronomeEnabled = false;
+    this.recordDevicePreference = 'auto';
+    this.recordInstrument = 'keyboard';
+    this.recordStatus = { degree: 1, octave: 0, velocity: 96 };
+    this.inputBus = new InputEventBus();
+    this.keyboardInput = new KeyboardInput(this.inputBus);
+    this.gamepadInput = new GamepadInput(this.inputBus);
+    this.touchInput = new TouchInput(this.inputBus);
+    this.recordLayout = new RecordModeLayout({ touchInput: this.touchInput });
+    this.recorder = new MidiRecorder({ getTime: () => this.getRecordingTime() });
+    this.registerInputHandlers();
     this.qaResults = [];
     this.draggingTrackControl = null;
     this.longPressTimer = null;
@@ -587,6 +608,8 @@ export default class MidiComposer {
       prevBar: null,
       nextBar: null,
       goEnd: null,
+      record: null,
+      recordStop: null,
       instrumentLauncher: null,
       metronome: null,
       timeDisplay: null,
@@ -671,6 +694,27 @@ export default class MidiComposer {
     this.gridZoomY = this.getDefaultGridZoomY();
     this.gridZoomInitialized = false;
     this.preloadDefaultInstruments();
+  }
+
+  getRecordingTime() {
+    if (this.game?.audio?.ctx?.currentTime) {
+      return this.game.audio.ctx.currentTime;
+    }
+    return performance.now() / 1000;
+  }
+
+  registerInputHandlers() {
+    this.inputBus.on('noteon', (event) => this.handleRecordedNoteOn(event));
+    this.inputBus.on('noteoff', (event) => this.handleRecordedNoteOff(event));
+    this.inputBus.on('cc', (event) => this.handleRecordedCc(event));
+    this.inputBus.on('pitchbend', (event) => this.handleRecordedPitchBend(event));
+    this.inputBus.on('toggleRecord', () => {
+      if (this.recordModeActive) {
+        this.stopRecording();
+      } else {
+        this.startRecording();
+      }
+    });
   }
 
   loadSong() {
@@ -1539,20 +1583,183 @@ export default class MidiComposer {
     };
   }
 
+  startRecording() {
+    if (this.recordModeActive) return;
+    this.recordModeActive = true;
+    this.activeTab = 'grid';
+    const tempo = this.song.tempo || 120;
+    const countInBars = this.recordCountInEnabled ? 1 : 0;
+    const countInSeconds = countInBars * this.beatsPerBar * (60 / tempo);
+    const startTime = this.getRecordingTime() + countInSeconds;
+    this.recorder.startRecording({
+      tempo,
+      ticksPerBeat: this.ticksPerBeat,
+      beatsPerBar: this.beatsPerBar,
+      startTime,
+      quantizeDivisor: this.recordQuantizeEnabled ? this.recordQuantizeDivisor : null
+    });
+    this.playheadTick = 0;
+    this.recordStartTime = startTime;
+  }
+
+  stopRecording() {
+    if (!this.recordModeActive) return;
+    this.recorder.stopRecording(this.getRecordingTime());
+    const { track, pattern } = this.getRecordingTarget();
+    if (pattern) {
+      this.recorder.commitRecordedTakeToScore({ pattern, startTickOffset: 0 });
+      this.persist();
+      const lastNote = pattern.notes[pattern.notes.length - 1];
+      if (lastNote) {
+        this.playNote(track, lastNote, this.playheadTick);
+      }
+    }
+    this.recordModeActive = false;
+  }
+
+  getRecordingTarget() {
+    const track = this.getRecordingTrack();
+    const pattern = track?.patterns?.[this.selectedPatternIndex] || null;
+    return { track, pattern };
+  }
+
+  getRecordingTrack() {
+    if (this.recordInstrument === 'drums') {
+      let drumTrack = this.song.tracks.find((candidate) => candidate.channel === 9);
+      if (!drumTrack) {
+        drumTrack = {
+          id: `track-drums-${Date.now()}`,
+          name: 'Drums',
+          channel: 9,
+          program: 0,
+          bankMSB: DEFAULT_BANK_MSB,
+          bankLSB: DEFAULT_BANK_LSB,
+          volume: 0.9,
+          pan: 0,
+          mute: false,
+          solo: false,
+          color: TRACK_COLORS[this.song.tracks.length % TRACK_COLORS.length],
+          patterns: [{ id: `pattern-drums-${Date.now()}`, bars: this.song.loopBars, notes: [] }]
+        };
+        this.song.tracks.push(drumTrack);
+      }
+      const drumIndex = this.song.tracks.indexOf(drumTrack);
+      if (drumIndex >= 0) {
+        this.selectedTrackIndex = drumIndex;
+      }
+      return drumTrack;
+    }
+    return this.getActiveTrack();
+  }
+
+  handleRecordedNoteOn(event) {
+    if (!this.recordModeActive) return;
+    const now = this.getRecordingTime();
+    const { track } = this.getRecordingTarget();
+    if (!track) return;
+    this.recordStatus.velocity = event.velocity || this.recordStatus.velocity;
+    this.recorder.recordNoteOn({
+      id: event.id,
+      pitch: event.pitch,
+      velocity: event.velocity,
+      time: now,
+      channel: track.channel,
+      trackId: track.id
+    });
+    this.playGmNote(event.pitch, 0.4, (event.velocity / 127) * track.volume, track, track.pan);
+  }
+
+  handleRecordedNoteOff(event) {
+    if (!this.recordModeActive) return;
+    this.recorder.recordNoteOff({ id: event.id, time: this.getRecordingTime() });
+  }
+
+  handleRecordedCc(event) {
+    if (!this.recordModeActive) return;
+    const { track } = this.getRecordingTarget();
+    if (!track) return;
+    this.recorder.recordCC({
+      controller: event.controller,
+      value: event.value,
+      time: this.getRecordingTime(),
+      channel: track.channel,
+      trackId: track.id
+    });
+  }
+
+  handleRecordedPitchBend(event) {
+    if (!this.recordModeActive) return;
+    const { track } = this.getRecordingTarget();
+    if (!track) return;
+    this.recorder.recordPitchBend({
+      value: event.value,
+      time: this.getRecordingTime(),
+      channel: track.channel,
+      trackId: track.id
+    });
+  }
+
   update(input, dt) {
     this.ensureState();
     this.handleKeyboardShortcuts(input);
     this.handleGamepadInput(input, dt);
+    this.updateRecordMode(dt);
     if (this.isPlaying) {
       this.advancePlayhead(dt);
     }
     this.cleanupActiveNotes();
   }
 
+  updateRecordMode(dt) {
+    if (!this.recordModeActive) {
+      this.keyboardInput.setEnabled(false);
+      this.gamepadInput.setEnabled(false);
+      return;
+    }
+    this.keyboardInput.setEnabled(true);
+    const scale = SCALE_LIBRARY.find((entry) => entry.id === this.song.scale) || SCALE_LIBRARY[0];
+    this.gamepadInput.setEnabled(true);
+    this.gamepadInput.setScale({ key: this.song.key || 0, steps: scale.steps });
+    this.gamepadInput.update();
+
+    const gamepadConnected = this.gamepadInput.connected;
+    const preferred = this.recordDevicePreference === 'auto'
+      ? (gamepadConnected ? 'gamepad' : 'touch')
+      : this.recordDevicePreference;
+    this.recordLayout.setDevice(preferred);
+    this.recordLayout.setInstrument(this.recordInstrument);
+    this.recordLayout.quantizeEnabled = this.recordQuantizeEnabled;
+    this.recordLayout.quantizeLabel = `1/${this.recordQuantizeDivisor}`;
+    this.recordLayout.countInEnabled = this.recordCountInEnabled;
+    this.recordLayout.metronomeEnabled = this.recordMetronomeEnabled;
+
+    if (preferred === 'touch') {
+      this.gamepadInput.setEnabled(false);
+    }
+
+    this.recordStatus.degree = this.gamepadInput.leftStickStableDirection || this.recordStatus.degree;
+    this.recordStatus.octave = this.gamepadInput.octaveOffset;
+    if (preferred !== 'gamepad') {
+      this.recordStatus.velocity = this.keyboardInput.velocity || this.recordStatus.velocity;
+    }
+    if (this.recorder.isRecording) {
+      const elapsed = Math.max(0, this.getRecordingTime() - this.recorder.startTime);
+      const ticks = (elapsed * this.song.tempo / 60) * this.ticksPerBeat;
+      this.playheadTick = clamp(ticks, 0, this.getLoopTicks());
+    }
+  }
+
   handleKeyboardShortcuts(input) {
     const ctrl = input.isDownCode?.('ControlLeft') || input.isDownCode?.('ControlRight');
     const meta = input.isDownCode?.('MetaLeft') || input.isDownCode?.('MetaRight');
     const cmd = ctrl || meta;
+    if (input.wasPressedCode?.('Enter')) {
+      if (this.recordModeActive) {
+        this.stopRecording();
+      } else {
+        this.startRecording();
+      }
+    }
     if (cmd && input.wasPressedCode?.('KeyC')) {
       this.copySelection();
     }
@@ -1778,6 +1985,36 @@ export default class MidiComposer {
   handlePointerDown(payload) {
     this.lastPointer = { x: payload.x, y: payload.y };
     const { x, y } = payload;
+    if (this.recordModeActive) {
+      if (this.bounds.recordStop && this.pointInBounds(x, y, this.bounds.recordStop)) {
+        this.stopRecording();
+        return;
+      }
+      const action = this.recordLayout.handlePointerDown(payload);
+      if (action?.type === 'device') {
+        this.recordDevicePreference = action.value;
+        return;
+      }
+      if (action?.type === 'instrument') {
+        this.recordInstrument = action.value;
+        return;
+      }
+      if (action?.type === 'quantize') {
+        this.recordQuantizeEnabled = this.recordLayout.quantizeEnabled;
+        return;
+      }
+      if (action?.type === 'countin') {
+        this.recordCountInEnabled = this.recordLayout.countInEnabled;
+        return;
+      }
+      if (action?.type === 'metronome') {
+        this.recordMetronomeEnabled = this.recordLayout.metronomeEnabled;
+        return;
+      }
+      if (action?.type === 'touch') {
+        return;
+      }
+    }
     if (this.qaOverlayOpen) {
       const hit = this.qaBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (hit) {
@@ -1820,6 +2057,11 @@ export default class MidiComposer {
     if (noteLengthHit) {
       this.setNoteLengthIndex(noteLengthHit.index);
       this.noteLengthMenu.open = false;
+      return;
+    }
+
+    if (this.bounds.record && this.pointInBounds(x, y, this.bounds.record)) {
+      this.startRecording();
       return;
     }
     if (this.tempoSliderOpen && this.bounds.tempoSlider && this.pointInBounds(x, y, this.bounds.tempoSlider)) {
@@ -2172,6 +2414,9 @@ export default class MidiComposer {
 
   handlePointerMove(payload) {
     this.lastPointer = { x: payload.x, y: payload.y };
+    if (this.recordModeActive) {
+      this.recordLayout.handlePointerMove(payload);
+    }
     if (this.qaOverlayOpen) return;
     if (this.dragState?.mode === 'instrument-scroll') {
       const delta = this.dragState.startY - payload.y;
@@ -2278,6 +2523,9 @@ export default class MidiComposer {
 
   handlePointerUp(payload) {
     this.lastPointer = { x: payload.x, y: payload.y };
+    if (this.recordModeActive) {
+      this.recordLayout.handlePointerUp(payload);
+    }
     if (this.longPressTimer) {
       clearTimeout(this.longPressTimer);
       this.longPressTimer = null;
@@ -3812,6 +4060,11 @@ export default class MidiComposer {
     this.bounds.noteLengthMenu = [];
 
     const isMobile = this.isMobileLayout();
+    if (this.recordModeActive) {
+      this.drawRecordMode(ctx, width, height, track, pattern);
+      ctx.restore();
+      return;
+    }
     if (isMobile) {
       this.drawMobileLayout(ctx, width, height, track, pattern);
     } else {
@@ -3860,6 +4113,70 @@ export default class MidiComposer {
       this.drawQaOverlay(ctx, width, height);
     }
 
+    ctx.restore();
+  }
+
+  drawRecordMode(ctx, width, height, track, pattern) {
+    const layout = this.recordLayout.layout(width, height);
+    const grid = layout.grid;
+    const instrument = layout.instrument;
+    if (grid) {
+      this.drawPatternEditor(ctx, grid.x, grid.y, grid.w, grid.h, track, pattern);
+      this.drawGhostNotes(ctx);
+    }
+    const deviceLabel = this.gamepadInput.connected
+      ? `Gamepad ${this.recordLayout.device === 'gamepad' ? 'Active' : 'Detected'}`
+      : 'Touch/Keyboard';
+    const degreeLabel = this.recordLayout.device === 'gamepad'
+      ? `Degree ${this.recordStatus.degree}`
+      : 'Keyboard Ready';
+    const octaveLabel = this.recordLayout.device === 'gamepad'
+      ? `Oct ${this.recordStatus.octave >= 0 ? '+' : ''}${this.recordStatus.octave}`
+      : `Oct ${this.keyboardInput.baseOctave}`;
+    const velocityLabel = `Vel ${this.recordStatus.velocity}`;
+    this.recordLayout.draw(ctx, {
+      gamepadConnected: this.gamepadInput.connected,
+      showGamepadHints: this.recordLayout.device === 'gamepad' && this.gamepadInput.connected,
+      deviceLabel,
+      degreeLabel,
+      octaveLabel,
+      velocityLabel
+    });
+
+    if (layout.stop) {
+      this.bounds.recordStop = layout.stop;
+      ctx.fillStyle = '#ff6a6a';
+      ctx.fillRect(layout.stop.x, layout.stop.y, layout.stop.w, layout.stop.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.strokeRect(layout.stop.x, layout.stop.y, layout.stop.w, layout.stop.h);
+      ctx.fillStyle = '#111';
+      ctx.font = '16px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText('Stop Recording', layout.stop.x + layout.stop.w / 2, layout.stop.y + layout.stop.h / 2 + 6);
+      ctx.textAlign = 'left';
+    }
+  }
+
+  drawGhostNotes(ctx) {
+    if (!this.gridBounds) return;
+    const activeNotes = this.recorder.getActiveNotes();
+    if (!activeNotes.length) return;
+    const elapsed = Math.max(0, this.getRecordingTime() - this.recorder.startTime);
+    const currentTick = (elapsed * this.song.tempo / 60) * this.ticksPerBeat;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,225,106,0.4)';
+    activeNotes.forEach((note) => {
+      const startSeconds = Math.max(0, note.startTime - this.recorder.startTime);
+      const startTick = (startSeconds * this.song.tempo / 60) * this.ticksPerBeat;
+      const tempNote = {
+        pitch: note.pitch,
+        startTick,
+        durationTicks: Math.max(1, currentTick - startTick)
+      };
+      const rect = this.getNoteRect(tempNote);
+      if (!rect) return;
+      ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+    });
     ctx.restore();
   }
 
@@ -4152,6 +4469,7 @@ export default class MidiComposer {
     const buttonSpecs = [
       { id: 'returnStart', label: '⏮', w: baseButtonW },
       { id: 'prevBar', label: '⏪', w: baseButtonW },
+      { id: 'record', label: '●', w: baseButtonW, active: this.recordModeActive, emphasis: true },
       { id: 'play', label: this.isPlaying ? '❚❚' : '▶', w: baseButtonW * 1.3, active: this.isPlaying, emphasis: true },
       { id: 'nextBar', label: '⏩', w: baseButtonW },
       { id: 'goEnd', label: '⏭', w: baseButtonW }
@@ -4173,7 +4491,8 @@ export default class MidiComposer {
       const bounds = { x: bx, y: centerY, w: button.w, h: buttonH };
       this.bounds[button.id] = bounds;
       const isActive = Boolean(button.active);
-      const baseFill = isActive ? '#ffe16a' : 'rgba(10,10,10,0.7)';
+      const isRecord = button.id === 'record';
+      const baseFill = isRecord ? '#ff6a6a' : isActive ? '#ffe16a' : 'rgba(10,10,10,0.7)';
       const highlight = button.emphasis ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.12)';
       ctx.save();
       ctx.shadowColor = 'rgba(0,0,0,0.4)';
