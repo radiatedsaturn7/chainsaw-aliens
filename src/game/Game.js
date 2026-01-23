@@ -6326,4 +6326,17 @@ export default class Game {
     }
   }
 
+  shouldHandleGestureStart(payload) {
+    if (this.state === 'editor') {
+      return this.editor.shouldHandleGestureStart?.(payload) ?? true;
+    }
+    if (this.state === 'pixel-editor') {
+      return this.pixelStudio.shouldHandleGestureStart?.(payload) ?? true;
+    }
+    if (this.state === 'midi-editor') {
+      return this.midiComposer.shouldHandleGestureStart?.(payload) ?? true;
+    }
+    return true;
+  }
+
 }

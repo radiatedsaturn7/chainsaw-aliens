@@ -2687,6 +2687,13 @@ export default class MidiComposer {
     this.clampGridOffset(this.gridBounds.w, this.gridBounds.h, this.gridBounds.gridW, this.gridBounds.gridH);
   }
 
+  shouldHandleGestureStart(payload) {
+    if (!this.recordModeActive) return true;
+    const instrumentBounds = this.recordLayout?.bounds?.instrument;
+    if (!instrumentBounds) return true;
+    return !payload.touches?.some((touch) => this.pointInBounds(touch.x, touch.y, instrumentBounds));
+  }
+
   handleGestureStart(payload) {
     if (!this.gridBounds || this.qaOverlayOpen || this.activeTab !== 'grid') return;
     if (!this.pointInBounds(payload.x, payload.y, this.gridBounds)) return;
