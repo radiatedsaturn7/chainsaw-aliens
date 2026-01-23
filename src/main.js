@@ -149,6 +149,7 @@ let gestureActive = false;
 const activeTouches = new Map();
 
 canvas.addEventListener('touchstart', (event) => {
+  const gesturesAllowed = !(game.state === 'midi-editor' && game.midiComposer?.recordModeActive);
   const shouldStartGesture = () => {
     if (!game.handleGestureStart) return false;
     if (typeof game.shouldHandleGestureStart !== 'function') return true;
@@ -160,6 +161,7 @@ canvas.addEventListener('touchstart', (event) => {
   };
   if (['editor', 'pixel-editor', 'midi-editor'].includes(game.state)
     && event.touches.length >= 2
+    && gesturesAllowed
     && shouldStartGesture()) {
     event.preventDefault();
     const gesture = getTouchGesture(event.touches);
@@ -186,6 +188,9 @@ canvas.addEventListener('touchstart', (event) => {
 }, { passive: false });
 
 canvas.addEventListener('touchmove', (event) => {
+  if (game.state === 'midi-editor' && game.midiComposer?.recordModeActive) {
+    gestureActive = false;
+  }
   if (gestureActive && event.touches.length >= 2) {
     event.preventDefault();
     const gesture = getTouchGesture(event.touches);
