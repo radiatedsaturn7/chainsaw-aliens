@@ -616,7 +616,6 @@ export default class MidiComposer {
       nextBar: null,
       goEnd: null,
       record: null,
-      recordStop: null,
       instrumentLauncher: null,
       metronome: null,
       timeDisplay: null,
@@ -2070,14 +2069,6 @@ export default class MidiComposer {
     this.lastPointer = { x: payload.x, y: payload.y };
     const { x, y } = payload;
     if (this.recordModeActive) {
-      if (this.bounds.recordStop && this.pointInBounds(x, y, this.bounds.recordStop)) {
-        if (this.recorder.isRecording) {
-          this.stopRecording();
-        } else {
-          this.startRecording();
-        }
-        return;
-      }
       const action = this.recordLayout.handlePointerDown(payload);
       if (action?.type === 'device') {
         this.recordDevicePreference = action.value;
@@ -2105,6 +2096,14 @@ export default class MidiComposer {
       }
       if (action?.type === 'playback-stop') {
         this.stopPlayback();
+        return;
+      }
+      if (action?.type === 'record-toggle') {
+        if (this.recorder.isRecording) {
+          this.stopRecording();
+        } else {
+          this.startRecording();
+        }
         return;
       }
       if (action?.type === 'touch') {
@@ -4232,10 +4231,17 @@ export default class MidiComposer {
 
   drawRecordMode(ctx, width, height, track, pattern) {
     const padding = 16;
-    const contentX = padding;
+    const gap = 12;
+    const sidebarW = Math.min(260, Math.max(190, width * 0.22));
+    const sidebarX = padding;
+    const sidebarY = padding;
+    const sidebarH = height - padding * 2;
+    const contentX = sidebarX + sidebarW + gap;
     const contentY = padding;
-    const contentW = width - padding * 2;
+    const contentW = width - contentX - padding;
     const contentH = height - padding * 2;
+
+    this.drawRecordModeSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH);
 
     const layout = this.recordLayout.layout(contentW, contentH, contentX, contentY);
     const grid = layout.grid;
@@ -4262,27 +4268,46 @@ export default class MidiComposer {
     }
     this.recordLayout.draw(ctx, {
       showGamepadHints: this.recordLayout.device === 'gamepad' && this.gamepadInput.connected,
-      isPlaying: this.isPlaying
+      isPlaying: this.isPlaying,
+      isRecording: this.recorder.isRecording
     });
 
-    if (layout.stop) {
-      this.bounds.recordStop = layout.stop;
-      const isRecording = this.recorder.isRecording;
-      ctx.fillStyle = isRecording ? '#ff6a6a' : '#55d68a';
-      ctx.fillRect(layout.stop.x, layout.stop.y, layout.stop.w, layout.stop.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-      ctx.strokeRect(layout.stop.x, layout.stop.y, layout.stop.w, layout.stop.h);
-      ctx.fillStyle = '#111';
-      ctx.font = '16px Courier New';
-      ctx.textAlign = 'center';
-      ctx.fillText(
-        isRecording ? 'Stop Recording' : 'Record',
-        layout.stop.x + layout.stop.w / 2,
-        layout.stop.y + layout.stop.h / 2 + 6
-      );
-      ctx.textAlign = 'left';
+    if (this.fileMenuOpen && this.bounds.fileButton) {
+      const panelPadding = 10;
+      const menuX = Math.max(panelPadding, width - FILE_MENU_WIDTH - panelPadding);
+      const menuY = this.bounds.fileButton.y + this.bounds.fileButton.h + 6;
+      this.drawFileMenu(ctx, menuX, menuY);
     }
+  }
 
+  drawRecordModeSidebar(ctx, x, y, w, h) {
+    const rowH = 38;
+    const rowGap = 8;
+    const panelPadding = 10;
+    const menuRows = TAB_OPTIONS.length + 1;
+    const menuH = Math.min(h, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
+    const menuX = x;
+    const menuY = y;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(menuX, menuY, w, menuH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(menuX, menuY, w, menuH);
+
+    const innerX = menuX + panelPadding;
+    const innerW = w - panelPadding * 2;
+    let cursorY = menuY + panelPadding;
+    this.bounds.tabs = [];
+    this.bounds.fileButton = { x: innerX, y: cursorY, w: innerW, h: rowH };
+    this.drawButton(ctx, this.bounds.fileButton, 'File', this.fileMenuOpen, false);
+    cursorY += rowH + rowGap;
+
+    TAB_OPTIONS.forEach((tab) => {
+      const bounds = { x: innerX, y: cursorY, w: innerW, h: rowH, id: tab.id };
+      this.bounds.tabs.push(bounds);
+      this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
+      cursorY += rowH + rowGap;
+    });
   }
 
   drawGhostNotes(ctx) {
