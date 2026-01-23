@@ -29,14 +29,14 @@ const QUANTIZE_OPTIONS = [
 ];
 
 const NOTE_LENGTH_OPTIONS = [
-  { id: '1', label: '1', divisor: 1 },
-  { id: '1/2', label: '1/2', divisor: 2 },
-  { id: '1/3', label: '1/3', divisor: 3 },
-  { id: '1/4', label: '1/4', divisor: 4 },
-  { id: '1/6', label: '1/6', divisor: 6 },
-  { id: '1/8', label: '1/8', divisor: 8 },
-  { id: '1/16', label: '1/16', divisor: 16 },
-  { id: '1/32', label: '1/32', divisor: 32 }
+  { id: '1', label: '1', icon: 'w', divisor: 1 },
+  { id: '1/2', label: '1/2', icon: 'd', divisor: 2 },
+  { id: '1/3', label: '1/3', icon: 't', divisor: 3 },
+  { id: '1/4', label: '1/4', icon: 'q', divisor: 4 },
+  { id: '1/6', label: '1/6', icon: 's', divisor: 6 },
+  { id: '1/8', label: '1/8', icon: 'e', divisor: 8 },
+  { id: '1/16', label: '1/16', icon: 'x', divisor: 16 },
+  { id: '1/32', label: '1/32', icon: 't', divisor: 32 }
 ];
 
 const SOUNDFONT_CDNS = [
@@ -2416,6 +2416,16 @@ export default class MidiComposer {
       };
       return;
     }
+    if (this.song.loopEnabled && this.isNearLoopMarker(x, 'start')) {
+      this.dragState = { mode: 'loop-start' };
+      this.setLoopStartTick(this.getTickFromX(x));
+      return;
+    }
+    if (this.song.loopEnabled && this.isNearLoopMarker(x, 'end')) {
+      this.dragState = { mode: 'loop-end' };
+      this.setLoopEndTick(this.getTickFromX(x));
+      return;
+    }
     const hit = this.getNoteHitAt(x, y);
     const cell = this.getGridCell(x, y);
     if (!cell && !hit) return;
@@ -3922,26 +3932,40 @@ export default class MidiComposer {
     const buttonSize = rowH;
     const compactLayout = controlW < 220;
     const noteW = compactLayout ? controlW : Math.min(110, Math.max(76, controlW * 0.45));
-    const labelW = Math.max(60, controlW - (buttonSize * 2 + rowGap * 2 + (compactLayout ? 0 : noteW + rowGap)));
-    const instrumentLabel = this.getTrackInstrumentLabel(track);
-    const clippedLabel = this.truncateLabel(ctx, instrumentLabel, labelW - 12);
+    const selectorW = controlW - buttonSize * 2;
+    const selectorX = controlX + buttonSize;
+    const trackName = track?.name || 'Track';
+    const instrumentName = track
+      ? isDrumChannel(track.channel)
+        ? this.getDrumKitLabel(track)
+        : this.getProgramLabel(track.program)
+      : 'Instrument';
 
     this.bounds.instrumentPrev = { x: controlX, y: controlY, w: buttonSize, h: rowH };
     this.drawSmallButton(ctx, this.bounds.instrumentPrev, '<', false);
-    this.bounds.instrumentLabel = {
-      x: controlX + buttonSize + rowGap,
-      y: controlY,
-      w: labelW,
-      h: rowH
-    };
-    this.drawSmallButton(ctx, this.bounds.instrumentLabel, clippedLabel, false);
     this.bounds.instrumentNext = {
-      x: controlX + buttonSize + rowGap + labelW + rowGap,
+      x: controlX + controlW - buttonSize,
       y: controlY,
       w: buttonSize,
       h: rowH
     };
     this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
+    this.bounds.instrumentLabel = {
+      x: selectorX + rowGap,
+      y: controlY,
+      w: selectorW - rowGap * 2,
+      h: rowH
+    };
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.font = '12px Courier New';
+    ctx.textAlign = 'center';
+    const clippedName = this.truncateLabel(ctx, trackName, this.bounds.instrumentLabel.w - 8);
+    ctx.fillText(clippedName, this.bounds.instrumentLabel.x + this.bounds.instrumentLabel.w / 2, controlY + 16);
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.font = '10px Courier New';
+    const clippedInstrument = this.truncateLabel(ctx, instrumentName, this.bounds.instrumentLabel.w - 8);
+    ctx.fillText(clippedInstrument, this.bounds.instrumentLabel.x + this.bounds.instrumentLabel.w / 2, controlY + 30);
+    ctx.textAlign = 'left';
     controlY += rowH + rowGap;
 
     if (track) {
@@ -4017,18 +4041,13 @@ export default class MidiComposer {
       controlY += mixH + rowGap;
     }
 
+    const noteLabel = `Note ${this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex])}`;
     this.bounds.noteLength = { x: controlX, y: controlY, w: noteW, h: rowH };
-    this.drawSmallButton(ctx, this.bounds.noteLength, `Note ${NOTE_LENGTH_OPTIONS[this.noteLengthIndex].label}`, false);
-    controlY += rowH + rowGap;
-    this.bounds.loopToggle = { x: controlX, y: controlY, w: noteW, h: rowH };
-    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+    this.drawSmallButton(ctx, this.bounds.noteLength, noteLabel, false);
     controlY += rowH + rowGap;
     const tempoLabel = `Tempo ${this.song.tempo}BPM`;
     this.bounds.tempoButton = { x: controlX, y: controlY, w: controlW, h: rowH };
     this.drawSmallButton(ctx, this.bounds.tempoButton, tempoLabel, this.tempoSliderOpen);
-    controlY += rowH + rowGap;
-    this.bounds.metronome = { x: controlX, y: controlY, w: controlW, h: rowH };
-    this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
     const transportGap = 6;
     const transportW = (controlW - transportGap * 4) / 5;
     const transportButtons = [
@@ -4039,6 +4058,12 @@ export default class MidiComposer {
       { id: 'goEnd', label: '⏭' }
     ];
     const transportY = controlsY + controlsH - panelPadding - rowH;
+    const toggleRowY = transportY - rowGap - rowH;
+    const toggleW = Math.max(90, (controlW - rowGap) / 2);
+    this.bounds.loopToggle = { x: controlX, y: toggleRowY, w: toggleW, h: rowH };
+    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+    this.bounds.metronome = { x: controlX + toggleW + rowGap, y: toggleRowY, w: toggleW, h: rowH };
+    this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
     transportButtons.forEach((button, index) => {
       const bounds = {
         x: controlX + index * (transportW + transportGap),
@@ -4058,6 +4083,15 @@ export default class MidiComposer {
       truncated = truncated.slice(0, -1);
     }
     return `${truncated}…`;
+  }
+
+  getNoteLengthDisplay(option, includeLabel = false) {
+    if (!option) return '';
+    const icon = option.icon || option.label;
+    if (includeLabel && option.label && option.label !== icon) {
+      return `${icon} ${option.label}`;
+    }
+    return icon;
   }
 
   drawHeader(ctx, x, y, w, h, track) {
@@ -4206,7 +4240,7 @@ export default class MidiComposer {
     this.drawButton(ctx, this.bounds.instrumentNext, '>', false, false);
     cursorX += buttonSize + gap * 2;
 
-    const noteLabel = `Note ${NOTE_LENGTH_OPTIONS[this.noteLengthIndex].label}`;
+    const noteLabel = `Note ${this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex])}`;
     const noteW = Math.min(160, Math.max(120, ctx.measureText(noteLabel).width + 28));
     this.bounds.noteLength = { x: cursorX, y, w: noteW, h: rowH };
     this.drawButton(ctx, this.bounds.noteLength, noteLabel, false, false);
@@ -4535,7 +4569,8 @@ export default class MidiComposer {
     }
 
     const buttonRowY = infoY + 40 + previewOffset;
-    const buttonW = (rightW - padding * 2 - 10) / 2;
+    const buttonGap = 8;
+    const buttonW = (rightW - padding * 2 - buttonGap * 2) / 3;
     const changeBounds = {
       x: rightX + padding,
       y: buttonRowY,
@@ -4544,8 +4579,16 @@ export default class MidiComposer {
       trackIndex: this.selectedTrackIndex,
       control: 'instrument'
     };
+    const renameBounds = {
+      x: rightX + padding + buttonW + buttonGap,
+      y: buttonRowY,
+      w: buttonW,
+      h: 32,
+      trackIndex: this.selectedTrackIndex,
+      control: 'name'
+    };
     const removeBounds = {
-      x: rightX + padding + buttonW + 10,
+      x: rightX + padding + (buttonW + buttonGap) * 2,
       y: buttonRowY,
       w: buttonW,
       h: 32,
@@ -4553,8 +4596,9 @@ export default class MidiComposer {
       control: 'remove'
     };
     this.drawButton(ctx, changeBounds, 'Change', false, false);
+    this.drawButton(ctx, renameBounds, 'Rename', false, false);
     this.drawButton(ctx, removeBounds, 'Remove', false, false);
-    this.bounds.instrumentSettingsControls.push(changeBounds, removeBounds);
+    this.bounds.instrumentSettingsControls.push(changeBounds, renameBounds, removeBounds);
 
     const toggleRowY = buttonRowY + 44;
     const muteBounds = {
@@ -4955,7 +4999,7 @@ export default class MidiComposer {
     this.drawToggle(ctx, this.bounds.slur, `Slur ${this.slurEnabled ? 'On' : 'Off'}`, this.slurEnabled);
 
     let noteLengthX = slurX + 100;
-    const noteLengthLabel = `Note ${NOTE_LENGTH_OPTIONS[this.noteLengthIndex].label}`;
+    const noteLengthLabel = `Note ${this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex])}`;
     this.bounds.noteLength = { x: noteLengthX, y: controlsRowY, w: 96, h: rowH };
     this.drawSmallButton(ctx, this.bounds.noteLength, noteLengthLabel, false);
 
@@ -5104,7 +5148,8 @@ export default class MidiComposer {
     rowY += rowH + gap;
 
     this.bounds.noteLength = { x: innerX, y: rowY, w: colW, h: rowH };
-    this.drawSmallButton(ctx, this.bounds.noteLength, `Note ${NOTE_LENGTH_OPTIONS[this.noteLengthIndex].label}`, false);
+    const noteLengthLabel = `Note ${this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex])}`;
+    this.drawSmallButton(ctx, this.bounds.noteLength, noteLengthLabel, false);
     this.bounds.preview = { x: innerX + colW + colGap, y: rowY, w: colW, h: rowH };
     this.drawToggle(ctx, this.bounds.preview, `Preview ${this.previewOnEdit ? 'On' : 'Off'}`, this.previewOnEdit);
     rowY += rowH + gap;
@@ -5760,7 +5805,7 @@ export default class MidiComposer {
     const gap = 6;
     const padding = 8;
     ctx.font = '12px Courier New';
-    const maxLabelW = Math.max(...options.map((option) => ctx.measureText(option.label).width));
+    const maxLabelW = Math.max(...options.map((option) => ctx.measureText(this.getNoteLengthDisplay(option, true)).width));
     const cellW = Math.max(60, Math.round(maxLabelW + 28));
     const cellH = 30;
     const menuW = columns * cellW + gap * (columns - 1) + padding * 2;
@@ -5783,7 +5828,7 @@ export default class MidiComposer {
       const cellY = menuY + padding + row * (cellH + gap);
       const bounds = { x: cellX, y: cellY, w: cellW, h: cellH, index };
       const isActive = index === this.noteLengthIndex;
-      this.drawSmallButton(ctx, bounds, option.label, isActive);
+      this.drawSmallButton(ctx, bounds, this.getNoteLengthDisplay(option, true), isActive);
       this.bounds.noteLengthMenu.push(bounds);
     });
   }
