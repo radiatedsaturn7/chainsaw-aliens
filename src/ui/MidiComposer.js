@@ -527,7 +527,7 @@ export default class MidiComposer {
     this.selectedGenre = 'random';
     this.qaOverlayOpen = false;
     this.recordModeActive = false;
-    this.recordQuantizeEnabled = false;
+    this.recordQuantizeEnabled = true;
     this.recordQuantizeDivisor = 16;
     this.recordCountInEnabled = false;
     this.recordMetronomeEnabled = false;
@@ -542,6 +542,8 @@ export default class MidiComposer {
     this.touchInput.setReverseStrings(this.reverseStrings);
     this.recordLayout = new RecordModeLayout({ touchInput: this.touchInput });
     this.recorder = new MidiRecorder({ getTime: () => this.getRecordingTime() });
+    this.recordGridSnapshot = null;
+    this.recordGridZoomedOut = false;
     this.registerInputHandlers();
     this.qaResults = [];
     this.draggingTrackControl = null;
@@ -714,9 +716,13 @@ export default class MidiComposer {
     this.inputBus.on('pitchbend', (event) => this.handleRecordedPitchBend(event));
     this.inputBus.on('toggleRecord', () => {
       if (this.recordModeActive) {
-        this.stopRecording();
+        if (this.recorder.isRecording) {
+          this.stopRecording();
+        } else {
+          this.startRecording();
+        }
       } else {
-        this.startRecording();
+        this.enterRecordMode();
       }
     });
   }
@@ -1605,10 +1611,24 @@ export default class MidiComposer {
     };
   }
 
-  startRecording() {
+  enterRecordMode() {
     if (this.recordModeActive) return;
     this.recordModeActive = true;
     this.activeTab = 'grid';
+    this.recordGridSnapshot = {
+      gridZoomX: this.gridZoomX,
+      gridZoomY: this.gridZoomY,
+      gridZoomInitialized: this.gridZoomInitialized,
+      gridOffset: this.gridOffset ? { ...this.gridOffset } : null
+    };
+    this.recordGridZoomedOut = false;
+  }
+
+  startRecording() {
+    if (this.recorder.isRecording) return;
+    if (!this.recordModeActive) {
+      this.enterRecordMode();
+    }
     if (!this.isPlaying) {
       this.togglePlayback();
     }
@@ -1629,17 +1649,29 @@ export default class MidiComposer {
 
   stopRecording() {
     if (!this.recordModeActive) return;
-    this.recorder.stopRecording(this.getRecordingTime());
-    const { track, pattern } = this.getRecordingTarget();
-    if (pattern) {
-      this.recorder.commitRecordedTakeToScore({ pattern, startTickOffset: 0 });
-      this.persist();
-      const lastNote = pattern.notes[pattern.notes.length - 1];
-      if (lastNote) {
-        this.playNote(track, lastNote, this.playheadTick);
+    if (this.recorder.isRecording) {
+      this.recorder.stopRecording(this.getRecordingTime());
+      const { track, pattern } = this.getRecordingTarget();
+      if (pattern) {
+        this.recorder.commitRecordedTakeToScore({ pattern, startTickOffset: 0 });
+        this.persist();
+        const lastNote = pattern.notes[pattern.notes.length - 1];
+        if (lastNote) {
+          this.playNote(track, lastNote, this.playheadTick);
+        }
       }
     }
     this.recordModeActive = false;
+    if (this.recordGridSnapshot) {
+      this.gridZoomX = this.recordGridSnapshot.gridZoomX;
+      this.gridZoomY = this.recordGridSnapshot.gridZoomY;
+      this.gridZoomInitialized = this.recordGridSnapshot.gridZoomInitialized;
+      if (this.recordGridSnapshot.gridOffset) {
+        this.gridOffset = { ...this.recordGridSnapshot.gridOffset };
+      }
+      this.recordGridSnapshot = null;
+      this.recordGridZoomedOut = false;
+    }
   }
 
   getRecordingTarget() {
@@ -1780,9 +1812,13 @@ export default class MidiComposer {
     const cmd = ctrl || meta;
     if (input.wasPressedCode?.('Enter')) {
       if (this.recordModeActive) {
-        this.stopRecording();
+        if (this.recorder.isRecording) {
+          this.stopRecording();
+        } else {
+          this.startRecording();
+        }
       } else {
-        this.startRecording();
+        this.enterRecordMode();
       }
     }
     if (cmd && input.wasPressedCode?.('KeyC')) {
@@ -2012,7 +2048,11 @@ export default class MidiComposer {
     const { x, y } = payload;
     if (this.recordModeActive) {
       if (this.bounds.recordStop && this.pointInBounds(x, y, this.bounds.recordStop)) {
-        this.stopRecording();
+        if (this.recorder.isRecording) {
+          this.stopRecording();
+        } else {
+          this.startRecording();
+        }
         return;
       }
       const action = this.recordLayout.handlePointerDown(payload);
@@ -2037,6 +2077,9 @@ export default class MidiComposer {
         return;
       }
       if (action?.type === 'touch') {
+        return;
+      }
+      if (action?.type) {
         return;
       }
     }
@@ -2086,7 +2129,7 @@ export default class MidiComposer {
     }
 
     if (this.bounds.record && this.pointInBounds(x, y, this.bounds.record)) {
-      this.startRecording();
+      this.enterRecordMode();
       return;
     }
     if (this.tempoSliderOpen && this.bounds.tempoSlider && this.pointInBounds(x, y, this.bounds.tempoSlider)) {
@@ -3416,6 +3459,7 @@ export default class MidiComposer {
 
   handleSettingsControl(control, pointer) {
     if (!control?.id) return;
+    if (control.disabled) return;
     if (control.id === 'audio-volume' || control.id === 'audio-latency' || control.id === 'audio-reverb-level') {
       this.dragState = { mode: 'slider', id: control.id, bounds: control };
       this.updateSliderValue(pointer.x, pointer.y, control.id, control);
@@ -3492,6 +3536,16 @@ export default class MidiComposer {
     }
     if (control.id === 'touch-reverse-strings') {
       this.setReverseStrings(!this.reverseStrings);
+      return;
+    }
+    if (control.id === 'virtual-device-gamepad') {
+      if (this.gamepadInput.connected) {
+        this.recordDevicePreference = 'gamepad';
+      }
+      return;
+    }
+    if (control.id === 'virtual-device-touch') {
+      this.recordDevicePreference = 'touch';
       return;
     }
     if (control.id === 'grid-select-all') {
@@ -4149,6 +4203,18 @@ export default class MidiComposer {
     const layout = this.recordLayout.layout(width, height);
     const grid = layout.grid;
     const instrument = layout.instrument;
+    if (!this.recordGridZoomedOut && track) {
+      const rows = isDrumChannel(track.channel)
+        ? this.getDrumRows().length
+        : this.getPitchRange().max - this.getPitchRange().min + 1;
+      const { minZoom } = this.getGridZoomLimits(rows);
+      const zoomXLimits = this.getGridZoomLimitsX();
+      this.gridZoomX = zoomXLimits.minZoom;
+      this.gridZoomY = minZoom;
+      this.gridZoomInitialized = true;
+      this.gridOffsetInitialized = false;
+      this.recordGridZoomedOut = true;
+    }
     if (grid) {
       this.drawPatternEditor(ctx, grid.x, grid.y, grid.w, grid.h, track, pattern);
       this.drawGhostNotes(ctx);
@@ -4174,14 +4240,19 @@ export default class MidiComposer {
 
     if (layout.stop) {
       this.bounds.recordStop = layout.stop;
-      ctx.fillStyle = '#ff6a6a';
+      const isRecording = this.recorder.isRecording;
+      ctx.fillStyle = isRecording ? '#ff6a6a' : '#55d68a';
       ctx.fillRect(layout.stop.x, layout.stop.y, layout.stop.w, layout.stop.h);
       ctx.strokeStyle = 'rgba(255,255,255,0.4)';
       ctx.strokeRect(layout.stop.x, layout.stop.y, layout.stop.w, layout.stop.h);
       ctx.fillStyle = '#111';
       ctx.font = '16px Courier New';
       ctx.textAlign = 'center';
-      ctx.fillText('Stop Recording', layout.stop.x + layout.stop.w / 2, layout.stop.y + layout.stop.h / 2 + 6);
+      ctx.fillText(
+        isRecording ? 'Stop Recording' : 'Record',
+        layout.stop.x + layout.stop.w / 2,
+        layout.stop.y + layout.stop.h / 2 + 6
+      );
       ctx.textAlign = 'left';
     }
   }
@@ -5071,6 +5142,36 @@ export default class MidiComposer {
       cursorY += rowH + 10;
     };
 
+    const drawButtonRow = (label, buttons, description) => {
+      const buttonGap = 10;
+      const buttonH = 36;
+      const totalW = w - padding * 2 - labelW;
+      const buttonW = (totalW - buttonGap * (buttons.length - 1)) / buttons.length;
+      const baseX = x + padding + labelW;
+      const baseY = cursorY + Math.round((rowH - buttonH) / 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.font = '13px Courier New';
+      ctx.fillText(label, x + padding, cursorY + 22);
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.font = '11px Courier New';
+      if (description) {
+        ctx.fillText(description, x + padding, cursorY + 40);
+      }
+      buttons.forEach((button, index) => {
+        const bounds = {
+          x: baseX + index * (buttonW + buttonGap),
+          y: baseY,
+          w: buttonW,
+          h: buttonH,
+          id: button.id,
+          disabled: button.disabled
+        };
+        this.drawButton(ctx, bounds, button.label, button.active, button.disabled);
+        this.bounds.settingsControls.push(bounds);
+      });
+      cursorY += rowH + 10;
+    };
+
     const drawSlider = (label, valueText, ratio, id, description) => {
       const bounds = { x: x + padding + labelW, y: cursorY, w: w - padding * 2 - labelW, h: rowH, id };
       const barBounds = { x: bounds.x, y: cursorY + 24, w: bounds.w, h: 16 };
@@ -5134,6 +5235,31 @@ export default class MidiComposer {
     drawToggle('Scrub', this.scrubAudition, 'grid-scrub', 'Audition notes while scrubbing.');
     drawAction('All', 'Select', 'grid-select-all', 'Select all notes in the current pattern.');
     drawToggle('High Contrast', this.highContrast, 'ui-contrast', 'Boosts UI contrast for clarity.');
+    cursorY += sectionGap;
+
+    drawSectionTitle('Virtual Instruments');
+    const gamepadConnected = this.gamepadInput.connected;
+    const preferredDevice = this.recordDevicePreference === 'auto'
+      ? (gamepadConnected ? 'gamepad' : 'touch')
+      : this.recordDevicePreference;
+    drawButtonRow(
+      'Input',
+      [
+        {
+          id: 'virtual-device-gamepad',
+          label: gamepadConnected ? 'Gamepad' : 'No Pad',
+          active: preferredDevice === 'gamepad',
+          disabled: !gamepadConnected
+        },
+        {
+          id: 'virtual-device-touch',
+          label: 'Touch',
+          active: preferredDevice === 'touch',
+          disabled: false
+        }
+      ],
+      'Choose the control source for virtual instruments.'
+    );
     cursorY += sectionGap;
 
     drawSectionTitle('Touch Input');
