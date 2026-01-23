@@ -2099,6 +2099,14 @@ export default class MidiComposer {
         this.recordMetronomeEnabled = this.recordLayout.metronomeEnabled;
         return;
       }
+      if (action?.type === 'playback-play') {
+        this.togglePlayback();
+        return;
+      }
+      if (action?.type === 'playback-stop') {
+        this.stopPlayback();
+        return;
+      }
       if (action?.type === 'touch') {
         return;
       }
@@ -4224,17 +4232,10 @@ export default class MidiComposer {
 
   drawRecordMode(ctx, width, height, track, pattern) {
     const padding = 16;
-    const gap = 12;
-    const sidebarW = Math.min(280, Math.max(200, width * 0.26));
-    const sidebarX = padding;
-    const sidebarY = padding;
-    const sidebarH = height - padding * 2;
-    const contentX = sidebarX + sidebarW + gap;
+    const contentX = padding;
     const contentY = padding;
-    const contentW = width - contentX - padding;
+    const contentW = width - padding * 2;
     const contentH = height - padding * 2;
-
-    this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track);
 
     const layout = this.recordLayout.layout(contentW, contentH, contentX, contentY);
     const grid = layout.grid;
@@ -4259,23 +4260,9 @@ export default class MidiComposer {
       });
       this.drawGhostNotes(ctx);
     }
-    const deviceLabel = this.gamepadInput.connected
-      ? `Gamepad ${this.recordLayout.device === 'gamepad' ? 'Active' : 'Detected'}`
-      : 'Touch/Keyboard';
-    const degreeLabel = this.recordLayout.device === 'gamepad'
-      ? `Degree ${this.recordStatus.degree}`
-      : 'Keyboard Ready';
-    const octaveLabel = this.recordLayout.device === 'gamepad'
-      ? `Oct ${this.recordStatus.octave >= 0 ? '+' : ''}${this.recordStatus.octave}`
-      : `Oct ${this.keyboardInput.baseOctave}`;
-    const velocityLabel = `Vel ${this.recordStatus.velocity}`;
     this.recordLayout.draw(ctx, {
-      gamepadConnected: this.gamepadInput.connected,
       showGamepadHints: this.recordLayout.device === 'gamepad' && this.gamepadInput.connected,
-      deviceLabel,
-      degreeLabel,
-      octaveLabel,
-      velocityLabel
+      isPlaying: this.isPlaying
     });
 
     if (layout.stop) {
@@ -4296,12 +4283,6 @@ export default class MidiComposer {
       ctx.textAlign = 'left';
     }
 
-    if (this.fileMenuOpen && this.bounds.fileButton) {
-      const panelPadding = 10;
-      const menuX = Math.max(panelPadding, sidebarX + sidebarW - FILE_MENU_WIDTH - panelPadding);
-      const menuY = this.bounds.fileButton.y + this.bounds.fileButton.h + 6;
-      this.drawFileMenu(ctx, menuX, menuY);
-    }
   }
 
   drawGhostNotes(ctx) {

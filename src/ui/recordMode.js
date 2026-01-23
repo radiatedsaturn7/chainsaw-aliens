@@ -62,16 +62,15 @@ export default class RecordModeLayout {
       w: stopW,
       h: stopH
     };
-    const textBlockH = 36;
     const headerPadding = 12;
-    const headerH = headerPadding + textBlockH + this.header.rowH + 10;
+    const headerH = headerPadding + this.header.rowH + 10;
     this.header = {
       x: this.bounds.instrument.x + 12,
       y: this.bounds.instrument.y + 12,
       rowH: 28,
       rowGap: 10,
-      settingsY: this.bounds.instrument.y + 12 + textBlockH,
-      instrumentY: this.bounds.instrument.y + 12 + textBlockH + 28 + 10,
+      settingsY: this.bounds.instrument.y + 12,
+      instrumentY: this.bounds.instrument.y + 12 + 28 + 10,
       headerH
     };
     if (this.touchInput) {
@@ -86,7 +85,7 @@ export default class RecordModeLayout {
     return this.bounds;
   }
 
-  draw(ctx, { gamepadConnected, showGamepadHints, deviceLabel, degreeLabel, octaveLabel, velocityLabel }) {
+  draw(ctx, { showGamepadHints, isPlaying }) {
     const { instrument } = this.bounds;
     if (!instrument) return;
 
@@ -96,23 +95,15 @@ export default class RecordModeLayout {
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(instrument.x, instrument.y, instrument.w, instrument.h);
 
-    ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
-    ctx.fillText('Record Mode', instrument.x + 12, instrument.y + 20);
-
-    const metaText = `${deviceLabel} · ${degreeLabel} · ${octaveLabel} · ${velocityLabel}`;
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = '12px Courier New';
-    ctx.fillText(metaText, instrument.x + 12, instrument.y + 40);
-
-    this.drawSettingButtons(ctx);
-    this.drawInstrumentModal(ctx, gamepadConnected);
+    this.drawSettingButtons(ctx, isPlaying);
 
     if (showGamepadHints) {
       this.drawGamepadHints(ctx);
     } else if (this.touchInput) {
       this.touchInput.draw(ctx);
     }
+
+    this.drawInstrumentModal(ctx);
 
     ctx.restore();
   }
@@ -129,12 +120,8 @@ export default class RecordModeLayout {
     ctx.textAlign = 'left';
   }
 
-  drawInstrumentButtons(ctx, gamepadConnected) {
+  drawInstrumentButtons(ctx) {
     if (!this.instrumentMenuOpen) {
-      this.bounds.instrumentButtons = [];
-      return;
-    }
-    if (this.device === 'gamepad' && gamepadConnected) {
       this.bounds.instrumentButtons = [];
       return;
     }
@@ -161,10 +148,9 @@ export default class RecordModeLayout {
     });
   }
 
-  drawInstrumentModal(ctx, gamepadConnected) {
+  drawInstrumentModal(ctx) {
     this.instrumentModalBounds = null;
     if (!this.instrumentMenuOpen) return;
-    if (this.device === 'gamepad' && gamepadConnected) return;
     const { instrument } = this.bounds;
     if (!instrument) return;
     ctx.save();
@@ -184,14 +170,14 @@ export default class RecordModeLayout {
     ctx.font = '14px Courier New';
     ctx.fillText('Virtual Instruments', modalX + 16, modalY + 28);
 
-    this.drawInstrumentButtons(ctx, gamepadConnected);
+    this.drawInstrumentButtons(ctx);
     ctx.restore();
   }
 
-  drawSettingButtons(ctx) {
+  drawSettingButtons(ctx, isPlaying) {
     const gap = 10;
     const totalW = this.bounds.instrument.w - 24;
-    const buttonW = Math.max(90, (totalW - gap * 3) / 4);
+    const buttonW = Math.max(80, (totalW - gap * 5) / 6);
     const x = this.header.x;
     const y = this.header.settingsY;
     this.bounds.settingsButtons = [
@@ -230,6 +216,24 @@ export default class RecordModeLayout {
         w: buttonW,
         h: this.header.rowH,
         active: this.instrumentMenuOpen
+      },
+      {
+        id: 'playback-play',
+        label: isPlaying ? '❚❚' : '▶',
+        x: x + (buttonW + gap) * 4,
+        y,
+        w: buttonW,
+        h: this.header.rowH,
+        active: isPlaying
+      },
+      {
+        id: 'playback-stop',
+        label: '⏹',
+        x: x + (buttonW + gap) * 5,
+        y,
+        w: buttonW,
+        h: this.header.rowH,
+        active: false
       }
     ];
     this.bounds.settingsButtons.forEach((btn) => {
@@ -281,6 +285,12 @@ export default class RecordModeLayout {
       }
       if (hitSetting.id === 'virtual') {
         this.instrumentMenuOpen = !this.instrumentMenuOpen;
+      }
+      if (hitSetting.id === 'playback-play') {
+        return { type: 'playback-play' };
+      }
+      if (hitSetting.id === 'playback-stop') {
+        return { type: 'playback-stop' };
       }
       return { type: hitSetting.id, value: hitSetting.active };
     }
