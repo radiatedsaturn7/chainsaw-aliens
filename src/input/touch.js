@@ -25,6 +25,7 @@ export default class TouchInput {
     this.stringRects = [];
     this.reverseStrings = false;
     this.stringLayout = null;
+    this.stringVibrations = new Map();
   }
 
   setInstrument(instrument) {
@@ -181,6 +182,7 @@ export default class TouchInput {
     const pointerId = id ?? 'mouse';
     const noteId = `touch-${pointerId}-${hit.pitch}-${Date.now()}`;
     this.activeTouches.set(pointerId, { id: noteId, pitch: hit.pitch, hit });
+    this.triggerStringVibration(hit);
     this.bus.emit('noteon', {
       id: noteId,
       pitch: hit.pitch,
@@ -199,6 +201,7 @@ export default class TouchInput {
     this.bus.emit('noteoff', { id: current.id, source: 'touch' });
     const noteId = `touch-${pointerId}-${hit.pitch}-${Date.now()}`;
     this.activeTouches.set(pointerId, { id: noteId, pitch: hit.pitch, hit });
+    this.triggerStringVibration(hit);
     this.bus.emit('noteon', {
       id: noteId,
       pitch: hit.pitch,
@@ -270,7 +273,12 @@ export default class TouchInput {
     ctx.save();
     ctx.fillStyle = '#101010';
     ctx.fillRect(this.bounds.x, this.bounds.y, this.bounds.w, this.bounds.h);
-    const activePitches = new Set(Array.from(this.activeTouches.values()).map((touch) => touch.pitch));
+    const activeCells = new Set();
+    this.activeTouches.forEach((touch) => {
+      if (touch.hit && typeof touch.hit.stringIndex === 'number' && typeof touch.hit.fret === 'number') {
+        activeCells.add(`${touch.hit.stringIndex}-${touch.hit.fret}`);
+      }
+    });
     const layout = this.stringLayout;
     if (!layout) {
       ctx.restore();
@@ -324,22 +332,58 @@ export default class TouchInput {
       const octave = Math.floor(basePitch / 12) - 1;
       ctx.fillText(`${noteName}${octave}`, this.bounds.x + 4, y + 4);
     });
+    const now = performance.now();
     ctx.strokeStyle = 'rgba(255,255,255,0.3)';
     for (let i = 0; i < stringCount; i += 1) {
       const y = this.bounds.y + (i + 1) * stringGap;
       const thicknessIndex = this.reverseStrings ? (stringCount - 1 - i) : i;
       ctx.lineWidth = 1 + (thicknessIndex / Math.max(1, stringCount - 1)) * 2.6;
+      const vibration = this.stringVibrations.get(i);
+      let amplitude = 0;
+      let phase = 0;
+      if (vibration) {
+        const elapsed = (now - vibration.start) / 1000;
+        amplitude = vibration.amplitude * Math.exp(-elapsed * 2.8);
+        phase = elapsed * 14;
+        if (amplitude < 0.12) {
+          this.stringVibrations.delete(i);
+          amplitude = 0;
+        }
+      }
       ctx.beginPath();
-      ctx.moveTo(boardX, y);
-      ctx.lineTo(boardX + boardW, y);
+      if (amplitude > 0.1) {
+        const segments = 24;
+        for (let s = 0; s <= segments; s += 1) {
+          const x = boardX + (boardW * s) / segments;
+          const wave = Math.sin((s / segments) * Math.PI * 4 + phase) * amplitude;
+          const yOffset = y + wave;
+          if (s === 0) {
+            ctx.moveTo(x, yOffset);
+          } else {
+            ctx.lineTo(x, yOffset);
+          }
+        }
+      } else {
+        ctx.moveTo(boardX, y);
+        ctx.lineTo(boardX + boardW, y);
+      }
       ctx.stroke();
     }
     ctx.lineWidth = 1;
     this.stringRects.forEach((cell) => {
-      if (!activePitches.has(cell.pitch)) return;
+      const cellId = `${cell.stringIndex}-${cell.fret}`;
+      if (!activeCells.has(cellId)) return;
       ctx.fillStyle = 'rgba(255,225,106,0.6)';
       ctx.fillRect(cell.x + 2, cell.y + 2, cell.w - 4, cell.h - 4);
     });
     ctx.restore();
+  }
+
+  triggerStringVibration(hit) {
+    if (!hit || typeof hit.stringIndex !== 'number') return;
+    this.stringVibrations.set(hit.stringIndex, {
+      start: performance.now(),
+      amplitude: 6
+    });
   }
 }

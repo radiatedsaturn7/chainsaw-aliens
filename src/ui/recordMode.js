@@ -7,7 +7,6 @@ export default class RecordModeLayout {
       grid: null,
       instrument: null,
       stop: null,
-      deviceButtons: [],
       instrumentButtons: [],
       settingsButtons: []
     };
@@ -17,7 +16,8 @@ export default class RecordModeLayout {
       rowH: 28,
       rowGap: 10,
       settingsY: 0,
-      deviceY: 0
+      instrumentY: 0,
+      headerH: 0
     };
     this.device = 'auto';
     this.instrument = 'keyboard';
@@ -25,6 +25,7 @@ export default class RecordModeLayout {
     this.quantizeLabel = '1/16';
     this.countInEnabled = false;
     this.metronomeEnabled = false;
+    this.instrumentMenuOpen = false;
   }
 
   setDevice(device) {
@@ -43,7 +44,7 @@ export default class RecordModeLayout {
     const topBarH = 56;
     const gridGap = 12;
     const availableH = height - padding * 2 - topBarH - gridGap;
-    const gridH = Math.round(availableH * 0.56);
+    const gridH = Math.round(availableH * 0.42);
     const gridY = padding + topBarH;
     this.bounds.grid = { x: padding, y: gridY, w: width - padding * 2, h: gridH };
     this.bounds.instrument = {
@@ -60,21 +61,24 @@ export default class RecordModeLayout {
       w: stopW,
       h: stopH
     };
-    const headerH = 92;
+    const textBlockH = 36;
+    const headerPadding = 12;
+    const headerH = headerPadding + textBlockH + this.header.rowH
+      + (this.instrumentMenuOpen ? this.header.rowGap + this.header.rowH : 0) + 10;
     this.header = {
       x: this.bounds.instrument.x + 12,
       y: this.bounds.instrument.y + 12,
       rowH: 28,
       rowGap: 10,
-      settingsY: this.bounds.instrument.y + 12,
-      deviceY: this.bounds.instrument.y + 12 + 28 + 10,
+      settingsY: this.bounds.instrument.y + 12 + textBlockH,
+      instrumentY: this.bounds.instrument.y + 12 + textBlockH + 28 + 10,
       headerH
     };
     if (this.touchInput) {
-      const touchH = Math.max(0, this.bounds.instrument.h - headerH - 24);
+      const touchH = Math.max(0, this.bounds.instrument.h - headerH - 16);
       this.touchInput.setBounds({
         x: this.bounds.instrument.x + 12,
-        y: this.bounds.instrument.y + headerH + 12,
+        y: this.bounds.instrument.y + headerH,
         w: this.bounds.instrument.w - 24,
         h: touchH
       });
@@ -101,7 +105,6 @@ export default class RecordModeLayout {
     ctx.font = '12px Courier New';
     ctx.fillText(metaText, instrument.x + 12, instrument.y + 40);
 
-    this.drawDeviceButtons(ctx, gamepadConnected);
     this.drawInstrumentButtons(ctx, gamepadConnected);
     this.drawSettingButtons(ctx);
 
@@ -126,52 +129,42 @@ export default class RecordModeLayout {
     ctx.textAlign = 'left';
   }
 
-  drawDeviceButtons(ctx, gamepadConnected) {
-    const buttons = [];
-    const x = this.header.x;
-    const y = this.header.deviceY;
-    const w = 110;
-    const h = this.header.rowH;
-    const gap = 10;
-    const gamepadLabel = gamepadConnected ? 'Gamepad' : 'No Pad';
-    buttons.push({ id: 'gamepad', label: gamepadLabel, x, y, w, h, disabled: !gamepadConnected });
-    buttons.push({ id: 'touch', label: 'Touch', x: x + w + gap, y, w, h });
-    this.bounds.deviceButtons = buttons.map((btn) => ({
-      ...btn,
-      active: this.device === btn.id
-    }));
-    this.bounds.deviceButtons.forEach((btn) => {
-      this.drawButton(ctx, btn, btn.label, btn.active && !btn.disabled);
-    });
-  }
-
   drawInstrumentButtons(ctx, gamepadConnected) {
+    if (!this.instrumentMenuOpen) {
+      this.bounds.instrumentButtons = [];
+      return;
+    }
     if (this.device === 'gamepad' && gamepadConnected) {
       this.bounds.instrumentButtons = [];
       return;
     }
     const instruments = ['guitar', 'bass', 'keyboard', 'drums'];
-    const buttonW = 96;
     const gap = 10;
-    const x = this.header.x + 2 * (110 + gap) + 24;
-    const y = this.header.deviceY;
-    this.bounds.instrumentButtons = instruments.map((instrument, index) => ({
-      id: instrument,
-      label: instrument[0].toUpperCase() + instrument.slice(1),
-      x: x + index * (buttonW + gap),
-      y,
-      w: buttonW,
-      h: this.header.rowH,
-      active: this.instrument === instrument
-    }));
+    const totalW = this.bounds.instrument.w - 24;
+    const buttonW = Math.max(80, (totalW - gap * (instruments.length - 1)) / instruments.length);
+    const x = this.header.x;
+    const y = this.header.instrumentY;
+    this.bounds.instrumentButtons = instruments.map((instrument, index) => {
+      const w = Math.min(buttonW, totalW);
+      return ({
+        id: instrument,
+        label: instrument[0].toUpperCase() + instrument.slice(1),
+        x: x + index * (w + gap),
+        y,
+        w,
+        h: this.header.rowH,
+        active: this.instrument === instrument
+      });
+    });
     this.bounds.instrumentButtons.forEach((btn) => {
       this.drawButton(ctx, btn, btn.label, btn.active);
     });
   }
 
   drawSettingButtons(ctx) {
-    const buttonW = 110;
     const gap = 10;
+    const totalW = this.bounds.instrument.w - 24;
+    const buttonW = Math.max(90, (totalW - gap * 3) / 4);
     const x = this.header.x;
     const y = this.header.settingsY;
     this.bounds.settingsButtons = [
@@ -180,27 +173,36 @@ export default class RecordModeLayout {
         label: this.quantizeEnabled ? `Quant ${this.quantizeLabel}` : 'Quant Off',
         x,
         y,
-        w: buttonW + 10,
+        w: buttonW,
         h: this.header.rowH,
         active: this.quantizeEnabled
       },
       {
         id: 'countin',
         label: this.countInEnabled ? 'Count-in On' : 'Count-in Off',
-        x: x + buttonW + gap + 10,
+        x: x + buttonW + gap,
         y,
-        w: buttonW + 10,
+        w: buttonW,
         h: this.header.rowH,
         active: this.countInEnabled
       },
       {
         id: 'metronome',
         label: this.metronomeEnabled ? 'Click On' : 'Click Off',
-        x: x + (buttonW + gap + 10) * 2,
+        x: x + (buttonW + gap) * 2,
         y,
-        w: buttonW + 10,
+        w: buttonW,
         h: this.header.rowH,
         active: this.metronomeEnabled
+      },
+      {
+        id: 'virtual',
+        label: 'Virtual Instruments',
+        x: x + (buttonW + gap) * 3,
+        y,
+        w: buttonW,
+        h: this.header.rowH,
+        active: this.instrumentMenuOpen
       }
     ];
     this.bounds.settingsButtons.forEach((btn) => {
@@ -229,14 +231,10 @@ export default class RecordModeLayout {
 
   handlePointerDown(payload) {
     const { x, y } = payload;
-    const hitDevice = this.bounds.deviceButtons.find((btn) => this.pointInBounds(x, y, btn));
-    if (hitDevice && !hitDevice.disabled) {
-      this.device = hitDevice.id;
-      return { type: 'device', value: hitDevice.id };
-    }
     const hitInstrument = this.bounds.instrumentButtons.find((btn) => this.pointInBounds(x, y, btn));
     if (hitInstrument) {
       this.setInstrument(hitInstrument.id);
+      this.instrumentMenuOpen = false;
       return { type: 'instrument', value: hitInstrument.id };
     }
     const hitSetting = this.bounds.settingsButtons.find((btn) => this.pointInBounds(x, y, btn));
@@ -249,6 +247,9 @@ export default class RecordModeLayout {
       }
       if (hitSetting.id === 'metronome') {
         this.metronomeEnabled = !this.metronomeEnabled;
+      }
+      if (hitSetting.id === 'virtual') {
+        this.instrumentMenuOpen = !this.instrumentMenuOpen;
       }
       return { type: hitSetting.id, value: hitSetting.active };
     }
