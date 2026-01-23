@@ -1624,6 +1624,22 @@ export default class MidiComposer {
     this.recordGridZoomedOut = false;
   }
 
+  exitRecordMode() {
+    if (!this.recordModeActive) return;
+    if (this.recorder.isRecording) {
+      this.stopRecording();
+    }
+    this.recordModeActive = false;
+    if (this.recordGridSnapshot) {
+      this.gridZoomX = this.recordGridSnapshot.gridZoomX;
+      this.gridZoomY = this.recordGridSnapshot.gridZoomY;
+      this.gridZoomInitialized = this.recordGridSnapshot.gridZoomInitialized;
+      this.gridOffset = this.recordGridSnapshot.gridOffset ? { ...this.recordGridSnapshot.gridOffset } : { x: 0, y: 0 };
+    }
+    this.recordGridSnapshot = null;
+    this.recordGridZoomedOut = false;
+  }
+
   startRecording() {
     if (this.recorder.isRecording) return;
     if (!this.recordModeActive) {
@@ -2112,6 +2128,29 @@ export default class MidiComposer {
       if (action?.type) {
         return;
       }
+      if (this.fileMenuOpen) {
+        const fileHit = this.fileMenuBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+        if (fileHit) {
+          this.handleFileMenu(fileHit.id);
+          return;
+        }
+        if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
+          this.fileMenuOpen = false;
+          return;
+        }
+        this.fileMenuOpen = false;
+      }
+      const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
+      if (tabHit) {
+        this.activeTab = tabHit.id;
+        this.exitRecordMode();
+        return;
+      }
+      if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
+        this.fileMenuOpen = !this.fileMenuOpen;
+        return;
+      }
+      return;
     }
     if (this.qaOverlayOpen) {
       const hit = this.qaBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -2514,6 +2553,7 @@ export default class MidiComposer {
     this.lastPointer = { x: payload.x, y: payload.y };
     if (this.recordModeActive) {
       this.recordLayout.handlePointerMove(payload);
+      return;
     }
     if (this.qaOverlayOpen) return;
     if (this.dragState?.mode === 'instrument-scroll') {
@@ -2623,6 +2663,7 @@ export default class MidiComposer {
     this.lastPointer = { x: payload.x, y: payload.y };
     if (this.recordModeActive) {
       this.recordLayout.handlePointerUp(payload);
+      return;
     }
     if (this.longPressTimer) {
       clearTimeout(this.longPressTimer);
@@ -2689,9 +2730,7 @@ export default class MidiComposer {
 
   shouldHandleGestureStart(payload) {
     if (!this.recordModeActive) return true;
-    const instrumentBounds = this.recordLayout?.bounds?.instrument;
-    if (!instrumentBounds) return true;
-    return !payload.touches?.some((touch) => this.pointInBounds(touch.x, touch.y, instrumentBounds));
+    return false;
   }
 
   handleGestureStart(payload) {
@@ -4248,9 +4287,27 @@ export default class MidiComposer {
     const contentW = width - contentX - padding;
     const contentH = height - padding * 2;
 
-    this.drawRecordModeSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH);
+    const menuH = this.drawRecordModeSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH);
 
-    const layout = this.recordLayout.layout(contentW, contentH, contentX, contentY);
+    const gridBounds = {
+      x: contentX,
+      y: padding,
+      w: contentW,
+      h: menuH
+    };
+    const instrumentY = padding + menuH + gap;
+    const instrumentH = Math.max(0, height - instrumentY - padding);
+    const instrumentBounds = {
+      x: 0,
+      y: instrumentY,
+      w: width,
+      h: instrumentH
+    };
+
+    const layout = this.recordLayout.layout(contentW, contentH, contentX, contentY, {
+      gridBounds,
+      instrumentBounds
+    });
     const grid = layout.grid;
     const instrument = layout.instrument;
     if (!this.recordGridZoomedOut && track) {
@@ -4269,7 +4326,8 @@ export default class MidiComposer {
       this.drawPatternEditor(ctx, grid.x, grid.y, grid.w, grid.h, track, pattern, {
         summary: true,
         hideLabels: true,
-        uniformNotes: true
+        uniformNotes: true,
+        simplified: true
       });
       this.drawGhostNotes(ctx);
     }
@@ -4315,6 +4373,7 @@ export default class MidiComposer {
       this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
       cursorY += rowH + rowGap;
     });
+    return menuH;
   }
 
   drawGhostNotes(ctx) {
@@ -5829,13 +5888,14 @@ export default class MidiComposer {
 
   drawPatternEditor(ctx, x, y, w, h, track, pattern, options = {}) {
     if (!track || !pattern) return;
+    const simplified = options.simplified;
     const loopTicks = this.getLoopTicks();
     const rows = isDrumChannel(track.channel)
       ? this.getDrumRows().length
       : this.getPitchRange().max - this.getPitchRange().min + 1;
     const isMobile = this.isMobileLayout();
     const labelW = options.hideLabels ? 0 : (isMobile ? 76 : 96);
-    const rulerH = DEFAULT_RULER_HEIGHT;
+    const rulerH = simplified ? 0 : DEFAULT_RULER_HEIGHT;
     const viewW = w - labelW;
     const baseCellWidth = viewW / loopTicks;
     const baseVisibleRows = this.getBaseVisibleRows(rows);
@@ -5879,17 +5939,23 @@ export default class MidiComposer {
 
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(x, y, w, viewH + rulerH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(x, y, w, viewH + rulerH);
+    if (!simplified) {
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(x, y, w, viewH + rulerH);
+    }
 
-    this.drawRuler(ctx, x + labelW, y, viewW, rulerH, loopTicks);
+    if (!simplified) {
+      this.drawRuler(ctx, x + labelW, y, viewW, rulerH, loopTicks);
+    }
     ctx.save();
     ctx.beginPath();
     ctx.rect(x + labelW, y + rulerH, viewW, viewH);
     ctx.clip();
     this.drawGrid(ctx, track, pattern, loopTicks, options);
-    this.drawPlayhead(ctx);
-    this.drawCursor(ctx);
+    if (!simplified) {
+      this.drawPlayhead(ctx);
+      this.drawCursor(ctx);
+    }
     ctx.restore();
 
     if (!options.hideLabels) {
@@ -5902,7 +5968,9 @@ export default class MidiComposer {
       ctx.fillText(isMobile ? 'Notes' : 'Note', x + 8, y + 18);
       this.drawLabelColumn(ctx, track);
     }
-    this.drawSelectionMenu(ctx);
+    if (!simplified) {
+      this.drawSelectionMenu(ctx);
+    }
   }
 
   drawRuler(ctx, x, y, w, h, loopTicks) {
@@ -5999,6 +6067,7 @@ export default class MidiComposer {
     const isDrumGrid = isDrumChannel(track.channel);
     const chordMode = this.chordMode;
     const scalePitchClasses = this.getScalePitchClasses();
+    const simplified = options.simplified;
     this.bounds.pasteAction = null;
 
     for (let row = 0; row < rows; row += 1) {
@@ -6044,63 +6113,65 @@ export default class MidiComposer {
       ctx.fillStyle = 'rgba(255,225,106,0.18)';
       ctx.fillRect(loopStartX, originY, loopEndX - loopStartX, rows * cellHeight);
     }
-    const divisor = this.quantizeOptions[this.quantizeIndex]?.divisor || 16;
-    const gridStep = Math.max(1, Math.round(ticksPerBar / divisor));
-    for (let barTick = 0; barTick <= loopTicks; barTick += ticksPerBar) {
-      const xPos = originX + barTick * cellWidth;
-      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(xPos, originY);
-      ctx.lineTo(xPos, originY + rows * cellHeight);
-      ctx.stroke();
-    }
-    ctx.lineWidth = 1;
-    for (let tick = 0; tick <= loopTicks; tick += gridStep) {
-      const xPos = originX + tick * cellWidth;
-      const isBeat = tick % this.ticksPerBeat === 0;
-      ctx.strokeStyle = isBeat ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.08)';
-      ctx.beginPath();
-      ctx.moveTo(xPos, originY);
-      ctx.lineTo(xPos, originY + rows * cellHeight);
-      ctx.stroke();
-    }
-
-    if (typeof this.song.loopStartTick === 'number') {
-      const startX = originX + this.song.loopStartTick * cellWidth;
-      ctx.strokeStyle = '#55d68a';
-      ctx.beginPath();
-      ctx.moveTo(startX, originY);
-      ctx.lineTo(startX, originY + rows * cellHeight);
-      ctx.stroke();
-    }
-    if (typeof this.song.loopEndTick === 'number') {
-      const endX = originX + this.song.loopEndTick * cellWidth;
-      ctx.strokeStyle = '#ff6a6a';
-      ctx.beginPath();
-      ctx.moveTo(endX, originY);
-      ctx.lineTo(endX, originY + rows * cellHeight);
-      ctx.stroke();
-    }
-    for (let row = 0; row <= rows; row += 1) {
-      const yPos = originY + row * cellHeight;
-      let isOctave = false;
-      if (!options.summary && !isDrumGrid && row < rows) {
-        const pitch = this.getPitchFromRow(row);
-        isOctave = pitch % 12 === 0;
+    if (!simplified) {
+      const divisor = this.quantizeOptions[this.quantizeIndex]?.divisor || 16;
+      const gridStep = Math.max(1, Math.round(ticksPerBar / divisor));
+      for (let barTick = 0; barTick <= loopTicks; barTick += ticksPerBar) {
+        const xPos = originX + barTick * cellWidth;
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(xPos, originY);
+        ctx.lineTo(xPos, originY + rows * cellHeight);
+        ctx.stroke();
       }
-      ctx.strokeStyle = options.summary
-        ? 'rgba(255,255,255,0.12)'
-        : isOctave
-          ? 'rgba(255,255,255,0.35)'
-          : 'rgba(255,255,255,0.12)';
-      ctx.lineWidth = options.summary ? 1 : (isOctave ? 2 : 1);
-      ctx.beginPath();
-      ctx.moveTo(originX, yPos);
-      ctx.lineTo(originX + loopTicks * cellWidth, yPos);
-      ctx.stroke();
+      ctx.lineWidth = 1;
+      for (let tick = 0; tick <= loopTicks; tick += gridStep) {
+        const xPos = originX + tick * cellWidth;
+        const isBeat = tick % this.ticksPerBeat === 0;
+        ctx.strokeStyle = isBeat ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.08)';
+        ctx.beginPath();
+        ctx.moveTo(xPos, originY);
+        ctx.lineTo(xPos, originY + rows * cellHeight);
+        ctx.stroke();
+      }
+
+      if (typeof this.song.loopStartTick === 'number') {
+        const startX = originX + this.song.loopStartTick * cellWidth;
+        ctx.strokeStyle = '#55d68a';
+        ctx.beginPath();
+        ctx.moveTo(startX, originY);
+        ctx.lineTo(startX, originY + rows * cellHeight);
+        ctx.stroke();
+      }
+      if (typeof this.song.loopEndTick === 'number') {
+        const endX = originX + this.song.loopEndTick * cellWidth;
+        ctx.strokeStyle = '#ff6a6a';
+        ctx.beginPath();
+        ctx.moveTo(endX, originY);
+        ctx.lineTo(endX, originY + rows * cellHeight);
+        ctx.stroke();
+      }
+      for (let row = 0; row <= rows; row += 1) {
+        const yPos = originY + row * cellHeight;
+        let isOctave = false;
+        if (!options.summary && !isDrumGrid && row < rows) {
+          const pitch = this.getPitchFromRow(row);
+          isOctave = pitch % 12 === 0;
+        }
+        ctx.strokeStyle = options.summary
+          ? 'rgba(255,255,255,0.12)'
+          : isOctave
+            ? 'rgba(255,255,255,0.35)'
+            : 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = options.summary ? 1 : (isOctave ? 2 : 1);
+        ctx.beginPath();
+        ctx.moveTo(originX, yPos);
+        ctx.lineTo(originX + loopTicks * cellWidth, yPos);
+        ctx.stroke();
+      }
+      ctx.lineWidth = 1;
     }
-    ctx.lineWidth = 1;
 
     this.noteBounds = [];
     pattern.notes.forEach((note) => {
@@ -6116,11 +6187,11 @@ export default class MidiComposer {
       }
       ctx.fillStyle = this.selection.has(note.id) ? '#ffe16a' : noteFill;
       ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-      if (this.activeNotes.has(note.id)) {
+      if (!simplified && this.activeNotes.has(note.id)) {
         ctx.strokeStyle = '#fff';
         ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
       }
-      if (!options.summary && !isDrumGrid && chordMode) {
+      if (!simplified && !options.summary && !isDrumGrid && chordMode) {
         const chord = this.getChordForTick(note.startTick);
         const chordTones = this.getChordTones(chord);
         if (chordTones.includes(note.pitch % 12)) {
@@ -6128,7 +6199,7 @@ export default class MidiComposer {
           ctx.strokeRect(rect.x + 1, rect.y + 1, rect.w - 2, rect.h - 2);
         }
       }
-      if (this.selection.has(note.id)) {
+      if (!simplified && this.selection.has(note.id)) {
         const handleHeight = rect.h;
         const handleWidth = this.getNoteHandleWidth(rect);
         const handleY = rect.y;
@@ -6167,52 +6238,57 @@ export default class MidiComposer {
       this.drawPastePreview(ctx, track);
     }
 
-    if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
-      const loopStartX = originX + this.song.loopStartTick * cellWidth;
-      const loopEndX = originX + this.song.loopEndTick * cellWidth;
-      const handleW = Math.max(26, Math.round(DEFAULT_RULER_HEIGHT * 0.9));
-      const handleH = Math.max(14, Math.round(DEFAULT_RULER_HEIGHT * 0.8));
-      const handleY = this.gridBounds.y + Math.max(1, Math.round((this.gridBounds.h - handleH) / 2));
-      const gap = 4;
-      const minX = originX;
-      const maxX = originX + loopTicks * cellWidth - handleW;
-      const startHandleX = clamp(loopStartX - handleW - gap, minX, maxX);
-      const endHandleX = clamp(loopEndX + gap, minX, maxX);
-      this.bounds.loopShiftStartHandle = { x: startHandleX, y: handleY, w: handleW, h: handleH };
-      this.bounds.loopShiftEndHandle = { x: endHandleX, y: handleY, w: handleW, h: handleH };
-      ctx.fillStyle = '#55d68a';
-      ctx.fillRect(startHandleX, handleY, handleW, handleH);
-      ctx.fillStyle = '#ff6a6a';
-      ctx.fillRect(endHandleX, handleY, handleW, handleH);
-      ctx.strokeStyle = 'rgba(0,0,0,0.7)';
-      ctx.strokeRect(startHandleX, handleY, handleW, handleH);
-      ctx.strokeRect(endHandleX, handleY, handleW, handleH);
-      ctx.strokeStyle = 'rgba(0,0,0,0.55)';
-      [this.bounds.loopShiftStartHandle, this.bounds.loopShiftEndHandle].forEach((handle) => {
-        const ridgeXLeft = handle.x + Math.round(handleW * 0.35);
-        const ridgeXRight = handle.x + Math.round(handleW * 0.65);
-        ctx.beginPath();
-        ctx.moveTo(ridgeXLeft, handle.y + 3);
-        ctx.lineTo(ridgeXLeft, handle.y + handleH - 3);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(ridgeXRight, handle.y + 3);
-        ctx.lineTo(ridgeXRight, handle.y + handleH - 3);
-        ctx.stroke();
-      });
+    if (!simplified) {
+      if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
+        const loopStartX = originX + this.song.loopStartTick * cellWidth;
+        const loopEndX = originX + this.song.loopEndTick * cellWidth;
+        const handleW = Math.max(26, Math.round(DEFAULT_RULER_HEIGHT * 0.9));
+        const handleH = Math.max(14, Math.round(DEFAULT_RULER_HEIGHT * 0.8));
+        const handleY = this.gridBounds.y + Math.max(1, Math.round((this.gridBounds.h - handleH) / 2));
+        const gap = 4;
+        const minX = originX;
+        const maxX = originX + loopTicks * cellWidth - handleW;
+        const startHandleX = clamp(loopStartX - handleW - gap, minX, maxX);
+        const endHandleX = clamp(loopEndX + gap, minX, maxX);
+        this.bounds.loopShiftStartHandle = { x: startHandleX, y: handleY, w: handleW, h: handleH };
+        this.bounds.loopShiftEndHandle = { x: endHandleX, y: handleY, w: handleW, h: handleH };
+        ctx.fillStyle = '#55d68a';
+        ctx.fillRect(startHandleX, handleY, handleW, handleH);
+        ctx.fillStyle = '#ff6a6a';
+        ctx.fillRect(endHandleX, handleY, handleW, handleH);
+        ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+        ctx.strokeRect(startHandleX, handleY, handleW, handleH);
+        ctx.strokeRect(endHandleX, handleY, handleW, handleH);
+        ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+        [this.bounds.loopShiftStartHandle, this.bounds.loopShiftEndHandle].forEach((handle) => {
+          const ridgeXLeft = handle.x + Math.round(handleW * 0.35);
+          const ridgeXRight = handle.x + Math.round(handleW * 0.65);
+          ctx.beginPath();
+          ctx.moveTo(ridgeXLeft, handle.y + 3);
+          ctx.lineTo(ridgeXLeft, handle.y + handleH - 3);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(ridgeXRight, handle.y + 3);
+          ctx.lineTo(ridgeXRight, handle.y + handleH - 3);
+          ctx.stroke();
+        });
+      } else {
+        this.bounds.loopShiftStartHandle = null;
+        this.bounds.loopShiftEndHandle = null;
+      }
+
+      if (this.dragState?.mode === 'select') {
+        const { startX, startY, currentX, currentY } = this.dragState;
+        const rectX = Math.min(startX, currentX);
+        const rectY = Math.min(startY, currentY);
+        const rectW = Math.abs(currentX - startX);
+        const rectH = Math.abs(currentY - startY);
+        ctx.strokeStyle = '#ffe16a';
+        ctx.strokeRect(rectX, rectY, rectW, rectH);
+      }
     } else {
       this.bounds.loopShiftStartHandle = null;
       this.bounds.loopShiftEndHandle = null;
-    }
-
-    if (this.dragState?.mode === 'select') {
-      const { startX, startY, currentX, currentY } = this.dragState;
-      const rectX = Math.min(startX, currentX);
-      const rectY = Math.min(startY, currentY);
-      const rectW = Math.abs(currentX - startX);
-      const rectH = Math.abs(currentY - startY);
-      ctx.strokeStyle = '#ffe16a';
-      ctx.strokeRect(rectX, rectY, rectW, rectH);
     }
   }
 

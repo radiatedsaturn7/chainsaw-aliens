@@ -39,20 +39,27 @@ export default class RecordModeLayout {
     }
   }
 
-  layout(width, height, originX = 0, originY = 0) {
+  layout(width, height, originX = 0, originY = 0, config = {}) {
     const padding = 16;
     const topBarH = 56;
     const gridGap = 12;
-    const availableH = height - padding * 2 - topBarH - gridGap;
-    const gridH = Math.round(availableH * 0.42);
-    const gridY = originY + padding + topBarH;
-    this.bounds.grid = { x: originX + padding, y: gridY, w: width - padding * 2, h: gridH };
-    this.bounds.instrument = {
-      x: originX + padding,
-      y: gridY + gridH + gridGap,
-      w: width - padding * 2,
-      h: height - (gridY + gridH + gridGap) - padding
-    };
+    const gridBounds = config.gridBounds;
+    const instrumentBounds = config.instrumentBounds;
+    if (gridBounds && instrumentBounds) {
+      this.bounds.grid = { ...gridBounds };
+      this.bounds.instrument = { ...instrumentBounds };
+    } else {
+      const availableH = height - padding * 2 - topBarH - gridGap;
+      const gridH = Math.round(availableH * 0.42);
+      const gridY = originY + padding + topBarH;
+      this.bounds.grid = { x: originX + padding, y: gridY, w: width - padding * 2, h: gridH };
+      this.bounds.instrument = {
+        x: originX + padding,
+        y: gridY + gridH + gridGap,
+        w: width - padding * 2,
+        h: height - (gridY + gridH + gridGap) - padding
+      };
+    }
     const headerPadding = 12;
     const headerH = headerPadding + this.header.rowH + 10;
     this.header = {
