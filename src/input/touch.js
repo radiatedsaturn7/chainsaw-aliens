@@ -144,11 +144,6 @@ export default class TouchInput {
       : [40, 45, 50, 55, 59, 64];
     const tuning = this.reverseStrings ? tuningLowToHigh : [...tuningLowToHigh].reverse();
     this.stringRects = [];
-    const tuningOrder = tuning.map((pitch, index) => ({ pitch, index }))
-      .sort((a, b) => a.pitch - b.pitch)
-      .map((entry) => entry.index);
-    const eadGroup = tuningOrder.slice(0, Math.min(3, tuningOrder.length));
-    const adgGroup = tuningOrder.slice(1, Math.min(4, tuningOrder.length));
     this.stringLayout = {
       stringCount,
       fretCount,
@@ -159,10 +154,6 @@ export default class TouchInput {
       boardW,
       headX,
       headW,
-      strumGroups: {
-        ead: eadGroup,
-        adg: adgGroup
-      },
       strumZone: {
         x: boardX + boardW * 0.72,
         y: bounds.y,
@@ -222,11 +213,7 @@ export default class TouchInput {
       if (strumZone && x >= strumZone.x && x <= strumZone.x + strumZone.w
         && y >= strumZone.y && y <= strumZone.y + strumZone.h) {
         this.activeStrums.set(pointerId, {
-          lastStringIndex: null,
-          group: null,
-          lockedPitch: null,
-          lockedStringIndex: null,
-          lockedFromFret: false
+          lastStringIndex: null
         });
         this.handleStrum(pointerId, y);
         return;
@@ -532,24 +519,6 @@ export default class TouchInput {
     return selected ? selected.pitch : null;
   }
 
-  getStrumGroup(stringIndex, strum, layout) {
-    const groups = layout.strumGroups;
-    const inEad = groups.ead.includes(stringIndex);
-    const inAdg = groups.adg.includes(stringIndex);
-    if (inEad && !inAdg) return 'ead';
-    if (inAdg && !inEad) return 'adg';
-    if (strum.group) return strum.group;
-    return 'ead';
-  }
-
-  getGroupFrettedNote(groupIndices) {
-    for (const stringIndex of groupIndices) {
-      const note = this.getFrettedNoteForString(stringIndex);
-      if (note) return note;
-    }
-    return null;
-  }
-
   updateFrettedNotes(stringIndex) {
     const layout = this.stringLayout;
     if (!layout) return;
@@ -575,27 +544,10 @@ export default class TouchInput {
     if (!strum) return;
     if (strum.lastStringIndex === stringIndex) return;
     strum.lastStringIndex = stringIndex;
-    const group = this.getStrumGroup(stringIndex, strum, layout);
-    if (group !== strum.group) {
-      strum.group = group;
-      strum.lockedPitch = null;
-      strum.lockedStringIndex = null;
-      strum.lockedFromFret = false;
-    }
-    const groupIndices = group === 'adg' ? layout.strumGroups.adg : layout.strumGroups.ead;
-    const frettedNote = this.getGroupFrettedNote(groupIndices);
-    if (frettedNote) {
-      strum.lockedPitch = frettedNote.pitch;
-      strum.lockedStringIndex = frettedNote.stringIndex;
-      strum.lockedFromFret = true;
-    } else if (strum.lockedPitch == null || strum.lockedFromFret) {
-      const rootIndex = groupIndices[0];
-      strum.lockedPitch = this.getOpenPitch(rootIndex);
-      strum.lockedStringIndex = rootIndex;
-      strum.lockedFromFret = false;
-    }
-    if (strum.lockedPitch == null || strum.lockedStringIndex == null) return;
-    this.playStringNote(strum.lockedStringIndex, strum.lockedPitch);
+    const frettedPitch = this.getFrettedPitch(stringIndex);
+    const pitch = frettedPitch ?? this.getOpenPitch(stringIndex);
+    if (pitch == null) return;
+    this.playStringNote(stringIndex, pitch);
   }
 
   playStringNote(stringIndex, pitch) {

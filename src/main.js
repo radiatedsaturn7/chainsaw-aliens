@@ -149,7 +149,18 @@ let gestureActive = false;
 const activeTouches = new Map();
 
 canvas.addEventListener('touchstart', (event) => {
-  if (['editor', 'pixel-editor', 'midi-editor'].includes(game.state) && event.touches.length >= 2) {
+  const shouldStartGesture = () => {
+    if (!game.handleGestureStart) return false;
+    if (typeof game.shouldHandleGestureStart !== 'function') return true;
+    const touches = Array.from(event.touches).map((touch) => ({
+      id: touch.identifier,
+      ...getCanvasPosition(touch)
+    }));
+    return game.shouldHandleGestureStart({ touches });
+  };
+  if (['editor', 'pixel-editor', 'midi-editor'].includes(game.state)
+    && event.touches.length >= 2
+    && shouldStartGesture()) {
     event.preventDefault();
     const gesture = getTouchGesture(event.touches);
     gestureActive = true;
