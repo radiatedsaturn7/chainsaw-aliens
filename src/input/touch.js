@@ -144,6 +144,11 @@ export default class TouchInput {
       : [40, 45, 50, 55, 59, 64];
     const tuning = this.reverseStrings ? tuningLowToHigh : [...tuningLowToHigh].reverse();
     this.stringRects = [];
+    const tuningOrder = tuning.map((pitch, index) => ({ pitch, index }))
+      .sort((a, b) => a.pitch - b.pitch)
+      .map((entry) => entry.index);
+    const eadGroup = tuningOrder.slice(0, Math.min(3, tuningOrder.length));
+    const adgGroup = tuningOrder.slice(1, Math.min(4, tuningOrder.length));
     this.stringLayout = {
       stringCount,
       fretCount,
@@ -154,6 +159,10 @@ export default class TouchInput {
       boardW,
       headX,
       headW,
+      strumGroups: {
+        ead: eadGroup,
+        adg: adgGroup
+      },
       strumZone: {
         x: boardX + boardW * 0.72,
         y: bounds.y,
@@ -212,7 +221,13 @@ export default class TouchInput {
       const strumZone = layout.strumZone;
       if (strumZone && x >= strumZone.x && x <= strumZone.x + strumZone.w
         && y >= strumZone.y && y <= strumZone.y + strumZone.h) {
-        this.activeStrums.set(pointerId, { lastStringIndex: null, playedOpen: false });
+        this.activeStrums.set(pointerId, {
+          lastStringIndex: null,
+          group: null,
+          lockedPitch: null,
+          lockedStringIndex: null,
+          lockedFromFret: false
+        });
         this.handleStrum(pointerId, y);
         return;
       }
@@ -220,9 +235,6 @@ export default class TouchInput {
       if (!hit) return;
       this.activeFrets.set(pointerId, { ...hit, time: performance.now() });
       this.updateFrettedNotes(hit.stringIndex);
-      if (this.activeStrings.has(hit.stringIndex)) {
-        this.playStringNote(hit.stringIndex, hit.pitch);
-      }
       return;
     }
     const hit = this.findHit(x, y);
@@ -253,9 +265,6 @@ export default class TouchInput {
       if (hit.stringIndex === current.stringIndex && hit.fret === current.fret) return;
       this.activeFrets.set(pointerId, { ...hit, time: performance.now() });
       this.updateFrettedNotes(hit.stringIndex);
-      if (this.activeStrings.has(hit.stringIndex)) {
-        this.playStringNote(hit.stringIndex, hit.pitch);
-      }
       return;
     }
     if (!this.activeTouches.has(pointerId)) return;
@@ -507,15 +516,38 @@ export default class TouchInput {
     return false;
   }
 
-  getFrettedPitch(stringIndex) {
+  getFrettedNoteForString(stringIndex) {
     let selected = null;
     this.activeFrets.forEach((fret) => {
       if (fret.stringIndex !== stringIndex) return;
-      if (!selected || fret.time > selected.time) {
+      if (!selected || fret.fret > selected.fret) {
         selected = fret;
       }
     });
+    return selected;
+  }
+
+  getFrettedPitch(stringIndex) {
+    const selected = this.getFrettedNoteForString(stringIndex);
     return selected ? selected.pitch : null;
+  }
+
+  getStrumGroup(stringIndex, strum, layout) {
+    const groups = layout.strumGroups;
+    const inEad = groups.ead.includes(stringIndex);
+    const inAdg = groups.adg.includes(stringIndex);
+    if (inEad && !inAdg) return 'ead';
+    if (inAdg && !inEad) return 'adg';
+    if (strum.group) return strum.group;
+    return 'ead';
+  }
+
+  getGroupFrettedNote(groupIndices) {
+    for (const stringIndex of groupIndices) {
+      const note = this.getFrettedNoteForString(stringIndex);
+      if (note) return note;
+    }
+    return null;
   }
 
   updateFrettedNotes(stringIndex) {
@@ -543,21 +575,27 @@ export default class TouchInput {
     if (!strum) return;
     if (strum.lastStringIndex === stringIndex) return;
     strum.lastStringIndex = stringIndex;
-    const hasFrets = this.activeFrets.size > 0;
-    if (hasFrets) {
-      const pitch = this.getFrettedPitch(stringIndex);
-      if (!pitch) return;
-      this.playStringNote(stringIndex, pitch);
-      return;
+    const group = this.getStrumGroup(stringIndex, strum, layout);
+    if (group !== strum.group) {
+      strum.group = group;
+      strum.lockedPitch = null;
+      strum.lockedStringIndex = null;
+      strum.lockedFromFret = false;
     }
-    if (!strum.playedOpen) {
-      const openPitch = Math.min(...layout.tuning);
-      const openStringIndex = layout.tuning.indexOf(openPitch);
-      if (openStringIndex >= 0) {
-        this.playStringNote(openStringIndex, openPitch);
-      }
-      strum.playedOpen = true;
+    const groupIndices = group === 'adg' ? layout.strumGroups.adg : layout.strumGroups.ead;
+    const frettedNote = this.getGroupFrettedNote(groupIndices);
+    if (frettedNote) {
+      strum.lockedPitch = frettedNote.pitch;
+      strum.lockedStringIndex = frettedNote.stringIndex;
+      strum.lockedFromFret = true;
+    } else if (strum.lockedPitch == null || strum.lockedFromFret) {
+      const rootIndex = groupIndices[0];
+      strum.lockedPitch = this.getOpenPitch(rootIndex);
+      strum.lockedStringIndex = rootIndex;
+      strum.lockedFromFret = false;
     }
+    if (strum.lockedPitch == null || strum.lockedStringIndex == null) return;
+    this.playStringNote(strum.lockedStringIndex, strum.lockedPitch);
   }
 
   playStringNote(stringIndex, pitch) {
