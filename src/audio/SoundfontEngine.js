@@ -22,8 +22,7 @@ export default class SoundfontEngine {
     this.loadingPromises = new Map();
     this.channelPrograms = new Map();
     this.channelVolumes = new Map();
-    this.drumInstrument = null;
-    this.drumPromise = null;
+    this.drumKitName = DRUM_KIT_NAME;
     this.error = null;
     this.lastError = null;
     this.lastUrl = null;
@@ -62,6 +61,16 @@ export default class SoundfontEngine {
     this.channelPrograms.set(channel, program);
   }
 
+  setDrumKitName(name) {
+    if (name) {
+      this.drumKitName = name;
+    }
+  }
+
+  getDrumKitName() {
+    return this.drumKitName;
+  }
+
   setBaseUrl(url) {
     if (!url) return;
     this.baseUrl = normalizeBaseUrl(url);
@@ -76,8 +85,7 @@ export default class SoundfontEngine {
   reset() {
     this.instrumentCache.clear();
     this.loadingPromises.clear();
-    this.drumInstrument = null;
-    this.drumPromise = null;
+    this.drumKitName = DRUM_KIT_NAME;
     this.error = null;
     this.lastError = null;
     this.lastUrl = null;
@@ -86,7 +94,7 @@ export default class SoundfontEngine {
   getStatus() {
     return {
       ready: Boolean(this.player),
-      loading: this.loadingPromises.size > 0 || Boolean(this.playerPromise) || Boolean(this.drumPromise),
+      loading: this.loadingPromises.size > 0 || Boolean(this.playerPromise),
       error: this.error,
       lastError: this.lastError,
       lastUrl: this.lastUrl,
@@ -128,18 +136,9 @@ export default class SoundfontEngine {
     return this.loadInstrumentByName(String(program), name);
   }
 
-  loadDrumKit() {
-    if (this.drumInstrument) return Promise.resolve(this.drumInstrument);
-    if (this.drumPromise) return this.drumPromise;
-    this.drumPromise = this.loadInstrumentByName('drum-kit', DRUM_KIT_NAME)
-      .then((instrument) => {
-        this.drumInstrument = instrument;
-        return instrument;
-      })
-      .finally(() => {
-        this.drumPromise = null;
-      });
-    return this.drumPromise;
+  loadDrumKit(kitName = this.drumKitName) {
+    const resolved = kitName || DRUM_KIT_NAME;
+    return this.loadInstrumentByName(`drum-kit:${resolved}`, resolved);
   }
 
   async cacheInstrument(program) {
@@ -147,8 +146,9 @@ export default class SoundfontEngine {
     return this.cacheInstrumentByName(String(program), name);
   }
 
-  async cacheDrumKit() {
-    return this.cacheInstrumentByName('drum-kit', DRUM_KIT_NAME);
+  async cacheDrumKit(kitName = this.drumKitName) {
+    const resolved = kitName || DRUM_KIT_NAME;
+    return this.cacheInstrumentByName(`drum-kit:${resolved}`, resolved);
   }
 
   async cacheInstrumentByName(key, name) {
