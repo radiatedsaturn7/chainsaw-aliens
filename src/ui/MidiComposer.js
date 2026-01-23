@@ -1,5 +1,6 @@
 import {
   GM_DRUMS,
+  GM_DRUM_KITS,
   GM_DRUM_ROWS,
   GM_FAMILIES,
   GM_PROGRAMS,
@@ -757,7 +758,7 @@ export default class MidiComposer {
     const audio = this.game?.audio;
     if (!audio?.preloadSoundfontProgram) return;
     DEFAULT_PRELOAD_PROGRAMS.forEach((program) => audio.preloadSoundfontProgram(program, 0));
-    audio.preloadSoundfontProgram(0, 9);
+    audio.preloadSoundfontProgram(0, 9, DEFAULT_BANK_MSB, DEFAULT_BANK_LSB);
   }
 
   persist() {
@@ -899,7 +900,8 @@ export default class MidiComposer {
       reverbLevel: 0.18,
       latencyMs: 30,
       useSoundfont: true,
-      soundfontCdn: 'github'
+      soundfontCdn: 'github',
+      drumKitId: this.game?.audio?.getDrumKit?.()?.id || 'standard'
     };
     try {
       const stored = JSON.parse(localStorage.getItem('chainsaw-midi-audio'));
@@ -910,7 +912,8 @@ export default class MidiComposer {
         reverbLevel: typeof stored.reverbLevel === 'number' ? stored.reverbLevel : defaults.reverbLevel,
         latencyMs: typeof stored.latencyMs === 'number' ? stored.latencyMs : defaults.latencyMs,
         useSoundfont: typeof stored.useSoundfont === 'boolean' ? stored.useSoundfont : defaults.useSoundfont,
-        soundfontCdn: typeof stored.soundfontCdn === 'string' ? stored.soundfontCdn : defaults.soundfontCdn
+        soundfontCdn: typeof stored.soundfontCdn === 'string' ? stored.soundfontCdn : defaults.soundfontCdn,
+        drumKitId: typeof stored.drumKitId === 'string' ? stored.drumKitId : defaults.drumKitId
       };
     } catch (error) {
       return defaults;
@@ -934,6 +937,7 @@ export default class MidiComposer {
     audio.setMidiReverbLevel?.(clamp(this.audioSettings.reverbLevel, 0, 1));
     audio.setSoundfontEnabled?.(this.audioSettings.useSoundfont);
     audio.setSoundfontCdn?.(this.audioSettings.soundfontCdn);
+    audio.setDrumKit?.(this.audioSettings.drumKitId);
   }
 
   validateSong(song) {
@@ -1068,11 +1072,7 @@ export default class MidiComposer {
     audio.ensureGmPlayer()
       .then(() => {
         this.song.tracks.forEach((track) => {
-          if (isDrumChannel(track.channel)) {
-            audio.loadGmDrumKit?.();
-          } else {
-            audio.loadGmProgram?.(track.program);
-          }
+          audio.preloadSoundfontProgram?.(track.program, track.channel, track.bankMSB, track.bankLSB);
         });
       })
       .catch(() => {
@@ -1230,17 +1230,33 @@ export default class MidiComposer {
 
   getDrumKitLabel(track) {
     if (!track) return 'Drum Kit';
-    return `Drum Kit ${formatProgramNumber(track.program)}`;
+    const audio = this.game?.audio;
+    if (audio?.getDrumKitLabel) {
+      return audio.getDrumKitLabel({
+        bankMSB: track.bankMSB,
+        bankLSB: track.bankLSB,
+        program: track.program
+      });
+    }
+    const kit = GM_DRUM_KITS.find((entry) =>
+      entry.program === track.program && entry.bankMSB === track.bankMSB && entry.bankLSB === track.bankLSB);
+    return kit?.label || `Drum Kit ${formatProgramNumber(track.program)}`;
   }
 
   getCacheKeyForTrack(track) {
     if (!track) return null;
-    return isDrumChannel(track.channel) ? 'drums' : String(track.program);
+    if (isDrumChannel(track.channel)) {
+      return `drums:${track.bankMSB}:${track.bankLSB}:${track.program}`;
+    }
+    return String(track.program);
   }
 
-  getCacheKeyForProgram(program, channel) {
+  getCacheKeyForProgram(program, channel, bankMSB = DEFAULT_BANK_MSB, bankLSB = DEFAULT_BANK_LSB) {
     if (!Number.isInteger(program)) return null;
-    return isDrumChannel(channel) ? 'drums' : String(program);
+    if (isDrumChannel(channel)) {
+      return `drums:${bankMSB}:${bankLSB}:${program}`;
+    }
+    return String(program);
   }
 
   setPreviewLoading(key, loading) {
@@ -1257,16 +1273,16 @@ export default class MidiComposer {
 
   downloadTrackInstrument(track) {
     if (!track) return;
-    this.downloadInstrumentProgram(track.program, track.channel);
+    this.downloadInstrumentProgram(track.program, track.channel, track.bankMSB, track.bankLSB);
   }
 
-  downloadInstrumentProgram(program, channel) {
-    const key = this.getCacheKeyForProgram(program, channel);
+  downloadInstrumentProgram(program, channel, bankMSB = DEFAULT_BANK_MSB, bankLSB = DEFAULT_BANK_LSB) {
+    const key = this.getCacheKeyForProgram(program, channel, bankMSB, bankLSB);
     if (!key || this.instrumentDownload.loading || this.cachedPrograms.has(key)) return;
     const audio = this.game?.audio;
     if (!audio?.cacheGmProgram) return;
     this.setDownloadLoading(key, true);
-    audio.cacheGmProgram(program, channel)
+    audio.cacheGmProgram(program, channel, bankMSB, bankLSB)
       .then(() => {
         this.cachedPrograms.add(key);
         this.saveCachedPrograms();
@@ -2336,7 +2352,12 @@ export default class MidiComposer {
           const downloadProgram = Number.isInteger(this.instrumentPicker.selectedProgram)
             ? this.instrumentPicker.selectedProgram
             : pickerTrack?.program;
-          this.downloadInstrumentProgram(downloadProgram, pickerTrack?.channel ?? 0);
+          this.downloadInstrumentProgram(
+            downloadProgram,
+            pickerTrack?.channel ?? 0,
+            pickerTrack?.bankMSB ?? DEFAULT_BANK_MSB,
+            pickerTrack?.bankLSB ?? DEFAULT_BANK_LSB
+          );
           return;
         }
         if (this.instrumentPicker.confirmBounds && this.pointInBounds(x, y, this.instrumentPicker.confirmBounds)) {
@@ -3247,7 +3268,12 @@ export default class MidiComposer {
     const volume = track?.volume ?? 0.8;
     const isDrum = isDrumChannel(track?.channel);
     const channel = track?.channel ?? 0;
-    const key = isDrum ? 'drums' : String(program);
+    const key = this.getCacheKeyForProgram(
+      program,
+      channel,
+      track?.bankMSB ?? DEFAULT_BANK_MSB,
+      track?.bankLSB ?? DEFAULT_BANK_LSB
+    ) || String(program);
     const audio = this.game?.audio;
     if (audio?.loadGmProgram) {
       const loadPromise = isDrum ? audio.loadGmDrumKit?.() : audio.loadGmProgram(program);
@@ -3491,6 +3517,19 @@ export default class MidiComposer {
       this.setTrackChannel(track, 9);
       return;
     } else if (hit.control === 'bank') {
+      if (isDrumChannel(track.channel)) {
+        const kits = this.game?.audio?.listAvailableDrumKits?.() || GM_DRUM_KITS;
+        if (!kits.length) return;
+        const currentIndex = Math.max(0, kits.findIndex((kit) =>
+          kit.program === track.program && kit.bankMSB === track.bankMSB && kit.bankLSB === track.bankLSB));
+        const nextIndex = (currentIndex + 1) % kits.length;
+        const nextKit = kits[nextIndex];
+        track.bankMSB = nextKit.bankMSB;
+        track.bankLSB = nextKit.bankLSB;
+        track.program = nextKit.program;
+        this.persist();
+        return;
+      }
       const current = `${track.bankMSB},${track.bankLSB}`;
       const nextBank = window.prompt('Enter bank MSB,LSB (0-127,0-127)', current);
       if (nextBank) {
@@ -3570,7 +3609,18 @@ export default class MidiComposer {
     if (control.id === 'audio-soundfont-preload') {
       const track = this.getActiveTrack();
       if (!track) return;
-      this.game?.audio?.preloadSoundfontProgram?.(track.program, track.channel);
+      this.game?.audio?.preloadSoundfontProgram?.(track.program, track.channel, track.bankMSB, track.bankLSB);
+      return;
+    }
+    if (control.id === 'audio-drumkit') {
+      const kits = this.game?.audio?.listAvailableDrumKits?.() || GM_DRUM_KITS;
+      if (!kits.length) return;
+      const currentId = this.audioSettings.drumKitId;
+      const currentIndex = Math.max(0, kits.findIndex((kit) => kit.id === currentId));
+      const nextIndex = (currentIndex + 1) % kits.length;
+      this.audioSettings.drumKitId = kits[nextIndex].id;
+      this.saveAudioSettings();
+      this.applyAudioSettings();
       return;
     }
     if (control.id === 'grid-preview') {
@@ -5068,7 +5118,12 @@ export default class MidiComposer {
       const downloadProgram = Number.isInteger(this.instrumentPicker.selectedProgram)
         ? this.instrumentPicker.selectedProgram
         : pickerTrack?.program;
-      const downloadKey = this.getCacheKeyForProgram(downloadProgram, pickerTrack?.channel ?? 0);
+      const downloadKey = this.getCacheKeyForProgram(
+        downloadProgram,
+        pickerTrack?.channel ?? 0,
+        pickerTrack?.bankMSB ?? DEFAULT_BANK_MSB,
+        pickerTrack?.bankLSB ?? DEFAULT_BANK_LSB
+      );
       const isCached = downloadKey ? this.cachedPrograms.has(downloadKey) : false;
       const isDownloading = this.instrumentDownload.loading && this.instrumentDownload.key === downloadKey;
       const downloadLabel = isDownloading ? 'Downloading…' : isCached ? 'Downloaded' : 'Download Instrument';
@@ -5331,6 +5386,9 @@ export default class MidiComposer {
     const cdnLabel = SOUNDFONT_CDNS.find((entry) => entry.id === this.audioSettings.soundfontCdn)?.label || 'GitHub Pages';
     drawAction('SoundFont CDN', cdnLabel, 'audio-soundfont-cdn', 'Switch CDN source for the FluidR3_GM bank.');
     drawAction('Preload Instrument', 'Load', 'audio-soundfont-preload', 'Preload the active track SoundFont.');
+    const drumKits = this.game?.audio?.listAvailableDrumKits?.() || GM_DRUM_KITS;
+    const activeKit = drumKits.find((kit) => kit.id === this.audioSettings.drumKitId) || drumKits[0];
+    drawAction('Drum Kit', activeKit?.label || 'Standard Kit', 'audio-drumkit', 'Select the GM drum kit for channel 10.');
     if (gmStatus) {
       ctx.fillStyle = gmStatus.error ? '#ff8a8a' : 'rgba(255,255,255,0.55)';
       ctx.font = '11px Courier New';
@@ -5341,6 +5399,24 @@ export default class MidiComposer {
           : 'SoundFont status: Ready';
       ctx.fillText(statusText, x + padding, cursorY + 16);
       cursorY += 28;
+    }
+    const midiDebug = this.game?.audio?.getMidiDebugInfo?.();
+    if (midiDebug) {
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.font = '11px Courier New';
+      const debugKit = midiDebug.drumKit?.label || activeKit?.label || 'Standard Kit';
+      ctx.fillText(`Drum Kit: ${debugKit}`, x + padding, cursorY + 16);
+      cursorY += 18;
+      const drumNote = midiDebug.lastDrumNote
+        ? `${midiDebug.lastDrumNote.label} (${midiDebug.lastDrumNote.pitch})`
+        : 'None';
+      ctx.fillText(`Last Drum: ${drumNote}`, x + padding, cursorY + 16);
+      cursorY += 18;
+      const channelType = midiDebug.lastChannelType
+        ? `${midiDebug.lastChannelType} (Ch ${Number.isInteger(midiDebug.lastChannel) ? midiDebug.lastChannel + 1 : '?'})`
+        : 'None';
+      ctx.fillText(`Channel: ${channelType}`, x + padding, cursorY + 16);
+      cursorY += 24;
     }
     cursorY += sectionGap;
 
