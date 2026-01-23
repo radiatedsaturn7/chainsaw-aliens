@@ -539,10 +539,16 @@ export default class MidiComposer {
       favoriteBounds: [],
       sectionBounds: [],
       tabBounds: [],
+      tabPrevBounds: null,
+      tabNextBounds: null,
       confirmBounds: null,
       cancelBounds: null,
+      downloadBounds: null,
+      scrollUpBounds: null,
+      scrollDownBounds: null,
       scroll: 0,
-      scrollMax: 0
+      scrollMax: 0,
+      scrollStep: 0
     };
     this.recentInstruments = this.loadInstrumentList('chainsaw-midi-recent', []);
     this.favoriteInstruments = this.loadInstrumentList('chainsaw-midi-favorites', []);
@@ -1173,6 +1179,11 @@ export default class MidiComposer {
     return isDrumChannel(track.channel) ? 'drums' : String(track.program);
   }
 
+  getCacheKeyForProgram(program, channel) {
+    if (!Number.isInteger(program)) return null;
+    return isDrumChannel(channel) ? 'drums' : String(program);
+  }
+
   setPreviewLoading(key, loading) {
     if (!key) return;
     if (!loading && this.instrumentPreview.key !== key) return;
@@ -1186,12 +1197,17 @@ export default class MidiComposer {
   }
 
   downloadTrackInstrument(track) {
-    const key = this.getCacheKeyForTrack(track);
+    if (!track) return;
+    this.downloadInstrumentProgram(track.program, track.channel);
+  }
+
+  downloadInstrumentProgram(program, channel) {
+    const key = this.getCacheKeyForProgram(program, channel);
     if (!key || this.instrumentDownload.loading || this.cachedPrograms.has(key)) return;
     const audio = this.game?.audio;
     if (!audio?.cacheGmProgram) return;
     this.setDownloadLoading(key, true);
-    audio.cacheGmProgram(track.program, track.channel)
+    audio.cacheGmProgram(program, channel)
       .then(() => {
         this.cachedPrograms.add(key);
         this.saveCachedPrograms();
@@ -1223,8 +1239,23 @@ export default class MidiComposer {
     this.instrumentPicker.favoriteBounds = [];
     this.instrumentPicker.sectionBounds = [];
     this.instrumentPicker.tabBounds = [];
+    this.instrumentPicker.tabPrevBounds = null;
+    this.instrumentPicker.tabNextBounds = null;
     this.instrumentPicker.confirmBounds = null;
     this.instrumentPicker.cancelBounds = null;
+    this.instrumentPicker.downloadBounds = null;
+    this.instrumentPicker.scrollUpBounds = null;
+    this.instrumentPicker.scrollDownBounds = null;
+    this.instrumentPicker.scroll = 0;
+    this.instrumentPicker.scrollStep = 0;
+  }
+
+  shiftInstrumentPickerTab(delta) {
+    const tabs = INSTRUMENT_FAMILY_TABS.map((tab) => tab.id);
+    const currentIndex = tabs.indexOf(this.instrumentPicker.familyTab);
+    const baseIndex = currentIndex === -1 ? 0 : currentIndex;
+    const nextIndex = (baseIndex + delta + tabs.length) % tabs.length;
+    this.instrumentPicker.familyTab = tabs[nextIndex];
     this.instrumentPicker.scroll = 0;
   }
 
@@ -1440,7 +1471,9 @@ export default class MidiComposer {
 
   snapTick(tick) {
     const quantize = this.getQuantizeTicks();
-    return Math.round(tick / quantize) * quantize;
+    const ratio = tick / quantize;
+    const snapped = this.isMobileLayout() ? Math.floor(ratio) : Math.round(ratio);
+    return snapped * quantize;
   }
 
   getChordForTick(tick) {
@@ -1795,6 +1828,12 @@ export default class MidiComposer {
       return;
     }
 
+    const quickMixHit = this.bounds.instrumentSettingsControls?.find((bounds) => this.pointInBounds(x, y, bounds));
+    if (quickMixHit) {
+      this.handleTrackControl(quickMixHit);
+      return;
+    }
+
     const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
     if (tabHit) {
       this.activeTab = tabHit.id;
@@ -1872,6 +1911,14 @@ export default class MidiComposer {
 
     if (this.activeTab === 'instruments') {
       if (this.instrumentPicker.mode) {
+        if (this.instrumentPicker.tabPrevBounds && this.pointInBounds(x, y, this.instrumentPicker.tabPrevBounds)) {
+          this.shiftInstrumentPickerTab(-1);
+          return;
+        }
+        if (this.instrumentPicker.tabNextBounds && this.pointInBounds(x, y, this.instrumentPicker.tabNextBounds)) {
+          this.shiftInstrumentPickerTab(1);
+          return;
+        }
         const familyHit = this.instrumentPicker.tabBounds.find((bounds) => this.pointInBounds(x, y, bounds));
         if (familyHit) {
           this.instrumentPicker.familyTab = familyHit.id;
@@ -1887,6 +1934,30 @@ export default class MidiComposer {
         if (pickHit) {
           this.instrumentPicker.selectedProgram = pickHit.program;
           this.previewInstrument(pickHit.program);
+          return;
+        }
+        if (this.instrumentPicker.scrollUpBounds && this.pointInBounds(x, y, this.instrumentPicker.scrollUpBounds)) {
+          this.instrumentPicker.scroll = clamp(
+            this.instrumentPicker.scroll - Math.max(1, this.instrumentPicker.scrollStep),
+            0,
+            this.instrumentPicker.scrollMax
+          );
+          return;
+        }
+        if (this.instrumentPicker.scrollDownBounds && this.pointInBounds(x, y, this.instrumentPicker.scrollDownBounds)) {
+          this.instrumentPicker.scroll = clamp(
+            this.instrumentPicker.scroll + Math.max(1, this.instrumentPicker.scrollStep),
+            0,
+            this.instrumentPicker.scrollMax
+          );
+          return;
+        }
+        if (this.instrumentPicker.downloadBounds && this.pointInBounds(x, y, this.instrumentPicker.downloadBounds)) {
+          const pickerTrack = this.song.tracks[this.instrumentPicker.trackIndex ?? this.selectedTrackIndex];
+          const downloadProgram = Number.isInteger(this.instrumentPicker.selectedProgram)
+            ? this.instrumentPicker.selectedProgram
+            : pickerTrack?.program;
+          this.downloadInstrumentProgram(downloadProgram, pickerTrack?.channel ?? 0);
           return;
         }
         if (this.instrumentPicker.confirmBounds && this.pointInBounds(x, y, this.instrumentPicker.confirmBounds)) {
@@ -2034,19 +2105,19 @@ export default class MidiComposer {
         this.gridZoomY = clamp(this.gridZoomY + 0.1, minZoom, maxZoom);
         return;
       }
+      if (this.bounds.loopStartHandle && this.pointInBounds(x, y, this.bounds.loopStartHandle)) {
+        this.dragState = { mode: 'loop-start' };
+        this.setLoopStartTick(this.getTickFromX(x));
+        return;
+      }
+      if (this.bounds.loopEndHandle && this.pointInBounds(x, y, this.bounds.loopEndHandle)) {
+        this.dragState = { mode: 'loop-end' };
+        this.setLoopEndTick(this.getTickFromX(x));
+        return;
+      }
       if (this.rulerBounds && this.pointInBounds(x, y, this.rulerBounds)) {
         const modifiers = this.getModifiers();
         const tick = this.getTickFromX(x);
-        if (this.bounds.loopStartHandle && this.pointInBounds(x, y, this.bounds.loopStartHandle)) {
-          this.dragState = { mode: 'loop-start' };
-          this.setLoopStartTick(tick);
-          return;
-        }
-        if (this.bounds.loopEndHandle && this.pointInBounds(x, y, this.bounds.loopEndHandle)) {
-          this.dragState = { mode: 'loop-end' };
-          this.setLoopEndTick(tick);
-          return;
-        }
         if (this.isNearLoopMarker(x, 'start')) {
           this.dragState = { mode: 'loop-start' };
           this.setLoopStartTick(tick);
@@ -2913,8 +2984,7 @@ export default class MidiComposer {
       this.persist();
       return;
     }
-    const nextBars = clamp(this.song.loopBars + delta, 1, 128);
-    this.song.loopBars = nextBars;
+    this.song.loopBars = Math.max(1, this.song.loopBars + delta);
     this.song.tracks.forEach((track) => {
       track.patterns.forEach((pattern) => {
         pattern.bars = this.song.loopBars;
@@ -3178,7 +3248,8 @@ export default class MidiComposer {
       this.swing = Math.round(ratio * 60);
     }
     if (id === 'song-tempo') {
-      this.setTempo(Math.round(40 + ratio * 200));
+      const tempo = Math.round(40 + ratio * 200);
+      this.setTempo(Math.round(tempo / 5) * 5);
     }
     this.saveAudioSettings();
     this.applyAudioSettings();
@@ -3847,6 +3918,7 @@ export default class MidiComposer {
     const controlX = controlsX + panelPadding;
     const controlW = w - panelPadding * 2;
     let controlY = controlsY + panelPadding;
+    this.bounds.instrumentSettingsControls = [];
     const buttonSize = rowH;
     const compactLayout = controlW < 220;
     const noteW = compactLayout ? controlW : Math.min(110, Math.max(76, controlW * 0.45));
@@ -3871,6 +3943,80 @@ export default class MidiComposer {
     };
     this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
     controlY += rowH + rowGap;
+
+    if (track) {
+      const mixH = 90;
+      ctx.fillStyle = 'rgba(0,0,0,0.45)';
+      ctx.fillRect(controlX, controlY, controlW, mixH);
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.strokeRect(controlX, controlY, controlW, mixH);
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
+      ctx.font = '11px Courier New';
+      ctx.fillText('Mix Controls', controlX + 8, controlY + 14);
+
+      const buttonH = 22;
+      const muteBounds = {
+        x: controlX + 8,
+        y: controlY + 20,
+        w: 60,
+        h: buttonH,
+        trackIndex: this.selectedTrackIndex,
+        control: 'mute'
+      };
+      const soloBounds = {
+        x: muteBounds.x + 70,
+        y: muteBounds.y,
+        w: 60,
+        h: buttonH,
+        trackIndex: this.selectedTrackIndex,
+        control: 'solo'
+      };
+      this.drawSmallButton(ctx, muteBounds, 'Mute', track.mute);
+      this.drawSmallButton(ctx, soloBounds, 'Solo', track.solo);
+      this.bounds.instrumentSettingsControls.push(muteBounds, soloBounds);
+
+      const sliderW = controlW - 16;
+      const volumeBounds = {
+        x: controlX + 8,
+        y: muteBounds.y + buttonH + 8,
+        w: sliderW,
+        h: 12,
+        trackIndex: this.selectedTrackIndex,
+        control: 'volume'
+      };
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
+      ctx.fillStyle = '#ffe16a';
+      ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w * track.volume, volumeBounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '10px Courier New';
+      ctx.fillText('Volume', volumeBounds.x, volumeBounds.y - 4);
+      this.bounds.instrumentSettingsControls.push(volumeBounds);
+
+      const panBounds = {
+        x: controlX + 8,
+        y: volumeBounds.y + volumeBounds.h + 16,
+        w: sliderW,
+        h: 10,
+        trackIndex: this.selectedTrackIndex,
+        control: 'pan'
+      };
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
+      ctx.fillStyle = '#4fb7ff';
+      ctx.fillRect(panBounds.x, panBounds.y, panBounds.w * ((track.pan + 1) / 2), panBounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '10px Courier New';
+      ctx.fillText('Pan', panBounds.x, panBounds.y - 4);
+      this.bounds.instrumentSettingsControls.push(panBounds);
+
+      controlY += mixH + rowGap;
+    }
+
     this.bounds.noteLength = { x: controlX, y: controlY, w: noteW, h: rowH };
     this.drawSmallButton(ctx, this.bounds.noteLength, `Note ${NOTE_LENGTH_OPTIONS[this.noteLengthIndex].label}`, false);
     controlY += rowH + rowGap;
@@ -4151,7 +4297,7 @@ export default class MidiComposer {
     const rightY = leftY;
     const rowH = isMobile ? 54 : 48;
     const addButtonH = 36;
-    const controlsH = track ? (isMobile ? 118 : 106) : 0;
+    const controlsH = 0;
 
     this.bounds.instrumentList = [];
     this.bounds.instrumentSettingsControls = [];
@@ -4189,79 +4335,6 @@ export default class MidiComposer {
       cursorY += rowH + 6;
     });
 
-    if (track) {
-      const controlsY = listStartY + listH + 8;
-      const controlsX = leftX + 8;
-      const controlsW = leftW - 16;
-      ctx.fillStyle = 'rgba(0,0,0,0.45)';
-      ctx.fillRect(controlsX, controlsY, controlsW, controlsH - 6);
-      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-      ctx.strokeRect(controlsX, controlsY, controlsW, controlsH - 6);
-      ctx.fillStyle = 'rgba(255,255,255,0.75)';
-      ctx.font = '11px Courier New';
-      ctx.fillText('Mix Controls', controlsX + 8, controlsY + 16);
-
-      const buttonH = isMobile ? 26 : 22;
-      const muteBounds = {
-        x: controlsX + 8,
-        y: controlsY + 24,
-        w: 60,
-        h: buttonH,
-        trackIndex: this.selectedTrackIndex,
-        control: 'mute'
-      };
-      const soloBounds = {
-        x: muteBounds.x + 70,
-        y: muteBounds.y,
-        w: 60,
-        h: buttonH,
-        trackIndex: this.selectedTrackIndex,
-        control: 'solo'
-      };
-      this.drawSmallButton(ctx, muteBounds, 'Mute', track.mute);
-      this.drawSmallButton(ctx, soloBounds, 'Solo', track.solo);
-      this.bounds.instrumentSettingsControls.push(muteBounds, soloBounds);
-
-      const sliderW = controlsW - 16;
-      const volumeBounds = {
-        x: controlsX + 8,
-        y: muteBounds.y + buttonH + 10,
-        w: sliderW,
-        h: isMobile ? 14 : 12,
-        trackIndex: this.selectedTrackIndex,
-        control: 'volume'
-      };
-      ctx.fillStyle = 'rgba(0,0,0,0.5)';
-      ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
-      ctx.fillStyle = '#ffe16a';
-      ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w * track.volume, volumeBounds.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-      ctx.strokeRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.font = '10px Courier New';
-      ctx.fillText('Volume', volumeBounds.x, volumeBounds.y - 4);
-      this.bounds.instrumentSettingsControls.push(volumeBounds);
-
-      const panBounds = {
-        x: controlsX + 8,
-        y: volumeBounds.y + volumeBounds.h + 18,
-        w: sliderW,
-        h: isMobile ? 12 : 10,
-        trackIndex: this.selectedTrackIndex,
-        control: 'pan'
-      };
-      ctx.fillStyle = 'rgba(0,0,0,0.5)';
-      ctx.fillRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
-      ctx.fillStyle = '#4fb7ff';
-      ctx.fillRect(panBounds.x, panBounds.y, panBounds.w * ((track.pan + 1) / 2), panBounds.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-      ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.font = '10px Courier New';
-      ctx.fillText('Pan', panBounds.x, panBounds.y - 4);
-      this.bounds.instrumentSettingsControls.push(panBounds);
-    }
-
     this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - 8, w: leftW - 16, h: addButtonH };
     this.drawButton(ctx, this.bounds.instrumentAdd, 'Add Instrument', false, false);
 
@@ -4284,16 +4357,34 @@ export default class MidiComposer {
 
       const tabY = rightY + 34 + previewOffset;
       const tabH = 36;
-      const tabRows = rightW < 540 ? 2 : 1;
+      const tabNavW = 30;
+      const tabNavGap = 6;
+      const tabsAvailableW = rightW - padding * 2 - (tabNavW + tabNavGap) * 2;
+      const tabsX = rightX + padding + tabNavW + tabNavGap;
+      const tabRows = tabsAvailableW < 480 ? 2 : 1;
       const tabsPerRow = Math.ceil(INSTRUMENT_FAMILY_TABS.length / tabRows);
       this.instrumentPicker.tabBounds = [];
+      this.instrumentPicker.tabPrevBounds = {
+        x: rightX + padding,
+        y: tabY,
+        w: tabNavW,
+        h: tabH
+      };
+      this.instrumentPicker.tabNextBounds = {
+        x: rightX + rightW - padding - tabNavW,
+        y: tabY,
+        w: tabNavW,
+        h: tabH
+      };
+      this.drawSmallButton(ctx, this.instrumentPicker.tabPrevBounds, '<', false);
+      this.drawSmallButton(ctx, this.instrumentPicker.tabNextBounds, '>', false);
       for (let row = 0; row < tabRows; row += 1) {
         for (let col = 0; col < tabsPerRow; col += 1) {
           const index = row * tabsPerRow + col;
           const tab = INSTRUMENT_FAMILY_TABS[index];
           if (!tab) continue;
-          const tabW = (rightW - padding * 2 - (tabsPerRow - 1) * 6) / tabsPerRow;
-          const tabX = rightX + padding + col * (tabW + 6);
+          const tabW = (tabsAvailableW - (tabsPerRow - 1) * 6) / tabsPerRow;
+          const tabX = tabsX + col * (tabW + 6);
           const tabRowY = tabY + row * (tabH + 6);
           const bounds = { x: tabX, y: tabRowY, w: tabW, h: tabH, id: tab.id };
           this.instrumentPicker.tabBounds.push(bounds);
@@ -4302,7 +4393,7 @@ export default class MidiComposer {
       }
 
       const selectorY = tabY + tabRows * (tabH + 6) + 10;
-      const footerH = 52;
+      const footerH = 94;
       const scrollY = selectorY;
       const scrollH = rightY + panelH - scrollY - footerH;
       this.instrumentPicker.sectionBounds = [{ x: rightX + padding, y: scrollY, w: rightW - padding * 2, h: scrollH }];
@@ -4319,6 +4410,7 @@ export default class MidiComposer {
       const tileGap = 10;
       const tileW = (rightW - padding * 2 - tileGap * (columns - 1)) / columns;
       const tileH = 56;
+      this.instrumentPicker.scrollStep = tileH + tileGap;
       let tileX = rightX + padding;
       let tileY = scrollY - this.instrumentPicker.scroll;
       this.instrumentPicker.bounds = [];
@@ -4360,19 +4452,59 @@ export default class MidiComposer {
       this.instrumentPicker.scrollMax = Math.max(0, totalHeight - scrollH);
       this.instrumentPicker.scroll = clamp(this.instrumentPicker.scroll, 0, this.instrumentPicker.scrollMax);
 
+      this.instrumentPicker.scrollUpBounds = null;
+      this.instrumentPicker.scrollDownBounds = null;
+      if (this.instrumentPicker.scrollMax > 0) {
+        const scrollButtonW = 26;
+        const scrollButtonH = 22;
+        const scrollButtonX = rightX + rightW - padding - scrollButtonW;
+        this.instrumentPicker.scrollUpBounds = {
+          x: scrollButtonX,
+          y: scrollY + 6,
+          w: scrollButtonW,
+          h: scrollButtonH
+        };
+        this.instrumentPicker.scrollDownBounds = {
+          x: scrollButtonX,
+          y: scrollY + scrollH - scrollButtonH - 6,
+          w: scrollButtonW,
+          h: scrollButtonH
+        };
+        this.drawSmallButton(ctx, this.instrumentPicker.scrollUpBounds, '▲', false);
+        this.drawSmallButton(ctx, this.instrumentPicker.scrollDownBounds, '▼', false);
+      }
+
       const footerY = rightY + panelH - footerH + 6;
+      const footerButtonH = 32;
+      this.instrumentPicker.downloadBounds = {
+        x: rightX + padding,
+        y: footerY,
+        w: rightW - padding * 2,
+        h: footerButtonH
+      };
+      const pickerTrack = this.song.tracks[this.instrumentPicker.trackIndex ?? this.selectedTrackIndex] || track;
+      const downloadProgram = Number.isInteger(this.instrumentPicker.selectedProgram)
+        ? this.instrumentPicker.selectedProgram
+        : pickerTrack?.program;
+      const downloadKey = this.getCacheKeyForProgram(downloadProgram, pickerTrack?.channel ?? 0);
+      const isCached = downloadKey ? this.cachedPrograms.has(downloadKey) : false;
+      const isDownloading = this.instrumentDownload.loading && this.instrumentDownload.key === downloadKey;
+      const downloadLabel = isDownloading ? 'Downloading…' : isCached ? 'Downloaded' : 'Download Instrument';
+      this.drawButton(ctx, this.instrumentPicker.downloadBounds, downloadLabel, isCached, false);
+
+      const actionY = footerY + footerButtonH + 10;
       const buttonW = (rightW - padding * 2 - 12) / 2;
       this.instrumentPicker.confirmBounds = {
         x: rightX + padding,
-        y: footerY,
+        y: actionY,
         w: buttonW,
-        h: 32
+        h: footerButtonH
       };
       this.instrumentPicker.cancelBounds = {
         x: rightX + padding + buttonW + 12,
-        y: footerY,
+        y: actionY,
         w: buttonW,
-        h: 32
+        h: footerButtonH
       };
       const confirmLabel = this.instrumentPicker.mode === 'add' ? 'Add' : 'Apply';
       this.drawButton(ctx, this.instrumentPicker.confirmBounds, confirmLabel, false, false);
@@ -4424,23 +4556,7 @@ export default class MidiComposer {
     this.drawButton(ctx, removeBounds, 'Remove', false, false);
     this.bounds.instrumentSettingsControls.push(changeBounds, removeBounds);
 
-    const downloadRowY = buttonRowY + 44;
-    const downloadBounds = {
-      x: rightX + padding,
-      y: downloadRowY,
-      w: rightW - padding * 2,
-      h: 32,
-      trackIndex: this.selectedTrackIndex,
-      control: 'download'
-    };
-    const cacheKey = this.getCacheKeyForTrack(track);
-    const isCached = cacheKey ? this.cachedPrograms.has(cacheKey) : false;
-    const isDownloading = this.instrumentDownload.loading && this.instrumentDownload.key === cacheKey;
-    const downloadLabel = isDownloading ? 'Downloading…' : isCached ? 'Downloaded' : 'Download Instrument';
-    this.drawButton(ctx, downloadBounds, downloadLabel, isCached, false);
-    this.bounds.instrumentSettingsControls.push(downloadBounds);
-
-    const toggleRowY = downloadRowY + 44;
+    const toggleRowY = buttonRowY + 44;
     const muteBounds = {
       x: rightX + padding,
       y: toggleRowY,
@@ -5634,12 +5750,11 @@ export default class MidiComposer {
   }
 
   drawNoteLengthMenu(ctx, width, height) {
-    if (!this.noteLengthMenu.open || !this.noteLengthMenu.anchor) {
+    if (!this.noteLengthMenu.open) {
       this.bounds.noteLengthMenu = [];
       return;
     }
     const options = NOTE_LENGTH_OPTIONS;
-    const anchor = this.noteLengthMenu.anchor;
     const columns = 4;
     const rows = Math.ceil(options.length / columns);
     const gap = 6;
@@ -5650,21 +5765,11 @@ export default class MidiComposer {
     const cellH = 30;
     const menuW = columns * cellW + gap * (columns - 1) + padding * 2;
     const menuH = rows * cellH + gap * (rows - 1) + padding * 2;
-    let menuX = anchor.x;
-    let menuY = anchor.y + anchor.h + 8;
-    if (menuX + menuW > width - 8) {
-      menuX = width - menuW - 8;
-    }
-    if (menuX < 8) {
-      menuX = 8;
-    }
-    if (menuY + menuH > height - 8) {
-      menuY = anchor.y - menuH - 8;
-    }
-    if (menuY < 8) {
-      menuY = 8;
-    }
+    const menuX = Math.max(8, (width - menuW) / 2);
+    const menuY = Math.max(8, (height - menuH) / 2);
 
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(0, 0, width, height);
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(menuX, menuY, menuW, menuH);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
@@ -5684,29 +5789,18 @@ export default class MidiComposer {
   }
 
   drawTempoSlider(ctx, width, height) {
-    if (!this.tempoSliderOpen || !this.bounds.tempoButton) {
+    if (!this.tempoSliderOpen) {
       this.bounds.tempoSlider = null;
       return;
     }
-    const anchor = this.bounds.tempoButton;
     const padding = 10;
-    const sliderW = Math.min(260, Math.max(180, anchor.w * 1.6));
-    const sliderH = 56;
-    let sliderX = anchor.x + anchor.w / 2 - sliderW / 2;
-    let sliderY = anchor.y + anchor.h + 8;
-    if (sliderX + sliderW > width - 8) {
-      sliderX = width - sliderW - 8;
-    }
-    if (sliderX < 8) {
-      sliderX = 8;
-    }
-    if (sliderY + sliderH > height - 8) {
-      sliderY = anchor.y - sliderH - 8;
-    }
-    if (sliderY < 8) {
-      sliderY = 8;
-    }
+    const sliderW = Math.min(320, width - 40);
+    const sliderH = 72;
+    const sliderX = Math.max(8, (width - sliderW) / 2);
+    const sliderY = Math.max(8, (height - sliderH) / 2);
 
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(0, 0, width, height);
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(sliderX, sliderY, sliderW, sliderH);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
@@ -5717,7 +5811,7 @@ export default class MidiComposer {
 
     const barBounds = {
       x: sliderX + padding,
-      y: sliderY + 26,
+      y: sliderY + 30,
       w: sliderW - padding * 2,
       h: 14
     };
