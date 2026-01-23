@@ -352,6 +352,17 @@ export const GM_DRUMS = [
   { pitch: 81, label: 'Open Triangle' }
 ];
 
+export const GM_DRUM_KITS = [
+  { id: 'standard', label: 'Standard Kit', bankMSB: 0, bankLSB: 0, program: 0, soundfont: 'standard_kit' },
+  { id: 'room', label: 'Room Kit', bankMSB: 0, bankLSB: 0, program: 1, soundfont: 'room_kit' },
+  { id: 'power', label: 'Power Kit', bankMSB: 0, bankLSB: 0, program: 2, soundfont: 'power_kit' },
+  { id: 'electronic', label: 'Electronic Kit', bankMSB: 0, bankLSB: 0, program: 3, soundfont: 'electronic_kit' },
+  { id: 'jazz', label: 'Jazz Kit', bankMSB: 0, bankLSB: 0, program: 4, soundfont: 'jazz_kit' },
+  { id: 'brush', label: 'Brush Kit', bankMSB: 0, bankLSB: 0, program: 5, soundfont: 'brush_kit' },
+  { id: 'orchestra', label: 'Orchestra Kit', bankMSB: 0, bankLSB: 0, program: 6, soundfont: 'orchestra_kit' },
+  { id: 'sfx', label: 'SFX Kit', bankMSB: 0, bankLSB: 0, program: 7, soundfont: 'sfx_kit' }
+];
+
 export const isDrumChannel = (channel) => channel === 9;
 
 export const formatProgramNumber = (program) => `${String(program + 1).padStart(3, '0')}`;

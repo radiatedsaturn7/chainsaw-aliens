@@ -1,4 +1,5 @@
-import { GM_PROGRAMS, isDrumChannel } from '../audio/gm.js';
+import { GM_DRUMS, GM_PROGRAMS, isDrumChannel } from '../audio/gm.js';
+import DrumKitManager from '../audio/DrumKitManager.js';
 import SoundfontEngine from '../audio/SoundfontEngine.js';
 
 const DEFAULT_GM_SOUND_FONT_URL = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
@@ -59,6 +60,18 @@ export default class AudioSystem {
       baseUrl: this.loadStoredSoundfontUrl(),
       fallbackUrl: FALLBACK_GM_SOUND_FONT_URL
     });
+    this.drumKitManager = new DrumKitManager({ soundfont: this.soundfont });
+    this.channelState = Array.from({ length: 16 }, () => ({
+      bankMSB: 0,
+      bankLSB: 0,
+      program: 0,
+      drumKitId: null
+    }));
+    this.midiDebug = {
+      lastDrumNote: null,
+      lastChannel: null,
+      lastChannelType: null
+    };
   }
 
   ensure() {
@@ -138,6 +151,7 @@ export default class AudioSystem {
   resetGmBank() {
     this.soundfont.reset();
     this.gmError = null;
+    this.drumKitManager.setDrumKit('standard');
   }
 
   getGmStatus() {
@@ -165,25 +179,56 @@ export default class AudioSystem {
 
   loadGmDrumKit() {
     this.ensureMidiSampler();
-    return this.soundfont.loadDrumKit();
+    const kit = this.drumKitManager.getDrumKit();
+    return this.soundfont.loadDrumKit(kit?.soundfont);
   }
 
-  cacheGmProgram(program, channel = 0) {
+  cacheGmProgram(program, channel = 0, bankMSB = 0, bankLSB = 0) {
     if (!this.gmEnabled) return Promise.resolve({ cached: false, reason: 'GM disabled' });
     this.ensureMidiSampler();
     if (isDrumChannel(channel)) {
-      return this.soundfont.cacheDrumKit();
+      const kit = this.drumKitManager.resolveKitFromBankProgram(bankMSB, bankLSB, program);
+      return this.soundfont.cacheDrumKit(kit?.soundfont);
     }
     return this.soundfont.cacheInstrument(program);
   }
 
-  preloadSoundfontProgram(program, channel = 0) {
+  preloadSoundfontProgram(program, channel = 0, bankMSB = 0, bankLSB = 0) {
     if (!this.gmEnabled) return;
     if (isDrumChannel(channel)) {
-      this.loadGmDrumKit().catch(() => {});
+      const kit = this.drumKitManager.resolveKitFromBankProgram(bankMSB, bankLSB, program);
+      this.soundfont.loadDrumKit(kit?.soundfont).catch(() => {});
       return;
     }
     this.loadGmProgram(program).catch(() => {});
+  }
+
+  setDrumKit(nameOrId) {
+    const kit = this.drumKitManager.setDrumKit(nameOrId);
+    this.channelState[9].drumKitId = kit?.id || null;
+    return kit;
+  }
+
+  getDrumKit() {
+    return this.drumKitManager.getDrumKit();
+  }
+
+  listAvailableDrumKits() {
+    return this.drumKitManager.listAvailableDrumKits();
+  }
+
+  getDrumKitLabel({ bankMSB = 0, bankLSB = 0, program = 0 } = {}) {
+    const kit = this.drumKitManager.resolveKitFromBankProgram(bankMSB, bankLSB, program);
+    return kit ? kit.label : 'Standard Kit';
+  }
+
+  getMidiDebugInfo() {
+    return {
+      drumKit: this.drumKitManager.getDrumKit(),
+      lastDrumNote: this.midiDebug.lastDrumNote,
+      lastChannel: this.midiDebug.lastChannel,
+      lastChannelType: this.midiDebug.lastChannelType
+    };
   }
 
   setVolume(value) {
@@ -345,21 +390,53 @@ export default class AudioSystem {
     return presets[instrument] || presets.sine;
   }
 
+  /**
+   * GM channel 10 (index 9) is percussion: note numbers map directly to drum sounds,
+   * and kit selection is driven by Bank Select (CC0/CC32) plus Program Change.
+   */
   playGmNote({
     pitch = 60,
     duration = 0.5,
     volume = 0.8,
     program = 0,
     channel = 0,
+    bankMSB = 0,
+    bankLSB = 0,
     pan = 0
   }) {
     this.ensureMidiSampler();
     const clampedProgram = clamp(program ?? 0, 0, GM_PROGRAMS.length - 1);
     const clampedVolume = clamp(volume ?? 1, 0, 1);
     const clampedPan = clamp(pan ?? 0, -1, 1);
+    const isDrums = isDrumChannel(channel);
+    const channelState = this.channelState[channel] || this.channelState[0];
+    if (isDrums) {
+      const usesExplicitKit = [bankMSB, bankLSB, clampedProgram].some((value) => Number.isInteger(value) && value !== 0);
+      const resolvedKit = usesExplicitKit
+        ? this.drumKitManager.resolveKitFromBankProgram(bankMSB, bankLSB, clampedProgram)
+        : this.drumKitManager.getDrumKit();
+      if (resolvedKit?.soundfont) {
+        this.soundfont.setDrumKitName(resolvedKit.soundfont);
+        this.drumKitManager.setDrumKit(resolvedKit.id);
+        channelState.drumKitId = resolvedKit.id;
+        channelState.bankMSB = resolvedKit.bankMSB;
+        channelState.bankLSB = resolvedKit.bankLSB;
+        channelState.program = resolvedKit.program;
+      }
+      const drumLabel = GM_DRUMS.find((entry) => entry.pitch === pitch)?.label || 'Unknown Drum';
+      this.midiDebug.lastDrumNote = { pitch, label: drumLabel };
+      this.midiDebug.lastChannelType = 'percussion';
+      this.midiDebug.lastChannel = channel;
+    } else {
+      channelState.bankMSB = Number.isInteger(bankMSB) ? bankMSB : channelState.bankMSB;
+      channelState.bankLSB = Number.isInteger(bankLSB) ? bankLSB : channelState.bankLSB;
+      channelState.program = clampedProgram;
+      this.midiDebug.lastChannelType = 'melodic';
+      this.midiDebug.lastChannel = channel;
+    }
     const fallback = () => {
       this.gmError = 'SoundFont failed; using fallback synth.';
-      if (isDrumChannel(channel)) {
+      if (isDrums) {
         this.playSampledNote({
           pitch,
           duration,
@@ -377,7 +454,9 @@ export default class AudioSystem {
       fallback();
       return;
     }
-    this.soundfont.setProgram(clampedProgram, channel);
+    if (!isDrums) {
+      this.soundfont.setProgram(clampedProgram, channel);
+    }
     const when = this.ctx.currentTime + this.midiLatency;
     this.soundfont.noteOn(pitch, clampedVolume, when, duration, channel)
       .then((voice) => {
