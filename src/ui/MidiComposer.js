@@ -2729,8 +2729,14 @@ export default class MidiComposer {
   }
 
   shouldHandleGestureStart(payload) {
-    if (!this.recordModeActive) return true;
-    return false;
+    if (this.recordModeActive) return false;
+    const touches = payload?.touches;
+    const instrumentBounds = this.recordLayout?.bounds?.instrument;
+    if (touches && instrumentBounds && this.recordLayout?.device !== 'gamepad') {
+      const touchingInstrument = touches.some((touch) => this.pointInBounds(touch.x, touch.y, instrumentBounds));
+      if (touchingInstrument) return false;
+    }
+    return true;
   }
 
   handleGestureStart(payload) {
