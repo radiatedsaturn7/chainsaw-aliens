@@ -11,8 +11,8 @@ import {
 import DrumKitManager from '../audio/DrumKitManager.js';
 import SoundfontEngine from '../audio/SoundfontEngine.js';
 
-const DEFAULT_GM_SOUND_FONT_URL = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
-const FALLBACK_GM_SOUND_FONT_URL = 'https://cdn.jsdelivr.net/gh/gleitz/midi-js-soundfonts/FluidR3_GM/';
+const DEFAULT_GM_SOUND_FONT_URL = 'vendor/soundfonts/FluidR3_GM/';
+const FALLBACK_GM_SOUND_FONT_URL = 'vendor/soundfonts/FluidR3_GM/';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const LEGACY_INSTRUMENT_TO_PROGRAM = {
@@ -122,7 +122,11 @@ export default class AudioSystem {
 
   loadStoredSoundfontUrl() {
     try {
-      return localStorage.getItem('chainsaw-gm-soundfont-url') || DEFAULT_GM_SOUND_FONT_URL;
+      const stored = localStorage.getItem('chainsaw-gm-soundfont-url');
+      if (!stored || stored.startsWith('http')) {
+        return DEFAULT_GM_SOUND_FONT_URL;
+      }
+      return stored;
     } catch (error) {
       return DEFAULT_GM_SOUND_FONT_URL;
     }
@@ -151,11 +155,8 @@ export default class AudioSystem {
     }
   }
 
-  setSoundfontCdn(cdnId) {
-    const nextUrl = cdnId === 'jsdelivr'
-      ? FALLBACK_GM_SOUND_FONT_URL
-      : DEFAULT_GM_SOUND_FONT_URL;
-    this.setSoundfontUrl(nextUrl);
+  setSoundfontCdn() {
+    this.setSoundfontUrl(DEFAULT_GM_SOUND_FONT_URL);
     this.gmError = null;
   }
 

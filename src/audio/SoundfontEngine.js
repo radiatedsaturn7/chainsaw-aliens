@@ -1,9 +1,9 @@
 import { GM_DRUM_BANK_MSB, GM_SOUNDFONT_NAMES, isDrumChannel } from './gm.js';
 
-const PRIMARY_SOUNDFONT_BASE = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
-const FALLBACK_SOUNDFONT_BASE = 'https://cdn.jsdelivr.net/gh/gleitz/midi-js-soundfonts/FluidR3_GM/';
+const PRIMARY_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
+const FALLBACK_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
 const SOUNDFONT_PLAYER_GLOBAL = 'Soundfont';
-const DRUM_KIT_NAME = 'standard_kit';
+const DRUM_KIT_NAME = 'synth_drum';
 // FluidR3_GM does not ship dedicated drum kit soundfonts, so use a drum-ish fallback.
 const DRUM_KIT_FALLBACK_NAME = 'synth_drum';
 
@@ -33,6 +33,8 @@ export default class SoundfontEngine {
     this.channelVolumes = new Map();
     this.drumKitName = DRUM_KIT_NAME;
     this.drumKitFallbackName = drumKitFallbackName;
+    this.missingDrumKits = new Set();
+    this.failedInstruments = new Set();
     this.error = null;
     this.lastError = null;
     this.lastUrl = null;
@@ -73,9 +75,12 @@ export default class SoundfontEngine {
   }
 
   setDrumKitName(name) {
-    if (name) {
-      this.drumKitName = name;
+    if (!name) return;
+    if (this.missingDrumKits.has(name) && this.drumKitFallbackName) {
+      this.drumKitName = this.drumKitFallbackName;
+      return;
     }
+    this.drumKitName = name;
   }
 
   getDrumKitName() {
@@ -97,6 +102,8 @@ export default class SoundfontEngine {
     this.instrumentCache.clear();
     this.loadingPromises.clear();
     this.drumKitName = DRUM_KIT_NAME;
+    this.missingDrumKits.clear();
+    this.failedInstruments.clear();
     this.error = null;
     this.lastError = null;
     this.lastUrl = null;
@@ -148,13 +155,16 @@ export default class SoundfontEngine {
   }
 
   loadDrumKit(kitName = this.drumKitName) {
-    const resolved = kitName || DRUM_KIT_NAME;
+    const resolved = this.missingDrumKits.has(kitName) && this.drumKitFallbackName
+      ? this.drumKitFallbackName
+      : (kitName || DRUM_KIT_NAME);
     const percussionOptions = { percussion: true, bank: GM_DRUM_BANK_MSB };
     const drumKey = resolveDrumKitKey(resolved, percussionOptions.bank);
     return this.loadInstrumentByName(drumKey, resolved, percussionOptions).catch((error) => {
       if (!this.drumKitFallbackName || resolved === this.drumKitFallbackName) {
         throw error;
       }
+      this.missingDrumKits.add(resolved);
       this.drumKitName = this.drumKitFallbackName;
       const fallbackKey = resolveDrumKitKey(this.drumKitFallbackName, percussionOptions.bank);
       return this.loadInstrumentByName(fallbackKey, this.drumKitFallbackName, percussionOptions);
@@ -203,6 +213,9 @@ export default class SoundfontEngine {
   loadInstrumentByName(key, name, options = {}) {
     if (this.instrumentCache.has(key)) {
       return Promise.resolve(this.instrumentCache.get(key));
+    }
+    if (this.failedInstruments.has(key)) {
+      return Promise.reject(new Error(`SoundFont previously failed to load: ${name}`));
     }
     if (this.loadingPromises.has(key)) {
       return this.loadingPromises.get(key);
@@ -255,6 +268,7 @@ export default class SoundfontEngine {
         const details = this.lastUrl ? `${reason}. URL: ${this.lastUrl}` : reason;
         this.error = `SoundFont load error: ${name} (${details})`;
         this.lastError = details;
+        this.failedInstruments.add(key);
         throw error;
       })
       .finally(() => {
