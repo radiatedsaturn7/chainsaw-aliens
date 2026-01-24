@@ -4,12 +4,19 @@ const PRIMARY_SOUNDFONT_BASE = 'https://gleitz.github.io/midi-js-soundfonts/Flui
 const FALLBACK_SOUNDFONT_BASE = 'https://cdn.jsdelivr.net/gh/gleitz/midi-js-soundfonts/FluidR3_GM/';
 const SOUNDFONT_PLAYER_GLOBAL = 'Soundfont';
 const DRUM_KIT_NAME = 'standard_kit';
+// FluidR3_GM does not ship dedicated drum kit soundfonts, so use a drum-ish fallback.
+const DRUM_KIT_FALLBACK_NAME = 'synth_drum';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const normalizeBaseUrl = (url) => (url.endsWith('/') ? url : `${url}/`);
 
 export default class SoundfontEngine {
-  constructor({ baseUrl = PRIMARY_SOUNDFONT_BASE, fallbackUrl = FALLBACK_SOUNDFONT_BASE, format = 'mp3' } = {}) {
+  constructor({
+    baseUrl = PRIMARY_SOUNDFONT_BASE,
+    fallbackUrl = FALLBACK_SOUNDFONT_BASE,
+    format = 'mp3',
+    drumKitFallbackName = DRUM_KIT_FALLBACK_NAME
+  } = {}) {
     this.baseUrl = normalizeBaseUrl(baseUrl);
     this.fallbackUrl = normalizeBaseUrl(fallbackUrl);
     this.format = format;
@@ -23,6 +30,7 @@ export default class SoundfontEngine {
     this.channelPrograms = new Map();
     this.channelVolumes = new Map();
     this.drumKitName = DRUM_KIT_NAME;
+    this.drumKitFallbackName = drumKitFallbackName;
     this.error = null;
     this.lastError = null;
     this.lastUrl = null;
@@ -138,7 +146,13 @@ export default class SoundfontEngine {
 
   loadDrumKit(kitName = this.drumKitName) {
     const resolved = kitName || DRUM_KIT_NAME;
-    return this.loadInstrumentByName(`drum-kit:${resolved}`, resolved);
+    return this.loadInstrumentByName(`drum-kit:${resolved}`, resolved).catch((error) => {
+      if (!this.drumKitFallbackName || resolved === this.drumKitFallbackName) {
+        throw error;
+      }
+      this.drumKitName = this.drumKitFallbackName;
+      return this.loadInstrumentByName(`drum-kit:${this.drumKitFallbackName}`, this.drumKitFallbackName);
+    });
   }
 
   async cacheInstrument(program) {
