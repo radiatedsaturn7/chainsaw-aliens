@@ -9,13 +9,15 @@ const DRUM_KIT_FALLBACK_NAME = 'synth_drum';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const normalizeBaseUrl = (url) => (url.endsWith('/') ? url : `${url}/`);
+const resolveDrumKitKey = (kitName, bank = GM_DRUM_BANK_MSB) => `drum-kit:${bank}:${kitName}`;
 
 export default class SoundfontEngine {
   constructor({
     baseUrl = PRIMARY_SOUNDFONT_BASE,
     fallbackUrl = FALLBACK_SOUNDFONT_BASE,
     format = 'mp3',
-    drumKitFallbackName = DRUM_KIT_FALLBACK_NAME
+    drumKitFallbackName = DRUM_KIT_FALLBACK_NAME,
+    debug = true
   } = {}) {
     this.baseUrl = normalizeBaseUrl(baseUrl);
     this.fallbackUrl = normalizeBaseUrl(fallbackUrl);
@@ -34,6 +36,7 @@ export default class SoundfontEngine {
     this.error = null;
     this.lastError = null;
     this.lastUrl = null;
+    this.debug = Boolean(debug);
   }
 
   initAudio({ audioContext = null, destination = null } = {}) {
@@ -147,12 +150,14 @@ export default class SoundfontEngine {
   loadDrumKit(kitName = this.drumKitName) {
     const resolved = kitName || DRUM_KIT_NAME;
     const percussionOptions = { percussion: true, bank: GM_DRUM_BANK_MSB };
-    return this.loadInstrumentByName(`drum-kit:${resolved}`, resolved, percussionOptions).catch((error) => {
+    const drumKey = resolveDrumKitKey(resolved, percussionOptions.bank);
+    return this.loadInstrumentByName(drumKey, resolved, percussionOptions).catch((error) => {
       if (!this.drumKitFallbackName || resolved === this.drumKitFallbackName) {
         throw error;
       }
       this.drumKitName = this.drumKitFallbackName;
-      return this.loadInstrumentByName(`drum-kit:${this.drumKitFallbackName}`, this.drumKitFallbackName, percussionOptions);
+      const fallbackKey = resolveDrumKitKey(this.drumKitFallbackName, percussionOptions.bank);
+      return this.loadInstrumentByName(fallbackKey, this.drumKitFallbackName, percussionOptions);
     });
   }
 
@@ -163,7 +168,8 @@ export default class SoundfontEngine {
 
   async cacheDrumKit(kitName = this.drumKitName) {
     const resolved = kitName || DRUM_KIT_NAME;
-    return this.cacheInstrumentByName(`drum-kit:${resolved}`, resolved);
+    const drumKey = resolveDrumKitKey(resolved, GM_DRUM_BANK_MSB);
+    return this.cacheInstrumentByName(drumKey, resolved);
   }
 
   async cacheInstrumentByName(key, name) {
@@ -258,18 +264,71 @@ export default class SoundfontEngine {
     return promise;
   }
 
-  noteOn(midiNote, velocity = 0.8, time = null, durationSeconds = 0.25, channel = 0) {
+  logResolution(details) {
+    if (!this.debug) return;
+    const summary = {
+      trackId: details.trackId ?? null,
+      channel: details.channel,
+      isDrum: details.isDrum,
+      incomingNote: details.incomingNote,
+      resolvedNote: details.resolvedNote,
+      bankMSB: details.bankMSB ?? null,
+      bankLSB: details.bankLSB ?? null,
+      program: details.program ?? null,
+      presetName: details.presetName,
+      presetKey: details.presetKey,
+      percussionMode: details.percussionMode
+    };
+    // eslint-disable-next-line no-console
+    console.debug('[SoundfontEngine] preset resolution', summary);
+  }
+
+  noteOn(midiNote, velocity = 0.8, time = null, durationSeconds = 0.25, channel = 0, meta = {}) {
     if (!this.ctx) return Promise.resolve(null);
     const when = Math.max(time ?? this.ctx.currentTime, this.ctx.currentTime);
     const volume = clamp(velocity ?? 1, 0, 1) * (this.channelVolumes.get(channel) ?? 1);
+    const isDrum = isDrumChannel(channel);
+    const incomingNote = meta.sourceNote ?? midiNote;
+    const resolvedNote = meta.resolvedNote ?? midiNote;
+    const bankMSB = meta.bankMSB ?? (isDrum ? GM_DRUM_BANK_MSB : null);
+    const bankLSB = meta.bankLSB ?? null;
     const playNote = (instrument) => {
       if (!instrument?.play) return null;
-      return instrument.play(midiNote, when, { gain: volume, duration: durationSeconds });
+      return instrument.play(resolvedNote, when, { gain: volume, duration: durationSeconds });
     };
-    if (isDrumChannel(channel)) {
-      return this.loadDrumKit().then(playNote);
+    if (isDrum) {
+      const kitName = this.drumKitName || DRUM_KIT_NAME;
+      const drumKey = resolveDrumKitKey(kitName, bankMSB);
+      this.logResolution({
+        trackId: meta.trackId,
+        channel,
+        isDrum,
+        incomingNote,
+        resolvedNote,
+        bankMSB,
+        bankLSB,
+        program: meta.program ?? 0,
+        presetName: kitName,
+        presetKey: drumKey,
+        percussionMode: true
+      });
+      return this.loadDrumKit(kitName).then(playNote);
     }
     const program = this.channelPrograms.get(channel) ?? 0;
+    const presetName = this.getProgramName(program);
+    this.logResolution({
+      trackId: meta.trackId,
+      channel,
+      isDrum,
+      incomingNote,
+      resolvedNote,
+      bankMSB,
+      bankLSB,
+      program,
+      presetName,
+      presetKey: String(program),
+      percussionMode: false
+    });
     return this.loadInstrument(program).then(playNote);
   }
 }

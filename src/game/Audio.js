@@ -483,7 +483,15 @@ export default class AudioSystem {
       this.soundfont.setProgram(clampedProgram, resolvedChannel);
     }
     const when = this.ctx.currentTime + this.midiLatency;
-    this.soundfont.noteOn(resolvedPitch, clampedVolume, when, duration, resolvedChannel)
+    this.soundfont.noteOn(resolvedPitch, clampedVolume, when, duration, resolvedChannel, {
+      trackId: resolvedChannel,
+      isDrum: isDrums,
+      sourceNote: pitch,
+      resolvedNote: resolvedPitch,
+      bankMSB: resolvedBankMSB,
+      bankLSB: resolvedBankLSB,
+      program: isDrums ? channelState.program : clampedProgram
+    })
       .then((voice) => {
         if (!voice) return;
         const stopTime = when + duration + 0.2;
