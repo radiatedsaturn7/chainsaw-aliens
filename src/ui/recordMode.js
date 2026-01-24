@@ -83,7 +83,7 @@ export default class RecordModeLayout {
     return this.bounds;
   }
 
-  draw(ctx, { showGamepadHints, isPlaying, isRecording }) {
+  draw(ctx, { showGamepadHints, isPlaying, isRecording, selector }) {
     const { instrument } = this.bounds;
     if (!instrument) return;
 
@@ -99,6 +99,10 @@ export default class RecordModeLayout {
       this.drawGamepadHints(ctx);
     } else if (this.touchInput) {
       this.touchInput.draw(ctx);
+    }
+
+    if (selector) {
+      this.drawRadialSelector(ctx, selector);
     }
 
     this.drawInstrumentModal(ctx);
@@ -254,17 +258,60 @@ export default class RecordModeLayout {
     ctx.fillRect(instrument.x + 12, instrument.y + 70, instrument.w - 24, instrument.h - 90);
     ctx.fillStyle = '#fff';
     ctx.font = '13px Courier New';
-    const lines = [
-      'Left Stick: choose scale degree (silent)',
-      'A: triad  X: open  Y: 7th  B: power/bass',
-      'LB: minor  RB: spice  LT: Note Mode',
-      'D-Pad Up/Down: octave  RT: velocity',
-      'Right Stick: pitch bend + mod (CC1/74)',
-      'L3: Latch root'
-    ];
+    const lines = this.instrument === 'drums'
+      ? [
+        'LT: Kick  RB: Closed Hat  RT: Open Hat',
+        'A: Snare  X: Low Tom  Y: Mid Tom  B: High Tom',
+        'D-Pad Up: Crash  Down: Ride  Left/Right: Cymbals'
+      ]
+      : [
+        'Left Stick: set root note (silent)',
+        'D-Pad Left: Note Mode  Right: Chord Mode',
+        'A: 1  A+LB:2  X:3  X+LB:4',
+        'Y:5  Y+LB:6  B+LB:7  B:8',
+        'LB: passing tones  LT: sustain  RT: velocity',
+        'Right Stick: pitch bend',
+        'L3: scale root selector  R3: scale mode'
+      ];
     lines.forEach((line, index) => {
       ctx.fillText(line, instrument.x + 24, instrument.y + 100 + index * 20);
     });
+  }
+
+  drawRadialSelector(ctx, selector) {
+    const { instrument } = this.bounds;
+    const items = selector.items || [];
+    if (!instrument || !items.length) return;
+    const centerX = instrument.x + instrument.w / 2;
+    const centerY = instrument.y + instrument.h / 2 + 10;
+    const radius = Math.min(instrument.w, instrument.h) * 0.22;
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.fillRect(instrument.x + 12, instrument.y + 12, instrument.w - 24, instrument.h - 24);
+
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText(selector.title || 'Selector', centerX, instrument.y + 42);
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    const step = (Math.PI * 2) / items.length;
+    items.forEach((label, index) => {
+      const angle = index * step - Math.PI / 2;
+      const x = centerX + Math.cos(angle) * radius;
+      const y = centerY + Math.sin(angle) * radius;
+      const isActive = index === selector.index;
+      ctx.fillStyle = isActive ? '#ffe16a' : '#fff';
+      ctx.font = isActive ? '14px Courier New' : '12px Courier New';
+      ctx.fillText(label, x, y + 4);
+    });
+    ctx.restore();
   }
 
   handlePointerDown(payload) {

@@ -28,6 +28,14 @@ const SCALE_LIBRARY = [
   { id: 'phrygian', label: 'Phrygian', steps: [0, 1, 3, 5, 7, 8, 10] }
 ];
 
+const radialIndexFromStick = (x, y, count) => {
+  if (!count) return 0;
+  const angle = Math.atan2(y, x);
+  const normalized = (angle + Math.PI * 2 + Math.PI / 2) % (Math.PI * 2);
+  const slice = (Math.PI * 2) / count;
+  return Math.round(normalized / slice) % count;
+};
+
 const QUANTIZE_OPTIONS = [
   { id: '1', label: '1', divisor: 1 },
   { id: '1/2', label: '1/2', divisor: 2 },
@@ -545,6 +553,7 @@ export default class MidiComposer {
     this.recordDevicePreference = 'auto';
     this.recordInstrument = 'keyboard';
     this.recordStatus = { degree: 1, octave: 0, velocity: 96 };
+    this.recordSelector = { active: false, type: null, index: 0 };
     this.inputBus = new InputEventBus();
     this.keyboardInput = new KeyboardInput(this.inputBus);
     this.gamepadInput = new GamepadInput(this.inputBus);
@@ -1899,6 +1908,7 @@ export default class MidiComposer {
     const scale = SCALE_LIBRARY.find((entry) => entry.id === this.song.scale) || SCALE_LIBRARY[0];
     this.gamepadInput.setEnabled(true);
     this.gamepadInput.setScale({ key: this.song.key || 0, steps: scale.steps });
+    this.gamepadInput.setInstrument(this.recordInstrument);
     this.gamepadInput.update();
 
     const gamepadConnected = this.gamepadInput.connected;
@@ -1916,6 +1926,9 @@ export default class MidiComposer {
       this.gamepadInput.setEnabled(false);
     }
 
+    this.updateRecordSelectors();
+    this.gamepadInput.setSelectorActive(this.recordSelector.active);
+
     this.recordStatus.degree = this.gamepadInput.leftStickStableDirection || this.recordStatus.degree;
     this.recordStatus.octave = this.gamepadInput.octaveOffset;
     if (preferred !== 'gamepad') {
@@ -1926,6 +1939,49 @@ export default class MidiComposer {
       const ticks = (elapsed * this.song.tempo / 60) * this.ticksPerBeat;
       this.playheadTick = clamp(ticks, 0, this.getLoopTicks());
     }
+  }
+
+  toggleRecordSelector(type) {
+    if (this.recordSelector.active && this.recordSelector.type === type) {
+      this.recordSelector.active = false;
+      this.recordSelector.type = null;
+      return;
+    }
+    this.recordSelector.active = true;
+    this.recordSelector.type = type;
+    if (type === 'key') {
+      this.recordSelector.index = clamp(this.song.key || 0, 0, KEY_LABELS.length - 1);
+    } else {
+      const scaleIndex = SCALE_LIBRARY.findIndex((entry) => entry.id === this.song.scale);
+      this.recordSelector.index = scaleIndex >= 0 ? scaleIndex : 0;
+    }
+  }
+
+  updateRecordSelectors() {
+    if (this.recordInstrument === 'drums') {
+      this.recordSelector.active = false;
+      this.recordSelector.type = null;
+      return;
+    }
+    if (this.gamepadInput.wasButtonPressed(10)) {
+      this.toggleRecordSelector('key');
+    }
+    if (this.gamepadInput.wasButtonPressed(11)) {
+      this.toggleRecordSelector('scale');
+    }
+    if (!this.recordSelector.active || !this.recordSelector.type) return;
+    const { x, y } = this.gamepadInput.getRightStick();
+    if (Math.hypot(x, y) < 0.6) return;
+    const itemCount = this.recordSelector.type === 'key' ? KEY_LABELS.length : SCALE_LIBRARY.length;
+    const nextIndex = radialIndexFromStick(x, y, itemCount);
+    if (nextIndex === this.recordSelector.index) return;
+    this.recordSelector.index = nextIndex;
+    if (this.recordSelector.type === 'key') {
+      this.song.key = nextIndex;
+    } else {
+      this.song.scale = SCALE_LIBRARY[nextIndex]?.id || SCALE_LIBRARY[0].id;
+    }
+    this.persist();
   }
 
   updateCountInMetronome() {
@@ -4604,10 +4660,21 @@ export default class MidiComposer {
       });
       this.drawGhostNotes(ctx);
     }
+    const recordSelector = this.recordSelector.active
+      ? {
+        type: this.recordSelector.type,
+        index: this.recordSelector.index,
+        title: this.recordSelector.type === 'key' ? 'Scale Root' : 'Scale Mode',
+        items: this.recordSelector.type === 'key'
+          ? KEY_LABELS
+          : SCALE_LIBRARY.map((entry) => entry.label)
+      }
+      : null;
     this.recordLayout.draw(ctx, {
       showGamepadHints: this.recordLayout.device === 'gamepad' && this.gamepadInput.connected,
       isPlaying: this.isPlaying,
-      isRecording: this.recorder.isRecording
+      isRecording: this.recorder.isRecording,
+      selector: recordSelector
     });
 
     if (this.fileMenuOpen && this.bounds.fileButton) {
