@@ -55,14 +55,14 @@ If you hear no sound, wait for the “Loading instrument bank…” banner to fi
 
 **Gamepad mapping (Xbox/Backbone)**
 - **Left Stick**: set root note (silent).
-- **D-Pad Left** = **Note Mode**, **D-Pad Right** = **Chord Mode**.
+- **D-Pad Right** = toggle **Note/Chord Mode** · hold **D-Pad Left** for sharps.
 - **A** = 1, **A + LB** = 2, **X** = 3, **X + LB** = 4.
 - **Y** = 5, **Y + LB** = 6, **B + LB** = 7, **B** = 8.
-- **LB**: passing tone modifier.
+- **RB + A** = sus2 · **RB + X** = sus4 · **RB + Y** = dom7 · **RB + B** = 9th · **LB + RB** = diminished.
 - **LT**: sustain (CC64) · **RT**: velocity (full volume when released → silent when fully pulled).
-- **Right Stick**: pitch bend.
-- **L3**: circular selector for scale root (C at top).
-- **R3**: circular selector for scale mode.
+- **Right Stick**: pitch bend (± whole tone).
+- **L3**: circular selector for scale mode (use left stick to choose).
+- **R3**: circular selector for scale root (use right stick to choose).
 
 **Gamepad mapping (Drums)**
 - **LT** = Kick · **RB** = Closed Hi-Hat · **RT** = Open Hi-Hat.
