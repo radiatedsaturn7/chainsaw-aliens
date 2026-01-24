@@ -243,6 +243,36 @@ export default class AudioSystem {
     };
   }
 
+  logDrumNote({
+    backend,
+    bankMSB,
+    bankLSB,
+    program,
+    preset,
+    cacheKey,
+    resolvedPresetName,
+    note,
+    containsNote,
+    keyRange,
+    error
+  }) {
+    if (!this.soundfont?.debug) return;
+    // eslint-disable-next-line no-console
+    console.debug('[Audio] drum noteOn', {
+      backend,
+      bankMSB,
+      bankLSB,
+      program,
+      preset,
+      cacheKey,
+      resolvedPresetName,
+      note,
+      containsNote,
+      keyRange,
+      error: error ? String(error) : null
+    });
+  }
+
   setVolume(value) {
     this.volume = value;
     if (this.master) {
@@ -453,6 +483,27 @@ export default class AudioSystem {
     const fallback = () => {
       this.gmError = 'SoundFont failed; using fallback synth.';
       if (isDrums) {
+        const resolvedPresetName = this.soundfont.getDrumKitName?.() || 'synth_drum';
+        const cacheKey = this.soundfont.getCacheKey?.({
+          soundfontUrl: this.soundfont.baseUrl,
+          name: resolvedPresetName,
+          bankMSB: resolvedBankMSB,
+          bankLSB: resolvedBankLSB,
+          preset: 0,
+          percussion: true
+        });
+        this.logDrumNote({
+          backend: 'fallback',
+          bankMSB: resolvedBankMSB,
+          bankLSB: resolvedBankLSB,
+          program: 0,
+          preset: 0,
+          cacheKey,
+          resolvedPresetName,
+          note: resolvedPitch,
+          containsNote: false,
+          keyRange: null
+        });
         this.playSampledNote({
           pitch: resolvedPitch,
           duration,
@@ -489,7 +540,36 @@ export default class AudioSystem {
         this.registerMidiVoice({ voice, stopTime });
         this.gmError = null;
       })
-      .catch(fallback);
+      .catch((error) => {
+        if (isDrums) {
+          const resolvedPresetName = this.soundfont.getDrumKitName?.() || 'synth_drum';
+          const cacheKey = this.soundfont.getCacheKey?.({
+            soundfontUrl: this.soundfont.baseUrl,
+            name: resolvedPresetName,
+            bankMSB: resolvedBankMSB,
+            bankLSB: resolvedBankLSB,
+            preset: 0,
+            percussion: true
+          });
+          const message = `Drum SoundFont missing preset (bankMSB=${resolvedBankMSB}, bankLSB=${resolvedBankLSB}, preset=0).`;
+          this.gmError = message;
+          this.logDrumNote({
+            backend: 'soundfont',
+            bankMSB: resolvedBankMSB,
+            bankLSB: resolvedBankLSB,
+            program: 0,
+            preset: 0,
+            cacheKey,
+            resolvedPresetName,
+            note: resolvedPitch,
+            containsNote: false,
+            keyRange: null,
+            error
+          });
+          return;
+        }
+        fallback();
+      });
   }
 
   playMidiNote(pitch, instrument = 'piano', duration = 0.5, volume = 1, when = null, pan = 0) {

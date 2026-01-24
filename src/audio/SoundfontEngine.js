@@ -4,11 +4,12 @@ const PRIMARY_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
 const FALLBACK_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
 const SOUNDFONT_PLAYER_GLOBAL = 'Soundfont';
 const DRUM_KIT_NAME = 'synth_drum';
-const DRUM_PRESET_NAME = 'percussion';
+const DRUM_PRESET = 0;
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const normalizeBaseUrl = (url) => (url.endsWith('/') ? url : `${url}/`);
-const resolveDrumKitKey = (kitName, bank = GM_DRUM_BANK_MSB) => `drum-kit:${bank}:${kitName}`;
+const resolveDrumKitKey = (kitName, bankMSB = GM_DRUM_BANK_MSB, bankLSB = 0, preset = DRUM_PRESET) =>
+  `drum-kit:${bankMSB}:${bankLSB}:${preset}:${kitName}`;
 
 export default class SoundfontEngine {
   constructor({
@@ -142,26 +143,61 @@ export default class SoundfontEngine {
 
   loadInstrument(program) {
     const name = this.getProgramName(program);
-    return this.loadInstrumentByName(String(program), name);
+    return this.loadInstrumentByName(name, { program });
   }
 
-  loadDrumKit() {
-    const percussionOptions = { percussion: true, bank: GM_DRUM_BANK_MSB, preset: 0 };
-    const drumKey = resolveDrumKitKey(DRUM_PRESET_NAME, percussionOptions.bank);
-    return this.loadInstrumentByName(drumKey, DRUM_PRESET_NAME, percussionOptions);
+  loadDrumKit(kitName = this.drumKitName, options = {}) {
+    const name = kitName || DRUM_KIT_NAME;
+    const percussionOptions = {
+      percussion: true,
+      bankMSB: options.bankMSB ?? GM_DRUM_BANK_MSB,
+      bankLSB: options.bankLSB ?? 0,
+      preset: options.preset ?? DRUM_PRESET
+    };
+    return this.loadInstrumentByName(name, percussionOptions);
   }
 
   async cacheInstrument(program) {
     const name = this.getProgramName(program);
-    return this.cacheInstrumentByName(String(program), name);
+    return this.cacheInstrumentByName(name, { program });
   }
 
-  async cacheDrumKit() {
-    const drumKey = resolveDrumKitKey(DRUM_PRESET_NAME, GM_DRUM_BANK_MSB);
-    return this.cacheInstrumentByName(drumKey, DRUM_PRESET_NAME);
+  async cacheDrumKit(kitName = this.drumKitName, options = {}) {
+    const name = kitName || DRUM_KIT_NAME;
+    const percussionOptions = {
+      percussion: true,
+      bankMSB: options.bankMSB ?? GM_DRUM_BANK_MSB,
+      bankLSB: options.bankLSB ?? 0,
+      preset: options.preset ?? DRUM_PRESET
+    };
+    return this.cacheInstrumentByName(name, percussionOptions);
   }
 
-  async cacheInstrumentByName(key, name) {
+  buildCacheKey({
+    soundfontUrl = this.baseUrl,
+    name = '',
+    bankMSB = 0,
+    bankLSB = 0,
+    program = null,
+    preset = null,
+    percussion = false
+  } = {}) {
+    return [
+      `soundfont=${soundfontUrl}`,
+      `name=${name}`,
+      `bankMSB=${bankMSB ?? ''}`,
+      `bankLSB=${bankLSB ?? ''}`,
+      `program=${program ?? ''}`,
+      `preset=${preset ?? ''}`,
+      `percussion=${percussion ? 1 : 0}`
+    ].join('|');
+  }
+
+  getCacheKey(details = {}) {
+    return this.buildCacheKey(details);
+  }
+
+  async cacheInstrumentByName(name, options = {}) {
     if (!globalThis?.caches) {
       throw new Error('Cache API unavailable.');
     }
@@ -189,15 +225,24 @@ export default class SoundfontEngine {
     throw new Error(`Failed to cache SoundFont: ${name}`);
   }
 
-  loadInstrumentByName(key, name, options = {}) {
-    if (this.instrumentCache.has(key)) {
-      return Promise.resolve(this.instrumentCache.get(key));
+  loadInstrumentByName(name, options = {}) {
+    const cacheKey = this.buildCacheKey({
+      soundfontUrl: this.baseUrl,
+      name,
+      bankMSB: options.bankMSB ?? options.bank ?? 0,
+      bankLSB: options.bankLSB ?? 0,
+      program: options.program ?? null,
+      preset: options.preset ?? null,
+      percussion: options.percussion ?? false
+    });
+    if (this.instrumentCache.has(cacheKey)) {
+      return Promise.resolve(this.instrumentCache.get(cacheKey));
     }
-    if (this.failedInstruments.has(key)) {
+    if (this.failedInstruments.has(cacheKey)) {
       return Promise.reject(new Error(`SoundFont previously failed to load: ${name}`));
     }
-    if (this.loadingPromises.has(key)) {
-      return this.loadingPromises.get(key);
+    if (this.loadingPromises.has(cacheKey)) {
+      return this.loadingPromises.get(cacheKey);
     }
     const primaryFormat = this.format;
     const primaryUrl = this.buildUrl(this.baseUrl, name, primaryFormat);
@@ -209,7 +254,8 @@ export default class SoundfontEngine {
           format: this.format,
           destination: this.masterGain || this.destination,
           percussion: options.percussion,
-          bank: options.bank,
+          bank: options.bankMSB ?? options.bank,
+          bankLSB: options.bankLSB,
           preset: options.preset,
           nameToUrl: (instrumentName, soundfont, format) => {
             const url = this.buildUrl(this.baseUrl, instrumentName, format);
@@ -224,7 +270,8 @@ export default class SoundfontEngine {
           format: this.format,
           destination: this.masterGain || this.destination,
           percussion: options.percussion,
-          bank: options.bank,
+          bank: options.bankMSB ?? options.bank,
+          bankLSB: options.bankLSB,
           preset: options.preset,
           nameToUrl: (instrumentName, soundfont, format) => {
             const url = this.buildUrl(this.fallbackUrl, instrumentName, format);
@@ -239,7 +286,7 @@ export default class SoundfontEngine {
           this.lastError = this.error;
           return null;
         }
-        this.instrumentCache.set(key, instrument);
+        this.instrumentCache.set(cacheKey, instrument);
         this.error = null;
         this.lastError = null;
         return instrument;
@@ -249,14 +296,34 @@ export default class SoundfontEngine {
         const details = this.lastUrl ? `${reason}. URL: ${this.lastUrl}` : reason;
         this.error = `SoundFont load error: ${name} (${details})`;
         this.lastError = details;
-        this.failedInstruments.add(key);
+        this.failedInstruments.add(cacheKey);
         throw error;
       })
       .finally(() => {
-        this.loadingPromises.delete(key);
+        this.loadingPromises.delete(cacheKey);
       });
-    this.loadingPromises.set(key, promise);
+    this.loadingPromises.set(cacheKey, promise);
     return promise;
+  }
+
+  getInstrumentKeyRange(instrument) {
+    const buffers = instrument?.buffers;
+    if (!buffers || typeof buffers !== 'object') return null;
+    const keys = Object.keys(buffers)
+      .map((key) => Number(key))
+      .filter((value) => Number.isFinite(value));
+    if (!keys.length) return null;
+    return { min: Math.min(...keys), max: Math.max(...keys) };
+  }
+
+  instrumentContainsNote(instrument, note, keyRange = null) {
+    const buffers = instrument?.buffers;
+    if (!buffers || typeof buffers !== 'object') return false;
+    if (Object.prototype.hasOwnProperty.call(buffers, String(note))) return true;
+    if (keyRange) {
+      return note >= keyRange.min && note <= keyRange.max;
+    }
+    return false;
   }
 
   logResolution(details) {
@@ -270,12 +337,30 @@ export default class SoundfontEngine {
       bankMSB: details.bankMSB ?? null,
       bankLSB: details.bankLSB ?? null,
       program: details.program ?? null,
+      cacheKey: details.cacheKey ?? null,
       presetName: details.presetName,
       presetKey: details.presetKey,
       percussionMode: details.percussionMode
     };
     // eslint-disable-next-line no-console
     console.debug('[SoundfontEngine] preset resolution', summary);
+  }
+
+  logDrumNote(details) {
+    if (!this.debug) return;
+    // eslint-disable-next-line no-console
+    console.debug('[SoundfontEngine] drum noteOn', {
+      backend: details.backend,
+      bankMSB: details.bankMSB ?? null,
+      bankLSB: details.bankLSB ?? null,
+      program: details.program ?? null,
+      preset: details.preset ?? null,
+      cacheKey: details.cacheKey ?? null,
+      resolvedPresetName: details.resolvedPresetName ?? null,
+      note: details.note ?? null,
+      containsNote: details.containsNote ?? null,
+      keyRange: details.keyRange ?? null
+    });
   }
 
   noteOn(midiNote, velocity = 0.8, time = null, durationSeconds = 0.25, channel = 0, meta = {}) {
@@ -292,24 +377,61 @@ export default class SoundfontEngine {
       return instrument.play(resolvedNote, when, { gain: volume, duration: durationSeconds });
     };
     if (isDrum) {
-      const drumKey = resolveDrumKitKey(DRUM_PRESET_NAME, GM_DRUM_BANK_MSB);
+      const bankMSB = GM_DRUM_BANK_MSB;
+      const bankLSB = meta.bankLSB ?? 0;
+      const preset = meta.preset ?? DRUM_PRESET;
+      const kitName = this.drumKitName || DRUM_KIT_NAME;
+      const cacheKey = this.buildCacheKey({
+        soundfontUrl: this.baseUrl,
+        name: kitName,
+        bankMSB,
+        bankLSB,
+        preset,
+        percussion: true
+      });
+      const drumKey = resolveDrumKitKey(kitName, bankMSB, bankLSB, preset);
       this.logResolution({
         trackId: meta.trackId,
         channel,
         isDrum,
         incomingNote,
         resolvedNote,
-        bankMSB: GM_DRUM_BANK_MSB,
+        bankMSB,
         bankLSB,
         program: meta.program ?? 0,
-        presetName: DRUM_PRESET_NAME,
+        cacheKey,
+        presetName: kitName,
         presetKey: drumKey,
         percussionMode: true
       });
-      return this.loadDrumKit().then(playNote);
+      return this.loadDrumKit(kitName, { bankMSB, bankLSB, preset }).then((instrument) => {
+        const keyRange = this.getInstrumentKeyRange(instrument);
+        const containsNote = this.instrumentContainsNote(instrument, resolvedNote, keyRange);
+        this.logDrumNote({
+          backend: 'soundfont',
+          bankMSB,
+          bankLSB,
+          program: meta.program ?? 0,
+          preset,
+          cacheKey,
+          resolvedPresetName: kitName,
+          note: resolvedNote,
+          containsNote,
+          keyRange
+        });
+        return playNote(instrument);
+      });
     }
     const program = this.channelPrograms.get(channel) ?? 0;
     const presetName = this.getProgramName(program);
+    const cacheKey = this.buildCacheKey({
+      soundfontUrl: this.baseUrl,
+      name: presetName,
+      bankMSB,
+      bankLSB,
+      program,
+      percussion: false
+    });
     this.logResolution({
       trackId: meta.trackId,
       channel,
@@ -319,6 +441,7 @@ export default class SoundfontEngine {
       bankMSB,
       bankLSB,
       program,
+      cacheKey,
       presetName,
       presetKey: String(program),
       percussionMode: false
