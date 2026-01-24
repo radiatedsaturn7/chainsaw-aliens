@@ -51,8 +51,7 @@ const NOTE_LENGTH_OPTIONS = [
 ];
 
 const SOUNDFONT_CDNS = [
-  { id: 'github', label: 'GitHub Pages' },
-  { id: 'jsdelivr', label: 'jsDelivr' }
+  { id: 'vendored', label: 'Vendored' }
 ];
 
 const TIME_SIGNATURE_OPTIONS = [
@@ -941,7 +940,7 @@ export default class MidiComposer {
       reverbLevel: 0.18,
       latencyMs: 30,
       useSoundfont: true,
-      soundfontCdn: 'github',
+      soundfontCdn: 'vendored',
       drumKitId: this.game?.audio?.getDrumKit?.()?.id || 'standard'
     };
     try {
@@ -3971,7 +3970,7 @@ export default class MidiComposer {
       this.toolsMenuOpen = false;
     }
     if (action === 'soundfont-reset') {
-      this.audioSettings.soundfontCdn = 'github';
+      this.audioSettings.soundfontCdn = 'vendored';
       this.saveAudioSettings();
       this.applyAudioSettings();
       this.toolsMenuOpen = false;

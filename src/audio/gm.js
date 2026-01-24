@@ -356,14 +356,14 @@ export const GM_DRUMS = [
 ];
 
 export const GM_DRUM_KITS = [
-  { id: 'standard', label: 'Standard Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 0, soundfont: 'standard_kit' },
-  { id: 'room', label: 'Room Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 1, soundfont: 'room_kit' },
-  { id: 'power', label: 'Power Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 2, soundfont: 'power_kit' },
-  { id: 'electronic', label: 'Electronic Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 3, soundfont: 'electronic_kit' },
-  { id: 'jazz', label: 'Jazz Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 4, soundfont: 'jazz_kit' },
-  { id: 'brush', label: 'Brush Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 5, soundfont: 'brush_kit' },
-  { id: 'orchestra', label: 'Orchestra Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 6, soundfont: 'orchestra_kit' },
-  { id: 'sfx', label: 'SFX Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 7, soundfont: 'sfx_kit' }
+  { id: 'standard', label: 'Standard Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 0, soundfont: 'synth_drum' },
+  { id: 'room', label: 'Room Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 1, soundfont: 'synth_drum' },
+  { id: 'power', label: 'Power Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 2, soundfont: 'synth_drum' },
+  { id: 'electronic', label: 'Electronic Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 3, soundfont: 'synth_drum' },
+  { id: 'jazz', label: 'Jazz Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 4, soundfont: 'synth_drum' },
+  { id: 'brush', label: 'Brush Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 5, soundfont: 'synth_drum' },
+  { id: 'orchestra', label: 'Orchestra Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 6, soundfont: 'synth_drum' },
+  { id: 'sfx', label: 'SFX Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 7, soundfont: 'synth_drum' }
 ];
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
