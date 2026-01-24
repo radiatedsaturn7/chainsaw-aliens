@@ -555,6 +555,14 @@ export default class MidiComposer {
     this.recordDevicePreference = 'auto';
     this.recordInstrument = 'keyboard';
     this.recordStatus = { degree: 1, octave: 0, velocity: 96 };
+    this.singleNoteRecordMode = {
+      active: false,
+      anchorTick: 0,
+      measureStart: 0,
+      measureEnd: 0,
+      awaitingChord: true
+    };
+    this.singleNoteActiveNotes = new Map();
     this.recordSelector = {
       active: false,
       type: null,
@@ -578,13 +586,23 @@ export default class MidiComposer {
     this.longPressTimer = null;
     this.lastAuditionTime = 0;
     this.gamepadMoveCooldown = 0;
+    this.gamepadResizeCooldown = 0;
     this.gamepadCursorActive = false;
+    this.gamepadRtHeld = false;
+    this.gamepadLtHeld = false;
+    this.gamepadSelection = { active: false };
+    this.gamepadResizeMode = { active: false };
+    this.gamepadTransportTap = { left: 0, right: 0 };
     this.lastPointer = { x: 0, y: 0 };
     this.placingEndMarker = false;
     this.placingStartMarker = false;
     this.settingsOpen = false;
     this.settingsScroll = 0;
     this.settingsScrollMax = 0;
+    this.undoStack = [];
+    this.redoStack = [];
+    this.maxUndoSteps = 80;
+    this.lastPersistedSnapshot = null;
     this.instrumentPicker = {
       familyTab: INSTRUMENT_FAMILY_TABS[0]?.id || 'piano-keys',
       trackIndex: null,
@@ -723,6 +741,7 @@ export default class MidiComposer {
     this.audioSettings = this.loadAudioSettings();
     this.applyAudioSettings();
     this.ensureState();
+    this.lastPersistedSnapshot = JSON.stringify(this.song);
     this.gridZoomX = this.getDefaultGridZoomX();
     this.gridZoomY = this.getDefaultGridZoomY();
     this.gridZoomInitialized = false;
@@ -818,7 +837,60 @@ export default class MidiComposer {
 
   persist() {
     this.normalizeSongDrums();
-    localStorage.setItem(this.storageKey, JSON.stringify(this.song));
+    const snapshot = JSON.stringify(this.song);
+    if (snapshot !== this.lastPersistedSnapshot) {
+      if (this.lastPersistedSnapshot) {
+        this.undoStack.push(this.lastPersistedSnapshot);
+        if (this.undoStack.length > this.maxUndoSteps) {
+          this.undoStack.shift();
+        }
+        this.redoStack = [];
+      }
+      this.lastPersistedSnapshot = snapshot;
+    }
+    localStorage.setItem(this.storageKey, snapshot);
+  }
+
+  resetHistory() {
+    this.undoStack = [];
+    this.redoStack = [];
+    this.lastPersistedSnapshot = JSON.stringify(this.song);
+  }
+
+  applySongSnapshot(snapshot) {
+    if (!snapshot) return;
+    try {
+      this.song = JSON.parse(snapshot);
+    } catch (error) {
+      return;
+    }
+    this.ensureState();
+    this.highContrast = Boolean(this.song?.highContrast);
+    this.chordMode = Boolean(this.song?.chordMode);
+    this.selectedTrackIndex = clamp(this.selectedTrackIndex, 0, Math.max(0, this.song.tracks.length - 1));
+    const activeTrack = this.song.tracks[this.selectedTrackIndex];
+    const patternCount = activeTrack?.patterns?.length ?? 1;
+    this.selectedPatternIndex = clamp(this.selectedPatternIndex, 0, Math.max(0, patternCount - 1));
+    this.selection.clear();
+    this.clipboard = null;
+    this.lastPersistedSnapshot = JSON.stringify(this.song);
+    localStorage.setItem(this.storageKey, this.lastPersistedSnapshot);
+  }
+
+  undo() {
+    if (this.undoStack.length === 0) return;
+    const snapshot = this.undoStack.pop();
+    const current = JSON.stringify(this.song);
+    this.redoStack.push(current);
+    this.applySongSnapshot(snapshot);
+  }
+
+  redo() {
+    if (this.redoStack.length === 0) return;
+    const snapshot = this.redoStack.pop();
+    const current = JSON.stringify(this.song);
+    this.undoStack.push(current);
+    this.applySongSnapshot(snapshot);
   }
 
   loadSongLibrary() {
@@ -1735,6 +1807,9 @@ export default class MidiComposer {
     if (this.recorder.isRecording) {
       this.stopRecording();
     }
+    if (this.singleNoteRecordMode.active) {
+      this.exitSingleNoteRecordMode();
+    }
     this.recordModeActive = false;
     if (this.recordGridSnapshot) {
       this.gridZoomX = this.recordGridSnapshot.gridZoomX;
@@ -1746,10 +1821,108 @@ export default class MidiComposer {
     this.recordGridZoomedOut = false;
   }
 
+  toggleSingleNoteRecordMode() {
+    if (this.singleNoteRecordMode.active) {
+      this.exitSingleNoteRecordMode();
+    } else {
+      this.enterSingleNoteRecordMode();
+    }
+  }
+
+  enterSingleNoteRecordMode() {
+    if (this.recorder.isRecording) {
+      this.stopRecording();
+    }
+    if (!this.recordModeActive) {
+      this.enterRecordMode();
+    }
+    const ticksPerBar = this.ticksPerBeat * this.beatsPerBar;
+    const snappedTick = this.snapTick(this.playheadTick);
+    const measureStart = Math.floor(snappedTick / ticksPerBar) * ticksPerBar;
+    this.singleNoteRecordMode = {
+      active: true,
+      anchorTick: measureStart,
+      measureStart,
+      measureEnd: measureStart + ticksPerBar,
+      awaitingChord: true
+    };
+    this.cursor.tick = this.singleNoteRecordMode.anchorTick;
+    this.singleNoteActiveNotes.clear();
+  }
+
+  exitSingleNoteRecordMode() {
+    this.singleNoteRecordMode.active = false;
+    this.singleNoteActiveNotes.clear();
+  }
+
+  clearNotesInMeasure(pattern, startTick, endTick) {
+    if (!pattern) return;
+    pattern.notes = pattern.notes.filter((note) => {
+      if (note.startTick >= startTick && note.startTick < endTick) {
+        this.selection.delete(note.id);
+        return false;
+      }
+      return true;
+    });
+  }
+
+  placeSingleNoteAtAnchor(track, pattern, pitch, velocity) {
+    if (!track || !pattern) return;
+    const drumTrack = isDrumTrack(track);
+    const duration = drumTrack ? this.getDrumHitDurationTicks() : this.getNoteLengthTicks();
+    const note = {
+      id: uid(),
+      startTick: this.singleNoteRecordMode.anchorTick,
+      durationTicks: duration,
+      pitch,
+      velocity: (velocity ?? 96) / 127
+    };
+    pattern.notes.push(note);
+    this.selection.add(note.id);
+    this.ensureGridCapacity(note.startTick + duration);
+  }
+
+  handleSingleNoteRecordOn(event) {
+    const instrumentOverride = (event?.instrument === 'drums' || event?.channel === GM_DRUM_CHANNEL) ? 'drums' : null;
+    const { track, pattern } = this.getRecordingTarget(instrumentOverride);
+    if (!track || !pattern) return;
+    const velocity = Number.isFinite(event.velocity) ? event.velocity : this.recordStatus.velocity;
+    const clampedVelocity = clamp(velocity ?? 96, 1, 127);
+    const drumTrack = isDrumTrack(track);
+    const pitch = drumTrack
+      ? this.coercePitchForTrack(event.pitch, track, GM_DRUM_ROWS)
+      : event.pitch;
+    if (this.singleNoteRecordMode.awaitingChord) {
+      this.selection.clear();
+      this.clearNotesInMeasure(pattern, this.singleNoteRecordMode.measureStart, this.singleNoteRecordMode.measureEnd);
+      this.singleNoteRecordMode.awaitingChord = false;
+    }
+    if (!this.singleNoteActiveNotes.has(event.id)) {
+      this.singleNoteActiveNotes.set(event.id, pitch);
+      this.placeSingleNoteAtAnchor(track, pattern, pitch, clampedVelocity);
+      this.persist();
+    }
+    const previewPitch = Number.isFinite(event.previewPitch) ? event.previewPitch : pitch;
+    this.recordStatus.velocity = clampedVelocity;
+    this.playGmNote(previewPitch, 0.4, (clampedVelocity / 127) * track.volume, track, track.pan);
+    this.recordStatus.velocity = clampedVelocity;
+  }
+
+  handleSingleNoteRecordOff(event) {
+    if (!this.singleNoteActiveNotes.has(event.id)) return;
+    this.singleNoteActiveNotes.delete(event.id);
+    if (this.singleNoteActiveNotes.size === 0) {
+      this.singleNoteRecordMode.awaitingChord = true;
+    }
+  }
+
   startRecording() {
     if (this.recorder.isRecording) return;
     if (!this.recordModeActive) {
       this.enterRecordMode();
+    }
+    if (this.singleNoteRecordMode.active) {
+      this.exitSingleNoteRecordMode();
     }
     if (!this.isPlaying) {
       this.togglePlayback();
@@ -1841,6 +2014,10 @@ export default class MidiComposer {
 
   handleRecordedNoteOn(event) {
     if (!this.recordModeActive) return;
+    if (this.singleNoteRecordMode.active) {
+      this.handleSingleNoteRecordOn(event);
+      return;
+    }
     const now = this.getRecordingTime();
     const instrumentOverride = (event?.instrument === 'drums' || event?.channel === GM_DRUM_CHANNEL) ? 'drums' : null;
     const { track } = this.getRecordingTarget(instrumentOverride);
@@ -1866,6 +2043,10 @@ export default class MidiComposer {
 
   handleRecordedNoteOff(event) {
     if (!this.recordModeActive) return;
+    if (this.singleNoteRecordMode.active) {
+      this.handleSingleNoteRecordOff(event);
+      return;
+    }
     this.recorder.recordNoteOff({ id: event.id, time: this.getRecordingTime() });
   }
 
@@ -2056,6 +2237,12 @@ export default class MidiComposer {
     if (cmd && input.wasPressedCode?.('KeyC')) {
       this.copySelection();
     }
+    if (cmd && input.wasPressedCode?.('KeyZ')) {
+      this.undo();
+    }
+    if (cmd && (input.wasPressedCode?.('KeyY') || (input.isShiftDown?.() && input.wasPressedCode?.('KeyZ')))) {
+      this.redo();
+    }
     if (cmd && input.wasPressedCode?.('KeyV')) {
       this.pasteSelection();
     }
@@ -2079,9 +2266,25 @@ export default class MidiComposer {
     };
 
     const drumTrack = isDrumTrack(this.getActiveTrack());
+    const axes = input.getGamepadAxes?.() || {};
+    const rtHeld = (axes.rightTrigger || 0) > 0.2;
+    const ltHeld = (axes.leftTrigger || 0) > 0.2;
+    const rtPressed = rtHeld && !this.gamepadRtHeld;
+    const rtReleased = !rtHeld && this.gamepadRtHeld;
+    const lbHeld = input.isGamepadDown?.('aimUp');
+    const lbPressed = input.wasGamepadPressed?.('aimUp');
+    const dpadLeftPressed = input.wasGamepadPressed?.('dpadLeft');
+    const dpadRightPressed = input.wasGamepadPressed?.('dpadRight');
+    const dpadUpPressed = input.wasGamepadPressed?.('dpadUp');
+    const dpadDownPressed = input.wasGamepadPressed?.('dpadDown');
+    const backPressed = input.wasGamepadPressed?.('cancel');
 
     handleMappedPress('play', () => this.togglePlayback());
-    handleMappedPress('stop', () => this.stopPlayback());
+    const stopMapped = resolveAction(this.controllerMapping?.stop);
+    const suppressStop = stopMapped === 'cancel' && backPressed;
+    if (!suppressStop) {
+      handleMappedPress('stop', () => this.stopPlayback());
+    }
     handleMappedPress('instrument', () => this.openInstrumentPicker('edit', this.selectedTrackIndex));
     handleMappedPress('tool', () => {
       const currentIndex = TOOL_OPTIONS.findIndex((tool) => tool.id === this.activeTool);
@@ -2107,37 +2310,134 @@ export default class MidiComposer {
       this.cursor.pitch = clamp(this.cursor.pitch - 12, range.min, range.max);
     });
 
+    if (backPressed) {
+      this.toggleSingleNoteRecordMode();
+    }
+
     if (this.activeTab === 'grid') {
       this.gamepadMoveCooldown = Math.max(0, this.gamepadMoveCooldown - dt);
-      const left = input.isGamepadDown?.('left') || input.isGamepadDown?.('dpadLeft');
-      const right = input.isGamepadDown?.('right') || input.isGamepadDown?.('dpadRight');
-      const up = input.isGamepadDown?.('up') || input.isGamepadDown?.('dpadUp');
-      const down = input.isGamepadDown?.('down') || input.isGamepadDown?.('dpadDown');
-      const moveX = right ? 1 : left ? -1 : 0;
-      const moveY = down ? 1 : up ? -1 : 0;
-      if ((moveX || moveY) && this.gamepadMoveCooldown <= 0) {
-        const step = this.getQuantizeTicks();
-        const range = this.getPitchRange();
-        const maxTick = this.getLoopTicks();
-        this.cursor.tick = clamp(this.cursor.tick + moveX * step, 0, maxTick);
-        this.cursor.pitch = clamp(this.cursor.pitch - moveY, range.min, range.max);
-        this.gamepadMoveCooldown = 0.12;
-        this.gamepadCursorActive = true;
-        this.ensureCursorVisible();
+      this.gamepadResizeCooldown = Math.max(0, this.gamepadResizeCooldown - dt);
+      if (this.selection.size === 0) {
+        this.gamepadResizeMode.active = false;
       }
-      const axes = input.getGamepadAxes?.() || {};
-      const scrub = (axes.rightTrigger || 0) - (axes.leftTrigger || 0);
-      if (Math.abs(scrub) > 0.1) {
-        const scrubSpeed = this.ticksPerBeat * 6;
-        const nextTick = this.playheadTick + scrub * scrubSpeed * dt;
-        const loopStart = this.getLoopStartTick();
-        const loopEnd = this.getLoopTicks();
-        this.playheadTick = clamp(nextTick, loopStart, loopEnd);
-        if (this.scrubAudition) {
-          this.previewNotesAtTick(this.playheadTick);
+      if (lbPressed && this.selection.size > 0) {
+        this.gamepadResizeMode.active = !this.gamepadResizeMode.active;
+      }
+      if (lbHeld) {
+        const now = performance.now();
+        const tapWindow = 320;
+        if (dpadUpPressed) {
+          this.togglePlayback();
+        }
+        if (dpadDownPressed) {
+          if (this.recordModeActive) {
+            if (this.recorder.isRecording) {
+              this.stopRecording();
+            } else {
+              this.startRecording();
+            }
+          } else {
+            this.enterRecordMode();
+          }
+        }
+        if (dpadLeftPressed) {
+          if (now - this.gamepadTransportTap.left < tapWindow) {
+            this.returnToStart();
+          } else {
+            this.jumpPlayheadBars(-1);
+          }
+          this.gamepadTransportTap.left = now;
+        }
+        if (dpadRightPressed) {
+          if (now - this.gamepadTransportTap.right < tapWindow) {
+            this.goToEnd();
+          } else {
+            this.jumpPlayheadBars(1);
+          }
+          this.gamepadTransportTap.right = now;
+        }
+      }
+      if (ltHeld) {
+        const leftUndo = dpadLeftPressed || input.wasGamepadPressed?.('left');
+        const rightRedo = dpadRightPressed || input.wasGamepadPressed?.('right');
+        if (leftUndo) {
+          this.undo();
+        }
+        if (rightRedo) {
+          this.redo();
+        }
+      }
+      if (rtPressed && this.gridBounds) {
+        const origin = this.getCellScreenPosition(this.cursor.tick, this.cursor.pitch);
+        if (origin) {
+          this.dragState = {
+            mode: 'select',
+            startX: origin.x,
+            startY: origin.y,
+            currentX: origin.x,
+            currentY: origin.y,
+            appendSelection: false
+          };
+          this.gamepadSelection = {
+            active: true
+          };
+          this.closeSelectionMenu();
+        }
+      }
+
+      if (this.gamepadResizeMode.active) {
+        const resizeStep = Math.max(1, this.getQuantizeTicks());
+        if (this.gamepadResizeCooldown <= 0) {
+          const grow = axes.leftX > 0.55 || axes.leftY < -0.55 || axes.leftY > 0.55;
+          const shrink = axes.rightX > 0.55 || axes.rightY < -0.55 || axes.rightY > 0.55;
+          if (grow) {
+            this.resizeSelectedNotesBy(resizeStep);
+            this.gamepadResizeCooldown = 0.12;
+          } else if (shrink) {
+            this.resizeSelectedNotesBy(-resizeStep);
+            this.gamepadResizeCooldown = 0.12;
+          }
+        }
+      }
+
+      if (!lbHeld && !ltHeld && !this.gamepadResizeMode.active) {
+        const left = input.isGamepadDown?.('left') || input.isGamepadDown?.('dpadLeft');
+        const right = input.isGamepadDown?.('right') || input.isGamepadDown?.('dpadRight');
+        const up = input.isGamepadDown?.('up') || input.isGamepadDown?.('dpadUp');
+        const down = input.isGamepadDown?.('down') || input.isGamepadDown?.('dpadDown');
+        const moveX = right ? 1 : left ? -1 : 0;
+        const moveY = down ? 1 : up ? -1 : 0;
+        if ((moveX || moveY) && this.gamepadMoveCooldown <= 0) {
+          const step = this.getQuantizeTicks();
+          const range = this.getPitchRange();
+          const maxTick = this.getLoopTicks();
+          this.cursor.tick = clamp(this.cursor.tick + moveX * step, 0, maxTick);
+          this.cursor.pitch = clamp(this.cursor.pitch - moveY, range.min, range.max);
+          this.gamepadMoveCooldown = 0.12;
+          this.gamepadCursorActive = true;
+          this.ensureCursorVisible();
+        }
+      }
+
+      if (this.gamepadSelection.active && this.dragState?.mode === 'select') {
+        const pos = this.getCellScreenPosition(this.cursor.tick, this.cursor.pitch);
+        if (pos) {
+          this.updateSelectionBox(pos.x, pos.y);
+        }
+      }
+
+      if (rtReleased && this.gamepadSelection.active) {
+        this.finalizeSelectionBox();
+        this.dragState = null;
+        this.gamepadSelection = { active: false };
+        if (this.selection.size === 0) {
+          this.closeSelectionMenu();
         }
       }
     }
+
+    this.gamepadRtHeld = rtHeld;
+    this.gamepadLtHeld = ltHeld;
   }
 
   advancePlayhead(dt) {
@@ -3302,6 +3602,24 @@ export default class MidiComposer {
     this.persist();
   }
 
+  resizeSelectedNotesBy(deltaTicks) {
+    if (!deltaTicks) return;
+    const pattern = this.getActivePattern();
+    const track = this.getActiveTrack();
+    if (!pattern || !track || isDrumTrack(track)) return;
+    const loopTicks = this.getLoopTicks();
+    const selected = this.getSelectedNotes();
+    if (!selected.length) return;
+    pattern.notes = pattern.notes.map((note) => {
+      if (!this.selection.has(note.id)) return note;
+      const duration = clamp(note.durationTicks + deltaTicks, 1, Math.max(1, loopTicks - note.startTick));
+      return { ...note, durationTicks: duration };
+    });
+    const maxEndTick = Math.max(...this.getSelectedNotes().map((note) => note.startTick + this.getEffectiveDurationTicks(note, track)));
+    this.ensureGridCapacity(maxEndTick);
+    this.persist();
+  }
+
   updateSelectionBox(x, y) {
     if (!this.dragState) return;
     this.dragState.currentX = x;
@@ -4004,11 +4322,6 @@ export default class MidiComposer {
   }
 
   handleSelectionMenuAction(action) {
-    if (action === 'selection-erase') {
-      this.deleteSelectedNotes();
-      this.closeSelectionMenu();
-      return;
-    }
     if (action === 'selection-copy') {
       this.copySelection();
       this.closeSelectionMenu();
@@ -4020,6 +4333,16 @@ export default class MidiComposer {
       this.deleteSelectedNotes();
       this.closeSelectionMenu();
       this.beginPastePreview();
+      return;
+    }
+    if (action === 'selection-paste') {
+      this.pasteSelection();
+      this.closeSelectionMenu();
+      return;
+    }
+    if (action === 'selection-cancel') {
+      this.selection.clear();
+      this.closeSelectionMenu();
     }
   }
 
@@ -4275,12 +4598,14 @@ export default class MidiComposer {
     this.gridZoomX = this.getDefaultGridZoomX();
     this.gridZoomY = this.getDefaultGridZoomY();
     this.gridZoomInitialized = false;
+    this.resetHistory();
     this.persist();
   }
 
   loadDemoSong() {
     this.song = createDemoSong();
     this.ensureState();
+    this.resetHistory();
     this.gridOffsetInitialized = false;
     this.gridZoomX = this.getDefaultGridZoomX();
     this.gridZoomY = this.getDefaultGridZoomY();
@@ -4401,6 +4726,17 @@ export default class MidiComposer {
     const tick = col;
     const pitch = this.getPitchFromRow(row);
     return { tick, pitch };
+  }
+
+  getCellScreenPosition(tick, pitch) {
+    if (!this.gridBounds) return null;
+    const { originX, originY, cellWidth, cellHeight } = this.gridBounds;
+    const row = this.getRowFromPitch(pitch);
+    if (row < 0) return null;
+    return {
+      x: originX + tick * cellWidth,
+      y: originY + row * cellHeight
+    };
   }
 
   getTickFromX(x) {
@@ -5129,6 +5465,12 @@ export default class MidiComposer {
       cursorX += button.w + gap;
     });
 
+    if (this.singleNoteRecordMode.active) {
+      ctx.fillStyle = '#ff9c42';
+      ctx.font = isMobile ? '12px Courier New' : '13px Courier New';
+      ctx.fillText('Single Note Mode', x + 12, y + h - 10);
+    }
+
     const position = this.getPositionLabel();
     ctx.fillStyle = '#ffe16a';
     ctx.font = isMobile ? '12px Courier New' : '13px Courier New';
@@ -5850,13 +6192,15 @@ export default class MidiComposer {
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.font = '12px Courier New';
     const helpLines = [
-      'Drag a box to select notes, then use Erase / Copy / Cut.',
+      'Drag a box to select notes, then use Copy / Cut / Paste.',
       `Play/Pause: ${this.controllerMapping.play}`,
-      `Stop/Return: ${this.controllerMapping.stop}`,
       `Open Instruments: ${this.controllerMapping.instrument}`,
       `Place Note: ${this.controllerMapping.place}`,
       `Erase Note: ${this.controllerMapping.erase}`,
-      'Scrub Timeline: LT / RT',
+      'RT + Left Stick: selection box',
+      'LT + D-Pad Left/Right: undo/redo',
+      'LB + D-Pad: play/record/measure jump',
+      'Back: single note record mode',
       'Drag on grid to move selection.'
     ];
     helpLines.forEach((line) => {
@@ -5891,9 +6235,12 @@ export default class MidiComposer {
       `Open Instruments: ${this.controllerMapping.instrument}`,
       `Octave Up: ${this.controllerMapping.octaveUp}`,
       `Octave Down: ${this.controllerMapping.octaveDown}`,
-      'Scrub Timeline: LT / RT',
-      `Play/Pause: ${this.controllerMapping.play}`,
-      `Stop/Return: ${this.controllerMapping.stop}`
+      'RT + Left Stick: selection box',
+      'LT + D-Pad Left/Right: undo/redo',
+      'LB + D-Pad: play/record/measure jump',
+      'LB + Left Stick: grow selection note',
+      'LB + Right Stick: shrink selection note',
+      'Back: single note record mode'
     ];
     lines.forEach((line) => {
       ctx.fillStyle = 'rgba(255,255,255,0.8)';
@@ -6134,6 +6481,11 @@ export default class MidiComposer {
     ctx.fillStyle = '#ffe16a';
     ctx.font = `${Math.max(11, Math.round(14 * scale))}px Courier New`;
     ctx.fillText(`Position ${bar}:${beat}`, x + w - offset(160), y + offset(70));
+    if (this.singleNoteRecordMode.active) {
+      ctx.fillStyle = '#ff9c42';
+      ctx.font = `${Math.max(10, Math.round(12 * scale))}px Courier New`;
+      ctx.fillText('Single Note', x + w - offset(160), y + offset(88));
+    }
   }
 
   drawTransportCompact(ctx, x, y, w, h) {
@@ -6209,6 +6561,11 @@ export default class MidiComposer {
     ctx.fillStyle = '#fff';
     ctx.font = '12px Courier New';
     ctx.fillText(`Swing ${Math.round(this.swing)}%`, this.bounds.swing.x + 6, this.bounds.swing.y + 30);
+    if (this.singleNoteRecordMode.active) {
+      ctx.fillStyle = '#ff9c42';
+      ctx.font = '12px Courier New';
+      ctx.fillText('Single Note Mode', innerX, this.bounds.swing.y + 50);
+    }
   }
 
   drawTrackList(ctx, x, y, w, h) {
@@ -6868,9 +7225,10 @@ export default class MidiComposer {
       return;
     }
     const actions = [
-      { action: 'selection-erase', label: 'Erase' },
       { action: 'selection-copy', label: 'Copy' },
-      { action: 'selection-cut', label: 'Cut' }
+      { action: 'selection-cut', label: 'Cut' },
+      { action: 'selection-paste', label: 'Paste' },
+      { action: 'selection-cancel', label: 'Cancel' }
     ];
     const menuW = 140;
     const rowH = 32;
