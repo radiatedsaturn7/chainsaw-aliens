@@ -1,9 +1,9 @@
-import { GM_DRUM_KITS } from './gm.js';
+import { GM_DRUM_BANK_LSB, GM_DRUM_BANK_MSB, GM_DRUM_KITS } from './gm.js';
 
 const DEFAULT_DRUM_KIT_ID = 'standard';
-const DEFAULT_BANK_MSB = 0;
-const DEFAULT_BANK_LSB = 0;
-const ALTERNATE_BANK_MSBS = new Set([128]);
+const DEFAULT_BANK_MSB = GM_DRUM_BANK_MSB;
+const DEFAULT_BANK_LSB = GM_DRUM_BANK_LSB;
+const ALTERNATE_BANK_MSBS = new Set([0, GM_DRUM_BANK_MSB]);
 
 const normalizeId = (value) => (value ? String(value).toLowerCase() : '');
 
@@ -45,8 +45,7 @@ export default class DrumKitManager {
   matchesBankProgram(kit, bankMSB, bankLSB, program) {
     if (!kit) return false;
     const msbMatches = kit.bankMSB === bankMSB
-      || (bankMSB === DEFAULT_BANK_MSB && kit.bankMSB === DEFAULT_BANK_MSB)
-      || (ALTERNATE_BANK_MSBS.has(bankMSB) && kit.bankMSB === DEFAULT_BANK_MSB);
+      || (ALTERNATE_BANK_MSBS.has(bankMSB) && ALTERNATE_BANK_MSBS.has(kit.bankMSB));
     return msbMatches && kit.bankLSB === bankLSB && kit.program === program;
   }
 

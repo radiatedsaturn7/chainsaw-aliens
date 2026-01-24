@@ -290,17 +290,20 @@ export const GM_PROGRAMS = GM_PROGRAM_NAMES.map((name, program) => ({
   family: resolveFamily(program)
 }));
 
-export const GM_DRUM_ROWS = [
+export const GM_DRUM_CHANNEL = 9;
+export const GM_DRUM_BANK_MSB = 128;
+export const GM_DRUM_BANK_LSB = 0;
+export const GM_DRUM_NOTE_MIN = 35;
+export const GM_DRUM_NOTE_MAX = 81;
+
+export const GM_DRUM_PAD_ROWS = [
   { label: 'Kick', pitch: 36 },
   { label: 'Snare', pitch: 38 },
-  { label: 'Closed Hat', pitch: 42 },
-  { label: 'Open Hat', pitch: 46 },
-  { label: 'Low Tom', pitch: 45 },
-  { label: 'Mid Tom', pitch: 47 },
-  { label: 'High Tom', pitch: 50 },
-  { label: 'Crash', pitch: 49 },
-  { label: 'Ride', pitch: 51 }
+  { label: 'Hi-Hat', pitch: 42 },
+  { label: 'Cymbal', pitch: 49 }
 ];
+
+export const GM_DRUM_ROWS = GM_DRUM_PAD_ROWS.map((row) => ({ ...row }));
 
 export const GM_DRUMS = [
   { pitch: 35, label: 'Acoustic Bass Drum' },
@@ -353,16 +356,38 @@ export const GM_DRUMS = [
 ];
 
 export const GM_DRUM_KITS = [
-  { id: 'standard', label: 'Standard Kit', bankMSB: 0, bankLSB: 0, program: 0, soundfont: 'standard_kit' },
-  { id: 'room', label: 'Room Kit', bankMSB: 0, bankLSB: 0, program: 1, soundfont: 'room_kit' },
-  { id: 'power', label: 'Power Kit', bankMSB: 0, bankLSB: 0, program: 2, soundfont: 'power_kit' },
-  { id: 'electronic', label: 'Electronic Kit', bankMSB: 0, bankLSB: 0, program: 3, soundfont: 'electronic_kit' },
-  { id: 'jazz', label: 'Jazz Kit', bankMSB: 0, bankLSB: 0, program: 4, soundfont: 'jazz_kit' },
-  { id: 'brush', label: 'Brush Kit', bankMSB: 0, bankLSB: 0, program: 5, soundfont: 'brush_kit' },
-  { id: 'orchestra', label: 'Orchestra Kit', bankMSB: 0, bankLSB: 0, program: 6, soundfont: 'orchestra_kit' },
-  { id: 'sfx', label: 'SFX Kit', bankMSB: 0, bankLSB: 0, program: 7, soundfont: 'sfx_kit' }
+  { id: 'standard', label: 'Standard Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 0, soundfont: 'standard_kit' },
+  { id: 'room', label: 'Room Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 1, soundfont: 'room_kit' },
+  { id: 'power', label: 'Power Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 2, soundfont: 'power_kit' },
+  { id: 'electronic', label: 'Electronic Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 3, soundfont: 'electronic_kit' },
+  { id: 'jazz', label: 'Jazz Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 4, soundfont: 'jazz_kit' },
+  { id: 'brush', label: 'Brush Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 5, soundfont: 'brush_kit' },
+  { id: 'orchestra', label: 'Orchestra Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 6, soundfont: 'orchestra_kit' },
+  { id: 'sfx', label: 'SFX Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 7, soundfont: 'sfx_kit' }
 ];
 
-export const isDrumChannel = (channel) => channel === 9;
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+export const clampDrumPitch = (pitch) => {
+  const numeric = Number.isFinite(pitch) ? Math.round(pitch) : GM_DRUM_NOTE_MIN;
+  return clamp(numeric, GM_DRUM_NOTE_MIN, GM_DRUM_NOTE_MAX);
+};
+
+export const mapPitchToDrumRow = (pitch, rows = GM_DRUM_ROWS) => {
+  const candidates = Array.isArray(rows) && rows.length ? rows : GM_DRUM_ROWS;
+  const clamped = clampDrumPitch(pitch);
+  const direct = candidates.find((row) => row.pitch === clamped);
+  if (direct) return direct.pitch;
+  const closest = candidates.reduce((best, row) => {
+    const distance = Math.abs(row.pitch - clamped);
+    if (!best || distance < best.distance) {
+      return { pitch: row.pitch, distance };
+    }
+    return best;
+  }, null);
+  return closest?.pitch ?? GM_DRUM_ROWS[0].pitch;
+};
+
+export const isDrumChannel = (channel) => channel === GM_DRUM_CHANNEL;
 
 export const formatProgramNumber = (program) => `${String(program + 1).padStart(3, '0')}`;

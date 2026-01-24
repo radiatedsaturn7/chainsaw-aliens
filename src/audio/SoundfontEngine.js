@@ -1,4 +1,4 @@
-import { GM_SOUNDFONT_NAMES, isDrumChannel } from './gm.js';
+import { GM_DRUM_BANK_MSB, GM_SOUNDFONT_NAMES, isDrumChannel } from './gm.js';
 
 const PRIMARY_SOUNDFONT_BASE = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
 const FALLBACK_SOUNDFONT_BASE = 'https://cdn.jsdelivr.net/gh/gleitz/midi-js-soundfonts/FluidR3_GM/';
@@ -146,12 +146,13 @@ export default class SoundfontEngine {
 
   loadDrumKit(kitName = this.drumKitName) {
     const resolved = kitName || DRUM_KIT_NAME;
-    return this.loadInstrumentByName(`drum-kit:${resolved}`, resolved).catch((error) => {
+    const percussionOptions = { percussion: true, bank: GM_DRUM_BANK_MSB };
+    return this.loadInstrumentByName(`drum-kit:${resolved}`, resolved, percussionOptions).catch((error) => {
       if (!this.drumKitFallbackName || resolved === this.drumKitFallbackName) {
         throw error;
       }
       this.drumKitName = this.drumKitFallbackName;
-      return this.loadInstrumentByName(`drum-kit:${this.drumKitFallbackName}`, this.drumKitFallbackName);
+      return this.loadInstrumentByName(`drum-kit:${this.drumKitFallbackName}`, this.drumKitFallbackName, percussionOptions);
     });
   }
 
@@ -193,7 +194,7 @@ export default class SoundfontEngine {
     throw new Error(`Failed to cache SoundFont: ${name}`);
   }
 
-  loadInstrumentByName(key, name) {
+  loadInstrumentByName(key, name, options = {}) {
     if (this.instrumentCache.has(key)) {
       return Promise.resolve(this.instrumentCache.get(key));
     }
@@ -209,6 +210,8 @@ export default class SoundfontEngine {
         return this.player.instrument(this.ctx, name, {
           format: this.format,
           destination: this.masterGain || this.destination,
+          percussion: options.percussion,
+          bank: options.bank,
           nameToUrl: (instrumentName, soundfont, format) => {
             const url = this.buildUrl(this.baseUrl, instrumentName, format);
             this.lastUrl = url;
@@ -221,6 +224,8 @@ export default class SoundfontEngine {
         return this.ensurePlayer().then(() => this.player.instrument(this.ctx, name, {
           format: this.format,
           destination: this.masterGain || this.destination,
+          percussion: options.percussion,
+          bank: options.bank,
           nameToUrl: (instrumentName, soundfont, format) => {
             const url = this.buildUrl(this.fallbackUrl, instrumentName, format);
             this.lastUrl = url;
