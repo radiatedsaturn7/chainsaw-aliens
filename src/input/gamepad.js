@@ -100,7 +100,7 @@ export default class GamepadInput {
     } = options || {};
     const rootStep = rootDegree - 1;
     const chordSteps = [rootStep, rootStep + 2, rootStep + 4];
-    if (variant === 'seventh' || variant === 'dominant' || variant === 'ninth') {
+    if (variant === 'seventh' || variant === 'dominant') {
       chordSteps.push(rootStep + 6);
     } else if (variant === 'open') {
       chordSteps[1] += 7;
@@ -108,7 +108,7 @@ export default class GamepadInput {
       chordSteps.length = 0;
       chordSteps.push(rootStep, rootStep + 4, rootStep + 7);
     }
-    if (variant === 'ninth') {
+    if (variant === 'add9') {
       chordSteps.push(rootStep + 1 + this.scaleSteps.length);
     }
     if (suspension === 'sus2') {
@@ -126,7 +126,7 @@ export default class GamepadInput {
           pitch -= 1;
         }
       }
-      if ((variant === 'dominant' || variant === 'ninth') && stepIndex === dominantSeventh) {
+      if (variant === 'dominant' && stepIndex === dominantSeventh) {
         pitch -= 1;
       }
       return pitch;
@@ -248,7 +248,7 @@ export default class GamepadInput {
       });
     } else {
       const rootDegree = this.leftStickStableDirection;
-      const accidentalShift = dpadLeft ? 1 : 0;
+      const accidentalShift = this.noteMode && dpadLeft ? 1 : 0;
       const degreeButtons = [
         { index: 0, base: 1, alt: 2 },
         { index: 2, base: 3, alt: 4 },
@@ -265,13 +265,12 @@ export default class GamepadInput {
           const velocity = clamp(Math.round((1 - rtValue) * 127), 1, 127);
           let pitches = [];
           if (this.noteMode) {
-            pitches = [this.getPitchForScaleStep(targetDegree - 1)];
+            const pitch = this.getPitchForScaleStep(targetDegree - 1) + (rbPressed ? 12 : 0);
+            pitches = [pitch];
           } else {
             let variant = 'triad';
             let suspension = null;
-            if (rbPressed && lbPressed) {
-              variant = 'diminished';
-            } else if (rbPressed) {
+            if (dpadLeft) {
               if (button.index === 0) {
                 suspension = 'sus2';
               } else if (button.index === 2) {
@@ -279,8 +278,10 @@ export default class GamepadInput {
               } else if (button.index === 3) {
                 variant = 'dominant';
               } else if (button.index === 1) {
-                variant = 'ninth';
+                variant = 'diminished';
               }
+            } else if (rbPressed) {
+              variant = 'add9';
             }
             pitches = this.getChordPitches(targetDegree, { variant, suspension });
           }

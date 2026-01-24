@@ -266,11 +266,11 @@ export default class RecordModeLayout {
       ]
       : [
         'Left Stick: set root note (silent)',
-        'D-Pad Right: toggle note/chord  Left (hold): sharps',
+        'D-Pad Right: toggle note/chord  Left (hold): sharps/mods',
         'A: 1  A+LB:2  X:3  X+LB:4',
         'Y:5  Y+LB:6  B+LB:7  B:8',
-        'RB+A: sus2  RB+X: sus4  RB+Y: dom7  RB+B: 9th',
-        'LB+RB: dim  LT: sustain  RT: velocity',
+        'Left+A: sus2  Left+X: sus4  Left+Y: dom7  Left+B: dim',
+        'RB: add9 (chord) / octave (note)  LT: sustain  RT: velocity',
         'Right Stick: pitch bend (± whole tone)',
         'L3: scale selector  R3: root selector'
       ];
