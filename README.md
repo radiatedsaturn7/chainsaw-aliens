@@ -54,13 +54,20 @@ If you hear no sound, wait for the “Loading instrument bank…” banner to fi
 3. Notes are captured with start time, duration, pitch, and velocity and are placed onto the grid automatically.
 
 **Gamepad mapping (Xbox/Backbone)**
-- **Left Stick**: choose scale degree (silent). **L3** toggles **Latch Root**.
-- **A**: triad · **X**: open voicing · **Y**: 7th · **B**: power/bass.
-- **LB** = minor, **RB** = spice (add9 by default).
-- **LT** held = **Note Mode** (A/X/Y/B = root/+1/+2/+3 scale steps).
-- **D-Pad Up/Down** = octave ±1.
-- **RT** = velocity for new notes.
-- **Right Stick X** = pitch bend, **Right Stick Y** = mod (CC1 or CC74).
+- **Left Stick**: set root note (silent).
+- **D-Pad Left** = **Note Mode**, **D-Pad Right** = **Chord Mode**.
+- **A** = 1, **A + LB** = 2, **X** = 3, **X + LB** = 4.
+- **Y** = 5, **Y + LB** = 6, **B + LB** = 7, **B** = 8.
+- **LB**: passing tone modifier.
+- **LT**: sustain (CC64) · **RT**: velocity (full volume when released → silent when fully pulled).
+- **Right Stick**: pitch bend.
+- **L3**: circular selector for scale root (C at top).
+- **R3**: circular selector for scale mode.
+
+**Gamepad mapping (Drums)**
+- **LT** = Kick · **RB** = Closed Hi-Hat · **RT** = Open Hi-Hat.
+- **A** = Snare · **X** = Low Tom · **Y** = Mid Tom · **B** = High Tom.
+- **D-Pad Up** = Crash · **D-Pad Down** = Ride · **D-Pad Left/Right** = Cymbals.
 
 **Keyboard mapping (desktop)**
 - **White keys**: `A S D F G H J K L ;`
