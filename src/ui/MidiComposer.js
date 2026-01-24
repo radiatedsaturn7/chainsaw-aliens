@@ -1746,16 +1746,18 @@ export default class MidiComposer {
     const now = this.getRecordingTime();
     const { track } = this.getRecordingTarget();
     if (!track) return;
-    this.recordStatus.velocity = event.velocity || this.recordStatus.velocity;
+    const velocity = Number.isFinite(event.velocity) ? event.velocity : this.recordStatus.velocity;
+    const clampedVelocity = clamp(velocity ?? 96, 1, 127);
+    this.recordStatus.velocity = clampedVelocity;
     this.recorder.recordNoteOn({
       id: event.id,
       pitch: event.pitch,
-      velocity: event.velocity,
+      velocity: clampedVelocity,
       time: now,
       channel: track.channel,
       trackId: track.id
     });
-    this.playGmNote(event.pitch, 0.4, (event.velocity / 127) * track.volume, track, track.pan);
+    this.playGmNote(event.pitch, 0.4, (clampedVelocity / 127) * track.volume, track, track.pan);
   }
 
   handleRecordedNoteOff(event) {
