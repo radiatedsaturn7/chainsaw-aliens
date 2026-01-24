@@ -1,4 +1,11 @@
-import { isDrumChannel } from '../audio/gm.js';
+import {
+  GM_DRUM_BANK_LSB,
+  GM_DRUM_BANK_MSB,
+  GM_DRUM_CHANNEL,
+  clampDrumPitch,
+  isDrumChannel,
+  mapPitchToDrumRow
+} from '../audio/gm.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
@@ -109,15 +116,19 @@ export default class MidiSongPlayer {
     const velocity = note.velocity ?? 0.8;
     const volume = clamp(velocity * (track.volume ?? 0.8) * this.volume, 0, 1);
     const pan = track.pan ?? 0;
-    const channel = isDrumChannel(track.channel) ? 9 : track.channel;
+    const isDrums = isDrumChannel(track.channel);
+    const channel = isDrums ? GM_DRUM_CHANNEL : track.channel;
+    const pitch = isDrums ? mapPitchToDrumRow(clampDrumPitch(note.pitch)) : note.pitch;
+    const bankMSB = isDrums ? (track.bankMSB ?? GM_DRUM_BANK_MSB) : (track.bankMSB ?? 0);
+    const bankLSB = isDrums ? (track.bankLSB ?? GM_DRUM_BANK_LSB) : (track.bankLSB ?? 0);
     this.audio.playGmNote({
-      pitch: note.pitch,
+      pitch,
       duration,
       volume,
       program: track.program ?? 0,
       channel,
-      bankMSB: track.bankMSB ?? 0,
-      bankLSB: track.bankLSB ?? 0,
+      bankMSB,
+      bankLSB,
       pan
     });
   }

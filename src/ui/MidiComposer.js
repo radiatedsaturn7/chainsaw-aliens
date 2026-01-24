@@ -1,11 +1,15 @@
 import {
-  GM_DRUMS,
+  GM_DRUM_BANK_LSB,
+  GM_DRUM_BANK_MSB,
+  GM_DRUM_CHANNEL,
   GM_DRUM_KITS,
   GM_DRUM_ROWS,
   GM_FAMILIES,
   GM_PROGRAMS,
+  clampDrumPitch,
   formatProgramNumber,
-  isDrumChannel
+  isDrumChannel,
+  mapPitchToDrumRow
 } from '../audio/gm.js';
 import InputEventBus from '../input/eventBus.js';
 import GamepadInput from '../input/gamepad.js';
@@ -110,6 +114,8 @@ const GAMEPAD_BUTTONS = [
 const GM_SCHEMA_VERSION = 2;
 const DEFAULT_BANK_MSB = 0;
 const DEFAULT_BANK_LSB = 0;
+const DRUM_BANK_MSB = GM_DRUM_BANK_MSB;
+const DRUM_BANK_LSB = GM_DRUM_BANK_LSB;
 
 const TRACK_COLORS = ['#4fb7ff', '#ff9c42', '#55d68a', '#b48dff', '#ff6a6a', '#43d5d0'];
 const DEFAULT_GRID_BARS = 8;
@@ -248,6 +254,9 @@ const toRgba = (hex, alpha) => {
   return `rgba(${r},${g},${b},${alpha})`;
 };
 
+const isDrumTrack = (track) => Boolean(track) && (track.instrument === 'drums' || isDrumChannel(track.channel));
+const coerceDrumPitch = (pitch, rows = GM_DRUM_ROWS) => mapPitchToDrumRow(clampDrumPitch(pitch), rows);
+
 const createDefaultSong = () => ({
   schemaVersion: GM_SCHEMA_VERSION,
   tempo: 120,
@@ -293,10 +302,11 @@ const createDefaultSong = () => ({
     {
       id: 'track-drums',
       name: 'Drums',
-      channel: 9,
+      instrument: 'drums',
+      channel: GM_DRUM_CHANNEL,
       program: 0,
-      bankMSB: DEFAULT_BANK_MSB,
-      bankLSB: DEFAULT_BANK_LSB,
+      bankMSB: DRUM_BANK_MSB,
+      bankLSB: DRUM_BANK_LSB,
       volume: 0.9,
       pan: 0,
       mute: false,
@@ -452,10 +462,11 @@ const createDemoSong = () => ({
     {
       id: 'track-demo-drums',
       name: 'Drums',
-      channel: 9,
+      instrument: 'drums',
+      channel: GM_DRUM_CHANNEL,
       program: 0,
-      bankMSB: DEFAULT_BANK_MSB,
-      bankLSB: DEFAULT_BANK_LSB,
+      bankMSB: DRUM_BANK_MSB,
+      bankLSB: DRUM_BANK_LSB,
       volume: 0.9,
       pan: 0,
       mute: false,
@@ -758,10 +769,40 @@ export default class MidiComposer {
     const audio = this.game?.audio;
     if (!audio?.preloadSoundfontProgram) return;
     DEFAULT_PRELOAD_PROGRAMS.forEach((program) => audio.preloadSoundfontProgram(program, 0));
-    audio.preloadSoundfontProgram(0, 9, DEFAULT_BANK_MSB, DEFAULT_BANK_LSB);
+    audio.preloadSoundfontProgram(0, GM_DRUM_CHANNEL, DRUM_BANK_MSB, DRUM_BANK_LSB);
+  }
+
+  ensureDrumTrackSettings(track) {
+    if (!isDrumTrack(track)) return track;
+    track.instrument = 'drums';
+    track.channel = GM_DRUM_CHANNEL;
+    if (!Number.isInteger(track.bankMSB) || track.bankMSB === DEFAULT_BANK_MSB) {
+      track.bankMSB = DRUM_BANK_MSB;
+    }
+    track.bankLSB = DRUM_BANK_LSB;
+    track.program = clamp(track.program ?? 0, 0, 127);
+    return track;
+  }
+
+  normalizeDrumPattern(track, pattern, rows = GM_DRUM_ROWS) {
+    if (!pattern || !isDrumTrack(track)) return;
+    pattern.notes = pattern.notes.map((note) => ({
+      ...note,
+      pitch: coerceDrumPitch(note.pitch, rows)
+    }));
+  }
+
+  normalizeSongDrums() {
+    if (!this.song?.tracks) return;
+    this.song.tracks.forEach((track) => {
+      if (!isDrumTrack(track)) return;
+      this.ensureDrumTrackSettings(track);
+      track.patterns?.forEach((pattern) => this.normalizeDrumPattern(track, pattern));
+    });
   }
 
   persist() {
+    this.normalizeSongDrums();
     localStorage.setItem(this.storageKey, JSON.stringify(this.song));
   }
 
@@ -955,7 +996,8 @@ export default class MidiComposer {
       }
     }
     for (const track of song.tracks) {
-      const channel = track.channel ?? (track.instrument === 'drums' ? 9 : 0);
+      const drumTrack = isDrumTrack(track);
+      const channel = drumTrack ? GM_DRUM_CHANNEL : (track.channel ?? 0);
       const program = track.program ?? 0;
       if (!Number.isInteger(channel) || channel < 0 || channel > 15) {
         return { valid: false, error: `Track "${track.name || track.id}" has invalid channel.` };
@@ -1004,6 +1046,7 @@ export default class MidiComposer {
     }
     this.song.schemaVersion = GM_SCHEMA_VERSION;
     this.song.tracks = this.song.tracks.map((track, index) => this.normalizeTrack(track, index, this.song.loopBars));
+    this.normalizeSongDrums();
     if (typeof this.song.loopStartTick !== 'number') {
       this.song.loopStartTick = null;
     }
@@ -1047,6 +1090,7 @@ export default class MidiComposer {
     this.beatsPerBar = this.song.timeSignature.beats;
     this.ensureDefaultLoopRegion();
     this.selectedTrackIndex = clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
+    this.syncCursorToTrack();
     const activeTrack = this.getActiveTrack();
     if (activeTrack) {
       this.selectedPatternIndex = clamp(this.selectedPatternIndex, 0, activeTrack.patterns.length - 1);
@@ -1082,20 +1126,28 @@ export default class MidiComposer {
 
   normalizeTrack(track, index, loopBars = DEFAULT_GRID_BARS) {
     const legacyProgram = this.mapLegacyInstrumentToProgram(track.instrument);
-    const channel = Number.isInteger(track.channel)
-      ? track.channel
-      : track.instrument === 'drums'
-        ? 9
+    const drumTrack = isDrumTrack(track);
+    const channel = drumTrack
+      ? GM_DRUM_CHANNEL
+      : Number.isInteger(track.channel)
+        ? track.channel
         : index % 16;
     const resolvedProgram = clamp(Number.isInteger(track.program) ? track.program : legacyProgram, 0, 127);
-    return {
+    const bankMSB = clamp(Number.isInteger(track.bankMSB)
+      ? (drumTrack && track.bankMSB === DEFAULT_BANK_MSB ? DRUM_BANK_MSB : track.bankMSB)
+      : drumTrack ? DRUM_BANK_MSB : DEFAULT_BANK_MSB, 0, 127);
+    const bankLSB = clamp(Number.isInteger(track.bankLSB)
+      ? track.bankLSB
+      : drumTrack ? DRUM_BANK_LSB : DEFAULT_BANK_LSB, 0, 127);
+    const normalized = {
       id: track.id || `track-${uid()}`,
       name: track.name || `Track ${index + 1}`,
+      instrument: drumTrack ? 'drums' : track.instrument,
       channel: clamp(channel, 0, 15),
       program: resolvedProgram,
-      instrumentFamily: track.instrumentFamily || this.getProgramFamilyLabel(resolvedProgram),
-      bankMSB: clamp(Number.isInteger(track.bankMSB) ? track.bankMSB : DEFAULT_BANK_MSB, 0, 127),
-      bankLSB: clamp(Number.isInteger(track.bankLSB) ? track.bankLSB : DEFAULT_BANK_LSB, 0, 127),
+      instrumentFamily: drumTrack ? 'Drums' : (track.instrumentFamily || this.getProgramFamilyLabel(resolvedProgram)),
+      bankMSB,
+      bankLSB: drumTrack ? DRUM_BANK_LSB : bankLSB,
       volume: typeof track.volume === 'number' ? track.volume : 0.8,
       pan: typeof track.pan === 'number' ? clamp(track.pan, -1, 1) : 0,
       mute: Boolean(track.mute),
@@ -1105,6 +1157,7 @@ export default class MidiComposer {
         ? track.patterns
         : [{ id: `pattern-${track.id || uid()}`, bars: loopBars, notes: [] }]
     };
+    return drumTrack ? this.ensureDrumTrackSettings(normalized) : normalized;
   }
 
   mapLegacyInstrumentToProgram(instrument) {
@@ -1150,6 +1203,16 @@ export default class MidiComposer {
     return this.song.tracks[this.selectedTrackIndex];
   }
 
+  syncCursorToTrack() {
+    const track = this.getActiveTrack();
+    if (!track) return;
+    if (isDrumTrack(track)) {
+      this.ensureDrumTrackSettings(track);
+      this.cursor.pitch = this.coercePitchForTrack(this.cursor.pitch, track, GM_DRUM_ROWS);
+      this.gridOffset.y = 0;
+    }
+  }
+
   getActivePattern() {
     const track = this.getActiveTrack();
     if (!track) return null;
@@ -1162,6 +1225,7 @@ export default class MidiComposer {
     this.selectedTrackIndex = (this.selectedTrackIndex + delta + total) % total;
     this.selection.clear();
     this.closeSelectionMenu();
+    this.syncCursorToTrack();
   }
 
   isMobileLayout() {
@@ -1222,7 +1286,7 @@ export default class MidiComposer {
 
   getTrackInstrumentLabel(track) {
     if (!track) return 'Instrument';
-    if (isDrumChannel(track.channel)) {
+    if (isDrumTrack(track)) {
       return `${track.name || 'Track'}: ${this.getDrumKitLabel(track)}`;
     }
     return `${track.name || 'Track'}: ${this.getProgramLabel(track.program)}`;
@@ -1245,7 +1309,7 @@ export default class MidiComposer {
 
   getCacheKeyForTrack(track) {
     if (!track) return null;
-    if (isDrumChannel(track.channel)) {
+    if (isDrumTrack(track)) {
       return `drums:${track.bankMSB}:${track.bankLSB}:${track.program}`;
     }
     return String(track.program);
@@ -1448,18 +1512,23 @@ export default class MidiComposer {
   }
 
   getNoteLengthTicks() {
+    if (isDrumTrack(this.getActiveTrack())) {
+      return this.getDrumHitDurationTicks();
+    }
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
     const divisor = NOTE_LENGTH_OPTIONS[this.noteLengthIndex]?.divisor || 4;
     return Math.max(1, Math.round(ticksPerBar / divisor));
   }
 
   setNoteLengthIndex(index) {
+    if (isDrumTrack(this.getActiveTrack())) return;
     const total = NOTE_LENGTH_OPTIONS.length;
     const nextIndex = ((index % total) + total) % total;
     this.noteLengthIndex = nextIndex;
     if (this.quantizeOptions.length > 0) {
       this.quantizeIndex = Math.min(nextIndex, this.quantizeOptions.length - 1);
     }
+    this.persist();
   }
 
   cycleTimeSignature() {
@@ -1479,7 +1548,7 @@ export default class MidiComposer {
   getNextAvailableChannel() {
     const used = new Set(this.song.tracks.map((track) => track.channel));
     for (let channel = 0; channel < 16; channel += 1) {
-      if (channel === 9) continue;
+      if (channel === GM_DRUM_CHANNEL) continue;
       if (!used.has(channel)) return channel;
     }
     return 0;
@@ -1531,7 +1600,7 @@ export default class MidiComposer {
 
   snapPitchToScale(pitch) {
     const track = this.getActiveTrack();
-    if (isDrumChannel(track?.channel)) return pitch;
+    if (isDrumTrack(track)) return pitch;
     if (!this.scaleLock) return pitch;
     const pitchClasses = this.getScalePitchClasses();
     const octave = Math.floor(pitch / 12);
@@ -1572,6 +1641,12 @@ export default class MidiComposer {
   }
 
   setChordMode(enabled) {
+    if (isDrumTrack(this.getActiveTrack())) {
+      this.chordMode = false;
+      this.song.chordMode = false;
+      this.persist();
+      return;
+    }
     this.chordMode = Boolean(enabled);
     this.song.chordMode = this.chordMode;
     this.persist();
@@ -1697,6 +1772,10 @@ export default class MidiComposer {
       const { track, pattern } = this.getRecordingTarget();
       if (pattern) {
         this.recorder.commitRecordedTakeToScore({ pattern, startTickOffset: 0 });
+        if (isDrumTrack(track)) {
+          this.ensureDrumTrackSettings(track);
+          this.normalizeDrumPattern(track, pattern, GM_DRUM_ROWS);
+        }
         this.persist();
         const lastNote = pattern.notes[pattern.notes.length - 1];
         if (lastNote) {
@@ -1715,23 +1794,26 @@ export default class MidiComposer {
   getRecordingTrack(instrumentOverride = null) {
     const instrument = instrumentOverride || this.recordInstrument;
     if (instrument === 'drums') {
-      let drumTrack = this.song.tracks.find((candidate) => candidate.channel === 9);
+      let drumTrack = this.song.tracks.find((candidate) => isDrumTrack(candidate));
       if (!drumTrack) {
-        drumTrack = {
+        drumTrack = this.ensureDrumTrackSettings({
           id: `track-drums-${Date.now()}`,
           name: 'Drums',
-          channel: 9,
+          instrument: 'drums',
+          channel: GM_DRUM_CHANNEL,
           program: 0,
-          bankMSB: DEFAULT_BANK_MSB,
-          bankLSB: DEFAULT_BANK_LSB,
+          bankMSB: DRUM_BANK_MSB,
+          bankLSB: DRUM_BANK_LSB,
           volume: 0.9,
           pan: 0,
           mute: false,
           solo: false,
           color: TRACK_COLORS[this.song.tracks.length % TRACK_COLORS.length],
           patterns: [{ id: `pattern-drums-${Date.now()}`, bars: this.song.loopBars, notes: [] }]
-        };
+        });
         this.song.tracks.push(drumTrack);
+      } else {
+        this.ensureDrumTrackSettings(drumTrack);
       }
       const drumIndex = this.song.tracks.indexOf(drumTrack);
       if (drumIndex >= 0) {
@@ -1745,21 +1827,25 @@ export default class MidiComposer {
   handleRecordedNoteOn(event) {
     if (!this.recordModeActive) return;
     const now = this.getRecordingTime();
-    const instrumentOverride = (event?.instrument === 'drums' || event?.channel === 9) ? 'drums' : null;
+    const instrumentOverride = (event?.instrument === 'drums' || event?.channel === GM_DRUM_CHANNEL) ? 'drums' : null;
     const { track } = this.getRecordingTarget(instrumentOverride);
     if (!track) return;
     const velocity = Number.isFinite(event.velocity) ? event.velocity : this.recordStatus.velocity;
     const clampedVelocity = clamp(velocity ?? 96, 1, 127);
+    const drumTrack = isDrumTrack(track);
+    const pitch = drumTrack
+      ? this.coercePitchForTrack(event.pitch, track, GM_DRUM_ROWS)
+      : event.pitch;
     this.recordStatus.velocity = clampedVelocity;
     this.recorder.recordNoteOn({
       id: event.id,
-      pitch: event.pitch,
+      pitch,
       velocity: clampedVelocity,
       time: now,
-      channel: track.channel,
+      channel: drumTrack ? GM_DRUM_CHANNEL : track.channel,
       trackId: track.id
     });
-    this.playGmNote(event.pitch, 0.4, (clampedVelocity / 127) * track.volume, track, track.pan);
+    this.playGmNote(pitch, 0.4, (clampedVelocity / 127) * track.volume, track, track.pan);
   }
 
   handleRecordedNoteOff(event) {
@@ -1783,7 +1869,7 @@ export default class MidiComposer {
   handleRecordedPitchBend(event) {
     if (!this.recordModeActive) return;
     const { track } = this.getRecordingTarget();
-    if (!track) return;
+    if (!track || isDrumTrack(track)) return;
     this.recorder.recordPitchBend({
       value: event.value,
       time: this.getRecordingTime(),
@@ -1904,6 +1990,8 @@ export default class MidiComposer {
       }
     };
 
+    const drumTrack = isDrumTrack(this.getActiveTrack());
+
     handleMappedPress('play', () => this.togglePlayback());
     handleMappedPress('stop', () => this.stopPlayback());
     handleMappedPress('instrument', () => this.openInstrumentPicker('edit', this.selectedTrackIndex));
@@ -1921,10 +2009,12 @@ export default class MidiComposer {
       this.eraseNoteAt(this.cursor.tick, this.cursor.pitch);
     });
     handleMappedPress('octaveUp', () => {
+      if (drumTrack) return;
       const range = this.getPitchRange();
       this.cursor.pitch = clamp(this.cursor.pitch + 12, range.min, range.max);
     });
     handleMappedPress('octaveDown', () => {
+      if (drumTrack) return;
       const range = this.getPitchRange();
       this.cursor.pitch = clamp(this.cursor.pitch - 12, range.min, range.max);
     });
@@ -2056,7 +2146,7 @@ export default class MidiComposer {
   }
 
   shouldSlurNote(track, pattern, note) {
-    if (!this.slurEnabled || isDrumChannel(track.channel)) return false;
+    if (!this.slurEnabled || isDrumTrack(track)) return false;
     return pattern.notes.some((other) => {
       if (other.id === note.id || other.pitch !== note.pitch) return false;
       const otherEnd = other.startTick + other.durationTicks;
@@ -2065,9 +2155,15 @@ export default class MidiComposer {
   }
 
   playNote(track, note, startTick) {
-    const duration = note.durationTicks / this.ticksPerBeat;
+    const drumTrack = isDrumTrack(track);
+    const durationTicks = drumTrack ? this.getDrumHitDurationTicks() : note.durationTicks;
+    const duration = durationTicks / this.ticksPerBeat;
     const velocity = note.velocity ?? 0.8;
-    this.playGmNote(note.pitch, duration, velocity * track.volume, track, track.pan);
+    const pitch = drumTrack ? this.coercePitchForTrack(note.pitch, track, GM_DRUM_ROWS) : note.pitch;
+    if (drumTrack) {
+      this.ensureDrumTrackSettings(track);
+    }
+    this.playGmNote(pitch, duration, velocity * track.volume, track, track.pan);
     const now = performance.now();
     this.activeNotes.set(note.id, { trackId: track.id, expires: now + duration * 1000 + 120 });
     this.lastPlaybackTick = startTick;
@@ -2075,14 +2171,20 @@ export default class MidiComposer {
 
   playGmNote(pitch, duration, volume, track, pan = 0) {
     if (this.game?.audio?.playGmNote) {
+      const drumTrack = isDrumTrack(track);
+      const resolvedPitch = drumTrack ? this.coercePitchForTrack(pitch, track, GM_DRUM_ROWS) : pitch;
+      const resolvedDuration = drumTrack ? this.getDrumHitDurationTicks() / this.ticksPerBeat : duration;
+      if (drumTrack) {
+        this.ensureDrumTrackSettings(track);
+      }
       this.game.audio.playGmNote({
-        pitch,
-        duration,
+        pitch: resolvedPitch,
+        duration: resolvedDuration,
         volume,
         program: track.program,
-        channel: track.channel,
-        bankMSB: track.bankMSB,
-        bankLSB: track.bankLSB,
+        channel: drumTrack ? GM_DRUM_CHANNEL : track.channel,
+        bankMSB: drumTrack ? (track.bankMSB ?? DRUM_BANK_MSB) : track.bankMSB,
+        bankLSB: drumTrack ? DRUM_BANK_LSB : track.bankLSB,
         pan
       });
       return;
@@ -2212,6 +2314,10 @@ export default class MidiComposer {
 
     const noteLengthHit = this.bounds.noteLengthMenu?.find((bounds) => this.pointInBounds(x, y, bounds));
     if (noteLengthHit) {
+      if (isDrumTrack(this.getActiveTrack())) {
+        this.noteLengthMenu.open = false;
+        return;
+      }
       this.setNoteLengthIndex(noteLengthHit.index);
       this.noteLengthMenu.open = false;
       return;
@@ -2299,6 +2405,7 @@ export default class MidiComposer {
       this.tempoSliderOpen = false;
     }
     if (this.bounds.noteLength && this.pointInBounds(x, y, this.bounds.noteLength)) {
+      if (isDrumTrack(this.getActiveTrack())) return;
       this.noteLengthMenu.open = !this.noteLengthMenu.open;
       this.noteLengthMenu.anchor = { ...this.bounds.noteLength };
       this.tempoSliderOpen = false;
@@ -2474,10 +2581,12 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.chordMode && this.pointInBounds(x, y, this.bounds.chordMode)) {
+        if (isDrumTrack(this.getActiveTrack())) return;
         this.setChordMode(!this.chordMode);
         return;
       }
       if (this.bounds.chordEdit && this.pointInBounds(x, y, this.bounds.chordEdit)) {
+        if (isDrumTrack(this.getActiveTrack())) return;
         this.promptChordProgression();
         return;
       }
@@ -2819,6 +2928,8 @@ export default class MidiComposer {
   handleGridPointerDown(payload) {
     const { x, y } = payload;
     const modifiers = this.getModifiers();
+    const track = this.getActiveTrack();
+    const drumTrack = isDrumTrack(track);
     if (this.song.loopEnabled && this.bounds.loopShiftStartHandle && this.pointInBounds(x, y, this.bounds.loopShiftStartHandle)) {
       const tick = this.getTickFromX(x);
       this.dragState = {
@@ -2903,7 +3014,7 @@ export default class MidiComposer {
         this.selection.clear();
         this.selection.add(hit.note.id);
       }
-      if (hit.edge) {
+      if (hit.edge && !drumTrack) {
         this.dragState = {
           mode: 'resize',
           edge: hit.edge,
@@ -2953,9 +3064,13 @@ export default class MidiComposer {
       this.closeSelectionMenu();
     }
     const pattern = this.getActivePattern();
-    if (!pattern) return;
+    const track = this.getActiveTrack();
+    if (!pattern || !track) return;
+    const drumTrack = isDrumTrack(track);
     const snappedTick = this.snapTick(tick);
-    const snappedPitch = this.snapPitchToScale(pitch);
+    const snappedPitch = drumTrack
+      ? this.coercePitchForTrack(pitch, track)
+      : this.snapPitchToScale(pitch);
     const existingIndex = pattern.notes.findIndex(
       (note) => note.startTick === snappedTick && note.pitch === snappedPitch
     );
@@ -2967,7 +3082,7 @@ export default class MidiComposer {
       this.persist();
       return;
     }
-    const duration = this.getNoteLengthTicks();
+    const duration = drumTrack ? this.getDrumHitDurationTicks() : this.getNoteLengthTicks();
     const note = {
       id: uid(),
       startTick: snappedTick,
@@ -2989,9 +3104,13 @@ export default class MidiComposer {
       this.closeSelectionMenu();
     }
     const pattern = this.getActivePattern();
-    if (!pattern) return;
+    const track = this.getActiveTrack();
+    if (!pattern || !track) return;
+    const drumTrack = isDrumTrack(track);
     const snappedTick = this.snapTick(tick);
-    const snappedPitch = this.snapPitchToScale(pitch);
+    const snappedPitch = drumTrack
+      ? this.coercePitchForTrack(pitch, track)
+      : this.snapPitchToScale(pitch);
     const existing = pattern.notes.find((note) => note.startTick === snappedTick && note.pitch === snappedPitch);
     if (existing) {
       if (!continuous) {
@@ -3001,7 +3120,7 @@ export default class MidiComposer {
       }
       return;
     }
-    const duration = this.getNoteLengthTicks();
+    const duration = drumTrack ? this.getDrumHitDurationTicks() : this.getNoteLengthTicks();
     const note = {
       id: uid(),
       startTick: snappedTick,
@@ -3034,23 +3153,37 @@ export default class MidiComposer {
 
   moveSelectionTo(tick, pitch) {
     const pattern = this.getActivePattern();
-    if (!pattern || !this.dragState?.originalNotes) return;
+    const track = this.getActiveTrack();
+    if (!pattern || !this.dragState?.originalNotes || !track) return;
+    const drumTrack = isDrumTrack(track);
     const startTick = this.snapTick(tick);
-    const snappedPitch = this.snapPitchToScale(pitch);
+    const snappedPitch = drumTrack
+      ? this.coercePitchForTrack(pitch, track, GM_DRUM_ROWS)
+      : this.snapPitchToScale(pitch);
     const deltaTick = startTick - this.dragState.startTick;
-    const deltaPitch = snappedPitch - this.dragState.startPitch;
+    const deltaPitch = drumTrack ? 0 : snappedPitch - this.dragState.startPitch;
     const loopTicks = this.getLoopTicks();
+    const drumDuration = this.getDrumHitDurationTicks();
     pattern.notes = pattern.notes.map((note) => {
       if (!this.selection.has(note.id)) return note;
       const original = this.dragState.originalNotes.find((entry) => entry.id === note.id);
       const nextStart = clamp(original.startTick + deltaTick, 0, loopTicks - 1);
-      const nextPitch = clamp(original.pitch + deltaPitch, this.getPitchRange().min, this.getPitchRange().max);
-      return { ...note, startTick: nextStart, pitch: this.snapPitchToScale(nextPitch) };
+      const nextPitch = drumTrack
+        ? this.coercePitchForTrack(original.pitch, track, GM_DRUM_ROWS)
+        : clamp(original.pitch + deltaPitch, this.getPitchRange().min, this.getPitchRange().max);
+      return {
+        ...note,
+        startTick: nextStart,
+        durationTicks: drumTrack ? drumDuration : note.durationTicks,
+        pitch: drumTrack ? nextPitch : this.snapPitchToScale(nextPitch)
+      };
     });
-    const maxEndTick = Math.max(...this.getSelectedNotes().map((note) => note.startTick + note.durationTicks));
+    const selectedNotes = this.getSelectedNotes();
+    if (!selectedNotes.length) return;
+    const maxEndTick = Math.max(...selectedNotes.map((note) => note.startTick + this.getEffectiveDurationTicks(note, track)));
     this.ensureGridCapacity(maxEndTick);
     this.persist();
-    const previewTarget = this.getSelectedNotes()[0];
+    const previewTarget = selectedNotes[0];
     if (previewTarget) {
       this.previewNote(previewTarget, snappedPitch);
     }
@@ -3058,7 +3191,8 @@ export default class MidiComposer {
 
   resizeSelectionTo(tick) {
     const pattern = this.getActivePattern();
-    if (!pattern || !this.dragState?.originalNotes) return;
+    const track = this.getActiveTrack();
+    if (!pattern || !this.dragState?.originalNotes || !track || isDrumTrack(track)) return;
     const snappedTick = this.snapTick(tick);
     const loopTicks = this.getLoopTicks();
     pattern.notes = pattern.notes.map((note) => {
@@ -3075,7 +3209,7 @@ export default class MidiComposer {
       }
       return { ...note, startTick, durationTicks: duration };
     });
-    const maxEndTick = Math.max(...this.getSelectedNotes().map((note) => note.startTick + note.durationTicks));
+    const maxEndTick = Math.max(...this.getSelectedNotes().map((note) => note.startTick + this.getEffectiveDurationTicks(note, track)));
     this.ensureGridCapacity(maxEndTick);
     this.persist();
   }
@@ -3132,12 +3266,18 @@ export default class MidiComposer {
 
   beginPastePreview() {
     if (!this.clipboard) return;
+    const track = this.getActiveTrack();
+    if (!track) return;
+    const drumTrack = isDrumTrack(track) || this.clipboard.isDrum;
     const nextTick = this.getNextEmptyBarStart();
-    const basePitch = this.cursor.pitch || this.getPitchRange().min;
+    const basePitch = drumTrack
+      ? this.coercePitchForTrack(this.clipboard.basePitch ?? this.cursor.pitch ?? this.getPitchRange().min, track, GM_DRUM_ROWS)
+      : this.cursor.pitch || this.getPitchRange().min;
     this.pastePreview = {
       tick: this.snapTick(nextTick),
-      pitch: this.snapPitchToScale(basePitch),
-      notes: this.clipboard.notes
+      pitch: drumTrack ? basePitch : this.snapPitchToScale(basePitch),
+      notes: this.clipboard.notes,
+      isDrum: drumTrack
     };
     this.cursor.tick = this.pastePreview.tick;
     this.cursor.pitch = this.pastePreview.pitch;
@@ -3145,8 +3285,12 @@ export default class MidiComposer {
 
   updatePastePreviewPosition(tick, pitch) {
     if (!this.pastePreview) return;
+    const track = this.getActiveTrack();
+    const drumTrack = this.pastePreview.isDrum || isDrumTrack(track);
     this.pastePreview.tick = this.snapTick(tick);
-    this.pastePreview.pitch = this.snapPitchToScale(pitch);
+    if (!drumTrack) {
+      this.pastePreview.pitch = this.snapPitchToScale(pitch);
+    }
     this.cursor.tick = this.pastePreview.tick;
     this.cursor.pitch = this.pastePreview.pitch;
   }
@@ -3154,21 +3298,26 @@ export default class MidiComposer {
   applyPastePreview() {
     if (!this.clipboard || !this.pastePreview) return;
     const pattern = this.getActivePattern();
-    if (!pattern) return;
+    const track = this.getActiveTrack();
+    if (!pattern || !track) return;
+    const drumTrack = this.pastePreview.isDrum || isDrumTrack(track);
     const loopTicks = this.getLoopTicks();
     const hasLoopEnd = typeof this.song.loopEndTick === 'number';
     const baseTick = this.pastePreview.tick;
     const basePitch = this.pastePreview.pitch;
+    const drumDuration = this.getDrumHitDurationTicks();
     const newIds = [];
     this.clipboard.notes.forEach((note) => {
       const rawStart = baseTick + note.startTick;
       const startTick = hasLoopEnd ? clamp(rawStart, 0, loopTicks - 1) : Math.max(0, rawStart);
-      const pitch = clamp(basePitch + note.pitch, this.getPitchRange().min, this.getPitchRange().max);
+      const pitchValue = drumTrack
+        ? this.coercePitchForTrack(note.pitchAbsolute ?? note.pitch, track, GM_DRUM_ROWS)
+        : clamp(basePitch + note.pitch, this.getPitchRange().min, this.getPitchRange().max);
       const newNote = {
         id: uid(),
         startTick,
-        durationTicks: note.durationTicks,
-        pitch,
+        durationTicks: drumTrack ? drumDuration : note.durationTicks,
+        pitch: pitchValue,
         velocity: note.velocity
       };
       pattern.notes.push(newNote);
@@ -3177,7 +3326,7 @@ export default class MidiComposer {
     this.selection = new Set(newIds);
     const maxEndTick = Math.max(...newIds.map((id) => {
       const note = pattern.notes.find((entry) => entry.id === id);
-      return note ? note.startTick + note.durationTicks : 0;
+      return note ? note.startTick + this.getEffectiveDurationTicks(note, track) : 0;
     }));
     this.ensureGridCapacity(maxEndTick);
     this.pastePreview = null;
@@ -3186,17 +3335,25 @@ export default class MidiComposer {
 
   copySelection() {
     const notes = this.getSelectedNotes();
-    if (notes.length === 0) return;
+    const track = this.getActiveTrack();
+    if (!track || notes.length === 0) return;
+    const drumTrack = isDrumTrack(track);
     const minTick = Math.min(...notes.map((note) => note.startTick));
     const minPitch = Math.min(...notes.map((note) => note.pitch));
+    const drumDuration = this.getDrumHitDurationTicks();
+    const width = Math.max(...notes.map((note) => note.startTick + this.getEffectiveDurationTicks(note, track))) - minTick;
     this.clipboard = {
       notes: notes.map((note) => ({
         ...note,
         startTick: note.startTick - minTick,
-        pitch: note.pitch - minPitch
+        durationTicks: drumTrack ? drumDuration : note.durationTicks,
+        pitch: drumTrack ? note.pitch : note.pitch - minPitch,
+        pitchAbsolute: note.pitch
       })),
-      width: Math.max(...notes.map((note) => note.startTick + note.durationTicks)) - minTick,
-      height: Math.max(...notes.map((note) => note.pitch)) - minPitch
+      width,
+      height: drumTrack ? 0 : Math.max(...notes.map((note) => note.pitch)) - minPitch,
+      isDrum: drumTrack,
+      basePitch: drumTrack ? notes[0].pitch : minPitch
     };
   }
 
@@ -3211,20 +3368,30 @@ export default class MidiComposer {
     const notes = this.getSelectedNotes();
     if (notes.length === 0) return;
     const pattern = this.getActivePattern();
+    const track = this.getActiveTrack();
+    if (!pattern || !track) return;
+    const drumTrack = isDrumTrack(track);
     const loopTicks = this.getLoopTicks();
     const hasLoopEnd = typeof this.song.loopEndTick === 'number';
-    const span = Math.max(...notes.map((note) => note.startTick + note.durationTicks))
+    const drumDuration = this.getDrumHitDurationTicks();
+    const span = Math.max(...notes.map((note) => note.startTick + this.getEffectiveDurationTicks(note, track)))
       - Math.min(...notes.map((note) => note.startTick));
     const newIds = [];
     notes.forEach((note) => {
       const rawStart = note.startTick + span;
       const startTick = hasLoopEnd ? clamp(rawStart, 0, loopTicks - 1) : Math.max(0, rawStart);
-      const newNote = { ...note, id: uid(), startTick };
+      const newNote = {
+        ...note,
+        id: uid(),
+        startTick,
+        durationTicks: drumTrack ? drumDuration : note.durationTicks,
+        pitch: drumTrack ? this.coercePitchForTrack(note.pitch, track, GM_DRUM_ROWS) : note.pitch
+      };
       pattern.notes.push(newNote);
       newIds.push(newNote.id);
     });
     this.selection = new Set(newIds);
-    const maxEndTick = Math.max(...notes.map((note) => note.startTick + span + note.durationTicks));
+    const maxEndTick = Math.max(...notes.map((note) => note.startTick + span + this.getEffectiveDurationTicks(note, track)));
     this.ensureGridCapacity(maxEndTick);
     this.persist();
   }
@@ -3250,8 +3417,11 @@ export default class MidiComposer {
     this.lastAuditionTime = now;
     const track = this.getActiveTrack();
     if (!track) return;
-    const duration = note.durationTicks / this.ticksPerBeat;
-    this.playGmNote(pitch, duration, track.volume, track);
+    const drumTrack = isDrumTrack(track);
+    const durationTicks = this.getEffectiveDurationTicks(note, track);
+    const duration = durationTicks / this.ticksPerBeat;
+    const resolvedPitch = drumTrack ? this.coercePitchForTrack(pitch, track, GM_DRUM_ROWS) : pitch;
+    this.playGmNote(resolvedPitch, duration, track.volume, track);
   }
 
   auditionPitch(pitch) {
@@ -3260,7 +3430,10 @@ export default class MidiComposer {
     this.lastAuditionTime = now;
     const track = this.getActiveTrack();
     if (!track) return;
-    this.playGmNote(pitch, 0.4, track.volume, track);
+    const drumTrack = isDrumTrack(track);
+    const resolvedPitch = drumTrack ? this.coercePitchForTrack(pitch, track, GM_DRUM_ROWS) : pitch;
+    const duration = drumTrack ? this.getDrumHitDurationTicks() / this.ticksPerBeat : 0.4;
+    this.playGmNote(resolvedPitch, duration, track.volume, track);
   }
 
   previewInstrument(program, trackOverride = null) {
@@ -3270,8 +3443,8 @@ export default class MidiComposer {
     this.lastAuditionTime = now;
     const track = trackOverride || this.getActiveTrack();
     const volume = track?.volume ?? 0.8;
-    const isDrum = isDrumChannel(track?.channel);
-    const channel = track?.channel ?? 0;
+    const isDrum = isDrumTrack(track);
+    const channel = isDrum ? GM_DRUM_CHANNEL : (track?.channel ?? 0);
     const key = this.getCacheKeyForProgram(
       program,
       channel,
@@ -3287,7 +3460,7 @@ export default class MidiComposer {
       }
     }
     const sequence = isDrum
-      ? [36, 42, 38, 36]
+      ? [36, 38, 42, 49]
       : [60, 65, 67, 72];
     const baseVolume = Math.min(1, volume + 0.1);
     sequence.forEach((pitch, index) => {
@@ -3295,8 +3468,9 @@ export default class MidiComposer {
         this.playGmNote(pitch, 0.45, baseVolume, {
           program,
           channel,
-          bankMSB: DEFAULT_BANK_MSB,
-          bankLSB: DEFAULT_BANK_LSB
+          bankMSB: isDrum ? DRUM_BANK_MSB : DEFAULT_BANK_MSB,
+          bankLSB: isDrum ? DRUM_BANK_LSB : DEFAULT_BANK_LSB,
+          instrument: isDrum ? 'drums' : track?.instrument
         });
       }, index * 160);
     });
@@ -3304,9 +3478,11 @@ export default class MidiComposer {
 
   previewNotesAtTick(tick) {
     const pattern = this.getActivePattern();
-    if (!pattern) return;
+    const track = this.getActiveTrack();
+    if (!pattern || !track) return;
     pattern.notes.forEach((note) => {
-      if (note.startTick <= tick && note.startTick + note.durationTicks > tick) {
+      const durationTicks = this.getEffectiveDurationTicks(note, track);
+      if (note.startTick <= tick && note.startTick + durationTicks > tick) {
         this.previewNote(note, note.pitch);
       }
     });
@@ -3460,6 +3636,7 @@ export default class MidiComposer {
     if (this.song.tracks.length <= 1) return;
     this.song.tracks.splice(this.selectedTrackIndex, 1);
     this.selectedTrackIndex = clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
+    this.syncCursorToTrack();
     this.persist();
   }
 
@@ -3492,7 +3669,7 @@ export default class MidiComposer {
       this.removeTrack();
       return;
     } else if (hit.control === 'instrument') {
-      if (isDrumChannel(track.channel)) {
+      if (isDrumTrack(track)) {
         this.instrumentPicker.familyTab = 'drums-perc';
       }
       this.openInstrumentPicker('edit', hit.trackIndex);
@@ -3518,10 +3695,10 @@ export default class MidiComposer {
       }
       return;
     } else if (hit.control === 'set-drums') {
-      this.setTrackChannel(track, 9);
+      this.setTrackChannel(track, GM_DRUM_CHANNEL);
       return;
     } else if (hit.control === 'bank') {
-      if (isDrumChannel(track.channel)) {
+      if (isDrumTrack(track)) {
         const available = this.game?.audio?.listAvailableDrumKits?.();
         const kits = Array.isArray(available) && available.length ? available : GM_DRUM_KITS;
         if (!kits.length) return;
@@ -3563,7 +3740,11 @@ export default class MidiComposer {
 
   setTrackChannel(track, channel) {
     const nextChannel = clamp(channel, 0, 15);
-    track.channel = nextChannel;
+    const drumTarget = isDrumTrack(track) || nextChannel === GM_DRUM_CHANNEL;
+    track.channel = drumTarget ? GM_DRUM_CHANNEL : nextChannel;
+    if (drumTarget) {
+      this.ensureDrumTrackSettings(track);
+    }
     this.preloadTrackPrograms();
     this.persist();
   }
@@ -3896,7 +4077,7 @@ export default class MidiComposer {
       const pattern = track.patterns[this.selectedPatternIndex];
       if (!pattern) return;
       pattern.notes = [];
-      if (isDrumChannel(track.channel)) {
+      if (isDrumTrack(track)) {
         const kick = 36;
         const snare = 38;
         const hat = 42;
@@ -4049,7 +4230,22 @@ export default class MidiComposer {
   }
 
   getDrumRows() {
-    return this.drumAdvanced ? GM_DRUMS : GM_DRUM_ROWS;
+    return GM_DRUM_ROWS;
+  }
+
+  getDrumHitDurationTicks() {
+    return Math.max(1, this.getQuantizeTicks());
+  }
+
+  getEffectiveDurationTicks(note, track = this.getActiveTrack()) {
+    if (!note) return 1;
+    return isDrumTrack(track) ? this.getDrumHitDurationTicks() : Math.max(1, note.durationTicks);
+  }
+
+  coercePitchForTrack(pitch, track = this.getActiveTrack(), rows = null) {
+    if (!isDrumTrack(track)) return pitch;
+    const drumRows = rows || this.getDrumRows();
+    return coerceDrumPitch(pitch, drumRows);
   }
 
   getBaseVisibleRows(rows) {
@@ -4059,7 +4255,7 @@ export default class MidiComposer {
   initializeGridOffset(track, rows, cellHeight) {
     if (this.gridOffsetInitialized) return;
     this.gridOffsetInitialized = true;
-    if (!track || isDrumChannel(track.channel)) {
+    if (!track || isDrumTrack(track)) {
       this.gridOffset.y = 0;
       return;
     }
@@ -4101,7 +4297,7 @@ export default class MidiComposer {
 
   getPitchRange() {
     const track = this.getActiveTrack();
-    if (isDrumChannel(track?.channel)) {
+    if (isDrumTrack(track)) {
       const pitches = this.getDrumRows().map((row) => row.pitch);
       return { min: Math.min(...pitches), max: Math.max(...pitches) };
     }
@@ -4127,7 +4323,7 @@ export default class MidiComposer {
 
   getPitchFromRow(row) {
     const track = this.getActiveTrack();
-    if (isDrumChannel(track?.channel)) {
+    if (isDrumTrack(track)) {
       const rows = this.getDrumRows();
       const entry = rows[row];
       return entry?.pitch ?? rows[0].pitch;
@@ -4138,8 +4334,10 @@ export default class MidiComposer {
 
   getRowFromPitch(pitch) {
     const track = this.getActiveTrack();
-    if (isDrumChannel(track?.channel)) {
-      return this.getDrumRows().findIndex((row) => row.pitch === pitch);
+    if (isDrumTrack(track)) {
+      const rows = this.getDrumRows();
+      const mapped = coerceDrumPitch(pitch, rows);
+      return rows.findIndex((row) => row.pitch === mapped);
     }
     const range = this.getPitchRange();
     return range.max - pitch;
@@ -4180,19 +4378,21 @@ export default class MidiComposer {
   getNoteHitAt(x, y) {
     if (!this.gridBounds) return null;
     const pattern = this.getActivePattern();
-    if (!pattern) return null;
+    const track = this.getActiveTrack();
+    if (!pattern || !track) return null;
+    const drumTrack = isDrumTrack(track);
     let handleHit = null;
     let bodyHit = null;
     pattern.notes.forEach((note) => {
       const rect = this.getNoteRect(note);
       if (!rect) return;
       if (y < rect.y || y > rect.y + rect.h) return;
-      const handleWidth = this.getNoteHandleWidth(rect);
-      if (x >= rect.x - handleWidth && x <= rect.x) {
+      const handleWidth = drumTrack ? 0 : this.getNoteHandleWidth(rect);
+      if (!drumTrack && x >= rect.x - handleWidth && x <= rect.x) {
         handleHit = { note, edge: 'start' };
         return;
       }
-      if (x >= rect.x + rect.w && x <= rect.x + rect.w + handleWidth) {
+      if (!drumTrack && x >= rect.x + rect.w && x <= rect.x + rect.w + handleWidth) {
         handleHit = { note, edge: 'end' };
         return;
       }
@@ -4205,11 +4405,19 @@ export default class MidiComposer {
 
   getNoteAtCell(tick, pitch, pointerX = null) {
     const pattern = this.getActivePattern();
-    if (!pattern) return null;
-    const hit = pattern.notes.find((note) => tick >= note.startTick && tick < note.startTick + note.durationTicks && note.pitch === pitch);
+    const track = this.getActiveTrack();
+    if (!pattern || !track) return null;
+    const drumTrack = isDrumTrack(track);
+    const hit = pattern.notes.find((note) => {
+      const durationTicks = this.getEffectiveDurationTicks(note, track);
+      return tick >= note.startTick && tick < note.startTick + durationTicks && note.pitch === pitch;
+    });
     if (!hit) return null;
     const rect = this.getNoteRect(hit);
     if (!rect) return null;
+    if (drumTrack) {
+      return { note: hit, edge: null };
+    }
     const handleWidth = this.getNoteHandleWidth(rect);
     const handleSize = Math.max(6, Math.min(handleWidth, rect.w / 2));
     const cursorX = typeof pointerX === 'number' ? pointerX : this.lastPointer.x;
@@ -4224,13 +4432,16 @@ export default class MidiComposer {
 
   getNoteRect(note) {
     if (!this.gridBounds) return null;
+    const track = this.getActiveTrack();
+    if (!track) return null;
     const { originX, originY, cellWidth, cellHeight } = this.gridBounds;
     const row = this.getRowFromPitch(note.pitch);
     if (row < 0) return null;
+    const durationTicks = this.getEffectiveDurationTicks(note, track);
     return {
       x: originX + note.startTick * cellWidth,
       y: originY + row * cellHeight + 1,
-      w: Math.max(cellWidth * note.durationTicks, cellWidth),
+      w: Math.max(cellWidth * durationTicks, cellWidth),
       h: cellHeight - 2
     };
   }
@@ -4248,7 +4459,9 @@ export default class MidiComposer {
     } else if (cursorX > x + w - margin) {
       this.gridOffset.x -= cursorX - (x + w - margin);
     }
-    if (cursorY < y + margin) {
+    if (isDrumTrack(this.getActiveTrack())) {
+      this.gridOffset.y = 0;
+    } else if (cursorY < y + margin) {
       this.gridOffset.y += (y + margin) - cursorY;
     } else if (cursorY > y + h - margin) {
       this.gridOffset.y -= cursorY - (y + h - margin);
@@ -4373,7 +4586,7 @@ export default class MidiComposer {
     const grid = layout.grid;
     const instrument = layout.instrument;
     if (!this.recordGridZoomedOut && track) {
-      const rows = isDrumChannel(track.channel)
+      const rows = isDrumTrack(track)
         ? this.getDrumRows().length
         : this.getPitchRange().max - this.getPitchRange().min + 1;
       const { minZoom } = this.getGridZoomLimits(rows);
@@ -4381,7 +4594,6 @@ export default class MidiComposer {
       this.gridZoomX = zoomXLimits.minZoom;
       this.gridZoomY = minZoom;
       this.gridZoomInitialized = true;
-      this.gridOffsetInitialized = false;
       this.recordGridZoomedOut = true;
     }
     if (grid) {
@@ -4534,7 +4746,7 @@ export default class MidiComposer {
     const selectorX = controlX + buttonSize;
     const trackName = track?.name || 'Track';
     const instrumentName = track
-      ? isDrumChannel(track.channel)
+      ? isDrumTrack(track)
         ? this.getDrumKitLabel(track)
         : this.getProgramLabel(track.program)
       : 'Instrument';
@@ -4826,8 +5038,9 @@ export default class MidiComposer {
     const buttonSize = rowH;
     let cursorX = x;
     ctx.font = '13px Courier New';
+    const drumGrid = isDrumTrack(track);
     const label = track
-      ? isDrumChannel(track.channel)
+      ? drumGrid
         ? `[${this.getDrumKitLabel(track)}]`
         : `[${this.getProgramLabel(track.program)}]`
       : '[No Track]';
@@ -4844,23 +5057,30 @@ export default class MidiComposer {
     this.drawButton(ctx, this.bounds.instrumentNext, '>', false, false);
     cursorX += buttonSize + gap * 2;
 
-    const noteLabel = `Note ${this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex])}`;
-    const noteW = Math.min(160, Math.max(120, ctx.measureText(noteLabel).width + 28));
-    this.bounds.noteLength = { x: cursorX, y, w: noteW, h: rowH };
-    this.drawButton(ctx, this.bounds.noteLength, noteLabel, false, false);
     const row2Y = y + rowH + gap;
     let row2X = x;
-    const chordLabel = this.chordMode ? 'Chord Mode' : 'Piano Mode';
-    const chordW = Math.min(180, Math.max(140, ctx.measureText(chordLabel).width + 28));
-    this.bounds.chordMode = { x: row2X, y: row2Y, w: chordW, h: rowH };
-    this.drawButton(ctx, this.bounds.chordMode, chordLabel, this.chordMode, false);
-    row2X += chordW + gap;
+    if (!drumGrid) {
+      const noteLabel = `Note ${this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex])}`;
+      const noteW = Math.min(160, Math.max(120, ctx.measureText(noteLabel).width + 28));
+      this.bounds.noteLength = { x: cursorX, y, w: noteW, h: rowH };
+      this.drawButton(ctx, this.bounds.noteLength, noteLabel, false, false);
 
-    const editLabel = 'Edit Chords';
-    const editW = Math.min(150, Math.max(120, ctx.measureText(editLabel).width + 28));
-    this.bounds.chordEdit = { x: row2X, y: row2Y, w: editW, h: rowH };
-    this.drawButton(ctx, this.bounds.chordEdit, editLabel, false, false);
-    row2X += editW + gap;
+      const chordLabel = this.chordMode ? 'Chord Mode' : 'Piano Mode';
+      const chordW = Math.min(180, Math.max(140, ctx.measureText(chordLabel).width + 28));
+      this.bounds.chordMode = { x: row2X, y: row2Y, w: chordW, h: rowH };
+      this.drawButton(ctx, this.bounds.chordMode, chordLabel, this.chordMode, false);
+      row2X += chordW + gap;
+
+      const editLabel = 'Edit Chords';
+      const editW = Math.min(150, Math.max(120, ctx.measureText(editLabel).width + 28));
+      this.bounds.chordEdit = { x: row2X, y: row2Y, w: editW, h: rowH };
+      this.drawButton(ctx, this.bounds.chordEdit, editLabel, false, false);
+      row2X += editW + gap;
+    } else {
+      this.bounds.noteLength = null;
+      this.bounds.chordMode = null;
+      this.bounds.chordEdit = null;
+    }
 
     const barsLabel = `Bars ${Math.max(1, this.song.loopBars || DEFAULT_GRID_BARS)}`;
     const barsLabelW = Math.min(140, Math.max(96, ctx.measureText(barsLabel).width + 28));
@@ -4877,6 +5097,7 @@ export default class MidiComposer {
   }
 
   drawGridZoomControls(ctx, x, y, w, h) {
+    const drumGrid = isDrumTrack(this.getActiveTrack());
     const buttonSize = 30;
     const gap = 6;
     const zoomOutXBounds = {
@@ -4905,16 +5126,20 @@ export default class MidiComposer {
     };
     this.bounds.zoomInX = zoomInXBounds;
     this.bounds.zoomOutX = zoomOutXBounds;
-    this.bounds.zoomInY = zoomInYBounds;
-    this.bounds.zoomOutY = zoomOutYBounds;
+    this.bounds.zoomInY = drumGrid ? null : zoomInYBounds;
+    this.bounds.zoomOutY = drumGrid ? null : zoomOutYBounds;
     this.drawSmallButton(ctx, zoomInXBounds, '+', false);
     this.drawSmallButton(ctx, zoomOutXBounds, '−', false);
-    this.drawSmallButton(ctx, zoomInYBounds, '+', false);
-    this.drawSmallButton(ctx, zoomOutYBounds, '−', false);
+    if (!drumGrid) {
+      this.drawSmallButton(ctx, zoomInYBounds, '+', false);
+      this.drawSmallButton(ctx, zoomOutYBounds, '−', false);
+    }
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.font = '11px Courier New';
     ctx.fillText('X', zoomOutXBounds.x + 9, zoomOutXBounds.y - 6);
-    ctx.fillText('Y', zoomOutYBounds.x + 9, zoomOutYBounds.y - 6);
+    if (!drumGrid) {
+      ctx.fillText('Y', zoomOutYBounds.x + 9, zoomOutYBounds.y - 6);
+    }
   }
 
   drawInstrumentPanel(ctx, x, y, w, h, track) {
@@ -5164,7 +5389,7 @@ export default class MidiComposer {
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.font = '12px Courier New';
     ctx.fillText(track.name, rightX + 12, infoY + 12);
-    const instrumentLabel = isDrumChannel(track.channel)
+    const instrumentLabel = isDrumTrack(track)
       ? this.getDrumKitLabel(track)
       : this.getProgramLabel(track.program);
     ctx.fillText(instrumentLabel, rightX + 12, infoY + 28);
@@ -5699,7 +5924,7 @@ export default class MidiComposer {
     this.drawSmallButton(ctx, this.bounds.noteLength, noteLengthLabel, false);
 
     noteLengthX += 110;
-    if (track && isDrumChannel(track.channel)) {
+    if (track && isDrumTrack(track)) {
       this.bounds.drumView = { x: noteLengthX, y: controlsRowY, w: 140, h: rowH };
       const drumLabel = this.drumAdvanced ? 'Drum View: Full' : 'Drum View: Basic';
       this.drawSmallButton(ctx, this.bounds.drumView, drumLabel, false);
@@ -5920,7 +6145,7 @@ export default class MidiComposer {
       });
       ctx.fillStyle = 'rgba(255,255,255,0.9)';
       ctx.font = `${isMobile ? 14 : 12}px Courier New`;
-      const isDrums = isDrumChannel(track.channel);
+      const isDrums = isDrumTrack(track);
       const instrumentLabel = isDrums
         ? this.getDrumKitLabel(track)
         : this.getProgramLabel(track.program);
@@ -5979,7 +6204,8 @@ export default class MidiComposer {
     if (!track || !pattern) return;
     const simplified = options.simplified;
     const loopTicks = this.getLoopTicks();
-    const rows = isDrumChannel(track.channel)
+    const drumGrid = isDrumTrack(track);
+    const rows = drumGrid
       ? this.getDrumRows().length
       : this.getPitchRange().max - this.getPitchRange().min + 1;
     const isMobile = this.isMobileLayout();
@@ -5992,7 +6218,9 @@ export default class MidiComposer {
     const zoomXLimits = this.getGridZoomLimitsX();
     this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
     this.gridZoomY = clamp(this.gridZoomY, minZoom, maxZoom);
-    const baseCellHeight = Math.min(24, (h - rulerH - 16) / baseVisibleRows);
+    const baseCellHeight = drumGrid
+      ? Math.max(26, (h - rulerH - 12) / Math.max(1, rows))
+      : Math.min(24, (h - rulerH - 16) / baseVisibleRows);
     const viewH = Math.max(0, h - rulerH);
     if (!this.gridZoomInitialized) {
       const desiredVisibleRows = 12;
@@ -6000,13 +6228,18 @@ export default class MidiComposer {
       this.gridZoomInitialized = true;
     }
     const cellWidth = baseCellWidth * this.gridZoomX;
-    const cellHeight = baseCellHeight * this.gridZoomY;
+    let cellHeight = baseCellHeight * this.gridZoomY;
     const totalGridW = cellWidth * loopTicks;
-    const gridH = cellHeight * rows;
+    if (drumGrid) {
+      this.gridZoomY = 1;
+      cellHeight = Math.max(24, (viewH - 4) / Math.max(1, rows));
+      this.gridOffset.y = 0;
+    }
+    const gridH = drumGrid ? viewH : cellHeight * rows;
     this.initializeGridOffset(track, rows, cellHeight);
-    this.clampGridOffset(viewW, viewH, totalGridW, gridH);
+    this.clampGridOffset(viewW, viewH, totalGridW, drumGrid ? viewH : gridH);
     const originX = x + labelW + this.gridOffset.x;
-    const originY = y + rulerH + this.gridOffset.y;
+    const originY = y + rulerH + (drumGrid ? 0 : this.gridOffset.y);
 
     this.rulerBounds = { x: x + labelW, y, w: viewW, h: rulerH };
     this.gridBounds = {
@@ -6153,7 +6386,7 @@ export default class MidiComposer {
 
   drawGrid(ctx, track, pattern, loopTicks, options = {}) {
     const { originX, originY, cellWidth, cellHeight, rows } = this.gridBounds;
-    const isDrumGrid = isDrumChannel(track.channel);
+    const isDrumGrid = isDrumTrack(track);
     const chordMode = this.chordMode;
     const scalePitchClasses = this.getScalePitchClasses();
     const simplified = options.simplified;
@@ -6162,11 +6395,13 @@ export default class MidiComposer {
     for (let row = 0; row < rows; row += 1) {
       if (options.summary) {
         ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      } else if (isDrumGrid) {
+        ctx.fillStyle = row % 2 === 0 ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.03)';
       } else {
         const pitch = this.getPitchFromRow(row);
         const pitchClass = pitch % 12;
-        const isScaleTone = !isDrumGrid && scalePitchClasses.includes(pitchClass);
-        if (!isDrumGrid && !chordMode) {
+        const isScaleTone = scalePitchClasses.includes(pitchClass);
+        if (!chordMode) {
           ctx.fillStyle = isBlackKey(pitchClass)
             ? 'rgba(0,0,0,0.4)'
             : 'rgba(255,255,255,0.06)';
@@ -6177,6 +6412,20 @@ export default class MidiComposer {
         }
       }
       ctx.fillRect(originX, originY + row * cellHeight, cellWidth * loopTicks, cellHeight);
+    }
+
+    if (isDrumGrid && !simplified && !options.summary) {
+      const padInset = Math.max(1, Math.min(4, Math.round(Math.min(cellWidth, cellHeight) * 0.12)));
+      ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+      for (let row = 0; row < rows; row += 1) {
+        const yPos = originY + row * cellHeight + padInset;
+        const padH = Math.max(2, cellHeight - padInset * 2);
+        for (let tick = 0; tick < loopTicks; tick += 1) {
+          const xPos = originX + tick * cellWidth + padInset;
+          const padW = Math.max(2, cellWidth - padInset * 2);
+          ctx.strokeRect(xPos, yPos, padW, padH);
+        }
+      }
     }
 
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
@@ -6288,7 +6537,7 @@ export default class MidiComposer {
           ctx.strokeRect(rect.x + 1, rect.y + 1, rect.w - 2, rect.h - 2);
         }
       }
-      if (!simplified && this.selection.has(note.id)) {
+      if (!simplified && !isDrumGrid && this.selection.has(note.id)) {
         const handleHeight = rect.h;
         const handleWidth = this.getNoteHandleWidth(rect);
         const handleY = rect.y;
@@ -6384,18 +6633,23 @@ export default class MidiComposer {
   drawPastePreview(ctx, track) {
     if (!this.pastePreview || !this.gridBounds) return;
     const { originX, originY, cellWidth, cellHeight } = this.gridBounds;
+    const drumTrack = this.pastePreview.isDrum || isDrumTrack(track);
     const baseTick = this.pastePreview.tick;
     const basePitch = this.pastePreview.pitch;
+    const drumDuration = this.getDrumHitDurationTicks();
     ctx.save();
     ctx.globalAlpha = 0.5;
     this.pastePreview.notes.forEach((note) => {
       const startTick = baseTick + note.startTick;
-      const pitch = basePitch + note.pitch;
-      const row = this.getRowFromPitch(pitch);
+      const pitchValue = drumTrack
+        ? this.coercePitchForTrack(note.pitchAbsolute ?? note.pitch, track, GM_DRUM_ROWS)
+        : basePitch + note.pitch;
+      const durationTicks = drumTrack ? drumDuration : note.durationTicks;
+      const row = this.getRowFromPitch(pitchValue);
       if (row < 0) return;
       const noteX = originX + startTick * cellWidth;
       const noteY = originY + row * cellHeight + 1;
-      const noteW = Math.max(cellWidth * note.durationTicks, cellWidth);
+      const noteW = Math.max(cellWidth * durationTicks, cellWidth);
       const noteH = cellHeight - 2;
       ctx.fillStyle = track.color || '#4fb7ff';
       ctx.fillRect(noteX, noteY, noteW, noteH);
@@ -6404,7 +6658,8 @@ export default class MidiComposer {
     });
     ctx.restore();
 
-    const baseRow = this.getRowFromPitch(basePitch);
+    const anchorPitch = drumTrack ? this.coercePitchForTrack(basePitch, track, GM_DRUM_ROWS) : basePitch;
+    const baseRow = this.getRowFromPitch(anchorPitch);
     if (baseRow >= 0) {
       const buttonW = 110;
       const buttonH = 26;
@@ -6424,30 +6679,48 @@ export default class MidiComposer {
   drawLabelColumn(ctx, track) {
     if (!this.gridBounds || !track) return;
     const { labelX, labelW, originY, cellHeight, rows } = this.gridBounds;
-    const isDrumGrid = isDrumChannel(track.channel);
+    const drumGrid = isDrumTrack(track);
+    const drumRows = this.getDrumRows();
     this.noteLabelBounds = [];
     ctx.save();
     ctx.beginPath();
     ctx.rect(labelX, originY, labelW, rows * cellHeight);
     ctx.clip();
+    ctx.font = '12px Courier New';
     for (let row = 0; row < rows; row += 1) {
       const pitch = this.getPitchFromRow(row);
-      let label = isDrumGrid
-        ? this.getDrumRows()[row]?.label
+      let label = drumGrid
+        ? drumRows[row]?.label || 'Drum'
         : NOTE_LABELS[pitch % 12];
-      if (!isDrumGrid && pitch % 12 === 0) {
+      if (!drumGrid && pitch % 12 === 0) {
         label = `${label}${this.getOctaveLabel(pitch)}`;
       }
-      this.noteLabelBounds.push({
+      const bounds = {
         x: labelX,
         y: originY + row * cellHeight,
         w: labelW,
         h: cellHeight,
         pitch
-      });
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
-      ctx.font = '12px Courier New';
-      ctx.fillText(label, labelX + 8, originY + row * cellHeight + cellHeight * 0.75);
+      };
+      this.noteLabelBounds.push(bounds);
+      if (drumGrid) {
+        const inset = Math.max(4, Math.round(cellHeight * 0.12));
+        const padX = bounds.x + inset;
+        const padY = bounds.y + inset / 2;
+        const padW = Math.max(12, bounds.w - inset * 2);
+        const padH = Math.max(12, bounds.h - inset);
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.fillRect(padX, padY, padW, padH);
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+        ctx.strokeRect(padX, padY, padW, padH);
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.textAlign = 'center';
+        ctx.fillText(label, padX + padW / 2, padY + padH * 0.65);
+        ctx.textAlign = 'left';
+      } else {
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.fillText(label, labelX + 8, originY + row * cellHeight + cellHeight * 0.75);
+      }
     }
     ctx.restore();
   }
@@ -6517,7 +6790,8 @@ export default class MidiComposer {
   }
 
   drawNoteLengthMenu(ctx, width, height) {
-    if (!this.noteLengthMenu.open) {
+    if (!this.noteLengthMenu.open || isDrumTrack(this.getActiveTrack())) {
+      this.noteLengthMenu.open = false;
       this.bounds.noteLengthMenu = [];
       return;
     }

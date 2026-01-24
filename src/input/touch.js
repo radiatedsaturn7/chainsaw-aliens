@@ -5,13 +5,8 @@ const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 
 const DRUM_MAP = [
   { label: 'Kick', pitch: 36 },
   { label: 'Snare', pitch: 38 },
-  { label: 'Hat', pitch: 42 },
-  { label: 'Open', pitch: 46 },
-  { label: 'Low Tom', pitch: 45 },
-  { label: 'Mid Tom', pitch: 47 },
-  { label: 'High Tom', pitch: 50 },
-  { label: 'Crash', pitch: 49 },
-  { label: 'Ride', pitch: 51 }
+  { label: 'Hi-Hat', pitch: 42 },
+  { label: 'Cymbal', pitch: 49 }
 ];
 
 export default class TouchInput {
@@ -110,8 +105,8 @@ export default class TouchInput {
   }
 
   computeDrumLayout(bounds) {
-    const cols = 3;
-    const rows = 3;
+    const cols = 2;
+    const rows = 2;
     const padW = bounds.w / cols;
     const padH = bounds.h / rows;
     const padGap = 4;

@@ -1,4 +1,13 @@
-import { GM_DRUMS, GM_PROGRAMS, isDrumChannel } from '../audio/gm.js';
+import {
+  GM_DRUM_BANK_LSB,
+  GM_DRUM_BANK_MSB,
+  GM_DRUM_CHANNEL,
+  GM_DRUM_NOTE_MIN,
+  GM_DRUMS,
+  GM_PROGRAMS,
+  clampDrumPitch,
+  isDrumChannel
+} from '../audio/gm.js';
 import DrumKitManager from '../audio/DrumKitManager.js';
 import SoundfontEngine from '../audio/SoundfontEngine.js';
 
@@ -67,6 +76,8 @@ export default class AudioSystem {
       program: 0,
       drumKitId: null
     }));
+    this.channelState[GM_DRUM_CHANNEL].bankMSB = GM_DRUM_BANK_MSB;
+    this.channelState[GM_DRUM_CHANNEL].bankLSB = GM_DRUM_BANK_LSB;
     this.midiDebug = {
       lastDrumNote: null,
       lastChannel: null,
@@ -409,11 +420,19 @@ export default class AudioSystem {
     const clampedVolume = clamp(volume ?? 1, 0, 1);
     const clampedPan = clamp(pan ?? 0, -1, 1);
     const isDrums = isDrumChannel(channel);
-    const channelState = this.channelState[channel] || this.channelState[0];
+    const resolvedChannel = isDrums ? GM_DRUM_CHANNEL : clamp(channel ?? 0, 0, 15);
+    const channelState = this.channelState[resolvedChannel] || this.channelState[0];
+    let resolvedPitch = clamp(Math.round(pitch ?? GM_DRUM_NOTE_MIN), 0, 127);
+    let resolvedBankMSB = bankMSB;
+    let resolvedBankLSB = bankLSB;
     if (isDrums) {
-      const usesExplicitKit = [bankMSB, bankLSB, clampedProgram].some((value) => Number.isInteger(value) && value !== 0);
+      resolvedPitch = clampDrumPitch(resolvedPitch);
+      resolvedBankMSB = Number.isInteger(bankMSB) ? bankMSB : GM_DRUM_BANK_MSB;
+      resolvedBankLSB = Number.isInteger(bankLSB) ? bankLSB : GM_DRUM_BANK_LSB;
+      const usesExplicitKit = [resolvedBankMSB, resolvedBankLSB, clampedProgram]
+        .some((value) => Number.isInteger(value) && value !== GM_DRUM_BANK_LSB);
       const resolvedKit = usesExplicitKit
-        ? this.drumKitManager.resolveKitFromBankProgram(bankMSB, bankLSB, clampedProgram)
+        ? this.drumKitManager.resolveKitFromBankProgram(resolvedBankMSB, resolvedBankLSB, clampedProgram)
         : this.drumKitManager.getDrumKit();
       if (resolvedKit?.soundfont) {
         this.soundfont.setDrumKitName(resolvedKit.soundfont);
@@ -422,43 +441,49 @@ export default class AudioSystem {
         channelState.bankMSB = resolvedKit.bankMSB;
         channelState.bankLSB = resolvedKit.bankLSB;
         channelState.program = resolvedKit.program;
+        resolvedBankMSB = resolvedKit.bankMSB;
+        resolvedBankLSB = resolvedKit.bankLSB;
+      } else {
+        channelState.bankMSB = resolvedBankMSB;
+        channelState.bankLSB = resolvedBankLSB;
+        channelState.program = clampedProgram;
       }
-      const drumLabel = GM_DRUMS.find((entry) => entry.pitch === pitch)?.label || 'Unknown Drum';
-      this.midiDebug.lastDrumNote = { pitch, label: drumLabel };
+      const drumLabel = GM_DRUMS.find((entry) => entry.pitch === resolvedPitch)?.label || 'Unknown Drum';
+      this.midiDebug.lastDrumNote = { pitch: resolvedPitch, label: drumLabel };
       this.midiDebug.lastChannelType = 'percussion';
-      this.midiDebug.lastChannel = channel;
+      this.midiDebug.lastChannel = resolvedChannel;
     } else {
       channelState.bankMSB = Number.isInteger(bankMSB) ? bankMSB : channelState.bankMSB;
       channelState.bankLSB = Number.isInteger(bankLSB) ? bankLSB : channelState.bankLSB;
       channelState.program = clampedProgram;
       this.midiDebug.lastChannelType = 'melodic';
-      this.midiDebug.lastChannel = channel;
+      this.midiDebug.lastChannel = resolvedChannel;
     }
     const fallback = () => {
       this.gmError = 'SoundFont failed; using fallback synth.';
       if (isDrums) {
         this.playSampledNote({
-          pitch,
+          pitch: resolvedPitch,
           duration,
           volume: clampedVolume,
-          instrument: this.getFallbackDrum(pitch),
+          instrument: this.getFallbackDrum(resolvedPitch),
           when: this.ctx.currentTime + this.midiLatency,
           pan: clampedPan
         });
         return;
       }
       const fallbackInstrument = this.getFallbackInstrument(clampedProgram);
-      this.playMidiNote(pitch, fallbackInstrument, duration, clampedVolume, this.ctx.currentTime + this.midiLatency, clampedPan);
+      this.playMidiNote(resolvedPitch, fallbackInstrument, duration, clampedVolume, this.ctx.currentTime + this.midiLatency, clampedPan);
     };
     if (!this.gmEnabled) {
       fallback();
       return;
     }
     if (!isDrums) {
-      this.soundfont.setProgram(clampedProgram, channel);
+      this.soundfont.setProgram(clampedProgram, resolvedChannel);
     }
     const when = this.ctx.currentTime + this.midiLatency;
-    this.soundfont.noteOn(pitch, clampedVolume, when, duration, channel)
+    this.soundfont.noteOn(resolvedPitch, clampedVolume, when, duration, resolvedChannel)
       .then((voice) => {
         if (!voice) return;
         const stopTime = when + duration + 0.2;
