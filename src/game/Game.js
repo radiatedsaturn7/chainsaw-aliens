@@ -2458,7 +2458,7 @@ export default class Game {
     const vx = dirX * speed;
     const horizontalSpeed = Math.abs(vx);
     const travelTime = targetRange / Math.max(1, horizontalSpeed || speed);
-    const liftScale = Math.max(0.2, Math.min(1, Math.abs(dirX)));
+    const liftScale = Math.max(0.2, Math.min(0.55, Math.abs(dirX)));
     const vy = dirY * speed - 0.5 * gravity * travelTime * liftScale;
 
     const baseSpeed = Math.hypot(vx, vy) || 1;
