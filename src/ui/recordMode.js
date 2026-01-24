@@ -266,12 +266,13 @@ export default class RecordModeLayout {
       ]
       : [
         'Left Stick: set root note (silent)',
-        'D-Pad Left: Note Mode  Right: Chord Mode',
+        'D-Pad Right: toggle note/chord  Left (hold): sharps',
         'A: 1  A+LB:2  X:3  X+LB:4',
         'Y:5  Y+LB:6  B+LB:7  B:8',
-        'LB: passing tones  LT: sustain  RT: velocity',
-        'Right Stick: pitch bend',
-        'L3: scale root selector  R3: scale mode'
+        'RB+A: sus2  RB+X: sus4  RB+Y: dom7  RB+B: 9th',
+        'LB+RB: dim  LT: sustain  RT: velocity',
+        'Right Stick: pitch bend (± whole tone)',
+        'L3: scale selector  R3: root selector'
       ];
     lines.forEach((line, index) => {
       ctx.fillText(line, instrument.x + 24, instrument.y + 100 + index * 20);

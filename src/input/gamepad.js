@@ -1,5 +1,7 @@
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-const DEADZONE = 0.5;
+const LEFT_STICK_DEADZONE = 0.35;
+const STICK_NEUTRAL_DEADZONE = 0.08;
+const PITCH_BEND_RANGE_SEMITONES = 2;
 
 const DIRECTION_MAP = [
   { id: 1, angle: 270 },
@@ -44,6 +46,8 @@ export default class GamepadInput {
     this.lastPitchBend = 8192;
     this.lastSustainValue = 0;
     this.rightStick = { x: 0, y: 0 };
+    this.leftStick = { x: 0, y: 0 };
+    this.pitchBendSemitones = 0;
     this.activeButtons = new Map();
     this.buttonPressed = new Set();
     this.buttonReleased = new Set();
@@ -70,8 +74,16 @@ export default class GamepadInput {
     return this.buttonPressed.has(index);
   }
 
+  getLeftStick() {
+    return { ...this.leftStick };
+  }
+
   getRightStick() {
     return { ...this.rightStick };
+  }
+
+  getPitchBendSemitones() {
+    return this.pitchBendSemitones;
   }
 
   getPitchForScaleStep(stepIndex) {
@@ -82,10 +94,13 @@ export default class GamepadInput {
   }
 
   getChordPitches(rootDegree, options) {
-    const { minor, spice, variant } = options;
+    const {
+      variant = 'triad',
+      suspension = null
+    } = options || {};
     const rootStep = rootDegree - 1;
     const chordSteps = [rootStep, rootStep + 2, rootStep + 4];
-    if (variant === 'seventh') {
+    if (variant === 'seventh' || variant === 'dominant' || variant === 'ninth') {
       chordSteps.push(rootStep + 6);
     } else if (variant === 'open') {
       chordSteps[1] += 7;
@@ -93,23 +108,29 @@ export default class GamepadInput {
       chordSteps.length = 0;
       chordSteps.push(rootStep, rootStep + 4, rootStep + 7);
     }
-    const pitches = chordSteps.map((stepIndex, index) => {
+    if (variant === 'ninth') {
+      chordSteps.push(rootStep + 1 + this.scaleSteps.length);
+    }
+    if (suspension === 'sus2') {
+      chordSteps[1] = rootStep + 1;
+    } else if (suspension === 'sus4') {
+      chordSteps[1] = rootStep + 3;
+    }
+    const diminishedThird = rootStep + 2;
+    const diminishedFifth = rootStep + 4;
+    const dominantSeventh = rootStep + 6;
+    return chordSteps.map((stepIndex) => {
       let pitch = this.getPitchForScaleStep(stepIndex);
-      if (minor && index === 1 && variant !== 'power') {
+      if (variant === 'diminished') {
+        if (stepIndex === diminishedThird || stepIndex === diminishedFifth) {
+          pitch -= 1;
+        }
+      }
+      if ((variant === 'dominant' || variant === 'ninth') && stepIndex === dominantSeventh) {
         pitch -= 1;
       }
       return pitch;
     });
-    if (spice) {
-      if (this.spiceMode === 'sus2') {
-        pitches[1] = this.getPitchForScaleStep(rootStep + 1);
-      } else if (this.spiceMode === 'sus4') {
-        pitches[1] = this.getPitchForScaleStep(rootStep + 3);
-      } else {
-        pitches.push(this.getPitchForScaleStep(rootStep + 1) + 12);
-      }
-    }
-    return pitches;
   }
 
   update() {
@@ -140,11 +161,15 @@ export default class GamepadInput {
     const dpadLeft = currentButtons[14];
     const dpadRight = currentButtons[15];
     const lbPressed = currentButtons[4];
+    const rbPressed = currentButtons[5];
     const isDrum = this.instrument === 'drums';
 
+    this.leftStick = { x: axisLX, y: axisLY };
     this.rightStick = { x: axisRX, y: axisRY };
+    const bendNormalized = Math.abs(axisRY) < STICK_NEUTRAL_DEADZONE ? 0 : clamp(-axisRY, -1, 1);
+    this.pitchBendSemitones = bendNormalized * PITCH_BEND_RANGE_SEMITONES;
 
-    if (Math.hypot(axisLX, axisLY) > DEADZONE) {
+    if (Math.hypot(axisLX, axisLY) > LEFT_STICK_DEADZONE) {
       const direction = mapDirection(axisLX, axisLY);
       if (this.leftStickCandidate !== direction) {
         this.leftStickCandidate = direction;
@@ -158,11 +183,8 @@ export default class GamepadInput {
     }
 
     if (!isDrum) {
-      if (dpadLeft && !this.prevButtons[14]) {
-        this.noteMode = true;
-      }
       if (dpadRight && !this.prevButtons[15]) {
-        this.noteMode = false;
+        this.noteMode = !this.noteMode;
       }
       if (dpadUp && !this.prevButtons[12]) {
         this.octaveOffset = clamp(this.octaveOffset + 1, -2, 2);
@@ -226,6 +248,7 @@ export default class GamepadInput {
       });
     } else {
       const rootDegree = this.leftStickStableDirection;
+      const accidentalShift = dpadLeft ? 1 : 0;
       const degreeButtons = [
         { index: 0, base: 1, alt: 2 },
         { index: 2, base: 3, alt: 4 },
@@ -240,14 +263,36 @@ export default class GamepadInput {
           const degreeOffset = degree - 1;
           const targetDegree = rootDegree + degreeOffset;
           const velocity = clamp(Math.round((1 - rtValue) * 127), 1, 127);
-          const pitches = this.noteMode
-            ? [this.getPitchForScaleStep(targetDegree - 1)]
-            : this.getChordPitches(targetDegree, { minor: false, spice: false, variant: 'triad' });
+          let pitches = [];
+          if (this.noteMode) {
+            pitches = [this.getPitchForScaleStep(targetDegree - 1)];
+          } else {
+            let variant = 'triad';
+            let suspension = null;
+            if (rbPressed && lbPressed) {
+              variant = 'diminished';
+            } else if (rbPressed) {
+              if (button.index === 0) {
+                suspension = 'sus2';
+              } else if (button.index === 2) {
+                suspension = 'sus4';
+              } else if (button.index === 3) {
+                variant = 'dominant';
+              } else if (button.index === 1) {
+                variant = 'ninth';
+              }
+            }
+            pitches = this.getChordPitches(targetDegree, { variant, suspension });
+          }
+          if (accidentalShift) {
+            pitches = pitches.map((pitch) => pitch + accidentalShift);
+          }
           const noteIds = pitches.map((pitch, idx) => {
             const noteId = `pad-${button.index}-${pitch}-${now}-${idx}`;
             this.bus.emit('noteon', {
               id: noteId,
               pitch,
+              previewPitch: pitch + this.pitchBendSemitones,
               velocity,
               source: 'gamepad'
             });
@@ -264,7 +309,7 @@ export default class GamepadInput {
     }
 
     if (!this.selectorActive) {
-      const pitchBend = Math.round(((clamp(axisRX, -1, 1) + 1) / 2) * 16383);
+      const pitchBend = Math.round(((clamp(bendNormalized, -1, 1) + 1) / 2) * 16383);
       if (Math.abs(pitchBend - this.lastPitchBend) > 80) {
         this.bus.emit('pitchbend', { value: pitchBend, source: 'gamepad' });
         this.lastPitchBend = pitchBend;

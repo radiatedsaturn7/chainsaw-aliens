@@ -22,10 +22,12 @@ const NOTE_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#',
 const KEY_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const SCALE_LIBRARY = [
   { id: 'major', label: 'Major', steps: [0, 2, 4, 5, 7, 9, 11] },
-  { id: 'minor', label: 'Minor', steps: [0, 2, 3, 5, 7, 8, 10] },
   { id: 'dorian', label: 'Dorian', steps: [0, 2, 3, 5, 7, 9, 10] },
+  { id: 'phrygian', label: 'Phrygian', steps: [0, 1, 3, 5, 7, 8, 10] },
+  { id: 'lydian', label: 'Lydian', steps: [0, 2, 4, 6, 7, 9, 11] },
   { id: 'mixolydian', label: 'Mixolydian', steps: [0, 2, 4, 5, 7, 9, 10] },
-  { id: 'phrygian', label: 'Phrygian', steps: [0, 1, 3, 5, 7, 8, 10] }
+  { id: 'minor', label: 'Minor', steps: [0, 2, 3, 5, 7, 8, 10] },
+  { id: 'locrian', label: 'Locrian', steps: [0, 1, 3, 5, 6, 8, 10] }
 ];
 
 const radialIndexFromStick = (x, y, count) => {
@@ -553,7 +555,12 @@ export default class MidiComposer {
     this.recordDevicePreference = 'auto';
     this.recordInstrument = 'keyboard';
     this.recordStatus = { degree: 1, octave: 0, velocity: 96 };
-    this.recordSelector = { active: false, type: null, index: 0 };
+    this.recordSelector = {
+      active: false,
+      type: null,
+      index: 0,
+      stickEngaged: false
+    };
     this.inputBus = new InputEventBus();
     this.keyboardInput = new KeyboardInput(this.inputBus);
     this.gamepadInput = new GamepadInput(this.inputBus);
@@ -1853,7 +1860,8 @@ export default class MidiComposer {
       channel: drumTrack ? GM_DRUM_CHANNEL : track.channel,
       trackId: track.id
     });
-    this.playGmNote(pitch, 0.4, (clampedVelocity / 127) * track.volume, track, track.pan);
+    const previewPitch = Number.isFinite(event.previewPitch) ? event.previewPitch : pitch;
+    this.playGmNote(previewPitch, 0.4, (clampedVelocity / 127) * track.volume, track, track.pan);
   }
 
   handleRecordedNoteOff(event) {
@@ -1945,10 +1953,12 @@ export default class MidiComposer {
     if (this.recordSelector.active && this.recordSelector.type === type) {
       this.recordSelector.active = false;
       this.recordSelector.type = null;
+      this.recordSelector.stickEngaged = false;
       return;
     }
     this.recordSelector.active = true;
     this.recordSelector.type = type;
+    this.recordSelector.stickEngaged = false;
     if (type === 'key') {
       this.recordSelector.index = clamp(this.song.key || 0, 0, KEY_LABELS.length - 1);
     } else {
@@ -1961,27 +1971,50 @@ export default class MidiComposer {
     if (this.recordInstrument === 'drums') {
       this.recordSelector.active = false;
       this.recordSelector.type = null;
+      this.recordSelector.stickEngaged = false;
       return;
     }
     if (this.gamepadInput.wasButtonPressed(10)) {
-      this.toggleRecordSelector('key');
-    }
-    if (this.gamepadInput.wasButtonPressed(11)) {
       this.toggleRecordSelector('scale');
     }
-    if (!this.recordSelector.active || !this.recordSelector.type) return;
-    const { x, y } = this.gamepadInput.getRightStick();
-    if (Math.hypot(x, y) < 0.6) return;
-    const itemCount = this.recordSelector.type === 'key' ? KEY_LABELS.length : SCALE_LIBRARY.length;
-    const nextIndex = radialIndexFromStick(x, y, itemCount);
-    if (nextIndex === this.recordSelector.index) return;
-    this.recordSelector.index = nextIndex;
-    if (this.recordSelector.type === 'key') {
-      this.song.key = nextIndex;
-    } else {
-      this.song.scale = SCALE_LIBRARY[nextIndex]?.id || SCALE_LIBRARY[0].id;
+    if (this.gamepadInput.wasButtonPressed(11)) {
+      this.toggleRecordSelector('key');
     }
-    this.persist();
+    if (!this.recordSelector.active || !this.recordSelector.type) return;
+    if (this.recordSelector.type === 'scale') {
+      const { x, y } = this.gamepadInput.getLeftStick();
+      if (Math.hypot(x, y) < 0.6) return;
+      const itemCount = SCALE_LIBRARY.length;
+      const nextIndex = radialIndexFromStick(x, y, itemCount);
+      if (nextIndex !== this.recordSelector.index) {
+        this.recordSelector.index = nextIndex;
+        this.song.scale = SCALE_LIBRARY[nextIndex]?.id || SCALE_LIBRARY[0].id;
+        this.persist();
+      }
+      this.recordSelector.active = false;
+      this.recordSelector.type = null;
+      this.recordSelector.stickEngaged = false;
+      return;
+    }
+
+    const { x, y } = this.gamepadInput.getRightStick();
+    const magnitude = Math.hypot(x, y);
+    if (magnitude >= 0.6) {
+      this.recordSelector.stickEngaged = true;
+      const itemCount = KEY_LABELS.length;
+      const nextIndex = radialIndexFromStick(x, y, itemCount);
+      if (nextIndex !== this.recordSelector.index) {
+        this.recordSelector.index = nextIndex;
+        this.song.key = nextIndex;
+        this.persist();
+      }
+      return;
+    }
+    if (magnitude <= 0.3 && this.recordSelector.stickEngaged) {
+      this.recordSelector.active = false;
+      this.recordSelector.type = null;
+      this.recordSelector.stickEngaged = false;
+    }
   }
 
   updateCountInMetronome() {
