@@ -35,6 +35,41 @@ Then visit `http://localhost:8000/index.html`.
 - Debug Overlay (Playability Verification Layer): **F3**
 - Obstacle Test Room (debug): **B**
 
+## Pixel Studio (Pixel Art Editor)
+Open from the title screen **Tools** menu (`Pixel Editor`). The editor is an Aseprite-lite canvas with layers, palette presets, and frame animation.
+
+### Tools
+- Pencil, Eraser, Eyedropper
+- Line (Bresenham, optional perfect pixels)
+- Fill (contiguous or global, tolerance)
+- Rect/Ellipse/Lasso select
+- Move selection (nudge), Transform (flip/rotate/scale)
+- Clone stamp (Alt/long-press to set source)
+- Dither brush (Bayer 2x2, Bayer 4x4, Checker)
+- Color Replace (layer or selection scope)
+
+### Shortcuts
+- **B** Pencil · **E** Eraser · **G** Fill · **I** Eyedropper · **V** Move · **S** Select
+- **Ctrl/Cmd + C/X/V** copy/cut/paste selection
+- **[ / ]** brush size down/up
+- **+ / -** zoom in/out
+- **Space + drag** pan canvas
+- **Ctrl/Cmd + Z / Y** undo/redo
+
+### Gamepad Mapping (Xbox-style)
+- **Left Stick**: move cursor · **D-pad**: nudge 1px
+- **A**: draw · **B**: erase (hold)
+- **X**: eyedropper · **Y**: toggle selection/move
+- **LB/RB**: cycle palette colors
+- **LT/RT**: zoom out/in
+- **Start**: play/pause animation · **Back**: tiled preview / onion skin
+- **R3**: toggle UI focus mode (D-pad to navigate UI buttons)
+
+### Export
+- **PNG**: current frame
+- **Sprite Sheet PNG + JSON**: timeline strip with metadata (frame rects + durations)
+- **Palette**: export as JSON or HEX list, import via palette editor
+
 ## MIDI Pattern Sequencer
 Open the sequencer from the title screen **Tools** menu (`MIDI Editor`). The editor is built around a Track → Pattern → Notes model, with full General MIDI (GM) program support:
 - **Track**: channel (1–16), GM program (1–128), optional bank MSB/LSB, mute/solo, volume, and patterns.
