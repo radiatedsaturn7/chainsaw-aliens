@@ -6291,6 +6291,10 @@ export default class Game {
       this.editor.handleWheel(payload);
       return;
     }
+    if (this.state === 'pixel-editor') {
+      this.pixelStudio.handleWheel(payload);
+      return;
+    }
     if (this.state === 'midi-editor') {
       this.midiComposer.handleWheel(payload);
     }

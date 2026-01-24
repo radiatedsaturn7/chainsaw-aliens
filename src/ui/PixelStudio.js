@@ -1,39 +1,32 @@
-const DEFAULT_PALETTE = [
-  { id: 'clear', label: 'Clear', color: null },
-  { id: 'white', label: 'White', color: '#ffffff' },
-  { id: 'black', label: 'Black', color: '#101010' },
-  { id: 'gray', label: 'Gray', color: '#7b7b7b' },
-  { id: 'blue', label: 'Blue', color: '#4fb7ff' },
-  { id: 'red', label: 'Red', color: '#ff6a6a' },
-  { id: 'orange', label: 'Orange', color: '#ff9c42' },
-  { id: 'yellow', label: 'Yellow', color: '#ffd24a' },
-  { id: 'green', label: 'Green', color: '#55d68a' },
-  { id: 'purple', label: 'Purple', color: '#b48dff' },
-  { id: 'teal', label: 'Teal', color: '#43d5d0' },
-  { id: 'pink', label: 'Pink', color: '#ff8ad4' }
-];
+import {
+  buildPalette,
+  loadPalettePresets,
+  loadCustomPalettes,
+  saveCustomPalettes,
+  parsePaletteText,
+  paletteToHexList,
+  getNearestPaletteIndex,
+  getPaletteSwatchHex,
+  hexToRgba,
+  rgbaToUint32,
+  uint32ToRgba
+} from './pixel-editor/palette.js';
+import {
+  createLayer,
+  cloneLayer,
+  compositeLayers,
+  mergeDown,
+  flattenLayers,
+  reorderLayer
+} from './pixel-editor/layers.js';
+import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
+import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
+import UndoStack from './pixel-editor/undo.js';
+import { GAMEPAD_HINTS, updateGamepadCursor } from './pixel-editor/gamepad.js';
 
-const TOOL_LIST = [
-  { id: 'paint', label: 'Paint' },
-  { id: 'erase', label: 'Erase' },
-  { id: 'copy', label: 'Copy' },
-  { id: 'paste', label: 'Paste' },
-  { id: 'clone', label: 'Clone' },
-  { id: 'rectangle', label: 'Rectangle' },
-  { id: 'oval', label: 'Oval' },
-  { id: 'rounded-rect', label: 'Rounded Rectangle' },
-  { id: 'polygon', label: 'Polygon' },
-  { id: 'gradient', label: 'Gradient' },
-  { id: 'dropper', label: 'Color Dropper' },
-  { id: 'fill', label: 'Fill' },
-  { id: 'preview', label: 'Preview' },
-  { id: 'tiled', label: 'Tiled Mode' },
-  { id: 'zoom-in', label: 'Zoom In' },
-  { id: 'zoom-out', label: 'Zoom Out' },
-  { id: 'cut-image', label: 'Cut From Image' }
-];
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const lerp = (a, b, t) => a + (b - a) * t;
 
-const ZOOM_LEVELS = [8, 12, 16, 20, 24, 28, 32];
 const TILE_LIBRARY = [
   { id: 'solid', label: 'Solid Block', char: '#' },
   { id: 'hidden-path', label: 'Hidden Path Block', char: 'Z' },
@@ -79,145 +72,267 @@ const TILE_LIBRARY = [
   { id: 'objective', label: 'Objective', char: 'O' }
 ];
 
-const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-
-const hexToRgb = (hex) => {
-  if (!hex) return null;
-  const normalized = hex.replace('#', '');
-  const value = parseInt(normalized, 16);
-  return {
-    r: (value >> 16) & 255,
-    g: (value >> 8) & 255,
-    b: value & 255
-  };
+const bresenhamLine = (start, end) => {
+  const points = [];
+  let x0 = start.col;
+  let y0 = start.row;
+  const x1 = end.col;
+  const y1 = end.row;
+  const dx = Math.abs(x1 - x0);
+  const dy = -Math.abs(y1 - y0);
+  const sx = x0 < x1 ? 1 : -1;
+  const sy = y0 < y1 ? 1 : -1;
+  let err = dx + dy;
+  while (true) {
+    points.push({ col: x0, row: y0 });
+    if (x0 === x1 && y0 === y1) break;
+    const e2 = 2 * err;
+    if (e2 >= dy) {
+      err += dy;
+      x0 += sx;
+    }
+    if (e2 <= dx) {
+      err += dx;
+      y0 += sy;
+    }
+  }
+  return points;
 };
 
-const colorDistance = (a, b) => {
-  if (!a || !b) return Number.POSITIVE_INFINITY;
-  return Math.hypot(a.r - b.r, a.g - b.g, a.b - b.b);
+const generateEllipseMask = (width, height, bounds) => {
+  const mask = new Uint8Array(width * height);
+  const rx = bounds.w / 2;
+  const ry = bounds.h / 2;
+  const cx = bounds.x + rx;
+  const cy = bounds.y + ry;
+  for (let row = bounds.y; row < bounds.y + bounds.h; row += 1) {
+    for (let col = bounds.x; col < bounds.x + bounds.w; col += 1) {
+      const dx = (col + 0.5 - cx) / rx;
+      const dy = (row + 0.5 - cy) / ry;
+      if (dx * dx + dy * dy <= 1) {
+        mask[row * width + col] = 1;
+      }
+    }
+  }
+  return mask;
 };
 
-const rgbToHex = (rgb) => {
-  const toHex = (value) => value.toString(16).padStart(2, '0');
-  return `#${toHex(rgb.r)}${toHex(rgb.g)}${toHex(rgb.b)}`;
+const pointInPolygon = (point, polygon) => {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i, i += 1) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+    const intersect = ((yi > point.y) !== (yj > point.y))
+      && point.x < ((xj - xi) * (point.y - yi)) / (yj - yi + 1e-6) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
 };
 
-const lerp = (a, b, t) => a + (b - a) * t;
-const POINT_IN_POLYGON_EPSILON = 1e-6;
+const createPolygonMask = (width, height, points) => {
+  const mask = new Uint8Array(width * height);
+  if (points.length < 3) return mask;
+  const xs = points.map((p) => p.x);
+  const ys = points.map((p) => p.y);
+  const minX = clamp(Math.floor(Math.min(...xs)), 0, width - 1);
+  const maxX = clamp(Math.ceil(Math.max(...xs)), 0, width - 1);
+  const minY = clamp(Math.floor(Math.min(...ys)), 0, height - 1);
+  const maxY = clamp(Math.ceil(Math.max(...ys)), 0, height - 1);
+  for (let y = minY; y <= maxY; y += 1) {
+    for (let x = minX; x <= maxX; x += 1) {
+      if (pointInPolygon({ x: x + 0.5, y: y + 0.5 }, points)) {
+        mask[y * width + x] = 1;
+      }
+    }
+  }
+  return mask;
+};
+
+const createRectMask = (width, height, bounds) => {
+  const mask = new Uint8Array(width * height);
+  for (let row = bounds.y; row < bounds.y + bounds.h; row += 1) {
+    for (let col = bounds.x; col < bounds.x + bounds.w; col += 1) {
+      mask[row * width + col] = 1;
+    }
+  }
+  return mask;
+};
+
+const applySymmetryPoints = (points, width, height, symmetry) => {
+  const output = new Map();
+  points.forEach(({ row, col }) => {
+    const candidates = [{ row, col }];
+    if (symmetry.horizontal) {
+      candidates.push({ row, col: width - 1 - col });
+    }
+    if (symmetry.vertical) {
+      candidates.push({ row: height - 1 - row, col });
+    }
+    if (symmetry.horizontal && symmetry.vertical) {
+      candidates.push({ row: height - 1 - row, col: width - 1 - col });
+    }
+    candidates.forEach((point) => {
+      output.set(`${point.row},${point.col}`, point);
+    });
+  });
+  return Array.from(output.values());
+};
+
+const createDitherMask = (pattern, size) => {
+  if (pattern === 'checker') {
+    return [
+      [0, 1],
+      [1, 0]
+    ];
+  }
+  if (pattern === 'bayer4') {
+    return [
+      [0, 8, 2, 10],
+      [12, 4, 14, 6],
+      [3, 11, 1, 9],
+      [15, 7, 13, 5]
+    ];
+  }
+  return [
+    [0, 2],
+    [3, 1]
+  ];
+};
 
 export default class PixelStudio {
   constructor(game) {
     this.game = game;
-    this.tools = TOOL_LIST;
-    this.toolIndex = 0;
-    this.palette = DEFAULT_PALETTE;
-    this.paletteIndex = 1;
-    this.secondaryPaletteIndex = 2;
-    this.lastPaletteIndex = this.paletteIndex;
-    this.objectEntries = [];
-    this.objectIndex = 0;
-    this.objectScroll = 0;
     this.tileLibrary = TILE_LIBRARY;
-    this.tileIndex = 0;
-    this.tileScroll = 0;
-    this.tileBounds = [];
     this.activeTile = this.tileLibrary[0] || null;
-    this.focus = 'tools';
-    this.gridSize = 16;
-    this.zoomIndex = 2;
-    this.previewEnabled = true;
-    this.tiledMode = false;
-    this.pixels = Array(this.gridSize * this.gridSize).fill(null);
+    this.tileIndex = 0;
+    this.modeTab = 'draw';
+    this.tools = createToolRegistry(this);
+    this.activeToolId = TOOL_IDS.PENCIL;
+    this.toolOptions = {
+      brushSize: 1,
+      linePerfect: true,
+      fillContiguous: true,
+      fillTolerance: 0,
+      symmetry: { horizontal: false, vertical: false },
+      wrapDraw: false,
+      ditherPattern: 'bayer2',
+      ditherStrength: 2,
+      replaceScope: 'layer'
+    };
+    this.canvasState = {
+      width: 16,
+      height: 16,
+      layers: [createLayer(16, 16, 'Layer 1')],
+      activeLayerIndex: 0
+    };
+    this.palettePresets = [];
+    this.customPalettes = loadCustomPalettes();
+    this.currentPalette = buildPalette(['#000000', '#ffffff'], 'Temp');
+    this.paletteIndex = 0;
+    this.secondaryPaletteIndex = 1;
+    this.paletteRamps = [];
+    this.limitToPalette = false;
+    this.selection = {
+      active: false,
+      mask: null,
+      bounds: null,
+      mode: null,
+      start: null,
+      end: null,
+      lassoPoints: [],
+      floating: null,
+      offset: { x: 0, y: 0 }
+    };
     this.clipboard = null;
+    this.view = {
+      zoomLevels: [6, 8, 10, 12, 16, 20, 24, 28, 32],
+      zoomIndex: 4,
+      panX: 0,
+      panY: 0
+    };
+    this.tiledPreview = { enabled: false, tiles: 2 };
+    this.animation = {
+      frames: [createFrame(this.canvasState.layers, 120)],
+      currentFrameIndex: 0,
+      playing: false,
+      loop: true,
+      onion: { enabled: false, prev: 1, next: 1, opacity: 0.35 }
+    };
+    this.undoStack = new UndoStack(75);
+    this.pendingHistory = null;
+    this.strokeState = null;
+    this.linePreview = null;
     this.cloneSource = null;
     this.cloneOffset = null;
-    this.clonePainting = false;
-    this.painting = false;
-    this.shapeActive = false;
-    this.shapeStart = null;
-    this.shapeEnd = null;
-    this.shapeTool = null;
-    this.canvasBounds = null;
+    this.panStart = null;
+    this.longPressTimer = null;
+    this.cursor = { row: 0, col: 0, x: 0, y: 0 };
+    this.gamepadCursor = { x: 0, y: 0, active: false, initialized: false };
+    this.gamepadDrawing = false;
+    this.gamepadErase = false;
+    this.gamepadHintVisible = false;
+    this.uiFocusMode = false;
+    this.uiFocusIndex = 0;
+    this.uiButtons = [];
     this.paletteBounds = [];
-    this.toolBounds = [];
-    this.objectBounds = [];
-    this.toolScroll = 0;
-    this.toolVisibleCount = 0;
-    this.objectVisibleCount = 0;
-    this.axisCooldown = 0;
-    this.leftTriggerHeld = false;
-    this.rightTriggerHeld = false;
-    this.exitBounds = null;
-    this.cutBounds = null;
-    this.cutImageRect = null;
-    this.cutSelection = null;
-    this.cutDragging = false;
-    this.cutSelectionStart = null;
-    this.cutImage = null;
-    this.gesture = null;
-    this.cutCanvas = document.createElement('canvas');
-    this.cutCanvasCtx = this.cutCanvas.getContext('2d');
-    this.imageInput = document.createElement('input');
-    this.imageInput.type = 'file';
-    this.imageInput.accept = 'image/*';
-    this.imageInput.style.display = 'none';
-    document.body.appendChild(this.imageInput);
-    this.imageInput.addEventListener('change', (event) => {
+    this.layerBounds = [];
+    this.frameBounds = [];
+    this.statusMessage = '';
+    this.lastTime = 0;
+    this.spaceDown = false;
+    this.altDown = false;
+    this.offscreen = document.createElement('canvas');
+    this.offscreenCtx = this.offscreen.getContext('2d');
+    this.exportLink = document.createElement('a');
+    this.paletteFileInput = document.createElement('input');
+    this.paletteFileInput.type = 'file';
+    this.paletteFileInput.accept = '.json,.txt';
+    this.paletteFileInput.style.display = 'none';
+    document.body.appendChild(this.paletteFileInput);
+    this.paletteFileInput.addEventListener('change', (event) => {
       const file = event.target.files?.[0];
       if (!file) return;
-      const img = new Image();
-      img.onload = () => {
-        this.cutImage = img;
-        this.cutSelection = null;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const text = reader.result;
+        const colors = typeof text === 'string' ? parsePaletteText(text) : [];
+        if (colors.length) {
+          const palette = buildPalette(colors, `Imported ${Date.now()}`);
+          this.customPalettes.push(palette);
+          saveCustomPalettes(this.customPalettes);
+          this.currentPalette = palette;
+          this.paletteIndex = 0;
+        }
       };
-      img.src = URL.createObjectURL(file);
+      reader.readAsText(file);
     });
-    if (this.activeTile) {
-      this.setActiveTile(this.activeTile);
-    }
-    this.getObjectEntries();
+    this.initializePalettes();
+    this.loadTileData();
+    window.addEventListener('keydown', (event) => this.handleKeyDown(event));
+    window.addEventListener('keyup', (event) => this.handleKeyUp(event));
   }
 
-  resetFocus() {
-    this.focus = 'tools';
+  async initializePalettes() {
+    this.palettePresets = await loadPalettePresets();
+    this.currentPalette = this.palettePresets[0] || this.currentPalette;
   }
 
-  getObjectEntries() {
-    const entries = [];
-    const pushEntry = (label, indent, selectable = false, tile = null) => {
-      entries.push({ label, indent, selectable, tile });
-    };
-
-    pushEntry('Tiles', 0, false);
-    this.tileLibrary.forEach((tile) => {
-      pushEntry(tile.label, 1, true, tile);
-    });
-    pushEntry('Entities', 0, false);
-    pushEntry('Player', 1, false);
-    pushEntry('Idle', 2, false);
-    pushEntry('Running', 2, false);
-    pushEntry('Enemy', 1, false);
-    pushEntry('Idle', 2, false);
-    pushEntry('Moving', 2, false);
-    pushEntry('Attacking', 2, false);
-
-    this.objectEntries = entries;
-    return entries;
+  get activeLayer() {
+    return this.canvasState.layers[this.canvasState.activeLayerIndex];
   }
 
-  getSelectableObjectEntries() {
-    return this.objectEntries.filter((entry) => entry.selectable);
+  get currentFrame() {
+    return this.animation.frames[this.animation.currentFrameIndex];
   }
 
-  getSelectedObjectEntry() {
-    const selectable = this.getSelectableObjectEntries();
-    return selectable[this.objectIndex] || null;
+  setFrameLayers(layers) {
+    this.canvasState.layers = layers;
+    this.currentFrame.layers = layers;
   }
 
-  getTilePixels(tileChar) {
-    if (!tileChar) {
-      return { pixelData: null, frame: this.pixels };
-    }
+  loadTileData() {
     if (!this.game?.world?.pixelArt) {
       this.game.world.pixelArt = { tiles: {} };
     }
@@ -225,537 +340,1269 @@ export default class PixelStudio {
       this.game.world.pixelArt.tiles = {};
     }
     const tiles = this.game.world.pixelArt.tiles;
+    const tileChar = this.activeTile?.char;
+    if (!tileChar) return;
     if (!tiles[tileChar]) {
-      tiles[tileChar] = { size: this.gridSize, frames: [Array(this.gridSize * this.gridSize).fill(null)], fps: 6 };
+      tiles[tileChar] = { size: 16, frames: [Array(16 * 16).fill(null)], fps: 6 };
     }
     const pixelData = tiles[tileChar];
-    if (!Array.isArray(pixelData.frames) || pixelData.frames.length === 0) {
-      pixelData.frames = [Array(pixelData.size * pixelData.size).fill(null)];
+    if (!pixelData.editor) {
+      const size = pixelData.size || 16;
+      const baseLayer = createLayer(size, size, 'Layer 1');
+      const frame = pixelData.frames?.[0] || Array(size * size).fill(null);
+      frame.forEach((color, index) => {
+        if (!color) return;
+        const rgba = hexToRgba(color);
+        baseLayer.pixels[index] = rgbaToUint32(rgba);
+      });
+      pixelData.editor = {
+        width: size,
+        height: size,
+        frames: [createFrame([baseLayer], 120)],
+        activeLayerIndex: 0
+      };
     }
-    if (pixelData.size !== this.gridSize) {
-      pixelData.size = this.gridSize;
-      pixelData.frames = [Array(this.gridSize * this.gridSize).fill(null)];
-    }
-    return { pixelData, frame: pixelData.frames[0] };
+    this.canvasState.width = pixelData.editor.width;
+    this.canvasState.height = pixelData.editor.height;
+    this.animation.frames = pixelData.editor.frames;
+    this.animation.currentFrameIndex = 0;
+    this.canvasState.activeLayerIndex = pixelData.editor.activeLayerIndex || 0;
+    this.setFrameLayers(this.animation.frames[0].layers);
+  }
+
+  syncTileData() {
+    const tileChar = this.activeTile?.char;
+    if (!tileChar || !this.game?.world?.pixelArt?.tiles) return;
+    const tiles = this.game.world.pixelArt.tiles;
+    if (!tiles[tileChar]) return;
+    const pixelData = tiles[tileChar];
+    pixelData.editor = {
+      width: this.canvasState.width,
+      height: this.canvasState.height,
+      frames: this.animation.frames,
+      activeLayerIndex: this.canvasState.activeLayerIndex
+    };
+    pixelData.size = this.canvasState.width;
+    pixelData.frames = this.animation.frames.map((frame) => {
+      const composite = compositeLayers(frame.layers, this.canvasState.width, this.canvasState.height);
+      return Array.from(composite).map((value) => {
+        if (!value) return null;
+        const rgba = uint32ToRgba(value);
+        const hex = `#${[rgba.r, rgba.g, rgba.b].map((c) => c.toString(16).padStart(2, '0')).join('')}`;
+        return rgba.a === 0 ? null : hex;
+      });
+    });
+    pixelData.fps = Math.round(1000 / (this.animation.frames[0]?.durationMs || 120));
   }
 
   setActiveTile(tile) {
     this.activeTile = tile;
-    if (!tile?.char) {
-      this.pixels = Array(this.gridSize * this.gridSize).fill(null);
+    const index = this.tileLibrary.findIndex((entry) => entry.id === tile?.id);
+    if (index >= 0) this.tileIndex = index;
+    this.loadTileData();
+  }
+
+  resetFocus() {
+    this.uiFocusMode = false;
+  }
+
+  handleKeyDown(event) {
+    if (event.repeat) return;
+    const key = event.key.toLowerCase();
+    if (event.key === ' ') this.spaceDown = true;
+    if (event.key === 'Alt') this.altDown = true;
+    if ((event.ctrlKey || event.metaKey) && key === 'z') {
+      this.undo();
+      event.preventDefault();
       return;
     }
-    const { frame } = this.getTilePixels(tile.char);
-    this.pixels = frame;
+    if ((event.ctrlKey || event.metaKey) && (key === 'y' || (event.shiftKey && key === 'z'))) {
+      this.redo();
+      event.preventDefault();
+      return;
+    }
+    if ((event.ctrlKey || event.metaKey) && key === 'c') {
+      this.copySelection();
+      event.preventDefault();
+      return;
+    }
+    if ((event.ctrlKey || event.metaKey) && key === 'x') {
+      this.cutSelection();
+      event.preventDefault();
+      return;
+    }
+    if ((event.ctrlKey || event.metaKey) && key === 'v') {
+      this.pasteClipboard();
+      event.preventDefault();
+      return;
+    }
+    if (key === 'b') this.activeToolId = TOOL_IDS.PENCIL;
+    if (key === 'e') this.activeToolId = TOOL_IDS.ERASER;
+    if (key === 'g') this.activeToolId = TOOL_IDS.FILL;
+    if (key === 'i') this.activeToolId = TOOL_IDS.EYEDROPPER;
+    if (key === 'v') this.activeToolId = TOOL_IDS.MOVE;
+    if (key === 's') this.activeToolId = TOOL_IDS.SELECT_RECT;
+    if (key === '[') this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8);
+    if (key === ']') this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8);
+    if (key === '+' || key === '=') this.zoomBy(1);
+    if (key === '-') this.zoomBy(-1);
+    const tool = this.tools.find((entry) => entry.id === this.activeToolId);
+    tool?.onKeyDown?.(event);
+  }
+
+  handleKeyUp(event) {
+    if (event.key === ' ') this.spaceDown = false;
+    if (event.key === 'Alt') this.altDown = false;
   }
 
   update(input, dt = 0) {
-    const left = input.wasPressed('left');
-    const right = input.wasPressed('right');
-    const up = input.wasPressed('up');
-    const down = input.wasPressed('down');
-    const dpadLeft = input.wasGamepadPressed('dpadLeft');
-    const dpadRight = input.wasGamepadPressed('dpadRight');
-    const dpadUp = input.wasGamepadPressed('dpadUp');
-    const dpadDown = input.wasGamepadPressed('dpadDown');
-    const interact = input.wasPressed('interact');
-    const axes = input.getGamepadAxes?.() || {};
-    const axisX = axes.leftX || 0;
-    const leftTrigger = axes.leftTrigger || 0;
-    const rightTrigger = axes.rightTrigger || 0;
+    this.lastTime += dt;
+    this.updateAnimation(dt);
+    this.handleGamepad(input, dt);
+    this.updateCursorPosition();
+  }
 
-    this.axisCooldown = Math.max(0, this.axisCooldown - dt);
-    if (Math.abs(axisX) > 0.55 && this.axisCooldown === 0) {
-      this.focus = 'palette';
-      this.paletteIndex = (this.paletteIndex + (axisX > 0 ? 1 : -1) + this.palette.length) % this.palette.length;
-      this.axisCooldown = 0.18;
-    }
-
-    if (leftTrigger > 0.6 && !this.leftTriggerHeld) {
-      this.zoomIndex = clamp(this.zoomIndex - 1, 0, ZOOM_LEVELS.length - 1);
-      this.leftTriggerHeld = true;
-    }
-    if (leftTrigger < 0.4) {
-      this.leftTriggerHeld = false;
-    }
-    if (rightTrigger > 0.6 && !this.rightTriggerHeld) {
-      this.zoomIndex = clamp(this.zoomIndex + 1, 0, ZOOM_LEVELS.length - 1);
-      this.rightTriggerHeld = true;
-    }
-    if (rightTrigger < 0.4) {
-      this.rightTriggerHeld = false;
-    }
-
-    if (this.focus === 'tools') {
-      if (up || dpadUp) this.toolIndex = (this.toolIndex - 1 + this.tools.length) % this.tools.length;
-      if (down || dpadDown) this.toolIndex = (this.toolIndex + 1) % this.tools.length;
-      if (left || dpadLeft) this.focus = 'objects';
-      if (right || dpadRight) this.focus = 'canvas';
-      if ((down || dpadDown) && this.toolIndex === this.tools.length - 1) {
-        this.focus = 'palette';
-      }
-    } else if (this.focus === 'objects') {
-      this.getObjectEntries();
-      const selectable = this.getSelectableObjectEntries();
-      if (selectable.length) {
-        if (up || dpadUp) this.objectIndex = (this.objectIndex - 1 + selectable.length) % selectable.length;
-        if (down || dpadDown) this.objectIndex = (this.objectIndex + 1) % selectable.length;
-      }
-      if (right || dpadRight) this.focus = 'tools';
-      if (interact) {
-        const selected = this.getSelectedObjectEntry();
-        if (selected?.tile) {
-          const tileIndex = this.tileLibrary.findIndex((tile) => tile.id === selected.tile.id);
-          if (tileIndex >= 0) {
-            this.tileIndex = tileIndex;
-          }
-          this.setActiveTile(selected.tile);
+  updateAnimation(dt) {
+    if (!this.animation.playing) return;
+    const frame = this.currentFrame;
+    frame.elapsed = (frame.elapsed || 0) + dt;
+    if (frame.elapsed >= frame.durationMs) {
+      frame.elapsed = 0;
+      const nextIndex = this.animation.currentFrameIndex + 1;
+      if (nextIndex >= this.animation.frames.length) {
+        if (this.animation.loop) {
+          this.animation.currentFrameIndex = 0;
+        } else {
+          this.animation.playing = false;
         }
+      } else {
+        this.animation.currentFrameIndex = nextIndex;
       }
-    } else if (this.focus === 'palette') {
-      if (left) this.paletteIndex = (this.paletteIndex - 1 + this.palette.length) % this.palette.length;
-      if (right) this.paletteIndex = (this.paletteIndex + 1) % this.palette.length;
-      if (up) this.focus = 'tools';
-    } else if (this.focus === 'canvas') {
-      if (left) this.focus = 'tools';
-      if (down) this.focus = 'palette';
-      if (up && this.cutImage) this.focus = 'cut';
-    } else if (this.focus === 'cut') {
-      if (down) this.focus = 'canvas';
-      if (left) this.focus = 'tools';
+      this.setFrameLayers(this.currentFrame.layers);
+    }
+  }
+
+  handleGamepad(input, dt) {
+    const axes = input.getGamepadAxes?.() || { leftX: 0, leftY: 0, leftTrigger: 0, rightTrigger: 0 };
+    const connected = input.isGamepadConnected?.() || false;
+    if (connected && !this.gamepadHintVisible) {
+      console.info('[PixelStudio] Gamepad detected.');
+      this.gamepadHintVisible = true;
+    }
+    if (!connected) {
+      this.gamepadCursor.active = false;
+      return;
     }
 
-    if (this.paletteIndex !== this.lastPaletteIndex) {
-      this.secondaryPaletteIndex = this.lastPaletteIndex;
-      this.lastPaletteIndex = this.paletteIndex;
+    if (this.canvasBounds && !this.gamepadCursor.initialized) {
+      this.gamepadCursor.x = this.canvasBounds.x + this.canvasBounds.w / 2;
+      this.gamepadCursor.y = this.canvasBounds.y + this.canvasBounds.h / 2;
+      this.gamepadCursor.initialized = true;
+    }
+    this.gamepadCursor = updateGamepadCursor(this.gamepadCursor, axes, dt, 320);
+    this.gamepadCursor.active = true;
+    if (this.canvasBounds) {
+      this.gamepadCursor.x = clamp(this.gamepadCursor.x, this.canvasBounds.x, this.canvasBounds.x + this.canvasBounds.w);
+      this.gamepadCursor.y = clamp(this.gamepadCursor.y, this.canvasBounds.y, this.canvasBounds.y + this.canvasBounds.h);
     }
 
-    if (interact) {
-      const tool = this.tools[this.toolIndex];
-      if (!tool) return;
-      if (tool.id === 'preview') {
-        this.startPreview();
+    const actions = input.getGamepadActions?.() || {};
+    const aDown = actions.jump;
+    const bDown = actions.dash;
+    const xPressed = input.wasGamepadPressed?.('rev');
+    const yPressed = input.wasGamepadPressed?.('throw');
+    const lbPressed = input.wasGamepadPressed?.('aimUp');
+    const rbPressed = input.wasGamepadPressed?.('aimDown');
+    const startPressed = input.wasGamepadPressed?.('pause');
+    const backPressed = input.wasGamepadPressed?.('cancel');
+    const r3Pressed = input.wasGamepadPressed?.('flame');
+    const dpadLeft = input.wasGamepadPressed?.('dpadLeft');
+    const dpadRight = input.wasGamepadPressed?.('dpadRight');
+    const dpadUp = input.wasGamepadPressed?.('dpadUp');
+    const dpadDown = input.wasGamepadPressed?.('dpadDown');
+
+    if (lbPressed) this.cyclePalette(-1);
+    if (rbPressed) this.cyclePalette(1);
+    if (axes.leftTrigger > 0.6) this.zoomBy(-1);
+    if (axes.rightTrigger > 0.6) this.zoomBy(1);
+    if (xPressed) this.activeToolId = TOOL_IDS.EYEDROPPER;
+    if (yPressed) this.activeToolId = this.selection.active ? TOOL_IDS.MOVE : TOOL_IDS.SELECT_RECT;
+    if (startPressed) this.animation.playing = !this.animation.playing;
+    if (backPressed) {
+      if (this.modeTab === 'animate') {
+        this.animation.onion.enabled = !this.animation.onion.enabled;
+      } else {
+        this.tiledPreview.enabled = !this.tiledPreview.enabled;
       }
-      if (tool.id === 'zoom-in') {
-        this.zoomIndex = clamp(this.zoomIndex + 1, 0, ZOOM_LEVELS.length - 1);
+    }
+    if (r3Pressed) this.uiFocusMode = !this.uiFocusMode;
+
+    if (this.uiFocusMode && (dpadLeft || dpadRight || dpadUp || dpadDown)) {
+      const direction = dpadLeft || dpadUp ? -1 : 1;
+      if (this.uiButtons.length) {
+        this.uiFocusIndex = (this.uiFocusIndex + direction + this.uiButtons.length) % this.uiButtons.length;
       }
-      if (tool.id === 'zoom-out') {
-        this.zoomIndex = clamp(this.zoomIndex - 1, 0, ZOOM_LEVELS.length - 1);
+    }
+
+    if (this.uiFocusMode && aDown && this.uiButtons[this.uiFocusIndex]) {
+      this.uiButtons[this.uiFocusIndex].onClick?.();
+      return;
+    }
+
+    if (dpadLeft || dpadRight || dpadUp || dpadDown) {
+      const tool = this.tools.find((entry) => entry.id === this.activeToolId);
+      if (tool?.onGamepad) {
+        if (dpadLeft) tool.onGamepad('dpadLeft');
+        if (dpadRight) tool.onGamepad('dpadRight');
+        if (dpadUp) tool.onGamepad('dpadUp');
+        if (dpadDown) tool.onGamepad('dpadDown');
       }
-      if (tool.id === 'copy') {
-        this.clipboard = [...this.pixels];
+    }
+
+    if (aDown && !this.gamepadDrawing) {
+      this.gamepadDrawing = true;
+      const point = this.getGridCellFromScreen(this.gamepadCursor.x, this.gamepadCursor.y);
+      if (point) this.handleToolPointerDown(point, { fromGamepad: true });
+    }
+    if (!aDown && this.gamepadDrawing) {
+      this.gamepadDrawing = false;
+      this.handleToolPointerUp();
+    }
+    if (this.gamepadDrawing) {
+      const point = this.getGridCellFromScreen(this.gamepadCursor.x, this.gamepadCursor.y);
+      if (point) this.handleToolPointerMove(point);
+    }
+
+    if (bDown) {
+      if (!this.gamepadErase) {
+        this.gamepadErase = true;
+        this.activeToolId = TOOL_IDS.ERASER;
       }
-      if (tool.id === 'paste' && this.clipboard) {
-        this.pixels = [...this.clipboard];
+    } else if (this.gamepadErase) {
+      this.gamepadErase = false;
+      this.activeToolId = TOOL_IDS.PENCIL;
+    }
+  }
+
+  zoomBy(delta) {
+    this.view.zoomIndex = clamp(this.view.zoomIndex + delta, 0, this.view.zoomLevels.length - 1);
+  }
+
+  updateCursorPosition() {
+    if (!this.canvasBounds) return;
+    const sourceX = this.gamepadCursor.active ? this.gamepadCursor.x : this.cursor.x;
+    const sourceY = this.gamepadCursor.active ? this.gamepadCursor.y : this.cursor.y;
+    const cell = this.getGridCellFromScreen(sourceX, sourceY);
+    if (cell) {
+      this.cursor.row = cell.row;
+      this.cursor.col = cell.col;
+    }
+  }
+
+  handlePointerDown(payload) {
+    this.cursor.x = payload.x;
+    this.cursor.y = payload.y;
+    const button = payload.button ?? 0;
+    if (this.handleButtonClick(payload.x, payload.y)) return;
+    if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
+      if (this.spaceDown || button === 1) {
+        this.panStart = { x: payload.x, y: payload.y, panX: this.view.panX, panY: this.view.panY };
+        return;
       }
-      if (tool.id === 'clone') {
-        this.cloneSource = null;
-        this.cloneOffset = null;
-        this.clonePainting = false;
+      const point = this.getGridCellFromScreen(payload.x, payload.y);
+      if (point) {
+        this.handleToolPointerDown(point, { altKey: this.altDown, fromTouch: payload.touchCount });
       }
-      if (tool.id === 'fill') {
-        this.applyFillAll();
-      }
-      if (tool.id === 'cut-image') {
-        if (!this.cutImage) {
-          this.imageInput.click();
-        } else if (this.cutSelection) {
-          this.applyCutSelection();
-        }
-      }
-      if (tool.id === 'tiled') {
-        this.tiledMode = !this.tiledMode;
+      if (payload.touchCount) {
+        this.startLongPress(payload);
       }
     }
   }
 
-  startPreview() {
-    if (!this.activeTile?.char) return;
-    if (this.game?.enterPixelPreview) {
-      this.game.enterPixelPreview(this.activeTile);
+  handlePointerMove(payload) {
+    this.cursor.x = payload.x;
+    this.cursor.y = payload.y;
+    if (this.panStart && payload.buttons) {
+      this.view.panX = this.panStart.panX + (payload.x - this.panStart.x);
+      this.view.panY = this.panStart.panY + (payload.y - this.panStart.y);
+      return;
     }
+    const point = this.getGridCellFromScreen(payload.x, payload.y);
+    if (point) {
+      this.handleToolPointerMove(point);
+    }
+  }
+
+  handlePointerUp() {
+    if (this.panStart) {
+      this.panStart = null;
+    }
+    this.cancelLongPress();
+    this.handleToolPointerUp();
+  }
+
+  handleWheel(payload) {
+    const direction = payload.deltaY > 0 ? -1 : 1;
+    this.zoomBy(direction);
   }
 
   handleGestureStart(payload) {
-    if (!this.canvasBounds || !this.isPointInBounds(payload.x, payload.y, this.canvasBounds)) return;
-    this.gesture = {
-      startDistance: payload.distance,
-      startZoom: ZOOM_LEVELS[this.zoomIndex]
-    };
+    if (!this.canvasBounds) return;
+    if (!payload?.distance) return;
+    this.gesture = { startDistance: payload.distance, startZoomIndex: this.view.zoomIndex };
   }
 
   handleGestureMove(payload) {
     if (!this.gesture?.startDistance) return;
     const scale = payload.distance / this.gesture.startDistance;
-    const minZoom = ZOOM_LEVELS[0];
-    const maxZoom = ZOOM_LEVELS[ZOOM_LEVELS.length - 1];
-    const targetZoom = clamp(this.gesture.startZoom * scale, minZoom, maxZoom);
+    const levels = this.view.zoomLevels;
+    const target = levels[this.gesture.startZoomIndex] * scale;
     let closestIndex = 0;
-    let closestDelta = Infinity;
-    ZOOM_LEVELS.forEach((level, index) => {
-      const delta = Math.abs(level - targetZoom);
-      if (delta < closestDelta) {
-        closestDelta = delta;
+    let closest = Infinity;
+    levels.forEach((value, index) => {
+      const delta = Math.abs(value - target);
+      if (delta < closest) {
+        closest = delta;
         closestIndex = index;
       }
     });
-    this.zoomIndex = closestIndex;
+    this.view.zoomIndex = closestIndex;
   }
 
   handleGestureEnd() {
     this.gesture = null;
   }
 
-  handlePointerDown(payload) {
-    const { x, y } = payload;
-    if (this.exitBounds && this.isPointInBounds(x, y, this.exitBounds)) {
-      this.game.exitPixelStudio({ toTitle: true });
-      return;
-    }
-    if (this.canvasBounds && this.isPointInBounds(x, y, this.canvasBounds)) {
-      const tool = this.tools[this.toolIndex];
-      if (tool?.id === 'fill') {
-        const cell = this.getGridCellFromPoint(x, y);
-        if (cell) {
-          this.applyFillAt(cell.row, cell.col);
-        }
-      } else if (['rectangle', 'oval', 'rounded-rect', 'polygon', 'gradient'].includes(tool?.id)) {
-        const cell = this.getGridCellFromPoint(x, y);
-        if (cell) {
-          this.shapeActive = true;
-          this.shapeStart = cell;
-          this.shapeEnd = cell;
-          this.shapeTool = tool.id;
-        }
-      } else if (tool?.id === 'clone') {
-        const cell = this.getGridCellFromPoint(x, y);
-        if (!cell) return;
-        if (!this.cloneSource) {
-          this.cloneSource = cell;
-        } else {
-          this.cloneOffset = { row: this.cloneSource.row - cell.row, col: this.cloneSource.col - cell.col };
-          this.clonePainting = true;
-          this.paintAt(x, y);
-        }
-      } else {
-        this.painting = true;
-        this.paintAt(x, y);
+  startLongPress(payload) {
+    this.cancelLongPress();
+    this.longPressTimer = setTimeout(() => {
+      const point = this.getGridCellFromScreen(payload.x, payload.y);
+      if (point) {
+        this.pickColor(point);
       }
-      this.focus = 'canvas';
-      return;
-    }
-    const paletteHit = this.paletteBounds.find((bounds) => this.isPointInBounds(x, y, bounds));
-    if (paletteHit) {
-      this.paletteIndex = paletteHit.index;
-      this.focus = 'palette';
-      return;
-    }
-    const toolHit = this.toolBounds.find((bounds) => this.isPointInBounds(x, y, bounds));
-    if (toolHit) {
-      this.toolIndex = toolHit.index;
-      this.focus = 'tools';
-      const tool = this.tools[this.toolIndex];
-      if (tool?.id === 'clone') {
-        this.cloneSource = null;
-        this.cloneOffset = null;
-        this.clonePainting = false;
-      }
-      return;
-    }
-    const objectHit = this.objectBounds.find((bounds) => this.isPointInBounds(x, y, bounds));
-    if (objectHit) {
-      this.objectIndex = objectHit.index;
-      this.focus = 'objects';
-      const selected = this.getSelectedObjectEntry();
-      if (selected?.tile) {
-        const tileIndex = this.tileLibrary.findIndex((tile) => tile.id === selected.tile.id);
-        if (tileIndex >= 0) {
-          this.tileIndex = tileIndex;
-        }
-        this.setActiveTile(selected.tile);
-      }
-      return;
-    }
-    if (this.cutImageRect && this.isPointInBounds(x, y, this.cutImageRect)) {
-      this.cutDragging = true;
-      this.cutSelectionStart = { x, y };
-      this.cutSelection = { x, y, w: 1, h: 1 };
-      this.focus = 'cut';
+    }, 450);
+  }
+
+  cancelLongPress() {
+    if (this.longPressTimer) {
+      clearTimeout(this.longPressTimer);
+      this.longPressTimer = null;
     }
   }
 
-  handlePointerMove(payload) {
-    if (this.painting || this.clonePainting) {
-      this.paintAt(payload.x, payload.y);
+  handleToolPointerDown(point, modifiers = {}) {
+    const tool = this.tools.find((entry) => entry.id === this.activeToolId);
+    if (tool?.onPointerDown) {
+      tool.onPointerDown(point, modifiers);
     }
-    if (this.shapeActive && this.canvasBounds) {
-      const cell = this.getGridCellFromPoint(payload.x, payload.y);
-      if (cell) {
-        this.shapeEnd = cell;
+  }
+
+  handleToolPointerMove(point) {
+    const tool = this.tools.find((entry) => entry.id === this.activeToolId);
+    if (tool?.onPointerMove) {
+      tool.onPointerMove(point);
+    }
+  }
+
+  handleToolPointerUp() {
+    const tool = this.tools.find((entry) => entry.id === this.activeToolId);
+    if (tool?.onPointerUp) {
+      tool.onPointerUp();
+    }
+  }
+
+  handleMoveKey(event) {
+    if (!this.selection.active) return;
+    const delta = { x: 0, y: 0 };
+    if (event.key === 'ArrowLeft') delta.x = -1;
+    if (event.key === 'ArrowRight') delta.x = 1;
+    if (event.key === 'ArrowUp') delta.y = -1;
+    if (event.key === 'ArrowDown') delta.y = 1;
+    if (delta.x || delta.y) {
+      this.nudgeSelection(delta.x, delta.y);
+    }
+  }
+
+  handleMoveGamepad(action) {
+    if (!this.selection.active) return;
+    if (action === 'dpadLeft') this.nudgeSelection(-1, 0);
+    if (action === 'dpadRight') this.nudgeSelection(1, 0);
+    if (action === 'dpadUp') this.nudgeSelection(0, -1);
+    if (action === 'dpadDown') this.nudgeSelection(0, 1);
+  }
+
+  startHistory(label) {
+    this.pendingHistory = {
+      label,
+      frameIndex: this.animation.currentFrameIndex,
+      layersBefore: this.canvasState.layers.map((layer) => new Uint32Array(layer.pixels))
+    };
+  }
+
+  commitHistory() {
+    if (!this.pendingHistory) return;
+    const layersAfter = this.canvasState.layers.map((layer) => new Uint32Array(layer.pixels));
+    this.pendingHistory.layersAfter = layersAfter;
+    this.undoStack.push(this.pendingHistory);
+    this.pendingHistory = null;
+    this.syncTileData();
+  }
+
+  undo() {
+    const entry = this.undoStack.undo();
+    if (!entry) return;
+    this.animation.currentFrameIndex = entry.frameIndex;
+    const frame = this.animation.frames[this.animation.currentFrameIndex];
+    frame.layers.forEach((layer, index) => {
+      layer.pixels.set(entry.layersBefore[index]);
+    });
+    this.setFrameLayers(frame.layers);
+    this.syncTileData();
+  }
+
+  redo() {
+    const entry = this.undoStack.redo();
+    if (!entry) return;
+    this.animation.currentFrameIndex = entry.frameIndex;
+    const frame = this.animation.frames[this.animation.currentFrameIndex];
+    frame.layers.forEach((layer, index) => {
+      layer.pixels.set(entry.layersAfter[index]);
+    });
+    this.setFrameLayers(frame.layers);
+    this.syncTileData();
+  }
+
+  startStroke(point, { mode }) {
+    if (!this.activeLayer || this.activeLayer.locked) return;
+    this.startHistory(`${mode} stroke`);
+    this.strokeState = {
+      mode,
+      lastPoint: point
+    };
+    this.applyBrush(point);
+  }
+
+  continueStroke(point) {
+    if (!this.strokeState) return;
+    const line = bresenhamLine(this.strokeState.lastPoint, point);
+    line.forEach((pt) => this.applyBrush(pt));
+    this.strokeState.lastPoint = point;
+  }
+
+  finishStroke() {
+    if (!this.strokeState) return;
+    this.strokeState = null;
+    this.commitHistory();
+  }
+
+  applyBrush(point) {
+    const { width, height } = this.canvasState;
+    const size = this.toolOptions.brushSize;
+    const radius = Math.floor(size / 2);
+    const points = [];
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        points.push({ row: point.row + dy, col: point.col + dx });
       }
     }
-    if (this.cutDragging && this.cutImageRect) {
-      const start = this.cutSelectionStart;
-      const endX = clamp(payload.x, this.cutImageRect.x, this.cutImageRect.x + this.cutImageRect.w);
-      const endY = clamp(payload.y, this.cutImageRect.y, this.cutImageRect.y + this.cutImageRect.h);
-      const x = Math.min(start.x, endX);
-      const y = Math.min(start.y, endY);
-      const w = Math.abs(endX - start.x);
-      const h = Math.abs(endY - start.y);
-      this.cutSelection = { x, y, w, h };
-    }
-  }
-
-  handlePointerUp() {
-    this.painting = false;
-    this.clonePainting = false;
-    this.cutDragging = false;
-    this.cutSelectionStart = null;
-    if (this.shapeActive && this.shapeStart && this.shapeEnd) {
-      this.applyShape(this.shapeStart, this.shapeEnd, this.shapeTool);
-    }
-    this.shapeActive = false;
-    this.shapeStart = null;
-    this.shapeEnd = null;
-    this.shapeTool = null;
-  }
-
-  paintAt(x, y) {
-    if (!this.canvasBounds) return;
-    const cell = this.getGridCellFromPoint(x, y);
-    if (!cell) return;
-    const { row, col } = cell;
-    const tool = this.tools[this.toolIndex];
-    if (!tool) return;
-    const index = row * this.gridSize + col;
-    if (tool.id === 'clone') {
-      if (!this.cloneOffset) return;
-      const sourceRow = row + this.cloneOffset.row;
-      const sourceCol = col + this.cloneOffset.col;
-      if (sourceRow < 0 || sourceCol < 0 || sourceRow >= this.gridSize || sourceCol >= this.gridSize) return;
-      const sourceIndex = sourceRow * this.gridSize + sourceCol;
-      this.pixels[index] = this.pixels[sourceIndex];
-      return;
-    }
-    if (!['paint', 'erase', 'dropper'].includes(tool.id)) return;
-    if (tool.id === 'dropper') {
-      const current = this.pixels[index];
-      const paletteIndex = this.palette.findIndex((entry) => entry.color === current);
-      if (paletteIndex >= 0) {
-        this.paletteIndex = paletteIndex;
+    const symmetryPoints = applySymmetryPoints(points, width, height, this.toolOptions.symmetry);
+    symmetryPoints.forEach((pt) => {
+      const row = this.wrapCoord(pt.row, height);
+      const col = this.wrapCoord(pt.col, width);
+      if (row < 0 || col < 0 || row >= height || col >= width) return;
+      if (this.selection.active && this.selection.mask && !this.selection.mask[row * width + col]) return;
+      const index = row * width + col;
+      const target = this.activeLayer.pixels[index];
+      if (this.strokeState.mode === 'clone') {
+        this.applyCloneStroke({ row, col });
+        return;
       }
-      return;
-    }
-    const color = tool.id === 'erase' ? null : this.palette[this.paletteIndex]?.color ?? null;
-    this.pixels[index] = color;
-  }
-
-  applyFillAll() {
-    const color = this.palette[this.paletteIndex]?.color ?? null;
-    this.pixels.forEach((_, index) => {
-      this.pixels[index] = color;
+      let colorValue = this.getActiveColorValue();
+      if (this.strokeState.mode === 'erase') colorValue = 0;
+      if (this.strokeState.mode === 'dither') {
+        if (!this.shouldApplyDither(row, col)) return;
+      }
+      if (this.toolOptions.symmetry?.mirrorOnly && target === colorValue) return;
+      this.activeLayer.pixels[index] = colorValue;
     });
   }
 
-  applyFillAt(row, col) {
-    const targetIndex = row * this.gridSize + col;
-    const targetColor = this.pixels[targetIndex];
-    const replacement = this.palette[this.paletteIndex]?.color ?? null;
-    if (targetColor === replacement) return;
-    const stack = [{ row, col }];
+  shouldApplyDither(row, col) {
+    const pattern = this.toolOptions.ditherPattern;
+    const strength = Math.max(1, this.toolOptions.ditherStrength);
+    const matrix = createDitherMask(pattern, 2);
+    const size = matrix.length;
+    const value = matrix[row % size][col % size];
+    return value % strength === 0;
+  }
+
+  getActiveColorValue() {
+    const hex = getPaletteSwatchHex(this.currentPalette, this.paletteIndex);
+    return rgbaToUint32(hexToRgba(hex));
+  }
+
+  pickColor(point) {
+    const composite = compositeLayers(this.canvasState.layers, this.canvasState.width, this.canvasState.height);
+    const value = composite[point.row * this.canvasState.width + point.col];
+    if (!value) return;
+    const rgba = uint32ToRgba(value);
+    this.paletteIndex = getNearestPaletteIndex(this.currentPalette, rgba);
+  }
+
+  startLine(point) {
+    this.linePreview = { start: point, end: point };
+  }
+
+  updateLine(point) {
+    if (!this.linePreview) return;
+    this.linePreview.end = point;
+  }
+
+  commitLine() {
+    if (!this.linePreview) return;
+    this.startHistory('line');
+    const points = bresenhamLine(this.linePreview.start, this.linePreview.end);
+    const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(points) : points;
+    filtered.forEach((pt) => this.applyBrush(pt));
+    this.linePreview = null;
+    this.commitHistory();
+  }
+
+  applyPerfectPixels(points) {
+    if (points.length < 3) return points;
+    const filtered = [points[0]];
+    for (let i = 1; i < points.length - 1; i += 1) {
+      const prev = points[i - 1];
+      const current = points[i];
+      const next = points[i + 1];
+      if ((prev.row !== current.row && prev.col !== current.col)
+        && (next.row !== current.row && next.col !== current.col)) {
+        continue;
+      }
+      filtered.push(current);
+    }
+    filtered.push(points[points.length - 1]);
+    return filtered;
+  }
+
+  applyFill(point) {
+    if (!this.activeLayer || this.activeLayer.locked) return;
+    this.startHistory('fill');
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const index = point.row * width + point.col;
+    const target = this.activeLayer.pixels[index];
+    const replacement = this.getActiveColorValue();
+    if (target === replacement) {
+      this.pendingHistory = null;
+      return;
+    }
+    if (!this.toolOptions.fillContiguous) {
+      const tolerance = this.toolOptions.fillTolerance;
+      const targetRgba = uint32ToRgba(target);
+      for (let i = 0; i < this.activeLayer.pixels.length; i += 1) {
+        if (this.selection.mask && this.selection.active && !this.selection.mask[i]) continue;
+        const currentValue = this.activeLayer.pixels[i];
+        const currentRgba = uint32ToRgba(currentValue);
+        const dist = Math.hypot(currentRgba.r - targetRgba.r, currentRgba.g - targetRgba.g, currentRgba.b - targetRgba.b);
+        if (dist > tolerance) continue;
+        this.activeLayer.pixels[i] = replacement;
+      }
+      this.commitHistory();
+      return;
+    }
+    const queue = [point];
     const visited = new Set();
-    while (stack.length) {
-      const current = stack.pop();
+    const tolerance = this.toolOptions.fillTolerance;
+    const targetRgba = uint32ToRgba(target);
+    while (queue.length) {
+      const current = queue.pop();
       const key = `${current.row},${current.col}`;
       if (visited.has(key)) continue;
       visited.add(key);
-      const idx = current.row * this.gridSize + current.col;
-      if (this.pixels[idx] !== targetColor) continue;
-      this.pixels[idx] = replacement;
-      if (current.row > 0) stack.push({ row: current.row - 1, col: current.col });
-      if (current.row < this.gridSize - 1) stack.push({ row: current.row + 1, col: current.col });
-      if (current.col > 0) stack.push({ row: current.row, col: current.col - 1 });
-      if (current.col < this.gridSize - 1) stack.push({ row: current.row, col: current.col + 1 });
+      const idx = current.row * width + current.col;
+      if (this.selection.mask && this.selection.active && !this.selection.mask[idx]) continue;
+      const currentValue = this.activeLayer.pixels[idx];
+      const currentRgba = uint32ToRgba(currentValue);
+      const dist = Math.hypot(currentRgba.r - targetRgba.r, currentRgba.g - targetRgba.g, currentRgba.b - targetRgba.b);
+      if (dist > tolerance) continue;
+      this.activeLayer.pixels[idx] = replacement;
+      if (current.row > 0) queue.push({ row: current.row - 1, col: current.col });
+      if (current.row < height - 1) queue.push({ row: current.row + 1, col: current.col });
+      if (current.col > 0) queue.push({ row: current.row, col: current.col - 1 });
+      if (current.col < width - 1) queue.push({ row: current.row, col: current.col + 1 });
     }
+    this.commitHistory();
   }
 
-  applyShape(start, end, toolId) {
-    if (!start || !end) return;
-    if (toolId === 'gradient') {
-      this.applyGradient(start, end);
+  replaceColor(point) {
+    if (!this.activeLayer || this.activeLayer.locked) return;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const index = point.row * width + point.col;
+    const target = this.activeLayer.pixels[index];
+    if (!target) return;
+    const replacement = this.getActiveColorValue();
+    this.startHistory('replace color');
+    for (let i = 0; i < this.activeLayer.pixels.length; i += 1) {
+      if (this.activeLayer.pixels[i] !== target) continue;
+      if (this.toolOptions.replaceScope === 'selection' && this.selection.mask && !this.selection.mask[i]) continue;
+      this.activeLayer.pixels[i] = replacement;
+    }
+    this.commitHistory();
+  }
+
+  startSelection(point, mode) {
+    this.selection.active = false;
+    this.selection.mode = mode;
+    this.selection.start = point;
+    this.selection.end = point;
+  }
+
+  updateSelection(point) {
+    if (!this.selection.start) return;
+    this.selection.end = point;
+  }
+
+  commitSelection() {
+    if (!this.selection.start || !this.selection.end) return;
+    const bounds = this.getBoundsFromPoints(this.selection.start, this.selection.end);
+    this.selection.bounds = bounds;
+    this.selection.mask = this.selection.mode === 'ellipse'
+      ? generateEllipseMask(this.canvasState.width, this.canvasState.height, bounds)
+      : createRectMask(this.canvasState.width, this.canvasState.height, bounds);
+    this.selection.active = true;
+  }
+
+  addLassoPoint(point) {
+    if (!this.selection.lassoPoints.length) {
+      this.selection.lassoPoints = [{ x: point.col + 0.5, y: point.row + 0.5 }];
+      this.selection.active = false;
       return;
     }
-    const color = this.palette[this.paletteIndex]?.color ?? null;
-    const [minRow, maxRow] = [Math.min(start.row, end.row), Math.max(start.row, end.row)];
-    const [minCol, maxCol] = [Math.min(start.col, end.col), Math.max(start.col, end.col)];
-    const width = maxCol - minCol + 1;
-    const height = maxRow - minRow + 1;
-    const radius = Math.max(1, Math.floor(Math.min(width, height) * 0.25));
+    const last = this.selection.lassoPoints[this.selection.lassoPoints.length - 1];
+    if (Math.hypot(point.col + 0.5 - last.x, point.row + 0.5 - last.y) < 1) {
+      this.commitLasso();
+      return;
+    }
+    this.selection.lassoPoints.push({ x: point.col + 0.5, y: point.row + 0.5 });
+  }
 
-    for (let row = minRow; row <= maxRow; row += 1) {
-      for (let col = minCol; col <= maxCol; col += 1) {
-        let hit = false;
-        if (toolId === 'rectangle') {
-          hit = true;
-        } else if (toolId === 'oval') {
-          const rx = width / 2;
-          const ry = height / 2;
-          const cx = minCol + rx;
-          const cy = minRow + ry;
-          const dx = (col + 0.5 - cx) / rx;
-          const dy = (row + 0.5 - cy) / ry;
-          hit = dx * dx + dy * dy <= 1;
-        } else if (toolId === 'rounded-rect') {
-          const left = minCol;
-          const right = maxCol;
-          const top = minRow;
-          const bottom = maxRow;
-          const innerLeft = left + radius;
-          const innerRight = right - radius;
-          const innerTop = top + radius;
-          const innerBottom = bottom - radius;
-          if (col >= innerLeft && col <= innerRight) {
-            hit = row >= top && row <= bottom;
-          } else if (row >= innerTop && row <= innerBottom) {
-            hit = col >= left && col <= right;
-          } else {
-            const cornerX = col < innerLeft ? innerLeft : innerRight;
-            const cornerY = row < innerTop ? innerTop : innerBottom;
-            const dx = col - cornerX;
-            const dy = row - cornerY;
-            hit = dx * dx + dy * dy <= radius * radius;
-          }
-        } else if (toolId === 'polygon') {
-          const polygon = this.getPolygonVertices(minRow, maxRow, minCol, maxCol, 6);
-          hit = this.isPointInPolygon({ x: col + 0.5, y: row + 0.5 }, polygon);
-        }
-        if (hit) {
-          this.pixels[row * this.gridSize + col] = color;
-        }
+  commitLasso() {
+    if (this.selection.lassoPoints.length < 3) return;
+    this.selection.mask = createPolygonMask(this.canvasState.width, this.canvasState.height, this.selection.lassoPoints);
+    this.selection.bounds = this.getMaskBounds(this.selection.mask);
+    this.selection.active = true;
+    this.selection.lassoPoints = [];
+  }
+
+  startMove(point) {
+    if (!this.selection.active) return;
+    this.selection.floating = this.extractSelectionPixels();
+    this.selection.offset = { x: 0, y: 0 };
+    this.selection.start = point;
+  }
+
+  updateMove(point) {
+    if (!this.selection.floating || !this.selection.start) return;
+    this.selection.offset = {
+      x: point.col - this.selection.start.col,
+      y: point.row - this.selection.start.row
+    };
+  }
+
+  commitMove() {
+    if (!this.selection.floating) return;
+    this.startHistory('move selection');
+    this.pasteSelectionPixels(this.selection.floating, this.selection.offset.x, this.selection.offset.y);
+    this.selection.floating = null;
+    this.commitHistory();
+  }
+
+  extractSelectionPixels() {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const pixels = new Uint32Array(width * height);
+    this.activeLayer.pixels.forEach((value, index) => {
+      if (!this.selection.mask || !this.selection.mask[index]) return;
+      pixels[index] = value;
+      this.activeLayer.pixels[index] = 0;
+    });
+    return pixels;
+  }
+
+  pasteSelectionPixels(pixels, offsetX, offsetY) {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    for (let row = 0; row < height; row += 1) {
+      for (let col = 0; col < width; col += 1) {
+        const srcIndex = row * width + col;
+        const value = pixels[srcIndex];
+        if (!value) continue;
+        const destRow = row + offsetY;
+        const destCol = col + offsetX;
+        if (destRow < 0 || destCol < 0 || destRow >= height || destCol >= width) continue;
+        const destIndex = destRow * width + destCol;
+        this.activeLayer.pixels[destIndex] = value;
       }
     }
   }
 
-  getPolygonVertices(minRow, maxRow, minCol, maxCol, sides) {
-    const cx = (minCol + maxCol + 1) / 2;
-    const cy = (minRow + maxRow + 1) / 2;
-    const radiusX = Math.max(1, (maxCol - minCol + 1) / 2);
-    const radiusY = Math.max(1, (maxRow - minRow + 1) / 2);
-    const vertices = [];
-    for (let i = 0; i < sides; i += 1) {
-      const angle = (Math.PI * 2 * i) / sides - Math.PI / 2;
-      vertices.push({
-        x: cx + Math.cos(angle) * radiusX,
-        y: cy + Math.sin(angle) * radiusY
+  nudgeSelection(dx, dy) {
+    if (!this.selection.active) return;
+    this.startHistory('nudge selection');
+    const pixels = this.extractSelectionPixels();
+    this.pasteSelectionPixels(pixels, dx, dy);
+    this.commitHistory();
+  }
+
+  copySelection() {
+    if (!this.selection.active || !this.selection.mask) return;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const pixels = new Uint32Array(width * height);
+    this.activeLayer.pixels.forEach((value, index) => {
+      if (!this.selection.mask[index]) return;
+      pixels[index] = value;
+    });
+    this.clipboard = { width, height, pixels };
+  }
+
+  cutSelection() {
+    if (!this.selection.active) return;
+    this.copySelection();
+    this.startHistory('cut selection');
+    this.activeLayer.pixels.forEach((_, index) => {
+      if (!this.selection.mask[index]) return;
+      this.activeLayer.pixels[index] = 0;
+    });
+    this.commitHistory();
+  }
+
+  pasteClipboard() {
+    if (!this.clipboard) return;
+    this.startHistory('paste');
+    this.clipboard.pixels.forEach((value, index) => {
+      if (!value) return;
+      this.activeLayer.pixels[index] = value;
+    });
+    this.commitHistory();
+  }
+
+  clearSelection() {
+    this.selection.active = false;
+    this.selection.mask = null;
+    this.selection.bounds = null;
+  }
+
+  invertSelection() {
+    const size = this.canvasState.width * this.canvasState.height;
+    if (!this.selection.mask) {
+      this.selection.mask = new Uint8Array(size);
+    }
+    for (let i = 0; i < size; i += 1) {
+      this.selection.mask[i] = this.selection.mask[i] ? 0 : 1;
+    }
+    this.selection.bounds = this.getMaskBounds(this.selection.mask);
+    this.selection.active = true;
+  }
+
+  expandSelection(delta) {
+    if (!this.selection.mask) return;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const nextMask = new Uint8Array(this.selection.mask);
+    const radius = Math.abs(delta);
+    for (let row = 0; row < height; row += 1) {
+      for (let col = 0; col < width; col += 1) {
+        const index = row * width + col;
+        if (delta > 0 && this.selection.mask[index]) {
+          for (let dy = -radius; dy <= radius; dy += 1) {
+            for (let dx = -radius; dx <= radius; dx += 1) {
+              const r = row + dy;
+              const c = col + dx;
+              if (r < 0 || c < 0 || r >= height || c >= width) continue;
+              nextMask[r * width + c] = 1;
+            }
+          }
+        } else if (delta < 0 && this.selection.mask[index]) {
+          let keep = true;
+          for (let dy = -radius; dy <= radius; dy += 1) {
+            for (let dx = -radius; dx <= radius; dx += 1) {
+              const r = row + dy;
+              const c = col + dx;
+              if (r < 0 || c < 0 || r >= height || c >= width) continue;
+              if (!this.selection.mask[r * width + c]) {
+                keep = false;
+                break;
+              }
+            }
+            if (!keep) break;
+          }
+          if (!keep) nextMask[index] = 0;
+        }
+      }
+    }
+    this.selection.mask = nextMask;
+    this.selection.bounds = this.getMaskBounds(nextMask);
+  }
+
+  transformSelection(type) {
+    if (!this.selection.mask) return;
+    this.startHistory(`transform ${type}`);
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const pixels = this.extractSelectionPixels();
+    const transformed = new Uint32Array(this.activeLayer.pixels);
+    for (let row = 0; row < height; row += 1) {
+      for (let col = 0; col < width; col += 1) {
+        const index = row * width + col;
+        const value = pixels[index];
+        if (!value) continue;
+        let targetRow = row;
+        let targetCol = col;
+        if (type === 'flip-h') targetCol = width - 1 - col;
+        if (type === 'flip-v') targetRow = height - 1 - row;
+        if (type === 'rotate-cw') {
+          targetRow = col;
+          targetCol = width - 1 - row;
+        }
+        if (type === 'rotate-ccw') {
+          targetRow = height - 1 - col;
+          targetCol = row;
+        }
+        transformed[targetRow * width + targetCol] = value;
+      }
+    }
+    this.activeLayer.pixels = transformed;
+    this.commitHistory();
+  }
+
+  scaleSelection(factor) {
+    if (!this.selection.mask) return;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const pixels = this.extractSelectionPixels();
+    const next = new Uint32Array(this.activeLayer.pixels);
+    for (let row = 0; row < height; row += 1) {
+      for (let col = 0; col < width; col += 1) {
+        const value = pixels[row * width + col];
+        if (!value) continue;
+        for (let sy = 0; sy < factor; sy += 1) {
+          for (let sx = 0; sx < factor; sx += 1) {
+            const r = row * factor + sy;
+            const c = col * factor + sx;
+            if (r < height && c < width) {
+              next[r * width + c] = value;
+            }
+          }
+        }
+      }
+    }
+    this.activeLayer.pixels = next;
+    this.commitHistory();
+  }
+
+  handleCloneDown(point, modifiers = {}) {
+    if (modifiers.altKey || modifiers.fromTouch) {
+      this.cloneSource = point;
+      this.statusMessage = 'Clone source set';
+      return;
+    }
+    if (!this.cloneSource) return;
+    this.cloneOffset = { row: this.cloneSource.row - point.row, col: this.cloneSource.col - point.col };
+    this.startStroke(point, { mode: 'clone' });
+  }
+
+  applyClone(point) {
+    if (!this.cloneOffset) return;
+    const row = point.row + this.cloneOffset.row;
+    const col = point.col + this.cloneOffset.col;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    if (row < 0 || col < 0 || row >= height || col >= width) return;
+    const sourceIndex = row * width + col;
+    const destIndex = point.row * width + point.col;
+    if (this.selection.active && this.selection.mask && !this.selection.mask[destIndex]) return;
+    this.activeLayer.pixels[destIndex] = this.activeLayer.pixels[sourceIndex];
+  }
+
+  applyCloneStroke(point) {
+    if (!this.cloneOffset) return;
+    this.applyClone(point);
+  }
+
+  cyclePalette(delta) {
+    const count = this.currentPalette.colors.length;
+    this.setPaletteIndex((this.paletteIndex + delta + count) % count);
+  }
+
+  setPaletteIndex(index) {
+    this.secondaryPaletteIndex = this.paletteIndex;
+    this.paletteIndex = index;
+  }
+
+  generateRamp(steps = 4) {
+    const start = this.currentPalette.colors[this.paletteIndex];
+    const end = this.currentPalette.colors[this.secondaryPaletteIndex] || start;
+    if (!start || !end) return;
+    const colors = [];
+    for (let i = 0; i < steps; i += 1) {
+      const t = steps === 1 ? 0 : i / (steps - 1);
+      const r = Math.round(lerp(start.rgba.r, end.rgba.r, t));
+      const g = Math.round(lerp(start.rgba.g, end.rgba.g, t));
+      const b = Math.round(lerp(start.rgba.b, end.rgba.b, t));
+      colors.push({
+        id: `ramp-${Date.now()}-${i}`,
+        hex: `#${[r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('')}`,
+        rgba: { r, g, b, a: 255 }
       });
     }
-    return vertices;
+    this.currentPalette.colors.push(...colors);
   }
 
-  isPointInPolygon(point, polygon) {
-    let inside = false;
-    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i, i += 1) {
-      const xi = polygon[i].x;
-      const yi = polygon[i].y;
-      const xj = polygon[j].x;
-      const yj = polygon[j].y;
-      const intersect = ((yi > point.y) !== (yj > point.y))
-        && point.x < ((xj - xi) * (point.y - yi)) / (yj - yi + POINT_IN_POLYGON_EPSILON) + xi;
-      if (intersect) inside = !inside;
-    }
-    return inside;
+  addPaletteColor() {
+    const color = this.currentPalette.colors[this.paletteIndex];
+    if (!color) return;
+    const copy = {
+      id: `color-${Date.now()}`,
+      hex: color.hex,
+      rgba: { ...color.rgba }
+    };
+    this.currentPalette.colors.splice(this.paletteIndex + 1, 0, copy);
+    this.paletteIndex += 1;
   }
 
-  applyGradient(start, end) {
-    const primary = this.palette[this.paletteIndex]?.color ?? null;
-    const secondary = this.palette[this.secondaryPaletteIndex]?.color ?? primary ?? null;
-    const [minRow, maxRow] = [Math.min(start.row, end.row), Math.max(start.row, end.row)];
-    const [minCol, maxCol] = [Math.min(start.col, end.col), Math.max(start.col, end.col)];
-    const startPoint = { x: start.col + 0.5, y: start.row + 0.5 };
-    const endPoint = { x: end.col + 0.5, y: end.row + 0.5 };
-    const dx = endPoint.x - startPoint.x;
-    const dy = endPoint.y - startPoint.y;
-    const lengthSq = dx * dx + dy * dy || 1;
-    const primaryRgb = hexToRgb(primary);
-    const secondaryRgb = hexToRgb(secondary);
+  removePaletteColor() {
+    if (this.currentPalette.colors.length <= 1) return;
+    this.currentPalette.colors.splice(this.paletteIndex, 1);
+    this.paletteIndex = clamp(this.paletteIndex, 0, this.currentPalette.colors.length - 1);
+  }
 
-    for (let row = minRow; row <= maxRow; row += 1) {
-      for (let col = minCol; col <= maxCol; col += 1) {
-        const proj = ((col + 0.5 - startPoint.x) * dx + (row + 0.5 - startPoint.y) * dy) / lengthSq;
-        const t = clamp(proj, 0, 1);
-        let color = primary;
-        if (!primary || !secondary) {
-          color = t < 0.5 ? primary : secondary;
-        } else if (primaryRgb && secondaryRgb) {
-          const blended = {
-            r: Math.round(lerp(primaryRgb.r, secondaryRgb.r, t)),
-            g: Math.round(lerp(primaryRgb.g, secondaryRgb.g, t)),
-            b: Math.round(lerp(primaryRgb.b, secondaryRgb.b, t))
-          };
-          color = rgbToHex(blended);
-        }
-        this.pixels[row * this.gridSize + col] = color;
+  movePaletteColor(delta) {
+    const nextIndex = clamp(this.paletteIndex + delta, 0, this.currentPalette.colors.length - 1);
+    if (nextIndex === this.paletteIndex) return;
+    const [item] = this.currentPalette.colors.splice(this.paletteIndex, 1);
+    this.currentPalette.colors.splice(nextIndex, 0, item);
+    this.paletteIndex = nextIndex;
+  }
+
+  saveCurrentPalette() {
+    const palette = buildPalette(this.currentPalette.colors.map((entry) => entry.hex), `${this.currentPalette.name} Copy`);
+    this.customPalettes.push(palette);
+    saveCustomPalettes(this.customPalettes);
+  }
+
+  cycleTile(delta) {
+    const count = this.tileLibrary.length;
+    this.tileIndex = (this.tileIndex + delta + count) % count;
+    this.setActiveTile(this.tileLibrary[this.tileIndex]);
+  }
+
+  wrapCoord(value, max) {
+    if (!this.toolOptions.wrapDraw) return value;
+    return (value + max) % max;
+  }
+
+  getBoundsFromPoints(start, end) {
+    const minRow = Math.min(start.row, end.row);
+    const maxRow = Math.max(start.row, end.row);
+    const minCol = Math.min(start.col, end.col);
+    const maxCol = Math.max(start.col, end.col);
+    return { x: minCol, y: minRow, w: maxCol - minCol + 1, h: maxRow - minRow + 1 };
+  }
+
+  getMaskBounds(mask) {
+    if (!mask) return null;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    let minRow = height;
+    let maxRow = 0;
+    let minCol = width;
+    let maxCol = 0;
+    let found = false;
+    for (let row = 0; row < height; row += 1) {
+      for (let col = 0; col < width; col += 1) {
+        if (!mask[row * width + col]) continue;
+        found = true;
+        minRow = Math.min(minRow, row);
+        maxRow = Math.max(maxRow, row);
+        minCol = Math.min(minCol, col);
+        maxCol = Math.max(maxCol, col);
       }
     }
+    if (!found) return null;
+    return { x: minCol, y: minRow, w: maxCol - minCol + 1, h: maxRow - minRow + 1 };
   }
 
-  getGridCellFromPoint(x, y) {
+  offsetCanvas(dx, dy, wrap = true) {
+    this.startHistory('offset');
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    this.canvasState.layers.forEach((layer) => {
+      const next = new Uint32Array(width * height);
+      for (let row = 0; row < height; row += 1) {
+        for (let col = 0; col < width; col += 1) {
+          const value = layer.pixels[row * width + col];
+          if (!value) continue;
+          let targetRow = row + dy;
+          let targetCol = col + dx;
+          if (wrap) {
+            targetRow = (targetRow + height) % height;
+            targetCol = (targetCol + width) % width;
+          }
+          if (targetRow < 0 || targetCol < 0 || targetRow >= height || targetCol >= width) continue;
+          next[targetRow * width + targetCol] = value;
+        }
+      }
+      layer.pixels = next;
+    });
+    this.commitHistory();
+  }
+
+  addLayer() {
+    const layer = createLayer(this.canvasState.width, this.canvasState.height, `Layer ${this.canvasState.layers.length + 1}`);
+    this.canvasState.layers.push(layer);
+    this.canvasState.activeLayerIndex = this.canvasState.layers.length - 1;
+    this.currentFrame.layers = this.canvasState.layers;
+    this.syncTileData();
+  }
+
+  deleteLayer(index) {
+    if (this.canvasState.layers.length <= 1) return;
+    this.canvasState.layers.splice(index, 1);
+    this.canvasState.activeLayerIndex = clamp(this.canvasState.activeLayerIndex, 0, this.canvasState.layers.length - 1);
+    this.currentFrame.layers = this.canvasState.layers;
+    this.syncTileData();
+  }
+
+  duplicateLayer(index) {
+    const layer = cloneLayer(this.canvasState.layers[index]);
+    layer.name = `${layer.name} Copy`;
+    this.canvasState.layers.splice(index + 1, 0, layer);
+    this.canvasState.activeLayerIndex = index + 1;
+    this.currentFrame.layers = this.canvasState.layers;
+    this.syncTileData();
+  }
+
+  mergeLayerDown(index) {
+    this.canvasState.layers = mergeDown(this.canvasState.layers, index);
+    this.canvasState.activeLayerIndex = clamp(index - 1, 0, this.canvasState.layers.length - 1);
+    this.currentFrame.layers = this.canvasState.layers;
+    this.syncTileData();
+  }
+
+  flattenAllLayers() {
+    this.canvasState.layers = flattenLayers(this.canvasState.layers, this.canvasState.width, this.canvasState.height);
+    this.canvasState.activeLayerIndex = 0;
+    this.currentFrame.layers = this.canvasState.layers;
+    this.syncTileData();
+  }
+
+  reorderLayer(from, to) {
+    this.canvasState.layers = reorderLayer(this.canvasState.layers, from, to);
+    this.canvasState.activeLayerIndex = to;
+    this.currentFrame.layers = this.canvasState.layers;
+    this.syncTileData();
+  }
+
+  addFrame() {
+    const newFrame = createFrame(this.canvasState.layers, 120);
+    this.animation.frames.push(newFrame);
+    this.animation.currentFrameIndex = this.animation.frames.length - 1;
+    this.setFrameLayers(newFrame.layers);
+    this.syncTileData();
+  }
+
+  duplicateFrame(index) {
+    const clone = cloneFrame(this.animation.frames[index]);
+    this.animation.frames.splice(index + 1, 0, clone);
+    this.animation.currentFrameIndex = index + 1;
+    this.setFrameLayers(clone.layers);
+    this.syncTileData();
+  }
+
+  deleteFrame(index) {
+    if (this.animation.frames.length <= 1) return;
+    this.animation.frames.splice(index, 1);
+    this.animation.currentFrameIndex = clamp(this.animation.currentFrameIndex, 0, this.animation.frames.length - 1);
+    this.setFrameLayers(this.animation.frames[this.animation.currentFrameIndex].layers);
+    this.syncTileData();
+  }
+
+  exportPng() {
+    const composite = compositeLayers(this.canvasState.layers, this.canvasState.width, this.canvasState.height);
+    const canvas = document.createElement('canvas');
+    canvas.width = this.canvasState.width;
+    canvas.height = this.canvasState.height;
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.createImageData(canvas.width, canvas.height);
+    const bytes = new Uint32Array(imageData.data.buffer);
+    bytes.set(composite);
+    ctx.putImageData(imageData, 0, 0);
+    this.downloadDataUrl(canvas.toDataURL('image/png'), `${this.activeTile?.id || 'pixel-art'}.png`);
+  }
+
+  exportSpriteSheet(layout = 'horizontal') {
+    try {
+      const { canvas, metadata } = exportSpriteSheet(
+        this.animation.frames,
+        this.canvasState.width,
+        this.canvasState.height,
+        { layout, columns: 4 }
+      );
+      this.downloadDataUrl(canvas.toDataURL('image/png'), `${this.activeTile?.id || 'pixel-art'}-sheet.png`);
+      const blob = new Blob([JSON.stringify(metadata, null, 2)], { type: 'application/json' });
+      this.downloadDataUrl(URL.createObjectURL(blob), `${this.activeTile?.id || 'pixel-art'}-sheet.json`);
+    } catch (error) {
+      console.warn('[PixelStudio] Failed to export sprite sheet.', error);
+    }
+  }
+
+  exportGif() {
+    console.warn('[PixelStudio] GIF export not implemented. Use sprite sheet export instead.');
+  }
+
+  exportPaletteJson() {
+    const blob = new Blob([JSON.stringify({
+      name: this.currentPalette.name,
+      colors: this.currentPalette.colors.map((entry) => entry.hex)
+    }, null, 2)], { type: 'application/json' });
+    this.downloadDataUrl(URL.createObjectURL(blob), `${this.currentPalette.name}-palette.json`);
+  }
+
+  exportPaletteHex() {
+    const blob = new Blob([paletteToHexList(this.currentPalette)], { type: 'text/plain' });
+    this.downloadDataUrl(URL.createObjectURL(blob), `${this.currentPalette.name}-palette.txt`);
+  }
+
+  downloadDataUrl(url, filename) {
+    this.exportLink.href = url;
+    this.exportLink.download = filename;
+    this.exportLink.click();
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+  }
+
+  isPointInBounds(point, bounds) {
+    return point.x >= bounds.x && point.x <= bounds.x + bounds.w
+      && point.y >= bounds.y && point.y <= bounds.y + bounds.h;
+  }
+
+  getGridCellFromScreen(x, y) {
     if (!this.canvasBounds) return null;
     const { x: startX, y: startY, cellSize } = this.canvasBounds;
     const col = Math.floor((x - startX) / cellSize);
     const row = Math.floor((y - startY) / cellSize);
-    if (col < 0 || row < 0 || col >= this.gridSize || row >= this.gridSize) return null;
+    if (col < 0 || row < 0 || col >= this.canvasState.width || row >= this.canvasState.height) return null;
     return { row, col };
   }
 
-  applyCutSelection() {
-    if (!this.cutImage || !this.cutSelection || !this.cutImageRect) return;
-    const { x, y, w, h } = this.cutSelection;
-    const scaleX = this.cutImage.width / this.cutImageRect.w;
-    const scaleY = this.cutImage.height / this.cutImageRect.h;
-    const sx = Math.floor(clamp((x - this.cutImageRect.x) * scaleX, 0, this.cutImage.width));
-    const sy = Math.floor(clamp((y - this.cutImageRect.y) * scaleY, 0, this.cutImage.height));
-    const sw = Math.max(1, Math.floor(clamp(w * scaleX, 1, this.cutImage.width - sx)));
-    const sh = Math.max(1, Math.floor(clamp(h * scaleY, 1, this.cutImage.height - sy)));
-
-    this.cutCanvas.width = this.cutImage.width;
-    this.cutCanvas.height = this.cutImage.height;
-    this.cutCanvasCtx.clearRect(0, 0, this.cutCanvas.width, this.cutCanvas.height);
-    this.cutCanvasCtx.drawImage(this.cutImage, 0, 0);
-    const imageData = this.cutCanvasCtx.getImageData(sx, sy, sw, sh);
-    const data = imageData.data;
-
-    const paletteColors = this.palette
-      .filter((entry) => entry.color)
-      .map((entry) => ({ entry, rgb: hexToRgb(entry.color) }));
-
-    for (let row = 0; row < this.gridSize; row += 1) {
-      for (let col = 0; col < this.gridSize; col += 1) {
-        const sampleX = Math.floor(((col + 0.5) / this.gridSize) * sw);
-        const sampleY = Math.floor(((row + 0.5) / this.gridSize) * sh);
-        const idx = (sampleY * sw + sampleX) * 4;
-        const alpha = data[idx + 3] / 255;
-        if (alpha < 0.15) {
-          this.pixels[row * this.gridSize + col] = null;
-          continue;
-        }
-        const sample = { r: data[idx], g: data[idx + 1], b: data[idx + 2] };
-        let closest = paletteColors[0]?.entry?.color ?? null;
-        let closestDist = Number.POSITIVE_INFINITY;
-        paletteColors.forEach((candidate) => {
-          const dist = colorDistance(sample, candidate.rgb);
-          if (dist < closestDist) {
-            closestDist = dist;
-            closest = candidate.entry.color;
-          }
-        });
-        this.pixels[row * this.gridSize + col] = closest;
-      }
+  handleButtonClick(x, y) {
+    const hit = this.uiButtons.find((button) => x >= button.bounds.x
+      && x <= button.bounds.x + button.bounds.w
+      && y >= button.bounds.y
+      && y <= button.bounds.y + button.bounds.h);
+    if (hit) {
+      hit.onClick?.();
+      return true;
     }
+    const paletteHit = this.paletteBounds.find((bounds) => this.isPointInBounds({ x, y }, bounds));
+    if (paletteHit) {
+      this.setPaletteIndex(paletteHit.index);
+      return true;
+    }
+    const layerHit = this.layerBounds.find((bounds) => this.isPointInBounds({ x, y }, bounds));
+    if (layerHit) {
+      this.canvasState.activeLayerIndex = layerHit.index;
+      return true;
+    }
+    const frameHit = this.frameBounds.find((bounds) => this.isPointInBounds({ x, y }, bounds));
+    if (frameHit) {
+      this.animation.currentFrameIndex = frameHit.index;
+      this.setFrameLayers(this.currentFrame.layers);
+      return true;
+    }
+    return false;
   }
 
-  isPointInBounds(x, y, bounds) {
-    return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
+  draw(ctx, width, height) {
+    ctx.save();
+    ctx.fillStyle = '#0b0b0b';
+    ctx.fillRect(0, 0, width, height);
+    ctx.imageSmoothingEnabled = false;
+
+    const leftWidth = 260;
+    const rightWidth = 240;
+    const bottomHeight = 170;
+    const topBarHeight = 50;
+
+    ctx.fillStyle = '#fff';
+    ctx.font = '20px Courier New';
+    ctx.fillText('Pixel Studio', 24, 32);
+
+    const tabs = ['Draw', 'Select', 'Animate', 'Export'];
+    const tabX = 220;
+    this.uiButtons = [];
+    tabs.forEach((tab, index) => {
+      const bounds = { x: tabX + index * 90, y: 16, w: 84, h: 26 };
+      const active = this.modeTab.toLowerCase() === tab.toLowerCase();
+      this.drawButton(ctx, bounds, tab, active);
+      this.uiButtons.push({ bounds, onClick: () => { this.modeTab = tab.toLowerCase(); } });
+    });
+
+    const zoom = this.view.zoomLevels[this.view.zoomIndex];
+    const statusText = `Tool: ${this.activeToolId} | Brush ${this.toolOptions.brushSize}px | Color ${getPaletteSwatchHex(this.currentPalette, this.paletteIndex)} | Layer ${this.canvasState.activeLayerIndex + 1}/${this.canvasState.layers.length} | Frame ${this.animation.currentFrameIndex + 1}/${this.animation.frames.length} | Zoom ${zoom}x | Cursor ${this.cursor.col},${this.cursor.row}`;
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '12px Courier New';
+    ctx.fillText(statusText, 24, height - bottomHeight - 8);
+
+    const toolsX = 20;
+    const toolsY = topBarHeight + 10;
+    const toolsH = height - bottomHeight - topBarHeight - 20;
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(toolsX, toolsY, leftWidth, toolsH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(toolsX, toolsY, leftWidth, toolsH);
+
+    this.drawToolsPanel(ctx, toolsX, toolsY, leftWidth, toolsH);
+
+    const layersX = width - rightWidth - 20;
+    const layersY = topBarHeight + 10;
+    const layersH = height - bottomHeight - topBarHeight - 20;
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(layersX, layersY, rightWidth, layersH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(layersX, layersY, rightWidth, layersH);
+
+    this.drawLayersPanel(ctx, layersX, layersY, rightWidth, layersH);
+
+    const canvasX = leftWidth + 40;
+    const canvasY = topBarHeight + 20;
+    const canvasW = width - leftWidth - rightWidth - 80;
+    const canvasH = height - bottomHeight - topBarHeight - 40;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(canvasX, canvasY, canvasW, canvasH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(canvasX, canvasY, canvasW, canvasH);
+
+    this.drawCanvasArea(ctx, canvasX, canvasY, canvasW, canvasH);
+
+    this.drawPaletteBar(ctx, 20, height - bottomHeight + 20, width - 40, bottomHeight - 40);
+    this.drawTimeline(ctx, canvasX, height - bottomHeight + 20, canvasW, bottomHeight - 40);
+
+    if (this.gamepadHintVisible) {
+      this.drawGamepadHints(ctx, width - rightWidth - 40, height - bottomHeight - 90);
+    }
+
+    if (this.uiFocusMode && this.uiButtons[this.uiFocusIndex]) {
+      const bounds = this.uiButtons[this.uiFocusIndex].bounds;
+      ctx.strokeStyle = '#9ddcff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(bounds.x - 2, bounds.y - 2, bounds.w + 4, bounds.h + 4);
+    }
+
+    ctx.restore();
   }
 
   drawButton(ctx, bounds, label, active = false) {
@@ -770,302 +1617,527 @@ export default class PixelStudio {
     ctx.textAlign = 'left';
   }
 
-  draw(ctx, width, height) {
-    ctx.save();
-    ctx.fillStyle = '#0b0b0b';
-    ctx.fillRect(0, 0, width, height);
-
-    ctx.fillStyle = '#fff';
-    ctx.font = '24px Courier New';
-    ctx.textAlign = 'left';
-    ctx.fillText('Pixel Editor', 24, 40);
-    this.exitBounds = { x: width - 124, y: 24, w: 92, h: 28 };
-    this.drawButton(ctx, this.exitBounds, 'Exit');
-
-    const leftWidth = 300;
-    const bottomHeight = 140;
-    const panelPadding = 16;
-
-    const panelX = 20;
-    const panelY = 70;
-    const panelH = height - bottomHeight - panelY - 20;
-
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(panelX, panelY, leftWidth, panelH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(panelX, panelY, leftWidth, panelH);
-
-    const sectionGap = 18;
-    const toolsBoxH = Math.floor(panelH * 0.4);
-    const objectsBoxH = panelH - toolsBoxH - sectionGap - 12;
-
-    const toolsBoxY = panelY + 12;
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(panelX + 12, toolsBoxY, leftWidth - 24, toolsBoxH);
-    ctx.strokeStyle = this.focus === 'tools' ? '#ffe16a' : 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(panelX + 12, toolsBoxY, leftWidth - 24, toolsBoxH);
+  drawToolsPanel(ctx, x, y, w, h) {
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
-    ctx.fillText('Tools', panelX + 24, toolsBoxY + 20);
+    ctx.fillText('Tools', x + 12, y + 20);
 
-    this.toolBounds = [];
-    const toolListStartY = toolsBoxY + 36;
-    const toolLineHeight = 18;
-    this.toolVisibleCount = Math.max(1, Math.floor((toolsBoxH - 44) / toolLineHeight));
-    const toolMaxScroll = Math.max(0, this.tools.length - this.toolVisibleCount);
-    this.toolScroll = clamp(this.toolScroll, 0, toolMaxScroll);
-    if (this.toolIndex < this.toolScroll) {
-      this.toolScroll = this.toolIndex;
-    } else if (this.toolIndex >= this.toolScroll + this.toolVisibleCount) {
-      this.toolScroll = Math.min(toolMaxScroll, this.toolIndex - this.toolVisibleCount + 1);
+    const list = this.tools.map((tool) => tool);
+    const lineHeight = 20;
+    let offsetY = y + 36;
+    list.forEach((tool) => {
+      const isActive = tool.id === this.activeToolId;
+      ctx.fillStyle = isActive ? '#ffe16a' : 'rgba(255,255,255,0.7)';
+      ctx.fillText(tool.name, x + 16, offsetY);
+      const bounds = { x: x + 8, y: offsetY - 14, w: w - 16, h: 18 };
+      this.uiButtons.push({ bounds, onClick: () => { this.activeToolId = tool.id; } });
+      offsetY += lineHeight;
+    });
+
+    offsetY += 8;
+    ctx.fillStyle = '#fff';
+    ctx.fillText('Options', x + 12, offsetY);
+    offsetY += 18;
+
+    this.drawOptionToggle(ctx, x + 12, offsetY, 'Symmetry H', this.toolOptions.symmetry.horizontal, () => {
+      this.toolOptions.symmetry.horizontal = !this.toolOptions.symmetry.horizontal;
+    });
+    offsetY += 20;
+    this.drawOptionToggle(ctx, x + 12, offsetY, 'Symmetry V', this.toolOptions.symmetry.vertical, () => {
+      this.toolOptions.symmetry.vertical = !this.toolOptions.symmetry.vertical;
+    });
+    offsetY += 20;
+    this.drawOptionToggle(ctx, x + 12, offsetY, 'Wrap Draw', this.toolOptions.wrapDraw, () => {
+      this.toolOptions.wrapDraw = !this.toolOptions.wrapDraw;
+    });
+    offsetY += 20;
+    this.drawOptionToggle(ctx, x + 12, offsetY, 'Tiled Preview', this.tiledPreview.enabled, () => {
+      this.tiledPreview.enabled = !this.tiledPreview.enabled;
+    });
+    offsetY += 24;
+    const tileSizeBounds = { x: x + 12, y: offsetY - 12, w: 120, h: 18 };
+    this.drawButton(ctx, tileSizeBounds, `Tiles: ${this.tiledPreview.tiles}x${this.tiledPreview.tiles}`);
+    this.uiButtons.push({
+      bounds: tileSizeBounds,
+      onClick: () => { this.tiledPreview.tiles = this.tiledPreview.tiles === 2 ? 3 : 2; }
+    });
+    offsetY += 24;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText(`Brush Size: ${this.toolOptions.brushSize}`, x + 12, offsetY);
+    this.uiButtons.push({
+      bounds: { x: x + 160, y: offsetY - 14, w: 30, h: 18 },
+      onClick: () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8); }
+    });
+    this.uiButtons.push({
+      bounds: { x: x + 196, y: offsetY - 14, w: 30, h: 18 },
+      onClick: () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8); }
+    });
+    this.drawButton(ctx, { x: x + 160, y: offsetY - 14, w: 28, h: 16 }, '-');
+    this.drawButton(ctx, { x: x + 196, y: offsetY - 14, w: 28, h: 16 }, '+');
+    offsetY += 24;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText(`Tile: ${this.activeTile?.label || 'None'}`, x + 12, offsetY);
+    this.uiButtons.push({
+      bounds: { x: x + 160, y: offsetY - 14, w: 30, h: 18 },
+      onClick: () => this.cycleTile(-1)
+    });
+    this.uiButtons.push({
+      bounds: { x: x + 196, y: offsetY - 14, w: 30, h: 18 },
+      onClick: () => this.cycleTile(1)
+    });
+    this.drawButton(ctx, { x: x + 160, y: offsetY - 14, w: 28, h: 16 }, '<');
+    this.drawButton(ctx, { x: x + 196, y: offsetY - 14, w: 28, h: 16 }, '>');
+    offsetY += 24;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText('Offset Canvas', x + 12, offsetY);
+    offsetY += 20;
+    const offsetButtons = [
+      { label: '←', action: () => this.offsetCanvas(-1, 0, true) },
+      { label: '→', action: () => this.offsetCanvas(1, 0, true) },
+      { label: '↑', action: () => this.offsetCanvas(0, -1, true) },
+      { label: '↓', action: () => this.offsetCanvas(0, 1, true) },
+      { label: '½W', action: () => this.offsetCanvas(Math.floor(this.canvasState.width / 2), 0, true) },
+      { label: '½H', action: () => this.offsetCanvas(0, Math.floor(this.canvasState.height / 2), true) }
+    ];
+    offsetButtons.forEach((entry, index) => {
+      const bounds = { x: x + 12 + (index % 3) * 44, y: offsetY + Math.floor(index / 3) * 20, w: 40, h: 18 };
+      this.drawButton(ctx, bounds, entry.label);
+      this.uiButtons.push({ bounds, onClick: entry.action });
+    });
+    offsetY += 44;
+
+    offsetY = this.drawToolOptions(ctx, x + 12, offsetY);
+
+    if (this.modeTab === 'select') {
+      this.drawSelectionActions(ctx, x + 12, offsetY);
     }
-    this.tools.slice(this.toolScroll, this.toolScroll + this.toolVisibleCount).forEach((tool, index) => {
-      const listIndex = this.toolScroll + index;
-      const y = toolListStartY + index * toolLineHeight;
-      const isSelected = listIndex === this.toolIndex;
-      ctx.fillStyle = isSelected ? '#ffe16a' : 'rgba(255,255,255,0.7)';
-      ctx.fillText(tool.label, panelX + 32, y);
-      this.toolBounds.push({
-        x: panelX + 20,
-        y: y - 12,
-        w: leftWidth - 40,
-        h: 16,
-        index: listIndex
+
+    if (this.modeTab === 'animate') {
+      this.drawAnimationControls(ctx, x + 12, offsetY);
+    }
+
+    if (this.modeTab === 'export') {
+      this.drawExportControls(ctx, x + 12, offsetY);
+    }
+  }
+
+  drawOptionToggle(ctx, x, y, label, active, onClick) {
+    const bounds = { x, y: y - 12, w: 120, h: 18 };
+    this.drawButton(ctx, bounds, label, active);
+    this.uiButtons.push({ bounds, onClick });
+  }
+
+  drawToolOptions(ctx, x, y) {
+    let offsetY = y;
+    ctx.fillStyle = '#fff';
+    ctx.fillText('Tool Options', x, offsetY);
+    offsetY += 18;
+    if (this.activeToolId === TOOL_IDS.LINE) {
+      this.drawOptionToggle(ctx, x, offsetY, 'Perfect Pixels', this.toolOptions.linePerfect, () => {
+        this.toolOptions.linePerfect = !this.toolOptions.linePerfect;
       });
-    });
+      offsetY += 20;
+    }
+    if (this.activeToolId === TOOL_IDS.FILL) {
+      this.drawOptionToggle(ctx, x, offsetY, 'Contiguous', this.toolOptions.fillContiguous, () => {
+        this.toolOptions.fillContiguous = !this.toolOptions.fillContiguous;
+      });
+      offsetY += 20;
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fillText(`Tolerance: ${this.toolOptions.fillTolerance}`, x, offsetY);
+      this.uiButtons.push({
+        bounds: { x: x + 120, y: offsetY - 14, w: 30, h: 18 },
+        onClick: () => { this.toolOptions.fillTolerance = clamp(this.toolOptions.fillTolerance - 5, 0, 255); }
+      });
+      this.uiButtons.push({
+        bounds: { x: x + 156, y: offsetY - 14, w: 30, h: 18 },
+        onClick: () => { this.toolOptions.fillTolerance = clamp(this.toolOptions.fillTolerance + 5, 0, 255); }
+      });
+      this.drawButton(ctx, { x: x + 120, y: offsetY - 14, w: 28, h: 16 }, '-');
+      this.drawButton(ctx, { x: x + 156, y: offsetY - 14, w: 28, h: 16 }, '+');
+      offsetY += 22;
+    }
+    if (this.activeToolId === TOOL_IDS.DITHER) {
+      const patterns = ['bayer2', 'bayer4', 'checker'];
+      const nextPattern = patterns[(patterns.indexOf(this.toolOptions.ditherPattern) + 1) % patterns.length];
+      const bounds = { x, y: offsetY - 12, w: 120, h: 18 };
+      this.drawButton(ctx, bounds, `Pattern: ${this.toolOptions.ditherPattern}`);
+      this.uiButtons.push({ bounds, onClick: () => { this.toolOptions.ditherPattern = nextPattern; } });
+      offsetY += 20;
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fillText(`Strength: ${this.toolOptions.ditherStrength}`, x, offsetY);
+      this.uiButtons.push({
+        bounds: { x: x + 120, y: offsetY - 14, w: 30, h: 18 },
+        onClick: () => { this.toolOptions.ditherStrength = clamp(this.toolOptions.ditherStrength - 1, 1, 4); }
+      });
+      this.uiButtons.push({
+        bounds: { x: x + 156, y: offsetY - 14, w: 30, h: 18 },
+        onClick: () => { this.toolOptions.ditherStrength = clamp(this.toolOptions.ditherStrength + 1, 1, 4); }
+      });
+      this.drawButton(ctx, { x: x + 120, y: offsetY - 14, w: 28, h: 16 }, '-');
+      this.drawButton(ctx, { x: x + 156, y: offsetY - 14, w: 28, h: 16 }, '+');
+      offsetY += 22;
+    }
+    if (this.activeToolId === TOOL_IDS.COLOR_REPLACE) {
+      const bounds = { x, y: offsetY - 12, w: 120, h: 18 };
+      this.drawButton(ctx, bounds, `Scope: ${this.toolOptions.replaceScope}`);
+      this.uiButtons.push({
+        bounds,
+        onClick: () => {
+          this.toolOptions.replaceScope = this.toolOptions.replaceScope === 'layer' ? 'selection' : 'layer';
+        }
+      });
+      offsetY += 20;
+    }
+    return offsetY;
+  }
 
-    const objectsBoxY = toolsBoxY + toolsBoxH + sectionGap;
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(panelX + 12, objectsBoxY, leftWidth - 24, objectsBoxH);
-    ctx.strokeStyle = this.focus === 'objects' ? '#ffe16a' : 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(panelX + 12, objectsBoxY, leftWidth - 24, objectsBoxH);
+  drawSelectionActions(ctx, x, y) {
+    const actions = [
+      { label: 'Clear', action: () => this.clearSelection() },
+      { label: 'Invert', action: () => this.invertSelection() },
+      { label: 'Expand', action: () => this.expandSelection(1) },
+      { label: 'Contract', action: () => this.expandSelection(-1) },
+      { label: 'Flip H', action: () => this.transformSelection('flip-h') },
+      { label: 'Flip V', action: () => this.transformSelection('flip-v') },
+      { label: 'Rot CW', action: () => this.transformSelection('rotate-cw') },
+      { label: 'Rot CCW', action: () => this.transformSelection('rotate-ccw') },
+      { label: 'Scale 2x', action: () => this.scaleSelection(2) },
+      { label: 'Scale 3x', action: () => this.scaleSelection(3) },
+      { label: 'Scale 4x', action: () => this.scaleSelection(4) }
+    ];
+    actions.forEach((entry, index) => {
+      const bounds = { x, y: y + index * 20, w: 120, h: 18 };
+      this.drawButton(ctx, bounds, entry.label);
+      this.uiButtons.push({ bounds, onClick: entry.action });
+    });
+  }
+
+  drawAnimationControls(ctx, x, y) {
+    const controls = [
+      { label: this.animation.playing ? 'Pause' : 'Play', action: () => { this.animation.playing = !this.animation.playing; } },
+      { label: 'Onion Skin', action: () => { this.animation.onion.enabled = !this.animation.onion.enabled; } },
+      { label: 'Loop', action: () => { this.animation.loop = !this.animation.loop; } }
+    ];
+    controls.forEach((entry, index) => {
+      const bounds = { x, y: y + index * 20, w: 120, h: 18 };
+      const active = entry.label === 'Loop' ? this.animation.loop : entry.label === 'Onion Skin' ? this.animation.onion.enabled : false;
+      this.drawButton(ctx, bounds, entry.label, active);
+      this.uiButtons.push({ bounds, onClick: entry.action });
+    });
+    const onionOffset = y + controls.length * 20 + 4;
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText(`Prev: ${this.animation.onion.prev}`, x, onionOffset);
+    this.uiButtons.push({
+      bounds: { x: x + 60, y: onionOffset - 14, w: 24, h: 16 },
+      onClick: () => { this.animation.onion.prev = clamp(this.animation.onion.prev - 1, 0, 3); }
+    });
+    this.uiButtons.push({
+      bounds: { x: x + 88, y: onionOffset - 14, w: 24, h: 16 },
+      onClick: () => { this.animation.onion.prev = clamp(this.animation.onion.prev + 1, 0, 3); }
+    });
+    this.drawButton(ctx, { x: x + 60, y: onionOffset - 14, w: 22, h: 16 }, '-');
+    this.drawButton(ctx, { x: x + 88, y: onionOffset - 14, w: 22, h: 16 }, '+');
+    const nextOffset = onionOffset + 20;
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText(`Next: ${this.animation.onion.next}`, x, nextOffset);
+    this.uiButtons.push({
+      bounds: { x: x + 60, y: nextOffset - 14, w: 24, h: 16 },
+      onClick: () => { this.animation.onion.next = clamp(this.animation.onion.next - 1, 0, 3); }
+    });
+    this.uiButtons.push({
+      bounds: { x: x + 88, y: nextOffset - 14, w: 24, h: 16 },
+      onClick: () => { this.animation.onion.next = clamp(this.animation.onion.next + 1, 0, 3); }
+    });
+    this.drawButton(ctx, { x: x + 60, y: nextOffset - 14, w: 22, h: 16 }, '-');
+    this.drawButton(ctx, { x: x + 88, y: nextOffset - 14, w: 22, h: 16 }, '+');
+  }
+
+  drawExportControls(ctx, x, y) {
+    const actions = [
+      { label: 'Export PNG', action: () => this.exportPng() },
+      { label: 'Sprite Sheet', action: () => this.exportSpriteSheet('horizontal') },
+      { label: 'Export GIF', action: () => this.exportGif() },
+      { label: 'Palette JSON', action: () => this.exportPaletteJson() },
+      { label: 'Palette HEX', action: () => this.exportPaletteHex() },
+      { label: 'Import Palette', action: () => this.paletteFileInput.click() }
+    ];
+    actions.forEach((entry, index) => {
+      const bounds = { x, y: y + index * 20, w: 140, h: 18 };
+      this.drawButton(ctx, bounds, entry.label);
+      this.uiButtons.push({ bounds, onClick: entry.action });
+    });
+  }
+
+  drawLayersPanel(ctx, x, y, w, h) {
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
-    ctx.fillText('Objects', panelX + 24, objectsBoxY + 20);
-
-    const objectListStartY = objectsBoxY + 36;
-    const objectLineHeight = 18;
-    this.objectVisibleCount = Math.max(1, Math.floor((objectsBoxH - 44) / objectLineHeight));
-    const entries = this.getObjectEntries();
-    const selectable = this.getSelectableObjectEntries();
-    const selectedEntry = selectable[this.objectIndex] || null;
-    const objectMaxScroll = Math.max(0, entries.length - this.objectVisibleCount);
-    this.objectScroll = clamp(this.objectScroll, 0, objectMaxScroll);
-    const selectedIndex = entries.findIndex((entry) => entry === selectedEntry);
-    if (selectedIndex >= 0) {
-      if (selectedIndex < this.objectScroll) {
-        this.objectScroll = selectedIndex;
-      } else if (selectedIndex >= this.objectScroll + this.objectVisibleCount) {
-        this.objectScroll = Math.min(objectMaxScroll, selectedIndex - this.objectVisibleCount + 1);
-      }
-    }
-
-    this.objectBounds = [];
-    entries.slice(this.objectScroll, this.objectScroll + this.objectVisibleCount).forEach((entry, index) => {
-      const listIndex = this.objectScroll + index;
-      const y = objectListStartY + index * objectLineHeight;
-      const isSelected = entries[listIndex] === selectedEntry;
-      ctx.fillStyle = entry.selectable ? (isSelected ? '#ffe16a' : 'rgba(255,255,255,0.7)') : 'rgba(255,255,255,0.5)';
-      const indentX = panelX + 32 + entry.indent * 14;
-      const label = entry.tile?.char ? `${entry.label} [${entry.tile.char}]` : entry.label;
-      ctx.fillText(label, indentX, y);
-      if (entry.selectable) {
-        const selectableIndex = selectable.findIndex((item) => item === entry);
-        this.objectBounds.push({
-          x: panelX + 20,
-          y: y - 12,
-          w: leftWidth - 40,
-          h: 16,
-          index: selectableIndex
-        });
-      }
+    ctx.fillText('Layers', x + 12, y + 20);
+    const controls = [
+      { label: '+', action: () => this.addLayer() },
+      { label: 'Dup', action: () => this.duplicateLayer(this.canvasState.activeLayerIndex) },
+      { label: '-', action: () => this.deleteLayer(this.canvasState.activeLayerIndex) },
+      { label: 'Merge', action: () => this.mergeLayerDown(this.canvasState.activeLayerIndex) },
+      { label: 'Flatten', action: () => this.flattenAllLayers() }
+    ];
+    controls.forEach((entry, index) => {
+      const bounds = { x: x + 12 + index * 44, y: y + 28, w: 40, h: 18 };
+      this.drawButton(ctx, bounds, entry.label);
+      this.uiButtons.push({ bounds, onClick: entry.action });
     });
+    let offsetY = y + 60;
+    this.layerBounds = [];
+    this.canvasState.layers.slice().reverse().forEach((layer, reversedIndex) => {
+      const index = this.canvasState.layers.length - 1 - reversedIndex;
+      const active = index === this.canvasState.activeLayerIndex;
+      ctx.fillStyle = active ? '#ffe16a' : 'rgba(255,255,255,0.7)';
+      ctx.fillText(`${layer.visible ? '👁' : '⛔'} ${layer.name}`, x + 12, offsetY);
+      const bounds = { x: x + 8, y: offsetY - 14, w: w - 16, h: 18, index };
+      this.layerBounds.push(bounds);
+      offsetY += 20;
+    });
+  }
 
-    const canvasX = leftWidth + 60;
-    const canvasY = 80;
-    const canvasW = width - canvasX - 20;
-    const canvasH = height - bottomHeight - canvasY - 20;
+  drawCanvasArea(ctx, x, y, w, h) {
+    const { width, height } = this.canvasState;
+    const zoom = this.view.zoomLevels[this.view.zoomIndex];
+    const gridW = width * zoom;
+    const gridH = height * zoom;
+    const offsetX = x + (w - gridW) / 2 + this.view.panX;
+    const offsetY = y + (h - gridH) / 2 + this.view.panY;
+    this.canvasBounds = { x: offsetX, y: offsetY, w: gridW, h: gridH, cellSize: zoom };
 
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(canvasX, canvasY, canvasW, canvasH);
-    ctx.strokeStyle = this.focus === 'canvas' ? '#ffe16a' : 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(canvasX, canvasY, canvasW, canvasH);
+    this.offscreen.width = width;
+    this.offscreen.height = height;
+    const composite = compositeLayers(this.canvasState.layers, width, height);
+    const imageData = this.offscreenCtx.createImageData(width, height);
+    const bytes = new Uint32Array(imageData.data.buffer);
+    bytes.set(composite);
+    this.offscreenCtx.putImageData(imageData, 0, 0);
 
-    const maxPixelSize = Math.min((canvasW - 40) / this.gridSize, (canvasH - 60) / this.gridSize);
-    const pixelSize = Math.min(ZOOM_LEVELS[this.zoomIndex], maxPixelSize);
-    const gridW = pixelSize * this.gridSize;
-    const gridH = pixelSize * this.gridSize;
-    const gridX = canvasX + (canvasW - gridW) / 2;
-    const gridY = canvasY + 40;
-
-    this.canvasBounds = { x: gridX, y: gridY, w: gridW, h: gridH, cellSize: pixelSize };
-
-    if (this.tiledMode) {
-      this.drawTiledPreview(ctx, canvasX, canvasY, canvasW, canvasH, gridX, gridY, pixelSize, gridW, gridH);
-    }
-
-    ctx.fillStyle = '#101010';
-    ctx.fillRect(gridX, gridY, gridW, gridH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(gridX, gridY, gridW, gridH);
-
-    for (let row = 0; row < this.gridSize; row += 1) {
-      for (let col = 0; col < this.gridSize; col += 1) {
-        const color = this.pixels[row * this.gridSize + col];
-        if (!color) continue;
-        ctx.fillStyle = color;
-        ctx.fillRect(gridX + col * pixelSize, gridY + row * pixelSize, pixelSize, pixelSize);
+    if (this.tiledPreview.enabled) {
+      const tileCount = this.tiledPreview.tiles;
+      for (let row = -1; row <= tileCount; row += 1) {
+        for (let col = -1; col <= tileCount; col += 1) {
+          ctx.globalAlpha = 0.2;
+          ctx.drawImage(this.offscreen, offsetX + col * gridW, offsetY + row * gridH, gridW, gridH);
+        }
       }
+      ctx.globalAlpha = 1;
     }
 
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-    for (let i = 1; i < this.gridSize; i += 1) {
+    if (this.animation.onion.enabled) {
+      this.drawOnionSkin(ctx, offsetX, offsetY, gridW, gridH);
+    }
+
+    ctx.drawImage(this.offscreen, offsetX, offsetY, gridW, gridH);
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    for (let row = 0; row <= height; row += 1) {
       ctx.beginPath();
-      ctx.moveTo(gridX + i * pixelSize, gridY);
-      ctx.lineTo(gridX + i * pixelSize, gridY + gridH);
+      ctx.moveTo(offsetX, offsetY + row * zoom);
+      ctx.lineTo(offsetX + gridW, offsetY + row * zoom);
       ctx.stroke();
+    }
+    for (let col = 0; col <= width; col += 1) {
       ctx.beginPath();
-      ctx.moveTo(gridX, gridY + i * pixelSize);
-      ctx.lineTo(gridX + gridW, gridY + i * pixelSize);
+      ctx.moveTo(offsetX + col * zoom, offsetY);
+      ctx.lineTo(offsetX + col * zoom, offsetY + gridH);
       ctx.stroke();
     }
 
-    if (this.shapeActive && this.shapeStart && this.shapeEnd) {
-      const minRow = Math.min(this.shapeStart.row, this.shapeEnd.row);
-      const maxRow = Math.max(this.shapeStart.row, this.shapeEnd.row);
-      const minCol = Math.min(this.shapeStart.col, this.shapeEnd.col);
-      const maxCol = Math.max(this.shapeStart.col, this.shapeEnd.col);
+    if (this.selection.active && this.selection.bounds) {
       ctx.strokeStyle = '#ffcc6a';
       ctx.lineWidth = 2;
       ctx.strokeRect(
-        gridX + minCol * pixelSize,
-        gridY + minRow * pixelSize,
-        (maxCol - minCol + 1) * pixelSize,
-        (maxRow - minRow + 1) * pixelSize
+        offsetX + this.selection.bounds.x * zoom,
+        offsetY + this.selection.bounds.y * zoom,
+        this.selection.bounds.w * zoom,
+        this.selection.bounds.h * zoom
       );
     }
 
+    if (this.linePreview) {
+      const bounds = this.getBoundsFromPoints(this.linePreview.start, this.linePreview.end);
+      ctx.strokeStyle = '#9ddcff';
+      ctx.strokeRect(
+        offsetX + bounds.x * zoom,
+        offsetY + bounds.y * zoom,
+        bounds.w * zoom,
+        bounds.h * zoom
+      );
+    }
+
+    if (this.toolOptions.symmetry.horizontal) {
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      const xMid = offsetX + gridW / 2;
+      ctx.beginPath();
+      ctx.moveTo(xMid, offsetY);
+      ctx.lineTo(xMid, offsetY + gridH);
+      ctx.stroke();
+    }
+    if (this.toolOptions.symmetry.vertical) {
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      const yMid = offsetY + gridH / 2;
+      ctx.beginPath();
+      ctx.moveTo(offsetX, yMid);
+      ctx.lineTo(offsetX + gridW, yMid);
+      ctx.stroke();
+    }
+
+    if (this.gamepadCursor.active) {
+      ctx.strokeStyle = '#9ddcff';
+      ctx.strokeRect(this.gamepadCursor.x - 4, this.gamepadCursor.y - 4, 8, 8);
+    }
+
+    const previewSize = 72;
+    const previewX = x + w - previewSize - 12;
+    const previewY = y + 12;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(previewX, previewY, previewSize, previewSize);
+    ctx.strokeStyle = '#ffe16a';
+    ctx.strokeRect(previewX, previewY, previewSize, previewSize);
+    ctx.drawImage(this.offscreen, previewX, previewY, previewSize, previewSize);
     ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
-    ctx.fillText(`Zoom: ${pixelSize}px`, canvasX + 20, canvasY + 24);
-    ctx.fillText(`Tool: ${this.tools[this.toolIndex]?.label || ''}`, canvasX + 180, canvasY + 24);
-    if (this.tiledMode) {
-      ctx.fillStyle = '#ffe16a';
-      ctx.fillText('Tiled Mode On', canvasX + 360, canvasY + 24);
+    ctx.font = '11px Courier New';
+    ctx.fillText('Preview', previewX, previewY + previewSize + 12);
+  }
+
+  drawOnionSkin(ctx, offsetX, offsetY, gridW, gridH) {
+    const { prev, next, opacity } = this.animation.onion;
+    const total = this.animation.frames.length;
+    for (let i = 1; i <= prev; i += 1) {
+      const index = this.animation.currentFrameIndex - i;
+      if (index < 0) continue;
+      const composite = compositeLayers(this.animation.frames[index].layers, this.canvasState.width, this.canvasState.height);
+      this.drawGhost(ctx, composite, offsetX, offsetY, gridW, gridH, opacity * (1 - i * 0.2));
     }
-    if (this.cloneSource && this.tools[this.toolIndex]?.id === 'clone') {
-      ctx.fillStyle = '#9ddcff';
-      ctx.fillText('Clone Source Set', canvasX + 20, canvasY + 44);
+    for (let i = 1; i <= next; i += 1) {
+      const index = this.animation.currentFrameIndex + i;
+      if (index >= total) continue;
+      const composite = compositeLayers(this.animation.frames[index].layers, this.canvasState.width, this.canvasState.height);
+      this.drawGhost(ctx, composite, offsetX, offsetY, gridW, gridH, opacity * (1 - i * 0.2));
     }
+  }
 
-    if (this.previewEnabled) {
-      const previewSize = 80;
-      const previewX = canvasX + canvasW - previewSize - 20;
-      const previewY = canvasY + 14;
-      ctx.fillStyle = 'rgba(255,255,255,0.06)';
-      ctx.fillRect(previewX, previewY, previewSize, previewSize);
-      ctx.strokeStyle = '#ffe16a';
-      ctx.strokeRect(previewX, previewY, previewSize, previewSize);
-      const previewPixel = previewSize / this.gridSize;
-      for (let row = 0; row < this.gridSize; row += 1) {
-        for (let col = 0; col < this.gridSize; col += 1) {
-          const color = this.pixels[row * this.gridSize + col];
-          if (!color) continue;
-          ctx.fillStyle = color;
-          ctx.fillRect(previewX + col * previewPixel, previewY + row * previewPixel, previewPixel, previewPixel);
-        }
-      }
-      ctx.fillStyle = '#fff';
-      ctx.font = '12px Courier New';
-      ctx.fillText('Preview', previewX + 8, previewY + previewSize + 16);
-    }
-
-    this.cutImageRect = null;
-    if (this.cutImage) {
-      const cutW = Math.min(canvasW * 0.35, 240);
-      const cutH = cutW;
-      const cutX = canvasX + 20;
-      const cutY = canvasY + canvasH - cutH - 20;
-      this.cutBounds = { x: cutX, y: cutY, w: cutW, h: cutH };
-      ctx.fillStyle = 'rgba(0,0,0,0.4)';
-      ctx.fillRect(cutX, cutY, cutW, cutH);
-      ctx.strokeStyle = this.focus === 'cut' ? '#ffe16a' : 'rgba(255,255,255,0.2)';
-      ctx.strokeRect(cutX, cutY, cutW, cutH);
-      const scale = Math.min(cutW / this.cutImage.width, cutH / this.cutImage.height);
-      const imgW = this.cutImage.width * scale;
-      const imgH = this.cutImage.height * scale;
-      const imgX = cutX + (cutW - imgW) / 2;
-      const imgY = cutY + (cutH - imgH) / 2;
-      this.cutImageRect = { x: imgX, y: imgY, w: imgW, h: imgH };
-      ctx.drawImage(this.cutImage, imgX, imgY, imgW, imgH);
-      if (this.cutSelection) {
-        ctx.strokeStyle = '#ffcc6a';
-        ctx.strokeRect(this.cutSelection.x, this.cutSelection.y, this.cutSelection.w, this.cutSelection.h);
-      }
-      ctx.fillStyle = '#fff';
-      ctx.font = '12px Courier New';
-      ctx.fillText('Cut From Image', cutX + 6, cutY - 6);
-    }
-
-    const paletteY = height - bottomHeight + 30;
-    const paletteX = 20;
-    const paletteW = width - 40;
-    const swatchSize = 32;
-    const swatchGap = 12;
-    const totalSwatchesWidth = this.palette.length * swatchSize + (this.palette.length - 1) * swatchGap;
-    let startX = paletteX + (paletteW - totalSwatchesWidth) / 2;
-    if (totalSwatchesWidth > paletteW) {
-      startX = paletteX;
-    }
-
-    this.paletteBounds = [];
-    this.palette.forEach((entry, index) => {
-      const x = startX + index * (swatchSize + swatchGap);
-      const y = paletteY;
-      ctx.fillStyle = entry.color || '#101010';
-      ctx.fillRect(x, y, swatchSize, swatchSize);
-      ctx.strokeStyle = index === this.paletteIndex || this.focus === 'palette' ? '#ffe16a' : 'rgba(255,255,255,0.3)';
-      ctx.strokeRect(x, y, swatchSize, swatchSize);
-      if (!entry.color) {
-        ctx.strokeStyle = '#ff6b6b';
-        ctx.beginPath();
-        ctx.moveTo(x + 4, y + 4);
-        ctx.lineTo(x + swatchSize - 4, y + swatchSize - 4);
-        ctx.stroke();
-      }
-      this.paletteBounds.push({ x, y, w: swatchSize, h: swatchSize, index });
-    });
-
-    ctx.fillStyle = '#fff';
-    ctx.font = '12px Courier New';
-    ctx.fillText('Swatches', paletteX + 4, paletteY - 8);
-
-    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.font = '12px Courier New';
-    ctx.fillText('Joystick: palette • D-pad: tools/objects • Triggers: zoom • Enter: apply tool • Esc: back', 24, height - 14);
-
+  drawGhost(ctx, composite, offsetX, offsetY, gridW, gridH, alpha) {
+    const imageData = this.offscreenCtx.createImageData(this.canvasState.width, this.canvasState.height);
+    const bytes = new Uint32Array(imageData.data.buffer);
+    bytes.set(composite);
+    this.offscreenCtx.putImageData(imageData, 0, 0);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(this.offscreen, offsetX, offsetY, gridW, gridH);
     ctx.restore();
   }
 
-  drawTiledPreview(ctx, canvasX, canvasY, canvasW, canvasH, gridX, gridY, pixelSize, gridW, gridH) {
-    const startX = gridX - gridW * 2;
-    const startY = gridY - gridH * 2;
-    const endX = canvasX + canvasW;
-    const endY = canvasY + canvasH;
-    ctx.save();
-    ctx.globalAlpha = 0.35;
-    for (let tileY = startY; tileY < endY; tileY += gridH) {
-      for (let tileX = startX; tileX < endX; tileX += gridW) {
-        for (let row = 0; row < this.gridSize; row += 1) {
-          for (let col = 0; col < this.gridSize; col += 1) {
-            const color = this.pixels[row * this.gridSize + col];
-            if (!color) continue;
-            ctx.fillStyle = color;
-            ctx.fillRect(tileX + col * pixelSize, tileY + row * pixelSize, pixelSize, pixelSize);
-          }
-        }
-      }
+  drawPaletteBar(ctx, x, y, w, h) {
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, w, h);
+
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    ctx.fillText(`Palette: ${this.currentPalette.name}`, x + 10, y + 18);
+
+    const paletteControls = [
+      { label: '+', action: () => this.addPaletteColor() },
+      { label: '-', action: () => this.removePaletteColor() },
+      { label: '<', action: () => this.movePaletteColor(-1) },
+      { label: '>', action: () => this.movePaletteColor(1) },
+      { label: 'Ramp', action: () => this.generateRamp(4) },
+      { label: 'Save', action: () => this.saveCurrentPalette() },
+      { label: this.limitToPalette ? 'Limit ✓' : 'Limit', action: () => { this.limitToPalette = !this.limitToPalette; } }
+    ];
+    paletteControls.forEach((entry, index) => {
+      const bounds = { x: x + 200 + index * 44, y: y + 4, w: 40, h: 18 };
+      this.drawButton(ctx, bounds, entry.label);
+      this.uiButtons.push({ bounds, onClick: entry.action });
+    });
+
+    const swatchSize = 26;
+    const gap = 8;
+    const total = this.currentPalette.colors.length;
+    let startX = x + 10;
+    const maxPerRow = Math.floor((w - 20) / (swatchSize + gap));
+    this.paletteBounds = [];
+    for (let i = 0; i < total; i += 1) {
+      const row = Math.floor(i / maxPerRow);
+      const col = i % maxPerRow;
+      const swatchX = startX + col * (swatchSize + gap);
+      const swatchY = y + 30 + row * (swatchSize + gap);
+      ctx.fillStyle = this.currentPalette.colors[i].hex;
+      ctx.fillRect(swatchX, swatchY, swatchSize, swatchSize);
+      ctx.strokeStyle = i === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)';
+      ctx.strokeRect(swatchX, swatchY, swatchSize, swatchSize);
+      this.paletteBounds.push({ x: swatchX, y: swatchY, w: swatchSize, h: swatchSize, index: i });
     }
-    ctx.restore();
+
+    const presetX = x + w - 180;
+    const presetY = y + 8;
+    const allPalettes = [...this.palettePresets, ...this.customPalettes];
+    allPalettes.forEach((preset, index) => {
+      const bounds = { x: presetX, y: presetY + index * 20, w: 160, h: 18 };
+      this.drawButton(ctx, bounds, preset.name, preset.name === this.currentPalette.name);
+      this.uiButtons.push({ bounds, onClick: () => { this.currentPalette = preset; this.paletteIndex = 0; } });
+    });
+  }
+
+  drawTimeline(ctx, x, y, w, h) {
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, w, h);
+
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    ctx.fillText('Timeline', x + 10, y + 18);
+
+    const thumbSize = 36;
+    const gap = 10;
+    const startX = x + 10;
+    const startY = y + 30;
+    this.frameBounds = [];
+    this.animation.frames.forEach((frame, index) => {
+      const thumbX = startX + index * (thumbSize + gap);
+      const thumbY = startY;
+      ctx.fillStyle = index === this.animation.currentFrameIndex ? '#ffe16a' : 'rgba(255,255,255,0.2)';
+      ctx.fillRect(thumbX, thumbY, thumbSize, thumbSize);
+      const composite = compositeLayers(frame.layers, this.canvasState.width, this.canvasState.height);
+      const imageData = this.offscreenCtx.createImageData(this.canvasState.width, this.canvasState.height);
+      const bytes = new Uint32Array(imageData.data.buffer);
+      bytes.set(composite);
+      this.offscreenCtx.putImageData(imageData, 0, 0);
+      ctx.drawImage(this.offscreen, thumbX, thumbY, thumbSize, thumbSize);
+      this.frameBounds.push({ x: thumbX, y: thumbY, w: thumbSize, h: thumbSize, index });
+    });
+
+    const controls = [
+      { label: '+', action: () => this.addFrame() },
+      { label: 'Dup', action: () => this.duplicateFrame(this.animation.currentFrameIndex) },
+      { label: '-', action: () => this.deleteFrame(this.animation.currentFrameIndex) },
+      { label: this.animation.playing ? 'Pause' : 'Play', action: () => { this.animation.playing = !this.animation.playing; } }
+    ];
+    controls.forEach((entry, index) => {
+      const bounds = { x: x + 10 + index * 52, y: y + h - 28, w: 46, h: 18 };
+      this.drawButton(ctx, bounds, entry.label);
+      this.uiButtons.push({ bounds, onClick: entry.action });
+    });
+  }
+
+  drawGamepadHints(ctx, x, y) {
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(x, y, 200, 140);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, 200, 140);
+    ctx.fillStyle = '#fff';
+    ctx.font = '11px Courier New';
+    GAMEPAD_HINTS.forEach((hint, index) => {
+      ctx.fillText(hint, x + 10, y + 16 + index * 12);
+    });
   }
 }
