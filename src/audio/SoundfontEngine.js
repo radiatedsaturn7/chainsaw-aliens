@@ -4,8 +4,7 @@ const PRIMARY_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
 const FALLBACK_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
 const SOUNDFONT_PLAYER_GLOBAL = 'Soundfont';
 const DRUM_KIT_NAME = 'synth_drum';
-// FluidR3_GM does not ship dedicated drum kit soundfonts, so use a drum-ish fallback.
-const DRUM_KIT_FALLBACK_NAME = 'synth_drum';
+const DRUM_PRESET_NAME = 'percussion';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const normalizeBaseUrl = (url) => (url.endsWith('/') ? url : `${url}/`);
@@ -16,7 +15,6 @@ export default class SoundfontEngine {
     baseUrl = PRIMARY_SOUNDFONT_BASE,
     fallbackUrl = FALLBACK_SOUNDFONT_BASE,
     format = 'mp3',
-    drumKitFallbackName = DRUM_KIT_FALLBACK_NAME,
     debug = true
   } = {}) {
     this.baseUrl = normalizeBaseUrl(baseUrl);
@@ -32,8 +30,6 @@ export default class SoundfontEngine {
     this.channelPrograms = new Map();
     this.channelVolumes = new Map();
     this.drumKitName = DRUM_KIT_NAME;
-    this.drumKitFallbackName = drumKitFallbackName;
-    this.missingDrumKits = new Set();
     this.failedInstruments = new Set();
     this.error = null;
     this.lastError = null;
@@ -76,10 +72,6 @@ export default class SoundfontEngine {
 
   setDrumKitName(name) {
     if (!name) return;
-    if (this.missingDrumKits.has(name) && this.drumKitFallbackName) {
-      this.drumKitName = this.drumKitFallbackName;
-      return;
-    }
     this.drumKitName = name;
   }
 
@@ -102,7 +94,6 @@ export default class SoundfontEngine {
     this.instrumentCache.clear();
     this.loadingPromises.clear();
     this.drumKitName = DRUM_KIT_NAME;
-    this.missingDrumKits.clear();
     this.failedInstruments.clear();
     this.error = null;
     this.lastError = null;
@@ -154,21 +145,10 @@ export default class SoundfontEngine {
     return this.loadInstrumentByName(String(program), name);
   }
 
-  loadDrumKit(kitName = this.drumKitName) {
-    const resolved = this.missingDrumKits.has(kitName) && this.drumKitFallbackName
-      ? this.drumKitFallbackName
-      : (kitName || DRUM_KIT_NAME);
-    const percussionOptions = { percussion: true, bank: GM_DRUM_BANK_MSB };
-    const drumKey = resolveDrumKitKey(resolved, percussionOptions.bank);
-    return this.loadInstrumentByName(drumKey, resolved, percussionOptions).catch((error) => {
-      if (!this.drumKitFallbackName || resolved === this.drumKitFallbackName) {
-        throw error;
-      }
-      this.missingDrumKits.add(resolved);
-      this.drumKitName = this.drumKitFallbackName;
-      const fallbackKey = resolveDrumKitKey(this.drumKitFallbackName, percussionOptions.bank);
-      return this.loadInstrumentByName(fallbackKey, this.drumKitFallbackName, percussionOptions);
-    });
+  loadDrumKit() {
+    const percussionOptions = { percussion: true, bank: GM_DRUM_BANK_MSB, preset: 0 };
+    const drumKey = resolveDrumKitKey(DRUM_PRESET_NAME, percussionOptions.bank);
+    return this.loadInstrumentByName(drumKey, DRUM_PRESET_NAME, percussionOptions);
   }
 
   async cacheInstrument(program) {
@@ -176,10 +156,9 @@ export default class SoundfontEngine {
     return this.cacheInstrumentByName(String(program), name);
   }
 
-  async cacheDrumKit(kitName = this.drumKitName) {
-    const resolved = kitName || DRUM_KIT_NAME;
-    const drumKey = resolveDrumKitKey(resolved, GM_DRUM_BANK_MSB);
-    return this.cacheInstrumentByName(drumKey, resolved);
+  async cacheDrumKit() {
+    const drumKey = resolveDrumKitKey(DRUM_PRESET_NAME, GM_DRUM_BANK_MSB);
+    return this.cacheInstrumentByName(drumKey, DRUM_PRESET_NAME);
   }
 
   async cacheInstrumentByName(key, name) {
@@ -231,6 +210,7 @@ export default class SoundfontEngine {
           destination: this.masterGain || this.destination,
           percussion: options.percussion,
           bank: options.bank,
+          preset: options.preset,
           nameToUrl: (instrumentName, soundfont, format) => {
             const url = this.buildUrl(this.baseUrl, instrumentName, format);
             this.lastUrl = url;
@@ -245,6 +225,7 @@ export default class SoundfontEngine {
           destination: this.masterGain || this.destination,
           percussion: options.percussion,
           bank: options.bank,
+          preset: options.preset,
           nameToUrl: (instrumentName, soundfont, format) => {
             const url = this.buildUrl(this.fallbackUrl, instrumentName, format);
             this.lastUrl = url;
@@ -311,22 +292,21 @@ export default class SoundfontEngine {
       return instrument.play(resolvedNote, when, { gain: volume, duration: durationSeconds });
     };
     if (isDrum) {
-      const kitName = this.drumKitName || DRUM_KIT_NAME;
-      const drumKey = resolveDrumKitKey(kitName, bankMSB);
+      const drumKey = resolveDrumKitKey(DRUM_PRESET_NAME, GM_DRUM_BANK_MSB);
       this.logResolution({
         trackId: meta.trackId,
         channel,
         isDrum,
         incomingNote,
         resolvedNote,
-        bankMSB,
+        bankMSB: GM_DRUM_BANK_MSB,
         bankLSB,
         program: meta.program ?? 0,
-        presetName: kitName,
+        presetName: DRUM_PRESET_NAME,
         presetKey: drumKey,
         percussionMode: true
       });
-      return this.loadDrumKit(kitName).then(playNote);
+      return this.loadDrumKit().then(playNote);
     }
     const program = this.channelPrograms.get(channel) ?? 0;
     const presetName = this.getProgramName(program);

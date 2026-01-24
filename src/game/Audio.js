@@ -428,27 +428,17 @@ export default class AudioSystem {
     let resolvedBankLSB = bankLSB;
     if (isDrums) {
       resolvedPitch = clampDrumPitch(resolvedPitch);
-      resolvedBankMSB = Number.isInteger(bankMSB) ? bankMSB : GM_DRUM_BANK_MSB;
-      resolvedBankLSB = Number.isInteger(bankLSB) ? bankLSB : GM_DRUM_BANK_LSB;
-      const usesExplicitKit = [resolvedBankMSB, resolvedBankLSB, clampedProgram]
-        .some((value) => Number.isInteger(value) && value !== GM_DRUM_BANK_LSB);
-      const resolvedKit = usesExplicitKit
-        ? this.drumKitManager.resolveKitFromBankProgram(resolvedBankMSB, resolvedBankLSB, clampedProgram)
-        : this.drumKitManager.getDrumKit();
+      resolvedBankMSB = GM_DRUM_BANK_MSB;
+      resolvedBankLSB = GM_DRUM_BANK_LSB;
+      const resolvedKit = this.drumKitManager.getDrumKit();
       if (resolvedKit?.soundfont) {
         this.soundfont.setDrumKitName(resolvedKit.soundfont);
         this.drumKitManager.setDrumKit(resolvedKit.id);
         channelState.drumKitId = resolvedKit.id;
-        channelState.bankMSB = resolvedKit.bankMSB;
-        channelState.bankLSB = resolvedKit.bankLSB;
-        channelState.program = resolvedKit.program;
-        resolvedBankMSB = resolvedKit.bankMSB;
-        resolvedBankLSB = resolvedKit.bankLSB;
-      } else {
-        channelState.bankMSB = resolvedBankMSB;
-        channelState.bankLSB = resolvedBankLSB;
-        channelState.program = clampedProgram;
       }
+      channelState.bankMSB = resolvedBankMSB;
+      channelState.bankLSB = resolvedBankLSB;
+      channelState.program = 0;
       const drumLabel = GM_DRUMS.find((entry) => entry.pitch === resolvedPitch)?.label || 'Unknown Drum';
       this.midiDebug.lastDrumNote = { pitch: resolvedPitch, label: drumLabel };
       this.midiDebug.lastChannelType = 'percussion';
@@ -491,7 +481,7 @@ export default class AudioSystem {
       resolvedNote: resolvedPitch,
       bankMSB: resolvedBankMSB,
       bankLSB: resolvedBankLSB,
-      program: isDrums ? channelState.program : clampedProgram
+      program: isDrums ? 0 : clampedProgram
     })
       .then((voice) => {
         if (!voice) return;
@@ -615,11 +605,27 @@ export default class AudioSystem {
   }
 
   getFallbackDrum(pitch) {
-    if (pitch <= 36) return 'kick';
-    if (pitch <= 38) return 'snare';
-    if (pitch <= 42) return 'hat';
-    if (pitch <= 46) return 'tom';
-    if (pitch <= 49) return 'crash';
+    const entry = GM_DRUMS.find((drum) => drum.pitch === pitch);
+    const label = entry?.label?.toLowerCase() || '';
+    if (label.includes('kick') || label.includes('bass drum')) return 'kick';
+    if (label.includes('snare') || label.includes('stick') || label.includes('clap')) return 'snare';
+    if (label.includes('hi-hat') || label.includes('hat')) return 'hat';
+    if (label.includes('cymbal') || label.includes('triangle') || label.includes('tambourine')) return 'crash';
+    if (label.includes('tom')
+      || label.includes('bongo')
+      || label.includes('conga')
+      || label.includes('timbale')
+      || label.includes('agogo')
+      || label.includes('cowbell')
+      || label.includes('wood block')
+      || label.includes('claves')
+      || label.includes('cabasa')
+      || label.includes('maracas')
+      || label.includes('guiro')
+      || label.includes('whistle')
+      || label.includes('cuica')) {
+      return 'tom';
+    }
     return 'hat';
   }
 
