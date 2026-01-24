@@ -4926,6 +4926,18 @@ export default class MidiComposer {
       ctx.fillStyle = gmStatus.error ? '#ff6a6a' : 'rgba(255,255,255,0.6)';
       ctx.font = '12px Courier New';
       ctx.fillText(statusText, x + padding, y + padding + 12);
+      if (gmStatus.error) {
+        const bannerText = `SoundFont error: ${gmStatus.error}`;
+        const bannerH = 22;
+        const bannerY = y + h - bannerH - 8;
+        ctx.fillStyle = 'rgba(255,90,90,0.25)';
+        ctx.fillRect(x + 8, bannerY, w - 16, bannerH);
+        ctx.strokeStyle = 'rgba(255,120,120,0.6)';
+        ctx.strokeRect(x + 8, bannerY, w - 16, bannerH);
+        ctx.fillStyle = '#ffd0d0';
+        ctx.font = '12px Courier New';
+        ctx.fillText(this.truncateLabel(ctx, bannerText, w - 28), x + 14, bannerY + 15);
+      }
     }
   }
 
