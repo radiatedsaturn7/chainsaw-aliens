@@ -3,9 +3,11 @@ import { GM_DRUM_BANK_MSB, GM_SOUNDFONT_NAMES, isDrumChannel } from './gm.js';
 const PRIMARY_SOUNDFONT_BASE = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
 const FALLBACK_SOUNDFONT_BASE = 'https://cdn.jsdelivr.net/gh/gleitz/midi-js-soundfonts/FluidR3_GM/';
 const SOUNDFONT_PLAYER_GLOBAL = 'Soundfont';
-const DRUM_KIT_NAME = 'standard_kit';
 // FluidR3_GM does not ship dedicated drum kit soundfonts, so use a drum-ish fallback.
+const DRUM_KIT_NAME = 'synth_drum';
 const DRUM_KIT_FALLBACK_NAME = 'synth_drum';
+const LOCAL_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
+const LOCAL_SOUNDFONTS = new Set(['synth_drum']);
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const normalizeBaseUrl = (url) => (url.endsWith('/') ? url : `${url}/`);
@@ -37,6 +39,8 @@ export default class SoundfontEngine {
     this.lastError = null;
     this.lastUrl = null;
     this.debug = Boolean(debug);
+    this.localBaseUrl = LOCAL_SOUNDFONT_BASE;
+    this.localSoundfonts = new Set(LOCAL_SOUNDFONTS);
   }
 
   initAudio({ audioContext = null, destination = null } = {}) {
@@ -134,8 +138,15 @@ export default class SoundfontEngine {
     return this.playerPromise;
   }
 
+  getBaseUrlForInstrument(name, fallback = false) {
+    if (this.localSoundfonts?.has(name)) {
+      return this.localBaseUrl;
+    }
+    return fallback ? this.fallbackUrl : this.baseUrl;
+  }
+
   buildUrl(baseUrl, name, format) {
-    return `${baseUrl}${name}-${format}.js`;
+    return `${normalizeBaseUrl(baseUrl)}${name}-${format}.js`;
   }
 
   getProgramName(program) {
@@ -177,8 +188,8 @@ export default class SoundfontEngine {
       throw new Error('Cache API unavailable.');
     }
     const cache = await caches.open('chainsaw-soundfonts');
-    const primaryUrl = this.buildUrl(this.baseUrl, name, this.format);
-    const fallbackUrl = this.buildUrl(this.fallbackUrl, name, this.format);
+    const primaryUrl = this.buildUrl(this.getBaseUrlForInstrument(name, false), name, this.format);
+    const fallbackUrl = this.buildUrl(this.getBaseUrlForInstrument(name, true), name, this.format);
     const urls = [primaryUrl, fallbackUrl];
     for (const url of urls) {
       const cached = await cache.match(url);
@@ -208,8 +219,8 @@ export default class SoundfontEngine {
       return this.loadingPromises.get(key);
     }
     const primaryFormat = this.format;
-    const primaryUrl = this.buildUrl(this.baseUrl, name, primaryFormat);
-    const fallbackUrl = this.buildUrl(this.fallbackUrl, name, primaryFormat);
+    const primaryUrl = this.buildUrl(this.getBaseUrlForInstrument(name, false), name, primaryFormat);
+    const fallbackUrl = this.buildUrl(this.getBaseUrlForInstrument(name, true), name, primaryFormat);
     const promise = this.ensurePlayer()
       .then(() => {
         this.lastUrl = primaryUrl;
@@ -219,7 +230,7 @@ export default class SoundfontEngine {
           percussion: options.percussion,
           bank: options.bank,
           nameToUrl: (instrumentName, soundfont, format) => {
-            const url = this.buildUrl(this.baseUrl, instrumentName, format);
+            const url = this.buildUrl(this.getBaseUrlForInstrument(instrumentName, false), instrumentName, format);
             this.lastUrl = url;
             return url;
           }
@@ -233,7 +244,7 @@ export default class SoundfontEngine {
           percussion: options.percussion,
           bank: options.bank,
           nameToUrl: (instrumentName, soundfont, format) => {
-            const url = this.buildUrl(this.fallbackUrl, instrumentName, format);
+            const url = this.buildUrl(this.getBaseUrlForInstrument(instrumentName, true), instrumentName, format);
             this.lastUrl = url;
             return url;
           }
