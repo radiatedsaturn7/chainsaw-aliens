@@ -233,7 +233,9 @@ export default class TouchInput {
       id: noteId,
       pitch: hit.pitch,
       velocity: 112,
-      source: 'touch'
+      source: 'touch',
+      instrument: this.instrument,
+      channel: this.instrument === 'drums' ? 9 : undefined
     });
   }
 
@@ -266,7 +268,9 @@ export default class TouchInput {
       id: noteId,
       pitch: hit.pitch,
       velocity: 112,
-      source: 'touch'
+      source: 'touch',
+      instrument: this.instrument,
+      channel: this.instrument === 'drums' ? 9 : undefined
     });
   }
 

@@ -1706,14 +1706,15 @@ export default class MidiComposer {
     }
   }
 
-  getRecordingTarget() {
-    const track = this.getRecordingTrack();
+  getRecordingTarget(instrumentOverride = null) {
+    const track = this.getRecordingTrack(instrumentOverride);
     const pattern = track?.patterns?.[this.selectedPatternIndex] || null;
     return { track, pattern };
   }
 
-  getRecordingTrack() {
-    if (this.recordInstrument === 'drums') {
+  getRecordingTrack(instrumentOverride = null) {
+    const instrument = instrumentOverride || this.recordInstrument;
+    if (instrument === 'drums') {
       let drumTrack = this.song.tracks.find((candidate) => candidate.channel === 9);
       if (!drumTrack) {
         drumTrack = {
@@ -1744,7 +1745,8 @@ export default class MidiComposer {
   handleRecordedNoteOn(event) {
     if (!this.recordModeActive) return;
     const now = this.getRecordingTime();
-    const { track } = this.getRecordingTarget();
+    const instrumentOverride = (event?.instrument === 'drums' || event?.channel === 9) ? 'drums' : null;
+    const { track } = this.getRecordingTarget(instrumentOverride);
     if (!track) return;
     const velocity = Number.isFinite(event.velocity) ? event.velocity : this.recordStatus.velocity;
     const clampedVelocity = clamp(velocity ?? 96, 1, 127);
