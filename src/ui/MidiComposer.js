@@ -3518,7 +3518,8 @@ export default class MidiComposer {
       return;
     } else if (hit.control === 'bank') {
       if (isDrumChannel(track.channel)) {
-        const kits = this.game?.audio?.listAvailableDrumKits?.() || GM_DRUM_KITS;
+        const available = this.game?.audio?.listAvailableDrumKits?.();
+        const kits = Array.isArray(available) && available.length ? available : GM_DRUM_KITS;
         if (!kits.length) return;
         const currentIndex = Math.max(0, kits.findIndex((kit) =>
           kit.program === track.program && kit.bankMSB === track.bankMSB && kit.bankLSB === track.bankLSB));
@@ -3613,7 +3614,8 @@ export default class MidiComposer {
       return;
     }
     if (control.id === 'audio-drumkit') {
-      const kits = this.game?.audio?.listAvailableDrumKits?.() || GM_DRUM_KITS;
+      const available = this.game?.audio?.listAvailableDrumKits?.();
+      const kits = Array.isArray(available) && available.length ? available : GM_DRUM_KITS;
       if (!kits.length) return;
       const currentId = this.audioSettings.drumKitId;
       const currentIndex = Math.max(0, kits.findIndex((kit) => kit.id === currentId));
@@ -5386,7 +5388,8 @@ export default class MidiComposer {
     const cdnLabel = SOUNDFONT_CDNS.find((entry) => entry.id === this.audioSettings.soundfontCdn)?.label || 'GitHub Pages';
     drawAction('SoundFont CDN', cdnLabel, 'audio-soundfont-cdn', 'Switch CDN source for the FluidR3_GM bank.');
     drawAction('Preload Instrument', 'Load', 'audio-soundfont-preload', 'Preload the active track SoundFont.');
-    const drumKits = this.game?.audio?.listAvailableDrumKits?.() || GM_DRUM_KITS;
+    const availableKits = this.game?.audio?.listAvailableDrumKits?.();
+    const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
     const activeKit = drumKits.find((kit) => kit.id === this.audioSettings.drumKitId) || drumKits[0];
     drawAction('Drum Kit', activeKit?.label || 'Standard Kit', 'audio-drumkit', 'Select the GM drum kit for channel 10.');
     if (gmStatus) {

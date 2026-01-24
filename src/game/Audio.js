@@ -415,7 +415,7 @@ export default class AudioSystem {
       const resolvedKit = usesExplicitKit
         ? this.drumKitManager.resolveKitFromBankProgram(bankMSB, bankLSB, clampedProgram)
         : this.drumKitManager.getDrumKit();
-      if (resolvedKit) {
+      if (resolvedKit?.soundfont) {
         this.soundfont.setDrumKitName(resolvedKit.soundfont);
         this.drumKitManager.setDrumKit(resolvedKit.id);
         channelState.drumKitId = resolvedKit.id;
