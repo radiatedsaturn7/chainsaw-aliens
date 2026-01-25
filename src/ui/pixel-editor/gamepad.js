@@ -1,15 +1,17 @@
 export const GAMEPAD_HINTS = [
   'Back: UI/CANVAS mode',
-  'D-pad: UI focus / 1px nudge',
-  'Left Stick: cursor',
+  'D-pad: menu focus',
+  'Left Stick: grid cursor',
   'Right Stick: pan / scrub timeline',
-  'A: confirm / draw',
-  'B: back / cancel',
-  'X: eyedropper (hold)',
-  'Y: draw ↔ select',
-  'LB: temp erase',
-  'RB + D-pad ←/→: undo/redo',
-  'LT/RT: zoom',
+  'A: draw / use tool',
+  'B: undo',
+  'X: eraser',
+  'Y: redo',
+  'LB/RB: switch panels',
+  'LT: deselect area',
+  'RT: select area',
+  'L3: color wheel',
+  'R3: tool wheel',
   'Start: menu / play'
 ];
 
