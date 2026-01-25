@@ -67,17 +67,17 @@ Open from the title screen **Tools** menu (`Pixel Editor`). The editor is an Ase
 | --- | --- |
 | **LT** | Deselect area (selection mask) |
 | **RT** | Draw selection area |
-| **D-pad** | Navigate UI lists (menu-first) |
+| **D-pad** | Nudge cursor (canvas) / navigate UI lists (menu) |
 | **Left Stick** | Move canvas cursor (grid-quantized) |
 | **Right Stick** | Pan canvas (default) / scrub timeline when focused |
 | **A** | Draw / use active tool |
-| **B** | Undo |
+| **B** | Return to draw mode / Undo |
 | **X** | Eraser |
 | **Y** | Redo |
 | **LB / RB** | Switch left-panel tabs |
 | **L3** | Color wheel (8 swatches) |
 | **R3** | Tool wheel (8 tools) |
-| **Start** | Menu (or Play/Pause when timeline focused) |
+| **Start** | Tools tab |
 | **Back/Select** | Toggle **UI** ↔ **Canvas** focus mode |
 
 ### Mobile Gestures

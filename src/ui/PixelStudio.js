@@ -305,8 +305,8 @@ export default class PixelStudio {
     this.mobileDrawer = null;
     this.paletteGridOpen = false;
     this.sidebars = { left: true };
-    this.leftPanelTabs = ['tools', 'objects', 'layers', 'switches', 'animate', 'file', 'palette'];
-    this.leftPanelTabIndex = 0;
+    this.leftPanelTabs = ['tools', 'canvas'];
+    this.leftPanelTabIndex = 1;
     this.leftPanelTab = this.leftPanelTabs[this.leftPanelTabIndex];
     this.uiButtons = [];
     this.paletteBounds = [];
@@ -587,6 +587,11 @@ export default class PixelStudio {
             this.selectionContextMenu = null;
             break;
           }
+          if (this.inputMode === 'canvas'
+            && [TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.MOVE].includes(this.activeToolId)) {
+            this.setActiveTool(TOOL_IDS.PENCIL);
+            break;
+          }
           this.undo();
           break;
         case INPUT_ACTIONS.REDO:
@@ -637,16 +642,32 @@ export default class PixelStudio {
           this.openQuickWheel('tool');
           break;
         case INPUT_ACTIONS.NAV_UP:
-          this.handleNav('up');
+          if (this.inputMode === 'canvas') {
+            this.handleCanvasNav('up');
+          } else {
+            this.handleNav('up');
+          }
           break;
         case INPUT_ACTIONS.NAV_DOWN:
-          this.handleNav('down');
+          if (this.inputMode === 'canvas') {
+            this.handleCanvasNav('down');
+          } else {
+            this.handleNav('down');
+          }
           break;
         case INPUT_ACTIONS.NAV_LEFT:
-          this.handleNav('left');
+          if (this.inputMode === 'canvas') {
+            this.handleCanvasNav('left');
+          } else {
+            this.handleNav('left');
+          }
           break;
         case INPUT_ACTIONS.NAV_RIGHT:
-          this.handleNav('right');
+          if (this.inputMode === 'canvas') {
+            this.handleCanvasNav('right');
+          } else {
+            this.handleNav('right');
+          }
           break;
         case INPUT_ACTIONS.DRAW_PRESS:
           if (this.inputMode === 'canvas') {
@@ -714,8 +735,23 @@ export default class PixelStudio {
     this.moveFocus(direction);
   }
 
+  handleCanvasNav(direction) {
+    const delta = { x: 0, y: 0 };
+    if (direction === 'left') delta.x = -1;
+    if (direction === 'right') delta.x = 1;
+    if (direction === 'up') delta.y = -1;
+    if (direction === 'down') delta.y = 1;
+    if (!delta.x && !delta.y) return;
+    if (this.selection.active && this.activeToolId === TOOL_IDS.MOVE) {
+      this.nudgeSelection(delta.x, delta.y);
+      return;
+    }
+    this.nudgeCursor(delta.x, delta.y);
+  }
+
   handleCursorMove(inputState, dt) {
     if (!this.canvasBounds) return;
+    if (this.inputMode !== 'canvas') return;
     const axes = inputState.axes || { leftX: 0, leftY: 0 };
     if (this.quickWheel?.active) return;
     const threshold = 0.35;
@@ -799,7 +835,7 @@ export default class PixelStudio {
 
   openFileTab() {
     this.sidebars.left = true;
-    this.setLeftPanelTab('file');
+    this.setLeftPanelTab('tools');
     this.setInputMode('ui');
     this.uiFocus.group = 'menu';
     this.uiFocus.index = 0;
@@ -810,6 +846,11 @@ export default class PixelStudio {
     if (index < 0) return;
     this.leftPanelTabIndex = index;
     this.leftPanelTab = tab;
+    if (tab === 'canvas') {
+      this.setInputMode('canvas');
+    } else {
+      this.setInputMode('ui');
+    }
     if (tab === 'animate') {
       this.modeTab = 'animate';
       return;
@@ -2156,14 +2197,17 @@ export default class PixelStudio {
     ctx.fillRect(0, 0, width, height);
     ctx.imageSmoothingEnabled = false;
     const isMobile = this.isMobileLayout(width, height);
+    const menuFullScreen = !isMobile && this.leftPanelTab === 'tools';
     const padding = isMobile ? 12 : 16;
     const topBarHeight = 0;
     const statusHeight = 20;
     const paletteHeight = isMobile ? 64 : 0;
     const toolbarHeight = isMobile ? 72 : 0;
     const timelineHeight = !isMobile && this.modeTab === 'animate' ? 120 : 0;
-    const bottomHeight = statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
-    const leftWidth = isMobile ? 0 : (this.sidebars.left ? 260 : 0);
+    const bottomHeight = menuFullScreen
+      ? padding * 2
+      : statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
+    const leftWidth = isMobile ? 0 : (this.sidebars.left ? (menuFullScreen ? width - padding * 2 : 260) : 0);
     const rightWidth = 0;
 
     this.uiButtons = [];
@@ -2180,26 +2224,32 @@ export default class PixelStudio {
 
     if (!isMobile && this.sidebars.left) {
       const panelX = padding;
-      const panelY = canvasY;
-      const panelH = canvasH;
+      const panelY = menuFullScreen ? padding : canvasY;
+      const panelH = menuFullScreen ? height - padding * 2 : canvasH;
       this.drawLeftPanel(ctx, panelX, panelY, leftWidth, panelH, { isMobile: false });
     }
 
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(canvasX, canvasY, canvasW, canvasH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(canvasX, canvasY, canvasW, canvasH);
+    if (!menuFullScreen) {
+      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      ctx.fillRect(canvasX, canvasY, canvasW, canvasH);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(canvasX, canvasY, canvasW, canvasH);
 
-    this.drawCanvasArea(ctx, canvasX, canvasY, canvasW, canvasH);
+      this.drawCanvasArea(ctx, canvasX, canvasY, canvasW, canvasH);
+    } else {
+      this.canvasBounds = null;
+    }
 
     const paletteY = height - bottomHeight + padding;
-    if (paletteHeight > 0) {
+    if (!menuFullScreen && paletteHeight > 0) {
       this.drawPaletteBar(ctx, padding, paletteY, width - padding * 2, paletteHeight, { isMobile });
     }
     const statusY = paletteY + (paletteHeight > 0 ? paletteHeight + 6 : 0);
-    this.drawStatusBar(ctx, padding, statusY, width - padding * 2, statusHeight);
+    if (!menuFullScreen) {
+      this.drawStatusBar(ctx, padding, statusY, width - padding * 2, statusHeight);
+    }
 
-    if (!isMobile && this.modeTab === 'animate') {
+    if (!menuFullScreen && !isMobile && this.modeTab === 'animate') {
       const timelineY = statusY + statusHeight + 6;
       this.drawTimeline(ctx, canvasX, timelineY, canvasW, timelineHeight);
     }
@@ -2285,16 +2335,9 @@ export default class PixelStudio {
     const gap = 8;
     const labels = {
       tools: 'Tools',
-      objects: 'Objects',
-      layers: 'Layers',
-      switches: 'Switches',
-      animate: 'Animate',
-      file: 'File',
-      palette: 'Palette'
+      canvas: 'Canvas'
     };
-    const paletteTab = 'palette';
-    const paletteIndex = this.leftPanelTabs.indexOf(paletteTab);
-    const mainTabs = this.leftPanelTabs.filter((tab) => tab !== paletteTab);
+    const mainTabs = this.leftPanelTabs;
     let offsetY = y + 8;
     mainTabs.forEach((tab, index) => {
       const bounds = {
@@ -2310,19 +2353,6 @@ export default class PixelStudio {
       offsetY += tabHeight + gap;
     });
 
-    if (paletteIndex >= 0) {
-      const bounds = {
-        x: x + 8,
-        y: y + h - tabHeight - 8,
-        w: tabWidth,
-        h: tabHeight
-      };
-      const active = this.leftPanelTab === paletteTab;
-      this.drawButton(ctx, bounds, labels[paletteTab], active, { fontSize: isMobile ? 12 : 11 });
-      this.uiButtons.push({ bounds, onClick: () => this.setLeftPanelTab(paletteTab) });
-      this.registerFocusable('menu', bounds, () => this.setLeftPanelTab(paletteTab));
-    }
-
     const panelX = x + tabWidth + 16;
     const panelY = y + 8;
     const panelH = h - 16;
@@ -2332,32 +2362,22 @@ export default class PixelStudio {
   drawLeftPanelContent(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
     if (this.leftPanelTab === 'tools') {
-      this.drawToolsPanel(ctx, x, y, w, h, { isMobile });
+      this.drawToolsMenu(ctx, x, y, w, h, { isMobile });
       return;
     }
-    if (this.leftPanelTab === 'objects') {
-      this.drawObjectsPanel(ctx, x, y, w, h, { isMobile });
-      return;
-    }
-    if (this.leftPanelTab === 'layers') {
-      this.drawLayersPanel(ctx, x, y, w, h, { isMobile, showPreview: !isMobile });
-      return;
-    }
-    if (this.leftPanelTab === 'switches') {
-      this.drawSwitchesPanel(ctx, x, y, w, h, { isMobile });
-      return;
-    }
-    if (this.leftPanelTab === 'animate') {
-      this.drawAnimatePanel(ctx, x, y, w, h, { isMobile });
-      return;
-    }
-    if (this.leftPanelTab === 'file') {
-      this.drawFilePanel(ctx, x, y, w, h, { isMobile });
-      return;
-    }
-    if (this.leftPanelTab === 'palette') {
-      this.drawPalettePanel(ctx, x, y, w, h, { isMobile });
-    }
+  }
+
+  drawToolsMenu(ctx, x, y, w, h, options = {}) {
+    const isMobile = options.isMobile;
+    const gap = 12;
+    const colWidth = Math.max(160, Math.floor((w - gap * 2) / 3));
+    const leftX = x;
+    const middleX = x + colWidth + gap;
+    const rightX = x + (colWidth + gap) * 2;
+    const columnHeight = h;
+    this.drawToolsPanel(ctx, leftX, y, colWidth, columnHeight, { isMobile });
+    this.drawLayersPanel(ctx, middleX, y, colWidth, columnHeight, { isMobile, showPreview: !isMobile });
+    this.drawPalettePanel(ctx, rightX, y, colWidth, columnHeight, { isMobile });
   }
 
   drawObjectsPanel(ctx, x, y, w, h, options = {}) {
@@ -2600,8 +2620,8 @@ export default class PixelStudio {
       { label: '↺', action: () => this.undo() },
       { label: '↻', action: () => this.redo() },
       { label: '🔍', action: () => this.zoomBy(this.view.zoomIndex >= this.view.zoomLevels.length - 1 ? -1 : 1) },
-      { label: this.leftPanelTab === 'animate' ? 'Anim ✓' : 'Anim', action: () => { this.setLeftPanelTab('animate'); this.mobileDrawer = 'timeline'; } },
-      { label: 'File', action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } }
+      { label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
+      { label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = null; } }
     ];
     const gap = 8;
     const buttonW = Math.min(68, Math.max(44, Math.floor((w - gap * (actions.length - 1)) / actions.length)));
@@ -2727,9 +2747,9 @@ export default class PixelStudio {
 
     ctx.font = '12px Courier New';
     const lines = [
-      'Gamepad: D-pad menu | LS cursor (grid) | RS pan/scrub',
-      'A draw/use | X erase | B undo/close menu | Y redo',
-      'LT deselect | RT select | LB/RB panels | Start file/play | Back UI mode',
+      'Gamepad: D-pad fine move | LS cursor (grid) | RS pan/scrub',
+      'A draw/use | X erase | B draw mode/undo | Y redo',
+      'LT deselect | RT select | LB/RB panels | Start tools | Back UI mode',
       'L3 color pages | R3 tool pages',
       '',
       'Keyboard: B pencil | E eraser | G fill | I eyedropper | V move | S select',
@@ -3161,6 +3181,18 @@ export default class PixelStudio {
         offsetY + this.selection.bounds.y * zoom,
         this.selection.bounds.w * zoom,
         this.selection.bounds.h * zoom
+      );
+    }
+
+    if (this.selection.start && this.selection.end && this.selection.mode === 'rect' && !this.selection.active) {
+      const bounds = this.getBoundsFromPoints(this.selection.start, this.selection.end);
+      ctx.strokeStyle = '#ffcc6a';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(
+        offsetX + bounds.x * zoom,
+        offsetY + bounds.y * zoom,
+        bounds.w * zoom,
+        bounds.h * zoom
       );
     }
 
