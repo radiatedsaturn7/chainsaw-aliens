@@ -48,22 +48,44 @@ Open from the title screen **Tools** menu (`Pixel Editor`). The editor is an Ase
 - Dither brush (Bayer 2x2, Bayer 4x4, Checker)
 - Color Replace (layer or selection scope)
 
-### Shortcuts
-- **B** Pencil · **E** Eraser · **G** Fill · **I** Eyedropper · **V** Move · **S** Select
-- **Ctrl/Cmd + C/X/V** copy/cut/paste selection
-- **[ / ]** brush size down/up
-- **+ / -** zoom in/out
-- **Space + drag** pan canvas
-- **Ctrl/Cmd + Z / Y** undo/redo
+### Shortcuts (Desktop)
+| Shortcut | Action |
+| --- | --- |
+| **B / E / G / I / V / S** | Pencil / Eraser / Fill / Eyedropper / Move / Select |
+| **Ctrl/Cmd + C / X / V** | Copy / Cut / Paste selection |
+| **Ctrl/Cmd + Z** | Undo |
+| **Ctrl/Cmd + Shift + Z** or **Ctrl/Cmd + Y** | Redo |
+| **[ / ]** | Brush size down/up |
+| **+ / -** | Zoom in/out |
+| **0** | Reset zoom |
+| **Arrow keys** | Nudge cursor/selection (when canvas focused) |
+| **Left click/touch** | Draw |
+| **Right click** or **Space + drag** | Pan canvas |
 
-### Gamepad Mapping (Xbox-style)
-- **Left Stick**: move cursor · **D-pad**: nudge 1px
-- **A**: draw · **B**: erase (hold)
-- **X**: eyedropper · **Y**: toggle selection/move
-- **LB/RB**: cycle palette colors
-- **LT/RT**: zoom out/in
-- **Start**: play/pause animation · **Back**: tiled preview / onion skin
-- **R3**: toggle UI focus mode (D-pad to navigate UI buttons)
+### Controller Mapping (Xbox-style)
+| Control | Action |
+| --- | --- |
+| **LT / RT** | Zoom out / in (hold for continuous) |
+| **D-pad** | Navigate UI lists in **UI** mode; nudge cursor 1px in **Canvas** mode |
+| **Left Stick** | Move canvas cursor |
+| **Right Stick** | Pan canvas (default) / scrub timeline when focused |
+| **A** | Confirm / draw |
+| **B** | Back / cancel |
+| **X** | Eyedropper (hold = temporary) |
+| **Y** | Toggle draw ↔ select/move |
+| **LB** | Temporary erase (hold) |
+| **RB + D-pad Left/Right** | Undo / Redo |
+| **Start** | Menu (or Play/Pause when timeline focused) |
+| **Back/Select** | Toggle **UI** ↔ **Canvas** focus mode |
+
+### Mobile Gestures
+- **1 finger**: draw
+- **2 fingers**: pan
+- **Pinch**: zoom (nearest-neighbor)
+- **Long-press**: eyedropper
+
+### Controls Overlay
+Open the **Menu** (☰) inside Pixel Studio and choose **Controls** to view shortcuts and mappings.
 
 ### Export
 - **PNG**: current frame
