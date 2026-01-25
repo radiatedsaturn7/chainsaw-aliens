@@ -65,16 +65,18 @@ Open from the title screen **Tools** menu (`Pixel Editor`). The editor is an Ase
 ### Controller Mapping (Xbox-style)
 | Control | Action |
 | --- | --- |
-| **LT / RT** | Zoom out / in (hold for continuous) |
-| **D-pad** | Navigate UI lists in **UI** mode; nudge cursor 1px in **Canvas** mode |
-| **Left Stick** | Move canvas cursor |
+| **LT** | Deselect area (selection mask) |
+| **RT** | Draw selection area |
+| **D-pad** | Navigate UI lists (menu-first) |
+| **Left Stick** | Move canvas cursor (grid-quantized) |
 | **Right Stick** | Pan canvas (default) / scrub timeline when focused |
-| **A** | Confirm / draw |
-| **B** | Back / cancel |
-| **X** | Eyedropper (hold = temporary) |
-| **Y** | Toggle draw ↔ select/move |
-| **LB** | Temporary erase (hold) |
-| **RB + D-pad Left/Right** | Undo / Redo |
+| **A** | Draw / use active tool |
+| **B** | Undo |
+| **X** | Eraser |
+| **Y** | Redo |
+| **LB / RB** | Switch left-panel tabs |
+| **L3** | Color wheel (8 swatches) |
+| **R3** | Tool wheel (8 tools) |
 | **Start** | Menu (or Play/Pause when timeline focused) |
 | **Back/Select** | Toggle **UI** ↔ **Canvas** focus mode |
 

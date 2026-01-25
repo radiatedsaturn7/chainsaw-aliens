@@ -186,7 +186,9 @@ export default class Input {
       dpadLeft,
       dpadRight,
       aimUp,
-      aimDown
+      aimDown,
+      l3: isButtonActive(10),
+      r3: isButtonActive(11)
     };
     Object.keys(nextActions).forEach((action) => {
       const prev = Boolean(this.gamepadPrevActions[action]);

@@ -22,7 +22,7 @@ import {
 import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import UndoStack from './pixel-editor/undo.js';
-import { GAMEPAD_HINTS, updateGamepadCursor } from './pixel-editor/gamepad.js';
+import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -273,6 +273,10 @@ export default class PixelStudio {
     this.gamepadCursor = { x: 0, y: 0, active: false, initialized: false };
     this.gamepadDrawing = false;
     this.gamepadHintVisible = false;
+    this.gamepadSelection = { active: false, mode: null };
+    this.selectionContextMenu = null;
+    this.quickWheel = { active: false, type: null, center: { x: 0, y: 0 }, selectionIndex: null };
+    this.leftStickMoveTimer = 0;
     this.inputManager = new InputManager();
     this.inputMode = 'canvas';
     this.inputManager.setMode(this.inputMode);
@@ -293,9 +297,11 @@ export default class PixelStudio {
     this.menuOpen = false;
     this.controlsOverlayOpen = false;
     this.mobileDrawer = null;
-    this.mobileDrawerTab = 'tools';
     this.paletteGridOpen = false;
-    this.sidebars = { left: true, right: true };
+    this.sidebars = { left: true };
+    this.leftPanelTabs = ['tools', 'objects', 'layers', 'switches'];
+    this.leftPanelTabIndex = 0;
+    this.leftPanelTab = this.leftPanelTabs[this.leftPanelTabIndex];
     this.uiButtons = [];
     this.paletteBounds = [];
     this.layerBounds = [];
@@ -555,6 +561,8 @@ export default class PixelStudio {
     this.gamepadCursor.active = true;
 
     this.applyInputActions(inputState.actions, inputState, dt);
+    this.handleTriggerSelection(inputState);
+    this.updateQuickWheel(inputState, dt);
 
     if (this.gamepadDrawing && this.inputMode === 'canvas') {
       const point = this.getGridCellFromScreen(this.gamepadCursor.x, this.gamepadCursor.y);
@@ -601,26 +609,22 @@ export default class PixelStudio {
             this.toggleDrawSelectMode();
           }
           break;
-        case INPUT_ACTIONS.TEMP_ERASE:
-          if (action.active) {
-            const toolId = this.activeToolId === TOOL_IDS.ERASER ? TOOL_IDS.PENCIL : TOOL_IDS.ERASER;
-            this.setTempTool('erase', toolId);
-          } else {
-            this.clearTempTool('erase');
+        case INPUT_ACTIONS.SET_TOOL:
+          if (action.tool === 'eraser') {
+            this.setActiveTool(TOOL_IDS.ERASER);
           }
           break;
-        case INPUT_ACTIONS.TEMP_EYEDROPPER:
-          if (action.active) {
-            this.setTempTool('eyedropper', TOOL_IDS.EYEDROPPER);
-          } else {
-            this.clearTempTool('eyedropper');
-          }
+        case INPUT_ACTIONS.PANEL_PREV:
+          this.cycleLeftPanel(-1);
           break;
-        case INPUT_ACTIONS.ZOOM_IN:
-          this.zoomBy(1);
+        case INPUT_ACTIONS.PANEL_NEXT:
+          this.cycleLeftPanel(1);
           break;
-        case INPUT_ACTIONS.ZOOM_OUT:
-          this.zoomBy(-1);
+        case INPUT_ACTIONS.QUICK_COLOR:
+          this.openQuickWheel('color');
+          break;
+        case INPUT_ACTIONS.QUICK_TOOL:
+          this.openQuickWheel('tool');
           break;
         case INPUT_ACTIONS.NAV_UP:
           this.handleNav('up');
@@ -645,7 +649,9 @@ export default class PixelStudio {
           }
           break;
         case INPUT_ACTIONS.PAN_XY:
-          this.handlePanAction(action, dt, inputState);
+          if (!this.quickWheel?.active) {
+            this.handlePanAction(action, dt, inputState);
+          }
           break;
         default:
           break;
@@ -668,6 +674,14 @@ export default class PixelStudio {
       this.menuOpen = false;
       return;
     }
+    if (this.selectionContextMenu) {
+      this.selectionContextMenu = null;
+      return;
+    }
+    if (this.quickWheel?.active) {
+      this.quickWheel = { active: false, type: null, center: { x: 0, y: 0 }, selectionIndex: null };
+      return;
+    }
     if (this.paletteGridOpen) {
       this.paletteGridOpen = false;
       return;
@@ -686,24 +700,31 @@ export default class PixelStudio {
   }
 
   handleNav(direction) {
-    if (this.inputMode === 'ui') {
-      this.moveFocus(direction);
-      return;
+    if (this.inputMode !== 'ui') {
+      this.setInputMode('ui');
+      this.uiFocus.group = 'menu';
+      this.uiFocus.index = 0;
     }
-    if (direction === 'left') this.nudgeCursor(-1, 0);
-    if (direction === 'right') this.nudgeCursor(1, 0);
-    if (direction === 'up') this.nudgeCursor(0, -1);
-    if (direction === 'down') this.nudgeCursor(0, 1);
+    this.moveFocus(direction);
   }
 
   handleCursorMove(inputState, dt) {
     if (!this.canvasBounds) return;
     const axes = inputState.axes || { leftX: 0, leftY: 0 };
-    if (Math.hypot(axes.leftX, axes.leftY) > 0.08) {
-      this.gamepadCursor = updateGamepadCursor(this.gamepadCursor, axes, dt, 320);
-      this.gamepadCursor.active = true;
-      this.gamepadCursor.x = clamp(this.gamepadCursor.x, this.canvasBounds.x, this.canvasBounds.x + this.canvasBounds.w);
-      this.gamepadCursor.y = clamp(this.gamepadCursor.y, this.canvasBounds.y, this.canvasBounds.y + this.canvasBounds.h);
+    if (this.quickWheel?.active) return;
+    const threshold = 0.35;
+    const magnitude = Math.hypot(axes.leftX, axes.leftY);
+    if (magnitude > threshold) {
+      this.leftStickMoveTimer -= dt;
+      if (this.leftStickMoveTimer <= 0) {
+        const useX = Math.abs(axes.leftX) >= Math.abs(axes.leftY);
+        const dx = useX ? (axes.leftX > 0 ? 1 : -1) : 0;
+        const dy = useX ? 0 : (axes.leftY > 0 ? 1 : -1);
+        this.nudgeCursor(dx, dy);
+        this.leftStickMoveTimer = 0.12;
+      }
+    } else {
+      this.leftStickMoveTimer = 0;
     }
   }
 
@@ -720,14 +741,166 @@ export default class PixelStudio {
     }
   }
 
+  cycleLeftPanel(delta) {
+    const total = this.leftPanelTabs.length;
+    this.leftPanelTabIndex = (this.leftPanelTabIndex + delta + total) % total;
+    this.leftPanelTab = this.leftPanelTabs[this.leftPanelTabIndex];
+  }
+
+  openQuickWheel(type) {
+    const centerX = this.gamepadCursor.active ? this.gamepadCursor.x : this.cursor.x;
+    const centerY = this.gamepadCursor.active ? this.gamepadCursor.y : this.cursor.y;
+    this.quickWheel = {
+      active: true,
+      type,
+      center: { x: centerX, y: centerY },
+      selectionIndex: null
+    };
+  }
+
+  updateQuickWheel(inputState) {
+    if (!this.quickWheel?.active) return;
+    const axes = inputState.axes || { leftX: 0, leftY: 0, rightX: 0, rightY: 0 };
+    const useRight = this.quickWheel.type === 'tool';
+    const axisX = useRight ? axes.rightX : axes.leftX;
+    const axisY = useRight ? axes.rightY : axes.leftY;
+    const magnitude = Math.hypot(axisX, axisY);
+    const selectThreshold = 0.35;
+    const releaseThreshold = 0.2;
+    if (magnitude > selectThreshold) {
+      const angle = (Math.atan2(axisY, axisX) + Math.PI * 2) % (Math.PI * 2);
+      const slice = Math.floor((angle + Math.PI / 8) / (Math.PI / 4)) % 8;
+      this.quickWheel.selectionIndex = slice;
+      return;
+    }
+    if (magnitude < releaseThreshold && this.quickWheel.selectionIndex !== null) {
+      this.applyQuickWheelSelection(this.quickWheel.selectionIndex);
+      this.quickWheel = { active: false, type: null, center: { x: 0, y: 0 }, selectionIndex: null };
+    }
+  }
+
+  applyQuickWheelSelection(index) {
+    if (this.quickWheel.type === 'color') {
+      const entries = this.getQuickPaletteEntries();
+      const entry = entries[index];
+      if (entry) this.setPaletteIndex(entry.index);
+      return;
+    }
+    if (this.quickWheel.type === 'tool') {
+      const tools = this.getQuickToolEntries();
+      const entry = tools[index];
+      if (entry) this.setActiveTool(entry.id);
+    }
+  }
+
+  getQuickPaletteEntries() {
+    const colors = this.currentPalette.colors || [];
+    const count = Math.max(1, colors.length);
+    const entries = [];
+    for (let i = 0; i < 8; i += 1) {
+      const index = (this.paletteIndex + i) % count;
+      entries.push({ index, hex: colors[index]?.hex || '#000000' });
+    }
+    return entries;
+  }
+
+  getQuickToolEntries() {
+    return [
+      { id: TOOL_IDS.PENCIL, label: 'Pencil' },
+      { id: TOOL_IDS.ERASER, label: 'Erase' },
+      { id: TOOL_IDS.FILL, label: 'Fill' },
+      { id: TOOL_IDS.LINE, label: 'Line' },
+      { id: TOOL_IDS.SELECT_RECT, label: 'Rect' },
+      { id: TOOL_IDS.SELECT_ELLIPSE, label: 'Ellipse' },
+      { id: TOOL_IDS.SELECT_LASSO, label: 'Lasso' },
+      { id: TOOL_IDS.MOVE, label: 'Move' }
+    ];
+  }
+
+  handleTriggerSelection(inputState) {
+    if (this.inputMode !== 'canvas') return;
+    if (this.quickWheel?.active) return;
+    const point = this.getGridCellFromScreen(this.gamepadCursor.x, this.gamepadCursor.y);
+    if (inputState.rtPressed && point) {
+      this.startTriggerSelection('add', point);
+    }
+    if (inputState.ltPressed && point) {
+      this.startTriggerSelection('subtract', point);
+    }
+    if (this.gamepadSelection.active && point) {
+      this.updateSelection(point);
+    }
+    if (inputState.rtReleased && this.gamepadSelection.mode === 'add') {
+      this.commitTriggerSelection('add');
+    }
+    if (inputState.ltReleased && this.gamepadSelection.mode === 'subtract') {
+      this.commitTriggerSelection('subtract');
+    }
+  }
+
+  startTriggerSelection(mode, point) {
+    this.gamepadSelection = { active: true, mode };
+    this.selectionContextMenu = null;
+    this.selection.mode = 'rect';
+    this.selection.start = point;
+    this.selection.end = point;
+    this.selection.active = false;
+  }
+
+  commitTriggerSelection(mode) {
+    if (!this.selection.start || !this.selection.end) {
+      this.gamepadSelection = { active: false, mode: null };
+      return;
+    }
+    const bounds = this.getBoundsFromPoints(this.selection.start, this.selection.end);
+    const mask = createRectMask(this.canvasState.width, this.canvasState.height, bounds);
+    if (mode === 'add') {
+      if (!this.selection.mask) {
+        this.selection.mask = mask;
+      } else {
+        this.selection.mask.forEach((value, index) => {
+          if (mask[index]) this.selection.mask[index] = 1;
+        });
+      }
+    } else if (mode === 'subtract' && this.selection.mask) {
+      this.selection.mask.forEach((value, index) => {
+        if (mask[index]) this.selection.mask[index] = 0;
+      });
+    }
+    if (this.selection.mask) {
+      this.selection.bounds = this.getMaskBounds(this.selection.mask);
+      this.selection.active = Boolean(this.selection.bounds);
+      if (!this.selection.bounds) {
+        this.clearSelection();
+      }
+    }
+    this.selection.start = null;
+    this.selection.end = null;
+    this.gamepadSelection = { active: false, mode: null };
+    if (this.selection.active) {
+      this.openSelectionContextMenu();
+    }
+  }
+
+  openSelectionContextMenu() {
+    const anchorX = this.gamepadCursor.active ? this.gamepadCursor.x : this.cursor.x;
+    const anchorY = this.gamepadCursor.active ? this.gamepadCursor.y : this.cursor.y;
+    this.selectionContextMenu = { x: anchorX, y: anchorY };
+    this.setInputMode('ui');
+    this.uiFocus.group = 'menu';
+    this.uiFocus.index = 0;
+  }
+
   handlePanAction(action, dt, inputState) {
     const axes = inputState.axes || { rightX: 0, rightY: 0 };
+    const panX = -axes.rightX;
+    const panY = -axes.rightY;
     const panSpeed = 420;
     if (this.modeTab === 'animate' && this.inputMode === 'ui' && this.uiFocus.group === 'timeline') {
       const threshold = 0.4;
       this.timelineScrubTimer = (this.timelineScrubTimer || 0) - dt;
-      if (Math.abs(axes.rightX) > threshold && this.timelineScrubTimer <= 0) {
-        const direction = axes.rightX > 0 ? 1 : -1;
+      if (Math.abs(panX) > threshold && this.timelineScrubTimer <= 0) {
+        const direction = panX > 0 ? 1 : -1;
         this.animation.currentFrameIndex = clamp(
           this.animation.currentFrameIndex + direction,
           0,
@@ -738,8 +911,8 @@ export default class PixelStudio {
       }
       return;
     }
-    this.view.panX += axes.rightX * panSpeed * dt;
-    this.view.panY += axes.rightY * panSpeed * dt;
+    this.view.panX += panX * panSpeed * dt;
+    this.view.panY += panY * panSpeed * dt;
   }
 
   startGamepadDraw() {
@@ -776,7 +949,7 @@ export default class PixelStudio {
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
     const button = payload.button ?? 0;
-    if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen) {
+    if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen || this.selectionContextMenu) {
       this.handleButtonClick(payload.x, payload.y);
       return;
     }
@@ -1339,6 +1512,16 @@ export default class PixelStudio {
     this.commitHistory();
   }
 
+  deleteSelection() {
+    if (!this.selection.active || !this.selection.mask) return;
+    this.startHistory('delete selection');
+    this.activeLayer.pixels.forEach((_, index) => {
+      if (!this.selection.mask[index]) return;
+      this.activeLayer.pixels[index] = 0;
+    });
+    this.commitHistory();
+  }
+
   pasteClipboard() {
     if (!this.clipboard) return;
     this.startHistory('paste');
@@ -1353,6 +1536,7 @@ export default class PixelStudio {
     this.selection.active = false;
     this.selection.mask = null;
     this.selection.bounds = null;
+    this.selectionContextMenu = null;
   }
 
   invertSelection() {
@@ -1775,6 +1959,10 @@ export default class PixelStudio {
       hit.onClick?.();
       return true;
     }
+    if (this.selectionContextMenu?.bounds && !this.isPointInBounds({ x, y }, this.selectionContextMenu.bounds)) {
+      this.selectionContextMenu = null;
+      return true;
+    }
     const paletteHit = this.paletteBounds.find((bounds) => this.isPointInBounds({ x, y }, bounds));
     if (paletteHit) {
       this.setPaletteIndex(paletteHit.index);
@@ -1803,7 +1991,7 @@ export default class PixelStudio {
 
   finalizeFocusGroups() {
     let order = Object.keys(this.focusGroups).filter((group) => this.focusGroups[group]?.length);
-    if (this.controlsOverlayOpen || this.menuOpen) {
+    if (this.controlsOverlayOpen || this.menuOpen || this.selectionContextMenu) {
       order = order.filter((group) => group === 'menu');
     } else if (this.paletteGridOpen) {
       order = order.filter((group) => group === 'palette' || group === 'menu');
@@ -1887,7 +2075,7 @@ export default class PixelStudio {
     const timelineHeight = !isMobile && this.modeTab === 'animate' ? 120 : 0;
     const bottomHeight = statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
     const leftWidth = isMobile ? 0 : (this.sidebars.left ? 260 : 0);
-    const rightWidth = isMobile ? 0 : (this.sidebars.right ? 260 : 0);
+    const rightWidth = 0;
 
     this.uiButtons = [];
     this.paletteBounds = [];
@@ -1907,13 +2095,9 @@ export default class PixelStudio {
 
     if (!isMobile && this.sidebars.left) {
       const leftToggle = { x: padding + 140, y: 12, w: 70, h: 26 };
-      const rightToggle = { x: width - padding - 140, y: 12, w: 90, h: 26 };
-      this.drawButton(ctx, leftToggle, this.sidebars.left ? 'Tools' : 'Tools ▸', false, { fontSize: 12 });
-      this.drawButton(ctx, rightToggle, this.sidebars.right ? 'Layers' : 'Layers ▸', false, { fontSize: 12 });
+      this.drawButton(ctx, leftToggle, this.sidebars.left ? 'Panel' : 'Panel ▸', false, { fontSize: 12 });
       this.uiButtons.push({ bounds: leftToggle, onClick: () => { this.sidebars.left = !this.sidebars.left; } });
-      this.uiButtons.push({ bounds: rightToggle, onClick: () => { this.sidebars.right = !this.sidebars.right; } });
       this.registerFocusable('menu', leftToggle, () => { this.sidebars.left = !this.sidebars.left; });
-      this.registerFocusable('menu', rightToggle, () => { this.sidebars.right = !this.sidebars.right; });
     }
 
     const tabs = ['draw', 'select', 'animate', 'export'];
@@ -1951,33 +2135,11 @@ export default class PixelStudio {
     const canvasW = width - leftWidth - rightWidth - padding * 2;
     const canvasH = height - canvasY - bottomHeight;
 
-    if (!isMobile) {
-      const toolsX = padding;
-      const toolsY = canvasY;
-      const toolsH = canvasH;
-      ctx.fillStyle = 'rgba(255,255,255,0.05)';
-      ctx.fillRect(toolsX, toolsY, leftWidth, toolsH);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-      ctx.strokeRect(toolsX, toolsY, leftWidth, toolsH);
-
-      const toolsSplit = Math.floor(toolsH * 0.55);
-      this.drawToolsPanel(ctx, toolsX, toolsY, leftWidth, toolsSplit, { isMobile: false });
-      this.drawObjectsPanel(ctx, toolsX, toolsY + toolsSplit + 8, leftWidth, toolsH - toolsSplit - 8, { isMobile: false });
-
-    }
-
-    if (!isMobile && this.sidebars.right) {
-      const rightX = width - rightWidth - padding;
-      const rightY = canvasY;
-      const rightH = canvasH;
-      ctx.fillStyle = 'rgba(255,255,255,0.05)';
-      ctx.fillRect(rightX, rightY, rightWidth, rightH);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-      ctx.strokeRect(rightX, rightY, rightWidth, rightH);
-
-      const previewH = 120;
-      this.drawPreviewPanel(ctx, rightX + 8, rightY + 8, rightWidth - 16, previewH - 16);
-      this.drawLayersPanel(ctx, rightX, rightY + previewH, rightWidth, rightH - previewH, { isMobile: false });
+    if (!isMobile && this.sidebars.left) {
+      const panelX = padding;
+      const panelY = canvasY;
+      const panelH = canvasH;
+      this.drawLeftPanel(ctx, panelX, panelY, leftWidth, panelH, { isMobile: false });
     }
 
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
@@ -2011,6 +2173,13 @@ export default class PixelStudio {
       }
     }
 
+    if (this.selectionContextMenu) {
+      this.drawSelectionContextMenu(ctx, width, height);
+    }
+    if (this.quickWheel?.active) {
+      this.drawQuickWheel(ctx, width, height);
+    }
+
     if (this.menuOpen) {
       this.drawMenuOverlay(ctx, width, height, isMobile);
     }
@@ -2019,7 +2188,7 @@ export default class PixelStudio {
     }
 
     if (this.gamepadHintVisible && !isMobile) {
-      this.drawGamepadHints(ctx, width - rightWidth - padding - 20, height - bottomHeight - 90);
+      this.drawGamepadHints(ctx, width - padding - 20, height - bottomHeight - 90);
     }
 
     this.finalizeFocusGroups();
@@ -2062,6 +2231,60 @@ export default class PixelStudio {
     ctx.fillText('Preview', x + 4, y + h + 14);
   }
 
+  drawLeftPanel(ctx, x, y, w, h, options = {}) {
+    const isMobile = options.isMobile;
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, w, h);
+
+    const tabHeight = isMobile ? 36 : 28;
+    const gap = 6;
+    const labels = {
+      tools: 'Tools',
+      objects: 'Objects',
+      layers: 'Layers',
+      switches: 'Switches'
+    };
+    const tabCount = this.leftPanelTabs.length;
+    const tabWidth = Math.max(60, Math.floor((w - 16 - gap * (tabCount - 1)) / tabCount));
+    this.leftPanelTabs.forEach((tab, index) => {
+      const bounds = {
+        x: x + 8 + index * (tabWidth + gap),
+        y: y + 8,
+        w: tabWidth,
+        h: tabHeight
+      };
+      const active = this.leftPanelTab === tab;
+      this.drawButton(ctx, bounds, labels[tab] || tab, active, { fontSize: isMobile ? 12 : 11 });
+      this.uiButtons.push({ bounds, onClick: () => { this.leftPanelTabIndex = index; this.leftPanelTab = tab; } });
+      this.registerFocusable('menu', bounds, () => { this.leftPanelTabIndex = index; this.leftPanelTab = tab; });
+    });
+
+    const panelY = y + tabHeight + 16;
+    const panelH = h - tabHeight - 24;
+    this.drawLeftPanelContent(ctx, x + 8, panelY, w - 16, panelH, options);
+  }
+
+  drawLeftPanelContent(ctx, x, y, w, h, options = {}) {
+    const isMobile = options.isMobile;
+    if (this.leftPanelTab === 'tools') {
+      this.drawToolsPanel(ctx, x, y, w, h, { isMobile });
+      return;
+    }
+    if (this.leftPanelTab === 'objects') {
+      this.drawObjectsPanel(ctx, x, y, w, h, { isMobile });
+      return;
+    }
+    if (this.leftPanelTab === 'layers') {
+      this.drawLayersPanel(ctx, x, y, w, h, { isMobile, showPreview: !isMobile });
+      return;
+    }
+    if (this.leftPanelTab === 'switches') {
+      this.drawSwitchesPanel(ctx, x, y, w, h, { isMobile });
+    }
+  }
+
   drawObjectsPanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
     ctx.fillStyle = '#fff';
@@ -2096,20 +2319,85 @@ export default class PixelStudio {
     ctx.fillText(statusText, x + 8, y + 14);
   }
 
+  drawSelectionContextMenu(ctx, width, height) {
+    const items = [
+      { label: 'Copy', action: () => { this.copySelection(); this.selectionContextMenu = null; } },
+      { label: 'Cut', action: () => { this.cutSelection(); this.selectionContextMenu = null; } },
+      { label: 'Delete', action: () => { this.deleteSelection(); this.selectionContextMenu = null; } }
+    ];
+    const boxW = 160;
+    const boxH = items.length * 42 + 20;
+    const padding = 8;
+    const anchorX = this.selectionContextMenu?.x ?? width / 2;
+    const anchorY = this.selectionContextMenu?.y ?? height / 2;
+    const boxX = clamp(anchorX + 12, padding, width - boxW - padding);
+    const boxY = clamp(anchorY - boxH / 2, padding, height - boxH - padding);
+    this.selectionContextMenu.bounds = { x: boxX, y: boxY, w: boxW, h: boxH };
+
+    ctx.fillStyle = 'rgba(0,0,0,0.92)';
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+    items.forEach((entry, index) => {
+      const bounds = { x: boxX + 10, y: boxY + 10 + index * 42, w: boxW - 20, h: 34 };
+      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+      this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('menu', bounds, entry.action);
+    });
+  }
+
+  drawQuickWheel(ctx, width, height) {
+    const center = this.quickWheel.center || { x: width / 2, y: height / 2 };
+    const radius = 72;
+    const innerRadius = 20;
+    const items = this.quickWheel.type === 'tool' ? this.getQuickToolEntries() : this.getQuickPaletteEntries();
+    const labelFont = '10px Courier New';
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, radius + 18, 0, Math.PI * 2);
+    ctx.fill();
+
+    items.forEach((entry, index) => {
+      const angle = index * (Math.PI / 4);
+      const cx = center.x + Math.cos(angle) * radius;
+      const cy = center.y + Math.sin(angle) * radius;
+      const selected = this.quickWheel.selectionIndex === index;
+      ctx.beginPath();
+      ctx.fillStyle = this.quickWheel.type === 'color' ? entry.hex : 'rgba(0,0,0,0.6)';
+      ctx.strokeStyle = selected ? '#ffe16a' : 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = selected ? 3 : 1;
+      ctx.arc(cx, cy, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      if (this.quickWheel.type === 'tool') {
+        ctx.fillStyle = selected ? '#ffe16a' : '#fff';
+        ctx.font = labelFont;
+        ctx.textAlign = 'center';
+        ctx.fillText(entry.label.slice(0, 3), cx, cy + 4);
+      }
+    });
+
+    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, innerRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
   drawMobileToolbar(ctx, x, y, w, h) {
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(x, y, w, h);
     const actions = [
-      { label: this.activeToolId.slice(0, 2).toUpperCase(), action: () => { this.mobileDrawer = this.mobileDrawer === 'tools' ? null : 'tools'; } },
+      { label: this.leftPanelTab.slice(0, 2).toUpperCase(), action: () => { this.mobileDrawer = this.mobileDrawer === 'panel' ? null : 'panel'; } },
       { label: '🎨', action: () => { this.paletteGridOpen = !this.paletteGridOpen; } },
       { label: '↺', action: () => this.undo() },
       { label: '↻', action: () => this.redo() },
       { label: '🔍', action: () => this.zoomBy(this.view.zoomIndex >= this.view.zoomLevels.length - 1 ? -1 : 1) },
-      { label: 'Layers', action: () => { this.mobileDrawer = this.mobileDrawer === 'layers' ? null : 'layers'; } },
       { label: this.modeTab === 'animate' ? 'Anim ✓' : 'Anim', action: () => { this.modeTab = this.modeTab === 'animate' ? 'draw' : 'animate'; this.mobileDrawer = this.modeTab === 'animate' ? 'timeline' : null; } },
-      { label: 'Export', action: () => { this.modeTab = 'export'; this.mobileDrawer = 'tools'; this.mobileDrawerTab = 'tools'; } }
+      { label: 'Export', action: () => { this.modeTab = 'export'; this.mobileDrawer = 'panel'; } }
     ];
     const gap = 8;
     const buttonW = Math.min(68, Math.max(44, Math.floor((w - gap * (actions.length - 1)) / actions.length)));
@@ -2133,27 +2421,26 @@ export default class PixelStudio {
     ctx.strokeRect(x, y, w, h);
 
     const tabHeight = 44;
-    if (type === 'tools') {
-      const toolsTab = { x: x + 12, y: y + 8, w: 90, h: tabHeight };
-      const objectsTab = { x: x + 110, y: y + 8, w: 110, h: tabHeight };
-      this.drawButton(ctx, toolsTab, 'Tools', this.mobileDrawerTab === 'tools', { fontSize: 12 });
-      this.drawButton(ctx, objectsTab, 'Objects', this.mobileDrawerTab === 'objects', { fontSize: 12 });
-      this.uiButtons.push({ bounds: toolsTab, onClick: () => { this.mobileDrawerTab = 'tools'; } });
-      this.uiButtons.push({ bounds: objectsTab, onClick: () => { this.mobileDrawerTab = 'objects'; } });
-      this.registerFocusable('menu', toolsTab, () => { this.mobileDrawerTab = 'tools'; });
-      this.registerFocusable('menu', objectsTab, () => { this.mobileDrawerTab = 'objects'; });
+    if (type === 'panel') {
+      const prevBounds = { x: x + 12, y: y + 8, w: 44, h: tabHeight };
+      const nextBounds = { x: x + w - 56, y: y + 8, w: 44, h: tabHeight };
+      const label = this.leftPanelTab[0].toUpperCase() + this.leftPanelTab.slice(1);
+      this.drawButton(ctx, prevBounds, '<', false, { fontSize: 14 });
+      this.drawButton(ctx, nextBounds, '>', false, { fontSize: 14 });
+      this.uiButtons.push({ bounds: prevBounds, onClick: () => this.cycleLeftPanel(-1) });
+      this.uiButtons.push({ bounds: nextBounds, onClick: () => this.cycleLeftPanel(1) });
+      this.registerFocusable('menu', prevBounds, () => this.cycleLeftPanel(-1));
+      this.registerFocusable('menu', nextBounds, () => this.cycleLeftPanel(1));
+
+      ctx.fillStyle = '#fff';
+      ctx.font = '14px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, x + w / 2, y + 34);
+      ctx.textAlign = 'left';
 
       const panelY = y + tabHeight + 16;
       const panelH = h - tabHeight - 24;
-      if (this.mobileDrawerTab === 'objects') {
-        this.drawObjectsPanel(ctx, x + 8, panelY, w - 16, panelH, { isMobile: true });
-      } else {
-        this.drawToolsPanel(ctx, x + 8, panelY, w - 16, panelH, { isMobile: true });
-      }
-    }
-
-    if (type === 'layers') {
-      this.drawLayersPanel(ctx, x + 8, y + 8, w - 16, h - 16, { isMobile: true });
+      this.drawLeftPanelContent(ctx, x + 8, panelY, w - 16, panelH, { isMobile: true });
     }
   }
 
@@ -2236,9 +2523,10 @@ export default class PixelStudio {
 
     ctx.font = '12px Courier New';
     const lines = [
-      'Gamepad: LT/RT zoom | D-pad UI | LS cursor | RS pan/scrub',
-      'A confirm/draw | B cancel | X eyedropper (hold) | Y draw/select',
-      'LB temp erase | RB + D-pad ←/→ undo/redo | Start menu/play | Back UI mode',
+      'Gamepad: D-pad menu | LS cursor (grid) | RS pan/scrub',
+      'A draw/use | X erase | B undo | Y redo',
+      'LT deselect | RT select | LB/RB panels | Start menu/play | Back UI mode',
+      'L3 color wheel | R3 tool wheel',
       '',
       'Keyboard: B pencil | E eraser | G fill | I eyedropper | V move | S select',
       'Ctrl+Z undo | Ctrl+Shift+Z / Ctrl+Y redo | [ ] brush size',
@@ -2278,39 +2566,6 @@ export default class PixelStudio {
       this.registerFocusable('tools', bounds, () => this.setActiveTool(tool.id));
       offsetY += lineHeight;
     });
-
-    offsetY += 6;
-    ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 14 : 12}px Courier New`;
-    ctx.fillText('Options', x + 12, offsetY);
-    offsetY += 18;
-
-    this.drawOptionToggle(ctx, x + 12, offsetY, 'Symmetry H', this.toolOptions.symmetry.horizontal, () => {
-      this.toolOptions.symmetry.horizontal = !this.toolOptions.symmetry.horizontal;
-    }, { isMobile });
-    offsetY += lineHeight;
-    this.drawOptionToggle(ctx, x + 12, offsetY, 'Symmetry V', this.toolOptions.symmetry.vertical, () => {
-      this.toolOptions.symmetry.vertical = !this.toolOptions.symmetry.vertical;
-    }, { isMobile });
-    offsetY += lineHeight;
-    this.drawOptionToggle(ctx, x + 12, offsetY, 'Wrap Draw', this.toolOptions.wrapDraw, () => {
-      this.toolOptions.wrapDraw = !this.toolOptions.wrapDraw;
-    }, { isMobile });
-    offsetY += lineHeight;
-    this.drawOptionToggle(ctx, x + 12, offsetY, 'Tiled Preview', this.tiledPreview.enabled, () => {
-      this.tiledPreview.enabled = !this.tiledPreview.enabled;
-    }, { isMobile });
-    offsetY += lineHeight;
-    const tileSizeBounds = { x: x + 12, y: offsetY - buttonHeight + 4, w: 140, h: buttonHeight };
-    this.drawButton(ctx, tileSizeBounds, `Tiles: ${this.tiledPreview.tiles}x${this.tiledPreview.tiles}`, false, { fontSize });
-    this.uiButtons.push({
-      bounds: tileSizeBounds,
-      onClick: () => { this.tiledPreview.tiles = this.tiledPreview.tiles === 2 ? 3 : 2; }
-    });
-    this.registerFocusable('menu', tileSizeBounds, () => {
-      this.tiledPreview.tiles = this.tiledPreview.tiles === 2 ? 3 : 2;
-    });
-    offsetY += lineHeight;
 
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.font = `${fontSize}px Courier New`;
@@ -2375,6 +2630,51 @@ export default class PixelStudio {
 
     if (this.modeTab === 'export') {
       this.drawExportControls(ctx, x + 12, offsetY, { isMobile });
+    }
+  }
+
+  drawSwitchesPanel(ctx, x, y, w, h, options = {}) {
+    const isMobile = options.isMobile;
+    const fontSize = isMobile ? 14 : 12;
+    const lineHeight = isMobile ? 52 : 20;
+    const buttonHeight = isMobile ? 44 : 18;
+    ctx.fillStyle = '#fff';
+    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+    ctx.fillText('Switches', x + 12, y + 22);
+
+    let offsetY = y + 44;
+    this.drawOptionToggle(ctx, x + 12, offsetY, 'Symmetry H', this.toolOptions.symmetry.horizontal, () => {
+      this.toolOptions.symmetry.horizontal = !this.toolOptions.symmetry.horizontal;
+    }, { isMobile });
+    offsetY += lineHeight;
+    this.drawOptionToggle(ctx, x + 12, offsetY, 'Symmetry V', this.toolOptions.symmetry.vertical, () => {
+      this.toolOptions.symmetry.vertical = !this.toolOptions.symmetry.vertical;
+    }, { isMobile });
+    offsetY += lineHeight;
+    this.drawOptionToggle(ctx, x + 12, offsetY, 'Wrap Draw', this.toolOptions.wrapDraw, () => {
+      this.toolOptions.wrapDraw = !this.toolOptions.wrapDraw;
+    }, { isMobile });
+    offsetY += lineHeight;
+    this.drawOptionToggle(ctx, x + 12, offsetY, 'Tiled Preview', this.tiledPreview.enabled, () => {
+      this.tiledPreview.enabled = !this.tiledPreview.enabled;
+    }, { isMobile });
+    offsetY += lineHeight;
+
+    const tileSizeBounds = { x: x + 12, y: offsetY - buttonHeight + 4, w: 160, h: buttonHeight };
+    this.drawButton(ctx, tileSizeBounds, `Tiles: ${this.tiledPreview.tiles}x${this.tiledPreview.tiles}`, false, { fontSize });
+    this.uiButtons.push({
+      bounds: tileSizeBounds,
+      onClick: () => { this.tiledPreview.tiles = this.tiledPreview.tiles === 2 ? 3 : 2; }
+    });
+    this.registerFocusable('menu', tileSizeBounds, () => {
+      this.tiledPreview.tiles = this.tiledPreview.tiles === 2 ? 3 : 2;
+    });
+    offsetY += lineHeight;
+
+    if (offsetY + lineHeight < y + h) {
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = `${fontSize}px Courier New`;
+      ctx.fillText(`Zoom: ${Math.round(this.view.zoomLevels[this.view.zoomIndex] * 100)}%`, x + 12, offsetY);
     }
   }
 
@@ -2557,10 +2857,17 @@ export default class PixelStudio {
 
   drawLayersPanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
+    const showPreview = options.showPreview;
     const buttonHeight = isMobile ? 44 : 18;
+    let offsetY = y;
+    if (showPreview) {
+      const previewH = Math.min(120, Math.max(90, Math.floor(h * 0.35)));
+      this.drawPreviewPanel(ctx, x + 4, y + 4, w - 8, previewH - 16);
+      offsetY += previewH;
+    }
     ctx.fillStyle = '#fff';
     ctx.font = `${isMobile ? 16 : 14}px Courier New`;
-    ctx.fillText('Layers', x + 12, y + 20);
+    ctx.fillText('Layers', x + 12, offsetY + 20);
     const controls = [
       { label: '+', action: () => this.addLayer() },
       { label: 'Dup', action: () => this.duplicateLayer(this.canvasState.activeLayerIndex) },
@@ -2569,12 +2876,12 @@ export default class PixelStudio {
       { label: 'Flatten', action: () => this.flattenAllLayers() }
     ];
     controls.forEach((entry, index) => {
-      const bounds = { x: x + 12 + index * (buttonHeight + 6), y: y + 28, w: buttonHeight, h: buttonHeight };
+      const bounds = { x: x + 12 + index * (buttonHeight + 6), y: offsetY + 28, w: buttonHeight, h: buttonHeight };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({ bounds, onClick: entry.action });
       this.registerFocusable('menu', bounds, entry.action);
     });
-    let offsetY = y + 60;
+    offsetY += 60;
     this.layerBounds = [];
     const lineHeight = isMobile ? 52 : 20;
     this.focusGroupMeta.layers = { maxVisible: Math.max(1, Math.floor((h - 80) / lineHeight)) };

@@ -7,13 +7,14 @@ export const INPUT_ACTIONS = {
   CANCEL: 'CANCEL',
   DRAW_PRESS: 'DRAW_PRESS',
   DRAW_RELEASE: 'DRAW_RELEASE',
-  TEMP_ERASE: 'TEMP_ERASE',
-  TEMP_EYEDROPPER: 'TEMP_EYEDROPPER',
-  ZOOM_IN: 'ZOOM_IN',
-  ZOOM_OUT: 'ZOOM_OUT',
+  SET_TOOL: 'SET_TOOL',
   PAN_XY: 'PAN_XY',
   UNDO: 'UNDO',
   REDO: 'REDO',
+  PANEL_PREV: 'PANEL_PREV',
+  PANEL_NEXT: 'PANEL_NEXT',
+  QUICK_COLOR: 'QUICK_COLOR',
+  QUICK_TOOL: 'QUICK_TOOL',
   TOGGLE_UI_MODE: 'TOGGLE_UI_MODE',
   TOGGLE_MODE: 'TOGGLE_MODE',
   MENU: 'MENU'
@@ -21,8 +22,6 @@ export const INPUT_ACTIONS = {
 
 const NAV_REPEAT_DELAY = 0.18;
 const TRIGGER_THRESHOLD = 0.6;
-const TRIGGER_REPEAT = 0.12;
-const X_HOLD_DELAY = 0.18;
 
 export default class InputManager {
   constructor() {
@@ -33,12 +32,15 @@ export default class InputManager {
       x: false,
       y: false,
       lb: false,
-      rb: false
+      rb: false,
+      l3: false,
+      r3: false
     };
-    this.triggerTimers = { in: 0, out: 0 };
     this.navTimers = { up: 0, down: 0, left: 0, right: 0 };
-    this.xHoldTime = 0;
-    this.xTempActive = false;
+    this.triggerState = {
+      leftHeld: false,
+      rightHeld: false
+    };
   }
 
   setMode(mode) {
@@ -57,10 +59,24 @@ export default class InputManager {
     };
     const connected = input.isGamepadConnected?.() || false;
     if (!connected) {
-      this.xHoldTime = 0;
-      this.xTempActive = false;
-      this.triggerTimers = { in: 0, out: 0 };
-      return { actions, axes, connected, aDown: false, bDown: false, xDown: false, yDown: false, lbDown: false, rbDown: false };
+      this.triggerState = { leftHeld: false, rightHeld: false };
+      return {
+        actions,
+        axes,
+        connected,
+        aDown: false,
+        bDown: false,
+        xDown: false,
+        yDown: false,
+        lbDown: false,
+        rbDown: false,
+        ltHeld: false,
+        rtHeld: false,
+        ltPressed: false,
+        rtPressed: false,
+        ltReleased: false,
+        rtReleased: false
+      };
     }
 
     const gamepadActions = input.getGamepadActions?.() || {};
@@ -70,6 +86,8 @@ export default class InputManager {
     const yDown = Boolean(gamepadActions.throw);
     const lbDown = Boolean(gamepadActions.aimUp);
     const rbDown = Boolean(gamepadActions.aimDown);
+    const l3Down = Boolean(gamepadActions.l3);
+    const r3Down = Boolean(gamepadActions.r3);
 
     const startPressed = input.wasGamepadPressed?.('pause');
     const backPressed = input.wasGamepadPressed?.('cancel');
@@ -82,13 +100,13 @@ export default class InputManager {
     const dpadUpDown = input.isGamepadDown?.('dpadUp');
     const dpadDownDown = input.isGamepadDown?.('dpadDown');
 
-    if (rbDown && dpadLeftPressed) actions.push({ type: INPUT_ACTIONS.UNDO });
-    if (rbDown && dpadRightPressed) actions.push({ type: INPUT_ACTIONS.REDO });
+    if (bDown && !this.prevButtons.b) actions.push({ type: INPUT_ACTIONS.UNDO });
+    if (yDown && !this.prevButtons.y) actions.push({ type: INPUT_ACTIONS.REDO });
 
     if (backPressed) actions.push({ type: INPUT_ACTIONS.TOGGLE_UI_MODE });
     if (startPressed) actions.push({ type: INPUT_ACTIONS.MENU });
 
-    const blockHorizontalNav = rbDown && (dpadLeftPressed || dpadRightPressed);
+    const blockHorizontalNav = false;
     if (dpadUpPressed || dpadDownPressed || dpadLeftPressed || dpadRightPressed) {
       const navCandidates = [
         { down: dpadUpPressed, dir: 'up' },
@@ -134,46 +152,11 @@ export default class InputManager {
       actions.push({ type: INPUT_ACTIONS.DRAW_RELEASE });
     }
 
-    if (bDown && !this.prevButtons.b) actions.push({ type: INPUT_ACTIONS.CANCEL });
-    if (yDown && !this.prevButtons.y) actions.push({ type: INPUT_ACTIONS.TOGGLE_MODE });
-
-    if (lbDown && !this.prevButtons.lb) actions.push({ type: INPUT_ACTIONS.TEMP_ERASE, active: true });
-    if (!lbDown && this.prevButtons.lb) actions.push({ type: INPUT_ACTIONS.TEMP_ERASE, active: false });
-
-    if (xDown) {
-      this.xHoldTime += dt;
-      if (!this.xTempActive && this.xHoldTime >= X_HOLD_DELAY) {
-        this.xTempActive = true;
-        actions.push({ type: INPUT_ACTIONS.TEMP_EYEDROPPER, active: true });
-      }
-    }
-    if (!xDown && this.prevButtons.x) {
-      if (this.xTempActive) {
-        actions.push({ type: INPUT_ACTIONS.TEMP_EYEDROPPER, active: false });
-      } else {
-        actions.push({ type: INPUT_ACTIONS.TOGGLE_MODE, tool: 'eyedropper' });
-      }
-      this.xHoldTime = 0;
-      this.xTempActive = false;
-    }
-
-    const triggerZoom = (value, key, actionType) => {
-      const isActive = value > TRIGGER_THRESHOLD;
-      if (isActive) {
-        this.triggerTimers[key] += dt;
-        if (this.triggerTimers[key] === dt) {
-          actions.push({ type: actionType, step: 1 });
-        } else if (this.triggerTimers[key] >= TRIGGER_REPEAT) {
-          this.triggerTimers[key] = 0;
-          actions.push({ type: actionType, step: 1, repeat: true });
-        }
-      } else {
-        this.triggerTimers[key] = 0;
-      }
-    };
-
-    triggerZoom(axes.leftTrigger, 'out', INPUT_ACTIONS.ZOOM_OUT);
-    triggerZoom(axes.rightTrigger, 'in', INPUT_ACTIONS.ZOOM_IN);
+    if (xDown && !this.prevButtons.x) actions.push({ type: INPUT_ACTIONS.SET_TOOL, tool: 'eraser' });
+    if (lbDown && !this.prevButtons.lb) actions.push({ type: INPUT_ACTIONS.PANEL_PREV });
+    if (rbDown && !this.prevButtons.rb) actions.push({ type: INPUT_ACTIONS.PANEL_NEXT });
+    if (l3Down && !this.prevButtons.l3) actions.push({ type: INPUT_ACTIONS.QUICK_COLOR });
+    if (r3Down && !this.prevButtons.r3) actions.push({ type: INPUT_ACTIONS.QUICK_TOOL });
 
     const panActive = Math.hypot(axes.rightX, axes.rightY) > 0.12;
     if (panActive) {
@@ -185,7 +168,15 @@ export default class InputManager {
       });
     }
 
-    this.prevButtons = { a: aDown, b: bDown, x: xDown, y: yDown, lb: lbDown, rb: rbDown };
+    const ltHeld = axes.leftTrigger > TRIGGER_THRESHOLD;
+    const rtHeld = axes.rightTrigger > TRIGGER_THRESHOLD;
+    const ltPressed = ltHeld && !this.triggerState.leftHeld;
+    const rtPressed = rtHeld && !this.triggerState.rightHeld;
+    const ltReleased = !ltHeld && this.triggerState.leftHeld;
+    const rtReleased = !rtHeld && this.triggerState.rightHeld;
+
+    this.triggerState = { leftHeld: ltHeld, rightHeld: rtHeld };
+    this.prevButtons = { a: aDown, b: bDown, x: xDown, y: yDown, lb: lbDown, rb: rbDown, l3: l3Down, r3: r3Down };
 
     return {
       actions,
@@ -196,7 +187,13 @@ export default class InputManager {
       xDown,
       yDown,
       lbDown,
-      rbDown
+      rbDown,
+      ltHeld,
+      rtHeld,
+      ltPressed,
+      rtPressed,
+      ltReleased,
+      rtReleased
     };
   }
 
