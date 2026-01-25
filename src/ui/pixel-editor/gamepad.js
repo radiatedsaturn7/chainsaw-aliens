@@ -4,15 +4,15 @@ export const GAMEPAD_HINTS = [
   'Left Stick: grid cursor',
   'Right Stick: pan / scrub timeline',
   'A: draw / use tool',
-  'B: undo',
+  'B: undo / close menu',
   'X: eraser',
   'Y: redo',
   'LB/RB: switch panels',
   'LT: deselect area',
   'RT: select area',
-  'L3: color wheel',
-  'R3: tool wheel',
-  'Start: menu / play'
+  'L3: color pages',
+  'R3: tool pages',
+  'Start: file tab / play'
 ];
 
 export const updateGamepadCursor = (cursor, axes, dt, speed = 280) => {
