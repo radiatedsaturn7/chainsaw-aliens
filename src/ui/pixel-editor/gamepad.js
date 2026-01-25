@@ -1,10 +1,10 @@
 export const GAMEPAD_HINTS = [
   'Back: UI/CANVAS mode',
-  'D-pad: menu focus',
-  'Left Stick: grid cursor',
+  'D-pad: fine cursor move',
+  'Left Stick: fast cursor move',
   'Right Stick: pan / scrub timeline',
   'A: draw / use tool',
-  'B: undo / close menu',
+  'B: draw mode / undo',
   'X: eraser',
   'Y: redo',
   'LB/RB: switch panels',
@@ -12,7 +12,7 @@ export const GAMEPAD_HINTS = [
   'RT: select area',
   'L3: color pages',
   'R3: tool pages',
-  'Start: file tab / play'
+  'Start: tools tab'
 ];
 
 export const updateGamepadCursor = (cursor, axes, dt, speed = 280) => {
