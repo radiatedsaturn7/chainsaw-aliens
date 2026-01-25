@@ -991,9 +991,9 @@ export default class MidiComposer {
       if (!stored || typeof stored !== 'object') throw new Error('invalid');
       return {
         place: stored.place || 'A',
-        erase: stored.erase || 'B',
-        tool: stored.tool || 'X',
-        instrument: stored.instrument || 'Y',
+        erase: stored.erase || 'X',
+        tool: stored.tool || 'Y',
+        instrument: stored.instrument || 'B',
         play: stored.play || 'Start',
         stop: stored.stop || 'Back',
         octaveUp: stored.octaveUp || 'LB',
@@ -1002,9 +1002,9 @@ export default class MidiComposer {
     } catch (error) {
       return {
         place: 'A',
-        erase: 'B',
-        tool: 'X',
-        instrument: 'Y',
+        erase: 'X',
+        tool: 'Y',
+        instrument: 'B',
         play: 'Start',
         stop: 'Back',
         octaveUp: 'LB',
@@ -2257,8 +2257,11 @@ export default class MidiComposer {
       return;
     }
     const resolveAction = (buttonId) => GAMEPAD_BUTTONS.find((entry) => entry.id === buttonId)?.action;
+    const suppressedButtons = new Set();
     const handleMappedPress = (actionId, callback) => {
       const mapped = this.controllerMapping?.[actionId];
+      if (!mapped || suppressedButtons.has(mapped)) return;
+      if (actionId === 'tool' && mapped === this.controllerMapping?.erase) return;
       const gamepadAction = resolveAction(mapped);
       if (gamepadAction && input.wasGamepadPressed?.(gamepadAction)) {
         callback();
@@ -2278,6 +2281,21 @@ export default class MidiComposer {
     const dpadUpPressed = input.wasGamepadPressed?.('dpadUp');
     const dpadDownPressed = input.wasGamepadPressed?.('dpadDown');
     const backPressed = input.wasGamepadPressed?.('cancel');
+
+    if (this.activeTab === 'grid' && !this.recordModeActive) {
+      if (input.wasGamepadPressed?.('dash')) {
+        this.undo();
+        suppressedButtons.add('B');
+      }
+      if (input.wasGamepadPressed?.('throw')) {
+        this.redo();
+        suppressedButtons.add('Y');
+      }
+      if (input.wasGamepadPressed?.('rev')) {
+        this.eraseNoteAt(this.cursor.tick, this.cursor.pitch);
+        suppressedButtons.add('X');
+      }
+    }
 
     handleMappedPress('play', () => this.togglePlayback());
     const stopMapped = resolveAction(this.controllerMapping?.stop);
@@ -2311,7 +2329,12 @@ export default class MidiComposer {
     });
 
     if (backPressed) {
-      this.toggleSingleNoteRecordMode();
+      if (this.singleNoteRecordMode.active || this.recordModeActive) {
+        this.exitSingleNoteRecordMode();
+        this.exitRecordMode();
+      } else {
+        this.enterSingleNoteRecordMode();
+      }
     }
 
     if (this.activeTab === 'grid') {
@@ -2357,31 +2380,44 @@ export default class MidiComposer {
           this.gamepadTransportTap.right = now;
         }
       }
-      if (ltHeld) {
-        const leftUndo = dpadLeftPressed || input.wasGamepadPressed?.('left');
-        const rightRedo = dpadRightPressed || input.wasGamepadPressed?.('right');
-        if (leftUndo) {
-          this.undo();
+      if (!this.recordModeActive) {
+        const tickStep = Math.max(1, this.getQuantizeTicks());
+        if (ltPressed) {
+          this.playheadTick = clamp(
+            this.playheadTick - tickStep,
+            this.getLoopStartTick(),
+            this.getLoopTicks()
+          );
+          if (this.scrubAudition) {
+            this.previewNotesAtTick(this.playheadTick);
+          }
         }
-        if (rightRedo) {
-          this.redo();
+        if (rtPressed) {
+          this.playheadTick = clamp(
+            this.playheadTick + tickStep,
+            this.getLoopStartTick(),
+            this.getLoopTicks()
+          );
+          if (this.scrubAudition) {
+            this.previewNotesAtTick(this.playheadTick);
+          }
         }
       }
-      if (rtPressed && this.gridBounds) {
-        const origin = this.getCellScreenPosition(this.cursor.tick, this.cursor.pitch);
-        if (origin) {
-          this.dragState = {
-            mode: 'select',
-            startX: origin.x,
-            startY: origin.y,
-            currentX: origin.x,
-            currentY: origin.y,
-            appendSelection: false
-          };
-          this.gamepadSelection = {
-            active: true
-          };
-          this.closeSelectionMenu();
+
+      if (!this.recordModeActive && this.gridBounds) {
+        const panDeadzone = 0.2;
+        const panX = Math.abs(axes.rightX) > panDeadzone ? axes.rightX : 0;
+        const panY = Math.abs(axes.rightY) > panDeadzone ? axes.rightY : 0;
+        if (panX || panY) {
+          const panSpeed = 420;
+          this.gridOffset.x -= panX * panSpeed * dt;
+          this.gridOffset.y -= panY * panSpeed * dt;
+          this.clampGridOffset(
+            this.gridBounds.w,
+            this.gridBounds.h,
+            this.gridBounds.gridW,
+            this.gridBounds.gridH
+          );
         }
       }
 
