@@ -23,6 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import UndoStack from './pixel-editor/undo.js';
 import { GAMEPAD_HINTS, updateGamepadCursor } from './pixel-editor/gamepad.js';
+import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -271,10 +272,30 @@ export default class PixelStudio {
     this.cursor = { row: 0, col: 0, x: 0, y: 0 };
     this.gamepadCursor = { x: 0, y: 0, active: false, initialized: false };
     this.gamepadDrawing = false;
-    this.gamepadErase = false;
     this.gamepadHintVisible = false;
-    this.uiFocusMode = false;
-    this.uiFocusIndex = 0;
+    this.inputManager = new InputManager();
+    this.inputMode = 'canvas';
+    this.inputManager.setMode(this.inputMode);
+    this.uiFocus = { group: 'tools', index: 0 };
+    this.focusGroups = {};
+    this.focusOrder = [];
+    this.focusGroupMeta = {};
+    this.focusScroll = {
+      tools: 0,
+      objects: 0,
+      palette: 0,
+      layers: 0,
+      timeline: 0,
+      toolbar: 0,
+      menu: 0
+    };
+    this.tempToolOverrides = new Map();
+    this.menuOpen = false;
+    this.controlsOverlayOpen = false;
+    this.mobileDrawer = null;
+    this.mobileDrawerTab = 'tools';
+    this.paletteGridOpen = false;
+    this.sidebars = { left: true, right: true };
     this.uiButtons = [];
     this.paletteBounds = [];
     this.layerBounds = [];
@@ -283,8 +304,10 @@ export default class PixelStudio {
     this.lastTime = 0;
     this.spaceDown = false;
     this.altDown = false;
+    this.lastActiveToolId = this.activeToolId;
     this.offscreen = document.createElement('canvas');
     this.offscreenCtx = this.offscreen.getContext('2d');
+    this.offscreenCtx.imageSmoothingEnabled = false;
     this.exportLink = document.createElement('a');
     this.paletteFileInput = document.createElement('input');
     this.paletteFileInput.type = 'file';
@@ -403,12 +426,17 @@ export default class PixelStudio {
   }
 
   resetFocus() {
-    this.uiFocusMode = false;
+    this.setInputMode('canvas');
   }
 
   handleKeyDown(event) {
     if (event.repeat) return;
     const key = event.key.toLowerCase();
+    const mappedActions = this.inputManager.mapKeyboardEvent(event);
+    if (mappedActions.length) {
+      this.applyInputActions(mappedActions, {}, 0);
+      event.preventDefault();
+    }
     if (event.key === ' ') this.spaceDown = true;
     if (event.key === 'Alt') this.altDown = true;
     if ((event.ctrlKey || event.metaKey) && key === 'z') {
@@ -436,16 +464,21 @@ export default class PixelStudio {
       event.preventDefault();
       return;
     }
-    if (key === 'b') this.activeToolId = TOOL_IDS.PENCIL;
-    if (key === 'e') this.activeToolId = TOOL_IDS.ERASER;
-    if (key === 'g') this.activeToolId = TOOL_IDS.FILL;
-    if (key === 'i') this.activeToolId = TOOL_IDS.EYEDROPPER;
-    if (key === 'v') this.activeToolId = TOOL_IDS.MOVE;
-    if (key === 's') this.activeToolId = TOOL_IDS.SELECT_RECT;
+    if (key === 'b') this.setActiveTool(TOOL_IDS.PENCIL);
+    if (key === 'e') this.setActiveTool(TOOL_IDS.ERASER);
+    if (key === 'g') this.setActiveTool(TOOL_IDS.FILL);
+    if (key === 'i') this.setActiveTool(TOOL_IDS.EYEDROPPER);
+    if (key === 'v') this.setActiveTool(TOOL_IDS.MOVE);
+    if (key === 's') this.setActiveTool(TOOL_IDS.SELECT_RECT);
     if (key === '[') this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8);
     if (key === ']') this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8);
     if (key === '+' || key === '=') this.zoomBy(1);
     if (key === '-') this.zoomBy(-1);
+    if (key === '0') this.resetZoom();
+    if (event.key.startsWith('Arrow')) {
+      this.handleArrowKey(event.key);
+      event.preventDefault();
+    }
     const tool = this.tools.find((entry) => entry.id === this.activeToolId);
     tool?.onKeyDown?.(event);
   }
@@ -458,7 +491,7 @@ export default class PixelStudio {
   update(input, dt = 0) {
     this.lastTime += dt;
     this.updateAnimation(dt);
-    this.handleGamepad(input, dt);
+    this.handleInput(input, dt);
     this.updateCursorPosition();
   }
 
@@ -482,14 +515,34 @@ export default class PixelStudio {
     }
   }
 
-  handleGamepad(input, dt) {
-    const axes = input.getGamepadAxes?.() || { leftX: 0, leftY: 0, leftTrigger: 0, rightTrigger: 0 };
-    const connected = input.isGamepadConnected?.() || false;
-    if (connected && !this.gamepadHintVisible) {
+  setInputMode(mode) {
+    this.inputMode = mode === 'ui' ? 'ui' : 'canvas';
+    this.inputManager.setMode(this.inputMode);
+  }
+
+  toggleInputMode() {
+    this.setInputMode(this.inputMode === 'ui' ? 'canvas' : 'ui');
+  }
+
+  toggleMenu() {
+    if (this.controlsOverlayOpen) {
+      this.controlsOverlayOpen = false;
+      return;
+    }
+    this.menuOpen = !this.menuOpen;
+  }
+
+  handleInput(input, dt) {
+    const inputState = this.inputManager.updateGamepad(input, dt, {
+      mode: this.inputMode,
+      animationMode: this.modeTab === 'animate',
+      timelineFocused: this.uiFocus.group === 'timeline'
+    });
+    if (inputState.connected && !this.gamepadHintVisible) {
       console.info('[PixelStudio] Gamepad detected.');
       this.gamepadHintVisible = true;
     }
-    if (!connected) {
+    if (!inputState.connected) {
       this.gamepadCursor.active = false;
       return;
     }
@@ -499,89 +552,209 @@ export default class PixelStudio {
       this.gamepadCursor.y = this.canvasBounds.y + this.canvasBounds.h / 2;
       this.gamepadCursor.initialized = true;
     }
-    this.gamepadCursor = updateGamepadCursor(this.gamepadCursor, axes, dt, 320);
     this.gamepadCursor.active = true;
-    if (this.canvasBounds) {
-      this.gamepadCursor.x = clamp(this.gamepadCursor.x, this.canvasBounds.x, this.canvasBounds.x + this.canvasBounds.w);
-      this.gamepadCursor.y = clamp(this.gamepadCursor.y, this.canvasBounds.y, this.canvasBounds.y + this.canvasBounds.h);
-    }
 
-    const actions = input.getGamepadActions?.() || {};
-    const aDown = actions.jump;
-    const bDown = actions.dash;
-    const xPressed = input.wasGamepadPressed?.('rev');
-    const yPressed = input.wasGamepadPressed?.('throw');
-    const lbPressed = input.wasGamepadPressed?.('aimUp');
-    const rbPressed = input.wasGamepadPressed?.('aimDown');
-    const startPressed = input.wasGamepadPressed?.('pause');
-    const backPressed = input.wasGamepadPressed?.('cancel');
-    const r3Pressed = input.wasGamepadPressed?.('flame');
-    const dpadLeft = input.wasGamepadPressed?.('dpadLeft');
-    const dpadRight = input.wasGamepadPressed?.('dpadRight');
-    const dpadUp = input.wasGamepadPressed?.('dpadUp');
-    const dpadDown = input.wasGamepadPressed?.('dpadDown');
+    this.applyInputActions(inputState.actions, inputState, dt);
 
-    if (lbPressed) this.cyclePalette(-1);
-    if (rbPressed) this.cyclePalette(1);
-    if (axes.leftTrigger > 0.6) this.zoomBy(-1);
-    if (axes.rightTrigger > 0.6) this.zoomBy(1);
-    if (xPressed) this.activeToolId = TOOL_IDS.EYEDROPPER;
-    if (yPressed) this.activeToolId = this.selection.active ? TOOL_IDS.MOVE : TOOL_IDS.SELECT_RECT;
-    if (startPressed) this.animation.playing = !this.animation.playing;
-    if (backPressed) {
-      if (this.modeTab === 'animate') {
-        this.animation.onion.enabled = !this.animation.onion.enabled;
-      } else {
-        this.tiledPreview.enabled = !this.tiledPreview.enabled;
-      }
-    }
-    if (r3Pressed) this.uiFocusMode = !this.uiFocusMode;
-
-    if (this.uiFocusMode && (dpadLeft || dpadRight || dpadUp || dpadDown)) {
-      const direction = dpadLeft || dpadUp ? -1 : 1;
-      if (this.uiButtons.length) {
-        this.uiFocusIndex = (this.uiFocusIndex + direction + this.uiButtons.length) % this.uiButtons.length;
-      }
-    }
-
-    if (this.uiFocusMode && aDown && this.uiButtons[this.uiFocusIndex]) {
-      this.uiButtons[this.uiFocusIndex].onClick?.();
-      return;
-    }
-
-    if (dpadLeft || dpadRight || dpadUp || dpadDown) {
-      const tool = this.tools.find((entry) => entry.id === this.activeToolId);
-      if (tool?.onGamepad) {
-        if (dpadLeft) tool.onGamepad('dpadLeft');
-        if (dpadRight) tool.onGamepad('dpadRight');
-        if (dpadUp) tool.onGamepad('dpadUp');
-        if (dpadDown) tool.onGamepad('dpadDown');
-      }
-    }
-
-    if (aDown && !this.gamepadDrawing) {
-      this.gamepadDrawing = true;
-      const point = this.getGridCellFromScreen(this.gamepadCursor.x, this.gamepadCursor.y);
-      if (point) this.handleToolPointerDown(point, { fromGamepad: true });
-    }
-    if (!aDown && this.gamepadDrawing) {
-      this.gamepadDrawing = false;
-      this.handleToolPointerUp();
-    }
-    if (this.gamepadDrawing) {
+    if (this.gamepadDrawing && this.inputMode === 'canvas') {
       const point = this.getGridCellFromScreen(this.gamepadCursor.x, this.gamepadCursor.y);
       if (point) this.handleToolPointerMove(point);
     }
+  }
 
-    if (bDown) {
-      if (!this.gamepadErase) {
-        this.gamepadErase = true;
-        this.activeToolId = TOOL_IDS.ERASER;
+  applyInputActions(actions = [], inputState = {}, dt = 0) {
+    actions.forEach((action) => {
+      switch (action.type) {
+        case INPUT_ACTIONS.TOGGLE_UI_MODE:
+          this.toggleInputMode();
+          break;
+        case INPUT_ACTIONS.UNDO:
+          this.undo();
+          break;
+        case INPUT_ACTIONS.REDO:
+          this.redo();
+          break;
+        case INPUT_ACTIONS.MENU:
+          if (this.modeTab === 'animate' && this.inputMode === 'ui' && this.uiFocus.group === 'timeline') {
+            this.animation.playing = !this.animation.playing;
+          } else {
+            this.toggleMenu();
+          }
+          break;
+        case INPUT_ACTIONS.CANCEL:
+          this.handleCancel();
+          break;
+        case INPUT_ACTIONS.CONFIRM:
+          if (this.inputMode === 'ui') {
+            this.activateFocusedItem();
+          }
+          break;
+        case INPUT_ACTIONS.TOGGLE_MODE:
+          if (action.tool === 'eyedropper') {
+            if (this.activeToolId === TOOL_IDS.EYEDROPPER) {
+              this.setActiveTool(this.lastActiveToolId || TOOL_IDS.PENCIL);
+            } else {
+              this.lastActiveToolId = this.activeToolId;
+              this.setActiveTool(TOOL_IDS.EYEDROPPER);
+            }
+          } else {
+            this.toggleDrawSelectMode();
+          }
+          break;
+        case INPUT_ACTIONS.TEMP_ERASE:
+          if (action.active) {
+            const toolId = this.activeToolId === TOOL_IDS.ERASER ? TOOL_IDS.PENCIL : TOOL_IDS.ERASER;
+            this.setTempTool('erase', toolId);
+          } else {
+            this.clearTempTool('erase');
+          }
+          break;
+        case INPUT_ACTIONS.TEMP_EYEDROPPER:
+          if (action.active) {
+            this.setTempTool('eyedropper', TOOL_IDS.EYEDROPPER);
+          } else {
+            this.clearTempTool('eyedropper');
+          }
+          break;
+        case INPUT_ACTIONS.ZOOM_IN:
+          this.zoomBy(1);
+          break;
+        case INPUT_ACTIONS.ZOOM_OUT:
+          this.zoomBy(-1);
+          break;
+        case INPUT_ACTIONS.NAV_UP:
+          this.handleNav('up');
+          break;
+        case INPUT_ACTIONS.NAV_DOWN:
+          this.handleNav('down');
+          break;
+        case INPUT_ACTIONS.NAV_LEFT:
+          this.handleNav('left');
+          break;
+        case INPUT_ACTIONS.NAV_RIGHT:
+          this.handleNav('right');
+          break;
+        case INPUT_ACTIONS.DRAW_PRESS:
+          if (this.inputMode === 'canvas') {
+            this.startGamepadDraw();
+          }
+          break;
+        case INPUT_ACTIONS.DRAW_RELEASE:
+          if (this.inputMode === 'canvas') {
+            this.stopGamepadDraw();
+          }
+          break;
+        case INPUT_ACTIONS.PAN_XY:
+          this.handlePanAction(action, dt, inputState);
+          break;
+        default:
+          break;
       }
-    } else if (this.gamepadErase) {
-      this.gamepadErase = false;
-      this.activeToolId = TOOL_IDS.PENCIL;
+    });
+
+    if (this.inputMode === 'canvas') {
+      this.handleCursorMove(inputState, dt);
+    } else {
+      this.handleAnalogFocus(inputState, dt);
     }
+  }
+
+  handleCancel() {
+    if (this.controlsOverlayOpen) {
+      this.controlsOverlayOpen = false;
+      return;
+    }
+    if (this.menuOpen) {
+      this.menuOpen = false;
+      return;
+    }
+    if (this.paletteGridOpen) {
+      this.paletteGridOpen = false;
+      return;
+    }
+    if (this.mobileDrawer) {
+      this.mobileDrawer = null;
+      return;
+    }
+    if (this.selection.active) {
+      this.clearSelection();
+      return;
+    }
+    if (this.inputMode === 'ui') {
+      this.setInputMode('canvas');
+    }
+  }
+
+  handleNav(direction) {
+    if (this.inputMode === 'ui') {
+      this.moveFocus(direction);
+      return;
+    }
+    if (direction === 'left') this.nudgeCursor(-1, 0);
+    if (direction === 'right') this.nudgeCursor(1, 0);
+    if (direction === 'up') this.nudgeCursor(0, -1);
+    if (direction === 'down') this.nudgeCursor(0, 1);
+  }
+
+  handleCursorMove(inputState, dt) {
+    if (!this.canvasBounds) return;
+    const axes = inputState.axes || { leftX: 0, leftY: 0 };
+    if (Math.hypot(axes.leftX, axes.leftY) > 0.08) {
+      this.gamepadCursor = updateGamepadCursor(this.gamepadCursor, axes, dt, 320);
+      this.gamepadCursor.active = true;
+      this.gamepadCursor.x = clamp(this.gamepadCursor.x, this.canvasBounds.x, this.canvasBounds.x + this.canvasBounds.w);
+      this.gamepadCursor.y = clamp(this.gamepadCursor.y, this.canvasBounds.y, this.canvasBounds.y + this.canvasBounds.h);
+    }
+  }
+
+  handleAnalogFocus(inputState, dt) {
+    const axes = inputState.axes || { leftY: 0 };
+    if (Math.abs(axes.leftY) > 0.55) {
+      this.analogFocusTimer = (this.analogFocusTimer || 0) - dt;
+      if (this.analogFocusTimer <= 0) {
+        this.moveFocus(axes.leftY < 0 ? 'up' : 'down');
+        this.analogFocusTimer = 0.2;
+      }
+    } else {
+      this.analogFocusTimer = 0;
+    }
+  }
+
+  handlePanAction(action, dt, inputState) {
+    const axes = inputState.axes || { rightX: 0, rightY: 0 };
+    const panSpeed = 420;
+    if (this.modeTab === 'animate' && this.inputMode === 'ui' && this.uiFocus.group === 'timeline') {
+      const threshold = 0.4;
+      this.timelineScrubTimer = (this.timelineScrubTimer || 0) - dt;
+      if (Math.abs(axes.rightX) > threshold && this.timelineScrubTimer <= 0) {
+        const direction = axes.rightX > 0 ? 1 : -1;
+        this.animation.currentFrameIndex = clamp(
+          this.animation.currentFrameIndex + direction,
+          0,
+          this.animation.frames.length - 1
+        );
+        this.setFrameLayers(this.currentFrame.layers);
+        this.timelineScrubTimer = 0.15;
+      }
+      return;
+    }
+    this.view.panX += axes.rightX * panSpeed * dt;
+    this.view.panY += axes.rightY * panSpeed * dt;
+  }
+
+  startGamepadDraw() {
+    const point = this.getGridCellFromScreen(this.gamepadCursor.x, this.gamepadCursor.y);
+    if (point) {
+      this.handleToolPointerDown(point, { fromGamepad: true });
+    }
+    this.gamepadDrawing = true;
+  }
+
+  stopGamepadDraw() {
+    if (this.gamepadDrawing) {
+      this.handleToolPointerUp();
+    }
+    this.gamepadDrawing = false;
   }
 
   zoomBy(delta) {
@@ -603,9 +776,14 @@ export default class PixelStudio {
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
     const button = payload.button ?? 0;
+    if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen) {
+      this.handleButtonClick(payload.x, payload.y);
+      return;
+    }
     if (this.handleButtonClick(payload.x, payload.y)) return;
     if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
-      if (this.spaceDown || button === 1) {
+      this.setInputMode('canvas');
+      if (this.spaceDown || button === 1 || button === 2) {
         this.panStart = { x: payload.x, y: payload.y, panX: this.view.panX, panY: this.view.panY };
         return;
       }
@@ -649,7 +827,14 @@ export default class PixelStudio {
   handleGestureStart(payload) {
     if (!this.canvasBounds) return;
     if (!payload?.distance) return;
-    this.gesture = { startDistance: payload.distance, startZoomIndex: this.view.zoomIndex };
+    this.gesture = {
+      startDistance: payload.distance,
+      startZoomIndex: this.view.zoomIndex,
+      startX: payload.x,
+      startY: payload.y,
+      startPanX: this.view.panX,
+      startPanY: this.view.panY
+    };
   }
 
   handleGestureMove(payload) {
@@ -667,6 +852,8 @@ export default class PixelStudio {
       }
     });
     this.view.zoomIndex = closestIndex;
+    this.view.panX = this.gesture.startPanX + (payload.x - this.gesture.startX);
+    this.view.panY = this.gesture.startPanY + (payload.y - this.gesture.startY);
   }
 
   handleGestureEnd() {
@@ -691,23 +878,96 @@ export default class PixelStudio {
   }
 
   handleToolPointerDown(point, modifiers = {}) {
-    const tool = this.tools.find((entry) => entry.id === this.activeToolId);
+    const tool = this.tools.find((entry) => entry.id === this.getEffectiveToolId());
     if (tool?.onPointerDown) {
       tool.onPointerDown(point, modifiers);
     }
   }
 
   handleToolPointerMove(point) {
-    const tool = this.tools.find((entry) => entry.id === this.activeToolId);
+    const tool = this.tools.find((entry) => entry.id === this.getEffectiveToolId());
     if (tool?.onPointerMove) {
       tool.onPointerMove(point);
     }
   }
 
   handleToolPointerUp() {
-    const tool = this.tools.find((entry) => entry.id === this.activeToolId);
+    const tool = this.tools.find((entry) => entry.id === this.getEffectiveToolId());
     if (tool?.onPointerUp) {
       tool.onPointerUp();
+    }
+  }
+
+  setActiveTool(toolId) {
+    this.activeToolId = toolId;
+    this.lastActiveToolId = toolId;
+    if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.MOVE].includes(toolId)) {
+      this.modeTab = 'select';
+    } else if (toolId !== TOOL_IDS.EYEDROPPER) {
+      this.modeTab = this.modeTab === 'animate' ? 'animate' : 'draw';
+    }
+  }
+
+  setTempTool(source, toolId) {
+    this.tempToolOverrides.set(source, toolId);
+  }
+
+  clearTempTool(source) {
+    this.tempToolOverrides.delete(source);
+  }
+
+  getEffectiveToolId() {
+    if (this.tempToolOverrides.has('eyedropper')) return TOOL_IDS.EYEDROPPER;
+    if (this.tempToolOverrides.has('erase')) return this.tempToolOverrides.get('erase');
+    return this.activeToolId;
+  }
+
+  toggleDrawSelectMode() {
+    if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.MOVE].includes(this.activeToolId)) {
+      this.setActiveTool(TOOL_IDS.PENCIL);
+      return;
+    }
+    this.setActiveTool(this.selection.active ? TOOL_IDS.MOVE : TOOL_IDS.SELECT_RECT);
+  }
+
+  resetZoom() {
+    this.view.zoomIndex = 4;
+    this.view.panX = 0;
+    this.view.panY = 0;
+  }
+
+  handleArrowKey(key) {
+    if (this.inputMode === 'ui') {
+      if (key === 'ArrowLeft') this.moveFocus('left');
+      if (key === 'ArrowRight') this.moveFocus('right');
+      if (key === 'ArrowUp') this.moveFocus('up');
+      if (key === 'ArrowDown') this.moveFocus('down');
+      return;
+    }
+    if (this.selection.active && this.activeToolId === TOOL_IDS.MOVE) {
+      if (key === 'ArrowLeft') this.nudgeSelection(-1, 0);
+      if (key === 'ArrowRight') this.nudgeSelection(1, 0);
+      if (key === 'ArrowUp') this.nudgeSelection(0, -1);
+      if (key === 'ArrowDown') this.nudgeSelection(0, 1);
+      return;
+    }
+    if (key === 'ArrowLeft') this.nudgeCursor(-1, 0);
+    if (key === 'ArrowRight') this.nudgeCursor(1, 0);
+    if (key === 'ArrowUp') this.nudgeCursor(0, -1);
+    if (key === 'ArrowDown') this.nudgeCursor(0, 1);
+  }
+
+  nudgeCursor(dx, dy) {
+    if (!this.canvasBounds) return;
+    const nextCol = clamp(this.cursor.col + dx, 0, this.canvasState.width - 1);
+    const nextRow = clamp(this.cursor.row + dy, 0, this.canvasState.height - 1);
+    this.cursor.col = nextCol;
+    this.cursor.row = nextRow;
+    const screen = this.getScreenFromGridCell(nextRow, nextCol);
+    if (screen) {
+      this.gamepadCursor.x = screen.x;
+      this.gamepadCursor.y = screen.y;
+      this.gamepadCursor.active = true;
     }
   }
 
@@ -1497,6 +1757,15 @@ export default class PixelStudio {
     return { row, col };
   }
 
+  getScreenFromGridCell(row, col) {
+    if (!this.canvasBounds) return null;
+    const { x: startX, y: startY, cellSize } = this.canvasBounds;
+    return {
+      x: startX + col * cellSize + cellSize / 2,
+      y: startY + row * cellSize + cellSize / 2
+    };
+  }
+
   handleButtonClick(x, y) {
     const hit = this.uiButtons.find((button) => x >= button.bounds.x
       && x <= button.bounds.x + button.bounds.w
@@ -1525,61 +1794,191 @@ export default class PixelStudio {
     return false;
   }
 
+  registerFocusable(group, bounds, onActivate) {
+    if (!this.focusGroups[group]) {
+      this.focusGroups[group] = [];
+    }
+    this.focusGroups[group].push({ bounds, onActivate });
+  }
+
+  finalizeFocusGroups() {
+    let order = Object.keys(this.focusGroups).filter((group) => this.focusGroups[group]?.length);
+    if (this.controlsOverlayOpen || this.menuOpen) {
+      order = order.filter((group) => group === 'menu');
+    } else if (this.paletteGridOpen) {
+      order = order.filter((group) => group === 'palette' || group === 'menu');
+    }
+    this.focusOrder = order;
+    if (!this.focusOrder.length) return;
+    if (!this.focusGroups[this.uiFocus.group]) {
+      this.uiFocus.group = this.focusOrder[0];
+      this.uiFocus.index = 0;
+    }
+    const items = this.focusGroups[this.uiFocus.group] || [];
+    if (!items.length) {
+      this.uiFocus.group = this.focusOrder[0];
+      this.uiFocus.index = 0;
+    } else {
+      this.uiFocus.index = clamp(this.uiFocus.index, 0, items.length - 1);
+    }
+    this.ensureFocusVisible(this.uiFocus.group);
+  }
+
+  ensureFocusVisible(group) {
+    const meta = this.focusGroupMeta[group];
+    if (!meta) return;
+    const total = (this.focusGroups[group] || []).length;
+    const maxVisible = meta.maxVisible;
+    if (!maxVisible || total <= maxVisible) return;
+    let start = this.focusScroll[group] || 0;
+    if (this.uiFocus.index < start) start = this.uiFocus.index;
+    if (this.uiFocus.index >= start + maxVisible) start = this.uiFocus.index - maxVisible + 1;
+    this.focusScroll[group] = clamp(start, 0, Math.max(0, total - maxVisible));
+  }
+
+  moveFocus(direction) {
+    if (!this.focusOrder.length) return;
+    const groupIndex = this.focusOrder.indexOf(this.uiFocus.group);
+    if (direction === 'left' || direction === 'right') {
+      const delta = direction === 'left' ? -1 : 1;
+      const nextGroup = this.focusOrder[(groupIndex + delta + this.focusOrder.length) % this.focusOrder.length];
+      this.uiFocus.group = nextGroup;
+      this.uiFocus.index = clamp(this.uiFocus.index, 0, (this.focusGroups[nextGroup]?.length || 1) - 1);
+      this.ensureFocusVisible(nextGroup);
+      return;
+    }
+    const items = this.focusGroups[this.uiFocus.group] || [];
+    if (!items.length) return;
+    const delta = direction === 'up' ? -1 : 1;
+    this.uiFocus.index = clamp(this.uiFocus.index + delta, 0, items.length - 1);
+    this.ensureFocusVisible(this.uiFocus.group);
+  }
+
+  activateFocusedItem() {
+    const items = this.focusGroups[this.uiFocus.group] || [];
+    const item = items[this.uiFocus.index];
+    item?.onActivate?.();
+  }
+
+  drawFocusHighlight(ctx) {
+    if (this.inputMode !== 'ui') return;
+    const items = this.focusGroups[this.uiFocus.group] || [];
+    const item = items[this.uiFocus.index];
+    if (!item) return;
+    const bounds = item.bounds;
+    ctx.save();
+    ctx.strokeStyle = '#9ddcff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(bounds.x - 2, bounds.y - 2, bounds.w + 4, bounds.h + 4);
+    ctx.restore();
+  }
+
   draw(ctx, width, height) {
     ctx.save();
     ctx.fillStyle = '#0b0b0b';
     ctx.fillRect(0, 0, width, height);
     ctx.imageSmoothingEnabled = false;
+    const isMobile = this.isMobileLayout(width, height);
+    const padding = isMobile ? 12 : 16;
+    const topBarHeight = isMobile ? 44 : 50;
+    const statusHeight = 20;
+    const paletteHeight = isMobile ? 64 : 86;
+    const toolbarHeight = isMobile ? 72 : 0;
+    const timelineHeight = !isMobile && this.modeTab === 'animate' ? 120 : 0;
+    const bottomHeight = statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
+    const leftWidth = isMobile ? 0 : (this.sidebars.left ? 260 : 0);
+    const rightWidth = isMobile ? 0 : (this.sidebars.right ? 260 : 0);
 
-    const leftWidth = 260;
-    const rightWidth = 240;
-    const bottomHeight = 170;
-    const topBarHeight = 50;
+    this.uiButtons = [];
+    this.paletteBounds = [];
+    this.layerBounds = [];
+    this.frameBounds = [];
+    this.focusGroups = {};
+    this.focusGroupMeta = {};
+
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(0, 0, width, topBarHeight);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(0, 0, width, topBarHeight);
 
     ctx.fillStyle = '#fff';
-    ctx.font = '20px Courier New';
-    ctx.fillText('Pixel Studio', 24, 32);
+    ctx.font = isMobile ? '16px Courier New' : '20px Courier New';
+    ctx.fillText('Pixel Studio', padding, topBarHeight - 16);
 
-    const tabs = ['Draw', 'Select', 'Animate', 'Export'];
-    const tabX = 220;
-    this.uiButtons = [];
+    if (!isMobile && this.sidebars.left) {
+      const leftToggle = { x: padding + 140, y: 12, w: 70, h: 26 };
+      const rightToggle = { x: width - padding - 140, y: 12, w: 90, h: 26 };
+      this.drawButton(ctx, leftToggle, this.sidebars.left ? 'Tools' : 'Tools ▸', false, { fontSize: 12 });
+      this.drawButton(ctx, rightToggle, this.sidebars.right ? 'Layers' : 'Layers ▸', false, { fontSize: 12 });
+      this.uiButtons.push({ bounds: leftToggle, onClick: () => { this.sidebars.left = !this.sidebars.left; } });
+      this.uiButtons.push({ bounds: rightToggle, onClick: () => { this.sidebars.right = !this.sidebars.right; } });
+      this.registerFocusable('menu', leftToggle, () => { this.sidebars.left = !this.sidebars.left; });
+      this.registerFocusable('menu', rightToggle, () => { this.sidebars.right = !this.sidebars.right; });
+    }
+
+    const tabs = ['draw', 'select', 'animate', 'export'];
+    const tabStartX = isMobile ? 140 : 240;
+    const tabWidth = isMobile ? 70 : 90;
+    const tabHeight = isMobile ? 24 : 26;
     tabs.forEach((tab, index) => {
-      const bounds = { x: tabX + index * 90, y: 16, w: 84, h: 26 };
-      const active = this.modeTab.toLowerCase() === tab.toLowerCase();
-      this.drawButton(ctx, bounds, tab, active);
-      this.uiButtons.push({ bounds, onClick: () => { this.modeTab = tab.toLowerCase(); } });
+      const label = tab[0].toUpperCase() + tab.slice(1);
+      const bounds = { x: tabStartX + index * (tabWidth + 6), y: 12, w: tabWidth, h: tabHeight };
+      const active = this.modeTab === tab;
+      this.drawButton(ctx, bounds, label, active, { fontSize: isMobile ? 11 : 12 });
+      this.uiButtons.push({ bounds, onClick: () => { this.modeTab = tab; } });
+      this.registerFocusable('menu', bounds, () => { this.modeTab = tab; });
     });
 
+    const menuBounds = { x: width - padding - 36, y: 10, w: 32, h: 28 };
+    this.drawButton(ctx, menuBounds, '☰', this.menuOpen, { fontSize: 14 });
+    this.uiButtons.push({ bounds: menuBounds, onClick: () => this.toggleMenu() });
+    this.registerFocusable('menu', menuBounds, () => this.toggleMenu());
+
     const zoom = this.view.zoomLevels[this.view.zoomIndex];
-    const statusText = `Tool: ${this.activeToolId} | Brush ${this.toolOptions.brushSize}px | Color ${getPaletteSwatchHex(this.currentPalette, this.paletteIndex)} | Layer ${this.canvasState.activeLayerIndex + 1}/${this.canvasState.layers.length} | Frame ${this.animation.currentFrameIndex + 1}/${this.animation.frames.length} | Zoom ${zoom}x | Cursor ${this.cursor.col},${this.cursor.row}`;
+    const zoomPercent = Math.round(zoom * 100);
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.font = '12px Courier New';
-    ctx.fillText(statusText, 24, height - bottomHeight - 8);
+    ctx.textAlign = 'right';
+    ctx.fillText(
+      `${this.inputMode.toUpperCase()} | ${this.getEffectiveToolId()} | ${zoomPercent}%`,
+      width - padding - 44,
+      topBarHeight - 16
+    );
+    ctx.textAlign = 'left';
 
-    const toolsX = 20;
-    const toolsY = topBarHeight + 10;
-    const toolsH = height - bottomHeight - topBarHeight - 20;
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(toolsX, toolsY, leftWidth, toolsH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(toolsX, toolsY, leftWidth, toolsH);
+    const canvasX = padding + leftWidth;
+    const canvasY = topBarHeight + padding;
+    const canvasW = width - leftWidth - rightWidth - padding * 2;
+    const canvasH = height - canvasY - bottomHeight;
 
-    this.drawToolsPanel(ctx, toolsX, toolsY, leftWidth, toolsH);
+    if (!isMobile) {
+      const toolsX = padding;
+      const toolsY = canvasY;
+      const toolsH = canvasH;
+      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      ctx.fillRect(toolsX, toolsY, leftWidth, toolsH);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(toolsX, toolsY, leftWidth, toolsH);
 
-    const layersX = width - rightWidth - 20;
-    const layersY = topBarHeight + 10;
-    const layersH = height - bottomHeight - topBarHeight - 20;
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(layersX, layersY, rightWidth, layersH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(layersX, layersY, rightWidth, layersH);
+      const toolsSplit = Math.floor(toolsH * 0.55);
+      this.drawToolsPanel(ctx, toolsX, toolsY, leftWidth, toolsSplit, { isMobile: false });
+      this.drawObjectsPanel(ctx, toolsX, toolsY + toolsSplit + 8, leftWidth, toolsH - toolsSplit - 8, { isMobile: false });
 
-    this.drawLayersPanel(ctx, layersX, layersY, rightWidth, layersH);
+    }
 
-    const canvasX = leftWidth + 40;
-    const canvasY = topBarHeight + 20;
-    const canvasW = width - leftWidth - rightWidth - 80;
-    const canvasH = height - bottomHeight - topBarHeight - 40;
+    if (!isMobile && this.sidebars.right) {
+      const rightX = width - rightWidth - padding;
+      const rightY = canvasY;
+      const rightH = canvasH;
+      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      ctx.fillRect(rightX, rightY, rightWidth, rightH);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(rightX, rightY, rightWidth, rightH);
+
+      const previewH = 120;
+      this.drawPreviewPanel(ctx, rightX + 8, rightY + 8, rightWidth - 16, previewH - 16);
+      this.drawLayersPanel(ctx, rightX, rightY + previewH, rightWidth, rightH - previewH, { isMobile: false });
+    }
 
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(canvasX, canvasY, canvasW, canvasH);
@@ -1588,112 +1987,361 @@ export default class PixelStudio {
 
     this.drawCanvasArea(ctx, canvasX, canvasY, canvasW, canvasH);
 
-    this.drawPaletteBar(ctx, 20, height - bottomHeight + 20, width - 40, bottomHeight - 40);
-    this.drawTimeline(ctx, canvasX, height - bottomHeight + 20, canvasW, bottomHeight - 40);
+    const paletteY = height - bottomHeight + padding;
+    this.drawPaletteBar(ctx, padding, paletteY, width - padding * 2, paletteHeight, { isMobile });
+    const statusY = paletteY + paletteHeight + 6;
+    this.drawStatusBar(ctx, padding, statusY, width - padding * 2, statusHeight);
 
-    if (this.gamepadHintVisible) {
-      this.drawGamepadHints(ctx, width - rightWidth - 40, height - bottomHeight - 90);
+    if (!isMobile && this.modeTab === 'animate') {
+      const timelineY = statusY + statusHeight + 6;
+      this.drawTimeline(ctx, canvasX, timelineY, canvasW, timelineHeight);
     }
 
-    if (this.uiFocusMode && this.uiButtons[this.uiFocusIndex]) {
-      const bounds = this.uiButtons[this.uiFocusIndex].bounds;
-      ctx.strokeStyle = '#9ddcff';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(bounds.x - 2, bounds.y - 2, bounds.w + 4, bounds.h + 4);
+    if (isMobile) {
+      const toolbarY = height - toolbarHeight - padding;
+      this.drawMobileToolbar(ctx, padding, toolbarY, width - padding * 2, toolbarHeight);
+      if (this.mobileDrawer && this.mobileDrawer !== 'timeline') {
+        this.drawMobileDrawer(ctx, padding, topBarHeight + padding, width - padding * 2, canvasH, this.mobileDrawer);
+      }
+      if (this.paletteGridOpen) {
+        this.drawPaletteGridSheet(ctx, padding, canvasY + canvasH * 0.25, width - padding * 2, canvasH * 0.7);
+      }
+      if (this.modeTab === 'animate' && this.mobileDrawer === 'timeline') {
+        this.drawTimelineSheet(ctx, padding, height - toolbarHeight - padding - 180, width - padding * 2, 170);
+      }
     }
+
+    if (this.menuOpen) {
+      this.drawMenuOverlay(ctx, width, height, isMobile);
+    }
+    if (this.controlsOverlayOpen) {
+      this.drawControlsOverlay(ctx, width, height);
+    }
+
+    if (this.gamepadHintVisible && !isMobile) {
+      this.drawGamepadHints(ctx, width - rightWidth - padding - 20, height - bottomHeight - 90);
+    }
+
+    this.finalizeFocusGroups();
+    this.drawFocusHighlight(ctx);
 
     ctx.restore();
   }
 
-  drawButton(ctx, bounds, label, active = false) {
+  drawButton(ctx, bounds, label, active = false, options = {}) {
+    const fontSize = options.fontSize || 12;
     ctx.fillStyle = active ? 'rgba(255,225,106,0.6)' : 'rgba(0,0,0,0.6)';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.fillStyle = active ? '#0b0b0b' : '#fff';
-    ctx.font = '12px Courier New';
+    ctx.font = `${fontSize}px Courier New`;
     ctx.textAlign = 'center';
     ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 4);
     ctx.textAlign = 'left';
   }
 
-  drawToolsPanel(ctx, x, y, w, h) {
+  isMobileLayout(width, height) {
+    return this.game?.isMobile || width < 900 || height < 600;
+  }
+
+  drawPreviewPanel(ctx, x, y, w, h) {
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = '#ffe16a';
+    ctx.strokeRect(x, y, w, h);
+    const composite = compositeLayers(this.canvasState.layers, this.canvasState.width, this.canvasState.height);
+    const imageData = this.offscreenCtx.createImageData(this.canvasState.width, this.canvasState.height);
+    const bytes = new Uint32Array(imageData.data.buffer);
+    bytes.set(composite);
+    this.offscreenCtx.putImageData(imageData, 0, 0);
+    const size = Math.min(w, h);
+    ctx.drawImage(this.offscreen, x + (w - size) / 2, y + (h - size) / 2, size, size);
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px Courier New';
+    ctx.fillText('Preview', x + 4, y + h + 14);
+  }
+
+  drawObjectsPanel(ctx, x, y, w, h, options = {}) {
+    const isMobile = options.isMobile;
+    ctx.fillStyle = '#fff';
+    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+    ctx.fillText('Objects', x + 12, y + 20);
+    const lineHeight = isMobile ? 52 : 20;
+    const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
+    this.focusGroupMeta.objects = { maxVisible };
+    const start = this.focusScroll.objects || 0;
+    let offsetY = y + 36;
+    this.tileLibrary.slice(start, start + maxVisible).forEach((tile, visibleIndex) => {
+      const index = start + visibleIndex;
+      const active = tile.id === this.activeTile?.id;
+      const bounds = { x: x + 8, y: offsetY - (isMobile ? 28 : 14), w: w - 16, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, bounds, tile.label, active, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({ bounds, onClick: () => this.setActiveTile(tile) });
+      this.registerFocusable('objects', bounds, () => this.setActiveTile(tile));
+      offsetY += lineHeight;
+    });
+  }
+
+  drawStatusBar(ctx, x, y, w, h) {
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, w, h);
+    const zoom = this.view.zoomLevels[this.view.zoomIndex];
+    const zoomPercent = Math.round(zoom * 100);
+    const statusText = `Tool ${this.getEffectiveToolId()} | Brush ${this.toolOptions.brushSize}px | Color ${getPaletteSwatchHex(this.currentPalette, this.paletteIndex)} | Layer ${this.canvasState.activeLayerIndex + 1}/${this.canvasState.layers.length} | Frame ${this.animation.currentFrameIndex + 1}/${this.animation.frames.length} | Zoom ${zoomPercent}% | Cursor ${this.cursor.col},${this.cursor.row}`;
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = '12px Courier New';
+    ctx.fillText(statusText, x + 8, y + 14);
+  }
+
+  drawMobileToolbar(ctx, x, y, w, h) {
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, w, h);
+    const actions = [
+      { label: this.activeToolId.slice(0, 2).toUpperCase(), action: () => { this.mobileDrawer = this.mobileDrawer === 'tools' ? null : 'tools'; } },
+      { label: '🎨', action: () => { this.paletteGridOpen = !this.paletteGridOpen; } },
+      { label: '↺', action: () => this.undo() },
+      { label: '↻', action: () => this.redo() },
+      { label: '🔍', action: () => this.zoomBy(this.view.zoomIndex >= this.view.zoomLevels.length - 1 ? -1 : 1) },
+      { label: 'Layers', action: () => { this.mobileDrawer = this.mobileDrawer === 'layers' ? null : 'layers'; } },
+      { label: this.modeTab === 'animate' ? 'Anim ✓' : 'Anim', action: () => { this.modeTab = this.modeTab === 'animate' ? 'draw' : 'animate'; this.mobileDrawer = this.modeTab === 'animate' ? 'timeline' : null; } },
+      { label: 'Export', action: () => { this.modeTab = 'export'; this.mobileDrawer = 'tools'; this.mobileDrawerTab = 'tools'; } }
+    ];
+    const gap = 8;
+    const buttonW = Math.min(68, Math.max(44, Math.floor((w - gap * (actions.length - 1)) / actions.length)));
+    actions.forEach((entry, index) => {
+      const bounds = {
+        x: x + index * (buttonW + gap),
+        y: y + 8,
+        w: buttonW,
+        h: h - 16
+      };
+      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+      this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('toolbar', bounds, entry.action);
+    });
+  }
+
+  drawMobileDrawer(ctx, x, y, w, h, type) {
+    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, w, h);
+
+    const tabHeight = 44;
+    if (type === 'tools') {
+      const toolsTab = { x: x + 12, y: y + 8, w: 90, h: tabHeight };
+      const objectsTab = { x: x + 110, y: y + 8, w: 110, h: tabHeight };
+      this.drawButton(ctx, toolsTab, 'Tools', this.mobileDrawerTab === 'tools', { fontSize: 12 });
+      this.drawButton(ctx, objectsTab, 'Objects', this.mobileDrawerTab === 'objects', { fontSize: 12 });
+      this.uiButtons.push({ bounds: toolsTab, onClick: () => { this.mobileDrawerTab = 'tools'; } });
+      this.uiButtons.push({ bounds: objectsTab, onClick: () => { this.mobileDrawerTab = 'objects'; } });
+      this.registerFocusable('menu', toolsTab, () => { this.mobileDrawerTab = 'tools'; });
+      this.registerFocusable('menu', objectsTab, () => { this.mobileDrawerTab = 'objects'; });
+
+      const panelY = y + tabHeight + 16;
+      const panelH = h - tabHeight - 24;
+      if (this.mobileDrawerTab === 'objects') {
+        this.drawObjectsPanel(ctx, x + 8, panelY, w - 16, panelH, { isMobile: true });
+      } else {
+        this.drawToolsPanel(ctx, x + 8, panelY, w - 16, panelH, { isMobile: true });
+      }
+    }
+
+    if (type === 'layers') {
+      this.drawLayersPanel(ctx, x + 8, y + 8, w - 16, h - 16, { isMobile: true });
+    }
+  }
+
+  drawPaletteGridSheet(ctx, x, y, w, h) {
+    ctx.fillStyle = 'rgba(0,0,0,0.92)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, w, h);
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
-    ctx.fillText('Tools', x + 12, y + 20);
+    ctx.fillText('Palette', x + 12, y + 22);
+    const swatchSize = 44;
+    const gap = 10;
+    const maxPerRow = Math.max(1, Math.floor((w - 20) / (swatchSize + gap)));
+    let offsetY = y + 30;
+    this.paletteBounds = [];
+    this.currentPalette.colors.forEach((color, index) => {
+      const row = Math.floor(index / maxPerRow);
+      const col = index % maxPerRow;
+      const swatchX = x + 12 + col * (swatchSize + gap);
+      const swatchY = offsetY + row * (swatchSize + gap);
+      if (swatchY + swatchSize > y + h - 40) return;
+      ctx.fillStyle = color.hex;
+      ctx.fillRect(swatchX, swatchY, swatchSize, swatchSize);
+      ctx.strokeStyle = index === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)';
+      ctx.strokeRect(swatchX, swatchY, swatchSize, swatchSize);
+      const bounds = { x: swatchX, y: swatchY, w: swatchSize, h: swatchSize, index };
+      this.paletteBounds.push(bounds);
+      this.registerFocusable('palette', bounds, () => this.setPaletteIndex(index));
+    });
+
+    const closeBounds = { x: x + w - 110, y: y + h - 50, w: 90, h: 44 };
+    this.drawButton(ctx, closeBounds, 'Close', false, { fontSize: 12 });
+    this.uiButtons.push({ bounds: closeBounds, onClick: () => { this.paletteGridOpen = false; } });
+    this.registerFocusable('menu', closeBounds, () => { this.paletteGridOpen = false; });
+  }
+
+  drawTimelineSheet(ctx, x, y, w, h) {
+    this.drawTimeline(ctx, x, y, w, h);
+  }
+
+  drawMenuOverlay(ctx, width, height, isMobile) {
+    const boxW = Math.min(280, width - 40);
+    const boxH = 180;
+    const boxX = width / 2 - boxW / 2;
+    const boxY = height / 2 - boxH / 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.88)';
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+    ctx.fillStyle = '#fff';
+    ctx.font = '16px Courier New';
+    ctx.fillText('Menu', boxX + 16, boxY + 28);
+
+    const items = [
+      { label: 'Controls', action: () => { this.controlsOverlayOpen = true; this.menuOpen = false; } },
+      { label: 'Export PNG', action: () => { this.exportPng(); this.menuOpen = false; } },
+      { label: 'Exit', action: () => { this.game.exitPixelStudio({ toTitle: true }); } }
+    ];
+    items.forEach((entry, index) => {
+      const bounds = { x: boxX + 20, y: boxY + 50 + index * 52, w: boxW - 40, h: 44 };
+      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 13 });
+      this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('menu', bounds, entry.action);
+    });
+  }
+
+  drawControlsOverlay(ctx, width, height) {
+    const boxW = Math.min(560, width - 40);
+    const boxH = Math.min(420, height - 40);
+    const boxX = width / 2 - boxW / 2;
+    const boxY = height / 2 - boxH / 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.92)';
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+    ctx.fillStyle = '#fff';
+    ctx.font = '16px Courier New';
+    ctx.fillText('Controls', boxX + 16, boxY + 24);
+
+    ctx.font = '12px Courier New';
+    const lines = [
+      'Gamepad: LT/RT zoom | D-pad UI | LS cursor | RS pan/scrub',
+      'A confirm/draw | B cancel | X eyedropper (hold) | Y draw/select',
+      'LB temp erase | RB + D-pad ←/→ undo/redo | Start menu/play | Back UI mode',
+      '',
+      'Keyboard: B pencil | E eraser | G fill | I eyedropper | V move | S select',
+      'Ctrl+Z undo | Ctrl+Shift+Z / Ctrl+Y redo | [ ] brush size',
+      '+/- zoom | 0 reset zoom | Arrow keys nudge cursor/selection',
+      '',
+      'Touch: 1 finger draw | 2-finger pan | pinch zoom | long-press eyedropper'
+    ];
+    lines.forEach((line, index) => {
+      ctx.fillText(line, boxX + 16, boxY + 50 + index * 18);
+    });
+
+    const closeBounds = { x: boxX + boxW - 110, y: boxY + boxH - 50, w: 90, h: 44 };
+    this.drawButton(ctx, closeBounds, 'Close', false, { fontSize: 12 });
+    this.uiButtons.push({ bounds: closeBounds, onClick: () => { this.controlsOverlayOpen = false; } });
+    this.registerFocusable('menu', closeBounds, () => { this.controlsOverlayOpen = false; });
+  }
+
+  drawToolsPanel(ctx, x, y, w, h, options = {}) {
+    const isMobile = options.isMobile;
+    const fontSize = isMobile ? 14 : 12;
+    const lineHeight = isMobile ? 52 : 20;
+    const buttonHeight = isMobile ? 44 : 18;
+    ctx.fillStyle = '#fff';
+    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+    ctx.fillText('Tools', x + 12, y + 22);
 
     const list = this.tools.map((tool) => tool);
-    const lineHeight = 20;
+    const maxVisible = Math.max(1, Math.floor((h - 140) / lineHeight));
+    this.focusGroupMeta.tools = { maxVisible };
+    const start = this.focusScroll.tools || 0;
     let offsetY = y + 36;
-    list.forEach((tool) => {
+    list.slice(start, start + maxVisible).forEach((tool) => {
       const isActive = tool.id === this.activeToolId;
-      ctx.fillStyle = isActive ? '#ffe16a' : 'rgba(255,255,255,0.7)';
-      ctx.fillText(tool.name, x + 16, offsetY);
-      const bounds = { x: x + 8, y: offsetY - 14, w: w - 16, h: 18 };
-      this.uiButtons.push({ bounds, onClick: () => { this.activeToolId = tool.id; } });
+      const bounds = { x: x + 8, y: offsetY - buttonHeight + 4, w: w - 16, h: buttonHeight };
+      this.drawButton(ctx, bounds, tool.name, isActive, { fontSize });
+      this.uiButtons.push({ bounds, onClick: () => { this.setActiveTool(tool.id); } });
+      this.registerFocusable('tools', bounds, () => this.setActiveTool(tool.id));
       offsetY += lineHeight;
     });
 
-    offsetY += 8;
+    offsetY += 6;
     ctx.fillStyle = '#fff';
+    ctx.font = `${isMobile ? 14 : 12}px Courier New`;
     ctx.fillText('Options', x + 12, offsetY);
     offsetY += 18;
 
     this.drawOptionToggle(ctx, x + 12, offsetY, 'Symmetry H', this.toolOptions.symmetry.horizontal, () => {
       this.toolOptions.symmetry.horizontal = !this.toolOptions.symmetry.horizontal;
-    });
-    offsetY += 20;
+    }, { isMobile });
+    offsetY += lineHeight;
     this.drawOptionToggle(ctx, x + 12, offsetY, 'Symmetry V', this.toolOptions.symmetry.vertical, () => {
       this.toolOptions.symmetry.vertical = !this.toolOptions.symmetry.vertical;
-    });
-    offsetY += 20;
+    }, { isMobile });
+    offsetY += lineHeight;
     this.drawOptionToggle(ctx, x + 12, offsetY, 'Wrap Draw', this.toolOptions.wrapDraw, () => {
       this.toolOptions.wrapDraw = !this.toolOptions.wrapDraw;
-    });
-    offsetY += 20;
+    }, { isMobile });
+    offsetY += lineHeight;
     this.drawOptionToggle(ctx, x + 12, offsetY, 'Tiled Preview', this.tiledPreview.enabled, () => {
       this.tiledPreview.enabled = !this.tiledPreview.enabled;
-    });
-    offsetY += 24;
-    const tileSizeBounds = { x: x + 12, y: offsetY - 12, w: 120, h: 18 };
-    this.drawButton(ctx, tileSizeBounds, `Tiles: ${this.tiledPreview.tiles}x${this.tiledPreview.tiles}`);
+    }, { isMobile });
+    offsetY += lineHeight;
+    const tileSizeBounds = { x: x + 12, y: offsetY - buttonHeight + 4, w: 140, h: buttonHeight };
+    this.drawButton(ctx, tileSizeBounds, `Tiles: ${this.tiledPreview.tiles}x${this.tiledPreview.tiles}`, false, { fontSize });
     this.uiButtons.push({
       bounds: tileSizeBounds,
       onClick: () => { this.tiledPreview.tiles = this.tiledPreview.tiles === 2 ? 3 : 2; }
     });
-    offsetY += 24;
+    this.registerFocusable('menu', tileSizeBounds, () => {
+      this.tiledPreview.tiles = this.tiledPreview.tiles === 2 ? 3 : 2;
+    });
+    offsetY += lineHeight;
 
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = `${fontSize}px Courier New`;
     ctx.fillText(`Brush Size: ${this.toolOptions.brushSize}`, x + 12, offsetY);
-    this.uiButtons.push({
-      bounds: { x: x + 160, y: offsetY - 14, w: 30, h: 18 },
-      onClick: () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8); }
-    });
-    this.uiButtons.push({
-      bounds: { x: x + 196, y: offsetY - 14, w: 30, h: 18 },
-      onClick: () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8); }
-    });
-    this.drawButton(ctx, { x: x + 160, y: offsetY - 14, w: 28, h: 16 }, '-');
-    this.drawButton(ctx, { x: x + 196, y: offsetY - 14, w: 28, h: 16 }, '+');
-    offsetY += 24;
+    const brushMinus = { x: x + 160, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
+    const brushPlus = { x: x + 196, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
+    this.drawButton(ctx, brushMinus, '-', false, { fontSize });
+    this.drawButton(ctx, brushPlus, '+', false, { fontSize });
+    this.uiButtons.push({ bounds: brushMinus, onClick: () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8); } });
+    this.uiButtons.push({ bounds: brushPlus, onClick: () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8); } });
+    this.registerFocusable('menu', brushMinus, () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8); });
+    this.registerFocusable('menu', brushPlus, () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8); });
+    offsetY += lineHeight;
 
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = `${fontSize}px Courier New`;
     ctx.fillText(`Tile: ${this.activeTile?.label || 'None'}`, x + 12, offsetY);
-    this.uiButtons.push({
-      bounds: { x: x + 160, y: offsetY - 14, w: 30, h: 18 },
-      onClick: () => this.cycleTile(-1)
-    });
-    this.uiButtons.push({
-      bounds: { x: x + 196, y: offsetY - 14, w: 30, h: 18 },
-      onClick: () => this.cycleTile(1)
-    });
-    this.drawButton(ctx, { x: x + 160, y: offsetY - 14, w: 28, h: 16 }, '<');
-    this.drawButton(ctx, { x: x + 196, y: offsetY - 14, w: 28, h: 16 }, '>');
-    offsetY += 24;
+    const tileLeft = { x: x + 160, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
+    const tileRight = { x: x + 196, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
+    this.drawButton(ctx, tileLeft, '<', false, { fontSize });
+    this.drawButton(ctx, tileRight, '>', false, { fontSize });
+    this.uiButtons.push({ bounds: tileLeft, onClick: () => this.cycleTile(-1) });
+    this.uiButtons.push({ bounds: tileRight, onClick: () => this.cycleTile(1) });
+    this.registerFocusable('menu', tileLeft, () => this.cycleTile(-1));
+    this.registerFocusable('menu', tileRight, () => this.cycleTile(1));
+    offsetY += lineHeight;
 
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = `${fontSize}px Courier New`;
     ctx.fillText('Offset Canvas', x + 12, offsetY);
-    offsetY += 20;
+    offsetY += lineHeight;
     const offsetButtons = [
       { label: '←', action: () => this.offsetCanvas(-1, 0, true) },
       { label: '→', action: () => this.offsetCanvas(1, 0, true) },
@@ -1703,34 +2351,43 @@ export default class PixelStudio {
       { label: '½H', action: () => this.offsetCanvas(0, Math.floor(this.canvasState.height / 2), true) }
     ];
     offsetButtons.forEach((entry, index) => {
-      const bounds = { x: x + 12 + (index % 3) * 44, y: offsetY + Math.floor(index / 3) * 20, w: 40, h: 18 };
-      this.drawButton(ctx, bounds, entry.label);
+      const bounds = {
+        x: x + 12 + (index % 3) * (buttonHeight + 8),
+        y: offsetY + Math.floor(index / 3) * (buttonHeight + 6),
+        w: buttonHeight,
+        h: buttonHeight
+      };
+      this.drawButton(ctx, bounds, entry.label, false, { fontSize });
       this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('menu', bounds, entry.action);
     });
-    offsetY += 44;
+    offsetY += buttonHeight * 2 + 12;
 
-    offsetY = this.drawToolOptions(ctx, x + 12, offsetY);
+    offsetY = this.drawToolOptions(ctx, x + 12, offsetY, { isMobile });
 
     if (this.modeTab === 'select') {
-      this.drawSelectionActions(ctx, x + 12, offsetY);
+      this.drawSelectionActions(ctx, x + 12, offsetY, { isMobile });
     }
 
     if (this.modeTab === 'animate') {
-      this.drawAnimationControls(ctx, x + 12, offsetY);
+      this.drawAnimationControls(ctx, x + 12, offsetY, { isMobile });
     }
 
     if (this.modeTab === 'export') {
-      this.drawExportControls(ctx, x + 12, offsetY);
+      this.drawExportControls(ctx, x + 12, offsetY, { isMobile });
     }
   }
 
-  drawOptionToggle(ctx, x, y, label, active, onClick) {
-    const bounds = { x, y: y - 12, w: 120, h: 18 };
-    this.drawButton(ctx, bounds, label, active);
+  drawOptionToggle(ctx, x, y, label, active, onClick, options = {}) {
+    const isMobile = options.isMobile;
+    const bounds = { x, y: y - (isMobile ? 24 : 12), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
+    this.drawButton(ctx, bounds, label, active, { fontSize: isMobile ? 12 : 12 });
     this.uiButtons.push({ bounds, onClick });
+    this.registerFocusable('menu', bounds, onClick);
   }
 
-  drawToolOptions(ctx, x, y) {
+  drawToolOptions(ctx, x, y, options = {}) {
+    const isMobile = options.isMobile;
     let offsetY = y;
     ctx.fillStyle = '#fff';
     ctx.fillText('Tool Options', x, offsetY);
@@ -1738,64 +2395,77 @@ export default class PixelStudio {
     if (this.activeToolId === TOOL_IDS.LINE) {
       this.drawOptionToggle(ctx, x, offsetY, 'Perfect Pixels', this.toolOptions.linePerfect, () => {
         this.toolOptions.linePerfect = !this.toolOptions.linePerfect;
-      });
-      offsetY += 20;
+      }, { isMobile });
+      offsetY += isMobile ? 52 : 20;
     }
     if (this.activeToolId === TOOL_IDS.FILL) {
       this.drawOptionToggle(ctx, x, offsetY, 'Contiguous', this.toolOptions.fillContiguous, () => {
         this.toolOptions.fillContiguous = !this.toolOptions.fillContiguous;
-      });
-      offsetY += 20;
+      }, { isMobile });
+      offsetY += isMobile ? 52 : 20;
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.fillText(`Tolerance: ${this.toolOptions.fillTolerance}`, x, offsetY);
+      const minus = { x: x + 120, y: offsetY - (isMobile ? 28 : 14), w: 36, h: isMobile ? 44 : 18 };
+      const plus = { x: x + 160, y: offsetY - (isMobile ? 28 : 14), w: 36, h: isMobile ? 44 : 18 };
       this.uiButtons.push({
-        bounds: { x: x + 120, y: offsetY - 14, w: 30, h: 18 },
+        bounds: minus,
         onClick: () => { this.toolOptions.fillTolerance = clamp(this.toolOptions.fillTolerance - 5, 0, 255); }
       });
       this.uiButtons.push({
-        bounds: { x: x + 156, y: offsetY - 14, w: 30, h: 18 },
+        bounds: plus,
         onClick: () => { this.toolOptions.fillTolerance = clamp(this.toolOptions.fillTolerance + 5, 0, 255); }
       });
-      this.drawButton(ctx, { x: x + 120, y: offsetY - 14, w: 28, h: 16 }, '-');
-      this.drawButton(ctx, { x: x + 156, y: offsetY - 14, w: 28, h: 16 }, '+');
-      offsetY += 22;
+      this.drawButton(ctx, minus, '-', false, { fontSize: isMobile ? 12 : 12 });
+      this.drawButton(ctx, plus, '+', false, { fontSize: isMobile ? 12 : 12 });
+      this.registerFocusable('menu', minus, () => { this.toolOptions.fillTolerance = clamp(this.toolOptions.fillTolerance - 5, 0, 255); });
+      this.registerFocusable('menu', plus, () => { this.toolOptions.fillTolerance = clamp(this.toolOptions.fillTolerance + 5, 0, 255); });
+      offsetY += isMobile ? 52 : 22;
     }
     if (this.activeToolId === TOOL_IDS.DITHER) {
       const patterns = ['bayer2', 'bayer4', 'checker'];
       const nextPattern = patterns[(patterns.indexOf(this.toolOptions.ditherPattern) + 1) % patterns.length];
-      const bounds = { x, y: offsetY - 12, w: 120, h: 18 };
-      this.drawButton(ctx, bounds, `Pattern: ${this.toolOptions.ditherPattern}`);
+      const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, bounds, `Pattern: ${this.toolOptions.ditherPattern}`, false, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({ bounds, onClick: () => { this.toolOptions.ditherPattern = nextPattern; } });
-      offsetY += 20;
+      this.registerFocusable('menu', bounds, () => { this.toolOptions.ditherPattern = nextPattern; });
+      offsetY += isMobile ? 52 : 20;
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.fillText(`Strength: ${this.toolOptions.ditherStrength}`, x, offsetY);
+      const minus = { x: x + 120, y: offsetY - (isMobile ? 28 : 14), w: 36, h: isMobile ? 44 : 18 };
+      const plus = { x: x + 160, y: offsetY - (isMobile ? 28 : 14), w: 36, h: isMobile ? 44 : 18 };
       this.uiButtons.push({
-        bounds: { x: x + 120, y: offsetY - 14, w: 30, h: 18 },
+        bounds: minus,
         onClick: () => { this.toolOptions.ditherStrength = clamp(this.toolOptions.ditherStrength - 1, 1, 4); }
       });
       this.uiButtons.push({
-        bounds: { x: x + 156, y: offsetY - 14, w: 30, h: 18 },
+        bounds: plus,
         onClick: () => { this.toolOptions.ditherStrength = clamp(this.toolOptions.ditherStrength + 1, 1, 4); }
       });
-      this.drawButton(ctx, { x: x + 120, y: offsetY - 14, w: 28, h: 16 }, '-');
-      this.drawButton(ctx, { x: x + 156, y: offsetY - 14, w: 28, h: 16 }, '+');
-      offsetY += 22;
+      this.drawButton(ctx, minus, '-', false, { fontSize: isMobile ? 12 : 12 });
+      this.drawButton(ctx, plus, '+', false, { fontSize: isMobile ? 12 : 12 });
+      this.registerFocusable('menu', minus, () => { this.toolOptions.ditherStrength = clamp(this.toolOptions.ditherStrength - 1, 1, 4); });
+      this.registerFocusable('menu', plus, () => { this.toolOptions.ditherStrength = clamp(this.toolOptions.ditherStrength + 1, 1, 4); });
+      offsetY += isMobile ? 52 : 22;
     }
     if (this.activeToolId === TOOL_IDS.COLOR_REPLACE) {
-      const bounds = { x, y: offsetY - 12, w: 120, h: 18 };
-      this.drawButton(ctx, bounds, `Scope: ${this.toolOptions.replaceScope}`);
+      const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, bounds, `Scope: ${this.toolOptions.replaceScope}`, false, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({
         bounds,
         onClick: () => {
           this.toolOptions.replaceScope = this.toolOptions.replaceScope === 'layer' ? 'selection' : 'layer';
         }
       });
-      offsetY += 20;
+      this.registerFocusable('menu', bounds, () => {
+        this.toolOptions.replaceScope = this.toolOptions.replaceScope === 'layer' ? 'selection' : 'layer';
+      });
+      offsetY += isMobile ? 52 : 20;
     }
     return offsetY;
   }
 
-  drawSelectionActions(ctx, x, y) {
+  drawSelectionActions(ctx, x, y, options = {}) {
+    const isMobile = options.isMobile;
     const actions = [
       { label: 'Clear', action: () => this.clearSelection() },
       { label: 'Invert', action: () => this.invertSelection() },
@@ -1810,53 +2480,65 @@ export default class PixelStudio {
       { label: 'Scale 4x', action: () => this.scaleSelection(4) }
     ];
     actions.forEach((entry, index) => {
-      const bounds = { x, y: y + index * 20, w: 120, h: 18 };
-      this.drawButton(ctx, bounds, entry.label);
+      const bounds = { x, y: y + index * (isMobile ? 52 : 20), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('menu', bounds, entry.action);
     });
   }
 
-  drawAnimationControls(ctx, x, y) {
+  drawAnimationControls(ctx, x, y, options = {}) {
+    const isMobile = options.isMobile;
     const controls = [
       { label: this.animation.playing ? 'Pause' : 'Play', action: () => { this.animation.playing = !this.animation.playing; } },
       { label: 'Onion Skin', action: () => { this.animation.onion.enabled = !this.animation.onion.enabled; } },
       { label: 'Loop', action: () => { this.animation.loop = !this.animation.loop; } }
     ];
     controls.forEach((entry, index) => {
-      const bounds = { x, y: y + index * 20, w: 120, h: 18 };
+      const bounds = { x, y: y + index * (isMobile ? 52 : 20), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
       const active = entry.label === 'Loop' ? this.animation.loop : entry.label === 'Onion Skin' ? this.animation.onion.enabled : false;
-      this.drawButton(ctx, bounds, entry.label, active);
+      this.drawButton(ctx, bounds, entry.label, active, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('menu', bounds, entry.action);
     });
-    const onionOffset = y + controls.length * 20 + 4;
+    const onionOffset = y + controls.length * (isMobile ? 52 : 20) + 4;
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.fillText(`Prev: ${this.animation.onion.prev}`, x, onionOffset);
+    const prevMinus = { x: x + 60, y: onionOffset - (isMobile ? 28 : 14), w: 32, h: isMobile ? 44 : 16 };
+    const prevPlus = { x: x + 96, y: onionOffset - (isMobile ? 28 : 14), w: 32, h: isMobile ? 44 : 16 };
     this.uiButtons.push({
-      bounds: { x: x + 60, y: onionOffset - 14, w: 24, h: 16 },
+      bounds: prevMinus,
       onClick: () => { this.animation.onion.prev = clamp(this.animation.onion.prev - 1, 0, 3); }
     });
     this.uiButtons.push({
-      bounds: { x: x + 88, y: onionOffset - 14, w: 24, h: 16 },
+      bounds: prevPlus,
       onClick: () => { this.animation.onion.prev = clamp(this.animation.onion.prev + 1, 0, 3); }
     });
-    this.drawButton(ctx, { x: x + 60, y: onionOffset - 14, w: 22, h: 16 }, '-');
-    this.drawButton(ctx, { x: x + 88, y: onionOffset - 14, w: 22, h: 16 }, '+');
+    this.drawButton(ctx, prevMinus, '-', false, { fontSize: isMobile ? 12 : 12 });
+    this.drawButton(ctx, prevPlus, '+', false, { fontSize: isMobile ? 12 : 12 });
+    this.registerFocusable('menu', prevMinus, () => { this.animation.onion.prev = clamp(this.animation.onion.prev - 1, 0, 3); });
+    this.registerFocusable('menu', prevPlus, () => { this.animation.onion.prev = clamp(this.animation.onion.prev + 1, 0, 3); });
     const nextOffset = onionOffset + 20;
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.fillText(`Next: ${this.animation.onion.next}`, x, nextOffset);
+    const nextMinus = { x: x + 60, y: nextOffset - (isMobile ? 28 : 14), w: 32, h: isMobile ? 44 : 16 };
+    const nextPlus = { x: x + 96, y: nextOffset - (isMobile ? 28 : 14), w: 32, h: isMobile ? 44 : 16 };
     this.uiButtons.push({
-      bounds: { x: x + 60, y: nextOffset - 14, w: 24, h: 16 },
+      bounds: nextMinus,
       onClick: () => { this.animation.onion.next = clamp(this.animation.onion.next - 1, 0, 3); }
     });
     this.uiButtons.push({
-      bounds: { x: x + 88, y: nextOffset - 14, w: 24, h: 16 },
+      bounds: nextPlus,
       onClick: () => { this.animation.onion.next = clamp(this.animation.onion.next + 1, 0, 3); }
     });
-    this.drawButton(ctx, { x: x + 60, y: nextOffset - 14, w: 22, h: 16 }, '-');
-    this.drawButton(ctx, { x: x + 88, y: nextOffset - 14, w: 22, h: 16 }, '+');
+    this.drawButton(ctx, nextMinus, '-', false, { fontSize: isMobile ? 12 : 12 });
+    this.drawButton(ctx, nextPlus, '+', false, { fontSize: isMobile ? 12 : 12 });
+    this.registerFocusable('menu', nextMinus, () => { this.animation.onion.next = clamp(this.animation.onion.next - 1, 0, 3); });
+    this.registerFocusable('menu', nextPlus, () => { this.animation.onion.next = clamp(this.animation.onion.next + 1, 0, 3); });
   }
 
-  drawExportControls(ctx, x, y) {
+  drawExportControls(ctx, x, y, options = {}) {
+    const isMobile = options.isMobile;
     const actions = [
       { label: 'Export PNG', action: () => this.exportPng() },
       { label: 'Sprite Sheet', action: () => this.exportSpriteSheet('horizontal') },
@@ -1866,15 +2548,18 @@ export default class PixelStudio {
       { label: 'Import Palette', action: () => this.paletteFileInput.click() }
     ];
     actions.forEach((entry, index) => {
-      const bounds = { x, y: y + index * 20, w: 140, h: 18 };
-      this.drawButton(ctx, bounds, entry.label);
+      const bounds = { x, y: y + index * (isMobile ? 52 : 20), w: isMobile ? 190 : 140, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('menu', bounds, entry.action);
     });
   }
 
-  drawLayersPanel(ctx, x, y, w, h) {
+  drawLayersPanel(ctx, x, y, w, h, options = {}) {
+    const isMobile = options.isMobile;
+    const buttonHeight = isMobile ? 44 : 18;
     ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
+    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
     ctx.fillText('Layers', x + 12, y + 20);
     const controls = [
       { label: '+', action: () => this.addLayer() },
@@ -1884,20 +2569,28 @@ export default class PixelStudio {
       { label: 'Flatten', action: () => this.flattenAllLayers() }
     ];
     controls.forEach((entry, index) => {
-      const bounds = { x: x + 12 + index * 44, y: y + 28, w: 40, h: 18 };
-      this.drawButton(ctx, bounds, entry.label);
+      const bounds = { x: x + 12 + index * (buttonHeight + 6), y: y + 28, w: buttonHeight, h: buttonHeight };
+      this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('menu', bounds, entry.action);
     });
     let offsetY = y + 60;
     this.layerBounds = [];
-    this.canvasState.layers.slice().reverse().forEach((layer, reversedIndex) => {
+    const lineHeight = isMobile ? 52 : 20;
+    this.focusGroupMeta.layers = { maxVisible: Math.max(1, Math.floor((h - 80) / lineHeight)) };
+    const start = this.focusScroll.layers || 0;
+    const layers = this.canvasState.layers.slice().reverse();
+    layers.slice(start, start + this.focusGroupMeta.layers.maxVisible).forEach((layer, visibleIndex) => {
+      const reversedIndex = start + visibleIndex;
       const index = this.canvasState.layers.length - 1 - reversedIndex;
       const active = index === this.canvasState.activeLayerIndex;
+      const bounds = { x: x + 8, y: offsetY - (isMobile ? 20 : 14), w: w - 16, h: buttonHeight, index };
       ctx.fillStyle = active ? '#ffe16a' : 'rgba(255,255,255,0.7)';
+      ctx.font = `${isMobile ? 13 : 12}px Courier New`;
       ctx.fillText(`${layer.visible ? '👁' : '⛔'} ${layer.name}`, x + 12, offsetY);
-      const bounds = { x: x + 8, y: offsetY - 14, w: w - 16, h: 18, index };
       this.layerBounds.push(bounds);
-      offsetY += 20;
+      this.registerFocusable('layers', bounds, () => { this.canvasState.activeLayerIndex = index; });
+      offsetY += lineHeight;
     });
   }
 
@@ -1993,17 +2686,6 @@ export default class PixelStudio {
       ctx.strokeRect(this.gamepadCursor.x - 4, this.gamepadCursor.y - 4, 8, 8);
     }
 
-    const previewSize = 72;
-    const previewX = x + w - previewSize - 12;
-    const previewY = y + 12;
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.fillRect(previewX, previewY, previewSize, previewSize);
-    ctx.strokeStyle = '#ffe16a';
-    ctx.strokeRect(previewX, previewY, previewSize, previewSize);
-    ctx.drawImage(this.offscreen, previewX, previewY, previewSize, previewSize);
-    ctx.fillStyle = '#fff';
-    ctx.font = '11px Courier New';
-    ctx.fillText('Preview', previewX, previewY + previewSize + 12);
   }
 
   drawOnionSkin(ctx, offsetX, offsetY, gridW, gridH) {
@@ -2034,57 +2716,96 @@ export default class PixelStudio {
     ctx.restore();
   }
 
-  drawPaletteBar(ctx, x, y, w, h) {
+  drawPaletteBar(ctx, x, y, w, h, options = {}) {
+    const isMobile = options.isMobile;
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(x, y, w, h);
 
     ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
+    ctx.font = `${isMobile ? 12 : 14}px Courier New`;
     ctx.fillText(`Palette: ${this.currentPalette.name}`, x + 10, y + 18);
 
-    const paletteControls = [
-      { label: '+', action: () => this.addPaletteColor() },
-      { label: '-', action: () => this.removePaletteColor() },
-      { label: '<', action: () => this.movePaletteColor(-1) },
-      { label: '>', action: () => this.movePaletteColor(1) },
-      { label: 'Ramp', action: () => this.generateRamp(4) },
-      { label: 'Save', action: () => this.saveCurrentPalette() },
-      { label: this.limitToPalette ? 'Limit ✓' : 'Limit', action: () => { this.limitToPalette = !this.limitToPalette; } }
-    ];
-    paletteControls.forEach((entry, index) => {
-      const bounds = { x: x + 200 + index * 44, y: y + 4, w: 40, h: 18 };
-      this.drawButton(ctx, bounds, entry.label);
-      this.uiButtons.push({ bounds, onClick: entry.action });
-    });
+    if (!isMobile) {
+      const paletteControls = [
+        { label: '+', action: () => this.addPaletteColor() },
+        { label: '-', action: () => this.removePaletteColor() },
+        { label: '<', action: () => this.movePaletteColor(-1) },
+        { label: '>', action: () => this.movePaletteColor(1) },
+        { label: 'Ramp', action: () => this.generateRamp(4) },
+        { label: 'Save', action: () => this.saveCurrentPalette() },
+        { label: this.limitToPalette ? 'Limit ✓' : 'Limit', action: () => { this.limitToPalette = !this.limitToPalette; } }
+      ];
+      paletteControls.forEach((entry, index) => {
+        const bounds = { x: x + 200 + index * 44, y: y + 4, w: 40, h: 18 };
+        this.drawButton(ctx, bounds, entry.label);
+        this.uiButtons.push({ bounds, onClick: entry.action });
+        this.registerFocusable('menu', bounds, entry.action);
+      });
 
-    const swatchSize = 26;
+      const swatchSize = 26;
+      const gap = 8;
+      const total = this.currentPalette.colors.length;
+      const startX = x + 10;
+      const maxPerRow = Math.max(1, Math.floor((w - 20) / (swatchSize + gap)));
+      const maxRows = Math.max(1, Math.floor((h - 30) / (swatchSize + gap)));
+      const maxVisible = maxPerRow * maxRows;
+      this.paletteBounds = [];
+      this.focusGroupMeta.palette = { maxVisible };
+      const start = this.focusScroll.palette || 0;
+      for (let i = start; i < Math.min(total, start + maxVisible); i += 1) {
+        const relative = i - start;
+        const row = Math.floor(relative / maxPerRow);
+        const col = relative % maxPerRow;
+        const swatchX = startX + col * (swatchSize + gap);
+        const swatchY = y + 30 + row * (swatchSize + gap);
+        ctx.fillStyle = this.currentPalette.colors[i].hex;
+        ctx.fillRect(swatchX, swatchY, swatchSize, swatchSize);
+        ctx.strokeStyle = i === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)';
+        ctx.strokeRect(swatchX, swatchY, swatchSize, swatchSize);
+        const bounds = { x: swatchX, y: swatchY, w: swatchSize, h: swatchSize, index: i };
+        this.paletteBounds.push(bounds);
+        this.registerFocusable('palette', bounds, () => this.setPaletteIndex(i));
+      }
+
+      const presetX = x + w - 180;
+      const presetY = y + 8;
+      const allPalettes = [...this.palettePresets, ...this.customPalettes];
+      allPalettes.forEach((preset, index) => {
+        const bounds = { x: presetX, y: presetY + index * 20, w: 160, h: 18 };
+        this.drawButton(ctx, bounds, preset.name, preset.name === this.currentPalette.name);
+        this.uiButtons.push({ bounds, onClick: () => { this.currentPalette = preset; this.paletteIndex = 0; } });
+        this.registerFocusable('menu', bounds, () => { this.currentPalette = preset; this.paletteIndex = 0; });
+      });
+      return;
+    }
+
+    const swatchSize = 44;
     const gap = 8;
+    const maxPerRow = Math.max(1, Math.floor((w - 140) / (swatchSize + gap)));
+    const startX = x + 10;
     const total = this.currentPalette.colors.length;
-    let startX = x + 10;
-    const maxPerRow = Math.floor((w - 20) / (swatchSize + gap));
     this.paletteBounds = [];
-    for (let i = 0; i < total; i += 1) {
-      const row = Math.floor(i / maxPerRow);
-      const col = i % maxPerRow;
+    this.focusGroupMeta.palette = { maxVisible: maxPerRow };
+    const start = this.focusScroll.palette || 0;
+    for (let i = start; i < Math.min(total, start + maxPerRow); i += 1) {
+      const col = i - start;
       const swatchX = startX + col * (swatchSize + gap);
-      const swatchY = y + 30 + row * (swatchSize + gap);
+      const swatchY = y + 20;
       ctx.fillStyle = this.currentPalette.colors[i].hex;
       ctx.fillRect(swatchX, swatchY, swatchSize, swatchSize);
       ctx.strokeStyle = i === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)';
       ctx.strokeRect(swatchX, swatchY, swatchSize, swatchSize);
-      this.paletteBounds.push({ x: swatchX, y: swatchY, w: swatchSize, h: swatchSize, index: i });
+      const bounds = { x: swatchX, y: swatchY, w: swatchSize, h: swatchSize, index: i };
+      this.paletteBounds.push(bounds);
+      this.registerFocusable('palette', bounds, () => this.setPaletteIndex(i));
     }
 
-    const presetX = x + w - 180;
-    const presetY = y + 8;
-    const allPalettes = [...this.palettePresets, ...this.customPalettes];
-    allPalettes.forEach((preset, index) => {
-      const bounds = { x: presetX, y: presetY + index * 20, w: 160, h: 18 };
-      this.drawButton(ctx, bounds, preset.name, preset.name === this.currentPalette.name);
-      this.uiButtons.push({ bounds, onClick: () => { this.currentPalette = preset; this.paletteIndex = 0; } });
-    });
+    const moreBounds = { x: x + w - 112, y: y + 10, w: 100, h: 44 };
+    this.drawButton(ctx, moreBounds, this.paletteGridOpen ? 'Palette ▾' : 'Palette ▸', false, { fontSize: 12 });
+    this.uiButtons.push({ bounds: moreBounds, onClick: () => { this.paletteGridOpen = !this.paletteGridOpen; } });
+    this.registerFocusable('menu', moreBounds, () => { this.paletteGridOpen = !this.paletteGridOpen; });
   }
 
   drawTimeline(ctx, x, y, w, h) {
@@ -2097,13 +2818,17 @@ export default class PixelStudio {
     ctx.font = '14px Courier New';
     ctx.fillText('Timeline', x + 10, y + 18);
 
-    const thumbSize = 36;
+    const thumbSize = 40;
     const gap = 10;
     const startX = x + 10;
     const startY = y + 30;
     this.frameBounds = [];
-    this.animation.frames.forEach((frame, index) => {
-      const thumbX = startX + index * (thumbSize + gap);
+    const maxVisible = Math.max(1, Math.floor((w - 20) / (thumbSize + gap)));
+    this.focusGroupMeta.timeline = { maxVisible };
+    const start = this.focusScroll.timeline || 0;
+    this.animation.frames.slice(start, start + maxVisible).forEach((frame, visibleIndex) => {
+      const index = start + visibleIndex;
+      const thumbX = startX + visibleIndex * (thumbSize + gap);
       const thumbY = startY;
       ctx.fillStyle = index === this.animation.currentFrameIndex ? '#ffe16a' : 'rgba(255,255,255,0.2)';
       ctx.fillRect(thumbX, thumbY, thumbSize, thumbSize);
@@ -2113,7 +2838,12 @@ export default class PixelStudio {
       bytes.set(composite);
       this.offscreenCtx.putImageData(imageData, 0, 0);
       ctx.drawImage(this.offscreen, thumbX, thumbY, thumbSize, thumbSize);
-      this.frameBounds.push({ x: thumbX, y: thumbY, w: thumbSize, h: thumbSize, index });
+      const bounds = { x: thumbX, y: thumbY, w: thumbSize, h: thumbSize, index };
+      this.frameBounds.push(bounds);
+      this.registerFocusable('timeline', bounds, () => {
+        this.animation.currentFrameIndex = index;
+        this.setFrameLayers(this.currentFrame.layers);
+      });
     });
 
     const controls = [
@@ -2126,14 +2856,16 @@ export default class PixelStudio {
       const bounds = { x: x + 10 + index * 52, y: y + h - 28, w: 46, h: 18 };
       this.drawButton(ctx, bounds, entry.label);
       this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('menu', bounds, entry.action);
     });
   }
 
   drawGamepadHints(ctx, x, y) {
+    const height = GAMEPAD_HINTS.length * 12 + 20;
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect(x, y, 200, 140);
+    ctx.fillRect(x, y, 220, height);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(x, y, 200, 140);
+    ctx.strokeRect(x, y, 220, height);
     ctx.fillStyle = '#fff';
     ctx.font = '11px Courier New';
     GAMEPAD_HINTS.forEach((hint, index) => {
