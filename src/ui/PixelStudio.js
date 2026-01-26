@@ -1042,19 +1042,18 @@ export default class PixelStudio {
     }
     const bounds = this.getBoundsFromPoints(this.selection.start, this.selection.end);
     const mask = createRectMask(this.canvasState.width, this.canvasState.height, bounds);
+    const size = this.canvasState.width * this.canvasState.height;
+    const nextMask = this.selection.mask ? new Uint8Array(this.selection.mask) : new Uint8Array(size);
     if (mode === 'add') {
-      if (!this.selection.mask) {
-        this.selection.mask = mask;
-      } else {
-        this.selection.mask.forEach((value, index) => {
-          if (mask[index]) this.selection.mask[index] = 1;
-        });
-      }
-    } else if (mode === 'subtract' && this.selection.mask) {
-      this.selection.mask.forEach((value, index) => {
-        if (mask[index]) this.selection.mask[index] = 0;
+      mask.forEach((value, index) => {
+        if (value) nextMask[index] = 1;
+      });
+    } else if (mode === 'subtract') {
+      mask.forEach((value, index) => {
+        if (value) nextMask[index] = 0;
       });
     }
+    this.selection.mask = nextMask;
     if (this.selection.mask) {
       this.selection.bounds = this.getMaskBounds(this.selection.mask);
       this.selection.active = Boolean(this.selection.bounds);

@@ -1836,23 +1836,39 @@ export default class MidiComposer {
     if (!this.recordModeActive) {
       this.enterRecordMode();
     }
-    const ticksPerBar = this.ticksPerBeat * this.beatsPerBar;
-    const snappedTick = this.snapTick(this.playheadTick);
-    const measureStart = Math.floor(snappedTick / ticksPerBar) * ticksPerBar;
     this.singleNoteRecordMode = {
       active: true,
-      anchorTick: measureStart,
-      measureStart,
-      measureEnd: measureStart + ticksPerBar,
+      anchorTick: 0,
+      measureStart: 0,
+      measureEnd: 0,
       awaitingChord: true
     };
-    this.cursor.tick = this.singleNoteRecordMode.anchorTick;
+    this.setSingleNoteAnchorTick(this.playheadTick);
     this.singleNoteActiveNotes.clear();
   }
 
   exitSingleNoteRecordMode() {
     this.singleNoteRecordMode.active = false;
     this.singleNoteActiveNotes.clear();
+  }
+
+  setSingleNoteAnchorTick(tick) {
+    const ticksPerBar = this.ticksPerBeat * this.beatsPerBar;
+    const snappedTick = this.snapTick(tick);
+    const measureStart = Math.floor(snappedTick / ticksPerBar) * ticksPerBar;
+    this.singleNoteRecordMode.anchorTick = snappedTick;
+    this.singleNoteRecordMode.measureStart = measureStart;
+    this.singleNoteRecordMode.measureEnd = measureStart + ticksPerBar;
+    this.cursor.tick = snappedTick;
+    this.playheadTick = snappedTick;
+  }
+
+  advanceSingleNoteAnchor() {
+    if (!this.singleNoteRecordMode.active) return;
+    const step = Math.max(1, this.getQuantizeTicks());
+    const loopEnd = this.getLoopTicks();
+    const nextTick = clamp(this.singleNoteRecordMode.anchorTick + step, 0, Math.max(0, loopEnd - 1));
+    this.setSingleNoteAnchorTick(nextTick);
   }
 
   clearNotesInMeasure(pattern, startTick, endTick) {
@@ -2096,7 +2112,8 @@ export default class MidiComposer {
     this.keyboardInput.setEnabled(true);
     const scale = SCALE_LIBRARY.find((entry) => entry.id === this.song.scale) || SCALE_LIBRARY[0];
     this.gamepadInput.setEnabled(true);
-    this.gamepadInput.setScale({ key: this.song.key || 0, steps: scale.steps });
+    const scaleSteps = this.scaleLock ? scale.steps : Array.from({ length: 12 }, (_, index) => index);
+    this.gamepadInput.setScale({ key: this.song.key || 0, steps: scaleSteps });
     this.gamepadInput.setInstrument(this.recordInstrument);
     this.gamepadInput.update();
 
@@ -2298,7 +2315,13 @@ export default class MidiComposer {
       }
     }
 
-    handleMappedPress('play', () => this.togglePlayback());
+    handleMappedPress('play', () => {
+      if (this.singleNoteRecordMode.active) {
+        this.advanceSingleNoteAnchor();
+      } else {
+        this.togglePlayback();
+      }
+    });
     const stopMapped = resolveAction(this.controllerMapping?.stop);
     const suppressStop = stopMapped === 'cancel' && backPressed;
     if (!suppressStop) {
