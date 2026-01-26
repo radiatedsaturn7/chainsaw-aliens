@@ -17,6 +17,8 @@ export const INPUT_ACTIONS = {
   QUICK_TOOL: 'QUICK_TOOL',
   TOGGLE_UI_MODE: 'TOGGLE_UI_MODE',
   TOGGLE_MODE: 'TOGGLE_MODE',
+  ERASE_PRESS: 'ERASE_PRESS',
+  ERASE_RELEASE: 'ERASE_RELEASE',
   MENU: 'MENU'
 };
 
@@ -152,7 +154,8 @@ export default class InputManager {
       actions.push({ type: INPUT_ACTIONS.DRAW_RELEASE });
     }
 
-    if (xDown && !this.prevButtons.x) actions.push({ type: INPUT_ACTIONS.SET_TOOL, tool: 'eraser' });
+    if (xDown && !this.prevButtons.x) actions.push({ type: INPUT_ACTIONS.ERASE_PRESS });
+    if (!xDown && this.prevButtons.x) actions.push({ type: INPUT_ACTIONS.ERASE_RELEASE });
     if (lbDown && !this.prevButtons.lb) actions.push({ type: INPUT_ACTIONS.PANEL_PREV });
     if (rbDown && !this.prevButtons.rb) actions.push({ type: INPUT_ACTIONS.PANEL_NEXT });
     if (l3Down && !this.prevButtons.l3) actions.push({ type: INPUT_ACTIONS.QUICK_COLOR });
