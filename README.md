@@ -35,6 +35,30 @@ Then visit `http://localhost:8000/index.html`.
 - Debug Overlay (Playability Verification Layer): **F3**
 - Obstacle Test Room (debug): **B**
 
+### Controller Contexts (Gamepad)
+Gamepad input is read per-mode so the editors don’t inherit gameplay bindings. Each mode has its own expectations, and the engine now auto-resolves stick axes/triggers for non-standard pads (for example, swapped stick axes or trigger-only axes).
+
+**Game (campaign/endless/playtest)**
+- **Left Stick / D-pad**: move
+- **A**: jump · **B**: dash · **X**: rev · **Y**: throw
+- **RT**: attack · **LT**: aim mode
+- **LB / RB**: aim up/down
+- **L3**: flame-saw mode toggle
+
+**Level Editor**
+- **Left Stick**: move cursor
+- **Right Stick**: pan camera
+- **LT / RT**: zoom out/in
+- **D-pad**: navigate panels
+- **A/B/X/Y**: paint/erase/tool/mode
+- **Start**: playtest · **Back**: exit
+
+**Pixel Editor**
+- See the Pixel Studio controller mapping section below (L3/R3 for quick palettes/tools, triggers for selection).
+
+**MIDI Editor**
+- Uses the MIDI controller mapping section below (separate live-performance bindings vs. grid navigation).
+
 ## Pixel Studio (Pixel Art Editor)
 Open from the title screen **Tools** menu (`Pixel Editor`). The editor is an Aseprite-lite canvas with layers, palette presets, and frame animation.
 
