@@ -12,7 +12,7 @@ import {
   mapPitchToDrumRow
 } from '../audio/gm.js';
 import InputEventBus from '../input/eventBus.js';
-import GamepadInput from '../input/gamepad.js';
+import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
 import TouchInput from '../input/touch.js';
 import MidiRecorder from '../recording/recorder.js';
@@ -571,7 +571,7 @@ export default class MidiComposer {
     };
     this.inputBus = new InputEventBus();
     this.keyboardInput = new KeyboardInput(this.inputBus);
-    this.gamepadInput = new GamepadInput(this.inputBus);
+    this.gamepadInput = new RobterspielInput(this.inputBus);
     this.touchInput = new TouchInput(this.inputBus);
     this.reverseStrings = Boolean(this.song?.reverseStrings);
     this.touchInput.setReverseStrings(this.reverseStrings);

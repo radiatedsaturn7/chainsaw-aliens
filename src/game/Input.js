@@ -1,3 +1,5 @@
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
 export const KEYMAP = {
   left: ['ArrowLeft', 'KeyA'],
   right: ['ArrowRight', 'KeyD'],
@@ -42,6 +44,7 @@ export default class Input {
     this.gamepadAvailable = false;
     this.gamepadScanIntervalMs = 250;
     this.lastGamepadScanTime = 0;
+    this.gamepadAxisMode = null;
     this.gamepadAxes = {
       leftX: 0,
       leftY: 0,
@@ -74,6 +77,7 @@ export default class Input {
     window.addEventListener('gamepaddisconnected', (event) => {
       if (this.gamepadIndex === event.gamepad.index) {
         this.gamepadIndex = null;
+        this.gamepadAxisMode = null;
       }
     });
   }
@@ -137,6 +141,7 @@ export default class Input {
     if (!pad) {
       this.gamepadPrevActions = {};
       this.gamepadAvailable = false;
+      this.gamepadAxisMode = null;
       return;
     }
     this.gamepadAvailable = true;
@@ -148,12 +153,14 @@ export default class Input {
       return Boolean(button.pressed || button.value > threshold);
     };
 
-    const axisX = pad.axes?.[0] ?? 0;
-    const axisY = pad.axes?.[1] ?? 0;
-    const axisRX = pad.axes?.[2] ?? 0;
-    const axisRY = pad.axes?.[3] ?? 0;
-    const leftTrigger = pad.buttons?.[6]?.value ?? 0;
-    const rightTrigger = pad.buttons?.[7]?.value ?? 0;
+    const axisData = this.resolveGamepadAxes(pad);
+    const axisX = axisData.leftX;
+    const axisY = axisData.leftY;
+    const axisRX = axisData.rightX;
+    const axisRY = axisData.rightY;
+    const triggerData = this.resolveGamepadTriggers(pad);
+    const leftTrigger = triggerData.leftTrigger;
+    const rightTrigger = triggerData.rightTrigger;
     const leftStickLeft = axisX < -this.gamepadDeadzone;
     const leftStickRight = axisX > this.gamepadDeadzone;
     const leftStickUp = axisY < -this.gamepadDeadzone;
@@ -212,6 +219,49 @@ export default class Input {
       leftTrigger,
       rightTrigger
     };
+  }
+
+  resolveGamepadAxes(pad) {
+    const axes = pad.axes || [];
+    let leftX = axes[0] ?? 0;
+    let leftY = axes[1] ?? 0;
+    let rightX = axes[2] ?? 0;
+    let rightY = axes[3] ?? 0;
+    if (pad.mapping !== 'standard') {
+      const leftMag = Math.hypot(leftX, leftY);
+      const rightMag = Math.hypot(rightX, rightY);
+      const swapThreshold = 0.2;
+      if (!this.gamepadAxisMode) {
+        if (leftMag > swapThreshold && rightMag <= swapThreshold) {
+          this.gamepadAxisMode = 'standard';
+        } else if (rightMag > swapThreshold && leftMag <= swapThreshold) {
+          this.gamepadAxisMode = 'swapped';
+        }
+      }
+      if (this.gamepadAxisMode === 'swapped') {
+        [leftX, leftY, rightX, rightY] = [rightX, rightY, leftX, leftY];
+      }
+    }
+    return { leftX, leftY, rightX, rightY };
+  }
+
+  resolveGamepadTriggers(pad) {
+    let leftTrigger = pad.buttons?.[6]?.value ?? 0;
+    let rightTrigger = pad.buttons?.[7]?.value ?? 0;
+    const axisLeft = pad.axes?.[4];
+    const axisRight = pad.axes?.[5];
+    if (typeof axisLeft === 'number' && typeof axisRight === 'number') {
+      const axisLeftValue = clamp((axisLeft + 1) / 2, 0, 1);
+      const axisRightValue = clamp((axisRight + 1) / 2, 0, 1);
+      const buttonsIdle = leftTrigger <= 0.01 && rightTrigger <= 0.01;
+      const buttonsStuck = leftTrigger >= 0.99 && rightTrigger >= 0.99;
+      const axisActive = Math.abs(axisLeft) > 0.05 || Math.abs(axisRight) > 0.05;
+      if ((buttonsIdle && axisActive) || (buttonsStuck && (axisLeftValue < 0.98 || axisRightValue < 0.98))) {
+        leftTrigger = axisLeftValue;
+        rightTrigger = axisRightValue;
+      }
+    }
+    return { leftTrigger, rightTrigger };
   }
 
   getGamepadActions() {
