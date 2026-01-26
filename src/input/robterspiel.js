@@ -276,10 +276,10 @@ export default class RobterspielInput {
         return sorted;
       };
       const degreeButtons = [
-        { index: 0, base: 1, passing: 2, chromatic: 2 },
-        { index: 2, base: 3, passing: 4, chromatic: 3 },
-        { index: 3, base: 5, passing: 6, chromatic: 6 },
-        { index: 1, base: 8, passing: 7, chromatic: 7 }
+        { index: 0, base: 1, passing: 2 },
+        { index: 2, base: 3, passing: 4 },
+        { index: 3, base: 5, passing: 6 },
+        { index: 1, base: 8, passing: 7 }
       ];
       degreeButtons.forEach((button) => {
         const isPressed = Boolean(currentButtons[button.index]);
@@ -288,12 +288,12 @@ export default class RobterspielInput {
           let pitches = [];
           const velocity = clamp(Math.round((1 - rtValue) * 127), 1, 127);
           if (!isChordMode) {
-            const degree = dpadLeft ? button.chromatic : (lbPressed ? button.passing : button.base);
+            const degree = lbPressed ? button.passing : button.base;
             const degreeOffset = degree - 1;
             const targetDegree = rootDegree + degreeOffset;
             let pitch = this.getPitchForScaleStep(targetDegree - 1);
             if (dpadLeft) {
-              pitch -= 1;
+              pitch += 1;
             }
             if (rbPressed) {
               pitch += 12;
@@ -304,15 +304,18 @@ export default class RobterspielInput {
             let suspension = null;
             let inversion = 0;
             const targetDegree = rootDegree;
-            if (dpadLeft) {
+            let addNinthChord = false;
+            if (lbPressed && rbPressed) {
+              variant = 'diminished';
+            } else if (rbPressed) {
               if (button.index === 0) {
                 suspension = 'sus2';
-              } else if (button.index === 1) {
-                suspension = 'sus4';
               } else if (button.index === 2) {
-                variant = 'dominant';
+                suspension = 'sus4';
               } else if (button.index === 3) {
-                variant = 'diminished';
+                variant = 'dominant';
+              } else if (button.index === 1) {
+                addNinthChord = true;
               }
             } else {
               if (button.index === 2) {
@@ -325,11 +328,8 @@ export default class RobterspielInput {
             }
             pitches = this.getChordPitches(targetDegree, { variant, suspension });
             pitches = applyInversion(pitches, inversion);
-            if (lbPressed) {
+            if (addNinthChord) {
               pitches = addNinth(pitches, targetDegree - 1);
-            }
-            if (rbPressed) {
-              pitches = pitches.map((pitch) => pitch + 12);
             }
           }
           const noteIds = pitches.map((pitch, idx) => {
