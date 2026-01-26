@@ -794,7 +794,8 @@ export default class PixelStudio {
 
   handleCursorMove(inputState, dt) {
     if (!this.canvasBounds) return;
-    if (this.inputMode !== 'canvas') return;
+    const allowCursorInMenu = Boolean(this.selectionContextMenu);
+    if (this.inputMode !== 'canvas' && !allowCursorInMenu) return;
     const axes = inputState.axes || { leftX: 0, leftY: 0 };
     if (this.quickWheel?.active) return;
     const threshold = 0.35;
@@ -806,7 +807,7 @@ export default class PixelStudio {
         const dx = useX ? (axes.leftX > 0 ? 1 : -1) : 0;
         const dy = useX ? 0 : (axes.leftY > 0 ? 1 : -1);
         this.nudgeCursor(dx, dy);
-        this.leftStickMoveTimer = 0.12;
+        this.leftStickMoveTimer = 0.08;
       }
     } else {
       this.leftStickMoveTimer = 0;
@@ -814,6 +815,7 @@ export default class PixelStudio {
   }
 
   handleAnalogFocus(inputState, dt) {
+    if (this.selectionContextMenu) return;
     const axes = inputState.axes || { leftY: 0 };
     if (Math.abs(axes.leftY) > 0.55) {
       this.analogFocusTimer = (this.analogFocusTimer || 0) - dt;
