@@ -9,7 +9,7 @@ Robterspiel is the live gamepad performance layout used by the MIDI editor’s r
 - **Right Trigger (RT)**: volume (fully pressed = silence).
 - **D-pad Up/Down**: octave up/down.
 - **D-pad Right**: toggle Note Mode ↔ Chord Mode.
-- **L3**: open scale-mode selector (major modes: Ionian, Dorian, Phrygian, etc.).
+- **L3**: open scale-mode selector (major modes: Ionian, Dorian, Phrygian, etc.). This always updates the gamepad scale degrees.
 - **R3**: open scale-root selector (choose any of the 12 chromatic roots).
 
 ## Note Mode (examples in C major)
