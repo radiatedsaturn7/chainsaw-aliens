@@ -244,6 +244,8 @@ export default class PixelStudio {
       end: null,
       lassoPoints: [],
       floating: null,
+      floatingMode: null,
+      floatingBounds: null,
       offset: { x: 0, y: 0 }
     };
     this.clipboard = null;
@@ -281,6 +283,7 @@ export default class PixelStudio {
     this.quickToolPage = 0;
     this.quickToolStartIndex = 0;
     this.leftStickMoveTimer = 0;
+    this.triggerSelectionReady = false;
     this.inputManager = new InputManager();
     this.inputMode = 'canvas';
     this.inputManager.setMode(this.inputMode);
@@ -320,6 +323,9 @@ export default class PixelStudio {
     this.offscreen = document.createElement('canvas');
     this.offscreenCtx = this.offscreen.getContext('2d');
     this.offscreenCtx.imageSmoothingEnabled = false;
+    this.floatingCanvas = document.createElement('canvas');
+    this.floatingCtx = this.floatingCanvas.getContext('2d');
+    this.floatingCtx.imageSmoothingEnabled = false;
     this.exportLink = document.createElement('a');
     this.paletteFileInput = document.createElement('input');
     this.paletteFileInput.type = 'file';
@@ -439,6 +445,12 @@ export default class PixelStudio {
 
   resetFocus() {
     this.setInputMode('canvas');
+    this.clearSelection();
+    this.selection.floating = null;
+    this.selection.floatingMode = null;
+    this.selection.floatingBounds = null;
+    this.setActiveTool(TOOL_IDS.PENCIL);
+    this.triggerSelectionReady = false;
   }
 
   handleKeyDown(event) {
@@ -556,6 +568,7 @@ export default class PixelStudio {
     }
     if (!inputState.connected) {
       this.gamepadCursor.active = false;
+      this.triggerSelectionReady = false;
       return;
     }
 
@@ -569,6 +582,9 @@ export default class PixelStudio {
     this.applyInputActions(inputState.actions, inputState, dt);
     this.handleTriggerSelection(inputState);
     this.updateQuickWheel(inputState, dt);
+    if (this.inputMode === 'ui' && !this.quickWheel?.active) {
+      this.handleAnalogFocus(inputState, dt);
+    }
 
     if (this.gamepadDrawing && this.inputMode === 'canvas') {
       const point = this.getGridCellFromScreen(this.gamepadCursor.x, this.gamepadCursor.y);
@@ -670,7 +686,9 @@ export default class PixelStudio {
           }
           break;
         case INPUT_ACTIONS.DRAW_PRESS:
-          if (this.inputMode === 'canvas') {
+          if (this.inputMode === 'canvas' && this.selection.floatingMode === 'paste') {
+            this.commitFloatingPaste();
+          } else if (this.inputMode === 'canvas') {
             this.startGamepadDraw();
           }
           break;
@@ -702,7 +720,16 @@ export default class PixelStudio {
       return;
     }
     if (this.selectionContextMenu) {
-      this.selectionContextMenu = null;
+      this.clearSelection();
+      this.setInputMode('canvas');
+      this.setActiveTool(TOOL_IDS.PENCIL);
+      return;
+    }
+    if (this.selection.floatingMode === 'paste') {
+      this.selection.floating = null;
+      this.selection.floatingMode = null;
+      this.selection.floatingBounds = null;
+      this.setActiveTool(TOOL_IDS.PENCIL);
       return;
     }
     if (this.quickWheel?.active) {
@@ -943,6 +970,12 @@ export default class PixelStudio {
   }
 
   handleTriggerSelection(inputState) {
+    if (!this.triggerSelectionReady) {
+      if (!inputState.ltHeld && !inputState.rtHeld) {
+        this.triggerSelectionReady = true;
+      }
+      return;
+    }
     if (this.quickWheel?.active) return;
     const point = this.getGridCellFromScreen(this.gamepadCursor.x, this.gamepadCursor.y);
     if (inputState.rtPressed && point) {
@@ -965,6 +998,7 @@ export default class PixelStudio {
   startTriggerSelection(mode, point) {
     this.gamepadSelection = { active: true, mode };
     this.selectionContextMenu = null;
+    this.setInputMode('canvas');
     this.selection.mode = 'rect';
     this.selection.start = point;
     this.selection.end = point;
@@ -1534,6 +1568,61 @@ export default class PixelStudio {
     }
   }
 
+  getSelectionPixels() {
+    if (!this.selection.mask) return null;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const pixels = new Uint32Array(width * height);
+    this.activeLayer.pixels.forEach((value, index) => {
+      if (!this.selection.mask[index]) return;
+      pixels[index] = value;
+    });
+    return pixels;
+  }
+
+  startFloatingPaste(mode) {
+    if (!this.selection.active || !this.selection.mask) return;
+    const bounds = this.selection.bounds || this.getMaskBounds(this.selection.mask);
+    if (!bounds) return;
+    this.copySelection();
+    let floating = null;
+    if (mode === 'cut') {
+      this.startHistory('cut selection');
+      floating = this.extractSelectionPixels();
+      this.commitHistory();
+    } else {
+      floating = this.getSelectionPixels();
+    }
+    if (!floating) return;
+    this.selection.floating = floating;
+    this.selection.floatingMode = 'paste';
+    this.selection.floatingBounds = { ...bounds };
+    this.clearSelection();
+    this.setActiveTool(TOOL_IDS.PENCIL);
+    this.setInputMode('canvas');
+  }
+
+  getFloatingPasteOffset() {
+    const bounds = this.selection.floatingBounds;
+    if (!bounds) return { x: 0, y: 0 };
+    return {
+      x: this.cursor.col - bounds.x,
+      y: this.cursor.row - bounds.y
+    };
+  }
+
+  commitFloatingPaste() {
+    if (!this.selection.floating || this.selection.floatingMode !== 'paste') return;
+    const offset = this.getFloatingPasteOffset();
+    this.startHistory('paste selection');
+    this.pasteSelectionPixels(this.selection.floating, offset.x, offset.y);
+    this.commitHistory();
+    this.selection.floating = null;
+    this.selection.floatingMode = null;
+    this.selection.floatingBounds = null;
+    this.setActiveTool(TOOL_IDS.PENCIL);
+  }
+
   addLassoPoint(point) {
     if (!this.selection.lassoPoints.length) {
       this.selection.lassoPoints = [{ x: point.col + 0.5, y: point.row + 0.5 }];
@@ -1666,6 +1755,10 @@ export default class PixelStudio {
     this.selection.active = false;
     this.selection.mask = null;
     this.selection.bounds = null;
+    this.selection.mode = null;
+    this.selection.start = null;
+    this.selection.end = null;
+    this.selection.lassoPoints = [];
     this.selectionContextMenu = null;
   }
 
@@ -2091,6 +2184,8 @@ export default class PixelStudio {
     }
     if (this.selectionContextMenu?.bounds && !this.isPointInBounds({ x, y }, this.selectionContextMenu.bounds)) {
       this.selectionContextMenu = null;
+      this.setInputMode('canvas');
+      this.setActiveTool(TOOL_IDS.PENCIL);
       return true;
     }
     const paletteHit = this.paletteBounds.find((bounds) => this.isPointInBounds({ x, y }, bounds));
@@ -2544,10 +2639,10 @@ export default class PixelStudio {
 
   drawSelectionContextMenu(ctx, width, height) {
     const items = [
-      { label: 'Copy', action: () => { this.copySelection(); this.selectionContextMenu = null; } },
-      { label: 'Cut', action: () => { this.cutSelection(); this.selectionContextMenu = null; } },
-      { label: 'Delete', action: () => { this.deleteSelection(); this.selectionContextMenu = null; } },
-      { label: 'Cancel', action: () => { this.selectionContextMenu = null; } }
+      { label: 'Copy', action: () => this.startFloatingPaste('copy') },
+      { label: 'Cut', action: () => this.startFloatingPaste('cut') },
+      { label: 'Delete', action: () => { this.deleteSelection(); this.clearSelection(); this.setActiveTool(TOOL_IDS.PENCIL); this.setInputMode('canvas'); } },
+      { label: 'Cancel', action: () => { this.clearSelection(); this.setActiveTool(TOOL_IDS.PENCIL); this.setInputMode('canvas'); } }
     ];
     const boxW = 160;
     const boxH = items.length * 42 + 20;
@@ -3182,6 +3277,26 @@ export default class PixelStudio {
         this.selection.bounds.w * zoom,
         this.selection.bounds.h * zoom
       );
+    }
+
+    if (this.selection.floating && this.selection.floatingMode === 'paste') {
+      const floatingOffset = this.getFloatingPasteOffset();
+      this.floatingCanvas.width = width;
+      this.floatingCanvas.height = height;
+      const imageData = this.floatingCtx.createImageData(width, height);
+      const bytes = new Uint32Array(imageData.data.buffer);
+      bytes.set(this.selection.floating);
+      this.floatingCtx.putImageData(imageData, 0, 0);
+      ctx.save();
+      ctx.globalAlpha = 0.6;
+      ctx.drawImage(
+        this.floatingCanvas,
+        offsetX + floatingOffset.x * zoom,
+        offsetY + floatingOffset.y * zoom,
+        gridW,
+        gridH
+      );
+      ctx.restore();
     }
 
     if (this.selection.start && this.selection.end && this.selection.mode === 'rect' && !this.selection.active) {
