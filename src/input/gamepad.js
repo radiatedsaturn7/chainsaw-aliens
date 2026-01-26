@@ -45,6 +45,8 @@ export default class GamepadInput {
     this.selectorActive = false;
     this.lastPitchBend = 8192;
     this.lastSustainValue = 0;
+    this.sustainActive = false;
+    this.sustainedNotes = new Set();
     this.rightStick = { x: 0, y: 0 };
     this.leftStick = { x: 0, y: 0 };
     this.pitchBendSemitones = 0;
@@ -193,6 +195,16 @@ export default class GamepadInput {
         this.octaveOffset = clamp(this.octaveOffset - 1, -2, 2);
       }
       const sustainValue = clamp(Math.round(ltValue * 127), 0, 127);
+      const sustainOn = sustainValue >= 64;
+      if (sustainOn !== this.sustainActive) {
+        this.sustainActive = sustainOn;
+        if (!sustainOn && this.sustainedNotes.size) {
+          Array.from(this.sustainedNotes).forEach((id) => {
+            this.bus.emit('noteoff', { id, source: 'gamepad' });
+          });
+          this.sustainedNotes.clear();
+        }
+      }
       if (Math.abs(sustainValue - this.lastSustainValue) > 2) {
         this.bus.emit('cc', { controller: 64, value: sustainValue, source: 'gamepad' });
         this.lastSustainValue = sustainValue;
@@ -303,7 +315,11 @@ export default class GamepadInput {
         }
         if (!isPressed && wasPressed) {
           const noteIds = this.activeButtons.get(button.index) || [];
-          noteIds.forEach((id) => this.bus.emit('noteoff', { id, source: 'gamepad' }));
+          if (this.sustainActive) {
+            noteIds.forEach((id) => this.sustainedNotes.add(id));
+          } else {
+            noteIds.forEach((id) => this.bus.emit('noteoff', { id, source: 'gamepad' }));
+          }
           this.activeButtons.delete(button.index);
         }
       });

@@ -2081,10 +2081,13 @@ export default class MidiComposer {
 
   handleRecordedPitchBend(event) {
     if (!this.recordModeActive) return;
+    const bendValue = Number.isFinite(event?.value) ? event.value : 8192;
+    const bendSemitones = ((bendValue - 8192) / 8192) * 2;
+    this.game?.audio?.setMidiPitchBend?.(bendSemitones);
     const { track } = this.getRecordingTarget();
     if (!track || isDrumTrack(track)) return;
     this.recorder.recordPitchBend({
-      value: event.value,
+      value: bendValue,
       time: this.getRecordingTime(),
       channel: track.channel,
       trackId: track.id
@@ -2106,6 +2109,7 @@ export default class MidiComposer {
     if (!this.recordModeActive) {
       this.keyboardInput.setEnabled(false);
       this.gamepadInput.setEnabled(false);
+      this.game?.audio?.setMidiPitchBend?.(0);
       return;
     }
     this.updateCountInMetronome();
