@@ -2116,8 +2116,7 @@ export default class MidiComposer {
     this.keyboardInput.setEnabled(true);
     const scale = SCALE_LIBRARY.find((entry) => entry.id === this.song.scale) || SCALE_LIBRARY[0];
     this.gamepadInput.setEnabled(true);
-    const scaleSteps = this.scaleLock ? scale.steps : Array.from({ length: 12 }, (_, index) => index);
-    this.gamepadInput.setScale({ key: this.song.key || 0, steps: scaleSteps });
+    this.gamepadInput.setScale({ key: this.song.key || 0, steps: scale.steps });
     this.gamepadInput.setInstrument(this.recordInstrument);
     this.gamepadInput.update();
 
