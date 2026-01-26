@@ -26,11 +26,15 @@ Passing notes (hold **LB**):
 - **Y = 6** (A)
 - **B = 7** (B)
 
-Non-scale notes (hold **D-pad Left**):
-- **A = 2♭** (C# / Db)
-- **X = 3♭** (D# / Eb)
-- **Y = 6♭** (G# / Ab)
-- **B = 7♭** (A# / Bb)
+Sharpen notes (hold **D-pad Left**):
+- **A = 1♯**
+- **X = 3♯**
+- **Y = 5♯**
+- **B = 8♯**
+- **LB + A = 2♯**
+- **LB + X = 4♯**
+- **LB + Y = 6♯**
+- **LB + B = 7♯**
 
 Additional note modifiers:
 - **RB**: octave up for the played note.
@@ -38,18 +42,15 @@ Additional note modifiers:
 
 ## Chord Mode
 
-Base chords (D-pad Left **not** held):
+Base chords:
 - **A**: Major triad (root position).
 - **X**: Major triad, 1st inversion.
 - **Y**: Major triad, 2nd inversion.
 - **B**: Power chord.
 
 Chord modifiers:
-- **LB**: add 9th.
-- **RB**: octave up (shift the chord up an octave).
-
-Uncommon chords (hold **D-pad Left**):
-- **A**: Sus2.
-- **B**: Sus4.
-- **X**: 7th (dominant).
-- **Y**: Diminished.
+- **RB + A**: Sus2.
+- **RB + X**: Sus4.
+- **RB + Y**: 7th (dominant).
+- **RB + B**: add 9th.
+- **LB + RB**: Diminished.
