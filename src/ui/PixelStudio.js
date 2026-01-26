@@ -645,6 +645,22 @@ export default class PixelStudio {
             this.setActiveTool(TOOL_IDS.ERASER);
           }
           break;
+        case INPUT_ACTIONS.ERASE_PRESS:
+          if (this.inputMode === 'canvas') {
+            this.setTempTool('erase', TOOL_IDS.ERASER);
+            if (this.selection.floatingMode === 'paste') {
+              this.commitFloatingPaste();
+            } else {
+              this.startGamepadDraw();
+            }
+          }
+          break;
+        case INPUT_ACTIONS.ERASE_RELEASE:
+          if (this.inputMode === 'canvas') {
+            this.stopGamepadDraw();
+          }
+          this.clearTempTool('erase');
+          break;
         case INPUT_ACTIONS.PANEL_PREV:
           this.cycleLeftPanel(-1);
           break;
@@ -821,8 +837,13 @@ export default class PixelStudio {
     if (type === 'color') {
       const count = this.currentPalette.colors?.length || 0;
       if (!isSameWheel) {
-        this.quickPaletteStartIndex = count ? this.paletteIndex % count : 0;
-        this.quickPalettePage = 0;
+        const pages = Math.max(1, Math.ceil(count / 8));
+        this.quickPaletteStartIndex = count
+          ? this.quickPaletteStartIndex % count
+          : 0;
+        if (this.quickPalettePage >= pages) {
+          this.quickPalettePage = 0;
+        }
       } else {
         this.advanceQuickWheelPage('color');
       }
@@ -830,9 +851,13 @@ export default class PixelStudio {
     if (type === 'tool') {
       const list = this.getQuickToolList();
       if (!isSameWheel) {
-        const activeIndex = list.findIndex((entry) => entry.id === this.activeToolId);
-        this.quickToolStartIndex = activeIndex >= 0 ? activeIndex : 0;
-        this.quickToolPage = 0;
+        const pages = Math.max(1, Math.ceil(list.length / 8));
+        this.quickToolStartIndex = list.length
+          ? this.quickToolStartIndex % list.length
+          : 0;
+        if (this.quickToolPage >= pages) {
+          this.quickToolPage = 0;
+        }
       } else {
         this.advanceQuickWheelPage('tool');
       }
@@ -974,7 +999,10 @@ export default class PixelStudio {
       if (!inputState.ltHeld && !inputState.rtHeld) {
         this.triggerSelectionReady = true;
       }
-      return;
+      if (!inputState.ltPressed && !inputState.rtPressed) {
+        return;
+      }
+      this.triggerSelectionReady = true;
     }
     if (this.quickWheel?.active) return;
     const point = this.getGridCellFromScreen(this.gamepadCursor.x, this.gamepadCursor.y);

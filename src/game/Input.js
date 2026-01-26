@@ -159,10 +159,12 @@ export default class Input {
     const leftStickUp = axisY < -this.gamepadDeadzone;
     const leftStickDown = axisY > this.gamepadDeadzone;
 
-    const dpadUp = isButtonActive(12);
-    const dpadDown = isButtonActive(13);
-    const dpadLeft = isButtonActive(14);
-    const dpadRight = isButtonActive(15);
+    const dpadAxisX = pad.axes?.[6] ?? 0;
+    const dpadAxisY = pad.axes?.[7] ?? 0;
+    const dpadUp = isButtonActive(12) || dpadAxisY < -0.5;
+    const dpadDown = isButtonActive(13) || dpadAxisY > 0.5;
+    const dpadLeft = isButtonActive(14) || dpadAxisX < -0.5;
+    const dpadRight = isButtonActive(15) || dpadAxisX > 0.5;
     const aimUp = isButtonActive(4);
     const aimDown = isButtonActive(5);
 
