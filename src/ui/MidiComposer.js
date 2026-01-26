@@ -2274,6 +2274,7 @@ export default class MidiComposer {
     const ltHeld = (axes.leftTrigger || 0) > 0.2;
     const rtPressed = rtHeld && !this.gamepadRtHeld;
     const rtReleased = !rtHeld && this.gamepadRtHeld;
+    const ltPressed = ltHeld && !this.gamepadLtHeld;
     const lbHeld = input.isGamepadDown?.('aimUp');
     const lbPressed = input.wasGamepadPressed?.('aimUp');
     const dpadLeftPressed = input.wasGamepadPressed?.('dpadLeft');
