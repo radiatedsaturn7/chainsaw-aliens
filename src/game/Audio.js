@@ -63,6 +63,7 @@ export default class AudioSystem {
     this.midiReverbEnabled = true;
     this.midiReverbLevel = 0.18;
     this.midiReverbSend = null;
+    this.midiPitchBendSemitones = 0;
     this.gmEnabled = true;
     this.gmError = null;
     this.soundfont = new SoundfontEngine({
@@ -118,6 +119,17 @@ export default class AudioSystem {
     this.midiReverb.connect(this.midiLimiter);
     this.midiSamples = this.buildMidiSamples();
     this.soundfont.initAudio({ audioContext: this.ctx, destination: this.midiBus });
+  }
+
+  setMidiPitchBend(semitones = 0) {
+    const nextValue = clamp(Number(semitones) || 0, -12, 12);
+    this.midiPitchBendSemitones = nextValue;
+    const rate = 2 ** (nextValue / 12);
+    this.midiVoices.forEach((voice) => {
+      if (!voice?.audioNode?.playbackRate) return;
+      const baseRate = voice.basePlaybackRate ?? voice.audioNode.playbackRate.value ?? 1;
+      voice.audioNode.playbackRate.value = baseRate * rate;
+    });
   }
 
   loadStoredSoundfontUrl() {
@@ -716,7 +728,13 @@ export default class AudioSystem {
       if (source?.stop) return () => source.stop();
       return null;
     };
-    this.midiVoices.push({ source, gain, stopTime, stop: resolveStop() });
+    const audioNode = voice?.audioBufferSourceNode || source || null;
+    const basePlaybackRate = audioNode?.playbackRate?.value ?? 1;
+    const entry = { source, gain, stopTime, stop: resolveStop(), voice, audioNode, basePlaybackRate };
+    if (audioNode?.playbackRate && this.midiPitchBendSemitones) {
+      audioNode.playbackRate.value = basePlaybackRate * (2 ** (this.midiPitchBendSemitones / 12));
+    }
+    this.midiVoices.push(entry);
     if (this.midiVoices.length > this.midiVoiceLimit) {
       const oldest = this.midiVoices.shift();
       if (oldest) {
