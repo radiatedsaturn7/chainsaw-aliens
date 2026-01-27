@@ -35,6 +35,24 @@ const RHYTHM_PATTERNS = {
   ]
 };
 
+const BASS_RHYTHM_PATTERNS = {
+  simple: [
+    [0, 2],
+    [0, 1, 2.5],
+    [0, 2.75]
+  ],
+  medium: [
+    [0, 1.5, 2.5, 3.25],
+    [0, 0.75, 1.5, 2.75, 3.5],
+    [0, 1.25, 2, 2.75]
+  ],
+  dense: [
+    [0, 0.5, 1.25, 2, 2.75, 3.5],
+    [0, 0.75, 1.5, 2.25, 3, 3.75],
+    [0, 1, 1.75, 2.5, 3.25, 3.75]
+  ]
+};
+
 const CHORD_TYPES = {
   power: { button: 'B', lb: false, dleft: false, type: 'power' },
   triad: { button: 'A', lb: false, dleft: false, type: 'triad' },
@@ -87,11 +105,24 @@ const selectRhythm = (rng, tier) => {
   return pickRandom(rng, RHYTHM_PATTERNS.dense);
 };
 
+const selectBassRhythm = (rng, tier) => {
+  if (tier <= 2) return pickRandom(rng, BASS_RHYTHM_PATTERNS.simple);
+  if (tier <= 4) return pickRandom(rng, BASS_RHYTHM_PATTERNS.medium);
+  return pickRandom(rng, BASS_RHYTHM_PATTERNS.dense);
+};
+
 const shouldUseNoteMode = (rng, tier) => {
   if (tier < 3) return false;
   if (tier === 3) return rng() < 0.45;
   if (tier === 4) return rng() < 0.4;
   return rng() < 0.5;
+};
+
+const shouldUseBassNoteMode = (rng, tier) => {
+  if (tier < 3) return false;
+  if (tier === 3) return rng() < 0.55;
+  if (tier === 4) return rng() < 0.65;
+  return rng() < 0.75;
 };
 
 const createStarPhraseMap = (totalBars) => {
@@ -150,10 +181,15 @@ const generateEvents = ({
           });
         });
       } else {
-        rhythm.forEach((offset) => {
+        const bassSyncopation = instrument === 'bass'
+          ? selectBassRhythm(rng, tier)
+          : rhythm;
+        bassSyncopation.forEach((offset) => {
           const timeBeat = beatCursor + offset;
-          if (instrument === 'bass' && rng() < 0.25) return;
-          let useNoteMode = shouldUseNoteMode(rng, tier);
+          if (instrument === 'bass' && rng() < (tier >= 5 ? 0.08 : 0.18)) return;
+          let useNoteMode = instrument === 'bass'
+            ? shouldUseBassNoteMode(rng, tier)
+            : shouldUseNoteMode(rng, tier);
           if (instrument === 'piano') {
             useNoteMode = useNoteMode && rng() < 0.4;
           }
