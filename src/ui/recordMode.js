@@ -279,7 +279,7 @@ export default class RecordModeLayout {
         'A: 1  A+LB:2  X:3  X+LB:4',
         'Y:5  Y+LB:6  B+LB:7  B:8',
         'Left+A: sus2  Left+X: sus4  Left+Y: dom7  Left+B: dim',
-        'RB: add9 (chord) / octave (note)  LT: sustain  RT: velocity',
+        'RB: add9 (chord) / octave (note)  LT: sustain  RT: volume',
         'Right Stick: pitch bend (± whole tone)',
         'L3: scale selector  R3: root selector'
       ];
