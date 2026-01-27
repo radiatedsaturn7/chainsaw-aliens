@@ -1,0 +1,810 @@
+---
+setlist_version: 1
+generated_at: "2026-01-27T00:00:00-05:00"
+definitions:
+  duration_tokens: { w: 4, h: 2, q: 1, e: 0.5 }
+  structure_letters: { I: intro, V: verse, P: prechorus, C: chorus, B: bridge, S: solo, O: outro }
+  articulation: { uppercase: strum, lowercase: arpeggio }
+  required_chord_types: ["sus2","sus4","7","add9","m7","maj7"]
+songs:
+  - id: "s01"
+    title: "Dancing on My Grave"
+    band: "The Rabbit Heads"
+    difficulty: 1
+    tier: "beginner"
+    tempo_bpm: 110
+    time_signature: "4/4"
+    key: "G major"
+    style_tags: ["punk","garage"]
+    structure: "VVCCB"
+    sections:
+      verse:
+        - ["G5(q)","G5(q)","C5(h)"]
+        - ["G5(q)","G5(q)","C5(h)"]
+      chorus:
+        - ["D5(q)","G5(q)","C5(h)"]
+        - ["C5(w)"]
+      bridge:
+        - ["A5(w)"]
+
+  - id: "s02"
+    title: "Static Shoes"
+    band: "Alley Radios"
+    difficulty: 1
+    tier: "beginner"
+    tempo_bpm: 122
+    time_signature: "4/4"
+    key: "C major"
+    style_tags: ["punk"]
+    structure: "VVCCO"
+    sections:
+      verse:
+        - ["C5(q)","G5(q)","C5(q)","G5(q)"]
+        - ["C5(q)","G5(q)","C5(q)","G5(q)"]
+      chorus:
+        - ["F5(h)","G5(h)"]
+        - ["C5(w)"]
+      outro:
+        - ["C5(w)"]
+
+  - id: "s03"
+    title: "Rusted Summer"
+    band: "Red Signal"
+    difficulty: 2
+    tier: "beginner"
+    tempo_bpm: 104
+    time_signature: "4/4"
+    key: "D major"
+    style_tags: ["alt-rock"]
+    structure: "IVVCC"
+    sections:
+      intro:
+        - ["D5(w)"]
+      verse:
+        - ["D5(h)","D5(h)"]
+        - ["G5(q)","A5(q)","D5(h)"]
+      chorus:
+        - ["G5(h)","A5(h)"]
+        - ["D5(w)"]
+
+  - id: "s04"
+    title: "Cheap Neon"
+    band: "Weekend Static"
+    difficulty: 3
+    tier: "beginner"
+    tempo_bpm: 116
+    time_signature: "4/4"
+    key: "E major"
+    style_tags: ["alt-rock"]
+    structure: "VVCCbO"
+    sections:
+      verse:
+        - ["E5(q)","B5(q)","A5(h)"]
+        - ["E5(q)","B5(q)","A5(h)"]
+      chorus:
+        - ["A5(q)","B5(q)","E5(h)"]
+        - ["E5(w)"]
+      bridge:
+        - ["e(e)","b(e)","a(e)","b(e)","e(e)","b(e)","a(e)","b(e)"]
+      outro:
+        - ["E5(w)"]
+
+  - id: "s05"
+    title: "Last Bus Home"
+    band: "Ghost Youth"
+    difficulty: 3
+    tier: "beginner"
+    tempo_bpm: 98
+    time_signature: "4/4"
+    key: "G major"
+    style_tags: ["indie","rock"]
+    structure: "IVVCcbO"
+    sections:
+      intro:
+        - ["G5(w)"]
+      verse:
+        - ["G5(h)","D5(h)"]
+        - ["C5(h)","D5(h)"]
+      chorus:
+        - ["G5(h)","C5(h)"]
+        - ["D5(w)"]
+      bridge:
+        - ["g(e)","d(e)","b(e)","d(e)","g(e)","d(e)","b(e)","d(e)"]
+      outro:
+        - ["G5(w)"]
+
+  - id: "s06"
+    title: "Polaroid Heart"
+    band: "Tape Fires"
+    difficulty: 4
+    tier: "easy"
+    tempo_bpm: 100
+    time_signature: "4/4"
+    key: "G major"
+    style_tags: ["radio-rock"]
+    structure: "IVVCCo"
+    sections:
+      intro:
+        - ["G(w)"]
+      verse:
+        - ["G(h)","D(h)"]
+        - ["Em(h)","C(h)"]
+      chorus:
+        - ["C(h)","D(h)"]
+        - ["G(w)"]
+      outro:
+        - ["g(e)","d(e)","b(e)","d(e)","g(e)","d(e)","b(e)","d(e)"]
+
+  - id: "s07"
+    title: "Paper Planes"
+    band: "Soft Riot"
+    difficulty: 4
+    tier: "easy"
+    tempo_bpm: 92
+    time_signature: "4/4"
+    key: "C major"
+    style_tags: ["pop-rock"]
+    structure: "VVCC"
+    sections:
+      verse:
+        - ["C(q)","G(q)","Am(q)","F(q)"]
+        - ["C(q)","G(q)","Am(q)","F(q)"]
+      chorus:
+        - ["F(h)","G(h)"]
+        - ["C(w)"]
+
+  - id: "s08"
+    title: "Parking Lot Lights"
+    band: "Moon Static"
+    difficulty: 4
+    tier: "easy"
+    tempo_bpm: 106
+    time_signature: "4/4"
+    key: "D major"
+    style_tags: ["alt-rock"]
+    structure: "IVVCCB"
+    sections:
+      intro:
+        - ["D(w)"]
+      verse:
+        - ["D(h)","A(h)"]
+        - ["Bm(h)","G(h)"]
+      chorus:
+        - ["G(h)","A(h)"]
+        - ["D(w)"]
+      bridge:
+        - ["Bm(q)","G(q)","D(h)"]
+
+  - id: "s09"
+    title: "Telephone Dreams"
+    band: "Blue Vinyl"
+    difficulty: 5
+    tier: "easy"
+    tempo_bpm: 108
+    time_signature: "4/4"
+    key: "E major"
+    style_tags: ["90s-alt"]
+    structure: "VVCCb"
+    sections:
+      verse:
+        - ["E(h)","A(h)"]
+        - ["C#m(h)","B(h)"]
+      chorus:
+        - ["A(h)","B(h)"]
+        - ["E(w)"]
+      bridge:
+        - ["c#m(e)","b(e)","a(e)","b(e)","c#m(e)","b(e)","a(e)","b(e)"]
+
+  - id: "s10"
+    title: "Burn the Map"
+    band: "Southbound"
+    difficulty: 5
+    tier: "easy"
+    tempo_bpm: 112
+    time_signature: "4/4"
+    key: "G major"
+    style_tags: ["americana","rock"]
+    structure: "VVCCbO"
+    sections:
+      verse:
+        - ["G(q)","D(q)","C(h)"]
+        - ["G(q)","D(q)","C(h)"]
+      chorus:
+        - ["C(h)","G(q)","D(q)"]
+        - ["G(w)"]
+      bridge:
+        - ["am(e)","g(e)","d(e)","g(e)","am(e)","g(e)","d(e)","g(e)"]
+      outro:
+        - ["G(w)"]
+
+  - id: "s11"
+    title: "Night Arcade"
+    band: "Neon Saints"
+    difficulty: 6
+    tier: "mid"
+    tempo_bpm: 118
+    time_signature: "4/4"
+    key: "D major"
+    style_tags: ["indie","rock"]
+    structure: "IVVPCcB"
+    sections:
+      intro:
+        - ["D(w)"]
+      verse:
+        - ["D(h)","A/C#(h)"]
+        - ["Bm(h)","G(h)"]
+      prechorus:
+        - ["Em(q)","G(q)","A(h)"]
+      chorus:
+        - ["G(h)","A(h)"]
+        - ["D(w)"]
+      bridge:
+        - ["e(e)","a/c#(e)","bm(e)","g(e)","e(e)","a/c#(e)","bm(e)","g(e)"]
+
+  - id: "s12"
+    title: "Cold Weather"
+    band: "Static Field"
+    difficulty: 6
+    tier: "mid"
+    tempo_bpm: 96
+    time_signature: "4/4"
+    key: "C major"
+    style_tags: ["indie"]
+    structure: "VVCCbO"
+    sections:
+      verse:
+        - ["C(h)","G/B(h)"]
+        - ["Am(h)","F(h)"]
+      chorus:
+        - ["F(h)","G(h)"]
+        - ["C(w)"]
+      bridge:
+        - ["dm(e)","f(e)","g(e)","c(e)","dm(e)","f(e)","g(e)","c(e)"]
+      outro:
+        - ["C(w)"]
+
+  - id: "s13"
+    title: "Motel Oxygen"
+    band: "Split Signals"
+    difficulty: 6
+    tier: "mid"
+    tempo_bpm: 110
+    time_signature: "4/4"
+    key: "G major"
+    style_tags: ["alt-rock"]
+    structure: "IVVCCB"
+    sections:
+      intro:
+        - ["G(w)"]
+      verse:
+        - ["G(h)","D/F#(h)"]
+        - ["Em(h)","C(h)"]
+      chorus:
+        - ["C(h)","G(h)"]
+        - ["D(w)"]
+      bridge:
+        - ["Am(h)","Em(h)"]
+
+  - id: "s14"
+    title: "After the Sirens"
+    band: "Tall Fires"
+    difficulty: 6
+    tier: "mid"
+    tempo_bpm: 102
+    time_signature: "4/4"
+    key: "A major"
+    style_tags: ["radio-rock"]
+    structure: "VVCCb"
+    sections:
+      verse:
+        - ["A(h)","E/G#(h)"]
+        - ["F#m(h)","D(h)"]
+      chorus:
+        - ["D(h)","A(h)"]
+        - ["E(w)"]
+      bridge:
+        - ["bm(e)","d(e)","a(e)","e(e)","bm(e)","d(e)","a(e)","e(e)"]
+
+  - id: "s15"
+    title: "Broken Antenna"
+    band: "Low Orbit"
+    difficulty: 7
+    tier: "mid"
+    tempo_bpm: 120
+    time_signature: "4/4"
+    key: "E major"
+    style_tags: ["alt-rock"]
+    structure: "IVVPCcSO"
+    sections:
+      intro:
+        - ["E(w)"]
+      verse:
+        - ["E(h)","B(h)"]
+        - ["C#m(h)","A(h)"]
+      prechorus:
+        - ["F#m(q)","A(q)","B(h)"]
+      chorus:
+        - ["A(h)","E(h)"]
+        - ["B(w)"]
+      solo:
+        - ["E(q)","A(q)","B(q)","A(q)"]
+      outro:
+        - ["e(e)","b(e)","c#m(e)","a(e)","e(e)","b(e)","c#m(e)","a(e)"]
+
+  - id: "s16"
+    title: "Salt in the Amp"
+    band: "Cinder Kids"
+    difficulty: 7
+    tier: "mid"
+    tempo_bpm: 100
+    time_signature: "4/4"
+    key: "D major"
+    style_tags: ["rock"]
+    structure: "VVPCcB"
+    sections:
+      verse:
+        - ["D(q)","Asus4(q)","G(h)"]
+        - ["D(q)","Asus4(q)","G(h)"]
+      prechorus:
+        - ["Bm(q)","G(q)","A(h)"]
+      chorus:
+        - ["D(add9)(h)","G(h)"]
+        - ["A(w)"]
+      bridge:
+        - ["d(e)","a(e)","g(e)","a(e)","d(e)","a(e)","g(e)","a(e)"]
+
+  - id: "s17"
+    title: "Tension Wire"
+    band: "Night Engines"
+    difficulty: 7
+    tier: "mid"
+    tempo_bpm: 112
+    time_signature: "4/4"
+    key: "E major"
+    style_tags: ["alt-rock"]
+    structure: "IVVCCB"
+    sections:
+      intro:
+        - ["E(w)"]
+      verse:
+        - ["E(h)","A(h)"]
+        - ["B7(h)","A(h)"]
+      chorus:
+        - ["A(h)","B(h)"]
+        - ["E(w)"]
+      bridge:
+        - ["F#m7(h)","A(h)"]
+
+  - id: "s18"
+    title: "Glass Battery"
+    band: "Audio Larceny"
+    difficulty: 7
+    tier: "mid"
+    tempo_bpm: 95
+    time_signature: "4/4"
+    key: "C major"
+    style_tags: ["indie","rock"]
+    structure: "VVCCb"
+    sections:
+      verse:
+        - ["Cmaj7(h)","G(h)"]
+        - ["Am(h)","F(h)"]
+      chorus:
+        - ["F(h)","Gsus2(h)"]
+        - ["C(w)"]
+      bridge:
+        - ["c(e)","g(e)","am(e)","f(e)","c(e)","g(e)","am(e)","f(e)"]
+
+  - id: "s19"
+    title: "Faded Poster"
+    band: "Basement Parade"
+    difficulty: 7
+    tier: "mid"
+    tempo_bpm: 108
+    time_signature: "4/4"
+    key: "G major"
+    style_tags: ["indie"]
+    structure: "VVCCO"
+    sections:
+      verse:
+        - ["G(q)","D/F#(q)","Em(h)"]
+        - ["C(h)","D(h)"]
+      chorus:
+        - ["G(add9)(h)","C(h)"]
+        - ["D(w)"]
+      outro:
+        - ["G(w)"]
+
+  - id: "s20"
+    title: "Rooftop Relay"
+    band: "Signal Run"
+    difficulty: 7
+    tier: "mid"
+    tempo_bpm: 124
+    time_signature: "4/4"
+    key: "A major"
+    style_tags: ["pop-rock"]
+    structure: "VVPCcB"
+    sections:
+      verse:
+        - ["A(q)","E(q)","F#m(h)"]
+        - ["D(h)","E(h)"]
+      prechorus:
+        - ["Bm(q)","D(q)","E(h)"]
+      chorus:
+        - ["A(h)","Dsus2(h)"]
+        - ["E(w)"]
+      bridge:
+        - ["a(e)","e(e)","f#m(e)","d(e)","a(e)","e(e)","f#m(e)","d(e)"]
+
+  - id: "s21"
+    title: "Dead Satellites"
+    band: "Void FM"
+    difficulty: 8
+    tier: "hard"
+    tempo_bpm: 115
+    time_signature: "4/4"
+    key: "D major"
+    style_tags: ["hard-rock"]
+    structure: "IVVCCBS"
+    sections:
+      intro:
+        - ["D5(w)"]
+      verse:
+        - ["D(q)","C(q)","G(h)"]
+        - ["A(w)"]
+      chorus:
+        - ["G(h)","D(h)"]
+        - ["A(w)"]
+      bridge:
+        - ["Bb(h)","C(h)"]
+      solo:
+        - ["D(q)","G(q)","A(q)","D(q)"]
+
+  - id: "s22"
+    title: "Mirrors Break"
+    band: "Static Choir"
+    difficulty: 8
+    tier: "hard"
+    tempo_bpm: 128
+    time_signature: "4/4"
+    key: "E major"
+    style_tags: ["hard-rock"]
+    structure: "VVCCB"
+    sections:
+      verse:
+        - ["E(q)","C(q)","G(h)"]
+        - ["D(h)","A(h)"]
+      chorus:
+        - ["G(h)","D(h)"]
+        - ["E(w)"]
+      bridge:
+        - ["F#dim(h)","G(h)"]
+
+  - id: "s23"
+    title: "Ashfall Parade"
+    band: "Iron Youth"
+    difficulty: 8
+    tier: "hard"
+    tempo_bpm: 110
+    time_signature: "4/4"
+    key: "A major"
+    style_tags: ["alt-rock"]
+    structure: "VVPCcB"
+    sections:
+      verse:
+        - ["A(q)","G(q)","D(h)"]
+        - ["A(w)"]
+      prechorus:
+        - ["Bm(q)","D(q)","E(h)"]
+      chorus:
+        - ["D(h)","A(h)"]
+        - ["G(w)"]
+      bridge:
+        - ["Bb(h)","G(h)"]
+
+  - id: "s24"
+    title: "Radio Silence"
+    band: "Black Towers"
+    difficulty: 8
+    tier: "hard"
+    tempo_bpm: 96
+    time_signature: "4/4"
+    key: "C major"
+    style_tags: ["alt-rock"]
+    structure: "IVVCCbO"
+    sections:
+      intro:
+        - ["C(w)"]
+      verse:
+        - ["C(h)","Bb(h)"]
+        - ["F(h)","C(h)"]
+      chorus:
+        - ["F(h)","C(h)"]
+        - ["Bb(w)"]
+      bridge:
+        - ["eb(e)","f(e)","c(e)","bb(e)","eb(e)","f(e)","c(e)","bb(e)"]
+      outro:
+        - ["C(w)"]
+
+  - id: "s25"
+    title: "Bleed the Sun"
+    band: "Kill Frequency"
+    difficulty: 8
+    tier: "hard"
+    tempo_bpm: 132
+    time_signature: "4/4"
+    key: "E major"
+    style_tags: ["hard-rock"]
+    structure: "VVCCBS"
+    sections:
+      verse:
+        - ["E5(q)","E5(q)","A5(h)"]
+        - ["B5(w)"]
+      chorus:
+        - ["A5(h)","B5(h)"]
+        - ["E5(w)"]
+      bridge:
+        - ["F#(h)","G(h)"]
+      solo:
+        - ["E(q)","A(q)","B(q)","E(q)"]
+
+  - id: "s26"
+    title: "Neon Burial"
+    band: "Dead Frequency"
+    difficulty: 9
+    tier: "expert"
+    tempo_bpm: 120
+    time_signature: "4/4"
+    key: "E major"
+    style_tags: ["expert","alt-rock"]
+    structure: "IVVPCCbSO"
+    sections:
+      intro:
+        - ["E(w)"]
+      verse:
+        - ["E(h)","A/C#(h)"]
+        - ["F#m(h)","D(h)"]
+      prechorus:
+        - ["Bm(q)","C#7(q)","F#m(h)"]
+      chorus:
+        - ["D(h)","A(h)"]
+        - ["E(w)"]
+      bridge:
+        - ["e(e)","a/c#(e)","f#m(e)","d(e)","e(e)","a/c#(e)","f#m(e)","d(e)"]
+      solo:
+        - ["E(q)","D(q)","A(q)","E(q)"]
+      outro:
+        - ["E(w)"]
+
+  - id: "s27"
+    title: "Wolves in Static"
+    band: "Dead Air"
+    difficulty: 9
+    tier: "expert"
+    tempo_bpm: 108
+    time_signature: "4/4"
+    key: "G major"
+    style_tags: ["indie","expert"]
+    structure: "IVVPCCbO"
+    sections:
+      intro:
+        - ["G(w)"]
+      verse:
+        - ["G(h)","D/F#(h)"]
+        - ["Em(h)","C(h)"]
+      prechorus:
+        - ["Am(q)","Bm(q)","C(h)"]
+      chorus:
+        - ["C(h)","G(h)"]
+        - ["D(w)"]
+      bridge:
+        - ["eb(e)","f(e)","g(e)","d(e)","eb(e)","f(e)","g(e)","d(e)"]
+      outro:
+        - ["G(w)"]
+
+  - id: "s28"
+    title: "End of the Dial"
+    band: "Final Signal"
+    difficulty: 9
+    tier: "expert"
+    tempo_bpm: 104
+    time_signature: "4/4"
+    key: "A major"
+    style_tags: ["expert","rock"]
+    structure: "IVVPCCbS"
+    sections:
+      intro:
+        - ["A(w)"]
+      verse:
+        - ["A(h)","E/G#(h)"]
+        - ["F#m(h)","D(h)"]
+      prechorus:
+        - ["C#m(q)","Bm(q)","E(h)"]
+      chorus:
+        - ["D(h)","A(h)"]
+        - ["E(w)"]
+      bridge:
+        - ["F#dim(h)","E(h)"]
+      solo:
+        - ["A(q)","D(q)","E(q)","A(q)"]
+
+  - id: "s29"
+    title: "Chrome Ladder"
+    band: "Razor Bloom"
+    difficulty: 9
+    tier: "expert"
+    tempo_bpm: 126
+    time_signature: "4/4"
+    key: "D major"
+    style_tags: ["alt-rock"]
+    structure: "IVVpcCbO"
+    sections:
+      intro:
+        - ["D(w)"]
+      verse:
+        - ["D(q)","G(q)","A(h)"]
+        - ["Bm(h)","G(h)"]
+      prechorus:
+        - ["Em7(h)","A7(h)"]
+      chorus:
+        - ["D(add9)(h)","G(h)"]
+        - ["Asus4(w)"]
+      bridge:
+        - ["d(e)","g(e)","a(e)","g(e)","d(e)","g(e)","a(e)","g(e)"]
+      outro:
+        - ["D(w)"]
+
+  - id: "s30"
+    title: "Blue Sparks"
+    band: "Circuit Saints"
+    difficulty: 9
+    tier: "expert"
+    tempo_bpm: 90
+    time_signature: "4/4"
+    key: "E major"
+    style_tags: ["slow-rock"]
+    structure: "IVvPCcB"
+    sections:
+      intro:
+        - ["E(w)"]
+      verse:
+        - ["E(h)","A(h)"]
+        - ["C#m7(h)","B(h)"]
+      prechorus:
+        - ["A(q)","Bsus2(q)","B7(h)"]
+      chorus:
+        - ["E(add9)(h)","A(h)"]
+        - ["B(w)"]
+      bridge:
+        - ["e(e)","b(e)","c#m7(e)","a(e)","e(e)","b(e)","c#m7(e)","a(e)"]
+
+  - id: "s31"
+    title: "Hollow Broadcast"
+    band: "Late Night Antennas"
+    difficulty: 10
+    tier: "expert"
+    tempo_bpm: 140
+    time_signature: "4/4"
+    key: "C major"
+    style_tags: ["fast","punk-rock"]
+    structure: "IVVCCbO"
+    sections:
+      intro:
+        - ["C5(w)"]
+      verse:
+        - ["C5(q)","G5(q)","Am(q)","F(q)"]
+        - ["C5(q)","G5(q)","Am(q)","F(q)"]
+      chorus:
+        - ["F(h)","Gsus4(h)"]
+        - ["C(w)"]
+      bridge:
+        - ["am(e)","f(e)","g(e)","c(e)","am(e)","f(e)","g(e)","c(e)"]
+      outro:
+        - ["C5(w)"]
+
+  - id: "s32"
+    title: "Signal in the Snow"
+    band: "Northbound"
+    difficulty: 10
+    tier: "expert"
+    tempo_bpm: 100
+    time_signature: "4/4"
+    key: "G major"
+    style_tags: ["anthem-rock"]
+    structure: "IVVPCCbSO"
+    sections:
+      intro:
+        - ["G(w)"]
+      verse:
+        - ["G(h)","D(h)"]
+        - ["Em(h)","C(h)"]
+      prechorus:
+        - ["Am(q)","C(q)","D(h)"]
+      chorus:
+        - ["G(add9)(h)","C(h)"]
+        - ["D(w)"]
+      bridge:
+        - ["eb(e)","f(e)","g(e)","d(e)","eb(e)","f(e)","g(e)","d(e)"]
+      solo:
+        - ["G(q)","C(q)","D(q)","G(q)"]
+      outro:
+        - ["G(w)"]
+
+  - id: "s33"
+    title: "Blackout Waltz"
+    band: "Knucklelight"
+    difficulty: 10
+    tier: "expert"
+    tempo_bpm: 120
+    time_signature: "4/4"
+    key: "A minor"
+    style_tags: ["dark-rock"]
+    structure: "IVvPCcB"
+    sections:
+      intro:
+        - ["Am(w)"]
+      verse:
+        - ["Am(h)","F(h)"]
+        - ["C(h)","G(h)"]
+      prechorus:
+        - ["Dm7(h)","E7(h)"]
+      chorus:
+        - ["Am(add9)(h)","F(h)"]
+        - ["Gsus2(w)"]
+      bridge:
+        - ["bb(h)","c(h)"]
+
+  - id: "s34"
+    title: "Rust & Halo"
+    band: "Midnight Workshop"
+    difficulty: 10
+    tier: "expert"
+    tempo_bpm: 108
+    time_signature: "4/4"
+    key: "E minor"
+    style_tags: ["post-rock","expert"]
+    structure: "IvVPccBO"
+    sections:
+      intro:
+        - ["e(e)","b(e)","g(e)","b(e)","e(e)","b(e)","g(e)","b(e)"]
+      verse:
+        - ["Em(h)","C(h)"]
+        - ["G(h)","D(h)"]
+      prechorus:
+        - ["Am7(h)","C(h)"]
+      chorus:
+        - ["G(q)","Dsus4(q)","Em(h)"]
+        - ["C(w)"]
+      bridge:
+        - ["F(h)","G(h)"]
+      outro:
+        - ["Em(w)"]
+
+  - id: "s35"
+    title: "Final Chorus"
+    band: "The Last Verse"
+    difficulty: 10
+    tier: "expert"
+    tempo_bpm: 132
+    time_signature: "4/4"
+    key: "D major"
+    style_tags: ["arena-rock","expert"]
+    structure: "IVVPCCbSO"
+    sections:
+      intro:
+        - ["D(w)"]
+      verse:
+        - ["D(h)","G(h)"]
+        - ["Bm(h)","A(h)"]
+      prechorus:
+        - ["Em7(h)","A7(h)"]
+      chorus:
+        - ["D(add9)(h)","G(h)"]
+        - ["Asus2(w)"]
+      bridge:
+        - ["bb(h)","c(h)"]
+      solo:
+        - ["D(q)","G(q)","A(q)","D(q)"]
+      outro:
+        - ["D(w)"]

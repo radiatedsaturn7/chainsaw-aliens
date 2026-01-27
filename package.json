@@ -11,6 +11,7 @@
   },
   "scripts": {
     "prepare:playwright": "npx playwright install",
-    "test:dashboard": "npm run prepare:playwright && node tools/test-runner/run.js"
+    "test:dashboard": "npm run prepare:playwright && node tools/test-runner/run.js",
+    "test:robtersession-songs": "node tools/robtersession/song-generator-harness.js"
   }
 }

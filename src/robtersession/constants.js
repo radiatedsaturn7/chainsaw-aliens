@@ -12,7 +12,7 @@ export const MODE_LIBRARY = [
 
 export const ROOT_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
-export const SETS = [
+export const DEFAULT_SETS = [
   {
     id: 'warm-up',
     title: 'Warm Up - The Neon Launchers',
