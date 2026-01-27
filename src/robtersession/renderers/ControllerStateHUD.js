@@ -38,7 +38,7 @@ export default class ControllerStateHUD {
     ctx.restore();
   }
 
-  drawCompass(ctx, x, y, radius, activeDirection) {
+  drawCompass(ctx, x, y, radius, activeDirection, targetDirection) {
     ctx.save();
     ctx.fillStyle = 'rgba(6,12,20,0.75)';
     ctx.beginPath();
@@ -47,6 +47,32 @@ export default class ControllerStateHUD {
     ctx.strokeStyle = 'rgba(140,200,255,0.6)';
     ctx.lineWidth = 2;
     ctx.stroke();
+
+    if (Number.isFinite(targetDirection)) {
+      const angles = {
+        1: 270,
+        2: 315,
+        3: 0,
+        4: 45,
+        5: 90,
+        6: 135,
+        7: 180,
+        8: 225
+      };
+      const angle = (angles[targetDirection] ?? 270) * (Math.PI / 180);
+      const dx = Math.cos(angle) * radius;
+      const dy = Math.sin(angle) * radius;
+      ctx.strokeStyle = 'rgba(255,225,120,0.9)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + dx, y + dy);
+      ctx.stroke();
+      ctx.fillStyle = '#ffe16a';
+      ctx.beginPath();
+      ctx.arc(x + dx, y + dy, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -86,7 +112,7 @@ export default class ControllerStateHUD {
     ctx.restore();
   }
 
-  drawOctaveMeter(ctx, x, y, height, octaveOffset, min = -2, max = 2) {
+  drawOctaveMeter(ctx, x, y, height, octaveOffset, min = -2, max = 2, requiredOffset = null) {
     ctx.save();
     ctx.fillStyle = 'rgba(8,12,20,0.7)';
     ctx.fillRect(x, y, 22, height);
@@ -97,10 +123,24 @@ export default class ControllerStateHUD {
     const markerY = y + height - normalized * height;
     ctx.fillStyle = '#ffe16a';
     ctx.fillRect(x + 2, markerY - 4, 18, 8);
+    if (Number.isFinite(requiredOffset)) {
+      const targetNorm = clamp((requiredOffset - min) / range, 0, 1);
+      const targetY = y + height - targetNorm * height;
+      ctx.strokeStyle = 'rgba(255,225,120,0.9)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x - 4, targetY);
+      ctx.lineTo(x + 26, targetY);
+      ctx.stroke();
+    }
     ctx.fillStyle = '#d7f2ff';
     ctx.font = '10px Courier New';
     ctx.textAlign = 'left';
     ctx.fillText(`Oct ${octaveOffset >= 0 ? '+' : ''}${octaveOffset}`, x + 28, y + 10);
+    if (Number.isFinite(requiredOffset)) {
+      ctx.fillStyle = '#ffe16a';
+      ctx.fillText(`Target ${requiredOffset >= 0 ? '+' : ''}${requiredOffset}`, x + 28, y + 24);
+    }
     ctx.restore();
   }
 
@@ -122,8 +162,10 @@ export default class ControllerStateHUD {
       mode,
       degree,
       stickDir,
+      targetDirection,
       modifiers,
       octaveOffset,
+      requiredOctaveOffset,
       mappings,
       compact
     } = state;
@@ -136,7 +178,7 @@ export default class ControllerStateHUD {
     const baseY = height - 140;
     const radius = 36;
 
-    this.drawCompass(ctx, baseX + radius, baseY, radius, stickDir || degree);
+    this.drawCompass(ctx, baseX + radius, baseY, radius, stickDir || degree, targetDirection);
     ctx.save();
     ctx.fillStyle = '#d7f2ff';
     ctx.font = '12px Courier New';
@@ -146,7 +188,7 @@ export default class ControllerStateHUD {
 
     if (!compact) {
       this.drawModifiers(ctx, baseX + radius * 2 + 12, baseY + 12, modifiers);
-      this.drawOctaveMeter(ctx, baseX + radius * 2 + 12, baseY + 50, 64, octaveOffset);
+      this.drawOctaveMeter(ctx, baseX + radius * 2 + 12, baseY + 50, 64, octaveOffset, -2, 2, requiredOctaveOffset);
       this.drawMappings(ctx, baseX + radius * 2 + 72, baseY + 44, mappings);
     }
   }

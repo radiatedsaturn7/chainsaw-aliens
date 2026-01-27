@@ -25,14 +25,14 @@ export default class NoteRenderer {
     }
 
     if (kind === 'chord') {
-      const barGap = height * 0.1;
-      const barH = (height - barGap * 2) / 3;
+      const barGap = width * 0.08;
+      const barW = (width - barGap * 2) / 3;
       for (let i = 0; i < 3; i += 1) {
-        const barY = y + i * (barH + barGap);
+        const barX = x + i * (barW + barGap);
         ctx.fillStyle = color;
-        ctx.fillRect(x, barY, width, barH);
+        ctx.fillRect(barX, y, barW, height);
         ctx.strokeStyle = 'rgba(20,30,40,0.8)';
-        ctx.strokeRect(x, barY, width, barH);
+        ctx.strokeRect(barX, y, barW, height);
       }
     } else {
       ctx.fillStyle = color;
