@@ -2251,9 +2251,39 @@ export default class MidiComposer {
       || (this.recordSelector.active && this.recordSelector.type === 'scale');
     const rightActive = rightMagnitude > 0.3
       || (this.recordSelector.active && this.recordSelector.type === 'key');
+    const leftDegree = this.gamepadInput.leftStickStableDirection || this.recordStatus.degree || 1;
+    const leftPitch = this.gamepadInput.getPitchForScaleStep(leftDegree - 1);
+    const activeTrack = this.getActiveTrack();
+    const leftNoteLabel = this.recordInstrument === 'drums' ? null : this.formatPitchLabel(leftPitch, activeTrack);
+    const bendSemitones = this.gamepadInput.getPitchBendSemitones();
+    const bendDisplaySemitones = Math.round(bendSemitones * 2) / 2;
+    const bendBasePitch = leftPitch;
+    const bendTargetPitch = bendBasePitch + bendDisplaySemitones;
+    const bendBaseLabel = this.recordInstrument === 'drums'
+      ? ''
+      : this.formatPitchLabel(bendBasePitch, activeTrack);
+    const bendTargetLabel = this.recordInstrument === 'drums'
+      ? ''
+      : this.formatPitchLabel(bendTargetPitch, activeTrack);
+    const bendActive = preferred === 'gamepad'
+      && this.recordInstrument !== 'drums'
+      && (Math.abs(bendSemitones) > 0.05 || rightActive);
     this.recordStickIndicators = {
-      left: { x: leftStick.x, y: leftStick.y, active: leftActive },
-      right: { x: rightStick.x, y: rightStick.y, active: rightActive }
+      left: {
+        x: leftStick.x,
+        y: leftStick.y,
+        active: leftActive,
+        degree: leftDegree,
+        noteLabel: leftNoteLabel
+      },
+      right: { x: rightStick.x, y: rightStick.y, active: rightActive },
+      bend: {
+        active: bendActive,
+        semitones: bendSemitones,
+        displaySemitones: bendDisplaySemitones,
+        baseLabel: bendBaseLabel,
+        targetLabel: bendTargetLabel
+      }
     };
 
     const shouldApplyBend = preferred === 'gamepad'

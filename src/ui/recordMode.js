@@ -300,7 +300,17 @@ export default class RecordModeLayout {
     const baseY = instrument.y + instrument.h - 80;
     const leftX = instrument.x + insetX;
     const rightX = instrument.x + instrument.w - insetX;
-    const drawStick = (centerX, centerY, stick, label) => {
+    const directionMarkers = [
+      { id: 1, angle: 270 },
+      { id: 2, angle: 315 },
+      { id: 3, angle: 0 },
+      { id: 4, angle: 45 },
+      { id: 5, angle: 90 },
+      { id: 6, angle: 135 },
+      { id: 7, angle: 180 },
+      { id: 8, angle: 225 }
+    ];
+    const drawStick = (centerX, centerY, stick, label, options = {}) => {
       if (!stick?.active) return;
       const knobX = centerX + clamp(stick.x, -1, 1) * radius * 0.6;
       const knobY = centerY + clamp(stick.y, -1, 1) * radius * 0.6;
@@ -320,10 +330,71 @@ export default class RecordModeLayout {
       ctx.font = '12px Courier New';
       ctx.textAlign = 'center';
       ctx.fillText(label, centerX, centerY + radius + 18);
+      if (options.showDirections) {
+        const labelRadius = radius + 16;
+        ctx.font = '11px Courier New';
+        directionMarkers.forEach((marker) => {
+          const angle = (marker.angle * Math.PI) / 180;
+          const dx = Math.cos(angle) * labelRadius;
+          const dy = Math.sin(angle) * labelRadius;
+          ctx.fillStyle = marker.id === stick.degree ? '#ffe16a' : '#fff';
+          ctx.fillText(String(marker.id), centerX + dx, centerY + dy + 4);
+        });
+      }
+      if (stick.noteLabel) {
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px Courier New';
+        const degreeLabel = stick.degree ? `${stick.degree}: ` : '';
+        ctx.fillText(`${degreeLabel}${stick.noteLabel}`, centerX, centerY + radius + 34);
+      }
       ctx.restore();
     };
-    drawStick(leftX, baseY, stickIndicators.left, 'Left Stick');
+    drawStick(leftX, baseY, stickIndicators.left, 'Left Stick', { showDirections: true });
     drawStick(rightX, baseY, stickIndicators.right, 'Right Stick');
+
+    const bend = stickIndicators.bend;
+    if (bend?.active) {
+      const meterW = Math.min(280, instrument.w * 0.45);
+      const meterH = 10;
+      const meterX = instrument.x + (instrument.w - meterW) / 2;
+      const meterY = baseY - 50;
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fillRect(meterX, meterY, meterW, meterH);
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.strokeRect(meterX, meterY, meterW, meterH);
+      const stepCount = 4;
+      const totalSteps = stepCount * 0.5;
+      for (let i = -stepCount; i <= stepCount; i += 1) {
+        const step = i * 0.5;
+        const ratio = (step + totalSteps) / (totalSteps * 2);
+        const tickX = meterX + ratio * meterW;
+        const isMajor = i % 2 === 0;
+        const tickH = isMajor ? 10 : 6;
+        ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+        ctx.beginPath();
+        ctx.moveTo(tickX, meterY - tickH);
+        ctx.lineTo(tickX, meterY);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.font = '10px Courier New';
+        ctx.textAlign = 'center';
+        ctx.fillText(step.toFixed(1), tickX, meterY - tickH - 2);
+      }
+      const clamped = clamp(bend.semitones, -2, 2);
+      const knobRatio = (clamped + 2) / 4;
+      const knobX = meterX + knobRatio * meterW;
+      ctx.fillStyle = '#ffe16a';
+      ctx.beginPath();
+      ctx.arc(knobX, meterY + meterH / 2, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = '12px Courier New';
+      ctx.textAlign = 'center';
+      const bendLabel = `${bend.baseLabel} → ${bend.targetLabel} (${bend.displaySemitones >= 0 ? '+' : ''}${bend.displaySemitones} st)`;
+      ctx.fillText(bendLabel, meterX + meterW / 2, meterY + meterH + 18);
+      ctx.restore();
+    }
   }
 
   drawNowPlayingModal(ctx, nowPlaying) {
