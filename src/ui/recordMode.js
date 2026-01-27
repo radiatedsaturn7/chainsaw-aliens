@@ -278,8 +278,11 @@ export default class RecordModeLayout {
         'D-Pad Right: toggle note/chord  Left (hold): sharps/mods',
         'A: 1  A+LB:2  X:3  X+LB:4',
         'Y:5  Y+LB:6  B+LB:7  B:8',
-        'Left+A: sus2  Left+X: sus4  Left+Y: dom7  Left+B: dim',
-        'RB: add9 (chord) / octave (note)  LT: sustain  RT: volume',
+        'LB+A: sus2  LB+X: sus4  LB+Y: diatonic 7  LB+B: add9',
+        'D-Left+A: dim  D-Left+X: m7♭5  D-Left+Y: aug  D-Left+B: 7♭9/7♯9',
+        'LB+D-Left+A: m6  LB+D-Left+X: dim7',
+        'LB+D-Left+Y: aug maj7  LB+D-Left+B: m9♭5',
+        'RB: octave up  LT: sustain  RT: volume',
         'Right Stick: pitch bend (± whole tone)',
         'L3: scale selector  R3: root selector'
       ];
