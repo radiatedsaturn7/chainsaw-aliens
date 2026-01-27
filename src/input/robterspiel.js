@@ -2,6 +2,7 @@ const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const LEFT_STICK_DEADZONE = 0.35;
 const STICK_NEUTRAL_DEADZONE = 0.08;
 const PITCH_BEND_RANGE_SEMITONES = 2;
+const NOTE_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 const DIRECTION_MAP = [
   { id: 1, angle: 270 },
@@ -25,6 +26,13 @@ const mapDirection = (x, y) => {
     return diff < closest.diff ? { diff, id: candidate.id } : closest;
   }, { diff: Infinity, id: 1 });
   return entry.id;
+};
+
+const formatPitchLabel = (pitch) => {
+  const normalized = Math.round(pitch ?? 0);
+  const label = NOTE_LABELS[((normalized % 12) + 12) % 12];
+  const octave = Math.floor(normalized / 12) - 1;
+  return `${label}${octave}`;
 };
 
 export default class RobterspielInput {
@@ -292,6 +300,10 @@ export default class RobterspielInput {
         if (isPressed && !wasPressed) {
           let pitches = [];
           const velocity = clamp(Math.round((1 - rtValue) * 127), 1, 127);
+          let displayLabel = '';
+          let displayDetail = '';
+          let displayType = isChordMode ? 'chord' : 'note';
+          let displayRootPitch = null;
           if (!isChordMode) {
             const degree = lbPressed ? button.passing : button.base;
             const degreeOffset = degree - 1;
@@ -304,6 +316,8 @@ export default class RobterspielInput {
               pitch += 12;
             }
             pitches = [pitch];
+            displayLabel = formatPitchLabel(pitch);
+            displayDetail = `Degree ${targetDegree}`;
           } else {
             let variant = 'triad';
             let suspension = null;
@@ -336,15 +350,44 @@ export default class RobterspielInput {
             if (addNinthChord) {
               pitches = addNinth(pitches, targetDegree - 1);
             }
+            displayRootPitch = this.getPitchForScaleStep(targetDegree - 1);
+            const rootLabel = formatPitchLabel(displayRootPitch);
+            const suffixParts = [];
+            if (variant === 'diminished') {
+              suffixParts.push('dim');
+            } else if (variant === 'dominant') {
+              suffixParts.push('7');
+            } else if (variant === 'seventh') {
+              suffixParts.push('7');
+            } else if (variant === 'power') {
+              suffixParts.push('5');
+            } else if (variant === 'open') {
+              suffixParts.push('open');
+            } else if (variant === 'add9') {
+              suffixParts.push('add9');
+            }
+            if (suspension) {
+              suffixParts.push(suspension);
+            }
+            if (addNinthChord && !suffixParts.includes('add9')) {
+              suffixParts.push('add9');
+            }
+            const suffix = suffixParts.length ? ` ${suffixParts.join(' ')}` : '';
+            displayLabel = `${rootLabel}${suffix}`;
+            displayDetail = pitches.map((pitch) => formatPitchLabel(pitch)).join(' ');
           }
           const noteIds = pitches.map((pitch, idx) => {
             const noteId = `pad-${button.index}-${pitch}-${now}-${idx}`;
             this.bus.emit('noteon', {
               id: noteId,
               pitch,
-              previewPitch: pitch + this.pitchBendSemitones,
+              previewPitch: pitch,
               velocity,
-              source: 'gamepad'
+              source: 'gamepad',
+              displayLabel,
+              displayDetail,
+              displayType,
+              displayRootPitch
             });
             return noteId;
           });

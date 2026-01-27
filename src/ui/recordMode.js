@@ -83,7 +83,14 @@ export default class RecordModeLayout {
     return this.bounds;
   }
 
-  draw(ctx, { showGamepadHints, isPlaying, isRecording, selector }) {
+  draw(ctx, {
+    showGamepadHints,
+    isPlaying,
+    isRecording,
+    selector,
+    stickIndicators,
+    nowPlaying
+  }) {
     const { instrument } = this.bounds;
     if (!instrument) return;
 
@@ -105,6 +112,8 @@ export default class RecordModeLayout {
       this.drawRadialSelector(ctx, selector);
     }
 
+    this.drawStickIndicators(ctx, stickIndicators);
+    this.drawNowPlayingModal(ctx, nowPlaying);
     this.drawInstrumentModal(ctx);
 
     ctx.restore();
@@ -277,6 +286,67 @@ export default class RecordModeLayout {
     lines.forEach((line, index) => {
       ctx.fillText(line, instrument.x + 24, instrument.y + 100 + index * 20);
     });
+  }
+
+  drawStickIndicators(ctx, stickIndicators) {
+    if (!stickIndicators) return;
+    const { instrument } = this.bounds;
+    if (!instrument) return;
+    const radius = 26;
+    const insetX = 80;
+    const baseY = instrument.y + instrument.h - 80;
+    const leftX = instrument.x + insetX;
+    const rightX = instrument.x + instrument.w - insetX;
+    const drawStick = (centerX, centerY, stick, label) => {
+      if (!stick?.active) return;
+      const knobX = centerX + clamp(stick.x, -1, 1) * radius * 0.6;
+      const knobY = centerY + clamp(stick.y, -1, 1) * radius * 0.6;
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = '#ffe16a';
+      ctx.beginPath();
+      ctx.arc(knobX, knobY, radius * 0.35, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = '12px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, centerX, centerY + radius + 18);
+      ctx.restore();
+    };
+    drawStick(leftX, baseY, stickIndicators.left, 'Left Stick');
+    drawStick(rightX, baseY, stickIndicators.right, 'Right Stick');
+  }
+
+  drawNowPlayingModal(ctx, nowPlaying) {
+    if (!nowPlaying?.active) return;
+    const { instrument } = this.bounds;
+    if (!instrument) return;
+    const modalW = Math.min(520, instrument.w - 40);
+    const modalH = 130;
+    const modalX = instrument.x + (instrument.w - modalW) / 2;
+    const modalY = instrument.y + (instrument.h - modalH) / 2;
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+    ctx.fillRect(modalX, modalY, modalW, modalH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(modalX, modalY, modalW, modalH);
+    ctx.fillStyle = '#ffe16a';
+    ctx.font = '28px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText(nowPlaying.label, modalX + modalW / 2, modalY + 52);
+    if (nowPlaying.detail) {
+      ctx.fillStyle = '#fff';
+      ctx.font = '14px Courier New';
+      ctx.fillText(nowPlaying.detail, modalX + modalW / 2, modalY + 88);
+    }
+    ctx.restore();
   }
 
   drawRadialSelector(ctx, selector) {
