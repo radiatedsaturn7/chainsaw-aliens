@@ -12,11 +12,12 @@ const COMPASS_LABELS = [
 ];
 
 export default class ControllerStateHUD {
-  drawModePill(ctx, width, mode) {
+  drawModePill(ctx, width, mode, options = {}) {
     const pillW = 220;
     const pillH = 36;
     const pillX = width / 2 - pillW / 2;
     const pillY = 24;
+    const noteLabel = options.noteLabel ?? 'NOTE';
     ctx.save();
     ctx.fillStyle = 'rgba(8,14,24,0.8)';
     ctx.fillRect(pillX, pillY, pillW, pillH);
@@ -33,7 +34,7 @@ export default class ControllerStateHUD {
     ctx.font = 'bold 16px Courier New';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('NOTE', pillX + halfW / 2, pillY + pillH / 2);
+    ctx.fillText(noteLabel, pillX + halfW / 2, pillY + pillH / 2);
     ctx.fillText('CHORD', pillX + halfW + halfW / 2, pillY + pillH / 2);
     ctx.restore();
   }
@@ -167,29 +168,108 @@ export default class ControllerStateHUD {
       octaveOffset,
       requiredOctaveOffset,
       mappings,
-      compact
+      compact,
+      instrument
     } = state;
 
     if (mode && mode !== 'drum') {
-      this.drawModePill(ctx, width, mode);
+      const noteLabel = instrument === 'piano' || instrument === 'guitar' ? 'ARP' : 'NOTE';
+      this.drawModePill(ctx, width, mode, { noteLabel });
     }
 
-    const baseX = 40;
-    const baseY = height - 140;
-    const radius = 36;
+    const baseX = width - 260;
+    const baseY = 80;
+    const rowH = 24;
+    const rowW = 220;
+    const labelX = baseX + 10;
+    const valueX = baseX + rowW - 10;
+    const directionLabels = {
+      1: 'N',
+      2: 'NE',
+      3: 'E',
+      4: 'SE',
+      5: 'S',
+      6: 'SW',
+      7: 'W',
+      8: 'NW'
+    };
+    const stickLabel = directionLabels[targetDirection] || `${targetDirection ?? ''}`;
+    const showStick = Number.isFinite(targetDirection) && targetDirection !== stickDir;
+    const showOctave = Number.isFinite(requiredOctaveOffset) && requiredOctaveOffset !== octaveOffset;
+    const mappingByButton = (mappings || []).reduce((acc, entry) => {
+      acc[entry.button] = entry.label;
+      return acc;
+    }, {});
+    const rows = [];
 
-    this.drawCompass(ctx, baseX + radius, baseY, radius, stickDir || degree, targetDirection);
-    ctx.save();
-    ctx.fillStyle = '#d7f2ff';
-    ctx.font = '12px Courier New';
-    ctx.textAlign = 'left';
-    ctx.fillText(`Degree ${degree}`, baseX + radius * 2 + 12, baseY - 8);
-    ctx.restore();
-
-    if (!compact) {
-      this.drawModifiers(ctx, baseX + radius * 2 + 12, baseY + 12, modifiers);
-      this.drawOctaveMeter(ctx, baseX + radius * 2 + 12, baseY + 50, 64, octaveOffset, -2, 2, requiredOctaveOffset);
-      this.drawMappings(ctx, baseX + radius * 2 + 72, baseY + 44, mappings);
+    if (showOctave) {
+      rows.push({
+        label: 'D-Pad Octave',
+        value: `Now ${octaveOffset >= 0 ? '+' : ''}${octaveOffset} → ${requiredOctaveOffset >= 0 ? '+' : ''}${requiredOctaveOffset}`,
+        highlight: true
+      });
     }
+
+    rows.push({
+      label: 'D-Pad Left',
+      value: modifiers.dleft ? 'On' : 'Off',
+      active: modifiers.dleft
+    });
+    rows.push({
+      label: 'LB',
+      value: modifiers.lb ? 'On' : 'Off',
+      active: modifiers.lb
+    });
+
+    if (showStick) {
+      rows.push({
+        label: 'L-Stick Dir',
+        value: stickLabel,
+        highlight: true
+      });
+    }
+
+    ['A', 'X', 'Y', 'B'].forEach((button) => {
+      rows.push({
+        label: button,
+        value: mappingByButton[button] || '--'
+      });
+    });
+
+    rows.push({
+      label: 'RB',
+      value: modifiers.rb ? 'On' : 'Off',
+      active: modifiers.rb
+    });
+
+    if (compact) {
+      rows.splice(5, 0, {
+        label: 'Degree',
+        value: `${degree}`
+      });
+    }
+
+    rows.forEach((row, index) => {
+      const rowY = baseY + index * (rowH + 6);
+      ctx.save();
+      const bg = row.highlight
+        ? 'rgba(255,225,120,0.2)'
+        : row.active
+          ? 'rgba(255,220,120,0.18)'
+          : 'rgba(20,30,40,0.6)';
+      ctx.fillStyle = bg;
+      ctx.fillRect(baseX, rowY, rowW, rowH);
+      ctx.strokeStyle = 'rgba(140,200,255,0.45)';
+      ctx.strokeRect(baseX, rowY, rowW, rowH);
+      ctx.font = '12px Courier New';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#d7f2ff';
+      ctx.fillText(row.label, labelX, rowY + rowH / 2);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = row.highlight ? '#ffe16a' : row.active ? '#ffe9b0' : '#d7f2ff';
+      ctx.fillText(row.value, valueX, rowY + rowH / 2);
+      ctx.restore();
+    });
   }
 }

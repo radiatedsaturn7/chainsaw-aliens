@@ -39,8 +39,19 @@ const WRONG_GHOST_DURATION = 0.7;
 const MAX_NOTE_SIZE = 1.5;
 const MAX_HIGHWAY_ZOOM = 2;
 const REQUIRED_OCTAVE_OFFSET = 0;
+const STICK_DIRECTION_LABELS = {
+  1: 'N',
+  2: 'NE',
+  3: 'E',
+  4: 'SE',
+  5: 'S',
+  6: 'SW',
+  7: 'W',
+  8: 'NW'
+};
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const getStickDirectionLabel = (degree) => STICK_DIRECTION_LABELS[degree] || `${degree ?? ''}`;
 
 const radialIndexFromStick = (x, y, count) => {
   if (!count) return 0;
@@ -871,9 +882,16 @@ export default class RobterSession {
         event.requiredInput
       );
       event.expectedAction = expectedAction;
-      event.primaryLabel = event.requiredInput?.button || NOTE_LANES[event.lane] || '';
-      event.secondaryLabel = expectedAction?.label || event.displayLabel || '';
       event.noteKind = event.requiredInput?.mode === 'note' ? 'note' : event.requiredInput?.mode === 'drum' ? 'drum' : 'chord';
+      if (this.instrument === 'drums') {
+        event.primaryLabel = event.requiredInput?.button || NOTE_LANES[event.lane] || '';
+        event.secondaryLabel = expectedAction?.label || event.displayLabel || '';
+        return;
+      }
+      event.primaryLabel = '';
+      event.secondaryLabel = '';
+      event.sideLabel = expectedAction?.label || event.displayLabel || '';
+      event.stickLabel = getStickDirectionLabel(event.requiredInput?.degree);
     });
     this.trackEventIndex = INSTRUMENTS.reduce((acc, instrument) => {
       acc[instrument] = 0;
@@ -1913,7 +1931,6 @@ export default class RobterSession {
     const modifiers = this.getModifierState();
     const nextEvent = this.getNextPendingEvent();
     const targetDegree = nextEvent?.requiredInput?.degree;
-    const targetDirectionAngle = Number.isFinite(targetDegree) ? this.getDegreeAngle(targetDegree) : null;
     const requiredOctaveOffset = REQUIRED_OCTAVE_OFFSET;
     const mappings = NOTE_LANES.map((button) => {
       const chordType = this.getChordTypeForButton(button, modifiers);
@@ -1942,14 +1959,8 @@ export default class RobterSession {
       octaveOffset: this.octaveOffset,
       requiredOctaveOffset,
       mappings,
-      compact: this.hudSettings.inputHud === 'compact'
-    });
-
-    this.drawStickIndicators(ctx, width, height, {
-      baseY: height - 60,
-      forceLeft: this.hudSettings.inputHud === 'compact',
-      targetLeftAngle: targetDirectionAngle,
-      targetLeftLabel: targetDirectionAngle != null ? 'Next' : null
+      compact: this.hudSettings.inputHud === 'compact',
+      instrument: this.instrument
     });
 
     if (this.debugShowInputs) {

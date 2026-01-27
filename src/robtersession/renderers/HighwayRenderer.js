@@ -197,6 +197,8 @@ export default class HighwayRenderer {
   drawNotes(ctx, events, layout, songTime, settings, laneColors, mode) {
     const { startX, laneWidth, laneGap, hitLineY } = layout;
     const visibleWindow = 4.4;
+    const showPitchLabel = settings.labelMode !== 'buttons';
+    const showStickLabel = settings.labelMode !== 'pitch';
     events.forEach((event) => {
       const timeToHit = event.timeSec - songTime;
       if (timeToHit < -0.4 || timeToHit > visibleWindow) return;
@@ -227,6 +229,45 @@ export default class HighwayRenderer {
         sustainLength,
         hitGlow: event.autoHit
       });
+
+      if (showStickLabel && event.stickLabel) {
+        const stickSize = Math.max(18, noteHeight * 0.5);
+        const stickX = Math.max(12, noteX - stickSize - 8);
+        const stickY = noteY + noteHeight / 2 - stickSize / 2;
+        ctx.save();
+        ctx.fillStyle = 'rgba(8,12,20,0.7)';
+        ctx.fillRect(stickX, stickY, stickSize, stickSize);
+        ctx.strokeStyle = 'rgba(140,200,255,0.45)';
+        ctx.strokeRect(stickX, stickY, stickSize, stickSize);
+        ctx.fillStyle = '#ffe16a';
+        ctx.font = `bold ${Math.max(10, stickSize * 0.5)}px Courier New`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(event.stickLabel, stickX + stickSize / 2, stickY + stickSize / 2);
+        ctx.restore();
+      }
+
+      if (showPitchLabel && event.sideLabel) {
+        const labelText = event.sideLabel;
+        const labelX = startX + layout.totalWidth + 18;
+        const labelY = noteY + noteHeight / 2;
+        ctx.save();
+        ctx.font = `bold ${Math.max(12, noteHeight * 0.45)}px Courier New`;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        const metrics = ctx.measureText(labelText);
+        const paddingX = 8;
+        const paddingY = 4;
+        const boxW = metrics.width + paddingX * 2;
+        const boxH = Math.max(18, noteHeight * 0.55);
+        ctx.fillStyle = 'rgba(8,12,20,0.7)';
+        ctx.fillRect(labelX, labelY - boxH / 2, boxW, boxH);
+        ctx.strokeStyle = 'rgba(140,200,255,0.45)';
+        ctx.strokeRect(labelX, labelY - boxH / 2, boxW, boxH);
+        ctx.fillStyle = '#d7f2ff';
+        ctx.fillText(labelText, labelX + paddingX, labelY + paddingY / 2);
+        ctx.restore();
+      }
     });
   }
 }
