@@ -5,9 +5,10 @@ import {
   LANE_LABELS,
   MODE_LIBRARY,
   ROOT_LABELS,
-  SETS
+  DEFAULT_SETS
 } from './constants.js';
-import { buildRandomName, generateSongData } from './songGenerator.js';
+import { buildRandomName, generateSongData, mapDifficultyToTierNumber, mapTierToDifficulty } from './songGenerator.js';
+import { buildSetlistSets, loadSetlistData } from './setlistLoader.js';
 import { getModeToggle, getOctaveShift, getPauseTrigger, getStarPowerTrigger, matchesRequiredInput, normalizeRobterInput } from './inputNormalizer.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -202,7 +203,26 @@ export default class RobterSession {
     this.robterspiel = new RobterspielInput(this.inputBus);
     this.robterspielNotes = new Set();
     this.robterspiel.setEnabled(true);
+    this.setlistSets = DEFAULT_SETS;
+    this.setlistLoaded = false;
+    this.setlistLoadError = null;
+    this.setlistLoadPromise = this.loadSetlistData();
     this.registerInputBus();
+  }
+
+  async loadSetlistData() {
+    try {
+      const setlist = await loadSetlistData();
+      const sets = buildSetlistSets(setlist, mapDifficultyToTierNumber);
+      if (sets.length) {
+        this.setlistSets = sets;
+      }
+      this.setlistLoaded = true;
+      this.setlistLoadError = null;
+    } catch (error) {
+      this.setlistLoadError = error;
+      this.setlistLoaded = true;
+    }
   }
 
   loadRandomSeed() {
@@ -837,7 +857,9 @@ export default class RobterSession {
       name: songName,
       tier,
       instrument: this.instrument,
-      allowModeChange
+      allowModeChange,
+      difficulty: this.songMeta.difficulty,
+      schema: this.songMeta.schema
     });
     this.scaleSelection = {
       scaleIndex: 0,
@@ -923,7 +945,7 @@ export default class RobterSession {
       progress.bestGrades[key] = grade;
     }
     if (!this.songMeta.random && this.songMeta.setIndex + 1 >= progress.unlockedSets) {
-      progress.unlockedSets = Math.min(SETS.length, this.songMeta.setIndex + 2);
+      progress.unlockedSets = Math.min(this.setlistSets.length, this.songMeta.setIndex + 2);
     }
     saveProgress(progress);
     this.state = 'results';
@@ -1537,7 +1559,7 @@ export default class RobterSession {
 
   getSetlistEntries() {
     const entries = [];
-    SETS.forEach((set, setIndex) => {
+    this.setlistSets.forEach((set, setIndex) => {
       set.songs.forEach((song, songIndex) => {
         const locked = setIndex + 1 > this.progress.unlockedSets;
         entries.push({
@@ -1545,7 +1567,7 @@ export default class RobterSession {
           setIndex,
           songIndex,
           setTitle: set.title,
-          tier: set.tier,
+          tier: song.difficulty ? mapDifficultyToTierNumber(song.difficulty) : set.tier,
           locked,
           random: false
         });
@@ -1558,6 +1580,7 @@ export default class RobterSession {
       setIndex: -1,
       songIndex: -1,
       tier: Math.min(7, this.progress.unlockedSets),
+      difficulty: mapTierToDifficulty(Math.min(7, this.progress.unlockedSets)),
       hint: 'A fresh deterministic chart from your saved random seed.',
       setTitle: 'Random',
       locked: false
@@ -1670,7 +1693,9 @@ export default class RobterSession {
         name: songName,
         tier: this.songMeta.tier,
         instrument: this.instrument,
-        allowModeChange: this.songMeta.tier >= 7
+        allowModeChange: this.songMeta.tier >= 7,
+        difficulty: this.songMeta.difficulty,
+        schema: this.songMeta.schema
       });
     }
     ctx.save();
