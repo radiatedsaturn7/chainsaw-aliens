@@ -421,7 +421,7 @@ export default class RobterSession {
         stickDir: this.robterspiel.leftStickStableDirection || this.degree
       }, inputEvent);
       const inputLabel = inputAction?.label || this.getInputLabel(normalized);
-      const hitResult = this.tryHit(normalized);
+      const hitResult = this.tryHit(normalized, inputAction);
       if (hitResult.hit) {
         this.registerButtonPulse(normalized.button);
       }
@@ -939,7 +939,18 @@ export default class RobterSession {
     });
   }
 
-  tryHit(normalized) {
+  actionsMatch(playedAction, expectedAction) {
+    if (!playedAction || !expectedAction) return false;
+    if (playedAction.kind !== expectedAction.kind) return false;
+    const playedPitches = (playedAction.pitches || []).map((pitch) => Math.round(pitch));
+    const expectedPitches = (expectedAction.pitches || []).map((pitch) => Math.round(pitch));
+    if (playedPitches.length !== expectedPitches.length || !playedPitches.length) return false;
+    playedPitches.sort((a, b) => a - b);
+    expectedPitches.sort((a, b) => a - b);
+    return playedPitches.every((pitch, index) => pitch === expectedPitches[index]);
+  }
+
+  tryHit(normalized, inputAction = null) {
     const timing = this.songData.timing;
     const window = timing.good;
     const match = this.events
@@ -954,7 +965,7 @@ export default class RobterSession {
         required: candidate.event.requiredInput,
         normalized,
         mode: this.mode
-      }))?.event;
+      }) || this.actionsMatch(inputAction, candidate.event.expectedAction))?.event;
     if (!match) return { hit: false };
     const diff = Math.abs(match.timeSec - this.songTime);
     const judgement = diff <= timing.great ? 'great' : 'good';
