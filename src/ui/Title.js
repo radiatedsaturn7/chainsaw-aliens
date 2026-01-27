@@ -3,7 +3,7 @@ export default class Title {
     this.timer = 0;
     this.screen = 'intro';
     this.transition = null;
-    this.menuOrder = ['campaign', 'endless', 'tools', 'options'];
+    this.menuOrder = ['campaign', 'robtersession', 'endless', 'tools', 'options'];
     this.toolsOrder = [
       'level-editor',
       'pixel-editor',
@@ -210,6 +210,8 @@ export default class Title {
       ctx.font = '18px Courier New';
       const label = action === 'campaign'
         ? 'Campaign'
+        : action === 'robtersession'
+          ? 'RobterSESSION'
         : action === 'endless'
           ? 'Endless Mode'
           : action === 'tools'

@@ -43,6 +43,7 @@ import MobileControls from '../ui/MobileControls.js';
 import PixelStudio from '../ui/PixelStudio.js';
 import MidiComposer from '../ui/MidiComposer.js';
 import MidiSongPlayer from './MidiSongPlayer.js';
+import RobterSession from '../robtersession/RobterSession.js';
 import TestHarness from '../debug/TestHarness.js';
 import Validator from '../debug/Validator.js';
 import ConsoleOverlay from '../debug/ConsoleOverlay.js';
@@ -302,6 +303,7 @@ export default class Game {
     this.editor = new Editor(this);
     this.pixelStudio = new PixelStudio(this);
     this.midiComposer = new MidiComposer(this);
+    this.robterSession = new RobterSession({ input: this.input, audio: this.audio });
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
     this.midiComposerReturnState = 'title';
@@ -1212,6 +1214,16 @@ export default class Game {
       return;
     }
 
+    if (this.state === 'robtersession') {
+      this.robterSession.update(dt);
+      if (this.robterSession.state === 'exit') {
+        this.robterSession.enter();
+        this.state = 'title';
+      }
+      this.input.flush();
+      return;
+    }
+
     if (this.state === 'pixel-preview') {
       if (this.input.wasPressed('attack') || this.input.wasPressed('interact')) {
         this.exitPixelPreview();
@@ -1357,6 +1369,9 @@ export default class Game {
           this.title.setScreen('tools');
         } else if (action === 'endless') {
           this.startEndlessMode();
+        } else if (action === 'robtersession') {
+          this.robterSession.enter();
+          this.state = 'robtersession';
         } else {
           if (this.gameMode !== 'story' && this.storyData) {
             this.gameMode = 'story';
@@ -4772,6 +4787,11 @@ export default class Game {
       return;
     }
 
+    if (this.state === 'robtersession') {
+      this.robterSession.draw(ctx, canvas.width, canvas.height);
+      return;
+    }
+
     const shakeX = this.shakeTimer > 0 ? (Math.random() - 0.5) * this.shakeMagnitude : 0;
     const shakeY = this.shakeTimer > 0 ? (Math.random() - 0.5) * this.shakeMagnitude : 0;
 
@@ -5995,6 +6015,10 @@ export default class Game {
         this.audio.ui();
       }
     }
+    if (this.state === 'robtersession') {
+      this.robterSession.handleClick(x, y);
+      return;
+    }
     if (this.state === 'title' && !this.testDashboard.visible) {
       if (this.title.screen === 'intro') {
         this.title.setScreen('main');
@@ -6048,6 +6072,12 @@ export default class Game {
         this.audio.ui();
         return;
       }
+      if (action === 'robtersession') {
+        this.robterSession.enter();
+        this.state = 'robtersession';
+        this.audio.ui();
+        return;
+      }
       if (action === 'campaign') {
         if (this.gameMode !== 'story' && this.storyData) {
           this.gameMode = 'story';
@@ -6065,6 +6095,10 @@ export default class Game {
   handlePointerDown(payload) {
     if (this.state === 'pixel-preview') {
       this.exitPixelPreview();
+      return;
+    }
+    if (this.state === 'robtersession') {
+      this.robterSession.handleClick(payload.x, payload.y);
       return;
     }
     if (this.state === 'editor') {
@@ -6231,6 +6265,14 @@ export default class Game {
       }
       if (action === 'endless') {
         this.startEndlessMode();
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
+      if (action === 'robtersession') {
+        this.robterSession.enter();
+        this.state = 'robtersession';
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
