@@ -2171,6 +2171,10 @@ export default class MidiComposer {
     if (!this.recordModeActive) return;
     const { track } = this.getRecordingTarget();
     if (!track) return;
+    if (event?.controller === 7) {
+      const normalized = clamp((event.value ?? 127) / 127, 0, 1);
+      this.game?.audio?.setMidiVolume?.(normalized);
+    }
     this.recorder.recordCC({
       controller: event.controller,
       value: event.value,

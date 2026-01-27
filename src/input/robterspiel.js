@@ -53,6 +53,7 @@ export default class RobterspielInput {
     this.selectorActive = false;
     this.lastPitchBend = 8192;
     this.lastSustainValue = 0;
+    this.lastVolumeValue = 127;
     this.sustainActive = false;
     this.sustainedNotes = new Set();
     this.rightStick = { x: 0, y: 0 };
@@ -165,6 +166,7 @@ export default class RobterspielInput {
     const axisRY = pad.axes?.[3] ?? 0;
     const ltValue = pad.buttons?.[6]?.value ?? 0;
     const rtValue = pad.buttons?.[7]?.value ?? 0;
+    const volumeValue = clamp(Math.round((1 - rtValue) * 127), 0, 127);
     const currentButtons = pad.buttons.map((button) => Boolean(button.pressed || button.value > 0.5));
     const dpadUp = currentButtons[12];
     const dpadDown = currentButtons[13];
@@ -224,6 +226,11 @@ export default class RobterspielInput {
       }
     }
 
+    if (Math.abs(volumeValue - this.lastVolumeValue) > 1) {
+      this.bus.emit('cc', { controller: 7, value: volumeValue, source: 'gamepad' });
+      this.lastVolumeValue = volumeValue;
+    }
+
     this.buttonPressed.clear();
     this.buttonReleased.clear();
     currentButtons.forEach((pressed, index) => {
@@ -254,7 +261,7 @@ export default class RobterspielInput {
         const isPressed = Boolean(currentButtons[button.index]);
         const wasPressed = Boolean(this.prevButtons[button.index]);
         if (isPressed && !wasPressed) {
-          const velocity = 110;
+          const velocity = clamp(volumeValue, 1, 127);
           const noteId = `pad-drum-${button.index}-${button.pitch}-${now}`;
           this.bus.emit('noteon', {
             id: noteId,
@@ -299,7 +306,7 @@ export default class RobterspielInput {
         const wasPressed = Boolean(this.prevButtons[button.index]);
         if (isPressed && !wasPressed) {
           let pitches = [];
-          const velocity = clamp(Math.round((1 - rtValue) * 127), 1, 127);
+          const velocity = clamp(volumeValue, 1, 127);
           let displayLabel = '';
           let displayDetail = '';
           let displayType = isChordMode ? 'chord' : 'note';

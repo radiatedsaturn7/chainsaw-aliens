@@ -133,6 +133,14 @@ export default class AudioSystem {
     });
   }
 
+  setMidiVolume(value = 1) {
+    const nextValue = clamp(Number(value) || 0, 0, 1);
+    this.ensureMidiSampler();
+    if (this.midiBus?.gain) {
+      this.midiBus.gain.value = nextValue;
+    }
+  }
+
   loadStoredSoundfontUrl() {
     try {
       const stored = localStorage.getItem('chainsaw-gm-soundfont-url');
@@ -851,7 +859,7 @@ export default class AudioSystem {
       if (source?.stop) return () => source.stop();
       return null;
     };
-    const audioNode = voice?.audioBufferSourceNode || source || null;
+    const audioNode = voice?.audioBufferSourceNode || voice?.source || source || null;
     const basePlaybackRate = audioNode?.playbackRate?.value ?? 1;
     const entry = { source, gain, stopTime, stop: resolveStop(), voice, audioNode, basePlaybackRate };
     if (audioNode?.playbackRate && this.midiPitchBendSemitones) {
