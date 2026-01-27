@@ -143,7 +143,7 @@ export default class HighwayRenderer {
     ctx.restore();
   }
 
-  drawHitLine(ctx, layout, highlight, octaveLineY) {
+  drawHitLine(ctx, layout, highlight, octaveLineY, mode) {
     const { startX, totalWidth, hitLineY } = layout;
     ctx.save();
     const glassGradient = ctx.createLinearGradient(startX, hitLineY - 8, startX, hitLineY + 8);
@@ -153,11 +153,22 @@ export default class HighwayRenderer {
     ctx.fillStyle = glassGradient;
     ctx.fillRect(startX - 40, hitLineY - 6, totalWidth + 80, 12);
     ctx.strokeStyle = 'rgba(200,245,255,0.9)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(startX - 40, hitLineY);
-    ctx.lineTo(startX + totalWidth + 40, hitLineY);
-    ctx.stroke();
+    if (mode === 'chord') {
+      const offsets = [-6, 0, 6];
+      ctx.lineWidth = 2;
+      offsets.forEach((offset) => {
+        ctx.beginPath();
+        ctx.moveTo(startX - 40, hitLineY + offset);
+        ctx.lineTo(startX + totalWidth + 40, hitLineY + offset);
+        ctx.stroke();
+      });
+    } else {
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(startX - 40, hitLineY);
+      ctx.lineTo(startX + totalWidth + 40, hitLineY);
+      ctx.stroke();
+    }
 
     if (highlight) {
       ctx.strokeStyle = 'rgba(255,255,255,0.65)';

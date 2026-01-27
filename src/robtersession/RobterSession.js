@@ -36,6 +36,9 @@ const SCALE_SELECTOR_THRESHOLD = 0.6;
 const SCALE_SELECTOR_RELEASE = 0.3;
 const SCALE_PROMPT_SPEED = 0.9;
 const WRONG_GHOST_DURATION = 0.7;
+const MAX_NOTE_SIZE = 1.5;
+const MAX_HIGHWAY_ZOOM = 2;
+const REQUIRED_OCTAVE_OFFSET = 0;
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
@@ -63,8 +66,8 @@ const defaultProgress = () => ({
 });
 
 const defaultHudSettings = () => ({
-  noteSize: 1.1,
-  highwayZoom: 1.2,
+  noteSize: MAX_NOTE_SIZE,
+  highwayZoom: MAX_HIGHWAY_ZOOM,
   labelMode: 'both',
   inputHud: 'full',
   ghostNotes: true
@@ -76,8 +79,8 @@ const loadHudSettings = () => {
     if (!raw) return defaultHudSettings();
     const parsed = JSON.parse(raw);
     return {
-      noteSize: parsed.noteSize ?? 1.1,
-      highwayZoom: parsed.highwayZoom ?? 1.2,
+      noteSize: MAX_NOTE_SIZE,
+      highwayZoom: MAX_HIGHWAY_ZOOM,
       labelMode: parsed.labelMode ?? 'both',
       inputHud: parsed.inputHud ?? 'full',
       ghostNotes: parsed.ghostNotes ?? true
@@ -132,6 +135,7 @@ export default class RobterSession {
       scaleConfirmed: false,
       rootConfirmed: false
     };
+    this.octaveOffset = REQUIRED_OCTAVE_OFFSET;
     this.scaleSelector = {
       active: false,
       type: null,
@@ -206,6 +210,13 @@ export default class RobterSession {
     this.songMeta = null;
     this.robterspielNotes.forEach((id) => this.audio.stopLiveGmNote?.(id));
     this.robterspielNotes.clear();
+    this.scaleSelection = {
+      scaleIndex: 0,
+      rootIndex: 0,
+      scaleConfirmed: false,
+      rootConfirmed: false
+    };
+    this.octaveOffset = REQUIRED_OCTAVE_OFFSET;
   }
 
   update(dt) {
@@ -451,7 +462,14 @@ export default class RobterSession {
 
     const speed = this.playMode === 'practice' ? this.practiceSpeed : 1;
     const prevTime = this.songTime;
-    this.songTime += dt * speed;
+    let nextTime = this.songTime + dt * speed;
+    if (this.playMode === 'practice') {
+      const pendingEvent = this.getNextPendingEvent();
+      if (pendingEvent && nextTime >= pendingEvent.timeSec && !pendingEvent.hit && !pendingEvent.judged) {
+        nextTime = pendingEvent.timeSec;
+      }
+    }
+    this.songTime = nextTime;
     this.updateTimers(dt);
     this.advanceBandTracks(prevTime, this.songTime);
     this.advanceAutoplay(prevTime, this.songTime);
@@ -519,6 +537,13 @@ export default class RobterSession {
       .map((event) => ({ event, diff: Math.abs(event.timeSec - this.songTime) }))
       .filter((candidate) => candidate.diff <= window)
       .sort((a, b) => a.diff - b.diff)[0]?.event || null;
+  }
+
+  getNextPendingEvent() {
+    if (!this.events?.length) return null;
+    return this.events
+      .filter((event) => !event.hit && !event.judged)
+      .sort((a, b) => a.timeSec - b.timeSec)[0] || null;
   }
 
   advanceAutoplay(prevTime, nextTime) {
@@ -644,6 +669,12 @@ export default class RobterSession {
     };
     const chordSuffix = suffix();
     return chordSuffix ? `${rootLabel} ${chordSuffix}` : rootLabel;
+  }
+
+  getOctaveLabel(offset) {
+    const base = 4;
+    const octave = base + (offset || 0);
+    return `C${octave}`;
   }
 
   getEventLabel(requiredInput) {
@@ -797,13 +828,13 @@ export default class RobterSession {
       instrument: this.instrument,
       allowModeChange
     });
-    const modeIndex = MODE_LIBRARY.findIndex((mode) => mode.name === this.songData.mode.name);
     this.scaleSelection = {
-      scaleIndex: modeIndex >= 0 ? modeIndex : 0,
-      rootIndex: this.songData.root,
+      scaleIndex: 0,
+      rootIndex: 0,
       scaleConfirmed: false,
       rootConfirmed: false
     };
+    this.octaveOffset = REQUIRED_OCTAVE_OFFSET;
     this.scaleSelector = {
       active: false,
       type: null,
@@ -1159,7 +1190,8 @@ export default class RobterSession {
     const scale = MODE_LIBRARY[this.scaleSelection.scaleIndex] || MODE_LIBRARY[0];
     const correctRoot = this.scaleSelection.rootIndex === this.songData.root;
     const correctScale = scale.name === this.songData.mode.name;
-    return this.scaleSelection.rootConfirmed && this.scaleSelection.scaleConfirmed && correctRoot && correctScale;
+    const correctOctave = this.octaveOffset === REQUIRED_OCTAVE_OFFSET;
+    return this.scaleSelection.rootConfirmed && this.scaleSelection.scaleConfirmed && correctRoot && correctScale && correctOctave;
   }
 
   updateScaleState(dt) {
@@ -1168,6 +1200,11 @@ export default class RobterSession {
     this.robterspiel.setInstrument(this.instrument === 'drums' ? 'drums' : 'keyboard');
     this.robterspiel.setSelectorActive(true);
     this.syncRobterspielScale();
+    if (this.robterspiel.connected) {
+      this.octaveOffset = this.robterspiel.octaveOffset;
+    } else {
+      this.octaveOffset = clamp(this.octaveOffset + getOctaveShift(this.input), -2, 2);
+    }
     this.handleScaleInput();
     if (this.instrument === 'drums') return;
     if (this.robterspiel.wasButtonPressed(10)) {
@@ -1356,7 +1393,7 @@ export default class RobterSession {
     const rightX = options.rightX ?? width - 80;
     const baseY = options.baseY ?? height - 110;
 
-    const drawStick = (centerX, centerY, stick, label, active, showDirections) => {
+    const drawStick = (centerX, centerY, stick, label, active, showDirections, targetAngle, targetLabel) => {
       if (!active) return;
       const knobX = centerX + clamp(stick.x, -1, 1) * radius * 0.6;
       const knobY = centerY + clamp(stick.y, -1, 1) * radius * 0.6;
@@ -1376,6 +1413,26 @@ export default class RobterSession {
       ctx.font = '11px Courier New';
       ctx.textAlign = 'center';
       ctx.fillText(label, centerX, centerY + radius + 16);
+      if (Number.isFinite(targetAngle)) {
+        const markerRadius = radius * 0.95;
+        const dx = Math.cos(targetAngle) * markerRadius;
+        const dy = Math.sin(targetAngle) * markerRadius;
+        ctx.strokeStyle = 'rgba(255,225,120,0.9)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(centerX + dx, centerY + dy);
+        ctx.stroke();
+        ctx.fillStyle = '#ffe16a';
+        ctx.beginPath();
+        ctx.arc(centerX + dx, centerY + dy, 4, 0, Math.PI * 2);
+        ctx.fill();
+        if (targetLabel) {
+          ctx.fillStyle = '#ffe16a';
+          ctx.font = '10px Courier New';
+          ctx.fillText(targetLabel, centerX, centerY - radius - 10);
+        }
+      }
       if (showDirections) {
         const markers = [
           { id: 1, angle: 270 },
@@ -1405,8 +1462,26 @@ export default class RobterSession {
       ctx.restore();
     };
 
-    drawStick(leftX, baseY, leftStick, 'Left Stick', leftMagnitude > 0.25 || options.forceLeft, true);
-    drawStick(rightX, baseY, rightStick, 'Right Stick', rightMagnitude > 0.25 || options.forceRight, false);
+    drawStick(
+      leftX,
+      baseY,
+      leftStick,
+      'Left Stick',
+      leftMagnitude > 0.25 || options.forceLeft,
+      true,
+      options.targetLeftAngle,
+      options.targetLeftLabel
+    );
+    drawStick(
+      rightX,
+      baseY,
+      rightStick,
+      'Right Stick',
+      rightMagnitude > 0.25 || options.forceRight,
+      false,
+      options.targetRightAngle,
+      options.targetRightLabel
+    );
 
     if (this.instrument !== 'drums') {
       const meterW = 200;
@@ -1604,6 +1679,9 @@ export default class RobterSession {
     const selectedRoot = ROOT_LABELS[this.scaleSelection.rootIndex];
     const targetMode = this.songData.mode.name;
     const selectedMode = MODE_LIBRARY[this.scaleSelection.scaleIndex]?.name || MODE_LIBRARY[0].name;
+    const targetModeIndex = MODE_LIBRARY.findIndex((mode) => mode.name === targetMode);
+    const targetOctaveLabel = this.getOctaveLabel(REQUIRED_OCTAVE_OFFSET);
+    const selectedOctaveLabel = this.getOctaveLabel(this.octaveOffset);
     const ready = this.isScaleReady();
     const pulse = (Math.sin(this.scalePromptTime * 2) + 1) / 2;
     ctx.save();
@@ -1623,7 +1701,7 @@ export default class RobterSession {
     ctx.fillText('Use Robterspiel to lock in the scale + root.', width / 2, 110);
 
     const cardW = 520;
-    const cardH = 160;
+    const cardH = 190;
     const cardX = width / 2 - cardW / 2;
     const cardY = 150;
     ctx.fillStyle = 'rgba(10,16,24,0.75)';
@@ -1639,6 +1717,7 @@ export default class RobterSession {
     ctx.font = '18px Courier New';
     ctx.fillText(`Root: ${targetRoot}`, cardX + 24, cardY + 70);
     ctx.fillText(`Mode: ${targetMode}`, cardX + 24, cardY + 104);
+    ctx.fillText(`Octave: ${targetOctaveLabel}`, cardX + 24, cardY + 138);
 
     const statusX = cardX + cardW / 2 + 10;
     const rootMatch = selectedRoot === targetRoot;
@@ -1651,6 +1730,9 @@ export default class RobterSession {
     ctx.fillText(`Root: ${selectedRoot}`, statusX, cardY + 70);
     ctx.fillStyle = modeMatch ? '#7dffb6' : '#ff6b6b';
     ctx.fillText(`Mode: ${selectedMode}`, statusX, cardY + 104);
+    const octaveMatch = this.octaveOffset === REQUIRED_OCTAVE_OFFSET;
+    ctx.fillStyle = octaveMatch ? '#7dffb6' : '#ff6b6b';
+    ctx.fillText(`Octave: ${selectedOctaveLabel}`, statusX, cardY + 138);
 
     if (this.songData.modeChange) {
       ctx.fillStyle = '#ffe16a';
@@ -1663,6 +1745,7 @@ export default class RobterSession {
     ctx.fillStyle = 'rgba(215,242,255,0.8)';
     ctx.font = '14px Courier New';
     ctx.fillText('L3: select scale with left stick   |   R3: select root with right stick', width / 2, height - 140);
+    ctx.fillText('D-Pad Up/Down: set octave', width / 2, height - 120);
 
     const promptY = height - 100;
     ctx.fillStyle = ready ? '#7dffb6' : 'rgba(215,242,255,0.65)';
@@ -1704,7 +1787,11 @@ export default class RobterSession {
     this.drawStickIndicators(ctx, width, height, {
       baseY: height - 60,
       forceLeft: true,
-      forceRight: true
+      forceRight: true,
+      targetLeftAngle: this.getRadialAngle(targetModeIndex, MODE_LIBRARY.length),
+      targetRightAngle: this.getRadialAngle(this.songData.root, ROOT_LABELS.length),
+      targetLeftLabel: 'Target',
+      targetRightLabel: 'Target'
     });
 
     ctx.restore();
@@ -1739,7 +1826,7 @@ export default class RobterSession {
     const lanePulse = NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1));
     this.highwayRenderer.drawBeatLines(ctx, layout, this.songTime, beatDuration);
     this.highwayRenderer.drawLanes(ctx, width, height, layout, laneColors, lanes, lanePulse);
-    this.highwayRenderer.drawHitLine(ctx, layout, this.hitGlassTimer > 0, layout.octaveLineY);
+    this.highwayRenderer.drawHitLine(ctx, layout, this.hitGlassTimer > 0, layout.octaveLineY, this.mode);
 
     this.highwayRenderer.drawNotes(ctx, this.events, layout, this.songTime, {
       noteSize: this.hudSettings.noteSize,
@@ -1813,6 +1900,10 @@ export default class RobterSession {
     }
 
     const modifiers = this.getModifierState();
+    const nextEvent = this.getNextPendingEvent();
+    const targetDegree = nextEvent?.requiredInput?.degree;
+    const targetDirectionAngle = Number.isFinite(targetDegree) ? this.getDegreeAngle(targetDegree) : null;
+    const requiredOctaveOffset = REQUIRED_OCTAVE_OFFSET;
     const mappings = NOTE_LANES.map((button) => {
       const chordType = this.getChordTypeForButton(button, modifiers);
       const action = resolveInputToMusicalAction({
@@ -1835,10 +1926,19 @@ export default class RobterSession {
       mode: this.mode,
       degree: this.degree,
       stickDir: this.robterspiel.leftStickStableDirection || this.degree,
+      targetDirection: targetDegree,
       modifiers,
       octaveOffset: this.octaveOffset,
+      requiredOctaveOffset,
       mappings,
       compact: this.hudSettings.inputHud === 'compact'
+    });
+
+    this.drawStickIndicators(ctx, width, height, {
+      baseY: height - 60,
+      forceLeft: this.hudSettings.inputHud === 'compact',
+      targetLeftAngle: targetDirectionAngle,
+      targetLeftLabel: targetDirectionAngle != null ? 'Next' : null
     });
 
     if (this.debugShowInputs) {
@@ -1856,6 +1956,27 @@ export default class RobterSession {
     }
 
     ctx.restore();
+  }
+
+  getRadialAngle(index, count) {
+    if (!Number.isFinite(index) || index < 0 || !count) return null;
+    return (index / count) * Math.PI * 2 - Math.PI / 2;
+  }
+
+  getDegreeAngle(degree) {
+    const mapping = {
+      1: 270,
+      2: 315,
+      3: 0,
+      4: 45,
+      5: 90,
+      6: 135,
+      7: 180,
+      8: 225
+    };
+    const angle = mapping[degree];
+    if (!Number.isFinite(angle)) return null;
+    return (angle * Math.PI) / 180;
   }
 
   drawPause(ctx, width, height) {
@@ -1948,15 +2069,6 @@ export default class RobterSession {
       }
       if (action.type === 'speed') {
         this.practiceSpeed = action.value;
-      }
-      if (action.type === 'slider') {
-        if (action.id === 'noteSize') {
-          this.hudSettings.noteSize = action.value;
-        }
-        if (action.id === 'highwayZoom') {
-          this.hudSettings.highwayZoom = action.value;
-        }
-        saveHudSettings(this.hudSettings);
       }
       return;
     }

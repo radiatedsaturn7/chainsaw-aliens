@@ -114,19 +114,7 @@ export default class SongPreviewScreen {
       this.bounds.speedButtons.push(bounds);
     });
 
-    const sliderW = Math.min(360, width - 80);
-    const sliderH = 18;
-    const sliderX = width / 2 - sliderW / 2;
-    const sliderY = speedY + 70;
-    const noteSizeBounds = { x: sliderX, y: sliderY, w: sliderW, h: sliderH, id: 'noteSize', min: 0.8, max: 1.5 };
-    this.drawSlider(ctx, noteSizeBounds, 'Note Size', settings.noteSize, 0.8, 1.5);
-    this.bounds.sliders.push(noteSizeBounds);
-
-    const zoomBounds = { x: sliderX, y: sliderY + 50, w: sliderW, h: sliderH, id: 'highwayZoom', min: 1, max: 2 };
-    this.drawSlider(ctx, zoomBounds, 'Highway Zoom', settings.highwayZoom, 1, 2);
-    this.bounds.sliders.push(zoomBounds);
-
-    const hudBounds = { x: sliderX, y: sliderY + 96, w: sliderW, h: 28, id: 'inputHud' };
+    const hudBounds = { x: speedLabelX, y: speedY + 48, w: 260, h: 28, id: 'inputHud' };
     this.drawToggle(ctx, hudBounds, `HUD: ${settings.inputHud === 'compact' ? 'Compact' : 'Full'}`, settings.inputHud === 'full');
     this.bounds.toggles.push(hudBounds);
 
@@ -154,14 +142,6 @@ export default class SongPreviewScreen {
     ));
     if (speedHit) return { type: 'speed', value: speedHit.value };
 
-    const sliderHit = this.bounds.sliders.find((slider) => (
-      x >= slider.x && x <= slider.x + slider.w && y >= slider.y && y <= slider.y + slider.h
-    ));
-    if (sliderHit) {
-      const ratio = clamp((x - sliderHit.x) / sliderHit.w, 0, 1);
-      const value = sliderHit.min + ratio * (sliderHit.max - sliderHit.min);
-      return { type: 'slider', id: sliderHit.id, value };
-    }
     return null;
   }
 }
