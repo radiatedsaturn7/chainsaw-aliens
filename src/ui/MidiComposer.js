@@ -556,6 +556,17 @@ export default class MidiComposer {
     this.recordDevicePreference = 'auto';
     this.recordInstrument = 'keyboard';
     this.recordStatus = { degree: 1, octave: 0, velocity: 96 };
+    this.nowPlaying = {
+      active: false,
+      label: '',
+      detail: '',
+      type: 'note'
+    };
+    this.nowPlayingNotes = new Map();
+    this.recordStickIndicators = {
+      left: { x: 0, y: 0, active: false },
+      right: { x: 0, y: 0, active: false }
+    };
     this.singleNoteRecordMode = {
       active: false,
       anchorTick: 0,
@@ -1923,6 +1934,7 @@ export default class MidiComposer {
     const previewPitch = Number.isFinite(event.previewPitch) ? event.previewPitch : pitch;
     this.recordStatus.velocity = clampedVelocity;
     this.playLivePreviewNote(event.id, previewPitch, clampedVelocity, track, track.pan);
+    this.updateNowPlayingDisplay(event, pitch, track);
     this.recordStatus.velocity = clampedVelocity;
   }
 
@@ -1933,6 +1945,7 @@ export default class MidiComposer {
       this.singleNoteRecordMode.awaitingChord = true;
     }
     this.stopLivePreviewNote(event.id);
+    this.clearNowPlayingDisplay(event);
   }
 
   playLivePreviewNote(id, pitch, velocity, track, pan = 0) {
@@ -2099,6 +2112,7 @@ export default class MidiComposer {
     });
     const previewPitch = Number.isFinite(event.previewPitch) ? event.previewPitch : pitch;
     this.playLivePreviewNote(event.id, previewPitch, clampedVelocity, track, track.pan);
+    this.updateNowPlayingDisplay(event, pitch, track);
   }
 
   handleRecordedNoteOff(event) {
@@ -2109,6 +2123,48 @@ export default class MidiComposer {
     }
     this.recorder.recordNoteOff({ id: event.id, time: this.getRecordingTime() });
     this.stopLivePreviewNote(event.id);
+    this.clearNowPlayingDisplay(event);
+  }
+
+  formatPitchLabel(pitch, track) {
+    if (isDrumTrack(track)) {
+      const drumRow = this.getDrumRows().find((row) => row.pitch === pitch);
+      return drumRow?.label || `Drum ${pitch}`;
+    }
+    const normalized = Math.round(pitch ?? 0);
+    const label = NOTE_LABELS[((normalized % 12) + 12) % 12];
+    const octave = this.getOctaveLabel(normalized);
+    return `${label}${octave}`;
+  }
+
+  updateNowPlayingDisplay(event, pitch, track) {
+    if (!event) return;
+    const notePitch = Number.isFinite(pitch) ? pitch : event.pitch;
+    const label = event.displayLabel || this.formatPitchLabel(notePitch, track);
+    const detail = event.displayDetail || '';
+    const type = event.displayType || (isDrumTrack(track) ? 'drum' : 'note');
+    this.nowPlaying = {
+      active: true,
+      label,
+      detail,
+      type
+    };
+    if (event.id) {
+      this.nowPlayingNotes.set(event.id, { label, detail, type });
+    }
+  }
+
+  clearNowPlayingDisplay(event) {
+    if (!event?.id) return;
+    this.nowPlayingNotes.delete(event.id);
+    if (this.nowPlayingNotes.size === 0) {
+      this.nowPlaying = {
+        active: false,
+        label: '',
+        detail: '',
+        type: 'note'
+      };
+    }
   }
 
   handleRecordedCc(event) {
@@ -2182,6 +2238,28 @@ export default class MidiComposer {
 
     this.updateRecordSelectors();
     this.gamepadInput.setSelectorActive(this.recordSelector.active);
+
+    const leftStick = this.gamepadInput.getLeftStick();
+    const rightStick = this.gamepadInput.getRightStick();
+    const leftMagnitude = Math.hypot(leftStick.x, leftStick.y);
+    const rightMagnitude = Math.hypot(rightStick.x, rightStick.y);
+    const leftActive = leftMagnitude > 0.3
+      || (this.recordSelector.active && this.recordSelector.type === 'scale');
+    const rightActive = rightMagnitude > 0.3
+      || (this.recordSelector.active && this.recordSelector.type === 'key');
+    this.recordStickIndicators = {
+      left: { x: leftStick.x, y: leftStick.y, active: leftActive },
+      right: { x: rightStick.x, y: rightStick.y, active: rightActive }
+    };
+
+    const shouldApplyBend = preferred === 'gamepad'
+      && !this.recordSelector.active
+      && this.recordInstrument !== 'drums';
+    if (shouldApplyBend) {
+      this.game?.audio?.setMidiPitchBend?.(this.gamepadInput.getPitchBendSemitones());
+    } else {
+      this.game?.audio?.setMidiPitchBend?.(0);
+    }
 
     this.recordStatus.degree = this.gamepadInput.leftStickStableDirection || this.recordStatus.degree;
     this.recordStatus.octave = this.gamepadInput.octaveOffset;
@@ -5151,7 +5229,9 @@ export default class MidiComposer {
       showGamepadHints: this.recordLayout.device === 'gamepad' && this.gamepadInput.connected,
       isPlaying: this.isPlaying,
       isRecording: this.recorder.isRecording,
-      selector: recordSelector
+      selector: recordSelector,
+      stickIndicators: this.recordStickIndicators,
+      nowPlaying: this.nowPlaying
     });
 
     if (this.fileMenuOpen && this.bounds.fileButton) {
