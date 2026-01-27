@@ -225,10 +225,11 @@ const shouldUseNoteMode = (rng, tier) => {
 };
 
 const shouldUseBassNoteMode = (rng, tier) => {
-  if (tier < 3) return false;
-  if (tier === 3) return rng() < 0.55;
-  if (tier === 4) return rng() < 0.65;
-  return rng() < 0.75;
+  if (tier <= 1) return rng() < 0.92;
+  if (tier === 2) return rng() < 0.94;
+  if (tier === 3) return rng() < 0.95;
+  if (tier === 4) return rng() < 0.96;
+  return rng() < 0.98;
 };
 
 const createStarPhraseMap = (totalBars) => {
