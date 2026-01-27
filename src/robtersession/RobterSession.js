@@ -11,6 +11,17 @@ import { buildRandomName, generateSongData } from './songGenerator.js';
 import { getModeToggle, getOctaveShift, getPauseTrigger, getStarPowerTrigger, matchesRequiredInput, normalizeRobterInput } from './inputNormalizer.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
+import HighwayRenderer from './renderers/HighwayRenderer.js';
+import NoteRenderer from './renderers/NoteRenderer.js';
+import ControllerStateHUD from './renderers/ControllerStateHUD.js';
+import FeedbackSystem from './renderers/FeedbackSystem.js';
+import SongPreviewScreen from './renderers/SongPreviewScreen.js';
+import {
+  describeInputDebug,
+  formatPitchLabel,
+  resolveInputToMusicalAction,
+  resolveRequiredInputToMusicalAction
+} from './inputResolver.js';
 
 const PROGRESS_KEY = 'robtersession-progress';
 const RANDOM_SEED_KEY = 'robtersession-random-seed';
@@ -27,7 +38,6 @@ const SCALE_PROMPT_SPEED = 0.9;
 const WRONG_GHOST_DURATION = 0.7;
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-const lerp = (a, b, t) => a + (b - a) * t;
 
 const radialIndexFromStick = (x, y, count) => {
   if (!count) return 0;
@@ -37,13 +47,7 @@ const radialIndexFromStick = (x, y, count) => {
   return Math.round(normalized / slice) % count;
 };
 
-const formatPitchLabel = (pitch) => {
-  const labels = ROOT_LABELS;
-  const normalized = Math.round(pitch ?? 0);
-  const label = labels[((normalized % 12) + 12) % 12];
-  const octave = Math.floor(normalized / 12) - 1;
-  return `${label}${octave}`;
-};
+const HUD_SETTINGS_KEY = 'robtersession-hud-settings';
 
 const MIDI_PROGRAMS = {
   guitar: 27,
@@ -57,6 +61,35 @@ const defaultProgress = () => ({
   bestAccuracy: {},
   bestGrades: {}
 });
+
+const defaultHudSettings = () => ({
+  noteSize: 1.1,
+  highwayZoom: 1.2,
+  labelMode: 'both',
+  inputHud: 'full',
+  ghostNotes: true
+});
+
+const loadHudSettings = () => {
+  try {
+    const raw = localStorage.getItem(HUD_SETTINGS_KEY);
+    if (!raw) return defaultHudSettings();
+    const parsed = JSON.parse(raw);
+    return {
+      noteSize: parsed.noteSize ?? 1.1,
+      highwayZoom: parsed.highwayZoom ?? 1.2,
+      labelMode: parsed.labelMode ?? 'both',
+      inputHud: parsed.inputHud ?? 'full',
+      ghostNotes: parsed.ghostNotes ?? true
+    };
+  } catch (error) {
+    return defaultHudSettings();
+  }
+};
+
+const saveHudSettings = (settings) => {
+  localStorage.setItem(HUD_SETTINGS_KEY, JSON.stringify(settings));
+};
 
 const loadProgress = () => {
   try {
@@ -120,6 +153,7 @@ export default class RobterSession {
     this.starPower = 0;
     this.starPowerActive = false;
     this.starPowerUsed = 0;
+    this.feedbackSystem = new FeedbackSystem();
     this.mode = 'chord';
     this.octaveOffset = 0;
     this.degree = 1;
@@ -140,6 +174,15 @@ export default class RobterSession {
     this.buttonPulse = { A: 0, B: 0, X: 0, Y: 0 };
     this.wrongNotes = [];
     this.trackEventIndex = {};
+    this.hudSettings = loadHudSettings();
+    this.playMode = 'play';
+    this.practiceSpeed = 1;
+    this.previewSelection = 0;
+    this.feedbackSystem = new FeedbackSystem();
+    this.noteRenderer = new NoteRenderer();
+    this.highwayRenderer = new HighwayRenderer(this.noteRenderer);
+    this.controllerHUD = new ControllerStateHUD();
+    this.previewScreen = new SongPreviewScreen();
     this.inputBus = new InputEventBus();
     this.robterspiel = new RobterspielInput(this.inputBus);
     this.robterspielNotes = new Set();
@@ -180,6 +223,10 @@ export default class RobterSession {
     }
     if (this.state === 'scale') {
       this.updateScaleState(dt);
+      return;
+    }
+    if (this.state === 'preview') {
+      this.handlePreviewInput();
       return;
     }
     if (this.state === 'pause') {
@@ -240,7 +287,7 @@ export default class RobterSession {
       this.audio.menu();
     }
     if (this.input.wasPressed('cancel')) {
-      this.state = 'setlist';
+      this.state = 'scale';
       this.audio.ui();
       return;
     }
@@ -258,7 +305,31 @@ export default class RobterSession {
       return;
     }
     if (this.input.wasPressed('interact') && this.isScaleReady()) {
-      this.startSong();
+      this.state = 'preview';
+      this.previewSelection = 0;
+      this.audio.ui();
+    }
+  }
+
+  handlePreviewInput() {
+    const count = 3;
+    if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')) {
+      this.previewSelection = (this.previewSelection - 1 + count) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('down') || this.input.wasGamepadPressed('dpadDown')) {
+      this.previewSelection = (this.previewSelection + 1) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('cancel')) {
+      this.state = 'setlist';
+      this.audio.ui();
+      return;
+    }
+    if (this.input.wasPressed('interact')) {
+      const modes = ['listen', 'practice', 'play'];
+      const selected = modes[this.previewSelection] || 'play';
+      this.startSong({ playMode: selected });
       this.audio.ui();
     }
   }
@@ -277,7 +348,7 @@ export default class RobterSession {
       if (this.pauseSelection === 0) {
         this.state = 'play';
       } else if (this.pauseSelection === 1) {
-        this.startSong();
+        this.startSong({ playMode: this.playMode });
       } else {
         this.robterspielNotes.forEach((id) => this.audio.stopLiveGmNote?.(id));
         this.robterspielNotes.clear();
@@ -315,7 +386,7 @@ export default class RobterSession {
       this.audio.ui();
       return;
     }
-    if (this.instrument !== 'drums' && getModeToggle(this.input)) {
+    if (this.instrument !== 'drums' && getModeToggle(this.input) && this.playMode !== 'listen') {
       this.mode = this.mode === 'note' ? 'chord' : 'note';
     }
     const octaveShift = getOctaveShift(this.input);
@@ -326,15 +397,39 @@ export default class RobterSession {
     const normalized = normalizeRobterInput({ input: this.input, prevDegree: this.degree, mode: this.mode });
     this.degree = normalized.degree;
 
-    if (normalized.button) {
-      const inputLabel = this.getInputLabel(normalized);
-      const hit = this.tryHit(normalized);
-      this.registerButtonPulse(normalized.button);
-      if (!hit) {
+    if (normalized.button && this.playMode !== 'listen') {
+      const inputEvent = {
+        ...normalized,
+        buttonsPressed: this.getPressedButtons()
+      };
+      const inputAction = resolveInputToMusicalAction({
+        robterspiel: this.robterspiel,
+        instrument: this.instrument,
+        mode: this.mode,
+        degree: this.degree,
+        stickDir: this.robterspiel.leftStickStableDirection || this.degree
+      }, inputEvent);
+      const inputLabel = inputAction?.label || this.getInputLabel(normalized);
+      const hitResult = this.tryHit(normalized);
+      if (hitResult.hit) {
+        this.registerButtonPulse(normalized.button);
+      }
+      if (!hitResult.hit && this.playMode !== 'listen') {
+        const expectedEvent = this.getClosestExpectedEvent();
+        const expectedLabel = expectedEvent?.expectedAction?.label || expectedEvent?.displayLabel || '—';
         this.registerWrongNote({
           label: inputLabel,
           laneIndex: NOTE_LANES.indexOf(normalized.button)
         });
+        this.feedbackSystem.addMiss({
+          expected: expectedLabel,
+          played: inputLabel,
+          inputs: describeInputDebug(inputAction),
+          laneIndex: NOTE_LANES.indexOf(normalized.button)
+        });
+      }
+      if (hitResult.hit) {
+        this.feedbackSystem.addHit({ judgement: hitResult.judgementLabel, laneIndex: hitResult.laneIndex });
       }
       if (!this.robterspiel.connected) {
         this.robterspiel.octaveOffset = this.octaveOffset;
@@ -342,23 +437,24 @@ export default class RobterSession {
       }
     }
 
-    if (getStarPowerTrigger(this.input) && this.groove && this.starPower > 0 && !this.starPowerActive) {
+    if (this.playMode === 'play' && getStarPowerTrigger(this.input) && this.groove && this.starPower > 0 && !this.starPowerActive) {
       this.starPowerActive = true;
       this.starPowerUsed += 1;
     }
 
-    if (this.starPowerActive) {
+    if (this.playMode === 'play' && this.starPowerActive) {
       this.starPower = Math.max(0, this.starPower - STAR_POWER_DRAIN * dt);
       if (this.starPower <= 0) {
         this.starPowerActive = false;
       }
     }
 
-    this.updateTimers(dt);
-
+    const speed = this.playMode === 'practice' ? this.practiceSpeed : 1;
     const prevTime = this.songTime;
-    this.songTime += dt;
+    this.songTime += dt * speed;
+    this.updateTimers(dt);
     this.advanceBandTracks(prevTime, this.songTime);
+    this.advanceAutoplay(prevTime, this.songTime);
 
     if (this.modeChangeNotice && this.songTime > this.modeChangeNotice.time + 3) {
       this.modeChangeNotice = null;
@@ -369,6 +465,96 @@ export default class RobterSession {
     if (this.songTime >= this.songLength) {
       this.finishSong();
     }
+  }
+
+  getPressedButtons() {
+    const buttons = [];
+    if (this.input.wasGamepadPressed('jump') || this.input.wasPressedCode('KeyJ')) buttons.push('A');
+    if (this.input.wasGamepadPressed('rev') || this.input.wasPressedCode('KeyU')) buttons.push('X');
+    if (this.input.wasGamepadPressed('throw') || this.input.wasPressedCode('KeyI')) buttons.push('Y');
+    if (this.input.wasGamepadPressed('dash') || this.input.wasPressedCode('KeyK')) buttons.push('B');
+    return buttons;
+  }
+
+  getModifierState() {
+    return {
+      lb: this.input.isGamepadDown('aimUp') || this.input.isDownCode('KeyQ'),
+      dleft: this.input.isGamepadDown('dpadLeft') || this.input.isDownCode('KeyE'),
+      rb: this.input.isGamepadDown('aimDown') || this.input.isDownCode('KeyR')
+    };
+  }
+
+  getChordTypeForButton(button, modifiers) {
+    if (!button) return 'triad';
+    if (modifiers.lb && modifiers.dleft) {
+      if (button === 'A') return 'minor6';
+      if (button === 'X') return 'dim7';
+      if (button === 'Y') return 'augMaj7';
+      if (button === 'B') return 'minor9b5';
+    }
+    if (modifiers.lb) {
+      if (button === 'A') return 'sus2';
+      if (button === 'X') return 'sus4';
+      if (button === 'Y') return 'seventh';
+      if (button === 'B') return 'add9';
+    }
+    if (modifiers.dleft) {
+      if (button === 'A') return 'dim';
+      if (button === 'X') return 'half-dim';
+      if (button === 'Y') return 'aug';
+      if (button === 'B') return 'altered-dom';
+    }
+    if (button === 'A') return 'triad';
+    if (button === 'X') return 'triad-inv1';
+    if (button === 'Y') return 'triad-inv2';
+    if (button === 'B') return 'power';
+    return 'triad';
+  }
+
+  getClosestExpectedEvent() {
+    if (!this.songData?.timing) return null;
+    const window = this.songData.timing.good;
+    return this.events
+      .filter((event) => !event.hit && !event.judged)
+      .map((event) => ({ event, diff: Math.abs(event.timeSec - this.songTime) }))
+      .filter((candidate) => candidate.diff <= window)
+      .sort((a, b) => a.diff - b.diff)[0]?.event || null;
+  }
+
+  advanceAutoplay(prevTime, nextTime) {
+    const shouldAutoplay = this.playMode === 'listen' || (this.playMode === 'practice' && this.hudSettings.ghostNotes);
+    if (!shouldAutoplay) return;
+    const events = this.events || [];
+    events.forEach((event) => {
+      if (event.timeSec > nextTime || event.timeSec < Math.max(0, prevTime)) return;
+      if (this.playMode === 'listen') {
+        event.hit = true;
+        event.judged = true;
+      }
+      event.autoHit = 0.35;
+      const pitches = this.resolveRequiredPitches(event.requiredInput, this.instrument);
+      const duration = event.sustain ? event.sustain * this.songData.tempo.secondsPerBeat : 0.5;
+      pitches.forEach((pitch) => {
+        if (this.instrument === 'drums') {
+          this.audio.playGmNote?.({
+            pitch,
+            duration: 0.35,
+            volume: 0.7,
+            program: 0,
+            channel: 9
+          });
+        } else {
+          const program = MIDI_PROGRAMS[this.instrument] ?? 0;
+          this.audio.playGmNote?.({
+            pitch,
+            duration,
+            volume: 0.55,
+            program,
+            channel: 0
+          });
+        }
+      });
+    });
   }
 
   getInputLabel(normalized) {
@@ -627,8 +813,9 @@ export default class RobterSession {
     this.scalePromptTime = 0;
   }
 
-  startSong() {
+  startSong({ playMode = 'play' } = {}) {
     this.state = 'play';
+    this.playMode = playMode;
     this.songTime = -2;
     this.streak = 0;
     this.bestStreak = 0;
@@ -647,6 +834,16 @@ export default class RobterSession {
       judged: false,
       displayLabel: this.getEventLabel(event.requiredInput)
     }));
+    this.events.forEach((event) => {
+      const expectedAction = resolveRequiredInputToMusicalAction(
+        { robterspiel: this.robterspiel, instrument: this.instrument },
+        event.requiredInput
+      );
+      event.expectedAction = expectedAction;
+      event.primaryLabel = event.requiredInput?.button || NOTE_LANES[event.lane] || '';
+      event.secondaryLabel = expectedAction?.label || event.displayLabel || '';
+      event.noteKind = event.requiredInput?.mode === 'note' ? 'note' : event.requiredInput?.mode === 'drum' ? 'drum' : 'chord';
+    });
     this.trackEventIndex = INSTRUMENTS.reduce((acc, instrument) => {
       acc[instrument] = 0;
       return acc;
@@ -689,16 +886,26 @@ export default class RobterSession {
       if (event.hit || event.judged) return;
       if (this.songTime - event.timeSec > missWindow) {
         event.judged = true;
-        this.registerMiss();
+        this.registerMiss(event);
       }
     });
   }
 
-  registerMiss() {
-    this.misses += 1;
-    this.streak = 0;
-    this.groove = false;
-    this.starPowerActive = false;
+  registerMiss(event) {
+    const noPenalty = this.playMode !== 'play';
+    if (!noPenalty) {
+      this.misses += 1;
+      this.streak = 0;
+      this.groove = false;
+      this.starPowerActive = false;
+    }
+    const expectedLabel = event?.expectedAction?.label || event?.displayLabel || '—';
+    this.feedbackSystem.addMiss({
+      expected: expectedLabel,
+      played: null,
+      inputs: '',
+      laneIndex: event?.lane ?? 0
+    });
   }
 
   tryHit(normalized) {
@@ -717,27 +924,37 @@ export default class RobterSession {
         normalized,
         mode: this.mode
       }))?.event;
-    if (!match) return false;
+    if (!match) return { hit: false };
     const diff = Math.abs(match.timeSec - this.songTime);
     const judgement = diff <= timing.great ? 'great' : 'good';
     match.hit = true;
     match.judged = true;
     match.judgement = judgement;
-    this.hits += 1;
-    this.streak += 1;
-    this.bestStreak = Math.max(this.bestStreak, this.streak);
-    if (match.starPhrase) {
-      this.starPower = clamp(this.starPower + STAR_POWER_GAIN, 0, 1);
+    let judgementLabel = judgement === 'great' ? 'Perfect' : 'Good';
+    if (this.playMode === 'play') {
+      this.hits += 1;
+      this.streak += 1;
+      this.bestStreak = Math.max(this.bestStreak, this.streak);
+      if (match.starPhrase) {
+        this.starPower = clamp(this.starPower + STAR_POWER_GAIN, 0, 1);
+      }
+      if (this.streak >= GROOVE_THRESHOLD) {
+        this.groove = true;
+      }
+      const baseScore = judgement === 'great' ? 120 : 70;
+      const grooveMultiplier = this.groove ? 1.5 : 1;
+      const starMultiplier = this.starPowerActive ? 2 : 1;
+      this.score += Math.round(baseScore * grooveMultiplier * starMultiplier);
+      this.hitGlassTimer = HIT_GLASS_DURATION;
+    } else {
+      judgementLabel = 'Practice';
     }
-    if (this.streak >= GROOVE_THRESHOLD) {
-      this.groove = true;
-    }
-    const baseScore = judgement === 'great' ? 120 : 70;
-    const grooveMultiplier = this.groove ? 1.5 : 1;
-    const starMultiplier = this.starPowerActive ? 2 : 1;
-    this.score += Math.round(baseScore * grooveMultiplier * starMultiplier);
-    this.hitGlassTimer = HIT_GLASS_DURATION;
-    return true;
+    return {
+      hit: true,
+      event: match,
+      judgementLabel,
+      laneIndex: match.lane
+    };
   }
 
   registerButtonPulse(button) {
@@ -776,6 +993,12 @@ export default class RobterSession {
       note.spin += note.spinSpeed * dt;
       note.x += note.vx * dt;
       note.y += note.vy * dt;
+    });
+    this.feedbackSystem.update(dt);
+    this.events.forEach((event) => {
+      if (event.autoHit) {
+        event.autoHit = Math.max(0, event.autoHit - dt);
+      }
     });
   }
 
@@ -1263,6 +1486,10 @@ export default class RobterSession {
       this.drawScale(ctx, width, height);
       return;
     }
+    if (this.state === 'preview') {
+      this.drawPreview(ctx, width, height);
+      return;
+    }
     if (this.state === 'play') {
       this.drawPlay(ctx, width, height);
       return;
@@ -1440,7 +1667,7 @@ export default class RobterSession {
     const promptY = height - 100;
     ctx.fillStyle = ready ? '#7dffb6' : 'rgba(215,242,255,0.65)';
     ctx.font = ready ? 'bold 18px Courier New' : '16px Courier New';
-    ctx.fillText(ready ? 'Press A to begin.' : 'Match the target root + scale to begin.', width / 2, promptY);
+    ctx.fillText(ready ? 'Press A to choose Listen / Practice / Play.' : 'Match the target root + scale to begin.', width / 2, promptY);
     ctx.fillStyle = 'rgba(215,242,255,0.6)';
     ctx.font = '14px Courier New';
     ctx.fillText('Back: return to song detail.', width / 2, promptY + 26);
@@ -1483,145 +1710,51 @@ export default class RobterSession {
     ctx.restore();
   }
 
+  drawPreview(ctx, width, height) {
+    this.previewScreen.draw(ctx, width, height, {
+      selectedIndex: this.previewSelection,
+      settings: this.hudSettings,
+      practiceSpeed: this.practiceSpeed,
+      ghostNotes: this.hudSettings.ghostNotes
+    });
+  }
+
   drawPlay(ctx, width, height) {
     ctx.save();
     const lanes = this.instrument === 'drums' ? DRUM_LANES : LANE_LABELS;
     const laneCount = lanes.length;
-    const laneWidth = 70;
-    const laneGap = 18;
-    const totalWidth = laneCount * laneWidth + (laneCount - 1) * laneGap;
-    const startX = width / 2 - totalWidth / 2;
-    const hitLineY = height - 140;
-    const laneTop = 110;
-    const laneBottom = hitLineY;
     const laneColors = this.getLaneColors();
-
-    this.drawHighwayBackground(ctx, width, height, {
-      startX,
-      totalWidth,
-      laneTop,
-      laneBottom,
-      hitLineY,
-      laneColors,
-      laneWidth,
-      laneGap
+    const layout = this.highwayRenderer.getLayout({
+      width,
+      height,
+      laneCount,
+      zoom: this.hudSettings.highwayZoom,
+      octaveOffset: this.octaveOffset,
+      scrollSpeed: SCROLL_SPEED
     });
 
-    ctx.fillStyle = this.groove ? 'rgba(70,160,255,0.45)' : 'rgba(10,18,30,0.7)';
-    ctx.fillRect(startX - 60, 72, totalWidth + 120, 32);
-
-    ctx.strokeStyle = 'rgba(110,180,255,0.25)';
-    ctx.lineWidth = 1;
-    ctx.fillStyle = 'rgba(6,12,20,0.55)';
-    ctx.fillRect(startX - 40, laneTop, totalWidth + 80, laneBottom - laneTop);
-    ctx.strokeRect(startX - 40, laneTop, totalWidth + 80, laneBottom - laneTop);
-
-    for (let i = 0; i < laneCount; i += 1) {
-      const x = startX + i * (laneWidth + laneGap);
-      const label = lanes[i];
-      const buttonKey = NOTE_LANES[i];
-      const pulse = clamp(this.buttonPulse[buttonKey] / 0.22, 0, 1);
-      const laneColor = laneColors[i] || '#7ad0ff';
-      ctx.fillStyle = pulse > 0 ? `rgba(255,255,255,${0.08 + pulse * 0.2})` : 'rgba(255,255,255,0.04)';
-      ctx.fillRect(x, laneTop, laneWidth, laneBottom - laneTop);
-      ctx.strokeStyle = 'rgba(120,190,255,0.28)';
-      ctx.strokeRect(x, laneTop, laneWidth, laneBottom - laneTop);
-      ctx.fillStyle = laneColor;
-      ctx.font = pulse > 0 ? 'bold 16px Courier New' : '14px Courier New';
-      ctx.textAlign = 'center';
-      const bump = pulse * 6;
-      ctx.fillText(label, x + laneWidth / 2, hitLineY + 30 - bump);
-    }
+    this.highwayRenderer.drawBackground(ctx, width, height, layout, laneColors);
 
     const beatDuration = this.songData.tempo.secondsPerBeat;
-    const visibleWindow = 4.2;
-    const startBeat = Math.floor(this.songTime / beatDuration) - 1;
-    const endBeat = Math.ceil((this.songTime + visibleWindow) / beatDuration);
-    for (let beat = startBeat; beat <= endBeat; beat += 1) {
-      const beatTime = beat * beatDuration;
-      const timeToHit = beatTime - this.songTime;
-      if (timeToHit < -0.3 || timeToHit > visibleWindow) continue;
-      const y = hitLineY - timeToHit * SCROLL_SPEED;
-      const isBar = beat % 4 === 0;
-      ctx.strokeStyle = isBar ? 'rgba(130,210,255,0.45)' : 'rgba(120,180,220,0.18)';
-      ctx.lineWidth = isBar ? 2 : 1;
-      ctx.beginPath();
-      ctx.moveTo(startX - 30, y);
-      ctx.lineTo(startX + totalWidth + 30, y);
-      ctx.stroke();
-    }
+    const lanePulse = NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1));
+    this.highwayRenderer.drawBeatLines(ctx, layout, this.songTime, beatDuration);
+    this.highwayRenderer.drawLanes(ctx, width, height, layout, laneColors, lanes, lanePulse);
+    this.highwayRenderer.drawHitLine(ctx, layout, this.hitGlassTimer > 0, layout.octaveLineY);
 
-    const glassGradient = ctx.createLinearGradient(startX, hitLineY - 6, startX, hitLineY + 6);
-    glassGradient.addColorStop(0, 'rgba(160,220,255,0.2)');
-    glassGradient.addColorStop(0.5, 'rgba(220,245,255,0.65)');
-    glassGradient.addColorStop(1, 'rgba(120,200,255,0.15)');
-    ctx.fillStyle = glassGradient;
-    ctx.fillRect(startX - 30, hitLineY - 5, totalWidth + 60, 10);
-    ctx.strokeStyle = 'rgba(180,235,255,0.7)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(startX - 30, hitLineY);
-    ctx.lineTo(startX + totalWidth + 30, hitLineY);
-    ctx.stroke();
-    if (this.hitGlassTimer > 0) {
-      const crackAlpha = clamp(this.hitGlassTimer / HIT_GLASS_DURATION, 0, 1);
-      ctx.strokeStyle = `rgba(220,245,255,${0.4 + crackAlpha * 0.4})`;
-      ctx.lineWidth = 1.5;
-      for (let i = 0; i < 6; i += 1) {
-        const crackX = lerp(startX, startX + totalWidth, i / 5);
-        const crackLen = 18 + i * 2;
-        ctx.beginPath();
-        ctx.moveTo(crackX, hitLineY - crackLen);
-        ctx.lineTo(crackX + (i % 2 === 0 ? -12 : 12), hitLineY - 6);
-        ctx.stroke();
-      }
-    }
-
-    this.events.forEach((event) => {
-      if (event.hit || (event.judged && !event.hit)) return;
-      const timeToHit = event.timeSec - this.songTime;
-      if (timeToHit < -0.3 || timeToHit > visibleWindow) return;
-      const laneIndex = event.lane ?? 0;
-      const x = startX + laneIndex * (laneWidth + laneGap);
-      const depth = clamp(1 - timeToHit / visibleWindow, 0, 1);
-      const scale = lerp(0.65, 1.2, depth);
-      const y = hitLineY - timeToHit * SCROLL_SPEED * lerp(0.85, 1.12, depth);
-      const baseWidth = laneWidth - 12;
-      const noteW = baseWidth * scale;
-      const noteH = 16 * scale;
-      const laneCenter = x + laneWidth / 2;
-      const noteX = laneCenter - noteW / 2;
-      const noteY = y - noteH / 2;
-      const baseColor = laneColors[laneIndex] || '#7ad0ff';
-      const color = event.starPhrase ? '#7ad0ff' : baseColor;
-      ctx.fillStyle = color;
-      ctx.globalAlpha = event.starPhrase ? 0.95 : 0.85;
-      ctx.fillRect(noteX, noteY, noteW, noteH);
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = 'rgba(230,245,255,0.6)';
-      ctx.strokeRect(noteX, noteY, noteW, noteH);
-      if (event.displayLabel) {
-        ctx.fillStyle = 'rgba(5,10,18,0.75)';
-        const labelPad = 6;
-        ctx.font = '11px Courier New';
-        ctx.textAlign = 'center';
-        const labelWidth = ctx.measureText(event.displayLabel).width + labelPad * 2;
-        const labelX = laneCenter - labelWidth / 2;
-        const labelY = noteY - 18 * scale;
-        ctx.fillRect(labelX, labelY, labelWidth, 16);
-        ctx.strokeStyle = 'rgba(160,220,255,0.5)';
-        ctx.strokeRect(labelX, labelY, labelWidth, 16);
-        ctx.fillStyle = '#d7f2ff';
-        ctx.fillText(event.displayLabel, laneCenter, labelY + 12);
-      }
-    });
+    this.highwayRenderer.drawNotes(ctx, this.events, layout, this.songTime, {
+      noteSize: this.hudSettings.noteSize,
+      labelMode: this.hudSettings.labelMode,
+      secondsPerBeat: beatDuration
+    }, laneColors, this.playMode);
 
     this.drawWrongNoteGhosts(ctx, width, height, {
-      startX,
-      laneWidth,
-      laneGap,
-      hitLineY
+      startX: layout.startX,
+      laneWidth: layout.laneWidth,
+      laneGap: layout.laneGap,
+      hitLineY: layout.hitLineY
     });
+
+    this.feedbackSystem.draw(ctx, layout);
 
     const accuracy = this.events.length ? this.hits / this.events.length : 0;
     ctx.fillStyle = '#d7f2ff';
@@ -1630,26 +1763,21 @@ export default class RobterSession {
     ctx.fillText(`Score ${this.score}`, 40, 40);
     ctx.fillText(`Streak ${this.streak}`, 40, 62);
     ctx.fillText(`Accuracy ${(accuracy * 100).toFixed(1)}%`, 40, 84);
+    ctx.fillText(`Mode ${this.mode.toUpperCase()}`, 40, 106);
 
     const sectionLabel = this.getCurrentSectionLabel();
     if (sectionLabel) {
       ctx.fillStyle = 'rgba(10,16,24,0.75)';
-      ctx.fillRect(32, 104, 180, 26);
+      ctx.fillRect(32, 128, 180, 26);
       ctx.strokeStyle = 'rgba(120,190,255,0.5)';
-      ctx.strokeRect(32, 104, 180, 26);
+      ctx.strokeRect(32, 128, 180, 26);
       ctx.fillStyle = '#7ad0ff';
       ctx.font = '14px Courier New';
-      ctx.fillText(sectionLabel, 40, 122);
+      ctx.fillText(sectionLabel, 40, 146);
     }
 
-    ctx.textAlign = 'right';
-    ctx.fillText(`Mode ${this.mode.toUpperCase()}`, width - 40, 40);
-    ctx.fillText(`Degree ${this.degree}`, width - 40, 62);
-    ctx.fillText(`Octave ${this.octaveOffset}`, width - 40, 84);
-    ctx.fillText(`Instrument ${this.instrument}`, width - 40, 106);
-
     const meterX = width - 220;
-    const meterY = 120;
+    const meterY = 44;
     const meterW = 160;
     const meterH = 16;
     ctx.strokeStyle = '#7ad0ff';
@@ -1658,13 +1786,22 @@ export default class RobterSession {
     ctx.fillRect(meterX, meterY, meterW * this.starPower, meterH);
     ctx.fillStyle = '#d7f2ff';
     ctx.font = '12px Courier New';
+    ctx.textAlign = 'right';
     ctx.fillText('Star Power', meterX + meterW, meterY - 6);
 
     if (this.groove) {
       ctx.fillStyle = 'rgba(122,208,255,0.9)';
       ctx.font = '14px Courier New';
       ctx.textAlign = 'center';
-      ctx.fillText('Robtergroove!', width / 2, 100);
+      ctx.fillText('Robtergroove!', width / 2, 96);
+    }
+
+    if (this.playMode !== 'play') {
+      ctx.fillStyle = 'rgba(255,220,140,0.9)';
+      ctx.font = '14px Courier New';
+      ctx.textAlign = 'center';
+      const label = this.playMode === 'listen' ? 'Listen First (Autoplay)' : `Practice Mode ${this.practiceSpeed}x`;
+      ctx.fillText(label, width / 2, 120);
     }
 
     if (this.modeChangeNotice && Math.abs(this.songTime - this.modeChangeNotice.time) < 2) {
@@ -1672,29 +1809,37 @@ export default class RobterSession {
       ctx.font = '16px Courier New';
       ctx.textAlign = 'center';
       const rootLabel = ROOT_LABELS[this.modeChangeNotice.root];
-      ctx.fillText(`Mode Change: ${rootLabel} ${this.modeChangeNotice.mode.name}`, width / 2, 130);
+      ctx.fillText(`Mode Change: ${rootLabel} ${this.modeChangeNotice.mode.name}`, width / 2, 132);
     }
 
-    const legendX = 40;
-    const legendY = height - 120;
-    ctx.textAlign = 'left';
-    ctx.font = '12px Courier New';
-    ctx.fillStyle = 'rgba(215,242,255,0.7)';
-    ctx.fillText('Lane Colors', legendX, legendY);
-    NOTE_LANES.forEach((label, index) => {
-      const color = laneColors[index];
-      const boxX = legendX + index * 36;
-      ctx.fillStyle = color;
-      ctx.fillRect(boxX, legendY + 12, 16, 16);
-      ctx.fillStyle = '#d7f2ff';
-      ctx.fillText(label, boxX + 20, legendY + 25);
+    const modifiers = this.getModifierState();
+    const mappings = NOTE_LANES.map((button) => {
+      const chordType = this.getChordTypeForButton(button, modifiers);
+      const action = resolveInputToMusicalAction({
+        robterspiel: this.robterspiel,
+        instrument: this.instrument,
+        mode: this.mode,
+        degree: this.degree,
+        stickDir: this.robterspiel.leftStickStableDirection || this.degree
+      }, {
+        button,
+        lb: modifiers.lb,
+        dleft: modifiers.dleft,
+        octaveUp: modifiers.rb,
+        chordType
+      });
+      return { button, label: action?.label || '--' };
     });
 
-    ctx.fillStyle = 'rgba(215,242,255,0.6)';
-    ctx.fillText('D-Pad Right: Note/Chord   D-Pad Up/Down: Octave', legendX, legendY + 48);
-    ctx.fillText('LB: chord color   D-Left: tension   RB: octave', legendX, legendY + 64);
-
-    this.drawStickIndicators(ctx, width, height);
+    this.controllerHUD.draw(ctx, width, height, {
+      mode: this.mode,
+      degree: this.degree,
+      stickDir: this.robterspiel.leftStickStableDirection || this.degree,
+      modifiers,
+      octaveOffset: this.octaveOffset,
+      mappings,
+      compact: this.hudSettings.inputHud === 'compact'
+    });
 
     if (this.debugShowInputs) {
       const upcoming = this.events.filter((event) => !event.judged).slice(0, 3);
@@ -1780,6 +1925,41 @@ export default class RobterSession {
         }
       }
     }
+    if (this.state === 'preview') {
+      const action = this.previewScreen.handleClick(x, y);
+      if (!action) return;
+      if (action.type === 'mode') {
+        const modes = ['listen', 'practice', 'play'];
+        this.previewSelection = modes.indexOf(action.value);
+        this.startSong({ playMode: action.value });
+        this.audio.ui();
+      }
+      if (action.type === 'toggle') {
+        if (action.id === 'ghostNotes') {
+          this.hudSettings.ghostNotes = !this.hudSettings.ghostNotes;
+        } else if (action.id === 'labelMode') {
+          const options = ['buttons', 'pitch', 'both'];
+          const index = (options.indexOf(this.hudSettings.labelMode) + 1) % options.length;
+          this.hudSettings.labelMode = options[index];
+        } else if (action.id === 'inputHud') {
+          this.hudSettings.inputHud = this.hudSettings.inputHud === 'compact' ? 'full' : 'compact';
+        }
+        saveHudSettings(this.hudSettings);
+      }
+      if (action.type === 'speed') {
+        this.practiceSpeed = action.value;
+      }
+      if (action.type === 'slider') {
+        if (action.id === 'noteSize') {
+          this.hudSettings.noteSize = action.value;
+        }
+        if (action.id === 'highwayZoom') {
+          this.hudSettings.highwayZoom = action.value;
+        }
+        saveHudSettings(this.hudSettings);
+      }
+      return;
+    }
     if (this.state === 'pause') {
       const hit = this.bounds.pauseButtons.find((button) => (
         x >= button.x && x <= button.x + button.w && y >= button.y && y <= button.y + button.h
@@ -1789,7 +1969,7 @@ export default class RobterSession {
         if (this.pauseSelection === 0) {
           this.state = 'play';
         } else if (this.pauseSelection === 1) {
-          this.startSong();
+          this.startSong({ playMode: this.playMode });
         } else {
           this.state = 'setlist';
         }
