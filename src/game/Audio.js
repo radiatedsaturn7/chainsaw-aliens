@@ -64,6 +64,7 @@ export default class AudioSystem {
     this.midiReverbLevel = 0.18;
     this.midiReverbSend = null;
     this.midiPitchBendSemitones = 0;
+    this.liveMidiNotes = new Map();
     this.gmEnabled = true;
     this.gmError = null;
     this.soundfont = new SoundfontEngine({
@@ -584,6 +585,128 @@ export default class AudioSystem {
       });
   }
 
+  startLiveGmNote({
+    id,
+    pitch = 60,
+    duration = 8,
+    volume = 0.8,
+    program = 0,
+    channel = 0,
+    bankMSB = 0,
+    bankLSB = 0,
+    pan = 0
+  }) {
+    if (!id) return;
+    this.stopLiveGmNote(id);
+    this.ensureMidiSampler();
+    const clampedProgram = clamp(program ?? 0, 0, GM_PROGRAMS.length - 1);
+    const clampedVolume = clamp(volume ?? 1, 0, 1);
+    const clampedPan = clamp(pan ?? 0, -1, 1);
+    const isDrums = isDrumChannel(channel);
+    const resolvedChannel = isDrums ? GM_DRUM_CHANNEL : clamp(channel ?? 0, 0, 15);
+    const channelState = this.channelState[resolvedChannel] || this.channelState[0];
+    let resolvedPitch = clamp(Math.round(pitch ?? GM_DRUM_NOTE_MIN), 0, 127);
+    let resolvedBankMSB = bankMSB;
+    let resolvedBankLSB = bankLSB;
+    if (isDrums) {
+      resolvedPitch = clampDrumPitch(resolvedPitch);
+      resolvedBankMSB = GM_DRUM_BANK_MSB;
+      resolvedBankLSB = GM_DRUM_BANK_LSB;
+      const resolvedKit = this.drumKitManager.getDrumKit();
+      if (resolvedKit?.soundfont) {
+        this.soundfont.setDrumKitName(resolvedKit.soundfont);
+        this.drumKitManager.setDrumKit(resolvedKit.id);
+        channelState.drumKitId = resolvedKit.id;
+      }
+      channelState.bankMSB = resolvedBankMSB;
+      channelState.bankLSB = resolvedBankLSB;
+      channelState.program = 0;
+      const drumLabel = GM_DRUMS.find((entry) => entry.pitch === resolvedPitch)?.label || 'Unknown Drum';
+      this.midiDebug.lastDrumNote = { pitch: resolvedPitch, label: drumLabel };
+      this.midiDebug.lastChannelType = 'percussion';
+      this.midiDebug.lastChannel = resolvedChannel;
+    } else {
+      channelState.bankMSB = Number.isInteger(bankMSB) ? bankMSB : channelState.bankMSB;
+      channelState.bankLSB = Number.isInteger(bankLSB) ? bankLSB : channelState.bankLSB;
+      channelState.program = clampedProgram;
+      this.midiDebug.lastChannelType = 'melodic';
+      this.midiDebug.lastChannel = resolvedChannel;
+    }
+    if (!this.gmEnabled) {
+      this.playMidiNote(resolvedPitch, this.getFallbackInstrument(clampedProgram), duration, clampedVolume, null, clampedPan);
+      return;
+    }
+    if (!isDrums) {
+      this.soundfont.setProgram(clampedProgram, resolvedChannel);
+    }
+    const when = this.ctx.currentTime + this.midiLatency;
+    this.soundfont.noteOn(resolvedPitch, clampedVolume, when, duration, resolvedChannel, {
+      trackId: resolvedChannel,
+      isDrum: isDrums,
+      sourceNote: pitch,
+      resolvedNote: resolvedPitch,
+      bankMSB: resolvedBankMSB,
+      bankLSB: resolvedBankLSB,
+      program: isDrums ? 0 : clampedProgram
+    })
+      .then((voice) => {
+        if (!voice) return;
+        const stopTime = when + duration + 0.2;
+        const entry = this.registerMidiVoice({ voice, stopTime });
+        if (entry) {
+          this.liveMidiNotes.set(id, entry);
+        }
+        this.gmError = null;
+      })
+      .catch((error) => {
+        if (isDrums) {
+          const resolvedPresetName = this.soundfont.getDrumKitName?.() || 'synth_drum';
+          const cacheKey = this.soundfont.getCacheKey?.({
+            soundfontUrl: this.soundfont.baseUrl,
+            name: resolvedPresetName,
+            bankMSB: resolvedBankMSB,
+            bankLSB: resolvedBankLSB,
+            preset: 0,
+            percussion: true
+          });
+          const message = `Drum SoundFont missing preset (bankMSB=${resolvedBankMSB}, bankLSB=${resolvedBankLSB}, preset=0).`;
+          this.gmError = message;
+          this.logDrumNote({
+            backend: 'soundfont',
+            bankMSB: resolvedBankMSB,
+            bankLSB: resolvedBankLSB,
+            program: 0,
+            preset: 0,
+            cacheKey,
+            resolvedPresetName,
+            note: resolvedPitch,
+            containsNote: false,
+            keyRange: null,
+            error
+          });
+          return;
+        }
+        this.playMidiNote(resolvedPitch, this.getFallbackInstrument(clampedProgram), duration, clampedVolume, null, clampedPan);
+      });
+  }
+
+  stopLiveGmNote(id) {
+    if (!id) return;
+    const entry = this.liveMidiNotes.get(id);
+    if (!entry) return;
+    try {
+      if (entry.gain) {
+        entry.gain.gain.setTargetAtTime(0.0001, this.ctx.currentTime, 0.02);
+      }
+      if (entry.stop) {
+        entry.stop();
+      }
+    } catch (error) {
+      // ignore
+    }
+    this.liveMidiNotes.delete(id);
+  }
+
   playMidiNote(pitch, instrument = 'piano', duration = 0.5, volume = 1, when = null, pan = 0) {
     if (this.gmEnabled && LEGACY_INSTRUMENT_TO_PROGRAM[instrument] !== undefined) {
       this.playGmNote({
@@ -751,6 +874,7 @@ export default class AudioSystem {
       }
     }
     this.midiVoices = this.midiVoices.filter((voice) => voice.stopTime > this.ctx.currentTime);
+    return entry;
   }
 
   noise(duration = 0.12, gainValue = 0.12) {
