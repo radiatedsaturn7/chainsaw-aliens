@@ -24,6 +24,7 @@ const NOTE_LANES = ['A', 'X', 'Y', 'B'];
 const SCALE_SELECTOR_THRESHOLD = 0.6;
 const SCALE_SELECTOR_RELEASE = 0.3;
 const SCALE_PROMPT_SPEED = 0.9;
+const WRONG_GHOST_DURATION = 0.7;
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -137,6 +138,8 @@ export default class RobterSession {
     this.hitGlassTimer = 0;
     this.wrongNoteCooldown = 0;
     this.buttonPulse = { A: 0, B: 0, X: 0, Y: 0 };
+    this.wrongNotes = [];
+    this.trackEventIndex = {};
     this.inputBus = new InputEventBus();
     this.robterspiel = new RobterspielInput(this.inputBus);
     this.robterspielNotes = new Set();
@@ -324,10 +327,14 @@ export default class RobterSession {
     this.degree = normalized.degree;
 
     if (normalized.button) {
+      const inputLabel = this.getInputLabel(normalized);
       const hit = this.tryHit(normalized);
       this.registerButtonPulse(normalized.button);
       if (!hit) {
-        this.registerWrongNote();
+        this.registerWrongNote({
+          label: inputLabel,
+          laneIndex: NOTE_LANES.indexOf(normalized.button)
+        });
       }
       if (!this.robterspiel.connected) {
         this.robterspiel.octaveOffset = this.octaveOffset;
@@ -349,7 +356,9 @@ export default class RobterSession {
 
     this.updateTimers(dt);
 
+    const prevTime = this.songTime;
     this.songTime += dt;
+    this.advanceBandTracks(prevTime, this.songTime);
 
     if (this.modeChangeNotice && this.songTime > this.modeChangeNotice.time + 3) {
       this.modeChangeNotice = null;
@@ -360,6 +369,236 @@ export default class RobterSession {
     if (this.songTime >= this.songLength) {
       this.finishSong();
     }
+  }
+
+  getInputLabel(normalized) {
+    if (!normalized?.button) return null;
+    if (this.instrument === 'drums') {
+      return DRUM_LANES[NOTE_LANES.indexOf(normalized.button)] || 'Drum';
+    }
+    if (normalized.mode === 'note') {
+      const rootDegree = normalized.degree || 1;
+      const buttonMap = {
+        A: { base: 1, passing: 2 },
+        X: { base: 3, passing: 4 },
+        Y: { base: 5, passing: 6 },
+        B: { base: 8, passing: 7 }
+      };
+      const entry = buttonMap[normalized.button] || buttonMap.A;
+      const degree = normalized.lb ? entry.passing : entry.base;
+      const targetDegree = rootDegree + degree - 1;
+      let pitch = this.robterspiel.getPitchForScaleStep(targetDegree - 1);
+      if (normalized.dleft) {
+        pitch += 1;
+      }
+      if (normalized.octaveUp) {
+        pitch += 12;
+      }
+      return formatPitchLabel(pitch);
+    }
+    return this.getChordLabel({
+      degree: normalized.degree || 1,
+      chordType: normalized.chordType || 'triad'
+    });
+  }
+
+  getChordLabel({ degree, chordType }) {
+    let variant = 'triad';
+    let suspension = null;
+    let inversion = 0;
+    if (chordType === 'power') {
+      variant = 'power';
+    } else if (chordType === 'triad-inv1') {
+      inversion = 1;
+    } else if (chordType === 'triad-inv2') {
+      inversion = 2;
+    } else if (chordType === 'sus2') {
+      suspension = 'sus2';
+    } else if (chordType === 'sus4') {
+      suspension = 'sus4';
+    } else if (chordType === 'seventh') {
+      variant = 'seventh';
+    } else if (chordType === 'add9') {
+      variant = 'add9';
+    } else if (chordType === 'dim') {
+      variant = 'diminished';
+    } else if (chordType === 'half-dim') {
+      variant = 'half-diminished';
+    } else if (chordType === 'aug') {
+      variant = 'augmented';
+    } else if (chordType === 'altered-dom') {
+      variant = 'altered-dominant';
+    } else if (chordType === 'minor6') {
+      variant = 'minor6';
+    } else if (chordType === 'dim7') {
+      variant = 'diminished7';
+    } else if (chordType === 'augMaj7') {
+      variant = 'augmented-major7';
+    } else if (chordType === 'minor9b5') {
+      variant = 'minor9b5';
+    }
+    let pitches = this.robterspiel.getChordPitches(degree, { variant, suspension });
+    pitches = this.applyInversion(pitches, inversion);
+    const rootPitch = pitches[0] ?? this.robterspiel.getPitchForScaleStep(degree - 1);
+    const rootLabel = formatPitchLabel(rootPitch);
+    const suffix = () => {
+      if (variant === 'power') return '5';
+      if (variant === 'diminished') return 'dim';
+      if (variant === 'half-diminished') return 'm7♭5';
+      if (variant === 'augmented') return 'aug';
+      if (variant === 'diminished7') return 'dim7';
+      if (variant === 'augmented-major7') return 'aug maj7';
+      if (variant === 'minor9b5') return 'm9♭5';
+      if (variant === 'altered-dominant') return '7alt';
+      if (variant === 'seventh') return '7';
+      if (variant === 'add9') return 'add9';
+      if (variant === 'minor6') return 'm6';
+      if (suspension) return suspension;
+      return '';
+    };
+    const chordSuffix = suffix();
+    return chordSuffix ? `${rootLabel} ${chordSuffix}` : rootLabel;
+  }
+
+  getEventLabel(requiredInput) {
+    if (!requiredInput) return '';
+    if (requiredInput.mode === 'drum') {
+      return DRUM_LANES[requiredInput.lane] || 'Drum';
+    }
+    if (requiredInput.mode === 'note') {
+      const buttonMap = {
+        A: { base: 1, passing: 2 },
+        X: { base: 3, passing: 4 },
+        Y: { base: 5, passing: 6 },
+        B: { base: 8, passing: 7 }
+      };
+      const entry = buttonMap[requiredInput.button] || buttonMap.A;
+      const degree = requiredInput.modifiers?.lb ? entry.passing : entry.base;
+      const targetDegree = (requiredInput.degree || 1) + degree - 1;
+      let pitch = this.robterspiel.getPitchForScaleStep(targetDegree - 1);
+      if (requiredInput.modifiers?.dleft) {
+        pitch += 1;
+      }
+      if (requiredInput.octaveUp) {
+        pitch += 12;
+      }
+      return formatPitchLabel(pitch);
+    }
+    return this.getChordLabel({
+      degree: requiredInput.degree || 1,
+      chordType: requiredInput.chordType || 'triad'
+    });
+  }
+
+  getCurrentSectionLabel() {
+    if (!this.songData?.sections || !this.songData?.tempo) return null;
+    const beat = this.songTime / this.songData.tempo.secondsPerBeat;
+    const section = this.songData.sections.find((entry) => beat >= entry.startBeat && beat < entry.endBeat);
+    return section ? section.name.toUpperCase() : null;
+  }
+
+  resolveRequiredPitches(requiredInput, instrument) {
+    if (!requiredInput) return [];
+    if (instrument === 'drums') {
+      const drumMap = [36, 38, 42, 49];
+      return [drumMap[requiredInput.lane] ?? 38];
+    }
+    if (requiredInput.mode === 'note') {
+      const buttonMap = {
+        A: { base: 1, passing: 2 },
+        X: { base: 3, passing: 4 },
+        Y: { base: 5, passing: 6 },
+        B: { base: 8, passing: 7 }
+      };
+      const entry = buttonMap[requiredInput.button] || buttonMap.A;
+      const degree = requiredInput.modifiers?.lb ? entry.passing : entry.base;
+      const targetDegree = (requiredInput.degree || 1) + degree - 1;
+      let pitch = this.robterspiel.getPitchForScaleStep(targetDegree - 1);
+      if (requiredInput.modifiers?.dleft) {
+        pitch += 1;
+      }
+      if (requiredInput.octaveUp) {
+        pitch += 12;
+      }
+      return [pitch];
+    }
+    const chordType = requiredInput.chordType || 'triad';
+    let variant = 'triad';
+    let suspension = null;
+    let inversion = 0;
+    if (chordType === 'power') {
+      variant = 'power';
+    } else if (chordType === 'triad-inv1') {
+      inversion = 1;
+    } else if (chordType === 'triad-inv2') {
+      inversion = 2;
+    } else if (chordType === 'sus2') {
+      suspension = 'sus2';
+    } else if (chordType === 'sus4') {
+      suspension = 'sus4';
+    } else if (chordType === 'seventh') {
+      variant = 'seventh';
+    } else if (chordType === 'add9') {
+      variant = 'add9';
+    } else if (chordType === 'dim') {
+      variant = 'diminished';
+    } else if (chordType === 'half-dim') {
+      variant = 'half-diminished';
+    } else if (chordType === 'aug') {
+      variant = 'augmented';
+    } else if (chordType === 'altered-dom') {
+      variant = 'altered-dominant';
+    } else if (chordType === 'minor6') {
+      variant = 'minor6';
+    } else if (chordType === 'dim7') {
+      variant = 'diminished7';
+    } else if (chordType === 'augMaj7') {
+      variant = 'augmented-major7';
+    } else if (chordType === 'minor9b5') {
+      variant = 'minor9b5';
+    }
+    let pitches = this.robterspiel.getChordPitches(requiredInput.degree || 1, { variant, suspension });
+    pitches = this.applyInversion(pitches, inversion);
+    return pitches;
+  }
+
+  advanceBandTracks(prevTime, nextTime) {
+    if (!this.songData?.tracks || nextTime <= 0) return;
+    INSTRUMENTS.forEach((track) => {
+      if (track === this.instrument) return;
+      const events = this.songData.tracks[track] || [];
+      let index = this.trackEventIndex[track] ?? 0;
+      while (index < events.length) {
+        const event = events[index];
+        if (event.timeSec > nextTime) break;
+        if (event.timeSec >= Math.max(0, prevTime)) {
+          const pitches = this.resolveRequiredPitches(event.requiredInput, track);
+          const duration = event.sustain ? event.sustain * this.songData.tempo.secondsPerBeat : 0.5;
+          pitches.forEach((pitch) => {
+            if (track === 'drums') {
+              this.audio.playGmNote?.({
+                pitch,
+                duration: 0.35,
+                volume: 0.6,
+                program: 0,
+                channel: 9
+              });
+            } else {
+              const program = MIDI_PROGRAMS[track] ?? 0;
+              this.audio.playGmNote?.({
+                pitch,
+                duration,
+                volume: 0.45,
+                program,
+                channel: 0
+              });
+            }
+          });
+        }
+        index += 1;
+      }
+      this.trackEventIndex[track] = index;
+    });
   }
 
   prepareSong() {
@@ -401,12 +640,17 @@ export default class RobterSession {
     this.starPowerActive = false;
     this.starPowerUsed = 0;
     this.mode = this.instrument === 'drums' ? 'drum' : 'chord';
+    this.syncRobterspielScale();
     this.events = this.songData.events.map((event) => ({
       ...event,
       hit: false,
-      judged: false
+      judged: false,
+      displayLabel: this.getEventLabel(event.requiredInput)
     }));
-    this.syncRobterspielScale();
+    this.trackEventIndex = INSTRUMENTS.reduce((acc, instrument) => {
+      acc[instrument] = 0;
+      return acc;
+    }, {});
     const lastEvent = this.events[this.events.length - 1];
     this.songLength = (lastEvent?.timeSec ?? 0) + 4;
     if (this.songData.modeChange) {
@@ -501,10 +745,23 @@ export default class RobterSession {
     this.buttonPulse[button] = 0.22;
   }
 
-  registerWrongNote() {
+  registerWrongNote(noteData) {
     if (this.wrongNoteCooldown > 0) return;
     this.wrongNoteCooldown = WRONG_NOTE_COOLDOWN;
     this.audio.noise?.(0.08, 0.14);
+    if (noteData?.label) {
+      this.wrongNotes.push({
+        label: noteData.label,
+        laneIndex: Number.isFinite(noteData.laneIndex) ? noteData.laneIndex : 0,
+        life: WRONG_GHOST_DURATION,
+        spin: 0,
+        spinSpeed: (Math.random() * 2 - 1) * 3,
+        x: 0,
+        y: 0,
+        vx: (Math.random() * 2 - 1) * 40,
+        vy: -60 - Math.random() * 40
+      });
+    }
   }
 
   updateTimers(dt) {
@@ -513,6 +770,13 @@ export default class RobterSession {
     });
     this.hitGlassTimer = Math.max(0, this.hitGlassTimer - dt);
     this.wrongNoteCooldown = Math.max(0, this.wrongNoteCooldown - dt);
+    this.wrongNotes = this.wrongNotes.filter((note) => note.life > 0);
+    this.wrongNotes.forEach((note) => {
+      note.life = Math.max(0, note.life - dt);
+      note.spin += note.spinSpeed * dt;
+      note.x += note.vx * dt;
+      note.y += note.vy * dt;
+    });
   }
 
   registerInputBus() {
@@ -744,6 +1008,110 @@ export default class RobterSession {
 
   getLaneColors() {
     return ['#3ad96f', '#ff5b5b', '#ffd84a', '#46b3ff'];
+  }
+
+  drawHighwayBackground(ctx, width, height, options) {
+    const {
+      startX,
+      totalWidth,
+      laneTop,
+      laneBottom,
+      hitLineY,
+      laneColors,
+      laneWidth,
+      laneGap
+    } = options;
+    const horizonY = 80;
+    ctx.save();
+    const sky = ctx.createLinearGradient(0, 0, 0, height);
+    sky.addColorStop(0, '#0f1c2f');
+    sky.addColorStop(0.45, '#071320');
+    sky.addColorStop(1, '#010307');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, width, height);
+
+    const glow = ctx.createRadialGradient(width / 2, horizonY, 10, width / 2, horizonY, 280);
+    glow.addColorStop(0, 'rgba(90,180,255,0.35)');
+    glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = 'rgba(8,12,20,0.7)';
+    ctx.fillRect(startX - 60, laneTop - 20, totalWidth + 120, laneBottom - laneTop + 60);
+
+    ctx.strokeStyle = 'rgba(120,190,255,0.18)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(startX - 60, laneTop - 20, totalWidth + 120, laneBottom - laneTop + 60);
+
+    const time = this.songTime;
+    const streakCount = 18;
+    for (let i = 0; i < streakCount; i += 1) {
+      const t = (i / streakCount + (time * 0.2)) % 1;
+      const y = laneTop + t * (laneBottom - laneTop);
+      const alpha = 0.08 + (1 - t) * 0.2;
+      ctx.strokeStyle = `rgba(80,160,255,${alpha})`;
+      ctx.beginPath();
+      ctx.moveTo(startX - 40, y);
+      ctx.lineTo(startX + totalWidth + 40, y);
+      ctx.stroke();
+    }
+
+    laneColors.forEach((color, index) => {
+      const laneX = startX + index * (laneWidth + laneGap) + laneWidth / 2;
+      ctx.strokeStyle = `${color}33`;
+      ctx.beginPath();
+      ctx.moveTo(laneX, laneTop);
+      ctx.lineTo(width / 2 + (laneX - width / 2) * 0.75, horizonY);
+      ctx.stroke();
+    });
+
+    ctx.strokeStyle = 'rgba(140,210,255,0.35)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(startX - 60, laneBottom);
+    ctx.lineTo(startX - 120, height);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(startX + totalWidth + 60, laneBottom);
+    ctx.lineTo(startX + totalWidth + 120, height);
+    ctx.stroke();
+
+    const hitGlow = ctx.createLinearGradient(0, hitLineY - 30, 0, hitLineY + 30);
+    hitGlow.addColorStop(0, 'rgba(70,160,255,0)');
+    hitGlow.addColorStop(0.5, 'rgba(70,160,255,0.3)');
+    hitGlow.addColorStop(1, 'rgba(70,160,255,0)');
+    ctx.fillStyle = hitGlow;
+    ctx.fillRect(startX - 80, hitLineY - 30, totalWidth + 160, 60);
+
+    ctx.restore();
+  }
+
+  drawWrongNoteGhosts(ctx, width, height, options) {
+    const { startX, laneWidth, laneGap, hitLineY } = options;
+    if (!this.wrongNotes.length) return;
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.font = '14px Courier New';
+    this.wrongNotes.forEach((note) => {
+      const laneIndex = note.laneIndex ?? 0;
+      const laneCenter = startX + laneIndex * (laneWidth + laneGap) + laneWidth / 2;
+      const lifeRatio = note.life / WRONG_GHOST_DURATION;
+      const alpha = Math.max(0, lifeRatio);
+      const x = laneCenter + note.x;
+      const y = hitLineY - 20 + note.y;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(note.spin);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = 'rgba(255,80,80,0.85)';
+      ctx.fillRect(-28, -12, 56, 24);
+      ctx.strokeStyle = 'rgba(255,160,160,0.9)';
+      ctx.strokeRect(-28, -12, 56, 24);
+      ctx.fillStyle = '#2b0b0b';
+      ctx.fillText(note.label, 0, 6);
+      ctx.restore();
+    });
+    ctx.restore();
   }
 
   drawStickIndicators(ctx, width, height, options = {}) {
@@ -1117,12 +1485,6 @@ export default class RobterSession {
 
   drawPlay(ctx, width, height) {
     ctx.save();
-    const background = ctx.createLinearGradient(0, 0, 0, height);
-    background.addColorStop(0, '#06121f');
-    background.addColorStop(1, '#020409');
-    ctx.fillStyle = background;
-    ctx.fillRect(0, 0, width, height);
-
     const lanes = this.instrument === 'drums' ? DRUM_LANES : LANE_LABELS;
     const laneCount = lanes.length;
     const laneWidth = 70;
@@ -1134,12 +1496,23 @@ export default class RobterSession {
     const laneBottom = hitLineY;
     const laneColors = this.getLaneColors();
 
+    this.drawHighwayBackground(ctx, width, height, {
+      startX,
+      totalWidth,
+      laneTop,
+      laneBottom,
+      hitLineY,
+      laneColors,
+      laneWidth,
+      laneGap
+    });
+
     ctx.fillStyle = this.groove ? 'rgba(70,160,255,0.45)' : 'rgba(10,18,30,0.7)';
     ctx.fillRect(startX - 60, 72, totalWidth + 120, 32);
 
     ctx.strokeStyle = 'rgba(110,180,255,0.25)';
     ctx.lineWidth = 1;
-    ctx.fillStyle = 'rgba(6,12,20,0.7)';
+    ctx.fillStyle = 'rgba(6,12,20,0.55)';
     ctx.fillRect(startX - 40, laneTop, totalWidth + 80, laneBottom - laneTop);
     ctx.strokeRect(startX - 40, laneTop, totalWidth + 80, laneBottom - laneTop);
 
@@ -1227,6 +1600,27 @@ export default class RobterSession {
       ctx.globalAlpha = 1;
       ctx.strokeStyle = 'rgba(230,245,255,0.6)';
       ctx.strokeRect(noteX, noteY, noteW, noteH);
+      if (event.displayLabel) {
+        ctx.fillStyle = 'rgba(5,10,18,0.75)';
+        const labelPad = 6;
+        ctx.font = '11px Courier New';
+        ctx.textAlign = 'center';
+        const labelWidth = ctx.measureText(event.displayLabel).width + labelPad * 2;
+        const labelX = laneCenter - labelWidth / 2;
+        const labelY = noteY - 18 * scale;
+        ctx.fillRect(labelX, labelY, labelWidth, 16);
+        ctx.strokeStyle = 'rgba(160,220,255,0.5)';
+        ctx.strokeRect(labelX, labelY, labelWidth, 16);
+        ctx.fillStyle = '#d7f2ff';
+        ctx.fillText(event.displayLabel, laneCenter, labelY + 12);
+      }
+    });
+
+    this.drawWrongNoteGhosts(ctx, width, height, {
+      startX,
+      laneWidth,
+      laneGap,
+      hitLineY
     });
 
     const accuracy = this.events.length ? this.hits / this.events.length : 0;
@@ -1236,6 +1630,17 @@ export default class RobterSession {
     ctx.fillText(`Score ${this.score}`, 40, 40);
     ctx.fillText(`Streak ${this.streak}`, 40, 62);
     ctx.fillText(`Accuracy ${(accuracy * 100).toFixed(1)}%`, 40, 84);
+
+    const sectionLabel = this.getCurrentSectionLabel();
+    if (sectionLabel) {
+      ctx.fillStyle = 'rgba(10,16,24,0.75)';
+      ctx.fillRect(32, 104, 180, 26);
+      ctx.strokeStyle = 'rgba(120,190,255,0.5)';
+      ctx.strokeRect(32, 104, 180, 26);
+      ctx.fillStyle = '#7ad0ff';
+      ctx.font = '14px Courier New';
+      ctx.fillText(sectionLabel, 40, 122);
+    }
 
     ctx.textAlign = 'right';
     ctx.fillText(`Mode ${this.mode.toUpperCase()}`, width - 40, 40);

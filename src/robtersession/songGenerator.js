@@ -1,4 +1,4 @@
-import { DIFFICULTY_WINDOWS, MODE_LIBRARY, ROOT_LABELS } from './constants.js';
+import { DIFFICULTY_WINDOWS, INSTRUMENTS, MODE_LIBRARY, ROOT_LABELS } from './constants.js';
 import { hashString, mulberry32, pickRandom, rangeRandom } from './rng.js';
 
 const PROGRESSIONS = [
@@ -74,6 +74,42 @@ const CHORD_TYPES = {
 
 const NOTE_BUTTONS = ['A', 'X', 'Y', 'B'];
 
+const SECTION_FEEL = {
+  Intro: 'simple',
+  Verse: 'simple',
+  Chorus: 'medium',
+  Bridge: 'medium',
+  Solo: 'dense'
+};
+
+const SECTION_RHYTHMS = {
+  Intro: {
+    simple: [[0, 2], [0, 3], [0, 2.5]],
+    medium: [[0, 1.5, 3], [0, 2, 3.5]],
+    dense: [[0, 1.5, 2.5, 3.5]]
+  },
+  Verse: {
+    simple: [[0, 2], [0, 1, 2.5], [0, 3]],
+    medium: [[0, 1.5, 2.5], [0, 1, 2, 3]],
+    dense: [[0, 0.75, 1.5, 2.5, 3.25]]
+  },
+  Chorus: {
+    simple: [[0, 2, 3], [0, 1, 2.5]],
+    medium: [[0, 1, 2, 3.5], [0, 1.5, 2.5, 3.5]],
+    dense: [[0, 0.5, 1.5, 2.5, 3.5], [0, 1, 1.75, 2.5, 3.25, 3.75]]
+  },
+  Bridge: {
+    simple: [[0, 2.5], [0, 1.75, 3]],
+    medium: [[0, 1.25, 2.75], [0, 1.5, 2.5, 3.5]],
+    dense: [[0, 0.75, 1.5, 2.25, 3.25]]
+  },
+  Solo: {
+    simple: [[0, 1, 2, 3]],
+    medium: [[0, 1, 1.5, 2.5, 3.5]],
+    dense: [[0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5]]
+  }
+};
+
 const createTempoMap = (bpm) => ({ bpm, secondsPerBeat: 60 / bpm });
 
 const getTimingWindows = (tier) => DIFFICULTY_WINDOWS.find((entry) => entry.tier === tier) || DIFFICULTY_WINDOWS[0];
@@ -87,6 +123,20 @@ const buildSections = (rng, tier) => {
     name,
     bars: baseBars + (index % 2 === 0 ? 0 : 2)
   }));
+};
+
+const buildSectionTimeline = (sections) => {
+  let beatCursor = 0;
+  return sections.map((section) => {
+    const beats = section.bars * 4;
+    const entry = {
+      ...section,
+      startBeat: beatCursor,
+      endBeat: beatCursor + beats
+    };
+    beatCursor += beats;
+    return entry;
+  });
 };
 
 const selectChordType = (rng, tier) => {
@@ -109,6 +159,62 @@ const selectBassRhythm = (rng, tier) => {
   if (tier <= 2) return pickRandom(rng, BASS_RHYTHM_PATTERNS.simple);
   if (tier <= 4) return pickRandom(rng, BASS_RHYTHM_PATTERNS.medium);
   return pickRandom(rng, BASS_RHYTHM_PATTERNS.dense);
+};
+
+const getSectionDensity = (sectionName, tier) => {
+  const base = tier <= 2 ? 'simple' : tier <= 4 ? 'medium' : 'dense';
+  const target = SECTION_FEEL[sectionName] || base;
+  if (target === base) return base;
+  if (target === 'dense' && base === 'simple') return 'medium';
+  if (target === 'simple' && base === 'dense') return 'medium';
+  return target;
+};
+
+const selectSectionRhythm = (rng, tier, sectionName, instrument) => {
+  const density = getSectionDensity(sectionName, tier);
+  if (instrument === 'bass') {
+    const pool = BASS_RHYTHM_PATTERNS[density] || BASS_RHYTHM_PATTERNS.simple;
+    return pickRandom(rng, pool);
+  }
+  const sectionPool = SECTION_RHYTHMS[sectionName]?.[density];
+  if (sectionPool) return pickRandom(rng, sectionPool);
+  return selectRhythm(rng, tier);
+};
+
+const buildDrumPattern = ({ rng, tier, sectionName, isSectionStart, isSectionEnd }) => {
+  const density = getSectionDensity(sectionName, tier);
+  let kick = [0];
+  let snare = [1];
+  let hat = [0.5, 1.5, 2.5, 3.5];
+  let cymbal = [];
+  if (density === 'medium') {
+    kick = [0, 2.5];
+    snare = [1, 3];
+    hat = [0.5, 1, 1.5, 2, 2.5, 3, 3.5];
+  }
+  if (density === 'dense') {
+    kick = [0, 1.5, 2.5];
+    snare = [1, 3];
+    hat = [0.5, 1, 1.5, 2, 2.5, 3, 3.5];
+  }
+  if (sectionName === 'Bridge') {
+    kick = kick.concat([2.75]);
+  }
+  if (sectionName === 'Chorus') {
+    cymbal = [0];
+  }
+  if (isSectionStart && rng() < 0.4) {
+    cymbal = [...new Set([...cymbal, 0])];
+  }
+  if (isSectionEnd) {
+    cymbal = [...new Set([...cymbal, 3.5])];
+  }
+  return {
+    kick,
+    snare,
+    hat,
+    cymbal
+  };
 };
 
 const shouldUseNoteMode = (rng, tier) => {
@@ -139,38 +245,43 @@ const generateEvents = ({
   tempo,
   sections,
   progression,
-  instrument,
-  modeChange
+  instrument
 }) => {
   const events = [];
-  let beatCursor = 0;
   const totalBars = sections.reduce((sum, section) => sum + section.bars, 0);
   const starPhraseBars = createStarPhraseMap(totalBars);
   const degreePool = progression.length ? progression : [1, 4, 5, 1];
-  const drumPattern = [
-    { lane: 0, offsets: [0, 2] },
-    { lane: 1, offsets: [1, 3] },
-    { lane: 2, offsets: [0.5, 1.5, 2.5, 3.5] },
-    { lane: 3, offsets: [2.75] }
-  ];
   for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex += 1) {
     const section = sections[sectionIndex];
+    const sectionRhythm = selectSectionRhythm(rng, tier, section.name, instrument);
     for (let bar = 0; bar < section.bars; bar += 1) {
-      const globalBar = Math.floor(beatCursor / 4);
-      const rhythm = selectRhythm(rng, tier);
+      const barStartBeat = section.startBeat + bar * 4;
+      const globalBar = Math.floor(barStartBeat / 4);
       const degree = degreePool[(globalBar + bar) % degreePool.length];
       const isPhrase = starPhraseBars.has(globalBar);
       if (instrument === 'drums') {
-        drumPattern.forEach((laneDef) => {
+        const drumPattern = buildDrumPattern({
+          rng,
+          tier,
+          sectionName: section.name,
+          isSectionStart: bar === 0,
+          isSectionEnd: bar === section.bars - 1 && sectionIndex < sections.length - 1
+        });
+        const laneMap = [
+          { lane: 0, offsets: drumPattern.kick },
+          { lane: 1, offsets: drumPattern.snare },
+          { lane: 2, offsets: drumPattern.hat },
+          { lane: 3, offsets: drumPattern.cymbal }
+        ];
+        laneMap.forEach((laneDef) => {
           laneDef.offsets.forEach((offset) => {
-            if (tier < 4 && laneDef.lane === 3 && rng() < 0.6) return;
-            if (tier < 3 && laneDef.lane === 2 && rng() < 0.4) return;
-            const timeBeat = beatCursor + offset;
+            const timeBeat = barStartBeat + offset;
             events.push({
               timeBeat,
               timeSec: timeBeat * tempo.secondsPerBeat,
               lane: laneDef.lane,
               type: 'NOTE',
+              section: section.name,
               requiredInput: {
                 mode: 'drum',
                 lane: laneDef.lane,
@@ -182,10 +293,10 @@ const generateEvents = ({
         });
       } else {
         const bassSyncopation = instrument === 'bass'
-          ? selectBassRhythm(rng, tier)
-          : rhythm;
+          ? selectSectionRhythm(rng, tier, section.name, 'bass')
+          : sectionRhythm;
         bassSyncopation.forEach((offset) => {
-          const timeBeat = beatCursor + offset;
+          const timeBeat = barStartBeat + offset;
           if (instrument === 'bass' && rng() < (tier >= 5 ? 0.08 : 0.18)) return;
           let useNoteMode = instrument === 'bass'
             ? shouldUseBassNoteMode(rng, tier)
@@ -203,6 +314,7 @@ const generateEvents = ({
               timeSec: timeBeat * tempo.secondsPerBeat,
               lane: NOTE_BUTTONS.indexOf(button),
               type: 'NOTE',
+              section: section.name,
               requiredInput: {
                 mode: 'note',
                 degree,
@@ -220,6 +332,7 @@ const generateEvents = ({
               timeSec: timeBeat * tempo.secondsPerBeat,
               lane: NOTE_BUTTONS.indexOf(chordType.button),
               type: 'CHORD',
+              section: section.name,
               requiredInput: {
                 mode: 'chord',
                 degree,
@@ -233,7 +346,6 @@ const generateEvents = ({
           }
         });
       }
-      beatCursor += 4;
     }
   }
   return events;
@@ -248,7 +360,7 @@ export const generateSongData = ({ name, tier, instrument, allowModeChange = fal
   const tempoMax = 120 + tier * 8;
   const bpm = Math.round(rangeRandom(rng, tempoMin, tempoMax));
   const tempo = createTempoMap(bpm);
-  const sections = buildSections(rng, tier);
+  const sections = buildSectionTimeline(buildSections(rng, tier));
   const progression = pickRandom(rng, PROGRESSIONS);
   const difficulty = clamp(Math.round(1 + tier + rng() * 2), 1, 10);
   const totalBars = sections.reduce((sum, section) => sum + section.bars, 0);
@@ -259,15 +371,18 @@ export const generateSongData = ({ name, tier, instrument, allowModeChange = fal
       mode: pickRandom(rng, MODE_LIBRARY)
     }
     : null;
-  const events = generateEvents({
-    rng,
-    tier,
-    tempo,
-    sections,
-    progression,
-    instrument,
-    modeChange
+  const tracks = {};
+  INSTRUMENTS.forEach((trackInstrument) => {
+    tracks[trackInstrument] = generateEvents({
+      rng,
+      tier,
+      tempo,
+      sections,
+      progression,
+      instrument: trackInstrument
+    });
   });
+  const events = tracks[instrument] || tracks.guitar || [];
   const timing = getTimingWindows(tier);
   return {
     name,
@@ -283,6 +398,7 @@ export const generateSongData = ({ name, tier, instrument, allowModeChange = fal
     difficulty,
     timing,
     events,
+    tracks,
     modeChange,
     tempoRange: { min: tempoMin, max: tempoMax }
   };
