@@ -37,7 +37,7 @@ Sharpen notes (hold **D-pad Left**):
 - **LB + B = 7♯**
 
 Additional note modifiers:
-- **RB**: octave up for the played note.
+- **RB**: octave up (global, applies after choosing the note).
 - **Tritone (F#)**: use the right-stick bend to reach it.
 
 ## Chord Mode
@@ -49,8 +49,30 @@ Base chords:
 - **B**: Power chord.
 
 Chord modifiers:
-- **RB + A**: Sus2.
-- **RB + X**: Sus4.
-- **RB + Y**: 7th (dominant).
-- **RB + B**: add 9th.
-- **LB + RB**: Diminished.
+- **LB + A**: Sus2 (replace the 3rd with the diatonic 2).
+- **LB + X**: Sus4 (replace the 3rd with the diatonic 4).
+- **LB + Y**: Diatonic 7th (context-aware).
+- **LB + B**: add 9th (add the diatonic 2 an octave up).
+- **D-pad Left + A**: Diminished triad.
+- **D-pad Left + X**: Half-diminished (m7♭5).
+- **D-pad Left + Y**: Augmented triad.
+- **D-pad Left + B**: Altered dominant (auto-select 7♭9 or 7♯9).
+- **LB + D-pad Left + A**: Minor 6.
+- **LB + D-pad Left + X**: Diminished 7.
+- **LB + D-pad Left + Y**: Augmented major 7.
+- **LB + D-pad Left + B**: Minor 9♭5.
+
+Chords are built from **scale steps**, not fixed chromatic intervals, so every modifier stays context-aware.
+
+### Why RB Does Not Affect Harmony
+RB is a **global octave-up performance modifier**. It applies identically in note mode and chord mode by shifting the chosen pitches up an octave **after** the chord or note is built. RB never selects chord types or alters chord qualities, so harmony decisions remain exclusively on LB and D-pad Left.
+
+### Why the 7th Changes by Scale Degree
+The LB + Y chord is a **diatonic 7th**, meaning the 7th is pulled from the active scale instead of forced to be a dominant 7th. This keeps the harmony aligned with the mode and degree:
+- Degree 1 → Cmaj7
+- Degree 2 → Dm7
+- Degree 3 → Em7
+- Degree 4 → Fmaj7
+- Degree 5 → G7
+- Degree 6 → Am7
+- Degree 7 → Bm7♭5

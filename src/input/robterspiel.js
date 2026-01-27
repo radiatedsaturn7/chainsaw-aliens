@@ -107,11 +107,23 @@ export default class RobterspielInput {
   getChordPitches(rootDegree, options) {
     const {
       variant = 'triad',
-      suspension = null
+      suspension = null,
+      alteredNinth = null
     } = options || {};
     const rootStep = rootDegree - 1;
     const chordSteps = [rootStep, rootStep + 2, rootStep + 4];
-    if (variant === 'seventh' || variant === 'dominant') {
+    const addsSeventh = [
+      'seventh',
+      'dominant',
+      'minor7',
+      'major7',
+      'half-diminished',
+      'altered-dominant',
+      'diminished7',
+      'augmented-major7',
+      'minor9b5'
+    ].includes(variant);
+    if (addsSeventh) {
       chordSteps.push(rootStep + 6);
     } else if (variant === 'open') {
       chordSteps[1] += 7;
@@ -119,7 +131,13 @@ export default class RobterspielInput {
       chordSteps.length = 0;
       chordSteps.push(rootStep, rootStep + 4, rootStep + 7);
     }
-    if (variant === 'add9') {
+    if (variant === 'sixth' || variant === 'minor6') {
+      chordSteps.push(rootStep + 5);
+    }
+    if (variant === 'add9' || variant === 'minor9b5') {
+      chordSteps.push(rootStep + 1 + this.scaleSteps.length);
+    }
+    if (variant === 'altered-dominant') {
       chordSteps.push(rootStep + 1 + this.scaleSteps.length);
     }
     if (suspension === 'sus2') {
@@ -130,15 +148,96 @@ export default class RobterspielInput {
     const diminishedThird = rootStep + 2;
     const diminishedFifth = rootStep + 4;
     const dominantSeventh = rootStep + 6;
+    const majorThird = rootStep + 2;
+    const majorFifth = rootStep + 4;
+    const minorSeventh = rootStep + 6;
+    const majorSeventh = rootStep + 6;
+    const majorSixth = rootStep + 5;
+    const alteredNinthStep = rootStep + 1 + this.scaleSteps.length;
+    const rootPitch = this.getPitchForScaleStep(rootStep);
     return chordSteps.map((stepIndex) => {
       let pitch = this.getPitchForScaleStep(stepIndex);
+      const interval = pitch - rootPitch;
       if (variant === 'diminished') {
         if (stepIndex === diminishedThird || stepIndex === diminishedFifth) {
           pitch -= 1;
         }
       }
+      if (variant === 'augmented' && stepIndex === majorFifth) {
+        pitch += 1;
+      }
       if (variant === 'dominant' && stepIndex === dominantSeventh) {
         pitch -= 1;
+      }
+      if (variant === 'minor' || variant === 'minor7' || variant === 'minor6' || variant === 'minor9b5') {
+        if (stepIndex === majorThird && interval === 4) {
+          pitch -= 1;
+        }
+        if (stepIndex === majorFifth && interval === 6 && variant !== 'minor9b5') {
+          pitch += 1;
+        }
+        if ((variant === 'minor7' || variant === 'minor9b5') && stepIndex === minorSeventh && interval === 11) {
+          pitch -= 1;
+        }
+        if (variant === 'minor9b5' && stepIndex === majorFifth && interval === 7) {
+          pitch -= 1;
+        }
+      }
+      if (variant === 'major7' || variant === 'sixth' || variant === 'altered-dominant' || variant === 'augmented-major7') {
+        if (stepIndex === majorThird && interval === 3) {
+          pitch += 1;
+        }
+        if (stepIndex === majorFifth && interval === 6) {
+          pitch += 1;
+        }
+        if (stepIndex === majorFifth && interval === 8 && variant !== 'augmented-major7') {
+          pitch -= 1;
+        }
+      }
+      if ((variant === 'major7' || variant === 'augmented-major7') && stepIndex === majorSeventh && interval === 10) {
+        pitch += 1;
+      }
+      if ((variant === 'sixth' || variant === 'minor6') && stepIndex === majorSixth && interval === 8) {
+        pitch += 1;
+      }
+      if (variant === 'half-diminished') {
+        if (stepIndex === diminishedThird && interval === 4) {
+          pitch -= 1;
+        }
+        if (stepIndex === diminishedFifth) {
+          pitch -= 1;
+        }
+        if (stepIndex === minorSeventh && interval === 11) {
+          pitch -= 1;
+        }
+      }
+      if (variant === 'diminished7') {
+        if (stepIndex === diminishedThird && interval === 4) {
+          pitch -= 1;
+        }
+        if (stepIndex === diminishedFifth) {
+          pitch -= 1;
+        }
+        if (stepIndex === minorSeventh && interval >= 10) {
+          pitch -= interval - 9;
+        }
+      }
+      if (variant === 'augmented-major7') {
+        if (stepIndex === majorFifth && interval === 7) {
+          pitch += 1;
+        }
+      }
+      if (variant === 'altered-dominant') {
+        if (stepIndex === dominantSeventh && interval === 11) {
+          pitch -= 1;
+        }
+        if (stepIndex === alteredNinthStep) {
+          if (alteredNinth === 'sharp') {
+            pitch += 1;
+          } else if (alteredNinth === 'flat') {
+            pitch -= 1;
+          }
+        }
       }
       return pitch;
     });
@@ -281,10 +380,6 @@ export default class RobterspielInput {
     } else {
       const rootDegree = this.leftStickStableDirection;
       const isChordMode = !this.noteMode;
-      const addNinth = (pitches, rootStep) => {
-        const ninth = this.getPitchForScaleStep(rootStep + 1 + this.scaleSteps.length);
-        return [...pitches, ninth];
-      };
       const applyInversion = (pitches, inversion) => {
         if (!inversion) return pitches;
         const sorted = [...pitches].sort((a, b) => a - b);
@@ -305,12 +400,19 @@ export default class RobterspielInput {
         const isPressed = Boolean(currentButtons[button.index]);
         const wasPressed = Boolean(this.prevButtons[button.index]);
         if (isPressed && !wasPressed) {
+          if (this.sustainActive && this.sustainedNotes.size) {
+            Array.from(this.sustainedNotes).forEach((id) => {
+              this.bus.emit('noteoff', { id, source: 'gamepad' });
+            });
+            this.sustainedNotes.clear();
+          }
           let pitches = [];
           const velocity = clamp(volumeValue, 1, 127);
           let displayLabel = '';
           let displayDetail = '';
           let displayType = isChordMode ? 'chord' : 'note';
           let displayRootPitch = null;
+          let chordSuffix = '';
           if (!isChordMode) {
             const degree = lbPressed ? button.passing : button.base;
             const degreeOffset = degree - 1;
@@ -318,9 +420,6 @@ export default class RobterspielInput {
             let pitch = this.getPitchForScaleStep(targetDegree - 1);
             if (dpadLeft) {
               pitch += 1;
-            }
-            if (rbPressed) {
-              pitch += 12;
             }
             pitches = [pitch];
             displayLabel = formatPitchLabel(pitch);
@@ -330,20 +429,49 @@ export default class RobterspielInput {
             let suspension = null;
             let inversion = 0;
             const targetDegree = rootDegree;
-            let addNinthChord = false;
-            if (lbPressed && rbPressed) {
-              variant = 'diminished';
-            } else if (rbPressed) {
+            let alteredNinth = null;
+            const harmonyModifierCount = Number(lbPressed) + Number(dpadLeft);
+            const harmonyModifier = harmonyModifierCount === 1
+              ? (lbPressed ? 'lb' : 'dpad-left')
+              : harmonyModifierCount === 2
+                ? 'lb-dpad-left'
+                : null;
+            if (harmonyModifier === 'lb') {
               if (button.index === 0) {
                 suspension = 'sus2';
               } else if (button.index === 2) {
                 suspension = 'sus4';
               } else if (button.index === 3) {
-                variant = 'dominant';
+                variant = 'seventh';
               } else if (button.index === 1) {
-                addNinthChord = true;
+                variant = 'add9';
               }
-            } else {
+            } else if (harmonyModifier === 'dpad-left') {
+              if (button.index === 0) {
+                variant = 'diminished';
+              } else if (button.index === 2) {
+                variant = 'half-diminished';
+              } else if (button.index === 3) {
+                variant = 'augmented';
+              } else if (button.index === 1) {
+                variant = 'altered-dominant';
+                const rootStep = targetDegree - 1;
+                const rootPitch = this.getPitchForScaleStep(rootStep);
+                const secondPitch = this.getPitchForScaleStep(rootStep + 1);
+                const secondInterval = secondPitch - rootPitch;
+                alteredNinth = secondInterval <= 1 ? 'sharp' : 'flat';
+              }
+            } else if (harmonyModifier === 'lb-dpad-left') {
+              if (button.index === 0) {
+                variant = 'minor6';
+              } else if (button.index === 2) {
+                variant = 'diminished7';
+              } else if (button.index === 3) {
+                variant = 'augmented-major7';
+              } else if (button.index === 1) {
+                variant = 'minor9b5';
+              }
+            } else if (harmonyModifierCount === 0) {
               if (button.index === 2) {
                 inversion = 1;
               } else if (button.index === 3) {
@@ -352,20 +480,37 @@ export default class RobterspielInput {
                 variant = 'power';
               }
             }
-            pitches = this.getChordPitches(targetDegree, { variant, suspension });
+            pitches = this.getChordPitches(targetDegree, { variant, suspension, alteredNinth });
             pitches = applyInversion(pitches, inversion);
-            if (addNinthChord) {
-              pitches = addNinth(pitches, targetDegree - 1);
-            }
             displayRootPitch = this.getPitchForScaleStep(targetDegree - 1);
             const rootLabel = formatPitchLabel(displayRootPitch);
             const suffixParts = [];
             if (variant === 'diminished') {
               suffixParts.push('dim');
-            } else if (variant === 'dominant') {
-              suffixParts.push('7');
+            } else if (variant === 'half-diminished') {
+              suffixParts.push('m7♭5');
+            } else if (variant === 'augmented') {
+              suffixParts.push('aug');
+            } else if (variant === 'diminished7') {
+              suffixParts.push('dim7');
+            } else if (variant === 'augmented-major7') {
+              suffixParts.push('aug maj7');
+            } else if (variant === 'minor9b5') {
+              suffixParts.push('m9♭5');
+            } else if (variant === 'altered-dominant') {
+              suffixParts.push(alteredNinth === 'sharp' ? '7♯9' : '7♭9');
             } else if (variant === 'seventh') {
               suffixParts.push('7');
+            } else if (variant === 'minor') {
+              suffixParts.push('m');
+            } else if (variant === 'minor7') {
+              suffixParts.push('m7');
+            } else if (variant === 'major7') {
+              suffixParts.push('maj7');
+            } else if (variant === 'sixth') {
+              suffixParts.push('6');
+            } else if (variant === 'minor6') {
+              suffixParts.push('m6');
             } else if (variant === 'power') {
               suffixParts.push('5');
             } else if (variant === 'open') {
@@ -376,12 +521,20 @@ export default class RobterspielInput {
             if (suspension) {
               suffixParts.push(suspension);
             }
-            if (addNinthChord && !suffixParts.includes('add9')) {
-              suffixParts.push('add9');
-            }
-            const suffix = suffixParts.length ? ` ${suffixParts.join(' ')}` : '';
-            displayLabel = `${rootLabel}${suffix}`;
+            chordSuffix = suffixParts.length ? ` ${suffixParts.join(' ')}` : '';
+            displayLabel = `${rootLabel}${chordSuffix}`;
             displayDetail = pitches.map((pitch) => formatPitchLabel(pitch)).join(' ');
+          }
+          if (rbPressed) {
+            pitches = pitches.map((pitch) => pitch + 12);
+            if (displayType === 'note') {
+              displayLabel = formatPitchLabel(pitches[0]);
+            } else if (displayRootPitch !== null) {
+              displayRootPitch += 12;
+              const rootLabel = formatPitchLabel(displayRootPitch);
+              displayLabel = `${rootLabel}${chordSuffix}`;
+              displayDetail = pitches.map((pitch) => formatPitchLabel(pitch)).join(' ');
+            }
           }
           const noteIds = pitches.map((pitch, idx) => {
             const noteId = `pad-${button.index}-${pitch}-${now}-${idx}`;
