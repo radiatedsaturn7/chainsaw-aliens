@@ -171,13 +171,18 @@ export default class RobterspielInput {
     const bendNormalized = Math.abs(axisRY) < STICK_NEUTRAL_DEADZONE ? 0 : clamp(-axisRY, -1, 1);
     this.pitchBendSemitones = bendNormalized * PITCH_BEND_RANGE_SEMITONES;
 
-    if (Math.hypot(axisLX, axisLY) > LEFT_STICK_DEADZONE) {
-      const direction = mapDirection(axisLX, axisLY);
-      if (this.leftStickCandidate !== direction) {
-        this.leftStickCandidate = direction;
-        this.leftStickCandidateTime = now;
-      } else if (now - this.leftStickCandidateTime >= 50) {
-        this.leftStickStableDirection = direction;
+    if (!this.selectorActive) {
+      if (Math.hypot(axisLX, axisLY) > LEFT_STICK_DEADZONE) {
+        const direction = mapDirection(axisLX, axisLY);
+        if (this.leftStickCandidate !== direction) {
+          this.leftStickCandidate = direction;
+          this.leftStickCandidateTime = now;
+        } else if (now - this.leftStickCandidateTime >= 50) {
+          this.leftStickStableDirection = direction;
+        }
+      } else {
+        this.leftStickCandidate = null;
+        this.leftStickCandidateTime = 0;
       }
     } else {
       this.leftStickCandidate = null;
@@ -359,7 +364,7 @@ export default class RobterspielInput {
 
     if (!this.selectorActive) {
       const pitchBend = Math.round(((clamp(bendNormalized, -1, 1) + 1) / 2) * 16383);
-      if (Math.abs(pitchBend - this.lastPitchBend) > 80) {
+      if (Math.abs(pitchBend - this.lastPitchBend) > 24) {
         this.bus.emit('pitchbend', { value: pitchBend, source: 'gamepad' });
         this.lastPitchBend = pitchBend;
       }

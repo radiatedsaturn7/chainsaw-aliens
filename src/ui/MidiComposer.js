@@ -535,6 +535,7 @@ export default class MidiComposer {
     this.lastPlaybackTick = 0;
     this.isPlaying = false;
     this.activeNotes = new Map();
+    this.livePreviewNotes = new Set();
     this.dragState = null;
     this.selection = new Set();
     this.clipboard = null;
@@ -1810,6 +1811,7 @@ export default class MidiComposer {
     if (this.singleNoteRecordMode.active) {
       this.exitSingleNoteRecordMode();
     }
+    this.stopLivePreviewNotes();
     this.recordModeActive = false;
     if (this.recordGridSnapshot) {
       this.gridZoomX = this.recordGridSnapshot.gridZoomX;
@@ -1920,7 +1922,7 @@ export default class MidiComposer {
     }
     const previewPitch = Number.isFinite(event.previewPitch) ? event.previewPitch : pitch;
     this.recordStatus.velocity = clampedVelocity;
-    this.playGmNote(previewPitch, 0.4, (clampedVelocity / 127) * track.volume, track, track.pan);
+    this.playLivePreviewNote(event.id, previewPitch, clampedVelocity, track, track.pan);
     this.recordStatus.velocity = clampedVelocity;
   }
 
@@ -1930,6 +1932,48 @@ export default class MidiComposer {
     if (this.singleNoteActiveNotes.size === 0) {
       this.singleNoteRecordMode.awaitingChord = true;
     }
+    this.stopLivePreviewNote(event.id);
+  }
+
+  playLivePreviewNote(id, pitch, velocity, track, pan = 0) {
+    if (!id || !track) return;
+    const drumTrack = isDrumTrack(track);
+    if (drumTrack) {
+      this.playGmNote(pitch, 0.4, (velocity / 127) * track.volume, track, pan);
+      return;
+    }
+    if (this.game?.audio?.startLiveGmNote) {
+      this.game.audio.startLiveGmNote({
+        id,
+        pitch,
+        duration: 8,
+        volume: (velocity / 127) * track.volume,
+        program: track.program,
+        channel: track.channel,
+        bankMSB: track.bankMSB,
+        bankLSB: track.bankLSB,
+        pan
+      });
+      this.livePreviewNotes.add(id);
+      return;
+    }
+    this.playGmNote(pitch, 0.4, (velocity / 127) * track.volume, track, pan);
+  }
+
+  stopLivePreviewNote(id) {
+    if (!id || !this.livePreviewNotes.has(id)) return;
+    if (this.game?.audio?.stopLiveGmNote) {
+      this.game.audio.stopLiveGmNote(id);
+    }
+    this.livePreviewNotes.delete(id);
+  }
+
+  stopLivePreviewNotes() {
+    if (!this.livePreviewNotes.size) return;
+    if (this.game?.audio?.stopLiveGmNote) {
+      this.livePreviewNotes.forEach((noteId) => this.game.audio.stopLiveGmNote(noteId));
+    }
+    this.livePreviewNotes.clear();
   }
 
   startRecording() {
@@ -2054,7 +2098,7 @@ export default class MidiComposer {
       trackId: track.id
     });
     const previewPitch = Number.isFinite(event.previewPitch) ? event.previewPitch : pitch;
-    this.playGmNote(previewPitch, 0.4, (clampedVelocity / 127) * track.volume, track, track.pan);
+    this.playLivePreviewNote(event.id, previewPitch, clampedVelocity, track, track.pan);
   }
 
   handleRecordedNoteOff(event) {
@@ -2064,6 +2108,7 @@ export default class MidiComposer {
       return;
     }
     this.recorder.recordNoteOff({ id: event.id, time: this.getRecordingTime() });
+    this.stopLivePreviewNote(event.id);
   }
 
   handleRecordedCc(event) {
