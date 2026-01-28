@@ -430,6 +430,7 @@ export default class RobterSession {
     }
     if (this.instrument !== 'drums' && getModeToggle(this.input) && this.playMode !== 'listen') {
       this.mode = this.mode === 'note' ? 'chord' : 'note';
+      this.robterspiel.noteMode = this.mode === 'note';
     }
     const octaveShift = getOctaveShift(this.input);
     if (!this.robterspiel.connected) {
@@ -926,6 +927,9 @@ export default class RobterSession {
     this.starPowerActive = false;
     this.starPowerUsed = 0;
     this.mode = this.instrument === 'drums' ? 'drum' : 'chord';
+    if (this.instrument !== 'drums') {
+      this.robterspiel.noteMode = this.mode === 'note';
+    }
     this.syncRobterspielScale();
     this.events = this.songData.events.map((event) => ({
       ...event,
@@ -1483,6 +1487,7 @@ export default class RobterSession {
     const rightX = options.rightX ?? width - 80;
     const baseY = options.baseY ?? height - 110;
 
+    const targetPulse = clamp(options.targetPulse ?? 0, 0, 1);
     const drawStick = (centerX, centerY, stick, label, active, showDirections, targetAngle, targetLabel) => {
       if (!active) return;
       const knobX = centerX + clamp(stick.x, -1, 1) * radius * 0.6;
@@ -1504,18 +1509,18 @@ export default class RobterSession {
       ctx.textAlign = 'center';
       ctx.fillText(label, centerX, centerY + radius + 16);
       if (Number.isFinite(targetAngle)) {
-        const markerRadius = radius * 0.95;
+        const markerRadius = radius * (0.9 + targetPulse * 0.12);
         const dx = Math.cos(targetAngle) * markerRadius;
         const dy = Math.sin(targetAngle) * markerRadius;
-        ctx.strokeStyle = 'rgba(255,225,120,0.9)';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = `rgba(255,225,120,${0.65 + targetPulse * 0.35})`;
+        ctx.lineWidth = 2 + targetPulse;
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.lineTo(centerX + dx, centerY + dy);
         ctx.stroke();
-        ctx.fillStyle = '#ffe16a';
+        ctx.fillStyle = `rgba(255,225,120,${0.7 + targetPulse * 0.3})`;
         ctx.beginPath();
-        ctx.arc(centerX + dx, centerY + dy, 4, 0, Math.PI * 2);
+        ctx.arc(centerX + dx, centerY + dy, 4 + targetPulse * 2, 0, Math.PI * 2);
         ctx.fill();
         if (targetLabel) {
           ctx.fillStyle = '#ffe16a';
@@ -1556,7 +1561,7 @@ export default class RobterSession {
       leftX,
       baseY,
       leftStick,
-      'Left Stick',
+      options.leftLabel || 'Left Stick',
       leftMagnitude > 0.25 || options.forceLeft,
       true,
       options.targetLeftAngle,
@@ -1566,7 +1571,7 @@ export default class RobterSession {
       rightX,
       baseY,
       rightStick,
-      'Right Stick',
+      options.rightLabel || 'Right Stick',
       rightMagnitude > 0.25 || options.forceRight,
       false,
       options.targetRightAngle,
@@ -1684,37 +1689,72 @@ export default class RobterSession {
     const listY = 110;
     const rowH = 26;
     const entries = this.getSetlistEntries();
-    this.bounds.list = [];
+    const listTop = listY;
+    const listBottom = height - 80;
+    const viewHeight = listBottom - listTop;
+    const rowPositions = [];
     let y = listY;
     let lastSetIndex = null;
     entries.forEach((entry, index) => {
       if (entry.setIndex !== lastSetIndex && entry.setIndex >= 0) {
-        ctx.fillStyle = '#7ad0ff';
-        ctx.font = '14px Courier New';
-        ctx.textAlign = 'left';
-        ctx.fillText(entry.setTitle, listX, y);
         y += 18;
         lastSetIndex = entry.setIndex;
       }
-      const selected = index === this.selectionIndex;
-      ctx.fillStyle = selected ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)';
-      ctx.fillRect(listX, y - 16, 380, rowH);
-      ctx.strokeStyle = selected ? '#ffe16a' : 'rgba(255,255,255,0.12)';
-      ctx.strokeRect(listX, y - 16, 380, rowH);
-      ctx.fillStyle = entry.locked ? 'rgba(255,255,255,0.25)' : '#fff';
-      ctx.font = '16px Courier New';
-      ctx.fillText(entry.name, listX + 12, y + 4);
-      ctx.font = '12px Courier New';
-      ctx.fillStyle = entry.locked ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.7)';
-      const bestScore = this.progress.bestScores[getSongKey(entry.name)] || 0;
-      const bestGrade = this.progress.bestGrades[getSongKey(entry.name)] || '-';
-      if (!entry.random) {
-        ctx.fillText(`Best ${bestScore}`, listX + 220, y + 4);
-        ctx.fillText(`Grade ${bestGrade}`, listX + 320, y + 4);
-      } else {
-        ctx.fillText('Deterministic seed', listX + 250, y + 4);
+      rowPositions.push({ index, y });
+      y += rowH + 8;
+    });
+    const totalHeight = y - listY;
+    const maxScroll = Math.max(0, totalHeight - viewHeight);
+    const selectedRow = rowPositions[this.selectionIndex];
+    let scrollOffset = 0;
+    if (selectedRow) {
+      const rowTop = selectedRow.y - 16;
+      const rowBottom = rowTop + rowH;
+      if (rowTop - scrollOffset < listTop) {
+        scrollOffset = rowTop - listTop;
+      } else if (rowBottom - scrollOffset > listBottom) {
+        scrollOffset = rowBottom - listBottom;
       }
-      this.bounds.list.push({ x: listX, y: y - 16, w: 380, h: rowH, entryIndex: index });
+    }
+    scrollOffset = clamp(scrollOffset, 0, maxScroll);
+
+    this.bounds.list = [];
+    y = listY;
+    lastSetIndex = null;
+    entries.forEach((entry, index) => {
+      if (entry.setIndex !== lastSetIndex && entry.setIndex >= 0) {
+        const headerY = y - scrollOffset;
+        if (headerY >= listTop - 20 && headerY <= listBottom + 20) {
+          ctx.fillStyle = '#7ad0ff';
+          ctx.font = '14px Courier New';
+          ctx.textAlign = 'left';
+          ctx.fillText(entry.setTitle, listX, headerY);
+        }
+        y += 18;
+        lastSetIndex = entry.setIndex;
+      }
+      const drawY = y - scrollOffset;
+      const selected = index === this.selectionIndex;
+      if (drawY + rowH >= listTop - 30 && drawY - rowH <= listBottom + 30) {
+        ctx.fillStyle = selected ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)';
+        ctx.fillRect(listX, drawY - 16, 380, rowH);
+        ctx.strokeStyle = selected ? '#ffe16a' : 'rgba(255,255,255,0.12)';
+        ctx.strokeRect(listX, drawY - 16, 380, rowH);
+        ctx.fillStyle = entry.locked ? 'rgba(255,255,255,0.25)' : '#fff';
+        ctx.font = '16px Courier New';
+        ctx.fillText(entry.name, listX + 12, drawY + 4);
+        ctx.font = '12px Courier New';
+        ctx.fillStyle = entry.locked ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.7)';
+        const bestScore = this.progress.bestScores[getSongKey(entry.name)] || 0;
+        const bestGrade = this.progress.bestGrades[getSongKey(entry.name)] || '-';
+        if (!entry.random) {
+          ctx.fillText(`Best ${bestScore}`, listX + 220, drawY + 4);
+          ctx.fillText(`Grade ${bestGrade}`, listX + 320, drawY + 4);
+        } else {
+          ctx.fillText('Deterministic seed', listX + 250, drawY + 4);
+        }
+        this.bounds.list.push({ x: listX, y: drawY - 16, w: 380, h: rowH, entryIndex: index });
+      }
       y += rowH + 8;
     });
 
@@ -1808,8 +1848,8 @@ export default class RobterSession {
     ctx.fillText('TARGET', cardX + 24, cardY + 34);
     ctx.fillStyle = '#d7f2ff';
     ctx.font = '18px Courier New';
-    ctx.fillText(`Root: ${targetRoot}`, cardX + 24, cardY + 70);
-    ctx.fillText(`Mode: ${targetMode}`, cardX + 24, cardY + 104);
+    ctx.fillText(`Mode: ${targetMode}`, cardX + 24, cardY + 70);
+    ctx.fillText(`Root: ${targetRoot}`, cardX + 24, cardY + 104);
     ctx.fillText(`Octave: ${targetOctaveLabel}`, cardX + 24, cardY + 138);
 
     const statusX = cardX + cardW / 2 + 10;
@@ -1818,11 +1858,11 @@ export default class RobterSession {
     ctx.fillStyle = '#7ad0ff';
     ctx.font = '14px Courier New';
     ctx.fillText('YOUR ROBTERSPIEL', statusX, cardY + 34);
-    ctx.fillStyle = rootMatch ? '#7dffb6' : '#ff6b6b';
-    ctx.font = '18px Courier New';
-    ctx.fillText(`Root: ${selectedRoot}`, statusX, cardY + 70);
     ctx.fillStyle = modeMatch ? '#7dffb6' : '#ff6b6b';
-    ctx.fillText(`Mode: ${selectedMode}`, statusX, cardY + 104);
+    ctx.font = '18px Courier New';
+    ctx.fillText(`Mode: ${selectedMode}`, statusX, cardY + 70);
+    ctx.fillStyle = rootMatch ? '#7dffb6' : '#ff6b6b';
+    ctx.fillText(`Root: ${selectedRoot}`, statusX, cardY + 104);
     const octaveMatch = this.octaveOffset === REQUIRED_OCTAVE_OFFSET;
     ctx.fillStyle = octaveMatch ? '#7dffb6' : '#ff6b6b';
     ctx.fillText(`Octave: ${selectedOctaveLabel}`, statusX, cardY + 138);
@@ -1850,41 +1890,20 @@ export default class RobterSession {
 
     const l3X = width / 2 - 180;
     const r3X = width / 2 + 180;
-    const animRadius = 34;
     const animY = height - 210;
-    const drawStickPrompt = (label, centerX, isLeft) => {
-      const pressScale = 1 + pulse * 0.12;
-      ctx.save();
-      ctx.translate(centerX, animY);
-      ctx.scale(pressScale, pressScale);
-      ctx.fillStyle = 'rgba(5,12,20,0.7)';
-      ctx.beginPath();
-      ctx.arc(0, 0, animRadius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(120,190,255,0.7)';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.fillStyle = 'rgba(122,208,255,0.8)';
-      ctx.beginPath();
-      const offset = Math.sin(this.scalePromptTime * 2) * 10;
-      ctx.arc(0, isLeft ? -offset : offset, animRadius * 0.35, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-      ctx.fillStyle = '#d7f2ff';
-      ctx.font = '12px Courier New';
-      ctx.fillText(label, centerX, animY + animRadius + 18);
-    };
-    drawStickPrompt('L3 + Left Stick', l3X, true);
-    drawStickPrompt('R3 + Right Stick', r3X, false);
-
     this.drawStickIndicators(ctx, width, height, {
-      baseY: height - 60,
+      baseY: animY,
+      leftX: l3X,
+      rightX: r3X,
       forceLeft: true,
       forceRight: true,
       targetLeftAngle: this.getRadialAngle(targetModeIndex, MODE_LIBRARY.length),
       targetRightAngle: this.getRadialAngle(this.songData.root, ROOT_LABELS.length),
       targetLeftLabel: 'Target',
-      targetRightLabel: 'Target'
+      targetRightLabel: 'Target',
+      leftLabel: 'L3 + Left Stick',
+      rightLabel: 'R3 + Right Stick',
+      targetPulse: pulse
     });
 
     ctx.restore();

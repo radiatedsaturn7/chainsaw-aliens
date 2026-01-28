@@ -110,6 +110,7 @@ export const normalizeRobterInput = ({
 
   return {
     degree,
+    mode,
     button,
     lb,
     dleft,
