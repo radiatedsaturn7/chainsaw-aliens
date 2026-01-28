@@ -81,11 +81,13 @@ const getChordSuffix = ({ variant, suspension }) => {
   return '';
 };
 
-const resolveNotePitch = (robterspiel, rootDegree, { button, lb, dleft, octaveUp }) => {
+const resolveNotePitch = (robterspiel, rootDegree, { button, lb, dleft, octaveUp }, octaveOffset = null) => {
   const entry = BUTTON_DEGREES[button] || BUTTON_DEGREES.A;
   const degree = lb ? entry.passing : entry.base;
   const targetDegree = (rootDegree || 1) + degree - 1;
-  let pitch = robterspiel.getPitchForScaleStep(targetDegree - 1);
+  let pitch = Number.isFinite(octaveOffset)
+    ? robterspiel.getPitchForScaleStepWithOffset(targetDegree - 1, octaveOffset)
+    : robterspiel.getPitchForScaleStep(targetDegree - 1);
   if (dleft) {
     pitch += 1;
   }
@@ -111,9 +113,11 @@ const applyRegister = (pitches, requiredInput) => {
   });
 };
 
-const resolvePatternPitch = (robterspiel, requiredInput) => {
+const resolvePatternPitch = (robterspiel, requiredInput, octaveOffset = null) => {
   const degree = requiredInput.degree || 1;
-  const basePitch = robterspiel.getPitchForScaleStep(degree - 1);
+  const basePitch = Number.isFinite(octaveOffset)
+    ? robterspiel.getPitchForScaleStepWithOffset(degree - 1, octaveOffset)
+    : robterspiel.getPitchForScaleStep(degree - 1);
   const chordQuality = requiredInput.chordQuality || 'major';
   const chordType = requiredInput.chordType || 'triad';
   const seventhQuality = requiredInput.seventhQuality || null;
@@ -141,22 +145,26 @@ const resolvePatternPitch = (robterspiel, requiredInput) => {
   return basePitch + getInterval(patternDegree);
 };
 
-const resolveChordPitches = (robterspiel, degree, chordType) => {
+const resolveChordPitches = (robterspiel, degree, chordType, octaveOffset = null) => {
   const { variant, suspension, inversion } = resolveChordSettings(chordType);
-  let pitches = robterspiel.getChordPitches(degree || 1, { variant, suspension });
+  let pitches = Number.isFinite(octaveOffset)
+    ? robterspiel.getChordPitchesWithOffset(degree || 1, { variant, suspension }, octaveOffset)
+    : robterspiel.getChordPitches(degree || 1, { variant, suspension });
   pitches = applyInversion(pitches, inversion);
   return { pitches, variant, suspension, inversion };
 };
 
-const resolveChordLabel = (robterspiel, degree, chordType) => {
-  const { pitches, variant, suspension } = resolveChordPitches(robterspiel, degree, chordType);
-  const rootPitch = pitches[0] ?? robterspiel.getPitchForScaleStep((degree || 1) - 1);
+const resolveChordLabel = (robterspiel, degree, chordType, octaveOffset = null) => {
+  const { pitches, variant, suspension } = resolveChordPitches(robterspiel, degree, chordType, octaveOffset);
+  const rootPitch = pitches[0] ?? (Number.isFinite(octaveOffset)
+    ? robterspiel.getPitchForScaleStepWithOffset((degree || 1) - 1, octaveOffset)
+    : robterspiel.getPitchForScaleStep((degree || 1) - 1));
   const rootLabel = formatPitchLabel(rootPitch);
   const suffix = getChordSuffix({ variant, suspension });
   return suffix ? `${rootLabel} ${suffix}` : rootLabel;
 };
 
-export const resolveRequiredInputToMusicalAction = ({ robterspiel, instrument }, requiredInput) => {
+export const resolveRequiredInputToMusicalAction = ({ robterspiel, instrument, octaveOffset }, requiredInput) => {
   if (!requiredInput) return null;
   if (instrument === 'drums' || requiredInput.mode === 'drum') {
     const lane = requiredInput.lane ?? 0;
@@ -169,7 +177,7 @@ export const resolveRequiredInputToMusicalAction = ({ robterspiel, instrument },
   }
 
   if (requiredInput.mode === 'pattern') {
-    const pitch = resolvePatternPitch(robterspiel, requiredInput);
+    const pitch = resolvePatternPitch(robterspiel, requiredInput, octaveOffset);
     const [registered] = applyRegister([pitch], requiredInput);
     return {
       kind: 'note',
@@ -188,7 +196,7 @@ export const resolveRequiredInputToMusicalAction = ({ robterspiel, instrument },
       lb: requiredInput.modifiers?.lb,
       dleft: requiredInput.modifiers?.dleft,
       octaveUp: requiredInput.octaveUp
-    });
+    }, octaveOffset);
     const [registered] = applyRegister([pitch], requiredInput);
     return {
       kind: 'note',
@@ -207,8 +215,8 @@ export const resolveRequiredInputToMusicalAction = ({ robterspiel, instrument },
   }
 
   const chordType = requiredInput.chordType || 'triad';
-  const label = resolveChordLabel(robterspiel, requiredInput.degree || 1, chordType);
-  const { pitches } = resolveChordPitches(robterspiel, requiredInput.degree || 1, chordType);
+  const label = resolveChordLabel(robterspiel, requiredInput.degree || 1, chordType, octaveOffset);
+  const { pitches } = resolveChordPitches(robterspiel, requiredInput.degree || 1, chordType, octaveOffset);
   const registered = applyRegister(pitches, requiredInput);
   return {
     kind: 'chord',
