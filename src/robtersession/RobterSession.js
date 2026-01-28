@@ -816,7 +816,9 @@ export default class RobterSession {
       return DRUM_LANES[requiredInput.lane] || 'Drum';
     }
     if (requiredInput.mode === 'note' || requiredInput.mode === 'pattern') {
-      const [pitch] = this.resolveRequiredPitches(requiredInput, this.instrument);
+      const [pitch] = this.resolveRequiredPitches(requiredInput, this.instrument, {
+        octaveOffset: this.requiredOctaveOffset
+      });
       return formatPitchLabel(pitch);
     }
     return this.getChordLabel({
@@ -1052,7 +1054,7 @@ export default class RobterSession {
     let lastDegree = null;
     this.events.forEach((event) => {
       const expectedAction = resolveRequiredInputToMusicalAction(
-        { robterspiel: this.robterspiel, instrument: this.instrument },
+        { robterspiel: this.robterspiel, instrument: this.instrument, octaveOffset: this.requiredOctaveOffset },
         event.requiredInput
       );
       event.expectedAction = expectedAction;
@@ -2222,20 +2224,25 @@ export default class RobterSession {
     const nextEvent = this.getNextPendingEvent();
     const targetDegree = nextEvent?.requiredInput?.degree;
     const requiredOctaveOffset = this.requiredOctaveOffset;
+    const register = this.songData?.schema?.arrangement?.registers?.[this.instrument] || null;
     const mappings = NOTE_LANES.map((button) => {
       const chordType = this.getChordTypeForButton(button, modifiers);
-      const action = resolveInputToMusicalAction({
+      const action = resolveRequiredInputToMusicalAction({
         robterspiel: this.robterspiel,
         instrument: this.instrument,
-        mode: this.mode,
-        degree: this.degree,
-        stickDir: this.robterspiel.leftStickStableDirection || this.degree
+        octaveOffset: requiredOctaveOffset
       }, {
+        mode: this.mode === 'note' ? 'note' : 'chord',
+        degree: this.degree,
         button,
-        lb: modifiers.lb,
-        dleft: modifiers.dleft,
+        modifiers: {
+          lb: modifiers.lb,
+          dleft: modifiers.dleft
+        },
         octaveUp: modifiers.rb,
-        chordType
+        chordType,
+        transpose: register?.transpose_semitones ?? 0,
+        minNote: register?.min_note ?? null
       });
       return { button, label: action?.label || '--' };
     });
