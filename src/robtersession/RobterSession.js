@@ -76,6 +76,13 @@ const MIDI_PROGRAMS = {
   piano: 0
 };
 
+const INSTRUMENT_CHANNELS = {
+  guitar: 0,
+  bass: 1,
+  piano: 2,
+  drums: 9
+};
+
 const defaultProgress = () => ({
   unlockedSets: 1,
   bestScores: {},
@@ -473,8 +480,9 @@ export default class RobterSession {
     this.robterspiel.setInstrument(this.instrument === 'drums' ? 'drums' : 'keyboard');
     this.robterspiel.setSelectorActive(false);
     this.syncRobterspielScale();
-    const bendSemitones = this.robterspiel.getPitchBendSemitones();
-    this.audio.setMidiPitchBend?.(this.state === 'play' ? bendSemitones : 0);
+    const playerChannel = INSTRUMENT_CHANNELS[this.instrument] ?? 0;
+    const bendSemitones = this.instrument === 'drums' ? 0 : this.robterspiel.getPitchBendSemitones();
+    this.audio.setMidiPitchBend?.(this.state === 'play' ? bendSemitones : 0, playerChannel);
     if (this.robterspiel.connected) {
       this.octaveOffset = this.robterspiel.octaveOffset;
     }
@@ -492,6 +500,7 @@ export default class RobterSession {
     const octaveShift = getOctaveShift(this.input);
     if (!this.robterspiel.connected) {
       this.octaveOffset = clamp(this.octaveOffset + octaveShift, -2, 2);
+      this.robterspiel.octaveOffset = this.octaveOffset;
     }
 
     const normalized = normalizeRobterInput({ input: this.input, prevDegree: this.degree, mode: this.mode });
@@ -660,12 +669,13 @@ export default class RobterSession {
           });
         } else {
           const program = MIDI_PROGRAMS[this.instrument] ?? 0;
+          const channel = INSTRUMENT_CHANNELS[this.instrument] ?? 0;
           this.audio.playGmNote?.({
             pitch,
             duration,
             volume: 0.55,
             program,
-            channel: 0
+            channel
           });
         }
       });
@@ -934,26 +944,27 @@ export default class RobterSession {
           const pitches = this.resolveRequiredPitches(event.requiredInput, track);
           const duration = event.sustain ? event.sustain * this.songData.tempo.secondsPerBeat : 0.5;
           pitches.forEach((pitch) => {
-            if (track === 'drums') {
-              this.audio.playGmNote?.({
-                pitch,
-                duration: 0.35,
-                volume: 0.6,
-                program: 0,
-                channel: 9
-              });
-            } else {
-              const program = MIDI_PROGRAMS[track] ?? 0;
-              this.audio.playGmNote?.({
-                pitch,
-                duration,
-                volume: 0.45,
-                program,
-                channel: 0
-              });
-            }
-          });
-        }
+          if (track === 'drums') {
+            this.audio.playGmNote?.({
+              pitch,
+              duration: 0.35,
+              volume: 0.6,
+              program: 0,
+              channel: 9
+            });
+          } else {
+            const program = MIDI_PROGRAMS[track] ?? 0;
+            const channel = INSTRUMENT_CHANNELS[track] ?? 0;
+            this.audio.playGmNote?.({
+              pitch,
+              duration,
+              volume: 0.45,
+              program,
+              channel
+            });
+          }
+        });
+      }
         index += 1;
       }
       this.trackEventIndex[track] = index;
@@ -1013,6 +1024,9 @@ export default class RobterSession {
       this.robterspiel.noteMode = this.mode === 'note';
     }
     this.syncRobterspielScale();
+    this.robterspiel.octaveOffset = this.octaveOffset;
+    this.audio.setMidiPitchBend?.(0);
+    this.audio.setMidiPitchBend?.(0, INSTRUMENT_CHANNELS[this.instrument] ?? 0);
     this.events = this.songData.events.map((event) => ({
       ...event,
       hit: false,
@@ -1045,6 +1059,11 @@ export default class RobterSession {
         event.stickLabel = event.requiredInput?.degree !== lastDegree
           ? getStickDirectionLabel(event.requiredInput?.degree)
           : null;
+        event.modifierState = {
+          lb: Boolean(event.requiredInput?.modifiers?.lb),
+          dleft: Boolean(event.requiredInput?.modifiers?.dleft),
+          rb: Boolean(event.requiredInput?.octaveUp)
+        };
       } else {
         event.stickLabel = getStickDirectionLabel(event.requiredInput?.degree);
       }
@@ -1244,13 +1263,14 @@ export default class RobterSession {
         });
       } else {
         const program = MIDI_PROGRAMS[instrument] ?? 0;
+        const channel = INSTRUMENT_CHANNELS[instrument] ?? 0;
         this.audio.startLiveGmNote?.({
           id: event.id,
           pitch,
           duration: 1.4,
           volume: velocity,
           program,
-          channel: 0
+          channel
         });
       }
       this.robterspielNotes.add(event.id);
@@ -1263,7 +1283,8 @@ export default class RobterSession {
     this.inputBus.on('pitchbend', (event) => {
       if (this.state !== 'play') return;
       const bendSemitones = ((event.value - 8192) / 8192) * 2;
-      this.audio.setMidiPitchBend?.(bendSemitones);
+      const playerChannel = INSTRUMENT_CHANNELS[this.instrument] ?? 0;
+      this.audio.setMidiPitchBend?.(bendSemitones, playerChannel);
     });
   }
 
@@ -1317,7 +1338,7 @@ export default class RobterSession {
         duration: 0.45,
         volume: velocity,
         program: MIDI_PROGRAMS[instrument] ?? 0,
-        channel: 0
+        channel: INSTRUMENT_CHANNELS[instrument] ?? 0
       });
       return;
     }
@@ -1365,7 +1386,7 @@ export default class RobterSession {
         duration: 0.6,
         volume: velocity,
         program: MIDI_PROGRAMS[instrument] ?? 0,
-        channel: 0
+        channel: INSTRUMENT_CHANNELS[instrument] ?? 0
       });
     });
   }
@@ -1397,6 +1418,7 @@ export default class RobterSession {
       this.octaveOffset = this.robterspiel.octaveOffset;
     } else {
       this.octaveOffset = clamp(this.octaveOffset + getOctaveShift(this.input), -2, 2);
+      this.robterspiel.octaveOffset = this.octaveOffset;
     }
     this.handleScaleInput();
     if (this.instrument === 'drums') return;

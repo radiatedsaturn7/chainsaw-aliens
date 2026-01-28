@@ -64,6 +64,7 @@ export default class AudioSystem {
     this.midiReverbLevel = 0.18;
     this.midiReverbSend = null;
     this.midiPitchBendSemitones = 0;
+    this.channelPitchBendSemitones = Array.from({ length: 16 }, () => 0);
     this.liveMidiNotes = new Map();
     this.gmEnabled = true;
     this.gmError = null;
@@ -122,12 +123,22 @@ export default class AudioSystem {
     this.soundfont.initAudio({ audioContext: this.ctx, destination: this.midiBus });
   }
 
-  setMidiPitchBend(semitones = 0) {
+  setMidiPitchBend(semitones = 0, channel = null) {
     const nextValue = clamp(Number(semitones) || 0, -12, 12);
-    this.midiPitchBendSemitones = nextValue;
-    const rate = 2 ** (nextValue / 12);
+    const resolvedChannel = Number.isFinite(channel) ? clamp(channel, 0, 15) : null;
+    if (resolvedChannel !== null) {
+      this.channelPitchBendSemitones[resolvedChannel] = nextValue;
+    } else {
+      this.midiPitchBendSemitones = nextValue;
+    }
     this.midiVoices.forEach((voice) => {
       if (!voice?.audioNode?.playbackRate) return;
+      if (resolvedChannel !== null && voice.channel !== resolvedChannel) return;
+      const channelBend = Number.isFinite(voice.channel)
+        ? this.channelPitchBendSemitones[voice.channel] ?? 0
+        : 0;
+      const bend = channelBend || this.midiPitchBendSemitones;
+      const rate = 2 ** (bend / 12);
       const baseRate = voice.basePlaybackRate ?? voice.audioNode.playbackRate.value ?? 1;
       voice.audioNode.playbackRate.value = baseRate * rate;
     });
@@ -558,7 +569,7 @@ export default class AudioSystem {
       .then((voice) => {
         if (!voice) return;
         const stopTime = when + duration + 0.2;
-        this.registerMidiVoice({ voice, stopTime });
+        this.registerMidiVoice({ voice, stopTime, channel: resolvedChannel });
         this.gmError = null;
       })
       .catch((error) => {
@@ -660,7 +671,7 @@ export default class AudioSystem {
       .then((voice) => {
         if (!voice) return;
         const stopTime = when + duration + 0.2;
-        const entry = this.registerMidiVoice({ voice, stopTime });
+        const entry = this.registerMidiVoice({ voice, stopTime, channel: resolvedChannel });
         if (entry) {
           this.liveMidiNotes.set(id, entry);
         }
@@ -852,7 +863,7 @@ export default class AudioSystem {
     return 'hat';
   }
 
-  registerMidiVoice({ source, gain, stopTime, voice }) {
+  registerMidiVoice({ source, gain, stopTime, voice, channel = null }) {
     const resolveStop = () => {
       if (voice?.stop) return () => voice.stop();
       if (voice?.audioBufferSourceNode?.stop) return () => voice.audioBufferSourceNode.stop();
@@ -861,9 +872,11 @@ export default class AudioSystem {
     };
     const audioNode = voice?.audioBufferSourceNode || voice?.source || source || null;
     const basePlaybackRate = audioNode?.playbackRate?.value ?? 1;
-    const entry = { source, gain, stopTime, stop: resolveStop(), voice, audioNode, basePlaybackRate };
-    if (audioNode?.playbackRate && this.midiPitchBendSemitones) {
-      audioNode.playbackRate.value = basePlaybackRate * (2 ** (this.midiPitchBendSemitones / 12));
+    const entry = { source, gain, stopTime, stop: resolveStop(), voice, audioNode, basePlaybackRate, channel };
+    const channelBend = Number.isFinite(channel) ? this.channelPitchBendSemitones[channel] ?? 0 : 0;
+    const bend = channelBend || this.midiPitchBendSemitones;
+    if (audioNode?.playbackRate && bend) {
+      audioNode.playbackRate.value = basePlaybackRate * (2 ** (bend / 12));
     }
     this.midiVoices.push(entry);
     if (this.midiVoices.length > this.midiVoiceLimit) {
