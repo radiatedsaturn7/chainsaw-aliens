@@ -122,17 +122,18 @@ export const normalizeRobterInput = ({
 export const matchesRequiredInput = ({ required, normalized, mode }) => {
   if (!required) return false;
   if (!normalized.button) return false;
+  const requiredMode = required.mode === 'pattern' ? 'note' : required.mode;
   if (required.mode === 'drum') {
     const laneMap = { A: 0, X: 1, Y: 2, B: 3 };
     return laneMap[normalized.button] === required.lane;
   }
-  if (required.mode !== mode) return false;
+  if (requiredMode !== mode) return false;
   if (required.degree !== normalized.degree) return false;
   if (required.button !== normalized.button) return false;
   if (required.modifiers?.lb !== normalized.lb) return false;
   if (required.modifiers?.dleft !== normalized.dleft) return false;
-  if (required.mode === 'chord' && required.chordType !== normalized.chordType) return false;
-  if (required.mode === 'note' && required.octaveUp && !normalized.octaveUp) return false;
+  if (requiredMode === 'chord' && required.chordType !== normalized.chordType) return false;
+  if (requiredMode === 'note' && required.octaveUp && !normalized.octaveUp) return false;
   return true;
 };
 
