@@ -13,17 +13,12 @@ export default class NoteRenderer {
       labelMode,
       kind,
       modifierState,
-      sustainLength,
       hitGlow,
       alpha
     } = note;
 
     ctx.save();
     ctx.globalAlpha = alpha ?? 1;
-    if (sustainLength && sustainLength > 8) {
-      ctx.fillStyle = 'rgba(120,200,255,0.2)';
-      ctx.fillRect(x + width * 0.4, y - sustainLength, width * 0.2, sustainLength);
-    }
 
     if (kind === 'chord') {
       const barGap = width * 0.08;

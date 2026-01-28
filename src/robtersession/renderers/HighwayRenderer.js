@@ -31,7 +31,7 @@ export default class HighwayRenderer {
     };
   }
 
-  drawBackground(ctx, width, height, layout, laneColors) {
+  drawBackground(ctx, width, height, layout, laneColors, tint = {}) {
     const { startX, totalWidth, laneTop, laneBottom, hitLineY, horizonY } = layout;
     ctx.save();
     const sky = ctx.createLinearGradient(0, 0, 0, height);
@@ -42,7 +42,7 @@ export default class HighwayRenderer {
     ctx.fillRect(0, 0, width, height);
 
     const glow = ctx.createRadialGradient(width / 2, horizonY, 10, width / 2, horizonY, 300);
-    glow.addColorStop(0, 'rgba(90,180,255,0.45)');
+    glow.addColorStop(0, tint.glowColor || 'rgba(90,180,255,0.45)');
     glow.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, width, height);
@@ -51,6 +51,11 @@ export default class HighwayRenderer {
     ctx.fillRect(startX - 70, laneTop - 40, totalWidth + 140, laneBottom - laneTop + 100);
     ctx.strokeStyle = 'rgba(110,180,255,0.22)';
     ctx.strokeRect(startX - 70, laneTop - 40, totalWidth + 140, laneBottom - laneTop + 100);
+
+    if (tint.tintColor) {
+      ctx.fillStyle = tint.tintColor;
+      ctx.fillRect(startX - 70, laneTop - 40, totalWidth + 140, laneBottom - laneTop + 100);
+    }
 
     const edgeGlow = ctx.createLinearGradient(0, laneBottom, 0, height);
     edgeGlow.addColorStop(0, 'rgba(80,170,255,0.5)');
@@ -232,8 +237,27 @@ export default class HighwayRenderer {
       const y = hitLineY - timeToHit * pixelsPerSecond;
       const noteX = perspectiveCenter - noteWidth / 2;
       const noteY = y - noteHeight / 2;
-      const color = laneColors[laneIndex] || '#7ad0ff';
-      const sustainLength = event.sustain ? event.sustain * settings.secondsPerBeat * pixelsPerSecond * 0.7 : 0;
+      const color = event.starPhrase ? '#fefefe' : (laneColors[laneIndex] || '#7ad0ff');
+      const sustainSeconds = event.sustain ? event.sustain * settings.secondsPerBeat : 0;
+      if (sustainSeconds > 0.08) {
+        const timeToEnd = timeToHit + sustainSeconds;
+        const endDepth = clamp(1 - timeToEnd / visibleWindow, 0, 1);
+        const endPerspective = lerp(0.45, 1, endDepth);
+        const endCenter = highwayCenter + (laneCenter - highwayCenter) * endPerspective;
+        const startTailWidth = noteWidth * 0.32;
+        const endTailWidth = laneWidth * endPerspective * settings.noteSize * 0.32;
+        const endY = hitLineY - timeToEnd * pixelsPerSecond;
+        ctx.save();
+        ctx.fillStyle = event.starPhrase ? 'rgba(255,255,255,0.55)' : 'rgba(120,200,255,0.25)';
+        ctx.beginPath();
+        ctx.moveTo(perspectiveCenter - startTailWidth / 2, y);
+        ctx.lineTo(perspectiveCenter + startTailWidth / 2, y);
+        ctx.lineTo(endCenter + endTailWidth / 2, endY);
+        ctx.lineTo(endCenter - endTailWidth / 2, endY);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
       this.noteRenderer.drawNote(ctx, {
         x: noteX,
         y: noteY,
@@ -245,7 +269,6 @@ export default class HighwayRenderer {
         modifierState: event.modifierState,
         labelMode: settings.labelMode,
         kind: event.noteKind,
-        sustainLength,
         hitGlow: event.autoHit
       });
 

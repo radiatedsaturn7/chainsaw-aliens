@@ -29,16 +29,21 @@ const RANDOM_SEED_KEY = 'robtersession-random-seed';
 const GROOVE_THRESHOLD = 20;
 const STAR_POWER_GAIN = 0.12;
 const STAR_POWER_DRAIN = 0.2;
+const STAR_POWER_READY = 0.5;
 const SCROLL_SPEED = 240;
 const HIT_GLASS_DURATION = 0.25;
 const WRONG_NOTE_COOLDOWN = 0.22;
-const NOTE_LANES = ['A', 'X', 'Y', 'B'];
+const NOTE_LANES = ['X', 'Y', 'A', 'B'];
 const SCALE_SELECTOR_THRESHOLD = 0.6;
 const SCALE_SELECTOR_RELEASE = 0.3;
 const SCALE_PROMPT_SPEED = 0.9;
 const WRONG_GHOST_DURATION = 1.2;
 const MAX_NOTE_SIZE = 1.5;
 const MAX_HIGHWAY_ZOOM = 2;
+const HEALTH_GAIN = 0.04;
+const HEALTH_LOSS = 0.12;
+const MAX_MULTIPLIER = 4;
+const STREAK_PER_MULTIPLIER = 10;
 const REQUIRED_OCTAVE_OFFSET = 0;
 const STICK_DIRECTION_LABELS = {
   1: 'N',
@@ -69,6 +74,7 @@ const radialIndexFromStick = (x, y, count) => {
 };
 
 const HUD_SETTINGS_KEY = 'robtersession-hud-settings';
+const TUNING_KEY = 'robtersession-last-tuning';
 
 const MIDI_PROGRAMS = {
   guitar: 27,
@@ -82,6 +88,29 @@ const INSTRUMENT_CHANNELS = {
   piano: 2,
   drums: 9
 };
+
+const PERFORMANCE_DIFFICULTIES = [
+  {
+    id: 'easy',
+    label: 'Easy',
+    description: 'Whole/half/quarter/eighth, no modifiers (RB only).'
+  },
+  {
+    id: 'medium',
+    label: 'Medium',
+    description: 'Quarter rhythms + chord changes, LB modifiers only.'
+  },
+  {
+    id: 'hard',
+    label: 'Hard',
+    description: 'Eighth notes + LB/DL modifiers.'
+  },
+  {
+    id: 'expert',
+    label: 'Expert',
+    description: 'Full chart, no simplification.'
+  }
+];
 
 const defaultProgress = () => ({
   unlockedSets: 1,
@@ -119,6 +148,27 @@ const saveHudSettings = (settings) => {
   localStorage.setItem(HUD_SETTINGS_KEY, JSON.stringify(settings));
 };
 
+const loadTuning = () => {
+  try {
+    const raw = localStorage.getItem(TUNING_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed) return null;
+    return {
+      rootIndex: parsed.rootIndex ?? 0,
+      scaleName: parsed.scaleName ?? MODE_LIBRARY[0].name,
+      octaveOffset: Number.isFinite(parsed.octaveOffset) ? parsed.octaveOffset : REQUIRED_OCTAVE_OFFSET
+    };
+  } catch (error) {
+    return null;
+  }
+};
+
+const saveTuning = (tuning) => {
+  if (!tuning) return;
+  localStorage.setItem(TUNING_KEY, JSON.stringify(tuning));
+};
+
 const loadProgress = () => {
   try {
     const raw = localStorage.getItem(PROGRESS_KEY);
@@ -150,10 +200,13 @@ export default class RobterSession {
   constructor({ input, audio }) {
     this.input = input;
     this.audio = audio;
-    this.state = 'setlist';
+    this.state = 'instrument-select';
     this.progress = loadProgress();
     this.selectionIndex = 0;
     this.instrument = 'guitar';
+    this.instrumentSelectionIndex = 0;
+    this.performanceDifficulty = 'medium';
+    this.difficultySelectionIndex = 1;
     this.scaleSelection = {
       scaleIndex: 0,
       rootIndex: 0,
@@ -183,6 +236,10 @@ export default class RobterSession {
     this.starPower = 0;
     this.starPowerActive = false;
     this.starPowerUsed = 0;
+    this.health = 1;
+    this.failed = false;
+    this.health = 1;
+    this.failed = false;
     this.feedbackSystem = new FeedbackSystem();
     this.mode = 'chord';
     this.selectedMode = 'chord';
@@ -194,9 +251,13 @@ export default class RobterSession {
       list: [],
       detailButtons: {},
       pauseButtons: [],
-      resultsButtons: []
+      resultsButtons: [],
+      instrumentButtons: [],
+      difficultyButtons: []
     };
     this.randomSeed = this.loadRandomSeed();
+    this.lastTuning = loadTuning();
+    this.difficultyRatings = new Map();
     this.debugEnabled = Boolean(window?.location?.hostname?.includes('localhost'));
     this.debugShowInputs = false;
     this.modeChangeNotice = null;
@@ -252,11 +313,16 @@ export default class RobterSession {
   }
 
   enter() {
-    this.state = 'setlist';
+    this.state = 'instrument-select';
     this.songData = null;
     this.songMeta = null;
     this.robterspielNotes.forEach((id) => this.audio.stopLiveGmNote?.(id));
     this.robterspielNotes.clear();
+    this.instrumentSelectionIndex = Math.max(0, INSTRUMENTS.indexOf(this.instrument));
+    this.difficultySelectionIndex = Math.max(
+      0,
+      PERFORMANCE_DIFFICULTIES.findIndex((entry) => entry.id === this.performanceDifficulty)
+    );
     this.scaleSelection = {
       scaleIndex: 0,
       rootIndex: 0,
@@ -274,6 +340,14 @@ export default class RobterSession {
 
     if (this.state === 'setlist') {
       this.handleSetlistInput();
+      return;
+    }
+    if (this.state === 'instrument-select') {
+      this.handleInstrumentSelectInput();
+      return;
+    }
+    if (this.state === 'difficulty-select') {
+      this.handleDifficultySelectInput();
       return;
     }
     if (this.state === 'detail') {
@@ -316,7 +390,7 @@ export default class RobterSession {
       this.audio.menu();
     }
     if (this.input.wasPressed('cancel')) {
-      this.state = 'exit';
+      this.state = 'difficulty-select';
       this.audio.ui();
       return;
     }
@@ -332,31 +406,90 @@ export default class RobterSession {
         resolvedEntry.name = this.resolveRandomSongName();
       }
       this.songMeta = resolvedEntry;
-      this.instrument = entry.instrument || this.instrument;
       this.state = 'detail';
       this.audio.ui();
     }
   }
 
-  handleDetailInput() {
+  handleInstrumentSelectInput() {
+    const count = INSTRUMENTS.length;
     if (this.input.wasPressed('left') || this.input.wasGamepadPressed('dpadLeft')) {
-      const index = (INSTRUMENTS.indexOf(this.instrument) - 1 + INSTRUMENTS.length) % INSTRUMENTS.length;
-      this.instrument = INSTRUMENTS[index];
+      this.instrumentSelectionIndex = (this.instrumentSelectionIndex - 1 + count) % count;
       this.audio.menu();
     }
     if (this.input.wasPressed('right') || this.input.wasGamepadPressed('dpadRight')) {
-      const index = (INSTRUMENTS.indexOf(this.instrument) + 1) % INSTRUMENTS.length;
-      this.instrument = INSTRUMENTS[index];
+      this.instrumentSelectionIndex = (this.instrumentSelectionIndex + 1) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')) {
+      this.instrumentSelectionIndex = (this.instrumentSelectionIndex - 1 + count) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('down') || this.input.wasGamepadPressed('dpadDown')) {
+      this.instrumentSelectionIndex = (this.instrumentSelectionIndex + 1) % count;
       this.audio.menu();
     }
     if (this.input.wasPressed('cancel')) {
-      this.state = 'scale';
+      this.state = 'exit';
+      this.audio.ui();
+      return;
+    }
+    if (this.input.wasPressed('interact')) {
+      this.instrument = INSTRUMENTS[this.instrumentSelectionIndex] || this.instrument;
+      this.state = 'difficulty-select';
+      this.audio.ui();
+    }
+  }
+
+  handleDifficultySelectInput() {
+    const count = PERFORMANCE_DIFFICULTIES.length;
+    if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')) {
+      this.difficultySelectionIndex = (this.difficultySelectionIndex - 1 + count) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('down') || this.input.wasGamepadPressed('dpadDown')) {
+      this.difficultySelectionIndex = (this.difficultySelectionIndex + 1) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('left') || this.input.wasGamepadPressed('dpadLeft')) {
+      this.difficultySelectionIndex = (this.difficultySelectionIndex - 1 + count) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('right') || this.input.wasGamepadPressed('dpadRight')) {
+      this.difficultySelectionIndex = (this.difficultySelectionIndex + 1) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('cancel')) {
+      this.state = 'instrument-select';
+      this.audio.ui();
+      return;
+    }
+    if (this.input.wasPressed('interact')) {
+      const entry = PERFORMANCE_DIFFICULTIES[this.difficultySelectionIndex];
+      if (entry) {
+        this.performanceDifficulty = entry.id;
+      }
+      this.selectionIndex = 0;
+      this.state = 'setlist';
+      this.audio.ui();
+    }
+  }
+
+  handleDetailInput() {
+    if (this.input.wasPressed('cancel')) {
+      this.state = 'setlist';
       this.audio.ui();
       return;
     }
     if (this.input.wasPressed('interact')) {
       this.prepareSong();
-      this.state = 'scale';
+      if (this.shouldSkipScaleSync()) {
+        this.applyAutoTuning();
+        this.state = 'preview';
+        this.previewSelection = 0;
+      } else {
+        this.state = 'scale';
+      }
       this.audio.ui();
     }
   }
@@ -368,14 +501,11 @@ export default class RobterSession {
       return;
     }
     if (this.input.wasPressed('interact') && this.isScaleReady()) {
-      if (this.instrument === 'drums') {
-        this.state = 'preview';
-        this.previewSelection = 0;
-      } else {
-        this.selectedMode = this.getPreferredPerformanceMode();
-        this.modeSelectionIndex = this.selectedMode === 'note' ? 0 : 1;
-        this.state = 'mode-select';
-      }
+      this.persistTuning();
+      this.selectedMode = this.instrument === 'drums' ? 'drum' : this.getPreferredPerformanceMode();
+      this.modeSelectionIndex = this.selectedMode === 'note' ? 0 : 1;
+      this.state = 'preview';
+      this.previewSelection = 0;
       this.audio.ui();
     }
   }
@@ -532,13 +662,13 @@ export default class RobterSession {
         const expectedLabel = expectedEvent?.expectedAction?.label || expectedEvent?.displayLabel || '—';
         this.registerWrongNote({
           label: inputLabel,
-          laneIndex: NOTE_LANES.indexOf(normalized.button)
+          laneIndex: this.getLaneIndexForButton(normalized.button)
         });
         this.feedbackSystem.addMiss({
           expected: expectedLabel,
           played: inputLabel,
           inputs: describeInputDebug(inputAction),
-          laneIndex: NOTE_LANES.indexOf(normalized.button)
+          laneIndex: this.getLaneIndexForButton(normalized.button)
         });
       }
       if (hitResult.hit) {
@@ -550,7 +680,7 @@ export default class RobterSession {
       }
     }
 
-    if (this.playMode === 'play' && getStarPowerTrigger(this.input) && this.groove && this.starPower > 0 && !this.starPowerActive) {
+    if (this.playMode === 'play' && getStarPowerTrigger(this.input) && this.starPower >= STAR_POWER_READY && !this.starPowerActive) {
       this.starPowerActive = true;
       this.starPowerUsed += 1;
     }
@@ -581,6 +711,9 @@ export default class RobterSession {
     }
 
     this.markMisses();
+    if (this.failed) {
+      return;
+    }
 
     if (this.songTime >= this.songLength) {
       this.finishSong();
@@ -646,6 +779,51 @@ export default class RobterSession {
     return tally.chord > tally.note ? 'chord' : 'note';
   }
 
+  getPerformanceProfile() {
+    switch (this.performanceDifficulty) {
+      case 'easy':
+        return { minBeatGap: 0.5, allowLB: false, allowDLeft: false, allowOctaveUp: true };
+      case 'medium':
+        return { minBeatGap: 0.5, allowLB: true, allowDLeft: false, allowOctaveUp: false };
+      case 'hard':
+        return { minBeatGap: 0.25, allowLB: true, allowDLeft: true, allowOctaveUp: true };
+      default:
+        return { minBeatGap: 0, allowLB: true, allowDLeft: true, allowOctaveUp: true };
+    }
+  }
+
+  applyPerformanceDifficulty(events = []) {
+    const profile = this.getPerformanceProfile();
+    if (profile.minBeatGap <= 0 && profile.allowLB && profile.allowDLeft && profile.allowOctaveUp) {
+      return events;
+    }
+    const sorted = [...events].sort((a, b) => a.timeBeat - b.timeBeat);
+    const filtered = [];
+    let lastBeat = -Infinity;
+    sorted.forEach((event) => {
+      if (event.timeBeat - lastBeat < profile.minBeatGap) return;
+      const required = event.requiredInput ? { ...event.requiredInput } : null;
+      if (required && required.modifiers) {
+        required.modifiers = { ...required.modifiers };
+        if (!profile.allowLB) required.modifiers.lb = false;
+        if (!profile.allowDLeft) required.modifiers.dleft = false;
+      }
+      if (required && !profile.allowOctaveUp) {
+        required.octaveUp = false;
+      }
+      if (required?.mode === 'chord') {
+        required.chordType = this.getChordTypeForButton(required.button, {
+          lb: required.modifiers?.lb,
+          dleft: required.modifiers?.dleft,
+          rb: required.octaveUp
+        });
+      }
+      filtered.push({ ...event, requiredInput: required || event.requiredInput });
+      lastBeat = event.timeBeat;
+    });
+    return filtered;
+  }
+
   getClosestExpectedEvent() {
     if (!this.songData?.timing) return null;
     const window = this.songData.timing.good;
@@ -703,7 +881,8 @@ export default class RobterSession {
   getInputLabel(normalized) {
     if (!normalized?.button) return null;
     if (this.instrument === 'drums') {
-      return DRUM_LANES[NOTE_LANES.indexOf(normalized.button)] || 'Drum';
+      const drumMap = { A: 0, X: 1, Y: 2, B: 3 };
+      return DRUM_LANES[drumMap[normalized.button]] || 'Drum';
     }
     if (normalized.mode === 'note') {
       const register = this.songData?.schema?.arrangement?.registers?.[this.instrument] || null;
@@ -743,6 +922,15 @@ export default class RobterSession {
       degree: normalized.degree || 1,
       chordType: normalized.chordType || 'triad'
     });
+  }
+
+  getLaneIndexForButton(button) {
+    if (!button) return 0;
+    if (this.instrument === 'drums') {
+      const drumMap = { A: 0, X: 1, Y: 2, B: 3 };
+      return drumMap[button] ?? 0;
+    }
+    return NOTE_LANES.indexOf(button);
   }
 
   getModifierLabel(requiredInput) {
@@ -1061,7 +1249,8 @@ export default class RobterSession {
     this.robterspiel.octaveOffset = this.octaveOffset;
     this.audio.setMidiPitchBend?.(0);
     this.audio.setMidiPitchBend?.(0, INSTRUMENT_CHANNELS[this.instrument] ?? 0);
-    this.events = this.songData.events.map((event) => ({
+    const performanceEvents = this.applyPerformanceDifficulty(this.songData.events);
+    this.events = performanceEvents.map((event) => ({
       ...event,
       hit: false,
       judged: false,
@@ -1132,18 +1321,27 @@ export default class RobterSession {
     this.robterspielNotes.forEach((id) => this.audio.stopLiveGmNote?.(id));
     this.robterspielNotes.clear();
     const key = getSongKey(this.songMeta.name);
-    const progress = this.progress;
-    progress.bestScores[key] = Math.max(progress.bestScores[key] || 0, this.score);
-    const previousAccuracy = progress.bestAccuracy[key] || 0;
-    progress.bestAccuracy[key] = Math.max(previousAccuracy, accuracy);
-    if (accuracy >= previousAccuracy) {
-      progress.bestGrades[key] = grade;
+    if (!this.failed) {
+      const progress = this.progress;
+      progress.bestScores[key] = Math.max(progress.bestScores[key] || 0, this.score);
+      const previousAccuracy = progress.bestAccuracy[key] || 0;
+      progress.bestAccuracy[key] = Math.max(previousAccuracy, accuracy);
+      if (accuracy >= previousAccuracy) {
+        progress.bestGrades[key] = grade;
+      }
+      if (!this.songMeta.random && this.songMeta.setIndex + 1 >= progress.unlockedSets) {
+        progress.unlockedSets = Math.min(this.setlistSets.length, this.songMeta.setIndex + 2);
+      }
+      saveProgress(progress);
     }
-    if (!this.songMeta.random && this.songMeta.setIndex + 1 >= progress.unlockedSets) {
-      progress.unlockedSets = Math.min(this.setlistSets.length, this.songMeta.setIndex + 2);
-    }
-    saveProgress(progress);
     this.state = 'results';
+  }
+
+  failSong() {
+    if (this.failed) return;
+    this.failed = true;
+    this.songTime = this.songLength;
+    this.finishSong();
   }
 
   markMisses() {
@@ -1164,6 +1362,10 @@ export default class RobterSession {
       this.streak = 0;
       this.groove = false;
       this.starPowerActive = false;
+      this.health = clamp(this.health - HEALTH_LOSS, 0, 1);
+      if (this.health <= 0) {
+        this.failSong();
+      }
     }
     const expectedLabel = event?.expectedAction?.label || event?.displayLabel || '—';
     this.feedbackSystem.addMiss({
@@ -1219,10 +1421,11 @@ export default class RobterSession {
         this.groove = true;
       }
       const baseScore = judgement === 'great' ? 120 : 70;
-      const grooveMultiplier = this.groove ? 1.5 : 1;
+      const streakMultiplier = this.getStreakMultiplier();
       const starMultiplier = this.starPowerActive ? 2 : 1;
-      this.score += Math.round(baseScore * grooveMultiplier * starMultiplier);
+      this.score += Math.round(baseScore * streakMultiplier * starMultiplier);
       this.hitGlassTimer = HIT_GLASS_DURATION;
+      this.health = clamp(this.health + HEALTH_GAIN, 0, 1);
     } else {
       judgementLabel = 'Practice';
     }
@@ -1433,6 +1636,50 @@ export default class RobterSession {
     });
   }
 
+  getTargetTuning() {
+    const scaleIndex = MODE_LIBRARY.findIndex((mode) => mode.name === this.songData?.mode?.name);
+    return {
+      rootIndex: this.songData?.root ?? 0,
+      scaleIndex: scaleIndex >= 0 ? scaleIndex : 0,
+      octaveOffset: this.requiredOctaveOffset
+    };
+  }
+
+  shouldSkipScaleSync() {
+    if (this.instrument === 'drums') return true;
+    if (!this.lastTuning || !this.songData) return false;
+    const target = this.getTargetTuning();
+    const targetScale = MODE_LIBRARY[target.scaleIndex]?.name || MODE_LIBRARY[0].name;
+    return this.lastTuning.rootIndex === target.rootIndex
+      && this.lastTuning.scaleName === targetScale
+      && this.lastTuning.octaveOffset === target.octaveOffset;
+  }
+
+  applyAutoTuning() {
+    const target = this.getTargetTuning();
+    this.scaleSelection = {
+      scaleIndex: target.scaleIndex,
+      rootIndex: target.rootIndex,
+      scaleConfirmed: true,
+      rootConfirmed: true
+    };
+    this.octaveOffset = target.octaveOffset;
+    this.robterspiel.octaveOffset = target.octaveOffset;
+    this.syncRobterspielScale();
+  }
+
+  persistTuning() {
+    if (!this.songData) return;
+    const target = this.getTargetTuning();
+    const scaleName = MODE_LIBRARY[target.scaleIndex]?.name || MODE_LIBRARY[0].name;
+    this.lastTuning = {
+      rootIndex: target.rootIndex,
+      scaleName,
+      octaveOffset: target.octaveOffset
+    };
+    saveTuning(this.lastTuning);
+  }
+
   isScaleReady() {
     if (this.instrument === 'drums') return true;
     const scale = MODE_LIBRARY[this.scaleSelection.scaleIndex] || MODE_LIBRARY[0];
@@ -1516,7 +1763,21 @@ export default class RobterSession {
   }
 
   getLaneColors() {
-    return ['#3ad96f', '#ff5b5b', '#ffd84a', '#46b3ff'];
+    return ['#46b3ff', '#ffd84a', '#3ad96f', '#ff5b5b'];
+  }
+
+  getHighwayTint() {
+    if (this.starPowerActive) {
+      return { tintColor: 'rgba(255,255,255,0.18)', glowColor: 'rgba(255,255,255,0.55)' };
+    }
+    if (this.mode === 'note') {
+      return { tintColor: 'rgba(70,140,255,0.16)', glowColor: 'rgba(80,160,255,0.45)' };
+    }
+    return { tintColor: 'rgba(255,170,80,0.18)', glowColor: 'rgba(255,170,80,0.5)' };
+  }
+
+  getStreakMultiplier() {
+    return clamp(1 + Math.floor(this.streak / STREAK_PER_MULTIPLIER), 1, MAX_MULTIPLIER);
   }
 
   drawHighwayBackground(ctx, width, height, options) {
@@ -1803,7 +2064,15 @@ export default class RobterSession {
       setTitle: 'Random',
       locked: false
     });
-    return entries;
+    const ratedEntries = entries.map((entry) => ({
+      ...entry,
+      rating: this.getSongDifficultyRating(entry)
+    }));
+    ratedEntries.sort((a, b) => {
+      if (a.rating !== b.rating) return a.rating - b.rating;
+      return a.name.localeCompare(b.name);
+    });
+    return ratedEntries;
   }
 
   resolveRandomSongName() {
@@ -1811,6 +2080,76 @@ export default class RobterSession {
     this.randomSeed += 1;
     this.saveRandomSeed();
     return name;
+  }
+
+  getSongDifficultyRating(entry) {
+    if (!entry) return 1;
+    const key = `${entry.name}-${this.instrument}`;
+    if (this.difficultyRatings.has(key)) {
+      return this.difficultyRatings.get(key);
+    }
+    const songData = generateSongData({
+      name: entry.name,
+      tier: entry.tier,
+      instrument: this.instrument,
+      allowModeChange: entry.tier >= 7,
+      difficulty: entry.difficulty,
+      schema: entry.schema
+    });
+    const rating = this.calculateDifficultyRating(songData);
+    this.difficultyRatings.set(key, rating);
+    return rating;
+  }
+
+  calculateDifficultyRating(songData) {
+    const events = songData?.events || [];
+    if (!events.length) return 1;
+    const tempo = songData?.tempo?.bpm || songData?.bpm || 120;
+    const secondsPerBeat = songData?.tempo?.secondsPerBeat || 60 / tempo;
+    const sorted = [...events].sort((a, b) => a.timeSec - b.timeSec);
+    const lastEvent = sorted[sorted.length - 1];
+    const sustainSeconds = lastEvent?.sustain ? lastEvent.sustain * secondsPerBeat : 0;
+    const duration = Math.max(1, (lastEvent?.timeSec || 0) + sustainSeconds);
+    const notesPerMinute = (sorted.length / duration) * 60;
+
+    const degrees = new Set();
+    const buttons = new Set();
+    let modifierEvents = 0;
+    let fastEvents = 0;
+
+    sorted.forEach((event, index) => {
+      const required = event.requiredInput || {};
+      if (required.degree) degrees.add(required.degree);
+      if (required.button) buttons.add(required.button);
+      if (required.modifiers?.lb || required.modifiers?.dleft || required.octaveUp) {
+        modifierEvents += 1;
+      }
+      if (required.chordType && !['triad', 'power'].includes(required.chordType)) {
+        modifierEvents += 1;
+      }
+      if (index > 0) {
+        const delta = event.timeSec - sorted[index - 1].timeSec;
+        if (delta < secondsPerBeat * 0.5) {
+          fastEvents += 1;
+        }
+      }
+    });
+
+    const densityScore = notesPerMinute / 90;
+    const varietyScore = degrees.size / 7;
+    const buttonScore = buttons.size / 4;
+    const modifierScore = modifierEvents / sorted.length;
+    const fastScore = fastEvents / sorted.length;
+    const tempoScore = tempo / 180;
+
+    const rawScore = densityScore * 1.2
+      + varietyScore * 0.9
+      + buttonScore * 0.6
+      + modifierScore * 1.6
+      + fastScore * 1.2
+      + tempoScore * 0.8;
+
+    return clamp(Math.ceil(rawScore * 1.2), 1, 6);
   }
 
   draw(ctx, width, height) {
@@ -1821,6 +2160,14 @@ export default class RobterSession {
 
     if (this.state === 'setlist') {
       this.drawSetlist(ctx, width, height);
+      return;
+    }
+    if (this.state === 'instrument-select') {
+      this.drawInstrumentSelect(ctx, width, height);
+      return;
+    }
+    if (this.state === 'difficulty-select') {
+      this.drawDifficultySelect(ctx, width, height);
       return;
     }
     if (this.state === 'detail') {
@@ -1853,6 +2200,81 @@ export default class RobterSession {
     }
   }
 
+  drawInstrumentSelect(ctx, width, height) {
+    ctx.save();
+    ctx.fillStyle = '#0b0d14';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 28px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('Choose Your Instrument', width / 2, 80);
+
+    const cardW = 240;
+    const cardH = 60;
+    const startY = 140;
+    const gap = 16;
+    this.bounds.instrumentButtons = [];
+    INSTRUMENTS.forEach((instrument, index) => {
+      const y = startY + index * (cardH + gap);
+      const isSelected = index === this.instrumentSelectionIndex;
+      const x = width / 2 - cardW / 2;
+      ctx.fillStyle = isSelected ? 'rgba(120,200,255,0.85)' : 'rgba(20,30,40,0.7)';
+      ctx.fillRect(x, y, cardW, cardH);
+      ctx.strokeStyle = isSelected ? '#ffe16a' : 'rgba(140,200,255,0.4)';
+      ctx.lineWidth = isSelected ? 2.5 : 2;
+      ctx.strokeRect(x, y, cardW, cardH);
+      ctx.fillStyle = isSelected ? '#041019' : '#d7f2ff';
+      ctx.font = 'bold 18px Courier New';
+      ctx.fillText(instrument.toUpperCase(), width / 2, y + cardH / 2 + 6);
+      this.bounds.instrumentButtons.push({ x, y, w: cardW, h: cardH, index });
+    });
+
+    ctx.fillStyle = 'rgba(215,242,255,0.75)';
+    ctx.font = '14px Courier New';
+    ctx.fillText('Confirm: Select  |  Back: Exit to Main Menu', width / 2, height - 60);
+    ctx.restore();
+  }
+
+  drawDifficultySelect(ctx, width, height) {
+    ctx.save();
+    ctx.fillStyle = '#0b0f18';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 28px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('Choose Difficulty', width / 2, 80);
+
+    const cardW = 520;
+    const cardH = 58;
+    const startY = 140;
+    const gap = 14;
+    this.bounds.difficultyButtons = [];
+    PERFORMANCE_DIFFICULTIES.forEach((entry, index) => {
+      const y = startY + index * (cardH + gap);
+      const isSelected = index === this.difficultySelectionIndex;
+      const x = width / 2 - cardW / 2;
+      ctx.fillStyle = isSelected ? 'rgba(255,210,120,0.85)' : 'rgba(20,30,40,0.7)';
+      ctx.fillRect(x, y, cardW, cardH);
+      ctx.strokeStyle = isSelected ? '#ffe16a' : 'rgba(140,200,255,0.4)';
+      ctx.lineWidth = isSelected ? 2.5 : 2;
+      ctx.strokeRect(x, y, cardW, cardH);
+      ctx.fillStyle = isSelected ? '#20120a' : '#d7f2ff';
+      ctx.font = 'bold 18px Courier New';
+      ctx.textAlign = 'left';
+      ctx.fillText(entry.label, width / 2 - cardW / 2 + 24, y + 24);
+      ctx.font = '13px Courier New';
+      ctx.fillStyle = isSelected ? '#20120a' : 'rgba(215,242,255,0.8)';
+      ctx.fillText(entry.description, width / 2 - cardW / 2 + 24, y + 44);
+      this.bounds.difficultyButtons.push({ x, y, w: cardW, h: cardH, index });
+    });
+
+    ctx.fillStyle = 'rgba(215,242,255,0.75)';
+    ctx.font = '14px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('Confirm: Continue  |  Back: Instrument Select', width / 2, height - 60);
+    ctx.restore();
+  }
+
   drawSetlist(ctx, width, height) {
     ctx.save();
     ctx.fillStyle = '#0e0f18';
@@ -1867,17 +2289,19 @@ export default class RobterSession {
     const listY = 110;
     const rowH = 26;
     const entries = this.getSetlistEntries();
+    const listWidth = 520;
+    const instrumentLabel = this.instrument.toUpperCase();
+    const difficultyLabel = PERFORMANCE_DIFFICULTIES.find((entry) => entry.id === this.performanceDifficulty)?.label || 'Medium';
+    ctx.fillStyle = 'rgba(215,242,255,0.75)';
+    ctx.font = '14px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Instrument: ${instrumentLabel}   •   Difficulty: ${difficultyLabel}`, width / 2, 90);
     const listTop = listY;
     const listBottom = height - 80;
     const viewHeight = listBottom - listTop;
     const rowPositions = [];
     let y = listY;
-    let lastSetIndex = null;
     entries.forEach((entry, index) => {
-      if (entry.setIndex !== lastSetIndex && entry.setIndex >= 0) {
-        y += 18;
-        lastSetIndex = entry.setIndex;
-      }
       rowPositions.push({ index, y });
       y += rowH + 8;
     });
@@ -1898,26 +2322,14 @@ export default class RobterSession {
 
     this.bounds.list = [];
     y = listY;
-    lastSetIndex = null;
     entries.forEach((entry, index) => {
-      if (entry.setIndex !== lastSetIndex && entry.setIndex >= 0) {
-        const headerY = y - scrollOffset;
-        if (headerY >= listTop - 20 && headerY <= listBottom + 20) {
-          ctx.fillStyle = '#7ad0ff';
-          ctx.font = '14px Courier New';
-          ctx.textAlign = 'left';
-          ctx.fillText(entry.setTitle, listX, headerY);
-        }
-        y += 18;
-        lastSetIndex = entry.setIndex;
-      }
       const drawY = y - scrollOffset;
       const selected = index === this.selectionIndex;
       if (drawY + rowH >= listTop - 30 && drawY - rowH <= listBottom + 30) {
         ctx.fillStyle = selected ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)';
-        ctx.fillRect(listX, drawY - 16, 380, rowH);
+        ctx.fillRect(listX, drawY - 16, listWidth, rowH);
         ctx.strokeStyle = selected ? '#ffe16a' : 'rgba(255,255,255,0.12)';
-        ctx.strokeRect(listX, drawY - 16, 380, rowH);
+        ctx.strokeRect(listX, drawY - 16, listWidth, rowH);
         ctx.fillStyle = entry.locked ? 'rgba(255,255,255,0.25)' : '#fff';
         ctx.font = '16px Courier New';
         ctx.fillText(entry.name, listX + 12, drawY + 4);
@@ -1931,7 +2343,8 @@ export default class RobterSession {
         } else {
           ctx.fillText('Deterministic seed', listX + 250, drawY + 4);
         }
-        this.bounds.list.push({ x: listX, y: drawY - 16, w: 380, h: rowH, entryIndex: index });
+        this.drawDifficultyIcons(ctx, listX + listWidth - 150, drawY + 4, entry.rating);
+        this.bounds.list.push({ x: listX, y: drawY - 16, w: listWidth, h: rowH, entryIndex: index });
       }
       y += rowH + 8;
     });
@@ -1939,7 +2352,21 @@ export default class RobterSession {
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.font = '14px Courier New';
     ctx.textAlign = 'left';
-    ctx.fillText('Confirm: Start  |  Back: Exit to Main Menu', listX, height - 40);
+    ctx.fillText('Confirm: Start  |  Back: Difficulty Select', listX, height - 40);
+    ctx.restore();
+  }
+
+  drawDifficultyIcons(ctx, x, y, rating) {
+    const normalized = clamp(Math.round(rating || 1), 1, 6);
+    const label = normalized >= 6 ? '💀💀💀💀💀' : '🔥'.repeat(normalized);
+    ctx.save();
+    ctx.font = '14px Courier New';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(215,242,255,0.85)';
+    ctx.fillText(`D${normalized}`, x, y);
+    ctx.font = '16px Arial';
+    ctx.fillStyle = normalized >= 6 ? 'rgba(255,120,120,0.9)' : 'rgba(255,200,90,0.9)';
+    ctx.fillText(label, x + 36, y + 2);
     ctx.restore();
   }
 
@@ -1972,16 +2399,19 @@ export default class RobterSession {
     ctx.fillStyle = '#fff';
     ctx.font = '16px Courier New';
     ctx.fillText(`Default Instrument: ${this.songMeta.instrument}`, 140, 170);
-    ctx.fillText(`Difficulty: ${this.songData.difficulty}/10`, 140, 200);
+    const rating = this.getSongDifficultyRating(this.songMeta);
+    ctx.fillText(`Song Difficulty: D${rating}`, 140, 200);
     ctx.fillText(`Tempo Range: ${Math.round(this.songData.tempoRange.min)}-${Math.round(this.songData.tempoRange.max)} BPM`, 140, 230);
 
     ctx.fillStyle = '#ffe16a';
-    ctx.fillText(`Current Instrument: ${this.instrument}`, 140, 270);
+    ctx.fillText(`Instrument: ${this.instrument}`, 140, 270);
+    const difficultyLabel = PERFORMANCE_DIFFICULTIES.find((entry) => entry.id === this.performanceDifficulty)?.label || 'Medium';
+    ctx.fillText(`Performance Difficulty: ${difficultyLabel}`, 140, 300);
+    this.drawDifficultyIcons(ctx, 140, 330, rating);
 
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.font = '14px Courier New';
-    ctx.fillText('Left/Right: Change Instrument', 140, 310);
-    ctx.fillText('Confirm: Set Scale  |  Back: Setlist', 140, 335);
+    ctx.fillText('Confirm: Set Scale  |  Back: Setlist', 140, 360);
     ctx.restore();
   }
 
@@ -2148,7 +2578,7 @@ export default class RobterSession {
       settings: this.hudSettings,
       practiceSpeed: this.practiceSpeed,
       ghostNotes: this.hudSettings.ghostNotes,
-      backLabel: this.instrument === 'drums' ? 'Scale Sync' : 'Mode Select'
+      backLabel: 'Scale Sync'
     });
   }
 
@@ -2157,6 +2587,7 @@ export default class RobterSession {
     const lanes = this.instrument === 'drums' ? DRUM_LANES : LANE_LABELS;
     const laneCount = lanes.length;
     const laneColors = this.getLaneColors();
+    const highwayTint = this.getHighwayTint();
     const layout = this.highwayRenderer.getLayout({
       width,
       height,
@@ -2166,7 +2597,17 @@ export default class RobterSession {
       scrollSpeed: SCROLL_SPEED
     });
 
-    this.highwayRenderer.drawBackground(ctx, width, height, layout, laneColors);
+    this.highwayRenderer.drawBackground(ctx, width, height, layout, laneColors, highwayTint);
+
+    if (this.starPower >= STAR_POWER_READY && !this.starPowerActive) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+      ctx.shadowColor = 'rgba(255,255,255,0.9)';
+      ctx.shadowBlur = 12;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(layout.startX - 72, layout.laneTop - 38, layout.totalWidth + 144, layout.laneBottom - layout.laneTop + 90);
+      ctx.restore();
+    }
 
     const beatDuration = this.songData.tempo.secondsPerBeat;
     const lanePulse = NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1));
@@ -2200,6 +2641,9 @@ export default class RobterSession {
     this.feedbackSystem.draw(ctx, layout);
 
     const accuracy = this.events.length ? this.hits / this.events.length : 0;
+    const streakMultiplier = this.getStreakMultiplier();
+    const starMultiplier = this.starPowerActive ? 2 : 1;
+    const totalMultiplier = streakMultiplier * starMultiplier;
     ctx.fillStyle = '#d7f2ff';
     ctx.font = '16px Courier New';
     ctx.textAlign = 'left';
@@ -2207,30 +2651,48 @@ export default class RobterSession {
     ctx.fillText(`Streak ${this.streak}`, 40, 62);
     ctx.fillText(`Accuracy ${(accuracy * 100).toFixed(1)}%`, 40, 84);
     ctx.fillText(`Mode ${this.mode.toUpperCase()}`, 40, 106);
+    ctx.fillText(`Multiplier x${totalMultiplier}`, 40, 128);
+
+    const healthX = 40;
+    const healthY = 146;
+    const healthW = 160;
+    const healthH = 10;
+    ctx.strokeStyle = 'rgba(120,190,255,0.6)';
+    ctx.strokeRect(healthX, healthY, healthW, healthH);
+    ctx.fillStyle = 'rgba(120,255,180,0.8)';
+    ctx.fillRect(healthX, healthY, healthW * this.health, healthH);
+    ctx.fillStyle = 'rgba(215,242,255,0.75)';
+    ctx.font = '11px Courier New';
+    ctx.fillText('Health', healthX, healthY - 6);
 
     const sectionLabel = this.getCurrentSectionLabel();
     if (sectionLabel) {
       ctx.fillStyle = 'rgba(10,16,24,0.75)';
-      ctx.fillRect(32, 128, 180, 26);
+      ctx.fillRect(32, 172, 180, 26);
       ctx.strokeStyle = 'rgba(120,190,255,0.5)';
-      ctx.strokeRect(32, 128, 180, 26);
+      ctx.strokeRect(32, 172, 180, 26);
       ctx.fillStyle = '#7ad0ff';
       ctx.font = '14px Courier New';
-      ctx.fillText(sectionLabel, 40, 146);
+      ctx.fillText(sectionLabel, 40, 190);
     }
 
-    const meterX = width - 220;
-    const meterY = 44;
-    const meterW = 160;
-    const meterH = 16;
-    ctx.strokeStyle = '#7ad0ff';
+    const meterW = 220;
+    const meterH = 10;
+    const meterX = width / 2 - meterW / 2;
+    const meterY = layout.hitLineY + 18;
+    ctx.strokeStyle = this.starPowerActive ? 'rgba(255,255,255,0.9)' : 'rgba(120,190,255,0.7)';
     ctx.strokeRect(meterX, meterY, meterW, meterH);
-    ctx.fillStyle = this.starPowerActive ? 'rgba(122,208,255,0.9)' : 'rgba(122,208,255,0.5)';
+    ctx.fillStyle = this.starPowerActive ? 'rgba(255,255,255,0.85)' : 'rgba(122,208,255,0.55)';
     ctx.fillRect(meterX, meterY, meterW * this.starPower, meterH);
-    ctx.fillStyle = '#d7f2ff';
-    ctx.font = '12px Courier New';
-    ctx.textAlign = 'right';
-    ctx.fillText('Star Power', meterX + meterW, meterY - 6);
+    ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+    ctx.beginPath();
+    ctx.moveTo(meterX + meterW * STAR_POWER_READY, meterY - 2);
+    ctx.lineTo(meterX + meterW * STAR_POWER_READY, meterY + meterH + 2);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(215,242,255,0.8)';
+    ctx.font = '11px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('2X Power', width / 2, meterY + meterH + 12);
 
     if (this.groove) {
       ctx.fillStyle = 'rgba(122,208,255,0.9)';
@@ -2378,6 +2840,12 @@ export default class RobterSession {
     ctx.fillText(`Grade: ${grade}`, width / 2, 245);
     ctx.fillText(`Star Power Uses: ${this.starPowerUsed}`, width / 2, 280);
 
+    if (this.failed) {
+      ctx.fillStyle = '#ff7b7b';
+      ctx.font = 'bold 20px Courier New';
+      ctx.fillText('Song Failed', width / 2, 320);
+    }
+
     ctx.font = '16px Courier New';
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.fillText('Press Confirm to return to Setlist.', width / 2, height - 80);
@@ -2385,6 +2853,32 @@ export default class RobterSession {
   }
 
   handleClick(x, y) {
+    if (this.state === 'instrument-select') {
+      const hit = this.bounds.instrumentButtons.find((button) => (
+        x >= button.x && x <= button.x + button.w && y >= button.y && y <= button.y + button.h
+      ));
+      if (hit) {
+        this.instrumentSelectionIndex = hit.index;
+        this.instrument = INSTRUMENTS[hit.index] || this.instrument;
+        this.state = 'difficulty-select';
+        this.audio.ui();
+      }
+    }
+    if (this.state === 'difficulty-select') {
+      const hit = this.bounds.difficultyButtons.find((button) => (
+        x >= button.x && x <= button.x + button.w && y >= button.y && y <= button.y + button.h
+      ));
+      if (hit) {
+        this.difficultySelectionIndex = hit.index;
+        const entry = PERFORMANCE_DIFFICULTIES[hit.index];
+        if (entry) {
+          this.performanceDifficulty = entry.id;
+        }
+        this.selectionIndex = 0;
+        this.state = 'setlist';
+        this.audio.ui();
+      }
+    }
     if (this.state === 'setlist') {
       const hit = this.bounds.list.find((entry) => (
         x >= entry.x && x <= entry.x + entry.w && y >= entry.y && y <= entry.y + entry.h
@@ -2394,7 +2888,6 @@ export default class RobterSession {
         const entry = this.getSetlistEntries()[this.selectionIndex];
         if (!entry.locked || entry.random) {
           this.songMeta = entry;
-          this.instrument = entry.instrument || this.instrument;
           this.state = 'detail';
           this.audio.ui();
         }

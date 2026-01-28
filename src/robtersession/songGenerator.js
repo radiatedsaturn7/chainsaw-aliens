@@ -168,7 +168,7 @@ const BRIDGE_BORROW_POOL = [
 ];
 
 const CHORD_COLORS = ['sus2', 'sus4', '7', 'add9', 'm7', 'maj7'];
-const NOTE_LANES = ['A', 'X', 'Y', 'B'];
+const NOTE_LANES = ['X', 'Y', 'A', 'B'];
 
 const NOTE_INPUTS = [
   { button: 'A', base: 1, passing: 2 },
