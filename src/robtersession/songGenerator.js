@@ -189,7 +189,7 @@ const getTimingWindows = (tier) => DIFFICULTY_WINDOWS.find((entry) => entry.tier
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 const DEFAULT_REGISTERS = {
-  bass: { transpose_semitones: -12, min_note: 'E2' },
+  bass: { transpose_semitones: -20, min_note: 'E2' },
   guitar: { transpose_semitones: 0, center_note: 'C3' },
   piano: { transpose_semitones: 12, center_note: 'C4' }
 };
@@ -351,10 +351,14 @@ const getPatternInterval = ({ degree, chordQuality, seventhQuality, chordType })
 const resolvePatternTokensToEvents = ({ tokens, chordEvent, tempo, register }) => {
   const parsed = tokens.map((token) => parsePatternToken(token)).filter(Boolean);
   if (!parsed.length) return [];
-  const scaleFactor = chordEvent.duration / 4;
+  const events = [];
+  const endBeat = chordEvent.startBeat + chordEvent.duration;
   let beatCursor = chordEvent.startBeat;
-  return parsed.map((entry) => {
-    const duration = (DURATION_TOKENS[entry.duration] || 1) * scaleFactor;
+  parsed.forEach((entry) => {
+    const remaining = endBeat - beatCursor;
+    if (remaining <= 0) return;
+    const baseDuration = DURATION_TOKENS[entry.duration] || 1;
+    const duration = Math.min(baseDuration, remaining);
     const event = {
       timeBeat: beatCursor,
       timeSec: beatCursor * tempo.secondsPerBeat,
@@ -374,9 +378,10 @@ const resolvePatternTokensToEvents = ({ tokens, chordEvent, tempo, register }) =
       sustain: duration,
       starPhrase: chordEvent.isPhrase
     };
+    events.push(event);
     beatCursor += duration;
-    return event;
   });
+  return events;
 };
 
 const buildStructure = (rng, tierLabel, difficulty) => {
