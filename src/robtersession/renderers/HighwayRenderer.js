@@ -151,7 +151,7 @@ export default class HighwayRenderer {
     ctx.restore();
   }
 
-  drawHitLine(ctx, layout, highlight, octaveLineY, mode) {
+  drawHitLine(ctx, layout, highlight, octaveLineY, requiredOctaveLineY, mode) {
     const { startX, totalWidth, hitLineY } = layout;
     ctx.save();
     const glassGradient = ctx.createLinearGradient(startX, hitLineY - 8, startX, hitLineY + 8);
@@ -192,11 +192,19 @@ export default class HighwayRenderer {
     }
 
     if (Number.isFinite(octaveLineY)) {
-      ctx.strokeStyle = 'rgba(255,215,120,0.55)';
+      ctx.strokeStyle = 'rgba(120,200,255,0.35)';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(startX - 30, octaveLineY);
       ctx.lineTo(startX + totalWidth + 30, octaveLineY);
+      ctx.stroke();
+    }
+    if (Number.isFinite(requiredOctaveLineY) && requiredOctaveLineY !== octaveLineY) {
+      ctx.strokeStyle = 'rgba(255,165,80,0.7)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(startX - 34, requiredOctaveLineY);
+      ctx.lineTo(startX + totalWidth + 34, requiredOctaveLineY);
       ctx.stroke();
     }
     ctx.restore();

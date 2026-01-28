@@ -2119,7 +2119,17 @@ export default class RobterSession {
     const lanePulse = NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1));
     this.highwayRenderer.drawBeatLines(ctx, layout, this.songTime, beatDuration);
     this.highwayRenderer.drawLanes(ctx, width, height, layout, laneColors, lanes, lanePulse);
-    this.highwayRenderer.drawHitLine(ctx, layout, this.hitGlassTimer > 0, layout.octaveLineY, this.mode);
+    const requiredOctaveLineY = Number.isFinite(this.requiredOctaveOffset)
+      ? layout.hitLineY - this.requiredOctaveOffset * 18
+      : null;
+    this.highwayRenderer.drawHitLine(
+      ctx,
+      layout,
+      this.hitGlassTimer > 0,
+      layout.octaveLineY,
+      requiredOctaveLineY,
+      this.mode
+    );
 
     this.highwayRenderer.drawNotes(ctx, this.events, layout, this.songTime, {
       noteSize: this.hudSettings.noteSize,
