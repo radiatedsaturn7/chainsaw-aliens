@@ -29,6 +29,46 @@ const NOTE_TO_PC = {
 const PC_TO_NOTE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 const DURATION_TOKENS = { w: 4, h: 2, q: 1, e: 0.5 };
+const DEFAULT_PATTERN_LIBRARY = {
+  patterns_version: 1,
+  duration_tokens: DURATION_TOKENS,
+  basslines: [
+    { id: 'BL_ROOT_8', tokens: ['1e', '1e', '1e', '1e', '1e', '1e', '1e', '1e'] },
+    { id: 'BL_ROOT_Q', tokens: ['1q', '1q', '1q', '1q'] },
+    { id: 'BL_ROOT_HH', tokens: ['1h', '1h'] },
+    { id: 'BL_ROOT_W', tokens: ['1w'] },
+    { id: 'BL_ROOT_16_LAST', tokens: ['1e', '1e', '1e', '1e', '1e', '1e', '1e', '7e'] },
+    { id: 'BL_R5_Q', tokens: ['1q', '5q', '1q', '5q'] },
+    { id: 'BL_R8_Q', tokens: ['1q', '8q', '1q', '8q'] },
+    { id: 'BL_R58_8', tokens: ['1e', '1e', '5e', '5e', '8e', '8e', '5e', '5e'] },
+    { id: 'BL_R5_8_LASTQ', tokens: ['1e', '1e', '1e', '1e', '1e', '1e', '5q'] },
+    { id: 'BL_R58_ALT', tokens: ['1e', '5e', '1e', '5e', '1e', '5e', '8e', '5e'] },
+    { id: 'BL_R235_8', tokens: ['1e', '2e', '3e', '5e', '6e', '5e', '3e', '2e'] },
+    { id: 'BL_R24578_8', tokens: ['1e', '2e', '4e', '5e', '7e', '8e', '7e', '5e'] },
+    { id: 'BL_R75311', tokens: ['1e', '7e', '5e', '3e', '1e', '1e', '3e', '1e'] },
+    { id: 'BL_OCT_DROP', tokens: ['8e', '5e', '1e', '1e', '1e', '1e', '1e', '1e'] },
+    { id: 'BL_FILL_END', tokens: ['1e', '1e', '1e', '1e', '5e', '6e', '7e', '8e'] },
+    { id: 'BL_FILL_DOWN', tokens: ['8e', '7e', '6e', '5e', '4e', '3e', '2e', '1e'] },
+    { id: 'BL_FILL_PUSH', tokens: ['1q', '1e', '1e', '5q', '6e', '6e'] },
+    { id: 'BL_FILL_HOOK', tokens: ['1e', '1e', '5e', '8e', '1e', '1e', '5e', '8e'] }
+  ],
+  arpeggios: [
+    { id: 'ARP_135_8', tokens: ['1e', '3e', '5e', '3e', '1e', '3e', '5e', '3e'] },
+    { id: 'ARP_153_8', tokens: ['1e', '5e', '3e', '5e', '1e', '5e', '3e', '5e'] },
+    { id: 'ARP_1358', tokens: ['1e', '3e', '5e', '8e', '5e', '3e', '1e', '3e'] },
+    { id: 'ARP_1515', tokens: ['1e', '5e', '1e', '5e', '1e', '5e', '1e', '5e'] },
+    { id: 'ARP_PEDAL_R', tokens: ['1e', '1e', '5e', '1e', '3e', '1e', '5e', '1e'] },
+    { id: 'ARP_PEDAL_3', tokens: ['3e', '1e', '5e', '1e', '3e', '1e', '5e', '1e'] },
+    { id: 'ARP_ADD9', tokens: ['1e', '3e', '5e', '9e', '5e', '3e', '9e', '5e'] },
+    { id: 'ARP_DOM7', tokens: ['1e', '3e', '5e', '7e', '5e', '3e', '7e', '5e'] },
+    { id: 'ARP_SUS2', tokens: ['1e', '2e', '5e', '2e', '1e', '2e', '5e', '2e'] },
+    { id: 'ARP_SUS4', tokens: ['1e', '4e', '5e', '4e', '1e', '4e', '5e', '4e'] },
+    { id: 'ARP_M7', tokens: ['1e', '3e', '5e', '7e', '8e', '7e', '5e', '3e'] },
+    { id: 'ARP_SYNC_A', tokens: ['1q', '3e', '5e', '3q', '5e', '3e'] },
+    { id: 'ARP_SYNC_B', tokens: ['1e', '3e', '5q', '3e', '5e', '3q'] },
+    { id: 'ARP_SWELL', tokens: ['1h', '3e', '5e', '7e', '5e'] }
+  ]
+};
 const DURATION_TEMPLATES = [
   ['w'],
   ['h', 'h'],
@@ -49,12 +89,19 @@ const SECTION_LETTERS = {
   O: 'outro'
 };
 
+const ARRANGEMENT_PRESETS = [
+  'bass_roots_gtr_chords_pno_arps',
+  'bass_roots_gtr_arps_pno_chords',
+  'bass_arps_gtr_roots_pno_chords',
+  'bass_roots_gtr_chords_pno_chords_split'
+];
+
 const STRUCTURE_PATTERNS = {
-  beginner: ['VVCC', 'IVVCC', 'VVCCO'],
-  easy: ['VVCCB', 'IVVCCO', 'VVCCbO'],
-  mid: ['IVVPCcB', 'VVPCcB', 'IVVCCB'],
-  hard: ['IVVPCcBS', 'VVCCBS', 'IVVCCBS'],
-  expert: ['IVVPCCbSO', 'IVVPCCbS', 'IVVPCcBO']
+  beginner: ['IVVCCVVCCO', 'IVVCCVVCCCO', 'IVVCCVVCCO'],
+  easy: ['IVVCCVVCCBCCO', 'IVVCCVVCCbCCO', 'IVVCCVVCCO'],
+  mid: ['IVVPCCVVPCcBCCO', 'IVVPCcVVPCcBCCO', 'IVVCCVVCCBCCO'],
+  hard: ['IVVPCcVVPCcBSCCO', 'IVVCCVVCCBSCCO', 'IVVPCcVVPCcBSCCO'],
+  expert: ['IVVPCCVVPCcBSCCO', 'IVVPCCVVPCcBSCCO', 'IVVPCCVVPCcBSCCO']
 };
 
 const STYLE_PRESETS = {
@@ -141,12 +188,89 @@ const getTimingWindows = (tier) => DIFFICULTY_WINDOWS.find((entry) => entry.tier
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
+const DEFAULT_REGISTERS = {
+  bass: { transpose_semitones: -12, min_note: 'E2' },
+  guitar: { transpose_semitones: 0, center_note: 'C3' },
+  piano: { transpose_semitones: 12, center_note: 'C4' }
+};
+
 const resolveTierLabel = (difficulty) => {
   if (difficulty <= 3) return 'beginner';
   if (difficulty <= 5) return 'easy';
   if (difficulty <= 7) return 'mid';
   if (difficulty <= 8) return 'hard';
   return 'expert';
+};
+
+const selectArrangementPreset = (difficulty, rng) => {
+  if (difficulty <= 3) return 'bass_roots_gtr_chords_pno_arps';
+  if (difficulty <= 5) return 'bass_roots_gtr_arps_pno_chords';
+  if (difficulty <= 7) return 'bass_roots_gtr_chords_pno_chords_split';
+  if (rng && rng() < 0.5) return 'bass_arps_gtr_roots_pno_chords';
+  return 'bass_roots_gtr_chords_pno_chords_split';
+};
+
+const selectArpPattern = (difficulty, rng) => {
+  if (difficulty <= 3) return 'ARP_135_8';
+  if (difficulty <= 5) return rng && rng() < 0.4 ? 'ARP_1515' : 'ARP_153_8';
+  if (difficulty <= 7) return rng && rng() < 0.4 ? 'ARP_ADD9' : 'ARP_1358';
+  return rng && rng() < 0.4 ? 'ARP_DOM7' : 'ARP_M7';
+};
+
+const selectBassPatterns = (difficulty, preset, rng) => {
+  if (preset === 'bass_arps_gtr_roots_pno_chords') {
+    const base = difficulty >= 8 ? 'BL_R24578_8' : 'BL_R235_8';
+    return {
+      default_pattern: base,
+      section_overrides: {
+        verse: base,
+        chorus: rng && rng() < 0.4 ? 'BL_R58_ALT' : 'BL_R58_8',
+        bridge: 'BL_FILL_HOOK',
+        outro: 'BL_FILL_END'
+      }
+    };
+  }
+  if (difficulty <= 3) {
+    return {
+      default_pattern: 'BL_ROOT_Q',
+      section_overrides: {
+        chorus: 'BL_R5_Q',
+        bridge: 'BL_ROOT_HH',
+        outro: 'BL_ROOT_W'
+      }
+    };
+  }
+  if (difficulty <= 5) {
+    return {
+      default_pattern: 'BL_R5_Q',
+      section_overrides: {
+        verse: 'BL_R5_Q',
+        chorus: 'BL_R58_8',
+        bridge: 'BL_FILL_END',
+        outro: 'BL_FILL_DOWN'
+      }
+    };
+  }
+  if (difficulty <= 7) {
+    return {
+      default_pattern: 'BL_R58_8',
+      section_overrides: {
+        verse: 'BL_R58_8',
+        chorus: 'BL_R58_ALT',
+        bridge: 'BL_FILL_END',
+        outro: 'BL_FILL_PUSH'
+      }
+    };
+  }
+  return {
+    default_pattern: 'BL_R235_8',
+    section_overrides: {
+      verse: 'BL_R235_8',
+      chorus: 'BL_R58_ALT',
+      bridge: 'BL_FILL_END',
+      outro: 'BL_FILL_HOOK'
+    }
+  };
 };
 
 export const mapDifficultyToTierNumber = (difficulty) => {
@@ -177,6 +301,83 @@ const parseKeySignature = (key) => {
 };
 
 const normalizeChordText = (chord) => chord.replace(/\(([^)]+)\)/g, '$1');
+
+const resolvePatternLibrary = (schema) => schema?.patternsLibrary || DEFAULT_PATTERN_LIBRARY;
+
+const findPatternById = (library, collection, id) => (
+  library?.[collection]?.find((pattern) => pattern.id === id) || null
+);
+
+const parsePatternToken = (token) => {
+  const match = String(token).match(/^(\d+)(w|h|q|e)$/);
+  if (!match) return null;
+  return { degree: Number(match[1]), duration: match[2] };
+};
+
+const getChordQualityFromSymbol = (symbol) => {
+  if (/dim/.test(symbol)) return 'dim';
+  if (/m(?!aj)/.test(symbol)) return 'minor';
+  return 'major';
+};
+
+const getChordSeventhQuality = (symbol) => {
+  if (/maj7/.test(symbol)) return 'maj7';
+  if (/m7/.test(symbol)) return 'm7';
+  if (/7/.test(symbol)) return '7';
+  return null;
+};
+
+const getPatternInterval = ({ degree, chordQuality, seventhQuality, chordType }) => {
+  if (degree === 1) return 0;
+  if (degree === 2) return 2;
+  if (degree === 3) {
+    if (chordType === 'sus2') return 2;
+    if (chordType === 'sus4') return 5;
+    return chordQuality === 'minor' || chordQuality === 'dim' ? 3 : 4;
+  }
+  if (degree === 4) return 5;
+  if (degree === 5) return 7;
+  if (degree === 6) return 9;
+  if (degree === 7) {
+    if (seventhQuality === 'maj7') return 11;
+    if (seventhQuality === 'm7' || seventhQuality === '7') return 10;
+    return chordQuality === 'minor' ? 10 : 11;
+  }
+  if (degree === 8) return 12;
+  if (degree === 9) return 14;
+  return (degree - 1) * 2;
+};
+
+const resolvePatternTokensToEvents = ({ tokens, chordEvent, tempo, register }) => {
+  const parsed = tokens.map((token) => parsePatternToken(token)).filter(Boolean);
+  if (!parsed.length) return [];
+  const scaleFactor = chordEvent.duration / 4;
+  let beatCursor = chordEvent.startBeat;
+  return parsed.map((entry) => {
+    const duration = (DURATION_TOKENS[entry.duration] || 1) * scaleFactor;
+    const event = {
+      timeBeat: beatCursor,
+      timeSec: beatCursor * tempo.secondsPerBeat,
+      lane: 0,
+      type: 'NOTE',
+      section: chordEvent.section,
+      requiredInput: {
+        mode: 'pattern',
+        degree: chordEvent.degree,
+        patternDegree: entry.degree,
+        chordType: chordEvent.chordType,
+        chordQuality: chordEvent.chordQuality,
+        seventhQuality: chordEvent.seventhQuality,
+        transpose: register?.transpose_semitones ?? 0,
+        minNote: register?.min_note ?? null
+      },
+      sustain: duration,
+      starPhrase: chordEvent.isPhrase
+    };
+    beatCursor += duration;
+    return event;
+  });
+};
 
 const buildStructure = (rng, tierLabel, difficulty) => {
   const patterns = STRUCTURE_PATTERNS[tierLabel] || STRUCTURE_PATTERNS.easy;
@@ -451,8 +652,8 @@ const buildSectionTimelineFromSchema = (schema) => {
   return timeline;
 };
 
-const buildChordEventsFromSchema = ({ schema, tempo, instrument }) => {
-  const events = [];
+const buildChordTimelineFromSchema = ({ schema, tempo }) => {
+  const timeline = [];
   const sections = buildSectionTimelineFromSchema(schema);
   const keyInfo = parseKeySignature(schema.key);
   const rootPc = NOTE_TO_PC[keyInfo.root] ?? 0;
@@ -493,30 +694,51 @@ const buildChordEventsFromSchema = ({ schema, tempo, instrument }) => {
           if (inversion) return 'triad-inv1';
           return 'triad';
         })();
-        const inputMap = CHORD_INPUTS[chordType] || CHORD_INPUTS.triad;
-        const lane = NOTE_LANES.indexOf(inputMap.button);
         const timeBeat = barStartBeat + beatOffset;
-        events.push({
+        timeline.push({
           timeBeat,
           timeSec: timeBeat * tempo.secondsPerBeat,
-          lane: lane >= 0 ? lane : 0,
-          type: 'CHORD',
           section: section.name,
-          requiredInput: {
-            mode: instrument === 'drums' ? 'drum' : 'chord',
-            degree,
-            button: inputMap.button,
-            modifiers: inputMap.modifiers,
-            chordType
-          },
-          sustain: duration,
-          starPhrase: isPhrase
+          degree,
+          duration,
+          chordType,
+          chordQuality: getChordQualityFromSymbol(symbolRoot),
+          seventhQuality: getChordSeventhQuality(symbolRoot),
+          isPhrase
         });
         beatOffset += duration;
       });
     });
   });
-  return { events, sections };
+  return { timeline, sections };
+};
+
+const buildChordEventsFromSchema = ({ schema, tempo, instrument, register }) => {
+  const events = [];
+  const { timeline, sections } = buildChordTimelineFromSchema({ schema, tempo });
+  timeline.forEach((entry) => {
+    const inputMap = CHORD_INPUTS[entry.chordType] || CHORD_INPUTS.triad;
+    const lane = NOTE_LANES.indexOf(inputMap.button);
+    events.push({
+      timeBeat: entry.timeBeat,
+      timeSec: entry.timeSec,
+      lane: lane >= 0 ? lane : 0,
+      type: 'CHORD',
+      section: entry.section,
+      requiredInput: {
+        mode: instrument === 'drums' ? 'drum' : 'chord',
+        degree: entry.degree,
+        button: inputMap.button,
+        modifiers: inputMap.modifiers,
+        chordType: entry.chordType,
+        transpose: register?.transpose_semitones ?? 0,
+        minNote: register?.min_note ?? null
+      },
+      sustain: entry.duration,
+      starPhrase: entry.isPhrase
+    });
+  });
+  return { events, sections, timeline };
 };
 
 const createStarPhraseMap = (totalBars) => {
@@ -631,6 +853,10 @@ export const generateStructuredSong = ({ difficulty = 1, seed, stylePreset } = {
     difficulty: normalizedDifficulty,
     tierLabel
   });
+  const preset = selectArrangementPreset(normalizedDifficulty, rng);
+  const bassPart = selectBassPatterns(normalizedDifficulty, preset, rng);
+  const guitarRole = preset.includes('gtr_chords') ? 'chords' : preset.includes('gtr_arps') ? 'arpeggio' : 'roots';
+  const pianoRole = preset.includes('pno_arps') ? 'arpeggio' : 'chords';
   const song = {
     id: `rnd-${seed ?? Date.now()}`,
     title: buildRandomName(typeof seed === 'number' ? seed : hashString(String(seed ?? Date.now()))),
@@ -642,6 +868,21 @@ export const generateStructuredSong = ({ difficulty = 1, seed, stylePreset } = {
     key,
     style_tags: style?.tags || ['rock'],
     structure,
+    arrangement: {
+      preset,
+      registers: DEFAULT_REGISTERS
+    },
+    parts: {
+      bass: bassPart,
+      guitar: {
+        role: guitarRole,
+        ...(guitarRole === 'arpeggio' ? { arp_pattern: selectArpPattern(normalizedDifficulty, rng) } : {})
+      },
+      piano: {
+        role: pianoRole,
+        ...(pianoRole === 'arpeggio' ? { arp_pattern: selectArpPattern(normalizedDifficulty, rng) } : {})
+      }
+    },
     sections
   };
   ensureChordDiversity({ song, rootPc, mode, rng });
@@ -709,16 +950,199 @@ export const validateChordSymbolFormat = (song) => {
   return errors;
 };
 
+export const validatePatternLibrary = (library) => {
+  const errors = [];
+  const collections = ['basslines', 'arpeggios'];
+  collections.forEach((collection) => {
+    (library?.[collection] || []).forEach((pattern) => {
+      const total = (pattern.tokens || []).reduce((sum, token) => {
+        const parsed = parsePatternToken(token);
+        if (!parsed) {
+          errors.push(`Invalid token ${token} in ${pattern.id}.`);
+          return sum;
+        }
+        return sum + (DURATION_TOKENS[parsed.duration] || 0);
+      }, 0);
+      if (Math.abs(total - 4) > 0.001) {
+        errors.push(`Pattern ${pattern.id} sums to ${total} beats.`);
+      }
+    });
+  });
+  if (errors.length) {
+    console.warn(errors.join('\n'));
+  }
+  return errors;
+};
+
+export const validatePatternReferences = (song, library) => {
+  const errors = [];
+  const bassPattern = song.parts?.bass?.default_pattern;
+  if (bassPattern && !findPatternById(library, 'basslines', bassPattern)) {
+    errors.push(`Missing bass pattern ${bassPattern} in ${song.id || song.title}.`);
+  }
+  Object.entries(song.parts?.bass?.section_overrides || {}).forEach(([section, patternId]) => {
+    if (!findPatternById(library, 'basslines', patternId)) {
+      errors.push(`Missing bass pattern ${patternId} for ${section} in ${song.id || song.title}.`);
+    }
+  });
+  const guitarArp = song.parts?.guitar?.arp_pattern;
+  if (guitarArp && !findPatternById(library, 'arpeggios', guitarArp)) {
+    errors.push(`Missing guitar arp ${guitarArp} in ${song.id || song.title}.`);
+  }
+  const pianoArp = song.parts?.piano?.arp_pattern;
+  if (pianoArp && !findPatternById(library, 'arpeggios', pianoArp)) {
+    errors.push(`Missing piano arp ${pianoArp} in ${song.id || song.title}.`);
+  }
+  if (errors.length) {
+    console.warn(errors.join('\n'));
+  }
+  return errors;
+};
+
+export const validateRegisterRules = (song) => {
+  const errors = [];
+  const registers = song.arrangement?.registers;
+  if (!registers) return errors;
+  const toMidi = (note) => {
+    const match = String(note || '').match(/^([A-Ga-g])([#b]?)(-?\\d+)$/);
+    if (!match) return null;
+    const label = `${match[1].toUpperCase()}${match[2] || ''}`;
+    const octave = Number(match[3]);
+    return (octave + 1) * 12 + (NOTE_TO_PC[label] ?? 0);
+  };
+  const bassCenter = toMidi(registers.bass?.min_note) ?? 0;
+  const guitarCenter = toMidi(registers.guitar?.center_note) ?? bassCenter + 12;
+  const pianoCenter = toMidi(registers.piano?.center_note) ?? guitarCenter + 12;
+  if (bassCenter > guitarCenter || guitarCenter > pianoCenter) {
+    errors.push(`Register order violation in ${song.id || song.title}.`);
+  }
+  if (errors.length) {
+    console.warn(errors.join('\n'));
+  }
+  return errors;
+};
+
+export const validateRequiredChordTypes = (setlist) => {
+  const required = setlist?.definitions?.required_chord_types || [];
+  if (!required.length) return [];
+  const present = new Set();
+  setlist?.songs?.forEach((song) => {
+    Object.values(song.sections || {}).forEach((bars) => {
+      bars.forEach((bar) => {
+        bar.forEach((entry) => {
+          const chord = normalizeChordText(entry.replace(/\((w|h|q|e)\)\s*$/, ''));
+          required.forEach((type) => {
+            if (chord.includes(type)) present.add(type);
+          });
+        });
+      });
+    });
+  });
+  const missing = required.filter((type) => !present.has(type));
+  if (missing.length) {
+    console.warn(`Missing required chord types: ${missing.join(', ')}`);
+  }
+  return missing;
+};
+
+const buildPatternTrack = ({
+  schema,
+  tempo,
+  timeline,
+  patternId,
+  register,
+  collection
+}) => {
+  const library = resolvePatternLibrary(schema);
+  const pattern = findPatternById(library, collection, patternId);
+  if (!pattern) return [];
+  const events = [];
+  timeline.forEach((chordEvent) => {
+    const patternEvents = resolvePatternTokensToEvents({
+      tokens: pattern.tokens || [],
+      chordEvent: {
+        ...chordEvent,
+        startBeat: chordEvent.timeBeat
+      },
+      tempo,
+      register
+    });
+    events.push(...patternEvents);
+  });
+  return events;
+};
+
 const buildTracksFromSchema = ({ rng, tier, instrument, schema }) => {
   const tempo = createTempoMap(schema.tempo_bpm);
-  const { events, sections } = buildChordEventsFromSchema({ schema, tempo, instrument });
+  const arrangement = schema.arrangement || {};
+  const registers = arrangement.registers || DEFAULT_REGISTERS;
+  const { events, sections, timeline } = buildChordEventsFromSchema({
+    schema,
+    tempo,
+    instrument,
+    register: registers[instrument]
+  });
   const tracks = {};
   INSTRUMENTS.forEach((trackInstrument) => {
     if (trackInstrument === 'drums') {
       tracks[trackInstrument] = buildDrumEvents({ rng, tier, tempo, sections });
-    } else {
-      tracks[trackInstrument] = buildChordEventsFromSchema({ schema, tempo, instrument: trackInstrument }).events;
+      return;
     }
+    const part = schema.parts?.[trackInstrument] || {};
+    const register = registers[trackInstrument];
+    if (trackInstrument === 'bass') {
+      const defaultPattern = part.default_pattern || 'BL_ROOT_8';
+      const sectionOverrides = part.section_overrides || {};
+      const trackEvents = [];
+      const library = resolvePatternLibrary(schema);
+      timeline.forEach((chordEvent) => {
+        const patternId = sectionOverrides[chordEvent.section] || defaultPattern;
+        const pattern = findPatternById(library, 'basslines', patternId);
+        if (!pattern) return;
+        const patternEvents = resolvePatternTokensToEvents({
+          tokens: pattern.tokens || [],
+          chordEvent: {
+            ...chordEvent,
+            startBeat: chordEvent.timeBeat
+          },
+          tempo,
+          register
+        });
+        trackEvents.push(...patternEvents);
+      });
+      tracks[trackInstrument] = trackEvents;
+      return;
+    }
+    const role = part.role || 'chords';
+    if (role === 'arpeggio') {
+      const arpPattern = part.arp_pattern || 'ARP_135_8';
+      tracks[trackInstrument] = buildPatternTrack({
+        schema,
+        tempo,
+        timeline,
+        patternId: arpPattern,
+        register,
+        collection: 'arpeggios'
+      });
+      return;
+    }
+    if (role === 'roots') {
+      tracks[trackInstrument] = buildPatternTrack({
+        schema,
+        tempo,
+        timeline,
+        patternId: 'BL_ROOT_Q',
+        register,
+        collection: 'basslines'
+      });
+      return;
+    }
+    tracks[trackInstrument] = buildChordEventsFromSchema({
+      schema,
+      tempo,
+      instrument: trackInstrument,
+      register
+    }).events;
   });
   return { tracks, events, sections, tempo };
 };

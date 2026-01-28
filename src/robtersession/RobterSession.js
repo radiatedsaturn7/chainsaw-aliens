@@ -713,23 +713,8 @@ export default class RobterSession {
     if (requiredInput.mode === 'drum') {
       return DRUM_LANES[requiredInput.lane] || 'Drum';
     }
-    if (requiredInput.mode === 'note') {
-      const buttonMap = {
-        A: { base: 1, passing: 2 },
-        X: { base: 3, passing: 4 },
-        Y: { base: 5, passing: 6 },
-        B: { base: 8, passing: 7 }
-      };
-      const entry = buttonMap[requiredInput.button] || buttonMap.A;
-      const degree = requiredInput.modifiers?.lb ? entry.passing : entry.base;
-      const targetDegree = (requiredInput.degree || 1) + degree - 1;
-      let pitch = this.robterspiel.getPitchForScaleStep(targetDegree - 1);
-      if (requiredInput.modifiers?.dleft) {
-        pitch += 1;
-      }
-      if (requiredInput.octaveUp) {
-        pitch += 12;
-      }
+    if (requiredInput.mode === 'note' || requiredInput.mode === 'pattern') {
+      const [pitch] = this.resolveRequiredPitches(requiredInput, this.instrument);
       return formatPitchLabel(pitch);
     }
     return this.getChordLabel({
@@ -747,9 +732,59 @@ export default class RobterSession {
 
   resolveRequiredPitches(requiredInput, instrument) {
     if (!requiredInput) return [];
+    const toMidi = (note) => {
+      const match = String(note || '').match(/^([A-Ga-g])([#b]?)(-?\d+)$/);
+      if (!match) return null;
+      const label = `${match[1].toUpperCase()}${match[2] || ''}`;
+      const octave = Number(match[3]);
+      const pcMap = { C: 0, 'C#': 1, Db: 1, D: 2, 'D#': 3, Eb: 3, E: 4, F: 5, 'F#': 6, Gb: 6, G: 7, 'G#': 8, Ab: 8, A: 9, 'A#': 10, Bb: 10, B: 11 };
+      return (octave + 1) * 12 + (pcMap[label] ?? 0);
+    };
+    const applyRegister = (pitches) => {
+      const transpose = requiredInput.transpose ?? 0;
+      const minMidi = requiredInput.minNote ? toMidi(requiredInput.minNote) : null;
+      return pitches.map((pitch) => {
+        let adjusted = pitch + transpose;
+        if (Number.isFinite(minMidi)) {
+          while (adjusted < minMidi) {
+            adjusted += 12;
+          }
+        }
+        return adjusted;
+      });
+    };
     if (instrument === 'drums') {
       const drumMap = [36, 38, 42, 49];
       return [drumMap[requiredInput.lane] ?? 38];
+    }
+    if (requiredInput.mode === 'pattern') {
+      const chordQuality = requiredInput.chordQuality || 'major';
+      const chordType = requiredInput.chordType || 'triad';
+      const seventhQuality = requiredInput.seventhQuality || null;
+      const degree = requiredInput.degree || 1;
+      const basePitch = this.robterspiel.getPitchForScaleStep(degree - 1);
+      const getInterval = (patternDegree) => {
+        if (patternDegree === 1) return 0;
+        if (patternDegree === 2) return 2;
+        if (patternDegree === 3) {
+          if (chordType === 'sus2') return 2;
+          if (chordType === 'sus4') return 5;
+          return chordQuality === 'minor' || chordQuality === 'dim' ? 3 : 4;
+        }
+        if (patternDegree === 4) return 5;
+        if (patternDegree === 5) return 7;
+        if (patternDegree === 6) return 9;
+        if (patternDegree === 7) {
+          if (seventhQuality === 'maj7') return 11;
+          if (seventhQuality === 'm7' || seventhQuality === '7') return 10;
+          return chordQuality === 'minor' ? 10 : 11;
+        }
+        if (patternDegree === 8) return 12;
+        if (patternDegree === 9) return 14;
+        return (patternDegree - 1) * 2;
+      };
+      const interval = getInterval(requiredInput.patternDegree || 1);
+      return applyRegister([basePitch + interval]);
     }
     if (requiredInput.mode === 'note') {
       const buttonMap = {
@@ -768,7 +803,7 @@ export default class RobterSession {
       if (requiredInput.octaveUp) {
         pitch += 12;
       }
-      return [pitch];
+      return applyRegister([pitch]);
     }
     const chordType = requiredInput.chordType || 'triad';
     let variant = 'triad';
@@ -807,7 +842,7 @@ export default class RobterSession {
     }
     let pitches = this.robterspiel.getChordPitches(requiredInput.degree || 1, { variant, suspension });
     pitches = this.applyInversion(pitches, inversion);
-    return pitches;
+    return applyRegister(pitches);
   }
 
   advanceBandTracks(prevTime, nextTime) {
@@ -904,7 +939,11 @@ export default class RobterSession {
         event.requiredInput
       );
       event.expectedAction = expectedAction;
-      event.noteKind = event.requiredInput?.mode === 'note' ? 'note' : event.requiredInput?.mode === 'drum' ? 'drum' : 'chord';
+      event.noteKind = event.requiredInput?.mode === 'note' || event.requiredInput?.mode === 'pattern'
+        ? 'note'
+        : event.requiredInput?.mode === 'drum'
+          ? 'drum'
+          : 'chord';
       if (this.instrument === 'drums') {
         event.primaryLabel = event.requiredInput?.button || NOTE_LANES[event.lane] || '';
         event.secondaryLabel = expectedAction?.label || event.displayLabel || '';

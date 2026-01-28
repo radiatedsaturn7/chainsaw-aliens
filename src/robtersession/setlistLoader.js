@@ -1,4 +1,12 @@
-import { validateBarDurations, validateChordSymbolFormat, validateStructureSectionsPresent } from './songGenerator.js';
+import {
+  validateBarDurations,
+  validateChordSymbolFormat,
+  validatePatternLibrary,
+  validatePatternReferences,
+  validateRegisterRules,
+  validateRequiredChordTypes,
+  validateStructureSectionsPresent
+} from './songGenerator.js';
 
 const SECTION_NAME_MAP = {
   I: 'intro',
@@ -66,6 +74,51 @@ const parseValue = (value) => {
   return trimmed;
 };
 
+const parsePatternYaml = (text) => {
+  const lines = text.split(/\r?\n/);
+  const parsed = {};
+  let currentList = null;
+  let currentItem = null;
+  lines.forEach((rawLine) => {
+    const cleaned = stripYamlComment(rawLine);
+    if (!cleaned.trim()) return;
+    if (cleaned.trim() === '---') return;
+    const indent = cleaned.match(/^\s*/)[0].length;
+    const trimmed = cleaned.trim();
+    if (indent === 0 && trimmed.includes(':')) {
+      const entry = parseKeyValue(trimmed);
+      if (!entry) return;
+      if (!entry.value) {
+        parsed[entry.key] = [];
+        currentList = entry.key;
+        currentItem = null;
+      } else {
+        parsed[entry.key] = parseValue(entry.value);
+        currentList = null;
+        currentItem = null;
+      }
+      return;
+    }
+    if (currentList && indent === 2 && trimmed.startsWith('- ')) {
+      const entry = parseKeyValue(trimmed.replace(/^-\s*/, ''));
+      const item = {};
+      if (entry) {
+        item[entry.key] = parseValue(entry.value);
+      }
+      parsed[currentList].push(item);
+      currentItem = item;
+      return;
+    }
+    if (currentItem && indent >= 4 && trimmed.includes(':')) {
+      const entry = parseKeyValue(trimmed);
+      if (entry) {
+        currentItem[entry.key] = parseValue(entry.value);
+      }
+    }
+  });
+  return parsed;
+};
+
 const parseBarLine = (line) => {
   const trimmed = line.trim();
   if (!trimmed.startsWith('-')) return null;
@@ -107,6 +160,10 @@ export const parseSetlistYaml = (text) => {
   const setlist = { definitions: {}, songs: [] };
   let currentSong = null;
   let currentSection = null;
+  let currentNestedKey = null;
+  let currentArrangementRegister = null;
+  let currentPartKey = null;
+  let currentPartSub = null;
   let inDefinitions = false;
   let inSongs = false;
   lines.forEach((rawLine) => {
@@ -148,22 +205,88 @@ export const parseSetlistYaml = (text) => {
           currentSong[entry.key] = parseValue(entry.value);
         }
         currentSection = null;
+        currentNestedKey = null;
+        currentArrangementRegister = null;
+        currentPartKey = null;
+        currentPartSub = null;
         return;
       }
       if (!currentSong) return;
       if (indent === 4 && trimmed === 'sections:') {
         currentSong.sections = currentSong.sections || {};
+        currentSection = null;
+        currentNestedKey = null;
         return;
       }
       if (indent === 4 && trimmed.endsWith(':')) {
         const key = trimmed.slice(0, -1).trim();
         currentSong[key] = {};
+        currentNestedKey = key;
+        currentArrangementRegister = null;
+        currentPartKey = null;
+        currentPartSub = null;
         return;
       }
       if (indent === 4 && trimmed.includes(':')) {
         const entry = parseKeyValue(trimmed);
         if (entry) {
           currentSong[entry.key] = parseValue(entry.value);
+        }
+        return;
+      }
+      if (indent === 6 && currentNestedKey === 'arrangement') {
+        if (trimmed.endsWith(':')) {
+          const key = trimmed.slice(0, -1).trim();
+          if (key === 'registers') {
+            currentSong.arrangement.registers = {};
+          }
+          return;
+        }
+        const entry = parseKeyValue(trimmed);
+        if (entry) {
+          currentSong.arrangement[entry.key] = parseValue(entry.value);
+        }
+        return;
+      }
+      if (indent === 8 && currentNestedKey === 'arrangement') {
+        if (!currentSong.arrangement.registers) currentSong.arrangement.registers = {};
+        if (trimmed.endsWith(':')) {
+          currentArrangementRegister = trimmed.slice(0, -1).trim();
+          currentSong.arrangement.registers[currentArrangementRegister] = {};
+        }
+        return;
+      }
+      if (indent === 10 && currentNestedKey === 'arrangement' && currentArrangementRegister) {
+        const entry = parseKeyValue(trimmed);
+        if (entry) {
+          currentSong.arrangement.registers[currentArrangementRegister][entry.key] = parseValue(entry.value);
+        }
+        return;
+      }
+      if (indent === 6 && currentNestedKey === 'parts') {
+        if (trimmed.endsWith(':')) {
+          currentPartKey = trimmed.slice(0, -1).trim();
+          currentSong.parts[currentPartKey] = {};
+          currentPartSub = null;
+        }
+        return;
+      }
+      if (indent === 8 && currentNestedKey === 'parts' && currentPartKey) {
+        if (trimmed.endsWith(':')) {
+          currentPartSub = trimmed.slice(0, -1).trim();
+          currentSong.parts[currentPartKey][currentPartSub] = {};
+          return;
+        }
+        const entry = parseKeyValue(trimmed);
+        if (entry) {
+          currentSong.parts[currentPartKey][entry.key] = parseValue(entry.value);
+        }
+        return;
+      }
+      if (indent === 10 && currentNestedKey === 'parts' && currentPartKey && currentPartSub) {
+        const entry = parseKeyValue(trimmed);
+        if (entry) {
+          currentSong.parts[currentPartKey][currentPartSub][entry.key] = parseValue(entry.value);
         }
         return;
       }
@@ -183,35 +306,45 @@ export const parseSetlistYaml = (text) => {
   return setlist;
 };
 
-const normalizeSetlistSong = (song) => {
+const normalizeSetlistSong = (song, patternsLibrary) => {
   if (!song.sections) return song;
   const fixedSections = {};
   Object.entries(song.sections).forEach(([sectionName, bars]) => {
     fixedSections[sectionName] = bars.map((bar) => fixBarDurations(bar));
   });
-  return { ...song, sections: fixedSections };
+  return { ...song, sections: fixedSections, patternsLibrary };
 };
 
 export const loadSetlistData = async () => {
+  const patternsResponse = await fetch('data/robtersession_patterns.yaml');
+  if (!patternsResponse.ok) {
+    throw new Error(`Failed to load patterns: ${patternsResponse.status}`);
+  }
+  const patternsText = await patternsResponse.text();
+  const patterns = parsePatternYaml(patternsText);
   const response = await fetch('data/robtersession_setlist.yaml');
   if (!response.ok) {
     throw new Error(`Failed to load setlist: ${response.status}`);
   }
   const text = await response.text();
   const parsed = parseSetlistYaml(text);
-  const normalizedSongs = parsed.songs.map((song) => normalizeSetlistSong(song));
-  const normalized = { ...parsed, songs: normalizedSongs };
+  const normalizedSongs = parsed.songs.map((song) => normalizeSetlistSong(song, patterns));
+  const normalized = { ...parsed, patterns, songs: normalizedSongs };
+  validatePatternLibrary(patterns);
+  validateRequiredChordTypes(normalized);
   normalized.songs.forEach((song) => {
     validateBarDurations(song);
     validateStructureSectionsPresent(song, SECTION_NAME_MAP);
     validateChordSymbolFormat(song);
+    validatePatternReferences(song, patterns);
+    validateRegisterRules(song);
   });
   return normalized;
 };
 
 export const buildSetlistSets = (setlist, mapDifficultyToTierNumber) => {
   if (!setlist?.songs?.length) return [];
-  const songs = setlist.songs.map((song) => normalizeSetlistSong(song));
+  const songs = setlist.songs.map((song) => normalizeSetlistSong(song, setlist.patterns));
   const sets = [];
   const setSize = 5;
   for (let i = 0; i < songs.length; i += setSize) {

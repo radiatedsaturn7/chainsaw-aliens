@@ -1,0 +1,82 @@
+---
+patterns_version: 1
+duration_tokens: { w: 4, h: 2, q: 1, e: 0.5 }
+
+# IMPORTANT INTERPRETATION RULE:
+# Degree numbers in bass/arpeggio patterns are RELATIVE TO THE CURRENT CHORD ROOT (not key).
+# e.g., over chord C: 1=C, 3=E, 5=G, 7=Bb (for dom7), 7=B (for maj7), 9=D, 2=D, 4=F, 8=octave.
+# Your chord parser must decide whether 7 is minor/major based on chord type (7 vs maj7 vs m7).
+
+basslines:
+  - id: "BL_ROOT_8"
+    tokens: ["1e","1e","1e","1e","1e","1e","1e","1e"]
+  - id: "BL_ROOT_Q"
+    tokens: ["1q","1q","1q","1q"]
+  - id: "BL_ROOT_HH"
+    tokens: ["1h","1h"]
+  - id: "BL_ROOT_W"
+    tokens: ["1w"]
+  - id: "BL_ROOT_16_LAST"
+    tokens: ["1e","1e","1e","1e","1e","1e","1e","7e"]
+
+  - id: "BL_R5_Q"
+    tokens: ["1q","5q","1q","5q"]
+  - id: "BL_R8_Q"
+    tokens: ["1q","8q","1q","8q"]
+  - id: "BL_R58_8"
+    tokens: ["1e","1e","5e","5e","8e","8e","5e","5e"]
+  - id: "BL_R5_8_LASTQ"
+    tokens: ["1e","1e","1e","1e","1e","1e","5q"]
+  - id: "BL_R58_ALT"
+    tokens: ["1e","5e","1e","5e","1e","5e","8e","5e"]
+
+  - id: "BL_R235_8"
+    tokens: ["1e","2e","3e","5e","6e","5e","3e","2e"]
+  - id: "BL_R24578_8"
+    tokens: ["1e","2e","4e","5e","7e","8e","7e","5e"]
+  - id: "BL_R75311"
+    tokens: ["1e","7e","5e","3e","1e","1e","3e","1e"]
+  - id: "BL_OCT_DROP"
+    tokens: ["8e","5e","1e","1e","1e","1e","1e","1e"]
+
+  - id: "BL_FILL_END"
+    tokens: ["1e","1e","1e","1e","5e","6e","7e","8e"]
+  - id: "BL_FILL_DOWN"
+    tokens: ["8e","7e","6e","5e","4e","3e","2e","1e"]
+  - id: "BL_FILL_PUSH"
+    tokens: ["1q","1e","1e","5q","6e","6e"]
+  - id: "BL_FILL_HOOK"
+    tokens: ["1e","1e","5e","8e","1e","1e","5e","8e"]
+
+arpeggios:
+  - id: "ARP_135_8"
+    tokens: ["1e","3e","5e","3e","1e","3e","5e","3e"]
+  - id: "ARP_153_8"
+    tokens: ["1e","5e","3e","5e","1e","5e","3e","5e"]
+  - id: "ARP_1358"
+    tokens: ["1e","3e","5e","8e","5e","3e","1e","3e"]
+  - id: "ARP_1515"
+    tokens: ["1e","5e","1e","5e","1e","5e","1e","5e"]
+
+  - id: "ARP_PEDAL_R"
+    tokens: ["1e","1e","5e","1e","3e","1e","5e","1e"]
+  - id: "ARP_PEDAL_3"
+    tokens: ["3e","1e","5e","1e","3e","1e","5e","1e"]
+
+  - id: "ARP_ADD9"
+    tokens: ["1e","3e","5e","9e","5e","3e","9e","5e"]
+  - id: "ARP_DOM7"
+    tokens: ["1e","3e","5e","7e","5e","3e","7e","5e"]
+  - id: "ARP_SUS2"
+    tokens: ["1e","2e","5e","2e","1e","2e","5e","2e"]
+  - id: "ARP_SUS4"
+    tokens: ["1e","4e","5e","4e","1e","4e","5e","4e"]
+  - id: "ARP_M7"
+    tokens: ["1e","3e","5e","7e","8e","7e","5e","3e"]
+
+  - id: "ARP_SYNC_A"
+    tokens: ["1q","3e","5e","3q","5e","3e"]
+  - id: "ARP_SYNC_B"
+    tokens: ["1e","3e","5q","3e","5e","3q"]
+  - id: "ARP_SWELL"
+    tokens: ["1h","3e","5e","7e","5e"]
