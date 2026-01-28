@@ -372,8 +372,10 @@ export default class RobterSession {
         this.state = 'preview';
         this.previewSelection = 0;
       } else {
-        this.state = 'mode-select';
-        this.modeSelectionIndex = this.selectedMode === 'note' ? 0 : 1;
+        this.selectedMode = this.getPreferredPerformanceMode();
+        this.mode = this.selectedMode;
+        this.robterspiel.noteMode = this.mode === 'note';
+        this.startSong({ playMode: 'play' });
       }
       this.audio.ui();
     }
@@ -423,7 +425,7 @@ export default class RobterSession {
       this.audio.menu();
     }
     if (this.input.wasPressed('cancel')) {
-      this.state = this.instrument === 'drums' ? 'scale' : 'mode-select';
+      this.state = 'scale';
       this.audio.ui();
       return;
     }
@@ -626,6 +628,21 @@ export default class RobterSession {
     if (button === 'Y') return 'triad-inv2';
     if (button === 'B') return 'power';
     return 'triad';
+  }
+
+  getPreferredPerformanceMode() {
+    const tally = this.songData?.events?.reduce(
+      (acc, event) => {
+        const mode = event?.requiredInput?.mode;
+        if (mode === 'chord') acc.chord += 1;
+        if (mode === 'note' || mode === 'pattern') acc.note += 1;
+        return acc;
+      },
+      { note: 0, chord: 0 }
+    );
+    if (!tally) return this.selectedMode;
+    if (tally.note === 0 && tally.chord === 0) return this.selectedMode;
+    return tally.chord > tally.note ? 'chord' : 'note';
   }
 
   getClosestExpectedEvent() {
@@ -1046,14 +1063,14 @@ export default class RobterSession {
           ? 'drum'
           : 'chord';
       if (this.instrument === 'drums') {
-        event.primaryLabel = event.requiredInput?.button || NOTE_LANES[event.lane] || '';
-        event.secondaryLabel = expectedAction?.label || event.displayLabel || '';
+        event.primaryLabel = '';
+        event.secondaryLabel = '';
         return;
       }
       const modifierLabel = this.getModifierLabel(event.requiredInput);
       const isNoteEvent = event.requiredInput?.mode === 'note' || event.requiredInput?.mode === 'pattern';
-      event.primaryLabel = isNoteEvent ? (event.requiredInput?.button || '') : '';
-      event.secondaryLabel = isNoteEvent ? modifierLabel : '';
+      event.primaryLabel = '';
+      event.secondaryLabel = '';
       event.sideLabel = expectedAction?.label || event.displayLabel || '';
       if (isNoteEvent) {
         event.stickLabel = event.requiredInput?.degree !== lastDegree
@@ -2009,7 +2026,7 @@ export default class RobterSession {
     ctx.fillStyle = ready ? '#7dffb6' : 'rgba(215,242,255,0.65)';
     ctx.font = ready ? 'bold 18px Courier New' : '16px Courier New';
     ctx.fillText(
-      ready ? 'Press A to choose NOTE or CHORD mode.' : 'Match the target root + scale to begin.',
+      ready ? 'Press A to start the song.' : 'Match the target root + scale to begin.',
       width / 2,
       promptY
     );

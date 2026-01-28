@@ -123,7 +123,7 @@ export default class HighwayRenderer {
 
   drawBeatLines(ctx, layout, songTime, beatDuration) {
     const { startX, totalWidth, hitLineY, laneTop, widthCenter } = layout;
-    const visibleWindow = 4.4;
+    const visibleWindow = 3.6;
     const topScale = 0.45;
     const topWidth = totalWidth * topScale;
     const topLeft = widthCenter - topWidth / 2;
@@ -212,11 +212,12 @@ export default class HighwayRenderer {
 
   drawNotes(ctx, events, layout, songTime, settings, laneColors, mode) {
     const { startX, laneWidth, laneGap, hitLineY, laneTop } = layout;
-    const visibleWindow = 4.4;
+    const visibleWindow = 3.6;
     const showPitchLabel = settings.labelMode !== 'buttons';
     const showStickLabel = settings.labelMode !== 'pitch';
     const pixelsPerSecond = (hitLineY - laneTop) / visibleWindow;
-    events.forEach((event) => {
+    const sortedEvents = [...events].sort((a, b) => b.timeSec - a.timeSec);
+    sortedEvents.forEach((event) => {
       const timeToHit = event.timeSec - songTime;
       if (timeToHit < -0.4 || timeToHit > visibleWindow) return;
       if (mode !== 'listen' && event.judged) return;
@@ -227,7 +228,7 @@ export default class HighwayRenderer {
       const highwayCenter = layout.widthCenter ?? (startX + layout.totalWidth / 2);
       const perspectiveCenter = highwayCenter + (laneCenter - highwayCenter) * perspective;
       const noteWidth = laneWidth * perspective * settings.noteSize;
-      const noteHeight = Math.max(24, laneWidth * 0.32) * settings.noteSize * perspective;
+      const noteHeight = Math.max(18, laneWidth * 0.24) * settings.noteSize * perspective;
       const y = hitLineY - timeToHit * pixelsPerSecond;
       const noteX = perspectiveCenter - noteWidth / 2;
       const noteY = y - noteHeight / 2;
