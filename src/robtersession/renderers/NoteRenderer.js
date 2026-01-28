@@ -12,6 +12,7 @@ export default class NoteRenderer {
       secondaryLabel,
       labelMode,
       kind,
+      modifierState,
       sustainLength,
       hitGlow,
       alpha
@@ -49,12 +50,13 @@ export default class NoteRenderer {
 
     const showPrimary = labelMode !== 'pitch';
     const showSecondary = labelMode !== 'buttons';
+    const modifierLaneHeight = modifierState ? Math.max(10, height * 0.2) : 0;
     const labelCenterX = x + width / 2;
-    const labelCenterY = y + height / 2;
+    const labelCenterY = y + height / 2 - modifierLaneHeight * 0.25;
 
     if ((showPrimary && primaryLabel) || (showSecondary && secondaryLabel)) {
       const labelBoxW = width * 0.9;
-      const labelBoxH = Math.min(height - 4, height * 0.7);
+      const labelBoxH = Math.min(height - 4 - modifierLaneHeight, height * 0.7);
       ctx.fillStyle = 'rgba(10,16,24,0.65)';
       ctx.fillRect(labelCenterX - labelBoxW / 2, labelCenterY - labelBoxH / 2, labelBoxW, labelBoxH);
     }
@@ -72,6 +74,28 @@ export default class NoteRenderer {
       ctx.font = `bold ${Math.max(10, height * 0.25)}px ${DEFAULT_FONT}`;
       ctx.fillStyle = '#bfe9ff';
       ctx.fillText(secondaryLabel, labelCenterX, labelCenterY + height * 0.22);
+    }
+
+    if (modifierState) {
+      const lanes = [
+        { label: 'LB', active: modifierState.lb },
+        { label: 'DL', active: modifierState.dleft },
+        { label: 'RB', active: modifierState.rb }
+      ];
+      const laneW = width / lanes.length;
+      const laneY = y + height - modifierLaneHeight;
+      lanes.forEach((lane, index) => {
+        const laneX = x + index * laneW;
+        ctx.fillStyle = lane.active ? 'rgba(255,215,120,0.9)' : 'rgba(8,14,22,0.7)';
+        ctx.fillRect(laneX, laneY, laneW, modifierLaneHeight);
+        ctx.strokeStyle = 'rgba(120,190,255,0.45)';
+        ctx.strokeRect(laneX, laneY, laneW, modifierLaneHeight);
+        ctx.fillStyle = lane.active ? '#20120a' : '#d7f2ff';
+        ctx.font = `bold ${Math.max(8, modifierLaneHeight * 0.55)}px ${DEFAULT_FONT}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(lane.label, laneX + laneW / 2, laneY + modifierLaneHeight / 2);
+      });
     }
 
     ctx.restore();
