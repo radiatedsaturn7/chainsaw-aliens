@@ -122,8 +122,13 @@ export default class HighwayRenderer {
   }
 
   drawBeatLines(ctx, layout, songTime, beatDuration) {
-    const { startX, totalWidth, hitLineY } = layout;
+    const { startX, totalWidth, hitLineY, laneTop, widthCenter } = layout;
     const visibleWindow = 4.4;
+    const topScale = 0.45;
+    const topWidth = totalWidth * topScale;
+    const topLeft = widthCenter - topWidth / 2;
+    const topRight = widthCenter + topWidth / 2;
+    const pixelsPerSecond = (hitLineY - laneTop) / visibleWindow;
     const startBeat = Math.floor(songTime / beatDuration) - 1;
     const endBeat = Math.ceil((songTime + visibleWindow) / beatDuration);
     ctx.save();
@@ -131,13 +136,16 @@ export default class HighwayRenderer {
       const beatTime = beat * beatDuration;
       const timeToHit = beatTime - songTime;
       if (timeToHit < -0.3 || timeToHit > visibleWindow) continue;
-      const y = hitLineY - timeToHit * layout.scrollSpeed;
+      const depth = clamp(1 - timeToHit / visibleWindow, 0, 1);
+      const y = hitLineY - timeToHit * pixelsPerSecond;
+      const leftX = lerp(topLeft, startX, depth);
+      const rightX = lerp(topRight, startX + totalWidth, depth);
       const isBar = beat % 4 === 0;
       ctx.strokeStyle = isBar ? 'rgba(130,210,255,0.5)' : 'rgba(120,180,220,0.2)';
       ctx.lineWidth = isBar ? 2 : 1;
       ctx.beginPath();
-      ctx.moveTo(startX - 40, y);
-      ctx.lineTo(startX + totalWidth + 40, y);
+      ctx.moveTo(leftX, y);
+      ctx.lineTo(rightX, y);
       ctx.stroke();
     }
     ctx.restore();
@@ -195,10 +203,11 @@ export default class HighwayRenderer {
   }
 
   drawNotes(ctx, events, layout, songTime, settings, laneColors, mode) {
-    const { startX, laneWidth, laneGap, hitLineY } = layout;
+    const { startX, laneWidth, laneGap, hitLineY, laneTop } = layout;
     const visibleWindow = 4.4;
     const showPitchLabel = settings.labelMode !== 'buttons';
     const showStickLabel = settings.labelMode !== 'pitch';
+    const pixelsPerSecond = (hitLineY - laneTop) / visibleWindow;
     events.forEach((event) => {
       const timeToHit = event.timeSec - songTime;
       if (timeToHit < -0.4 || timeToHit > visibleWindow) return;
@@ -211,11 +220,11 @@ export default class HighwayRenderer {
       const perspectiveCenter = highwayCenter + (laneCenter - highwayCenter) * perspective;
       const noteWidth = laneWidth * perspective * settings.noteSize;
       const noteHeight = Math.max(24, laneWidth * 0.32) * settings.noteSize * perspective;
-      const y = hitLineY - timeToHit * layout.scrollSpeed * lerp(0.85, 1.15, depth);
+      const y = hitLineY - timeToHit * pixelsPerSecond;
       const noteX = perspectiveCenter - noteWidth / 2;
       const noteY = y - noteHeight / 2;
       const color = laneColors[laneIndex] || '#7ad0ff';
-      const sustainLength = event.sustain ? event.sustain * settings.secondsPerBeat * layout.scrollSpeed * 0.7 : 0;
+      const sustainLength = event.sustain ? event.sustain * settings.secondsPerBeat * pixelsPerSecond * 0.7 : 0;
       this.noteRenderer.drawNote(ctx, {
         x: noteX,
         y: noteY,
