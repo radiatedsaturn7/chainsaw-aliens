@@ -109,7 +109,7 @@ export const DIFFICULTY_WINDOWS = [
   { tier: 7, great: 0.07, good: 0.14 }
 ];
 
-export const LANE_LABELS = ['A', 'X', 'Y', 'B'];
+export const LANE_LABELS = ['X', 'Y', 'A', 'B'];
 export const DRUM_LANES = ['Kick', 'Snare', 'Hat', 'Cymbal'];
 
 export const GRADE_THRESHOLDS = [
