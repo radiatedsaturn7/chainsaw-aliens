@@ -373,9 +373,8 @@ export default class RobterSession {
         this.previewSelection = 0;
       } else {
         this.selectedMode = this.getPreferredPerformanceMode();
-        this.mode = this.selectedMode;
-        this.robterspiel.noteMode = this.mode === 'note';
-        this.startSong({ playMode: 'play' });
+        this.modeSelectionIndex = this.selectedMode === 'note' ? 0 : 1;
+        this.state = 'mode-select';
       }
       this.audio.ui();
     }
@@ -798,7 +797,7 @@ export default class RobterSession {
   }
 
   getOctaveLabel(offset) {
-    const base = 4;
+    const base = 3;
     const octave = base + (offset || 0);
     return `C${octave}`;
   }
@@ -808,7 +807,7 @@ export default class RobterSession {
     const targetNote = register?.center_note || register?.min_note;
     const targetOctave = parseNoteOctave(targetNote);
     if (!Number.isFinite(targetOctave)) return REQUIRED_OCTAVE_OFFSET;
-    return clamp(targetOctave - 4, -2, 2);
+    return clamp(targetOctave - 3, -2, 2);
   }
 
   getEventLabel(requiredInput) {
