@@ -178,6 +178,8 @@ export default class RobterSession {
     this.starPowerUsed = 0;
     this.feedbackSystem = new FeedbackSystem();
     this.mode = 'chord';
+    this.selectedMode = 'chord';
+    this.modeSelectionIndex = 0;
     this.chartWindow = { start: 0, end: 0 };
     this.degree = 1;
     this.pauseSelection = 0;
@@ -275,6 +277,10 @@ export default class RobterSession {
       this.updateScaleState(dt);
       return;
     }
+    if (this.state === 'mode-select') {
+      this.handleModeSelectInput();
+      return;
+    }
     if (this.state === 'preview') {
       this.handlePreviewInput();
       return;
@@ -355,6 +361,44 @@ export default class RobterSession {
       return;
     }
     if (this.input.wasPressed('interact') && this.isScaleReady()) {
+      if (this.instrument === 'drums') {
+        this.state = 'preview';
+        this.previewSelection = 0;
+      } else {
+        this.state = 'mode-select';
+        this.modeSelectionIndex = this.selectedMode === 'note' ? 0 : 1;
+      }
+      this.audio.ui();
+    }
+  }
+
+  handleModeSelectInput() {
+    const count = 2;
+    if (this.input.wasPressed('left') || this.input.wasGamepadPressed('dpadLeft')) {
+      this.modeSelectionIndex = (this.modeSelectionIndex - 1 + count) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('right') || this.input.wasGamepadPressed('dpadRight')) {
+      this.modeSelectionIndex = (this.modeSelectionIndex + 1) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')) {
+      this.modeSelectionIndex = (this.modeSelectionIndex - 1 + count) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('down') || this.input.wasGamepadPressed('dpadDown')) {
+      this.modeSelectionIndex = (this.modeSelectionIndex + 1) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('cancel')) {
+      this.state = 'scale';
+      this.audio.ui();
+      return;
+    }
+    if (this.input.wasPressed('interact')) {
+      this.selectedMode = this.modeSelectionIndex === 0 ? 'note' : 'chord';
+      this.mode = this.selectedMode;
+      this.robterspiel.noteMode = this.mode === 'note';
       this.state = 'preview';
       this.previewSelection = 0;
       this.audio.ui();
@@ -362,7 +406,7 @@ export default class RobterSession {
   }
 
   handlePreviewInput() {
-    const count = 3;
+    const count = 4;
     if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')) {
       this.previewSelection = (this.previewSelection - 1 + count) % count;
       this.audio.menu();
@@ -372,13 +416,18 @@ export default class RobterSession {
       this.audio.menu();
     }
     if (this.input.wasPressed('cancel')) {
-      this.state = 'setlist';
+      this.state = this.instrument === 'drums' ? 'scale' : 'mode-select';
       this.audio.ui();
       return;
     }
     if (this.input.wasPressed('interact')) {
-      const modes = ['listen', 'practice', 'play'];
+      const modes = ['play', 'practice', 'listen', 'exit'];
       const selected = modes[this.previewSelection] || 'play';
+      if (selected === 'exit') {
+        this.state = 'setlist';
+        this.audio.ui();
+        return;
+      }
       this.startSong({ playMode: selected });
       this.audio.ui();
     }
@@ -654,6 +703,15 @@ export default class RobterSession {
     });
   }
 
+  getModifierLabel(requiredInput) {
+    if (!requiredInput) return '';
+    const mods = [];
+    if (requiredInput.modifiers?.lb) mods.push('LB');
+    if (requiredInput.modifiers?.dleft) mods.push('D-Left');
+    if (requiredInput.octaveUp) mods.push('RB');
+    return mods.join('+');
+  }
+
   getChordLabel({ degree, chordType }) {
     let variant = 'triad';
     let suspension = null;
@@ -927,6 +985,13 @@ export default class RobterSession {
       index: 0,
       stickEngaged: false
     };
+    if (this.instrument === 'drums') {
+      this.selectedMode = 'drum';
+      this.modeSelectionIndex = 0;
+    } else {
+      this.selectedMode = this.selectedMode === 'note' ? 'note' : 'chord';
+      this.modeSelectionIndex = this.selectedMode === 'note' ? 0 : 1;
+    }
     this.scalePromptTime = 0;
   }
 
@@ -943,7 +1008,7 @@ export default class RobterSession {
     this.starPower = 0;
     this.starPowerActive = false;
     this.starPowerUsed = 0;
-    this.mode = this.instrument === 'drums' ? 'drum' : 'chord';
+    this.mode = this.instrument === 'drums' ? 'drum' : this.selectedMode;
     if (this.instrument !== 'drums') {
       this.robterspiel.noteMode = this.mode === 'note';
     }
@@ -954,6 +1019,7 @@ export default class RobterSession {
       judged: false,
       displayLabel: this.getEventLabel(event.requiredInput)
     }));
+    let lastDegree = null;
     this.events.forEach((event) => {
       const expectedAction = resolveRequiredInputToMusicalAction(
         { robterspiel: this.robterspiel, instrument: this.instrument },
@@ -970,10 +1036,19 @@ export default class RobterSession {
         event.secondaryLabel = expectedAction?.label || event.displayLabel || '';
         return;
       }
-      event.primaryLabel = '';
-      event.secondaryLabel = '';
+      const modifierLabel = this.getModifierLabel(event.requiredInput);
+      const isNoteEvent = event.requiredInput?.mode === 'note' || event.requiredInput?.mode === 'pattern';
+      event.primaryLabel = isNoteEvent ? (event.requiredInput?.button || '') : '';
+      event.secondaryLabel = isNoteEvent ? modifierLabel : '';
       event.sideLabel = expectedAction?.label || event.displayLabel || '';
-      event.stickLabel = getStickDirectionLabel(event.requiredInput?.degree);
+      if (isNoteEvent) {
+        event.stickLabel = event.requiredInput?.degree !== lastDegree
+          ? getStickDirectionLabel(event.requiredInput?.degree)
+          : null;
+      } else {
+        event.stickLabel = getStickDirectionLabel(event.requiredInput?.degree);
+      }
+      lastDegree = event.requiredInput?.degree ?? lastDegree;
     });
     this.trackEventIndex = INSTRUMENTS.reduce((acc, instrument) => {
       acc[instrument] = 0;
@@ -1681,6 +1756,10 @@ export default class RobterSession {
       this.drawScale(ctx, width, height);
       return;
     }
+    if (this.state === 'mode-select') {
+      this.drawModeSelect(ctx, width, height);
+      return;
+    }
     if (this.state === 'preview') {
       this.drawPreview(ctx, width, height);
       return;
@@ -1907,7 +1986,11 @@ export default class RobterSession {
     const promptY = height - 100;
     ctx.fillStyle = ready ? '#7dffb6' : 'rgba(215,242,255,0.65)';
     ctx.font = ready ? 'bold 18px Courier New' : '16px Courier New';
-    ctx.fillText(ready ? 'Press A to choose Listen / Practice / Play.' : 'Match the target root + scale to begin.', width / 2, promptY);
+    ctx.fillText(
+      ready ? 'Press A to choose NOTE or CHORD mode.' : 'Match the target root + scale to begin.',
+      width / 2,
+      promptY
+    );
     ctx.fillStyle = 'rgba(215,242,255,0.6)';
     ctx.font = '14px Courier New';
     ctx.fillText('Back: return to song detail.', width / 2, promptY + 26);
@@ -1933,12 +2016,64 @@ export default class RobterSession {
     ctx.restore();
   }
 
+  drawModeSelect(ctx, width, height) {
+    const options = ['NOTE', 'CHORD'];
+    const selectedIndex = this.modeSelectionIndex;
+    const selectedMode = options[selectedIndex] || 'NOTE';
+    ctx.save();
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, '#0a0f1c');
+    gradient.addColorStop(1, '#05070d');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = '#d7f2ff';
+    ctx.font = 'bold 28px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('Choose Performance Mode', width / 2, 80);
+
+    ctx.fillStyle = 'rgba(215,242,255,0.75)';
+    ctx.font = '16px Courier New';
+    ctx.fillText('NOTE mode focuses on single notes. CHORD mode strums full chords.', width / 2, 110);
+
+    const cardW = 280;
+    const cardH = 160;
+    const gap = 80;
+    const startX = width / 2 - cardW - gap / 2;
+    const startY = 180;
+
+    options.forEach((label, index) => {
+      const x = startX + index * (cardW + gap);
+      const y = startY;
+      const isSelected = index === selectedIndex;
+      ctx.fillStyle = isSelected ? 'rgba(120,200,255,0.85)' : 'rgba(12,18,28,0.8)';
+      ctx.fillRect(x, y, cardW, cardH);
+      ctx.strokeStyle = isSelected ? '#ffe16a' : 'rgba(120,190,255,0.5)';
+      ctx.lineWidth = isSelected ? 3 : 2;
+      ctx.strokeRect(x, y, cardW, cardH);
+      ctx.fillStyle = isSelected ? '#041019' : '#d7f2ff';
+      ctx.font = 'bold 26px Courier New';
+      ctx.fillText(label, x + cardW / 2, y + cardH / 2);
+    });
+
+    ctx.fillStyle = '#7dffb6';
+    ctx.font = 'bold 18px Courier New';
+    ctx.fillText(`Selected: ${selectedMode}`, width / 2, startY + cardH + 50);
+
+    ctx.fillStyle = 'rgba(215,242,255,0.75)';
+    ctx.font = '14px Courier New';
+    ctx.fillText('Use Left/Right (or Up/Down) to choose. Press A to continue.', width / 2, height - 80);
+    ctx.fillText('Back: return to scale sync.', width / 2, height - 54);
+    ctx.restore();
+  }
+
   drawPreview(ctx, width, height) {
     this.previewScreen.draw(ctx, width, height, {
       selectedIndex: this.previewSelection,
       settings: this.hudSettings,
       practiceSpeed: this.practiceSpeed,
-      ghostNotes: this.hudSettings.ghostNotes
+      ghostNotes: this.hudSettings.ghostNotes,
+      backLabel: this.instrument === 'drums' ? 'Scale Sync' : 'Mode Select'
     });
   }
 

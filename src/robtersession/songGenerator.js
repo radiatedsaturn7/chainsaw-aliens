@@ -169,6 +169,26 @@ const BRIDGE_BORROW_POOL = [
 
 const CHORD_COLORS = ['sus2', 'sus4', '7', 'add9', 'm7', 'maj7'];
 const NOTE_LANES = ['A', 'X', 'Y', 'B'];
+
+const NOTE_INPUTS = [
+  { button: 'A', base: 1, passing: 2 },
+  { button: 'X', base: 3, passing: 4 },
+  { button: 'Y', base: 5, passing: 6 },
+  { button: 'B', base: 8, passing: 7 }
+];
+
+const mapPatternDegreeToInput = (patternDegree) => {
+  const degree = Number(patternDegree) || 1;
+  const octaveUp = degree > 8;
+  const baseDegree = degree > 8 ? ((degree - 1) % 7) + 1 : degree;
+  const entry = NOTE_INPUTS.find((item) => item.base === baseDegree || item.passing === baseDegree) || NOTE_INPUTS[0];
+  const modifiers = { lb: entry.passing === baseDegree, dleft: false };
+  return {
+    button: entry.button,
+    modifiers,
+    octaveUp
+  };
+};
 const CHORD_INPUTS = {
   power: { button: 'B', modifiers: { lb: false, dleft: false } },
   triad: { button: 'A', modifiers: { lb: false, dleft: false } },
@@ -359,10 +379,12 @@ const resolvePatternTokensToEvents = ({ tokens, chordEvent, tempo, register }) =
     if (remaining <= 0) return;
     const baseDuration = DURATION_TOKENS[entry.duration] || 1;
     const duration = Math.min(baseDuration, remaining);
+    const inputMap = mapPatternDegreeToInput(entry.degree);
+    const lane = NOTE_LANES.indexOf(inputMap.button);
     const event = {
       timeBeat: beatCursor,
       timeSec: beatCursor * tempo.secondsPerBeat,
-      lane: 0,
+      lane: lane >= 0 ? lane : 0,
       type: 'NOTE',
       section: chordEvent.section,
       requiredInput: {
@@ -372,6 +394,9 @@ const resolvePatternTokensToEvents = ({ tokens, chordEvent, tempo, register }) =
         chordType: chordEvent.chordType,
         chordQuality: chordEvent.chordQuality,
         seventhQuality: chordEvent.seventhQuality,
+        button: inputMap.button,
+        modifiers: inputMap.modifiers,
+        octaveUp: inputMap.octaveUp,
         transpose: register?.transpose_semitones ?? 0,
         minNote: register?.min_note ?? null
       },

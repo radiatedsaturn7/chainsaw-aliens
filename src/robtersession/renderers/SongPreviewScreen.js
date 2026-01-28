@@ -50,7 +50,13 @@ export default class SongPreviewScreen {
   }
 
   draw(ctx, width, height, state) {
-    const { selectedIndex, settings, practiceSpeed, ghostNotes } = state;
+    const {
+      selectedIndex,
+      settings,
+      practiceSpeed,
+      ghostNotes,
+      backLabel = 'Mode Select'
+    } = state;
     this.bounds = { modeButtons: [], toggles: [], sliders: [], speedButtons: [] };
     ctx.save();
     ctx.fillStyle = '#0b0f18';
@@ -61,10 +67,11 @@ export default class SongPreviewScreen {
     ctx.textAlign = 'center';
     ctx.fillText('Choose Session Mode', width / 2, 60);
 
-    const modes = ['Listen', 'Practice', 'Play'];
+    const modes = ['Play', 'Practice', 'Listen', 'Exit'];
     const btnW = 180;
     const btnH = 44;
     const startY = 120;
+    const modeCount = modes.length;
     modes.forEach((label, index) => {
       const x = width / 2 - btnW / 2;
       const y = startY + index * (btnH + 12);
@@ -75,9 +82,9 @@ export default class SongPreviewScreen {
 
     ctx.fillStyle = '#d7f2ff';
     ctx.font = '14px Courier New';
-    ctx.fillText('Practice Options', width / 2, startY + 3 * (btnH + 12) + 10);
+    ctx.fillText('Practice Options', width / 2, startY + modeCount * (btnH + 12) + 10);
 
-    const toggleY = startY + 3 * (btnH + 12) + 24;
+    const toggleY = startY + modeCount * (btnH + 12) + 24;
     const toggleW = 160;
     const toggleH = 28;
     const toggleX = width / 2 - toggleW - 12;
@@ -121,7 +128,7 @@ export default class SongPreviewScreen {
     ctx.fillStyle = 'rgba(215,242,255,0.6)';
     ctx.font = '12px Courier New';
     ctx.textAlign = 'center';
-    ctx.fillText('Confirm: Start  |  Back: Setlist', width / 2, height - 40);
+    ctx.fillText(`Confirm: Select  |  Back: ${backLabel}`, width / 2, height - 40);
 
     ctx.restore();
   }
