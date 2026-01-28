@@ -229,7 +229,7 @@ export const resolveRequiredInputToMusicalAction = ({ robterspiel, instrument, o
   };
 };
 
-export const resolveInputToMusicalAction = ({ robterspiel, instrument, mode, degree, stickDir }, inputEvent) => {
+export const resolveInputToMusicalAction = ({ robterspiel, instrument, mode, degree, stickDir, register }, inputEvent) => {
   if (!inputEvent?.button) return null;
   if (instrument === 'drums') {
     const laneMap = { A: 0, X: 1, Y: 2, B: 3 };
@@ -247,10 +247,14 @@ export const resolveInputToMusicalAction = ({ robterspiel, instrument, mode, deg
 
   if (mode === 'note') {
     const pitch = resolveNotePitch(robterspiel, degree || 1, inputEvent);
+    const [registered] = applyRegister([pitch], {
+      transpose: register?.transpose_semitones ?? 0,
+      minNote: register?.min_note ?? null
+    });
     return {
       kind: 'note',
-      pitches: [pitch],
-      label: formatPitchLabel(pitch),
+      pitches: [registered],
+      label: formatPitchLabel(registered),
       debug: {
         degree: degree || 1,
         stickDir,
@@ -265,11 +269,18 @@ export const resolveInputToMusicalAction = ({ robterspiel, instrument, mode, deg
   }
 
   const chordType = inputEvent.chordType || 'triad';
-  const label = resolveChordLabel(robterspiel, degree || 1, chordType);
   const { pitches } = resolveChordPitches(robterspiel, degree || 1, chordType);
+  const registered = applyRegister(pitches, {
+    transpose: register?.transpose_semitones ?? 0,
+    minNote: register?.min_note ?? null
+  });
+  const { variant, suspension } = resolveChordSettings(chordType);
+  const suffix = getChordSuffix({ variant, suspension });
+  const rootLabel = formatPitchLabel(registered[0]);
+  const label = suffix ? `${rootLabel} ${suffix}` : rootLabel;
   return {
     kind: 'chord',
-    pitches,
+    pitches: registered,
     label,
     debug: {
       degree: degree || 1,

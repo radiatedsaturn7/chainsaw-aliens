@@ -36,7 +36,7 @@ const NOTE_LANES = ['A', 'X', 'Y', 'B'];
 const SCALE_SELECTOR_THRESHOLD = 0.6;
 const SCALE_SELECTOR_RELEASE = 0.3;
 const SCALE_PROMPT_SPEED = 0.9;
-const WRONG_GHOST_DURATION = 0.7;
+const WRONG_GHOST_DURATION = 1.2;
 const MAX_NOTE_SIZE = 1.5;
 const MAX_HIGHWAY_ZOOM = 2;
 const REQUIRED_OCTAVE_OFFSET = 0;
@@ -512,12 +512,14 @@ export default class RobterSession {
         ...normalized,
         buttonsPressed: this.getPressedButtons()
       };
+      const register = this.songData?.schema?.arrangement?.registers?.[this.instrument] || null;
       const inputAction = resolveInputToMusicalAction({
         robterspiel: this.robterspiel,
         instrument: this.instrument,
         mode: this.mode,
         degree: this.degree,
-        stickDir: this.robterspiel.leftStickStableDirection || this.degree
+        stickDir: this.robterspiel.leftStickStableDirection || this.degree,
+        register
       }, inputEvent);
       const inputLabel = inputAction?.label || this.getInputLabel(normalized);
       const hitResult = this.tryHit(normalized, inputAction);
@@ -704,6 +706,7 @@ export default class RobterSession {
       return DRUM_LANES[NOTE_LANES.indexOf(normalized.button)] || 'Drum';
     }
     if (normalized.mode === 'note') {
+      const register = this.songData?.schema?.arrangement?.registers?.[this.instrument] || null;
       const rootDegree = normalized.degree || 1;
       const buttonMap = {
         A: { base: 1, passing: 2 },
@@ -720,6 +723,19 @@ export default class RobterSession {
       }
       if (normalized.octaveUp) {
         pitch += 12;
+      }
+      if (register?.transpose_semitones) {
+        pitch += register.transpose_semitones;
+      }
+      const match = String(register?.min_note || '').match(/^([A-Ga-g])([#b]?)(-?\d+)$/);
+      if (match) {
+        const label = `${match[1].toUpperCase()}${match[2] || ''}`;
+        const octave = Number(match[3]);
+        const pcMap = { C: 0, 'C#': 1, Db: 1, D: 2, 'D#': 3, Eb: 3, E: 4, F: 5, 'F#': 6, Gb: 6, G: 7, 'G#': 8, Ab: 8, A: 9, 'A#': 10, Bb: 10, B: 11 };
+        const minMidi = (octave + 1) * 12 + (pcMap[label] ?? 0);
+        while (pitch < minMidi) {
+          pitch += 12;
+        }
       }
       return formatPitchLabel(pitch);
     }
@@ -1228,7 +1244,7 @@ export default class RobterSession {
     this.wrongNoteCooldown = WRONG_NOTE_COOLDOWN;
     this.audio.noise?.(0.08, 0.14);
     if (noteData?.label) {
-      this.wrongNotes.push({
+      this.wrongNotes = [{
         label: noteData.label,
         laneIndex: Number.isFinite(noteData.laneIndex) ? noteData.laneIndex : 0,
         life: WRONG_GHOST_DURATION,
@@ -1238,7 +1254,7 @@ export default class RobterSession {
         y: 0,
         vx: (Math.random() * 2 - 1) * 40,
         vy: -60 - Math.random() * 40
-      });
+      }];
     }
   }
 
@@ -1600,7 +1616,7 @@ export default class RobterSession {
       ctx.fillRect(-28, -12, 56, 24);
       ctx.strokeStyle = 'rgba(255,160,160,0.9)';
       ctx.strokeRect(-28, -12, 56, 24);
-      ctx.fillStyle = '#2b0b0b';
+      ctx.fillStyle = '#ffffff';
       ctx.fillText(note.label, 0, 6);
       ctx.restore();
     });
@@ -1613,7 +1629,26 @@ export default class RobterSession {
     const leftMagnitude = Math.hypot(leftStick.x, leftStick.y);
     const rightMagnitude = Math.hypot(rightStick.x, rightStick.y);
     const leftDegree = this.robterspiel.leftStickStableDirection || this.degree || 1;
-    const basePitch = this.robterspiel.getPitchForScaleStep(leftDegree - 1);
+    const register = this.songData?.schema?.arrangement?.registers?.[this.instrument] || null;
+    const toMidi = (note) => {
+      const match = String(note || '').match(/^([A-Ga-g])([#b]?)(-?\d+)$/);
+      if (!match) return null;
+      const label = `${match[1].toUpperCase()}${match[2] || ''}`;
+      const octave = Number(match[3]);
+      const pcMap = { C: 0, 'C#': 1, Db: 1, D: 2, 'D#': 3, Eb: 3, E: 4, F: 5, 'F#': 6, Gb: 6, G: 7, 'G#': 8, Ab: 8, A: 9, 'A#': 10, Bb: 10, B: 11 };
+      return (octave + 1) * 12 + (pcMap[label] ?? 0);
+    };
+    const applyRegister = (pitch) => {
+      let adjusted = pitch + (register?.transpose_semitones ?? 0);
+      const minMidi = register?.min_note ? toMidi(register.min_note) : null;
+      if (Number.isFinite(minMidi)) {
+        while (adjusted < minMidi) {
+          adjusted += 12;
+        }
+      }
+      return adjusted;
+    };
+    const basePitch = applyRegister(this.robterspiel.getPitchForScaleStep(leftDegree - 1));
     const noteLabel = this.instrument === 'drums' ? '' : formatPitchLabel(basePitch);
     const bendSemitones = this.robterspiel.getPitchBendSemitones();
     const bendDisplay = Math.round(bendSemitones * 2) / 2;
