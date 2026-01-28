@@ -53,6 +53,12 @@ const STICK_DIRECTION_LABELS = {
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const getStickDirectionLabel = (degree) => STICK_DIRECTION_LABELS[degree] || `${degree ?? ''}`;
+const parseNoteOctave = (noteLabel) => {
+  const match = String(noteLabel || '').match(/^([A-Ga-g])([#b]?)(-?\d+)$/);
+  if (!match) return null;
+  const octave = Number(match[3]);
+  return Number.isFinite(octave) ? octave : null;
+};
 
 const radialIndexFromStick = (x, y, count) => {
   if (!count) return 0;
@@ -147,6 +153,7 @@ export default class RobterSession {
       scaleConfirmed: false,
       rootConfirmed: false
     };
+    this.requiredOctaveOffset = REQUIRED_OCTAVE_OFFSET;
     this.octaveOffset = REQUIRED_OCTAVE_OFFSET;
     this.scaleSelector = {
       active: false,
@@ -171,7 +178,7 @@ export default class RobterSession {
     this.starPowerUsed = 0;
     this.feedbackSystem = new FeedbackSystem();
     this.mode = 'chord';
-    this.octaveOffset = 0;
+    this.chartWindow = { start: 0, end: 0 };
     this.degree = 1;
     this.pauseSelection = 0;
     this.bounds = {
@@ -247,6 +254,7 @@ export default class RobterSession {
       scaleConfirmed: false,
       rootConfirmed: false
     };
+    this.requiredOctaveOffset = REQUIRED_OCTAVE_OFFSET;
     this.octaveOffset = REQUIRED_OCTAVE_OFFSET;
   }
 
@@ -457,7 +465,8 @@ export default class RobterSession {
       if (hitResult.hit) {
         this.registerButtonPulse(normalized.button);
       }
-      if (!hitResult.hit && this.playMode !== 'listen') {
+      const inChartWindow = this.songTime >= this.chartWindow.start && this.songTime <= this.chartWindow.end;
+      if (!hitResult.hit && this.playMode !== 'listen' && inChartWindow) {
         const expectedEvent = this.getClosestExpectedEvent();
         const expectedLabel = expectedEvent?.expectedAction?.label || expectedEvent?.displayLabel || '—';
         this.registerWrongNote({
@@ -709,6 +718,14 @@ export default class RobterSession {
     return `C${octave}`;
   }
 
+  getRequiredOctaveOffset() {
+    const register = this.songData?.schema?.arrangement?.registers?.[this.instrument];
+    const targetNote = register?.center_note || register?.min_note;
+    const targetOctave = parseNoteOctave(targetNote);
+    if (!Number.isFinite(targetOctave)) return REQUIRED_OCTAVE_OFFSET;
+    return clamp(targetOctave - 4, -2, 2);
+  }
+
   getEventLabel(requiredInput) {
     if (!requiredInput) return '';
     if (requiredInput.mode === 'drum') {
@@ -731,7 +748,7 @@ export default class RobterSession {
     return section ? section.name.toUpperCase() : null;
   }
 
-  resolveRequiredPitches(requiredInput, instrument) {
+  resolveRequiredPitches(requiredInput, instrument, { octaveOffset = REQUIRED_OCTAVE_OFFSET } = {}) {
     if (!requiredInput) return [];
     const toMidi = (note) => {
       const match = String(note || '').match(/^([A-Ga-g])([#b]?)(-?\d+)$/);
@@ -763,7 +780,7 @@ export default class RobterSession {
       const chordType = requiredInput.chordType || 'triad';
       const seventhQuality = requiredInput.seventhQuality || null;
       const degree = requiredInput.degree || 1;
-      const basePitch = this.robterspiel.getPitchForScaleStep(degree - 1);
+      const basePitch = this.robterspiel.getPitchForScaleStepWithOffset(degree - 1, octaveOffset);
       const getInterval = (patternDegree) => {
         if (patternDegree === 1) return 0;
         if (patternDegree === 2) return 2;
@@ -797,7 +814,7 @@ export default class RobterSession {
       const entry = buttonMap[requiredInput.button] || buttonMap.A;
       const degree = requiredInput.modifiers?.lb ? entry.passing : entry.base;
       const targetDegree = (requiredInput.degree || 1) + degree - 1;
-      let pitch = this.robterspiel.getPitchForScaleStep(targetDegree - 1);
+      let pitch = this.robterspiel.getPitchForScaleStepWithOffset(targetDegree - 1, octaveOffset);
       if (requiredInput.modifiers?.dleft) {
         pitch += 1;
       }
@@ -841,7 +858,7 @@ export default class RobterSession {
     } else if (chordType === 'minor9b5') {
       variant = 'minor9b5';
     }
-    let pitches = this.robterspiel.getChordPitches(requiredInput.degree || 1, { variant, suspension });
+    let pitches = this.robterspiel.getChordPitchesWithOffset(requiredInput.degree || 1, { variant, suspension }, octaveOffset);
     pitches = this.applyInversion(pitches, inversion);
     return applyRegister(pitches);
   }
@@ -903,7 +920,7 @@ export default class RobterSession {
       scaleConfirmed: false,
       rootConfirmed: false
     };
-    this.octaveOffset = REQUIRED_OCTAVE_OFFSET;
+    this.requiredOctaveOffset = this.getRequiredOctaveOffset();
     this.scaleSelector = {
       active: false,
       type: null,
@@ -962,7 +979,14 @@ export default class RobterSession {
       acc[instrument] = 0;
       return acc;
     }, {});
+    const firstEvent = this.events[0];
     const lastEvent = this.events[this.events.length - 1];
+    const lastEventEnd = lastEvent?.timeSec ?? 0;
+    const sustainSeconds = lastEvent?.sustain ? lastEvent.sustain * this.songData.tempo.secondsPerBeat : 0;
+    this.chartWindow = {
+      start: firstEvent?.timeSec ?? 0,
+      end: lastEventEnd + sustainSeconds
+    };
     this.songLength = (lastEvent?.timeSec ?? 0) + 4;
     if (this.songData.modeChange) {
       this.modeChangeNotice = {
@@ -1284,7 +1308,7 @@ export default class RobterSession {
     const scale = MODE_LIBRARY[this.scaleSelection.scaleIndex] || MODE_LIBRARY[0];
     const correctRoot = this.scaleSelection.rootIndex === this.songData.root;
     const correctScale = scale.name === this.songData.mode.name;
-    const correctOctave = this.octaveOffset === REQUIRED_OCTAVE_OFFSET;
+    const correctOctave = this.octaveOffset === this.requiredOctaveOffset;
     return this.scaleSelection.rootConfirmed && this.scaleSelection.scaleConfirmed && correctRoot && correctScale && correctOctave;
   }
 
@@ -1813,7 +1837,7 @@ export default class RobterSession {
     const targetMode = this.songData.mode.name;
     const selectedMode = MODE_LIBRARY[this.scaleSelection.scaleIndex]?.name || MODE_LIBRARY[0].name;
     const targetModeIndex = MODE_LIBRARY.findIndex((mode) => mode.name === targetMode);
-    const targetOctaveLabel = this.getOctaveLabel(REQUIRED_OCTAVE_OFFSET);
+    const targetOctaveLabel = this.getOctaveLabel(this.requiredOctaveOffset);
     const selectedOctaveLabel = this.getOctaveLabel(this.octaveOffset);
     const ready = this.isScaleReady();
     const pulse = (Math.sin(this.scalePromptTime * 2) + 1) / 2;
@@ -1863,7 +1887,7 @@ export default class RobterSession {
     ctx.fillText(`Mode: ${selectedMode}`, statusX, cardY + 70);
     ctx.fillStyle = rootMatch ? '#7dffb6' : '#ff6b6b';
     ctx.fillText(`Root: ${selectedRoot}`, statusX, cardY + 104);
-    const octaveMatch = this.octaveOffset === REQUIRED_OCTAVE_OFFSET;
+    const octaveMatch = this.octaveOffset === this.requiredOctaveOffset;
     ctx.fillStyle = octaveMatch ? '#7dffb6' : '#ff6b6b';
     ctx.fillText(`Octave: ${selectedOctaveLabel}`, statusX, cardY + 138);
 
@@ -2014,7 +2038,7 @@ export default class RobterSession {
     const modifiers = this.getModifierState();
     const nextEvent = this.getNextPendingEvent();
     const targetDegree = nextEvent?.requiredInput?.degree;
-    const requiredOctaveOffset = REQUIRED_OCTAVE_OFFSET;
+    const requiredOctaveOffset = this.requiredOctaveOffset;
     const mappings = NOTE_LANES.map((button) => {
       const chordType = this.getChordTypeForButton(button, modifiers);
       const action = resolveInputToMusicalAction({

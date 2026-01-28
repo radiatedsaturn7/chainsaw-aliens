@@ -98,13 +98,21 @@ export default class RobterspielInput {
   }
 
   getPitchForScaleStep(stepIndex) {
+    return this.getPitchForScaleStepWithOffset(stepIndex, this.octaveOffset);
+  }
+
+  getPitchForScaleStepWithOffset(stepIndex, octaveOffset = 0) {
     const steps = this.scaleSteps;
     const octave = Math.floor(stepIndex / steps.length);
     const step = steps[((stepIndex % steps.length) + steps.length) % steps.length];
-    return (4 + this.octaveOffset + octave) * 12 + this.key + step;
+    return (4 + octaveOffset + octave) * 12 + this.key + step;
   }
 
   getChordPitches(rootDegree, options) {
+    return this.getChordPitchesWithOffset(rootDegree, options, this.octaveOffset);
+  }
+
+  getChordPitchesWithOffset(rootDegree, options, octaveOffset = 0) {
     const {
       variant = 'triad',
       suspension = null,
@@ -154,9 +162,9 @@ export default class RobterspielInput {
     const majorSeventh = rootStep + 6;
     const majorSixth = rootStep + 5;
     const alteredNinthStep = rootStep + 1 + this.scaleSteps.length;
-    const rootPitch = this.getPitchForScaleStep(rootStep);
+    const rootPitch = this.getPitchForScaleStepWithOffset(rootStep, octaveOffset);
     return chordSteps.map((stepIndex) => {
-      let pitch = this.getPitchForScaleStep(stepIndex);
+      let pitch = this.getPitchForScaleStepWithOffset(stepIndex, octaveOffset);
       const interval = pitch - rootPitch;
       if (variant === 'diminished') {
         if (stepIndex === diminishedThird || stepIndex === diminishedFifth) {
@@ -378,7 +386,10 @@ export default class RobterspielInput {
         }
       });
     } else {
-      const rootDegree = this.leftStickStableDirection;
+      const liveDirection = Math.hypot(axisLX, axisLY) > LEFT_STICK_DEADZONE
+        ? mapDirection(axisLX, axisLY)
+        : this.leftStickStableDirection;
+      const rootDegree = liveDirection;
       const isChordMode = !this.noteMode;
       const applyInversion = (pitches, inversion) => {
         if (!inversion) return pitches;
