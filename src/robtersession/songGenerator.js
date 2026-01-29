@@ -96,6 +96,13 @@ const ARRANGEMENT_PRESETS = [
   'bass_roots_gtr_chords_pno_chords_split'
 ];
 
+const DEFAULT_SOUND_PROGRAMS = {
+  guitar: 27,
+  bass: 33,
+  piano: 0,
+  drums: 0
+};
+
 const STRUCTURE_PATTERNS = {
   beginner: ['IVVCCVVCCO', 'IVVCCVVCCCO', 'IVVCCVVCCO'],
   easy: ['IVVCCVVCCBCCO', 'IVVCCVVCCbCCO', 'IVVCCVVCCO'],
@@ -900,7 +907,11 @@ export const generateStructuredSong = ({ difficulty = 1, seed, stylePreset } = {
     structure,
     arrangement: {
       preset,
-      registers: DEFAULT_REGISTERS
+      registers: DEFAULT_REGISTERS,
+      sound: {
+        programs: { ...DEFAULT_SOUND_PROGRAMS },
+        drum_kit: 'standard'
+      }
     },
     parts: {
       bass: bassPart,
