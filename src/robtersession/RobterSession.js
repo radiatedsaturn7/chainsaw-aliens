@@ -79,7 +79,8 @@ const TUNING_KEY = 'robtersession-last-tuning';
 const MIDI_PROGRAMS = {
   guitar: 27,
   bass: 33,
-  piano: 0
+  piano: 0,
+  drums: 0
 };
 
 const INSTRUMENT_CHANNELS = {
@@ -285,6 +286,55 @@ export default class RobterSession {
     this.setlistLoadError = null;
     this.setlistLoadPromise = this.loadSetlistData();
     this.registerInputBus();
+  }
+
+  getSongSoundConfig() {
+    const schema = this.songData?.schema || {};
+    const arrangementSound = schema.arrangement?.sound || {};
+    return {
+      programs: arrangementSound.programs || schema.instrument_programs || {},
+      sections: arrangementSound.sections || schema.section_programs || {},
+      drumKit: arrangementSound.drum_kit || schema.drum_kit || null
+    };
+  }
+
+  normalizeProgramEntry(entry) {
+    if (!entry) return {};
+    if (typeof entry === 'number') {
+      return { program: entry };
+    }
+    if (typeof entry === 'object') {
+      return {
+        program: entry.program,
+        bankMSB: entry.bankMSB,
+        bankLSB: entry.bankLSB,
+        drumKit: entry.drum_kit || entry.kit
+      };
+    }
+    return {};
+  }
+
+  resolveInstrumentSound(instrument, sectionName) {
+    const { programs, sections } = this.getSongSoundConfig();
+    const sectionKey = sectionName ? String(sectionName).toLowerCase() : null;
+    const sectionPrograms = sectionKey ? (sections?.[sectionKey] || sections?.[sectionName]) : null;
+    const entry = sectionPrograms?.[instrument] ?? programs?.[instrument];
+    const normalized = this.normalizeProgramEntry(entry);
+    return {
+      program: Number.isInteger(normalized.program) ? normalized.program : (MIDI_PROGRAMS[instrument] ?? 0),
+      bankMSB: Number.isInteger(normalized.bankMSB) ? normalized.bankMSB : 0,
+      bankLSB: Number.isInteger(normalized.bankLSB) ? normalized.bankLSB : 0,
+      drumKit: normalized.drumKit
+    };
+  }
+
+  applySongSoundSettings() {
+    const { drumKit, programs } = this.getSongSoundConfig();
+    const drumEntry = this.normalizeProgramEntry(programs?.drums);
+    const kit = drumKit || drumEntry.drumKit;
+    if (kit) {
+      this.audio.setDrumKit?.(kit);
+    }
   }
 
   async loadSetlistData() {
@@ -864,14 +914,16 @@ export default class RobterSession {
             channel: 9
           });
         } else {
-          const program = MIDI_PROGRAMS[this.instrument] ?? 0;
+          const sound = this.resolveInstrumentSound(this.instrument, event.section);
           const channel = INSTRUMENT_CHANNELS[this.instrument] ?? 0;
           this.audio.playGmNote?.({
             pitch,
             duration,
             volume: 0.55,
-            program,
-            channel
+            program: sound.program,
+            channel,
+            bankMSB: sound.bankMSB,
+            bankLSB: sound.bankLSB
           });
         }
       });
@@ -1166,27 +1218,29 @@ export default class RobterSession {
           const pitches = this.resolveRequiredPitches(event.requiredInput, track);
           const duration = event.sustain ? event.sustain * this.songData.tempo.secondsPerBeat : 0.5;
           pitches.forEach((pitch) => {
-          if (track === 'drums') {
-            this.audio.playGmNote?.({
-              pitch,
-              duration: 0.35,
-              volume: 0.6,
-              program: 0,
-              channel: 9
-            });
-          } else {
-            const program = MIDI_PROGRAMS[track] ?? 0;
-            const channel = INSTRUMENT_CHANNELS[track] ?? 0;
-            this.audio.playGmNote?.({
-              pitch,
-              duration,
-              volume: 0.45,
-              program,
-              channel
-            });
-          }
-        });
-      }
+            if (track === 'drums') {
+              this.audio.playGmNote?.({
+                pitch,
+                duration: 0.35,
+                volume: 0.6,
+                program: 0,
+                channel: 9
+              });
+            } else {
+              const sound = this.resolveInstrumentSound(track, event.section);
+              const channel = INSTRUMENT_CHANNELS[track] ?? 0;
+              this.audio.playGmNote?.({
+                pitch,
+                duration,
+                volume: 0.45,
+                program: sound.program,
+                channel,
+                bankMSB: sound.bankMSB,
+                bankLSB: sound.bankLSB
+              });
+            }
+          });
+        }
         index += 1;
       }
       this.trackEventIndex[track] = index;
@@ -1205,6 +1259,7 @@ export default class RobterSession {
       difficulty: this.songMeta.difficulty,
       schema: this.songMeta.schema
     });
+    this.applySongSoundSettings();
     this.scaleSelection = {
       scaleIndex: 0,
       rootIndex: 0,
@@ -1489,6 +1544,7 @@ export default class RobterSession {
       if (!Number.isFinite(pitch)) return;
       const instrument = this.instrument;
       const velocity = clamp((event.velocity ?? 96) / 127, 0.1, 1);
+      const sectionName = this.getCurrentSectionLabel()?.toLowerCase() || null;
       if (instrument === 'drums') {
         this.audio.startLiveGmNote?.({
           id: event.id,
@@ -1499,15 +1555,17 @@ export default class RobterSession {
           channel: 9
         });
       } else {
-        const program = MIDI_PROGRAMS[instrument] ?? 0;
+        const sound = this.resolveInstrumentSound(instrument, sectionName);
         const channel = INSTRUMENT_CHANNELS[instrument] ?? 0;
         this.audio.startLiveGmNote?.({
           id: event.id,
           pitch,
           duration: 1.4,
           volume: velocity,
-          program,
-          channel
+          program: sound.program,
+          channel,
+          bankMSB: sound.bankMSB,
+          bankLSB: sound.bankLSB
         });
       }
       this.robterspielNotes.add(event.id);
@@ -1540,6 +1598,7 @@ export default class RobterSession {
     if (!normalized?.button) return;
     const instrument = this.instrument;
     const velocity = 0.7;
+    const sectionName = this.getCurrentSectionLabel()?.toLowerCase() || null;
     if (instrument === 'drums') {
       const drumMap = { A: 38, X: 45, Y: 48, B: 50 };
       const pitch = drumMap[normalized.button] ?? 38;
@@ -1570,12 +1629,15 @@ export default class RobterSession {
       if (normalized.octaveUp) {
         pitch += 12;
       }
+      const sound = this.resolveInstrumentSound(instrument, sectionName);
       this.audio.playGmNote?.({
         pitch,
         duration: 0.45,
         volume: velocity,
-        program: MIDI_PROGRAMS[instrument] ?? 0,
-        channel: INSTRUMENT_CHANNELS[instrument] ?? 0
+        program: sound.program,
+        channel: INSTRUMENT_CHANNELS[instrument] ?? 0,
+        bankMSB: sound.bankMSB,
+        bankLSB: sound.bankLSB
       });
       return;
     }
@@ -1617,13 +1679,16 @@ export default class RobterSession {
     }
     let pitches = this.robterspiel.getChordPitches(rootDegree, { variant, suspension });
     pitches = this.applyInversion(pitches, inversion);
+    const sound = this.resolveInstrumentSound(instrument, sectionName);
     pitches.forEach((pitch) => {
       this.audio.playGmNote?.({
         pitch,
         duration: 0.6,
         volume: velocity,
-        program: MIDI_PROGRAMS[instrument] ?? 0,
-        channel: INSTRUMENT_CHANNELS[instrument] ?? 0
+        program: sound.program,
+        channel: INSTRUMENT_CHANNELS[instrument] ?? 0,
+        bankMSB: sound.bankMSB,
+        bankLSB: sound.bankLSB
       });
     });
   }
