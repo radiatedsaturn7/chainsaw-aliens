@@ -1,0 +1,44 @@
+---
+song:
+  id: "s09"
+  title: "Telephone Dreams"
+  band: "Blue Vinyl"
+  inspired_by: "Energy of Blue Vinyl"
+  difficulty: 3
+  tier: solid
+  tempo_bpm: 108
+  time_signature: "4/4"
+  key: "E major"
+  style_tags: ["90s-alt"]
+  structure: "IVVCCVVCCbCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [E2(h), E3(h)]
+      guitar: [E(h), A(h)]
+      piano: [G#4(h), E4(h)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [E2(h), E3(h), C#2(h), F#3(h)]
+      guitar: [E(h), A(h), C#m(h), B(h)]
+      piano: [G#4(h), E4(h), C#5(h), D#4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    chorus:
+      repeats: 1
+      bass: [A2(h), F#3(h), E2(w)]
+      guitar: [A(h), B(h), E(w)]
+      piano: [C#4(h), F#4(h), E5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [C#2(e), F#3(e), A2(e), F#3(e), C#2(e), F#3(e), A2(e), F#3(e)]
+      guitar: [c#m(e), b(e), a(e), b(e), c#m(e), b(e), a(e), b(e)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    outro:
+      repeats: 1
+      bass: [E2(w)]
+      guitar: [E(w)]
+      piano: [G#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

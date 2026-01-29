@@ -1,0 +1,50 @@
+---
+song:
+  id: "s33"
+  title: "Blackout Waltz"
+  band: "Knucklelight"
+  inspired_by: "Energy of Knucklelight"
+  difficulty: 5
+  tier: hard
+  tempo_bpm: 120
+  time_signature: "4/4"
+  key: "A minor"
+  style_tags: ["dark-rock"]
+  structure: "IvvPccvvPccBccO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [A2(w)]
+      guitar: [Am(w)]
+      piano: [C4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [A2(h), C3(h), C2(h), D3(h)]
+      guitar: [Am(h), F(h), C(h), G(h)]
+      piano: [C4(h), C4(h), C5(h), B4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    prechorus:
+      repeats: 1
+      bass: [D2(h), B3(h)]
+      guitar: [Dm7(h), E7(h)]
+      piano: [F4(h), B4(h)]
+      drums: [KICK(q), HAT_O(e), HAT_O(e), SNARE(q), KICK(e), HAT_O(e)]
+    chorus:
+      repeats: 1
+      bass: [A2(h), C3(h), G2(w)]
+      guitar: [Am(add9)(h), F(h), Gsus2(w)]
+      piano: [C4(h), C4(h), G5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [Bb2(h), G3(h)]
+      guitar: [bb(h), c(h)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    outro:
+      repeats: 1
+      bass: [G2(w)]
+      guitar: [Gsus2(w)]
+      piano: [A4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

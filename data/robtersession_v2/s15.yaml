@@ -1,0 +1,50 @@
+---
+song:
+  id: "s15"
+  title: "Broken Antenna"
+  band: "Low Orbit"
+  inspired_by: "Energy of Low Orbit"
+  difficulty: 4
+  tier: skilled
+  tempo_bpm: 120
+  time_signature: "4/4"
+  key: "E major"
+  style_tags: ["alt-rock"]
+  structure: "IVVPccVVPccSccO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [E2(w)]
+      guitar: [E(w)]
+      piano: [G#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [E2(h), F#3(h), C#2(h), E3(h)]
+      guitar: [E(h), B(h), C#m(h), A(h)]
+      piano: [G#4(h), F#4(h), C#5(h), C#4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    prechorus:
+      repeats: 1
+      bass: [F#2(q), E3(q), B2(h)]
+      guitar: [F#m(q), A(q), B(h)]
+      piano: [A4(q), E4(q), B5(h)]
+      drums: [KICK(q), HAT_O(e), HAT_O(e), SNARE(q), KICK(e), HAT_O(e)]
+    chorus:
+      repeats: 1
+      bass: [A2(h), B3(h), B2(w)]
+      guitar: [A(h), E(h), B(w)]
+      piano: [C#4(h), B4(h), B5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    solo:
+      repeats: 1
+      bass: [E2(q), E3(q), B2(q), E3(q)]
+      guitar: [E(q), A(q), B(q), A(q)]
+      piano: []
+      drums: [KICK(e), RIDE(e), KICK(e), SNARE(e), TOM_M(q), CRASH(q)]
+    outro:
+      repeats: 1
+      bass: [E2(e), F#3(e), C#2(e), E3(e), E2(e), F#3(e), C#2(e), E3(e)]
+      guitar: [e(e), b(e), c#m(e), a(e), e(e), b(e), c#m(e), a(e)]
+      piano: [G#4(e), F#4(e), C#5(e), C#4(e), B4(e), B5(e), E4(e), E4(e)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

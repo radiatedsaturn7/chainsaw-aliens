@@ -1,0 +1,56 @@
+---
+song:
+  id: "s26"
+  title: "Neon Burial"
+  band: "Dead Frequency"
+  inspired_by: "Energy of Dead Frequency"
+  difficulty: 5
+  tier: hard
+  tempo_bpm: 120
+  time_signature: "4/4"
+  key: "E major"
+  style_tags: ["expert", "alt-rock"]
+  structure: "IVVPCCVVPCCbSCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [E2(w)]
+      guitar: [E(w)]
+      piano: [G#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [E2(h), E3(h), F#2(h), A3(h)]
+      guitar: [E(h), A/C#(h), F#m(h), D(h)]
+      piano: [G#4(h), E4(h), F#5(h), F#4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    prechorus:
+      repeats: 1
+      bass: [B2(q), G#3(q), F#2(h)]
+      guitar: [Bm(q), C#7(q), F#m(h)]
+      piano: [D4(q), G#4(q), F#5(h)]
+      drums: [KICK(q), HAT_O(e), HAT_O(e), SNARE(q), KICK(e), HAT_O(e)]
+    chorus:
+      repeats: 1
+      bass: [D2(h), E3(h), E2(w)]
+      guitar: [D(h), A(h), E(w)]
+      piano: [F#4(h), E4(h), E5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [E2(e), E3(e), F#2(e), A3(e), E2(e), E3(e), F#2(e), A3(e)]
+      guitar: [e(e), a/c#(e), f#m(e), d(e), e(e), a/c#(e), f#m(e), d(e)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    solo:
+      repeats: 1
+      bass: [E2(q), A3(q), A2(q), B3(q)]
+      guitar: [E(q), D(q), A(q), E(q)]
+      piano: []
+      drums: [KICK(e), RIDE(e), KICK(e), SNARE(e), TOM_M(q), CRASH(q)]
+    outro:
+      repeats: 1
+      bass: [E2(w)]
+      guitar: [E(w)]
+      piano: [G#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

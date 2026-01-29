@@ -1,0 +1,44 @@
+---
+song:
+  id: "s31"
+  title: "Hollow Broadcast"
+  band: "Late Night Antennas"
+  inspired_by: "Energy of Late Night Antennas"
+  difficulty: 5
+  tier: hard
+  tempo_bpm: 140
+  time_signature: "4/4"
+  key: "C major"
+  style_tags: ["fast", "punk-rock"]
+  structure: "IVVCCVVCCbCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [C2(w)]
+      guitar: [C5(w)]
+      piano: [E4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [C2(q), D3(q), A2(q), C3(q), C2(q), D3(q), A2(q), C3(q)]
+      guitar: [C5(q), G5(q), Am(q), F(q), C5(q), G5(q), Am(q), F(q)]
+      piano: [E4(q), D4(q), A5(q), A4(q), G4(q), G5(q), C4(q), C4(q)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    chorus:
+      repeats: 1
+      bass: [F2(h), D3(h), C2(w)]
+      guitar: [F(h), Gsus4(h), C(w)]
+      piano: [A4(h), D4(h), C5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [A2(e), C3(e), G2(e), G3(e), A2(e), C3(e), G2(e), G3(e)]
+      guitar: [am(e), f(e), g(e), c(e), am(e), f(e), g(e), c(e)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    outro:
+      repeats: 1
+      bass: [C2(w)]
+      guitar: [C5(w)]
+      piano: [E4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

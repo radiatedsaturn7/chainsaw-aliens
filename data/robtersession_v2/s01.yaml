@@ -1,0 +1,44 @@
+---
+song:
+  id: "s01"
+  title: "Dancing on My Grave"
+  band: "The Rabbit Heads"
+  inspired_by: "Energy of The Rabbit Heads"
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 110
+  time_signature: "4/4"
+  key: "G major"
+  style_tags: ["punk", "garage"]
+  structure: "IVVCCVVCCBCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [G2(q), D3(q), C2(h)]
+      guitar: [G5(q), G5(q), C5(h)]
+      piano: [B4(q), D4(q), C5(h)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [G2(q), D3(q), C2(h), D3(q), G2(q), G3(h)]
+      guitar: [G5(q), G5(q), C5(h), G5(q), G5(q), C5(h)]
+      piano: [B4(q), D4(q), C5(h), B4(q), D4(q), C5(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    chorus:
+      repeats: 1
+      bass: [D2(q), D3(q), C2(h), G3(w)]
+      guitar: [D5(q), G5(q), C5(h), C5(w)]
+      piano: [F#4(q), D4(q), C5(h), E4(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [A2(w)]
+      guitar: [A5(w)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    outro:
+      repeats: 1
+      bass: [C2(w)]
+      guitar: [C5(w)]
+      piano: [E4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

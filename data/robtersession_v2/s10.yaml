@@ -1,0 +1,44 @@
+---
+song:
+  id: "s10"
+  title: "Burn the Map"
+  band: "Southbound"
+  inspired_by: "Energy of Southbound"
+  difficulty: 3
+  tier: solid
+  tempo_bpm: 112
+  time_signature: "4/4"
+  key: "G major"
+  style_tags: ["americana", "rock"]
+  structure: "IVVCCVVCCbCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [G2(q), A3(q), C2(h)]
+      guitar: [G(q), D(q), C(h)]
+      piano: [B4(q), A4(q), C5(h)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [G2(q), A3(q), C2(h), D3(q), D2(q), G3(h)]
+      guitar: [G(q), D(q), C(h), G(q), D(q), C(h)]
+      piano: [B4(q), A4(q), C5(h), B4(q), A4(q), C5(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    chorus:
+      repeats: 1
+      bass: [C2(h), D3(q), D2(q), D3(w)]
+      guitar: [C(h), G(q), D(q), G(w)]
+      piano: [E4(h), D4(q), D5(q), B4(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [A2(e), D3(e), D2(e), D3(e), A2(e), D3(e), D2(e), D3(e)]
+      guitar: [am(e), g(e), d(e), g(e), am(e), g(e), d(e), g(e)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    outro:
+      repeats: 1
+      bass: [G2(w)]
+      guitar: [G(w)]
+      piano: [B4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

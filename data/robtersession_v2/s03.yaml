@@ -1,0 +1,38 @@
+---
+song:
+  id: "s03"
+  title: "Rusted Summer"
+  band: "Red Signal"
+  inspired_by: "Energy of Red Signal"
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 104
+  time_signature: "4/4"
+  key: "D major"
+  style_tags: ["alt-rock"]
+  structure: "IVVCCVVCCCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [D2(w)]
+      guitar: [D5(w)]
+      piano: [F#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [D2(h), A3(h), G2(q), E3(q), D2(h)]
+      guitar: [D5(h), D5(h), G5(q), A5(q), D5(h)]
+      piano: [F#4(h), A4(h), G5(q), C#4(q), A4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    chorus:
+      repeats: 1
+      bass: [G2(h), E3(h), D2(w)]
+      guitar: [G5(h), A5(h), D5(w)]
+      piano: [B4(h), E4(h), D5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    outro:
+      repeats: 1
+      bass: [D2(w)]
+      guitar: [D5(w)]
+      piano: [F#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

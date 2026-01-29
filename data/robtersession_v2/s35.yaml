@@ -1,0 +1,56 @@
+---
+song:
+  id: "s35"
+  title: "Final Chorus"
+  band: "The Last Verse"
+  inspired_by: "Energy of The Last Verse"
+  difficulty: 5
+  tier: hard
+  tempo_bpm: 132
+  time_signature: "4/4"
+  key: "D major"
+  style_tags: ["arena-rock", "expert"]
+  structure: "IVVPCCVVPCCbSCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [D2(w)]
+      guitar: [D(w)]
+      piano: [F#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [D2(h), D3(h), B2(h), E3(h)]
+      guitar: [D(h), G(h), Bm(h), A(h)]
+      piano: [F#4(h), D4(h), B5(h), C#4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    prechorus:
+      repeats: 1
+      bass: [E2(h), E3(h)]
+      guitar: [Em7(h), A7(h)]
+      piano: [G4(h), E4(h)]
+      drums: [KICK(q), HAT_O(e), HAT_O(e), SNARE(q), KICK(e), HAT_O(e)]
+    chorus:
+      repeats: 1
+      bass: [D2(h), D3(h), A2(w)]
+      guitar: [D(add9)(h), G(h), Asus2(w)]
+      piano: [F#4(h), D4(h), A5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [Bb2(h), G3(h)]
+      guitar: [bb(h), c(h)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    solo:
+      repeats: 1
+      bass: [D2(q), D3(q), A2(q), A3(q)]
+      guitar: [D(q), G(q), A(q), D(q)]
+      piano: []
+      drums: [KICK(e), RIDE(e), KICK(e), SNARE(e), TOM_M(q), CRASH(q)]
+    outro:
+      repeats: 1
+      bass: [D2(w)]
+      guitar: [D(w)]
+      piano: [F#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

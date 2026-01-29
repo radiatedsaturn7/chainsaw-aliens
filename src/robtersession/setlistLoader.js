@@ -119,6 +119,62 @@ const parsePatternYaml = (text) => {
   return parsed;
 };
 
+const parseSongIndexYaml = (text) => {
+  const lines = text.split(/\r?\n/);
+  const index = { songs: [], setlist_version: null };
+  let inSongs = false;
+  lines.forEach((rawLine) => {
+    const cleaned = stripYamlComment(rawLine);
+    if (!cleaned.trim()) return;
+    if (cleaned.trim() === '---') return;
+    const indent = cleaned.match(/^\s*/)[0].length;
+    const trimmed = cleaned.trim();
+    if (indent === 0) {
+      const entry = parseKeyValue(trimmed);
+      if (!entry) return;
+      if (entry.key === 'songs') {
+        inSongs = true;
+        return;
+      }
+      index[entry.key] = parseValue(entry.value);
+      inSongs = false;
+      return;
+    }
+    if (inSongs && indent === 2 && trimmed.startsWith('-')) {
+      const value = trimmed.replace(/^-\s*/, '');
+      index.songs.push(parseValue(value));
+    }
+  });
+  return index;
+};
+
+const parseSongYaml = (text) => {
+  const lines = text.split(/\r?\n/);
+  const root = {};
+  const stack = [{ indent: -1, container: root }];
+  lines.forEach((rawLine) => {
+    const cleaned = stripYamlComment(rawLine);
+    if (!cleaned.trim()) return;
+    if (cleaned.trim() === '---') return;
+    const indent = cleaned.match(/^\s*/)[0].length;
+    const trimmed = cleaned.trim();
+    const entry = parseKeyValue(trimmed);
+    if (!entry) return;
+    while (stack.length && indent <= stack[stack.length - 1].indent) {
+      stack.pop();
+    }
+    const parent = stack[stack.length - 1].container;
+    if (!entry.value) {
+      const next = {};
+      parent[entry.key] = next;
+      stack.push({ indent, container: next });
+      return;
+    }
+    parent[entry.key] = parseValue(entry.value);
+  });
+  return root.song || root;
+};
+
 const parseBarLine = (line) => {
   const trimmed = line.trim();
   if (!trimmed.startsWith('-')) return null;
@@ -153,6 +209,47 @@ const fixBarDurations = (bar) => {
   const updated = [...bar];
   updated[updated.length - 1] = updated[updated.length - 1].replace(/\((w|h|q|e)\)\s*$/, `(${closestToken.token})`);
   return updated;
+};
+
+const splitEventsIntoBars = (events) => {
+  const bars = [];
+  let bar = [];
+  let total = 0;
+  events.forEach((entry) => {
+    const match = entry.match(/\((w|h|q|e)\)\s*$/);
+    const duration = match ? DURATION_VALUES[match[1]] : null;
+    if (duration == null) return;
+    if (total + duration > 4 && bar.length) {
+      bars.push(bar);
+      bar = [];
+      total = 0;
+    }
+    bar.push(entry);
+    total += duration;
+    if (Math.abs(total - 4) < 0.001) {
+      bars.push(bar);
+      bar = [];
+      total = 0;
+    }
+  });
+  if (bar.length) bars.push(bar);
+  return bars;
+};
+
+const convertV2SongToLegacy = (song, patternsLibrary) => {
+  const sections = {};
+  Object.entries(song.sections || {}).forEach(([sectionName, section]) => {
+    const guitarEvents = section.guitar || [];
+    const bars = splitEventsIntoBars(guitarEvents).map((bar) => fixBarDurations(bar));
+    if (bars.length) {
+      sections[sectionName] = bars;
+    }
+  });
+  return {
+    ...song,
+    sections,
+    patternsLibrary
+  };
 };
 
 export const parseSetlistYaml = (text) => {
@@ -322,14 +419,29 @@ export const loadSetlistData = async () => {
   }
   const patternsText = await patternsResponse.text();
   const patterns = parsePatternYaml(patternsText);
-  const response = await fetch('data/robtersession_setlist.yaml');
+  const response = await fetch('data/robtersession_setlist_v2.yaml');
   if (!response.ok) {
     throw new Error(`Failed to load setlist: ${response.status}`);
   }
   const text = await response.text();
-  const parsed = parseSetlistYaml(text);
-  const normalizedSongs = parsed.songs.map((song) => normalizeSetlistSong(song, patterns));
-  const normalized = { ...parsed, patterns, songs: normalizedSongs };
+  const index = parseSongIndexYaml(text);
+  const songResponses = await Promise.all(
+    (index.songs || []).map(async (path) => {
+      const songResponse = await fetch(path);
+      if (!songResponse.ok) {
+        throw new Error(`Failed to load song: ${songResponse.status}`);
+      }
+      const songText = await songResponse.text();
+      return parseSongYaml(songText);
+    })
+  );
+  const normalizedSongs = songResponses.map((song) => convertV2SongToLegacy(song, patterns));
+  const normalized = {
+    ...index,
+    patterns,
+    definitions: {},
+    songs: normalizedSongs
+  };
   validatePatternLibrary(patterns);
   validateRequiredChordTypes(normalized);
   normalized.songs.forEach((song) => {

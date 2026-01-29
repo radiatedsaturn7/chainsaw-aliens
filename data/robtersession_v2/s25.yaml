@@ -1,0 +1,50 @@
+---
+song:
+  id: "s25"
+  title: "Bleed the Sun"
+  band: "Kill Frequency"
+  inspired_by: "Energy of Kill Frequency"
+  difficulty: 4
+  tier: skilled
+  tempo_bpm: 132
+  time_signature: "4/4"
+  key: "E major"
+  style_tags: ["hard-rock"]
+  structure: "IVVCCVVCCBSCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [E2(q), B3(q), A2(h)]
+      guitar: [E5(q), E5(q), A5(h)]
+      piano: [G#4(q), B4(q), A5(h)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [E2(q), B3(q), A2(h), F#3(w)]
+      guitar: [E5(q), E5(q), A5(h), B5(w)]
+      piano: [G#4(q), B4(q), A5(h), D#4(w)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    chorus:
+      repeats: 1
+      bass: [A2(h), F#3(h), E2(w)]
+      guitar: [A5(h), B5(h), E5(w)]
+      piano: [C#4(h), F#4(h), E5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [F#2(h), D3(h)]
+      guitar: [F#(h), G(h)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    solo:
+      repeats: 1
+      bass: [E2(q), E3(q), B2(q), B3(q)]
+      guitar: [E(q), A(q), B(q), E(q)]
+      piano: []
+      drums: [KICK(e), RIDE(e), KICK(e), SNARE(e), TOM_M(q), CRASH(q)]
+    outro:
+      repeats: 1
+      bass: [E2(w)]
+      guitar: [E5(w)]
+      piano: [G#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]
