@@ -17,12 +17,18 @@ import NoteRenderer from './renderers/NoteRenderer.js';
 import ControllerStateHUD from './renderers/ControllerStateHUD.js';
 import FeedbackSystem from './renderers/FeedbackSystem.js';
 import SongPreviewScreen from './renderers/SongPreviewScreen.js';
+import SongSelectView from '../ui/SongSelectView.js';
+import InstrumentSelectView from '../ui/InstrumentSelectView.js';
 import {
   describeInputDebug,
   formatPitchLabel,
   resolveInputToMusicalAction,
   resolveRequiredInputToMusicalAction
 } from './inputResolver.js';
+import { loadSongManifest } from '../songs/songManifest.js';
+import { loadZipSong } from '../songs/songLoader.js';
+import { parseMidi } from '../midi/midiParser.js';
+import { formatKeyLabel, transcribeMidiStem } from '../transcribe/robterTranscriber.js';
 
 const PROGRESS_KEY = 'robtersession-progress';
 const RANDOM_SEED_KEY = 'robtersession-random-seed';
@@ -89,6 +95,25 @@ const INSTRUMENT_CHANNELS = {
   piano: 2,
   drums: 9
 };
+
+const STEM_INSTRUMENT_MAP = {
+  Bass: 'bass',
+  Guitar: 'guitar',
+  Drums: 'drums',
+  Percussion: 'drums',
+  Keyboard: 'piano',
+  Synth: 'piano',
+  Unknown: 'piano'
+};
+
+const STEM_PROGRAM_MAP = {
+  bass: 33,
+  guitar: 27,
+  piano: 0,
+  drums: 0
+};
+
+const USE_LEGACY_SETLIST = Boolean(window?.location?.search?.includes('legacySetlist'));
 
 const PERFORMANCE_DIFFICULTIES = [
   {
@@ -195,13 +220,22 @@ const getGrade = (accuracy) => {
   return entry?.grade ?? 'F';
 };
 
+const getTimingForDifficulty = (rating = 3) => {
+  const clamped = clamp(rating, 1, 5);
+  const ratio = (clamped - 1) / 4;
+  return {
+    great: 0.1 - ratio * 0.03,
+    good: 0.2 - ratio * 0.06
+  };
+};
+
 const getSongKey = (songName) => songName.toLowerCase().replace(/\s+/g, '-');
 
 export default class RobterSession {
   constructor({ input, audio }) {
     this.input = input;
     this.audio = audio;
-    this.state = 'instrument-select';
+    this.state = USE_LEGACY_SETLIST ? 'instrument-select' : 'song-select';
     this.progress = loadProgress();
     this.selectionIndex = 0;
     this.instrument = 'guitar';
@@ -277,6 +311,8 @@ export default class RobterSession {
     this.highwayRenderer = new HighwayRenderer(this.noteRenderer);
     this.controllerHUD = new ControllerStateHUD();
     this.previewScreen = new SongPreviewScreen();
+    this.songSelectView = new SongSelectView();
+    this.instrumentSelectView = new InstrumentSelectView();
     this.inputBus = new InputEventBus();
     this.robterspiel = new RobterspielInput(this.inputBus);
     this.robterspielNotes = new Set();
@@ -285,6 +321,22 @@ export default class RobterSession {
     this.setlistLoaded = false;
     this.setlistLoadError = null;
     this.setlistLoadPromise = this.loadSetlistData();
+    this.songManifest = [];
+    this.songManifestLoaded = false;
+    this.songManifestError = null;
+    this.songManifestPromise = this.loadSongManifest();
+    this.songSelectionIndex = 0;
+    this.songLoadStatus = '';
+    this.selectedSong = null;
+    this.stemList = [];
+    this.stemSelectionIndex = 0;
+    this.stemActionIndex = 0;
+    this.stemData = new Map();
+    this.activeStemNotes = null;
+    this.activeStemProgram = null;
+    this.activeStemKey = null;
+    this.midiPlaybackIndex = 0;
+    this.useStemPlayback = false;
     this.registerInputBus();
   }
 
@@ -352,6 +404,18 @@ export default class RobterSession {
     }
   }
 
+  async loadSongManifest() {
+    try {
+      const songs = await loadSongManifest();
+      this.songManifest = songs;
+      this.songManifestLoaded = true;
+      this.songManifestError = null;
+    } catch (error) {
+      this.songManifestError = error;
+      this.songManifestLoaded = true;
+    }
+  }
+
   loadRandomSeed() {
     const raw = localStorage.getItem(RANDOM_SEED_KEY);
     const seed = raw ? Number(raw) : Date.now();
@@ -362,8 +426,103 @@ export default class RobterSession {
     localStorage.setItem(RANDOM_SEED_KEY, String(this.randomSeed));
   }
 
+  async loadSelectedSong(entry) {
+    if (!entry) return;
+    this.songLoadStatus = 'Loading song zip...';
+    this.selectedSong = entry;
+    this.stemData.clear();
+    this.stemList = [];
+    this.stemSelectionIndex = 0;
+    try {
+      const zipUrl = `assets/songs/${entry.filename}`;
+      const { stems, meta } = await loadZipSong(zipUrl);
+      console.log('[RobterSESSION] Stems found:', meta.instruments);
+      const stemEntries = [];
+      for (const [instrumentName, stem] of stems.entries()) {
+        const midiData = parseMidi(stem.bytes);
+        const isDrumStem = ['Drums', 'Percussion'].includes(instrumentName);
+        const transcribed = transcribeMidiStem({
+          notes: midiData.notes,
+          bpm: midiData.bpm,
+          keySignature: midiData.keySignature,
+          isDrumStem
+        });
+        const difficulty = transcribed.stats.difficulty;
+        const keyLabel = formatKeyLabel(transcribed.key);
+        console.log('[RobterSESSION] Stem', instrumentName, 'Key', keyLabel, 'BPM', midiData.bpm.toFixed(1), 'TimeSig', `${midiData.timeSignature.beats}/${midiData.timeSignature.unit}`);
+        console.log('[RobterSESSION] Mapping stats', transcribed.stats.approxCounts);
+        this.stemData.set(instrumentName, { instrumentName, midiData, transcribed, bytes: stem.bytes });
+        stemEntries.push({
+          name: instrumentName,
+          label: instrumentName,
+          difficultyLabel: `${difficulty.label} (${difficulty.rating})`,
+          keyLabel
+        });
+      }
+      this.stemList = stemEntries;
+      this.songLoadStatus = stems.size ? '' : 'No MIDI stems found in zip.';
+      this.state = 'stem-select';
+    } catch (error) {
+      console.error('[RobterSESSION] Failed to load zip song', error);
+      this.songLoadStatus = 'Failed to load zip song.';
+    }
+  }
+
+  prepareStemSong(stemName) {
+    const stem = this.stemData.get(stemName);
+    if (!stem) return false;
+    const transcribed = stem.transcribed;
+    const { key, timing, events, sections, stats } = transcribed;
+    const modeEntry = MODE_LIBRARY.find((mode) => (
+      key.mode === 'minor' ? mode.name === 'Aeolian' : mode.name === 'Ionian'
+    )) || MODE_LIBRARY[0];
+    this.songData = {
+      name: this.selectedSong?.title || stemName,
+      bpm: timing.bpm,
+      tempo: timing,
+      root: key.tonicPitchClass,
+      mode: modeEntry,
+      sections,
+      events,
+      schema: { arrangement: { registers: {} } }
+    };
+    this.songData.timing = getTimingForDifficulty(stats.difficulty.rating);
+    this.songMeta = {
+      name: this.songData.name,
+      instrument: stemName,
+      hint: `Key: ${formatKeyLabel(key)}`,
+      tier: 1,
+      random: false,
+      setIndex: 0,
+      songIndex: 0
+    };
+    const mappedInstrument = STEM_INSTRUMENT_MAP[stemName] || 'piano';
+    this.instrument = mappedInstrument;
+    this.instrumentSelectionIndex = Math.max(0, INSTRUMENTS.indexOf(mappedInstrument));
+    this.applySongSoundSettings();
+    this.scaleSelection = {
+      scaleIndex: 0,
+      rootIndex: key.tonicPitchClass,
+      scaleConfirmed: true,
+      rootConfirmed: true
+    };
+    this.requiredOctaveOffset = REQUIRED_OCTAVE_OFFSET;
+    this.octaveOffset = REQUIRED_OCTAVE_OFFSET;
+    this.selectedMode = stats.chordEvents > stats.noteEvents ? 'chord' : 'note';
+    this.modeSelectionIndex = this.selectedMode === 'note' ? 0 : 1;
+    this.playMode = 'play';
+    this.activeStemNotes = stem.midiData.notes;
+    this.activeStemProgram = stem.midiData.notes.find((note) => Number.isFinite(note.program))?.program
+      ?? STEM_PROGRAM_MAP[mappedInstrument]
+      ?? 0;
+    this.activeStemKey = key;
+    this.midiPlaybackIndex = 0;
+    this.useStemPlayback = true;
+    return true;
+  }
+
   enter() {
-    this.state = 'instrument-select';
+    this.state = USE_LEGACY_SETLIST ? 'instrument-select' : 'song-select';
     this.songData = null;
     this.songMeta = null;
     this.robterspielNotes.forEach((id) => this.audio.stopLiveGmNote?.(id));
@@ -381,6 +540,10 @@ export default class RobterSession {
     };
     this.requiredOctaveOffset = REQUIRED_OCTAVE_OFFSET;
     this.octaveOffset = REQUIRED_OCTAVE_OFFSET;
+    this.songLoadStatus = '';
+    this.stemSelectionIndex = 0;
+    this.stemActionIndex = 0;
+    this.useStemPlayback = false;
   }
 
   update(dt) {
@@ -388,6 +551,14 @@ export default class RobterSession {
       this.debugShowInputs = !this.debugShowInputs;
     }
 
+    if (this.state === 'song-select') {
+      this.handleSongSelectInput();
+      return;
+    }
+    if (this.state === 'stem-select') {
+      this.handleStemSelectInput();
+      return;
+    }
     if (this.state === 'setlist') {
       this.handleSetlistInput();
       return;
@@ -426,6 +597,77 @@ export default class RobterSession {
     }
     if (this.state === 'play') {
       this.updatePlay(dt);
+    }
+  }
+
+  handleSongSelectInput() {
+    const maxIndex = Math.max(0, this.songManifest.length - 1);
+    if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')) {
+      this.songSelectionIndex = (this.songSelectionIndex - 1 + (maxIndex + 1)) % (maxIndex + 1);
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('down') || this.input.wasGamepadPressed('dpadDown')) {
+      this.songSelectionIndex = (this.songSelectionIndex + 1) % (maxIndex + 1);
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('cancel')) {
+      this.state = 'exit';
+      this.audio.ui();
+      return;
+    }
+    if (this.input.wasPressed('interact')) {
+      const entry = this.songManifest[this.songSelectionIndex];
+      if (!entry) return;
+      this.audio.ui();
+      this.loadSelectedSong(entry);
+    }
+  }
+
+  handleStemSelectInput() {
+    const stemCount = Math.max(0, this.stemList.length);
+    const actionCount = 3;
+    if (!stemCount) {
+      if (this.input.wasPressed('cancel')) {
+        this.state = 'song-select';
+        this.audio.ui();
+      }
+      return;
+    }
+    if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')) {
+      this.stemSelectionIndex = (this.stemSelectionIndex - 1 + stemCount) % stemCount;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('down') || this.input.wasGamepadPressed('dpadDown')) {
+      this.stemSelectionIndex = (this.stemSelectionIndex + 1) % stemCount;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('left') || this.input.wasGamepadPressed('dpadLeft')) {
+      this.stemActionIndex = (this.stemActionIndex - 1 + actionCount) % actionCount;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('right') || this.input.wasGamepadPressed('dpadRight')) {
+      this.stemActionIndex = (this.stemActionIndex + 1) % actionCount;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('cancel')) {
+      this.state = 'song-select';
+      this.audio.ui();
+      return;
+    }
+    if (this.input.wasPressed('interact')) {
+      const stem = this.stemList[this.stemSelectionIndex];
+      if (!stem) return;
+      const action = this.stemActionIndex;
+      if (action === 2) {
+        this.state = 'song-select';
+        this.audio.ui();
+        return;
+      }
+      const prepared = this.prepareStemSong(stem.name);
+      if (!prepared) return;
+      const playMode = action === 1 ? 'listen' : 'play';
+      this.startSong({ playMode });
+      this.audio.ui();
     }
   }
 
@@ -639,7 +881,7 @@ export default class RobterSession {
       } else {
         this.robterspielNotes.forEach((id) => this.audio.stopLiveGmNote?.(id));
         this.robterspielNotes.clear();
-        this.state = 'setlist';
+        this.state = this.useStemPlayback ? 'song-select' : 'setlist';
       }
       this.audio.ui();
     }
@@ -651,7 +893,7 @@ export default class RobterSession {
 
   handleResultsInput() {
     if (this.input.wasPressed('interact') || this.input.wasPressed('cancel')) {
-      this.state = 'setlist';
+      this.state = this.useStemPlayback ? 'song-select' : 'setlist';
       this.audio.ui();
     }
   }
@@ -755,6 +997,7 @@ export default class RobterSession {
     this.updateTimers(dt);
     this.advanceBandTracks(prevTime, this.songTime);
     this.advanceAutoplay(prevTime, this.songTime);
+    this.advanceStemPlayback(prevTime, this.songTime);
 
     if (this.modeChangeNotice && this.songTime > this.modeChangeNotice.time + 3) {
       this.modeChangeNotice = null;
@@ -902,6 +1145,9 @@ export default class RobterSession {
         event.judged = true;
       }
       event.autoHit = 0.35;
+      if (this.useStemPlayback && this.playMode === 'listen') {
+        return;
+      }
       const pitches = this.resolveRequiredPitches(event.requiredInput, this.instrument);
       const duration = event.sustain ? event.sustain * this.songData.tempo.secondsPerBeat : 0.5;
       pitches.forEach((pitch) => {
@@ -1247,6 +1493,31 @@ export default class RobterSession {
     });
   }
 
+  advanceStemPlayback(prevTime, nextTime) {
+    if (!this.useStemPlayback || !this.activeStemNotes || nextTime <= 0) return;
+    const notes = this.activeStemNotes;
+    const volume = this.playMode === 'listen' ? 0.7 : this.playMode === 'play' ? 0.35 : 0.45;
+    let index = this.midiPlaybackIndex;
+    while (index < notes.length) {
+      const note = notes[index];
+      if (note.tStartSec > nextTime) break;
+      if (note.tStartSec >= Math.max(0, prevTime)) {
+        const duration = Math.max(0.05, note.tEndSec - note.tStartSec);
+        const channel = this.instrument === 'drums' ? 9 : (INSTRUMENT_CHANNELS[this.instrument] ?? 0);
+        const program = this.activeStemProgram ?? STEM_PROGRAM_MAP[this.instrument] ?? 0;
+        this.audio.playGmNote?.({
+          pitch: note.midi,
+          duration,
+          volume: Math.min(1, Math.max(0.1, (note.vel ?? 0.8) * volume)),
+          program,
+          channel
+        });
+      }
+      index += 1;
+    }
+    this.midiPlaybackIndex = index;
+  }
+
   prepareSong() {
     const tier = this.songMeta.tier;
     const allowModeChange = tier >= 7;
@@ -1281,6 +1552,9 @@ export default class RobterSession {
       this.modeSelectionIndex = this.selectedMode === 'note' ? 0 : 1;
     }
     this.scalePromptTime = 0;
+    this.useStemPlayback = false;
+    this.activeStemNotes = null;
+    this.midiPlaybackIndex = 0;
   }
 
   startSong({ playMode = 'play' } = {}) {
@@ -1296,6 +1570,9 @@ export default class RobterSession {
     this.starPower = 0;
     this.starPowerActive = false;
     this.starPowerUsed = 0;
+    if (this.useStemPlayback) {
+      this.midiPlaybackIndex = 0;
+    }
     this.mode = this.instrument === 'drums' ? 'drum' : this.selectedMode;
     if (this.instrument !== 'drums') {
       this.robterspiel.noteMode = this.mode === 'note';
@@ -1384,7 +1661,7 @@ export default class RobterSession {
       if (accuracy >= previousAccuracy) {
         progress.bestGrades[key] = grade;
       }
-      if (!this.songMeta.random && this.songMeta.setIndex + 1 >= progress.unlockedSets) {
+      if (!this.useStemPlayback && !this.songMeta.random && this.songMeta.setIndex + 1 >= progress.unlockedSets) {
         progress.unlockedSets = Math.min(this.setlistSets.length, this.songMeta.setIndex + 2);
       }
       saveProgress(progress);
@@ -2223,6 +2500,14 @@ export default class RobterSession {
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
+    if (this.state === 'song-select') {
+      this.drawSongSelect(ctx, width, height);
+      return;
+    }
+    if (this.state === 'stem-select') {
+      this.drawStemSelect(ctx, width, height);
+      return;
+    }
     if (this.state === 'setlist') {
       this.drawSetlist(ctx, width, height);
       return;
@@ -2263,6 +2548,32 @@ export default class RobterSession {
     if (this.state === 'results') {
       this.drawResults(ctx, width, height);
     }
+  }
+
+  drawSongSelect(ctx, width, height) {
+    const status = !this.songManifestLoaded
+      ? 'Loading song manifest...'
+      : this.songManifestError
+        ? 'Failed to load song manifest.'
+        : this.songLoadStatus;
+    this.songSelectView.draw(ctx, width, height, {
+      songs: this.songManifest,
+      selectedIndex: this.songSelectionIndex,
+      status
+    });
+  }
+
+  drawStemSelect(ctx, width, height) {
+    this.instrumentSelectView.draw(ctx, width, height, {
+      stems: this.stemList.map((stem) => ({
+        label: stem.label,
+        difficultyLabel: stem.difficultyLabel || stem.keyLabel
+      })),
+      selectedStemIndex: this.stemSelectionIndex,
+      selectedActionIndex: this.stemActionIndex,
+      songTitle: this.selectedSong?.title || '',
+      status: this.songLoadStatus
+    });
   }
 
   drawInstrumentSelect(ctx, width, height) {
@@ -2834,6 +3145,19 @@ export default class RobterSession {
           : `${required.mode} ${required.button} deg ${required.degree}${required.modifiers?.lb ? ' +LB' : ''}${required.modifiers?.dleft ? ' +DL' : ''}`;
         ctx.fillText(label, 40, height - 120 + index * 16);
       });
+
+      const currentEvent = this.getClosestExpectedEvent() || this.getNextPendingEvent();
+      if (currentEvent) {
+        const originalNotes = currentEvent.originalNotes || [];
+        const noteLabels = originalNotes.length
+          ? originalNotes.map((note) => formatPitchLabel(note)).join(', ')
+          : 'N/A';
+        const mappedLabel = currentEvent.expectedAction?.label || currentEvent.displayLabel || '—';
+        ctx.fillStyle = 'rgba(255,220,140,0.9)';
+        ctx.fillText(`MIDI: ${noteLabels}`, 40, height - 64);
+        ctx.fillStyle = 'rgba(215,242,255,0.85)';
+        ctx.fillText(`Mapped: ${mappedLabel} (${currentEvent.approxLevel || 'exact'})`, 40, height - 48);
+      }
     }
 
     ctx.restore();
@@ -2911,13 +3235,66 @@ export default class RobterSession {
       ctx.fillText('Song Failed', width / 2, 320);
     }
 
+    const approxCounts = this.events.reduce((acc, event) => {
+      const level = event.approxLevel || null;
+      if (level && level !== 'exact') {
+        acc[level] = (acc[level] || 0) + 1;
+      }
+      return acc;
+    }, {});
+    const approxEntries = Object.entries(approxCounts);
+    if (approxEntries.length) {
+      ctx.fillStyle = 'rgba(255,220,140,0.85)';
+      ctx.font = '14px Courier New';
+      ctx.fillText('Approximation Warnings', width / 2, 360);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '12px Courier New';
+      approxEntries.slice(0, 3).forEach(([label, count], index) => {
+        ctx.fillText(`${label}: ${count}`, width / 2, 382 + index * 16);
+      });
+    }
+
     ctx.font = '16px Courier New';
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.fillText('Press Confirm to return to Setlist.', width / 2, height - 80);
+    const returnLabel = this.useStemPlayback ? 'Song List' : 'Setlist';
+    ctx.fillText(`Press Confirm to return to ${returnLabel}.`, width / 2, height - 80);
     ctx.restore();
   }
 
   handleClick(x, y) {
+    if (this.state === 'song-select') {
+      const hitIndex = this.songSelectView.handleClick(x, y);
+      if (Number.isInteger(hitIndex)) {
+        this.songSelectionIndex = hitIndex;
+        const entry = this.songManifest[this.songSelectionIndex];
+        if (entry) {
+          this.loadSelectedSong(entry);
+          this.audio.ui();
+        }
+      }
+    }
+    if (this.state === 'stem-select') {
+      const action = this.instrumentSelectView.handleClick(x, y);
+      if (!action) return;
+      if (action.type === 'stem') {
+        this.stemSelectionIndex = action.index;
+        this.audio.menu();
+      } else if (action.type === 'action') {
+        this.stemActionIndex = action.index;
+        const stem = this.stemList[this.stemSelectionIndex];
+        if (!stem) return;
+        if (action.index === 2) {
+          this.state = 'song-select';
+          this.audio.ui();
+          return;
+        }
+        const prepared = this.prepareStemSong(stem.name);
+        if (!prepared) return;
+        const playMode = action.index === 1 ? 'listen' : 'play';
+        this.startSong({ playMode });
+        this.audio.ui();
+      }
+    }
     if (this.state === 'instrument-select') {
       const hit = this.bounds.instrumentButtons.find((button) => (
         x >= button.x && x <= button.x + button.w && y >= button.y && y <= button.y + button.h
