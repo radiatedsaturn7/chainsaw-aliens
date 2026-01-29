@@ -1,0 +1,2816 @@
+rb2_dna_version: 1
+generated_at: "2026-01-29T03:58:39.649321+00:00"
+songs:
+  - id: rb2_01
+    inspired_by: "A Jagged Gorgeous Winter — The Main Drag"
+    genre_tags: [alt, indie]
+    tempo_bpm_range: [90, 120]
+    time_signature: "4/4"
+    difficulty_tier: warmup
+    harmonic_language:
+      - chromatic_passing
+      - octave_displacement
+      - sus2
+    bass_style: root_only
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+    guitar_role: riff_anchor
+    solo_behavior: none
+    piano_contour: stepwise_hook
+    drum_groove: punk_drive
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_02
+    inspired_by: "Alive — Pearl Jam"
+    genre_tags: [punk, rock]
+    tempo_bpm_range: [90, 120]
+    time_signature: "4/4"
+    difficulty_tier: warmup
+    harmonic_language:
+      - modal_mixture
+      - suspended_resolution
+      - sus4
+    bass_style: pedal_drive
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+    guitar_role: texture_layer
+    solo_behavior: none
+    piano_contour: octave_leaps
+    drum_groove: half_time
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_03
+    inspired_by: "Almost Easy — Avenged Sevenfold"
+    genre_tags: [metal, hard]
+    tempo_bpm_range: [90, 120]
+    time_signature: "4/4"
+    difficulty_tier: warmup
+    harmonic_language:
+      - power_chord_motion
+      - blues_inflection
+      - add9
+    bass_style: walking
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+    guitar_role: call_response
+    solo_behavior: none
+    piano_contour: narrow_range
+    drum_groove: shuffle
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_04
+    inspired_by: "Aqualung — Jethro Tull"
+    genre_tags: [prog, rock]
+    tempo_bpm_range: [90, 120]
+    time_signature: "6/8"
+    difficulty_tier: warmup
+    harmonic_language:
+      - octave_displacement
+      - minor_key_tension
+      - maj7
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+    guitar_role: arpeggiated_motion
+    solo_behavior: none
+    piano_contour: wide_range
+    drum_groove: shuffle
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_05
+    inspired_by: "Any Way You Want It — Journey"
+    genre_tags: [pop, rock]
+    tempo_bpm_range: [90, 120]
+    time_signature: "4/4"
+    difficulty_tier: warmup
+    harmonic_language:
+      - suspended_resolution
+      - parallel_motion
+      - chromatic_passing
+      - m7
+    bass_style: gallop
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+    guitar_role: riff_anchor
+    solo_behavior: none
+    piano_contour: bluesy_bends_sim
+    drum_groove: tom_heavy
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_06
+    inspired_by: "Bad Reputation — Joan Jett"
+    genre_tags: [garage, punk]
+    tempo_bpm_range: [90, 120]
+    time_signature: "4/4"
+    difficulty_tier: warmup
+    harmonic_language:
+      - blues_inflection
+      - static_harmony_with_rhythm
+      - dom7
+    bass_style: syncopated_pulse
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+    guitar_role: melodic_hook
+    solo_behavior: none
+    piano_contour: rhythmic_syllables
+    drum_groove: syncopated_kick
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_07
+    inspired_by: "Battery — Metallica"
+    genre_tags: [grunge, alt]
+    tempo_bpm_range: [90, 120]
+    time_signature: "4/4"
+    difficulty_tier: warmup
+    harmonic_language:
+      - minor_key_tension
+      - pedal_tone
+    bass_style: riff_based
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      - gallop_ees
+    guitar_role: rhythm_driver
+    solo_behavior: none
+    piano_contour: chanty_static
+    drum_groove: gallop
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_08
+    inspired_by: "Bodhisattva — Steely Dan"
+    genre_tags: [rock, classic]
+    tempo_bpm_range: [90, 120]
+    time_signature: "4/4"
+    difficulty_tier: warmup
+    harmonic_language:
+      - parallel_motion
+      - chromatic_passing
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+    guitar_role: riff_anchor
+    solo_behavior: none
+    piano_contour: stepwise_hook
+    drum_groove: ride_bell_drive
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_09
+    inspired_by: "Come Out and Play (Keep 'Em Separated) — The Offspring"
+    genre_tags: [alt, indie]
+    tempo_bpm_range: [90, 120]
+    time_signature: "3/4"
+    difficulty_tier: warmup
+    harmonic_language:
+      - static_harmony_with_rhythm
+      - modal_mixture
+    bass_style: drop_tuning_style
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+    guitar_role: texture_layer
+    solo_behavior: none
+    piano_contour: octave_leaps
+    drum_groove: straight_rock
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_10
+    inspired_by: "Conventional Lover — Speck"
+    genre_tags: [punk, rock]
+    tempo_bpm_range: [90, 120]
+    time_signature: "4/4"
+    difficulty_tier: warmup
+    harmonic_language:
+      - pedal_tone
+      - power_chord_motion
+      - blues_inflection
+    bass_style: root_only
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+    guitar_role: riff_anchor
+    solo_behavior: none
+    piano_contour: narrow_range
+    drum_groove: punk_drive
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_11
+    inspired_by: "Cool for Cats — Squeeze"
+    genre_tags: [metal, hard]
+    tempo_bpm_range: [90, 120]
+    time_signature: "4/4"
+    difficulty_tier: warmup
+    harmonic_language:
+      - chromatic_passing
+      - octave_displacement
+      - sus4
+    bass_style: pedal_drive
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+    guitar_role: arpeggiated_motion
+    solo_behavior: none
+    piano_contour: wide_range
+    drum_groove: half_time
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_12
+    inspired_by: "De-Luxe — Lush"
+    genre_tags: [prog, rock]
+    tempo_bpm_range: [90, 120]
+    time_signature: "4/4"
+    difficulty_tier: warmup
+    harmonic_language:
+      - modal_mixture
+      - suspended_resolution
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+    guitar_role: chug_syncopation
+    solo_behavior: none
+    piano_contour: bluesy_bends_sim
+    drum_groove: shuffle
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_13
+    inspired_by: "E-Pro — Beck"
+    genre_tags: [pop, rock]
+    tempo_bpm_range: [100, 130]
+    time_signature: "4/4"
+    difficulty_tier: apprentice
+    harmonic_language:
+      - power_chord_motion
+      - blues_inflection
+    bass_style: octave_jumps
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+    guitar_role: melodic_hook
+    solo_behavior: short_motif
+    piano_contour: rhythmic_syllables
+    drum_groove: gallop
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_14
+    inspired_by: "Feel the Pain — Dinosaur Jr."
+    genre_tags: [garage, punk]
+    tempo_bpm_range: [100, 130]
+    time_signature: "12/8"
+    difficulty_tier: apprentice
+    harmonic_language:
+      - octave_displacement
+      - minor_key_tension
+    bass_style: gallop
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      - gallop_ees
+    guitar_role: rhythm_driver
+    solo_behavior: short_motif
+    piano_contour: chanty_static
+    drum_groove: gallop
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_15
+    inspired_by: "Float On — Modest Mouse"
+    genre_tags: [grunge, alt]
+    tempo_bpm_range: [100, 130]
+    time_signature: "4/4"
+    difficulty_tier: apprentice
+    harmonic_language:
+      - suspended_resolution
+      - parallel_motion
+      - chromatic_passing
+    bass_style: syncopated_pulse
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+    guitar_role: riff_anchor
+    solo_behavior: short_motif
+    piano_contour: stepwise_hook
+    drum_groove: syncopated_kick
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_16
+    inspired_by: "Give It All — Rise Against"
+    genre_tags: [rock, classic]
+    tempo_bpm_range: [100, 130]
+    time_signature: "4/4"
+    difficulty_tier: apprentice
+    harmonic_language:
+      - blues_inflection
+      - static_harmony_with_rhythm
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+    guitar_role: texture_layer
+    solo_behavior: short_motif
+    piano_contour: octave_leaps
+    drum_groove: open_hat_lift
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_17
+    inspired_by: "Hello There — Cheap Trick"
+    genre_tags: [alt, indie]
+    tempo_bpm_range: [100, 130]
+    time_signature: "4/4"
+    difficulty_tier: apprentice
+    harmonic_language:
+      - minor_key_tension
+      - pedal_tone
+    bass_style: chromatic_walkups
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+    guitar_role: call_response
+    solo_behavior: short_motif
+    piano_contour: narrow_range
+    drum_groove: ride_bell_drive
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_18
+    inspired_by: "Hungry Like the Wolf — Duran Duran"
+    genre_tags: [punk, rock]
+    tempo_bpm_range: [100, 130]
+    time_signature: "4/4"
+    difficulty_tier: apprentice
+    harmonic_language:
+      - parallel_motion
+      - chromatic_passing
+    bass_style: drop_tuning_style
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+    guitar_role: arpeggiated_motion
+    solo_behavior: short_motif
+    piano_contour: wide_range
+    drum_groove: straight_rock
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_19
+    inspired_by: "Kids in America — The Muffs"
+    genre_tags: [metal, hard]
+    tempo_bpm_range: [100, 130]
+    time_signature: "6/8"
+    difficulty_tier: apprentice
+    harmonic_language:
+      - static_harmony_with_rhythm
+      - modal_mixture
+    bass_style: root_only
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+    guitar_role: chug_syncopation
+    solo_behavior: short_motif
+    piano_contour: bluesy_bends_sim
+    drum_groove: shuffle
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_20
+    inspired_by: "Lump — The Presidents of the United States of America"
+    genre_tags: [prog, rock]
+    tempo_bpm_range: [100, 130]
+    time_signature: "4/4"
+    difficulty_tier: apprentice
+    harmonic_language:
+      - pedal_tone
+      - power_chord_motion
+      - blues_inflection
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+    guitar_role: riff_anchor
+    solo_behavior: short_motif
+    piano_contour: rhythmic_syllables
+    drum_groove: half_time
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_21
+    inspired_by: "Man in the Box — Alice in Chains"
+    genre_tags: [pop, rock]
+    tempo_bpm_range: [100, 130]
+    time_signature: "4/4"
+    difficulty_tier: apprentice
+    harmonic_language:
+      - chromatic_passing
+      - octave_displacement
+    bass_style: walking
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      - gallop_ees
+    guitar_role: rhythm_driver
+    solo_behavior: short_motif
+    piano_contour: chanty_static
+    drum_groove: gallop
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_22
+    inspired_by: "Mountain Song — Jane's Addiction"
+    genre_tags: [garage, punk]
+    tempo_bpm_range: [100, 130]
+    time_signature: "4/4"
+    difficulty_tier: apprentice
+    harmonic_language:
+      - modal_mixture
+      - suspended_resolution
+      - add9
+    bass_style: octave_jumps
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+    guitar_role: riff_anchor
+    solo_behavior: short_motif
+    piano_contour: stepwise_hook
+    drum_groove: gallop
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_23
+    inspired_by: "My Own Worst Enemy — Lit"
+    genre_tags: [grunge, alt]
+    tempo_bpm_range: [100, 130]
+    time_signature: "4/4"
+    difficulty_tier: apprentice
+    harmonic_language:
+      - power_chord_motion
+      - blues_inflection
+    bass_style: gallop
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+    guitar_role: texture_layer
+    solo_behavior: short_motif
+    piano_contour: octave_leaps
+    drum_groove: tom_heavy
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_24
+    inspired_by: "Nine in the Afternoon — Panic! at the Disco"
+    genre_tags: [rock, classic]
+    tempo_bpm_range: [100, 130]
+    time_signature: "3/4"
+    difficulty_tier: apprentice
+    harmonic_language:
+      - octave_displacement
+      - minor_key_tension
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+    guitar_role: call_response
+    solo_behavior: short_motif
+    piano_contour: narrow_range
+    drum_groove: syncopated_kick
+    drum_fill_density: sparse
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_25
+    inspired_by: "Our Truth — Lacuna Coil"
+    genre_tags: [alt, indie]
+    tempo_bpm_range: [105, 140]
+    time_signature: "4/4"
+    difficulty_tier: solid
+    harmonic_language:
+      - suspended_resolution
+      - parallel_motion
+      - chromatic_passing
+    bass_style: riff_based
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+    guitar_role: riff_anchor
+    solo_behavior: pentatonic_burst
+    piano_contour: wide_range
+    drum_groove: open_hat_lift
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_26
+    inspired_by: "Painkiller — Judas Priest"
+    genre_tags: [punk, rock]
+    tempo_bpm_range: [105, 140]
+    time_signature: "4/4"
+    difficulty_tier: solid
+    harmonic_language:
+      - blues_inflection
+      - static_harmony_with_rhythm
+    bass_style: chromatic_walkups
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+    guitar_role: chug_syncopation
+    solo_behavior: pentatonic_burst
+    piano_contour: bluesy_bends_sim
+    drum_groove: ride_bell_drive
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_27
+    inspired_by: "Panic Attack — Dream Theater"
+    genre_tags: [metal, hard]
+    tempo_bpm_range: [105, 140]
+    time_signature: "4/4"
+    difficulty_tier: solid
+    harmonic_language:
+      - minor_key_tension
+      - pedal_tone
+    bass_style: drop_tuning_style
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+    guitar_role: melodic_hook
+    solo_behavior: pentatonic_burst
+    piano_contour: rhythmic_syllables
+    drum_groove: straight_rock
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_28
+    inspired_by: "PDA — Interpol"
+    genre_tags: [prog, rock]
+    tempo_bpm_range: [105, 140]
+    time_signature: "4/4"
+    difficulty_tier: solid
+    harmonic_language:
+      - parallel_motion
+      - chromatic_passing
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      - gallop_ees
+    guitar_role: rhythm_driver
+    solo_behavior: pentatonic_burst
+    piano_contour: chanty_static
+    drum_groove: gallop
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_29
+    inspired_by: "Pinball Wizard — The Who"
+    genre_tags: [pop, rock]
+    tempo_bpm_range: [105, 140]
+    time_signature: "12/8"
+    difficulty_tier: solid
+    harmonic_language:
+      - static_harmony_with_rhythm
+      - modal_mixture
+    bass_style: pedal_drive
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+    guitar_role: riff_anchor
+    solo_behavior: pentatonic_burst
+    piano_contour: stepwise_hook
+    drum_groove: shuffle
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_30
+    inspired_by: "Pump It Up — Elvis Costello"
+    genre_tags: [garage, punk]
+    tempo_bpm_range: [105, 140]
+    time_signature: "4/4"
+    difficulty_tier: solid
+    harmonic_language:
+      - pedal_tone
+      - power_chord_motion
+      - blues_inflection
+    bass_style: walking
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+    guitar_role: riff_anchor
+    solo_behavior: pentatonic_burst
+    piano_contour: octave_leaps
+    drum_groove: shuffle
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_31
+    inspired_by: "Ramblin' Man — The Allman Brothers Band"
+    genre_tags: [grunge, alt]
+    tempo_bpm_range: [105, 140]
+    time_signature: "4/4"
+    difficulty_tier: solid
+    harmonic_language:
+      - chromatic_passing
+      - octave_displacement
+    bass_style: octave_jumps
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+    guitar_role: call_response
+    solo_behavior: pentatonic_burst
+    piano_contour: narrow_range
+    drum_groove: gallop
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_32
+    inspired_by: "Reptilia — The Strokes"
+    genre_tags: [rock, classic]
+    tempo_bpm_range: [105, 140]
+    time_signature: "4/4"
+    difficulty_tier: solid
+    harmonic_language:
+      - modal_mixture
+      - suspended_resolution
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+    guitar_role: arpeggiated_motion
+    solo_behavior: pentatonic_burst
+    piano_contour: wide_range
+    drum_groove: tom_heavy
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_33
+    inspired_by: "Rock 'n Me — Steve Miller Band"
+    genre_tags: [alt, indie]
+    tempo_bpm_range: [105, 140]
+    time_signature: "4/4"
+    difficulty_tier: solid
+    harmonic_language:
+      - power_chord_motion
+      - blues_inflection
+      - maj7
+    bass_style: syncopated_pulse
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+    guitar_role: chug_syncopation
+    solo_behavior: pentatonic_burst
+    piano_contour: bluesy_bends_sim
+    drum_groove: syncopated_kick
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_34
+    inspired_by: "Round and Round — Ratt"
+    genre_tags: [punk, rock]
+    tempo_bpm_range: [105, 140]
+    time_signature: "6/8"
+    difficulty_tier: solid
+    harmonic_language:
+      - octave_displacement
+      - minor_key_tension
+    bass_style: riff_based
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+    guitar_role: melodic_hook
+    solo_behavior: pentatonic_burst
+    piano_contour: rhythmic_syllables
+    drum_groove: shuffle
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_35
+    inspired_by: "Shooting Star — Bad Company"
+    genre_tags: [metal, hard]
+    tempo_bpm_range: [105, 140]
+    time_signature: "4/4"
+    difficulty_tier: solid
+    harmonic_language:
+      - suspended_resolution
+      - parallel_motion
+      - chromatic_passing
+    bass_style: chromatic_walkups
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      - gallop_ees
+    guitar_role: riff_anchor
+    solo_behavior: pentatonic_burst
+    piano_contour: chanty_static
+    drum_groove: gallop
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_36
+    inspired_by: "So What'cha Want — Beastie Boys"
+    genre_tags: [prog, rock]
+    tempo_bpm_range: [105, 140]
+    time_signature: "4/4"
+    difficulty_tier: solid
+    harmonic_language:
+      - blues_inflection
+      - static_harmony_with_rhythm
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+    guitar_role: riff_anchor
+    solo_behavior: pentatonic_burst
+    piano_contour: stepwise_hook
+    drum_groove: straight_rock
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_37
+    inspired_by: "Spirit in the Sky — Norman Greenbaum"
+    genre_tags: [pop, rock]
+    tempo_bpm_range: [105, 140]
+    time_signature: "4/4"
+    difficulty_tier: solid
+    harmonic_language:
+      - minor_key_tension
+      - pedal_tone
+    bass_style: root_only
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+    guitar_role: texture_layer
+    solo_behavior: pentatonic_burst
+    piano_contour: octave_leaps
+    drum_groove: punk_drive
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_38
+    inspired_by: "Supreme Girl — The Sterns"
+    genre_tags: [garage, punk]
+    tempo_bpm_range: [105, 140]
+    time_signature: "4/4"
+    difficulty_tier: solid
+    harmonic_language:
+      - parallel_motion
+      - chromatic_passing
+    bass_style: pedal_drive
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+    guitar_role: call_response
+    solo_behavior: pentatonic_burst
+    piano_contour: narrow_range
+    drum_groove: half_time
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_39
+    inspired_by: "Testify — Rage Against the Machine"
+    genre_tags: [grunge, alt]
+    tempo_bpm_range: [110, 150]
+    time_signature: "3/4"
+    difficulty_tier: skilled
+    harmonic_language:
+      - static_harmony_with_rhythm
+      - modal_mixture
+    bass_style: walking
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+    guitar_role: arpeggiated_motion
+    solo_behavior: modal_run
+    piano_contour: wide_range
+    drum_groove: shuffle
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_40
+    inspired_by: "The Trees — Rush"
+    genre_tags: [rock, classic]
+    tempo_bpm_range: [110, 150]
+    time_signature: "4/4"
+    difficulty_tier: skilled
+    harmonic_language:
+      - pedal_tone
+      - power_chord_motion
+      - blues_inflection
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+    guitar_role: riff_anchor
+    solo_behavior: modal_run
+    piano_contour: bluesy_bends_sim
+    drum_groove: gallop
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_41
+    inspired_by: "Today — The Smashing Pumpkins"
+    genre_tags: [alt, indie]
+    tempo_bpm_range: [110, 150]
+    time_signature: "4/4"
+    difficulty_tier: skilled
+    harmonic_language:
+      - chromatic_passing
+      - octave_displacement
+    bass_style: gallop
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+    guitar_role: melodic_hook
+    solo_behavior: modal_run
+    piano_contour: rhythmic_syllables
+    drum_groove: tom_heavy
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_42
+    inspired_by: "Uncontrollable Urge — Devo"
+    genre_tags: [punk, rock]
+    tempo_bpm_range: [110, 150]
+    time_signature: "4/4"
+    difficulty_tier: skilled
+    harmonic_language:
+      - modal_mixture
+      - suspended_resolution
+    bass_style: syncopated_pulse
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      - gallop_ees
+    guitar_role: rhythm_driver
+    solo_behavior: modal_run
+    piano_contour: chanty_static
+    drum_groove: gallop
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_43
+    inspired_by: "White Wedding (Part 1) — Billy Idol"
+    genre_tags: [metal, hard]
+    tempo_bpm_range: [110, 150]
+    time_signature: "4/4"
+    difficulty_tier: skilled
+    harmonic_language:
+      - power_chord_motion
+      - blues_inflection
+    bass_style: riff_based
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+    guitar_role: riff_anchor
+    solo_behavior: modal_run
+    piano_contour: stepwise_hook
+    drum_groove: open_hat_lift
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_44
+    inspired_by: "Ace of Spades — Motörhead"
+    genre_tags: [prog, rock]
+    tempo_bpm_range: [110, 150]
+    time_signature: "12/8"
+    difficulty_tier: skilled
+    harmonic_language:
+      - octave_displacement
+      - minor_key_tension
+      - m7
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+    guitar_role: texture_layer
+    solo_behavior: modal_run
+    piano_contour: octave_leaps
+    drum_groove: shuffle
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_45
+    inspired_by: "Alabama Getaway — Grateful Dead"
+    genre_tags: [pop, rock]
+    tempo_bpm_range: [110, 150]
+    time_signature: "4/4"
+    difficulty_tier: skilled
+    harmonic_language:
+      - suspended_resolution
+      - parallel_motion
+      - chromatic_passing
+    bass_style: drop_tuning_style
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+    guitar_role: riff_anchor
+    solo_behavior: modal_run
+    piano_contour: narrow_range
+    drum_groove: straight_rock
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_46
+    inspired_by: "Alex Chilton — The Replacements"
+    genre_tags: [garage, punk]
+    tempo_bpm_range: [110, 150]
+    time_signature: "4/4"
+    difficulty_tier: skilled
+    harmonic_language:
+      - blues_inflection
+      - static_harmony_with_rhythm
+    bass_style: root_only
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+    guitar_role: arpeggiated_motion
+    solo_behavior: modal_run
+    piano_contour: wide_range
+    drum_groove: punk_drive
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_47
+    inspired_by: "Girl's Not Grey — AFI"
+    genre_tags: [grunge, alt]
+    tempo_bpm_range: [110, 150]
+    time_signature: "4/4"
+    difficulty_tier: skilled
+    harmonic_language:
+      - minor_key_tension
+      - pedal_tone
+    bass_style: pedal_drive
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+    guitar_role: chug_syncopation
+    solo_behavior: modal_run
+    piano_contour: bluesy_bends_sim
+    drum_groove: half_time
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_48
+    inspired_by: "Rob the Prez-O-Dent — That Handsome Devil"
+    genre_tags: [rock, classic]
+    tempo_bpm_range: [110, 150]
+    time_signature: "4/4"
+    difficulty_tier: skilled
+    harmonic_language:
+      - parallel_motion
+      - chromatic_passing
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+    guitar_role: melodic_hook
+    solo_behavior: modal_run
+    piano_contour: rhythmic_syllables
+    drum_groove: shuffle
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_49
+    inspired_by: "Get Clean — Anarchy Club"
+    genre_tags: [alt, indie]
+    tempo_bpm_range: [110, 150]
+    time_signature: "6/8"
+    difficulty_tier: skilled
+    harmonic_language:
+      - static_harmony_with_rhythm
+      - modal_mixture
+    bass_style: octave_jumps
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      - gallop_ees
+    guitar_role: rhythm_driver
+    solo_behavior: modal_run
+    piano_contour: chanty_static
+    drum_groove: gallop
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_50
+    inspired_by: "Shoulder to the Plow — Breaking Wheel"
+    genre_tags: [punk, rock]
+    tempo_bpm_range: [110, 150]
+    time_signature: "4/4"
+    difficulty_tier: skilled
+    harmonic_language:
+      - pedal_tone
+      - power_chord_motion
+      - blues_inflection
+    bass_style: gallop
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+    guitar_role: riff_anchor
+    solo_behavior: modal_run
+    piano_contour: stepwise_hook
+    drum_groove: tom_heavy
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_51
+    inspired_by: "Let There Be Rock — AC/DC"
+    genre_tags: [metal, hard]
+    tempo_bpm_range: [110, 150]
+    time_signature: "4/4"
+    difficulty_tier: skilled
+    harmonic_language:
+      - chromatic_passing
+      - octave_displacement
+    bass_style: syncopated_pulse
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+    guitar_role: texture_layer
+    solo_behavior: modal_run
+    piano_contour: octave_leaps
+    drum_groove: syncopated_kick
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_52
+    inspired_by: "Livin' on a Prayer — Bon Jovi"
+    genre_tags: [prog, rock]
+    tempo_bpm_range: [110, 150]
+    time_signature: "4/4"
+    difficulty_tier: skilled
+    harmonic_language:
+      - modal_mixture
+      - suspended_resolution
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+    guitar_role: call_response
+    solo_behavior: modal_run
+    piano_contour: narrow_range
+    drum_groove: open_hat_lift
+    drum_fill_density: moderate
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_53
+    inspired_by: "Peace Sells — Megadeth"
+    genre_tags: [pop, rock]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - power_chord_motion
+      - blues_inflection
+    bass_style: chromatic_walkups
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+    guitar_role: arpeggiated_motion
+    solo_behavior: pentatonic_burst
+    piano_contour: wide_range
+    drum_groove: ride_bell_drive
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_54
+    inspired_by: "Supersonic — Oasis"
+    genre_tags: [garage, punk]
+    tempo_bpm_range: [115, 170]
+    time_signature: "3/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - octave_displacement
+      - minor_key_tension
+    bass_style: drop_tuning_style
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+    guitar_role: chug_syncopation
+    solo_behavior: chromatic_flash
+    piano_contour: bluesy_bends_sim
+    drum_groove: straight_rock
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_55
+    inspired_by: "Teen Age Riot — Sonic Youth"
+    genre_tags: [grunge, alt]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - suspended_resolution
+      - parallel_motion
+      - chromatic_passing
+      - dom7
+    bass_style: root_only
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+    guitar_role: riff_anchor
+    solo_behavior: pentatonic_burst
+    piano_contour: rhythmic_syllables
+    drum_groove: punk_drive
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_56
+    inspired_by: "Rebel Girl — Bikini Kill"
+    genre_tags: [rock, classic]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - blues_inflection
+      - static_harmony_with_rhythm
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      - gallop_ees
+    guitar_role: rhythm_driver
+    solo_behavior: chromatic_flash
+    piano_contour: chanty_static
+    drum_groove: gallop
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_57
+    inspired_by: "The Middle — Jimmy Eat World"
+    genre_tags: [alt, indie]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - minor_key_tension
+      - pedal_tone
+    bass_style: walking
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+    guitar_role: riff_anchor
+    solo_behavior: pentatonic_burst
+    piano_contour: stepwise_hook
+    drum_groove: shuffle
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_58
+    inspired_by: "Eye of the Tiger — Survivor"
+    genre_tags: [punk, rock]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - parallel_motion
+      - chromatic_passing
+    bass_style: octave_jumps
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+    guitar_role: texture_layer
+    solo_behavior: chromatic_flash
+    piano_contour: octave_leaps
+    drum_groove: gallop
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_59
+    inspired_by: "Go Your Own Way — Fleetwood Mac"
+    genre_tags: [metal, hard]
+    tempo_bpm_range: [115, 170]
+    time_signature: "12/8"
+    difficulty_tier: hard
+    harmonic_language:
+      - static_harmony_with_rhythm
+      - modal_mixture
+    bass_style: gallop
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+    guitar_role: call_response
+    solo_behavior: pentatonic_burst
+    piano_contour: narrow_range
+    drum_groove: shuffle
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_60
+    inspired_by: "One Way or Another — Blondie"
+    genre_tags: [prog, rock]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - pedal_tone
+      - power_chord_motion
+      - blues_inflection
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+    guitar_role: riff_anchor
+    solo_behavior: chromatic_flash
+    piano_contour: wide_range
+    drum_groove: syncopated_kick
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_61
+    inspired_by: "We Got the Beat — The Go-Go's"
+    genre_tags: [pop, rock]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - chromatic_passing
+      - octave_displacement
+    bass_style: riff_based
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+    guitar_role: chug_syncopation
+    solo_behavior: pentatonic_burst
+    piano_contour: bluesy_bends_sim
+    drum_groove: open_hat_lift
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_62
+    inspired_by: "Should I Stay or Should I Go — The Clash"
+    genre_tags: [garage, punk]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - modal_mixture
+      - suspended_resolution
+    bass_style: chromatic_walkups
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+    guitar_role: melodic_hook
+    solo_behavior: chromatic_flash
+    piano_contour: rhythmic_syllables
+    drum_groove: ride_bell_drive
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_63
+    inspired_by: "Everlong — Foo Fighters"
+    genre_tags: [grunge, alt]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - power_chord_motion
+      - blues_inflection
+    bass_style: drop_tuning_style
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      - gallop_ees
+    guitar_role: rhythm_driver
+    solo_behavior: pentatonic_burst
+    piano_contour: chanty_static
+    drum_groove: gallop
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_64
+    inspired_by: "Carry on Wayward Son — Kansas"
+    genre_tags: [rock, classic]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - octave_displacement
+      - minor_key_tension
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+    guitar_role: riff_anchor
+    solo_behavior: chromatic_flash
+    piano_contour: stepwise_hook
+    drum_groove: punk_drive
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_65
+    inspired_by: "The Spirit of Radio — Rush"
+    genre_tags: [alt, indie]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - suspended_resolution
+      - parallel_motion
+      - chromatic_passing
+    bass_style: pedal_drive
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+    guitar_role: riff_anchor
+    solo_behavior: pentatonic_burst
+    piano_contour: octave_leaps
+    drum_groove: half_time
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_66
+    inspired_by: "Gimme Shelter — The Rolling Stones"
+    genre_tags: [punk, rock]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - blues_inflection
+      - static_harmony_with_rhythm
+      - sus2
+    bass_style: walking
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+    guitar_role: call_response
+    solo_behavior: chromatic_flash
+    piano_contour: narrow_range
+    drum_groove: shuffle
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_67
+    inspired_by: "Roxanne — The Police"
+    genre_tags: [metal, hard]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - minor_key_tension
+      - pedal_tone
+    bass_style: octave_jumps
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+    guitar_role: arpeggiated_motion
+    solo_behavior: pentatonic_burst
+    piano_contour: wide_range
+    drum_groove: gallop
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_68
+    inspired_by: "Holiday in Cambodia — Dead Kennedys"
+    genre_tags: [prog, rock]
+    tempo_bpm_range: [115, 170]
+    time_signature: "4/4"
+    difficulty_tier: hard
+    harmonic_language:
+      - parallel_motion
+      - chromatic_passing
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+    guitar_role: chug_syncopation
+    solo_behavior: chromatic_flash
+    piano_contour: bluesy_bends_sim
+    drum_groove: tom_heavy
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_69
+    inspired_by: "Drain You — Nirvana"
+    genre_tags: [pop, rock]
+    tempo_bpm_range: [120, 180]
+    time_signature: "4/4"
+    difficulty_tier: expert
+    harmonic_language:
+      - static_harmony_with_rhythm
+      - modal_mixture
+    bass_style: syncopated_pulse
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+    guitar_role: melodic_hook
+    solo_behavior: rhythmic_noise
+    piano_contour: rhythmic_syllables
+    drum_groove: syncopated_kick
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_70
+    inspired_by: "Hysteria — Muse"
+    genre_tags: [garage, punk]
+    tempo_bpm_range: [120, 180]
+    time_signature: "4/4"
+    difficulty_tier: expert
+    harmonic_language:
+      - pedal_tone
+      - power_chord_motion
+      - blues_inflection
+    bass_style: riff_based
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      - gallop_ees
+    guitar_role: riff_anchor
+    solo_behavior: sustained_bends
+    piano_contour: chanty_static
+    drum_groove: gallop
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_71
+    inspired_by: "Peace of Mind — Boston"
+    genre_tags: [grunge, alt]
+    tempo_bpm_range: [120, 180]
+    time_signature: "4/4"
+    difficulty_tier: expert
+    harmonic_language:
+      - chromatic_passing
+      - octave_displacement
+    bass_style: chromatic_walkups
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+    guitar_role: riff_anchor
+    solo_behavior: rhythmic_noise
+    piano_contour: stepwise_hook
+    drum_groove: ride_bell_drive
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_72
+    inspired_by: "Suffragette City — David Bowie"
+    genre_tags: [rock, classic]
+    tempo_bpm_range: [120, 180]
+    time_signature: "4/4"
+    difficulty_tier: expert
+    harmonic_language:
+      - modal_mixture
+      - suspended_resolution
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+    guitar_role: texture_layer
+    solo_behavior: sustained_bends
+    piano_contour: octave_leaps
+    drum_groove: straight_rock
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_73
+    inspired_by: "Cherub Rock — The Smashing Pumpkins"
+    genre_tags: [alt, indie]
+    tempo_bpm_range: [120, 180]
+    time_signature: "4/4"
+    difficulty_tier: expert
+    harmonic_language:
+      - power_chord_motion
+      - blues_inflection
+    bass_style: root_only
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+    guitar_role: call_response
+    solo_behavior: rhythmic_noise
+    piano_contour: narrow_range
+    drum_groove: punk_drive
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_74
+    inspired_by: "Monkey Wrench — Foo Fighters"
+    genre_tags: [punk, rock]
+    tempo_bpm_range: [120, 180]
+    time_signature: "4/4"
+    difficulty_tier: expert
+    harmonic_language:
+      - octave_displacement
+      - minor_key_tension
+    bass_style: pedal_drive
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+    guitar_role: arpeggiated_motion
+    solo_behavior: sustained_bends
+    piano_contour: wide_range
+    drum_groove: half_time
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_75
+    inspired_by: "Epic — Faith No More"
+    genre_tags: [metal, hard]
+    tempo_bpm_range: [120, 180]
+    time_signature: "4/4"
+    difficulty_tier: expert
+    harmonic_language:
+      - suspended_resolution
+      - parallel_motion
+      - chromatic_passing
+    bass_style: walking
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+    guitar_role: riff_anchor
+    solo_behavior: rhythmic_noise
+    piano_contour: bluesy_bends_sim
+    drum_groove: shuffle
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_76
+    inspired_by: "Sledgehammer — Peter Gabriel"
+    genre_tags: [prog, rock]
+    tempo_bpm_range: [120, 180]
+    time_signature: "4/4"
+    difficulty_tier: expert
+    harmonic_language:
+      - blues_inflection
+      - static_harmony_with_rhythm
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+    guitar_role: melodic_hook
+    solo_behavior: sustained_bends
+    piano_contour: rhythmic_syllables
+    drum_groove: gallop
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_77
+    inspired_by: "Master Exploder — Tenacious D"
+    genre_tags: [pop, rock]
+    tempo_bpm_range: [120, 180]
+    time_signature: "4/4"
+    difficulty_tier: expert
+    harmonic_language:
+      - minor_key_tension
+      - pedal_tone
+      - sus4
+    bass_style: gallop
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      - gallop_ees
+    guitar_role: rhythm_driver
+    solo_behavior: rhythmic_noise
+    piano_contour: chanty_static
+    drum_groove: gallop
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_78
+    inspired_by: "Time Is Running Out — Muse"
+    genre_tags: [garage, punk]
+    tempo_bpm_range: [120, 180]
+    time_signature: "4/4"
+    difficulty_tier: expert
+    harmonic_language:
+      - parallel_motion
+      - chromatic_passing
+    bass_style: syncopated_pulse
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+    guitar_role: riff_anchor
+    solo_behavior: sustained_bends
+    piano_contour: stepwise_hook
+    drum_groove: syncopated_kick
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_79
+    inspired_by: "Sabotage — Beastie Boys"
+    genre_tags: [grunge, alt]
+    tempo_bpm_range: [130, 200]
+    time_signature: "4/4"
+    difficulty_tier: nightmare
+    harmonic_language:
+      - static_harmony_with_rhythm
+      - modal_mixture
+    bass_style: riff_based
+    bass_rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+    guitar_role: texture_layer
+    solo_behavior: modal_run
+    piano_contour: octave_leaps
+    drum_groove: open_hat_lift
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_80
+    inspired_by: "American Woman — The Guess Who"
+    genre_tags: [rock, classic]
+    tempo_bpm_range: [130, 200]
+    time_signature: "4/4"
+    difficulty_tier: nightmare
+    harmonic_language:
+      - pedal_tone
+      - power_chord_motion
+      - blues_inflection
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - pickup_notes
+      - dotted_push
+    guitar_role: riff_anchor
+    solo_behavior: chromatic_flash
+    piano_contour: narrow_range
+    drum_groove: ride_bell_drive
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_81
+    inspired_by: "Shackler's Revenge — Guns N' Roses"
+    genre_tags: [alt, indie]
+    tempo_bpm_range: [130, 200]
+    time_signature: "4/4"
+    difficulty_tier: nightmare
+    harmonic_language:
+      - chromatic_passing
+      - octave_displacement
+    bass_style: drop_tuning_style
+    bass_rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+    guitar_role: arpeggiated_motion
+    solo_behavior: modal_run
+    piano_contour: wide_range
+    drum_groove: straight_rock
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_82
+    inspired_by: "In Bloom — Nirvana"
+    genre_tags: [punk, rock]
+    tempo_bpm_range: [130, 200]
+    time_signature: "4/4"
+    difficulty_tier: nightmare
+    harmonic_language:
+      - modal_mixture
+      - suspended_resolution
+    bass_style: root_only
+    bass_rhythm_traits:
+      - dotted_push
+      - straight_8ths
+    guitar_role: chug_syncopation
+    solo_behavior: chromatic_flash
+    piano_contour: bluesy_bends_sim
+    drum_groove: punk_drive
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_83
+    inspired_by: "Mississippi Queen — Mountain"
+    genre_tags: [metal, hard]
+    tempo_bpm_range: [130, 200]
+    time_signature: "4/4"
+    difficulty_tier: nightmare
+    harmonic_language:
+      - power_chord_motion
+      - blues_inflection
+    bass_style: pedal_drive
+    bass_rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+    guitar_role: melodic_hook
+    solo_behavior: modal_run
+    piano_contour: rhythmic_syllables
+    drum_groove: half_time
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
+  - id: rb2_84
+    inspired_by: "Psycho Killer — Talking Heads"
+    genre_tags: [prog, rock]
+    tempo_bpm_range: [130, 200]
+    time_signature: "4/4"
+    difficulty_tier: nightmare
+    harmonic_language:
+      - octave_displacement
+      - minor_key_tension
+    bass_style: melodic_counterline
+    bass_rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      - gallop_ees
+    guitar_role: rhythm_driver
+    solo_behavior: chromatic_flash
+    piano_contour: chanty_static
+    drum_groove: gallop
+    drum_fill_density: frequent
+    structure_template:
+      - intro
+      - verse
+      - chorus
+      - verse
+      - chorus
+      - bridge_or_solo
+      - chorus
+      - outro
+    variation_rules:
+      - dynamic_dropouts
+      - register_shifts
+      - rhythmic_displacement
+      - call_and_response
+      - breakdown_section
