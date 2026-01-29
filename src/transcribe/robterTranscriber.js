@@ -1,0 +1,308 @@
+import { quantizeNotes, buildTiming, buildSectionsFromDuration, estimateDifficulty } from '../gameplay/eventTrack.js';
+
+const NOTE_LANES = ['X', 'Y', 'A', 'B'];
+const NOTE_INPUTS = [
+  { button: 'A', base: 1, passing: 2 },
+  { button: 'X', base: 3, passing: 4 },
+  { button: 'Y', base: 5, passing: 6 },
+  { button: 'B', base: 8, passing: 7 }
+];
+
+const CHORD_INPUTS = {
+  power: { button: 'B', modifiers: { lb: false, dleft: false } },
+  triad: { button: 'A', modifiers: { lb: false, dleft: false } },
+  'triad-inv1': { button: 'X', modifiers: { lb: false, dleft: false } },
+  'triad-inv2': { button: 'Y', modifiers: { lb: false, dleft: false } },
+  sus2: { button: 'A', modifiers: { lb: true, dleft: false } },
+  sus4: { button: 'X', modifiers: { lb: true, dleft: false } },
+  seventh: { button: 'Y', modifiers: { lb: true, dleft: false } },
+  add9: { button: 'B', modifiers: { lb: true, dleft: false } },
+  dim: { button: 'A', modifiers: { lb: false, dleft: true } },
+  aug: { button: 'Y', modifiers: { lb: false, dleft: true } }
+};
+
+const SCALE_STEPS = {
+  major: [0, 2, 4, 5, 7, 9, 11],
+  minor: [0, 2, 3, 5, 7, 8, 10]
+};
+
+const PITCH_CLASS_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+const MAJOR_PROFILE = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88];
+const MINOR_PROFILE = [6.33, 2.68, 3.52, 5.38, 2.6, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17];
+
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+const pitchClassFromLabel = (label) => {
+  const normalized = String(label || '').replace(/\s+/g, '');
+  if (!normalized) return 0;
+  const match = normalized.match(/^([A-Ga-g])([#b]?)/);
+  if (!match) return 0;
+  const baseMap = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+  const base = baseMap[match[1].toUpperCase()] ?? 0;
+  const accidental = match[2] === '#' ? 1 : match[2] === 'b' ? -1 : 0;
+  return (base + accidental + 12) % 12;
+};
+
+const detectKeyFromHistogram = (histogram) => {
+  const scoreFor = (profile, tonic) => {
+    return profile.reduce((sum, value, index) => {
+      const pc = (index + tonic) % 12;
+      return sum + value * (histogram[pc] || 0);
+    }, 0);
+  };
+  let best = { tonic: 0, mode: 'major', score: -Infinity };
+  for (let tonic = 0; tonic < 12; tonic += 1) {
+    const majorScore = scoreFor(MAJOR_PROFILE, tonic);
+    if (majorScore > best.score) {
+      best = { tonic, mode: 'major', score: majorScore };
+    }
+    const minorScore = scoreFor(MINOR_PROFILE, tonic);
+    if (minorScore > best.score) {
+      best = { tonic, mode: 'minor', score: minorScore };
+    }
+  }
+  return { tonicPitchClass: best.tonic, mode: best.mode };
+};
+
+export const detectKey = ({ keySignature, notes }) => {
+  if (keySignature?.key) {
+    const tonicPitchClass = pitchClassFromLabel(keySignature.key);
+    const mode = keySignature.scale || 'major';
+    return { tonicPitchClass, mode };
+  }
+  const histogram = Array(12).fill(0);
+  notes.forEach((note) => {
+    const pc = ((note.midi % 12) + 12) % 12;
+    const duration = Math.max(0.05, note.tEndSec - note.tStartSec);
+    histogram[pc] += duration;
+  });
+  return detectKeyFromHistogram(histogram);
+};
+
+const getScalePitchClasses = (tonicPitchClass, mode) => {
+  const steps = SCALE_STEPS[mode] || SCALE_STEPS.major;
+  return steps.map((step) => (tonicPitchClass + step) % 12);
+};
+
+const mapPitchToScaleDegree = (pitchClass, key) => {
+  const scalePcs = getScalePitchClasses(key.tonicPitchClass, key.mode);
+  const exactIndex = scalePcs.indexOf(pitchClass);
+  if (exactIndex >= 0) {
+    return { degree: exactIndex + 1, chromatic: false, dleft: false, approxLevel: 'exact' };
+  }
+  let best = { degree: 1, diff: Infinity, dleft: false };
+  scalePcs.forEach((pc, index) => {
+    const diff = (pitchClass - pc + 12) % 12;
+    const distance = diff <= 6 ? diff : 12 - diff;
+    if (distance < best.diff) {
+      best = { degree: index + 1, diff: distance, dleft: diff === 1 };
+    }
+  });
+  return {
+    degree: best.degree,
+    chromatic: true,
+    dleft: best.dleft,
+    approxLevel: best.dleft ? 'chromatic-shift' : 'diatonic-snap'
+  };
+};
+
+const mapDegreeToNoteInput = (degree) => {
+  const baseDegree = degree > 8 ? ((degree - 1) % 7) + 1 : degree;
+  const entry = NOTE_INPUTS.find((item) => item.base === baseDegree || item.passing === baseDegree) || NOTE_INPUTS[0];
+  const modifiers = { lb: entry.passing === baseDegree, dleft: false };
+  return { button: entry.button, modifiers };
+};
+
+const resolveOctaveModifier = ({ midi, degree, key }) => {
+  const steps = SCALE_STEPS[key.mode] || SCALE_STEPS.major;
+  const step = steps[degree - 1] ?? steps[0];
+  const basePitch = 48 + key.tonicPitchClass + step;
+  const octaveDiff = Math.round((midi - basePitch) / 12);
+  const clamped = clamp(octaveDiff, -1, 1);
+  return {
+    octaveUp: clamped > 0,
+    approxLevel: clamped !== octaveDiff ? 'octave-folded' : 'exact'
+  };
+};
+
+const groupNotes = (notes, { clusterWindow = 0.03, arpeggioWindow = 0.2 } = {}) => {
+  const clusters = [];
+  let index = 0;
+  while (index < notes.length) {
+    const anchor = notes[index];
+    const cluster = [anchor];
+    let nextIndex = index + 1;
+    while (nextIndex < notes.length && notes[nextIndex].tStartSec - anchor.tStartSec <= clusterWindow) {
+      cluster.push(notes[nextIndex]);
+      nextIndex += 1;
+    }
+    if (cluster.length === 1) {
+      const arpeggio = [anchor];
+      let lookahead = nextIndex;
+      while (lookahead < notes.length && notes[lookahead].tStartSec - anchor.tStartSec <= arpeggioWindow) {
+        arpeggio.push(notes[lookahead]);
+        lookahead += 1;
+      }
+      if (arpeggio.length >= 3) {
+        clusters.push({ notes: arpeggio, arpeggio: true });
+        index = lookahead;
+        continue;
+      }
+    }
+    clusters.push({ notes: cluster, arpeggio: false });
+    index = nextIndex;
+  }
+  return clusters;
+};
+
+const detectChordType = (pcs) => {
+  const intervals = new Set(pcs.map((pc) => (pc - pcs[0] + 12) % 12));
+  const has = (n) => intervals.has(n);
+  if (has(0) && has(7) && !has(3) && !has(4)) return { chordType: 'power', approx: 'power-chord-fallback' };
+  if (has(0) && has(2) && has(7) && !has(3) && !has(4)) return { chordType: 'sus2', approx: 'simplified' };
+  if (has(0) && has(5) && has(7) && !has(3) && !has(4)) return { chordType: 'sus4', approx: 'simplified' };
+  if (has(0) && has(4) && has(7)) {
+    if (has(2)) return { chordType: 'add9', approx: 'simplified' };
+    if (has(10) || has(11)) return { chordType: 'seventh', approx: 'simplified' };
+    return { chordType: 'triad', approx: 'exact' };
+  }
+  if (has(0) && has(3) && has(7)) {
+    if (has(10) || has(11)) return { chordType: 'seventh', approx: 'simplified' };
+    return { chordType: 'triad', approx: 'simplified' };
+  }
+  if (has(0) && has(3) && has(6)) return { chordType: 'dim', approx: 'simplified' };
+  if (has(0) && has(4) && has(8)) return { chordType: 'aug', approx: 'simplified' };
+  return { chordType: 'power', approx: 'power-chord-fallback' };
+};
+
+const mapDrumPitchToLane = (midi) => {
+  if (midi <= 36) return 0; // kick
+  if (midi <= 40) return 1; // snare
+  if (midi <= 46) return 2; // hats
+  return 3; // cymbals
+};
+
+export const transcribeMidiStem = ({ notes, bpm, keySignature, isDrumStem = false, options = {} }) => {
+  const key = detectKey({ keySignature, notes });
+  const timing = buildTiming(bpm || 120);
+  const quantized = quantizeNotes(notes, bpm || 120, options.quantize);
+  const clusters = groupNotes(quantized, options.grouping);
+  const events = [];
+  let approxCounts = {
+    exact: 0,
+    'diatonic-snap': 0,
+    'chromatic-shift': 0,
+    'power-chord-fallback': 0,
+    'octave-folded': 0,
+    simplified: 0
+  };
+
+  clusters.forEach((cluster) => {
+    const startSec = cluster.notes[0].tStartSec;
+    const endSec = Math.max(...cluster.notes.map((n) => n.tEndSec));
+    const duration = Math.max(0.05, endSec - startSec);
+    const timeBeat = startSec / timing.secondsPerBeat;
+    if (isDrumStem) {
+      const lane = mapDrumPitchToLane(cluster.notes[0].midi);
+      events.push({
+        timeBeat,
+        timeSec: startSec,
+        lane,
+        type: 'DRUM',
+        section: 'song',
+        requiredInput: { mode: 'drum', lane },
+        sustain: duration / timing.secondsPerBeat,
+        originalNotes: cluster.notes.map((note) => note.midi),
+        approxLevel: 'exact',
+        recommendedMode: 'drum'
+      });
+      approxCounts.exact += 1;
+      return;
+    }
+
+    if (cluster.notes.length >= 2 || cluster.arpeggio) {
+      const sorted = [...cluster.notes].sort((a, b) => a.midi - b.midi);
+      const rootPc = ((sorted[0].midi % 12) + 12) % 12;
+      const pcs = Array.from(new Set(sorted.map((note) => ((note.midi % 12) + 12) % 12)))
+        .sort((a, b) => (a - rootPc + 12) % 12 - (b - rootPc + 12) % 12);
+      const chordInfo = detectChordType([rootPc, ...pcs.filter((pc) => pc !== rootPc)]);
+      const degreeInfo = mapPitchToScaleDegree(rootPc, key);
+      const chordType = chordInfo.chordType;
+      const inputMap = CHORD_INPUTS[chordType] || CHORD_INPUTS.triad;
+      const approxLevel = degreeInfo.approxLevel !== 'exact'
+        ? degreeInfo.approxLevel
+        : chordInfo.approx;
+      approxCounts[approxLevel] = (approxCounts[approxLevel] || 0) + 1;
+      events.push({
+        timeBeat,
+        timeSec: startSec,
+        lane: NOTE_LANES.indexOf(inputMap.button),
+        type: 'CHORD',
+        section: 'song',
+        requiredInput: {
+          mode: 'chord',
+          degree: degreeInfo.degree,
+          button: inputMap.button,
+          modifiers: inputMap.modifiers,
+          chordType
+        },
+        sustain: duration / timing.secondsPerBeat,
+        originalNotes: cluster.notes.map((note) => note.midi),
+        approxLevel,
+        recommendedMode: 'chord'
+      });
+      return;
+    }
+
+    const note = cluster.notes[0];
+    const pc = ((note.midi % 12) + 12) % 12;
+    const degreeInfo = mapPitchToScaleDegree(pc, key);
+    const octaveInfo = resolveOctaveModifier({ midi: note.midi, degree: degreeInfo.degree, key });
+    const inputMap = mapDegreeToNoteInput(degreeInfo.degree);
+    const approxLevel = [degreeInfo.approxLevel, octaveInfo.approxLevel].find((entry) => entry !== 'exact') || 'exact';
+    approxCounts[approxLevel] = (approxCounts[approxLevel] || 0) + 1;
+    events.push({
+      timeBeat,
+      timeSec: startSec,
+      lane: NOTE_LANES.indexOf(inputMap.button),
+      type: 'NOTE',
+      section: 'song',
+      requiredInput: {
+        mode: 'note',
+        degree: 1,
+        button: inputMap.button,
+        modifiers: { ...inputMap.modifiers, dleft: degreeInfo.dleft },
+        octaveUp: octaveInfo.octaveUp
+      },
+      sustain: duration / timing.secondsPerBeat,
+      originalNotes: [note.midi],
+      approxLevel,
+      recommendedMode: 'note'
+    });
+  });
+
+  const orderedEvents = events.sort((a, b) => a.timeSec - b.timeSec);
+  const chordEvents = orderedEvents.filter((event) => event.type === 'CHORD').length;
+  const noteEvents = orderedEvents.length - chordEvents;
+  const difficulty = estimateDifficulty({ bpm, events: orderedEvents, chordEvents, noteEvents });
+  const totalDuration = orderedEvents.length ? orderedEvents[orderedEvents.length - 1].timeSec : 0;
+  return {
+    events: orderedEvents,
+    key,
+    timing,
+    stats: {
+      total: orderedEvents.length,
+      chordEvents,
+      noteEvents,
+      approxCounts,
+      difficulty
+    },
+    sections: buildSectionsFromDuration(totalDuration, bpm)
+  };
+};
+
+export const formatKeyLabel = ({ tonicPitchClass, mode }) => {
+  const label = PITCH_CLASS_LABELS[tonicPitchClass] || 'C';
+  return `${label} ${mode === 'minor' ? 'Minor' : 'Major'}`;
+};

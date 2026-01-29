@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "description": "Static Chainsaw Aliens game with optional dev test harness",
   "dependencies": {
+    "@tonejs/midi": "^2.0.28",
+    "jszip": "^3.10.1",
     "soundfont-player": "^0.12.0"
   },
   "devDependencies": {
@@ -12,6 +14,7 @@
   "scripts": {
     "prepare:playwright": "npx playwright install",
     "test:dashboard": "npm run prepare:playwright && node tools/test-runner/run.js",
-    "test:robtersession-songs": "node tools/robtersession/song-generator-harness.js"
+    "test:robtersession-songs": "node tools/robtersession/song-generator-harness.js",
+    "test:robtersession-midi": "node tools/robtersession-midi-tests.js"
   }
 }

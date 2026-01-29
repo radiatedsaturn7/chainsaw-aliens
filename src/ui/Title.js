@@ -211,7 +211,7 @@ export default class Title {
       const label = action === 'campaign'
         ? 'Campaign'
         : action === 'robtersession'
-          ? 'RobterSESSION'
+          ? 'Songs'
         : action === 'endless'
           ? 'Endless Mode'
           : action === 'tools'
