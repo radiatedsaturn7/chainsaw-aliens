@@ -104,11 +104,41 @@ const DEFAULT_SOUND_PROGRAMS = {
 };
 
 const STRUCTURE_PATTERNS = {
-  beginner: ['IVVCCVVCCO', 'IVVCCVVCCCO', 'IVVCCVVCCO'],
-  easy: ['IVVCCVVCCBCCO', 'IVVCCVVCCbCCO', 'IVVCCVVCCO'],
-  mid: ['IVVPCCVVPCcBCCO', 'IVVPCcVVPCcBCCO', 'IVVCCVVCCBCCO'],
-  hard: ['IVVPCcVVPCcBSCCO', 'IVVCCVVCCBSCCO', 'IVVPCcVVPCcBSCCO'],
-  expert: ['IVVPCCVVPCcBSCCO', 'IVVPCCVVPCcBSCCO', 'IVVPCCVVPCcBSCCO']
+  beginner: [
+    'IVVCCVVCCO',
+    'IVVCCVVCCCO',
+    'IVVCCVVCCO',
+    'IVVCCVVCcO',
+    'IVVCCVVCCSO'
+  ],
+  easy: [
+    'IVVCCVVCCBCCO',
+    'IVVCCVVCCbCCO',
+    'IVVCCVVCCO',
+    'IVVPCVVCCBSO',
+    'IVVCCVVCCSCO'
+  ],
+  mid: [
+    'IVVPCCVVPCcBCCO',
+    'IVVPCcVVPCcBCCO',
+    'IVVCCVVCCBCCO',
+    'IVVPCcVVCCBSCCO',
+    'IVVCCVVPCcBSCO'
+  ],
+  hard: [
+    'IVVPCcVVPCcBSCCO',
+    'IVVCCVVCCBSCCO',
+    'IVVPCcVVPCcBSCCO',
+    'IVVPCcVVCCBSCCSO',
+    'IVVPCcVVPCcBSCCOO'
+  ],
+  expert: [
+    'IVVPCCVVPCcBSCCO',
+    'IVVPCCVVPCcBSCCO',
+    'IVVPCCVVPCcBSCCO',
+    'IVVPCCVVPCcBSCCSO',
+    'IVVPCCVVPCcBSCCOOB'
+  ]
 };
 
 const STYLE_PRESETS = {
@@ -136,43 +166,98 @@ const STYLE_PRESETS = {
 
 const PROGRESSION_POOLS = {
   beginner: [
-    [1, 5, 4, 5],
-    [1, 4, 5, 1],
-    [1, 4, 1, 5]
+    { degrees: [1, 5, 4, 5], tags: ['punk', 'rock'], weight: 1.2 },
+    { degrees: [1, 4, 5, 1], tags: ['anthem'], weight: 1.1 },
+    { degrees: [1, 4, 1, 5], tags: ['indie'], weight: 1.0 },
+    { degrees: [1, 5, 6, 4], tags: ['alt', 'rock'], weight: 1.0 },
+    { degrees: [1, 4, 5, 'b7'], tags: ['alt'], weight: 0.9 },
+    { degrees: [1, 5, 4, 1, 1, 5, 4, 5], tags: ['anthem'], weight: 0.8 }
   ],
   easy: [
-    [1, 5, 6, 4],
-    [1, 6, 4, 5],
-    [1, 4, 6, 5]
+    { degrees: [1, 5, 6, 4], tags: ['anthem', 'rock'], weight: 1.2 },
+    { degrees: [1, 6, 4, 5], tags: ['punk'], weight: 1.0 },
+    { degrees: [1, 4, 6, 5], tags: ['indie'], weight: 1.0 },
+    { degrees: [1, 'b7', 4, 1], tags: ['alt'], weight: 0.9 },
+    { degrees: [1, 5, 4, 5, 1, 6, 4, 5], tags: ['anthem'], weight: 0.9 },
+    { degrees: [1, 5, 6, 'b7', 4, 1, 5, 4], tags: ['alt', 'rock'], weight: 0.8 }
   ],
   mid: [
-    [1, 5, 6, 4],
-    [1, 4, 2, 5],
-    [6, 4, 1, 5]
+    { degrees: [1, 5, 6, 4], tags: ['rock'], weight: 1.0 },
+    { degrees: [1, 4, 2, 5], tags: ['anthem'], weight: 1.0 },
+    { degrees: [6, 4, 1, 5], tags: ['punk'], weight: 1.0 },
+    { degrees: [1, 'b7', 4, 1], tags: ['alt'], weight: 0.9 },
+    { degrees: [1, 5, 4, 'b6'], tags: ['alt', 'indie'], weight: 0.8 },
+    { degrees: [1, 5, 6, 4, 2, 5, 1, 5], tags: ['anthem'], weight: 0.9 },
+    { degrees: [6, 4, 1, 5, 6, 'b7', 4, 1], tags: ['alt'], weight: 0.8 }
   ],
   hard: [
-    [1, 4, 2, 5],
-    [6, 4, 1, 5],
-    [1, 5, 6, 4]
+    { degrees: [1, 4, 2, 5], tags: ['rock'], weight: 1.0 },
+    { degrees: [6, 4, 1, 5], tags: ['punk'], weight: 1.0 },
+    { degrees: [1, 5, 6, 4], tags: ['anthem'], weight: 1.0 },
+    { degrees: [1, 'b7', 'b6', 4], tags: ['alt'], weight: 0.9 },
+    { degrees: [1, 5, 4, 'b7'], tags: ['alt', 'indie'], weight: 0.9 },
+    { degrees: [1, 5, 6, 4, 1, 4, 2, 5], tags: ['anthem'], weight: 0.9 },
+    { degrees: [1, 'b7', 4, 1, 6, 4, 1, 5], tags: ['alt'], weight: 0.8 }
   ],
   expert: [
-    [1, 4, 2, 5],
-    [6, 4, 1, 5],
-    [1, 5, 6, 4]
+    { degrees: [1, 4, 2, 5], tags: ['rock'], weight: 1.0 },
+    { degrees: [6, 4, 1, 5], tags: ['punk'], weight: 1.0 },
+    { degrees: [1, 5, 6, 4], tags: ['anthem'], weight: 1.0 },
+    { degrees: [1, 'b7', 'b6', 4], tags: ['alt'], weight: 0.9 },
+    { degrees: [1, 4, 'b7', 5], tags: ['alt', 'indie'], weight: 0.9 },
+    { degrees: [1, 5, 6, 4, 2, 5, 1, 5], tags: ['anthem'], weight: 0.9 },
+    { degrees: [6, 4, 1, 5, 1, 'b7', 4, 1], tags: ['alt'], weight: 0.8 }
   ]
 };
 
 const PRECHORUS_POOL = [
   [2, 4, 5],
   [6, 4, 5],
-  [2, 5, 5]
+  [2, 5, 5],
+  [4, 5, 1, 5],
+  [2, 5, 6, 5]
 ];
 
 const BRIDGE_BORROW_POOL = [
-  ['bVII', 'bVI'],
-  ['bVI', 'bVII'],
-  ['bIII', 'bVII']
+  ['b7', 'b6'],
+  ['b6', 'b7'],
+  ['b3', 'b7'],
+  ['b7', 4, 1],
+  ['b6', 4, 5]
 ];
+
+const SECTION_MOTIF_POOLS = {
+  intro: [
+    { id: 'motif_intro_pulse', type: 'rhythm', tokens: ['q', 'q', 'e', 'e', 'q'] },
+    { id: 'motif_intro_rise', type: 'riff', tokens: ['1e', '2e', '3e', '5e', '6e', '5e'] }
+  ],
+  verse: [
+    { id: 'motif_verse_chug', type: 'rhythm', tokens: ['q', 'q', 'q', 'q'] },
+    { id: 'motif_verse_hook', type: 'riff', tokens: ['1e', '1e', '5e', '6e', '5e', '3e'] },
+    { id: 'motif_verse_sync', type: 'rhythm', tokens: ['q', 'e', 'e', 'q', 'q'] }
+  ],
+  prechorus: [
+    { id: 'motif_pre_swell', type: 'riff', tokens: ['1e', '2e', '4e', '5e', '6e', '5e'] },
+    { id: 'motif_pre_push', type: 'rhythm', tokens: ['q', 'q', 'e', 'e', 'q'] }
+  ],
+  chorus: [
+    { id: 'motif_chorus_anthem', type: 'riff', tokens: ['1e', '5e', '6e', '5e', '4e', '5e'] },
+    { id: 'motif_chorus_drive', type: 'rhythm', tokens: ['q', 'q', 'q', 'q'] },
+    { id: 'motif_chorus_lift', type: 'riff', tokens: ['1e', '3e', '5e', '6e', '8e', '6e'] }
+  ],
+  bridge: [
+    { id: 'motif_bridge_shift', type: 'riff', tokens: ['1e', 'b7e', '6e', '5e', '4e'] },
+    { id: 'motif_bridge_stop', type: 'rhythm', tokens: ['h', 'q', 'q'] }
+  ],
+  solo: [
+    { id: 'motif_solo_run', type: 'riff', tokens: ['1e', '2e', '3e', '5e', '6e', '8e'] },
+    { id: 'motif_solo_skip', type: 'riff', tokens: ['1e', '5e', '3e', '6e', '4e', '8e'] }
+  ],
+  outro: [
+    { id: 'motif_outro_fade', type: 'rhythm', tokens: ['q', 'q', 'h'] },
+    { id: 'motif_outro_hit', type: 'riff', tokens: ['1e', '5e', '1q'] }
+  ]
+};
 
 const CHORD_COLORS = ['sus2', 'sus4', '7', 'add9', 'm7', 'maj7'];
 const NOTE_LANES = ['X', 'Y', 'A', 'B'];
@@ -497,10 +582,25 @@ const degreeToPitchClass = (rootPc, steps, degree) => {
 
 const resolveBorrowedDegree = (degree) => {
   if (typeof degree === 'number') return { degree, accidental: 0 };
-  const match = String(degree).match(/^(b|#)?(\d)$/);
+  const normalized = String(degree).trim();
+  const match = normalized.match(/^(b|#)?(\d|i{1,3}|iv|v|vi{0,2}|vii)$/i);
   if (!match) return { degree: 1, accidental: 0 };
   const accidental = match[1] === 'b' ? -1 : match[1] === '#' ? 1 : 0;
-  return { degree: Number(match[2]), accidental };
+  const value = match[2];
+  if (/^\d$/.test(value)) {
+    return { degree: Number(value), accidental };
+  }
+  const roman = value.toUpperCase();
+  const romanMap = {
+    I: 1,
+    II: 2,
+    III: 3,
+    IV: 4,
+    V: 5,
+    VI: 6,
+    VII: 7
+  };
+  return { degree: romanMap[roman] || 1, accidental };
 };
 
 const buildChordSymbol = ({ root, quality, color, power, inversion, lowerCase }) => {
@@ -663,23 +763,71 @@ const ensureChordColorPresence = ({ song, difficulty }) => {
   bar[0] = `${base}(add9)(${duration})`;
 };
 
+const pickWeightedEntry = (rng, entries) => {
+  if (!entries.length) return null;
+  const totalWeight = entries.reduce((sum, entry) => sum + entry.weight, 0);
+  if (totalWeight <= 0) return entries[0];
+  let roll = rng() * totalWeight;
+  for (const entry of entries) {
+    roll -= entry.weight;
+    if (roll <= 0) return entry;
+  }
+  return entries[entries.length - 1];
+};
+
+const selectProgressionByStyle = (rng, pool, styleTags = []) => {
+  const normalizedTags = styleTags.map((tag) => String(tag).toLowerCase());
+  const weightedPool = pool.map((entry) => {
+    if (Array.isArray(entry)) {
+      return { degrees: entry, weight: 1, tags: [] };
+    }
+    const tags = (entry.tags || []).map((tag) => String(tag).toLowerCase());
+    const matches = tags.filter((tag) => normalizedTags.includes(tag)).length;
+    const baseWeight = entry.weight ?? 1;
+    const weightBoost = matches > 0 ? 1 + matches * 0.35 : 1;
+    return {
+      ...entry,
+      degrees: entry.degrees || entry.progression || [],
+      weight: baseWeight * weightBoost,
+      tags
+    };
+  });
+  const selection = pickWeightedEntry(rng, weightedPool) || weightedPool[0];
+  return selection?.degrees?.length ? selection.degrees : pool[0] || [];
+};
+
+const buildSectionMotifs = ({ rng, structure }) => {
+  const motifs = {};
+  const letters = structure.split('');
+  letters.forEach((letter) => {
+    const sectionName = SECTION_LETTERS[letter.toUpperCase()];
+    if (!sectionName || motifs[sectionName]) return;
+    const pool = SECTION_MOTIF_POOLS[sectionName] || SECTION_MOTIF_POOLS.verse;
+    motifs[sectionName] = pickRandom(rng, pool);
+  });
+  return motifs;
+};
+
 const buildSongSections = ({
   rng,
   structure,
   rootPc,
   mode,
   difficulty,
-  tierLabel
+  tierLabel,
+  styleTags
 }) => {
   const sections = {};
   const allowPower = difficulty <= 3;
   const allowColor = difficulty >= 4;
   const allowInversion = difficulty >= 6;
   const progressionPool = PROGRESSION_POOLS[tierLabel] || PROGRESSION_POOLS.easy;
-  const verseProgression = pickRandom(rng, progressionPool);
-  const chorusProgression = pickRandom(rng, progressionPool);
+  const verseProgression = selectProgressionByStyle(rng, progressionPool, styleTags);
+  const chorusProgression = selectProgressionByStyle(rng, progressionPool, styleTags);
   const prechorusProgression = pickRandom(rng, PRECHORUS_POOL);
-  const bridgeProgression = difficulty >= 8 ? pickRandom(rng, BRIDGE_BORROW_POOL) : pickRandom(rng, progressionPool);
+  const bridgeProgression = difficulty >= 8
+    ? pickRandom(rng, BRIDGE_BORROW_POOL)
+    : selectProgressionByStyle(rng, progressionPool, styleTags);
   const sectionBarCounts = {
     intro: difficulty >= 7 ? 2 : 1,
     verse: 2,
@@ -949,8 +1097,10 @@ export const generateStructuredSong = ({ difficulty = 1, seed, stylePreset } = {
     rootPc,
     mode,
     difficulty: normalizedDifficulty,
-    tierLabel
+    tierLabel,
+    styleTags: style?.tags || []
   });
+  const sectionMotifs = buildSectionMotifs({ rng, structure });
   const preset = selectArrangementPreset(normalizedDifficulty, rng);
   const bassPart = selectBassPatterns(normalizedDifficulty, preset, rng);
   const guitarRole = preset.includes('gtr_chords') ? 'chords' : preset.includes('gtr_arps') ? 'arpeggio' : 'roots';
@@ -985,7 +1135,8 @@ export const generateStructuredSong = ({ difficulty = 1, seed, stylePreset } = {
         ...(pianoRole === 'arpeggio' ? { arp_pattern: selectArpPattern(normalizedDifficulty, rng) } : {})
       }
     },
-    sections
+    sections,
+    section_motifs: sectionMotifs
   };
   ensureChordDiversity({ song, rootPc, mode, rng });
   ensureChordColorPresence({ song, difficulty: normalizedDifficulty });
