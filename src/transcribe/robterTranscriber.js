@@ -167,6 +167,20 @@ const groupNotes = (notes, { clusterWindow = 0.03, arpeggioWindow = 0.2 } = {}) 
   return clusters;
 };
 
+const trimOverlappingNotes = (notes) => {
+  const sorted = notes
+    .map((note) => ({ ...note }))
+    .sort((a, b) => a.tStartSec - b.tStartSec);
+  for (let i = 0; i < sorted.length - 1; i += 1) {
+    const current = sorted[i];
+    const next = sorted[i + 1];
+    if (next.tStartSec < current.tEndSec) {
+      current.tEndSec = Math.max(current.tStartSec, next.tStartSec);
+    }
+  }
+  return sorted;
+};
+
 const detectChordType = (pcs) => {
   if (!pcs.length) return null;
   const intervals = Array.from(new Set(pcs.map((pc) => (pc - pcs[0] + 12) % 12))).sort((a, b) => a - b);
@@ -209,7 +223,8 @@ export const transcribeMidiStem = ({ notes, bpm, keySignature, isDrumStem = fals
   const key = detectKey({ keySignature, notes });
   const timing = buildTiming(bpm || 120);
   const quantized = quantizeNotes(notes, bpm || 120, options.quantize);
-  const clusters = groupNotes(quantized, options.grouping);
+  const processedNotes = options.trimOverlaps ? trimOverlappingNotes(quantized) : quantized;
+  const clusters = groupNotes(processedNotes, options.grouping);
   const events = [];
   let approxCounts = {
     exact: 0,
@@ -277,6 +292,11 @@ export const transcribeMidiStem = ({ notes, bpm, keySignature, isDrumStem = fals
     }
 
     if (cluster.arpeggio) {
+      cluster.notes.forEach((note) => pushNoteEvent(note));
+      return;
+    }
+
+    if (options.forceNoteMode) {
       cluster.notes.forEach((note) => pushNoteEvent(note));
       return;
     }
