@@ -1,0 +1,44 @@
+---
+song:
+  id: "s24"
+  title: "Radio Silence"
+  band: "Black Towers"
+  inspired_by: "Energy of Black Towers"
+  difficulty: 4
+  tier: skilled
+  tempo_bpm: 96
+  time_signature: "4/4"
+  key: "C major"
+  style_tags: ["alt-rock"]
+  structure: "IVVCCVVCCbCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [C2(w)]
+      guitar: [C(w)]
+      piano: [E4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [C2(h), F3(h), F2(h), G3(h)]
+      guitar: [C(h), Bb(h), F(h), C(h)]
+      piano: [E4(h), F4(h), F5(h), E4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    chorus:
+      repeats: 1
+      bass: [F2(h), G3(h), Bb2(w)]
+      guitar: [F(h), C(h), Bb(w)]
+      piano: [A4(h), G4(h), A#5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [Eb2(e), C3(e), C2(e), F3(e), Eb2(e), C3(e), C2(e), F3(e)]
+      guitar: [eb(e), f(e), c(e), bb(e), eb(e), f(e), c(e), bb(e)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    outro:
+      repeats: 1
+      bass: [C2(w)]
+      guitar: [C(w)]
+      piano: [E4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

@@ -1,0 +1,50 @@
+---
+song:
+  id: "s20"
+  title: "Rooftop Relay"
+  band: "Signal Run"
+  inspired_by: "Energy of Signal Run"
+  difficulty: 4
+  tier: skilled
+  tempo_bpm: 124
+  time_signature: "4/4"
+  key: "A major"
+  style_tags: ["pop-rock"]
+  structure: "IVVPccVVPccBccO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [A2(q), B3(q), F#2(h)]
+      guitar: [A(q), E(q), F#m(h)]
+      piano: [C#4(q), B4(q), F#5(h)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [A2(q), B3(q), F#2(h), A3(h), E2(h)]
+      guitar: [A(q), E(q), F#m(h), D(h), E(h)]
+      piano: [C#4(q), B4(q), F#5(h), F#4(h), B4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    prechorus:
+      repeats: 1
+      bass: [B2(q), A3(q), E2(h)]
+      guitar: [Bm(q), D(q), E(h)]
+      piano: [D4(q), A4(q), E5(h)]
+      drums: [KICK(q), HAT_O(e), HAT_O(e), SNARE(q), KICK(e), HAT_O(e)]
+    chorus:
+      repeats: 1
+      bass: [A2(h), A3(h), E2(w)]
+      guitar: [A(h), Dsus2(h), E(w)]
+      piano: [C#4(h), A4(h), E5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [A2(e), B3(e), F#2(e), A3(e), A2(e), B3(e), F#2(e), A3(e)]
+      guitar: [a(e), e(e), f#m(e), d(e), a(e), e(e), f#m(e), d(e)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    outro:
+      repeats: 1
+      bass: [E2(w)]
+      guitar: [E(w)]
+      piano: [G#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

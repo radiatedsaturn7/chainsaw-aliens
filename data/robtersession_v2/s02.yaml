@@ -1,0 +1,38 @@
+---
+song:
+  id: "s02"
+  title: "Static Shoes"
+  band: "Alley Radios"
+  inspired_by: "Energy of Alley Radios"
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 122
+  time_signature: "4/4"
+  key: "C major"
+  style_tags: ["punk"]
+  structure: "IVVCCVVCCCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [C2(q), D3(q), C2(q), D3(q)]
+      guitar: [C5(q), G5(q), C5(q), G5(q)]
+      piano: [E4(q), D4(q), C5(q), B4(q)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [C2(q), D3(q), C2(q), D3(q), C2(q), D3(q), C2(q), D3(q)]
+      guitar: [C5(q), G5(q), C5(q), G5(q), C5(q), G5(q), C5(q), G5(q)]
+      piano: [E4(q), D4(q), C5(q), B4(q), G4(q), G5(q), E4(q), D4(q)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    chorus:
+      repeats: 1
+      bass: [F2(h), D3(h), C2(w)]
+      guitar: [F5(h), G5(h), C5(w)]
+      piano: [A4(h), D4(h), C5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    outro:
+      repeats: 1
+      bass: [C2(w)]
+      guitar: [C5(w)]
+      piano: [E4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

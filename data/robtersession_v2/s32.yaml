@@ -1,0 +1,56 @@
+---
+song:
+  id: "s32"
+  title: "Signal in the Snow"
+  band: "Northbound"
+  inspired_by: "Energy of Northbound"
+  difficulty: 5
+  tier: hard
+  tempo_bpm: 100
+  time_signature: "4/4"
+  key: "G major"
+  style_tags: ["anthem-rock"]
+  structure: "IVVPCCVVPCCbSCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [G2(w)]
+      guitar: [G(w)]
+      piano: [B4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [G2(h), A3(h), E2(h), G3(h)]
+      guitar: [G(h), D(h), Em(h), C(h)]
+      piano: [B4(h), A4(h), E5(h), E4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    prechorus:
+      repeats: 1
+      bass: [A2(q), G3(q), D2(h)]
+      guitar: [Am(q), C(q), D(h)]
+      piano: [C4(q), G4(q), D5(h)]
+      drums: [KICK(q), HAT_O(e), HAT_O(e), SNARE(q), KICK(e), HAT_O(e)]
+    chorus:
+      repeats: 1
+      bass: [G2(h), G3(h), D2(w)]
+      guitar: [G(add9)(h), C(h), D(w)]
+      piano: [B4(h), G4(h), D5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [Eb2(e), C3(e), G2(e), A3(e), Eb2(e), C3(e), G2(e), A3(e)]
+      guitar: [eb(e), f(e), g(e), d(e), eb(e), f(e), g(e), d(e)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    solo:
+      repeats: 1
+      bass: [G2(q), G3(q), D2(q), D3(q)]
+      guitar: [G(q), C(q), D(q), G(q)]
+      piano: []
+      drums: [KICK(e), RIDE(e), KICK(e), SNARE(e), TOM_M(q), CRASH(q)]
+    outro:
+      repeats: 1
+      bass: [G2(w)]
+      guitar: [G(w)]
+      piano: [B4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

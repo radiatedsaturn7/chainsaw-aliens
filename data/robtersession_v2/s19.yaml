@@ -1,0 +1,38 @@
+---
+song:
+  id: "s19"
+  title: "Faded Poster"
+  band: "Basement Parade"
+  inspired_by: "Energy of Basement Parade"
+  difficulty: 4
+  tier: skilled
+  tempo_bpm: 108
+  time_signature: "4/4"
+  key: "G major"
+  style_tags: ["indie"]
+  structure: "IVVCCVVCCCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [G2(q), A3(q), E2(h)]
+      guitar: [G(q), D/F#(q), Em(h)]
+      piano: [B4(q), A4(q), E5(h)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [G2(q), A3(q), E2(h), G3(h), D2(h)]
+      guitar: [G(q), D/F#(q), Em(h), C(h), D(h)]
+      piano: [B4(q), A4(q), E5(h), E4(h), A4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    chorus:
+      repeats: 1
+      bass: [G2(h), G3(h), D2(w)]
+      guitar: [G(add9)(h), C(h), D(w)]
+      piano: [B4(h), G4(h), D5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    outro:
+      repeats: 1
+      bass: [G2(w)]
+      guitar: [G(w)]
+      piano: [B4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

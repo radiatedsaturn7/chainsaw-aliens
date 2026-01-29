@@ -1,0 +1,50 @@
+---
+song:
+  id: "s23"
+  title: "Ashfall Parade"
+  band: "Iron Youth"
+  inspired_by: "Energy of Iron Youth"
+  difficulty: 4
+  tier: skilled
+  tempo_bpm: 110
+  time_signature: "4/4"
+  key: "A major"
+  style_tags: ["alt-rock"]
+  structure: "IVVPccVVPccBccO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [A2(q), D3(q), D2(h)]
+      guitar: [A(q), G(q), D(h)]
+      piano: [C#4(q), D4(q), D5(h)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [A2(q), D3(q), D2(h), E3(w)]
+      guitar: [A(q), G(q), D(h), A(w)]
+      piano: [C#4(q), D4(q), D5(h), C#4(w)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    prechorus:
+      repeats: 1
+      bass: [B2(q), A3(q), E2(h)]
+      guitar: [Bm(q), D(q), E(h)]
+      piano: [D4(q), A4(q), E5(h)]
+      drums: [KICK(q), HAT_O(e), HAT_O(e), SNARE(q), KICK(e), HAT_O(e)]
+    chorus:
+      repeats: 1
+      bass: [D2(h), E3(h), G2(w)]
+      guitar: [D(h), A(h), G(w)]
+      piano: [F#4(h), E4(h), G5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [Bb2(h), D3(h)]
+      guitar: [Bb(h), G(h)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    outro:
+      repeats: 1
+      bass: [G2(w)]
+      guitar: [G(w)]
+      piano: [B4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

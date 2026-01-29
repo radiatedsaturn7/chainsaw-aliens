@@ -1,0 +1,44 @@
+---
+song:
+  id: "s04"
+  title: "Cheap Neon"
+  band: "Weekend Static"
+  inspired_by: "Energy of Weekend Static"
+  difficulty: 2
+  tier: apprentice
+  tempo_bpm: 116
+  time_signature: "4/4"
+  key: "E major"
+  style_tags: ["alt-rock"]
+  structure: "IVVCCVVCCbCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [E2(q), F#3(q), A2(h)]
+      guitar: [E5(q), B5(q), A5(h)]
+      piano: [G#4(q), F#4(q), A5(h)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [E2(q), F#3(q), A2(h), B3(q), B2(q), E3(h)]
+      guitar: [E5(q), B5(q), A5(h), E5(q), B5(q), A5(h)]
+      piano: [G#4(q), F#4(q), A5(h), G#4(q), F#4(q), A5(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    chorus:
+      repeats: 1
+      bass: [A2(q), F#3(q), E2(h), B3(w)]
+      guitar: [A5(q), B5(q), E5(h), E5(w)]
+      piano: [C#4(q), F#4(q), E5(h), G#4(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [E2(e), F#3(e), A2(e), F#3(e), E2(e), F#3(e), A2(e), F#3(e)]
+      guitar: [e(e), b(e), a(e), b(e), e(e), b(e), a(e), b(e)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    outro:
+      repeats: 1
+      bass: [E2(w)]
+      guitar: [E5(w)]
+      piano: [G#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

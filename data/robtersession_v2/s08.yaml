@@ -1,0 +1,44 @@
+---
+song:
+  id: "s08"
+  title: "Parking Lot Lights"
+  band: "Moon Static"
+  inspired_by: "Energy of Moon Static"
+  difficulty: 2
+  tier: apprentice
+  tempo_bpm: 106
+  time_signature: "4/4"
+  key: "D major"
+  style_tags: ["alt-rock"]
+  structure: "IVVCCVVCCBCCO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [D2(w)]
+      guitar: [D(w)]
+      piano: [F#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [D2(h), E3(h), B2(h), D3(h)]
+      guitar: [D(h), A(h), Bm(h), G(h)]
+      piano: [F#4(h), E4(h), B5(h), B4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    chorus:
+      repeats: 1
+      bass: [G2(h), E3(h), D2(w)]
+      guitar: [G(h), A(h), D(w)]
+      piano: [B4(h), E4(h), D5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [B2(q), D3(q), D2(h)]
+      guitar: [Bm(q), G(q), D(h)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    outro:
+      repeats: 1
+      bass: [D2(w)]
+      guitar: [D(w)]
+      piano: [F#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

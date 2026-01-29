@@ -1,0 +1,38 @@
+---
+song:
+  id: "s06"
+  title: "Polaroid Heart"
+  band: "Tape Fires"
+  inspired_by: "Energy of Tape Fires"
+  difficulty: 2
+  tier: apprentice
+  tempo_bpm: 100
+  time_signature: "4/4"
+  key: "G major"
+  style_tags: ["radio-rock"]
+  structure: "IVVCCVVCCCCo"
+  sections:
+    intro:
+      repeats: 1
+      bass: [G2(w)]
+      guitar: [G(w)]
+      piano: [B4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [G2(h), A3(h), E2(h), G3(h)]
+      guitar: [G(h), D(h), Em(h), C(h)]
+      piano: [B4(h), A4(h), E5(h), E4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    chorus:
+      repeats: 1
+      bass: [C2(h), A3(h), G2(w)]
+      guitar: [C(h), D(h), G(w)]
+      piano: [E4(h), A4(h), G5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    outro:
+      repeats: 1
+      bass: [G2(e), A3(e), B2(e), A3(e), G2(e), A3(e), B2(e), A3(e)]
+      guitar: [g(e), d(e), b(e), d(e), g(e), d(e), b(e), d(e)]
+      piano: [B4(e), A4(e), B5(e), F#4(e), D4(e), D5(e), D#4(e), A4(e)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]

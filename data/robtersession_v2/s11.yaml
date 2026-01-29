@@ -1,0 +1,50 @@
+---
+song:
+  id: "s11"
+  title: "Night Arcade"
+  band: "Neon Saints"
+  inspired_by: "Energy of Neon Saints"
+  difficulty: 3
+  tier: solid
+  tempo_bpm: 118
+  time_signature: "4/4"
+  key: "D major"
+  style_tags: ["indie", "rock"]
+  structure: "IVVPccVVPccBccO"
+  sections:
+    intro:
+      repeats: 1
+      bass: [D2(w)]
+      guitar: [D(w)]
+      piano: [F#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), HAT_C(e), HAT_C(e)]
+    verse:
+      repeats: 1
+      bass: [D2(h), E3(h), B2(h), D3(h)]
+      guitar: [D(h), A/C#(h), Bm(h), G(h)]
+      piano: [F#4(h), E4(h), B5(h), B4(h)]
+      drums: [KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e), KICK(e), HAT_C(e), KICK(e), SNARE(e), HAT_C(e), KICK(e), HAT_C(e), SNARE(e)]
+    prechorus:
+      repeats: 1
+      bass: [E2(q), D3(q), A2(h)]
+      guitar: [Em(q), G(q), A(h)]
+      piano: [G4(q), D4(q), A5(h)]
+      drums: [KICK(q), HAT_O(e), HAT_O(e), SNARE(q), KICK(e), HAT_O(e)]
+    chorus:
+      repeats: 1
+      bass: [G2(h), E3(h), D2(w)]
+      guitar: [G(h), A(h), D(w)]
+      piano: [B4(h), E4(h), D5(w)]
+      drums: [CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e), CRASH(q), KICK(e), KICK(e), SNARE(q), KICK(e), HAT_C(e)]
+    bridge:
+      repeats: 1
+      bass: [E2(e), E3(e), B2(e), D3(e), E2(e), E3(e), B2(e), D3(e)]
+      guitar: [e(e), a/c#(e), bm(e), g(e), e(e), a/c#(e), bm(e), g(e)]
+      piano: []
+      drums: [KICK(q), RIDE(q), SNARE(h)]
+    outro:
+      repeats: 1
+      bass: [D2(w)]
+      guitar: [D(w)]
+      piano: [F#4(w)]
+      drums: [KICK(q), HAT_C(e), HAT_C(e), SNARE(q), KICK(q)]
