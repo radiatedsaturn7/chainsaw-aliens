@@ -1,0 +1,7445 @@
+setlist_version: 1
+generated_at: '2026-01-29T04:18:45.543931+00:00'
+definitions:
+  duration_tokens:
+    w: 4
+    h: 2
+    q: 1
+    e: 0.5
+  structure_letters:
+    I: intro
+    V: verse
+    P: prechorus
+    C: chorus
+    B: bridge
+    S: solo
+    O: outro
+  articulation:
+    uppercase: strum
+    lowercase: arpeggio
+  required_chord_types:
+  - sus2
+  - sus4
+  - '7'
+  - add9
+  - m7
+  - maj7
+  patterns_source: data/robtersession_patterns.yaml
+  custom_basslines:
+  - id: BL_GALLOP_QEE
+    tokens:
+    - 1q
+    - 1e
+    - 1e
+    - 5q
+    - 5e
+    - 5e
+  - id: BL_GALLOP_EEQ
+    tokens:
+    - 1e
+    - 1e
+    - 1q
+    - 5e
+    - 5e
+    - 5q
+songs:
+- id: rb2_01
+  title: RobterSESSION RB2_01
+  band: RobterSESSION DNA
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 101
+  time_signature: 4/4
+  key: D# major
+  style_tags:
+  - alt
+  - indie
+  structure: IVCVCBCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: root_only
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      default_pattern: BL_ROOT_HH
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: riff_anchor
+      solo_behavior: none
+      rhythm_cell: q-e-e
+    piano:
+      contour: stepwise_hook
+      role: vocals
+      arp_pattern: ARP_153_8
+    drums:
+      groove: punk_drive
+      fill_density: sparse
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A#maj7(h)
+        - Gm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - D#(q)
+        - E(q)
+        - G#(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - G#(q)
+        - D#(q)
+        - A#(h)
+    bridge:
+    - repeats: 2
+      bars:
+      - - Fm(q)
+        - E(e)
+        - A#(e)
+        - Fm(q)
+        - E(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - D#(h)
+        - G#(h)
+- id: rb2_02
+  title: RobterSESSION RB2_02
+  band: RobterSESSION DNA
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 93
+  time_signature: 4/4
+  key: C# major
+  style_tags:
+  - punk
+  - rock
+  structure: IVCVCBCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: pedal_drive
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      default_pattern: BL_ROOT_W
+      section_overrides: {}
+    guitar:
+      role: texture_layer
+      solo_behavior: none
+      rhythm_cell: q-q
+    piano:
+      contour: octave_leaps
+      role: vocals
+      arp_pattern: ARP_1358
+    drums:
+      groove: half_time
+      fill_density: sparse
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C#sus4(h)
+        - A#sus4(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A#m(q)
+        - F#(q)
+        - C#(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D#m(q)
+        - G#(q)
+        - C#(h)
+    bridge:
+    - repeats: 2
+      bars:
+      - - A#m(q)
+        - D#m(e)
+        - F#(e)
+        - A#m(q)
+        - D#m(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A#m(h)
+        - C#(h)
+- id: rb2_03
+  title: RobterSESSION RB2_03
+  band: RobterSESSION DNA
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 113
+  time_signature: 4/4
+  key: G minor
+  style_tags:
+  - metal
+  - hard
+  structure: IVCVCBCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: walking
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      default_pattern: BL_R235_8
+      section_overrides: {}
+    guitar:
+      role: call_response
+      solo_behavior: none
+      rhythm_cell: q-q
+    piano:
+      contour: narrow_range
+      role: vocals
+      arp_pattern: ARP_PEDAL_R
+    drums:
+      groove: shuffle
+      fill_density: sparse
+      kick_pattern: K--K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - G7(h)
+        - D#5(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - D#(q)
+        - Cm(q)
+        - Gm(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - Dm(q)
+        - A#(h)
+    bridge:
+    - repeats: 2
+      bars:
+      - - D#(q)
+        - Adim(e)
+        - Cm(e)
+        - D#(q)
+        - Adim(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Gm(h)
+        - Cm(h)
+- id: rb2_04
+  title: RobterSESSION RB2_04
+  band: RobterSESSION DNA
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 101
+  time_signature: 6/8
+  key: D minor
+  style_tags:
+  - prog
+  - rock
+  structure: IVCVCBCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      default_pattern: BL_R24578_8
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: arpeggiated_motion
+      solo_behavior: none
+      rhythm_cell: q-q
+    piano:
+      contour: wide_range
+      role: vocals
+      arp_pattern: ARP_M7
+    drums:
+      groove: shuffle
+      fill_density: sparse
+      kick_pattern: K--K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Dm(h)
+        - Gm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A#(q)
+        - Gm(q)
+        - Dm(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Dm(q)
+        - Am(q)
+        - F(h)
+    bridge:
+    - repeats: 2
+      bars:
+      - - Edim(q)
+        - A#(e)
+        - Am(e)
+        - Edim(q)
+        - A#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A#(h)
+        - Dm(h)
+- id: rb2_05
+  title: RobterSESSION RB2_05
+  band: RobterSESSION DNA
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 95
+  time_signature: 4/4
+  key: C major
+  style_tags:
+  - pop
+  - rock
+  structure: IVCVCBCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: gallop
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      default_pattern: BL_GALLOP_QEE
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: none
+      rhythm_cell: q-e-e
+    piano:
+      contour: bluesy_bends_sim
+      role: vocals
+      arp_pattern: ARP_DOM7
+    drums:
+      groove: tom_heavy
+      fill_density: sparse
+      kick_pattern: KTTK
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - G(h)
+        - Esus4(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - C(q)
+        - C#(q)
+        - F(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - F(q)
+        - C(q)
+        - G(h)
+    bridge:
+    - repeats: 2
+      bars:
+      - - Em(q)
+        - C#(e)
+        - Dm(e)
+        - Em(q)
+        - C#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - C(h)
+        - F(h)
+- id: rb2_06
+  title: RobterSESSION RB2_06
+  band: RobterSESSION DNA
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 94
+  time_signature: 4/4
+  key: D minor
+  style_tags:
+  - garage
+  - punk
+  structure: IVCVCBCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: syncopated_pulse
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      default_pattern: BL_FILL_PUSH
+      section_overrides: {}
+    guitar:
+      role: melodic_hook
+      solo_behavior: none
+      rhythm_cell: q-q
+    piano:
+      contour: rhythmic_syllables
+      role: vocals
+      arp_pattern: ARP_SYNC_B
+    drums:
+      groove: syncopated_kick
+      fill_density: sparse
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D7(h)
+        - G7(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Dm(q)
+        - Dm(q)
+        - Dm(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Edim(q)
+        - Am(q)
+        - Dm(h)
+    bridge:
+    - repeats: 2
+      bars:
+      - - A#(q)
+        - Edim(e)
+        - Gm(e)
+        - A#(q)
+        - Edim(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A#(h)
+        - Dm(h)
+- id: rb2_07
+  title: RobterSESSION RB2_07
+  band: RobterSESSION DNA
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 103
+  time_signature: 4/4
+  key: G minor
+  style_tags:
+  - grunge
+  - alt
+  structure: IVCVCBCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: riff_based
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      - gallop_ees
+      default_pattern: BL_R5_8_LASTQ
+      section_overrides: {}
+    guitar:
+      role: rhythm_driver
+      solo_behavior: none
+      rhythm_cell: q-q
+    piano:
+      contour: chanty_static
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: gallop
+      fill_density: sparse
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Gm(h)
+        - Cm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - Cm(q)
+        - Adim(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Adim(q)
+        - Dm(q)
+        - Gm(h)
+    bridge:
+    - repeats: 2
+      bars:
+      - - Adim(q)
+        - D#(e)
+        - Dm(e)
+        - Adim(q)
+        - D#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Dm(h)
+        - Gm(h)
+- id: rb2_08
+  title: RobterSESSION RB2_08
+  band: RobterSESSION DNA
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 99
+  time_signature: 4/4
+  key: B major
+  style_tags:
+  - rock
+  - classic
+  structure: IVCVCBCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      default_pattern: BL_R24578_8
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: none
+      rhythm_cell: q-e-e
+    piano:
+      contour: stepwise_hook
+      role: vocals
+      arp_pattern: ARP_153_8
+    drums:
+      groove: ride_bell_drive
+      fill_density: sparse
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - B(h)
+        - G#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - B(q)
+        - C(q)
+        - C#m(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - B(q)
+        - F#(h)
+    bridge:
+    - repeats: 2
+      bars:
+      - - C#m(q)
+        - C(e)
+        - F#(e)
+        - C#m(q)
+        - C(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - B(h)
+        - E(h)
+- id: rb2_09
+  title: RobterSESSION RB2_09
+  band: RobterSESSION DNA
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 102
+  time_signature: 3/4
+  key: A# major
+  style_tags:
+  - alt
+  - indie
+  structure: IVCVCBCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: drop_tuning_style
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      default_pattern: BL_ROOT_W
+      section_overrides: {}
+    guitar:
+      role: texture_layer
+      solo_behavior: none
+      rhythm_cell: q-q
+    piano:
+      contour: octave_leaps
+      role: vocals
+      arp_pattern: ARP_1515
+    drums:
+      groove: straight_rock
+      fill_density: sparse
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A#(h)
+        - Gm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - Gm(q)
+        - Gm(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Cm(q)
+        - F(q)
+        - A#(h)
+    bridge:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - Cm(e)
+        - D#(e)
+        - Gm(q)
+        - Cm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Gm(h)
+        - A#(h)
+- id: rb2_10
+  title: RobterSESSION RB2_10
+  band: RobterSESSION DNA
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 109
+  time_signature: 4/4
+  key: A minor
+  style_tags:
+  - punk
+  - rock
+  structure: IVCVCBCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: root_only
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      default_pattern: BL_ROOT_HH
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: none
+      rhythm_cell: q-e-e
+    piano:
+      contour: narrow_range
+      role: vocals
+      arp_pattern: ARP_PEDAL_R
+    drums:
+      groove: punk_drive
+      fill_density: sparse
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A7(h)
+        - F5(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Am(q)
+        - Dm(q)
+        - Bdim(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Am(q)
+        - Em(q)
+        - C(h)
+    bridge:
+    - repeats: 2
+      bars:
+      - - C(q)
+        - Em(e)
+        - Bdim(e)
+        - C(q)
+        - Em(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Am(h)
+        - Dm(h)
+- id: rb2_11
+  title: RobterSESSION RB2_11
+  band: RobterSESSION DNA
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 95
+  time_signature: 4/4
+  key: A# major
+  style_tags:
+  - metal
+  - hard
+  structure: IVCVCBCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: pedal_drive
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      default_pattern: BL_ROOT_HH
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: arpeggiated_motion
+      solo_behavior: none
+      rhythm_cell: q-q
+    piano:
+      contour: wide_range
+      role: vocals
+      arp_pattern: ARP_1358
+    drums:
+      groove: half_time
+      fill_density: sparse
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Fsus4(h)
+        - Dm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - B(q)
+        - A#(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D#(q)
+        - A#(q)
+        - F(h)
+    bridge:
+    - repeats: 2
+      bars:
+      - - Cm(q)
+        - B(e)
+        - F(e)
+        - Cm(q)
+        - B(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - F(h)
+        - A#(h)
+- id: rb2_12
+  title: RobterSESSION RB2_12
+  band: RobterSESSION DNA
+  difficulty: 1
+  tier: warmup
+  tempo_bpm: 105
+  time_signature: 4/4
+  key: E major
+  style_tags:
+  - prog
+  - rock
+  structure: IVCVCBCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: chug_syncopation
+      solo_behavior: none
+      rhythm_cell: q-q
+    piano:
+      contour: bluesy_bends_sim
+      role: vocals
+      arp_pattern: ARP_DOM7
+    drums:
+      groove: shuffle
+      fill_density: sparse
+      kick_pattern: K--K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Bsus4(h)
+        - G#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - A(q)
+        - F#m(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - B(q)
+        - G#m(h)
+    bridge:
+    - repeats: 2
+      bars:
+      - - F#m(q)
+        - C#m(e)
+        - B(e)
+        - F#m(q)
+        - C#m(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - E(h)
+        - A(h)
+- id: rb2_13
+  title: RobterSESSION RB2_13
+  band: RobterSESSION DNA
+  difficulty: 3
+  tier: apprentice
+  tempo_bpm: 104
+  time_signature: 4/4
+  key: F minor
+  style_tags:
+  - pop
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: octave_jumps
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      default_pattern: BL_R8_Q
+      section_overrides: {}
+    guitar:
+      role: melodic_hook
+      solo_behavior: short_motif
+      rhythm_cell: q-q
+    piano:
+      contour: rhythmic_syllables
+      role: vocals
+      arp_pattern: ARP_SYNC_B
+    drums:
+      groove: gallop
+      fill_density: sparse
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C5(h)
+        - G#7(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - C#(q)
+        - A#m(q)
+        - Fm(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - A#m(q)
+        - Fm(q)
+        - Cm(h)
+    solo:
+    - repeats: 2
+      bars:
+      - - Fm(q)
+        - D#(q)
+        - C#(h)
+    outro:
+    - repeats: 2
+      bars:
+      - - Fm(h)
+        - A#m(h)
+- id: rb2_14
+  title: RobterSESSION RB2_14
+  band: RobterSESSION DNA
+  difficulty: 3
+  tier: apprentice
+  tempo_bpm: 100
+  time_signature: 12/8
+  key: C# minor
+  style_tags:
+  - garage
+  - punk
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: gallop
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      - gallop_ees
+      default_pattern: BL_GALLOP_QEE
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: rhythm_driver
+      solo_behavior: short_motif
+      rhythm_cell: q-q
+    piano:
+      contour: chanty_static
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: gallop
+      fill_density: sparse
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C#m(h)
+        - F#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - F#m(q)
+        - C#m(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D#dim(q)
+        - G#m(q)
+        - C#m(h)
+    solo:
+    - repeats: 2
+      bars:
+      - - C#m(q)
+        - B(q)
+        - A(h)
+    outro:
+    - repeats: 2
+      bars:
+      - - G#m(h)
+        - C#m(h)
+- id: rb2_15
+  title: RobterSESSION RB2_15
+  band: RobterSESSION DNA
+  difficulty: 3
+  tier: apprentice
+  tempo_bpm: 128
+  time_signature: 4/4
+  key: F major
+  style_tags:
+  - grunge
+  - alt
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: syncopated_pulse
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      default_pattern: BL_FILL_PUSH
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: short_motif
+      rhythm_cell: q-e-e
+    piano:
+      contour: stepwise_hook
+      role: vocals
+      arp_pattern: ARP_153_8
+    drums:
+      groove: syncopated_kick
+      fill_density: sparse
+      kick_pattern: -K-K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Fsus4(h)
+        - A#(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Dm(q)
+        - F#(q)
+        - F(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - F(q)
+        - C(q)
+        - Am(h)
+    solo:
+    - repeats: 2
+      bars:
+      - - F(q)
+        - A#(q)
+        - Gm(h)
+    outro:
+    - repeats: 2
+      bars:
+      - - C(h)
+        - F(h)
+- id: rb2_16
+  title: RobterSESSION RB2_16
+  band: RobterSESSION DNA
+  difficulty: 3
+  tier: apprentice
+  tempo_bpm: 120
+  time_signature: 4/4
+  key: C minor
+  style_tags:
+  - rock
+  - classic
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: texture_layer
+      solo_behavior: short_motif
+      rhythm_cell: q-q
+    piano:
+      contour: octave_leaps
+      role: vocals
+      arp_pattern: ARP_1515
+    drums:
+      groove: open_hat_lift
+      fill_density: sparse
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C7(h)
+        - G#(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - G#(q)
+        - G#(q)
+        - G#(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Ddim(q)
+        - Gm(q)
+        - Cm(h)
+    solo:
+    - repeats: 2
+      bars:
+      - - Cm(q)
+        - A#(q)
+        - G#(h)
+    outro:
+    - repeats: 2
+      bars:
+      - - Gm(h)
+        - Cm(h)
+- id: rb2_17
+  title: RobterSESSION RB2_17
+  band: RobterSESSION DNA
+  difficulty: 3
+  tier: apprentice
+  tempo_bpm: 112
+  time_signature: 4/4
+  key: G# minor
+  style_tags:
+  - alt
+  - indie
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: chromatic_walkups
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      default_pattern: BL_FILL_DOWN
+      section_overrides: {}
+    guitar:
+      role: call_response
+      solo_behavior: short_motif
+      rhythm_cell: q-q
+    piano:
+      contour: narrow_range
+      role: vocals
+      arp_pattern: ARP_PEDAL_R
+    drums:
+      groove: ride_bell_drive
+      fill_density: sparse
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D#m(h)
+        - B(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - C#m(q)
+        - G#m(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - A#dim(q)
+        - D#m(q)
+        - G#m(h)
+    solo:
+    - repeats: 2
+      bars:
+      - - G#m(q)
+        - F#(q)
+        - E(h)
+    outro:
+    - repeats: 2
+      bars:
+      - - D#m(h)
+        - G#m(h)
+- id: rb2_18
+  title: RobterSESSION RB2_18
+  band: RobterSESSION DNA
+  difficulty: 3
+  tier: apprentice
+  tempo_bpm: 124
+  time_signature: 4/4
+  key: F major
+  style_tags:
+  - punk
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: drop_tuning_style
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      default_pattern: BL_ROOT_HH
+      section_overrides: {}
+    guitar:
+      role: arpeggiated_motion
+      solo_behavior: short_motif
+      rhythm_cell: q-q
+    piano:
+      contour: wide_range
+      role: vocals
+      arp_pattern: ARP_M7
+    drums:
+      groove: straight_rock
+      fill_density: sparse
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - F(h)
+        - Dm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - F(q)
+        - F#(q)
+        - A#(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - C(q)
+        - F(h)
+    solo:
+    - repeats: 2
+      bars:
+      - - F(q)
+        - E(q)
+        - Dm(h)
+    outro:
+    - repeats: 2
+      bars:
+      - - Dm(h)
+        - F(h)
+- id: rb2_19
+  title: RobterSESSION RB2_19
+  band: RobterSESSION DNA
+  difficulty: 3
+  tier: apprentice
+  tempo_bpm: 121
+  time_signature: 6/8
+  key: A# major
+  style_tags:
+  - metal
+  - hard
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: root_only
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      default_pattern: BL_ROOT_Q
+      section_overrides: {}
+    guitar:
+      role: chug_syncopation
+      solo_behavior: short_motif
+      rhythm_cell: q-q
+    piano:
+      contour: bluesy_bends_sim
+      role: vocals
+      arp_pattern: ARP_DOM7
+    drums:
+      groove: shuffle
+      fill_density: sparse
+      kick_pattern: K--K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A#(h)
+        - D#(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - Gm(q)
+        - Gm(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Cm(q)
+        - F(q)
+        - A#(h)
+    solo:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - F(q)
+        - Cm(h)
+    outro:
+    - repeats: 2
+      bars:
+      - - F(h)
+        - A#(h)
+- id: rb2_20
+  title: RobterSESSION RB2_20
+  band: RobterSESSION DNA
+  difficulty: 3
+  tier: apprentice
+  tempo_bpm: 126
+  time_signature: 4/4
+  key: D# minor
+  style_tags:
+  - prog
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      default_pattern: BL_R24578_8
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: short_motif
+      rhythm_cell: q-e-e
+    piano:
+      contour: rhythmic_syllables
+      role: vocals
+      arp_pattern: ARP_SYNC_B
+    drums:
+      groove: half_time
+      fill_density: sparse
+      kick_pattern: K--K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D#7(h)
+        - B5(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - B(q)
+        - G#m(q)
+        - D#m(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Fdim(q)
+        - A#m(q)
+        - D#m(h)
+    solo:
+    - repeats: 2
+      bars:
+      - - D#m(q)
+        - G#m(q)
+        - Fdim(h)
+    outro:
+    - repeats: 2
+      bars:
+      - - A#m(h)
+        - D#m(h)
+- id: rb2_21
+  title: RobterSESSION RB2_21
+  band: RobterSESSION DNA
+  difficulty: 3
+  tier: apprentice
+  tempo_bpm: 113
+  time_signature: 4/4
+  key: B major
+  style_tags:
+  - pop
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: walking
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      - gallop_ees
+      default_pattern: BL_R24578_8
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: rhythm_driver
+      solo_behavior: short_motif
+      rhythm_cell: q-q
+    piano:
+      contour: chanty_static
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: gallop
+      fill_density: sparse
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - F#(h)
+        - D#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - G#m(q)
+        - C(q)
+        - B(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - B(q)
+        - F#(q)
+        - D#m(h)
+    solo:
+    - repeats: 2
+      bars:
+      - - B(q)
+        - E(q)
+        - C#m(h)
+    outro:
+    - repeats: 2
+      bars:
+      - - B(h)
+        - E(h)
+- id: rb2_22
+  title: RobterSESSION RB2_22
+  band: RobterSESSION DNA
+  difficulty: 3
+  tier: apprentice
+  tempo_bpm: 127
+  time_signature: 4/4
+  key: E major
+  style_tags:
+  - garage
+  - punk
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: octave_jumps
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      default_pattern: BL_OCT_DROP
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: short_motif
+      rhythm_cell: q-e-e
+    piano:
+      contour: stepwise_hook
+      role: vocals
+      arp_pattern: ARP_153_8
+    drums:
+      groove: gallop
+      fill_density: sparse
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Eadd9(h)
+        - C#sus4(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - C#m(q)
+        - A(q)
+        - E(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - B(q)
+        - G#m(h)
+    solo:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - A(q)
+        - F#m(h)
+    outro:
+    - repeats: 2
+      bars:
+      - - B(h)
+        - E(h)
+- id: rb2_23
+  title: RobterSESSION RB2_23
+  band: RobterSESSION DNA
+  difficulty: 3
+  tier: apprentice
+  tempo_bpm: 103
+  time_signature: 4/4
+  key: D minor
+  style_tags:
+  - grunge
+  - alt
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: gallop
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      default_pattern: BL_GALLOP_EEQ
+      section_overrides: {}
+    guitar:
+      role: texture_layer
+      solo_behavior: short_motif
+      rhythm_cell: q-q
+    piano:
+      contour: octave_leaps
+      role: vocals
+      arp_pattern: ARP_1515
+    drums:
+      groove: tom_heavy
+      fill_density: sparse
+      kick_pattern: K-TK
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D7(h)
+        - A#5(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A#(q)
+        - Gm(q)
+        - Dm(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Edim(q)
+        - Am(q)
+        - Dm(h)
+    solo:
+    - repeats: 2
+      bars:
+      - - A#(q)
+        - Am(q)
+        - Edim(h)
+    outro:
+    - repeats: 2
+      bars:
+      - - Dm(h)
+        - Gm(h)
+- id: rb2_24
+  title: RobterSESSION RB2_24
+  band: RobterSESSION DNA
+  difficulty: 3
+  tier: apprentice
+  tempo_bpm: 124
+  time_signature: 3/4
+  key: A# minor
+  style_tags:
+  - rock
+  - classic
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      default_pattern: BL_R24578_8
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: call_response
+      solo_behavior: short_motif
+      rhythm_cell: q-q
+    piano:
+      contour: narrow_range
+      role: vocals
+      arp_pattern: ARP_PEDAL_R
+    drums:
+      groove: syncopated_kick
+      fill_density: sparse
+      kick_pattern: -K-K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A#m(h)
+        - F#(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A#m(q)
+        - D#m(q)
+        - Cdim(h)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D#m(q)
+        - A#m(q)
+        - Fm(h)
+    solo:
+    - repeats: 2
+      bars:
+      - - A#m(q)
+        - G#(q)
+        - F#(h)
+    outro:
+    - repeats: 2
+      bars:
+      - - Fm(h)
+        - A#m(h)
+- id: rb2_25
+  title: RobterSESSION RB2_25
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 130
+  time_signature: 4/4
+  key: E major
+  style_tags:
+  - alt
+  - indie
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: riff_based
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      default_pattern: BL_R5_8_LASTQ
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-e-e
+    piano:
+      contour: wide_range
+      role: vocals
+      arp_pattern: ARP_M7
+    drums:
+      groove: open_hat_lift
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Esus4(h)
+        - A(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - F(q)
+        - F#m(q)
+        - C#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - E(q)
+        - B(q)
+        - C#m(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - A(q)
+        - F#m(q)
+        - B(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - B(h)
+        - E(h)
+- id: rb2_26
+  title: RobterSESSION RB2_26
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 133
+  time_signature: 4/4
+  key: C# minor
+  style_tags:
+  - punk
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: chromatic_walkups
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      default_pattern: BL_FILL_DOWN
+      section_overrides: {}
+    guitar:
+      role: chug_syncopation
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: bluesy_bends_sim
+      role: vocals
+      arp_pattern: ARP_SYNC_A
+    drums:
+      groove: ride_bell_drive
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C#7(h)
+        - F#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - A(q)
+        - A(q)
+        - A(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D#dim(q)
+        - G#m(q)
+        - C#m(q)
+        - A(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - C#m(q)
+        - F#m(q)
+        - D#dim(q)
+        - G#m(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - G#m(h)
+        - C#m(h)
+- id: rb2_27
+  title: RobterSESSION RB2_27
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 118
+  time_signature: 4/4
+  key: E minor
+  style_tags:
+  - metal
+  - hard
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: drop_tuning_style
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      default_pattern: BL_ROOT_HH
+      section_overrides: {}
+    guitar:
+      role: melodic_hook
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: rhythmic_syllables
+      role: vocals
+      arp_pattern: ARP_SYNC_A
+    drums:
+      groove: straight_rock
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Em(h)
+        - C(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Em(q)
+        - C(q)
+        - Am(q)
+        - F#dim(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - F#dim(q)
+        - Bm(q)
+        - Em(q)
+        - C(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - C(q)
+        - Bm(q)
+        - F#dim(q)
+        - Am(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Em(h)
+        - Am(h)
+- id: rb2_28
+  title: RobterSESSION RB2_28
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 133
+  time_signature: 4/4
+  key: E major
+  style_tags:
+  - prog
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      - gallop_ees
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: rhythm_driver
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: chanty_static
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: gallop
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - B(h)
+        - G#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - F(q)
+        - F#m(q)
+        - C#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - B(q)
+        - G#m(q)
+        - A(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - D#(q)
+        - C#m(q)
+        - A(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - E(h)
+        - A(h)
+- id: rb2_29
+  title: RobterSESSION RB2_29
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 108
+  time_signature: 12/8
+  key: A# major
+  style_tags:
+  - pop
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: pedal_drive
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      default_pattern: BL_ROOT_HH
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-e-e
+    piano:
+      contour: stepwise_hook
+      role: vocals
+      arp_pattern: ARP_153_8
+    drums:
+      groove: shuffle
+      fill_density: moderate
+      kick_pattern: K--K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A#(h)
+        - D#(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - Gm(q)
+        - Gm(q)
+        - Gm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Cm(q)
+        - F(q)
+        - A#(q)
+        - Gm(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - A#(q)
+        - A(q)
+        - Gm(q)
+        - D#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Gm(h)
+        - A#(h)
+- id: rb2_30
+  title: RobterSESSION RB2_30
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 136
+  time_signature: 4/4
+  key: D minor
+  style_tags:
+  - garage
+  - punk
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: walking
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      default_pattern: BL_R235_8
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-e-e
+    piano:
+      contour: octave_leaps
+      role: vocals
+      arp_pattern: ARP_1515
+    drums:
+      groove: shuffle
+      fill_density: moderate
+      kick_pattern: K--K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D5(h)
+        - G7(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Dm(q)
+        - A#(q)
+        - Gm(q)
+        - Edim(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Edim(q)
+        - Am(q)
+        - Dm(q)
+        - A#(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - A#(q)
+        - Am(q)
+        - Edim(q)
+        - Gm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A#(h)
+        - Dm(h)
+- id: rb2_31
+  title: RobterSESSION RB2_31
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 111
+  time_signature: 4/4
+  key: F major
+  style_tags:
+  - grunge
+  - alt
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: octave_jumps
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      default_pattern: BL_R8_Q
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: call_response
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: narrow_range
+      role: vocals
+      arp_pattern: ARP_PEDAL_R
+    drums:
+      groove: gallop
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C(h)
+        - Am(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Dm(q)
+        - F#(q)
+        - F(q)
+        - Gm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - C(q)
+        - F(q)
+        - Dm(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - Dm(q)
+        - C(q)
+        - Gm(q)
+        - A#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - F(h)
+        - A#(h)
+- id: rb2_32
+  title: RobterSESSION RB2_32
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 110
+  time_signature: 4/4
+  key: A major
+  style_tags:
+  - rock
+  - classic
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: arpeggiated_motion
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: wide_range
+      role: vocals
+      arp_pattern: ARP_1358
+    drums:
+      groove: tom_heavy
+      fill_density: moderate
+      kick_pattern: K-TK
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Asus4(h)
+        - F#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - F#m(q)
+        - D(q)
+        - Bm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - A(q)
+        - E(q)
+        - F#m(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - D(q)
+        - Bm(q)
+        - E(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A(h)
+        - D(h)
+- id: rb2_33
+  title: RobterSESSION RB2_33
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 137
+  time_signature: 4/4
+  key: D minor
+  style_tags:
+  - alt
+  - indie
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: syncopated_pulse
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      default_pattern: BL_ROOT_16_LAST
+      section_overrides: {}
+    guitar:
+      role: chug_syncopation
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: bluesy_bends_sim
+      role: vocals
+      arp_pattern: ARP_SYNC_A
+    drums:
+      groove: syncopated_kick
+      fill_density: moderate
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D7(h)
+        - A#5(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A#(q)
+        - Gm(q)
+        - Dm(q)
+        - Edim(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Edim(q)
+        - Am(q)
+        - Dm(q)
+        - A#(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - A#(q)
+        - Am(q)
+        - Edim(q)
+        - Gm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Am(h)
+        - Dm(h)
+- id: rb2_34
+  title: RobterSESSION RB2_34
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 127
+  time_signature: 6/8
+  key: F# minor
+  style_tags:
+  - punk
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: riff_based
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      default_pattern: BL_R58_ALT
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: melodic_hook
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: rhythmic_syllables
+      role: vocals
+      arp_pattern: ARP_SYNC_A
+    drums:
+      groove: shuffle
+      fill_density: moderate
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - F#m(h)
+        - D(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - F#m(q)
+        - D(q)
+        - Bm(q)
+        - G#dim(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - G#dim(q)
+        - C#m(q)
+        - F#m(q)
+        - D(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - C#m(q)
+        - G#dim(q)
+        - Bm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - D(h)
+        - F#m(h)
+- id: rb2_35
+  title: RobterSESSION RB2_35
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 140
+  time_signature: 4/4
+  key: A# major
+  style_tags:
+  - metal
+  - hard
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: chromatic_walkups
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      - gallop_ees
+      default_pattern: BL_FILL_DOWN
+      section_overrides:
+        outro: BL_FILL_END
+    guitar:
+      role: riff_anchor
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-e-e
+    piano:
+      contour: chanty_static
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: gallop
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A#sus4(h)
+        - Gm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A#(q)
+        - B(q)
+        - D#(q)
+        - Cm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D#(q)
+        - A#(q)
+        - F(q)
+        - Gm(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - F(q)
+        - Cm(q)
+        - D#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A#(h)
+        - D#(h)
+- id: rb2_36
+  title: RobterSESSION RB2_36
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 121
+  time_signature: 4/4
+  key: G minor
+  style_tags:
+  - prog
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-e-e
+    piano:
+      contour: stepwise_hook
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: straight_rock
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D7(h)
+        - A#(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - Gm(q)
+        - Gm(q)
+        - Gm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Adim(q)
+        - Dm(q)
+        - Gm(q)
+        - D#(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - F(q)
+        - D#(q)
+        - Cm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - D#(h)
+        - Gm(h)
+- id: rb2_37
+  title: RobterSESSION RB2_37
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 123
+  time_signature: 4/4
+  key: G# minor
+  style_tags:
+  - pop
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: root_only
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      default_pattern: BL_ROOT_Q
+      section_overrides: {}
+    guitar:
+      role: texture_layer
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: octave_leaps
+      role: vocals
+      arp_pattern: ARP_1358
+    drums:
+      groove: punk_drive
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D#m(h)
+        - B(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - G#m(q)
+        - E(q)
+        - C#m(q)
+        - A#dim(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - G#m(q)
+        - D#m(q)
+        - B(q)
+        - C#m(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - D#m(q)
+        - A#dim(q)
+        - C#m(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - E(h)
+        - G#m(h)
+- id: rb2_38
+  title: RobterSESSION RB2_38
+  band: RobterSESSION DNA
+  difficulty: 4
+  tier: solid
+  tempo_bpm: 124
+  time_signature: 4/4
+  key: E major
+  style_tags:
+  - garage
+  - punk
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: pedal_drive
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      default_pattern: BL_ROOT_HH
+      section_overrides: {}
+    guitar:
+      role: call_response
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: narrow_range
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: half_time
+      fill_density: moderate
+      kick_pattern: K--K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - E(h)
+        - C#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - F(q)
+        - A(q)
+        - F#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - B(q)
+        - G#m(q)
+        - A(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - E(q)
+        - A(q)
+        - F#m(q)
+        - B(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - B(h)
+        - E(h)
+- id: rb2_39
+  title: RobterSESSION RB2_39
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 120
+  time_signature: 3/4
+  key: C major
+  style_tags:
+  - grunge
+  - alt
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: walking
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      default_pattern: BL_R235_8
+      section_overrides: {}
+    guitar:
+      role: arpeggiated_motion
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: wide_range
+      role: vocals
+      arp_pattern: ARP_1358
+    drums:
+      groove: shuffle
+      fill_density: moderate
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C(h)
+        - Am(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - C(q)
+        - C(q)
+        - C(q)
+        - C(q)
+      - - C(q)
+        - C(q)
+        - C(q)
+        - C(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - C(q)
+        - G(q)
+        - Em(q)
+        - F(q)
+      - - G(q)
+        - Em(q)
+        - F(q)
+        - C(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - Am(q)
+        - G(q)
+        - Dm(q)
+        - F(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - C(h)
+        - F(h)
+- id: rb2_40
+  title: RobterSESSION RB2_40
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 144
+  time_signature: 4/4
+  key: C minor
+  style_tags:
+  - rock
+  - classic
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: modal_run
+      rhythm_cell: q-e-e
+    piano:
+      contour: bluesy_bends_sim
+      role: vocals
+      arp_pattern: ARP_SYNC_A
+    drums:
+      groove: gallop
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - G5(h)
+        - D#7(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - G#(q)
+        - Fm(q)
+        - Cm(q)
+        - Ddim(q)
+      - - Fm(q)
+        - Cm(q)
+        - Ddim(q)
+        - G#(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Fm(q)
+        - Cm(q)
+        - Gm(q)
+        - G#(q)
+      - - Cm(q)
+        - Gm(q)
+        - G#(q)
+        - Fm(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - G#(q)
+        - Gm(q)
+        - Ddim(q)
+        - Fm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - G#(h)
+        - Cm(h)
+- id: rb2_41
+  title: RobterSESSION RB2_41
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 132
+  time_signature: 4/4
+  key: A major
+  style_tags:
+  - alt
+  - indie
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: gallop
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      default_pattern: BL_GALLOP_EEQ
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: melodic_hook
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: rhythmic_syllables
+      role: vocals
+      arp_pattern: ARP_SYNC_B
+    drums:
+      groove: tom_heavy
+      fill_density: moderate
+      kick_pattern: KTTK
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A(h)
+        - D(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - F#m(q)
+        - A#(q)
+        - A(q)
+        - Bm(q)
+      - - A#(q)
+        - A(q)
+        - Bm(q)
+        - F#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Bm(q)
+        - E(q)
+        - A(q)
+        - F#m(q)
+      - - E(q)
+        - A(q)
+        - F#m(q)
+        - Bm(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - D(q)
+        - Bm(q)
+        - E(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - F#m(h)
+        - A(h)
+- id: rb2_42
+  title: RobterSESSION RB2_42
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 131
+  time_signature: 4/4
+  key: F# major
+  style_tags:
+  - punk
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: syncopated_pulse
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      - gallop_ees
+      default_pattern: BL_ROOT_16_LAST
+      section_overrides: {}
+    guitar:
+      role: rhythm_driver
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: chanty_static
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: gallop
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C#sus4(h)
+        - A#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - F#(q)
+        - D#m(q)
+        - B(q)
+        - G#m(q)
+      - - D#m(q)
+        - B(q)
+        - G#m(q)
+        - F#(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - G#m(q)
+        - C#(q)
+        - F#(q)
+        - D#m(q)
+      - - C#(q)
+        - F#(q)
+        - D#m(q)
+        - G#m(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - F#(q)
+        - B(q)
+        - G#m(q)
+        - C#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - D#m(h)
+        - F#(h)
+- id: rb2_43
+  title: RobterSESSION RB2_43
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 115
+  time_signature: 4/4
+  key: F# minor
+  style_tags:
+  - metal
+  - hard
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: riff_based
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      default_pattern: BL_R5_8_LASTQ
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: modal_run
+      rhythm_cell: q-e-e
+    piano:
+      contour: stepwise_hook
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: open_hat_lift
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - F#7(h)
+        - D5(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - Bm(q)
+        - F#m(q)
+        - G#dim(q)
+      - - Bm(q)
+        - F#m(q)
+        - G#dim(q)
+        - D(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - F#m(q)
+        - C#m(q)
+        - A(q)
+        - Bm(q)
+      - - C#m(q)
+        - A(q)
+        - Bm(q)
+        - F#m(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - F#m(q)
+        - Bm(q)
+        - G#dim(q)
+        - C#m(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - D(h)
+        - F#m(h)
+- id: rb2_44
+  title: RobterSESSION RB2_44
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 135
+  time_signature: 12/8
+  key: C# minor
+  style_tags:
+  - prog
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      default_pattern: BL_R75311
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: texture_layer
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: octave_leaps
+      role: vocals
+      arp_pattern: ARP_1515
+    drums:
+      groove: shuffle
+      fill_density: moderate
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - G#m7(h)
+        - E(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - F#m(q)
+        - C#m(q)
+        - D#dim(q)
+      - - F#m(q)
+        - C#m(q)
+        - D#dim(q)
+        - A(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D#dim(q)
+        - G#m(q)
+        - C#m(q)
+        - A(q)
+      - - G#m(q)
+        - C#m(q)
+        - A(q)
+        - D#dim(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - C#m(q)
+        - B(q)
+        - A(q)
+        - F#m(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - G#m(h)
+        - C#m(h)
+- id: rb2_45
+  title: RobterSESSION RB2_45
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 140
+  time_signature: 4/4
+  key: D# major
+  style_tags:
+  - pop
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: drop_tuning_style
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      default_pattern: BL_ROOT_W
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: modal_run
+      rhythm_cell: q-e-e
+    piano:
+      contour: narrow_range
+      role: vocals
+      arp_pattern: ARP_PEDAL_R
+    drums:
+      groove: straight_rock
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D#sus4(h)
+        - Cm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - D#(q)
+        - E(q)
+        - G#(q)
+        - Fm(q)
+      - - E(q)
+        - G#(q)
+        - Fm(q)
+        - D#(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - G#(q)
+        - D#(q)
+        - A#(q)
+        - Cm(q)
+      - - D#(q)
+        - A#(q)
+        - Cm(q)
+        - G#(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - D#(q)
+        - G#(q)
+        - Fm(q)
+        - A#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A#(h)
+        - D#(h)
+- id: rb2_46
+  title: RobterSESSION RB2_46
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 126
+  time_signature: 4/4
+  key: F# minor
+  style_tags:
+  - garage
+  - punk
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: root_only
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      default_pattern: BL_ROOT_Q
+      section_overrides: {}
+    guitar:
+      role: arpeggiated_motion
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: wide_range
+      role: vocals
+      arp_pattern: ARP_1358
+    drums:
+      groove: punk_drive
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C#7(h)
+        - A(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - F#m(q)
+        - F#m(q)
+        - F#m(q)
+        - F#m(q)
+      - - F#m(q)
+        - F#m(q)
+        - F#m(q)
+        - F#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - F#m(q)
+        - C#m(q)
+        - A(q)
+        - Bm(q)
+      - - C#m(q)
+        - A(q)
+        - Bm(q)
+        - F#m(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - F#m(q)
+        - E(q)
+        - D(q)
+        - Bm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - C#m(h)
+        - F#m(h)
+- id: rb2_47
+  title: RobterSESSION RB2_47
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 124
+  time_signature: 4/4
+  key: C minor
+  style_tags:
+  - grunge
+  - alt
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: pedal_drive
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      default_pattern: BL_ROOT_W
+      section_overrides: {}
+    guitar:
+      role: chug_syncopation
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: bluesy_bends_sim
+      role: vocals
+      arp_pattern: ARP_DOM7
+    drums:
+      groove: half_time
+      fill_density: moderate
+      kick_pattern: K--K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Gm(h)
+        - D#(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Cm(q)
+        - G#(q)
+        - Fm(q)
+        - Ddim(q)
+      - - G#(q)
+        - Fm(q)
+        - Ddim(q)
+        - Cm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Ddim(q)
+        - Gm(q)
+        - Cm(q)
+        - G#(q)
+      - - Gm(q)
+        - Cm(q)
+        - G#(q)
+        - Ddim(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - G#(q)
+        - Gm(q)
+        - Ddim(q)
+        - Fm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - G#(h)
+        - Cm(h)
+- id: rb2_48
+  title: RobterSESSION RB2_48
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 138
+  time_signature: 4/4
+  key: D major
+  style_tags:
+  - rock
+  - classic
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: melodic_hook
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: rhythmic_syllables
+      role: vocals
+      arp_pattern: ARP_SYNC_B
+    drums:
+      groove: shuffle
+      fill_density: moderate
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D(h)
+        - G(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - D#(q)
+        - Em(q)
+        - Bm(q)
+      - - D#(q)
+        - Em(q)
+        - Bm(q)
+        - D(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - A(q)
+        - F#m(q)
+        - G(q)
+      - - A(q)
+        - F#m(q)
+        - G(q)
+        - D(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - G(q)
+        - Em(q)
+        - A(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A(h)
+        - D(h)
+- id: rb2_49
+  title: RobterSESSION RB2_49
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 128
+  time_signature: 6/8
+  key: D major
+  style_tags:
+  - alt
+  - indie
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: octave_jumps
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      - gallop_ees
+      default_pattern: BL_OCT_DROP
+      section_overrides: {}
+    guitar:
+      role: rhythm_driver
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: chanty_static
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: gallop
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A(h)
+        - F#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Bm(q)
+        - Bm(q)
+        - Bm(q)
+        - Bm(q)
+      - - Bm(q)
+        - Bm(q)
+        - Bm(q)
+        - Bm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - A(q)
+        - F#m(q)
+        - G(q)
+      - - A(q)
+        - F#m(q)
+        - G(q)
+        - D(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - G(q)
+        - Em(q)
+        - A(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A(h)
+        - D(h)
+- id: rb2_50
+  title: RobterSESSION RB2_50
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 116
+  time_signature: 4/4
+  key: C minor
+  style_tags:
+  - punk
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: gallop
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      default_pattern: BL_GALLOP_QEE
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: modal_run
+      rhythm_cell: q-e-e
+    piano:
+      contour: stepwise_hook
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: tom_heavy
+      fill_density: moderate
+      kick_pattern: K-TK
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C7(h)
+        - F5(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Cm(q)
+        - Fm(q)
+        - Ddim(q)
+        - G#(q)
+      - - Fm(q)
+        - Ddim(q)
+        - G#(q)
+        - Cm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Ddim(q)
+        - Gm(q)
+        - Cm(q)
+        - G#(q)
+      - - Gm(q)
+        - Cm(q)
+        - G#(q)
+        - Ddim(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - G#(q)
+        - Gm(q)
+        - Ddim(q)
+        - Fm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - G#(h)
+        - Cm(h)
+- id: rb2_51
+  title: RobterSESSION RB2_51
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 130
+  time_signature: 4/4
+  key: B major
+  style_tags:
+  - metal
+  - hard
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: syncopated_pulse
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      default_pattern: BL_FILL_PUSH
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: texture_layer
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: octave_leaps
+      role: vocals
+      arp_pattern: ARP_1515
+    drums:
+      groove: syncopated_kick
+      fill_density: moderate
+      kick_pattern: -K-K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - F#(h)
+        - D#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - B(q)
+        - C(q)
+        - C#m(q)
+        - G#m(q)
+      - - C(q)
+        - C#m(q)
+        - G#m(q)
+        - B(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - B(q)
+        - F#(q)
+        - D#m(q)
+        - E(q)
+      - - F#(q)
+        - D#m(q)
+        - E(q)
+        - B(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - B(q)
+        - E(q)
+        - C#m(q)
+        - F#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - G#m(h)
+        - B(h)
+- id: rb2_52
+  title: RobterSESSION RB2_52
+  band: RobterSESSION DNA
+  difficulty: 6
+  tier: skilled
+  tempo_bpm: 116
+  time_signature: 4/4
+  key: F# major
+  style_tags:
+  - prog
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: call_response
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: narrow_range
+      role: vocals
+      arp_pattern: ARP_PEDAL_R
+    drums:
+      groove: open_hat_lift
+      fill_density: moderate
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C#sus4(h)
+        - A#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - D#m(q)
+        - B(q)
+        - F#(q)
+        - G#m(q)
+      - - B(q)
+        - F#(q)
+        - G#m(q)
+        - D#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - B(q)
+        - F#(q)
+        - C#(q)
+        - D#m(q)
+      - - F#(q)
+        - C#(q)
+        - D#m(q)
+        - B(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - F#(q)
+        - B(q)
+        - G#m(q)
+        - C#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - C#(h)
+        - F#(h)
+- id: rb2_53
+  title: RobterSESSION RB2_53
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 151
+  time_signature: 4/4
+  key: C# minor
+  style_tags:
+  - pop
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: chromatic_walkups
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      default_pattern: BL_FILL_END
+      section_overrides: {}
+    guitar:
+      role: arpeggiated_motion
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: wide_range
+      role: vocals
+      arp_pattern: ARP_M7
+    drums:
+      groove: ride_bell_drive
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C#7(h)
+        - A5(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - C#m(q)
+        - F#m(e)
+        - D#dim(e)
+        - A(q)
+        - C#m(q)
+      - - F#m(q)
+        - D#dim(e)
+        - A(e)
+        - C#m(q)
+        - F#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - F#m(q)
+        - C#m(e)
+        - G#m(e)
+        - A(q)
+        - F#m(q)
+      - - C#m(q)
+        - G#m(e)
+        - A(e)
+        - F#m(q)
+        - C#m(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - G#m(e)
+        - D#dim(e)
+        - F#m(q)
+        - A(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A(h)
+        - C#m(h)
+- id: rb2_54
+  title: RobterSESSION RB2_54
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 130
+  time_signature: 3/4
+  key: F minor
+  style_tags:
+  - garage
+  - punk
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: drop_tuning_style
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      default_pattern: BL_ROOT_W
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: chug_syncopation
+      solo_behavior: chromatic_flash
+      rhythm_cell: q-q
+    piano:
+      contour: bluesy_bends_sim
+      role: vocals
+      arp_pattern: ARP_SYNC_A
+    drums:
+      groove: straight_rock
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Fm(h)
+        - A#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Fm(q)
+        - A#m(e)
+        - Gdim(e)
+        - C#(q)
+        - Fm(q)
+      - - A#m(q)
+        - Gdim(e)
+        - C#(e)
+        - Fm(q)
+        - A#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Gdim(q)
+        - Cm(e)
+        - Fm(e)
+        - C#(q)
+        - Gdim(q)
+      - - Cm(q)
+        - Fm(e)
+        - C#(e)
+        - Gdim(q)
+        - Cm(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - Fm(q)
+        - A#m(e)
+        - Gdim(e)
+        - Cm(q)
+        - Fm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - C#(h)
+        - Fm(h)
+- id: rb2_55
+  title: RobterSESSION RB2_55
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 122
+  time_signature: 4/4
+  key: F major
+  style_tags:
+  - grunge
+  - alt
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: root_only
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      default_pattern: BL_ROOT_HH
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-e-e
+    piano:
+      contour: rhythmic_syllables
+      role: vocals
+      arp_pattern: ARP_SYNC_A
+    drums:
+      groove: punk_drive
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Csus4(h)
+        - A7(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Dm(q)
+        - F#(e)
+        - F(e)
+        - Gm(q)
+        - Dm(q)
+      - - F#(q)
+        - F(e)
+        - Gm(e)
+        - Dm(q)
+        - F#(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - A#(q)
+        - F(e)
+        - C(e)
+        - Dm(q)
+        - A#(q)
+      - - F(q)
+        - C(e)
+        - Dm(e)
+        - A#(q)
+        - F(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - Dm(q)
+        - C(e)
+        - Gm(e)
+        - A#(q)
+        - Dm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - C(h)
+        - F(h)
+- id: rb2_56
+  title: RobterSESSION RB2_56
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 153
+  time_signature: 4/4
+  key: A# minor
+  style_tags:
+  - rock
+  - classic
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      - gallop_ees
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: rhythm_driver
+      solo_behavior: chromatic_flash
+      rhythm_cell: q-q
+    piano:
+      contour: chanty_static
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: gallop
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A#7(h)
+        - D#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - F#(q)
+        - F#(e)
+        - F#(e)
+        - F#(q)
+        - F#(q)
+      - - F#(q)
+        - F#(e)
+        - F#(e)
+        - F#(q)
+        - F#(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Cdim(q)
+        - Fm(e)
+        - A#m(e)
+        - F#(q)
+        - Cdim(q)
+      - - Fm(q)
+        - A#m(e)
+        - F#(e)
+        - Cdim(q)
+        - Fm(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - F#(q)
+        - Fm(e)
+        - Cdim(e)
+        - D#m(q)
+        - F#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - F#(h)
+        - A#m(h)
+- id: rb2_57
+  title: RobterSESSION RB2_57
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 146
+  time_signature: 4/4
+  key: D# minor
+  style_tags:
+  - alt
+  - indie
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: walking
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      default_pattern: BL_R24578_8
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-e-e
+    piano:
+      contour: stepwise_hook
+      role: vocals
+      arp_pattern: ARP_153_8
+    drums:
+      groove: shuffle
+      fill_density: frequent
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D#m(h)
+        - G#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - B(q)
+        - G#m(e)
+        - D#m(e)
+        - Fdim(q)
+        - B(q)
+      - - G#m(q)
+        - D#m(e)
+        - Fdim(e)
+        - B(q)
+        - G#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D#m(q)
+        - A#m(e)
+        - F#(e)
+        - G#m(q)
+        - D#m(q)
+      - - A#m(q)
+        - F#(e)
+        - G#m(e)
+        - D#m(q)
+        - A#m(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - D#m(q)
+        - G#m(e)
+        - Fdim(e)
+        - A#m(q)
+        - D#m(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - B(h)
+        - D#m(h)
+- id: rb2_58
+  title: RobterSESSION RB2_58
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 125
+  time_signature: 4/4
+  key: G# major
+  style_tags:
+  - punk
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: octave_jumps
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      default_pattern: BL_R8_Q
+      section_overrides: {}
+    guitar:
+      role: texture_layer
+      solo_behavior: chromatic_flash
+      rhythm_cell: q-q
+    piano:
+      contour: octave_leaps
+      role: vocals
+      arp_pattern: ARP_1358
+    drums:
+      groove: gallop
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - G#(h)
+        - C#(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - G#(q)
+        - A(e)
+        - C#(e)
+        - A#m(q)
+        - G#(q)
+      - - A(q)
+        - C#(e)
+        - A#m(e)
+        - G#(q)
+        - A(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - C#(q)
+        - G#(e)
+        - D#(e)
+        - Fm(q)
+        - C#(q)
+      - - G#(q)
+        - D#(e)
+        - Fm(e)
+        - C#(q)
+        - G#(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - G#(q)
+        - C#(e)
+        - A#m(e)
+        - D#(q)
+        - G#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - D#(h)
+        - G#(h)
+- id: rb2_59
+  title: RobterSESSION RB2_59
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 141
+  time_signature: 12/8
+  key: C major
+  style_tags:
+  - metal
+  - hard
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: gallop
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      default_pattern: BL_GALLOP_QEE
+      section_overrides: {}
+    guitar:
+      role: call_response
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: narrow_range
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: shuffle
+      fill_density: frequent
+      kick_pattern: K--K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C(h)
+        - Am(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - C(q)
+        - C(e)
+        - C(e)
+        - C(q)
+        - C(q)
+      - - C(q)
+        - C(e)
+        - C(e)
+        - C(q)
+        - C(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - C(q)
+        - G(e)
+        - Em(e)
+        - F(q)
+        - C(q)
+      - - G(q)
+        - Em(e)
+        - F(e)
+        - C(q)
+        - G(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - C(q)
+        - F(e)
+        - Dm(e)
+        - G(q)
+        - C(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - G(h)
+        - C(h)
+- id: rb2_60
+  title: RobterSESSION RB2_60
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 152
+  time_signature: 4/4
+  key: F minor
+  style_tags:
+  - prog
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      default_pattern: BL_R24578_8
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: chromatic_flash
+      rhythm_cell: q-e-e
+    piano:
+      contour: wide_range
+      role: vocals
+      arp_pattern: ARP_M7
+    drums:
+      groove: syncopated_kick
+      fill_density: frequent
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - F5(h)
+        - A#7(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - C#(q)
+        - A#m(e)
+        - Fm(e)
+        - Gdim(q)
+        - C#(q)
+      - - A#m(q)
+        - Fm(e)
+        - Gdim(e)
+        - C#(q)
+        - A#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Fm(q)
+        - Cm(e)
+        - G#(e)
+        - A#m(q)
+        - Fm(q)
+      - - Cm(q)
+        - G#(e)
+        - A#m(e)
+        - Fm(q)
+        - Cm(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - C#(q)
+        - Cm(e)
+        - Gdim(e)
+        - A#m(q)
+        - C#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Cm(h)
+        - Fm(h)
+- id: rb2_61
+  title: RobterSESSION RB2_61
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 127
+  time_signature: 4/4
+  key: D# major
+  style_tags:
+  - pop
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: riff_based
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      default_pattern: BL_R58_ALT
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: chug_syncopation
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: bluesy_bends_sim
+      role: vocals
+      arp_pattern: ARP_DOM7
+    drums:
+      groove: open_hat_lift
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D#(h)
+        - Cm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Cm(q)
+        - E(e)
+        - D#(e)
+        - Fm(q)
+        - Cm(q)
+      - - E(q)
+        - D#(e)
+        - Fm(e)
+        - Cm(q)
+        - E(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - G#(q)
+        - D#(e)
+        - A#(e)
+        - Cm(q)
+        - G#(q)
+      - - D#(q)
+        - A#(e)
+        - Cm(e)
+        - G#(q)
+        - D#(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - D#(q)
+        - G#(e)
+        - Fm(e)
+        - A#(q)
+        - D#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A#(h)
+        - D#(h)
+- id: rb2_62
+  title: RobterSESSION RB2_62
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 145
+  time_signature: 4/4
+  key: A major
+  style_tags:
+  - garage
+  - punk
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: chromatic_walkups
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      default_pattern: BL_FILL_DOWN
+      section_overrides: {}
+    guitar:
+      role: melodic_hook
+      solo_behavior: chromatic_flash
+      rhythm_cell: q-q
+    piano:
+      contour: rhythmic_syllables
+      role: vocals
+      arp_pattern: ARP_SYNC_B
+    drums:
+      groove: ride_bell_drive
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Asus4(h)
+        - D(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - D(e)
+        - Bm(e)
+        - F#m(q)
+        - A(q)
+      - - D(q)
+        - Bm(e)
+        - F#m(e)
+        - A(q)
+        - D(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Bm(q)
+        - E(e)
+        - A(e)
+        - F#m(q)
+        - Bm(q)
+      - - E(q)
+        - A(e)
+        - F#m(e)
+        - Bm(q)
+        - E(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - G#(e)
+        - F#m(e)
+        - D(q)
+        - A(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - E(h)
+        - A(h)
+- id: rb2_63
+  title: RobterSESSION RB2_63
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 130
+  time_signature: 4/4
+  key: C# minor
+  style_tags:
+  - grunge
+  - alt
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: drop_tuning_style
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      - gallop_ees
+      default_pattern: BL_ROOT_W
+      section_overrides: {}
+    guitar:
+      role: rhythm_driver
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: chanty_static
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: gallop
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C#7(h)
+        - F#5(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - C#m(q)
+        - A(e)
+        - F#m(e)
+        - D#dim(q)
+        - C#m(q)
+      - - A(q)
+        - F#m(e)
+        - D#dim(e)
+        - C#m(q)
+        - A(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - F#m(q)
+        - C#m(e)
+        - G#m(e)
+        - A(q)
+        - F#m(q)
+      - - C#m(q)
+        - G#m(e)
+        - A(e)
+        - F#m(q)
+        - C#m(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - C#m(q)
+        - F#m(e)
+        - D#dim(e)
+        - G#m(q)
+        - C#m(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A(h)
+        - C#m(h)
+- id: rb2_64
+  title: RobterSESSION RB2_64
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 165
+  time_signature: 4/4
+  key: A minor
+  style_tags:
+  - rock
+  - classic
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      default_pattern: BL_R75311
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: riff_anchor
+      solo_behavior: chromatic_flash
+      rhythm_cell: q-e-e
+    piano:
+      contour: stepwise_hook
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: punk_drive
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Am(h)
+        - F(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Am(q)
+        - Dm(e)
+        - Bdim(e)
+        - F(q)
+        - Am(q)
+      - - Dm(q)
+        - Bdim(e)
+        - F(e)
+        - Am(q)
+        - Dm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Bdim(q)
+        - Em(e)
+        - Am(e)
+        - F(q)
+        - Bdim(q)
+      - - Em(q)
+        - Am(e)
+        - F(e)
+        - Bdim(q)
+        - Em(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - F(q)
+        - Em(e)
+        - Bdim(e)
+        - Dm(q)
+        - F(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Am(h)
+        - Dm(h)
+- id: rb2_65
+  title: RobterSESSION RB2_65
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 138
+  time_signature: 4/4
+  key: C# major
+  style_tags:
+  - alt
+  - indie
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: pedal_drive
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      default_pattern: BL_ROOT_HH
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-e-e
+    piano:
+      contour: octave_leaps
+      role: vocals
+      arp_pattern: ARP_1358
+    drums:
+      groove: half_time
+      fill_density: frequent
+      kick_pattern: K--K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - G#sus4(h)
+        - Fm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - C#(q)
+        - D(e)
+        - F#(e)
+        - D#m(q)
+        - C#(q)
+      - - D(q)
+        - F#(e)
+        - D#m(e)
+        - C#(q)
+        - D(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D#m(q)
+        - G#(e)
+        - C#(e)
+        - A#m(q)
+        - D#m(q)
+      - - G#(q)
+        - C#(e)
+        - A#m(e)
+        - D#m(q)
+        - G#(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - A#m(q)
+        - G#(e)
+        - D#m(e)
+        - F#(q)
+        - A#m(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - C#(h)
+        - F#(h)
+- id: rb2_66
+  title: RobterSESSION RB2_66
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 134
+  time_signature: 4/4
+  key: F minor
+  style_tags:
+  - punk
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: walking
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      default_pattern: BL_R24578_8
+      section_overrides: {}
+    guitar:
+      role: call_response
+      solo_behavior: chromatic_flash
+      rhythm_cell: q-q
+    piano:
+      contour: narrow_range
+      role: vocals
+      arp_pattern: ARP_PEDAL_R
+    drums:
+      groove: shuffle
+      fill_density: frequent
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Fsus2(h)
+        - A#7(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Fm(q)
+        - Fm(e)
+        - Fm(e)
+        - Fm(q)
+        - Fm(q)
+      - - Fm(q)
+        - Fm(e)
+        - Fm(e)
+        - Fm(q)
+        - Fm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Gdim(q)
+        - Cm(e)
+        - Fm(e)
+        - C#(q)
+        - Gdim(q)
+      - - Cm(q)
+        - Fm(e)
+        - C#(e)
+        - Gdim(q)
+        - Cm(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - Fm(q)
+        - A#m(e)
+        - Gdim(e)
+        - Cm(q)
+        - Fm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Cm(h)
+        - Fm(h)
+- id: rb2_67
+  title: RobterSESSION RB2_67
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 130
+  time_signature: 4/4
+  key: F minor
+  style_tags:
+  - metal
+  - hard
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: octave_jumps
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      default_pattern: BL_R8_Q
+      section_overrides: {}
+    guitar:
+      role: arpeggiated_motion
+      solo_behavior: pentatonic_burst
+      rhythm_cell: q-q
+    piano:
+      contour: wide_range
+      role: vocals
+      arp_pattern: ARP_1358
+    drums:
+      groove: gallop
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Fm(h)
+        - C#(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - C#(q)
+        - A#m(e)
+        - Fm(e)
+        - Gdim(q)
+        - C#(q)
+      - - A#m(q)
+        - Fm(e)
+        - Gdim(e)
+        - C#(q)
+        - A#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Fm(q)
+        - Cm(e)
+        - G#(e)
+        - A#m(q)
+        - Fm(q)
+      - - Cm(q)
+        - G#(e)
+        - A#m(e)
+        - Fm(q)
+        - Cm(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - C#(q)
+        - Cm(e)
+        - Gdim(e)
+        - A#m(q)
+        - C#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Fm(h)
+        - A#m(h)
+- id: rb2_68
+  title: RobterSESSION RB2_68
+  band: RobterSESSION DNA
+  difficulty: 7
+  tier: hard
+  tempo_bpm: 140
+  time_signature: 4/4
+  key: F# major
+  style_tags:
+  - prog
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: chug_syncopation
+      solo_behavior: chromatic_flash
+      rhythm_cell: q-q
+    piano:
+      contour: bluesy_bends_sim
+      role: vocals
+      arp_pattern: ARP_DOM7
+    drums:
+      groove: tom_heavy
+      fill_density: frequent
+      kick_pattern: K-TK
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - F#(h)
+        - D#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - F#(q)
+        - G(e)
+        - G#m(e)
+        - D#m(q)
+        - F#(q)
+      - - G(q)
+        - G#m(e)
+        - D#m(e)
+        - F#(q)
+        - G(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - B(q)
+        - F#(e)
+        - C#(e)
+        - D#m(q)
+        - B(q)
+      - - F#(q)
+        - C#(e)
+        - D#m(e)
+        - B(q)
+        - F#(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - F#(q)
+        - F(e)
+        - D#m(e)
+        - B(q)
+        - F#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - C#(h)
+        - F#(h)
+- id: rb2_69
+  title: RobterSESSION RB2_69
+  band: RobterSESSION DNA
+  difficulty: 9
+  tier: expert
+  tempo_bpm: 141
+  time_signature: 4/4
+  key: A major
+  style_tags:
+  - pop
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: syncopated_pulse
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      default_pattern: BL_ROOT_16_LAST
+      section_overrides: {}
+    guitar:
+      role: melodic_hook
+      solo_behavior: rhythmic_noise
+      rhythm_cell: q-q
+    piano:
+      contour: rhythmic_syllables
+      role: vocals
+      arp_pattern: ARP_SYNC_B
+    drums:
+      groove: syncopated_kick
+      fill_density: frequent
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - E(h)
+        - C#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - A(e)
+        - A(e)
+        - A(q)
+        - A(q)
+      - - A(q)
+        - A(e)
+        - A(e)
+        - A(q)
+        - A(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - A(e)
+        - E(e)
+        - F#m(q)
+        - D(q)
+      - - A(q)
+        - E(e)
+        - F#m(e)
+        - D(q)
+        - A(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - G#(e)
+        - F#m(e)
+        - D(q)
+        - A(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - E(h)
+        - A(h)
+- id: rb2_70
+  title: RobterSESSION RB2_70
+  band: RobterSESSION DNA
+  difficulty: 9
+  tier: expert
+  tempo_bpm: 158
+  time_signature: 4/4
+  key: F# minor
+  style_tags:
+  - garage
+  - punk
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: riff_based
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      - gallop_ees
+      default_pattern: BL_R5_8_LASTQ
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: sustained_bends
+      rhythm_cell: q-e-e
+    piano:
+      contour: chanty_static
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: gallop
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - C#5(h)
+        - A7(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - Bm(e)
+        - F#m(e)
+        - G#dim(q)
+        - D(q)
+      - - Bm(q)
+        - F#m(e)
+        - G#dim(e)
+        - D(q)
+        - Bm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - F#m(q)
+        - C#m(e)
+        - A(e)
+        - Bm(q)
+        - F#m(q)
+      - - C#m(q)
+        - A(e)
+        - Bm(e)
+        - F#m(q)
+        - C#m(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - C#m(e)
+        - G#dim(e)
+        - Bm(q)
+        - D(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - C#m(h)
+        - F#m(h)
+- id: rb2_71
+  title: RobterSESSION RB2_71
+  band: RobterSESSION DNA
+  difficulty: 9
+  tier: expert
+  tempo_bpm: 159
+  time_signature: 4/4
+  key: A major
+  style_tags:
+  - grunge
+  - alt
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: chromatic_walkups
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      default_pattern: BL_FILL_DOWN
+      section_overrides:
+        bridge: BL_OCT_DROP
+        outro: BL_FILL_END
+    guitar:
+      role: riff_anchor
+      solo_behavior: rhythmic_noise
+      rhythm_cell: q-e-e
+    piano:
+      contour: stepwise_hook
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: ride_bell_drive
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A(h)
+        - F#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - A#(e)
+        - Bm(e)
+        - F#m(q)
+        - A(q)
+      - - A#(q)
+        - Bm(e)
+        - F#m(e)
+        - A(q)
+        - A#(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - A(e)
+        - E(e)
+        - F#m(q)
+        - D(q)
+      - - A(q)
+        - E(e)
+        - F#m(e)
+        - D(q)
+        - A(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - A(q)
+        - D(e)
+        - Bm(e)
+        - E(q)
+        - A(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - E(h)
+        - A(h)
+- id: rb2_72
+  title: RobterSESSION RB2_72
+  band: RobterSESSION DNA
+  difficulty: 9
+  tier: expert
+  tempo_bpm: 153
+  time_signature: 4/4
+  key: D# major
+  style_tags:
+  - rock
+  - classic
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: texture_layer
+      solo_behavior: sustained_bends
+      rhythm_cell: q-q
+    piano:
+      contour: octave_leaps
+      role: vocals
+      arp_pattern: ARP_1358
+    drums:
+      groove: straight_rock
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D#sus4(h)
+        - Cm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Cm(q)
+        - G#(e)
+        - D#(e)
+        - Fm(q)
+        - Cm(q)
+      - - G#(q)
+        - D#(e)
+        - Fm(e)
+        - Cm(q)
+        - G#(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Fm(q)
+        - A#(e)
+        - D#(e)
+        - Cm(q)
+        - Fm(q)
+      - - A#(q)
+        - D#(e)
+        - Cm(e)
+        - Fm(q)
+        - A#(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - D#(q)
+        - D(e)
+        - Cm(e)
+        - G#(q)
+        - D#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A#(h)
+        - D#(h)
+- id: rb2_73
+  title: RobterSESSION RB2_73
+  band: RobterSESSION DNA
+  difficulty: 9
+  tier: expert
+  tempo_bpm: 157
+  time_signature: 4/4
+  key: G minor
+  style_tags:
+  - alt
+  - indie
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: root_only
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      default_pattern: BL_ROOT_Q
+      section_overrides: {}
+    guitar:
+      role: call_response
+      solo_behavior: rhythmic_noise
+      rhythm_cell: q-q
+    piano:
+      contour: narrow_range
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: punk_drive
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D5(h)
+        - A#7(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - D#(q)
+        - Cm(e)
+        - Gm(e)
+        - Adim(q)
+        - D#(q)
+      - - Cm(q)
+        - Gm(e)
+        - Adim(e)
+        - D#(q)
+        - Cm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - Dm(e)
+        - A#(e)
+        - Cm(q)
+        - Gm(q)
+      - - Dm(q)
+        - A#(e)
+        - Cm(e)
+        - Gm(q)
+        - Dm(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - Gm(q)
+        - F(e)
+        - D#(e)
+        - Cm(q)
+        - Gm(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - D#(h)
+        - Gm(h)
+- id: rb2_74
+  title: RobterSESSION RB2_74
+  band: RobterSESSION DNA
+  difficulty: 9
+  tier: expert
+  tempo_bpm: 121
+  time_signature: 4/4
+  key: A minor
+  style_tags:
+  - punk
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: pedal_drive
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      default_pattern: BL_ROOT_HH
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: arpeggiated_motion
+      solo_behavior: sustained_bends
+      rhythm_cell: q-q
+    piano:
+      contour: wide_range
+      role: vocals
+      arp_pattern: ARP_M7
+    drums:
+      groove: half_time
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Am(h)
+        - Dm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Am(q)
+        - F(e)
+        - Dm(e)
+        - Bdim(q)
+        - Am(q)
+      - - F(q)
+        - Dm(e)
+        - Bdim(e)
+        - Am(q)
+        - F(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Dm(q)
+        - Am(e)
+        - Em(e)
+        - F(q)
+        - Dm(q)
+      - - Am(q)
+        - Em(e)
+        - F(e)
+        - Dm(q)
+        - Am(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - Am(q)
+        - Dm(e)
+        - Bdim(e)
+        - Em(q)
+        - Am(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Em(h)
+        - Am(h)
+- id: rb2_75
+  title: RobterSESSION RB2_75
+  band: RobterSESSION DNA
+  difficulty: 9
+  tier: expert
+  tempo_bpm: 161
+  time_signature: 4/4
+  key: C major
+  style_tags:
+  - metal
+  - hard
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: walking
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      default_pattern: BL_R24578_8
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: rhythmic_noise
+      rhythm_cell: q-e-e
+    piano:
+      contour: bluesy_bends_sim
+      role: vocals
+      arp_pattern: ARP_DOM7
+    drums:
+      groove: shuffle
+      fill_density: frequent
+      kick_pattern: K-K-
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Csus4(h)
+        - Am(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - C(q)
+        - C#(e)
+        - Dm(e)
+        - Am(q)
+        - C(q)
+      - - C#(q)
+        - Dm(e)
+        - Am(e)
+        - C(q)
+        - C#(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - F(q)
+        - C(e)
+        - G(e)
+        - Am(q)
+        - F(q)
+      - - C(q)
+        - G(e)
+        - Am(e)
+        - F(q)
+        - C(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - C(q)
+        - B(e)
+        - Am(e)
+        - F(q)
+        - C(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Am(h)
+        - C(h)
+- id: rb2_76
+  title: RobterSESSION RB2_76
+  band: RobterSESSION DNA
+  difficulty: 9
+  tier: expert
+  tempo_bpm: 142
+  time_signature: 4/4
+  key: E minor
+  style_tags:
+  - prog
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: melodic_hook
+      solo_behavior: sustained_bends
+      rhythm_cell: q-q
+    piano:
+      contour: rhythmic_syllables
+      role: vocals
+      arp_pattern: ARP_SYNC_B
+    drums:
+      groove: gallop
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - E7(h)
+        - Am(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Em(q)
+        - Em(e)
+        - Em(e)
+        - Em(q)
+        - Em(q)
+      - - Em(q)
+        - Em(e)
+        - Em(e)
+        - Em(q)
+        - Em(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Am(q)
+        - Em(e)
+        - Bm(e)
+        - C(q)
+        - Am(q)
+      - - Em(q)
+        - Bm(e)
+        - C(e)
+        - Am(q)
+        - Em(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - Em(q)
+        - D(e)
+        - C(e)
+        - Am(q)
+        - Em(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Bm(h)
+        - Em(h)
+- id: rb2_77
+  title: RobterSESSION RB2_77
+  band: RobterSESSION DNA
+  difficulty: 9
+  tier: expert
+  tempo_bpm: 159
+  time_signature: 4/4
+  key: A# minor
+  style_tags:
+  - pop
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: gallop
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      - gallop_ees
+      default_pattern: BL_GALLOP_EEQ
+      section_overrides: {}
+    guitar:
+      role: rhythm_driver
+      solo_behavior: rhythmic_noise
+      rhythm_cell: q-q
+    piano:
+      contour: chanty_static
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: gallop
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Fsus4(h)
+        - C#(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A#m(q)
+        - D#m(e)
+        - Cdim(e)
+        - F#(q)
+        - A#m(q)
+      - - D#m(q)
+        - Cdim(e)
+        - F#(e)
+        - A#m(q)
+        - D#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D#m(q)
+        - A#m(e)
+        - Fm(e)
+        - F#(q)
+        - D#m(q)
+      - - A#m(q)
+        - Fm(e)
+        - F#(e)
+        - D#m(q)
+        - A#m(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - A#m(q)
+        - G#(e)
+        - F#(e)
+        - D#m(q)
+        - A#m(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Fm(h)
+        - A#m(h)
+- id: rb2_78
+  title: RobterSESSION RB2_78
+  band: RobterSESSION DNA
+  difficulty: 9
+  tier: expert
+  tempo_bpm: 133
+  time_signature: 4/4
+  key: D major
+  style_tags:
+  - garage
+  - punk
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: syncopated_pulse
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      default_pattern: BL_FILL_PUSH
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: sustained_bends
+      rhythm_cell: q-e-e
+    piano:
+      contour: stepwise_hook
+      role: vocals
+      arp_pattern: ARP_153_8
+    drums:
+      groove: syncopated_kick
+      fill_density: frequent
+      kick_pattern: -K-K
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - D(h)
+        - G(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - D#(e)
+        - G(e)
+        - Em(q)
+        - D(q)
+      - - D#(q)
+        - G(e)
+        - Em(e)
+        - D(q)
+        - D#(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - G(q)
+        - D(e)
+        - A(e)
+        - Bm(q)
+        - G(q)
+      - - D(q)
+        - A(e)
+        - Bm(e)
+        - G(q)
+        - D(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - G(e)
+        - Em(e)
+        - A(q)
+        - D(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Bm(h)
+        - D(h)
+- id: rb2_79
+  title: RobterSESSION RB2_79
+  band: RobterSESSION DNA
+  difficulty: 10
+  tier: nightmare
+  tempo_bpm: 174
+  time_signature: 4/4
+  key: A# major
+  style_tags:
+  - grunge
+  - alt
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: riff_based
+      rhythm_traits:
+      - offbeat_accents
+      - stop_time_hits
+      default_pattern: BL_R5_8_LASTQ
+      section_overrides: {}
+    guitar:
+      role: texture_layer
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: octave_leaps
+      role: vocals
+      arp_pattern: ARP_1358
+    drums:
+      groove: open_hat_lift
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - F(h)
+        - Dm(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A#(q)
+        - A#(e)
+        - A#(e)
+        - A#(q)
+        - A#(q)
+      - - A#(q)
+        - A#(e)
+        - A#(e)
+        - A#(q)
+        - A#(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Cm(q)
+        - F(e)
+        - A#(e)
+        - Gm(q)
+        - Cm(q)
+      - - F(q)
+        - A#(e)
+        - Gm(e)
+        - Cm(q)
+        - F(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - A#(q)
+        - A(e)
+        - Gm(e)
+        - D#(q)
+        - A#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Gm(h)
+        - A#(h)
+- id: rb2_80
+  title: RobterSESSION RB2_80
+  band: RobterSESSION DNA
+  difficulty: 10
+  tier: nightmare
+  tempo_bpm: 156
+  time_signature: 4/4
+  key: A minor
+  style_tags:
+  - rock
+  - classic
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - pickup_notes
+      - dotted_push
+      default_pattern: BL_R75311
+      section_overrides: {}
+    guitar:
+      role: riff_anchor
+      solo_behavior: chromatic_flash
+      rhythm_cell: q-e-e
+    piano:
+      contour: narrow_range
+      role: vocals
+      arp_pattern: ARP_PEDAL_R
+    drums:
+      groove: ride_bell_drive
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A7(h)
+        - F5(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - F(q)
+        - Dm(e)
+        - Am(e)
+        - Bdim(q)
+        - F(q)
+      - - Dm(q)
+        - Am(e)
+        - Bdim(e)
+        - F(q)
+        - Dm(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Bdim(q)
+        - Em(e)
+        - Am(e)
+        - F(q)
+        - Bdim(q)
+      - - Em(q)
+        - Am(e)
+        - F(e)
+        - Bdim(q)
+        - Em(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - Am(q)
+        - G(e)
+        - F(e)
+        - Dm(q)
+        - Am(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Em(h)
+        - Am(h)
+- id: rb2_81
+  title: RobterSESSION RB2_81
+  band: RobterSESSION DNA
+  difficulty: 10
+  tier: nightmare
+  tempo_bpm: 147
+  time_signature: 4/4
+  key: F# major
+  style_tags:
+  - alt
+  - indie
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_arps_pno_chords
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: drop_tuning_style
+      rhythm_traits:
+      - stop_time_hits
+      - sustained_drone
+      default_pattern: BL_ROOT_HH
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: arpeggiated_motion
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: wide_range
+      role: vocals
+      arp_pattern: ARP_M7
+    drums:
+      groove: straight_rock
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - F#(h)
+        - D#m(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - F#(q)
+        - G(e)
+        - B(e)
+        - G#m(q)
+        - F#(q)
+      - - G(q)
+        - B(e)
+        - G#m(e)
+        - F#(q)
+        - G(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - G#m(q)
+        - C#(e)
+        - F#(e)
+        - D#m(q)
+        - G#m(q)
+      - - C#(q)
+        - F#(e)
+        - D#m(e)
+        - G#m(q)
+        - C#(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - F#(q)
+        - B(e)
+        - G#m(e)
+        - C#(q)
+        - F#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - D#m(h)
+        - F#(h)
+- id: rb2_82
+  title: RobterSESSION RB2_82
+  band: RobterSESSION DNA
+  difficulty: 10
+  tier: nightmare
+  tempo_bpm: 142
+  time_signature: 4/4
+  key: D major
+  style_tags:
+  - punk
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: root_only
+      rhythm_traits:
+      - dotted_push
+      - straight_8ths
+      default_pattern: BL_ROOT_HH
+      section_overrides: {}
+    guitar:
+      role: chug_syncopation
+      solo_behavior: chromatic_flash
+      rhythm_cell: q-q
+    piano:
+      contour: bluesy_bends_sim
+      role: vocals
+      arp_pattern: ARP_DOM7
+    drums:
+      groove: punk_drive
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Dsus4(h)
+        - G(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Bm(q)
+        - G(e)
+        - D(e)
+        - Em(q)
+        - Bm(q)
+      - - G(q)
+        - D(e)
+        - Em(e)
+        - Bm(q)
+        - G(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - G(q)
+        - D(e)
+        - A(e)
+        - Bm(q)
+        - G(q)
+      - - D(q)
+        - A(e)
+        - Bm(e)
+        - G(q)
+        - D(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - D(q)
+        - G(e)
+        - Em(e)
+        - A(q)
+        - D(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - A(h)
+        - D(h)
+- id: rb2_83
+  title: RobterSESSION RB2_83
+  band: RobterSESSION DNA
+  difficulty: 10
+  tier: nightmare
+  tempo_bpm: 130
+  time_signature: 4/4
+  key: A# minor
+  style_tags:
+  - metal
+  - hard
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: pedal_drive
+      rhythm_traits:
+      - sustained_drone
+      - offbeat_accents
+      default_pattern: BL_ROOT_HH
+      section_overrides: {}
+    guitar:
+      role: melodic_hook
+      solo_behavior: modal_run
+      rhythm_cell: q-q
+    piano:
+      contour: rhythmic_syllables
+      role: vocals
+      arp_pattern: ARP_SYNC_A
+    drums:
+      groove: half_time
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - A#7(h)
+        - D#5(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - A#m(q)
+        - D#m(e)
+        - Cdim(e)
+        - F#(q)
+        - A#m(q)
+      - - D#m(q)
+        - Cdim(e)
+        - F#(e)
+        - A#m(q)
+        - D#m(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - D#m(q)
+        - A#m(e)
+        - Fm(e)
+        - F#(q)
+        - D#m(q)
+      - - A#m(q)
+        - Fm(e)
+        - F#(e)
+        - D#m(q)
+        - A#m(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - F#(q)
+        - Fm(e)
+        - Cdim(e)
+        - D#m(q)
+        - F#(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - F#(h)
+        - A#m(h)
+- id: rb2_84
+  title: RobterSESSION RB2_84
+  band: RobterSESSION DNA
+  difficulty: 10
+  tier: nightmare
+  tempo_bpm: 143
+  time_signature: 4/4
+  key: A minor
+  style_tags:
+  - prog
+  - rock
+  structure: IVCVCSCO
+  arrangement:
+    preset: bass_roots_gtr_chords_pno_arps
+    registers:
+      bass:
+        transpose_semitones: -12
+        min_note: E2
+      guitar:
+        transpose_semitones: 0
+        center_note: C3
+      piano:
+        transpose_semitones: 12
+        center_note: C4
+    variation_rules:
+    - dynamic_dropouts
+    - register_shifts
+    - rhythmic_displacement
+    - call_and_response
+    - breakdown_section
+  parts:
+    bass:
+      style: melodic_counterline
+      rhythm_traits:
+      - straight_8ths
+      - pickup_notes
+      - gallop_ees
+      default_pattern: BL_R75311
+      section_overrides:
+        bridge: BL_OCT_DROP
+    guitar:
+      role: rhythm_driver
+      solo_behavior: chromatic_flash
+      rhythm_cell: q-q
+    piano:
+      contour: chanty_static
+      role: vocals
+      arp_pattern: ARP_135_8
+    drums:
+      groove: gallop
+      fill_density: frequent
+      kick_pattern: K---
+  sections:
+    intro:
+    - repeats: 2
+      bars:
+      - - Em(h)
+        - C(h)
+    verse:
+    - repeats: 2
+      bars:
+      - - Am(q)
+        - F(e)
+        - Dm(e)
+        - Bdim(q)
+        - Am(q)
+      - - F(q)
+        - Dm(e)
+        - Bdim(e)
+        - Am(q)
+        - F(q)
+    chorus:
+    - repeats: 2
+      bars:
+      - - Am(q)
+        - Em(e)
+        - C(e)
+        - Dm(q)
+        - Am(q)
+      - - Em(q)
+        - C(e)
+        - Dm(e)
+        - Am(q)
+        - Em(q)
+    solo:
+    - repeats: 2
+      bars:
+      - - Am(q)
+        - Dm(e)
+        - Bdim(e)
+        - Em(q)
+        - Am(q)
+    outro:
+    - repeats: 2
+      bars:
+      - - Am(h)
+        - Dm(h)
