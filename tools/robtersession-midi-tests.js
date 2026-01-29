@@ -31,5 +31,22 @@ const assert = require('assert');
   const power = transcribeMidiStem({ notes: powerNotes, bpm: 120, keySignature: null, isDrumStem: false });
   assert.strictEqual(power.events[0].requiredInput.chordType, 'power', 'Expected power chord mapping');
 
+  const arpeggioNotes = [
+    buildNote(60, 0, 0.4),
+    buildNote(64, 0.08, 0.48),
+    buildNote(67, 0.16, 0.6)
+  ];
+  const arpeggio = transcribeMidiStem({ notes: arpeggioNotes, bpm: 120, keySignature: null, isDrumStem: false });
+  assert.strictEqual(arpeggio.events.length, 3, 'Expected arpeggio notes to preserve rhythm');
+  assert.ok(arpeggio.events.every((event) => event.type === 'NOTE'), 'Expected arpeggio notes to be notes');
+
+  const unsupportedNotes = [
+    buildNote(60, 0, 1),
+    buildNote(61, 0, 1)
+  ];
+  const unsupported = transcribeMidiStem({ notes: unsupportedNotes, bpm: 120, keySignature: null, isDrumStem: false });
+  assert.strictEqual(unsupported.events[0].type, 'NOTE', 'Expected unsupported chord to fall back to a note');
+  assert.strictEqual(unsupported.events[0].approxLevel, 'root-fallback', 'Expected root note fallback for unsupported chord');
+
   console.log('RobterSESSION MIDI tests passed');
 })();

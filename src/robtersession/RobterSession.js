@@ -1581,7 +1581,9 @@ export default class RobterSession {
     this.robterspiel.octaveOffset = this.octaveOffset;
     this.audio.setMidiPitchBend?.(0);
     this.audio.setMidiPitchBend?.(0, INSTRUMENT_CHANNELS[this.instrument] ?? 0);
-    const performanceEvents = this.applyPerformanceDifficulty(this.songData.events);
+    const performanceEvents = this.useStemPlayback
+      ? this.songData.events
+      : this.applyPerformanceDifficulty(this.songData.events);
     this.events = performanceEvents.map((event) => ({
       ...event,
       hit: false,
