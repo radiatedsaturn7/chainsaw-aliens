@@ -335,7 +335,9 @@ export default class RobterSession {
     this.activeStemNotes = null;
     this.activeStemProgram = null;
     this.activeStemKey = null;
+    this.activeStemName = null;
     this.midiPlaybackIndex = 0;
+    this.stemPlaybackIndices = {};
     this.useStemPlayback = false;
     this.registerInputBus();
   }
@@ -441,17 +443,32 @@ export default class RobterSession {
       for (const [instrumentName, stem] of stems.entries()) {
         const midiData = parseMidi(stem.bytes);
         const isDrumStem = ['Drums', 'Percussion'].includes(instrumentName);
+        const mappedInstrument = STEM_INSTRUMENT_MAP[instrumentName] || 'piano';
         const transcribed = transcribeMidiStem({
           notes: midiData.notes,
           bpm: midiData.bpm,
           keySignature: midiData.keySignature,
-          isDrumStem
+          isDrumStem,
+          options: {
+            forceNoteMode: mappedInstrument === 'bass',
+            trimOverlaps: mappedInstrument === 'bass'
+          }
         });
         const difficulty = transcribed.stats.difficulty;
         const keyLabel = formatKeyLabel(transcribed.key);
         console.log('[RobterSESSION] Stem', instrumentName, 'Key', keyLabel, 'BPM', midiData.bpm.toFixed(1), 'TimeSig', `${midiData.timeSignature.beats}/${midiData.timeSignature.unit}`);
         console.log('[RobterSESSION] Mapping stats', transcribed.stats.approxCounts);
-        this.stemData.set(instrumentName, { instrumentName, midiData, transcribed, bytes: stem.bytes });
+        const playbackProgram = midiData.notes.find((note) => Number.isFinite(note.program))?.program
+          ?? STEM_PROGRAM_MAP[mappedInstrument]
+          ?? 0;
+        this.stemData.set(instrumentName, {
+          instrumentName,
+          mappedInstrument,
+          midiData,
+          transcribed,
+          bytes: stem.bytes,
+          playbackProgram
+        });
         stemEntries.push({
           name: instrumentName,
           label: instrumentName,
@@ -512,11 +529,16 @@ export default class RobterSession {
     this.modeSelectionIndex = this.selectedMode === 'note' ? 0 : 1;
     this.playMode = 'play';
     this.activeStemNotes = stem.midiData.notes;
-    this.activeStemProgram = stem.midiData.notes.find((note) => Number.isFinite(note.program))?.program
+    this.activeStemProgram = stem.playbackProgram
       ?? STEM_PROGRAM_MAP[mappedInstrument]
       ?? 0;
     this.activeStemKey = key;
+    this.activeStemName = stemName;
     this.midiPlaybackIndex = 0;
+    this.stemPlaybackIndices = {};
+    this.stemData.forEach((entry) => {
+      this.stemPlaybackIndices[entry.instrumentName] = 0;
+    });
     this.useStemPlayback = true;
     return true;
   }
@@ -544,6 +566,8 @@ export default class RobterSession {
     this.stemSelectionIndex = 0;
     this.stemActionIndex = 0;
     this.useStemPlayback = false;
+    this.activeStemName = null;
+    this.stemPlaybackIndices = {};
   }
 
   update(dt) {
@@ -1494,28 +1518,33 @@ export default class RobterSession {
   }
 
   advanceStemPlayback(prevTime, nextTime) {
-    if (!this.useStemPlayback || !this.activeStemNotes || nextTime <= 0) return;
-    const notes = this.activeStemNotes;
+    if (!this.useStemPlayback || nextTime <= 0) return;
     const volume = this.playMode === 'listen' ? 0.7 : this.playMode === 'play' ? 0.35 : 0.45;
-    let index = this.midiPlaybackIndex;
-    while (index < notes.length) {
-      const note = notes[index];
-      if (note.tStartSec > nextTime) break;
-      if (note.tStartSec >= Math.max(0, prevTime)) {
-        const duration = Math.max(0.05, note.tEndSec - note.tStartSec);
-        const channel = this.instrument === 'drums' ? 9 : (INSTRUMENT_CHANNELS[this.instrument] ?? 0);
-        const program = this.activeStemProgram ?? STEM_PROGRAM_MAP[this.instrument] ?? 0;
-        this.audio.playGmNote?.({
-          pitch: note.midi,
-          duration,
-          volume: Math.min(1, Math.max(0.1, (note.vel ?? 0.8) * volume)),
-          program,
-          channel
-        });
+    this.stemData.forEach((stem) => {
+      const notes = stem.midiData?.notes || [];
+      let index = this.stemPlaybackIndices[stem.instrumentName] ?? 0;
+      while (index < notes.length) {
+        const note = notes[index];
+        if (note.tStartSec > nextTime) break;
+        if (note.tStartSec >= Math.max(0, prevTime)) {
+          const duration = Math.max(0.05, note.tEndSec - note.tStartSec);
+          const isActiveStem = stem.instrumentName === this.activeStemName;
+          const mappedInstrument = stem.mappedInstrument || STEM_INSTRUMENT_MAP[stem.instrumentName] || 'piano';
+          const channel = mappedInstrument === 'drums' ? 9 : (INSTRUMENT_CHANNELS[mappedInstrument] ?? 0);
+          const program = stem.playbackProgram ?? STEM_PROGRAM_MAP[mappedInstrument] ?? 0;
+          const mixVolume = isActiveStem ? volume : volume * 0.6;
+          this.audio.playGmNote?.({
+            pitch: note.midi,
+            duration,
+            volume: Math.min(1, Math.max(0.1, (note.vel ?? 0.8) * mixVolume)),
+            program,
+            channel
+          });
+        }
+        index += 1;
       }
-      index += 1;
-    }
-    this.midiPlaybackIndex = index;
+      this.stemPlaybackIndices[stem.instrumentName] = index;
+    });
   }
 
   prepareSong() {
@@ -1554,7 +1583,9 @@ export default class RobterSession {
     this.scalePromptTime = 0;
     this.useStemPlayback = false;
     this.activeStemNotes = null;
+    this.activeStemName = null;
     this.midiPlaybackIndex = 0;
+    this.stemPlaybackIndices = {};
   }
 
   startSong({ playMode = 'play' } = {}) {
@@ -1572,6 +1603,10 @@ export default class RobterSession {
     this.starPowerUsed = 0;
     if (this.useStemPlayback) {
       this.midiPlaybackIndex = 0;
+      this.stemPlaybackIndices = {};
+      this.stemData.forEach((entry) => {
+        this.stemPlaybackIndices[entry.instrumentName] = 0;
+      });
     }
     this.mode = this.instrument === 'drums' ? 'drum' : this.selectedMode;
     if (this.instrument !== 'drums') {

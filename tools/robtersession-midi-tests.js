@@ -1,4 +1,8 @@
 const assert = require('assert');
+const fs = require('fs/promises');
+const path = require('path');
+const JSZip = require('jszip');
+const { Midi } = require('@tonejs/midi');
 
 (async () => {
   const { detectKey, transcribeMidiStem } = await import('../src/transcribe/robterTranscriber.js');
@@ -47,6 +51,48 @@ const assert = require('assert');
   const unsupported = transcribeMidiStem({ notes: unsupportedNotes, bpm: 120, keySignature: null, isDrumStem: false });
   assert.strictEqual(unsupported.events[0].type, 'NOTE', 'Expected unsupported chord to fall back to a note');
   assert.strictEqual(unsupported.events[0].approxLevel, 'root-fallback', 'Expected root note fallback for unsupported chord');
+
+  const zipPath = path.join(__dirname, '..', 'assets', 'songs', 'Skyward by Toxic Bunnies.zip');
+  const zipBuffer = await fs.readFile(zipPath);
+  const zip = await JSZip.loadAsync(zipBuffer);
+  const bassEntry = Object.values(zip.files).find((file) => !file.dir && /\bBass\b/i.test(file.name));
+  assert.ok(bassEntry, 'Expected a Bass stem in Skyward by Toxic Bunnies.zip');
+  const bassBytes = await bassEntry.async('uint8array');
+  const bassMidi = new Midi(bassBytes);
+  const bassNotes = [];
+  bassMidi.tracks.forEach((track) => {
+    const channel = Number.isFinite(track.channel) ? track.channel : 0;
+    const program = track.instrument?.number ?? null;
+    track.notes.forEach((note) => {
+      bassNotes.push({
+        tStartSec: note.time,
+        tEndSec: note.time + note.duration,
+        midi: note.midi,
+        vel: note.velocity,
+        channel: note.channel ?? channel,
+        program
+      });
+    });
+  });
+  const bassKeySignature = bassMidi.header.keySignatures?.[0]
+    ? {
+        key: bassMidi.header.keySignatures[0].key,
+        scale: bassMidi.header.keySignatures[0].scale,
+        ticks: bassMidi.header.keySignatures[0].ticks
+      }
+    : null;
+  const bassTranscribed = transcribeMidiStem({
+    notes: bassNotes,
+    bpm: bassMidi.header.tempos?.[0]?.bpm ?? 120,
+    keySignature: bassKeySignature,
+    isDrumStem: false,
+    options: { forceNoteMode: true, trimOverlaps: true }
+  });
+  const bassNoteEvents = bassTranscribed.events.filter((event) => event.type === 'NOTE').length;
+  const bassChordEvents = bassTranscribed.events.filter((event) => event.type === 'CHORD').length;
+  assert.ok(bassNoteEvents > 0, 'Expected bass stem to yield note events');
+  assert.strictEqual(bassChordEvents, 0, 'Expected bass stem to have no chord events in note mode');
+  console.log(`Bass stem note events: ${bassNoteEvents}`);
 
   console.log('RobterSESSION MIDI tests passed');
 })();
