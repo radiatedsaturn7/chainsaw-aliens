@@ -208,6 +208,55 @@ const getTimingWindows = (tier) => DIFFICULTY_WINDOWS.find((entry) => entry.tier
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
+const SECTION_VELOCITY_BIAS = {
+  intro: -6,
+  verse: 0,
+  prechorus: 6,
+  chorus: 12,
+  bridge: -12,
+  solo: 4,
+  outro: -6
+};
+
+const SECTION_ACCENT_MAP = {
+  intro: [0],
+  verse: [0, 2],
+  prechorus: [0, 2],
+  chorus: [0, 2],
+  bridge: [0],
+  solo: [0, 2],
+  outro: [0]
+};
+
+const SECTION_DENSITY_MULTIPLIER = {
+  bridge: 0.88
+};
+
+const getBeatAccentBias = (timeBeat) => {
+  const beatInBar = ((timeBeat % 4) + 4) % 4;
+  const snapped = Math.round(beatInBar * 2) / 2;
+  if (snapped === 0) return 16;
+  if (snapped === 2) return 10;
+  if (snapped === 1 || snapped === 3) return 6;
+  if (snapped % 1 !== 0) return -4;
+  return 0;
+};
+
+const getSectionAccentBonus = (sectionName, timeBeat) => {
+  const accents = SECTION_ACCENT_MAP[sectionName] || SECTION_ACCENT_MAP.verse;
+  const beatInBar = ((timeBeat % 4) + 4) % 4;
+  const snapped = Math.round(beatInBar * 2) / 2;
+  return accents.includes(snapped) ? 8 : 0;
+};
+
+const computeEventVelocity = ({ timeBeat, sectionName, baseVelocity }) => {
+  const sectionBias = SECTION_VELOCITY_BIAS[sectionName] ?? 0;
+  const densityMultiplier = SECTION_DENSITY_MULTIPLIER[sectionName] ?? 1;
+  const velocity = (baseVelocity + getBeatAccentBias(timeBeat) + getSectionAccentBonus(sectionName, timeBeat) + sectionBias)
+    * densityMultiplier;
+  return Math.round(clamp(velocity, 30, 127));
+};
+
 const DEFAULT_REGISTERS = {
   bass: { transpose_semitones: -20, min_note: 'E2' },
   guitar: { transpose_semitones: 0, center_note: 'C3' },
@@ -749,12 +798,18 @@ const buildChordEventsFromSchema = ({ schema, tempo, instrument, register }) => 
   timeline.forEach((entry) => {
     const inputMap = CHORD_INPUTS[entry.chordType] || CHORD_INPUTS.triad;
     const lane = NOTE_LANES.indexOf(inputMap.button);
+    const velocity = computeEventVelocity({
+      timeBeat: entry.timeBeat,
+      sectionName: entry.section,
+      baseVelocity: 92
+    });
     events.push({
       timeBeat: entry.timeBeat,
       timeSec: entry.timeSec,
       lane: lane >= 0 ? lane : 0,
       type: 'CHORD',
       section: entry.section,
+      velocity,
       requiredInput: {
         mode: instrument === 'drums' ? 'drum' : 'chord',
         degree: entry.degree,
@@ -827,20 +882,26 @@ const buildDrumEvents = ({ rng, tier, tempo, sections }) => {
         isSectionEnd: bar === section.bars - 1 && sectionIndex < sections.length - 1
       });
       const laneMap = [
-        { lane: 0, offsets: drumPattern.kick },
-        { lane: 1, offsets: drumPattern.snare },
-        { lane: 2, offsets: drumPattern.hat },
-        { lane: 3, offsets: drumPattern.cymbal }
+        { lane: 0, offsets: drumPattern.kick, baseVelocity: 104 },
+        { lane: 1, offsets: drumPattern.snare, baseVelocity: 100 },
+        { lane: 2, offsets: drumPattern.hat, baseVelocity: 76 },
+        { lane: 3, offsets: drumPattern.cymbal, baseVelocity: 94 }
       ];
       laneMap.forEach((laneDef) => {
         laneDef.offsets.forEach((offset) => {
           const timeBeat = barStartBeat + offset;
+          const velocity = computeEventVelocity({
+            timeBeat,
+            sectionName: section.name,
+            baseVelocity: laneDef.baseVelocity
+          });
           events.push({
             timeBeat,
             timeSec: timeBeat * tempo.secondsPerBeat,
             lane: laneDef.lane,
             type: 'NOTE',
             section: section.name,
+            velocity,
             requiredInput: {
               mode: 'drum',
               lane: laneDef.lane,
@@ -1097,7 +1158,14 @@ const buildPatternTrack = ({
       tempo,
       register
     });
-    events.push(...patternEvents);
+    patternEvents.forEach((event) => {
+      const velocity = computeEventVelocity({
+        timeBeat: event.timeBeat,
+        sectionName: event.section,
+        baseVelocity: 88
+      });
+      events.push({ ...event, velocity });
+    });
   });
   return events;
 };
@@ -1138,7 +1206,14 @@ const buildTracksFromSchema = ({ rng, tier, instrument, schema }) => {
           tempo,
           register
         });
-        trackEvents.push(...patternEvents);
+        patternEvents.forEach((event) => {
+          const velocity = computeEventVelocity({
+            timeBeat: event.timeBeat,
+            sectionName: event.section,
+            baseVelocity: 88
+          });
+          trackEvents.push({ ...event, velocity });
+        });
       });
       tracks[trackInstrument] = trackEvents;
       return;
