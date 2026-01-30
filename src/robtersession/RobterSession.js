@@ -383,6 +383,11 @@ export default class RobterSession {
     this.buttonPulse = { A: 0, B: 0, X: 0, Y: 0 };
     this.wrongNotes = [];
     this.trackEventIndex = {};
+    this.directionalCueState = {
+      key: null,
+      stuckDurationSec: 0,
+      lastSongTime: null
+    };
     this.hudSettings = loadHudSettings();
     this.calibration = loadCalibration();
     this.calibrationState = {
@@ -1113,11 +1118,26 @@ export default class RobterSession {
     const targetDirection = active.requiredInput?.degree ?? null;
     const isWrong = targetDirection !== currentDirection;
     const stuck = songTime >= active.timeSec && isWrong;
+    const cueKey = `${active.timeSec}-${active.directionalLabel}`;
+    const cueState = this.directionalCueState;
+    if (cueState.key !== cueKey) {
+      cueState.key = cueKey;
+      cueState.stuckDurationSec = 0;
+      cueState.lastSongTime = songTime;
+    }
+    const timeDelta = Math.max(0, songTime - (cueState.lastSongTime ?? songTime));
+    if (stuck) {
+      cueState.stuckDurationSec += timeDelta;
+    } else {
+      cueState.stuckDurationSec = 0;
+    }
+    cueState.lastSongTime = songTime;
     return {
       label: active.directionalLabel,
       timeSec: active.timeSec,
       isWrong,
       stuck,
+      stuckDurationSec: cueState.stuckDurationSec,
       laneIndex: 0
     };
   }
@@ -3360,7 +3380,7 @@ export default class RobterSession {
     const directionLabel = getStickDirectionIcon(currentDirection);
     const lanes = laneOffset ? [directionLabel, ...baseLanes] : baseLanes;
     const laneCount = lanes.length;
-    const laneColors = laneOffset ? ['#6f7a88', ...this.getLaneColors()] : this.getLaneColors();
+    const laneColors = laneOffset ? ['#d7f2ff', ...this.getLaneColors()] : this.getLaneColors();
     const highwayTint = this.getHighwayTint();
     const visualSongTime = this.getVisualSongTime();
     const directionalCue = laneOffset ? this.getDirectionalCue(visualSongTime) : null;
