@@ -284,7 +284,10 @@ const trimOverlappingNotes = (notes) => {
   for (let i = 0; i < sorted.length - 1; i += 1) {
     const current = sorted[i];
     const next = sorted[i + 1];
-    if (next.tStartSec < current.tEndSec) {
+    const samePitch = next.midi === current.midi
+      && (next.channel ?? null) === (current.channel ?? null)
+      && (next.program ?? null) === (current.program ?? null);
+    if (samePitch && next.tStartSec < current.tEndSec) {
       current.tEndSec = Math.max(current.tStartSec, next.tStartSec);
     }
   }
@@ -427,7 +430,8 @@ export const transcribeMidiStem = ({
   const key = detectKey({ keySignature, notes });
   const timing = buildTiming(bpm || 120);
   const quantized = quantizeNotes(notes, bpm || 120, options.quantize);
-  const processedNotes = options.trimOverlaps ? trimOverlappingNotes(quantized) : quantized;
+  const shouldTrim = options.trimOverlaps ?? true;
+  const processedNotes = shouldTrim ? trimOverlappingNotes(quantized) : quantized;
   const octaveOffset = resolveInitialOctaveOffset({
     notes: processedNotes,
     key,

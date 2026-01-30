@@ -25,8 +25,8 @@ import {
   resolveRequiredInputToMusicalAction
 } from './inputResolver.js';
 import { loadSongManifest } from '../songs/songManifest.js';
-import { loadZipSong } from '../songs/songLoader.js';
-import { parseMidi } from '../midi/midiParser.js';
+import { buildZipFromStems, loadZipSong, loadZipSongFromBytes } from '../songs/songLoader.js';
+import { buildMidiBytes, parseMidi } from '../midi/midiParser.js';
 import { formatKeyLabel, transcribeMidiStem } from '../transcribe/robterTranscriber.js';
 
 const PROGRESS_KEY = 'robtersession-progress';
@@ -51,6 +51,8 @@ const HEALTH_LOSS = 0.12;
 const MAX_MULTIPLIER = 4;
 const STREAK_PER_MULTIPLIER = 10;
 const REQUIRED_OCTAVE_OFFSET = 0;
+const IMPROV_MEASURES = 5;
+const IMPROV_FADE_SECONDS = 0.6;
 const STICK_DIRECTION_LABELS = {
   1: 'N',
   2: 'NE',
@@ -81,6 +83,26 @@ const parseNoteOctave = (noteLabel) => {
   const octave = Number(match[3]);
   return Number.isFinite(octave) ? octave : null;
 };
+const trimOverlappingMidiNotes = (notes) => {
+  const sorted = notes
+    .map((note) => ({ ...note }))
+    .sort((a, b) => a.tStartSec - b.tStartSec);
+  for (let i = 0; i < sorted.length - 1; i += 1) {
+    const current = sorted[i];
+    const next = sorted[i + 1];
+    const samePitch = next.midi === current.midi
+      && (next.channel ?? null) === (current.channel ?? null)
+      && (next.program ?? null) === (current.program ?? null);
+    if (samePitch && next.tStartSec < current.tEndSec) {
+      current.tEndSec = Math.max(current.tStartSec, next.tStartSec);
+    }
+  }
+  return sorted;
+};
+const formatZipName = (name) => String(name || 'robter-midi')
+  .replace(/\s+/g, '-')
+  .replace(/[^a-zA-Z0-9._-]/g, '')
+  .replace(/\.zip$/i, '');
 
 const radialIndexFromStick = (x, y, count) => {
   if (!count) return 0;
@@ -452,7 +474,25 @@ export default class RobterSession {
     this.midiPlaybackIndex = 0;
     this.stemPlaybackIndices = {};
     this.useStemPlayback = false;
+    this.uploadedZip = null;
+    this.zipInput = this.createZipInput();
+    this.improvWindows = [];
     this.registerInputBus();
+  }
+
+  createZipInput() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.zip,application/zip';
+    input.style.display = 'none';
+    document.body.appendChild(input);
+    input.addEventListener('change', async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      await this.loadUploadedZip(file);
+      event.target.value = '';
+    });
+    return input;
   }
 
   getLaneOffset() {
@@ -583,58 +623,121 @@ export default class RobterSession {
     if (!entry) return;
     this.songLoadStatus = 'Loading song zip...';
     this.selectedSong = entry;
+    this.uploadedZip = null;
     this.stemData.clear();
     this.stemList = [];
     this.stemSelectionIndex = 0;
     try {
       const zipUrl = `assets/songs/${entry.filename}`;
       const { stems, meta } = await loadZipSong(zipUrl);
-      console.log('[RobterSESSION] Stems found:', meta.instruments);
-      const stemEntries = [];
-      for (const [instrumentName, stem] of stems.entries()) {
-        const midiData = parseMidi(stem.bytes);
-        const isDrumStem = ['Drums', 'Percussion'].includes(instrumentName);
-        const mappedInstrument = STEM_INSTRUMENT_MAP[instrumentName] || 'piano';
-        const transcribed = transcribeMidiStem({
-          notes: midiData.notes,
-          bpm: midiData.bpm,
-          keySignature: midiData.keySignature,
-          timeSignature: midiData.timeSignature,
-          isDrumStem,
-          options: {
-            forceNoteMode: mappedInstrument === 'bass',
-            trimOverlaps: mappedInstrument === 'bass',
-            collapseChords: mappedInstrument === 'bass'
-          }
-        });
-        const difficulty = transcribed.stats.difficulty;
-        const keyLabel = formatKeyLabel(transcribed.key);
-        console.log('[RobterSESSION] Stem', instrumentName, 'Key', keyLabel, 'BPM', midiData.bpm.toFixed(1), 'TimeSig', `${midiData.timeSignature.beats}/${midiData.timeSignature.unit}`);
-        console.log('[RobterSESSION] Mapping stats', transcribed.stats.approxCounts);
-        const playbackProgram = midiData.notes.find((note) => Number.isFinite(note.program))?.program
-          ?? STEM_PROGRAM_MAP[mappedInstrument]
-          ?? 0;
-        this.stemData.set(instrumentName, {
-          instrumentName,
-          mappedInstrument,
-          midiData,
-          transcribed,
-          bytes: stem.bytes,
-          playbackProgram
-        });
-        stemEntries.push({
-          name: instrumentName,
-          label: instrumentName,
-          difficultyLabel: `${difficulty.label} (${difficulty.rating})`,
-          keyLabel
-        });
-      }
-      this.stemList = stemEntries;
-      this.songLoadStatus = stems.size ? '' : 'No MIDI stems found in zip.';
-      this.state = 'stem-select';
+      await this.populateStemData({ stems, meta, sourceLabel: entry.filename });
     } catch (error) {
       console.error('[RobterSESSION] Failed to load zip song', error);
       this.songLoadStatus = 'Failed to load zip song.';
+    }
+  }
+
+  async loadUploadedZip(file) {
+    if (!file) return;
+    this.songLoadStatus = `Loading ${file.name}...`;
+    const title = file.name.replace(/\.zip$/i, '');
+    this.selectedSong = { title, filename: file.name, uploaded: true };
+    this.uploadedZip = { name: file.name };
+    this.stemData.clear();
+    this.stemList = [];
+    this.stemSelectionIndex = 0;
+    try {
+      const bytes = await file.arrayBuffer();
+      const { stems, meta } = await loadZipSongFromBytes(bytes);
+      await this.populateStemData({ stems, meta, sourceLabel: file.name });
+    } catch (error) {
+      console.error('[RobterSESSION] Failed to load uploaded zip', error);
+      this.songLoadStatus = 'Failed to load uploaded zip.';
+    }
+  }
+
+  async populateStemData({ stems, meta, sourceLabel = '' }) {
+    console.log('[RobterSESSION] Stems found:', meta.instruments);
+    const stemEntries = [];
+    for (const [instrumentName, stem] of stems.entries()) {
+      const midiData = parseMidi(stem.bytes);
+      const isDrumStem = ['Drums', 'Percussion'].includes(instrumentName);
+      const mappedInstrument = STEM_INSTRUMENT_MAP[instrumentName] || 'piano';
+      const transcribed = transcribeMidiStem({
+        notes: midiData.notes,
+        bpm: midiData.bpm,
+        keySignature: midiData.keySignature,
+        timeSignature: midiData.timeSignature,
+        isDrumStem,
+        options: {
+          forceNoteMode: mappedInstrument === 'bass',
+          collapseChords: mappedInstrument === 'bass'
+        }
+      });
+      const difficulty = transcribed.stats.difficulty;
+      const keyLabel = formatKeyLabel(transcribed.key);
+      console.log('[RobterSESSION] Stem', instrumentName, 'Key', keyLabel, 'BPM', midiData.bpm.toFixed(1), 'TimeSig', `${midiData.timeSignature.beats}/${midiData.timeSignature.unit}`);
+      console.log('[RobterSESSION] Mapping stats', transcribed.stats.approxCounts);
+      const playbackProgram = midiData.notes.find((note) => Number.isFinite(note.program))?.program
+        ?? STEM_PROGRAM_MAP[mappedInstrument]
+        ?? 0;
+      this.stemData.set(instrumentName, {
+        instrumentName,
+        mappedInstrument,
+        midiData,
+        transcribed,
+        bytes: stem.bytes,
+        filename: stem.filename,
+        playbackProgram,
+        sourceLabel
+      });
+      stemEntries.push({
+        name: instrumentName,
+        label: instrumentName,
+        difficultyLabel: `${difficulty.label} (${difficulty.rating})`,
+        keyLabel
+      });
+    }
+    this.stemList = stemEntries;
+    this.songLoadStatus = stems.size ? '' : 'No MIDI stems found in zip.';
+    this.state = 'stem-select';
+  }
+
+  getExportNotesForStem(stem) {
+    if (!stem?.midiData?.notes?.length) return [];
+    const notes = stem.midiData.notes.map((note) => ({ ...note }));
+    return trimOverlappingMidiNotes(notes);
+  }
+
+  async downloadStemZip() {
+    if (!this.stemData.size) return;
+    try {
+      const stems = [];
+      this.stemData.forEach((stem) => {
+        const notes = this.getExportNotesForStem(stem);
+        const bytes = buildMidiBytes({
+          notes,
+          bpm: stem.midiData.bpm,
+          timeSignature: stem.midiData.timeSignature,
+          keySignature: stem.midiData.keySignature,
+          program: stem.playbackProgram ?? 0,
+          channel: stem.midiData.notes.find((note) => Number.isFinite(note.channel))?.channel ?? 0
+        });
+        const filename = stem.filename || `${stem.instrumentName}.mid`;
+        stems.push({ filename, bytes });
+      });
+      const blob = await buildZipFromStems(stems);
+      const link = document.createElement('a');
+      const baseName = formatZipName(this.selectedSong?.title || this.selectedSong?.filename || 'robter-midi');
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = `${baseName}-robter.zip`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch (error) {
+      console.error('[RobterSESSION] Failed to download MIDI zip', error);
     }
   }
 
@@ -654,6 +757,7 @@ export default class RobterSession {
       mode: modeEntry,
       sections,
       events,
+      timeSignature: stem.midiData.timeSignature,
       schema: { arrangement: { registers: {} } }
     };
     this.songData.timing = getTimingForDifficulty(stats.difficulty.rating);
@@ -808,6 +912,10 @@ export default class RobterSession {
       this.audio.ui();
       return;
     }
+    if (this.input.wasPressedCode('KeyU')) {
+      this.zipInput?.click();
+      return;
+    }
     if (this.input.wasPressed('interact')) {
       const entry = this.songManifest[this.songSelectionIndex];
       if (!entry) return;
@@ -851,8 +959,13 @@ export default class RobterSession {
       const stem = this.stemList[this.stemSelectionIndex];
       if (!stem) return;
       const action = this.stemActionIndex;
-      if (action === 2) {
+      if (action === 3) {
         this.state = 'song-select';
+        this.audio.ui();
+        return;
+      }
+      if (action === 2) {
+        this.downloadStemZip();
         this.audio.ui();
         return;
       }
@@ -1374,7 +1487,8 @@ export default class RobterSession {
       const hitResult = this.tryHit(normalized, inputAction);
       const chartTime = this.getJudgementSongTime();
       const inChartWindow = chartTime >= this.chartWindow.start && chartTime <= this.chartWindow.end;
-      if (!hitResult.hit && this.playMode !== 'listen' && inChartWindow) {
+      const inImprovWindow = this.isImprovActiveAt(chartTime);
+      if (!hitResult.hit && this.playMode !== 'listen' && inChartWindow && !inImprovWindow) {
         const expectedEvent = this.getClosestExpectedEvent();
         const expectedLabel = expectedEvent?.expectedAction?.label || expectedEvent?.displayLabel || '—';
         this.registerWrongNote({
@@ -1519,6 +1633,9 @@ export default class RobterSession {
   }
 
   applyReductionPass(events = []) {
+    if (this.instrument === 'bass' && this.useStemPlayback) {
+      return events;
+    }
     const profile = this.getReductionProfile();
     if (!profile || profile.id === 'off') {
       return events;
@@ -1636,6 +1753,79 @@ export default class RobterSession {
       lastBeat = event.timeBeat;
     });
     return filtered;
+  }
+
+  computeImprovWindows(events = []) {
+    const timing = this.songData?.tempo || { secondsPerBeat: 0.5 };
+    const timeSignature = this.songData?.timeSignature || { beats: 4, unit: 4 };
+    const beatsPerBar = timeSignature?.beats || 4;
+    const minGapSec = beatsPerBar * IMPROV_MEASURES * timing.secondsPerBeat;
+    if (!events.length || minGapSec <= 0) return [];
+    const scored = events.filter((event) => !event.visualOnly).sort((a, b) => a.timeSec - b.timeSec);
+    if (!scored.length) return [];
+    const windows = [];
+    let previousEnd = 0;
+    scored.forEach((event) => {
+      const sustainSeconds = event.sustain ? event.sustain * timing.secondsPerBeat : 0;
+      const gap = event.timeSec - previousEnd;
+      if (gap >= minGapSec) {
+        windows.push({ start: previousEnd, end: event.timeSec });
+      }
+      previousEnd = Math.max(previousEnd, event.timeSec + sustainSeconds);
+    });
+    const tailGap = this.songLength > previousEnd ? this.songLength - previousEnd : 0;
+    if (tailGap >= minGapSec) {
+      windows.push({ start: previousEnd, end: this.songLength });
+    }
+    return windows;
+  }
+
+  isImprovActiveAt(timeSec) {
+    return this.improvWindows.some((window) => timeSec >= window.start && timeSec <= window.end);
+  }
+
+  getImprovLaneAlpha(timeSec) {
+    if (!this.improvWindows.length) return 1;
+    const fade = IMPROV_FADE_SECONDS;
+    for (const window of this.improvWindows) {
+      if (timeSec < window.start - fade || timeSec > window.end + fade) continue;
+      if (timeSec >= window.start && timeSec <= window.end) {
+        const fadeIn = clamp((timeSec - window.start) / fade, 0, 1);
+        const fadeOut = clamp((window.end - timeSec) / fade, 0, 1);
+        const edgeBlend = Math.min(fadeIn, fadeOut);
+        return clamp(1 - edgeBlend, 0, 1);
+      }
+      if (timeSec < window.start) {
+        return clamp((window.start - timeSec) / fade, 0, 1);
+      }
+      if (timeSec > window.end) {
+        return clamp((timeSec - window.end) / fade, 0, 1);
+      }
+    }
+    return 1;
+  }
+
+  mergeModifierEvents(events = []) {
+    if (!events.length) return [];
+    const secondsPerBeat = this.songData?.tempo?.secondsPerBeat || 0.5;
+    const sorted = [...events].sort((a, b) => a.timeSec - b.timeSec);
+    const merged = [];
+    const lastByLane = new Map();
+    sorted.forEach((event) => {
+      const laneKey = event.lane ?? 0;
+      const duration = event.sustain ? event.sustain * secondsPerBeat : 0;
+      const endTime = event.timeSec + duration;
+      const last = lastByLane.get(laneKey);
+      if (last && event.timeSec <= last.endTime + 0.05) {
+        last.endTime = Math.max(last.endTime, endTime);
+        last.event.sustain = Math.max(0, (last.endTime - last.event.timeSec) / secondsPerBeat);
+        return;
+      }
+      const entry = { event: { ...event }, endTime };
+      lastByLane.set(laneKey, entry);
+      merged.push(entry.event);
+    });
+    return merged;
   }
 
   getClosestExpectedEvent() {
@@ -2192,7 +2382,8 @@ export default class RobterSession {
       lastDegree = event.requiredInput?.degree ?? lastDegree;
     });
     if (modifierEvents.length) {
-      this.events = [...this.events, ...modifierEvents];
+      const mergedModifiers = this.mergeModifierEvents(modifierEvents);
+      this.events = [...this.events, ...mergedModifiers];
     }
     this.trackEventIndex = INSTRUMENTS.reduce((acc, instrument) => {
       acc[instrument] = 0;
@@ -2208,6 +2399,7 @@ export default class RobterSession {
       end: lastEventEnd + sustainSeconds
     };
     this.songLength = (lastEvent?.timeSec ?? 0) + 4;
+    this.improvWindows = this.computeImprovWindows(this.events);
     if (this.songData.modeChange) {
       this.modeChangeNotice = {
         time: this.songData.modeChange.beat * this.songData.tempo.secondsPerBeat,
@@ -3153,7 +3345,8 @@ export default class RobterSession {
     this.songSelectView.draw(ctx, width, height, {
       songs: this.songManifest,
       selectedIndex: this.songSelectionIndex,
-      status
+      status,
+      showUpload: true
     });
   }
 
@@ -3704,6 +3897,7 @@ export default class RobterSession {
     const laneColors = this.getLaneColors();
     const highwayTint = this.getHighwayTint();
     const visualSongTime = this.getVisualSongTime();
+    const laneAlpha = this.getImprovLaneAlpha(visualSongTime);
     const directionalCues = laneOffset ? this.getDirectionalCues(visualSongTime) : [];
     const activeDirectionalCue = directionalCues.find((cue) => cue.isWrong || cue.stuck);
     if (activeDirectionalCue?.isWrong) {
@@ -3731,11 +3925,18 @@ export default class RobterSession {
     }
 
     const beatDuration = this.songData.tempo.secondsPerBeat;
+    const modifiers = this.getModifierState();
     const lanePulse = this.instrument === 'drums'
       ? NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1))
-      : [0, 0, 0, ...NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1)), 0];
+      : [
+        modifiers.dleft ? 1 : 0,
+        0,
+        modifiers.lb ? 1 : 0,
+        ...NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1)),
+        modifiers.rb ? 1 : 0
+      ];
     this.highwayRenderer.drawBeatLines(ctx, layout, visualSongTime, beatDuration);
-    this.highwayRenderer.drawLanes(ctx, width, height, layout, laneColors, lanes, lanePulse);
+    this.highwayRenderer.drawLanes(ctx, width, height, layout, laneColors, lanes, lanePulse, { alpha: laneAlpha });
     const requiredOctaveLineY = Number.isFinite(this.requiredOctaveOffset)
       ? layout.hitLineY - this.requiredOctaveOffset * 18
       : null;
@@ -3844,7 +4045,6 @@ export default class RobterSession {
       ctx.fillText(`Mode Change: ${rootLabel} ${this.modeChangeNotice.mode.name}`, width / 2, 132);
     }
 
-    const modifiers = this.getModifierState();
     const nextEvent = this.getNextPendingEvent();
     const targetDegree = nextEvent?.requiredInput?.degree;
     const requiredOctaveOffset = this.requiredOctaveOffset;
@@ -4014,9 +4214,14 @@ export default class RobterSession {
 
   handleClick(x, y) {
     if (this.state === 'song-select') {
-      const hitIndex = this.songSelectView.handleClick(x, y);
-      if (Number.isInteger(hitIndex)) {
-        this.songSelectionIndex = hitIndex;
+      const hit = this.songSelectView.handleClick(x, y);
+      if (!hit) return;
+      if (hit.type === 'upload') {
+        this.zipInput?.click();
+        return;
+      }
+      if (hit.type === 'song' && Number.isInteger(hit.index)) {
+        this.songSelectionIndex = hit.index;
         const entry = this.songManifest[this.songSelectionIndex];
         if (entry) {
           this.loadSelectedSong(entry);
@@ -4040,14 +4245,13 @@ export default class RobterSession {
           return;
         }
         if (action.index === 2) {
-          this.enterDifficultySelect({ returnState: 'stem-select', cancelState: 'stem-select' });
+          this.downloadStemZip();
           this.audio.ui();
           return;
         }
-        const prepared = this.prepareStemSong(stem.name);
-        if (!prepared) return;
-        const playMode = action.index === 1 ? 'listen' : 'play';
-        this.startSong({ playMode });
+        this.pendingStemAction = action.index;
+        this.pendingStemName = stem.name;
+        this.enterDifficultySelect({ returnState: 'stem-play', cancelState: 'stem-select' });
         this.audio.ui();
       }
     }

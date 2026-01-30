@@ -91,9 +91,10 @@ export default class HighwayRenderer {
     ctx.restore();
   }
 
-  drawLanes(ctx, width, height, layout, laneColors, labels, pulseByIndex = []) {
+  drawLanes(ctx, width, height, layout, laneColors, labels, pulseByIndex = [], options = {}) {
     const { startX, laneWidth, laneGap, laneTop, laneBottom, horizonY } = layout;
     ctx.save();
+    ctx.globalAlpha = Number.isFinite(options.alpha) ? options.alpha : 1;
     const topScale = 0.45;
     for (let i = 0; i < labels.length; i += 1) {
       const baseX = startX + i * (laneWidth + laneGap);
