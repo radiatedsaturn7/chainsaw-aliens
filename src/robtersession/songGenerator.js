@@ -269,6 +269,15 @@ const NOTE_INPUTS = [
   { button: 'B', base: 8, passing: 7 }
 ];
 
+const DRUM_LANES = {
+  KICK: 0,
+  SNARE: 1,
+  HAT_C: 2,
+  HAT_O: 2,
+  CRASH: 3,
+  RIDE: 3
+};
+
 const mapPatternDegreeToInput = (patternDegree) => {
   const degree = Number(patternDegree) || 1;
   const octaveUp = degree > 8;
@@ -280,6 +289,87 @@ const mapPatternDegreeToInput = (patternDegree) => {
     modifiers,
     octaveUp
   };
+};
+
+const parseDurationToken = (entry) => {
+  const match = String(entry).match(/\((w|h|q|e)\)\s*$/);
+  if (!match) return null;
+  return { token: match[1], duration: DURATION_TOKENS[match[1]] || 1 };
+};
+
+const stripDurationToken = (entry) => String(entry).replace(/\((w|h|q|e)\)\s*$/, '');
+
+const splitEventsIntoBars = (events) => {
+  const bars = [];
+  let bar = [];
+  let total = 0;
+  (events || []).forEach((entry) => {
+    const parsed = parseDurationToken(entry);
+    if (!parsed) return;
+    if (total + parsed.duration > 4 && bar.length) {
+      bars.push(bar);
+      bar = [];
+      total = 0;
+    }
+    bar.push(entry);
+    total += parsed.duration;
+    if (Math.abs(total - 4) < 0.001) {
+      bars.push(bar);
+      bar = [];
+      total = 0;
+    }
+  });
+  if (bar.length) bars.push(bar);
+  return bars;
+};
+
+const fixBarDurations = (bar) => {
+  const durations = (bar || []).map((entry) => {
+    const parsed = parseDurationToken(entry);
+    return parsed ? parsed.duration : null;
+  });
+  if (durations.some((value) => value == null)) return bar;
+  const total = durations.reduce((sum, value) => sum + value, 0);
+  if (Math.abs(total - 4) < 0.001) return bar;
+  const target = 4 - (total - durations[durations.length - 1]);
+  const closestToken = Object.entries(DURATION_TOKENS).reduce((best, [token, value]) => {
+    const diff = Math.abs(value - target);
+    if (!best || diff < best.diff) return { token, diff };
+    return best;
+  }, null);
+  if (!closestToken) return bar;
+  const updated = [...bar];
+  updated[updated.length - 1] = updated[updated.length - 1].replace(/\((w|h|q|e)\)\s*$/, `(${closestToken.token})`);
+  return updated;
+};
+
+const getSectionChordBars = (schema, sectionName) => {
+  const section = schema.sections?.[sectionName];
+  if (!section) return [];
+  if (Array.isArray(section)) return section;
+  if (Array.isArray(section.chords)) return section.chords;
+  if (Array.isArray(section.guitar)) {
+    return splitEventsIntoBars(section.guitar).map((bar) => fixBarDurations(bar));
+  }
+  return [];
+};
+
+const getSectionInstrumentEvents = (schema, sectionName, instrument) => {
+  const section = schema.sections?.[sectionName];
+  if (!section || Array.isArray(section)) return null;
+  return Array.isArray(section[instrument]) ? section[instrument] : null;
+};
+
+const getSectionBarCount = (schema, sectionName) => {
+  const chordBars = getSectionChordBars(schema, sectionName);
+  if (chordBars.length) return chordBars.length;
+  const section = schema.sections?.[sectionName];
+  if (!section || Array.isArray(section)) return 0;
+  const fallbackInstrument = ['guitar', 'bass', 'piano', 'drums']
+    .map((instrument) => section[instrument])
+    .find((events) => Array.isArray(events) && events.length);
+  if (!fallbackInstrument) return 0;
+  return splitEventsIntoBars(fallbackInstrument).length;
 };
 const CHORD_INPUTS = {
   power: { button: 'B', modifiers: { lb: false, dleft: false } },
@@ -486,6 +576,84 @@ const getChordSeventhQuality = (symbol) => {
   if (/m7/.test(symbol)) return 'm7';
   if (/7/.test(symbol)) return '7';
   return null;
+};
+
+const resolveChordInfo = ({ symbol, keyInfo }) => {
+  const clean = normalizeChordText(symbol);
+  const [symbolRoot, inversion] = clean.split('/');
+  const rootMatch = symbolRoot.match(/^([A-Ga-g])([#b]?)/);
+  const noteLabel = rootMatch ? `${rootMatch[1].toUpperCase()}${rootMatch[2] || ''}` : keyInfo.root;
+  const rootPc = NOTE_TO_PC[keyInfo.root] ?? 0;
+  const chordPc = NOTE_TO_PC[noteLabel] ?? 0;
+  const steps = keyInfo.mode === 'minor' ? MINOR_STEPS : MAJOR_STEPS;
+  const pcOffset = (chordPc - rootPc + 12) % 12;
+  let degreeIndex = steps.indexOf(pcOffset);
+  if (degreeIndex === -1) {
+    degreeIndex = steps.reduce((closest, step, index) => {
+      const diff = Math.abs(step - pcOffset);
+      return diff < closest.diff ? { diff, index } : closest;
+    }, { diff: Infinity, index: 0 }).index;
+  }
+  const degree = degreeIndex + 1;
+  const chordType = (() => {
+    if (symbolRoot.includes('5')) return 'power';
+    if (symbolRoot.includes('sus2')) return 'sus2';
+    if (symbolRoot.includes('sus4')) return 'sus4';
+    if (symbolRoot.includes('add9')) return 'add9';
+    if (symbolRoot.includes('dim')) return 'dim';
+    if (symbolRoot.includes('aug')) return 'aug';
+    if (symbolRoot.includes('7')) return 'seventh';
+    if (inversion) return 'triad-inv1';
+    return 'triad';
+  })();
+  return {
+    degree,
+    chordType,
+    chordQuality: getChordQualityFromSymbol(symbolRoot),
+    seventhQuality: getChordSeventhQuality(symbolRoot)
+  };
+};
+
+const INSTRUMENT_OCTAVE_BASE = {
+  bass: 2,
+  guitar: 3,
+  piano: 4
+};
+
+const resolveNoteInputFromLabel = ({ label, keyInfo, instrument }) => {
+  const match = String(label).match(/^([A-Ga-g])([#b]?)(-?\d+)?$/);
+  if (!match) return null;
+  const noteLabel = `${match[1].toUpperCase()}${match[2] || ''}`;
+  const octave = match[3] != null ? Number(match[3]) : null;
+  const rootPc = NOTE_TO_PC[keyInfo.root] ?? 0;
+  const pc = NOTE_TO_PC[noteLabel];
+  if (pc == null) return null;
+  const steps = keyInfo.mode === 'minor' ? MINOR_STEPS : MAJOR_STEPS;
+  const offset = (pc - rootPc + 12) % 12;
+  let degreeIndex = steps.indexOf(offset);
+  let accidental = 0;
+  if (degreeIndex === -1) {
+    const sharpIndex = steps.findIndex((step) => (step + 1) % 12 === offset);
+    if (sharpIndex !== -1) {
+      degreeIndex = sharpIndex;
+      accidental = 1;
+    } else {
+      degreeIndex = steps.reduce((closest, step, index) => {
+        const diff = Math.abs(step - offset);
+        return diff < closest.diff ? { diff, index } : closest;
+      }, { diff: Infinity, index: 0 }).index;
+    }
+  }
+  const octaveBase = INSTRUMENT_OCTAVE_BASE[instrument] ?? 3;
+  const octaveOffset = octave != null && octave > octaveBase ? 1 : 0;
+  const degree = degreeIndex + 1 + (octaveOffset * 7);
+  const inputMap = mapPatternDegreeToInput(degree);
+  return {
+    degree: 1,
+    button: inputMap.button,
+    modifiers: { ...inputMap.modifiers, dleft: accidental === 1 },
+    octaveUp: inputMap.octaveUp
+  };
 };
 
 const getPatternInterval = ({ degree, chordQuality, seventhQuality, chordType }) => {
@@ -871,7 +1039,7 @@ const buildSectionTimelineFromSchema = (schema) => {
   let beatCursor = 0;
   schema.structure.split('').forEach((letter) => {
     const sectionName = SECTION_LETTERS[letter.toUpperCase()];
-    const bars = schema.sections?.[sectionName]?.length || 0;
+    const bars = getSectionBarCount(schema, sectionName);
     const beats = bars * 4;
     if (!sectionName || beats === 0) return;
     timeline.push({
@@ -890,11 +1058,9 @@ const buildChordTimelineFromSchema = ({ schema, tempo }) => {
   const timeline = [];
   const sections = buildSectionTimelineFromSchema(schema);
   const keyInfo = parseKeySignature(schema.key);
-  const rootPc = NOTE_TO_PC[keyInfo.root] ?? 0;
-  const steps = keyInfo.mode === 'minor' ? MINOR_STEPS : MAJOR_STEPS;
   const starPhraseBars = createStarPhraseMap(sections.reduce((sum, section) => sum + section.bars, 0));
   sections.forEach((section) => {
-    const bars = schema.sections?.[section.name] || [];
+    const bars = getSectionChordBars(schema, section.name);
     bars.forEach((bar, barIndex) => {
       const barStartBeat = section.startBeat + barIndex * 4;
       let beatOffset = 0;
@@ -904,40 +1070,17 @@ const buildChordTimelineFromSchema = ({ schema, tempo }) => {
         const durationToken = entry.match(/\((w|h|q|e)\)\s*$/)?.[1] || 'q';
         const duration = DURATION_TOKENS[durationToken] || 1;
         const clean = normalizeChordText(entry.replace(/\((w|h|q|e)\)\s*$/, ''));
-        const [symbolRoot, inversion] = clean.split('/');
-        const rootMatch = symbolRoot.match(/^([A-Ga-g])([#b]?)/);
-        const noteLabel = rootMatch ? `${rootMatch[1].toUpperCase()}${rootMatch[2] || ''}` : 'C';
-        const chordPc = NOTE_TO_PC[noteLabel] ?? 0;
-        const pcOffset = (chordPc - rootPc + 12) % 12;
-        let degreeIndex = steps.indexOf(pcOffset);
-        if (degreeIndex === -1) {
-          degreeIndex = steps.reduce((closest, step, index) => {
-            const diff = Math.abs(step - pcOffset);
-            return diff < closest.diff ? { diff, index } : closest;
-          }, { diff: Infinity, index: 0 }).index;
-        }
-        const degree = degreeIndex + 1;
-        const chordType = (() => {
-          if (symbolRoot.includes('5')) return 'power';
-          if (symbolRoot.includes('sus2')) return 'sus2';
-          if (symbolRoot.includes('sus4')) return 'sus4';
-          if (symbolRoot.includes('add9')) return 'add9';
-          if (symbolRoot.includes('dim')) return 'dim';
-          if (symbolRoot.includes('aug')) return 'aug';
-          if (symbolRoot.includes('7')) return 'seventh';
-          if (inversion) return 'triad-inv1';
-          return 'triad';
-        })();
+        const chordInfo = resolveChordInfo({ symbol: clean, keyInfo });
         const timeBeat = barStartBeat + beatOffset;
         timeline.push({
           timeBeat,
           timeSec: timeBeat * tempo.secondsPerBeat,
           section: section.name,
-          degree,
+          degree: chordInfo.degree,
           duration,
-          chordType,
-          chordQuality: getChordQualityFromSymbol(symbolRoot),
-          seventhQuality: getChordSeventhQuality(symbolRoot),
+          chordType: chordInfo.chordType,
+          chordQuality: chordInfo.chordQuality,
+          seventhQuality: chordInfo.seventhQuality,
           isPhrase
         });
         beatOffset += duration;
@@ -1145,7 +1288,8 @@ export const generateStructuredSong = ({ difficulty = 1, seed, stylePreset } = {
 
 export const validateBarDurations = (song) => {
   const errors = [];
-  Object.entries(song.sections || {}).forEach(([sectionName, bars]) => {
+  Object.keys(song.sections || {}).forEach((sectionName) => {
+    const bars = getSectionChordBars(song, sectionName);
     bars.forEach((bar, barIndex) => {
       const total = bar.reduce((sum, entry) => {
         const match = entry.match(/\((w|h|q|e)\)\s*$/);
@@ -1172,7 +1316,7 @@ export const validateStructureSectionsPresent = (song, sectionMap = SECTION_LETT
   letters.forEach((letter) => {
     const name = sectionMap[letter.toUpperCase()];
     if (!name) return;
-    if (!song.sections?.[name]) {
+    if (getSectionBarCount(song, name) === 0) {
       errors.push(`Missing section ${name} for structure ${song.structure} in ${song.id || song.title}.`);
     }
   });
@@ -1187,7 +1331,8 @@ export const validateChordSymbolFormat = (song) => {
   const rootPattern = '[A-Ga-g](?:#|b{1,2})?';
   const qualityPattern = '(?:madd9|m7|maj7|sus2|sus4|add9|dim7|dim|aug|7|5|m)?';
   const chordRegex = new RegExp(`^${rootPattern}${qualityPattern}(?:/${rootPattern})?$`);
-  Object.entries(song.sections || {}).forEach(([sectionName, bars]) => {
+  Object.keys(song.sections || {}).forEach((sectionName) => {
+    const bars = getSectionChordBars(song, sectionName);
     bars.forEach((bar, barIndex) => {
       bar.forEach((entry) => {
         const base = normalizeChordText(entry.replace(/\((w|h|q|e)\)\s*$/, ''));
@@ -1280,7 +1425,8 @@ export const validateRequiredChordTypes = (setlist) => {
   if (!required.length) return [];
   const present = new Set();
   setlist?.songs?.forEach((song) => {
-    Object.values(song.sections || {}).forEach((bars) => {
+    Object.keys(song.sections || {}).forEach((sectionName) => {
+      const bars = getSectionChordBars(song, sectionName);
       bars.forEach((bar) => {
         bar.forEach((entry) => {
           const chord = normalizeChordText(entry.replace(/\((w|h|q|e)\)\s*$/, ''));
@@ -1332,6 +1478,116 @@ const buildPatternTrack = ({
   return events;
 };
 
+const hasAuthoredInstrumentParts = (schema, instrument) => (
+  Object.keys(schema.sections || {}).some((sectionName) => {
+    const events = getSectionInstrumentEvents(schema, sectionName, instrument);
+    return Array.isArray(events) && events.length > 0;
+  })
+);
+
+const buildAuthoredTrackEvents = ({
+  schema,
+  tempo,
+  sections,
+  instrument,
+  register
+}) => {
+  const events = [];
+  const keyInfo = parseKeySignature(schema.key);
+  const totalBars = sections.reduce((sum, section) => sum + section.bars, 0);
+  const starPhraseBars = createStarPhraseMap(totalBars);
+  sections.forEach((section) => {
+    const partEvents = getSectionInstrumentEvents(schema, section.name, instrument) || [];
+    if (!partEvents.length) return;
+    const bars = splitEventsIntoBars(partEvents).map((bar) => fixBarDurations(bar));
+    bars.forEach((bar, barIndex) => {
+      const barStartBeat = section.startBeat + barIndex * 4;
+      const globalBar = Math.floor(barStartBeat / 4);
+      const isPhrase = starPhraseBars.has(globalBar);
+      let beatOffset = 0;
+      bar.forEach((entry) => {
+        const parsed = parseDurationToken(entry);
+        if (!parsed) return;
+        const token = stripDurationToken(entry).trim();
+        const timeBeat = barStartBeat + beatOffset;
+        if (instrument === 'drums') {
+          const lane = DRUM_LANES[token.toUpperCase()];
+          if (lane == null) {
+            beatOffset += parsed.duration;
+            return;
+          }
+          events.push({
+            timeBeat,
+            timeSec: timeBeat * tempo.secondsPerBeat,
+            lane,
+            type: 'NOTE',
+            section: section.name,
+            requiredInput: {
+              mode: 'drum',
+              lane,
+              degree: 1
+            },
+            starPhrase: isPhrase
+          });
+          beatOffset += parsed.duration;
+          return;
+        }
+        if (instrument === 'guitar') {
+          const chordInfo = resolveChordInfo({ symbol: token, keyInfo });
+          const inputMap = CHORD_INPUTS[chordInfo.chordType] || CHORD_INPUTS.triad;
+          const lane = NOTE_LANES.indexOf(inputMap.button);
+          events.push({
+            timeBeat,
+            timeSec: timeBeat * tempo.secondsPerBeat,
+            lane: lane >= 0 ? lane : 0,
+            type: 'CHORD',
+            section: section.name,
+            requiredInput: {
+              mode: 'chord',
+              degree: chordInfo.degree,
+              button: inputMap.button,
+              modifiers: inputMap.modifiers,
+              chordType: chordInfo.chordType,
+              transpose: register?.transpose_semitones ?? 0,
+              minNote: register?.min_note ?? null
+            },
+            sustain: parsed.duration,
+            starPhrase: isPhrase
+          });
+          beatOffset += parsed.duration;
+          return;
+        }
+        const noteInput = resolveNoteInputFromLabel({ label: token, keyInfo, instrument });
+        if (!noteInput) {
+          beatOffset += parsed.duration;
+          return;
+        }
+        const lane = NOTE_LANES.indexOf(noteInput.button);
+        events.push({
+          timeBeat,
+          timeSec: timeBeat * tempo.secondsPerBeat,
+          lane: lane >= 0 ? lane : 0,
+          type: 'NOTE',
+          section: section.name,
+          requiredInput: {
+            mode: 'note',
+            degree: noteInput.degree,
+            button: noteInput.button,
+            modifiers: noteInput.modifiers,
+            octaveUp: noteInput.octaveUp,
+            transpose: register?.transpose_semitones ?? 0,
+            minNote: register?.min_note ?? null
+          },
+          sustain: parsed.duration,
+          starPhrase: isPhrase
+        });
+        beatOffset += parsed.duration;
+      });
+    });
+  });
+  return events;
+};
+
 const buildTracksFromSchema = ({ rng, tier, instrument, schema }) => {
   const tempo = createTempoMap(schema.tempo_bpm);
   const arrangement = schema.arrangement || {};
@@ -1344,12 +1600,33 @@ const buildTracksFromSchema = ({ rng, tier, instrument, schema }) => {
   });
   const tracks = {};
   INSTRUMENTS.forEach((trackInstrument) => {
+    const hasAuthoredParts = hasAuthoredInstrumentParts(schema, trackInstrument);
+    const register = registers[trackInstrument];
     if (trackInstrument === 'drums') {
+      if (hasAuthoredParts) {
+        tracks[trackInstrument] = buildAuthoredTrackEvents({
+          schema,
+          tempo,
+          sections,
+          instrument: trackInstrument,
+          register
+        });
+        return;
+      }
       tracks[trackInstrument] = buildDrumEvents({ rng, tier, tempo, sections });
       return;
     }
+    if (hasAuthoredParts) {
+      tracks[trackInstrument] = buildAuthoredTrackEvents({
+        schema,
+        tempo,
+        sections,
+        instrument: trackInstrument,
+        register
+      });
+      return;
+    }
     const part = schema.parts?.[trackInstrument] || {};
-    const register = registers[trackInstrument];
     if (trackInstrument === 'bass') {
       const defaultPattern = part.default_pattern || 'BL_ROOT_8';
       const sectionOverrides = part.section_overrides || {};
@@ -1440,7 +1717,7 @@ export const generateSongData = ({
     schema: songSchema
   });
   const timing = getTimingWindows(mapDifficultyToTierNumber(resolvedDifficulty));
-  const progression = songSchema.sections?.verse?.[0] || [];
+  const progression = getSectionChordBars(songSchema, 'verse')[0] || [];
   return {
     name: name || songSchema.title,
     seed: resolvedSeed,
