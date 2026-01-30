@@ -515,18 +515,18 @@ export const transcribeMidiStem = ({
         ? degreeInfo.approxLevel
         : chordInfo.approx;
       const sorted = [...cluster.notes].sort((a, b) => a.midi - b.midi);
-      const rootPc = ((sorted[0].midi % 12) + 12) % 12;
+      const chordRootPc = ((sorted[0].midi % 12) + 12) % 12;
       const pcs = Array.from(new Set(sorted.map((note) => ((note.midi % 12) + 12) % 12)))
-        .sort((a, b) => (a - rootPc + 12) % 12 - (b - rootPc + 12) % 12);
-      const intervals = pcs.map((pc) => (pc - rootPc + 12) % 12).sort((a, b) => a - b);
+        .sort((a, b) => (a - chordRootPc + 12) % 12 - (b - chordRootPc + 12) % 12);
+      const intervals = pcs.map((pc) => (pc - chordRootPc + 12) % 12).sort((a, b) => a - b);
       const chordCandidates = buildChordCandidates({ intervals });
       if (!chordCandidates.length) {
-        const chordInfo = detectChordType([rootPc, ...pcs.filter((pc) => pc !== rootPc)]);
+        const chordInfo = detectChordType([chordRootPc, ...pcs.filter((pc) => pc !== chordRootPc)]);
         if (!chordInfo) {
           pushNoteEvent(sorted[0], { approxOverride: 'root-fallback' });
           return;
         }
-        const degreeInfo = mapPitchToScaleDegree(rootPc, key);
+        const degreeInfo = mapPitchToScaleDegree(chordRootPc, key);
         const chordType = chordInfo.chordType;
         const inputMap = CHORD_INPUTS[chordType] || CHORD_INPUTS.triad;
         const approxLevel = degreeInfo.approxLevel !== 'exact'
