@@ -163,10 +163,38 @@ const mapDegreeToNoteInput = (degree) => {
   return { button: entry.button, modifiers };
 };
 
-const resolveOctaveModifier = ({ midi, degree, key }) => {
+const median = (values) => {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  if (sorted.length % 2 === 0) {
+    return (sorted[mid - 1] + sorted[mid]) / 2;
+  }
+  return sorted[mid];
+};
+
+const resolveInitialOctaveOffset = ({ notes, key, timing, timeSignature }) => {
+  if (!notes?.length) return 0;
+  const beatsPerBar = timeSignature?.beats || 4;
+  const windowEnd = (timing?.secondsPerBeat || 0.5) * beatsPerBar;
+  const windowNotes = notes.filter((note) => note.tStartSec < windowEnd);
+  const sample = windowNotes.length ? windowNotes : notes;
+  if (!sample.length) return 0;
+  const steps = SCALE_STEPS[key.mode] || SCALE_STEPS.major;
+  const diffs = sample.map((note) => {
+    const pc = ((note.midi % 12) + 12) % 12;
+    const degreeInfo = mapPitchToScaleDegree(pc, key);
+    const step = steps[degreeInfo.degree - 1] ?? steps[0];
+    const basePitch = 48 + key.tonicPitchClass + step;
+    return Math.round((note.midi - basePitch) / 12);
+  });
+  return clamp(Math.round(median(diffs)), -2, 2);
+};
+
+const resolveOctaveModifier = ({ midi, degree, key, baseOctaveOffset = 0 }) => {
   const steps = SCALE_STEPS[key.mode] || SCALE_STEPS.major;
   const step = steps[degree - 1] ?? steps[0];
-  const basePitch = 48 + key.tonicPitchClass + step;
+  const basePitch = 48 + key.tonicPitchClass + step + baseOctaveOffset * 12;
   const octaveDiff = Math.round((midi - basePitch) / 12);
   const clamped = clamp(octaveDiff, -1, 1);
   return {
@@ -370,11 +398,24 @@ const selectChordInput = ({ rootPc, chordInfo }) => {
   return { inputKey, inputMap };
 };
 
-export const transcribeMidiStem = ({ notes, bpm, keySignature, isDrumStem = false, options = {} }) => {
+export const transcribeMidiStem = ({
+  notes,
+  bpm,
+  keySignature,
+  timeSignature,
+  isDrumStem = false,
+  options = {}
+}) => {
   const key = detectKey({ keySignature, notes });
   const timing = buildTiming(bpm || 120);
   const quantized = quantizeNotes(notes, bpm || 120, options.quantize);
   const processedNotes = options.trimOverlaps ? trimOverlappingNotes(quantized) : quantized;
+  const octaveOffset = resolveInitialOctaveOffset({
+    notes: processedNotes,
+    key,
+    timing,
+    timeSignature
+  });
   const clusters = groupNotes(processedNotes, options.grouping);
   const events = [];
   let lastChordFingering = null;
@@ -395,7 +436,12 @@ export const transcribeMidiStem = ({ notes, bpm, keySignature, isDrumStem = fals
     const timeBeat = startSec / timing.secondsPerBeat;
     const pc = ((note.midi % 12) + 12) % 12;
     const degreeInfo = mapPitchToScaleDegree(pc, key);
-    const octaveInfo = resolveOctaveModifier({ midi: note.midi, degree: degreeInfo.degree, key });
+    const octaveInfo = resolveOctaveModifier({
+      midi: note.midi,
+      degree: degreeInfo.degree,
+      key,
+      baseOctaveOffset: octaveOffset
+    });
     const inputMap = mapDegreeToNoteInput(degreeInfo.degree);
     const derivedApprox = [degreeInfo.approxLevel, octaveInfo.approxLevel].find((entry) => entry !== 'exact') || 'exact';
     const approxLevel = approxOverride || derivedApprox;
@@ -578,6 +624,7 @@ export const transcribeMidiStem = ({ notes, bpm, keySignature, isDrumStem = fals
     events: orderedEvents,
     key,
     timing,
+    recommendedOctaveOffset: octaveOffset,
     stats: {
       total: orderedEvents.length,
       chordEvents,
