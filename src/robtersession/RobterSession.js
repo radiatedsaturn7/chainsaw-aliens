@@ -663,39 +663,65 @@ export default class RobterSession {
       const midiData = parseMidi(stem.bytes);
       const isDrumStem = ['Drums', 'Percussion'].includes(instrumentName);
       const mappedInstrument = STEM_INSTRUMENT_MAP[instrumentName] || 'piano';
-      const transcribed = transcribeMidiStem({
-        notes: midiData.notes,
-        bpm: midiData.bpm,
-        keySignature: midiData.keySignature,
-        timeSignature: midiData.timeSignature,
-        isDrumStem,
-        options: {
-          forceNoteMode: mappedInstrument === 'bass',
-          collapseChords: mappedInstrument === 'bass'
-        }
-      });
-      const difficulty = transcribed.stats.difficulty;
-      const keyLabel = formatKeyLabel(transcribed.key);
-      console.log('[RobterSESSION] Stem', instrumentName, 'Key', keyLabel, 'BPM', midiData.bpm.toFixed(1), 'TimeSig', `${midiData.timeSignature.beats}/${midiData.timeSignature.unit}`);
-      console.log('[RobterSESSION] Mapping stats', transcribed.stats.approxCounts);
-      const playbackProgram = midiData.notes.find((note) => Number.isFinite(note.program))?.program
-        ?? STEM_PROGRAM_MAP[mappedInstrument]
-        ?? 0;
-      this.stemData.set(instrumentName, {
-        instrumentName,
-        mappedInstrument,
-        midiData,
-        transcribed,
-        bytes: stem.bytes,
-        filename: stem.filename,
-        playbackProgram,
-        sourceLabel
-      });
-      stemEntries.push({
-        name: instrumentName,
-        label: instrumentName,
-        difficultyLabel: `${difficulty.label} (${difficulty.rating})`,
-        keyLabel
+      const trackGroups = midiData.tracks?.length
+        ? midiData.tracks
+        : [{
+          trackIndex: 0,
+          channel: midiData.notes.find((note) => Number.isFinite(note.channel))?.channel ?? 0,
+          program: midiData.notes.find((note) => Number.isFinite(note.program))?.program ?? null,
+          notes: midiData.notes
+        }];
+      const hasMultipleGroups = trackGroups.length > 1;
+      trackGroups.forEach((group, groupIndex) => {
+        const stemName = hasMultipleGroups ? `${instrumentName} ${groupIndex + 1}` : instrumentName;
+        const groupMidiData = {
+          ...midiData,
+          notes: group.notes,
+          tracks: [group]
+        };
+        const transcribed = transcribeMidiStem({
+          notes: group.notes,
+          bpm: midiData.bpm,
+          keySignature: midiData.keySignature,
+          timeSignature: midiData.timeSignature,
+          isDrumStem,
+          options: {
+            forceNoteMode: mappedInstrument === 'bass',
+            collapseChords: mappedInstrument === 'bass'
+          }
+        });
+        const difficulty = transcribed.stats.difficulty;
+        const keyLabel = formatKeyLabel(transcribed.key);
+        console.log('[RobterSESSION] Stem', stemName, 'Key', keyLabel, 'BPM', midiData.bpm.toFixed(1), 'TimeSig', `${midiData.timeSignature.beats}/${midiData.timeSignature.unit}`);
+        console.log('[RobterSESSION] Mapping stats', transcribed.stats.approxCounts);
+        const playbackProgram = Number.isFinite(group.program)
+          ? group.program
+          : STEM_PROGRAM_MAP[mappedInstrument] ?? 0;
+        const playbackChannel = Number.isFinite(group.channel)
+          ? group.channel
+          : midiData.notes.find((note) => Number.isFinite(note.channel))?.channel ?? 0;
+        const filenameBase = stem.filename?.replace(/\.mid$/i, '') || instrumentName;
+        const filename = hasMultipleGroups
+          ? `${filenameBase}-${groupIndex + 1}.mid`
+          : stem.filename || `${instrumentName}.mid`;
+        this.stemData.set(stemName, {
+          instrumentName: stemName,
+          baseInstrumentName: instrumentName,
+          mappedInstrument,
+          midiData: groupMidiData,
+          transcribed,
+          bytes: stem.bytes,
+          filename,
+          playbackProgram,
+          playbackChannel,
+          sourceLabel
+        });
+        stemEntries.push({
+          name: stemName,
+          label: stemName,
+          difficultyLabel: `${difficulty.label} (${difficulty.rating})`,
+          keyLabel
+        });
       });
     }
     this.stemList = stemEntries;
@@ -721,7 +747,7 @@ export default class RobterSession {
           timeSignature: stem.midiData.timeSignature,
           keySignature: stem.midiData.keySignature,
           program: stem.playbackProgram ?? 0,
-          channel: stem.midiData.notes.find((note) => Number.isFinite(note.channel))?.channel ?? 0
+          channel: Number.isFinite(stem.playbackChannel) ? stem.playbackChannel : 0
         });
         const filename = stem.filename || `${stem.instrumentName}.mid`;
         stems.push({ filename, bytes });
@@ -770,7 +796,7 @@ export default class RobterSession {
       setIndex: 0,
       songIndex: 0
     };
-    const mappedInstrument = STEM_INSTRUMENT_MAP[stemName] || 'piano';
+    const mappedInstrument = stem.mappedInstrument || STEM_INSTRUMENT_MAP[stemName] || 'piano';
     this.instrument = mappedInstrument;
     this.instrumentSelectionIndex = Math.max(0, INSTRUMENTS.indexOf(mappedInstrument));
     this.applySongSoundSettings();

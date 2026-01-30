@@ -134,28 +134,49 @@ export const parseMidi = (bytes, options = {}) => {
     ? { beats: timeSignatureEntry.timeSignature[0], unit: timeSignatureEntry.timeSignature[1] }
     : { beats: 4, unit: 4 };
   const keySignature = midi.header.keySignatures?.[0] || null;
-  const notes = [];
-  midi.tracks.forEach((track) => {
-    const channel = Number.isFinite(track.channel) ? track.channel : 0;
+  const rawTracks = [];
+  midi.tracks.forEach((track, trackIndex) => {
+    const trackChannel = Number.isFinite(track.channel) ? track.channel : 0;
     const program = track.instrument?.number ?? null;
+    const groupMap = new Map();
     track.notes.forEach((note) => {
-      notes.push({
+      const channel = note.channel ?? trackChannel;
+      const groupKey = `${trackIndex}-${channel ?? 'na'}-${program ?? 'na'}`;
+      if (!groupMap.has(groupKey)) {
+        groupMap.set(groupKey, {
+          trackIndex,
+          channel,
+          program,
+          notes: []
+        });
+      }
+      groupMap.get(groupKey).notes.push({
         tStartSec: note.time,
         tEndSec: note.time + note.duration,
         midi: note.midi,
         vel: note.velocity,
-        channel: note.channel ?? channel,
+        channel,
         program
       });
     });
+    groupMap.forEach((group) => rawTracks.push(group));
   });
-  const normalizedNotes = normalizeMidiNotes(notes, {
+  const normalizationConfig = {
     bpm: tempos[0]?.bpm ?? 120,
     timeSignature,
     ...options
-  });
+  };
+  const tracks = rawTracks
+    .filter((group) => group.notes.length)
+    .map((group) => ({
+      ...group,
+      notes: normalizeMidiNotes(group.notes, normalizationConfig)
+        .sort((a, b) => a.tStartSec - b.tStartSec)
+    }));
+  const normalizedNotes = tracks.flatMap((group) => group.notes);
   return {
     notes: normalizedNotes.sort((a, b) => a.tStartSec - b.tStartSec),
+    tracks,
     tempos,
     timeSignature,
     keySignature: keySignature
