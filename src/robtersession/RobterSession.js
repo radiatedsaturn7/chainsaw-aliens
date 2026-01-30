@@ -1113,11 +1113,13 @@ export default class RobterSession {
     const targetDirection = active.requiredInput?.degree ?? null;
     const isWrong = targetDirection !== currentDirection;
     const stuck = songTime >= active.timeSec && isWrong;
+    const stuckDurationSec = stuck ? Math.max(0, songTime - active.timeSec) : 0;
     return {
       label: active.directionalLabel,
       timeSec: active.timeSec,
       isWrong,
       stuck,
+      stuckDurationSec,
       laneIndex: 0
     };
   }
@@ -1140,11 +1142,13 @@ export default class RobterSession {
     const targetDirection = active?.requiredInput?.degree ?? null;
     const isWrong = targetDirection !== currentDirection;
     const stuck = Boolean(active && songTime >= active.timeSec && isWrong);
+    const stuckDurationSec = stuck && active ? Math.max(0, songTime - active.timeSec) : 0;
     return chordEvents.map((event) => ({
       label: event.directionalLabel,
       timeSec: event.timeSec,
       isWrong: Boolean(active && event === active && isWrong),
       stuck: Boolean(active && event === active && stuck),
+      stuckDurationSec: event === active ? stuckDurationSec : 0,
       laneIndex: 0
     }));
   }

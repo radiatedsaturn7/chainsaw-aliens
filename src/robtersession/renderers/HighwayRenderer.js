@@ -238,10 +238,17 @@ export default class HighwayRenderer {
       const baseHeight = Math.max(18, laneWidth * 0.24) * settings.noteSize * perspective;
       const noteHeight = baseHeight * noteHeightScale;
       const y = hitLineY - timeToHit * pixelsPerSecond;
-      const noteX = perspectiveCenter - noteWidth / 2;
+      const stuckDuration = directionalCue.stuckDurationSec || 0;
+      const jitterStrength = directionalCue.isWrong
+        ? 3 + 3 * clamp(stuckDuration / 1.2, 0, 1)
+        : 0;
+      const jitterOffset = jitterStrength * Math.sin((songTime + stuckDuration) * 12);
+      const noteX = perspectiveCenter - noteWidth / 2 + jitterOffset * perspective;
       const noteY = y - noteHeight / 2;
+      const stuckBlend = clamp(stuckDuration / 1.6, 0, 1);
+      const wrongColor = `rgba(${Math.round(lerp(255, 150, stuckBlend))},${Math.round(lerp(120, 30, stuckBlend))},${Math.round(lerp(120, 30, stuckBlend))},0.92)`;
       ctx.save();
-      ctx.fillStyle = directionalCue.isWrong ? 'rgba(255,90,90,0.92)' : 'rgba(120,200,255,0.85)';
+      ctx.fillStyle = directionalCue.isWrong ? wrongColor : 'rgba(120,200,255,0.85)';
       ctx.fillRect(noteX, noteY, noteWidth, noteHeight);
       ctx.strokeStyle = 'rgba(20,30,40,0.9)';
       ctx.strokeRect(noteX, noteY, noteWidth, noteHeight);
