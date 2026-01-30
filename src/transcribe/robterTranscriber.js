@@ -570,7 +570,6 @@ export const transcribeMidiStem = ({
       });
       scoredCandidates.sort((a, b) => a.score - b.score);
       const chosen = scoredCandidates[0];
-      const approxLevel = degreeInfo.approxLevel !== 'exact' ? degreeInfo.approxLevel : 'exact';
       approxCounts[approxLevel] = (approxCounts[approxLevel] || 0) + 1;
       console.debug('robter chord fingering', {
         intervals,
