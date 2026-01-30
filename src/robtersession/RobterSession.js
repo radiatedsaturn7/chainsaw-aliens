@@ -135,8 +135,10 @@ const REDUCTION_PRESETS = {
   easy: {
     id: 'easy',
     label: 'Easy',
-    description: 'Quantize to eighths, remove modifiers, collapse octaves.',
-    quantizeGrid: 0.5,
+    description: 'Quantize to quarters with stable eighths, remove modifiers, collapse octaves.',
+    passCount: 2,
+    quantizeGridHierarchy: [1, 0.5],
+    allowStableHalfBeats: true,
     stripModifiers: true,
     collapseOctave: true
   },
@@ -144,7 +146,8 @@ const REDUCTION_PRESETS = {
     id: 'medium',
     label: 'Medium',
     description: 'Quantize to eighths, remove modifiers.',
-    quantizeGrid: 0.5,
+    passCount: 1,
+    quantizeGridHierarchy: [0.5],
     stripModifiers: true,
     collapseOctave: false
   },
@@ -152,7 +155,8 @@ const REDUCTION_PRESETS = {
     id: 'hard',
     label: 'Hard',
     description: 'Remove modifiers only.',
-    quantizeGrid: null,
+    passCount: 1,
+    quantizeGridHierarchy: [null],
     stripModifiers: true,
     collapseOctave: false
   },
@@ -160,7 +164,8 @@ const REDUCTION_PRESETS = {
     id: 'off',
     label: 'Off',
     description: 'No post-transcription reduction.',
-    quantizeGrid: null,
+    passCount: 0,
+    quantizeGridHierarchy: [],
     stripModifiers: false,
     collapseOctave: false
   }
@@ -383,6 +388,11 @@ export default class RobterSession {
     this.buttonPulse = { A: 0, B: 0, X: 0, Y: 0 };
     this.wrongNotes = [];
     this.trackEventIndex = {};
+    this.directionalCueState = {
+      key: null,
+      stuckDurationSec: 0,
+      lastSongTime: null
+    };
     this.hudSettings = loadHudSettings();
     this.calibration = loadCalibration();
     this.calibrationState = {
@@ -1113,6 +1123,20 @@ export default class RobterSession {
     const targetDirection = active.requiredInput?.degree ?? null;
     const isWrong = targetDirection !== currentDirection;
     const stuck = songTime >= active.timeSec && isWrong;
+    const cueKey = `${active.timeSec}-${active.directionalLabel}`;
+    const cueState = this.directionalCueState;
+    if (cueState.key !== cueKey) {
+      cueState.key = cueKey;
+      cueState.stuckDurationSec = 0;
+      cueState.lastSongTime = songTime;
+    }
+    const timeDelta = Math.max(0, songTime - (cueState.lastSongTime ?? songTime));
+    if (stuck) {
+      cueState.stuckDurationSec += timeDelta;
+    } else {
+      cueState.stuckDurationSec = 0;
+    }
+    cueState.lastSongTime = songTime;
     return {
       label: active.directionalLabel,
       timeSec: active.timeSec,
@@ -1347,10 +1371,10 @@ export default class RobterSession {
   }
 
   getReductionProfile() {
-    const override = normalizeReductionPreset(this.reductionPreset);
-    if (override) return REDUCTION_PRESETS[override];
     const fromDifficulty = normalizeReductionPreset(this.performanceDifficulty);
     if (fromDifficulty) return REDUCTION_PRESETS[fromDifficulty];
+    const override = normalizeReductionPreset(this.reductionPreset);
+    if (override) return REDUCTION_PRESETS[override];
     return REDUCTION_PRESETS.off;
   }
 
@@ -1361,20 +1385,64 @@ export default class RobterSession {
     }
     const secondsPerBeat = this.songData?.tempo?.secondsPerBeat
       ?? (60 / (this.songData?.bpm || 120));
-    const quantizeGrid = Number.isFinite(profile.quantizeGrid) ? profile.quantizeGrid : null;
-    const quantizeBeat = (timeBeat) => (quantizeGrid ? Math.round(timeBeat / quantizeGrid) * quantizeGrid : timeBeat);
+    const passCount = Math.max(
+      profile.passCount ?? profile.quantizeGridHierarchy?.length ?? 1,
+      1
+    );
+    const gridHierarchy = profile.quantizeGridHierarchy || [];
+    const originalBeats = events.map((event) => event.timeBeat);
+    const sortedByBeat = originalBeats
+      .map((timeBeat, index) => ({ index, timeBeat }))
+      .sort((a, b) => a.timeBeat - b.timeBeat);
+    const sortedIndexByOriginal = new Map(
+      sortedByBeat.map((entry, sortedIndex) => [entry.index, sortedIndex])
+    );
+    const quantizeBeat = (timeBeat, grid) => (grid ? Math.round(timeBeat / grid) * grid : timeBeat);
+    const isHalfBeat = (timeBeat) => Math.abs((timeBeat % 1) - 0.5) < 1e-6;
+    const isStableHalfBeat = (sortedIndex, snappedBeat) => {
+      if (!isHalfBeat(snappedBeat)) return true;
+      const prev = sortedByBeat[sortedIndex - 1];
+      const next = sortedByBeat[sortedIndex + 1];
+      const prevBeat = prev ? quantizeBeat(originalBeats[prev.index], 0.5) : null;
+      const nextBeat = next ? quantizeBeat(originalBeats[next.index], 0.5) : null;
+      const prevHalf = prevBeat !== null && isHalfBeat(prevBeat) && Math.abs(prevBeat - snappedBeat) <= 0.75;
+      const nextHalf = nextBeat !== null && isHalfBeat(nextBeat) && Math.abs(nextBeat - snappedBeat) <= 0.75;
+      return prevHalf || nextHalf;
+    };
+    const chooseGridForPass = (passIndex) => {
+      if (!gridHierarchy.length) return null;
+      return gridHierarchy[passIndex] ?? gridHierarchy[gridHierarchy.length - 1];
+    };
+    let reducedEvents = events.map((event) => ({ ...event }));
+    // Reduction passes scale with difficulty: easy runs a broad quarter pass, then allows stable eighths;
+    // medium keeps a single eighth-note pass, hard skips quantization entirely.
+    for (let passIndex = 0; passIndex < passCount; passIndex += 1) {
+      const quantizeGrid = chooseGridForPass(passIndex);
+      const allowStableHalfBeats = profile.allowStableHalfBeats && quantizeGrid === 0.5;
+      reducedEvents = reducedEvents.map((event, index) => {
+        const reduced = { ...event };
+        const baseBeat = passIndex === 0 ? reduced.timeBeat : originalBeats[index];
+        let snappedBeat = quantizeBeat(baseBeat, quantizeGrid);
+        if (allowStableHalfBeats && isHalfBeat(snappedBeat)) {
+          const sortedIndex = sortedIndexByOriginal.get(index) ?? 0;
+          if (!isStableHalfBeat(sortedIndex, snappedBeat)) {
+            snappedBeat = Math.round(baseBeat);
+          }
+        }
+        if (snappedBeat !== reduced.timeBeat) {
+          reduced.timeBeat = snappedBeat;
+          reduced.timeSec = snappedBeat * secondsPerBeat;
+        }
+        return reduced;
+      });
+    }
     // Post-transcription reduction rules:
-    // - Quantize sixteenth-note rhythms to eighths by snapping to a 0.5-beat grid.
+    // - Quantize rhythms by pass (easy: quarter + stable eighths, medium: eighths, hard: none).
     // - Remove modifiers (LB/D-Left/RB) so alternate fingerings and accents disappear.
     // - Collapse octaves by clearing octave-up flags to a central octave.
     // - Preserve chord integrity by keeping chord events intact.
-    return events.map((event) => {
+    return reducedEvents.map((event) => {
       const reduced = { ...event };
-      const snappedBeat = quantizeBeat(event.timeBeat);
-      if (snappedBeat !== event.timeBeat) {
-        reduced.timeBeat = snappedBeat;
-        reduced.timeSec = snappedBeat * secondsPerBeat;
-      }
       const required = event.requiredInput ? { ...event.requiredInput } : null;
       if (required) {
         if (profile.stripModifiers) {
