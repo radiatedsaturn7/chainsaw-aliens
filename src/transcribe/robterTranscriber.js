@@ -558,7 +558,6 @@ export const transcribeMidiStem = ({
         };
         return;
       }
-      const degreeInfo = mapPitchToScaleDegree(rootPc, key);
       const scoredCandidates = chordCandidates.map((candidate) => {
         return {
           ...candidate,
