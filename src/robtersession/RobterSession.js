@@ -374,7 +374,8 @@ export default class RobterSession {
       pauseButtons: [],
       resultsButtons: [],
       instrumentButtons: [],
-      difficultyButtons: []
+      difficultyButtons: [],
+      settingsButtons: []
     };
     this.randomSeed = this.loadRandomSeed();
     this.lastTuning = loadTuning();
@@ -405,12 +406,15 @@ export default class RobterSession {
       samples: { audio: [], video: [] },
       timer: 0,
       pulse: 0,
-      beatInterval: 0.8
+      beatInterval: 1
     };
     this.calibrationReturnState = 'preview';
+    this.difficultyReturnState = 'setlist';
+    this.difficultyCancelState = 'instrument-select';
     this.playMode = 'play';
     this.practiceSpeed = 1;
     this.previewSelection = 0;
+    this.settingsSelectionIndex = 0;
     this.feedbackSystem = new FeedbackSystem();
     this.noteRenderer = new NoteRenderer();
     this.highwayRenderer = new HighwayRenderer(this.noteRenderer);
@@ -467,11 +471,22 @@ export default class RobterSession {
     return this.songTime + this.getVideoOffsetSec();
   }
 
-  enterCalibration(returnState = 'preview') {
+  enterCalibration(returnState = 'preview', mode = this.calibrationState.mode) {
     this.calibrationReturnState = returnState;
+    this.calibrationState.mode = mode;
     this.calibrationState.timer = 0;
     this.calibrationState.pulse = 0;
     this.state = 'calibration';
+  }
+
+  enterDifficultySelect({ returnState = 'setlist', cancelState = 'instrument-select' } = {}) {
+    this.difficultyReturnState = returnState;
+    this.difficultyCancelState = cancelState;
+    this.difficultySelectionIndex = Math.max(
+      0,
+      PERFORMANCE_DIFFICULTIES.findIndex((entry) => entry.id === this.performanceDifficulty)
+    );
+    this.state = 'difficulty-select';
   }
 
   getSongSoundConfig() {
@@ -584,7 +599,8 @@ export default class RobterSession {
           isDrumStem,
           options: {
             forceNoteMode: mappedInstrument === 'bass',
-            trimOverlaps: mappedInstrument === 'bass'
+            trimOverlaps: mappedInstrument === 'bass',
+            collapseChords: mappedInstrument === 'bass'
           }
         });
         const difficulty = transcribed.stats.difficulty;
@@ -750,6 +766,10 @@ export default class RobterSession {
       this.handlePreviewInput();
       return;
     }
+    if (this.state === 'settings') {
+      this.handleSettingsInput();
+      return;
+    }
     if (this.state === 'calibration') {
       this.updateCalibration(dt);
       return;
@@ -792,7 +812,7 @@ export default class RobterSession {
 
   handleStemSelectInput() {
     const stemCount = Math.max(0, this.stemList.length);
-    const actionCount = 3;
+    const actionCount = this.instrumentSelectView.actions.length;
     if (!stemCount) {
       if (this.input.wasPressed('cancel')) {
         this.state = 'song-select';
@@ -825,8 +845,13 @@ export default class RobterSession {
       const stem = this.stemList[this.stemSelectionIndex];
       if (!stem) return;
       const action = this.stemActionIndex;
-      if (action === 2) {
+      if (action === 3) {
         this.state = 'song-select';
+        this.audio.ui();
+        return;
+      }
+      if (action === 2) {
+        this.enterDifficultySelect({ returnState: 'stem-select', cancelState: 'stem-select' });
         this.audio.ui();
         return;
       }
@@ -849,7 +874,7 @@ export default class RobterSession {
       this.audio.menu();
     }
     if (this.input.wasPressed('cancel')) {
-      this.state = 'difficulty-select';
+      this.enterDifficultySelect({ returnState: 'setlist', cancelState: 'instrument-select' });
       this.audio.ui();
       return;
     }
@@ -895,7 +920,7 @@ export default class RobterSession {
     }
     if (this.input.wasPressed('interact')) {
       this.instrument = INSTRUMENTS[this.instrumentSelectionIndex] || this.instrument;
-      this.state = 'difficulty-select';
+      this.enterDifficultySelect({ returnState: 'setlist', cancelState: 'instrument-select' });
       this.audio.ui();
     }
   }
@@ -919,7 +944,7 @@ export default class RobterSession {
       this.audio.menu();
     }
     if (this.input.wasPressed('cancel')) {
-      this.state = 'instrument-select';
+      this.state = this.difficultyCancelState || 'instrument-select';
       this.audio.ui();
       return;
     }
@@ -928,8 +953,10 @@ export default class RobterSession {
       if (entry) {
         this.performanceDifficulty = entry.id;
       }
-      this.selectionIndex = 0;
-      this.state = 'setlist';
+      if (this.difficultyReturnState === 'setlist') {
+        this.selectionIndex = 0;
+      }
+      this.state = this.difficultyReturnState || 'setlist';
       this.audio.ui();
     }
   }
@@ -1018,10 +1045,11 @@ export default class RobterSession {
       return;
     }
     if (this.input.wasPressed('interact')) {
-      const modes = ['play', 'practice', 'listen', 'calibrate', 'exit'];
+      const modes = ['play', 'practice', 'listen', 'settings', 'exit'];
       const selected = modes[this.previewSelection] || 'play';
-      if (selected === 'calibrate') {
-        this.enterCalibration('preview');
+      if (selected === 'settings') {
+        this.state = 'settings';
+        this.settingsSelectionIndex = 0;
         this.audio.ui();
         return;
       }
@@ -1031,6 +1059,35 @@ export default class RobterSession {
         return;
       }
       this.startSong({ playMode: selected });
+      this.audio.ui();
+    }
+  }
+
+  handleSettingsInput() {
+    const options = ['audio', 'video', 'back'];
+    const count = options.length;
+    if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')) {
+      this.settingsSelectionIndex = (this.settingsSelectionIndex - 1 + count) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('down') || this.input.wasGamepadPressed('dpadDown')) {
+      this.settingsSelectionIndex = (this.settingsSelectionIndex + 1) % count;
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('cancel')) {
+      this.state = 'preview';
+      this.audio.ui();
+      return;
+    }
+    if (this.input.wasPressed('interact')) {
+      const selected = options[this.settingsSelectionIndex];
+      if (selected === 'back') {
+        this.state = 'preview';
+        this.audio.ui();
+        return;
+      }
+      const mode = selected === 'audio' ? 'audio' : 'video';
+      this.enterCalibration('settings', mode);
       this.audio.ui();
     }
   }
@@ -3035,6 +3092,10 @@ export default class RobterSession {
       this.drawPreview(ctx, width, height);
       return;
     }
+    if (this.state === 'settings') {
+      this.drawSettings(ctx, width, height);
+      return;
+    }
     if (this.state === 'calibration') {
       this.drawCalibration(ctx, width, height);
       return;
@@ -3461,6 +3522,63 @@ export default class RobterSession {
     });
   }
 
+  drawSettings(ctx, width, height) {
+    const options = [
+      {
+        id: 'audio',
+        title: 'Audio Calibration',
+        description: 'Press A every time you hear the note (1-second pulse).'
+      },
+      {
+        id: 'video',
+        title: 'Video Calibration',
+        description: 'Press A when the falling A matches the target A.'
+      },
+      { id: 'back', title: 'Back', description: 'Return to session setup.' }
+    ];
+    ctx.save();
+    ctx.fillStyle = '#0b0f18';
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 26px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('RobterSESSION Settings', width / 2, 60);
+    ctx.fillStyle = 'rgba(215,242,255,0.75)';
+    ctx.font = '14px Courier New';
+    ctx.fillText('Calibrate your input timing before you play.', width / 2, 90);
+
+    const cardW = 620;
+    const cardH = 70;
+    const startY = 140;
+    const gap = 18;
+    this.bounds.settingsButtons = [];
+    options.forEach((option, index) => {
+      const y = startY + index * (cardH + gap);
+      const isSelected = index === this.settingsSelectionIndex;
+      const x = width / 2 - cardW / 2;
+      ctx.fillStyle = isSelected ? 'rgba(255,210,120,0.85)' : 'rgba(20,30,40,0.7)';
+      ctx.fillRect(x, y, cardW, cardH);
+      ctx.strokeStyle = isSelected ? '#ffe16a' : 'rgba(140,200,255,0.4)';
+      ctx.lineWidth = isSelected ? 2.5 : 2;
+      ctx.strokeRect(x, y, cardW, cardH);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = isSelected ? '#241608' : '#d7f2ff';
+      ctx.font = 'bold 16px Courier New';
+      ctx.fillText(option.title, x + 20, y + 28);
+      ctx.font = '13px Courier New';
+      ctx.fillStyle = isSelected ? '#241608' : 'rgba(215,242,255,0.8)';
+      ctx.fillText(option.description, x + 20, y + 50);
+      this.bounds.settingsButtons.push({ x, y, w: cardW, h: cardH, index, id: option.id });
+    });
+
+    ctx.fillStyle = 'rgba(215,242,255,0.75)';
+    ctx.font = '14px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('Confirm: Select  |  Back: Mode Select', width / 2, height - 50);
+    ctx.restore();
+  }
+
   drawCalibration(ctx, width, height) {
     const { mode, pulse } = this.calibrationState;
     const audioOffset = this.calibration.audioOffsetMs ?? 0;
@@ -3476,7 +3594,10 @@ export default class RobterSession {
 
     ctx.fillStyle = 'rgba(215,242,255,0.75)';
     ctx.font = '14px Courier New';
-    ctx.fillText('Tap A on the beat to measure your offset.', width / 2, 100);
+    const prompt = mode === 'audio'
+      ? 'Press A every time you hear the note (1-second pulse).'
+      : 'Press A when the falling A matches the target.';
+    ctx.fillText(prompt, width / 2, 100);
 
     const cardW = 260;
     const cardH = 120;
@@ -3503,20 +3624,42 @@ export default class RobterSession {
       ctx.fillText(`${entry.value} ms`, x + cardW / 2, y + 74);
     });
 
-    const pulseX = width / 2;
-    const pulseY = height / 2 + 40;
-    const pulseRadius = 26 + pulse * 24;
-    ctx.strokeStyle = `rgba(122,208,255,${0.6 + pulse * 0.4})`;
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.arc(pulseX, pulseY, pulseRadius, 0, Math.PI * 2);
-    ctx.stroke();
+    if (mode === 'audio') {
+      const pulseX = width / 2;
+      const pulseY = height / 2 + 40;
+      const pulseRadius = 26 + pulse * 24;
+      ctx.strokeStyle = `rgba(122,208,255,${0.6 + pulse * 0.4})`;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(pulseX, pulseY, pulseRadius, 0, Math.PI * 2);
+      ctx.stroke();
+    } else {
+      const trackTop = height / 2 - 30;
+      const trackBottom = height / 2 + 60;
+      const trackX = width / 2;
+      const progress = clamp(this.calibrationState.timer / this.calibrationState.beatInterval, 0, 1);
+      const fallY = trackTop + (trackBottom - trackTop) * progress;
+      ctx.strokeStyle = 'rgba(120,190,255,0.35)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(trackX, trackTop);
+      ctx.lineTo(trackX, trackBottom);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(255,225,120,0.95)';
+      ctx.font = 'bold 38px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText('A', trackX, fallY);
+      ctx.fillStyle = 'rgba(215,242,255,0.85)';
+      ctx.font = 'bold 30px Courier New';
+      ctx.fillText('A', trackX, trackBottom + 12);
+    }
 
     ctx.fillStyle = 'rgba(215,242,255,0.8)';
     ctx.font = '14px Courier New';
     ctx.fillText('Up/Down: switch audio/visual', width / 2, height - 120);
     ctx.fillText('Left/Right: fine tune +/- 5 ms', width / 2, height - 95);
-    ctx.fillText('Back: return to session setup', width / 2, height - 70);
+    const returnLabel = this.calibrationReturnState === 'settings' ? 'settings' : 'session setup';
+    ctx.fillText(`Back: return to ${returnLabel}`, width / 2, height - 70);
     ctx.restore();
   }
 
@@ -3861,8 +4004,13 @@ export default class RobterSession {
         this.stemActionIndex = action.index;
         const stem = this.stemList[this.stemSelectionIndex];
         if (!stem) return;
-        if (action.index === 2) {
+        if (action.index === 3) {
           this.state = 'song-select';
+          this.audio.ui();
+          return;
+        }
+        if (action.index === 2) {
+          this.enterDifficultySelect({ returnState: 'stem-select', cancelState: 'stem-select' });
           this.audio.ui();
           return;
         }
@@ -3880,7 +4028,7 @@ export default class RobterSession {
       if (hit) {
         this.instrumentSelectionIndex = hit.index;
         this.instrument = INSTRUMENTS[hit.index] || this.instrument;
-        this.state = 'difficulty-select';
+        this.enterDifficultySelect({ returnState: 'setlist', cancelState: 'instrument-select' });
         this.audio.ui();
       }
     }
@@ -3894,8 +4042,26 @@ export default class RobterSession {
         if (entry) {
           this.performanceDifficulty = entry.id;
         }
-        this.selectionIndex = 0;
-        this.state = 'setlist';
+        if (this.difficultyReturnState === 'setlist') {
+          this.selectionIndex = 0;
+        }
+        this.state = this.difficultyReturnState || 'setlist';
+        this.audio.ui();
+      }
+    }
+    if (this.state === 'settings') {
+      const hit = this.bounds.settingsButtons.find((button) => (
+        x >= button.x && x <= button.x + button.w && y >= button.y && y <= button.y + button.h
+      ));
+      if (hit) {
+        this.settingsSelectionIndex = hit.index;
+        if (hit.id === 'back') {
+          this.state = 'preview';
+          this.audio.ui();
+          return;
+        }
+        const mode = hit.id === 'audio' ? 'audio' : 'video';
+        this.enterCalibration('settings', mode);
         this.audio.ui();
       }
     }
@@ -3917,15 +4083,16 @@ export default class RobterSession {
       const action = this.previewScreen.handleClick(x, y);
       if (!action) return;
       if (action.type === 'mode') {
-        const modes = ['play', 'practice', 'listen', 'calibrate', 'exit'];
+        const modes = ['play', 'practice', 'listen', 'settings', 'exit'];
         this.previewSelection = Math.max(0, modes.indexOf(action.value));
         if (action.value === 'exit') {
           this.state = 'setlist';
           this.audio.ui();
           return;
         }
-        if (action.value === 'calibrate') {
-          this.enterCalibration('preview');
+        if (action.value === 'settings') {
+          this.state = 'settings';
+          this.settingsSelectionIndex = 0;
           this.audio.ui();
           return;
         }

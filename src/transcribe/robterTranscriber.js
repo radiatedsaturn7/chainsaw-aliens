@@ -484,6 +484,19 @@ export const transcribeMidiStem = ({
     });
   };
 
+  const pickSingleNoteFromCluster = (cluster) => {
+    if (!cluster?.notes?.length) return { note: null, approxOverride: null };
+    const sorted = [...cluster.notes].sort((a, b) => a.midi - b.midi);
+    if (sorted.length === 1) return { note: sorted[0], approxOverride: null };
+    const analysis = analyzeChord(sorted);
+    const fallbackPc = ((sorted[0].midi % 12) + 12) % 12;
+    const rootPc = analysis?.rootPc ?? fallbackPc;
+    const rootNote = sorted.find((note) => (((note.midi % 12) + 12) % 12) === rootPc);
+    const chosen = rootNote || sorted[0];
+    const approxOverride = analysis?.chordInfo ? null : 'root-fallback';
+    return { note: chosen, approxOverride };
+  };
+
   clusters.forEach((cluster) => {
     const startSec = cluster.notes[0].tStartSec;
     const endSec = Math.max(...cluster.notes.map((n) => n.tEndSec));
@@ -513,7 +526,14 @@ export const transcribeMidiStem = ({
     }
 
     if (options.forceNoteMode) {
-      cluster.notes.forEach((note) => pushNoteEvent(note));
+      if (options.collapseChords && cluster.notes.length > 1) {
+        const { note, approxOverride } = pickSingleNoteFromCluster(cluster);
+        if (note) {
+          pushNoteEvent(note, { approxOverride });
+        }
+      } else {
+        cluster.notes.forEach((note) => pushNoteEvent(note));
+      }
       return;
     }
 
