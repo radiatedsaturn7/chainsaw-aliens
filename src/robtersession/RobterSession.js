@@ -114,6 +114,45 @@ const STEM_PROGRAM_MAP = {
 };
 
 const USE_LEGACY_SETLIST = Boolean(window?.location?.search?.includes('legacySetlist'));
+// Optional config flag: append ?reduction=easy|medium|hard|off to override reduction pass.
+const REDUCTION_PRESET_PARAM = window?.location?.search
+  ? new URLSearchParams(window.location.search).get('reduction')
+  : null;
+
+const REDUCTION_PRESETS = {
+  easy: {
+    id: 'easy',
+    label: 'Easy',
+    description: 'Quantize to eighths, remove modifiers, collapse octaves.',
+    quantizeGrid: 0.5,
+    stripModifiers: true,
+    collapseOctave: true
+  },
+  medium: {
+    id: 'medium',
+    label: 'Medium',
+    description: 'Quantize to eighths, remove modifiers.',
+    quantizeGrid: 0.5,
+    stripModifiers: true,
+    collapseOctave: false
+  },
+  hard: {
+    id: 'hard',
+    label: 'Hard',
+    description: 'Remove modifiers only.',
+    quantizeGrid: null,
+    stripModifiers: true,
+    collapseOctave: false
+  },
+  off: {
+    id: 'off',
+    label: 'Off',
+    description: 'No post-transcription reduction.',
+    quantizeGrid: null,
+    stripModifiers: false,
+    collapseOctave: false
+  }
+};
 
 const PERFORMANCE_DIFFICULTIES = [
   {
@@ -230,6 +269,12 @@ const getTimingForDifficulty = (rating = 3) => {
 };
 
 const getSongKey = (songName) => songName.toLowerCase().replace(/\s+/g, '-');
+const normalizeReductionPreset = (value) => {
+  const key = String(value || '').toLowerCase();
+  if (REDUCTION_PRESETS[key]) return key;
+  if (key === 'expert') return 'off';
+  return null;
+};
 
 export default class RobterSession {
   constructor({ input, audio }) {
@@ -242,6 +287,7 @@ export default class RobterSession {
     this.instrumentSelectionIndex = 0;
     this.performanceDifficulty = 'medium';
     this.difficultySelectionIndex = 1;
+    this.reductionPreset = normalizeReductionPreset(REDUCTION_PRESET_PARAM);
     this.scaleSelection = {
       scaleIndex: 0,
       rootIndex: 0,
@@ -1109,6 +1155,58 @@ export default class RobterSession {
     }
   }
 
+  getReductionProfile() {
+    const override = normalizeReductionPreset(this.reductionPreset);
+    if (override) return REDUCTION_PRESETS[override];
+    const fromDifficulty = normalizeReductionPreset(this.performanceDifficulty);
+    if (fromDifficulty) return REDUCTION_PRESETS[fromDifficulty];
+    return REDUCTION_PRESETS.off;
+  }
+
+  applyReductionPass(events = []) {
+    const profile = this.getReductionProfile();
+    if (!profile || profile.id === 'off') {
+      return events;
+    }
+    const secondsPerBeat = this.songData?.tempo?.secondsPerBeat
+      ?? (60 / (this.songData?.bpm || 120));
+    const quantizeGrid = Number.isFinite(profile.quantizeGrid) ? profile.quantizeGrid : null;
+    const quantizeBeat = (timeBeat) => (quantizeGrid ? Math.round(timeBeat / quantizeGrid) * quantizeGrid : timeBeat);
+    // Post-transcription reduction rules:
+    // - Quantize sixteenth-note rhythms to eighths by snapping to a 0.5-beat grid.
+    // - Remove modifiers (LB/D-Left/RB) so alternate fingerings and accents disappear.
+    // - Collapse octaves by clearing octave-up flags to a central octave.
+    // - Preserve chord integrity by keeping chord events intact.
+    return events.map((event) => {
+      const reduced = { ...event };
+      const snappedBeat = quantizeBeat(event.timeBeat);
+      if (snappedBeat !== event.timeBeat) {
+        reduced.timeBeat = snappedBeat;
+        reduced.timeSec = snappedBeat * secondsPerBeat;
+      }
+      const required = event.requiredInput ? { ...event.requiredInput } : null;
+      if (required) {
+        if (profile.stripModifiers) {
+          required.modifiers = { lb: false, dleft: false };
+          if (required.mode === 'chord') {
+            required.chordType = this.getChordTypeForButton(required.button, {
+              lb: false,
+              dleft: false,
+              rb: false
+            });
+          }
+        } else if (required.modifiers) {
+          required.modifiers = { ...required.modifiers };
+        }
+        if (profile.collapseOctave) {
+          required.octaveUp = false;
+        }
+      }
+      reduced.requiredInput = required || event.requiredInput;
+      return reduced;
+    });
+  }
+
   applyPerformanceDifficulty(events = []) {
     const profile = this.getPerformanceProfile();
     if (profile.minBeatGap <= 0 && profile.allowLB && profile.allowDLeft && profile.allowOctaveUp) {
@@ -1616,9 +1714,10 @@ export default class RobterSession {
     this.robterspiel.octaveOffset = this.octaveOffset;
     this.audio.setMidiPitchBend?.(0);
     this.audio.setMidiPitchBend?.(0, INSTRUMENT_CHANNELS[this.instrument] ?? 0);
+    const reducedEvents = this.applyReductionPass(this.songData.events);
     const performanceEvents = this.useStemPlayback
-      ? this.songData.events
-      : this.applyPerformanceDifficulty(this.songData.events);
+      ? reducedEvents
+      : this.applyPerformanceDifficulty(reducedEvents);
     this.events = performanceEvents.map((event) => ({
       ...event,
       hit: false,
