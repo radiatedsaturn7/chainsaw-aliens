@@ -1118,6 +1118,7 @@ export default class RobterSession {
       timeSec: active.timeSec,
       isWrong,
       stuck,
+      stuckDurationSec: stuck ? Math.max(0, songTime - active.timeSec) : 0,
       laneIndex: 1
     };
   }
