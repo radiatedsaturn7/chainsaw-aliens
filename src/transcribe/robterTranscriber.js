@@ -137,6 +137,50 @@ const resolveOctaveModifier = ({ midi, degree, key }) => {
   };
 };
 
+const scoreFingering = ({ inputMap, lastFingering, timeSec }) => {
+  const buttonIndex = NOTE_LANES.indexOf(inputMap.button);
+  const centerIndex = (NOTE_LANES.length - 1) / 2;
+  const stretchCost = Math.abs(buttonIndex - centerIndex);
+  const modifierCost = (inputMap.modifiers?.lb ? 0.4 : 0) + (inputMap.modifiers?.dleft ? 0.4 : 0);
+  let shiftCost = 0;
+  let rapidAlternationCost = 0;
+  if (lastFingering) {
+    shiftCost = Math.abs(buttonIndex - lastFingering.buttonIndex) * 0.6;
+    shiftCost += lastFingering.modifiers?.lb !== inputMap.modifiers?.lb ? 0.3 : 0;
+    shiftCost += lastFingering.modifiers?.dleft !== inputMap.modifiers?.dleft ? 0.3 : 0;
+    const timeDelta = Math.max(0, timeSec - lastFingering.timeSec);
+    if (timeDelta > 0 && timeDelta < 0.4 && lastFingering.buttonIndex !== buttonIndex) {
+      rapidAlternationCost = 0.6;
+    }
+  }
+  return stretchCost + modifierCost + shiftCost + rapidAlternationCost;
+};
+
+const buildChordCandidates = ({ intervals }) => {
+  const intervalSet = new Set(intervals);
+  const candidates = [];
+  CHORD_TEMPLATES.forEach((entry) => {
+    entry.templates.forEach((template) => {
+      if (template.length !== intervals.length) return;
+      const matches = template.every((interval) => intervalSet.has(interval));
+      if (!matches) return;
+      const inputMap = CHORD_INPUTS[entry.chordType];
+      if (inputMap) {
+        candidates.push({ chordType: entry.chordType, inputMap, template });
+      }
+      if (entry.chordType === 'triad') {
+        ['triad-inv1', 'triad-inv2'].forEach((variant) => {
+          const variantMap = CHORD_INPUTS[variant];
+          if (variantMap) {
+            candidates.push({ chordType: variant, inputMap: variantMap, template });
+          }
+        });
+      }
+    });
+  });
+  return candidates;
+};
+
 const groupNotes = (notes, { clusterWindow = 0.03, arpeggioWindow = 0.2 } = {}) => {
   const clusters = [];
   let index = 0;
@@ -226,6 +270,7 @@ export const transcribeMidiStem = ({ notes, bpm, keySignature, isDrumStem = fals
   const processedNotes = options.trimOverlaps ? trimOverlappingNotes(quantized) : quantized;
   const clusters = groupNotes(processedNotes, options.grouping);
   const events = [];
+  let lastChordFingering = null;
   let approxCounts = {
     exact: 0,
     'diatonic-snap': 0,
@@ -306,36 +351,97 @@ export const transcribeMidiStem = ({ notes, bpm, keySignature, isDrumStem = fals
       const rootPc = ((sorted[0].midi % 12) + 12) % 12;
       const pcs = Array.from(new Set(sorted.map((note) => ((note.midi % 12) + 12) % 12)))
         .sort((a, b) => (a - rootPc + 12) % 12 - (b - rootPc + 12) % 12);
-      const chordInfo = detectChordType([rootPc, ...pcs.filter((pc) => pc !== rootPc)]);
-      if (!chordInfo) {
-        pushNoteEvent(sorted[0], { approxOverride: 'root-fallback' });
+      const intervals = pcs.map((pc) => (pc - rootPc + 12) % 12).sort((a, b) => a - b);
+      const chordCandidates = buildChordCandidates({ intervals });
+      if (!chordCandidates.length) {
+        const chordInfo = detectChordType([rootPc, ...pcs.filter((pc) => pc !== rootPc)]);
+        if (!chordInfo) {
+          pushNoteEvent(sorted[0], { approxOverride: 'root-fallback' });
+          return;
+        }
+        const degreeInfo = mapPitchToScaleDegree(rootPc, key);
+        const chordType = chordInfo.chordType;
+        const inputMap = CHORD_INPUTS[chordType] || CHORD_INPUTS.triad;
+        const approxLevel = degreeInfo.approxLevel !== 'exact'
+          ? degreeInfo.approxLevel
+          : chordInfo.approx;
+        approxCounts[approxLevel] = (approxCounts[approxLevel] || 0) + 1;
+        events.push({
+          timeBeat,
+          timeSec: startSec,
+          lane: NOTE_LANES.indexOf(inputMap.button),
+          type: 'CHORD',
+          section: 'song',
+          requiredInput: {
+            mode: 'chord',
+            degree: degreeInfo.degree,
+            button: inputMap.button,
+            modifiers: inputMap.modifiers,
+            chordType
+          },
+          sustain: duration / timing.secondsPerBeat,
+          originalNotes: cluster.notes.map((note) => note.midi),
+          approxLevel,
+          recommendedMode: 'chord'
+        });
+        lastChordFingering = {
+          buttonIndex: NOTE_LANES.indexOf(inputMap.button),
+          modifiers: inputMap.modifiers,
+          timeSec: startSec
+        };
         return;
       }
       const degreeInfo = mapPitchToScaleDegree(rootPc, key);
-      const chordType = chordInfo.chordType;
-      const inputMap = CHORD_INPUTS[chordType] || CHORD_INPUTS.triad;
-      const approxLevel = degreeInfo.approxLevel !== 'exact'
-        ? degreeInfo.approxLevel
-        : chordInfo.approx;
+      const scoredCandidates = chordCandidates.map((candidate) => {
+        return {
+          ...candidate,
+          score: scoreFingering({
+            inputMap: candidate.inputMap,
+            lastFingering: lastChordFingering,
+            timeSec: startSec
+          })
+        };
+      });
+      scoredCandidates.sort((a, b) => a.score - b.score);
+      const chosen = scoredCandidates[0];
+      const approxLevel = degreeInfo.approxLevel !== 'exact' ? degreeInfo.approxLevel : 'exact';
       approxCounts[approxLevel] = (approxCounts[approxLevel] || 0) + 1;
+      console.debug('robter chord fingering', {
+        intervals,
+        chordType: chosen.chordType,
+        button: chosen.inputMap.button,
+        modifiers: chosen.inputMap.modifiers,
+        score: chosen.score,
+        candidates: scoredCandidates.map((candidate) => ({
+          chordType: candidate.chordType,
+          button: candidate.inputMap.button,
+          modifiers: candidate.inputMap.modifiers,
+          score: candidate.score
+        }))
+      });
       events.push({
         timeBeat,
         timeSec: startSec,
-        lane: NOTE_LANES.indexOf(inputMap.button),
+        lane: NOTE_LANES.indexOf(chosen.inputMap.button),
         type: 'CHORD',
         section: 'song',
         requiredInput: {
           mode: 'chord',
           degree: degreeInfo.degree,
-          button: inputMap.button,
-          modifiers: inputMap.modifiers,
-          chordType
+          button: chosen.inputMap.button,
+          modifiers: chosen.inputMap.modifiers,
+          chordType: chosen.chordType
         },
         sustain: duration / timing.secondsPerBeat,
         originalNotes: cluster.notes.map((note) => note.midi),
         approxLevel,
         recommendedMode: 'chord'
       });
+      lastChordFingering = {
+        buttonIndex: NOTE_LANES.indexOf(chosen.inputMap.button),
+        modifiers: chosen.inputMap.modifiers,
+        timeSec: startSec
+      };
       return;
     }
 
