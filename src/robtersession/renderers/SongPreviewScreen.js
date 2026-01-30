@@ -67,7 +67,7 @@ export default class SongPreviewScreen {
     ctx.textAlign = 'center';
     ctx.fillText('Choose Session Mode', width / 2, 60);
 
-    const modes = ['Play', 'Practice', 'Listen', 'Exit'];
+    const modes = ['Play', 'Practice', 'Listen', 'Calibrate', 'Exit'];
     const btnW = 180;
     const btnH = 44;
     const startY = 120;

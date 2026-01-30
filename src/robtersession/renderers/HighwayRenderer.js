@@ -219,21 +219,53 @@ export default class HighwayRenderer {
     const { startX, laneWidth, laneGap, hitLineY, laneTop } = layout;
     const visibleWindow = 3.6;
     const showPitchLabel = settings.labelMode !== 'buttons';
-    const showStickLabel = settings.labelMode !== 'pitch';
     const pixelsPerSecond = (hitLineY - laneTop) / visibleWindow;
+    const laneOffset = settings.laneOffset ?? 0;
+    const noteHeightScale = settings.noteHeightScale ?? 0.6;
+    const directionalCue = settings.directionalCue;
+    if (directionalCue?.label) {
+      const cueLaneIndex = directionalCue.laneIndex ?? 0;
+      const timeToHitRaw = directionalCue.timeSec - songTime;
+      const timeToHit = directionalCue.stuck ? Math.max(0, timeToHitRaw) : timeToHitRaw;
+      if (timeToHit > -0.4 && timeToHit < visibleWindow) {
+        const depth = clamp(1 - timeToHit / visibleWindow, 0, 1);
+        const perspective = lerp(0.45, 1, depth);
+        const laneCenter = startX + cueLaneIndex * (laneWidth + laneGap) + laneWidth / 2;
+        const highwayCenter = layout.widthCenter ?? (startX + layout.totalWidth / 2);
+        const perspectiveCenter = highwayCenter + (laneCenter - highwayCenter) * perspective;
+        const noteWidth = laneWidth * perspective * settings.noteSize;
+        const baseHeight = Math.max(18, laneWidth * 0.24) * settings.noteSize * perspective;
+        const noteHeight = baseHeight * noteHeightScale;
+        const y = hitLineY - timeToHit * pixelsPerSecond;
+        const noteX = perspectiveCenter - noteWidth / 2;
+        const noteY = y - noteHeight / 2;
+        ctx.save();
+        ctx.fillStyle = directionalCue.isWrong ? 'rgba(255,90,90,0.92)' : 'rgba(120,200,255,0.85)';
+        ctx.fillRect(noteX, noteY, noteWidth, noteHeight);
+        ctx.strokeStyle = 'rgba(20,30,40,0.9)';
+        ctx.strokeRect(noteX, noteY, noteWidth, noteHeight);
+        ctx.fillStyle = '#0f1a22';
+        ctx.font = `bold ${Math.max(14, noteHeight * 0.6)}px Courier New`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(directionalCue.label, noteX + noteWidth / 2, noteY + noteHeight / 2);
+        ctx.restore();
+      }
+    }
     const sortedEvents = [...events].sort((a, b) => b.timeSec - a.timeSec);
     sortedEvents.forEach((event) => {
       const timeToHit = event.timeSec - songTime;
       if (timeToHit < -0.4 || timeToHit > visibleWindow) return;
       if (mode !== 'listen' && event.judged) return;
-      const laneIndex = event.lane ?? 0;
+      const laneIndex = (event.lane ?? 0) + laneOffset;
       const depth = clamp(1 - timeToHit / visibleWindow, 0, 1);
       const perspective = lerp(0.45, 1, depth);
       const laneCenter = startX + laneIndex * (laneWidth + laneGap) + laneWidth / 2;
       const highwayCenter = layout.widthCenter ?? (startX + layout.totalWidth / 2);
       const perspectiveCenter = highwayCenter + (laneCenter - highwayCenter) * perspective;
       const noteWidth = laneWidth * perspective * settings.noteSize;
-      const noteHeight = Math.max(18, laneWidth * 0.24) * settings.noteSize * perspective;
+      const baseHeight = Math.max(18, laneWidth * 0.24) * settings.noteSize * perspective;
+      const noteHeight = baseHeight * noteHeightScale;
       const y = hitLineY - timeToHit * pixelsPerSecond;
       const noteX = perspectiveCenter - noteWidth / 2;
       const noteY = y - noteHeight / 2;
@@ -271,23 +303,6 @@ export default class HighwayRenderer {
         kind: event.noteKind,
         hitGlow: event.autoHit
       });
-
-      if (showStickLabel && event.stickLabel) {
-        const stickSize = Math.max(18, noteHeight * 0.5);
-        const stickX = Math.max(12, noteX - stickSize - 8);
-        const stickY = noteY + noteHeight / 2 - stickSize / 2;
-        ctx.save();
-        ctx.fillStyle = 'rgba(8,12,20,0.7)';
-        ctx.fillRect(stickX, stickY, stickSize, stickSize);
-        ctx.strokeStyle = 'rgba(140,200,255,0.45)';
-        ctx.strokeRect(stickX, stickY, stickSize, stickSize);
-        ctx.fillStyle = '#ffe16a';
-        ctx.font = `bold ${Math.max(10, stickSize * 0.5)}px Courier New`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(event.stickLabel, stickX + stickSize / 2, stickY + stickSize / 2);
-        ctx.restore();
-      }
 
       if (showPitchLabel && event.sideLabel) {
         const labelText = event.sideLabel;
