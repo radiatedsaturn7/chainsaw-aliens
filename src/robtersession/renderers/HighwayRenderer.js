@@ -222,40 +222,43 @@ export default class HighwayRenderer {
     const pixelsPerSecond = (hitLineY - laneTop) / visibleWindow;
     const laneOffset = settings.laneOffset ?? 0;
     const noteHeightScale = settings.noteHeightScale ?? 0.6;
-    const directionalCue = settings.directionalCue;
-    if (directionalCue?.label) {
+    const directionalCues = settings.directionalCues ?? [];
+    directionalCues.forEach((directionalCue) => {
+      if (!directionalCue?.label) return;
       const cueLaneIndex = directionalCue.laneIndex ?? 0;
       const timeToHitRaw = directionalCue.timeSec - songTime;
       const timeToHit = directionalCue.stuck ? Math.max(0, timeToHitRaw) : timeToHitRaw;
-      if (timeToHit > -0.4 && timeToHit < visibleWindow) {
-        const depth = clamp(1 - timeToHit / visibleWindow, 0, 1);
-        const perspective = lerp(0.45, 1, depth);
-        const laneCenter = startX + cueLaneIndex * (laneWidth + laneGap) + laneWidth / 2;
-        const highwayCenter = layout.widthCenter ?? (startX + layout.totalWidth / 2);
-        const perspectiveCenter = highwayCenter + (laneCenter - highwayCenter) * perspective;
-        const noteWidth = laneWidth * perspective * settings.noteSize;
-        const baseHeight = Math.max(18, laneWidth * 0.24) * settings.noteSize * perspective;
-        const noteHeight = baseHeight * noteHeightScale;
-        const y = hitLineY - timeToHit * pixelsPerSecond;
-        const jitterStrength = directionalCue.isWrong ? 3 + 3 * clamp((directionalCue.stuckDurationSec || 0) / 1.2, 0, 1) : 0;
-        const jitterOffset = jitterStrength * Math.sin((songTime + (directionalCue.stuckDurationSec || 0)) * 12);
-        const noteX = perspectiveCenter - noteWidth / 2 + jitterOffset * perspective;
-        const noteY = y - noteHeight / 2;
-        const stuckBlend = clamp((directionalCue.stuckDurationSec || 0) / 1.6, 0, 1);
-        const wrongColor = `rgba(${Math.round(lerp(255, 150, stuckBlend))},${Math.round(lerp(120, 30, stuckBlend))},${Math.round(lerp(120, 30, stuckBlend))},0.92)`;
-        ctx.save();
-        ctx.fillStyle = directionalCue.isWrong ? wrongColor : 'rgba(120,200,255,0.85)';
-        ctx.fillRect(noteX, noteY, noteWidth, noteHeight);
-        ctx.strokeStyle = 'rgba(20,30,40,0.9)';
-        ctx.strokeRect(noteX, noteY, noteWidth, noteHeight);
-        ctx.fillStyle = '#0f1a22';
-        ctx.font = `bold ${Math.max(14, noteHeight * 0.6)}px Courier New`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(directionalCue.label, noteX + noteWidth / 2, noteY + noteHeight / 2);
-        ctx.restore();
-      }
-    }
+      if (timeToHit <= -0.4 || timeToHit >= visibleWindow) return;
+      const depth = clamp(1 - timeToHit / visibleWindow, 0, 1);
+      const perspective = lerp(0.45, 1, depth);
+      const laneCenter = startX + cueLaneIndex * (laneWidth + laneGap) + laneWidth / 2;
+      const highwayCenter = layout.widthCenter ?? (startX + layout.totalWidth / 2);
+      const perspectiveCenter = highwayCenter + (laneCenter - highwayCenter) * perspective;
+      const noteWidth = laneWidth * perspective * settings.noteSize;
+      const baseHeight = Math.max(18, laneWidth * 0.24) * settings.noteSize * perspective;
+      const noteHeight = baseHeight * noteHeightScale;
+      const y = hitLineY - timeToHit * pixelsPerSecond;
+      const stuckDuration = directionalCue.stuckDurationSec || 0;
+      const jitterStrength = directionalCue.isWrong
+        ? 3 + 3 * clamp(stuckDuration / 1.2, 0, 1)
+        : 0;
+      const jitterOffset = jitterStrength * Math.sin((songTime + stuckDuration) * 12);
+      const noteX = perspectiveCenter - noteWidth / 2 + jitterOffset * perspective;
+      const noteY = y - noteHeight / 2;
+      const stuckBlend = clamp(stuckDuration / 1.6, 0, 1);
+      const wrongColor = `rgba(${Math.round(lerp(255, 150, stuckBlend))},${Math.round(lerp(120, 30, stuckBlend))},${Math.round(lerp(120, 30, stuckBlend))},0.92)`;
+      ctx.save();
+      ctx.fillStyle = directionalCue.isWrong ? wrongColor : 'rgba(120,200,255,0.85)';
+      ctx.fillRect(noteX, noteY, noteWidth, noteHeight);
+      ctx.strokeStyle = 'rgba(20,30,40,0.9)';
+      ctx.strokeRect(noteX, noteY, noteWidth, noteHeight);
+      ctx.fillStyle = '#0f1a22';
+      ctx.font = `bold ${Math.max(14, noteHeight * 0.6)}px Courier New`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(directionalCue.label, noteX + noteWidth / 2, noteY + noteHeight / 2);
+      ctx.restore();
+    });
     const sortedEvents = [...events].sort((a, b) => b.timeSec - a.timeSec);
     sortedEvents.forEach((event) => {
       const timeToHit = event.timeSec - songTime;

@@ -387,6 +387,11 @@ export default class RobterSession {
     this.wrongNoteCooldown = 0;
     this.buttonPulse = { A: 0, B: 0, X: 0, Y: 0 };
     this.wrongNotes = [];
+    this.directionalCueState = {
+      key: null,
+      stuckDurationSec: 0,
+      lastSongTime: 0
+    };
     this.trackEventIndex = {};
     this.directionalCueState = {
       key: null,
@@ -1104,6 +1109,25 @@ export default class RobterSession {
     this.calibrationState.samples[mode] = [];
   }
 
+  updateDirectionalCueState(songTime, active, stuck) {
+    if (!active) return 0;
+    const cueKey = `${active.timeSec}-${active.directionalLabel}`;
+    const cueState = this.directionalCueState;
+    if (cueState.key !== cueKey) {
+      cueState.key = cueKey;
+      cueState.stuckDurationSec = 0;
+      cueState.lastSongTime = songTime;
+    }
+    const timeDelta = Math.max(0, songTime - (cueState.lastSongTime ?? songTime));
+    if (stuck) {
+      cueState.stuckDurationSec += timeDelta;
+    } else {
+      cueState.stuckDurationSec = 0;
+    }
+    cueState.lastSongTime = songTime;
+    return cueState.stuckDurationSec;
+  }
+
   getDirectionalCue(songTime) {
     if (this.instrument === 'drums') return null;
     const chordEvents = this.events.filter((event) => event.directionalLabel);
@@ -1123,6 +1147,7 @@ export default class RobterSession {
     const targetDirection = active.requiredInput?.degree ?? null;
     const isWrong = targetDirection !== currentDirection;
     const stuck = songTime >= active.timeSec && isWrong;
+    const stuckDurationSec = this.updateDirectionalCueState(songTime, active, stuck);
     const cueKey = `${active.timeSec}-${active.directionalLabel}`;
     const cueState = this.directionalCueState;
     if (cueState.key !== cueKey) {
@@ -1142,9 +1167,38 @@ export default class RobterSession {
       timeSec: active.timeSec,
       isWrong,
       stuck,
-      stuckDurationSec: stuck ? Math.max(0, songTime - active.timeSec) : 0,
-      laneIndex: 1
+      stuckDurationSec,
+      laneIndex: 0
     };
+  }
+
+  getDirectionalCues(songTime) {
+    if (this.instrument === 'drums') return [];
+    const chordEvents = this.events.filter((event) => event.directionalLabel);
+    if (!chordEvents.length) return [];
+    const currentDirection = this.robterspiel.leftStickStableDirection || this.degree;
+    const nextIndex = chordEvents.findIndex((event) => event.timeSec >= songTime);
+    const pastIndex = nextIndex === -1 ? chordEvents.length - 1 : nextIndex - 1;
+    let active = null;
+    if (pastIndex >= 0) {
+      const pastEvent = chordEvents[pastIndex];
+      const matched = pastEvent.requiredInput?.degree === currentDirection;
+      active = matched ? chordEvents[pastIndex + 1] : pastEvent;
+    } else {
+      active = chordEvents[0];
+    }
+    const targetDirection = active?.requiredInput?.degree ?? null;
+    const isWrong = targetDirection !== currentDirection;
+    const stuck = Boolean(active && songTime >= active.timeSec && isWrong);
+    const stuckDurationSec = this.updateDirectionalCueState(songTime, active, stuck);
+    return chordEvents.map((event) => ({
+      label: event.directionalLabel,
+      timeSec: event.timeSec,
+      isWrong: Boolean(active && event === active && isWrong),
+      stuck: Boolean(active && event === active && stuck),
+      stuckDurationSec: event === active ? stuckDurationSec : 0,
+      laneIndex: 0
+    }));
   }
 
   handlePauseInput() {
@@ -3477,9 +3531,10 @@ export default class RobterSession {
     const laneColors = this.getLaneColors();
     const highwayTint = this.getHighwayTint();
     const visualSongTime = this.getVisualSongTime();
-    const directionalCue = laneOffset ? this.getDirectionalCue(visualSongTime) : null;
-    if (directionalCue?.isWrong) {
-      laneColors[1] = '#ff5b5b';
+    const directionalCues = laneOffset ? this.getDirectionalCues(visualSongTime) : [];
+    const activeDirectionalCue = directionalCues.find((cue) => cue.isWrong || cue.stuck);
+    if (activeDirectionalCue?.isWrong) {
+      laneColors[0] = '#ff5b5b';
     }
     const layout = this.highwayRenderer.getLayout({
       width,
@@ -3526,7 +3581,7 @@ export default class RobterSession {
       secondsPerBeat: beatDuration,
       laneOffset,
       noteHeightScale: 0.6,
-      directionalCue
+      directionalCues
     }, laneColors, this.playMode);
 
     this.drawWrongNoteGhosts(ctx, width, height, {
