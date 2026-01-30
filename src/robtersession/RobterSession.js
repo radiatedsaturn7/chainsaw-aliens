@@ -494,6 +494,7 @@ export default class RobterSession {
           notes: midiData.notes,
           bpm: midiData.bpm,
           keySignature: midiData.keySignature,
+          timeSignature: midiData.timeSignature,
           isDrumStem,
           options: {
             forceNoteMode: mappedInstrument === 'bass',
@@ -569,8 +570,14 @@ export default class RobterSession {
       scaleConfirmed: true,
       rootConfirmed: true
     };
-    this.requiredOctaveOffset = REQUIRED_OCTAVE_OFFSET;
-    this.octaveOffset = REQUIRED_OCTAVE_OFFSET;
+    const stemOctaveOffset = Number.isFinite(transcribed.recommendedOctaveOffset)
+      ? transcribed.recommendedOctaveOffset
+      : REQUIRED_OCTAVE_OFFSET;
+    this.requiredOctaveOffset = stemOctaveOffset;
+    this.octaveOffset = stemOctaveOffset;
+    this.songData.schema.arrangement.registers[this.instrument] = {
+      center_note: `C${3 + stemOctaveOffset}`
+    };
     this.selectedMode = stats.chordEvents > stats.noteEvents ? 'chord' : 'note';
     this.modeSelectionIndex = this.selectedMode === 'note' ? 0 : 1;
     this.playMode = 'play';
