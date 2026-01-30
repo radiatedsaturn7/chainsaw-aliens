@@ -668,7 +668,7 @@ export default class RobterSession {
         : [{
           trackIndex: 0,
           channel: midiData.notes.find((note) => Number.isFinite(note.channel))?.channel ?? 0,
-          program: midiData.notes.find((note) => Number.isFinite(note.program))?.program ?? null,
+          program: null,
           notes: midiData.notes
         }];
       const hasMultipleGroups = trackGroups.length > 1;
@@ -741,13 +741,24 @@ export default class RobterSession {
       const stems = [];
       this.stemData.forEach((stem) => {
         const notes = this.getExportNotesForStem(stem);
+        const trackMeta = stem.midiData.tracks?.[0] || {};
+        const program = Number.isFinite(trackMeta.program)
+          ? trackMeta.program
+          : (Number.isFinite(stem.playbackProgram)
+            ? stem.playbackProgram
+            : stem.midiData.notes.find((note) => Number.isFinite(note.program))?.program ?? 0);
+        const channel = Number.isFinite(trackMeta.channel)
+          ? trackMeta.channel
+          : (Number.isFinite(stem.playbackChannel)
+            ? stem.playbackChannel
+            : stem.midiData.notes.find((note) => Number.isFinite(note.channel))?.channel ?? 0);
         const bytes = buildMidiBytes({
           notes,
           bpm: stem.midiData.bpm,
           timeSignature: stem.midiData.timeSignature,
           keySignature: stem.midiData.keySignature,
-          program: stem.playbackProgram ?? 0,
-          channel: Number.isFinite(stem.playbackChannel) ? stem.playbackChannel : 0
+          program,
+          channel
         });
         const filename = stem.filename || `${stem.instrumentName}.mid`;
         stems.push({ filename, bytes });
