@@ -382,6 +382,11 @@ export default class RobterSession {
     this.wrongNoteCooldown = 0;
     this.buttonPulse = { A: 0, B: 0, X: 0, Y: 0 };
     this.wrongNotes = [];
+    this.directionalCueState = {
+      key: null,
+      stuckDurationSec: 0,
+      lastSongTime: 0
+    };
     this.trackEventIndex = {};
     this.hudSettings = loadHudSettings();
     this.calibration = loadCalibration();
@@ -1094,6 +1099,25 @@ export default class RobterSession {
     this.calibrationState.samples[mode] = [];
   }
 
+  updateDirectionalCueState(songTime, active, stuck) {
+    if (!active) return 0;
+    const cueKey = `${active.timeSec}-${active.directionalLabel}`;
+    const cueState = this.directionalCueState;
+    if (cueState.key !== cueKey) {
+      cueState.key = cueKey;
+      cueState.stuckDurationSec = 0;
+      cueState.lastSongTime = songTime;
+    }
+    const timeDelta = Math.max(0, songTime - (cueState.lastSongTime ?? songTime));
+    if (stuck) {
+      cueState.stuckDurationSec += timeDelta;
+    } else {
+      cueState.stuckDurationSec = 0;
+    }
+    cueState.lastSongTime = songTime;
+    return cueState.stuckDurationSec;
+  }
+
   getDirectionalCue(songTime) {
     if (this.instrument === 'drums') return null;
     const chordEvents = this.events.filter((event) => event.directionalLabel);
@@ -1113,7 +1137,7 @@ export default class RobterSession {
     const targetDirection = active.requiredInput?.degree ?? null;
     const isWrong = targetDirection !== currentDirection;
     const stuck = songTime >= active.timeSec && isWrong;
-    const stuckDurationSec = stuck ? Math.max(0, songTime - active.timeSec) : 0;
+    const stuckDurationSec = this.updateDirectionalCueState(songTime, active, stuck);
     return {
       label: active.directionalLabel,
       timeSec: active.timeSec,
@@ -1142,7 +1166,7 @@ export default class RobterSession {
     const targetDirection = active?.requiredInput?.degree ?? null;
     const isWrong = targetDirection !== currentDirection;
     const stuck = Boolean(active && songTime >= active.timeSec && isWrong);
-    const stuckDurationSec = stuck && active ? Math.max(0, songTime - active.timeSec) : 0;
+    const stuckDurationSec = this.updateDirectionalCueState(songTime, active, stuck);
     return chordEvents.map((event) => ({
       label: event.directionalLabel,
       timeSec: event.timeSec,
@@ -3394,9 +3418,9 @@ export default class RobterSession {
     const laneColors = laneOffset ? ['#6f7a88', ...this.getLaneColors()] : this.getLaneColors();
     const highwayTint = this.getHighwayTint();
     const visualSongTime = this.getVisualSongTime();
-    const directionalCue = laneOffset ? this.getDirectionalCue(visualSongTime) : null;
     const directionalCues = laneOffset ? this.getDirectionalCues(visualSongTime) : [];
-    if (directionalCue?.isWrong) {
+    const activeDirectionalCue = directionalCues.find((cue) => cue.isWrong || cue.stuck);
+    if (activeDirectionalCue?.isWrong) {
       laneColors[0] = '#ff5b5b';
     }
     const layout = this.highwayRenderer.getLayout({
