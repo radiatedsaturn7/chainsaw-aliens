@@ -2,7 +2,6 @@ import {
   DRUM_LANES,
   GRADE_THRESHOLDS,
   INSTRUMENTS,
-  LANE_LABELS,
   MODE_LIBRARY,
   ROOT_LABELS,
   DEFAULT_SETS
@@ -40,6 +39,7 @@ const SCROLL_SPEED = 240;
 const HIT_GLASS_DURATION = 0.25;
 const WRONG_NOTE_COOLDOWN = 0.22;
 const NOTE_LANES = ['X', 'Y', 'A', 'B'];
+const NON_DRUM_LANES = ['LB', ...NOTE_LANES, 'RB'];
 const SCALE_SELECTOR_THRESHOLD = 0.6;
 const SCALE_SELECTOR_RELEASE = 0.3;
 const SCALE_PROMPT_SPEED = 0.9;
@@ -135,8 +135,10 @@ const REDUCTION_PRESETS = {
   easy: {
     id: 'easy',
     label: 'Easy',
-    description: 'Quantize to eighths, remove modifiers, collapse octaves.',
-    quantizeGrid: 0.5,
+    description: 'Quantize to quarters with stable eighths, remove modifiers, collapse octaves.',
+    passCount: 2,
+    quantizeGridHierarchy: [1, 0.5],
+    allowStableHalfBeats: true,
     stripModifiers: true,
     collapseOctave: true
   },
@@ -144,7 +146,8 @@ const REDUCTION_PRESETS = {
     id: 'medium',
     label: 'Medium',
     description: 'Quantize to eighths, remove modifiers.',
-    quantizeGrid: 0.5,
+    passCount: 1,
+    quantizeGridHierarchy: [0.5],
     stripModifiers: true,
     collapseOctave: false
   },
@@ -152,7 +155,8 @@ const REDUCTION_PRESETS = {
     id: 'hard',
     label: 'Hard',
     description: 'Remove modifiers only.',
-    quantizeGrid: null,
+    passCount: 1,
+    quantizeGridHierarchy: [null],
     stripModifiers: true,
     collapseOctave: false
   },
@@ -160,7 +164,8 @@ const REDUCTION_PRESETS = {
     id: 'off',
     label: 'Off',
     description: 'No post-transcription reduction.',
-    quantizeGrid: null,
+    passCount: 0,
+    quantizeGridHierarchy: [],
     stripModifiers: false,
     collapseOctave: false
   }
@@ -388,6 +393,11 @@ export default class RobterSession {
       lastSongTime: 0
     };
     this.trackEventIndex = {};
+    this.directionalCueState = {
+      key: null,
+      stuckDurationSec: 0,
+      lastSongTime: null
+    };
     this.hudSettings = loadHudSettings();
     this.calibration = loadCalibration();
     this.calibrationState = {
@@ -438,7 +448,7 @@ export default class RobterSession {
   }
 
   getLaneOffset() {
-    return this.instrument === 'drums' ? 0 : 1;
+    return this.instrument === 'drums' ? 0 : 3;
   }
 
   getAudioOffsetSec() {
@@ -1138,6 +1148,20 @@ export default class RobterSession {
     const isWrong = targetDirection !== currentDirection;
     const stuck = songTime >= active.timeSec && isWrong;
     const stuckDurationSec = this.updateDirectionalCueState(songTime, active, stuck);
+    const cueKey = `${active.timeSec}-${active.directionalLabel}`;
+    const cueState = this.directionalCueState;
+    if (cueState.key !== cueKey) {
+      cueState.key = cueKey;
+      cueState.stuckDurationSec = 0;
+      cueState.lastSongTime = songTime;
+    }
+    const timeDelta = Math.max(0, songTime - (cueState.lastSongTime ?? songTime));
+    if (stuck) {
+      cueState.stuckDurationSec += timeDelta;
+    } else {
+      cueState.stuckDurationSec = 0;
+    }
+    cueState.lastSongTime = songTime;
     return {
       label: active.directionalLabel,
       timeSec: active.timeSec,
@@ -1401,10 +1425,10 @@ export default class RobterSession {
   }
 
   getReductionProfile() {
-    const override = normalizeReductionPreset(this.reductionPreset);
-    if (override) return REDUCTION_PRESETS[override];
     const fromDifficulty = normalizeReductionPreset(this.performanceDifficulty);
     if (fromDifficulty) return REDUCTION_PRESETS[fromDifficulty];
+    const override = normalizeReductionPreset(this.reductionPreset);
+    if (override) return REDUCTION_PRESETS[override];
     return REDUCTION_PRESETS.off;
   }
 
@@ -1415,20 +1439,64 @@ export default class RobterSession {
     }
     const secondsPerBeat = this.songData?.tempo?.secondsPerBeat
       ?? (60 / (this.songData?.bpm || 120));
-    const quantizeGrid = Number.isFinite(profile.quantizeGrid) ? profile.quantizeGrid : null;
-    const quantizeBeat = (timeBeat) => (quantizeGrid ? Math.round(timeBeat / quantizeGrid) * quantizeGrid : timeBeat);
+    const passCount = Math.max(
+      profile.passCount ?? profile.quantizeGridHierarchy?.length ?? 1,
+      1
+    );
+    const gridHierarchy = profile.quantizeGridHierarchy || [];
+    const originalBeats = events.map((event) => event.timeBeat);
+    const sortedByBeat = originalBeats
+      .map((timeBeat, index) => ({ index, timeBeat }))
+      .sort((a, b) => a.timeBeat - b.timeBeat);
+    const sortedIndexByOriginal = new Map(
+      sortedByBeat.map((entry, sortedIndex) => [entry.index, sortedIndex])
+    );
+    const quantizeBeat = (timeBeat, grid) => (grid ? Math.round(timeBeat / grid) * grid : timeBeat);
+    const isHalfBeat = (timeBeat) => Math.abs((timeBeat % 1) - 0.5) < 1e-6;
+    const isStableHalfBeat = (sortedIndex, snappedBeat) => {
+      if (!isHalfBeat(snappedBeat)) return true;
+      const prev = sortedByBeat[sortedIndex - 1];
+      const next = sortedByBeat[sortedIndex + 1];
+      const prevBeat = prev ? quantizeBeat(originalBeats[prev.index], 0.5) : null;
+      const nextBeat = next ? quantizeBeat(originalBeats[next.index], 0.5) : null;
+      const prevHalf = prevBeat !== null && isHalfBeat(prevBeat) && Math.abs(prevBeat - snappedBeat) <= 0.75;
+      const nextHalf = nextBeat !== null && isHalfBeat(nextBeat) && Math.abs(nextBeat - snappedBeat) <= 0.75;
+      return prevHalf || nextHalf;
+    };
+    const chooseGridForPass = (passIndex) => {
+      if (!gridHierarchy.length) return null;
+      return gridHierarchy[passIndex] ?? gridHierarchy[gridHierarchy.length - 1];
+    };
+    let reducedEvents = events.map((event) => ({ ...event }));
+    // Reduction passes scale with difficulty: easy runs a broad quarter pass, then allows stable eighths;
+    // medium keeps a single eighth-note pass, hard skips quantization entirely.
+    for (let passIndex = 0; passIndex < passCount; passIndex += 1) {
+      const quantizeGrid = chooseGridForPass(passIndex);
+      const allowStableHalfBeats = profile.allowStableHalfBeats && quantizeGrid === 0.5;
+      reducedEvents = reducedEvents.map((event, index) => {
+        const reduced = { ...event };
+        const baseBeat = passIndex === 0 ? reduced.timeBeat : originalBeats[index];
+        let snappedBeat = quantizeBeat(baseBeat, quantizeGrid);
+        if (allowStableHalfBeats && isHalfBeat(snappedBeat)) {
+          const sortedIndex = sortedIndexByOriginal.get(index) ?? 0;
+          if (!isStableHalfBeat(sortedIndex, snappedBeat)) {
+            snappedBeat = Math.round(baseBeat);
+          }
+        }
+        if (snappedBeat !== reduced.timeBeat) {
+          reduced.timeBeat = snappedBeat;
+          reduced.timeSec = snappedBeat * secondsPerBeat;
+        }
+        return reduced;
+      });
+    }
     // Post-transcription reduction rules:
-    // - Quantize sixteenth-note rhythms to eighths by snapping to a 0.5-beat grid.
+    // - Quantize rhythms by pass (easy: quarter + stable eighths, medium: eighths, hard: none).
     // - Remove modifiers (LB/D-Left/RB) so alternate fingerings and accents disappear.
     // - Collapse octaves by clearing octave-up flags to a central octave.
     // - Preserve chord integrity by keeping chord events intact.
-    return events.map((event) => {
+    return reducedEvents.map((event) => {
       const reduced = { ...event };
-      const snappedBeat = quantizeBeat(event.timeBeat);
-      if (snappedBeat !== event.timeBeat) {
-        reduced.timeBeat = snappedBeat;
-        reduced.timeSec = snappedBeat * secondsPerBeat;
-      }
       const required = event.requiredInput ? { ...event.requiredInput } : null;
       if (required) {
         if (profile.stripModifiers) {
@@ -1489,7 +1557,7 @@ export default class RobterSession {
     const window = this.songData.timing.good;
     const now = this.getJudgementSongTime();
     return this.events
-      .filter((event) => !event.hit && !event.judged)
+      .filter((event) => !event.visualOnly && !event.hit && !event.judged)
       .map((event) => ({ event, diff: Math.abs(event.timeSec - now) }))
       .filter((candidate) => candidate.diff <= window)
       .sort((a, b) => a.diff - b.diff)[0]?.event || null;
@@ -1498,7 +1566,7 @@ export default class RobterSession {
   getNextPendingEvent() {
     if (!this.events?.length) return null;
     return this.events
-      .filter((event) => !event.hit && !event.judged)
+      .filter((event) => !event.visualOnly && !event.hit && !event.judged)
       .sort((a, b) => a.timeSec - b.timeSec)[0] || null;
   }
 
@@ -1507,6 +1575,7 @@ export default class RobterSession {
     if (!shouldAutoplay) return;
     const events = this.events || [];
     events.forEach((event) => {
+      if (event.visualOnly) return;
       if (event.timeSec > nextTime || event.timeSec < Math.max(0, prevTime)) return;
       if (this.playMode === 'listen') {
         event.hit = true;
@@ -1973,6 +2042,7 @@ export default class RobterSession {
     }));
     let lastDegree = null;
     let lastChordDegree = null;
+    const modifierEvents = [];
     this.events.forEach((event) => {
       const expectedAction = resolveRequiredInputToMusicalAction(
         { robterspiel: this.robterspiel, instrument: this.instrument, octaveOffset: this.requiredOctaveOffset },
@@ -1989,18 +2059,44 @@ export default class RobterSession {
         event.secondaryLabel = '';
         return;
       }
-      const modifierLabel = this.getModifierLabel(event.requiredInput);
       const isNoteEvent = event.requiredInput?.mode === 'note' || event.requiredInput?.mode === 'pattern';
       event.primaryLabel = '';
       event.secondaryLabel = '';
       event.sideLabel = expectedAction?.label || event.displayLabel || '';
       if (isNoteEvent) {
         event.stickLabel = null;
-        event.modifierState = {
-          lb: Boolean(event.requiredInput?.modifiers?.lb),
-          dleft: Boolean(event.requiredInput?.modifiers?.dleft),
-          rb: Boolean(event.requiredInput?.octaveUp)
-        };
+        if (this.instrument !== 'drums') {
+          const modifiers = event.requiredInput?.modifiers || {};
+          const laneOffset = this.getLaneOffset();
+          const modifierLaneIndex = (modifierKey) => {
+            if (modifierKey === 'dleft') return 0;
+            if (modifierKey === 'lb') return 2;
+            if (modifierKey === 'rb') return 7;
+            return 0;
+          };
+          const addModifierEvent = (modifierKey, label) => {
+            modifierEvents.push({
+              timeBeat: event.timeBeat,
+              timeSec: event.timeSec,
+              lane: modifierLaneIndex(modifierKey) - laneOffset,
+              type: 'MODIFIER',
+              section: event.section,
+              sustain: event.sustain,
+              starPhrase: false,
+              hit: false,
+              judged: false,
+              visualOnly: true,
+              displayLabel: label,
+              primaryLabel: label,
+              secondaryLabel: '',
+              sideLabel: '',
+              noteKind: 'modifier'
+            });
+          };
+          if (modifiers.lb) addModifierEvent('lb', 'LB');
+          if (modifiers.dleft) addModifierEvent('dleft', 'D-Left');
+          if (event.requiredInput?.octaveUp) addModifierEvent('rb', 'RB');
+        }
       } else {
         const degree = event.requiredInput?.degree ?? null;
         event.directionalLabel = degree !== lastChordDegree ? getStickDirectionIcon(degree) : null;
@@ -2008,12 +2104,16 @@ export default class RobterSession {
       }
       lastDegree = event.requiredInput?.degree ?? lastDegree;
     });
+    if (modifierEvents.length) {
+      this.events = [...this.events, ...modifierEvents];
+    }
     this.trackEventIndex = INSTRUMENTS.reduce((acc, instrument) => {
       acc[instrument] = 0;
       return acc;
     }, {});
-    const firstEvent = this.events[0];
-    const lastEvent = this.events[this.events.length - 1];
+    const scoredEvents = this.events.filter((event) => !event.visualOnly);
+    const firstEvent = scoredEvents[0];
+    const lastEvent = scoredEvents[scoredEvents.length - 1];
     const lastEventEnd = lastEvent?.timeSec ?? 0;
     const sustainSeconds = lastEvent?.sustain ? lastEvent.sustain * this.songData.tempo.secondsPerBeat : 0;
     this.chartWindow = {
@@ -2031,7 +2131,7 @@ export default class RobterSession {
   }
 
   finishSong() {
-    const total = this.events.length;
+    const total = this.events.filter((event) => !event.visualOnly).length;
     const accuracy = total ? this.hits / total : 0;
     const grade = getGrade(accuracy);
     this.robterspielNotes.forEach((id) => this.audio.stopLiveGmNote?.(id));
@@ -2064,6 +2164,7 @@ export default class RobterSession {
     const missWindow = this.songData.timing.good;
     const now = this.getJudgementSongTime();
     this.events.forEach((event) => {
+      if (event.visualOnly) return;
       if (event.hit || event.judged) return;
       if (now - event.timeSec > missWindow) {
         event.judged = true;
@@ -2109,7 +2210,7 @@ export default class RobterSession {
     const window = timing.good;
     const now = this.getJudgementSongTime();
     const match = this.events
-      .filter((event) => !event.hit && !event.judged)
+      .filter((event) => !event.visualOnly && !event.hit && !event.judged)
       .map((event) => ({
         event,
         diff: Math.abs(event.timeSec - now)
@@ -2491,7 +2592,19 @@ export default class RobterSession {
   }
 
   getLaneColors() {
-    return ['#46b3ff', '#ffd84a', '#3ad96f', '#ff5b5b'];
+    if (this.instrument === 'drums') {
+      return ['#46b3ff', '#ffd84a', '#3ad96f', '#ff5b5b'];
+    }
+    return [
+      '#0b0b12',
+      '#f4f7ff',
+      '#ff9b33',
+      '#46b3ff',
+      '#ffd84a',
+      '#3ad96f',
+      '#ff5b5b',
+      '#9a6bff'
+    ];
   }
 
   getHighwayTint() {
@@ -3410,12 +3523,12 @@ export default class RobterSession {
   drawPlay(ctx, width, height) {
     ctx.save();
     const laneOffset = this.getLaneOffset();
-    const baseLanes = this.instrument === 'drums' ? DRUM_LANES : LANE_LABELS;
+    const baseLanes = this.instrument === 'drums' ? DRUM_LANES : NON_DRUM_LANES;
     const currentDirection = this.robterspiel.leftStickStableDirection || this.degree;
     const directionLabel = getStickDirectionIcon(currentDirection);
-    const lanes = laneOffset ? [directionLabel, ...baseLanes] : baseLanes;
+    const lanes = this.instrument === 'drums' ? baseLanes : ['D-Left', directionLabel, ...baseLanes];
     const laneCount = lanes.length;
-    const laneColors = laneOffset ? ['#6f7a88', ...this.getLaneColors()] : this.getLaneColors();
+    const laneColors = this.getLaneColors();
     const highwayTint = this.getHighwayTint();
     const visualSongTime = this.getVisualSongTime();
     const directionalCues = laneOffset ? this.getDirectionalCues(visualSongTime) : [];
@@ -3445,9 +3558,9 @@ export default class RobterSession {
     }
 
     const beatDuration = this.songData.tempo.secondsPerBeat;
-    const lanePulse = laneOffset
-      ? [0, ...NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1))]
-      : NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1));
+    const lanePulse = this.instrument === 'drums'
+      ? NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1))
+      : [0, 0, 0, ...NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1)), 0];
     this.highwayRenderer.drawBeatLines(ctx, layout, visualSongTime, beatDuration);
     this.highwayRenderer.drawLanes(ctx, width, height, layout, laneColors, lanes, lanePulse);
     const requiredOctaveLineY = Number.isFinite(this.requiredOctaveOffset)
@@ -3480,7 +3593,8 @@ export default class RobterSession {
 
     this.feedbackSystem.draw(ctx, layout);
 
-    const accuracy = this.events.length ? this.hits / this.events.length : 0;
+    const scoredEvents = this.events.filter((event) => !event.visualOnly);
+    const accuracy = scoredEvents.length ? this.hits / scoredEvents.length : 0;
     const streakMultiplier = this.getStreakMultiplier();
     const starMultiplier = this.starPowerActive ? 2 : 1;
     const totalMultiplier = streakMultiplier * starMultiplier;
@@ -3675,7 +3789,7 @@ export default class RobterSession {
   }
 
   drawResults(ctx, width, height) {
-    const total = this.events.length;
+    const total = this.events.filter((event) => !event.visualOnly).length;
     const accuracy = total ? this.hits / total : 0;
     const grade = getGrade(accuracy);
     ctx.save();

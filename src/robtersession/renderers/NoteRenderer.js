@@ -12,7 +12,6 @@ export default class NoteRenderer {
       secondaryLabel,
       labelMode,
       kind,
-      modifierState,
       hitGlow,
       alpha
     } = note;
@@ -47,27 +46,6 @@ export default class NoteRenderer {
     const showSecondary = labelMode !== 'buttons';
     const labelCenterX = x + width / 2;
     const labelCenterY = y + height / 2;
-
-    if (modifierState) {
-      const lanes = [
-        { label: 'LB', active: modifierState.lb },
-        { label: 'DL', active: modifierState.dleft },
-        { label: 'RB', active: modifierState.rb }
-      ];
-      const laneW = width / lanes.length;
-      lanes.forEach((lane, index) => {
-        const laneX = x + index * laneW;
-        ctx.fillStyle = lane.active ? 'rgba(255,215,120,0.85)' : 'rgba(8,14,22,0.45)';
-        ctx.fillRect(laneX, y, laneW, height);
-        ctx.strokeStyle = 'rgba(120,190,255,0.45)';
-        ctx.strokeRect(laneX, y, laneW, height);
-        ctx.fillStyle = lane.active ? '#20120a' : '#d7f2ff';
-        ctx.font = `bold ${Math.max(9, height * 0.2)}px ${DEFAULT_FONT}`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(lane.label, laneX + laneW / 2, y + height / 2);
-      });
-    }
 
     if ((showPrimary && primaryLabel) || (showSecondary && secondaryLabel)) {
       const labelBoxW = width * 0.9;
