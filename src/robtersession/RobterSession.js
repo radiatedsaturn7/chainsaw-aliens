@@ -1122,6 +1122,33 @@ export default class RobterSession {
     };
   }
 
+  getDirectionalCues(songTime) {
+    if (this.instrument === 'drums') return [];
+    const chordEvents = this.events.filter((event) => event.directionalLabel);
+    if (!chordEvents.length) return [];
+    const currentDirection = this.robterspiel.leftStickStableDirection || this.degree;
+    const nextIndex = chordEvents.findIndex((event) => event.timeSec >= songTime);
+    const pastIndex = nextIndex === -1 ? chordEvents.length - 1 : nextIndex - 1;
+    let active = null;
+    if (pastIndex >= 0) {
+      const pastEvent = chordEvents[pastIndex];
+      const matched = pastEvent.requiredInput?.degree === currentDirection;
+      active = matched ? chordEvents[pastIndex + 1] : pastEvent;
+    } else {
+      active = chordEvents[0];
+    }
+    const targetDirection = active?.requiredInput?.degree ?? null;
+    const isWrong = targetDirection !== currentDirection;
+    const stuck = Boolean(active && songTime >= active.timeSec && isWrong);
+    return chordEvents.map((event) => ({
+      label: event.directionalLabel,
+      timeSec: event.timeSec,
+      isWrong: Boolean(active && event === active && isWrong),
+      stuck: Boolean(active && event === active && stuck),
+      laneIndex: 0
+    }));
+  }
+
   handlePauseInput() {
     const count = 3;
     if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')) {
@@ -3364,6 +3391,7 @@ export default class RobterSession {
     const highwayTint = this.getHighwayTint();
     const visualSongTime = this.getVisualSongTime();
     const directionalCue = laneOffset ? this.getDirectionalCue(visualSongTime) : null;
+    const directionalCues = laneOffset ? this.getDirectionalCues(visualSongTime) : [];
     if (directionalCue?.isWrong) {
       laneColors[0] = '#ff5b5b';
     }
@@ -3412,7 +3440,7 @@ export default class RobterSession {
       secondsPerBeat: beatDuration,
       laneOffset,
       noteHeightScale: 0.6,
-      directionalCue
+      directionalCues
     }, laneColors, this.playMode);
 
     this.drawWrongNoteGhosts(ctx, width, height, {
