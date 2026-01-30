@@ -21,6 +21,44 @@ const CHORD_INPUTS = {
   aug: { button: 'Y', modifiers: { lb: false, dleft: true } }
 };
 
+// Preferred base fingering per root pitch class (grouped to keep the root stable).
+const ROOT_BASE_FINGERING = {
+  0: 'A',
+  1: 'A',
+  2: 'A',
+  3: 'X',
+  4: 'X',
+  5: 'X',
+  6: 'Y',
+  7: 'Y',
+  8: 'Y',
+  9: 'B',
+  10: 'B',
+  11: 'B'
+};
+
+// Combo table for alternate voicings; each entry includes a compact fret-span proxy.
+// The selection heuristic prefers spans within MAX_FRET_SPAN and keeps the root on
+// the preferred base fingering when multiple voicings are viable.
+const MAX_FRET_SPAN = 7;
+const CHORD_COMBOS = {
+  triad: [
+    { inputKey: 'triad', intervals: [0, 4, 7], rootPosition: true },
+    { inputKey: 'triad-inv1', intervals: [0, 3, 8], rootPosition: false },
+    { inputKey: 'triad-inv2', intervals: [0, 5, 9], rootPosition: false }
+  ],
+  sus2: [{ inputKey: 'sus2', intervals: [0, 2, 7], rootPosition: true }],
+  sus4: [{ inputKey: 'sus4', intervals: [0, 5, 7], rootPosition: true }],
+  seventh: [{ inputKey: 'seventh', intervals: [0, 4, 7, 10], rootPosition: true }],
+  add9: [{ inputKey: 'add9', intervals: [0, 2, 4, 7], rootPosition: true }],
+  dim: [{ inputKey: 'dim', intervals: [0, 3, 6], rootPosition: true }],
+  aug: [{ inputKey: 'aug', intervals: [0, 4, 8], rootPosition: true }],
+  power: [
+    { inputKey: 'power', intervals: [0, 7], rootPosition: true },
+    { inputKey: 'power', intervals: [0, 5], rootPosition: false }
+  ]
+};
+
 const CHORD_TEMPLATES = [
   { chordType: 'triad', templates: [[0, 4, 7], [0, 3, 7]] },
   { chordType: 'sus2', templates: [[0, 2, 7]] },
@@ -209,7 +247,12 @@ const detectChordType = (pcs) => {
   if (!best || best.score < 0.5) return null;
   const exact = best.score === 1 && intervals.length === best.templateLength;
   const approx = exact ? 'exact' : (best.chordType === 'power' ? 'power-chord-fallback' : 'simplified');
-  return { chordType: best.chordType, approx };
+  return {
+    chordType: best.chordType,
+    approx,
+    score: best.score,
+    template: best.template
+  };
 };
 
 const mapDrumPitchToLane = (midi) => {
@@ -217,6 +260,70 @@ const mapDrumPitchToLane = (midi) => {
   if (midi <= 40) return 1; // snare
   if (midi <= 46) return 2; // hats
   return 3; // cymbals
+};
+
+const analyzeChord = (notes) => {
+  const sorted = [...notes].sort((a, b) => a.midi - b.midi);
+  const pitchClasses = Array.from(new Set(sorted.map((note) => ((note.midi % 12) + 12) % 12)));
+  if (!pitchClasses.length) return null;
+  const bassPc = ((sorted[0].midi % 12) + 12) % 12;
+  let best = null;
+  pitchClasses.forEach((candidatePc) => {
+    const pcsForRoot = [candidatePc, ...pitchClasses.filter((pc) => pc !== candidatePc)];
+    const chordInfo = detectChordType(pcsForRoot);
+    if (!chordInfo) return;
+    const score = chordInfo.score ?? 0;
+    const isBass = candidatePc === bassPc;
+    if (!best
+      || score > best.score
+      || (score === best.score && isBass && !best.isBass)) {
+      best = {
+        rootPc: candidatePc,
+        chordInfo,
+        score,
+        isBass
+      };
+    }
+  });
+  if (!best) {
+    return { rootPc: bassPc, chordInfo: null };
+  }
+  return { rootPc: best.rootPc, chordInfo: best.chordInfo };
+};
+
+const selectChordInput = ({ rootPc, chordInfo }) => {
+  const preferredButton = ROOT_BASE_FINGERING[rootPc] || CHORD_INPUTS[chordInfo.chordType]?.button || 'A';
+  const baseCombos = CHORD_COMBOS[chordInfo.chordType] || [
+    { inputKey: chordInfo.chordType, intervals: chordInfo.template || [0] }
+  ];
+  const combos = baseCombos.map((combo) => {
+    const span = Math.max(...combo.intervals) - Math.min(...combo.intervals);
+    const button = CHORD_INPUTS[combo.inputKey]?.button || preferredButton;
+    return { ...combo, span, button };
+  });
+  const viable = combos.filter((combo) => combo.span <= MAX_FRET_SPAN);
+  const candidates = viable.length ? viable : combos;
+  let best = candidates[0];
+  candidates.forEach((combo) => {
+    const rootStable = combo.button === preferredButton;
+    const bestRootStable = best.button === preferredButton;
+    if (rootStable && !bestRootStable) {
+      best = combo;
+      return;
+    }
+    if (rootStable === bestRootStable) {
+      if (combo.rootPosition && !best.rootPosition) {
+        best = combo;
+        return;
+      }
+      if (combo.rootPosition === best.rootPosition && combo.span < best.span) {
+        best = combo;
+      }
+    }
+  });
+  const inputKey = best?.inputKey || chordInfo.chordType;
+  const inputMap = CHORD_INPUTS[inputKey] || CHORD_INPUTS.triad;
+  return { inputKey, inputMap };
 };
 
 export const transcribeMidiStem = ({ notes, bpm, keySignature, isDrumStem = false, options = {} }) => {
@@ -302,18 +409,17 @@ export const transcribeMidiStem = ({ notes, bpm, keySignature, isDrumStem = fals
     }
 
     if (cluster.notes.length >= 2) {
-      const sorted = [...cluster.notes].sort((a, b) => a.midi - b.midi);
-      const rootPc = ((sorted[0].midi % 12) + 12) % 12;
-      const pcs = Array.from(new Set(sorted.map((note) => ((note.midi % 12) + 12) % 12)))
-        .sort((a, b) => (a - rootPc + 12) % 12 - (b - rootPc + 12) % 12);
-      const chordInfo = detectChordType([rootPc, ...pcs.filter((pc) => pc !== rootPc)]);
+      const analysis = analyzeChord(cluster.notes);
+      const rootPc = analysis?.rootPc ?? ((cluster.notes[0].midi % 12) + 12) % 12;
+      const chordInfo = analysis?.chordInfo;
       if (!chordInfo) {
+        const sorted = [...cluster.notes].sort((a, b) => a.midi - b.midi);
         pushNoteEvent(sorted[0], { approxOverride: 'root-fallback' });
         return;
       }
       const degreeInfo = mapPitchToScaleDegree(rootPc, key);
-      const chordType = chordInfo.chordType;
-      const inputMap = CHORD_INPUTS[chordType] || CHORD_INPUTS.triad;
+      const { inputKey, inputMap } = selectChordInput({ rootPc, chordInfo });
+      const chordType = inputKey || chordInfo.chordType;
       const approxLevel = degreeInfo.approxLevel !== 'exact'
         ? degreeInfo.approxLevel
         : chordInfo.approx;
