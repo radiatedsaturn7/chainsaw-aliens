@@ -2,7 +2,6 @@ import {
   DRUM_LANES,
   GRADE_THRESHOLDS,
   INSTRUMENTS,
-  LANE_LABELS,
   MODE_LIBRARY,
   ROOT_LABELS,
   DEFAULT_SETS
@@ -40,6 +39,7 @@ const SCROLL_SPEED = 240;
 const HIT_GLASS_DURATION = 0.25;
 const WRONG_NOTE_COOLDOWN = 0.22;
 const NOTE_LANES = ['X', 'Y', 'A', 'B'];
+const NON_DRUM_LANES = ['LB', ...NOTE_LANES, 'RB'];
 const SCALE_SELECTOR_THRESHOLD = 0.6;
 const SCALE_SELECTOR_RELEASE = 0.3;
 const SCALE_PROMPT_SPEED = 0.9;
@@ -433,7 +433,7 @@ export default class RobterSession {
   }
 
   getLaneOffset() {
-    return this.instrument === 'drums' ? 0 : 1;
+    return this.instrument === 'drums' ? 0 : 3;
   }
 
   getAudioOffsetSec() {
@@ -1118,7 +1118,7 @@ export default class RobterSession {
       timeSec: active.timeSec,
       isWrong,
       stuck,
-      laneIndex: 0
+      laneIndex: 1
     };
   }
 
@@ -1434,7 +1434,7 @@ export default class RobterSession {
     const window = this.songData.timing.good;
     const now = this.getJudgementSongTime();
     return this.events
-      .filter((event) => !event.hit && !event.judged)
+      .filter((event) => !event.visualOnly && !event.hit && !event.judged)
       .map((event) => ({ event, diff: Math.abs(event.timeSec - now) }))
       .filter((candidate) => candidate.diff <= window)
       .sort((a, b) => a.diff - b.diff)[0]?.event || null;
@@ -1443,7 +1443,7 @@ export default class RobterSession {
   getNextPendingEvent() {
     if (!this.events?.length) return null;
     return this.events
-      .filter((event) => !event.hit && !event.judged)
+      .filter((event) => !event.visualOnly && !event.hit && !event.judged)
       .sort((a, b) => a.timeSec - b.timeSec)[0] || null;
   }
 
@@ -1452,6 +1452,7 @@ export default class RobterSession {
     if (!shouldAutoplay) return;
     const events = this.events || [];
     events.forEach((event) => {
+      if (event.visualOnly) return;
       if (event.timeSec > nextTime || event.timeSec < Math.max(0, prevTime)) return;
       if (this.playMode === 'listen') {
         event.hit = true;
@@ -1918,6 +1919,7 @@ export default class RobterSession {
     }));
     let lastDegree = null;
     let lastChordDegree = null;
+    const modifierEvents = [];
     this.events.forEach((event) => {
       const expectedAction = resolveRequiredInputToMusicalAction(
         { robterspiel: this.robterspiel, instrument: this.instrument, octaveOffset: this.requiredOctaveOffset },
@@ -1934,18 +1936,44 @@ export default class RobterSession {
         event.secondaryLabel = '';
         return;
       }
-      const modifierLabel = this.getModifierLabel(event.requiredInput);
       const isNoteEvent = event.requiredInput?.mode === 'note' || event.requiredInput?.mode === 'pattern';
       event.primaryLabel = '';
       event.secondaryLabel = '';
       event.sideLabel = expectedAction?.label || event.displayLabel || '';
       if (isNoteEvent) {
         event.stickLabel = null;
-        event.modifierState = {
-          lb: Boolean(event.requiredInput?.modifiers?.lb),
-          dleft: Boolean(event.requiredInput?.modifiers?.dleft),
-          rb: Boolean(event.requiredInput?.octaveUp)
-        };
+        if (this.instrument !== 'drums') {
+          const modifiers = event.requiredInput?.modifiers || {};
+          const laneOffset = this.getLaneOffset();
+          const modifierLaneIndex = (modifierKey) => {
+            if (modifierKey === 'dleft') return 0;
+            if (modifierKey === 'lb') return 2;
+            if (modifierKey === 'rb') return 7;
+            return 0;
+          };
+          const addModifierEvent = (modifierKey, label) => {
+            modifierEvents.push({
+              timeBeat: event.timeBeat,
+              timeSec: event.timeSec,
+              lane: modifierLaneIndex(modifierKey) - laneOffset,
+              type: 'MODIFIER',
+              section: event.section,
+              sustain: event.sustain,
+              starPhrase: false,
+              hit: false,
+              judged: false,
+              visualOnly: true,
+              displayLabel: label,
+              primaryLabel: label,
+              secondaryLabel: '',
+              sideLabel: '',
+              noteKind: 'modifier'
+            });
+          };
+          if (modifiers.lb) addModifierEvent('lb', 'LB');
+          if (modifiers.dleft) addModifierEvent('dleft', 'D-Left');
+          if (event.requiredInput?.octaveUp) addModifierEvent('rb', 'RB');
+        }
       } else {
         const degree = event.requiredInput?.degree ?? null;
         event.directionalLabel = degree !== lastChordDegree ? getStickDirectionIcon(degree) : null;
@@ -1953,12 +1981,16 @@ export default class RobterSession {
       }
       lastDegree = event.requiredInput?.degree ?? lastDegree;
     });
+    if (modifierEvents.length) {
+      this.events = [...this.events, ...modifierEvents];
+    }
     this.trackEventIndex = INSTRUMENTS.reduce((acc, instrument) => {
       acc[instrument] = 0;
       return acc;
     }, {});
-    const firstEvent = this.events[0];
-    const lastEvent = this.events[this.events.length - 1];
+    const scoredEvents = this.events.filter((event) => !event.visualOnly);
+    const firstEvent = scoredEvents[0];
+    const lastEvent = scoredEvents[scoredEvents.length - 1];
     const lastEventEnd = lastEvent?.timeSec ?? 0;
     const sustainSeconds = lastEvent?.sustain ? lastEvent.sustain * this.songData.tempo.secondsPerBeat : 0;
     this.chartWindow = {
@@ -1976,7 +2008,7 @@ export default class RobterSession {
   }
 
   finishSong() {
-    const total = this.events.length;
+    const total = this.events.filter((event) => !event.visualOnly).length;
     const accuracy = total ? this.hits / total : 0;
     const grade = getGrade(accuracy);
     this.robterspielNotes.forEach((id) => this.audio.stopLiveGmNote?.(id));
@@ -2009,6 +2041,7 @@ export default class RobterSession {
     const missWindow = this.songData.timing.good;
     const now = this.getJudgementSongTime();
     this.events.forEach((event) => {
+      if (event.visualOnly) return;
       if (event.hit || event.judged) return;
       if (now - event.timeSec > missWindow) {
         event.judged = true;
@@ -2054,7 +2087,7 @@ export default class RobterSession {
     const window = timing.good;
     const now = this.getJudgementSongTime();
     const match = this.events
-      .filter((event) => !event.hit && !event.judged)
+      .filter((event) => !event.visualOnly && !event.hit && !event.judged)
       .map((event) => ({
         event,
         diff: Math.abs(event.timeSec - now)
@@ -2436,7 +2469,19 @@ export default class RobterSession {
   }
 
   getLaneColors() {
-    return ['#46b3ff', '#ffd84a', '#3ad96f', '#ff5b5b'];
+    if (this.instrument === 'drums') {
+      return ['#46b3ff', '#ffd84a', '#3ad96f', '#ff5b5b'];
+    }
+    return [
+      '#0b0b12',
+      '#f4f7ff',
+      '#ff9b33',
+      '#46b3ff',
+      '#ffd84a',
+      '#3ad96f',
+      '#ff5b5b',
+      '#9a6bff'
+    ];
   }
 
   getHighwayTint() {
@@ -3355,17 +3400,17 @@ export default class RobterSession {
   drawPlay(ctx, width, height) {
     ctx.save();
     const laneOffset = this.getLaneOffset();
-    const baseLanes = this.instrument === 'drums' ? DRUM_LANES : LANE_LABELS;
+    const baseLanes = this.instrument === 'drums' ? DRUM_LANES : NON_DRUM_LANES;
     const currentDirection = this.robterspiel.leftStickStableDirection || this.degree;
     const directionLabel = getStickDirectionIcon(currentDirection);
-    const lanes = laneOffset ? [directionLabel, ...baseLanes] : baseLanes;
+    const lanes = this.instrument === 'drums' ? baseLanes : ['D-Left', directionLabel, ...baseLanes];
     const laneCount = lanes.length;
-    const laneColors = laneOffset ? ['#6f7a88', ...this.getLaneColors()] : this.getLaneColors();
+    const laneColors = this.getLaneColors();
     const highwayTint = this.getHighwayTint();
     const visualSongTime = this.getVisualSongTime();
     const directionalCue = laneOffset ? this.getDirectionalCue(visualSongTime) : null;
     if (directionalCue?.isWrong) {
-      laneColors[0] = '#ff5b5b';
+      laneColors[1] = '#ff5b5b';
     }
     const layout = this.highwayRenderer.getLayout({
       width,
@@ -3389,9 +3434,9 @@ export default class RobterSession {
     }
 
     const beatDuration = this.songData.tempo.secondsPerBeat;
-    const lanePulse = laneOffset
-      ? [0, ...NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1))]
-      : NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1));
+    const lanePulse = this.instrument === 'drums'
+      ? NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1))
+      : [0, 0, 0, ...NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1)), 0];
     this.highwayRenderer.drawBeatLines(ctx, layout, visualSongTime, beatDuration);
     this.highwayRenderer.drawLanes(ctx, width, height, layout, laneColors, lanes, lanePulse);
     const requiredOctaveLineY = Number.isFinite(this.requiredOctaveOffset)
@@ -3424,7 +3469,8 @@ export default class RobterSession {
 
     this.feedbackSystem.draw(ctx, layout);
 
-    const accuracy = this.events.length ? this.hits / this.events.length : 0;
+    const scoredEvents = this.events.filter((event) => !event.visualOnly);
+    const accuracy = scoredEvents.length ? this.hits / scoredEvents.length : 0;
     const streakMultiplier = this.getStreakMultiplier();
     const starMultiplier = this.starPowerActive ? 2 : 1;
     const totalMultiplier = streakMultiplier * starMultiplier;
@@ -3619,7 +3665,7 @@ export default class RobterSession {
   }
 
   drawResults(ctx, width, height) {
-    const total = this.events.length;
+    const total = this.events.filter((event) => !event.visualOnly).length;
     const accuracy = total ? this.hits / total : 0;
     const grade = getGrade(accuracy);
     ctx.save();

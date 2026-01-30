@@ -298,7 +298,6 @@ export default class HighwayRenderer {
         color,
         primaryLabel: event.primaryLabel,
         secondaryLabel: event.secondaryLabel,
-        modifierState: event.modifierState,
         labelMode: settings.labelMode,
         kind: event.noteKind,
         hitGlow: event.autoHit
