@@ -391,13 +391,15 @@ export default class RobterSession {
     this.directionalCueState = {
       key: null,
       stuckDurationSec: 0,
-      lastSongTime: 0
+      lastSongTime: 0,
+      correctionAlpha: 0
     };
     this.trackEventIndex = {};
     this.directionalCueState = {
       key: null,
       stuckDurationSec: 0,
-      lastSongTime: null
+      lastSongTime: null,
+      correctionAlpha: 0
     };
     this.hudSettings = loadHudSettings();
     this.calibration = loadCalibration();
@@ -440,6 +442,8 @@ export default class RobterSession {
     this.stemList = [];
     this.stemSelectionIndex = 0;
     this.stemActionIndex = 0;
+    this.pendingStemAction = null;
+    this.pendingStemName = null;
     this.stemData = new Map();
     this.activeStemNotes = null;
     this.activeStemProgram = null;
@@ -720,6 +724,8 @@ export default class RobterSession {
     this.songLoadStatus = '';
     this.stemSelectionIndex = 0;
     this.stemActionIndex = 0;
+    this.pendingStemAction = null;
+    this.pendingStemName = null;
     this.useStemPlayback = false;
     this.activeStemName = null;
     this.stemPlaybackIndices = {};
@@ -845,20 +851,14 @@ export default class RobterSession {
       const stem = this.stemList[this.stemSelectionIndex];
       if (!stem) return;
       const action = this.stemActionIndex;
-      if (action === 3) {
+      if (action === 2) {
         this.state = 'song-select';
         this.audio.ui();
         return;
       }
-      if (action === 2) {
-        this.enterDifficultySelect({ returnState: 'stem-select', cancelState: 'stem-select' });
-        this.audio.ui();
-        return;
-      }
-      const prepared = this.prepareStemSong(stem.name);
-      if (!prepared) return;
-      const playMode = action === 1 ? 'listen' : 'play';
-      this.startSong({ playMode });
+      this.pendingStemAction = action;
+      this.pendingStemName = stem.name;
+      this.enterDifficultySelect({ returnState: 'stem-play', cancelState: 'stem-select' });
       this.audio.ui();
     }
   }
@@ -944,6 +944,10 @@ export default class RobterSession {
       this.audio.menu();
     }
     if (this.input.wasPressed('cancel')) {
+      if (this.difficultyReturnState === 'stem-play') {
+        this.pendingStemAction = null;
+        this.pendingStemName = null;
+      }
       this.state = this.difficultyCancelState || 'instrument-select';
       this.audio.ui();
       return;
@@ -952,6 +956,24 @@ export default class RobterSession {
       const entry = PERFORMANCE_DIFFICULTIES[this.difficultySelectionIndex];
       if (entry) {
         this.performanceDifficulty = entry.id;
+      }
+      if (this.difficultyReturnState === 'stem-play') {
+        const stemName = this.pendingStemName;
+        const action = this.pendingStemAction;
+        this.pendingStemAction = null;
+        this.pendingStemName = null;
+        if (stemName) {
+          const prepared = this.prepareStemSong(stemName);
+          if (prepared) {
+            const playMode = action === 1 ? 'listen' : 'play';
+            this.startSong({ playMode });
+            this.audio.ui();
+            return;
+          }
+        }
+        this.state = 'stem-select';
+        this.audio.ui();
+        return;
       }
       if (this.difficultyReturnState === 'setlist') {
         this.selectionIndex = 0;
@@ -1166,13 +1188,16 @@ export default class RobterSession {
     this.calibrationState.samples[mode] = [];
   }
 
-  updateDirectionalCueState(songTime, active, stuck) {
-    if (!active) return 0;
+  updateDirectionalCueState(songTime, active, { stuck, isWrong }) {
+    if (!active) {
+      return { stuckDurationSec: 0, correctionAlpha: 0 };
+    }
     const cueKey = `${active.timeSec}-${active.directionalLabel}`;
     const cueState = this.directionalCueState;
     if (cueState.key !== cueKey) {
       cueState.key = cueKey;
       cueState.stuckDurationSec = 0;
+      cueState.correctionAlpha = 0;
       cueState.lastSongTime = songTime;
     }
     const timeDelta = Math.max(0, songTime - (cueState.lastSongTime ?? songTime));
@@ -1181,13 +1206,21 @@ export default class RobterSession {
     } else {
       cueState.stuckDurationSec = 0;
     }
+    if (isWrong) {
+      cueState.correctionAlpha = 1;
+    } else {
+      cueState.correctionAlpha = Math.max(0, cueState.correctionAlpha - timeDelta * 1.4);
+    }
     cueState.lastSongTime = songTime;
-    return cueState.stuckDurationSec;
+    return {
+      stuckDurationSec: cueState.stuckDurationSec,
+      correctionAlpha: cueState.correctionAlpha
+    };
   }
 
   getDirectionalCue(songTime) {
     if (this.instrument === 'drums') return null;
-    const chordEvents = this.events.filter((event) => event.directionalLabel);
+    const chordEvents = this.events.filter((event) => event.noteKind === 'chord' && Number.isFinite(event.requiredInput?.degree));
     if (!chordEvents.length) return null;
     const currentDirection = this.robterspiel.leftStickStableDirection || this.degree;
     const nextIndex = chordEvents.findIndex((event) => event.timeSec >= songTime);
@@ -1204,34 +1237,21 @@ export default class RobterSession {
     const targetDirection = active.requiredInput?.degree ?? null;
     const isWrong = targetDirection !== currentDirection;
     const stuck = songTime >= active.timeSec && isWrong;
-    const stuckDurationSec = this.updateDirectionalCueState(songTime, active, stuck);
-    const cueKey = `${active.timeSec}-${active.directionalLabel}`;
-    const cueState = this.directionalCueState;
-    if (cueState.key !== cueKey) {
-      cueState.key = cueKey;
-      cueState.stuckDurationSec = 0;
-      cueState.lastSongTime = songTime;
-    }
-    const timeDelta = Math.max(0, songTime - (cueState.lastSongTime ?? songTime));
-    if (stuck) {
-      cueState.stuckDurationSec += timeDelta;
-    } else {
-      cueState.stuckDurationSec = 0;
-    }
-    cueState.lastSongTime = songTime;
+    const { stuckDurationSec, correctionAlpha } = this.updateDirectionalCueState(songTime, active, { stuck, isWrong });
     return {
-      label: active.directionalLabel,
+      label: active.directionalLabel || active.directionalHint,
       timeSec: active.timeSec,
       isWrong,
       stuck,
       stuckDurationSec,
-      laneIndex: 0
+      correctionAlpha,
+      laneIndex: 1
     };
   }
 
   getDirectionalCues(songTime) {
     if (this.instrument === 'drums') return [];
-    const chordEvents = this.events.filter((event) => event.directionalLabel);
+    const chordEvents = this.events.filter((event) => event.noteKind === 'chord' && Number.isFinite(event.requiredInput?.degree));
     if (!chordEvents.length) return [];
     const currentDirection = this.robterspiel.leftStickStableDirection || this.degree;
     const nextIndex = chordEvents.findIndex((event) => event.timeSec >= songTime);
@@ -1247,19 +1267,28 @@ export default class RobterSession {
     const targetDirection = active?.requiredInput?.degree ?? null;
     const isWrong = targetDirection !== currentDirection;
     const stuck = Boolean(active && songTime >= active.timeSec && isWrong);
-    const stuckDurationSec = this.updateDirectionalCueState(songTime, active, stuck);
-    return chordEvents.map((event) => ({
-      label: event.directionalLabel,
-      timeSec: event.timeSec,
-      isWrong: Boolean(active && event === active && isWrong),
-      stuck: Boolean(active && event === active && stuck),
-      stuckDurationSec: event === active ? stuckDurationSec : 0,
-      laneIndex: 0
-    }));
+    const { stuckDurationSec, correctionAlpha } = this.updateDirectionalCueState(songTime, active, { stuck, isWrong });
+    return chordEvents.map((event) => {
+      const isActive = Boolean(active && event === active);
+      const showCorrection = Boolean(
+        correctionAlpha > 0
+        && event.timeSec >= (active?.timeSec ?? 0)
+        && event.requiredInput?.degree === targetDirection
+      );
+      return {
+        label: event.directionalLabel || (showCorrection ? event.directionalHint : null),
+        timeSec: event.timeSec,
+        isWrong: Boolean(isActive && isWrong),
+        stuck: Boolean(isActive && stuck),
+        stuckDurationSec: isActive ? stuckDurationSec : 0,
+        correctionAlpha: showCorrection ? correctionAlpha : 0,
+        laneIndex: 1
+      };
+    });
   }
 
   handlePauseInput() {
-    const count = 3;
+    const count = 4;
     if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')) {
       this.pauseSelection = (this.pauseSelection - 1 + count) % count;
       this.audio.menu();
@@ -1273,6 +1302,8 @@ export default class RobterSession {
         this.state = 'play';
       } else if (this.pauseSelection === 1) {
         this.startSong({ playMode: this.playMode });
+      } else if (this.pauseSelection === 2) {
+        this.enterCalibration('pause', this.calibrationState.mode);
       } else {
         this.robterspielNotes.forEach((id) => this.audio.stopLiveGmNote?.(id));
         this.robterspielNotes.clear();
@@ -1329,6 +1360,7 @@ export default class RobterSession {
         ...normalized,
         buttonsPressed: this.getPressedButtons()
       };
+      this.registerButtonPulse(normalized.button);
       const register = this.songData?.schema?.arrangement?.registers?.[this.instrument] || null;
       const inputAction = resolveInputToMusicalAction({
         robterspiel: this.robterspiel,
@@ -1340,9 +1372,6 @@ export default class RobterSession {
       }, inputEvent);
       const inputLabel = inputAction?.label || this.getInputLabel(normalized);
       const hitResult = this.tryHit(normalized, inputAction);
-      if (hitResult.hit) {
-        this.registerButtonPulse(normalized.button);
-      }
       const chartTime = this.getJudgementSongTime();
       const inChartWindow = chartTime >= this.chartWindow.start && chartTime <= this.chartWindow.end;
       if (!hitResult.hit && this.playMode !== 'listen' && inChartWindow) {
@@ -2156,7 +2185,8 @@ export default class RobterSession {
         }
       } else {
         const degree = event.requiredInput?.degree ?? null;
-        event.directionalLabel = degree !== lastChordDegree ? getStickDirectionIcon(degree) : null;
+        event.directionalHint = getStickDirectionIcon(degree);
+        event.directionalLabel = degree !== lastChordDegree ? event.directionalHint : null;
         lastChordDegree = degree ?? lastChordDegree;
       }
       lastDegree = event.requiredInput?.degree ?? lastDegree;
@@ -3914,7 +3944,7 @@ export default class RobterSession {
     ctx.textAlign = 'center';
     ctx.fillText('Paused', width / 2, height / 2 - 80);
 
-    const options = ['Resume', 'Restart', 'Exit to Setlist'];
+    const options = ['Resume', 'Restart', 'Calibration', 'Exit to Setlist'];
     this.bounds.pauseButtons = [];
     options.forEach((label, index) => {
       const y = height / 2 - 20 + index * 40;

@@ -3,7 +3,7 @@ const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 export default class InstrumentSelectView {
   constructor() {
     this.bounds = { items: [], actions: [] };
-    this.actions = ['Play', 'Listen', 'Difficulty', 'Back'];
+    this.actions = ['Play', 'Listen', 'Back'];
   }
 
   draw(ctx, width, height, {

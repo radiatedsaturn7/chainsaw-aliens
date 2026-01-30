@@ -118,10 +118,24 @@ export default class HighwayRenderer {
       ctx.strokeStyle = 'rgba(120,190,255,0.25)';
       ctx.stroke();
 
-      ctx.fillStyle = laneColors[i] || '#7ad0ff';
-      ctx.font = `bold ${Math.max(14, laneWidth * 0.32)}px Courier New`;
+      const labelColor = laneColors[i] || '#7ad0ff';
+      const labelBoxW = laneWidth * 0.7;
+      const labelBoxH = 24;
+      const pulseLift = pulse * 6;
+      const labelBoxX = centerBottom - labelBoxW / 2;
+      const labelBoxY = laneBottom + 16 - pulseLift;
+      ctx.strokeStyle = labelColor;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(labelBoxX, labelBoxY, labelBoxW, labelBoxH);
+      if (pulse > 0) {
+        ctx.fillStyle = `rgba(255,255,255,${0.12 + pulse * 0.35})`;
+        ctx.fillRect(labelBoxX, labelBoxY, labelBoxW, labelBoxH);
+      }
+      ctx.fillStyle = pulse > 0 ? '#041019' : labelColor;
+      ctx.font = `bold ${Math.max(12, laneWidth * 0.28)}px Courier New`;
       ctx.textAlign = 'center';
-      ctx.fillText(labels[i], centerBottom, laneBottom + 34);
+      ctx.textBaseline = 'middle';
+      ctx.fillText(labels[i], centerBottom, labelBoxY + labelBoxH / 2 + 1);
     }
     ctx.restore();
   }
@@ -225,6 +239,8 @@ export default class HighwayRenderer {
     const directionalCues = settings.directionalCues ?? [];
     directionalCues.forEach((directionalCue) => {
       if (!directionalCue?.label) return;
+      const correctionAlpha = directionalCue.correctionAlpha ?? 0;
+      const cueAlpha = correctionAlpha > 0 ? correctionAlpha : 1;
       const cueLaneIndex = directionalCue.laneIndex ?? 0;
       const timeToHitRaw = directionalCue.timeSec - songTime;
       const timeToHit = directionalCue.stuck ? Math.max(0, timeToHitRaw) : timeToHitRaw;
@@ -239,15 +255,19 @@ export default class HighwayRenderer {
       const noteHeight = baseHeight * noteHeightScale;
       const y = hitLineY - timeToHit * pixelsPerSecond;
       const stuckDuration = directionalCue.stuckDurationSec || 0;
+      const stuckFloat = directionalCue.stuck
+        ? 12 + Math.sin((songTime + stuckDuration) * 6) * 4
+        : 0;
       const jitterStrength = directionalCue.isWrong
         ? 3 + 3 * clamp(stuckDuration / 1.2, 0, 1)
         : 0;
       const jitterOffset = jitterStrength * Math.sin((songTime + stuckDuration) * 12);
       const noteX = perspectiveCenter - noteWidth / 2 + jitterOffset * perspective;
-      const noteY = y - noteHeight / 2;
+      const noteY = y - noteHeight / 2 - stuckFloat;
       const stuckBlend = clamp(stuckDuration / 1.6, 0, 1);
       const wrongColor = `rgba(${Math.round(lerp(255, 150, stuckBlend))},${Math.round(lerp(120, 30, stuckBlend))},${Math.round(lerp(120, 30, stuckBlend))},0.92)`;
       ctx.save();
+      ctx.globalAlpha = cueAlpha;
       ctx.fillStyle = directionalCue.isWrong ? wrongColor : 'rgba(120,200,255,0.85)';
       ctx.fillRect(noteX, noteY, noteWidth, noteHeight);
       ctx.strokeStyle = 'rgba(20,30,40,0.9)';
