@@ -3,7 +3,7 @@ const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 export default class InstrumentSelectView {
   constructor() {
     this.bounds = { items: [], actions: [] };
-    this.actions = ['Play', 'Listen', 'Back'];
+    this.actions = ['Play', 'Listen', 'Download Zip', 'Back'];
   }
 
   draw(ctx, width, height, {
@@ -51,7 +51,7 @@ export default class InstrumentSelectView {
     });
 
     const actionY = height - 120;
-    const actionW = 140;
+    const actionW = 160;
     const actionH = 36;
     const actionGap = 22;
     const totalWidth = this.actions.length * actionW + (this.actions.length - 1) * actionGap;

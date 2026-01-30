@@ -5,7 +5,7 @@ export default class SongSelectView {
     this.bounds = { items: [] };
   }
 
-  draw(ctx, width, height, { songs = [], selectedIndex = 0, status = '' } = {}) {
+  draw(ctx, width, height, { songs = [], selectedIndex = 0, status = '', showUpload = false } = {}) {
     ctx.save();
     ctx.fillStyle = '#0b0d14';
     ctx.fillRect(0, 0, width, height);
@@ -47,6 +47,24 @@ export default class SongSelectView {
       ctx.fillText(status, width / 2, height - 90);
     }
 
+    if (showUpload) {
+      const uploadW = 220;
+      const uploadH = 34;
+      const uploadX = width / 2 - uploadW / 2;
+      const uploadY = height - 130;
+      ctx.fillStyle = 'rgba(90,200,255,0.85)';
+      ctx.fillRect(uploadX, uploadY, uploadW, uploadH);
+      ctx.strokeStyle = '#ffe16a';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(uploadX, uploadY, uploadW, uploadH);
+      ctx.fillStyle = '#041019';
+      ctx.font = 'bold 13px Courier New';
+      ctx.fillText('Upload MIDI ZIP (U)', width / 2, uploadY + uploadH / 2 + 5);
+      this.bounds.upload = { x: uploadX, y: uploadY, w: uploadW, h: uploadH };
+    } else {
+      this.bounds.upload = null;
+    }
+
     ctx.fillStyle = 'rgba(215,242,255,0.75)';
     ctx.font = '14px Courier New';
     ctx.fillText('Confirm: Select  |  Back: Exit to Main Menu', width / 2, height - 60);
@@ -54,11 +72,16 @@ export default class SongSelectView {
   }
 
   handleClick(x, y) {
+    if (this.bounds.upload
+      && x >= this.bounds.upload.x && x <= this.bounds.upload.x + this.bounds.upload.w
+      && y >= this.bounds.upload.y && y <= this.bounds.upload.y + this.bounds.upload.h) {
+      return { type: 'upload' };
+    }
     const hit = this.bounds.items.find((item) => (
       x >= item.x && x <= item.x + item.w && y >= item.y && y <= item.y + item.h
     ));
     if (hit) {
-      return hit.index;
+      return { type: 'song', index: hit.index };
     }
     return null;
   }

@@ -78,6 +78,50 @@ const getMidiClass = () => {
   return globalMidi.Midi || globalMidi;
 };
 
+export const buildMidiBytes = ({
+  notes = [],
+  bpm = 120,
+  timeSignature = null,
+  keySignature = null,
+  program = null,
+  channel = 0
+} = {}) => {
+  const MidiClass = getMidiClass();
+  const midi = new MidiClass();
+  if (Number.isFinite(bpm)) {
+    midi.header.setTempo(bpm);
+  }
+  if (timeSignature?.beats && timeSignature?.unit) {
+    midi.header.timeSignatures.push({
+      ticks: 0,
+      timeSignature: [timeSignature.beats, timeSignature.unit]
+    });
+  }
+  if (keySignature?.key) {
+    midi.header.keySignatures.push({
+      ticks: 0,
+      key: keySignature.key,
+      scale: keySignature.scale || 'major'
+    });
+  }
+  const track = midi.addTrack();
+  track.channel = Number.isFinite(channel) ? channel : 0;
+  if (Number.isFinite(program)) {
+    track.instrument.number = program;
+  }
+  notes.forEach((note) => {
+    const start = Math.max(0, note.tStartSec ?? note.time ?? 0);
+    const duration = Math.max(0.05, (note.tEndSec ?? start) - start);
+    track.addNote({
+      midi: note.midi,
+      time: start,
+      duration,
+      velocity: clamp(Number.isFinite(note.vel) ? note.vel : 0.8, 0.05, 1)
+    });
+  });
+  return midi.toArray();
+};
+
 export const parseMidi = (bytes, options = {}) => {
   const MidiClass = getMidiClass();
   const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);

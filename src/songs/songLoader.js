@@ -23,14 +23,10 @@ const detectInstrumentName = (filename) => {
   return match?.name || 'Unknown';
 };
 
-export const loadZipSong = async (zipUrl) => {
-  const response = await fetch(zipUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to load zip song: ${response.status}`);
-  }
-  const arrayBuffer = await response.arrayBuffer();
+export const loadZipSongFromBytes = async (bytes) => {
+  const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
   const JSZip = getZip();
-  const zip = await JSZip.loadAsync(arrayBuffer);
+  const zip = await JSZip.loadAsync(data);
   const stems = new Map();
   const files = [];
   const pending = [];
@@ -51,6 +47,25 @@ export const loadZipSong = async (zipUrl) => {
       instruments: Array.from(stems.keys())
     }
   };
+};
+
+export const loadZipSong = async (zipUrl) => {
+  const response = await fetch(zipUrl);
+  if (!response.ok) {
+    throw new Error(`Failed to load zip song: ${response.status}`);
+  }
+  const arrayBuffer = await response.arrayBuffer();
+  return loadZipSongFromBytes(arrayBuffer);
+};
+
+export const buildZipFromStems = async (stems = []) => {
+  const JSZip = getZip();
+  const zip = new JSZip();
+  stems.forEach((stem) => {
+    if (!stem?.filename || !stem?.bytes) return;
+    zip.file(stem.filename, stem.bytes);
+  });
+  return zip.generateAsync({ type: 'blob' });
 };
 
 export const getInstrumentFromFilename = detectInstrumentName;
