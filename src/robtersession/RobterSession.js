@@ -61,9 +61,20 @@ const STICK_DIRECTION_LABELS = {
   7: 'W',
   8: 'NW'
 };
+const STICK_DIRECTION_ICONS = {
+  1: '↑',
+  2: '↗',
+  3: '→',
+  4: '↘',
+  5: '↓',
+  6: '↙',
+  7: '←',
+  8: '↖'
+};
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const getStickDirectionLabel = (degree) => STICK_DIRECTION_LABELS[degree] || `${degree ?? ''}`;
+const getStickDirectionIcon = (degree) => STICK_DIRECTION_ICONS[degree] || `${degree ?? ''}`;
 const parseNoteOctave = (noteLabel) => {
   const match = String(noteLabel || '').match(/^([A-Ga-g])([#b]?)(-?\d+)$/);
   if (!match) return null;
@@ -81,6 +92,7 @@ const radialIndexFromStick = (x, y, count) => {
 
 const HUD_SETTINGS_KEY = 'robtersession-hud-settings';
 const TUNING_KEY = 'robtersession-last-tuning';
+const CALIBRATION_KEY = 'robtersession-calibration';
 
 const MIDI_PROGRAMS = {
   guitar: 27,
@@ -211,6 +223,29 @@ const loadHudSettings = () => {
 
 const saveHudSettings = (settings) => {
   localStorage.setItem(HUD_SETTINGS_KEY, JSON.stringify(settings));
+};
+
+const defaultCalibration = () => ({
+  audioOffsetMs: 0,
+  videoOffsetMs: 0
+});
+
+const loadCalibration = () => {
+  try {
+    const raw = localStorage.getItem(CALIBRATION_KEY);
+    if (!raw) return defaultCalibration();
+    const parsed = JSON.parse(raw);
+    return {
+      audioOffsetMs: parsed.audioOffsetMs ?? 0,
+      videoOffsetMs: parsed.videoOffsetMs ?? 0
+    };
+  } catch (error) {
+    return defaultCalibration();
+  }
+};
+
+const saveCalibration = (calibration) => {
+  localStorage.setItem(CALIBRATION_KEY, JSON.stringify(calibration));
 };
 
 const loadTuning = () => {
@@ -349,6 +384,15 @@ export default class RobterSession {
     this.wrongNotes = [];
     this.trackEventIndex = {};
     this.hudSettings = loadHudSettings();
+    this.calibration = loadCalibration();
+    this.calibrationState = {
+      mode: 'audio',
+      samples: { audio: [], video: [] },
+      timer: 0,
+      pulse: 0,
+      beatInterval: 0.8
+    };
+    this.calibrationReturnState = 'preview';
     this.playMode = 'play';
     this.practiceSpeed = 1;
     this.previewSelection = 0;
@@ -386,6 +430,33 @@ export default class RobterSession {
     this.stemPlaybackIndices = {};
     this.useStemPlayback = false;
     this.registerInputBus();
+  }
+
+  getLaneOffset() {
+    return this.instrument === 'drums' ? 0 : 1;
+  }
+
+  getAudioOffsetSec() {
+    return (this.calibration?.audioOffsetMs ?? 0) / 1000;
+  }
+
+  getVideoOffsetSec() {
+    return (this.calibration?.videoOffsetMs ?? 0) / 1000;
+  }
+
+  getJudgementSongTime() {
+    return this.songTime + this.getAudioOffsetSec();
+  }
+
+  getVisualSongTime() {
+    return this.songTime + this.getVideoOffsetSec();
+  }
+
+  enterCalibration(returnState = 'preview') {
+    this.calibrationReturnState = returnState;
+    this.calibrationState.timer = 0;
+    this.calibrationState.pulse = 0;
+    this.state = 'calibration';
   }
 
   getSongSoundConfig() {
@@ -664,6 +735,10 @@ export default class RobterSession {
       this.handlePreviewInput();
       return;
     }
+    if (this.state === 'calibration') {
+      this.updateCalibration(dt);
+      return;
+    }
     if (this.state === 'pause') {
       this.handlePauseInput();
       return;
@@ -913,7 +988,7 @@ export default class RobterSession {
   }
 
   handlePreviewInput() {
-    const count = 4;
+    const count = 5;
     if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')) {
       this.previewSelection = (this.previewSelection - 1 + count) % count;
       this.audio.menu();
@@ -928,8 +1003,13 @@ export default class RobterSession {
       return;
     }
     if (this.input.wasPressed('interact')) {
-      const modes = ['play', 'practice', 'listen', 'exit'];
+      const modes = ['play', 'practice', 'listen', 'calibrate', 'exit'];
       const selected = modes[this.previewSelection] || 'play';
+      if (selected === 'calibrate') {
+        this.enterCalibration('preview');
+        this.audio.ui();
+        return;
+      }
       if (selected === 'exit') {
         this.state = 'setlist';
         this.audio.ui();
@@ -938,6 +1018,108 @@ export default class RobterSession {
       this.startSong({ playMode: selected });
       this.audio.ui();
     }
+  }
+
+  updateCalibration(dt) {
+    const state = this.calibrationState;
+    state.timer += dt;
+    if (state.timer >= state.beatInterval) {
+      state.timer -= state.beatInterval;
+      state.pulse = 1;
+      if (state.mode === 'audio') {
+        this.audio.playGmNote?.({
+          pitch: 37,
+          duration: 0.08,
+          volume: 0.7,
+          program: 0,
+          channel: 9
+        });
+      }
+    }
+    state.pulse = Math.max(0, state.pulse - dt * 2.8);
+
+    if (this.input.wasPressed('cancel')) {
+      saveCalibration(this.calibration);
+      this.state = this.calibrationReturnState || 'preview';
+      this.audio.ui();
+      return;
+    }
+
+    if (this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp')
+      || this.input.wasPressed('down') || this.input.wasGamepadPressed('dpadDown')) {
+      state.mode = state.mode === 'audio' ? 'video' : 'audio';
+      this.audio.menu();
+    }
+
+    if (this.input.wasPressed('left') || this.input.wasGamepadPressed('dpadLeft')) {
+      this.nudgeCalibration(state.mode, -5);
+      this.audio.menu();
+    }
+    if (this.input.wasPressed('right') || this.input.wasGamepadPressed('dpadRight')) {
+      this.nudgeCalibration(state.mode, 5);
+      this.audio.menu();
+    }
+
+    if (this.input.wasPressed('interact')) {
+      const offsetSec = state.timer <= state.beatInterval / 2
+        ? state.timer
+        : state.timer - state.beatInterval;
+      this.recordCalibrationSample(state.mode, offsetSec);
+      this.audio.ui();
+    }
+  }
+
+  recordCalibrationSample(mode, offsetSec) {
+    const bucket = this.calibrationState.samples[mode] || [];
+    bucket.push(offsetSec);
+    if (bucket.length > 8) {
+      bucket.shift();
+    }
+    this.calibrationState.samples[mode] = bucket;
+    const average = bucket.reduce((sum, value) => sum + value, 0) / bucket.length;
+    const offsetMs = Math.round(average * 1000);
+    if (mode === 'audio') {
+      this.calibration.audioOffsetMs = offsetMs;
+    } else {
+      this.calibration.videoOffsetMs = offsetMs;
+    }
+  }
+
+  nudgeCalibration(mode, deltaMs) {
+    if (mode === 'audio') {
+      this.calibration.audioOffsetMs = clamp((this.calibration.audioOffsetMs || 0) + deltaMs, -200, 200);
+    } else {
+      this.calibration.videoOffsetMs = clamp((this.calibration.videoOffsetMs || 0) + deltaMs, -200, 200);
+    }
+    this.calibrationState.samples[mode] = [];
+  }
+
+  getDirectionalCue(songTime) {
+    if (this.instrument === 'drums') return null;
+    const chordEvents = this.events.filter((event) => event.directionalLabel);
+    if (!chordEvents.length) return null;
+    const currentDirection = this.robterspiel.leftStickStableDirection || this.degree;
+    const nextIndex = chordEvents.findIndex((event) => event.timeSec >= songTime);
+    const pastIndex = nextIndex === -1 ? chordEvents.length - 1 : nextIndex - 1;
+    let active = null;
+    if (pastIndex >= 0) {
+      const pastEvent = chordEvents[pastIndex];
+      const matched = pastEvent.requiredInput?.degree === currentDirection;
+      active = matched ? chordEvents[pastIndex + 1] : pastEvent;
+    } else {
+      active = chordEvents[0];
+    }
+    if (!active) return null;
+    const targetDirection = active.requiredInput?.degree ?? null;
+    const isWrong = targetDirection !== currentDirection;
+    const stuck = songTime >= active.timeSec && isWrong;
+    return {
+      label: active.directionalLabel,
+      timeSec: active.timeSec,
+      isWrong,
+      stuck,
+      laneIndex: 0
+    };
   }
 
   handlePauseInput() {
@@ -1025,7 +1207,8 @@ export default class RobterSession {
       if (hitResult.hit) {
         this.registerButtonPulse(normalized.button);
       }
-      const inChartWindow = this.songTime >= this.chartWindow.start && this.songTime <= this.chartWindow.end;
+      const chartTime = this.getJudgementSongTime();
+      const inChartWindow = chartTime >= this.chartWindow.start && chartTime <= this.chartWindow.end;
       if (!hitResult.hit && this.playMode !== 'listen' && inChartWindow) {
         const expectedEvent = this.getClosestExpectedEvent();
         const expectedLabel = expectedEvent?.expectedAction?.label || expectedEvent?.displayLabel || '—';
@@ -1249,9 +1432,10 @@ export default class RobterSession {
   getClosestExpectedEvent() {
     if (!this.songData?.timing) return null;
     const window = this.songData.timing.good;
+    const now = this.getJudgementSongTime();
     return this.events
       .filter((event) => !event.hit && !event.judged)
-      .map((event) => ({ event, diff: Math.abs(event.timeSec - this.songTime) }))
+      .map((event) => ({ event, diff: Math.abs(event.timeSec - now) }))
       .filter((candidate) => candidate.diff <= window)
       .sort((a, b) => a.diff - b.diff)[0]?.event || null;
   }
@@ -1357,7 +1541,8 @@ export default class RobterSession {
       const drumMap = { A: 0, X: 1, Y: 2, B: 3 };
       return drumMap[button] ?? 0;
     }
-    return NOTE_LANES.indexOf(button);
+    const index = NOTE_LANES.indexOf(button);
+    return (index >= 0 ? index : 0) + this.getLaneOffset();
   }
 
   getModifierLabel(requiredInput) {
@@ -1732,6 +1917,7 @@ export default class RobterSession {
       displayLabel: this.getEventLabel(event.requiredInput)
     }));
     let lastDegree = null;
+    let lastChordDegree = null;
     this.events.forEach((event) => {
       const expectedAction = resolveRequiredInputToMusicalAction(
         { robterspiel: this.robterspiel, instrument: this.instrument, octaveOffset: this.requiredOctaveOffset },
@@ -1754,16 +1940,16 @@ export default class RobterSession {
       event.secondaryLabel = '';
       event.sideLabel = expectedAction?.label || event.displayLabel || '';
       if (isNoteEvent) {
-        event.stickLabel = event.requiredInput?.degree !== lastDegree
-          ? getStickDirectionLabel(event.requiredInput?.degree)
-          : null;
+        event.stickLabel = null;
         event.modifierState = {
           lb: Boolean(event.requiredInput?.modifiers?.lb),
           dleft: Boolean(event.requiredInput?.modifiers?.dleft),
           rb: Boolean(event.requiredInput?.octaveUp)
         };
       } else {
-        event.stickLabel = getStickDirectionLabel(event.requiredInput?.degree);
+        const degree = event.requiredInput?.degree ?? null;
+        event.directionalLabel = degree !== lastChordDegree ? getStickDirectionIcon(degree) : null;
+        lastChordDegree = degree ?? lastChordDegree;
       }
       lastDegree = event.requiredInput?.degree ?? lastDegree;
     });
@@ -1821,9 +2007,10 @@ export default class RobterSession {
 
   markMisses() {
     const missWindow = this.songData.timing.good;
+    const now = this.getJudgementSongTime();
     this.events.forEach((event) => {
       if (event.hit || event.judged) return;
-      if (this.songTime - event.timeSec > missWindow) {
+      if (now - event.timeSec > missWindow) {
         event.judged = true;
         this.registerMiss(event);
       }
@@ -1847,7 +2034,7 @@ export default class RobterSession {
       expected: expectedLabel,
       played: null,
       inputs: '',
-      laneIndex: event?.lane ?? 0
+      laneIndex: (event?.lane ?? 0) + this.getLaneOffset()
     });
   }
 
@@ -1865,11 +2052,12 @@ export default class RobterSession {
   tryHit(normalized, inputAction = null) {
     const timing = this.songData.timing;
     const window = timing.good;
+    const now = this.getJudgementSongTime();
     const match = this.events
       .filter((event) => !event.hit && !event.judged)
       .map((event) => ({
         event,
-        diff: Math.abs(event.timeSec - this.songTime)
+        diff: Math.abs(event.timeSec - now)
       }))
       .filter((candidate) => candidate.diff <= window)
       .sort((a, b) => a.diff - b.diff)
@@ -1879,7 +2067,7 @@ export default class RobterSession {
         mode: this.mode
       }) || this.actionsMatch(inputAction, candidate.event.expectedAction))?.event;
     if (!match) return { hit: false };
-    const diff = Math.abs(match.timeSec - this.songTime);
+    const diff = Math.abs(match.timeSec - now);
     const judgement = diff <= timing.great ? 'great' : 'good';
     match.hit = true;
     match.judged = true;
@@ -1908,7 +2096,7 @@ export default class RobterSession {
       hit: true,
       event: match,
       judgementLabel,
-      laneIndex: match.lane
+      laneIndex: (match.lane ?? 0) + this.getLaneOffset()
     };
   }
 
@@ -2679,6 +2867,10 @@ export default class RobterSession {
       this.drawPreview(ctx, width, height);
       return;
     }
+    if (this.state === 'calibration') {
+      this.drawCalibration(ctx, width, height);
+      return;
+    }
     if (this.state === 'play') {
       this.drawPlay(ctx, width, height);
       return;
@@ -3101,12 +3293,80 @@ export default class RobterSession {
     });
   }
 
+  drawCalibration(ctx, width, height) {
+    const { mode, pulse } = this.calibrationState;
+    const audioOffset = this.calibration.audioOffsetMs ?? 0;
+    const videoOffset = this.calibration.videoOffsetMs ?? 0;
+    ctx.save();
+    ctx.fillStyle = '#090c14';
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = '#d7f2ff';
+    ctx.font = 'bold 26px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('Latency Calibration', width / 2, 70);
+
+    ctx.fillStyle = 'rgba(215,242,255,0.75)';
+    ctx.font = '14px Courier New';
+    ctx.fillText('Tap A on the beat to measure your offset.', width / 2, 100);
+
+    const cardW = 260;
+    const cardH = 120;
+    const gap = 80;
+    const startX = width / 2 - cardW - gap / 2;
+    const startY = 150;
+    const modes = [
+      { id: 'audio', label: 'Audio', value: audioOffset },
+      { id: 'video', label: 'Visual', value: videoOffset }
+    ];
+    modes.forEach((entry, index) => {
+      const x = startX + index * (cardW + gap);
+      const y = startY;
+      const selected = entry.id === mode;
+      ctx.fillStyle = selected ? 'rgba(120,200,255,0.85)' : 'rgba(20,30,40,0.7)';
+      ctx.fillRect(x, y, cardW, cardH);
+      ctx.strokeStyle = selected ? '#ffe16a' : 'rgba(140,200,255,0.5)';
+      ctx.lineWidth = selected ? 3 : 2;
+      ctx.strokeRect(x, y, cardW, cardH);
+      ctx.fillStyle = selected ? '#041019' : '#d7f2ff';
+      ctx.font = 'bold 20px Courier New';
+      ctx.fillText(entry.label, x + cardW / 2, y + 36);
+      ctx.font = '16px Courier New';
+      ctx.fillText(`${entry.value} ms`, x + cardW / 2, y + 74);
+    });
+
+    const pulseX = width / 2;
+    const pulseY = height / 2 + 40;
+    const pulseRadius = 26 + pulse * 24;
+    ctx.strokeStyle = `rgba(122,208,255,${0.6 + pulse * 0.4})`;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(pulseX, pulseY, pulseRadius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(215,242,255,0.8)';
+    ctx.font = '14px Courier New';
+    ctx.fillText('Up/Down: switch audio/visual', width / 2, height - 120);
+    ctx.fillText('Left/Right: fine tune +/- 5 ms', width / 2, height - 95);
+    ctx.fillText('Back: return to session setup', width / 2, height - 70);
+    ctx.restore();
+  }
+
   drawPlay(ctx, width, height) {
     ctx.save();
-    const lanes = this.instrument === 'drums' ? DRUM_LANES : LANE_LABELS;
+    const laneOffset = this.getLaneOffset();
+    const baseLanes = this.instrument === 'drums' ? DRUM_LANES : LANE_LABELS;
+    const currentDirection = this.robterspiel.leftStickStableDirection || this.degree;
+    const directionLabel = getStickDirectionIcon(currentDirection);
+    const lanes = laneOffset ? [directionLabel, ...baseLanes] : baseLanes;
     const laneCount = lanes.length;
-    const laneColors = this.getLaneColors();
+    const laneColors = laneOffset ? ['#6f7a88', ...this.getLaneColors()] : this.getLaneColors();
     const highwayTint = this.getHighwayTint();
+    const visualSongTime = this.getVisualSongTime();
+    const directionalCue = laneOffset ? this.getDirectionalCue(visualSongTime) : null;
+    if (directionalCue?.isWrong) {
+      laneColors[0] = '#ff5b5b';
+    }
     const layout = this.highwayRenderer.getLayout({
       width,
       height,
@@ -3129,8 +3389,10 @@ export default class RobterSession {
     }
 
     const beatDuration = this.songData.tempo.secondsPerBeat;
-    const lanePulse = NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1));
-    this.highwayRenderer.drawBeatLines(ctx, layout, this.songTime, beatDuration);
+    const lanePulse = laneOffset
+      ? [0, ...NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1))]
+      : NOTE_LANES.map((label) => clamp(this.buttonPulse[label] / 0.22, 0, 1));
+    this.highwayRenderer.drawBeatLines(ctx, layout, visualSongTime, beatDuration);
     this.highwayRenderer.drawLanes(ctx, width, height, layout, laneColors, lanes, lanePulse);
     const requiredOctaveLineY = Number.isFinite(this.requiredOctaveOffset)
       ? layout.hitLineY - this.requiredOctaveOffset * 18
@@ -3144,10 +3406,13 @@ export default class RobterSession {
       this.mode
     );
 
-    this.highwayRenderer.drawNotes(ctx, this.events, layout, this.songTime, {
+    this.highwayRenderer.drawNotes(ctx, this.events, layout, visualSongTime, {
       noteSize: this.hudSettings.noteSize,
       labelMode: this.hudSettings.labelMode,
-      secondsPerBeat: beatDuration
+      secondsPerBeat: beatDuration,
+      laneOffset,
+      noteHeightScale: 0.6,
+      directionalCue
     }, laneColors, this.playMode);
 
     this.drawWrongNoteGhosts(ctx, width, height, {
@@ -3482,8 +3747,18 @@ export default class RobterSession {
       const action = this.previewScreen.handleClick(x, y);
       if (!action) return;
       if (action.type === 'mode') {
-        const modes = ['listen', 'practice', 'play'];
-        this.previewSelection = modes.indexOf(action.value);
+        const modes = ['play', 'practice', 'listen', 'calibrate', 'exit'];
+        this.previewSelection = Math.max(0, modes.indexOf(action.value));
+        if (action.value === 'exit') {
+          this.state = 'setlist';
+          this.audio.ui();
+          return;
+        }
+        if (action.value === 'calibrate') {
+          this.enterCalibration('preview');
+          this.audio.ui();
+          return;
+        }
         this.startSong({ playMode: action.value });
         this.audio.ui();
       }

@@ -247,7 +247,7 @@ const buildChordCandidates = ({ intervals }) => {
   return candidates;
 };
 
-const groupNotes = (notes, { clusterWindow = 0.03, arpeggioWindow = 0.2 } = {}) => {
+const groupNotes = (notes, { clusterWindow = 0.05, arpeggioWindow = 0.25 } = {}) => {
   const clusters = [];
   let index = 0;
   while (index < notes.length) {
@@ -295,6 +295,24 @@ const detectChordType = (pcs) => {
   if (!pcs.length) return null;
   const intervals = Array.from(new Set(pcs.map((pc) => (pc - pcs[0] + 12) % 12))).sort((a, b) => a - b);
   const intervalSet = new Set(intervals);
+  if (intervals.length === 2) {
+    if (intervalSet.has(7) || intervalSet.has(5)) {
+      return {
+        chordType: 'power',
+        approx: 'power-chord-fallback',
+        score: 0.85,
+        template: intervalSet.has(7) ? [0, 7] : [0, 5]
+      };
+    }
+    if (intervalSet.has(3) || intervalSet.has(4)) {
+      return {
+        chordType: 'triad',
+        approx: 'simplified',
+        score: 0.7,
+        template: intervalSet.has(4) ? [0, 4, 7] : [0, 3, 7]
+      };
+    }
+  }
   let best = null;
   CHORD_TEMPLATES.forEach((entry) => {
     entry.templates.forEach((template) => {
