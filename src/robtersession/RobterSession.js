@@ -46,6 +46,9 @@ const SCALE_PROMPT_SPEED = 0.9;
 const WRONG_GHOST_DURATION = 1.2;
 const MAX_NOTE_SIZE = 1.5;
 const MAX_HIGHWAY_ZOOM = 2;
+const START_ANIMATION_SECONDS = 1.6;
+const FINISH_ANIMATION_SECONDS = 2.2;
+const SONG_END_TAIL_BARS = 2;
 const HEALTH_GAIN = 0.04;
 const HEALTH_LOSS = 0.12;
 const MAX_MULTIPLIER = 4;
@@ -368,6 +371,7 @@ export default class RobterSession {
     this.songMeta = null;
     this.songTime = 0;
     this.songLength = 0;
+    this.finishAnimationTimer = 0;
     this.events = [];
     this.eventIndex = 0;
     this.streak = 0;
@@ -923,6 +927,10 @@ export default class RobterSession {
     }
     if (this.state === 'pause') {
       this.handlePauseInput();
+      return;
+    }
+    if (this.state === 'finish') {
+      this.updateFinishState(dt);
       return;
     }
     if (this.state === 'results') {
@@ -1586,6 +1594,13 @@ export default class RobterSession {
 
     if (this.songTime >= this.songLength) {
       this.finishSong();
+    }
+  }
+
+  updateFinishState(dt) {
+    this.finishAnimationTimer = Math.max(0, this.finishAnimationTimer - dt);
+    if (this.finishAnimationTimer <= 0) {
+      this.state = 'results';
     }
   }
 
@@ -2319,6 +2334,7 @@ export default class RobterSession {
     this.state = 'play';
     this.playMode = playMode;
     this.songTime = -2;
+    this.finishAnimationTimer = 0;
     this.streak = 0;
     this.bestStreak = 0;
     this.score = 0;
@@ -2430,12 +2446,15 @@ export default class RobterSession {
     const firstEvent = scoredEvents[0];
     const lastEvent = scoredEvents[scoredEvents.length - 1];
     const lastEventEnd = lastEvent?.timeSec ?? 0;
-    const sustainSeconds = lastEvent?.sustain ? lastEvent.sustain * this.songData.tempo.secondsPerBeat : 0;
+    const secondsPerBeat = this.songData?.tempo?.secondsPerBeat ?? 0.5;
+    const sustainSeconds = lastEvent?.sustain ? lastEvent.sustain * secondsPerBeat : 0;
+    const beatsPerBar = this.songData?.timeSignature?.beats ?? 4;
+    const tailBars = clamp(SONG_END_TAIL_BARS, 1, 4);
     this.chartWindow = {
       start: firstEvent?.timeSec ?? 0,
       end: lastEventEnd + sustainSeconds
     };
-    this.songLength = (lastEvent?.timeSec ?? 0) + 4;
+    this.songLength = lastEventEnd + sustainSeconds + tailBars * beatsPerBar * secondsPerBeat;
     this.improvWindows = this.computeImprovWindows(this.events);
     if (this.songData.modeChange) {
       this.modeChangeNotice = {
@@ -2447,6 +2466,7 @@ export default class RobterSession {
   }
 
   finishSong() {
+    if (this.state === 'finish' || this.state === 'results') return;
     const total = this.events.filter((event) => !event.visualOnly).length;
     const accuracy = total ? this.hits / total : 0;
     const grade = getGrade(accuracy);
@@ -2466,7 +2486,8 @@ export default class RobterSession {
       }
       saveProgress(progress);
     }
-    this.state = 'results';
+    this.finishAnimationTimer = FINISH_ANIMATION_SECONDS;
+    this.state = 'finish';
   }
 
   failSong() {
@@ -3368,6 +3389,11 @@ export default class RobterSession {
       this.drawPause(ctx, width, height);
       return;
     }
+    if (this.state === 'finish') {
+      this.drawPlay(ctx, width, height);
+      this.drawFinishTransition(ctx, width, height);
+      return;
+    }
     if (this.state === 'results') {
       this.drawResults(ctx, width, height);
     }
@@ -3923,6 +3949,71 @@ export default class RobterSession {
     ctx.restore();
   }
 
+  drawSongTransition(ctx, width, height, { progress, label, subtitle, accent = '#7ad0ff' }) {
+    const clamped = clamp(progress, 0, 1);
+    const pulse = Math.sin(clamped * Math.PI);
+    if (pulse <= 0) return;
+    const easeOut = 1 - Math.pow(1 - clamped, 2);
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = 100 + easeOut * 220;
+
+    ctx.save();
+    ctx.fillStyle = `rgba(6,10,18,${0.35 * pulse})`;
+    ctx.fillRect(0, 0, width, height);
+
+    const glow = ctx.createRadialGradient(centerX, centerY, radius * 0.15, centerX, centerY, radius);
+    glow.addColorStop(0, `rgba(122,208,255,${0.55 * pulse})`);
+    glow.addColorStop(0.5, `rgba(255,220,140,${0.25 * pulse})`);
+    glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = `rgba(255,225,160,${0.7 * pulse})`;
+    ctx.lineWidth = 2 + easeOut * 3;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius * 0.7, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = `rgba(122,208,255,${0.5 * pulse})`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius * 0.4, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = `rgba(255,255,255,${0.92 * pulse})`;
+    ctx.font = `bold ${44 + easeOut * 10}px Courier New`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, centerX, centerY - 6);
+
+    if (subtitle) {
+      ctx.fillStyle = `rgba(122,208,255,${0.85 * pulse})`;
+      ctx.font = `bold ${16 + easeOut * 4}px Courier New`;
+      ctx.fillText(subtitle, centerX, centerY + 34);
+    }
+
+    ctx.strokeStyle = `${accent}AA`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(centerX - 140, centerY + 58);
+    ctx.lineTo(centerX + 140, centerY + 58);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  drawFinishTransition(ctx, width, height) {
+    const progress = 1 - clamp(this.finishAnimationTimer / FINISH_ANIMATION_SECONDS, 0, 1);
+    this.drawSongTransition(ctx, width, height, {
+      progress,
+      label: 'FINISH!',
+      subtitle: 'Crowd goes wild',
+      accent: '#ffe16a'
+    });
+  }
+
   drawPlay(ctx, width, height) {
     ctx.save();
     const laneOffset = this.getLaneOffset();
@@ -4120,6 +4211,17 @@ export default class RobterSession {
       compact: this.hudSettings.inputHud === 'compact',
       instrument: this.instrument
     });
+
+    if (this.songTime < 0) {
+      const introProgress = clamp((this.songTime + START_ANIMATION_SECONDS) / START_ANIMATION_SECONDS, 0, 1);
+      if (introProgress > 0) {
+        this.drawSongTransition(ctx, width, height, {
+          progress: introProgress,
+          label: 'READY',
+          subtitle: 'Let it rip'
+        });
+      }
+    }
 
     if (this.debugShowInputs) {
       const upcoming = this.events.filter((event) => !event.judged).slice(0, 3);

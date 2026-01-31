@@ -15,6 +15,7 @@ export default class HighwayRenderer {
     const laneTop = Math.max(80, height * 0.12);
     const laneBottom = hitLineY;
     const horizonY = Math.max(60, height * 0.08);
+    const topScale = 0.45;
     const octaveLineY = hitLineY - (octaveOffset || 0) * 18;
     return {
       widthCenter: width / 2,
@@ -26,6 +27,7 @@ export default class HighwayRenderer {
       laneTop,
       laneBottom,
       horizonY,
+      topScale,
       octaveLineY,
       scrollSpeed: scrollSpeed || 240
     };
@@ -92,17 +94,16 @@ export default class HighwayRenderer {
   }
 
   drawLanes(ctx, width, height, layout, laneColors, labels, pulseByIndex = [], options = {}) {
-    const { startX, laneWidth, laneGap, laneTop, laneBottom, horizonY } = layout;
+    const { startX, laneWidth, laneGap, laneTop, laneBottom, horizonY, topScale } = layout;
     ctx.save();
     ctx.globalAlpha = Number.isFinite(options.alpha) ? options.alpha : 1;
-    const topScale = 0.45;
     for (let i = 0; i < labels.length; i += 1) {
       const baseX = startX + i * (laneWidth + laneGap);
       const bottomLeft = baseX;
       const bottomRight = baseX + laneWidth;
       const centerBottom = baseX + laneWidth / 2;
       const centerTop = width / 2 + (centerBottom - width / 2) * topScale;
-      const topWidth = laneWidth * 0.45;
+      const topWidth = laneWidth * topScale;
       const topLeft = centerTop - topWidth / 2;
       const topRight = centerTop + topWidth / 2;
 
@@ -142,9 +143,8 @@ export default class HighwayRenderer {
   }
 
   drawBeatLines(ctx, layout, songTime, beatDuration) {
-    const { startX, totalWidth, hitLineY, laneTop, widthCenter } = layout;
+    const { startX, totalWidth, hitLineY, laneTop, widthCenter, topScale } = layout;
     const visibleWindow = 3.6;
-    const topScale = 0.45;
     const topWidth = totalWidth * topScale;
     const topLeft = widthCenter - topWidth / 2;
     const topRight = widthCenter + topWidth / 2;
@@ -231,13 +231,26 @@ export default class HighwayRenderer {
   }
 
   drawNotes(ctx, events, layout, songTime, settings, laneColors, mode) {
-    const { startX, laneWidth, laneGap, hitLineY, laneTop } = layout;
+    const { startX, laneWidth, laneGap, hitLineY, laneTop, widthCenter, topScale } = layout;
     const visibleWindow = 3.6;
     const showPitchLabel = settings.labelMode !== 'buttons';
     const pixelsPerSecond = (hitLineY - laneTop) / visibleWindow;
     const laneOffset = settings.laneOffset ?? 0;
     const noteHeightScale = settings.noteHeightScale ?? 0.6;
     const directionalCues = settings.directionalCues ?? [];
+    const getLaneEdges = (laneIndex, depth) => {
+      const baseLeft = startX + laneIndex * (laneWidth + laneGap);
+      const baseRight = baseLeft + laneWidth;
+      const perspective = lerp(topScale, 1, depth);
+      const left = widthCenter + (baseLeft - widthCenter) * perspective;
+      const right = widthCenter + (baseRight - widthCenter) * perspective;
+      return {
+        left,
+        right,
+        center: (left + right) / 2,
+        perspective
+      };
+    };
     directionalCues.forEach((directionalCue) => {
       if (!directionalCue?.label) return;
       const correctionAlpha = directionalCue.correctionAlpha ?? 0;
@@ -248,10 +261,8 @@ export default class HighwayRenderer {
       if (timeToHit <= -0.4 || timeToHit >= visibleWindow) return;
       const depth = clamp(1 - timeToHit / visibleWindow, 0, 1);
       const perspective = lerp(0.45, 1, depth);
-      const laneCenter = startX + cueLaneIndex * (laneWidth + laneGap) + laneWidth / 2;
-      const highwayCenter = layout.widthCenter ?? (startX + layout.totalWidth / 2);
-      const perspectiveCenter = highwayCenter + (laneCenter - highwayCenter) * perspective;
-      const noteWidth = laneWidth * perspective * settings.noteSize;
+      const laneEdges = getLaneEdges(cueLaneIndex, depth);
+      const noteWidth = (laneEdges.right - laneEdges.left) * settings.noteSize;
       const baseHeight = Math.max(18, laneWidth * 0.24) * settings.noteSize * perspective;
       const noteHeight = baseHeight * noteHeightScale;
       const y = hitLineY - timeToHit * pixelsPerSecond;
@@ -263,7 +274,7 @@ export default class HighwayRenderer {
         ? 3 + 3 * clamp(stuckDuration / 1.2, 0, 1)
         : 0;
       const jitterOffset = jitterStrength * Math.sin((songTime + stuckDuration) * 12);
-      const noteX = perspectiveCenter - noteWidth / 2 + jitterOffset * perspective;
+      const noteX = laneEdges.center - noteWidth / 2 + jitterOffset * perspective;
       const noteY = y - noteHeight / 2 - stuckFloat;
       const stuckBlend = clamp(stuckDuration / 1.6, 0, 1);
       const wrongColor = `rgba(${Math.round(lerp(255, 150, stuckBlend))},${Math.round(lerp(120, 30, stuckBlend))},${Math.round(lerp(120, 30, stuckBlend))},0.92)`;
@@ -288,32 +299,29 @@ export default class HighwayRenderer {
       const laneIndex = (event.lane ?? 0) + laneOffset;
       const depth = clamp(1 - timeToHit / visibleWindow, 0, 1);
       const perspective = lerp(0.45, 1, depth);
-      const laneCenter = startX + laneIndex * (laneWidth + laneGap) + laneWidth / 2;
-      const highwayCenter = layout.widthCenter ?? (startX + layout.totalWidth / 2);
-      const perspectiveCenter = highwayCenter + (laneCenter - highwayCenter) * perspective;
-      const noteWidth = laneWidth * perspective * settings.noteSize;
+      const laneEdges = getLaneEdges(laneIndex, depth);
+      const noteWidth = (laneEdges.right - laneEdges.left) * settings.noteSize;
       const baseHeight = Math.max(18, laneWidth * 0.24) * settings.noteSize * perspective;
       const noteHeight = baseHeight * noteHeightScale;
       const y = hitLineY - timeToHit * pixelsPerSecond;
-      const noteX = perspectiveCenter - noteWidth / 2;
+      const noteX = laneEdges.center - noteWidth / 2;
       const noteY = y - noteHeight / 2;
       const color = event.starPhrase ? '#fefefe' : (laneColors[laneIndex] || '#7ad0ff');
       const sustainSeconds = event.sustain ? event.sustain * settings.secondsPerBeat : 0;
       if (sustainSeconds > 0.08) {
         const timeToEnd = timeToHit + sustainSeconds;
         const endDepth = clamp(1 - timeToEnd / visibleWindow, 0, 1);
-        const endPerspective = lerp(0.45, 1, endDepth);
-        const endCenter = highwayCenter + (laneCenter - highwayCenter) * endPerspective;
+        const endEdges = getLaneEdges(laneIndex, endDepth);
         const startTailWidth = noteWidth * 0.32;
-        const endTailWidth = laneWidth * endPerspective * settings.noteSize * 0.32;
+        const endTailWidth = (endEdges.right - endEdges.left) * settings.noteSize * 0.32;
         const endY = hitLineY - timeToEnd * pixelsPerSecond;
         ctx.save();
         ctx.fillStyle = event.starPhrase ? 'rgba(255,255,255,0.55)' : 'rgba(120,200,255,0.25)';
         ctx.beginPath();
-        ctx.moveTo(perspectiveCenter - startTailWidth / 2, y);
-        ctx.lineTo(perspectiveCenter + startTailWidth / 2, y);
-        ctx.lineTo(endCenter + endTailWidth / 2, endY);
-        ctx.lineTo(endCenter - endTailWidth / 2, endY);
+        ctx.moveTo(laneEdges.center - startTailWidth / 2, y);
+        ctx.lineTo(laneEdges.center + startTailWidth / 2, y);
+        ctx.lineTo(endEdges.center + endTailWidth / 2, endY);
+        ctx.lineTo(endEdges.center - endTailWidth / 2, endY);
         ctx.closePath();
         ctx.fill();
         ctx.restore();
