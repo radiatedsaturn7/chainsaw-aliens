@@ -48,6 +48,7 @@ const MAX_NOTE_SIZE = 1.5;
 const MAX_HIGHWAY_ZOOM = 2;
 const START_ANIMATION_SECONDS = 1.6;
 const FINISH_ANIMATION_SECONDS = 2.2;
+const MENU_FADE_SECONDS = 0.35;
 const SONG_END_TAIL_BARS = 2;
 const HEALTH_GAIN = 0.04;
 const HEALTH_LOSS = 0.12;
@@ -372,6 +373,8 @@ export default class RobterSession {
     this.songTime = 0;
     this.songLength = 0;
     this.finishAnimationTimer = 0;
+    this.lastState = this.state;
+    this.menuTransition = null;
     this.events = [];
     this.eventIndex = 0;
     this.streak = 0;
@@ -462,6 +465,8 @@ export default class RobterSession {
     this.songManifestLoaded = false;
     this.songManifestError = null;
     this.songManifestPromise = this.loadSongManifest();
+    this.songPrefetchCache = new Map();
+    this.songPrefetching = new Map();
     this.songSelectionIndex = 0;
     this.songLoadStatus = '';
     this.selectedSong = null;
@@ -517,6 +522,66 @@ export default class RobterSession {
 
   getVisualSongTime() {
     return this.songTime + this.getVideoOffsetSec();
+  }
+
+  isMenuState(state) {
+    return !['play', 'pause', 'finish'].includes(state);
+  }
+
+  updateMenuTransition(dt) {
+    if (this.menuTransition) {
+      this.menuTransition.progress += dt / this.menuTransition.duration;
+      if (this.menuTransition.progress >= 1) {
+        this.menuTransition = null;
+      }
+    }
+    if (this.state !== this.lastState) {
+      this.startMenuTransition(this.lastState, this.state);
+      this.lastState = this.state;
+    }
+  }
+
+  startMenuTransition(from, to) {
+    if (!this.isMenuState(from) || !this.isMenuState(to)) {
+      this.menuTransition = null;
+      return;
+    }
+    this.menuTransition = {
+      from,
+      to,
+      progress: 0,
+      duration: MENU_FADE_SECONDS
+    };
+  }
+
+  getTransitionSongTitle() {
+    return this.songMeta?.name || this.songData?.name || this.selectedSong?.title || 'Ready';
+  }
+
+  getTransitionSongArtist() {
+    return this.songMeta?.schema?.band
+      || this.songData?.schema?.band
+      || this.selectedSong?.artist
+      || this.selectedSong?.band
+      || '';
+  }
+
+  prefetchSong(entry) {
+    if (!entry || entry.uploaded || !entry.filename) return;
+    if (this.songPrefetchCache.has(entry.filename) || this.songPrefetching.has(entry.filename)) return;
+    const zipUrl = `assets/songs/${entry.filename}`;
+    const promise = loadZipSong(zipUrl)
+      .then((data) => {
+        this.songPrefetchCache.set(entry.filename, data);
+        return data;
+      })
+      .catch((error) => {
+        console.warn('[RobterSESSION] Prefetch failed', error);
+      })
+      .finally(() => {
+        this.songPrefetching.delete(entry.filename);
+      });
+    this.songPrefetching.set(entry.filename, promise);
   }
 
   enterCalibration(returnState = 'preview', mode = this.calibrationState.mode) {
@@ -633,8 +698,14 @@ export default class RobterSession {
     this.stemSelectionIndex = 0;
     try {
       const zipUrl = `assets/songs/${entry.filename}`;
-      const { stems, meta } = await loadZipSong(zipUrl);
-      await this.populateStemData({ stems, meta, sourceLabel: entry.filename });
+      const cached = this.songPrefetchCache.get(entry.filename);
+      const pending = this.songPrefetching.get(entry.filename);
+      const resolved = cached || (pending ? await pending : await loadZipSong(zipUrl));
+      if (resolved) {
+        this.songPrefetchCache.set(entry.filename, resolved);
+        const { stems, meta } = resolved;
+        await this.populateStemData({ stems, meta, sourceLabel: entry.filename });
+      }
     } catch (error) {
       console.error('[RobterSESSION] Failed to load zip song', error);
       this.songLoadStatus = 'Failed to load zip song.';
@@ -881,7 +952,10 @@ export default class RobterSession {
       this.debugShowInputs = !this.debugShowInputs;
     }
 
+    this.updateMenuTransition(dt);
+
     if (this.state === 'song-select') {
+      this.prefetchSong(this.songManifest[this.songSelectionIndex]);
       this.handleSongSelectInput();
       return;
     }
@@ -3330,73 +3404,90 @@ export default class RobterSession {
     return clamp(Math.ceil(rawScore * 1.2), 1, 6);
   }
 
+  drawState(ctx, width, height, state) {
+    if (state === 'song-select') {
+      this.drawSongSelect(ctx, width, height);
+      return;
+    }
+    if (state === 'stem-select') {
+      this.drawStemSelect(ctx, width, height);
+      return;
+    }
+    if (state === 'setlist') {
+      this.drawSetlist(ctx, width, height);
+      return;
+    }
+    if (state === 'instrument-select') {
+      this.drawInstrumentSelect(ctx, width, height);
+      return;
+    }
+    if (state === 'difficulty-select') {
+      this.drawDifficultySelect(ctx, width, height);
+      return;
+    }
+    if (state === 'detail') {
+      this.drawDetail(ctx, width, height);
+      return;
+    }
+    if (state === 'scale') {
+      this.drawScale(ctx, width, height);
+      return;
+    }
+    if (state === 'mode-select') {
+      this.drawModeSelect(ctx, width, height);
+      return;
+    }
+    if (state === 'preview') {
+      this.drawPreview(ctx, width, height);
+      return;
+    }
+    if (state === 'settings') {
+      this.drawSettings(ctx, width, height);
+      return;
+    }
+    if (state === 'calibration') {
+      this.drawCalibration(ctx, width, height);
+      return;
+    }
+    if (state === 'play') {
+      this.drawPlay(ctx, width, height);
+      return;
+    }
+    if (state === 'pause') {
+      this.drawPlay(ctx, width, height);
+      this.drawPause(ctx, width, height);
+      return;
+    }
+    if (state === 'finish') {
+      this.drawPlay(ctx, width, height);
+      this.drawFinishTransition(ctx, width, height);
+      return;
+    }
+    if (state === 'results') {
+      this.drawResults(ctx, width, height);
+    }
+  }
+
   draw(ctx, width, height) {
     ctx.save();
     ctx.fillStyle = '#08080d';
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
-    if (this.state === 'song-select') {
-      this.drawSongSelect(ctx, width, height);
+    if (this.menuTransition && this.isMenuState(this.menuTransition.from) && this.isMenuState(this.menuTransition.to)) {
+      const t = clamp(this.menuTransition.progress, 0, 1);
+      ctx.save();
+      ctx.globalAlpha = 1 - t;
+      this.drawState(ctx, width, height, this.menuTransition.from);
+      ctx.restore();
+      ctx.save();
+      ctx.globalAlpha = t;
+      this.drawState(ctx, width, height, this.menuTransition.to);
+      ctx.restore();
       return;
     }
-    if (this.state === 'stem-select') {
-      this.drawStemSelect(ctx, width, height);
-      return;
-    }
-    if (this.state === 'setlist') {
-      this.drawSetlist(ctx, width, height);
-      return;
-    }
-    if (this.state === 'instrument-select') {
-      this.drawInstrumentSelect(ctx, width, height);
-      return;
-    }
-    if (this.state === 'difficulty-select') {
-      this.drawDifficultySelect(ctx, width, height);
-      return;
-    }
-    if (this.state === 'detail') {
-      this.drawDetail(ctx, width, height);
-      return;
-    }
-    if (this.state === 'scale') {
-      this.drawScale(ctx, width, height);
-      return;
-    }
-    if (this.state === 'mode-select') {
-      this.drawModeSelect(ctx, width, height);
-      return;
-    }
-    if (this.state === 'preview') {
-      this.drawPreview(ctx, width, height);
-      return;
-    }
-    if (this.state === 'settings') {
-      this.drawSettings(ctx, width, height);
-      return;
-    }
-    if (this.state === 'calibration') {
-      this.drawCalibration(ctx, width, height);
-      return;
-    }
-    if (this.state === 'play') {
-      this.drawPlay(ctx, width, height);
-      return;
-    }
-    if (this.state === 'pause') {
-      this.drawPlay(ctx, width, height);
-      this.drawPause(ctx, width, height);
-      return;
-    }
-    if (this.state === 'finish') {
-      this.drawPlay(ctx, width, height);
-      this.drawFinishTransition(ctx, width, height);
-      return;
-    }
-    if (this.state === 'results') {
-      this.drawResults(ctx, width, height);
-    }
+
+    this.drawState(ctx, width, height, this.state);
   }
 
   drawSongSelect(ctx, width, height) {
@@ -3949,68 +4040,74 @@ export default class RobterSession {
     ctx.restore();
   }
 
-  drawSongTransition(ctx, width, height, { progress, label, subtitle, accent = '#7ad0ff' }) {
+  drawSongTransition(ctx, width, height, {
+    progress,
+    label,
+    subtitle,
+    direction = 'in'
+  }) {
     const clamped = clamp(progress, 0, 1);
-    const pulse = Math.sin(clamped * Math.PI);
-    if (pulse <= 0) return;
-    const easeOut = 1 - Math.pow(1 - clamped, 2);
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const radius = 100 + easeOut * 220;
+    if (clamped <= 0) return;
+    const eased = 1 - Math.pow(1 - clamped, 3);
+    const offsetY = direction === 'out'
+      ? eased * height * 0.9
+      : (eased - 1) * height * 0.9;
+    const fade = direction === 'out' ? 1 - clamped * 0.9 : clamped;
+    const laneColors = this.getLaneColors();
+    const lanes = this.instrument === 'drums' ? DRUM_LANES : NON_DRUM_LANES;
+    const layout = this.highwayRenderer.getLayout({
+      width,
+      height,
+      laneCount: lanes.length,
+      zoom: this.hudSettings.highwayZoom,
+      octaveOffset: this.octaveOffset,
+      scrollSpeed: SCROLL_SPEED
+    });
 
     ctx.save();
-    ctx.fillStyle = `rgba(6,10,18,${0.35 * pulse})`;
-    ctx.fillRect(0, 0, width, height);
-
-    const glow = ctx.createRadialGradient(centerX, centerY, radius * 0.15, centerX, centerY, radius);
-    glow.addColorStop(0, `rgba(122,208,255,${0.55 * pulse})`);
-    glow.addColorStop(0.5, `rgba(255,220,140,${0.25 * pulse})`);
-    glow.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = glow;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = `rgba(255,225,160,${0.7 * pulse})`;
-    ctx.lineWidth = 2 + easeOut * 3;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius * 0.7, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.strokeStyle = `rgba(122,208,255,${0.5 * pulse})`;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius * 0.4, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.fillStyle = `rgba(255,255,255,${0.92 * pulse})`;
-    ctx.font = `bold ${44 + easeOut * 10}px Courier New`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, centerX, centerY - 6);
-
-    if (subtitle) {
-      ctx.fillStyle = `rgba(122,208,255,${0.85 * pulse})`;
-      ctx.font = `bold ${16 + easeOut * 4}px Courier New`;
-      ctx.fillText(subtitle, centerX, centerY + 34);
-    }
-
-    ctx.strokeStyle = `${accent}AA`;
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(centerX - 140, centerY + 58);
-    ctx.lineTo(centerX + 140, centerY + 58);
-    ctx.stroke();
+    ctx.globalAlpha = clamp(fade, 0, 1);
+    ctx.translate(0, offsetY);
+    this.highwayRenderer.drawBackground(ctx, width, height, layout, laneColors, this.getHighwayTint());
+    this.highwayRenderer.drawLanes(ctx, width, height, layout, laneColors, lanes, [], { alpha: 0.6 });
     ctx.restore();
+
+    const textAlpha = direction === 'out' ? 1 - clamped : clamped;
+    if (textAlpha > 0) {
+      const centerX = width / 2;
+      const panelW = Math.min(width * 0.7, 560);
+      const panelH = subtitle ? 76 : 48;
+      const panelX = centerX - panelW / 2;
+      const panelY = height * 0.64 - panelH / 2;
+      ctx.save();
+      ctx.globalAlpha = clamp(textAlpha, 0, 1);
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(panelX, panelY, panelW, panelH);
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(panelX, panelY, panelW, panelH);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 32px Courier New';
+      ctx.fillText(label, centerX, panelY + (subtitle ? 26 : panelH / 2));
+      if (subtitle) {
+        ctx.fillStyle = 'rgba(200,220,255,0.95)';
+        ctx.font = 'bold 18px Courier New';
+        ctx.fillText(subtitle, centerX, panelY + 54);
+      }
+      ctx.restore();
+    }
   }
 
   drawFinishTransition(ctx, width, height) {
     const progress = 1 - clamp(this.finishAnimationTimer / FINISH_ANIMATION_SECONDS, 0, 1);
+    const title = this.getTransitionSongTitle();
+    const artist = this.getTransitionSongArtist();
     this.drawSongTransition(ctx, width, height, {
       progress,
-      label: 'FINISH!',
-      subtitle: 'Crowd goes wild',
-      accent: '#ffe16a'
+      label: title,
+      subtitle: artist,
+      direction: 'out'
     });
   }
 
@@ -4215,10 +4312,13 @@ export default class RobterSession {
     if (this.songTime < 0) {
       const introProgress = clamp((this.songTime + START_ANIMATION_SECONDS) / START_ANIMATION_SECONDS, 0, 1);
       if (introProgress > 0) {
+        const title = this.getTransitionSongTitle();
+        const artist = this.getTransitionSongArtist();
         this.drawSongTransition(ctx, width, height, {
           progress: introProgress,
-          label: 'READY',
-          subtitle: 'Let it rip'
+          label: title,
+          subtitle: artist,
+          direction: 'in'
         });
       }
     }
