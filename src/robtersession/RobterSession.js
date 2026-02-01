@@ -422,6 +422,7 @@ export default class RobterSession {
     this.buttonPulse = { A: 0, B: 0, X: 0, Y: 0 };
     this.autoModifiers = { lb: false, dleft: false, rb: false };
     this.wrongNotes = [];
+    this.midiLaunchContext = null;
     this.directionalCueState = {
       key: null,
       stuckDurationSec: 0,
@@ -808,6 +809,15 @@ export default class RobterSession {
     }
     this.stemList = stemEntries;
     this.songLoadStatus = stems.size ? '' : 'No MIDI stems found in zip.';
+    if (this.midiLaunchContext?.instrument) {
+      const matchIndex = stemEntries.findIndex((entry) => {
+        const stem = this.stemData.get(entry.name);
+        return stem?.mappedInstrument === this.midiLaunchContext.instrument;
+      });
+      if (matchIndex >= 0) {
+        this.stemSelectionIndex = matchIndex;
+      }
+    }
     this.state = 'stem-select';
   }
 
@@ -858,6 +868,21 @@ export default class RobterSession {
     } catch (error) {
       console.error('[RobterSESSION] Failed to download MIDI zip', error);
     }
+  }
+
+  getStemPlaybackLength() {
+    if (!this.stemData.size) return null;
+    let maxEnd = 0;
+    this.stemData.forEach((stem) => {
+      const notes = stem.midiData?.notes || [];
+      notes.forEach((note) => {
+        if (Number.isFinite(note.tEndSec)) {
+          maxEnd = Math.max(maxEnd, note.tEndSec);
+        }
+      });
+    });
+    if (!Number.isFinite(maxEnd) || maxEnd <= 0) return null;
+    return maxEnd;
   }
 
   prepareStemSong(stemName) {
@@ -925,6 +950,14 @@ export default class RobterSession {
     return true;
   }
 
+  setMidiLaunchContext({ instrument } = {}) {
+    if (!instrument) {
+      this.midiLaunchContext = null;
+      return;
+    }
+    this.midiLaunchContext = { source: 'midi', instrument };
+  }
+
   enter() {
     this.state = USE_LEGACY_SETLIST ? 'instrument-select' : 'song-select';
     this.songData = null;
@@ -952,6 +985,7 @@ export default class RobterSession {
     this.useStemPlayback = false;
     this.activeStemName = null;
     this.stemPlaybackIndices = {};
+    this.midiLaunchContext = null;
   }
 
   setMobile(isMobile) {
@@ -1483,7 +1517,7 @@ export default class RobterSession {
     if (this.instrument === 'drums') return null;
     const chordEvents = this.events.filter((event) => event.noteKind === 'chord' && Number.isFinite(event.requiredInput?.degree));
     if (!chordEvents.length) return null;
-    const currentDirection = this.robterspiel.leftStickStableDirection || this.degree;
+    const currentDirection = this.robterspiel.connected ? this.robterspiel.leftStickStableDirection : this.degree;
     const nextIndex = chordEvents.findIndex((event) => event.timeSec >= songTime);
     const pastIndex = nextIndex === -1 ? chordEvents.length - 1 : nextIndex - 1;
     let active = null;
@@ -1514,7 +1548,7 @@ export default class RobterSession {
     if (this.instrument === 'drums') return [];
     const chordEvents = this.events.filter((event) => event.noteKind === 'chord' && Number.isFinite(event.requiredInput?.degree));
     if (!chordEvents.length) return [];
-    const currentDirection = this.robterspiel.leftStickStableDirection || this.degree;
+    const currentDirection = this.robterspiel.connected ? this.robterspiel.leftStickStableDirection : this.degree;
     const nextIndex = chordEvents.findIndex((event) => event.timeSec >= songTime);
     const pastIndex = nextIndex === -1 ? chordEvents.length - 1 : nextIndex - 1;
     let active = null;
@@ -1580,7 +1614,11 @@ export default class RobterSession {
 
   handleResultsInput() {
     if (this.input.wasPressed('interact') || this.input.wasPressed('cancel')) {
-      this.state = this.useStemPlayback ? 'song-select' : 'setlist';
+      if (this.midiLaunchContext?.source === 'midi') {
+        this.state = 'exit';
+      } else {
+        this.state = this.useStemPlayback ? 'song-select' : 'setlist';
+      }
       this.audio.ui();
     }
   }
@@ -1597,7 +1635,8 @@ export default class RobterSession {
       this.octaveOffset = this.robterspiel.octaveOffset;
     }
 
-    if (getPauseTrigger(this.input)) {
+    const pauseTriggered = getPauseTrigger(this.input);
+    if (pauseTriggered && (!this.isMobile || this.input.wasGamepadPressed('pause'))) {
       this.state = 'pause';
       this.pauseSelection = 0;
       this.audio.ui();
@@ -1637,6 +1676,7 @@ export default class RobterSession {
         ...normalized,
         buttonsPressed: this.getPressedButtons()
       };
+      const stickDir = this.robterspiel.connected ? this.robterspiel.leftStickStableDirection : this.degree;
       this.registerButtonPulse(normalized.button);
       const register = this.songData?.schema?.arrangement?.registers?.[this.instrument] || null;
       const inputAction = resolveInputToMusicalAction({
@@ -1644,7 +1684,7 @@ export default class RobterSession {
         instrument: this.instrument,
         mode: this.mode,
         degree: this.degree,
-        stickDir: this.robterspiel.leftStickStableDirection || this.degree,
+        stickDir,
         register
       }, inputEvent);
       const inputLabel = inputAction?.label || this.getInputLabel(normalized);
@@ -2575,9 +2615,13 @@ export default class RobterSession {
       return acc;
     }, {});
     const scoredEvents = this.events.filter((event) => !event.visualOnly);
-    const firstEvent = scoredEvents[0];
-    const lastEvent = scoredEvents[scoredEvents.length - 1];
-    const lastEventEnd = lastEvent?.timeSec ?? 0;
+    const firstEvent = scoredEvents.find((event) => Number.isFinite(event.timeSec)) || null;
+    const lastEvent = scoredEvents.reduce((latest, event) => {
+      if (!Number.isFinite(event.timeSec)) return latest;
+      if (!latest || event.timeSec > latest.timeSec) return event;
+      return latest;
+    }, null);
+    const lastEventEnd = Number.isFinite(lastEvent?.timeSec) ? lastEvent.timeSec : 0;
     const secondsPerBeat = this.songData?.tempo?.secondsPerBeat ?? 0.5;
     const sustainSeconds = lastEvent?.sustain ? lastEvent.sustain * secondsPerBeat : 0;
     const beatsPerBar = this.songData?.timeSignature?.beats ?? 4;
@@ -2586,7 +2630,18 @@ export default class RobterSession {
       start: firstEvent?.timeSec ?? 0,
       end: lastEventEnd + sustainSeconds
     };
-    this.songLength = lastEventEnd + sustainSeconds + tailBars * beatsPerBar * secondsPerBeat;
+    const tailSeconds = tailBars * beatsPerBar * secondsPerBeat;
+    let songLength = lastEventEnd + sustainSeconds + tailSeconds;
+    if (this.useStemPlayback) {
+      const stemLength = this.getStemPlaybackLength();
+      if (Number.isFinite(stemLength)) {
+        songLength = Math.max(songLength, stemLength + tailSeconds);
+      }
+    }
+    if (!Number.isFinite(songLength) || songLength <= 0) {
+      songLength = Math.max(0, tailSeconds);
+    }
+    this.songLength = songLength;
     this.improvWindows = this.computeImprovWindows(this.events);
     if (this.songData.modeChange) {
       this.modeChangeNotice = {
@@ -3199,7 +3254,7 @@ export default class RobterSession {
     const rightStick = this.robterspiel.getRightStick();
     const leftMagnitude = Math.hypot(leftStick.x, leftStick.y);
     const rightMagnitude = Math.hypot(rightStick.x, rightStick.y);
-    const leftDegree = this.robterspiel.leftStickStableDirection || this.degree || 1;
+    const leftDegree = this.robterspiel.connected ? this.robterspiel.leftStickStableDirection : (this.degree || 1);
     const register = this.songData?.schema?.arrangement?.registers?.[this.instrument] || null;
     const toMidi = (note) => {
       const match = String(note || '').match(/^([A-Ga-g])([#b]?)(-?\d+)$/);
@@ -4174,7 +4229,7 @@ export default class RobterSession {
     ctx.save();
     const laneOffset = this.getLaneOffset();
     const baseLanes = this.instrument === 'drums' ? DRUM_LANES : NON_DRUM_LANES;
-    const currentDirection = this.robterspiel.leftStickStableDirection || this.degree;
+    const currentDirection = this.robterspiel.connected ? this.robterspiel.leftStickStableDirection : this.degree;
     const directionLabel = getStickDirectionIcon(currentDirection);
     const lanes = this.instrument === 'drums' ? baseLanes : ['D-Left', directionLabel, ...baseLanes];
     const laneCount = lanes.length;
@@ -4355,10 +4410,11 @@ export default class RobterSession {
       return { button, label: action?.label || '--' };
     });
 
+    const stickDir = this.robterspiel.connected ? this.robterspiel.leftStickStableDirection : this.degree;
     this.controllerHUD.draw(ctx, width, height, {
       mode: this.mode,
       degree: this.degree,
-      stickDir: this.robterspiel.leftStickStableDirection || this.degree,
+      stickDir,
       targetDirection: targetDegree,
       modifiers,
       octaveOffset: this.octaveOffset,
@@ -4465,6 +4521,7 @@ export default class RobterSession {
     const total = this.events.filter((event) => !event.visualOnly).length;
     const accuracy = total ? this.hits / total : 0;
     const grade = getGrade(accuracy);
+    const showPlayAgain = this.midiLaunchContext?.source === 'midi';
     ctx.save();
     ctx.fillStyle = '#0b0c14';
     ctx.fillRect(0, 0, width, height);
@@ -4472,6 +4529,22 @@ export default class RobterSession {
     ctx.font = 'bold 26px Courier New';
     ctx.textAlign = 'center';
     ctx.fillText('Results', width / 2, 80);
+    this.bounds.resultsButtons = [];
+    if (showPlayAgain) {
+      const buttonW = Math.min(260, width * 0.6);
+      const buttonH = 34;
+      const buttonX = width / 2 - buttonW / 2;
+      const buttonY = 105;
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      ctx.fillRect(buttonX, buttonY, buttonW, buttonH);
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(buttonX, buttonY, buttonW, buttonH);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 16px Courier New';
+      ctx.fillText('Play Again', width / 2, buttonY + 22);
+      this.bounds.resultsButtons.push({ id: 'play-again', x: buttonX, y: buttonY, w: buttonW, h: buttonH });
+    }
 
     ctx.font = '18px Courier New';
     ctx.fillText(`Score: ${this.score}`, width / 2, 140);
@@ -4507,7 +4580,9 @@ export default class RobterSession {
 
     ctx.font = '16px Courier New';
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    const returnLabel = this.useStemPlayback ? 'Song List' : 'Setlist';
+    const returnLabel = this.midiLaunchContext?.source === 'midi'
+      ? 'MIDI Sequencer'
+      : (this.useStemPlayback ? 'Song List' : 'Setlist');
     ctx.fillText(`Press Confirm to return to ${returnLabel}.`, width / 2, height - 80);
     ctx.restore();
   }
@@ -4528,6 +4603,16 @@ export default class RobterSession {
   }
 
   handleClick(x, y) {
+    if (this.state === 'results') {
+      const hit = this.bounds.resultsButtons.find((button) => (
+        x >= button.x && x <= button.x + button.w && y >= button.y && y <= button.y + button.h
+      ));
+      if (hit?.id === 'play-again') {
+        this.startSong({ playMode: this.playMode });
+        this.audio.ui();
+      }
+      return;
+    }
     if (this.state === 'song-select') {
       const hit = this.songSelectView.handleClick(x, y);
       if (!hit) return;

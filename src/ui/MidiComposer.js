@@ -961,6 +961,22 @@ export default class MidiComposer {
     }
   }
 
+  getRobterSessionInstrumentFromTrack(track) {
+    if (!track) return 'piano';
+    if (isDrumTrack(track)) return 'drums';
+    const name = String(track.name || '').toLowerCase();
+    if (name.includes('bass')) return 'bass';
+    if (name.includes('guitar')) return 'guitar';
+    if (name.includes('piano') || name.includes('keys') || name.includes('keyboard') || name.includes('synth')) {
+      return 'piano';
+    }
+    const program = Number.isFinite(track.program) ? track.program : 0;
+    if (program >= 32 && program <= 39) return 'bass';
+    if (program >= 24 && program <= 31) return 'guitar';
+    if (program <= 7) return 'piano';
+    return 'piano';
+  }
+
   async playInRobterSession() {
     const session = this.game?.robterSession;
     if (!session) return;
@@ -972,10 +988,12 @@ export default class MidiComposer {
     this.stopPlayback();
     const file = new File([blob], `${this.getExportBaseName()}-robtersession.zip`, { type: 'application/zip' });
     session.enter();
+    const selectedTrack = this.song?.tracks?.[this.selectedTrackIndex] || null;
+    session.setMidiLaunchContext({ instrument: this.getRobterSessionInstrumentFromTrack(selectedTrack) });
     await session.loadUploadedZip(file);
     if (this.game) {
       this.game.robterSessionReturnState = 'midi-editor';
-      this.game.robterSessionAutoReturn = true;
+      this.game.robterSessionAutoReturn = false;
       this.game.state = 'robtersession';
     }
   }
