@@ -101,8 +101,13 @@ export default class SongPreviewScreen {
     this.drawToggle(ctx, labelBounds, `Labels: ${labelText}`, true);
     this.bounds.toggles.push(labelBounds);
 
+    const autoToggleY = toggleY + 38;
+    const autoBounds = { x: toggleX, y: autoToggleY, w: toggleW * 2 + 24, h: toggleH, id: 'autoMod' };
+    this.drawToggle(ctx, autoBounds, `Auto Mod: ${settings.autoMod ? 'On' : 'Off'}`, settings.autoMod);
+    this.bounds.toggles.push(autoBounds);
+
     const speedOptions = [0.5, 0.75, 1];
-    const speedY = toggleY + 40;
+    const speedY = autoToggleY + 40;
     const speedLabelX = width / 2 - 140;
     ctx.fillStyle = '#d7f2ff';
     ctx.font = '12px Courier New';

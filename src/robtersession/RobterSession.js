@@ -16,6 +16,7 @@ import NoteRenderer from './renderers/NoteRenderer.js';
 import ControllerStateHUD from './renderers/ControllerStateHUD.js';
 import FeedbackSystem from './renderers/FeedbackSystem.js';
 import SongPreviewScreen from './renderers/SongPreviewScreen.js';
+import RobterSessionMobileControls from './RobterSessionMobileControls.js';
 import SongSelectView from '../ui/SongSelectView.js';
 import InstrumentSelectView from '../ui/InstrumentSelectView.js';
 import {
@@ -232,7 +233,8 @@ const defaultHudSettings = () => ({
   highwayZoom: MAX_HIGHWAY_ZOOM,
   labelMode: 'both',
   inputHud: 'full',
-  ghostNotes: true
+  ghostNotes: true,
+  autoMod: false
 });
 
 const loadHudSettings = () => {
@@ -245,7 +247,8 @@ const loadHudSettings = () => {
       highwayZoom: MAX_HIGHWAY_ZOOM,
       labelMode: parsed.labelMode ?? 'both',
       inputHud: parsed.inputHud ?? 'full',
-      ghostNotes: parsed.ghostNotes ?? true
+      ghostNotes: parsed.ghostNotes ?? true,
+      autoMod: parsed.autoMod ?? false
     };
   } catch (error) {
     return defaultHudSettings();
@@ -343,9 +346,10 @@ const normalizeReductionPreset = (value) => {
 };
 
 export default class RobterSession {
-  constructor({ input, audio }) {
+  constructor({ input, audio, isMobile = false }) {
     this.input = input;
     this.audio = audio;
+    this.isMobile = Boolean(isMobile);
     this.state = USE_LEGACY_SETLIST ? 'instrument-select' : 'song-select';
     this.progress = loadProgress();
     this.selectionIndex = 0;
@@ -416,6 +420,7 @@ export default class RobterSession {
     this.hitGlassTimer = 0;
     this.wrongNoteCooldown = 0;
     this.buttonPulse = { A: 0, B: 0, X: 0, Y: 0 };
+    this.autoModifiers = { lb: false, dleft: false, rb: false };
     this.wrongNotes = [];
     this.directionalCueState = {
       key: null,
@@ -451,6 +456,7 @@ export default class RobterSession {
     this.highwayRenderer = new HighwayRenderer(this.noteRenderer);
     this.controllerHUD = new ControllerStateHUD();
     this.previewScreen = new SongPreviewScreen();
+    this.mobileControls = new RobterSessionMobileControls();
     this.songSelectView = new SongSelectView();
     this.instrumentSelectView = new InstrumentSelectView();
     this.inputBus = new InputEventBus();
@@ -487,6 +493,7 @@ export default class RobterSession {
     this.zipInput = this.createZipInput();
     this.improvWindows = [];
     this.registerInputBus();
+    this.setMobile(this.isMobile);
   }
 
   createZipInput() {
@@ -947,11 +954,33 @@ export default class RobterSession {
     this.stemPlaybackIndices = {};
   }
 
+  setMobile(isMobile) {
+    this.isMobile = Boolean(isMobile);
+    this.mobileControls.setEnabled(this.isMobile);
+    if (!this.isMobile) {
+      this.input.clearVirtualGamepad();
+    }
+  }
+
+  updateMobileControls() {
+    if (!this.isMobile) {
+      this.input.clearVirtualGamepad();
+      return;
+    }
+    const { actions, axes } = this.mobileControls.getActions(this.state);
+    if (this.mobileControls.shouldHandle(this.state)) {
+      this.input.setVirtualGamepad({ actions, axes });
+    } else {
+      this.input.clearVirtualGamepad();
+    }
+  }
+
   update(dt) {
     if (this.debugEnabled && this.input.wasPressedCode('KeyH')) {
       this.debugShowInputs = !this.debugShowInputs;
     }
 
+    this.updateMobileControls();
     this.updateMenuTransition(dt);
 
     if (this.state === 'song-select') {
@@ -1586,6 +1615,22 @@ export default class RobterSession {
 
     const normalized = normalizeRobterInput({ input: this.input, prevDegree: this.degree, mode: this.mode });
     this.degree = normalized.degree;
+    if (this.hudSettings.autoMod) {
+      const autoModifiers = this.getAutoModifiers();
+      this.autoModifiers = autoModifiers;
+      if (normalized.button) {
+        normalized.lb = autoModifiers.lb;
+        normalized.dleft = autoModifiers.dleft;
+        normalized.octaveUp = autoModifiers.rb;
+        if (this.mode === 'chord') {
+          normalized.chordType = this.getChordTypeForButton(normalized.button, {
+            lb: normalized.lb,
+            dleft: normalized.dleft,
+            rb: normalized.octaveUp
+          });
+        }
+      }
+    }
 
     if (normalized.button && this.playMode !== 'listen') {
       const inputEvent = {
@@ -1688,10 +1733,23 @@ export default class RobterSession {
   }
 
   getModifierState() {
+    if (this.hudSettings.autoMod) {
+      return { ...this.autoModifiers };
+    }
     return {
       lb: this.input.isGamepadDown('aimUp') || this.input.isDownCode('KeyQ'),
       dleft: this.input.isGamepadDown('dpadLeft') || this.input.isDownCode('KeyE'),
       rb: this.input.isGamepadDown('aimDown') || this.input.isDownCode('KeyR')
+    };
+  }
+
+  getAutoModifiers() {
+    const expected = this.getClosestExpectedEvent() || this.getNextPendingEvent();
+    const required = expected?.requiredInput;
+    return {
+      lb: Boolean(required?.modifiers?.lb),
+      dleft: Boolean(required?.modifiers?.dleft),
+      rb: Boolean(required?.octaveUp)
     };
   }
 
@@ -3469,6 +3527,7 @@ export default class RobterSession {
   }
 
   draw(ctx, width, height) {
+    this.mobileControls.setViewport({ width, height, isMobile: this.isMobile });
     ctx.save();
     ctx.fillStyle = '#08080d';
     ctx.fillRect(0, 0, width, height);
@@ -4309,6 +4368,8 @@ export default class RobterSession {
       instrument: this.instrument
     });
 
+    this.mobileControls.draw(ctx, this.state);
+
     if (this.songTime < 0) {
       const introProgress = clamp((this.songTime + START_ANIMATION_SECONDS) / START_ANIMATION_SECONDS, 0, 1);
       if (introProgress > 0) {
@@ -4451,6 +4512,21 @@ export default class RobterSession {
     ctx.restore();
   }
 
+  handlePointerDown(payload) {
+    if (this.mobileControls.handlePointerDown(payload, this.state)) {
+      return;
+    }
+    this.handleClick(payload.x, payload.y);
+  }
+
+  handlePointerMove(payload) {
+    this.mobileControls.handlePointerMove(payload);
+  }
+
+  handlePointerUp(payload) {
+    this.mobileControls.handlePointerUp(payload, this.state);
+  }
+
   handleClick(x, y) {
     if (this.state === 'song-select') {
       const hit = this.songSelectView.handleClick(x, y);
@@ -4579,6 +4655,8 @@ export default class RobterSession {
           const options = ['buttons', 'pitch', 'both'];
           const index = (options.indexOf(this.hudSettings.labelMode) + 1) % options.length;
           this.hudSettings.labelMode = options[index];
+        } else if (action.id === 'autoMod') {
+          this.hudSettings.autoMod = !this.hudSettings.autoMod;
         } else if (action.id === 'inputHud') {
           this.hudSettings.inputHud = this.hudSettings.inputHud === 'compact' ? 'full' : 'compact';
         }
