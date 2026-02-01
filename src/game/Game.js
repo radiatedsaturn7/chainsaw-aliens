@@ -355,9 +355,10 @@ export default class Game {
     } else {
       this.effectiveInputMode = this.deviceIsMobile ? 'mobile' : 'keyboard';
     }
-    this.isMobile = this.effectiveInputMode === 'mobile';
-    this.mobileControls.setEnabled(this.isMobile);
-    this.robterSession.setMobile(this.isMobile);
+    const mobileControlsActive = this.deviceIsMobile && !this.gamepadConnected && this.effectiveInputMode === 'mobile';
+    this.isMobile = mobileControlsActive;
+    this.mobileControls.setEnabled(mobileControlsActive);
+    this.robterSession.setMobile(mobileControlsActive);
   }
 
   setInputMode(mode) {
