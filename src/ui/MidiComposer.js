@@ -3231,22 +3231,22 @@ export default class MidiComposer {
       }
       if (this.bounds.zoomOutX && this.pointInBounds(x, y, this.bounds.zoomOutX)) {
         const { minZoom, maxZoom } = this.getGridZoomLimitsX();
-        this.gridZoomX = clamp(this.gridZoomX - 0.1, minZoom, maxZoom);
+        this.gridZoomX = clamp(this.gridZoomX / 1.5, minZoom, maxZoom);
         return;
       }
       if (this.bounds.zoomInX && this.pointInBounds(x, y, this.bounds.zoomInX)) {
         const { minZoom, maxZoom } = this.getGridZoomLimitsX();
-        this.gridZoomX = clamp(this.gridZoomX + 0.1, minZoom, maxZoom);
+        this.gridZoomX = clamp(this.gridZoomX * 1.5, minZoom, maxZoom);
         return;
       }
       if (this.bounds.zoomOutY && this.pointInBounds(x, y, this.bounds.zoomOutY)) {
         const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridBounds?.rows || 1);
-        this.gridZoomY = clamp(this.gridZoomY - 0.1, minZoom, maxZoom);
+        this.gridZoomY = clamp(this.gridZoomY / 1.5, minZoom, maxZoom);
         return;
       }
       if (this.bounds.zoomInY && this.pointInBounds(x, y, this.bounds.zoomInY)) {
         const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridBounds?.rows || 1);
-        this.gridZoomY = clamp(this.gridZoomY + 0.1, minZoom, maxZoom);
+        this.gridZoomY = clamp(this.gridZoomY * 1.5, minZoom, maxZoom);
         return;
       }
       if (this.bounds.loopStartHandle && this.pointInBounds(x, y, this.bounds.loopStartHandle)) {
@@ -4606,6 +4606,10 @@ export default class MidiComposer {
     if (action === 'new') {
       this.song = createDefaultSong();
       this.ensureState();
+      this.gridOffsetInitialized = false;
+      this.gridZoomX = this.getDefaultGridZoomX();
+      this.gridZoomY = this.getDefaultGridZoomY();
+      this.gridZoomInitialized = false;
       this.fileMenuOpen = false;
       return;
     }
@@ -5045,7 +5049,7 @@ export default class MidiComposer {
   getGridZoomLimitsX() {
     const bars = Math.max(1, this.song?.loopBars || DEFAULT_GRID_BARS);
     return {
-      minZoom: 1,
+      minZoom: Math.max(1, bars / 12),
       maxZoom: Math.max(1, bars)
     };
   }
