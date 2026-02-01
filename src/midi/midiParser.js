@@ -122,6 +122,54 @@ export const buildMidiBytes = ({
   return midi.toArray();
 };
 
+export const buildMultiTrackMidiBytes = ({
+  tracks = [],
+  bpm = 120,
+  timeSignature = null,
+  keySignature = null
+} = {}) => {
+  const MidiClass = getMidiClass();
+  const midi = new MidiClass();
+  if (Number.isFinite(bpm)) {
+    midi.header.setTempo(bpm);
+  }
+  if (timeSignature?.beats && timeSignature?.unit) {
+    midi.header.timeSignatures.push({
+      ticks: 0,
+      timeSignature: [timeSignature.beats, timeSignature.unit]
+    });
+  }
+  if (keySignature?.key) {
+    midi.header.keySignatures.push({
+      ticks: 0,
+      key: keySignature.key,
+      scale: keySignature.scale || 'major'
+    });
+  }
+  if (!Array.isArray(tracks) || tracks.length === 0) {
+    midi.addTrack();
+    return midi.toArray();
+  }
+  tracks.forEach((trackData) => {
+    const track = midi.addTrack();
+    track.channel = Number.isFinite(trackData?.channel) ? trackData.channel : 0;
+    if (Number.isFinite(trackData?.program)) {
+      track.instrument.number = trackData.program;
+    }
+    (trackData?.notes || []).forEach((note) => {
+      const start = Math.max(0, note.tStartSec ?? note.time ?? 0);
+      const duration = Math.max(0.05, (note.tEndSec ?? start) - start);
+      track.addNote({
+        midi: note.midi,
+        time: start,
+        duration,
+        velocity: clamp(Number.isFinite(note.vel) ? note.vel : 0.8, 0.05, 1)
+      });
+    });
+  });
+  return midi.toArray();
+};
+
 export const parseMidi = (bytes, options = {}) => {
   const MidiClass = getMidiClass();
   const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);

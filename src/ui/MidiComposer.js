@@ -11,8 +11,8 @@ import {
   isDrumChannel,
   mapPitchToDrumRow
 } from '../audio/gm.js';
-import { parseMidi } from '../midi/midiParser.js';
-import { loadZipSongFromBytes } from '../songs/songLoader.js';
+import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/midiParser.js';
+import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -541,6 +541,7 @@ export default class MidiComposer {
     this.activeNotes = new Map();
     this.livePreviewNotes = new Set();
     this.dragState = null;
+    this.suppressNextGridTap = false;
     this.selection = new Set();
     this.clipboard = null;
     this.cursor = { tick: 0, pitch: 60 };
@@ -3232,21 +3233,25 @@ export default class MidiComposer {
       if (this.bounds.zoomOutX && this.pointInBounds(x, y, this.bounds.zoomOutX)) {
         const { minZoom, maxZoom } = this.getGridZoomLimitsX();
         this.gridZoomX = clamp(this.gridZoomX / 1.5, minZoom, maxZoom);
+        this.suppressNextGridTap = true;
         return;
       }
       if (this.bounds.zoomInX && this.pointInBounds(x, y, this.bounds.zoomInX)) {
         const { minZoom, maxZoom } = this.getGridZoomLimitsX();
         this.gridZoomX = clamp(this.gridZoomX * 1.5, minZoom, maxZoom);
+        this.suppressNextGridTap = true;
         return;
       }
       if (this.bounds.zoomOutY && this.pointInBounds(x, y, this.bounds.zoomOutY)) {
         const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridBounds?.rows || 1);
         this.gridZoomY = clamp(this.gridZoomY / 1.5, minZoom, maxZoom);
+        this.suppressNextGridTap = true;
         return;
       }
       if (this.bounds.zoomInY && this.pointInBounds(x, y, this.bounds.zoomInY)) {
         const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridBounds?.rows || 1);
         this.gridZoomY = clamp(this.gridZoomY * 1.5, minZoom, maxZoom);
+        this.suppressNextGridTap = true;
         return;
       }
       if (this.bounds.loopStartHandle && this.pointInBounds(x, y, this.bounds.loopStartHandle)) {
@@ -3417,6 +3422,11 @@ export default class MidiComposer {
       clearTimeout(this.longPressTimer);
       this.longPressTimer = null;
     }
+    if (this.suppressNextGridTap) {
+      this.suppressNextGridTap = false;
+      this.dragState = null;
+      return;
+    }
     if (this.dragState?.mode === 'touch-pan' || this.dragState?.mode === 'pan') {
       if (!this.dragState.moved) {
         const { cell } = this.dragState;
@@ -3534,6 +3544,7 @@ export default class MidiComposer {
     const nextOriginY = payload.y - gridCoordY * nextCellHeight;
     this.gridZoomX = nextZoomX;
     this.gridZoomY = nextZoomY;
+    this.suppressNextGridTap = true;
     this.gridOffset.x = nextOriginX - this.gridGesture.viewX;
     this.gridOffset.y = nextOriginY - this.gridGesture.viewY;
     this.ensureGridPanCapacity(this.gridOffset.x);
@@ -4573,8 +4584,14 @@ export default class MidiComposer {
       this.toolsMenuOpen = false;
       return;
     }
-    if (action === 'export') {
-      this.exportSong();
+    if (action === 'export-json') {
+      this.exportSongJson();
+    }
+    if (action === 'export-midi') {
+      this.exportSongMidi();
+    }
+    if (action === 'export-midi-zip') {
+      this.exportSongMidiZip();
     }
     if (action === 'import') {
       this.importSong();
@@ -4604,12 +4621,15 @@ export default class MidiComposer {
 
   handleFileMenu(action) {
     if (action === 'new') {
+      this.stopPlayback();
       this.song = createDefaultSong();
       this.ensureState();
       this.gridOffsetInitialized = false;
       this.gridZoomX = this.getDefaultGridZoomX();
       this.gridZoomY = this.getDefaultGridZoomY();
       this.gridZoomInitialized = false;
+      this.playheadTick = 0;
+      this.lastPlaybackTick = 0;
       this.fileMenuOpen = false;
       return;
     }
@@ -4623,8 +4643,18 @@ export default class MidiComposer {
       this.fileMenuOpen = false;
       return;
     }
-    if (action === 'export') {
-      this.exportSong();
+    if (action === 'export-json') {
+      this.exportSongJson();
+      this.fileMenuOpen = false;
+      return;
+    }
+    if (action === 'export-midi') {
+      this.exportSongMidi();
+      this.fileMenuOpen = false;
+      return;
+    }
+    if (action === 'export-midi-zip') {
+      this.exportSongMidiZip();
       this.fileMenuOpen = false;
       return;
     }
@@ -4782,15 +4812,107 @@ export default class MidiComposer {
     this.persist();
   }
 
-  exportSong() {
-    const data = JSON.stringify(this.song, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
+  getExportBaseName() {
+    return 'chainsaw-midi-song';
+  }
+
+  getExportKeySignature() {
+    if (!Number.isFinite(this.song?.key)) return null;
+    const keyLabel = KEY_LABELS[((this.song.key % 12) + 12) % 12] || 'C';
+    const scale = this.song.scale === 'minor' ? 'minor' : 'major';
+    return { key: keyLabel, scale };
+  }
+
+  buildExportTrackNotes(track, pattern, ticksPerSecond) {
+    if (!pattern?.notes?.length) return [];
+    return pattern.notes.map((note) => {
+      const startTick = Math.max(0, note.startTick ?? 0);
+      const durationTicks = Math.max(1, this.getEffectiveDurationTicks(note, track));
+      const endTick = startTick + durationTicks;
+      return {
+        tStartSec: startTick / ticksPerSecond,
+        tEndSec: endTick / ticksPerSecond,
+        midi: note.pitch,
+        vel: clamp(note.velocity ?? 0.8, 0.05, 1)
+      };
+    });
+  }
+
+  buildExportTracks() {
+    const tempo = this.song?.tempo || 120;
+    const ticksPerSecond = (tempo / 60) * this.ticksPerBeat;
+    return this.song.tracks
+      .map((track, index) => {
+        const pattern = track.patterns?.[this.selectedPatternIndex];
+        const notes = this.buildExportTrackNotes(track, pattern, ticksPerSecond);
+        return {
+          id: track.id || `track-${index + 1}`,
+          name: track.name || `Track ${index + 1}`,
+          channel: Number.isFinite(track.channel) ? track.channel : 0,
+          program: Number.isFinite(track.program) ? track.program : 0,
+          notes
+        };
+      })
+      .filter((track) => track.notes.length > 0);
+  }
+
+  downloadBlob(blob, filename) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'chainsaw-midi-song.json';
+    link.download = filename;
     link.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+
+  exportSongJson() {
+    const data = JSON.stringify(this.song, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    this.downloadBlob(blob, `${this.getExportBaseName()}.json`);
+  }
+
+  exportSongMidi() {
+    const tempo = this.song?.tempo || 120;
+    const timeSignature = this.song?.timeSignature || { beats: 4, unit: 4 };
+    const keySignature = this.getExportKeySignature();
+    const tracks = this.buildExportTracks();
+    const bytes = buildMultiTrackMidiBytes({
+      tracks,
+      bpm: tempo,
+      timeSignature,
+      keySignature
+    });
+    const blob = new Blob([bytes], { type: 'audio/midi' });
+    this.downloadBlob(blob, `${this.getExportBaseName()}.mid`);
+  }
+
+  async exportSongMidiZip() {
+    const tempo = this.song?.tempo || 120;
+    const timeSignature = this.song?.timeSignature || { beats: 4, unit: 4 };
+    const keySignature = this.getExportKeySignature();
+    const ticksPerSecond = (tempo / 60) * this.ticksPerBeat;
+    const stems = this.song.tracks
+      .map((track, index) => {
+        const pattern = track.patterns?.[this.selectedPatternIndex];
+        const notes = this.buildExportTrackNotes(track, pattern, ticksPerSecond);
+        if (!notes.length) return null;
+        const bytes = buildMidiBytes({
+          notes,
+          bpm: tempo,
+          timeSignature,
+          keySignature,
+          program: Number.isFinite(track.program) ? track.program : 0,
+          channel: Number.isFinite(track.channel) ? track.channel : 0
+        });
+        const safeName = String(track.name || `Track ${index + 1}`).trim() || `Track ${index + 1}`;
+        const sanitized = safeName.replace(/[\\/:*?"<>|]/g, '').trim() || `Track ${index + 1}`;
+        const filename = `(${sanitized}).mid`;
+        return { filename, bytes };
+      })
+      .filter(Boolean);
+    if (!stems.length) return;
+    const blob = await buildZipFromStems(stems);
+    this.downloadBlob(blob, `${this.getExportBaseName()}-stems.zip`);
   }
 
   importSong() {
@@ -7795,7 +7917,9 @@ export default class MidiComposer {
   drawToolsMenu(ctx, x, y) {
     const items = [
       { id: 'generate', label: 'Generate Pattern' },
-      { id: 'export', label: 'Export JSON' },
+      { id: 'export-json', label: 'Export JSON' },
+      { id: 'export-midi', label: 'Export MIDI' },
+      { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
       { id: 'import', label: 'Import MIDI/ZIP/JSON' },
       { id: 'demo', label: 'Play Demo' },
       { id: 'soundfont', label: 'SoundFont CDN' },
@@ -7830,7 +7954,9 @@ export default class MidiComposer {
       { id: 'new', label: 'New' },
       { id: 'save', label: 'Save' },
       { id: 'load', label: 'Load' },
-      { id: 'export', label: 'Export' },
+      { id: 'export-json', label: 'Export JSON' },
+      { id: 'export-midi', label: 'Export MIDI' },
+      { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
       { id: 'import', label: 'Import MIDI/ZIP/JSON' },
       { id: 'theme', label: 'Generate Theme' },
       { id: 'sample', label: 'Load Sample Song' }
