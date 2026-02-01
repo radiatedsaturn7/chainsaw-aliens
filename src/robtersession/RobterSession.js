@@ -2085,7 +2085,7 @@ export default class RobterSession {
       if (this.useStemPlayback && this.playMode === 'listen') {
         return;
       }
-      const pitches = this.resolveRequiredPitches(event.requiredInput, this.instrument);
+      const pitches = this.resolvePlaybackPitches(event.requiredInput, this.instrument);
       const duration = event.sustain ? event.sustain * this.songData.tempo.secondsPerBeat : 0.5;
       pitches.forEach((pitch) => {
         if (this.instrument === 'drums') {
@@ -2397,6 +2397,13 @@ export default class RobterSession {
     return applyRegister(pitches);
   }
 
+  resolvePlaybackPitches(requiredInput, instrument, { octaveOffset = REQUIRED_OCTAVE_OFFSET } = {}) {
+    if (Array.isArray(requiredInput?.playbackPitches) && requiredInput.playbackPitches.length) {
+      return requiredInput.playbackPitches;
+    }
+    return this.resolveRequiredPitches(requiredInput, instrument, { octaveOffset });
+  }
+
   advanceBandTracks(prevTime, nextTime) {
     if (!this.songData?.tracks || nextTime <= 0) return;
     INSTRUMENTS.forEach((track) => {
@@ -2407,7 +2414,7 @@ export default class RobterSession {
         const event = events[index];
         if (event.timeSec > nextTime) break;
         if (event.timeSec >= Math.max(0, prevTime)) {
-          const pitches = this.resolveRequiredPitches(event.requiredInput, track);
+          const pitches = this.resolvePlaybackPitches(event.requiredInput, track);
           const duration = event.sustain ? event.sustain * this.songData.tempo.secondsPerBeat : 0.5;
           pitches.forEach((pitch) => {
             if (track === 'drums') {
