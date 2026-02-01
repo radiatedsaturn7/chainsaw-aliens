@@ -451,7 +451,10 @@ export const transcribeMidiStem = ({
     'root-fallback': 0
   };
 
-  const pushNoteEvent = (note, { approxOverride = null, exactPitch = null } = {}) => {
+  const pushNoteEvent = (
+    note,
+    { approxOverride = null, exactPitch = null, useExactPitch = false } = {}
+  ) => {
     const startSec = note.tStartSec;
     const endSec = note.tEndSec;
     const duration = Math.max(0.05, endSec - startSec);
@@ -468,6 +471,7 @@ export const transcribeMidiStem = ({
     const derivedApprox = [degreeInfo.approxLevel, octaveInfo.approxLevel].find((entry) => entry !== 'exact') || 'exact';
     const approxLevel = approxOverride || derivedApprox;
     approxCounts[approxLevel] = (approxCounts[approxLevel] || 0) + 1;
+    const resolvedExactPitch = Number.isFinite(exactPitch) ? exactPitch : (useExactPitch ? note.midi : null);
     events.push({
       timeBeat,
       timeSec: startSec,
@@ -480,7 +484,8 @@ export const transcribeMidiStem = ({
         button: inputMap.button,
         modifiers: { ...inputMap.modifiers, dleft: degreeInfo.dleft },
         octaveUp: octaveInfo.octaveUp,
-        ...(Number.isFinite(exactPitch) ? { exactPitch } : {}),
+        ...(Number.isFinite(resolvedExactPitch) ? { exactPitch: resolvedExactPitch } : {}),
+        ...(useExactPitch ? { useExactPitch: true } : {}),
         playbackPitches: [note.midi]
       },
       sustain: duration / timing.secondsPerBeat,
@@ -536,7 +541,7 @@ export const transcribeMidiStem = ({
       if (options.collapseChords && cluster.notes.length > 1) {
         const { note, approxOverride } = pickSingleNoteFromCluster(cluster);
         if (note) {
-          pushNoteEvent(note, { approxOverride, exactPitch: note.midi });
+          pushNoteEvent(note, { approxOverride, exactPitch: note.midi, useExactPitch: true });
         }
       } else {
         cluster.notes.forEach((note) => pushNoteEvent(note, { exactPitch: note.midi }));
@@ -550,7 +555,11 @@ export const transcribeMidiStem = ({
       const chordInfo = analysis?.chordInfo;
       if (!chordInfo) {
         const sorted = [...cluster.notes].sort((a, b) => a.midi - b.midi);
-        pushNoteEvent(sorted[0], { approxOverride: 'root-fallback', exactPitch: sorted[0].midi });
+        pushNoteEvent(sorted[0], {
+          approxOverride: 'root-fallback',
+          exactPitch: sorted[0].midi,
+          useExactPitch: true
+        });
         return;
       }
       const degreeInfo = mapPitchToScaleDegree(rootPc, key);
@@ -568,7 +577,11 @@ export const transcribeMidiStem = ({
       if (!chordCandidates.length) {
         const chordInfo = detectChordType([chordRootPc, ...pcs.filter((pc) => pc !== chordRootPc)]);
         if (!chordInfo) {
-          pushNoteEvent(sorted[0], { approxOverride: 'root-fallback' });
+          pushNoteEvent(sorted[0], {
+            approxOverride: 'root-fallback',
+            exactPitch: sorted[0].midi,
+            useExactPitch: true
+          });
           return;
         }
         const degreeInfo = mapPitchToScaleDegree(chordRootPc, key);
