@@ -4159,13 +4159,15 @@ export default class MidiComposer {
   setLoopStartTick(tick) {
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
     const gridTicks = this.getGridTicks();
-    const maxStart = Math.max(0, gridTicks - ticksPerBar);
+    const loopEnd = typeof this.song.loopEndTick === 'number' ? this.song.loopEndTick : gridTicks;
+    const maxStart = Math.max(0, loopEnd - ticksPerBar);
     const snapped = clamp(Math.round(tick / ticksPerBar) * ticksPerBar, 0, maxStart);
     this.song.loopStartTick = snapped;
     if (typeof this.song.loopEndTick === 'number' && this.song.loopEndTick <= snapped) {
-      this.song.loopEndTick = clamp(snapped + ticksPerBar, ticksPerBar, gridTicks);
+      this.song.loopEndTick = Math.max(ticksPerBar, snapped + ticksPerBar);
+      this.ensureGridCapacity(this.song.loopEndTick);
     } else if (typeof this.song.loopEndTick === 'number' && this.song.loopEndTick > gridTicks) {
-      this.song.loopEndTick = gridTicks;
+      this.ensureGridCapacity(this.song.loopEndTick);
     }
     this.playheadTick = clamp(this.playheadTick, this.getLoopStartTick(), this.getLoopTicks());
     this.persist();
@@ -4173,11 +4175,11 @@ export default class MidiComposer {
 
   setLoopEndTick(tick) {
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
-    const gridTicks = this.getGridTicks();
     const start = typeof this.song.loopStartTick === 'number' ? this.song.loopStartTick : 0;
-    const minEnd = Math.min(gridTicks, start + ticksPerBar);
-    const snapped = clamp(Math.round(tick / ticksPerBar) * ticksPerBar, minEnd, gridTicks);
+    const minEnd = Math.max(ticksPerBar, start + ticksPerBar);
+    const snapped = Math.max(minEnd, Math.round(tick / ticksPerBar) * ticksPerBar);
     this.song.loopEndTick = snapped;
+    this.ensureGridCapacity(snapped);
     this.playheadTick = clamp(this.playheadTick, this.getLoopStartTick(), this.getLoopTicks());
     this.persist();
   }
@@ -5137,10 +5139,14 @@ export default class MidiComposer {
     if (typeof this.song.loopStartTick !== 'number' || typeof this.song.loopEndTick !== 'number') return;
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
     const loopLength = Math.max(1, this.song.loopEndTick - this.song.loopStartTick);
-    const gridTicks = this.song.loopBars * ticksPerBar;
-    const maxStart = Math.max(0, gridTicks - loopLength);
-    const nextStart = clamp(this.song.loopStartTick + deltaTicks, 0, maxStart);
-    const nextEnd = nextStart + loopLength;
+    let nextStart = this.song.loopStartTick + deltaTicks;
+    let nextEnd = nextStart + loopLength;
+    if (nextEnd > this.getGridTicks()) {
+      this.ensureGridCapacity(nextEnd);
+    }
+    const maxStart = Math.max(0, this.getGridTicks() - loopLength);
+    nextStart = clamp(nextStart, 0, maxStart);
+    nextEnd = nextStart + loopLength;
     this.song.loopStartTick = nextStart;
     this.song.loopEndTick = nextEnd;
     this.playheadTick = clamp(this.playheadTick, this.getLoopStartTick(), this.getLoopTicks());
