@@ -11,6 +11,8 @@ import {
   isDrumChannel,
   mapPitchToDrumRow
 } from '../audio/gm.js';
+import { parseMidi } from '../midi/midiParser.js';
+import { loadZipSongFromBytes } from '../songs/songLoader.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -732,22 +734,20 @@ export default class MidiComposer {
     this.gridZoomInitialized = false;
     this.fileInput = document.createElement('input');
     this.fileInput.type = 'file';
-    this.fileInput.accept = 'application/json';
+    this.fileInput.accept = '.json,.mid,.midi,.zip,application/json,audio/midi,application/zip';
     this.fileInput.style.display = 'none';
     document.body.appendChild(this.fileInput);
     this.fileInput.addEventListener('change', (event) => {
       const file = event.target.files?.[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const data = JSON.parse(reader.result);
-          this.applyImportedSong(data);
-        } catch (error) {
+      this.importSongFile(file)
+        .catch((error) => {
           console.warn('Invalid song file', error);
-        }
-      };
-      reader.readAsText(file);
+          window.alert('Failed to import song data.');
+        })
+        .finally(() => {
+          this.fileInput.value = '';
+        });
     });
     this.game.audio.ensureMidiSampler();
     this.audioSettings = this.loadAudioSettings();
@@ -1674,7 +1674,6 @@ export default class MidiComposer {
   }
 
   ensureGridCapacity(tickEnd) {
-    if (typeof this.song.loopEndTick === 'number') return;
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
     const requiredBars = Math.max(1, Math.ceil((tickEnd + 1) / ticksPerBar));
     if (requiredBars > this.song.loopBars) {
@@ -2630,7 +2629,7 @@ export default class MidiComposer {
         if ((moveX || moveY) && this.gamepadMoveCooldown <= 0) {
           const step = this.getQuantizeTicks();
           const range = this.getPitchRange();
-          const maxTick = this.getLoopTicks();
+          const maxTick = this.getGridTicks();
           this.cursor.tick = clamp(this.cursor.tick + moveX * step, 0, maxTick);
           this.cursor.pitch = clamp(this.cursor.pitch - moveY, range.min, range.max);
           this.gamepadMoveCooldown = 0.12;
@@ -3770,12 +3769,12 @@ export default class MidiComposer {
       : this.snapPitchToScale(pitch);
     const deltaTick = startTick - this.dragState.startTick;
     const deltaPitch = drumTrack ? 0 : snappedPitch - this.dragState.startPitch;
-    const loopTicks = this.getLoopTicks();
+    const gridTicks = this.getGridTicks();
     const drumDuration = this.getDrumHitDurationTicks();
     pattern.notes = pattern.notes.map((note) => {
       if (!this.selection.has(note.id)) return note;
       const original = this.dragState.originalNotes.find((entry) => entry.id === note.id);
-      const nextStart = clamp(original.startTick + deltaTick, 0, loopTicks - 1);
+      const nextStart = clamp(original.startTick + deltaTick, 0, gridTicks - 1);
       const nextPitch = drumTrack
         ? this.coercePitchForTrack(original.pitch, track, GM_DRUM_ROWS)
         : clamp(original.pitch + deltaPitch, this.getPitchRange().min, this.getPitchRange().max);
@@ -3802,7 +3801,7 @@ export default class MidiComposer {
     const track = this.getActiveTrack();
     if (!pattern || !this.dragState?.originalNotes || !track || isDrumTrack(track)) return;
     const snappedTick = this.snapTick(tick);
-    const loopTicks = this.getLoopTicks();
+    const gridTicks = this.getGridTicks();
     pattern.notes = pattern.notes.map((note) => {
       if (!this.selection.has(note.id)) return note;
       const original = this.dragState.originalNotes.find((entry) => entry.id === note.id);
@@ -3810,10 +3809,10 @@ export default class MidiComposer {
       let duration = original.durationTicks;
       if (this.dragState.edge === 'start') {
         const nextStart = clamp(snappedTick, 0, original.startTick + original.durationTicks - 1);
-        duration = clamp(original.startTick + original.durationTicks - nextStart, 1, loopTicks);
+        duration = clamp(original.startTick + original.durationTicks - nextStart, 1, gridTicks);
         startTick = nextStart;
       } else {
-        duration = clamp(snappedTick - original.startTick, 1, loopTicks - original.startTick);
+        duration = clamp(snappedTick - original.startTick, 1, gridTicks - original.startTick);
       }
       return { ...note, startTick, durationTicks: duration };
     });
@@ -3827,12 +3826,12 @@ export default class MidiComposer {
     const pattern = this.getActivePattern();
     const track = this.getActiveTrack();
     if (!pattern || !track || isDrumTrack(track)) return;
-    const loopTicks = this.getLoopTicks();
+    const gridTicks = this.getGridTicks();
     const selected = this.getSelectedNotes();
     if (!selected.length) return;
     pattern.notes = pattern.notes.map((note) => {
       if (!this.selection.has(note.id)) return note;
-      const duration = clamp(note.durationTicks + deltaTicks, 1, Math.max(1, loopTicks - note.startTick));
+      const duration = clamp(note.durationTicks + deltaTicks, 1, Math.max(1, gridTicks - note.startTick));
       return { ...note, durationTicks: duration };
     });
     const maxEndTick = Math.max(...this.getSelectedNotes().map((note) => note.startTick + this.getEffectiveDurationTicks(note, track)));
@@ -3927,15 +3926,14 @@ export default class MidiComposer {
     const track = this.getActiveTrack();
     if (!pattern || !track) return;
     const drumTrack = this.pastePreview.isDrum || isDrumTrack(track);
-    const loopTicks = this.getLoopTicks();
-    const hasLoopEnd = typeof this.song.loopEndTick === 'number';
+    const gridTicks = this.getGridTicks();
     const baseTick = this.pastePreview.tick;
     const basePitch = this.pastePreview.pitch;
     const drumDuration = this.getDrumHitDurationTicks();
     const newIds = [];
     this.clipboard.notes.forEach((note) => {
       const rawStart = baseTick + note.startTick;
-      const startTick = hasLoopEnd ? clamp(rawStart, 0, loopTicks - 1) : Math.max(0, rawStart);
+      const startTick = clamp(rawStart, 0, gridTicks - 1);
       const pitchValue = drumTrack
         ? this.coercePitchForTrack(note.pitchAbsolute ?? note.pitch, track, GM_DRUM_ROWS)
         : clamp(basePitch + note.pitch, this.getPitchRange().min, this.getPitchRange().max);
@@ -3997,15 +3995,14 @@ export default class MidiComposer {
     const track = this.getActiveTrack();
     if (!pattern || !track) return;
     const drumTrack = isDrumTrack(track);
-    const loopTicks = this.getLoopTicks();
-    const hasLoopEnd = typeof this.song.loopEndTick === 'number';
+    const gridTicks = this.getGridTicks();
     const drumDuration = this.getDrumHitDurationTicks();
     const span = Math.max(...notes.map((note) => note.startTick + this.getEffectiveDurationTicks(note, track)))
       - Math.min(...notes.map((note) => note.startTick));
     const newIds = [];
     notes.forEach((note) => {
       const rawStart = note.startTick + span;
-      const startTick = hasLoopEnd ? clamp(rawStart, 0, loopTicks - 1) : Math.max(0, rawStart);
+      const startTick = clamp(rawStart, 0, gridTicks - 1);
       const newNote = {
         ...note,
         id: uid(),
@@ -4800,6 +4797,135 @@ export default class MidiComposer {
     if (this.fileInput) {
       this.fileInput.click();
     }
+  }
+
+  async importSongFile(file) {
+    const name = file?.name || '';
+    const lowerName = name.toLowerCase();
+    if (lowerName.endsWith('.mid') || lowerName.endsWith('.midi')) {
+      const bytes = await file.arrayBuffer();
+      const midiData = parseMidi(bytes);
+      const song = this.buildSongFromMidiSources([{
+        label: name.replace(/\.(mid|midi)$/i, '') || 'MIDI Track',
+        midiData
+      }]);
+      this.applyImportedSong(song);
+      return;
+    }
+    if (lowerName.endsWith('.zip')) {
+      const bytes = await file.arrayBuffer();
+      const { stems } = await loadZipSongFromBytes(bytes);
+      const sources = [];
+      stems.forEach((stem, instrument) => {
+        if (!stem?.bytes) return;
+        sources.push({
+          label: instrument || stem.filename?.replace(/\.mid(i)?$/i, '') || 'MIDI Stem',
+          midiData: parseMidi(stem.bytes)
+        });
+      });
+      if (sources.length === 0) {
+        throw new Error('No MIDI stems found in zip.');
+      }
+      const song = this.buildSongFromMidiSources(sources);
+      this.applyImportedSong(song);
+      return;
+    }
+    const text = await file.text();
+    const data = JSON.parse(text);
+    this.applyImportedSong(data);
+  }
+
+  buildSongFromMidiSources(sources) {
+    const baseSong = createDefaultSong();
+    const first = sources.find((entry) => entry?.midiData) || {};
+    const tempo = Number.isFinite(first.midiData?.bpm) ? first.midiData.bpm : baseSong.tempo;
+    const timeSignature = first.midiData?.timeSignature || baseSong.timeSignature;
+    const ticksPerBar = this.ticksPerBeat * (timeSignature?.beats || 4);
+    const ticksPerSecond = (tempo / 60) * this.ticksPerBeat;
+    const tracks = [];
+    let maxEndTick = 0;
+    let colorIndex = 0;
+
+    const toTick = (seconds) => Math.max(0, Math.round(seconds * ticksPerSecond));
+    sources.forEach((source) => {
+      const midiData = source.midiData;
+      if (!midiData) return;
+      const trackGroups = midiData.tracks?.length
+        ? midiData.tracks
+        : [{
+          trackIndex: 0,
+          channel: midiData.notes.find((note) => Number.isFinite(note.channel))?.channel ?? 0,
+          program: null,
+          notes: midiData.notes
+        }];
+      trackGroups.forEach((group, groupIndex) => {
+        if (!group?.notes?.length) return;
+        const isDrum = isDrumChannel(group.channel ?? 0);
+        const program = Number.isFinite(group.program) ? group.program : 0;
+        const groupLabel = source.label || `Track ${tracks.length + 1}`;
+        const name = trackGroups.length > 1 ? `${groupLabel} ${groupIndex + 1}` : groupLabel;
+        const notes = group.notes.map((note) => {
+          const startTick = toTick(note.tStartSec);
+          const endTick = Math.max(startTick + 1, toTick(note.tEndSec));
+          const durationTicks = Math.max(1, endTick - startTick);
+          maxEndTick = Math.max(maxEndTick, endTick);
+          return {
+            id: uid(),
+            startTick,
+            durationTicks,
+            pitch: isDrum ? coerceDrumPitch(note.midi, GM_DRUM_ROWS) : note.midi,
+            velocity: clamp(note.vel ?? 0.8, 0.1, 1)
+          };
+        });
+        const track = {
+          id: `track-${Date.now()}-${tracks.length}`,
+          name,
+          channel: isDrum ? GM_DRUM_CHANNEL : (Number.isFinite(group.channel) ? group.channel : 0),
+          program,
+          bankMSB: isDrum ? DRUM_BANK_MSB : DEFAULT_BANK_MSB,
+          bankLSB: isDrum ? DRUM_BANK_LSB : DEFAULT_BANK_LSB,
+          volume: 0.8,
+          pan: 0,
+          mute: false,
+          solo: false,
+          instrument: isDrum ? 'drums' : undefined,
+          instrumentFamily: isDrum ? 'Drums' : this.getProgramFamilyLabel(program),
+          color: TRACK_COLORS[colorIndex % TRACK_COLORS.length],
+          patterns: [{
+            id: `pattern-${uid()}`,
+            bars: baseSong.loopBars,
+            notes
+          }]
+        };
+        tracks.push(track);
+        colorIndex += 1;
+      });
+    });
+
+    if (tracks.length === 0) {
+      return baseSong;
+    }
+
+    const loopBars = Math.max(DEFAULT_GRID_BARS, Math.ceil((maxEndTick || ticksPerBar) / ticksPerBar));
+    tracks.forEach((track) => {
+      track.patterns.forEach((pattern) => {
+        pattern.bars = loopBars;
+      });
+    });
+
+    return {
+      ...baseSong,
+      tempo,
+      timeSignature: {
+        beats: timeSignature?.beats || 4,
+        unit: timeSignature?.unit || 4
+      },
+      loopBars,
+      loopStartTick: 0,
+      loopEndTick: loopBars * ticksPerBar,
+      loopEnabled: true,
+      tracks
+    };
   }
 
   applyImportedSong(data) {
@@ -6893,7 +7019,7 @@ export default class MidiComposer {
   drawPatternEditor(ctx, x, y, w, h, track, pattern, options = {}) {
     if (!track || !pattern) return;
     const simplified = options.simplified;
-    const loopTicks = this.getLoopTicks();
+    const gridTicks = this.getGridTicks();
     const drumGrid = isDrumTrack(track);
     const rows = drumGrid
       ? this.getDrumRows().length
@@ -6902,7 +7028,7 @@ export default class MidiComposer {
     const labelW = options.hideLabels ? 0 : (isMobile ? 76 : 96);
     const rulerH = simplified ? 0 : DEFAULT_RULER_HEIGHT;
     const viewW = w - labelW;
-    const baseCellWidth = viewW / loopTicks;
+    const baseCellWidth = viewW / gridTicks;
     const baseVisibleRows = this.getBaseVisibleRows(rows);
     const { minZoom, maxZoom } = this.getGridZoomLimits(rows);
     const zoomXLimits = this.getGridZoomLimitsX();
@@ -6919,7 +7045,7 @@ export default class MidiComposer {
     }
     const cellWidth = baseCellWidth * this.gridZoomX;
     let cellHeight = baseCellHeight * this.gridZoomY;
-    const totalGridW = cellWidth * loopTicks;
+    const totalGridW = cellWidth * gridTicks;
     if (drumGrid) {
       this.gridZoomY = 1;
       cellHeight = Math.max(24, (viewH - 4) / Math.max(1, rows));
@@ -6937,7 +7063,7 @@ export default class MidiComposer {
       y: y + rulerH,
       w: viewW,
       h: viewH,
-      cols: loopTicks,
+      cols: gridTicks,
       rows,
       cellWidth,
       cellHeight,
@@ -6957,13 +7083,13 @@ export default class MidiComposer {
     }
 
     if (!simplified) {
-      this.drawRuler(ctx, x + labelW, y, viewW, rulerH, loopTicks);
+      this.drawRuler(ctx, x + labelW, y, viewW, rulerH, gridTicks);
     }
     ctx.save();
     ctx.beginPath();
     ctx.rect(x + labelW, y + rulerH, viewW, viewH);
     ctx.clip();
-    this.drawGrid(ctx, track, pattern, loopTicks, options);
+    this.drawGrid(ctx, track, pattern, gridTicks, options);
     if (!simplified) {
       this.drawPlayhead(ctx);
       this.drawCursor(ctx);
@@ -7701,7 +7827,7 @@ export default class MidiComposer {
     const items = [
       { id: 'generate', label: 'Generate Pattern' },
       { id: 'export', label: 'Export JSON' },
-      { id: 'import', label: 'Import JSON' },
+      { id: 'import', label: 'Import MIDI/ZIP/JSON' },
       { id: 'demo', label: 'Play Demo' },
       { id: 'soundfont', label: 'SoundFont CDN' },
       { id: 'soundfont-reset', label: 'SoundFont Default' },
@@ -7736,7 +7862,7 @@ export default class MidiComposer {
       { id: 'save', label: 'Save' },
       { id: 'load', label: 'Load' },
       { id: 'export', label: 'Export' },
-      { id: 'import', label: 'Import' },
+      { id: 'import', label: 'Import MIDI/ZIP/JSON' },
       { id: 'theme', label: 'Generate Theme' },
       { id: 'sample', label: 'Load Sample Song' }
     ];
