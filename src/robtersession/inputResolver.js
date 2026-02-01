@@ -176,6 +176,23 @@ export const resolveRequiredInputToMusicalAction = ({ robterspiel, instrument, o
     };
   }
 
+  if (requiredInput.useExactPitch) {
+    const exactPitches = Array.isArray(requiredInput.exactPitches)
+      ? requiredInput.exactPitches
+      : (Number.isFinite(requiredInput.exactPitch) ? [requiredInput.exactPitch] : []);
+    if (exactPitches.length) {
+      const label = exactPitches.length > 1
+        ? exactPitches.map((pitch) => formatPitchLabel(pitch)).join('/')
+        : formatPitchLabel(exactPitches[0]);
+      return {
+        kind: requiredInput.mode === 'chord' ? 'chord' : 'note',
+        pitches: exactPitches,
+        label,
+        debug: { exact: true }
+      };
+    }
+  }
+
   if (requiredInput.mode === 'pattern') {
     const pitch = resolvePatternPitch(robterspiel, requiredInput, octaveOffset);
     const [registered] = applyRegister([pitch], requiredInput);

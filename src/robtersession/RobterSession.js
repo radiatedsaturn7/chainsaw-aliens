@@ -2301,6 +2301,14 @@ export default class RobterSession {
       const drumMap = [36, 38, 42, 49];
       return [drumMap[requiredInput.lane] ?? 38];
     }
+    if (requiredInput.useExactPitch) {
+      if (Array.isArray(requiredInput.exactPitches) && requiredInput.exactPitches.length) {
+        return requiredInput.exactPitches;
+      }
+      if (Number.isFinite(requiredInput.exactPitch)) {
+        return [requiredInput.exactPitch];
+      }
+    }
     if (requiredInput.mode === 'pattern') {
       const chordQuality = requiredInput.chordQuality || 'major';
       const chordType = requiredInput.chordType || 'triad';
@@ -2535,7 +2543,18 @@ export default class RobterSession {
     const performanceEvents = this.useStemPlayback
       ? reducedEvents
       : this.applyPerformanceDifficulty(reducedEvents);
-    this.events = performanceEvents.map((event) => ({
+    const useExactPitch = this.performanceDifficulty === 'expert';
+    const adjustedEvents = performanceEvents.map((event) => {
+      if (!useExactPitch) return event;
+      const requiredInput = event.requiredInput ? { ...event.requiredInput } : null;
+      if (!requiredInput || requiredInput.mode === 'drum') return event;
+      if (Number.isFinite(requiredInput.exactPitch) || Array.isArray(requiredInput.exactPitches)) {
+        requiredInput.useExactPitch = true;
+        return { ...event, requiredInput };
+      }
+      return event;
+    });
+    this.events = adjustedEvents.map((event) => ({
       ...event,
       hit: false,
       judged: false,
