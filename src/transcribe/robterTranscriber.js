@@ -451,7 +451,7 @@ export const transcribeMidiStem = ({
     'root-fallback': 0
   };
 
-  const pushNoteEvent = (note, { approxOverride = null } = {}) => {
+  const pushNoteEvent = (note, { approxOverride = null, exactPitch = null } = {}) => {
     const startSec = note.tStartSec;
     const endSec = note.tEndSec;
     const duration = Math.max(0.05, endSec - startSec);
@@ -479,7 +479,8 @@ export const transcribeMidiStem = ({
         degree: 1,
         button: inputMap.button,
         modifiers: { ...inputMap.modifiers, dleft: degreeInfo.dleft },
-        octaveUp: octaveInfo.octaveUp
+        octaveUp: octaveInfo.octaveUp,
+        ...(Number.isFinite(exactPitch) ? { exactPitch } : {})
       },
       sustain: duration / timing.secondsPerBeat,
       originalNotes: [note.midi],
@@ -524,8 +525,9 @@ export const transcribeMidiStem = ({
       return;
     }
 
+    const exactClusterPitches = cluster.notes.map((note) => note.midi);
     if (cluster.arpeggio) {
-      cluster.notes.forEach((note) => pushNoteEvent(note));
+      cluster.notes.forEach((note) => pushNoteEvent(note, { exactPitch: note.midi }));
       return;
     }
 
@@ -533,10 +535,10 @@ export const transcribeMidiStem = ({
       if (options.collapseChords && cluster.notes.length > 1) {
         const { note, approxOverride } = pickSingleNoteFromCluster(cluster);
         if (note) {
-          pushNoteEvent(note, { approxOverride });
+          pushNoteEvent(note, { approxOverride, exactPitch: note.midi });
         }
       } else {
-        cluster.notes.forEach((note) => pushNoteEvent(note));
+        cluster.notes.forEach((note) => pushNoteEvent(note, { exactPitch: note.midi }));
       }
       return;
     }
@@ -547,7 +549,7 @@ export const transcribeMidiStem = ({
       const chordInfo = analysis?.chordInfo;
       if (!chordInfo) {
         const sorted = [...cluster.notes].sort((a, b) => a.midi - b.midi);
-        pushNoteEvent(sorted[0], { approxOverride: 'root-fallback' });
+        pushNoteEvent(sorted[0], { approxOverride: 'root-fallback', exactPitch: sorted[0].midi });
         return;
       }
       const degreeInfo = mapPitchToScaleDegree(rootPc, key);
@@ -586,7 +588,8 @@ export const transcribeMidiStem = ({
             degree: degreeInfo.degree,
             button: inputMap.button,
             modifiers: inputMap.modifiers,
-            chordType
+            chordType,
+            exactPitches: exactClusterPitches
           },
           sustain: duration / timing.secondsPerBeat,
           originalNotes: cluster.notes.map((note) => note.midi),
@@ -637,7 +640,8 @@ export const transcribeMidiStem = ({
           degree: degreeInfo.degree,
           button: chosen.inputMap.button,
           modifiers: chosen.inputMap.modifiers,
-          chordType: chosen.chordType
+          chordType: chosen.chordType,
+          exactPitches: exactClusterPitches
         },
         sustain: duration / timing.secondsPerBeat,
         originalNotes: cluster.notes.map((note) => note.midi),
@@ -652,7 +656,7 @@ export const transcribeMidiStem = ({
       return;
     }
 
-    pushNoteEvent(cluster.notes[0]);
+    pushNoteEvent(cluster.notes[0], { exactPitch: cluster.notes[0].midi });
   });
 
   const orderedEvents = events.sort((a, b) => a.timeSec - b.timeSec);
