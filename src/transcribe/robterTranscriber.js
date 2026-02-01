@@ -480,7 +480,8 @@ export const transcribeMidiStem = ({
         button: inputMap.button,
         modifiers: { ...inputMap.modifiers, dleft: degreeInfo.dleft },
         octaveUp: octaveInfo.octaveUp,
-        ...(Number.isFinite(exactPitch) ? { exactPitch } : {})
+        ...(Number.isFinite(exactPitch) ? { exactPitch } : {}),
+        playbackPitches: [note.midi]
       },
       sustain: duration / timing.secondsPerBeat,
       originalNotes: [note.midi],
@@ -589,7 +590,8 @@ export const transcribeMidiStem = ({
             button: inputMap.button,
             modifiers: inputMap.modifiers,
             chordType,
-            exactPitches: exactClusterPitches
+            exactPitches: exactClusterPitches,
+            playbackPitches: exactClusterPitches
           },
           sustain: duration / timing.secondsPerBeat,
           originalNotes: cluster.notes.map((note) => note.midi),
@@ -641,7 +643,8 @@ export const transcribeMidiStem = ({
           button: chosen.inputMap.button,
           modifiers: chosen.inputMap.modifiers,
           chordType: chosen.chordType,
-          exactPitches: exactClusterPitches
+          exactPitches: exactClusterPitches,
+          playbackPitches: exactClusterPitches
         },
         sustain: duration / timing.secondsPerBeat,
         originalNotes: cluster.notes.map((note) => note.midi),
