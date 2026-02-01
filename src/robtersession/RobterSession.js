@@ -4591,6 +4591,24 @@ export default class RobterSession {
         if (entry) {
           this.performanceDifficulty = entry.id;
         }
+        if (this.difficultyReturnState === 'stem-play') {
+          const stemName = this.pendingStemName;
+          const action = this.pendingStemAction;
+          this.pendingStemAction = null;
+          this.pendingStemName = null;
+          if (stemName) {
+            const prepared = this.prepareStemSong(stemName);
+            if (prepared) {
+              const playMode = action === 1 ? 'listen' : 'play';
+              this.startSong({ playMode });
+              this.audio.ui();
+              return;
+            }
+          }
+          this.state = 'stem-select';
+          this.audio.ui();
+          return;
+        }
         if (this.difficultyReturnState === 'setlist') {
           this.selectionIndex = 0;
         }
