@@ -135,6 +135,8 @@ const MIN_VISIBLE_ROWS = 5;
 const MAX_VISIBLE_ROWS = 60;
 const DEFAULT_GRID_TOP_PITCH = 59;
 const DEFAULT_RULER_HEIGHT = 32;
+const LOOP_HANDLE_MIN_WIDTH = 38;
+const LOOP_HANDLE_MIN_HEIGHT = 22;
 const FILE_MENU_WIDTH = 240;
 const DEFAULT_LOOP_BARS = 4;
 const SONG_LIBRARY_KEY = 'chainsaw-midi-library';
@@ -5249,7 +5251,7 @@ export default class MidiComposer {
     }
     const minX = Math.min(0, viewW - gridW);
     const minY = Math.min(0, viewH - gridH);
-    this.gridOffset.x = clamp(this.gridOffset.x, minX, 0);
+    this.gridOffset.x = Math.max(this.gridOffset.x, minX);
     this.gridOffset.y = clamp(this.gridOffset.y, minY, 0);
   }
 
@@ -7130,8 +7132,8 @@ export default class MidiComposer {
       const loopEndX = originX + this.song.loopEndTick * cellWidth;
       ctx.fillStyle = 'rgba(255,225,106,0.25)';
       ctx.fillRect(loopStartX, y, loopEndX - loopStartX, h);
-      const handleW = Math.max(26, Math.round(h * 0.9));
-      const handleH = Math.max(14, Math.round(h * 0.8));
+      const handleW = Math.max(LOOP_HANDLE_MIN_WIDTH, Math.round(h * 1.1));
+      const handleH = Math.max(LOOP_HANDLE_MIN_HEIGHT, Math.round(h * 0.9));
       const handleY = y + Math.max(1, Math.round((h - handleH) / 2));
       const gap = 3;
       const minX = originX;
@@ -7396,8 +7398,8 @@ export default class MidiComposer {
       if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
         const loopStartX = originX + this.song.loopStartTick * cellWidth;
         const loopEndX = originX + this.song.loopEndTick * cellWidth;
-        const handleW = Math.max(26, Math.round(DEFAULT_RULER_HEIGHT * 0.9));
-        const handleH = Math.max(14, Math.round(DEFAULT_RULER_HEIGHT * 0.8));
+        const handleW = Math.max(LOOP_HANDLE_MIN_WIDTH, Math.round(DEFAULT_RULER_HEIGHT * 1.1));
+        const handleH = Math.max(LOOP_HANDLE_MIN_HEIGHT, Math.round(DEFAULT_RULER_HEIGHT * 0.9));
         const handleY = this.gridBounds.y + Math.max(1, Math.round((this.gridBounds.h - handleH) / 2));
         const gap = 4;
         const minX = originX;
