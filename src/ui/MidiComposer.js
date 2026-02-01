@@ -1688,6 +1688,27 @@ export default class MidiComposer {
     }
   }
 
+  ensureGridPanCapacity(desiredOffsetX) {
+    if (!this.gridBounds) return;
+    if (desiredOffsetX >= 0) return;
+    const viewW = this.gridBounds.w;
+    const cellWidth = this.gridBounds.cellWidth;
+    const requiredGridW = viewW - desiredOffsetX;
+    const requiredTicks = Math.ceil(requiredGridW / cellWidth);
+    if (requiredTicks > this.getGridTicks()) {
+      this.ensureGridCapacity(Math.max(0, requiredTicks - 1));
+    }
+  }
+
+  getEditableGridTick() {
+    return this.getGridTicks();
+  }
+
+  getExpandedGridWidth() {
+    if (!this.gridBounds) return 0;
+    return this.gridBounds.cellWidth * this.getGridTicks();
+  }
+
   getScaleSteps() {
     const scale = SCALE_LIBRARY.find((entry) => entry.id === this.song.scale) || SCALE_LIBRARY[0];
     return scale.steps;
@@ -2570,8 +2591,8 @@ export default class MidiComposer {
         if (ltPressed) {
           this.playheadTick = clamp(
             this.playheadTick - tickStep,
-            this.getLoopStartTick(),
-            this.getLoopTicks()
+            0,
+            this.getEditableGridTick()
           );
           if (this.scrubAudition) {
             this.previewNotesAtTick(this.playheadTick);
@@ -2580,8 +2601,8 @@ export default class MidiComposer {
         if (rtPressed) {
           this.playheadTick = clamp(
             this.playheadTick + tickStep,
-            this.getLoopStartTick(),
-            this.getLoopTicks()
+            0,
+            this.getEditableGridTick()
           );
           if (this.scrubAudition) {
             this.previewNotesAtTick(this.playheadTick);
@@ -2597,10 +2618,11 @@ export default class MidiComposer {
           const panSpeed = 420;
           this.gridOffset.x -= panX * panSpeed * dt;
           this.gridOffset.y -= panY * panSpeed * dt;
+          this.ensureGridPanCapacity(this.gridOffset.x);
           this.clampGridOffset(
             this.gridBounds.w,
             this.gridBounds.h,
-            this.gridBounds.gridW,
+            this.getExpandedGridWidth(),
             this.gridBounds.gridH
           );
         }
@@ -3279,7 +3301,7 @@ export default class MidiComposer {
             this.setLoopStartTick(tick);
           }, 450);
         }
-        this.playheadTick = clamp(tick, this.getLoopStartTick(), this.getLoopTicks());
+        this.playheadTick = clamp(tick, 0, this.getEditableGridTick());
         if (this.scrubAudition) {
           this.previewNotesAtTick(this.playheadTick);
         }
@@ -3332,14 +3354,16 @@ export default class MidiComposer {
       if (this.dragState.moved) {
         this.gridOffset.x = this.dragState.startOffsetX + dx;
         this.gridOffset.y = this.dragState.startOffsetY + dy;
-        const { gridW, gridH, w, h } = this.gridBounds;
+        this.ensureGridPanCapacity(this.gridOffset.x);
+        const { gridH, w, h } = this.gridBounds;
+        const gridW = this.getExpandedGridWidth();
         this.clampGridOffset(w, h, gridW, gridH);
       }
       return;
     }
     if (this.dragState.mode === 'scrub') {
       const tick = this.getTickFromX(payload.x);
-      this.playheadTick = clamp(tick, this.getLoopStartTick(), this.getLoopTicks());
+      this.playheadTick = clamp(tick, 0, this.getEditableGridTick());
       if (this.scrubAudition) {
         this.previewNotesAtTick(this.playheadTick);
       }
@@ -3380,7 +3404,9 @@ export default class MidiComposer {
       if (this.dragState.moved) {
         this.gridOffset.x = this.dragState.startOffsetX + dx;
         this.gridOffset.y = this.dragState.startOffsetY + dy;
-        const { gridW, gridH, w, h } = this.gridBounds;
+        this.ensureGridPanCapacity(this.gridOffset.x);
+        const { gridH, w, h } = this.gridBounds;
+        const gridW = this.getExpandedGridWidth();
         this.clampGridOffset(w, h, gridW, gridH);
       }
     } else if (this.dragState.mode === 'paste-preview') {
@@ -3465,10 +3491,16 @@ export default class MidiComposer {
     const delta = payload.deltaY;
     if (modifiers.shift) {
       this.gridOffset.x -= delta;
+      this.ensureGridPanCapacity(this.gridOffset.x);
     } else {
       this.gridOffset.y -= delta;
     }
-    this.clampGridOffset(this.gridBounds.w, this.gridBounds.h, this.gridBounds.gridW, this.gridBounds.gridH);
+    this.clampGridOffset(
+      this.gridBounds.w,
+      this.gridBounds.h,
+      this.getExpandedGridWidth(),
+      this.gridBounds.gridH
+    );
   }
 
   shouldHandleGestureStart(payload) {
@@ -3525,6 +3557,7 @@ export default class MidiComposer {
     this.gridZoomY = nextZoomY;
     this.gridOffset.x = nextOriginX - this.gridGesture.viewX;
     this.gridOffset.y = nextOriginY - this.gridGesture.viewY;
+    this.ensureGridPanCapacity(this.gridOffset.x);
     const nextGridW = nextCellWidth * this.gridGesture.cols;
     const nextGridH = nextCellHeight * this.gridGesture.rows;
     this.clampGridOffset(this.gridGesture.viewW, this.gridGesture.viewH, nextGridW, nextGridH);
@@ -4133,7 +4166,7 @@ export default class MidiComposer {
   jumpPlayheadBars(delta) {
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
     const next = this.playheadTick + ticksPerBar * delta;
-    this.playheadTick = clamp(next, this.getLoopStartTick(), this.getLoopTicks());
+    this.playheadTick = clamp(next, 0, this.getEditableGridTick());
   }
 
   togglePlayback() {
