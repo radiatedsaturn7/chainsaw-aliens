@@ -129,14 +129,14 @@ const DRUM_BANK_MSB = GM_DRUM_BANK_MSB;
 const DRUM_BANK_LSB = GM_DRUM_BANK_LSB;
 
 const TRACK_COLORS = ['#4fb7ff', '#ff9c42', '#55d68a', '#b48dff', '#ff6a6a', '#43d5d0'];
-const DEFAULT_GRID_BARS = 8;
+const DEFAULT_GRID_BARS = 16;
 const DEFAULT_VISIBLE_ROWS = 12;
 const MIN_VISIBLE_ROWS = 5;
 const MAX_VISIBLE_ROWS = 60;
 const DEFAULT_GRID_TOP_PITCH = 59;
 const DEFAULT_RULER_HEIGHT = 32;
-const LOOP_HANDLE_MIN_WIDTH = 38;
-const LOOP_HANDLE_MIN_HEIGHT = 22;
+const LOOP_HANDLE_MIN_WIDTH = 54;
+const LOOP_HANDLE_MIN_HEIGHT = 30;
 const FILE_MENU_WIDTH = 240;
 const DEFAULT_LOOP_BARS = 4;
 const SONG_LIBRARY_KEY = 'chainsaw-midi-library';
@@ -3272,15 +3272,6 @@ export default class MidiComposer {
           this.setLoopEndTick(tick);
           return;
         }
-        if (this.isInsideLoopRegion(x)) {
-          this.dragState = {
-            mode: 'loop-shift',
-            startTick: tick,
-            originStart: this.song.loopStartTick,
-            originEnd: this.song.loopEndTick
-          };
-          return;
-        }
         if (this.placingStartMarker) {
           this.setLoopStartTick(tick);
           this.placingStartMarker = false;
@@ -3375,18 +3366,6 @@ export default class MidiComposer {
     }
     if (this.dragState.mode === 'loop-end') {
       this.setLoopEndTick(this.getTickFromX(payload.x));
-      return;
-    }
-    if (this.dragState.mode === 'loop-shift') {
-      const tick = this.getTickFromX(payload.x);
-      const delta = tick - this.dragState.startTick;
-      const start = this.dragState.originStart;
-      const end = this.dragState.originEnd;
-      if (typeof start === 'number' && typeof end === 'number') {
-        this.song.loopStartTick = start;
-        this.song.loopEndTick = end;
-      }
-      this.shiftLoopRegion(delta);
       return;
     }
     if (!this.pointInBounds(payload.x, payload.y, this.gridBounds)) return;
@@ -3572,26 +3551,6 @@ export default class MidiComposer {
     const modifiers = this.getModifiers();
     const track = this.getActiveTrack();
     const drumTrack = isDrumTrack(track);
-    if (this.song.loopEnabled && this.bounds.loopShiftStartHandle && this.pointInBounds(x, y, this.bounds.loopShiftStartHandle)) {
-      const tick = this.getTickFromX(x);
-      this.dragState = {
-        mode: 'loop-shift',
-        startTick: tick,
-        originStart: this.song.loopStartTick,
-        originEnd: this.song.loopEndTick
-      };
-      return;
-    }
-    if (this.song.loopEnabled && this.bounds.loopShiftEndHandle && this.pointInBounds(x, y, this.bounds.loopShiftEndHandle)) {
-      const tick = this.getTickFromX(x);
-      this.dragState = {
-        mode: 'loop-shift',
-        startTick: tick,
-        originStart: this.song.loopStartTick,
-        originEnd: this.song.loopEndTick
-      };
-      return;
-    }
     if (this.song.loopEnabled && this.isNearLoopMarker(x, 'start')) {
       this.dragState = { mode: 'loop-start' };
       this.setLoopStartTick(this.getTickFromX(x));
@@ -7171,8 +7130,8 @@ export default class MidiComposer {
       const loopEndX = originX + this.song.loopEndTick * cellWidth;
       ctx.fillStyle = 'rgba(255,225,106,0.25)';
       ctx.fillRect(loopStartX, y, loopEndX - loopStartX, h);
-      const handleW = Math.max(LOOP_HANDLE_MIN_WIDTH, Math.round(h * 1.1));
-      const handleH = Math.max(LOOP_HANDLE_MIN_HEIGHT, Math.round(h * 0.9));
+      const handleW = Math.max(LOOP_HANDLE_MIN_WIDTH, Math.round(h * 1.4));
+      const handleH = Math.max(LOOP_HANDLE_MIN_HEIGHT, Math.round(h * 1.1));
       const handleY = y + Math.max(1, Math.round((h - handleH) / 2));
       const gap = 3;
       const minX = originX;
@@ -7434,43 +7393,8 @@ export default class MidiComposer {
     }
 
     if (!simplified) {
-      if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
-        const loopStartX = originX + this.song.loopStartTick * cellWidth;
-        const loopEndX = originX + this.song.loopEndTick * cellWidth;
-        const handleW = Math.max(LOOP_HANDLE_MIN_WIDTH, Math.round(DEFAULT_RULER_HEIGHT * 1.1));
-        const handleH = Math.max(LOOP_HANDLE_MIN_HEIGHT, Math.round(DEFAULT_RULER_HEIGHT * 0.9));
-        const handleY = this.gridBounds.y + Math.max(1, Math.round((this.gridBounds.h - handleH) / 2));
-        const gap = 4;
-        const minX = originX;
-        const maxX = originX + loopTicks * cellWidth - handleW;
-        const startHandleX = clamp(loopStartX - handleW - gap, minX, maxX);
-        const endHandleX = clamp(loopEndX + gap, minX, maxX);
-        this.bounds.loopShiftStartHandle = { x: startHandleX, y: handleY, w: handleW, h: handleH };
-        this.bounds.loopShiftEndHandle = { x: endHandleX, y: handleY, w: handleW, h: handleH };
-        ctx.fillStyle = '#55d68a';
-        ctx.fillRect(startHandleX, handleY, handleW, handleH);
-        ctx.fillStyle = '#ff6a6a';
-        ctx.fillRect(endHandleX, handleY, handleW, handleH);
-        ctx.strokeStyle = 'rgba(0,0,0,0.7)';
-        ctx.strokeRect(startHandleX, handleY, handleW, handleH);
-        ctx.strokeRect(endHandleX, handleY, handleW, handleH);
-        ctx.strokeStyle = 'rgba(0,0,0,0.55)';
-        [this.bounds.loopShiftStartHandle, this.bounds.loopShiftEndHandle].forEach((handle) => {
-          const ridgeXLeft = handle.x + Math.round(handleW * 0.35);
-          const ridgeXRight = handle.x + Math.round(handleW * 0.65);
-          ctx.beginPath();
-          ctx.moveTo(ridgeXLeft, handle.y + 3);
-          ctx.lineTo(ridgeXLeft, handle.y + handleH - 3);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(ridgeXRight, handle.y + 3);
-          ctx.lineTo(ridgeXRight, handle.y + handleH - 3);
-          ctx.stroke();
-        });
-      } else {
-        this.bounds.loopShiftStartHandle = null;
-        this.bounds.loopShiftEndHandle = null;
-      }
+      this.bounds.loopShiftStartHandle = null;
+      this.bounds.loopShiftEndHandle = null;
 
       if (this.dragState?.mode === 'select') {
         const { startX, startY, currentX, currentY } = this.dragState;
