@@ -303,7 +303,7 @@ export default class Game {
     this.editor = new Editor(this);
     this.pixelStudio = new PixelStudio(this);
     this.midiComposer = new MidiComposer(this);
-    this.robterSession = new RobterSession({ input: this.input, audio: this.audio });
+    this.robterSession = new RobterSession({ input: this.input, audio: this.audio, isMobile: this.deviceIsMobile });
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
     this.midiComposerReturnState = 'title';
@@ -357,6 +357,7 @@ export default class Game {
     }
     this.isMobile = this.effectiveInputMode === 'mobile';
     this.mobileControls.setEnabled(this.isMobile);
+    this.robterSession.setMobile(this.isMobile);
   }
 
   setInputMode(mode) {
@@ -6122,7 +6123,7 @@ export default class Game {
       return;
     }
     if (this.state === 'robtersession') {
-      this.robterSession.handleClick(payload.x, payload.y);
+      this.robterSession.handlePointerDown(payload);
       return;
     }
     if (this.state === 'editor') {
@@ -6321,6 +6322,10 @@ export default class Game {
   }
 
   handlePointerMove(payload) {
+    if (this.state === 'robtersession') {
+      this.robterSession.handlePointerMove(payload);
+      return;
+    }
     if (this.state === 'editor') {
       this.editor.handlePointerMove(payload);
       return;
@@ -6337,6 +6342,10 @@ export default class Game {
   }
 
   handlePointerUp(payload) {
+    if (this.state === 'robtersession') {
+      this.robterSession.handlePointerUp(payload);
+      return;
+    }
     if (this.state === 'editor') {
       this.editor.handlePointerUp(payload);
       return;

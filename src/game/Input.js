@@ -34,6 +34,18 @@ export default class Input {
     this.virtualDown = new Map();
     this.virtualPressed = new Set();
     this.virtualReleased = new Set();
+    this.virtualGamepadActions = {};
+    this.virtualGamepadPressed = new Set();
+    this.virtualGamepadReleased = new Set();
+    this.virtualGamepadActive = false;
+    this.virtualGamepadAxes = {
+      leftX: 0,
+      leftY: 0,
+      rightX: 0,
+      rightY: 0,
+      leftTrigger: 0,
+      rightTrigger: 0
+    };
     this.gamepadIndex = null;
     this.gamepadActions = {};
     this.gamepadDeadzone = 0.3;
@@ -273,14 +285,17 @@ export default class Input {
   }
 
   isGamepadDown(action) {
-    return Boolean(this.gamepadActions[action]);
+    return Boolean(this.gamepadActions[action] || this.virtualGamepadActions[action]);
   }
 
   wasGamepadPressed(action) {
-    return this.gamepadPressed.has(action);
+    return this.gamepadPressed.has(action) || this.virtualGamepadPressed.has(action);
   }
 
   getGamepadAxes() {
+    if (this.virtualGamepadActive) {
+      return this.virtualGamepadAxes;
+    }
     return this.gamepadAxes;
   }
 
@@ -306,10 +321,52 @@ export default class Input {
     });
   }
 
+  setVirtualGamepad({ actions = {}, axes = {} } = {}) {
+    const allActions = new Set([
+      ...Object.keys(this.virtualGamepadActions),
+      ...Object.keys(actions)
+    ]);
+    allActions.forEach((action) => {
+      const prev = Boolean(this.virtualGamepadActions[action]);
+      const next = Boolean(actions[action]);
+      if (next && !prev) {
+        this.virtualGamepadPressed.add(action);
+      }
+      if (!next && prev) {
+        this.virtualGamepadReleased.add(action);
+      }
+      this.virtualGamepadActions[action] = next;
+    });
+    this.virtualGamepadAxes = {
+      leftX: axes.leftX ?? 0,
+      leftY: axes.leftY ?? 0,
+      rightX: axes.rightX ?? 0,
+      rightY: axes.rightY ?? 0,
+      leftTrigger: axes.leftTrigger ?? 0,
+      rightTrigger: axes.rightTrigger ?? 0
+    };
+    this.virtualGamepadActive = true;
+  }
+
   clearVirtual() {
     this.virtualDown.clear();
     this.virtualPressed.clear();
     this.virtualReleased.clear();
+  }
+
+  clearVirtualGamepad() {
+    this.virtualGamepadActions = {};
+    this.virtualGamepadPressed.clear();
+    this.virtualGamepadReleased.clear();
+    this.virtualGamepadActive = false;
+    this.virtualGamepadAxes = {
+      leftX: 0,
+      leftY: 0,
+      rightX: 0,
+      rightY: 0,
+      leftTrigger: 0,
+      rightTrigger: 0
+    };
   }
 
   reset() {
@@ -317,6 +374,7 @@ export default class Input {
     this.pressed.clear();
     this.released.clear();
     this.clearVirtual();
+    this.clearVirtualGamepad();
     this.gamepadActions = {};
   }
 
@@ -327,5 +385,7 @@ export default class Input {
     this.virtualReleased.clear();
     this.gamepadPressed.clear();
     this.gamepadReleased.clear();
+    this.virtualGamepadPressed.clear();
+    this.virtualGamepadReleased.clear();
   }
 }
