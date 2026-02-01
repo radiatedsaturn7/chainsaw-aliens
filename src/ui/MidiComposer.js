@@ -549,7 +549,6 @@ export default class MidiComposer {
     this.instrumentPreview = { loading: false, key: null };
     this.instrumentDownload = { loading: false, key: null };
     this.toolsMenuOpen = false;
-    this.fileMenuOpen = false;
     this.genreMenuOpen = false;
     this.selectedGenre = 'random';
     this.qaOverlayOpen = false;
@@ -929,7 +928,7 @@ export default class MidiComposer {
   saveSongToLibrary() {
     const suggested = this.song.name || 'New Song';
     const name = window.prompt('Save song as:', suggested);
-    if (!name) return;
+    if (!name) return null;
     this.song.name = name;
     const library = this.loadSongLibrary();
     const existingIndex = library.findIndex((entry) => entry.name === name);
@@ -946,6 +945,39 @@ export default class MidiComposer {
     this.saveSongLibrary(library);
     this.selection.clear();
     this.persist();
+    return payload;
+  }
+
+  saveAndPaint() {
+    const entry = this.saveSongToLibrary();
+    if (!entry || !this.game?.enterEditor) return;
+    this.stopPlayback();
+    this.game.enterEditor({ tab: 'music' });
+    if (this.game.editor) {
+      this.game.editor.getMusicTracks();
+      this.game.editor.musicTrack = { id: entry.id, name: entry.name, source: 'library' };
+      this.game.editor.mode = 'music';
+      this.game.editor.musicTool = 'paint';
+    }
+  }
+
+  async playInRobterSession() {
+    const session = this.game?.robterSession;
+    if (!session) return;
+    const blob = await this.buildRobterSessionZip();
+    if (!blob) {
+      window.alert('No notes available to play in RobterSession yet.');
+      return;
+    }
+    this.stopPlayback();
+    const file = new File([blob], `${this.getExportBaseName()}-robtersession.zip`, { type: 'application/zip' });
+    session.enter();
+    await session.loadUploadedZip(file);
+    if (this.game) {
+      this.game.robterSessionReturnState = 'midi-editor';
+      this.game.robterSessionAutoReturn = true;
+      this.game.state = 'robtersession';
+    }
   }
 
   loadSongFromLibrary() {
@@ -2882,18 +2914,6 @@ export default class MidiComposer {
       if (action?.type) {
         return;
       }
-      if (this.fileMenuOpen) {
-        const fileHit = this.fileMenuBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
-        if (fileHit) {
-          this.handleFileMenu(fileHit.id);
-          return;
-        }
-        if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
-          this.fileMenuOpen = false;
-          return;
-        }
-        this.fileMenuOpen = false;
-      }
       const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
       if (tabHit) {
         this.activeTab = tabHit.id;
@@ -2901,7 +2921,8 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
-        this.fileMenuOpen = !this.fileMenuOpen;
+        this.activeTab = 'file';
+        this.exitRecordMode();
         return;
       }
       return;
@@ -2916,17 +2937,12 @@ export default class MidiComposer {
       return;
     }
 
-    if (this.fileMenuOpen) {
+    if (this.activeTab === 'file') {
       const fileHit = this.fileMenuBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (fileHit) {
         this.handleFileMenu(fileHit.id);
         return;
       }
-      if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
-        this.fileMenuOpen = false;
-        return;
-      }
-      this.fileMenuOpen = false;
     }
 
     if (this.genreMenuOpen) {
@@ -2982,9 +2998,13 @@ export default class MidiComposer {
     }
 
     if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
-      this.fileMenuOpen = !this.fileMenuOpen;
+      this.activeTab = 'file';
       this.toolsMenuOpen = false;
       this.genreMenuOpen = false;
+      this.closeSelectionMenu();
+      this.pastePreview = null;
+      this.noteLengthMenu.open = false;
+      this.tempoSliderOpen = false;
       return;
     }
 
@@ -4630,47 +4650,46 @@ export default class MidiComposer {
       this.gridZoomInitialized = false;
       this.playheadTick = 0;
       this.lastPlaybackTick = 0;
-      this.fileMenuOpen = false;
       return;
     }
     if (action === 'save') {
       this.saveSongToLibrary();
-      this.fileMenuOpen = false;
+      return;
+    }
+    if (action === 'save-paint') {
+      this.saveAndPaint();
       return;
     }
     if (action === 'load') {
       this.loadSongFromLibrary();
-      this.fileMenuOpen = false;
       return;
     }
     if (action === 'export-json') {
       this.exportSongJson();
-      this.fileMenuOpen = false;
       return;
     }
     if (action === 'export-midi') {
       this.exportSongMidi();
-      this.fileMenuOpen = false;
       return;
     }
     if (action === 'export-midi-zip') {
       this.exportSongMidiZip();
-      this.fileMenuOpen = false;
       return;
     }
     if (action === 'import') {
       this.importSong();
-      this.fileMenuOpen = false;
+      return;
+    }
+    if (action === 'play-robtersession') {
+      this.playInRobterSession();
       return;
     }
     if (action === 'theme') {
       this.generateTheme();
-      this.fileMenuOpen = false;
       return;
     }
     if (action === 'sample') {
       this.loadDemoSong();
-      this.fileMenuOpen = false;
     }
   }
 
@@ -4854,6 +4873,34 @@ export default class MidiComposer {
         };
       })
       .filter((track) => track.notes.length > 0);
+  }
+
+  async buildRobterSessionZip() {
+    const tempo = this.song?.tempo || 120;
+    const timeSignature = this.song?.timeSignature || { beats: 4, unit: 4 };
+    const keySignature = this.getExportKeySignature();
+    const ticksPerSecond = (tempo / 60) * this.ticksPerBeat;
+    const stems = this.song.tracks
+      .map((track, index) => {
+        const pattern = track.patterns?.[this.selectedPatternIndex];
+        const notes = this.buildExportTrackNotes(track, pattern, ticksPerSecond);
+        if (!notes.length) return null;
+        const bytes = buildMidiBytes({
+          notes,
+          bpm: tempo,
+          timeSignature,
+          keySignature,
+          program: Number.isFinite(track.program) ? track.program : 0,
+          channel: Number.isFinite(track.channel) ? track.channel : 0
+        });
+        const safeName = String(track.name || `Track ${index + 1}`).trim() || `Track ${index + 1}`;
+        const sanitized = safeName.replace(/[\\/:*?"<>|]/g, '').trim() || `Track ${index + 1}`;
+        const filename = `${sanitized}.mid`;
+        return { filename, bytes };
+      })
+      .filter(Boolean);
+    if (!stems.length) return null;
+    return buildZipFromStems(stems);
   }
 
   downloadBlob(blob, filename) {
@@ -5422,18 +5469,13 @@ export default class MidiComposer {
         this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
       } else if (this.activeTab === 'settings') {
         this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
+      } else if (this.activeTab === 'file') {
+        this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
       }
     }
 
     this.drawNoteLengthMenu(ctx, width, height);
     this.drawTempoSlider(ctx, width, height);
-
-    if (this.fileMenuOpen && this.bounds.fileButton) {
-      const panelPadding = this.isMobileLayout() ? 10 : 16;
-      const menuX = Math.max(panelPadding, width - FILE_MENU_WIDTH - panelPadding);
-      const menuY = this.bounds.fileButton.y + this.bounds.fileButton.h + 6;
-      this.drawFileMenu(ctx, menuX, menuY);
-    }
 
     if (this.genreMenuOpen) {
       this.drawGenreMenu(ctx, width, height);
@@ -5520,12 +5562,6 @@ export default class MidiComposer {
       nowPlaying: this.nowPlaying
     });
 
-    if (this.fileMenuOpen && this.bounds.fileButton) {
-      const panelPadding = 10;
-      const menuX = Math.max(panelPadding, width - FILE_MENU_WIDTH - panelPadding);
-      const menuY = this.bounds.fileButton.y + this.bounds.fileButton.h + 6;
-      this.drawFileMenu(ctx, menuX, menuY);
-    }
   }
 
   drawRecordModeSidebar(ctx, x, y, w, h) {
@@ -5547,7 +5583,7 @@ export default class MidiComposer {
     let cursorY = menuY + panelPadding;
     this.bounds.tabs = [];
     this.bounds.fileButton = { x: innerX, y: cursorY, w: innerW, h: rowH };
-    this.drawButton(ctx, this.bounds.fileButton, 'File', this.fileMenuOpen, false);
+    this.drawButton(ctx, this.bounds.fileButton, 'File', this.activeTab === 'file', false);
     cursorY += rowH + rowGap;
 
     TAB_OPTIONS.forEach((tab) => {
@@ -5603,6 +5639,8 @@ export default class MidiComposer {
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
+    } else if (this.activeTab === 'file') {
+      this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
     }
   }
 
@@ -5629,7 +5667,7 @@ export default class MidiComposer {
     let cursorY = menuY + panelPadding;
     this.bounds.tabs = [];
     this.bounds.fileButton = { x: innerX, y: cursorY, w: innerW, h: rowH };
-    this.drawButton(ctx, this.bounds.fileButton, 'File', this.fileMenuOpen, false);
+    this.drawButton(ctx, this.bounds.fileButton, 'File', this.activeTab === 'file', false);
     cursorY += rowH + rowGap;
 
     TAB_OPTIONS.forEach((tab) => {
@@ -5863,7 +5901,7 @@ export default class MidiComposer {
     const tabW = (tabsW - gap * (TAB_OPTIONS.length - 1)) / TAB_OPTIONS.length;
     this.bounds.tabs = [];
     this.bounds.fileButton = { x, y, w: fileW, h };
-    this.drawButton(ctx, this.bounds.fileButton, 'File', this.fileMenuOpen, false);
+    this.drawButton(ctx, this.bounds.fileButton, 'File', this.activeTab === 'file', false);
     let cursorX = x + fileW + gap;
     TAB_OPTIONS.forEach((tab, index) => {
       const tabX = cursorX + index * (tabW + gap);
@@ -7949,18 +7987,62 @@ export default class MidiComposer {
     });
   }
 
-  drawFileMenu(ctx, x, y) {
-    const items = [
+  getFileMenuItems() {
+    return [
       { id: 'new', label: 'New' },
       { id: 'save', label: 'Save' },
+      { id: 'save-paint', label: 'Save and Paint' },
       { id: 'load', label: 'Load' },
       { id: 'export-json', label: 'Export JSON' },
       { id: 'export-midi', label: 'Export MIDI' },
       { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
       { id: 'import', label: 'Import MIDI/ZIP/JSON' },
+      { id: 'play-robtersession', label: 'Play in RobterSession' },
       { id: 'theme', label: 'Generate Theme' },
       { id: 'sample', label: 'Load Sample Song' }
     ];
+  }
+
+  drawFilePanel(ctx, x, y, w, h) {
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, w, h);
+
+    const padding = 14;
+    const panelW = Math.min(320, Math.max(240, w * 0.35));
+    const panelX = x + w - panelW - padding;
+    const panelY = y + padding;
+    const panelH = h - padding * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(panelX, panelY, panelW, panelH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(panelX, panelY, panelW, panelH);
+
+    ctx.fillStyle = '#fff';
+    ctx.font = '16px Courier New';
+    ctx.fillText('File Actions', panelX + 12, panelY + 22);
+
+    const items = this.getFileMenuItems();
+    const rowH = 44;
+    let cursorY = panelY + 34;
+    this.fileMenuBounds = [];
+    items.forEach((item) => {
+      const bounds = {
+        x: panelX + 12,
+        y: cursorY,
+        w: panelW - 24,
+        h: rowH - 8,
+        id: item.id
+      };
+      this.drawButton(ctx, bounds, item.label, false, true);
+      this.fileMenuBounds.push(bounds);
+      cursorY += rowH;
+    });
+  }
+
+  drawFileMenu(ctx, x, y) {
+    const items = this.getFileMenuItems();
     const width = FILE_MENU_WIDTH;
     const rowH = 44;
     const gap = 10;

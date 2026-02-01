@@ -307,6 +307,8 @@ export default class Game {
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
     this.midiComposerReturnState = 'title';
+    this.robterSessionReturnState = 'title';
+    this.robterSessionAutoReturn = false;
     this.pixelPreviewReturnState = null;
     this.pixelPreviewSnapshot = null;
     this.pixelPreviewTarget = null;
@@ -1216,9 +1218,31 @@ export default class Game {
 
     if (this.state === 'robtersession') {
       this.robterSession.update(dt);
+      if (this.robterSessionAutoReturn && this.robterSession.state === 'results') {
+        this.robterSessionAutoReturn = false;
+        this.robterSession.enter();
+        const returnState = this.robterSessionReturnState || 'title';
+        this.robterSessionReturnState = 'title';
+        if (returnState === 'midi-editor') {
+          this.enterMidiComposer();
+          this.midiComposerReturnState = 'title';
+        } else {
+          this.state = returnState;
+        }
+        this.input.flush();
+        return;
+      }
       if (this.robterSession.state === 'exit') {
         this.robterSession.enter();
-        this.state = 'title';
+        this.robterSessionAutoReturn = false;
+        const returnState = this.robterSessionReturnState || 'title';
+        this.robterSessionReturnState = 'title';
+        if (returnState === 'midi-editor') {
+          this.enterMidiComposer();
+          this.midiComposerReturnState = 'title';
+        } else {
+          this.state = returnState;
+        }
       }
       this.input.flush();
       return;
