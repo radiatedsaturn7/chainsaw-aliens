@@ -768,6 +768,7 @@ export default class RobterSession {
           keySignature: midiData.keySignature,
           timeSignature: midiData.timeSignature,
           isDrumStem,
+          instrumentFamily: mappedInstrument === 'drums' ? 'Drums' : null,
           options: {
             forceNoteMode: mappedInstrument === 'bass',
             collapseChords: mappedInstrument === 'bass'
