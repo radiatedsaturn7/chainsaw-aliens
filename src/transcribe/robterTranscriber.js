@@ -348,11 +348,63 @@ const detectChordType = (pcs) => {
   };
 };
 
+const DRUM_HIT_LANE_MAP = new Map([
+  [35, 0], // Acoustic Bass Drum
+  [36, 0], // Bass Drum 1
+  [37, 1], // Side Stick
+  [38, 1], // Acoustic Snare
+  [39, 1], // Hand Clap
+  [40, 1], // Electric Snare
+  [41, 1], // Low Floor Tom
+  [42, 2], // Closed Hi-Hat
+  [43, 1], // High Floor Tom
+  [44, 2], // Pedal Hi-Hat
+  [45, 1], // Low Tom
+  [46, 2], // Open Hi-Hat
+  [47, 1], // Low-Mid Tom
+  [48, 1], // Hi-Mid Tom
+  [49, 3], // Crash Cymbal 1
+  [50, 1], // High Tom
+  [51, 3], // Ride Cymbal 1
+  [52, 3], // Chinese Cymbal
+  [53, 3], // Ride Bell
+  [54, 3], // Tambourine
+  [55, 3], // Splash Cymbal
+  [56, 3], // Cowbell
+  [57, 3], // Crash Cymbal 2
+  [58, 3], // Vibra Slap
+  [59, 3], // Ride Cymbal 2
+  [60, 3], // Hi Bongo
+  [61, 3], // Low Bongo
+  [62, 3], // Mute Hi Conga
+  [63, 3], // Open Hi Conga
+  [64, 3], // Low Conga
+  [65, 3], // High Timbale
+  [66, 3], // Low Timbale
+  [67, 3], // High Agogo
+  [68, 3], // Low Agogo
+  [69, 3], // Cabasa
+  [70, 3], // Maracas
+  [71, 3], // Short Whistle
+  [72, 3], // Long Whistle
+  [73, 3], // Short Guiro
+  [74, 3], // Long Guiro
+  [75, 3], // Claves
+  [76, 3], // Hi Wood Block
+  [77, 3], // Low Wood Block
+  [78, 3], // Mute Cuica
+  [79, 3], // Open Cuica
+  [80, 3], // Mute Triangle
+  [81, 3] // Open Triangle
+]);
+
 const mapDrumPitchToLane = (midi) => {
-  if (midi <= 36) return 0; // kick
-  if (midi <= 40) return 1; // snare
-  if (midi <= 46) return 2; // hats
-  return 3; // cymbals
+  const mapped = DRUM_HIT_LANE_MAP.get(midi);
+  if (Number.isFinite(mapped)) return mapped;
+  if (midi <= 36) return 0; // kick fallback
+  if (midi <= 40) return 1; // snare fallback
+  if (midi <= 46) return 2; // hats fallback
+  return 3; // cymbals/percussion fallback
 };
 
 const analyzeChord = (notes) => {
@@ -425,8 +477,13 @@ export const transcribeMidiStem = ({
   keySignature,
   timeSignature,
   isDrumStem = false,
+  instrumentFamily = null,
   options = {}
 }) => {
+  const isDrumChannel = (note) => (note?.channel ?? 0) === 9;
+  const isDrumTrack = Boolean(isDrumStem)
+    || instrumentFamily === 'Drums'
+    || (Array.isArray(notes) && notes.some(isDrumChannel));
   const key = detectKey({ keySignature, notes });
   const timing = buildTiming(bpm || 120);
   const quantized = quantizeNotes(notes, bpm || 120, options.quantize);
@@ -513,7 +570,7 @@ export const transcribeMidiStem = ({
     const endSec = Math.max(...cluster.notes.map((n) => n.tEndSec));
     const duration = Math.max(0.05, endSec - startSec);
     const timeBeat = startSec / timing.secondsPerBeat;
-    if (isDrumStem) {
+    if (isDrumTrack) {
       const lane = mapDrumPitchToLane(cluster.notes[0].midi);
       events.push({
         timeBeat,
