@@ -6,6 +6,7 @@ const { Midi } = require('@tonejs/midi');
 
 (async () => {
   const { detectKey, transcribeMidiStem } = await import('../src/transcribe/robterTranscriber.js');
+  const keyLabels = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
   const buildNote = (midi, tStartSec = 0, tEndSec = 1) => ({ midi, tStartSec, tEndSec, vel: 0.8, channel: 0 });
 
@@ -93,6 +94,155 @@ const { Midi } = require('@tonejs/midi');
   assert.ok(bassNoteEvents > 0, 'Expected bass stem to yield note events');
   assert.strictEqual(bassChordEvents, 0, 'Expected bass stem to have no chord events in note mode');
   console.log(`Bass stem note events: ${bassNoteEvents}`);
+
+  const importFixturePath = path.join(__dirname, '..', 'data', 'tests', 'robtersession_bass_import.json');
+  const importFixture = JSON.parse(await fs.readFile(importFixturePath, 'utf8'));
+  const bassTrack = importFixture.tracks.find((track) => /bass/i.test(track.name || ''));
+  assert.ok(bassTrack, 'Expected Bass track in RobterSESSION import fixture');
+  const pattern = bassTrack.patterns?.[0];
+  assert.ok(pattern?.notes?.length, 'Expected notes in Bass pattern');
+
+  const ticksPerBeat = 8;
+  const ticksPerSecond = (importFixture.tempo / 60) * ticksPerBeat;
+  const midi = new Midi();
+  midi.header.setTempo(importFixture.tempo);
+  midi.header.timeSignatures.push({
+    ticks: 0,
+    timeSignature: [importFixture.timeSignature.beats, importFixture.timeSignature.unit]
+  });
+  const keyLabel = keyLabels[((importFixture.key ?? 0) % 12 + 12) % 12] || 'C';
+  midi.header.keySignatures.push({
+    ticks: 0,
+    key: keyLabel,
+    scale: importFixture.scale === 'minor' ? 'minor' : 'major'
+  });
+  const midiTrack = midi.addTrack();
+  midiTrack.channel = Number.isFinite(bassTrack.channel) ? bassTrack.channel : 1;
+  if (Number.isFinite(bassTrack.program)) {
+    midiTrack.instrument.number = bassTrack.program;
+  }
+  pattern.notes.forEach((note) => {
+    const start = note.startTick / ticksPerSecond;
+    const duration = note.durationTicks / ticksPerSecond;
+    midiTrack.addNote({
+      midi: note.pitch,
+      time: start,
+      duration,
+      velocity: note.velocity ?? 0.8
+    });
+  });
+  const importedMidi = new Midi(midi.toArray());
+  const importedNotes = [];
+  importedMidi.tracks.forEach((track) => {
+    const channel = Number.isFinite(track.channel) ? track.channel : 0;
+    const program = track.instrument?.number ?? null;
+    track.notes.forEach((note) => {
+      importedNotes.push({
+        tStartSec: note.time,
+        tEndSec: note.time + note.duration,
+        midi: note.midi,
+        vel: note.velocity,
+        channel: note.channel ?? channel,
+        program
+      });
+    });
+  });
+  const importedKeySignature = importedMidi.header.keySignatures?.[0]
+    ? {
+        key: importedMidi.header.keySignatures[0].key,
+        scale: importedMidi.header.keySignatures[0].scale,
+        ticks: importedMidi.header.keySignatures[0].ticks
+      }
+    : null;
+  const importedTimeSignature = importedMidi.header.timeSignatures?.[0]
+    ? {
+        beats: importedMidi.header.timeSignatures[0].timeSignature[0],
+        unit: importedMidi.header.timeSignatures[0].timeSignature[1]
+      }
+    : { beats: 4, unit: 4 };
+  const importedTranscribed = transcribeMidiStem({
+    notes: importedNotes,
+    bpm: importedMidi.header.tempos?.[0]?.bpm ?? 120,
+    keySignature: importedKeySignature,
+    timeSignature: importedTimeSignature,
+    isDrumStem: false,
+    options: { forceNoteMode: true, collapseChords: true }
+  });
+
+  // The imported MIDI drops the explicit key signature, so the transcriber
+  // detects F minor from the bass notes and maps scale degrees accordingly.
+  const expectedBassInputs = [
+    {
+      timeBeat: 0,
+      midi: 72,
+      button: 'Y',
+      modifiers: { lb: false, dleft: false },
+      octaveUp: false
+    },
+    {
+      timeBeat: 3,
+      midi: 73,
+      button: 'Y',
+      modifiers: { lb: true, dleft: false },
+      octaveUp: false
+    },
+    {
+      timeBeat: 6,
+      midi: 70,
+      button: 'X',
+      modifiers: { lb: true, dleft: false },
+      octaveUp: false
+    },
+    {
+      timeBeat: 8,
+      midi: 67,
+      button: 'A',
+      modifiers: { lb: true, dleft: false },
+      octaveUp: false
+    },
+    {
+      timeBeat: 9,
+      midi: 67,
+      button: 'A',
+      modifiers: { lb: true, dleft: false },
+      octaveUp: false
+    },
+    {
+      timeBeat: 10,
+      midi: 65,
+      button: 'A',
+      modifiers: { lb: false, dleft: false },
+      octaveUp: false
+    },
+    {
+      timeBeat: 11,
+      midi: 68,
+      button: 'X',
+      modifiers: { lb: false, dleft: false },
+      octaveUp: false
+    },
+    {
+      timeBeat: 14,
+      midi: 65,
+      button: 'A',
+      modifiers: { lb: false, dleft: false },
+      octaveUp: false
+    }
+  ];
+
+  const importedNoteEvents = importedTranscribed.events.filter((event) => event.type === 'NOTE');
+  const simplifiedImported = importedNoteEvents.map((event) => ({
+    timeBeat: event.timeBeat,
+    midi: event.requiredInput.playbackPitches[0],
+    button: event.requiredInput.button,
+    modifiers: event.requiredInput.modifiers,
+    octaveUp: event.requiredInput.octaveUp
+  }));
+  assert.deepStrictEqual(
+    simplifiedImported,
+    expectedBassInputs,
+    'Expected RobterSESSION bass import to match manual Robterspiel approximations'
+  );
 
   console.log('RobterSESSION MIDI tests passed');
 })();
