@@ -3,7 +3,7 @@ import { GM_DRUM_BANK_MSB, GM_SOUNDFONT_NAMES, isDrumChannel, resolveDrumFallbac
 const PRIMARY_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
 const FALLBACK_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
 const SOUNDFONT_PLAYER_GLOBAL = 'Soundfont';
-const DRUM_KIT_NAME = 'synth_drum';
+const DRUM_KIT_NAME = 'standard_kit';
 const DRUM_PRESET = 0;
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
