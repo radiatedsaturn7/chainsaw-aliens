@@ -63,6 +63,7 @@ const NOTE_LENGTH_OPTIONS = [
 ];
 
 const SOUNDFONT_CDNS = [
+  { id: 'gleitz', label: 'GitHub Pages' },
   { id: 'vendored', label: 'Vendored' }
 ];
 
@@ -1093,7 +1094,7 @@ export default class MidiComposer {
       reverbLevel: 0.18,
       latencyMs: 30,
       useSoundfont: true,
-      soundfontCdn: 'vendored',
+      soundfontCdn: 'gleitz',
       drumKitId: this.game?.audio?.getDrumKit?.()?.id || 'standard'
     };
     try {

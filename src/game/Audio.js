@@ -11,8 +11,12 @@ import {
 import DrumKitManager from '../audio/DrumKitManager.js';
 import SoundfontEngine from '../audio/SoundfontEngine.js';
 
-const DEFAULT_GM_SOUND_FONT_URL = 'vendor/soundfonts/FluidR3_GM/';
+const DEFAULT_GM_SOUND_FONT_URL = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
 const FALLBACK_GM_SOUND_FONT_URL = 'vendor/soundfonts/FluidR3_GM/';
+const SOUNDFONT_CDN_URLS = {
+  vendored: 'vendor/soundfonts/FluidR3_GM/',
+  gleitz: 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/'
+};
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const LEGACY_INSTRUMENT_TO_PROGRAM = {
@@ -155,7 +159,7 @@ export default class AudioSystem {
   loadStoredSoundfontUrl() {
     try {
       const stored = localStorage.getItem('chainsaw-gm-soundfont-url');
-      if (!stored || stored.startsWith('http')) {
+      if (!stored) {
         return DEFAULT_GM_SOUND_FONT_URL;
       }
       return stored;
@@ -187,8 +191,9 @@ export default class AudioSystem {
     }
   }
 
-  setSoundfontCdn() {
-    this.setSoundfontUrl(DEFAULT_GM_SOUND_FONT_URL);
+  setSoundfontCdn(id = 'vendored') {
+    const nextUrl = SOUNDFONT_CDN_URLS[id] || DEFAULT_GM_SOUND_FONT_URL;
+    this.setSoundfontUrl(nextUrl);
     this.gmError = null;
   }
 
