@@ -134,6 +134,7 @@ If you hear no sound, wait for the “Loading instrument bank…” banner to fi
 ### Drums: GM Channel 10 + Pad Map
 - Drum tracks always route to **GM channel 10** (index `9` in 0-based code). Notes are interpreted as **percussion hits**, not pitched instruments.
 - The default drum pad layout is kept in `src/audio/gm.js` (`GM_DRUM_PAD_LAYOUT`) and is mirrored by the touch UI in `src/input/touch.js`.
+- For higher-quality drum samples, the app can load a WebAudioFont drum kit from `vendor/webaudiofont/` (see `tools/download-webaudiofont-drums.sh`).
 
 **Default pad notes**
 1. Kick — 36
