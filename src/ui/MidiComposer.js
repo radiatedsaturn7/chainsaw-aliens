@@ -657,6 +657,12 @@ export default class MidiComposer {
       startTick: 0,
       endTick: 0
     };
+    this.songSelectionMenu = {
+      open: false,
+      x: 0,
+      y: 0,
+      bounds: []
+    };
     this.songClipboard = null;
     this.noteLengthMenu = {
       open: false,
@@ -669,6 +675,9 @@ export default class MidiComposer {
     this.gridOffset = { x: 0, y: 0 };
     this.gridOffsetInitialized = false;
     this.gridGesture = null;
+    this.songTimelineZoomX = 1;
+    this.songTimelineOffsetX = 0;
+    this.songTimelineBounds = null;
     this.bounds = {
       headerInstrument: null,
       fileButton: null,
@@ -731,7 +740,9 @@ export default class MidiComposer {
       loopStartHandle: null,
       loopEndHandle: null,
       loopShiftStartHandle: null,
-      loopShiftEndHandle: null
+      loopShiftEndHandle: null,
+      songZoomIn: null,
+      songZoomOut: null
     };
     this.trackBounds = [];
     this.trackControlBounds = [];
@@ -745,6 +756,7 @@ export default class MidiComposer {
     this.rulerBounds = null;
     this.gridZoomInitialized = false;
     this.songLaneBounds = [];
+    this.songLabelBounds = [];
     this.songAutomationBounds = [];
     this.songActionBounds = [];
     this.songInstrumentBounds = null;
@@ -1780,6 +1792,43 @@ export default class MidiComposer {
       ? this.song.loopEndTick
       : (this.song.loopBars || 1) * ticksPerBar;
     return Math.max(ticksPerBar, loopEnd);
+  }
+
+  getSongTimelineZoomLimits() {
+    return { minZoom: 1, maxZoom: 8 };
+  }
+
+  clampSongTimelineOffset(offsetX, viewW, totalW) {
+    const minX = Math.min(0, viewW - totalW);
+    return clamp(offsetX, minX, 0);
+  }
+
+  setSongTimelineZoom(nextZoom, anchorTick = this.playheadTick) {
+    const { minZoom, maxZoom } = this.getSongTimelineZoomLimits();
+    const clampedZoom = clamp(nextZoom, minZoom, maxZoom);
+    if (!this.songTimelineBounds) {
+      this.songTimelineZoomX = clampedZoom;
+      return;
+    }
+    const {
+      x,
+      w,
+      originX,
+      cellWidth,
+      timelineTicks
+    } = this.songTimelineBounds;
+    const anchorX = originX + anchorTick * cellWidth;
+    const baseCellWidth = cellWidth / this.songTimelineZoomX;
+    const nextCellWidth = baseCellWidth * clampedZoom;
+    const nextOriginX = anchorX - anchorTick * nextCellWidth;
+    const totalW = nextCellWidth * timelineTicks;
+    this.songTimelineZoomX = clampedZoom;
+    this.songTimelineOffsetX = this.clampSongTimelineOffset(nextOriginX - x, w, totalW);
+  }
+
+  getSongTimelineX(tick) {
+    if (!this.songTimelineBounds) return 0;
+    return this.songTimelineBounds.originX + tick * this.songTimelineBounds.cellWidth;
   }
 
   getSongSelectionRange() {
@@ -3226,9 +3275,22 @@ export default class MidiComposer {
     }
 
     if (this.activeTab === 'song') {
-      const actionHit = this.songActionBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
-      if (actionHit) {
-        this.handleSongAction(actionHit.action);
+      const menuHit = this.songSelectionMenu.open
+        ? this.songSelectionMenu.bounds?.find((bounds) => this.pointInBounds(x, y, bounds))
+        : null;
+      if (menuHit) {
+        this.handleSongAction(menuHit.action);
+        return;
+      }
+      if (this.songSelectionMenu.open) {
+        this.clearSongSelection();
+      }
+      if (this.bounds.songZoomOut && this.pointInBounds(x, y, this.bounds.songZoomOut)) {
+        this.setSongTimelineZoom(this.songTimelineZoomX / 1.5);
+        return;
+      }
+      if (this.bounds.songZoomIn && this.pointInBounds(x, y, this.bounds.songZoomIn)) {
+        this.setSongTimelineZoom(this.songTimelineZoomX * 1.5);
         return;
       }
       if (this.songInstrumentBounds && this.pointInBounds(x, y, this.songInstrumentBounds)) {
@@ -3237,6 +3299,12 @@ export default class MidiComposer {
       }
       if (this.songAddBounds && this.pointInBounds(x, y, this.songAddBounds)) {
         this.addTrack();
+        return;
+      }
+      const labelHit = this.songLabelBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (labelHit) {
+        this.selectedTrackIndex = labelHit.trackIndex;
+        this.clearSongSelection();
         return;
       }
       const automationHit = this.songAutomationBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -3255,13 +3323,41 @@ export default class MidiComposer {
       if (laneHit) {
         this.selectedTrackIndex = laneHit.trackIndex;
         const tick = this.getSongTickFromX(x, laneHit);
-        this.songSelection = {
-          active: true,
-          trackIndex: laneHit.trackIndex,
+        this.playheadTick = clamp(tick, 0, this.getSongTimelineTicks());
+        this.clearSongSelection();
+        const modifiers = this.getModifiers();
+        const shouldPan = modifiers.alt || payload.button === 1 || payload.button === 2 || payload.touchCount > 1;
+        if (shouldPan) {
+          this.dragState = {
+            mode: 'song-pan',
+            startX: x,
+            startOffsetX: this.songTimelineOffsetX
+          };
+          return;
+        }
+        this.dragState = {
+          mode: 'song-select-pending',
+          bounds: laneHit,
+          startX: x,
+          startY: y,
           startTick: tick,
-          endTick: tick
+          trackIndex: laneHit.trackIndex
         };
-        this.dragState = { mode: 'song-select', bounds: laneHit };
+        return;
+      }
+      if (this.songTimelineBounds && this.pointInBounds(x, y, this.songTimelineBounds)) {
+        const tick = this.getSongTickFromX(x, this.songTimelineBounds);
+        this.playheadTick = clamp(tick, 0, this.getSongTimelineTicks());
+        this.clearSongSelection();
+        const modifiers = this.getModifiers();
+        const shouldPan = modifiers.alt || payload.button === 1 || payload.button === 2 || payload.touchCount > 1;
+        if (shouldPan) {
+          this.dragState = {
+            mode: 'song-pan',
+            startX: x,
+            startOffsetX: this.songTimelineOffsetX
+          };
+        }
       }
       return;
     }
@@ -3437,9 +3533,34 @@ export default class MidiComposer {
       return;
     }
     if (this.qaOverlayOpen) return;
-    if (this.dragState?.mode === 'song-select') {
-      const tick = this.getSongTickFromX(payload.x, this.dragState.bounds);
-      this.songSelection.endTick = tick;
+    if (this.dragState?.mode === 'song-pan') {
+      const dx = payload.x - this.dragState.startX;
+      if (this.songTimelineBounds) {
+        this.songTimelineOffsetX = this.clampSongTimelineOffset(
+          this.dragState.startOffsetX + dx,
+          this.songTimelineBounds.w,
+          this.songTimelineBounds.totalW
+        );
+      }
+      return;
+    }
+    if (this.dragState?.mode === 'song-select-pending' || this.dragState?.mode === 'song-select') {
+      const dx = payload.x - this.dragState.startX;
+      const dy = payload.y - this.dragState.startY;
+      const threshold = 6;
+      if (this.dragState.mode === 'song-select-pending' && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) {
+        this.dragState.mode = 'song-select';
+        this.songSelection = {
+          active: true,
+          trackIndex: this.dragState.trackIndex,
+          startTick: this.dragState.startTick,
+          endTick: this.dragState.startTick
+        };
+      }
+      if (this.dragState.mode === 'song-select' && this.dragState.bounds) {
+        const tick = this.getSongTickFromX(payload.x, this.dragState.bounds);
+        this.songSelection.endTick = tick;
+      }
       return;
     }
     if (this.dragState?.mode === 'instrument-scroll') {
@@ -3574,6 +3695,14 @@ export default class MidiComposer {
       this.dragState = null;
       return;
     }
+    if (this.dragState?.mode === 'song-select-pending') {
+      this.dragState = null;
+      return;
+    }
+    if (this.dragState?.mode === 'song-pan') {
+      this.dragState = null;
+      return;
+    }
     if (this.dragState?.mode === 'paste-preview') {
       this.dragState = null;
       return;
@@ -3602,24 +3731,41 @@ export default class MidiComposer {
   handleWheel(payload) {
     this.lastPointer = { x: payload.x, y: payload.y };
     if (this.qaOverlayOpen) return;
-    if (this.activeTab !== 'grid' || !this.gridBounds) return;
-    const inGrid = this.pointInBounds(payload.x, payload.y, this.gridBounds);
-    const inRuler = this.rulerBounds && this.pointInBounds(payload.x, payload.y, this.rulerBounds);
-    if (!inGrid && !inRuler) return;
     const modifiers = this.getModifiers();
-    const delta = payload.deltaY;
-    if (modifiers.shift) {
-      this.gridOffset.x -= delta;
-      this.ensureGridPanCapacity(this.gridOffset.x);
-    } else {
-      this.gridOffset.y -= delta;
+    if (this.activeTab === 'grid' && this.gridBounds) {
+      const inGrid = this.pointInBounds(payload.x, payload.y, this.gridBounds);
+      const inRuler = this.rulerBounds && this.pointInBounds(payload.x, payload.y, this.rulerBounds);
+      if (!inGrid && !inRuler) return;
+      const delta = payload.deltaY;
+      if (modifiers.shift) {
+        this.gridOffset.x -= delta;
+        this.ensureGridPanCapacity(this.gridOffset.x);
+      } else {
+        this.gridOffset.y -= delta;
+      }
+      this.clampGridOffset(
+        this.gridBounds.w,
+        this.gridBounds.h,
+        this.getExpandedGridWidth(),
+        this.gridBounds.gridH
+      );
+      return;
     }
-    this.clampGridOffset(
-      this.gridBounds.w,
-      this.gridBounds.h,
-      this.getExpandedGridWidth(),
-      this.gridBounds.gridH
-    );
+    if (this.activeTab === 'song' && this.songTimelineBounds) {
+      const inTimeline = this.pointInBounds(payload.x, payload.y, this.songTimelineBounds);
+      if (!inTimeline) return;
+      const delta = payload.deltaY;
+      if (modifiers.meta) {
+        const zoomFactor = delta > 0 ? 0.9 : 1.1;
+        this.setSongTimelineZoom(this.songTimelineZoomX * zoomFactor);
+      } else {
+        this.songTimelineOffsetX = this.clampSongTimelineOffset(
+          this.songTimelineOffsetX - delta,
+          this.songTimelineBounds.w,
+          this.songTimelineBounds.totalW
+        );
+      }
+    }
   }
 
   shouldHandleGestureStart(payload) {
@@ -4499,8 +4645,13 @@ export default class MidiComposer {
   }
 
   getSongTickFromX(x, bounds) {
-    const ratio = clamp((x - bounds.x) / bounds.w, 0, 1);
-    const tick = ratio * this.getSongTimelineTicks();
+    if (!this.songTimelineBounds) {
+      const ratio = clamp((x - bounds.x) / bounds.w, 0, 1);
+      const tick = ratio * this.getSongTimelineTicks();
+      return this.snapTick(tick);
+    }
+    const { originX, cellWidth, timelineTicks } = this.songTimelineBounds;
+    const tick = clamp((x - originX) / cellWidth, 0, timelineTicks);
     return this.snapTick(tick);
   }
 
@@ -4513,6 +4664,15 @@ export default class MidiComposer {
     const totalTicks = this.getSongTimelineTicks();
     this.songSelection.startTick = clamp(this.songSelection.startTick, 0, totalTicks);
     this.songSelection.endTick = clamp(this.songSelection.endTick, 0, totalTicks);
+    this.songSelectionMenu.open = Boolean(this.getSongSelectionRange());
+    this.songSelectionMenu.x = this.lastPointer.x;
+    this.songSelectionMenu.y = this.lastPointer.y;
+  }
+
+  clearSongSelection() {
+    this.songSelection.active = false;
+    this.songSelectionMenu.open = false;
+    this.songSelectionMenu.bounds = [];
   }
 
   addSongAutomationKeyframe(track, type, tick, value) {
@@ -4569,6 +4729,21 @@ export default class MidiComposer {
           startTick: note.startTick - range.startTick
         }))
       };
+      return;
+    }
+
+    if (action === 'song-paste') {
+      if (!this.songClipboard || !this.songClipboard.notes?.length) return;
+      const startTick = range.startTick;
+      this.songClipboard.notes.forEach((note) => {
+        pattern.notes.push({
+          ...note,
+          id: uid(),
+          startTick: startTick + note.startTick
+        });
+      });
+      this.ensureGridCapacity(startTick + this.songClipboard.durationTicks);
+      this.persist();
       return;
     }
 
@@ -6262,9 +6437,11 @@ export default class MidiComposer {
     const padding = 12;
     const headerH = 38;
     const headerY = y + padding;
+    const rulerH = 24;
+    const rulerY = headerY + headerH + 10;
     const addH = 34;
     const addY = y + h - padding - addH;
-    const laneAreaY = headerY + headerH + 12;
+    const laneAreaY = rulerY + rulerH + 8;
     const laneAreaH = Math.max(0, addY - laneAreaY - 10);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = 12;
@@ -6274,6 +6451,7 @@ export default class MidiComposer {
     const laneW = w - padding * 2 - labelW - 12;
     const laneH = Math.max(36, laneBlockH * 0.42);
     const automationH = Math.max(12, (laneBlockH - laneH) / 2 - 6);
+    this.songActionBounds = [];
 
     const selectedTrack = this.getActiveTrack();
     const trackLabel = selectedTrack ? selectedTrack.name : 'No Track';
@@ -6309,31 +6487,43 @@ export default class MidiComposer {
       ctx.fillText(`Selection: Bars ${startBar}-${endBar}`, x + padding + 420, headerY + 20);
     }
 
-    const actions = [
-      { id: 'song-copy', label: 'Copy' },
-      { id: 'song-cut', label: 'Cut' },
-      { id: 'song-delete', label: 'Delete' },
-      { id: 'song-splice', label: 'Splice' },
-      { id: 'song-transpose-up', label: 'Pitch +1' },
-      { id: 'song-transpose-down', label: 'Pitch -1' },
-      { id: 'song-repeat', label: 'Repeat' }
-    ];
-    this.songActionBounds = [];
-    let actionX = x + padding + 420;
-    const actionY = headerY + 4;
-    const actionH = headerH - 10;
-    actions.forEach((action) => {
-      const actionW = Math.min(110, Math.max(70, ctx.measureText(action.label).width + 24));
-      if (actionX + actionW > x + w - padding) return;
-      const bounds = { x: actionX, y: actionY, w: actionW, h: actionH, action: action.id };
-      this.drawSmallButton(ctx, bounds, action.label, false);
-      this.songActionBounds.push(bounds);
-      actionX += actionW + 8;
-    });
+    const controlH = headerH - 12;
+    const controlGap = 8;
+    const zoomButtonW = 26;
+    const loopToggleW = 110;
+    let controlX = x + w - padding - loopToggleW;
+    this.bounds.loopToggle = { x: controlX, y: headerY + 6, w: loopToggleW, h: controlH };
+    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+    controlX -= controlGap + zoomButtonW;
+    this.bounds.songZoomIn = { x: controlX, y: headerY + 6, w: zoomButtonW, h: controlH };
+    this.drawSmallButton(ctx, this.bounds.songZoomIn, '+', false);
+    controlX -= controlGap + zoomButtonW;
+    this.bounds.songZoomOut = { x: controlX, y: headerY + 6, w: zoomButtonW, h: controlH };
+    this.drawSmallButton(ctx, this.bounds.songZoomOut, '−', false);
 
     this.songLaneBounds = [];
+    this.songLabelBounds = [];
     this.songAutomationBounds = [];
     const timelineTicks = this.getSongTimelineTicks();
+    const baseCellWidth = laneW / timelineTicks;
+    const { minZoom, maxZoom } = this.getSongTimelineZoomLimits();
+    this.songTimelineZoomX = clamp(this.songTimelineZoomX, minZoom, maxZoom);
+    const cellWidth = baseCellWidth * this.songTimelineZoomX;
+    const totalW = cellWidth * timelineTicks;
+    this.songTimelineOffsetX = this.clampSongTimelineOffset(this.songTimelineOffsetX, laneW, totalW);
+    const originX = laneX + this.songTimelineOffsetX;
+    this.songTimelineBounds = {
+      x: laneX,
+      y: rulerY,
+      w: laneW,
+      h: laneAreaH + rulerH,
+      originX,
+      cellWidth,
+      totalW,
+      timelineTicks
+    };
+    this.drawSongRuler(ctx, laneX, rulerY, laneW, rulerH);
+
     this.song.tracks.forEach((track, index) => {
       const laneTop = laneAreaY + index * (laneBlockH + laneGap);
       if (laneTop + laneBlockH > laneAreaY + laneAreaH + 4) return;
@@ -6349,6 +6539,7 @@ export default class MidiComposer {
       ctx.font = '10px Courier New';
       const instrumentName = isDrumTrack(track) ? this.getDrumKitLabel(track) : this.getProgramLabel(track.program);
       ctx.fillText(this.truncateLabel(ctx, instrumentName, labelW - 20), labelX + 10, laneTop + 34);
+      this.songLabelBounds.push({ x: labelX, y: laneTop, w: labelW, h: laneBlockH, trackIndex: index });
 
       const laneBounds = { x: laneX, y: laneTop, w: laneW, h: laneH, trackIndex: index };
       ctx.fillStyle = index === this.selectedTrackIndex ? 'rgba(255,225,106,0.12)' : 'rgba(0,0,0,0.45)';
@@ -6356,6 +6547,26 @@ export default class MidiComposer {
       ctx.strokeStyle = track.color || 'rgba(255,255,255,0.2)';
       ctx.strokeRect(laneBounds.x, laneBounds.y, laneBounds.w, laneBounds.h);
       this.songLaneBounds.push(laneBounds);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(laneBounds.x, laneBounds.y, laneBounds.w, laneBounds.h);
+      ctx.clip();
+      const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+      for (let barTick = 0; barTick <= timelineTicks; barTick += ticksPerBar) {
+        const barX = originX + barTick * cellWidth;
+        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+        ctx.beginPath();
+        ctx.moveTo(barX, laneBounds.y);
+        ctx.lineTo(barX, laneBounds.y + laneBounds.h);
+        ctx.stroke();
+      }
+      if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
+        const loopStartX = originX + this.song.loopStartTick * cellWidth;
+        const loopEndX = originX + this.song.loopEndTick * cellWidth;
+        ctx.fillStyle = 'rgba(255,225,106,0.12)';
+        ctx.fillRect(loopStartX, laneBounds.y, loopEndX - loopStartX, laneBounds.h);
+      }
 
       const pattern = track.patterns?.[this.selectedPatternIndex];
       if (pattern) {
@@ -6366,8 +6577,8 @@ export default class MidiComposer {
           const maxPitch = Math.max(...pitches);
           const range = Math.max(1, maxPitch - minPitch);
           notes.forEach((note) => {
-            const noteX = laneBounds.x + (note.startTick / timelineTicks) * laneBounds.w;
-            const noteW = Math.max(2, (note.durationTicks / timelineTicks) * laneBounds.w);
+            const noteX = originX + note.startTick * cellWidth;
+            const noteW = Math.max(2, note.durationTicks * cellWidth);
             const pitchRatio = (note.pitch - minPitch) / range;
             const noteY = laneBounds.y + 4 + (1 - pitchRatio) * (laneBounds.h - 8);
             ctx.fillStyle = toRgba(track.color, 0.7);
@@ -6377,13 +6588,14 @@ export default class MidiComposer {
       }
 
       if (selectionRange && selectionRange.trackIndex === index) {
-        const selStart = laneBounds.x + (selectionRange.startTick / timelineTicks) * laneBounds.w;
-        const selEnd = laneBounds.x + (selectionRange.endTick / timelineTicks) * laneBounds.w;
+        const selStart = originX + selectionRange.startTick * cellWidth;
+        const selEnd = originX + selectionRange.endTick * cellWidth;
         ctx.fillStyle = 'rgba(255,225,106,0.2)';
         ctx.fillRect(selStart, laneBounds.y, selEnd - selStart, laneBounds.h);
         ctx.strokeStyle = 'rgba(255,225,106,0.6)';
         ctx.strokeRect(selStart, laneBounds.y, selEnd - selStart, laneBounds.h);
       }
+      ctx.restore();
 
       const panBounds = {
         x: laneX,
@@ -6401,16 +6613,124 @@ export default class MidiComposer {
         trackIndex: index,
         type: 'padding'
       };
-      this.drawAutomationLane(ctx, panBounds, track.automation?.pan || [], -1, 1, 'Pan');
-      this.drawAutomationLane(ctx, padBounds, track.automation?.padding || [], 0, 1, 'Pad');
+      this.drawAutomationLane(ctx, panBounds, track.automation?.pan || [], -1, 1, 'Pan', {
+        originX,
+        cellWidth
+      });
+      this.drawAutomationLane(ctx, padBounds, track.automation?.padding || [], 0, 1, 'Pad', {
+        originX,
+        cellWidth
+      });
       this.songAutomationBounds.push(panBounds, padBounds);
     });
 
     this.songAddBounds = { x: x + padding, y: addY, w: w - padding * 2, h: addH };
     this.drawButton(ctx, this.songAddBounds, 'Add Instrument', false, false);
+    this.drawSongPlayhead(ctx, this.songTimelineBounds.y, laneAreaY + laneAreaH);
+    this.drawSongSelectionMenu(ctx);
   }
 
-  drawAutomationLane(ctx, bounds, keyframes, minValue, maxValue, label) {
+  drawSongRuler(ctx, x, y, w, h) {
+    if (!this.songTimelineBounds) return;
+    const { originX, cellWidth, timelineTicks } = this.songTimelineBounds;
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, w, h);
+    ctx.fillStyle = '#fff';
+    ctx.font = '11px Courier New';
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.clip();
+    if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
+      const loopStartX = originX + this.song.loopStartTick * cellWidth;
+      const loopEndX = originX + this.song.loopEndTick * cellWidth;
+      ctx.fillStyle = 'rgba(255,225,106,0.22)';
+      ctx.fillRect(loopStartX, y, loopEndX - loopStartX, h);
+    }
+    for (let bar = 0; bar <= Math.ceil(timelineTicks / ticksPerBar); bar += 1) {
+      const barX = originX + bar * ticksPerBar * cellWidth;
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.beginPath();
+      ctx.moveTo(barX, y);
+      ctx.lineTo(barX, y + h);
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.fillText(`${bar + 1}`, barX + 4, y + h - 6);
+    }
+    ctx.restore();
+  }
+
+  drawSongPlayhead(ctx, topY, bottomY) {
+    if (!this.songTimelineBounds) return;
+    const xPos = this.getSongTimelineX(this.playheadTick);
+    ctx.strokeStyle = '#ffe16a';
+    ctx.beginPath();
+    ctx.moveTo(xPos, topY);
+    ctx.lineTo(xPos, bottomY);
+    ctx.stroke();
+  }
+
+  drawSongSelectionMenu(ctx) {
+    if (!this.songSelectionMenu.open || !this.songTimelineBounds) {
+      this.songSelectionMenu.bounds = [];
+      return;
+    }
+    const range = this.getSongSelectionRange();
+    if (!range) {
+      this.songSelectionMenu.bounds = [];
+      this.songSelectionMenu.open = false;
+      return;
+    }
+    const laneBounds = this.songLaneBounds.find((entry) => entry.trackIndex === range.trackIndex);
+    if (!laneBounds) {
+      this.songSelectionMenu.bounds = [];
+      return;
+    }
+    const actions = [
+      { action: 'song-splice', label: 'Split' },
+      { action: 'song-copy', label: 'Copy' },
+      { action: 'song-cut', label: 'Cut' },
+      { action: 'song-paste', label: 'Paste' },
+      { action: 'song-delete', label: 'Delete' },
+      { action: 'song-transpose-up', label: 'Pitch +1' },
+      { action: 'song-transpose-down', label: 'Pitch -1' }
+    ];
+    const buttonW = 110;
+    const buttonH = 28;
+    const gap = 6;
+    const columns = 2;
+    const rows = Math.ceil(actions.length / columns);
+    const menuW = columns * buttonW + gap * (columns + 1);
+    const menuH = rows * buttonH + gap * (rows + 1);
+    const selStart = this.getSongTimelineX(range.startTick);
+    const selEnd = this.getSongTimelineX(range.endTick);
+    const midX = (selStart + selEnd) / 2 - menuW / 2;
+    let menuX = clamp(midX, this.songTimelineBounds.x, this.songTimelineBounds.x + this.songTimelineBounds.w - menuW);
+    let menuY = laneBounds.y - menuH - 8;
+    if (menuY < this.songTimelineBounds.y) {
+      menuY = laneBounds.y + laneBounds.h + 8;
+    }
+    menuY = clamp(menuY, this.songTimelineBounds.y, this.songTimelineBounds.y + this.songTimelineBounds.h - menuH);
+    ctx.fillStyle = 'rgba(12,14,18,0.95)';
+    ctx.fillRect(menuX, menuY, menuW, menuH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(menuX, menuY, menuW, menuH);
+    this.songSelectionMenu.bounds = [];
+    actions.forEach((entry, index) => {
+      const row = Math.floor(index / columns);
+      const col = index % columns;
+      const bx = menuX + gap + col * (buttonW + gap);
+      const by = menuY + gap + row * (buttonH + gap);
+      const bounds = { x: bx, y: by, w: buttonW, h: buttonH, action: entry.action };
+      this.drawSmallButton(ctx, bounds, entry.label, false);
+      this.songSelectionMenu.bounds.push(bounds);
+    });
+  }
+
+  drawAutomationLane(ctx, bounds, keyframes, minValue, maxValue, label, timeline) {
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.strokeStyle = 'rgba(255,255,255,0.15)';
@@ -6422,13 +6742,18 @@ export default class MidiComposer {
     if (!keyframes.length) return;
     const sorted = [...keyframes].sort((a, b) => a.tick - b.tick);
     const totalTicks = this.getSongTimelineTicks();
+    const originX = timeline?.originX ?? bounds.x;
+    const cellWidth = timeline?.cellWidth ?? (bounds.w / totalTicks || 1);
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.clip();
     ctx.strokeStyle = 'rgba(255,225,106,0.8)';
     ctx.beginPath();
     sorted.forEach((frame, index) => {
-      const ratio = totalTicks ? frame.tick / totalTicks : 0;
       const value = clamp(frame.value ?? 0, minValue, maxValue);
       const valueRatio = (value - minValue) / (maxValue - minValue || 1);
-      const x = bounds.x + ratio * bounds.w;
+      const x = originX + frame.tick * cellWidth;
       const y = bounds.y + bounds.h - valueRatio * bounds.h;
       if (index === 0) {
         ctx.moveTo(x, y);
@@ -6438,16 +6763,16 @@ export default class MidiComposer {
     });
     ctx.stroke();
     sorted.forEach((frame) => {
-      const ratio = totalTicks ? frame.tick / totalTicks : 0;
       const value = clamp(frame.value ?? 0, minValue, maxValue);
       const valueRatio = (value - minValue) / (maxValue - minValue || 1);
-      const x = bounds.x + ratio * bounds.w;
+      const x = originX + frame.tick * cellWidth;
       const y = bounds.y + bounds.h - valueRatio * bounds.h;
       ctx.fillStyle = '#ffe16a';
       ctx.beginPath();
       ctx.arc(x, y, 3, 0, Math.PI * 2);
       ctx.fill();
     });
+    ctx.restore();
   }
 
   drawGridControls(ctx, x, y, w, track) {
