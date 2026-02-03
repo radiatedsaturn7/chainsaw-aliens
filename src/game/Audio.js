@@ -11,11 +11,10 @@ import {
 import DrumKitManager from '../audio/DrumKitManager.js';
 import SoundfontEngine from '../audio/SoundfontEngine.js';
 
-const DEFAULT_GM_SOUND_FONT_URL = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
+const DEFAULT_GM_SOUND_FONT_URL = 'vendor/soundfonts/FluidR3_GM/';
 const FALLBACK_GM_SOUND_FONT_URL = 'vendor/soundfonts/FluidR3_GM/';
 const SOUNDFONT_CDN_URLS = {
-  vendored: 'vendor/soundfonts/FluidR3_GM/',
-  gleitz: 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/'
+  vendored: 'vendor/soundfonts/FluidR3_GM/'
 };
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
