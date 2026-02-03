@@ -69,6 +69,8 @@ export default class AudioSystem {
     this.midiReverbLevel = 0.18;
     this.midiReverbSend = null;
     this.midiPitchBendSemitones = 0;
+    this.masterPan = 0;
+    this.masterPanNode = null;
     this.channelPitchBendSemitones = Array.from({ length: 16 }, () => 0);
     this.liveMidiNotes = new Map();
     this.gmEnabled = true;
@@ -109,7 +111,14 @@ export default class AudioSystem {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
       this.master = this.ctx.createGain();
       this.master.gain.value = this.volume;
-      this.master.connect(this.ctx.destination);
+      this.masterPanNode = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
+      if (this.masterPanNode) {
+        this.masterPanNode.pan.value = clamp(this.masterPan, -1, 1);
+        this.master.connect(this.masterPanNode);
+        this.masterPanNode.connect(this.ctx.destination);
+      } else {
+        this.master.connect(this.ctx.destination);
+      }
     } else if (this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
@@ -453,6 +462,13 @@ export default class AudioSystem {
     this.volume = value;
     if (this.master) {
       this.master.gain.value = value;
+    }
+  }
+
+  setMasterPan(value = 0) {
+    this.masterPan = clamp(Number(value) || 0, -1, 1);
+    if (this.masterPanNode) {
+      this.masterPanNode.pan.value = this.masterPan;
     }
   }
 
