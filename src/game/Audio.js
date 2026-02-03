@@ -476,7 +476,8 @@ export default class AudioSystem {
     channel = 0,
     bankMSB = 0,
     bankLSB = 0,
-    pan = 0
+    pan = 0,
+    trackId = null
   }) {
     this.ensureMidiSampler();
     const clampedProgram = clamp(program ?? 0, 0, GM_PROGRAMS.length - 1);
@@ -511,6 +512,18 @@ export default class AudioSystem {
       channelState.program = clampedProgram;
       this.midiDebug.lastChannelType = 'melodic';
       this.midiDebug.lastChannel = resolvedChannel;
+    }
+    if (this.soundfont?.debug) {
+      // eslint-disable-next-line no-console
+      console.debug('[Audio] GM noteOn', {
+        trackId,
+        channel: resolvedChannel,
+        isDrum: isDrums,
+        pitch: resolvedPitch,
+        program: isDrums ? 0 : clampedProgram,
+        bankMSB: resolvedBankMSB,
+        bankLSB: resolvedBankLSB
+      });
     }
     const fallback = () => {
       this.gmError = 'SoundFont failed; using fallback synth.';
@@ -558,7 +571,7 @@ export default class AudioSystem {
     }
     const when = this.ctx.currentTime + this.midiLatency;
     this.soundfont.noteOn(resolvedPitch, clampedVolume, when, duration, resolvedChannel, {
-      trackId: resolvedChannel,
+      trackId: trackId ?? resolvedChannel,
       isDrum: isDrums,
       sourceNote: pitch,
       resolvedNote: resolvedPitch,
@@ -598,6 +611,7 @@ export default class AudioSystem {
             keyRange: null,
             error
           });
+          fallback();
           return;
         }
         fallback();
@@ -613,7 +627,8 @@ export default class AudioSystem {
     channel = 0,
     bankMSB = 0,
     bankLSB = 0,
-    pan = 0
+    pan = 0,
+    trackId = null
   }) {
     if (!id) return;
     this.stopLiveGmNote(id);
@@ -651,6 +666,18 @@ export default class AudioSystem {
       this.midiDebug.lastChannelType = 'melodic';
       this.midiDebug.lastChannel = resolvedChannel;
     }
+    if (this.soundfont?.debug) {
+      // eslint-disable-next-line no-console
+      console.debug('[Audio] GM live noteOn', {
+        trackId,
+        channel: resolvedChannel,
+        isDrum: isDrums,
+        pitch: resolvedPitch,
+        program: isDrums ? 0 : clampedProgram,
+        bankMSB: resolvedBankMSB,
+        bankLSB: resolvedBankLSB
+      });
+    }
     if (!this.gmEnabled) {
       this.playMidiNote(resolvedPitch, this.getFallbackInstrument(clampedProgram), duration, clampedVolume, null, clampedPan);
       return;
@@ -660,7 +687,7 @@ export default class AudioSystem {
     }
     const when = this.ctx.currentTime + this.midiLatency;
     this.soundfont.noteOn(resolvedPitch, clampedVolume, when, duration, resolvedChannel, {
-      trackId: resolvedChannel,
+      trackId: trackId ?? resolvedChannel,
       isDrum: isDrums,
       sourceNote: pitch,
       resolvedNote: resolvedPitch,
@@ -703,10 +730,44 @@ export default class AudioSystem {
             keyRange: null,
             error
           });
+          this.playSampledNote({
+            pitch: resolvedPitch,
+            duration,
+            volume: clampedVolume,
+            instrument: this.getFallbackDrum(resolvedPitch),
+            when: this.ctx.currentTime + this.midiLatency,
+            pan: clampedPan
+          });
           return;
         }
         this.playMidiNote(resolvedPitch, this.getFallbackInstrument(clampedProgram), duration, clampedVolume, null, clampedPan);
       });
+  }
+
+  testDrumKit({
+    sequence = [36, 38, 42, 46, 45, 47, 50, 49, 51],
+    intervalSeconds = 0.3,
+    volume = 0.9
+  } = {}) {
+    this.ensureMidiSampler();
+    const start = performance.now();
+    sequence.forEach((pitch, index) => {
+      const delay = Math.max(0, intervalSeconds) * 1000 * index;
+      window.setTimeout(() => {
+        this.playGmNote({
+          pitch,
+          duration: 0.25,
+          volume,
+          program: 0,
+          channel: GM_DRUM_CHANNEL,
+          bankMSB: GM_DRUM_BANK_MSB,
+          bankLSB: GM_DRUM_BANK_LSB,
+          pan: 0,
+          trackId: 'drum-test'
+        });
+      }, delay);
+    });
+    return performance.now() - start;
   }
 
   stopLiveGmNote(id) {

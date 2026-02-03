@@ -131,6 +131,25 @@ Open the sequencer from the title screen **Tools** menu (`MIDI Editor`). The edi
 
 If you hear no sound, wait for the “Loading instrument bank…” banner to finish or switch to another GM SoundFont.
 
+### Drums: GM Channel 10 + Pad Map
+- Drum tracks always route to **GM channel 10** (index `9` in 0-based code). Notes are interpreted as **percussion hits**, not pitched instruments.
+- The default drum pad layout is kept in `src/audio/gm.js` (`GM_DRUM_PAD_LAYOUT`) and is mirrored by the touch UI in `src/input/touch.js`.
+
+**Default pad notes**
+1. Kick — 36
+2. Snare — 38
+3. Closed Hat — 42
+4. Open Hat — 46
+5. Low Tom — 45
+6. Mid Tom — 47
+7. High Tom — 50
+8. Crash — 49
+9. Ride — 51
+
+**How to add pads**
+1. Add a `{ label, pitch }` entry to `GM_DRUM_PAD_LAYOUT` in `src/audio/gm.js`.
+2. The touch drum pad UI and the basic drum grid will reflect the new pad automatically.
+
 ### Recording Mode (Live Input)
 1. Open the **MIDI Editor**, then press the **Record** button in the transport bar.
 2. The layout switches to **Record Mode** (grid on top, live instrument UI on bottom). Use **Stop Recording** in the lower-right corner to finish.

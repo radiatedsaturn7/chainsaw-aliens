@@ -4478,6 +4478,10 @@ export default class MidiComposer {
       this.applyAudioSettings();
       return;
     }
+    if (control.id === 'audio-drum-test') {
+      this.game?.audio?.testDrumKit?.();
+      return;
+    }
     if (control.id === 'grid-preview') {
       this.previewOnEdit = !this.previewOnEdit;
       return;
@@ -6604,6 +6608,7 @@ export default class MidiComposer {
     const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
     const activeKit = drumKits.find((kit) => kit.id === this.audioSettings.drumKitId) || drumKits[0];
     drawAction('Drum Kit', activeKit?.label || 'Standard Kit', 'audio-drumkit', 'Select the GM drum kit for channel 10.');
+    drawAction('Test Drum Kit', 'Play', 'audio-drum-test', 'Plays kick/snare/hats/toms/cymbals to verify routing.');
     if (gmStatus) {
       ctx.fillStyle = gmStatus.error ? '#ff8a8a' : 'rgba(255,255,255,0.55)';
       ctx.font = '11px Courier New';
