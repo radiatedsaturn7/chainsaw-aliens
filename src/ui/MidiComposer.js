@@ -76,8 +76,8 @@ const TIME_SIGNATURE_OPTIONS = [
 
 const TAB_OPTIONS = [
   { id: 'grid', label: 'Grid' },
-  { id: 'instruments', label: 'Tracks' },
-  { id: 'settings', label: 'Settings' }
+  { id: 'song', label: 'Song' },
+  { id: 'instruments', label: 'Mixer' }
 ];
 
 const TOOL_OPTIONS = [
@@ -296,6 +296,7 @@ const createDefaultSong = () => ({
       mute: false,
       solo: false,
       color: TRACK_COLORS[0],
+      automation: { pan: [], padding: [] },
       patterns: [{ id: 'pattern-lead', bars: DEFAULT_GRID_BARS, notes: [] }]
     },
     {
@@ -310,6 +311,7 @@ const createDefaultSong = () => ({
       mute: false,
       solo: false,
       color: TRACK_COLORS[1],
+      automation: { pan: [], padding: [] },
       patterns: [{ id: 'pattern-bass', bars: DEFAULT_GRID_BARS, notes: [] }]
     },
     {
@@ -325,6 +327,7 @@ const createDefaultSong = () => ({
       mute: false,
       solo: false,
       color: TRACK_COLORS[2],
+      automation: { pan: [], padding: [] },
       patterns: [{ id: 'pattern-drums', bars: DEFAULT_GRID_BARS, notes: [] }]
     }
   ],
@@ -648,6 +651,13 @@ export default class MidiComposer {
       y: 0,
       bounds: []
     };
+    this.songSelection = {
+      active: false,
+      trackIndex: 0,
+      startTick: 0,
+      endTick: 0
+    };
+    this.songClipboard = null;
     this.noteLengthMenu = {
       open: false,
       anchor: null
@@ -734,6 +744,11 @@ export default class MidiComposer {
     this.gridBounds = null;
     this.rulerBounds = null;
     this.gridZoomInitialized = false;
+    this.songLaneBounds = [];
+    this.songAutomationBounds = [];
+    this.songActionBounds = [];
+    this.songInstrumentBounds = null;
+    this.songAddBounds = null;
     this.fileInput = document.createElement('input');
     this.fileInput.type = 'file';
     this.fileInput.accept = '.json,.mid,.midi,.zip,application/json,audio/midi,application/zip';
@@ -1305,6 +1320,10 @@ export default class MidiComposer {
       mute: Boolean(track.mute),
       solo: Boolean(track.solo),
       color: track.color || TRACK_COLORS[index % TRACK_COLORS.length],
+      automation: {
+        pan: Array.isArray(track.automation?.pan) ? track.automation.pan : [],
+        padding: Array.isArray(track.automation?.padding) ? track.automation.padding : []
+      },
       patterns: Array.isArray(track.patterns) && track.patterns.length > 0
         ? track.patterns
         : [{ id: `pattern-${track.id || uid()}`, bars: loopBars, notes: [] }]
@@ -1753,6 +1772,28 @@ export default class MidiComposer {
 
   getEditableGridTick() {
     return this.getGridTicks();
+  }
+
+  getSongTimelineTicks() {
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    const loopEnd = typeof this.song.loopEndTick === 'number'
+      ? this.song.loopEndTick
+      : (this.song.loopBars || 1) * ticksPerBar;
+    return Math.max(ticksPerBar, loopEnd);
+  }
+
+  getSongSelectionRange() {
+    if (!this.songSelection?.active) return null;
+    const startTick = Math.min(this.songSelection.startTick, this.songSelection.endTick);
+    const endTick = Math.max(this.songSelection.startTick, this.songSelection.endTick);
+    if (!Number.isFinite(startTick) || !Number.isFinite(endTick)) return null;
+    if (endTick <= startTick) return null;
+    return {
+      trackIndex: this.songSelection.trackIndex,
+      startTick,
+      endTick,
+      durationTicks: endTick - startTick
+    };
   }
 
   getExpandedGridWidth() {
@@ -3184,6 +3225,47 @@ export default class MidiComposer {
       return;
     }
 
+    if (this.activeTab === 'song') {
+      const actionHit = this.songActionBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (actionHit) {
+        this.handleSongAction(actionHit.action);
+        return;
+      }
+      if (this.songInstrumentBounds && this.pointInBounds(x, y, this.songInstrumentBounds)) {
+        this.openInstrumentPicker('edit', this.selectedTrackIndex);
+        return;
+      }
+      if (this.songAddBounds && this.pointInBounds(x, y, this.songAddBounds)) {
+        this.addTrack();
+        return;
+      }
+      const automationHit = this.songAutomationBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (automationHit) {
+        const track = this.song.tracks[automationHit.trackIndex];
+        const tick = this.getSongTickFromX(x, automationHit);
+        const ratio = clamp((automationHit.y + automationHit.h - y) / automationHit.h, 0, 1);
+        const minValue = automationHit.type === 'pan' ? -1 : 0;
+        const maxValue = automationHit.type === 'pan' ? 1 : 1;
+        const value = minValue + ratio * (maxValue - minValue);
+        this.selectedTrackIndex = automationHit.trackIndex;
+        this.addSongAutomationKeyframe(track, automationHit.type, tick, value);
+        return;
+      }
+      const laneHit = this.songLaneBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (laneHit) {
+        this.selectedTrackIndex = laneHit.trackIndex;
+        const tick = this.getSongTickFromX(x, laneHit);
+        this.songSelection = {
+          active: true,
+          trackIndex: laneHit.trackIndex,
+          startTick: tick,
+          endTick: tick
+        };
+        this.dragState = { mode: 'song-select', bounds: laneHit };
+      }
+      return;
+    }
+
     if (this.activeTab === 'settings') {
       const controlHit = this.bounds.settingsControls?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (controlHit) {
@@ -3355,6 +3437,11 @@ export default class MidiComposer {
       return;
     }
     if (this.qaOverlayOpen) return;
+    if (this.dragState?.mode === 'song-select') {
+      const tick = this.getSongTickFromX(payload.x, this.dragState.bounds);
+      this.songSelection.endTick = tick;
+      return;
+    }
     if (this.dragState?.mode === 'instrument-scroll') {
       const delta = this.dragState.startY - payload.y;
       this.instrumentPicker.scroll = clamp(this.dragState.startScroll + delta, 0, this.instrumentPicker.scrollMax);
@@ -3479,6 +3566,11 @@ export default class MidiComposer {
     if (this.dragState?.mode === 'instrument-scroll'
       || this.dragState?.mode === 'settings-scroll'
       || this.dragState?.mode === 'slider') {
+      this.dragState = null;
+      return;
+    }
+    if (this.dragState?.mode === 'song-select') {
+      this.finalizeSongSelection();
       this.dragState = null;
       return;
     }
@@ -4406,6 +4498,140 @@ export default class MidiComposer {
     this.persist();
   }
 
+  getSongTickFromX(x, bounds) {
+    const ratio = clamp((x - bounds.x) / bounds.w, 0, 1);
+    const tick = ratio * this.getSongTimelineTicks();
+    return this.snapTick(tick);
+  }
+
+  finalizeSongSelection() {
+    if (!this.songSelection?.active) return;
+    const minTicks = this.ticksPerBeat;
+    if (this.songSelection.endTick === this.songSelection.startTick) {
+      this.songSelection.endTick = this.songSelection.startTick + minTicks;
+    }
+    const totalTicks = this.getSongTimelineTicks();
+    this.songSelection.startTick = clamp(this.songSelection.startTick, 0, totalTicks);
+    this.songSelection.endTick = clamp(this.songSelection.endTick, 0, totalTicks);
+  }
+
+  addSongAutomationKeyframe(track, type, tick, value) {
+    if (!track) return;
+    if (!track.automation) {
+      track.automation = { pan: [], padding: [] };
+    }
+    const frames = track.automation[type] || [];
+    const existing = frames.find((frame) => Math.abs(frame.tick - tick) <= this.ticksPerBeat / 4);
+    if (existing) {
+      existing.value = value;
+    } else {
+      frames.push({ tick, value });
+    }
+    frames.sort((a, b) => a.tick - b.tick);
+    track.automation[type] = frames;
+    this.persist();
+  }
+
+  getSongSelectionNotes(pattern, range) {
+    if (!pattern || !range) return [];
+    return pattern.notes.filter((note) => note.startTick >= range.startTick && note.startTick < range.endTick);
+  }
+
+  getSongNotesOverlapping(pattern, range) {
+    if (!pattern || !range) return [];
+    return pattern.notes.filter((note) => (
+      note.startTick < range.endTick && (note.startTick + note.durationTicks) > range.startTick
+    ));
+  }
+
+  shiftNotesAfterTick(pattern, tick, deltaTicks) {
+    pattern.notes.forEach((note) => {
+      if (note.startTick >= tick) {
+        note.startTick = Math.max(0, note.startTick + deltaTicks);
+      }
+    });
+  }
+
+  handleSongAction(action) {
+    const range = this.getSongSelectionRange();
+    if (!range) return;
+    const track = this.song.tracks[range.trackIndex];
+    const pattern = track?.patterns?.[this.selectedPatternIndex];
+    if (!track || !pattern) return;
+
+    if (action === 'song-copy') {
+      const selectionNotes = this.getSongSelectionNotes(pattern, range);
+      this.songClipboard = {
+        trackIndex: range.trackIndex,
+        durationTicks: range.durationTicks,
+        notes: selectionNotes.map((note) => ({
+          ...note,
+          startTick: note.startTick - range.startTick
+        }))
+      };
+      return;
+    }
+
+    if (action === 'song-cut') {
+      this.handleSongAction('song-copy');
+      const overlapping = this.getSongNotesOverlapping(pattern, range);
+      pattern.notes = pattern.notes.filter((note) => !overlapping.includes(note));
+      this.persist();
+      return;
+    }
+
+    if (action === 'song-delete') {
+      const overlapping = this.getSongNotesOverlapping(pattern, range);
+      pattern.notes = pattern.notes.filter((note) => !overlapping.includes(note));
+      this.persist();
+      return;
+    }
+
+    if (action === 'song-splice') {
+      const overlapping = this.getSongNotesOverlapping(pattern, range);
+      pattern.notes = pattern.notes.filter((note) => !overlapping.includes(note));
+      this.shiftNotesAfterTick(pattern, range.endTick, -range.durationTicks);
+      this.persist();
+      return;
+    }
+
+    if (action === 'song-transpose-up' || action === 'song-transpose-down') {
+      if (isDrumTrack(track)) return;
+      const delta = action === 'song-transpose-up' ? 1 : -1;
+      pattern.notes.forEach((note) => {
+        if (note.startTick >= range.startTick && note.startTick < range.endTick) {
+          note.pitch = clamp(note.pitch + delta, 0, 127);
+        }
+      });
+      this.persist();
+      return;
+    }
+
+    if (action === 'song-repeat') {
+      const repeatRaw = window.prompt('Repeat selection how many times?', '2');
+      const repeatCount = Number.parseInt(repeatRaw, 10);
+      if (!Number.isInteger(repeatCount) || repeatCount < 2) return;
+      const selectionNotes = this.getSongSelectionNotes(pattern, range);
+      if (!selectionNotes.length) return;
+      const extraTicks = range.durationTicks * (repeatCount - 1);
+      this.shiftNotesAfterTick(pattern, range.endTick, extraTicks);
+      for (let i = 1; i < repeatCount; i += 1) {
+        selectionNotes.forEach((note) => {
+          pattern.notes.push({
+            ...note,
+            id: uid(),
+            startTick: note.startTick + range.durationTicks * i,
+            durationTicks: note.durationTicks
+          });
+        });
+      }
+      const newEndTick = range.endTick + extraTicks;
+      this.ensureGridCapacity(newEndTick);
+      this.songSelection.endTick = range.startTick + range.durationTicks * repeatCount;
+      this.persist();
+    }
+  }
+
   setTrackChannel(track, channel) {
     const nextChannel = clamp(channel, 0, 15);
     const drumTarget = isDrumTrack(track) || nextChannel === GM_DRUM_CHANNEL;
@@ -4704,6 +4930,10 @@ export default class MidiComposer {
     }
     if (action === 'play-robtersession') {
       this.playInRobterSession();
+      return;
+    }
+    if (action === 'settings') {
+      this.activeTab = 'settings';
       return;
     }
     if (action === 'theme') {
@@ -5487,6 +5717,8 @@ export default class MidiComposer {
 
       if (this.activeTab === 'grid') {
         this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
+      } else if (this.activeTab === 'song') {
+        this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
       } else if (this.activeTab === 'instruments') {
         this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
       } else if (this.activeTab === 'settings') {
@@ -5657,6 +5889,8 @@ export default class MidiComposer {
     if (this.activeTab === 'grid') {
       this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.drawGridZoomControls(ctx, contentX, contentY, contentW, contentH);
+    } else if (this.activeTab === 'song') {
+      this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'instruments') {
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
     } else if (this.activeTab === 'settings') {
@@ -6017,6 +6251,203 @@ export default class MidiComposer {
     const gridH = h - controlsH - 12;
     this.drawPatternEditor(ctx, x, gridY, w, gridH, track, pattern);
     this.drawGridZoomControls(ctx, x, gridY, w, gridH);
+  }
+
+  drawSongTab(ctx, x, y, w, h) {
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(x, y, w, h);
+
+    const padding = 12;
+    const headerH = 38;
+    const headerY = y + padding;
+    const addH = 34;
+    const addY = y + h - padding - addH;
+    const laneAreaY = headerY + headerH + 12;
+    const laneAreaH = Math.max(0, addY - laneAreaY - 10);
+    const trackCount = Math.max(1, this.song.tracks.length);
+    const laneGap = 12;
+    const laneBlockH = Math.max(74, Math.min(112, (laneAreaH - laneGap * (trackCount - 1)) / trackCount));
+    const labelW = Math.min(210, Math.max(140, w * 0.22));
+    const laneX = x + padding + labelW + 12;
+    const laneW = w - padding * 2 - labelW - 12;
+    const laneH = Math.max(36, laneBlockH * 0.42);
+    const automationH = Math.max(12, (laneBlockH - laneH) / 2 - 6);
+
+    const selectedTrack = this.getActiveTrack();
+    const trackLabel = selectedTrack ? selectedTrack.name : 'No Track';
+    const instrumentLabel = selectedTrack
+      ? isDrumTrack(selectedTrack)
+        ? this.getDrumKitLabel(selectedTrack)
+        : this.getProgramLabel(selectedTrack.program)
+      : 'Instrument';
+
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    ctx.fillText('Song Timeline', x + padding, headerY + 16);
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '12px Courier New';
+    ctx.fillText(trackLabel, x + padding, headerY + 32);
+
+    const instrumentW = Math.min(240, Math.max(150, ctx.measureText(instrumentLabel).width + 28));
+    this.songInstrumentBounds = {
+      x: x + padding + 150,
+      y: headerY + 8,
+      w: instrumentW,
+      h: headerH - 12
+    };
+    this.drawSmallButton(ctx, this.songInstrumentBounds, instrumentLabel, false);
+
+    const selectionRange = this.getSongSelectionRange();
+    if (selectionRange) {
+      const ticksPerBar = this.ticksPerBeat * this.beatsPerBar;
+      const startBar = Math.floor(selectionRange.startTick / ticksPerBar) + 1;
+      const endBar = Math.max(startBar, Math.ceil(selectionRange.endTick / ticksPerBar));
+      ctx.fillStyle = '#ffe16a';
+      ctx.font = '12px Courier New';
+      ctx.fillText(`Selection: Bars ${startBar}-${endBar}`, x + padding + 420, headerY + 20);
+    }
+
+    const actions = [
+      { id: 'song-copy', label: 'Copy' },
+      { id: 'song-cut', label: 'Cut' },
+      { id: 'song-delete', label: 'Delete' },
+      { id: 'song-splice', label: 'Splice' },
+      { id: 'song-transpose-up', label: 'Pitch +1' },
+      { id: 'song-transpose-down', label: 'Pitch -1' },
+      { id: 'song-repeat', label: 'Repeat' }
+    ];
+    this.songActionBounds = [];
+    let actionX = x + padding + 420;
+    const actionY = headerY + 4;
+    const actionH = headerH - 10;
+    actions.forEach((action) => {
+      const actionW = Math.min(110, Math.max(70, ctx.measureText(action.label).width + 24));
+      if (actionX + actionW > x + w - padding) return;
+      const bounds = { x: actionX, y: actionY, w: actionW, h: actionH, action: action.id };
+      this.drawSmallButton(ctx, bounds, action.label, false);
+      this.songActionBounds.push(bounds);
+      actionX += actionW + 8;
+    });
+
+    this.songLaneBounds = [];
+    this.songAutomationBounds = [];
+    const timelineTicks = this.getSongTimelineTicks();
+    this.song.tracks.forEach((track, index) => {
+      const laneTop = laneAreaY + index * (laneBlockH + laneGap);
+      if (laneTop + laneBlockH > laneAreaY + laneAreaH + 4) return;
+      const labelX = x + padding;
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.fillRect(labelX, laneTop, labelW, laneBlockH);
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.strokeRect(labelX, laneTop, labelW, laneBlockH);
+      ctx.fillStyle = '#fff';
+      ctx.font = '12px Courier New';
+      ctx.fillText(track.name, labelX + 10, laneTop + 18);
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.font = '10px Courier New';
+      const instrumentName = isDrumTrack(track) ? this.getDrumKitLabel(track) : this.getProgramLabel(track.program);
+      ctx.fillText(this.truncateLabel(ctx, instrumentName, labelW - 20), labelX + 10, laneTop + 34);
+
+      const laneBounds = { x: laneX, y: laneTop, w: laneW, h: laneH, trackIndex: index };
+      ctx.fillStyle = index === this.selectedTrackIndex ? 'rgba(255,225,106,0.12)' : 'rgba(0,0,0,0.45)';
+      ctx.fillRect(laneBounds.x, laneBounds.y, laneBounds.w, laneBounds.h);
+      ctx.strokeStyle = track.color || 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(laneBounds.x, laneBounds.y, laneBounds.w, laneBounds.h);
+      this.songLaneBounds.push(laneBounds);
+
+      const pattern = track.patterns?.[this.selectedPatternIndex];
+      if (pattern) {
+        const notes = pattern.notes || [];
+        if (notes.length > 0) {
+          const pitches = notes.map((note) => note.pitch);
+          const minPitch = Math.min(...pitches);
+          const maxPitch = Math.max(...pitches);
+          const range = Math.max(1, maxPitch - minPitch);
+          notes.forEach((note) => {
+            const noteX = laneBounds.x + (note.startTick / timelineTicks) * laneBounds.w;
+            const noteW = Math.max(2, (note.durationTicks / timelineTicks) * laneBounds.w);
+            const pitchRatio = (note.pitch - minPitch) / range;
+            const noteY = laneBounds.y + 4 + (1 - pitchRatio) * (laneBounds.h - 8);
+            ctx.fillStyle = toRgba(track.color, 0.7);
+            ctx.fillRect(noteX, noteY - 2, noteW, 4);
+          });
+        }
+      }
+
+      if (selectionRange && selectionRange.trackIndex === index) {
+        const selStart = laneBounds.x + (selectionRange.startTick / timelineTicks) * laneBounds.w;
+        const selEnd = laneBounds.x + (selectionRange.endTick / timelineTicks) * laneBounds.w;
+        ctx.fillStyle = 'rgba(255,225,106,0.2)';
+        ctx.fillRect(selStart, laneBounds.y, selEnd - selStart, laneBounds.h);
+        ctx.strokeStyle = 'rgba(255,225,106,0.6)';
+        ctx.strokeRect(selStart, laneBounds.y, selEnd - selStart, laneBounds.h);
+      }
+
+      const panBounds = {
+        x: laneX,
+        y: laneTop + laneH + 6,
+        w: laneW,
+        h: automationH,
+        trackIndex: index,
+        type: 'pan'
+      };
+      const padBounds = {
+        x: laneX,
+        y: panBounds.y + automationH + 6,
+        w: laneW,
+        h: automationH,
+        trackIndex: index,
+        type: 'padding'
+      };
+      this.drawAutomationLane(ctx, panBounds, track.automation?.pan || [], -1, 1, 'Pan');
+      this.drawAutomationLane(ctx, padBounds, track.automation?.padding || [], 0, 1, 'Pad');
+      this.songAutomationBounds.push(panBounds, padBounds);
+    });
+
+    this.songAddBounds = { x: x + padding, y: addY, w: w - padding * 2, h: addH };
+    this.drawButton(ctx, this.songAddBounds, 'Add Instrument', false, false);
+  }
+
+  drawAutomationLane(ctx, bounds, keyframes, minValue, maxValue, label) {
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = '10px Courier New';
+    ctx.fillText(label, bounds.x + 6, bounds.y + bounds.h - 3);
+
+    if (!keyframes.length) return;
+    const sorted = [...keyframes].sort((a, b) => a.tick - b.tick);
+    const totalTicks = this.getSongTimelineTicks();
+    ctx.strokeStyle = 'rgba(255,225,106,0.8)';
+    ctx.beginPath();
+    sorted.forEach((frame, index) => {
+      const ratio = totalTicks ? frame.tick / totalTicks : 0;
+      const value = clamp(frame.value ?? 0, minValue, maxValue);
+      const valueRatio = (value - minValue) / (maxValue - minValue || 1);
+      const x = bounds.x + ratio * bounds.w;
+      const y = bounds.y + bounds.h - valueRatio * bounds.h;
+      if (index === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+    ctx.stroke();
+    sorted.forEach((frame) => {
+      const ratio = totalTicks ? frame.tick / totalTicks : 0;
+      const value = clamp(frame.value ?? 0, minValue, maxValue);
+      const valueRatio = (value - minValue) / (maxValue - minValue || 1);
+      const x = bounds.x + ratio * bounds.w;
+      const y = bounds.y + bounds.h - valueRatio * bounds.h;
+      ctx.fillStyle = '#ffe16a';
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.fill();
+    });
   }
 
   drawGridControls(ctx, x, y, w, track) {
@@ -8021,6 +8452,7 @@ export default class MidiComposer {
       { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
       { id: 'import', label: 'Import MIDI/ZIP/JSON' },
       { id: 'play-robtersession', label: 'Play in RobterSession' },
+      { id: 'settings', label: 'Settings' },
       { id: 'theme', label: 'Generate Theme' },
       { id: 'sample', label: 'Load Sample Song' }
     ];
