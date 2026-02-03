@@ -86,6 +86,7 @@ export default class AudioSystem {
       lastChannel: null,
       lastChannelType: null
     };
+    this.drumSoundfontBypass = new Set();
   }
 
   ensure() {
@@ -286,7 +287,8 @@ export default class AudioSystem {
     note,
     containsNote,
     keyRange,
-    error
+    error,
+    reason
   }) {
     if (!this.soundfont?.debug) return;
     // eslint-disable-next-line no-console
@@ -301,8 +303,14 @@ export default class AudioSystem {
       note,
       containsNote,
       keyRange,
-      error: error ? String(error) : null
+      error: error ? String(error) : null,
+      reason: reason ?? null
     });
+  }
+
+  shouldBypassDrumSoundfont(kitName) {
+    if (!kitName) return true;
+    return kitName === 'synth_drum';
   }
 
   setVolume(value) {
@@ -569,6 +577,45 @@ export default class AudioSystem {
     if (!isDrums) {
       this.soundfont.setProgram(clampedProgram, resolvedChannel);
     }
+    if (isDrums) {
+      const resolvedPresetName = this.soundfont.getDrumKitName?.() || 'synth_drum';
+      if (this.shouldBypassDrumSoundfont(resolvedPresetName)) {
+        const cacheKey = this.soundfont.getCacheKey?.({
+          soundfontUrl: this.soundfont.baseUrl,
+          name: resolvedPresetName,
+          bankMSB: resolvedBankMSB,
+          bankLSB: resolvedBankLSB,
+          preset: 0,
+          percussion: true
+        });
+        if (!this.drumSoundfontBypass.has(resolvedPresetName)) {
+          this.drumSoundfontBypass.add(resolvedPresetName);
+          this.gmError = `Drum SoundFont "${resolvedPresetName}" lacks percussion samples; using fallback kit.`;
+        }
+        this.logDrumNote({
+          backend: 'fallback',
+          bankMSB: resolvedBankMSB,
+          bankLSB: resolvedBankLSB,
+          program: 0,
+          preset: 0,
+          cacheKey,
+          resolvedPresetName,
+          note: resolvedPitch,
+          containsNote: false,
+          keyRange: null,
+          reason: 'non-percussion-soundfont'
+        });
+        this.playSampledNote({
+          pitch: resolvedPitch,
+          duration,
+          volume: clampedVolume,
+          instrument: this.getFallbackDrum(resolvedPitch),
+          when: this.ctx.currentTime + this.midiLatency,
+          pan: clampedPan
+        });
+        return;
+      }
+    }
     const when = this.ctx.currentTime + this.midiLatency;
     this.soundfont.noteOn(resolvedPitch, clampedVolume, when, duration, resolvedChannel, {
       trackId: trackId ?? resolvedChannel,
@@ -684,6 +731,45 @@ export default class AudioSystem {
     }
     if (!isDrums) {
       this.soundfont.setProgram(clampedProgram, resolvedChannel);
+    }
+    if (isDrums) {
+      const resolvedPresetName = this.soundfont.getDrumKitName?.() || 'synth_drum';
+      if (this.shouldBypassDrumSoundfont(resolvedPresetName)) {
+        const cacheKey = this.soundfont.getCacheKey?.({
+          soundfontUrl: this.soundfont.baseUrl,
+          name: resolvedPresetName,
+          bankMSB: resolvedBankMSB,
+          bankLSB: resolvedBankLSB,
+          preset: 0,
+          percussion: true
+        });
+        if (!this.drumSoundfontBypass.has(resolvedPresetName)) {
+          this.drumSoundfontBypass.add(resolvedPresetName);
+          this.gmError = `Drum SoundFont "${resolvedPresetName}" lacks percussion samples; using fallback kit.`;
+        }
+        this.logDrumNote({
+          backend: 'fallback',
+          bankMSB: resolvedBankMSB,
+          bankLSB: resolvedBankLSB,
+          program: 0,
+          preset: 0,
+          cacheKey,
+          resolvedPresetName,
+          note: resolvedPitch,
+          containsNote: false,
+          keyRange: null,
+          reason: 'non-percussion-soundfont'
+        });
+        this.playSampledNote({
+          pitch: resolvedPitch,
+          duration,
+          volume: clampedVolume,
+          instrument: this.getFallbackDrum(resolvedPitch),
+          when: this.ctx.currentTime + this.midiLatency,
+          pan: clampedPan
+        });
+        return;
+      }
     }
     const when = this.ctx.currentTime + this.midiLatency;
     this.soundfont.noteOn(resolvedPitch, clampedVolume, when, duration, resolvedChannel, {
