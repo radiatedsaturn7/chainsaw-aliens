@@ -1,19 +1,10 @@
+import { GM_DRUM_PAD_LAYOUT } from '../audio/gm.js';
+
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
-const DRUM_MAP = [
-  { label: 'Kick', pitch: 36 },
-  { label: 'Snare', pitch: 38 },
-  { label: 'Closed Hat', pitch: 42 },
-  { label: 'Pedal Hat', pitch: 44 },
-  { label: 'Open Hat', pitch: 46 },
-  { label: 'Tom Low', pitch: 45 },
-  { label: 'Tom Mid', pitch: 47 },
-  { label: 'Tom High', pitch: 50 },
-  { label: 'Crash', pitch: 49 },
-  { label: 'Ride', pitch: 51 }
-];
+const DRUM_MAP = GM_DRUM_PAD_LAYOUT;
 
 export default class TouchInput {
   constructor(bus) {

@@ -116,11 +116,24 @@ export default class MidiSongPlayer {
     const velocity = note.velocity ?? 0.8;
     const volume = clamp(velocity * (track.volume ?? 0.8) * this.volume, 0, 1);
     const pan = track.pan ?? 0;
-    const isDrums = isDrumChannel(track.channel);
+    const isDrums = track.instrument === 'drums' || track.isPercussion === true || isDrumChannel(track.channel);
     const channel = isDrums ? GM_DRUM_CHANNEL : track.channel;
     const pitch = isDrums ? mapPitchToDrumRow(clampDrumPitch(note.pitch)) : note.pitch;
     const bankMSB = isDrums ? (track.bankMSB ?? GM_DRUM_BANK_MSB) : (track.bankMSB ?? 0);
     const bankLSB = isDrums ? (track.bankLSB ?? GM_DRUM_BANK_LSB) : (track.bankLSB ?? 0);
+    if (this.audio?.soundfont?.debug) {
+      // eslint-disable-next-line no-console
+      console.debug('[MIDI] noteOn', {
+        trackId: track.id ?? null,
+        channel,
+        note: pitch,
+        velocity,
+        drum: isDrums,
+        bankMSB,
+        bankLSB,
+        program: track.program ?? 0
+      });
+    }
     this.audio.playGmNote({
       pitch,
       duration,
@@ -129,7 +142,8 @@ export default class MidiSongPlayer {
       channel,
       bankMSB,
       bankLSB,
-      pan
+      pan,
+      trackId: track.id ?? null
     });
   }
 }

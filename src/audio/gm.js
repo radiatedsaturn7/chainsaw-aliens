@@ -299,11 +299,18 @@ export const GM_DRUM_NOTE_MAX = 81;
 export const GM_DRUM_PAD_ROWS = [
   { label: 'Kick', pitch: 36 },
   { label: 'Snare', pitch: 38 },
-  { label: 'Hi-Hat', pitch: 42 },
-  { label: 'Cymbal', pitch: 49 }
+  { label: 'Closed Hat', pitch: 42 },
+  { label: 'Open Hat', pitch: 46 },
+  { label: 'Low Tom', pitch: 45 },
+  { label: 'Mid Tom', pitch: 47 },
+  { label: 'High Tom', pitch: 50 },
+  { label: 'Crash', pitch: 49 },
+  { label: 'Ride', pitch: 51 }
 ];
 
 export const GM_DRUM_ROWS = GM_DRUM_PAD_ROWS.map((row) => ({ ...row }));
+
+export const GM_DRUM_PAD_LAYOUT = GM_DRUM_PAD_ROWS.map((row) => ({ ...row }));
 
 export const GM_DRUMS = [
   { pitch: 35, label: 'Acoustic Bass Drum' },
@@ -356,15 +363,27 @@ export const GM_DRUMS = [
 ];
 
 export const GM_DRUM_KITS = [
-  { id: 'standard', label: 'Standard Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 0, soundfont: 'synth_drum' },
-  { id: 'room', label: 'Room Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 1, soundfont: 'synth_drum' },
-  { id: 'power', label: 'Power Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 2, soundfont: 'synth_drum' },
-  { id: 'electronic', label: 'Electronic Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 3, soundfont: 'synth_drum' },
-  { id: 'jazz', label: 'Jazz Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 4, soundfont: 'synth_drum' },
-  { id: 'brush', label: 'Brush Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 5, soundfont: 'synth_drum' },
-  { id: 'orchestra', label: 'Orchestra Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 6, soundfont: 'synth_drum' },
-  { id: 'sfx', label: 'SFX Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 7, soundfont: 'synth_drum' }
+  { id: 'standard', label: 'Standard Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 0, soundfont: 'standard_kit' },
+  { id: 'room', label: 'Room Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 1, soundfont: 'standard_kit' },
+  { id: 'power', label: 'Power Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 2, soundfont: 'standard_kit' },
+  { id: 'electronic', label: 'Electronic Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 3, soundfont: 'standard_kit' },
+  { id: 'jazz', label: 'Jazz Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 4, soundfont: 'standard_kit' },
+  { id: 'brush', label: 'Brush Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 5, soundfont: 'standard_kit' },
+  { id: 'orchestra', label: 'Orchestra Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 6, soundfont: 'standard_kit' },
+  { id: 'sfx', label: 'SFX Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 7, soundfont: 'standard_kit' }
 ];
+
+export const GM_DRUM_GROUPS = {
+  kick: [35, 36],
+  snare: [38, 40, 37, 39],
+  hat: [42, 44, 46],
+  tom: [45, 47, 50, 41, 43, 48],
+  cymbal: [49, 51, 52, 55, 57, 59],
+  clap: [39],
+  cowbell: [56]
+};
+
+const DRUM_FALLBACK_PRIORITY = ['kick', 'snare', 'hat', 'tom', 'cymbal', 'clap', 'cowbell'];
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
@@ -388,6 +407,28 @@ export const mapPitchToDrumRow = (pitch, rows = GM_DRUM_ROWS) => {
   return closest?.pitch ?? GM_DRUM_ROWS[0].pitch;
 };
 
-export const isDrumChannel = (channel) => channel === GM_DRUM_CHANNEL;
+export const getDrumGroup = (pitch) => {
+  const numeric = Number.isFinite(pitch) ? Math.round(pitch) : null;
+  if (numeric === null) return null;
+  return Object.keys(GM_DRUM_GROUPS).find((group) => GM_DRUM_GROUPS[group].includes(numeric)) || null;
+};
+
+export const resolveDrumFallbackNote = (pitch, availableNotes = []) => {
+  const availableSet = new Set(availableNotes.filter(Number.isFinite).map((note) => Math.round(note)));
+  const numeric = Number.isFinite(pitch) ? Math.round(pitch) : GM_DRUM_NOTE_MIN;
+  if (availableSet.has(numeric)) return numeric;
+  const group = getDrumGroup(numeric);
+  if (group) {
+    const groupMatch = GM_DRUM_GROUPS[group].find((note) => availableSet.has(note));
+    if (Number.isFinite(groupMatch)) return groupMatch;
+  }
+  for (const fallbackGroup of DRUM_FALLBACK_PRIORITY) {
+    const match = GM_DRUM_GROUPS[fallbackGroup].find((note) => availableSet.has(note));
+    if (Number.isFinite(match)) return match;
+  }
+  return null;
+};
+
+export const isDrumChannel = (channel) => channel === GM_DRUM_CHANNEL || channel === GM_DRUM_CHANNEL + 1;
 
 export const formatProgramNumber = (program) => `${String(program + 1).padStart(3, '0')}`;

@@ -13,6 +13,11 @@ import SoundfontEngine from '../audio/SoundfontEngine.js';
 
 const DEFAULT_GM_SOUND_FONT_URL = 'vendor/soundfonts/FluidR3_GM/';
 const FALLBACK_GM_SOUND_FONT_URL = 'vendor/soundfonts/FluidR3_GM/';
+const SOUNDFONT_CDN_URLS = {
+  vendored: 'vendor/soundfonts/FluidR3_GM/'
+};
+const WEB_AUDIOFONT_BASE_URL = 'vendor/webaudiofont/';
+const WEB_AUDIOFONT_KIT = 'Chaos_sf2_file';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const LEGACY_INSTRUMENT_TO_PROGRAM = {
@@ -86,6 +91,14 @@ export default class AudioSystem {
       lastChannel: null,
       lastChannelType: null
     };
+    this.drumFont = {
+      baseUrl: WEB_AUDIOFONT_BASE_URL,
+      kit: WEB_AUDIOFONT_KIT,
+      player: null,
+      loadedNotes: new Set(),
+      loadingNotes: new Map(),
+      failed: false
+    };
   }
 
   ensure() {
@@ -123,6 +136,95 @@ export default class AudioSystem {
     this.soundfont.initAudio({ audioContext: this.ctx, destination: this.midiBus });
   }
 
+  loadScriptOnce(url) {
+    return new Promise((resolve, reject) => {
+      if (!url) {
+        reject(new Error('Missing script URL.'));
+        return;
+      }
+      const existing = document.querySelector(`script[data-src="${url}"]`);
+      if (existing) {
+        if (existing.dataset.loaded === 'true') resolve();
+        else existing.addEventListener('load', () => resolve());
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = url;
+      script.async = true;
+      script.dataset.src = url;
+      script.dataset.loaded = 'false';
+      script.onload = () => {
+        script.dataset.loaded = 'true';
+        resolve();
+      };
+      script.onerror = () => reject(new Error(`Failed to load ${url}`));
+      document.head.appendChild(script);
+    });
+  }
+
+  async ensureDrumFontPlayer() {
+    if (this.drumFont.failed) return null;
+    if (this.drumFont.player) return this.drumFont.player;
+    try {
+      await this.loadScriptOnce(`${this.drumFont.baseUrl}webaudiofont.js`);
+      const PlayerClass = globalThis.WebAudioFontPlayer;
+      if (!PlayerClass) {
+        this.drumFont.failed = true;
+        return null;
+      }
+      this.drumFont.player = new PlayerClass();
+      return this.drumFont.player;
+    } catch (error) {
+      this.drumFont.failed = true;
+      return null;
+    }
+  }
+
+  getDrumFontVarName(note) {
+    return `_drum_${note}_0_${this.drumFont.kit}`;
+  }
+
+  async loadDrumFontNote(note) {
+    if (this.drumFont.failed) return null;
+    if (this.drumFont.loadedNotes.has(note)) return globalThis[this.getDrumFontVarName(note)] || null;
+    if (this.drumFont.loadingNotes.has(note)) {
+      return this.drumFont.loadingNotes.get(note);
+    }
+    const url = `${this.drumFont.baseUrl}128${note}_0_${this.drumFont.kit}.js`;
+    const promise = this.loadScriptOnce(url)
+      .then(() => {
+        const data = globalThis[this.getDrumFontVarName(note)];
+        if (!data) {
+          throw new Error(`Missing drum font data for note ${note}`);
+        }
+        this.drumFont.loadedNotes.add(note);
+        return data;
+      })
+      .catch((error) => {
+        this.drumFont.failed = true;
+        throw error;
+      })
+      .finally(() => {
+        this.drumFont.loadingNotes.delete(note);
+      });
+    this.drumFont.loadingNotes.set(note, promise);
+    return promise;
+  }
+
+  playWebAudioFontDrum({ note, when, duration, volume }) {
+    if (this.drumFont.failed) return false;
+    const play = async () => {
+      const player = await this.ensureDrumFontPlayer();
+      if (!player) return;
+      const data = await this.loadDrumFontNote(note);
+      if (!data) return;
+      const target = this.midiBus || this.master;
+      player.queueWaveTable(this.ctx, target, data, when, note, duration, volume);
+    };
+    play();
+    return true;
+  }
+
   setMidiPitchBend(semitones = 0, channel = null) {
     const nextValue = clamp(Number(semitones) || 0, -12, 12);
     const resolvedChannel = Number.isFinite(channel) ? clamp(channel, 0, 15) : null;
@@ -155,7 +257,7 @@ export default class AudioSystem {
   loadStoredSoundfontUrl() {
     try {
       const stored = localStorage.getItem('chainsaw-gm-soundfont-url');
-      if (!stored || stored.startsWith('http')) {
+      if (!stored) {
         return DEFAULT_GM_SOUND_FONT_URL;
       }
       return stored;
@@ -187,8 +289,9 @@ export default class AudioSystem {
     }
   }
 
-  setSoundfontCdn() {
-    this.setSoundfontUrl(DEFAULT_GM_SOUND_FONT_URL);
+  setSoundfontCdn(id = 'vendored') {
+    const nextUrl = SOUNDFONT_CDN_URLS[id] || DEFAULT_GM_SOUND_FONT_URL;
+    this.setSoundfontUrl(nextUrl);
     this.gmError = null;
   }
 
@@ -476,7 +579,8 @@ export default class AudioSystem {
     channel = 0,
     bankMSB = 0,
     bankLSB = 0,
-    pan = 0
+    pan = 0,
+    trackId = null
   }) {
     this.ensureMidiSampler();
     const clampedProgram = clamp(program ?? 0, 0, GM_PROGRAMS.length - 1);
@@ -511,6 +615,18 @@ export default class AudioSystem {
       channelState.program = clampedProgram;
       this.midiDebug.lastChannelType = 'melodic';
       this.midiDebug.lastChannel = resolvedChannel;
+    }
+    if (this.soundfont?.debug) {
+      // eslint-disable-next-line no-console
+      console.debug('[Audio] GM noteOn', {
+        trackId,
+        channel: resolvedChannel,
+        isDrum: isDrums,
+        pitch: resolvedPitch,
+        program: isDrums ? 0 : clampedProgram,
+        bankMSB: resolvedBankMSB,
+        bankLSB: resolvedBankLSB
+      });
     }
     const fallback = () => {
       this.gmError = 'SoundFont failed; using fallback synth.';
@@ -556,9 +672,19 @@ export default class AudioSystem {
     if (!isDrums) {
       this.soundfont.setProgram(clampedProgram, resolvedChannel);
     }
+    if (isDrums && !this.drumFont.failed) {
+      const when = this.ctx.currentTime + this.midiLatency;
+      const used = this.playWebAudioFontDrum({
+        note: resolvedPitch,
+        when,
+        duration,
+        volume: clampedVolume
+      });
+      if (used) return;
+    }
     const when = this.ctx.currentTime + this.midiLatency;
     this.soundfont.noteOn(resolvedPitch, clampedVolume, when, duration, resolvedChannel, {
-      trackId: resolvedChannel,
+      trackId: trackId ?? resolvedChannel,
       isDrum: isDrums,
       sourceNote: pitch,
       resolvedNote: resolvedPitch,
@@ -598,6 +724,7 @@ export default class AudioSystem {
             keyRange: null,
             error
           });
+          fallback();
           return;
         }
         fallback();
@@ -613,7 +740,8 @@ export default class AudioSystem {
     channel = 0,
     bankMSB = 0,
     bankLSB = 0,
-    pan = 0
+    pan = 0,
+    trackId = null
   }) {
     if (!id) return;
     this.stopLiveGmNote(id);
@@ -651,6 +779,18 @@ export default class AudioSystem {
       this.midiDebug.lastChannelType = 'melodic';
       this.midiDebug.lastChannel = resolvedChannel;
     }
+    if (this.soundfont?.debug) {
+      // eslint-disable-next-line no-console
+      console.debug('[Audio] GM live noteOn', {
+        trackId,
+        channel: resolvedChannel,
+        isDrum: isDrums,
+        pitch: resolvedPitch,
+        program: isDrums ? 0 : clampedProgram,
+        bankMSB: resolvedBankMSB,
+        bankLSB: resolvedBankLSB
+      });
+    }
     if (!this.gmEnabled) {
       this.playMidiNote(resolvedPitch, this.getFallbackInstrument(clampedProgram), duration, clampedVolume, null, clampedPan);
       return;
@@ -658,9 +798,19 @@ export default class AudioSystem {
     if (!isDrums) {
       this.soundfont.setProgram(clampedProgram, resolvedChannel);
     }
+    if (isDrums && !this.drumFont.failed) {
+      const when = this.ctx.currentTime + this.midiLatency;
+      const used = this.playWebAudioFontDrum({
+        note: resolvedPitch,
+        when,
+        duration,
+        volume: clampedVolume
+      });
+      if (used) return;
+    }
     const when = this.ctx.currentTime + this.midiLatency;
     this.soundfont.noteOn(resolvedPitch, clampedVolume, when, duration, resolvedChannel, {
-      trackId: resolvedChannel,
+      trackId: trackId ?? resolvedChannel,
       isDrum: isDrums,
       sourceNote: pitch,
       resolvedNote: resolvedPitch,
@@ -703,10 +853,44 @@ export default class AudioSystem {
             keyRange: null,
             error
           });
+          this.playSampledNote({
+            pitch: resolvedPitch,
+            duration,
+            volume: clampedVolume,
+            instrument: this.getFallbackDrum(resolvedPitch),
+            when: this.ctx.currentTime + this.midiLatency,
+            pan: clampedPan
+          });
           return;
         }
         this.playMidiNote(resolvedPitch, this.getFallbackInstrument(clampedProgram), duration, clampedVolume, null, clampedPan);
       });
+  }
+
+  testDrumKit({
+    sequence = [36, 38, 42, 46, 45, 47, 50, 49, 51],
+    intervalSeconds = 0.3,
+    volume = 0.9
+  } = {}) {
+    this.ensureMidiSampler();
+    const start = performance.now();
+    sequence.forEach((pitch, index) => {
+      const delay = Math.max(0, intervalSeconds) * 1000 * index;
+      window.setTimeout(() => {
+        this.playGmNote({
+          pitch,
+          duration: 0.25,
+          volume,
+          program: 0,
+          channel: GM_DRUM_CHANNEL,
+          bankMSB: GM_DRUM_BANK_MSB,
+          bankLSB: GM_DRUM_BANK_LSB,
+          pan: 0,
+          trackId: 'drum-test'
+        });
+      }, delay);
+    });
+    return performance.now() - start;
   }
 
   stopLiveGmNote(id) {

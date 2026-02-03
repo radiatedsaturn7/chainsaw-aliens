@@ -1,9 +1,9 @@
-import { GM_DRUM_BANK_MSB, GM_SOUNDFONT_NAMES, isDrumChannel } from './gm.js';
+import { GM_DRUM_BANK_MSB, GM_SOUNDFONT_NAMES, isDrumChannel, resolveDrumFallbackNote } from './gm.js';
 
 const PRIMARY_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
 const FALLBACK_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
 const SOUNDFONT_PLAYER_GLOBAL = 'Soundfont';
-const DRUM_KIT_NAME = 'synth_drum';
+const DRUM_KIT_NAME = 'standard_kit';
 const DRUM_PRESET = 0;
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -316,6 +316,14 @@ export default class SoundfontEngine {
     return { min: Math.min(...keys), max: Math.max(...keys) };
   }
 
+  getInstrumentNotes(instrument) {
+    const buffers = instrument?.buffers;
+    if (!buffers || typeof buffers !== 'object') return [];
+    return Object.keys(buffers)
+      .map((key) => Number(key))
+      .filter((value) => Number.isFinite(value));
+  }
+
   instrumentContainsNote(instrument, note, keyRange = null) {
     const buffers = instrument?.buffers;
     if (!buffers || typeof buffers !== 'object') return false;
@@ -324,6 +332,18 @@ export default class SoundfontEngine {
       return note >= keyRange.min && note <= keyRange.max;
     }
     return false;
+  }
+
+  selectDrumPlaybackNote(note, instrument) {
+    const availableNotes = this.getInstrumentNotes(instrument);
+    if (!availableNotes.length) return { playbackNote: note, fallbackNote: null, availableNotes };
+    if (availableNotes.includes(note)) return { playbackNote: note, fallbackNote: null, availableNotes };
+    const fallbackNote = resolveDrumFallbackNote(note, availableNotes);
+    if (Number.isFinite(fallbackNote)) {
+      return { playbackNote: fallbackNote, fallbackNote, availableNotes };
+    }
+    const sorted = [...availableNotes].sort((a, b) => a - b);
+    return { playbackNote: sorted[0] ?? note, fallbackNote: sorted[0] ?? null, availableNotes };
   }
 
   logResolution(details) {
@@ -358,6 +378,9 @@ export default class SoundfontEngine {
       cacheKey: details.cacheKey ?? null,
       resolvedPresetName: details.resolvedPresetName ?? null,
       note: details.note ?? null,
+      playbackNote: details.playbackNote ?? null,
+      fallbackNote: details.fallbackNote ?? null,
+      availableNotes: details.availableNotes ?? null,
       containsNote: details.containsNote ?? null,
       keyRange: details.keyRange ?? null
     });
@@ -372,9 +395,9 @@ export default class SoundfontEngine {
     const resolvedNote = meta.resolvedNote ?? midiNote;
     const bankMSB = meta.bankMSB ?? (isDrum ? GM_DRUM_BANK_MSB : null);
     const bankLSB = meta.bankLSB ?? null;
-    const playNote = (instrument) => {
+    const playNote = (instrument, note = resolvedNote) => {
       if (!instrument?.play) return null;
-      return instrument.play(resolvedNote, when, { gain: volume, duration: durationSeconds });
+      return instrument.play(note, when, { gain: volume, duration: durationSeconds });
     };
     if (isDrum) {
       const bankMSB = GM_DRUM_BANK_MSB;
@@ -406,7 +429,8 @@ export default class SoundfontEngine {
       });
       return this.loadDrumKit(kitName, { bankMSB, bankLSB, preset }).then((instrument) => {
         const keyRange = this.getInstrumentKeyRange(instrument);
-        const containsNote = this.instrumentContainsNote(instrument, resolvedNote, keyRange);
+        const { playbackNote, fallbackNote, availableNotes } = this.selectDrumPlaybackNote(resolvedNote, instrument);
+        const containsNote = this.instrumentContainsNote(instrument, playbackNote, null);
         this.logDrumNote({
           backend: 'soundfont',
           bankMSB,
@@ -416,10 +440,13 @@ export default class SoundfontEngine {
           cacheKey,
           resolvedPresetName: kitName,
           note: resolvedNote,
+          playbackNote,
           containsNote,
-          keyRange
+          keyRange,
+          fallbackNote,
+          availableNotes: availableNotes.length
         });
-        return playNote(instrument);
+        return playNote(instrument, playbackNote);
       });
     }
     const program = this.channelPrograms.get(channel) ?? 0;
