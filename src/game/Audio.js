@@ -713,7 +713,7 @@ export default class AudioSystem {
     if (!isDrums) {
       this.soundfont.setProgram(clampedProgram, resolvedChannel);
     }
-    const preferWebAudioFont = isDrums && channel === GM_DRUM_CHANNEL;
+    const preferWebAudioFont = isDrums && resolvedChannel === GM_DRUM_CHANNEL;
     if (preferWebAudioFont && this.drumFont.available === null) {
       this.ensureWebAudioFontAvailability();
     }
@@ -843,7 +843,7 @@ export default class AudioSystem {
     if (!isDrums) {
       this.soundfont.setProgram(clampedProgram, resolvedChannel);
     }
-    const preferWebAudioFont = isDrums && channel === GM_DRUM_CHANNEL;
+    const preferWebAudioFont = isDrums && resolvedChannel === GM_DRUM_CHANNEL;
     if (preferWebAudioFont && this.drumFont.available === null) {
       this.ensureWebAudioFontAvailability();
     }
