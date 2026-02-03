@@ -47,7 +47,6 @@ const SCALE_PROMPT_SPEED = 0.9;
 const WRONG_GHOST_DURATION = 1.2;
 const MAX_NOTE_SIZE = 1.5;
 const MAX_HIGHWAY_ZOOM = 2;
-const START_ANIMATION_SECONDS = 1.6;
 const FINISH_ANIMATION_SECONDS = 2.2;
 const MENU_FADE_SECONDS = 0.35;
 const SONG_END_TAIL_BARS = 2;
@@ -3599,8 +3598,8 @@ export default class RobterSession {
       return;
     }
     if (state === 'finish') {
+      // Finish state keeps the base play view without a fly-out transition.
       this.drawPlay(ctx, width, height);
-      this.drawFinishTransition(ctx, width, height);
       return;
     }
     if (state === 'results') {
@@ -4181,77 +4180,6 @@ export default class RobterSession {
     ctx.restore();
   }
 
-  drawSongTransition(ctx, width, height, {
-    progress,
-    label,
-    subtitle,
-    direction = 'in'
-  }) {
-    const clamped = clamp(progress, 0, 1);
-    if (clamped <= 0) return;
-    const eased = 1 - Math.pow(1 - clamped, 3);
-    const offsetY = direction === 'out'
-      ? eased * height * 0.9
-      : (eased - 1) * height * 0.9;
-    const fade = direction === 'out' ? 1 - clamped * 0.9 : clamped;
-    const laneColors = this.getLaneColors();
-    const lanes = this.instrument === 'drums' ? DRUM_LANES : NON_DRUM_LANES;
-    const layout = this.highwayRenderer.getLayout({
-      width,
-      height,
-      laneCount: lanes.length,
-      zoom: this.hudSettings.highwayZoom,
-      octaveOffset: this.octaveOffset,
-      scrollSpeed: SCROLL_SPEED
-    });
-
-    ctx.save();
-    ctx.globalAlpha = clamp(fade, 0, 1);
-    ctx.translate(0, offsetY);
-    this.highwayRenderer.drawBackground(ctx, width, height, layout, laneColors, this.getHighwayTint());
-    this.highwayRenderer.drawLanes(ctx, width, height, layout, laneColors, lanes, [], { alpha: 0.6 });
-    ctx.restore();
-
-    const textAlpha = direction === 'out' ? 1 - clamped : clamped;
-    if (textAlpha > 0) {
-      const centerX = width / 2;
-      const panelW = Math.min(width * 0.7, 560);
-      const panelH = subtitle ? 76 : 48;
-      const panelX = centerX - panelW / 2;
-      const panelY = height * 0.64 - panelH / 2;
-      ctx.save();
-      ctx.globalAlpha = clamp(textAlpha, 0, 1);
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      ctx.fillRect(panelX, panelY, panelW, panelH);
-      ctx.strokeStyle = '#000';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(panelX, panelY, panelW, panelH);
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 32px Courier New';
-      ctx.fillText(label, centerX, panelY + (subtitle ? 26 : panelH / 2));
-      if (subtitle) {
-        ctx.fillStyle = 'rgba(200,220,255,0.95)';
-        ctx.font = 'bold 18px Courier New';
-        ctx.fillText(subtitle, centerX, panelY + 54);
-      }
-      ctx.restore();
-    }
-  }
-
-  drawFinishTransition(ctx, width, height) {
-    const progress = 1 - clamp(this.finishAnimationTimer / FINISH_ANIMATION_SECONDS, 0, 1);
-    const title = this.getTransitionSongTitle();
-    const artist = this.getTransitionSongArtist();
-    this.drawSongTransition(ctx, width, height, {
-      progress,
-      label: title,
-      subtitle: artist,
-      direction: 'out'
-    });
-  }
-
   drawPlay(ctx, width, height) {
     ctx.save();
     const laneOffset = this.getLaneOffset();
@@ -4452,20 +4380,7 @@ export default class RobterSession {
     });
 
     this.mobileControls.draw(ctx, this.state);
-
-    if (this.songTime < 0) {
-      const introProgress = clamp((this.songTime + START_ANIMATION_SECONDS) / START_ANIMATION_SECONDS, 0, 1);
-      if (introProgress > 0) {
-        const title = this.getTransitionSongTitle();
-        const artist = this.getTransitionSongArtist();
-        this.drawSongTransition(ctx, width, height, {
-          progress: introProgress,
-          label: title,
-          subtitle: artist,
-          direction: 'in'
-        });
-      }
-    }
+    // Song start uses the base highway render without a fly-in transition.
 
     if (this.debugShowInputs) {
       const upcoming = this.events.filter((event) => !event.judged).slice(0, 3);
