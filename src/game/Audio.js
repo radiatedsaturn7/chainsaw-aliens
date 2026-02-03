@@ -97,7 +97,10 @@ export default class AudioSystem {
       player: null,
       loadedNotes: new Set(),
       loadingNotes: new Map(),
-      failed: false
+      failed: false,
+      available: null,
+      availabilityPromise: null,
+      missingLogged: false
     };
   }
 
@@ -164,6 +167,8 @@ export default class AudioSystem {
 
   async ensureDrumFontPlayer() {
     if (this.drumFont.failed) return null;
+    const available = await this.ensureWebAudioFontAvailability();
+    if (!available) return null;
     if (this.drumFont.player) return this.drumFont.player;
     try {
       await this.loadScriptOnce(`${this.drumFont.baseUrl}webaudiofont.js`);
@@ -178,6 +183,42 @@ export default class AudioSystem {
       this.drumFont.failed = true;
       return null;
     }
+  }
+
+  ensureWebAudioFontAvailability() {
+    if (this.drumFont.available !== null) {
+      return Promise.resolve(this.drumFont.available);
+    }
+    if (this.drumFont.availabilityPromise) {
+      return this.drumFont.availabilityPromise;
+    }
+    const url = `${this.drumFont.baseUrl}webaudiofont.js`;
+    this.drumFont.availabilityPromise = fetch(url, { method: 'GET' })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Missing ${url}`);
+        }
+        this.drumFont.available = true;
+        return true;
+      })
+      .catch(() => {
+        this.drumFont.available = false;
+        this.drumFont.failed = true;
+        if (!this.drumFont.missingLogged) {
+          // eslint-disable-next-line no-console
+          console.error('[Audio] WebAudioFont drums unavailable: vendor/webaudiofont/ assets are missing.');
+          this.drumFont.missingLogged = true;
+        }
+        return false;
+      })
+      .finally(() => {
+        this.drumFont.availabilityPromise = null;
+      });
+    return this.drumFont.availabilityPromise;
+  }
+
+  isWebAudioFontReady() {
+    return this.drumFont.available === true && !this.drumFont.failed;
   }
 
   getDrumFontVarName(note) {
@@ -212,7 +253,7 @@ export default class AudioSystem {
   }
 
   playWebAudioFontDrum({ note, when, duration, volume }) {
-    if (this.drumFont.failed) return false;
+    if (!this.isWebAudioFontReady()) return false;
     const play = async () => {
       const player = await this.ensureDrumFontPlayer();
       if (!player) return;
@@ -672,7 +713,11 @@ export default class AudioSystem {
     if (!isDrums) {
       this.soundfont.setProgram(clampedProgram, resolvedChannel);
     }
-    if (isDrums && !this.drumFont.failed) {
+    const preferWebAudioFont = isDrums && channel === GM_DRUM_CHANNEL;
+    if (preferWebAudioFont && this.drumFont.available === null) {
+      this.ensureWebAudioFontAvailability();
+    }
+    if (preferWebAudioFont && this.isWebAudioFontReady()) {
       const when = this.ctx.currentTime + this.midiLatency;
       const used = this.playWebAudioFontDrum({
         note: resolvedPitch,
@@ -798,7 +843,11 @@ export default class AudioSystem {
     if (!isDrums) {
       this.soundfont.setProgram(clampedProgram, resolvedChannel);
     }
-    if (isDrums && !this.drumFont.failed) {
+    const preferWebAudioFont = isDrums && channel === GM_DRUM_CHANNEL;
+    if (preferWebAudioFont && this.drumFont.available === null) {
+      this.ensureWebAudioFontAvailability();
+    }
+    if (preferWebAudioFont && this.isWebAudioFontReady()) {
       const when = this.ctx.currentTime + this.midiLatency;
       const used = this.playWebAudioFontDrum({
         note: resolvedPitch,
@@ -873,6 +922,11 @@ export default class AudioSystem {
     volume = 0.9
   } = {}) {
     this.ensureMidiSampler();
+    this.ensureWebAudioFontAvailability()
+      .then((available) => {
+        // eslint-disable-next-line no-console
+        console.debug('[Audio] testDrumKit WebAudioFont active:', available);
+      });
     const start = performance.now();
     sequence.forEach((pitch, index) => {
       const delay = Math.max(0, intervalSeconds) * 1000 * index;

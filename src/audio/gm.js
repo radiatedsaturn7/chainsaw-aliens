@@ -310,8 +310,6 @@ export const GM_DRUM_PAD_ROWS = [
 
 export const GM_DRUM_ROWS = GM_DRUM_PAD_ROWS.map((row) => ({ ...row }));
 
-export const GM_DRUM_PAD_LAYOUT = GM_DRUM_PAD_ROWS.map((row) => ({ ...row }));
-
 export const GM_DRUMS = [
   { pitch: 35, label: 'Acoustic Bass Drum' },
   { pitch: 36, label: 'Bass Drum 1' },
@@ -361,6 +359,11 @@ export const GM_DRUMS = [
   { pitch: 80, label: 'Mute Triangle' },
   { pitch: 81, label: 'Open Triangle' }
 ];
+
+export const GM_DRUM_PAD_LAYOUT = GM_DRUMS.map((drum) => ({
+  label: drum.label,
+  pitch: drum.pitch
+}));
 
 export const GM_DRUM_KITS = [
   { id: 'standard', label: 'Standard Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 0, soundfont: 'standard_kit' },
