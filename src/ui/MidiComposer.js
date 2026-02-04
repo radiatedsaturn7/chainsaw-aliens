@@ -131,10 +131,12 @@ const DRUM_BANK_LSB = GM_DRUM_BANK_LSB;
 const TRACK_COLORS = ['#4fb7ff', '#ff9c42', '#55d68a', '#b48dff', '#ff6a6a', '#43d5d0'];
 const DEFAULT_GRID_BARS = 16;
 const DEFAULT_VISIBLE_ROWS = 12;
+const DEFAULT_LABEL_WIDTH = 192;
+const DEFAULT_LABEL_WIDTH_MOBILE = 152;
 const MIN_VISIBLE_ROWS = 5;
 const MAX_VISIBLE_ROWS = 60;
 const DEFAULT_GRID_TOP_PITCH = 59;
-const DEFAULT_RULER_HEIGHT = 40;
+const DEFAULT_RULER_HEIGHT = 80;
 const LOOP_HANDLE_MIN_WIDTH = 54;
 const LOOP_HANDLE_MIN_HEIGHT = 30;
 const FILE_MENU_WIDTH = 240;
@@ -6845,7 +6847,7 @@ export default class MidiComposer {
     const laneGap = 12;
     const laneBlockH = Math.max(74, Math.min(112, (laneAreaH - laneGap * (trackCount - 1)) / trackCount));
     const isMobile = this.isMobileLayout();
-    const labelW = isMobile ? 76 : 96;
+    const labelW = isMobile ? DEFAULT_LABEL_WIDTH_MOBILE : DEFAULT_LABEL_WIDTH;
     const laneX = x + padding + labelW;
     const laneW = w - padding * 2 - labelW;
     const laneH = Math.max(36, laneBlockH * 0.42);
@@ -8476,7 +8478,7 @@ export default class MidiComposer {
       ? this.getDrumRows().length
       : this.getPitchRange().max - this.getPitchRange().min + 1;
     const isMobile = this.isMobileLayout();
-    const labelW = options.hideLabels ? 0 : (isMobile ? 76 : 96);
+    const labelW = options.hideLabels ? 0 : (isMobile ? DEFAULT_LABEL_WIDTH_MOBILE : DEFAULT_LABEL_WIDTH);
     const rulerH = simplified ? 0 : DEFAULT_RULER_HEIGHT;
     const viewW = w - labelW;
     const baseCellWidth = viewW / gridTicks;
@@ -8560,9 +8562,6 @@ export default class MidiComposer {
       ctx.fillRect(x, y, labelW, viewH + rulerH);
       ctx.strokeStyle = 'rgba(255,255,255,0.2)';
       ctx.strokeRect(x, y, labelW, viewH + rulerH);
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.font = '12px Courier New';
-      ctx.fillText(isMobile ? 'Notes' : 'Note', x + 8, y + 18);
       this.drawLabelColumn(ctx, track);
     }
     if (!simplified) {
