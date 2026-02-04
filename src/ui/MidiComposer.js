@@ -6250,7 +6250,7 @@ export default class MidiComposer {
     }
     const minX = Math.min(0, viewW - gridW);
     const minY = Math.min(0, viewH - gridH);
-    this.gridOffset.x = Math.max(this.gridOffset.x, minX);
+    this.gridOffset.x = clamp(this.gridOffset.x, minX, 0);
     this.gridOffset.y = clamp(this.gridOffset.y, minY, 0);
   }
 
