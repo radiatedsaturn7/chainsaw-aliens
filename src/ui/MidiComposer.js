@@ -764,6 +764,7 @@ export default class MidiComposer {
     this.songActionBounds = [];
     this.songInstrumentBounds = null;
     this.songAddBounds = null;
+    this.songRulerBounds = null;
     this.fileInput = document.createElement('input');
     this.fileInput.type = 'file';
     this.fileInput.accept = '.json,.mid,.midi,.zip,application/json,audio/midi,application/zip';
@@ -3424,10 +3425,9 @@ export default class MidiComposer {
       const laneHit = this.songLaneBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (laneHit) {
         this.selectedTrackIndex = laneHit.trackIndex;
-        const tick = this.getSongTickFromX(x, laneHit);
-        this.playheadTick = clamp(tick, 0, this.getSongTimelineTicks());
         const modifiers = this.getModifiers();
         const isTouch = payload.touchCount > 0;
+        const tick = this.getSongTickFromX(x, laneHit);
         const selectionRange = this.getSongSelectionRange();
         const inSelection = this.isSongSelectionHit(tick, laneHit.trackIndex);
         if (inSelection && isTouch) {
@@ -3500,42 +3500,41 @@ export default class MidiComposer {
           return;
         }
         this.clearSongSelection();
-        const shouldPan = modifiers.alt || payload.button === 1 || payload.button === 2 || payload.touchCount > 1;
-        if (shouldPan) {
+        const wantsSelection = modifiers.shift;
+        if (wantsSelection) {
           this.dragState = {
-            mode: 'song-pan',
+            mode: 'song-select-pending',
+            bounds: laneHit,
             startX: x,
-            startOffsetX: this.songTimelineOffsetX
+            startY: y,
+            startTick: tick,
+            trackIndex: laneHit.trackIndex
           };
           return;
         }
         this.dragState = {
-          mode: 'song-select-pending',
-          bounds: laneHit,
+          mode: 'song-pan',
           startX: x,
-          startY: y,
-          startTick: tick,
-          trackIndex: laneHit.trackIndex
+          startOffsetX: this.songTimelineOffsetX
+        };
+        return;
+      }
+      if (this.songRulerBounds && this.pointInBounds(x, y, this.songRulerBounds)) {
+        const tick = this.getSongTickFromX(x, this.songTimelineBounds);
+        this.playheadTick = clamp(tick, 0, this.getSongTimelineTicks());
+        this.clearSongSelection();
+        this.dragState = {
+          mode: 'song-scrub',
+          bounds: this.songTimelineBounds
         };
         return;
       }
       if (this.songTimelineBounds && this.pointInBounds(x, y, this.songTimelineBounds)) {
-        const tick = this.getSongTickFromX(x, this.songTimelineBounds);
-        this.playheadTick = clamp(tick, 0, this.getSongTimelineTicks());
         this.clearSongSelection();
-        const modifiers = this.getModifiers();
-        const shouldPan = modifiers.alt || payload.button === 1 || payload.button === 2 || payload.touchCount > 1;
-        if (shouldPan) {
-          this.dragState = {
-            mode: 'song-pan',
-            startX: x,
-            startOffsetX: this.songTimelineOffsetX
-          };
-          return;
-        }
         this.dragState = {
-          mode: 'song-scrub',
-          bounds: this.songTimelineBounds
+          mode: 'song-pan',
+          startX: x,
+          startOffsetX: this.songTimelineOffsetX
         };
       }
       return;
@@ -6836,10 +6835,8 @@ export default class MidiComposer {
     ctx.strokeRect(x, y, w, h);
 
     const padding = 12;
-    const headerH = 38;
-    const headerY = y + padding;
     const rulerH = 24;
-    const rulerY = headerY + headerH + 10;
+    const rulerY = y + padding;
     const addH = 34;
     const addY = y + h - padding - addH;
     const laneAreaY = rulerY + rulerH + 8;
@@ -6847,60 +6844,17 @@ export default class MidiComposer {
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = 12;
     const laneBlockH = Math.max(74, Math.min(112, (laneAreaH - laneGap * (trackCount - 1)) / trackCount));
-    const labelW = Math.min(210, Math.max(140, w * 0.22));
-    const laneX = x + padding + labelW + 12;
-    const laneW = w - padding * 2 - labelW - 12;
+    const labelW = Math.min(120, Math.max(80, w * 0.14));
+    const laneX = x + padding + labelW + 10;
+    const laneW = w - padding * 2 - labelW - 10;
     const laneH = Math.max(36, laneBlockH * 0.42);
     const automationH = Math.max(12, (laneBlockH - laneH) / 2 - 6);
     this.songActionBounds = [];
 
-    const selectedTrack = this.getActiveTrack();
-    const trackLabel = selectedTrack ? selectedTrack.name : 'No Track';
-    const instrumentLabel = selectedTrack
-      ? isDrumTrack(selectedTrack)
-        ? this.getDrumKitLabel(selectedTrack)
-        : this.getProgramLabel(selectedTrack.program)
-      : 'Instrument';
-
-    ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
-    ctx.fillText('Song Timeline', x + padding, headerY + 16);
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = '12px Courier New';
-    ctx.fillText(trackLabel, x + padding, headerY + 32);
-
-    const instrumentW = Math.min(240, Math.max(150, ctx.measureText(instrumentLabel).width + 28));
-    this.songInstrumentBounds = {
-      x: x + padding + 150,
-      y: headerY + 8,
-      w: instrumentW,
-      h: headerH - 12
-    };
-    this.drawSmallButton(ctx, this.songInstrumentBounds, instrumentLabel, false);
-
+    this.songInstrumentBounds = null;
+    this.bounds.songZoomIn = null;
+    this.bounds.songZoomOut = null;
     const selectionRange = this.getSongSelectionRange();
-    if (selectionRange) {
-      const ticksPerBar = this.ticksPerBeat * this.beatsPerBar;
-      const startBar = Math.floor(selectionRange.startTick / ticksPerBar) + 1;
-      const endBar = Math.max(startBar, Math.ceil(selectionRange.endTick / ticksPerBar));
-      ctx.fillStyle = '#ffe16a';
-      ctx.font = '12px Courier New';
-      ctx.fillText(`Selection: Bars ${startBar}-${endBar}`, x + padding + 420, headerY + 20);
-    }
-
-    const controlH = headerH - 12;
-    const controlGap = 8;
-    const zoomButtonW = 26;
-    const loopToggleW = 110;
-    let controlX = x + w - padding - loopToggleW;
-    this.bounds.loopToggle = { x: controlX, y: headerY + 6, w: loopToggleW, h: controlH };
-    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
-    controlX -= controlGap + zoomButtonW;
-    this.bounds.songZoomIn = { x: controlX, y: headerY + 6, w: zoomButtonW, h: controlH };
-    this.drawSmallButton(ctx, this.bounds.songZoomIn, '+', false);
-    controlX -= controlGap + zoomButtonW;
-    this.bounds.songZoomOut = { x: controlX, y: headerY + 6, w: zoomButtonW, h: controlH };
-    this.drawSmallButton(ctx, this.bounds.songZoomOut, '−', false);
 
     this.songLaneBounds = [];
     this.songLabelBounds = [];
@@ -6930,6 +6884,12 @@ export default class MidiComposer {
       totalW,
       timelineTicks
     };
+    this.songRulerBounds = {
+      x: laneX,
+      y: rulerY,
+      w: laneW,
+      h: rulerH
+    };
     this.drawTimelineRuler(ctx, laneX, rulerY, laneW, rulerH, timelineTicks, this.songTimelineBounds);
 
     this.song.tracks.forEach((track, index) => {
@@ -6942,11 +6902,7 @@ export default class MidiComposer {
       ctx.strokeRect(labelX, laneTop, labelW, laneBlockH);
       ctx.fillStyle = '#fff';
       ctx.font = '12px Courier New';
-      ctx.fillText(track.name, labelX + 10, laneTop + 18);
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
-      ctx.font = '10px Courier New';
-      const instrumentName = isDrumTrack(track) ? this.getDrumKitLabel(track) : this.getProgramLabel(track.program);
-      ctx.fillText(this.truncateLabel(ctx, instrumentName, labelW - 20), labelX + 10, laneTop + 34);
+      ctx.fillText(this.truncateLabel(ctx, track.name, labelW - 20), labelX + 10, laneTop + 18);
       this.songLabelBounds.push({ x: labelX, y: laneTop, w: labelW, h: laneBlockH, trackIndex: index });
 
       const laneBounds = { x: laneX, y: laneTop, w: laneW, h: laneH, trackIndex: index };
