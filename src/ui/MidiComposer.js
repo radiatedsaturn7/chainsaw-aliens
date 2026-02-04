@@ -543,6 +543,7 @@ export default class MidiComposer {
     this.playheadTick = 0;
     this.lastPlaybackTick = 0;
     this.isPlaying = false;
+    this.keyframePanelOpen = false;
     this.activeNotes = new Map();
     this.livePreviewNotes = new Set();
     this.dragState = null;
@@ -750,7 +751,10 @@ export default class MidiComposer {
       loopShiftStartHandle: null,
       loopShiftEndHandle: null,
       songZoomIn: null,
-      songZoomOut: null
+      songZoomOut: null,
+      keyframeToggle: null,
+      keyframeSet: null,
+      keyframeRemove: null
     };
     this.trackBounds = [];
     this.trackControlBounds = [];
@@ -3195,6 +3199,33 @@ export default class MidiComposer {
       return;
     }
 
+    if (this.activeTab === 'grid') {
+      if (this.bounds.keyframeToggle && this.pointInBounds(x, y, this.bounds.keyframeToggle)) {
+        this.keyframePanelOpen = !this.keyframePanelOpen;
+        return;
+      }
+      if (this.bounds.keyframeSet && this.pointInBounds(x, y, this.bounds.keyframeSet)) {
+        const track = this.getActiveTrack();
+        if (track) {
+          const tick = this.snapTick(this.playheadTick);
+          const volume = clamp(track.volume ?? 0.8, 0, 1);
+          const pan = clamp(track.pan ?? 0, -1, 1);
+          this.addSongAutomationKeyframe(track, 'padding', tick, volume);
+          this.addSongAutomationKeyframe(track, 'pan', tick, pan);
+        }
+        return;
+      }
+      if (this.bounds.keyframeRemove && this.pointInBounds(x, y, this.bounds.keyframeRemove)) {
+        const track = this.getActiveTrack();
+        if (track) {
+          const tick = this.snapTick(this.playheadTick);
+          this.removeSongAutomationKeyframe(track, 'padding', tick);
+          this.removeSongAutomationKeyframe(track, 'pan', tick);
+        }
+        return;
+      }
+    }
+
     if (this.bounds.record && this.pointInBounds(x, y, this.bounds.record)) {
       this.enterRecordMode();
       return;
@@ -5170,6 +5201,17 @@ export default class MidiComposer {
     this.persist();
   }
 
+  removeSongAutomationKeyframe(track, type, tick) {
+    if (!track?.automation?.[type]) return;
+    const frames = track.automation[type];
+    const threshold = this.ticksPerBeat / 4;
+    const index = frames.findIndex((frame) => Math.abs(frame.tick - tick) <= threshold);
+    if (index < 0) return;
+    frames.splice(index, 1);
+    track.automation[type] = frames;
+    this.persist();
+  }
+
   getSongSelectionNotes(pattern, range) {
     if (!pattern || !range) return [];
     return pattern.notes.filter((note) => note.startTick >= range.startTick && note.startTick < range.endTick);
@@ -6990,8 +7032,9 @@ export default class MidiComposer {
     const labelW = isMobile ? DEFAULT_LABEL_WIDTH_MOBILE : DEFAULT_LABEL_WIDTH;
     const laneX = x + padding + labelW;
     const laneW = w - padding * 2 - labelW;
-    const laneH = Math.max(36, laneBlockH * 0.42);
-    const automationH = Math.max(12, (laneBlockH - laneH) / 2 - 6);
+    const showAutomation = this.keyframePanelOpen;
+    const laneH = showAutomation ? Math.max(36, laneBlockH * 0.42) : laneBlockH;
+    const automationH = showAutomation ? Math.max(12, (laneBlockH - laneH) / 2 - 6) : 0;
     this.songActionBounds = [];
 
     this.songInstrumentBounds = null;
@@ -7105,33 +7148,35 @@ export default class MidiComposer {
       }
       ctx.restore();
 
-      const panBounds = {
-        x: laneX,
-        y: laneTop + laneH + 6,
-        w: laneW,
-        h: automationH,
-        trackIndex: index,
-        type: 'pan'
-      };
-      const padBounds = {
-        x: laneX,
-        y: panBounds.y + automationH + 6,
-        w: laneW,
-        h: automationH,
-        trackIndex: index,
-        type: 'padding'
-      };
-      const panValue = this.getTrackAutomationValue(track, 'pan', this.playheadTick, track.pan ?? 0);
-      const volumeValue = this.getTrackAutomationValue(track, 'padding', this.playheadTick, track.volume ?? 0.8);
-      this.drawAutomationLane(ctx, panBounds, track.automation?.pan || [], -1, 1, 'Pan', {
-        originX,
-        cellWidth
-      }, { tick: this.playheadTick, value: panValue });
-      this.drawAutomationLane(ctx, padBounds, track.automation?.padding || [], 0, 1, 'Volume', {
-        originX,
-        cellWidth
-      }, { tick: this.playheadTick, value: volumeValue });
-      this.songAutomationBounds.push(panBounds, padBounds);
+      if (showAutomation) {
+        const panBounds = {
+          x: laneX,
+          y: laneTop + laneH + 6,
+          w: laneW,
+          h: automationH,
+          trackIndex: index,
+          type: 'pan'
+        };
+        const padBounds = {
+          x: laneX,
+          y: panBounds.y + automationH + 6,
+          w: laneW,
+          h: automationH,
+          trackIndex: index,
+          type: 'padding'
+        };
+        const panValue = this.getTrackAutomationValue(track, 'pan', this.playheadTick, track.pan ?? 0);
+        const volumeValue = this.getTrackAutomationValue(track, 'padding', this.playheadTick, track.volume ?? 0.8);
+        this.drawAutomationLane(ctx, panBounds, track.automation?.pan || [], -1, 1, 'Pan', {
+          originX,
+          cellWidth
+        }, { tick: this.playheadTick, value: panValue });
+        this.drawAutomationLane(ctx, padBounds, track.automation?.padding || [], 0, 1, 'Volume', {
+          originX,
+          cellWidth
+        }, { tick: this.playheadTick, value: volumeValue });
+        this.songAutomationBounds.push(panBounds, padBounds);
+      }
     });
 
     this.songAddBounds = { x: x + padding, y: addY, w: w - padding * 2, h: addH };
@@ -7382,6 +7427,10 @@ export default class MidiComposer {
     const buttonSize = rowH;
     let cursorX = x;
     ctx.font = '13px Courier New';
+    this.bounds.instrumentSettingsControls = [];
+    this.bounds.keyframeToggle = null;
+    this.bounds.keyframeSet = null;
+    this.bounds.keyframeRemove = null;
     const drumGrid = isDrumTrack(track);
     const label = track
       ? drumGrid
@@ -7437,7 +7486,89 @@ export default class MidiComposer {
     this.bounds.barsPlus = { x: row2X, y: row2Y, w: buttonSize, h: rowH };
     this.drawButton(ctx, this.bounds.barsPlus, '+', false, false);
 
-    return rowH * 2 + gap;
+    const keyframeRowY = row2Y + rowH + gap;
+    const keyframeLabel = this.keyframePanelOpen ? 'Keyframes ▾' : 'Keyframes ▸';
+    const keyframeW = Math.min(180, Math.max(140, ctx.measureText(keyframeLabel).width + 28));
+    this.bounds.keyframeToggle = { x, y: keyframeRowY, w: keyframeW, h: rowH };
+    this.drawButton(ctx, this.bounds.keyframeToggle, keyframeLabel, this.keyframePanelOpen, false);
+
+    let extraHeight = rowH + gap;
+    if (this.keyframePanelOpen && track) {
+      const panelY = keyframeRowY + rowH + gap;
+      const panelPadding = 10;
+      const sliderW = w - panelPadding * 2;
+      const sliderX = x + panelPadding;
+      const sliderH = 16;
+      const sliderGap = 20;
+      const mixVolume = clamp(track.volume ?? 0.8, 0, 1);
+      const mixPan = clamp(track.pan ?? 0, -1, 1);
+
+      const panelHeight = panelPadding + 10 + sliderH + sliderGap + sliderH + 18 + 32 + panelPadding;
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.fillRect(x, panelY, w, panelHeight);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(x, panelY, w, panelHeight);
+
+      const volumeBounds = {
+        x: sliderX,
+        y: panelY + panelPadding + 10,
+        w: sliderW,
+        h: sliderH,
+        trackIndex: this.selectedTrackIndex,
+        control: 'volume'
+      };
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
+      ctx.fillStyle = '#ffe16a';
+      ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w * mixVolume, volumeBounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
+      ctx.font = '11px Courier New';
+      ctx.fillText('Volume', sliderX, volumeBounds.y - 6);
+      this.bounds.instrumentSettingsControls.push(volumeBounds);
+
+      const panBounds = {
+        x: sliderX,
+        y: volumeBounds.y + sliderH + sliderGap,
+        w: sliderW,
+        h: sliderH,
+        trackIndex: this.selectedTrackIndex,
+        control: 'pan'
+      };
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
+      ctx.fillStyle = '#4fb7ff';
+      ctx.fillRect(panBounds.x, panBounds.y, panBounds.w * ((mixPan + 1) / 2), panBounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
+      ctx.font = '11px Courier New';
+      ctx.fillText('Pan (L/R)', sliderX, panBounds.y - 6);
+      this.bounds.instrumentSettingsControls.push(panBounds);
+
+      const buttonY = panBounds.y + sliderH + 18;
+      const buttonGap = 12;
+      const buttonW = (w - panelPadding * 2 - buttonGap) / 2;
+      this.bounds.keyframeSet = {
+        x: sliderX,
+        y: buttonY,
+        w: buttonW,
+        h: 32
+      };
+      this.bounds.keyframeRemove = {
+        x: sliderX + buttonW + buttonGap,
+        y: buttonY,
+        w: buttonW,
+        h: 32
+      };
+      this.drawButton(ctx, this.bounds.keyframeSet, 'Set Keyframe', false, false);
+      this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove Keyframe', false, false);
+
+      extraHeight += panelHeight + gap;
+    }
+
+    return rowH * 2 + gap + extraHeight;
   }
 
   drawGridZoomControls(ctx, x, y, w, h) {
