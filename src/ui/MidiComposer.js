@@ -656,6 +656,8 @@ export default class MidiComposer {
     this.songSelection = {
       active: false,
       trackIndex: 0,
+      trackStartIndex: 0,
+      trackEndIndex: 0,
       startTick: 0,
       endTick: 0
     };
@@ -683,6 +685,7 @@ export default class MidiComposer {
     this.songTimelineZoomX = 1;
     this.songTimelineOffsetX = 0;
     this.songTimelineBounds = null;
+    this.songPlayheadBounds = null;
     this.bounds = {
       headerInstrument: null,
       fileButton: null,
@@ -1878,8 +1881,23 @@ export default class MidiComposer {
     const endTick = Math.max(this.songSelection.startTick, this.songSelection.endTick);
     if (!Number.isFinite(startTick) || !Number.isFinite(endTick)) return null;
     if (endTick <= startTick) return null;
+    const trackTotal = this.song?.tracks?.length ?? 0;
+    if (trackTotal <= 0) return null;
+    const fallbackIndex = clamp(this.songSelection.trackIndex ?? 0, 0, Math.max(0, trackTotal - 1));
+    const rawStart = Number.isInteger(this.songSelection.trackStartIndex) ? this.songSelection.trackStartIndex : fallbackIndex;
+    const rawEnd = Number.isInteger(this.songSelection.trackEndIndex) ? this.songSelection.trackEndIndex : fallbackIndex;
+    const startTrackIndex = clamp(Math.min(rawStart, rawEnd), 0, Math.max(0, trackTotal - 1));
+    const endTrackIndex = clamp(Math.max(rawStart, rawEnd), 0, Math.max(0, trackTotal - 1));
+    const trackIndices = [];
+    for (let i = startTrackIndex; i <= endTrackIndex; i += 1) {
+      trackIndices.push(i);
+    }
     return {
-      trackIndex: this.songSelection.trackIndex,
+      trackIndex: startTrackIndex,
+      trackStartIndex: startTrackIndex,
+      trackEndIndex: endTrackIndex,
+      trackIndices,
+      trackCount: trackIndices.length,
       startTick,
       endTick,
       durationTicks: endTick - startTick
@@ -1893,7 +1911,10 @@ export default class MidiComposer {
   isSongSelectionHit(tick, trackIndex) {
     const range = this.getSongSelectionRange();
     if (!range) return false;
-    return range.trackIndex === trackIndex && tick >= range.startTick && tick <= range.endTick;
+    return trackIndex >= range.trackStartIndex
+      && trackIndex <= range.trackEndIndex
+      && tick >= range.startTick
+      && tick <= range.endTick;
   }
 
   getAutomationValueAtTick(frames, tick, defaultValue) {
@@ -3380,6 +3401,11 @@ export default class MidiComposer {
       if (this.songSelectionMenu.open) {
         this.clearSongSelection();
       }
+      if (this.songPlayheadBounds && this.pointInBounds(x, y, this.songPlayheadBounds)) {
+        this.playheadTick = clamp(this.getSongTickFromX(x, this.songTimelineBounds), 0, this.getSongTimelineTicks());
+        this.dragState = { mode: 'song-playhead', bounds: this.songTimelineBounds };
+        return;
+      }
       if (this.bounds.loopStartHandle && this.pointInBounds(x, y, this.bounds.loopStartHandle)) {
         this.dragState = { mode: 'song-loop-start' };
         this.setLoopStartTick(this.getSongTickFromX(x, this.songTimelineBounds));
@@ -3436,6 +3462,14 @@ export default class MidiComposer {
           const track = this.song.tracks[laneHit.trackIndex];
           const pattern = track?.patterns?.[this.selectedPatternIndex];
           if (!pattern) return;
+          const selectionNotesByTrack = selectionRange?.trackIndices?.map((trackIndex) => {
+            const sourceTrack = this.song.tracks[trackIndex];
+            const sourcePattern = sourceTrack?.patterns?.[this.selectedPatternIndex];
+            return {
+              trackIndex,
+              notes: this.getSongNotesOverlapping(sourcePattern, selectionRange)
+            };
+          }).filter((entry) => entry.notes?.length) || [];
           this.songSelectionMenu.open = false;
           this.songSelectionMenu.bounds = [];
           this.dragState = {
@@ -3445,9 +3479,10 @@ export default class MidiComposer {
             startOffsetX: this.songTimelineOffsetX,
             offsetTick: tick - selectionRange.startTick,
             originalRange: selectionRange,
-            targetTrackIndex: laneHit.trackIndex,
+            targetTrackIndex: selectionRange.trackStartIndex,
             targetStartTick: selectionRange.startTick,
-            originalNotes: this.getSongNotesOverlapping(pattern, selectionRange),
+            originalNotesByTrack: selectionNotesByTrack,
+            grabTrackOffset: laneHit.trackIndex - selectionRange.trackStartIndex,
             moved: false
           };
           if (this.longPressTimer) {
@@ -3486,6 +3521,8 @@ export default class MidiComposer {
             this.songSelection = {
               active: true,
               trackIndex: laneHit.trackIndex,
+              trackStartIndex: laneHit.trackIndex,
+              trackEndIndex: laneHit.trackIndex,
               startTick: tick,
               endTick: tick
             };
@@ -3517,7 +3554,9 @@ export default class MidiComposer {
         this.dragState = {
           mode: 'song-pan',
           startX: x,
-          startOffsetX: this.songTimelineOffsetX
+          startOffsetX: this.songTimelineOffsetX,
+          trackIndex: laneHit.trackIndex,
+          moved: false
         };
         return;
       }
@@ -3769,12 +3808,21 @@ export default class MidiComposer {
         const duration = this.dragState.originalRange.durationTicks;
         const totalTicks = this.getSongTimelineTicks();
         const nextStartTick = clamp(tick - this.dragState.offsetTick, 0, Math.max(0, totalTicks - duration));
-        this.dragState.targetTrackIndex = laneHit.trackIndex;
+        const trackCount = this.dragState.originalRange.trackCount || 1;
+        const maxStartTrack = Math.max(0, this.song.tracks.length - trackCount);
+        const nextStartTrackIndex = clamp(
+          laneHit.trackIndex - (this.dragState.grabTrackOffset ?? 0),
+          0,
+          maxStartTrack
+        );
+        this.dragState.targetTrackIndex = nextStartTrackIndex;
         this.dragState.targetStartTick = nextStartTick;
         this.dragState.moved = true;
         this.songSelection = {
           active: true,
-          trackIndex: laneHit.trackIndex,
+          trackIndex: nextStartTrackIndex,
+          trackStartIndex: nextStartTrackIndex,
+          trackEndIndex: nextStartTrackIndex + trackCount - 1,
           startTick: nextStartTick,
           endTick: nextStartTick + duration
         };
@@ -3803,7 +3851,11 @@ export default class MidiComposer {
     }
     if (this.dragState?.mode === 'song-pan') {
       const dx = payload.x - this.dragState.startX;
-      if (this.songTimelineBounds) {
+      const threshold = 6;
+      if (!this.dragState.moved && Math.abs(dx) > threshold) {
+        this.dragState.moved = true;
+      }
+      if (this.dragState.moved && this.songTimelineBounds) {
         const nextOffset = this.dragState.startOffsetX + dx;
         this.ensureTimelinePanCapacity(nextOffset, this.songTimelineBounds.w, this.songTimelineBounds.cellWidth);
         this.songTimelineOffsetX = this.clampTimelineOffsetX(
@@ -3825,6 +3877,8 @@ export default class MidiComposer {
         this.songSelection = {
           active: true,
           trackIndex: this.dragState.trackIndex,
+          trackStartIndex: this.dragState.trackIndex,
+          trackEndIndex: this.dragState.trackIndex,
           startTick: this.dragState.startTick,
           endTick: this.dragState.startTick
         };
@@ -3832,6 +3886,18 @@ export default class MidiComposer {
       if (this.dragState.mode === 'song-select' && this.dragState.bounds) {
         const tick = this.getSongTickFromX(payload.x, this.dragState.bounds);
         this.songSelection.endTick = tick;
+        const laneHit = this.getSongLaneAt(payload.x, payload.y);
+        if (laneHit) {
+          this.songSelection.trackEndIndex = laneHit.trackIndex;
+        }
+      }
+      return;
+    }
+    if (this.dragState?.mode === 'song-playhead') {
+      const bounds = this.dragState.bounds || this.songTimelineBounds;
+      if (bounds) {
+        const tick = this.getSongTickFromX(payload.x, bounds);
+        this.playheadTick = clamp(tick, 0, this.getSongTimelineTicks());
       }
       return;
     }
@@ -3959,6 +4025,10 @@ export default class MidiComposer {
       return;
     }
     if (this.dragState?.mode === 'song-pan-or-select') {
+      if (!this.dragState.moved && Number.isInteger(this.dragState.trackIndex)) {
+        this.selectedTrackIndex = this.dragState.trackIndex;
+        this.clearSongSelection();
+      }
       this.dragState = null;
       return;
     }
@@ -3982,10 +4052,18 @@ export default class MidiComposer {
       return;
     }
     if (this.dragState?.mode === 'song-pan') {
+      if (!this.dragState.moved && Number.isInteger(this.dragState.trackIndex)) {
+        this.selectedTrackIndex = this.dragState.trackIndex;
+        this.clearSongSelection();
+      }
       this.dragState = null;
       return;
     }
     if (this.dragState?.mode === 'song-scrub') {
+      this.dragState = null;
+      return;
+    }
+    if (this.dragState?.mode === 'song-playhead') {
       this.dragState = null;
       return;
     }
@@ -5008,6 +5086,11 @@ export default class MidiComposer {
     const totalTicks = this.getSongTimelineTicks();
     this.songSelection.startTick = clamp(this.songSelection.startTick, 0, totalTicks);
     this.songSelection.endTick = clamp(this.songSelection.endTick, 0, totalTicks);
+    const trackTotal = this.song?.tracks?.length ?? 0;
+    const maxTrack = Math.max(0, trackTotal - 1);
+    this.songSelection.trackStartIndex = clamp(this.songSelection.trackStartIndex ?? this.songSelection.trackIndex ?? 0, 0, maxTrack);
+    this.songSelection.trackEndIndex = clamp(this.songSelection.trackEndIndex ?? this.songSelection.trackIndex ?? 0, 0, maxTrack);
+    this.songSelection.trackIndex = clamp(this.songSelection.trackIndex ?? this.songSelection.trackStartIndex ?? 0, 0, maxTrack);
     this.songSelectionMenu.open = Boolean(this.getSongSelectionRange());
     this.songSelectionMenu.x = this.lastPointer.x;
     this.songSelectionMenu.y = this.lastPointer.y;
@@ -5020,39 +5103,52 @@ export default class MidiComposer {
   }
 
   applySongSelectionMove(dragState) {
-    if (!dragState?.originalRange || !Array.isArray(dragState.originalNotes)) return;
-    const originTrack = this.song.tracks[dragState.originalRange.trackIndex];
-    const targetTrack = this.song.tracks[dragState.targetTrackIndex];
-    const originPattern = originTrack?.patterns?.[this.selectedPatternIndex];
-    const targetPattern = targetTrack?.patterns?.[this.selectedPatternIndex];
-    if (!originPattern || !targetPattern) return;
+    if (!dragState?.originalRange || !Array.isArray(dragState.originalNotesByTrack)) return;
     const totalTicks = this.getSongTimelineTicks();
     const offset = dragState.targetStartTick - dragState.originalRange.startTick;
-    const noteIds = new Set(dragState.originalNotes.map((note) => note.id));
-    if (originPattern === targetPattern && dragState.originalRange.trackIndex === dragState.targetTrackIndex) {
-      originPattern.notes = originPattern.notes.map((note) => {
-        if (!noteIds.has(note.id)) return note;
-        return {
-          ...note,
-          startTick: clamp(note.startTick + offset, 0, totalTicks)
-        };
-      });
-    } else {
-      originPattern.notes = originPattern.notes.filter((note) => !noteIds.has(note.id));
-      dragState.originalNotes.forEach((note) => {
-        targetPattern.notes.push({
-          ...note,
-          startTick: clamp(note.startTick + offset, 0, totalTicks)
+    const trackCount = dragState.originalRange.trackCount || 1;
+    const maxStartTrack = Math.max(0, this.song.tracks.length - trackCount);
+    const targetStartTrackIndex = clamp(dragState.targetTrackIndex, 0, maxStartTrack);
+    dragState.originalNotesByTrack.forEach((entry) => {
+      const originTrackIndex = entry.trackIndex;
+      const targetTrackIndex = clamp(
+        targetStartTrackIndex + (originTrackIndex - dragState.originalRange.trackStartIndex),
+        0,
+        this.song.tracks.length - 1
+      );
+      const originTrack = this.song.tracks[originTrackIndex];
+      const targetTrack = this.song.tracks[targetTrackIndex];
+      const originPattern = originTrack?.patterns?.[this.selectedPatternIndex];
+      const targetPattern = targetTrack?.patterns?.[this.selectedPatternIndex];
+      if (!originPattern || !targetPattern) return;
+      const noteIds = new Set(entry.notes.map((note) => note.id));
+      if (originPattern === targetPattern && originTrackIndex === targetTrackIndex) {
+        originPattern.notes = originPattern.notes.map((note) => {
+          if (!noteIds.has(note.id)) return note;
+          return {
+            ...note,
+            startTick: clamp(note.startTick + offset, 0, totalTicks)
+          };
         });
-      });
-    }
+      } else {
+        originPattern.notes = originPattern.notes.filter((note) => !noteIds.has(note.id));
+        entry.notes.forEach((note) => {
+          targetPattern.notes.push({
+            ...note,
+            startTick: clamp(note.startTick + offset, 0, totalTicks)
+          });
+        });
+      }
+    });
     this.songSelection = {
       active: true,
-      trackIndex: dragState.targetTrackIndex,
+      trackIndex: targetStartTrackIndex,
+      trackStartIndex: targetStartTrackIndex,
+      trackEndIndex: targetStartTrackIndex + trackCount - 1,
       startTick: dragState.targetStartTick,
       endTick: dragState.targetStartTick + dragState.originalRange.durationTicks
     };
-    this.selectedTrackIndex = dragState.targetTrackIndex;
+    this.selectedTrackIndex = targetStartTrackIndex;
     this.persist();
     this.finalizeSongSelection();
   }
@@ -5097,31 +5193,50 @@ export default class MidiComposer {
   handleSongAction(action) {
     const range = this.getSongSelectionRange();
     if (!range) return;
-    const track = this.song.tracks[range.trackIndex];
-    const pattern = track?.patterns?.[this.selectedPatternIndex];
-    if (!track || !pattern) return;
+    const tracks = range.trackIndices.map((trackIndex) => ({
+      trackIndex,
+      track: this.song.tracks[trackIndex],
+      pattern: this.song.tracks[trackIndex]?.patterns?.[this.selectedPatternIndex]
+    })).filter((entry) => entry.track && entry.pattern);
+    if (!tracks.length) return;
 
     if (action === 'song-copy') {
-      const selectionNotes = this.getSongSelectionNotes(pattern, range);
-      this.songClipboard = {
-        trackIndex: range.trackIndex,
-        durationTicks: range.durationTicks,
-        notes: selectionNotes.map((note) => ({
+      const notesByTrack = tracks.map((entry) => ({
+        trackIndex: entry.trackIndex,
+        notes: this.getSongSelectionNotes(entry.pattern, range).map((note) => ({
           ...note,
           startTick: note.startTick - range.startTick
         }))
+      })).filter((entry) => entry.notes.length > 0);
+      this.songClipboard = {
+        anchorTrackIndex: range.trackStartIndex,
+        durationTicks: range.durationTicks,
+        notesByTrack
       };
       return;
     }
 
     if (action === 'song-paste') {
-      if (!this.songClipboard || !this.songClipboard.notes?.length) return;
+      const notesByTrack = this.songClipboard?.notesByTrack;
+      if (!Array.isArray(notesByTrack) || notesByTrack.length === 0) return;
       const startTick = range.startTick;
-      this.songClipboard.notes.forEach((note) => {
-        pattern.notes.push({
-          ...note,
-          id: uid(),
-          startTick: startTick + note.startTick
+      const anchorTrack = Number.isInteger(this.songClipboard.anchorTrackIndex)
+        ? this.songClipboard.anchorTrackIndex
+        : range.trackStartIndex;
+      notesByTrack.forEach((entry) => {
+        const targetTrackIndex = clamp(
+          range.trackStartIndex + (entry.trackIndex - anchorTrack),
+          0,
+          this.song.tracks.length - 1
+        );
+        const targetPattern = this.song.tracks[targetTrackIndex]?.patterns?.[this.selectedPatternIndex];
+        if (!targetPattern) return;
+        entry.notes.forEach((note) => {
+          targetPattern.notes.push({
+            ...note,
+            id: uid(),
+            startTick: startTick + note.startTick
+          });
         });
       });
       this.ensureGridCapacity(startTick + this.songClipboard.durationTicks);
@@ -5131,34 +5246,42 @@ export default class MidiComposer {
 
     if (action === 'song-cut') {
       this.handleSongAction('song-copy');
-      const overlapping = this.getSongNotesOverlapping(pattern, range);
-      pattern.notes = pattern.notes.filter((note) => !overlapping.includes(note));
+      tracks.forEach((entry) => {
+        const overlapping = this.getSongNotesOverlapping(entry.pattern, range);
+        entry.pattern.notes = entry.pattern.notes.filter((note) => !overlapping.includes(note));
+      });
       this.persist();
       return;
     }
 
     if (action === 'song-delete') {
-      const overlapping = this.getSongNotesOverlapping(pattern, range);
-      pattern.notes = pattern.notes.filter((note) => !overlapping.includes(note));
+      tracks.forEach((entry) => {
+        const overlapping = this.getSongNotesOverlapping(entry.pattern, range);
+        entry.pattern.notes = entry.pattern.notes.filter((note) => !overlapping.includes(note));
+      });
       this.persist();
       return;
     }
 
     if (action === 'song-splice') {
-      const overlapping = this.getSongNotesOverlapping(pattern, range);
-      pattern.notes = pattern.notes.filter((note) => !overlapping.includes(note));
-      this.shiftNotesAfterTick(pattern, range.endTick, -range.durationTicks);
+      tracks.forEach((entry) => {
+        const overlapping = this.getSongNotesOverlapping(entry.pattern, range);
+        entry.pattern.notes = entry.pattern.notes.filter((note) => !overlapping.includes(note));
+        this.shiftNotesAfterTick(entry.pattern, range.endTick, -range.durationTicks);
+      });
       this.persist();
       return;
     }
 
     if (action === 'song-transpose-up' || action === 'song-transpose-down') {
-      if (isDrumTrack(track)) return;
       const delta = action === 'song-transpose-up' ? 1 : -1;
-      pattern.notes.forEach((note) => {
-        if (note.startTick >= range.startTick && note.startTick < range.endTick) {
-          note.pitch = clamp(note.pitch + delta, 0, 127);
-        }
+      tracks.forEach((entry) => {
+        if (isDrumTrack(entry.track)) return;
+        entry.pattern.notes.forEach((note) => {
+          if (note.startTick >= range.startTick && note.startTick < range.endTick) {
+            note.pitch = clamp(note.pitch + delta, 0, 127);
+          }
+        });
       });
       this.persist();
       return;
@@ -5168,23 +5291,40 @@ export default class MidiComposer {
       const repeatRaw = window.prompt('Repeat selection how many times?', '2');
       const repeatCount = Number.parseInt(repeatRaw, 10);
       if (!Number.isInteger(repeatCount) || repeatCount < 2) return;
-      const selectionNotes = this.getSongSelectionNotes(pattern, range);
-      if (!selectionNotes.length) return;
+      const selectionNotesByTrack = tracks.map((entry) => ({
+        trackIndex: entry.trackIndex,
+        notes: this.getSongSelectionNotes(entry.pattern, range)
+      })).filter((entry) => entry.notes.length > 0);
+      if (!selectionNotesByTrack.length) return;
       const extraTicks = range.durationTicks * (repeatCount - 1);
-      this.shiftNotesAfterTick(pattern, range.endTick, extraTicks);
+      tracks.forEach((entry) => {
+        this.shiftNotesAfterTick(entry.pattern, range.endTick, extraTicks);
+      });
       for (let i = 1; i < repeatCount; i += 1) {
-        selectionNotes.forEach((note) => {
-          pattern.notes.push({
-            ...note,
-            id: uid(),
-            startTick: note.startTick + range.durationTicks * i,
-            durationTicks: note.durationTicks
+        selectionNotesByTrack.forEach((entry) => {
+          const targetPattern = this.song.tracks[entry.trackIndex]?.patterns?.[this.selectedPatternIndex];
+          if (!targetPattern) return;
+          entry.notes.forEach((note) => {
+            targetPattern.notes.push({
+              ...note,
+              id: uid(),
+              startTick: note.startTick + range.durationTicks * i,
+              durationTicks: note.durationTicks
+            });
           });
         });
       }
       const newEndTick = range.endTick + extraTicks;
       this.ensureGridCapacity(newEndTick);
       this.songSelection.endTick = range.startTick + range.durationTicks * repeatCount;
+      this.persist();
+      return;
+    }
+
+    if (action === 'song-loop-selection') {
+      this.setLoopStartTick(range.startTick);
+      this.setLoopEndTick(range.endTick);
+      this.song.loopEnabled = true;
       this.persist();
     }
   }
@@ -6857,6 +6997,7 @@ export default class MidiComposer {
     this.songInstrumentBounds = null;
     this.bounds.songZoomIn = null;
     this.bounds.songZoomOut = null;
+    this.songPlayheadBounds = null;
     const selectionRange = this.getSongSelectionRange();
 
     this.songLaneBounds = [];
@@ -6954,7 +7095,7 @@ export default class MidiComposer {
         }
       }
 
-      if (selectionRange && selectionRange.trackIndex === index) {
+      if (selectionRange && index >= selectionRange.trackStartIndex && index <= selectionRange.trackEndIndex) {
         const selStart = originX + selectionRange.startTick * cellWidth;
         const selEnd = originX + selectionRange.endTick * cellWidth;
         ctx.fillStyle = 'rgba(255,225,106,0.2)';
@@ -7091,6 +7232,13 @@ export default class MidiComposer {
   drawSongPlayhead(ctx, topY, bottomY) {
     if (!this.songTimelineBounds) return;
     const xPos = this.getSongTimelineX(this.playheadTick);
+    const handleWidth = 14;
+    this.songPlayheadBounds = {
+      x: xPos - handleWidth / 2,
+      y: topY,
+      w: handleWidth,
+      h: bottomY - topY
+    };
     ctx.strokeStyle = '#ffe16a';
     ctx.beginPath();
     ctx.moveTo(xPos, topY);
@@ -7120,6 +7268,7 @@ export default class MidiComposer {
       { action: 'song-cut', label: 'Cut' },
       { action: 'song-paste', label: 'Paste' },
       { action: 'song-delete', label: 'Delete' },
+      { action: 'song-loop-selection', label: 'Loop this' },
       { action: 'song-transpose-up', label: 'Pitch +1' },
       { action: 'song-transpose-down', label: 'Pitch -1' }
     ];
