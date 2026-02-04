@@ -6834,7 +6834,7 @@ export default class MidiComposer {
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(x, y, w, h);
 
-    const padding = 12;
+    const padding = 0;
     const rulerH = 24;
     const rulerY = y + padding;
     const addH = 34;
