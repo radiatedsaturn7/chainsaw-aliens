@@ -131,10 +131,12 @@ const DRUM_BANK_LSB = GM_DRUM_BANK_LSB;
 const TRACK_COLORS = ['#4fb7ff', '#ff9c42', '#55d68a', '#b48dff', '#ff6a6a', '#43d5d0'];
 const DEFAULT_GRID_BARS = 16;
 const DEFAULT_VISIBLE_ROWS = 12;
+const DEFAULT_LABEL_WIDTH = 192;
+const DEFAULT_LABEL_WIDTH_MOBILE = 152;
 const MIN_VISIBLE_ROWS = 5;
 const MAX_VISIBLE_ROWS = 60;
 const DEFAULT_GRID_TOP_PITCH = 59;
-const DEFAULT_RULER_HEIGHT = 32;
+const DEFAULT_RULER_HEIGHT = 80;
 const LOOP_HANDLE_MIN_WIDTH = 54;
 const LOOP_HANDLE_MIN_HEIGHT = 30;
 const FILE_MENU_WIDTH = 240;
@@ -676,6 +678,8 @@ export default class MidiComposer {
     this.gridOffsetInitialized = false;
     this.gridGesture = null;
     this.songGesture = null;
+    this.timelineStartTick = 0;
+    this.timelineSource = 'grid';
     this.songTimelineZoomX = 1;
     this.songTimelineOffsetX = 0;
     this.songTimelineBounds = null;
@@ -762,6 +766,7 @@ export default class MidiComposer {
     this.songActionBounds = [];
     this.songInstrumentBounds = null;
     this.songAddBounds = null;
+    this.songRulerBounds = null;
     this.fileInput = document.createElement('input');
     this.fileInput.type = 'file';
     this.fileInput.accept = '.json,.mid,.midi,.zip,application/json,audio/midi,application/zip';
@@ -1791,11 +1796,7 @@ export default class MidiComposer {
   }
 
   getSongTimelineTicks() {
-    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
-    const loopEnd = typeof this.song.loopEndTick === 'number'
-      ? this.song.loopEndTick
-      : (this.song.loopBars || 1) * ticksPerBar;
-    return Math.max(ticksPerBar, loopEnd);
+    return this.getGridTicks();
   }
 
   getSongTimelineZoomLimits() {
@@ -1807,27 +1808,63 @@ export default class MidiComposer {
     return clamp(offsetX, minX, 0);
   }
 
+  clampTimelineOffsetX(offsetX, viewW, cellWidth) {
+    const totalW = cellWidth * this.getGridTicks();
+    const minX = Math.min(0, viewW - totalW);
+    return clamp(offsetX, minX, 0);
+  }
+
+  updateTimelineStartTickFromGrid() {
+    if (!this.gridBounds) return;
+    this.timelineStartTick = Math.max(0, -this.gridOffset.x / this.gridBounds.cellWidth);
+    this.timelineSource = 'grid';
+  }
+
+  updateTimelineStartTickFromSong() {
+    if (!this.songTimelineBounds) return;
+    this.timelineStartTick = Math.max(0, -this.songTimelineOffsetX / this.songTimelineBounds.cellWidth);
+    this.timelineSource = 'song';
+  }
+
+  ensureTimelineCapacity() {
+    const timelineTicks = this.getGridTicks();
+    const visibleTicks = timelineTicks / (this.gridZoomX || 1);
+    const requiredTicks = Math.ceil(this.timelineStartTick + visibleTicks);
+    if (requiredTicks > timelineTicks) {
+      this.ensureGridCapacity(requiredTicks - 1);
+    }
+  }
+
+  ensureTimelinePanCapacity(desiredOffsetX, viewW, cellWidth) {
+    if (desiredOffsetX >= 0) return;
+    const requiredGridW = viewW - desiredOffsetX;
+    const requiredTicks = Math.ceil(requiredGridW / cellWidth);
+    if (requiredTicks > this.getGridTicks()) {
+      this.ensureGridCapacity(Math.max(0, requiredTicks - 1));
+    }
+  }
+
   setSongTimelineZoom(nextZoom, anchorTick = this.playheadTick) {
-    const { minZoom, maxZoom } = this.getSongTimelineZoomLimits();
+    const { minZoom, maxZoom } = this.getGridZoomLimitsX();
     const clampedZoom = clamp(nextZoom, minZoom, maxZoom);
     if (!this.songTimelineBounds) {
-      this.songTimelineZoomX = clampedZoom;
+      this.gridZoomX = clampedZoom;
       return;
     }
     const {
       x,
       w,
       originX,
-      cellWidth,
-      timelineTicks
+      cellWidth
     } = this.songTimelineBounds;
     const anchorX = originX + anchorTick * cellWidth;
-    const baseCellWidth = cellWidth / this.songTimelineZoomX;
+    const baseCellWidth = cellWidth / (this.gridZoomX || 1);
     const nextCellWidth = baseCellWidth * clampedZoom;
     const nextOriginX = anchorX - anchorTick * nextCellWidth;
-    const totalW = nextCellWidth * timelineTicks;
-    this.songTimelineZoomX = clampedZoom;
-    this.songTimelineOffsetX = this.clampSongTimelineOffset(nextOriginX - x, w, totalW);
+    this.gridZoomX = clampedZoom;
+    this.songTimelineOffsetX = this.clampTimelineOffsetX(nextOriginX - x, w, nextCellWidth);
+    this.updateTimelineStartTickFromSong();
+    this.ensureTimelineCapacity();
   }
 
   getSongTimelineX(tick) {
@@ -2822,6 +2859,7 @@ export default class MidiComposer {
             this.getExpandedGridWidth(),
             this.gridBounds.gridH
           );
+          this.updateTimelineStartTickFromGrid();
         }
       }
 
@@ -3342,12 +3380,22 @@ export default class MidiComposer {
       if (this.songSelectionMenu.open) {
         this.clearSongSelection();
       }
+      if (this.bounds.loopStartHandle && this.pointInBounds(x, y, this.bounds.loopStartHandle)) {
+        this.dragState = { mode: 'song-loop-start' };
+        this.setLoopStartTick(this.getSongTickFromX(x, this.songTimelineBounds));
+        return;
+      }
+      if (this.bounds.loopEndHandle && this.pointInBounds(x, y, this.bounds.loopEndHandle)) {
+        this.dragState = { mode: 'song-loop-end' };
+        this.setLoopEndTick(this.getSongTickFromX(x, this.songTimelineBounds));
+        return;
+      }
       if (this.bounds.songZoomOut && this.pointInBounds(x, y, this.bounds.songZoomOut)) {
-        this.setSongTimelineZoom(this.songTimelineZoomX / 1.5);
+        this.setSongTimelineZoom(this.gridZoomX / 1.5);
         return;
       }
       if (this.bounds.songZoomIn && this.pointInBounds(x, y, this.bounds.songZoomIn)) {
-        this.setSongTimelineZoom(this.songTimelineZoomX * 1.5);
+        this.setSongTimelineZoom(this.gridZoomX * 1.5);
         return;
       }
       if (this.songInstrumentBounds && this.pointInBounds(x, y, this.songInstrumentBounds)) {
@@ -3379,10 +3427,9 @@ export default class MidiComposer {
       const laneHit = this.songLaneBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (laneHit) {
         this.selectedTrackIndex = laneHit.trackIndex;
-        const tick = this.getSongTickFromX(x, laneHit);
-        this.playheadTick = clamp(tick, 0, this.getSongTimelineTicks());
         const modifiers = this.getModifiers();
         const isTouch = payload.touchCount > 0;
+        const tick = this.getSongTickFromX(x, laneHit);
         const selectionRange = this.getSongSelectionRange();
         const inSelection = this.isSongSelectionHit(tick, laneHit.trackIndex);
         if (inSelection && isTouch) {
@@ -3455,42 +3502,41 @@ export default class MidiComposer {
           return;
         }
         this.clearSongSelection();
-        const shouldPan = modifiers.alt || payload.button === 1 || payload.button === 2 || payload.touchCount > 1;
-        if (shouldPan) {
+        const wantsSelection = modifiers.shift;
+        if (wantsSelection) {
           this.dragState = {
-            mode: 'song-pan',
+            mode: 'song-select-pending',
+            bounds: laneHit,
             startX: x,
-            startOffsetX: this.songTimelineOffsetX
+            startY: y,
+            startTick: tick,
+            trackIndex: laneHit.trackIndex
           };
           return;
         }
         this.dragState = {
-          mode: 'song-select-pending',
-          bounds: laneHit,
+          mode: 'song-pan',
           startX: x,
-          startY: y,
-          startTick: tick,
-          trackIndex: laneHit.trackIndex
+          startOffsetX: this.songTimelineOffsetX
+        };
+        return;
+      }
+      if (this.songRulerBounds && this.pointInBounds(x, y, this.songRulerBounds)) {
+        const tick = this.getSongTickFromX(x, this.songTimelineBounds);
+        this.playheadTick = clamp(tick, 0, this.getSongTimelineTicks());
+        this.clearSongSelection();
+        this.dragState = {
+          mode: 'song-scrub',
+          bounds: this.songTimelineBounds
         };
         return;
       }
       if (this.songTimelineBounds && this.pointInBounds(x, y, this.songTimelineBounds)) {
-        const tick = this.getSongTickFromX(x, this.songTimelineBounds);
-        this.playheadTick = clamp(tick, 0, this.getSongTimelineTicks());
         this.clearSongSelection();
-        const modifiers = this.getModifiers();
-        const shouldPan = modifiers.alt || payload.button === 1 || payload.button === 2 || payload.touchCount > 1;
-        if (shouldPan) {
-          this.dragState = {
-            mode: 'song-pan',
-            startX: x,
-            startOffsetX: this.songTimelineOffsetX
-          };
-          return;
-        }
         this.dragState = {
-          mode: 'song-scrub',
-          bounds: this.songTimelineBounds
+          mode: 'song-pan',
+          startX: x,
+          startOffsetX: this.songTimelineOffsetX
         };
       }
       return;
@@ -3680,11 +3726,15 @@ export default class MidiComposer {
         this.dragState.mode = 'song-pan';
       }
       if (this.dragState.mode === 'song-pan' && this.songTimelineBounds) {
-        this.songTimelineOffsetX = this.clampSongTimelineOffset(
-          this.dragState.startOffsetX + dx,
+        const nextOffset = this.dragState.startOffsetX + dx;
+        this.ensureTimelinePanCapacity(nextOffset, this.songTimelineBounds.w, this.songTimelineBounds.cellWidth);
+        this.songTimelineOffsetX = this.clampTimelineOffsetX(
+          nextOffset,
           this.songTimelineBounds.w,
-          this.songTimelineBounds.totalW
+          this.songTimelineBounds.cellWidth
         );
+        this.updateTimelineStartTickFromSong();
+        this.ensureTimelineCapacity();
       }
       return;
     }
@@ -3699,11 +3749,15 @@ export default class MidiComposer {
         }
         this.dragState.mode = 'song-pan';
         if (this.songTimelineBounds) {
-          this.songTimelineOffsetX = this.clampSongTimelineOffset(
-            this.dragState.startOffsetX + dx,
+          const nextOffset = this.dragState.startOffsetX + dx;
+          this.ensureTimelinePanCapacity(nextOffset, this.songTimelineBounds.w, this.songTimelineBounds.cellWidth);
+          this.songTimelineOffsetX = this.clampTimelineOffsetX(
+            nextOffset,
             this.songTimelineBounds.w,
-            this.songTimelineBounds.totalW
+            this.songTimelineBounds.cellWidth
           );
+          this.updateTimelineStartTickFromSong();
+          this.ensureTimelineCapacity();
         }
       }
       return;
@@ -3735,14 +3789,30 @@ export default class MidiComposer {
       }
       return;
     }
+    if (this.dragState?.mode === 'song-loop-start') {
+      if (this.songTimelineBounds) {
+        this.setLoopStartTick(this.getSongTickFromX(payload.x, this.songTimelineBounds));
+      }
+      return;
+    }
+    if (this.dragState?.mode === 'song-loop-end') {
+      if (this.songTimelineBounds) {
+        this.setLoopEndTick(this.getSongTickFromX(payload.x, this.songTimelineBounds));
+      }
+      return;
+    }
     if (this.dragState?.mode === 'song-pan') {
       const dx = payload.x - this.dragState.startX;
       if (this.songTimelineBounds) {
-        this.songTimelineOffsetX = this.clampSongTimelineOffset(
-          this.dragState.startOffsetX + dx,
+        const nextOffset = this.dragState.startOffsetX + dx;
+        this.ensureTimelinePanCapacity(nextOffset, this.songTimelineBounds.w, this.songTimelineBounds.cellWidth);
+        this.songTimelineOffsetX = this.clampTimelineOffsetX(
+          nextOffset,
           this.songTimelineBounds.w,
-          this.songTimelineBounds.totalW
+          this.songTimelineBounds.cellWidth
         );
+        this.updateTimelineStartTickFromSong();
+        this.ensureTimelineCapacity();
       }
       return;
     }
@@ -3802,6 +3872,7 @@ export default class MidiComposer {
         const { gridH, w, h } = this.gridBounds;
         const gridW = this.getExpandedGridWidth();
         this.clampGridOffset(w, h, gridW, gridH);
+        this.updateTimelineStartTickFromGrid();
       }
       return;
     }
@@ -3840,6 +3911,7 @@ export default class MidiComposer {
         const { gridH, w, h } = this.gridBounds;
         const gridW = this.getExpandedGridWidth();
         this.clampGridOffset(w, h, gridW, gridH);
+        this.updateTimelineStartTickFromGrid();
       }
     } else if (this.dragState.mode === 'paste-preview') {
       this.updatePastePreviewPosition(cell.tick, cell.pitch);
@@ -3970,6 +4042,7 @@ export default class MidiComposer {
         this.getExpandedGridWidth(),
         this.gridBounds.gridH
       );
+      this.updateTimelineStartTickFromGrid();
       return;
     }
     if (this.activeTab === 'song' && this.songTimelineBounds) {
@@ -3978,13 +4051,17 @@ export default class MidiComposer {
       const delta = payload.deltaY;
       if (modifiers.meta) {
         const zoomFactor = delta > 0 ? 0.9 : 1.1;
-        this.setSongTimelineZoom(this.songTimelineZoomX * zoomFactor);
+        this.setSongTimelineZoom(this.gridZoomX * zoomFactor);
       } else {
-        this.songTimelineOffsetX = this.clampSongTimelineOffset(
-          this.songTimelineOffsetX - delta,
+        const nextOffset = this.songTimelineOffsetX - delta;
+        this.ensureTimelinePanCapacity(nextOffset, this.songTimelineBounds.w, this.songTimelineBounds.cellWidth);
+        this.songTimelineOffsetX = this.clampTimelineOffsetX(
+          nextOffset,
           this.songTimelineBounds.w,
-          this.songTimelineBounds.totalW
+          this.songTimelineBounds.cellWidth
         );
+        this.updateTimelineStartTickFromSong();
+        this.ensureTimelineCapacity();
       }
     }
   }
@@ -4031,7 +4108,7 @@ export default class MidiComposer {
       if (!this.pointInBounds(payload.x, payload.y, this.songTimelineBounds)) return;
       this.songGesture = {
         startDistance: payload.distance,
-        startZoomX: this.songTimelineZoomX,
+        startZoomX: this.gridZoomX,
         startOffsetX: this.songTimelineOffsetX,
         startX: payload.x,
         startY: payload.y,
@@ -4068,23 +4145,25 @@ export default class MidiComposer {
       const nextGridW = nextCellWidth * this.gridGesture.cols;
       const nextGridH = nextCellHeight * this.gridGesture.rows;
       this.clampGridOffset(this.gridGesture.viewW, this.gridGesture.viewH, nextGridW, nextGridH);
+      this.updateTimelineStartTickFromGrid();
       return;
     }
     if (this.songGesture?.startDistance) {
       const scale = payload.distance / this.songGesture.startDistance;
-      const { minZoom, maxZoom } = this.getSongTimelineZoomLimits();
-      const nextZoomX = clamp(this.songGesture.startZoomX * scale, minZoom, maxZoom);
+      const zoomXLimits = this.getGridZoomLimitsX();
+      const nextZoomX = clamp(this.songGesture.startZoomX * scale, zoomXLimits.minZoom, zoomXLimits.maxZoom);
       const baseCellWidth = this.songGesture.cellWidth / this.songGesture.startZoomX;
       const nextCellWidth = baseCellWidth * nextZoomX;
       const coordX = (this.songGesture.startX - this.songGesture.originX) / this.songGesture.cellWidth;
       const nextOriginX = payload.x - coordX * nextCellWidth;
-      const totalW = nextCellWidth * this.songGesture.timelineTicks;
-      this.songTimelineZoomX = nextZoomX;
-      this.songTimelineOffsetX = this.clampSongTimelineOffset(
+      this.gridZoomX = nextZoomX;
+      this.songTimelineOffsetX = this.clampTimelineOffsetX(
         nextOriginX - this.songGesture.viewX,
         this.songGesture.viewW,
-        totalW
+        nextCellWidth
       );
+      this.updateTimelineStartTickFromSong();
+      this.ensureTimelineCapacity();
     }
   }
 
@@ -6158,6 +6237,7 @@ export default class MidiComposer {
       this.gridOffset.y -= cursorY - (y + h - margin);
     }
     this.clampGridOffset(w, h, cellWidth * cols, cellHeight * rows);
+    this.updateTimelineStartTickFromGrid();
   }
 
   pointInBounds(x, y, bounds) {
@@ -6170,7 +6250,7 @@ export default class MidiComposer {
     }
     const minX = Math.min(0, viewW - gridW);
     const minY = Math.min(0, viewH - gridH);
-    this.gridOffset.x = Math.max(this.gridOffset.x, minX);
+    this.gridOffset.x = clamp(this.gridOffset.x, minX, 0);
     this.gridOffset.y = clamp(this.gridOffset.y, minY, 0);
   }
 
@@ -6756,84 +6836,47 @@ export default class MidiComposer {
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(x, y, w, h);
 
-    const padding = 12;
-    const headerH = 38;
-    const headerY = y + padding;
-    const rulerH = 24;
-    const rulerY = headerY + headerH + 10;
+    const padding = 0;
+    const rulerH = DEFAULT_RULER_HEIGHT;
+    const rulerY = y + padding;
     const addH = 34;
     const addY = y + h - padding - addH;
-    const laneAreaY = rulerY + rulerH + 8;
-    const laneAreaH = Math.max(0, addY - laneAreaY - 10);
+    const laneAreaY = rulerY + rulerH;
+    const laneAreaH = Math.max(0, addY - laneAreaY);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = 12;
     const laneBlockH = Math.max(74, Math.min(112, (laneAreaH - laneGap * (trackCount - 1)) / trackCount));
-    const labelW = Math.min(210, Math.max(140, w * 0.22));
-    const laneX = x + padding + labelW + 12;
-    const laneW = w - padding * 2 - labelW - 12;
+    const isMobile = this.isMobileLayout();
+    const labelW = isMobile ? DEFAULT_LABEL_WIDTH_MOBILE : DEFAULT_LABEL_WIDTH;
+    const laneX = x + padding + labelW;
+    const laneW = w - padding * 2 - labelW;
     const laneH = Math.max(36, laneBlockH * 0.42);
     const automationH = Math.max(12, (laneBlockH - laneH) / 2 - 6);
     this.songActionBounds = [];
 
-    const selectedTrack = this.getActiveTrack();
-    const trackLabel = selectedTrack ? selectedTrack.name : 'No Track';
-    const instrumentLabel = selectedTrack
-      ? isDrumTrack(selectedTrack)
-        ? this.getDrumKitLabel(selectedTrack)
-        : this.getProgramLabel(selectedTrack.program)
-      : 'Instrument';
-
-    ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
-    ctx.fillText('Song Timeline', x + padding, headerY + 16);
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = '12px Courier New';
-    ctx.fillText(trackLabel, x + padding, headerY + 32);
-
-    const instrumentW = Math.min(240, Math.max(150, ctx.measureText(instrumentLabel).width + 28));
-    this.songInstrumentBounds = {
-      x: x + padding + 150,
-      y: headerY + 8,
-      w: instrumentW,
-      h: headerH - 12
-    };
-    this.drawSmallButton(ctx, this.songInstrumentBounds, instrumentLabel, false);
-
+    this.songInstrumentBounds = null;
+    this.bounds.songZoomIn = null;
+    this.bounds.songZoomOut = null;
     const selectionRange = this.getSongSelectionRange();
-    if (selectionRange) {
-      const ticksPerBar = this.ticksPerBeat * this.beatsPerBar;
-      const startBar = Math.floor(selectionRange.startTick / ticksPerBar) + 1;
-      const endBar = Math.max(startBar, Math.ceil(selectionRange.endTick / ticksPerBar));
-      ctx.fillStyle = '#ffe16a';
-      ctx.font = '12px Courier New';
-      ctx.fillText(`Selection: Bars ${startBar}-${endBar}`, x + padding + 420, headerY + 20);
-    }
-
-    const controlH = headerH - 12;
-    const controlGap = 8;
-    const zoomButtonW = 26;
-    const loopToggleW = 110;
-    let controlX = x + w - padding - loopToggleW;
-    this.bounds.loopToggle = { x: controlX, y: headerY + 6, w: loopToggleW, h: controlH };
-    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
-    controlX -= controlGap + zoomButtonW;
-    this.bounds.songZoomIn = { x: controlX, y: headerY + 6, w: zoomButtonW, h: controlH };
-    this.drawSmallButton(ctx, this.bounds.songZoomIn, '+', false);
-    controlX -= controlGap + zoomButtonW;
-    this.bounds.songZoomOut = { x: controlX, y: headerY + 6, w: zoomButtonW, h: controlH };
-    this.drawSmallButton(ctx, this.bounds.songZoomOut, '−', false);
 
     this.songLaneBounds = [];
     this.songLabelBounds = [];
     this.songAutomationBounds = [];
-    const timelineTicks = this.getSongTimelineTicks();
+    let timelineTicks = this.getSongTimelineTicks();
     const baseCellWidth = laneW / timelineTicks;
-    const { minZoom, maxZoom } = this.getSongTimelineZoomLimits();
-    this.songTimelineZoomX = clamp(this.songTimelineZoomX, minZoom, maxZoom);
-    const cellWidth = baseCellWidth * this.songTimelineZoomX;
+    const zoomXLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+    let cellWidth = baseCellWidth * this.gridZoomX;
+    this.ensureTimelineCapacity();
+    timelineTicks = this.getSongTimelineTicks();
+    cellWidth = (laneW / timelineTicks) * this.gridZoomX;
+    let offsetX = -this.timelineStartTick * cellWidth;
+    offsetX = this.clampTimelineOffsetX(offsetX, laneW, cellWidth);
+    this.songTimelineOffsetX = offsetX;
+    this.timelineStartTick = Math.max(0, -offsetX / cellWidth);
+    this.timelineSource = 'song';
     const totalW = cellWidth * timelineTicks;
-    this.songTimelineOffsetX = this.clampSongTimelineOffset(this.songTimelineOffsetX, laneW, totalW);
-    const originX = laneX + this.songTimelineOffsetX;
+    const originX = laneX + offsetX;
     this.songTimelineBounds = {
       x: laneX,
       y: rulerY,
@@ -6844,7 +6887,13 @@ export default class MidiComposer {
       totalW,
       timelineTicks
     };
-    this.drawSongRuler(ctx, laneX, rulerY, laneW, rulerH);
+    this.songRulerBounds = {
+      x: laneX,
+      y: rulerY,
+      w: laneW,
+      h: rulerH
+    };
+    this.drawTimelineRuler(ctx, laneX, rulerY, laneW, rulerH, timelineTicks, this.songTimelineBounds);
 
     this.song.tracks.forEach((track, index) => {
       const laneTop = laneAreaY + index * (laneBlockH + laneGap);
@@ -6856,11 +6905,7 @@ export default class MidiComposer {
       ctx.strokeRect(labelX, laneTop, labelW, laneBlockH);
       ctx.fillStyle = '#fff';
       ctx.font = '12px Courier New';
-      ctx.fillText(track.name, labelX + 10, laneTop + 18);
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
-      ctx.font = '10px Courier New';
-      const instrumentName = isDrumTrack(track) ? this.getDrumKitLabel(track) : this.getProgramLabel(track.program);
-      ctx.fillText(this.truncateLabel(ctx, instrumentName, labelW - 20), labelX + 10, laneTop + 34);
+      ctx.fillText(this.truncateLabel(ctx, track.name, labelW - 20), labelX + 10, laneTop + 18);
       this.songLabelBounds.push({ x: labelX, y: laneTop, w: labelW, h: laneBlockH, trackIndex: index });
 
       const laneBounds = { x: laneX, y: laneTop, w: laneW, h: laneH, trackIndex: index };
@@ -6954,16 +6999,16 @@ export default class MidiComposer {
     this.drawSongSelectionMenu(ctx);
   }
 
-  drawSongRuler(ctx, x, y, w, h) {
-    if (!this.songTimelineBounds) return;
-    const { originX, cellWidth, timelineTicks } = this.songTimelineBounds;
+  drawTimelineRuler(ctx, x, y, w, h, loopTicks, timeline) {
+    if (!timeline) return;
+    const { originX, cellWidth } = timeline;
     const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(x, y, w, h);
     ctx.fillStyle = '#fff';
-    ctx.font = '11px Courier New';
+    ctx.font = '12px Courier New';
     ctx.save();
     ctx.beginPath();
     ctx.rect(x, y, w, h);
@@ -6971,18 +7016,74 @@ export default class MidiComposer {
     if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
       const loopStartX = originX + this.song.loopStartTick * cellWidth;
       const loopEndX = originX + this.song.loopEndTick * cellWidth;
-      ctx.fillStyle = 'rgba(255,225,106,0.22)';
+      ctx.fillStyle = 'rgba(255,225,106,0.25)';
       ctx.fillRect(loopStartX, y, loopEndX - loopStartX, h);
+      const handleW = Math.max(LOOP_HANDLE_MIN_WIDTH, Math.round(h * 1.4));
+      const handleH = Math.max(LOOP_HANDLE_MIN_HEIGHT, Math.round(h * 1.1));
+      const handleY = y + Math.max(1, Math.round((h - handleH) / 2));
+      const gap = 3;
+      const minX = originX;
+      const maxX = originX + loopTicks * cellWidth - handleW;
+      this.bounds.loopStartHandle = {
+        x: clamp(loopStartX - handleW - gap, minX, maxX),
+        y: handleY,
+        w: handleW,
+        h: handleH
+      };
+      this.bounds.loopEndHandle = {
+        x: clamp(loopEndX + gap, minX, maxX),
+        y: handleY,
+        w: handleW,
+        h: handleH
+      };
+      ctx.fillStyle = '#55d68a';
+      ctx.fillRect(this.bounds.loopStartHandle.x, this.bounds.loopStartHandle.y, handleW, handleH);
+      ctx.fillStyle = '#ff6a6a';
+      ctx.fillRect(this.bounds.loopEndHandle.x, this.bounds.loopEndHandle.y, handleW, handleH);
+      ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+      ctx.strokeRect(this.bounds.loopStartHandle.x, this.bounds.loopStartHandle.y, handleW, handleH);
+      ctx.strokeRect(this.bounds.loopEndHandle.x, this.bounds.loopEndHandle.y, handleW, handleH);
+      ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+      [this.bounds.loopStartHandle, this.bounds.loopEndHandle].forEach((handle) => {
+        const ridgeXLeft = handle.x + Math.round(handleW * 0.35);
+        const ridgeXRight = handle.x + Math.round(handleW * 0.65);
+        ctx.beginPath();
+        ctx.moveTo(ridgeXLeft, handle.y + 3);
+        ctx.lineTo(ridgeXLeft, handle.y + handleH - 3);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(ridgeXRight, handle.y + 3);
+        ctx.lineTo(ridgeXRight, handle.y + handleH - 3);
+        ctx.stroke();
+      });
+    } else {
+      this.bounds.loopStartHandle = null;
+      this.bounds.loopEndHandle = null;
     }
-    for (let bar = 0; bar <= Math.ceil(timelineTicks / ticksPerBar); bar += 1) {
+    const totalBars = Math.max(1, Math.ceil(loopTicks / ticksPerBar));
+    for (let bar = 0; bar < totalBars; bar += 1) {
       const barX = originX + bar * ticksPerBar * cellWidth;
-      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.fillText(`${bar + 1}`, barX + 4, y + h - 8);
+    }
+    if (typeof this.song.loopStartTick === 'number') {
+      const startX = originX + this.song.loopStartTick * cellWidth;
+      ctx.strokeStyle = '#55d68a';
       ctx.beginPath();
-      ctx.moveTo(barX, y);
-      ctx.lineTo(barX, y + h);
+      ctx.moveTo(startX, y);
+      ctx.lineTo(startX, y + h);
       ctx.stroke();
-      ctx.fillStyle = '#fff';
-      ctx.fillText(`${bar + 1}`, barX + 4, y + h - 6);
+      ctx.fillStyle = '#55d68a';
+      ctx.fillText('START', startX + 4, y + h - 8);
+    }
+    if (typeof this.song.loopEndTick === 'number') {
+      const endX = originX + this.song.loopEndTick * cellWidth;
+      ctx.strokeStyle = '#ff6a6a';
+      ctx.beginPath();
+      ctx.moveTo(endX, y);
+      ctx.lineTo(endX, y + h);
+      ctx.stroke();
+      ctx.fillStyle = '#ff6a6a';
+      ctx.fillText('END', endX + 4, y + h - 8);
     }
     ctx.restore();
   }
@@ -8377,7 +8478,7 @@ export default class MidiComposer {
       ? this.getDrumRows().length
       : this.getPitchRange().max - this.getPitchRange().min + 1;
     const isMobile = this.isMobileLayout();
-    const labelW = options.hideLabels ? 0 : (isMobile ? 76 : 96);
+    const labelW = options.hideLabels ? 0 : (isMobile ? DEFAULT_LABEL_WIDTH_MOBILE : DEFAULT_LABEL_WIDTH);
     const rulerH = simplified ? 0 : DEFAULT_RULER_HEIGHT;
     const viewW = w - labelW;
     const baseCellWidth = viewW / gridTicks;
@@ -8402,6 +8503,14 @@ export default class MidiComposer {
       this.gridZoomY = 1;
       cellHeight = Math.max(24, (viewH - 4) / Math.max(1, rows));
       this.gridOffset.y = 0;
+    }
+    if (Number.isFinite(this.timelineStartTick)) {
+      if (this.timelineSource === 'song') {
+        this.gridOffset.x = -this.timelineStartTick * cellWidth;
+        this.timelineSource = 'grid';
+      } else {
+        this.timelineStartTick = Math.max(0, -this.gridOffset.x / cellWidth);
+      }
     }
     const gridH = drumGrid ? viewH : cellHeight * rows;
     this.initializeGridOffset(track, rows, cellHeight);
@@ -8453,9 +8562,6 @@ export default class MidiComposer {
       ctx.fillRect(x, y, labelW, viewH + rulerH);
       ctx.strokeStyle = 'rgba(255,255,255,0.2)';
       ctx.strokeRect(x, y, labelW, viewH + rulerH);
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.font = '12px Courier New';
-      ctx.fillText(isMobile ? 'Notes' : 'Note', x + 8, y + 18);
       this.drawLabelColumn(ctx, track);
     }
     if (!simplified) {
@@ -8464,92 +8570,8 @@ export default class MidiComposer {
   }
 
   drawRuler(ctx, x, y, w, h, loopTicks) {
-    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(x, y, w, h);
-    ctx.fillStyle = '#fff';
-    ctx.font = '12px Courier New';
     if (!this.gridBounds) return;
-    const { originX, cellWidth } = this.gridBounds;
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(x, y, w, h);
-    ctx.clip();
-    if (this.song.loopEnabled && typeof this.song.loopStartTick === 'number' && typeof this.song.loopEndTick === 'number') {
-      const loopStartX = originX + this.song.loopStartTick * cellWidth;
-      const loopEndX = originX + this.song.loopEndTick * cellWidth;
-      ctx.fillStyle = 'rgba(255,225,106,0.25)';
-      ctx.fillRect(loopStartX, y, loopEndX - loopStartX, h);
-      const handleW = Math.max(LOOP_HANDLE_MIN_WIDTH, Math.round(h * 1.4));
-      const handleH = Math.max(LOOP_HANDLE_MIN_HEIGHT, Math.round(h * 1.1));
-      const handleY = y + Math.max(1, Math.round((h - handleH) / 2));
-      const gap = 3;
-      const minX = originX;
-      const maxX = originX + loopTicks * cellWidth - handleW;
-      this.bounds.loopStartHandle = {
-        x: clamp(loopStartX - handleW - gap, minX, maxX),
-        y: handleY,
-        w: handleW,
-        h: handleH
-      };
-      this.bounds.loopEndHandle = {
-        x: clamp(loopEndX + gap, minX, maxX),
-        y: handleY,
-        w: handleW,
-        h: handleH
-      };
-      ctx.fillStyle = '#55d68a';
-      ctx.fillRect(this.bounds.loopStartHandle.x, this.bounds.loopStartHandle.y, handleW, handleH);
-      ctx.fillStyle = '#ff6a6a';
-      ctx.fillRect(this.bounds.loopEndHandle.x, this.bounds.loopEndHandle.y, handleW, handleH);
-      ctx.strokeStyle = 'rgba(0,0,0,0.7)';
-      ctx.strokeRect(this.bounds.loopStartHandle.x, this.bounds.loopStartHandle.y, handleW, handleH);
-      ctx.strokeRect(this.bounds.loopEndHandle.x, this.bounds.loopEndHandle.y, handleW, handleH);
-      ctx.strokeStyle = 'rgba(0,0,0,0.55)';
-      [this.bounds.loopStartHandle, this.bounds.loopEndHandle].forEach((handle) => {
-        const ridgeXLeft = handle.x + Math.round(handleW * 0.35);
-        const ridgeXRight = handle.x + Math.round(handleW * 0.65);
-        ctx.beginPath();
-        ctx.moveTo(ridgeXLeft, handle.y + 3);
-        ctx.lineTo(ridgeXLeft, handle.y + handleH - 3);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(ridgeXRight, handle.y + 3);
-        ctx.lineTo(ridgeXRight, handle.y + handleH - 3);
-        ctx.stroke();
-      });
-    } else {
-      this.bounds.loopStartHandle = null;
-      this.bounds.loopEndHandle = null;
-    }
-    const totalBars = Math.max(1, Math.ceil(loopTicks / ticksPerBar));
-    for (let bar = 0; bar < totalBars; bar += 1) {
-      const barX = originX + bar * ticksPerBar * cellWidth;
-      ctx.fillText(`${bar + 1}`, barX + 4, y + h - 8);
-    }
-    if (typeof this.song.loopStartTick === 'number') {
-      const startX = originX + this.song.loopStartTick * cellWidth;
-      ctx.strokeStyle = '#55d68a';
-      ctx.beginPath();
-      ctx.moveTo(startX, y);
-      ctx.lineTo(startX, y + h);
-      ctx.stroke();
-      ctx.fillStyle = '#55d68a';
-      ctx.fillText('START', startX + 4, y + h - 8);
-    }
-    if (typeof this.song.loopEndTick === 'number') {
-      const endX = originX + this.song.loopEndTick * cellWidth;
-      ctx.strokeStyle = '#ff6a6a';
-      ctx.beginPath();
-      ctx.moveTo(endX, y);
-      ctx.lineTo(endX, y + h);
-      ctx.stroke();
-      ctx.fillStyle = '#ff6a6a';
-      ctx.fillText('END', endX + 4, y + h - 8);
-    }
-    ctx.restore();
+    this.drawTimelineRuler(ctx, x, y, w, h, loopTicks, this.gridBounds);
   }
 
   drawGrid(ctx, track, pattern, loopTicks, options = {}) {
