@@ -5334,9 +5334,14 @@ export default class MidiComposer {
     }
 
     if (action === 'song-splice') {
+      const splitTicks = new Set([range.startTick, range.endTick]);
+      if (Number.isFinite(this.playheadTick)
+        && this.playheadTick > range.startTick
+        && this.playheadTick < range.endTick) {
+        splitTicks.add(this.playheadTick);
+      }
       tracks.forEach((entry) => {
-        this.splitNotesAtTick(entry.pattern, range.startTick);
-        this.splitNotesAtTick(entry.pattern, range.endTick);
+        splitTicks.forEach((tick) => this.splitNotesAtTick(entry.pattern, tick));
       });
       this.persist();
       return;
