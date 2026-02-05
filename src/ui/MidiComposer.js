@@ -3917,16 +3917,18 @@ export default class MidiComposer {
         const range = this.getPatternPartRange(pattern, this.dragState.partIndex, this.getSongTimelineTicks());
         const duration = range.endTick - range.startTick;
         const tick = this.getSongTickFromX(payload.x, laneHit);
-        this.dragState.targetTrackIndex = laneHit.trackIndex;
-        this.dragState.targetStartTick = clamp(tick - this.dragState.offsetTick, 0, Math.max(0, this.getSongTimelineTicks() - duration));
-        this.dragState.moved = true;
+        const nextTrackIndex = laneHit.trackIndex;
+        const nextStartTick = clamp(tick - this.dragState.offsetTick, 0, Math.max(0, this.getSongTimelineTicks() - duration));
+        this.dragState.targetTrackIndex = nextTrackIndex;
+        this.dragState.targetStartTick = nextStartTick;
+        this.dragState.moved = nextTrackIndex !== this.dragState.sourceTrackIndex || nextStartTick !== range.startTick;
         this.songSelection = {
           active: true,
-          trackIndex: laneHit.trackIndex,
-          trackStartIndex: laneHit.trackIndex,
-          trackEndIndex: laneHit.trackIndex,
-          startTick: this.dragState.targetStartTick,
-          endTick: this.dragState.targetStartTick + duration
+          trackIndex: nextTrackIndex,
+          trackStartIndex: nextTrackIndex,
+          trackEndIndex: nextTrackIndex,
+          startTick: nextStartTick,
+          endTick: nextStartTick + duration
         };
       }
       return;
@@ -7442,6 +7444,12 @@ export default class MidiComposer {
         for (let i = 0; i < boundaries.length - 1; i += 1) {
           const partStart = boundaries[i];
           const partEnd = boundaries[i + 1];
+          const hasPartNotes = pattern.notes?.some((note) => {
+            const noteStart = note.startTick;
+            const noteEnd = note.startTick + Math.max(1, note.durationTicks || this.ticksPerBeat);
+            return noteEnd > partStart && noteStart < partEnd;
+          });
+          if (!hasPartNotes) continue;
           const partX = originX + partStart * cellWidth;
           const partW = Math.max(1, (partEnd - partStart) * cellWidth);
           const partBounds = {
