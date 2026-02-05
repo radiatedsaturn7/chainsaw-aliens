@@ -5278,6 +5278,43 @@ export default class MidiComposer {
     return splitCount;
   }
 
+
+  getPatternPartBoundaries(pattern, totalTicks) {
+    const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
+    const raw = Array.isArray(pattern?.partBoundaries) ? pattern.partBoundaries : [];
+    const boundaries = [...new Set(
+      [0, ...raw, limit]
+        .filter((tick) => Number.isFinite(tick))
+        .map((tick) => clamp(Math.round(tick), 0, limit))
+    )].sort((a, b) => a - b);
+    if (boundaries[0] !== 0) boundaries.unshift(0);
+    if (boundaries[boundaries.length - 1] !== limit) boundaries.push(limit);
+    return boundaries;
+  }
+
+  splitPatternPartsAtTicks(pattern, ticks, totalTicks) {
+    if (!pattern) return 0;
+    const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
+    const boundaries = this.getPatternPartBoundaries(pattern, limit);
+    let added = 0;
+    ticks.forEach((tick) => {
+      if (!Number.isFinite(tick)) return;
+      const nextTick = clamp(Math.round(tick), 1, limit - 1);
+      if (!boundaries.includes(nextTick)) {
+        boundaries.push(nextTick);
+        added += 1;
+      }
+    });
+    boundaries.sort((a, b) => a - b);
+    pattern.partBoundaries = boundaries.slice(1, -1);
+    return added;
+  }
+
+  splitSongTrackPartsAtTicks(tracks, ticks, totalTicks) {
+    if (!Array.isArray(tracks) || !tracks.length) return 0;
+    return tracks.reduce((sum, entry) => sum + this.splitPatternPartsAtTicks(entry.pattern, ticks, totalTicks), 0);
+  }
+
   handleSongAction(action) {
     const range = this.getSongSelectionRange();
     if (!range) return;
@@ -5354,16 +5391,10 @@ export default class MidiComposer {
     }
 
     if (action === 'song-splice') {
-      const splitTicks = new Set([range.startTick, range.endTick]);
-      if (Number.isFinite(this.playheadTick)
-        && this.playheadTick > range.startTick
-        && this.playheadTick < range.endTick) {
-        splitTicks.add(this.playheadTick);
-      }
-      const splitCount = this.splitSongTracksAtTicks(tracks, [...splitTicks]);
-      if (splitCount === 0) {
-        window.alert('Split only affects notes that cross the selection start/end (and playhead if inside). No notes crossed those boundaries.');
-      }
+      const splitTicks = [range.startTick, range.endTick];
+      const totalTicks = this.getSongTimelineTicks();
+      this.splitSongTrackPartsAtTicks(tracks, splitTicks, totalTicks);
+      this.splitSongTracksAtTicks(tracks, splitTicks);
       this.persist();
       return;
     }
@@ -7193,6 +7224,25 @@ export default class MidiComposer {
 
       const pattern = track.patterns?.[this.selectedPatternIndex];
       if (pattern) {
+        const boundaries = this.getPatternPartBoundaries(pattern, timelineTicks);
+        for (let i = 0; i < boundaries.length - 1; i += 1) {
+          const partStart = boundaries[i];
+          const partEnd = boundaries[i + 1];
+          const partX = originX + partStart * cellWidth;
+          const partW = Math.max(1, (partEnd - partStart) * cellWidth);
+          ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)';
+          ctx.fillRect(partX, laneBounds.y, partW, laneBounds.h);
+          if (i > 0) {
+            ctx.strokeStyle = 'rgba(255,225,106,0.6)';
+            ctx.beginPath();
+            ctx.moveTo(partX, laneBounds.y + 1);
+            ctx.lineTo(partX, laneBounds.y + laneBounds.h - 1);
+            ctx.stroke();
+          }
+        }
+      }
+
+      if (pattern) {
         const notes = pattern.notes || [];
         if (notes.length > 0) {
           const pitches = notes.map((note) => note.pitch);
@@ -7380,7 +7430,7 @@ export default class MidiComposer {
       return;
     }
     const actions = [
-      { action: 'song-splice', label: 'Split Notes' },
+      { action: 'song-splice', label: 'Split Parts' },
       { action: 'song-copy', label: 'Copy' },
       { action: 'song-cut', label: 'Cut' },
       { action: 'song-paste', label: 'Paste' },
