@@ -5238,7 +5238,7 @@ export default class MidiComposer {
   }
 
   splitNotesAtTick(pattern, tick) {
-    if (!pattern?.notes?.length) return;
+    if (!pattern?.notes?.length) return 0;
     const newNotes = [];
     pattern.notes.forEach((note) => {
       const endTick = note.startTick + note.durationTicks;
@@ -5258,19 +5258,24 @@ export default class MidiComposer {
     if (newNotes.length) {
       pattern.notes.push(...newNotes);
     }
+    return newNotes.length;
   }
 
   splitSongTracksAtTicks(tracks, ticks) {
-    if (!Array.isArray(tracks) || !tracks.length) return;
+    if (!Array.isArray(tracks) || !tracks.length) return 0;
     const sortedTicks = [...new Set(
       ticks
         .filter((tick) => Number.isFinite(tick))
         .map((tick) => Math.max(0, Math.round(tick)))
     )].sort((a, b) => a - b);
-    if (!sortedTicks.length) return;
+    if (!sortedTicks.length) return 0;
+    let splitCount = 0;
     tracks.forEach((entry) => {
-      sortedTicks.forEach((tick) => this.splitNotesAtTick(entry.pattern, tick));
+      sortedTicks.forEach((tick) => {
+        splitCount += this.splitNotesAtTick(entry.pattern, tick);
+      });
     });
+    return splitCount;
   }
 
   handleSongAction(action) {
@@ -5355,7 +5360,10 @@ export default class MidiComposer {
         && this.playheadTick < range.endTick) {
         splitTicks.add(this.playheadTick);
       }
-      this.splitSongTracksAtTicks(tracks, [...splitTicks]);
+      const splitCount = this.splitSongTracksAtTicks(tracks, [...splitTicks]);
+      if (splitCount === 0) {
+        window.alert('Split only affects notes that cross the selection start/end (and playhead if inside). No notes crossed those boundaries.');
+      }
       this.persist();
       return;
     }
@@ -7372,7 +7380,7 @@ export default class MidiComposer {
       return;
     }
     const actions = [
-      { action: 'song-splice', label: 'Split' },
+      { action: 'song-splice', label: 'Split Notes' },
       { action: 'song-copy', label: 'Copy' },
       { action: 'song-cut', label: 'Cut' },
       { action: 'song-paste', label: 'Paste' },
