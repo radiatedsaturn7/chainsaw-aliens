@@ -4177,6 +4177,8 @@ export default class MidiComposer {
           this.dragState.targetTrackIndex,
           this.dragState.targetStartTick
         );
+      } else {
+        this.finalizeSongSelection();
       }
       this.dragState = null;
       return;
