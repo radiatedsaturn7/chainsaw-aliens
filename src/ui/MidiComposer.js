@@ -3544,6 +3544,8 @@ export default class MidiComposer {
         };
         this.dragState = {
           mode: 'song-part-move',
+          startX: x,
+          startY: y,
           sourceTrackIndex: partHit.trackIndex,
           partIndex: partHit.partIndex,
           offsetTick: this.getSongTickFromX(x, partHit) - partHit.startTick,
@@ -3935,6 +3937,12 @@ export default class MidiComposer {
     if (this.dragState?.mode === 'song-part-move') {
       const laneHit = this.getSongLaneAt(payload.x, payload.y) || this.songLaneBounds?.[this.dragState.targetTrackIndex];
       if (laneHit) {
+        const dx = payload.x - (this.dragState.startX ?? payload.x);
+        const dy = payload.y - (this.dragState.startY ?? payload.y);
+        const pointerMoved = Math.abs(dx) > 6 || Math.abs(dy) > 6;
+        if (!pointerMoved && !this.dragState.moved) {
+          return;
+        }
         const pattern = this.song.tracks[this.dragState.sourceTrackIndex]?.patterns?.[this.selectedPatternIndex];
         const range = this.getPatternPartRange(pattern, this.dragState.partIndex, this.getSongTimelineTicks());
         const duration = range.endTick - range.startTick;
@@ -5471,6 +5479,26 @@ export default class MidiComposer {
     return merged;
   }
 
+  mergeSongTrackPartsAtBoundary(tracks, boundaryTick, totalTicks) {
+    if (!Array.isArray(tracks) || !tracks.length || !Number.isFinite(boundaryTick)) return 0;
+    const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
+    const boundary = clamp(Math.round(boundaryTick), 1, limit - 1);
+    let merged = 0;
+    tracks.forEach((entry) => {
+      const pattern = entry?.pattern;
+      if (!pattern) return;
+      const existing = Array.isArray(pattern.partBoundaries) ? pattern.partBoundaries : [];
+      const next = existing
+        .filter((tick) => Math.round(tick) !== boundary)
+        .map((tick) => clamp(Math.round(tick), 1, limit - 1));
+      if (next.length !== existing.length) {
+        pattern.partBoundaries = [...new Set(next)].sort((a, b) => a - b);
+        merged += 1;
+      }
+    });
+    return merged;
+  }
+
   startSongSplitTool(range) {
     if (!range) return;
     const splitTick = clamp(range.startTick + Math.floor(range.durationTicks / 2), range.startTick + 1, range.endTick - 1);
@@ -5698,9 +5726,17 @@ export default class MidiComposer {
       return;
     }
 
-    if (action === 'song-merge') {
+    if (action === 'song-merge-left') {
       const totalTicks = this.getSongTimelineTicks();
-      this.mergeSongTrackPartsInRange(tracks, range, totalTicks);
+      this.mergeSongTrackPartsAtBoundary(tracks, range.startTick, totalTicks);
+      this.songSplitTool.active = false;
+      this.persist();
+      return;
+    }
+
+    if (action === 'song-merge-right') {
+      const totalTicks = this.getSongTimelineTicks();
+      this.mergeSongTrackPartsAtBoundary(tracks, range.endTick, totalTicks);
       this.songSplitTool.active = false;
       this.persist();
       return;
@@ -7561,9 +7597,10 @@ export default class MidiComposer {
             && selectionRange.trackEndIndex === index
             && selectionRange.startTick === partStart
             && selectionRange.endTick === partEnd;
+          const partBaseColor = track.color || '#ffffff';
           ctx.fillStyle = partSelected
-            ? 'rgba(255,225,106,0.18)'
-            : (i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)');
+            ? toRgba(partBaseColor, 0.66)
+            : toRgba(partBaseColor, 0.3);
           ctx.fillRect(partX, laneBounds.y, partW, laneBounds.h);
           if (i > 0) {
             ctx.strokeStyle = 'rgba(255,225,106,0.6)';
@@ -7790,7 +7827,8 @@ export default class MidiComposer {
     }
     const actions = [
       { action: 'song-splice', label: 'Split Parts' },
-      { action: 'song-merge', label: 'Merge Parts' },
+      { action: 'song-merge-left', label: 'Merge Left' },
+      { action: 'song-merge-right', label: 'Merge Right' },
       { action: 'song-copy', label: 'Copy' },
       { action: 'song-cut', label: 'Cut' },
       { action: 'song-paste', label: 'Paste' },
