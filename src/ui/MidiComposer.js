@@ -5503,7 +5503,14 @@ export default class MidiComposer {
 
   startSongSplitTool(range) {
     if (!range) return;
-    const splitTick = clamp(range.startTick + Math.floor(range.durationTicks / 2), range.startTick + 1, range.endTick - 1);
+    const fallbackTick = range.startTick + Math.floor(range.durationTicks / 2);
+    const pointerX = Number.isFinite(this.songSelectionMenu.x)
+      ? this.songSelectionMenu.x
+      : this.lastPointer.x;
+    const pointerTick = this.songTimelineBounds
+      ? this.getSongTickFromX(pointerX, this.songTimelineBounds)
+      : fallbackTick;
+    const splitTick = clamp(pointerTick, range.startTick + 1, range.endTick - 1);
     this.songSplitTool.active = true;
     this.songSplitTool.tick = splitTick;
     this.songSelectionMenu.open = false;
