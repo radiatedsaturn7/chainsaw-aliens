@@ -668,6 +668,15 @@ export default class MidiComposer {
       y: 0,
       bounds: []
     };
+    this.songSplitTool = {
+      active: false,
+      tick: 0,
+      bounds: {
+        handleTop: null,
+        handleBottom: null,
+        splitAction: null
+      }
+    };
     this.songClipboard = null;
     this.noteLengthMenu = {
       open: false,
@@ -3424,6 +3433,19 @@ export default class MidiComposer {
     }
 
     if (this.activeTab === 'song') {
+      if (this.songSplitTool.active) {
+        const splitActionHit = this.songSplitTool.bounds?.splitAction && this.pointInBounds(x, y, this.songSplitTool.bounds.splitAction);
+        if (splitActionHit) {
+          this.applySongSplitTool();
+          return;
+        }
+        const splitHandleHit = (this.songSplitTool.bounds?.handleTop && this.pointInBounds(x, y, this.songSplitTool.bounds.handleTop))
+          || (this.songSplitTool.bounds?.handleBottom && this.pointInBounds(x, y, this.songSplitTool.bounds.handleBottom));
+        if (splitHandleHit) {
+          this.dragState = { mode: 'song-split-adjust' };
+          return;
+        }
+      }
       const menuHit = this.songSelectionMenu.open
         ? this.songSelectionMenu.bounds?.find((bounds) => this.pointInBounds(x, y, bounds))
         : null;
@@ -3941,6 +3963,17 @@ export default class MidiComposer {
       }
       return;
     }
+    if (this.dragState?.mode === 'song-split-adjust') {
+      const range = this.getSongSelectionRange();
+      if (range && this.songTimelineBounds) {
+        this.songSplitTool.tick = clamp(
+          this.getSongTickFromX(payload.x, this.songTimelineBounds),
+          range.startTick + 1,
+          range.endTick - 1
+        );
+      }
+      return;
+    }
     if (this.dragState?.mode === 'song-scrub') {
       const bounds = this.dragState.bounds || this.songTimelineBounds;
       if (bounds) {
@@ -4186,6 +4219,10 @@ export default class MidiComposer {
       return;
     }
     if (this.dragState?.mode === 'song-part-resize') {
+      this.dragState = null;
+      return;
+    }
+    if (this.dragState?.mode === 'song-split-adjust') {
       this.dragState = null;
       return;
     }
@@ -5230,6 +5267,7 @@ export default class MidiComposer {
     this.songSelection.active = false;
     this.songSelectionMenu.open = false;
     this.songSelectionMenu.bounds = [];
+    this.songSplitTool.active = false;
   }
 
   applySongSelectionMove(dragState) {
@@ -5375,7 +5413,13 @@ export default class MidiComposer {
 
   getPatternPartBoundaries(pattern, totalTicks) {
     const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
-    const raw = Array.isArray(pattern?.partBoundaries) ? pattern.partBoundaries : [];
+    let raw = Array.isArray(pattern?.partBoundaries) ? pattern.partBoundaries : [];
+    if (!raw.length && Array.isArray(pattern?.notes) && pattern.notes.length) {
+      const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+      const lastTick = pattern.notes.reduce((max, note) => Math.max(max, note.startTick + Math.max(1, note.durationTicks || this.ticksPerBeat)), 0);
+      const inferredEnd = clamp(Math.ceil(lastTick / ticksPerBar) * ticksPerBar, 1, limit);
+      raw = [inferredEnd];
+    }
     const boundaries = [...new Set(
       [0, ...raw, limit]
         .filter((tick) => Number.isFinite(tick))
@@ -5407,6 +5451,51 @@ export default class MidiComposer {
   splitSongTrackPartsAtTicks(tracks, ticks, totalTicks) {
     if (!Array.isArray(tracks) || !tracks.length) return 0;
     return tracks.reduce((sum, entry) => sum + this.splitPatternPartsAtTicks(entry.pattern, ticks, totalTicks), 0);
+  }
+
+  mergeSongTrackPartsInRange(tracks, range, totalTicks) {
+    if (!Array.isArray(tracks) || !tracks.length || !range) return 0;
+    const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
+    let merged = 0;
+    tracks.forEach((entry) => {
+      const pattern = entry?.pattern;
+      if (!pattern) return;
+      const existing = Array.isArray(pattern.partBoundaries) ? pattern.partBoundaries : [];
+      const next = existing.filter((tick) => tick <= range.startTick || tick >= range.endTick)
+        .map((tick) => clamp(Math.round(tick), 1, limit - 1));
+      if (next.length !== existing.length) {
+        pattern.partBoundaries = [...new Set(next)].sort((a, b) => a - b);
+        merged += 1;
+      }
+    });
+    return merged;
+  }
+
+  startSongSplitTool(range) {
+    if (!range) return;
+    const splitTick = clamp(range.startTick + Math.floor(range.durationTicks / 2), range.startTick + 1, range.endTick - 1);
+    this.songSplitTool.active = true;
+    this.songSplitTool.tick = splitTick;
+    this.songSelectionMenu.open = false;
+  }
+
+  applySongSplitTool() {
+    const range = this.getSongSelectionRange();
+    if (!range || !this.songSplitTool.active) return;
+    const tracks = range.trackIndices.map((trackIndex) => ({
+      trackIndex,
+      track: this.song.tracks[trackIndex],
+      pattern: this.song.tracks[trackIndex]?.patterns?.[this.selectedPatternIndex]
+    })).filter((entry) => entry.track && entry.pattern);
+    if (!tracks.length) return;
+    const totalTicks = this.getSongTimelineTicks();
+    const splitTick = clamp(Math.round(this.songSplitTool.tick), range.startTick + 1, range.endTick - 1);
+    this.splitSongTrackPartsAtTicks(tracks, [splitTick], totalTicks);
+    this.splitSongTracksAtTicks(tracks, [splitTick]);
+    this.songSelection.startTick = range.startTick;
+    this.songSelection.endTick = splitTick;
+    this.songSplitTool.active = false;
+    this.persist();
   }
 
 
@@ -5605,10 +5694,14 @@ export default class MidiComposer {
     }
 
     if (action === 'song-splice') {
-      const splitTicks = [range.startTick, range.endTick];
+      this.startSongSplitTool(range);
+      return;
+    }
+
+    if (action === 'song-merge') {
       const totalTicks = this.getSongTimelineTicks();
-      this.splitSongTrackPartsAtTicks(tracks, splitTicks, totalTicks);
-      this.splitSongTracksAtTicks(tracks, splitTicks);
+      this.mergeSongTrackPartsInRange(tracks, range, totalTicks);
+      this.songSplitTool.active = false;
       this.persist();
       return;
     }
@@ -7570,6 +7663,7 @@ export default class MidiComposer {
     this.drawButton(ctx, this.songAddBounds, 'Add Instrument', false, false);
     this.drawSongPlayhead(ctx, this.songTimelineBounds.y, laneAreaY + laneAreaH);
     this.drawSongSelectionMenu(ctx);
+    this.drawSongSplitTool(ctx);
   }
 
   drawTimelineRuler(ctx, x, y, w, h, loopTicks, timeline) {
@@ -7696,6 +7790,7 @@ export default class MidiComposer {
     }
     const actions = [
       { action: 'song-splice', label: 'Split Parts' },
+      { action: 'song-merge', label: 'Merge Parts' },
       { action: 'song-copy', label: 'Copy' },
       { action: 'song-cut', label: 'Cut' },
       { action: 'song-paste', label: 'Paste' },
@@ -7734,6 +7829,54 @@ export default class MidiComposer {
       this.drawSmallButton(ctx, bounds, entry.label, false);
       this.songSelectionMenu.bounds.push(bounds);
     });
+  }
+
+  drawSongSplitTool(ctx) {
+    if (!this.songSplitTool.active || !this.songTimelineBounds) {
+      this.songSplitTool.bounds.handleTop = null;
+      this.songSplitTool.bounds.handleBottom = null;
+      this.songSplitTool.bounds.splitAction = null;
+      return;
+    }
+    const range = this.getSongSelectionRange();
+    if (!range || range.durationTicks < 2) {
+      this.songSplitTool.active = false;
+      return;
+    }
+    const tick = clamp(Math.round(this.songSplitTool.tick), range.startTick + 1, range.endTick - 1);
+    this.songSplitTool.tick = tick;
+    const x = this.getSongTimelineX(tick);
+    const top = this.songTimelineBounds.y;
+    const bottom = this.songTimelineBounds.y + this.songTimelineBounds.h;
+    ctx.save();
+    ctx.setLineDash([8, 6]);
+    ctx.strokeStyle = '#ff5959';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x, top);
+    ctx.lineTo(x, bottom);
+    ctx.stroke();
+    ctx.restore();
+
+    const handleW = 18;
+    const handleH = 10;
+    const topHandle = { x: x - handleW / 2, y: top + 2, w: handleW, h: handleH };
+    const bottomHandle = { x: x - handleW / 2, y: bottom - handleH - 2, w: handleW, h: handleH };
+    this.songSplitTool.bounds.handleTop = topHandle;
+    this.songSplitTool.bounds.handleBottom = bottomHandle;
+    ctx.fillStyle = '#ff5959';
+    ctx.fillRect(topHandle.x, topHandle.y, topHandle.w, topHandle.h);
+    ctx.fillRect(bottomHandle.x, bottomHandle.y, bottomHandle.w, bottomHandle.h);
+
+    const action = {
+      x: clamp(x + 12, this.songTimelineBounds.x, this.songTimelineBounds.x + this.songTimelineBounds.w - 110),
+      y: clamp(top + 12, this.songTimelineBounds.y, this.songTimelineBounds.y + this.songTimelineBounds.h - 34),
+      w: 108,
+      h: 30,
+      action: 'song-split-apply'
+    };
+    this.songSplitTool.bounds.splitAction = action;
+    this.drawSmallButton(ctx, action, 'Split here', true);
   }
 
   drawAutomationLane(ctx, bounds, keyframes, minValue, maxValue, label, timeline, indicator = null) {
