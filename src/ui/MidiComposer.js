@@ -5260,6 +5260,19 @@ export default class MidiComposer {
     }
   }
 
+  splitSongTracksAtTicks(tracks, ticks) {
+    if (!Array.isArray(tracks) || !tracks.length) return;
+    const sortedTicks = [...new Set(
+      ticks
+        .filter((tick) => Number.isFinite(tick))
+        .map((tick) => Math.max(0, Math.round(tick)))
+    )].sort((a, b) => a - b);
+    if (!sortedTicks.length) return;
+    tracks.forEach((entry) => {
+      sortedTicks.forEach((tick) => this.splitNotesAtTick(entry.pattern, tick));
+    });
+  }
+
   handleSongAction(action) {
     const range = this.getSongSelectionRange();
     if (!range) return;
@@ -5316,9 +5329,11 @@ export default class MidiComposer {
 
     if (action === 'song-cut') {
       this.handleSongAction('song-copy');
+      this.splitSongTracksAtTicks(tracks, [range.startTick, range.endTick]);
       tracks.forEach((entry) => {
-        const overlapping = this.getSongNotesOverlapping(entry.pattern, range);
-        entry.pattern.notes = entry.pattern.notes.filter((note) => !overlapping.includes(note));
+        entry.pattern.notes = entry.pattern.notes.filter((note) => (
+          note.startTick < range.startTick || note.startTick >= range.endTick
+        ));
       });
       this.persist();
       return;
@@ -5340,9 +5355,7 @@ export default class MidiComposer {
         && this.playheadTick < range.endTick) {
         splitTicks.add(this.playheadTick);
       }
-      tracks.forEach((entry) => {
-        splitTicks.forEach((tick) => this.splitNotesAtTick(entry.pattern, tick));
-      });
+      this.splitSongTracksAtTicks(tracks, [...splitTicks]);
       this.persist();
       return;
     }
@@ -7368,9 +7381,9 @@ export default class MidiComposer {
       { action: 'song-transpose-up', label: 'Pitch +1' },
       { action: 'song-transpose-down', label: 'Pitch -1' }
     ];
-    const buttonW = 110;
-    const buttonH = 28;
-    const gap = 6;
+    const buttonW = 132;
+    const buttonH = 36;
+    const gap = 8;
     const columns = 2;
     const rows = Math.ceil(actions.length / columns);
     const menuW = columns * buttonW + gap * (columns + 1);
