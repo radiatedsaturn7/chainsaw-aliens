@@ -3429,6 +3429,11 @@ export default class MidiComposer {
         this.handleSongAction(menuHit.action);
         return;
       }
+      const actionHit = this.songActionBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (actionHit?.action === 'song-toggle-automation') {
+        this.keyframePanelOpen = !this.keyframePanelOpen;
+        return;
+      }
       if (this.songSelectionMenu.open) {
         this.clearSongSelection();
       }
@@ -5232,6 +5237,29 @@ export default class MidiComposer {
     });
   }
 
+  splitNotesAtTick(pattern, tick) {
+    if (!pattern?.notes?.length) return;
+    const newNotes = [];
+    pattern.notes.forEach((note) => {
+      const endTick = note.startTick + note.durationTicks;
+      if (note.startTick < tick && endTick > tick) {
+        const firstDuration = tick - note.startTick;
+        const secondDuration = endTick - tick;
+        if (firstDuration < 1 || secondDuration < 1) return;
+        note.durationTicks = firstDuration;
+        newNotes.push({
+          ...note,
+          id: uid(),
+          startTick: tick,
+          durationTicks: secondDuration
+        });
+      }
+    });
+    if (newNotes.length) {
+      pattern.notes.push(...newNotes);
+    }
+  }
+
   handleSongAction(action) {
     const range = this.getSongSelectionRange();
     if (!range) return;
@@ -5307,9 +5335,8 @@ export default class MidiComposer {
 
     if (action === 'song-splice') {
       tracks.forEach((entry) => {
-        const overlapping = this.getSongNotesOverlapping(entry.pattern, range);
-        entry.pattern.notes = entry.pattern.notes.filter((note) => !overlapping.includes(note));
-        this.shiftNotesAfterTick(entry.pattern, range.endTick, -range.durationTicks);
+        this.splitNotesAtTick(entry.pattern, range.startTick);
+        this.splitNotesAtTick(entry.pattern, range.endTick);
       });
       this.persist();
       return;
@@ -7090,6 +7117,25 @@ export default class MidiComposer {
       ctx.fillStyle = '#fff';
       ctx.font = '12px Courier New';
       ctx.fillText(this.truncateLabel(ctx, track.name, labelW - 20), labelX + 10, laneTop + 18);
+      ctx.fillStyle = 'rgba(255,255,255,0.65)';
+      ctx.font = '10px Courier New';
+      const instrumentLabel = isDrumTrack(track)
+        ? this.getDrumKitLabel(track)
+        : this.getProgramLabel(track.program);
+      ctx.fillText(this.truncateLabel(ctx, instrumentLabel, labelW - 20), labelX + 10, laneTop + 34);
+      const expandLabel = showAutomation ? 'Mix ▾' : 'Mix ▸';
+      const expandH = 18;
+      const expandY = laneTop + laneBlockH - expandH - 8;
+      const expandBounds = {
+        x: labelX + 8,
+        y: Math.max(laneTop + 40, expandY),
+        w: labelW - 16,
+        h: expandH,
+        action: 'song-toggle-automation',
+        trackIndex: index
+      };
+      this.drawSmallButton(ctx, expandBounds, expandLabel, showAutomation);
+      this.songActionBounds.push(expandBounds);
       this.songLabelBounds.push({ x: labelX, y: laneTop, w: labelW, h: laneBlockH, trackIndex: index });
 
       const laneBounds = { x: laneX, y: laneTop, w: laneW, h: laneH, trackIndex: index };
