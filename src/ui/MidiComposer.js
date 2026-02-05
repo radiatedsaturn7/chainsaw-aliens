@@ -5482,7 +5482,9 @@ export default class MidiComposer {
   mergeSongTrackPartsAtBoundary(tracks, boundaryTick, totalTicks) {
     if (!Array.isArray(tracks) || !tracks.length || !Number.isFinite(boundaryTick)) return 0;
     const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
+    if (limit <= 1) return 0;
     const boundary = clamp(Math.round(boundaryTick), 1, limit - 1);
+    if (boundary <= 0 || boundary >= limit) return 0;
     let merged = 0;
     tracks.forEach((entry) => {
       const pattern = entry?.pattern;
@@ -5728,17 +5730,21 @@ export default class MidiComposer {
 
     if (action === 'song-merge-left') {
       const totalTicks = this.getSongTimelineTicks();
-      this.mergeSongTrackPartsAtBoundary(tracks, range.startTick, totalTicks);
+      const merged = this.mergeSongTrackPartsAtBoundary(tracks, range.startTick, totalTicks);
       this.songSplitTool.active = false;
-      this.persist();
+      if (merged > 0) {
+        this.persist();
+      }
       return;
     }
 
     if (action === 'song-merge-right') {
       const totalTicks = this.getSongTimelineTicks();
-      this.mergeSongTrackPartsAtBoundary(tracks, range.endTick, totalTicks);
+      const merged = this.mergeSongTrackPartsAtBoundary(tracks, range.endTick, totalTicks);
       this.songSplitTool.active = false;
-      this.persist();
+      if (merged > 0) {
+        this.persist();
+      }
       return;
     }
 
@@ -7826,9 +7832,9 @@ export default class MidiComposer {
       return;
     }
     const actions = [
-      { action: 'song-splice', label: 'Split Parts' },
       { action: 'song-merge-left', label: 'Merge Left' },
       { action: 'song-merge-right', label: 'Merge Right' },
+      { action: 'song-splice', label: 'Split Parts' },
       { action: 'song-copy', label: 'Copy' },
       { action: 'song-cut', label: 'Cut' },
       { action: 'song-paste', label: 'Paste' },
