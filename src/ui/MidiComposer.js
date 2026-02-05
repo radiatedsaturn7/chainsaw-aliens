@@ -771,6 +771,8 @@ export default class MidiComposer {
     this.songLabelBounds = [];
     this.songAutomationBounds = [];
     this.songActionBounds = [];
+    this.songPartBounds = [];
+    this.songPartHandleBounds = [];
     this.songInstrumentBounds = null;
     this.songAddBounds = null;
     this.songRulerBounds = null;
@@ -3486,6 +3488,49 @@ export default class MidiComposer {
         this.addSongAutomationKeyframe(track, automationHit.type, tick, value);
         return;
       }
+      const partHandleHit = this.songPartHandleBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (partHandleHit) {
+        this.selectedTrackIndex = partHandleHit.trackIndex;
+        const pattern = this.song.tracks[partHandleHit.trackIndex]?.patterns?.[this.selectedPatternIndex];
+        const range = this.getPatternPartRange(pattern, partHandleHit.partIndex, this.getSongTimelineTicks());
+        this.songSelection = {
+          active: true,
+          trackIndex: partHandleHit.trackIndex,
+          trackStartIndex: partHandleHit.trackIndex,
+          trackEndIndex: partHandleHit.trackIndex,
+          startTick: range.startTick,
+          endTick: range.endTick
+        };
+        this.dragState = {
+          mode: 'song-part-resize',
+          trackIndex: partHandleHit.trackIndex,
+          partIndex: partHandleHit.partIndex,
+          edge: partHandleHit.edge
+        };
+        return;
+      }
+      const partHit = this.songPartBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (partHit) {
+        this.selectedTrackIndex = partHit.trackIndex;
+        this.songSelection = {
+          active: true,
+          trackIndex: partHit.trackIndex,
+          trackStartIndex: partHit.trackIndex,
+          trackEndIndex: partHit.trackIndex,
+          startTick: partHit.startTick,
+          endTick: partHit.endTick
+        };
+        this.dragState = {
+          mode: 'song-part-move',
+          sourceTrackIndex: partHit.trackIndex,
+          partIndex: partHit.partIndex,
+          offsetTick: this.getSongTickFromX(x, partHit) - partHit.startTick,
+          targetTrackIndex: partHit.trackIndex,
+          targetStartTick: partHit.startTick,
+          moved: false
+        };
+        return;
+      }
       const laneHit = this.songLaneBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (laneHit) {
         this.selectedTrackIndex = laneHit.trackIndex;
@@ -3865,6 +3910,35 @@ export default class MidiComposer {
       }
       return;
     }
+    if (this.dragState?.mode === 'song-part-move') {
+      const laneHit = this.getSongLaneAt(payload.x, payload.y) || this.songLaneBounds?.[this.dragState.targetTrackIndex];
+      if (laneHit) {
+        const pattern = this.song.tracks[this.dragState.sourceTrackIndex]?.patterns?.[this.selectedPatternIndex];
+        const range = this.getPatternPartRange(pattern, this.dragState.partIndex, this.getSongTimelineTicks());
+        const duration = range.endTick - range.startTick;
+        const tick = this.getSongTickFromX(payload.x, laneHit);
+        this.dragState.targetTrackIndex = laneHit.trackIndex;
+        this.dragState.targetStartTick = clamp(tick - this.dragState.offsetTick, 0, Math.max(0, this.getSongTimelineTicks() - duration));
+        this.dragState.moved = true;
+        this.songSelection = {
+          active: true,
+          trackIndex: laneHit.trackIndex,
+          trackStartIndex: laneHit.trackIndex,
+          trackEndIndex: laneHit.trackIndex,
+          startTick: this.dragState.targetStartTick,
+          endTick: this.dragState.targetStartTick + duration
+        };
+      }
+      return;
+    }
+    if (this.dragState?.mode === 'song-part-resize') {
+      const lane = this.songLaneBounds?.find((b) => b.trackIndex === this.dragState.trackIndex);
+      if (lane) {
+        const tick = this.getSongTickFromX(payload.x, lane);
+        this.resizeSongPartEdge(this.dragState.trackIndex, this.dragState.partIndex, this.dragState.edge, tick);
+      }
+      return;
+    }
     if (this.dragState?.mode === 'song-scrub') {
       const bounds = this.dragState.bounds || this.songTimelineBounds;
       if (bounds) {
@@ -4092,6 +4166,22 @@ export default class MidiComposer {
         this.selectedTrackIndex = this.dragState.trackIndex;
         this.clearSongSelection();
       }
+      this.dragState = null;
+      return;
+    }
+    if (this.dragState?.mode === 'song-part-move') {
+      if (this.dragState.moved) {
+        this.moveSongPart(
+          this.dragState.sourceTrackIndex,
+          this.dragState.partIndex,
+          this.dragState.targetTrackIndex,
+          this.dragState.targetStartTick
+        );
+      }
+      this.dragState = null;
+      return;
+    }
+    if (this.dragState?.mode === 'song-part-resize') {
       this.dragState = null;
       return;
     }
@@ -5313,6 +5403,126 @@ export default class MidiComposer {
   splitSongTrackPartsAtTicks(tracks, ticks, totalTicks) {
     if (!Array.isArray(tracks) || !tracks.length) return 0;
     return tracks.reduce((sum, entry) => sum + this.splitPatternPartsAtTicks(entry.pattern, ticks, totalTicks), 0);
+  }
+
+
+  getPatternPartRange(pattern, partIndex, totalTicks) {
+    const boundaries = this.getPatternPartBoundaries(pattern, totalTicks);
+    const idx = clamp(partIndex, 0, Math.max(0, boundaries.length - 2));
+    return {
+      partIndex: idx,
+      startTick: boundaries[idx],
+      endTick: boundaries[idx + 1]
+    };
+  }
+
+  setPatternPartEdge(pattern, partIndex, edge, tick, totalTicks) {
+    if (!pattern) return false;
+    const boundaries = this.getPatternPartBoundaries(pattern, totalTicks);
+    const idx = clamp(partIndex, 0, Math.max(0, boundaries.length - 2));
+    if (edge === 'start' && idx > 0) {
+      const minTick = boundaries[idx - 1] + 1;
+      const maxTick = boundaries[idx + 1] - 1;
+      boundaries[idx] = clamp(Math.round(tick), minTick, maxTick);
+    } else if (edge === 'end' && idx < boundaries.length - 2) {
+      const minTick = boundaries[idx] + 1;
+      const maxTick = boundaries[idx + 2] - 1;
+      boundaries[idx + 1] = clamp(Math.round(tick), minTick, maxTick);
+    } else {
+      return false;
+    }
+    pattern.partBoundaries = boundaries.slice(1, -1);
+    return true;
+  }
+
+  moveSongPart(sourceTrackIndex, sourcePartIndex, targetTrackIndex, targetStartTick) {
+    const totalTicks = this.getSongTimelineTicks();
+    const sourcePattern = this.song.tracks[sourceTrackIndex]?.patterns?.[this.selectedPatternIndex];
+    const targetPattern = this.song.tracks[targetTrackIndex]?.patterns?.[this.selectedPatternIndex];
+    if (!sourcePattern || !targetPattern) return;
+    const sourceRange = this.getPatternPartRange(sourcePattern, sourcePartIndex, totalTicks);
+    const duration = sourceRange.endTick - sourceRange.startTick;
+    const nextStart = clamp(Math.round(targetStartTick), 0, Math.max(0, totalTicks - duration));
+    const nextEnd = nextStart + duration;
+
+    this.splitPatternPartsAtTicks(sourcePattern, [sourceRange.startTick, sourceRange.endTick], totalTicks);
+    this.splitPatternPartsAtTicks(targetPattern, [nextStart, nextEnd], totalTicks);
+    this.splitSongTracksAtTicks([
+      { pattern: sourcePattern },
+      { pattern: targetPattern }
+    ], [sourceRange.startTick, sourceRange.endTick, nextStart, nextEnd]);
+
+    const movedNotes = sourcePattern.notes.filter((note) => note.startTick >= sourceRange.startTick && note.startTick < sourceRange.endTick);
+    sourcePattern.notes = sourcePattern.notes.filter((note) => note.startTick < sourceRange.startTick || note.startTick >= sourceRange.endTick);
+    const offset = nextStart - sourceRange.startTick;
+    movedNotes.forEach((note) => {
+      targetPattern.notes.push({
+        ...note,
+        id: uid(),
+        startTick: clamp(note.startTick + offset, 0, totalTicks)
+      });
+    });
+
+    const targetPartIndex = this.getPatternPartBoundaries(targetPattern, totalTicks)
+      .findIndex((tick, i, arr) => i < arr.length - 1 && arr[i] === nextStart && arr[i + 1] === nextEnd);
+    const nextPartIndex = targetPartIndex >= 0 ? targetPartIndex : 0;
+    this.songSelection = {
+      active: true,
+      trackIndex: targetTrackIndex,
+      trackStartIndex: targetTrackIndex,
+      trackEndIndex: targetTrackIndex,
+      startTick: nextStart,
+      endTick: nextEnd
+    };
+    this.dragState.selectedPartIndex = nextPartIndex;
+    this.selectedTrackIndex = targetTrackIndex;
+    this.persist();
+  }
+
+  resizeSongPartEdge(trackIndex, partIndex, edge, tick) {
+    const totalTicks = this.getSongTimelineTicks();
+    const pattern = this.song.tracks[trackIndex]?.patterns?.[this.selectedPatternIndex];
+    if (!pattern) return;
+    const before = this.getPatternPartRange(pattern, partIndex, totalTicks);
+    const changed = this.setPatternPartEdge(pattern, partIndex, edge, tick, totalTicks);
+    if (!changed) return;
+    const after = this.getPatternPartRange(pattern, partIndex, totalTicks);
+
+    if (edge === 'end') {
+      if (after.endTick > before.endTick) {
+        const base = pattern.notes.filter((note) => note.startTick >= before.startTick && note.startTick < before.endTick)
+          .map((note) => ({ ...note }));
+        const partLen = Math.max(1, before.endTick - before.startTick);
+        let cursor = before.endTick;
+        while (cursor < after.endTick && base.length) {
+          base.forEach((note) => {
+            const rel = note.startTick - before.startTick;
+            const start = cursor + rel;
+            if (start >= after.endTick) return;
+            pattern.notes.push({
+              ...note,
+              id: uid(),
+              startTick: start,
+              durationTicks: Math.min(note.durationTicks, after.endTick - start)
+            });
+          });
+          cursor += partLen;
+        }
+      } else if (after.endTick < before.endTick) {
+        this.splitNotesAtTick(pattern, after.endTick);
+        pattern.notes = pattern.notes.filter((note) => note.startTick < after.endTick || note.startTick >= before.endTick);
+      }
+    }
+
+    this.songSelection = {
+      active: true,
+      trackIndex,
+      trackStartIndex: trackIndex,
+      trackEndIndex: trackIndex,
+      startTick: after.startTick,
+      endTick: after.endTick
+    };
+    this.persist();
   }
 
   handleSongAction(action) {
@@ -7120,6 +7330,8 @@ export default class MidiComposer {
     const laneH = showAutomation ? Math.max(36, laneBlockH * 0.42) : laneBlockH;
     const automationH = showAutomation ? Math.max(12, (laneBlockH - laneH) / 2 - 6) : 0;
     this.songActionBounds = [];
+    this.songPartBounds = [];
+    this.songPartHandleBounds = [];
 
     this.songInstrumentBounds = null;
     this.bounds.songZoomIn = null;
@@ -7230,7 +7442,25 @@ export default class MidiComposer {
           const partEnd = boundaries[i + 1];
           const partX = originX + partStart * cellWidth;
           const partW = Math.max(1, (partEnd - partStart) * cellWidth);
-          ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)';
+          const partBounds = {
+            x: partX,
+            y: laneBounds.y,
+            w: partW,
+            h: laneBounds.h,
+            trackIndex: index,
+            partIndex: i,
+            startTick: partStart,
+            endTick: partEnd
+          };
+          this.songPartBounds.push(partBounds);
+          const partSelected = selectionRange
+            && selectionRange.trackStartIndex === index
+            && selectionRange.trackEndIndex === index
+            && selectionRange.startTick === partStart
+            && selectionRange.endTick === partEnd;
+          ctx.fillStyle = partSelected
+            ? 'rgba(255,225,106,0.18)'
+            : (i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)');
           ctx.fillRect(partX, laneBounds.y, partW, laneBounds.h);
           if (i > 0) {
             ctx.strokeStyle = 'rgba(255,225,106,0.6)';
@@ -7238,6 +7468,31 @@ export default class MidiComposer {
             ctx.moveTo(partX, laneBounds.y + 1);
             ctx.lineTo(partX, laneBounds.y + laneBounds.h - 1);
             ctx.stroke();
+          }
+          if (partSelected) {
+            const handleW = 8;
+            const leftHandle = {
+              x: partX - handleW / 2,
+              y: laneBounds.y + 2,
+              w: handleW,
+              h: Math.max(8, laneBounds.h - 4),
+              trackIndex: index,
+              partIndex: i,
+              edge: 'start'
+            };
+            const rightHandle = {
+              x: partX + partW - handleW / 2,
+              y: laneBounds.y + 2,
+              w: handleW,
+              h: Math.max(8, laneBounds.h - 4),
+              trackIndex: index,
+              partIndex: i,
+              edge: 'end'
+            };
+            this.songPartHandleBounds.push(leftHandle, rightHandle);
+            ctx.fillStyle = 'rgba(255,225,106,0.95)';
+            ctx.fillRect(leftHandle.x, leftHandle.y, leftHandle.w, leftHandle.h);
+            ctx.fillRect(rightHandle.x, rightHandle.y, rightHandle.w, rightHandle.h);
           }
         }
       }
