@@ -5506,6 +5506,26 @@ export default class MidiComposer {
     return boundaries;
   }
 
+  getImplicitPatternPartRange(pattern, totalTicks) {
+    if (!pattern || !Array.isArray(pattern.notes) || pattern.notes.length === 0) return null;
+    const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
+    const ticksPerBar = this.beatsPerBar * this.ticksPerBeat;
+    let minStart = Infinity;
+    let maxEnd = 0;
+    pattern.notes.forEach((note) => {
+      minStart = Math.min(minStart, note.startTick);
+      const endTick = note.startTick + Math.max(1, note.durationTicks || this.ticksPerBeat);
+      maxEnd = Math.max(maxEnd, endTick);
+    });
+    if (!Number.isFinite(minStart)) return null;
+    const startTick = clamp(Math.floor(minStart), 0, Math.max(0, limit - 1));
+    const inferredEnd = clamp(Math.ceil(maxEnd / ticksPerBar) * ticksPerBar, startTick + 1, limit);
+    return {
+      startTick,
+      endTick: inferredEnd
+    };
+  }
+
   splitPatternPartsAtTicks(pattern, ticks, totalTicks) {
     if (!pattern) return 0;
     const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
@@ -5631,6 +5651,16 @@ export default class MidiComposer {
 
   getPatternPartRange(pattern, partIndex, totalTicks) {
     const boundaries = this.getPatternPartBoundaries(pattern, totalTicks);
+    if (!Array.isArray(pattern?.partBoundaries) || pattern.partBoundaries.length === 0) {
+      const implicit = this.getImplicitPatternPartRange(pattern, totalTicks);
+      if (implicit) {
+        return {
+          partIndex: 0,
+          startTick: implicit.startTick,
+          endTick: implicit.endTick
+        };
+      }
+    }
     const idx = clamp(partIndex, 0, Math.max(0, boundaries.length - 2));
     return {
       partIndex: idx,
@@ -7674,89 +7704,106 @@ export default class MidiComposer {
 
       const pattern = track.patterns?.[this.selectedPatternIndex];
       if (pattern) {
-        const boundaries = this.getPatternPartBoundaries(pattern, timelineTicks);
         const hasAnyNotes = Array.isArray(pattern.notes) && pattern.notes.length > 0;
         const hasExplicitParts = Array.isArray(pattern.partBoundaries) && pattern.partBoundaries.length > 0;
-        if (hasAnyNotes || hasExplicitParts) {
+        const partRanges = [];
+        if (hasExplicitParts) {
+          const boundaries = this.getPatternPartBoundaries(pattern, timelineTicks);
           for (let i = 0; i < boundaries.length - 1; i += 1) {
-            const partStart = boundaries[i];
-            const partEnd = boundaries[i + 1];
-            const partX = originX + partStart * cellWidth;
-            const partW = Math.max(1, (partEnd - partStart) * cellWidth);
-            const partBounds = {
-              x: partX,
-              y: laneBounds.y,
-              w: partW,
-              h: laneBounds.h,
-              trackIndex: index,
+            partRanges.push({
               partIndex: i,
-              startTick: partStart,
-              endTick: partEnd
-            };
-            this.songPartBounds.push(partBounds);
-            const partSelected = selectionRange
-              && selectionRange.trackStartIndex === index
-              && selectionRange.trackEndIndex === index
-              && selectionRange.startTick === partStart
-              && selectionRange.endTick === partEnd;
-            const partBaseColor = track.color || '#ffffff';
-            ctx.fillStyle = partSelected
-              ? toRgba(partBaseColor, 0.66)
-              : toRgba(partBaseColor, 0.3);
-            ctx.fillRect(partX, laneBounds.y, partW, laneBounds.h);
-            if (i > 0) {
-              ctx.save();
-              ctx.strokeStyle = 'rgba(255,225,106,0.6)';
-              ctx.lineWidth = 6;
-              ctx.beginPath();
-              ctx.moveTo(partX, laneBounds.y + 1);
-              ctx.lineTo(partX, laneBounds.y + laneBounds.h - 1);
-              ctx.stroke();
-              ctx.restore();
-            }
-            if (partSelected) {
-              const handleW = 14;
-              const handleHitPad = 8;
-              const leftHandle = {
-                x: partX - handleW / 2,
-                y: laneBounds.y + 2,
-                w: handleW,
-                h: Math.max(8, laneBounds.h - 4),
-                trackIndex: index,
-                partIndex: i,
-                edge: 'start'
-              };
-              const rightHandle = {
-                x: partX + partW - handleW / 2,
-                y: laneBounds.y + 2,
-                w: handleW,
-                h: Math.max(8, laneBounds.h - 4),
-                trackIndex: index,
-                partIndex: i,
-                edge: 'end'
-              };
-              this.songPartHandleBounds.push(
-                {
-                  ...leftHandle,
-                  x: leftHandle.x - handleHitPad,
-                  y: leftHandle.y - handleHitPad,
-                  w: leftHandle.w + handleHitPad * 2,
-                  h: leftHandle.h + handleHitPad * 2
-                },
-                {
-                  ...rightHandle,
-                  x: rightHandle.x - handleHitPad,
-                  y: rightHandle.y - handleHitPad,
-                  w: rightHandle.w + handleHitPad * 2,
-                  h: rightHandle.h + handleHitPad * 2
-                }
-              );
-              ctx.fillStyle = 'rgba(255,225,106,0.95)';
-              ctx.fillRect(leftHandle.x, leftHandle.y, leftHandle.w, leftHandle.h);
-              ctx.fillRect(rightHandle.x, rightHandle.y, rightHandle.w, rightHandle.h);
-            }
+              startTick: boundaries[i],
+              endTick: boundaries[i + 1]
+            });
+          }
+        } else if (hasAnyNotes) {
+          const implicit = this.getImplicitPatternPartRange(pattern, timelineTicks);
+          if (implicit) {
+            partRanges.push({
+              partIndex: 0,
+              startTick: implicit.startTick,
+              endTick: implicit.endTick
+            });
           }
         }
+        partRanges.forEach((range) => {
+          const partStart = range.startTick;
+          const partEnd = range.endTick;
+          const partX = originX + partStart * cellWidth;
+          const partW = Math.max(1, (partEnd - partStart) * cellWidth);
+          const partBounds = {
+            x: partX,
+            y: laneBounds.y,
+            w: partW,
+            h: laneBounds.h,
+            trackIndex: index,
+            partIndex: range.partIndex,
+            startTick: partStart,
+            endTick: partEnd
+          };
+          this.songPartBounds.push(partBounds);
+          const partSelected = selectionRange
+            && selectionRange.trackStartIndex === index
+            && selectionRange.trackEndIndex === index
+            && selectionRange.startTick === partStart
+            && selectionRange.endTick === partEnd;
+          const partBaseColor = track.color || '#ffffff';
+          ctx.fillStyle = partSelected
+            ? toRgba(partBaseColor, 0.66)
+            : toRgba(partBaseColor, 0.3);
+          ctx.fillRect(partX, laneBounds.y, partW, laneBounds.h);
+          if (hasExplicitParts && range.partIndex > 0) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255,225,106,0.6)';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(partX, laneBounds.y + 1);
+            ctx.lineTo(partX, laneBounds.y + laneBounds.h - 1);
+            ctx.stroke();
+            ctx.restore();
+          }
+          if (partSelected) {
+            const handleW = 14;
+            const handleHitPad = 8;
+            const leftHandle = {
+              x: partX - handleW / 2,
+              y: laneBounds.y + 2,
+              w: handleW,
+              h: Math.max(8, laneBounds.h - 4),
+              trackIndex: index,
+              partIndex: range.partIndex,
+              edge: 'start'
+            };
+            const rightHandle = {
+              x: partX + partW - handleW / 2,
+              y: laneBounds.y + 2,
+              w: handleW,
+              h: Math.max(8, laneBounds.h - 4),
+              trackIndex: index,
+              partIndex: range.partIndex,
+              edge: 'end'
+            };
+            this.songPartHandleBounds.push(
+              {
+                ...leftHandle,
+                x: leftHandle.x - handleHitPad,
+                y: leftHandle.y - handleHitPad,
+                w: leftHandle.w + handleHitPad * 2,
+                h: leftHandle.h + handleHitPad * 2
+              },
+              {
+                ...rightHandle,
+                x: rightHandle.x - handleHitPad,
+                y: rightHandle.y - handleHitPad,
+                w: rightHandle.w + handleHitPad * 2,
+                h: rightHandle.h + handleHitPad * 2
+              }
+            );
+            ctx.fillStyle = 'rgba(255,225,106,0.95)';
+            ctx.fillRect(leftHandle.x, leftHandle.y, leftHandle.w, leftHandle.h);
+            ctx.fillRect(rightHandle.x, rightHandle.y, rightHandle.w, rightHandle.h);
+          }
+        });
       }
 
       if (pattern) {
