@@ -8012,9 +8012,10 @@ export default class MidiComposer {
       { action: 'song-delete', label: 'Delete' },
       { action: 'song-loop-selection', label: 'Loop this' }
     ];
-    const buttonW = this.isMobileLayout() ? 188 : 168;
-    const buttonH = this.isMobileLayout() ? 50 : 44;
-    const gap = 10;
+    const menuScale = 1.25;
+    const buttonW = (this.isMobileLayout() ? 188 : 168) * menuScale;
+    const buttonH = (this.isMobileLayout() ? 50 : 44) * menuScale;
+    const gap = 10 * menuScale;
     const columns = 2;
     const rows = Math.ceil(actions.length / columns);
     const menuW = columns * buttonW + gap * (columns + 1);
@@ -8038,7 +8039,14 @@ export default class MidiComposer {
       const col = index % columns;
       const bx = menuX + gap + col * (buttonW + gap);
       const by = menuY + gap + row * (buttonH + gap);
-      const bounds = { x: bx, y: by, w: buttonW, h: buttonH, action: entry.action };
+      const bounds = {
+        x: bx,
+        y: by,
+        w: buttonW,
+        h: buttonH,
+        action: entry.action,
+        __midiScaled125: true
+      };
       this.drawSmallButton(ctx, bounds, entry.label, false);
       this.songSelectionMenu.bounds.push(bounds);
     });
