@@ -675,7 +675,8 @@ export default class MidiComposer {
         lineGrab: null,
         handleTop: null,
         handleBottom: null,
-        splitAction: null
+        splitAction: null,
+        cancelAction: null
       }
     };
     this.songClipboard = null;
@@ -3438,6 +3439,11 @@ export default class MidiComposer {
         const splitActionHit = this.songSplitTool.bounds?.splitAction && this.pointInBounds(x, y, this.songSplitTool.bounds.splitAction);
         if (splitActionHit) {
           this.applySongSplitTool();
+          return;
+        }
+        const splitCancelHit = this.songSplitTool.bounds?.cancelAction && this.pointInBounds(x, y, this.songSplitTool.bounds.cancelAction);
+        if (splitCancelHit) {
+          this.songSplitTool.active = false;
           return;
         }
         const splitHandleHit = (this.songSplitTool.bounds?.handleTop && this.pointInBounds(x, y, this.songSplitTool.bounds.handleTop))
@@ -7896,6 +7902,7 @@ export default class MidiComposer {
       this.songSplitTool.bounds.handleTop = null;
       this.songSplitTool.bounds.handleBottom = null;
       this.songSplitTool.bounds.splitAction = null;
+      this.songSplitTool.bounds.cancelAction = null;
       return;
     }
     const range = this.getSongSelectionRange();
@@ -7947,14 +7954,42 @@ export default class MidiComposer {
     ctx.fillRect(bottomHandle.x, bottomHandle.y, bottomHandle.w, bottomHandle.h);
 
     const action = {
-      x: clamp(x + 12, this.songTimelineBounds.x, this.songTimelineBounds.x + this.songTimelineBounds.w - 110),
-      y: clamp(top + 12, this.songTimelineBounds.y, this.songTimelineBounds.y + this.songTimelineBounds.h - 34),
+      x: 0,
+      y: 0,
       w: 108,
       h: 30,
       action: 'song-split-apply'
     };
+    const cancelAction = {
+      x: 0,
+      y: 0,
+      w: 92,
+      h: 30,
+      action: 'song-split-cancel'
+    };
+    const selectedLane = this.songLaneBounds.find((entry) => entry.trackIndex === range.trackIndex);
+    if (selectedLane) {
+      const onFirstTrack = range.trackIndex === 0;
+      const anchorY = onFirstTrack
+        ? selectedLane.y + selectedLane.h + 8
+        : selectedLane.y - action.h - 8;
+      const controlsY = clamp(anchorY, this.songTimelineBounds.y, this.songTimelineBounds.y + this.songTimelineBounds.h - action.h);
+      const totalW = action.w + 8 + cancelAction.w;
+      const startX = clamp(x - totalW / 2, this.songTimelineBounds.x, this.songTimelineBounds.x + this.songTimelineBounds.w - totalW);
+      action.x = startX;
+      action.y = controlsY;
+      cancelAction.x = startX + action.w + 8;
+      cancelAction.y = controlsY;
+    } else {
+      action.x = clamp(x + 12, this.songTimelineBounds.x, this.songTimelineBounds.x + this.songTimelineBounds.w - 110);
+      action.y = clamp(top + 12, this.songTimelineBounds.y, this.songTimelineBounds.y + this.songTimelineBounds.h - 34);
+      cancelAction.x = clamp(action.x + action.w + 8, this.songTimelineBounds.x, this.songTimelineBounds.x + this.songTimelineBounds.w - cancelAction.w);
+      cancelAction.y = action.y;
+    }
     this.songSplitTool.bounds.splitAction = action;
+    this.songSplitTool.bounds.cancelAction = cancelAction;
     this.drawSmallButton(ctx, action, 'Split here', true);
+    this.drawSmallButton(ctx, cancelAction, 'Cancel', false);
   }
 
   drawAutomationLane(ctx, bounds, keyframes, minValue, maxValue, label, timeline, indicator = null) {
