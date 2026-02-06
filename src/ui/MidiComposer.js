@@ -5489,17 +5489,13 @@ export default class MidiComposer {
 
   getPatternPartBoundaries(pattern, totalTicks) {
     const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
-    const bounds = this.getPatternPartRangeBounds(pattern, limit);
-    if (!bounds) return [0, limit];
-    const startTick = clamp(Math.round(bounds.startTick), 0, Math.max(0, limit - 1));
-    const endTick = clamp(Math.round(bounds.endTick), startTick + 1, limit);
-    const raw = Array.isArray(pattern?.partBoundaries) ? pattern.partBoundaries : [];
-    const boundedRaw = raw
-      .filter((tick) => Number.isFinite(tick))
-      .map((tick) => clamp(Math.round(tick), startTick + 1, endTick - 1))
-      .filter((tick) => tick > startTick && tick < endTick);
-    const boundaries = [...new Set([startTick, ...boundedRaw, endTick])].sort((a, b) => a - b);
-    return boundaries;
+    const ranges = this.getPatternPartRanges(pattern, limit);
+    if (!ranges.length) return [0, limit];
+    const boundaries = [];
+    ranges.forEach((range) => {
+      boundaries.push(range.startTick, range.endTick);
+    });
+    return [...new Set(boundaries)].sort((a, b) => a - b);
   }
 
   getPatternPartRangeBounds(pattern, totalTicks) {
@@ -5518,6 +5514,45 @@ export default class MidiComposer {
     }
     const implicit = this.getImplicitPatternPartRange(pattern, limit);
     return implicit || { startTick: 0, endTick: limit };
+  }
+
+  normalizePartRanges(ranges, totalTicks) {
+    const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
+    return ranges
+      .filter((range) => range && Number.isFinite(range.startTick) && Number.isFinite(range.endTick))
+      .map((range) => {
+        const startTick = clamp(Math.round(range.startTick), 0, Math.max(0, limit - 1));
+        const endTick = clamp(Math.round(range.endTick), startTick + 1, limit);
+        return { startTick, endTick };
+      })
+      .filter((range) => range.endTick > range.startTick)
+      .sort((a, b) => a.startTick - b.startTick);
+  }
+
+  getPatternPartRanges(pattern, totalTicks) {
+    if (!pattern) return [];
+    const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
+    if (Array.isArray(pattern.partRanges) && pattern.partRanges.length > 0) {
+      return this.normalizePartRanges(pattern.partRanges, limit);
+    }
+    if (Array.isArray(pattern.partBoundaries) && pattern.partBoundaries.length > 0) {
+      const bounds = this.getPatternPartRangeBounds(pattern, limit);
+      if (!bounds) return [];
+      const startTick = clamp(Math.round(bounds.startTick), 0, Math.max(0, limit - 1));
+      const endTick = clamp(Math.round(bounds.endTick), startTick + 1, limit);
+      const inner = pattern.partBoundaries
+        .filter((tick) => Number.isFinite(tick))
+        .map((tick) => clamp(Math.round(tick), startTick + 1, endTick - 1))
+        .filter((tick) => tick > startTick && tick < endTick);
+      const boundaries = [...new Set([startTick, ...inner, endTick])].sort((a, b) => a - b);
+      const ranges = [];
+      for (let i = 0; i < boundaries.length - 1; i += 1) {
+        ranges.push({ startTick: boundaries[i], endTick: boundaries[i + 1] });
+      }
+      return this.normalizePartRanges(ranges, limit);
+    }
+    const implicit = this.getImplicitPatternPartRange(pattern, limit);
+    return implicit ? [implicit] : [];
   }
 
   getImplicitPatternPartRange(pattern, totalTicks) {
@@ -5542,6 +5577,24 @@ export default class MidiComposer {
 
   refreshPatternPartRange(pattern, totalTicks) {
     if (!pattern) return;
+    if (Array.isArray(pattern.partRanges) && pattern.partRanges.length > 0) {
+      const ranges = this.normalizePartRanges(pattern.partRanges, totalTicks);
+      if (!ranges.length) {
+        pattern.partRanges = [];
+        return;
+      }
+      if (Array.isArray(pattern.notes) && pattern.notes.length > 0) {
+        const trimmed = ranges.filter((range) => pattern.notes.some((note) => {
+          const noteStart = note.startTick;
+          const noteEnd = note.startTick + Math.max(1, note.durationTicks || this.ticksPerBeat);
+          return noteEnd > range.startTick && noteStart < range.endTick;
+        }));
+        pattern.partRanges = trimmed.length ? trimmed : ranges;
+      } else {
+        pattern.partRanges = [];
+      }
+      return;
+    }
     const hasExplicitParts = Array.isArray(pattern.partBoundaries) && pattern.partBoundaries.length > 0;
     const hasExplicitRange = Number.isFinite(pattern.partRangeStart) || Number.isFinite(pattern.partRangeEnd);
     if (!hasExplicitParts && !hasExplicitRange) return;
@@ -5566,24 +5619,25 @@ export default class MidiComposer {
   splitPatternPartsAtTicks(pattern, ticks, totalTicks) {
     if (!pattern) return 0;
     const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
-    const bounds = this.getPatternPartRangeBounds(pattern, limit);
-    if (!bounds) return 0;
-    const boundaries = this.getPatternPartBoundaries(pattern, limit);
+    const ranges = this.getPatternPartRanges(pattern, limit);
+    if (!ranges.length) return 0;
     let added = 0;
     ticks.forEach((tick) => {
       if (!Number.isFinite(tick)) return;
-      const nextTick = clamp(Math.round(tick), bounds.startTick + 1, bounds.endTick - 1);
-      if (!boundaries.includes(nextTick)) {
-        boundaries.push(nextTick);
-        added += 1;
-      }
+      const nextTick = clamp(Math.round(tick), 0, limit);
+      const rangeIndex = ranges.findIndex((range) => nextTick > range.startTick && nextTick < range.endTick);
+      if (rangeIndex === -1) return;
+      const target = ranges[rangeIndex];
+      const left = { startTick: target.startTick, endTick: nextTick };
+      const right = { startTick: nextTick, endTick: target.endTick };
+      if (left.endTick - left.startTick < 1 || right.endTick - right.startTick < 1) return;
+      ranges.splice(rangeIndex, 1, left, right);
+      added += 1;
     });
-    boundaries.sort((a, b) => a - b);
-    if (!pattern.partBoundaries?.length && Array.isArray(pattern.notes) && pattern.notes.length) {
-      pattern.partRangeStart = bounds.startTick;
-      pattern.partRangeEnd = bounds.endTick;
-    }
-    pattern.partBoundaries = boundaries.slice(1, -1);
+    pattern.partRanges = this.normalizePartRanges(ranges, limit);
+    pattern.partBoundaries = [];
+    pattern.partRangeStart = null;
+    pattern.partRangeEnd = null;
     return added;
   }
 
@@ -5599,6 +5653,15 @@ export default class MidiComposer {
     tracks.forEach((entry) => {
       const pattern = entry?.pattern;
       if (!pattern) return;
+      if (Array.isArray(pattern.partRanges) && pattern.partRanges.length > 0) {
+        const ranges = this.normalizePartRanges(pattern.partRanges, limit);
+        const next = ranges.filter((part) => part.endTick <= range.startTick || part.startTick >= range.endTick);
+        if (next.length !== ranges.length) {
+          pattern.partRanges = next;
+          merged += 1;
+        }
+        return;
+      }
       const existing = Array.isArray(pattern.partBoundaries) ? pattern.partBoundaries : [];
       const next = existing.filter((tick) => tick <= range.startTick || tick >= range.endTick)
         .map((tick) => clamp(Math.round(tick), 1, limit - 1));
@@ -5620,6 +5683,21 @@ export default class MidiComposer {
     tracks.forEach((entry) => {
       const pattern = entry?.pattern;
       if (!pattern) return;
+      if (Array.isArray(pattern.partRanges) && pattern.partRanges.length > 0) {
+        const ranges = this.normalizePartRanges(pattern.partRanges, limit);
+        const leftIndex = ranges.findIndex((range) => range.endTick === boundary);
+        if (leftIndex === -1 || leftIndex >= ranges.length - 1) return;
+        const rightIndex = leftIndex + 1;
+        if (ranges[rightIndex].startTick !== boundary) return;
+        const mergedRange = {
+          startTick: ranges[leftIndex].startTick,
+          endTick: ranges[rightIndex].endTick
+        };
+        ranges.splice(leftIndex, 2, mergedRange);
+        pattern.partRanges = ranges;
+        merged += 1;
+        return;
+      }
       const existing = Array.isArray(pattern.partBoundaries) ? pattern.partBoundaries : [];
       const next = existing
         .filter((tick) => Math.round(tick) !== boundary)
@@ -5693,41 +5771,42 @@ export default class MidiComposer {
 
 
   getPatternPartRange(pattern, partIndex, totalTicks) {
-    const boundaries = this.getPatternPartBoundaries(pattern, totalTicks);
-    if (!Array.isArray(pattern?.partBoundaries) || pattern.partBoundaries.length === 0) {
-      const implicit = this.getImplicitPatternPartRange(pattern, totalTicks);
-      if (implicit) {
-        return {
-          partIndex: 0,
-          startTick: implicit.startTick,
-          endTick: implicit.endTick
-        };
-      }
+    const ranges = this.getPatternPartRanges(pattern, totalTicks);
+    if (!ranges.length) {
+      return { partIndex: 0, startTick: 0, endTick: totalTicks || 1 };
     }
-    const idx = clamp(partIndex, 0, Math.max(0, boundaries.length - 2));
+    const idx = clamp(partIndex, 0, Math.max(0, ranges.length - 1));
     return {
       partIndex: idx,
-      startTick: boundaries[idx],
-      endTick: boundaries[idx + 1]
+      startTick: ranges[idx].startTick,
+      endTick: ranges[idx].endTick
     };
   }
 
   setPatternPartEdge(pattern, partIndex, edge, tick, totalTicks) {
     if (!pattern) return false;
-    const boundaries = this.getPatternPartBoundaries(pattern, totalTicks);
-    const idx = clamp(partIndex, 0, Math.max(0, boundaries.length - 2));
-    if (edge === 'start' && idx > 0) {
-      const minTick = boundaries[idx - 1] + 1;
-      const maxTick = boundaries[idx + 1] - 1;
-      boundaries[idx] = clamp(Math.round(tick), minTick, maxTick);
-    } else if (edge === 'end' && idx < boundaries.length - 2) {
-      const minTick = boundaries[idx] + 1;
-      const maxTick = boundaries[idx + 2] - 1;
-      boundaries[idx + 1] = clamp(Math.round(tick), minTick, maxTick);
+    const total = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
+    const ranges = this.getPatternPartRanges(pattern, total);
+    if (!ranges.length) return false;
+    const idx = clamp(partIndex, 0, Math.max(0, ranges.length - 1));
+    const range = ranges[idx];
+    const prev = idx > 0 ? ranges[idx - 1] : null;
+    const next = idx < ranges.length - 1 ? ranges[idx + 1] : null;
+    if (edge === 'start') {
+      const minTick = prev ? prev.endTick + 1 : 0;
+      const maxTick = range.endTick - 1;
+      range.startTick = clamp(Math.round(tick), minTick, maxTick);
+    } else if (edge === 'end') {
+      const minTick = range.startTick + 1;
+      const maxTick = next ? next.startTick - 1 : total;
+      range.endTick = clamp(Math.round(tick), minTick, maxTick);
     } else {
       return false;
     }
-    pattern.partBoundaries = boundaries.slice(1, -1);
+    pattern.partRanges = this.normalizePartRanges(ranges, total);
+    pattern.partBoundaries = [];
+    pattern.partRangeStart = null;
+    pattern.partRangeEnd = null;
     return true;
   }
 
@@ -5736,19 +5815,13 @@ export default class MidiComposer {
     const sourcePattern = this.song.tracks[sourceTrackIndex]?.patterns?.[this.selectedPatternIndex];
     const targetPattern = this.song.tracks[targetTrackIndex]?.patterns?.[this.selectedPatternIndex];
     if (!sourcePattern || !targetPattern) return;
-    const sourceRange = this.getPatternPartRange(sourcePattern, sourcePartIndex, totalTicks);
+    const sourceRanges = this.getPatternPartRanges(sourcePattern, totalTicks);
+    if (!sourceRanges.length) return;
+    const sourceIndex = clamp(sourcePartIndex, 0, Math.max(0, sourceRanges.length - 1));
+    const sourceRange = sourceRanges[sourceIndex];
     const duration = sourceRange.endTick - sourceRange.startTick;
     const nextStart = clamp(Math.round(targetStartTick), 0, Math.max(0, totalTicks - duration));
     const nextEnd = nextStart + duration;
-
-    const sourceHasPartBoundaries = Array.isArray(sourcePattern.partBoundaries) && sourcePattern.partBoundaries.length > 0;
-    const targetHasPartBoundaries = Array.isArray(targetPattern.partBoundaries) && targetPattern.partBoundaries.length > 0;
-    if (sourceHasPartBoundaries) {
-      this.splitPatternPartsAtTicks(sourcePattern, [sourceRange.startTick, sourceRange.endTick], totalTicks);
-    }
-    if (targetHasPartBoundaries) {
-      this.splitPatternPartsAtTicks(targetPattern, [nextStart, nextEnd], totalTicks);
-    }
     this.splitSongTracksAtTicks([
       { pattern: sourcePattern },
       { pattern: targetPattern }
@@ -5764,11 +5837,24 @@ export default class MidiComposer {
         startTick: clamp(note.startTick + offset, 0, totalTicks)
       });
     });
+    const targetRanges = this.getPatternPartRanges(targetPattern, totalTicks);
+    const normalizedTargetRanges = targetRanges.length ? targetRanges : [];
+    sourceRanges.splice(sourceIndex, 1);
+    normalizedTargetRanges.push({ startTick: nextStart, endTick: nextEnd });
+    sourcePattern.partRanges = this.normalizePartRanges(sourceRanges, totalTicks);
+    targetPattern.partRanges = this.normalizePartRanges(normalizedTargetRanges, totalTicks);
+    sourcePattern.partBoundaries = [];
+    targetPattern.partBoundaries = [];
+    sourcePattern.partRangeStart = null;
+    sourcePattern.partRangeEnd = null;
+    targetPattern.partRangeStart = null;
+    targetPattern.partRangeEnd = null;
     this.refreshPatternPartRange(sourcePattern, totalTicks);
     this.refreshPatternPartRange(targetPattern, totalTicks);
 
-    const targetPartIndex = this.getPatternPartBoundaries(targetPattern, totalTicks)
-      .findIndex((tick, i, arr) => i < arr.length - 1 && arr[i] === nextStart && arr[i + 1] === nextEnd);
+    const targetPartIndex = targetPattern.partRanges
+      ? targetPattern.partRanges.findIndex((range) => range.startTick === nextStart && range.endTick === nextEnd)
+      : -1;
     const nextPartIndex = targetPartIndex >= 0 ? targetPartIndex : 0;
     this.songSelection = {
       active: true,
@@ -7751,28 +7837,8 @@ export default class MidiComposer {
 
       const pattern = track.patterns?.[this.selectedPatternIndex];
       if (pattern) {
-        const hasAnyNotes = Array.isArray(pattern.notes) && pattern.notes.length > 0;
-        const hasExplicitParts = Array.isArray(pattern.partBoundaries) && pattern.partBoundaries.length > 0;
-        const partRanges = [];
-        if (hasExplicitParts) {
-          const boundaries = this.getPatternPartBoundaries(pattern, timelineTicks);
-          for (let i = 0; i < boundaries.length - 1; i += 1) {
-            partRanges.push({
-              partIndex: i,
-              startTick: boundaries[i],
-              endTick: boundaries[i + 1]
-            });
-          }
-        } else if (hasAnyNotes) {
-          const implicit = this.getImplicitPatternPartRange(pattern, timelineTicks);
-          if (implicit) {
-            partRanges.push({
-              partIndex: 0,
-              startTick: implicit.startTick,
-              endTick: implicit.endTick
-            });
-          }
-        }
+        const partRanges = this.getPatternPartRanges(pattern, timelineTicks)
+          .map((range, idx) => ({ ...range, partIndex: idx }));
         partRanges.forEach((range) => {
           const partStart = range.startTick;
           const partEnd = range.endTick;
@@ -7799,7 +7865,7 @@ export default class MidiComposer {
             ? toRgba(partBaseColor, 0.66)
             : toRgba(partBaseColor, 0.3);
           ctx.fillRect(partX, laneBounds.y, partW, laneBounds.h);
-          if (hasExplicitParts && range.partIndex > 0) {
+          if (Array.isArray(pattern.partRanges) && pattern.partRanges.length > 0 && range.partIndex > 0) {
             ctx.save();
             ctx.strokeStyle = 'rgba(255,225,106,0.6)';
             ctx.lineWidth = 6;
