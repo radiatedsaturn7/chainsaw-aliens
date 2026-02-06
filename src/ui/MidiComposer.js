@@ -3192,6 +3192,14 @@ export default class MidiComposer {
         this.exitRecordMode();
         return;
       }
+      if (this.bounds.undoButton && this.pointInBounds(x, y, this.bounds.undoButton)) {
+        this.undo();
+        return;
+      }
+      if (this.bounds.redoButton && this.pointInBounds(x, y, this.bounds.redoButton)) {
+        this.redo();
+        return;
+      }
       return;
     }
     if (this.qaOverlayOpen) {
@@ -3299,6 +3307,14 @@ export default class MidiComposer {
       this.pastePreview = null;
       this.noteLengthMenu.open = false;
       this.tempoSliderOpen = false;
+      return;
+    }
+    if (this.bounds.undoButton && this.pointInBounds(x, y, this.bounds.undoButton)) {
+      this.undo();
+      return;
+    }
+    if (this.bounds.redoButton && this.pointInBounds(x, y, this.bounds.redoButton)) {
+      this.redo();
       return;
     }
 
@@ -7315,7 +7331,7 @@ export default class MidiComposer {
     const rowH = 38;
     const rowGap = 8;
     const panelPadding = 10;
-    const menuRows = TAB_OPTIONS.length + 1;
+    const menuRows = TAB_OPTIONS.length + 2;
     const menuH = Math.min(h, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
     const menuX = x;
     const menuY = y;
@@ -7339,6 +7355,11 @@ export default class MidiComposer {
       this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
       cursorY += rowH + rowGap;
     });
+    const halfW = (innerW - rowGap) / 2;
+    this.bounds.undoButton = { x: innerX, y: cursorY, w: halfW, h: rowH };
+    this.bounds.redoButton = { x: innerX + halfW + rowGap, y: cursorY, w: halfW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.undoButton, 'Undo', false);
+    this.drawSmallButton(ctx, this.bounds.redoButton, 'Redo', false);
     return menuH;
   }
 
@@ -7398,7 +7419,7 @@ export default class MidiComposer {
     const rowH = 38;
     const rowGap = 8;
     const panelPadding = 10;
-    const menuRows = TAB_OPTIONS.length + 1;
+    const menuRows = TAB_OPTIONS.length + 2;
     const menuH = Math.min(h * 0.46, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
     const menuX = x;
     const menuY = y;
@@ -7425,6 +7446,11 @@ export default class MidiComposer {
       this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
       cursorY += rowH + rowGap;
     });
+    const halfW = (innerW - rowGap) / 2;
+    this.bounds.undoButton = { x: innerX, y: cursorY, w: halfW, h: rowH };
+    this.bounds.redoButton = { x: innerX + halfW + rowGap, y: cursorY, w: halfW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.undoButton, 'Undo', false);
+    this.drawSmallButton(ctx, this.bounds.redoButton, 'Redo', false);
 
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(controlsX, controlsY, w, controlsH);
@@ -8162,7 +8188,6 @@ export default class MidiComposer {
       { action: 'song-shift-note', label: 'Shift Note' },
       { action: 'song-copy', label: 'Copy' },
       { action: 'song-cut', label: 'Cut' },
-      { action: 'song-paste', label: 'Paste' },
       { action: 'song-delete', label: 'Delete' },
       { action: 'song-loop-selection', label: 'Loop this' }
     ];
