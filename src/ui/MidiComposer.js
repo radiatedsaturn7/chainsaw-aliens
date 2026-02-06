@@ -7702,11 +7702,14 @@ export default class MidiComposer {
             : toRgba(partBaseColor, 0.3);
           ctx.fillRect(partX, laneBounds.y, partW, laneBounds.h);
           if (i > 0) {
+            ctx.save();
             ctx.strokeStyle = 'rgba(255,225,106,0.6)';
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(partX, laneBounds.y + 1);
             ctx.lineTo(partX, laneBounds.y + laneBounds.h - 1);
             ctx.stroke();
+            ctx.restore();
           }
           if (partSelected) {
             const handleW = 14;
