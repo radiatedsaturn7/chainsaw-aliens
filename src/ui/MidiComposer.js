@@ -5668,8 +5668,14 @@ export default class MidiComposer {
     const nextStart = clamp(Math.round(targetStartTick), 0, Math.max(0, totalTicks - duration));
     const nextEnd = nextStart + duration;
 
-    this.splitPatternPartsAtTicks(sourcePattern, [sourceRange.startTick, sourceRange.endTick], totalTicks);
-    this.splitPatternPartsAtTicks(targetPattern, [nextStart, nextEnd], totalTicks);
+    const sourceHasPartBoundaries = Array.isArray(sourcePattern.partBoundaries) && sourcePattern.partBoundaries.length > 0;
+    const targetHasPartBoundaries = Array.isArray(targetPattern.partBoundaries) && targetPattern.partBoundaries.length > 0;
+    if (sourceHasPartBoundaries) {
+      this.splitPatternPartsAtTicks(sourcePattern, [sourceRange.startTick, sourceRange.endTick], totalTicks);
+    }
+    if (targetHasPartBoundaries) {
+      this.splitPatternPartsAtTicks(targetPattern, [nextStart, nextEnd], totalTicks);
+    }
     this.splitSongTracksAtTicks([
       { pattern: sourcePattern },
       { pattern: targetPattern }
@@ -7669,15 +7675,12 @@ export default class MidiComposer {
       const pattern = track.patterns?.[this.selectedPatternIndex];
       if (pattern) {
         const boundaries = this.getPatternPartBoundaries(pattern, timelineTicks);
+        const hasAnyNotes = Array.isArray(pattern.notes) && pattern.notes.length > 0;
+        const hasExplicitParts = Array.isArray(pattern.partBoundaries) && pattern.partBoundaries.length > 0;
+        if (!hasAnyNotes && !hasExplicitParts) return;
         for (let i = 0; i < boundaries.length - 1; i += 1) {
           const partStart = boundaries[i];
           const partEnd = boundaries[i + 1];
-          const hasPartNotes = pattern.notes?.some((note) => {
-            const noteStart = note.startTick;
-            const noteEnd = note.startTick + Math.max(1, note.durationTicks || this.ticksPerBeat);
-            return noteEnd > partStart && noteStart < partEnd;
-          });
-          if (!hasPartNotes) continue;
           const partX = originX + partStart * cellWidth;
           const partW = Math.max(1, (partEnd - partStart) * cellWidth);
           const partBounds = {
@@ -7704,7 +7707,7 @@ export default class MidiComposer {
           if (i > 0) {
             ctx.save();
             ctx.strokeStyle = 'rgba(255,225,106,0.6)';
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 6;
             ctx.beginPath();
             ctx.moveTo(partX, laneBounds.y + 1);
             ctx.lineTo(partX, laneBounds.y + laneBounds.h - 1);
