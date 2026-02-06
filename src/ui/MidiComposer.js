@@ -5518,7 +5518,7 @@ export default class MidiComposer {
 
   normalizePartRanges(ranges, totalTicks) {
     const limit = Math.max(1, Math.round(totalTicks || this.getSongTimelineTicks() || 1));
-    return ranges
+    const sorted = ranges
       .filter((range) => range && Number.isFinite(range.startTick) && Number.isFinite(range.endTick))
       .map((range) => {
         const startTick = clamp(Math.round(range.startTick), 0, Math.max(0, limit - 1));
@@ -5527,6 +5527,16 @@ export default class MidiComposer {
       })
       .filter((range) => range.endTick > range.startTick)
       .sort((a, b) => a.startTick - b.startTick);
+    const merged = [];
+    sorted.forEach((range) => {
+      const last = merged[merged.length - 1];
+      if (last && range.startTick < last.endTick) {
+        last.endTick = Math.max(last.endTick, range.endTick);
+      } else {
+        merged.push({ ...range });
+      }
+    });
+    return merged;
   }
 
   getPatternPartRanges(pattern, totalTicks) {
@@ -5837,12 +5847,17 @@ export default class MidiComposer {
         startTick: clamp(note.startTick + offset, 0, totalTicks)
       });
     });
-    const targetRanges = this.getPatternPartRanges(targetPattern, totalTicks);
-    const normalizedTargetRanges = targetRanges.length ? targetRanges : [];
-    sourceRanges.splice(sourceIndex, 1);
-    normalizedTargetRanges.push({ startTick: nextStart, endTick: nextEnd });
-    sourcePattern.partRanges = this.normalizePartRanges(sourceRanges, totalTicks);
-    targetPattern.partRanges = this.normalizePartRanges(normalizedTargetRanges, totalTicks);
+    if (sourcePattern === targetPattern) {
+      sourceRanges[sourceIndex] = { startTick: nextStart, endTick: nextEnd };
+      sourcePattern.partRanges = this.normalizePartRanges(sourceRanges, totalTicks);
+    } else {
+      const targetRanges = this.getPatternPartRanges(targetPattern, totalTicks);
+      const normalizedTargetRanges = targetRanges.length ? targetRanges : [];
+      sourceRanges.splice(sourceIndex, 1);
+      normalizedTargetRanges.push({ startTick: nextStart, endTick: nextEnd });
+      sourcePattern.partRanges = this.normalizePartRanges(sourceRanges, totalTicks);
+      targetPattern.partRanges = this.normalizePartRanges(normalizedTargetRanges, totalTicks);
+    }
     sourcePattern.partBoundaries = [];
     targetPattern.partBoundaries = [];
     sourcePattern.partRangeStart = null;
