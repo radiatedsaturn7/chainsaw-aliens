@@ -672,6 +672,7 @@ export default class MidiComposer {
       active: false,
       tick: 0,
       bounds: {
+        lineGrab: null,
         handleTop: null,
         handleBottom: null,
         splitAction: null
@@ -3440,7 +3441,8 @@ export default class MidiComposer {
           return;
         }
         const splitHandleHit = (this.songSplitTool.bounds?.handleTop && this.pointInBounds(x, y, this.songSplitTool.bounds.handleTop))
-          || (this.songSplitTool.bounds?.handleBottom && this.pointInBounds(x, y, this.songSplitTool.bounds.handleBottom));
+          || (this.songSplitTool.bounds?.handleBottom && this.pointInBounds(x, y, this.songSplitTool.bounds.handleBottom))
+          || (this.songSplitTool.bounds?.lineGrab && this.pointInBounds(x, y, this.songSplitTool.bounds.lineGrab));
         if (splitHandleHit) {
           this.dragState = { mode: 'song-split-adjust' };
           return;
@@ -7676,6 +7678,12 @@ export default class MidiComposer {
         ctx.strokeStyle = 'rgba(255,225,106,0.6)';
         ctx.strokeRect(selStart, laneBounds.y, selEnd - selStart, laneBounds.h);
       }
+      if (this.songSplitTool.active
+        && selectionRange
+        && (index < selectionRange.trackStartIndex || index > selectionRange.trackEndIndex)) {
+        ctx.fillStyle = 'rgba(0,0,0,0.62)';
+        ctx.fillRect(laneBounds.x, laneBounds.y, laneBounds.w, laneBounds.h);
+      }
       ctx.restore();
 
       if (showAutomation) {
@@ -7850,8 +7858,8 @@ export default class MidiComposer {
       { action: 'song-transpose-up', label: 'Pitch +1' },
       { action: 'song-transpose-down', label: 'Pitch -1' }
     ];
-    const buttonW = 132;
-    const buttonH = 36;
+    const buttonW = this.isMobileLayout() ? 172 : 156;
+    const buttonH = this.isMobileLayout() ? 48 : 42;
     const gap = 8;
     const columns = 2;
     const rows = Math.ceil(actions.length / columns);
@@ -7884,6 +7892,7 @@ export default class MidiComposer {
 
   drawSongSplitTool(ctx) {
     if (!this.songSplitTool.active || !this.songTimelineBounds) {
+      this.songSplitTool.bounds.lineGrab = null;
       this.songSplitTool.bounds.handleTop = null;
       this.songSplitTool.bounds.handleBottom = null;
       this.songSplitTool.bounds.splitAction = null;
@@ -7899,6 +7908,13 @@ export default class MidiComposer {
     const x = this.getSongTimelineX(tick);
     const top = this.songTimelineBounds.y;
     const bottom = this.songTimelineBounds.y + this.songTimelineBounds.h;
+    const grabW = this.isMobileLayout() ? 72 : 56;
+    this.songSplitTool.bounds.lineGrab = {
+      x: x - grabW / 2,
+      y: top,
+      w: grabW,
+      h: bottom - top
+    };
     ctx.save();
     ctx.setLineDash([8, 6]);
     ctx.strokeStyle = '#ff5959';
@@ -7909,12 +7925,23 @@ export default class MidiComposer {
     ctx.stroke();
     ctx.restore();
 
-    const handleW = 18;
-    const handleH = 10;
+    const handleW = this.isMobileLayout() ? 34 : 28;
+    const handleH = this.isMobileLayout() ? 18 : 14;
+    const hitPad = this.isMobileLayout() ? 14 : 10;
     const topHandle = { x: x - handleW / 2, y: top + 2, w: handleW, h: handleH };
     const bottomHandle = { x: x - handleW / 2, y: bottom - handleH - 2, w: handleW, h: handleH };
-    this.songSplitTool.bounds.handleTop = topHandle;
-    this.songSplitTool.bounds.handleBottom = bottomHandle;
+    this.songSplitTool.bounds.handleTop = {
+      x: topHandle.x - hitPad,
+      y: topHandle.y - hitPad,
+      w: topHandle.w + hitPad * 2,
+      h: topHandle.h + hitPad * 2
+    };
+    this.songSplitTool.bounds.handleBottom = {
+      x: bottomHandle.x - hitPad,
+      y: bottomHandle.y - hitPad,
+      w: bottomHandle.w + hitPad * 2,
+      h: bottomHandle.h + hitPad * 2
+    };
     ctx.fillStyle = '#ff5959';
     ctx.fillRect(topHandle.x, topHandle.y, topHandle.w, topHandle.h);
     ctx.fillRect(bottomHandle.x, bottomHandle.y, bottomHandle.w, bottomHandle.h);
