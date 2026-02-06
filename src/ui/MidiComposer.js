@@ -7677,83 +7677,84 @@ export default class MidiComposer {
         const boundaries = this.getPatternPartBoundaries(pattern, timelineTicks);
         const hasAnyNotes = Array.isArray(pattern.notes) && pattern.notes.length > 0;
         const hasExplicitParts = Array.isArray(pattern.partBoundaries) && pattern.partBoundaries.length > 0;
-        if (!hasAnyNotes && !hasExplicitParts) return;
-        for (let i = 0; i < boundaries.length - 1; i += 1) {
-          const partStart = boundaries[i];
-          const partEnd = boundaries[i + 1];
-          const partX = originX + partStart * cellWidth;
-          const partW = Math.max(1, (partEnd - partStart) * cellWidth);
-          const partBounds = {
-            x: partX,
-            y: laneBounds.y,
-            w: partW,
-            h: laneBounds.h,
-            trackIndex: index,
-            partIndex: i,
-            startTick: partStart,
-            endTick: partEnd
-          };
-          this.songPartBounds.push(partBounds);
-          const partSelected = selectionRange
-            && selectionRange.trackStartIndex === index
-            && selectionRange.trackEndIndex === index
-            && selectionRange.startTick === partStart
-            && selectionRange.endTick === partEnd;
-          const partBaseColor = track.color || '#ffffff';
-          ctx.fillStyle = partSelected
-            ? toRgba(partBaseColor, 0.66)
-            : toRgba(partBaseColor, 0.3);
-          ctx.fillRect(partX, laneBounds.y, partW, laneBounds.h);
-          if (i > 0) {
-            ctx.save();
-            ctx.strokeStyle = 'rgba(255,225,106,0.6)';
-            ctx.lineWidth = 6;
-            ctx.beginPath();
-            ctx.moveTo(partX, laneBounds.y + 1);
-            ctx.lineTo(partX, laneBounds.y + laneBounds.h - 1);
-            ctx.stroke();
-            ctx.restore();
-          }
-          if (partSelected) {
-            const handleW = 14;
-            const handleHitPad = 8;
-            const leftHandle = {
-              x: partX - handleW / 2,
-              y: laneBounds.y + 2,
-              w: handleW,
-              h: Math.max(8, laneBounds.h - 4),
+        if (hasAnyNotes || hasExplicitParts) {
+          for (let i = 0; i < boundaries.length - 1; i += 1) {
+            const partStart = boundaries[i];
+            const partEnd = boundaries[i + 1];
+            const partX = originX + partStart * cellWidth;
+            const partW = Math.max(1, (partEnd - partStart) * cellWidth);
+            const partBounds = {
+              x: partX,
+              y: laneBounds.y,
+              w: partW,
+              h: laneBounds.h,
               trackIndex: index,
               partIndex: i,
-              edge: 'start'
+              startTick: partStart,
+              endTick: partEnd
             };
-            const rightHandle = {
-              x: partX + partW - handleW / 2,
-              y: laneBounds.y + 2,
-              w: handleW,
-              h: Math.max(8, laneBounds.h - 4),
-              trackIndex: index,
-              partIndex: i,
-              edge: 'end'
-            };
-            this.songPartHandleBounds.push(
-              {
-                ...leftHandle,
-                x: leftHandle.x - handleHitPad,
-                y: leftHandle.y - handleHitPad,
-                w: leftHandle.w + handleHitPad * 2,
-                h: leftHandle.h + handleHitPad * 2
-              },
-              {
-                ...rightHandle,
-                x: rightHandle.x - handleHitPad,
-                y: rightHandle.y - handleHitPad,
-                w: rightHandle.w + handleHitPad * 2,
-                h: rightHandle.h + handleHitPad * 2
-              }
-            );
-            ctx.fillStyle = 'rgba(255,225,106,0.95)';
-            ctx.fillRect(leftHandle.x, leftHandle.y, leftHandle.w, leftHandle.h);
-            ctx.fillRect(rightHandle.x, rightHandle.y, rightHandle.w, rightHandle.h);
+            this.songPartBounds.push(partBounds);
+            const partSelected = selectionRange
+              && selectionRange.trackStartIndex === index
+              && selectionRange.trackEndIndex === index
+              && selectionRange.startTick === partStart
+              && selectionRange.endTick === partEnd;
+            const partBaseColor = track.color || '#ffffff';
+            ctx.fillStyle = partSelected
+              ? toRgba(partBaseColor, 0.66)
+              : toRgba(partBaseColor, 0.3);
+            ctx.fillRect(partX, laneBounds.y, partW, laneBounds.h);
+            if (i > 0) {
+              ctx.save();
+              ctx.strokeStyle = 'rgba(255,225,106,0.6)';
+              ctx.lineWidth = 6;
+              ctx.beginPath();
+              ctx.moveTo(partX, laneBounds.y + 1);
+              ctx.lineTo(partX, laneBounds.y + laneBounds.h - 1);
+              ctx.stroke();
+              ctx.restore();
+            }
+            if (partSelected) {
+              const handleW = 14;
+              const handleHitPad = 8;
+              const leftHandle = {
+                x: partX - handleW / 2,
+                y: laneBounds.y + 2,
+                w: handleW,
+                h: Math.max(8, laneBounds.h - 4),
+                trackIndex: index,
+                partIndex: i,
+                edge: 'start'
+              };
+              const rightHandle = {
+                x: partX + partW - handleW / 2,
+                y: laneBounds.y + 2,
+                w: handleW,
+                h: Math.max(8, laneBounds.h - 4),
+                trackIndex: index,
+                partIndex: i,
+                edge: 'end'
+              };
+              this.songPartHandleBounds.push(
+                {
+                  ...leftHandle,
+                  x: leftHandle.x - handleHitPad,
+                  y: leftHandle.y - handleHitPad,
+                  w: leftHandle.w + handleHitPad * 2,
+                  h: leftHandle.h + handleHitPad * 2
+                },
+                {
+                  ...rightHandle,
+                  x: rightHandle.x - handleHitPad,
+                  y: rightHandle.y - handleHitPad,
+                  w: rightHandle.w + handleHitPad * 2,
+                  h: rightHandle.h + handleHitPad * 2
+                }
+              );
+              ctx.fillStyle = 'rgba(255,225,106,0.95)';
+              ctx.fillRect(leftHandle.x, leftHandle.y, leftHandle.w, leftHandle.h);
+              ctx.fillRect(rightHandle.x, rightHandle.y, rightHandle.w, rightHandle.h);
+            }
           }
         }
       }
@@ -7964,9 +7965,9 @@ export default class MidiComposer {
       { action: 'song-delete', label: 'Delete' },
       { action: 'song-loop-selection', label: 'Loop this' }
     ];
-    const buttonW = this.isMobileLayout() ? 172 : 156;
-    const buttonH = this.isMobileLayout() ? 48 : 42;
-    const gap = 8;
+    const buttonW = this.isMobileLayout() ? 188 : 168;
+    const buttonH = this.isMobileLayout() ? 50 : 44;
+    const gap = 10;
     const columns = 2;
     const rows = Math.ceil(actions.length / columns);
     const menuW = columns * buttonW + gap * (columns + 1);
