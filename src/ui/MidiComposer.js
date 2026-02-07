@@ -5388,18 +5388,7 @@ export default class MidiComposer {
       ? this.songRepeatTool.baseNotes
       : [];
     if (baseNotes.length === 0) {
-      baseNotes = (pattern.notes || [])
-        .filter((note) => note.startTick >= baseStart && note.startTick < baseEnd)
-        .map((note) => ({
-          relStart: note.startTick - baseStart,
-          durationTicks: Math.min(
-            note.durationTicks,
-            Math.max(1, baseEnd - note.startTick)
-          ),
-          pitch: note.pitch,
-          velocity: note.velocity
-        }))
-        .filter((note) => note.durationTicks > 0);
+      baseNotes = this.collectSongRepeatBaseNotes(pattern, baseStart, baseEnd);
       this.songRepeatTool.baseNotes = baseNotes;
     }
     if (!baseNotes.length) return;
@@ -5450,6 +5439,22 @@ export default class MidiComposer {
     }
     this.ensureGridCapacity(nextEnd);
     this.persist();
+  }
+
+  collectSongRepeatBaseNotes(pattern, baseStart, baseEnd) {
+    if (!pattern || !Array.isArray(pattern.notes)) return [];
+    return pattern.notes
+      .filter((note) => note.startTick >= baseStart && note.startTick < baseEnd)
+      .map((note) => ({
+        relStart: note.startTick - baseStart,
+        durationTicks: Math.min(
+          note.durationTicks,
+          Math.max(1, baseEnd - note.startTick)
+        ),
+        pitch: note.pitch,
+        velocity: note.velocity
+      }))
+      .filter((note) => note.durationTicks > 0);
   }
 
   applySongSelectionMove(dragState) {
@@ -6012,9 +6017,13 @@ export default class MidiComposer {
     const baseStart = repeatActive ? this.songRepeatTool.baseStartTick : before.startTick;
     const baseEnd = repeatActive ? this.songRepeatTool.baseEndTick : before.endTick;
     const partLen = Math.max(1, baseEnd - baseStart);
-    const baseNotes = repeatActive
+    let baseNotes = repeatActive
       ? this.songRepeatTool.baseNotes || []
       : [];
+    if (repeatActive && baseNotes.length === 0) {
+      baseNotes = this.collectSongRepeatBaseNotes(pattern, baseStart, baseEnd);
+      this.songRepeatTool.baseNotes = baseNotes;
+    }
 
     if (edge === 'end') {
       if (after.endTick > before.endTick) {
