@@ -6104,18 +6104,13 @@ export default class MidiComposer {
         const targetPattern = tracks.find((entry) => entry.trackIndex === range.trackIndex)?.pattern;
         const timelineTicks = this.getSongTimelineTicks();
         const partRanges = this.getPatternPartRanges(targetPattern, timelineTicks);
-        const containedRange = partRanges.find((entry) => (
-          range.startTick >= entry.startTick && range.endTick <= entry.endTick
-        ));
-        const baseRange = containedRange
-          || partRanges.find((entry) => range.startTick >= entry.startTick && range.startTick < entry.endTick)
+        const baseRange = partRanges.find((entry) => (
+          range.startTick >= entry.startTick && range.startTick < entry.endTick
+        ))
           || partRanges[0]
           || { startTick: range.startTick, endTick: range.endTick };
-        const selectionWithinPart = Boolean(containedRange);
-        const baseStart = selectionWithinPart ? baseRange.startTick : range.startTick;
-        const baseEnd = selectionWithinPart
-          ? baseRange.endTick
-          : (range.endTick > range.startTick ? range.endTick : baseRange.endTick);
+        const baseStart = baseRange.startTick;
+        const baseEnd = baseRange.endTick;
         this.songRepeatTool.trackIndex = range.trackIndex;
         this.songRepeatTool.baseStartTick = baseStart;
         this.songRepeatTool.baseEndTick = baseEnd;
