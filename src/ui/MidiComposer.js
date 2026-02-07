@@ -6018,14 +6018,15 @@ export default class MidiComposer {
       && this.songClonePaintTool.trackIndex === trackIndex
       && Number.isFinite(this.songClonePaintTool.baseStartTick)
       && Number.isFinite(this.songClonePaintTool.baseEndTick);
-    const baseStart = clonePaintActive ? this.songClonePaintTool.baseStartTick : before.startTick;
-    const baseEnd = clonePaintActive ? this.songClonePaintTool.baseEndTick : before.endTick;
+    const baseStart = before.startTick;
+    const baseEnd = before.endTick;
     const partLen = Math.max(1, baseEnd - baseStart);
-    let baseNotes = clonePaintActive
-      ? this.songClonePaintTool.baseNotes || []
-      : [];
-    if (clonePaintActive && baseNotes.length === 0) {
+    let baseNotes = [];
+    if (clonePaintActive) {
       baseNotes = this.collectSongClonePaintBaseNotes(pattern, baseStart, baseEnd);
+      this.songClonePaintTool.trackIndex = trackIndex;
+      this.songClonePaintTool.baseStartTick = baseStart;
+      this.songClonePaintTool.baseEndTick = baseEnd;
       this.songClonePaintTool.baseNotes = baseNotes;
     }
 
