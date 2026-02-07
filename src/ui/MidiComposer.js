@@ -4303,6 +4303,13 @@ export default class MidiComposer {
       return;
     }
     if (this.dragState?.mode === 'song-part-resize') {
+      if (this.songClonePaintTool.active) {
+        this.songClonePaintTool.active = false;
+        this.songClonePaintTool.trackIndex = null;
+        this.songClonePaintTool.baseStartTick = null;
+        this.songClonePaintTool.baseEndTick = null;
+        this.songClonePaintTool.baseNotes = [];
+      }
       this.dragState = null;
       return;
     }
@@ -6018,6 +6025,19 @@ export default class MidiComposer {
       && this.songClonePaintTool.trackIndex === trackIndex
       && Number.isFinite(this.songClonePaintTool.baseStartTick)
       && Number.isFinite(this.songClonePaintTool.baseEndTick);
+    if (clonePaintActive) {
+      const matchesBaseRange = this.songClonePaintTool.baseStartTick === before.startTick
+        && this.songClonePaintTool.baseEndTick === before.endTick;
+      if (!matchesBaseRange) {
+        this.songClonePaintTool.baseStartTick = before.startTick;
+        this.songClonePaintTool.baseEndTick = before.endTick;
+        this.songClonePaintTool.baseNotes = this.collectSongClonePaintBaseNotes(
+          pattern,
+          before.startTick,
+          before.endTick
+        );
+      }
+    }
     const baseStart = clonePaintActive ? this.songClonePaintTool.baseStartTick : before.startTick;
     const baseEnd = clonePaintActive ? this.songClonePaintTool.baseEndTick : before.endTick;
     const partLen = Math.max(1, baseEnd - baseStart);
