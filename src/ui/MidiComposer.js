@@ -5928,8 +5928,16 @@ export default class MidiComposer {
     const baseEnd = repeatActive ? this.songRepeatTool.baseEndTick : before.endTick;
     const partLen = Math.max(1, baseEnd - baseStart);
     const baseNotes = repeatActive
-      ? pattern.notes.filter((note) => note.startTick >= baseStart && note.startTick < baseEnd)
-        .map((note) => ({ ...note }))
+      ? pattern.notes
+        .filter((note) => note.startTick >= baseStart && note.startTick < baseEnd)
+        .map((note) => ({
+          ...note,
+          durationTicks: Math.min(
+            note.durationTicks,
+            Math.max(1, baseEnd - note.startTick)
+          )
+        }))
+        .filter((note) => note.durationTicks > 0)
       : [];
 
     if (edge === 'end') {
