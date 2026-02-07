@@ -269,6 +269,7 @@ export default class PixelStudio {
     this.linePreview = null;
     this.cloneSource = null;
     this.cloneOffset = null;
+    this.cloneSourcePixels = null;
     this.panStart = null;
     this.longPressTimer = null;
     this.cursor = { row: 0, col: 0, x: 0, y: 0 };
@@ -1395,6 +1396,9 @@ export default class PixelStudio {
   startStroke(point, { mode }) {
     if (!this.activeLayer || this.activeLayer.locked) return;
     this.startHistory(`${mode} stroke`);
+    this.cloneSourcePixels = mode === 'clone'
+      ? new Uint32Array(this.activeLayer.pixels)
+      : null;
     this.strokeState = {
       mode,
       lastPoint: point
@@ -1412,6 +1416,7 @@ export default class PixelStudio {
   finishStroke() {
     if (!this.strokeState) return;
     this.strokeState = null;
+    this.cloneSourcePixels = null;
     this.commitHistory();
   }
 
@@ -1920,7 +1925,8 @@ export default class PixelStudio {
     const sourceIndex = row * width + col;
     const destIndex = point.row * width + point.col;
     if (this.selection.active && this.selection.mask && !this.selection.mask[destIndex]) return;
-    this.activeLayer.pixels[destIndex] = this.activeLayer.pixels[sourceIndex];
+    const sourcePixels = this.cloneSourcePixels || this.activeLayer.pixels;
+    this.activeLayer.pixels[destIndex] = sourcePixels[sourceIndex];
   }
 
   applyCloneStroke(point) {
