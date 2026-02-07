@@ -6107,8 +6107,11 @@ export default class MidiComposer {
         const baseRange = partRanges.find((entry) => range.startTick >= entry.startTick && range.startTick < entry.endTick)
           || partRanges[0]
           || { startTick: range.startTick, endTick: range.endTick };
-        const baseStart = range.startTick;
-        const baseEnd = range.endTick > range.startTick ? range.endTick : baseRange.endTick;
+        const selectionWithinPart = range.startTick >= baseRange.startTick && range.endTick <= baseRange.endTick;
+        const baseStart = selectionWithinPart ? baseRange.startTick : range.startTick;
+        const baseEnd = selectionWithinPart
+          ? baseRange.endTick
+          : (range.endTick > range.startTick ? range.endTick : baseRange.endTick);
         this.songRepeatTool.trackIndex = range.trackIndex;
         this.songRepeatTool.baseStartTick = baseStart;
         this.songRepeatTool.baseEndTick = baseEnd;
