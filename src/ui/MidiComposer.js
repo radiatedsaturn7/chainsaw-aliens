@@ -5363,12 +5363,6 @@ export default class MidiComposer {
     this.songSelectionMenu.open = Boolean(this.getSongSelectionRange());
     this.songSelectionMenu.x = this.lastPointer.x;
     this.songSelectionMenu.y = this.lastPointer.y;
-    if (this.songClonePaintTool.active) {
-      const range = this.getSongSelectionRange();
-      if (range) {
-        this.applySongClonePaintToRange(range);
-      }
-    }
   }
 
   resetSongClonePaintTool() {
