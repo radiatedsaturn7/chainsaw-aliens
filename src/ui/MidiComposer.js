@@ -6206,22 +6206,7 @@ export default class MidiComposer {
         this.songRepeatTool.trackIndex = range.trackIndex;
         this.songRepeatTool.baseStartTick = baseStart;
         this.songRepeatTool.baseEndTick = baseEnd;
-        const baseNotes = (targetPattern?.notes || [])
-          .filter((note) => note.startTick >= baseStart && note.startTick < baseEnd)
-          .map((note) => ({
-            relStart: note.startTick - baseStart,
-            durationTicks: Math.min(
-              note.durationTicks,
-              Math.max(1, baseEnd - note.startTick)
-            )
-          }))
-          .filter((note) => note.durationTicks > 0)
-          .map((note) => ({
-            relStart: note.relStart,
-            durationTicks: note.durationTicks,
-            pitch: note.pitch,
-            velocity: note.velocity
-          }));
+        const baseNotes = this.collectSongRepeatBaseNotes(targetPattern, baseStart, baseEnd);
         this.songRepeatTool.baseNotes = baseNotes;
         this.applySongRepeatToRange(range);
       } else {
