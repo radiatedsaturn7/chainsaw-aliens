@@ -693,7 +693,8 @@ export default class MidiComposer {
       active: false,
       trackIndex: null,
       baseStartTick: null,
-      baseEndTick: null
+      baseEndTick: null,
+      baseNotes: []
     };
     this.songClipboard = null;
     this.defaultNoteDurationTicks = null;
@@ -5893,6 +5894,7 @@ export default class MidiComposer {
       this.songRepeatTool.trackIndex = null;
       this.songRepeatTool.baseStartTick = null;
       this.songRepeatTool.baseEndTick = null;
+      this.songRepeatTool.baseNotes = [];
     }
 
     const targetPartIndex = targetPattern.partRanges
@@ -5928,16 +5930,7 @@ export default class MidiComposer {
     const baseEnd = repeatActive ? this.songRepeatTool.baseEndTick : before.endTick;
     const partLen = Math.max(1, baseEnd - baseStart);
     const baseNotes = repeatActive
-      ? pattern.notes
-        .filter((note) => note.startTick >= baseStart && note.startTick < baseEnd)
-        .map((note) => ({
-          ...note,
-          durationTicks: Math.min(
-            note.durationTicks,
-            Math.max(1, baseEnd - note.startTick)
-          )
-        }))
-        .filter((note) => note.durationTicks > 0)
+      ? this.songRepeatTool.baseNotes || []
       : [];
 
     if (edge === 'end') {
@@ -6107,9 +6100,34 @@ export default class MidiComposer {
     if (action === 'song-repeat') {
       const nextActive = !this.songRepeatTool.active;
       this.songRepeatTool.active = nextActive;
-      this.songRepeatTool.trackIndex = nextActive ? range.trackIndex : null;
-      this.songRepeatTool.baseStartTick = nextActive ? range.startTick : null;
-      this.songRepeatTool.baseEndTick = nextActive ? range.endTick : null;
+      if (nextActive) {
+        this.songRepeatTool.trackIndex = range.trackIndex;
+        this.songRepeatTool.baseStartTick = range.startTick;
+        this.songRepeatTool.baseEndTick = range.endTick;
+        const baseStart = range.startTick;
+        const baseEnd = range.endTick;
+        const baseNotes = this.getSongSelectionNotes(tracks[0]?.pattern, range)
+          .map((note) => ({
+            ...note,
+            durationTicks: Math.min(
+              note.durationTicks,
+              Math.max(1, baseEnd - note.startTick)
+            )
+          }))
+          .filter((note) => note.durationTicks > 0)
+          .map((note) => ({
+            startTick: note.startTick,
+            durationTicks: note.durationTicks,
+            pitch: note.pitch,
+            velocity: note.velocity
+          }));
+        this.songRepeatTool.baseNotes = baseNotes;
+      } else {
+        this.songRepeatTool.trackIndex = null;
+        this.songRepeatTool.baseStartTick = null;
+        this.songRepeatTool.baseEndTick = null;
+        this.songRepeatTool.baseNotes = [];
+      }
       this.songSelectionMenu.open = false;
       return;
     }
