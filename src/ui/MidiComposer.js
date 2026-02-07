@@ -5940,10 +5940,10 @@ export default class MidiComposer {
           let cursor = before.endTick;
           while (cursor < after.endTick) {
             baseNotes.forEach((note) => {
-              const rel = note.startTick - baseStart;
+              const rel = note.relStart ?? 0;
               const start = cursor + rel;
               if (start >= after.endTick) return;
-              const noteRelStart = note.startTick - baseStart;
+              const noteRelStart = rel;
               const maxDuration = Math.min(
                 note.durationTicks,
                 partLen - noteRelStart,
@@ -5973,12 +5973,12 @@ export default class MidiComposer {
           let cursor = before.startTick - partLen;
           while (cursor >= after.startTick) {
             baseNotes.forEach((note) => {
-              const rel = note.startTick - baseStart;
+              const rel = note.relStart ?? 0;
               const start = cursor + rel;
               const endTick = start + Math.max(1, note.durationTicks || this.ticksPerBeat);
               if (endTick <= after.startTick || start >= before.startTick) return;
               const clampedStart = Math.max(start, after.startTick);
-              const noteRelStart = note.startTick - baseStart;
+              const noteRelStart = rel;
               const clampedDuration = Math.min(
                 note.durationTicks,
                 partLen - noteRelStart,
@@ -6107,18 +6107,15 @@ export default class MidiComposer {
         const baseRange = partRanges.find((entry) => range.startTick >= entry.startTick && range.startTick < entry.endTick)
           || partRanges[0]
           || { startTick: range.startTick, endTick: range.endTick };
-        const implicitRange = (!partRanges.length && targetPattern)
-          ? this.getImplicitPatternPartRange(targetPattern, timelineTicks)
-          : null;
-        const baseStart = implicitRange ? implicitRange.startTick : baseRange.startTick;
-        const baseEnd = implicitRange ? implicitRange.endTick : baseRange.endTick;
+        const baseStart = range.startTick;
+        const baseEnd = range.endTick > range.startTick ? range.endTick : baseRange.endTick;
         this.songRepeatTool.trackIndex = range.trackIndex;
         this.songRepeatTool.baseStartTick = baseStart;
         this.songRepeatTool.baseEndTick = baseEnd;
         const baseNotes = (targetPattern?.notes || [])
           .filter((note) => note.startTick >= baseStart && note.startTick < baseEnd)
           .map((note) => ({
-            ...note,
+            relStart: note.startTick - baseStart,
             durationTicks: Math.min(
               note.durationTicks,
               Math.max(1, baseEnd - note.startTick)
@@ -6126,7 +6123,7 @@ export default class MidiComposer {
           }))
           .filter((note) => note.durationTicks > 0)
           .map((note) => ({
-            startTick: note.startTick,
+            relStart: note.relStart,
             durationTicks: note.durationTicks,
             pitch: note.pitch,
             velocity: note.velocity
