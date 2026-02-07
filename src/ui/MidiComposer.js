@@ -5951,7 +5951,6 @@ export default class MidiComposer {
               const start = cursor + rel;
               if (start >= after.endTick) return;
               const noteRelStart = note.startTick - baseStart;
-              const noteRelEnd = noteRelStart + note.durationTicks;
               const maxDuration = Math.min(
                 note.durationTicks,
                 partLen - noteRelStart,
@@ -5959,6 +5958,7 @@ export default class MidiComposer {
                 partLen
               );
               if (maxDuration < 1) return;
+              if (start < before.endTick) return;
               pattern.notes.push({
                 ...note,
                 id: uid(),
@@ -5994,6 +5994,7 @@ export default class MidiComposer {
                 partLen
               );
               if (clampedDuration < 1) return;
+              if (clampedStart >= before.startTick) return;
               pattern.notes.push({
                 ...note,
                 id: uid(),
