@@ -5373,6 +5373,13 @@ export default class MidiComposer {
     this.songSelectionMenu.bounds = [];
     this.songSplitTool.active = false;
     this.songShiftTool.active = false;
+    if (this.songClonePaintTool.active) {
+      this.songClonePaintTool.active = false;
+      this.songClonePaintTool.trackIndex = null;
+      this.songClonePaintTool.baseStartTick = null;
+      this.songClonePaintTool.baseEndTick = null;
+      this.songClonePaintTool.baseNotes = [];
+    }
   }
 
   applySongClonePaintToRange(range) {
