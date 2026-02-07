@@ -1826,6 +1826,12 @@ export default class MidiComposer {
     }
   }
 
+  ensureTimelineForTick(endTick) {
+    if (!Number.isFinite(endTick)) return this.getSongTimelineTicks();
+    this.ensureGridCapacity(endTick);
+    return this.getSongTimelineTicks();
+  }
+
   ensureGridPanCapacity(desiredOffsetX) {
     if (!this.gridBounds) return;
     if (desiredOffsetX >= 0) return;
@@ -5395,20 +5401,21 @@ export default class MidiComposer {
     const targetStart = range.startTick;
     const targetEnd = range.endTick;
     if (targetEnd <= baseEnd) return;
-    const totalTicks = this.getSongTimelineTicks();
-    const nextEnd = clamp(targetEnd, 0, Math.max(totalTicks, targetEnd));
-    const ranges = this.getPatternPartRanges(pattern, totalTicks);
+    const totalTicks = this.ensureTimelineForTick(targetEnd);
+    const limitTicks = Math.max(totalTicks, targetEnd);
+    const nextEnd = clamp(targetEnd, 0, limitTicks);
+    const ranges = this.getPatternPartRanges(pattern, limitTicks);
     const rangeIndex = ranges.findIndex((entry) => baseStart >= entry.startTick && baseStart < entry.endTick);
     if (rangeIndex >= 0) {
       ranges[rangeIndex] = {
         startTick: ranges[rangeIndex].startTick,
         endTick: Math.max(ranges[rangeIndex].endTick, nextEnd)
       };
-      pattern.partRanges = this.normalizePartRanges(ranges, totalTicks);
+      pattern.partRanges = this.normalizePartRanges(ranges, limitTicks);
       pattern.partBoundaries = [];
       pattern.partRangeStart = null;
       pattern.partRangeEnd = null;
-      this.refreshPatternPartRange(pattern, nextEnd);
+      this.refreshPatternPartRange(pattern, limitTicks);
     }
     this.splitNotesAtTick(pattern, baseEnd);
     this.splitNotesAtTick(pattern, nextEnd);
@@ -5438,8 +5445,30 @@ export default class MidiComposer {
       });
       cursor += baseSpan;
     }
-    this.ensureGridCapacity(nextEnd);
     this.persist();
+  }
+
+  runClonePaintSanityCheck() {
+    const debug = this.debug?.clonePaintQA;
+    const trackIndex = Number.isInteger(this.songClonePaintTool.trackIndex)
+      ? this.songClonePaintTool.trackIndex
+      : this.selectedTrackIndex;
+    const pattern = this.song?.tracks?.[trackIndex]?.patterns?.[this.selectedPatternIndex];
+    if (!pattern) {
+      if (debug) console.warn('Clone paint sanity check skipped: missing pattern.');
+      return { ok: false, reason: 'missing pattern' };
+    }
+    const baseStart = this.songClonePaintTool.baseStartTick ?? 0;
+    const baseEnd = this.songClonePaintTool.baseEndTick ?? baseStart + this.ticksPerBeat;
+    const targetEnd = baseEnd + this.ticksPerBeat * 8;
+    const totalTicks = this.ensureTimelineForTick(targetEnd);
+    const limitTicks = Math.max(totalTicks, targetEnd);
+    const ranges = this.getPatternPartRanges(pattern, limitTicks);
+    const expanded = ranges.some((entry) => entry.startTick <= baseStart && entry.endTick >= targetEnd);
+    const notesExist = pattern.notes.some((note) => note.startTick >= baseEnd && note.startTick < targetEnd);
+    const ok = expanded && notesExist;
+    if (debug) console.info('Clone paint sanity check result:', { ok, expanded, notesExist });
+    return { ok, expanded, notesExist, targetEnd };
   }
 
   collectSongClonePaintBaseNotes(pattern, baseStart, baseEnd) {
@@ -6007,17 +6036,21 @@ export default class MidiComposer {
   }
 
   resizeSongPartEdge(trackIndex, partIndex, edge, tick) {
-    const totalTicks = this.getSongTimelineTicks();
+    let totalTicks = this.getSongTimelineTicks();
     const pattern = this.song.tracks[trackIndex]?.patterns?.[this.selectedPatternIndex];
     if (!pattern) return;
-    const before = this.getPatternPartRange(pattern, partIndex, totalTicks);
-    const changed = this.setPatternPartEdge(pattern, partIndex, edge, tick, totalTicks);
-    if (!changed) return;
-    const after = this.getPatternPartRange(pattern, partIndex, totalTicks);
     const clonePaintActive = this.songClonePaintTool.active
       && this.songClonePaintTool.trackIndex === trackIndex
       && Number.isFinite(this.songClonePaintTool.baseStartTick)
       && Number.isFinite(this.songClonePaintTool.baseEndTick);
+    if (clonePaintActive && edge === 'end' && tick > totalTicks) {
+      totalTicks = this.ensureTimelineForTick(tick);
+    }
+    const limitTicks = Math.max(totalTicks, tick);
+    const before = this.getPatternPartRange(pattern, partIndex, limitTicks);
+    const changed = this.setPatternPartEdge(pattern, partIndex, edge, tick, limitTicks);
+    if (!changed) return;
+    const after = this.getPatternPartRange(pattern, partIndex, limitTicks);
     const baseStart = clonePaintActive ? this.songClonePaintTool.baseStartTick : before.startTick;
     const baseEnd = clonePaintActive ? this.songClonePaintTool.baseEndTick : before.endTick;
     const partLen = Math.max(1, baseEnd - baseStart);
