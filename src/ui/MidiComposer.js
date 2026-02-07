@@ -1828,7 +1828,7 @@ export default class MidiComposer {
 
   ensureTimelineForTick(endTick) {
     if (!Number.isFinite(endTick)) return this.getSongTimelineTicks();
-    this.ensureGridCapacity(endTick);
+    this.ensureGridCapacity(endTick + 1);
     return this.getSongTimelineTicks();
   }
 
@@ -4309,6 +4309,13 @@ export default class MidiComposer {
       return;
     }
     if (this.dragState?.mode === 'song-part-resize') {
+      if (this.songClonePaintTool.active) {
+        const range = this.getSongSelectionRange();
+        if (range) {
+          this.applySongClonePaintToRange(range);
+          this.persist();
+        }
+      }
       this.dragState = null;
       return;
     }
@@ -5379,6 +5386,12 @@ export default class MidiComposer {
     this.songSelectionMenu.bounds = [];
     this.songSplitTool.active = false;
     this.songShiftTool.active = false;
+    if (this.songClonePaintTool?.active) {
+      this.songClonePaintTool.active = false;
+      this.songClonePaintTool.baseStartTick = null;
+      this.songClonePaintTool.baseEndTick = null;
+      this.songClonePaintTool.baseNotes = [];
+    }
   }
 
   applySongClonePaintToRange(range) {
@@ -5404,6 +5417,9 @@ export default class MidiComposer {
     const totalTicks = this.ensureTimelineForTick(targetEnd);
     const limitTicks = Math.max(totalTicks, targetEnd);
     const nextEnd = clamp(targetEnd, 0, limitTicks);
+    if (this.debug?.clonePaintQA) {
+      console.info('clonePaint apply', { baseStart, baseEnd, targetEnd, totalTicks, limitTicks });
+    }
     const ranges = this.getPatternPartRanges(pattern, limitTicks);
     const rangeIndex = ranges.findIndex((entry) => baseStart >= entry.startTick && baseStart < entry.endTick);
     if (rangeIndex >= 0) {
@@ -5415,7 +5431,7 @@ export default class MidiComposer {
       pattern.partBoundaries = [];
       pattern.partRangeStart = null;
       pattern.partRangeEnd = null;
-      this.refreshPatternPartRange(pattern, limitTicks);
+      this.refreshPatternPartRange(pattern, nextEnd);
     }
     this.splitNotesAtTick(pattern, baseEnd);
     this.splitNotesAtTick(pattern, nextEnd);
@@ -6051,81 +6067,14 @@ export default class MidiComposer {
     const changed = this.setPatternPartEdge(pattern, partIndex, edge, tick, limitTicks);
     if (!changed) return;
     const after = this.getPatternPartRange(pattern, partIndex, limitTicks);
-    const baseStart = clonePaintActive ? this.songClonePaintTool.baseStartTick : before.startTick;
-    const baseEnd = clonePaintActive ? this.songClonePaintTool.baseEndTick : before.endTick;
-    const partLen = Math.max(1, baseEnd - baseStart);
-    let baseNotes = clonePaintActive
-      ? this.songClonePaintTool.baseNotes || []
-      : [];
-    if (clonePaintActive && baseNotes.length === 0) {
-      baseNotes = this.collectSongClonePaintBaseNotes(pattern, baseStart, baseEnd);
-      this.songClonePaintTool.baseNotes = baseNotes;
-    }
 
     if (edge === 'end') {
-      if (after.endTick > before.endTick) {
-        if (clonePaintActive && baseNotes.length) {
-          this.splitNotesAtTick(pattern, before.endTick);
-          let cursor = before.endTick;
-          while (cursor < after.endTick) {
-            baseNotes.forEach((note) => {
-              const rel = note.relStart ?? 0;
-              const start = cursor + rel;
-              if (start >= after.endTick) return;
-              const maxDuration = Math.min(
-                note.durationTicks,
-                partLen - rel,
-                after.endTick - start,
-                partLen
-              );
-              if (maxDuration < 1) return;
-              if (start < before.endTick) return;
-              pattern.notes.push({
-                ...note,
-                id: uid(),
-                startTick: start,
-                durationTicks: maxDuration
-              });
-            });
-            cursor += partLen;
-          }
-        }
-      } else if (after.endTick < before.endTick) {
+      if (after.endTick < before.endTick) {
         this.splitNotesAtTick(pattern, after.endTick);
         pattern.notes = pattern.notes.filter((note) => note.startTick < after.endTick || note.startTick >= before.endTick);
       }
     } else if (edge === 'start') {
-      if (after.startTick < before.startTick) {
-        if (clonePaintActive && baseNotes.length) {
-          this.splitNotesAtTick(pattern, before.startTick);
-          let cursor = before.startTick - partLen;
-          while (cursor >= after.startTick) {
-            baseNotes.forEach((note) => {
-              const rel = note.relStart ?? 0;
-              const start = cursor + rel;
-              const endTick = start + Math.max(1, note.durationTicks || this.ticksPerBeat);
-              if (endTick <= after.startTick || start >= before.startTick) return;
-              const clampedStart = Math.max(start, after.startTick);
-              const clampedDuration = Math.min(
-                note.durationTicks,
-                partLen - rel,
-                before.startTick - clampedStart,
-                after.endTick - clampedStart,
-                partLen
-              );
-              if (clampedDuration < 1) return;
-              if (clampedStart >= before.startTick) return;
-              pattern.notes.push({
-                ...note,
-                id: uid(),
-                startTick: clampedStart,
-                durationTicks: clampedDuration
-              });
-            });
-            cursor -= partLen;
-          }
-        }
-      } else if (after.startTick > before.startTick) {
+      if (after.startTick > before.startTick) {
         this.splitNotesAtTick(pattern, after.startTick);
         pattern.notes = pattern.notes.filter((note) => note.startTick < before.startTick || note.startTick >= after.startTick);
       }
