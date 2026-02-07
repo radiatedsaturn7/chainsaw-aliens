@@ -5359,6 +5359,12 @@ export default class MidiComposer {
     this.songSelectionMenu.open = Boolean(this.getSongSelectionRange());
     this.songSelectionMenu.x = this.lastPointer.x;
     this.songSelectionMenu.y = this.lastPointer.y;
+    if (this.songRepeatTool.active) {
+      const range = this.getSongSelectionRange();
+      if (range) {
+        this.applySongRepeatToRange(range);
+      }
+    }
   }
 
   clearSongSelection() {
@@ -5367,6 +5373,83 @@ export default class MidiComposer {
     this.songSelectionMenu.bounds = [];
     this.songSplitTool.active = false;
     this.songShiftTool.active = false;
+  }
+
+  applySongRepeatToRange(range) {
+    if (!this.songRepeatTool.active || !range) return;
+    if (this.songRepeatTool.trackIndex !== range.trackIndex) return;
+    const pattern = this.song.tracks[range.trackIndex]?.patterns?.[this.selectedPatternIndex];
+    if (!pattern) return;
+    const baseStart = this.songRepeatTool.baseStartTick;
+    const baseEnd = this.songRepeatTool.baseEndTick;
+    if (!Number.isFinite(baseStart) || !Number.isFinite(baseEnd) || baseEnd <= baseStart) return;
+    const partLen = Math.max(1, baseEnd - baseStart);
+    let baseNotes = Array.isArray(this.songRepeatTool.baseNotes)
+      ? this.songRepeatTool.baseNotes
+      : [];
+    if (baseNotes.length === 0) {
+      baseNotes = (pattern.notes || [])
+        .filter((note) => note.startTick >= baseStart && note.startTick < baseEnd)
+        .map((note) => ({
+          relStart: note.startTick - baseStart,
+          durationTicks: Math.min(
+            note.durationTicks,
+            Math.max(1, baseEnd - note.startTick)
+          ),
+          pitch: note.pitch,
+          velocity: note.velocity
+        }))
+        .filter((note) => note.durationTicks > 0);
+      this.songRepeatTool.baseNotes = baseNotes;
+    }
+    if (!baseNotes.length) return;
+    const targetStart = range.startTick;
+    const targetEnd = range.endTick;
+    if (targetEnd <= baseEnd) return;
+    const totalTicks = this.getSongTimelineTicks();
+    const nextEnd = clamp(targetEnd, 0, Math.max(totalTicks, targetEnd));
+    const ranges = this.getPatternPartRanges(pattern, totalTicks);
+    const rangeIndex = ranges.findIndex((entry) => baseStart >= entry.startTick && baseStart < entry.endTick);
+    if (rangeIndex >= 0) {
+      ranges[rangeIndex] = {
+        startTick: ranges[rangeIndex].startTick,
+        endTick: Math.max(ranges[rangeIndex].endTick, nextEnd)
+      };
+      pattern.partRanges = this.normalizePartRanges(ranges, totalTicks);
+      pattern.partBoundaries = [];
+      pattern.partRangeStart = null;
+      pattern.partRangeEnd = null;
+      this.refreshPatternPartRange(pattern, nextEnd);
+    }
+    this.splitNotesAtTick(pattern, baseEnd);
+    let cursor = baseEnd;
+    while (cursor < nextEnd) {
+      baseNotes.forEach((note) => {
+        const rel = note.relStart ?? 0;
+        const start = cursor + rel;
+        const originalDuration = Math.max(1, note.durationTicks || this.ticksPerBeat);
+        const skipBefore = start + originalDuration <= targetStart;
+        if (skipBefore || start >= nextEnd) return;
+        const clampedStart = Math.max(start, targetStart);
+        const trimLeft = clampedStart - start;
+        const clampedDuration = Math.min(
+          originalDuration - trimLeft,
+          nextEnd - clampedStart,
+          partLen - rel
+        );
+        if (clampedDuration < 1) return;
+        if (clampedStart < baseEnd && cursor === baseEnd) return;
+        pattern.notes.push({
+          ...note,
+          id: uid(),
+          startTick: clampedStart,
+          durationTicks: clampedDuration
+        });
+      });
+      cursor += partLen;
+    }
+    this.ensureGridCapacity(nextEnd);
+    this.persist();
   }
 
   applySongSelectionMove(dragState) {
