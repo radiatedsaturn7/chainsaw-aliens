@@ -6101,12 +6101,18 @@ export default class MidiComposer {
       const nextActive = !this.songRepeatTool.active;
       this.songRepeatTool.active = nextActive;
       if (nextActive) {
+        const targetPattern = tracks.find((entry) => entry.trackIndex === range.trackIndex)?.pattern;
+        const partRanges = this.getPatternPartRanges(targetPattern, this.getSongTimelineTicks());
+        const baseRange = partRanges.find((entry) => range.startTick >= entry.startTick && range.startTick < entry.endTick)
+          || partRanges[0]
+          || { startTick: range.startTick, endTick: range.endTick };
+        const baseStart = baseRange.startTick;
+        const baseEnd = baseRange.endTick;
         this.songRepeatTool.trackIndex = range.trackIndex;
-        this.songRepeatTool.baseStartTick = range.startTick;
-        this.songRepeatTool.baseEndTick = range.endTick;
-        const baseStart = range.startTick;
-        const baseEnd = range.endTick;
-        const baseNotes = this.getSongSelectionNotes(tracks[0]?.pattern, range)
+        this.songRepeatTool.baseStartTick = baseStart;
+        this.songRepeatTool.baseEndTick = baseEnd;
+        const baseNotes = (targetPattern?.notes || [])
+          .filter((note) => note.startTick >= baseStart && note.startTick < baseEnd)
           .map((note) => ({
             ...note,
             durationTicks: Math.min(
