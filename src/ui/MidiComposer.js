@@ -5935,17 +5935,24 @@ export default class MidiComposer {
     if (edge === 'end') {
       if (after.endTick > before.endTick) {
         if (repeatActive && baseNotes.length) {
+          this.splitNotesAtTick(pattern, before.endTick);
           let cursor = before.endTick;
           while (cursor < after.endTick) {
             baseNotes.forEach((note) => {
               const rel = note.startTick - baseStart;
               const start = cursor + rel;
               if (start >= after.endTick) return;
+              const maxDuration = Math.min(
+                note.durationTicks,
+                baseEnd - note.startTick,
+                after.endTick - start
+              );
+              if (maxDuration < 1) return;
               pattern.notes.push({
                 ...note,
                 id: uid(),
                 startTick: start,
-                durationTicks: Math.min(note.durationTicks, after.endTick - start)
+                durationTicks: maxDuration
               });
             });
             cursor += partLen;
@@ -5958,6 +5965,7 @@ export default class MidiComposer {
     } else if (edge === 'start') {
       if (after.startTick < before.startTick) {
         if (repeatActive && baseNotes.length) {
+          this.splitNotesAtTick(pattern, before.startTick);
           let cursor = before.startTick - partLen;
           while (cursor >= after.startTick) {
             baseNotes.forEach((note) => {
@@ -5966,7 +5974,12 @@ export default class MidiComposer {
               const endTick = start + Math.max(1, note.durationTicks || this.ticksPerBeat);
               if (endTick <= after.startTick || start >= before.startTick) return;
               const clampedStart = Math.max(start, after.startTick);
-              const clampedDuration = Math.min(note.durationTicks, before.startTick - clampedStart, after.endTick - clampedStart);
+              const clampedDuration = Math.min(
+                note.durationTicks,
+                baseEnd - note.startTick,
+                before.startTick - clampedStart,
+                after.endTick - clampedStart
+              );
               if (clampedDuration < 1) return;
               pattern.notes.push({
                 ...note,
@@ -6084,6 +6097,38 @@ export default class MidiComposer {
       this.songRepeatTool.baseStartTick = nextActive ? range.startTick : null;
       this.songRepeatTool.baseEndTick = nextActive ? range.endTick : null;
       this.songSelectionMenu.open = false;
+      return;
+    }
+
+    if (action === 'song-duplicate') {
+      const totalTicks = this.getSongTimelineTicks();
+      const durationTicks = Math.max(1, range.durationTicks);
+      const insertStart = range.endTick;
+      const insertEnd = clamp(insertStart + durationTicks, 0, totalTicks + durationTicks);
+      tracks.forEach((entry) => {
+        const targetPattern = entry.pattern;
+        if (!targetPattern) return;
+        const selectionNotes = this.getSongSelectionNotes(targetPattern, range);
+        selectionNotes.forEach((note) => {
+          targetPattern.notes.push({
+            ...note,
+            id: uid(),
+            startTick: note.startTick + durationTicks
+          });
+        });
+        const ranges = this.getPatternPartRanges(targetPattern, totalTicks);
+        ranges.push({ startTick: insertStart, endTick: insertEnd });
+        targetPattern.partRanges = this.normalizePartRanges(ranges, totalTicks + durationTicks);
+        targetPattern.partBoundaries = [];
+        targetPattern.partRangeStart = null;
+        targetPattern.partRangeEnd = null;
+        this.refreshPatternPartRange(targetPattern, totalTicks + durationTicks);
+      });
+      this.ensureGridCapacity(insertEnd);
+      this.songSelection.startTick = insertStart;
+      this.songSelection.endTick = insertEnd;
+      this.songSelectionMenu.open = false;
+      this.persist();
       return;
     }
 
@@ -8185,6 +8230,7 @@ export default class MidiComposer {
       { action: 'song-merge-right', label: 'Merge Right' },
       { action: 'song-splice', label: 'Split Parts' },
       { action: 'song-repeat', label: 'Repeat' },
+      { action: 'song-duplicate', label: 'Duplicate' },
       { action: 'song-shift-note', label: 'Shift Note' },
       { action: 'song-copy', label: 'Copy' },
       { action: 'song-cut', label: 'Cut' },
