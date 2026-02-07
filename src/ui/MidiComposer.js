@@ -5979,11 +5979,14 @@ export default class MidiComposer {
     this.refreshPatternPartRange(sourcePattern, totalTicks);
     this.refreshPatternPartRange(targetPattern, totalTicks);
     if (this.songClonePaintTool.active) {
-      this.songClonePaintTool.active = false;
-      this.songClonePaintTool.trackIndex = null;
-      this.songClonePaintTool.baseStartTick = null;
-      this.songClonePaintTool.baseEndTick = null;
-      this.songClonePaintTool.baseNotes = [];
+      const isBasePart = this.songClonePaintTool.trackIndex === sourceTrackIndex
+        && this.songClonePaintTool.baseStartTick === sourceRange.startTick
+        && this.songClonePaintTool.baseEndTick === sourceRange.endTick;
+      if (isBasePart) {
+        this.songClonePaintTool.trackIndex = targetTrackIndex;
+        this.songClonePaintTool.baseStartTick = nextStart;
+        this.songClonePaintTool.baseEndTick = nextEnd;
+      }
     }
 
     const targetPartIndex = targetPattern.partRanges
