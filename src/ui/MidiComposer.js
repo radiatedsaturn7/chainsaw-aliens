@@ -689,7 +689,7 @@ export default class MidiComposer {
         cancel: null
       }
     };
-    this.songRepeatTool = {
+    this.songClonePaintTool = {
       active: false,
       trackIndex: null,
       baseStartTick: null,
@@ -5359,10 +5359,10 @@ export default class MidiComposer {
     this.songSelectionMenu.open = Boolean(this.getSongSelectionRange());
     this.songSelectionMenu.x = this.lastPointer.x;
     this.songSelectionMenu.y = this.lastPointer.y;
-    if (this.songRepeatTool.active) {
+    if (this.songClonePaintTool.active) {
       const range = this.getSongSelectionRange();
       if (range) {
-        this.applySongRepeatToRange(range);
+        this.applySongClonePaintToRange(range);
       }
     }
   }
@@ -5375,21 +5375,21 @@ export default class MidiComposer {
     this.songShiftTool.active = false;
   }
 
-  applySongRepeatToRange(range) {
-    if (!this.songRepeatTool.active || !range) return;
-    if (this.songRepeatTool.trackIndex !== range.trackIndex) return;
+  applySongClonePaintToRange(range) {
+    if (!this.songClonePaintTool.active || !range) return;
+    if (this.songClonePaintTool.trackIndex !== range.trackIndex) return;
     const pattern = this.song.tracks[range.trackIndex]?.patterns?.[this.selectedPatternIndex];
     if (!pattern) return;
-    const baseStart = this.songRepeatTool.baseStartTick;
-    const baseEnd = this.songRepeatTool.baseEndTick;
+    const baseStart = this.songClonePaintTool.baseStartTick;
+    const baseEnd = this.songClonePaintTool.baseEndTick;
     if (!Number.isFinite(baseStart) || !Number.isFinite(baseEnd) || baseEnd <= baseStart) return;
-    const partLen = Math.max(1, baseEnd - baseStart);
-    let baseNotes = Array.isArray(this.songRepeatTool.baseNotes)
-      ? this.songRepeatTool.baseNotes
+    const baseSpan = Math.max(1, baseEnd - baseStart);
+    let baseNotes = Array.isArray(this.songClonePaintTool.baseNotes)
+      ? this.songClonePaintTool.baseNotes
       : [];
     if (baseNotes.length === 0) {
-      baseNotes = this.collectSongRepeatBaseNotes(pattern, baseStart, baseEnd);
-      this.songRepeatTool.baseNotes = baseNotes;
+      baseNotes = this.collectSongClonePaintBaseNotes(pattern, baseStart, baseEnd);
+      this.songClonePaintTool.baseNotes = baseNotes;
     }
     if (!baseNotes.length) return;
     const targetStart = range.startTick;
@@ -5411,20 +5411,21 @@ export default class MidiComposer {
       this.refreshPatternPartRange(pattern, nextEnd);
     }
     this.splitNotesAtTick(pattern, baseEnd);
+    this.splitNotesAtTick(pattern, nextEnd);
+    pattern.notes = pattern.notes.filter((note) => note.startTick < baseEnd || note.startTick >= nextEnd);
     let cursor = baseEnd;
     while (cursor < nextEnd) {
       baseNotes.forEach((note) => {
         const rel = note.relStart ?? 0;
         const start = cursor + rel;
         const originalDuration = Math.max(1, note.durationTicks || this.ticksPerBeat);
-        const skipBefore = start + originalDuration <= targetStart;
-        if (skipBefore || start >= nextEnd) return;
+        if (start >= nextEnd) return;
         const clampedStart = Math.max(start, targetStart);
         const trimLeft = clampedStart - start;
         const clampedDuration = Math.min(
           originalDuration - trimLeft,
           nextEnd - clampedStart,
-          partLen - rel
+          baseSpan - rel
         );
         if (clampedDuration < 1) return;
         if (clampedStart < baseEnd && cursor === baseEnd) return;
@@ -5435,13 +5436,13 @@ export default class MidiComposer {
           durationTicks: clampedDuration
         });
       });
-      cursor += partLen;
+      cursor += baseSpan;
     }
     this.ensureGridCapacity(nextEnd);
     this.persist();
   }
 
-  collectSongRepeatBaseNotes(pattern, baseStart, baseEnd) {
+  collectSongClonePaintBaseNotes(pattern, baseStart, baseEnd) {
     if (!pattern || !Array.isArray(pattern.notes)) return [];
     return pattern.notes
       .filter((note) => note.startTick >= baseStart && note.startTick < baseEnd)
@@ -5977,12 +5978,12 @@ export default class MidiComposer {
     targetPattern.partRangeEnd = null;
     this.refreshPatternPartRange(sourcePattern, totalTicks);
     this.refreshPatternPartRange(targetPattern, totalTicks);
-    if (this.songRepeatTool.active) {
-      this.songRepeatTool.active = false;
-      this.songRepeatTool.trackIndex = null;
-      this.songRepeatTool.baseStartTick = null;
-      this.songRepeatTool.baseEndTick = null;
-      this.songRepeatTool.baseNotes = [];
+    if (this.songClonePaintTool.active) {
+      this.songClonePaintTool.active = false;
+      this.songClonePaintTool.trackIndex = null;
+      this.songClonePaintTool.baseStartTick = null;
+      this.songClonePaintTool.baseEndTick = null;
+      this.songClonePaintTool.baseNotes = [];
     }
 
     const targetPartIndex = targetPattern.partRanges
@@ -6010,24 +6011,24 @@ export default class MidiComposer {
     const changed = this.setPatternPartEdge(pattern, partIndex, edge, tick, totalTicks);
     if (!changed) return;
     const after = this.getPatternPartRange(pattern, partIndex, totalTicks);
-    const repeatActive = this.songRepeatTool.active
-      && this.songRepeatTool.trackIndex === trackIndex
-      && Number.isFinite(this.songRepeatTool.baseStartTick)
-      && Number.isFinite(this.songRepeatTool.baseEndTick);
-    const baseStart = repeatActive ? this.songRepeatTool.baseStartTick : before.startTick;
-    const baseEnd = repeatActive ? this.songRepeatTool.baseEndTick : before.endTick;
+    const clonePaintActive = this.songClonePaintTool.active
+      && this.songClonePaintTool.trackIndex === trackIndex
+      && Number.isFinite(this.songClonePaintTool.baseStartTick)
+      && Number.isFinite(this.songClonePaintTool.baseEndTick);
+    const baseStart = clonePaintActive ? this.songClonePaintTool.baseStartTick : before.startTick;
+    const baseEnd = clonePaintActive ? this.songClonePaintTool.baseEndTick : before.endTick;
     const partLen = Math.max(1, baseEnd - baseStart);
-    let baseNotes = repeatActive
-      ? this.songRepeatTool.baseNotes || []
+    let baseNotes = clonePaintActive
+      ? this.songClonePaintTool.baseNotes || []
       : [];
-    if (repeatActive && baseNotes.length === 0) {
-      baseNotes = this.collectSongRepeatBaseNotes(pattern, baseStart, baseEnd);
-      this.songRepeatTool.baseNotes = baseNotes;
+    if (clonePaintActive && baseNotes.length === 0) {
+      baseNotes = this.collectSongClonePaintBaseNotes(pattern, baseStart, baseEnd);
+      this.songClonePaintTool.baseNotes = baseNotes;
     }
 
     if (edge === 'end') {
       if (after.endTick > before.endTick) {
-        if (repeatActive && baseNotes.length) {
+        if (clonePaintActive && baseNotes.length) {
           this.splitNotesAtTick(pattern, before.endTick);
           let cursor = before.endTick;
           while (cursor < after.endTick) {
@@ -6035,10 +6036,9 @@ export default class MidiComposer {
               const rel = note.relStart ?? 0;
               const start = cursor + rel;
               if (start >= after.endTick) return;
-              const noteRelStart = rel;
               const maxDuration = Math.min(
                 note.durationTicks,
-                partLen - noteRelStart,
+                partLen - rel,
                 after.endTick - start,
                 partLen
               );
@@ -6060,7 +6060,7 @@ export default class MidiComposer {
       }
     } else if (edge === 'start') {
       if (after.startTick < before.startTick) {
-        if (repeatActive && baseNotes.length) {
+        if (clonePaintActive && baseNotes.length) {
           this.splitNotesAtTick(pattern, before.startTick);
           let cursor = before.startTick - partLen;
           while (cursor >= after.startTick) {
@@ -6070,10 +6070,9 @@ export default class MidiComposer {
               const endTick = start + Math.max(1, note.durationTicks || this.ticksPerBeat);
               if (endTick <= after.startTick || start >= before.startTick) return;
               const clampedStart = Math.max(start, after.startTick);
-              const noteRelStart = rel;
               const clampedDuration = Math.min(
                 note.durationTicks,
-                partLen - noteRelStart,
+                partLen - rel,
                 before.startTick - clampedStart,
                 after.endTick - clampedStart,
                 partLen
@@ -6189,9 +6188,9 @@ export default class MidiComposer {
       return;
     }
 
-    if (action === 'song-repeat') {
-      const nextActive = !this.songRepeatTool.active;
-      this.songRepeatTool.active = nextActive;
+    if (action === 'song-clone-paint') {
+      const nextActive = !this.songClonePaintTool.active;
+      this.songClonePaintTool.active = nextActive;
       if (nextActive) {
         const targetPattern = tracks.find((entry) => entry.trackIndex === range.trackIndex)?.pattern;
         const timelineTicks = this.getSongTimelineTicks();
@@ -6203,17 +6202,17 @@ export default class MidiComposer {
           || { startTick: range.startTick, endTick: range.endTick };
         const baseStart = baseRange.startTick;
         const baseEnd = baseRange.endTick;
-        this.songRepeatTool.trackIndex = range.trackIndex;
-        this.songRepeatTool.baseStartTick = baseStart;
-        this.songRepeatTool.baseEndTick = baseEnd;
-        const baseNotes = this.collectSongRepeatBaseNotes(targetPattern, baseStart, baseEnd);
-        this.songRepeatTool.baseNotes = baseNotes;
-        this.applySongRepeatToRange(range);
+        this.songClonePaintTool.trackIndex = range.trackIndex;
+        this.songClonePaintTool.baseStartTick = baseStart;
+        this.songClonePaintTool.baseEndTick = baseEnd;
+        const baseNotes = this.collectSongClonePaintBaseNotes(targetPattern, baseStart, baseEnd);
+        this.songClonePaintTool.baseNotes = baseNotes;
+        this.applySongClonePaintToRange(range);
       } else {
-        this.songRepeatTool.trackIndex = null;
-        this.songRepeatTool.baseStartTick = null;
-        this.songRepeatTool.baseEndTick = null;
-        this.songRepeatTool.baseNotes = [];
+        this.songClonePaintTool.trackIndex = null;
+        this.songClonePaintTool.baseStartTick = null;
+        this.songClonePaintTool.baseEndTick = null;
+        this.songClonePaintTool.baseNotes = [];
       }
       this.songSelectionMenu.open = false;
       return;
@@ -8348,7 +8347,7 @@ export default class MidiComposer {
       { action: 'song-merge-left', label: 'Merge Left' },
       { action: 'song-merge-right', label: 'Merge Right' },
       { action: 'song-splice', label: 'Split Parts' },
-      { action: 'song-repeat', label: 'Repeat' },
+      { action: 'song-clone-paint', label: 'clone paint' },
       { action: 'song-duplicate', label: 'Duplicate' },
       { action: 'song-shift-note', label: 'Shift Note' },
       { action: 'song-copy', label: 'Copy' },
