@@ -5950,10 +5950,13 @@ export default class MidiComposer {
               const rel = note.startTick - baseStart;
               const start = cursor + rel;
               if (start >= after.endTick) return;
+              const noteRelStart = note.startTick - baseStart;
+              const noteRelEnd = noteRelStart + note.durationTicks;
               const maxDuration = Math.min(
                 note.durationTicks,
-                baseEnd - note.startTick,
-                after.endTick - start
+                partLen - noteRelStart,
+                after.endTick - start,
+                partLen
               );
               if (maxDuration < 1) return;
               pattern.notes.push({
@@ -5982,11 +5985,13 @@ export default class MidiComposer {
               const endTick = start + Math.max(1, note.durationTicks || this.ticksPerBeat);
               if (endTick <= after.startTick || start >= before.startTick) return;
               const clampedStart = Math.max(start, after.startTick);
+              const noteRelStart = note.startTick - baseStart;
               const clampedDuration = Math.min(
                 note.durationTicks,
-                baseEnd - note.startTick,
+                partLen - noteRelStart,
                 before.startTick - clampedStart,
-                after.endTick - clampedStart
+                after.endTick - clampedStart,
+                partLen
               );
               if (clampedDuration < 1) return;
               pattern.notes.push({
