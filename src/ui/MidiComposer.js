@@ -6223,6 +6223,7 @@ export default class MidiComposer {
             velocity: note.velocity
           }));
         this.songRepeatTool.baseNotes = baseNotes;
+        this.applySongRepeatToRange(range);
       } else {
         this.songRepeatTool.trackIndex = null;
         this.songRepeatTool.baseStartTick = null;
