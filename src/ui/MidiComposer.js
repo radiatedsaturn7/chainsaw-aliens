@@ -3595,7 +3595,8 @@ export default class MidiComposer {
           mode: 'song-part-resize',
           trackIndex: partHandleHit.trackIndex,
           partIndex: partHandleHit.partIndex,
-          edge: partHandleHit.edge
+          edge: partHandleHit.edge,
+          clonePaintActive: this.songClonePaintTool.active
         };
         return;
       }
@@ -4303,6 +4304,9 @@ export default class MidiComposer {
       return;
     }
     if (this.dragState?.mode === 'song-part-resize') {
+      if (this.dragState.clonePaintActive) {
+        this.resetSongClonePaintTool();
+      }
       this.dragState = null;
       return;
     }
@@ -5367,19 +5371,39 @@ export default class MidiComposer {
     }
   }
 
+  resetSongClonePaintTool() {
+    this.songClonePaintTool.active = false;
+    this.songClonePaintTool.trackIndex = null;
+    this.songClonePaintTool.baseStartTick = null;
+    this.songClonePaintTool.baseEndTick = null;
+    this.songClonePaintTool.baseNotes = [];
+  }
+
+  armSongClonePaintTool(range, pattern, totalTicks) {
+    if (!range || !pattern) return;
+    const timelineTicks = totalTicks ?? this.getSongTimelineTicks();
+    const partRanges = this.getPatternPartRanges(pattern, timelineTicks);
+    const baseRange = partRanges.find((entry) => (
+      range.startTick >= entry.startTick && range.startTick < entry.endTick
+    ))
+      || partRanges[0]
+      || { startTick: range.startTick, endTick: range.endTick };
+    const baseStart = baseRange.startTick;
+    const baseEnd = baseRange.endTick;
+    this.songClonePaintTool.active = true;
+    this.songClonePaintTool.trackIndex = range.trackIndex;
+    this.songClonePaintTool.baseStartTick = baseStart;
+    this.songClonePaintTool.baseEndTick = baseEnd;
+    this.songClonePaintTool.baseNotes = this.collectSongClonePaintBaseNotes(pattern, baseStart, baseEnd);
+  }
+
   clearSongSelection() {
     this.songSelection.active = false;
     this.songSelectionMenu.open = false;
     this.songSelectionMenu.bounds = [];
     this.songSplitTool.active = false;
     this.songShiftTool.active = false;
-    if (this.songClonePaintTool.active) {
-      this.songClonePaintTool.active = false;
-      this.songClonePaintTool.trackIndex = null;
-      this.songClonePaintTool.baseStartTick = null;
-      this.songClonePaintTool.baseEndTick = null;
-      this.songClonePaintTool.baseNotes = [];
-    }
+    this.resetSongClonePaintTool();
   }
 
   applySongClonePaintToRange(range) {
@@ -6021,10 +6045,13 @@ export default class MidiComposer {
     const changed = this.setPatternPartEdge(pattern, partIndex, edge, tick, totalTicks);
     if (!changed) return;
     const after = this.getPatternPartRange(pattern, partIndex, totalTicks);
-    const clonePaintActive = this.songClonePaintTool.active
+    const clonePaintActive = Boolean(
+      this.dragState?.mode === 'song-part-resize'
+      && this.dragState?.clonePaintActive
       && this.songClonePaintTool.trackIndex === trackIndex
       && Number.isFinite(this.songClonePaintTool.baseStartTick)
-      && Number.isFinite(this.songClonePaintTool.baseEndTick);
+      && Number.isFinite(this.songClonePaintTool.baseEndTick)
+    );
     const baseStart = clonePaintActive ? this.songClonePaintTool.baseStartTick : before.startTick;
     const baseEnd = clonePaintActive ? this.songClonePaintTool.baseEndTick : before.endTick;
     const partLen = Math.max(1, baseEnd - baseStart);
@@ -6199,31 +6226,14 @@ export default class MidiComposer {
     }
 
     if (action === 'song-clone-paint') {
-      const nextActive = !this.songClonePaintTool.active;
-      this.songClonePaintTool.active = nextActive;
-      if (nextActive) {
-        const targetPattern = tracks.find((entry) => entry.trackIndex === range.trackIndex)?.pattern;
-        const timelineTicks = this.getSongTimelineTicks();
-        const partRanges = this.getPatternPartRanges(targetPattern, timelineTicks);
-        const baseRange = partRanges.find((entry) => (
-          range.startTick >= entry.startTick && range.startTick < entry.endTick
-        ))
-          || partRanges[0]
-          || { startTick: range.startTick, endTick: range.endTick };
-        const baseStart = baseRange.startTick;
-        const baseEnd = baseRange.endTick;
-        this.songClonePaintTool.trackIndex = range.trackIndex;
-        this.songClonePaintTool.baseStartTick = baseStart;
-        this.songClonePaintTool.baseEndTick = baseEnd;
-        const baseNotes = this.collectSongClonePaintBaseNotes(targetPattern, baseStart, baseEnd);
-        this.songClonePaintTool.baseNotes = baseNotes;
-        this.applySongClonePaintToRange(range);
-      } else {
-        this.songClonePaintTool.trackIndex = null;
-        this.songClonePaintTool.baseStartTick = null;
-        this.songClonePaintTool.baseEndTick = null;
-        this.songClonePaintTool.baseNotes = [];
+      if (this.songClonePaintTool.active) {
+        this.resetSongClonePaintTool();
+        this.songSelectionMenu.open = false;
+        return;
       }
+      const targetPattern = tracks.find((entry) => entry.trackIndex === range.trackIndex)?.pattern;
+      this.armSongClonePaintTool(range, targetPattern, this.getSongTimelineTicks());
+      this.applySongClonePaintToRange(range);
       this.songSelectionMenu.open = false;
       return;
     }
