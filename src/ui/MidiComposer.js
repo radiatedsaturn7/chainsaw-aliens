@@ -842,6 +842,7 @@ export default class MidiComposer {
     this.applyAudioSettings();
     this.ensureState();
     this.lastPersistedSnapshot = JSON.stringify(this.song);
+    this.lastSavedSnapshot = this.lastPersistedSnapshot;
     this.gridZoomX = this.getDefaultGridZoomX();
     this.gridZoomY = this.getDefaultGridZoomY();
     this.gridZoomInitialized = false;
@@ -957,6 +958,19 @@ export default class MidiComposer {
     this.lastPersistedSnapshot = JSON.stringify(this.song);
   }
 
+  markSavedSnapshot() {
+    this.lastSavedSnapshot = JSON.stringify(this.song);
+  }
+
+  hasUnsavedChanges() {
+    return JSON.stringify(this.song) !== this.lastSavedSnapshot;
+  }
+
+  confirmDiscardChanges() {
+    if (!this.hasUnsavedChanges()) return true;
+    return window.confirm('Are you sure? Existing data will be lost. Yes / No');
+  }
+
   applySongSnapshot(snapshot) {
     if (!snapshot) return;
     try {
@@ -1031,6 +1045,7 @@ export default class MidiComposer {
     this.saveSongLibrary(library);
     this.selection.clear();
     this.persist();
+    this.markSavedSnapshot();
     return payload;
   }
 
@@ -1085,6 +1100,7 @@ export default class MidiComposer {
   }
 
   loadSongFromLibrary() {
+    if (!this.confirmDiscardChanges()) return;
     const library = this.loadSongLibrary();
     if (!library.length) {
       window.alert('No saved songs yet.');
@@ -1637,6 +1653,28 @@ export default class MidiComposer {
     this.instrumentPicker.scrollDownBounds = null;
     this.instrumentPicker.scroll = 0;
     this.instrumentPicker.scrollStep = 0;
+  }
+
+  confirmInstrumentSelection() {
+    if (!this.instrumentPicker.mode) return true;
+    const targetIndex = this.instrumentPicker.trackIndex ?? this.selectedTrackIndex;
+    const track = this.song.tracks[targetIndex];
+    const selectedProgram = this.instrumentPicker.selectedProgram;
+    const hasSelection = Number.isInteger(selectedProgram);
+    const isAddMode = this.instrumentPicker.mode === 'add';
+    const changed = hasSelection && (isAddMode || (track && selectedProgram !== track.program));
+    if (!changed) {
+      this.instrumentPicker.mode = null;
+      return true;
+    }
+    const apply = window.confirm('Apply this instrument? Yes / No');
+    if (apply) {
+      this.applyInstrumentSelection(selectedProgram);
+      return true;
+    }
+    this.instrumentPicker.selectedProgram = track?.program ?? null;
+    this.instrumentPicker.mode = null;
+    return false;
   }
 
   shiftInstrumentPickerTab(delta) {
@@ -3241,11 +3279,17 @@ export default class MidiComposer {
       }
       const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
       if (tabHit) {
+        if (this.activeTab === 'instruments' && (tabHit.id === 'grid' || tabHit.id === 'song')) {
+          this.confirmInstrumentSelection();
+        }
         this.activeTab = tabHit.id;
         this.exitRecordMode();
         return;
       }
       if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
+        if (this.activeTab === 'instruments') {
+          this.confirmInstrumentSelection();
+        }
         this.activeTab = 'file';
         this.exitRecordMode();
         return;
@@ -3349,6 +3393,9 @@ export default class MidiComposer {
 
     const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
     if (tabHit) {
+      if (this.activeTab === 'instruments' && (tabHit.id === 'grid' || tabHit.id === 'song')) {
+        this.confirmInstrumentSelection();
+      }
       this.activeTab = tabHit.id;
       this.closeSelectionMenu();
       this.pastePreview = null;
@@ -3358,6 +3405,9 @@ export default class MidiComposer {
     }
 
     if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
+      if (this.activeTab === 'instruments') {
+        this.confirmInstrumentSelection();
+      }
       this.activeTab = 'file';
       this.toolsMenuOpen = false;
       this.genreMenuOpen = false;
@@ -6673,6 +6723,7 @@ export default class MidiComposer {
 
   handleFileMenu(action) {
     if (action === 'new') {
+      if (!this.confirmDiscardChanges()) return;
       this.stopPlayback();
       this.song = createDefaultSong();
       this.ensureState();
@@ -6682,6 +6733,7 @@ export default class MidiComposer {
       this.gridZoomInitialized = false;
       this.playheadTick = 0;
       this.lastPlaybackTick = 0;
+      this.markSavedSnapshot();
       return;
     }
     if (action === 'save') {
@@ -6725,6 +6777,7 @@ export default class MidiComposer {
       return;
     }
     if (action === 'sample') {
+      if (!this.confirmDiscardChanges()) return;
       this.loadDemoSong();
     }
   }
@@ -6999,6 +7052,7 @@ export default class MidiComposer {
   }
 
   importSong() {
+    if (!this.confirmDiscardChanges()) return;
     if (this.fileInput) {
       this.fileInput.click();
     }
@@ -7152,6 +7206,7 @@ export default class MidiComposer {
     this.gridZoomInitialized = false;
     this.resetHistory();
     this.persist();
+    this.markSavedSnapshot();
   }
 
   loadDemoSong() {
@@ -7163,6 +7218,7 @@ export default class MidiComposer {
     this.gridZoomY = this.getDefaultGridZoomY();
     this.gridZoomInitialized = false;
     this.qaResults = [{ label: 'Demo loaded', status: 'pass' }];
+    this.markSavedSnapshot();
     if (!this.isPlaying) {
       this.togglePlayback();
     }
@@ -9009,7 +9065,7 @@ export default class MidiComposer {
       const tabNavGap = 6;
       const tabsAvailableW = rightW - padding * 2 - (tabNavW + tabNavGap) * 2;
       const tabsX = rightX + padding + tabNavW + tabNavGap;
-      const tabsPerPage = 4;
+      const tabsPerPage = 3;
       const currentIndex = Math.max(0, INSTRUMENT_FAMILY_TABS.findIndex((tab) => tab.id === this.instrumentPicker.familyTab));
       const pageStart = Math.floor(currentIndex / tabsPerPage) * tabsPerPage;
       const visibleTabs = INSTRUMENT_FAMILY_TABS.slice(pageStart, pageStart + tabsPerPage);
