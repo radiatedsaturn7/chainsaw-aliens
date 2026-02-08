@@ -76,6 +76,7 @@ const NOTE_VALUE_ICONS = {
   '1/16': '𝅘𝅥𝅯',
   '1/32': '𝅘𝅥𝅰'
 };
+const MAX_ACTIVE_NOTES = 96;
 
 const TIME_SIGNATURE_OPTIONS = [
   { id: '3/4', beats: 3, unit: 4 },
@@ -3134,6 +3135,7 @@ export default class MidiComposer {
 
   playNote(track, note, startTick) {
     const drumTrack = isDrumTrack(track);
+    if (this.activeNotes.size >= MAX_ACTIVE_NOTES) return;
     const durationTicks = drumTrack ? this.getDrumHitDurationTicks() : note.durationTicks;
     const duration = durationTicks / this.ticksPerBeat;
     const velocity = note.velocity ?? 0.8;
@@ -9449,6 +9451,8 @@ export default class MidiComposer {
     drawSectionTitle('Grid & Editing');
     drawToggle('Preview On', this.previewOnEdit, 'grid-preview', 'Audition notes as you place them.');
     drawAction('Grid', this.quantizeOptions[this.quantizeIndex].label, 'grid-quantize-value', 'Quantize grid step size.');
+    drawToggle('Quant', this.quantizeEnabled, 'grid-quantize-toggle', 'Enable quantized placement.');
+    drawToggle('Staccato', this.staccatoEnabled, 'grid-staccato', 'Shorten placed notes while keeping grid timing.');
     drawButtonRow(
       'Time Sig',
       [
@@ -9461,9 +9465,7 @@ export default class MidiComposer {
     );
     drawToggle('Snap', this.scaleLock, 'grid-scale-lock', 'Snap pitches to the current scale.');
     drawToggle('Chord Mode', this.chordMode, 'grid-chord-mode', 'Show chord tones and highlight chord notes.');
-    drawToggle('Staccato', this.staccatoEnabled, 'grid-staccato', 'Shorten placed notes while keeping grid timing.');
     drawAction('Chords', 'Edit', 'grid-chord-progression', 'Define chord progressions by bar range.');
-    drawToggle('Quant', this.quantizeEnabled, 'grid-quantize-toggle', 'Enable quantized placement.');
     drawToggle('Scrub', this.scrubAudition, 'grid-scrub', 'Audition notes while scrubbing.');
     drawAction('All', 'Select', 'grid-select-all', 'Select all notes in the current pattern.');
     drawToggle('High Contrast', this.highContrast, 'ui-contrast', 'Boosts UI contrast for clarity.');
@@ -10518,7 +10520,7 @@ export default class MidiComposer {
       { action: 'selection-paste', label: 'Paste' },
       { action: 'selection-cancel', label: 'Cancel' }
     ];
-    const menuScale = 1.5;
+    const menuScale = 1.25;
     const menuW = 140 * menuScale;
     const rowH = 32 * menuScale;
     const gap = 6 * menuScale;
