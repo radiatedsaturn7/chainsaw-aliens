@@ -773,6 +773,7 @@ export default class Game {
     this.editor.activate();
     this.playtestActive = false;
     this.mobileControls.reset();
+    this.input.reset();
     document.body.classList.add('editor-active');
   }
 

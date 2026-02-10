@@ -786,6 +786,44 @@ export default class Editor {
 
     if (tabId === 'tools') {
       items = [
+        {
+          id: 'playtest',
+          label: 'Playtest',
+          tooltip: 'Start playtest from current cursor',
+          onClick: () => this.startPlaytestFromCursor()
+        },
+        {
+          id: 'save',
+          label: 'Save',
+          tooltip: 'Save level to browser storage',
+          onClick: () => this.saveToStorage()
+        },
+        {
+          id: 'load',
+          label: 'Load',
+          tooltip: 'Load level from browser storage',
+          onClick: () => this.loadFromStorage()
+        },
+        {
+          id: 'export',
+          label: 'Export',
+          tooltip: 'Download level JSON',
+          onClick: () => this.saveToFile()
+        },
+        {
+          id: 'import',
+          label: 'Import',
+          tooltip: 'Import level JSON from file',
+          onClick: () => this.openFileDialog()
+        },
+        {
+          id: 'start-everything',
+          label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
+          tooltip: 'Toggle playtest loadout',
+          onClick: () => {
+            this.startWithEverything = !this.startWithEverything;
+          }
+        },
         ...(spawnTile
           ? [{
             id: 'spawn-point',
@@ -798,14 +836,6 @@ export default class Editor {
             }
           }]
           : []),
-        {
-          id: 'start-everything',
-          label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
-          tooltip: 'Toggle playtest loadout',
-          onClick: () => {
-            this.startWithEverything = !this.startWithEverything;
-          }
-        },
         {
           id: 'undo',
           label: 'Undo',
@@ -823,12 +853,6 @@ export default class Editor {
           label: 'Random Level',
           tooltip: 'Create a random level layout',
           onClick: () => this.promptRandomLevel()
-        },
-        {
-          id: 'playtest',
-          label: 'Playtest',
-          tooltip: 'Start playtest from current cursor',
-          onClick: () => this.startPlaytestFromCursor()
         }
       ];
       columns = 2;
@@ -5912,6 +5936,36 @@ export default class Editor {
       return lines;
     };
 
+    const drawScrollHints = (x, y, w, h, scrollY, maxScroll) => {
+      if (maxScroll <= 2) return;
+      ctx.save();
+      const topVisible = scrollY > 2;
+      const bottomVisible = scrollY < maxScroll - 2;
+      if (topVisible) {
+        const gradTop = ctx.createLinearGradient(0, y, 0, y + 24);
+        gradTop.addColorStop(0, 'rgba(255,255,255,0.26)');
+        gradTop.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = gradTop;
+        ctx.fillRect(x + 1, y + 1, w - 2, 24);
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.font = '10px Courier New';
+        ctx.textAlign = 'center';
+        ctx.fillText('▲ more', x + w / 2, y + 11);
+      }
+      if (bottomVisible) {
+        const gradBottom = ctx.createLinearGradient(0, y + h - 24, 0, y + h);
+        gradBottom.addColorStop(0, 'rgba(255,255,255,0)');
+        gradBottom.addColorStop(1, 'rgba(255,255,255,0.26)');
+        ctx.fillStyle = gradBottom;
+        ctx.fillRect(x + 1, y + h - 25, w - 2, 24);
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.font = '10px Courier New';
+        ctx.textAlign = 'center';
+        ctx.fillText('▼ more', x + w / 2, y + h - 6);
+      }
+      ctx.restore();
+    };
+
     const controlMargin = 18;
     const controlBase = Math.min(width, height);
     let joystickRadius = 0;
@@ -5997,7 +6051,7 @@ export default class Editor {
         ctx.fillText(summary, panelW / 2, panelY + 46);
       } else {
         const tabs = [
-          { id: 'tools', label: 'TOOLS' },
+          { id: 'tools', label: 'FILE' },
           { id: 'toolbox', label: 'TOOLBOX' },
           { id: 'tiles', label: 'TILES' },
           { id: 'powerups', label: 'POWERUPS' },
@@ -6050,16 +6104,41 @@ export default class Editor {
 
         if (activeTab === 'tools') {
           items = [
-            ...tileToolButtons.map((tool) => ({
-              id: `tile-${tool.id}`,
-              label: `${tool.label.toUpperCase()} TOOL`,
-              active: this.tileTool === tool.id && this.mode === 'tile',
-              tooltip: tool.tooltip,
-              onClick: () => {
-                this.mode = 'tile';
-                this.tileTool = tool.id;
-              }
-            })),
+            {
+              id: 'playtest',
+              label: 'PLAYTEST',
+              active: false,
+              tooltip: 'Start playtest from cursor',
+              onClick: () => this.startPlaytestFromCursor()
+            },
+            {
+              id: 'save',
+              label: 'SAVE',
+              active: false,
+              tooltip: 'Save level to browser storage',
+              onClick: () => this.saveToStorage()
+            },
+            {
+              id: 'load',
+              label: 'LOAD',
+              active: false,
+              tooltip: 'Load level from browser storage',
+              onClick: () => this.loadFromStorage()
+            },
+            {
+              id: 'export',
+              label: 'EXPORT',
+              active: false,
+              tooltip: 'Download level JSON',
+              onClick: () => this.saveToFile()
+            },
+            {
+              id: 'import',
+              label: 'IMPORT',
+              active: false,
+              tooltip: 'Import level JSON',
+              onClick: () => this.openFileDialog()
+            },
             ...(spawnTile
               ? [{
                 id: 'spawn-point',
@@ -6102,41 +6181,6 @@ export default class Editor {
               active: false,
               tooltip: 'Create a random level layout',
               onClick: () => this.promptRandomLevel()
-            },
-            {
-              id: 'playtest',
-              label: 'PLAYTEST',
-              active: false,
-              tooltip: 'Start playtest from cursor',
-              onClick: () => this.startPlaytestFromCursor()
-            },
-            {
-              id: 'save',
-              label: 'SAVE',
-              active: false,
-              tooltip: 'Save level to browser storage',
-              onClick: () => this.saveToStorage()
-            },
-            {
-              id: 'load',
-              label: 'LOAD',
-              active: false,
-              tooltip: 'Load level from browser storage',
-              onClick: () => this.loadFromStorage()
-            },
-            {
-              id: 'export',
-              label: 'EXPORT',
-              active: false,
-              tooltip: 'Download level JSON',
-              onClick: () => this.saveToFile()
-            },
-            {
-              id: 'import',
-              label: 'IMPORT',
-              active: false,
-              tooltip: 'Import level JSON',
-              onClick: () => this.openFileDialog()
             },
             {
               id: 'exit',
@@ -6389,6 +6433,7 @@ export default class Editor {
           );
         });
 
+        drawScrollHints(contentX, contentY, contentW, contentHeight, scrollY, maxScroll);
       }
       if (!this.drawer.open) {
         this.panelScrollBounds = null;
@@ -6401,7 +6446,7 @@ export default class Editor {
       const panelY = 12;
       const panelH = height - 24;
       const tabs = [
-        { id: 'tools', label: 'TOOLS' },
+        { id: 'tools', label: 'FILE' },
         { id: 'toolbox', label: 'TOOLBOX' },
         { id: 'tiles', label: 'TILES' },
         { id: 'powerups', label: 'POWERUPS' },
@@ -6564,6 +6609,8 @@ export default class Editor {
           gamepadActive && index === focusedIndex
         );
       });
+
+      drawScrollHints(contentX, contentY, contentW, contentHeight, scrollY, maxScroll);
 
       infoPanelBottom = 12;
     }
