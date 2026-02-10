@@ -495,6 +495,7 @@ export default class Editor {
     this.active = true;
     this.loadAutosaveOrSeed();
     this.resetView();
+    this.syncMobileControlBounds();
     this.getMusicTracks();
     this.syncPreviewMinimap();
     this.panJoystick.active = false;
@@ -626,6 +627,36 @@ export default class Editor {
 
   setFocusOverride(point) {
     this.focusOverride = point;
+  }
+
+  syncMobileControlBounds() {
+    if (!this.isMobileLayout()) return;
+    const { width, height } = this.game.canvas;
+    const controlMargin = 18;
+    const controlBase = Math.min(width, height);
+    const joystickRadius = Math.min(78, controlBase * 0.14);
+    const joystickCenter = {
+      x: controlMargin + joystickRadius,
+      y: height - controlMargin - joystickRadius
+    };
+    this.panJoystick.center = joystickCenter;
+    this.panJoystick.radius = joystickRadius;
+    this.panJoystick.knobRadius = Math.max(22, joystickRadius * 0.45);
+
+    let sliderX = joystickCenter.x + joystickRadius + 24;
+    let sliderWidth = width - sliderX - controlMargin;
+    const sliderHeight = 10;
+    let sliderY = height - controlMargin - sliderHeight;
+    if (sliderWidth < 160) {
+      sliderX = controlMargin;
+      sliderWidth = width - controlMargin * 2;
+    }
+    this.zoomSlider.bounds = {
+      x: sliderX,
+      y: sliderY - 14,
+      w: sliderWidth,
+      h: sliderHeight + 28
+    };
   }
 
   update(input, dt) {
@@ -4371,6 +4402,11 @@ export default class Editor {
     const { center, radius } = this.panJoystick;
     const dx = x - center.x;
     const dy = y - center.y;
+    if (!Number.isFinite(radius) || radius <= 0) {
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+      return;
+    }
     const distance = Math.hypot(dx, dy);
     if (distance <= 0.01) {
       this.panJoystick.dx = 0;
