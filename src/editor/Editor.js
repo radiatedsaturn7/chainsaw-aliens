@@ -3984,7 +3984,9 @@ export default class Editor {
     if (!this.active) return;
     this.lastPointer = { x: payload.x, y: payload.y };
 
-    if (this.isMobileLayout() && (payload.buttons & 1) && !this.panJoystick.active
+    const isTouchDrag = payload.id !== undefined;
+    const isPointerDown = payload.buttons === undefined || (payload.buttons & 1);
+    if (this.isMobileLayout() && isTouchDrag && isPointerDown && !this.panJoystick.active
       && this.isPointInCircle(payload.x, payload.y, this.panJoystick.center, this.panJoystick.radius * 1.2)) {
       this.panJoystick.active = true;
       this.panJoystick.id = payload.id ?? null;
