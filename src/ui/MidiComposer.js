@@ -660,6 +660,10 @@ export default class MidiComposer {
       scrollMax: 0,
       scrollStep: 0
     };
+    this.fileMenuScroll = 0;
+    this.fileMenuScrollMax = 0;
+    this.fileMenuScrollUp = null;
+    this.fileMenuScrollDown = null;
     this.recentInstruments = this.loadInstrumentList('chainsaw-midi-recent', []);
     this.favoriteInstruments = this.loadInstrumentList('chainsaw-midi-favorites', []);
     this.controllerMapping = this.loadControllerMapping();
@@ -3315,6 +3319,14 @@ export default class MidiComposer {
     }
 
     if (this.activeTab === 'file') {
+      if (this.fileMenuScrollUp && this.pointInBounds(x, y, this.fileMenuScrollUp)) {
+        this.fileMenuScroll = clamp(this.fileMenuScroll - 1, 0, this.fileMenuScrollMax);
+        return;
+      }
+      if (this.fileMenuScrollDown && this.pointInBounds(x, y, this.fileMenuScrollDown)) {
+        this.fileMenuScroll = clamp(this.fileMenuScroll + 1, 0, this.fileMenuScrollMax);
+        return;
+      }
       const fileHit = this.fileMenuBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (fileHit) {
         this.handleFileMenu(fileHit.id);
@@ -7523,6 +7535,8 @@ export default class MidiComposer {
   draw(ctx, width, height) {
     const track = this.getActiveTrack();
     const pattern = this.getActivePattern();
+    this.viewportWidth = width;
+    this.viewportHeight = height;
     ctx.save();
     ctx.fillStyle = this.highContrast ? '#000' : '#070707';
     ctx.fillRect(0, 0, width, height);
@@ -7587,7 +7601,14 @@ export default class MidiComposer {
   drawRecordMode(ctx, width, height, track, pattern) {
     const padding = 16;
     const gap = 12;
-    const sidebarW = Math.min(260, Math.max(190, width * 0.22));
+    const sidebarW = this.getSidebarWidth(width, {
+      ratio: 0.22,
+      min: 240,
+      max: 340,
+      padding,
+      gap,
+      minContent: 240
+    });
     const sidebarX = padding;
     const sidebarY = padding;
     const sidebarH = height - padding * 2;
@@ -7661,9 +7682,9 @@ export default class MidiComposer {
   }
 
   drawRecordModeSidebar(ctx, x, y, w, h) {
-    const rowH = 38;
-    const rowGap = 8;
-    const panelPadding = 10;
+    const rowH = clamp(Math.round(h * 0.055), 40, 48);
+    const rowGap = clamp(Math.round(rowH * 0.2), 6, 10);
+    const panelPadding = clamp(Math.round(rowH * 0.25), 8, 12);
     const menuRows = TAB_OPTIONS.length + 2;
     const menuH = Math.min(h, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
     const menuX = x;
@@ -7688,10 +7709,16 @@ export default class MidiComposer {
       this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
       cursorY += rowH + rowGap;
     });
-    const halfW = (innerW - rowGap) / 2;
-    this.bounds.undoButton = { x: innerX, y: cursorY, w: halfW, h: rowH };
-    this.bounds.redoButton = { x: innerX + halfW + rowGap, y: cursorY, w: halfW, h: rowH };
+    const undoCols = innerW < 190 ? 1 : 2;
+    const undoW = undoCols === 1 ? innerW : (innerW - rowGap) / 2;
+    this.bounds.undoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
     this.drawSmallButton(ctx, this.bounds.undoButton, 'Undo', false);
+    if (undoCols === 1) {
+      cursorY += rowH + rowGap;
+      this.bounds.redoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
+    } else {
+      this.bounds.redoButton = { x: innerX + undoW + rowGap, y: cursorY, w: undoW, h: rowH };
+    }
     this.drawSmallButton(ctx, this.bounds.redoButton, 'Redo', false);
     return menuH;
   }
@@ -7722,7 +7749,14 @@ export default class MidiComposer {
   drawMobileLayout(ctx, width, height, track, pattern) {
     const padding = 10;
     const gap = 10;
-    const sidebarW = Math.min(280, Math.max(200, width * 0.38));
+    const sidebarW = this.getSidebarWidth(width, {
+      ratio: 0.38,
+      min: 220,
+      max: 320,
+      padding,
+      gap,
+      minContent: 180
+    });
     const sidebarX = padding;
     const sidebarY = padding;
     const sidebarH = height - padding * 2;
@@ -7749,9 +7783,9 @@ export default class MidiComposer {
 
   drawMobileSidebar(ctx, x, y, w, h, track) {
     const panelGap = 10;
-    const rowH = 38;
-    const rowGap = 8;
-    const panelPadding = 10;
+    const rowH = clamp(Math.round(h * 0.055), 40, 48);
+    const rowGap = clamp(Math.round(rowH * 0.2), 6, 10);
+    const panelPadding = clamp(Math.round(rowH * 0.25), 8, 12);
     const menuRows = TAB_OPTIONS.length + 2;
     const menuH = Math.min(h * 0.46, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
     const menuX = x;
@@ -7779,10 +7813,16 @@ export default class MidiComposer {
       this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
       cursorY += rowH + rowGap;
     });
-    const halfW = (innerW - rowGap) / 2;
-    this.bounds.undoButton = { x: innerX, y: cursorY, w: halfW, h: rowH };
-    this.bounds.redoButton = { x: innerX + halfW + rowGap, y: cursorY, w: halfW, h: rowH };
+    const undoCols = innerW < 190 ? 1 : 2;
+    const undoW = undoCols === 1 ? innerW : (innerW - rowGap) / 2;
+    this.bounds.undoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
     this.drawSmallButton(ctx, this.bounds.undoButton, 'Undo', false);
+    if (undoCols === 1) {
+      cursorY += rowH + rowGap;
+      this.bounds.redoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
+    } else {
+      this.bounds.redoButton = { x: innerX + undoW + rowGap, y: cursorY, w: undoW, h: rowH };
+    }
     this.drawSmallButton(ctx, this.bounds.redoButton, 'Redo', false);
 
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
@@ -7796,7 +7836,7 @@ export default class MidiComposer {
     this.bounds.instrumentSettingsControls = [];
     const buttonSize = rowH;
     const compactLayout = controlW < 220;
-    const noteW = compactLayout ? controlW : Math.min(110, Math.max(76, controlW * 0.45));
+    const noteW = compactLayout ? controlW : Math.min(140, Math.max(90, controlW * 0.5));
     const selectorW = controlW - buttonSize * 2;
     const selectorX = controlX + buttonSize;
     const trackName = track?.name || 'Track';
@@ -7839,7 +7879,7 @@ export default class MidiComposer {
 
     if (track) {
       const mix = this.getTrackPlaybackMix(track);
-      const mixH = 90;
+      const mixH = Math.max(86, Math.min(110, Math.round(controlsH * 0.24)));
       ctx.fillStyle = 'rgba(0,0,0,0.45)';
       ctx.fillRect(controlX, controlY, controlW, mixH);
       ctx.strokeStyle = 'rgba(255,255,255,0.15)';
@@ -7848,19 +7888,22 @@ export default class MidiComposer {
       ctx.font = '11px Courier New';
       ctx.fillText('Mix Controls', controlX + 8, controlY + 14);
 
-      const buttonH = 22;
+      const buttonH = Math.max(22, Math.round(rowH * 0.55));
+      const mixButtonGap = 8;
+      const mixButtonW = Math.max(60, Math.min(90, (controlW - 24 - mixButtonGap) / 2));
+      const mixButtonY = controlY + 20;
       const muteBounds = {
         x: controlX + 8,
-        y: controlY + 20,
-        w: 60,
+        y: mixButtonY,
+        w: mixButtonW,
         h: buttonH,
         trackIndex: this.selectedTrackIndex,
         control: 'mute'
       };
       const soloBounds = {
-        x: muteBounds.x + 70,
-        y: muteBounds.y,
-        w: 60,
+        x: muteBounds.x + mixButtonW + mixButtonGap,
+        y: mixButtonY,
+        w: mixButtonW,
         h: buttonH,
         trackIndex: this.selectedTrackIndex,
         control: 'solo'
@@ -7869,7 +7912,7 @@ export default class MidiComposer {
       this.drawSmallButton(ctx, soloBounds, 'Solo', track.solo);
       this.bounds.instrumentSettingsControls.push(muteBounds, soloBounds);
 
-      const sliderW = controlW - 16;
+      const sliderW = Math.max(0, controlW - 16);
       const volumeBounds = {
         x: controlX + 8,
         y: muteBounds.y + buttonH + 8,
@@ -7919,7 +7962,9 @@ export default class MidiComposer {
     this.bounds.tempoButton = { x: controlX, y: controlY, w: controlW, h: rowH };
     this.drawSmallButton(ctx, this.bounds.tempoButton, tempoLabel, this.tempoSliderOpen);
     const transportGap = 6;
-    const transportW = (controlW - transportGap * 4) / 5;
+    const transportCols = 5;
+    const transportW = (controlW - transportGap * (transportCols - 1)) / transportCols;
+    const transportButtonSize = Math.max(40, Math.min(rowH, transportW));
     const transportButtons = [
       { id: 'returnStart', label: '⏮' },
       { id: 'prevBar', label: '⏪' },
@@ -7927,23 +7972,52 @@ export default class MidiComposer {
       { id: 'nextBar', label: '⏩' },
       { id: 'goEnd', label: '⏭' }
     ];
-    const transportY = controlsY + controlsH - panelPadding - rowH;
-    const toggleRowY = transportY - rowGap - rowH;
-    const toggleW = Math.max(90, (controlW - rowGap) / 2);
+    const transportY = controlsY + controlsH - panelPadding - transportButtonSize;
+    const toggleCols = controlW < 220 ? 1 : 2;
+    const toggleW = toggleCols === 1 ? controlW : Math.max(90, (controlW - rowGap) / 2);
+    const toggleBlockH = toggleCols === 1 ? rowH * 2 + rowGap : rowH;
+    const toggleRowY = transportY - rowGap - toggleBlockH;
     this.bounds.loopToggle = { x: controlX, y: toggleRowY, w: toggleW, h: rowH };
     this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
-    this.bounds.metronome = { x: controlX + toggleW + rowGap, y: toggleRowY, w: toggleW, h: rowH };
+    if (toggleCols === 1) {
+      this.bounds.metronome = { x: controlX, y: toggleRowY + rowH + rowGap, w: toggleW, h: rowH };
+    } else {
+      this.bounds.metronome = { x: controlX + toggleW + rowGap, y: toggleRowY, w: toggleW, h: rowH };
+    }
     this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
     transportButtons.forEach((button, index) => {
       const bounds = {
         x: controlX + index * (transportW + transportGap),
         y: transportY,
         w: transportW,
-        h: rowH
+        h: transportButtonSize
       };
       this.bounds[button.id] = bounds;
       this.drawSmallButton(ctx, bounds, button.label, button.id === 'play' && this.isPlaying);
     });
+  }
+
+  getSidebarWidth(viewWidth, {
+    ratio,
+    min,
+    max,
+    padding,
+    gap,
+    minContent
+  }) {
+    const safePadding = padding ?? 16;
+    const safeGap = gap ?? 12;
+    const safeContent = minContent ?? 200;
+    const available = viewWidth - safePadding * 2 - safeGap - safeContent;
+    const maxAllowed = Math.max(0, Math.min(max, available));
+    const minAllowed = Math.min(min, maxAllowed || min);
+    return clamp(viewWidth * ratio, minAllowed, maxAllowed || minAllowed);
+  }
+
+  getButtonFontSize(bounds, isMobile) {
+    const target = Math.round(bounds.h * 0.45);
+    const maxSize = isMobile ? 18 : 16;
+    return clamp(target, 12, maxSize);
   }
 
   truncateLabel(ctx, label, maxWidth) {
@@ -8029,7 +8103,7 @@ export default class MidiComposer {
     this.bounds.transportBar = { x, y, w, h };
     const isMobile = this.isMobileLayout();
     const gap = 12;
-    const buttonH = Math.max(48, h - 26);
+    const buttonH = Math.max(44, h - 26);
     const baseButtonW = Math.min(72, (w - gap * 7) / 6);
     const buttonSpecs = [
       { id: 'returnStart', label: '⏮', w: baseButtonW },
@@ -8039,7 +8113,9 @@ export default class MidiComposer {
       { id: 'nextBar', label: '⏩', w: baseButtonW },
       { id: 'goEnd', label: '⏭', w: baseButtonW }
     ];
-    const totalW = buttonSpecs.reduce((sum, button) => sum + button.w, 0) + gap * (buttonSpecs.length - 1);
+    const rawTotalW = buttonSpecs.reduce((sum, button) => sum + button.w, 0) + gap * (buttonSpecs.length - 1);
+    const scale = rawTotalW > w ? w / rawTotalW : 1;
+    const totalW = rawTotalW * scale;
     const startX = x + (w - totalW) / 2;
     const centerY = y + (h - buttonH) / 2;
     const radius = Math.min(14, buttonH / 2);
@@ -8053,7 +8129,8 @@ export default class MidiComposer {
       ctx.closePath();
     };
     const drawTransportButton = (button, bx) => {
-      const bounds = { x: bx, y: centerY, w: button.w, h: buttonH };
+      const buttonW = button.w * scale;
+      const bounds = { x: bx, y: centerY, w: buttonW, h: buttonH };
       this.bounds[button.id] = bounds;
       const isActive = Boolean(button.active);
       const isRecord = button.id === 'record';
@@ -8075,7 +8152,8 @@ export default class MidiComposer {
       ctx.fill();
       ctx.restore();
       ctx.fillStyle = isActive ? '#0b0b0b' : '#fff';
-      ctx.font = `${button.emphasis ? 20 : 16}px Courier New`;
+      const fontSize = this.getButtonFontSize(bounds, isMobile);
+      ctx.font = `${button.emphasis ? fontSize + 2 : fontSize}px Courier New`;
       ctx.textAlign = 'center';
       ctx.fillText(button.label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 6);
       ctx.textAlign = 'left';
@@ -8083,7 +8161,7 @@ export default class MidiComposer {
     let cursorX = startX;
     buttonSpecs.forEach((button) => {
       drawTransportButton(button, cursorX);
-      cursorX += button.w + gap;
+      cursorX += button.w * scale + gap;
     });
 
     if (this.singleNoteRecordMode.active) {
@@ -8992,15 +9070,15 @@ export default class MidiComposer {
     const isMobile = this.isMobileLayout();
     const padding = 12;
     const panelGap = 12;
-    const leftW = Math.min(320, Math.max(220, w * 0.32));
-    const rightW = w - padding * 2 - leftW - panelGap;
+    const leftW = clamp(w * 0.32, 240, 360);
+    const rightW = Math.max(0, w - padding * 2 - leftW - panelGap);
     const leftX = x + padding;
     const leftY = y + padding;
     const panelH = h - padding * 2;
     const rightX = leftX + leftW + panelGap;
     const rightY = leftY;
-    const rowH = isMobile ? 54 : 48;
-    const addButtonH = 36;
+    const rowH = clamp(Math.round(h * 0.08), isMobile ? 48 : 44, isMobile ? 60 : 54);
+    const addButtonH = clamp(Math.round(rowH * 0.8), 32, 40);
     const controlsH = 0;
 
     this.bounds.instrumentList = [];
@@ -9060,16 +9138,20 @@ export default class MidiComposer {
       }
 
       const tabY = rightY + 34 + previewOffset;
-      const tabH = 38;
+      const tabH = 34;
       const tabNavW = 30;
       const tabNavGap = 6;
       const tabsAvailableW = rightW - padding * 2 - (tabNavW + tabNavGap) * 2;
       const tabsX = rightX + padding + tabNavW + tabNavGap;
-      const tabsPerPage = 3;
+      const tabGap = 6;
+      const minTabW = 90;
+      const tabRows = rightW < 420 ? 2 : 1;
+      const tabCols = Math.max(1, Math.floor((tabsAvailableW + tabGap) / (minTabW + tabGap)));
+      const tabsPerPage = tabCols * tabRows;
       const currentIndex = Math.max(0, INSTRUMENT_FAMILY_TABS.findIndex((tab) => tab.id === this.instrumentPicker.familyTab));
       const pageStart = Math.floor(currentIndex / tabsPerPage) * tabsPerPage;
       const visibleTabs = INSTRUMENT_FAMILY_TABS.slice(pageStart, pageStart + tabsPerPage);
-      const tabW = (tabsAvailableW - Math.max(0, visibleTabs.length - 1) * 6) / Math.max(1, visibleTabs.length);
+      const tabW = (tabsAvailableW - Math.max(0, tabCols - 1) * tabGap) / Math.max(1, tabCols);
       this.instrumentPicker.tabBounds = [];
       this.instrumentPicker.tabPrevBounds = {
         x: rightX + padding,
@@ -9087,18 +9169,21 @@ export default class MidiComposer {
         x: rightX + padding,
         y: tabY,
         w: rightW - padding * 2,
-        h: tabH
+        h: tabRows * tabH + Math.max(0, tabRows - 1) * tabGap
       };
       this.drawSmallButton(ctx, this.instrumentPicker.tabPrevBounds, '<', false);
       this.drawSmallButton(ctx, this.instrumentPicker.tabNextBounds, '>', false);
       visibleTabs.forEach((tab, index) => {
-        const tabX = tabsX + index * (tabW + 6);
-        const bounds = { x: tabX, y: tabY, w: tabW, h: tabH, id: tab.id };
+        const row = Math.floor(index / tabCols);
+        const col = index % tabCols;
+        const tabX = tabsX + col * (tabW + tabGap);
+        const tabYPos = tabY + row * (tabH + tabGap);
+        const bounds = { x: tabX, y: tabYPos, w: tabW, h: tabH, id: tab.id };
         this.instrumentPicker.tabBounds.push(bounds);
         this.drawButton(ctx, bounds, tab.label, this.instrumentPicker.familyTab === tab.id, false);
       });
 
-      const selectorY = tabY + tabH + 10;
+      const selectorY = tabY + tabRows * tabH + Math.max(0, tabRows - 1) * tabGap + 10;
       const footerH = 94;
       const scrollY = selectorY;
       const scrollH = rightY + panelH - scrollY - footerH;
@@ -10581,12 +10666,14 @@ export default class MidiComposer {
     const rowH = 32 * menuScale;
     const gap = 6 * menuScale;
     const menuH = actions.length * rowH + gap * 2;
-    const minX = this.gridBounds.x;
-    const maxX = this.gridBounds.x + this.gridBounds.w - menuW;
-    const minY = this.gridBounds.y;
-    const maxY = this.gridBounds.y + this.gridBounds.h - menuH;
-    const menuX = clamp(this.selectionMenu.x, minX, maxX);
-    const menuY = clamp(this.selectionMenu.y, minY, maxY);
+    const viewportW = this.viewportWidth ?? this.gridBounds.x + this.gridBounds.w;
+    const viewportH = this.viewportHeight ?? this.gridBounds.y + this.gridBounds.h;
+    const minX = Math.max(8, this.gridBounds.x);
+    const maxX = Math.min(viewportW - menuW - 8, this.gridBounds.x + this.gridBounds.w - menuW);
+    const minY = Math.max(8, this.gridBounds.y);
+    const maxY = Math.min(viewportH - menuH - 8, this.gridBounds.y + this.gridBounds.h - menuH);
+    const menuX = clamp(this.selectionMenu.x, minX, Math.max(minX, maxX));
+    const menuY = clamp(this.selectionMenu.y, minY, Math.max(minY, maxY));
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(menuX, menuY, menuW, menuH);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
@@ -10739,8 +10826,8 @@ export default class MidiComposer {
   }
 
   drawInstrumentPicker(ctx, width, height) {
-    const dialogW = Math.min(720, width - 40);
-    const dialogH = Math.min(600, height - 40);
+    const dialogW = Math.min(520, width - 24);
+    const dialogH = Math.min(600, height - 24);
     const dialogX = (width - dialogW) / 2;
     const dialogY = (height - dialogH) / 2;
     const padding = 16;
@@ -10760,7 +10847,7 @@ export default class MidiComposer {
 
     const inputY = dialogY + 42;
     const items = this.getInstrumentPickerItems();
-    const rowH = 22;
+    const rowH = clamp(Math.round(dialogH * 0.05), 24, 30);
     const listStartY = inputY + 36;
     const listHeight = dialogY + dialogH - listStartY - 40;
     const visibleRows = Math.max(1, Math.floor(listHeight / rowH));
@@ -10836,19 +10923,23 @@ export default class MidiComposer {
     ];
     const width = 180;
     const height = items.length * 22 + 16;
+    const viewportW = this.viewportWidth ?? x + width;
+    const viewportH = this.viewportHeight ?? y + height;
+    const menuX = clamp(x, 8, Math.max(8, viewportW - width - 8));
+    const menuY = clamp(y, 8, Math.max(8, viewportH - height - 8));
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
-    ctx.fillRect(x, y, width, height);
+    ctx.fillRect(menuX, menuY, width, height);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(x, y, width, height);
+    ctx.strokeRect(menuX, menuY, width, height);
     ctx.fillStyle = '#fff';
     ctx.font = '12px Courier New';
     this.toolsMenuBounds = [];
     items.forEach((item, index) => {
-      const itemY = y + 18 + index * 22;
+      const itemY = menuY + 18 + index * 22;
       ctx.fillStyle = 'rgba(255,255,255,0.8)';
-      ctx.fillText(item.label, x + 12, itemY);
+      ctx.fillText(item.label, menuX + 12, itemY);
       this.toolsMenuBounds.push({
-        x: x + 8,
+        x: menuX + 8,
         y: itemY - 12,
         w: width - 16,
         h: 18,
@@ -10881,28 +10972,36 @@ export default class MidiComposer {
     ctx.strokeRect(x, y, w, h);
 
     const padding = 14;
-    const panelW = Math.min(320, Math.max(240, w * 0.35));
-    const panelX = x + w - panelW - padding;
+    const panelW = Math.min(520, Math.max(240, w * 0.35));
+    const maxPanelW = Math.max(0, w - padding * 2);
+    const finalPanelW = Math.min(panelW, maxPanelW);
+    const panelX = x + w - finalPanelW - padding;
     const panelY = y + padding;
     const panelH = h - padding * 2;
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
-    ctx.fillRect(panelX, panelY, panelW, panelH);
+    ctx.fillRect(panelX, panelY, finalPanelW, panelH);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(panelX, panelY, panelW, panelH);
+    ctx.strokeRect(panelX, panelY, finalPanelW, panelH);
 
     ctx.fillStyle = '#fff';
     ctx.font = '16px Courier New';
     ctx.fillText('File Actions', panelX + 12, panelY + 22);
 
     const items = this.getFileMenuItems();
-    const rowH = 44;
-    let cursorY = panelY + 34;
+    const rowH = clamp(Math.round(panelH * 0.08), 36, 44);
+    const listStartY = panelY + 34;
+    const listH = Math.max(0, panelH - (listStartY - panelY) - 12);
+    const visibleRows = Math.max(1, Math.floor(listH / rowH));
+    this.fileMenuScrollMax = Math.max(0, items.length - visibleRows);
+    this.fileMenuScroll = clamp(this.fileMenuScroll, 0, this.fileMenuScrollMax);
+    const visibleItems = items.slice(this.fileMenuScroll, this.fileMenuScroll + visibleRows);
+    let cursorY = listStartY;
     this.fileMenuBounds = [];
-    items.forEach((item) => {
+    visibleItems.forEach((item) => {
       const bounds = {
         x: panelX + 12,
         y: cursorY,
-        w: panelW - 24,
+        w: finalPanelW - 24,
         h: rowH - 8,
         id: item.id
       };
@@ -10910,6 +11009,28 @@ export default class MidiComposer {
       this.fileMenuBounds.push(bounds);
       cursorY += rowH;
     });
+
+    this.fileMenuScrollUp = null;
+    this.fileMenuScrollDown = null;
+    if (this.fileMenuScrollMax > 0) {
+      const buttonW = 26;
+      const buttonH = 22;
+      const buttonsY = panelY + panelH - buttonH - 10;
+      this.fileMenuScrollUp = {
+        x: panelX + 12,
+        y: buttonsY,
+        w: buttonW,
+        h: buttonH
+      };
+      this.fileMenuScrollDown = {
+        x: panelX + 12 + buttonW + 8,
+        y: buttonsY,
+        w: buttonW,
+        h: buttonH
+      };
+      this.drawSmallButton(ctx, this.fileMenuScrollUp, '▲', false);
+      this.drawSmallButton(ctx, this.fileMenuScrollDown, '▼', false);
+    }
   }
 
   drawFileMenu(ctx, x, y) {
@@ -10918,17 +11039,21 @@ export default class MidiComposer {
     const rowH = 44;
     const gap = 10;
     const height = items.length * rowH + gap * 2;
+    const viewportW = this.viewportWidth ?? x + width;
+    const viewportH = this.viewportHeight ?? y + height;
+    const menuX = clamp(x, 8, Math.max(8, viewportW - width - 8));
+    const menuY = clamp(y, 8, Math.max(8, viewportH - height - 8));
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
-    ctx.fillRect(x, y, width, height);
+    ctx.fillRect(menuX, menuY, width, height);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(x, y, width, height);
+    ctx.strokeRect(menuX, menuY, width, height);
     ctx.fillStyle = '#fff';
     ctx.font = '13px Courier New';
     this.fileMenuBounds = [];
     items.forEach((item, index) => {
-      const itemY = y + gap + index * rowH;
+      const itemY = menuY + gap + index * rowH;
       const bounds = {
-        x: x + gap,
+        x: menuX + gap,
         y: itemY,
         w: width - gap * 2,
         h: rowH - 8,
@@ -11012,26 +11137,22 @@ export default class MidiComposer {
   }
 
   drawButton(ctx, bounds, label, active, subtle) {
-    if (bounds && !bounds.__midiScaled125) {
-      const scale = 1.25;
-      const cx = bounds.x + bounds.w / 2;
-      const cy = bounds.y + bounds.h / 2;
-      bounds.w *= scale;
-      bounds.h *= scale;
-      bounds.x = cx - bounds.w / 2;
-      bounds.y = cy - bounds.h / 2;
-      bounds.__midiScaled125 = true;
-    }
     const fill = active ? 'rgba(255,225,106,0.7)' : subtle ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.6)';
     ctx.fillStyle = fill;
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.fillStyle = active ? '#0b0b0b' : '#fff';
-    ctx.font = `${this.isMobileLayout() ? 17 : 15}px Courier New`;
+    const isMobile = this.isMobileLayout();
+    const fontSize = this.getButtonFontSize(bounds, isMobile);
+    ctx.font = `${fontSize}px Courier New`;
     ctx.textAlign = 'center';
-    ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 5);
+    ctx.textBaseline = 'middle';
+    const padding = Math.max(6, Math.round(bounds.h * 0.2));
+    const clippedLabel = this.truncateLabel(ctx, label, Math.max(0, bounds.w - padding * 2));
+    ctx.fillText(clippedLabel, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
     ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
   }
 
   drawSmallButton(ctx, bounds, label, active) {
