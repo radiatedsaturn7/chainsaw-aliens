@@ -3,7 +3,7 @@ export default class Title {
     this.timer = 0;
     this.screen = 'intro';
     this.transition = null;
-    this.menuOrder = ['campaign', 'robtersession', 'endless', 'tools', 'options'];
+    this.menuOrder = ['campaign', 'robtersession', 'endless', 'export-game', 'import-game', 'tools', 'options'];
     this.toolsOrder = [
       'level-editor',
       'pixel-editor',
@@ -215,8 +215,12 @@ export default class Title {
         : action === 'endless'
           ? 'Endless Mode'
           : action === 'tools'
-            ? 'Tools'
-            : 'Options';
+            ? 'File'
+            : action === 'export-game'
+              ? 'Export Game Bundle'
+              : action === 'import-game'
+                ? 'Import Game Bundle'
+                : 'Options';
       ctx.fillText(label, width / 2, y + 22);
       if (action === 'options') {
         ctx.font = '12px Courier New';
@@ -240,7 +244,7 @@ export default class Title {
     ctx.fillStyle = '#fff';
     ctx.font = '22px Courier New';
     ctx.textAlign = 'center';
-    ctx.fillText('Tools', width / 2, 180);
+    ctx.fillText('File', width / 2, 180);
     ctx.font = '14px Courier New';
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.fillText('Editors & Reset', width / 2, 206);
