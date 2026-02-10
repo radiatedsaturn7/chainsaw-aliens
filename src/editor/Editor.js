@@ -3983,6 +3983,14 @@ export default class Editor {
   handlePointerMove(payload) {
     if (!this.active) return;
     this.lastPointer = { x: payload.x, y: payload.y };
+
+    if (this.isMobileLayout() && (payload.buttons & 1) && !this.panJoystick.active
+      && this.isPointInCircle(payload.x, payload.y, this.panJoystick.center, this.panJoystick.radius * 1.2)) {
+      this.panJoystick.active = true;
+      this.panJoystick.id = payload.id ?? null;
+      this.updatePanJoystick(payload.x, payload.y);
+      return;
+    }
     if (this.pixelPaintActive && this.mode === 'pixel') {
       const cell = this.getPixelCellAt(payload.x, payload.y);
       if (cell) {
