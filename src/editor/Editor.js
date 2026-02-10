@@ -325,6 +325,7 @@ export default class Editor {
     };
     this.panelScrollBounds = null;
     this.panelScrollView = null;
+    this.panelScrollDrag = null;
     this.panelMenuIndex = {
       tools: 0,
       tiles: 0,
@@ -731,6 +732,7 @@ export default class Editor {
       { id: 'erase', label: 'Erase', tooltip: 'Erase tiles. (E)' },
       { id: 'move', label: 'Move', tooltip: 'Move items or pan. (M)' }
     ];
+    const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
     let items = [];
     let columns = 1;
     const enemySource = tabId === 'bosses'
@@ -748,6 +750,18 @@ export default class Editor {
             this.tileTool = tool.id;
           }
         })),
+        ...(spawnTile
+          ? [{
+            id: 'spawn-point',
+            label: 'Spawn Point',
+            tooltip: 'Place the player spawn point',
+            onClick: () => {
+              this.setTileType(spawnTile);
+              this.mode = 'tile';
+              this.tileTool = 'paint';
+            }
+          }]
+          : []),
         {
           id: 'start-everything',
           label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
@@ -3607,6 +3621,16 @@ export default class Editor {
       return;
     }
 
+    if (this.isMobileLayout() && this.drawer.open && this.panelScrollBounds
+      && this.isPointInBounds(payload.x, payload.y, this.panelScrollBounds)) {
+      this.panelScrollDrag = {
+        id: payload.id ?? null,
+        startY: payload.y,
+        startScroll: this.panelScroll[this.getActivePanelTab()] || 0,
+        moved: false
+      };
+    }
+
     if (this.handleUIClick(payload.x, payload.y)) return;
 
     if (this.mode === 'pixel') {
@@ -3657,7 +3681,9 @@ export default class Editor {
       }
     }
 
-    if (this.isMobileLayout() && this.isPointInBounds(payload.x, payload.y, this.drawerBounds)) {
+    if (this.isMobileLayout()
+      && this.isPointInBounds(payload.x, payload.y, this.drawerBounds)
+      && !(this.panelScrollBounds && this.isPointInBounds(payload.x, payload.y, this.panelScrollBounds))) {
       this.drawer.swipeStart = { x: payload.x, y: payload.y };
       return;
     }
@@ -3779,6 +3805,25 @@ export default class Editor {
         this.updateZoomFromSlider(payload.x);
         return;
       }
+    }
+
+    if (this.isMobileLayout() && this.panelScrollDrag
+      && (payload.id === undefined || this.panelScrollDrag.id === payload.id)) {
+      const activeTab = this.getActivePanelTab();
+      const maxScroll = this.panelScrollMax[activeTab] || 0;
+      const delta = this.panelScrollDrag.startY - payload.y;
+      if (Math.abs(delta) > 6) {
+        this.panelScrollDrag.moved = true;
+      }
+      this.panelScroll[activeTab] = clamp(this.panelScrollDrag.startScroll + delta, 0, maxScroll);
+      if (this.panelScrollDrag.moved) {
+        if (this.drawer.swipeStart) this.drawer.swipeStart = null;
+        if (this.longPressTimer) {
+          clearTimeout(this.longPressTimer);
+          this.longPressTimer = null;
+        }
+      }
+      return;
     }
 
     if (this.randomLevelDialog.open && this.randomLevelSlider.active) {
@@ -3928,6 +3973,10 @@ export default class Editor {
 
     if (this.drawer.swipeStart) {
       this.drawer.swipeStart = null;
+    }
+
+    if (this.panelScrollDrag && (payload.id === undefined || this.panelScrollDrag.id === payload.id)) {
+      this.panelScrollDrag = null;
     }
 
     if (this.longPressTimer) {
@@ -5728,50 +5777,31 @@ export default class Editor {
           { id: 'music', label: 'MUSIC' }
         ];
         const activeTab = this.getActivePanelTab();
-        const activeTabLabel = tabs.find((tab) => tab.id === activeTab)?.label || 'TOOLS';
-        const tabMargin = 12;
-        const tabArrowW = 34;
-        const tabArrowGap = 6;
-        const tabHeight = 40;
-        const tabRowW = panelW - tabMargin * 2 - (tabArrowW + tabArrowGap) * 2;
+        const panelPadding = 10;
+        const tabColumnW = Math.max(104, Math.min(160, Math.floor(panelW * 0.38)));
+        const tabX = panelX + panelPadding;
         const tabY = panelY + handleAreaH + 8;
+        const tabW = tabColumnW - panelPadding * 1.5;
+        const tabButtonH = 36;
+        const tabGap = 8;
         ctx.font = '14px Courier New';
-        drawButton(
-          panelX + tabMargin,
-          tabY,
-          tabArrowW,
-          tabHeight,
-          '◀',
-          false,
-          () => this.cyclePanelTab(-1),
-          'Previous tab'
-        );
-        drawButton(
-          panelX + panelW - tabMargin - tabArrowW,
-          tabY,
-          tabArrowW,
-          tabHeight,
-          '▶',
-          false,
-          () => this.cyclePanelTab(1),
-          'Next tab'
-        );
-        drawButton(
-          panelX + tabMargin + tabArrowW + tabArrowGap,
-          tabY,
-          tabRowW,
-          tabHeight,
-          activeTabLabel,
-          true,
-          () => {
-            this.setPanelTab(activeTab);
-          },
-          `${activeTabLabel} drawer`
-        );
+        tabs.forEach((tab, index) => {
+          const y = tabY + index * (tabButtonH + tabGap);
+          drawButton(
+            tabX,
+            y,
+            tabW,
+            tabButtonH,
+            tab.label,
+            activeTab === tab.id,
+            () => this.setPanelTab(tab.id),
+            `${tab.label} drawer`
+          );
+        });
 
-        const contentX = panelX + 12;
-        const contentW = panelW - 24;
-        const baseContentY = tabY + tabHeight + 10;
+        const contentX = panelX + tabColumnW + 6;
+        const contentW = panelW - tabColumnW - panelPadding - 6;
+        const baseContentY = tabY;
         let contentY = baseContentY;
         const reservedBottom = joystickRadius * 2 + 32;
         let contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom);
@@ -5781,9 +5811,11 @@ export default class Editor {
           || activeTab === 'enemies'
           || activeTab === 'bosses';
         const buttonHeight = isPreviewTab ? 60 : 52;
-        const buttonGap = 12;
+        const buttonGap = 10;
+        const contentPadding = 10;
         let items = [];
-        let columns = 2;
+        let columns = 1;
+        const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
 
         if (activeTab === 'tools') {
           items = [
@@ -5797,6 +5829,19 @@ export default class Editor {
                 this.tileTool = tool.id;
               }
             })),
+            ...(spawnTile
+              ? [{
+                id: 'spawn-point',
+                label: 'SPAWN POINT',
+                active: this.tileType?.special === 'spawn',
+                tooltip: 'Place the player spawn point',
+                onClick: () => {
+                  this.setTileType(spawnTile);
+                  this.mode = 'tile';
+                  this.tileTool = 'paint';
+                }
+              }]
+              : []),
             {
               id: 'start-everything',
               label: `START WITH EVERYTHING: ${this.startWithEverything ? 'ON' : 'OFF'}`,
@@ -5849,7 +5894,7 @@ export default class Editor {
               onClick: () => this.game.exitEditor({ playtest: false, toTitle: true })
             }
           ];
-          columns = 2;
+          columns = 1;
         } else if (activeTab === 'tiles') {
           items = DEFAULT_TILE_TYPES.map((tile) => ({
             id: tile.id,
@@ -5863,7 +5908,7 @@ export default class Editor {
               this.tileTool = 'paint';
             }
           }));
-          columns = 2;
+          columns = 1;
         } else if (activeTab === 'enemies' || activeTab === 'bosses') {
           const enemySource = activeTab === 'bosses'
             ? BOSS_ENEMY_TYPES
@@ -5879,7 +5924,7 @@ export default class Editor {
               this.mode = 'enemy';
             }
           }));
-          columns = 2;
+          columns = 1;
         } else if (activeTab === 'powerups') {
           items = POWERUP_TYPES.map((powerup) => ({
             id: powerup.id,
@@ -5893,7 +5938,7 @@ export default class Editor {
               this.tileTool = 'paint';
             }
           }));
-          columns = 2;
+          columns = 1;
         } else if (activeTab === 'prefabs') {
           items = PREFAB_TYPES.map((prefab) => ({
             id: prefab.id,
@@ -5906,7 +5951,7 @@ export default class Editor {
               this.mode = 'prefab';
             }
           }));
-          columns = 2;
+          columns = 1;
         } else if (activeTab === 'pixels') {
           items = [
             {
@@ -5970,7 +6015,7 @@ export default class Editor {
               this.mode = 'pixel';
             }
           })));
-          columns = 2;
+          columns = 1;
         } else if (activeTab === 'music') {
           const tracks = this.getMusicTracks();
           items = [
@@ -6005,7 +6050,7 @@ export default class Editor {
               this.mode = 'music';
             }
           })));
-          columns = 2;
+          columns = 1;
         } else if (activeTab === 'midi') {
           const tracks = this.ensureMidiTracks();
           items = [
@@ -6034,7 +6079,7 @@ export default class Editor {
               this.mode = 'midi';
             }
           })));
-          columns = 2;
+          columns = 1;
         } else {
           items = SHAPE_TOOLS.map((shape) => ({
             id: shape.id,
@@ -6046,7 +6091,7 @@ export default class Editor {
               this.mode = 'shape';
             }
           }));
-          columns = 2;
+          columns = 1;
         }
 
         ctx.globalAlpha = 0.7;
@@ -6055,15 +6100,29 @@ export default class Editor {
         ctx.strokeStyle = 'rgba(255,255,255,0.15)';
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
 
-        const columnWidth = (contentW - buttonGap * (columns - 1)) / columns;
+        const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
+        const rows = Math.ceil(items.length / columns);
+        const totalHeight = rows * (buttonHeight + buttonGap) - buttonGap + contentPadding * 2;
+        const maxScroll = Math.max(0, totalHeight - contentHeight);
+        this.panelScrollMax[activeTab] = maxScroll;
+        const scrollY = clamp(this.panelScroll[activeTab] || 0, 0, maxScroll);
+        this.panelScroll[activeTab] = scrollY;
+        this.panelScrollBounds = { x: contentX, y: contentY, w: contentW, h: contentHeight };
+        this.panelScrollView = {
+          contentHeight,
+          buttonHeight,
+          buttonGap,
+          columns,
+          padding: contentPadding
+        };
         const gamepadActive = this.game.input?.isGamepadConnected?.() ?? false;
         const focusedIndex = this.panelMenuIndex[activeTab] ?? 0;
         items.forEach((item, index) => {
           const col = index % columns;
           const row = Math.floor(index / columns);
-          const x = contentX + col * (columnWidth + buttonGap);
-          const y = contentY + 8 + row * (buttonHeight + buttonGap);
-          if (y + buttonHeight > contentY + contentHeight - 8) return;
+          const x = contentX + contentPadding + col * (columnWidth + buttonGap);
+          const y = contentY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
+          if (y + buttonHeight < contentY + 4 || y > contentY + contentHeight - 4) return;
           drawButton(
             x,
             y,
@@ -6079,8 +6138,10 @@ export default class Editor {
         });
 
       }
-      this.panelScrollBounds = null;
-      this.panelScrollView = null;
+      if (!this.drawer.open) {
+        this.panelScrollBounds = null;
+        this.panelScrollView = null;
+      }
     } else {
       this.editorBounds = { x: 0, y: 0, w: width, h: height };
       const panelWidth = 360;
