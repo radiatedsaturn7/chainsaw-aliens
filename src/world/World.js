@@ -87,6 +87,7 @@ export default class World {
     this.pixelArt = { tiles: {} };
     this.musicZones = [];
     this.midiTracks = [];
+    this.triggerZones = [];
     this.data = null;
     this.rooms = [];
     this.roomIndexByTile = [];
@@ -138,6 +139,7 @@ export default class World {
       ...track,
       notes: (track.notes || []).map((note) => ({ ...note }))
     }));
+    this.triggerZones = (data.triggerZones || []).map((zone) => ({ ...zone, actions: (zone.actions || []).map((action) => ({ ...action })) }));
     this.data = { ...data, tiles: normalizedTiles };
     if (this.data) {
       this.data.elevatorPaths = this.elevatorPaths;
@@ -145,6 +147,7 @@ export default class World {
       this.data.pixelArt = this.pixelArt;
       this.data.musicZones = this.musicZones;
       this.data.midiTracks = this.midiTracks;
+      this.data.triggerZones = this.triggerZones;
     }
     this.rebuildCaches();
   }
