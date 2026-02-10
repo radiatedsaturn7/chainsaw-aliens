@@ -1,4 +1,5 @@
 import Minimap from '../world/Minimap.js';
+import MidiSongPlayer from '../game/MidiSongPlayer.js';
 
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
@@ -390,9 +391,8 @@ export default class Editor {
     this.recentPrefabs = [];
     this.recentShapes = [];
     this.rotation = 0;
-    this.playtestPressTimer = null;
-    this.playtestPressActive = false;
-    this.playtestSpawnOverride = null;
+    this.musicPreviewPlayer = null;
+    this.musicPreviewTrackId = null;
     this.precisionZoom = null;
     this.playButtonBounds = null;
     this.dragSource = null;
@@ -494,7 +494,6 @@ export default class Editor {
   activate() {
     this.active = true;
     this.loadAutosaveOrSeed();
-    this.restorePlaytestSpawn();
     this.resetView();
     this.getMusicTracks();
     this.syncPreviewMinimap();
@@ -504,6 +503,7 @@ export default class Editor {
     this.panJoystick.dy = 0;
     this.zoomSlider.active = false;
     this.zoomSlider.id = null;
+    this.stopMusicPreview({ immediate: true });
   }
 
   deactivate() {
@@ -629,6 +629,7 @@ export default class Editor {
   }
 
   update(input, dt) {
+    this.updateMusicPreview(dt);
     this.handleKeyboard(input, dt);
     this.handleGamepad(input, dt);
     if (!this.isMobileLayout()) {
@@ -689,7 +690,7 @@ export default class Editor {
       this.loadFromStorage();
     }
     if (input.wasPressedCode('KeyP')) {
-      this.game.exitEditor({ playtest: true });
+      this.startPlaytest();
     }
 
     if (input.wasPressedCode('Escape')) {
@@ -789,8 +790,8 @@ export default class Editor {
         {
           id: 'playtest',
           label: 'Playtest',
-          tooltip: 'Start playtest from current cursor',
-          onClick: () => this.startPlaytestFromCursor()
+          tooltip: 'Start playtest from spawn',
+          onClick: () => this.startPlaytest()
         },
         {
           id: 'save',
@@ -1339,7 +1340,7 @@ export default class Editor {
     }
 
     if (input.wasGamepadPressed('pause')) {
-      this.startPlaytestFromCursor();
+      this.startPlaytest();
       return;
     }
     if (input.wasGamepadPressed('cancel')) {
@@ -1617,6 +1618,7 @@ export default class Editor {
       rect,
       track: trackId
     });
+    this.startMusicPreview(trackId);
     this.persistAutosave();
   }
 
@@ -1730,6 +1732,37 @@ export default class Editor {
     const tracks = this.getMusicTracks();
     const match = tracks.find((track) => track.id === trackId);
     return match?.name || match?.label || trackId;
+  }
+
+  updateMusicPreview(dt) {
+    if (!this.musicPreviewPlayer) return;
+    this.musicPreviewPlayer.update(dt);
+    if (this.musicPreviewPlayer.targetVolume === 0 && this.musicPreviewPlayer.volume <= 0) {
+      this.musicPreviewPlayer = null;
+      this.musicPreviewTrackId = null;
+    }
+  }
+
+  startMusicPreview(trackId) {
+    if (!trackId || !this.game?.audio) return;
+    if (this.musicPreviewTrackId === trackId && this.musicPreviewPlayer) return;
+    const entry = this.loadSavedSongLibrary().find((item) => item?.id === trackId && item?.song);
+    if (!entry?.song) return;
+    this.stopMusicPreview({ immediate: true });
+    const player = new MidiSongPlayer(this.game.audio);
+    player.setSong(entry.song, trackId);
+    player.setFade(1, 0.15);
+    this.musicPreviewPlayer = player;
+    this.musicPreviewTrackId = trackId;
+  }
+
+  stopMusicPreview({ immediate = false } = {}) {
+    if (!this.musicPreviewPlayer) return;
+    this.musicPreviewPlayer.setFade(0, immediate ? 0 : 0.2);
+    if (immediate) {
+      this.musicPreviewPlayer = null;
+      this.musicPreviewTrackId = null;
+    }
   }
 
   normalizeMidiTracks(rawTracks) {
@@ -3788,17 +3821,7 @@ export default class Editor {
       return;
     }
     if (this.isPointInBounds(payload.x, payload.y, this.playButtonBounds)) {
-      this.playtestPressActive = true;
-      if (this.playtestPressTimer) {
-        clearTimeout(this.playtestPressTimer);
-      }
-      this.playtestPressTimer = setTimeout(() => {
-        this.playtestPressTimer = null;
-        if (this.playtestPressActive) {
-          this.playtestPressActive = false;
-          this.startPlaytestFromCursor();
-        }
-      }, 450);
+      this.startPlaytest();
       return;
     }
 
@@ -4158,16 +4181,6 @@ export default class Editor {
       this.dragTarget = null;
       return;
     }
-    if (this.playtestPressActive) {
-      this.playtestPressActive = false;
-      if (this.playtestPressTimer) {
-        clearTimeout(this.playtestPressTimer);
-        this.playtestPressTimer = null;
-        this.game.exitEditor({ playtest: true });
-      }
-      return;
-    }
-
     if (this.isMobileLayout()) {
       if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
         this.panJoystick.active = false;
@@ -4564,25 +4577,9 @@ export default class Editor {
     this.setZoom(previous, this.lastPointer.x, this.lastPointer.y);
   }
 
-  startPlaytestFromCursor() {
-    const hover = this.hoverTile;
-    if (!hover) return;
-    const previous = this.game.world.spawn ? { ...this.game.world.spawn } : null;
-    this.playtestSpawnOverride = previous;
-    const ensured = this.ensureInBounds(hover.x, hover.y);
-    if (ensured) {
-      this.game.world.setSpawnTile(ensured.tileX, ensured.tileY);
-    }
+  startPlaytest() {
+    this.stopMusicPreview();
     this.game.exitEditor({ playtest: true });
-  }
-
-  restorePlaytestSpawn() {
-    if (!this.playtestSpawnOverride) return;
-    const previous = this.playtestSpawnOverride;
-    this.playtestSpawnOverride = null;
-    if (previous) {
-      this.game.world.setSpawnTile(previous.x, previous.y);
-    }
   }
 
   applyPaint(tileX, tileY, mode) {
@@ -6108,8 +6105,8 @@ export default class Editor {
               id: 'playtest',
               label: 'PLAYTEST',
               active: false,
-              tooltip: 'Start playtest from cursor',
-              onClick: () => this.startPlaytestFromCursor()
+              tooltip: 'Start playtest from spawn',
+              onClick: () => this.startPlaytest()
             },
             {
               id: 'save',
