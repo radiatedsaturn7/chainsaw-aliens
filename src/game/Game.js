@@ -62,6 +62,7 @@ import Editor from '../editor/Editor.js';
 import ObstacleTestMap from '../debug/ObstacleTestMap.js';
 import { OBSTACLES } from '../world/Obstacles.js';
 import { MOVEMENT_MODEL } from './MovementModel.js';
+import { exportProjectBundleBlob, importProjectBundleFile } from '../storage/projectStorage.js';
 
 const MIDI_SONG_LIBRARY_KEY = 'chainsaw-midi-library';
 const BOSS_TYPES = new Set([
@@ -159,6 +160,17 @@ export default class Game {
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
     this.title = new Title();
+    this.bundleFileInput = document.createElement('input');
+    this.bundleFileInput.type = 'file';
+    this.bundleFileInput.accept = '.zip,application/zip';
+    this.bundleFileInput.style.display = 'none';
+    document.body.appendChild(this.bundleFileInput);
+    this.bundleFileInput.addEventListener('change', async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      await this.importGameBundle(file);
+      this.bundleFileInput.value = '';
+    });
     this.dialog = new Dialog(INTRO_LINES);
     this.hud = new HUD();
     this.pauseMenu = new Pause();
@@ -616,6 +628,7 @@ export default class Game {
       elevators: this.world.elevators,
       pixelArt: this.world.pixelArt,
       musicZones: this.world.musicZones,
+      triggerZones: this.world.triggerZones,
       midiTracks: this.world.midiTracks
     };
   }
@@ -634,6 +647,7 @@ export default class Game {
       elevators: data.elevators || [],
       pixelArt: data.pixelArt || { tiles: {} },
       musicZones: data.musicZones || [],
+      triggerZones: data.triggerZones || [],
       midiTracks: data.midiTracks || []
     };
     this.world.applyData(migrated);
@@ -903,6 +917,7 @@ export default class Game {
       elevators: [],
       pixelArt: { tiles: {} },
       musicZones: [],
+      triggerZones: [],
       midiTracks: []
     };
   }
@@ -913,6 +928,32 @@ export default class Game {
     this.editor.clearAutosave();
     this.editor.syncPreviewMinimap();
     this.showSystemToast('All graphics, music, and levels reset.');
+  }
+
+  async exportGameBundle() {
+    try {
+      const blob = await exportProjectBundleBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'chainsaw-aliens-project.zip';
+      link.click();
+      URL.revokeObjectURL(url);
+      this.showSystemToast('Exported project bundle.');
+    } catch (error) {
+      this.showSystemToast('Project export failed.');
+      console.error('Project export failed:', error);
+    }
+  }
+
+  async importGameBundle(file) {
+    try {
+      await importProjectBundleFile(file);
+      this.showSystemToast('Imported project bundle. Open tools to load assets.');
+    } catch (error) {
+      this.showSystemToast('Project import failed.');
+      console.error('Project import failed:', error);
+    }
   }
 
   startGoldenPath() {
@@ -1393,6 +1434,10 @@ export default class Game {
         } else if (action === 'options') {
           this.title.setControlsSelectionByMode(this.inputMode);
           this.title.setScreen('controls');
+        } else if (action === 'export-game') {
+          this.exportGameBundle();
+        } else if (action === 'import-game') {
+          this.bundleFileInput.click();
         } else if (action === 'tools') {
           this.title.setScreen('tools');
         } else if (action === 'endless') {
@@ -6090,7 +6135,11 @@ export default class Game {
         this.audio.ui();
         return;
       }
-      if (action === 'tools') {
+      if (action === 'export-game') {
+        this.exportGameBundle();
+      } else if (action === 'import-game') {
+        this.bundleFileInput.click();
+      } else if (action === 'tools') {
         this.title.setScreen('tools');
         this.audio.ui();
         return;
@@ -6284,7 +6333,11 @@ export default class Game {
         this.recordFeedback('menu navigate', 'visual');
         return;
       }
-      if (action === 'tools') {
+      if (action === 'export-game') {
+        this.exportGameBundle();
+      } else if (action === 'import-game') {
+        this.bundleFileInput.click();
+      } else if (action === 'tools') {
         this.title.setScreen('tools');
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');

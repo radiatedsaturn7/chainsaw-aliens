@@ -86,6 +86,7 @@ export default class World {
     this.elevatorSet = new Set();
     this.pixelArt = { tiles: {} };
     this.musicZones = [];
+    this.triggerZones = [];
     this.midiTracks = [];
     this.data = null;
     this.rooms = [];
@@ -134,6 +135,7 @@ export default class World {
     this.elevatorSet = new Set(this.elevators.map((elevator) => `${elevator.x},${elevator.y}`));
     this.pixelArt = data.pixelArt ? { ...data.pixelArt, tiles: { ...(data.pixelArt.tiles || {}) } } : { tiles: {} };
     this.musicZones = (data.musicZones || []).map((zone) => ({ ...zone }));
+    this.triggerZones = (data.triggerZones || []).map((zone) => ({ ...zone }));
     this.midiTracks = (data.midiTracks || []).map((track) => ({
       ...track,
       notes: (track.notes || []).map((note) => ({ ...note }))
@@ -144,6 +146,7 @@ export default class World {
       this.data.elevators = this.elevators;
       this.data.pixelArt = this.pixelArt;
       this.data.musicZones = this.musicZones;
+      this.data.triggerZones = this.triggerZones;
       this.data.midiTracks = this.midiTracks;
     }
     this.rebuildCaches();
