@@ -10,6 +10,8 @@ export default class Title {
       'music-editor',
       'midi-editor',
       'skin-editor',
+      'export-game',
+      'import-game',
       'reset-all',
       'back'
     ];
@@ -274,9 +276,13 @@ export default class Title {
               ? 'MIDI Editor'
               : action === 'skin-editor'
                 ? 'Skin Editor'
-                : action === 'reset-all'
-                  ? 'Reset All'
-                  : 'Back';
+                : action === 'export-game'
+                  ? 'Export Game'
+                  : action === 'import-game'
+                    ? 'Import Game'
+                    : action === 'reset-all'
+                      ? 'Reset All'
+                      : 'Back';
       ctx.fillText(label, width / 2, y + 22);
       if (selected) {
         ctx.fillStyle = '#fff';

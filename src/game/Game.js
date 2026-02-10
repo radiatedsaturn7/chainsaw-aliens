@@ -616,7 +616,8 @@ export default class Game {
       elevators: this.world.elevators,
       pixelArt: this.world.pixelArt,
       musicZones: this.world.musicZones,
-      midiTracks: this.world.midiTracks
+      midiTracks: this.world.midiTracks,
+      triggerZones: this.world.triggerZones
     };
   }
 
@@ -634,7 +635,8 @@ export default class Game {
       elevators: data.elevators || [],
       pixelArt: data.pixelArt || { tiles: {} },
       musicZones: data.musicZones || [],
-      midiTracks: data.midiTracks || []
+      midiTracks: data.midiTracks || [],
+      triggerZones: data.triggerZones || []
     };
     this.world.applyData(migrated);
     this.syncSpawnPoint();
@@ -905,6 +907,67 @@ export default class Game {
       musicZones: [],
       midiTracks: []
     };
+  }
+
+  async exportGameBundle() {
+    const JSZip = window?.JSZip;
+    if (!JSZip) {
+      console.warn('JSZip unavailable for game export.');
+      return;
+    }
+    const bundle = {
+      version: 1,
+      world: this.buildWorldData(),
+      midiLibrary: (() => {
+        try {
+          return JSON.parse(localStorage.getItem(MIDI_SONG_LIBRARY_KEY)) || [];
+        } catch (error) {
+          return [];
+        }
+      })()
+    };
+    const zip = new JSZip();
+    zip.file('game-bundle.json', JSON.stringify(bundle, null, 2));
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chainsaw-aliens-game.zip';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  importGameBundle() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,.zip,application/json,application/zip';
+    input.addEventListener('change', async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        let payload = null;
+        if (/\.zip$/i.test(file.name)) {
+          const JSZip = window?.JSZip;
+          if (!JSZip) throw new Error('JSZip unavailable');
+          const zip = await JSZip.loadAsync(file);
+          const entry = zip.file('game-bundle.json') || Object.values(zip.files).find((item) => item && !item.dir && item.name.endsWith('.json'));
+          if (!entry) throw new Error('No game-bundle.json found in zip.');
+          payload = JSON.parse(await entry.async('string'));
+        } else {
+          payload = JSON.parse(await file.text());
+        }
+        if (payload?.world?.tiles) {
+          this.applyWorldData(payload.world);
+        }
+        if (Array.isArray(payload?.midiLibrary)) {
+          localStorage.setItem(MIDI_SONG_LIBRARY_KEY, JSON.stringify(payload.midiLibrary));
+        }
+      } catch (error) {
+        console.warn('Failed to import game bundle:', error);
+      }
+      input.value = '';
+    });
+    input.click();
   }
 
   resetAllContent() {
@@ -1387,6 +1450,10 @@ export default class Game {
             this.enterMidiComposer();
           } else if (action === 'skin-editor') {
             this.enterEditor({ tab: 'pixels' });
+          } else if (action === 'export-game') {
+            this.exportGameBundle();
+          } else if (action === 'import-game') {
+            this.importGameBundle();
           } else if (action === 'reset-all') {
             this.resetAllContent();
           }
@@ -6078,6 +6145,10 @@ export default class Game {
           this.enterMidiComposer();
         } else if (action === 'skin-editor') {
           this.enterEditor({ tab: 'pixels' });
+        } else if (action === 'export-game') {
+          this.exportGameBundle();
+        } else if (action === 'import-game') {
+          this.importGameBundle();
         } else if (action === 'reset-all') {
           this.resetAllContent();
         }
@@ -6268,6 +6339,10 @@ export default class Game {
           this.enterMidiComposer();
         } else if (action === 'skin-editor') {
           this.enterEditor({ tab: 'pixels' });
+        } else if (action === 'export-game') {
+          this.exportGameBundle();
+        } else if (action === 'import-game') {
+          this.importGameBundle();
         } else if (action === 'reset-all') {
           this.resetAllContent();
         }
