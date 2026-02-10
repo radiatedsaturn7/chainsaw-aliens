@@ -61,14 +61,21 @@ export default class RecordModeLayout {
       };
     }
     const headerPadding = 12;
-    const headerH = headerPadding + this.header.rowH + 10;
+    const rowH = clamp(Math.round(this.bounds.instrument.h * 0.08), 36, 48);
+    const rowGap = clamp(Math.round(rowH * 0.35), 8, 12);
+    const totalW = this.bounds.instrument.w - 24;
+    const minButtonW = 90;
+    const columns = Math.max(1, Math.floor((totalW + rowGap) / (minButtonW + rowGap)));
+    const settingsRows = Math.ceil(7 / columns);
+    const settingsBlockH = settingsRows * rowH + Math.max(0, settingsRows - 1) * rowGap;
+    const headerH = headerPadding + settingsBlockH + rowGap + rowH;
     this.header = {
       x: this.bounds.instrument.x + 12,
       y: this.bounds.instrument.y + 12,
-      rowH: 28,
-      rowGap: 10,
+      rowH,
+      rowGap,
       settingsY: this.bounds.instrument.y + 12,
-      instrumentY: this.bounds.instrument.y + 12 + 28 + 10,
+      instrumentY: this.bounds.instrument.y + 12 + settingsBlockH + rowGap,
       headerH
     };
     if (this.touchInput) {
@@ -125,10 +132,24 @@ export default class RecordModeLayout {
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.fillStyle = active ? '#111' : '#fff';
-    ctx.font = '12px Courier New';
+    const fontSize = clamp(Math.round(bounds.h * 0.45), 12, 16);
+    ctx.font = `${fontSize}px Courier New`;
     ctx.textAlign = 'center';
-    ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 4);
+    ctx.textBaseline = 'middle';
+    const padding = Math.max(6, Math.round(bounds.h * 0.2));
+    const clippedLabel = this.truncateLabel(ctx, label, Math.max(0, bounds.w - padding * 2));
+    ctx.fillText(clippedLabel, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
     ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  truncateLabel(ctx, label, maxWidth) {
+    if (ctx.measureText(label).width <= maxWidth) return label;
+    let truncated = label;
+    while (truncated.length > 4 && ctx.measureText(`${truncated}…`).width > maxWidth) {
+      truncated = truncated.slice(0, -1);
+    }
+    return `${truncated}…`;
   }
 
   drawInstrumentButtons(ctx) {
@@ -139,16 +160,20 @@ export default class RecordModeLayout {
     const instruments = ['guitar', 'bass', 'keyboard', 'drums'];
     const gap = 10;
     const totalW = this.instrumentModalBounds?.w ? this.instrumentModalBounds.w - 32 : this.bounds.instrument.w - 24;
-    const buttonW = Math.max(80, (totalW - gap * (instruments.length - 1)) / instruments.length);
+    const minButtonW = 96;
+    const columns = Math.max(1, Math.floor((totalW + gap) / (minButtonW + gap)));
+    const buttonW = Math.max(minButtonW, (totalW - gap * (columns - 1)) / columns);
     const startX = this.instrumentModalBounds?.x ? this.instrumentModalBounds.x + 16 : this.header.x;
     const startY = this.instrumentModalBounds?.y ? this.instrumentModalBounds.y + 54 : this.header.instrumentY;
     this.bounds.instrumentButtons = instruments.map((instrument, index) => {
+      const row = Math.floor(index / columns);
+      const col = index % columns;
       const w = Math.min(buttonW, totalW);
       return ({
         id: instrument,
         label: instrument[0].toUpperCase() + instrument.slice(1),
-        x: startX + index * (w + gap),
-        y: startY,
+        x: startX + col * (w + gap),
+        y: startY + row * (this.header.rowH + gap),
         w,
         h: this.header.rowH,
         active: this.instrument === instrument
@@ -168,8 +193,15 @@ export default class RecordModeLayout {
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(instrument.x, instrument.y, instrument.w, instrument.h);
 
-    const modalW = Math.min(520, instrument.w - 40);
-    const modalH = 150;
+    const modalW = Math.min(520, instrument.w - 24);
+    const instruments = ['guitar', 'bass', 'keyboard', 'drums'];
+    const gap = 10;
+    const minButtonW = 96;
+    const columns = Math.max(1, Math.floor((modalW - 32 + gap) / (minButtonW + gap)));
+    const rows = Math.ceil(instruments.length / columns);
+    const titleH = 34;
+    const modalContentH = titleH + rows * this.header.rowH + Math.max(0, rows - 1) * gap + 16;
+    const modalH = Math.min(instrument.h - 24, Math.max(150, modalContentH));
     const modalX = instrument.x + (instrument.w - modalW) / 2;
     const modalY = instrument.y + (instrument.h - modalH) / 2;
     this.instrumentModalBounds = { x: modalX, y: modalY, w: modalW, h: modalH };
@@ -188,7 +220,9 @@ export default class RecordModeLayout {
   drawSettingButtons(ctx, isPlaying, isRecording) {
     const gap = 10;
     const totalW = this.bounds.instrument.w - 24;
-    const buttonW = Math.max(72, (totalW - gap * 6) / 7);
+    const minButtonW = 90;
+    const columns = Math.max(1, Math.floor((totalW + gap) / (minButtonW + gap)));
+    const buttonW = Math.max(minButtonW, (totalW - gap * (columns - 1)) / columns);
     const x = this.header.x;
     const y = this.header.settingsY;
     this.bounds.settingsButtons = [
@@ -204,7 +238,7 @@ export default class RecordModeLayout {
       {
         id: 'countin',
         label: this.countInEnabled ? 'Count-in On' : 'Count-in Off',
-        x: x + buttonW + gap,
+        x: x + (buttonW + gap),
         y,
         w: buttonW,
         h: this.header.rowH,
@@ -256,6 +290,15 @@ export default class RecordModeLayout {
         active: false
       }
     ];
+    this.bounds.settingsButtons = this.bounds.settingsButtons.map((button, index) => {
+      const row = Math.floor(index / columns);
+      const col = index % columns;
+      return {
+        ...button,
+        x: x + col * (buttonW + gap),
+        y: y + row * (this.header.rowH + gap)
+      };
+    });
     this.bounds.settingsButtons.forEach((btn) => {
       this.drawButton(ctx, btn, btn.label, btn.active);
     });
