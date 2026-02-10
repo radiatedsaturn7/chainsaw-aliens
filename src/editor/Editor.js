@@ -496,6 +496,7 @@ export default class Editor {
     this.loadAutosaveOrSeed();
     this.resetView();
     this.syncMobileControlBounds();
+    this.resetTransientTouchState();
     this.getMusicTracks();
     this.syncPreviewMinimap();
     this.panJoystick.active = false;
@@ -509,6 +510,7 @@ export default class Editor {
 
   deactivate() {
     this.active = false;
+    this.resetTransientTouchState();
     this.dragging = false;
     this.dragMode = null;
     this.pendingChanges.clear();
@@ -627,6 +629,26 @@ export default class Editor {
 
   setFocusOverride(point) {
     this.focusOverride = point;
+  }
+
+
+  resetTransientTouchState() {
+    this.pendingPointer = null;
+    this.longPressFired = false;
+    if (this.longPressTimer) {
+      clearTimeout(this.longPressTimer);
+      this.longPressTimer = null;
+    }
+    this.panelScrollDrag = null;
+    this.drawer.swipeStart = null;
+    this.gestureStart = null;
+    this.dragButton = null;
+    this.panJoystick.active = false;
+    this.panJoystick.id = null;
+    this.panJoystick.dx = 0;
+    this.panJoystick.dy = 0;
+    this.zoomSlider.active = false;
+    this.zoomSlider.id = null;
   }
 
   syncMobileControlBounds() {
