@@ -4097,7 +4097,9 @@ export default class Editor {
     }
 
     if (this.isMobileLayout() && this.panelScrollDrag
-      && (payload.id === undefined || this.panelScrollDrag.id === payload.id)) {
+      && (payload.id === undefined || this.panelScrollDrag.id === payload.id)
+      && this.panelScrollBounds
+      && this.isPointInBounds(payload.x, payload.y, this.drawerBounds)) {
       const activeTab = this.getActivePanelTab();
       const maxScroll = this.panelScrollMax[activeTab] || 0;
       const delta = this.panelScrollDrag.startY - payload.y;
@@ -4268,8 +4270,10 @@ export default class Editor {
       this.drawer.swipeStart = null;
     }
 
-    if (this.panelScrollDrag && (payload.id === undefined || this.panelScrollDrag.id === payload.id)) {
-      this.panelScrollDrag = null;
+    if (this.panelScrollDrag) {
+      if (payload.id === undefined || this.panelScrollDrag.id === null || this.panelScrollDrag.id === payload.id) {
+        this.panelScrollDrag = null;
+      }
     }
 
     if (this.longPressTimer) {
@@ -4422,9 +4426,14 @@ export default class Editor {
 
   updatePanJoystick(x, y) {
     const { center, radius } = this.panJoystick;
+    if (!center || !Number.isFinite(center.x) || !Number.isFinite(center.y) || !Number.isFinite(radius) || radius <= 0) {
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+      return;
+    }
     const dx = x - center.x;
     const dy = y - center.y;
-    if (!Number.isFinite(radius) || radius <= 0) {
+    if (!Number.isFinite(dx) || !Number.isFinite(dy)) {
       this.panJoystick.dx = 0;
       this.panJoystick.dy = 0;
       return;
