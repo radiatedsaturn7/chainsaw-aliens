@@ -24,6 +24,8 @@ import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/anima
 import UndoStack from './pixel-editor/undo.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
+import { openProjectBrowser } from './ProjectBrowserModal.js';
+import { vfsSave } from './vfs.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -208,6 +210,7 @@ export default class PixelStudio {
     this.tileLibrary = TILE_LIBRARY;
     this.activeTile = this.tileLibrary[0] || null;
     this.tileIndex = 0;
+    this.currentDocumentRef = null;
     this.modeTab = 'draw';
     this.tools = createToolRegistry(this);
     this.activeToolId = TOOL_IDS.PENCIL;
@@ -435,6 +438,46 @@ export default class PixelStudio {
       });
     });
     pixelData.fps = Math.round(1000 / (this.animation.frames[0]?.durationMs || 120));
+  }
+
+
+  async saveArtDocument(options = {}) {
+    const { forceSaveAs = false } = options;
+    this.syncTileData();
+    let name = this.currentDocumentRef?.name;
+    if (forceSaveAs || !name) {
+      const result = await openProjectBrowser({
+        mode: 'saveAs',
+        fixedFolder: 'art',
+        initialFolder: 'art',
+        title: 'Save Art As'
+      });
+      if (!result?.name) return;
+      name = result.name;
+    }
+    vfsSave('art', name, this.game.world.pixelArt || { tiles: {} });
+    this.currentDocumentRef = { folder: 'art', name };
+  }
+
+  loadArtDocument() {
+    openProjectBrowser({
+      mode: 'open',
+      fixedFolder: 'art',
+      initialFolder: 'art',
+      title: 'Open Art',
+      onOpen: ({ name, payload }) => {
+        if (!payload?.data) return;
+        this.game.world.pixelArt = payload.data;
+        this.currentDocumentRef = { folder: 'art', name };
+        this.loadTileData();
+      }
+    });
+  }
+
+  newArtDocument() {
+    this.game.world.pixelArt = { tiles: {} };
+    this.currentDocumentRef = null;
+    this.loadTileData();
   }
 
   setActiveTile(tile) {
@@ -2551,6 +2594,10 @@ export default class PixelStudio {
     const lineHeight = isMobile ? 52 : 20;
     const buttonHeight = isMobile ? 44 : 18;
     const actions = [
+      { label: 'New', action: () => this.newArtDocument() },
+      { label: 'Save', action: () => this.saveArtDocument() },
+      { label: 'Save As', action: () => this.saveArtDocument({ forceSaveAs: true }) },
+      { label: 'Open', action: () => this.loadArtDocument() },
       { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } },
       { label: 'Export PNG', action: () => this.exportPng() },
       { label: 'Sprite Sheet', action: () => this.exportSpriteSheet('horizontal') },

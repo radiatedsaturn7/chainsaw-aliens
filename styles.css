@@ -119,3 +119,119 @@ body.mobile .hint {
 .gm-search-input::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
+
+.project-browser-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.project-browser-panel {
+  width: min(980px, 96vw);
+  max-height: 92vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #0b1118;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.project-browser-header,
+.project-browser-footer,
+.project-browser-row,
+.project-browser-inline,
+.project-browser-actions,
+.project-browser-row-actions,
+.project-browser-tabs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.project-browser-header h2 {
+  margin: 0;
+  font-size: 18px;
+  flex: 1;
+}
+
+.project-browser-list {
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 200px;
+}
+
+.project-browser-row {
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 8px;
+  flex-wrap: wrap;
+}
+
+.project-browser-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.project-browser-meta span,
+.project-browser-info,
+.project-browser-message {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.project-browser-btn,
+.project-browser-close,
+.project-browser-tab {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  min-height: 34px;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.project-browser-tab.is-active,
+.project-browser-btn.primary {
+  background: rgba(75, 130, 255, 0.4);
+}
+
+.project-browser-btn.danger {
+  background: rgba(180, 60, 60, 0.45);
+}
+
+.project-browser-search {
+  width: 100%;
+  min-height: 36px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  padding: 8px;
+  font-family: inherit;
+}
+
+.project-browser-savebox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.project-browser-overwrite {
+  font-size: 12px;
+}
