@@ -333,11 +333,10 @@ export default class Editor {
       enemies: true,
       prefabs: true
     };
-    this.panelTabs = ['file', 'playtest', 'toolbox', 'tiles', 'triggers', 'powerups', 'enemies', 'bosses', 'prefabs', 'music'];
+    this.panelTabs = ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'enemies', 'bosses', 'prefabs', 'music'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       file: 0,
-      playtest: 0,
       toolbox: 0,
       tiles: 0,
       triggers: 0,
@@ -352,7 +351,6 @@ export default class Editor {
     };
     this.panelScrollMax = {
       file: 0,
-      playtest: 0,
       toolbox: 0,
       tiles: 0,
       triggers: 0,
@@ -370,7 +368,6 @@ export default class Editor {
     this.panelScrollDrag = null;
     this.panelMenuIndex = {
       file: 0,
-      playtest: 0,
       toolbox: 0,
       tiles: 0,
       triggers: 0,
@@ -387,7 +384,7 @@ export default class Editor {
     this.drawer = {
       open: true,
       tabIndex: 0,
-      tabs: ['file', 'playtest', 'toolbox', 'tiles', 'triggers', 'powerups', 'enemies', 'bosses', 'prefabs', 'music'],
+      tabs: ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'enemies', 'bosses', 'prefabs', 'music'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -887,13 +884,9 @@ export default class Editor {
       this.enemyCategory = 'boss';
     } else if (tabId === 'enemies') {
       this.enemyCategory = 'standard';
-    } else if (tabId === 'pixels') {
-      this.mode = 'pixel';
-    } else if (tabId === 'music') {
-      this.mode = 'music';
+    }
+    if (tabId === 'music') {
       this.getMusicTracks();
-    } else if (tabId === 'midi') {
-      this.mode = 'midi';
     }
   }
 
@@ -907,22 +900,8 @@ export default class Editor {
     if (drawerIndex >= 0) {
       this.drawer.tabIndex = drawerIndex;
     }
-    if (nextTab === 'tiles') {
-      this.mode = 'tile';
-      this.tileTool = 'paint';
-    } else if (nextTab === 'toolbox') {
-      this.mode = 'shape';
-    } else if (nextTab === 'triggers') {
-      this.mode = 'trigger';
-    } else if (nextTab === 'enemies' || nextTab === 'bosses') {
-      this.mode = 'enemy';
-    } else if (nextTab === 'pixels') {
-      this.mode = 'pixel';
-    } else if (nextTab === 'music') {
-      this.mode = 'music';
+    if (nextTab === 'music') {
       this.getMusicTracks();
-    } else if (nextTab === 'midi') {
-      this.mode = 'midi';
     }
   }
 
@@ -4138,7 +4117,7 @@ export default class Editor {
       return;
     }
 
-    if (this.mode === 'music') {
+    if (this.mode === 'music' && this.getActivePanelTab() === 'music') {
       if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
       const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
       if (this.musicTool === 'erase') {
@@ -4248,7 +4227,7 @@ export default class Editor {
       return;
     }
 
-    if (this.musicDragStart && this.mode === 'music') {
+    if (this.musicDragStart && this.mode === 'music' && this.getActivePanelTab() === 'music') {
       const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
       this.musicDragTarget = { x: tileX, y: tileY };
       return;
@@ -4399,7 +4378,7 @@ export default class Editor {
       return;
     }
 
-    if (this.musicDragStart && this.mode === 'music') {
+    if (this.musicDragStart && this.mode === 'music' && this.getActivePanelTab() === 'music') {
       const start = this.musicDragStart;
       const end = this.musicDragTarget || start;
       const minX = Math.min(start.x, end.x);
@@ -5621,7 +5600,8 @@ export default class Editor {
       ctx.restore();
     }
     const zones = this.game.world.musicZones || [];
-    if (zones.length > 0) {
+    const showMusicZones = this.getActivePanelTab() === 'music';
+    if (showMusicZones && zones.length > 0) {
       ctx.save();
       ctx.fillStyle = 'rgba(120, 200, 255, 0.18)';
       ctx.strokeStyle = 'rgba(120, 200, 255, 0.6)';
@@ -5679,7 +5659,7 @@ export default class Editor {
       ctx.restore();
     }
 
-    if (this.musicDragStart && this.musicDragTarget) {
+    if (showMusicZones && this.musicDragStart && this.musicDragTarget) {
       const minX = Math.min(this.musicDragStart.x, this.musicDragTarget.x);
       const minY = Math.min(this.musicDragStart.y, this.musicDragTarget.y);
       const maxX = Math.max(this.musicDragStart.x, this.musicDragTarget.x);
@@ -6277,7 +6257,6 @@ export default class Editor {
       } else {
         const tabs = [
           { id: 'file', label: 'FILE' },
-          { id: 'playtest', label: 'PLAYTEST' },
           { id: 'toolbox', label: 'TOOLBOX' },
           { id: 'tiles', label: 'TILES' },
           { id: 'triggers', label: 'TRIGGERS' },
@@ -6455,7 +6434,7 @@ export default class Editor {
             ...SHAPE_TOOLS.map((shape) => ({
               id: shape.id,
               label: shape.label,
-              active: this.shapeTool.id === shape.id,
+              active: this.mode === 'shape' && this.shapeTool.id === shape.id,
               tooltip: `Shape: ${shape.label}`,
               onClick: () => {
                 this.setShapeTool(shape);
@@ -6664,7 +6643,7 @@ export default class Editor {
           items = SHAPE_TOOLS.map((shape) => ({
             id: shape.id,
             label: shape.label,
-            active: this.shapeTool.id === shape.id,
+            active: this.mode === 'shape' && this.shapeTool.id === shape.id,
             tooltip: `Shape: ${shape.label}`,
             onClick: () => {
               this.setShapeTool(shape);
