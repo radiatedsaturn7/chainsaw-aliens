@@ -173,13 +173,20 @@ const TRIGGER_ACTION_TYPES = [
   { id: 'save-game', label: 'Save Game' },
   { id: 'add-item', label: 'Add Weapon / Item' },
   { id: 'play-animation', label: 'Play Animation' },
-  { id: 'move-entity', label: 'Move Entity / Object' }
+  { id: 'move-entity', label: 'Move Entity / Object' },
+  { id: 'fade-in', label: 'Fade In' },
+  { id: 'fade-out', label: 'Fade Out' },
+  { id: 'display-text', label: 'Display Text' },
+  { id: 'wait', label: 'Wait (ms)' },
+  { id: 'fade-out-music', label: 'Fade Out Music' },
+  { id: 'fade-in-music', label: 'Fade In Music' }
 ];
 
 const TRIGGER_ITEM_OPTIONS = ['chainsaw-throw', 'flame-saw', 'mag-boots', 'resonance', 'flamethrower', 'health-pack'];
 const TRIGGER_ANIMATION_OPTIONS = ['spark-burst', 'explosion-small', 'portal-open', 'screen-shake'];
 const TRIGGER_TARGET_OPTIONS = ['player', 'enemy', 'object'];
 const TRIGGER_ENEMY_TARGET_OPTIONS = ['nearest', 'all-in-zone', 'by-tag'];
+const TRIGGER_TEXT_OPTIONS = ['Warning!', 'Door unlocked.', 'Boss incoming!', 'Checkpoint reached.', 'Objective updated.'];
 
 const TILE_TOOL_LABELS = {
   paint: 'Paint',
@@ -291,6 +298,9 @@ export default class Editor {
     this.triggerZoneTarget = null;
     this.triggerEditorOpen = false;
     this.selectedTriggerId = null;
+    this.triggerEditorView = 'main';
+    this.triggerActionDraft = null;
+    this.triggerEditingActionId = null;
     this.midiTrackIndex = 0;
     this.midiNoteLength = 4;
     this.midiGridBounds = null;
@@ -1708,6 +1718,9 @@ export default class Editor {
     triggers.push(trigger);
     this.selectedTriggerId = trigger.id;
     this.triggerEditorOpen = true;
+    this.triggerEditorView = 'main';
+    this.triggerActionDraft = null;
+    this.triggerEditingActionId = null;
     this.persistAutosave();
   }
 
@@ -1722,6 +1735,9 @@ export default class Editor {
     if (removed?.id === this.selectedTriggerId) {
       this.selectedTriggerId = triggers[0]?.id || null;
       this.triggerEditorOpen = Boolean(this.selectedTriggerId);
+      this.triggerEditorView = 'main';
+      this.triggerActionDraft = null;
+      this.triggerEditingActionId = null;
     }
     this.persistAutosave();
     return true;
@@ -1769,10 +1785,58 @@ export default class Editor {
       case 'move-entity':
         base.params = { target: TRIGGER_TARGET_OPTIONS[0], dx: 0, dy: 0 };
         break;
+      case 'fade-in':
+      case 'fade-out':
+      case 'fade-out-music':
+        base.params = { durationMs: 1000 };
+        break;
+      case 'fade-in-music':
+        base.params = { musicId: MUSIC_TRACKS[0]?.id || 'ambient-rift', durationMs: 1000 };
+        break;
+      case 'display-text':
+        base.params = { text: TRIGGER_TEXT_OPTIONS[0], durationMs: 2000 };
+        break;
+      case 'wait':
+        base.params = { durationMs: 500 };
+        break;
       default:
         base.params = {};
     }
     return base;
+  }
+
+
+  openTriggerActionEditor(action, { isNew = false } = {}) {
+    if (!action) return;
+    this.triggerActionDraft = JSON.parse(JSON.stringify(action));
+    this.triggerEditingActionId = isNew ? null : action.id;
+    this.triggerEditorView = 'edit-action';
+  }
+
+  commitTriggerActionDraft(trigger) {
+    if (!trigger || !this.triggerActionDraft) return;
+    if (this.triggerEditingActionId) {
+      const index = trigger.actions.findIndex((entry) => entry.id === this.triggerEditingActionId);
+      if (index >= 0) {
+        trigger.actions[index] = JSON.parse(JSON.stringify(this.triggerActionDraft));
+      }
+    } else {
+      trigger.actions.push(JSON.parse(JSON.stringify(this.triggerActionDraft)));
+    }
+    this.triggerEditorView = 'main';
+    this.triggerActionDraft = null;
+    this.triggerEditingActionId = null;
+    this.persistAutosave();
+  }
+
+  deleteEditingTriggerAction(trigger) {
+    if (!trigger || !this.triggerEditingActionId) return;
+    const index = trigger.actions.findIndex((entry) => entry.id === this.triggerEditingActionId);
+    if (index >= 0) trigger.actions.splice(index, 1);
+    this.triggerEditorView = 'main';
+    this.triggerActionDraft = null;
+    this.triggerEditingActionId = null;
+    this.persistAutosave();
   }
 
   normalizeTrigger(trigger) {
@@ -1846,6 +1910,18 @@ export default class Editor {
         return `${params.animationId || 'animation'} on ${params.target || 'zone'}`;
       case 'move-entity':
         return `${params.target || 'player'} by (${params.dx || 0}, ${params.dy || 0})`;
+      case 'fade-in':
+        return `Duration: ${params.durationMs || 0}ms`;
+      case 'fade-out':
+        return `Duration: ${params.durationMs || 0}ms`;
+      case 'display-text':
+        return `"${params.text || ''}" (${params.durationMs || 0}ms)`;
+      case 'wait':
+        return `${params.durationMs || 0}ms`;
+      case 'fade-out-music':
+        return `Duration: ${params.durationMs || 0}ms`;
+      case 'fade-in-music':
+        return `${params.musicId || 'ambient-rift'} (${params.durationMs || 0}ms)`;
       default:
         return 'No params';
     }
@@ -6463,6 +6539,9 @@ export default class Editor {
               onClick: () => {
                 this.selectedTriggerId = trigger.id;
                 this.triggerEditorOpen = true;
+                this.triggerEditorView = 'main';
+                this.triggerActionDraft = null;
+                this.triggerEditingActionId = null;
                 this.mode = 'trigger';
               }
             }))
@@ -6883,15 +6962,19 @@ export default class Editor {
       }
     }
 
+
     if (this.triggerEditorOpen) {
       const selected = this.getSelectedTrigger();
       if (selected) {
-        const panelWidth = 420;
-        const panelHeight = 520;
-        const panelX = width - panelWidth - (this.isMobileLayout() ? 12 : 384);
+        const panelWidth = this.isMobileLayout() ? Math.min(width - 24, 440) : 420;
+        const panelHeight = this.isMobileLayout() ? Math.min(height - 24, 620) : 560;
+        const panelX = this.isMobileLayout() ? 12 : width - panelWidth - (this.isMobileLayout() ? 12 : 384);
         const panelY = 12;
         const levelNames = this.getTriggerLevelNames();
         const enemyOptions = [...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES].map((entry) => entry.id);
+        const sectionButtonH = 40;
+        const rowGap = 8;
+        const draft = this.triggerActionDraft;
 
         ctx.save();
         ctx.fillStyle = 'rgba(15,18,22,0.95)';
@@ -6901,136 +6984,126 @@ export default class Editor {
         ctx.fillStyle = '#fff';
         ctx.font = '15px Courier New';
         ctx.fillText('Trigger Editor', panelX + 12, panelY + 22);
-        ctx.font = '12px Courier New';
-        ctx.fillStyle = 'rgba(255,255,255,0.8)';
-        ctx.fillText('Condition', panelX + 12, panelY + 40);
 
-        let triggerEditorY = panelY + 46;
-        TRIGGER_CONDITIONS.forEach((condition) => {
-          drawButton(panelX + 12, triggerEditorY, panelWidth - 24, 22, condition, selected.condition === condition, () => {
-            selected.condition = condition;
-            this.persistAutosave();
-          }, condition);
-          triggerEditorY += 24;
-        });
-
-        triggerEditorY += 4;
-        ctx.fillStyle = 'rgba(255,255,255,0.8)';
-        ctx.fillText('Add Action', panelX + 12, triggerEditorY + 10);
-        triggerEditorY += 14;
-
-        const addColumns = 2;
-        const addGap = 6;
-        const addButtonW = (panelWidth - 24 - addGap * (addColumns - 1)) / addColumns;
-        TRIGGER_ACTION_TYPES.forEach((type, index) => {
-          const col = index % addColumns;
-          const row = Math.floor(index / addColumns);
-          const x = panelX + 12 + col * (addButtonW + addGap);
-          const y = triggerEditorY + row * 22;
-          drawButton(x, y, addButtonW, 20, `+ ${type.label}`, false, () => {
-            selected.actions.push(this.createTriggerAction(type.id));
-            this.persistAutosave();
-          }, `Add action: ${type.label}`);
-        });
-        triggerEditorY += Math.ceil(TRIGGER_ACTION_TYPES.length / addColumns) * 22 + 4;
-
-        ctx.fillStyle = 'rgba(255,255,255,0.8)';
-        ctx.fillText('Actions (ordered)', panelX + 12, triggerEditorY + 10);
-        triggerEditorY += 14;
-
-        selected.actions.forEach((action, index) => {
-          const label = TRIGGER_ACTION_TYPES.find((entry) => entry.id === action.type)?.label || action.type;
-          const rowY = triggerEditorY;
-          drawButton(panelX + 12, rowY, panelWidth - 102, 20, `${index + 1}. ${label}`, false, () => {}, label);
-          drawButton(panelX + panelWidth - 84, rowY, 34, 20, '↑', false, () => {
-            if (index <= 0) return;
-            const [moved] = selected.actions.splice(index, 1);
-            selected.actions.splice(index - 1, 0, moved);
-            this.persistAutosave();
-          }, 'Move action up');
-          drawButton(panelX + panelWidth - 46, rowY, 34, 20, 'X', false, () => {
-            selected.actions.splice(index, 1);
-            this.persistAutosave();
-          }, 'Delete action');
-          triggerEditorY += 22;
-
-          const summary = this.formatTriggerActionSummary(action);
-          ctx.fillStyle = 'rgba(255,255,255,0.72)';
-          ctx.fillText(summary, panelX + 16, triggerEditorY + 9);
-
-          const paramsY = triggerEditorY;
-          if (action.type === 'load-level') {
-            drawButton(panelX + panelWidth - 110, paramsY, 22, 18, '◀', false, () => {
-              action.params.levelName = this.cycleOption(action.params.levelName, levelNames, -1);
+        let y = panelY + 36;
+        if (this.triggerEditorView === 'main') {
+          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Add Condition', false, () => { this.triggerEditorView = 'pick-condition'; }, 'Choose trigger condition');
+          y += sectionButtonH + rowGap;
+          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Add Action', false, () => { this.triggerEditorView = 'pick-action'; }, 'Add action to trigger');
+          y += sectionButtonH + rowGap + 4;
+          ctx.font = '12px Courier New';
+          ctx.fillStyle = 'rgba(255,255,255,0.8)';
+          ctx.fillText(`Condition: ${selected.condition}`, panelX + 12, y + 10);
+          y += 16;
+          ctx.fillText('Actions (tap to edit)', panelX + 12, y + 10);
+          y += 14;
+          selected.actions.forEach((action, index) => {
+            const label = TRIGGER_ACTION_TYPES.find((entry) => entry.id === action.type)?.label || action.type;
+            const rowY = y;
+            const summary = this.formatTriggerActionSummary(action);
+            drawButton(panelX + 12, rowY, panelWidth - 102, sectionButtonH, `${index + 1}. ${label}`, false, () => { this.openTriggerActionEditor(action, { isNew: false }); }, summary);
+            drawButton(panelX + panelWidth - 84, rowY, 34, sectionButtonH, '↑', false, () => { if (index <= 0) return; const [moved] = selected.actions.splice(index, 1); selected.actions.splice(index - 1, 0, moved); this.persistAutosave(); }, 'Move action up');
+            drawButton(panelX + panelWidth - 46, rowY, 34, sectionButtonH, 'X', false, () => { selected.actions.splice(index, 1); this.persistAutosave(); }, 'Delete action');
+            y += sectionButtonH + 2;
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.fillText(summary, panelX + 16, y + 9);
+            y += 20;
+          });
+          const deleteY = panelY + panelHeight - 52;
+          drawButton(panelX + 12, deleteY, panelWidth - 24, 40, 'Delete Trigger', false, () => {
+            const triggers = this.ensureTriggers();
+            const idx = triggers.findIndex((entry) => entry.id === selected.id);
+            if (idx >= 0) {
+              triggers.splice(idx, 1);
+              this.selectedTriggerId = triggers[0]?.id || null;
+              this.triggerEditorOpen = Boolean(this.selectedTriggerId);
+              this.triggerEditorView = 'main';
+              this.triggerActionDraft = null;
+              this.triggerEditingActionId = null;
               this.persistAutosave();
-            }, 'Previous level');
-            drawButton(panelX + panelWidth - 84, paramsY, 22, 18, '▶', false, () => {
-              action.params.levelName = this.cycleOption(action.params.levelName, levelNames, 1);
-              this.persistAutosave();
-            }, 'Next level');
-          } else if (action.type === 'spawn-enemy') {
-            drawButton(panelX + panelWidth - 158, paramsY, 22, 18, 'E◀', false, () => {
-              action.params.enemyType = this.cycleOption(action.params.enemyType, enemyOptions, -1);
-              this.persistAutosave();
-            }, 'Prev enemy');
-            drawButton(panelX + panelWidth - 132, paramsY, 22, 18, 'E▶', false, () => {
-              action.params.enemyType = this.cycleOption(action.params.enemyType, enemyOptions, 1);
-              this.persistAutosave();
-            }, 'Next enemy');
-            drawButton(panelX + panelWidth - 106, paramsY, 22, 18, 'X-', false, () => { this.adjustTriggerActionParam(action, 'offsetX', -1, { min: -200, max: 200 }); this.persistAutosave(); }, 'Offset X -');
-            drawButton(panelX + panelWidth - 80, paramsY, 22, 18, 'X+', false, () => { this.adjustTriggerActionParam(action, 'offsetX', 1, { min: -200, max: 200 }); this.persistAutosave(); }, 'Offset X +');
-            drawButton(panelX + panelWidth - 54, paramsY, 22, 18, 'Y-', false, () => { this.adjustTriggerActionParam(action, 'offsetY', -1, { min: -200, max: 200 }); this.persistAutosave(); }, 'Offset Y -');
-            drawButton(panelX + panelWidth - 28, paramsY, 22, 18, 'Y+', false, () => { this.adjustTriggerActionParam(action, 'offsetY', 1, { min: -200, max: 200 }); this.persistAutosave(); }, 'Offset Y +');
-          } else if (action.type === 'heal-player' || action.type === 'heal-enemy') {
-            drawButton(panelX + panelWidth - 58, paramsY, 22, 18, '-', false, () => { this.adjustTriggerActionParam(action, 'amount', -1, { min: 0, max: 99 }); this.persistAutosave(); }, 'Amount -');
-            drawButton(panelX + panelWidth - 32, paramsY, 22, 18, '+', false, () => { this.adjustTriggerActionParam(action, 'amount', 1, { min: 0, max: 99 }); this.persistAutosave(); }, 'Amount +');
-            if (action.type === 'heal-enemy') {
-              drawButton(panelX + panelWidth - 110, paramsY, 48, 18, 'Target', false, () => {
-                action.params.target = this.cycleOption(action.params.target, TRIGGER_ENEMY_TARGET_OPTIONS, 1);
-                this.persistAutosave();
-              }, 'Cycle enemy target');
             }
-          } else if (action.type === 'kill-enemy') {
-            drawButton(panelX + panelWidth - 110, paramsY, 100, 18, 'Cycle Target', false, () => {
-              action.params.target = this.cycleOption(action.params.target, TRIGGER_ENEMY_TARGET_OPTIONS, 1);
-              this.persistAutosave();
-            }, 'Cycle kill target');
-          } else if (action.type === 'save-game') {
-            drawButton(panelX + panelWidth - 58, paramsY, 22, 18, '-', false, () => { this.adjustTriggerActionParam(action, 'slot', -1, { min: 1, max: 9 }); this.persistAutosave(); }, 'Slot -');
-            drawButton(panelX + panelWidth - 32, paramsY, 22, 18, '+', false, () => { this.adjustTriggerActionParam(action, 'slot', 1, { min: 1, max: 9 }); this.persistAutosave(); }, 'Slot +');
-          } else if (action.type === 'add-item') {
-            drawButton(panelX + panelWidth - 110, paramsY, 48, 18, 'Item', false, () => {
-              action.params.itemId = this.cycleOption(action.params.itemId, TRIGGER_ITEM_OPTIONS, 1);
-              this.persistAutosave();
-            }, 'Cycle item');
-            drawButton(panelX + panelWidth - 58, paramsY, 22, 18, '-', false, () => { this.adjustTriggerActionParam(action, 'quantity', -1, { min: 1, max: 99 }); this.persistAutosave(); }, 'Qty -');
-            drawButton(panelX + panelWidth - 32, paramsY, 22, 18, '+', false, () => { this.adjustTriggerActionParam(action, 'quantity', 1, { min: 1, max: 99 }); this.persistAutosave(); }, 'Qty +');
-          } else if (action.type === 'play-animation') {
-            drawButton(panelX + panelWidth - 110, paramsY, 48, 18, 'Anim', false, () => {
-              action.params.animationId = this.cycleOption(action.params.animationId, TRIGGER_ANIMATION_OPTIONS, 1);
-              this.persistAutosave();
-            }, 'Cycle animation');
-            drawButton(panelX + panelWidth - 58, paramsY, 48, 18, 'Target', false, () => {
-              action.params.target = this.cycleOption(action.params.target, ['zone', ...TRIGGER_TARGET_OPTIONS], 1);
-              this.persistAutosave();
-            }, 'Cycle animation target');
-          } else if (action.type === 'move-entity') {
-            drawButton(panelX + panelWidth - 136, paramsY, 48, 18, 'Target', false, () => {
-              action.params.target = this.cycleOption(action.params.target, TRIGGER_TARGET_OPTIONS, 1);
-              this.persistAutosave();
-            }, 'Cycle target');
-            drawButton(panelX + panelWidth - 84, paramsY, 22, 18, 'X-', false, () => { this.adjustTriggerActionParam(action, 'dx', -1, { min: -200, max: 200 }); this.persistAutosave(); }, 'Delta X -');
-            drawButton(panelX + panelWidth - 58, paramsY, 22, 18, 'X+', false, () => { this.adjustTriggerActionParam(action, 'dx', 1, { min: -200, max: 200 }); this.persistAutosave(); }, 'Delta X +');
-            drawButton(panelX + panelWidth - 32, paramsY, 22, 18, 'Y+', false, () => { this.adjustTriggerActionParam(action, 'dy', 1, { min: -200, max: 200 }); this.persistAutosave(); }, 'Delta Y +');
+          }, 'Remove trigger zone');
+        } else if (this.triggerEditorView === 'pick-condition') {
+          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Back', false, () => { this.triggerEditorView = 'main'; }, 'Return to trigger');
+          y += sectionButtonH + rowGap;
+          TRIGGER_CONDITIONS.forEach((condition) => {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, condition, selected.condition === condition, () => { selected.condition = condition; this.triggerEditorView = 'main'; this.persistAutosave(); }, condition);
+            y += sectionButtonH + 4;
+          });
+        } else if (this.triggerEditorView === 'pick-action') {
+          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Back', false, () => { this.triggerEditorView = 'main'; }, 'Return to trigger');
+          y += sectionButtonH + rowGap;
+          TRIGGER_ACTION_TYPES.forEach((type) => {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, type.label, false, () => { this.openTriggerActionEditor(this.createTriggerAction(type.id), { isNew: true }); }, `Add action: ${type.label}`);
+            y += sectionButtonH + 4;
+          });
+        } else if (this.triggerEditorView === 'edit-action' && draft) {
+          const actionLabel = TRIGGER_ACTION_TYPES.find((entry) => entry.id === draft.type)?.label || draft.type;
+          drawButton(panelX + 12, y, 110, sectionButtonH, 'Cancel', false, () => { this.triggerEditorView = 'main'; this.triggerActionDraft = null; this.triggerEditingActionId = null; }, 'Cancel editing');
+          drawButton(panelX + panelWidth - 122, y, 110, sectionButtonH, 'OK', false, () => { this.commitTriggerActionDraft(selected); }, 'Save action');
+          y += sectionButtonH + rowGap;
+          ctx.font = '12px Courier New';
+          ctx.fillStyle = 'rgba(255,255,255,0.85)';
+          ctx.fillText(`Action: ${actionLabel}`, panelX + 12, y + 10);
+          y += 18;
+          const numericRow = (label, key, step, min, max) => {
+            drawButton(panelX + 12, y, 54, sectionButtonH, '-', false, () => { this.adjustTriggerActionParam(draft, key, -step, { min, max }); }, `${label} down`);
+            drawButton(panelX + 70, y, panelWidth - 140, sectionButtonH, `${label}: ${draft.params[key] || 0}`, false, () => {}, label);
+            drawButton(panelX + panelWidth - 66, y, 54, sectionButtonH, '+', false, () => { this.adjustTriggerActionParam(draft, key, step, { min, max }); }, `${label} up`);
+            y += sectionButtonH + 4;
+          };
+          if (draft.type === 'load-level') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Level: ${draft.params.levelName || levelNames[0]}`, false, () => { draft.params.levelName = this.cycleOption(draft.params.levelName, levelNames, 1); }, 'Cycle level');
+            y += sectionButtonH + 4;
+          } else if (draft.type === 'spawn-enemy') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Enemy: ${draft.params.enemyType || enemyOptions[0]}`, false, () => { draft.params.enemyType = this.cycleOption(draft.params.enemyType, enemyOptions, 1); }, 'Cycle enemy');
+            y += sectionButtonH + 4;
+            numericRow('Offset X', 'offsetX', 1, -200, 200);
+            numericRow('Offset Y', 'offsetY', 1, -200, 200);
+          } else if (draft.type === 'heal-player' || draft.type === 'heal-enemy') {
+            numericRow('Amount', 'amount', 1, 0, 99);
+            if (draft.type === 'heal-enemy') {
+              drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Target: ${draft.params.target || TRIGGER_ENEMY_TARGET_OPTIONS[0]}`, false, () => { draft.params.target = this.cycleOption(draft.params.target, TRIGGER_ENEMY_TARGET_OPTIONS, 1); }, 'Cycle target');
+              y += sectionButtonH + 4;
+            }
+          } else if (draft.type === 'kill-enemy') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Target: ${draft.params.target || TRIGGER_ENEMY_TARGET_OPTIONS[0]}`, false, () => { draft.params.target = this.cycleOption(draft.params.target, TRIGGER_ENEMY_TARGET_OPTIONS, 1); }, 'Cycle target');
+            y += sectionButtonH + 4;
+          } else if (draft.type === 'save-game') {
+            numericRow('Slot', 'slot', 1, 1, 9);
+          } else if (draft.type === 'add-item') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Item: ${draft.params.itemId || TRIGGER_ITEM_OPTIONS[0]}`, false, () => { draft.params.itemId = this.cycleOption(draft.params.itemId, TRIGGER_ITEM_OPTIONS, 1); }, 'Cycle item');
+            y += sectionButtonH + 4;
+            numericRow('Quantity', 'quantity', 1, 1, 99);
+          } else if (draft.type === 'play-animation') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Animation: ${draft.params.animationId || TRIGGER_ANIMATION_OPTIONS[0]}`, false, () => { draft.params.animationId = this.cycleOption(draft.params.animationId, TRIGGER_ANIMATION_OPTIONS, 1); }, 'Cycle animation');
+            y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Target: ${draft.params.target || 'zone'}`, false, () => { draft.params.target = this.cycleOption(draft.params.target, ['zone', ...TRIGGER_TARGET_OPTIONS], 1); }, 'Cycle target');
+            y += sectionButtonH + 4;
+          } else if (draft.type === 'move-entity') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Target: ${draft.params.target || TRIGGER_TARGET_OPTIONS[0]}`, false, () => { draft.params.target = this.cycleOption(draft.params.target, TRIGGER_TARGET_OPTIONS, 1); }, 'Cycle target');
+            y += sectionButtonH + 4;
+            numericRow('Delta X', 'dx', 1, -200, 200);
+            numericRow('Delta Y', 'dy', 1, -200, 200);
+          } else if (draft.type === 'display-text') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Text: ${draft.params.text || TRIGGER_TEXT_OPTIONS[0]}`, false, () => { draft.params.text = this.cycleOption(draft.params.text, TRIGGER_TEXT_OPTIONS, 1); }, 'Cycle text');
+            y += sectionButtonH + 4;
+            numericRow('Duration (ms)', 'durationMs', 100, 100, 15000);
+          } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {
+            numericRow('Duration (ms)', 'durationMs', 100, 0, 15000);
+          } else if (draft.type === 'fade-in-music') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Music: ${draft.params.musicId || MUSIC_TRACKS[0]?.id || 'ambient-rift'}`, false, () => { draft.params.musicId = this.cycleOption(draft.params.musicId, MUSIC_TRACKS.map((track) => track.id), 1); }, 'Cycle music track');
+            y += sectionButtonH + 4;
+            numericRow('Duration (ms)', 'durationMs', 100, 0, 15000);
           }
-
-          triggerEditorY += 20;
-          triggerEditorY += 2;
-        });
+          if (this.triggerEditingActionId) {
+            const deleteY = panelY + panelHeight - 52;
+            drawButton(panelX + 12, deleteY, panelWidth - 24, 40, 'Delete Action', false, () => { this.deleteEditingTriggerAction(selected); }, 'Delete this action');
+          }
+        }
         ctx.restore();
       }
     }
-
 
     if (this.mode === 'pixel') {
       const panelWidth = 300;
