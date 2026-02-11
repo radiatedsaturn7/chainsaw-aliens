@@ -768,9 +768,11 @@ export default class Game {
       this.editor.setFocusOverride({ x: this.player.x, y: this.player.y });
     }
     this.state = 'editor';
+    this.editor.resetTransientInputState();
     this.editor.activate();
     this.playtestActive = false;
     this.mobileControls.reset();
+    this.input.reset();
     document.body.classList.add('editor-active');
   }
 
