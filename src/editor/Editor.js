@@ -1,4 +1,6 @@
 import Minimap from '../world/Minimap.js';
+import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
+import { vfsList, vfsSave } from '../ui/vfs.js';
 
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
@@ -263,7 +265,6 @@ const MIDI_NOTE_LENGTHS = [
 ];
 
 const EDITOR_AUTOSAVE_KEY = 'chainsaw-editor-autosave';
-const MIDI_SONG_LIBRARY_KEY = 'chainsaw-midi-library';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -311,6 +312,7 @@ export default class Editor {
     this.midiInstrumentScrollBounds = null;
     this.midiInstrumentScrollMax = 0;
     this.startWithEverything = true;
+    this.currentDocumentRef = null;
     this.camera = { x: 0, y: 0 };
     this.previewMinimap = new Minimap(this.game.world);
     this.pendingWorldRefresh = null;
@@ -1864,15 +1866,8 @@ export default class Editor {
   }
 
   getTriggerLevelNames() {
-    const storage = this.getStorage();
-    if (!storage) return ['Level 1'];
-    try {
-      const fs = JSON.parse(storage.getItem('chainsaw-mini-fs') || '{}');
-      const names = Object.keys(fs?.levels || {});
-      return names.length ? names : ['Level 1'];
-    } catch (error) {
-      return ['Level 1'];
-    }
+    const levels = vfsList('levels').map((entry) => entry.name);
+    return levels.length ? levels : ['Level 1'];
   }
 
   cycleOption(value, options, direction = 1) {
@@ -1927,28 +1922,36 @@ export default class Editor {
     }
   }
 
-  saveLevelToStorage() {
-    const storage = this.getStorage();
-    if (!storage) return;
-    const fs = JSON.parse(storage.getItem('chainsaw-mini-fs') || '{}');
-    fs.levels = fs.levels || {};
-    const name = window.prompt('Save level as:', 'Level 1');
-    if (!name) return;
-    fs.levels[name] = this.game.buildWorldData();
-    storage.setItem('chainsaw-mini-fs', JSON.stringify(fs));
+  async saveLevelToStorage(options = {}) {
+    const { forceSaveAs = false } = options;
+    let name = this.currentDocumentRef?.name;
+    if (forceSaveAs || !name) {
+      const result = await openProjectBrowser({
+        mode: 'saveAs',
+        fixedFolder: 'levels',
+        initialFolder: 'levels',
+        title: 'Save Level As'
+      });
+      if (!result?.name) return;
+      name = result.name;
+    }
+    vfsSave('levels', name, this.game.buildWorldData());
+    this.currentDocumentRef = { folder: 'levels', name };
   }
 
   loadLevelFromStorage() {
-    const storage = this.getStorage();
-    if (!storage) return;
-    const fs = JSON.parse(storage.getItem('chainsaw-mini-fs') || '{}');
-    const levels = fs.levels || {};
-    const names = Object.keys(levels);
-    if (!names.length) return;
-    const chosen = window.prompt(`Load which level?\n${names.join('\n')}`, names[0]);
-    if (!chosen || !levels[chosen]) return;
-    this.game.applyWorldData(levels[chosen]);
-    this.flushWorldRefresh();
+    openProjectBrowser({
+      mode: 'open',
+      fixedFolder: 'levels',
+      initialFolder: 'levels',
+      title: 'Open Level',
+      onOpen: ({ name, payload }) => {
+        if (!payload?.data) return;
+        this.game.applyWorldData(payload.data);
+        this.currentDocumentRef = { folder: 'levels', name };
+        this.flushWorldRefresh();
+      }
+    });
   }
 
   ensureMusicZones() {
@@ -1997,13 +2000,10 @@ export default class Editor {
   }
 
   loadSavedSongLibrary() {
-    try {
-      const stored = JSON.parse(localStorage.getItem(MIDI_SONG_LIBRARY_KEY));
-      if (!Array.isArray(stored)) return [];
-      return stored.filter((entry) => entry && entry.id && entry.name);
-    } catch (error) {
-      return [];
-    }
+    return vfsList('music').map((entry) => ({
+      id: entry.name,
+      name: entry.name
+    }));
   }
 
   getLibraryTracks() {

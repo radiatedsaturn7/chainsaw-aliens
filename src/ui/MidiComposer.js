@@ -13,6 +13,8 @@ import {
 } from '../audio/gm.js';
 import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/midiParser.js';
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
+import { openProjectBrowser } from './ProjectBrowserModal.js';
+import { vfsSave } from './vfs.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -154,7 +156,6 @@ const LOOP_HANDLE_MIN_WIDTH = 70;
 const LOOP_HANDLE_MIN_HEIGHT = 38;
 const FILE_MENU_WIDTH = 240;
 const DEFAULT_LOOP_BARS = 4;
-const SONG_LIBRARY_KEY = 'chainsaw-midi-library';
 const CACHED_SOUND_FONT_KEY = 'chainsaw-midi-cached-programs';
 const DEFAULT_PRELOAD_PROGRAMS = [0, 24, 32, 52];
 const GENRE_OPTIONS = [
@@ -551,6 +552,7 @@ export default class MidiComposer {
     this.activeTab = 'grid';
     this.activeTool = 'draw';
     this.song = this.loadSong();
+    this.currentDocumentRef = null;
     this.highContrast = Boolean(this.song?.highContrast);
     this.chordMode = Boolean(this.song?.chordMode);
     this.selectedTrackIndex = 0;
@@ -1058,7 +1060,7 @@ export default class MidiComposer {
 
   confirmDiscardChanges() {
     if (!this.hasUnsavedChanges()) return true;
-    return window.confirm('Are you sure? Existing data will be lost. Yes / No');
+    return this.game?.showInlineConfirm?.('Discard unsaved song changes?') ?? false;
   }
 
   applySongSnapshot(snapshot) {
@@ -1097,50 +1099,30 @@ export default class MidiComposer {
     this.applySongSnapshot(snapshot);
   }
 
-  loadSongLibrary() {
-    try {
-      const stored = JSON.parse(localStorage.getItem(SONG_LIBRARY_KEY));
-      if (!Array.isArray(stored)) return [];
-      return stored.filter((entry) => entry && entry.id && entry.song);
-    } catch (error) {
-      return [];
+  async saveSongToLibrary(options = {}) {
+    const { forceSaveAs = false } = options;
+    let name = this.currentDocumentRef?.name;
+    if (forceSaveAs || !name) {
+      const result = await openProjectBrowser({
+        mode: 'saveAs',
+        fixedFolder: 'music',
+        initialFolder: 'music',
+        title: 'Save Song As'
+      });
+      if (!result?.name) return null;
+      name = result.name;
     }
-  }
-
-  saveSongLibrary(library) {
-    try {
-      localStorage.setItem(SONG_LIBRARY_KEY, JSON.stringify(library));
-    } catch (error) {
-      // ignore
-    }
-  }
-
-  saveSongToLibrary() {
-    const suggested = this.song.name || 'New Song';
-    const name = window.prompt('Save song as:', suggested);
-    if (!name) return null;
     this.song.name = name;
-    const library = this.loadSongLibrary();
-    const existingIndex = library.findIndex((entry) => entry.name === name);
-    const payload = {
-      id: existingIndex >= 0 ? library[existingIndex].id : `song-${Date.now()}`,
-      name,
-      song: JSON.parse(JSON.stringify(this.song))
-    };
-    if (existingIndex >= 0) {
-      library[existingIndex] = payload;
-    } else {
-      library.unshift(payload);
-    }
-    this.saveSongLibrary(library);
+    vfsSave('music', name, JSON.parse(JSON.stringify(this.song)));
+    this.currentDocumentRef = { folder: 'music', name };
     this.selection.clear();
     this.persist({ commitHistory: true });
     this.markSavedSnapshot();
-    return payload;
+    return { id: name, name };
   }
 
-  saveAndPaint() {
-    const entry = this.saveSongToLibrary();
+  async saveAndPaint() {
+    const entry = await this.saveSongToLibrary();
     if (!entry || !this.game?.enterEditor) return;
     this.stopPlayback();
     this.game.enterEditor({ tab: 'music' });
@@ -1151,6 +1133,7 @@ export default class MidiComposer {
       this.game.editor.musicTool = 'paint';
     }
   }
+
 
   getRobterSessionInstrumentFromTrack(track) {
     if (!track) return 'piano';
@@ -1191,20 +1174,19 @@ export default class MidiComposer {
 
   loadSongFromLibrary() {
     if (!this.confirmDiscardChanges()) return;
-    const library = this.loadSongLibrary();
-    if (!library.length) {
-      window.alert('No saved songs yet.');
-      return;
-    }
-    const names = library.map((entry) => entry.name).join(', ');
-    const name = window.prompt(`Load which song?\n${names}`);
-    if (!name) return;
-    const entry = library.find((item) => item.name === name);
-    if (!entry) {
-      window.alert('Song not found.');
-      return;
-    }
-    this.applyImportedSong(entry.song);
+    openProjectBrowser({
+      mode: 'open',
+      fixedFolder: 'music',
+      initialFolder: 'music',
+      title: 'Open Song',
+      onOpen: ({ name, payload }) => {
+        if (!payload?.data) return;
+        this.applyImportedSong(payload.data);
+        this.currentDocumentRef = { folder: 'music', name };
+        this.song.name = name;
+        this.markSavedSnapshot();
+      }
+    });
   }
 
   loadInstrumentList(key, fallback) {
@@ -6885,11 +6867,16 @@ export default class MidiComposer {
       this.gridZoomInitialized = false;
       this.playheadTick = 0;
       this.lastPlaybackTick = 0;
+      this.currentDocumentRef = null;
       this.markSavedSnapshot();
       return;
     }
     if (action === 'save') {
       this.saveSongToLibrary();
+      return;
+    }
+    if (action === 'save-as') {
+      this.saveSongToLibrary({ forceSaveAs: true });
       return;
     }
     if (action === 'save-paint') {
@@ -11113,6 +11100,7 @@ export default class MidiComposer {
     return [
       { id: 'new', label: 'New' },
       { id: 'save', label: 'Save' },
+      { id: 'save-as', label: 'Save As' },
       { id: 'save-paint', label: 'Save and Paint' },
       { id: 'load', label: 'Load' },
       { id: 'export-json', label: 'Export JSON' },

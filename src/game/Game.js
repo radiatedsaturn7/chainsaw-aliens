@@ -62,8 +62,9 @@ import Editor from '../editor/Editor.js';
 import ObstacleTestMap from '../debug/ObstacleTestMap.js';
 import { OBSTACLES } from '../world/Obstacles.js';
 import { MOVEMENT_MODEL } from './MovementModel.js';
+import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
+import { vfsEnsureIndex, vfsList, vfsLoad } from '../ui/vfs.js';
 
-const MIDI_SONG_LIBRARY_KEY = 'chainsaw-midi-library';
 const BOSS_TYPES = new Set([
   'finalboss',
   'sunderbehemoth',
@@ -159,6 +160,7 @@ export default class Game {
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
     this.title = new Title();
+    vfsEnsureIndex();
     this.dialog = new Dialog(INTRO_LINES);
     this.hud = new HUD();
     this.pauseMenu = new Pause();
@@ -909,6 +911,52 @@ export default class Game {
     };
   }
 
+
+  openProjectBrowserFromTitle() {
+    openProjectBrowser({
+      mode: 'open',
+      initialFolder: 'levels',
+      title: 'Project Browser',
+      onOpen: ({ folder, name, payload }) => {
+        if (!payload?.data) return;
+        if (folder === 'levels') {
+          this.applyWorldData(payload.data);
+          this.enterEditor({ tab: 'tiles' });
+          this.editor.currentDocumentRef = { folder: 'levels', name: name || 'Level' };
+        } else if (folder === 'art') {
+          this.world.pixelArt = payload.data;
+          this.enterPixelStudio();
+          this.pixelStudio.currentDocumentRef = { folder: 'art', name: name || 'Art' };
+          this.pixelStudio.loadTileData();
+        } else if (folder === 'music') {
+          this.enterMidiComposer();
+          this.midiComposer.applyImportedSong(payload.data);
+          this.midiComposer.currentDocumentRef = { folder: 'music', name: name || 'Song' };
+        }
+      },
+      onNew: (folder) => {
+        if (folder === 'levels') this.enterEditor({ tab: 'tiles' });
+        if (folder === 'art') {
+          this.enterPixelStudio();
+          this.pixelStudio.newArtDocument();
+        }
+        if (folder === 'music') {
+          this.enterMidiComposer();
+          this.midiComposer.song = this.midiComposer.song || {};
+          this.midiComposer.currentDocumentRef = null;
+        }
+      },
+      onExportZip: () => {
+        this.showPrompt('TODO: ZIP export hook');
+      }
+    });
+  }
+
+  showInlineConfirm(message) {
+    this.showPrompt(message);
+    return true;
+  }
+
   resetAllContent() {
     const blank = this.buildBlankWorldData();
     this.applyWorldData(blank);
@@ -1397,8 +1445,8 @@ export default class Game {
           this.title.setScreen('controls');
         } else if (action === 'tools') {
           this.title.setScreen('tools');
-        } else if (action === 'endless') {
-          this.startEndlessMode();
+        } else if (action === 'project-browser') {
+          this.openProjectBrowserFromTitle();
         } else if (action === 'robtersession') {
           this.robterSession.enter();
           this.state = 'robtersession';
@@ -3758,19 +3806,21 @@ export default class Game {
   }
 
   loadSongLibrary() {
-    try {
-      const stored = JSON.parse(localStorage.getItem(MIDI_SONG_LIBRARY_KEY));
-      if (!Array.isArray(stored)) return [];
-      return stored.filter((entry) => entry && entry.id && entry.song);
-    } catch (error) {
-      return [];
-    }
+    return vfsList('music').map((entry) => {
+      const payload = vfsLoad('music', entry.name);
+      return {
+        id: entry.name,
+        name: entry.name,
+        song: payload?.data || null
+      };
+    }).filter((entry) => entry.song);
   }
 
   getLibrarySong(trackId) {
     if (!trackId) return null;
-    const library = this.loadSongLibrary();
-    return library.find((entry) => entry.id === trackId) || null;
+    const payload = vfsLoad('music', trackId);
+    if (!payload?.data) return null;
+    return { id: trackId, name: trackId, song: payload.data };
   }
 
   getMusicZoneAt(tileX, tileY) {
@@ -6097,8 +6147,8 @@ export default class Game {
         this.audio.ui();
         return;
       }
-      if (action === 'endless') {
-        this.startEndlessMode();
+      if (action === 'project-browser') {
+        this.openProjectBrowserFromTitle();
         this.audio.ui();
         return;
       }
@@ -6293,8 +6343,8 @@ export default class Game {
         this.recordFeedback('menu navigate', 'visual');
         return;
       }
-      if (action === 'endless') {
-        this.startEndlessMode();
+      if (action === 'project-browser') {
+        this.openProjectBrowserFromTitle();
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
