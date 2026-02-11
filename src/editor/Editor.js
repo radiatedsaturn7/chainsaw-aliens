@@ -393,6 +393,7 @@ export default class Editor {
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
     this.activeTooltip = '';
     this.tooltipTimer = 0;
+    this.sanitizeDebug = { enabled: false, reasonLog: new Map() };
     this.editorBounds = { x: 0, y: 0, w: 0, h: 0 };
     this.moveSelection = null;
     this.moveTarget = null;
@@ -505,6 +506,97 @@ export default class Editor {
         event.preventDefault();
       }
     });
+
+    window.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.clearTransientPointers('visibility-hidden');
+      }
+    });
+    window.addEventListener('blur', () => {
+      this.clearTransientPointers('window-blur');
+    });
+  }
+
+
+  isFinitePoint(point) {
+    return Boolean(point) && Number.isFinite(point.x) && Number.isFinite(point.y);
+  }
+
+  sanitizeView(reason = 'unknown') {
+    const logOnce = (detail) => {
+      if (!this.sanitizeDebug?.enabled) return;
+      const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+      const last = this.sanitizeDebug.reasonLog.get(detail) || 0;
+      if (now - last < 1200) return;
+      this.sanitizeDebug.reasonLog.set(detail, now);
+      console.warn(`[Editor] sanitizeView corrected ${detail}`);
+    };
+
+    if (!Number.isFinite(this.zoom) || this.zoom <= 0) {
+      this.zoom = 1;
+      logOnce(`${reason}:zoom-invalid`);
+    }
+    const clampedZoom = clamp(this.zoom, 0.35, 3);
+    if (clampedZoom !== this.zoom) {
+      this.zoom = clampedZoom;
+      logOnce(`${reason}:zoom-clamped`);
+    }
+    if (!Number.isFinite(this.camera.x)) {
+      this.camera.x = 0;
+      logOnce(`${reason}:camera-x-invalid`);
+    }
+    if (!Number.isFinite(this.camera.y)) {
+      this.camera.y = 0;
+      logOnce(`${reason}:camera-y-invalid`);
+    }
+    this.clampCamera();
+    if (!Number.isFinite(this.camera.x)) this.camera.x = 0;
+    if (!Number.isFinite(this.camera.y)) this.camera.y = 0;
+  }
+
+  updateLayoutBounds(width = this.game.canvas?.width || 0, height = this.game.canvas?.height || 0) {
+    if (!width || !height) return;
+    const controlMargin = 18;
+    const controlBase = Math.min(width, height);
+    if (this.isMobileLayout()) {
+      const joystickRadius = Math.min(78, controlBase * 0.14);
+      const knobRadius = Math.max(22, joystickRadius * 0.45);
+      const center = {
+        x: controlMargin + joystickRadius,
+        y: height - controlMargin - joystickRadius
+      };
+      this.panJoystick.center = center;
+      this.panJoystick.radius = joystickRadius;
+      this.panJoystick.knobRadius = knobRadius;
+      const sliderHeight = 10;
+      let sliderX = center.x + joystickRadius + 24;
+      let sliderWidth = width - sliderX - controlMargin;
+      const sliderY = height - controlMargin - sliderHeight;
+      if (sliderWidth < 160) {
+        sliderX = controlMargin;
+        sliderWidth = width - controlMargin * 2;
+      }
+      this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
+
+      const drawerWidth = Math.floor(width * 0.5);
+      const collapsedWidth = 64;
+      const panelW = this.drawer.open ? drawerWidth : collapsedWidth;
+      this.editorBounds = { x: panelW, y: 0, w: width - panelW, h: height };
+      this.drawerBounds = { x: 0, y: 0, w: panelW, h: height };
+    } else {
+      this.panJoystick.center = { x: 0, y: 0 };
+      this.panJoystick.radius = 0;
+      this.panJoystick.knobRadius = 0;
+      this.zoomSlider.bounds = { x: 0, y: 0, w: 0, h: 0 };
+      this.editorBounds = { x: 0, y: 0, w: width, h: height };
+      this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
+    }
+  }
+
+  clearTransientPointers(reason = 'unknown') {
+    this.resetTransientInputState();
+    this.updateLayoutBounds();
+    this.sanitizeView(`clearTransientPointers:${reason}`);
   }
 
   resetTransientInputState() {
@@ -548,6 +640,8 @@ export default class Editor {
     this.resetView();
     this.getMusicTracks();
     this.syncPreviewMinimap();
+    this.updateLayoutBounds();
+    this.sanitizeView('activate');
   }
 
   deactivate() {
@@ -661,12 +755,27 @@ export default class Editor {
 
   resetView() {
     const { canvas } = this.game;
-    const focus = this.focusOverride || this.game.world.spawnPoint || this.game.spawnPoint || this.game.player || { x: 0, y: 0 };
+    const candidates = [
+      this.focusOverride,
+      this.game.world?.spawnPoint,
+      this.game.spawnPoint,
+      this.game.world?.spawn && Number.isFinite(this.game.world.spawn.x) && Number.isFinite(this.game.world.spawn.y)
+        ? {
+          x: (this.game.world.spawn.x + 0.5) * this.game.world.tileSize,
+          y: this.game.world.spawn.y * this.game.world.tileSize
+        }
+        : null,
+      this.game.player,
+      { x: 0, y: 0 }
+    ];
+    const focus = candidates.find((point) => this.isFinitePoint(point)) || { x: 0, y: 0 };
     this.zoom = 1;
     const bounds = this.getCameraBounds();
     this.camera.x = clamp(focus.x - canvas.width / 2, bounds.minX, bounds.maxX);
     this.camera.y = clamp(focus.y - canvas.height / 2, bounds.minY, bounds.maxY);
     this.focusOverride = null;
+    this.updateLayoutBounds(canvas.width, canvas.height);
+    this.sanitizeView('resetView');
   }
 
   setFocusOverride(point) {
@@ -693,6 +802,7 @@ export default class Editor {
       this.camera.y += this.panJoystick.dy * panSpeed;
       this.clampCamera();
     }
+    this.sanitizeView('update');
     this.updateHover();
     if (this.tooltipTimer > 0) {
       this.tooltipTimer = Math.max(0, this.tooltipTimer - dt);
@@ -3906,6 +4016,8 @@ export default class Editor {
 
   handlePointerDown(payload) {
     if (!this.active) return;
+    this.updateLayoutBounds();
+    this.sanitizeView('handlePointerDown');
     this.lastPointer = { x: payload.x, y: payload.y };
     if (this.randomLevelDialog.open) {
       if (this.isPointInBounds(payload.x, payload.y, this.randomLevelSlider.bounds.width)) {
@@ -4095,6 +4207,7 @@ export default class Editor {
 
   handlePointerMove(payload) {
     if (!this.active) return;
+    this.sanitizeView('handlePointerMove');
     this.lastPointer = { x: payload.x, y: payload.y };
     if (this.pixelPaintActive && this.mode === 'pixel') {
       const cell = this.getPixelCellAt(payload.x, payload.y);
@@ -4258,6 +4371,7 @@ export default class Editor {
 
   handlePointerUp(payload = {}) {
     if (!this.active) return;
+    this.sanitizeView('handlePointerUp');
     if (this.pixelPaintActive && this.mode === 'pixel') {
       this.pixelPaintActive = false;
       return;
@@ -4394,6 +4508,7 @@ export default class Editor {
     this.camera.x = this.gestureStart.camX - dx;
     this.camera.y = this.gestureStart.camY - dy;
     this.clampCamera();
+    this.sanitizeView('handleGestureMove');
   }
 
   handleGestureEnd() {
@@ -5414,13 +5529,19 @@ export default class Editor {
   }
 
   setZoom(nextZoom, anchorX, anchorY) {
-    const clamped = Math.min(3, Math.max(0.35, nextZoom));
-    if (Math.abs(clamped - this.zoom) < 0.001) return;
-    const worldPos = this.screenToWorld(anchorX, anchorY);
+    const safeAnchorX = Number.isFinite(anchorX) ? anchorX : (this.game.canvas?.width || 0) * 0.5;
+    const safeAnchorY = Number.isFinite(anchorY) ? anchorY : (this.game.canvas?.height || 0) * 0.5;
+    const clamped = Math.min(3, Math.max(0.35, Number.isFinite(nextZoom) ? nextZoom : 1));
+    if (Math.abs(clamped - this.zoom) < 0.001) {
+      this.sanitizeView('setZoom');
+      return;
+    }
+    const worldPos = this.screenToWorld(safeAnchorX, safeAnchorY);
     this.zoom = clamped;
-    this.camera.x = worldPos.x - anchorX / this.zoom;
-    this.camera.y = worldPos.y - anchorY / this.zoom;
+    this.camera.x = worldPos.x - safeAnchorX / this.zoom;
+    this.camera.y = worldPos.y - safeAnchorY / this.zoom;
     this.clampCamera();
+    this.sanitizeView('setZoom');
   }
 
   worldToScreen(x, y) {
@@ -5454,6 +5575,8 @@ export default class Editor {
 
   draw(ctx) {
     const { canvas } = this.game;
+    this.updateLayoutBounds(canvas.width, canvas.height);
+    this.sanitizeView('draw');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
