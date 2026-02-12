@@ -11,6 +11,10 @@ const ROOM_SIZE_PRESETS = [
 const ROOM_BASE_WIDTH = 38;
 const ROOM_BASE_HEIGHT = 18;
 
+const EDITOR_MIN_ZOOM = 0.25;
+const EDITOR_MAX_ZOOM = 3;
+const EDITOR_ZOOM_SLIDER_EXPONENT = 2.322;
+
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
   { id: 'empty', label: 'Empty', char: '.' },
@@ -558,7 +562,7 @@ export default class Editor {
       this.zoom = 1;
       logOnce(`${reason}:zoom-invalid`);
     }
-    const clampedZoom = clamp(this.zoom, 0.35, 3);
+    const clampedZoom = clamp(this.zoom, EDITOR_MIN_ZOOM, EDITOR_MAX_ZOOM);
     if (clampedZoom !== this.zoom) {
       this.zoom = clampedZoom;
       logOnce(`${reason}:zoom-clamped`);
@@ -4854,9 +4858,7 @@ Level size:`, `${current.width}x${current.height}`);
     const { bounds } = this.zoomSlider;
     if (!bounds || bounds.w <= 0) return;
     const t = Math.min(1, Math.max(0, (x - bounds.x) / bounds.w));
-    const minZoom = 0.35;
-    const maxZoom = 3;
-    const nextZoom = minZoom + (maxZoom - minZoom) * t;
+    const nextZoom = this.sliderTToZoom(t);
     this.setZoom(nextZoom, this.game.canvas.width / 2, this.game.canvas.height / 2);
   }
 
@@ -5779,6 +5781,17 @@ Level size:`, `${current.width}x${current.height}`);
       && y <= this.editorBounds.y + this.editorBounds.h;
   }
 
+  sliderTToZoom(t) {
+    const normalized = clamp(t, 0, 1);
+    const curved = Math.pow(normalized, EDITOR_ZOOM_SLIDER_EXPONENT);
+    return EDITOR_MIN_ZOOM + (EDITOR_MAX_ZOOM - EDITOR_MIN_ZOOM) * curved;
+  }
+
+  zoomToSliderT(zoom) {
+    const normalized = clamp((zoom - EDITOR_MIN_ZOOM) / (EDITOR_MAX_ZOOM - EDITOR_MIN_ZOOM), 0, 1);
+    return Math.pow(normalized, 1 / EDITOR_ZOOM_SLIDER_EXPONENT);
+  }
+
   adjustZoom(delta, anchorX, anchorY) {
     this.setZoom(this.zoom + delta * 0.02, anchorX, anchorY);
   }
@@ -5786,7 +5799,7 @@ Level size:`, `${current.width}x${current.height}`);
   setZoom(nextZoom, anchorX, anchorY) {
     const safeAnchorX = Number.isFinite(anchorX) ? anchorX : (this.game.canvas?.width || 0) * 0.5;
     const safeAnchorY = Number.isFinite(anchorY) ? anchorY : (this.game.canvas?.height || 0) * 0.5;
-    const clamped = Math.min(3, Math.max(0.35, Number.isFinite(nextZoom) ? nextZoom : 1));
+    const clamped = Math.min(EDITOR_MAX_ZOOM, Math.max(EDITOR_MIN_ZOOM, Number.isFinite(nextZoom) ? nextZoom : 1));
     if (Math.abs(clamped - this.zoom) < 0.001) {
       this.sanitizeView('setZoom');
       return;
@@ -7700,9 +7713,7 @@ Level size:`, `${current.width}x${current.height}`);
     }
 
     if (this.isMobileLayout()) {
-      const zoomMin = 0.35;
-      const zoomMax = 3;
-      const zoomT = Math.min(1, Math.max(0, (this.zoom - zoomMin) / (zoomMax - zoomMin)));
+      const zoomT = this.zoomToSliderT(this.zoom);
       const sliderKnobX = sliderX + zoomT * sliderWidth;
       const sliderCenterY = sliderY + sliderHeight / 2;
       const sliderKnobRadius = sliderHeight * 1.6;
