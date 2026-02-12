@@ -447,6 +447,7 @@ export default class Editor {
       id: null
     };
     this.randomLevelSize = { width: 150, height: 100 };
+    this.newLevelSizeDraft = { width: this.game.world?.width || 64, height: this.game.world?.height || 36 };
     this.randomLevelSlider = {
       active: null,
       bounds: {
@@ -976,6 +977,12 @@ export default class Editor {
           label: 'Open',
           tooltip: 'Open level from browser storage',
           onClick: () => this.loadLevelFromStorage()
+        },
+        {
+          id: 'resize-level',
+          label: 'Resize',
+          tooltip: 'Resize level canvas',
+          onClick: () => this.resizeLevelDocument()
         },
         { id: 'divider-1', label: '────────', tooltip: '', onClick: () => {} },
         {
@@ -1659,10 +1666,74 @@ export default class Editor {
     return trimmed || fallback;
   }
 
+  promptForLevelDimensions(initial = null) {
+    const current = initial || this.newLevelSizeDraft || { width: this.game.world?.width || 64, height: this.game.world?.height || 36 };
+    const hint = 'Enter size (e.g. 96x54) or room preset (1x1,2x1,3x1,4x1,1x2,1x3,1x4,2x2,3x3,4x4).';
+    const value = window.prompt(`${hint}
+Level size:`, `${current.width}x${current.height}`);
+    if (value == null) return null;
+    const raw = value.trim().toLowerCase();
+    if (!raw) return null;
+    const roomPreset = raw.match(/^(\d)\s*x\s*(\d)$/);
+    if (roomPreset) {
+      const rw = clamp(parseInt(roomPreset[1], 10), 1, 4);
+      const rh = clamp(parseInt(roomPreset[2], 10), 1, 4);
+      if ((rw <= 4 && rh === 1) || (rw === 1 && rh <= 4) || (rw === rh && rw >= 1 && rw <= 4)) {
+        return {
+          width: clamp(rw * ROOM_BASE_WIDTH, 24, 256),
+          height: clamp(rh * ROOM_BASE_HEIGHT, 24, 256)
+        };
+      }
+    }
+    return this.parseLevelSize(raw);
+  }
+
+  buildEmptyLevelData(width, height) {
+    const w = clamp(Math.round(width), 24, 256);
+    const h = clamp(Math.round(height), 24, 256);
+    const tiles = Array.from({ length: h }, (_, y) => {
+      const row = Array.from({ length: w }, (_, x) => {
+        if (x === 0 || y === 0 || x === w - 1 || y === h - 1) return '#';
+        return '.';
+      }).join('');
+      return row;
+    });
+    const spawn = { x: Math.floor(w / 2), y: Math.floor(h / 2) };
+    return {
+      schemaVersion: 1,
+      tileSize: this.game.world.tileSize || 32,
+      width: w,
+      height: h,
+      spawn,
+      tiles,
+      regions: [],
+      enemies: [],
+      elevatorPaths: [],
+      elevators: [],
+      pixelArt: { tiles: {} },
+      musicZones: [],
+      midiTracks: []
+    };
+  }
+
+  resizeLevelDocument() {
+    const dims = this.promptForLevelDimensions({ width: this.game.world.width, height: this.game.world.height });
+    if (!dims) return;
+    const data = this.buildEmptyLevelData(dims.width, dims.height);
+    this.game.applyWorldData(data);
+    this.newLevelSizeDraft = { width: data.width, height: data.height };
+    this.resetView();
+    this.syncPreviewMinimap();
+  }
+
   async newLevelDocument() {
     const name = await this.promptForNewLevelName();
     if (!name) return;
-    this.game.applyWorldData(this.game.buildBlankWorldData());
+    const dims = this.promptForLevelDimensions(this.newLevelSizeDraft);
+    if (!dims) return;
+    const data = this.buildEmptyLevelData(dims.width, dims.height);
+    this.game.applyWorldData(data);
+    this.newLevelSizeDraft = { width: data.width, height: data.height };
     this.currentDocumentRef = { folder: 'levels', name };
     this.resetView();
     this.syncPreviewMinimap();
@@ -6536,6 +6607,13 @@ export default class Editor {
               active: false,
               tooltip: 'Open level from browser storage',
               onClick: () => this.loadLevelFromStorage()
+            },
+            {
+              id: 'resize-level',
+              label: 'Resize',
+              active: false,
+              tooltip: 'Resize level canvas',
+              onClick: () => this.resizeLevelDocument()
             },
             { id: 'divider-1', divider: true },
             {

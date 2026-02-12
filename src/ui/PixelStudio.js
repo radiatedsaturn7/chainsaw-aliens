@@ -519,9 +519,14 @@ export default class PixelStudio {
   async newArtDocument() {
     const name = await this.promptForNewArtName();
     if (!name) return;
+    const dims = this.promptForArtDimensions(this.artSizeDraft);
+    if (!dims) return;
     this.game.world.pixelArt = { tiles: {} };
     this.currentDocumentRef = { folder: 'art', name };
     this.loadTileData();
+    this.artSizeDraft.width = dims.width;
+    this.artSizeDraft.height = dims.height;
+    this.resizeArtCanvas(dims.width, dims.height);
     this.markSavedSnapshot();
   }
 
@@ -565,6 +570,26 @@ export default class PixelStudio {
     const next = clamp(parsed, 8, 512);
     if (kind === 'width') this.artSizeDraft.width = next;
     else this.artSizeDraft.height = next;
+  }
+
+  promptForArtDimensions(initial = null) {
+    const current = initial || this.artSizeDraft || { width: this.canvasState.width, height: this.canvasState.height };
+    const raw = window.prompt('Art size (e.g. 32x32, 64x32, 128x256):', `${current.width}x${current.height}`);
+    if (raw == null) return null;
+    const match = String(raw).toLowerCase().match(/(\d+)\s*[x,]\s*(\d+)/);
+    if (!match) return null;
+    return {
+      width: clamp(parseInt(match[1], 10), 8, 512),
+      height: clamp(parseInt(match[2], 10), 8, 512)
+    };
+  }
+
+  resizeArtDocumentPrompt() {
+    const dims = this.promptForArtDimensions({ width: this.canvasState.width, height: this.canvasState.height });
+    if (!dims) return;
+    this.artSizeDraft.width = dims.width;
+    this.artSizeDraft.height = dims.height;
+    this.resizeArtCanvas(dims.width, dims.height);
   }
 
 
@@ -2745,6 +2770,7 @@ export default class PixelStudio {
         { label: 'Palette JSON', action: () => this.exportPaletteJson() },
         { label: 'Palette HEX', action: () => this.exportPaletteHex() },
         { divider: true },
+        { label: 'Resize', action: () => this.resizeArtDocumentPrompt() },
         { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } },
         { divider: true },
         { label: 'Close', action: () => { this.closeStudioWithPrompt(); } }
