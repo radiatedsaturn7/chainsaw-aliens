@@ -819,7 +819,7 @@ export default class Game {
     this.lootDrops = [];
     this.healthDrops = [];
     this.effects = [];
-    this.spawnEnemies();
+    this.spawnEnemies({ allowStoryFallback: !playtest });
     this.bossInteractions = {
       anchor: false,
       flame: false,
@@ -1120,7 +1120,7 @@ export default class Game {
     };
   }
 
-  spawnEnemies() {
+  spawnEnemies({ allowStoryFallback = true } = {}) {
     if (this.world.enemies && this.world.enemies.length > 0) {
       this.enemies = [];
       this.boss = null;
@@ -1136,7 +1136,7 @@ export default class Game {
       return;
     }
 
-    if (this.gameMode === 'endless') {
+    if (this.gameMode === 'endless' || !allowStoryFallback) {
       this.enemies = [];
       this.boss = null;
       this.bossActive = false;

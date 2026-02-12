@@ -8,8 +8,8 @@ const ROOM_SIZE_PRESETS = [
   [1, 2], [1, 3], [1, 4],
   [2, 2], [3, 3], [4, 4]
 ];
-const ROOM_BASE_WIDTH = 22;
-const ROOM_BASE_HEIGHT = 13;
+const ROOM_BASE_WIDTH = 38;
+const ROOM_BASE_HEIGHT = 18;
 
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
