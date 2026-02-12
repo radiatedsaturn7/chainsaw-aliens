@@ -1427,16 +1427,14 @@ export default class Game {
         } else if (this.title.screen === 'tools') {
           if (action === 'back') {
             this.title.setScreen('main');
+          } else if (action === 'project-browser') {
+            this.openProjectBrowserFromTitle();
           } else if (action === 'level-editor') {
             this.enterEditor({ tab: 'tiles' });
           } else if (action === 'pixel-editor') {
             this.enterPixelStudio();
-          } else if (action === 'music-editor') {
-            this.enterEditor({ tab: 'music' });
           } else if (action === 'midi-editor') {
             this.enterMidiComposer();
-          } else if (action === 'skin-editor') {
-            this.enterEditor({ tab: 'pixels' });
           } else if (action === 'reset-all') {
             this.resetAllContent();
           }
@@ -1445,8 +1443,6 @@ export default class Game {
           this.title.setScreen('controls');
         } else if (action === 'tools') {
           this.title.setScreen('tools');
-        } else if (action === 'project-browser') {
-          this.openProjectBrowserFromTitle();
         } else if (action === 'robtersession') {
           this.robterSession.enter();
           this.state = 'robtersession';
@@ -6120,16 +6116,14 @@ export default class Game {
       if (this.title.screen === 'tools') {
         if (action === 'back') {
           this.title.setScreen('main');
+        } else if (action === 'project-browser') {
+          this.openProjectBrowserFromTitle();
         } else if (action === 'level-editor') {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
-        } else if (action === 'music-editor') {
-          this.enterEditor({ tab: 'music' });
         } else if (action === 'midi-editor') {
           this.enterMidiComposer();
-        } else if (action === 'skin-editor') {
-          this.enterEditor({ tab: 'pixels' });
         } else if (action === 'reset-all') {
           this.resetAllContent();
         }
@@ -6144,11 +6138,6 @@ export default class Game {
       }
       if (action === 'tools') {
         this.title.setScreen('tools');
-        this.audio.ui();
-        return;
-      }
-      if (action === 'project-browser') {
-        this.openProjectBrowserFromTitle();
         this.audio.ui();
         return;
       }
@@ -6310,16 +6299,14 @@ export default class Game {
       if (this.title.screen === 'tools') {
         if (action === 'back') {
           this.title.setScreen('main');
+        } else if (action === 'project-browser') {
+          this.openProjectBrowserFromTitle();
         } else if (action === 'level-editor') {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
-        } else if (action === 'music-editor') {
-          this.enterEditor({ tab: 'music' });
         } else if (action === 'midi-editor') {
           this.enterMidiComposer();
-        } else if (action === 'skin-editor') {
-          this.enterEditor({ tab: 'pixels' });
         } else if (action === 'reset-all') {
           this.resetAllContent();
         }
@@ -6338,13 +6325,6 @@ export default class Game {
       }
       if (action === 'tools') {
         this.title.setScreen('tools');
-        this.audio.ui();
-        this.recordFeedback('menu navigate', 'audio');
-        this.recordFeedback('menu navigate', 'visual');
-        return;
-      }
-      if (action === 'project-browser') {
-        this.openProjectBrowserFromTitle();
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');

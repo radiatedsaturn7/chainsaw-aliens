@@ -3,13 +3,12 @@ export default class Title {
     this.timer = 0;
     this.screen = 'intro';
     this.transition = null;
-    this.menuOrder = ['campaign', 'robtersession', 'project-browser', 'tools', 'options'];
+    this.menuOrder = ['campaign', 'robtersession', 'tools', 'options'];
     this.toolsOrder = [
+      'project-browser',
       'level-editor',
       'pixel-editor',
-      'music-editor',
       'midi-editor',
-      'skin-editor',
       'reset-all',
       'back'
     ];
@@ -212,17 +211,10 @@ export default class Title {
         ? 'Campaign'
         : action === 'robtersession'
           ? 'Songs'
-        : action === 'project-browser'
-          ? 'Project Browser'
-          : action === 'tools'
+        : action === 'tools'
             ? 'Tools'
             : 'Options';
       ctx.fillText(label, width / 2, y + 22);
-      if (action === 'options') {
-        ctx.font = '12px Courier New';
-        ctx.fillStyle = 'rgba(255,255,255,0.8)';
-        ctx.fillText('Controls', width / 2, y + 40);
-      }
       if (selected) {
         ctx.fillStyle = '#fff';
         ctx.beginPath();
@@ -266,17 +258,15 @@ export default class Title {
       ctx.font = '18px Courier New';
       const label = action === 'level-editor'
         ? 'Level Editor'
-        : action === 'pixel-editor'
-          ? 'Pixel Editor'
-          : action === 'music-editor'
-            ? 'Music Zones'
+        : action === 'project-browser'
+          ? 'Project Browser'
+          : action === 'pixel-editor'
+            ? 'Pixel Editor'
             : action === 'midi-editor'
               ? 'MIDI Editor'
-              : action === 'skin-editor'
-                ? 'Skin Editor'
-                : action === 'reset-all'
-                  ? 'Reset All'
-                  : 'Back';
+              : action === 'reset-all'
+                ? 'Reset All'
+                : 'Back';
       ctx.fillText(label, width / 2, y + 22);
       if (selected) {
         ctx.fillStyle = '#fff';
