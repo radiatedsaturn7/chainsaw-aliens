@@ -674,8 +674,6 @@ export default class MidiComposer {
     };
     this.fileMenuScroll = 0;
     this.fileMenuScrollMax = 0;
-    this.fileMenuScrollUp = null;
-    this.fileMenuScrollDown = null;
     this.fileMenuListBounds = null;
     this.recentInstruments = this.loadInstrumentList('chainsaw-midi-recent', []);
     this.favoriteInstruments = this.loadInstrumentList('chainsaw-midi-favorites', []);
@@ -3407,7 +3405,7 @@ export default class MidiComposer {
     }
 
     if (this.activeTab === 'file') {
-      if (payload.touchCount && this.fileMenuListBounds && this.pointInBounds(x, y, this.fileMenuListBounds)) {
+      if (this.fileMenuListBounds && this.pointInBounds(x, y, this.fileMenuListBounds)) {
         const fileHit = this.fileMenuBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
         this.dragState = {
           mode: 'file-menu-scroll',
@@ -3416,14 +3414,6 @@ export default class MidiComposer {
           moved: false,
           target: fileHit?.id || null
         };
-        return;
-      }
-      if (this.fileMenuScrollUp && this.pointInBounds(x, y, this.fileMenuScrollUp)) {
-        this.dragState = { mode: 'file-menu-tap', target: 'scroll-up', startX: x, startY: y, moved: false };
-        return;
-      }
-      if (this.fileMenuScrollDown && this.pointInBounds(x, y, this.fileMenuScrollDown)) {
-        this.dragState = { mode: 'file-menu-tap', target: 'scroll-down', startX: x, startY: y, moved: false };
         return;
       }
       const fileHit = this.fileMenuBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -4562,14 +4552,6 @@ export default class MidiComposer {
       const wasMoved = this.dragState.moved;
       this.dragState = null;
       if (wasMoved) return;
-      if (target === 'scroll-up') {
-        this.fileMenuScroll = clamp(this.fileMenuScroll - 1, 0, this.fileMenuScrollMax);
-        return;
-      }
-      if (target === 'scroll-down') {
-        this.fileMenuScroll = clamp(this.fileMenuScroll + 1, 0, this.fileMenuScrollMax);
-        return;
-      }
       if (target) {
         this.handleFileMenu(target);
       }
@@ -11279,28 +11261,7 @@ export default class MidiComposer {
       cursorY += rowH;
     });
 
-    this.fileMenuScrollUp = null;
-    this.fileMenuScrollDown = null;
-    this.fileMenuListBounds = null;
-    if (this.fileMenuScrollMax > 0) {
-      const buttonW = 26;
-      const buttonH = 22;
-      const buttonsY = panelY + panelH - buttonH - 10;
-      this.fileMenuScrollUp = {
-        x: panelX + 12,
-        y: buttonsY,
-        w: buttonW,
-        h: buttonH
-      };
-      this.fileMenuScrollDown = {
-        x: panelX + 12 + buttonW + 8,
-        y: buttonsY,
-        w: buttonW,
-        h: buttonH
-      };
-      this.drawSmallButton(ctx, this.fileMenuScrollUp, '▲', false);
-      this.drawSmallButton(ctx, this.fileMenuScrollDown, '▼', false);
-    }
+    this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
   }
 
   drawFileMenu(ctx, x, y) {

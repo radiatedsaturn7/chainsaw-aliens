@@ -2441,7 +2441,7 @@ export default class PixelStudio {
     ctx.fillRect(0, 0, width, height);
     ctx.imageSmoothingEnabled = false;
     const isMobile = this.isMobileLayout(width, height);
-    const menuFullScreen = !isMobile && this.leftPanelTab === 'tools';
+    const menuFullScreen = false;
     const padding = isMobile ? 12 : 16;
     const topBarHeight = 0;
     const statusHeight = 20;
@@ -2708,7 +2708,11 @@ export default class PixelStudio {
     this.focusGroupMeta.file = { maxVisible };
     const start = this.focusScroll.file || 0;
     let offsetY = y + 36;
-    actions.slice(start, start + maxVisible).forEach((entry) => {
+    const listBottomPadding = isMobile ? 64 : 40;
+    const maxListVisible = Math.max(1, Math.floor((h - 30 - listBottomPadding) / lineHeight));
+    const boundedStart = clamp(start, 0, Math.max(0, actions.length - maxListVisible));
+    this.focusScroll.file = boundedStart;
+    actions.slice(boundedStart, boundedStart + maxListVisible).forEach((entry) => {
       if (entry.divider) {
         const lineY = offsetY - (isMobile ? 10 : 4);
         ctx.strokeStyle = 'rgba(255,255,255,0.25)';
@@ -2725,6 +2729,11 @@ export default class PixelStudio {
       this.registerFocusable('file', bounds, (entry.onClick || entry.action));
       offsetY += lineHeight;
     });
+
+    const closeBounds = { x: x + 8, y: y + h - (isMobile ? 52 : 30), w: w - 16, h: isMobile ? 44 : 22 };
+    this.drawButton(ctx, closeBounds, 'Close', false, { fontSize: isMobile ? 12 : 12 });
+    this.uiButtons.push({ bounds: closeBounds, onClick: () => this.closeStudioWithPrompt() });
+    this.registerFocusable('file', closeBounds, () => this.closeStudioWithPrompt());
   }
 
   drawPalettePanel(ctx, x, y, w, h, options = {}) {
