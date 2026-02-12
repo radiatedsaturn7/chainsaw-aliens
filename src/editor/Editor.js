@@ -3,6 +3,14 @@ import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsList, vfsSave } from '../ui/vfs.js';
 import { UI_SUITE, formatMenuLabel } from '../ui/uiSuite.js';
 
+const ROOM_SIZE_PRESETS = [
+  [1, 1], [2, 1], [3, 1], [4, 1],
+  [1, 2], [1, 3], [1, 4],
+  [2, 2], [3, 3], [4, 4]
+];
+const ROOM_BASE_WIDTH = 38;
+const ROOM_BASE_HEIGHT = 18;
+
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
   { id: 'empty', label: 'Empty', char: '.' },
@@ -2221,8 +2229,8 @@ export default class Editor {
     if (!value) return null;
     const match = value.toLowerCase().match(/(\d+)\s*[x,]\s*(\d+)/);
     if (!match) return null;
-    const width = clamp(parseInt(match[1], 10), 48, 256);
-    const height = clamp(parseInt(match[2], 10), 48, 256);
+    const width = clamp(parseInt(match[1], 10), 24, 256);
+    const height = clamp(parseInt(match[2], 10), 24, 256);
     if (!Number.isFinite(width) || !Number.isFinite(height)) return null;
     return { width, height };
   }
@@ -4784,7 +4792,7 @@ export default class Editor {
   adjustRandomLevelSlider(kind, step) {
     if (!kind) return;
     const bounds = this.randomLevelSlider.bounds[kind];
-    const min = bounds?.min ?? (kind === 'width' ? 50 : 30);
+    const min = bounds?.min ?? 24;
     const max = bounds?.max ?? 256;
     if (kind === 'width') {
       this.randomLevelSize.width = clamp(this.randomLevelSize.width + step, min, max);
@@ -4792,6 +4800,30 @@ export default class Editor {
       this.randomLevelSize.height = clamp(this.randomLevelSize.height + step, min, max);
     }
   }
+
+  setRandomLevelRoomPreset(roomsWide, roomsHigh) {
+    const width = clamp(roomsWide * ROOM_BASE_WIDTH, 24, 256);
+    const height = clamp(roomsHigh * ROOM_BASE_HEIGHT, 24, 256);
+    this.randomLevelSize.width = width;
+    this.randomLevelSize.height = height;
+    this.randomLevelDialog.focus = 'width';
+    this.randomLevelSlider.active = 'width';
+  }
+
+  promptRandomLevelDimension(kind) {
+    const current = kind === 'width' ? this.randomLevelSize.width : this.randomLevelSize.height;
+    const label = kind === 'width' ? 'Level width' : 'Level height';
+    const raw = window.prompt(`${label} (24-256):`, String(current));
+    if (raw == null) return;
+    const parsed = Number.parseInt(raw, 10);
+    if (!Number.isFinite(parsed)) return;
+    const next = clamp(parsed, 24, 256);
+    if (kind === 'width') this.randomLevelSize.width = next;
+    else this.randomLevelSize.height = next;
+    this.randomLevelDialog.focus = kind;
+    this.randomLevelSlider.active = kind;
+  }
+
 
   getCameraBounds() {
     const tileSize = this.game.world.tileSize;
@@ -7620,8 +7652,8 @@ export default class Editor {
     }
 
     if (this.randomLevelDialog.open) {
-      const dialogW = Math.min(420, width * 0.8);
-      const dialogH = 170;
+      const dialogW = Math.min(560, width * 0.9);
+      const dialogH = 320;
       const dialogX = (width - dialogW) / 2;
       const dialogY = (height - dialogH) / 2;
       ctx.save();
@@ -7648,7 +7680,7 @@ export default class Editor {
         sliderW,
         'Width',
         this.randomLevelSize.width,
-        50,
+        24,
         256,
         'width',
         this.randomLevelDialog.focus === 'width'
@@ -7659,11 +7691,57 @@ export default class Editor {
         sliderW,
         'Height',
         this.randomLevelSize.height,
-        30,
+        24,
         256,
         'height',
         this.randomLevelDialog.focus === 'height'
       );
+
+      const dimensionButtonW = 120;
+      const dimensionButtonH = 26;
+      const dimensionY = sliderY + 62;
+      drawButton(
+        dialogX + 20,
+        dimensionY,
+        dimensionButtonW,
+        dimensionButtonH,
+        'Set Width',
+        false,
+        () => this.promptRandomLevelDimension('width'),
+        'Enter width directly'
+      );
+      drawButton(
+        dialogX + 20 + dimensionButtonW + 8,
+        dimensionY,
+        dimensionButtonW,
+        dimensionButtonH,
+        'Set Height',
+        false,
+        () => this.promptRandomLevelDimension('height'),
+        'Enter height directly'
+      );
+
+      const presetStartY = dimensionY + 38;
+      const presetCols = 5;
+      const presetGap = 8;
+      const presetW = Math.floor((dialogW - 40 - presetGap * (presetCols - 1)) / presetCols);
+      const presetH = 26;
+      ROOM_SIZE_PRESETS.forEach(([rw, rh], index) => {
+        const col = index % presetCols;
+        const row = Math.floor(index / presetCols);
+        const px = dialogX + 20 + col * (presetW + presetGap);
+        const py = presetStartY + row * (presetH + 6);
+        drawButton(
+          px,
+          py,
+          presetW,
+          presetH,
+          `${rw}x${rh}`,
+          false,
+          () => this.setRandomLevelRoomPreset(rw, rh),
+          `Set level to ${rw}x${rh} rooms`
+        );
+      });
 
       const buttonW = 120;
       const buttonH = 34;

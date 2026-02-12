@@ -30,6 +30,7 @@ import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const lerp = (a, b, t) => a + (b - a) * t;
+const PIXEL_SIZE_PRESETS = [16, 32, 64, 128, 256];
 
 const TILE_LIBRARY = [
   { id: 'solid', label: 'Solid Block', char: '#' },
@@ -319,6 +320,7 @@ export default class PixelStudio {
     this.leftPanelTab = this.leftPanelTabs[this.leftPanelTabIndex];
     this.uiButtons = [];
     this.menuScrollDrag = null;
+    this.artSizeDraft = { width: 16, height: 16 };
     this.paletteBounds = [];
     this.layerBounds = [];
     this.frameBounds = [];
@@ -416,6 +418,8 @@ export default class PixelStudio {
     this.animation.frames = pixelData.editor.frames;
     this.animation.currentFrameIndex = 0;
     this.canvasState.activeLayerIndex = pixelData.editor.activeLayerIndex || 0;
+    this.artSizeDraft.width = this.canvasState.width;
+    this.artSizeDraft.height = this.canvasState.height;
     this.setFrameLayers(this.animation.frames[0].layers);
   }
 
@@ -520,6 +524,49 @@ export default class PixelStudio {
     this.loadTileData();
     this.markSavedSnapshot();
   }
+
+  resizeArtCanvas(width, height) {
+    const nextW = clamp(Math.round(width), 8, 512);
+    const nextH = clamp(Math.round(height), 8, 512);
+    if (nextW === this.canvasState.width && nextH === this.canvasState.height) return;
+    const resizeLayer = (layer) => {
+      const next = createLayer(nextW, nextH, layer.name);
+      const copyW = Math.min(this.canvasState.width, nextW);
+      const copyH = Math.min(this.canvasState.height, nextH);
+      for (let row = 0; row < copyH; row += 1) {
+        const srcOffset = row * this.canvasState.width;
+        const dstOffset = row * nextW;
+        for (let col = 0; col < copyW; col += 1) {
+          next.pixels[dstOffset + col] = layer.pixels[srcOffset + col];
+        }
+      }
+      return next;
+    };
+    this.animation.frames = this.animation.frames.map((frame) => ({
+      ...frame,
+      layers: frame.layers.map((layer) => resizeLayer(layer))
+    }));
+    this.canvasState.width = nextW;
+    this.canvasState.height = nextH;
+    this.artSizeDraft.width = nextW;
+    this.artSizeDraft.height = nextH;
+    this.animation.currentFrameIndex = clamp(this.animation.currentFrameIndex, 0, this.animation.frames.length - 1);
+    this.setFrameLayers(this.animation.frames[this.animation.currentFrameIndex].layers);
+    this.canvasState.activeLayerIndex = clamp(this.canvasState.activeLayerIndex, 0, this.canvasState.layers.length - 1);
+    this.syncTileData();
+  }
+
+  setArtSizeDraftFromPrompt(kind) {
+    const current = kind === 'width' ? this.artSizeDraft.width : this.artSizeDraft.height;
+    const raw = window.prompt(`${kind === 'width' ? 'Pixel width' : 'Pixel height'} (8-512):`, String(current));
+    if (raw == null) return;
+    const parsed = Number.parseInt(raw, 10);
+    if (!Number.isFinite(parsed)) return;
+    const next = clamp(parsed, 8, 512);
+    if (kind === 'width') this.artSizeDraft.width = next;
+    else this.artSizeDraft.height = next;
+  }
+
 
   setActiveTile(tile) {
     this.activeTile = tile;
@@ -2729,6 +2776,33 @@ export default class PixelStudio {
       this.registerFocusable('file', bounds, (entry.onClick || entry.action));
       offsetY += lineHeight;
     });
+
+    const sizeSectionY = y + h - (isMobile ? 132 : 90);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = `${isMobile ? 12 : 11}px ${UI_SUITE.font.family}`;
+    ctx.fillText(`Canvas: ${this.canvasState.width}x${this.canvasState.height}`, x + 10, sizeSectionY - 8);
+
+    const presetW = isMobile ? 56 : 46;
+    const presetH = isMobile ? 30 : 20;
+    PIXEL_SIZE_PRESETS.forEach((size, index) => {
+      const bounds = { x: x + 8 + index * (presetW + 6), y: sizeSectionY, w: presetW, h: presetH };
+      this.drawButton(ctx, bounds, `${size}`, false, { fontSize: isMobile ? 11 : 10 });
+      this.uiButtons.push({ bounds, onClick: () => { this.artSizeDraft.width = size; this.artSizeDraft.height = size; this.resizeArtCanvas(size, size); } });
+      this.registerFocusable('file', bounds, () => { this.artSizeDraft.width = size; this.artSizeDraft.height = size; this.resizeArtCanvas(size, size); });
+    });
+
+    const setWBounds = { x: x + 8, y: sizeSectionY + presetH + 6, w: isMobile ? 86 : 72, h: isMobile ? 30 : 20 };
+    const setHBounds = { x: setWBounds.x + setWBounds.w + 6, y: setWBounds.y, w: isMobile ? 86 : 72, h: isMobile ? 30 : 20 };
+    const applySizeBounds = { x: setHBounds.x + setHBounds.w + 6, y: setWBounds.y, w: isMobile ? 86 : 72, h: isMobile ? 30 : 20 };
+    this.drawButton(ctx, setWBounds, `W: ${this.artSizeDraft.width}`, false, { fontSize: isMobile ? 11 : 10 });
+    this.drawButton(ctx, setHBounds, `H: ${this.artSizeDraft.height}`, false, { fontSize: isMobile ? 11 : 10 });
+    this.drawButton(ctx, applySizeBounds, 'Apply', false, { fontSize: isMobile ? 11 : 10 });
+    this.uiButtons.push({ bounds: setWBounds, onClick: () => this.setArtSizeDraftFromPrompt('width') });
+    this.uiButtons.push({ bounds: setHBounds, onClick: () => this.setArtSizeDraftFromPrompt('height') });
+    this.uiButtons.push({ bounds: applySizeBounds, onClick: () => this.resizeArtCanvas(this.artSizeDraft.width, this.artSizeDraft.height) });
+    this.registerFocusable('file', setWBounds, () => this.setArtSizeDraftFromPrompt('width'));
+    this.registerFocusable('file', setHBounds, () => this.setArtSizeDraftFromPrompt('height'));
+    this.registerFocusable('file', applySizeBounds, () => this.resizeArtCanvas(this.artSizeDraft.width, this.artSizeDraft.height));
 
     const closeBounds = { x: x + 8, y: y + h - (isMobile ? 52 : 30), w: w - 16, h: isMobile ? 44 : 22 };
     this.drawButton(ctx, closeBounds, 'Close', false, { fontSize: isMobile ? 12 : 12 });
