@@ -8,8 +8,8 @@ const ROOM_SIZE_PRESETS = [
   [1, 2], [1, 3], [1, 4],
   [2, 2], [3, 3], [4, 4]
 ];
-const ROOM_BASE_WIDTH = 38;
-const ROOM_BASE_HEIGHT = 18;
+const ROOM_BASE_WIDTH = 22;
+const ROOM_BASE_HEIGHT = 13;
 
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
@@ -447,7 +447,7 @@ export default class Editor {
       id: null
     };
     this.randomLevelSize = { width: 150, height: 100 };
-    this.newLevelSizeDraft = { width: this.game.world?.width || 64, height: this.game.world?.height || 36 };
+    this.newLevelSizeDraft = { width: ROOM_BASE_WIDTH, height: ROOM_BASE_HEIGHT };
     this.randomLevelSlider = {
       active: null,
       bounds: {
@@ -455,7 +455,7 @@ export default class Editor {
         height: null
       }
     };
-    this.randomLevelDialog = { open: false, focus: 'width' };
+    this.randomLevelDialog = { open: false, focus: 'width', mode: 'random' };
     this.randomLevelSliderRepeat = 0;
     this.randomLevelFocusRepeat = 0;
     this.autosaveKey = EDITOR_AUTOSAVE_KEY;
@@ -1717,27 +1717,27 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   resizeLevelDocument() {
-    const dims = this.promptForLevelDimensions({ width: this.game.world.width, height: this.game.world.height });
-    if (!dims) return;
-    const data = this.buildEmptyLevelData(dims.width, dims.height);
-    this.game.applyWorldData(data);
-    this.newLevelSizeDraft = { width: data.width, height: data.height };
-    this.resetView();
-    this.syncPreviewMinimap();
+    this.randomLevelDialog.mode = 'resize';
+    this.randomLevelDialog.open = true;
+    this.randomLevelDialog.justOpened = true;
+    this.randomLevelDialog.focus = 'width';
+    this.randomLevelSlider.active = 'width';
+    this.randomLevelSliderRepeat = 0;
+    this.randomLevelFocusRepeat = 0;
+    this.randomLevelSize.width = this.game.world.width;
+    this.randomLevelSize.height = this.game.world.height;
   }
 
   async newLevelDocument() {
-    const name = await this.promptForNewLevelName();
-    if (!name) return;
-    const dims = this.promptForLevelDimensions(this.newLevelSizeDraft);
-    if (!dims) return;
-    const data = this.buildEmptyLevelData(dims.width, dims.height);
-    this.game.applyWorldData(data);
-    this.newLevelSizeDraft = { width: data.width, height: data.height };
-    this.currentDocumentRef = { folder: 'levels', name };
-    this.resetView();
-    this.syncPreviewMinimap();
-    this.markSavedSnapshot();
+    this.randomLevelDialog.mode = 'new';
+    this.randomLevelDialog.open = true;
+    this.randomLevelDialog.justOpened = true;
+    this.randomLevelDialog.focus = 'width';
+    this.randomLevelSlider.active = 'width';
+    this.randomLevelSliderRepeat = 0;
+    this.randomLevelFocusRepeat = 0;
+    this.randomLevelSize.width = this.newLevelSizeDraft.width;
+    this.randomLevelSize.height = this.newLevelSizeDraft.height;
   }
 
   async closeEditorWithPrompt() {
@@ -2282,11 +2282,25 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   confirmRandomLevel() {
+    const mode = this.randomLevelDialog.mode || 'random';
     this.randomLevelDialog.open = false;
     this.randomLevelDialog.justOpened = false;
     this.randomLevelDialog.focus = null;
     this.randomLevelSlider.active = null;
-    this.createRandomLevel(this.randomLevelSize.width, this.randomLevelSize.height);
+    if (mode === 'random') {
+      this.createRandomLevel(this.randomLevelSize.width, this.randomLevelSize.height);
+      return;
+    }
+    const data = this.buildEmptyLevelData(this.randomLevelSize.width, this.randomLevelSize.height);
+    this.game.applyWorldData(data);
+    this.newLevelSizeDraft = { width: data.width, height: data.height };
+    if (mode === 'new') {
+      const fallback = this.currentDocumentRef?.name || `new-level-${Date.now()}`;
+      this.currentDocumentRef = { folder: 'levels', name: fallback };
+      this.markSavedSnapshot();
+    }
+    this.resetView();
+    this.syncPreviewMinimap();
   }
 
   cancelRandomLevel() {
@@ -7747,7 +7761,8 @@ Level size:`, `${current.width}x${current.height}`);
       ctx.font = '14px Courier New';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      ctx.fillText('Random Level Size', dialogX + dialogW / 2, dialogY + 12);
+      const dialogTitle = this.randomLevelDialog.mode === 'new' ? 'New Level Size' : (this.randomLevelDialog.mode === 'resize' ? 'Resize Level' : 'Random Level Size');
+      ctx.fillText(dialogTitle, dialogX + dialogW / 2, dialogY + 12);
 
       const sliderW = dialogW - 40;
       const sliderX = dialogX + 20;
@@ -7775,31 +7790,30 @@ Level size:`, `${current.width}x${current.height}`);
         this.randomLevelDialog.focus === 'height'
       );
 
-      const dimensionButtonW = 120;
-      const dimensionButtonH = 26;
-      const dimensionY = sliderY + 62;
-      drawButton(
-        dialogX + 20,
-        dimensionY,
-        dimensionButtonW,
-        dimensionButtonH,
-        'Set Width',
-        false,
-        () => this.promptRandomLevelDimension('width'),
-        'Enter width directly'
-      );
-      drawButton(
-        dialogX + 20 + dimensionButtonW + 8,
-        dimensionY,
-        dimensionButtonW,
-        dimensionButtonH,
-        'Set Height',
-        false,
-        () => this.promptRandomLevelDimension('height'),
-        'Enter height directly'
-      );
 
-      const presetStartY = dimensionY + 38;
+      const tickMin = 16;
+      const tickMax = 256;
+      const tickStep = 16;
+      const drawSizeTicks = (y, kind) => {
+        for (let value = tickMin; value <= tickMax; value += tickStep) {
+          const t = (value - tickMin) / (tickMax - tickMin);
+          const tx = sliderX + t * sliderW;
+          const active = (kind === 'width' ? this.randomLevelSize.width : this.randomLevelSize.height) === value;
+          ctx.strokeStyle = active ? '#ffe16a' : 'rgba(255,255,255,0.45)';
+          ctx.beginPath();
+          ctx.moveTo(tx, y);
+          ctx.lineTo(tx, y + (active ? 10 : 6));
+          ctx.stroke();
+          this.addUIButton({ x: tx - 6, y: y - 2, w: 12, h: 14 }, () => {
+            if (kind === 'width') this.randomLevelSize.width = value;
+            else this.randomLevelSize.height = value;
+          }, `${kind} ${value}`);
+        }
+      };
+      drawSizeTicks(sliderY + 12, 'width');
+      drawSizeTicks(sliderY + 44, 'height');
+
+      const presetStartY = sliderY + 66;
       const presetCols = 5;
       const presetGap = 8;
       const presetW = Math.floor((dialogW - 40 - presetGap * (presetCols - 1)) / presetCols);
