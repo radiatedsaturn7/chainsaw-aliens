@@ -2847,16 +2847,18 @@ export default class PixelStudio {
     this.registerFocusable('file', setHBounds, () => this.setArtSizeDraftFromPrompt('height'));
     this.registerFocusable('file', applySizeBounds, () => this.resizeArtCanvas(this.artSizeDraft.width, this.artSizeDraft.height));
 
-    const closeBounds = { x: x + 8, y: y + h - (isMobile ? 52 : 30), w: w - 16, h: isMobile ? 44 : 22 };
-    this.drawButton(ctx, closeBounds, isMobile ? 'Close Menu' : 'Close', false, { fontSize: isMobile ? 12 : 12 });
-    this.uiButtons.push({ bounds: closeBounds, onClick: () => {
-      if (isMobile) this.mobileDrawer = null;
-      else this.closeStudioWithPrompt();
-    } });
-    this.registerFocusable('file', closeBounds, () => {
-      if (isMobile) this.mobileDrawer = null;
-      else this.closeStudioWithPrompt();
-    });
+    const footerY = y + h - (isMobile ? 52 : 30);
+    const footerH = isMobile ? 44 : 22;
+    const footerGap = 8;
+    const footerW = Math.floor((w - 16 - footerGap) / 2);
+    const closeBounds = { x: x + 8, y: footerY, w: footerW, h: footerH };
+    const exitBounds = { x: closeBounds.x + closeBounds.w + footerGap, y: footerY, w: footerW, h: footerH };
+    this.drawButton(ctx, closeBounds, 'Close Menu', false, { fontSize: isMobile ? 12 : 12 });
+    this.drawButton(ctx, exitBounds, 'Exit to Main Menu', false, { fontSize: isMobile ? 11 : 11 });
+    this.uiButtons.push({ bounds: closeBounds, onClick: () => this.closeFileMenu() });
+    this.uiButtons.push({ bounds: exitBounds, onClick: () => this.closeStudioWithPrompt() });
+    this.registerFocusable('file', closeBounds, () => this.closeFileMenu());
+    this.registerFocusable('file', exitBounds, () => this.closeStudioWithPrompt());
   }
 
   drawPalettePanel(ctx, x, y, w, h, options = {}) {

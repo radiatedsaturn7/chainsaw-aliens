@@ -6998,11 +6998,11 @@ export default class MidiComposer {
       this.loadDemoSong();
       return;
     }
-    if (action === 'close-menu') {
+    if (action === 'close-menu' || action === 'close-menu-fixed') {
       this.closeFileMenu();
       return;
     }
-    if (action === 'exit-main') {
+    if (action === 'exit-main' || action === 'exit-main-fixed') {
       await this.closeComposerWithPrompt();
       return;
     }
@@ -11244,7 +11244,8 @@ export default class MidiComposer {
     const items = this.getFileMenuItems();
     const rowH = clamp(Math.round(panelH * 0.08), 36, 44);
     const listStartY = panelY + 34;
-    const listH = Math.max(0, panelH - (listStartY - panelY) - 12);
+    const footerReserved = 56;
+    const listH = Math.max(0, panelH - (listStartY - panelY) - footerReserved);
     this.fileMenuListBounds = { x: panelX + 10, y: listStartY - 4, w: finalPanelW - 20, h: listH + 8 };
     const visibleRows = Math.max(1, Math.floor(listH / rowH));
     this.fileMenuScrollMax = Math.max(0, items.length - visibleRows);
@@ -11274,6 +11275,16 @@ export default class MidiComposer {
       this.fileMenuBounds.push(bounds);
       cursorY += rowH;
     });
+
+    const footerY = panelY + panelH - 40;
+    const footerH = 28;
+    const footerGap = 8;
+    const footerW = Math.floor((finalPanelW - 24 - footerGap) / 2);
+    const closeBounds = { x: panelX + 12, y: footerY, w: footerW, h: footerH, id: 'close-menu-fixed' };
+    const exitBounds = { x: closeBounds.x + closeBounds.w + footerGap, y: footerY, w: footerW, h: footerH, id: 'exit-main-fixed' };
+    this.drawButton(ctx, closeBounds, 'Close Menu', false, true);
+    this.drawButton(ctx, exitBounds, 'Exit to Main Menu', false, true);
+    this.fileMenuBounds.push(closeBounds, exitBounds);
 
     this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
   }
