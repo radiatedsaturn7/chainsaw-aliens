@@ -1,7 +1,19 @@
 import Minimap from '../world/Minimap.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsList, vfsSave } from '../ui/vfs.js';
-import { UI_SUITE } from '../ui/uiSuite.js';
+import { UI_SUITE, formatMenuLabel } from '../ui/uiSuite.js';
+
+const ROOM_SIZE_PRESETS = [
+  [1, 1], [2, 1], [3, 1], [4, 1],
+  [1, 2], [1, 3], [1, 4],
+  [2, 2], [3, 3], [4, 4]
+];
+const ROOM_BASE_WIDTH = 38;
+const ROOM_BASE_HEIGHT = 18;
+
+const EDITOR_MIN_ZOOM = 0.25;
+const EDITOR_MAX_ZOOM = 3;
+const EDITOR_ZOOM_SLIDER_EXPONENT = 2.322;
 
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
@@ -380,6 +392,7 @@ export default class Editor {
     this.panelScrollBounds = null;
     this.panelScrollView = null;
     this.panelScrollDrag = null;
+    this.panelScrollTapCandidate = null;
     this.panelMenuIndex = {
       file: 0,
       toolbox: 0,
@@ -438,6 +451,7 @@ export default class Editor {
       id: null
     };
     this.randomLevelSize = { width: 150, height: 100 };
+    this.newLevelSizeDraft = { width: ROOM_BASE_WIDTH, height: ROOM_BASE_HEIGHT };
     this.randomLevelSlider = {
       active: null,
       bounds: {
@@ -445,7 +459,7 @@ export default class Editor {
         height: null
       }
     };
-    this.randomLevelDialog = { open: false, focus: 'width' };
+    this.randomLevelDialog = { open: false, focus: 'width', mode: 'random' };
     this.randomLevelSliderRepeat = 0;
     this.randomLevelFocusRepeat = 0;
     this.autosaveKey = EDITOR_AUTOSAVE_KEY;
@@ -548,7 +562,7 @@ export default class Editor {
       this.zoom = 1;
       logOnce(`${reason}:zoom-invalid`);
     }
-    const clampedZoom = clamp(this.zoom, 0.35, 3);
+    const clampedZoom = clamp(this.zoom, EDITOR_MIN_ZOOM, EDITOR_MAX_ZOOM);
     if (clampedZoom !== this.zoom) {
       this.zoom = clampedZoom;
       logOnce(`${reason}:zoom-clamped`);
@@ -590,7 +604,7 @@ export default class Editor {
       }
       this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
 
-      const drawerWidth = Math.min(UI_SUITE.layout.panelWidthMobile, Math.floor(width * 0.56));
+      const drawerWidth = Math.min(UI_SUITE.layout.leftMenuWidthDesktop, Math.max(UI_SUITE.layout.railWidthMobile + 96, width - 120));
       const collapsedWidth = UI_SUITE.layout.railWidthMobile;
       const panelW = this.drawer.open ? drawerWidth : collapsedWidth;
       this.editorBounds = { x: panelW, y: 0, w: width - panelW, h: height };
@@ -626,6 +640,7 @@ export default class Editor {
       this.longPressTimer = null;
     }
     this.panelScrollDrag = null;
+    this.panelScrollTapCandidate = null;
     this.drawer.swipeStart = null;
     this.triggerZoneStart = null;
     this.triggerZoneTarget = null;
@@ -921,6 +936,17 @@ export default class Editor {
     }
   }
 
+  closeFileMenu() {
+    if (this.isMobileLayout()) {
+      this.drawer.open = false;
+    }
+    this.setPanelTab('toolbox');
+  }
+
+  async exitToMainMenu() {
+    await this.closeEditorWithPrompt();
+  }
+
   getPanelConfig(tabId, { includeExtras = false } = {}) {
     const tileToolButtons = [
       { id: 'paint', label: 'Paint', tooltip: 'Paint tiles. (Q)' },
@@ -966,6 +992,12 @@ export default class Editor {
           label: 'Open',
           tooltip: 'Open level from browser storage',
           onClick: () => this.loadLevelFromStorage()
+        },
+        {
+          id: 'resize-level',
+          label: 'Resize',
+          tooltip: 'Resize level canvas',
+          onClick: () => this.resizeLevelDocument()
         },
         { id: 'divider-1', label: '────────', tooltip: '', onClick: () => {} },
         {
@@ -1028,10 +1060,16 @@ export default class Editor {
         },
         { id: 'divider-4', label: '────────', tooltip: '', onClick: () => {} },
         {
-          id: 'close',
-          label: 'Close',
-          tooltip: 'Close editor',
-          onClick: () => this.closeEditorWithPrompt()
+          id: 'close-menu',
+          label: 'Close Menu',
+          tooltip: 'Close file menu',
+          onClick: () => this.closeFileMenu()
+        },
+        {
+          id: 'exit-main',
+          label: 'Exit to Main Menu',
+          tooltip: 'Exit editor to title',
+          onClick: () => this.exitToMainMenu()
         }
       ];
       columns = 2;
@@ -1649,14 +1687,78 @@ export default class Editor {
     return trimmed || fallback;
   }
 
+  promptForLevelDimensions(initial = null) {
+    const current = initial || this.newLevelSizeDraft || { width: this.game.world?.width || 64, height: this.game.world?.height || 36 };
+    const hint = 'Enter size (e.g. 96x54) or room preset (1x1,2x1,3x1,4x1,1x2,1x3,1x4,2x2,3x3,4x4).';
+    const value = window.prompt(`${hint}
+Level size:`, `${current.width}x${current.height}`);
+    if (value == null) return null;
+    const raw = value.trim().toLowerCase();
+    if (!raw) return null;
+    const roomPreset = raw.match(/^(\d)\s*x\s*(\d)$/);
+    if (roomPreset) {
+      const rw = clamp(parseInt(roomPreset[1], 10), 1, 4);
+      const rh = clamp(parseInt(roomPreset[2], 10), 1, 4);
+      if ((rw <= 4 && rh === 1) || (rw === 1 && rh <= 4) || (rw === rh && rw >= 1 && rw <= 4)) {
+        return {
+          width: clamp(rw * ROOM_BASE_WIDTH, 24, 256),
+          height: clamp(rh * ROOM_BASE_HEIGHT, 24, 256)
+        };
+      }
+    }
+    return this.parseLevelSize(raw);
+  }
+
+  buildEmptyLevelData(width, height) {
+    const w = clamp(Math.round(width), 24, 256);
+    const h = clamp(Math.round(height), 24, 256);
+    const tiles = Array.from({ length: h }, (_, y) => {
+      const row = Array.from({ length: w }, (_, x) => {
+        if (x === 0 || y === 0 || x === w - 1 || y === h - 1) return '#';
+        return '.';
+      }).join('');
+      return row;
+    });
+    const spawn = { x: Math.floor(w / 2), y: Math.floor(h / 2) };
+    return {
+      schemaVersion: 1,
+      tileSize: this.game.world.tileSize || 32,
+      width: w,
+      height: h,
+      spawn,
+      tiles,
+      regions: [],
+      enemies: [],
+      elevatorPaths: [],
+      elevators: [],
+      pixelArt: { tiles: {} },
+      musicZones: [],
+      midiTracks: []
+    };
+  }
+
+  resizeLevelDocument() {
+    this.randomLevelDialog.mode = 'resize';
+    this.randomLevelDialog.open = true;
+    this.randomLevelDialog.justOpened = true;
+    this.randomLevelDialog.focus = 'width';
+    this.randomLevelSlider.active = 'width';
+    this.randomLevelSliderRepeat = 0;
+    this.randomLevelFocusRepeat = 0;
+    this.randomLevelSize.width = this.game.world.width;
+    this.randomLevelSize.height = this.game.world.height;
+  }
+
   async newLevelDocument() {
-    const name = await this.promptForNewLevelName();
-    if (!name) return;
-    this.game.applyWorldData(this.game.buildBlankWorldData());
-    this.currentDocumentRef = { folder: 'levels', name };
-    this.resetView();
-    this.syncPreviewMinimap();
-    this.markSavedSnapshot();
+    this.randomLevelDialog.mode = 'new';
+    this.randomLevelDialog.open = true;
+    this.randomLevelDialog.justOpened = true;
+    this.randomLevelDialog.focus = 'width';
+    this.randomLevelSlider.active = 'width';
+    this.randomLevelSliderRepeat = 0;
+    this.randomLevelFocusRepeat = 0;
+    this.randomLevelSize.width = this.newLevelSizeDraft.width;
+    this.randomLevelSize.height = this.newLevelSizeDraft.height;
   }
 
   async closeEditorWithPrompt() {
@@ -2201,11 +2303,25 @@ export default class Editor {
   }
 
   confirmRandomLevel() {
+    const mode = this.randomLevelDialog.mode || 'random';
     this.randomLevelDialog.open = false;
     this.randomLevelDialog.justOpened = false;
     this.randomLevelDialog.focus = null;
     this.randomLevelSlider.active = null;
-    this.createRandomLevel(this.randomLevelSize.width, this.randomLevelSize.height);
+    if (mode === 'random') {
+      this.createRandomLevel(this.randomLevelSize.width, this.randomLevelSize.height);
+      return;
+    }
+    const data = this.buildEmptyLevelData(this.randomLevelSize.width, this.randomLevelSize.height);
+    this.game.applyWorldData(data);
+    this.newLevelSizeDraft = { width: data.width, height: data.height };
+    if (mode === 'new') {
+      const fallback = this.currentDocumentRef?.name || `new-level-${Date.now()}`;
+      this.currentDocumentRef = { folder: 'levels', name: fallback };
+      this.markSavedSnapshot();
+    }
+    this.resetView();
+    this.syncPreviewMinimap();
   }
 
   cancelRandomLevel() {
@@ -2219,8 +2335,8 @@ export default class Editor {
     if (!value) return null;
     const match = value.toLowerCase().match(/(\d+)\s*[x,]\s*(\d+)/);
     if (!match) return null;
-    const width = clamp(parseInt(match[1], 10), 48, 256);
-    const height = clamp(parseInt(match[2], 10), 48, 256);
+    const width = clamp(parseInt(match[1], 10), 24, 256);
+    const height = clamp(parseInt(match[2], 10), 24, 256);
     if (!Number.isFinite(width) || !Number.isFinite(height)) return null;
     return { width, height };
   }
@@ -4194,6 +4310,8 @@ export default class Editor {
         startScroll: this.panelScroll[this.getActivePanelTab()] || 0,
         moved: false
       };
+      this.panelScrollTapCandidate = { x: payload.x, y: payload.y, id: payload.id ?? null };
+      return;
     }
 
     if (this.handleUIClick(payload.x, payload.y)) return;
@@ -4573,6 +4691,16 @@ export default class Editor {
       this.drawer.swipeStart = null;
     }
 
+    if (this.panelScrollTapCandidate && (!this.panelScrollDrag || !this.panelScrollDrag.moved)
+      && (payload.id === undefined || this.panelScrollTapCandidate.id === (payload.id ?? null))) {
+      const tap = this.panelScrollTapCandidate;
+      this.panelScrollTapCandidate = null;
+      if (this.handleUIClick(tap.x, tap.y)) {
+        this.panelScrollDrag = null;
+        return;
+      }
+    }
+
     if (this.panelScrollDrag && (payload.id === undefined || this.panelScrollDrag.id === payload.id)) {
       this.panelScrollDrag = null;
     }
@@ -4747,9 +4875,7 @@ export default class Editor {
     const { bounds } = this.zoomSlider;
     if (!bounds || bounds.w <= 0) return;
     const t = Math.min(1, Math.max(0, (x - bounds.x) / bounds.w));
-    const minZoom = 0.35;
-    const maxZoom = 3;
-    const nextZoom = minZoom + (maxZoom - minZoom) * t;
+    const nextZoom = this.sliderTToZoom(t);
     this.setZoom(nextZoom, this.game.canvas.width / 2, this.game.canvas.height / 2);
   }
 
@@ -4770,7 +4896,7 @@ export default class Editor {
   adjustRandomLevelSlider(kind, step) {
     if (!kind) return;
     const bounds = this.randomLevelSlider.bounds[kind];
-    const min = bounds?.min ?? (kind === 'width' ? 50 : 30);
+    const min = bounds?.min ?? 24;
     const max = bounds?.max ?? 256;
     if (kind === 'width') {
       this.randomLevelSize.width = clamp(this.randomLevelSize.width + step, min, max);
@@ -4778,6 +4904,30 @@ export default class Editor {
       this.randomLevelSize.height = clamp(this.randomLevelSize.height + step, min, max);
     }
   }
+
+  setRandomLevelRoomPreset(roomsWide, roomsHigh) {
+    const width = clamp(roomsWide * ROOM_BASE_WIDTH, 24, 256);
+    const height = clamp(roomsHigh * ROOM_BASE_HEIGHT, 24, 256);
+    this.randomLevelSize.width = width;
+    this.randomLevelSize.height = height;
+    this.randomLevelDialog.focus = 'width';
+    this.randomLevelSlider.active = 'width';
+  }
+
+  promptRandomLevelDimension(kind) {
+    const current = kind === 'width' ? this.randomLevelSize.width : this.randomLevelSize.height;
+    const label = kind === 'width' ? 'Level width' : 'Level height';
+    const raw = window.prompt(`${label} (24-256):`, String(current));
+    if (raw == null) return;
+    const parsed = Number.parseInt(raw, 10);
+    if (!Number.isFinite(parsed)) return;
+    const next = clamp(parsed, 24, 256);
+    if (kind === 'width') this.randomLevelSize.width = next;
+    else this.randomLevelSize.height = next;
+    this.randomLevelDialog.focus = kind;
+    this.randomLevelSlider.active = kind;
+  }
+
 
   getCameraBounds() {
     const tileSize = this.game.world.tileSize;
@@ -5648,6 +5798,17 @@ export default class Editor {
       && y <= this.editorBounds.y + this.editorBounds.h;
   }
 
+  sliderTToZoom(t) {
+    const normalized = clamp(t, 0, 1);
+    const curved = Math.pow(normalized, EDITOR_ZOOM_SLIDER_EXPONENT);
+    return EDITOR_MIN_ZOOM + (EDITOR_MAX_ZOOM - EDITOR_MIN_ZOOM) * curved;
+  }
+
+  zoomToSliderT(zoom) {
+    const normalized = clamp((zoom - EDITOR_MIN_ZOOM) / (EDITOR_MAX_ZOOM - EDITOR_MIN_ZOOM), 0, 1);
+    return Math.pow(normalized, 1 / EDITOR_ZOOM_SLIDER_EXPONENT);
+  }
+
   adjustZoom(delta, anchorX, anchorY) {
     this.setZoom(this.zoom + delta * 0.02, anchorX, anchorY);
   }
@@ -5655,7 +5816,7 @@ export default class Editor {
   setZoom(nextZoom, anchorX, anchorY) {
     const safeAnchorX = Number.isFinite(anchorX) ? anchorX : (this.game.canvas?.width || 0) * 0.5;
     const safeAnchorY = Number.isFinite(anchorY) ? anchorY : (this.game.canvas?.height || 0) * 0.5;
-    const clamped = Math.min(3, Math.max(0.35, Number.isFinite(nextZoom) ? nextZoom : 1));
+    const clamped = Math.min(EDITOR_MAX_ZOOM, Math.max(EDITOR_MIN_ZOOM, Number.isFinite(nextZoom) ? nextZoom : 1));
     if (Math.abs(clamped - this.zoom) < 0.001) {
       this.sanitizeView('setZoom');
       return;
@@ -6242,9 +6403,9 @@ export default class Editor {
 
     const drawButton = (x, y, w, h, label, active, onClick, tooltip = '', preview = null, focused = false) => {
       ctx.globalAlpha = 0.9;
-      ctx.fillStyle = active ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.6)';
+      ctx.fillStyle = active ? 'rgba(255,225,106,0.7)' : 'rgba(0,0,0,0.6)';
       ctx.fillRect(x, y, w, h);
-      ctx.strokeStyle = active ? '#fff' : 'rgba(255,255,255,0.4)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(x, y, w, h);
       if (focused) {
         ctx.save();
@@ -6253,7 +6414,7 @@ export default class Editor {
         ctx.strokeRect(x - 2, y - 2, w + 4, h + 4);
         ctx.restore();
       }
-      ctx.fillStyle = '#fff';
+      ctx.fillStyle = active ? '#0b0b0b' : '#fff';
       ctx.save();
       ctx.textBaseline = 'middle';
       const previewSize = preview ? Math.min(22, h - 8) : 0;
@@ -6267,7 +6428,7 @@ export default class Editor {
         drawEnemyPreview(previewX, previewY, previewSize, preview.enemy);
       }
       const textOffset = preview ? previewSize + 14 : 8;
-      ctx.fillText(label, x + textOffset, y + h / 2);
+      ctx.fillText(formatMenuLabel(label), x + textOffset, y + h / 2);
       ctx.restore();
       this.addUIButton({ x, y, w, h }, onClick, tooltip);
       if (tooltip && !this.isMobileLayout() && isHovered(x, y, w, h)) {
@@ -6358,7 +6519,7 @@ export default class Editor {
     }
 
     if (this.isMobileLayout()) {
-      const drawerWidth = Math.min(UI_SUITE.layout.panelWidthMobile, Math.floor(width * 0.56));
+      const drawerWidth = Math.min(UI_SUITE.layout.leftMenuWidthDesktop, Math.max(UI_SUITE.layout.railWidthMobile + 96, width - 120));
       const collapsedWidth = UI_SUITE.layout.railWidthMobile;
       const panelW = this.drawer.open ? drawerWidth : collapsedWidth;
       const panelX = 0;
@@ -6401,25 +6562,25 @@ export default class Editor {
         ctx.fillText(summary, panelW / 2, panelY + 46);
       } else {
         const tabs = [
-          { id: 'file', label: 'FILE' },
-          { id: 'toolbox', label: 'TOOLBOX' },
-          { id: 'tiles', label: 'TILES' },
-          { id: 'triggers', label: 'TRIGGERS' },
-          { id: 'powerups', label: 'POWERUPS' },
-          { id: 'enemies', label: 'ENEMIES' },
-          { id: 'bosses', label: 'BOSSES' },
-          { id: 'prefabs', label: 'STRUCTURES' },
-          { id: 'music', label: 'MUSIC' }
+          { id: 'file', label: 'File' },
+          { id: 'toolbox', label: 'Toolbox' },
+          { id: 'tiles', label: 'Tiles' },
+          { id: 'triggers', label: 'Triggers' },
+          { id: 'powerups', label: 'Powerups' },
+          { id: 'enemies', label: 'Enemies' },
+          { id: 'bosses', label: 'Bosses' },
+          { id: 'prefabs', label: 'Structures' },
+          { id: 'music', label: 'Music' }
         ];
         const activeTab = this.getActivePanelTab();
         const panelPadding = 10;
-        const tabColumnW = Math.max(104, Math.min(160, Math.floor(panelW * 0.38)));
+        const tabColumnW = Math.max(92, Math.min(124, Math.floor(panelW * 0.32)));
         const tabX = panelX + panelPadding;
         const tabY = panelY + handleAreaH + 8;
         const tabW = tabColumnW - panelPadding * 1.5;
         const tabButtonH = 36;
         const tabGap = 8;
-        ctx.font = '14px Courier New';
+        ctx.font = `14px ${UI_SUITE.font.family}`;
         tabs.forEach((tab, index) => {
           const y = tabY + index * (tabButtonH + tabGap);
           drawButton(
@@ -6455,7 +6616,7 @@ export default class Editor {
         if (activeTab === 'playtest') {
           items = [{
             id: 'playtest',
-            label: 'PLAYTEST',
+            label: 'Playtest',
             active: false,
             tooltip: 'Start playtest from spawn',
             onClick: () => this.game.exitEditor({ playtest: true })
@@ -6465,66 +6626,73 @@ export default class Editor {
           items = [
             {
               id: 'new-level',
-              label: 'NEW',
+              label: 'New',
               active: false,
               tooltip: 'Create a new level',
               onClick: () => this.newLevelDocument()
             },
             {
               id: 'save-storage',
-              label: 'SAVE',
+              label: 'Save',
               active: false,
               tooltip: 'Save level to browser storage',
               onClick: () => this.saveLevelToStorage()
             },
             {
               id: 'save-as-storage',
-              label: 'SAVE AS',
+              label: 'Save As',
               active: false,
               tooltip: 'Save level with a new name',
               onClick: () => this.saveLevelToStorage({ forceSaveAs: true })
             },
             {
               id: 'load-storage',
-              label: 'OPEN',
+              label: 'Open',
               active: false,
               tooltip: 'Open level from browser storage',
               onClick: () => this.loadLevelFromStorage()
             },
-            { id: 'divider-1', label: '────────', active: false, tooltip: '', onClick: () => {} },
+            {
+              id: 'resize-level',
+              label: 'Resize',
+              active: false,
+              tooltip: 'Resize level canvas',
+              onClick: () => this.resizeLevelDocument()
+            },
+            { id: 'divider-1', divider: true },
             {
               id: 'export-json',
-              label: 'EXPORT',
+              label: 'Export',
               active: false,
               tooltip: 'Export world JSON',
               onClick: () => this.saveToFile()
             },
             {
               id: 'import-json',
-              label: 'IMPORT',
+              label: 'Import',
               active: false,
               tooltip: 'Import world JSON',
               onClick: () => this.openFileDialog()
             },
-            { id: 'divider-2', label: '────────', active: false, tooltip: '', onClick: () => {} },
+            { id: 'divider-2', divider: true },
             {
               id: 'undo',
-              label: 'UNDO',
+              label: 'Undo',
               active: false,
               tooltip: 'Undo last change (Ctrl+Z)',
               onClick: () => this.undo()
             },
             {
               id: 'redo',
-              label: 'REDO',
+              label: 'Redo',
               active: false,
               tooltip: 'Redo last change (Ctrl+Y)',
               onClick: () => this.redo()
             },
-            { id: 'divider-3', label: '────────', active: false, tooltip: '', onClick: () => {} },
+            { id: 'divider-3', divider: true },
             {
               id: 'playtest',
-              label: 'PLAYTEST',
+              label: 'Playtest',
               active: false,
               tooltip: 'Start playtest from spawn',
               onClick: () => this.game.exitEditor({ playtest: true })
@@ -6532,7 +6700,7 @@ export default class Editor {
             ...(spawnTile
               ? [{
                 id: 'spawn-point',
-                label: 'SPAWN POINT',
+                label: 'Spawn point',
                 active: this.tileType?.special === 'spawn',
                 tooltip: 'Place the player spawn point',
                 onClick: () => {
@@ -6544,7 +6712,7 @@ export default class Editor {
               : []),
             {
               id: 'start-everything',
-              label: `START WITH EVERYTHING: ${this.startWithEverything ? 'ON' : 'OFF'}`,
+              label: `Start with everything: ${this.startWithEverything ? 'On' : 'Off'}`,
               active: false,
               tooltip: 'Toggle playtest loadout',
               onClick: () => {
@@ -6553,18 +6721,25 @@ export default class Editor {
             },
             {
               id: 'random-level',
-              label: 'RANDOM LEVEL',
+              label: 'Random level',
               active: false,
               tooltip: 'Create a random level layout',
               onClick: () => this.promptRandomLevel()
             },
-            { id: 'divider-4', label: '────────', active: false, tooltip: '', onClick: () => {} },
+            { id: 'divider-4', divider: true },
             {
-              id: 'close',
-              label: 'CLOSE',
+              id: 'close-menu',
+              label: 'Close Menu',
               active: false,
-              tooltip: 'Close editor',
-              onClick: () => this.closeEditorWithPrompt()
+              tooltip: 'Close file menu',
+              onClick: () => this.closeFileMenu()
+            },
+            {
+              id: 'exit-main',
+              label: 'Exit to Main Menu',
+              active: false,
+              tooltip: 'Exit editor to title',
+              onClick: () => this.exitToMainMenu()
             }
           ];
           columns = 1;
@@ -6820,7 +6995,7 @@ export default class Editor {
         }
 
         ctx.globalAlpha = 0.7;
-        ctx.fillStyle = 'rgba(5,6,8,0.6)';
+        ctx.fillStyle = 'rgba(5,6,8,0.38)';
         ctx.fillRect(contentX, contentY, contentW, contentHeight);
         ctx.strokeStyle = 'rgba(255,255,255,0.15)';
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
@@ -6847,6 +7022,17 @@ export default class Editor {
           const row = Math.floor(index / columns);
           const x = contentX + contentPadding + col * (columnWidth + buttonGap);
           const y = contentY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
+          if (item.divider) {
+            const dividerY = y + Math.max(8, Math.floor(buttonHeight * 0.5));
+            if (dividerY >= contentY + 4 && dividerY <= contentY + contentHeight - 4) {
+              ctx.strokeStyle = UI_SUITE.colors.border;
+              ctx.beginPath();
+              ctx.moveTo(x, dividerY);
+              ctx.lineTo(x + columnWidth, dividerY);
+              ctx.stroke();
+            }
+            return;
+          }
           if (y + buttonHeight < contentY + 4 || y > contentY + contentHeight - 4) return;
           drawButton(
             x,
@@ -6861,6 +7047,33 @@ export default class Editor {
             gamepadActive && index === focusedIndex
           );
         });
+
+        if (activeTab === 'file') {
+          const footerH = Math.max(28, buttonHeight);
+          const footerY = contentY + contentHeight - footerH - 10;
+          const footerGap = 8;
+          const footerW = Math.floor((contentW - contentPadding * 2 - footerGap) / 2);
+          drawButton(
+            contentX + contentPadding,
+            footerY,
+            footerW,
+            footerH,
+            'Close Menu',
+            false,
+            () => this.closeFileMenu(),
+            'Close file menu'
+          );
+          drawButton(
+            contentX + contentPadding + footerW + footerGap,
+            footerY,
+            footerW,
+            footerH,
+            'Exit to Main Menu',
+            false,
+            () => this.exitToMainMenu(),
+            'Exit editor to title'
+          );
+        }
 
       }
       if (!this.drawer.open) {
@@ -7030,6 +7243,33 @@ export default class Editor {
           gamepadActive && index === focusedIndex
         );
       });
+
+      if (activeTab === 'file') {
+        const footerH = 30;
+        const footerY = contentY + contentHeight - footerH - 10;
+        const footerGap = 8;
+        const footerW = Math.floor((contentW - contentPadding * 2 - footerGap) / 2);
+        drawButton(
+          contentX + contentPadding,
+          footerY,
+          footerW,
+          footerH,
+          'Close Menu',
+          false,
+          () => this.closeFileMenu(),
+          'Close file menu'
+        );
+        drawButton(
+          contentX + contentPadding + footerW + footerGap,
+          footerY,
+          footerW,
+          footerH,
+          'Exit to Main Menu',
+          false,
+          () => this.exitToMainMenu(),
+          'Exit editor to title'
+        );
+      }
 
       const infoLines = [];
       if (infoLines.length > 0) {
@@ -7551,9 +7791,7 @@ export default class Editor {
     }
 
     if (this.isMobileLayout()) {
-      const zoomMin = 0.35;
-      const zoomMax = 3;
-      const zoomT = Math.min(1, Math.max(0, (this.zoom - zoomMin) / (zoomMax - zoomMin)));
+      const zoomT = this.zoomToSliderT(this.zoom);
       const sliderKnobX = sliderX + zoomT * sliderWidth;
       const sliderCenterY = sliderY + sliderHeight / 2;
       const sliderKnobRadius = sliderHeight * 1.6;
@@ -7595,8 +7833,8 @@ export default class Editor {
     }
 
     if (this.randomLevelDialog.open) {
-      const dialogW = Math.min(420, width * 0.8);
-      const dialogH = 170;
+      const dialogW = Math.min(560, width * 0.9);
+      const dialogH = 320;
       const dialogX = (width - dialogW) / 2;
       const dialogY = (height - dialogH) / 2;
       ctx.save();
@@ -7612,7 +7850,8 @@ export default class Editor {
       ctx.font = '14px Courier New';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      ctx.fillText('Random Level Size', dialogX + dialogW / 2, dialogY + 12);
+      const dialogTitle = this.randomLevelDialog.mode === 'new' ? 'New Level Size' : (this.randomLevelDialog.mode === 'resize' ? 'Resize Level' : 'Random Level Size');
+      ctx.fillText(dialogTitle, dialogX + dialogW / 2, dialogY + 12);
 
       const sliderW = dialogW - 40;
       const sliderX = dialogX + 20;
@@ -7623,7 +7862,7 @@ export default class Editor {
         sliderW,
         'Width',
         this.randomLevelSize.width,
-        50,
+        24,
         256,
         'width',
         this.randomLevelDialog.focus === 'width'
@@ -7634,11 +7873,56 @@ export default class Editor {
         sliderW,
         'Height',
         this.randomLevelSize.height,
-        30,
+        24,
         256,
         'height',
         this.randomLevelDialog.focus === 'height'
       );
+
+
+      const tickMin = 16;
+      const tickMax = 256;
+      const tickStep = 16;
+      const drawSizeTicks = (y, kind) => {
+        for (let value = tickMin; value <= tickMax; value += tickStep) {
+          const t = (value - tickMin) / (tickMax - tickMin);
+          const tx = sliderX + t * sliderW;
+          const active = (kind === 'width' ? this.randomLevelSize.width : this.randomLevelSize.height) === value;
+          ctx.strokeStyle = active ? '#ffe16a' : 'rgba(255,255,255,0.45)';
+          ctx.beginPath();
+          ctx.moveTo(tx, y);
+          ctx.lineTo(tx, y + (active ? 10 : 6));
+          ctx.stroke();
+          this.addUIButton({ x: tx - 6, y: y - 2, w: 12, h: 14 }, () => {
+            if (kind === 'width') this.randomLevelSize.width = value;
+            else this.randomLevelSize.height = value;
+          }, `${kind} ${value}`);
+        }
+      };
+      drawSizeTicks(sliderY + 12, 'width');
+      drawSizeTicks(sliderY + 44, 'height');
+
+      const presetStartY = sliderY + 66;
+      const presetCols = 5;
+      const presetGap = 8;
+      const presetW = Math.floor((dialogW - 40 - presetGap * (presetCols - 1)) / presetCols);
+      const presetH = 26;
+      ROOM_SIZE_PRESETS.forEach(([rw, rh], index) => {
+        const col = index % presetCols;
+        const row = Math.floor(index / presetCols);
+        const px = dialogX + 20 + col * (presetW + presetGap);
+        const py = presetStartY + row * (presetH + 6);
+        drawButton(
+          px,
+          py,
+          presetW,
+          presetH,
+          `${rw}x${rh}`,
+          false,
+          () => this.setRandomLevelRoomPreset(rw, rh),
+          `Set level to ${rw}x${rh} rooms`
+        );
+      });
 
       const buttonW = 120;
       const buttonH = 34;

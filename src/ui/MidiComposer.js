@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, buildStandardFileMenu } from './uiSuite.js';
+import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -674,8 +674,7 @@ export default class MidiComposer {
     };
     this.fileMenuScroll = 0;
     this.fileMenuScrollMax = 0;
-    this.fileMenuScrollUp = null;
-    this.fileMenuScrollDown = null;
+    this.fileMenuListBounds = null;
     this.recentInstruments = this.loadInstrumentList('chainsaw-midi-recent', []);
     this.favoriteInstruments = this.loadInstrumentList('chainsaw-midi-favorites', []);
     this.controllerMapping = this.loadControllerMapping();
@@ -3406,12 +3405,15 @@ export default class MidiComposer {
     }
 
     if (this.activeTab === 'file') {
-      if (this.fileMenuScrollUp && this.pointInBounds(x, y, this.fileMenuScrollUp)) {
-        this.dragState = { mode: 'file-menu-tap', target: 'scroll-up', startX: x, startY: y, moved: false };
-        return;
-      }
-      if (this.fileMenuScrollDown && this.pointInBounds(x, y, this.fileMenuScrollDown)) {
-        this.dragState = { mode: 'file-menu-tap', target: 'scroll-down', startX: x, startY: y, moved: false };
+      if (this.fileMenuListBounds && this.pointInBounds(x, y, this.fileMenuListBounds)) {
+        const fileHit = this.fileMenuBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+        this.dragState = {
+          mode: 'file-menu-scroll',
+          startY: y,
+          startScroll: this.fileMenuScroll,
+          moved: false,
+          target: fileHit?.id || null
+        };
         return;
       }
       const fileHit = this.fileMenuBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -4376,6 +4378,14 @@ export default class MidiComposer {
       this.settingsScroll = clamp(this.dragState.startScroll + delta, 0, this.settingsScrollMax);
       return;
     }
+    if (this.dragState?.mode === 'file-menu-scroll') {
+      const dy = this.dragState.startY - payload.y;
+      if (Math.abs(dy) > 8) this.dragState.moved = true;
+      if (this.dragState.moved) {
+        this.fileMenuScroll = clamp(this.dragState.startScroll + Math.round(dy / 24), 0, this.fileMenuScrollMax);
+      }
+      return;
+    }
     if (this.dragState?.mode === 'file-menu-tap') {
       const dx = payload.x - this.dragState.startX;
       const dy = payload.y - this.dragState.startY;
@@ -4530,19 +4540,18 @@ export default class MidiComposer {
       this.dragState = null;
       return;
     }
+    if (this.dragState?.mode === 'file-menu-scroll') {
+      const target = this.dragState.target;
+      const wasMoved = this.dragState.moved;
+      this.dragState = null;
+      if (!wasMoved && target) this.handleFileMenu(target);
+      return;
+    }
     if (this.dragState?.mode === 'file-menu-tap') {
       const target = this.dragState.target;
       const wasMoved = this.dragState.moved;
       this.dragState = null;
       if (wasMoved) return;
-      if (target === 'scroll-up') {
-        this.fileMenuScroll = clamp(this.fileMenuScroll - 1, 0, this.fileMenuScrollMax);
-        return;
-      }
-      if (target === 'scroll-down') {
-        this.fileMenuScroll = clamp(this.fileMenuScroll + 1, 0, this.fileMenuScrollMax);
-        return;
-      }
       if (target) {
         this.handleFileMenu(target);
       }
@@ -6900,6 +6909,11 @@ export default class MidiComposer {
     this.game?.exitMidiComposer?.();
   }
 
+  closeFileMenu() {
+    this.activeTab = 'grid';
+    this.fileMenuOpen = false;
+  }
+
   async handleFileMenu(action) {
     if (action === 'new') {
       if (!this.confirmDiscardChanges()) return;
@@ -6982,6 +6996,14 @@ export default class MidiComposer {
     if (action === 'sample') {
       if (!this.confirmDiscardChanges()) return;
       this.loadDemoSong();
+      return;
+    }
+    if (action === 'close-menu' || action === 'close-menu-fixed') {
+      this.closeFileMenu();
+      return;
+    }
+    if (action === 'exit-main' || action === 'exit-main-fixed') {
+      await this.closeComposerWithPrompt();
       return;
     }
     if (action === 'close') {
@@ -7818,9 +7840,9 @@ export default class MidiComposer {
     const padding = 16;
     const gap = 12;
     const sidebarW = this.getSidebarWidth(width, {
-      ratio: 0.22,
-      min: 240,
-      max: 340,
+      ratio: 0.24,
+      min: UI_SUITE.layout.leftMenuWidthDesktop,
+      max: UI_SUITE.layout.leftMenuWidthDesktop,
       padding,
       gap,
       minContent: 240
@@ -11165,7 +11187,7 @@ export default class MidiComposer {
   }
 
   getFileMenuItems() {
-    const base = buildStandardFileMenu({
+    return buildStandardFileMenu({
       labels: {
         open: 'Open',
         export: 'Export JSON',
@@ -11191,7 +11213,8 @@ export default class MidiComposer {
         { id: 'theme', label: 'Generate Theme' },
         { id: 'sample', label: 'Load Sample Song' },
         { divider: true },
-        { id: 'close', label: 'Close' }
+        { id: 'close-menu', label: 'Close Menu' },
+        { id: 'exit-main', label: 'Exit to Main Menu' }
       ]
     });
   }
@@ -11221,7 +11244,9 @@ export default class MidiComposer {
     const items = this.getFileMenuItems();
     const rowH = clamp(Math.round(panelH * 0.08), 36, 44);
     const listStartY = panelY + 34;
-    const listH = Math.max(0, panelH - (listStartY - panelY) - 12);
+    const footerReserved = 56;
+    const listH = Math.max(0, panelH - (listStartY - panelY) - footerReserved);
+    this.fileMenuListBounds = { x: panelX + 10, y: listStartY - 4, w: finalPanelW - 20, h: listH + 8 };
     const visibleRows = Math.max(1, Math.floor(listH / rowH));
     this.fileMenuScrollMax = Math.max(0, items.length - visibleRows);
     this.fileMenuScroll = clamp(this.fileMenuScroll, 0, this.fileMenuScrollMax);
@@ -11251,27 +11276,17 @@ export default class MidiComposer {
       cursorY += rowH;
     });
 
-    this.fileMenuScrollUp = null;
-    this.fileMenuScrollDown = null;
-    if (this.fileMenuScrollMax > 0) {
-      const buttonW = 26;
-      const buttonH = 22;
-      const buttonsY = panelY + panelH - buttonH - 10;
-      this.fileMenuScrollUp = {
-        x: panelX + 12,
-        y: buttonsY,
-        w: buttonW,
-        h: buttonH
-      };
-      this.fileMenuScrollDown = {
-        x: panelX + 12 + buttonW + 8,
-        y: buttonsY,
-        w: buttonW,
-        h: buttonH
-      };
-      this.drawSmallButton(ctx, this.fileMenuScrollUp, '▲', false);
-      this.drawSmallButton(ctx, this.fileMenuScrollDown, '▼', false);
-    }
+    const footerY = panelY + panelH - 40;
+    const footerH = 28;
+    const footerGap = 8;
+    const footerW = Math.floor((finalPanelW - 24 - footerGap) / 2);
+    const closeBounds = { x: panelX + 12, y: footerY, w: footerW, h: footerH, id: 'close-menu-fixed' };
+    const exitBounds = { x: closeBounds.x + closeBounds.w + footerGap, y: footerY, w: footerW, h: footerH, id: 'exit-main-fixed' };
+    this.drawButton(ctx, closeBounds, 'Close Menu', false, true);
+    this.drawButton(ctx, exitBounds, 'Exit to Main Menu', false, true);
+    this.fileMenuBounds.push(closeBounds, exitBounds);
+
+    this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
   }
 
   drawFileMenu(ctx, x, y) {
@@ -11397,11 +11412,11 @@ export default class MidiComposer {
     ctx.fillStyle = active ? '#0b0b0b' : '#fff';
     const isMobile = this.isMobileLayout();
     const fontSize = this.getButtonFontSize(bounds, isMobile);
-    ctx.font = `${fontSize}px Courier New`;
+    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const padding = Math.max(6, Math.round(bounds.h * 0.2));
-    const clippedLabel = this.truncateLabel(ctx, label, Math.max(0, bounds.w - padding * 2));
+    const clippedLabel = this.truncateLabel(ctx, formatMenuLabel(label), Math.max(0, bounds.w - padding * 2));
     ctx.fillText(clippedLabel, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
