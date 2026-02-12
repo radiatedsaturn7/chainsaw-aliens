@@ -143,9 +143,9 @@ body.mobile .hint {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #0b1118;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
+  background: var(--ui-panel);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
   padding: 14px;
   box-sizing: border-box;
 }
@@ -315,4 +315,21 @@ body.mobile .hint {
 
 .project-browser-overwrite {
   font-size: 12px;
+}
+
+
+.project-browser-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.project-browser-type-badge {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: var(--ui-muted);
 }

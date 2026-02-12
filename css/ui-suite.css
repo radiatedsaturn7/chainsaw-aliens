@@ -1,0 +1,36 @@
+:root {
+  --ui-bg: #0b0b0b;
+  --ui-panel: #0b1118;
+  --ui-panel-2: #121923;
+  --ui-border: rgba(255, 255, 255, 0.2);
+  --ui-text: #fff;
+  --ui-muted: rgba(255, 255, 255, 0.72);
+  --ui-accent: #ffe16a;
+  --ui-accent-2: #9ddcff;
+  --ui-shadow: rgba(0, 0, 0, 0.45);
+  --ui-radius: 8px;
+  --ui-gap: 8px;
+  --ui-font: "Courier New", monospace;
+  --ui-font-size: 12px;
+  --ui-rail-width: 72px;
+  --ui-panel-width: 292px;
+}
+
+.suite-panel {
+  background: var(--ui-panel);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+}
+
+.suite-button {
+  min-height: 44px;
+  border-radius: 6px;
+  border: 1px solid var(--ui-border);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ui-text);
+  font: var(--ui-font-size) var(--ui-font);
+}
+
+.suite-button:disabled {
+  opacity: 0.45;
+}

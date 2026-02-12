@@ -15,6 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
+import { UI_SUITE, buildStandardFileMenu } from './uiSuite.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -7907,7 +7908,7 @@ export default class MidiComposer {
 
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(menuX, menuY, w, menuH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(menuX, menuY, w, menuH);
 
     const innerX = menuX + panelPadding;
@@ -8011,7 +8012,7 @@ export default class MidiComposer {
 
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(menuX, menuY, w, menuH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(menuX, menuY, w, menuH);
 
     const innerX = menuX + panelPadding;
@@ -8042,7 +8043,7 @@ export default class MidiComposer {
 
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(controlsX, controlsY, w, controlsH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(controlsX, controlsY, w, controlsH);
 
     const controlX = controlsX + panelPadding;
@@ -8140,7 +8141,7 @@ export default class MidiComposer {
       ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
       ctx.fillStyle = '#ffe16a';
       ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w * mix.volume, volumeBounds.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = '10px Courier New';
@@ -8159,7 +8160,7 @@ export default class MidiComposer {
       ctx.fillRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
       ctx.fillStyle = '#4fb7ff';
       ctx.fillRect(panBounds.x, panBounds.y, panBounds.w * ((mix.pan + 1) / 2), panBounds.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = '10px Courier New';
@@ -8256,7 +8257,7 @@ export default class MidiComposer {
   drawHeader(ctx, x, y, w, h, track) {
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
     const padding = 12;
@@ -8290,7 +8291,7 @@ export default class MidiComposer {
   drawTabs(ctx, x, y, w, h) {
     ctx.fillStyle = 'rgba(255,255,255,0.04)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     const gap = 6;
     const isMobile = this.isMobileLayout();
@@ -8313,7 +8314,7 @@ export default class MidiComposer {
   drawTransportBar(ctx, x, y, w, h) {
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     this.bounds.transportBar = { x, y, w, h };
     const isMobile = this.isMobileLayout();
@@ -8402,7 +8403,7 @@ export default class MidiComposer {
   drawSongTab(ctx, x, y, w, h) {
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
     const padding = 0;
@@ -8690,7 +8691,7 @@ export default class MidiComposer {
     const ticksPerBar = this.getTicksPerBar();
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     ctx.fillStyle = '#fff';
     ctx.font = '12px Courier New';
@@ -8847,7 +8848,7 @@ export default class MidiComposer {
     menuY = clamp(menuY, this.songTimelineBounds.y, this.songTimelineBounds.y + this.songTimelineBounds.h - menuH);
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(menuX, menuY, menuW, menuH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(menuX, menuY, menuW, menuH);
     this.songSelectionMenu.bounds = [];
     actions.forEach((entry, index) => {
@@ -9009,7 +9010,7 @@ export default class MidiComposer {
   }
 
   drawAutomationLane(ctx, bounds, keyframes, minValue, maxValue, label, timeline, indicator = null) {
-    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.strokeStyle = 'rgba(255,255,255,0.15)';
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
@@ -9163,9 +9164,9 @@ export default class MidiComposer {
       const mixPan = clamp(track.pan ?? 0, -1, 1);
 
       const panelHeight = panelPadding + 10 + sliderH + sliderGap + sliderH + 18 + 32 + panelPadding;
-      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.fillStyle = UI_SUITE.colors.panel;
       ctx.fillRect(x, panelY, w, panelHeight);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(x, panelY, w, panelHeight);
 
       const volumeBounds = {
@@ -9180,7 +9181,7 @@ export default class MidiComposer {
       ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
       ctx.fillStyle = '#ffe16a';
       ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w * mixVolume, volumeBounds.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
       ctx.fillStyle = 'rgba(255,255,255,0.75)';
       ctx.font = '11px Courier New';
@@ -9199,7 +9200,7 @@ export default class MidiComposer {
       ctx.fillRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
       ctx.fillStyle = '#4fb7ff';
       ctx.fillRect(panBounds.x, panBounds.y, panBounds.w * ((mixPan + 1) / 2), panBounds.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
       ctx.fillStyle = 'rgba(255,255,255,0.75)';
       ctx.font = '11px Courier New';
@@ -9279,7 +9280,7 @@ export default class MidiComposer {
   drawInstrumentPanel(ctx, x, y, w, h, track) {
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
     const isMobile = this.isMobileLayout();
@@ -9299,9 +9300,9 @@ export default class MidiComposer {
     this.bounds.instrumentList = [];
     this.bounds.instrumentSettingsControls = [];
 
-    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(leftX, leftY, leftW, panelH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(leftX, leftY, leftW, panelH);
 
     ctx.fillStyle = '#fff';
@@ -9337,7 +9338,7 @@ export default class MidiComposer {
 
     ctx.fillStyle = 'rgba(0,0,0,0.3)';
     ctx.fillRect(rightX, rightY, rightW, panelH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(rightX, rightY, rightW, panelH);
 
     if (this.instrumentPicker.mode) {
@@ -9613,7 +9614,7 @@ export default class MidiComposer {
     ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
     ctx.fillStyle = '#ffe16a';
     ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w * mix.volume, volumeBounds.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
     ctx.fillStyle = 'rgba(255,255,255,0.75)';
     ctx.font = '11px Courier New';
@@ -9632,7 +9633,7 @@ export default class MidiComposer {
     ctx.fillRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
     ctx.fillStyle = '#4fb7ff';
     ctx.fillRect(panBounds.x, panBounds.y, panBounds.w * ((mix.pan + 1) / 2), panBounds.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
     ctx.fillStyle = 'rgba(255,255,255,0.75)';
     ctx.font = '11px Courier New';
@@ -9643,7 +9644,7 @@ export default class MidiComposer {
   drawSettingsPanel(ctx, x, y, w, h) {
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     this.bounds.settingsPanel = { x, y, w, h };
 
@@ -9742,7 +9743,7 @@ export default class MidiComposer {
       ctx.fillRect(barBounds.x, barBounds.y, barBounds.w, barBounds.h);
       ctx.fillStyle = '#ffe16a';
       ctx.fillRect(barBounds.x, barBounds.y, barBounds.w * ratio, barBounds.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(barBounds.x, barBounds.y, barBounds.w, barBounds.h);
       ctx.fillStyle = 'rgba(255,255,255,0.8)';
       ctx.fillText(valueText, barBounds.x, barBounds.y + 32);
@@ -9923,7 +9924,7 @@ export default class MidiComposer {
   drawHelpPanel(ctx, x, y, w, h) {
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     const padding = 16;
     let cursorY = y + padding;
@@ -9985,7 +9986,7 @@ export default class MidiComposer {
       masterVolumeBounds.w * clamp(this.audioSettings.masterVolume, 0, 1),
       masterVolumeBounds.h
     );
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(masterVolumeBounds.x, masterVolumeBounds.y, masterVolumeBounds.w, masterVolumeBounds.h);
     this.trackControlBounds.push(masterVolumeBounds);
 
@@ -10005,7 +10006,7 @@ export default class MidiComposer {
       masterPanBounds.w * ((clamp(this.audioSettings.masterPan, -1, 1) + 1) / 2),
       masterPanBounds.h
     );
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(masterPanBounds.x, masterPanBounds.y, masterPanBounds.w, masterPanBounds.h);
     this.trackControlBounds.push(masterPanBounds);
     cursorY += rowH + gap;
@@ -10036,7 +10037,7 @@ export default class MidiComposer {
       ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
       ctx.fillStyle = '#ffe16a';
       ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w * mix.volume, volumeBounds.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
       this.trackControlBounds.push(volumeBounds);
 
@@ -10052,7 +10053,7 @@ export default class MidiComposer {
       ctx.fillRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
       ctx.fillStyle = '#4fb7ff';
       ctx.fillRect(panBounds.x, panBounds.y, panBounds.w * ((mix.pan + 1) / 2), panBounds.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
       this.trackControlBounds.push(panBounds);
       this.trackBounds.push(bounds);
@@ -10064,7 +10065,7 @@ export default class MidiComposer {
   drawTopBar(ctx, x, y, w, h, track) {
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     this.bounds.endMarker = null;
     this.bounds.loopToggle = null;
@@ -10158,7 +10159,7 @@ export default class MidiComposer {
     const offset = (value) => value * scale;
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
     const buttonW = 92 * scale;
@@ -10166,7 +10167,7 @@ export default class MidiComposer {
     this.bounds.play = { x: x + offset(16), y: y + offset(18), w: buttonW, h: buttonH };
     ctx.fillStyle = this.isPlaying ? '#ffe16a' : 'rgba(0,0,0,0.6)';
     ctx.fillRect(this.bounds.play.x, this.bounds.play.y, buttonW, buttonH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(this.bounds.play.x, this.bounds.play.y, buttonW, buttonH);
     ctx.fillStyle = this.isPlaying ? '#0b0b0b' : '#fff';
     ctx.font = `${Math.max(12, Math.round(16 * scale))}px Courier New`;
@@ -10184,7 +10185,7 @@ export default class MidiComposer {
     this.bounds.endMarker = { x: x + offset(340), y: y + offset(16), w: offset(140), h: offset(24) };
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(this.bounds.endMarker.x, this.bounds.endMarker.y, this.bounds.endMarker.w, this.bounds.endMarker.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(this.bounds.endMarker.x, this.bounds.endMarker.y, this.bounds.endMarker.w, this.bounds.endMarker.h);
     ctx.fillStyle = '#fff';
     const endLabel = this.placingEndMarker ? 'Set End...' : this.getEndMarkerLabel();
@@ -10204,7 +10205,7 @@ export default class MidiComposer {
     this.bounds.swing = { x: x + offset(16), y: y + offset(58), w: offset(200), h: offset(16) };
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(this.bounds.swing.x, this.bounds.swing.y, this.bounds.swing.w, this.bounds.swing.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(this.bounds.swing.x, this.bounds.swing.y, this.bounds.swing.w, this.bounds.swing.h);
     const knobX = this.bounds.swing.x + (this.swing / 60) * this.bounds.swing.w;
     ctx.fillStyle = '#ffe16a';
@@ -10247,7 +10248,7 @@ export default class MidiComposer {
   drawTransportCompact(ctx, x, y, w, h) {
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
     const innerX = x + 12;
@@ -10309,7 +10310,7 @@ export default class MidiComposer {
     this.bounds.swing = { x: innerX, y: rowY + 6, w: innerW, h: 16 };
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(this.bounds.swing.x, this.bounds.swing.y, this.bounds.swing.w, this.bounds.swing.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(this.bounds.swing.x, this.bounds.swing.y, this.bounds.swing.w, this.bounds.swing.h);
     const knobX = this.bounds.swing.x + (this.swing / 60) * this.bounds.swing.w;
     ctx.fillStyle = '#ffe16a';
@@ -10328,7 +10329,7 @@ export default class MidiComposer {
     const isMobile = this.isMobileLayout();
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     ctx.fillStyle = '#fff';
     ctx.font = `${isMobile ? 18 : 16}px Courier New`;
@@ -10417,7 +10418,7 @@ export default class MidiComposer {
       ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
       ctx.fillStyle = '#ffe16a';
       ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w * mix.volume, volumeBounds.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
       this.trackControlBounds.push({ ...volumeBounds, trackIndex: index, control: 'volume' });
 
@@ -10495,7 +10496,7 @@ export default class MidiComposer {
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(x, y, w, viewH + rulerH);
     if (!simplified) {
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(x, y, w, viewH + rulerH);
     }
 
@@ -10516,7 +10517,7 @@ export default class MidiComposer {
     if (!options.hideLabels) {
       ctx.fillStyle = 'rgba(0,0,0,0.6)';
       ctx.fillRect(x, y, labelW, viewH + rulerH);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(x, y, labelW, viewH + rulerH);
       this.drawLabelColumn(ctx, track);
     }
@@ -10540,7 +10541,7 @@ export default class MidiComposer {
 
     for (let row = 0; row < rows; row += 1) {
       if (options.summary) {
-        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.fillStyle = UI_SUITE.colors.panel;
       } else if (isDrumGrid) {
         ctx.fillStyle = row % 2 === 0 ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.03)';
       } else {
@@ -10891,7 +10892,7 @@ export default class MidiComposer {
     const menuY = clamp(this.selectionMenu.y, minY, Math.max(minY, maxY));
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(menuX, menuY, menuW, menuH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(menuX, menuY, menuW, menuH);
     this.bounds.selectionMenu = [];
     actions.forEach((entry, index) => {
@@ -10931,7 +10932,7 @@ export default class MidiComposer {
     ctx.fillRect(0, 0, width, height);
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(menuX, menuY, menuW, menuH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(menuX, menuY, menuW, menuH);
 
     this.bounds.noteLengthMenu = [];
@@ -10962,7 +10963,7 @@ export default class MidiComposer {
     ctx.fillRect(0, 0, width, height);
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(sliderX, sliderY, sliderW, sliderH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(sliderX, sliderY, sliderW, sliderH);
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.font = '12px Courier New';
@@ -10979,7 +10980,7 @@ export default class MidiComposer {
     ctx.fillRect(barBounds.x, barBounds.y, barBounds.w, barBounds.h);
     ctx.fillStyle = '#ffe16a';
     ctx.fillRect(barBounds.x, barBounds.y, barBounds.w * ratio, barBounds.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(barBounds.x, barBounds.y, barBounds.w, barBounds.h);
     this.bounds.tempoSlider = barBounds;
   }
@@ -10994,7 +10995,7 @@ export default class MidiComposer {
     ctx.fillRect(0, 0, width, height);
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(dialogX, dialogY, dialogW, dialogH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(dialogX, dialogY, dialogW, dialogH);
 
     ctx.fillStyle = '#fff';
@@ -11050,7 +11051,7 @@ export default class MidiComposer {
     ctx.fillRect(0, 0, width, height);
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(dialogX, dialogY, dialogW, dialogH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(dialogX, dialogY, dialogW, dialogH);
 
     ctx.fillStyle = '#fff';
@@ -11144,7 +11145,7 @@ export default class MidiComposer {
     const menuY = clamp(y, 8, Math.max(8, viewportH - height - 8));
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(menuX, menuY, width, height);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(menuX, menuY, width, height);
     ctx.fillStyle = '#fff';
     ctx.font = '12px Courier New';
@@ -11164,34 +11165,41 @@ export default class MidiComposer {
   }
 
   getFileMenuItems() {
-    return [
-      { id: 'new', label: 'New' },
-      { id: 'save', label: 'Save' },
-      { id: 'save-as', label: 'Save As' },
-      { id: 'load', label: 'Open' },
-      { id: 'divider-1', divider: true },
-      { id: 'export-json', label: 'Export JSON' },
-      { id: 'export-midi', label: 'Export MIDI' },
-      { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
-      { id: 'import', label: 'Import MIDI/ZIP/JSON' },
-      { id: 'divider-2', divider: true },
-      { id: 'undo', label: 'Undo' },
-      { id: 'redo', label: 'Redo' },
-      { id: 'divider-3', divider: true },
-      { id: 'save-paint', label: 'Save and Paint' },
-      { id: 'play-robtersession', label: 'Play in RobterSession' },
-      { id: 'settings', label: 'Settings' },
-      { id: 'theme', label: 'Generate Theme' },
-      { id: 'sample', label: 'Load Sample Song' },
-      { id: 'divider-4', divider: true },
-      { id: 'close', label: 'Close' }
-    ];
+    const base = buildStandardFileMenu({
+      labels: {
+        open: 'Open',
+        export: 'Export JSON',
+        import: 'Import MIDI/ZIP/JSON'
+      },
+      actions: {
+        new: () => this.handleFileMenuAction('new'),
+        save: () => this.handleFileMenuAction('save'),
+        'save-as': () => this.handleFileMenuAction('save-as'),
+        open: () => this.handleFileMenuAction('load'),
+        export: () => this.handleFileMenuAction('export-json'),
+        import: () => this.handleFileMenuAction('import'),
+        undo: () => this.handleFileMenuAction('undo'),
+        redo: () => this.handleFileMenuAction('redo')
+      },
+      extras: [
+        { id: 'export-midi', label: 'Export MIDI' },
+        { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
+        { divider: true },
+        { id: 'save-paint', label: 'Save and Paint' },
+        { id: 'play-robtersession', label: 'Play in RobterSession' },
+        { id: 'settings', label: 'Settings' },
+        { id: 'theme', label: 'Generate Theme' },
+        { id: 'sample', label: 'Load Sample Song' },
+        { divider: true },
+        { id: 'close', label: 'Close' }
+      ]
+    });
   }
 
   drawFilePanel(ctx, x, y, w, h) {
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
     const padding = 14;
@@ -11201,9 +11209,9 @@ export default class MidiComposer {
     const panelX = x + w - finalPanelW - padding;
     const panelY = y + padding;
     const panelH = h - padding * 2;
-    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(panelX, panelY, finalPanelW, panelH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(panelX, panelY, finalPanelW, panelH);
 
     ctx.fillStyle = '#fff';
@@ -11223,7 +11231,7 @@ export default class MidiComposer {
     visibleItems.forEach((item) => {
       if (item.divider) {
         const dividerY = cursorY + 8;
-        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.beginPath();
         ctx.moveTo(panelX + 12, dividerY);
         ctx.lineTo(panelX + finalPanelW - 12, dividerY);
@@ -11278,7 +11286,7 @@ export default class MidiComposer {
     const menuY = clamp(y, 8, Math.max(8, viewportH - height - 8));
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(menuX, menuY, width, height);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(menuX, menuY, width, height);
     ctx.fillStyle = '#fff';
     ctx.font = '13px Courier New';
@@ -11287,7 +11295,7 @@ export default class MidiComposer {
     items.forEach((item) => {
       if (item.divider) {
         const dividerY = cursorY + 6;
-        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.beginPath();
         ctx.moveTo(menuX + gap, dividerY);
         ctx.lineTo(menuX + width - gap, dividerY);
@@ -11318,7 +11326,7 @@ export default class MidiComposer {
     const panelY = Math.min(height - panelH - gap, gap + 40);
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(panelX, panelY, panelW, panelH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(panelX, panelY, panelW, panelH);
     ctx.fillStyle = '#fff';
     ctx.font = '13px Courier New';
@@ -11347,7 +11355,7 @@ export default class MidiComposer {
     ctx.fillRect(0, 0, width, height);
     ctx.fillStyle = 'rgba(12,14,18,0.95)';
     ctx.fillRect(overlayX, overlayY, overlayW, overlayH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(overlayX, overlayY, overlayW, overlayH);
 
     ctx.fillStyle = '#fff';
@@ -11384,7 +11392,7 @@ export default class MidiComposer {
     const fill = active ? 'rgba(255,225,106,0.7)' : subtle ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.6)';
     ctx.fillStyle = fill;
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.fillStyle = active ? '#0b0b0b' : '#fff';
     const isMobile = this.isMobileLayout();
@@ -11406,7 +11414,7 @@ export default class MidiComposer {
   drawToggle(ctx, bounds, label, active) {
     ctx.fillStyle = active ? 'rgba(255,225,106,0.2)' : 'rgba(0,0,0,0.5)';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.fillStyle = '#fff';
     ctx.font = `${this.isMobileLayout() ? 14 : 12}px Courier New`;

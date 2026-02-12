@@ -9,6 +9,7 @@ import {
   vfsRename,
   vfsSanitizeName
 } from './vfs.js';
+import { fileTypeBadge } from './uiSuite.js';
 
 const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music' };
 const DEFAULT_FOLDERS = ['levels', 'art', 'music'];
@@ -274,7 +275,17 @@ export function openProjectBrowser({
 
         const meta = document.createElement('div');
         meta.className = 'project-browser-meta';
-        meta.innerHTML = `<strong>${entry.name}</strong><span>Updated ${formatDate(entry.updatedAt)} · ${formatSize(entry.size)}</span>`;
+        const nameRow = document.createElement('div');
+        nameRow.className = 'project-browser-name-row';
+        const typeBadge = document.createElement('span');
+        typeBadge.className = 'project-browser-type-badge';
+        typeBadge.textContent = fileTypeBadge(entry.name);
+        nameRow.innerHTML = `<strong>📄 ${entry.name}</strong>`;
+        nameRow.appendChild(typeBadge);
+        const detail = document.createElement('span');
+        detail.textContent = `Updated ${formatDate(entry.updatedAt)} · ${formatSize(entry.size)}`;
+        meta.appendChild(nameRow);
+        meta.appendChild(detail);
         row.appendChild(meta);
 
         const actions = document.createElement('div');

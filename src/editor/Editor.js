@@ -1,6 +1,7 @@
 import Minimap from '../world/Minimap.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsList, vfsSave } from '../ui/vfs.js';
+import { UI_SUITE } from '../ui/uiSuite.js';
 
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
@@ -589,8 +590,8 @@ export default class Editor {
       }
       this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
 
-      const drawerWidth = Math.floor(width * 0.5);
-      const collapsedWidth = 64;
+      const drawerWidth = Math.min(UI_SUITE.layout.panelWidthMobile, Math.floor(width * 0.56));
+      const collapsedWidth = UI_SUITE.layout.railWidthMobile;
       const panelW = this.drawer.open ? drawerWidth : collapsedWidth;
       this.editorBounds = { x: panelW, y: 0, w: width - panelW, h: height };
       this.drawerBounds = { x: 0, y: 0, w: panelW, h: height };
@@ -6357,18 +6358,18 @@ export default class Editor {
     }
 
     if (this.isMobileLayout()) {
-      const drawerWidth = Math.floor(width * 0.5);
-      const collapsedWidth = 64;
+      const drawerWidth = Math.min(UI_SUITE.layout.panelWidthMobile, Math.floor(width * 0.56));
+      const collapsedWidth = UI_SUITE.layout.railWidthMobile;
       const panelW = this.drawer.open ? drawerWidth : collapsedWidth;
       const panelX = 0;
       const panelY = 0;
       const panelH = height;
       this.editorBounds = { x: panelW, y: 0, w: width - panelW, h: height };
       this.drawerBounds = { x: panelX, y: panelY, w: panelW, h: panelH };
-      ctx.globalAlpha = 0.92;
-      ctx.fillStyle = 'rgba(8,10,12,0.9)';
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = UI_SUITE.colors.panel;
       ctx.fillRect(panelX, panelY, panelW, panelH);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(panelX, panelY, panelW, panelH);
 
       const handleAreaH = 34;
@@ -7512,7 +7513,7 @@ export default class Editor {
       this.midiGridBounds = { x: gridX, y: gridY, cellSize: gridCellSize, rows: gridRows, cols: gridCols };
       ctx.fillStyle = 'rgba(255,255,255,0.05)';
       ctx.fillRect(gridX, gridY, gridW, gridH);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       for (let row = 0; row <= gridRows; row += 1) {
         ctx.beginPath();
         ctx.moveTo(gridX, gridY + row * gridCellSize);
