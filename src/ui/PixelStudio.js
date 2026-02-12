@@ -2404,10 +2404,17 @@ export default class PixelStudio {
   }
 
   handleButtonClick(x, y) {
-    const hit = this.uiButtons.find((button) => x >= button.bounds.x
-      && x <= button.bounds.x + button.bounds.w
-      && y >= button.bounds.y
-      && y <= button.bounds.y + button.bounds.h);
+    let hit = null;
+    for (let index = this.uiButtons.length - 1; index >= 0; index -= 1) {
+      const button = this.uiButtons[index];
+      if (x >= button.bounds.x
+        && x <= button.bounds.x + button.bounds.w
+        && y >= button.bounds.y
+        && y <= button.bounds.y + button.bounds.h) {
+        hit = button;
+        break;
+      }
+    }
     if (hit) {
       hit.onClick?.();
       return true;

@@ -7048,6 +7048,33 @@ Level size:`, `${current.width}x${current.height}`);
           );
         });
 
+        if (activeTab === 'file') {
+          const footerH = Math.max(28, buttonHeight);
+          const footerY = contentY + contentHeight - footerH - 10;
+          const footerGap = 8;
+          const footerW = Math.floor((contentW - contentPadding * 2 - footerGap) / 2);
+          drawButton(
+            contentX + contentPadding,
+            footerY,
+            footerW,
+            footerH,
+            'Close Menu',
+            false,
+            () => this.closeFileMenu(),
+            'Close file menu'
+          );
+          drawButton(
+            contentX + contentPadding + footerW + footerGap,
+            footerY,
+            footerW,
+            footerH,
+            'Exit to Main Menu',
+            false,
+            () => this.exitToMainMenu(),
+            'Exit editor to title'
+          );
+        }
+
       }
       if (!this.drawer.open) {
         this.panelScrollBounds = null;
@@ -7216,6 +7243,33 @@ Level size:`, `${current.width}x${current.height}`);
           gamepadActive && index === focusedIndex
         );
       });
+
+      if (activeTab === 'file') {
+        const footerH = 30;
+        const footerY = contentY + contentHeight - footerH - 10;
+        const footerGap = 8;
+        const footerW = Math.floor((contentW - contentPadding * 2 - footerGap) / 2);
+        drawButton(
+          contentX + contentPadding,
+          footerY,
+          footerW,
+          footerH,
+          'Close Menu',
+          false,
+          () => this.closeFileMenu(),
+          'Close file menu'
+        );
+        drawButton(
+          contentX + contentPadding + footerW + footerGap,
+          footerY,
+          footerW,
+          footerH,
+          'Exit to Main Menu',
+          false,
+          () => this.exitToMainMenu(),
+          'Exit editor to title'
+        );
+      }
 
       const infoLines = [];
       if (infoLines.length > 0) {
