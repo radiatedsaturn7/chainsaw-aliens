@@ -26,6 +26,7 @@ import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
+import { UI_SUITE, buildStandardFileMenu } from './uiSuite.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -2405,7 +2406,7 @@ export default class PixelStudio {
 
   draw(ctx, width, height) {
     ctx.save();
-    ctx.fillStyle = '#0b0b0b';
+    ctx.fillStyle = UI_SUITE.colors.bg;
     ctx.fillRect(0, 0, width, height);
     ctx.imageSmoothingEnabled = false;
     const isMobile = this.isMobileLayout(width, height);
@@ -2419,7 +2420,7 @@ export default class PixelStudio {
     const bottomHeight = menuFullScreen
       ? padding * 2
       : statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
-    const leftWidth = isMobile ? 0 : (this.sidebars.left ? (menuFullScreen ? width - padding * 2 : 260) : 0);
+    const leftWidth = isMobile ? UI_SUITE.layout.railWidthMobile : (this.sidebars.left ? (menuFullScreen ? width - padding * 2 : 260) : 0);
     const rightWidth = 0;
 
     this.uiButtons = [];
@@ -2434,7 +2435,9 @@ export default class PixelStudio {
     const canvasW = width - leftWidth - rightWidth - padding * 2;
     const canvasH = height - canvasY - bottomHeight;
 
-    if (!isMobile && this.sidebars.left) {
+    if (isMobile) {
+      this.drawMobileRail(ctx, padding, canvasY, leftWidth - 8, canvasH);
+    } else if (this.sidebars.left) {
       const panelX = padding;
       const panelY = menuFullScreen ? padding : canvasY;
       const panelH = menuFullScreen ? height - padding * 2 : canvasH;
@@ -2442,9 +2445,9 @@ export default class PixelStudio {
     }
 
     if (!menuFullScreen) {
-      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      ctx.fillStyle = UI_SUITE.colors.panelAlt;
       ctx.fillRect(canvasX, canvasY, canvasW, canvasH);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(canvasX, canvasY, canvasW, canvasH);
 
       this.drawCanvasArea(ctx, canvasX, canvasY, canvasW, canvasH);
@@ -2468,7 +2471,7 @@ export default class PixelStudio {
 
     if (isMobile) {
       const toolbarY = height - toolbarHeight - padding;
-      this.drawMobileToolbar(ctx, padding, toolbarY, width - padding * 2, toolbarHeight);
+      this.drawMobileToolbar(ctx, canvasX, toolbarY, width - canvasX - padding, toolbarHeight);
       if (this.mobileDrawer && this.mobileDrawer !== 'timeline') {
         this.drawMobileDrawer(ctx, padding, topBarHeight + padding, width - padding * 2, canvasH, this.mobileDrawer);
       }
@@ -2505,7 +2508,7 @@ export default class PixelStudio {
     const fontSize = options.fontSize || 12;
     ctx.fillStyle = active ? 'rgba(255,225,106,0.6)' : 'rgba(0,0,0,0.6)';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.fillStyle = active ? '#0b0b0b' : '#fff';
     ctx.font = `${fontSize}px Courier New`;
@@ -2539,7 +2542,7 @@ export default class PixelStudio {
     const isMobile = options.isMobile;
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
     const tabHeight = isMobile ? 40 : 28;
@@ -2632,26 +2635,34 @@ export default class PixelStudio {
     ctx.fillText('File', x + 12, y + 20);
     const lineHeight = isMobile ? 52 : 20;
     const buttonHeight = isMobile ? 44 : 18;
-    const actions = [
-      { label: 'New', action: () => this.newArtDocument() },
-      { label: 'Save', action: () => this.saveArtDocument() },
-      { label: 'Save As', action: () => this.saveArtDocument({ forceSaveAs: true }) },
-      { label: 'Open', action: () => this.loadArtDocument() },
-      { divider: true },
-      { label: 'Export PNG', action: () => this.exportPng() },
-      { label: 'Sprite Sheet', action: () => this.exportSpriteSheet('horizontal') },
-      { label: 'Export GIF', action: () => this.exportGif() },
-      { label: 'Palette JSON', action: () => this.exportPaletteJson() },
-      { label: 'Palette HEX', action: () => this.exportPaletteHex() },
-      { label: 'Import Palette', action: () => this.paletteFileInput.click() },
-      { divider: true },
-      { label: 'Undo', action: () => this.undo() },
-      { label: 'Redo', action: () => this.redo() },
-      { divider: true },
-      { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } },
-      { divider: true },
-      { label: 'Close', action: () => { this.closeStudioWithPrompt(); } }
-    ];
+    const actions = buildStandardFileMenu({
+      labels: {
+        open: 'Open',
+        export: 'Export PNG',
+        import: 'Import Palette'
+      },
+      actions: {
+        new: () => this.newArtDocument(),
+        save: () => this.saveArtDocument(),
+        'save-as': () => this.saveArtDocument({ forceSaveAs: true }),
+        open: () => this.loadArtDocument(),
+        export: () => this.exportPng(),
+        import: () => this.paletteFileInput.click(),
+        undo: () => this.undo(),
+        redo: () => this.redo()
+      },
+      extras: [
+        { divider: true },
+        { label: 'Sprite Sheet', action: () => this.exportSpriteSheet('horizontal') },
+        { label: 'Export GIF', action: () => this.exportGif() },
+        { label: 'Palette JSON', action: () => this.exportPaletteJson() },
+        { label: 'Palette HEX', action: () => this.exportPaletteHex() },
+        { divider: true },
+        { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } },
+        { divider: true },
+        { label: 'Close', action: () => { this.closeStudioWithPrompt(); } }
+      ]
+    });
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
     this.focusGroupMeta.file = { maxVisible };
     const start = this.focusScroll.file || 0;
@@ -2669,8 +2680,8 @@ export default class PixelStudio {
       }
       const bounds = { x: x + 8, y: offsetY - (isMobile ? 28 : 14), w: w - 16, h: buttonHeight };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
-      this.uiButtons.push({ bounds, onClick: entry.action });
-      this.registerFocusable('file', bounds, entry.action);
+      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+      this.registerFocusable('file', bounds, (entry.onClick || entry.action));
       offsetY += lineHeight;
     });
   }
@@ -2706,8 +2717,8 @@ export default class PixelStudio {
         h: buttonHeight
       };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize });
-      this.uiButtons.push({ bounds, onClick: entry.action });
-      this.registerFocusable('menu', bounds, entry.action);
+      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+      this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
     });
 
     const controlRows = Math.ceil(paletteControls.length / perRow);
@@ -2762,9 +2773,9 @@ export default class PixelStudio {
   }
 
   drawStatusBar(ctx, x, y, w, h) {
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     const zoom = this.view.zoomLevels[this.view.zoomIndex];
     const zoomPercent = Math.round(zoom * 100);
@@ -2792,13 +2803,13 @@ export default class PixelStudio {
 
     ctx.fillStyle = 'rgba(0,0,0,0.92)';
     ctx.fillRect(boxX, boxY, boxW, boxH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(boxX, boxY, boxW, boxH);
     items.forEach((entry, index) => {
       const bounds = { x: boxX + 10, y: boxY + 10 + index * 42, w: boxW - 20, h: 34 };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
-      this.uiButtons.push({ bounds, onClick: entry.action });
-      this.registerFocusable('menu', bounds, entry.action);
+      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+      this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
     });
   }
 
@@ -2841,10 +2852,31 @@ export default class PixelStudio {
     ctx.restore();
   }
 
-  drawMobileToolbar(ctx, x, y, w, h) {
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+
+  drawMobileRail(ctx, x, y, w, h) {
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(x, y, w, h);
+    const actions = [
+      { label: 'File', action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
+      { label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
+      { label: 'Grid', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
+      { label: 'Fit', action: () => this.centerView(true) }
+    ];
+    const btnH = 46;
+    actions.forEach((entry, index) => {
+      const bounds = { x: x + 6, y: y + 8 + index * (btnH + 8), w: w - 12, h: btnH };
+      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+      this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('toolbar', bounds, entry.action);
+    });
+  }
+
+  drawMobileToolbar(ctx, x, y, w, h) {
+    ctx.fillStyle = UI_SUITE.colors.panel;
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     const actions = [
       { label: this.leftPanelTab.slice(0, 2).toUpperCase(), action: () => { this.mobileDrawer = this.mobileDrawer === 'panel' ? null : 'panel'; } },
@@ -2865,15 +2897,15 @@ export default class PixelStudio {
         h: h - 16
       };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
-      this.uiButtons.push({ bounds, onClick: entry.action });
-      this.registerFocusable('toolbar', bounds, entry.action);
+      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+      this.registerFocusable('toolbar', bounds, (entry.onClick || entry.action));
     });
   }
 
   drawMobileDrawer(ctx, x, y, w, h, type) {
     ctx.fillStyle = 'rgba(0,0,0,0.85)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
     const tabHeight = 44;
@@ -2903,7 +2935,7 @@ export default class PixelStudio {
   drawPaletteGridSheet(ctx, x, y, w, h) {
     ctx.fillStyle = 'rgba(0,0,0,0.92)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
@@ -2945,7 +2977,7 @@ export default class PixelStudio {
     const boxY = height / 2 - boxH / 2;
     ctx.fillStyle = 'rgba(0,0,0,0.88)';
     ctx.fillRect(boxX, boxY, boxW, boxH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(boxX, boxY, boxW, boxH);
     ctx.fillStyle = '#fff';
     ctx.font = '16px Courier New';
@@ -2959,8 +2991,8 @@ export default class PixelStudio {
     items.forEach((entry, index) => {
       const bounds = { x: boxX + 20, y: boxY + 50 + index * 52, w: boxW - 40, h: 44 };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: 13 });
-      this.uiButtons.push({ bounds, onClick: entry.action });
-      this.registerFocusable('menu', bounds, entry.action);
+      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+      this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
     });
   }
 
@@ -2971,7 +3003,7 @@ export default class PixelStudio {
     const boxY = height / 2 - boxH / 2;
     ctx.fillStyle = 'rgba(0,0,0,0.92)';
     ctx.fillRect(boxX, boxY, boxW, boxH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(boxX, boxY, boxW, boxH);
     ctx.fillStyle = '#fff';
     ctx.font = '16px Courier New';
@@ -3069,8 +3101,8 @@ export default class PixelStudio {
         h: buttonHeight
       };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize });
-      this.uiButtons.push({ bounds, onClick: entry.action });
-      this.registerFocusable('menu', bounds, entry.action);
+      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+      this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
     });
     offsetY += buttonHeight * 2 + 12;
 
@@ -3238,8 +3270,8 @@ export default class PixelStudio {
     actions.forEach((entry, index) => {
       const bounds = { x, y: y + index * (isMobile ? 52 : 20), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
-      this.uiButtons.push({ bounds, onClick: entry.action });
-      this.registerFocusable('menu', bounds, entry.action);
+      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+      this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
     });
   }
 
@@ -3254,8 +3286,8 @@ export default class PixelStudio {
       const bounds = { x, y: y + index * (isMobile ? 52 : 20), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
       const active = entry.label === 'Loop' ? this.animation.loop : entry.label === 'Onion Skin' ? this.animation.onion.enabled : false;
       this.drawButton(ctx, bounds, entry.label, active, { fontSize: isMobile ? 12 : 12 });
-      this.uiButtons.push({ bounds, onClick: entry.action });
-      this.registerFocusable('menu', bounds, entry.action);
+      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+      this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
     });
     const onionOffset = y + controls.length * (isMobile ? 52 : 20) + 4;
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
@@ -3306,8 +3338,8 @@ export default class PixelStudio {
     actions.forEach((entry, index) => {
       const bounds = { x, y: y + index * (isMobile ? 52 : 20), w: isMobile ? 190 : 140, h: isMobile ? 44 : 18 };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
-      this.uiButtons.push({ bounds, onClick: entry.action });
-      this.registerFocusable('menu', bounds, entry.action);
+      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+      this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
     });
   }
 
@@ -3334,8 +3366,8 @@ export default class PixelStudio {
     controls.forEach((entry, index) => {
       const bounds = { x: x + 12 + index * (buttonHeight + 6), y: offsetY + 28, w: buttonHeight, h: buttonHeight };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
-      this.uiButtons.push({ bounds, onClick: entry.action });
-      this.registerFocusable('menu', bounds, entry.action);
+      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+      this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
     });
     offsetY += 60;
     this.layerBounds = [];
@@ -3515,7 +3547,7 @@ export default class PixelStudio {
     const isMobile = options.isMobile;
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
     ctx.fillStyle = '#fff';
@@ -3535,8 +3567,8 @@ export default class PixelStudio {
       paletteControls.forEach((entry, index) => {
         const bounds = { x: x + 200 + index * 44, y: y + 4, w: 40, h: 18 };
         this.drawButton(ctx, bounds, entry.label);
-        this.uiButtons.push({ bounds, onClick: entry.action });
-        this.registerFocusable('menu', bounds, entry.action);
+        this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+        this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
       });
 
       const swatchSize = 26;
@@ -3606,7 +3638,7 @@ export default class PixelStudio {
   drawTimeline(ctx, x, y, w, h) {
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
     ctx.fillStyle = '#fff';
@@ -3650,16 +3682,16 @@ export default class PixelStudio {
     controls.forEach((entry, index) => {
       const bounds = { x: x + 10 + index * 52, y: y + h - 28, w: 46, h: 18 };
       this.drawButton(ctx, bounds, entry.label);
-      this.uiButtons.push({ bounds, onClick: entry.action });
-      this.registerFocusable('menu', bounds, entry.action);
+      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+      this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
     });
   }
 
   drawGamepadHints(ctx, x, y) {
     const height = GAMEPAD_HINTS.length * 12 + 20;
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(x, y, 220, height);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, 220, height);
     ctx.fillStyle = '#fff';
     ctx.font = '11px Courier New';
