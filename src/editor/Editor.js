@@ -380,6 +380,7 @@ export default class Editor {
     this.panelScrollBounds = null;
     this.panelScrollView = null;
     this.panelScrollDrag = null;
+    this.panelScrollTapCandidate = null;
     this.panelMenuIndex = {
       file: 0,
       toolbox: 0,
@@ -626,6 +627,7 @@ export default class Editor {
       this.longPressTimer = null;
     }
     this.panelScrollDrag = null;
+    this.panelScrollTapCandidate = null;
     this.drawer.swipeStart = null;
     this.triggerZoneStart = null;
     this.triggerZoneTarget = null;
@@ -4194,6 +4196,8 @@ export default class Editor {
         startScroll: this.panelScroll[this.getActivePanelTab()] || 0,
         moved: false
       };
+      this.panelScrollTapCandidate = { x: payload.x, y: payload.y, id: payload.id ?? null };
+      return;
     }
 
     if (this.handleUIClick(payload.x, payload.y)) return;
@@ -4571,6 +4575,16 @@ export default class Editor {
 
     if (this.drawer.swipeStart) {
       this.drawer.swipeStart = null;
+    }
+
+    if (this.panelScrollTapCandidate && (!this.panelScrollDrag || !this.panelScrollDrag.moved)
+      && (payload.id === undefined || this.panelScrollTapCandidate.id === (payload.id ?? null))) {
+      const tap = this.panelScrollTapCandidate;
+      this.panelScrollTapCandidate = null;
+      if (this.handleUIClick(tap.x, tap.y)) {
+        this.panelScrollDrag = null;
+        return;
+      }
     }
 
     if (this.panelScrollDrag && (payload.id === undefined || this.panelScrollDrag.id === payload.id)) {
@@ -6413,7 +6427,7 @@ export default class Editor {
         ];
         const activeTab = this.getActivePanelTab();
         const panelPadding = 10;
-        const tabColumnW = Math.max(104, Math.min(160, Math.floor(panelW * 0.38)));
+        const tabColumnW = Math.max(92, Math.min(124, Math.floor(panelW * 0.32)));
         const tabX = panelX + panelPadding;
         const tabY = panelY + handleAreaH + 8;
         const tabW = tabColumnW - panelPadding * 1.5;

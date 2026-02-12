@@ -314,10 +314,11 @@ export default class PixelStudio {
     this.mobileDrawer = null;
     this.paletteGridOpen = false;
     this.sidebars = { left: true };
-    this.leftPanelTabs = ['tools', 'canvas'];
+    this.leftPanelTabs = ['file', 'tools', 'canvas'];
     this.leftPanelTabIndex = 1;
     this.leftPanelTab = this.leftPanelTabs[this.leftPanelTabIndex];
     this.uiButtons = [];
+    this.menuScrollDrag = null;
     this.paletteBounds = [];
     this.layerBounds = [];
     this.frameBounds = [];
@@ -1224,6 +1225,18 @@ export default class PixelStudio {
       this.handleButtonClick(payload.x, payload.y);
       return;
     }
+    if (payload.touchCount && this.leftPanelTab === 'file' && this.filePanelScroll
+      && this.isPointInBounds(payload, this.filePanelScroll)) {
+      const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
+      this.menuScrollDrag = {
+        startY: payload.y,
+        startScroll: this.focusScroll.file || 0,
+        moved: false,
+        hitAction: hit?.onClick || null,
+        lineHeight: Math.max(1, this.filePanelScroll.lineHeight || 20)
+      };
+      return;
+    }
     if (this.handleButtonClick(payload.x, payload.y)) return;
     if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
       this.setInputMode('canvas');
@@ -1244,6 +1257,18 @@ export default class PixelStudio {
   handlePointerMove(payload) {
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
+    if (this.menuScrollDrag) {
+      const dy = payload.y - this.menuScrollDrag.startY;
+      if (Math.abs(dy) > 8) this.menuScrollDrag.moved = true;
+      if (this.menuScrollDrag.moved) {
+        const total = (this.focusGroups.file || []).length;
+        const maxVisible = this.focusGroupMeta.file?.maxVisible || 1;
+        const maxScroll = Math.max(0, total - maxVisible);
+        const next = this.menuScrollDrag.startScroll - Math.round(dy / this.menuScrollDrag.lineHeight);
+        this.focusScroll.file = clamp(next, 0, maxScroll);
+      }
+      return;
+    }
     if (this.panStart && payload.buttons) {
       this.view.panX = this.panStart.panX + (payload.x - this.panStart.x);
       this.view.panY = this.panStart.panY + (payload.y - this.panStart.y);
@@ -1256,6 +1281,12 @@ export default class PixelStudio {
   }
 
   handlePointerUp() {
+    if (this.menuScrollDrag) {
+      const drag = this.menuScrollDrag;
+      this.menuScrollDrag = null;
+      if (!drag.moved && drag.hitAction) drag.hitAction();
+      return;
+    }
     if (this.panStart) {
       this.panStart = null;
     }
@@ -2549,6 +2580,7 @@ export default class PixelStudio {
     const tabWidth = isMobile ? 72 : 78;
     const gap = 8;
     const labels = {
+      file: 'File',
       tools: 'Tools',
       canvas: 'Canvas'
     };
@@ -2576,8 +2608,16 @@ export default class PixelStudio {
 
   drawLeftPanelContent(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
+    if (this.leftPanelTab === 'file') {
+      this.drawFilePanel(ctx, x, y, w, h, { isMobile });
+      return;
+    }
     if (this.leftPanelTab === 'tools') {
       this.drawToolsMenu(ctx, x, y, w, h, { isMobile });
+      return;
+    }
+    if (this.leftPanelTab === 'canvas') {
+      this.drawSwitchesPanel(ctx, x, y, w, h, { isMobile });
       return;
     }
   }
@@ -2664,6 +2704,7 @@ export default class PixelStudio {
       ]
     });
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
+    this.filePanelScroll = { x, y: y + 30, w, h: Math.max(0, h - 30), lineHeight };
     this.focusGroupMeta.file = { maxVisible };
     const start = this.focusScroll.file || 0;
     let offsetY = y + 36;
