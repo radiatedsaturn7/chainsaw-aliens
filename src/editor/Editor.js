@@ -936,6 +936,17 @@ export default class Editor {
     }
   }
 
+  closeFileMenu() {
+    if (this.isMobileLayout()) {
+      this.drawer.open = false;
+    }
+    this.setPanelTab('toolbox');
+  }
+
+  async exitToMainMenu() {
+    await this.closeEditorWithPrompt();
+  }
+
   getPanelConfig(tabId, { includeExtras = false } = {}) {
     const tileToolButtons = [
       { id: 'paint', label: 'Paint', tooltip: 'Paint tiles. (Q)' },
@@ -1049,10 +1060,16 @@ export default class Editor {
         },
         { id: 'divider-4', label: '────────', tooltip: '', onClick: () => {} },
         {
-          id: 'close',
-          label: 'Close',
-          tooltip: 'Close editor',
-          onClick: () => this.closeEditorWithPrompt()
+          id: 'close-menu',
+          label: 'Close Menu',
+          tooltip: 'Close file menu',
+          onClick: () => this.closeFileMenu()
+        },
+        {
+          id: 'exit-main',
+          label: 'Exit to Main Menu',
+          tooltip: 'Exit editor to title',
+          onClick: () => this.exitToMainMenu()
         }
       ];
       columns = 2;
@@ -6711,11 +6728,18 @@ Level size:`, `${current.width}x${current.height}`);
             },
             { id: 'divider-4', divider: true },
             {
-              id: 'close',
-              label: 'Close',
+              id: 'close-menu',
+              label: 'Close Menu',
               active: false,
-              tooltip: 'Close editor',
-              onClick: () => this.closeEditorWithPrompt()
+              tooltip: 'Close file menu',
+              onClick: () => this.closeFileMenu()
+            },
+            {
+              id: 'exit-main',
+              label: 'Exit to Main Menu',
+              active: false,
+              tooltip: 'Exit editor to title',
+              onClick: () => this.exitToMainMenu()
             }
           ];
           columns = 1;

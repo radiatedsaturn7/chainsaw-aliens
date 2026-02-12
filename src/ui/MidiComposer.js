@@ -6909,6 +6909,11 @@ export default class MidiComposer {
     this.game?.exitMidiComposer?.();
   }
 
+  closeFileMenu() {
+    this.activeTab = 'grid';
+    this.fileMenuOpen = false;
+  }
+
   async handleFileMenu(action) {
     if (action === 'new') {
       if (!this.confirmDiscardChanges()) return;
@@ -6991,6 +6996,14 @@ export default class MidiComposer {
     if (action === 'sample') {
       if (!this.confirmDiscardChanges()) return;
       this.loadDemoSong();
+      return;
+    }
+    if (action === 'close-menu') {
+      this.closeFileMenu();
+      return;
+    }
+    if (action === 'exit-main') {
+      await this.closeComposerWithPrompt();
       return;
     }
     if (action === 'close') {
@@ -11200,7 +11213,8 @@ export default class MidiComposer {
         { id: 'theme', label: 'Generate Theme' },
         { id: 'sample', label: 'Load Sample Song' },
         { divider: true },
-        { id: 'close', label: 'Close' }
+        { id: 'close-menu', label: 'Close Menu' },
+        { id: 'exit-main', label: 'Exit to Main Menu' }
       ]
     });
   }

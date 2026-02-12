@@ -1053,6 +1053,14 @@ export default class PixelStudio {
     this.uiFocus.index = 0;
   }
 
+  closeFileMenu() {
+    if (this.isMobileLayout()) {
+      this.mobileDrawer = null;
+      return;
+    }
+    this.setLeftPanelTab('tools');
+  }
+
   setLeftPanelTab(tab) {
     const index = this.leftPanelTabs.indexOf(tab);
     if (index < 0) return;
@@ -2781,7 +2789,8 @@ export default class PixelStudio {
         { label: 'Resize', action: () => this.resizeArtDocumentPrompt() },
         { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } },
         { divider: true },
-        { label: 'Exit Studio', action: () => { this.closeStudioWithPrompt(); } }
+        { label: 'Close Menu', action: () => { this.closeFileMenu(); } },
+        { label: 'Exit to Main Menu', action: () => { this.closeStudioWithPrompt(); } }
       ]
     });
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
