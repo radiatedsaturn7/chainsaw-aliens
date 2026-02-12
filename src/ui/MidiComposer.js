@@ -3406,16 +3406,16 @@ export default class MidiComposer {
 
     if (this.activeTab === 'file') {
       if (this.fileMenuScrollUp && this.pointInBounds(x, y, this.fileMenuScrollUp)) {
-        this.fileMenuScroll = clamp(this.fileMenuScroll - 1, 0, this.fileMenuScrollMax);
+        this.dragState = { mode: 'file-menu-tap', target: 'scroll-up', startX: x, startY: y, moved: false };
         return;
       }
       if (this.fileMenuScrollDown && this.pointInBounds(x, y, this.fileMenuScrollDown)) {
-        this.fileMenuScroll = clamp(this.fileMenuScroll + 1, 0, this.fileMenuScrollMax);
+        this.dragState = { mode: 'file-menu-tap', target: 'scroll-down', startX: x, startY: y, moved: false };
         return;
       }
       const fileHit = this.fileMenuBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (fileHit) {
-        this.handleFileMenu(fileHit.id);
+        this.dragState = { mode: 'file-menu-tap', target: fileHit.id, startX: x, startY: y, moved: false };
         return;
       }
     }
@@ -4375,6 +4375,14 @@ export default class MidiComposer {
       this.settingsScroll = clamp(this.dragState.startScroll + delta, 0, this.settingsScrollMax);
       return;
     }
+    if (this.dragState?.mode === 'file-menu-tap') {
+      const dx = payload.x - this.dragState.startX;
+      const dy = payload.y - this.dragState.startY;
+      if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+        this.dragState.moved = true;
+      }
+      return;
+    }
     if (this.dragState?.mode === 'slider') {
       this.updateSliderValue(payload.x, payload.y, this.dragState.id, this.dragState.bounds);
       return;
@@ -4519,6 +4527,24 @@ export default class MidiComposer {
         this.commitHistorySnapshot();
       }
       this.dragState = null;
+      return;
+    }
+    if (this.dragState?.mode === 'file-menu-tap') {
+      const target = this.dragState.target;
+      const wasMoved = this.dragState.moved;
+      this.dragState = null;
+      if (wasMoved) return;
+      if (target === 'scroll-up') {
+        this.fileMenuScroll = clamp(this.fileMenuScroll - 1, 0, this.fileMenuScrollMax);
+        return;
+      }
+      if (target === 'scroll-down') {
+        this.fileMenuScroll = clamp(this.fileMenuScroll + 1, 0, this.fileMenuScrollMax);
+        return;
+      }
+      if (target) {
+        this.handleFileMenu(target);
+      }
       return;
     }
     if (this.dragState?.mode === 'song-select') {
@@ -6876,10 +6902,17 @@ export default class MidiComposer {
   async handleFileMenu(action) {
     if (action === 'new') {
       if (!this.confirmDiscardChanges()) return;
-      const newName = await this.promptForNewSongName();
+      const result = await openProjectBrowser({
+        mode: 'saveAs',
+        fixedFolder: 'music',
+        initialFolder: 'music',
+        title: 'New Song'
+      });
+      const newName = result?.name;
       if (!newName) return;
       this.stopPlayback();
       this.song = createDefaultSong();
+      this.song.name = newName;
       this.ensureState();
       this.gridOffsetInitialized = false;
       this.gridZoomX = this.getDefaultGridZoomX();
@@ -6888,6 +6921,8 @@ export default class MidiComposer {
       this.playheadTick = 0;
       this.lastPlaybackTick = 0;
       this.currentDocumentRef = { folder: 'music', name: newName };
+      vfsSave('music', newName, JSON.parse(JSON.stringify(this.song)));
+      this.persist({ commitHistory: true });
       this.markSavedSnapshot();
       return;
     }

@@ -118,7 +118,6 @@ export function openProjectBrowser({
     };
     if (!fixedFolder && mode === 'open') state.view = 'home';
 
-    let overwrite = false;
     let pendingDelete = null;
     let renameTarget = null;
 
@@ -155,8 +154,12 @@ export function openProjectBrowser({
 
     const titleEl = document.createElement('h2');
     titleEl.className = 'project-browser-title';
-    titleEl.textContent = title;
     panel.appendChild(titleEl);
+
+    const saveBox = document.createElement('div');
+    saveBox.className = 'project-browser-savebox';
+    if (mode !== 'saveAs') saveBox.style.display = 'none';
+    panel.appendChild(saveBox);
 
     const searchWrap = document.createElement('div');
     searchWrap.className = 'project-browser-search-wrap';
@@ -183,25 +186,10 @@ export function openProjectBrowser({
     footer.className = 'project-browser-footer';
     panel.appendChild(footer);
 
-    const saveBox = document.createElement('div');
-    saveBox.className = 'project-browser-savebox';
-    if (mode !== 'saveAs') saveBox.style.display = 'none';
-    footer.appendChild(saveBox);
-
     const saveInput = document.createElement('input');
     saveInput.className = 'project-browser-search';
     saveInput.placeholder = 'Filename';
     saveBox.appendChild(saveInput);
-
-    const overwriteWrap = document.createElement('label');
-    overwriteWrap.className = 'project-browser-overwrite';
-    const overwriteInput = document.createElement('input');
-    overwriteInput.type = 'checkbox';
-    overwriteInput.addEventListener('change', () => {
-      overwrite = overwriteInput.checked;
-    });
-    overwriteWrap.append(overwriteInput, document.createTextNode(' Allow overwrite if file exists'));
-    saveBox.appendChild(overwriteWrap);
 
     const message = document.createElement('div');
     message.className = 'project-browser-message';
@@ -292,32 +280,39 @@ export function openProjectBrowser({
         const actions = document.createElement('div');
         actions.className = 'project-browser-row-actions';
 
-        const openBtn = makeButton('Open', 'project-browser-btn primary', () => openFile(folder, entry.name));
-        openBtn.disabled = !VFS_FOLDERS.includes(folder);
-        actions.appendChild(openBtn);
+        if (mode === 'saveAs') {
+          actions.appendChild(makeButton('Overwrite', 'project-browser-btn primary', () => {
+            onPick?.({ action: 'saveAs', folder, name: entry.name, overwrite: true });
+            cleanup({ action: 'saveAs', folder, name: entry.name, overwrite: true });
+          }));
+        } else {
+          const openBtn = makeButton('Open', 'project-browser-btn primary', () => openFile(folder, entry.name));
+          openBtn.disabled = !VFS_FOLDERS.includes(folder);
+          actions.appendChild(openBtn);
 
-        actions.appendChild(makeButton('Rename', 'project-browser-btn', () => {
-          if (!VFS_FOLDERS.includes(folder)) return;
-          renameTarget = entry.name;
-          pendingDelete = null;
-          refresh();
-        }));
-        actions.appendChild(makeButton('Duplicate', 'project-browser-btn', () => {
-          if (!VFS_FOLDERS.includes(folder)) return;
-          const candidate = vfsSanitizeName(`${entry.name} Copy`);
-          if (!candidate || vfsExists(folder, candidate)) return;
-          vfsDuplicate(folder, entry.name, candidate);
-          refresh();
-        }));
-        actions.appendChild(makeButton('Delete', 'project-browser-btn danger', () => {
-          if (!VFS_FOLDERS.includes(folder)) return;
-          pendingDelete = entry.name;
-          renameTarget = null;
-          refresh();
-        }));
+          actions.appendChild(makeButton('Rename', 'project-browser-btn', () => {
+            if (!VFS_FOLDERS.includes(folder)) return;
+            renameTarget = entry.name;
+            pendingDelete = null;
+            refresh();
+          }));
+          actions.appendChild(makeButton('Duplicate', 'project-browser-btn', () => {
+            if (!VFS_FOLDERS.includes(folder)) return;
+            const candidate = vfsSanitizeName(`${entry.name} Copy`);
+            if (!candidate || vfsExists(folder, candidate)) return;
+            vfsDuplicate(folder, entry.name, candidate);
+            refresh();
+          }));
+          actions.appendChild(makeButton('Delete', 'project-browser-btn danger', () => {
+            if (!VFS_FOLDERS.includes(folder)) return;
+            pendingDelete = entry.name;
+            renameTarget = null;
+            refresh();
+          }));
+        }
         row.appendChild(actions);
 
-        if (renameTarget === entry.name) {
+        if (mode !== 'saveAs' && renameTarget === entry.name) {
           const renameRow = document.createElement('div');
           renameRow.className = 'project-browser-inline';
           const input = document.createElement('input');
@@ -338,7 +333,7 @@ export function openProjectBrowser({
           row.appendChild(renameRow);
         }
 
-        if (pendingDelete === entry.name) {
+        if (mode !== 'saveAs' && pendingDelete === entry.name) {
           const delRow = document.createElement('div');
           delRow.className = 'project-browser-inline';
           delRow.appendChild(makeButton('Confirm Delete', 'project-browser-btn danger', () => {
@@ -358,6 +353,8 @@ export function openProjectBrowser({
     }
 
     function refresh() {
+      const folderLabel = FOLDER_LABELS[state.folder] || state.folder;
+      titleEl.textContent = mode === 'saveAs' ? `Save ${folderLabel} as...` : title;
       renderBreadcrumb();
       searchWrap.classList.toggle('is-open', state.searchOpen && state.view === 'folder');
       searchToggle.classList.toggle('is-active', state.searchOpen && state.view === 'folder');
@@ -374,10 +371,6 @@ export function openProjectBrowser({
         actionRow.appendChild(makeButton('Save', 'project-browser-btn primary', () => {
           const name = vfsSanitizeName(saveInput.value);
           if (!name) return;
-          if (vfsExists(state.folder, name) && !overwrite) {
-            message.textContent = 'Name already exists. Enable overwrite to continue.';
-            return;
-          }
           onPick?.({ action: 'saveAs', folder: state.folder, name, overwrite: vfsExists(state.folder, name) });
           cleanup({ action: 'saveAs', folder: state.folder, name, overwrite: vfsExists(state.folder, name) });
         }));
@@ -387,8 +380,6 @@ export function openProjectBrowser({
           onNew?.(state.folder);
           cleanup({ action: 'new', folder: state.folder });
         }));
-      }
-      if (state.view === 'folder') {
         actionRow.appendChild(makeButton('Import', 'project-browser-btn', () => onImport?.(state.folder)));
         actionRow.appendChild(makeButton('Export ZIP', 'project-browser-btn', () => onExportZip?.(state.folder)));
       }
@@ -405,7 +396,7 @@ export function openProjectBrowser({
     saveInput.addEventListener('input', () => {
       const saveName = vfsSanitizeName(saveInput.value);
       const exists = saveName && vfsExists(state.folder, saveName);
-      message.textContent = exists && !overwrite ? 'Name already exists. Enable overwrite or choose a new name.' : '';
+      message.textContent = exists ? 'Name already exists. Use Overwrite on that file row, or choose a different name.' : '';
     });
 
     overlay.addEventListener('click', (event) => {
@@ -421,7 +412,6 @@ export function openProjectBrowser({
         event.preventDefault();
         const name = vfsSanitizeName(saveInput.value);
         if (!name) return;
-        if (vfsExists(state.folder, name) && !overwrite) return;
         cleanup({ action: 'saveAs', folder: state.folder, name, overwrite: vfsExists(state.folder, name) });
       }
     });
