@@ -1,7 +1,7 @@
 import Minimap from '../world/Minimap.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsList, vfsSave } from '../ui/vfs.js';
-import { UI_SUITE } from '../ui/uiSuite.js';
+import { UI_SUITE, formatMenuLabel } from '../ui/uiSuite.js';
 
 const DEFAULT_TILE_TYPES = [
   { id: 'solid', label: 'Solid Block', char: '#' },
@@ -590,7 +590,7 @@ export default class Editor {
       }
       this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
 
-      const drawerWidth = Math.min(UI_SUITE.layout.panelWidthMobile, Math.floor(width * 0.56));
+      const drawerWidth = Math.min(UI_SUITE.layout.leftMenuWidthDesktop, Math.max(UI_SUITE.layout.railWidthMobile + 96, width - 120));
       const collapsedWidth = UI_SUITE.layout.railWidthMobile;
       const panelW = this.drawer.open ? drawerWidth : collapsedWidth;
       this.editorBounds = { x: panelW, y: 0, w: width - panelW, h: height };
@@ -6242,9 +6242,9 @@ export default class Editor {
 
     const drawButton = (x, y, w, h, label, active, onClick, tooltip = '', preview = null, focused = false) => {
       ctx.globalAlpha = 0.9;
-      ctx.fillStyle = active ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.6)';
+      ctx.fillStyle = active ? 'rgba(255,225,106,0.7)' : 'rgba(0,0,0,0.6)';
       ctx.fillRect(x, y, w, h);
-      ctx.strokeStyle = active ? '#fff' : 'rgba(255,255,255,0.4)';
+      ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(x, y, w, h);
       if (focused) {
         ctx.save();
@@ -6253,7 +6253,7 @@ export default class Editor {
         ctx.strokeRect(x - 2, y - 2, w + 4, h + 4);
         ctx.restore();
       }
-      ctx.fillStyle = '#fff';
+      ctx.fillStyle = active ? '#0b0b0b' : '#fff';
       ctx.save();
       ctx.textBaseline = 'middle';
       const previewSize = preview ? Math.min(22, h - 8) : 0;
@@ -6267,7 +6267,7 @@ export default class Editor {
         drawEnemyPreview(previewX, previewY, previewSize, preview.enemy);
       }
       const textOffset = preview ? previewSize + 14 : 8;
-      ctx.fillText(label, x + textOffset, y + h / 2);
+      ctx.fillText(formatMenuLabel(label), x + textOffset, y + h / 2);
       ctx.restore();
       this.addUIButton({ x, y, w, h }, onClick, tooltip);
       if (tooltip && !this.isMobileLayout() && isHovered(x, y, w, h)) {
@@ -6358,7 +6358,7 @@ export default class Editor {
     }
 
     if (this.isMobileLayout()) {
-      const drawerWidth = Math.min(UI_SUITE.layout.panelWidthMobile, Math.floor(width * 0.56));
+      const drawerWidth = Math.min(UI_SUITE.layout.leftMenuWidthDesktop, Math.max(UI_SUITE.layout.railWidthMobile + 96, width - 120));
       const collapsedWidth = UI_SUITE.layout.railWidthMobile;
       const panelW = this.drawer.open ? drawerWidth : collapsedWidth;
       const panelX = 0;
@@ -6401,15 +6401,15 @@ export default class Editor {
         ctx.fillText(summary, panelW / 2, panelY + 46);
       } else {
         const tabs = [
-          { id: 'file', label: 'FILE' },
-          { id: 'toolbox', label: 'TOOLBOX' },
-          { id: 'tiles', label: 'TILES' },
-          { id: 'triggers', label: 'TRIGGERS' },
-          { id: 'powerups', label: 'POWERUPS' },
-          { id: 'enemies', label: 'ENEMIES' },
-          { id: 'bosses', label: 'BOSSES' },
-          { id: 'prefabs', label: 'STRUCTURES' },
-          { id: 'music', label: 'MUSIC' }
+          { id: 'file', label: 'File' },
+          { id: 'toolbox', label: 'Toolbox' },
+          { id: 'tiles', label: 'Tiles' },
+          { id: 'triggers', label: 'Triggers' },
+          { id: 'powerups', label: 'Powerups' },
+          { id: 'enemies', label: 'Enemies' },
+          { id: 'bosses', label: 'Bosses' },
+          { id: 'prefabs', label: 'Structures' },
+          { id: 'music', label: 'Music' }
         ];
         const activeTab = this.getActivePanelTab();
         const panelPadding = 10;
@@ -6419,7 +6419,7 @@ export default class Editor {
         const tabW = tabColumnW - panelPadding * 1.5;
         const tabButtonH = 36;
         const tabGap = 8;
-        ctx.font = '14px Courier New';
+        ctx.font = `14px ${UI_SUITE.font.family}`;
         tabs.forEach((tab, index) => {
           const y = tabY + index * (tabButtonH + tabGap);
           drawButton(
@@ -6455,7 +6455,7 @@ export default class Editor {
         if (activeTab === 'playtest') {
           items = [{
             id: 'playtest',
-            label: 'PLAYTEST',
+            label: 'Playtest',
             active: false,
             tooltip: 'Start playtest from spawn',
             onClick: () => this.game.exitEditor({ playtest: true })
@@ -6465,66 +6465,66 @@ export default class Editor {
           items = [
             {
               id: 'new-level',
-              label: 'NEW',
+              label: 'New',
               active: false,
               tooltip: 'Create a new level',
               onClick: () => this.newLevelDocument()
             },
             {
               id: 'save-storage',
-              label: 'SAVE',
+              label: 'Save',
               active: false,
               tooltip: 'Save level to browser storage',
               onClick: () => this.saveLevelToStorage()
             },
             {
               id: 'save-as-storage',
-              label: 'SAVE AS',
+              label: 'Save As',
               active: false,
               tooltip: 'Save level with a new name',
               onClick: () => this.saveLevelToStorage({ forceSaveAs: true })
             },
             {
               id: 'load-storage',
-              label: 'OPEN',
+              label: 'Open',
               active: false,
               tooltip: 'Open level from browser storage',
               onClick: () => this.loadLevelFromStorage()
             },
-            { id: 'divider-1', label: '────────', active: false, tooltip: '', onClick: () => {} },
+            { id: 'divider-1', divider: true },
             {
               id: 'export-json',
-              label: 'EXPORT',
+              label: 'Export',
               active: false,
               tooltip: 'Export world JSON',
               onClick: () => this.saveToFile()
             },
             {
               id: 'import-json',
-              label: 'IMPORT',
+              label: 'Import',
               active: false,
               tooltip: 'Import world JSON',
               onClick: () => this.openFileDialog()
             },
-            { id: 'divider-2', label: '────────', active: false, tooltip: '', onClick: () => {} },
+            { id: 'divider-2', divider: true },
             {
               id: 'undo',
-              label: 'UNDO',
+              label: 'Undo',
               active: false,
               tooltip: 'Undo last change (Ctrl+Z)',
               onClick: () => this.undo()
             },
             {
               id: 'redo',
-              label: 'REDO',
+              label: 'Redo',
               active: false,
               tooltip: 'Redo last change (Ctrl+Y)',
               onClick: () => this.redo()
             },
-            { id: 'divider-3', label: '────────', active: false, tooltip: '', onClick: () => {} },
+            { id: 'divider-3', divider: true },
             {
               id: 'playtest',
-              label: 'PLAYTEST',
+              label: 'Playtest',
               active: false,
               tooltip: 'Start playtest from spawn',
               onClick: () => this.game.exitEditor({ playtest: true })
@@ -6532,7 +6532,7 @@ export default class Editor {
             ...(spawnTile
               ? [{
                 id: 'spawn-point',
-                label: 'SPAWN POINT',
+                label: 'Spawn point',
                 active: this.tileType?.special === 'spawn',
                 tooltip: 'Place the player spawn point',
                 onClick: () => {
@@ -6544,7 +6544,7 @@ export default class Editor {
               : []),
             {
               id: 'start-everything',
-              label: `START WITH EVERYTHING: ${this.startWithEverything ? 'ON' : 'OFF'}`,
+              label: `Start with everything: ${this.startWithEverything ? 'On' : 'Off'}`,
               active: false,
               tooltip: 'Toggle playtest loadout',
               onClick: () => {
@@ -6553,15 +6553,15 @@ export default class Editor {
             },
             {
               id: 'random-level',
-              label: 'RANDOM LEVEL',
+              label: 'Random level',
               active: false,
               tooltip: 'Create a random level layout',
               onClick: () => this.promptRandomLevel()
             },
-            { id: 'divider-4', label: '────────', active: false, tooltip: '', onClick: () => {} },
+            { id: 'divider-4', divider: true },
             {
               id: 'close',
-              label: 'CLOSE',
+              label: 'Close',
               active: false,
               tooltip: 'Close editor',
               onClick: () => this.closeEditorWithPrompt()
@@ -6820,7 +6820,7 @@ export default class Editor {
         }
 
         ctx.globalAlpha = 0.7;
-        ctx.fillStyle = 'rgba(5,6,8,0.6)';
+        ctx.fillStyle = 'rgba(5,6,8,0.38)';
         ctx.fillRect(contentX, contentY, contentW, contentHeight);
         ctx.strokeStyle = 'rgba(255,255,255,0.15)';
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
@@ -6847,6 +6847,17 @@ export default class Editor {
           const row = Math.floor(index / columns);
           const x = contentX + contentPadding + col * (columnWidth + buttonGap);
           const y = contentY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
+          if (item.divider) {
+            const dividerY = y + Math.max(8, Math.floor(buttonHeight * 0.5));
+            if (dividerY >= contentY + 4 && dividerY <= contentY + contentHeight - 4) {
+              ctx.strokeStyle = UI_SUITE.colors.border;
+              ctx.beginPath();
+              ctx.moveTo(x, dividerY);
+              ctx.lineTo(x + columnWidth, dividerY);
+              ctx.stroke();
+            }
+            return;
+          }
           if (y + buttonHeight < contentY + 4 || y > contentY + contentHeight - 4) return;
           drawButton(
             x,

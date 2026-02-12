@@ -17,10 +17,11 @@ export const UI_SUITE = {
   },
   layout: {
     railWidthMobile: 72,
-    panelWidthMobile: 292
+    panelWidthMobile: 292,
+    leftMenuWidthDesktop: 292
   },
   font: {
-    family: 'Courier New',
+    family: 'Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
     size: 12
   }
 };
@@ -69,4 +70,17 @@ export function fileTypeBadge(filename = '') {
   if (value.endsWith('.gif')) return 'GIF';
   if (value.endsWith('.zip')) return 'ZIP';
   return 'FILE';
+}
+
+const MENU_LABEL_ACRONYMS = new Set(['JSON', 'MIDI', 'ZIP', 'PNG', 'GIF', 'GM', 'QA', 'UI', 'VFS']);
+
+export function formatMenuLabel(label = '') {
+  const value = String(label ?? '');
+  if (!/[A-Za-z]/.test(value)) return value;
+  if (/[a-z]/.test(value)) return value;
+  return value.replace(/[A-Z][A-Z0-9']*/g, (word) => {
+    if (MENU_LABEL_ACRONYMS.has(word)) return word;
+    const lower = word.toLowerCase();
+    return `${lower[0].toUpperCase()}${lower.slice(1)}`;
+  });
 }

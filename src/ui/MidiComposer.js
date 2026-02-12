@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, buildStandardFileMenu } from './uiSuite.js';
+import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -7818,9 +7818,9 @@ export default class MidiComposer {
     const padding = 16;
     const gap = 12;
     const sidebarW = this.getSidebarWidth(width, {
-      ratio: 0.22,
-      min: 240,
-      max: 340,
+      ratio: 0.24,
+      min: UI_SUITE.layout.leftMenuWidthDesktop,
+      max: UI_SUITE.layout.leftMenuWidthDesktop,
       padding,
       gap,
       minContent: 240
@@ -11165,7 +11165,7 @@ export default class MidiComposer {
   }
 
   getFileMenuItems() {
-    const base = buildStandardFileMenu({
+    return buildStandardFileMenu({
       labels: {
         open: 'Open',
         export: 'Export JSON',
@@ -11397,11 +11397,11 @@ export default class MidiComposer {
     ctx.fillStyle = active ? '#0b0b0b' : '#fff';
     const isMobile = this.isMobileLayout();
     const fontSize = this.getButtonFontSize(bounds, isMobile);
-    ctx.font = `${fontSize}px Courier New`;
+    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const padding = Math.max(6, Math.round(bounds.h * 0.2));
-    const clippedLabel = this.truncateLabel(ctx, label, Math.max(0, bounds.w - padding * 2));
+    const clippedLabel = this.truncateLabel(ctx, formatMenuLabel(label), Math.max(0, bounds.w - padding * 2));
     ctx.fillText(clippedLabel, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';

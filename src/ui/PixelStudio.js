@@ -26,7 +26,7 @@ import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, buildStandardFileMenu } from './uiSuite.js';
+import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -2420,7 +2420,7 @@ export default class PixelStudio {
     const bottomHeight = menuFullScreen
       ? padding * 2
       : statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
-    const leftWidth = isMobile ? UI_SUITE.layout.railWidthMobile : (this.sidebars.left ? (menuFullScreen ? width - padding * 2 : 260) : 0);
+    const leftWidth = isMobile ? UI_SUITE.layout.railWidthMobile : (this.sidebars.left ? (menuFullScreen ? width - padding * 2 : UI_SUITE.layout.leftMenuWidthDesktop) : 0);
     const rightWidth = 0;
 
     this.uiButtons = [];
@@ -2506,14 +2506,14 @@ export default class PixelStudio {
 
   drawButton(ctx, bounds, label, active = false, options = {}) {
     const fontSize = options.fontSize || 12;
-    ctx.fillStyle = active ? 'rgba(255,225,106,0.6)' : 'rgba(0,0,0,0.6)';
+    ctx.fillStyle = active ? 'rgba(255,225,106,0.7)' : 'rgba(0,0,0,0.6)';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.fillStyle = active ? '#0b0b0b' : '#fff';
-    ctx.font = `${fontSize}px Courier New`;
+    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'center';
-    ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 4);
+    ctx.fillText(formatMenuLabel(label), bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 4);
     ctx.textAlign = 'left';
   }
 
@@ -3056,7 +3056,7 @@ export default class PixelStudio {
     });
 
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = `${fontSize}px Courier New`;
+    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
     ctx.fillText(`Brush Size: ${this.toolOptions.brushSize}`, x + 12, offsetY);
     const brushMinus = { x: x + 160, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
     const brushPlus = { x: x + 196, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
@@ -3069,7 +3069,7 @@ export default class PixelStudio {
     offsetY += lineHeight;
 
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = `${fontSize}px Courier New`;
+    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
     ctx.fillText(`Tile: ${this.activeTile?.label || 'None'}`, x + 12, offsetY);
     const tileLeft = { x: x + 160, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
     const tileRight = { x: x + 196, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
@@ -3082,7 +3082,7 @@ export default class PixelStudio {
     offsetY += lineHeight;
 
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = `${fontSize}px Courier New`;
+    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
     ctx.fillText('Offset Canvas', x + 12, offsetY);
     offsetY += lineHeight;
     const offsetButtons = [
@@ -3161,7 +3161,7 @@ export default class PixelStudio {
 
     if (offsetY + lineHeight < y + h) {
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.font = `${fontSize}px Courier New`;
+      ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
       ctx.fillText(`Zoom: ${Math.round(this.view.zoomLevels[this.view.zoomIndex] * 100)}%`, x + 12, offsetY);
     }
   }
