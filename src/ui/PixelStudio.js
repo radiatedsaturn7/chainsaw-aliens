@@ -211,6 +211,7 @@ export default class PixelStudio {
     this.activeTile = this.tileLibrary[0] || null;
     this.tileIndex = 0;
     this.currentDocumentRef = null;
+    this.savedSnapshot = null;
     this.modeTab = 'draw';
     this.tools = createToolRegistry(this);
     this.activeToolId = TOOL_IDS.PENCIL;
@@ -355,6 +356,7 @@ export default class PixelStudio {
     });
     this.initializePalettes();
     this.loadTileData();
+    this.markSavedSnapshot();
     window.addEventListener('keydown', (event) => this.handleKeyDown(event));
     window.addEventListener('keyup', (event) => this.handleKeyUp(event));
   }
@@ -440,6 +442,38 @@ export default class PixelStudio {
     pixelData.fps = Math.round(1000 / (this.animation.frames[0]?.durationMs || 120));
   }
 
+  captureArtSnapshot() {
+    return JSON.stringify(this.game.world.pixelArt || { tiles: {} });
+  }
+
+  markSavedSnapshot() {
+    this.savedSnapshot = this.captureArtSnapshot();
+  }
+
+  hasUnsavedChanges() {
+    if (this.savedSnapshot == null) return false;
+    return this.captureArtSnapshot() !== this.savedSnapshot;
+  }
+
+  async promptForNewArtName() {
+    const fallback = this.currentDocumentRef?.name || 'new-art';
+    const value = window.prompt('New art file name?', fallback);
+    if (value == null) return null;
+    const trimmed = value.trim();
+    return trimmed || fallback;
+  }
+
+  async closeStudioWithPrompt() {
+    this.syncTileData();
+    if (this.hasUnsavedChanges()) {
+      const shouldSave = this.game?.showInlineConfirm?.('Save changes before closing?');
+      if (shouldSave) {
+        await this.saveArtDocument();
+      }
+    }
+    this.game.exitPixelStudio({ toTitle: true });
+  }
+
 
   async saveArtDocument(options = {}) {
     const { forceSaveAs = false } = options;
@@ -457,6 +491,7 @@ export default class PixelStudio {
     }
     vfsSave('art', name, this.game.world.pixelArt || { tiles: {} });
     this.currentDocumentRef = { folder: 'art', name };
+    this.markSavedSnapshot();
   }
 
   loadArtDocument() {
@@ -470,14 +505,18 @@ export default class PixelStudio {
         this.game.world.pixelArt = payload.data;
         this.currentDocumentRef = { folder: 'art', name };
         this.loadTileData();
+        this.markSavedSnapshot();
       }
     });
   }
 
-  newArtDocument() {
+  async newArtDocument() {
+    const name = await this.promptForNewArtName();
+    if (!name) return;
     this.game.world.pixelArt = { tiles: {} };
-    this.currentDocumentRef = null;
+    this.currentDocumentRef = { folder: 'art', name };
     this.loadTileData();
+    this.markSavedSnapshot();
   }
 
   setActiveTile(tile) {
@@ -2598,20 +2637,36 @@ export default class PixelStudio {
       { label: 'Save', action: () => this.saveArtDocument() },
       { label: 'Save As', action: () => this.saveArtDocument({ forceSaveAs: true }) },
       { label: 'Open', action: () => this.loadArtDocument() },
-      { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } },
+      { divider: true },
       { label: 'Export PNG', action: () => this.exportPng() },
       { label: 'Sprite Sheet', action: () => this.exportSpriteSheet('horizontal') },
       { label: 'Export GIF', action: () => this.exportGif() },
       { label: 'Palette JSON', action: () => this.exportPaletteJson() },
       { label: 'Palette HEX', action: () => this.exportPaletteHex() },
       { label: 'Import Palette', action: () => this.paletteFileInput.click() },
-      { label: 'Exit', action: () => { this.game.exitPixelStudio({ toTitle: true }); } }
+      { divider: true },
+      { label: 'Undo', action: () => this.undo() },
+      { label: 'Redo', action: () => this.redo() },
+      { divider: true },
+      { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } },
+      { divider: true },
+      { label: 'Close', action: () => { this.closeStudioWithPrompt(); } }
     ];
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
     this.focusGroupMeta.file = { maxVisible };
     const start = this.focusScroll.file || 0;
     let offsetY = y + 36;
-    actions.slice(start, start + maxVisible).forEach((entry, visibleIndex) => {
+    actions.slice(start, start + maxVisible).forEach((entry) => {
+      if (entry.divider) {
+        const lineY = offsetY - (isMobile ? 10 : 4);
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+        ctx.beginPath();
+        ctx.moveTo(x + 12, lineY);
+        ctx.lineTo(x + w - 12, lineY);
+        ctx.stroke();
+        offsetY += Math.max(10, Math.round(lineHeight * 0.4));
+        return;
+      }
       const bounds = { x: x + 8, y: offsetY - (isMobile ? 28 : 14), w: w - 16, h: buttonHeight };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({ bounds, onClick: entry.action });

@@ -313,6 +313,7 @@ export default class Editor {
     this.midiInstrumentScrollMax = 0;
     this.startWithEverything = true;
     this.currentDocumentRef = null;
+    this.savedSnapshot = null;
     this.camera = { x: 0, y: 0 };
     this.previewMinimap = new Minimap(this.game.world);
     this.pendingWorldRefresh = null;
@@ -484,6 +485,7 @@ export default class Editor {
           this.persistAutosave();
           this.resetView();
           this.syncPreviewMinimap();
+          this.markSavedSnapshot();
         } catch (error) {
           console.error('Failed to load world data:', error);
         }
@@ -651,6 +653,7 @@ export default class Editor {
     this.syncPreviewMinimap();
     this.updateLayoutBounds();
     this.sanitizeView('activate');
+    this.markSavedSnapshot();
   }
 
   deactivate() {
@@ -940,10 +943,10 @@ export default class Editor {
     } else if (tabId === 'file') {
       items = [
         {
-          id: 'playtest',
-          label: 'Playtest',
-          tooltip: 'Start playtest from spawn',
-          onClick: () => this.game.exitEditor({ playtest: true })
+          id: 'new-level',
+          label: 'New',
+          tooltip: 'Create a new level',
+          onClick: () => this.newLevelDocument()
         },
         {
           id: 'save-storage',
@@ -952,11 +955,18 @@ export default class Editor {
           onClick: () => this.saveLevelToStorage()
         },
         {
+          id: 'save-as-storage',
+          label: 'Save As',
+          tooltip: 'Save level with a new name',
+          onClick: () => this.saveLevelToStorage({ forceSaveAs: true })
+        },
+        {
           id: 'load-storage',
-          label: 'Load',
-          tooltip: 'Load level from browser storage',
+          label: 'Open',
+          tooltip: 'Open level from browser storage',
           onClick: () => this.loadLevelFromStorage()
         },
+        { id: 'divider-1', label: '────────', tooltip: '', onClick: () => {} },
         {
           id: 'export-json',
           label: 'Export',
@@ -968,6 +978,26 @@ export default class Editor {
           label: 'Import',
           tooltip: 'Import world JSON',
           onClick: () => this.openFileDialog()
+        },
+        { id: 'divider-2', label: '────────', tooltip: '', onClick: () => {} },
+        {
+          id: 'undo',
+          label: 'Undo',
+          tooltip: 'Undo last change (Ctrl+Z)',
+          onClick: () => this.undo()
+        },
+        {
+          id: 'redo',
+          label: 'Redo',
+          tooltip: 'Redo last change (Ctrl+Y)',
+          onClick: () => this.redo()
+        },
+        { id: 'divider-3', label: '────────', tooltip: '', onClick: () => {} },
+        {
+          id: 'playtest',
+          label: 'Playtest',
+          tooltip: 'Start playtest from spawn',
+          onClick: () => this.game.exitEditor({ playtest: true })
         },
         ...(spawnTile
           ? [{
@@ -990,22 +1020,17 @@ export default class Editor {
           }
         },
         {
-          id: 'undo',
-          label: 'Undo',
-          tooltip: 'Undo last change (Ctrl+Z)',
-          onClick: () => this.undo()
-        },
-        {
-          id: 'redo',
-          label: 'Redo',
-          tooltip: 'Redo last change (Ctrl+Y)',
-          onClick: () => this.redo()
-        },
-        {
           id: 'random-level',
           label: 'Random Level',
           tooltip: 'Create a random level layout',
           onClick: () => this.promptRandomLevel()
+        },
+        { id: 'divider-4', label: '────────', tooltip: '', onClick: () => {} },
+        {
+          id: 'close',
+          label: 'Close',
+          tooltip: 'Close editor',
+          onClick: () => this.closeEditorWithPrompt()
         }
       ];
       columns = 2;
@@ -1245,20 +1270,20 @@ export default class Editor {
         {
           id: 'save',
           label: 'Save',
-          tooltip: 'Save world JSON',
-          onClick: () => this.saveToFile()
+          tooltip: 'Save level to browser storage',
+          onClick: () => this.saveLevelToStorage()
         },
         {
           id: 'load',
-          label: 'Load',
-          tooltip: 'Load world JSON',
-          onClick: () => this.openFileDialog()
+          label: 'Open',
+          tooltip: 'Open level from browser storage',
+          onClick: () => this.loadLevelFromStorage()
         },
         {
           id: 'exit',
-          label: 'Exit',
-          tooltip: 'Exit editor',
-          onClick: () => this.game.exitEditor({ playtest: false, toTitle: true })
+          label: 'Close',
+          tooltip: 'Close editor',
+          onClick: () => this.closeEditorWithPrompt()
         }
       );
     }
@@ -1313,7 +1338,7 @@ export default class Editor {
     const index = Math.max(0, Math.min(this.panelMenuIndex[activeTab] ?? 0, items.length - 1));
     const nextItem = items[index];
     if (!nextItem) return false;
-    nextItem.onClick();
+    if (typeof nextItem.onClick === 'function') nextItem.onClick();
     if (nextItem.tooltip) {
       this.activeTooltip = nextItem.tooltip;
       this.tooltipTimer = 2;
@@ -1600,6 +1625,47 @@ export default class Editor {
     if (mode === 'prefab') return 'prefab';
     if (mode === 'shape') return 'shape';
     return 'paint';
+  }
+
+  captureWorldSnapshot() {
+    return JSON.stringify(this.game.buildWorldData());
+  }
+
+  markSavedSnapshot() {
+    this.savedSnapshot = this.captureWorldSnapshot();
+  }
+
+  hasUnsavedChanges() {
+    if (this.savedSnapshot == null) return false;
+    return this.captureWorldSnapshot() !== this.savedSnapshot;
+  }
+
+  async promptForNewLevelName() {
+    const fallback = this.currentDocumentRef?.name || 'new-level';
+    const value = window.prompt('New level file name?', fallback);
+    if (value == null) return null;
+    const trimmed = value.trim();
+    return trimmed || fallback;
+  }
+
+  async newLevelDocument() {
+    const name = await this.promptForNewLevelName();
+    if (!name) return;
+    this.game.applyWorldData(this.game.buildBlankWorldData());
+    this.currentDocumentRef = { folder: 'levels', name };
+    this.resetView();
+    this.syncPreviewMinimap();
+    this.markSavedSnapshot();
+  }
+
+  async closeEditorWithPrompt() {
+    if (this.hasUnsavedChanges()) {
+      const shouldSave = this.game?.showInlineConfirm?.('Save changes before closing?');
+      if (shouldSave) {
+        await this.saveLevelToStorage();
+      }
+    }
+    this.game.exitEditor({ playtest: false, toTitle: true });
   }
 
   openFileDialog() {
@@ -1937,6 +2003,7 @@ export default class Editor {
     }
     vfsSave('levels', name, this.game.buildWorldData());
     this.currentDocumentRef = { folder: 'levels', name };
+    this.markSavedSnapshot();
   }
 
   loadLevelFromStorage() {
@@ -1950,6 +2017,7 @@ export default class Editor {
         this.game.applyWorldData(payload.data);
         this.currentDocumentRef = { folder: 'levels', name };
         this.flushWorldRefresh();
+        this.markSavedSnapshot();
       }
     });
   }
@@ -6395,11 +6463,11 @@ export default class Editor {
         } else if (activeTab === 'file') {
           items = [
             {
-              id: 'playtest',
-              label: 'PLAYTEST',
+              id: 'new-level',
+              label: 'NEW',
               active: false,
-              tooltip: 'Start playtest from spawn',
-              onClick: () => this.game.exitEditor({ playtest: true })
+              tooltip: 'Create a new level',
+              onClick: () => this.newLevelDocument()
             },
             {
               id: 'save-storage',
@@ -6409,12 +6477,20 @@ export default class Editor {
               onClick: () => this.saveLevelToStorage()
             },
             {
-              id: 'load-storage',
-              label: 'LOAD',
+              id: 'save-as-storage',
+              label: 'SAVE AS',
               active: false,
-              tooltip: 'Load level from browser storage',
+              tooltip: 'Save level with a new name',
+              onClick: () => this.saveLevelToStorage({ forceSaveAs: true })
+            },
+            {
+              id: 'load-storage',
+              label: 'OPEN',
+              active: false,
+              tooltip: 'Open level from browser storage',
               onClick: () => this.loadLevelFromStorage()
             },
+            { id: 'divider-1', label: '────────', active: false, tooltip: '', onClick: () => {} },
             {
               id: 'export-json',
               label: 'EXPORT',
@@ -6428,6 +6504,29 @@ export default class Editor {
               active: false,
               tooltip: 'Import world JSON',
               onClick: () => this.openFileDialog()
+            },
+            { id: 'divider-2', label: '────────', active: false, tooltip: '', onClick: () => {} },
+            {
+              id: 'undo',
+              label: 'UNDO',
+              active: false,
+              tooltip: 'Undo last change (Ctrl+Z)',
+              onClick: () => this.undo()
+            },
+            {
+              id: 'redo',
+              label: 'REDO',
+              active: false,
+              tooltip: 'Redo last change (Ctrl+Y)',
+              onClick: () => this.redo()
+            },
+            { id: 'divider-3', label: '────────', active: false, tooltip: '', onClick: () => {} },
+            {
+              id: 'playtest',
+              label: 'PLAYTEST',
+              active: false,
+              tooltip: 'Start playtest from spawn',
+              onClick: () => this.game.exitEditor({ playtest: true })
             },
             ...(spawnTile
               ? [{
@@ -6452,32 +6551,19 @@ export default class Editor {
               }
             },
             {
-              id: 'undo',
-              label: 'UNDO',
-              active: false,
-              tooltip: 'Undo last change (Ctrl+Z)',
-              onClick: () => this.undo()
-            },
-            {
-              id: 'redo',
-              label: 'REDO',
-              active: false,
-              tooltip: 'Redo last change (Ctrl+Y)',
-              onClick: () => this.redo()
-            },
-            {
               id: 'random-level',
               label: 'RANDOM LEVEL',
               active: false,
               tooltip: 'Create a random level layout',
               onClick: () => this.promptRandomLevel()
             },
+            { id: 'divider-4', label: '────────', active: false, tooltip: '', onClick: () => {} },
             {
-              id: 'exit',
-              label: 'EXIT',
+              id: 'close',
+              label: 'CLOSE',
               active: false,
-              tooltip: 'Exit editor',
-              onClick: () => this.game.exitEditor({ playtest: false, toTitle: true })
+              tooltip: 'Close editor',
+              onClick: () => this.closeEditorWithPrompt()
             }
           ];
           columns = 1;

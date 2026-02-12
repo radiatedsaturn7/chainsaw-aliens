@@ -6855,9 +6855,29 @@ export default class MidiComposer {
     }
   }
 
-  handleFileMenu(action) {
+  async promptForNewSongName() {
+    const fallback = this.currentDocumentRef?.name || 'new-song';
+    const value = window.prompt('New song file name?', fallback);
+    if (value == null) return null;
+    const trimmed = value.trim();
+    return trimmed || fallback;
+  }
+
+  async closeComposerWithPrompt() {
+    if (this.hasUnsavedChanges()) {
+      const shouldSave = this.game?.showInlineConfirm?.('Save changes before closing?');
+      if (shouldSave) {
+        await this.saveSongToLibrary();
+      }
+    }
+    this.game?.exitMidiComposer?.();
+  }
+
+  async handleFileMenu(action) {
     if (action === 'new') {
       if (!this.confirmDiscardChanges()) return;
+      const newName = await this.promptForNewSongName();
+      if (!newName) return;
       this.stopPlayback();
       this.song = createDefaultSong();
       this.ensureState();
@@ -6867,7 +6887,7 @@ export default class MidiComposer {
       this.gridZoomInitialized = false;
       this.playheadTick = 0;
       this.lastPlaybackTick = 0;
-      this.currentDocumentRef = null;
+      this.currentDocumentRef = { folder: 'music', name: newName };
       this.markSavedSnapshot();
       return;
     }
@@ -6903,6 +6923,14 @@ export default class MidiComposer {
       this.importSong();
       return;
     }
+    if (action === 'undo') {
+      this.undo();
+      return;
+    }
+    if (action === 'redo') {
+      this.redo();
+      return;
+    }
     if (action === 'play-robtersession') {
       this.playInRobterSession();
       return;
@@ -6918,6 +6946,10 @@ export default class MidiComposer {
     if (action === 'sample') {
       if (!this.confirmDiscardChanges()) return;
       this.loadDemoSong();
+      return;
+    }
+    if (action === 'close') {
+      await this.closeComposerWithPrompt();
     }
   }
 
@@ -11101,16 +11133,23 @@ export default class MidiComposer {
       { id: 'new', label: 'New' },
       { id: 'save', label: 'Save' },
       { id: 'save-as', label: 'Save As' },
-      { id: 'save-paint', label: 'Save and Paint' },
-      { id: 'load', label: 'Load' },
+      { id: 'load', label: 'Open' },
+      { id: 'divider-1', divider: true },
       { id: 'export-json', label: 'Export JSON' },
       { id: 'export-midi', label: 'Export MIDI' },
       { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
       { id: 'import', label: 'Import MIDI/ZIP/JSON' },
+      { id: 'divider-2', divider: true },
+      { id: 'undo', label: 'Undo' },
+      { id: 'redo', label: 'Redo' },
+      { id: 'divider-3', divider: true },
+      { id: 'save-paint', label: 'Save and Paint' },
       { id: 'play-robtersession', label: 'Play in RobterSession' },
       { id: 'settings', label: 'Settings' },
       { id: 'theme', label: 'Generate Theme' },
-      { id: 'sample', label: 'Load Sample Song' }
+      { id: 'sample', label: 'Load Sample Song' },
+      { id: 'divider-4', divider: true },
+      { id: 'close', label: 'Close' }
     ];
   }
 
@@ -11147,6 +11186,16 @@ export default class MidiComposer {
     let cursorY = listStartY;
     this.fileMenuBounds = [];
     visibleItems.forEach((item) => {
+      if (item.divider) {
+        const dividerY = cursorY + 8;
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.beginPath();
+        ctx.moveTo(panelX + 12, dividerY);
+        ctx.lineTo(panelX + finalPanelW - 12, dividerY);
+        ctx.stroke();
+        cursorY += Math.max(14, Math.round(rowH * 0.4));
+        return;
+      }
       const bounds = {
         x: panelX + 12,
         y: cursorY,
@@ -11187,7 +11236,7 @@ export default class MidiComposer {
     const width = FILE_MENU_WIDTH;
     const rowH = 44;
     const gap = 10;
-    const height = items.length * rowH + gap * 2;
+    const height = items.reduce((total, item) => total + (item.divider ? 14 : rowH), gap * 2);
     const viewportW = this.viewportWidth ?? x + width;
     const viewportH = this.viewportHeight ?? y + height;
     const menuX = clamp(x, 8, Math.max(8, viewportW - width - 8));
@@ -11199,17 +11248,28 @@ export default class MidiComposer {
     ctx.fillStyle = '#fff';
     ctx.font = '13px Courier New';
     this.fileMenuBounds = [];
-    items.forEach((item, index) => {
-      const itemY = menuY + gap + index * rowH;
+    let cursorY = menuY + gap;
+    items.forEach((item) => {
+      if (item.divider) {
+        const dividerY = cursorY + 6;
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.beginPath();
+        ctx.moveTo(menuX + gap, dividerY);
+        ctx.lineTo(menuX + width - gap, dividerY);
+        ctx.stroke();
+        cursorY += 14;
+        return;
+      }
       const bounds = {
         x: menuX + gap,
-        y: itemY,
+        y: cursorY,
         w: width - gap * 2,
         h: rowH - 8,
         id: item.id
       };
       this.drawButton(ctx, bounds, item.label, false, true);
       this.fileMenuBounds.push(bounds);
+      cursorY += rowH;
     });
   }
 
