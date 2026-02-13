@@ -15,7 +15,8 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, formatMenuLabel } from './uiSuite.js';
+import { buildEditorFileMenu, openNewDocumentDialog } from './editorFileMenu.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -2998,7 +2999,9 @@ export default class MidiComposer {
     });
 
     if (backPressed) {
-      if (this.singleNoteRecordMode.active || this.recordModeActive) {
+      if (this.activeTab === 'file') {
+        this.closeFileMenu();
+      } else if (this.singleNoteRecordMode.active || this.recordModeActive) {
         this.exitSingleNoteRecordMode();
         this.exitRecordMode();
       } else {
@@ -6917,17 +6920,25 @@ export default class MidiComposer {
   async handleFileMenu(action) {
     if (action === 'new') {
       if (!this.confirmDiscardChanges()) return;
-      const result = await openProjectBrowser({
-        mode: 'saveAs',
-        fixedFolder: 'music',
-        initialFolder: 'music',
-        title: 'New Song'
+      const result = await openNewDocumentDialog('midi', {
+        name: this.currentDocumentRef?.name || `new-song-${Date.now()}`,
+        tempo: 120,
+        timeSignature: '4/4',
+        key: 'C',
+        scale: 'major',
+        loopBars: DEFAULT_GRID_BARS
       });
-      const newName = result?.name;
-      if (!newName) return;
+      if (!result) return;
       this.stopPlayback();
       this.song = createDefaultSong();
-      this.song.name = newName;
+      const ts = TIME_SIGNATURE_OPTIONS.find((entry) => entry.id === result.timeSignature) || TIME_SIGNATURE_OPTIONS[1];
+      const keyIndex = KEY_LABELS.indexOf((result.key || 'C').toUpperCase());
+      this.song.name = result.name;
+      this.song.tempo = clamp(Number(result.tempo) || 120, 40, 280);
+      this.song.timeSignature = { beats: ts.beats, unit: ts.unit };
+      this.song.key = keyIndex >= 0 ? keyIndex : 0;
+      this.song.scale = result.scale === 'minor' ? 'minor' : 'major';
+      this.song.loopBars = Math.max(1, Number(result.loopBars) || DEFAULT_GRID_BARS);
       this.ensureState();
       this.gridOffsetInitialized = false;
       this.gridZoomX = this.getDefaultGridZoomX();
@@ -6935,10 +6946,11 @@ export default class MidiComposer {
       this.gridZoomInitialized = false;
       this.playheadTick = 0;
       this.lastPlaybackTick = 0;
-      this.currentDocumentRef = { folder: 'music', name: newName };
-      vfsSave('music', newName, JSON.parse(JSON.stringify(this.song)));
+      this.currentDocumentRef = { folder: 'music', name: result.name };
+      vfsSave('music', result.name, JSON.parse(JSON.stringify(this.song)));
       this.persist({ commitHistory: true });
       this.markSavedSnapshot();
+      this.closeFileMenu();
       return;
     }
     if (action === 'save') {
@@ -6998,11 +7010,11 @@ export default class MidiComposer {
       this.loadDemoSong();
       return;
     }
-    if (action === 'close-menu' || action === 'close-menu-fixed') {
+    if (action === 'close-menu') {
       this.closeFileMenu();
       return;
     }
-    if (action === 'exit-main' || action === 'exit-main-fixed') {
+    if (action === 'exit-main') {
       await this.closeComposerWithPrompt();
       return;
     }
@@ -11187,7 +11199,7 @@ export default class MidiComposer {
   }
 
   getFileMenuItems() {
-    return buildStandardFileMenu({
+    return buildEditorFileMenu({
       labels: {
         open: 'Open',
         export: 'Export JSON',
@@ -11275,16 +11287,6 @@ export default class MidiComposer {
       this.fileMenuBounds.push(bounds);
       cursorY += rowH;
     });
-
-    const footerY = panelY + panelH - 40;
-    const footerH = 28;
-    const footerGap = 8;
-    const footerW = Math.floor((finalPanelW - 24 - footerGap) / 2);
-    const closeBounds = { x: panelX + 12, y: footerY, w: footerW, h: footerH, id: 'close-menu-fixed' };
-    const exitBounds = { x: closeBounds.x + closeBounds.w + footerGap, y: footerY, w: footerW, h: footerH, id: 'exit-main-fixed' };
-    this.drawButton(ctx, closeBounds, 'Close Menu', false, true);
-    this.drawButton(ctx, exitBounds, 'Exit to Main Menu', false, true);
-    this.fileMenuBounds.push(closeBounds, exitBounds);
 
     this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
   }
