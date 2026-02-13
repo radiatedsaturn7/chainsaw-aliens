@@ -5,6 +5,7 @@ import { UI_SUITE, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
+import { createViewportController, screenToWorld, worldToScreen } from '../ui/shared/viewportController.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -331,6 +332,12 @@ export default class Editor {
     this.previewMinimap = new Minimap(this.game.world);
     this.pendingWorldRefresh = null;
     this.zoom = 1;
+    this.viewportController = createViewportController({
+      minZoom: EDITOR_MIN_ZOOM,
+      maxZoom: EDITOR_MAX_ZOOM,
+      zoomInFactor: 1.1,
+      zoomOutFactor: 0.9
+    });
     this.dragging = false;
     this.dragMode = null;
     this.dragStart = null;
@@ -676,6 +683,7 @@ export default class Editor {
     this.panStart = null;
     this.zoomStart = null;
     this.gestureStart = null;
+    this.viewportController.endPinch();
     this.pendingPointer = null;
     this.longPressFired = false;
     if (this.longPressTimer) {
@@ -4183,7 +4191,7 @@ Level size:`, `${current.width}x${current.height}`);
     this.moveSelection = null;
     this.moveTarget = null;
     if (mode === 'pan') {
-      this.panStart = { x: this.lastPointer.x, y: this.lastPointer.y, camX: this.camera.x, camY: this.camera.y };
+      this.panStart = this.viewportController.beginPan({ x: this.lastPointer.x, y: this.lastPointer.y }, { x: this.camera.x, y: this.camera.y });
       return;
     }
     if (mode === 'zoom') {
@@ -4201,7 +4209,7 @@ Level size:`, `${current.width}x${current.height}`);
         this.moveTarget = { x: tileX, y: tileY };
         return;
       }
-      this.panStart = { x: this.lastPointer.x, y: this.lastPointer.y, camX: this.camera.x, camY: this.camera.y };
+      this.panStart = this.viewportController.beginPan({ x: this.lastPointer.x, y: this.lastPointer.y }, { x: this.camera.x, y: this.camera.y });
       this.dragMode = 'pan';
       return;
     }
@@ -4603,10 +4611,10 @@ Level size:`, `${current.width}x${current.height}`);
     if (!this.dragging) return;
 
     if (this.dragMode === 'pan' && this.panStart) {
-      const dx = (payload.x - this.panStart.x) / this.zoom;
-      const dy = (payload.y - this.panStart.y) / this.zoom;
-      this.camera.x = this.panStart.camX - dx;
-      this.camera.y = this.panStart.camY - dy;
+      const pan = this.viewportController.updatePan(payload, { scaleX: -1 / this.zoom, scaleY: -1 / this.zoom });
+      if (!pan) return;
+      this.camera.x = pan.x;
+      this.camera.y = pan.y;
       this.clampCamera();
       return;
     }
@@ -4768,31 +4776,28 @@ Level size:`, `${current.width}x${current.height}`);
       this.longPressTimer = null;
     }
     this.pendingPointer = null;
-    this.gestureStart = {
-      x: payload.x,
-      y: payload.y,
+    this.viewportController.cancelInteractions();
+    this.viewportController.beginPinch(payload, {
       camX: this.camera.x,
       camY: this.camera.y,
-      zoom: this.zoom,
-      distance: payload.distance
-    };
+      zoom: this.zoom
+    });
   }
 
   handleGestureMove(payload) {
-    if (!this.active || !this.gestureStart) return;
-    const zoomFactor = payload.distance / this.gestureStart.distance;
-    this.setZoom(this.gestureStart.zoom * zoomFactor, payload.x, payload.y);
-    const dx = (payload.x - this.gestureStart.x) / this.zoom;
-    const dy = (payload.y - this.gestureStart.y) / this.zoom;
-    this.camera.x = this.gestureStart.camX - dx;
-    this.camera.y = this.gestureStart.camY - dy;
+    if (!this.active) return;
+    const pinch = this.viewportController.updatePinch(payload);
+    if (!pinch) return;
+    this.setZoom(pinch.context.zoom * pinch.scale, payload.x, payload.y);
+    this.camera.x = pinch.context.camX - pinch.deltaX / this.zoom;
+    this.camera.y = pinch.context.camY - pinch.deltaY / this.zoom;
     this.clampCamera();
     this.sanitizeView('handleGestureMove');
   }
 
   handleGestureEnd() {
     if (!this.active) return;
-    this.gestureStart = null;
+    this.viewportController.endPinch();
   }
 
   handleWheel(payload) {
@@ -4815,8 +4820,8 @@ Level size:`, `${current.width}x${current.height}`);
         return;
       }
     }
-    const zoomFactor = payload.deltaY > 0 ? 0.9 : 1.1;
-    this.setZoom(this.zoom * zoomFactor, payload.x, payload.y);
+    const nextZoom = this.viewportController.zoomWithFactor(this.zoom, payload.deltaY);
+    this.setZoom(nextZoom, payload.x, payload.y);
   }
 
   addUIButton(bounds, onClick, tooltip = '') {
@@ -5843,7 +5848,10 @@ Level size:`, `${current.width}x${current.height}`);
   setZoom(nextZoom, anchorX, anchorY) {
     const safeAnchorX = Number.isFinite(anchorX) ? anchorX : (this.game.canvas?.width || 0) * 0.5;
     const safeAnchorY = Number.isFinite(anchorY) ? anchorY : (this.game.canvas?.height || 0) * 0.5;
-    const clamped = Math.min(EDITOR_MAX_ZOOM, Math.max(EDITOR_MIN_ZOOM, Number.isFinite(nextZoom) ? nextZoom : 1));
+    const clamped = this.viewportController.clampZoom(Number.isFinite(nextZoom) ? nextZoom : 1, {
+      minZoom: EDITOR_MIN_ZOOM,
+      maxZoom: EDITOR_MAX_ZOOM
+    });
     if (Math.abs(clamped - this.zoom) < 0.001) {
       this.sanitizeView('setZoom');
       return;
@@ -5857,17 +5865,11 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   worldToScreen(x, y) {
-    return {
-      x: (x - this.camera.x) * this.zoom,
-      y: (y - this.camera.y) * this.zoom
-    };
+    return worldToScreen({ x, y }, { x: this.camera.x, y: this.camera.y, zoom: this.zoom });
   }
 
   screenToWorld(x, y) {
-    return {
-      x: x / this.zoom + this.camera.x,
-      y: y / this.zoom + this.camera.y
-    };
+    return screenToWorld({ x, y }, { x: this.camera.x, y: this.camera.y, zoom: this.zoom });
   }
 
   screenToTile(x, y) {

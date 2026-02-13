@@ -30,6 +30,7 @@ import { CACHED_SOUND_FONT_KEY, DEFAULT_PRELOAD_PROGRAMS } from './midi/io/stora
 import { initializeComposerState } from './midi/state/composerState.js';
 import { registerComposerInputHandlers } from './midi/input/composerInputHandlers.js';
 import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
+import { createViewportController } from './shared/viewportController.js';
 
 const NOTE_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const SCALE_LIBRARY = [
@@ -637,6 +638,7 @@ export default class MidiComposer {
     this.timelineSource = 'grid';
     this.songTimelineZoomX = 1;
     this.songTimelineOffsetX = 0;
+    this.viewportController = createViewportController();
     this.songTimelineBounds = null;
     this.songPlayheadBounds = null;
     this.bounds = {
@@ -1664,6 +1666,7 @@ export default class MidiComposer {
     this.dragState = null;
     this.gridGesture = null;
     this.songGesture = null;
+    this.viewportController.endPinch();
     this.draggingTrackControl = null;
     this.toolsMenuOpen = false;
     this.genreMenuOpen = false;
@@ -4570,8 +4573,11 @@ export default class MidiComposer {
       if (!inTimeline) return;
       const delta = payload.deltaY;
       if (modifiers.meta) {
-        const zoomFactor = delta > 0 ? 0.9 : 1.1;
-        this.setSongTimelineZoom(this.gridZoomX * zoomFactor);
+        const nextZoom = this.viewportController.zoomWithFactor(this.gridZoomX, delta, {
+          minZoom: this.getGridZoomLimitsX().minZoom,
+          maxZoom: this.getGridZoomLimitsX().maxZoom
+        });
+        this.setSongTimelineZoom(nextZoom);
       } else {
         const nextOffset = this.songTimelineOffsetX - delta;
         this.ensureTimelinePanCapacity(nextOffset, this.songTimelineBounds.w, this.songTimelineBounds.cellWidth);
@@ -4602,14 +4608,11 @@ export default class MidiComposer {
     if (this.activeTab === 'grid') {
       if (!this.gridBounds) return;
       if (!this.pointInBounds(payload.x, payload.y, this.gridBounds)) return;
-      this.gridGesture = {
-        startDistance: payload.distance,
+      this.gridGesture = this.viewportController.beginPinch(payload, {
         startZoomX: this.gridZoomX,
         startZoomY: this.gridZoomY,
         startOffsetX: this.gridOffset.x,
         startOffsetY: this.gridOffset.y,
-        startX: payload.x,
-        startY: payload.y,
         viewX: this.gridBounds.x,
         viewY: this.gridBounds.y,
         cellWidth: this.gridBounds.cellWidth,
@@ -4620,66 +4623,72 @@ export default class MidiComposer {
         rows: this.gridBounds.rows,
         viewW: this.gridBounds.w,
         viewH: this.gridBounds.h
-      };
+      });
       return;
     }
     if (this.activeTab === 'song') {
       if (!this.songTimelineBounds) return;
       if (!this.pointInBounds(payload.x, payload.y, this.songTimelineBounds)) return;
-      this.songGesture = {
-        startDistance: payload.distance,
+      this.songGesture = this.viewportController.beginPinch(payload, {
         startZoomX: this.gridZoomX,
         startOffsetX: this.songTimelineOffsetX,
-        startX: payload.x,
-        startY: payload.y,
         originX: this.songTimelineBounds.originX,
         cellWidth: this.songTimelineBounds.cellWidth,
         timelineTicks: this.songTimelineBounds.timelineTicks,
         viewX: this.songTimelineBounds.x,
         viewW: this.songTimelineBounds.w
-      };
+      });
     }
   }
 
   handleGestureMove(payload) {
     if (this.gridGesture?.startDistance) {
-      const scale = payload.distance / this.gridGesture.startDistance;
-      const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridGesture.rows || 1);
+      const pinch = this.viewportController.updatePinch(payload);
+      if (!pinch) return;
+      const scale = pinch.scale;
+      const gridContext = pinch.context;
+      const { minZoom, maxZoom } = this.getGridZoomLimits(gridContext.rows || 1);
       const zoomXLimits = this.getGridZoomLimitsX();
-      const nextZoomX = clamp(this.gridGesture.startZoomX * scale, zoomXLimits.minZoom, zoomXLimits.maxZoom);
-      const nextZoomY = clamp(this.gridGesture.startZoomY * scale, minZoom, maxZoom);
-      const baseCellWidth = this.gridGesture.cellWidth / this.gridGesture.startZoomX;
-      const baseCellHeight = this.gridGesture.cellHeight / this.gridGesture.startZoomY;
+      const nextZoomX = clamp(gridContext.startZoomX * scale, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+      const nextZoomY = clamp(gridContext.startZoomY * scale, minZoom, maxZoom);
+      const baseCellWidth = gridContext.cellWidth / gridContext.startZoomX;
+      const baseCellHeight = gridContext.cellHeight / gridContext.startZoomY;
       const nextCellWidth = baseCellWidth * nextZoomX;
       const nextCellHeight = baseCellHeight * nextZoomY;
-      const gridCoordX = (this.gridGesture.startX - this.gridGesture.originX) / this.gridGesture.cellWidth;
-      const gridCoordY = (this.gridGesture.startY - this.gridGesture.originY) / this.gridGesture.cellHeight;
+      const pinchStartX = payload.x - pinch.deltaX;
+      const pinchStartY = payload.y - pinch.deltaY;
+      const gridCoordX = (pinchStartX - gridContext.originX) / gridContext.cellWidth;
+      const gridCoordY = (pinchStartY - gridContext.originY) / gridContext.cellHeight;
       const nextOriginX = payload.x - gridCoordX * nextCellWidth;
       const nextOriginY = payload.y - gridCoordY * nextCellHeight;
       this.gridZoomX = nextZoomX;
       this.gridZoomY = nextZoomY;
       this.suppressNextGridTap = true;
-      this.gridOffset.x = nextOriginX - this.gridGesture.viewX;
-      this.gridOffset.y = nextOriginY - this.gridGesture.viewY;
+      this.gridOffset.x = nextOriginX - gridContext.viewX;
+      this.gridOffset.y = nextOriginY - gridContext.viewY;
       this.ensureGridPanCapacity(this.gridOffset.x);
-      const nextGridW = nextCellWidth * this.gridGesture.cols;
-      const nextGridH = nextCellHeight * this.gridGesture.rows;
-      this.clampGridOffset(this.gridGesture.viewW, this.gridGesture.viewH, nextGridW, nextGridH);
+      const nextGridW = nextCellWidth * gridContext.cols;
+      const nextGridH = nextCellHeight * gridContext.rows;
+      this.clampGridOffset(gridContext.viewW, gridContext.viewH, nextGridW, nextGridH);
       this.updateTimelineStartTickFromGrid();
       return;
     }
     if (this.songGesture?.startDistance) {
-      const scale = payload.distance / this.songGesture.startDistance;
+      const pinch = this.viewportController.updatePinch(payload);
+      if (!pinch) return;
+      const scale = pinch.scale;
+      const songContext = pinch.context;
       const zoomXLimits = this.getGridZoomLimitsX();
-      const nextZoomX = clamp(this.songGesture.startZoomX * scale, zoomXLimits.minZoom, zoomXLimits.maxZoom);
-      const baseCellWidth = this.songGesture.cellWidth / this.songGesture.startZoomX;
+      const nextZoomX = clamp(songContext.startZoomX * scale, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+      const baseCellWidth = songContext.cellWidth / songContext.startZoomX;
       const nextCellWidth = baseCellWidth * nextZoomX;
-      const coordX = (this.songGesture.startX - this.songGesture.originX) / this.songGesture.cellWidth;
+      const pinchStartX = payload.x - pinch.deltaX;
+      const coordX = (pinchStartX - songContext.originX) / songContext.cellWidth;
       const nextOriginX = payload.x - coordX * nextCellWidth;
       this.gridZoomX = nextZoomX;
       this.songTimelineOffsetX = this.clampTimelineOffsetX(
-        nextOriginX - this.songGesture.viewX,
-        this.songGesture.viewW,
+        nextOriginX - songContext.viewX,
+        songContext.viewW,
         nextCellWidth
       );
       this.updateTimelineStartTickFromSong();
@@ -4690,6 +4699,7 @@ export default class MidiComposer {
   handleGestureEnd() {
     this.gridGesture = null;
     this.songGesture = null;
+    this.viewportController.endPinch();
   }
 
   handleGridPointerDown(payload) {
