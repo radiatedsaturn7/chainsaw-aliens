@@ -9,12 +9,15 @@
     "soundfont-player": "^0.12.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "playwright": "^1.46.0"
   },
   "scripts": {
     "prepare:playwright": "npx playwright install",
     "test:dashboard": "npm run prepare:playwright && node tools/test-runner/run.js",
     "test:robtersession-songs": "node tools/robtersession/song-generator-harness.js",
-    "test:robtersession-midi": "node tools/robtersession-midi-tests.js"
+    "test:robtersession-midi": "node tools/robtersession-midi-tests.js",
+    "test:playwright": "playwright test",
+    "test:playwright:headed": "playwright test --headed"
   }
 }
