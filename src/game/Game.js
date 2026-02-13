@@ -64,6 +64,13 @@ import { OBSTACLES } from '../world/Obstacles.js';
 import { MOVEMENT_MODEL } from './MovementModel.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsList, vfsLoad } from '../ui/vfs.js';
+import StateManager from './state/StateManager.js';
+import { createTitleState } from './state/states/TitleState.js';
+import { createGameplayState } from './state/states/GameplayState.js';
+import { createEditorState } from './state/states/EditorState.js';
+import { createPixelEditorState } from './state/states/PixelEditorState.js';
+import { createMidiEditorState } from './state/states/MidiEditorState.js';
+import { createRobterSessionState } from './state/states/RobterSessionState.js';
 
 const BOSS_TYPES = new Set([
   'finalboss',
@@ -166,6 +173,12 @@ export default class Game {
     this.pauseMenu = new Pause();
     this.shopUI = new Shop(UPGRADE_LIST);
     this.state = 'loading';
+    this.stateManager = new StateManager({
+      initialState: this.state,
+      onTransition: ({ nextState }) => {
+        this.state = nextState;
+      }
+    });
     this.victory = false;
     this.systemPrompts = [];
     this.modalPrompt = null;
@@ -331,7 +344,24 @@ export default class Game {
     this.boxSize = 26;
     this.loading = true;
 
+    this.initializeStateSystem();
     this.init();
+  }
+
+
+  initializeStateSystem() {
+    this.stateManager.setHandlers({
+      title: createTitleState(this),
+      playing: createGameplayState(this),
+      editor: createEditorState(this),
+      'pixel-editor': createPixelEditorState(this),
+      'midi-editor': createMidiEditorState(this),
+      robtersession: createRobterSessionState(this)
+    });
+  }
+
+  transitionTo(nextState, context = {}) {
+    return this.stateManager.transition(nextState, context);
   }
 
   setViewport({ width, height, scale, isMobile }) {
@@ -398,7 +428,7 @@ export default class Game {
     } finally {
       this.loading = false;
       if (this.state === 'loading') {
-        this.state = 'title';
+        this.transitionTo('title');
       }
     }
   }
@@ -646,7 +676,7 @@ export default class Game {
 
   enterEditor({ tab = null } = {}) {
     this.editorReturnState = this.state;
-    this.state = 'editor';
+    this.transitionTo('editor');
     this.setRevAudio(false);
     this.editor.activate();
     if (tab) {
@@ -658,7 +688,7 @@ export default class Game {
 
   enterPixelStudio() {
     this.pixelStudioReturnState = this.state;
-    this.state = 'pixel-editor';
+    this.transitionTo('pixel-editor');
     this.setRevAudio(false);
     this.pixelStudio.resetFocus();
     this.playtestActive = false;
@@ -667,7 +697,7 @@ export default class Game {
 
   exitPixelStudio({ toTitle = false } = {}) {
     this.playtestActive = false;
-    this.state = toTitle ? 'title' : (this.pixelStudioReturnState || 'title');
+    this.transitionTo(toTitle ? 'title' : (this.pixelStudioReturnState || 'title'));
     document.body.classList.remove('editor-active');
   }
 
@@ -714,7 +744,7 @@ export default class Game {
 
   enterMidiComposer() {
     this.midiComposerReturnState = this.state;
-    this.state = 'midi-editor';
+    this.transitionTo('midi-editor');
     this.setRevAudio(false);
     this.playtestActive = false;
     document.body.classList.add('editor-active');
@@ -722,7 +752,7 @@ export default class Game {
 
   exitMidiComposer() {
     this.playtestActive = false;
-    this.state = this.midiComposerReturnState || 'title';
+    this.transitionTo(this.midiComposerReturnState || 'title');
     document.body.classList.remove('editor-active');
   }
 
@@ -731,7 +761,7 @@ export default class Game {
     this.editor.flushWorldRefresh();
     if (playtest) {
       this.syncSpawnPoint();
-      this.state = 'playing';
+      this.transitionTo('playing');
       this.playtestActive = true;
       this.playtestPauseLock = 0.35;
       document.body.classList.remove('editor-active');
@@ -745,12 +775,12 @@ export default class Game {
     }
     this.playtestActive = false;
     if (toTitle) {
-      this.state = 'title';
+      this.transitionTo('title');
     } else if (this.editorReturnState === 'playing' || this.editorReturnState === 'pause') {
-      this.state = 'pause';
+      this.transitionTo('pause');
       this.minimapSelected = false;
     } else {
-      this.state = 'title';
+      this.transitionTo('title');
     }
     document.body.classList.remove('editor-active');
   }
@@ -769,7 +799,7 @@ export default class Game {
     } else {
       this.editor.setFocusOverride({ x: this.player.x, y: this.player.y });
     }
-    this.state = 'editor';
+    this.transitionTo('editor');
     this.editor.resetTransientInputState();
     this.editor.activate();
     this.playtestActive = false;
@@ -1325,7 +1355,7 @@ export default class Game {
     }
 
     if (this.input.wasPressed('pause') && this.state === 'playing') {
-      this.state = 'pause';
+      this.transitionTo('pause');
       this.minimapSelected = true;
       this.minimapPan = { x: 0, y: 0 };
       this.audio.menu();
@@ -1345,7 +1375,7 @@ export default class Game {
       if (this.minimapSelected) {
         this.minimapSelected = false;
       } else {
-        this.state = 'playing';
+        this.transitionTo('playing');
       }
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
@@ -1354,7 +1384,7 @@ export default class Game {
       return;
     }
     if (cancelPressed && ['dialog', 'shop'].includes(this.state)) {
-      this.state = 'playing';
+      this.transitionTo('playing');
       this.minimapSelected = false;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
@@ -1474,7 +1504,7 @@ export default class Game {
       if (this.input.wasPressed('interact')) {
         const finished = this.dialog.next();
         if (finished) {
-          this.state = 'playing';
+          this.transitionTo('playing');
           this.simulationActive = false;
           this.runPlayabilityCheck();
           this.startSpawnPause();
@@ -1527,7 +1557,7 @@ export default class Game {
         this.recordFeedback('menu navigate', 'visual');
       }
       if (this.input.wasPressed('pause')) {
-        this.state = 'playing';
+        this.transitionTo('playing');
       }
       this.input.flush();
       return;
@@ -5959,12 +5989,12 @@ export default class Game {
     if (restoreState) {
       this.applyWorldData(worldData);
       if (restoreState === 'editor') {
-        this.state = 'editor';
+        this.transitionTo('editor');
         this.playtestActive = false;
         this.editor.activate();
         document.body.classList.add('editor-active');
       } else if (restoreState === 'playtest') {
-        this.state = 'playing';
+        this.transitionTo('playing');
         this.playtestActive = true;
         this.resetRun({ playtest: true, startWithEverything });
       } else {
@@ -6202,7 +6232,7 @@ export default class Game {
       && payload.y >= this.minimapBackBounds.y
       && payload.y <= this.minimapBackBounds.y + this.minimapBackBounds.h
     ) {
-      this.state = 'playing';
+      this.transitionTo('playing');
       this.minimapSelected = false;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
@@ -6218,7 +6248,7 @@ export default class Game {
       && payload.y >= this.minimapExitBounds.y
       && payload.y <= this.minimapExitBounds.y + this.minimapExitBounds.h
     ) {
-      this.state = 'title';
+      this.transitionTo('title');
       this.minimapSelected = false;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
@@ -6234,7 +6264,7 @@ export default class Game {
       && payload.y >= this.pauseMenu.exitBounds.y
       && payload.y <= this.pauseMenu.exitBounds.y + this.pauseMenu.exitBounds.h
     ) {
-      this.state = 'title';
+      this.transitionTo('title');
       this.minimapSelected = false;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
@@ -6259,7 +6289,7 @@ export default class Game {
       && payload.y >= this.minimapBounds.y
       && payload.y <= this.minimapBounds.y + this.minimapBounds.h
     ) {
-      this.state = 'pause';
+      this.transitionTo('pause');
       this.minimapSelected = true;
       this.minimapPan = { x: 0, y: 0 };
       this.audio.menu();
