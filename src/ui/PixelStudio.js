@@ -31,6 +31,7 @@ import { buildEditorFileMenu, openNewDocumentDialog, PIXEL_SIZE_PRESETS } from '
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const lerp = (a, b, t) => a + (b - a) * t;
+const PIXEL_LEFT_PANEL_WIDTH = 360;
 
 const TILE_LIBRARY = [
   { id: 'solid', label: 'Solid Block', char: '#' },
@@ -2563,7 +2564,7 @@ export default class PixelStudio {
     const bottomHeight = menuFullScreen
       ? padding * 2
       : statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
-    const leftWidth = isMobile ? UI_SUITE.layout.railWidthMobile : (this.sidebars.left ? (menuFullScreen ? width - padding * 2 : UI_SUITE.layout.leftMenuWidthDesktop) : 0);
+    const leftWidth = isMobile ? UI_SUITE.layout.railWidthMobile : (this.sidebars.left ? (menuFullScreen ? width - padding * 2 : PIXEL_LEFT_PANEL_WIDTH) : 0);
     const rightWidth = 0;
 
     this.uiButtons = [];
@@ -2691,8 +2692,11 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
-    const tabHeight = isMobile ? 40 : 28;
-    const tabWidth = isMobile ? 72 : 78;
+    const tabHeight = isMobile ? 40 : 32;
+    const tabColumnW = isMobile
+      ? Math.max(72, Math.min(96, w * 0.28))
+      : Math.max(92, Math.min(124, Math.floor(w * 0.32)));
+    const tabWidth = tabColumnW - 12;
     const gap = 8;
     const labels = {
       file: 'File',
@@ -2715,10 +2719,10 @@ export default class PixelStudio {
       offsetY += tabHeight + gap;
     });
 
-    const panelX = x + tabWidth + 16;
+    const panelX = x + tabColumnW + 8;
     const panelY = y + 8;
     const panelH = h - 16;
-    this.drawLeftPanelContent(ctx, panelX, panelY, w - tabWidth - 24, panelH, options);
+    this.drawLeftPanelContent(ctx, panelX, panelY, w - tabColumnW - 16, panelH, options);
   }
 
   drawLeftPanelContent(ctx, x, y, w, h, options = {}) {

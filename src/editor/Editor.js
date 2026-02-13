@@ -6527,7 +6527,7 @@ Level size:`, `${current.width}x${current.height}`);
         const activeTab = this.getActivePanelTab();
         const panelPadding = 10;
         const tabColumnW = Math.max(92, Math.min(124, Math.floor(panelW * 0.32)));
-        const tabX = panelX + panelPadding;
+        const tabX = panelX + panelW - tabColumnW;
         const tabY = panelY + handleAreaH + 8;
         const tabW = tabColumnW - panelPadding * 1.5;
         const tabButtonH = 36;
@@ -6547,7 +6547,7 @@ Level size:`, `${current.width}x${current.height}`);
           );
         });
 
-        const contentX = panelX + tabColumnW + 6;
+        const contentX = panelX + panelPadding;
         const contentW = panelW - tabColumnW - panelPadding - 6;
         const baseContentY = tabY;
         let contentY = baseContentY;
