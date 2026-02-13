@@ -26,6 +26,9 @@ import { radialIndexFromStick } from './midi/input/radial.js';
 import { toRgba } from './midi/render/color.js';
 import { KEY_LABELS, parseChordToken, parseChordProgressionInput, formatChordToken } from './midi/helpers/chords.js';
 import { CACHED_SOUND_FONT_KEY, DEFAULT_PRELOAD_PROGRAMS } from './midi/io/storage.js';
+import { initializeComposerState } from './midi/state/composerState.js';
+import { registerComposerInputHandlers } from './midi/input/composerInputHandlers.js';
+import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
 
 const NOTE_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const SCALE_LIBRARY = [
@@ -450,42 +453,15 @@ export default class MidiComposer {
   constructor(game) {
     this.game = game;
     this.storageKey = 'chainsaw-midi-composer';
-    this.ticksPerBeat = 8;
-    this.beatsPerBar = 4;
-    this.quantizeOptions = QUANTIZE_OPTIONS;
-    this.quantizeIndex = findNoteLengthIndex('1/4');
-    this.quantizeEnabled = true;
-    this.noteLengthIndex = findNoteLengthIndex('1/4');
-    this.swing = 0;
-    this.previewOnEdit = true;
-    this.scrubAudition = false;
-    this.metronomeEnabled = false;
-    this.scaleLock = false;
-    this.slurEnabled = false;
-    this.staccatoEnabled = Boolean(this.song?.staccatoEnabled);
-    this.drumAdvanced = false;
-    this.activeTab = 'grid';
-    this.activeTool = 'draw';
     this.song = this.loadSong();
-    this.currentDocumentRef = null;
-    this.highContrast = Boolean(this.song?.highContrast);
-    this.chordMode = Boolean(this.song?.chordMode);
-    this.selectedTrackIndex = 0;
-    this.selectedPatternIndex = 0;
-    this.playheadTick = 0;
-    this.lastPlaybackTick = 0;
-    this.isPlaying = false;
-    this.keyframePanelOpen = false;
-    this.activeNotes = new Map();
-    this.livePreviewNotes = new Set();
-    this.dragState = null;
-    this.suppressNextGridTap = false;
-    this.selection = new Set();
-    this.clipboard = null;
-    this.cursor = { tick: 0, pitch: 60 };
-    this.cachedPrograms = new Set(this.loadCachedPrograms());
-    this.instrumentPreview = { loading: false, key: null };
-    this.instrumentDownload = { loading: false, key: null };
+    initializeComposerState(this, {
+      quantizeOptions: QUANTIZE_OPTIONS,
+      quantizeIndex: findNoteLengthIndex('1/4'),
+      noteLengthIndex: findNoteLengthIndex('1/4'),
+      song: this.song,
+      cachedPrograms: this.loadCachedPrograms(),
+      instrumentFamilyTabs: INSTRUMENT_FAMILY_TABS
+    });
     this.toolsMenuOpen = false;
     this.genreMenuOpen = false;
     this.selectedGenre = 'random';
@@ -566,26 +542,6 @@ export default class MidiComposer {
     this._historyCommitDelayMs = 500;
     this._needsEnsureState = false;
     this.debug = { perf: false };
-    this.instrumentPicker = {
-      familyTab: INSTRUMENT_FAMILY_TABS[0]?.id || 'piano-keys',
-      trackIndex: null,
-      mode: null,
-      selectedProgram: null,
-      bounds: [],
-      favoriteBounds: [],
-      sectionBounds: [],
-      tabBounds: [],
-      tabPrevBounds: null,
-      tabNextBounds: null,
-      confirmBounds: null,
-      cancelBounds: null,
-      downloadBounds: null,
-      scrollUpBounds: null,
-      scrollDownBounds: null,
-      scroll: 0,
-      scrollMax: 0,
-      scrollStep: 0
-    };
     this.fileMenuScroll = 0;
     this.fileMenuScrollMax = 0;
     this.fileMenuListBounds = null;
@@ -789,21 +745,7 @@ export default class MidiComposer {
   }
 
   registerInputHandlers() {
-    this.inputBus.on('noteon', (event) => this.handleRecordedNoteOn(event));
-    this.inputBus.on('noteoff', (event) => this.handleRecordedNoteOff(event));
-    this.inputBus.on('cc', (event) => this.handleRecordedCc(event));
-    this.inputBus.on('pitchbend', (event) => this.handleRecordedPitchBend(event));
-    this.inputBus.on('toggleRecord', () => {
-      if (this.recordModeActive) {
-        if (this.recorder.isRecording) {
-          this.stopRecording();
-        } else {
-          this.startRecording();
-        }
-      } else {
-        this.enterRecordMode();
-      }
-    });
+    registerComposerInputHandlers(this);
   }
 
   loadSong() {
@@ -7857,68 +7799,11 @@ export default class MidiComposer {
   }
 
   drawRecordModeSidebar(ctx, x, y, w, h) {
-    const rowH = clamp(Math.round(h * 0.055), 40, 48);
-    const rowGap = clamp(Math.round(rowH * 0.2), 6, 10);
-    const panelPadding = clamp(Math.round(rowH * 0.25), 8, 12);
-    const menuRows = TAB_OPTIONS.length + 2;
-    const menuH = Math.min(h, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
-    const menuX = x;
-    const menuY = y;
-
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(menuX, menuY, w, menuH);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(menuX, menuY, w, menuH);
-
-    const innerX = menuX + panelPadding;
-    const innerW = w - panelPadding * 2;
-    let cursorY = menuY + panelPadding;
-    this.bounds.tabs = [];
-    this.bounds.fileButton = { x: innerX, y: cursorY, w: innerW, h: rowH };
-    this.drawButton(ctx, this.bounds.fileButton, 'File', this.activeTab === 'file', false);
-    cursorY += rowH + rowGap;
-
-    TAB_OPTIONS.forEach((tab) => {
-      const bounds = { x: innerX, y: cursorY, w: innerW, h: rowH, id: tab.id };
-      this.bounds.tabs.push(bounds);
-      this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
-      cursorY += rowH + rowGap;
-    });
-    const undoCols = innerW < 190 ? 1 : 2;
-    const undoW = undoCols === 1 ? innerW : (innerW - rowGap) / 2;
-    this.bounds.undoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
-    this.drawSmallButton(ctx, this.bounds.undoButton, 'Undo', false);
-    if (undoCols === 1) {
-      cursorY += rowH + rowGap;
-      this.bounds.redoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
-    } else {
-      this.bounds.redoButton = { x: innerX + undoW + rowGap, y: cursorY, w: undoW, h: rowH };
-    }
-    this.drawSmallButton(ctx, this.bounds.redoButton, 'Redo', false);
-    return menuH;
+    return drawComposerRecordModeSidebar(this, ctx, x, y, w, h, TAB_OPTIONS);
   }
 
   drawGhostNotes(ctx) {
-    if (!this.gridBounds) return;
-    const activeNotes = this.recorder.getActiveNotes();
-    if (!activeNotes.length) return;
-    const elapsed = Math.max(0, this.getRecordingTime() - this.recorder.startTime);
-    const currentTick = (elapsed * this.song.tempo / 60) * this.ticksPerBeat;
-    ctx.save();
-    ctx.fillStyle = 'rgba(255,225,106,0.4)';
-    activeNotes.forEach((note) => {
-      const startSeconds = Math.max(0, note.startTime - this.recorder.startTime);
-      const startTick = (startSeconds * this.song.tempo / 60) * this.ticksPerBeat;
-      const tempNote = {
-        pitch: note.pitch,
-        startTick,
-        durationTicks: Math.max(1, currentTick - startTick)
-      };
-      const rect = this.getNoteRect(tempNote);
-      if (!rect) return;
-      ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-    });
-    ctx.restore();
+    drawComposerGhostNotes(this, ctx);
   }
 
   drawMobileLayout(ctx, width, height, track, pattern) {

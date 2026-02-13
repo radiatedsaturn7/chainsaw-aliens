@@ -14,10 +14,11 @@
   },
   "scripts": {
     "prepare:playwright": "npx playwright install",
-    "test:dashboard": "npm run prepare:playwright && node tools/test-runner/run.js",
+    "test:dashboard": "npm run prepare:playwright && node tools/test-runner/run.cjs",
     "test:robtersession-songs": "node tools/robtersession/song-generator-harness.js",
-    "test:robtersession-midi": "node tools/robtersession-midi-tests.js",
+    "test:robtersession-midi": "node tools/robtersession-midi-tests.cjs",
     "test:playwright": "playwright test",
     "test:playwright:headed": "playwright test --headed"
-  }
+  },
+  "type": "module"
 }

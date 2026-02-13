@@ -1,3 +1,5 @@
+import { addDOMListener, createDisposer } from '../input/disposables.js';
+
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 export const KEYMAP = {
@@ -65,34 +67,50 @@ export default class Input {
       leftTrigger: 0,
       rightTrigger: 0
     };
-    window.addEventListener('keydown', (e) => {
+    this.listenerDisposer = createDisposer();
+    this.listenersBound = false;
+    this.bindListeners();
+  }
+
+  bindListeners() {
+    if (this.listenersBound) return;
+    this.listenersBound = true;
+    this.listenerDisposer.add(addDOMListener(window, 'keydown', (e) => {
       if (!this.keys.get(e.code)) {
         this.pressed.add(e.code);
       }
       this.keys.set(e.code, true);
-    });
-    window.addEventListener('keyup', (e) => {
+    }));
+    this.listenerDisposer.add(addDOMListener(window, 'keyup', (e) => {
       this.keys.set(e.code, false);
       this.released.add(e.code);
-    });
-    window.addEventListener('blur', () => this.reset());
-    window.addEventListener('visibilitychange', () => {
+    }));
+    this.listenerDisposer.add(addDOMListener(window, 'blur', () => this.reset()));
+    this.listenerDisposer.add(addDOMListener(window, 'visibilitychange', () => {
       if (document.hidden) {
         this.reset();
       }
-    });
-    window.addEventListener('gamepadconnected', (event) => {
+    }));
+    this.listenerDisposer.add(addDOMListener(window, 'gamepadconnected', (event) => {
       if (this.gamepadIndex === null) {
         this.gamepadIndex = event.gamepad.index;
       }
-    });
-    window.addEventListener('gamepaddisconnected', (event) => {
+    }));
+    this.listenerDisposer.add(addDOMListener(window, 'gamepaddisconnected', (event) => {
       if (this.gamepadIndex === event.gamepad.index) {
         this.gamepadIndex = null;
         this.gamepadAxisMode = null;
       }
-    });
+    }));
   }
+
+  destroy() {
+    if (!this.listenersBound) return;
+    this.listenerDisposer.disposeAll();
+    this.listenersBound = false;
+    this.reset();
+  }
+
 
   isDown(action) {
     return KEYMAP[action].some((code) => this.keys.get(code)) || this.virtualDown.get(action);

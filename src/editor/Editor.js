@@ -4,6 +4,7 @@ import { vfsList, vfsSave } from '../ui/vfs.js';
 import { UI_SUITE, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
+import { addDOMListener, createDisposer } from '../input/disposables.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -475,6 +476,7 @@ export default class Editor {
     this.recordRecent('enemies', this.enemyType);
     this.recordRecent('prefabs', this.prefabType);
     this.recordRecent('shapes', this.shapeTool);
+    this.listenerDisposer = createDisposer();
 
     this.fileInput = document.createElement('input');
     this.fileInput.type = 'file';
@@ -488,7 +490,7 @@ export default class Editor {
     this.midiFileInput.style.display = 'none';
     document.body.appendChild(this.midiFileInput);
 
-    this.fileInput.addEventListener('change', (event) => {
+    this.listenerDisposer.add(addDOMListener(this.fileInput, 'change', (event) => {
       const file = event.target.files?.[0];
       if (!file) return;
       const reader = new FileReader();
@@ -506,9 +508,9 @@ export default class Editor {
       };
       reader.readAsText(file);
       this.fileInput.value = '';
-    });
+    }));
 
-    this.midiFileInput.addEventListener('change', (event) => {
+    this.listenerDisposer.add(addDOMListener(this.midiFileInput, 'change', (event) => {
       const file = event.target.files?.[0];
       if (!file) return;
       const reader = new FileReader();
@@ -522,24 +524,24 @@ export default class Editor {
       };
       reader.readAsText(file);
       this.midiFileInput.value = '';
-    });
+    }));
 
-    window.addEventListener('keydown', (event) => {
+    this.listenerDisposer.add(addDOMListener(window, 'keydown', (event) => {
       if (!this.active) return;
       const codes = ['KeyS', 'KeyL', 'KeyZ', 'KeyY', 'KeyP'];
       if (event.ctrlKey || codes.includes(event.code)) {
         event.preventDefault();
       }
-    });
+    }));
 
-    window.addEventListener('visibilitychange', () => {
+    this.listenerDisposer.add(addDOMListener(window, 'visibilitychange', () => {
       if (document.hidden) {
         this.clearTransientPointers('visibility-hidden');
       }
-    });
-    window.addEventListener('blur', () => {
+    }));
+    this.listenerDisposer.add(addDOMListener(window, 'blur', () => {
       this.clearTransientPointers('window-blur');
-    });
+    }));
   }
 
 

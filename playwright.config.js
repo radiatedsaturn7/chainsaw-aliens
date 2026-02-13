@@ -1,6 +1,6 @@
-const { defineConfig } = require('@playwright/test');
+import { defineConfig } from '@playwright/test';
 
-module.exports = defineConfig({
+export default defineConfig({
   testDir: './tests/playwright',
   timeout: 60_000,
   expect: {
@@ -11,7 +11,7 @@ module.exports = defineConfig({
     trace: 'on-first-retry'
   },
   webServer: {
-    command: 'node tools/playwright/static-server.js',
+    command: 'node tools/playwright/static-server.cjs',
     port: 4173,
     reuseExistingServer: !process.env.CI,
     timeout: 30_000

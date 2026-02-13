@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 async function waitForGameReady(page) {
   await page.goto('/index.html', { waitUntil: 'load' });
@@ -64,6 +64,24 @@ test('regression: editor survives playtest round trip and still handles input', 
     window.__game.returnToEditorFromPlaytest();
   });
   await page.waitForFunction(() => window.__game.state === 'editor' && window.__game.playtestActive === false);
+
+  const inputResetCheck = await page.evaluate(() => {
+    window.__game.mobileControls.reset();
+    const touchId = 'smoke-touch';
+    const center = window.__game.mobileControls.joystick.center;
+    window.__game.mobileControls.handlePointerDown({
+      id: touchId,
+      x: center.x,
+      y: center.y,
+      touchCount: 1
+    }, 'playing');
+    const activeAfterDown = window.__game.mobileControls.joystick.active;
+    window.__game.mobileControls.handlePointerUp({ id: touchId, x: center.x, y: center.y }, 'playing');
+    const activeAfterUp = window.__game.mobileControls.joystick.active;
+    return { activeAfterDown, activeAfterUp };
+  });
+  expect(inputResetCheck.activeAfterDown).toBeTruthy();
+  expect(inputResetCheck.activeAfterUp).toBeFalsy();
 
   const beforeX = await page.evaluate(() => window.__game.editor.camera.x);
   await page.keyboard.down('ArrowRight');
