@@ -476,19 +476,36 @@ export default class Editor {
     this.recordRecent('enemies', this.enemyType);
     this.recordRecent('prefabs', this.prefabType);
     this.recordRecent('shapes', this.shapeTool);
+    this.globalListenersBound = false;
+    this.listenerDisposer = null;
+    this.fileInput = null;
+    this.midiFileInput = null;
+  }
+
+  bindGlobalListeners() {
+    if (this.globalListenersBound) return;
+    this.globalListenersBound = true;
     this.listenerDisposer = createDisposer();
 
-    this.fileInput = document.createElement('input');
-    this.fileInput.type = 'file';
-    this.fileInput.accept = 'application/json';
-    this.fileInput.style.display = 'none';
-    document.body.appendChild(this.fileInput);
+    if (!this.fileInput) {
+      this.fileInput = document.createElement('input');
+      this.fileInput.type = 'file';
+      this.fileInput.accept = 'application/json';
+      this.fileInput.style.display = 'none';
+    }
+    if (!this.fileInput.isConnected) {
+      document.body.appendChild(this.fileInput);
+    }
 
-    this.midiFileInput = document.createElement('input');
-    this.midiFileInput.type = 'file';
-    this.midiFileInput.accept = 'application/json';
-    this.midiFileInput.style.display = 'none';
-    document.body.appendChild(this.midiFileInput);
+    if (!this.midiFileInput) {
+      this.midiFileInput = document.createElement('input');
+      this.midiFileInput.type = 'file';
+      this.midiFileInput.accept = 'application/json';
+      this.midiFileInput.style.display = 'none';
+    }
+    if (!this.midiFileInput.isConnected) {
+      document.body.appendChild(this.midiFileInput);
+    }
 
     this.listenerDisposer.add(addDOMListener(this.fileInput, 'change', (event) => {
       const file = event.target.files?.[0];
@@ -539,9 +556,19 @@ export default class Editor {
         this.clearTransientPointers('visibility-hidden');
       }
     }));
+
     this.listenerDisposer.add(addDOMListener(window, 'blur', () => {
       this.clearTransientPointers('window-blur');
     }));
+  }
+
+  unbindGlobalListeners() {
+    if (!this.globalListenersBound) return;
+    this.globalListenersBound = false;
+    if (this.listenerDisposer) {
+      this.listenerDisposer.disposeAll();
+      this.listenerDisposer = null;
+    }
   }
 
 
@@ -661,6 +688,7 @@ export default class Editor {
   }
 
   activate() {
+    this.bindGlobalListeners();
     this.active = true;
     this.resetTransientInputState();
     this.loadAutosaveOrSeed();
@@ -696,6 +724,20 @@ export default class Editor {
       window.clearTimeout(this.pendingWorldRefresh);
       this.pendingWorldRefresh = null;
     }
+    this.unbindGlobalListeners();
+  }
+
+  destroy() {
+    this.deactivate();
+    this.unbindGlobalListeners();
+    if (this.fileInput?.parentNode) {
+      this.fileInput.parentNode.removeChild(this.fileInput);
+    }
+    if (this.midiFileInput?.parentNode) {
+      this.midiFileInput.parentNode.removeChild(this.midiFileInput);
+    }
+    this.fileInput = null;
+    this.midiFileInput = null;
   }
 
   syncPreviewMinimap() {
