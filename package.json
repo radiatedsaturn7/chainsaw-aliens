@@ -17,7 +17,7 @@
     "test:dashboard": "npm run prepare:playwright && node tools/test-runner/run.cjs",
     "test:robtersession-songs": "node tools/robtersession/song-generator-harness.js",
     "test:robtersession-midi": "node tools/robtersession-midi-tests.cjs",
-    "test:playwright": "playwright test",
+    "test:playwright": "playwright test tests/playwright",
     "test:playwright:headed": "playwright test --headed"
   },
   "type": "module"
