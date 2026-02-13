@@ -1,6 +1,7 @@
-export const createEditorUIModule = (editor) => ({
-  trigger(action, ...args) {
-    if (typeof editor[action] === 'function') return editor[action](...args);
-    return null;
-  }
-});
+import { createMethodProxy } from '../shared/createMethodProxy.js';
+
+export const createEditorUIModule = (editor) => (
+  createMethodProxy(editor, {
+    trigger: {}
+  })
+);
