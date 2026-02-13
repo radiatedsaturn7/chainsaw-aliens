@@ -1,3 +1,5 @@
+import { buildEditorFileMenu } from './editorFileMenu.js';
+
 export const UI_SUITE = {
   colors: {
     bg: '#0b0b0b',
@@ -26,40 +28,8 @@ export const UI_SUITE = {
   }
 };
 
-const STANDARD_FILE_ORDER = ['new', 'save', 'save-as', 'open', 'export', 'import', 'undo', 'redo'];
-
 export function buildStandardFileMenu(config = {}) {
-  const {
-    supported = {},
-    labels = {},
-    tooltips = {},
-    actions = {},
-    extras = []
-  } = config;
-
-  const entries = STANDARD_FILE_ORDER.map((id) => ({
-    id,
-    label: labels[id] || defaultLabelForFileId(id),
-    disabled: supported[id] === false,
-    tooltip: tooltips[id] || (supported[id] === false ? 'Not available in this editor yet' : ''),
-    onClick: actions[id] || null
-  }));
-
-  return [...entries, ...extras];
-}
-
-function defaultLabelForFileId(id) {
-  switch (id) {
-    case 'new': return 'New';
-    case 'save': return 'Save';
-    case 'save-as': return 'Save As';
-    case 'open': return 'Open';
-    case 'export': return 'Export';
-    case 'import': return 'Import';
-    case 'undo': return 'Undo';
-    case 'redo': return 'Redo';
-    default: return id;
-  }
+  return buildEditorFileMenu(config);
 }
 
 export function fileTypeBadge(filename = '') {

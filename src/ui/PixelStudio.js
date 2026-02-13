@@ -27,10 +27,10 @@ import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
 import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
+import { PIXEL_SIZE_PRESETS, openNewDocumentDialog } from './editorFileMenu.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const lerp = (a, b, t) => a + (b - a) * t;
-const PIXEL_SIZE_PRESETS = [16, 32, 64, 128, 256];
 
 const TILE_LIBRARY = [
   { id: 'solid', label: 'Solid Block', char: '#' },
@@ -518,23 +518,31 @@ export default class PixelStudio {
   }
 
   async newArtDocument() {
-    const name = await this.promptForNewArtName();
-    if (!name) return;
-    const dims = this.promptForArtDimensions(this.artSizeDraft);
-    if (!dims) return;
+    const result = await openNewDocumentDialog('art', {
+      name: this.currentDocumentRef?.name || `new-art-${Date.now()}`,
+      width: this.artSizeDraft.width,
+      height: this.artSizeDraft.height
+    });
+    if (!result) return;
     this.game.world.pixelArt = { tiles: {} };
-    this.currentDocumentRef = { folder: 'art', name };
+    this.currentDocumentRef = { folder: 'art', name: result.name };
     this.loadTileData();
-    this.artSizeDraft.width = dims.width;
-    this.artSizeDraft.height = dims.height;
-    this.resizeArtCanvas(dims.width, dims.height);
+    this.artSizeDraft.width = result.width;
+    this.artSizeDraft.height = result.height;
+    this.resizeArtCanvas(result.width, result.height);
+    this.fitCanvasToViewport();
     this.markSavedSnapshot();
+    this.closeFileMenu();
   }
 
   resizeArtCanvas(width, height) {
     const nextW = clamp(Math.round(width), 8, 512);
     const nextH = clamp(Math.round(height), 8, 512);
     if (nextW === this.canvasState.width && nextH === this.canvasState.height) return;
+    if ((nextW < this.canvasState.width || nextH < this.canvasState.height)
+      && !window.confirm('Reducing canvas size can crop pixels outside the new bounds. Continue?')) {
+      return;
+    }
     const resizeLayer = (layer) => {
       const next = createLayer(nextW, nextH, layer.name);
       const copyW = Math.min(this.canvasState.width, nextW);
@@ -586,11 +594,8 @@ export default class PixelStudio {
   }
 
   resizeArtDocumentPrompt() {
-    const dims = this.promptForArtDimensions({ width: this.canvasState.width, height: this.canvasState.height });
-    if (!dims) return;
-    this.artSizeDraft.width = dims.width;
-    this.artSizeDraft.height = dims.height;
-    this.resizeArtCanvas(dims.width, dims.height);
+    this.setLeftPanelTab('canvas');
+    this.setInputMode('ui');
   }
 
 
@@ -618,6 +623,11 @@ export default class PixelStudio {
     if (mappedActions.length) {
       this.applyInputActions(mappedActions, {}, 0);
       event.preventDefault();
+    }
+    if (key === 'escape' && this.leftPanelTab === 'file') {
+      this.closeFileMenu();
+      event.preventDefault();
+      return;
     }
     if (event.key === ' ') this.spaceDown = true;
     if (event.key === 'Alt') this.altDown = true;
@@ -1047,7 +1057,7 @@ export default class PixelStudio {
 
   openFileTab() {
     this.sidebars.left = true;
-    this.setLeftPanelTab('tools');
+    this.setLeftPanelTab('file');
     this.setInputMode('ui');
     this.uiFocus.group = 'menu';
     this.uiFocus.index = 0;
@@ -1488,6 +1498,26 @@ export default class PixelStudio {
 
   resetZoom() {
     this.view.zoomIndex = 4;
+    this.view.panX = 0;
+    this.view.panY = 0;
+  }
+
+  fitCanvasToViewport() {
+    const viewportW = this.viewportWidth || this.game?.canvas?.width || 1280;
+    const viewportH = this.viewportHeight || this.game?.canvas?.height || 720;
+    const targetW = Math.max(1, this.canvasState.width);
+    const targetH = Math.max(1, this.canvasState.height);
+    const maxScale = Math.max(0.25, Math.min((viewportW * 0.65) / targetW, (viewportH * 0.65) / targetH));
+    let bestIndex = 0;
+    let bestDelta = Infinity;
+    this.view.zoomLevels.forEach((zoom, index) => {
+      const delta = Math.abs(zoom - maxScale);
+      if (delta < bestDelta) {
+        bestDelta = delta;
+        bestIndex = index;
+      }
+    });
+    this.view.zoomIndex = bestIndex;
     this.view.panX = 0;
     this.view.panY = 0;
   }
@@ -2796,8 +2826,8 @@ export default class PixelStudio {
         { label: 'Resize', action: () => this.resizeArtDocumentPrompt() },
         { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } },
         { divider: true },
-        { label: 'Close Menu', action: () => { this.closeFileMenu(); } },
-        { label: 'Exit to Main Menu', action: () => { this.closeStudioWithPrompt(); } }
+        { id: 'close-menu', label: 'Close Menu', action: () => { this.closeFileMenu(); } },
+        { id: 'exit-main', label: 'Exit to Main Menu', action: () => { this.closeStudioWithPrompt(); } }
       ]
     });
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
@@ -2827,45 +2857,6 @@ export default class PixelStudio {
       offsetY += lineHeight;
     });
 
-    const sizeSectionY = y + h - (isMobile ? 132 : 90);
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.font = `${isMobile ? 12 : 11}px ${UI_SUITE.font.family}`;
-    ctx.fillText(`Canvas: ${this.canvasState.width}x${this.canvasState.height}`, x + 10, sizeSectionY - 8);
-
-    const presetW = isMobile ? 56 : 46;
-    const presetH = isMobile ? 30 : 20;
-    PIXEL_SIZE_PRESETS.forEach((size, index) => {
-      const bounds = { x: x + 8 + index * (presetW + 6), y: sizeSectionY, w: presetW, h: presetH };
-      this.drawButton(ctx, bounds, `${size}`, false, { fontSize: isMobile ? 11 : 10 });
-      this.uiButtons.push({ bounds, onClick: () => { this.artSizeDraft.width = size; this.artSizeDraft.height = size; this.resizeArtCanvas(size, size); } });
-      this.registerFocusable('file', bounds, () => { this.artSizeDraft.width = size; this.artSizeDraft.height = size; this.resizeArtCanvas(size, size); });
-    });
-
-    const setWBounds = { x: x + 8, y: sizeSectionY + presetH + 6, w: isMobile ? 86 : 72, h: isMobile ? 30 : 20 };
-    const setHBounds = { x: setWBounds.x + setWBounds.w + 6, y: setWBounds.y, w: isMobile ? 86 : 72, h: isMobile ? 30 : 20 };
-    const applySizeBounds = { x: setHBounds.x + setHBounds.w + 6, y: setWBounds.y, w: isMobile ? 86 : 72, h: isMobile ? 30 : 20 };
-    this.drawButton(ctx, setWBounds, `W: ${this.artSizeDraft.width}`, false, { fontSize: isMobile ? 11 : 10 });
-    this.drawButton(ctx, setHBounds, `H: ${this.artSizeDraft.height}`, false, { fontSize: isMobile ? 11 : 10 });
-    this.drawButton(ctx, applySizeBounds, 'Apply', false, { fontSize: isMobile ? 11 : 10 });
-    this.uiButtons.push({ bounds: setWBounds, onClick: () => this.setArtSizeDraftFromPrompt('width') });
-    this.uiButtons.push({ bounds: setHBounds, onClick: () => this.setArtSizeDraftFromPrompt('height') });
-    this.uiButtons.push({ bounds: applySizeBounds, onClick: () => this.resizeArtCanvas(this.artSizeDraft.width, this.artSizeDraft.height) });
-    this.registerFocusable('file', setWBounds, () => this.setArtSizeDraftFromPrompt('width'));
-    this.registerFocusable('file', setHBounds, () => this.setArtSizeDraftFromPrompt('height'));
-    this.registerFocusable('file', applySizeBounds, () => this.resizeArtCanvas(this.artSizeDraft.width, this.artSizeDraft.height));
-
-    const footerY = y + h - (isMobile ? 52 : 30);
-    const footerH = isMobile ? 44 : 22;
-    const footerGap = 8;
-    const footerW = Math.floor((w - 16 - footerGap) / 2);
-    const closeBounds = { x: x + 8, y: footerY, w: footerW, h: footerH };
-    const exitBounds = { x: closeBounds.x + closeBounds.w + footerGap, y: footerY, w: footerW, h: footerH };
-    this.drawButton(ctx, closeBounds, 'Close Menu', false, { fontSize: isMobile ? 12 : 12 });
-    this.drawButton(ctx, exitBounds, 'Exit to Main Menu', false, { fontSize: isMobile ? 11 : 11 });
-    this.uiButtons.push({ bounds: closeBounds, onClick: () => this.closeFileMenu() });
-    this.uiButtons.push({ bounds: exitBounds, onClick: () => this.closeStudioWithPrompt() });
-    this.registerFocusable('file', closeBounds, () => this.closeFileMenu());
-    this.registerFocusable('file', exitBounds, () => this.closeStudioWithPrompt());
   }
 
   drawPalettePanel(ctx, x, y, w, h, options = {}) {
@@ -3318,6 +3309,30 @@ export default class PixelStudio {
     ctx.fillText('Switches', x + 12, y + 22);
 
     let offsetY = y + 44;
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
+    ctx.fillText(`Canvas: ${this.canvasState.width}x${this.canvasState.height}`, x + 12, offsetY);
+    offsetY += lineHeight;
+    PIXEL_SIZE_PRESETS.forEach((size, index) => {
+      const bounds = { x: x + 12 + index * (buttonHeight + 8), y: offsetY - buttonHeight + 4, w: buttonHeight, h: buttonHeight };
+      this.drawButton(ctx, bounds, `${size}`, false, { fontSize });
+      this.uiButtons.push({ bounds, onClick: () => { this.artSizeDraft.width = size; this.artSizeDraft.height = size; this.resizeArtCanvas(size, size); this.fitCanvasToViewport(); } });
+      this.registerFocusable('menu', bounds, () => { this.artSizeDraft.width = size; this.artSizeDraft.height = size; this.resizeArtCanvas(size, size); this.fitCanvasToViewport(); });
+    });
+    offsetY += lineHeight;
+    const sizeSetW = { x: x + 12, y: offsetY - buttonHeight + 4, w: 88, h: buttonHeight };
+    const sizeSetH = { x: sizeSetW.x + sizeSetW.w + 8, y: sizeSetW.y, w: 88, h: buttonHeight };
+    const sizeApply = { x: sizeSetH.x + sizeSetH.w + 8, y: sizeSetW.y, w: 88, h: buttonHeight };
+    this.drawButton(ctx, sizeSetW, `W: ${this.artSizeDraft.width}`, false, { fontSize });
+    this.drawButton(ctx, sizeSetH, `H: ${this.artSizeDraft.height}`, false, { fontSize });
+    this.drawButton(ctx, sizeApply, 'Resize', false, { fontSize });
+    this.uiButtons.push({ bounds: sizeSetW, onClick: () => this.setArtSizeDraftFromPrompt('width') });
+    this.uiButtons.push({ bounds: sizeSetH, onClick: () => this.setArtSizeDraftFromPrompt('height') });
+    this.uiButtons.push({ bounds: sizeApply, onClick: () => { this.resizeArtCanvas(this.artSizeDraft.width, this.artSizeDraft.height); this.fitCanvasToViewport(); } });
+    this.registerFocusable('menu', sizeSetW, () => this.setArtSizeDraftFromPrompt('width'));
+    this.registerFocusable('menu', sizeSetH, () => this.setArtSizeDraftFromPrompt('height'));
+    this.registerFocusable('menu', sizeApply, () => { this.resizeArtCanvas(this.artSizeDraft.width, this.artSizeDraft.height); this.fitCanvasToViewport(); });
+    offsetY += lineHeight;
     this.drawOptionToggle(ctx, x + 12, offsetY, 'Symmetry H', this.toolOptions.symmetry.horizontal, () => {
       this.toolOptions.symmetry.horizontal = !this.toolOptions.symmetry.horizontal;
     }, { isMobile });
