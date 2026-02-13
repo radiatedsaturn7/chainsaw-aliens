@@ -10,6 +10,8 @@ import {
 } from '../audio/gm.js';
 import DrumKitManager from '../audio/DrumKitManager.js';
 import SoundfontEngine from '../audio/SoundfontEngine.js';
+import SoundfontLoader from '../audio/soundfontLoader.js';
+import { AUDIO_CONFIG } from '../audio/config.js';
 
 const DEFAULT_GM_SOUND_FONT_URL = 'vendor/soundfonts/FluidR3_GM/';
 const FALLBACK_GM_SOUND_FONT_URL = 'vendor/soundfonts/FluidR3_GM/';
@@ -79,6 +81,13 @@ export default class AudioSystem {
       baseUrl: this.loadStoredSoundfontUrl(),
       fallbackUrl: FALLBACK_GM_SOUND_FONT_URL
     });
+    this.soundfontLoader = new SoundfontLoader({
+      soundfont: this.soundfont,
+      enabled: AUDIO_CONFIG.useLazySoundfontLoader,
+      preloadCommonSet: AUDIO_CONFIG.preloadLazySoundfontCommonSet,
+      commonPrograms: AUDIO_CONFIG.lazySoundfontCommonPrograms,
+      includeCommonDrumKit: AUDIO_CONFIG.lazySoundfontCommonDrumKit
+    });
     this.drumKitManager = new DrumKitManager({ soundfont: this.soundfont });
     this.channelState = Array.from({ length: 16 }, () => ({
       bankMSB: 0,
@@ -146,6 +155,7 @@ export default class AudioSystem {
     this.midiReverb.connect(this.midiLimiter);
     this.midiSamples = this.buildMidiSamples();
     this.soundfont.initAudio({ audioContext: this.ctx, destination: this.midiBus });
+    this.soundfontLoader.preloadCommon().catch(() => {});
   }
 
   loadScriptOnce(url) {
@@ -347,6 +357,7 @@ export default class AudioSystem {
 
   resetGmBank() {
     this.soundfont.reset();
+    this.soundfontLoader.reset();
     this.gmError = null;
     this.drumKitManager.setDrumKit('standard');
   }
@@ -371,12 +382,24 @@ export default class AudioSystem {
 
   loadGmProgram(program) {
     this.ensureMidiSampler();
+    if (this.soundfontLoader.enabled) {
+      return this.soundfontLoader.ensureLoaded({ channel: 0, program, bankMSB: 0, bankLSB: 0 });
+    }
     return this.soundfont.loadInstrument(program);
   }
 
   loadGmDrumKit() {
     this.ensureMidiSampler();
     const kit = this.drumKitManager.getDrumKit();
+    if (this.soundfontLoader.enabled) {
+      return this.soundfontLoader.ensureLoaded({
+        channel: GM_DRUM_CHANNEL,
+        isDrum: true,
+        bankMSB: GM_DRUM_BANK_MSB,
+        bankLSB: GM_DRUM_BANK_LSB,
+        kitName: kit?.soundfont
+      });
+    }
     return this.soundfont.loadDrumKit(kit?.soundfont);
   }
 
@@ -744,14 +767,22 @@ export default class AudioSystem {
       if (used) return;
     }
     const when = this.ctx.currentTime + this.midiLatency;
-    this.soundfont.noteOn(resolvedPitch, clampedVolume, when, duration, resolvedChannel, {
-      trackId: trackId ?? resolvedChannel,
-      isDrum: isDrums,
-      sourceNote: pitch,
-      resolvedNote: resolvedPitch,
-      bankMSB: resolvedBankMSB,
-      bankLSB: resolvedBankLSB,
-      program: isDrums ? 0 : clampedProgram
+    this.gmNoteOnWithLoader({
+      pitch: resolvedPitch,
+      volume: clampedVolume,
+      when,
+      duration,
+      resolvedChannel,
+      isDrums,
+      meta: {
+        trackId: trackId ?? resolvedChannel,
+        isDrum: isDrums,
+        sourceNote: pitch,
+        resolvedNote: resolvedPitch,
+        bankMSB: resolvedBankMSB,
+        bankLSB: resolvedBankLSB,
+        program: isDrums ? 0 : clampedProgram
+      }
     })
       .then((voice) => {
         if (!voice) return;
@@ -874,14 +905,22 @@ export default class AudioSystem {
       if (used) return;
     }
     const when = this.ctx.currentTime + this.midiLatency;
-    this.soundfont.noteOn(resolvedPitch, clampedVolume, when, duration, resolvedChannel, {
-      trackId: trackId ?? resolvedChannel,
-      isDrum: isDrums,
-      sourceNote: pitch,
-      resolvedNote: resolvedPitch,
-      bankMSB: resolvedBankMSB,
-      bankLSB: resolvedBankLSB,
-      program: isDrums ? 0 : clampedProgram
+    this.gmNoteOnWithLoader({
+      pitch: resolvedPitch,
+      volume: clampedVolume,
+      when,
+      duration,
+      resolvedChannel,
+      isDrums,
+      meta: {
+        trackId: trackId ?? resolvedChannel,
+        isDrum: isDrums,
+        sourceNote: pitch,
+        resolvedNote: resolvedPitch,
+        bankMSB: resolvedBankMSB,
+        bankLSB: resolvedBankLSB,
+        program: isDrums ? 0 : clampedProgram
+      }
     })
       .then((voice) => {
         if (!voice) return;
@@ -930,6 +969,30 @@ export default class AudioSystem {
         }
         this.playMidiNote(resolvedPitch, this.getFallbackInstrument(clampedProgram), duration, clampedVolume, null, clampedPan);
       });
+  }
+
+  gmNoteOnWithLoader({
+    pitch,
+    volume,
+    when,
+    duration,
+    resolvedChannel,
+    isDrums,
+    meta
+  }) {
+    const runNoteOn = () => this.soundfont.noteOn(pitch, volume, when, duration, resolvedChannel, meta);
+    if (!this.soundfontLoader.enabled) {
+      return runNoteOn();
+    }
+    const kit = isDrums ? this.drumKitManager.getDrumKit() : null;
+    return this.soundfontLoader.ensureLoaded({
+      channel: resolvedChannel,
+      isDrum: isDrums,
+      program: isDrums ? 0 : meta.program,
+      bankMSB: meta.bankMSB,
+      bankLSB: meta.bankLSB,
+      kitName: kit?.soundfont
+    }).then(runNoteOn);
   }
 
   testDrumKit({
