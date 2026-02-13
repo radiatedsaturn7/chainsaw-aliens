@@ -921,6 +921,34 @@ export default class Editor {
     }
   }
 
+
+  getMainPanelTab(activeTab = this.getActivePanelTab()) {
+    return activeTab === 'file' ? 'file' : 'toolbox';
+  }
+
+  getToolboxSubTabs() {
+    return [
+      { id: 'toolbox', label: 'Tools' },
+      { id: 'tiles', label: 'Tiles' },
+      { id: 'triggers', label: 'Triggers' },
+      { id: 'powerups', label: 'Powerups' },
+      { id: 'enemies', label: 'Enemies' },
+      { id: 'bosses', label: 'Bosses' },
+      { id: 'prefabs', label: 'Structures' },
+      { id: 'music', label: 'Music' }
+    ];
+  }
+
+  setMainPanelTab(tabId) {
+    if (tabId === 'file') {
+      this.setPanelTab('file');
+      return;
+    }
+    if (tabId === 'toolbox' && this.getActivePanelTab() === 'file') {
+      this.setPanelTab('toolbox');
+    }
+  }
+
   cyclePanelTab(direction) {
     const current = this.getActivePanelTab();
     const currentIndex = Math.max(0, this.panelTabs.indexOf(current));
@@ -6513,42 +6541,53 @@ Level size:`, `${current.width}x${current.height}`);
         }
         ctx.fillText(summary, panelW / 2, panelY + 46);
       } else {
-        const tabs = [
-          { id: 'file', label: 'File' },
-          { id: 'toolbox', label: 'Toolbox' },
-          { id: 'tiles', label: 'Tiles' },
-          { id: 'triggers', label: 'Triggers' },
-          { id: 'powerups', label: 'Powerups' },
-          { id: 'enemies', label: 'Enemies' },
-          { id: 'bosses', label: 'Bosses' },
-          { id: 'prefabs', label: 'Structures' },
-          { id: 'music', label: 'Music' }
-        ];
         const activeTab = this.getActivePanelTab();
+        const mainTab = this.getMainPanelTab(activeTab);
+        const mainTabs = [{ id: 'file', label: 'File' }, { id: 'toolbox', label: 'Toolbox' }];
+        const subTabs = mainTab === 'file' ? [{ id: 'file', label: 'File' }] : this.getToolboxSubTabs();
         const panelPadding = 10;
-        const tabColumnW = Math.max(92, Math.min(124, Math.floor(panelW * 0.32)));
-        const tabX = panelX + panelW - tabColumnW;
         const tabY = panelY + handleAreaH + 8;
-        const tabW = tabColumnW - panelPadding * 1.5;
         const tabButtonH = 36;
         const tabGap = 8;
+        const mainColumnW = Math.max(88, Math.min(102, Math.floor(panelW * 0.22)));
+        const subColumnW = Math.max(94, Math.min(124, Math.floor(panelW * 0.26)));
+        const itemColumnW = Math.max(120, Math.min(170, Math.floor(panelW * 0.36)));
+        const rightEdge = panelX + panelW - panelPadding;
+        const mainX = rightEdge - mainColumnW;
+        const itemX = rightEdge - itemColumnW;
+        const subX = itemX - tabGap - subColumnW;
+        const tabW = mainColumnW;
+        const subW = subColumnW;
         ctx.font = `14px ${UI_SUITE.font.family}`;
-        tabs.forEach((tab, index) => {
+        mainTabs.forEach((tab, index) => {
           const y = tabY + index * (tabButtonH + tabGap);
           drawButton(
-            tabX,
+            mainX,
             y,
             tabW,
             tabButtonH,
             tab.label,
+            mainTab === tab.id,
+            () => this.setMainPanelTab(tab.id),
+            `${tab.label} main menu`
+          );
+        });
+        subTabs.forEach((tab, index) => {
+          const y = tabY + index * (tabButtonH + tabGap);
+          drawButton(
+            subX,
+            y,
+            subW,
+            tabButtonH,
+            tab.label,
             activeTab === tab.id,
             () => this.setPanelTab(tab.id),
-            `${tab.label} drawer`
+            `${tab.label} sub menu`
           );
         });
 
-        const contentX = panelX + panelPadding;
-        const contentW = panelW - tabColumnW - panelPadding - 6;
+        const contentX = itemX;
+        const contentW = itemColumnW;
         const baseContentY = tabY;
         let contentY = baseContentY;
         const reservedBottom = joystickRadius * 2 + 32;
@@ -6894,64 +6933,53 @@ Level size:`, `${current.width}x${current.height}`);
       const panelX = width - panelWidth - 12;
       const panelY = 12;
       const panelH = height - 24;
-      const tabs = [
-        { id: 'tools', label: 'TOOLS' },
-        { id: 'tiles', label: 'TILES' },
-        { id: 'powerups', label: 'POWERUPS' },
-        { id: 'enemies', label: 'ENEMIES' },
-        { id: 'bosses', label: 'BOSSES' },
-        { id: 'prefabs', label: 'STRUCTURES' },
-        { id: 'shapes', label: 'SHAPES' },
-        { id: 'music', label: 'MUSIC' }
-      ];
-      const tabMargin = 12;
-      const tabGap = 6;
-      const tabArrowW = 22;
-      const tabArrowGap = 6;
-      const tabHeight = 26;
-      const tabRowW = panelWidth - tabMargin * 2 - (tabArrowW + tabArrowGap) * 2;
-      const tabWidth = (tabRowW - tabGap * (tabs.length - 1)) / tabs.length;
-      const tabY = panelY;
       const activeTab = this.getActivePanelTab();
+      const mainTab = this.getMainPanelTab(activeTab);
+      const mainTabs = [{ id: 'file', label: 'FILE' }, { id: 'toolbox', label: 'TOOLBOX' }];
+      const subTabs = mainTab === 'file'
+        ? [{ id: 'file', label: 'FILE' }]
+        : this.getToolboxSubTabs().map((tab) => ({ id: tab.id, label: tab.label.toUpperCase() }));
+      const tabGap = 8;
+      const tabHeight = 28;
+      const mainW = 92;
+      const subW = 120;
+      const topY = panelY + 10;
+      const rightEdge = panelX + panelWidth - 10;
+      const mainX = rightEdge - mainW;
+      const subX = mainX - tabGap - subW;
 
-      drawButton(
-        panelX + tabMargin,
-        tabY,
-        tabArrowW,
-        tabHeight,
-        '◀',
-        false,
-        () => this.cyclePanelTab(-1),
-        'Previous tab'
-      );
-      drawButton(
-        panelX + panelWidth - tabMargin - tabArrowW,
-        tabY,
-        tabArrowW,
-        tabHeight,
-        '▶',
-        false,
-        () => this.cyclePanelTab(1),
-        'Next tab'
-      );
-      tabs.forEach((tab, index) => {
-        const x = panelX + tabMargin + tabArrowW + tabArrowGap + index * (tabWidth + tabGap);
+      mainTabs.forEach((tab, index) => {
+        const y = topY + index * (tabHeight + tabGap);
         drawButton(
-          x,
-          tabY,
-          tabWidth,
+          mainX,
+          y,
+          mainW,
+          tabHeight,
+          tab.label,
+          mainTab === tab.id,
+          () => this.setMainPanelTab(tab.id),
+          `${tab.label} main menu`
+        );
+      });
+
+      subTabs.forEach((tab, index) => {
+        const y = topY + index * (tabHeight + tabGap);
+        drawButton(
+          subX,
+          y,
+          subW,
           tabHeight,
           tab.label,
           activeTab === tab.id,
           () => this.setPanelTab(tab.id),
-          `${tab.label} panel`
+          `${tab.label} sub menu`
         );
       });
 
-      let contentY = tabY + tabHeight + 10;
-      let contentHeight = Math.max(0, panelY + panelH - contentY);
-      const contentX = panelX;
-      const contentW = panelWidth;
+      let contentY = topY;
+      let contentHeight = Math.max(0, panelY + panelH - contentY - 10);
+      const contentX = panelX + 10;
+      const contentW = Math.max(120, subX - panelX - 20);
       const contentPadding = 12;
       const buttonGap = 10;
       const isTallButtons = activeTab === 'tiles'
