@@ -2,6 +2,8 @@ import Minimap from '../world/Minimap.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsList, vfsSave } from '../ui/vfs.js';
 import { UI_SUITE, formatMenuLabel } from '../ui/uiSuite.js';
+import { clamp, randInt, pickOne } from './input/random.js';
+import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -279,9 +281,6 @@ const MIDI_NOTE_LENGTHS = [
 
 const EDITOR_AUTOSAVE_KEY = 'chainsaw-editor-autosave';
 
-const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-const pickOne = (list) => list[randInt(0, list.length - 1)];
 
 export default class Editor {
   constructor(game) {
@@ -872,11 +871,11 @@ export default class Editor {
       this.openFileDialog();
     }
     if (input.wasPressedCode('KeyP')) {
-      this.game.exitEditor({ playtest: true });
+      startPlaytestTransition(this.game);
     }
 
     if (input.wasPressedCode('Escape')) {
-      this.game.exitEditor({ playtest: false });
+      stopPlaytestTransition(this.game);
     }
 
     if ((input.isDownCode('ControlLeft') || input.isDownCode('ControlRight')) && input.wasPressedCode('KeyZ')) {
@@ -1531,7 +1530,7 @@ export default class Editor {
       return;
     }
     if (input.wasGamepadPressed('cancel')) {
-      this.game.exitEditor({ playtest: false });
+      stopPlaytestTransition(this.game);
       return;
     }
 
@@ -1548,7 +1547,7 @@ export default class Editor {
         return;
       }
       if (this.isPointInBounds(this.lastPointer.x, this.lastPointer.y, this.playButtonBounds)) {
-        this.game.exitEditor({ playtest: true });
+        startPlaytestTransition(this.game);
         return;
       }
     }
@@ -1768,7 +1767,7 @@ Level size:`, `${current.width}x${current.height}`);
         await this.saveLevelToStorage();
       }
     }
-    this.game.exitEditor({ playtest: false, toTitle: true });
+    stopPlaytestTransition(this.game, { toTitle: true });
   }
 
   openFileDialog() {
@@ -4662,7 +4661,7 @@ Level size:`, `${current.width}x${current.height}`);
       if (this.playtestPressTimer) {
         clearTimeout(this.playtestPressTimer);
         this.playtestPressTimer = null;
-        this.game.exitEditor({ playtest: true });
+        startPlaytestTransition(this.game);
       }
       return;
     }
@@ -5097,7 +5096,7 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   startPlaytestFromCursor() {
-    this.game.exitEditor({ playtest: true });
+    startPlaytestTransition(this.game);
   }
 
   restorePlaytestSpawn() {
