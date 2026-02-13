@@ -5,6 +5,18 @@ import { UI_SUITE, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
+import {
+  clampZoom,
+  applyZoomStep,
+  startPan,
+  movePan,
+  endPan,
+  startPinch,
+  movePinch,
+  endPinch,
+  worldToScreen as viewportWorldToScreen,
+  screenToWorld as viewportScreenToWorld
+} from '../ui/shared/viewportController.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -334,7 +346,7 @@ export default class Editor {
     this.dragging = false;
     this.dragMode = null;
     this.dragStart = null;
-    this.panStart = null;
+    this.panStart = endPan();
     this.zoomStart = null;
     this.gestureStart = null;
     this.dragButton = null;
@@ -673,7 +685,7 @@ export default class Editor {
     this.dragMode = null;
     this.dragButton = null;
     this.dragSource = null;
-    this.panStart = null;
+    this.panStart = endPan();
     this.zoomStart = null;
     this.gestureStart = null;
     this.pendingPointer = null;
@@ -4183,7 +4195,7 @@ Level size:`, `${current.width}x${current.height}`);
     this.moveSelection = null;
     this.moveTarget = null;
     if (mode === 'pan') {
-      this.panStart = { x: this.lastPointer.x, y: this.lastPointer.y, camX: this.camera.x, camY: this.camera.y };
+      this.panStart = startPan({ x: this.lastPointer.x, y: this.lastPointer.y, offsetX: this.camera.x, offsetY: this.camera.y });
       return;
     }
     if (mode === 'zoom') {
@@ -4201,7 +4213,7 @@ Level size:`, `${current.width}x${current.height}`);
         this.moveTarget = { x: tileX, y: tileY };
         return;
       }
-      this.panStart = { x: this.lastPointer.x, y: this.lastPointer.y, camX: this.camera.x, camY: this.camera.y };
+      this.panStart = startPan({ x: this.lastPointer.x, y: this.lastPointer.y, offsetX: this.camera.x, offsetY: this.camera.y });
       this.dragMode = 'pan';
       return;
     }
@@ -4223,7 +4235,7 @@ Level size:`, `${current.width}x${current.height}`);
     if (this.dragMode === 'pan') {
       this.dragging = false;
       this.dragMode = null;
-      this.panStart = null;
+      this.panStart = endPan();
       this.endPrecisionZoom();
       return;
     }
@@ -4603,10 +4615,11 @@ Level size:`, `${current.width}x${current.height}`);
     if (!this.dragging) return;
 
     if (this.dragMode === 'pan' && this.panStart) {
-      const dx = (payload.x - this.panStart.x) / this.zoom;
-      const dy = (payload.y - this.panStart.y) / this.zoom;
-      this.camera.x = this.panStart.camX - dx;
-      this.camera.y = this.panStart.camY - dy;
+      const panResult = movePan(this.panStart, payload, { zoom: this.zoom, scaleWithZoom: true });
+      if (panResult) {
+        this.camera.x = panResult.offsetX;
+        this.camera.y = panResult.offsetY;
+      }
       this.clampCamera();
       return;
     }
@@ -4761,38 +4774,41 @@ Level size:`, `${current.width}x${current.height}`);
     if (!this.active) return;
     this.dragging = false;
     this.dragMode = null;
-    this.panStart = null;
+    this.panStart = endPan();
     this.zoomStart = null;
     if (this.longPressTimer) {
       clearTimeout(this.longPressTimer);
       this.longPressTimer = null;
     }
     this.pendingPointer = null;
-    this.gestureStart = {
+    this.gestureStart = startPinch({
       x: payload.x,
       y: payload.y,
-      camX: this.camera.x,
-      camY: this.camera.y,
+      distance: payload.distance,
       zoom: this.zoom,
-      distance: payload.distance
-    };
+      offsetX: this.camera.x,
+      offsetY: this.camera.y
+    });
   }
 
   handleGestureMove(payload) {
     if (!this.active || !this.gestureStart) return;
-    const zoomFactor = payload.distance / this.gestureStart.distance;
-    this.setZoom(this.gestureStart.zoom * zoomFactor, payload.x, payload.y);
-    const dx = (payload.x - this.gestureStart.x) / this.zoom;
-    const dy = (payload.y - this.gestureStart.y) / this.zoom;
-    this.camera.x = this.gestureStart.camX - dx;
-    this.camera.y = this.gestureStart.camY - dy;
+    const pinchResult = movePinch(this.gestureStart, payload, {
+      minZoom: EDITOR_MIN_ZOOM,
+      maxZoom: EDITOR_MAX_ZOOM,
+      scaleWithZoom: true
+    });
+    if (!pinchResult) return;
+    this.setZoom(pinchResult.zoom, payload.x, payload.y);
+    this.camera.x = pinchResult.offsetX;
+    this.camera.y = pinchResult.offsetY;
     this.clampCamera();
     this.sanitizeView('handleGestureMove');
   }
 
   handleGestureEnd() {
     if (!this.active) return;
-    this.gestureStart = null;
+    this.gestureStart = endPinch();
   }
 
   handleWheel(payload) {
@@ -5837,13 +5853,22 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   adjustZoom(delta, anchorX, anchorY) {
-    this.setZoom(this.zoom + delta * 0.02, anchorX, anchorY);
+    const nextZoom = applyZoomStep(this.zoom, delta, {
+      minZoom: EDITOR_MIN_ZOOM,
+      maxZoom: EDITOR_MAX_ZOOM,
+      step: 0.02
+    });
+    this.setZoom(nextZoom, anchorX, anchorY);
   }
 
   setZoom(nextZoom, anchorX, anchorY) {
     const safeAnchorX = Number.isFinite(anchorX) ? anchorX : (this.game.canvas?.width || 0) * 0.5;
     const safeAnchorY = Number.isFinite(anchorY) ? anchorY : (this.game.canvas?.height || 0) * 0.5;
-    const clamped = Math.min(EDITOR_MAX_ZOOM, Math.max(EDITOR_MIN_ZOOM, Number.isFinite(nextZoom) ? nextZoom : 1));
+    const clamped = clampZoom(nextZoom, {
+      minZoom: EDITOR_MIN_ZOOM,
+      maxZoom: EDITOR_MAX_ZOOM,
+      fallbackZoom: 1
+    });
     if (Math.abs(clamped - this.zoom) < 0.001) {
       this.sanitizeView('setZoom');
       return;
@@ -5857,17 +5882,11 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   worldToScreen(x, y) {
-    return {
-      x: (x - this.camera.x) * this.zoom,
-      y: (y - this.camera.y) * this.zoom
-    };
+    return viewportWorldToScreen(x, y, { zoom: this.zoom, offsetX: this.camera.x, offsetY: this.camera.y });
   }
 
   screenToWorld(x, y) {
-    return {
-      x: x / this.zoom + this.camera.x,
-      y: y / this.zoom + this.camera.y
-    };
+    return viewportScreenToWorld(x, y, { zoom: this.zoom, offsetX: this.camera.x, offsetY: this.camera.y });
   }
 
   screenToTile(x, y) {

@@ -29,6 +29,15 @@ import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
+import {
+  applyZoomStep,
+  startPan,
+  movePan,
+  endPan,
+  startPinch,
+  movePinch,
+  endPinch
+} from './shared/viewportController.js';
 
 
 export default class PixelStudio {
@@ -119,7 +128,7 @@ export default class PixelStudio {
     this.cloneSource = null;
     this.cloneOffset = null;
     this.cloneSourcePixels = null;
-    this.panStart = null;
+    this.panStart = endPan();
     this.longPressTimer = null;
     this.cursor = { row: 0, col: 0, x: 0, y: 0 };
     this.gamepadCursor = { x: 0, y: 0, active: false, initialized: false };
@@ -415,7 +424,7 @@ export default class PixelStudio {
   resetTransientInteractionState() {
     this.stopGamepadDraw();
     this.cancelLongPress();
-    this.panStart = null;
+    this.panStart = endPan();
     this.menuScrollDrag = null;
     this.gesture = null;
     this.selectionContextMenu = null;
@@ -1108,7 +1117,13 @@ export default class PixelStudio {
   }
 
   zoomBy(delta) {
-    this.view.zoomIndex = clamp(this.view.zoomIndex + delta, 0, this.view.zoomLevels.length - 1);
+    const clamped = applyZoomStep(this.view.zoomIndex, delta, {
+      minZoom: 0,
+      maxZoom: this.view.zoomLevels.length - 1,
+      step: 1,
+      fallbackZoom: this.view.zoomIndex
+    });
+    this.view.zoomIndex = Math.round(clamped);
   }
 
   updateCursorPosition() {
@@ -1146,7 +1161,7 @@ export default class PixelStudio {
     if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
       this.setInputMode('canvas');
       if (this.spaceDown || button === 1 || button === 2) {
-        this.panStart = { x: payload.x, y: payload.y, panX: this.view.panX, panY: this.view.panY };
+        this.panStart = startPan({ x: payload.x, y: payload.y, offsetX: this.view.panX, offsetY: this.view.panY });
         return;
       }
       const point = this.getGridCellFromScreen(payload.x, payload.y);
@@ -1175,8 +1190,11 @@ export default class PixelStudio {
       return;
     }
     if (this.panStart && payload.buttons) {
-      this.view.panX = this.panStart.panX + (payload.x - this.panStart.x);
-      this.view.panY = this.panStart.panY + (payload.y - this.panStart.y);
+      const panResult = movePan(this.panStart, payload, { scaleWithZoom: false });
+      if (panResult) {
+        this.view.panX = panResult.offsetX;
+        this.view.panY = panResult.offsetY;
+      }
       return;
     }
     const point = this.getGridCellFromScreen(payload.x, payload.y);
@@ -1193,7 +1211,7 @@ export default class PixelStudio {
       return;
     }
     if (this.panStart) {
-      this.panStart = null;
+      this.panStart = endPan();
     }
     this.cancelLongPress();
     this.handleToolPointerUp();
@@ -1208,6 +1226,14 @@ export default class PixelStudio {
     if (!this.canvasBounds) return;
     if (!payload?.distance) return;
     this.gesture = {
+      pinch: startPinch({
+        x: payload.x,
+        y: payload.y,
+        distance: payload.distance,
+        zoom: this.view.zoomLevels[this.view.zoomIndex],
+        offsetX: this.view.panX,
+        offsetY: this.view.panY
+      }),
       startDistance: payload.distance,
       startZoomIndex: this.view.zoomIndex,
       startX: payload.x,
@@ -1221,7 +1247,12 @@ export default class PixelStudio {
     if (!this.gesture?.startDistance) return;
     const scale = payload.distance / this.gesture.startDistance;
     const levels = this.view.zoomLevels;
-    const target = levels[this.gesture.startZoomIndex] * scale;
+    const pinchResult = movePinch(this.gesture.pinch, payload, {
+      minZoom: levels[0],
+      maxZoom: levels[levels.length - 1],
+      scaleWithZoom: false
+    });
+    const target = pinchResult ? pinchResult.zoom : levels[this.gesture.startZoomIndex] * scale;
     let closestIndex = 0;
     let closest = Infinity;
     levels.forEach((value, index) => {
@@ -1232,11 +1263,17 @@ export default class PixelStudio {
       }
     });
     this.view.zoomIndex = closestIndex;
-    this.view.panX = this.gesture.startPanX + (payload.x - this.gesture.startX);
-    this.view.panY = this.gesture.startPanY + (payload.y - this.gesture.startY);
+    if (pinchResult) {
+      this.view.panX = pinchResult.offsetX;
+      this.view.panY = pinchResult.offsetY;
+    } else {
+      this.view.panX = this.gesture.startPanX + (payload.x - this.gesture.startX);
+      this.view.panY = this.gesture.startPanY + (payload.y - this.gesture.startY);
+    }
   }
 
   handleGestureEnd() {
+    if (this.gesture) this.gesture.pinch = endPinch();
     this.gesture = null;
   }
 

@@ -30,6 +30,14 @@ import { CACHED_SOUND_FONT_KEY, DEFAULT_PRELOAD_PROGRAMS } from './midi/io/stora
 import { initializeComposerState } from './midi/state/composerState.js';
 import { registerComposerInputHandlers } from './midi/input/composerInputHandlers.js';
 import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
+import {
+  clampZoom,
+  startPan,
+  movePan,
+  startPinch,
+  movePinch,
+  endPinch
+} from './shared/viewportController.js';
 
 const NOTE_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const SCALE_LIBRARY = [
@@ -4039,7 +4047,8 @@ export default class MidiComposer {
         this.dragState.mode = 'song-pan';
       }
       if (this.dragState.mode === 'song-pan' && this.songTimelineBounds) {
-        const nextOffset = this.dragState.startOffsetX + dx;
+        const panResult = movePan(this.dragState.panState, payload, { scaleWithZoom: false });
+        const nextOffset = panResult ? panResult.offsetX : this.dragState.startOffsetX + dx;
         this.ensureTimelinePanCapacity(nextOffset, this.songTimelineBounds.w, this.songTimelineBounds.cellWidth);
         this.songTimelineOffsetX = this.clampTimelineOffsetX(
           nextOffset,
@@ -4062,7 +4071,8 @@ export default class MidiComposer {
         }
         this.dragState.mode = 'song-pan';
         if (this.songTimelineBounds) {
-          const nextOffset = this.dragState.startOffsetX + dx;
+          const panResult = movePan(this.dragState.panState, payload, { scaleWithZoom: false });
+        const nextOffset = panResult ? panResult.offsetX : this.dragState.startOffsetX + dx;
           this.ensureTimelinePanCapacity(nextOffset, this.songTimelineBounds.w, this.songTimelineBounds.cellWidth);
           this.songTimelineOffsetX = this.clampTimelineOffsetX(
             nextOffset,
@@ -4186,7 +4196,8 @@ export default class MidiComposer {
         this.dragState.moved = true;
       }
       if (this.dragState.moved && this.songTimelineBounds) {
-        const nextOffset = this.dragState.startOffsetX + dx;
+        const panResult = movePan(this.dragState.panState, payload, { scaleWithZoom: false });
+        const nextOffset = panResult ? panResult.offsetX : this.dragState.startOffsetX + dx;
         this.ensureTimelinePanCapacity(nextOffset, this.songTimelineBounds.w, this.songTimelineBounds.cellWidth);
         this.songTimelineOffsetX = this.clampTimelineOffsetX(
           nextOffset,
@@ -4286,8 +4297,11 @@ export default class MidiComposer {
         }
       }
       if (this.dragState.moved) {
-        this.gridOffset.x = this.dragState.startOffsetX + dx;
-        this.gridOffset.y = this.dragState.startOffsetY + dy;
+        const panResult = movePan(this.dragState.panState, payload, { scaleWithZoom: false });
+        if (panResult) {
+          this.gridOffset.x = panResult.offsetX;
+          this.gridOffset.y = panResult.offsetY;
+        }
         this.ensureGridPanCapacity(this.gridOffset.x);
         const { gridH, w, h } = this.gridBounds;
         const gridW = this.getExpandedGridWidth();
@@ -4325,8 +4339,11 @@ export default class MidiComposer {
         this.dragState.moved = true;
       }
       if (this.dragState.moved) {
-        this.gridOffset.x = this.dragState.startOffsetX + dx;
-        this.gridOffset.y = this.dragState.startOffsetY + dy;
+        const panResult = movePan(this.dragState.panState, payload, { scaleWithZoom: false });
+        if (panResult) {
+          this.gridOffset.x = panResult.offsetX;
+          this.gridOffset.y = panResult.offsetY;
+        }
         this.ensureGridPanCapacity(this.gridOffset.x);
         const { gridH, w, h } = this.gridBounds;
         const gridW = this.getExpandedGridWidth();
@@ -4571,7 +4588,8 @@ export default class MidiComposer {
       const delta = payload.deltaY;
       if (modifiers.meta) {
         const zoomFactor = delta > 0 ? 0.9 : 1.1;
-        this.setSongTimelineZoom(this.gridZoomX * zoomFactor);
+        const nextZoom = clampZoom(this.gridZoomX * zoomFactor, this.getGridZoomLimitsX());
+        this.setSongTimelineZoom(nextZoom);
       } else {
         const nextOffset = this.songTimelineOffsetX - delta;
         this.ensureTimelinePanCapacity(nextOffset, this.songTimelineBounds.w, this.songTimelineBounds.cellWidth);
@@ -4603,6 +4621,14 @@ export default class MidiComposer {
       if (!this.gridBounds) return;
       if (!this.pointInBounds(payload.x, payload.y, this.gridBounds)) return;
       this.gridGesture = {
+        pinch: startPinch({
+          x: payload.x,
+          y: payload.y,
+          distance: payload.distance,
+          zoom: this.gridZoomX,
+          offsetX: this.gridOffset.x,
+          offsetY: this.gridOffset.y
+        }),
         startDistance: payload.distance,
         startZoomX: this.gridZoomX,
         startZoomY: this.gridZoomY,
@@ -4627,6 +4653,14 @@ export default class MidiComposer {
       if (!this.songTimelineBounds) return;
       if (!this.pointInBounds(payload.x, payload.y, this.songTimelineBounds)) return;
       this.songGesture = {
+        pinch: startPinch({
+          x: payload.x,
+          y: payload.y,
+          distance: payload.distance,
+          zoom: this.gridZoomX,
+          offsetX: this.songTimelineOffsetX,
+          offsetY: 0
+        }),
         startDistance: payload.distance,
         startZoomX: this.gridZoomX,
         startOffsetX: this.songTimelineOffsetX,
@@ -4646,7 +4680,8 @@ export default class MidiComposer {
       const scale = payload.distance / this.gridGesture.startDistance;
       const { minZoom, maxZoom } = this.getGridZoomLimits(this.gridGesture.rows || 1);
       const zoomXLimits = this.getGridZoomLimitsX();
-      const nextZoomX = clamp(this.gridGesture.startZoomX * scale, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+      const pinch = movePinch(this.gridGesture.pinch, payload, zoomXLimits);
+      const nextZoomX = pinch ? pinch.zoom : clamp(this.gridGesture.startZoomX * scale, zoomXLimits.minZoom, zoomXLimits.maxZoom);
       const nextZoomY = clamp(this.gridGesture.startZoomY * scale, minZoom, maxZoom);
       const baseCellWidth = this.gridGesture.cellWidth / this.gridGesture.startZoomX;
       const baseCellHeight = this.gridGesture.cellHeight / this.gridGesture.startZoomY;
@@ -4671,7 +4706,8 @@ export default class MidiComposer {
     if (this.songGesture?.startDistance) {
       const scale = payload.distance / this.songGesture.startDistance;
       const zoomXLimits = this.getGridZoomLimitsX();
-      const nextZoomX = clamp(this.songGesture.startZoomX * scale, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+      const pinch = movePinch(this.songGesture.pinch, payload, zoomXLimits);
+      const nextZoomX = pinch ? pinch.zoom : clamp(this.songGesture.startZoomX * scale, zoomXLimits.minZoom, zoomXLimits.maxZoom);
       const baseCellWidth = this.songGesture.cellWidth / this.songGesture.startZoomX;
       const nextCellWidth = baseCellWidth * nextZoomX;
       const coordX = (this.songGesture.startX - this.songGesture.originX) / this.songGesture.cellWidth;
@@ -4688,6 +4724,8 @@ export default class MidiComposer {
   }
 
   handleGestureEnd() {
+    if (this.gridGesture) this.gridGesture.pinch = endPinch();
+    if (this.songGesture) this.songGesture.pinch = endPinch();
     this.gridGesture = null;
     this.songGesture = null;
   }
