@@ -1,13 +1,9 @@
 import Minimap from '../world/Minimap.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsList, vfsSave } from '../ui/vfs.js';
-import { UI_SUITE, formatMenuLabel } from '../ui/uiSuite.js';
+import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from '../ui/uiSuite.js';
+import { ROOM_SIZE_PRESETS, openNewDocumentDialog } from '../ui/editorFileMenu.js';
 
-const ROOM_SIZE_PRESETS = [
-  [1, 1], [2, 1], [3, 1], [4, 1],
-  [1, 2], [1, 3], [1, 4],
-  [2, 2], [3, 3], [4, 4]
-];
 const ROOM_BASE_WIDTH = 38;
 const ROOM_BASE_HEIGHT = 18;
 
@@ -876,7 +872,11 @@ export default class Editor {
     }
 
     if (input.wasPressedCode('Escape')) {
-      this.game.exitEditor({ playtest: false });
+      if (this.getActivePanelTab() === 'file') {
+        this.closeFileMenu();
+      } else {
+        this.game.exitEditor({ playtest: false });
+      }
     }
 
     if ((input.isDownCode('ControlLeft') || input.isDownCode('ControlRight')) && input.wasPressedCode('KeyZ')) {
@@ -947,6 +947,50 @@ export default class Editor {
     await this.closeEditorWithPrompt();
   }
 
+  getEditorFileMenuItems() {
+    const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
+    return buildStandardFileMenu({
+      labels: { open: 'Open', export: 'Export', import: 'Import' },
+      actions: {
+        new: () => this.newLevelDocument(),
+        save: () => this.saveLevelToStorage(),
+        'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
+        open: () => this.loadLevelFromStorage(),
+        export: () => this.saveToFile(),
+        import: () => this.openFileDialog(),
+        undo: () => this.undo(),
+        redo: () => this.redo()
+      },
+      extras: [
+        { id: 'resize-level', label: 'Resize', onClick: () => this.resizeLevelDocument() },
+        { divider: true },
+        { id: 'playtest', label: 'Playtest', onClick: () => this.game.exitEditor({ playtest: true }) },
+        ...(spawnTile
+          ? [{
+            id: 'spawn-point',
+            label: 'Spawn Point',
+            onClick: () => {
+              this.setTileType(spawnTile);
+              this.mode = 'tile';
+              this.tileTool = 'paint';
+            }
+          }]
+          : []),
+        {
+          id: 'start-everything',
+          label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
+          onClick: () => {
+            this.startWithEverything = !this.startWithEverything;
+          }
+        },
+        { id: 'random-level', label: 'Random Level', onClick: () => this.promptRandomLevel() },
+        { divider: true },
+        { id: 'close-menu', label: 'Close Menu', onClick: () => this.closeFileMenu() },
+        { id: 'exit-main', label: 'Exit to Main Menu', onClick: () => this.exitToMainMenu() }
+      ]
+    });
+  }
+
   getPanelConfig(tabId, { includeExtras = false } = {}) {
     const tileToolButtons = [
       { id: 'paint', label: 'Paint', tooltip: 'Paint tiles. (Q)' },
@@ -968,110 +1012,7 @@ export default class Editor {
         onClick: () => this.game.exitEditor({ playtest: true })
       }];
     } else if (tabId === 'file') {
-      items = [
-        {
-          id: 'new-level',
-          label: 'New',
-          tooltip: 'Create a new level',
-          onClick: () => this.newLevelDocument()
-        },
-        {
-          id: 'save-storage',
-          label: 'Save',
-          tooltip: 'Save level to browser storage',
-          onClick: () => this.saveLevelToStorage()
-        },
-        {
-          id: 'save-as-storage',
-          label: 'Save As',
-          tooltip: 'Save level with a new name',
-          onClick: () => this.saveLevelToStorage({ forceSaveAs: true })
-        },
-        {
-          id: 'load-storage',
-          label: 'Open',
-          tooltip: 'Open level from browser storage',
-          onClick: () => this.loadLevelFromStorage()
-        },
-        {
-          id: 'resize-level',
-          label: 'Resize',
-          tooltip: 'Resize level canvas',
-          onClick: () => this.resizeLevelDocument()
-        },
-        { id: 'divider-1', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'export-json',
-          label: 'Export',
-          tooltip: 'Export world JSON',
-          onClick: () => this.saveToFile()
-        },
-        {
-          id: 'import-json',
-          label: 'Import',
-          tooltip: 'Import world JSON',
-          onClick: () => this.openFileDialog()
-        },
-        { id: 'divider-2', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'undo',
-          label: 'Undo',
-          tooltip: 'Undo last change (Ctrl+Z)',
-          onClick: () => this.undo()
-        },
-        {
-          id: 'redo',
-          label: 'Redo',
-          tooltip: 'Redo last change (Ctrl+Y)',
-          onClick: () => this.redo()
-        },
-        { id: 'divider-3', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'playtest',
-          label: 'Playtest',
-          tooltip: 'Start playtest from spawn',
-          onClick: () => this.game.exitEditor({ playtest: true })
-        },
-        ...(spawnTile
-          ? [{
-            id: 'spawn-point',
-            label: 'Spawn Point',
-            tooltip: 'Place the player spawn point',
-            onClick: () => {
-              this.setTileType(spawnTile);
-              this.mode = 'tile';
-              this.tileTool = 'paint';
-            }
-          }]
-          : []),
-        {
-          id: 'start-everything',
-          label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
-          tooltip: 'Toggle playtest loadout',
-          onClick: () => {
-            this.startWithEverything = !this.startWithEverything;
-          }
-        },
-        {
-          id: 'random-level',
-          label: 'Random Level',
-          tooltip: 'Create a random level layout',
-          onClick: () => this.promptRandomLevel()
-        },
-        { id: 'divider-4', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'close-menu',
-          label: 'Close Menu',
-          tooltip: 'Close file menu',
-          onClick: () => this.closeFileMenu()
-        },
-        {
-          id: 'exit-main',
-          label: 'Exit to Main Menu',
-          tooltip: 'Exit editor to title',
-          onClick: () => this.exitToMainMenu()
-        }
-      ];
+      items = this.getEditorFileMenuItems();
       columns = 2;
     } else if (tabId === 'tiles') {
       items = DEFAULT_TILE_TYPES.map((tile) => ({
@@ -1750,16 +1691,24 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   async newLevelDocument() {
-    this.randomLevelDialog.mode = 'new';
-    this.randomLevelDialog.open = true;
-    this.randomLevelDialog.justOpened = true;
-    this.randomLevelDialog.focus = 'width';
-    this.randomLevelSlider.active = 'width';
-    this.randomLevelSliderRepeat = 0;
-    this.randomLevelFocusRepeat = 0;
-    this.randomLevelSize.width = this.newLevelSizeDraft.width;
-    this.randomLevelSize.height = this.newLevelSizeDraft.height;
+    const result = await openNewDocumentDialog('level', {
+      name: this.currentDocumentRef?.name || `new-level-${Date.now()}`,
+      width: this.newLevelSizeDraft.width,
+      height: this.newLevelSizeDraft.height,
+      roomBaseWidth: ROOM_BASE_WIDTH,
+      roomBaseHeight: ROOM_BASE_HEIGHT
+    });
+    if (!result) return;
+    const data = this.buildEmptyLevelData(result.width, result.height);
+    this.game.applyWorldData(data);
+    this.newLevelSizeDraft = { width: data.width, height: data.height };
+    this.currentDocumentRef = { folder: 'levels', name: result.name };
+    this.markSavedSnapshot();
+    this.resetView();
+    this.syncPreviewMinimap();
+    this.closeFileMenu();
   }
+
 
   async closeEditorWithPrompt() {
     if (this.hasUnsavedChanges()) {
@@ -1769,326 +1718,6 @@ Level size:`, `${current.width}x${current.height}`);
       }
     }
     this.game.exitEditor({ playtest: false, toTitle: true });
-  }
-
-  openFileDialog() {
-    this.fileInput.click();
-  }
-
-  saveToFile() {
-    const data = this.game.buildWorldData();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = 'chainsaw-world.json';
-    anchor.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-
-  ensurePixelArtStore() {
-    if (!this.game.world.pixelArt) {
-      this.game.world.pixelArt = { tiles: {} };
-    }
-    if (!this.game.world.pixelArt.tiles) {
-      this.game.world.pixelArt.tiles = {};
-    }
-    return this.game.world.pixelArt;
-  }
-
-  getPixelArtData(tileChar) {
-    if (!tileChar) return null;
-    const store = this.ensurePixelArtStore();
-    if (!store.tiles[tileChar]) {
-      store.tiles[tileChar] = {
-        size: PIXEL_GRID_SIZE,
-        fps: 6,
-        frames: [Array(PIXEL_GRID_SIZE * PIXEL_GRID_SIZE).fill(null)]
-      };
-    }
-    return store.tiles[tileChar];
-  }
-
-  getActivePixelFrame() {
-    const tileChar = this.pixelTarget?.char;
-    const pixelData = this.getPixelArtData(tileChar);
-    if (!pixelData) return null;
-    if (!Array.isArray(pixelData.frames) || pixelData.frames.length === 0) {
-      pixelData.frames = [Array(pixelData.size * pixelData.size).fill(null)];
-    }
-    if (this.pixelFrameIndex >= pixelData.frames.length) {
-      this.pixelFrameIndex = 0;
-    }
-    const frame = pixelData.frames[this.pixelFrameIndex];
-    return { pixelData, frame };
-  }
-
-  setPixelCell(cellX, cellY, color) {
-    const active = this.getActivePixelFrame();
-    if (!active) return;
-    const { pixelData, frame } = active;
-    const size = pixelData.size || PIXEL_GRID_SIZE;
-    if (cellX < 0 || cellY < 0 || cellX >= size || cellY >= size) return;
-    const index = cellY * size + cellX;
-    if (frame[index] === color) return;
-    frame[index] = color;
-    this.persistAutosave();
-  }
-
-  addPixelFrame() {
-    const active = this.getActivePixelFrame();
-    if (!active) return;
-    const { pixelData } = active;
-    const size = pixelData.size || PIXEL_GRID_SIZE;
-    pixelData.frames.push(Array(size * size).fill(null));
-    this.pixelFrameIndex = pixelData.frames.length - 1;
-    this.persistAutosave();
-  }
-
-  removePixelFrame() {
-    const active = this.getActivePixelFrame();
-    if (!active) return;
-    const { pixelData } = active;
-    if (pixelData.frames.length <= 1) return;
-    pixelData.frames.splice(this.pixelFrameIndex, 1);
-    this.pixelFrameIndex = clamp(this.pixelFrameIndex, 0, pixelData.frames.length - 1);
-    this.persistAutosave();
-  }
-
-  cyclePixelFrame(direction) {
-    const active = this.getActivePixelFrame();
-    if (!active) return;
-    const total = active.pixelData.frames.length;
-    this.pixelFrameIndex = ((this.pixelFrameIndex + direction) % total + total) % total;
-  }
-
-  adjustPixelFps(delta) {
-    const active = this.getActivePixelFrame();
-    if (!active) return;
-    active.pixelData.fps = clamp((active.pixelData.fps || 6) + delta, 1, 24);
-    this.persistAutosave();
-  }
-
-
-  ensureTriggers() {
-    if (!this.game.world.triggers) {
-      this.game.world.triggers = [];
-    }
-    this.game.world.triggers.forEach((trigger) => this.normalizeTrigger(trigger));
-    return this.game.world.triggers;
-  }
-
-  addTriggerZone(rect) {
-    const triggers = this.ensureTriggers();
-    const trigger = {
-      id: `trigger-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
-      rect,
-      condition: TRIGGER_CONDITIONS[0],
-      actions: []
-    };
-    triggers.push(trigger);
-    this.selectedTriggerId = trigger.id;
-    this.triggerEditorOpen = true;
-    this.triggerEditorView = 'main';
-    this.triggerActionDraft = null;
-    this.triggerEditingActionId = null;
-    this.persistAutosave();
-  }
-
-  removeTriggerAt(tileX, tileY) {
-    const triggers = this.ensureTriggers();
-    const index = triggers.findIndex((trigger) => {
-      const [x, y, w, h] = trigger.rect;
-      return tileX >= x && tileX < x + w && tileY >= y && tileY < y + h;
-    });
-    if (index === -1) return false;
-    const [removed] = triggers.splice(index, 1);
-    if (removed?.id === this.selectedTriggerId) {
-      this.selectedTriggerId = triggers[0]?.id || null;
-      this.triggerEditorOpen = Boolean(this.selectedTriggerId);
-      this.triggerEditorView = 'main';
-      this.triggerActionDraft = null;
-      this.triggerEditingActionId = null;
-    }
-    this.persistAutosave();
-    return true;
-  }
-
-  getSelectedTrigger() {
-    if (!this.selectedTriggerId) return null;
-    const triggers = this.ensureTriggers();
-    const trigger = triggers.find((entry) => entry.id === this.selectedTriggerId) || null;
-    if (trigger) this.normalizeTrigger(trigger);
-    return trigger;
-  }
-
-  createTriggerAction(typeId) {
-    const base = {
-      id: `action-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
-      type: typeId,
-      params: {}
-    };
-    switch (typeId) {
-      case 'load-level':
-        base.params = { levelName: 'Level 1' };
-        break;
-      case 'kill-enemy':
-        base.params = { target: TRIGGER_ENEMY_TARGET_OPTIONS[0], tag: 'boss' };
-        break;
-      case 'spawn-enemy':
-        base.params = { enemyType: STANDARD_ENEMY_TYPES[0]?.id || 'practice', offsetX: 0, offsetY: 0 };
-        break;
-      case 'heal-player':
-        base.params = { amount: 2 };
-        break;
-      case 'heal-enemy':
-        base.params = { target: TRIGGER_ENEMY_TARGET_OPTIONS[0], amount: 2 };
-        break;
-      case 'save-game':
-        base.params = { slot: 1 };
-        break;
-      case 'add-item':
-        base.params = { itemId: TRIGGER_ITEM_OPTIONS[0], quantity: 1 };
-        break;
-      case 'play-animation':
-        base.params = { animationId: TRIGGER_ANIMATION_OPTIONS[0], target: 'zone' };
-        break;
-      case 'move-entity':
-        base.params = { target: TRIGGER_TARGET_OPTIONS[0], dx: 0, dy: 0 };
-        break;
-      case 'fade-in':
-      case 'fade-out':
-      case 'fade-out-music':
-        base.params = { durationMs: 1000 };
-        break;
-      case 'fade-in-music':
-        base.params = { musicId: MUSIC_TRACKS[0]?.id || 'ambient-rift', durationMs: 1000 };
-        break;
-      case 'display-text':
-        base.params = { text: TRIGGER_TEXT_OPTIONS[0], durationMs: 2000 };
-        break;
-      case 'wait':
-        base.params = { durationMs: 500 };
-        break;
-      default:
-        base.params = {};
-    }
-    return base;
-  }
-
-
-  openTriggerActionEditor(action, { isNew = false } = {}) {
-    if (!action) return;
-    this.triggerActionDraft = JSON.parse(JSON.stringify(action));
-    this.triggerEditingActionId = isNew ? null : action.id;
-    this.triggerEditorView = 'edit-action';
-  }
-
-  commitTriggerActionDraft(trigger) {
-    if (!trigger || !this.triggerActionDraft) return;
-    if (this.triggerEditingActionId) {
-      const index = trigger.actions.findIndex((entry) => entry.id === this.triggerEditingActionId);
-      if (index >= 0) {
-        trigger.actions[index] = JSON.parse(JSON.stringify(this.triggerActionDraft));
-      }
-    } else {
-      trigger.actions.push(JSON.parse(JSON.stringify(this.triggerActionDraft)));
-    }
-    this.triggerEditorView = 'main';
-    this.triggerActionDraft = null;
-    this.triggerEditingActionId = null;
-    this.persistAutosave();
-  }
-
-  deleteEditingTriggerAction(trigger) {
-    if (!trigger || !this.triggerEditingActionId) return;
-    const index = trigger.actions.findIndex((entry) => entry.id === this.triggerEditingActionId);
-    if (index >= 0) trigger.actions.splice(index, 1);
-    this.triggerEditorView = 'main';
-    this.triggerActionDraft = null;
-    this.triggerEditingActionId = null;
-    this.persistAutosave();
-  }
-
-  normalizeTrigger(trigger) {
-    if (!trigger || typeof trigger !== 'object') return;
-    if (!Array.isArray(trigger.actions)) {
-      trigger.actions = [];
-      return;
-    }
-    trigger.actions = trigger.actions.map((action) => {
-      if (typeof action === 'string') {
-        const type = TRIGGER_ACTION_TYPES.find((entry) => entry.label === action)?.id || 'play-animation';
-        return this.createTriggerAction(type);
-      }
-      if (!action.type) {
-        action.type = 'play-animation';
-      }
-      if (!action.id) {
-        action.id = `action-${Date.now()}-${Math.floor(Math.random() * 9999)}`;
-      }
-      if (!action.params || typeof action.params !== 'object') {
-        action.params = {};
-      }
-      return action;
-    });
-  }
-
-  getTriggerLevelNames() {
-    const levels = vfsList('levels').map((entry) => entry.name);
-    return levels.length ? levels : ['Level 1'];
-  }
-
-  cycleOption(value, options, direction = 1) {
-    if (!Array.isArray(options) || options.length === 0) return value;
-    const index = options.indexOf(value);
-    const nextIndex = ((Math.max(index, 0) + direction) % options.length + options.length) % options.length;
-    return options[nextIndex];
-  }
-
-  adjustTriggerActionParam(action, key, delta, { min = -999, max = 999 } = {}) {
-    if (!action?.params) return;
-    const current = Number(action.params[key] || 0);
-    action.params[key] = clamp(current + delta, min, max);
-  }
-
-  formatTriggerActionSummary(action) {
-    if (!action) return '';
-    const params = action.params || {};
-    switch (action.type) {
-      case 'load-level':
-        return `Level: ${params.levelName || 'Level 1'}`;
-      case 'kill-enemy':
-        return `Target: ${params.target || 'nearest'}`;
-      case 'spawn-enemy':
-        return `Enemy: ${params.enemyType || 'practice'} @ (${params.offsetX || 0}, ${params.offsetY || 0})`;
-      case 'heal-player':
-        return `Amount: +${params.amount || 0}`;
-      case 'heal-enemy':
-        return `Target: ${params.target || 'nearest'} +${params.amount || 0}`;
-      case 'save-game':
-        return `Slot: ${params.slot || 1}`;
-      case 'add-item':
-        return `Item: ${params.itemId || 'item'} x${params.quantity || 1}`;
-      case 'play-animation':
-        return `${params.animationId || 'animation'} on ${params.target || 'zone'}`;
-      case 'move-entity':
-        return `${params.target || 'player'} by (${params.dx || 0}, ${params.dy || 0})`;
-      case 'fade-in':
-        return `Duration: ${params.durationMs || 0}ms`;
-      case 'fade-out':
-        return `Duration: ${params.durationMs || 0}ms`;
-      case 'display-text':
-        return `"${params.text || ''}" (${params.durationMs || 0}ms)`;
-      case 'wait':
-        return `${params.durationMs || 0}ms`;
-      case 'fade-out-music':
-        return `Duration: ${params.durationMs || 0}ms`;
-      case 'fade-in-music':
-        return `${params.musicId || 'ambient-rift'} (${params.durationMs || 0}ms)`;
-      default:
-        return 'No params';
-    }
   }
 
   async saveLevelToStorage(options = {}) {
@@ -6623,125 +6252,7 @@ Level size:`, `${current.width}x${current.height}`);
           }];
           columns = 1;
         } else if (activeTab === 'file') {
-          items = [
-            {
-              id: 'new-level',
-              label: 'New',
-              active: false,
-              tooltip: 'Create a new level',
-              onClick: () => this.newLevelDocument()
-            },
-            {
-              id: 'save-storage',
-              label: 'Save',
-              active: false,
-              tooltip: 'Save level to browser storage',
-              onClick: () => this.saveLevelToStorage()
-            },
-            {
-              id: 'save-as-storage',
-              label: 'Save As',
-              active: false,
-              tooltip: 'Save level with a new name',
-              onClick: () => this.saveLevelToStorage({ forceSaveAs: true })
-            },
-            {
-              id: 'load-storage',
-              label: 'Open',
-              active: false,
-              tooltip: 'Open level from browser storage',
-              onClick: () => this.loadLevelFromStorage()
-            },
-            {
-              id: 'resize-level',
-              label: 'Resize',
-              active: false,
-              tooltip: 'Resize level canvas',
-              onClick: () => this.resizeLevelDocument()
-            },
-            { id: 'divider-1', divider: true },
-            {
-              id: 'export-json',
-              label: 'Export',
-              active: false,
-              tooltip: 'Export world JSON',
-              onClick: () => this.saveToFile()
-            },
-            {
-              id: 'import-json',
-              label: 'Import',
-              active: false,
-              tooltip: 'Import world JSON',
-              onClick: () => this.openFileDialog()
-            },
-            { id: 'divider-2', divider: true },
-            {
-              id: 'undo',
-              label: 'Undo',
-              active: false,
-              tooltip: 'Undo last change (Ctrl+Z)',
-              onClick: () => this.undo()
-            },
-            {
-              id: 'redo',
-              label: 'Redo',
-              active: false,
-              tooltip: 'Redo last change (Ctrl+Y)',
-              onClick: () => this.redo()
-            },
-            { id: 'divider-3', divider: true },
-            {
-              id: 'playtest',
-              label: 'Playtest',
-              active: false,
-              tooltip: 'Start playtest from spawn',
-              onClick: () => this.game.exitEditor({ playtest: true })
-            },
-            ...(spawnTile
-              ? [{
-                id: 'spawn-point',
-                label: 'Spawn point',
-                active: this.tileType?.special === 'spawn',
-                tooltip: 'Place the player spawn point',
-                onClick: () => {
-                  this.setTileType(spawnTile);
-                  this.mode = 'tile';
-                  this.tileTool = 'paint';
-                }
-              }]
-              : []),
-            {
-              id: 'start-everything',
-              label: `Start with everything: ${this.startWithEverything ? 'On' : 'Off'}`,
-              active: false,
-              tooltip: 'Toggle playtest loadout',
-              onClick: () => {
-                this.startWithEverything = !this.startWithEverything;
-              }
-            },
-            {
-              id: 'random-level',
-              label: 'Random level',
-              active: false,
-              tooltip: 'Create a random level layout',
-              onClick: () => this.promptRandomLevel()
-            },
-            { id: 'divider-4', divider: true },
-            {
-              id: 'close-menu',
-              label: 'Close Menu',
-              active: false,
-              tooltip: 'Close file menu',
-              onClick: () => this.closeFileMenu()
-            },
-            {
-              id: 'exit-main',
-              label: 'Exit to Main Menu',
-              active: false,
-              tooltip: 'Exit editor to title',
-              onClick: () => this.exitToMainMenu()
-            }
-          ];
+          items = this.getEditorFileMenuItems();
           columns = 1;
         } else if (activeTab === 'tiles') {
           items = DEFAULT_TILE_TYPES.map((tile) => ({
@@ -7048,32 +6559,7 @@ Level size:`, `${current.width}x${current.height}`);
           );
         });
 
-        if (activeTab === 'file') {
-          const footerH = Math.max(28, buttonHeight);
-          const footerY = contentY + contentHeight - footerH - 10;
-          const footerGap = 8;
-          const footerW = Math.floor((contentW - contentPadding * 2 - footerGap) / 2);
-          drawButton(
-            contentX + contentPadding,
-            footerY,
-            footerW,
-            footerH,
-            'Close Menu',
-            false,
-            () => this.closeFileMenu(),
-            'Close file menu'
-          );
-          drawButton(
-            contentX + contentPadding + footerW + footerGap,
-            footerY,
-            footerW,
-            footerH,
-            'Exit to Main Menu',
-            false,
-            () => this.exitToMainMenu(),
-            'Exit editor to title'
-          );
-        }
+        
 
       }
       if (!this.drawer.open) {
@@ -7244,113 +6730,7 @@ Level size:`, `${current.width}x${current.height}`);
         );
       });
 
-      if (activeTab === 'file') {
-        const footerH = 30;
-        const footerY = contentY + contentHeight - footerH - 10;
-        const footerGap = 8;
-        const footerW = Math.floor((contentW - contentPadding * 2 - footerGap) / 2);
-        drawButton(
-          contentX + contentPadding,
-          footerY,
-          footerW,
-          footerH,
-          'Close Menu',
-          false,
-          () => this.closeFileMenu(),
-          'Close file menu'
-        );
-        drawButton(
-          contentX + contentPadding + footerW + footerGap,
-          footerY,
-          footerW,
-          footerH,
-          'Exit to Main Menu',
-          false,
-          () => this.exitToMainMenu(),
-          'Exit editor to title'
-        );
-      }
-
-      const infoLines = [];
-      if (infoLines.length > 0) {
-      const infoHeight = infoLines.length * 18 + 12;
-      ctx.globalAlpha = 0.85;
-      const infoX = 12;
-      const infoY = 12;
-      ctx.fillStyle = 'rgba(0,0,0,0.7)';
-      ctx.fillRect(infoX, infoY, panelWidth, infoHeight);
-      ctx.strokeStyle = '#fff';
-      ctx.strokeRect(infoX, infoY, panelWidth, infoHeight);
-      ctx.fillStyle = '#fff';
-      infoLines.forEach((line, index) => {
-        ctx.fillText(line, infoX + 12, infoY + 22 + index * 18);
-      });
-      infoPanelBottom = infoY + infoHeight + 12;
-      }
-    }
-
-
-    if (this.triggerEditorOpen) {
-      const selected = this.getSelectedTrigger();
-      if (selected) {
-        const panelWidth = this.isMobileLayout() ? Math.min(width - 24, 440) : 420;
-        const panelHeight = this.isMobileLayout() ? Math.min(height - 24, 620) : 560;
-        const panelX = this.isMobileLayout() ? 12 : width - panelWidth - (this.isMobileLayout() ? 12 : 384);
-        const panelY = 12;
-        const levelNames = this.getTriggerLevelNames();
-        const enemyOptions = [...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES].map((entry) => entry.id);
-        const sectionButtonH = 40;
-        const rowGap = 8;
-        const draft = this.triggerActionDraft;
-
-        ctx.save();
-        ctx.fillStyle = 'rgba(15,18,22,0.95)';
-        ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
-        ctx.strokeStyle = 'rgba(255,180,80,0.95)';
-        ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
-        ctx.fillStyle = '#fff';
-        ctx.font = '15px Courier New';
-        ctx.fillText('Trigger Editor', panelX + 12, panelY + 22);
-
-        let y = panelY + 36;
-        if (this.triggerEditorView === 'main') {
-          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Add Condition', false, () => { this.triggerEditorView = 'pick-condition'; }, 'Choose trigger condition');
-          y += sectionButtonH + rowGap;
-          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Add Action', false, () => { this.triggerEditorView = 'pick-action'; }, 'Add action to trigger');
-          y += sectionButtonH + rowGap + 4;
-          ctx.font = '12px Courier New';
-          ctx.fillStyle = 'rgba(255,255,255,0.8)';
-          ctx.fillText(`Condition: ${selected.condition}`, panelX + 12, y + 10);
-          y += 16;
-          ctx.fillText('Actions (tap to edit)', panelX + 12, y + 10);
-          y += 14;
-          selected.actions.forEach((action, index) => {
-            const label = TRIGGER_ACTION_TYPES.find((entry) => entry.id === action.type)?.label || action.type;
-            const rowY = y;
-            const summary = this.formatTriggerActionSummary(action);
-            drawButton(panelX + 12, rowY, panelWidth - 102, sectionButtonH, `${index + 1}. ${label}`, false, () => { this.openTriggerActionEditor(action, { isNew: false }); }, summary);
-            drawButton(panelX + panelWidth - 84, rowY, 34, sectionButtonH, '↑', false, () => { if (index <= 0) return; const [moved] = selected.actions.splice(index, 1); selected.actions.splice(index - 1, 0, moved); this.persistAutosave(); }, 'Move action up');
-            drawButton(panelX + panelWidth - 46, rowY, 34, sectionButtonH, 'X', false, () => { selected.actions.splice(index, 1); this.persistAutosave(); }, 'Delete action');
-            y += sectionButtonH + 2;
-            ctx.fillStyle = 'rgba(255,255,255,0.7)';
-            ctx.fillText(summary, panelX + 16, y + 9);
-            y += 20;
-          });
-          const deleteY = panelY + panelHeight - 52;
-          drawButton(panelX + 12, deleteY, panelWidth - 24, 40, 'Delete Trigger', false, () => {
-            const triggers = this.ensureTriggers();
-            const idx = triggers.findIndex((entry) => entry.id === selected.id);
-            if (idx >= 0) {
-              triggers.splice(idx, 1);
-              this.selectedTriggerId = triggers[0]?.id || null;
-              this.triggerEditorOpen = Boolean(this.selectedTriggerId);
-              this.triggerEditorView = 'main';
-              this.triggerActionDraft = null;
-              this.triggerEditingActionId = null;
-              this.persistAutosave();
-            }
-          }, 'Remove trigger zone');
-        } else if (this.triggerEditorView === 'pick-condition') {
+       else if (this.triggerEditorView === 'pick-condition') {
           drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Back', false, () => { this.triggerEditorView = 'main'; }, 'Return to trigger');
           y += sectionButtonH + rowGap;
           TRIGGER_CONDITIONS.forEach((condition) => {
