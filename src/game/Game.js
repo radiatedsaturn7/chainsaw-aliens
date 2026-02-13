@@ -1,4 +1,11 @@
 import Input from './Input.js';
+import StateManager from './state/StateManager.js';
+import TitleState from './state/states/TitleState.js';
+import GameplayState from './state/states/GameplayState.js';
+import EditorState from './state/states/EditorState.js';
+import PixelEditorState from './state/states/PixelEditorState.js';
+import MidiEditorState from './state/states/MidiEditorState.js';
+import RobterSessionState from './state/states/RobterSessionState.js';
 import Camera from './Camera.js';
 import AudioSystem from './Audio.js';
 import World from '../world/World.js';
@@ -165,7 +172,9 @@ export default class Game {
     this.hud = new HUD();
     this.pauseMenu = new Pause();
     this.shopUI = new Shop(UPGRADE_LIST);
-    this.state = 'loading';
+    this.stateManager = new StateManager('loading');
+    this.registerStates();
+    this.state = this.stateManager.currentKey;
     this.victory = false;
     this.systemPrompts = [];
     this.modalPrompt = null;
@@ -398,7 +407,7 @@ export default class Game {
     } finally {
       this.loading = false;
       if (this.state === 'loading') {
-        this.state = 'title';
+        this.transitionTo('title');
       }
     }
   }
@@ -646,7 +655,7 @@ export default class Game {
 
   enterEditor({ tab = null } = {}) {
     this.editorReturnState = this.state;
-    this.state = 'editor';
+    this.transitionTo('editor');
     this.setRevAudio(false);
     this.editor.activate();
     if (tab) {
@@ -658,7 +667,7 @@ export default class Game {
 
   enterPixelStudio() {
     this.pixelStudioReturnState = this.state;
-    this.state = 'pixel-editor';
+    this.transitionTo('pixel-editor');
     this.setRevAudio(false);
     this.pixelStudio.resetFocus();
     this.playtestActive = false;
@@ -667,7 +676,7 @@ export default class Game {
 
   exitPixelStudio({ toTitle = false } = {}) {
     this.playtestActive = false;
-    this.state = toTitle ? 'title' : (this.pixelStudioReturnState || 'title');
+    this.transitionTo(toTitle ? 'title' : (this.pixelStudioReturnState || 'title'));
     document.body.classList.remove('editor-active');
   }
 
@@ -684,7 +693,7 @@ export default class Game {
     };
     this.pixelPreviewTarget = { tile, focus };
     this.pixelPreviewReturnState = this.state;
-    this.state = 'pixel-preview';
+    this.transitionTo('pixel-preview');
     this.player.x = focus.x;
     this.player.y = focus.y;
     this.snapCameraToPlayer();
@@ -695,7 +704,7 @@ export default class Game {
       this.player.x = this.pixelPreviewSnapshot.player.x;
       this.player.y = this.pixelPreviewSnapshot.player.y;
     }
-    this.state = this.pixelPreviewReturnState || 'pixel-editor';
+    this.transitionTo(this.pixelPreviewReturnState || 'pixel-editor');
     this.pixelPreviewSnapshot = null;
     this.pixelPreviewTarget = null;
   }
@@ -714,7 +723,7 @@ export default class Game {
 
   enterMidiComposer() {
     this.midiComposerReturnState = this.state;
-    this.state = 'midi-editor';
+    this.transitionTo('midi-editor');
     this.setRevAudio(false);
     this.playtestActive = false;
     document.body.classList.add('editor-active');
@@ -722,7 +731,7 @@ export default class Game {
 
   exitMidiComposer() {
     this.playtestActive = false;
-    this.state = this.midiComposerReturnState || 'title';
+    this.transitionTo(this.midiComposerReturnState || 'title');
     document.body.classList.remove('editor-active');
   }
 
@@ -731,7 +740,7 @@ export default class Game {
     this.editor.flushWorldRefresh();
     if (playtest) {
       this.syncSpawnPoint();
-      this.state = 'playing';
+      this.transitionTo('playing');
       this.playtestActive = true;
       this.playtestPauseLock = 0.35;
       document.body.classList.remove('editor-active');
@@ -745,12 +754,12 @@ export default class Game {
     }
     this.playtestActive = false;
     if (toTitle) {
-      this.state = 'title';
+      this.transitionTo('title');
     } else if (this.editorReturnState === 'playing' || this.editorReturnState === 'pause') {
-      this.state = 'pause';
+      this.transitionTo('pause');
       this.minimapSelected = false;
     } else {
-      this.state = 'title';
+      this.transitionTo('title');
     }
     document.body.classList.remove('editor-active');
   }
@@ -769,7 +778,7 @@ export default class Game {
     } else {
       this.editor.setFocusOverride({ x: this.player.x, y: this.player.y });
     }
-    this.state = 'editor';
+    this.transitionTo('editor');
     this.editor.resetTransientInputState();
     this.editor.activate();
     this.playtestActive = false;
@@ -967,7 +976,7 @@ export default class Game {
 
   startGoldenPath() {
     this.resetRun();
-    this.state = 'playing';
+    this.transitionTo('playing');
     this.simulationActive = true;
     this.goldenPath.start(this);
     this.testResults.golden = 'running';
@@ -981,7 +990,7 @@ export default class Game {
     this.gameMode = 'endless';
     this.applyWorldData(this.endlessData);
     this.resetRun();
-    this.state = 'playing';
+    this.transitionTo('playing');
     this.simulationActive = false;
     this.runPlayabilityCheck();
     this.startSpawnPause();
@@ -1200,7 +1209,7 @@ export default class Game {
     this.boss = null;
   }
 
-  update(dt) {
+  _updateByState(dt) {
     if (this.state === 'loading') {
       this.title.update(dt);
       return;
@@ -1281,7 +1290,7 @@ export default class Game {
           this.enterMidiComposer();
           this.midiComposerReturnState = 'title';
         } else {
-          this.state = returnState;
+          this.transitionTo(returnState);
         }
         this.input.flush();
         return;
@@ -1295,7 +1304,7 @@ export default class Game {
           this.enterMidiComposer();
           this.midiComposerReturnState = 'title';
         } else {
-          this.state = returnState;
+          this.transitionTo(returnState);
         }
       }
       this.input.flush();
@@ -1325,7 +1334,7 @@ export default class Game {
     }
 
     if (this.input.wasPressed('pause') && this.state === 'playing') {
-      this.state = 'pause';
+      this.transitionTo('pause');
       this.minimapSelected = true;
       this.minimapPan = { x: 0, y: 0 };
       this.audio.menu();
@@ -1345,7 +1354,7 @@ export default class Game {
       if (this.minimapSelected) {
         this.minimapSelected = false;
       } else {
-        this.state = 'playing';
+        this.transitionTo('playing');
       }
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
@@ -1354,7 +1363,7 @@ export default class Game {
       return;
     }
     if (cancelPressed && ['dialog', 'shop'].includes(this.state)) {
-      this.state = 'playing';
+      this.transitionTo('playing');
       this.minimapSelected = false;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
@@ -1372,7 +1381,7 @@ export default class Game {
         if (this.modalPrompt) {
           this.modalPrompt.dismiss();
         }
-        this.state = this.promptReturnState || 'playing';
+        this.transitionTo(this.promptReturnState || 'playing');
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
@@ -1445,7 +1454,7 @@ export default class Game {
           this.title.setScreen('tools');
         } else if (action === 'robtersession') {
           this.robterSession.enter();
-          this.state = 'robtersession';
+          this.transitionTo('robtersession');
         } else {
           if (this.gameMode !== 'story' && this.storyData) {
             this.gameMode = 'story';
@@ -1454,7 +1463,7 @@ export default class Game {
           } else {
             this.gameMode = 'story';
           }
-          this.state = 'dialog';
+          this.transitionTo('dialog');
         }
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
@@ -1474,7 +1483,7 @@ export default class Game {
       if (this.input.wasPressed('interact')) {
         const finished = this.dialog.next();
         if (finished) {
-          this.state = 'playing';
+          this.transitionTo('playing');
           this.simulationActive = false;
           this.runPlayabilityCheck();
           this.startSpawnPause();
@@ -1527,7 +1536,7 @@ export default class Game {
         this.recordFeedback('menu navigate', 'visual');
       }
       if (this.input.wasPressed('pause')) {
-        this.state = 'playing';
+        this.transitionTo('playing');
       }
       this.input.flush();
       return;
@@ -3636,7 +3645,7 @@ export default class Game {
     const lines = ABILITY_DIALOG_LINES[ability];
     if (!lines) return;
     this.dialog = new Dialog(lines);
-    this.state = 'dialog';
+    this.transitionTo('dialog');
     this.audio.showcase();
     this.recordFeedback('menu navigate', 'audio');
     this.recordFeedback('menu navigate', 'visual');
@@ -3651,7 +3660,7 @@ export default class Game {
     if (!message) return;
     this.modalPrompt = new SystemPrompt(message, { mode: 'modal' });
     this.promptReturnState = this.state === 'prompt' ? 'playing' : this.state;
-    this.state = 'prompt';
+    this.transitionTo('prompt');
   }
 
   updateSystemPrompts(dt) {
@@ -3751,7 +3760,7 @@ export default class Game {
   checkShops() {
     const nearShop = this.world.shops.find((shop) => Math.hypot(shop.x - this.player.x, shop.y - this.player.y) < 40);
     if (nearShop && this.input.wasPressed('interact')) {
-      this.state = 'shop';
+      this.transitionTo('shop');
       this.audio.interact();
       this.spawnEffect('interact', nearShop.x, nearShop.y - 16);
       this.recordFeedback('interact', 'audio');
@@ -4815,7 +4824,7 @@ export default class Game {
     return this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 });
   }
 
-  draw() {
+  _drawByState() {
     const { ctx, canvas } = this;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -5924,7 +5933,7 @@ export default class Game {
       inputMode: this.inputMode
     };
     this.resetRun({ playtest, startWithEverything });
-    this.state = 'playing';
+    this.transitionTo('playing');
     this.simulationActive = true;
     let report = this.goldenPathTest.start(this);
     let timedOut = false;
@@ -5959,16 +5968,16 @@ export default class Game {
     if (restoreState) {
       this.applyWorldData(worldData);
       if (restoreState === 'editor') {
-        this.state = 'editor';
+        this.transitionTo('editor');
         this.playtestActive = false;
         this.editor.activate();
         document.body.classList.add('editor-active');
       } else if (restoreState === 'playtest') {
-        this.state = 'playing';
+        this.transitionTo('playing');
         this.playtestActive = true;
         this.resetRun({ playtest: true, startWithEverything });
       } else {
-        this.state = savedState.state;
+        this.transitionTo(savedState.state);
         this.playtestActive = savedState.playtestActive;
         if (savedState.editorActive) {
           this.editor.activate();
@@ -6060,7 +6069,7 @@ export default class Game {
     return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
   }
 
-  handleClick(x, y) {
+  _handleClickByState(x, y) {
     if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(x, y)) {
       this.returnToEditorFromPlaytest();
       return;
@@ -6143,7 +6152,7 @@ export default class Game {
       }
       if (action === 'robtersession') {
         this.robterSession.enter();
-        this.state = 'robtersession';
+        this.transitionTo('robtersession');
         this.audio.ui();
         return;
       }
@@ -6155,13 +6164,13 @@ export default class Game {
         } else {
           this.gameMode = 'story';
         }
-        this.state = 'dialog';
+        this.transitionTo('dialog');
         this.audio.ui();
       }
     }
   }
 
-  handlePointerDown(payload) {
+  _handlePointerDownByState(payload) {
     if (this.state === 'pixel-preview') {
       this.exitPixelPreview();
       return;
@@ -6186,7 +6195,7 @@ export default class Game {
       const { x, y, w, h } = this.modalPrompt.okBounds;
       if (payload.x >= x && payload.x <= x + w && payload.y >= y && payload.y <= y + h) {
         this.modalPrompt.dismiss();
-        this.state = this.promptReturnState || 'playing';
+        this.transitionTo(this.promptReturnState || 'playing');
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
@@ -6202,7 +6211,7 @@ export default class Game {
       && payload.y >= this.minimapBackBounds.y
       && payload.y <= this.minimapBackBounds.y + this.minimapBackBounds.h
     ) {
-      this.state = 'playing';
+      this.transitionTo('playing');
       this.minimapSelected = false;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
@@ -6218,7 +6227,7 @@ export default class Game {
       && payload.y >= this.minimapExitBounds.y
       && payload.y <= this.minimapExitBounds.y + this.minimapExitBounds.h
     ) {
-      this.state = 'title';
+      this.transitionTo('title');
       this.minimapSelected = false;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
@@ -6234,7 +6243,7 @@ export default class Game {
       && payload.y >= this.pauseMenu.exitBounds.y
       && payload.y <= this.pauseMenu.exitBounds.y + this.pauseMenu.exitBounds.h
     ) {
-      this.state = 'title';
+      this.transitionTo('title');
       this.minimapSelected = false;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
@@ -6259,7 +6268,7 @@ export default class Game {
       && payload.y >= this.minimapBounds.y
       && payload.y <= this.minimapBounds.y + this.minimapBounds.h
     ) {
-      this.state = 'pause';
+      this.transitionTo('pause');
       this.minimapSelected = true;
       this.minimapPan = { x: 0, y: 0 };
       this.audio.menu();
@@ -6332,7 +6341,7 @@ export default class Game {
       }
       if (action === 'robtersession') {
         this.robterSession.enter();
-        this.state = 'robtersession';
+        this.transitionTo('robtersession');
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
@@ -6346,7 +6355,7 @@ export default class Game {
         } else {
           this.gameMode = 'story';
         }
-        this.state = 'dialog';
+        this.transitionTo('dialog');
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
@@ -6356,7 +6365,7 @@ export default class Game {
     this.mobileControls.handlePointerDown(payload, this.state);
   }
 
-  handlePointerMove(payload) {
+  _handlePointerMoveByState(payload) {
     if (this.state === 'robtersession') {
       this.robterSession.handlePointerMove(payload);
       return;
@@ -6376,7 +6385,7 @@ export default class Game {
     this.mobileControls.handlePointerMove(payload);
   }
 
-  handlePointerUp(payload) {
+  _handlePointerUpByState(payload) {
     if (this.state === 'robtersession') {
       this.robterSession.handlePointerUp(payload);
       return;
@@ -6396,7 +6405,7 @@ export default class Game {
     this.mobileControls.handlePointerUp(payload, this.state);
   }
 
-  handleWheel(payload) {
+  _handleWheelByState(payload) {
     if (this.state === 'editor') {
       this.editor.handleWheel(payload);
       return;
@@ -6410,7 +6419,7 @@ export default class Game {
     }
   }
 
-  handleGestureStart(payload) {
+  _handleGestureStartByState(payload) {
     if (this.state === 'editor') {
       this.editor.handleGestureStart(payload);
     } else if (this.state === 'pixel-editor') {
@@ -6420,7 +6429,7 @@ export default class Game {
     }
   }
 
-  handleGestureMove(payload) {
+  _handleGestureMoveByState(payload) {
     if (this.state === 'editor') {
       this.editor.handleGestureMove(payload);
     } else if (this.state === 'pixel-editor') {
@@ -6430,7 +6439,7 @@ export default class Game {
     }
   }
 
-  handleGestureEnd() {
+  _handleGestureEndByState() {
     if (this.state === 'editor') {
       this.editor.handleGestureEnd();
     } else if (this.state === 'pixel-editor') {
@@ -6440,7 +6449,7 @@ export default class Game {
     }
   }
 
-  shouldHandleGestureStart(payload) {
+  _shouldHandleGestureStartByState(payload) {
     if (this.state === 'editor') {
       return this.editor.shouldHandleGestureStart?.(payload) ?? true;
     }
@@ -6451,6 +6460,70 @@ export default class Game {
       return this.midiComposer.shouldHandleGestureStart?.(payload) ?? true;
     }
     return true;
+  }
+
+  update(dt) {
+    this.stateManager.update(dt);
+  }
+
+  draw() {
+    this.stateManager.draw();
+  }
+
+  handleClick(x, y) {
+    this.stateManager.handleClick?.(x, y);
+  }
+
+  handlePointerDown(payload) {
+    this.stateManager.handlePointerDown?.(payload);
+  }
+
+  handlePointerMove(payload) {
+    this.stateManager.handlePointerMove?.(payload);
+  }
+
+  handlePointerUp(payload) {
+    this.stateManager.handlePointerUp?.(payload);
+  }
+
+  handleWheel(payload) {
+    this.stateManager.handleWheel?.(payload);
+  }
+
+  handleGestureStart(payload) {
+    this.stateManager.handleGestureStart?.(payload);
+  }
+
+  handleGestureMove(payload) {
+    this.stateManager.handleGestureMove?.(payload);
+  }
+
+  handleGestureEnd() {
+    this.stateManager.handleGestureEnd?.();
+  }
+
+  shouldHandleGestureStart(payload) {
+    return this.stateManager.shouldHandleGestureStart?.(payload) ?? true;
+  }
+
+  transitionTo(nextState) {
+    this.stateManager.transition(nextState);
+    this.state = this.stateManager.currentKey;
+  }
+
+  registerStates() {
+    this.stateManager.register('loading', new TitleState(this));
+    this.stateManager.register('title', new TitleState(this));
+    this.stateManager.register('dialog', new TitleState(this));
+    this.stateManager.register('playing', new GameplayState(this));
+    this.stateManager.register('pause', new GameplayState(this));
+    this.stateManager.register('shop', new GameplayState(this));
+    this.stateManager.register('prompt', new GameplayState(this));
+    this.stateManager.register('pixel-preview', new GameplayState(this));
+    this.stateManager.register('editor', new EditorState(this));
+    this.stateManager.register('pixel-editor', new PixelEditorState(this));
+    this.stateManager.register('midi-editor', new MidiEditorState(this));
+    this.stateManager.register('robtersession', new RobterSessionState(this));
   }
 
 }
