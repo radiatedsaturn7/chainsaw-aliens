@@ -3,6 +3,11 @@ export default class StateManager {
     this.states = new Map();
     this.currentKey = initialState;
     this.currentState = null;
+    this.beforeTransition = null;
+  }
+
+  setBeforeTransition(handler) {
+    this.beforeTransition = typeof handler === 'function' ? handler : null;
   }
 
   register(key, state) {
@@ -12,11 +17,13 @@ export default class StateManager {
     }
   }
 
-  transition(nextState) {
+  transition(nextState, metadata = {}) {
     if (!nextState || this.currentKey === nextState) return;
     const previousKey = this.currentKey;
     const previousState = this.currentState;
     const next = this.states.get(nextState) || null;
+
+    this.beforeTransition?.({ from: previousKey, to: nextState, ...metadata });
 
     if (previousState?.exit) {
       previousState.exit({ from: previousKey, to: nextState });
