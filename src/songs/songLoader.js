@@ -1,3 +1,5 @@
+import { createZip, loadZipFromBytes } from '../vendorBridge/zip.js';
+
 const INSTRUMENT_PATTERNS = [
   { name: 'Bass', regex: /\bBass\b/i },
   { name: 'Guitar', regex: /\bGuitar\b/i },
@@ -6,14 +8,6 @@ const INSTRUMENT_PATTERNS = [
   { name: 'Keyboard', regex: /\bKeys?\b|\bKeyboard\b|\bPiano\b/i },
   { name: 'Synth', regex: /\bSynth\b|\bPad\b/i }
 ];
-
-const getZip = () => {
-  const zip = window?.JSZip;
-  if (!zip) {
-    throw new Error('JSZip is not available. Ensure vendor/jszip.min.js is loaded.');
-  }
-  return zip;
-};
 
 const detectInstrumentName = (filename) => {
   const clean = filename.replace(/\\/g, '/').split('/').pop() || filename;
@@ -24,9 +18,7 @@ const detectInstrumentName = (filename) => {
 };
 
 export const loadZipSongFromBytes = async (bytes) => {
-  const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
-  const JSZip = getZip();
-  const zip = await JSZip.loadAsync(data);
+  const zip = await loadZipFromBytes(bytes);
   const stems = new Map();
   const files = [];
   const pending = [];
@@ -59,8 +51,7 @@ export const loadZipSong = async (zipUrl) => {
 };
 
 export const buildZipFromStems = async (stems = []) => {
-  const JSZip = getZip();
-  const zip = new JSZip();
+  const zip = createZip();
   stems.forEach((stem) => {
     if (!stem?.filename || !stem?.bytes) return;
     zip.file(stem.filename, stem.bytes);

@@ -1,3 +1,5 @@
+import { getMidiClass } from '../vendorBridge/midi.js';
+
 const DEFAULT_INGESTION_OPTIONS = {
   gridDivisions: 16,
   minNoteBeats: 1 / 32,
@@ -68,14 +70,6 @@ const normalizeMidiNotes = (notes, { bpm, timeSignature, ...options } = {}) => {
     filtered.push(note);
   }
   return filtered;
-};
-
-const getMidiClass = () => {
-  const globalMidi = window?.Midi;
-  if (!globalMidi) {
-    throw new Error('Tonejs MIDI parser is not available. Ensure vendor/midi.min.js is loaded.');
-  }
-  return globalMidi.Midi || globalMidi;
 };
 
 export const buildMidiBytes = ({

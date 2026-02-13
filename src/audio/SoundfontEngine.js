@@ -1,8 +1,8 @@
 import { GM_DRUM_BANK_MSB, GM_SOUNDFONT_NAMES, isDrumChannel, resolveDrumFallbackNote } from './gm.js';
+import { getSoundfontPlayer } from '../vendorBridge/soundfont.js';
 
 const PRIMARY_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
 const FALLBACK_SOUNDFONT_BASE = 'vendor/soundfonts/FluidR3_GM/';
-const SOUNDFONT_PLAYER_GLOBAL = 'Soundfont';
 const DRUM_KIT_NAME = 'standard_kit';
 const DRUM_PRESET = 0;
 
@@ -117,16 +117,14 @@ export default class SoundfontEngine {
     if (this.player) return this.player;
     if (this.playerPromise) return this.playerPromise;
     this.playerPromise = new Promise((resolve, reject) => {
-      const globalPlayer = window?.[SOUNDFONT_PLAYER_GLOBAL];
-      if (globalPlayer) {
-        this.player = globalPlayer;
+      try {
+        this.player = getSoundfontPlayer();
         this.error = null;
         resolve(this.player);
-        return;
+      } catch (error) {
+        this.error = 'Failed to load SoundFont player.';
+        reject(error);
       }
-      const error = new Error('SoundFont player script not loaded.');
-      this.error = 'Failed to load SoundFont player.';
-      reject(error);
     }).finally(() => {
       this.playerPromise = null;
     });
