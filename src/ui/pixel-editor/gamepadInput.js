@@ -1,4 +1,4 @@
-import { INPUT_ACTIONS } from './inputManager.js';
+import { INPUT_ACTIONS } from './inputBindings.js';
 
 const NAV_REPEAT_DELAY = 0.18;
 const TRIGGER_THRESHOLD = 0.6;
