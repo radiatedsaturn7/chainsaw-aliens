@@ -22,9 +22,12 @@ import KeyboardInput from '../input/keyboard.js';
 import TouchInput from '../input/touch.js';
 import MidiRecorder from '../recording/recorder.js';
 import RecordModeLayout from './recordMode.js';
+import { radialIndexFromStick } from './midi/input/radial.js';
+import { toRgba } from './midi/render/color.js';
+import { KEY_LABELS, parseChordToken, parseChordProgressionInput, formatChordToken } from './midi/helpers/chords.js';
+import { CACHED_SOUND_FONT_KEY, DEFAULT_PRELOAD_PROGRAMS } from './midi/io/storage.js';
 
 const NOTE_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const KEY_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const SCALE_LIBRARY = [
   { id: 'major', label: 'Major', steps: [0, 2, 4, 5, 7, 9, 11] },
   { id: 'dorian', label: 'Dorian', steps: [0, 2, 3, 5, 7, 9, 10] },
@@ -34,14 +37,6 @@ const SCALE_LIBRARY = [
   { id: 'minor', label: 'Minor', steps: [0, 2, 3, 5, 7, 8, 10] },
   { id: 'locrian', label: 'Locrian', steps: [0, 1, 3, 5, 6, 8, 10] }
 ];
-
-const radialIndexFromStick = (x, y, count) => {
-  if (!count) return 0;
-  const angle = Math.atan2(y, x);
-  const normalized = (angle + Math.PI * 2 + Math.PI / 2) % (Math.PI * 2);
-  const slice = (Math.PI * 2) / count;
-  return Math.round(normalized / slice) % count;
-};
 
 const QUANTIZE_OPTIONS = [
   { id: '1', label: '1', divisor: 1 },
@@ -157,8 +152,6 @@ const LOOP_HANDLE_MIN_WIDTH = 70;
 const LOOP_HANDLE_MIN_HEIGHT = 38;
 const FILE_MENU_WIDTH = 240;
 const DEFAULT_LOOP_BARS = 4;
-const CACHED_SOUND_FONT_KEY = 'chainsaw-midi-cached-programs';
-const DEFAULT_PRELOAD_PROGRAMS = [0, 24, 32, 52];
 const GENRE_OPTIONS = [
   { id: 'random', label: 'Random' },
   { id: 'ambient', label: 'Ambient' },
@@ -202,87 +195,8 @@ const findNoteLengthIndex = (id) => {
   const index = NOTE_LENGTH_OPTIONS.findIndex((option) => option.id === id);
   return index >= 0 ? index : 0;
 };
-const NOTE_NAME_ALIASES = {
-  'C#': 1,
-  'Db': 1,
-  'D#': 3,
-  'Eb': 3,
-  'F#': 6,
-  'Gb': 6,
-  'G#': 8,
-  'Ab': 8,
-  'A#': 10,
-  'Bb': 10
-};
 const isBlackKey = (pitchClass) => [1, 3, 6, 8, 10].includes(pitchClass);
-const parseChordToken = (token) => {
-  if (!token) return null;
-  const trimmed = token.trim();
-  if (!trimmed) return null;
-  const quality = /dim/i.test(trimmed)
-    ? 'dim'
-    : /m(in)?$/i.test(trimmed) || trimmed === trimmed.toLowerCase()
-      ? 'min'
-      : 'maj';
-  const rootToken = trimmed.replace(/(dim|maj|min|m)$/i, '');
-  const normalized = rootToken.length > 1
-    ? `${rootToken[0].toUpperCase()}${rootToken[1]}`
-    : rootToken.toUpperCase();
-  const root = NOTE_NAME_ALIASES[normalized] ?? KEY_LABELS.indexOf(normalized);
-  if (root < 0) return null;
-  return { root, quality };
-};
-const parseChordProgressionInput = (input, loopBars) => {
-  if (!input) return null;
-  const segments = input
-    .split(/[\n;]+/)
-    .map((segment) => segment.trim())
-    .filter(Boolean);
-  if (!segments.length) return null;
-  const progression = [];
-  segments.forEach((segment) => {
-    const tokens = segment.split(/\s+/).filter(Boolean);
-    if (tokens.length < 2) return;
-    const rangeToken = tokens[0];
-    const [startRaw, endRaw] = rangeToken.split('-').map((value) => parseInt(value, 10));
-    const startBar = Number.isInteger(startRaw) ? Math.max(1, startRaw) : 1;
-    const endBar = Number.isInteger(endRaw) ? Math.max(startBar, endRaw) : startBar;
-    const chords = tokens.slice(1).map(parseChordToken).filter(Boolean);
-    if (!chords.length) return;
-    const maxBars = Math.max(endBar, loopBars || endBar);
-    for (let bar = startBar; bar <= Math.min(endBar, maxBars); bar += 1) {
-      const chord = chords[(bar - startBar) % chords.length] || chords[chords.length - 1];
-      if (!chord) continue;
-      progression.push({
-        root: chord.root,
-        quality: chord.quality,
-        startBar: bar,
-        lengthBars: 1
-      });
-    }
-  });
-  return progression.length ? progression : null;
-};
-const formatChordToken = (chord) => {
-  if (!chord) return '';
-  const name = KEY_LABELS[chord.root] || 'C';
-  if (chord.quality === 'min') return `${name}m`;
-  if (chord.quality === 'dim') return `${name}dim`;
-  return name;
-};
-const toRgba = (hex, alpha) => {
-  if (!hex || !hex.startsWith('#') || (hex.length !== 7 && hex.length !== 4)) {
-    return `rgba(255,255,255,${alpha})`;
-  }
-  const normalized = hex.length === 4
-    ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`
-    : hex;
-  const value = parseInt(normalized.slice(1), 16);
-  const r = (value >> 16) & 255;
-  const g = (value >> 8) & 255;
-  const b = value & 255;
-  return `rgba(${r},${g},${b},${alpha})`;
-};
+
 
 const isDrumTrack = (track) => Boolean(track) && (track.instrument === 'drums' || isDrumChannel(track.channel));
 const coerceDrumPitch = (pitch, rows = GM_DRUM_ROWS) => mapPitchToDrumRow(clampDrumPitch(pitch), rows);

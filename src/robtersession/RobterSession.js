@@ -29,80 +29,12 @@ import { loadSongManifest } from '../songs/songManifest.js';
 import { buildZipFromStems, loadZipSong, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { buildMidiBytes, parseMidi } from '../midi/midiParser.js';
 import { formatKeyLabel, transcribeMidiStem } from '../transcribe/robterTranscriber.js';
-
-const PROGRESS_KEY = 'robtersession-progress';
-const RANDOM_SEED_KEY = 'robtersession-random-seed';
-const GROOVE_THRESHOLD = 20;
-const STAR_POWER_GAIN = 0.12;
-const STAR_POWER_DRAIN = 0.2;
-const STAR_POWER_READY = 0.5;
-const SCROLL_SPEED = 240;
-const HIT_GLASS_DURATION = 0.25;
-const WRONG_NOTE_COOLDOWN = 0.22;
-const NOTE_LANES = ['X', 'Y', 'A', 'B'];
-const NON_DRUM_LANES = ['LB', ...NOTE_LANES, 'RB'];
-const SCALE_SELECTOR_THRESHOLD = 0.6;
-const SCALE_SELECTOR_RELEASE = 0.3;
-const SCALE_PROMPT_SPEED = 0.9;
-const WRONG_GHOST_DURATION = 1.2;
-const MAX_NOTE_SIZE = 1.5;
-const MAX_HIGHWAY_ZOOM = 2;
-const FINISH_ANIMATION_SECONDS = 2.2;
-const MENU_FADE_SECONDS = 0.35;
-const SONG_END_TAIL_BARS = 2;
-const HEALTH_GAIN = 0.04;
-const HEALTH_LOSS = 0.12;
-const MAX_MULTIPLIER = 4;
-const STREAK_PER_MULTIPLIER = 10;
-const REQUIRED_OCTAVE_OFFSET = 0;
-const IMPROV_MEASURES = 5;
-const IMPROV_FADE_SECONDS = 0.6;
-const STICK_DIRECTION_LABELS = {
-  1: 'N',
-  2: 'NE',
-  3: 'E',
-  4: 'SE',
-  5: 'S',
-  6: 'SW',
-  7: 'W',
-  8: 'NW'
-};
-const STICK_DIRECTION_ICONS = {
-  1: '↑',
-  2: '↗',
-  3: '→',
-  4: '↘',
-  5: '↓',
-  6: '↙',
-  7: '←',
-  8: '↖'
-};
+import { PROGRESS_KEY, RANDOM_SEED_KEY, GROOVE_THRESHOLD, STAR_POWER_GAIN, STAR_POWER_DRAIN, STAR_POWER_READY, SCROLL_SPEED, HIT_GLASS_DURATION, WRONG_NOTE_COOLDOWN, NOTE_LANES, NON_DRUM_LANES, SCALE_SELECTOR_THRESHOLD, SCALE_SELECTOR_RELEASE, SCALE_PROMPT_SPEED, WRONG_GHOST_DURATION, MAX_NOTE_SIZE, MAX_HIGHWAY_ZOOM, FINISH_ANIMATION_SECONDS, MENU_FADE_SECONDS, SONG_END_TAIL_BARS, HEALTH_GAIN, HEALTH_LOSS, MAX_MULTIPLIER, STREAK_PER_MULTIPLIER, REQUIRED_OCTAVE_OFFSET, IMPROV_MEASURES, IMPROV_FADE_SECONDS } from './model/gameplayConstants.js';
+import { getStickDirectionLabel, getStickDirectionIcon } from './ui/stickDirection.js';
+import { parseNoteOctave, trimOverlappingMidiNotes } from './audio/midiUtils.js';
+import { loadProgress as loadStoredProgress, saveProgress as saveStoredProgress } from './transport/storage.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-const getStickDirectionLabel = (degree) => STICK_DIRECTION_LABELS[degree] || `${degree ?? ''}`;
-const getStickDirectionIcon = (degree) => STICK_DIRECTION_ICONS[degree] || `${degree ?? ''}`;
-const parseNoteOctave = (noteLabel) => {
-  const match = String(noteLabel || '').match(/^([A-Ga-g])([#b]?)(-?\d+)$/);
-  if (!match) return null;
-  const octave = Number(match[3]);
-  return Number.isFinite(octave) ? octave : null;
-};
-const trimOverlappingMidiNotes = (notes) => {
-  const sorted = notes
-    .map((note) => ({ ...note }))
-    .sort((a, b) => a.tStartSec - b.tStartSec);
-  for (let i = 0; i < sorted.length - 1; i += 1) {
-    const current = sorted[i];
-    const next = sorted[i + 1];
-    const samePitch = next.midi === current.midi
-      && (next.channel ?? null) === (current.channel ?? null)
-      && (next.program ?? null) === (current.program ?? null);
-    if (samePitch && next.tStartSec < current.tEndSec) {
-      current.tEndSec = Math.max(current.tStartSec, next.tStartSec);
-    }
-  }
-  return sorted;
-};
 const formatZipName = (name) => String(name || 'robter-midi')
   .replace(/\s+/g, '-')
   .replace(/[^a-zA-Z0-9._-]/g, '')
@@ -220,13 +152,6 @@ const PERFORMANCE_DIFFICULTIES = [
   }
 ];
 
-const defaultProgress = () => ({
-  unlockedSets: 1,
-  bestScores: {},
-  bestAccuracy: {},
-  bestGrades: {}
-});
-
 const defaultHudSettings = () => ({
   noteSize: MAX_NOTE_SIZE,
   highwayZoom: MAX_HIGHWAY_ZOOM,
@@ -302,26 +227,6 @@ const saveTuning = (tuning) => {
   localStorage.setItem(TUNING_KEY, JSON.stringify(tuning));
 };
 
-const loadProgress = () => {
-  try {
-    const raw = localStorage.getItem(PROGRESS_KEY);
-    if (!raw) return defaultProgress();
-    const parsed = JSON.parse(raw);
-    return {
-      unlockedSets: parsed.unlockedSets ?? 1,
-      bestScores: parsed.bestScores ?? {},
-      bestAccuracy: parsed.bestAccuracy ?? {},
-      bestGrades: parsed.bestGrades ?? {}
-    };
-  } catch (error) {
-    return defaultProgress();
-  }
-};
-
-const saveProgress = (progress) => {
-  localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
-};
-
 const getGrade = (accuracy) => {
   const entry = GRADE_THRESHOLDS.find((grade) => accuracy >= grade.min);
   return entry?.grade ?? 'F';
@@ -350,7 +255,7 @@ export default class RobterSession {
     this.audio = audio;
     this.isMobile = Boolean(isMobile);
     this.state = USE_LEGACY_SETLIST ? 'instrument-select' : 'song-select';
-    this.progress = loadProgress();
+    this.progress = loadStoredProgress(PROGRESS_KEY);
     this.selectionIndex = 0;
     this.instrument = 'guitar';
     this.instrumentSelectionIndex = 0;
@@ -2697,7 +2602,7 @@ export default class RobterSession {
       if (!this.useStemPlayback && !this.songMeta.random && this.songMeta.setIndex + 1 >= progress.unlockedSets) {
         progress.unlockedSets = Math.min(this.setlistSets.length, this.songMeta.setIndex + 2);
       }
-      saveProgress(progress);
+      saveStoredProgress(PROGRESS_KEY, progress);
     }
     this.finishAnimationTimer = FINISH_ANIMATION_SECONDS;
     this.state = 'finish';
