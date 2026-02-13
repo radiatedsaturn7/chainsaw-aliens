@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
-import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
-import { vfsList, vfsSave } from '../ui/vfs.js';
+import { vfsList } from '../ui/vfs.js';
+import { createDocumentLifecycle } from '../ui/editor-documents/documentLifecycle.js';
 import { UI_SUITE, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
@@ -464,6 +464,21 @@ export default class Editor {
     this.randomLevelFocusRepeat = 0;
     this.autosaveKey = EDITOR_AUTOSAVE_KEY;
     this.autosaveLoaded = false;
+    this.documentLifecycle = createDocumentLifecycle({
+      folder: 'levels',
+      strings: {
+        saveAsTitle: 'Save Level As',
+        openTitle: 'Open Level',
+        discardChanges: 'Discard unsaved level changes?',
+        closePrompt: 'Save changes before closing?'
+      },
+      confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
+      serialize: (ctx) => ctx.game.buildWorldData(),
+      applyLoadedData: (ctx, data) => {
+        ctx.game.applyWorldData(data);
+        ctx.flushWorldRefresh();
+      }
+    });
     this.gamepadCursor = {
       x: 0,
       y: 0,
@@ -1710,16 +1725,15 @@ export default class Editor {
   }
 
   captureWorldSnapshot() {
-    return JSON.stringify(this.game.buildWorldData());
+    return this.documentLifecycle.captureSnapshot(this);
   }
 
   markSavedSnapshot() {
-    this.savedSnapshot = this.captureWorldSnapshot();
+    this.documentLifecycle.markSavedSnapshot(this);
   }
 
   hasUnsavedChanges() {
-    if (this.savedSnapshot == null) return false;
-    return this.captureWorldSnapshot() !== this.savedSnapshot;
+    return this.documentLifecycle.hasUnsavedChanges(this);
   }
 
   async promptForNewLevelName() {
@@ -1805,13 +1819,9 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   async closeEditorWithPrompt() {
-    if (this.hasUnsavedChanges()) {
-      const shouldSave = this.game?.showInlineConfirm?.('Save changes before closing?');
-      if (shouldSave) {
-        await this.saveLevelToStorage();
-      }
-    }
-    stopPlaytestTransition(this.game, { toTitle: true });
+    await this.documentLifecycle.closeWithPrompt(this, async () => {
+      stopPlaytestTransition(this.game, { toTitle: true });
+    });
   }
 
   openFileDialog() {
@@ -2135,37 +2145,11 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   async saveLevelToStorage(options = {}) {
-    const { forceSaveAs = false } = options;
-    let name = this.currentDocumentRef?.name;
-    if (forceSaveAs || !name) {
-      const result = await openProjectBrowser({
-        mode: 'saveAs',
-        fixedFolder: 'levels',
-        initialFolder: 'levels',
-        title: 'Save Level As'
-      });
-      if (!result?.name) return;
-      name = result.name;
-    }
-    vfsSave('levels', name, this.game.buildWorldData());
-    this.currentDocumentRef = { folder: 'levels', name };
-    this.markSavedSnapshot();
+    return this.documentLifecycle.saveAsOrCurrent(this, options);
   }
 
   loadLevelFromStorage() {
-    openProjectBrowser({
-      mode: 'open',
-      fixedFolder: 'levels',
-      initialFolder: 'levels',
-      title: 'Open Level',
-      onOpen: ({ name, payload }) => {
-        if (!payload?.data) return;
-        this.game.applyWorldData(payload.data);
-        this.currentDocumentRef = { folder: 'levels', name };
-        this.flushWorldRefresh();
-        this.markSavedSnapshot();
-      }
-    });
+    this.documentLifecycle.open(this);
   }
 
   ensureMusicZones() {

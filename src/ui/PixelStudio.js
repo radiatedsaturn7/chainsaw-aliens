@@ -24,8 +24,7 @@ import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/anima
 import UndoStack from './pixel-editor/undo.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { openProjectBrowser } from './ProjectBrowserModal.js';
-import { vfsSave } from './vfs.js';
+import { createDocumentLifecycle } from './editor-documents/documentLifecycle.js';
 import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
@@ -40,6 +39,24 @@ export default class PixelStudio {
     this.tileIndex = 0;
     this.currentDocumentRef = null;
     this.savedSnapshot = null;
+    this.documentLifecycle = createDocumentLifecycle({
+      folder: 'art',
+      strings: {
+        saveAsTitle: 'Save Art As',
+        openTitle: 'Open Art',
+        discardChanges: 'Discard unsaved art changes?',
+        closePrompt: 'Save changes before closing?'
+      },
+      confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
+      serialize: (ctx) => {
+        ctx.syncTileData();
+        return ctx.game.world.pixelArt || { tiles: {} };
+      },
+      applyLoadedData: (ctx, data) => {
+        ctx.game.world.pixelArt = data;
+        ctx.loadTileData();
+      }
+    });
     this.modeTab = 'draw';
     this.tools = createToolRegistry(this);
     this.activeToolId = TOOL_IDS.PENCIL;
@@ -276,16 +293,15 @@ export default class PixelStudio {
   }
 
   captureArtSnapshot() {
-    return JSON.stringify(this.game.world.pixelArt || { tiles: {} });
+    return this.documentLifecycle.captureSnapshot(this);
   }
 
   markSavedSnapshot() {
-    this.savedSnapshot = this.captureArtSnapshot();
+    this.documentLifecycle.markSavedSnapshot(this);
   }
 
   hasUnsavedChanges() {
-    if (this.savedSnapshot == null) return false;
-    return this.captureArtSnapshot() !== this.savedSnapshot;
+    return this.documentLifecycle.hasUnsavedChanges(this);
   }
 
   async promptForNewArtName() {
@@ -297,53 +313,22 @@ export default class PixelStudio {
   }
 
   async closeStudioWithPrompt() {
-    this.syncTileData();
-    if (this.hasUnsavedChanges()) {
-      const shouldSave = this.game?.showInlineConfirm?.('Save changes before closing?');
-      if (shouldSave) {
-        await this.saveArtDocument();
-      }
-    }
-    this.game.exitPixelStudio({ toTitle: true });
+    await this.documentLifecycle.closeWithPrompt(this, async () => {
+      this.game.exitPixelStudio({ toTitle: true });
+    });
   }
 
 
   async saveArtDocument(options = {}) {
-    const { forceSaveAs = false } = options;
-    this.syncTileData();
-    let name = this.currentDocumentRef?.name;
-    if (forceSaveAs || !name) {
-      const result = await openProjectBrowser({
-        mode: 'saveAs',
-        fixedFolder: 'art',
-        initialFolder: 'art',
-        title: 'Save Art As'
-      });
-      if (!result?.name) return;
-      name = result.name;
-    }
-    vfsSave('art', name, this.game.world.pixelArt || { tiles: {} });
-    this.currentDocumentRef = { folder: 'art', name };
-    this.markSavedSnapshot();
+    return this.documentLifecycle.saveAsOrCurrent(this, options);
   }
 
   loadArtDocument() {
-    openProjectBrowser({
-      mode: 'open',
-      fixedFolder: 'art',
-      initialFolder: 'art',
-      title: 'Open Art',
-      onOpen: ({ name, payload }) => {
-        if (!payload?.data) return;
-        this.game.world.pixelArt = payload.data;
-        this.currentDocumentRef = { folder: 'art', name };
-        this.loadTileData();
-        this.markSavedSnapshot();
-      }
-    });
+    this.documentLifecycle.open(this);
   }
 
   async newArtDocument() {
+    if (!this.documentLifecycle.confirmDiscardChanges(this)) return;
     const name = await this.promptForNewArtName();
     if (!name) return;
     const dims = this.promptForArtDimensions(this.artSizeDraft);

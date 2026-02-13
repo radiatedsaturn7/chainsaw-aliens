@@ -15,6 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
+import { createDocumentLifecycle } from './editor-documents/documentLifecycle.js';
 import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -542,6 +543,28 @@ export default class MidiComposer {
     this._historyCommitDelayMs = 500;
     this._needsEnsureState = false;
     this.debug = { perf: false };
+    this.currentDocumentRef = null;
+    this.savedSnapshot = null;
+    this.documentLifecycle = createDocumentLifecycle({
+      folder: 'music',
+      strings: {
+        saveAsTitle: 'Save Song As',
+        openTitle: 'Open Song',
+        discardChanges: 'Discard unsaved song changes?',
+        closePrompt: 'Save changes before closing?'
+      },
+      confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
+      serialize: (ctx) => JSON.parse(JSON.stringify(ctx.song)),
+      applyLoadedData: (ctx, data, meta) => {
+        ctx.applyImportedSong(data);
+        ctx.song.name = meta.name;
+      },
+      afterSave: (ctx, meta) => {
+        ctx.song.name = meta.name;
+        ctx.selection.clear();
+        ctx.persist({ commitHistory: true });
+      }
+    });
     this.fileMenuScroll = 0;
     this.fileMenuScrollMax = 0;
     this.fileMenuListBounds = null;
@@ -878,10 +901,11 @@ export default class MidiComposer {
     if (this.lastPersistedSnapshot) {
       this._dirty = false;
     }
+    this.documentLifecycle.markSavedSnapshot(this);
   }
 
   hasUnsavedChanges() {
-    return this._dirty || this.lastPersistedSnapshot !== this.lastSavedSnapshot;
+    return this.documentLifecycle.hasUnsavedChanges(this);
   }
 
   commitHistorySnapshot() {
@@ -915,8 +939,7 @@ export default class MidiComposer {
   }
 
   confirmDiscardChanges() {
-    if (!this.hasUnsavedChanges()) return true;
-    return this.game?.showInlineConfirm?.('Discard unsaved song changes?') ?? false;
+    return this.documentLifecycle.confirmDiscardChanges(this);
   }
 
   applySongSnapshot(snapshot) {
@@ -956,25 +979,7 @@ export default class MidiComposer {
   }
 
   async saveSongToLibrary(options = {}) {
-    const { forceSaveAs = false } = options;
-    let name = this.currentDocumentRef?.name;
-    if (forceSaveAs || !name) {
-      const result = await openProjectBrowser({
-        mode: 'saveAs',
-        fixedFolder: 'music',
-        initialFolder: 'music',
-        title: 'Save Song As'
-      });
-      if (!result?.name) return null;
-      name = result.name;
-    }
-    this.song.name = name;
-    vfsSave('music', name, JSON.parse(JSON.stringify(this.song)));
-    this.currentDocumentRef = { folder: 'music', name };
-    this.selection.clear();
-    this.persist({ commitHistory: true });
-    this.markSavedSnapshot();
-    return { id: name, name };
+    return this.documentLifecycle.saveAsOrCurrent(this, options);
   }
 
   async saveAndPaint() {
@@ -1029,20 +1034,7 @@ export default class MidiComposer {
   }
 
   loadSongFromLibrary() {
-    if (!this.confirmDiscardChanges()) return;
-    openProjectBrowser({
-      mode: 'open',
-      fixedFolder: 'music',
-      initialFolder: 'music',
-      title: 'Open Song',
-      onOpen: ({ name, payload }) => {
-        if (!payload?.data) return;
-        this.applyImportedSong(payload.data);
-        this.currentDocumentRef = { folder: 'music', name };
-        this.song.name = name;
-        this.markSavedSnapshot();
-      }
-    });
+    this.documentLifecycle.open(this);
   }
 
   loadInstrumentList(key, fallback) {
@@ -6779,13 +6771,9 @@ export default class MidiComposer {
   }
 
   async closeComposerWithPrompt() {
-    if (this.hasUnsavedChanges()) {
-      const shouldSave = this.game?.showInlineConfirm?.('Save changes before closing?');
-      if (shouldSave) {
-        await this.saveSongToLibrary();
-      }
-    }
-    this.game?.exitMidiComposer?.();
+    await this.documentLifecycle.closeWithPrompt(this, async () => {
+      this.game?.exitMidiComposer?.();
+    });
   }
 
   closeFileMenu() {
