@@ -29,6 +29,7 @@ import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
+import { createViewportController } from './shared/viewportController.js';
 
 
 export default class PixelStudio {
@@ -104,6 +105,11 @@ export default class PixelStudio {
       panX: 0,
       panY: 0
     };
+    this.viewportController = createViewportController({
+      minZoom: 0,
+      maxZoom: 8,
+      zoomStep: 1
+    });
     this.tiledPreview = { enabled: false, tiles: 2 };
     this.animation = {
       frames: [createFrame(this.canvasState.layers, 120)],
@@ -418,6 +424,7 @@ export default class PixelStudio {
     this.panStart = null;
     this.menuScrollDrag = null;
     this.gesture = null;
+    this.viewportController.cancelInteractions();
     this.selectionContextMenu = null;
     this.quickWheel = { active: false, type: null, center: { x: 0, y: 0 }, selectionIndex: null };
     this.controlsOverlayOpen = false;
@@ -1108,7 +1115,11 @@ export default class PixelStudio {
   }
 
   zoomBy(delta) {
-    this.view.zoomIndex = clamp(this.view.zoomIndex + delta, 0, this.view.zoomLevels.length - 1);
+    this.view.zoomIndex = this.viewportController.zoomWithStep(this.view.zoomIndex, delta, {
+      minZoom: 0,
+      maxZoom: this.view.zoomLevels.length - 1,
+      zoomStep: 1
+    });
   }
 
   updateCursorPosition() {
@@ -1146,7 +1157,7 @@ export default class PixelStudio {
     if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
       this.setInputMode('canvas');
       if (this.spaceDown || button === 1 || button === 2) {
-        this.panStart = { x: payload.x, y: payload.y, panX: this.view.panX, panY: this.view.panY };
+        this.panStart = this.viewportController.beginPan(payload, { x: this.view.panX, y: this.view.panY });
         return;
       }
       const point = this.getGridCellFromScreen(payload.x, payload.y);
@@ -1175,8 +1186,10 @@ export default class PixelStudio {
       return;
     }
     if (this.panStart && payload.buttons) {
-      this.view.panX = this.panStart.panX + (payload.x - this.panStart.x);
-      this.view.panY = this.panStart.panY + (payload.y - this.panStart.y);
+      const pan = this.viewportController.updatePan(payload);
+      if (!pan) return;
+      this.view.panX = pan.x;
+      this.view.panY = pan.y;
       return;
     }
     const point = this.getGridCellFromScreen(payload.x, payload.y);
@@ -1194,6 +1207,7 @@ export default class PixelStudio {
     }
     if (this.panStart) {
       this.panStart = null;
+      this.viewportController.endPan();
     }
     this.cancelLongPress();
     this.handleToolPointerUp();
@@ -1207,21 +1221,21 @@ export default class PixelStudio {
   handleGestureStart(payload) {
     if (!this.canvasBounds) return;
     if (!payload?.distance) return;
-    this.gesture = {
-      startDistance: payload.distance,
+    this.viewportController.cancelInteractions();
+    this.gesture = this.viewportController.beginPinch(payload, {
       startZoomIndex: this.view.zoomIndex,
-      startX: payload.x,
-      startY: payload.y,
       startPanX: this.view.panX,
       startPanY: this.view.panY
-    };
+    });
   }
 
   handleGestureMove(payload) {
     if (!this.gesture?.startDistance) return;
-    const scale = payload.distance / this.gesture.startDistance;
+    const pinch = this.viewportController.updatePinch(payload);
+    if (!pinch) return;
+    const scale = pinch.scale;
     const levels = this.view.zoomLevels;
-    const target = levels[this.gesture.startZoomIndex] * scale;
+    const target = levels[pinch.context.startZoomIndex] * scale;
     let closestIndex = 0;
     let closest = Infinity;
     levels.forEach((value, index) => {
@@ -1232,12 +1246,13 @@ export default class PixelStudio {
       }
     });
     this.view.zoomIndex = closestIndex;
-    this.view.panX = this.gesture.startPanX + (payload.x - this.gesture.startX);
-    this.view.panY = this.gesture.startPanY + (payload.y - this.gesture.startY);
+    this.view.panX = pinch.context.startPanX + pinch.deltaX;
+    this.view.panY = pinch.context.startPanY + pinch.deltaY;
   }
 
   handleGestureEnd() {
     this.gesture = null;
+    this.viewportController.endPinch();
   }
 
   startLongPress(payload) {
