@@ -1,7 +1,4 @@
-import { INPUT_ACTIONS } from './inputManager.js';
-
-const NAV_REPEAT_DELAY = 0.18;
-const TRIGGER_THRESHOLD = 0.6;
+import { INPUT_ACTIONS, NAV_REPEAT_DELAY, TRIGGER_THRESHOLD } from './inputBindings.js';
 
 export default class PixelEditorGamepadInput {
   constructor() {
