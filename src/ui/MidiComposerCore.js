@@ -31,6 +31,7 @@ import { initializeComposerState } from './midi/state/composerState.js';
 import { registerComposerInputHandlers } from './midi/input/composerInputHandlers.js';
 import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
 import { createViewportController } from './shared/viewportController.js';
+import { createSnapshotHistory } from './shared/history/SnapshotHistory.js';
 
 const NOTE_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const SCALE_LIBRARY = [
@@ -531,17 +532,25 @@ export default class MidiComposer {
     this.settingsOpen = false;
     this.settingsScroll = 0;
     this.settingsScrollMax = 0;
-    this.undoStack = [];
-    this.redoStack = [];
-    this.maxUndoSteps = 80;
     this.lastPersistedSnapshot = null;
     this.lastSavedSnapshot = null;
     this._dirty = false;
     this._persistTimer = null;
     this._persistDelayMs = 300;
-    this._pendingHistorySnapshot = null;
-    this._historyCommitTimer = null;
     this._historyCommitDelayMs = 500;
+    this.history = createSnapshotHistory({
+      limit: 80,
+      debounceMs: this._historyCommitDelayMs,
+      createSnapshot: () => {
+        try {
+          return JSON.stringify(this.song);
+        } catch (error) {
+          console.warn('history snapshot failed', error);
+          return null;
+        }
+      },
+      applySnapshot: (snapshot) => this.applySongSnapshot(snapshot, { updateHistory: false })
+    });
     this._needsEnsureState = false;
     this.debug = { perf: false };
     this.currentDocumentRef = null;
@@ -753,7 +762,7 @@ export default class MidiComposer {
     this.ensureState();
     const initialSnapshot = JSON.stringify(this.song);
     this.lastPersistedSnapshot = initialSnapshot;
-    this._pendingHistorySnapshot = initialSnapshot;
+    this.history.reset(initialSnapshot);
     this.lastSavedSnapshot = initialSnapshot;
     this._dirty = false;
     this.gridZoomX = this.getDefaultGridZoomX();
@@ -877,7 +886,7 @@ export default class MidiComposer {
       if (perfEnabled) {
         const elapsed = performance.now() - start;
         if (elapsed > 12) {
-          const sizeEstimate = this.lastPersistedSnapshot?.length || this._pendingHistorySnapshot?.length || 0;
+          const sizeEstimate = this.lastPersistedSnapshot?.length || this.history.currentSnapshot?.length || 0;
           console.warn(`[perf] flushPersist ${elapsed.toFixed(1)}ms (song ${sizeEstimate} chars)`);
         }
       }
@@ -892,14 +901,12 @@ export default class MidiComposer {
   }
 
   resetHistory() {
-    this.undoStack = [];
-    this.redoStack = [];
-    this._pendingHistorySnapshot = JSON.stringify(this.song);
+    this.history.reset();
     this.lastPersistedSnapshot = null;
   }
 
   markSavedSnapshot() {
-    this.lastSavedSnapshot = this.lastPersistedSnapshot ?? this._pendingHistorySnapshot;
+    this.lastSavedSnapshot = this.lastPersistedSnapshot ?? this.history.currentSnapshot;
     if (this.lastPersistedSnapshot) {
       this._dirty = false;
     }
@@ -911,40 +918,18 @@ export default class MidiComposer {
   }
 
   commitHistorySnapshot() {
-    let snapshot;
-    try {
-      snapshot = JSON.stringify(this.song);
-    } catch (error) {
-      console.warn('history snapshot failed', error);
-      return;
-    }
-    if (snapshot === this._pendingHistorySnapshot || snapshot === this.lastPersistedSnapshot) return;
-    const baseSnapshot = this._pendingHistorySnapshot ?? this.lastPersistedSnapshot;
-    if (baseSnapshot && baseSnapshot !== snapshot) {
-      this.undoStack.push(baseSnapshot);
-      if (this.undoStack.length > this.maxUndoSteps) {
-        this.undoStack.shift();
-      }
-    }
-    this.redoStack = [];
-    this._pendingHistorySnapshot = snapshot;
+    this.history.commit(undefined, { baseSnapshot: this.history.currentSnapshot ?? this.lastPersistedSnapshot });
   }
 
   scheduleHistoryCommit() {
-    if (this._historyCommitTimer) {
-      clearTimeout(this._historyCommitTimer);
-    }
-    this._historyCommitTimer = window.setTimeout(() => {
-      this._historyCommitTimer = null;
-      this.commitHistorySnapshot();
-    }, this._historyCommitDelayMs);
+    this.history.scheduleCommit();
   }
 
   confirmDiscardChanges() {
     return this.documentLifecycle.confirmDiscardChanges(this);
   }
 
-  applySongSnapshot(snapshot) {
+  applySongSnapshot(snapshot, { updateHistory = true } = {}) {
     if (!snapshot) return;
     try {
       this.song = JSON.parse(snapshot);
@@ -960,24 +945,19 @@ export default class MidiComposer {
     this.selectedPatternIndex = clamp(this.selectedPatternIndex, 0, Math.max(0, patternCount - 1));
     this.selection.clear();
     this.clipboard = null;
-    this._pendingHistorySnapshot = snapshot;
+    if (updateHistory) {
+      this.history.currentSnapshot = snapshot;
+      this.history.pendingSnapshot = snapshot;
+    }
     this.markDirty();
   }
 
   undo() {
-    if (this.undoStack.length === 0) return;
-    const snapshot = this.undoStack.pop();
-    const current = JSON.stringify(this.song);
-    this.redoStack.push(current);
-    this.applySongSnapshot(snapshot);
+    this.history.undo();
   }
 
   redo() {
-    if (this.redoStack.length === 0) return;
-    const snapshot = this.redoStack.pop();
-    const current = JSON.stringify(this.song);
-    this.undoStack.push(current);
-    this.applySongSnapshot(snapshot);
+    this.history.redo();
   }
 
   async saveSongToLibrary(options = {}) {
@@ -3090,7 +3070,7 @@ export default class MidiComposer {
     if (perfEnabled) {
       const elapsed = performance.now() - perfStart;
       if (elapsed > 12) {
-        const sizeEstimate = this.lastPersistedSnapshot?.length || this._pendingHistorySnapshot?.length || 0;
+        const sizeEstimate = this.lastPersistedSnapshot?.length || this.history.currentSnapshot?.length || 0;
         console.warn(`[perf] triggerPlayback ${elapsed.toFixed(1)}ms (notes ${noteCount}, song ${sizeEstimate} chars)`);
       }
     }
@@ -7651,7 +7631,7 @@ export default class MidiComposer {
         const elapsed = performance.now() - perfStart;
         if (elapsed > 12) {
           const noteCount = this.song.tracks.reduce((sum, t) => sum + (t.patterns?.[this.selectedPatternIndex]?.notes?.length || 0), 0);
-          const sizeEstimate = this.lastPersistedSnapshot?.length || this._pendingHistorySnapshot?.length || 0;
+          const sizeEstimate = this.lastPersistedSnapshot?.length || this.history.currentSnapshot?.length || 0;
           console.warn(`[perf] draw ${elapsed.toFixed(1)}ms (notes ${noteCount}, song ${sizeEstimate} chars)`);
         }
       }
@@ -7707,7 +7687,7 @@ export default class MidiComposer {
       const elapsed = performance.now() - perfStart;
       if (elapsed > 12) {
         const noteCount = this.song.tracks.reduce((sum, t) => sum + (t.patterns?.[this.selectedPatternIndex]?.notes?.length || 0), 0);
-        const sizeEstimate = this.lastPersistedSnapshot?.length || this._pendingHistorySnapshot?.length || 0;
+        const sizeEstimate = this.lastPersistedSnapshot?.length || this.history.currentSnapshot?.length || 0;
         console.warn(`[perf] draw ${elapsed.toFixed(1)}ms (notes ${noteCount}, song ${sizeEstimate} chars)`);
       }
     }
