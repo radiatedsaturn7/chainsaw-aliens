@@ -2,12 +2,8 @@ import Minimap from '../world/Minimap.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsList, vfsSave } from '../ui/vfs.js';
 import { UI_SUITE, formatMenuLabel } from '../ui/uiSuite.js';
+import { buildEditorFileMenu, LEVEL_ROOM_PRESETS, openNewDocumentDialog } from '../ui/editorFileMenu.js';
 
-const ROOM_SIZE_PRESETS = [
-  [1, 1], [2, 1], [3, 1], [4, 1],
-  [1, 2], [1, 3], [1, 4],
-  [2, 2], [3, 3], [4, 4]
-];
 const ROOM_BASE_WIDTH = 38;
 const ROOM_BASE_HEIGHT = 18;
 
@@ -876,7 +872,11 @@ export default class Editor {
     }
 
     if (input.wasPressedCode('Escape')) {
-      this.game.exitEditor({ playtest: false });
+      if (this.getActivePanelTab() === 'file') {
+        this.closeFileMenu();
+      } else {
+        this.game.exitEditor({ playtest: false });
+      }
     }
 
     if ((input.isDownCode('ControlLeft') || input.isDownCode('ControlRight')) && input.wasPressedCode('KeyZ')) {
@@ -921,6 +921,34 @@ export default class Editor {
     }
   }
 
+
+  getMainPanelTab(activeTab = this.getActivePanelTab()) {
+    return activeTab === 'file' ? 'file' : 'toolbox';
+  }
+
+  getToolboxSubTabs() {
+    return [
+      { id: 'toolbox', label: 'Tools' },
+      { id: 'tiles', label: 'Tiles' },
+      { id: 'triggers', label: 'Triggers' },
+      { id: 'powerups', label: 'Powerups' },
+      { id: 'enemies', label: 'Enemies' },
+      { id: 'bosses', label: 'Bosses' },
+      { id: 'prefabs', label: 'Structures' },
+      { id: 'music', label: 'Music' }
+    ];
+  }
+
+  setMainPanelTab(tabId) {
+    if (tabId === 'file') {
+      this.setPanelTab('file');
+      return;
+    }
+    if (tabId === 'toolbox' && this.getActivePanelTab() === 'file') {
+      this.setPanelTab('toolbox');
+    }
+  }
+
   cyclePanelTab(direction) {
     const current = this.getActivePanelTab();
     const currentIndex = Math.max(0, this.panelTabs.indexOf(current));
@@ -947,6 +975,55 @@ export default class Editor {
     await this.closeEditorWithPrompt();
   }
 
+  getFileMenuItems() {
+    const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
+    return buildEditorFileMenu({
+      labels: {
+        new: 'New',
+        open: 'Open',
+        export: 'Export',
+        import: 'Import'
+      },
+      actions: {
+        new: () => this.newLevelDocument(),
+        save: () => this.saveLevelToStorage(),
+        'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
+        open: () => this.loadLevelFromStorage(),
+        export: () => this.saveToFile(),
+        import: () => this.openFileDialog(),
+        undo: () => this.undo(),
+        redo: () => this.redo()
+      },
+      extras: [
+        { id: 'resize-level', label: 'Resize', onClick: () => this.resizeLevelDocument() },
+        { divider: true },
+        { id: 'playtest', label: 'Playtest', onClick: () => this.game.exitEditor({ playtest: true }) },
+        ...(spawnTile
+          ? [{
+            id: 'spawn-point',
+            label: 'Spawn Point',
+            onClick: () => {
+              this.setTileType(spawnTile);
+              this.mode = 'tile';
+              this.tileTool = 'paint';
+            }
+          }]
+          : []),
+        {
+          id: 'start-everything',
+          label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
+          onClick: () => {
+            this.startWithEverything = !this.startWithEverything;
+          }
+        },
+        { id: 'random-level', label: 'Random Level', onClick: () => this.promptRandomLevel() },
+        { divider: true },
+        { id: 'close-menu', label: 'Close Menu', onClick: () => this.closeFileMenu() },
+        { id: 'exit-main', label: 'Exit to Main Menu', onClick: () => this.exitToMainMenu() }
+      ]
+    });
+  }
+
   getPanelConfig(tabId, { includeExtras = false } = {}) {
     const tileToolButtons = [
       { id: 'paint', label: 'Paint', tooltip: 'Paint tiles. (Q)' },
@@ -968,110 +1045,7 @@ export default class Editor {
         onClick: () => this.game.exitEditor({ playtest: true })
       }];
     } else if (tabId === 'file') {
-      items = [
-        {
-          id: 'new-level',
-          label: 'New',
-          tooltip: 'Create a new level',
-          onClick: () => this.newLevelDocument()
-        },
-        {
-          id: 'save-storage',
-          label: 'Save',
-          tooltip: 'Save level to browser storage',
-          onClick: () => this.saveLevelToStorage()
-        },
-        {
-          id: 'save-as-storage',
-          label: 'Save As',
-          tooltip: 'Save level with a new name',
-          onClick: () => this.saveLevelToStorage({ forceSaveAs: true })
-        },
-        {
-          id: 'load-storage',
-          label: 'Open',
-          tooltip: 'Open level from browser storage',
-          onClick: () => this.loadLevelFromStorage()
-        },
-        {
-          id: 'resize-level',
-          label: 'Resize',
-          tooltip: 'Resize level canvas',
-          onClick: () => this.resizeLevelDocument()
-        },
-        { id: 'divider-1', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'export-json',
-          label: 'Export',
-          tooltip: 'Export world JSON',
-          onClick: () => this.saveToFile()
-        },
-        {
-          id: 'import-json',
-          label: 'Import',
-          tooltip: 'Import world JSON',
-          onClick: () => this.openFileDialog()
-        },
-        { id: 'divider-2', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'undo',
-          label: 'Undo',
-          tooltip: 'Undo last change (Ctrl+Z)',
-          onClick: () => this.undo()
-        },
-        {
-          id: 'redo',
-          label: 'Redo',
-          tooltip: 'Redo last change (Ctrl+Y)',
-          onClick: () => this.redo()
-        },
-        { id: 'divider-3', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'playtest',
-          label: 'Playtest',
-          tooltip: 'Start playtest from spawn',
-          onClick: () => this.game.exitEditor({ playtest: true })
-        },
-        ...(spawnTile
-          ? [{
-            id: 'spawn-point',
-            label: 'Spawn Point',
-            tooltip: 'Place the player spawn point',
-            onClick: () => {
-              this.setTileType(spawnTile);
-              this.mode = 'tile';
-              this.tileTool = 'paint';
-            }
-          }]
-          : []),
-        {
-          id: 'start-everything',
-          label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
-          tooltip: 'Toggle playtest loadout',
-          onClick: () => {
-            this.startWithEverything = !this.startWithEverything;
-          }
-        },
-        {
-          id: 'random-level',
-          label: 'Random Level',
-          tooltip: 'Create a random level layout',
-          onClick: () => this.promptRandomLevel()
-        },
-        { id: 'divider-4', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'close-menu',
-          label: 'Close Menu',
-          tooltip: 'Close file menu',
-          onClick: () => this.closeFileMenu()
-        },
-        {
-          id: 'exit-main',
-          label: 'Exit to Main Menu',
-          tooltip: 'Exit editor to title',
-          onClick: () => this.exitToMainMenu()
-        }
-      ];
+      items = this.getFileMenuItems();
       columns = 2;
     } else if (tabId === 'tiles') {
       items = DEFAULT_TILE_TYPES.map((tile) => ({
@@ -1750,15 +1724,21 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   async newLevelDocument() {
-    this.randomLevelDialog.mode = 'new';
-    this.randomLevelDialog.open = true;
-    this.randomLevelDialog.justOpened = true;
-    this.randomLevelDialog.focus = 'width';
-    this.randomLevelSlider.active = 'width';
-    this.randomLevelSliderRepeat = 0;
-    this.randomLevelFocusRepeat = 0;
-    this.randomLevelSize.width = this.newLevelSizeDraft.width;
-    this.randomLevelSize.height = this.newLevelSizeDraft.height;
+    const defaults = {
+      name: this.currentDocumentRef?.name || `new-level-${Date.now()}`,
+      width: this.newLevelSizeDraft.width,
+      height: this.newLevelSizeDraft.height
+    };
+    const result = await openNewDocumentDialog('level', defaults);
+    if (!result) return;
+    const data = this.buildEmptyLevelData(result.width, result.height);
+    this.game.applyWorldData(data);
+    this.newLevelSizeDraft = { width: data.width, height: data.height };
+    this.currentDocumentRef = { folder: 'levels', name: result.name };
+    this.markSavedSnapshot();
+    this.resetView();
+    this.syncPreviewMinimap();
+    this.closeFileMenu();
   }
 
   async closeEditorWithPrompt() {
@@ -6561,42 +6541,53 @@ Level size:`, `${current.width}x${current.height}`);
         }
         ctx.fillText(summary, panelW / 2, panelY + 46);
       } else {
-        const tabs = [
-          { id: 'file', label: 'File' },
-          { id: 'toolbox', label: 'Toolbox' },
-          { id: 'tiles', label: 'Tiles' },
-          { id: 'triggers', label: 'Triggers' },
-          { id: 'powerups', label: 'Powerups' },
-          { id: 'enemies', label: 'Enemies' },
-          { id: 'bosses', label: 'Bosses' },
-          { id: 'prefabs', label: 'Structures' },
-          { id: 'music', label: 'Music' }
-        ];
         const activeTab = this.getActivePanelTab();
+        const mainTab = this.getMainPanelTab(activeTab);
+        const mainTabs = [{ id: 'file', label: 'File' }, { id: 'toolbox', label: 'Toolbox' }];
+        const subTabs = mainTab === 'file' ? [{ id: 'file', label: 'File' }] : this.getToolboxSubTabs();
         const panelPadding = 10;
-        const tabColumnW = Math.max(92, Math.min(124, Math.floor(panelW * 0.32)));
-        const tabX = panelX + panelPadding;
         const tabY = panelY + handleAreaH + 8;
-        const tabW = tabColumnW - panelPadding * 1.5;
         const tabButtonH = 36;
         const tabGap = 8;
+        const mainColumnW = Math.max(88, Math.min(102, Math.floor(panelW * 0.22)));
+        const subColumnW = Math.max(94, Math.min(124, Math.floor(panelW * 0.26)));
+        const itemColumnW = Math.max(120, Math.min(170, Math.floor(panelW * 0.36)));
+        const rightEdge = panelX + panelW - panelPadding;
+        const mainX = rightEdge - mainColumnW;
+        const itemX = rightEdge - itemColumnW;
+        const subX = itemX - tabGap - subColumnW;
+        const tabW = mainColumnW;
+        const subW = subColumnW;
         ctx.font = `14px ${UI_SUITE.font.family}`;
-        tabs.forEach((tab, index) => {
+        mainTabs.forEach((tab, index) => {
           const y = tabY + index * (tabButtonH + tabGap);
           drawButton(
-            tabX,
+            mainX,
             y,
             tabW,
             tabButtonH,
             tab.label,
+            mainTab === tab.id,
+            () => this.setMainPanelTab(tab.id),
+            `${tab.label} main menu`
+          );
+        });
+        subTabs.forEach((tab, index) => {
+          const y = tabY + index * (tabButtonH + tabGap);
+          drawButton(
+            subX,
+            y,
+            subW,
+            tabButtonH,
+            tab.label,
             activeTab === tab.id,
             () => this.setPanelTab(tab.id),
-            `${tab.label} drawer`
+            `${tab.label} sub menu`
           );
         });
 
-        const contentX = panelX + tabColumnW + 6;
-        const contentW = panelW - tabColumnW - panelPadding - 6;
+        const contentX = itemX;
+        const contentW = itemColumnW;
         const baseContentY = tabY;
         let contentY = baseContentY;
         const reservedBottom = joystickRadius * 2 + 32;
@@ -6623,125 +6614,7 @@ Level size:`, `${current.width}x${current.height}`);
           }];
           columns = 1;
         } else if (activeTab === 'file') {
-          items = [
-            {
-              id: 'new-level',
-              label: 'New',
-              active: false,
-              tooltip: 'Create a new level',
-              onClick: () => this.newLevelDocument()
-            },
-            {
-              id: 'save-storage',
-              label: 'Save',
-              active: false,
-              tooltip: 'Save level to browser storage',
-              onClick: () => this.saveLevelToStorage()
-            },
-            {
-              id: 'save-as-storage',
-              label: 'Save As',
-              active: false,
-              tooltip: 'Save level with a new name',
-              onClick: () => this.saveLevelToStorage({ forceSaveAs: true })
-            },
-            {
-              id: 'load-storage',
-              label: 'Open',
-              active: false,
-              tooltip: 'Open level from browser storage',
-              onClick: () => this.loadLevelFromStorage()
-            },
-            {
-              id: 'resize-level',
-              label: 'Resize',
-              active: false,
-              tooltip: 'Resize level canvas',
-              onClick: () => this.resizeLevelDocument()
-            },
-            { id: 'divider-1', divider: true },
-            {
-              id: 'export-json',
-              label: 'Export',
-              active: false,
-              tooltip: 'Export world JSON',
-              onClick: () => this.saveToFile()
-            },
-            {
-              id: 'import-json',
-              label: 'Import',
-              active: false,
-              tooltip: 'Import world JSON',
-              onClick: () => this.openFileDialog()
-            },
-            { id: 'divider-2', divider: true },
-            {
-              id: 'undo',
-              label: 'Undo',
-              active: false,
-              tooltip: 'Undo last change (Ctrl+Z)',
-              onClick: () => this.undo()
-            },
-            {
-              id: 'redo',
-              label: 'Redo',
-              active: false,
-              tooltip: 'Redo last change (Ctrl+Y)',
-              onClick: () => this.redo()
-            },
-            { id: 'divider-3', divider: true },
-            {
-              id: 'playtest',
-              label: 'Playtest',
-              active: false,
-              tooltip: 'Start playtest from spawn',
-              onClick: () => this.game.exitEditor({ playtest: true })
-            },
-            ...(spawnTile
-              ? [{
-                id: 'spawn-point',
-                label: 'Spawn point',
-                active: this.tileType?.special === 'spawn',
-                tooltip: 'Place the player spawn point',
-                onClick: () => {
-                  this.setTileType(spawnTile);
-                  this.mode = 'tile';
-                  this.tileTool = 'paint';
-                }
-              }]
-              : []),
-            {
-              id: 'start-everything',
-              label: `Start with everything: ${this.startWithEverything ? 'On' : 'Off'}`,
-              active: false,
-              tooltip: 'Toggle playtest loadout',
-              onClick: () => {
-                this.startWithEverything = !this.startWithEverything;
-              }
-            },
-            {
-              id: 'random-level',
-              label: 'Random level',
-              active: false,
-              tooltip: 'Create a random level layout',
-              onClick: () => this.promptRandomLevel()
-            },
-            { id: 'divider-4', divider: true },
-            {
-              id: 'close-menu',
-              label: 'Close Menu',
-              active: false,
-              tooltip: 'Close file menu',
-              onClick: () => this.closeFileMenu()
-            },
-            {
-              id: 'exit-main',
-              label: 'Exit to Main Menu',
-              active: false,
-              tooltip: 'Exit editor to title',
-              onClick: () => this.exitToMainMenu()
-            }
-          ];
+          items = this.getFileMenuItems().map((item) => ({ ...item, active: false }));
           columns = 1;
         } else if (activeTab === 'tiles') {
           items = DEFAULT_TILE_TYPES.map((tile) => ({
@@ -7048,32 +6921,6 @@ Level size:`, `${current.width}x${current.height}`);
           );
         });
 
-        if (activeTab === 'file') {
-          const footerH = Math.max(28, buttonHeight);
-          const footerY = contentY + contentHeight - footerH - 10;
-          const footerGap = 8;
-          const footerW = Math.floor((contentW - contentPadding * 2 - footerGap) / 2);
-          drawButton(
-            contentX + contentPadding,
-            footerY,
-            footerW,
-            footerH,
-            'Close Menu',
-            false,
-            () => this.closeFileMenu(),
-            'Close file menu'
-          );
-          drawButton(
-            contentX + contentPadding + footerW + footerGap,
-            footerY,
-            footerW,
-            footerH,
-            'Exit to Main Menu',
-            false,
-            () => this.exitToMainMenu(),
-            'Exit editor to title'
-          );
-        }
 
       }
       if (!this.drawer.open) {
@@ -7086,64 +6933,53 @@ Level size:`, `${current.width}x${current.height}`);
       const panelX = width - panelWidth - 12;
       const panelY = 12;
       const panelH = height - 24;
-      const tabs = [
-        { id: 'tools', label: 'TOOLS' },
-        { id: 'tiles', label: 'TILES' },
-        { id: 'powerups', label: 'POWERUPS' },
-        { id: 'enemies', label: 'ENEMIES' },
-        { id: 'bosses', label: 'BOSSES' },
-        { id: 'prefabs', label: 'STRUCTURES' },
-        { id: 'shapes', label: 'SHAPES' },
-        { id: 'music', label: 'MUSIC' }
-      ];
-      const tabMargin = 12;
-      const tabGap = 6;
-      const tabArrowW = 22;
-      const tabArrowGap = 6;
-      const tabHeight = 26;
-      const tabRowW = panelWidth - tabMargin * 2 - (tabArrowW + tabArrowGap) * 2;
-      const tabWidth = (tabRowW - tabGap * (tabs.length - 1)) / tabs.length;
-      const tabY = panelY;
       const activeTab = this.getActivePanelTab();
+      const mainTab = this.getMainPanelTab(activeTab);
+      const mainTabs = [{ id: 'file', label: 'FILE' }, { id: 'toolbox', label: 'TOOLBOX' }];
+      const subTabs = mainTab === 'file'
+        ? [{ id: 'file', label: 'FILE' }]
+        : this.getToolboxSubTabs().map((tab) => ({ id: tab.id, label: tab.label.toUpperCase() }));
+      const tabGap = 8;
+      const tabHeight = 28;
+      const mainW = 92;
+      const subW = 120;
+      const topY = panelY + 10;
+      const rightEdge = panelX + panelWidth - 10;
+      const mainX = rightEdge - mainW;
+      const subX = mainX - tabGap - subW;
 
-      drawButton(
-        panelX + tabMargin,
-        tabY,
-        tabArrowW,
-        tabHeight,
-        '◀',
-        false,
-        () => this.cyclePanelTab(-1),
-        'Previous tab'
-      );
-      drawButton(
-        panelX + panelWidth - tabMargin - tabArrowW,
-        tabY,
-        tabArrowW,
-        tabHeight,
-        '▶',
-        false,
-        () => this.cyclePanelTab(1),
-        'Next tab'
-      );
-      tabs.forEach((tab, index) => {
-        const x = panelX + tabMargin + tabArrowW + tabArrowGap + index * (tabWidth + tabGap);
+      mainTabs.forEach((tab, index) => {
+        const y = topY + index * (tabHeight + tabGap);
         drawButton(
-          x,
-          tabY,
-          tabWidth,
+          mainX,
+          y,
+          mainW,
+          tabHeight,
+          tab.label,
+          mainTab === tab.id,
+          () => this.setMainPanelTab(tab.id),
+          `${tab.label} main menu`
+        );
+      });
+
+      subTabs.forEach((tab, index) => {
+        const y = topY + index * (tabHeight + tabGap);
+        drawButton(
+          subX,
+          y,
+          subW,
           tabHeight,
           tab.label,
           activeTab === tab.id,
           () => this.setPanelTab(tab.id),
-          `${tab.label} panel`
+          `${tab.label} sub menu`
         );
       });
 
-      let contentY = tabY + tabHeight + 10;
-      let contentHeight = Math.max(0, panelY + panelH - contentY);
-      const contentX = panelX;
-      const contentW = panelWidth;
+      let contentY = topY;
+      let contentHeight = Math.max(0, panelY + panelH - contentY - 10);
+      const contentX = panelX + 10;
+      const contentW = Math.max(120, subX - panelX - 20);
       const contentPadding = 12;
       const buttonGap = 10;
       const isTallButtons = activeTab === 'tiles'
@@ -7244,32 +7080,6 @@ Level size:`, `${current.width}x${current.height}`);
         );
       });
 
-      if (activeTab === 'file') {
-        const footerH = 30;
-        const footerY = contentY + contentHeight - footerH - 10;
-        const footerGap = 8;
-        const footerW = Math.floor((contentW - contentPadding * 2 - footerGap) / 2);
-        drawButton(
-          contentX + contentPadding,
-          footerY,
-          footerW,
-          footerH,
-          'Close Menu',
-          false,
-          () => this.closeFileMenu(),
-          'Close file menu'
-        );
-        drawButton(
-          contentX + contentPadding + footerW + footerGap,
-          footerY,
-          footerW,
-          footerH,
-          'Exit to Main Menu',
-          false,
-          () => this.exitToMainMenu(),
-          'Exit editor to title'
-        );
-      }
 
       const infoLines = [];
       if (infoLines.length > 0) {
@@ -7907,7 +7717,7 @@ Level size:`, `${current.width}x${current.height}`);
       const presetGap = 8;
       const presetW = Math.floor((dialogW - 40 - presetGap * (presetCols - 1)) / presetCols);
       const presetH = 26;
-      ROOM_SIZE_PRESETS.forEach(([rw, rh], index) => {
+      LEVEL_ROOM_PRESETS.forEach(([rw, rh], index) => {
         const col = index % presetCols;
         const row = Math.floor(index / presetCols);
         const px = dialogX + 20 + col * (presetW + presetGap);
