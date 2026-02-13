@@ -601,6 +601,19 @@ export default class PixelStudio {
     this.loadTileData();
   }
 
+  resetTransientInteractionState() {
+    this.stopGamepadDraw();
+    this.cancelLongPress();
+    this.panStart = null;
+    this.menuScrollDrag = null;
+    this.gesture = null;
+    this.selectionContextMenu = null;
+    this.quickWheel = { active: false, type: null, center: { x: 0, y: 0 }, selectionIndex: null };
+    this.controlsOverlayOpen = false;
+    this.menuOpen = false;
+    this.paletteGridOpen = false;
+  }
+
   resetFocus() {
     this.setInputMode('canvas');
     this.clearSelection();

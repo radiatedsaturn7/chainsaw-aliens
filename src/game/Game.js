@@ -173,6 +173,7 @@ export default class Game {
     this.pauseMenu = new Pause();
     this.shopUI = new Shop(UPGRADE_LIST);
     this.stateManager = new StateManager('loading');
+    this.stateManager.setBeforeTransition((metadata) => this.handleSharedStateTransitionCleanup(metadata));
     this.registerStates();
     this.state = this.stateManager.currentKey;
     this.victory = false;
@@ -407,7 +408,7 @@ export default class Game {
     } finally {
       this.loading = false;
       if (this.state === 'loading') {
-        this.transitionTo('title');
+        this.transitionTo('title', { forceCleanup: true });
       }
     }
   }
@@ -653,6 +654,45 @@ export default class Game {
     this.refreshWorldCaches();
   }
 
+
+  handleSharedStateTransitionCleanup({ from, to, forceCleanup = false } = {}) {
+    const editorStates = new Set(['editor', 'pixel-editor', 'midi-editor', 'pixel-preview']);
+    const shouldCleanup = forceCleanup
+      || this.playtestActive
+      || editorStates.has(from)
+      || editorStates.has(to);
+    if (!shouldCleanup) return;
+
+    this.input.reset();
+    this.input.clearVirtualGamepad();
+    this.editor?.resetTransientInputState?.();
+    this.pixelStudio?.resetTransientInteractionState?.();
+    this.midiComposer?.resetTransientInteractionState?.();
+
+    this.playtestPauseLock = 0;
+    this.spawnPauseTimer = 0;
+    this.pickupPauseTimer = 0;
+
+    if (typeof document !== 'undefined') {
+      const bodyClasses = Array.from(document.body.classList);
+      bodyClasses.forEach((className) => {
+        if (className === 'editor-active' || className.includes('modal') || className.includes('overlay')) {
+          document.body.classList.remove(className);
+        }
+      });
+      if (to === 'editor' || to === 'pixel-editor' || to === 'midi-editor') {
+        document.body.classList.add('editor-active');
+      }
+    }
+
+    this.mobileControls.reset();
+    this.mobileControls.setViewport({
+      width: this.canvas.width,
+      height: this.canvas.height,
+      isMobile: this.isMobile
+    });
+  }
+
   enterEditor({ tab = null } = {}) {
     this.editorReturnState = this.state;
     this.transitionTo('editor');
@@ -662,7 +702,6 @@ export default class Game {
       this.editor.setPanelTab(tab);
     }
     this.playtestActive = false;
-    document.body.classList.add('editor-active');
   }
 
   enterPixelStudio() {
@@ -671,13 +710,11 @@ export default class Game {
     this.setRevAudio(false);
     this.pixelStudio.resetFocus();
     this.playtestActive = false;
-    document.body.classList.add('editor-active');
   }
 
   exitPixelStudio({ toTitle = false } = {}) {
     this.playtestActive = false;
-    this.transitionTo(toTitle ? 'title' : (this.pixelStudioReturnState || 'title'));
-    document.body.classList.remove('editor-active');
+    this.transitionTo(toTitle ? 'title' : (this.pixelStudioReturnState || 'title'), { forceCleanup: true });
   }
 
   enterPixelPreview(tile) {
@@ -726,13 +763,11 @@ export default class Game {
     this.transitionTo('midi-editor');
     this.setRevAudio(false);
     this.playtestActive = false;
-    document.body.classList.add('editor-active');
   }
 
   exitMidiComposer() {
     this.playtestActive = false;
-    this.transitionTo(this.midiComposerReturnState || 'title');
-    document.body.classList.remove('editor-active');
+    this.transitionTo(this.midiComposerReturnState || 'title', { forceCleanup: true });
   }
 
   exitEditor({ playtest = false, toTitle = false } = {}) {
@@ -740,10 +775,9 @@ export default class Game {
     this.editor.flushWorldRefresh();
     if (playtest) {
       this.syncSpawnPoint();
-      this.transitionTo('playing');
+      this.transitionTo('playing', { forceCleanup: true });
       this.playtestActive = true;
       this.playtestPauseLock = 0.35;
-      document.body.classList.remove('editor-active');
       this.runGoldenPathSimulation({
         restoreState: 'playtest',
         playtest: true,
@@ -754,14 +788,13 @@ export default class Game {
     }
     this.playtestActive = false;
     if (toTitle) {
-      this.transitionTo('title');
+      this.transitionTo('title', { forceCleanup: true });
     } else if (this.editorReturnState === 'playing' || this.editorReturnState === 'pause') {
-      this.transitionTo('pause');
+      this.transitionTo('pause', { forceCleanup: true });
       this.minimapSelected = false;
     } else {
-      this.transitionTo('title');
+      this.transitionTo('title', { forceCleanup: true });
     }
-    document.body.classList.remove('editor-active');
   }
 
   returnToEditorFromPlaytest() {
@@ -778,13 +811,9 @@ export default class Game {
     } else {
       this.editor.setFocusOverride({ x: this.player.x, y: this.player.y });
     }
-    this.transitionTo('editor');
-    this.editor.resetTransientInputState();
+    this.transitionTo('editor', { forceCleanup: true });
     this.editor.activate();
     this.playtestActive = false;
-    this.mobileControls.reset();
-    this.input.reset();
-    document.body.classList.add('editor-active');
   }
 
   resetRun({ playtest = false, startWithEverything = true } = {}) {
@@ -5971,7 +6000,6 @@ export default class Game {
         this.transitionTo('editor');
         this.playtestActive = false;
         this.editor.activate();
-        document.body.classList.add('editor-active');
       } else if (restoreState === 'playtest') {
         this.transitionTo('playing');
         this.playtestActive = true;
@@ -5981,7 +6009,6 @@ export default class Game {
         this.playtestActive = savedState.playtestActive;
         if (savedState.editorActive) {
           this.editor.activate();
-          document.body.classList.add('editor-active');
         }
       }
       if (savedState.inputMode) {
@@ -6506,8 +6533,8 @@ export default class Game {
     return this.stateManager.shouldHandleGestureStart?.(payload) ?? true;
   }
 
-  transitionTo(nextState) {
-    this.stateManager.transition(nextState);
+  transitionTo(nextState, metadata = {}) {
+    this.stateManager.transition(nextState, metadata);
     this.state = this.stateManager.currentKey;
   }
 

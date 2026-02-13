@@ -1806,6 +1806,29 @@ export default class MidiComposer {
     this.activeTab = 'grid';
   }
 
+  resetTransientInteractionState() {
+    if (this.longPressTimer) {
+      clearTimeout(this.longPressTimer);
+      this.longPressTimer = null;
+    }
+    this.stopLivePreviewNotes();
+    this.stopPlayback();
+    this.dragState = null;
+    this.gridGesture = null;
+    this.songGesture = null;
+    this.draggingTrackControl = null;
+    this.toolsMenuOpen = false;
+    this.genreMenuOpen = false;
+    this.qaOverlayOpen = false;
+    this.tempoSliderOpen = false;
+    this.settingsOpen = false;
+    this.selectionMenu.open = false;
+    this.selectionMenu.bounds = [];
+    this.songSelectionMenu.open = false;
+    this.songSelectionMenu.bounds = [];
+    this.instrumentPicker.mode = null;
+  }
+
   isModalOpen() {
     return this.qaOverlayOpen;
   }
