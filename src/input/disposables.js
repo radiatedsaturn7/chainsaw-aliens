@@ -1,3 +1,12 @@
+/**
+ * Creates a one-shot disposer registry.
+ *
+ * Once disposeAll() is called, the registry is permanently closed:
+ * - Existing callbacks are drained once.
+ * - New callbacks passed to add() are disposed immediately.
+ *
+ * Create a fresh disposer via createDisposer() for any rebind lifecycle.
+ */
 export function createDisposer() {
   const disposers = [];
   let disposed = false;

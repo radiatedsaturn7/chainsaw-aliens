@@ -74,6 +74,9 @@ export default class Input {
 
   bindListeners() {
     if (this.listenersBound) return;
+    if (!this.listenerDisposer || this.listenerDisposer.disposed) {
+      this.listenerDisposer = createDisposer();
+    }
     this.listenersBound = true;
     this.listenerDisposer.add(addDOMListener(window, 'keydown', (e) => {
       if (!this.keys.get(e.code)) {
@@ -105,8 +108,9 @@ export default class Input {
   }
 
   destroy() {
-    if (!this.listenersBound) return;
-    this.listenerDisposer.disposeAll();
+    if (this.listenerDisposer) {
+      this.listenerDisposer.disposeAll();
+    }
     this.listenersBound = false;
     this.reset();
   }
@@ -394,6 +398,19 @@ export default class Input {
     this.clearVirtual();
     this.clearVirtualGamepad();
     this.gamepadActions = {};
+    this.gamepadPressed.clear();
+    this.gamepadReleased.clear();
+    this.gamepadPrevActions = {};
+    this.gamepadAxes = {
+      leftX: 0,
+      leftY: 0,
+      rightX: 0,
+      rightY: 0,
+      leftTrigger: 0,
+      rightTrigger: 0
+    };
+    this.gamepadConnected = false;
+    this.gamepadAxisMode = null;
   }
 
   flush() {
