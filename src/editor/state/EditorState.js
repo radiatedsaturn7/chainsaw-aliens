@@ -1,8 +1,10 @@
+import { createMethodProxy } from '../shared/createMethodProxy.js';
+
 export const createEditorStateModule = (editor) => ({
-  transition(action, ...args) {
-    if (typeof editor[action] === 'function') return editor[action](...args);
-    return null;
-  },
+  ...createMethodProxy(editor, {
+    transition: {},
+    applyTransition: {}
+  }),
   selectors() {
     return {
       world: editor.world,

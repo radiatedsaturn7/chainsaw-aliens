@@ -1,10 +1,10 @@
+import { createMethodProxy } from '../../../editor/shared/createMethodProxy.js';
+
 export const createComposerStateModule = (composer) => ({
-  applyTransition(transition, ...args) {
-    if (transition && typeof composer[transition] === 'function') {
-      return composer[transition](...args);
-    }
-    return null;
-  },
+  ...createMethodProxy(composer, {
+    applyTransition: {},
+    transition: {}
+  }),
   getSnapshot() {
     return {
       song: composer.song,

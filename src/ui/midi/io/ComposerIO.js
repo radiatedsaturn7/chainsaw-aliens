@@ -1,6 +1,7 @@
-export const createComposerIOModule = (composer) => ({
-  perform(action, ...args) {
-    if (typeof composer[action] === 'function') return composer[action](...args);
-    return null;
-  }
-});
+import { createMethodProxy } from '../../../editor/shared/createMethodProxy.js';
+
+export const createComposerIOModule = (composer) => (
+  createMethodProxy(composer, {
+    perform: {}
+  })
+);

@@ -1,6 +1,8 @@
-export const createEditorRenderModule = (editor) => ({
-  render(method = 'draw', ...args) {
-    if (typeof editor[method] === 'function') return editor[method](...args);
-    return null;
-  }
-});
+import { createMethodProxy } from '../shared/createMethodProxy.js';
+
+export const createEditorRenderModule = (editor) => (
+  createMethodProxy(editor, {
+    render: 'draw',
+    draw: 'draw'
+  })
+);

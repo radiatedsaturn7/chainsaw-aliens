@@ -1,6 +1,8 @@
-export const createComposerRenderModule = (composer) => ({
-  draw(method = 'draw', ...args) {
-    if (typeof composer[method] === 'function') return composer[method](...args);
-    return null;
-  }
-});
+import { createMethodProxy } from '../../../editor/shared/createMethodProxy.js';
+
+export const createComposerRenderModule = (composer) => (
+  createMethodProxy(composer, {
+    draw: 'draw',
+    render: 'draw'
+  })
+);
