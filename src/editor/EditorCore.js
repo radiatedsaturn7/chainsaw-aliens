@@ -6,6 +6,7 @@ import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
 import { createViewportController, screenToWorld, worldToScreen } from '../ui/shared/viewportController.js';
+import { createSnapshotHistory } from '../ui/shared/history/SnapshotHistory.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -350,9 +351,12 @@ export default class Editor {
     this.pendingEnemies = new Map();
     this.pendingElevatorPaths = new Map();
     this.pendingElevators = new Map();
-    this.undoStack = [];
-    this.redoStack = [];
     this.maxHistory = 50;
+    this.history = createSnapshotHistory({
+      limit: this.maxHistory,
+      onUndo: (action) => this.applyAction(action, 'undo'),
+      onRedo: (action) => this.applyAction(action, 'redo')
+    });
     this.hoverTile = null;
     this.regionName = 'Unknown';
     this.lastPointer = { x: 0, y: 0 };
@@ -4103,8 +4107,7 @@ Level size:`, `${current.width}x${current.height}`);
     this.pendingChanges.clear();
     this.pendingSpawn = null;
     this.pendingEnemies.clear();
-    this.undoStack = [];
-    this.redoStack = [];
+    this.history.reset(null);
     this.persistAutosave();
     this.resetView();
     this.game.runGoldenPathSimulation({
@@ -4116,18 +4119,12 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   undo() {
-    const action = this.undoStack.pop();
-    if (!action) return;
-    this.applyAction(action, 'undo');
-    this.redoStack.push(action);
+    if (!this.history.undo()) return;
     this.persistAutosave();
   }
 
   redo() {
-    const action = this.redoStack.pop();
-    if (!action) return;
-    this.applyAction(action, 'redo');
-    this.undoStack.push(action);
+    if (!this.history.redo()) return;
     this.persistAutosave();
   }
 
@@ -4264,11 +4261,7 @@ Level size:`, `${current.width}x${current.height}`);
         elevatorPaths,
         elevators
       };
-      this.undoStack.push(action);
-      if (this.undoStack.length > this.maxHistory) {
-        this.undoStack.shift();
-      }
-      this.redoStack = [];
+      this.history.commit(action);
       this.scheduleWorldRefresh();
       this.persistAutosave();
     }

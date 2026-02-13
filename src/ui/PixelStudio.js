@@ -21,7 +21,7 @@ import {
 } from './pixel-editor/layers.js';
 import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
-import UndoStack from './pixel-editor/undo.js';
+import { createSnapshotHistory } from './shared/history/SnapshotHistory.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
 import { createDocumentLifecycle } from './editor-documents/documentLifecycle.js';
@@ -118,7 +118,11 @@ export default class PixelStudio {
       loop: true,
       onion: { enabled: false, prev: 1, next: 1, opacity: 0.35 }
     };
-    this.undoStack = new UndoStack(75);
+    this.history = createSnapshotHistory({
+      limit: 75,
+      onUndo: (entry) => this.applyHistoryEntry(entry, 'undo'),
+      onRedo: (entry) => this.applyHistoryEntry(entry, 'redo')
+    });
     this.pendingHistory = null;
     this.strokeState = null;
     this.linePreview = null;
@@ -1398,30 +1402,26 @@ export default class PixelStudio {
     if (!this.pendingHistory) return;
     const layersAfter = this.canvasState.layers.map((layer) => new Uint32Array(layer.pixels));
     this.pendingHistory.layersAfter = layersAfter;
-    this.undoStack.push(this.pendingHistory);
+    this.history.commit(this.pendingHistory);
     this.pendingHistory = null;
     this.syncTileData();
   }
 
   undo() {
-    const entry = this.undoStack.undo();
-    if (!entry) return;
-    this.animation.currentFrameIndex = entry.frameIndex;
-    const frame = this.animation.frames[this.animation.currentFrameIndex];
-    frame.layers.forEach((layer, index) => {
-      layer.pixels.set(entry.layersBefore[index]);
-    });
-    this.setFrameLayers(frame.layers);
-    this.syncTileData();
+    this.history.undo();
   }
 
   redo() {
-    const entry = this.undoStack.redo();
+    this.history.redo();
+  }
+
+  applyHistoryEntry(entry, direction) {
     if (!entry) return;
     this.animation.currentFrameIndex = entry.frameIndex;
     const frame = this.animation.frames[this.animation.currentFrameIndex];
+    const layerSnapshots = direction === 'undo' ? entry.layersBefore : entry.layersAfter;
     frame.layers.forEach((layer, index) => {
-      layer.pixels.set(entry.layersAfter[index]);
+      layer.pixels.set(layerSnapshots[index]);
     });
     this.setFrameLayers(frame.layers);
     this.syncTileData();
