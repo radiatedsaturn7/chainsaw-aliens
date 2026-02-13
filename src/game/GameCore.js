@@ -2,9 +2,7 @@ import Input from './Input.js';
 import StateManager from './state/StateManager.js';
 import TitleState from './state/states/TitleState.js';
 import GameplayState from './state/states/GameplayState.js';
-import EditorState from './state/states/EditorState.js';
-import PixelEditorState from './state/states/PixelEditorState.js';
-import MidiEditorState from './state/states/MidiEditorState.js';
+import { createDelegatedState } from './state/states/DelegatedState.js';
 import RobterSessionState from './state/states/RobterSessionState.js';
 import Camera from './Camera.js';
 import AudioSystem from './Audio.js';
@@ -315,6 +313,16 @@ export default class Game {
     this.editor = new Editor(this);
     this.pixelStudio = new PixelStudio(this);
     this.midiComposer = new MidiComposer(this);
+    this.editorStateTargetKeys = {
+      editor: 'editor',
+      'pixel-editor': 'pixelStudio',
+      'midi-editor': 'midiComposer'
+    };
+    this.editorStateDrawArgs = {
+      editor: () => [this.ctx],
+      'pixel-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
+      'midi-editor': () => [this.ctx, this.canvas.width, this.canvas.height]
+    };
     this.robterSession = new RobterSession({ input: this.input, audio: this.audio, isMobile: this.deviceIsMobile });
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
@@ -4853,7 +4861,7 @@ export default class Game {
     return this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 });
   }
 
-  _drawByState() {
+  _drawByState(delegate = null) {
     const { ctx, canvas } = this;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -4886,18 +4894,10 @@ export default class Game {
       return;
     }
 
-    if (this.state === 'editor') {
-      this.editor.draw(ctx);
-      return;
-    }
-
-    if (this.state === 'pixel-editor') {
-      this.pixelStudio.draw(ctx, canvas.width, canvas.height);
-      return;
-    }
-
-    if (this.state === 'midi-editor') {
-      this.midiComposer.draw(ctx, canvas.width, canvas.height);
+    const editorTarget = this._getEditorStateTarget(delegate);
+    if (editorTarget) {
+      const drawArgs = this.editorStateDrawArgs[this.state]?.() ?? [ctx];
+      editorTarget.draw?.(...drawArgs);
       return;
     }
 
@@ -6197,7 +6197,7 @@ export default class Game {
     }
   }
 
-  _handlePointerDownByState(payload) {
+  _handlePointerDownByState(payload, delegate = null) {
     if (this.state === 'pixel-preview') {
       this.exitPixelPreview();
       return;
@@ -6206,16 +6206,7 @@ export default class Game {
       this.robterSession.handlePointerDown(payload);
       return;
     }
-    if (this.state === 'editor') {
-      this.editor.handlePointerDown(payload);
-      return;
-    }
-    if (this.state === 'pixel-editor') {
-      this.pixelStudio.handlePointerDown(payload);
-      return;
-    }
-    if (this.state === 'midi-editor') {
-      this.midiComposer.handlePointerDown(payload);
+    if (this._callEditorStateTarget('handlePointerDown', delegate, payload)) {
       return;
     }
     if (this.state === 'prompt' && this.modalPrompt?.okBounds) {
@@ -6392,100 +6383,60 @@ export default class Game {
     this.mobileControls.handlePointerDown(payload, this.state);
   }
 
-  _handlePointerMoveByState(payload) {
+  _handlePointerMoveByState(payload, delegate = null) {
     if (this.state === 'robtersession') {
       this.robterSession.handlePointerMove(payload);
       return;
     }
-    if (this.state === 'editor') {
-      this.editor.handlePointerMove(payload);
-      return;
-    }
-    if (this.state === 'pixel-editor') {
-      this.pixelStudio.handlePointerMove(payload);
-      return;
-    }
-    if (this.state === 'midi-editor') {
-      this.midiComposer.handlePointerMove(payload);
+    if (this._callEditorStateTarget('handlePointerMove', delegate, payload)) {
       return;
     }
     this.mobileControls.handlePointerMove(payload);
   }
 
-  _handlePointerUpByState(payload) {
+  _handlePointerUpByState(payload, delegate = null) {
     if (this.state === 'robtersession') {
       this.robterSession.handlePointerUp(payload);
       return;
     }
-    if (this.state === 'editor') {
-      this.editor.handlePointerUp(payload);
-      return;
-    }
-    if (this.state === 'pixel-editor') {
-      this.pixelStudio.handlePointerUp(payload);
-      return;
-    }
-    if (this.state === 'midi-editor') {
-      this.midiComposer.handlePointerUp(payload);
+    if (this._callEditorStateTarget('handlePointerUp', delegate, payload)) {
       return;
     }
     this.mobileControls.handlePointerUp(payload, this.state);
   }
 
-  _handleWheelByState(payload) {
-    if (this.state === 'editor') {
-      this.editor.handleWheel(payload);
-      return;
-    }
-    if (this.state === 'pixel-editor') {
-      this.pixelStudio.handleWheel(payload);
-      return;
-    }
-    if (this.state === 'midi-editor') {
-      this.midiComposer.handleWheel(payload);
-    }
+  _handleWheelByState(payload, delegate = null) {
+    this._callEditorStateTarget('handleWheel', delegate, payload);
   }
 
-  _handleGestureStartByState(payload) {
-    if (this.state === 'editor') {
-      this.editor.handleGestureStart(payload);
-    } else if (this.state === 'pixel-editor') {
-      this.pixelStudio.handleGestureStart(payload);
-    } else if (this.state === 'midi-editor') {
-      this.midiComposer.handleGestureStart(payload);
-    }
+  _handleGestureStartByState(payload, delegate = null) {
+    this._callEditorStateTarget('handleGestureStart', delegate, payload);
   }
 
-  _handleGestureMoveByState(payload) {
-    if (this.state === 'editor') {
-      this.editor.handleGestureMove(payload);
-    } else if (this.state === 'pixel-editor') {
-      this.pixelStudio.handleGestureMove(payload);
-    } else if (this.state === 'midi-editor') {
-      this.midiComposer.handleGestureMove(payload);
-    }
+  _handleGestureMoveByState(payload, delegate = null) {
+    this._callEditorStateTarget('handleGestureMove', delegate, payload);
   }
 
-  _handleGestureEndByState() {
-    if (this.state === 'editor') {
-      this.editor.handleGestureEnd();
-    } else if (this.state === 'pixel-editor') {
-      this.pixelStudio.handleGestureEnd();
-    } else if (this.state === 'midi-editor') {
-      this.midiComposer.handleGestureEnd();
-    }
+  _handleGestureEndByState(delegate = null) {
+    this._callEditorStateTarget('handleGestureEnd', delegate);
   }
 
-  _shouldHandleGestureStartByState(payload) {
-    if (this.state === 'editor') {
-      return this.editor.shouldHandleGestureStart?.(payload) ?? true;
-    }
-    if (this.state === 'pixel-editor') {
-      return this.pixelStudio.shouldHandleGestureStart?.(payload) ?? true;
-    }
-    if (this.state === 'midi-editor') {
-      return this.midiComposer.shouldHandleGestureStart?.(payload) ?? true;
-    }
+  _shouldHandleGestureStartByState(payload, delegate = null) {
+    const editorTarget = this._getEditorStateTarget(delegate);
+    if (!editorTarget) return true;
+    return editorTarget.shouldHandleGestureStart?.(payload) ?? true;
+  }
+
+  _getEditorStateTarget(delegate = null) {
+    if (delegate) return delegate;
+    const key = this.editorStateTargetKeys[this.state];
+    return key ? this[key] : null;
+  }
+
+  _callEditorStateTarget(method, delegate = null, ...args) {
+    const editorTarget = this._getEditorStateTarget(delegate);
+    if (!editorTarget) return false;
+    editorTarget[method]?.(...args);
     return true;
   }
 
@@ -6547,9 +6498,9 @@ export default class Game {
     this.stateManager.register('shop', new GameplayState(this));
     this.stateManager.register('prompt', new GameplayState(this));
     this.stateManager.register('pixel-preview', new GameplayState(this));
-    this.stateManager.register('editor', new EditorState(this));
-    this.stateManager.register('pixel-editor', new PixelEditorState(this));
-    this.stateManager.register('midi-editor', new MidiEditorState(this));
+    this.stateManager.register('editor', createDelegatedState(this, 'editor'));
+    this.stateManager.register('pixel-editor', createDelegatedState(this, 'pixelStudio'));
+    this.stateManager.register('midi-editor', createDelegatedState(this, 'midiComposer'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }
 
