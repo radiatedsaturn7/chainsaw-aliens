@@ -1,0 +1,38 @@
+:root {
+  --editor-bg: #0b0b0b;
+  --editor-surface: rgba(12, 14, 18, 0.95);
+  --editor-surface-alt: rgba(0, 0, 0, 0.5);
+  --editor-border: rgba(255, 255, 255, 0.2);
+  --editor-text: #ffffff;
+  --editor-text-muted: rgba(255, 255, 255, 0.7);
+  --editor-accent: #ffe16a;
+  --editor-accent-2: #9ddcff;
+  --editor-shadow: rgba(0, 0, 0, 0.45);
+  --editor-danger: #ff6a6a;
+  --editor-danger-surface: rgba(255, 90, 90, 0.25);
+  --editor-danger-border: rgba(255, 120, 120, 0.6);
+  --editor-danger-text: #ffd0d0;
+
+  --editor-font-family: Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --editor-font-size-xs: 10px;
+  --editor-font-size-sm: 12px;
+  --editor-font-size-md: 14px;
+  --editor-font-size-lg: 16px;
+  --editor-font-size-xl: 18px;
+
+  --editor-space-1: 4px;
+  --editor-space-2: 8px;
+  --editor-space-3: 12px;
+  --editor-space-4: 16px;
+  --editor-space-5: 24px;
+  --editor-space-6: 32px;
+
+  --editor-radius-sm: 4px;
+  --editor-radius-md: 8px;
+
+  --editor-left-rail-width: 292px;
+  --editor-left-rail-width-mobile: 72px;
+  --editor-top-bar-height: 40px;
+  --editor-status-bar-height: 20px;
+  --editor-mobile-toolbar-height: 72px;
+}
