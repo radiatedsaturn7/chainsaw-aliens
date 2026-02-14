@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -2359,7 +2359,7 @@ export default class PixelStudio {
     const bottomHeight = menuFullScreen
       ? padding * 2
       : statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
-    const leftWidth = isMobile ? UI_SUITE.layout.railWidthMobile : (this.sidebars.left ? (menuFullScreen ? width - padding * 2 : UI_SUITE.layout.leftMenuWidthDesktop) : 0);
+    const leftWidth = isMobile ? UI_SUITE.layout.railWidthMobile : (this.sidebars.left ? (menuFullScreen ? width - padding * 2 : SHARED_EDITOR_LEFT_MENU.width()) : 0);
     const rightWidth = 0;
 
     this.uiButtons = [];
@@ -2612,8 +2612,10 @@ export default class PixelStudio {
         { label: 'Resize', action: () => this.resizeArtDocumentPrompt() },
         { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } },
         { divider: true },
-        { label: 'Close Menu', action: () => { this.closeFileMenu(); } },
-        { label: 'Exit to Main Menu', action: () => { this.closeStudioWithPrompt(); } }
+        ...buildMainMenuFooterEntries({
+          onClose: () => { this.closeFileMenu(); },
+          onExit: () => { this.closeStudioWithPrompt(); }
+        }).map((entry) => ({ label: entry.label, action: entry.onClick }))
       ]
     });
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
@@ -2857,7 +2859,7 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     const actions = [
-      { label: 'File', action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
+      { label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
       { label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
       { label: 'Grid', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
       { label: 'Fit', action: () => this.centerView(true) }
