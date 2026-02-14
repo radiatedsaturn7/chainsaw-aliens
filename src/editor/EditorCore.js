@@ -1076,8 +1076,8 @@ export default class Editor {
     this.setPanelTab('toolbox');
   }
 
-  async exitToMainMenu() {
-    await this.closeEditorWithPrompt();
+  exitToMainMenu() {
+    this.game.exitEditorToMainMenu('level');
   }
 
   getPanelConfig(tabId, { includeExtras = false } = {}) {
@@ -1447,7 +1447,7 @@ export default class Editor {
           id: 'exit',
           label: 'Close',
           tooltip: 'Close editor',
-          onClick: () => this.closeEditorWithPrompt()
+          onClick: () => this.exitToMainMenu()
         }
       );
     }
@@ -1892,12 +1892,6 @@ Level size:`, `${current.width}x${current.height}`);
     this.randomLevelFocusRepeat = 0;
     this.randomLevelSize.width = this.newLevelSizeDraft.width;
     this.randomLevelSize.height = this.newLevelSizeDraft.height;
-  }
-
-  async closeEditorWithPrompt() {
-    await this.runtime.closeWithPrompt(async () => {
-      this.game.exitEditorToMainMenu('level');
-    });
   }
 
   openFileDialog() {

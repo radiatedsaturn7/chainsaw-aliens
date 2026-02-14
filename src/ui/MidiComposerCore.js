@@ -6763,10 +6763,8 @@ export default class MidiComposer {
     return trimmed || fallback;
   }
 
-  async closeComposerWithPrompt() {
-    await this.runtime.closeWithPrompt(async () => {
-      this.game?.exitEditorToMainMenu?.('midi');
-    });
+  exitToMainMenu() {
+    this.game?.exitEditorToMainMenu?.('midi');
   }
 
   closeFileMenu() {
@@ -6863,11 +6861,11 @@ export default class MidiComposer {
       return;
     }
     if (action === 'exit-main' || action === 'exit-main-fixed') {
-      await this.closeComposerWithPrompt();
+      this.exitToMainMenu();
       return;
     }
     if (action === 'close') {
-      await this.closeComposerWithPrompt();
+      this.exitToMainMenu();
     }
   }
 

@@ -305,10 +305,8 @@ export default class PixelStudio {
     return trimmed || fallback;
   }
 
-  async closeStudioWithPrompt() {
-    await this.runtime.closeWithPrompt(async () => {
-      this.game.exitEditorToMainMenu('pixel');
-    });
+  exitToMainMenu() {
+    this.game.exitEditorToMainMenu('pixel');
   }
 
 
@@ -2620,7 +2618,7 @@ export default class PixelStudio {
       ],
       footer: {
         onClose: () => { this.closeFileMenu(); },
-        onExit: () => { this.closeStudioWithPrompt(); }
+        onExit: () => { this.exitToMainMenu(); }
       }
     });
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
@@ -2690,9 +2688,9 @@ export default class PixelStudio {
     this.drawButton(ctx, closeBounds, SHARED_EDITOR_LEFT_MENU.closeLabel, false, { fontSize: isMobile ? 12 : 12 });
     this.drawButton(ctx, exitBounds, SHARED_EDITOR_LEFT_MENU.exitLabel, false, { fontSize: isMobile ? 11 : 11 });
     this.uiButtons.push({ bounds: closeBounds, onClick: () => this.closeFileMenu() });
-    this.uiButtons.push({ bounds: exitBounds, onClick: () => this.closeStudioWithPrompt() });
+    this.uiButtons.push({ bounds: exitBounds, onClick: () => this.exitToMainMenu() });
     this.registerFocusable('file', closeBounds, () => this.closeFileMenu());
-    this.registerFocusable('file', exitBounds, () => this.closeStudioWithPrompt());
+    this.registerFocusable('file', exitBounds, () => this.exitToMainMenu());
   }
 
   drawPalettePanel(ctx, x, y, w, h, options = {}) {
