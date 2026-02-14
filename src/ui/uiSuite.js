@@ -33,6 +33,8 @@ export const SHARED_EDITOR_LEFT_MENU = {
   buttonHeightDesktop: 36,
   buttonHeightMobile: 40,
   buttonGap: 8,
+  panelPadding: 8,
+  panelGap: 8,
   fileLabel: 'FILE',
   closeLabel: 'Close Menu',
   exitLabel: 'Exit to Main Menu'
@@ -113,10 +115,10 @@ export function buildSharedLeftMenuLayout({
   width,
   height,
   isMobile = false,
-  padding = 8,
-  gap = 8,
-  tabWidthDesktop = 84,
-  tabWidthMobile = 72
+  padding = SHARED_EDITOR_LEFT_MENU.panelPadding,
+  gap = SHARED_EDITOR_LEFT_MENU.panelGap,
+  tabWidthDesktop = SHARED_EDITOR_LEFT_MENU.tabWidthDesktop,
+  tabWidthMobile = SHARED_EDITOR_LEFT_MENU.tabWidthMobile
 }) {
   const tabWidth = isMobile ? tabWidthMobile : tabWidthDesktop;
   const tabX = x + padding;

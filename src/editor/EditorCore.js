@@ -6993,10 +6993,7 @@ Level size:`, `${current.width}x${current.height}`);
         y: panelY,
         width: panelWidth,
         height: panelH,
-        isMobile: false,
-        tabWidthDesktop: SHARED_EDITOR_LEFT_MENU.tabWidthDesktop,
-        padding: 8,
-        gap: 8
+        isMobile: false
       });
 
       ctx.globalAlpha = 1;
@@ -7034,8 +7031,7 @@ Level size:`, `${current.width}x${current.height}`);
         y: tabColumn.y,
         width: tabColumn.w,
         labels: topButtonDefs.map((entry) => ({ id: entry.id, label: entry.label })),
-        isMobile: false,
-        buttonHeight: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop
+        isMobile: false
       });
       topButtons.forEach((entry, index) => {
         const def = topButtonDefs[index];

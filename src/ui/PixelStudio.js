@@ -2495,11 +2495,7 @@ export default class PixelStudio {
       y,
       width: w,
       height: h,
-      isMobile,
-      tabWidthDesktop: SHARED_EDITOR_LEFT_MENU.tabWidthDesktop,
-      tabWidthMobile: SHARED_EDITOR_LEFT_MENU.tabWidthMobile,
-      padding: 8,
-      gap: 8
+      isMobile
     });
 
     const topButtons = buildSharedLeftMenuTopButtons({
@@ -2507,8 +2503,7 @@ export default class PixelStudio {
       y: tabColumn.y,
       width: tabColumn.w,
       labels: this.leftPanelTabs.map((tab) => ({ id: tab, label: labels[tab] || tab })),
-      isMobile,
-      buttonHeight: isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop
+      isMobile
     });
 
     topButtons.forEach((entry) => {

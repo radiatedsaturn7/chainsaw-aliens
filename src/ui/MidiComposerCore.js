@@ -7705,7 +7705,7 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
-    const { tabColumn } = buildSharedLeftMenuLayout({ x, y, width: w, height: h, isMobile: false, tabWidthDesktop: SHARED_EDITOR_LEFT_MENU.tabWidthDesktop });
+    const { tabColumn } = buildSharedLeftMenuLayout({ x, y, width: w, height: h, isMobile: false });
     const topButtons = buildSharedLeftMenuTopButtons({
       x: tabColumn.x,
       y: tabColumn.y,
@@ -7714,8 +7714,7 @@ export default class MidiComposer {
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
         ...TAB_OPTIONS.map((tab) => ({ id: tab.id, label: tab.label }))
       ],
-      isMobile: false,
-      buttonHeight: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop
+      isMobile: false
     });
 
     this.bounds.fileButton = topButtons[0]?.bounds || null;
