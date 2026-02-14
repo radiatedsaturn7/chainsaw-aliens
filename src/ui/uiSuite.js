@@ -28,6 +28,11 @@ export const UI_SUITE = {
 
 export const SHARED_EDITOR_LEFT_MENU = {
   width: () => UI_SUITE.layout.leftMenuWidthDesktop,
+  tabWidthDesktop: 86,
+  tabWidthMobile: 72,
+  buttonHeightDesktop: 36,
+  buttonHeightMobile: 40,
+  buttonGap: 8,
   fileLabel: 'FILE',
   closeLabel: 'Close Menu',
   exitLabel: 'Exit to Main Menu'
@@ -77,6 +82,29 @@ export function buildSharedMenuFooterLayout({
   const closeBounds = { x: innerX, y, w: buttonW, h: buttonHeight, id: closeId };
   const exitBounds = { x: innerX + buttonW + gap, y, w: buttonW, h: buttonHeight, id: exitId };
   return { closeBounds, exitBounds };
+}
+
+
+
+export function buildSharedLeftMenuTopButtons({
+  x,
+  y,
+  width,
+  labels = [],
+  isMobile = false,
+  gap = SHARED_EDITOR_LEFT_MENU.buttonGap,
+  buttonHeight = isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop
+}) {
+  return labels.map((label, index) => ({
+    id: label.id,
+    label: label.label,
+    bounds: {
+      x,
+      y: y + index * (buttonHeight + gap),
+      w: width,
+      h: buttonHeight
+    }
+  }));
 }
 
 export function buildSharedLeftMenuLayout({

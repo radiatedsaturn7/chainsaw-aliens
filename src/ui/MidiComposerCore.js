@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuTopButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -6765,7 +6765,7 @@ export default class MidiComposer {
 
   async closeComposerWithPrompt() {
     await this.runtime.closeWithPrompt(async () => {
-      this.game?.exitMidiComposer?.();
+      this.game?.exitEditorToMainMenu?.('midi');
     });
   }
 
@@ -7707,21 +7707,28 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
-    const { tabColumn } = buildSharedLeftMenuLayout({ x, y, width: w, height: h, isMobile: false, tabWidthDesktop: 86 });
-    const rowH = 36;
-    const gap = 8;
-    let cursorY = tabColumn.y;
+    const { tabColumn } = buildSharedLeftMenuLayout({ x, y, width: w, height: h, isMobile: false, tabWidthDesktop: SHARED_EDITOR_LEFT_MENU.tabWidthDesktop });
+    const topButtons = buildSharedLeftMenuTopButtons({
+      x: tabColumn.x,
+      y: tabColumn.y,
+      width: tabColumn.w,
+      labels: [
+        { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
+        ...TAB_OPTIONS.map((tab) => ({ id: tab.id, label: tab.label }))
+      ],
+      isMobile: false
+    });
 
-    this.bounds.fileButton = { x: tabColumn.x, y: cursorY, w: tabColumn.w, h: rowH };
-    this.drawButton(ctx, this.bounds.fileButton, SHARED_EDITOR_LEFT_MENU.fileLabel, this.activeTab === 'file', false);
-    cursorY += rowH + gap;
+    this.bounds.fileButton = topButtons[0]?.bounds || null;
+    if (this.bounds.fileButton) {
+      this.drawButton(ctx, this.bounds.fileButton, SHARED_EDITOR_LEFT_MENU.fileLabel, this.activeTab === 'file', false);
+    }
 
     this.bounds.tabs = [];
-    TAB_OPTIONS.forEach((tab) => {
-      const bounds = { x: tabColumn.x, y: cursorY, w: tabColumn.w, h: rowH, id: tab.id };
+    topButtons.slice(1).forEach((entry) => {
+      const bounds = { ...entry.bounds, id: entry.id };
       this.bounds.tabs.push(bounds);
-      this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
-      cursorY += rowH + gap;
+      this.drawButton(ctx, bounds, entry.label, this.activeTab === entry.id, false);
     });
   }
 

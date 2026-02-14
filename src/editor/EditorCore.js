@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuTopButtons, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -401,6 +401,7 @@ export default class Editor {
     };
     this.panelTabs = ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'enemies', 'bosses', 'prefabs', 'music'];
     this.panelTabIndex = 0;
+    this.leftMenuOverlay = null;
     this.panelScroll = {
       file: 0,
       toolbox: 0,
@@ -1042,6 +1043,7 @@ export default class Editor {
     if (drawerIndex >= 0) {
       this.drawer.tabIndex = drawerIndex;
     }
+    this.leftMenuOverlay = null;
     if (tabId === 'bosses') {
       this.enemyCategory = 'boss';
     } else if (tabId === 'enemies') {
@@ -1894,7 +1896,7 @@ Level size:`, `${current.width}x${current.height}`);
 
   async closeEditorWithPrompt() {
     await this.runtime.closeWithPrompt(async () => {
-      stopPlaytestTransition(this.game, { toTitle: true });
+      this.game.exitEditorToMainMenu('level');
     });
   }
 
@@ -6991,18 +6993,6 @@ Level size:`, `${current.width}x${current.height}`);
       const panelWidth = SHARED_EDITOR_LEFT_MENU.width();
       const panelH = height - 24;
       this.editorBounds = { x: panelX + panelWidth + 12, y: 0, w: Math.max(0, width - panelWidth - 24), h: height };
-      const tabs = [
-        { id: 'toolbox', label: 'TOOLS' },
-        { id: 'tiles', label: 'TILES' },
-        { id: 'powerups', label: 'POWERUPS' },
-        { id: 'enemies', label: 'ENEMIES' },
-        { id: 'bosses', label: 'BOSSES' },
-        { id: 'prefabs', label: 'STRUCTURES' },
-        { id: 'triggers', label: 'TRIGGERS' },
-        { id: 'music', label: 'MUSIC' }
-      ];
-      const tabHeight = 30;
-      const tabGap = 8;
       const activeTab = this.getActivePanelTab();
       const { tabColumn, content } = buildSharedLeftMenuLayout({
         x: panelX,
@@ -7010,7 +7000,7 @@ Level size:`, `${current.width}x${current.height}`);
         width: panelWidth,
         height: panelH,
         isMobile: false,
-        tabWidthDesktop: 92,
+        tabWidthDesktop: SHARED_EDITOR_LEFT_MENU.tabWidthDesktop,
         padding: 10,
         gap: 10
       });
@@ -7021,13 +7011,40 @@ Level size:`, `${current.width}x${current.height}`);
       ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(panelX, panelY, panelWidth, panelH);
 
-      const fileBounds = { x: tabColumn.x, y: tabColumn.y, w: tabColumn.w, h: tabHeight };
-      drawButton(fileBounds.x, fileBounds.y, fileBounds.w, fileBounds.h, SHARED_EDITOR_LEFT_MENU.fileLabel, activeTab === 'file', () => this.setPanelTab('file'), `${SHARED_EDITOR_LEFT_MENU.fileLabel} panel`);
-      let tabY = fileBounds.y + tabHeight + tabGap;
-      tabs.forEach((tab) => {
-        const bounds = { x: tabColumn.x, y: tabY, w: tabColumn.w, h: tabHeight };
-        drawButton(bounds.x, bounds.y, bounds.w, bounds.h, tab.label, activeTab === tab.id, () => this.setPanelTab(tab.id), `${tab.label} panel`);
-        tabY += tabHeight + tabGap;
+      const rootButtons = [
+        { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => this.setPanelTab('file'), active: activeTab === 'file' && !this.leftMenuOverlay },
+        { id: 'tools-root', label: 'TOOLS', action: () => { this.leftMenuOverlay = 'tools'; }, active: this.leftMenuOverlay === 'tools' },
+        { id: 'settings-root', label: 'SETTINGS', action: () => { this.leftMenuOverlay = 'settings'; }, active: this.leftMenuOverlay === 'settings' }
+      ];
+      const toolButtons = [
+        { id: 'toolbox', label: 'PAINT' },
+        { id: 'tiles', label: 'TILES' },
+        { id: 'powerups', label: 'POWERUPS' },
+        { id: 'enemies', label: 'ENEMIES' },
+        { id: 'bosses', label: 'BOSSES' },
+        { id: 'prefabs', label: 'STRUCTURES' },
+        { id: 'triggers', label: 'TRIGGERS' },
+        { id: 'music', label: 'MUSIC' }
+      ].map((entry) => ({ ...entry, action: () => this.setPanelTab(entry.id), active: activeTab === entry.id }));
+      const settingsButtons = [
+        { id: 'file', label: 'FILE ACTIONS', action: () => this.setPanelTab('file'), active: activeTab === 'file' },
+        { id: 'toolbox', label: 'RESET TOOLS', action: () => this.setPanelTab('toolbox'), active: false }
+      ];
+      const showingOverlay = this.leftMenuOverlay === 'tools' || this.leftMenuOverlay === 'settings';
+      const overlayItems = this.leftMenuOverlay === 'tools' ? toolButtons : settingsButtons;
+      const topButtonDefs = showingOverlay
+        ? [{ id: 'back', label: 'BACK', action: () => { this.leftMenuOverlay = null; }, active: false }, ...overlayItems]
+        : rootButtons;
+      const topButtons = buildSharedLeftMenuTopButtons({
+        x: tabColumn.x,
+        y: tabColumn.y,
+        width: tabColumn.w,
+        labels: topButtonDefs.map((entry) => ({ id: entry.id, label: entry.label })),
+        isMobile: false
+      });
+      topButtons.forEach((entry, index) => {
+        const def = topButtonDefs[index];
+        drawButton(entry.bounds.x, entry.bounds.y, entry.bounds.w, entry.bounds.h, def.label, Boolean(def.active), def.action, `${def.label} panel`);
       });
 
       let contentY = content.y;
