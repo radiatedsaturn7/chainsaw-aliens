@@ -1,12 +1,11 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { createDocumentLifecycle } from '../ui/editor-documents/documentLifecycle.js';
 import { UI_SUITE, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
 import { createViewportController, screenToWorld, worldToScreen } from '../ui/shared/viewportController.js';
-import { createSnapshotHistory } from '../ui/shared/history/SnapshotHistory.js';
+import { createEditorRuntime } from '../ui/shared/editor-runtime/EditorRuntime.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -352,11 +351,30 @@ export default class Editor {
     this.pendingElevatorPaths = new Map();
     this.pendingElevators = new Map();
     this.maxHistory = 50;
-    this.history = createSnapshotHistory({
-      limit: this.maxHistory,
-      onUndo: (action) => this.applyAction(action, 'undo'),
-      onRedo: (action) => this.applyAction(action, 'redo')
+    this.runtime = createEditorRuntime({
+      context: this,
+      document: {
+        folder: 'levels',
+        strings: {
+          saveAsTitle: 'Save Level As',
+          openTitle: 'Open Level',
+          discardChanges: 'Discard unsaved level changes?',
+          closePrompt: 'Save changes before closing?'
+        },
+        confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
+        serialize: (ctx) => ctx.game.buildWorldData(),
+        applyLoadedData: (ctx, data) => {
+          ctx.game.applyWorldData(data);
+          ctx.flushWorldRefresh();
+        }
+      },
+      history: {
+        limit: this.maxHistory,
+        onUndo: (action) => this.applyAction(action, 'undo'),
+        onRedo: (action) => this.applyAction(action, 'redo')
+      }
     });
+    this.history = this.runtime.history;
     this.hoverTile = null;
     this.regionName = 'Unknown';
     this.lastPointer = { x: 0, y: 0 };
@@ -475,21 +493,6 @@ export default class Editor {
     this.randomLevelFocusRepeat = 0;
     this.autosaveKey = EDITOR_AUTOSAVE_KEY;
     this.autosaveLoaded = false;
-    this.documentLifecycle = createDocumentLifecycle({
-      folder: 'levels',
-      strings: {
-        saveAsTitle: 'Save Level As',
-        openTitle: 'Open Level',
-        discardChanges: 'Discard unsaved level changes?',
-        closePrompt: 'Save changes before closing?'
-      },
-      confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
-      serialize: (ctx) => ctx.game.buildWorldData(),
-      applyLoadedData: (ctx, data) => {
-        ctx.game.applyWorldData(data);
-        ctx.flushWorldRefresh();
-      }
-    });
     this.gamepadCursor = {
       x: 0,
       y: 0,
@@ -544,7 +547,7 @@ export default class Editor {
           this.persistAutosave();
           this.resetView();
           this.syncPreviewMinimap();
-          this.markSavedSnapshot();
+          this.runtime.markSavedSnapshot();
         } catch (error) {
           console.error('Failed to load world data:', error);
         }
@@ -725,7 +728,7 @@ export default class Editor {
     this.syncPreviewMinimap();
     this.updateLayoutBounds();
     this.sanitizeView('activate');
-    this.markSavedSnapshot();
+    this.runtime.markSavedSnapshot();
   }
 
   deactivate() {
@@ -1736,17 +1739,6 @@ export default class Editor {
     return 'paint';
   }
 
-  captureWorldSnapshot() {
-    return this.documentLifecycle.captureSnapshot(this);
-  }
-
-  markSavedSnapshot() {
-    this.documentLifecycle.markSavedSnapshot(this);
-  }
-
-  hasUnsavedChanges() {
-    return this.documentLifecycle.hasUnsavedChanges(this);
-  }
 
   async promptForNewLevelName() {
     const fallback = this.currentDocumentRef?.name || 'new-level';
@@ -1831,7 +1823,7 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   async closeEditorWithPrompt() {
-    await this.documentLifecycle.closeWithPrompt(this, async () => {
+    await this.runtime.closeWithPrompt(async () => {
       stopPlaytestTransition(this.game, { toTitle: true });
     });
   }
@@ -2157,11 +2149,11 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   async saveLevelToStorage(options = {}) {
-    return this.documentLifecycle.saveAsOrCurrent(this, options);
+    return this.runtime.saveAsOrCurrent(options);
   }
 
   loadLevelFromStorage() {
-    this.documentLifecycle.open(this);
+    this.runtime.open();
   }
 
   ensureMusicZones() {
@@ -2357,7 +2349,7 @@ Level size:`, `${current.width}x${current.height}`);
     if (mode === 'new') {
       const fallback = this.currentDocumentRef?.name || `new-level-${Date.now()}`;
       this.currentDocumentRef = { folder: 'levels', name: fallback };
-      this.markSavedSnapshot();
+      this.runtime.markSavedSnapshot();
     }
     this.resetView();
     this.syncPreviewMinimap();
@@ -4119,12 +4111,12 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   undo() {
-    if (!this.history.undo()) return;
+    if (!this.runtime.undo()) return;
     this.persistAutosave();
   }
 
   redo() {
-    if (!this.history.redo()) return;
+    if (!this.runtime.redo()) return;
     this.persistAutosave();
   }
 

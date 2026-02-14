@@ -15,7 +15,6 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { createDocumentLifecycle } from './editor-documents/documentLifecycle.js';
 import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -31,7 +30,7 @@ import { initializeComposerState } from './midi/state/composerState.js';
 import { registerComposerInputHandlers } from './midi/input/composerInputHandlers.js';
 import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
 import { createViewportController } from './shared/viewportController.js';
-import { createSnapshotHistory } from './shared/history/SnapshotHistory.js';
+import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 
 const NOTE_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const SCALE_LIBRARY = [
@@ -538,43 +537,47 @@ export default class MidiComposer {
     this._persistTimer = null;
     this._persistDelayMs = 300;
     this._historyCommitDelayMs = 500;
-    this.history = createSnapshotHistory({
-      limit: 80,
-      debounceMs: this._historyCommitDelayMs,
-      createSnapshot: () => {
-        try {
-          return JSON.stringify(this.song);
-        } catch (error) {
-          console.warn('history snapshot failed', error);
-          return null;
+    this.runtime = createEditorRuntime({
+      context: this,
+      document: {
+        folder: 'music',
+        strings: {
+          saveAsTitle: 'Save Song As',
+          openTitle: 'Open Song',
+          discardChanges: 'Discard unsaved song changes?',
+          closePrompt: 'Save changes before closing?'
+        },
+        confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
+        serialize: (ctx) => JSON.parse(JSON.stringify(ctx.song)),
+        applyLoadedData: (ctx, data, meta) => {
+          ctx.applyImportedSong(data);
+          ctx.song.name = meta.name;
+        },
+        onAfterSave: (ctx, meta) => {
+          ctx.song.name = meta.name;
+          ctx.selection.clear();
+          ctx.persist({ commitHistory: true });
         }
       },
-      applySnapshot: (snapshot) => this.applySongSnapshot(snapshot, { updateHistory: false })
+      history: {
+        limit: 80,
+        debounceMs: this._historyCommitDelayMs,
+        createSnapshot: () => {
+          try {
+            return JSON.stringify(this.song);
+          } catch (error) {
+            console.warn('history snapshot failed', error);
+            return null;
+          }
+        },
+        applySnapshot: (snapshot) => this.applySongSnapshot(snapshot, { updateHistory: false })
+      }
     });
+    this.history = this.runtime.history;
     this._needsEnsureState = false;
     this.debug = { perf: false };
     this.currentDocumentRef = null;
     this.savedSnapshot = null;
-    this.documentLifecycle = createDocumentLifecycle({
-      folder: 'music',
-      strings: {
-        saveAsTitle: 'Save Song As',
-        openTitle: 'Open Song',
-        discardChanges: 'Discard unsaved song changes?',
-        closePrompt: 'Save changes before closing?'
-      },
-      confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
-      serialize: (ctx) => JSON.parse(JSON.stringify(ctx.song)),
-      applyLoadedData: (ctx, data, meta) => {
-        ctx.applyImportedSong(data);
-        ctx.song.name = meta.name;
-      },
-      afterSave: (ctx, meta) => {
-        ctx.song.name = meta.name;
-        ctx.selection.clear();
-        ctx.persist({ commitHistory: true });
-      }
-    });
     this.fileMenuScroll = 0;
     this.fileMenuScrollMax = 0;
     this.fileMenuListBounds = null;
@@ -910,24 +913,18 @@ export default class MidiComposer {
     if (this.lastPersistedSnapshot) {
       this._dirty = false;
     }
-    this.documentLifecycle.markSavedSnapshot(this);
+    this.runtime.markSavedSnapshot();
   }
 
-  hasUnsavedChanges() {
-    return this.documentLifecycle.hasUnsavedChanges(this);
-  }
 
   commitHistorySnapshot() {
-    this.history.commit(undefined, { baseSnapshot: this.history.currentSnapshot ?? this.lastPersistedSnapshot });
+    this.runtime.commitHistory(undefined, { baseSnapshot: this.history.currentSnapshot ?? this.lastPersistedSnapshot });
   }
 
   scheduleHistoryCommit() {
-    this.history.scheduleCommit();
+    this.runtime.scheduleHistoryCommit();
   }
 
-  confirmDiscardChanges() {
-    return this.documentLifecycle.confirmDiscardChanges(this);
-  }
 
   applySongSnapshot(snapshot, { updateHistory = true } = {}) {
     if (!snapshot) return;
@@ -952,16 +949,9 @@ export default class MidiComposer {
     this.markDirty();
   }
 
-  undo() {
-    this.history.undo();
-  }
-
-  redo() {
-    this.history.redo();
-  }
 
   async saveSongToLibrary(options = {}) {
-    return this.documentLifecycle.saveAsOrCurrent(this, options);
+    return this.runtime.saveAsOrCurrent(options);
   }
 
   async saveAndPaint() {
@@ -1016,7 +1006,7 @@ export default class MidiComposer {
   }
 
   loadSongFromLibrary() {
-    this.documentLifecycle.open(this);
+    this.runtime.open();
   }
 
   loadInstrumentList(key, fallback) {
@@ -2754,10 +2744,10 @@ export default class MidiComposer {
       this.copySelection();
     }
     if (cmd && input.wasPressedCode?.('KeyZ')) {
-      this.undo();
+      this.runtime.undo();
     }
     if (cmd && (input.wasPressedCode?.('KeyY') || (input.isShiftDown?.() && input.wasPressedCode?.('KeyZ')))) {
-      this.redo();
+      this.runtime.redo();
     }
     if (cmd && input.wasPressedCode?.('KeyV')) {
       this.pasteSelection();
@@ -2801,11 +2791,11 @@ export default class MidiComposer {
 
     if (this.activeTab === 'grid' && !this.recordModeActive) {
       if (input.wasGamepadPressed?.('dash')) {
-        this.undo();
+        this.runtime.undo();
         suppressedButtons.add('B');
       }
       if (input.wasGamepadPressed?.('throw')) {
-        this.redo();
+        this.runtime.redo();
         suppressedButtons.add('Y');
       }
       if (input.wasGamepadPressed?.('rev')) {
@@ -3239,11 +3229,11 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.undoButton && this.pointInBounds(x, y, this.bounds.undoButton)) {
-        this.undo();
+        this.runtime.undo();
         return;
       }
       if (this.bounds.redoButton && this.pointInBounds(x, y, this.bounds.redoButton)) {
-        this.redo();
+        this.runtime.redo();
         return;
       }
       return;
@@ -3373,11 +3363,11 @@ export default class MidiComposer {
       return;
     }
     if (this.bounds.undoButton && this.pointInBounds(x, y, this.bounds.undoButton)) {
-      this.undo();
+      this.runtime.undo();
       return;
     }
     if (this.bounds.redoButton && this.pointInBounds(x, y, this.bounds.redoButton)) {
-      this.redo();
+      this.runtime.redo();
       return;
     }
 
@@ -6761,7 +6751,7 @@ export default class MidiComposer {
   }
 
   async closeComposerWithPrompt() {
-    await this.documentLifecycle.closeWithPrompt(this, async () => {
+    await this.runtime.closeWithPrompt(async () => {
       this.game?.exitMidiComposer?.();
     });
   }
@@ -6773,7 +6763,7 @@ export default class MidiComposer {
 
   async handleFileMenu(action) {
     if (action === 'new') {
-      if (!this.confirmDiscardChanges()) return;
+      if (!this.runtime.confirmDiscardChanges()) return;
       const result = await openProjectBrowser({
         mode: 'saveAs',
         fixedFolder: 'music',
@@ -6831,11 +6821,11 @@ export default class MidiComposer {
       return;
     }
     if (action === 'undo') {
-      this.undo();
+      this.runtime.undo();
       return;
     }
     if (action === 'redo') {
-      this.redo();
+      this.runtime.redo();
       return;
     }
     if (action === 'play-robtersession') {
@@ -6851,7 +6841,7 @@ export default class MidiComposer {
       return;
     }
     if (action === 'sample') {
-      if (!this.confirmDiscardChanges()) return;
+      if (!this.runtime.confirmDiscardChanges()) return;
       this.loadDemoSong();
       return;
     }
@@ -7138,7 +7128,7 @@ export default class MidiComposer {
   }
 
   importSong() {
-    if (!this.confirmDiscardChanges()) return;
+    if (!this.runtime.confirmDiscardChanges()) return;
     if (this.fileInput) {
       this.fileInput.click();
     }

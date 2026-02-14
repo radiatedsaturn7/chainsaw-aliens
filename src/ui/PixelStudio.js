@@ -21,15 +21,14 @@ import {
 } from './pixel-editor/layers.js';
 import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
-import { createSnapshotHistory } from './shared/history/SnapshotHistory.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { createDocumentLifecycle } from './editor-documents/documentLifecycle.js';
 import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
 import { createViewportController } from './shared/viewportController.js';
+import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 
 
 export default class PixelStudio {
@@ -40,22 +39,30 @@ export default class PixelStudio {
     this.tileIndex = 0;
     this.currentDocumentRef = null;
     this.savedSnapshot = null;
-    this.documentLifecycle = createDocumentLifecycle({
-      folder: 'art',
-      strings: {
-        saveAsTitle: 'Save Art As',
-        openTitle: 'Open Art',
-        discardChanges: 'Discard unsaved art changes?',
-        closePrompt: 'Save changes before closing?'
+    this.runtime = createEditorRuntime({
+      context: this,
+      document: {
+        folder: 'art',
+        strings: {
+          saveAsTitle: 'Save Art As',
+          openTitle: 'Open Art',
+          discardChanges: 'Discard unsaved art changes?',
+          closePrompt: 'Save changes before closing?'
+        },
+        confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
+        serialize: (ctx) => {
+          ctx.syncTileData();
+          return ctx.game.world.pixelArt || { tiles: {} };
+        },
+        applyLoadedData: (ctx, data) => {
+          ctx.game.world.pixelArt = data;
+          ctx.loadTileData();
+        }
       },
-      confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
-      serialize: (ctx) => {
-        ctx.syncTileData();
-        return ctx.game.world.pixelArt || { tiles: {} };
-      },
-      applyLoadedData: (ctx, data) => {
-        ctx.game.world.pixelArt = data;
-        ctx.loadTileData();
+      history: {
+        limit: 75,
+        onUndo: (entry) => this.applyHistoryEntry(entry, 'undo'),
+        onRedo: (entry) => this.applyHistoryEntry(entry, 'redo')
       }
     });
     this.modeTab = 'draw';
@@ -118,11 +125,7 @@ export default class PixelStudio {
       loop: true,
       onion: { enabled: false, prev: 1, next: 1, opacity: 0.35 }
     };
-    this.history = createSnapshotHistory({
-      limit: 75,
-      onUndo: (entry) => this.applyHistoryEntry(entry, 'undo'),
-      onRedo: (entry) => this.applyHistoryEntry(entry, 'redo')
-    });
+    this.history = this.runtime.history;
     this.pendingHistory = null;
     this.strokeState = null;
     this.linePreview = null;
@@ -214,7 +217,7 @@ export default class PixelStudio {
     });
     this.initializePalettes();
     this.loadTileData();
-    this.markSavedSnapshot();
+    this.runtime.markSavedSnapshot();
     window.addEventListener('keydown', (event) => this.handleKeyDown(event));
     window.addEventListener('keyup', (event) => this.handleKeyUp(event));
   }
@@ -302,18 +305,6 @@ export default class PixelStudio {
     pixelData.fps = Math.round(1000 / (this.animation.frames[0]?.durationMs || 120));
   }
 
-  captureArtSnapshot() {
-    return this.documentLifecycle.captureSnapshot(this);
-  }
-
-  markSavedSnapshot() {
-    this.documentLifecycle.markSavedSnapshot(this);
-  }
-
-  hasUnsavedChanges() {
-    return this.documentLifecycle.hasUnsavedChanges(this);
-  }
-
   async promptForNewArtName() {
     const fallback = this.currentDocumentRef?.name || 'new-art';
     const value = window.prompt('New art file name?', fallback);
@@ -323,22 +314,22 @@ export default class PixelStudio {
   }
 
   async closeStudioWithPrompt() {
-    await this.documentLifecycle.closeWithPrompt(this, async () => {
+    await this.runtime.closeWithPrompt(async () => {
       this.game.exitPixelStudio({ toTitle: true });
     });
   }
 
 
   async saveArtDocument(options = {}) {
-    return this.documentLifecycle.saveAsOrCurrent(this, options);
+    return this.runtime.saveAsOrCurrent(options);
   }
 
   loadArtDocument() {
-    this.documentLifecycle.open(this);
+    this.runtime.open();
   }
 
   async newArtDocument() {
-    if (!this.documentLifecycle.confirmDiscardChanges(this)) return;
+    if (!this.runtime.confirmDiscardChanges()) return;
     const name = await this.promptForNewArtName();
     if (!name) return;
     const dims = this.promptForArtDimensions(this.artSizeDraft);
@@ -349,7 +340,7 @@ export default class PixelStudio {
     this.artSizeDraft.width = dims.width;
     this.artSizeDraft.height = dims.height;
     this.resizeArtCanvas(dims.width, dims.height);
-    this.markSavedSnapshot();
+    this.runtime.markSavedSnapshot();
   }
 
   resizeArtCanvas(width, height) {
@@ -457,12 +448,12 @@ export default class PixelStudio {
     if (event.key === ' ') this.spaceDown = true;
     if (event.key === 'Alt') this.altDown = true;
     if ((event.ctrlKey || event.metaKey) && key === 'z') {
-      this.undo();
+      this.runtime.undo();
       event.preventDefault();
       return;
     }
     if ((event.ctrlKey || event.metaKey) && (key === 'y' || (event.shiftKey && key === 'z'))) {
-      this.redo();
+      this.runtime.redo();
       event.preventDefault();
       return;
     }
@@ -601,10 +592,10 @@ export default class PixelStudio {
             this.setActiveTool(TOOL_IDS.PENCIL);
             break;
           }
-          this.undo();
+          this.runtime.undo();
           break;
         case INPUT_ACTIONS.REDO:
-          this.redo();
+          this.runtime.redo();
           break;
         case INPUT_ACTIONS.MENU:
           if (this.modeTab === 'animate' && this.inputMode === 'ui' && this.uiFocus.group === 'timeline') {
@@ -1402,18 +1393,11 @@ export default class PixelStudio {
     if (!this.pendingHistory) return;
     const layersAfter = this.canvasState.layers.map((layer) => new Uint32Array(layer.pixels));
     this.pendingHistory.layersAfter = layersAfter;
-    this.history.commit(this.pendingHistory);
+    this.runtime.commitHistory(this.pendingHistory);
     this.pendingHistory = null;
     this.syncTileData();
   }
 
-  undo() {
-    this.history.undo();
-  }
-
-  redo() {
-    this.history.redo();
-  }
 
   applyHistoryEntry(entry, direction) {
     if (!entry) return;
@@ -2622,8 +2606,8 @@ export default class PixelStudio {
         open: () => this.loadArtDocument(),
         export: () => this.exportPng(),
         import: () => this.paletteFileInput.click(),
-        undo: () => this.undo(),
-        redo: () => this.redo()
+        undo: () => this.runtime.undo(),
+        redo: () => this.runtime.redo()
       },
       extras: [
         { divider: true },
@@ -2902,8 +2886,8 @@ export default class PixelStudio {
     const actions = [
       { label: this.leftPanelTab.slice(0, 2).toUpperCase(), action: () => { this.mobileDrawer = this.mobileDrawer === 'panel' ? null : 'panel'; } },
       { label: '🎨', action: () => { this.paletteGridOpen = !this.paletteGridOpen; } },
-      { label: '↺', action: () => this.undo() },
-      { label: '↻', action: () => this.redo() },
+      { label: '↺', action: () => this.runtime.undo() },
+      { label: '↻', action: () => this.runtime.redo() },
       { label: '🔍', action: () => this.zoomBy(this.view.zoomIndex >= this.view.zoomLevels.length - 1 ? -1 : 1) },
       { label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
       { label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = null; } }
