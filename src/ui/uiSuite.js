@@ -16,9 +16,10 @@ export const UI_SUITE = {
     tap: 44
   },
   layout: {
-    railWidthMobile: 72,
+    railWidthMobile: 216,
     panelWidthMobile: 292,
-    leftMenuWidthDesktop: 292
+    leftMenuWidthDesktop: 292,
+    drawerWidth: 292
   },
   font: {
     family: 'Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
@@ -30,7 +31,7 @@ export const SHARED_EDITOR_LEFT_MENU = {
   width: () => UI_SUITE.layout.leftMenuWidthDesktop,
   tabWidthDesktop: 80,
   tabWidthMobile: 72,
-  buttonWidthMobile: 52,
+  buttonWidthMobile: 188,
   buttonHeightDesktop: 36,
   buttonHeightMobile: 40,
   buttonGap: 8,
@@ -42,6 +43,23 @@ export const SHARED_EDITOR_LEFT_MENU = {
   closeLabel: 'Close Menu',
   exitLabel: 'Exit to Main Menu'
 };
+
+export function getSharedEditorDrawerWidth(viewportWidth, {
+  minWidth = 220,
+  edgePadding = 12,
+  preferredWidth = UI_SUITE.layout.drawerWidth
+} = {}) {
+  const maxWidth = Math.max(0, viewportWidth - edgePadding * 2);
+  return clampValue(preferredWidth, minWidth, maxWidth);
+}
+
+function clampValue(value, min, max) {
+  if (!Number.isFinite(value)) return min;
+  if (!Number.isFinite(min)) min = value;
+  if (!Number.isFinite(max)) max = value;
+  if (min > max) return min;
+  return Math.max(min, Math.min(max, value));
+}
 
 export function buildMainMenuFooterEntries(config = {}) {
   const {
