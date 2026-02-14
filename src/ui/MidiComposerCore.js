@@ -7850,8 +7850,8 @@ export default class MidiComposer {
 
   drawMobileSidebar(ctx, x, y, w, h, track) {
     const panelGap = 10;
-    const rowH = clamp(Math.round(h * 0.055), 40, 48);
-    const rowGap = clamp(Math.round(rowH * 0.2), 6, 10);
+    const rowH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
+    const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const panelPadding = clamp(Math.round(rowH * 0.25), 8, 12);
     const menuRows = TAB_OPTIONS.length + 2;
     const menuH = Math.min(h * 0.46, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
@@ -7870,12 +7870,13 @@ export default class MidiComposer {
     const innerW = w - panelPadding * 2;
     let cursorY = menuY + panelPadding;
     this.bounds.tabs = [];
-    this.bounds.fileButton = { x: innerX, y: cursorY, w: innerW, h: rowH };
+    const menuButtonW = Math.min(innerW, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
+    this.bounds.fileButton = { x: innerX + (innerW - menuButtonW) * 0.5, y: cursorY, w: menuButtonW, h: rowH };
     this.drawButton(ctx, this.bounds.fileButton, SHARED_EDITOR_LEFT_MENU.fileLabel, this.activeTab === 'file', false);
     cursorY += rowH + rowGap;
 
     TAB_OPTIONS.forEach((tab) => {
-      const bounds = { x: innerX, y: cursorY, w: innerW, h: rowH, id: tab.id };
+      const bounds = { x: innerX + (innerW - menuButtonW) * 0.5, y: cursorY, w: menuButtonW, h: rowH, id: tab.id };
       this.bounds.tabs.push(bounds);
       this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
       cursorY += rowH + rowGap;

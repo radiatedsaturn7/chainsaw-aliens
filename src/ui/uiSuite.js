@@ -28,8 +28,9 @@ export const UI_SUITE = {
 
 export const SHARED_EDITOR_LEFT_MENU = {
   width: () => UI_SUITE.layout.leftMenuWidthDesktop,
-  tabWidthDesktop: 86,
+  tabWidthDesktop: 80,
   tabWidthMobile: 72,
+  buttonWidthMobile: 52,
   buttonHeightDesktop: 36,
   buttonHeightMobile: 40,
   buttonGap: 8,

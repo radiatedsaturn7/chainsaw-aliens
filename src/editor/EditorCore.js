@@ -6522,15 +6522,16 @@ Level size:`, `${current.width}x${current.height}`);
         const tabX = panelX + panelPadding;
         const tabY = panelY + handleAreaH + 8;
         const tabW = tabColumnW - panelPadding * 1.5;
-        const tabButtonH = 36;
-        const tabGap = 8;
+        const tabButtonW = Math.min(tabW, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
+        const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
+        const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
         ctx.font = `14px ${UI_SUITE.font.family}`;
         tabs.forEach((tab, index) => {
           const y = tabY + index * (tabButtonH + tabGap);
           drawButton(
-            tabX,
+            tabX + (tabW - tabButtonW) * 0.5,
             y,
-            tabW,
+            tabButtonW,
             tabButtonH,
             tab.label,
             activeTab === tab.id,
