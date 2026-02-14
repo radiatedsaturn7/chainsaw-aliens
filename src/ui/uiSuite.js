@@ -28,6 +28,15 @@ export const UI_SUITE = {
 
 export const SHARED_EDITOR_LEFT_MENU = {
   width: () => UI_SUITE.layout.leftMenuWidthDesktop,
+  tabWidthDesktop: 86,
+  tabWidthMobile: 72,
+  buttonHeightDesktop: 36,
+  buttonHeightMobile: 40,
+  buttonGap: 8,
+  panelPadding: 8,
+  panelGap: 8,
+  desktopOuterPadding: 16,
+  desktopContentGap: 12,
   fileLabel: 'FILE',
   closeLabel: 'Close Menu',
   exitLabel: 'Exit to Main Menu'
@@ -78,6 +87,113 @@ export function buildSharedMenuFooterLayout({
   const exitBounds = { x: innerX + buttonW + gap, y, w: buttonW, h: buttonHeight, id: exitId };
   return { closeBounds, exitBounds };
 }
+
+
+
+
+
+export function buildSharedDesktopLeftPanelFrame({
+  viewportWidth,
+  viewportHeight,
+  outerPadding = SHARED_EDITOR_LEFT_MENU.desktopOuterPadding,
+  contentGap = SHARED_EDITOR_LEFT_MENU.desktopContentGap
+}) {
+  const panelX = outerPadding;
+  const panelY = outerPadding;
+  const panelW = SHARED_EDITOR_LEFT_MENU.width();
+  const panelH = Math.max(0, viewportHeight - outerPadding * 2);
+  const contentX = panelX + panelW + contentGap;
+  const contentW = Math.max(0, viewportWidth - contentX - outerPadding);
+  return {
+    panelX,
+    panelY,
+    panelW,
+    panelH,
+    contentX,
+    contentW,
+    outerPadding,
+    contentGap
+  };
+}
+
+export function buildSharedLeftMenuTopButtons({
+  x,
+  y,
+  width,
+  labels = [],
+  isMobile = false,
+  gap = SHARED_EDITOR_LEFT_MENU.buttonGap,
+  buttonHeight = isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop
+}) {
+  return labels.map((label, index) => ({
+    id: label.id,
+    label: label.label,
+    bounds: {
+      x,
+      y: y + index * (buttonHeight + gap),
+      w: width,
+      h: buttonHeight
+    }
+  }));
+}
+
+export function buildSharedLeftMenuButtons({
+  x,
+  y,
+  height,
+  additionalButtons = [],
+  isMobile = false,
+  gap = SHARED_EDITOR_LEFT_MENU.buttonGap,
+  buttonHeight = isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop,
+  width = isMobile ? SHARED_EDITOR_LEFT_MENU.tabWidthMobile : SHARED_EDITOR_LEFT_MENU.tabWidthDesktop
+}) {
+  const labels = [
+    { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
+    ...additionalButtons
+  ];
+  if (!labels.length) return [];
+  const count = labels.length;
+  const availableHeight = Math.max(0, height);
+  const minButtonHeight = isMobile ? 28 : 18;
+  const maxGap = count > 1 ? Math.max(2, Math.floor((availableHeight - minButtonHeight * count) / (count - 1))) : gap;
+  const fittedGap = Math.max(2, Math.min(gap, maxGap));
+  const fittedButtonHeight = count > 0
+    ? Math.max(minButtonHeight, Math.min(buttonHeight, Math.floor((availableHeight - fittedGap * (count - 1)) / count)))
+    : buttonHeight;
+  return buildSharedLeftMenuTopButtons({
+    x,
+    y,
+    width,
+    labels,
+    isMobile,
+    gap: fittedGap,
+    buttonHeight: fittedButtonHeight
+  });
+}
+
+export function buildSharedLeftMenuLayout({
+  x,
+  y,
+  width,
+  height,
+  isMobile = false,
+  padding = SHARED_EDITOR_LEFT_MENU.panelPadding,
+  gap = SHARED_EDITOR_LEFT_MENU.panelGap,
+  tabWidthDesktop = SHARED_EDITOR_LEFT_MENU.tabWidthDesktop,
+  tabWidthMobile = SHARED_EDITOR_LEFT_MENU.tabWidthMobile
+}) {
+  const tabWidth = isMobile ? tabWidthMobile : tabWidthDesktop;
+  const tabX = x + padding;
+  const tabY = y + padding;
+  const contentX = tabX + tabWidth + gap;
+  const contentY = tabY;
+  const contentW = Math.max(0, width - (contentX - x) - padding);
+  const contentH = Math.max(0, height - padding * 2);
+  return {
+    tabColumn: { x: tabX, y: tabY, w: tabWidth, h: Math.max(0, height - padding * 2) },
+    content: { x: contentX, y: contentY, w: contentW, h: contentH }
+  };
+}
 const STANDARD_FILE_ORDER = ['new', 'save', 'save-as', 'open', 'export', 'import', 'undo', 'redo'];
 
 export function buildStandardFileMenu(config = {}) {
@@ -98,6 +214,29 @@ export function buildStandardFileMenu(config = {}) {
   }));
 
   return [...entries, ...extras];
+}
+
+
+export function buildSharedEditorFileMenu(config = {}) {
+  const {
+    supported = {},
+    labels = {},
+    tooltips = {},
+    actions = {},
+    extras = [],
+    includeFooter = true,
+    footer = {}
+  } = config;
+  const entries = buildStandardFileMenu({ supported, labels, tooltips, actions });
+  if (!includeFooter) return [...entries, ...extras];
+  const footerEntries = buildMainMenuFooterEntries(footer).map((entry) => ({
+    id: entry.id,
+    label: entry.label,
+    tooltip: entry.tooltip,
+    onClick: entry.onClick,
+    action: entry.onClick
+  }));
+  return [...entries, ...extras, { divider: true }, ...footerEntries];
 }
 
 function defaultLabelForFileId(id) {

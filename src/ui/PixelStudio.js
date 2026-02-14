@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedMenuFooterLayout, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -305,10 +305,8 @@ export default class PixelStudio {
     return trimmed || fallback;
   }
 
-  async closeStudioWithPrompt() {
-    await this.runtime.closeWithPrompt(async () => {
-      this.game.exitPixelStudio({ toTitle: true });
-    });
+  exitToMainMenu() {
+    this.game.exitEditorToMainMenu('pixel');
   }
 
 
@@ -2348,7 +2346,7 @@ export default class PixelStudio {
     ctx.fillStyle = UI_SUITE.colors.bg;
     ctx.fillRect(0, 0, width, height);
     ctx.imageSmoothingEnabled = false;
-    const isMobile = this.isMobileLayout(width, height);
+    const isMobile = this.isMobileLayout();
     const menuFullScreen = false;
     const padding = isMobile ? 12 : 16;
     const topBarHeight = 0;
@@ -2359,7 +2357,12 @@ export default class PixelStudio {
     const bottomHeight = menuFullScreen
       ? padding * 2
       : statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
-    const leftWidth = isMobile ? UI_SUITE.layout.railWidthMobile : (this.sidebars.left ? (menuFullScreen ? width - padding * 2 : SHARED_EDITOR_LEFT_MENU.width()) : 0);
+    const leftFrame = !isMobile && this.sidebars.left && !menuFullScreen
+      ? buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height })
+      : null;
+    const leftWidth = isMobile
+      ? UI_SUITE.layout.railWidthMobile
+      : (leftFrame ? leftFrame.panelW : (this.sidebars.left ? SHARED_EDITOR_LEFT_MENU.width() : 0));
     const rightWidth = 0;
 
     this.uiButtons = [];
@@ -2370,18 +2373,15 @@ export default class PixelStudio {
     this.focusGroupMeta = {};
     this.mobileDrawerBounds = null;
 
-    const canvasX = padding + leftWidth;
+    const canvasX = leftFrame ? leftFrame.contentX : (padding + leftWidth);
     const canvasY = topBarHeight + padding;
-    const canvasW = width - leftWidth - rightWidth - padding * 2;
+    const canvasW = leftFrame ? leftFrame.contentW : (width - leftWidth - rightWidth - padding * 2);
     const canvasH = height - canvasY - bottomHeight;
 
     if (isMobile) {
       this.drawMobileRail(ctx, padding, canvasY, leftWidth - 8, canvasH);
     } else if (this.sidebars.left) {
-      const panelX = padding;
-      const panelY = menuFullScreen ? padding : canvasY;
-      const panelH = menuFullScreen ? height - padding * 2 : canvasH;
-      this.drawLeftPanel(ctx, panelX, panelY, leftWidth, panelH, { isMobile: false });
+      this.drawLeftPanel(ctx, leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH, { isMobile: false });
     }
 
     if (!menuFullScreen) {
@@ -2459,8 +2459,8 @@ export default class PixelStudio {
     ctx.textAlign = 'left';
   }
 
-  isMobileLayout(width, height) {
-    return this.game?.isMobile || width < 900 || height < 600;
+  isMobileLayout() {
+    return Boolean(this.game?.isMobile);
   }
 
   drawPreviewPanel(ctx, x, y, w, h) {
@@ -2487,34 +2487,39 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
-    const tabHeight = isMobile ? 40 : 28;
-    const tabWidth = isMobile ? 72 : 78;
-    const gap = 8;
     const labels = {
       file: SHARED_EDITOR_LEFT_MENU.fileLabel,
       tools: 'Tools',
       canvas: 'Canvas'
     };
-    const mainTabs = this.leftPanelTabs;
-    let offsetY = y + 8;
-    mainTabs.forEach((tab, index) => {
-      const bounds = {
-        x: x + 8,
-        y: offsetY,
-        w: tabWidth,
-        h: tabHeight
-      };
-      const active = this.leftPanelTab === tab;
-      this.drawButton(ctx, bounds, labels[tab] || tab, active, { fontSize: isMobile ? 12 : 11 });
-      this.uiButtons.push({ bounds, onClick: () => this.setLeftPanelTab(tab) });
-      this.registerFocusable('menu', bounds, () => this.setLeftPanelTab(tab));
-      offsetY += tabHeight + gap;
+    const { tabColumn, content } = buildSharedLeftMenuLayout({
+      x,
+      y,
+      width: w,
+      height: h,
+      isMobile
     });
 
-    const panelX = x + tabWidth + 16;
-    const panelY = y + 8;
-    const panelH = h - 16;
-    this.drawLeftPanelContent(ctx, panelX, panelY, w - tabWidth - 24, panelH, options);
+    const topButtons = buildSharedLeftMenuButtons({
+      x: tabColumn.x,
+      y: tabColumn.y,
+      height: tabColumn.h,
+      additionalButtons: this.leftPanelTabs
+        .filter((tab) => tab !== 'file')
+        .map((tab) => ({ id: tab, label: labels[tab] || tab })),
+      isMobile,
+      width: tabColumn.w
+    });
+
+    topButtons.forEach((entry) => {
+      const bounds = entry.bounds;
+      const active = this.leftPanelTab === entry.id;
+      this.drawButton(ctx, bounds, entry.label, active, { fontSize: isMobile ? 12 : 11 });
+      this.uiButtons.push({ bounds, onClick: () => this.setLeftPanelTab(entry.id) });
+      this.registerFocusable('menu', bounds, () => this.setLeftPanelTab(entry.id));
+    });
+
+    this.drawLeftPanelContent(ctx, content.x, content.y, content.w, content.h, options);
   }
 
   drawLeftPanelContent(ctx, x, y, w, h, options = {}) {
@@ -2586,7 +2591,7 @@ export default class PixelStudio {
     ctx.fillText('File', x + 12, y + 20);
     const lineHeight = isMobile ? 52 : 20;
     const buttonHeight = isMobile ? 44 : 18;
-    const actions = buildStandardFileMenu({
+    const actions = buildSharedEditorFileMenu({
       labels: {
         open: 'Open',
         export: 'Export PNG',
@@ -2610,13 +2615,12 @@ export default class PixelStudio {
         { label: 'Palette HEX', action: () => this.exportPaletteHex() },
         { divider: true },
         { label: 'Resize', action: () => this.resizeArtDocumentPrompt() },
-        { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } },
-        { divider: true },
-        ...buildMainMenuFooterEntries({
-          onClose: () => { this.closeFileMenu(); },
-          onExit: () => { this.closeStudioWithPrompt(); }
-        }).map((entry) => ({ label: entry.label, action: entry.onClick }))
-      ]
+        { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } }
+      ],
+      footer: {
+        onClose: () => { this.closeFileMenu(); },
+        onExit: () => { this.exitToMainMenu(); }
+      }
     });
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
     this.filePanelScroll = { x, y: y + 30, w, h: Math.max(0, h - 30), lineHeight };
@@ -2685,9 +2689,9 @@ export default class PixelStudio {
     this.drawButton(ctx, closeBounds, SHARED_EDITOR_LEFT_MENU.closeLabel, false, { fontSize: isMobile ? 12 : 12 });
     this.drawButton(ctx, exitBounds, SHARED_EDITOR_LEFT_MENU.exitLabel, false, { fontSize: isMobile ? 11 : 11 });
     this.uiButtons.push({ bounds: closeBounds, onClick: () => this.closeFileMenu() });
-    this.uiButtons.push({ bounds: exitBounds, onClick: () => this.closeStudioWithPrompt() });
+    this.uiButtons.push({ bounds: exitBounds, onClick: () => this.exitToMainMenu() });
     this.registerFocusable('file', closeBounds, () => this.closeFileMenu());
-    this.registerFocusable('file', exitBounds, () => this.closeStudioWithPrompt());
+    this.registerFocusable('file', exitBounds, () => this.exitToMainMenu());
   }
 
   drawPalettePanel(ctx, x, y, w, h, options = {}) {

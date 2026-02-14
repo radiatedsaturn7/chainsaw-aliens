@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedMenuFooterLayout, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -166,7 +166,6 @@ const DEFAULT_GRID_TOP_PITCH = 59;
 const DEFAULT_RULER_HEIGHT = 80;
 const LOOP_HANDLE_MIN_WIDTH = 70;
 const LOOP_HANDLE_MIN_HEIGHT = 38;
-const FILE_MENU_WIDTH = SHARED_EDITOR_LEFT_MENU.width();
 const DEFAULT_LOOP_BARS = 4;
 const GENRE_OPTIONS = [
   { id: 'random', label: 'Random' },
@@ -6763,10 +6762,8 @@ export default class MidiComposer {
     return trimmed || fallback;
   }
 
-  async closeComposerWithPrompt() {
-    await this.runtime.closeWithPrompt(async () => {
-      this.game?.exitMidiComposer?.();
-    });
+  exitToMainMenu() {
+    this.game?.exitEditorToMainMenu?.('midi');
   }
 
   closeFileMenu() {
@@ -6863,11 +6860,11 @@ export default class MidiComposer {
       return;
     }
     if (action === 'exit-main' || action === 'exit-main-fixed') {
-      await this.closeComposerWithPrompt();
+      this.exitToMainMenu();
       return;
     }
     if (action === 'close') {
-      await this.closeComposerWithPrompt();
+      this.exitToMainMenu();
     }
   }
 
@@ -7643,35 +7640,7 @@ export default class MidiComposer {
     if (isMobile) {
       this.drawMobileLayout(ctx, width, height, track, pattern);
     } else {
-      const padding = 16;
-      const headerH = 40;
-      const tabsH = 44;
-      const transportH = 96;
-      const headerY = padding;
-      const tabsX = padding;
-      const tabsY = headerY + headerH + 8;
-      const tabsW = width - padding * 2;
-      this.drawHeader(ctx, padding, headerY, tabsW, headerH, track);
-      this.drawTabs(ctx, tabsX, tabsY, tabsW, tabsH);
-
-      const contentX = padding;
-      const contentY = tabsY + tabsH + 8;
-      const contentW = width - padding * 2;
-      const contentH = height - contentY - transportH - padding;
-      const transportY = height - transportH - padding;
-      this.drawTransportBar(ctx, padding, transportY, width - padding * 2, transportH);
-
-      if (this.activeTab === 'grid') {
-        this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
-      } else if (this.activeTab === 'song') {
-        this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
-      } else if (this.activeTab === 'instruments') {
-        this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
-      } else if (this.activeTab === 'settings') {
-        this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
-      } else if (this.activeTab === 'file') {
-        this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
-      }
+      this.drawDesktopLayout(ctx, width, height, track, pattern);
     }
 
     this.drawNoteLengthMenu(ctx, width, height);
@@ -7694,6 +7663,63 @@ export default class MidiComposer {
         console.warn(`[perf] draw ${elapsed.toFixed(1)}ms (notes ${noteCount}, song ${sizeEstimate} chars)`);
       }
     }
+  }
+
+
+  drawDesktopLayout(ctx, width, height, track, pattern) {
+    const transportH = 96;
+    const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
+    const headerH = 40;
+    const contentX = leftFrame.contentX;
+    const contentW = leftFrame.contentW;
+    const contentY = leftFrame.panelY + headerH + 8;
+    const contentH = Math.max(0, leftFrame.panelH - headerH - 8 - transportH - 8);
+    const transportY = contentY + contentH + 8;
+
+    this.drawHeader(ctx, contentX, leftFrame.panelY, contentW, headerH, track);
+    this.drawDesktopLeftPanel(ctx, leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH);
+    this.drawTransportBar(ctx, contentX, transportY, contentW, transportH);
+
+    if (this.activeTab === 'grid') {
+      this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
+    } else if (this.activeTab === 'song') {
+      this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
+    } else if (this.activeTab === 'instruments') {
+      this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
+    } else if (this.activeTab === 'settings') {
+      this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
+    } else if (this.activeTab === 'file') {
+      this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
+    }
+  }
+
+  drawDesktopLeftPanel(ctx, x, y, w, h) {
+    ctx.fillStyle = UI_SUITE.colors.panel;
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(x, y, w, h);
+
+    const { tabColumn } = buildSharedLeftMenuLayout({ x, y, width: w, height: h, isMobile: false });
+    const topButtons = buildSharedLeftMenuButtons({
+      x: tabColumn.x,
+      y: tabColumn.y,
+      height: tabColumn.h,
+      additionalButtons: TAB_OPTIONS.map((tab) => ({ id: tab.id, label: tab.label })),
+      isMobile: false,
+      width: tabColumn.w
+    });
+
+    this.bounds.fileButton = topButtons[0]?.bounds || null;
+    if (this.bounds.fileButton) {
+      this.drawButton(ctx, this.bounds.fileButton, SHARED_EDITOR_LEFT_MENU.fileLabel, this.activeTab === 'file', false);
+    }
+
+    this.bounds.tabs = [];
+    topButtons.slice(1).forEach((entry) => {
+      const bounds = { ...entry.bounds, id: entry.id };
+      this.bounds.tabs.push(bounds);
+      this.drawButton(ctx, bounds, entry.label, this.activeTab === entry.id, false);
+    });
   }
 
   drawRecordMode(ctx, width, height, track, pattern) {
@@ -10990,7 +11016,7 @@ export default class MidiComposer {
   }
 
   getFileMenuItems() {
-    return buildStandardFileMenu({
+    return buildSharedEditorFileMenu({
       labels: {
         open: 'Open',
         export: 'Export JSON',
@@ -11014,9 +11040,7 @@ export default class MidiComposer {
         { id: 'play-robtersession', label: 'Play in RobterSession' },
         { id: 'settings', label: 'Settings' },
         { id: 'theme', label: 'Generate Theme' },
-        { id: 'sample', label: 'Load Sample Song' },
-        { divider: true },
-        ...buildMainMenuFooterEntries()
+        { id: 'sample', label: 'Load Sample Song' }
       ]
     });
   }
@@ -11097,47 +11121,6 @@ export default class MidiComposer {
     this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
   }
 
-  drawFileMenu(ctx, x, y) {
-    const items = this.getFileMenuItems();
-    const width = FILE_MENU_WIDTH;
-    const rowH = 44;
-    const gap = 10;
-    const height = items.reduce((total, item) => total + (item.divider ? 14 : rowH), gap * 2);
-    const viewportW = this.viewportWidth ?? x + width;
-    const viewportH = this.viewportHeight ?? y + height;
-    const menuX = clamp(x, 8, Math.max(8, viewportW - width - 8));
-    const menuY = clamp(y, 8, Math.max(8, viewportH - height - 8));
-    ctx.fillStyle = 'rgba(12,14,18,0.95)';
-    ctx.fillRect(menuX, menuY, width, height);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(menuX, menuY, width, height);
-    ctx.fillStyle = '#fff';
-    ctx.font = '13px Courier New';
-    this.fileMenuBounds = [];
-    let cursorY = menuY + gap;
-    items.forEach((item) => {
-      if (item.divider) {
-        const dividerY = cursorY + 6;
-        ctx.strokeStyle = UI_SUITE.colors.border;
-        ctx.beginPath();
-        ctx.moveTo(menuX + gap, dividerY);
-        ctx.lineTo(menuX + width - gap, dividerY);
-        ctx.stroke();
-        cursorY += 14;
-        return;
-      }
-      const bounds = {
-        x: menuX + gap,
-        y: cursorY,
-        w: width - gap * 2,
-        h: rowH - 8,
-        id: item.id
-      };
-      this.drawButton(ctx, bounds, item.label, false, true);
-      this.fileMenuBounds.push(bounds);
-      cursorY += rowH;
-    });
-  }
 
   drawGenreMenu(ctx, width, height) {
     const panelW = 260;

@@ -998,8 +998,25 @@ export default class Game {
     });
   }
 
+
+  exitEditorToMainMenu(editorId = 'level') {
+    if (editorId === 'pixel') {
+      this.exitPixelStudio({ toTitle: true });
+      return;
+    }
+    if (editorId === 'midi') {
+      this.exitMidiComposer();
+      return;
+    }
+    this.exitEditor({ toTitle: true });
+  }
+
   showInlineConfirm(message) {
-    this.showPrompt(message);
+    const text = String(message ?? 'Are you sure?');
+    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+      return window.confirm(text);
+    }
+    this.showSystemToast?.(text);
     return true;
   }
 

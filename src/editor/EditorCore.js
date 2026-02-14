@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -1074,8 +1074,8 @@ export default class Editor {
     this.setPanelTab('toolbox');
   }
 
-  async exitToMainMenu() {
-    await this.closeEditorWithPrompt();
+  exitToMainMenu() {
+    this.game.exitEditorToMainMenu('level');
   }
 
   getPanelConfig(tabId, { includeExtras = false } = {}) {
@@ -1445,7 +1445,7 @@ export default class Editor {
           id: 'exit',
           label: 'Close',
           tooltip: 'Close editor',
-          onClick: () => this.closeEditorWithPrompt()
+          onClick: () => this.exitToMainMenu()
         }
       );
     }
@@ -1890,12 +1890,6 @@ Level size:`, `${current.width}x${current.height}`);
     this.randomLevelFocusRepeat = 0;
     this.randomLevelSize.width = this.newLevelSizeDraft.width;
     this.randomLevelSize.height = this.newLevelSizeDraft.height;
-  }
-
-  async closeEditorWithPrompt() {
-    await this.runtime.closeWithPrompt(async () => {
-      stopPlaytestTransition(this.game, { toTitle: true });
-    });
   }
 
   openFileDialog() {
@@ -6573,115 +6567,74 @@ Level size:`, `${current.width}x${current.height}`);
           }];
           columns = 1;
         } else if (activeTab === 'file') {
-          items = [
-            {
-              id: 'new-level',
-              label: 'New',
-              active: false,
-              tooltip: 'Create a new level',
-              onClick: () => this.newLevelDocument()
+          items = buildSharedEditorFileMenu({
+            labels: {
+              new: 'New',
+              open: 'Open',
+              export: 'Export',
+              import: 'Import'
             },
-            {
-              id: 'save-storage',
-              label: 'Save',
-              active: false,
-              tooltip: 'Save level to browser storage',
-              onClick: () => this.saveLevelToStorage()
+            tooltips: {
+              new: 'Create a new level',
+              save: 'Save level to browser storage',
+              'save-as': 'Save level with a new name',
+              open: 'Open level from browser storage',
+              export: 'Export world JSON',
+              import: 'Import world JSON',
+              undo: 'Undo last change (Ctrl+Z)',
+              redo: 'Redo last change (Ctrl+Y)'
             },
-            {
-              id: 'save-as-storage',
-              label: 'Save As',
-              active: false,
-              tooltip: 'Save level with a new name',
-              onClick: () => this.saveLevelToStorage({ forceSaveAs: true })
+            actions: {
+              new: () => this.newLevelDocument(),
+              save: () => this.saveLevelToStorage(),
+              'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
+              open: () => this.loadLevelFromStorage(),
+              export: () => this.saveToFile(),
+              import: () => this.openFileDialog(),
+              undo: () => this.undo(),
+              redo: () => this.redo()
             },
-            {
-              id: 'load-storage',
-              label: 'Open',
-              active: false,
-              tooltip: 'Open level from browser storage',
-              onClick: () => this.loadLevelFromStorage()
-            },
-            {
-              id: 'resize-level',
-              label: 'Resize',
-              active: false,
-              tooltip: 'Resize level canvas',
-              onClick: () => this.resizeLevelDocument()
-            },
-            { id: 'divider-1', divider: true },
-            {
-              id: 'export-json',
-              label: 'Export',
-              active: false,
-              tooltip: 'Export world JSON',
-              onClick: () => this.saveToFile()
-            },
-            {
-              id: 'import-json',
-              label: 'Import',
-              active: false,
-              tooltip: 'Import world JSON',
-              onClick: () => this.openFileDialog()
-            },
-            { id: 'divider-2', divider: true },
-            {
-              id: 'undo',
-              label: 'Undo',
-              active: false,
-              tooltip: 'Undo last change (Ctrl+Z)',
-              onClick: () => this.undo()
-            },
-            {
-              id: 'redo',
-              label: 'Redo',
-              active: false,
-              tooltip: 'Redo last change (Ctrl+Y)',
-              onClick: () => this.redo()
-            },
-            { id: 'divider-3', divider: true },
-            {
-              id: 'playtest',
-              label: 'Playtest',
-              active: false,
-              tooltip: 'Start playtest from spawn',
-              onClick: () => this.game.exitEditor({ playtest: true })
-            },
-            ...(spawnTile
-              ? [{
-                id: 'spawn-point',
-                label: 'Spawn point',
-                active: this.tileType?.special === 'spawn',
-                tooltip: 'Place the player spawn point',
+            extras: [
+              { id: 'resize-level', label: 'Resize', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
+              { divider: true },
+              {
+                id: 'playtest',
+                label: 'Playtest',
+                tooltip: 'Start playtest from spawn',
+                onClick: () => this.game.exitEditor({ playtest: true })
+              },
+              ...(spawnTile
+                ? [{
+                  id: 'spawn-point',
+                  label: 'Spawn point',
+                  tooltip: 'Place the player spawn point',
+                  onClick: () => {
+                    this.setTileType(spawnTile);
+                    this.mode = 'tile';
+                    this.tileTool = 'paint';
+                  }
+                }]
+                : []),
+              {
+                id: 'start-everything',
+                label: `Start with everything: ${this.startWithEverything ? 'On' : 'Off'}`,
+                tooltip: 'Toggle playtest loadout',
                 onClick: () => {
-                  this.setTileType(spawnTile);
-                  this.mode = 'tile';
-                  this.tileTool = 'paint';
+                  this.startWithEverything = !this.startWithEverything;
                 }
-              }]
-              : []),
-            {
-              id: 'start-everything',
-              label: `Start with everything: ${this.startWithEverything ? 'On' : 'Off'}`,
-              active: false,
-              tooltip: 'Toggle playtest loadout',
-              onClick: () => {
-                this.startWithEverything = !this.startWithEverything;
+              },
+              {
+                id: 'random-level',
+                label: 'Random level',
+                tooltip: 'Create a random level layout',
+                onClick: () => this.promptRandomLevel()
               }
-            },
-            {
-              id: 'random-level',
-              label: 'Random level',
-              active: false,
-              tooltip: 'Create a random level layout',
-              onClick: () => this.promptRandomLevel()
-            },
-            { id: 'divider-4', divider: true },
-            ...buildMainMenuFooterEntries({
+            ],
+            footer: {
               onClose: () => this.closeFileMenu(),
               onExit: () => this.exitToMainMenu()
-            }).map((entry) => ({ ...entry, active: false }))
-          ];
+            }
+          }).map((entry) => ({ ...entry, active: false }));
           columns = 1;
         } else if (activeTab === 'tiles') {
           items = DEFAULT_TILE_TYPES.map((tile) => ({
@@ -7027,69 +6980,53 @@ Level size:`, `${current.width}x${current.height}`);
         this.panelScrollView = null;
       }
     } else {
-      this.editorBounds = { x: 0, y: 0, w: width, h: height };
-      const panelWidth = 360;
-      const panelX = width - panelWidth - 12;
-      const panelY = 12;
-      const panelH = height - 24;
-      const tabs = [
-        { id: 'tools', label: 'TOOLS' },
+      const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
+      const activeTab = this.getActivePanelTab();
+      this.editorBounds = { x: leftFrame.contentX, y: 0, w: leftFrame.contentW, h: height };
+      const { tabColumn, content } = buildSharedLeftMenuLayout({
+        x: leftFrame.panelX,
+        y: leftFrame.panelY,
+        width: leftFrame.panelW,
+        height: leftFrame.panelH,
+        isMobile: false
+      });
+
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = UI_SUITE.colors.panel;
+      ctx.fillRect(leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH);
+
+      const topButtonDefs = [
+        { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
+        { id: 'toolbox', label: 'TOOLBOX' },
         { id: 'tiles', label: 'TILES' },
+        { id: 'triggers', label: 'TRIGGERS' },
         { id: 'powerups', label: 'POWERUPS' },
         { id: 'enemies', label: 'ENEMIES' },
         { id: 'bosses', label: 'BOSSES' },
         { id: 'prefabs', label: 'STRUCTURES' },
-        { id: 'shapes', label: 'SHAPES' },
         { id: 'music', label: 'MUSIC' }
-      ];
-      const tabMargin = 12;
-      const tabGap = 6;
-      const tabArrowW = 22;
-      const tabArrowGap = 6;
-      const tabHeight = 26;
-      const tabRowW = panelWidth - tabMargin * 2 - (tabArrowW + tabArrowGap) * 2;
-      const tabWidth = (tabRowW - tabGap * (tabs.length - 1)) / tabs.length;
-      const tabY = panelY;
-      const activeTab = this.getActivePanelTab();
-
-      drawButton(
-        panelX + tabMargin,
-        tabY,
-        tabArrowW,
-        tabHeight,
-        '◀',
-        false,
-        () => this.cyclePanelTab(-1),
-        'Previous tab'
-      );
-      drawButton(
-        panelX + panelWidth - tabMargin - tabArrowW,
-        tabY,
-        tabArrowW,
-        tabHeight,
-        '▶',
-        false,
-        () => this.cyclePanelTab(1),
-        'Next tab'
-      );
-      tabs.forEach((tab, index) => {
-        const x = panelX + tabMargin + tabArrowW + tabArrowGap + index * (tabWidth + tabGap);
-        drawButton(
-          x,
-          tabY,
-          tabWidth,
-          tabHeight,
-          tab.label,
-          activeTab === tab.id,
-          () => this.setPanelTab(tab.id),
-          `${tab.label} panel`
-        );
+      ].map((entry) => ({ ...entry, action: () => this.setPanelTab(entry.id), active: activeTab === entry.id }));
+      const topButtons = buildSharedLeftMenuButtons({
+        x: tabColumn.x,
+        y: tabColumn.y,
+        height: tabColumn.h,
+        additionalButtons: topButtonDefs
+          .filter((entry) => entry.id !== 'file')
+          .map((entry) => ({ id: entry.id, label: entry.label })),
+        isMobile: false,
+        width: tabColumn.w
+      });
+      topButtons.forEach((entry, index) => {
+        const def = topButtonDefs[index];
+        drawButton(entry.bounds.x, entry.bounds.y, entry.bounds.w, entry.bounds.h, def.label, Boolean(def.active), def.action, `${def.label} panel`);
       });
 
-      let contentY = tabY + tabHeight + 10;
-      let contentHeight = Math.max(0, panelY + panelH - contentY);
-      const contentX = panelX;
-      const contentW = panelWidth;
+      let contentY = content.y;
+      let contentHeight = Math.max(0, content.y + content.h - contentY);
+      const contentX = content.x;
+      const contentW = content.w;
       const contentPadding = 12;
       const buttonGap = 10;
       const isTallButtons = activeTab === 'tiles'
