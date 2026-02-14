@@ -26,7 +26,7 @@ const NOTE_TO_PC = {
   B: 11
 };
 
-const PC_TO_NOTE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const PC_TO_NOTE = ROOT_LABELS;
 
 const DURATION_TOKENS = { w: 4, h: 2, q: 1, e: 0.5 };
 const DEFAULT_PATTERN_LIBRARY = {

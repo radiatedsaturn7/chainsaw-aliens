@@ -33,7 +33,6 @@ import { createViewportController } from './shared/viewportController.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
 
-const NOTE_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const SCALE_LIBRARY = [
   { id: 'major', label: 'Major', steps: [0, 2, 4, 5, 7, 9, 11] },
   { id: 'dorian', label: 'Dorian', steps: [0, 2, 3, 5, 7, 9, 10] },
@@ -2472,7 +2471,7 @@ export default class MidiComposer {
       return drumRow?.label || `Drum ${pitch}`;
     }
     const normalized = Math.round(pitch ?? 0);
-    const label = NOTE_LABELS[((normalized % 12) + 12) % 12];
+    const label = KEY_LABELS[((normalized % 12) + 12) % 12];
     const octave = this.getOctaveLabel(normalized);
     return `${label}${octave}`;
   }
@@ -10631,7 +10630,7 @@ export default class MidiComposer {
       const pitch = this.getPitchFromRow(row);
       let label = drumGrid
         ? drumRows[row]?.label || 'Drum'
-        : NOTE_LABELS[pitch % 12];
+        : KEY_LABELS[((pitch % 12) + 12) % 12];
       if (!drumGrid && pitch % 12 === 0) {
         label = `${label}${this.getOctaveLabel(pitch)}`;
       }

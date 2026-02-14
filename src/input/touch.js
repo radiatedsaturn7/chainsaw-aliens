@@ -1,8 +1,8 @@
 import { GM_DRUM_PAD_LAYOUT } from '../audio/gm.js';
+import { KEY_LABELS } from '../ui/midi/helpers/chords.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
-const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 const DRUM_MAP = GM_DRUM_PAD_LAYOUT;
 
@@ -403,7 +403,7 @@ export default class TouchInput {
     ctx.font = '12px Courier New';
     tuning.forEach((basePitch, stringIndex) => {
       const y = this.bounds.y + (stringIndex + 1) * stringGap;
-      const noteName = NOTE_NAMES[basePitch % 12] || 'E';
+      const noteName = KEY_LABELS[((basePitch % 12) + 12) % 12] || 'E';
       const octave = Math.floor(basePitch / 12) - 1;
       ctx.fillText(`${noteName}${octave}`, this.bounds.x + 4, y + 4);
     });

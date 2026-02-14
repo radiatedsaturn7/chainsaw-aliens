@@ -1,3 +1,5 @@
+import { KEY_LABELS } from '../ui/midi/helpers/chords.js';
+
 export const INSTRUMENTS = ['guitar', 'bass', 'piano', 'drums'];
 
 export const MODE_LIBRARY = [
@@ -10,7 +12,7 @@ export const MODE_LIBRARY = [
   { name: 'Locrian', steps: [0, 1, 3, 5, 6, 8, 10] }
 ];
 
-export const ROOT_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+export const ROOT_LABELS = KEY_LABELS;
 
 export const DEFAULT_SETS = [
   {

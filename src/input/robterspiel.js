@@ -1,8 +1,8 @@
+import { KEY_LABELS } from '../ui/midi/helpers/chords.js';
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const LEFT_STICK_DEADZONE = 0.35;
 const STICK_NEUTRAL_DEADZONE = 0.08;
 const PITCH_BEND_RANGE_SEMITONES = 2;
-const NOTE_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 const DIRECTION_MAP = [
   { id: 1, angle: 270 },
@@ -30,7 +30,7 @@ const mapDirection = (x, y) => {
 
 const formatPitchLabel = (pitch) => {
   const normalized = Math.round(pitch ?? 0);
-  const label = NOTE_LABELS[((normalized % 12) + 12) % 12];
+  const label = KEY_LABELS[((normalized % 12) + 12) % 12];
   const octave = Math.floor(normalized / 12) - 1;
   return `${label}${octave}`;
 };
