@@ -31,6 +31,7 @@ import { registerComposerInputHandlers } from './midi/input/composerInputHandler
 import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
 import { createViewportController } from './shared/viewportController.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
+import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
 
 const NOTE_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const SCALE_LIBRARY = [
@@ -126,6 +127,17 @@ const CONTROLLER_ACTIONS = [
   { id: 'octaveUp', label: 'Octave Up' },
   { id: 'octaveDown', label: 'Octave Down' }
 ];
+
+const MIDI_GAMEPAD_SEMANTIC_BINDINGS = {
+  [EDITOR_INPUT_ACTIONS.UNDO]: 'dash',
+  [EDITOR_INPUT_ACTIONS.REDO]: 'throw',
+  [EDITOR_INPUT_ACTIONS.CANCEL]: 'cancel',
+  [EDITOR_INPUT_ACTIONS.PANEL_PREV]: 'aimUp',
+  [EDITOR_INPUT_ACTIONS.NAV_LEFT]: 'dpadLeft',
+  [EDITOR_INPUT_ACTIONS.NAV_RIGHT]: 'dpadRight',
+  [EDITOR_INPUT_ACTIONS.NAV_UP]: 'dpadUp',
+  [EDITOR_INPUT_ACTIONS.NAV_DOWN]: 'dpadDown'
+};
 
 const GAMEPAD_BUTTONS = [
   { id: 'A', action: 'jump' },
@@ -520,11 +532,10 @@ export default class MidiComposer {
     this.gamepadMoveCooldown = 0;
     this.gamepadResizeCooldown = 0;
     this.gamepadCursorActive = false;
-    this.gamepadRtHeld = false;
-    this.gamepadLtHeld = false;
     this.gamepadSelection = { active: false };
     this.gamepadResizeMode = { active: false };
     this.gamepadTransportTap = { left: 0, right: 0 };
+    this.inputActionNormalizer = new EditorInputActionNormalizer();
     this.lastPointer = { x: 0, y: 0 };
     this.placingEndMarker = false;
     this.placingStartMarker = false;
@@ -2758,10 +2769,16 @@ export default class MidiComposer {
   }
 
   handleGamepadInput(input, dt) {
-    if (!input?.isGamepadConnected?.()) {
+    const normalized = this.inputActionNormalizer.updateGamepad(input, dt, {
+      semanticBindings: MIDI_GAMEPAD_SEMANTIC_BINDINGS,
+      includePanIntent: true
+    });
+    if (!normalized.connected) {
       this.gamepadCursorActive = false;
       return;
     }
+    const { actions: semanticActions, axes, pressed, down, triggers } = normalized;
+    const hasSemanticAction = (type) => semanticActions.some((entry) => entry.type === type);
     const resolveAction = (buttonId) => GAMEPAD_BUTTONS.find((entry) => entry.id === buttonId)?.action;
     const suppressedButtons = new Set();
     const handleMappedPress = (actionId, callback) => {
@@ -2769,36 +2786,35 @@ export default class MidiComposer {
       if (!mapped || suppressedButtons.has(mapped)) return;
       if (actionId === 'tool' && mapped === this.controllerMapping?.erase) return;
       const gamepadAction = resolveAction(mapped);
-      if (gamepadAction && input.wasGamepadPressed?.(gamepadAction)) {
+      if (gamepadAction && Boolean(pressed[gamepadAction])) {
         callback();
       }
     };
 
     const drumTrack = isDrumTrack(this.getActiveTrack());
-    const axes = input.getGamepadAxes?.() || {};
-    const rtHeld = (axes.rightTrigger || 0) > 0.2;
-    const ltHeld = (axes.leftTrigger || 0) > 0.2;
-    const rtPressed = rtHeld && !this.gamepadRtHeld;
-    const rtReleased = !rtHeld && this.gamepadRtHeld;
-    const ltPressed = ltHeld && !this.gamepadLtHeld;
-    const lbHeld = input.isGamepadDown?.('aimUp');
-    const lbPressed = input.wasGamepadPressed?.('aimUp');
-    const dpadLeftPressed = input.wasGamepadPressed?.('dpadLeft');
-    const dpadRightPressed = input.wasGamepadPressed?.('dpadRight');
-    const dpadUpPressed = input.wasGamepadPressed?.('dpadUp');
-    const dpadDownPressed = input.wasGamepadPressed?.('dpadDown');
-    const backPressed = input.wasGamepadPressed?.('cancel');
+    const rtHeld = triggers.rtHeld;
+    const ltHeld = triggers.ltHeld;
+    const rtPressed = triggers.rtPressed;
+    const rtReleased = triggers.rtReleased;
+    const ltPressed = triggers.ltPressed;
+    const lbHeld = Boolean(down.aimUp);
+    const lbPressed = hasSemanticAction(EDITOR_INPUT_ACTIONS.PANEL_PREV);
+    const dpadLeftPressed = hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_LEFT);
+    const dpadRightPressed = hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_RIGHT);
+    const dpadUpPressed = hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_UP);
+    const dpadDownPressed = hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_DOWN);
+    const backPressed = hasSemanticAction(EDITOR_INPUT_ACTIONS.CANCEL);
 
     if (this.activeTab === 'grid' && !this.recordModeActive) {
-      if (input.wasGamepadPressed?.('dash')) {
+      if (hasSemanticAction(EDITOR_INPUT_ACTIONS.UNDO)) {
         this.runtime.undo();
         suppressedButtons.add('B');
       }
-      if (input.wasGamepadPressed?.('throw')) {
+      if (hasSemanticAction(EDITOR_INPUT_ACTIONS.REDO)) {
         this.runtime.redo();
         suppressedButtons.add('Y');
       }
-      if (input.wasGamepadPressed?.('rev')) {
+      if (Boolean(pressed.rev)) {
         this.eraseNoteAt(this.cursor.tick, this.cursor.pitch);
         suppressedButtons.add('X');
       }
@@ -2952,12 +2968,12 @@ export default class MidiComposer {
       }
 
       if (!lbHeld && !ltHeld && !this.gamepadResizeMode.active) {
-        const left = input.isGamepadDown?.('left') || input.isGamepadDown?.('dpadLeft');
-        const right = input.isGamepadDown?.('right') || input.isGamepadDown?.('dpadRight');
-        const up = input.isGamepadDown?.('up') || input.isGamepadDown?.('dpadUp');
-        const down = input.isGamepadDown?.('down') || input.isGamepadDown?.('dpadDown');
+        const left = Boolean(down.left || down.dpadLeft);
+        const right = Boolean(down.right || down.dpadRight);
+        const up = Boolean(down.up || down.dpadUp);
+        const downDir = Boolean(down.down || down.dpadDown);
         const moveX = right ? 1 : left ? -1 : 0;
-        const moveY = down ? 1 : up ? -1 : 0;
+        const moveY = downDir ? 1 : up ? -1 : 0;
         if ((moveX || moveY) && this.gamepadMoveCooldown <= 0) {
           const step = this.getQuantizeTicks();
           const range = this.getPitchRange();
@@ -2987,8 +3003,6 @@ export default class MidiComposer {
       }
     }
 
-    this.gamepadRtHeld = rtHeld;
-    this.gamepadLtHeld = ltHeld;
   }
 
   advancePlayhead(dt) {
