@@ -24,6 +24,14 @@ export const UI_SUITE = {
   font: {
     family: 'Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
     size: 12
+  },
+  editorPanel: {
+    alpha: 0.9,
+    background: 'rgba(0,0,0,0.7)',
+    border: '#fff',
+    text: '#fff',
+    titleFont: '14px Courier New',
+    bodyFont: '12px Courier New'
   }
 };
 
