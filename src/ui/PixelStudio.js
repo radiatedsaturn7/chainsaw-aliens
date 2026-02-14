@@ -2507,7 +2507,8 @@ export default class PixelStudio {
       y: tabColumn.y,
       width: tabColumn.w,
       labels: this.leftPanelTabs.map((tab) => ({ id: tab, label: labels[tab] || tab })),
-      isMobile
+      isMobile,
+      buttonHeight: isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop
     });
 
     topButtons.forEach((entry) => {

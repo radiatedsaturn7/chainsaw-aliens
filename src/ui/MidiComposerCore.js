@@ -7714,7 +7714,8 @@ export default class MidiComposer {
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
         ...TAB_OPTIONS.map((tab) => ({ id: tab.id, label: tab.label }))
       ],
-      isMobile: false
+      isMobile: false,
+      buttonHeight: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop
     });
 
     this.bounds.fileButton = topButtons[0]?.bounds || null;
