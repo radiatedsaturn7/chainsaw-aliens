@@ -2872,9 +2872,16 @@ export default class PixelStudio {
       { label: 'Grid', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
       { label: 'Fit', action: () => this.centerView(true) }
     ];
-    const btnH = 46;
+    const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+    const buttonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
+    const buttonW = Math.min(w - 12, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
     actions.forEach((entry, index) => {
-      const bounds = { x: x + 6, y: y + 8 + index * (btnH + 8), w: w - 12, h: btnH };
+      const bounds = {
+        x: x + 6 + (w - 12 - buttonW) * 0.5,
+        y: y + 8 + index * (buttonH + gap),
+        w: buttonW,
+        h: buttonH
+      };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
       this.uiButtons.push({ bounds, onClick: entry.action });
       this.registerFocusable('toolbar', bounds, entry.action);

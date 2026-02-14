@@ -12,6 +12,7 @@ window.__game = game;
 window.__gameReady = true;
 let isMobile = false;
 let fullscreenPending = false;
+const hideFullscreenControlsForTesting = new URLSearchParams(window.location.search).has('hideFullscreenForTesting');
 
 const listenerDisposer = createDisposer();
 
@@ -51,7 +52,7 @@ function exitFullscreen() {
 }
 
 function updateFullscreenButtons() {
-  const showControls = Boolean(isMobile);
+  const showControls = Boolean(isMobile) && !hideFullscreenControlsForTesting;
   const isFullscreen = Boolean(document.fullscreenElement);
   if (enterFullscreenButton) {
     enterFullscreenButton.classList.toggle('is-hidden', !showControls || isFullscreen || fullscreenPending);
