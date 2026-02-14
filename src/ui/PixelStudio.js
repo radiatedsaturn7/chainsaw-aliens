@@ -29,6 +29,7 @@ import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dithe
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
 import { createViewportController } from './shared/viewportController.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
+import { ensurePixelArtStore, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
 
 
 export default class PixelStudio {
@@ -241,19 +242,10 @@ export default class PixelStudio {
   }
 
   loadTileData() {
-    if (!this.game?.world?.pixelArt) {
-      this.game.world.pixelArt = { tiles: {} };
-    }
-    if (!this.game.world.pixelArt.tiles) {
-      this.game.world.pixelArt.tiles = {};
-    }
-    const tiles = this.game.world.pixelArt.tiles;
+    ensurePixelArtStore(this.game.world);
     const tileChar = this.activeTile?.char;
     if (!tileChar) return;
-    if (!tiles[tileChar]) {
-      tiles[tileChar] = { size: 16, frames: [Array(16 * 16).fill(null)], fps: 6 };
-    }
-    const pixelData = tiles[tileChar];
+    const pixelData = ensurePixelTileData(this.game.world, tileChar, { size: 16, fps: 6 });
     if (!pixelData.editor) {
       const size = pixelData.size || 16;
       const baseLayer = createLayer(size, size, 'Layer 1');
@@ -334,7 +326,8 @@ export default class PixelStudio {
     if (!name) return;
     const dims = this.promptForArtDimensions(this.artSizeDraft);
     if (!dims) return;
-    this.game.world.pixelArt = { tiles: {} };
+    ensurePixelArtStore(this.game.world);
+    this.game.world.pixelArt.tiles = {};
     this.currentDocumentRef = { folder: 'art', name };
     this.loadTileData();
     this.artSizeDraft.width = dims.width;
