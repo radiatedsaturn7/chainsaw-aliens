@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedMenuFooterLayout, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -2491,7 +2491,7 @@ export default class PixelStudio {
     const tabWidth = isMobile ? 72 : 78;
     const gap = 8;
     const labels = {
-      file: 'File',
+      file: SHARED_EDITOR_LEFT_MENU.fileLabel,
       tools: 'Tools',
       canvas: 'Canvas'
     };
@@ -2674,12 +2674,16 @@ export default class PixelStudio {
 
     const footerY = y + h - (isMobile ? 52 : 30);
     const footerH = isMobile ? 44 : 22;
-    const footerGap = 8;
-    const footerW = Math.floor((w - 16 - footerGap) / 2);
-    const closeBounds = { x: x + 8, y: footerY, w: footerW, h: footerH };
-    const exitBounds = { x: closeBounds.x + closeBounds.w + footerGap, y: footerY, w: footerW, h: footerH };
-    this.drawButton(ctx, closeBounds, 'Close Menu', false, { fontSize: isMobile ? 12 : 12 });
-    this.drawButton(ctx, exitBounds, 'Exit to Main Menu', false, { fontSize: isMobile ? 11 : 11 });
+    const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
+      x,
+      y: footerY,
+      width: w,
+      buttonHeight: footerH,
+      horizontalPadding: 8,
+      gap: 8
+    });
+    this.drawButton(ctx, closeBounds, SHARED_EDITOR_LEFT_MENU.closeLabel, false, { fontSize: isMobile ? 12 : 12 });
+    this.drawButton(ctx, exitBounds, SHARED_EDITOR_LEFT_MENU.exitLabel, false, { fontSize: isMobile ? 11 : 11 });
     this.uiButtons.push({ bounds: closeBounds, onClick: () => this.closeFileMenu() });
     this.uiButtons.push({ bounds: exitBounds, onClick: () => this.closeStudioWithPrompt() });
     this.registerFocusable('file', closeBounds, () => this.closeFileMenu());

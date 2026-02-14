@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, formatMenuLabel } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -6991,24 +6991,30 @@ Level size:`, `${current.width}x${current.height}`);
         if (activeTab === 'file') {
           const footerH = Math.max(28, buttonHeight);
           const footerY = contentY + contentHeight - footerH - 10;
-          const footerGap = 8;
-          const footerW = Math.floor((contentW - contentPadding * 2 - footerGap) / 2);
+          const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
+            x: contentX,
+            y: footerY,
+            width: contentW,
+            buttonHeight: footerH,
+            horizontalPadding: contentPadding,
+            gap: 8
+          });
           drawButton(
-            contentX + contentPadding,
-            footerY,
-            footerW,
-            footerH,
-            'Close Menu',
+            closeBounds.x,
+            closeBounds.y,
+            closeBounds.w,
+            closeBounds.h,
+            SHARED_EDITOR_LEFT_MENU.closeLabel,
             false,
             () => this.closeFileMenu(),
             'Close file menu'
           );
           drawButton(
-            contentX + contentPadding + footerW + footerGap,
-            footerY,
-            footerW,
-            footerH,
-            'Exit to Main Menu',
+            exitBounds.x,
+            exitBounds.y,
+            exitBounds.w,
+            exitBounds.h,
+            SHARED_EDITOR_LEFT_MENU.exitLabel,
             false,
             () => this.exitToMainMenu(),
             'Exit editor to title'
@@ -7187,24 +7193,30 @@ Level size:`, `${current.width}x${current.height}`);
       if (activeTab === 'file') {
         const footerH = 30;
         const footerY = contentY + contentHeight - footerH - 10;
-        const footerGap = 8;
-        const footerW = Math.floor((contentW - contentPadding * 2 - footerGap) / 2);
+        const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
+          x: contentX,
+          y: footerY,
+          width: contentW,
+          buttonHeight: footerH,
+          horizontalPadding: contentPadding,
+          gap: 8
+        });
         drawButton(
-          contentX + contentPadding,
-          footerY,
-          footerW,
-          footerH,
-          'Close Menu',
+          closeBounds.x,
+          closeBounds.y,
+          closeBounds.w,
+          closeBounds.h,
+          SHARED_EDITOR_LEFT_MENU.closeLabel,
           false,
           () => this.closeFileMenu(),
           'Close file menu'
         );
         drawButton(
-          contentX + contentPadding + footerW + footerGap,
-          footerY,
-          footerW,
-          footerH,
-          'Exit to Main Menu',
+          exitBounds.x,
+          exitBounds.y,
+          exitBounds.w,
+          exitBounds.h,
+          SHARED_EDITOR_LEFT_MENU.exitLabel,
           false,
           () => this.exitToMainMenu(),
           'Exit editor to title'

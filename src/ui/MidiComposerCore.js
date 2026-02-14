@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedMenuFooterLayout, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -11080,12 +11080,18 @@ export default class MidiComposer {
 
     const footerY = panelY + panelH - 40;
     const footerH = 28;
-    const footerGap = 8;
-    const footerW = Math.floor((finalPanelW - 24 - footerGap) / 2);
-    const closeBounds = { x: panelX + 12, y: footerY, w: footerW, h: footerH, id: 'close-menu-fixed' };
-    const exitBounds = { x: closeBounds.x + closeBounds.w + footerGap, y: footerY, w: footerW, h: footerH, id: 'exit-main-fixed' };
-    this.drawButton(ctx, closeBounds, 'Close Menu', false, true);
-    this.drawButton(ctx, exitBounds, 'Exit to Main Menu', false, true);
+    const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
+      x: panelX,
+      y: footerY,
+      width: finalPanelW,
+      buttonHeight: footerH,
+      horizontalPadding: 12,
+      gap: 8,
+      closeId: 'close-menu-fixed',
+      exitId: 'exit-main-fixed'
+    });
+    this.drawButton(ctx, closeBounds, SHARED_EDITOR_LEFT_MENU.closeLabel, false, true);
+    this.drawButton(ctx, exitBounds, SHARED_EDITOR_LEFT_MENU.exitLabel, false, true);
     this.fileMenuBounds.push(closeBounds, exitBounds);
 
     this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
