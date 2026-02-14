@@ -95,13 +95,12 @@ export function buildSharedMenuFooterLayout({
 export function buildSharedDesktopLeftPanelFrame({
   viewportWidth,
   viewportHeight,
-  menuWidth = SHARED_EDITOR_LEFT_MENU.width(),
   outerPadding = SHARED_EDITOR_LEFT_MENU.desktopOuterPadding,
   contentGap = SHARED_EDITOR_LEFT_MENU.desktopContentGap
 }) {
   const panelX = outerPadding;
   const panelY = outerPadding;
-  const panelW = menuWidth;
+  const panelW = SHARED_EDITOR_LEFT_MENU.width();
   const panelH = Math.max(0, viewportHeight - outerPadding * 2);
   const contentX = panelX + panelW + contentGap;
   const contentW = Math.max(0, viewportWidth - contentX - outerPadding);
