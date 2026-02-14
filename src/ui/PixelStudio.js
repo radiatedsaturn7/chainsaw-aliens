@@ -2346,7 +2346,7 @@ export default class PixelStudio {
     ctx.fillStyle = UI_SUITE.colors.bg;
     ctx.fillRect(0, 0, width, height);
     ctx.imageSmoothingEnabled = false;
-    const isMobile = this.isMobileLayout(width, height);
+    const isMobile = this.isMobileLayout();
     const menuFullScreen = false;
     const padding = isMobile ? 12 : 16;
     const topBarHeight = 0;
@@ -2459,8 +2459,8 @@ export default class PixelStudio {
     ctx.textAlign = 'left';
   }
 
-  isMobileLayout(width, height) {
-    return this.game?.isMobile || width < 900 || height < 600;
+  isMobileLayout() {
+    return Boolean(this.game?.isMobile);
   }
 
   drawPreviewPanel(ctx, x, y, w, h) {
