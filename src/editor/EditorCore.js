@@ -449,7 +449,7 @@ export default class Editor {
     };
     this.panelMenuFocused = false;
     this.drawer = {
-      open: true,
+      open: false,
       tabIndex: 0,
       tabs: ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'enemies', 'bosses', 'prefabs', 'music'],
       swipeStart: null
@@ -6482,45 +6482,63 @@ Level size:`, `${current.width}x${current.height}`);
       ctx.fillRect(panelX, panelY, panelW, handleAreaH);
       ctx.fillStyle = 'rgba(255,255,255,0.35)';
       ctx.fillRect(panelX + panelW / 2 - 18, panelY + 10, 36, 4);
-      this.addUIButton(
-        { x: panelX, y: panelY, w: panelW, h: handleAreaH },
-        () => {
-          this.drawer.open = !this.drawer.open;
-        },
-        this.drawer.open ? 'Collapse drawer' : 'Expand drawer'
-      );
+
+      const tabs = [
+        { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
+        { id: 'toolbox', label: 'Toolbox' },
+        { id: 'tiles', label: 'Tiles' },
+        { id: 'triggers', label: 'Triggers' },
+        { id: 'powerups', label: 'Powerups' },
+        { id: 'enemies', label: 'Enemies' },
+        { id: 'bosses', label: 'Bosses' },
+        { id: 'prefabs', label: 'Structures' },
+        { id: 'music', label: 'Music' }
+      ];
 
       if (!this.drawer.open) {
-        ctx.fillStyle = '#fff';
-        ctx.textAlign = 'center';
-        let summary = `${modeLabel}`;
-        if (this.mode === 'tile') {
-          summary = `${modeLabel} (${tileToolLabel})`;
-        } else if (this.mode === 'enemy') {
-          summary = `${modeLabel}`;
-        } else if (this.mode === 'prefab') {
-          summary = `${modeLabel}`;
-        } else if (this.mode === 'shape') {
-          summary = `${modeLabel}`;
-        }
-        ctx.fillText(summary, panelW / 2, panelY + 46);
+        const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
+        const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+        const tabButtonW = Math.min(panelW - 12, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
+        const startY = panelY + handleAreaH + 8;
+        tabs.forEach((tab, index) => {
+          const y = startY + index * (tabButtonH + tabGap);
+          if (y + tabButtonH > panelY + panelH - 8) return;
+          drawButton(
+            panelX + (panelW - tabButtonW) * 0.5,
+            y,
+            tabButtonW,
+            tabButtonH,
+            tab.label,
+            false,
+            () => {
+              this.setPanelTab(tab.id);
+              this.drawer.open = true;
+            },
+            `${tab.label} drawer`
+          );
+        });
       } else {
-        const tabs = [
-          { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
-          { id: 'toolbox', label: 'Toolbox' },
-          { id: 'tiles', label: 'Tiles' },
-          { id: 'triggers', label: 'Triggers' },
-          { id: 'powerups', label: 'Powerups' },
-          { id: 'enemies', label: 'Enemies' },
-          { id: 'bosses', label: 'Bosses' },
-          { id: 'prefabs', label: 'Structures' },
-          { id: 'music', label: 'Music' }
-        ];
         const activeTab = this.getActivePanelTab();
         const panelPadding = 10;
+        const backBounds = {
+          x: panelX + panelPadding,
+          y: panelY + handleAreaH + 8,
+          w: Math.min(120, panelW - panelPadding * 2),
+          h: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile
+        };
+        drawButton(
+          backBounds.x,
+          backBounds.y,
+          backBounds.w,
+          backBounds.h,
+          'Back',
+          false,
+          () => { this.drawer.open = false; },
+          'Back to menu'
+        );
         const tabColumnW = Math.max(92, Math.min(124, Math.floor(panelW * 0.32)));
         const tabX = panelX + panelPadding;
-        const tabY = panelY + handleAreaH + 8;
+        const tabY = panelY + handleAreaH + SHARED_EDITOR_LEFT_MENU.buttonHeightMobile + 14;
         const tabW = tabColumnW - panelPadding * 1.5;
         const tabButtonW = Math.min(tabW, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
         const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;

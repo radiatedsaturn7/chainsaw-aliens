@@ -2926,19 +2926,11 @@ export default class PixelStudio {
 
     const tabHeight = 44;
     if (type === 'panel') {
-      const prevBounds = { x: x + 12, y: y + 8, w: 44, h: tabHeight };
-      const closeBounds = { x: x + w - 56, y: y + 8, w: 44, h: tabHeight };
-      const nextBounds = { x: x + w - 108, y: y + 8, w: 44, h: tabHeight };
+      const backBounds = { x: x + 12, y: y + 8, w: 92, h: tabHeight };
       const label = this.leftPanelTab[0].toUpperCase() + this.leftPanelTab.slice(1);
-      this.drawButton(ctx, prevBounds, '<', false, { fontSize: 14 });
-      this.drawButton(ctx, nextBounds, '>', false, { fontSize: 14 });
-      this.drawButton(ctx, closeBounds, 'X', false, { fontSize: 12 });
-      this.uiButtons.push({ bounds: prevBounds, onClick: () => this.cycleLeftPanel(-1) });
-      this.uiButtons.push({ bounds: nextBounds, onClick: () => this.cycleLeftPanel(1) });
-      this.uiButtons.push({ bounds: closeBounds, onClick: () => { this.mobileDrawer = null; } });
-      this.registerFocusable('menu', prevBounds, () => this.cycleLeftPanel(-1));
-      this.registerFocusable('menu', nextBounds, () => this.cycleLeftPanel(1));
-      this.registerFocusable('menu', closeBounds, () => { this.mobileDrawer = null; });
+      this.drawButton(ctx, backBounds, 'Back', false, { fontSize: 12 });
+      this.uiButtons.push({ bounds: backBounds, onClick: () => { this.mobileDrawer = null; } });
+      this.registerFocusable('menu', backBounds, () => { this.mobileDrawer = null; });
 
       ctx.fillStyle = '#fff';
       ctx.font = '14px Courier New';

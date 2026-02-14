@@ -16,6 +16,7 @@ import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js'
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
 import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
+import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -7622,6 +7623,7 @@ export default class MidiComposer {
     this.bounds.tempoButton = null;
     this.bounds.tempoSlider = null;
     this.bounds.noteLengthMenu = [];
+    this.editorShellTheme = resolveEditorShellTheme();
 
     const isMobile = this.isMobileLayout();
     if (this.recordModeActive) {
@@ -7669,17 +7671,18 @@ export default class MidiComposer {
   drawDesktopLayout(ctx, width, height, track, pattern) {
     const transportH = 96;
     const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
-    const headerH = 40;
-    const contentX = leftFrame.contentX;
-    const contentW = leftFrame.contentW;
-    const contentY = leftFrame.panelY + headerH + 8;
-    const contentH = Math.max(0, leftFrame.panelH - headerH - 8 - transportH - 8);
-    const transportY = contentY + contentH + 8;
+    const shellLayout = createEditorShellLayout({
+      viewportWidth: width,
+      viewportHeight: height,
+      leftPanelFrame: leftFrame,
+      bottomBarHeight: transportH
+    });
 
-    this.drawHeader(ctx, contentX, leftFrame.panelY, contentW, headerH, track);
-    this.drawDesktopLeftPanel(ctx, leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH);
-    this.drawTransportBar(ctx, contentX, transportY, contentW, transportH);
+    this.drawHeader(ctx, shellLayout.topBar.x, shellLayout.topBar.y, shellLayout.topBar.w, shellLayout.topBar.h, track);
+    this.drawDesktopLeftPanel(ctx, shellLayout.leftRail.x, shellLayout.leftRail.y, shellLayout.leftRail.w, shellLayout.leftRail.h);
+    this.drawTransportBar(ctx, shellLayout.bottomBar.x, shellLayout.bottomBar.y, shellLayout.bottomBar.w, shellLayout.bottomBar.h);
 
+    const { x: contentX, y: contentY, w: contentW, h: contentH } = shellLayout.mainContent;
     if (this.activeTab === 'grid') {
       this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
     } else if (this.activeTab === 'song') {
@@ -7861,7 +7864,7 @@ export default class MidiComposer {
     const controlsY = y + menuH + panelGap;
     const controlsH = Math.max(0, h - menuH - panelGap);
 
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(menuX, menuY, w, menuH);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(menuX, menuY, w, menuH);
@@ -7893,7 +7896,7 @@ export default class MidiComposer {
     }
     this.drawSmallButton(ctx, this.bounds.redoButton, 'Redo', false);
 
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(controlsX, controlsY, w, controlsH);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(controlsX, controlsY, w, controlsH);
@@ -8107,7 +8110,7 @@ export default class MidiComposer {
   }
 
   drawHeader(ctx, x, y, w, h, track) {
-    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -8122,18 +8125,18 @@ export default class MidiComposer {
           : gmStatus.loading
             ? 'Loading SoundFont…'
             : 'SoundFont Ready';
-      ctx.fillStyle = gmStatus.error ? '#ff6a6a' : 'rgba(255,255,255,0.6)';
+      ctx.fillStyle = gmStatus.error ? this.editorShellTheme.danger : this.editorShellTheme.textMuted;
       ctx.font = '12px Courier New';
       ctx.fillText(statusText, x + padding, y + padding + 12);
       if (gmStatus.error) {
         const bannerText = `SoundFont error: ${gmStatus.error}`;
         const bannerH = 22;
         const bannerY = y + h - bannerH - 8;
-        ctx.fillStyle = 'rgba(255,90,90,0.25)';
+        ctx.fillStyle = this.editorShellTheme.dangerSurface;
         ctx.fillRect(x + 8, bannerY, w - 16, bannerH);
-        ctx.strokeStyle = 'rgba(255,120,120,0.6)';
+        ctx.strokeStyle = this.editorShellTheme.dangerBorder;
         ctx.strokeRect(x + 8, bannerY, w - 16, bannerH);
-        ctx.fillStyle = '#ffd0d0';
+        ctx.fillStyle = this.editorShellTheme.dangerText;
         ctx.font = '12px Courier New';
         ctx.fillText(this.truncateLabel(ctx, bannerText, w - 28), x + 14, bannerY + 15);
       }
@@ -8141,7 +8144,7 @@ export default class MidiComposer {
   }
 
   drawTabs(ctx, x, y, w, h) {
-    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -8164,7 +8167,7 @@ export default class MidiComposer {
   }
 
   drawTransportBar(ctx, x, y, w, h) {
-    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -8253,7 +8256,7 @@ export default class MidiComposer {
   }
 
   drawSongTab(ctx, x, y, w, h) {
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -9130,7 +9133,7 @@ export default class MidiComposer {
   }
 
   drawInstrumentPanel(ctx, x, y, w, h, track) {
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -9494,7 +9497,7 @@ export default class MidiComposer {
   }
 
   drawSettingsPanel(ctx, x, y, w, h) {
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -9774,7 +9777,7 @@ export default class MidiComposer {
   }
 
   drawHelpPanel(ctx, x, y, w, h) {
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -9915,7 +9918,7 @@ export default class MidiComposer {
   }
 
   drawTopBar(ctx, x, y, w, h, track) {
-    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -10009,7 +10012,7 @@ export default class MidiComposer {
   drawTransport(ctx, x, y, w, h) {
     const scale = Math.min(1, w / 980);
     const offset = (value) => value * scale;
-    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -10098,7 +10101,7 @@ export default class MidiComposer {
   }
 
   drawTransportCompact(ctx, x, y, w, h) {
-    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -10179,7 +10182,7 @@ export default class MidiComposer {
 
   drawTrackList(ctx, x, y, w, h) {
     const isMobile = this.isMobileLayout();
-    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -10345,7 +10348,7 @@ export default class MidiComposer {
       labelW
     };
 
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, viewH + rulerH);
     if (!simplified) {
       ctx.strokeStyle = UI_SUITE.colors.border;
@@ -10405,7 +10408,7 @@ export default class MidiComposer {
             ? 'rgba(0,0,0,0.4)'
             : 'rgba(255,255,255,0.06)';
         } else if (isScaleTone) {
-          ctx.fillStyle = 'rgba(255,255,255,0.05)';
+          ctx.fillStyle = this.editorShellTheme.surfaceAlt;
         } else {
           ctx.fillStyle = 'rgba(0,0,0,0.3)';
         }
@@ -11047,7 +11050,7 @@ export default class MidiComposer {
   }
 
   drawFilePanel(ctx, x, y, w, h) {
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
