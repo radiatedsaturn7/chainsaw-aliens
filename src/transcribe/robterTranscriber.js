@@ -1,4 +1,5 @@
 import { quantizeNotes, buildTiming, buildSectionsFromDuration, estimateDifficulty } from '../gameplay/eventTrack.js';
+import { KEY_LABELS } from '../ui/midi/helpers/chords.js';
 
 const NOTE_LANES = ['X', 'Y', 'A', 'B'];
 const NOTE_INPUTS = [
@@ -75,7 +76,6 @@ const SCALE_STEPS = {
   minor: [0, 2, 3, 5, 7, 8, 10]
 };
 
-const PITCH_CLASS_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 const MAJOR_PROFILE = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88];
 const MINOR_PROFILE = [6.33, 2.68, 3.52, 5.38, 2.6, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17];
@@ -754,6 +754,6 @@ export const transcribeMidiStem = ({
 };
 
 export const formatKeyLabel = ({ tonicPitchClass, mode }) => {
-  const label = PITCH_CLASS_LABELS[tonicPitchClass] || 'C';
+  const label = KEY_LABELS[((tonicPitchClass % 12) + 12) % 12] || 'C';
   return `${label} ${mode === 'minor' ? 'Minor' : 'Major'}`;
 };
