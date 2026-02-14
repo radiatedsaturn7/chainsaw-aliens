@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuTopButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuTopButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -166,7 +166,6 @@ const DEFAULT_GRID_TOP_PITCH = 59;
 const DEFAULT_RULER_HEIGHT = 80;
 const LOOP_HANDLE_MIN_WIDTH = 70;
 const LOOP_HANDLE_MIN_HEIGHT = 38;
-const FILE_MENU_WIDTH = SHARED_EDITOR_LEFT_MENU.width();
 const DEFAULT_LOOP_BARS = 4;
 const GENRE_OPTIONS = [
   { id: 'random', label: 'Random' },
@@ -7668,22 +7667,17 @@ export default class MidiComposer {
 
 
   drawDesktopLayout(ctx, width, height, track, pattern) {
-    const padding = 16;
-    const gap = 12;
     const transportH = 96;
-    const leftW = SHARED_EDITOR_LEFT_MENU.width();
-    const layoutH = height - padding * 2;
-    const leftX = padding;
-    const leftY = padding;
-    const contentX = leftX + leftW + gap;
-    const contentW = Math.max(0, width - contentX - padding);
+    const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
     const headerH = 40;
-    const contentY = leftY + headerH + 8;
-    const contentH = Math.max(0, layoutH - headerH - 8 - transportH - 8);
+    const contentX = leftFrame.contentX;
+    const contentW = leftFrame.contentW;
+    const contentY = leftFrame.panelY + headerH + 8;
+    const contentH = Math.max(0, leftFrame.panelH - headerH - 8 - transportH - 8);
     const transportY = contentY + contentH + 8;
 
-    this.drawHeader(ctx, contentX, leftY, contentW, headerH, track);
-    this.drawDesktopLeftPanel(ctx, leftX, leftY, leftW, layoutH);
+    this.drawHeader(ctx, contentX, leftFrame.panelY, contentW, headerH, track);
+    this.drawDesktopLeftPanel(ctx, leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH);
     this.drawTransportBar(ctx, contentX, transportY, contentW, transportH);
 
     if (this.activeTab === 'grid') {
@@ -11129,47 +11123,6 @@ export default class MidiComposer {
     this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
   }
 
-  drawFileMenu(ctx, x, y) {
-    const items = this.getFileMenuItems();
-    const width = FILE_MENU_WIDTH;
-    const rowH = 44;
-    const gap = 10;
-    const height = items.reduce((total, item) => total + (item.divider ? 14 : rowH), gap * 2);
-    const viewportW = this.viewportWidth ?? x + width;
-    const viewportH = this.viewportHeight ?? y + height;
-    const menuX = clamp(x, 8, Math.max(8, viewportW - width - 8));
-    const menuY = clamp(y, 8, Math.max(8, viewportH - height - 8));
-    ctx.fillStyle = 'rgba(12,14,18,0.95)';
-    ctx.fillRect(menuX, menuY, width, height);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(menuX, menuY, width, height);
-    ctx.fillStyle = '#fff';
-    ctx.font = '13px Courier New';
-    this.fileMenuBounds = [];
-    let cursorY = menuY + gap;
-    items.forEach((item) => {
-      if (item.divider) {
-        const dividerY = cursorY + 6;
-        ctx.strokeStyle = UI_SUITE.colors.border;
-        ctx.beginPath();
-        ctx.moveTo(menuX + gap, dividerY);
-        ctx.lineTo(menuX + width - gap, dividerY);
-        ctx.stroke();
-        cursorY += 14;
-        return;
-      }
-      const bounds = {
-        x: menuX + gap,
-        y: cursorY,
-        w: width - gap * 2,
-        h: rowH - 8,
-        id: item.id
-      };
-      this.drawButton(ctx, bounds, item.label, false, true);
-      this.fileMenuBounds.push(bounds);
-      cursorY += rowH;
-    });
-  }
 
   drawGenreMenu(ctx, width, height) {
     const panelW = 260;

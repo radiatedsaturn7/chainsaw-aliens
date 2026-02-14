@@ -35,6 +35,8 @@ export const SHARED_EDITOR_LEFT_MENU = {
   buttonGap: 8,
   panelPadding: 8,
   panelGap: 8,
+  desktopOuterPadding: 16,
+  desktopContentGap: 12,
   fileLabel: 'FILE',
   closeLabel: 'Close Menu',
   exitLabel: 'Exit to Main Menu'
@@ -87,6 +89,33 @@ export function buildSharedMenuFooterLayout({
 }
 
 
+
+
+
+export function buildSharedDesktopLeftPanelFrame({
+  viewportWidth,
+  viewportHeight,
+  menuWidth = SHARED_EDITOR_LEFT_MENU.width(),
+  outerPadding = SHARED_EDITOR_LEFT_MENU.desktopOuterPadding,
+  contentGap = SHARED_EDITOR_LEFT_MENU.desktopContentGap
+}) {
+  const panelX = outerPadding;
+  const panelY = outerPadding;
+  const panelW = menuWidth;
+  const panelH = Math.max(0, viewportHeight - outerPadding * 2);
+  const contentX = panelX + panelW + contentGap;
+  const contentW = Math.max(0, viewportWidth - contentX - outerPadding);
+  return {
+    panelX,
+    panelY,
+    panelW,
+    panelH,
+    contentX,
+    contentW,
+    outerPadding,
+    contentGap
+  };
+}
 
 export function buildSharedLeftMenuTopButtons({
   x,

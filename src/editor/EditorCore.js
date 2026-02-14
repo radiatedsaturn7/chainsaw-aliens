@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuTopButtons, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuTopButtons, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -6982,25 +6982,22 @@ Level size:`, `${current.width}x${current.height}`);
         this.panelScrollView = null;
       }
     } else {
-      const panelX = 12;
-      const panelY = 12;
-      const panelWidth = SHARED_EDITOR_LEFT_MENU.width();
-      const panelH = height - 24;
-      this.editorBounds = { x: panelX + panelWidth + 12, y: 0, w: Math.max(0, width - panelWidth - 24), h: height };
+      const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
       const activeTab = this.getActivePanelTab();
+      this.editorBounds = { x: leftFrame.contentX, y: 0, w: leftFrame.contentW, h: height };
       const { tabColumn, content } = buildSharedLeftMenuLayout({
-        x: panelX,
-        y: panelY,
-        width: panelWidth,
-        height: panelH,
+        x: leftFrame.panelX,
+        y: leftFrame.panelY,
+        width: leftFrame.panelW,
+        height: leftFrame.panelH,
         isMobile: false
       });
 
       ctx.globalAlpha = 1;
       ctx.fillStyle = UI_SUITE.colors.panel;
-      ctx.fillRect(panelX, panelY, panelWidth, panelH);
+      ctx.fillRect(leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH);
       ctx.strokeStyle = UI_SUITE.colors.border;
-      ctx.strokeRect(panelX, panelY, panelWidth, panelH);
+      ctx.strokeRect(leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH);
 
       const rootButtons = [
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => this.setPanelTab('file'), active: activeTab === 'file' && !this.leftMenuOverlay },

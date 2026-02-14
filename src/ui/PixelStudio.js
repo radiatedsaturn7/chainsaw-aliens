@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuTopButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuTopButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -2357,7 +2357,12 @@ export default class PixelStudio {
     const bottomHeight = menuFullScreen
       ? padding * 2
       : statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
-    const leftWidth = isMobile ? UI_SUITE.layout.railWidthMobile : (this.sidebars.left ? (menuFullScreen ? width - padding * 2 : SHARED_EDITOR_LEFT_MENU.width()) : 0);
+    const leftFrame = !isMobile && this.sidebars.left && !menuFullScreen
+      ? buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height })
+      : null;
+    const leftWidth = isMobile
+      ? UI_SUITE.layout.railWidthMobile
+      : (leftFrame ? leftFrame.panelW : (this.sidebars.left ? SHARED_EDITOR_LEFT_MENU.width() : 0));
     const rightWidth = 0;
 
     this.uiButtons = [];
@@ -2368,18 +2373,15 @@ export default class PixelStudio {
     this.focusGroupMeta = {};
     this.mobileDrawerBounds = null;
 
-    const canvasX = padding + leftWidth;
+    const canvasX = leftFrame ? leftFrame.contentX : (padding + leftWidth);
     const canvasY = topBarHeight + padding;
-    const canvasW = width - leftWidth - rightWidth - padding * 2;
+    const canvasW = leftFrame ? leftFrame.contentW : (width - leftWidth - rightWidth - padding * 2);
     const canvasH = height - canvasY - bottomHeight;
 
     if (isMobile) {
       this.drawMobileRail(ctx, padding, canvasY, leftWidth - 8, canvasH);
     } else if (this.sidebars.left) {
-      const panelX = padding;
-      const panelY = menuFullScreen ? padding : canvasY;
-      const panelH = menuFullScreen ? height - padding * 2 : canvasH;
-      this.drawLeftPanel(ctx, panelX, panelY, leftWidth, panelH, { isMobile: false });
+      this.drawLeftPanel(ctx, leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH, { isMobile: false });
     }
 
     if (!menuFullScreen) {
