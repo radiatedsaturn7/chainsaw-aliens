@@ -999,7 +999,11 @@ export default class Game {
   }
 
   showInlineConfirm(message) {
-    this.showPrompt(message);
+    const text = String(message ?? 'Are you sure?');
+    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+      return window.confirm(text);
+    }
+    this.showSystemToast?.(text);
     return true;
   }
 
