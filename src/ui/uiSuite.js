@@ -16,7 +16,7 @@ export const UI_SUITE = {
     tap: 44
   },
   layout: {
-    railWidthMobile: 72,
+    railWidthMobile: 96,
     panelWidthMobile: 292,
     leftMenuWidthDesktop: 292,
     drawerWidth: 292
