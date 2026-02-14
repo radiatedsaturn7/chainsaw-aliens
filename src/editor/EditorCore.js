@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedLeftMenuLayout, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -7027,69 +7027,54 @@ Level size:`, `${current.width}x${current.height}`);
         this.panelScrollView = null;
       }
     } else {
-      this.editorBounds = { x: 0, y: 0, w: width, h: height };
-      const panelWidth = 360;
-      const panelX = width - panelWidth - 12;
+      const panelX = 12;
       const panelY = 12;
+      const panelWidth = SHARED_EDITOR_LEFT_MENU.width();
       const panelH = height - 24;
+      this.editorBounds = { x: panelX + panelWidth + 12, y: 0, w: Math.max(0, width - panelWidth - 24), h: height };
       const tabs = [
-        { id: 'tools', label: 'TOOLS' },
+        { id: 'toolbox', label: 'TOOLS' },
         { id: 'tiles', label: 'TILES' },
         { id: 'powerups', label: 'POWERUPS' },
         { id: 'enemies', label: 'ENEMIES' },
         { id: 'bosses', label: 'BOSSES' },
         { id: 'prefabs', label: 'STRUCTURES' },
-        { id: 'shapes', label: 'SHAPES' },
+        { id: 'triggers', label: 'TRIGGERS' },
         { id: 'music', label: 'MUSIC' }
       ];
-      const tabMargin = 12;
-      const tabGap = 6;
-      const tabArrowW = 22;
-      const tabArrowGap = 6;
-      const tabHeight = 26;
-      const tabRowW = panelWidth - tabMargin * 2 - (tabArrowW + tabArrowGap) * 2;
-      const tabWidth = (tabRowW - tabGap * (tabs.length - 1)) / tabs.length;
-      const tabY = panelY;
+      const tabHeight = 30;
+      const tabGap = 8;
       const activeTab = this.getActivePanelTab();
-
-      drawButton(
-        panelX + tabMargin,
-        tabY,
-        tabArrowW,
-        tabHeight,
-        '◀',
-        false,
-        () => this.cyclePanelTab(-1),
-        'Previous tab'
-      );
-      drawButton(
-        panelX + panelWidth - tabMargin - tabArrowW,
-        tabY,
-        tabArrowW,
-        tabHeight,
-        '▶',
-        false,
-        () => this.cyclePanelTab(1),
-        'Next tab'
-      );
-      tabs.forEach((tab, index) => {
-        const x = panelX + tabMargin + tabArrowW + tabArrowGap + index * (tabWidth + tabGap);
-        drawButton(
-          x,
-          tabY,
-          tabWidth,
-          tabHeight,
-          tab.label,
-          activeTab === tab.id,
-          () => this.setPanelTab(tab.id),
-          `${tab.label} panel`
-        );
+      const { tabColumn, content } = buildSharedLeftMenuLayout({
+        x: panelX,
+        y: panelY,
+        width: panelWidth,
+        height: panelH,
+        isMobile: false,
+        tabWidthDesktop: 92,
+        padding: 10,
+        gap: 10
       });
 
-      let contentY = tabY + tabHeight + 10;
-      let contentHeight = Math.max(0, panelY + panelH - contentY);
-      const contentX = panelX;
-      const contentW = panelWidth;
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = UI_SUITE.colors.panel;
+      ctx.fillRect(panelX, panelY, panelWidth, panelH);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(panelX, panelY, panelWidth, panelH);
+
+      const fileBounds = { x: tabColumn.x, y: tabColumn.y, w: tabColumn.w, h: tabHeight };
+      drawButton(fileBounds.x, fileBounds.y, fileBounds.w, fileBounds.h, SHARED_EDITOR_LEFT_MENU.fileLabel, activeTab === 'file', () => this.setPanelTab('file'), `${SHARED_EDITOR_LEFT_MENU.fileLabel} panel`);
+      let tabY = fileBounds.y + tabHeight + tabGap;
+      tabs.forEach((tab) => {
+        const bounds = { x: tabColumn.x, y: tabY, w: tabColumn.w, h: tabHeight };
+        drawButton(bounds.x, bounds.y, bounds.w, bounds.h, tab.label, activeTab === tab.id, () => this.setPanelTab(tab.id), `${tab.label} panel`);
+        tabY += tabHeight + tabGap;
+      });
+
+      let contentY = content.y;
+      let contentHeight = Math.max(0, content.y + content.h - contentY);
+      const contentX = content.x;
+      const contentW = content.w;
       const contentPadding = 12;
       const buttonGap = 10;
       const isTallButtons = activeTab === 'tiles'
