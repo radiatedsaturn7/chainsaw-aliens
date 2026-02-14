@@ -78,6 +78,30 @@ export function buildSharedMenuFooterLayout({
   const exitBounds = { x: innerX + buttonW + gap, y, w: buttonW, h: buttonHeight, id: exitId };
   return { closeBounds, exitBounds };
 }
+
+export function buildSharedLeftMenuLayout({
+  x,
+  y,
+  width,
+  height,
+  isMobile = false,
+  padding = 8,
+  gap = 8,
+  tabWidthDesktop = 84,
+  tabWidthMobile = 72
+}) {
+  const tabWidth = isMobile ? tabWidthMobile : tabWidthDesktop;
+  const tabX = x + padding;
+  const tabY = y + padding;
+  const contentX = tabX + tabWidth + gap;
+  const contentY = tabY;
+  const contentW = Math.max(0, width - (contentX - x) - padding);
+  const contentH = Math.max(0, height - padding * 2);
+  return {
+    tabColumn: { x: tabX, y: tabY, w: tabWidth, h: Math.max(0, height - padding * 2) },
+    content: { x: contentX, y: contentY, w: contentW, h: contentH }
+  };
+}
 const STANDARD_FILE_ORDER = ['new', 'save', 'save-as', 'open', 'export', 'import', 'undo', 'redo'];
 
 export function buildStandardFileMenu(config = {}) {

@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedMenuFooterLayout, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedLeftMenuLayout, buildSharedMenuFooterLayout, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -2487,34 +2487,41 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
-    const tabHeight = isMobile ? 40 : 28;
-    const tabWidth = isMobile ? 72 : 78;
-    const gap = 8;
     const labels = {
       file: SHARED_EDITOR_LEFT_MENU.fileLabel,
       tools: 'Tools',
       canvas: 'Canvas'
     };
-    const mainTabs = this.leftPanelTabs;
-    let offsetY = y + 8;
-    mainTabs.forEach((tab, index) => {
+    const tabHeight = isMobile ? 40 : 28;
+    const tabGap = 8;
+    const { tabColumn, content } = buildSharedLeftMenuLayout({
+      x,
+      y,
+      width: w,
+      height: h,
+      isMobile,
+      tabWidthDesktop: 78,
+      tabWidthMobile: 72,
+      padding: 8,
+      gap: 8
+    });
+
+    let offsetY = tabColumn.y;
+    this.leftPanelTabs.forEach((tab) => {
       const bounds = {
-        x: x + 8,
+        x: tabColumn.x,
         y: offsetY,
-        w: tabWidth,
+        w: tabColumn.w,
         h: tabHeight
       };
       const active = this.leftPanelTab === tab;
       this.drawButton(ctx, bounds, labels[tab] || tab, active, { fontSize: isMobile ? 12 : 11 });
       this.uiButtons.push({ bounds, onClick: () => this.setLeftPanelTab(tab) });
       this.registerFocusable('menu', bounds, () => this.setLeftPanelTab(tab));
-      offsetY += tabHeight + gap;
+      offsetY += tabHeight + tabGap;
     });
 
-    const panelX = x + tabWidth + 16;
-    const panelY = y + 8;
-    const panelH = h - 16;
-    this.drawLeftPanelContent(ctx, panelX, panelY, w - tabWidth - 24, panelH, options);
+    this.drawLeftPanelContent(ctx, content.x, content.y, content.w, content.h, options);
   }
 
   drawLeftPanelContent(ctx, x, y, w, h, options = {}) {
