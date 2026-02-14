@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -166,7 +166,7 @@ const DEFAULT_GRID_TOP_PITCH = 59;
 const DEFAULT_RULER_HEIGHT = 80;
 const LOOP_HANDLE_MIN_WIDTH = 70;
 const LOOP_HANDLE_MIN_HEIGHT = 38;
-const FILE_MENU_WIDTH = 240;
+const FILE_MENU_WIDTH = SHARED_EDITOR_LEFT_MENU.width();
 const DEFAULT_LOOP_BARS = 4;
 const GENRE_OPTIONS = [
   { id: 'random', label: 'Random' },
@@ -7701,8 +7701,8 @@ export default class MidiComposer {
     const gap = 12;
     const sidebarW = this.getSidebarWidth(width, {
       ratio: 0.24,
-      min: UI_SUITE.layout.leftMenuWidthDesktop,
-      max: UI_SUITE.layout.leftMenuWidthDesktop,
+      min: SHARED_EDITOR_LEFT_MENU.width(),
+      max: SHARED_EDITOR_LEFT_MENU.width(),
       padding,
       gap,
       minContent: 240
@@ -7845,7 +7845,7 @@ export default class MidiComposer {
     let cursorY = menuY + panelPadding;
     this.bounds.tabs = [];
     this.bounds.fileButton = { x: innerX, y: cursorY, w: innerW, h: rowH };
-    this.drawButton(ctx, this.bounds.fileButton, 'File', this.activeTab === 'file', false);
+    this.drawButton(ctx, this.bounds.fileButton, SHARED_EDITOR_LEFT_MENU.fileLabel, this.activeTab === 'file', false);
     cursorY += rowH + rowGap;
 
     TAB_OPTIONS.forEach((tab) => {
@@ -8125,7 +8125,7 @@ export default class MidiComposer {
     const tabW = (tabsW - gap * (TAB_OPTIONS.length - 1)) / TAB_OPTIONS.length;
     this.bounds.tabs = [];
     this.bounds.fileButton = { x, y, w: fileW, h };
-    this.drawButton(ctx, this.bounds.fileButton, 'File', this.activeTab === 'file', false);
+    this.drawButton(ctx, this.bounds.fileButton, SHARED_EDITOR_LEFT_MENU.fileLabel, this.activeTab === 'file', false);
     let cursorX = x + fileW + gap;
     TAB_OPTIONS.forEach((tab, index) => {
       const tabX = cursorX + index * (tabW + gap);
@@ -11016,8 +11016,7 @@ export default class MidiComposer {
         { id: 'theme', label: 'Generate Theme' },
         { id: 'sample', label: 'Load Sample Song' },
         { divider: true },
-        { id: 'close-menu', label: 'Close Menu' },
-        { id: 'exit-main', label: 'Exit to Main Menu' }
+        ...buildMainMenuFooterEntries()
       ]
     });
   }

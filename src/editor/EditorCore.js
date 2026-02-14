@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, formatMenuLabel } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -718,7 +718,7 @@ export default class Editor {
       }
       this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
 
-      const drawerWidth = Math.min(UI_SUITE.layout.leftMenuWidthDesktop, Math.max(UI_SUITE.layout.railWidthMobile + 96, width - 120));
+      const drawerWidth = Math.min(SHARED_EDITOR_LEFT_MENU.width(), Math.max(UI_SUITE.layout.railWidthMobile + 96, width - 120));
       const collapsedWidth = UI_SUITE.layout.railWidthMobile;
       const panelW = this.drawer.open ? drawerWidth : collapsedWidth;
       this.editorBounds = { x: panelW, y: 0, w: width - panelW, h: height };
@@ -1190,18 +1190,10 @@ export default class Editor {
           onClick: () => this.promptRandomLevel()
         },
         { id: 'divider-4', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'close-menu',
-          label: 'Close Menu',
-          tooltip: 'Close file menu',
-          onClick: () => this.closeFileMenu()
-        },
-        {
-          id: 'exit-main',
-          label: 'Exit to Main Menu',
-          tooltip: 'Exit editor to title',
-          onClick: () => this.exitToMainMenu()
-        }
+        ...buildMainMenuFooterEntries({
+          onClose: () => this.closeFileMenu(),
+          onExit: () => this.exitToMainMenu()
+        })
       ];
       columns = 2;
     } else if (tabId === 'tiles') {
@@ -6477,7 +6469,7 @@ Level size:`, `${current.width}x${current.height}`);
     }
 
     if (this.isMobileLayout()) {
-      const drawerWidth = Math.min(UI_SUITE.layout.leftMenuWidthDesktop, Math.max(UI_SUITE.layout.railWidthMobile + 96, width - 120));
+      const drawerWidth = Math.min(SHARED_EDITOR_LEFT_MENU.width(), Math.max(UI_SUITE.layout.railWidthMobile + 96, width - 120));
       const collapsedWidth = UI_SUITE.layout.railWidthMobile;
       const panelW = this.drawer.open ? drawerWidth : collapsedWidth;
       const panelX = 0;
@@ -6520,7 +6512,7 @@ Level size:`, `${current.width}x${current.height}`);
         ctx.fillText(summary, panelW / 2, panelY + 46);
       } else {
         const tabs = [
-          { id: 'file', label: 'File' },
+          { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
           { id: 'toolbox', label: 'Toolbox' },
           { id: 'tiles', label: 'Tiles' },
           { id: 'triggers', label: 'Triggers' },
@@ -6685,20 +6677,10 @@ Level size:`, `${current.width}x${current.height}`);
               onClick: () => this.promptRandomLevel()
             },
             { id: 'divider-4', divider: true },
-            {
-              id: 'close-menu',
-              label: 'Close Menu',
-              active: false,
-              tooltip: 'Close file menu',
-              onClick: () => this.closeFileMenu()
-            },
-            {
-              id: 'exit-main',
-              label: 'Exit to Main Menu',
-              active: false,
-              tooltip: 'Exit editor to title',
-              onClick: () => this.exitToMainMenu()
-            }
+            ...buildMainMenuFooterEntries({
+              onClose: () => this.closeFileMenu(),
+              onExit: () => this.exitToMainMenu()
+            }).map((entry) => ({ ...entry, active: false }))
           ];
           columns = 1;
         } else if (activeTab === 'tiles') {

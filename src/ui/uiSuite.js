@@ -26,6 +26,38 @@ export const UI_SUITE = {
   }
 };
 
+export const SHARED_EDITOR_LEFT_MENU = {
+  width: () => UI_SUITE.layout.leftMenuWidthDesktop,
+  fileLabel: 'FILE'
+};
+
+export function buildMainMenuFooterEntries(config = {}) {
+  const {
+    closeId = 'close-menu',
+    exitId = 'exit-main',
+    closeLabel = 'Close Menu',
+    exitLabel = 'Exit to Main Menu',
+    closeTooltip = 'Close file menu',
+    exitTooltip = 'Exit editor to title',
+    onClose = null,
+    onExit = null
+  } = config;
+  return [
+    {
+      id: closeId,
+      label: closeLabel,
+      tooltip: closeTooltip,
+      onClick: onClose
+    },
+    {
+      id: exitId,
+      label: exitLabel,
+      tooltip: exitTooltip,
+      onClick: onExit
+    }
+  ];
+}
+
 const STANDARD_FILE_ORDER = ['new', 'save', 'save-as', 'open', 'export', 'import', 'undo', 'redo'];
 
 export function buildStandardFileMenu(config = {}) {
