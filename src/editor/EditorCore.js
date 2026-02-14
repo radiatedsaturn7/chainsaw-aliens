@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel, getSharedEditorDrawerWidth } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -718,11 +718,17 @@ export default class Editor {
       }
       this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
 
-      const drawerWidth = Math.min(SHARED_EDITOR_LEFT_MENU.width(), Math.max(UI_SUITE.layout.railWidthMobile + 96, width - 120));
-      const collapsedWidth = UI_SUITE.layout.railWidthMobile;
-      const panelW = this.drawer.open ? drawerWidth : collapsedWidth;
-      this.editorBounds = { x: panelW, y: 0, w: width - panelW, h: height };
-      this.drawerBounds = { x: 0, y: 0, w: panelW, h: height };
+      const railWidth = UI_SUITE.layout.railWidthMobile;
+      const drawerWidth = this.drawer.open
+        ? getSharedEditorDrawerWidth(width, {
+          minWidth: UI_SUITE.layout.railWidthMobile + 96,
+          edgePadding: 0
+        })
+        : 0;
+      this.editorBounds = { x: railWidth, y: 0, w: width - railWidth - drawerWidth, h: height };
+      this.drawerBounds = this.drawer.open
+        ? { x: width - drawerWidth, y: 0, w: drawerWidth, h: height }
+        : { x: 0, y: 0, w: railWidth, h: height };
     } else {
       this.panJoystick.center = { x: 0, y: 0 };
       this.panJoystick.radius = 0;
@@ -4885,7 +4891,7 @@ Level size:`, `${current.width}x${current.height}`);
     let extraLeft = 0;
     let extraRight = 0;
     if (this.isMobileLayout()) {
-      extraLeft = (this.drawerBounds?.w || 0) / this.zoom;
+      extraLeft = UI_SUITE.layout.railWidthMobile / this.zoom;
     } else {
       extraRight = 372 / this.zoom;
     }
@@ -6463,14 +6469,22 @@ Level size:`, `${current.width}x${current.height}`);
     }
 
     if (this.isMobileLayout()) {
-      const drawerWidth = Math.min(SHARED_EDITOR_LEFT_MENU.width(), Math.max(UI_SUITE.layout.railWidthMobile + 96, width - 120));
-      const collapsedWidth = UI_SUITE.layout.railWidthMobile;
-      const panelW = this.drawer.open ? drawerWidth : collapsedWidth;
+      const railWidth = UI_SUITE.layout.railWidthMobile;
+      const drawerWidth = this.drawer.open
+        ? getSharedEditorDrawerWidth(width, {
+          minWidth: UI_SUITE.layout.railWidthMobile + 96,
+          edgePadding: 0
+        })
+        : 0;
       const panelX = 0;
       const panelY = 0;
+      const panelW = railWidth;
       const panelH = height;
-      this.editorBounds = { x: panelW, y: 0, w: width - panelW, h: height };
-      this.drawerBounds = { x: panelX, y: panelY, w: panelW, h: panelH };
+      const drawerX = width - drawerWidth;
+      this.editorBounds = { x: railWidth, y: 0, w: width - railWidth - drawerWidth, h: height };
+      this.drawerBounds = this.drawer.open
+        ? { x: drawerX, y: panelY, w: drawerWidth, h: panelH }
+        : { x: panelX, y: panelY, w: panelW, h: panelH };
       ctx.globalAlpha = 1;
       ctx.fillStyle = UI_SUITE.colors.panel;
       ctx.fillRect(panelX, panelY, panelW, panelH);
@@ -6520,10 +6534,14 @@ Level size:`, `${current.width}x${current.height}`);
       } else {
         const activeTab = this.getActivePanelTab();
         const panelPadding = 10;
+        ctx.fillStyle = UI_SUITE.colors.panel;
+        ctx.fillRect(drawerX, panelY, drawerWidth, panelH);
+        ctx.strokeStyle = UI_SUITE.colors.border;
+        ctx.strokeRect(drawerX, panelY, drawerWidth, panelH);
         const backBounds = {
-          x: panelX + panelPadding,
+          x: drawerX + panelPadding,
           y: panelY + handleAreaH + 8,
-          w: Math.min(120, panelW - panelPadding * 2),
+          w: Math.min(120, drawerWidth - panelPadding * 2),
           h: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile
         };
         drawButton(
@@ -6536,30 +6554,33 @@ Level size:`, `${current.width}x${current.height}`);
           () => { this.drawer.open = false; },
           'Back to menu'
         );
-        const tabColumnW = Math.max(92, Math.min(124, Math.floor(panelW * 0.32)));
-        const tabX = panelX + panelPadding;
         const tabY = panelY + handleAreaH + SHARED_EDITOR_LEFT_MENU.buttonHeightMobile + 14;
-        const tabW = tabColumnW - panelPadding * 1.5;
-        const tabButtonW = Math.min(tabW, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
-        const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
-        const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
-        ctx.font = `14px ${UI_SUITE.font.family}`;
-        tabs.forEach((tab, index) => {
-          const y = tabY + index * (tabButtonH + tabGap);
-          drawButton(
-            tabX + (tabW - tabButtonW) * 0.5,
-            y,
-            tabButtonW,
-            tabButtonH,
-            tab.label,
-            activeTab === tab.id,
-            () => this.setPanelTab(tab.id),
-            `${tab.label} drawer`
-          );
-        });
-
-        const contentX = panelX + tabColumnW + 6;
-        const contentW = panelW - tabColumnW - panelPadding - 6;
+        let contentX = drawerX + panelPadding;
+        let contentW = drawerWidth - panelPadding * 2;
+        if (activeTab !== 'file') {
+          const tabColumnW = Math.max(92, Math.min(124, Math.floor(drawerWidth * 0.32)));
+          const tabX = drawerX + panelPadding;
+          const tabW = tabColumnW - panelPadding * 1.5;
+          const tabButtonW = Math.min(tabW, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
+          const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
+          const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+          ctx.font = `14px ${UI_SUITE.font.family}`;
+          tabs.forEach((tab, index) => {
+            const y = tabY + index * (tabButtonH + tabGap);
+            drawButton(
+              tabX + (tabW - tabButtonW) * 0.5,
+              y,
+              tabButtonW,
+              tabButtonH,
+              tab.label,
+              activeTab === tab.id,
+              () => this.setPanelTab(tab.id),
+              `${tab.label} drawer`
+            );
+          });
+          contentX = drawerX + tabColumnW + 6;
+          contentW = drawerWidth - tabColumnW - panelPadding - 6;
+        }
         const baseContentY = tabY;
         let contentY = baseContentY;
         const reservedBottom = joystickRadius * 2 + 32;

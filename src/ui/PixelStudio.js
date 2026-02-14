@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -2379,7 +2379,7 @@ export default class PixelStudio {
     const canvasH = height - canvasY - bottomHeight;
 
     if (isMobile) {
-      this.drawMobileRail(ctx, padding, canvasY, leftWidth - 8, canvasH);
+      this.drawMobileRail(ctx, 0, 0, UI_SUITE.layout.railWidthMobile, height);
     } else if (this.sidebars.left) {
       this.drawLeftPanel(ctx, leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH, { isMobile: false });
     }
@@ -2413,9 +2413,9 @@ export default class PixelStudio {
       const toolbarY = height - toolbarHeight - padding;
       this.drawMobileToolbar(ctx, canvasX, toolbarY, width - canvasX - padding, toolbarHeight);
       if (this.mobileDrawer && this.mobileDrawer !== 'timeline') {
-        const drawerW = Math.min(460, Math.max(280, Math.floor(width * 0.62)));
-        const drawerX = width - padding - drawerW;
-        this.drawMobileDrawer(ctx, drawerX, topBarHeight + padding, drawerW, canvasH, this.mobileDrawer);
+        const drawerW = getSharedEditorDrawerWidth(width, { edgePadding: 0 });
+        const drawerX = width - drawerW;
+        this.drawMobileDrawer(ctx, drawerX, 0, drawerW, height, this.mobileDrawer);
       }
       if (this.paletteGridOpen) {
         this.drawPaletteGridSheet(ctx, padding, canvasY + canvasH * 0.25, width - padding * 2, canvasH * 0.7);

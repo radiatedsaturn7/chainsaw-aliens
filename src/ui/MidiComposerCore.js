@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
 import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -6856,6 +6856,10 @@ export default class MidiComposer {
       this.loadDemoSong();
       return;
     }
+    if (action === 'back-menu' || action === 'back-menu-fixed') {
+      this.activeTab = 'grid';
+      return;
+    }
     if (action === 'close-menu' || action === 'close-menu-fixed') {
       this.closeFileMenu();
       return;
@@ -7736,9 +7740,9 @@ export default class MidiComposer {
       gap,
       minContent: 240
     });
-    const sidebarX = padding;
-    const sidebarY = padding;
-    const sidebarH = height - padding * 2;
+    const sidebarX = 0;
+    const sidebarY = 0;
+    const sidebarH = height;
     const contentX = sidebarX + sidebarW + gap;
     const contentY = padding;
     const contentW = width - contentX - padding;
@@ -7819,17 +7823,10 @@ export default class MidiComposer {
   drawMobileLayout(ctx, width, height, track, pattern) {
     const padding = 10;
     const gap = 10;
-    const sidebarW = this.getSidebarWidth(width, {
-      ratio: 0.38,
-      min: 220,
-      max: 320,
-      padding,
-      gap,
-      minContent: 180
-    });
-    const sidebarX = padding;
-    const sidebarY = padding;
-    const sidebarH = height - padding * 2;
+    const sidebarW = UI_SUITE.layout.railWidthMobile;
+    const sidebarX = 0;
+    const sidebarY = 0;
+    const sidebarH = height;
     const contentX = sidebarX + sidebarW + gap;
     const contentY = padding;
     const contentW = width - contentX - padding;
@@ -11055,25 +11052,34 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
-    const padding = 14;
-    const panelW = Math.min(520, Math.max(240, w * 0.35));
-    const maxPanelW = Math.max(0, w - padding * 2);
-    const finalPanelW = Math.min(panelW, maxPanelW);
-    const panelX = x + w - finalPanelW - padding;
-    const panelY = y + padding;
-    const panelH = h - padding * 2;
+    const viewportW = this.viewportWidth ?? x + w;
+    const viewportH = this.viewportHeight ?? y + h;
+    const padding = 0;
+    const finalPanelW = getSharedEditorDrawerWidth(viewportW, { edgePadding: 0 });
+    const panelX = viewportW - finalPanelW;
+    const panelY = 0;
+    const panelH = viewportH;
     ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(panelX, panelY, finalPanelW, panelH);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(panelX, panelY, finalPanelW, panelH);
 
+    const backBounds = {
+      x: panelX + 12,
+      y: panelY + 10,
+      w: Math.min(112, Math.max(82, finalPanelW * 0.34)),
+      h: 30,
+      id: 'back-menu-fixed'
+    };
+    this.drawButton(ctx, backBounds, 'Back', false, true);
+
     ctx.fillStyle = '#fff';
     ctx.font = '16px Courier New';
-    ctx.fillText('File Actions', panelX + 12, panelY + 22);
+    ctx.fillText('File Actions', panelX + 12, panelY + 58);
 
     const items = this.getFileMenuItems();
     const rowH = clamp(Math.round(panelH * 0.08), 36, 44);
-    const listStartY = panelY + 34;
+    const listStartY = panelY + 70;
     const footerReserved = 56;
     const listH = Math.max(0, panelH - (listStartY - panelY) - footerReserved);
     this.fileMenuListBounds = { x: panelX + 10, y: listStartY - 4, w: finalPanelW - 20, h: listH + 8 };
@@ -11120,7 +11126,7 @@ export default class MidiComposer {
     });
     this.drawButton(ctx, closeBounds, SHARED_EDITOR_LEFT_MENU.closeLabel, false, true);
     this.drawButton(ctx, exitBounds, SHARED_EDITOR_LEFT_MENU.exitLabel, false, true);
-    this.fileMenuBounds.push(closeBounds, exitBounds);
+    this.fileMenuBounds.push(backBounds, closeBounds, exitBounds);
 
     this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
   }
