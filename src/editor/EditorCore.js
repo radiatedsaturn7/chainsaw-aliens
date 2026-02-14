@@ -9,6 +9,7 @@ import { createEditorRuntime } from '../ui/shared/editor-runtime/EditorRuntime.j
 import { createPixelEditorAdapter } from './adapters/pixelEditorAdapter.js';
 import { createMidiEditorAdapter } from './adapters/midiEditorAdapter.js';
 import { normalizeMidiTracks } from './adapters/editorDataContracts.js';
+import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from '../ui/shared/input/editorInputActions.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -286,6 +287,17 @@ const MIDI_NOTE_LENGTHS = [
 
 const EDITOR_AUTOSAVE_KEY = 'chainsaw-editor-autosave';
 
+const EDITOR_GAMEPAD_BINDINGS = {
+  [EDITOR_INPUT_ACTIONS.CONFIRM]: 'jump',
+  [EDITOR_INPUT_ACTIONS.CANCEL]: 'cancel',
+  [EDITOR_INPUT_ACTIONS.MENU]: 'pause',
+  [EDITOR_INPUT_ACTIONS.TOGGLE_MODE]: 'throw',
+  [EDITOR_INPUT_ACTIONS.UNDO]: 'dash',
+  [EDITOR_INPUT_ACTIONS.PANEL_PREV]: 'aimUp',
+  [EDITOR_INPUT_ACTIONS.PANEL_NEXT]: 'aimDown',
+  SECONDARY: 'attack'
+};
+
 
 export default class Editor {
   constructor(game) {
@@ -318,6 +330,7 @@ export default class Editor {
     });
     this.triggerZoneStart = null;
     this.triggerZoneTarget = null;
+    this.inputActionNormalizer = new EditorInputActionNormalizer();
     this.triggerEditorOpen = false;
     this.selectedTriggerId = null;
     this.triggerEditorView = 'main';
@@ -746,6 +759,7 @@ export default class Editor {
     this.drawer.swipeStart = null;
     this.triggerZoneStart = null;
     this.triggerZoneTarget = null;
+    this.inputActionNormalizer = new EditorInputActionNormalizer();
     this.musicDragStart = null;
     this.musicDragTarget = null;
     this.panJoystick.active = false;
@@ -1503,7 +1517,15 @@ export default class Editor {
   }
 
   handleGamepad(input, dt) {
-    if (!input.isGamepadConnected()) {
+    const normalized = this.inputActionNormalizer.updateGamepad(input, dt, {
+      semanticBindings: EDITOR_GAMEPAD_BINDINGS,
+      includePanIntent: true,
+      includeZoomIntent: true
+    });
+    const { connected, axes, actions: semanticActions, pressed, down } = normalized;
+    const hasSemanticAction = (type) => semanticActions.some((entry) => entry.type === type);
+
+    if (!connected) {
       if (this.dragging && this.dragSource === 'gamepad') {
         this.endStroke();
       }
@@ -1519,7 +1541,6 @@ export default class Editor {
       this.lastPointer = { x: centerX, y: centerY };
     }
 
-    const axes = input.getGamepadAxes();
     const tileSize = this.game.world.tileSize;
     const moveSpeed = 420 * dt * (1 / this.zoom);
     const panSpeed = 320 * dt * (1 / this.zoom);
@@ -1545,16 +1566,16 @@ export default class Editor {
           ? this.randomLevelDialog.focus
           : null;
       };
-      if (input.wasGamepadPressed('dpadUp') || (stickY < -0.5 && this.randomLevelFocusRepeat <= 0)) {
+      if (hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_UP) || (stickY < -0.5 && this.randomLevelFocusRepeat <= 0)) {
         moveFocus(-1);
         this.randomLevelFocusRepeat = 0.18;
       }
-      if (input.wasGamepadPressed('dpadDown') || (stickY > 0.5 && this.randomLevelFocusRepeat <= 0)) {
+      if (hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_DOWN) || (stickY > 0.5 && this.randomLevelFocusRepeat <= 0)) {
         moveFocus(1);
         this.randomLevelFocusRepeat = 0.18;
       }
       if (['cancel', 'ok'].includes(this.randomLevelDialog.focus)) {
-        if (input.wasGamepadPressed('dpadLeft') || input.wasGamepadPressed('dpadRight')) {
+        if (hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_LEFT) || hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_RIGHT)) {
           this.randomLevelDialog.focus = this.randomLevelDialog.focus === 'cancel' ? 'ok' : 'cancel';
         }
       }
@@ -1562,10 +1583,10 @@ export default class Editor {
         this.randomLevelSlider.active = this.randomLevelDialog.focus;
       }
       if (this.randomLevelSlider.active) {
-        if (input.wasGamepadPressed('dpadLeft')) {
+        if (hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_LEFT)) {
           this.adjustRandomLevelSlider(this.randomLevelSlider.active, -1);
         }
-        if (input.wasGamepadPressed('dpadRight')) {
+        if (hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_RIGHT)) {
           this.adjustRandomLevelSlider(this.randomLevelSlider.active, 1);
         }
         const sliderInput = stickX;
@@ -1584,8 +1605,18 @@ export default class Editor {
     this.gamepadCursor.x += moveX * moveSpeed;
     this.gamepadCursor.y += moveY * moveSpeed;
 
+    const navInput = {
+      wasGamepadPressed: (action) => {
+        if (action === 'dpadUp') return hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_UP);
+        if (action === 'dpadDown') return hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_DOWN);
+        if (action === 'dpadLeft') return hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_LEFT);
+        if (action === 'dpadRight') return hasSemanticAction(EDITOR_INPUT_ACTIONS.NAV_RIGHT);
+        return false;
+      }
+    };
+
     if (moveX === 0 && moveY === 0) {
-      if (this.navigatePanelMenu(input)) {
+      if (this.navigatePanelMenu(navInput)) {
         this.panelMenuFocused = true;
       }
     } else {
@@ -1616,46 +1647,49 @@ export default class Editor {
     const screenPos = this.worldToScreen(this.gamepadCursor.x, this.gamepadCursor.y);
     this.lastPointer = { x: screenPos.x, y: screenPos.y };
 
-    if (input.wasGamepadPressed('throw')) {
+    if (hasSemanticAction(EDITOR_INPUT_ACTIONS.TOGGLE_MODE)) {
       this.cycleMode(1);
     }
-    if (input.wasGamepadPressed('dash')) {
+    if (Boolean(pressed.dash)) {
       this.cycleTileTool();
     }
-    if (input.wasGamepadPressed('aimUp')) {
+    if (hasSemanticAction(EDITOR_INPUT_ACTIONS.PANEL_PREV)) {
       this.cyclePanelTab(-1);
     }
-    if (input.wasGamepadPressed('aimDown')) {
+    if (hasSemanticAction(EDITOR_INPUT_ACTIONS.PANEL_NEXT)) {
       this.cyclePanelTab(1);
     }
 
     if (dialogOpen && this.randomLevelDialog.justOpened) {
       this.randomLevelDialog.justOpened = false;
-    } else if (dialogOpen && input.wasGamepadPressed('jump')) {
+    } else if (dialogOpen && hasSemanticAction(EDITOR_INPUT_ACTIONS.CONFIRM)) {
       if (this.randomLevelDialog.focus === 'cancel') {
         this.cancelRandomLevel();
       } else {
         this.confirmRandomLevel();
       }
       return;
-    } else if (dialogOpen && input.wasGamepadPressed('dash')) {
+    } else if (dialogOpen && Boolean(pressed.dash)) {
       this.cancelRandomLevel();
       return;
     }
 
-    if (input.wasGamepadPressed('pause')) {
+    if (hasSemanticAction(EDITOR_INPUT_ACTIONS.UNDO)) {
+      this.undo();
+    }
+    if (hasSemanticAction(EDITOR_INPUT_ACTIONS.MENU)) {
       this.startPlaytestFromCursor();
       return;
     }
-    if (input.wasGamepadPressed('cancel')) {
+    if (hasSemanticAction(EDITOR_INPUT_ACTIONS.CANCEL)) {
       stopPlaytestTransition(this.game);
       return;
     }
 
-    const primaryDown = input.isGamepadDown('jump');
-    const secondaryDown = input.isGamepadDown('attack');
-    const pressPrimary = input.wasGamepadPressed('jump');
-    const pressSecondary = input.wasGamepadPressed('attack');
+    const primaryDown = Boolean(down.jump);
+    const secondaryDown = Boolean(down.attack);
+    const pressPrimary = hasSemanticAction(EDITOR_INPUT_ACTIONS.CONFIRM);
+    const pressSecondary = Boolean(pressed.attack);
 
     if (pressPrimary || pressSecondary) {
       if (this.panelMenuFocused && pressPrimary && this.activatePanelSelection()) {
