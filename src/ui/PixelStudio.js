@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuTopButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -2500,12 +2500,15 @@ export default class PixelStudio {
       isMobile
     });
 
-    const topButtons = buildSharedLeftMenuTopButtons({
+    const topButtons = buildSharedLeftMenuButtons({
       x: tabColumn.x,
       y: tabColumn.y,
-      width: tabColumn.w,
-      labels: this.leftPanelTabs.map((tab) => ({ id: tab, label: labels[tab] || tab })),
-      isMobile
+      height: tabColumn.h,
+      additionalButtons: this.leftPanelTabs
+        .filter((tab) => tab !== 'file')
+        .map((tab) => ({ id: tab, label: labels[tab] || tab })),
+      isMobile,
+      width: tabColumn.w
     });
 
     topButtons.forEach((entry) => {

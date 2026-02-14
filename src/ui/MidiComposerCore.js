@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuTopButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -7700,15 +7700,13 @@ export default class MidiComposer {
     ctx.strokeRect(x, y, w, h);
 
     const { tabColumn } = buildSharedLeftMenuLayout({ x, y, width: w, height: h, isMobile: false });
-    const topButtons = buildSharedLeftMenuTopButtons({
+    const topButtons = buildSharedLeftMenuButtons({
       x: tabColumn.x,
       y: tabColumn.y,
-      width: tabColumn.w,
-      labels: [
-        { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
-        ...TAB_OPTIONS.map((tab) => ({ id: tab.id, label: tab.label }))
-      ],
-      isMobile: false
+      height: tabColumn.h,
+      additionalButtons: TAB_OPTIONS.map((tab) => ({ id: tab.id, label: tab.label })),
+      isMobile: false,
+      width: tabColumn.w
     });
 
     this.bounds.fileButton = topButtons[0]?.bounds || null;

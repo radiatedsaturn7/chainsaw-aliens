@@ -137,6 +137,40 @@ export function buildSharedLeftMenuTopButtons({
   }));
 }
 
+export function buildSharedLeftMenuButtons({
+  x,
+  y,
+  height,
+  additionalButtons = [],
+  isMobile = false,
+  gap = SHARED_EDITOR_LEFT_MENU.buttonGap,
+  buttonHeight = isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop,
+  width = isMobile ? SHARED_EDITOR_LEFT_MENU.tabWidthMobile : SHARED_EDITOR_LEFT_MENU.tabWidthDesktop
+}) {
+  const labels = [
+    { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
+    ...additionalButtons
+  ];
+  if (!labels.length) return [];
+  const count = labels.length;
+  const availableHeight = Math.max(0, height);
+  const minButtonHeight = isMobile ? 28 : 18;
+  const maxGap = count > 1 ? Math.max(2, Math.floor((availableHeight - minButtonHeight * count) / (count - 1))) : gap;
+  const fittedGap = Math.max(2, Math.min(gap, maxGap));
+  const fittedButtonHeight = count > 0
+    ? Math.max(minButtonHeight, Math.min(buttonHeight, Math.floor((availableHeight - fittedGap * (count - 1)) / count)))
+    : buttonHeight;
+  return buildSharedLeftMenuTopButtons({
+    x,
+    y,
+    width,
+    labels,
+    isMobile,
+    gap: fittedGap,
+    buttonHeight: fittedButtonHeight
+  });
+}
+
 export function buildSharedLeftMenuLayout({
   x,
   y,

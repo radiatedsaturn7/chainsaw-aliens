@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuTopButtons, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -401,7 +401,6 @@ export default class Editor {
     };
     this.panelTabs = ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'enemies', 'bosses', 'prefabs', 'music'];
     this.panelTabIndex = 0;
-    this.leftMenuOverlay = null;
     this.panelScroll = {
       file: 0,
       toolbox: 0,
@@ -1043,7 +1042,6 @@ export default class Editor {
     if (drawerIndex >= 0) {
       this.drawer.tabIndex = drawerIndex;
     }
-    this.leftMenuOverlay = null;
     if (tabId === 'bosses') {
       this.enemyCategory = 'boss';
     } else if (tabId === 'enemies') {
@@ -6999,36 +6997,26 @@ Level size:`, `${current.width}x${current.height}`);
       ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH);
 
-      const rootButtons = [
-        { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => this.setPanelTab('file'), active: activeTab === 'file' && !this.leftMenuOverlay },
-        { id: 'tools-root', label: 'TOOLS', action: () => { this.leftMenuOverlay = 'tools'; }, active: this.leftMenuOverlay === 'tools' },
-        { id: 'settings-root', label: 'SETTINGS', action: () => { this.leftMenuOverlay = 'settings'; }, active: this.leftMenuOverlay === 'settings' }
-      ];
-      const toolButtons = [
-        { id: 'toolbox', label: 'PAINT' },
+      const topButtonDefs = [
+        { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
+        { id: 'toolbox', label: 'TOOLBOX' },
         { id: 'tiles', label: 'TILES' },
+        { id: 'triggers', label: 'TRIGGERS' },
         { id: 'powerups', label: 'POWERUPS' },
         { id: 'enemies', label: 'ENEMIES' },
         { id: 'bosses', label: 'BOSSES' },
         { id: 'prefabs', label: 'STRUCTURES' },
-        { id: 'triggers', label: 'TRIGGERS' },
         { id: 'music', label: 'MUSIC' }
       ].map((entry) => ({ ...entry, action: () => this.setPanelTab(entry.id), active: activeTab === entry.id }));
-      const settingsButtons = [
-        { id: 'file', label: 'FILE ACTIONS', action: () => this.setPanelTab('file'), active: activeTab === 'file' },
-        { id: 'toolbox', label: 'RESET TOOLS', action: () => this.setPanelTab('toolbox'), active: false }
-      ];
-      const showingOverlay = this.leftMenuOverlay === 'tools' || this.leftMenuOverlay === 'settings';
-      const overlayItems = this.leftMenuOverlay === 'tools' ? toolButtons : settingsButtons;
-      const topButtonDefs = showingOverlay
-        ? [{ id: 'back', label: 'BACK', action: () => { this.leftMenuOverlay = null; }, active: false }, ...overlayItems]
-        : rootButtons;
-      const topButtons = buildSharedLeftMenuTopButtons({
+      const topButtons = buildSharedLeftMenuButtons({
         x: tabColumn.x,
         y: tabColumn.y,
-        width: tabColumn.w,
-        labels: topButtonDefs.map((entry) => ({ id: entry.id, label: entry.label })),
-        isMobile: false
+        height: tabColumn.h,
+        additionalButtons: topButtonDefs
+          .filter((entry) => entry.id !== 'file')
+          .map((entry) => ({ id: entry.id, label: entry.label })),
+        isMobile: false,
+        width: tabColumn.w
       });
       topButtons.forEach((entry, index) => {
         const def = topButtonDefs[index];
