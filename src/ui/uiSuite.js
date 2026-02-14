@@ -124,6 +124,29 @@ export function buildStandardFileMenu(config = {}) {
   return [...entries, ...extras];
 }
 
+
+export function buildSharedEditorFileMenu(config = {}) {
+  const {
+    supported = {},
+    labels = {},
+    tooltips = {},
+    actions = {},
+    extras = [],
+    includeFooter = true,
+    footer = {}
+  } = config;
+  const entries = buildStandardFileMenu({ supported, labels, tooltips, actions });
+  if (!includeFooter) return [...entries, ...extras];
+  const footerEntries = buildMainMenuFooterEntries(footer).map((entry) => ({
+    id: entry.id,
+    label: entry.label,
+    tooltip: entry.tooltip,
+    onClick: entry.onClick,
+    action: entry.onClick
+  }));
+  return [...entries, ...extras, { divider: true }, ...footerEntries];
+}
+
 function defaultLabelForFileId(id) {
   switch (id) {
     case 'new': return 'New';

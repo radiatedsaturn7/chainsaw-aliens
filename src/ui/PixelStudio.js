@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedLeftMenuLayout, buildSharedMenuFooterLayout, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -2593,7 +2593,7 @@ export default class PixelStudio {
     ctx.fillText('File', x + 12, y + 20);
     const lineHeight = isMobile ? 52 : 20;
     const buttonHeight = isMobile ? 44 : 18;
-    const actions = buildStandardFileMenu({
+    const actions = buildSharedEditorFileMenu({
       labels: {
         open: 'Open',
         export: 'Export PNG',
@@ -2617,13 +2617,12 @@ export default class PixelStudio {
         { label: 'Palette HEX', action: () => this.exportPaletteHex() },
         { divider: true },
         { label: 'Resize', action: () => this.resizeArtDocumentPrompt() },
-        { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } },
-        { divider: true },
-        ...buildMainMenuFooterEntries({
-          onClose: () => { this.closeFileMenu(); },
-          onExit: () => { this.closeStudioWithPrompt(); }
-        }).map((entry) => ({ label: entry.label, action: entry.onClick }))
-      ]
+        { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } }
+      ],
+      footer: {
+        onClose: () => { this.closeFileMenu(); },
+        onExit: () => { this.closeStudioWithPrompt(); }
+      }
     });
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
     this.filePanelScroll = { x, y: y + 30, w, h: Math.max(0, h - 30), lineHeight };

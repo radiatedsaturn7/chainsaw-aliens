@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedLeftMenuLayout, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedMenuFooterLayout, formatMenuLabel } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -6573,115 +6573,74 @@ Level size:`, `${current.width}x${current.height}`);
           }];
           columns = 1;
         } else if (activeTab === 'file') {
-          items = [
-            {
-              id: 'new-level',
-              label: 'New',
-              active: false,
-              tooltip: 'Create a new level',
-              onClick: () => this.newLevelDocument()
+          items = buildSharedEditorFileMenu({
+            labels: {
+              new: 'New',
+              open: 'Open',
+              export: 'Export',
+              import: 'Import'
             },
-            {
-              id: 'save-storage',
-              label: 'Save',
-              active: false,
-              tooltip: 'Save level to browser storage',
-              onClick: () => this.saveLevelToStorage()
+            tooltips: {
+              new: 'Create a new level',
+              save: 'Save level to browser storage',
+              'save-as': 'Save level with a new name',
+              open: 'Open level from browser storage',
+              export: 'Export world JSON',
+              import: 'Import world JSON',
+              undo: 'Undo last change (Ctrl+Z)',
+              redo: 'Redo last change (Ctrl+Y)'
             },
-            {
-              id: 'save-as-storage',
-              label: 'Save As',
-              active: false,
-              tooltip: 'Save level with a new name',
-              onClick: () => this.saveLevelToStorage({ forceSaveAs: true })
+            actions: {
+              new: () => this.newLevelDocument(),
+              save: () => this.saveLevelToStorage(),
+              'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
+              open: () => this.loadLevelFromStorage(),
+              export: () => this.saveToFile(),
+              import: () => this.openFileDialog(),
+              undo: () => this.undo(),
+              redo: () => this.redo()
             },
-            {
-              id: 'load-storage',
-              label: 'Open',
-              active: false,
-              tooltip: 'Open level from browser storage',
-              onClick: () => this.loadLevelFromStorage()
-            },
-            {
-              id: 'resize-level',
-              label: 'Resize',
-              active: false,
-              tooltip: 'Resize level canvas',
-              onClick: () => this.resizeLevelDocument()
-            },
-            { id: 'divider-1', divider: true },
-            {
-              id: 'export-json',
-              label: 'Export',
-              active: false,
-              tooltip: 'Export world JSON',
-              onClick: () => this.saveToFile()
-            },
-            {
-              id: 'import-json',
-              label: 'Import',
-              active: false,
-              tooltip: 'Import world JSON',
-              onClick: () => this.openFileDialog()
-            },
-            { id: 'divider-2', divider: true },
-            {
-              id: 'undo',
-              label: 'Undo',
-              active: false,
-              tooltip: 'Undo last change (Ctrl+Z)',
-              onClick: () => this.undo()
-            },
-            {
-              id: 'redo',
-              label: 'Redo',
-              active: false,
-              tooltip: 'Redo last change (Ctrl+Y)',
-              onClick: () => this.redo()
-            },
-            { id: 'divider-3', divider: true },
-            {
-              id: 'playtest',
-              label: 'Playtest',
-              active: false,
-              tooltip: 'Start playtest from spawn',
-              onClick: () => this.game.exitEditor({ playtest: true })
-            },
-            ...(spawnTile
-              ? [{
-                id: 'spawn-point',
-                label: 'Spawn point',
-                active: this.tileType?.special === 'spawn',
-                tooltip: 'Place the player spawn point',
+            extras: [
+              { id: 'resize-level', label: 'Resize', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
+              { divider: true },
+              {
+                id: 'playtest',
+                label: 'Playtest',
+                tooltip: 'Start playtest from spawn',
+                onClick: () => this.game.exitEditor({ playtest: true })
+              },
+              ...(spawnTile
+                ? [{
+                  id: 'spawn-point',
+                  label: 'Spawn point',
+                  tooltip: 'Place the player spawn point',
+                  onClick: () => {
+                    this.setTileType(spawnTile);
+                    this.mode = 'tile';
+                    this.tileTool = 'paint';
+                  }
+                }]
+                : []),
+              {
+                id: 'start-everything',
+                label: `Start with everything: ${this.startWithEverything ? 'On' : 'Off'}`,
+                tooltip: 'Toggle playtest loadout',
                 onClick: () => {
-                  this.setTileType(spawnTile);
-                  this.mode = 'tile';
-                  this.tileTool = 'paint';
+                  this.startWithEverything = !this.startWithEverything;
                 }
-              }]
-              : []),
-            {
-              id: 'start-everything',
-              label: `Start with everything: ${this.startWithEverything ? 'On' : 'Off'}`,
-              active: false,
-              tooltip: 'Toggle playtest loadout',
-              onClick: () => {
-                this.startWithEverything = !this.startWithEverything;
+              },
+              {
+                id: 'random-level',
+                label: 'Random level',
+                tooltip: 'Create a random level layout',
+                onClick: () => this.promptRandomLevel()
               }
-            },
-            {
-              id: 'random-level',
-              label: 'Random level',
-              active: false,
-              tooltip: 'Create a random level layout',
-              onClick: () => this.promptRandomLevel()
-            },
-            { id: 'divider-4', divider: true },
-            ...buildMainMenuFooterEntries({
+            ],
+            footer: {
               onClose: () => this.closeFileMenu(),
               onExit: () => this.exitToMainMenu()
-            }).map((entry) => ({ ...entry, active: false }))
-          ];
+            }
+          }).map((entry) => ({ ...entry, active: false }));
           columns = 1;
         } else if (activeTab === 'tiles') {
           items = DEFAULT_TILE_TYPES.map((tile) => ({

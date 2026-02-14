@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedLeftMenuLayout, buildSharedMenuFooterLayout, buildStandardFileMenu, formatMenuLabel } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedMenuFooterLayout, formatMenuLabel } from './uiSuite.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -11019,7 +11019,7 @@ export default class MidiComposer {
   }
 
   getFileMenuItems() {
-    return buildStandardFileMenu({
+    return buildSharedEditorFileMenu({
       labels: {
         open: 'Open',
         export: 'Export JSON',
@@ -11043,9 +11043,7 @@ export default class MidiComposer {
         { id: 'play-robtersession', label: 'Play in RobterSession' },
         { id: 'settings', label: 'Settings' },
         { id: 'theme', label: 'Generate Theme' },
-        { id: 'sample', label: 'Load Sample Song' },
-        { divider: true },
-        ...buildMainMenuFooterEntries()
+        { id: 'sample', label: 'Load Sample Song' }
       ]
     });
   }
