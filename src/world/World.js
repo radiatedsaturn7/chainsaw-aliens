@@ -1,3 +1,5 @@
+import { normalizeMidiTracks } from '../editor/adapters/editorDataContracts.js';
+
 const FALLBACK_WORLD = {
   schemaVersion: 1,
   tileSize: 32,
@@ -134,10 +136,7 @@ export default class World {
     this.elevatorSet = new Set(this.elevators.map((elevator) => `${elevator.x},${elevator.y}`));
     this.pixelArt = data.pixelArt ? { ...data.pixelArt, tiles: { ...(data.pixelArt.tiles || {}) } } : { tiles: {} };
     this.musicZones = (data.musicZones || []).map((zone) => ({ ...zone }));
-    this.midiTracks = (data.midiTracks || []).map((track) => ({
-      ...track,
-      notes: (track.notes || []).map((note) => ({ ...note }))
-    }));
+    this.midiTracks = normalizeMidiTracks(data.midiTracks || [], 'piano');
     this.data = { ...data, tiles: normalizedTiles };
     if (this.data) {
       this.data.elevatorPaths = this.elevatorPaths;

@@ -6,6 +6,9 @@ import { startPlaytestTransition, stopPlaytestTransition } from './playtest/tran
 import { addDOMListener, createDisposer } from '../input/disposables.js';
 import { createViewportController, screenToWorld, worldToScreen } from '../ui/shared/viewportController.js';
 import { createEditorRuntime } from '../ui/shared/editor-runtime/EditorRuntime.js';
+import { createPixelEditorAdapter } from './adapters/pixelEditorAdapter.js';
+import { createMidiEditorAdapter } from './adapters/midiEditorAdapter.js';
+import { normalizeMidiTracks } from './adapters/editorDataContracts.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -297,18 +300,22 @@ export default class Editor {
     this.enemyCategory = 'standard';
     this.shapeTool = SHAPE_TOOLS[0];
     this.prefabType = PREFAB_TYPES[0];
-    this.pixelTool = 'paint';
-    this.pixelTarget = DEFAULT_TILE_TYPES.find((tile) => tile.char) || DEFAULT_TILE_TYPES[0];
-    this.pixelColorIndex = 1;
-    this.pixelFrameIndex = 0;
-    this.pixelPaintActive = false;
-    this.pixelGridBounds = null;
-    this.pixelPaletteBounds = [];
-    this.pixelFrameBounds = null;
-    this.musicTool = 'paint';
-    this.musicTrack = null;
-    this.musicDragStart = null;
-    this.musicDragTarget = null;
+    this.pixelAdapter = createPixelEditorAdapter({
+      getWorld: () => this.game.world,
+      clamp,
+      persist: () => this.persistAutosave(),
+      gridSize: PIXEL_GRID_SIZE,
+      defaultTarget: DEFAULT_TILE_TYPES.find((tile) => tile.char) || DEFAULT_TILE_TYPES[0]
+    });
+    this.midiAdapter = createMidiEditorAdapter({
+      getWorld: () => this.game.world,
+      clamp,
+      persist: () => this.persistAutosave(),
+      refresh: () => this.flushWorldRefresh(),
+      playPreview: (pitch, instrument) => this.previewMidiNote(pitch, instrument),
+      midiTracks: MUSIC_TRACKS,
+      fallbackInstrument: MIDI_INSTRUMENTS[0]?.id || 'piano'
+    });
     this.triggerZoneStart = null;
     this.triggerZoneTarget = null;
     this.triggerEditorOpen = false;
@@ -316,15 +323,6 @@ export default class Editor {
     this.triggerEditorView = 'main';
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
-    this.midiTrackIndex = 0;
-    this.midiNoteLength = 4;
-    this.midiGridBounds = null;
-    this.midiNoteBounds = [];
-    this.midiNoteDrag = null;
-    this.midiNoteDirty = false;
-    this.midiInstrumentScroll = 0;
-    this.midiInstrumentScrollBounds = null;
-    this.midiInstrumentScrollMax = 0;
     this.startWithEverything = true;
     this.currentDocumentRef = null;
     this.savedSnapshot = null;
@@ -510,6 +508,52 @@ export default class Editor {
     this.fileInput = null;
     this.midiFileInput = null;
   }
+
+
+  get pixelTool() { return this.pixelAdapter.state.tool; }
+  set pixelTool(value) { this.pixelAdapter.state.tool = value; }
+  get pixelTarget() { return this.pixelAdapter.state.target; }
+  set pixelTarget(value) { this.pixelAdapter.state.target = value; }
+  get pixelColorIndex() { return this.pixelAdapter.state.colorIndex; }
+  set pixelColorIndex(value) { this.pixelAdapter.state.colorIndex = value; }
+  get pixelFrameIndex() { return this.pixelAdapter.state.frameIndex; }
+  set pixelFrameIndex(value) { this.pixelAdapter.state.frameIndex = value; }
+  get pixelPaintActive() { return this.pixelAdapter.state.paintActive; }
+  set pixelPaintActive(value) { this.pixelAdapter.state.paintActive = value; }
+  get pixelGridBounds() { return this.pixelAdapter.state.gridBounds; }
+  set pixelGridBounds(value) { this.pixelAdapter.state.gridBounds = value; }
+  get pixelPaletteBounds() { return this.pixelAdapter.state.paletteBounds; }
+  set pixelPaletteBounds(value) { this.pixelAdapter.state.paletteBounds = value; }
+  get pixelFrameBounds() { return this.pixelAdapter.state.frameBounds; }
+  set pixelFrameBounds(value) { this.pixelAdapter.state.frameBounds = value; }
+
+  get musicTool() { return this.midiAdapter.state.musicTool; }
+  set musicTool(value) { this.midiAdapter.state.musicTool = value; }
+  get musicTrack() { return this.midiAdapter.state.musicTrack; }
+  set musicTrack(value) { this.midiAdapter.state.musicTrack = value; }
+  get musicDragStart() { return this.midiAdapter.state.musicDragStart; }
+  set musicDragStart(value) { this.midiAdapter.state.musicDragStart = value; }
+  get musicDragTarget() { return this.midiAdapter.state.musicDragTarget; }
+  set musicDragTarget(value) { this.midiAdapter.state.musicDragTarget = value; }
+
+  get midiTrackIndex() { return this.midiAdapter.state.midiTrackIndex; }
+  set midiTrackIndex(value) { this.midiAdapter.state.midiTrackIndex = value; }
+  get midiNoteLength() { return this.midiAdapter.state.midiNoteLength; }
+  set midiNoteLength(value) { this.midiAdapter.state.midiNoteLength = value; }
+  get midiGridBounds() { return this.midiAdapter.state.midiGridBounds; }
+  set midiGridBounds(value) { this.midiAdapter.state.midiGridBounds = value; }
+  get midiNoteBounds() { return this.midiAdapter.state.midiNoteBounds; }
+  set midiNoteBounds(value) { this.midiAdapter.state.midiNoteBounds = value; }
+  get midiNoteDrag() { return this.midiAdapter.state.midiNoteDrag; }
+  set midiNoteDrag(value) { this.midiAdapter.state.midiNoteDrag = value; }
+  get midiNoteDirty() { return this.midiAdapter.state.midiNoteDirty; }
+  set midiNoteDirty(value) { this.midiAdapter.state.midiNoteDirty = value; }
+  get midiInstrumentScroll() { return this.midiAdapter.state.midiInstrumentScroll; }
+  set midiInstrumentScroll(value) { this.midiAdapter.state.midiInstrumentScroll = value; }
+  get midiInstrumentScrollBounds() { return this.midiAdapter.state.midiInstrumentScrollBounds; }
+  set midiInstrumentScrollBounds(value) { this.midiAdapter.state.midiInstrumentScrollBounds = value; }
+  get midiInstrumentScrollMax() { return this.midiAdapter.state.midiInstrumentScrollMax; }
+  set midiInstrumentScrollMax(value) { this.midiAdapter.state.midiInstrumentScrollMax = value; }
 
   bindGlobalListeners() {
     if (this.globalListenersBound) return;
@@ -1844,86 +1888,35 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   ensurePixelArtStore() {
-    if (!this.game.world.pixelArt) {
-      this.game.world.pixelArt = { tiles: {} };
-    }
-    if (!this.game.world.pixelArt.tiles) {
-      this.game.world.pixelArt.tiles = {};
-    }
-    return this.game.world.pixelArt;
+    return this.pixelAdapter.ensureStore();
   }
 
   getPixelArtData(tileChar) {
-    if (!tileChar) return null;
-    const store = this.ensurePixelArtStore();
-    if (!store.tiles[tileChar]) {
-      store.tiles[tileChar] = {
-        size: PIXEL_GRID_SIZE,
-        fps: 6,
-        frames: [Array(PIXEL_GRID_SIZE * PIXEL_GRID_SIZE).fill(null)]
-      };
-    }
-    return store.tiles[tileChar];
+    return this.pixelAdapter.getPixelData(tileChar);
   }
 
   getActivePixelFrame() {
-    const tileChar = this.pixelTarget?.char;
-    const pixelData = this.getPixelArtData(tileChar);
-    if (!pixelData) return null;
-    if (!Array.isArray(pixelData.frames) || pixelData.frames.length === 0) {
-      pixelData.frames = [Array(pixelData.size * pixelData.size).fill(null)];
-    }
-    if (this.pixelFrameIndex >= pixelData.frames.length) {
-      this.pixelFrameIndex = 0;
-    }
-    const frame = pixelData.frames[this.pixelFrameIndex];
-    return { pixelData, frame };
+    return this.pixelAdapter.getActivePixelFrame();
   }
 
   setPixelCell(cellX, cellY, color) {
-    const active = this.getActivePixelFrame();
-    if (!active) return;
-    const { pixelData, frame } = active;
-    const size = pixelData.size || PIXEL_GRID_SIZE;
-    if (cellX < 0 || cellY < 0 || cellX >= size || cellY >= size) return;
-    const index = cellY * size + cellX;
-    if (frame[index] === color) return;
-    frame[index] = color;
-    this.persistAutosave();
+    this.pixelAdapter.setPixelCell(cellX, cellY, color);
   }
 
   addPixelFrame() {
-    const active = this.getActivePixelFrame();
-    if (!active) return;
-    const { pixelData } = active;
-    const size = pixelData.size || PIXEL_GRID_SIZE;
-    pixelData.frames.push(Array(size * size).fill(null));
-    this.pixelFrameIndex = pixelData.frames.length - 1;
-    this.persistAutosave();
+    this.pixelAdapter.addFrame();
   }
 
   removePixelFrame() {
-    const active = this.getActivePixelFrame();
-    if (!active) return;
-    const { pixelData } = active;
-    if (pixelData.frames.length <= 1) return;
-    pixelData.frames.splice(this.pixelFrameIndex, 1);
-    this.pixelFrameIndex = clamp(this.pixelFrameIndex, 0, pixelData.frames.length - 1);
-    this.persistAutosave();
+    this.pixelAdapter.removeFrame();
   }
 
   cyclePixelFrame(direction) {
-    const active = this.getActivePixelFrame();
-    if (!active) return;
-    const total = active.pixelData.frames.length;
-    this.pixelFrameIndex = ((this.pixelFrameIndex + direction) % total + total) % total;
+    this.pixelAdapter.cycleFrame(direction);
   }
 
   adjustPixelFps(delta) {
-    const active = this.getActivePixelFrame();
-    if (!active) return;
-    active.pixelData.fps = clamp((active.pixelData.fps || 6) + delta, 1, 24);
-    this.persistAutosave();
+    this.pixelAdapter.adjustFps(delta);
   }
 
 
@@ -2157,48 +2150,19 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   ensureMusicZones() {
-    if (!this.game.world.musicZones) {
-      this.game.world.musicZones = [];
-    }
-    return this.game.world.musicZones;
+    return this.midiAdapter.ensureMusicZones();
   }
 
   addMusicZone(rect, trackId) {
-    const zones = this.ensureMusicZones();
-    zones.push({
-      id: `music-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
-      rect,
-      track: trackId
-    });
-    this.persistAutosave();
+    this.midiAdapter.addMusicZone(rect, trackId);
   }
 
   removeMusicZoneAt(tileX, tileY) {
-    const zones = this.ensureMusicZones();
-    const index = zones.findIndex((zone) => {
-      const [x, y, w, h] = zone.rect;
-      return tileX >= x && tileX < x + w && tileY >= y && tileY < y + h;
-    });
-    if (index === -1) return false;
-    zones.splice(index, 1);
-    this.persistAutosave();
-    return true;
+    return this.midiAdapter.removeMusicZoneAt(tileX, tileY);
   }
 
   ensureMidiTracks() {
-    if (!this.game.world.midiTracks) {
-      this.game.world.midiTracks = [];
-    }
-    if (this.game.world.midiTracks.length === 0) {
-      const defaultInstrument = MIDI_INSTRUMENTS[0]?.id || 'piano';
-      this.game.world.midiTracks = MUSIC_TRACKS.map((track) => ({
-        id: track.id,
-        name: track.label,
-        instrument: defaultInstrument,
-        notes: []
-      }));
-    }
-    return this.game.world.midiTracks;
+    return this.midiAdapter.ensureMidiTracks();
   }
 
   loadSavedSongLibrary() {
@@ -2236,37 +2200,11 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   normalizeMidiTracks(rawTracks) {
-    if (!Array.isArray(rawTracks)) return [];
-    const fallbackInstrument = MIDI_INSTRUMENTS[0]?.id || 'piano';
-    return rawTracks.map((track, index) => ({
-      id: track.id || `track-${Date.now()}-${index}`,
-      name: track.name || `Track ${index + 1}`,
-      instrument: track.instrument || fallbackInstrument,
-      notes: Array.isArray(track.notes)
-        ? track.notes.map((note) => ({
-          pitch: note.pitch,
-          start: note.start,
-          length: note.length || 1
-        }))
-        : []
-    }));
+    return normalizeMidiTracks(rawTracks, MIDI_INSTRUMENTS[0]?.id || 'piano');
   }
 
   replaceMidiTracks(data) {
-    const tracks = Array.isArray(data) ? data : data?.midiTracks || data?.tracks || [];
-    const normalized = this.normalizeMidiTracks(tracks);
-    this.game.world.midiTracks = normalized.length > 0
-      ? normalized
-      : [{
-        id: `track-${Date.now()}`,
-        name: 'Track 1',
-        instrument: MIDI_INSTRUMENTS[0]?.id || 'piano',
-        notes: []
-      }];
-    this.midiTrackIndex = 0;
-    this.musicTrack = this.game.world.midiTracks[0] || null;
-    this.persistAutosave();
-    this.flushWorldRefresh();
+    this.midiAdapter.replaceMidiTracks(data);
   }
 
   openMidiFilePicker() {
@@ -2276,47 +2214,19 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   getActiveMidiTrack() {
-    const tracks = this.ensureMidiTracks();
-    if (this.midiTrackIndex >= tracks.length) {
-      this.midiTrackIndex = 0;
-    }
-    return tracks[this.midiTrackIndex];
+    return this.midiAdapter.getActiveMidiTrack();
   }
 
   addMidiTrack() {
-    const tracks = this.ensureMidiTracks();
-    const index = tracks.length + 1;
-    tracks.push({
-      id: `track-${Date.now()}-${index}`,
-      name: `Track ${index}`,
-      instrument: MIDI_INSTRUMENTS[0]?.id || 'sine',
-      notes: []
-    });
-    this.midiTrackIndex = tracks.length - 1;
-    this.persistAutosave();
+    this.midiAdapter.addMidiTrack();
   }
 
   removeMidiTrack() {
-    const tracks = this.ensureMidiTracks();
-    if (tracks.length <= 1) return;
-    tracks.splice(this.midiTrackIndex, 1);
-    this.midiTrackIndex = clamp(this.midiTrackIndex, 0, tracks.length - 1);
-    this.persistAutosave();
+    this.midiAdapter.removeMidiTrack();
   }
 
   toggleMidiNote(pitch, start, length) {
-    const track = this.getActiveMidiTrack();
-    if (!track) return;
-    const existingIndex = track.notes.findIndex((note) => note.pitch === pitch && note.start === start);
-    if (existingIndex >= 0) {
-      track.notes.splice(existingIndex, 1);
-    } else {
-      const maxLength = this.midiGridBounds?.cols || 16;
-      const nextLength = clamp(length || 1, 1, maxLength);
-      track.notes.push({ pitch, start, length: nextLength });
-      this.previewMidiNote(pitch, track.instrument);
-    }
-    this.persistAutosave();
+    this.midiAdapter.toggleMidiNote(pitch, start, length);
   }
 
   previewMidiNote(pitch, instrument) {
