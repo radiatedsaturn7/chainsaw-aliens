@@ -28,15 +28,17 @@ export const UI_SUITE = {
 
 export const SHARED_EDITOR_LEFT_MENU = {
   width: () => UI_SUITE.layout.leftMenuWidthDesktop,
-  fileLabel: 'FILE'
+  fileLabel: 'FILE',
+  closeLabel: 'Close Menu',
+  exitLabel: 'Exit to Main Menu'
 };
 
 export function buildMainMenuFooterEntries(config = {}) {
   const {
     closeId = 'close-menu',
     exitId = 'exit-main',
-    closeLabel = 'Close Menu',
-    exitLabel = 'Exit to Main Menu',
+    closeLabel = SHARED_EDITOR_LEFT_MENU.closeLabel,
+    exitLabel = SHARED_EDITOR_LEFT_MENU.exitLabel,
     closeTooltip = 'Close file menu',
     exitTooltip = 'Exit editor to title',
     onClose = null,
@@ -58,6 +60,24 @@ export function buildMainMenuFooterEntries(config = {}) {
   ];
 }
 
+
+export function buildSharedMenuFooterLayout({
+  x,
+  y,
+  width,
+  buttonHeight,
+  horizontalPadding = 0,
+  gap = 8,
+  closeId = 'close-menu',
+  exitId = 'exit-main'
+}) {
+  const innerX = x + horizontalPadding;
+  const innerW = Math.max(0, width - horizontalPadding * 2);
+  const buttonW = Math.floor((innerW - gap) / 2);
+  const closeBounds = { x: innerX, y, w: buttonW, h: buttonHeight, id: closeId };
+  const exitBounds = { x: innerX + buttonW + gap, y, w: buttonW, h: buttonHeight, id: exitId };
+  return { closeBounds, exitBounds };
+}
 const STANDARD_FILE_ORDER = ['new', 'save', 'save-as', 'open', 'export', 'import', 'undo', 'redo'];
 
 export function buildStandardFileMenu(config = {}) {
