@@ -16,7 +16,7 @@ export const UI_SUITE = {
     tap: 44
   },
   layout: {
-    railWidthMobile: 96,
+    railWidthMobile: 216,
     panelWidthMobile: 292,
     leftMenuWidthDesktop: 292,
     drawerWidth: 292
@@ -31,7 +31,7 @@ export const SHARED_EDITOR_LEFT_MENU = {
   width: () => UI_SUITE.layout.leftMenuWidthDesktop,
   tabWidthDesktop: 80,
   tabWidthMobile: 72,
-  buttonWidthMobile: 52,
+  buttonWidthMobile: 188,
   buttonHeightDesktop: 36,
   buttonHeightMobile: 40,
   buttonGap: 8,
