@@ -26,3 +26,29 @@ export const createMethodProxy = (target, methodMap) => {
 
   return module;
 };
+
+const toDescriptorConfig = (descriptor) => {
+  if (!descriptor) return { methods: {} };
+  if (descriptor.methods) return descriptor;
+  return { methods: descriptor };
+};
+
+export const createModuleFromDescriptor = (target, descriptor) => {
+  const { methods = {}, extend = null } = toDescriptorConfig(descriptor);
+  const module = createMethodProxy(target, methods);
+  if (typeof extend === 'function') {
+    return {
+      ...module,
+      ...extend({ target, module })
+    };
+  }
+  return module;
+};
+
+export const createDescriptorModules = (target, descriptors = {}) => {
+  const modules = {};
+  Object.entries(descriptors).forEach(([moduleKey, descriptor]) => {
+    modules[moduleKey] = createModuleFromDescriptor(target, descriptor);
+  });
+  return modules;
+};
