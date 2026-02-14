@@ -6401,8 +6401,8 @@ Level size:`, `${current.width}x${current.height}`);
       ctx.beginPath();
       ctx.arc(knobX, y + h / 2, h * 0.9, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#fff';
-      ctx.font = '12px Courier New';
+      ctx.fillStyle = UI_SUITE.editorPanel.text;
+      ctx.font = UI_SUITE.editorPanel.bodyFont;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'bottom';
       ctx.fillText(`${label}: ${Math.round(clampedValue)}`, x, y - 4);
@@ -7076,10 +7076,10 @@ Level size:`, `${current.width}x${current.height}`);
       const buttonHeight = isTallButtons ? 40 : 32;
       const { items, columns } = this.getPanelConfig(activeTab);
 
-      ctx.globalAlpha = 0.85;
-      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.globalAlpha = UI_SUITE.editorPanel.alpha;
+      ctx.fillStyle = UI_SUITE.editorPanel.background;
       ctx.fillRect(contentX, contentY, contentW, contentHeight);
-      ctx.strokeStyle = '#fff';
+      ctx.strokeStyle = UI_SUITE.editorPanel.border;
       ctx.strokeRect(contentX, contentY, contentW, contentHeight);
 
       const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
@@ -7233,12 +7233,13 @@ Level size:`, `${current.width}x${current.height}`);
         const draft = this.triggerActionDraft;
 
         ctx.save();
-        ctx.fillStyle = 'rgba(15,18,22,0.95)';
+        ctx.globalAlpha = UI_SUITE.editorPanel.alpha;
+        ctx.fillStyle = UI_SUITE.editorPanel.background;
         ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
-        ctx.strokeStyle = 'rgba(255,180,80,0.95)';
+        ctx.strokeStyle = UI_SUITE.editorPanel.border;
         ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
-        ctx.fillStyle = '#fff';
-        ctx.font = '15px Courier New';
+        ctx.fillStyle = UI_SUITE.editorPanel.text;
+        ctx.font = UI_SUITE.editorPanel.titleFont;
         ctx.fillText('Trigger Editor', panelX + 12, panelY + 22);
 
         let y = panelY + 36;
@@ -7247,8 +7248,8 @@ Level size:`, `${current.width}x${current.height}`);
           y += sectionButtonH + rowGap;
           drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Add Action', false, () => { this.triggerEditorView = 'pick-action'; }, 'Add action to trigger');
           y += sectionButtonH + rowGap + 4;
-          ctx.font = '12px Courier New';
-          ctx.fillStyle = 'rgba(255,255,255,0.8)';
+          ctx.font = UI_SUITE.editorPanel.bodyFont;
+          ctx.fillStyle = UI_SUITE.colors.muted;
           ctx.fillText(`Condition: ${selected.condition}`, panelX + 12, y + 10);
           y += 16;
           ctx.fillText('Actions (tap to edit)', panelX + 12, y + 10);
@@ -7261,7 +7262,7 @@ Level size:`, `${current.width}x${current.height}`);
             drawButton(panelX + panelWidth - 84, rowY, 34, sectionButtonH, '↑', false, () => { if (index <= 0) return; const [moved] = selected.actions.splice(index, 1); selected.actions.splice(index - 1, 0, moved); this.persistAutosave(); }, 'Move action up');
             drawButton(panelX + panelWidth - 46, rowY, 34, sectionButtonH, 'X', false, () => { selected.actions.splice(index, 1); this.persistAutosave(); }, 'Delete action');
             y += sectionButtonH + 2;
-            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.fillStyle = UI_SUITE.colors.muted;
             ctx.fillText(summary, panelX + 16, y + 9);
             y += 20;
           });
@@ -7298,8 +7299,8 @@ Level size:`, `${current.width}x${current.height}`);
           drawButton(panelX + 12, y, 110, sectionButtonH, 'Cancel', false, () => { this.triggerEditorView = 'main'; this.triggerActionDraft = null; this.triggerEditingActionId = null; }, 'Cancel editing');
           drawButton(panelX + panelWidth - 122, y, 110, sectionButtonH, 'OK', false, () => { this.commitTriggerActionDraft(selected); }, 'Save action');
           y += sectionButtonH + rowGap;
-          ctx.font = '12px Courier New';
-          ctx.fillStyle = 'rgba(255,255,255,0.85)';
+          ctx.font = UI_SUITE.editorPanel.bodyFont;
+          ctx.fillStyle = UI_SUITE.colors.muted;
           ctx.fillText(`Action: ${actionLabel}`, panelX + 12, y + 10);
           y += 18;
           const numericRow = (label, key, step, min, max) => {
@@ -7372,13 +7373,13 @@ Level size:`, `${current.width}x${current.height}`);
       const panelPadding = 12;
       const panelHeight = 360;
       ctx.save();
-      ctx.globalAlpha = 0.9;
-      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.globalAlpha = UI_SUITE.editorPanel.alpha;
+      ctx.fillStyle = UI_SUITE.editorPanel.background;
       ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
-      ctx.strokeStyle = '#fff';
+      ctx.strokeStyle = UI_SUITE.editorPanel.border;
       ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
-      ctx.fillStyle = '#fff';
-      ctx.font = '14px Courier New';
+      ctx.fillStyle = UI_SUITE.editorPanel.text;
+      ctx.font = UI_SUITE.editorPanel.titleFont;
       ctx.textAlign = 'left';
       const targetLabel = this.pixelTarget?.label || 'Tile';
       const targetChar = this.pixelTarget?.char ? ` [${this.pixelTarget.char}]` : '';
@@ -7493,8 +7494,8 @@ Level size:`, `${current.width}x${current.height}`);
         () => this.removePixelFrame(),
         'Remove frame'
       );
-      ctx.fillStyle = '#fff';
-      ctx.font = '12px Courier New';
+      ctx.fillStyle = UI_SUITE.editorPanel.text;
+      ctx.font = UI_SUITE.editorPanel.bodyFont;
       ctx.fillText(
         `Frame ${this.pixelFrameIndex + 1}/${pixelData?.frames?.length || 1} | FPS ${(pixelData?.fps || 6)}`,
         panelX + panelPadding,
@@ -7549,13 +7550,13 @@ Level size:`, `${current.width}x${current.height}`);
       const noteSectionHeight = 12 + noteButtonH + 6;
       const panelHeight = 120 + noteSectionHeight + visibleInstrumentRows * instrumentRowHeight + gridH;
       ctx.save();
-      ctx.globalAlpha = 0.9;
-      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.globalAlpha = UI_SUITE.editorPanel.alpha;
+      ctx.fillStyle = UI_SUITE.editorPanel.background;
       ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
-      ctx.strokeStyle = '#fff';
+      ctx.strokeStyle = UI_SUITE.editorPanel.border;
       ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
-      ctx.fillStyle = '#fff';
-      ctx.font = '14px Courier New';
+      ctx.fillStyle = UI_SUITE.editorPanel.text;
+      ctx.font = UI_SUITE.editorPanel.titleFont;
       ctx.textAlign = 'left';
       ctx.fillText(`MIDI Editor: ${track?.name || 'Track'}`, panelX + 12, panelY + 20);
 
@@ -7593,8 +7594,8 @@ Level size:`, `${current.width}x${current.height}`);
         'Remove track'
       );
       const noteLabelY = panelY + 72;
-      ctx.font = '12px Courier New';
-      ctx.fillStyle = '#fff';
+      ctx.font = UI_SUITE.editorPanel.bodyFont;
+      ctx.fillStyle = UI_SUITE.editorPanel.text;
       ctx.fillText('Note Length:', panelX + 12, noteLabelY);
       const noteButtonsY = noteLabelY + 12;
       MIDI_NOTE_LENGTHS.forEach((entry, index) => {
