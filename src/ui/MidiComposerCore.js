@@ -7861,7 +7861,7 @@ export default class MidiComposer {
     const controlsY = y + menuH + panelGap;
     const controlsH = Math.max(0, h - menuH - panelGap);
 
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(menuX, menuY, w, menuH);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(menuX, menuY, w, menuH);
@@ -7893,7 +7893,7 @@ export default class MidiComposer {
     }
     this.drawSmallButton(ctx, this.bounds.redoButton, 'Redo', false);
 
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(controlsX, controlsY, w, controlsH);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(controlsX, controlsY, w, controlsH);

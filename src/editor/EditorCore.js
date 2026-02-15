@@ -6551,7 +6551,8 @@ Level size:`, `${current.width}x${current.height}`);
         const baseContentY = tabY;
         let contentY = baseContentY;
         const reservedBottom = joystickRadius * 2 + 32;
-        let contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom);
+        const fileFooterReserved = activeTab === 'file' ? 56 : 0;
+        let contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom - fileFooterReserved);
         const isPreviewTab = activeTab === 'tiles'
           || activeTab === 'prefabs'
           || activeTab === 'powerups'
@@ -6947,7 +6948,7 @@ Level size:`, `${current.width}x${current.height}`);
 
         if (activeTab === 'file') {
           const footerH = Math.max(28, buttonHeight);
-          const footerY = contentY + contentHeight - footerH - 10;
+          const footerY = contentY + contentHeight + 10;
           const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
             x: contentX,
             y: footerY,
