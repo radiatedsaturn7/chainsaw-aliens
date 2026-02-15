@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, renderSharedFileDrawer } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -7033,11 +7033,19 @@ Level size:`, `${current.width}x${current.height}`);
       const buttonHeight = isTallButtons ? 40 : 32;
       const { items, columns } = this.getPanelConfig(activeTab);
 
-      ctx.globalAlpha = UI_SUITE.editorPanel.alpha;
-      ctx.fillStyle = UI_SUITE.editorPanel.background;
-      ctx.fillRect(contentX, contentY, contentW, contentHeight);
-      ctx.strokeStyle = UI_SUITE.editorPanel.border;
-      ctx.strokeRect(contentX, contentY, contentW, contentHeight);
+      if (activeTab === 'file') {
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = UI_SUITE.colors.panel;
+        ctx.fillRect(contentX, contentY, contentW, contentHeight);
+        ctx.strokeStyle = UI_SUITE.colors.border;
+        ctx.strokeRect(contentX, contentY, contentW, contentHeight);
+      } else {
+        ctx.globalAlpha = UI_SUITE.editorPanel.alpha;
+        ctx.fillStyle = UI_SUITE.editorPanel.background;
+        ctx.fillRect(contentX, contentY, contentW, contentHeight);
+        ctx.strokeStyle = UI_SUITE.editorPanel.border;
+        ctx.strokeRect(contentX, contentY, contentW, contentHeight);
+      }
 
       const fileHeaderOffset = activeTab === 'file' ? 44 : 0;
       const listY = contentY + fileHeaderOffset;
@@ -7098,73 +7106,76 @@ Level size:`, `${current.width}x${current.height}`);
         return false;
       };
 
-      const gamepadActive = this.game.input?.isGamepadConnected?.() ?? false;
-      const focusedIndex = this.panelMenuIndex[activeTab] ?? 0;
-      items.forEach((item, index) => {
-        const col = index % columns;
-        const row = Math.floor(index / columns);
-        const x = contentX + contentPadding + col * (columnWidth + buttonGap);
-        const y = listY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
-        if (y + buttonHeight < listY + 4 || y > listY + listH - 4) return;
-        const preview = item.tile
-          ? { type: 'tile', tile: item.tile }
-          : item.prefab
-            ? { type: 'prefab', prefab: item.prefab }
-            : item.enemy
-              ? { type: 'enemy', enemy: item.enemy }
-              : null;
-        drawButton(
-          x,
-          y,
-          columnWidth,
-          buttonHeight,
-          item.label,
-          getActiveState(item),
-          item.onClick,
-          item.tooltip,
-          preview,
-          gamepadActive && index === focusedIndex
-        );
-      });
-
       if (activeTab === 'file') {
-        ctx.fillStyle = '#fff';
-        ctx.font = `16px ${UI_SUITE.font.family}`;
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'middle';
-        const fileDrawerLayout = buildSharedFileDrawerLayout({
-          x: contentX,
-          y: contentY,
-          width: contentW,
-          height: contentHeight,
-          padding: contentPadding,
-          headerHeight: 32,
-          footerHeight: 30,
-          footerBottomPadding: 10,
-          footerGap: 8
+        const rowHeight = 24;
+        const rowGap = 6;
+        const result = renderSharedFileDrawer(ctx, {
+          panel: { x: contentX, y: contentY, w: contentW, h: contentHeight },
+          items,
+          title: '',
+          scroll: this.panelScroll[activeTab] || 0,
+          rowHeight,
+          rowGap,
+          buttonHeight: rowHeight,
+          isMobile: false,
+          showTitle: false,
+          footerMode: 'stacked',
+          layout: {
+            padding: contentPadding,
+            headerHeight: 12,
+            footerHeight: rowHeight * 2 + rowGap,
+            footerBottomPadding: 10,
+            footerGap: 8
+          },
+          drawButton: (bounds, item) => {
+            const onClick = item.footer
+              ? (item.id === 'close-menu' ? () => this.closeFileMenu() : () => this.exitToMainMenu())
+              : item.onClick;
+            const tooltip = item.footer
+              ? (item.id === 'close-menu' ? 'Close file menu' : 'Exit editor to title')
+              : item.tooltip;
+            drawButton(bounds.x, bounds.y, bounds.w, bounds.h, item.label, false, onClick, tooltip);
+          }
         });
-        ctx.fillText('File', fileDrawerLayout.titleX, fileDrawerLayout.titleY);
-        const { closeBounds, exitBounds } = fileDrawerLayout;
-        drawButton(
-          closeBounds.x,
-          closeBounds.y,
-          closeBounds.w,
-          closeBounds.h,
-          SHARED_EDITOR_LEFT_MENU.closeLabel,
-          false,
-          () => this.closeFileMenu(),
-          'Close file menu'
-        );
-        drawButton(
-          exitBounds.x,
-          exitBounds.y,
-          exitBounds.w,
-          exitBounds.h,
-          SHARED_EDITOR_LEFT_MENU.exitLabel,
-          false,
-          () => this.exitToMainMenu(),
-          'Exit editor to title'
-        );
+        this.panelScrollMax[activeTab] = result.scrollMax;
+        this.panelScroll[activeTab] = result.scroll;
+        this.panelScrollBounds = result.listBounds;
+        this.panelScrollView = {
+          contentHeight: result.layout.listH,
+          buttonHeight: rowHeight,
+          buttonGap: rowGap,
+          columns: 1,
+          padding: contentPadding
+        };
+      } else {
+        const gamepadActive = this.game.input?.isGamepadConnected?.() ?? false;
+        const focusedIndex = this.panelMenuIndex[activeTab] ?? 0;
+        items.forEach((item, index) => {
+          const col = index % columns;
+          const row = Math.floor(index / columns);
+          const x = contentX + contentPadding + col * (columnWidth + buttonGap);
+          const y = listY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
+          if (y + buttonHeight < listY + 4 || y > listY + listH - 4) return;
+          const preview = item.tile
+            ? { type: 'tile', tile: item.tile }
+            : item.prefab
+              ? { type: 'prefab', prefab: item.prefab }
+              : item.enemy
+                ? { type: 'enemy', enemy: item.enemy }
+                : null;
+          drawButton(
+            x,
+            y,
+            columnWidth,
+            buttonHeight,
+            item.label,
+            getActiveState(item),
+            item.onClick,
+            item.tooltip,
+            preview,
+            gamepadActive && index === focusedIndex
+          );
+        });
       }
 
       const infoLines = [];
