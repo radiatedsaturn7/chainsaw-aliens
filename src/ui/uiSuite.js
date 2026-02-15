@@ -231,6 +231,7 @@ export function buildSharedFileDrawerLayout({
     listW: Math.max(0, width - padding * 2),
     listH,
     footerY,
+    footerBottomPadding,
     closeBounds,
     exitBounds
   };
@@ -251,7 +252,10 @@ export function renderSharedFileDrawer(ctx, {
   isMobile = false,
   layout = {},
   drawButton,
-  drawDivider = null
+  drawDivider = null,
+  showTitle = true,
+  footerMode = 'split',
+  footerRowGap = null
 } = {}) {
   const drawerLayout = buildSharedFileDrawerLayout({
     x: panel.x,
@@ -261,11 +265,13 @@ export function renderSharedFileDrawer(ctx, {
     ...layout
   });
 
-  ctx.fillStyle = '#fff';
-  ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(title, drawerLayout.titleX, drawerLayout.titleY);
+  if (showTitle && title) {
+    ctx.fillStyle = '#fff';
+    ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(title, drawerLayout.titleX, drawerLayout.titleY);
+  }
 
   const listBounds = {
     x: drawerLayout.listX - 2,
@@ -307,7 +313,15 @@ export function renderSharedFileDrawer(ctx, {
     cursorY += stride;
   });
 
-  const { closeBounds, exitBounds } = drawerLayout;
+  let { closeBounds, exitBounds } = drawerLayout;
+  if (footerMode === 'stacked') {
+    const footerButtonH = buttonHeight ?? Math.max(18, rowHeight);
+    const gap = Number.isFinite(footerRowGap) ? footerRowGap : rowGap;
+    const exitY = panel.y + panel.h - drawerLayout.footerBottomPadding - footerButtonH;
+    const closeY = exitY - gap - footerButtonH;
+    closeBounds = { x: drawerLayout.listX, y: closeY, w: drawerLayout.listW, h: footerButtonH, id: drawerLayout.closeBounds.id };
+    exitBounds = { x: drawerLayout.listX, y: exitY, w: drawerLayout.listW, h: footerButtonH, id: drawerLayout.exitBounds.id };
+  }
   drawButton(closeBounds, { id: closeBounds.id, label: SHARED_EDITOR_LEFT_MENU.closeLabel, footer: true });
   drawButton(exitBounds, { id: exitBounds.id, label: SHARED_EDITOR_LEFT_MENU.exitLabel, footer: true });
 

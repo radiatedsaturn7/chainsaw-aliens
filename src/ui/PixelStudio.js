@@ -2614,16 +2614,18 @@ export default class PixelStudio {
     const result = renderSharedFileDrawer(ctx, {
       panel: { x, y, w, h },
       items: actions,
-      title: 'File',
+      title: '',
       scroll: this.focusScroll.file || 0,
       rowHeight,
       rowGap,
       buttonHeight: rowHeight,
       isMobile,
+      showTitle: false,
+      footerMode: 'stacked',
       layout: {
         padding: 8,
-        headerHeight: isMobile ? 40 : 36,
-        footerHeight: isMobile ? 44 : 22,
+        headerHeight: isMobile ? 12 : 12,
+        footerHeight: (isMobile ? 44 : 22) * 2 + 8,
         footerBottomPadding: 8,
         footerGap: 8
       },
