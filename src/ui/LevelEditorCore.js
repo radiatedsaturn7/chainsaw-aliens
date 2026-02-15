@@ -721,10 +721,7 @@ export default class Editor {
 
       const railWidth = getSharedMobileRailWidth(width, height);
       const drawerWidth = this.drawer.open
-        ? getSharedMobileDrawerWidth(width, height, railWidth, {
-          minWidth: railWidth + 80,
-          edgePadding: 0
-        })
+        ? getSharedMobileDrawerWidth(width, height, railWidth, { edgePadding: 0 })
         : 0;
       this.editorBounds = { x: railWidth, y: 0, w: width - railWidth - drawerWidth, h: height };
       this.drawerBounds = this.drawer.open
@@ -4466,7 +4463,11 @@ Level size:`, `${current.width}x${current.height}`);
       if (Math.abs(dx) > 50 && Math.abs(dy) < 30) {
         const direction = dx > 0 ? -1 : 1;
         const nextIndex = (this.drawer.tabIndex + direction + this.drawer.tabs.length) % this.drawer.tabs.length;
-        this.drawer.tabIndex = nextIndex;
+        const nextTab = this.drawer.tabs[nextIndex];
+        if (nextTab) {
+          this.setPanelTab(nextTab);
+          this.drawer.open = true;
+        }
         this.drawer.swipeStart = null;
       }
       return;
@@ -6445,10 +6446,7 @@ Level size:`, `${current.width}x${current.height}`);
     if (this.isMobileLayout()) {
       const railWidth = getSharedMobileRailWidth(width, height);
       const drawerWidth = this.drawer.open
-        ? getSharedMobileDrawerWidth(width, height, railWidth, {
-          minWidth: railWidth + 80,
-          edgePadding: 0
-        })
+        ? getSharedMobileDrawerWidth(width, height, railWidth, { edgePadding: 0 })
         : 0;
       const panelX = 0;
       const panelY = 0;
