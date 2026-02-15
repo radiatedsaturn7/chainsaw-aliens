@@ -1045,6 +1045,9 @@ export default class Editor {
     const drawerIndex = this.drawer.tabs.indexOf(tabId);
     if (drawerIndex >= 0) {
       this.drawer.tabIndex = drawerIndex;
+      if (this.isMobileLayout()) {
+        this.drawer.open = true;
+      }
     }
     if (tabId === 'bosses') {
       this.enemyCategory = 'boss';
@@ -1072,10 +1075,10 @@ export default class Editor {
   }
 
   closeFileMenu() {
+    this.setPanelTab('toolbox');
     if (this.isMobileLayout()) {
       this.drawer.open = false;
     }
-    this.setPanelTab('toolbox');
   }
 
   exitToMainMenu() {
