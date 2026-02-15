@@ -2869,8 +2869,8 @@ export default class PixelStudio {
     ctx.strokeRect(x, y, w, h);
 
     if (type === 'panel') {
-      const panelY = y + 8;
-      const panelH = h - 16;
+      const panelY = y;
+      const panelH = h;
       this.drawLeftPanelContent(ctx, x + 8, panelY, w - 16, panelH, { isMobile: true });
     }
   }

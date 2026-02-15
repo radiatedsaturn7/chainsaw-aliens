@@ -4229,6 +4229,7 @@ Level size:`, `${current.width}x${current.height}`);
     }
 
     if (this.isMobileLayout() && this.drawer.open && this.panelScrollBounds
+      && this.isPointInBounds(payload.x, payload.y, this.drawerBounds)
       && this.isPointInBounds(payload.x, payload.y, this.panelScrollBounds)) {
       this.panelScrollDrag = {
         id: payload.id ?? null,

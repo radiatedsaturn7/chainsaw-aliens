@@ -130,7 +130,9 @@ export class SharedEditorMenu {
       showTitle,
       layout: {
         padding: this.options.panelPadding,
-        headerHeight: rowHeight + this.options.panelPadding * 2,
+        headerHeight: showTitle
+          ? rowHeight + this.options.panelPadding * 2
+          : 0,
         footerHeight: rowHeight,
         footerBottomPadding: this.options.panelPadding,
         footerGap: this.options.buttonGap
