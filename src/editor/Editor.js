@@ -1,4 +1,4 @@
-import EditorCore from './EditorCore.js';
+import LevelEditor from '../ui/LevelEditor.js';
 import { createDescriptorModules, createModuleFromDescriptor } from './shared/createMethodProxy.js';
 
 const editorModuleDescriptors = {
@@ -36,7 +36,7 @@ export const createEditorInputModule = (editor) => createModuleFromDescriptor(ed
 export const createEditorRenderModule = (editor) => createModuleFromDescriptor(editor, editorModuleDescriptors.renderModule);
 export const createEditorUIModule = (editor) => createModuleFromDescriptor(editor, editorModuleDescriptors.uiModule);
 
-export default class Editor extends EditorCore {
+export default class Editor extends LevelEditor {
   constructor(...args) {
     super(...args);
     Object.assign(this, createDescriptorModules(this, editorModuleDescriptors));

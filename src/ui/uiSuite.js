@@ -48,9 +48,207 @@ export const SHARED_EDITOR_LEFT_MENU = {
   desktopOuterPadding: 16,
   desktopContentGap: 12,
   fileLabel: 'FILE',
-  closeLabel: 'Close Menu',
+  closeLabel: 'Close Drawer',
   exitLabel: 'Exit to Main Menu'
 };
+
+export class SharedEditorMenu {
+  constructor(options = {}) {
+    this.options = {
+      desktopWidth: SHARED_EDITOR_LEFT_MENU.width(),
+      mobileWidth: UI_SUITE.layout.railWidthMobile,
+      panelPadding: SHARED_EDITOR_LEFT_MENU.panelPadding,
+      buttonGap: SHARED_EDITOR_LEFT_MENU.buttonGap,
+      ...options
+    };
+  }
+
+  getButtonHeight(isMobile) {
+    return isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop;
+  }
+
+  getPanelWidth(isMobile) {
+    return isMobile ? this.options.mobileWidth : this.options.desktopWidth;
+  }
+
+  draw(ctx, {
+    x,
+    y,
+    height,
+    isMobile = false,
+    buttons = [],
+    activeId = null,
+    drawButton,
+    registerButton
+  }) {
+    const panelW = this.getPanelWidth(isMobile);
+    const panelH = Math.max(0, height);
+    ctx.fillStyle = UI_SUITE.colors.panel;
+    ctx.fillRect(x, y, panelW, panelH);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(x, y, panelW, panelH);
+
+    const padding = this.options.panelPadding;
+    const gap = this.options.buttonGap;
+    const buttonH = this.getButtonHeight(isMobile);
+    const buttonW = Math.max(0, panelW - padding * 2);
+    let cursorY = y + padding;
+    const rendered = [];
+    buttons.forEach((entry) => {
+      const bounds = { x: x + padding, y: cursorY, w: buttonW, h: buttonH, id: entry.id };
+      const isActive = activeId === entry.id;
+      drawButton(bounds, entry, isActive);
+      if (typeof registerButton === 'function') {
+        registerButton(bounds, entry);
+      }
+      rendered.push({ ...entry, bounds, active: isActive });
+      cursorY += buttonH + gap;
+    });
+    return { panel: { x, y, w: panelW, h: panelH }, buttons: rendered };
+  }
+
+  drawDrawer(ctx, {
+    panel,
+    title = 'File',
+    isMobile = false,
+    items = [],
+    scroll = 0,
+    drawButton
+  }) {
+    const rowHeight = this.getButtonHeight(isMobile);
+    return renderSharedFileDrawer(ctx, {
+      panel,
+      title,
+      items,
+      scroll,
+      rowHeight,
+      rowGap: this.options.buttonGap,
+      buttonHeight: rowHeight,
+      isMobile,
+      footerMode: 'stacked',
+      showTitle: true,
+      layout: {
+        padding: this.options.panelPadding,
+        headerHeight: rowHeight + this.options.panelPadding * 2,
+        footerHeight: rowHeight,
+        footerBottomPadding: this.options.panelPadding,
+        footerGap: this.options.buttonGap
+      },
+      drawButton
+    });
+  }
+}
+
+
+export function drawSharedMenuButtonChrome(ctx, bounds, {
+  active = false,
+  subtle = false,
+  alpha = 1
+} = {}) {
+  const fill = active
+    ? 'rgba(255,225,106,0.7)'
+    : subtle
+      ? 'rgba(255,255,255,0.12)'
+      : 'rgba(0,0,0,0.6)';
+  const prevAlpha = ctx.globalAlpha;
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = fill;
+  ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  ctx.strokeStyle = UI_SUITE.colors.border;
+  ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  ctx.globalAlpha = prevAlpha;
+  return active ? '#0b0b0b' : '#fff';
+}
+
+export function drawSharedFocusRing(ctx, bounds, {
+  color = UI_SUITE.colors.accent,
+  lineWidth = 2,
+  padding = 2
+} = {}) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
+  ctx.strokeRect(
+    bounds.x - padding,
+    bounds.y - padding,
+    bounds.w + padding * 2,
+    bounds.h + padding * 2
+  );
+  ctx.restore();
+}
+
+
+function clipMenuLabel(ctx, label, maxWidth) {
+  const text = String(label ?? '');
+  if (!Number.isFinite(maxWidth) || maxWidth <= 0) return '';
+  if (ctx.measureText(text).width <= maxWidth) return text;
+  const ellipsis = '…';
+  let clipped = text;
+  while (clipped.length > 0 && ctx.measureText(clipped + ellipsis).width > maxWidth) {
+    clipped = clipped.slice(0, -1);
+  }
+  return clipped ? `${clipped}${ellipsis}` : ellipsis;
+}
+
+export function drawSharedMenuButtonLabel(ctx, bounds, label, {
+  fontSize = UI_SUITE.font.size,
+  fontFamily = UI_SUITE.font.family,
+  color = '#fff',
+  align = 'center',
+  baseline = 'middle',
+  padding = 6,
+  x = null,
+  y = null,
+  maxWidth = null,
+  format = true
+} = {}) {
+  const text = format ? formatMenuLabel(label) : String(label ?? '');
+  const textY = y ?? (bounds.y + bounds.h / 2);
+  const textX = x ?? (align === 'center' ? (bounds.x + bounds.w / 2) : (bounds.x + padding));
+  const availableWidth = Number.isFinite(maxWidth)
+    ? maxWidth
+    : Math.max(0, bounds.w - padding * 2);
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.font = `${fontSize}px ${fontFamily}`;
+  ctx.textAlign = align;
+  ctx.textBaseline = baseline;
+  const renderText = clipMenuLabel(ctx, text, availableWidth);
+  ctx.fillText(renderText, textX, textY);
+  ctx.restore();
+}
+
+
+export function getSharedMobileRailWidth(viewportWidth, viewportHeight, {
+  portraitWidth = UI_SUITE.layout.railWidthMobile,
+  landscapeWidth = 164,
+  minWidth = 120
+} = {}) {
+  const landscape = Number.isFinite(viewportWidth) && Number.isFinite(viewportHeight) && viewportWidth > viewportHeight;
+  const preferred = landscape ? landscapeWidth : portraitWidth;
+  const ratioCap = landscape ? 0.24 : 0.36;
+  const maxByRatio = Number.isFinite(viewportWidth)
+    ? Math.max(minWidth, Math.floor(viewportWidth * ratioCap))
+    : preferred;
+  return clampValue(preferred, minWidth, maxByRatio);
+}
+
+export function getSharedMobileDrawerWidth(viewportWidth, viewportHeight, railWidth, {
+  minWidth = 220,
+  portraitPreferred = UI_SUITE.layout.drawerWidth,
+  landscapePreferred = 248,
+  minContentPortrait = 180,
+  minContentLandscape = 260,
+  edgePadding = 0
+} = {}) {
+  const landscape = Number.isFinite(viewportWidth) && Number.isFinite(viewportHeight) && viewportWidth > viewportHeight;
+  const preferred = landscape ? landscapePreferred : portraitPreferred;
+  const minContent = landscape ? minContentLandscape : minContentPortrait;
+  const maxWidth = Number.isFinite(viewportWidth)
+    ? Math.max(minWidth, Math.floor(viewportWidth - railWidth - minContent - edgePadding * 2))
+    : preferred;
+  return clampValue(preferred, minWidth, maxWidth);
+}
 
 export function getSharedEditorDrawerWidth(viewportWidth, {
   minWidth = 220,
@@ -115,9 +313,162 @@ export function buildSharedMenuFooterLayout({
   return { closeBounds, exitBounds };
 }
 
+export function buildSharedFileDrawerLayout({
+  x,
+  y,
+  width,
+  height,
+  padding = 12,
+  headerHeight = 58,
+  footerHeight = 30,
+  footerBottomPadding = 10,
+  footerGap = 8,
+  closeId = 'close-menu',
+  exitId = 'exit-main'
+}) {
+  const titleX = x + padding;
+  const titleY = y + 28;
+  const listX = x + padding;
+  const listY = y + headerHeight;
+  const footerY = y + height - footerHeight - footerBottomPadding;
+  const listH = Math.max(0, footerY - listY - 8);
+  const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
+    x,
+    y: footerY,
+    width,
+    buttonHeight: footerHeight,
+    horizontalPadding: padding,
+    gap: footerGap,
+    closeId,
+    exitId
+  });
+  return {
+    titleX,
+    titleY,
+    listX,
+    listY,
+    listW: Math.max(0, width - padding * 2),
+    listH,
+    footerY,
+    footerBottomPadding,
+    closeBounds,
+    exitBounds
+  };
+}
 
 
 
+
+
+export function renderSharedFileDrawer(ctx, {
+  panel,
+  items = [],
+  title = 'File',
+  scroll = 0,
+  rowHeight = 32,
+  rowGap = 8,
+  buttonHeight = null,
+  isMobile = false,
+  layout = {},
+  drawButton,
+  drawDivider = null,
+  showTitle = true,
+  footerMode = 'split',
+  footerRowGap = null,
+  drawPanel = true,
+  panelFill = UI_SUITE.colors.panel,
+  panelBorder = UI_SUITE.colors.border,
+  panelAlpha = 1
+} = {}) {
+  const drawerLayout = buildSharedFileDrawerLayout({
+    x: panel.x,
+    y: panel.y,
+    width: panel.w,
+    height: panel.h,
+    ...layout
+  });
+
+
+  if (drawPanel) {
+    ctx.save();
+    ctx.globalAlpha = panelAlpha;
+    ctx.fillStyle = panelFill;
+    ctx.fillRect(panel.x, panel.y, panel.w, panel.h);
+    ctx.strokeStyle = panelBorder;
+    ctx.strokeRect(panel.x, panel.y, panel.w, panel.h);
+    ctx.restore();
+  }
+
+  if (showTitle && title) {
+    ctx.fillStyle = '#fff';
+    ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(title, drawerLayout.titleX, drawerLayout.titleY);
+  }
+
+  const listBounds = {
+    x: drawerLayout.listX - 2,
+    y: drawerLayout.listY - 4,
+    w: drawerLayout.listW + 4,
+    h: drawerLayout.listH + 8
+  };
+  const stride = rowHeight + rowGap;
+  const visibleRows = Math.max(1, Math.floor(drawerLayout.listH / Math.max(1, stride)));
+  const scrollMax = Math.max(0, items.length - visibleRows);
+  const nextScroll = Math.max(0, Math.min(scrollMax, Math.round(scroll || 0)));
+  const visibleItems = items.slice(nextScroll, nextScroll + visibleRows);
+  let cursorY = drawerLayout.listY;
+  const itemBounds = [];
+  visibleItems.forEach((item) => {
+    if (item?.divider) {
+      const dividerY = cursorY + 8;
+      if (typeof drawDivider === 'function') {
+        drawDivider({ x: drawerLayout.listX, y: dividerY, w: drawerLayout.listW, h: 0 }, item);
+      } else {
+        ctx.strokeStyle = UI_SUITE.colors.border;
+        ctx.beginPath();
+        ctx.moveTo(drawerLayout.listX, dividerY);
+        ctx.lineTo(drawerLayout.listX + drawerLayout.listW, dividerY);
+        ctx.stroke();
+      }
+      cursorY += Math.max(14, Math.round(Math.max(16, rowHeight) * 0.4));
+      return;
+    }
+    const bounds = {
+      x: drawerLayout.listX,
+      y: cursorY,
+      w: drawerLayout.listW,
+      h: buttonHeight ?? Math.max(18, rowHeight),
+      id: item?.id
+    };
+    drawButton(bounds, item);
+    itemBounds.push(bounds);
+    cursorY += stride;
+  });
+
+  let { closeBounds, exitBounds } = drawerLayout;
+  if (footerMode === 'stacked') {
+    const footerButtonH = buttonHeight ?? Math.max(18, rowHeight);
+    const gap = Number.isFinite(footerRowGap) ? footerRowGap : rowGap;
+    const exitY = panel.y + panel.h - drawerLayout.footerBottomPadding - footerButtonH;
+    const closeY = exitY - gap - footerButtonH;
+    closeBounds = { x: drawerLayout.listX, y: closeY, w: drawerLayout.listW, h: footerButtonH, id: drawerLayout.closeBounds.id };
+    exitBounds = { x: drawerLayout.listX, y: exitY, w: drawerLayout.listW, h: footerButtonH, id: drawerLayout.exitBounds.id };
+  }
+  drawButton(closeBounds, { id: closeBounds.id, label: SHARED_EDITOR_LEFT_MENU.closeLabel, footer: true });
+  drawButton(exitBounds, { id: exitBounds.id, label: SHARED_EDITOR_LEFT_MENU.exitLabel, footer: true });
+
+  return {
+    layout: drawerLayout,
+    listBounds: scrollMax > 0 ? listBounds : null,
+    itemBounds,
+    closeBounds,
+    exitBounds,
+    scroll: nextScroll,
+    scrollMax
+  };
+}
 
 export function buildSharedDesktopLeftPanelFrame({
   viewportWidth,
@@ -222,6 +573,31 @@ export function buildSharedLeftMenuLayout({
   };
 }
 const STANDARD_FILE_ORDER = ['new', 'save', 'save-as', 'open', 'export', 'import', 'undo', 'redo'];
+
+
+export function buildUnifiedFileDrawerItems({
+  actions = {},
+  labels = {},
+  tooltips = {},
+  editorSpecific = []
+} = {}) {
+  const mk = (id, fallback) => ({
+    id,
+    label: labels[id] || fallback,
+    tooltip: tooltips[id] || '',
+    onClick: actions[id] || null
+  });
+  return [
+    mk('new', 'New'),
+    mk('save', 'Save'),
+    mk('save-as', 'Save As'),
+    mk('open', 'Open'),
+    { divider: true },
+    mk('import', 'Import'),
+    mk('export', 'Export'),
+    ...(editorSpecific.length ? [{ divider: true }, ...editorSpecific] : [])
+  ];
+}
 
 export function buildStandardFileMenu(config = {}) {
   const {

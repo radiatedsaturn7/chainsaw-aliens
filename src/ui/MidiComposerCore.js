@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -465,6 +465,7 @@ const createDemoSong = () => ({
 export default class MidiComposer {
   constructor(game) {
     this.game = game;
+    this.sharedMenu = new SharedEditorMenu();
     this.storageKey = 'chainsaw-midi-composer';
     this.song = this.loadSong();
     initializeComposerState(this, {
@@ -7706,7 +7707,7 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
-    const { tabColumn } = buildSharedLeftMenuLayout({ x, y, width: w, height: h, isMobile: false });
+    const { tabColumn, content } = buildSharedLeftMenuLayout({ x, y, width: w, height: h, isMobile: false });
     const topButtons = buildSharedLeftMenuButtons({
       x: tabColumn.x,
       y: tabColumn.y,
@@ -7727,6 +7728,13 @@ export default class MidiComposer {
       this.bounds.tabs.push(bounds);
       this.drawButton(ctx, bounds, entry.label, this.activeTab === entry.id, false);
     });
+    const tabTail = topButtons[topButtons.length - 1]?.bounds || { x: tabColumn.x, y: tabColumn.y, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
+    this.bounds.undoButton = { x: tabColumn.x, y: tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
+    this.drawButton(ctx, this.bounds.undoButton, 'Undo / Redo', false, false);
+
+    if (this.activeTab === 'file') {
+      this.drawFilePanel(ctx, content.x, content.y, content.w, content.h);
+    }
   }
 
   drawRecordMode(ctx, width, height, track, pattern) {
@@ -7823,7 +7831,7 @@ export default class MidiComposer {
   drawMobileLayout(ctx, width, height, track, pattern) {
     const padding = 10;
     const gap = 10;
-    const sidebarW = UI_SUITE.layout.railWidthMobile;
+    const sidebarW = getSharedMobileRailWidth(width, height);
     const sidebarX = 0;
     const sidebarY = 0;
     const sidebarH = height;
@@ -7861,7 +7869,7 @@ export default class MidiComposer {
     const controlsY = y + menuH + panelGap;
     const controlsH = Math.max(0, h - menuH - panelGap);
 
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(menuX, menuY, w, menuH);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(menuX, menuY, w, menuH);
@@ -7893,7 +7901,7 @@ export default class MidiComposer {
     }
     this.drawSmallButton(ctx, this.bounds.redoButton, 'Redo', false);
 
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(controlsX, controlsY, w, controlsH);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(controlsX, controlsY, w, controlsH);
@@ -8107,11 +8115,6 @@ export default class MidiComposer {
   }
 
   drawHeader(ctx, x, y, w, h, track) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-
     const padding = 12;
     const gmStatus = this.game?.audio?.getGmStatus?.();
     if (gmStatus) {
@@ -8253,11 +8256,6 @@ export default class MidiComposer {
   }
 
   drawSongTab(ctx, x, y, w, h) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-
     const padding = 0;
     const rulerH = DEFAULT_RULER_HEIGHT;
     const rulerY = y + padding;
@@ -9130,11 +9128,6 @@ export default class MidiComposer {
   }
 
   drawInstrumentPanel(ctx, x, y, w, h, track) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-
     const isMobile = this.isMobileLayout();
     const padding = 12;
     const panelGap = 12;
@@ -10009,11 +10002,6 @@ export default class MidiComposer {
   drawTransport(ctx, x, y, w, h) {
     const scale = Math.min(1, w / 980);
     const offset = (value) => value * scale;
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-
     const buttonW = 92 * scale;
     const buttonH = 36 * scale;
     this.bounds.play = { x: x + offset(16), y: y + offset(18), w: buttonW, h: buttonH };
@@ -10098,11 +10086,6 @@ export default class MidiComposer {
   }
 
   drawTransportCompact(ctx, x, y, w, h) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-
     const innerX = x + 12;
     const innerW = w - 24;
     const rowH = 30;
@@ -11017,9 +11000,8 @@ export default class MidiComposer {
   }
 
   getFileMenuItems() {
-    return buildSharedEditorFileMenu({
+    return buildUnifiedFileDrawerItems({
       labels: {
-        open: 'Open',
         export: 'Export JSON',
         import: 'Import MIDI/ZIP/JSON'
       },
@@ -11029,14 +11011,11 @@ export default class MidiComposer {
         'save-as': () => this.handleFileMenuAction('save-as'),
         open: () => this.handleFileMenuAction('load'),
         export: () => this.handleFileMenuAction('export-json'),
-        import: () => this.handleFileMenuAction('import'),
-        undo: () => this.handleFileMenuAction('undo'),
-        redo: () => this.handleFileMenuAction('redo')
+        import: () => this.handleFileMenuAction('import')
       },
-      extras: [
+      editorSpecific: [
         { id: 'export-midi', label: 'Export MIDI' },
         { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
-        { divider: true },
         { id: 'save-paint', label: 'Save and Paint' },
         { id: 'play-robtersession', label: 'Play in RobterSession' },
         { id: 'settings', label: 'Settings' },
@@ -11047,89 +11026,40 @@ export default class MidiComposer {
   }
 
   drawFilePanel(ctx, x, y, w, h) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
+    const isMobile = this.isMobileLayout();
+    let panelX = x;
+    let panelY = y;
+    let panelW = w;
+    let panelH = h;
 
-    const viewportW = this.viewportWidth ?? x + w;
-    const viewportH = this.viewportHeight ?? y + h;
-    const padding = 0;
-    const finalPanelW = getSharedEditorDrawerWidth(viewportW, { edgePadding: 0 });
-    const panelX = viewportW - finalPanelW;
-    const panelY = 0;
-    const panelH = viewportH;
-    ctx.fillStyle = UI_SUITE.colors.panel;
-    ctx.fillRect(panelX, panelY, finalPanelW, panelH);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(panelX, panelY, finalPanelW, panelH);
+    if (isMobile) {
+      const viewportW = this.viewportWidth ?? x + w;
+      const viewportH = this.viewportHeight ?? y + h;
+      const railW = getSharedMobileRailWidth(viewportW, viewportH);
+      panelW = getSharedMobileDrawerWidth(viewportW, viewportH, railW, { edgePadding: 0 });
+      panelX = viewportW - panelW;
+      panelY = 0;
+      panelH = viewportH;
+    }
 
-    const backBounds = {
-      x: panelX + 12,
-      y: panelY + 10,
-      w: Math.min(112, Math.max(82, finalPanelW * 0.34)),
-      h: 30,
-      id: 'back-menu-fixed'
-    };
-    this.drawButton(ctx, backBounds, 'Back', false, true);
-
-    ctx.fillStyle = '#fff';
-    ctx.font = '16px Courier New';
-    ctx.fillText('File Actions', panelX + 12, panelY + 58);
-
-    const items = this.getFileMenuItems();
-    const rowH = clamp(Math.round(panelH * 0.08), 36, 44);
-    const listStartY = panelY + 70;
-    const footerReserved = 56;
-    const listH = Math.max(0, panelH - (listStartY - panelY) - footerReserved);
-    this.fileMenuListBounds = { x: panelX + 10, y: listStartY - 4, w: finalPanelW - 20, h: listH + 8 };
-    const visibleRows = Math.max(1, Math.floor(listH / rowH));
-    this.fileMenuScrollMax = Math.max(0, items.length - visibleRows);
-    this.fileMenuScroll = clamp(this.fileMenuScroll, 0, this.fileMenuScrollMax);
-    const visibleItems = items.slice(this.fileMenuScroll, this.fileMenuScroll + visibleRows);
-    let cursorY = listStartY;
     this.fileMenuBounds = [];
-    visibleItems.forEach((item) => {
-      if (item.divider) {
-        const dividerY = cursorY + 8;
-        ctx.strokeStyle = UI_SUITE.colors.border;
-        ctx.beginPath();
-        ctx.moveTo(panelX + 12, dividerY);
-        ctx.lineTo(panelX + finalPanelW - 12, dividerY);
-        ctx.stroke();
-        cursorY += Math.max(14, Math.round(rowH * 0.4));
-        return;
+    const result = this.sharedMenu.drawDrawer(ctx, {
+      panel: { x: panelX, y: panelY, w: panelW, h: panelH },
+      title: 'File',
+      items: this.getFileMenuItems(),
+      scroll: this.fileMenuScroll,
+      isMobile,
+      drawButton: (bounds, item) => {
+        this.drawButton(ctx, bounds, item.label, false, false);
+        this.fileMenuBounds.push({ ...bounds, id: item.id });
       }
-      const bounds = {
-        x: panelX + 12,
-        y: cursorY,
-        w: finalPanelW - 24,
-        h: rowH - 8,
-        id: item.id
-      };
-      this.drawButton(ctx, bounds, item.label, false, true);
-      this.fileMenuBounds.push(bounds);
-      cursorY += rowH;
     });
 
-    const footerY = panelY + panelH - 40;
-    const footerH = 28;
-    const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
-      x: panelX,
-      y: footerY,
-      width: finalPanelW,
-      buttonHeight: footerH,
-      horizontalPadding: 12,
-      gap: 8,
-      closeId: 'close-menu-fixed',
-      exitId: 'exit-main-fixed'
-    });
-    this.drawButton(ctx, closeBounds, SHARED_EDITOR_LEFT_MENU.closeLabel, false, true);
-    this.drawButton(ctx, exitBounds, SHARED_EDITOR_LEFT_MENU.exitLabel, false, true);
-    this.fileMenuBounds.push(backBounds, closeBounds, exitBounds);
-
-    this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
+    this.fileMenuScroll = result.scroll;
+    this.fileMenuScrollMax = result.scrollMax;
+    this.fileMenuListBounds = result.listBounds;
   }
+
 
 
   drawGenreMenu(ctx, width, height) {
@@ -11205,22 +11135,14 @@ export default class MidiComposer {
   }
 
   drawButton(ctx, bounds, label, active, subtle) {
-    const fill = active ? 'rgba(255,225,106,0.7)' : subtle ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.6)';
-    ctx.fillStyle = fill;
-    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.fillStyle = active ? '#0b0b0b' : '#fff';
+    const color = drawSharedMenuButtonChrome(ctx, bounds, { active, subtle });
     const isMobile = this.isMobileLayout();
     const fontSize = this.getButtonFontSize(bounds, isMobile);
-    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    const padding = Math.max(6, Math.round(bounds.h * 0.2));
-    const clippedLabel = this.truncateLabel(ctx, formatMenuLabel(label), Math.max(0, bounds.w - padding * 2));
-    ctx.fillText(clippedLabel, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
+    drawSharedMenuButtonLabel(ctx, bounds, label, {
+      fontSize,
+      color,
+      maxWidth: Math.max(0, bounds.w - Math.max(6, Math.round(bounds.h * 0.2)) * 2)
+    });
   }
 
   drawSmallButton(ctx, bounds, label, active) {

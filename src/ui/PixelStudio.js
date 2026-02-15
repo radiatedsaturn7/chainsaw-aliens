@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -35,6 +35,7 @@ import { ensurePixelArtStore, ensurePixelTileData } from '../editor/adapters/edi
 export default class PixelStudio {
   constructor(game) {
     this.game = game;
+    this.sharedMenu = new SharedEditorMenu();
     this.tileLibrary = TILE_LIBRARY;
     this.activeTile = this.tileLibrary[0] || null;
     this.tileIndex = 0;
@@ -2330,15 +2331,13 @@ export default class PixelStudio {
 
   drawFocusHighlight(ctx) {
     if (this.inputMode !== 'ui') return;
+    const isGamepadFocus = Boolean(this.game?.input?.isGamepadConnected?.());
+    if (!isGamepadFocus) return;
     const items = this.focusGroups[this.uiFocus.group] || [];
     const item = items[this.uiFocus.index];
     if (!item) return;
     const bounds = item.bounds;
-    ctx.save();
-    ctx.strokeStyle = '#9ddcff';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(bounds.x - 2, bounds.y - 2, bounds.w + 4, bounds.h + 4);
-    ctx.restore();
+    drawSharedFocusRing(ctx, bounds);
   }
 
   draw(ctx, width, height) {
@@ -2361,7 +2360,7 @@ export default class PixelStudio {
       ? buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height })
       : null;
     const leftWidth = isMobile
-      ? UI_SUITE.layout.railWidthMobile
+      ? getSharedMobileRailWidth(width, height)
       : (leftFrame ? leftFrame.panelW : (this.sidebars.left ? SHARED_EDITOR_LEFT_MENU.width() : 0));
     const rightWidth = 0;
 
@@ -2379,7 +2378,7 @@ export default class PixelStudio {
     const canvasH = height - canvasY - bottomHeight;
 
     if (isMobile) {
-      this.drawMobileRail(ctx, 0, 0, UI_SUITE.layout.railWidthMobile, height);
+      this.drawMobileRail(ctx, 0, 0, leftWidth, height);
     } else if (this.sidebars.left) {
       this.drawLeftPanel(ctx, leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH, { isMobile: false });
     }
@@ -2413,7 +2412,7 @@ export default class PixelStudio {
       const toolbarY = height - toolbarHeight - padding;
       this.drawMobileToolbar(ctx, canvasX, toolbarY, width - canvasX - padding, toolbarHeight);
       if (this.mobileDrawer && this.mobileDrawer !== 'timeline') {
-        const drawerW = getSharedEditorDrawerWidth(width, { edgePadding: 0 });
+        const drawerW = getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 });
         const drawerX = width - drawerW;
         this.drawMobileDrawer(ctx, drawerX, 0, drawerW, height, this.mobileDrawer);
       }
@@ -2448,15 +2447,12 @@ export default class PixelStudio {
 
   drawButton(ctx, bounds, label, active = false, options = {}) {
     const fontSize = options.fontSize || 12;
-    ctx.fillStyle = active ? 'rgba(255,225,106,0.7)' : 'rgba(0,0,0,0.6)';
-    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.fillStyle = active ? '#0b0b0b' : '#fff';
-    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
-    ctx.textAlign = 'center';
-    ctx.fillText(formatMenuLabel(label), bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 4);
-    ctx.textAlign = 'left';
+    const color = drawSharedMenuButtonChrome(ctx, bounds, { active });
+    drawSharedMenuButtonLabel(ctx, bounds, label, {
+      fontSize,
+      color,
+      y: bounds.y + bounds.h / 2 + 1
+    });
   }
 
   isMobileLayout() {
@@ -2482,7 +2478,7 @@ export default class PixelStudio {
 
   drawLeftPanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -2518,6 +2514,11 @@ export default class PixelStudio {
       this.uiButtons.push({ bounds, onClick: () => this.setLeftPanelTab(entry.id) });
       this.registerFocusable('menu', bounds, () => this.setLeftPanelTab(entry.id));
     });
+    const lastY = topButtons[topButtons.length - 1]?.bounds?.y || tabColumn.y;
+    const undoBounds = { x: tabColumn.x, y: lastY + SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
+    this.drawButton(ctx, undoBounds, 'Undo / Redo', false, { fontSize: isMobile ? 12 : 11 });
+    this.uiButtons.push({ bounds: undoBounds, onClick: () => this.runtime.undo() });
+    this.registerFocusable('menu', undoBounds, () => this.runtime.undo());
 
     this.drawLeftPanelContent(ctx, content.x, content.y, content.w, content.h, options);
   }
@@ -2554,7 +2555,7 @@ export default class PixelStudio {
   drawObjectsPanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
     ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+    ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
     ctx.fillText('Objects', x + 12, y + 20);
     const lineHeight = isMobile ? 52 : 20;
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
@@ -2586,14 +2587,8 @@ export default class PixelStudio {
 
   drawFilePanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
-    ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
-    ctx.fillText('File', x + 12, y + 20);
-    const lineHeight = isMobile ? 52 : 20;
-    const buttonHeight = isMobile ? 44 : 18;
-    const actions = buildSharedEditorFileMenu({
+    const actions = buildUnifiedFileDrawerItems({
       labels: {
-        open: 'Open',
         export: 'Export PNG',
         import: 'Import Palette'
       },
@@ -2603,96 +2598,42 @@ export default class PixelStudio {
         'save-as': () => this.saveArtDocument({ forceSaveAs: true }),
         open: () => this.loadArtDocument(),
         export: () => this.exportPng(),
-        import: () => this.paletteFileInput.click(),
-        undo: () => this.runtime.undo(),
-        redo: () => this.runtime.redo()
+        import: () => this.paletteFileInput.click()
       },
-      extras: [
-        { divider: true },
-        { label: 'Sprite Sheet', action: () => this.exportSpriteSheet('horizontal') },
-        { label: 'Export GIF', action: () => this.exportGif() },
-        { label: 'Palette JSON', action: () => this.exportPaletteJson() },
-        { label: 'Palette HEX', action: () => this.exportPaletteHex() },
-        { divider: true },
-        { label: 'Resize', action: () => this.resizeArtDocumentPrompt() },
-        { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } }
-      ],
-      footer: {
-        onClose: () => { this.closeFileMenu(); },
-        onExit: () => { this.exitToMainMenu(); }
+      editorSpecific: [
+        { id: 'sprite-sheet', label: 'Sprite Sheet', onClick: () => this.exportSpriteSheet('horizontal') },
+        { id: 'export-gif', label: 'Export GIF', onClick: () => this.exportGif() },
+        { id: 'palette-json', label: 'Palette JSON', onClick: () => this.exportPaletteJson() },
+        { id: 'palette-hex', label: 'Palette HEX', onClick: () => this.exportPaletteHex() },
+        { id: 'controls', label: 'Controls', onClick: () => { this.controlsOverlayOpen = true; } }
+      ]
+    });
+
+    const rowHeight = this.sharedMenu.getButtonHeight(isMobile);
+    const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+    const result = this.sharedMenu.drawDrawer(ctx, {
+      panel: { x, y, w, h },
+      title: 'File',
+      items: actions,
+      scroll: this.focusScroll.file || 0,
+      isMobile,
+      drawButton: (bounds, item) => {
+        const onClick = item.footer
+          ? (item.id === 'close-menu' ? () => this.closeFileMenu() : () => this.exitToMainMenu())
+          : (item.onClick || item.action);
+        this.drawButton(ctx, bounds, item.label, false, { fontSize: isMobile ? 12 : 12 });
+        this.uiButtons.push({ bounds, onClick });
+        this.registerFocusable('file', bounds, onClick);
       }
     });
-    const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
-    this.filePanelScroll = { x, y: y + 30, w, h: Math.max(0, h - 30), lineHeight };
-    this.focusGroupMeta.file = { maxVisible };
-    const start = this.focusScroll.file || 0;
-    let offsetY = y + 36;
-    const listBottomPadding = isMobile ? 64 : 40;
-    const maxListVisible = Math.max(1, Math.floor((h - 30 - listBottomPadding) / lineHeight));
-    const boundedStart = clamp(start, 0, Math.max(0, actions.length - maxListVisible));
-    this.focusScroll.file = boundedStart;
-    actions.slice(boundedStart, boundedStart + maxListVisible).forEach((entry) => {
-      if (entry.divider) {
-        const lineY = offsetY - (isMobile ? 10 : 4);
-        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-        ctx.beginPath();
-        ctx.moveTo(x + 12, lineY);
-        ctx.lineTo(x + w - 12, lineY);
-        ctx.stroke();
-        offsetY += Math.max(10, Math.round(lineHeight * 0.4));
-        return;
-      }
-      const bounds = { x: x + 8, y: offsetY - (isMobile ? 28 : 14), w: w - 16, h: buttonHeight };
-      this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
-      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
-      this.registerFocusable('file', bounds, (entry.onClick || entry.action));
-      offsetY += lineHeight;
-    });
 
-    const sizeSectionY = y + h - (isMobile ? 132 : 90);
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.font = `${isMobile ? 12 : 11}px ${UI_SUITE.font.family}`;
-    ctx.fillText(`Canvas: ${this.canvasState.width}x${this.canvasState.height}`, x + 10, sizeSectionY - 8);
-
-    const presetW = isMobile ? 56 : 46;
-    const presetH = isMobile ? 30 : 20;
-    PIXEL_SIZE_PRESETS.forEach((size, index) => {
-      const bounds = { x: x + 8 + index * (presetW + 6), y: sizeSectionY, w: presetW, h: presetH };
-      this.drawButton(ctx, bounds, `${size}`, false, { fontSize: isMobile ? 11 : 10 });
-      this.uiButtons.push({ bounds, onClick: () => { this.artSizeDraft.width = size; this.artSizeDraft.height = size; this.resizeArtCanvas(size, size); } });
-      this.registerFocusable('file', bounds, () => { this.artSizeDraft.width = size; this.artSizeDraft.height = size; this.resizeArtCanvas(size, size); });
-    });
-
-    const setWBounds = { x: x + 8, y: sizeSectionY + presetH + 6, w: isMobile ? 86 : 72, h: isMobile ? 30 : 20 };
-    const setHBounds = { x: setWBounds.x + setWBounds.w + 6, y: setWBounds.y, w: isMobile ? 86 : 72, h: isMobile ? 30 : 20 };
-    const applySizeBounds = { x: setHBounds.x + setHBounds.w + 6, y: setWBounds.y, w: isMobile ? 86 : 72, h: isMobile ? 30 : 20 };
-    this.drawButton(ctx, setWBounds, `W: ${this.artSizeDraft.width}`, false, { fontSize: isMobile ? 11 : 10 });
-    this.drawButton(ctx, setHBounds, `H: ${this.artSizeDraft.height}`, false, { fontSize: isMobile ? 11 : 10 });
-    this.drawButton(ctx, applySizeBounds, 'Apply', false, { fontSize: isMobile ? 11 : 10 });
-    this.uiButtons.push({ bounds: setWBounds, onClick: () => this.setArtSizeDraftFromPrompt('width') });
-    this.uiButtons.push({ bounds: setHBounds, onClick: () => this.setArtSizeDraftFromPrompt('height') });
-    this.uiButtons.push({ bounds: applySizeBounds, onClick: () => this.resizeArtCanvas(this.artSizeDraft.width, this.artSizeDraft.height) });
-    this.registerFocusable('file', setWBounds, () => this.setArtSizeDraftFromPrompt('width'));
-    this.registerFocusable('file', setHBounds, () => this.setArtSizeDraftFromPrompt('height'));
-    this.registerFocusable('file', applySizeBounds, () => this.resizeArtCanvas(this.artSizeDraft.width, this.artSizeDraft.height));
-
-    const footerY = y + h - (isMobile ? 52 : 30);
-    const footerH = isMobile ? 44 : 22;
-    const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
-      x,
-      y: footerY,
-      width: w,
-      buttonHeight: footerH,
-      horizontalPadding: 8,
-      gap: 8
-    });
-    this.drawButton(ctx, closeBounds, SHARED_EDITOR_LEFT_MENU.closeLabel, false, { fontSize: isMobile ? 12 : 12 });
-    this.drawButton(ctx, exitBounds, SHARED_EDITOR_LEFT_MENU.exitLabel, false, { fontSize: isMobile ? 11 : 11 });
-    this.uiButtons.push({ bounds: closeBounds, onClick: () => this.closeFileMenu() });
-    this.uiButtons.push({ bounds: exitBounds, onClick: () => this.exitToMainMenu() });
-    this.registerFocusable('file', closeBounds, () => this.closeFileMenu());
-    this.registerFocusable('file', exitBounds, () => this.exitToMainMenu());
+    this.focusScroll.file = result.scroll;
+    this.focusGroupMeta.file = { maxVisible: Math.max(1, Math.floor(result.layout.listH / Math.max(1, rowHeight + rowGap))) };
+    this.filePanelScroll = result.listBounds
+      ? { x: result.listBounds.x, y: result.listBounds.y, w: result.listBounds.w, h: result.listBounds.h, lineHeight: rowHeight + rowGap }
+      : null;
   }
+
 
   drawPalettePanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
@@ -2815,7 +2756,8 @@ export default class PixelStudio {
     ctx.strokeRect(boxX, boxY, boxW, boxH);
     items.forEach((entry, index) => {
       const bounds = { x: boxX + 10, y: boxY + 10 + index * 42, w: boxW - 20, h: 34 };
-      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+      const active = entry.id === this.leftPanelTab && entry.id !== 'fit';
+      this.drawButton(ctx, bounds, entry.label, active, { fontSize: 12 });
       this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
       this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
     });
@@ -2867,10 +2809,10 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     const actions = [
-      { label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
-      { label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
-      { label: 'Grid', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
-      { label: 'Fit', action: () => this.centerView(true) }
+      { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
+      { id: 'tools', label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
+      { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
+      { id: 'undo', label: 'Undo / Redo', action: () => { this.runtime.undo(); } }
     ];
     const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const buttonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
@@ -2882,7 +2824,8 @@ export default class PixelStudio {
         w: buttonW,
         h: buttonH
       };
-      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+      const active = entry.id === this.leftPanelTab && entry.id !== 'fit';
+      this.drawButton(ctx, bounds, entry.label, active, { fontSize: 12 });
       this.uiButtons.push({ bounds, onClick: entry.action });
       this.registerFocusable('toolbar', bounds, entry.action);
     });
@@ -2919,7 +2862,7 @@ export default class PixelStudio {
 
   drawMobileDrawer(ctx, x, y, w, h, type) {
     this.mobileDrawerBounds = { x, y, w, h };
-    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -2933,7 +2876,7 @@ export default class PixelStudio {
       this.registerFocusable('menu', backBounds, () => { this.mobileDrawer = null; });
 
       ctx.fillStyle = '#fff';
-      ctx.font = '14px Courier New';
+      ctx.font = `14px ${UI_SUITE.font.family}`;
       ctx.textAlign = 'center';
       ctx.fillText(label, x + w / 2, y + 34);
       ctx.textAlign = 'left';
@@ -3494,7 +3437,7 @@ export default class PixelStudio {
 
     if (this.linePreview) {
       const bounds = this.getBoundsFromPoints(this.linePreview.start, this.linePreview.end);
-      ctx.strokeStyle = '#9ddcff';
+      ctx.strokeStyle = UI_SUITE.colors.accent;
       ctx.strokeRect(
         offsetX + bounds.x * zoom,
         offsetY + bounds.y * zoom,
@@ -3521,7 +3464,7 @@ export default class PixelStudio {
     }
 
     if (this.gamepadCursor.active) {
-      ctx.strokeStyle = '#9ddcff';
+      ctx.strokeStyle = UI_SUITE.colors.accent;
       ctx.strokeRect(this.gamepadCursor.x - 4, this.gamepadCursor.y - 4, 8, 8);
     }
 
