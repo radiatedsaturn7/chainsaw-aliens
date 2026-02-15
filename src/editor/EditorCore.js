@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel, getSharedEditorDrawerWidth } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, renderSharedFileDrawer, SharedEditorMenu } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -302,6 +302,7 @@ const EDITOR_GAMEPAD_BINDINGS = {
 export default class Editor {
   constructor(game) {
     this.game = game;
+    this.sharedMenu = new SharedEditorMenu();
     this.active = false;
     this.mode = 'tile';
     this.previousNonTriggerMode = 'tile';
@@ -1105,103 +1106,75 @@ export default class Editor {
         onClick: () => this.game.exitEditor({ playtest: true })
       }];
     } else if (tabId === 'file') {
-      items = [
-        {
-          id: 'new-level',
-          label: 'New',
-          tooltip: 'Create a new level',
-          onClick: () => this.newLevelDocument()
+      items = buildSharedEditorFileMenu({
+        labels: {
+          new: 'New',
+          open: 'Open',
+          export: 'Export',
+          import: 'Import'
         },
-        {
-          id: 'save-storage',
-          label: 'Save',
-          tooltip: 'Save level to browser storage',
-          onClick: () => this.saveLevelToStorage()
+        tooltips: {
+          new: 'Create a new level',
+          save: 'Save level to browser storage',
+          'save-as': 'Save level with a new name',
+          open: 'Open level from browser storage',
+          export: 'Export world JSON',
+          import: 'Import world JSON',
+          undo: 'Undo last change (Ctrl+Z)',
+          redo: 'Redo last change (Ctrl+Y)'
         },
-        {
-          id: 'save-as-storage',
-          label: 'Save As',
-          tooltip: 'Save level with a new name',
-          onClick: () => this.saveLevelToStorage({ forceSaveAs: true })
+        actions: {
+          new: () => this.newLevelDocument(),
+          save: () => this.saveLevelToStorage(),
+          'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
+          open: () => this.loadLevelFromStorage(),
+          export: () => this.saveToFile(),
+          import: () => this.openFileDialog(),
+          undo: () => this.undo(),
+          redo: () => this.redo()
         },
-        {
-          id: 'load-storage',
-          label: 'Open',
-          tooltip: 'Open level from browser storage',
-          onClick: () => this.loadLevelFromStorage()
-        },
-        {
-          id: 'resize-level',
-          label: 'Resize',
-          tooltip: 'Resize level canvas',
-          onClick: () => this.resizeLevelDocument()
-        },
-        { id: 'divider-1', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'export-json',
-          label: 'Export',
-          tooltip: 'Export world JSON',
-          onClick: () => this.saveToFile()
-        },
-        {
-          id: 'import-json',
-          label: 'Import',
-          tooltip: 'Import world JSON',
-          onClick: () => this.openFileDialog()
-        },
-        { id: 'divider-2', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'undo',
-          label: 'Undo',
-          tooltip: 'Undo last change (Ctrl+Z)',
-          onClick: () => this.undo()
-        },
-        {
-          id: 'redo',
-          label: 'Redo',
-          tooltip: 'Redo last change (Ctrl+Y)',
-          onClick: () => this.redo()
-        },
-        { id: 'divider-3', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'playtest',
-          label: 'Playtest',
-          tooltip: 'Start playtest from spawn',
-          onClick: () => this.game.exitEditor({ playtest: true })
-        },
-        ...(spawnTile
-          ? [{
-            id: 'spawn-point',
-            label: 'Spawn Point',
-            tooltip: 'Place the player spawn point',
+        extras: [
+          { id: 'resize-level', label: 'Resize', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
+          { divider: true },
+          {
+            id: 'playtest',
+            label: 'Playtest',
+            tooltip: 'Start playtest from spawn',
+            onClick: () => this.game.exitEditor({ playtest: true })
+          },
+          ...(spawnTile
+            ? [{
+              id: 'spawn-point',
+              label: 'Spawn Point',
+              tooltip: 'Place the player spawn point',
+              onClick: () => {
+                this.setTileType(spawnTile);
+                this.mode = 'tile';
+                this.tileTool = 'paint';
+              }
+            }]
+            : []),
+          {
+            id: 'start-everything',
+            label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
+            tooltip: 'Toggle playtest loadout',
             onClick: () => {
-              this.setTileType(spawnTile);
-              this.mode = 'tile';
-              this.tileTool = 'paint';
+              this.startWithEverything = !this.startWithEverything;
             }
-          }]
-          : []),
-        {
-          id: 'start-everything',
-          label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
-          tooltip: 'Toggle playtest loadout',
-          onClick: () => {
-            this.startWithEverything = !this.startWithEverything;
+          },
+          {
+            id: 'random-level',
+            label: 'Random Level',
+            tooltip: 'Create a random level layout',
+            onClick: () => this.promptRandomLevel()
           }
-        },
-        {
-          id: 'random-level',
-          label: 'Random Level',
-          tooltip: 'Create a random level layout',
-          onClick: () => this.promptRandomLevel()
-        },
-        { id: 'divider-4', label: '────────', tooltip: '', onClick: () => {} },
-        ...buildMainMenuFooterEntries({
-          onClose: () => this.closeFileMenu(),
-          onExit: () => this.exitToMainMenu()
-        })
-      ];
-      columns = 2;
+        ],
+        includeFooter: false
+      }).map((entry) => ({
+        ...entry,
+        onClick: entry.onClick || entry.action || (() => {})
+      }));
+      columns = 1;
     } else if (tabId === 'tiles') {
       items = DEFAULT_TILE_TYPES.map((tile) => ({
         id: tile.id,
@@ -6352,20 +6325,13 @@ Level size:`, `${current.width}x${current.height}`);
     };
 
     const drawButton = (x, y, w, h, label, active, onClick, tooltip = '', preview = null, focused = false) => {
-      ctx.globalAlpha = 0.9;
-      ctx.fillStyle = active ? 'rgba(255,225,106,0.7)' : 'rgba(0,0,0,0.6)';
-      ctx.fillRect(x, y, w, h);
-      ctx.strokeStyle = UI_SUITE.colors.border;
-      ctx.strokeRect(x, y, w, h);
+      ctx.fillStyle = drawSharedMenuButtonChrome(ctx, { x, y, w, h }, { active, alpha: 0.9 });
       if (focused) {
-        ctx.save();
-        ctx.strokeStyle = '#9ad9ff';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x - 2, y - 2, w + 4, h + 4);
-        ctx.restore();
+        drawSharedFocusRing(ctx, { x, y, w, h });
       }
-      ctx.fillStyle = active ? '#0b0b0b' : '#fff';
       ctx.save();
+      const fontSize = Math.max(10, Math.min(12, Math.round(h * 0.3)));
+      ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
       ctx.textBaseline = 'middle';
       const previewSize = preview ? Math.min(22, h - 8) : 0;
       const previewX = x + 8;
@@ -6377,8 +6343,16 @@ Level size:`, `${current.width}x${current.height}`);
       } else if (preview?.type === 'enemy') {
         drawEnemyPreview(previewX, previewY, previewSize, preview.enemy);
       }
-      const textOffset = preview ? previewSize + 14 : 8;
-      ctx.fillText(formatMenuLabel(label), x + textOffset, y + h / 2);
+      const textX = preview ? (x + previewSize + 14) : (x + w / 2);
+      const textAlign = preview ? 'left' : 'center';
+      drawSharedMenuButtonLabel(ctx, { x, y, w, h }, label, {
+        fontSize,
+        color: active ? '#0b0b0b' : '#fff',
+        align: textAlign,
+        x: textX,
+        y: y + h / 2,
+        maxWidth: preview ? Math.max(0, w - previewSize - 18) : Math.max(0, w - 12)
+      });
       ctx.restore();
       this.addUIButton({ x, y, w, h }, onClick, tooltip);
       if (tooltip && !this.isMobileLayout() && isHovered(x, y, w, h)) {
@@ -6506,33 +6480,38 @@ Level size:`, `${current.width}x${current.height}`);
         { id: 'enemies', label: 'Enemies' },
         { id: 'bosses', label: 'Bosses' },
         { id: 'prefabs', label: 'Structures' },
-        { id: 'music', label: 'Music' }
+        { id: 'music', label: 'Music' },
+        { id: 'undo-redo', label: 'Undo / Redo' }
       ];
 
-      if (!this.drawer.open) {
-        const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
-        const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
-        const tabButtonW = Math.min(panelW - 12, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
-        const startY = panelY + handleAreaH + 8;
-        tabs.forEach((tab, index) => {
-          const y = startY + index * (tabButtonH + tabGap);
-          if (y + tabButtonH > panelY + panelH - 8) return;
-          drawButton(
-            panelX + (panelW - tabButtonW) * 0.5,
-            y,
-            tabButtonW,
-            tabButtonH,
-            tab.label,
-            false,
-            () => {
+      const activeTab = this.getActivePanelTab();
+      const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
+      const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+      const tabButtonW = Math.min(panelW - 12, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
+      const startY = panelY + handleAreaH + 8;
+      tabs.forEach((tab, index) => {
+        const y = startY + index * (tabButtonH + tabGap);
+        if (y + tabButtonH > panelY + panelH - 8) return;
+        drawButton(
+          panelX + (panelW - tabButtonW) * 0.5,
+          y,
+          tabButtonW,
+          tabButtonH,
+          tab.label,
+          activeTab === tab.id,
+          () => {
+            if (tab.id === 'undo-redo') {
+              this.undo();
+            } else {
               this.setPanelTab(tab.id);
               this.drawer.open = true;
-            },
-            `${tab.label} drawer`
-          );
-        });
-      } else {
-        const activeTab = this.getActivePanelTab();
+            }
+          },
+          `${tab.label} drawer`
+        );
+      });
+
+      if (this.drawer.open) {
         const panelPadding = 10;
         ctx.fillStyle = UI_SUITE.colors.panel;
         ctx.fillRect(drawerX, panelY, drawerWidth, panelH);
@@ -6555,36 +6534,13 @@ Level size:`, `${current.width}x${current.height}`);
           'Back to menu'
         );
         const tabY = panelY + handleAreaH + SHARED_EDITOR_LEFT_MENU.buttonHeightMobile + 14;
-        let contentX = drawerX + panelPadding;
-        let contentW = drawerWidth - panelPadding * 2;
-        if (activeTab !== 'file') {
-          const tabColumnW = Math.max(92, Math.min(124, Math.floor(drawerWidth * 0.32)));
-          const tabX = drawerX + panelPadding;
-          const tabW = tabColumnW - panelPadding * 1.5;
-          const tabButtonW = Math.min(tabW, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
-          const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
-          const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
-          ctx.font = `14px ${UI_SUITE.font.family}`;
-          tabs.forEach((tab, index) => {
-            const y = tabY + index * (tabButtonH + tabGap);
-            drawButton(
-              tabX + (tabW - tabButtonW) * 0.5,
-              y,
-              tabButtonW,
-              tabButtonH,
-              tab.label,
-              activeTab === tab.id,
-              () => this.setPanelTab(tab.id),
-              `${tab.label} drawer`
-            );
-          });
-          contentX = drawerX + tabColumnW + 6;
-          contentW = drawerWidth - tabColumnW - panelPadding - 6;
-        }
+        const contentX = drawerX + panelPadding;
+        const contentW = drawerWidth - panelPadding * 2;
         const baseContentY = tabY;
         let contentY = baseContentY;
         const reservedBottom = joystickRadius * 2 + 32;
-        let contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom);
+        const fileFooterReserved = activeTab === 'file' ? 120 : 0;
+        let contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom - fileFooterReserved);
         const isPreviewTab = activeTab === 'tiles'
           || activeTab === 'prefabs'
           || activeTab === 'powerups'
@@ -6670,10 +6626,7 @@ Level size:`, `${current.width}x${current.height}`);
                 onClick: () => this.promptRandomLevel()
               }
             ],
-            footer: {
-              onClose: () => this.closeFileMenu(),
-              onExit: () => this.exitToMainMenu()
-            }
+            includeFooter: false
           }).map((entry) => ({ ...entry, active: false }));
           columns = 1;
         } else if (activeTab === 'tiles') {
@@ -6927,22 +6880,25 @@ Level size:`, `${current.width}x${current.height}`);
           columns = 1;
         }
 
-        ctx.globalAlpha = 0.7;
-        ctx.fillStyle = 'rgba(5,6,8,0.38)';
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = UI_SUITE.colors.panel;
         ctx.fillRect(contentX, contentY, contentW, contentHeight);
-        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
 
+        const fileHeaderOffset = activeTab === 'file' ? 44 : 0;
+        const listY = contentY + fileHeaderOffset;
+        const listH = Math.max(0, contentHeight - fileHeaderOffset);
         const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
         const rows = Math.ceil(items.length / columns);
         const totalHeight = rows * (buttonHeight + buttonGap) - buttonGap + contentPadding * 2;
-        const maxScroll = Math.max(0, totalHeight - contentHeight);
+        const maxScroll = Math.max(0, totalHeight - listH);
         this.panelScrollMax[activeTab] = maxScroll;
         const scrollY = clamp(this.panelScroll[activeTab] || 0, 0, maxScroll);
         this.panelScroll[activeTab] = scrollY;
-        this.panelScrollBounds = { x: contentX, y: contentY, w: contentW, h: contentHeight };
+        this.panelScrollBounds = { x: contentX, y: listY, w: contentW, h: listH };
         this.panelScrollView = {
-          contentHeight,
+          contentHeight: listH,
           buttonHeight,
           buttonGap,
           columns,
@@ -6954,10 +6910,10 @@ Level size:`, `${current.width}x${current.height}`);
           const col = index % columns;
           const row = Math.floor(index / columns);
           const x = contentX + contentPadding + col * (columnWidth + buttonGap);
-          const y = contentY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
+          const y = listY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
           if (item.divider) {
             const dividerY = y + Math.max(8, Math.floor(buttonHeight * 0.5));
-            if (dividerY >= contentY + 4 && dividerY <= contentY + contentHeight - 4) {
+            if (dividerY >= listY + 4 && dividerY <= listY + listH - 4) {
               ctx.strokeStyle = UI_SUITE.colors.border;
               ctx.beginPath();
               ctx.moveTo(x, dividerY);
@@ -6966,7 +6922,7 @@ Level size:`, `${current.width}x${current.height}`);
             }
             return;
           }
-          if (y + buttonHeight < contentY + 4 || y > contentY + contentHeight - 4) return;
+          if (y + buttonHeight < listY + 4 || y > listY + listH - 4) return;
           drawButton(
             x,
             y,
@@ -6982,16 +6938,23 @@ Level size:`, `${current.width}x${current.height}`);
         });
 
         if (activeTab === 'file') {
-          const footerH = Math.max(28, buttonHeight);
-          const footerY = contentY + contentHeight - footerH - 10;
-          const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
+          ctx.fillStyle = '#fff';
+          ctx.font = `16px ${UI_SUITE.font.family}`;
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+          const fileDrawerLayout = buildSharedFileDrawerLayout({
             x: contentX,
-            y: footerY,
+            y: contentY,
             width: contentW,
-            buttonHeight: footerH,
-            horizontalPadding: contentPadding,
-            gap: 8
+            height: contentHeight,
+            padding: contentPadding,
+            headerHeight: 32,
+            footerHeight: Math.max(28, buttonHeight),
+            footerBottomPadding: 10,
+            footerGap: 8
           });
+          ctx.fillText('File', fileDrawerLayout.titleX, fileDrawerLayout.titleY);
+          const { closeBounds, exitBounds } = fileDrawerLayout;
           drawButton(
             closeBounds.x,
             closeBounds.y,
@@ -7046,8 +7009,9 @@ Level size:`, `${current.width}x${current.height}`);
         { id: 'enemies', label: 'ENEMIES' },
         { id: 'bosses', label: 'BOSSES' },
         { id: 'prefabs', label: 'STRUCTURES' },
-        { id: 'music', label: 'MUSIC' }
-      ].map((entry) => ({ ...entry, action: () => this.setPanelTab(entry.id), active: activeTab === entry.id }));
+        { id: 'music', label: 'MUSIC' },
+        { id: 'undo-redo', label: 'UNDO / REDO' }
+      ].map((entry) => ({ ...entry, action: () => (entry.id === 'undo-redo' ? this.undo() : this.setPanelTab(entry.id)), active: activeTab === entry.id }));
       const topButtons = buildSharedLeftMenuButtons({
         x: tabColumn.x,
         y: tabColumn.y,
@@ -7076,22 +7040,27 @@ Level size:`, `${current.width}x${current.height}`);
       const buttonHeight = isTallButtons ? 40 : 32;
       const { items, columns } = this.getPanelConfig(activeTab);
 
-      ctx.globalAlpha = UI_SUITE.editorPanel.alpha;
-      ctx.fillStyle = UI_SUITE.editorPanel.background;
-      ctx.fillRect(contentX, contentY, contentW, contentHeight);
-      ctx.strokeStyle = UI_SUITE.editorPanel.border;
-      ctx.strokeRect(contentX, contentY, contentW, contentHeight);
+      if (activeTab !== 'file') {
+        ctx.globalAlpha = UI_SUITE.editorPanel.alpha;
+        ctx.fillStyle = UI_SUITE.editorPanel.background;
+        ctx.fillRect(contentX, contentY, contentW, contentHeight);
+        ctx.strokeStyle = UI_SUITE.editorPanel.border;
+        ctx.strokeRect(contentX, contentY, contentW, contentHeight);
+      }
 
+      const fileHeaderOffset = activeTab === 'file' ? 44 : 0;
+      const listY = contentY + fileHeaderOffset;
+      const listH = Math.max(0, contentHeight - fileHeaderOffset);
       const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
       const rows = Math.ceil(items.length / columns);
       const totalHeight = rows * (buttonHeight + buttonGap) - buttonGap + contentPadding * 2;
-      const maxScroll = Math.max(0, totalHeight - contentHeight);
+      const maxScroll = Math.max(0, totalHeight - listH);
       this.panelScrollMax[activeTab] = maxScroll;
       const scrollY = clamp(this.panelScroll[activeTab] || 0, 0, maxScroll);
       this.panelScroll[activeTab] = scrollY;
-      this.panelScrollBounds = { x: contentX, y: contentY, w: contentW, h: contentHeight };
+      this.panelScrollBounds = { x: contentX, y: listY, w: contentW, h: listH };
       this.panelScrollView = {
-        contentHeight,
+        contentHeight: listH,
         buttonHeight,
         buttonGap,
         columns,
@@ -7138,66 +7107,76 @@ Level size:`, `${current.width}x${current.height}`);
         return false;
       };
 
-      const gamepadActive = this.game.input?.isGamepadConnected?.() ?? false;
-      const focusedIndex = this.panelMenuIndex[activeTab] ?? 0;
-      items.forEach((item, index) => {
-        const col = index % columns;
-        const row = Math.floor(index / columns);
-        const x = contentX + contentPadding + col * (columnWidth + buttonGap);
-        const y = contentY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
-        if (y + buttonHeight < contentY + 4 || y > contentY + contentHeight - 4) return;
-        const preview = item.tile
-          ? { type: 'tile', tile: item.tile }
-          : item.prefab
-            ? { type: 'prefab', prefab: item.prefab }
-            : item.enemy
-              ? { type: 'enemy', enemy: item.enemy }
-              : null;
-        drawButton(
-          x,
-          y,
-          columnWidth,
-          buttonHeight,
-          item.label,
-          getActiveState(item),
-          item.onClick,
-          item.tooltip,
-          preview,
-          gamepadActive && index === focusedIndex
-        );
-      });
-
       if (activeTab === 'file') {
-        const footerH = 30;
-        const footerY = contentY + contentHeight - footerH - 10;
-        const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
-          x: contentX,
-          y: footerY,
-          width: contentW,
-          buttonHeight: footerH,
-          horizontalPadding: contentPadding,
-          gap: 8
+        const rowHeight = 24;
+        const rowGap = 6;
+        const result = renderSharedFileDrawer(ctx, {
+          panel: { x: contentX, y: contentY, w: contentW, h: contentHeight },
+          items,
+          title: '',
+          scroll: this.panelScroll[activeTab] || 0,
+          rowHeight,
+          rowGap,
+          buttonHeight: rowHeight,
+          isMobile: false,
+          showTitle: false,
+          footerMode: 'stacked',
+          layout: {
+            padding: contentPadding,
+            headerHeight: 12,
+            footerHeight: rowHeight * 2 + rowGap,
+            footerBottomPadding: 10,
+            footerGap: 8
+          },
+          drawButton: (bounds, item) => {
+            const onClick = item.footer
+              ? (item.id === 'close-menu' ? () => this.closeFileMenu() : () => this.exitToMainMenu())
+              : item.onClick;
+            const tooltip = item.footer
+              ? (item.id === 'close-menu' ? 'Close file menu' : 'Exit editor to title')
+              : item.tooltip;
+            drawButton(bounds.x, bounds.y, bounds.w, bounds.h, item.label, false, onClick, tooltip);
+          }
         });
-        drawButton(
-          closeBounds.x,
-          closeBounds.y,
-          closeBounds.w,
-          closeBounds.h,
-          SHARED_EDITOR_LEFT_MENU.closeLabel,
-          false,
-          () => this.closeFileMenu(),
-          'Close file menu'
-        );
-        drawButton(
-          exitBounds.x,
-          exitBounds.y,
-          exitBounds.w,
-          exitBounds.h,
-          SHARED_EDITOR_LEFT_MENU.exitLabel,
-          false,
-          () => this.exitToMainMenu(),
-          'Exit editor to title'
-        );
+        this.panelScrollMax[activeTab] = result.scrollMax;
+        this.panelScroll[activeTab] = result.scroll;
+        this.panelScrollBounds = result.listBounds;
+        this.panelScrollView = {
+          contentHeight: result.layout.listH,
+          buttonHeight: rowHeight,
+          buttonGap: rowGap,
+          columns: 1,
+          padding: contentPadding
+        };
+      } else {
+        const gamepadActive = this.game.input?.isGamepadConnected?.() ?? false;
+        const focusedIndex = this.panelMenuIndex[activeTab] ?? 0;
+        items.forEach((item, index) => {
+          const col = index % columns;
+          const row = Math.floor(index / columns);
+          const x = contentX + contentPadding + col * (columnWidth + buttonGap);
+          const y = listY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
+          if (y + buttonHeight < listY + 4 || y > listY + listH - 4) return;
+          const preview = item.tile
+            ? { type: 'tile', tile: item.tile }
+            : item.prefab
+              ? { type: 'prefab', prefab: item.prefab }
+              : item.enemy
+                ? { type: 'enemy', enemy: item.enemy }
+                : null;
+          drawButton(
+            x,
+            y,
+            columnWidth,
+            buttonHeight,
+            item.label,
+            getActiveState(item),
+            item.onClick,
+            item.tooltip,
+            preview,
+            gamepadActive && index === focusedIndex
+          );
+        });
       }
 
       const infoLines = [];
