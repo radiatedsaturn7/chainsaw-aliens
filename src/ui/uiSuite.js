@@ -218,6 +218,38 @@ export function drawSharedMenuButtonLabel(ctx, bounds, label, {
   ctx.restore();
 }
 
+
+export function getSharedMobileRailWidth(viewportWidth, viewportHeight, {
+  portraitWidth = UI_SUITE.layout.railWidthMobile,
+  landscapeWidth = 164,
+  minWidth = 120
+} = {}) {
+  const landscape = Number.isFinite(viewportWidth) && Number.isFinite(viewportHeight) && viewportWidth > viewportHeight;
+  const preferred = landscape ? landscapeWidth : portraitWidth;
+  const ratioCap = landscape ? 0.24 : 0.36;
+  const maxByRatio = Number.isFinite(viewportWidth)
+    ? Math.max(minWidth, Math.floor(viewportWidth * ratioCap))
+    : preferred;
+  return clampValue(preferred, minWidth, maxByRatio);
+}
+
+export function getSharedMobileDrawerWidth(viewportWidth, viewportHeight, railWidth, {
+  minWidth = 220,
+  portraitPreferred = UI_SUITE.layout.drawerWidth,
+  landscapePreferred = 248,
+  minContentPortrait = 180,
+  minContentLandscape = 260,
+  edgePadding = 0
+} = {}) {
+  const landscape = Number.isFinite(viewportWidth) && Number.isFinite(viewportHeight) && viewportWidth > viewportHeight;
+  const preferred = landscape ? landscapePreferred : portraitPreferred;
+  const minContent = landscape ? minContentLandscape : minContentPortrait;
+  const maxWidth = Number.isFinite(viewportWidth)
+    ? Math.max(minWidth, Math.floor(viewportWidth - railWidth - minContent - edgePadding * 2))
+    : preferred;
+  return clampValue(preferred, minWidth, maxWidth);
+}
+
 export function getSharedEditorDrawerWidth(viewportWidth, {
   minWidth = 220,
   edgePadding = 12,

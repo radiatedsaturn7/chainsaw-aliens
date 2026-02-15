@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -7697,7 +7697,7 @@ export default class MidiComposer {
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
-      this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
+      this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
     }
   }
 
@@ -7831,7 +7831,7 @@ export default class MidiComposer {
   drawMobileLayout(ctx, width, height, track, pattern) {
     const padding = 10;
     const gap = 10;
-    const sidebarW = UI_SUITE.layout.railWidthMobile;
+    const sidebarW = getSharedMobileRailWidth(width, height);
     const sidebarX = 0;
     const sidebarY = 0;
     const sidebarH = height;
@@ -7852,7 +7852,7 @@ export default class MidiComposer {
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
-      this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
+      this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
     }
   }
 
@@ -11035,7 +11035,8 @@ export default class MidiComposer {
     if (isMobile) {
       const viewportW = this.viewportWidth ?? x + w;
       const viewportH = this.viewportHeight ?? y + h;
-      panelW = getSharedEditorDrawerWidth(viewportW, { edgePadding: 0 });
+      const railW = getSharedMobileRailWidth(viewportW, viewportH);
+      panelW = getSharedMobileDrawerWidth(viewportW, viewportH, railW, { edgePadding: 0 });
       panelX = viewportW - panelW;
       panelY = 0;
       panelH = viewportH;

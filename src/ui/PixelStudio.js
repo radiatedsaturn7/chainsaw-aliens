@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -2360,7 +2360,7 @@ export default class PixelStudio {
       ? buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height })
       : null;
     const leftWidth = isMobile
-      ? UI_SUITE.layout.railWidthMobile
+      ? getSharedMobileRailWidth(width, height)
       : (leftFrame ? leftFrame.panelW : (this.sidebars.left ? SHARED_EDITOR_LEFT_MENU.width() : 0));
     const rightWidth = 0;
 
@@ -2378,7 +2378,7 @@ export default class PixelStudio {
     const canvasH = height - canvasY - bottomHeight;
 
     if (isMobile) {
-      this.drawMobileRail(ctx, 0, 0, UI_SUITE.layout.railWidthMobile, height);
+      this.drawMobileRail(ctx, 0, 0, leftWidth, height);
     } else if (this.sidebars.left) {
       this.drawLeftPanel(ctx, leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH, { isMobile: false });
     }
@@ -2412,7 +2412,7 @@ export default class PixelStudio {
       const toolbarY = height - toolbarHeight - padding;
       this.drawMobileToolbar(ctx, canvasX, toolbarY, width - canvasX - padding, toolbarHeight);
       if (this.mobileDrawer && this.mobileDrawer !== 'timeline') {
-        const drawerW = getSharedEditorDrawerWidth(width, { edgePadding: 0 });
+        const drawerW = getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 });
         const drawerX = width - drawerW;
         this.drawMobileDrawer(ctx, drawerX, 0, drawerW, height, this.mobileDrawer);
       }

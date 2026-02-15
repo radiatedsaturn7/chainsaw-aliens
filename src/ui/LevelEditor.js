@@ -1,3 +1,3 @@
-import EditorCore from '../editor/EditorCore.js';
+import LevelEditorCore from './LevelEditorCore.js';
 
-export default class LevelEditor extends EditorCore {}
+export default class LevelEditor extends LevelEditorCore {}
