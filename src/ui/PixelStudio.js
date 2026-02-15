@@ -2335,7 +2335,7 @@ export default class PixelStudio {
     if (!item) return;
     const bounds = item.bounds;
     ctx.save();
-    ctx.strokeStyle = '#9ddcff';
+    ctx.strokeStyle = UI_SUITE.colors.accent;
     ctx.lineWidth = 2;
     ctx.strokeRect(bounds.x - 2, bounds.y - 2, bounds.w + 4, bounds.h + 4);
     ctx.restore();
@@ -3491,7 +3491,7 @@ export default class PixelStudio {
 
     if (this.linePreview) {
       const bounds = this.getBoundsFromPoints(this.linePreview.start, this.linePreview.end);
-      ctx.strokeStyle = '#9ddcff';
+      ctx.strokeStyle = UI_SUITE.colors.accent;
       ctx.strokeRect(
         offsetX + bounds.x * zoom,
         offsetY + bounds.y * zoom,
@@ -3518,7 +3518,7 @@ export default class PixelStudio {
     }
 
     if (this.gamepadCursor.active) {
-      ctx.strokeStyle = '#9ddcff';
+      ctx.strokeStyle = UI_SUITE.colors.accent;
       ctx.strokeRect(this.gamepadCursor.x - 4, this.gamepadCursor.y - 4, 8, 8);
     }
 
