@@ -6366,6 +6366,8 @@ Level size:`, `${current.width}x${current.height}`);
       }
       ctx.fillStyle = active ? '#0b0b0b' : '#fff';
       ctx.save();
+      const fontSize = Math.max(10, Math.min(12, Math.round(h * 0.3)));
+      ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
       ctx.textBaseline = 'middle';
       const previewSize = preview ? Math.min(22, h - 8) : 0;
       const previewX = x + 8;
@@ -6377,8 +6379,11 @@ Level size:`, `${current.width}x${current.height}`);
       } else if (preview?.type === 'enemy') {
         drawEnemyPreview(previewX, previewY, previewSize, preview.enemy);
       }
-      const textOffset = preview ? previewSize + 14 : 8;
-      ctx.fillText(formatMenuLabel(label), x + textOffset, y + h / 2);
+      const textX = preview ? (x + previewSize + 14) : (x + w / 2);
+      const textAlign = preview ? 'left' : 'center';
+      const menuLabel = formatMenuLabel(label);
+      ctx.textAlign = textAlign;
+      ctx.fillText(menuLabel, textX, y + h / 2);
       ctx.restore();
       this.addUIButton({ x, y, w, h }, onClick, tooltip);
       if (tooltip && !this.isMobileLayout() && isHovered(x, y, w, h)) {
