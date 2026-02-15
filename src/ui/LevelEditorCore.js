@@ -6515,23 +6515,7 @@ Level size:`, `${current.width}x${current.height}`);
         ctx.fillRect(drawerX, panelY, drawerWidth, panelH);
         ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.strokeRect(drawerX, panelY, drawerWidth, panelH);
-        const backBounds = {
-          x: drawerX + panelPadding,
-          y: panelY + handleAreaH + 8,
-          w: Math.min(120, drawerWidth - panelPadding * 2),
-          h: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile
-        };
-        drawButton(
-          backBounds.x,
-          backBounds.y,
-          backBounds.w,
-          backBounds.h,
-          'Back',
-          false,
-          () => { this.drawer.open = false; },
-          'Back to menu'
-        );
-        const tabY = panelY + handleAreaH + SHARED_EDITOR_LEFT_MENU.buttonHeightMobile + 14;
+        const tabY = panelY + handleAreaH + 8;
         const contentX = drawerX + panelPadding;
         const contentW = drawerWidth - panelPadding * 2;
         const baseContentY = tabY;
@@ -6938,22 +6922,17 @@ Level size:`, `${current.width}x${current.height}`);
         });
 
         if (activeTab === 'file') {
-          ctx.fillStyle = '#fff';
-          ctx.font = `16px ${UI_SUITE.font.family}`;
-          ctx.textAlign = 'left';
-          ctx.textBaseline = 'middle';
           const fileDrawerLayout = buildSharedFileDrawerLayout({
             x: contentX,
             y: contentY,
             width: contentW,
             height: contentHeight,
             padding: contentPadding,
-            headerHeight: 32,
+            headerHeight: 12,
             footerHeight: Math.max(28, buttonHeight),
             footerBottomPadding: 10,
             footerGap: 8
           });
-          ctx.fillText('File', fileDrawerLayout.titleX, fileDrawerLayout.titleY);
           const { closeBounds, exitBounds } = fileDrawerLayout;
           drawButton(
             closeBounds.x,
