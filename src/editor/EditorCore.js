@@ -6500,30 +6500,30 @@ Level size:`, `${current.width}x${current.height}`);
         { id: 'music', label: 'Music' }
       ];
 
-      if (!this.drawer.open) {
-        const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
-        const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
-        const tabButtonW = Math.min(panelW - 12, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
-        const startY = panelY + handleAreaH + 8;
-        tabs.forEach((tab, index) => {
-          const y = startY + index * (tabButtonH + tabGap);
-          if (y + tabButtonH > panelY + panelH - 8) return;
-          drawButton(
-            panelX + (panelW - tabButtonW) * 0.5,
-            y,
-            tabButtonW,
-            tabButtonH,
-            tab.label,
-            false,
-            () => {
-              this.setPanelTab(tab.id);
-              this.drawer.open = true;
-            },
-            `${tab.label} drawer`
-          );
-        });
-      } else {
-        const activeTab = this.getActivePanelTab();
+      const activeTab = this.getActivePanelTab();
+      const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
+      const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+      const tabButtonW = Math.min(panelW - 12, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
+      const startY = panelY + handleAreaH + 8;
+      tabs.forEach((tab, index) => {
+        const y = startY + index * (tabButtonH + tabGap);
+        if (y + tabButtonH > panelY + panelH - 8) return;
+        drawButton(
+          panelX + (panelW - tabButtonW) * 0.5,
+          y,
+          tabButtonW,
+          tabButtonH,
+          tab.label,
+          activeTab === tab.id,
+          () => {
+            this.setPanelTab(tab.id);
+            this.drawer.open = true;
+          },
+          `${tab.label} drawer`
+        );
+      });
+
+      if (this.drawer.open) {
         const panelPadding = 10;
         ctx.fillStyle = UI_SUITE.colors.panel;
         ctx.fillRect(drawerX, panelY, drawerWidth, panelH);

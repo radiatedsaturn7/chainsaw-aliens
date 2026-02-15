@@ -2330,6 +2330,8 @@ export default class PixelStudio {
 
   drawFocusHighlight(ctx) {
     if (this.inputMode !== 'ui') return;
+    const isGamepadFocus = Boolean(this.game?.input?.isGamepadConnected?.());
+    if (!isGamepadFocus) return;
     const items = this.focusGroups[this.uiFocus.group] || [];
     const item = items[this.uiFocus.index];
     if (!item) return;
