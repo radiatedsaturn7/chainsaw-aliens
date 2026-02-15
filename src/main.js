@@ -52,9 +52,7 @@ function exitFullscreen() {
 }
 
 function updateFullscreenButtons() {
-  const editorStates = new Set(['editor', 'pixel-editor', 'midi-editor']);
-  const hideForEditor = editorStates.has(game.state);
-  const showControls = Boolean(isMobile) && !hideFullscreenControlsForTesting && !hideForEditor;
+  const showControls = Boolean(isMobile) && !hideFullscreenControlsForTesting;
   const isFullscreen = Boolean(document.fullscreenElement);
   if (enterFullscreenButton) {
     enterFullscreenButton.classList.toggle('is-hidden', !showControls || isFullscreen || fullscreenPending);
