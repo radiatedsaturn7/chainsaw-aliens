@@ -194,6 +194,48 @@ export function buildSharedMenuFooterLayout({
   return { closeBounds, exitBounds };
 }
 
+export function buildSharedFileDrawerLayout({
+  x,
+  y,
+  width,
+  height,
+  padding = 12,
+  headerHeight = 58,
+  footerHeight = 30,
+  footerBottomPadding = 10,
+  footerGap = 8,
+  closeId = 'close-menu',
+  exitId = 'exit-main'
+}) {
+  const titleX = x + padding;
+  const titleY = y + 28;
+  const listX = x + padding;
+  const listY = y + headerHeight;
+  const footerY = y + height - footerHeight - footerBottomPadding;
+  const listH = Math.max(0, footerY - listY - 8);
+  const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
+    x,
+    y: footerY,
+    width,
+    buttonHeight: footerHeight,
+    horizontalPadding: padding,
+    gap: footerGap,
+    closeId,
+    exitId
+  });
+  return {
+    titleX,
+    titleY,
+    listX,
+    listY,
+    listW: Math.max(0, width - padding * 2),
+    listH,
+    footerY,
+    closeBounds,
+    exitBounds
+  };
+}
+
 
 
 

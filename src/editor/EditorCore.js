@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -6556,7 +6556,7 @@ Level size:`, `${current.width}x${current.height}`);
         const baseContentY = tabY;
         let contentY = baseContentY;
         const reservedBottom = joystickRadius * 2 + 32;
-        const fileFooterReserved = activeTab === 'file' ? 56 : 0;
+        const fileFooterReserved = activeTab === 'file' ? 120 : 0;
         let contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom - fileFooterReserved);
         const isPreviewTab = activeTab === 'tiles'
           || activeTab === 'prefabs'
@@ -6903,16 +6903,19 @@ Level size:`, `${current.width}x${current.height}`);
         ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
 
+        const fileHeaderOffset = activeTab === 'file' ? 30 : 0;
+        const listY = contentY + fileHeaderOffset;
+        const listH = Math.max(0, contentHeight - fileHeaderOffset);
         const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
         const rows = Math.ceil(items.length / columns);
         const totalHeight = rows * (buttonHeight + buttonGap) - buttonGap + contentPadding * 2;
-        const maxScroll = Math.max(0, totalHeight - contentHeight);
+        const maxScroll = Math.max(0, totalHeight - listH);
         this.panelScrollMax[activeTab] = maxScroll;
         const scrollY = clamp(this.panelScroll[activeTab] || 0, 0, maxScroll);
         this.panelScroll[activeTab] = scrollY;
-        this.panelScrollBounds = { x: contentX, y: contentY, w: contentW, h: contentHeight };
+        this.panelScrollBounds = { x: contentX, y: listY, w: contentW, h: listH };
         this.panelScrollView = {
-          contentHeight,
+          contentHeight: listH,
           buttonHeight,
           buttonGap,
           columns,
@@ -6924,10 +6927,10 @@ Level size:`, `${current.width}x${current.height}`);
           const col = index % columns;
           const row = Math.floor(index / columns);
           const x = contentX + contentPadding + col * (columnWidth + buttonGap);
-          const y = contentY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
+          const y = listY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
           if (item.divider) {
             const dividerY = y + Math.max(8, Math.floor(buttonHeight * 0.5));
-            if (dividerY >= contentY + 4 && dividerY <= contentY + contentHeight - 4) {
+            if (dividerY >= listY + 4 && dividerY <= listY + listH - 4) {
               ctx.strokeStyle = UI_SUITE.colors.border;
               ctx.beginPath();
               ctx.moveTo(x, dividerY);
@@ -6936,7 +6939,7 @@ Level size:`, `${current.width}x${current.height}`);
             }
             return;
           }
-          if (y + buttonHeight < contentY + 4 || y > contentY + contentHeight - 4) return;
+          if (y + buttonHeight < listY + 4 || y > listY + listH - 4) return;
           drawButton(
             x,
             y,
@@ -6952,16 +6955,23 @@ Level size:`, `${current.width}x${current.height}`);
         });
 
         if (activeTab === 'file') {
-          const footerH = Math.max(28, buttonHeight);
-          const footerY = contentY + contentHeight + 10;
-          const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
+          ctx.fillStyle = '#fff';
+          ctx.font = `16px ${UI_SUITE.font.family}`;
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+          const fileDrawerLayout = buildSharedFileDrawerLayout({
             x: contentX,
-            y: footerY,
+            y: contentY,
             width: contentW,
-            buttonHeight: footerH,
-            horizontalPadding: contentPadding,
-            gap: 8
+            height: contentHeight,
+            padding: contentPadding,
+            headerHeight: 32,
+            footerHeight: Math.max(28, buttonHeight),
+            footerBottomPadding: 10,
+            footerGap: 8
           });
+          ctx.fillText('File', fileDrawerLayout.titleX, fileDrawerLayout.titleY);
+          const { closeBounds, exitBounds } = fileDrawerLayout;
           drawButton(
             closeBounds.x,
             closeBounds.y,
@@ -7052,16 +7062,19 @@ Level size:`, `${current.width}x${current.height}`);
       ctx.strokeStyle = UI_SUITE.editorPanel.border;
       ctx.strokeRect(contentX, contentY, contentW, contentHeight);
 
+      const fileHeaderOffset = activeTab === 'file' ? 30 : 0;
+      const listY = contentY + fileHeaderOffset;
+      const listH = Math.max(0, contentHeight - fileHeaderOffset);
       const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
       const rows = Math.ceil(items.length / columns);
       const totalHeight = rows * (buttonHeight + buttonGap) - buttonGap + contentPadding * 2;
-      const maxScroll = Math.max(0, totalHeight - contentHeight);
+      const maxScroll = Math.max(0, totalHeight - listH);
       this.panelScrollMax[activeTab] = maxScroll;
       const scrollY = clamp(this.panelScroll[activeTab] || 0, 0, maxScroll);
       this.panelScroll[activeTab] = scrollY;
-      this.panelScrollBounds = { x: contentX, y: contentY, w: contentW, h: contentHeight };
+      this.panelScrollBounds = { x: contentX, y: listY, w: contentW, h: listH };
       this.panelScrollView = {
-        contentHeight,
+        contentHeight: listH,
         buttonHeight,
         buttonGap,
         columns,
@@ -7114,8 +7127,8 @@ Level size:`, `${current.width}x${current.height}`);
         const col = index % columns;
         const row = Math.floor(index / columns);
         const x = contentX + contentPadding + col * (columnWidth + buttonGap);
-        const y = contentY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
-        if (y + buttonHeight < contentY + 4 || y > contentY + contentHeight - 4) return;
+        const y = listY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
+        if (y + buttonHeight < listY + 4 || y > listY + listH - 4) return;
         const preview = item.tile
           ? { type: 'tile', tile: item.tile }
           : item.prefab
@@ -7138,16 +7151,23 @@ Level size:`, `${current.width}x${current.height}`);
       });
 
       if (activeTab === 'file') {
-        const footerH = 30;
-        const footerY = contentY + contentHeight - footerH - 10;
-        const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
+        ctx.fillStyle = '#fff';
+        ctx.font = `16px ${UI_SUITE.font.family}`;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        const fileDrawerLayout = buildSharedFileDrawerLayout({
           x: contentX,
-          y: footerY,
+          y: contentY,
           width: contentW,
-          buttonHeight: footerH,
-          horizontalPadding: contentPadding,
-          gap: 8
+          height: contentHeight,
+          padding: contentPadding,
+          headerHeight: 32,
+          footerHeight: 30,
+          footerBottomPadding: 10,
+          footerGap: 8
         });
+        ctx.fillText('File', fileDrawerLayout.titleX, fileDrawerLayout.titleY);
+        const { closeBounds, exitBounds } = fileDrawerLayout;
         drawButton(
           closeBounds.x,
           closeBounds.y,

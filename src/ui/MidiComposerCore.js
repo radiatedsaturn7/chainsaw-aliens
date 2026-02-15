@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
 import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -11064,25 +11064,31 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(panelX, panelY, finalPanelW, panelH);
 
-    const backBounds = {
-      x: panelX + 12,
-      y: panelY + 10,
-      w: Math.min(112, Math.max(82, finalPanelW * 0.34)),
-      h: 30,
-      id: 'back-menu-fixed'
-    };
-    this.drawButton(ctx, backBounds, 'Back', false, false);
+    const fileDrawerLayout = buildSharedFileDrawerLayout({
+      x: panelX,
+      y: panelY,
+      width: finalPanelW,
+      height: panelH,
+      padding: 12,
+      headerHeight: 66,
+      footerHeight: 28,
+      footerBottomPadding: 12,
+      footerGap: 8,
+      closeId: 'close-menu-fixed',
+      exitId: 'exit-main-fixed'
+    });
 
     ctx.fillStyle = '#fff';
     ctx.font = '16px Courier New';
-    ctx.fillText('File Actions', panelX + 12, panelY + 58);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('File', fileDrawerLayout.titleX, fileDrawerLayout.titleY);
 
     const items = this.getFileMenuItems();
     const rowH = clamp(Math.round(panelH * 0.08), 36, 44);
-    const listStartY = panelY + 70;
-    const footerReserved = 56;
-    const listH = Math.max(0, panelH - (listStartY - panelY) - footerReserved);
-    this.fileMenuListBounds = { x: panelX + 10, y: listStartY - 4, w: finalPanelW - 20, h: listH + 8 };
+    const listStartY = fileDrawerLayout.listY;
+    const listH = fileDrawerLayout.listH;
+    this.fileMenuListBounds = { x: fileDrawerLayout.listX - 2, y: listStartY - 4, w: fileDrawerLayout.listW + 4, h: listH + 8 };
     const visibleRows = Math.max(1, Math.floor(listH / rowH));
     this.fileMenuScrollMax = Math.max(0, items.length - visibleRows);
     this.fileMenuScroll = clamp(this.fileMenuScroll, 0, this.fileMenuScrollMax);
@@ -11101,9 +11107,9 @@ export default class MidiComposer {
         return;
       }
       const bounds = {
-        x: panelX + 12,
+        x: fileDrawerLayout.listX,
         y: cursorY,
-        w: finalPanelW - 24,
+        w: fileDrawerLayout.listW,
         h: rowH - 8,
         id: item.id
       };
@@ -11112,21 +11118,10 @@ export default class MidiComposer {
       cursorY += rowH;
     });
 
-    const footerY = panelY + panelH - 40;
-    const footerH = 28;
-    const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
-      x: panelX,
-      y: footerY,
-      width: finalPanelW,
-      buttonHeight: footerH,
-      horizontalPadding: 12,
-      gap: 8,
-      closeId: 'close-menu-fixed',
-      exitId: 'exit-main-fixed'
-    });
+    const { closeBounds, exitBounds } = fileDrawerLayout;
     this.drawButton(ctx, closeBounds, SHARED_EDITOR_LEFT_MENU.closeLabel, false, false);
     this.drawButton(ctx, exitBounds, SHARED_EDITOR_LEFT_MENU.exitLabel, false, false);
-    this.fileMenuBounds.push(backBounds, closeBounds, exitBounds);
+    this.fileMenuBounds.push(closeBounds, exitBounds);
 
     this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
   }

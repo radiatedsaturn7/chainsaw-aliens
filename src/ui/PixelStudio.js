@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -2581,11 +2581,24 @@ export default class PixelStudio {
 
   drawFilePanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
-    ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
-    ctx.fillText('File', x + 12, y + 20);
     const lineHeight = isMobile ? 52 : 20;
     const buttonHeight = isMobile ? 44 : 18;
+    const fileDrawerLayout = buildSharedFileDrawerLayout({
+      x,
+      y,
+      width: w,
+      height: h,
+      padding: 8,
+      headerHeight: isMobile ? 38 : 32,
+      footerHeight: isMobile ? 44 : 22,
+      footerBottomPadding: isMobile ? 8 : 8,
+      footerGap: 8
+    });
+    ctx.fillStyle = '#fff';
+    ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('File', fileDrawerLayout.titleX, fileDrawerLayout.titleY);
     const actions = buildSharedEditorFileMenu({
       labels: {
         open: 'Open',
@@ -2614,13 +2627,12 @@ export default class PixelStudio {
       ],
       includeFooter: false
     });
-    const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
-    this.filePanelScroll = { x, y: y + 30, w, h: Math.max(0, h - 30), lineHeight };
+    const maxVisible = Math.max(1, Math.floor(fileDrawerLayout.listH / lineHeight));
+    this.filePanelScroll = { x: fileDrawerLayout.listX, y: fileDrawerLayout.listY, w: fileDrawerLayout.listW, h: fileDrawerLayout.listH, lineHeight };
     this.focusGroupMeta.file = { maxVisible };
     const start = this.focusScroll.file || 0;
-    let offsetY = y + 36;
-    const listBottomPadding = isMobile ? 64 : 40;
-    const maxListVisible = Math.max(1, Math.floor((h - 30 - listBottomPadding) / lineHeight));
+    let offsetY = fileDrawerLayout.listY + 6;
+    const maxListVisible = Math.max(1, Math.floor(fileDrawerLayout.listH / lineHeight));
     const boundedStart = clamp(start, 0, Math.max(0, actions.length - maxListVisible));
     this.focusScroll.file = boundedStart;
     actions.slice(boundedStart, boundedStart + maxListVisible).forEach((entry) => {
@@ -2634,7 +2646,7 @@ export default class PixelStudio {
         offsetY += Math.max(10, Math.round(lineHeight * 0.4));
         return;
       }
-      const bounds = { x: x + 8, y: offsetY - (isMobile ? 28 : 14), w: w - 16, h: buttonHeight };
+      const bounds = { x: fileDrawerLayout.listX, y: offsetY - (isMobile ? 28 : 14), w: fileDrawerLayout.listW, h: buttonHeight };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
       this.registerFocusable('file', bounds, (entry.onClick || entry.action));
@@ -2668,16 +2680,7 @@ export default class PixelStudio {
     this.registerFocusable('file', setHBounds, () => this.setArtSizeDraftFromPrompt('height'));
     this.registerFocusable('file', applySizeBounds, () => this.resizeArtCanvas(this.artSizeDraft.width, this.artSizeDraft.height));
 
-    const footerY = y + h - (isMobile ? 52 : 30);
-    const footerH = isMobile ? 44 : 22;
-    const { closeBounds, exitBounds } = buildSharedMenuFooterLayout({
-      x,
-      y: footerY,
-      width: w,
-      buttonHeight: footerH,
-      horizontalPadding: 8,
-      gap: 8
-    });
+    const { closeBounds, exitBounds } = fileDrawerLayout;
     this.drawButton(ctx, closeBounds, SHARED_EDITOR_LEFT_MENU.closeLabel, false, { fontSize: isMobile ? 12 : 12 });
     this.drawButton(ctx, exitBounds, SHARED_EDITOR_LEFT_MENU.exitLabel, false, { fontSize: isMobile ? 11 : 11 });
     this.uiButtons.push({ bounds: closeBounds, onClick: () => this.closeFileMenu() });
