@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, renderSharedFileDrawer } from './uiSuite.js';
 import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -11070,73 +11070,42 @@ export default class MidiComposer {
       panelX = viewportW - panelW;
       panelY = 0;
       panelH = viewportH;
+      ctx.fillStyle = UI_SUITE.colors.panel;
+      ctx.fillRect(panelX, panelY, panelW, panelH);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(panelX, panelY, panelW, panelH);
     }
 
-    ctx.fillStyle = UI_SUITE.colors.panel;
-    ctx.fillRect(panelX, panelY, panelW, panelH);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(panelX, panelY, panelW, panelH);
-
-    const fileDrawerLayout = buildSharedFileDrawerLayout({
-      x: panelX,
-      y: panelY,
-      width: panelW,
-      height: panelH,
-      padding: isMobile ? 12 : 10,
-      headerHeight: isMobile ? 66 : 36,
-      footerHeight: isMobile ? 28 : 24,
-      footerBottomPadding: isMobile ? 12 : 10,
-      footerGap: 8,
-      closeId: 'close-menu-fixed',
-      exitId: 'exit-main-fixed'
-    });
-
-    ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('File', fileDrawerLayout.titleX, fileDrawerLayout.titleY);
-
-    const items = this.getFileMenuItems();
-    const rowH = isMobile ? clamp(Math.round(panelH * 0.08), 36, 44) : 32;
-    const listStartY = fileDrawerLayout.listY;
-    const listH = fileDrawerLayout.listH;
-    this.fileMenuListBounds = { x: fileDrawerLayout.listX - 2, y: listStartY - 4, w: fileDrawerLayout.listW + 4, h: listH + 8 };
-    const visibleRows = Math.max(1, Math.floor(listH / rowH));
-    this.fileMenuScrollMax = Math.max(0, items.length - visibleRows);
-    this.fileMenuScroll = clamp(this.fileMenuScroll, 0, this.fileMenuScrollMax);
-    const visibleItems = items.slice(this.fileMenuScroll, this.fileMenuScroll + visibleRows);
-    let cursorY = listStartY;
+    const rowHeight = isMobile ? 36 : 24;
+    const rowGap = isMobile ? 8 : 6;
     this.fileMenuBounds = [];
-    visibleItems.forEach((item) => {
-      if (item.divider) {
-        const dividerY = cursorY + 8;
-        ctx.strokeStyle = UI_SUITE.colors.border;
-        ctx.beginPath();
-        ctx.moveTo(fileDrawerLayout.listX, dividerY);
-        ctx.lineTo(fileDrawerLayout.listX + fileDrawerLayout.listW, dividerY);
-        ctx.stroke();
-        cursorY += Math.max(14, Math.round(rowH * 0.4));
-        return;
+    const result = renderSharedFileDrawer(ctx, {
+      panel: { x: panelX, y: panelY, w: panelW, h: panelH },
+      items: this.getFileMenuItems(),
+      title: 'File',
+      scroll: this.fileMenuScroll,
+      rowHeight,
+      rowGap,
+      buttonHeight: isMobile ? 28 : 24,
+      isMobile,
+      layout: {
+        padding: isMobile ? 12 : 10,
+        headerHeight: isMobile ? 66 : 36,
+        footerHeight: isMobile ? 28 : 24,
+        footerBottomPadding: isMobile ? 12 : 10,
+        footerGap: 8,
+        closeId: 'close-menu-fixed',
+        exitId: 'exit-main-fixed'
+      },
+      drawButton: (bounds, item) => {
+        this.drawButton(ctx, bounds, item.label, false, false);
+        this.fileMenuBounds.push({ ...bounds, id: item.id });
       }
-      const bounds = {
-        x: fileDrawerLayout.listX,
-        y: cursorY,
-        w: fileDrawerLayout.listW,
-        h: rowH - 8,
-        id: item.id
-      };
-      this.drawButton(ctx, bounds, item.label, false, false);
-      this.fileMenuBounds.push(bounds);
-      cursorY += rowH;
     });
 
-    const { closeBounds, exitBounds } = fileDrawerLayout;
-    this.drawButton(ctx, closeBounds, SHARED_EDITOR_LEFT_MENU.closeLabel, false, false);
-    this.drawButton(ctx, exitBounds, SHARED_EDITOR_LEFT_MENU.exitLabel, false, false);
-    this.fileMenuBounds.push(closeBounds, exitBounds);
-
-    this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
+    this.fileMenuScroll = result.scroll;
+    this.fileMenuScrollMax = result.scrollMax;
+    this.fileMenuListBounds = result.listBounds;
   }
 
 

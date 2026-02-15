@@ -1105,98 +1105,75 @@ export default class Editor {
         onClick: () => this.game.exitEditor({ playtest: true })
       }];
     } else if (tabId === 'file') {
-      items = [
-        {
-          id: 'new-level',
-          label: 'New',
-          tooltip: 'Create a new level',
-          onClick: () => this.newLevelDocument()
+      items = buildSharedEditorFileMenu({
+        labels: {
+          new: 'New',
+          open: 'Open',
+          export: 'Export',
+          import: 'Import'
         },
-        {
-          id: 'save-storage',
-          label: 'Save',
-          tooltip: 'Save level to browser storage',
-          onClick: () => this.saveLevelToStorage()
+        tooltips: {
+          new: 'Create a new level',
+          save: 'Save level to browser storage',
+          'save-as': 'Save level with a new name',
+          open: 'Open level from browser storage',
+          export: 'Export world JSON',
+          import: 'Import world JSON',
+          undo: 'Undo last change (Ctrl+Z)',
+          redo: 'Redo last change (Ctrl+Y)'
         },
-        {
-          id: 'save-as-storage',
-          label: 'Save As',
-          tooltip: 'Save level with a new name',
-          onClick: () => this.saveLevelToStorage({ forceSaveAs: true })
+        actions: {
+          new: () => this.newLevelDocument(),
+          save: () => this.saveLevelToStorage(),
+          'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
+          open: () => this.loadLevelFromStorage(),
+          export: () => this.saveToFile(),
+          import: () => this.openFileDialog(),
+          undo: () => this.undo(),
+          redo: () => this.redo()
         },
-        {
-          id: 'load-storage',
-          label: 'Open',
-          tooltip: 'Open level from browser storage',
-          onClick: () => this.loadLevelFromStorage()
-        },
-        {
-          id: 'resize-level',
-          label: 'Resize',
-          tooltip: 'Resize level canvas',
-          onClick: () => this.resizeLevelDocument()
-        },
-        { id: 'divider-1', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'export-json',
-          label: 'Export',
-          tooltip: 'Export world JSON',
-          onClick: () => this.saveToFile()
-        },
-        {
-          id: 'import-json',
-          label: 'Import',
-          tooltip: 'Import world JSON',
-          onClick: () => this.openFileDialog()
-        },
-        { id: 'divider-2', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'undo',
-          label: 'Undo',
-          tooltip: 'Undo last change (Ctrl+Z)',
-          onClick: () => this.undo()
-        },
-        {
-          id: 'redo',
-          label: 'Redo',
-          tooltip: 'Redo last change (Ctrl+Y)',
-          onClick: () => this.redo()
-        },
-        { id: 'divider-3', label: '────────', tooltip: '', onClick: () => {} },
-        {
-          id: 'playtest',
-          label: 'Playtest',
-          tooltip: 'Start playtest from spawn',
-          onClick: () => this.game.exitEditor({ playtest: true })
-        },
-        ...(spawnTile
-          ? [{
-            id: 'spawn-point',
-            label: 'Spawn Point',
-            tooltip: 'Place the player spawn point',
+        extras: [
+          { id: 'resize-level', label: 'Resize', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
+          { divider: true },
+          {
+            id: 'playtest',
+            label: 'Playtest',
+            tooltip: 'Start playtest from spawn',
+            onClick: () => this.game.exitEditor({ playtest: true })
+          },
+          ...(spawnTile
+            ? [{
+              id: 'spawn-point',
+              label: 'Spawn Point',
+              tooltip: 'Place the player spawn point',
+              onClick: () => {
+                this.setTileType(spawnTile);
+                this.mode = 'tile';
+                this.tileTool = 'paint';
+              }
+            }]
+            : []),
+          {
+            id: 'start-everything',
+            label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
+            tooltip: 'Toggle playtest loadout',
             onClick: () => {
-              this.setTileType(spawnTile);
-              this.mode = 'tile';
-              this.tileTool = 'paint';
+              this.startWithEverything = !this.startWithEverything;
             }
-          }]
-          : []),
-        {
-          id: 'start-everything',
-          label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
-          tooltip: 'Toggle playtest loadout',
-          onClick: () => {
-            this.startWithEverything = !this.startWithEverything;
+          },
+          {
+            id: 'random-level',
+            label: 'Random Level',
+            tooltip: 'Create a random level layout',
+            onClick: () => this.promptRandomLevel()
           }
-        },
-        {
-          id: 'random-level',
-          label: 'Random Level',
-          tooltip: 'Create a random level layout',
-          onClick: () => this.promptRandomLevel()
-        }
-      ];
-      columns = 2;
+        ],
+        includeFooter: false
+      }).map((entry) => ({
+        ...entry,
+        onClick: entry.onClick || entry.action || (() => {})
+      }));
+      columns = 1;
     } else if (tabId === 'tiles') {
       items = DEFAULT_TILE_TYPES.map((tile) => ({
         id: tile.id,
@@ -6903,7 +6880,7 @@ Level size:`, `${current.width}x${current.height}`);
         ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
 
-        const fileHeaderOffset = activeTab === 'file' ? 30 : 0;
+        const fileHeaderOffset = activeTab === 'file' ? 44 : 0;
         const listY = contentY + fileHeaderOffset;
         const listH = Math.max(0, contentHeight - fileHeaderOffset);
         const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
@@ -7062,7 +7039,7 @@ Level size:`, `${current.width}x${current.height}`);
       ctx.strokeStyle = UI_SUITE.editorPanel.border;
       ctx.strokeRect(contentX, contentY, contentW, contentHeight);
 
-      const fileHeaderOffset = activeTab === 'file' ? 30 : 0;
+      const fileHeaderOffset = activeTab === 'file' ? 44 : 0;
       const listY = contentY + fileHeaderOffset;
       const listH = Math.max(0, contentHeight - fileHeaderOffset);
       const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;

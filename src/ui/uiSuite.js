@@ -240,6 +240,88 @@ export function buildSharedFileDrawerLayout({
 
 
 
+export function renderSharedFileDrawer(ctx, {
+  panel,
+  items = [],
+  title = 'File',
+  scroll = 0,
+  rowHeight = 32,
+  rowGap = 8,
+  buttonHeight = null,
+  isMobile = false,
+  layout = {},
+  drawButton,
+  drawDivider = null
+} = {}) {
+  const drawerLayout = buildSharedFileDrawerLayout({
+    x: panel.x,
+    y: panel.y,
+    width: panel.w,
+    height: panel.h,
+    ...layout
+  });
+
+  ctx.fillStyle = '#fff';
+  ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(title, drawerLayout.titleX, drawerLayout.titleY);
+
+  const listBounds = {
+    x: drawerLayout.listX - 2,
+    y: drawerLayout.listY - 4,
+    w: drawerLayout.listW + 4,
+    h: drawerLayout.listH + 8
+  };
+  const stride = rowHeight + rowGap;
+  const visibleRows = Math.max(1, Math.floor(drawerLayout.listH / Math.max(1, stride)));
+  const scrollMax = Math.max(0, items.length - visibleRows);
+  const nextScroll = Math.max(0, Math.min(scrollMax, Math.round(scroll || 0)));
+  const visibleItems = items.slice(nextScroll, nextScroll + visibleRows);
+  let cursorY = drawerLayout.listY;
+  const itemBounds = [];
+  visibleItems.forEach((item) => {
+    if (item?.divider) {
+      const dividerY = cursorY + 8;
+      if (typeof drawDivider === 'function') {
+        drawDivider({ x: drawerLayout.listX, y: dividerY, w: drawerLayout.listW, h: 0 }, item);
+      } else {
+        ctx.strokeStyle = UI_SUITE.colors.border;
+        ctx.beginPath();
+        ctx.moveTo(drawerLayout.listX, dividerY);
+        ctx.lineTo(drawerLayout.listX + drawerLayout.listW, dividerY);
+        ctx.stroke();
+      }
+      cursorY += Math.max(14, Math.round(Math.max(16, rowHeight) * 0.4));
+      return;
+    }
+    const bounds = {
+      x: drawerLayout.listX,
+      y: cursorY,
+      w: drawerLayout.listW,
+      h: buttonHeight ?? Math.max(18, rowHeight),
+      id: item?.id
+    };
+    drawButton(bounds, item);
+    itemBounds.push(bounds);
+    cursorY += stride;
+  });
+
+  const { closeBounds, exitBounds } = drawerLayout;
+  drawButton(closeBounds, { id: closeBounds.id, label: SHARED_EDITOR_LEFT_MENU.closeLabel, footer: true });
+  drawButton(exitBounds, { id: exitBounds.id, label: SHARED_EDITOR_LEFT_MENU.exitLabel, footer: true });
+
+  return {
+    layout: drawerLayout,
+    listBounds: scrollMax > 0 ? listBounds : null,
+    itemBounds,
+    closeBounds,
+    exitBounds,
+    scroll: nextScroll,
+    scrollMax
+  };
+}
+
 export function buildSharedDesktopLeftPanelFrame({
   viewportWidth,
   viewportHeight,
