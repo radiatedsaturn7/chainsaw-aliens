@@ -7696,7 +7696,7 @@ export default class MidiComposer {
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
-      this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
+      this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
     }
   }
 
@@ -7706,7 +7706,7 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
-    const { tabColumn } = buildSharedLeftMenuLayout({ x, y, width: w, height: h, isMobile: false });
+    const { tabColumn, content } = buildSharedLeftMenuLayout({ x, y, width: w, height: h, isMobile: false });
     const topButtons = buildSharedLeftMenuButtons({
       x: tabColumn.x,
       y: tabColumn.y,
@@ -7727,6 +7727,10 @@ export default class MidiComposer {
       this.bounds.tabs.push(bounds);
       this.drawButton(ctx, bounds, entry.label, this.activeTab === entry.id, false);
     });
+
+    if (this.activeTab === 'file') {
+      this.drawFilePanel(ctx, content.x, content.y, content.w, content.h);
+    }
   }
 
   drawRecordMode(ctx, width, height, track, pattern) {
@@ -7844,7 +7848,7 @@ export default class MidiComposer {
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
-      this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
+      this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
     }
   }
 
@@ -11042,50 +11046,59 @@ export default class MidiComposer {
         { id: 'settings', label: 'Settings' },
         { id: 'theme', label: 'Generate Theme' },
         { id: 'sample', label: 'Load Sample Song' }
-      ]
+      ],
+      includeFooter: false
     });
   }
 
   drawFilePanel(ctx, x, y, w, h) {
+    const isMobile = this.isMobileLayout();
     ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
-    const viewportW = this.viewportWidth ?? x + w;
-    const viewportH = this.viewportHeight ?? y + h;
-    const padding = 0;
-    const finalPanelW = getSharedEditorDrawerWidth(viewportW, { edgePadding: 0 });
-    const panelX = viewportW - finalPanelW;
-    const panelY = 0;
-    const panelH = viewportH;
+    let panelX = x;
+    let panelY = y;
+    let panelW = w;
+    let panelH = h;
+
+    if (isMobile) {
+      const viewportW = this.viewportWidth ?? x + w;
+      const viewportH = this.viewportHeight ?? y + h;
+      panelW = getSharedEditorDrawerWidth(viewportW, { edgePadding: 0 });
+      panelX = viewportW - panelW;
+      panelY = 0;
+      panelH = viewportH;
+    }
+
     ctx.fillStyle = UI_SUITE.colors.panel;
-    ctx.fillRect(panelX, panelY, finalPanelW, panelH);
+    ctx.fillRect(panelX, panelY, panelW, panelH);
     ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(panelX, panelY, finalPanelW, panelH);
+    ctx.strokeRect(panelX, panelY, panelW, panelH);
 
     const fileDrawerLayout = buildSharedFileDrawerLayout({
       x: panelX,
       y: panelY,
-      width: finalPanelW,
+      width: panelW,
       height: panelH,
-      padding: 12,
-      headerHeight: 66,
-      footerHeight: 28,
-      footerBottomPadding: 12,
+      padding: isMobile ? 12 : 10,
+      headerHeight: isMobile ? 66 : 36,
+      footerHeight: isMobile ? 28 : 24,
+      footerBottomPadding: isMobile ? 12 : 10,
       footerGap: 8,
       closeId: 'close-menu-fixed',
       exitId: 'exit-main-fixed'
     });
 
     ctx.fillStyle = '#fff';
-    ctx.font = '16px Courier New';
+    ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillText('File', fileDrawerLayout.titleX, fileDrawerLayout.titleY);
 
     const items = this.getFileMenuItems();
-    const rowH = clamp(Math.round(panelH * 0.08), 36, 44);
+    const rowH = isMobile ? clamp(Math.round(panelH * 0.08), 36, 44) : 32;
     const listStartY = fileDrawerLayout.listY;
     const listH = fileDrawerLayout.listH;
     this.fileMenuListBounds = { x: fileDrawerLayout.listX - 2, y: listStartY - 4, w: fileDrawerLayout.listW + 4, h: listH + 8 };
@@ -11100,8 +11113,8 @@ export default class MidiComposer {
         const dividerY = cursorY + 8;
         ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.beginPath();
-        ctx.moveTo(panelX + 12, dividerY);
-        ctx.lineTo(panelX + finalPanelW - 12, dividerY);
+        ctx.moveTo(fileDrawerLayout.listX, dividerY);
+        ctx.lineTo(fileDrawerLayout.listX + fileDrawerLayout.listW, dividerY);
         ctx.stroke();
         cursorY += Math.max(14, Math.round(rowH * 0.4));
         return;
@@ -11125,6 +11138,7 @@ export default class MidiComposer {
 
     this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
   }
+
 
 
   drawGenreMenu(ctx, width, height) {
