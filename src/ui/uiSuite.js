@@ -48,9 +48,96 @@ export const SHARED_EDITOR_LEFT_MENU = {
   desktopOuterPadding: 16,
   desktopContentGap: 12,
   fileLabel: 'FILE',
-  closeLabel: 'Close Menu',
+  closeLabel: 'Close Drawer',
   exitLabel: 'Exit to Main Menu'
 };
+
+export class SharedEditorMenu {
+  constructor(options = {}) {
+    this.options = {
+      desktopWidth: SHARED_EDITOR_LEFT_MENU.width(),
+      mobileWidth: UI_SUITE.layout.railWidthMobile,
+      panelPadding: SHARED_EDITOR_LEFT_MENU.panelPadding,
+      buttonGap: SHARED_EDITOR_LEFT_MENU.buttonGap,
+      ...options
+    };
+  }
+
+  getButtonHeight(isMobile) {
+    return isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop;
+  }
+
+  getPanelWidth(isMobile) {
+    return isMobile ? this.options.mobileWidth : this.options.desktopWidth;
+  }
+
+  draw(ctx, {
+    x,
+    y,
+    height,
+    isMobile = false,
+    buttons = [],
+    activeId = null,
+    drawButton,
+    registerButton
+  }) {
+    const panelW = this.getPanelWidth(isMobile);
+    const panelH = Math.max(0, height);
+    ctx.fillStyle = UI_SUITE.colors.panel;
+    ctx.fillRect(x, y, panelW, panelH);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(x, y, panelW, panelH);
+
+    const padding = this.options.panelPadding;
+    const gap = this.options.buttonGap;
+    const buttonH = this.getButtonHeight(isMobile);
+    const buttonW = Math.max(0, panelW - padding * 2);
+    let cursorY = y + padding;
+    const rendered = [];
+    buttons.forEach((entry) => {
+      const bounds = { x: x + padding, y: cursorY, w: buttonW, h: buttonH, id: entry.id };
+      const isActive = activeId === entry.id;
+      drawButton(bounds, entry, isActive);
+      if (typeof registerButton === 'function') {
+        registerButton(bounds, entry);
+      }
+      rendered.push({ ...entry, bounds, active: isActive });
+      cursorY += buttonH + gap;
+    });
+    return { panel: { x, y, w: panelW, h: panelH }, buttons: rendered };
+  }
+
+  drawDrawer(ctx, {
+    panel,
+    title = 'File',
+    isMobile = false,
+    items = [],
+    scroll = 0,
+    drawButton
+  }) {
+    const rowHeight = this.getButtonHeight(isMobile);
+    return renderSharedFileDrawer(ctx, {
+      panel,
+      title,
+      items,
+      scroll,
+      rowHeight,
+      rowGap: this.options.buttonGap,
+      buttonHeight: rowHeight,
+      isMobile,
+      footerMode: 'stacked',
+      showTitle: true,
+      layout: {
+        padding: this.options.panelPadding,
+        headerHeight: rowHeight + this.options.panelPadding * 2,
+        footerHeight: rowHeight,
+        footerBottomPadding: this.options.panelPadding,
+        footerGap: this.options.buttonGap
+      },
+      drawButton
+    });
+  }
+}
 
 
 export function drawSharedMenuButtonChrome(ctx, bounds, {
@@ -454,6 +541,31 @@ export function buildSharedLeftMenuLayout({
   };
 }
 const STANDARD_FILE_ORDER = ['new', 'save', 'save-as', 'open', 'export', 'import', 'undo', 'redo'];
+
+
+export function buildUnifiedFileDrawerItems({
+  actions = {},
+  labels = {},
+  tooltips = {},
+  editorSpecific = []
+} = {}) {
+  const mk = (id, fallback) => ({
+    id,
+    label: labels[id] || fallback,
+    tooltip: tooltips[id] || '',
+    onClick: actions[id] || null
+  });
+  return [
+    mk('new', 'New'),
+    mk('save', 'Save'),
+    mk('save-as', 'Save As'),
+    mk('open', 'Open'),
+    { divider: true },
+    mk('import', 'Import'),
+    mk('export', 'Export'),
+    ...(editorSpecific.length ? [{ divider: true }, ...editorSpecific] : [])
+  ];
+}
 
 export function buildStandardFileMenu(config = {}) {
   const {

@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, renderSharedFileDrawer } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -465,6 +465,7 @@ const createDemoSong = () => ({
 export default class MidiComposer {
   constructor(game) {
     this.game = game;
+    this.sharedMenu = new SharedEditorMenu();
     this.storageKey = 'chainsaw-midi-composer';
     this.song = this.loadSong();
     initializeComposerState(this, {
@@ -7727,6 +7728,9 @@ export default class MidiComposer {
       this.bounds.tabs.push(bounds);
       this.drawButton(ctx, bounds, entry.label, this.activeTab === entry.id, false);
     });
+    const tabTail = topButtons[topButtons.length - 1]?.bounds || { x: tabColumn.x, y: tabColumn.y, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
+    this.bounds.undoButton = { x: tabColumn.x, y: tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
+    this.drawButton(ctx, this.bounds.undoButton, 'Undo / Redo', false, false);
 
     if (this.activeTab === 'file') {
       this.drawFilePanel(ctx, content.x, content.y, content.w, content.h);
@@ -10996,9 +11000,8 @@ export default class MidiComposer {
   }
 
   getFileMenuItems() {
-    return buildSharedEditorFileMenu({
+    return buildUnifiedFileDrawerItems({
       labels: {
-        open: 'Open',
         export: 'Export JSON',
         import: 'Import MIDI/ZIP/JSON'
       },
@@ -11008,21 +11011,17 @@ export default class MidiComposer {
         'save-as': () => this.handleFileMenuAction('save-as'),
         open: () => this.handleFileMenuAction('load'),
         export: () => this.handleFileMenuAction('export-json'),
-        import: () => this.handleFileMenuAction('import'),
-        undo: () => this.handleFileMenuAction('undo'),
-        redo: () => this.handleFileMenuAction('redo')
+        import: () => this.handleFileMenuAction('import')
       },
-      extras: [
+      editorSpecific: [
         { id: 'export-midi', label: 'Export MIDI' },
         { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
-        { divider: true },
         { id: 'save-paint', label: 'Save and Paint' },
         { id: 'play-robtersession', label: 'Play in RobterSession' },
         { id: 'settings', label: 'Settings' },
         { id: 'theme', label: 'Generate Theme' },
         { id: 'sample', label: 'Load Sample Song' }
-      ],
-      includeFooter: false
+      ]
     });
   }
 
@@ -11042,29 +11041,13 @@ export default class MidiComposer {
       panelH = viewportH;
     }
 
-    const rowHeight = isMobile ? 36 : 24;
-    const rowGap = isMobile ? 8 : 6;
     this.fileMenuBounds = [];
-    const result = renderSharedFileDrawer(ctx, {
+    const result = this.sharedMenu.drawDrawer(ctx, {
       panel: { x: panelX, y: panelY, w: panelW, h: panelH },
+      title: 'File',
       items: this.getFileMenuItems(),
-      title: '',
       scroll: this.fileMenuScroll,
-      rowHeight,
-      rowGap,
-      buttonHeight: isMobile ? 28 : 24,
       isMobile,
-      showTitle: false,
-      footerMode: 'stacked',
-      layout: {
-        padding: isMobile ? 12 : 10,
-        headerHeight: isMobile ? 16 : 12,
-        footerHeight: (isMobile ? 28 : 24) * 2 + 8,
-        footerBottomPadding: isMobile ? 12 : 10,
-        footerGap: 8,
-        closeId: 'close-menu-fixed',
-        exitId: 'exit-main-fixed'
-      },
       drawButton: (bounds, item) => {
         this.drawButton(ctx, bounds, item.label, false, false);
         this.fileMenuBounds.push({ ...bounds, id: item.id });

@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, renderSharedFileDrawer } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -35,6 +35,7 @@ import { ensurePixelArtStore, ensurePixelTileData } from '../editor/adapters/edi
 export default class PixelStudio {
   constructor(game) {
     this.game = game;
+    this.sharedMenu = new SharedEditorMenu();
     this.tileLibrary = TILE_LIBRARY;
     this.activeTile = this.tileLibrary[0] || null;
     this.tileIndex = 0;
@@ -2513,6 +2514,11 @@ export default class PixelStudio {
       this.uiButtons.push({ bounds, onClick: () => this.setLeftPanelTab(entry.id) });
       this.registerFocusable('menu', bounds, () => this.setLeftPanelTab(entry.id));
     });
+    const lastY = topButtons[topButtons.length - 1]?.bounds?.y || tabColumn.y;
+    const undoBounds = { x: tabColumn.x, y: lastY + SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
+    this.drawButton(ctx, undoBounds, 'Undo / Redo', false, { fontSize: isMobile ? 12 : 11 });
+    this.uiButtons.push({ bounds: undoBounds, onClick: () => this.runtime.undo() });
+    this.registerFocusable('menu', undoBounds, () => this.runtime.undo());
 
     this.drawLeftPanelContent(ctx, content.x, content.y, content.w, content.h, options);
   }
@@ -2581,9 +2587,8 @@ export default class PixelStudio {
 
   drawFilePanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
-    const actions = buildSharedEditorFileMenu({
+    const actions = buildUnifiedFileDrawerItems({
       labels: {
-        open: 'Open',
         export: 'Export PNG',
         import: 'Import Palette'
       },
@@ -2593,42 +2598,25 @@ export default class PixelStudio {
         'save-as': () => this.saveArtDocument({ forceSaveAs: true }),
         open: () => this.loadArtDocument(),
         export: () => this.exportPng(),
-        import: () => this.paletteFileInput.click(),
-        undo: () => this.runtime.undo(),
-        redo: () => this.runtime.redo()
+        import: () => this.paletteFileInput.click()
       },
-      extras: [
-        { divider: true },
-        { label: 'Sprite Sheet', action: () => this.exportSpriteSheet('horizontal') },
-        { label: 'Export GIF', action: () => this.exportGif() },
-        { label: 'Palette JSON', action: () => this.exportPaletteJson() },
-        { label: 'Palette HEX', action: () => this.exportPaletteHex() },
-        { divider: true },
-        { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } }
-      ],
-      includeFooter: false
+      editorSpecific: [
+        { id: 'sprite-sheet', label: 'Sprite Sheet', onClick: () => this.exportSpriteSheet('horizontal') },
+        { id: 'export-gif', label: 'Export GIF', onClick: () => this.exportGif() },
+        { id: 'palette-json', label: 'Palette JSON', onClick: () => this.exportPaletteJson() },
+        { id: 'palette-hex', label: 'Palette HEX', onClick: () => this.exportPaletteHex() },
+        { id: 'controls', label: 'Controls', onClick: () => { this.controlsOverlayOpen = true; } }
+      ]
     });
 
-    const rowHeight = isMobile ? 44 : 24;
-    const rowGap = isMobile ? 8 : 6;
-    const result = renderSharedFileDrawer(ctx, {
+    const rowHeight = this.sharedMenu.getButtonHeight(isMobile);
+    const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+    const result = this.sharedMenu.drawDrawer(ctx, {
       panel: { x, y, w, h },
+      title: 'File',
       items: actions,
-      title: '',
       scroll: this.focusScroll.file || 0,
-      rowHeight,
-      rowGap,
-      buttonHeight: rowHeight,
       isMobile,
-      showTitle: false,
-      footerMode: 'stacked',
-      layout: {
-        padding: 8,
-        headerHeight: isMobile ? 12 : 12,
-        footerHeight: (isMobile ? 44 : 22) * 2 + 8,
-        footerBottomPadding: 8,
-        footerGap: 8
-      },
       drawButton: (bounds, item) => {
         const onClick = item.footer
           ? (item.id === 'close-menu' ? () => this.closeFileMenu() : () => this.exitToMainMenu())
@@ -2823,8 +2811,8 @@ export default class PixelStudio {
     const actions = [
       { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
       { id: 'tools', label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
-      { id: 'canvas', label: 'Grid', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
-      { id: 'fit', label: 'Fit', action: () => this.centerView(true) }
+      { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
+      { id: 'undo', label: 'Undo / Redo', action: () => { this.runtime.undo(); } }
     ];
     const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const buttonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;

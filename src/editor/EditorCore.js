@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, renderSharedFileDrawer } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, renderSharedFileDrawer, SharedEditorMenu } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -302,6 +302,7 @@ const EDITOR_GAMEPAD_BINDINGS = {
 export default class Editor {
   constructor(game) {
     this.game = game;
+    this.sharedMenu = new SharedEditorMenu();
     this.active = false;
     this.mode = 'tile';
     this.previousNonTriggerMode = 'tile';
@@ -6479,7 +6480,8 @@ Level size:`, `${current.width}x${current.height}`);
         { id: 'enemies', label: 'Enemies' },
         { id: 'bosses', label: 'Bosses' },
         { id: 'prefabs', label: 'Structures' },
-        { id: 'music', label: 'Music' }
+        { id: 'music', label: 'Music' },
+        { id: 'undo-redo', label: 'Undo / Redo' }
       ];
 
       const activeTab = this.getActivePanelTab();
@@ -6498,8 +6500,12 @@ Level size:`, `${current.width}x${current.height}`);
           tab.label,
           activeTab === tab.id,
           () => {
-            this.setPanelTab(tab.id);
-            this.drawer.open = true;
+            if (tab.id === 'undo-redo') {
+              this.undo();
+            } else {
+              this.setPanelTab(tab.id);
+              this.drawer.open = true;
+            }
           },
           `${tab.label} drawer`
         );
@@ -7003,8 +7009,9 @@ Level size:`, `${current.width}x${current.height}`);
         { id: 'enemies', label: 'ENEMIES' },
         { id: 'bosses', label: 'BOSSES' },
         { id: 'prefabs', label: 'STRUCTURES' },
-        { id: 'music', label: 'MUSIC' }
-      ].map((entry) => ({ ...entry, action: () => this.setPanelTab(entry.id), active: activeTab === entry.id }));
+        { id: 'music', label: 'MUSIC' },
+        { id: 'undo-redo', label: 'UNDO / REDO' }
+      ].map((entry) => ({ ...entry, action: () => (entry.id === 'undo-redo' ? this.undo() : this.setPanelTab(entry.id)), active: activeTab === entry.id }));
       const topButtons = buildSharedLeftMenuButtons({
         x: tabColumn.x,
         y: tabColumn.y,
