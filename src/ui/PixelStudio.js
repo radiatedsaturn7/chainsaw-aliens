@@ -2806,7 +2806,8 @@ export default class PixelStudio {
     ctx.strokeRect(boxX, boxY, boxW, boxH);
     items.forEach((entry, index) => {
       const bounds = { x: boxX + 10, y: boxY + 10 + index * 42, w: boxW - 20, h: 34 };
-      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+      const active = entry.id === this.leftPanelTab && entry.id !== 'fit';
+      this.drawButton(ctx, bounds, entry.label, active, { fontSize: 12 });
       this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
       this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
     });
@@ -2858,10 +2859,10 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     const actions = [
-      { label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
-      { label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
-      { label: 'Grid', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
-      { label: 'Fit', action: () => this.centerView(true) }
+      { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
+      { id: 'tools', label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
+      { id: 'canvas', label: 'Grid', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
+      { id: 'fit', label: 'Fit', action: () => this.centerView(true) }
     ];
     const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const buttonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
@@ -2873,7 +2874,8 @@ export default class PixelStudio {
         w: buttonW,
         h: buttonH
       };
-      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+      const active = entry.id === this.leftPanelTab && entry.id !== 'fit';
+      this.drawButton(ctx, bounds, entry.label, active, { fontSize: 12 });
       this.uiButtons.push({ bounds, onClick: entry.action });
       this.registerFocusable('toolbar', bounds, entry.action);
     });
