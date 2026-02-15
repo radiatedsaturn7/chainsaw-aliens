@@ -8111,11 +8111,6 @@ export default class MidiComposer {
   }
 
   drawHeader(ctx, x, y, w, h, track) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-
     const padding = 12;
     const gmStatus = this.game?.audio?.getGmStatus?.();
     if (gmStatus) {
@@ -8257,11 +8252,6 @@ export default class MidiComposer {
   }
 
   drawSongTab(ctx, x, y, w, h) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-
     const padding = 0;
     const rulerH = DEFAULT_RULER_HEIGHT;
     const rulerY = y + padding;
@@ -9134,11 +9124,6 @@ export default class MidiComposer {
   }
 
   drawInstrumentPanel(ctx, x, y, w, h, track) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-
     const isMobile = this.isMobileLayout();
     const padding = 12;
     const panelGap = 12;
@@ -10013,11 +9998,6 @@ export default class MidiComposer {
   drawTransport(ctx, x, y, w, h) {
     const scale = Math.min(1, w / 980);
     const offset = (value) => value * scale;
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-
     const buttonW = 92 * scale;
     const buttonH = 36 * scale;
     this.bounds.play = { x: x + offset(16), y: y + offset(18), w: buttonW, h: buttonH };
@@ -10102,11 +10082,6 @@ export default class MidiComposer {
   }
 
   drawTransportCompact(ctx, x, y, w, h) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-
     const innerX = x + 12;
     const innerW = w - 24;
     const rowH = 30;
@@ -11053,11 +11028,6 @@ export default class MidiComposer {
 
   drawFilePanel(ctx, x, y, w, h) {
     const isMobile = this.isMobileLayout();
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-
     let panelX = x;
     let panelY = y;
     let panelW = w;
@@ -11070,10 +11040,6 @@ export default class MidiComposer {
       panelX = viewportW - panelW;
       panelY = 0;
       panelH = viewportH;
-      ctx.fillStyle = UI_SUITE.colors.panel;
-      ctx.fillRect(panelX, panelY, panelW, panelH);
-      ctx.strokeStyle = UI_SUITE.colors.border;
-      ctx.strokeRect(panelX, panelY, panelW, panelH);
     }
 
     const rowHeight = isMobile ? 36 : 24;

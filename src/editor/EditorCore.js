@@ -7033,13 +7033,7 @@ Level size:`, `${current.width}x${current.height}`);
       const buttonHeight = isTallButtons ? 40 : 32;
       const { items, columns } = this.getPanelConfig(activeTab);
 
-      if (activeTab === 'file') {
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = UI_SUITE.colors.panel;
-        ctx.fillRect(contentX, contentY, contentW, contentHeight);
-        ctx.strokeStyle = UI_SUITE.colors.border;
-        ctx.strokeRect(contentX, contentY, contentW, contentHeight);
-      } else {
+      if (activeTab !== 'file') {
         ctx.globalAlpha = UI_SUITE.editorPanel.alpha;
         ctx.fillStyle = UI_SUITE.editorPanel.background;
         ctx.fillRect(contentX, contentY, contentW, contentHeight);

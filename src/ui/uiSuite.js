@@ -255,7 +255,11 @@ export function renderSharedFileDrawer(ctx, {
   drawDivider = null,
   showTitle = true,
   footerMode = 'split',
-  footerRowGap = null
+  footerRowGap = null,
+  drawPanel = true,
+  panelFill = UI_SUITE.colors.panel,
+  panelBorder = UI_SUITE.colors.border,
+  panelAlpha = 1
 } = {}) {
   const drawerLayout = buildSharedFileDrawerLayout({
     x: panel.x,
@@ -264,6 +268,17 @@ export function renderSharedFileDrawer(ctx, {
     height: panel.h,
     ...layout
   });
+
+
+  if (drawPanel) {
+    ctx.save();
+    ctx.globalAlpha = panelAlpha;
+    ctx.fillStyle = panelFill;
+    ctx.fillRect(panel.x, panel.y, panel.w, panel.h);
+    ctx.strokeStyle = panelBorder;
+    ctx.strokeRect(panel.x, panel.y, panel.w, panel.h);
+    ctx.restore();
+  }
 
   if (showTitle && title) {
     ctx.fillStyle = '#fff';
