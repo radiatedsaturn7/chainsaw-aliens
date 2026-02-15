@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel, getSharedEditorDrawerWidth } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, drawSharedFocusRing, drawSharedMenuButtonChrome, formatMenuLabel, getSharedEditorDrawerWidth } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -6347,19 +6347,10 @@ Level size:`, `${current.width}x${current.height}`);
     };
 
     const drawButton = (x, y, w, h, label, active, onClick, tooltip = '', preview = null, focused = false) => {
-      ctx.globalAlpha = 0.9;
-      ctx.fillStyle = active ? 'rgba(255,225,106,0.7)' : 'rgba(0,0,0,0.6)';
-      ctx.fillRect(x, y, w, h);
-      ctx.strokeStyle = UI_SUITE.colors.border;
-      ctx.strokeRect(x, y, w, h);
+      ctx.fillStyle = drawSharedMenuButtonChrome(ctx, { x, y, w, h }, { active, alpha: 0.9 });
       if (focused) {
-        ctx.save();
-        ctx.strokeStyle = '#9ad9ff';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x - 2, y - 2, w + 4, h + 4);
-        ctx.restore();
+        drawSharedFocusRing(ctx, { x, y, w, h });
       }
-      ctx.fillStyle = active ? '#0b0b0b' : '#fff';
       ctx.save();
       const fontSize = Math.max(10, Math.min(12, Math.round(h * 0.3)));
       ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;

@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, drawSharedFocusRing, drawSharedMenuButtonChrome, formatMenuLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -2334,11 +2334,7 @@ export default class PixelStudio {
     const item = items[this.uiFocus.index];
     if (!item) return;
     const bounds = item.bounds;
-    ctx.save();
-    ctx.strokeStyle = UI_SUITE.colors.accent;
-    ctx.lineWidth = 2;
-    ctx.strokeRect(bounds.x - 2, bounds.y - 2, bounds.w + 4, bounds.h + 4);
-    ctx.restore();
+    drawSharedFocusRing(ctx, bounds);
   }
 
   draw(ctx, width, height) {
@@ -2448,11 +2444,7 @@ export default class PixelStudio {
 
   drawButton(ctx, bounds, label, active = false, options = {}) {
     const fontSize = options.fontSize || 12;
-    ctx.fillStyle = active ? 'rgba(255,225,106,0.7)' : 'rgba(0,0,0,0.6)';
-    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.fillStyle = active ? '#0b0b0b' : '#fff';
+    ctx.fillStyle = drawSharedMenuButtonChrome(ctx, bounds, { active });
     ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'center';
     ctx.fillText(formatMenuLabel(label), bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 4);

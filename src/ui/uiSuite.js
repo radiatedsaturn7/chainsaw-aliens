@@ -52,6 +52,44 @@ export const SHARED_EDITOR_LEFT_MENU = {
   exitLabel: 'Exit to Main Menu'
 };
 
+
+export function drawSharedMenuButtonChrome(ctx, bounds, {
+  active = false,
+  subtle = false,
+  alpha = 1
+} = {}) {
+  const fill = active
+    ? 'rgba(255,225,106,0.7)'
+    : subtle
+      ? 'rgba(255,255,255,0.12)'
+      : 'rgba(0,0,0,0.6)';
+  const prevAlpha = ctx.globalAlpha;
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = fill;
+  ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  ctx.strokeStyle = UI_SUITE.colors.border;
+  ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  ctx.globalAlpha = prevAlpha;
+  return active ? '#0b0b0b' : '#fff';
+}
+
+export function drawSharedFocusRing(ctx, bounds, {
+  color = UI_SUITE.colors.accent,
+  lineWidth = 2,
+  padding = 2
+} = {}) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
+  ctx.strokeRect(
+    bounds.x - padding,
+    bounds.y - padding,
+    bounds.w + padding * 2,
+    bounds.h + padding * 2
+  );
+  ctx.restore();
+}
+
 export function getSharedEditorDrawerWidth(viewportWidth, {
   minWidth = 220,
   edgePadding = 12,
