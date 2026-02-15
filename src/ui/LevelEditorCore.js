@@ -6463,11 +6463,7 @@ Level size:`, `${current.width}x${current.height}`);
       ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(panelX, panelY, panelW, panelH);
 
-      const handleAreaH = 34;
-      ctx.fillStyle = 'rgba(255,255,255,0.12)';
-      ctx.fillRect(panelX, panelY, panelW, handleAreaH);
-      ctx.fillStyle = 'rgba(255,255,255,0.35)';
-      ctx.fillRect(panelX + panelW / 2 - 18, panelY + 10, 36, 4);
+      const handleAreaH = 0;
 
       const tabs = [
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
