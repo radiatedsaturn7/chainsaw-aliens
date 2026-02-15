@@ -23,7 +23,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, drawSharedFocusRing, drawSharedMenuButtonChrome, formatMenuLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -2446,11 +2446,12 @@ export default class PixelStudio {
 
   drawButton(ctx, bounds, label, active = false, options = {}) {
     const fontSize = options.fontSize || 12;
-    ctx.fillStyle = drawSharedMenuButtonChrome(ctx, bounds, { active });
-    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
-    ctx.textAlign = 'center';
-    ctx.fillText(formatMenuLabel(label), bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 4);
-    ctx.textAlign = 'left';
+    const color = drawSharedMenuButtonChrome(ctx, bounds, { active });
+    drawSharedMenuButtonLabel(ctx, bounds, label, {
+      fontSize,
+      color,
+      y: bounds.y + bounds.h / 2 + 1
+    });
   }
 
   isMobileLayout() {

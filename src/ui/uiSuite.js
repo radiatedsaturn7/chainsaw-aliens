@@ -90,6 +90,47 @@ export function drawSharedFocusRing(ctx, bounds, {
   ctx.restore();
 }
 
+
+function clipMenuLabel(ctx, label, maxWidth) {
+  const text = String(label ?? '');
+  if (!Number.isFinite(maxWidth) || maxWidth <= 0) return '';
+  if (ctx.measureText(text).width <= maxWidth) return text;
+  const ellipsis = '…';
+  let clipped = text;
+  while (clipped.length > 0 && ctx.measureText(clipped + ellipsis).width > maxWidth) {
+    clipped = clipped.slice(0, -1);
+  }
+  return clipped ? `${clipped}${ellipsis}` : ellipsis;
+}
+
+export function drawSharedMenuButtonLabel(ctx, bounds, label, {
+  fontSize = UI_SUITE.font.size,
+  fontFamily = UI_SUITE.font.family,
+  color = '#fff',
+  align = 'center',
+  baseline = 'middle',
+  padding = 6,
+  x = null,
+  y = null,
+  maxWidth = null,
+  format = true
+} = {}) {
+  const text = format ? formatMenuLabel(label) : String(label ?? '');
+  const textY = y ?? (bounds.y + bounds.h / 2);
+  const textX = x ?? (align === 'center' ? (bounds.x + bounds.w / 2) : (bounds.x + padding));
+  const availableWidth = Number.isFinite(maxWidth)
+    ? maxWidth
+    : Math.max(0, bounds.w - padding * 2);
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.font = `${fontSize}px ${fontFamily}`;
+  ctx.textAlign = align;
+  ctx.textBaseline = baseline;
+  const renderText = clipMenuLabel(ctx, text, availableWidth);
+  ctx.fillText(renderText, textX, textY);
+  ctx.restore();
+}
+
 export function getSharedEditorDrawerWidth(viewportWidth, {
   minWidth = 220,
   edgePadding = 12,

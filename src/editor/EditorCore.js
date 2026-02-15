@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, drawSharedFocusRing, drawSharedMenuButtonChrome, formatMenuLabel, getSharedEditorDrawerWidth } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -6367,9 +6367,14 @@ Level size:`, `${current.width}x${current.height}`);
       }
       const textX = preview ? (x + previewSize + 14) : (x + w / 2);
       const textAlign = preview ? 'left' : 'center';
-      const menuLabel = formatMenuLabel(label);
-      ctx.textAlign = textAlign;
-      ctx.fillText(menuLabel, textX, y + h / 2);
+      drawSharedMenuButtonLabel(ctx, { x, y, w, h }, label, {
+        fontSize,
+        color: active ? '#0b0b0b' : '#fff',
+        align: textAlign,
+        x: textX,
+        y: y + h / 2,
+        maxWidth: preview ? Math.max(0, w - previewSize - 18) : Math.max(0, w - 12)
+      });
       ctx.restore();
       this.addUIButton({ x, y, w, h }, onClick, tooltip);
       if (tooltip && !this.isMobileLayout() && isHovered(x, y, w, h)) {

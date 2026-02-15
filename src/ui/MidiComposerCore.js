@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, drawSharedMenuButtonChrome, formatMenuLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth } from './uiSuite.js';
 import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -11205,17 +11205,14 @@ export default class MidiComposer {
   }
 
   drawButton(ctx, bounds, label, active, subtle) {
-    ctx.fillStyle = drawSharedMenuButtonChrome(ctx, bounds, { active, subtle });
+    const color = drawSharedMenuButtonChrome(ctx, bounds, { active, subtle });
     const isMobile = this.isMobileLayout();
     const fontSize = this.getButtonFontSize(bounds, isMobile);
-    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    const padding = Math.max(6, Math.round(bounds.h * 0.2));
-    const clippedLabel = this.truncateLabel(ctx, formatMenuLabel(label), Math.max(0, bounds.w - padding * 2));
-    ctx.fillText(clippedLabel, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
+    drawSharedMenuButtonLabel(ctx, bounds, label, {
+      fontSize,
+      color,
+      maxWidth: Math.max(0, bounds.w - Math.max(6, Math.round(bounds.h * 0.2)) * 2)
+    });
   }
 
   drawSmallButton(ctx, bounds, label, active) {
