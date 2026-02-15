@@ -6515,7 +6515,7 @@ Level size:`, `${current.width}x${current.height}`);
         ctx.fillRect(drawerX, panelY, drawerWidth, panelH);
         ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.strokeRect(drawerX, panelY, drawerWidth, panelH);
-        const tabY = panelY + handleAreaH + 8;
+        const tabY = panelY + 8;
         const contentX = drawerX + panelPadding;
         const contentW = drawerWidth - panelPadding * 2;
         const baseContentY = tabY;
@@ -6870,7 +6870,7 @@ Level size:`, `${current.width}x${current.height}`);
         ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
 
-        const fileHeaderOffset = activeTab === 'file' ? 44 : 0;
+        const fileHeaderOffset = activeTab === 'file' ? 0 : 0;
         const listY = contentY + fileHeaderOffset;
         const listH = Math.max(0, contentHeight - fileHeaderOffset);
         const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
@@ -7027,7 +7027,7 @@ Level size:`, `${current.width}x${current.height}`);
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
       }
 
-      const fileHeaderOffset = activeTab === 'file' ? 44 : 0;
+      const fileHeaderOffset = activeTab === 'file' ? 0 : 0;
       const listY = contentY + fileHeaderOffset;
       const listH = Math.max(0, contentHeight - fileHeaderOffset);
       const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
