@@ -52,7 +52,9 @@ function exitFullscreen() {
 }
 
 function updateFullscreenButtons() {
-  const showControls = Boolean(isMobile) && !hideFullscreenControlsForTesting;
+  const editorStates = new Set(['editor', 'pixel-editor', 'midi-editor']);
+  const hideForEditor = editorStates.has(game.state);
+  const showControls = Boolean(isMobile) && !hideFullscreenControlsForTesting && !hideForEditor;
   const isFullscreen = Boolean(document.fullscreenElement);
   if (enterFullscreenButton) {
     enterFullscreenButton.classList.toggle('is-hidden', !showControls || isFullscreen || fullscreenPending);
@@ -264,6 +266,7 @@ function loop(now) {
   if (game.state !== lastState) {
     resetTouchSession(`state:${lastState}->${game.state}`);
     lastState = game.state;
+    updateFullscreenButtons();
   }
   const dt = Math.min((now - last) / 1000, 0.033);
   last = now;

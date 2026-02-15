@@ -6536,16 +6536,18 @@ Level size:`, `${current.width}x${current.height}`);
         const contentW = drawerWidth - panelPadding * 2;
         const baseContentY = tabY;
         let contentY = baseContentY;
-        const reservedBottom = joystickRadius * 2 + 32;
-        const fileFooterReserved = activeTab === 'file' ? 120 : 0;
+        const reservedBottom = activeTab === 'file' ? 12 : (joystickRadius * 2 + 32);
+        const fileFooterReserved = 0;
         let contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom - fileFooterReserved);
         const isPreviewTab = activeTab === 'tiles'
           || activeTab === 'prefabs'
           || activeTab === 'powerups'
           || activeTab === 'enemies'
           || activeTab === 'bosses';
-        const buttonHeight = isPreviewTab ? 60 : 52;
-        const buttonGap = 10;
+        const buttonHeight = activeTab === 'file'
+          ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile
+          : (isPreviewTab ? 60 : 52);
+        const buttonGap = activeTab === 'file' ? SHARED_EDITOR_LEFT_MENU.buttonGap : 10;
         const contentPadding = 10;
         let items = [];
         let columns = 1;
