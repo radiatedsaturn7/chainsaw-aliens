@@ -2482,7 +2482,7 @@ export default class PixelStudio {
 
   drawLeftPanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -2554,7 +2554,7 @@ export default class PixelStudio {
   drawObjectsPanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
     ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+    ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
     ctx.fillText('Objects', x + 12, y + 20);
     const lineHeight = isMobile ? 52 : 20;
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
@@ -2587,7 +2587,7 @@ export default class PixelStudio {
   drawFilePanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
     ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+    ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
     ctx.fillText('File', x + 12, y + 20);
     const lineHeight = isMobile ? 52 : 20;
     const buttonHeight = isMobile ? 44 : 18;
@@ -2617,10 +2617,7 @@ export default class PixelStudio {
         { label: 'Resize', action: () => this.resizeArtDocumentPrompt() },
         { label: 'Controls', action: () => { this.controlsOverlayOpen = true; } }
       ],
-      footer: {
-        onClose: () => { this.closeFileMenu(); },
-        onExit: () => { this.exitToMainMenu(); }
-      }
+      includeFooter: false
     });
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
     this.filePanelScroll = { x, y: y + 30, w, h: Math.max(0, h - 30), lineHeight };
@@ -2919,7 +2916,7 @@ export default class PixelStudio {
 
   drawMobileDrawer(ctx, x, y, w, h, type) {
     this.mobileDrawerBounds = { x, y, w, h };
-    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -2933,7 +2930,7 @@ export default class PixelStudio {
       this.registerFocusable('menu', backBounds, () => { this.mobileDrawer = null; });
 
       ctx.fillStyle = '#fff';
-      ctx.font = '14px Courier New';
+      ctx.font = `14px ${UI_SUITE.font.family}`;
       ctx.textAlign = 'center';
       ctx.fillText(label, x + w / 2, y + 34);
       ctx.textAlign = 'left';

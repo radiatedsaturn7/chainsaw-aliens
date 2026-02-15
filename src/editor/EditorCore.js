@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from '../ui/vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildMainMenuFooterEntries, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel, getSharedEditorDrawerWidth } from '../ui/uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildSharedMenuFooterLayout, formatMenuLabel, getSharedEditorDrawerWidth } from '../ui/uiSuite.js';
 import { clamp, randInt, pickOne } from './input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from './playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -1194,12 +1194,7 @@ export default class Editor {
           label: 'Random Level',
           tooltip: 'Create a random level layout',
           onClick: () => this.promptRandomLevel()
-        },
-        { id: 'divider-4', label: '────────', tooltip: '', onClick: () => {} },
-        ...buildMainMenuFooterEntries({
-          onClose: () => this.closeFileMenu(),
-          onExit: () => this.exitToMainMenu()
-        })
+        }
       ];
       columns = 2;
     } else if (tabId === 'tiles') {
@@ -6560,32 +6555,8 @@ Level size:`, `${current.width}x${current.height}`);
           'Back to menu'
         );
         const tabY = panelY + handleAreaH + SHARED_EDITOR_LEFT_MENU.buttonHeightMobile + 14;
-        let contentX = drawerX + panelPadding;
-        let contentW = drawerWidth - panelPadding * 2;
-        if (activeTab !== 'file') {
-          const tabColumnW = Math.max(92, Math.min(124, Math.floor(drawerWidth * 0.32)));
-          const tabX = drawerX + panelPadding;
-          const tabW = tabColumnW - panelPadding * 1.5;
-          const tabButtonW = Math.min(tabW, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
-          const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
-          const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
-          ctx.font = `14px ${UI_SUITE.font.family}`;
-          tabs.forEach((tab, index) => {
-            const y = tabY + index * (tabButtonH + tabGap);
-            drawButton(
-              tabX + (tabW - tabButtonW) * 0.5,
-              y,
-              tabButtonW,
-              tabButtonH,
-              tab.label,
-              activeTab === tab.id,
-              () => this.setPanelTab(tab.id),
-              `${tab.label} drawer`
-            );
-          });
-          contentX = drawerX + tabColumnW + 6;
-          contentW = drawerWidth - tabColumnW - panelPadding - 6;
-        }
+        const contentX = drawerX + panelPadding;
+        const contentW = drawerWidth - panelPadding * 2;
         const baseContentY = tabY;
         let contentY = baseContentY;
         const reservedBottom = joystickRadius * 2 + 32;
@@ -6675,10 +6646,7 @@ Level size:`, `${current.width}x${current.height}`);
                 onClick: () => this.promptRandomLevel()
               }
             ],
-            footer: {
-              onClose: () => this.closeFileMenu(),
-              onExit: () => this.exitToMainMenu()
-            }
+            includeFooter: false
           }).map((entry) => ({ ...entry, active: false }));
           columns = 1;
         } else if (activeTab === 'tiles') {
@@ -6932,10 +6900,10 @@ Level size:`, `${current.width}x${current.height}`);
           columns = 1;
         }
 
-        ctx.globalAlpha = 0.7;
-        ctx.fillStyle = 'rgba(5,6,8,0.38)';
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = UI_SUITE.colors.panel;
         ctx.fillRect(contentX, contentY, contentW, contentHeight);
-        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
 
         const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
