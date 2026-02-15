@@ -11071,7 +11071,7 @@ export default class MidiComposer {
       h: 30,
       id: 'back-menu-fixed'
     };
-    this.drawButton(ctx, backBounds, 'Back', false, true);
+    this.drawButton(ctx, backBounds, 'Back', false, false);
 
     ctx.fillStyle = '#fff';
     ctx.font = '16px Courier New';
@@ -11107,7 +11107,7 @@ export default class MidiComposer {
         h: rowH - 8,
         id: item.id
       };
-      this.drawButton(ctx, bounds, item.label, false, true);
+      this.drawButton(ctx, bounds, item.label, false, false);
       this.fileMenuBounds.push(bounds);
       cursorY += rowH;
     });
@@ -11124,8 +11124,8 @@ export default class MidiComposer {
       closeId: 'close-menu-fixed',
       exitId: 'exit-main-fixed'
     });
-    this.drawButton(ctx, closeBounds, SHARED_EDITOR_LEFT_MENU.closeLabel, false, true);
-    this.drawButton(ctx, exitBounds, SHARED_EDITOR_LEFT_MENU.exitLabel, false, true);
+    this.drawButton(ctx, closeBounds, SHARED_EDITOR_LEFT_MENU.closeLabel, false, false);
+    this.drawButton(ctx, exitBounds, SHARED_EDITOR_LEFT_MENU.exitLabel, false, false);
     this.fileMenuBounds.push(backBounds, closeBounds, exitBounds);
 
     this.fileMenuListBounds = this.fileMenuScrollMax > 0 ? this.fileMenuListBounds : null;
