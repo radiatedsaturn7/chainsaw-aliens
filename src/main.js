@@ -264,6 +264,7 @@ function loop(now) {
   if (game.state !== lastState) {
     resetTouchSession(`state:${lastState}->${game.state}`);
     lastState = game.state;
+    updateFullscreenButtons();
   }
   const dt = Math.min((now - last) / 1000, 0.033);
   last = now;

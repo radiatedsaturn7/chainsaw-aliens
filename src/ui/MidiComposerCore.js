@@ -11045,10 +11045,11 @@ export default class MidiComposer {
     this.fileMenuBounds = [];
     const result = this.sharedMenu.drawDrawer(ctx, {
       panel: { x: panelX, y: panelY, w: panelW, h: panelH },
-      title: 'File',
+      title: '',
       items: this.getFileMenuItems(),
       scroll: this.fileMenuScroll,
       isMobile,
+      showTitle: false,
       drawButton: (bounds, item) => {
         this.drawButton(ctx, bounds, item.label, false, false);
         this.fileMenuBounds.push({ ...bounds, id: item.id });

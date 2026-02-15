@@ -2613,10 +2613,11 @@ export default class PixelStudio {
     const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const result = this.sharedMenu.drawDrawer(ctx, {
       panel: { x, y, w, h },
-      title: 'File',
+      title: '',
       items: actions,
       scroll: this.focusScroll.file || 0,
       isMobile,
+      showTitle: false,
       drawButton: (bounds, item) => {
         const onClick = item.footer
           ? (item.id === 'close-menu' ? () => this.closeFileMenu() : () => this.exitToMainMenu())
@@ -2867,22 +2868,9 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
-    const tabHeight = 44;
     if (type === 'panel') {
-      const backBounds = { x: x + 12, y: y + 8, w: 92, h: tabHeight };
-      const label = this.leftPanelTab[0].toUpperCase() + this.leftPanelTab.slice(1);
-      this.drawButton(ctx, backBounds, 'Back', false, { fontSize: 12 });
-      this.uiButtons.push({ bounds: backBounds, onClick: () => { this.mobileDrawer = null; } });
-      this.registerFocusable('menu', backBounds, () => { this.mobileDrawer = null; });
-
-      ctx.fillStyle = '#fff';
-      ctx.font = `14px ${UI_SUITE.font.family}`;
-      ctx.textAlign = 'center';
-      ctx.fillText(label, x + w / 2, y + 34);
-      ctx.textAlign = 'left';
-
-      const panelY = y + tabHeight + 16;
-      const panelH = h - tabHeight - 24;
+      const panelY = y;
+      const panelH = h;
       this.drawLeftPanelContent(ctx, x + 8, panelY, w - 16, panelH, { isMobile: true });
     }
   }

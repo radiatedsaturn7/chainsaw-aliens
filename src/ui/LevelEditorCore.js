@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { clamp, randInt, pickOne } from '../editor/input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from '../editor/playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -721,10 +721,7 @@ export default class Editor {
 
       const railWidth = getSharedMobileRailWidth(width, height);
       const drawerWidth = this.drawer.open
-        ? getSharedMobileDrawerWidth(width, height, railWidth, {
-          minWidth: railWidth + 80,
-          edgePadding: 0
-        })
+        ? getSharedMobileDrawerWidth(width, height, railWidth, { edgePadding: 0 })
         : 0;
       this.editorBounds = { x: railWidth, y: 0, w: width - railWidth - drawerWidth, h: height };
       this.drawerBounds = this.drawer.open
@@ -1048,6 +1045,9 @@ export default class Editor {
     const drawerIndex = this.drawer.tabs.indexOf(tabId);
     if (drawerIndex >= 0) {
       this.drawer.tabIndex = drawerIndex;
+      if (this.isMobileLayout()) {
+        this.drawer.open = true;
+      }
     }
     if (tabId === 'bosses') {
       this.enemyCategory = 'boss';
@@ -1075,10 +1075,10 @@ export default class Editor {
   }
 
   closeFileMenu() {
+    this.setPanelTab('toolbox');
     if (this.isMobileLayout()) {
       this.drawer.open = false;
     }
-    this.setPanelTab('toolbox');
   }
 
   exitToMainMenu() {
@@ -4232,6 +4232,7 @@ Level size:`, `${current.width}x${current.height}`);
     }
 
     if (this.isMobileLayout() && this.drawer.open && this.panelScrollBounds
+      && this.isPointInBounds(payload.x, payload.y, this.drawerBounds)
       && this.isPointInBounds(payload.x, payload.y, this.panelScrollBounds)) {
       this.panelScrollDrag = {
         id: payload.id ?? null,
@@ -4466,7 +4467,11 @@ Level size:`, `${current.width}x${current.height}`);
       if (Math.abs(dx) > 50 && Math.abs(dy) < 30) {
         const direction = dx > 0 ? -1 : 1;
         const nextIndex = (this.drawer.tabIndex + direction + this.drawer.tabs.length) % this.drawer.tabs.length;
-        this.drawer.tabIndex = nextIndex;
+        const nextTab = this.drawer.tabs[nextIndex];
+        if (nextTab) {
+          this.setPanelTab(nextTab);
+          this.drawer.open = true;
+        }
         this.drawer.swipeStart = null;
       }
       return;
@@ -6445,10 +6450,7 @@ Level size:`, `${current.width}x${current.height}`);
     if (this.isMobileLayout()) {
       const railWidth = getSharedMobileRailWidth(width, height);
       const drawerWidth = this.drawer.open
-        ? getSharedMobileDrawerWidth(width, height, railWidth, {
-          minWidth: railWidth + 80,
-          edgePadding: 0
-        })
+        ? getSharedMobileDrawerWidth(width, height, railWidth, { edgePadding: 0 })
         : 0;
       const panelX = 0;
       const panelY = 0;
@@ -6465,11 +6467,7 @@ Level size:`, `${current.width}x${current.height}`);
       ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(panelX, panelY, panelW, panelH);
 
-      const handleAreaH = 34;
-      ctx.fillStyle = 'rgba(255,255,255,0.12)';
-      ctx.fillRect(panelX, panelY, panelW, handleAreaH);
-      ctx.fillStyle = 'rgba(255,255,255,0.35)';
-      ctx.fillRect(panelX + panelW / 2 - 18, panelY + 10, 36, 4);
+      const handleAreaH = 0;
 
       const tabs = [
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
@@ -6517,37 +6515,23 @@ Level size:`, `${current.width}x${current.height}`);
         ctx.fillRect(drawerX, panelY, drawerWidth, panelH);
         ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.strokeRect(drawerX, panelY, drawerWidth, panelH);
-        const backBounds = {
-          x: drawerX + panelPadding,
-          y: panelY + handleAreaH + 8,
-          w: Math.min(120, drawerWidth - panelPadding * 2),
-          h: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile
-        };
-        drawButton(
-          backBounds.x,
-          backBounds.y,
-          backBounds.w,
-          backBounds.h,
-          'Back',
-          false,
-          () => { this.drawer.open = false; },
-          'Back to menu'
-        );
-        const tabY = panelY + handleAreaH + SHARED_EDITOR_LEFT_MENU.buttonHeightMobile + 14;
+        const tabY = panelY + 8;
         const contentX = drawerX + panelPadding;
         const contentW = drawerWidth - panelPadding * 2;
         const baseContentY = tabY;
         let contentY = baseContentY;
-        const reservedBottom = joystickRadius * 2 + 32;
-        const fileFooterReserved = activeTab === 'file' ? 120 : 0;
+        const reservedBottom = activeTab === 'file' ? 12 : (joystickRadius * 2 + 32);
+        const fileFooterReserved = 0;
         let contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom - fileFooterReserved);
         const isPreviewTab = activeTab === 'tiles'
           || activeTab === 'prefabs'
           || activeTab === 'powerups'
           || activeTab === 'enemies'
           || activeTab === 'bosses';
-        const buttonHeight = isPreviewTab ? 60 : 52;
-        const buttonGap = 10;
+        const buttonHeight = activeTab === 'file'
+          ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile
+          : (isPreviewTab ? 60 : 52);
+        const buttonGap = activeTab === 'file' ? SHARED_EDITOR_LEFT_MENU.buttonGap : 10;
         const contentPadding = 10;
         let items = [];
         let columns = 1;
@@ -6886,7 +6870,7 @@ Level size:`, `${current.width}x${current.height}`);
         ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
 
-        const fileHeaderOffset = activeTab === 'file' ? 44 : 0;
+        const fileHeaderOffset = activeTab === 'file' ? 0 : 0;
         const listY = contentY + fileHeaderOffset;
         const listH = Math.max(0, contentHeight - fileHeaderOffset);
         const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
@@ -6938,22 +6922,17 @@ Level size:`, `${current.width}x${current.height}`);
         });
 
         if (activeTab === 'file') {
-          ctx.fillStyle = '#fff';
-          ctx.font = `16px ${UI_SUITE.font.family}`;
-          ctx.textAlign = 'left';
-          ctx.textBaseline = 'middle';
           const fileDrawerLayout = buildSharedFileDrawerLayout({
             x: contentX,
             y: contentY,
             width: contentW,
             height: contentHeight,
             padding: contentPadding,
-            headerHeight: 32,
+            headerHeight: 12,
             footerHeight: Math.max(28, buttonHeight),
             footerBottomPadding: 10,
             footerGap: 8
           });
-          ctx.fillText('File', fileDrawerLayout.titleX, fileDrawerLayout.titleY);
           const { closeBounds, exitBounds } = fileDrawerLayout;
           drawButton(
             closeBounds.x,
@@ -7048,7 +7027,7 @@ Level size:`, `${current.width}x${current.height}`);
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
       }
 
-      const fileHeaderOffset = activeTab === 'file' ? 44 : 0;
+      const fileHeaderOffset = activeTab === 'file' ? 0 : 0;
       const listY = contentY + fileHeaderOffset;
       const listH = Math.max(0, contentHeight - fileHeaderOffset);
       const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;

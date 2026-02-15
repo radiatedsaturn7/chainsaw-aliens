@@ -113,6 +113,7 @@ export class SharedEditorMenu {
     isMobile = false,
     items = [],
     scroll = 0,
+    showTitle = true,
     drawButton
   }) {
     const rowHeight = this.getButtonHeight(isMobile);
@@ -126,10 +127,12 @@ export class SharedEditorMenu {
       buttonHeight: rowHeight,
       isMobile,
       footerMode: 'stacked',
-      showTitle: true,
+      showTitle,
       layout: {
         padding: this.options.panelPadding,
-        headerHeight: rowHeight + this.options.panelPadding * 2,
+        headerHeight: showTitle
+          ? rowHeight + this.options.panelPadding * 2
+          : 0,
         footerHeight: rowHeight,
         footerBottomPadding: this.options.panelPadding,
         footerGap: this.options.buttonGap
