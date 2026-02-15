@@ -6873,87 +6873,95 @@ Level size:`, `${current.width}x${current.height}`);
         const fileHeaderOffset = activeTab === 'file' ? 0 : 0;
         const listY = contentY + fileHeaderOffset;
         const listH = Math.max(0, contentHeight - fileHeaderOffset);
-        const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
-        const rows = Math.ceil(items.length / columns);
-        const totalHeight = rows * (buttonHeight + buttonGap) - buttonGap + contentPadding * 2;
-        const maxScroll = Math.max(0, totalHeight - listH);
-        this.panelScrollMax[activeTab] = maxScroll;
-        const scrollY = clamp(this.panelScroll[activeTab] || 0, 0, maxScroll);
-        this.panelScroll[activeTab] = scrollY;
-        this.panelScrollBounds = { x: contentX, y: listY, w: contentW, h: listH };
-        this.panelScrollView = {
-          contentHeight: listH,
-          buttonHeight,
-          buttonGap,
-          columns,
-          padding: contentPadding
-        };
-        const gamepadActive = this.game.input?.isGamepadConnected?.() ?? false;
-        const focusedIndex = this.panelMenuIndex[activeTab] ?? 0;
-        items.forEach((item, index) => {
-          const col = index % columns;
-          const row = Math.floor(index / columns);
-          const x = contentX + contentPadding + col * (columnWidth + buttonGap);
-          const y = listY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
-          if (item.divider) {
-            const dividerY = y + Math.max(8, Math.floor(buttonHeight * 0.5));
-            if (dividerY >= listY + 4 && dividerY <= listY + listH - 4) {
-              ctx.strokeStyle = UI_SUITE.colors.border;
-              ctx.beginPath();
-              ctx.moveTo(x, dividerY);
-              ctx.lineTo(x + columnWidth, dividerY);
-              ctx.stroke();
-            }
-            return;
-          }
-          if (y + buttonHeight < listY + 4 || y > listY + listH - 4) return;
-          drawButton(
-            x,
-            y,
-            columnWidth,
-            buttonHeight,
-            item.label,
-            item.active,
-            item.onClick,
-            item.tooltip,
-            item.preview,
-            gamepadActive && index === focusedIndex
-          );
-        });
-
         if (activeTab === 'file') {
-          const fileDrawerLayout = buildSharedFileDrawerLayout({
-            x: contentX,
-            y: contentY,
-            width: contentW,
-            height: contentHeight,
-            padding: contentPadding,
-            headerHeight: 12,
-            footerHeight: Math.max(28, buttonHeight),
-            footerBottomPadding: 10,
-            footerGap: 8
+          const rowHeight = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
+          const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+          const result = renderSharedFileDrawer(ctx, {
+            panel: { x: contentX, y: contentY, w: contentW, h: contentHeight },
+            items,
+            title: '',
+            scroll: this.panelScroll[activeTab] || 0,
+            rowHeight,
+            rowGap,
+            buttonHeight: rowHeight,
+            isMobile: true,
+            showTitle: false,
+            footerMode: 'stacked',
+            layout: {
+              padding: contentPadding,
+              headerHeight: 12,
+              footerHeight: rowHeight,
+              footerBottomPadding: 10,
+              footerGap: rowGap
+            },
+            drawButton: (bounds, item) => {
+              const onClick = item.footer
+                ? (item.id === 'close-menu' ? () => this.closeFileMenu() : () => this.exitToMainMenu())
+                : item.onClick;
+              const tooltip = item.footer
+                ? (item.id === 'close-menu' ? 'Close file menu' : 'Exit editor to title')
+                : item.tooltip;
+              drawButton(bounds.x, bounds.y, bounds.w, bounds.h, item.label, false, onClick, tooltip);
+            }
           });
-          const { closeBounds, exitBounds } = fileDrawerLayout;
-          drawButton(
-            closeBounds.x,
-            closeBounds.y,
-            closeBounds.w,
-            closeBounds.h,
-            SHARED_EDITOR_LEFT_MENU.closeLabel,
-            false,
-            () => this.closeFileMenu(),
-            'Close file menu'
-          );
-          drawButton(
-            exitBounds.x,
-            exitBounds.y,
-            exitBounds.w,
-            exitBounds.h,
-            SHARED_EDITOR_LEFT_MENU.exitLabel,
-            false,
-            () => this.exitToMainMenu(),
-            'Exit editor to title'
-          );
+          this.panelScrollMax[activeTab] = result.scrollMax;
+          this.panelScroll[activeTab] = result.scroll;
+          this.panelScrollBounds = result.listBounds;
+          this.panelScrollView = {
+            contentHeight: result.layout.listH,
+            buttonHeight: rowHeight,
+            buttonGap: rowGap,
+            columns: 1,
+            padding: contentPadding
+          };
+        } else {
+          const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
+          const rows = Math.ceil(items.length / columns);
+          const totalHeight = rows * (buttonHeight + buttonGap) - buttonGap + contentPadding * 2;
+          const maxScroll = Math.max(0, totalHeight - listH);
+          this.panelScrollMax[activeTab] = maxScroll;
+          const scrollY = clamp(this.panelScroll[activeTab] || 0, 0, maxScroll);
+          this.panelScroll[activeTab] = scrollY;
+          this.panelScrollBounds = { x: contentX, y: listY, w: contentW, h: listH };
+          this.panelScrollView = {
+            contentHeight: listH,
+            buttonHeight,
+            buttonGap,
+            columns,
+            padding: contentPadding
+          };
+          const gamepadActive = this.game.input?.isGamepadConnected?.() ?? false;
+          const focusedIndex = this.panelMenuIndex[activeTab] ?? 0;
+          items.forEach((item, index) => {
+            const col = index % columns;
+            const row = Math.floor(index / columns);
+            const x = contentX + contentPadding + col * (columnWidth + buttonGap);
+            const y = listY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
+            if (item.divider) {
+              const dividerY = y + Math.max(8, Math.floor(buttonHeight * 0.5));
+              if (dividerY >= listY + 4 && dividerY <= listY + listH - 4) {
+                ctx.strokeStyle = UI_SUITE.colors.border;
+                ctx.beginPath();
+                ctx.moveTo(x, dividerY);
+                ctx.lineTo(x + columnWidth, dividerY);
+                ctx.stroke();
+              }
+              return;
+            }
+            if (y + buttonHeight < listY + 4 || y > listY + listH - 4) return;
+            drawButton(
+              x,
+              y,
+              columnWidth,
+              buttonHeight,
+              item.label,
+              item.active,
+              item.onClick,
+              item.tooltip,
+              item.preview,
+              gamepadActive && index === focusedIndex
+            );
+          });
         }
 
       }
