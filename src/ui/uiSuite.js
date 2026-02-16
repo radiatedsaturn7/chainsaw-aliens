@@ -223,17 +223,72 @@ export function drawSharedMenuButtonLabel(ctx, bounds, label, {
 
 export function drawSharedPlayStopButton(ctx, bounds, {
   isActive = false,
-  label = isActive ? 'Stop' : 'Play',
-  fontSize = 16,
+  stopWhenActive = false,
   alpha = 0.95,
-  subtle = false
+  subtle = false,
+  icon = stopWhenActive
+    ? (isActive ? '⏹' : '▶')
+    : (isActive ? '❚❚' : '▶')
 } = {}) {
-  const color = drawSharedMenuButtonChrome(ctx, bounds, { active: isActive, subtle, alpha });
-  drawSharedMenuButtonLabel(ctx, bounds, label, {
-    fontSize,
-    color,
-    maxWidth: Math.max(0, bounds.w - 16)
+  drawSharedTransportIconButton(ctx, bounds, {
+    icon,
+    active: isActive,
+    subtle,
+    alpha,
+    emphasis: true
   });
+}
+
+export function drawSharedTransportIconButton(ctx, bounds, {
+  icon,
+  active = false,
+  emphasis = false,
+  subtle = false,
+  alpha = 0.95,
+  role = 'default'
+} = {}) {
+  if (!bounds) return;
+  const radius = Math.min(14, bounds.h / 2);
+  const drawRoundedRect = (bx, by, bw, bh) => {
+    ctx.beginPath();
+    ctx.moveTo(bx + radius, by);
+    ctx.arcTo(bx + bw, by, bx + bw, by + bh, radius);
+    ctx.arcTo(bx + bw, by + bh, bx, by + bh, radius);
+    ctx.arcTo(bx, by + bh, bx, by, radius);
+    ctx.arcTo(bx, by, bx + bw, by, radius);
+    ctx.closePath();
+  };
+
+  const isRecord = role === 'record';
+  const baseFill = isRecord ? '#ff6a6a' : active ? '#ffe16a' : (subtle ? 'rgba(18,18,18,0.68)' : 'rgba(10,10,10,0.78)');
+  const highlight = emphasis ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.12)';
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.shadowColor = 'rgba(0,0,0,0.4)';
+  ctx.shadowBlur = 6;
+  drawRoundedRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  ctx.fillStyle = baseFill;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  drawRoundedRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.stroke();
+  ctx.globalAlpha = Math.min(1, alpha * 0.74);
+  drawRoundedRect(bounds.x + 1, bounds.y + 1, bounds.w - 2, bounds.h / 2);
+  ctx.fillStyle = highlight;
+  ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  ctx.fillStyle = active ? '#0b0b0b' : '#fff';
+  const baseSize = Math.max(12, Math.min(20, Math.round(bounds.h * 0.45)));
+  const fontSize = emphasis ? baseSize + 2 : baseSize;
+  ctx.font = `${fontSize}px Courier New`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(icon ?? '', bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 1);
+  ctx.restore();
 }
 
 

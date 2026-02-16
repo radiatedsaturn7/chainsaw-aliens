@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsSave } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedTransportIconButton, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -8189,45 +8189,16 @@ export default class MidiComposer {
     const totalW = rawTotalW * scale;
     const startX = x + (w - totalW) / 2;
     const centerY = y + (h - buttonH) / 2;
-    const radius = Math.min(14, buttonH / 2);
-    const drawRoundedRect = (bx, by, bw, bh) => {
-      ctx.beginPath();
-      ctx.moveTo(bx + radius, by);
-      ctx.arcTo(bx + bw, by, bx + bw, by + bh, radius);
-      ctx.arcTo(bx + bw, by + bh, bx, by + bh, radius);
-      ctx.arcTo(bx, by + bh, bx, by, radius);
-      ctx.arcTo(bx, by, bx + bw, by, radius);
-      ctx.closePath();
-    };
     const drawTransportButton = (button, bx) => {
       const buttonW = button.w * scale;
       const bounds = { x: bx, y: centerY, w: buttonW, h: buttonH };
       this.bounds[button.id] = bounds;
-      const isActive = Boolean(button.active);
-      const isRecord = button.id === 'record';
-      const baseFill = isRecord ? '#ff6a6a' : isActive ? '#ffe16a' : 'rgba(10,10,10,0.7)';
-      const highlight = button.emphasis ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.12)';
-      ctx.save();
-      ctx.shadowColor = 'rgba(0,0,0,0.4)';
-      ctx.shadowBlur = 6;
-      drawRoundedRect(bounds.x, bounds.y, bounds.w, bounds.h);
-      ctx.fillStyle = baseFill;
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      drawRoundedRect(bounds.x, bounds.y, bounds.w, bounds.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-      ctx.stroke();
-      ctx.globalAlpha = 0.7;
-      drawRoundedRect(bounds.x + 1, bounds.y + 1, bounds.w - 2, bounds.h / 2);
-      ctx.fillStyle = highlight;
-      ctx.fill();
-      ctx.restore();
-      ctx.fillStyle = isActive ? '#0b0b0b' : '#fff';
-      const fontSize = this.getButtonFontSize(bounds, isMobile);
-      ctx.font = `${button.emphasis ? fontSize + 2 : fontSize}px Courier New`;
-      ctx.textAlign = 'center';
-      ctx.fillText(button.label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 6);
-      ctx.textAlign = 'left';
+      drawSharedTransportIconButton(ctx, bounds, {
+        icon: button.label,
+        active: Boolean(button.active),
+        emphasis: Boolean(button.emphasis),
+        role: button.id === 'record' ? 'record' : 'default'
+      });
     };
     let cursorX = startX;
     buttonSpecs.forEach((button) => {

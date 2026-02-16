@@ -7895,8 +7895,7 @@ Level size:`, `${current.width}x${current.height}`);
     this.playButtonBounds = { x: playX, y: playY, w: playButtonW, h: playButtonH };
     drawSharedPlayStopButton(ctx, this.playButtonBounds, {
       isActive: false,
-      label: 'Play',
-      fontSize: this.isMobileLayout() ? 16 : 15
+      stopWhenActive: true
     });
 
     const enemyInfo = this.enemyType?.description;
