@@ -221,6 +221,21 @@ export function drawSharedMenuButtonLabel(ctx, bounds, label, {
   ctx.restore();
 }
 
+export function drawSharedPlayStopButton(ctx, bounds, {
+  isActive = false,
+  label = isActive ? 'Stop' : 'Play',
+  fontSize = 16,
+  alpha = 0.95,
+  subtle = false
+} = {}) {
+  const color = drawSharedMenuButtonChrome(ctx, bounds, { active: isActive, subtle, alpha });
+  drawSharedMenuButtonLabel(ctx, bounds, label, {
+    fontSize,
+    color,
+    maxWidth: Math.max(0, bounds.w - 16)
+  });
+}
+
 
 export function getSharedMobileRailWidth(viewportWidth, viewportHeight, {
   portraitWidth = UI_SUITE.layout.railWidthMobile,
