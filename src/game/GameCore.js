@@ -5073,19 +5073,19 @@ export default class Game {
     ctx.fillText(`Credits: ${this.player.credits}`, canvas.width - 180, 130);
     ctx.restore();
     if (this.playtestActive && this.state === 'playing') {
-      const buttonWidth = 170;
-      const buttonHeight = 28;
-      const buttonX = 20;
-      const buttonY = 176;
+      const buttonWidth = 92;
+      const buttonHeight = 36;
+      const buttonX = Math.round((canvas.width - buttonWidth) / 2);
+      const buttonY = 18;
       ctx.save();
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillStyle = '#ffe16a';
       ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
       ctx.strokeStyle = '#fff';
       ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
-      ctx.fillStyle = '#fff';
-      ctx.font = '14px Courier New';
+      ctx.fillStyle = '#0b0b0b';
+      ctx.font = '16px Courier New';
       ctx.textAlign = 'center';
-      ctx.fillText('STOP PLAYTEST', buttonX + buttonWidth / 2, buttonY + 19);
+      ctx.fillText('STOP', buttonX + buttonWidth / 2, buttonY + buttonHeight * 0.65);
       ctx.restore();
       this.playtestButtonBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
     } else {

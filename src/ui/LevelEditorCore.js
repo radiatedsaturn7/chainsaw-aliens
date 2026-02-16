@@ -711,11 +711,12 @@ export default class Editor {
       this.panJoystick.knobRadius = knobRadius;
       const sliderHeight = 10;
       let sliderX = center.x + joystickRadius + 24;
-      let sliderWidth = width - sliderX - controlMargin;
+      const sliderRightPadding = Math.max(controlMargin + 132, width * 0.2);
+      let sliderWidth = width - sliderX - sliderRightPadding;
       const sliderY = height - controlMargin - sliderHeight;
-      if (sliderWidth < 160) {
+      if (sliderWidth < 140) {
         sliderX = controlMargin;
-        sliderWidth = width - controlMargin * 2;
+        sliderWidth = Math.max(140, width - controlMargin * 2 - 132);
       }
       this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
 
@@ -6428,11 +6429,12 @@ Level size:`, `${current.width}x${current.height}`);
       this.panJoystick.knobRadius = knobRadius;
 
       sliderX = joystickCenter.x + joystickRadius + 24;
-      sliderWidth = width - sliderX - controlMargin;
+      const sliderRightPadding = Math.max(controlMargin + 132, width * 0.2);
+      sliderWidth = width - sliderX - sliderRightPadding;
       sliderY = height - controlMargin - sliderHeight;
-      if (sliderWidth < 160) {
+      if (sliderWidth < 140) {
         sliderX = controlMargin;
-        sliderWidth = width - controlMargin * 2;
+        sliderWidth = Math.max(140, width - controlMargin * 2 - 132);
       }
       this.zoomSlider.bounds = {
         x: sliderX,
