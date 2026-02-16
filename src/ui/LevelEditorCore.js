@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { vfsList } from './vfs.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPlayStopButton, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { clamp, randInt, pickOne } from '../editor/input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from '../editor/playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -165,17 +165,6 @@ const POWERUP_TYPES = [
   { id: 'powerup-map', label: 'Map Cache', char: 'M' }
 ];
 
-const MODE_LABELS = {
-  tile: 'Tile',
-  enemy: 'Enemies',
-  prefab: 'Structures',
-  shape: 'Shapes',
-  trigger: 'Triggers',
-  pixel: 'Pixel Art',
-  music: 'Music Zones',
-  midi: 'MIDI'
-};
-
 const TRIGGER_CONDITIONS = [
   'When player enters this location',
   'When player presses attack',
@@ -210,12 +199,6 @@ const TRIGGER_ANIMATION_OPTIONS = ['spark-burst', 'explosion-small', 'portal-ope
 const TRIGGER_TARGET_OPTIONS = ['player', 'enemy', 'object'];
 const TRIGGER_ENEMY_TARGET_OPTIONS = ['nearest', 'all-in-zone', 'by-tag'];
 const TRIGGER_TEXT_OPTIONS = ['Warning!', 'Door unlocked.', 'Boss incoming!', 'Checkpoint reached.', 'Objective updated.'];
-
-const TILE_TOOL_LABELS = {
-  paint: 'Paint',
-  erase: 'Erase',
-  move: 'Move'
-};
 
 const BIOME_THEMES = [
   { id: 'white', name: 'White', color: '#ffffff' },
@@ -6115,12 +6098,6 @@ Level size:`, `${current.width}x${current.height}`);
 
   drawHUD(ctx, width, height) {
     const tileSize = this.game.world.tileSize;
-    const tileLabel = this.tileType.label || 'Unknown';
-    const modeLabel = MODE_LABELS[this.mode] || 'Tile';
-    const tileToolLabel = TILE_TOOL_LABELS[this.tileTool] || 'Paint';
-    const enemyLabel = this.enemyType?.label || 'Enemy';
-    const prefabLabel = this.prefabType?.label || 'Prefab';
-    const shapeLabel = this.shapeTool?.label || 'Shape';
     const tileToolButtons = [
       { id: 'paint', label: 'Paint', tooltip: 'Paint tiles. (Q)' },
       { id: 'erase', label: 'Erase', tooltip: 'Erase tiles. (E)' },
@@ -7911,27 +7888,16 @@ Level size:`, `${current.width}x${current.height}`);
       ctx.restore();
     }
 
-    const playSize = this.isMobileLayout() ? 58 : 52;
-    const playPadding = 16;
-    const playX = width - playSize - playPadding;
-    const playY = this.editorBounds.y + this.editorBounds.h - playSize - playPadding;
-    this.playButtonBounds = { x: playX, y: playY, w: playSize, h: playSize };
-    ctx.save();
-    ctx.globalAlpha = 0.95;
-    ctx.fillStyle = 'rgba(0,180,120,0.95)';
-    ctx.beginPath();
-    ctx.arc(playX + playSize / 2, playY + playSize / 2, playSize / 2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-    ctx.stroke();
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.moveTo(playX + playSize * 0.42, playY + playSize * 0.34);
-    ctx.lineTo(playX + playSize * 0.42, playY + playSize * 0.66);
-    ctx.lineTo(playX + playSize * 0.7, playY + playSize * 0.5);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
+    const playButtonW = this.isMobileLayout() ? 112 : 96;
+    const playButtonH = this.isMobileLayout() ? 40 : 36;
+    const playX = Math.round((width - playButtonW) / 2);
+    const playY = this.editorBounds.y + 16;
+    this.playButtonBounds = { x: playX, y: playY, w: playButtonW, h: playButtonH };
+    drawSharedPlayStopButton(ctx, this.playButtonBounds, {
+      isActive: false,
+      label: 'Play',
+      fontSize: this.isMobileLayout() ? 16 : 15
+    });
 
     const enemyInfo = this.enemyType?.description;
     const showEnemyInfo = enemyInfo && (this.getActivePanelTab() === 'enemies' || this.mode === 'enemy');
@@ -7966,24 +7932,24 @@ Level size:`, `${current.width}x${current.height}`);
     }
 
     const tooltip = hoverTooltip || (this.tooltipTimer > 0 ? this.activeTooltip : '');
-    const fallbackTooltip = `Mode: ${modeLabel} | Tile: ${tileLabel} | Enemy: ${enemyLabel} | Prefab: ${prefabLabel} | Shape: ${shapeLabel}`;
-    const tooltipText = tooltip || fallbackTooltip;
-    const tooltipHeight = this.isMobileLayout() ? 22 : 24;
-    const baseTooltipY = this.isMobileLayout()
-      ? this.editorBounds.y + this.editorBounds.h - tooltipHeight
-      : height - tooltipHeight;
-    const sliderSafeY = this.isMobileLayout()
-      ? sliderY - tooltipHeight - 12
-      : baseTooltipY;
-    const tooltipY = Math.max(0, Math.min(baseTooltipY, sliderSafeY));
-    ctx.globalAlpha = 0.85;
-    ctx.fillStyle = 'rgba(0,0,0,0.8)';
-    ctx.fillRect(0, tooltipY, width, tooltipHeight);
-    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-    ctx.strokeRect(0, tooltipY, width, tooltipHeight);
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'center';
-    ctx.fillText(tooltipText, width / 2, tooltipY + tooltipHeight - 7);
+    if (tooltip) {
+      const tooltipHeight = this.isMobileLayout() ? 22 : 24;
+      const baseTooltipY = this.isMobileLayout()
+        ? this.editorBounds.y + this.editorBounds.h - tooltipHeight
+        : height - tooltipHeight;
+      const sliderSafeY = this.isMobileLayout()
+        ? sliderY - tooltipHeight - 12
+        : baseTooltipY;
+      const tooltipY = Math.max(0, Math.min(baseTooltipY, sliderSafeY));
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle = 'rgba(0,0,0,0.8)';
+      ctx.fillRect(0, tooltipY, width, tooltipHeight);
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.strokeRect(0, tooltipY, width, tooltipHeight);
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.fillText(tooltip, width / 2, tooltipY + tooltipHeight - 7);
+    }
     ctx.restore();
   }
 }

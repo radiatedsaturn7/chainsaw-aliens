@@ -69,6 +69,7 @@ import { OBSTACLES } from '../world/Obstacles.js';
 import { MOVEMENT_MODEL } from './MovementModel.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsList, vfsLoad } from '../ui/vfs.js';
+import { drawSharedPlayStopButton } from '../ui/uiSuite.js';
 
 const BOSS_TYPES = new Set([
   'finalboss',
@@ -5077,17 +5078,12 @@ export default class Game {
       const buttonHeight = 36;
       const buttonX = Math.round((canvas.width - buttonWidth) / 2);
       const buttonY = 18;
-      ctx.save();
-      ctx.fillStyle = '#ffe16a';
-      ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
-      ctx.strokeStyle = '#fff';
-      ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
-      ctx.fillStyle = '#0b0b0b';
-      ctx.font = '16px Courier New';
-      ctx.textAlign = 'center';
-      ctx.fillText('STOP', buttonX + buttonWidth / 2, buttonY + buttonHeight * 0.65);
-      ctx.restore();
       this.playtestButtonBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
+      drawSharedPlayStopButton(ctx, this.playtestButtonBounds, {
+        isActive: true,
+        label: 'Stop',
+        fontSize: 16
+      });
     } else {
       this.playtestButtonBounds = null;
     }
