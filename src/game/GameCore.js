@@ -5077,7 +5077,7 @@ export default class Game {
       const buttonWidth = 92;
       const buttonHeight = 36;
       const buttonX = Math.round((canvas.width - buttonWidth) / 2);
-      const buttonY = 18;
+      const buttonY = 34;
       this.playtestButtonBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
       drawSharedPlayStopButton(ctx, this.playtestButtonBounds, {
         isActive: true,
