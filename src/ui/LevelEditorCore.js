@@ -1,5 +1,5 @@
 import Minimap from '../world/Minimap.js';
-import { vfsList } from './vfs.js';
+import { vfsList, vfsLoad } from './vfs.js';
 import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPlayStopButton, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { clamp, randInt, pickOne } from '../editor/input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from '../editor/playtest/transitions.js';
@@ -322,6 +322,8 @@ export default class Editor {
     this.triggerEditorView = 'main';
     this.triggerPlacementMode = null;
     this.triggerOptionPicker = null;
+    this.triggerLoadLevelPlacement = null;
+    this.triggerResizeId = null;
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
     this.triggerEditorScroll = 0;
@@ -392,7 +394,7 @@ export default class Editor {
       enemies: true,
       prefabs: true
     };
-    this.panelTabs = ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'enemies', 'bosses', 'prefabs', 'music'];
+    this.panelTabs = ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'npcs', 'prefabs', 'graphics', 'music'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       file: 0,
@@ -400,8 +402,7 @@ export default class Editor {
       tiles: 0,
       triggers: 0,
       powerups: 0,
-      enemies: 0,
-      bosses: 0,
+      npcs: 0,
       prefabs: 0,
       shapes: 0,
       pixels: 0,
@@ -414,8 +415,7 @@ export default class Editor {
       tiles: 0,
       triggers: 0,
       powerups: 0,
-      enemies: 0,
-      bosses: 0,
+      npcs: 0,
       prefabs: 0,
       shapes: 0,
       pixels: 0,
@@ -432,8 +432,7 @@ export default class Editor {
       tiles: 0,
       triggers: 0,
       powerups: 0,
-      enemies: 0,
-      bosses: 0,
+      npcs: 0,
       prefabs: 0,
       shapes: 0,
       pixels: 0,
@@ -444,7 +443,7 @@ export default class Editor {
     this.drawer = {
       open: false,
       tabIndex: 0,
-      tabs: ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'enemies', 'bosses', 'prefabs', 'music'],
+      tabs: ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'npcs', 'prefabs', 'graphics', 'music'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -463,6 +462,11 @@ export default class Editor {
     this.recentPrefabs = [];
     this.recentShapes = [];
     this.rotation = 0;
+    this.graphicsStatusMessage = '';
+    this.graphicsStatusTimer = 0;
+    this.lastGraphicsScreenshotDataUrl = null;
+    this.selectedDecalId = null;
+    this.captureWithoutUiRequested = false;
     this.playtestPressTimer = null;
     this.playtestPressActive = false;
     this.playtestSpawnOverride = null;
@@ -514,6 +518,7 @@ export default class Editor {
     this.listenerDisposer = null;
     this.fileInput = null;
     this.midiFileInput = null;
+    this.decalImageInput = null;
   }
 
 
@@ -587,6 +592,16 @@ export default class Editor {
       document.body.appendChild(this.midiFileInput);
     }
 
+    if (!this.decalImageInput) {
+      this.decalImageInput = document.createElement('input');
+      this.decalImageInput.type = 'file';
+      this.decalImageInput.accept = 'image/*';
+      this.decalImageInput.style.display = 'none';
+    }
+    if (!this.decalImageInput.isConnected) {
+      document.body.appendChild(this.decalImageInput);
+    }
+
     this.listenerDisposer.add(addDOMListener(this.fileInput, 'change', (event) => {
       const file = event.target.files?.[0];
       if (!file) return;
@@ -621,6 +636,22 @@ export default class Editor {
       };
       reader.readAsText(file);
       this.midiFileInput.value = '';
+    }));
+
+    this.listenerDisposer.add(addDOMListener(this.decalImageInput, 'change', (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const imageDataUrl = typeof reader.result === 'string' ? reader.result : null;
+        if (!imageDataUrl) {
+          this.setGraphicsStatus('Invalid image');
+          return;
+        }
+        this.addDecalImage(imageDataUrl, file.name || null);
+      };
+      reader.readAsDataURL(file);
+      this.decalImageInput.value = '';
     }));
 
     this.listenerDisposer.add(addDOMListener(window, 'keydown', (event) => {
@@ -822,8 +853,12 @@ export default class Editor {
     if (this.midiFileInput?.parentNode) {
       this.midiFileInput.parentNode.removeChild(this.midiFileInput);
     }
+    if (this.decalImageInput?.parentNode) {
+      this.decalImageInput.parentNode.removeChild(this.decalImageInput);
+    }
     this.fileInput = null;
     this.midiFileInput = null;
+    this.decalImageInput = null;
   }
 
   syncPreviewMinimap() {
@@ -939,6 +974,65 @@ export default class Editor {
     this.focusOverride = point;
   }
 
+  centerCameraOnWorld(worldX, worldY) {
+    if (!Number.isFinite(worldX) || !Number.isFinite(worldY)) return;
+    const { canvas } = this.game;
+    this.updateLayoutBounds(canvas.width, canvas.height);
+    const bounds = this.getCameraBounds();
+    this.camera.x = clamp(worldX - canvas.width / 2, bounds.minX, bounds.maxX);
+    this.camera.y = clamp(worldY - canvas.height / 2, bounds.minY, bounds.maxY);
+    this.sanitizeView('centerCameraOnWorld');
+  }
+
+  focusCameraOnTrigger(trigger) {
+    if (!trigger?.rect) return;
+    const [x, y, w, h] = trigger.rect;
+    const centerX = (x + Math.max(1, w) / 2) * this.game.world.tileSize;
+    const centerY = (y + Math.max(1, h) / 2) * this.game.world.tileSize;
+    this.centerCameraOnWorld(centerX, centerY);
+  }
+
+  startLoadLevelSpawnPlacement(draft) {
+    if (!draft?.params) return;
+    const levelName = draft.params.levelName || this.getTriggerLevelNames()[0];
+    const payload = vfsLoad('levels', levelName);
+    if (!payload?.data) return;
+    this.triggerLoadLevelPlacement = {
+      originalWorldData: this.game.buildWorldData(),
+      originalCamera: { ...this.camera },
+      originalZoom: this.zoom,
+      draft
+    };
+    this.game.applyWorldData(JSON.parse(JSON.stringify(payload.data)));
+    this.flushWorldRefresh();
+    this.resetView();
+    if (Number.isFinite(draft.params.spawnX) && Number.isFinite(draft.params.spawnY)) {
+      const worldX = (draft.params.spawnX + 0.5) * this.game.world.tileSize;
+      const worldY = (draft.params.spawnY + 0.5) * this.game.world.tileSize;
+      this.centerCameraOnWorld(worldX, worldY);
+    }
+    this.triggerEditorOpen = false;
+    this.triggerPlacementMode = 'load-level-spawn';
+    this.mode = 'trigger';
+  }
+
+  finishLoadLevelSpawnPlacement({ cancelled = false } = {}) {
+    const session = this.triggerLoadLevelPlacement;
+    if (!session) return;
+    this.game.applyWorldData(session.originalWorldData);
+    this.flushWorldRefresh();
+    this.zoom = session.originalZoom;
+    this.camera = { ...session.originalCamera };
+    this.sanitizeView('finishLoadLevelSpawnPlacement');
+    this.triggerLoadLevelPlacement = null;
+    this.triggerResizeId = null;
+    this.triggerPlacementMode = null;
+    this.triggerEditorOpen = true;
+    this.triggerEditorView = 'edit-action';
+    this.mode = 'trigger';
+    if (cancelled) return;
+  }
+
   update(input, dt) {
     this.handleKeyboard(input, dt);
     this.handleGamepad(input, dt);
@@ -963,6 +1057,10 @@ export default class Editor {
     this.updateHover();
     if (this.tooltipTimer > 0) {
       this.tooltipTimer = Math.max(0, this.tooltipTimer - dt);
+    }
+    if (this.graphicsStatusTimer > 0) {
+      this.graphicsStatusTimer = Math.max(0, this.graphicsStatusTimer - dt);
+      if (this.graphicsStatusTimer <= 0) this.graphicsStatusMessage = '';
     }
   }
 
@@ -1043,10 +1141,8 @@ export default class Editor {
         this.drawer.open = true;
       }
     }
-    if (tabId === 'bosses') {
-      this.enemyCategory = 'boss';
-    } else if (tabId === 'enemies') {
-      this.enemyCategory = 'standard';
+    if (tabId === 'npcs') {
+      this.enemyCategory = this.enemyCategory === 'boss' ? 'boss' : 'standard';
     }
     if (tabId === 'music') {
       this.getMusicTracks();
@@ -1088,9 +1184,7 @@ export default class Editor {
     const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
     let items = [];
     let columns = 1;
-    const enemySource = tabId === 'bosses'
-      ? BOSS_ENEMY_TYPES
-      : STANDARD_ENEMY_TYPES;
+    const enemySource = this.enemyCategory === 'boss' ? BOSS_ENEMY_TYPES : STANDARD_ENEMY_TYPES;
 
     if (tabId === 'playtest') {
       items = [{
@@ -1200,20 +1294,37 @@ export default class Editor {
             this.selectedTriggerId = trigger.id;
             this.triggerEditorOpen = true;
             this.mode = 'trigger';
+            this.focusCameraOnTrigger(trigger);
           }
         }))
       ];
-    } else if (tabId === 'enemies' || tabId === 'bosses') {
-      items = enemySource.map((enemy) => ({
-        id: enemy.id,
-        label: `${enemy.label} [${enemy.glyph}]`,
-        enemy,
-        tooltip: `Enemy: ${enemy.label}`,
-        onClick: () => {
-          this.setEnemyType(enemy);
-          this.mode = 'enemy';
-        }
-      }));
+    } else if (tabId === 'npcs') {
+      items = [
+        { id: 'npc-sep-standard', label: '──────── ENEMIES ────────', tooltip: 'Standard enemies', separator: true, onClick: () => {} },
+        ...STANDARD_ENEMY_TYPES.map((enemy) => ({
+          id: `npc-${enemy.id}`,
+          label: `${enemy.label} [${enemy.glyph}]`,
+          enemy,
+          tooltip: `Enemy: ${enemy.label}`,
+          onClick: () => {
+            this.enemyCategory = 'standard';
+            this.setEnemyType(enemy);
+            this.mode = 'enemy';
+          }
+        })),
+        { id: 'npc-sep-boss', label: '──────── BOSSES ────────', tooltip: 'Boss enemies', separator: true, onClick: () => {} },
+        ...BOSS_ENEMY_TYPES.map((enemy) => ({
+          id: `npc-${enemy.id}`,
+          label: `${enemy.label} [${enemy.glyph}]`,
+          enemy,
+          tooltip: `Enemy: ${enemy.label}`,
+          onClick: () => {
+            this.enemyCategory = 'boss';
+            this.setEnemyType(enemy);
+            this.mode = 'enemy';
+          }
+        }))
+      ];
     } else if (tabId === 'powerups') {
       items = POWERUP_TYPES.map((powerup) => ({
         id: powerup.id,
@@ -1363,6 +1474,53 @@ export default class Editor {
         }
       })));
       columns = 2;
+    } else if (tabId === 'graphics') {
+      const decals = this.ensureDecals();
+      const selected = decals.find((decal) => decal.id === this.selectedDecalId) || decals[0] || null;
+      if (selected) this.selectedDecalId = selected.id;
+      items = [
+        {
+          id: 'graphics-take-screenshot',
+          label: 'Take Screenshot',
+          tooltip: 'Copy current level view (without UI) to clipboard',
+          onClick: () => { this.takeGraphicsScreenshot(); }
+        },
+        {
+          id: 'graphics-apply-decal',
+          label: 'Apply Decal (Upload)',
+          tooltip: 'Upload an image file and apply as world decal',
+          onClick: () => { this.openDecalUploadDialog(); }
+        },
+        {
+          id: 'graphics-apply-selected',
+          label: 'Apply Selected Image',
+          tooltip: 'Duplicate selected decal image into a new decal',
+          onClick: () => { this.applySelectedDecalImage(); }
+        },
+        {
+          id: 'graphics-cycle-decal',
+          label: `Selected: ${selected ? (selected.name || selected.id) : 'None'}`,
+          tooltip: 'Cycle selected decal',
+          onClick: () => {
+            if (!decals.length) return;
+            const ids = decals.map((decal) => decal.id);
+            this.selectedDecalId = this.cycleOption(this.selectedDecalId || ids[0], ids, 1);
+          }
+        },
+        {
+          id: 'graphics-edit-decal',
+          label: 'Edit',
+          tooltip: 'Open selected decal in Pixel Studio for editing',
+          onClick: () => { this.editSelectedDecal(); }
+        },
+        {
+          id: 'graphics-delete-decal',
+          label: 'Delete Decal',
+          tooltip: 'Remove selected decal',
+          onClick: () => { this.deleteSelectedDecal(); }
+        }
+      ];
+      columns = 1;
     } else if (tabId === 'midi') {
       const tracks = this.ensureMidiTracks();
       items = [
@@ -1975,7 +2133,7 @@ Level size:`, `${current.width}x${current.height}`);
     };
     switch (typeId) {
       case 'load-level':
-        base.params = { levelName: 'Level 1' };
+        base.params = { levelName: 'Level 1', spawnX: null, spawnY: null, useFade: true };
         break;
       case 'kill-enemy':
         base.params = { target: TRIGGER_ENEMY_TARGET_OPTIONS[0], tag: 'boss' };
@@ -2065,6 +2223,8 @@ Level size:`, `${current.width}x${current.height}`);
     this.triggerEditorScrollTapCandidate = null;
     this.triggerPlacementMode = null;
     this.triggerOptionPicker = null;
+    this.triggerLoadLevelPlacement = null;
+    this.triggerResizeId = null;
   }
 
   applyTriggerEditor(trigger) {
@@ -2114,6 +2274,12 @@ Level size:`, `${current.width}x${current.height}`);
         if (typeof action.params.background !== 'boolean') action.params.background = true;
         if (typeof action.params.waitForInput !== 'boolean') action.params.waitForInput = true;
       }
+      if (action.type === 'load-level') {
+        if (typeof action.params.levelName !== 'string' || !action.params.levelName) action.params.levelName = 'Level 1';
+        if (!Number.isFinite(action.params.spawnX)) action.params.spawnX = null;
+        if (!Number.isFinite(action.params.spawnY)) action.params.spawnY = null;
+        if (typeof action.params.useFade !== 'boolean') action.params.useFade = true;
+      }
       return action;
     });
   }
@@ -2121,6 +2287,98 @@ Level size:`, `${current.width}x${current.height}`);
   getTriggerLevelNames() {
     const levels = vfsList('levels').map((entry) => entry.name);
     return levels.length ? levels : ['Level 1'];
+  }
+
+  ensureDecals() {
+    if (!Array.isArray(this.game.world.decals)) this.game.world.decals = [];
+    this.game.world.decals.forEach((decal, index) => {
+      if (!decal.id) decal.id = `decal-${Date.now()}-${index}`;
+      if (typeof decal.name !== 'string') decal.name = `Decal ${index + 1}`;
+    });
+    return this.game.world.decals;
+  }
+
+  setGraphicsStatus(message, seconds = 2.5) {
+    this.graphicsStatusMessage = message || '';
+    this.graphicsStatusTimer = Math.max(0, seconds);
+    if (message) {
+      this.activeTooltip = message;
+      this.tooltipTimer = Math.max(this.tooltipTimer, Math.min(seconds, 3));
+    }
+  }
+
+  async takeGraphicsScreenshot() {
+    try {
+      this.captureWithoutUiRequested = true;
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      const canvas = this.game.canvas;
+      const dataUrl = canvas.toDataURL('image/png');
+      this.lastGraphicsScreenshotDataUrl = dataUrl;
+      if (navigator?.clipboard?.write && typeof ClipboardItem !== 'undefined') {
+        const blob = await (await fetch(dataUrl)).blob();
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        this.setGraphicsStatus('Screenshot copied to clipboard');
+      } else {
+        this.setGraphicsStatus('Screenshot captured (clipboard unavailable)');
+      }
+    } catch (error) {
+      console.warn('Screenshot capture failed', error);
+      this.setGraphicsStatus('Screenshot failed');
+    } finally {
+      this.captureWithoutUiRequested = false;
+    }
+  }
+
+  addDecalImage(imageDataUrl, sourceName = null) {
+    if (!imageDataUrl) return;
+    const decals = this.ensureDecals();
+    const decal = {
+      id: `decal-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
+      name: sourceName ? `Decal ${decals.length + 1}: ${sourceName}` : `Decal ${decals.length + 1}`,
+      imageDataUrl,
+      x: 0,
+      y: 0,
+      w: this.game.world.width * this.game.world.tileSize,
+      h: this.game.world.height * this.game.world.tileSize
+    };
+    decals.push(decal);
+    this.selectedDecalId = decal.id;
+    this.persistAutosave();
+    this.setGraphicsStatus('Decal applied');
+  }
+
+  openDecalUploadDialog() {
+    this.decalImageInput?.click();
+  }
+
+  applySelectedDecalImage() {
+    const selected = this.ensureDecals().find((decal) => decal.id === this.selectedDecalId);
+    if (!selected?.imageDataUrl) {
+      this.setGraphicsStatus('Select a decal first');
+      return;
+    }
+    this.addDecalImage(selected.imageDataUrl, selected.name || null);
+  }
+
+  deleteSelectedDecal() {
+    const decals = this.ensureDecals();
+    if (!decals.length) return;
+    const index = decals.findIndex((decal) => decal.id === this.selectedDecalId);
+    if (index < 0) return;
+    decals.splice(index, 1);
+    this.selectedDecalId = decals[0]?.id || null;
+    this.persistAutosave();
+    this.setGraphicsStatus('Decal removed');
+  }
+
+  editSelectedDecal() {
+    const decal = this.ensureDecals().find((entry) => entry.id === this.selectedDecalId);
+    if (!decal?.imageDataUrl) {
+      this.setGraphicsStatus('No decal selected');
+      return;
+    }
+    this.game.openDecalInPixelStudio(decal.id);
+    this.setGraphicsStatus('Opening decal in Pixel Studio');
   }
 
   cycleOption(value, options, direction = 1) {
@@ -2140,8 +2398,12 @@ Level size:`, `${current.width}x${current.height}`);
     if (!action) return '';
     const params = action.params || {};
     switch (action.type) {
-      case 'load-level':
-        return `Level: ${params.levelName || 'Level 1'}`;
+      case 'load-level': {
+        const hasSpawn = Number.isFinite(params.spawnX) && Number.isFinite(params.spawnY);
+        const spawnText = hasSpawn ? ` @ (${params.spawnX}, ${params.spawnY})` : ' @ default spawn';
+        const fadeText = params.useFade === false ? ' [no fade]' : ' [fade]';
+        return `Level: ${params.levelName || 'Level 1'}${spawnText}${fadeText}`;
+      }
       case 'kill-enemy':
         return `Target: ${params.target || 'nearest'}`;
       case 'spawn-enemy':
@@ -4313,6 +4575,14 @@ Level size:`, `${current.width}x${current.height}`);
       return;
     }
 
+    if (this.triggerPlacementMode === 'load-level-spawn' && this.triggerLoadLevelPlacement) {
+      if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
+      const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
+      this.triggerLoadLevelPlacement.selectionX = tileX;
+      this.triggerLoadLevelPlacement.selectionY = tileY;
+      return;
+    }
+
     if (this.triggerEditorOpen && this.triggerPlacementMode === 'spawn-enemy' && this.triggerActionDraft) {
       if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
       const selectedTrigger = this.getSelectedTrigger();
@@ -4663,7 +4933,19 @@ Level size:`, `${current.width}x${current.height}`);
       const minY = Math.min(start.y, end.y);
       const maxX = Math.max(start.x, end.x);
       const maxY = Math.max(start.y, end.y);
-      this.addTriggerZone([minX, minY, maxX - minX + 1, maxY - minY + 1]);
+      if (this.triggerResizeId) {
+        const trigger = this.ensureTriggers().find((entry) => entry.id === this.triggerResizeId);
+        if (trigger) {
+          trigger.rect = [minX, minY, maxX - minX + 1, maxY - minY + 1];
+          this.triggerEditorOpen = true;
+          this.triggerEditorView = 'main';
+          this.focusCameraOnTrigger(trigger);
+          this.persistAutosave();
+        }
+        this.triggerResizeId = null;
+      } else {
+        this.addTriggerZone([minX, minY, maxX - minX + 1, maxY - minY + 1]);
+      }
       this.triggerZoneStart = null;
       this.triggerZoneTarget = null;
       return;
@@ -5918,7 +6200,9 @@ Level size:`, `${current.width}x${current.height}`);
     this.drawGrid(ctx);
     this.drawCursor(ctx);
     ctx.restore();
-    this.drawHUD(ctx, canvas.width, canvas.height);
+    if (!this.captureWithoutUiRequested) {
+      this.drawHUD(ctx, canvas.width, canvas.height);
+    }
   }
 
   drawEditorMarkers(ctx) {
@@ -6589,9 +6873,9 @@ Level size:`, `${current.width}x${current.height}`);
         { id: 'tiles', label: 'Tiles' },
         { id: 'triggers', label: 'Triggers' },
         { id: 'powerups', label: 'Powerups' },
-        { id: 'enemies', label: 'Enemies' },
-        { id: 'bosses', label: 'Bosses' },
+        { id: 'npcs', label: 'NPCs' },
         { id: 'prefabs', label: 'Structures' },
+        { id: 'graphics', label: 'Graphics' },
         { id: 'music', label: 'Music' },
         { id: 'undo-redo', label: 'Undo / Redo' }
       ];
@@ -6619,7 +6903,7 @@ Level size:`, `${current.width}x${current.height}`);
               this.drawer.open = true;
             }
           },
-          `${tab.label} drawer`
+          ''
         );
       });
 
@@ -6640,8 +6924,7 @@ Level size:`, `${current.width}x${current.height}`);
         const isPreviewTab = activeTab === 'tiles'
           || activeTab === 'prefabs'
           || activeTab === 'powerups'
-          || activeTab === 'enemies'
-          || activeTab === 'bosses';
+          || activeTab === 'npcs';
         const buttonHeight = activeTab === 'file'
           ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile
           : (isPreviewTab ? 60 : 52);
@@ -6789,25 +7072,40 @@ Level size:`, `${current.width}x${current.height}`);
                 this.triggerActionDraft = null;
                 this.triggerEditingActionId = null;
                 this.mode = 'trigger';
+                this.focusCameraOnTrigger(trigger);
               }
             }))
           ];
           columns = 1;
-        } else if (activeTab === 'enemies' || activeTab === 'bosses') {
-          const enemySource = activeTab === 'bosses'
-            ? BOSS_ENEMY_TYPES
-            : STANDARD_ENEMY_TYPES;
-          items = enemySource.map((enemy) => ({
-            id: enemy.id,
-            label: `${enemy.label} [${enemy.glyph}]`,
-            active: this.enemyType.id === enemy.id,
-            preview: { type: 'enemy', enemy },
-            tooltip: `Enemy: ${enemy.label}`,
-            onClick: () => {
-              this.setEnemyType(enemy);
-              this.mode = 'enemy';
-            }
-          }));
+        } else if (activeTab === 'npcs') {
+          items = [
+            { id: 'npc-sep-standard', label: '──────── ENEMIES ────────', separator: true, active: false, tooltip: 'Standard enemies', onClick: () => {} },
+            ...STANDARD_ENEMY_TYPES.map((enemy) => ({
+              id: `npc-${enemy.id}`,
+              label: `${enemy.label} [${enemy.glyph}]`,
+              active: this.enemyType.id === enemy.id,
+              preview: { type: 'enemy', enemy },
+              tooltip: `Enemy: ${enemy.label}`,
+              onClick: () => {
+                this.enemyCategory = 'standard';
+                this.setEnemyType(enemy);
+                this.mode = 'enemy';
+              }
+            })),
+            { id: 'npc-sep-boss', label: '──────── BOSSES ────────', separator: true, active: false, tooltip: 'Boss enemies', onClick: () => {} },
+            ...BOSS_ENEMY_TYPES.map((enemy) => ({
+              id: `npc-${enemy.id}`,
+              label: `${enemy.label} [${enemy.glyph}]`,
+              active: this.enemyType.id === enemy.id,
+              preview: { type: 'enemy', enemy },
+              tooltip: `Enemy: ${enemy.label}`,
+              onClick: () => {
+                this.enemyCategory = 'boss';
+                this.setEnemyType(enemy);
+                this.mode = 'enemy';
+              }
+            }))
+          ];
           columns = 1;
         } else if (activeTab === 'powerups') {
           items = POWERUP_TYPES.map((powerup) => ({
@@ -7051,7 +7349,7 @@ Level size:`, `${current.width}x${current.height}`);
             const row = Math.floor(index / columns);
             const x = contentX + contentPadding + col * (columnWidth + buttonGap);
             const y = listY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
-            if (item.divider) {
+            if (item.divider || item.separator) {
               const dividerY = y + Math.max(8, Math.floor(buttonHeight * 0.5));
               if (dividerY >= listY + 4 && dividerY <= listY + listH - 4) {
                 ctx.strokeStyle = UI_SUITE.colors.border;
@@ -7059,6 +7357,10 @@ Level size:`, `${current.width}x${current.height}`);
                 ctx.moveTo(x, dividerY);
                 ctx.lineTo(x + columnWidth, dividerY);
                 ctx.stroke();
+                if (item.separator) {
+                  ctx.fillStyle = UI_SUITE.colors.muted;
+                  ctx.fillText(item.label || '', x + 8, dividerY - 6);
+                }
               }
               return;
             }
@@ -7107,9 +7409,9 @@ Level size:`, `${current.width}x${current.height}`);
         { id: 'tiles', label: 'TILES' },
         { id: 'triggers', label: 'TRIGGERS' },
         { id: 'powerups', label: 'POWERUPS' },
-        { id: 'enemies', label: 'ENEMIES' },
-        { id: 'bosses', label: 'BOSSES' },
+        { id: 'npcs', label: 'NPCS' },
         { id: 'prefabs', label: 'STRUCTURES' },
+        { id: 'graphics', label: 'GRAPHICS' },
         { id: 'music', label: 'MUSIC' },
         { id: 'undo-redo', label: 'UNDO / REDO' }
       ].map((entry) => ({ ...entry, action: () => (entry.id === 'undo-redo' ? this.undo() : this.setPanelTab(entry.id)), active: activeTab === entry.id }));
@@ -7125,7 +7427,7 @@ Level size:`, `${current.width}x${current.height}`);
       });
       topButtons.forEach((entry, index) => {
         const def = topButtonDefs[index];
-        drawButton(entry.bounds.x, entry.bounds.y, entry.bounds.w, entry.bounds.h, def.label, Boolean(def.active), def.action, `${def.label} panel`);
+        drawButton(entry.bounds.x, entry.bounds.y, entry.bounds.w, entry.bounds.h, def.label, Boolean(def.active), def.action, '');
       });
 
       let contentY = content.y;
@@ -7136,8 +7438,7 @@ Level size:`, `${current.width}x${current.height}`);
       const buttonGap = 10;
       const isTallButtons = activeTab === 'tiles'
         || activeTab === 'prefabs'
-        || activeTab === 'enemies'
-        || activeTab === 'bosses';
+        || activeTab === 'npcs';
       const buttonHeight = isTallButtons ? 40 : 32;
       const { items, columns } = this.getPanelConfig(activeTab);
 
@@ -7179,7 +7480,7 @@ Level size:`, `${current.width}x${current.height}`);
           return false;
         }
         if (activeTab === 'tiles' || activeTab === 'powerups') return this.tileType.id === item.id;
-        if (activeTab === 'enemies' || activeTab === 'bosses') return this.enemyType.id === item.id;
+        if (activeTab === 'npcs') return this.enemyType.id === item.enemy?.id;
         if (activeTab === 'prefabs') return this.prefabType.id === item.id;
         if (activeTab === 'toolbox') {
           if (item.id?.startsWith('tile-')) {
@@ -7257,6 +7558,19 @@ Level size:`, `${current.width}x${current.height}`);
           const row = Math.floor(index / columns);
           const x = contentX + contentPadding + col * (columnWidth + buttonGap);
           const y = listY + contentPadding + row * (buttonHeight + buttonGap) - scrollY;
+          if (item.separator) {
+            const dividerY = y + Math.max(8, Math.floor(buttonHeight * 0.5));
+            if (dividerY >= listY + 4 && dividerY <= listY + listH - 4) {
+              ctx.strokeStyle = UI_SUITE.colors.border;
+              ctx.beginPath();
+              ctx.moveTo(x, dividerY);
+              ctx.lineTo(x + columnWidth, dividerY);
+              ctx.stroke();
+              ctx.fillStyle = UI_SUITE.colors.muted;
+              ctx.fillText(item.label || '', x + 8, dividerY - 6);
+            }
+            return;
+          }
           if (y + buttonHeight < listY + 4 || y > listY + listH - 4) return;
           const preview = item.tile
             ? { type: 'tile', tile: item.tile }
@@ -7365,7 +7679,7 @@ Level size:`, `${current.width}x${current.height}`);
           local += 18;
           const numericAdvance = sectionButtonH + 4;
           if (draft.type === 'load-level') {
-            local += sectionButtonH + 4;
+            local += sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4;
           } else if (draft.type === 'spawn-enemy') {
             local += sectionButtonH + 4 + sectionButtonH + 4;
           } else if (draft.type === 'heal-player') {
@@ -7439,7 +7753,20 @@ Level size:`, `${current.width}x${current.height}`);
             ctx.fillText(summary, panelX + 16, y + 9);
             y += 20;
           });
-          drawButton(panelX + 12, deleteTriggerY, panelWidth - 24, 40, 'Delete Trigger', false, () => {
+          const bottomButtonW = (panelWidth - 28) / 2;
+          drawButton(panelX + 12, deleteTriggerY, bottomButtonW, 40, 'Resize Trigger', false, () => {
+            this.triggerEditorOpen = false;
+            this.triggerEditorView = 'main';
+            this.triggerActionDraft = null;
+            this.triggerEditingActionId = null;
+            this.triggerPlacementMode = null;
+            this.triggerResizeId = selected.id;
+            this.mode = 'trigger';
+            const [zoneX, zoneY, zoneW, zoneH] = selected.rect;
+            this.triggerZoneStart = { x: zoneX, y: zoneY };
+            this.triggerZoneTarget = { x: zoneX + zoneW - 1, y: zoneY + zoneH - 1 };
+          }, 'Resize trigger zone by redrawing it');
+          drawButton(panelX + 16 + bottomButtonW, deleteTriggerY, bottomButtonW, 40, 'Delete Trigger', false, () => {
             const triggers = this.ensureTriggers();
             const idx = triggers.findIndex((entry) => entry.id === selected.id);
             if (idx >= 0) {
@@ -7497,7 +7824,12 @@ Level size:`, `${current.width}x${current.height}`);
             y += sectionButtonH + 4;
           };
           if (draft.type === 'load-level') {
-            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Level: ${draft.params.levelName || levelNames[0]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Level', options: levelNames, selectedValue: draft.params.levelName || levelNames[0], onPick: (value) => { draft.params.levelName = value; } }); }, 'Pick level');
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Level: ${draft.params.levelName || levelNames[0]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Level', options: levelNames, selectedValue: draft.params.levelName || levelNames[0], onPick: (value) => { draft.params.levelName = value; draft.params.spawnX = null; draft.params.spawnY = null; } }); }, 'Pick level');
+            y += sectionButtonH + 4;
+            const hasSpawn = Number.isFinite(draft.params.spawnX) && Number.isFinite(draft.params.spawnY);
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, hasSpawn ? `Spawn: (${draft.params.spawnX}, ${draft.params.spawnY})` : 'Spawn: default', this.triggerPlacementMode === 'load-level-spawn', () => { this.startLoadLevelSpawnPlacement(draft); }, 'Open target level and pick spawn location');
+            y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Fade out/in: ${draft.params.useFade === false ? 'Off' : 'On'}`, draft.params.useFade !== false, () => { draft.params.useFade = !(draft.params.useFade === false); }, 'Toggle fade to black before loading level');
             y += sectionButtonH + 4;
           } else if (draft.type === 'spawn-enemy') {
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Enemy: ${draft.params.enemyType || enemyOptions[0]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Enemy', options: enemyOptions, selectedValue: draft.params.enemyType || enemyOptions[0], onPick: (value) => { draft.params.enemyType = value; } }); }, 'Pick enemy');
@@ -7573,7 +7905,49 @@ Level size:`, `${current.width}x${current.height}`);
       }
     }
 
-    if (this.mode === 'pixel') {
+    if (this.triggerPlacementMode === 'load-level-spawn' && this.triggerLoadLevelPlacement) {
+      const tileSize = this.game.world.tileSize;
+      const pickX = this.triggerLoadLevelPlacement.selectionX;
+      const pickY = this.triggerLoadLevelPlacement.selectionY;
+      if (Number.isFinite(pickX) && Number.isFinite(pickY)) {
+        const markerX = pickX * tileSize;
+        const markerY = pickY * tileSize;
+        ctx.save();
+        ctx.strokeStyle = '#6ef7a6';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(markerX + 2, markerY + 2, tileSize - 4, tileSize - 4);
+        ctx.restore();
+      }
+      const panelWidth = 360;
+      const panelX = (width - panelWidth) / 2;
+      const panelY = height - 120;
+      ctx.save();
+      ctx.fillStyle = 'rgba(8,12,18,0.9)';
+      ctx.fillRect(panelX, panelY, panelWidth, 92);
+      ctx.strokeStyle = UI_SUITE.editorPanel.border;
+      ctx.strokeRect(panelX, panelY, panelWidth, 92);
+      ctx.fillStyle = UI_SUITE.editorPanel.text;
+      ctx.font = UI_SUITE.editorPanel.bodyFont;
+      const selectionText = Number.isFinite(pickX) && Number.isFinite(pickY)
+        ? `Selected spawn: (${pickX}, ${pickY})`
+        : 'Tap a tile to choose player location';
+      ctx.fillText(selectionText, panelX + 12, panelY + 22);
+      ctx.restore();
+      const buttonW = (panelWidth - 28) / 2;
+      drawButton(panelX + 8, panelY + 42, buttonW, 40, 'Cancel', false, () => { this.finishLoadLevelSpawnPlacement({ cancelled: true }); }, 'Cancel spawn placement');
+      drawButton(panelX + 20 + buttonW, panelY + 42, buttonW, 40, 'Set Player Location', false, () => {
+        const pickTileX = this.triggerLoadLevelPlacement.selectionX;
+        const pickTileY = this.triggerLoadLevelPlacement.selectionY;
+        if (Number.isFinite(pickTileX) && Number.isFinite(pickTileY)) {
+          const draft = this.triggerLoadLevelPlacement.draft;
+          draft.params.spawnX = pickTileX;
+          draft.params.spawnY = pickTileY;
+          this.finishLoadLevelSpawnPlacement();
+        }
+      }, 'Use selected tile as player spawn');
+    }
+
+        if (this.mode === 'pixel') {
       const panelWidth = 300;
       const panelX = this.isMobileLayout()
         ? this.editorBounds.x + this.editorBounds.w - panelWidth - 12
@@ -8181,7 +8555,7 @@ Level size:`, `${current.width}x${current.height}`);
     });
 
     const enemyInfo = this.enemyType?.description;
-    const showEnemyInfo = enemyInfo && (this.getActivePanelTab() === 'enemies' || this.mode === 'enemy');
+    const showEnemyInfo = enemyInfo && (this.getActivePanelTab() === 'npcs' || this.mode === 'enemy');
     if (showEnemyInfo) {
       ctx.save();
       const boxWidth = this.isMobileLayout()
@@ -8212,7 +8586,7 @@ Level size:`, `${current.width}x${current.height}`);
       ctx.restore();
     }
 
-    const tooltip = hoverTooltip || (this.tooltipTimer > 0 ? this.activeTooltip : '');
+    const tooltip = hoverTooltip || this.graphicsStatusMessage || (this.tooltipTimer > 0 ? this.activeTooltip : '');
     if (tooltip) {
       const tooltipHeight = this.isMobileLayout() ? 22 : 24;
       const baseTooltipY = this.isMobileLayout()

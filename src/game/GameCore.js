@@ -306,6 +306,7 @@ export default class Game {
     };
     this.prevHealth = this.player.health;
     this.damageFlashTimer = 0;
+    this.decalImageCache = new Map();
     this.revCharge = 0;
     this.revActive = false;
     this.simulationActive = false;
@@ -640,7 +641,8 @@ export default class Game {
       pixelArt: this.world.pixelArt,
       musicZones: this.world.musicZones,
       midiTracks: this.world.midiTracks,
-      triggers: this.world.triggers || []
+      triggers: this.world.triggers || [],
+      decals: this.world.decals || []
     };
   }
 
@@ -659,7 +661,8 @@ export default class Game {
       pixelArt: data.pixelArt || { tiles: {} },
       musicZones: data.musicZones || [],
       midiTracks: data.midiTracks || [],
-      triggers: data.triggers || []
+      triggers: data.triggers || [],
+      decals: data.decals || []
     };
     this.world.applyData(migrated);
     this.syncSpawnPoint();
@@ -720,6 +723,20 @@ export default class Game {
 
   enterPixelStudio() {
     this.pixelStudioReturnState = this.state;
+    this.transitionTo('pixel-editor');
+    this.setRevAudio(false);
+    this.pixelStudio.resetFocus();
+    this.playtestActive = false;
+  }
+
+  openDecalInPixelStudio(decalId) {
+    const decals = this.world.decals || [];
+    const decal = decals.find((entry) => entry.id === decalId);
+    if (!decal?.imageDataUrl) return;
+    this.pixelStudioReturnState = 'editor';
+    this.pixelStudio.loadDecalImageForEditing(decal.id, decal.imageDataUrl).catch((error) => {
+      console.warn('Failed to open decal in Pixel Studio', error);
+    });
     this.transitionTo('pixel-editor');
     this.setRevAudio(false);
     this.pixelStudio.resetFocus();
@@ -903,6 +920,7 @@ export default class Game {
     this.lastAttackFromGamepad = false;
     this.prevHealth = this.player.health;
     this.damageFlashTimer = 0;
+    this.decalImageCache = new Map();
     this.ignitirFlashTimer = 0;
     this.revCharge = 0;
     this.deathTimer = 0;
@@ -1009,7 +1027,8 @@ export default class Game {
 
   exitEditorToMainMenu(editorId = 'level') {
     if (editorId === 'pixel') {
-      this.exitPixelStudio({ toTitle: true });
+      const toTitle = this.pixelStudioReturnState !== 'editor';
+      this.exitPixelStudio({ toTitle });
       return;
     }
     if (editorId === 'midi') {
@@ -4021,14 +4040,28 @@ export default class Game {
     }
     if (action.type === 'load-level') {
       const levelName = params.levelName;
-      if (levelName) {
-        const payload = vfsLoad('levels', levelName);
-        if (payload?.data) {
-          this.applyWorldData(payload.data);
-          this.resetRun({ playtest: false, startWithEverything: true });
+      const completeLoad = () => {
+        if (levelName) {
+          const payload = vfsLoad('levels', levelName);
+          if (payload?.data) {
+            this.applyWorldData(payload.data);
+            if (Number.isFinite(params.spawnX) && Number.isFinite(params.spawnY)) {
+              this.world.spawn = { x: Math.floor(params.spawnX), y: Math.floor(params.spawnY) };
+              this.world.spawnPoint = {
+                x: (Math.floor(params.spawnX) + 0.5) * this.world.tileSize,
+                y: Math.floor(params.spawnY) * this.world.tileSize
+              };
+            }
+            this.resetRun({ playtest: false, startWithEverything: true });
+          }
         }
+        onDone();
+      };
+      if (params.useFade === false) {
+        completeLoad();
+      } else {
+        setTimeout(() => completeLoad(), 300);
       }
-      onDone();
       return;
     }
     if (action.type === 'display-text') {
@@ -5796,6 +5829,27 @@ export default class Game {
         }
       }
     }
+
+    const decals = this.world.decals || [];
+    decals.forEach((decal) => {
+      if (!decal?.imageDataUrl) return;
+      const cacheKey = decal.id || decal.imageDataUrl;
+      let image = this.decalImageCache.get(cacheKey);
+      if (!image) {
+        image = new Image();
+        image.src = decal.imageDataUrl;
+        this.decalImageCache.set(cacheKey, image);
+      }
+      if (!image.complete) return;
+      const x = Number.isFinite(decal.x) ? decal.x : 0;
+      const y = Number.isFinite(decal.y) ? decal.y : 0;
+      const w = Number.isFinite(decal.w) ? decal.w : this.world.width * tileSize;
+      const h = Number.isFinite(decal.h) ? decal.h : this.world.height * tileSize;
+      ctx.save();
+      ctx.globalAlpha = Number.isFinite(decal.alpha) ? Math.max(0, Math.min(1, decal.alpha)) : 1;
+      ctx.drawImage(image, x, y, w, h);
+      ctx.restore();
+    });
   }
 
   drawInteractables(ctx) {
