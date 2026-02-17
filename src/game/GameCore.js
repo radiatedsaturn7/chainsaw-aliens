@@ -5484,7 +5484,7 @@ export default class Game {
     ctx.restore();
   }
 
-  drawWorld(ctx, { showDoors = false } = {}) {
+  drawWorld(ctx, { showDoors = false, decalAlphaMultiplier = 1 } = {}) {
     const tileSize = this.world.tileSize;
     const time = this.worldTime;
     const ignitirTint = this.getIgnitirTint();
@@ -5847,7 +5847,8 @@ export default class Game {
       const h = Number.isFinite(decal.h) ? decal.h : this.world.height * tileSize;
       const rotation = Number.isFinite(decal.rotation) ? decal.rotation : 0;
       ctx.save();
-      ctx.globalAlpha = Number.isFinite(decal.alpha) ? Math.max(0, Math.min(1, decal.alpha)) : 1;
+      const decalAlpha = Number.isFinite(decal.alpha) ? Math.max(0, Math.min(1, decal.alpha)) : 1;
+      ctx.globalAlpha = decalAlpha * Math.max(0, Math.min(1, decalAlphaMultiplier));
       if (Math.abs(rotation) > 0.001) {
         const centerX = x + w * 0.5;
         const centerY = y + h * 0.5;

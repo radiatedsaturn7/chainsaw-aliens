@@ -1114,6 +1114,12 @@ export default class Editor {
       this.redo();
     }
 
+    if (input.wasPressedCode('Delete') || input.wasPressedCode('Backspace')) {
+      if (this.getActivePanelTab() === 'graphics' && this.selectedDecalId) {
+        this.deleteSelectedDecal();
+      }
+    }
+
     const panSpeed = 320 * dt * (1 / this.zoom);
     if (!input.isShiftDown()) {
       if (input.isDownCode('ArrowLeft')) this.camera.x -= panSpeed;
@@ -1543,6 +1549,30 @@ export default class Editor {
           label: 'Reset Orientation',
           tooltip: 'Reset selected decal orientation',
           onClick: () => { this.resetSelectedDecalOrientation(); }
+        },
+        {
+          id: 'graphics-decal-bring-forward',
+          label: 'Bring Forward',
+          tooltip: 'Move selected decal one layer up',
+          onClick: () => { this.reorderSelectedDecal('forward'); }
+        },
+        {
+          id: 'graphics-decal-bring-front',
+          label: 'Bring to Front',
+          tooltip: 'Move selected decal to top layer',
+          onClick: () => { this.reorderSelectedDecal('front'); }
+        },
+        {
+          id: 'graphics-decal-send-backward',
+          label: 'Send Backward',
+          tooltip: 'Move selected decal one layer down',
+          onClick: () => { this.reorderSelectedDecal('backward'); }
+        },
+        {
+          id: 'graphics-decal-send-back',
+          label: 'Send to Back',
+          tooltip: 'Move selected decal to bottom layer',
+          onClick: () => { this.reorderSelectedDecal('back'); }
         },
         {
           id: 'graphics-delete-decal',
@@ -2442,6 +2472,55 @@ Level size:`, `${current.width}x${current.height}`);
     this.addDecalImage(selected.imageDataUrl, selected.name || null);
   }
 
+  getSelectedDecal() {
+    return this.ensureDecals().find((entry) => entry.id === this.selectedDecalId) || null;
+  }
+
+  isWorldPointInsideDecal(decal, worldX, worldY) {
+    if (!decal) return false;
+    const x = Number.isFinite(decal.x) ? decal.x : 0;
+    const y = Number.isFinite(decal.y) ? decal.y : 0;
+    const w = Math.max(1, Number.isFinite(decal.w) ? decal.w : 1);
+    const h = Math.max(1, Number.isFinite(decal.h) ? decal.h : 1);
+    const rotation = Number.isFinite(decal.rotation) ? decal.rotation : 0;
+    if (Math.abs(rotation) <= 0.001) {
+      return worldX >= x && worldX <= x + w && worldY >= y && worldY <= y + h;
+    }
+    const centerX = x + w * 0.5;
+    const centerY = y + h * 0.5;
+    const dx = worldX - centerX;
+    const dy = worldY - centerY;
+    const rad = (-rotation * Math.PI) / 180;
+    const localX = dx * Math.cos(rad) - dy * Math.sin(rad);
+    const localY = dx * Math.sin(rad) + dy * Math.cos(rad);
+    return Math.abs(localX) <= w * 0.5 && Math.abs(localY) <= h * 0.5;
+  }
+
+  findTopDecalAtWorldPoint(worldX, worldY) {
+    const decals = this.ensureDecals();
+    for (let index = decals.length - 1; index >= 0; index -= 1) {
+      const decal = decals[index];
+      if (this.isWorldPointInsideDecal(decal, worldX, worldY)) {
+        return decal;
+      }
+    }
+    return null;
+  }
+
+  selectDecalAtScreenPoint(screenX, screenY, { allowClear = true } = {}) {
+    const world = this.screenToWorld(screenX, screenY);
+    const decal = this.findTopDecalAtWorldPoint(world.x, world.y);
+    if (decal) {
+      this.selectedDecalId = decal.id;
+      this.setGraphicsStatus(`Selected ${decal.name || decal.id}`);
+      return decal;
+    }
+    if (allowClear) {
+      this.selectedDecalId = null;
+    }
+    return null;
+  }
+
   adjustSelectedDecalZoom(factor) {
     const decal = this.ensureDecals().find((entry) => entry.id === this.selectedDecalId);
     if (!decal) {
@@ -2492,6 +2571,32 @@ Level size:`, `${current.width}x${current.height}`);
     this.selectedDecalId = decals[0]?.id || null;
     this.persistAutosave();
     this.setGraphicsStatus('Decal removed');
+  }
+
+  reorderSelectedDecal(direction) {
+    const decals = this.ensureDecals();
+    if (decals.length <= 1) return;
+    const index = decals.findIndex((decal) => decal.id === this.selectedDecalId);
+    if (index < 0) {
+      this.setGraphicsStatus('No decal selected');
+      return;
+    }
+    let nextIndex = index;
+    if (direction === 'forward') nextIndex = Math.min(decals.length - 1, index + 1);
+    if (direction === 'backward') nextIndex = Math.max(0, index - 1);
+    if (direction === 'front') nextIndex = decals.length - 1;
+    if (direction === 'back') nextIndex = 0;
+    if (nextIndex === index) return;
+    const [decal] = decals.splice(index, 1);
+    decals.splice(nextIndex, 0, decal);
+    this.persistAutosave();
+    const labelMap = {
+      forward: 'Decal brought forward',
+      backward: 'Decal sent backward',
+      front: 'Decal moved to front',
+      back: 'Decal moved to back'
+    };
+    this.setGraphicsStatus(labelMap[direction] || 'Decal order changed');
   }
 
   editSelectedDecal() {
@@ -4722,6 +4827,12 @@ Level size:`, `${current.width}x${current.height}`);
 
     if (this.handleUIClick(payload.x, payload.y)) return;
 
+    if (this.getActivePanelTab() === 'graphics' && this.isPointerInEditorArea(payload.x, payload.y)) {
+      if ((payload.button ?? 0) === 0) {
+        this.selectDecalAtScreenPoint(payload.x, payload.y, { allowClear: true });
+      }
+      return;
+    }
 
     if (this.mode === 'pixel') {
       const paletteHit = this.pixelPaletteBounds.find((bounds) => this.isPointInBounds(payload.x, payload.y, bounds));
@@ -6308,6 +6419,13 @@ Level size:`, `${current.width}x${current.height}`);
     return tileX >= 0 && tileY >= 0 && tileX < this.game.world.width && tileY < this.game.world.height;
   }
 
+  getDecalOverlayAlpha() {
+    if (this.mode === 'tile' && this.tileTool === 'paint') {
+      return 0.38;
+    }
+    return 1;
+  }
+
   draw(ctx) {
     const { canvas } = this.game;
     this.updateLayoutBounds(canvas.width, canvas.height);
@@ -6318,7 +6436,7 @@ Level size:`, `${current.width}x${current.height}`);
     ctx.save();
     ctx.scale(this.zoom, this.zoom);
     ctx.translate(-this.camera.x, -this.camera.y);
-    this.game.drawWorld(ctx, { showDoors: true });
+    this.game.drawWorld(ctx, { showDoors: true, decalAlphaMultiplier: this.getDecalOverlayAlpha() });
     this.drawEditorMarkers(ctx);
     this.drawGrid(ctx);
     this.drawCursor(ctx);
@@ -6432,6 +6550,27 @@ Level size:`, `${current.width}x${current.height}`);
         (maxX - minX + 1) * tileSize,
         (maxY - minY + 1) * tileSize
       );
+      ctx.restore();
+    }
+
+    const selectedDecal = this.getSelectedDecal();
+    if (selectedDecal) {
+      const x = Number.isFinite(selectedDecal.x) ? selectedDecal.x : 0;
+      const y = Number.isFinite(selectedDecal.y) ? selectedDecal.y : 0;
+      const w = Math.max(1, Number.isFinite(selectedDecal.w) ? selectedDecal.w : tileSize);
+      const h = Math.max(1, Number.isFinite(selectedDecal.h) ? selectedDecal.h : tileSize);
+      const rotation = Number.isFinite(selectedDecal.rotation) ? selectedDecal.rotation : 0;
+      ctx.save();
+      ctx.strokeStyle = this.getActivePanelTab() === 'graphics' ? 'rgba(255, 220, 120, 0.95)' : 'rgba(255,255,255,0.7)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 4]);
+      if (Math.abs(rotation) > 0.001) {
+        ctx.translate(x + w * 0.5, y + h * 0.5);
+        ctx.rotate(rotation * (Math.PI / 180));
+        ctx.strokeRect(-w * 0.5, -h * 0.5, w, h);
+      } else {
+        ctx.strokeRect(x, y, w, h);
+      }
       ctx.restore();
     }
     for (let y = 0; y < this.game.world.height; y += 1) {
@@ -7434,6 +7573,34 @@ Level size:`, `${current.width}x${current.height}`);
               active: false,
               tooltip: 'Reset selected decal orientation',
               onClick: () => { this.resetSelectedDecalOrientation(); }
+            },
+            {
+              id: 'graphics-decal-bring-forward',
+              label: 'BRING FORWARD',
+              active: false,
+              tooltip: 'Move selected decal one layer up',
+              onClick: () => { this.reorderSelectedDecal('forward'); }
+            },
+            {
+              id: 'graphics-decal-bring-front',
+              label: 'BRING TO FRONT',
+              active: false,
+              tooltip: 'Move selected decal to top layer',
+              onClick: () => { this.reorderSelectedDecal('front'); }
+            },
+            {
+              id: 'graphics-decal-send-backward',
+              label: 'SEND BACKWARD',
+              active: false,
+              tooltip: 'Move selected decal one layer down',
+              onClick: () => { this.reorderSelectedDecal('backward'); }
+            },
+            {
+              id: 'graphics-decal-send-back',
+              label: 'SEND TO BACK',
+              active: false,
+              tooltip: 'Move selected decal to bottom layer',
+              onClick: () => { this.reorderSelectedDecal('back'); }
             },
             {
               id: 'graphics-delete-decal',
