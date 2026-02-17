@@ -37,6 +37,7 @@ export default class PixelStudio {
     this.game = game;
     this.sharedMenu = new SharedEditorMenu();
     this.tileLibrary = TILE_LIBRARY;
+    this.decalEditSession = null;
     this.activeTile = this.tileLibrary[0] || null;
     this.tileIndex = 0;
     this.currentDocumentRef = null;
@@ -274,6 +275,7 @@ export default class PixelStudio {
   }
 
   syncTileData() {
+    if (this.decalEditSession) return;
     const tileChar = this.activeTile?.char;
     if (!tileChar || !this.game?.world?.pixelArt?.tiles) return;
     const tiles = this.game.world.pixelArt.tiles;
@@ -307,7 +309,75 @@ export default class PixelStudio {
   }
 
   exitToMainMenu() {
+    this.commitDecalEditIfNeeded();
     this.game.exitEditorToMainMenu('pixel');
+  }
+
+  async loadDecalImageForEditing(decalId, imageDataUrl) {
+    if (!imageDataUrl) return;
+    const image = await new Promise((resolve, reject) => {
+      const next = new Image();
+      next.onload = () => resolve(next);
+      next.onerror = reject;
+      next.src = imageDataUrl;
+    });
+    const width = clamp(Math.round(image.width || 16), 8, 512);
+    const height = clamp(Math.round(image.height || 16), 8, 512);
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const drawCtx = canvas.getContext('2d');
+    drawCtx.drawImage(image, 0, 0, width, height);
+    const pixels = drawCtx.getImageData(0, 0, width, height).data;
+    const layer = createLayer(width, height, 'Decal Layer');
+    for (let i = 0; i < width * height; i += 1) {
+      const r = pixels[i * 4];
+      const g = pixels[i * 4 + 1];
+      const b = pixels[i * 4 + 2];
+      const a = pixels[i * 4 + 3];
+      layer.pixels[i] = rgbaToUint32({ r, g, b, a });
+    }
+    this.decalEditSession = { decalId };
+    this.canvasState.width = width;
+    this.canvasState.height = height;
+    this.animation.frames = [createFrame([layer], 120)];
+    this.animation.currentFrameIndex = 0;
+    this.canvasState.activeLayerIndex = 0;
+    this.artSizeDraft.width = width;
+    this.artSizeDraft.height = height;
+    this.setFrameLayers(this.animation.frames[0].layers);
+    this.resetFocus();
+  }
+
+  exportCurrentFrameDataUrl() {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const composite = compositeLayers(this.currentFrame.layers, width, height);
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.createImageData(width, height);
+    for (let i = 0; i < composite.length; i += 1) {
+      const rgba = uint32ToRgba(composite[i]);
+      const offset = i * 4;
+      imageData.data[offset] = rgba.r;
+      imageData.data[offset + 1] = rgba.g;
+      imageData.data[offset + 2] = rgba.b;
+      imageData.data[offset + 3] = rgba.a;
+    }
+    ctx.putImageData(imageData, 0, 0);
+    return canvas.toDataURL('image/png');
+  }
+
+  commitDecalEditIfNeeded() {
+    if (!this.decalEditSession?.decalId) return;
+    const decal = (this.game.world.decals || []).find((entry) => entry.id === this.decalEditSession.decalId);
+    if (decal) {
+      decal.imageDataUrl = this.exportCurrentFrameDataUrl();
+      this.game.editor?.persistAutosave?.();
+    }
+    this.decalEditSession = null;
   }
 
 
@@ -2622,7 +2692,9 @@ export default class PixelStudio {
         const onClick = item.footer
           ? (item.id === 'close-menu' ? () => this.closeFileMenu() : () => this.exitToMainMenu())
           : (item.onClick || item.action);
-        this.drawButton(ctx, bounds, item.label, false, { fontSize: isMobile ? 12 : 12 });
+        const footerExitLabel = this.game.pixelStudioReturnState === 'editor' ? 'Return To Level Editor' : 'Exit to Main Menu';
+        const label = item.footer && item.id !== 'close-menu' ? footerExitLabel : item.label;
+        this.drawButton(ctx, bounds, label, false, { fontSize: isMobile ? 12 : 12 });
         this.uiButtons.push({ bounds, onClick });
         this.registerFocusable('file', bounds, onClick);
       }

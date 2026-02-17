@@ -90,6 +90,7 @@ export default class World {
     this.musicZones = [];
     this.midiTracks = [];
     this.triggers = [];
+    this.decals = [];
     this.data = null;
     this.rooms = [];
     this.roomIndexByTile = [];
@@ -145,6 +146,7 @@ export default class World {
         params: { ...(action?.params || {}) }
       })) : []
     }));
+    this.decals = (data.decals || []).map((decal) => ({ ...decal }));
     this.data = { ...data, tiles: normalizedTiles };
     if (this.data) {
       this.data.elevatorPaths = this.elevatorPaths;
@@ -153,6 +155,7 @@ export default class World {
       this.data.musicZones = this.musicZones;
       this.data.midiTracks = this.midiTracks;
       this.data.triggers = this.triggers;
+      this.data.decals = this.decals;
     }
     this.rebuildCaches();
   }
