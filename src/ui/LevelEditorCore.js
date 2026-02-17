@@ -465,6 +465,7 @@ export default class Editor {
     this.graphicsStatusMessage = '';
     this.graphicsStatusTimer = 0;
     this.lastGraphicsScreenshotDataUrl = null;
+    this.lastGraphicsScreenshotWorldBounds = null;
     this.selectedDecalId = null;
     this.captureWithoutUiRequested = false;
     this.playtestPressTimer = null;
@@ -1514,6 +1515,36 @@ export default class Editor {
           onClick: () => { this.editSelectedDecal(); }
         },
         {
+          id: 'graphics-zoom-in-decal',
+          label: 'Decal Zoom +',
+          tooltip: 'Zoom selected decal in',
+          onClick: () => { this.adjustSelectedDecalZoom(1.1); }
+        },
+        {
+          id: 'graphics-zoom-out-decal',
+          label: 'Decal Zoom -',
+          tooltip: 'Zoom selected decal out',
+          onClick: () => { this.adjustSelectedDecalZoom(1 / 1.1); }
+        },
+        {
+          id: 'graphics-rotate-left-decal',
+          label: 'Rotate Left',
+          tooltip: 'Rotate selected decal left',
+          onClick: () => { this.rotateSelectedDecal(-15); }
+        },
+        {
+          id: 'graphics-rotate-right-decal',
+          label: 'Rotate Right',
+          tooltip: 'Rotate selected decal right',
+          onClick: () => { this.rotateSelectedDecal(15); }
+        },
+        {
+          id: 'graphics-reset-decal-orientation',
+          label: 'Reset Orientation',
+          tooltip: 'Reset selected decal orientation',
+          onClick: () => { this.resetSelectedDecalOrientation(); }
+        },
+        {
           id: 'graphics-delete-decal',
           label: 'Delete Decal',
           tooltip: 'Remove selected decal',
@@ -2294,6 +2325,7 @@ Level size:`, `${current.width}x${current.height}`);
     this.game.world.decals.forEach((decal, index) => {
       if (!decal.id) decal.id = `decal-${Date.now()}-${index}`;
       if (typeof decal.name !== 'string') decal.name = `Decal ${index + 1}`;
+      if (!Number.isFinite(decal.rotation)) decal.rotation = 0;
     });
     return this.game.world.decals;
   }
@@ -2314,6 +2346,7 @@ Level size:`, `${current.width}x${current.height}`);
       const canvas = this.game.canvas;
       const dataUrl = canvas.toDataURL('image/png');
       this.lastGraphicsScreenshotDataUrl = dataUrl;
+      this.lastGraphicsScreenshotWorldBounds = this.getVisibleWorldBounds();
       if (navigator?.clipboard?.write && typeof ClipboardItem !== 'undefined') {
         const blob = await (await fetch(dataUrl)).blob();
         await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
@@ -2329,17 +2362,66 @@ Level size:`, `${current.width}x${current.height}`);
     }
   }
 
-  addDecalImage(imageDataUrl, sourceName = null) {
+  async getImageDimensions(imageDataUrl) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve({ width: image.naturalWidth || image.width || 1, height: image.naturalHeight || image.height || 1 });
+      image.onerror = () => reject(new Error('Failed to decode image'));
+      image.src = imageDataUrl;
+    });
+  }
+
+  getVisibleWorldBounds() {
+    const canvasW = this.game.canvas?.width || 1;
+    const canvasH = this.game.canvas?.height || 1;
+    const boundsX = Number.isFinite(this.editorBounds?.x) ? this.editorBounds.x : 0;
+    const boundsY = Number.isFinite(this.editorBounds?.y) ? this.editorBounds.y : 0;
+    const boundsW = Number.isFinite(this.editorBounds?.w) && this.editorBounds.w > 0 ? this.editorBounds.w : canvasW;
+    const boundsH = Number.isFinite(this.editorBounds?.h) && this.editorBounds.h > 0 ? this.editorBounds.h : canvasH;
+    return {
+      x: this.camera.x + boundsX / this.zoom,
+      y: this.camera.y + boundsY / this.zoom,
+      w: boundsW / this.zoom,
+      h: boundsH / this.zoom
+    };
+  }
+
+  resolveDecalPlacement(imageWidth, imageHeight) {
+    const shot = this.lastGraphicsScreenshotWorldBounds;
+    if (shot && Number.isFinite(shot.x) && Number.isFinite(shot.y) && shot.w > 0 && shot.h > 0) {
+      return { x: shot.x, y: shot.y, w: shot.w, h: shot.h };
+    }
+    const visible = this.getVisibleWorldBounds();
+    const fitScale = Math.min(visible.w / imageWidth, visible.h / imageHeight);
+    const w = imageWidth * fitScale;
+    const h = imageHeight * fitScale;
+    return {
+      x: visible.x + (visible.w - w) * 0.5,
+      y: visible.y + (visible.h - h) * 0.5,
+      w,
+      h
+    };
+  }
+
+  async addDecalImage(imageDataUrl, sourceName = null) {
     if (!imageDataUrl) return;
+    let imageSize = { width: 1, height: 1 };
+    try {
+      imageSize = await this.getImageDimensions(imageDataUrl);
+    } catch (error) {
+      console.warn('Unable to determine decal image dimensions', error);
+    }
+    const placement = this.resolveDecalPlacement(imageSize.width, imageSize.height);
     const decals = this.ensureDecals();
     const decal = {
       id: `decal-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
       name: sourceName ? `Decal ${decals.length + 1}: ${sourceName}` : `Decal ${decals.length + 1}`,
       imageDataUrl,
-      x: 0,
-      y: 0,
-      w: this.game.world.width * this.game.world.tileSize,
-      h: this.game.world.height * this.game.world.tileSize
+      x: placement.x,
+      y: placement.y,
+      w: placement.w,
+      h: placement.h,
+      rotation: 0
     };
     decals.push(decal);
     this.selectedDecalId = decal.id;
@@ -2358,6 +2440,47 @@ Level size:`, `${current.width}x${current.height}`);
       return;
     }
     this.addDecalImage(selected.imageDataUrl, selected.name || null);
+  }
+
+  adjustSelectedDecalZoom(factor) {
+    const decal = this.ensureDecals().find((entry) => entry.id === this.selectedDecalId);
+    if (!decal) {
+      this.setGraphicsStatus('No decal selected');
+      return;
+    }
+    const nextW = Math.max(8, (Number.isFinite(decal.w) ? decal.w : 8) * factor);
+    const nextH = Math.max(8, (Number.isFinite(decal.h) ? decal.h : 8) * factor);
+    const centerX = (Number.isFinite(decal.x) ? decal.x : 0) + (Number.isFinite(decal.w) ? decal.w : nextW) * 0.5;
+    const centerY = (Number.isFinite(decal.y) ? decal.y : 0) + (Number.isFinite(decal.h) ? decal.h : nextH) * 0.5;
+    decal.w = nextW;
+    decal.h = nextH;
+    decal.x = centerX - nextW * 0.5;
+    decal.y = centerY - nextH * 0.5;
+    this.persistAutosave();
+    this.setGraphicsStatus(`Decal zoom ${factor > 1 ? 'in' : 'out'}`);
+  }
+
+  rotateSelectedDecal(deltaDegrees) {
+    const decal = this.ensureDecals().find((entry) => entry.id === this.selectedDecalId);
+    if (!decal) {
+      this.setGraphicsStatus('No decal selected');
+      return;
+    }
+    const current = Number.isFinite(decal.rotation) ? decal.rotation : 0;
+    decal.rotation = current + deltaDegrees;
+    this.persistAutosave();
+    this.setGraphicsStatus(`Decal rotated to ${Math.round(decal.rotation)}°`);
+  }
+
+  resetSelectedDecalOrientation() {
+    const decal = this.ensureDecals().find((entry) => entry.id === this.selectedDecalId);
+    if (!decal) {
+      this.setGraphicsStatus('No decal selected');
+      return;
+    }
+    decal.rotation = 0;
+    this.persistAutosave();
+    this.setGraphicsStatus('Decal orientation reset');
   }
 
   deleteSelectedDecal() {
@@ -7276,6 +7399,41 @@ Level size:`, `${current.width}x${current.height}`);
               active: false,
               tooltip: 'Open selected decal in Pixel Studio for editing',
               onClick: () => { this.editSelectedDecal(); }
+            },
+            {
+              id: 'graphics-zoom-in-decal',
+              label: 'DECAL ZOOM +',
+              active: false,
+              tooltip: 'Zoom selected decal in',
+              onClick: () => { this.adjustSelectedDecalZoom(1.1); }
+            },
+            {
+              id: 'graphics-zoom-out-decal',
+              label: 'DECAL ZOOM -',
+              active: false,
+              tooltip: 'Zoom selected decal out',
+              onClick: () => { this.adjustSelectedDecalZoom(1 / 1.1); }
+            },
+            {
+              id: 'graphics-rotate-left-decal',
+              label: 'ROTATE LEFT',
+              active: false,
+              tooltip: 'Rotate selected decal left',
+              onClick: () => { this.rotateSelectedDecal(-15); }
+            },
+            {
+              id: 'graphics-rotate-right-decal',
+              label: 'ROTATE RIGHT',
+              active: false,
+              tooltip: 'Rotate selected decal right',
+              onClick: () => { this.rotateSelectedDecal(15); }
+            },
+            {
+              id: 'graphics-reset-decal-orientation',
+              label: 'RESET ORIENTATION',
+              active: false,
+              tooltip: 'Reset selected decal orientation',
+              onClick: () => { this.resetSelectedDecalOrientation(); }
             },
             {
               id: 'graphics-delete-decal',
