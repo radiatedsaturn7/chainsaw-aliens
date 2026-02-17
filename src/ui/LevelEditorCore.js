@@ -917,11 +917,11 @@ export default class Editor {
     ];
     const focus = candidates.find((point) => this.isFinitePoint(point)) || { x: 0, y: 0 };
     this.zoom = 1;
+    this.updateLayoutBounds(canvas.width, canvas.height);
     const bounds = this.getCameraBounds();
     this.camera.x = clamp(focus.x - canvas.width / 2, bounds.minX, bounds.maxX);
     this.camera.y = clamp(focus.y - canvas.height / 2, bounds.minY, bounds.maxY);
     this.focusOverride = null;
-    this.updateLayoutBounds(canvas.width, canvas.height);
     this.sanitizeView('resetView');
   }
 
@@ -4848,19 +4848,20 @@ Level size:`, `${current.width}x${current.height}`);
     const tileSize = this.game.world.tileSize;
     const worldW = this.game.world.width * tileSize;
     const worldH = this.game.world.height * tileSize;
-    const viewW = this.game.canvas.width / this.zoom;
-    const viewH = this.game.canvas.height / this.zoom;
-    let extraLeft = 0;
-    let extraRight = 0;
-    if (this.isMobileLayout()) {
-      extraLeft = getSharedMobileRailWidth(this.game.canvas.width, this.game.canvas.height) / this.zoom;
-    } else {
-      extraRight = 372 / this.zoom;
-    }
-    const minX = -extraLeft;
-    const maxX = Math.max(worldW - viewW + extraRight, minX);
-    const minY = 0;
-    const maxY = Math.max(worldH - viewH, minY);
+    const canvasW = this.game.canvas.width;
+    const canvasH = this.game.canvas.height;
+    const editorX = Number.isFinite(this.editorBounds?.x) ? this.editorBounds.x : 0;
+    const editorY = Number.isFinite(this.editorBounds?.y) ? this.editorBounds.y : 0;
+    const editorW = Number.isFinite(this.editorBounds?.w) && this.editorBounds.w > 0
+      ? this.editorBounds.w
+      : canvasW;
+    const editorH = Number.isFinite(this.editorBounds?.h) && this.editorBounds.h > 0
+      ? this.editorBounds.h
+      : canvasH;
+    const minX = -editorX / this.zoom;
+    const maxX = Math.max(worldW - (editorX + editorW) / this.zoom, minX);
+    const minY = -editorY / this.zoom;
+    const maxY = Math.max(worldH - (editorY + editorH) / this.zoom, minY);
     return { minX, maxX, minY, maxY };
   }
 
@@ -7895,8 +7896,7 @@ Level size:`, `${current.width}x${current.height}`);
     this.playButtonBounds = { x: playX, y: playY, w: playButtonW, h: playButtonH };
     drawSharedPlayStopButton(ctx, this.playButtonBounds, {
       isActive: false,
-      label: 'Play',
-      fontSize: this.isMobileLayout() ? 16 : 15
+      stopWhenActive: true
     });
 
     const enemyInfo = this.enemyType?.description;
