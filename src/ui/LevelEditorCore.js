@@ -471,6 +471,7 @@ export default class Editor {
     };
     this.zoomSlider = {
       bounds: { x: 0, y: 0, w: 0, h: 0 },
+      playZoomBounds: { x: 0, y: 0, w: 0, h: 0 },
       active: false,
       id: null
     };
@@ -2031,6 +2032,21 @@ Level size:`, `${current.width}x${current.height}`);
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
     this.persistAutosave();
+  }
+
+  closeTriggerEditor() {
+    this.triggerEditorOpen = false;
+    this.triggerEditorView = 'main';
+    this.triggerActionDraft = null;
+    this.triggerEditingActionId = null;
+  }
+
+  applyTriggerEditor(trigger) {
+    if (this.triggerEditorView === 'edit-action' && this.triggerActionDraft) {
+      this.commitTriggerActionDraft(trigger);
+    }
+    this.persistAutosave();
+    this.closeTriggerEditor();
   }
 
   deleteEditingTriggerAction(trigger) {
@@ -4202,6 +4218,10 @@ Level size:`, `${current.width}x${current.height}`);
       }
 
       if (this.isPointInBounds(payload.x, payload.y, this.zoomSlider.bounds)) {
+        if (this.isPointInBounds(payload.x, payload.y, this.zoomSlider.playZoomBounds)) {
+          this.setZoom(1, payload.x, payload.y);
+          return;
+        }
         this.zoomSlider.active = true;
         this.zoomSlider.id = payload.id ?? null;
         this.updateZoomFromSlider(payload.x);
@@ -6420,11 +6440,13 @@ Level size:`, `${current.width}x${current.height}`);
         w: sliderWidth,
         h: sliderHeight + 28
       };
+      this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
     } else {
       this.panJoystick.center = { x: 0, y: 0 };
       this.panJoystick.radius = 0;
       this.panJoystick.knobRadius = 0;
       this.zoomSlider.bounds = { x: 0, y: 0, w: 0, h: 0 };
+      this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
     }
 
     if (this.isMobileLayout()) {
@@ -7170,8 +7192,8 @@ Level size:`, `${current.width}x${current.height}`);
       if (selected) {
         const panelWidth = this.isMobileLayout() ? Math.min(width - 24, 440) : 420;
         const panelHeight = this.isMobileLayout() ? Math.min(height - 24, 620) : 560;
-        const panelX = this.isMobileLayout() ? 12 : width - panelWidth - (this.isMobileLayout() ? 12 : 384);
-        const panelY = 12;
+        const panelX = (width - panelWidth) / 2;
+        const panelY = (height - panelHeight) / 2;
         const levelNames = this.getTriggerLevelNames();
         const enemyOptions = [...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES].map((entry) => entry.id);
         const sectionButtonH = 40;
@@ -7179,8 +7201,8 @@ Level size:`, `${current.width}x${current.height}`);
         const draft = this.triggerActionDraft;
 
         ctx.save();
-        ctx.globalAlpha = UI_SUITE.editorPanel.alpha;
-        ctx.fillStyle = UI_SUITE.editorPanel.background;
+        ctx.globalAlpha = 0.95;
+        ctx.fillStyle = 'rgba(8,12,18,0.97)';
         ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
         ctx.strokeStyle = UI_SUITE.editorPanel.border;
         ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
@@ -7300,10 +7322,15 @@ Level size:`, `${current.width}x${current.height}`);
             numericRow('Duration (ms)', 'durationMs', 100, 0, 15000);
           }
           if (this.triggerEditingActionId) {
-            const deleteY = panelY + panelHeight - 52;
+            const deleteY = panelY + panelHeight - 100;
             drawButton(panelX + 12, deleteY, panelWidth - 24, 40, 'Delete Action', false, () => { this.deleteEditingTriggerAction(selected); }, 'Delete this action');
           }
         }
+
+        const footerY = panelY + panelHeight - 52;
+        const footerButtonW = (panelWidth - 36) / 2;
+        drawButton(panelX + 12, footerY, footerButtonW, 40, 'Cancel', false, () => { this.closeTriggerEditor(); }, 'Close trigger editor');
+        drawButton(panelX + 20 + footerButtonW, footerY, footerButtonW, 40, 'Apply', false, () => { this.applyTriggerEditor(selected); }, 'Apply trigger changes');
         ctx.restore();
       }
     }
@@ -7687,6 +7714,22 @@ Level size:`, `${current.width}x${current.height}`);
       ctx.fill();
       ctx.strokeStyle = 'rgba(0,0,0,0.7)';
       ctx.stroke();
+
+      const playZoomT = this.zoomToSliderT(1);
+      const playZoomX = sliderX + playZoomT * sliderWidth;
+      const markerRadius = Math.max(5, sliderHeight * 0.75);
+      ctx.fillStyle = 'rgba(0,200,255,0.95)';
+      ctx.beginPath();
+      ctx.arc(playZoomX, sliderCenterY, markerRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.75)';
+      ctx.stroke();
+      this.zoomSlider.playZoomBounds = {
+        x: playZoomX - markerRadius - 8,
+        y: sliderCenterY - markerRadius - 8,
+        w: markerRadius * 2 + 16,
+        h: markerRadius * 2 + 16
+      };
       ctx.restore();
 
       const joystickKnobX = joystickCenter.x + this.panJoystick.dx * joystickRadius;
