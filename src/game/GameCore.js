@@ -5845,9 +5845,18 @@ export default class Game {
       const y = Number.isFinite(decal.y) ? decal.y : 0;
       const w = Number.isFinite(decal.w) ? decal.w : this.world.width * tileSize;
       const h = Number.isFinite(decal.h) ? decal.h : this.world.height * tileSize;
+      const rotation = Number.isFinite(decal.rotation) ? decal.rotation : 0;
       ctx.save();
       ctx.globalAlpha = Number.isFinite(decal.alpha) ? Math.max(0, Math.min(1, decal.alpha)) : 1;
-      ctx.drawImage(image, x, y, w, h);
+      if (Math.abs(rotation) > 0.001) {
+        const centerX = x + w * 0.5;
+        const centerY = y + h * 0.5;
+        ctx.translate(centerX, centerY);
+        ctx.rotate(rotation * (Math.PI / 180));
+        ctx.drawImage(image, -w * 0.5, -h * 0.5, w, h);
+      } else {
+        ctx.drawImage(image, x, y, w, h);
+      }
       ctx.restore();
     });
   }
