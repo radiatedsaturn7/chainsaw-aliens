@@ -7233,6 +7233,59 @@ Level size:`, `${current.width}x${current.height}`);
             }
           })));
           columns = 1;
+        } else if (activeTab === 'graphics') {
+          const decals = this.ensureDecals();
+          const selected = decals.find((decal) => decal.id === this.selectedDecalId) || decals[0] || null;
+          if (selected) this.selectedDecalId = selected.id;
+          items = [
+            {
+              id: 'graphics-take-screenshot',
+              label: 'TAKE SCREENSHOT',
+              active: false,
+              tooltip: 'Copy current level view (without UI) to clipboard',
+              onClick: () => { this.takeGraphicsScreenshot(); }
+            },
+            {
+              id: 'graphics-apply-decal',
+              label: 'APPLY DECAL (UPLOAD)',
+              active: false,
+              tooltip: 'Upload an image file and apply as world decal',
+              onClick: () => { this.openDecalUploadDialog(); }
+            },
+            {
+              id: 'graphics-apply-selected',
+              label: 'APPLY SELECTED IMAGE',
+              active: false,
+              tooltip: 'Duplicate selected decal image into a new decal',
+              onClick: () => { this.applySelectedDecalImage(); }
+            },
+            {
+              id: 'graphics-cycle-decal',
+              label: `SELECTED: ${selected ? (selected.name || selected.id) : 'NONE'}`,
+              active: false,
+              tooltip: 'Cycle selected decal',
+              onClick: () => {
+                if (!decals.length) return;
+                const ids = decals.map((decal) => decal.id);
+                this.selectedDecalId = this.cycleOption(this.selectedDecalId || ids[0], ids, 1);
+              }
+            },
+            {
+              id: 'graphics-edit-decal',
+              label: 'EDIT',
+              active: false,
+              tooltip: 'Open selected decal in Pixel Studio for editing',
+              onClick: () => { this.editSelectedDecal(); }
+            },
+            {
+              id: 'graphics-delete-decal',
+              label: 'DELETE DECAL',
+              active: false,
+              tooltip: 'Remove selected decal',
+              onClick: () => { this.deleteSelectedDecal(); }
+            }
+          ];
+          columns = 1;
         } else if (activeTab === 'midi') {
           const tracks = this.ensureMidiTracks();
           items = [
