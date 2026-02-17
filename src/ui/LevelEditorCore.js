@@ -166,6 +166,7 @@ const POWERUP_TYPES = [
 ];
 
 const TRIGGER_CONDITIONS = [
+  'On level start',
   'When player enters this location',
   'When player presses attack',
   'When player presses jump',
@@ -199,6 +200,7 @@ const TRIGGER_ANIMATION_OPTIONS = ['spark-burst', 'explosion-small', 'portal-ope
 const TRIGGER_TARGET_OPTIONS = ['player', 'enemy', 'object'];
 const TRIGGER_ENEMY_TARGET_OPTIONS = ['nearest', 'all-in-zone', 'by-tag'];
 const TRIGGER_TEXT_OPTIONS = ['Warning!', 'Door unlocked.', 'Boss incoming!', 'Checkpoint reached.', 'Objective updated.'];
+const TRIGGER_TEXT_POSITIONS = ['top', 'middle', 'bottom'];
 
 const BIOME_THEMES = [
   { id: 'white', name: 'White', color: '#ffffff' },
@@ -318,6 +320,8 @@ export default class Editor {
     this.triggerEditorOpen = false;
     this.selectedTriggerId = null;
     this.triggerEditorView = 'main';
+    this.triggerPlacementMode = null;
+    this.triggerOptionPicker = null;
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
     this.triggerEditorScroll = 0;
@@ -2006,7 +2010,13 @@ Level size:`, `${current.width}x${current.height}`);
         base.params = { musicId: MUSIC_TRACKS[0]?.id || 'ambient-rift', durationMs: 1000 };
         break;
       case 'display-text':
-        base.params = { text: TRIGGER_TEXT_OPTIONS[0], durationMs: 2000 };
+        base.params = {
+          text: TRIGGER_TEXT_OPTIONS[0],
+          durationMs: 2000,
+          position: TRIGGER_TEXT_POSITIONS[1],
+          background: true,
+          waitForInput: true
+        };
         break;
       case 'wait':
         base.params = { durationMs: 500 };
@@ -2053,6 +2063,8 @@ Level size:`, `${current.width}x${current.height}`);
     this.triggerEditorScrollBounds = null;
     this.triggerEditorScrollDrag = null;
     this.triggerEditorScrollTapCandidate = null;
+    this.triggerPlacementMode = null;
+    this.triggerOptionPicker = null;
   }
 
   applyTriggerEditor(trigger) {
@@ -2076,6 +2088,9 @@ Level size:`, `${current.width}x${current.height}`);
 
   normalizeTrigger(trigger) {
     if (!trigger || typeof trigger !== 'object') return;
+    if (!TRIGGER_CONDITIONS.includes(trigger.condition)) {
+      trigger.condition = TRIGGER_CONDITIONS[0];
+    }
     if (!Array.isArray(trigger.actions)) {
       trigger.actions = [];
       return;
@@ -2093,6 +2108,11 @@ Level size:`, `${current.width}x${current.height}`);
       }
       if (!action.params || typeof action.params !== 'object') {
         action.params = {};
+      }
+      if (action.type === 'display-text') {
+        if (!TRIGGER_TEXT_POSITIONS.includes(action.params.position)) action.params.position = TRIGGER_TEXT_POSITIONS[1];
+        if (typeof action.params.background !== 'boolean') action.params.background = true;
+        if (typeof action.params.waitForInput !== 'boolean') action.params.waitForInput = true;
       }
       return action;
     });
@@ -2143,7 +2163,7 @@ Level size:`, `${current.width}x${current.height}`);
       case 'fade-out':
         return `Duration: ${params.durationMs || 0}ms`;
       case 'display-text':
-        return `"${params.text || ''}" (${params.durationMs || 0}ms)`;
+        return `"${params.text || ''}" ${params.position || 'middle'} ${params.background ? '[box]' : '[plain]'}${params.waitForInput ? ' [input]' : ''}`;
       case 'wait':
         return `${params.durationMs || 0}ms`;
       case 'fade-out-music':
@@ -2153,6 +2173,24 @@ Level size:`, `${current.width}x${current.height}`);
       default:
         return 'No params';
     }
+  }
+
+
+  openTriggerOptionPicker({ title, options, selectedValue, onPick }) {
+    this.triggerOptionPicker = {
+      title: title || 'Select Option',
+      options: options || [],
+      selectedValue,
+      onPick
+    };
+    this.triggerEditorView = 'pick-option';
+    this.triggerEditorScroll = 0;
+  }
+
+  closeTriggerOptionPicker() {
+    this.triggerOptionPicker = null;
+    this.triggerEditorView = 'edit-action';
+    this.triggerEditorScroll = 0;
   }
 
   async saveLevelToStorage(options = {}) {
@@ -4272,6 +4310,20 @@ Level size:`, `${current.width}x${current.height}`);
         moved: false
       };
       this.triggerEditorScrollTapCandidate = { x: payload.x, y: payload.y, id: payload.id ?? null };
+      return;
+    }
+
+    if (this.triggerEditorOpen && this.triggerPlacementMode === 'spawn-enemy' && this.triggerActionDraft) {
+      if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
+      const selectedTrigger = this.getSelectedTrigger();
+      if (!selectedTrigger) return;
+      const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
+      const [zoneX, zoneY, zoneW, zoneH] = selectedTrigger.rect;
+      const centerX = zoneX + Math.floor(zoneW / 2);
+      const centerY = zoneY + Math.floor(zoneH / 2);
+      this.triggerActionDraft.params.offsetX = tileX - centerX;
+      this.triggerActionDraft.params.offsetY = tileY - centerY;
+      this.triggerPlacementMode = null;
       return;
     }
 
@@ -7315,7 +7367,7 @@ Level size:`, `${current.width}x${current.height}`);
           if (draft.type === 'load-level') {
             local += sectionButtonH + 4;
           } else if (draft.type === 'spawn-enemy') {
-            local += sectionButtonH + 4 + numericAdvance + numericAdvance;
+            local += sectionButtonH + 4 + sectionButtonH + 4;
           } else if (draft.type === 'heal-player') {
             local += numericAdvance;
           } else if (draft.type === 'heal-enemy') {
@@ -7331,7 +7383,7 @@ Level size:`, `${current.width}x${current.height}`);
           } else if (draft.type === 'move-entity') {
             local += sectionButtonH + 4 + numericAdvance + numericAdvance;
           } else if (draft.type === 'display-text') {
-            local += sectionButtonH + 4 + numericAdvance;
+            local += sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4 + numericAdvance;
           } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {
             local += numericAdvance;
           } else if (draft.type === 'fade-in-music') {
@@ -7348,6 +7400,9 @@ Level size:`, `${current.width}x${current.height}`);
           contentHeightUsed = measurePickActionContent();
         } else if (this.triggerEditorView === 'edit-action') {
           contentHeightUsed = measureEditActionContent();
+        } else if (this.triggerEditorView === 'pick-option') {
+          const optionCount = this.triggerOptionPicker?.options?.length || 0;
+          contentHeightUsed = contentPadding + sectionButtonH + rowGap + optionCount * (sectionButtonH + 4);
         }
         const maxScroll = Math.max(0, contentHeightUsed - contentClipH);
         this.triggerEditorScrollMax = maxScroll;
@@ -7412,6 +7467,20 @@ Level size:`, `${current.width}x${current.height}`);
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, type.label, false, () => { this.openTriggerActionEditor(this.createTriggerAction(type.id), { isNew: true }); }, `Add action: ${type.label}`);
             y += sectionButtonH + 4;
           });
+        } else if (this.triggerEditorView === 'pick-option') {
+          const picker = this.triggerOptionPicker;
+          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Back', false, () => { this.closeTriggerOptionPicker(); }, 'Return to action');
+          y += sectionButtonH + rowGap;
+          if (picker) {
+            ctx.font = UI_SUITE.editorPanel.bodyFont;
+            ctx.fillStyle = UI_SUITE.colors.muted;
+            ctx.fillText(picker.title, panelX + 12, y + 10);
+            y += 18;
+            picker.options.forEach((option) => {
+              drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, option, picker.selectedValue === option, () => { picker.onPick?.(option); this.closeTriggerOptionPicker(); }, option);
+              y += sectionButtonH + 4;
+            });
+          }
         } else if (this.triggerEditorView === 'edit-action' && draft) {
           const actionLabel = TRIGGER_ACTION_TYPES.find((entry) => entry.id === draft.type)?.label || draft.type;
           drawButton(panelX + 12, y, 110, sectionButtonH, 'Cancel', false, () => { this.triggerEditorView = 'main'; this.triggerActionDraft = null; this.triggerEditingActionId = null; this.triggerEditorScroll = 0; }, 'Cancel editing');
@@ -7428,13 +7497,13 @@ Level size:`, `${current.width}x${current.height}`);
             y += sectionButtonH + 4;
           };
           if (draft.type === 'load-level') {
-            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Level: ${draft.params.levelName || levelNames[0]}`, false, () => { draft.params.levelName = this.cycleOption(draft.params.levelName, levelNames, 1); }, 'Cycle level');
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Level: ${draft.params.levelName || levelNames[0]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Level', options: levelNames, selectedValue: draft.params.levelName || levelNames[0], onPick: (value) => { draft.params.levelName = value; } }); }, 'Pick level');
             y += sectionButtonH + 4;
           } else if (draft.type === 'spawn-enemy') {
-            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Enemy: ${draft.params.enemyType || enemyOptions[0]}`, false, () => { draft.params.enemyType = this.cycleOption(draft.params.enemyType, enemyOptions, 1); }, 'Cycle enemy');
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Enemy: ${draft.params.enemyType || enemyOptions[0]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Enemy', options: enemyOptions, selectedValue: draft.params.enemyType || enemyOptions[0], onPick: (value) => { draft.params.enemyType = value; } }); }, 'Pick enemy');
             y += sectionButtonH + 4;
-            numericRow('Offset X', 'offsetX', 1, -200, 200);
-            numericRow('Offset Y', 'offsetY', 1, -200, 200);
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Spawn Point: (${draft.params.offsetX || 0}, ${draft.params.offsetY || 0})`, this.triggerPlacementMode === 'spawn-enemy', () => { this.triggerPlacementMode = this.triggerPlacementMode === 'spawn-enemy' ? null : 'spawn-enemy'; }, 'Tap, then click in the level to place enemy');
+            y += sectionButtonH + 4;
           } else if (draft.type === 'heal-player' || draft.type === 'heal-enemy') {
             numericRow('Amount', 'amount', 1, 0, 99);
             if (draft.type === 'heal-enemy') {
@@ -7461,7 +7530,13 @@ Level size:`, `${current.width}x${current.height}`);
             numericRow('Delta X', 'dx', 1, -200, 200);
             numericRow('Delta Y', 'dy', 1, -200, 200);
           } else if (draft.type === 'display-text') {
-            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Text: ${draft.params.text || TRIGGER_TEXT_OPTIONS[0]}`, false, () => { draft.params.text = this.cycleOption(draft.params.text, TRIGGER_TEXT_OPTIONS, 1); }, 'Cycle text');
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Text: ${draft.params.text || TRIGGER_TEXT_OPTIONS[0]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Text', options: TRIGGER_TEXT_OPTIONS, selectedValue: draft.params.text || TRIGGER_TEXT_OPTIONS[0], onPick: (value) => { draft.params.text = value; } }); }, 'Pick text');
+            y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Position: ${draft.params.position || TRIGGER_TEXT_POSITIONS[1]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Position', options: TRIGGER_TEXT_POSITIONS, selectedValue: draft.params.position || TRIGGER_TEXT_POSITIONS[1], onPick: (value) => { draft.params.position = value; } }); }, 'Pick text position');
+            y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Background: ${draft.params.background ? 'On' : 'Off'}`, Boolean(draft.params.background), () => { draft.params.background = !draft.params.background; }, 'Toggle textbox background');
+            y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Wait For Input: ${draft.params.waitForInput ? 'On' : 'Off'}`, Boolean(draft.params.waitForInput), () => { draft.params.waitForInput = !draft.params.waitForInput; }, 'Pause until attack/tap');
             y += sectionButtonH + 4;
             numericRow('Duration (ms)', 'durationMs', 100, 100, 15000);
           } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {

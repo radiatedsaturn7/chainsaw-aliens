@@ -89,6 +89,7 @@ export default class World {
     this.pixelArt = { tiles: {} };
     this.musicZones = [];
     this.midiTracks = [];
+    this.triggers = [];
     this.data = null;
     this.rooms = [];
     this.roomIndexByTile = [];
@@ -137,6 +138,13 @@ export default class World {
     this.pixelArt = data.pixelArt ? { ...data.pixelArt, tiles: { ...(data.pixelArt.tiles || {}) } } : { tiles: {} };
     this.musicZones = (data.musicZones || []).map((zone) => ({ ...zone }));
     this.midiTracks = normalizeMidiTracks(data.midiTracks || [], 'piano');
+    this.triggers = (data.triggers || []).map((trigger) => ({
+      ...trigger,
+      actions: Array.isArray(trigger.actions) ? trigger.actions.map((action) => ({
+        ...action,
+        params: { ...(action?.params || {}) }
+      })) : []
+    }));
     this.data = { ...data, tiles: normalizedTiles };
     if (this.data) {
       this.data.elevatorPaths = this.elevatorPaths;
@@ -144,6 +152,7 @@ export default class World {
       this.data.pixelArt = this.pixelArt;
       this.data.musicZones = this.musicZones;
       this.data.midiTracks = this.midiTracks;
+      this.data.triggers = this.triggers;
     }
     this.rebuildCaches();
   }
