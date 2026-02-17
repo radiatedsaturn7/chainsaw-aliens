@@ -320,6 +320,11 @@ export default class Editor {
     this.triggerEditorView = 'main';
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
+    this.triggerEditorScroll = 0;
+    this.triggerEditorScrollMax = 0;
+    this.triggerEditorScrollBounds = null;
+    this.triggerEditorScrollDrag = null;
+    this.triggerEditorScrollTapCandidate = null;
     this.startWithEverything = true;
     this.currentDocumentRef = null;
     this.savedSnapshot = null;
@@ -1926,6 +1931,7 @@ Level size:`, `${current.width}x${current.height}`);
     this.triggerEditorView = 'main';
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
+    this.triggerEditorScroll = 0;
     this.persistAutosave();
   }
 
@@ -1943,6 +1949,7 @@ Level size:`, `${current.width}x${current.height}`);
       this.triggerEditorView = 'main';
       this.triggerActionDraft = null;
       this.triggerEditingActionId = null;
+      this.triggerEditorScroll = 0;
     }
     this.persistAutosave();
     return true;
@@ -2016,6 +2023,7 @@ Level size:`, `${current.width}x${current.height}`);
     this.triggerActionDraft = JSON.parse(JSON.stringify(action));
     this.triggerEditingActionId = isNew ? null : action.id;
     this.triggerEditorView = 'edit-action';
+    this.triggerEditorScroll = 0;
   }
 
   commitTriggerActionDraft(trigger) {
@@ -2031,6 +2039,7 @@ Level size:`, `${current.width}x${current.height}`);
     this.triggerEditorView = 'main';
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
+    this.triggerEditorScroll = 0;
     this.persistAutosave();
   }
 
@@ -2039,6 +2048,11 @@ Level size:`, `${current.width}x${current.height}`);
     this.triggerEditorView = 'main';
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
+    this.triggerEditorScroll = 0;
+    this.triggerEditorScrollMax = 0;
+    this.triggerEditorScrollBounds = null;
+    this.triggerEditorScrollDrag = null;
+    this.triggerEditorScrollTapCandidate = null;
   }
 
   applyTriggerEditor(trigger) {
@@ -2056,6 +2070,7 @@ Level size:`, `${current.width}x${current.height}`);
     this.triggerEditorView = 'main';
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
+    this.triggerEditorScroll = 0;
     this.persistAutosave();
   }
 
@@ -4248,6 +4263,18 @@ Level size:`, `${current.width}x${current.height}`);
       return;
     }
 
+    if (this.triggerEditorOpen && this.triggerEditorScrollBounds
+      && this.isPointInBounds(payload.x, payload.y, this.triggerEditorScrollBounds)) {
+      this.triggerEditorScrollDrag = {
+        id: payload.id ?? null,
+        startY: payload.y,
+        startScroll: this.triggerEditorScroll || 0,
+        moved: false
+      };
+      this.triggerEditorScrollTapCandidate = { x: payload.x, y: payload.y, id: payload.id ?? null };
+      return;
+    }
+
     if (this.handleUIClick(payload.x, payload.y)) return;
 
 
@@ -4307,6 +4334,7 @@ Level size:`, `${current.width}x${current.height}`);
     }
 
     if (this.mode === 'trigger') {
+      if (this.triggerEditorOpen) return;
       if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
       const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
       this.triggerZoneStart = { x: tileX, y: tileY };
@@ -4439,6 +4467,16 @@ Level size:`, `${current.width}x${current.height}`);
         this.updateZoomFromSlider(payload.x);
         return;
       }
+    }
+
+    if (this.triggerEditorOpen && this.triggerEditorScrollDrag
+      && (payload.id === undefined || this.triggerEditorScrollDrag.id === payload.id)) {
+      const delta = this.triggerEditorScrollDrag.startY - payload.y;
+      if (Math.abs(delta) > 6) {
+        this.triggerEditorScrollDrag.moved = true;
+      }
+      this.triggerEditorScroll = clamp(this.triggerEditorScrollDrag.startScroll + delta, 0, this.triggerEditorScrollMax || 0);
+      return;
     }
 
     if (this.isMobileLayout() && this.panelScrollDrag
@@ -4629,6 +4667,21 @@ Level size:`, `${current.width}x${current.height}`);
       this.drawer.swipeStart = null;
     }
 
+    if (this.triggerEditorScrollTapCandidate && (!this.triggerEditorScrollDrag || !this.triggerEditorScrollDrag.moved)
+      && (payload.id === undefined || this.triggerEditorScrollTapCandidate.id === (payload.id ?? null))) {
+      const tap = this.triggerEditorScrollTapCandidate;
+      this.triggerEditorScrollTapCandidate = null;
+      if (this.handleUIClick(tap.x, tap.y)) {
+        this.triggerEditorScrollDrag = null;
+        return;
+      }
+    }
+
+    if (this.triggerEditorScrollDrag && (payload.id === undefined || this.triggerEditorScrollDrag.id === payload.id)) {
+      this.triggerEditorScrollDrag = null;
+      return;
+    }
+
     if (this.panelScrollTapCandidate && (!this.panelScrollDrag || !this.panelScrollDrag.moved)
       && (payload.id === undefined || this.panelScrollTapCandidate.id === (payload.id ?? null))) {
       const tap = this.panelScrollTapCandidate;
@@ -4705,6 +4758,13 @@ Level size:`, `${current.width}x${current.height}`);
 
   handleWheel(payload) {
     if (!this.active) return;
+    if (this.triggerEditorOpen && this.triggerEditorScrollBounds) {
+      const { x, y, w, h } = this.triggerEditorScrollBounds;
+      if (payload.x >= x && payload.x <= x + w && payload.y >= y && payload.y <= y + h) {
+        this.triggerEditorScroll = clamp((this.triggerEditorScroll || 0) + payload.deltaY, 0, this.triggerEditorScrollMax || 0);
+        return;
+      }
+    }
     if (this.mode === 'midi' && this.midiInstrumentScrollBounds) {
       const { x, y, w, h } = this.midiInstrumentScrollBounds;
       if (payload.x >= x && payload.x <= x + w && payload.y >= y && payload.y <= y + h) {
@@ -7199,6 +7259,13 @@ Level size:`, `${current.width}x${current.height}`);
         const sectionButtonH = 40;
         const rowGap = 8;
         const draft = this.triggerActionDraft;
+        const contentTop = panelY + 36;
+        const footerY = panelY + panelHeight - 52;
+        const deleteTriggerY = footerY - 48;
+        const triggerDeleteActionY = footerY - 96;
+        const contentBottom = this.triggerEditorView === 'main' ? deleteTriggerY - 8 : footerY - 8;
+        const contentHeight = Math.max(40, contentBottom - contentTop);
+        const contentPadding = 8;
 
         ctx.save();
         ctx.globalAlpha = 0.95;
@@ -7210,11 +7277,94 @@ Level size:`, `${current.width}x${current.height}`);
         ctx.font = UI_SUITE.editorPanel.titleFont;
         ctx.fillText('Trigger Editor', panelX + 12, panelY + 22);
 
-        let y = panelY + 36;
+        this.triggerEditorScrollBounds = {
+          x: panelX + 6,
+          y: contentTop,
+          w: panelWidth - 12,
+          h: contentHeight
+        };
+        const contentClipX = panelX + 8;
+        const contentClipY = contentTop;
+        const contentClipW = panelWidth - 16;
+        const contentClipH = contentHeight;
+
+        let contentHeightUsed = contentPadding;
+
+        const measureMainContent = () => {
+          let local = contentPadding;
+          local += sectionButtonH + rowGap;
+          local += sectionButtonH + rowGap + 4;
+          local += 16;
+          local += 14;
+          selected.actions.forEach(() => {
+            local += sectionButtonH + 2;
+            local += 20;
+          });
+          return local;
+        };
+
+        const measurePickConditionContent = () => contentPadding + sectionButtonH + rowGap + TRIGGER_CONDITIONS.length * (sectionButtonH + 4);
+        const measurePickActionContent = () => contentPadding + sectionButtonH + rowGap + TRIGGER_ACTION_TYPES.length * (sectionButtonH + 4);
+
+        const measureEditActionContent = () => {
+          if (!draft) return contentPadding;
+          let local = contentPadding;
+          local += sectionButtonH + rowGap;
+          local += 18;
+          const numericAdvance = sectionButtonH + 4;
+          if (draft.type === 'load-level') {
+            local += sectionButtonH + 4;
+          } else if (draft.type === 'spawn-enemy') {
+            local += sectionButtonH + 4 + numericAdvance + numericAdvance;
+          } else if (draft.type === 'heal-player') {
+            local += numericAdvance;
+          } else if (draft.type === 'heal-enemy') {
+            local += numericAdvance + sectionButtonH + 4;
+          } else if (draft.type === 'kill-enemy') {
+            local += sectionButtonH + 4;
+          } else if (draft.type === 'save-game') {
+            local += numericAdvance;
+          } else if (draft.type === 'add-item') {
+            local += sectionButtonH + 4 + numericAdvance;
+          } else if (draft.type === 'play-animation') {
+            local += sectionButtonH + 4 + sectionButtonH + 4;
+          } else if (draft.type === 'move-entity') {
+            local += sectionButtonH + 4 + numericAdvance + numericAdvance;
+          } else if (draft.type === 'display-text') {
+            local += sectionButtonH + 4 + numericAdvance;
+          } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {
+            local += numericAdvance;
+          } else if (draft.type === 'fade-in-music') {
+            local += sectionButtonH + 4 + numericAdvance;
+          }
+          return local;
+        };
+
         if (this.triggerEditorView === 'main') {
-          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Add Condition', false, () => { this.triggerEditorView = 'pick-condition'; }, 'Choose trigger condition');
+          contentHeightUsed = measureMainContent();
+        } else if (this.triggerEditorView === 'pick-condition') {
+          contentHeightUsed = measurePickConditionContent();
+        } else if (this.triggerEditorView === 'pick-action') {
+          contentHeightUsed = measurePickActionContent();
+        } else if (this.triggerEditorView === 'edit-action') {
+          contentHeightUsed = measureEditActionContent();
+        }
+        const maxScroll = Math.max(0, contentHeightUsed - contentClipH);
+        this.triggerEditorScrollMax = maxScroll;
+        this.triggerEditorScroll = clamp(this.triggerEditorScroll || 0, 0, maxScroll);
+        const scrollY = this.triggerEditorScroll;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(contentClipX, contentClipY, contentClipW, contentClipH);
+        ctx.clip();
+
+        const baseY = contentTop + contentPadding - scrollY;
+        let y = baseY;
+        if (this.triggerEditorView === 'main') {
+          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Add Condition', false, () => { this.triggerEditorView = 'pick-condition'; this.triggerEditorScroll = 0; }, 'Choose trigger condition');
           y += sectionButtonH + rowGap;
-          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Add Action', false, () => { this.triggerEditorView = 'pick-action'; }, 'Add action to trigger');
+          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Add Action', false, () => { this.triggerEditorView = 'pick-action'; this.triggerEditorScroll = 0; }, 'Add action to trigger');
           y += sectionButtonH + rowGap + 4;
           ctx.font = UI_SUITE.editorPanel.bodyFont;
           ctx.fillStyle = UI_SUITE.colors.muted;
@@ -7234,8 +7384,7 @@ Level size:`, `${current.width}x${current.height}`);
             ctx.fillText(summary, panelX + 16, y + 9);
             y += 20;
           });
-          const deleteY = panelY + panelHeight - 52;
-          drawButton(panelX + 12, deleteY, panelWidth - 24, 40, 'Delete Trigger', false, () => {
+          drawButton(panelX + 12, deleteTriggerY, panelWidth - 24, 40, 'Delete Trigger', false, () => {
             const triggers = this.ensureTriggers();
             const idx = triggers.findIndex((entry) => entry.id === selected.id);
             if (idx >= 0) {
@@ -7245,18 +7394,19 @@ Level size:`, `${current.width}x${current.height}`);
               this.triggerEditorView = 'main';
               this.triggerActionDraft = null;
               this.triggerEditingActionId = null;
+              this.triggerEditorScroll = 0;
               this.persistAutosave();
             }
           }, 'Remove trigger zone');
         } else if (this.triggerEditorView === 'pick-condition') {
-          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Back', false, () => { this.triggerEditorView = 'main'; }, 'Return to trigger');
+          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Back', false, () => { this.triggerEditorView = 'main'; this.triggerEditorScroll = 0; }, 'Return to trigger');
           y += sectionButtonH + rowGap;
           TRIGGER_CONDITIONS.forEach((condition) => {
-            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, condition, selected.condition === condition, () => { selected.condition = condition; this.triggerEditorView = 'main'; this.persistAutosave(); }, condition);
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, condition, selected.condition === condition, () => { selected.condition = condition; this.triggerEditorView = 'main'; this.triggerEditorScroll = 0; this.persistAutosave(); }, condition);
             y += sectionButtonH + 4;
           });
         } else if (this.triggerEditorView === 'pick-action') {
-          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Back', false, () => { this.triggerEditorView = 'main'; }, 'Return to trigger');
+          drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Back', false, () => { this.triggerEditorView = 'main'; this.triggerEditorScroll = 0; }, 'Return to trigger');
           y += sectionButtonH + rowGap;
           TRIGGER_ACTION_TYPES.forEach((type) => {
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, type.label, false, () => { this.openTriggerActionEditor(this.createTriggerAction(type.id), { isNew: true }); }, `Add action: ${type.label}`);
@@ -7264,7 +7414,7 @@ Level size:`, `${current.width}x${current.height}`);
           });
         } else if (this.triggerEditorView === 'edit-action' && draft) {
           const actionLabel = TRIGGER_ACTION_TYPES.find((entry) => entry.id === draft.type)?.label || draft.type;
-          drawButton(panelX + 12, y, 110, sectionButtonH, 'Cancel', false, () => { this.triggerEditorView = 'main'; this.triggerActionDraft = null; this.triggerEditingActionId = null; }, 'Cancel editing');
+          drawButton(panelX + 12, y, 110, sectionButtonH, 'Cancel', false, () => { this.triggerEditorView = 'main'; this.triggerActionDraft = null; this.triggerEditingActionId = null; this.triggerEditorScroll = 0; }, 'Cancel editing');
           drawButton(panelX + panelWidth - 122, y, 110, sectionButtonH, 'OK', false, () => { this.commitTriggerActionDraft(selected); }, 'Save action');
           y += sectionButtonH + rowGap;
           ctx.font = UI_SUITE.editorPanel.bodyFont;
@@ -7322,15 +7472,28 @@ Level size:`, `${current.width}x${current.height}`);
             numericRow('Duration (ms)', 'durationMs', 100, 0, 15000);
           }
           if (this.triggerEditingActionId) {
-            const deleteY = panelY + panelHeight - 100;
-            drawButton(panelX + 12, deleteY, panelWidth - 24, 40, 'Delete Action', false, () => { this.deleteEditingTriggerAction(selected); }, 'Delete this action');
+            drawButton(panelX + 12, triggerDeleteActionY, panelWidth - 24, 40, 'Delete Action', false, () => { this.deleteEditingTriggerAction(selected); }, 'Delete this action');
           }
         }
+        ctx.restore();
 
-        const footerY = panelY + panelHeight - 52;
         const footerButtonW = (panelWidth - 36) / 2;
         drawButton(panelX + 12, footerY, footerButtonW, 40, 'Cancel', false, () => { this.closeTriggerEditor(); }, 'Close trigger editor');
         drawButton(panelX + 20 + footerButtonW, footerY, footerButtonW, 40, 'Apply', false, () => { this.applyTriggerEditor(selected); }, 'Apply trigger changes');
+
+        if (maxScroll > 0) {
+          const barW = 6;
+          const barX = panelX + panelWidth - 10;
+          const trackY = contentClipY;
+          const trackH = contentClipH;
+          const thumbH = Math.max(28, (trackH / Math.max(contentHeightUsed, 1)) * trackH);
+          const thumbTravel = Math.max(0, trackH - thumbH);
+          const thumbY = trackY + (thumbTravel * (this.triggerEditorScroll / Math.max(maxScroll, 1)));
+          ctx.fillStyle = 'rgba(255,255,255,0.2)';
+          ctx.fillRect(barX, trackY, barW, trackH);
+          ctx.fillStyle = 'rgba(255,255,255,0.55)';
+          ctx.fillRect(barX, thumbY, barW, thumbH);
+        }
         ctx.restore();
       }
     }
