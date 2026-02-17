@@ -467,6 +467,8 @@ export default class Editor {
     this.lastGraphicsScreenshotDataUrl = null;
     this.lastGraphicsScreenshotWorldBounds = null;
     this.selectedDecalId = null;
+    this.decalTransformDrag = null;
+    this.decalUploadMode = 'add';
     this.captureWithoutUiRequested = false;
     this.playtestPressTimer = null;
     this.playtestPressActive = false;
@@ -647,9 +649,23 @@ export default class Editor {
         const imageDataUrl = typeof reader.result === 'string' ? reader.result : null;
         if (!imageDataUrl) {
           this.setGraphicsStatus('Invalid image');
+          this.decalUploadMode = 'add';
+          return;
+        }
+        if (this.decalUploadMode === 'replace') {
+          const selected = this.getSelectedDecal();
+          if (!selected) {
+            this.setGraphicsStatus('No decal selected');
+          } else {
+            selected.imageDataUrl = imageDataUrl;
+            this.persistAutosave();
+            this.setGraphicsStatus('Decal replaced');
+          }
+          this.decalUploadMode = 'add';
           return;
         }
         this.addDecalImage(imageDataUrl, file.name || null);
+        this.decalUploadMode = 'add';
       };
       reader.readAsDataURL(file);
       this.decalImageInput.value = '';
@@ -798,6 +814,7 @@ export default class Editor {
     this.panJoystick.dy = 0;
     this.zoomSlider.active = false;
     this.zoomSlider.id = null;
+    this.decalTransformDrag = null;
     this.playtestPressActive = false;
     if (this.playtestPressTimer) {
       clearTimeout(this.playtestPressTimer);
@@ -1499,10 +1516,10 @@ export default class Editor {
           onClick: () => { this.openDecalUploadDialog(); }
         },
         {
-          id: 'graphics-apply-selected',
-          label: 'Apply Selected Image',
-          tooltip: 'Duplicate selected decal image into a new decal',
-          onClick: () => { this.applySelectedDecalImage(); }
+          id: 'graphics-replace-decal',
+          label: 'Replace Decal',
+          tooltip: 'Replace image of selected decal',
+          onClick: () => { this.replaceSelectedDecalImage(); }
         },
         {
           id: 'graphics-cycle-decal',
@@ -1516,7 +1533,7 @@ export default class Editor {
         },
         {
           id: 'graphics-edit-decal',
-          label: 'Edit',
+          label: 'Edit Open In Pixel Studio',
           tooltip: 'Open selected decal in Pixel Studio for editing',
           onClick: () => { this.editSelectedDecal(); }
         },
@@ -1546,7 +1563,7 @@ export default class Editor {
         },
         {
           id: 'graphics-reset-decal-orientation',
-          label: 'Reset Orientation',
+          label: 'Reset Transform',
           tooltip: 'Reset selected decal orientation',
           onClick: () => { this.resetSelectedDecalOrientation(); }
         },
@@ -2356,6 +2373,10 @@ Level size:`, `${current.width}x${current.height}`);
       if (!decal.id) decal.id = `decal-${Date.now()}-${index}`;
       if (typeof decal.name !== 'string') decal.name = `Decal ${index + 1}`;
       if (!Number.isFinite(decal.rotation)) decal.rotation = 0;
+      if (!Number.isFinite(decal.w)) decal.w = this.game.world.tileSize;
+      if (!Number.isFinite(decal.h)) decal.h = this.game.world.tileSize;
+      if (!Number.isFinite(decal.baseW)) decal.baseW = decal.w;
+      if (!Number.isFinite(decal.baseH)) decal.baseH = decal.h;
     });
     return this.game.world.decals;
   }
@@ -2451,6 +2472,8 @@ Level size:`, `${current.width}x${current.height}`);
       y: placement.y,
       w: placement.w,
       h: placement.h,
+      baseW: placement.w,
+      baseH: placement.h,
       rotation: 0
     };
     decals.push(decal);
@@ -2470,6 +2493,11 @@ Level size:`, `${current.width}x${current.height}`);
       return;
     }
     this.addDecalImage(selected.imageDataUrl, selected.name || null);
+  }
+
+  replaceSelectedDecalImage() {
+    this.decalUploadMode = 'replace';
+    this.openDecalUploadDialog();
   }
 
   getSelectedDecal() {
@@ -2521,6 +2549,56 @@ Level size:`, `${current.width}x${current.height}`);
     return null;
   }
 
+  getSelectedDecalTransformHandles() {
+    const decal = this.getSelectedDecal();
+    if (!decal) return null;
+    const x = Number.isFinite(decal.x) ? decal.x : 0;
+    const y = Number.isFinite(decal.y) ? decal.y : 0;
+    const w = Math.max(1, Number.isFinite(decal.w) ? decal.w : 1);
+    const h = Math.max(1, Number.isFinite(decal.h) ? decal.h : 1);
+    const rotation = Number.isFinite(decal.rotation) ? decal.rotation : 0;
+    const rad = rotation * (Math.PI / 180);
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+    const centerX = x + w * 0.5;
+    const centerY = y + h * 0.5;
+    const toWorld = (lx, ly) => ({
+      x: centerX + lx * cos - ly * sin,
+      y: centerY + lx * sin + ly * cos
+    });
+    const handles = [
+      { key: 'nw', localX: -w * 0.5, localY: -h * 0.5 },
+      { key: 'n', localX: 0, localY: -h * 0.5 },
+      { key: 'ne', localX: w * 0.5, localY: -h * 0.5 },
+      { key: 'e', localX: w * 0.5, localY: 0 },
+      { key: 'se', localX: w * 0.5, localY: h * 0.5 },
+      { key: 's', localX: 0, localY: h * 0.5 },
+      { key: 'sw', localX: -w * 0.5, localY: h * 0.5 },
+      { key: 'w', localX: -w * 0.5, localY: 0 }
+    ].map((entry) => ({ ...entry, ...toWorld(entry.localX, entry.localY) }));
+    const rotateOrb = toWorld(0, -h * 0.5 - 24 / this.zoom);
+    return { decal, centerX, centerY, handles, rotateOrb };
+  }
+
+  getDecalTransformHit(screenX, screenY) {
+    const meta = this.getSelectedDecalTransformHandles();
+    if (!meta) return null;
+    const world = this.screenToWorld(screenX, screenY);
+    const handleRadius = 10 / this.zoom;
+    for (const handle of meta.handles) {
+      if (Math.hypot(world.x - handle.x, world.y - handle.y) <= handleRadius) {
+        return { type: 'scale', handle: handle.key, world, meta };
+      }
+    }
+    if (Math.hypot(world.x - meta.rotateOrb.x, world.y - meta.rotateOrb.y) <= handleRadius * 1.2) {
+      return { type: 'rotate', world, meta };
+    }
+    if (this.isWorldPointInsideDecal(meta.decal, world.x, world.y)) {
+      return { type: 'move', world, meta };
+    }
+    return null;
+  }
+
   adjustSelectedDecalZoom(factor) {
     const decal = this.ensureDecals().find((entry) => entry.id === this.selectedDecalId);
     if (!decal) {
@@ -2558,8 +2636,16 @@ Level size:`, `${current.width}x${current.height}`);
       return;
     }
     decal.rotation = 0;
+    if (Number.isFinite(decal.baseW) && Number.isFinite(decal.baseH)) {
+      const centerX = (Number.isFinite(decal.x) ? decal.x : 0) + (Number.isFinite(decal.w) ? decal.w : decal.baseW) * 0.5;
+      const centerY = (Number.isFinite(decal.y) ? decal.y : 0) + (Number.isFinite(decal.h) ? decal.h : decal.baseH) * 0.5;
+      decal.w = Math.max(8, decal.baseW);
+      decal.h = Math.max(8, decal.baseH);
+      decal.x = centerX - decal.w * 0.5;
+      decal.y = centerY - decal.h * 0.5;
+    }
     this.persistAutosave();
-    this.setGraphicsStatus('Decal orientation reset');
+    this.setGraphicsStatus('Decal transform reset');
   }
 
   deleteSelectedDecal() {
@@ -4829,7 +4915,26 @@ Level size:`, `${current.width}x${current.height}`);
 
     if (this.getActivePanelTab() === 'graphics' && this.isPointerInEditorArea(payload.x, payload.y)) {
       if ((payload.button ?? 0) === 0) {
-        this.selectDecalAtScreenPoint(payload.x, payload.y, { allowClear: true });
+        const selected = this.selectDecalAtScreenPoint(payload.x, payload.y, { allowClear: true });
+        if (selected) {
+          const hit = this.getDecalTransformHit(payload.x, payload.y);
+          if (hit) {
+            this.decalTransformDrag = {
+              type: hit.type,
+              handle: hit.handle || null,
+              decalId: selected.id,
+              startPointerWorld: hit.world,
+              startX: selected.x,
+              startY: selected.y,
+              startW: selected.w,
+              startH: selected.h,
+              startRotation: Number.isFinite(selected.rotation) ? selected.rotation : 0,
+              centerX: (Number.isFinite(selected.x) ? selected.x : 0) + (Number.isFinite(selected.w) ? selected.w : 1) * 0.5,
+              centerY: (Number.isFinite(selected.y) ? selected.y : 0) + (Number.isFinite(selected.h) ? selected.h : 1) * 0.5,
+              startPointerAngle: Math.atan2(hit.world.y - hit.meta.centerY, hit.world.x - hit.meta.centerX)
+            };
+          }
+        }
       }
       return;
     }
@@ -4969,6 +5074,40 @@ Level size:`, `${current.width}x${current.height}`);
     if (!this.active) return;
     this.sanitizeView('handlePointerMove');
     this.lastPointer = { x: payload.x, y: payload.y };
+    if (this.decalTransformDrag && this.getActivePanelTab() === 'graphics') {
+      const drag = this.decalTransformDrag;
+      const decal = this.ensureDecals().find((entry) => entry.id === drag.decalId);
+      if (!decal) {
+        this.decalTransformDrag = null;
+        return;
+      }
+      const world = this.screenToWorld(payload.x, payload.y);
+      if (drag.type === 'move') {
+        const dx = world.x - drag.startPointerWorld.x;
+        const dy = world.y - drag.startPointerWorld.y;
+        decal.x = drag.startX + dx;
+        decal.y = drag.startY + dy;
+      } else if (drag.type === 'rotate') {
+        const nextAngle = Math.atan2(world.y - drag.centerY, world.x - drag.centerX);
+        const delta = (nextAngle - drag.startPointerAngle) * (180 / Math.PI);
+        decal.rotation = drag.startRotation + delta;
+      } else if (drag.type === 'scale') {
+        const dx = world.x - drag.centerX;
+        const dy = world.y - drag.centerY;
+        const rad = -(drag.startRotation * (Math.PI / 180));
+        const localX = dx * Math.cos(rad) - dy * Math.sin(rad);
+        const localY = dx * Math.sin(rad) + dy * Math.cos(rad);
+        let halfW = Math.max(4, Math.abs(localX));
+        let halfH = Math.max(4, Math.abs(localY));
+        if (drag.handle === 'n' || drag.handle === 's') halfW = Math.max(4, drag.startW * 0.5);
+        if (drag.handle === 'e' || drag.handle === 'w') halfH = Math.max(4, drag.startH * 0.5);
+        decal.w = Math.max(8, halfW * 2);
+        decal.h = Math.max(8, halfH * 2);
+        decal.x = drag.centerX - decal.w * 0.5;
+        decal.y = drag.centerY - decal.h * 0.5;
+      }
+      return;
+    }
     if (this.pixelPaintActive && this.mode === 'pixel') {
       const cell = this.getPixelCellAt(payload.x, payload.y);
       if (cell) {
@@ -5146,6 +5285,11 @@ Level size:`, `${current.width}x${current.height}`);
   handlePointerUp(payload = {}) {
     if (!this.active) return;
     this.sanitizeView('handlePointerUp');
+    if (this.decalTransformDrag) {
+      this.decalTransformDrag = null;
+      this.persistAutosave();
+      return;
+    }
     if (this.pixelPaintActive && this.mode === 'pixel') {
       this.pixelPaintActive = false;
       return;
@@ -6572,6 +6716,35 @@ Level size:`, `${current.width}x${current.height}`);
         ctx.strokeRect(x, y, w, h);
       }
       ctx.restore();
+      if (this.getActivePanelTab() === 'graphics') {
+        const handleMeta = this.getSelectedDecalTransformHandles();
+        if (handleMeta) {
+          const handleRadius = 7 / this.zoom;
+          ctx.save();
+          ctx.fillStyle = 'rgba(255, 220, 120, 0.95)';
+          ctx.strokeStyle = 'rgba(35, 20, 10, 0.9)';
+          ctx.lineWidth = 1 / this.zoom;
+          handleMeta.handles.forEach((handle) => {
+            ctx.beginPath();
+            ctx.rect(handle.x - handleRadius, handle.y - handleRadius, handleRadius * 2, handleRadius * 2);
+            ctx.fill();
+            ctx.stroke();
+          });
+          ctx.beginPath();
+          const top = handleMeta.handles.find((entry) => entry.key === 'n');
+          if (top) {
+            ctx.moveTo(top.x, top.y);
+            ctx.lineTo(handleMeta.rotateOrb.x, handleMeta.rotateOrb.y);
+            ctx.stroke();
+          }
+          ctx.fillStyle = 'rgba(110, 220, 255, 0.95)';
+          ctx.beginPath();
+          ctx.arc(handleMeta.rotateOrb.x, handleMeta.rotateOrb.y, handleRadius * 1.05, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
     }
     for (let y = 0; y < this.game.world.height; y += 1) {
       for (let x = 0; x < this.game.world.width; x += 1) {
@@ -7515,11 +7688,11 @@ Level size:`, `${current.width}x${current.height}`);
               onClick: () => { this.openDecalUploadDialog(); }
             },
             {
-              id: 'graphics-apply-selected',
-              label: 'APPLY SELECTED IMAGE',
+              id: 'graphics-replace-decal',
+              label: 'REPLACE DECAL',
               active: false,
-              tooltip: 'Duplicate selected decal image into a new decal',
-              onClick: () => { this.applySelectedDecalImage(); }
+              tooltip: 'Replace image of selected decal',
+              onClick: () => { this.replaceSelectedDecalImage(); }
             },
             {
               id: 'graphics-cycle-decal',
@@ -7534,7 +7707,7 @@ Level size:`, `${current.width}x${current.height}`);
             },
             {
               id: 'graphics-edit-decal',
-              label: 'EDIT',
+              label: 'EDIT OPEN IN PIXEL STUDIO',
               active: false,
               tooltip: 'Open selected decal in Pixel Studio for editing',
               onClick: () => { this.editSelectedDecal(); }
@@ -7569,7 +7742,7 @@ Level size:`, `${current.width}x${current.height}`);
             },
             {
               id: 'graphics-reset-decal-orientation',
-              label: 'RESET ORIENTATION',
+              label: 'RESET TRANSFORM',
               active: false,
               tooltip: 'Reset selected decal orientation',
               onClick: () => { this.resetSelectedDecalOrientation(); }
