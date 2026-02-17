@@ -179,6 +179,8 @@ export default class Game {
     this.systemPrompts = [];
     this.modalPrompt = null;
     this.promptReturnState = 'playing';
+    this.triggerState = { byId: new Map(), startupPending: new Set() };
+    this.activeTriggerText = null;
     this.enemies = [];
     this.projectiles = [];
     this.debris = [];
@@ -637,7 +639,8 @@ export default class Game {
       elevators: this.world.elevators,
       pixelArt: this.world.pixelArt,
       musicZones: this.world.musicZones,
-      midiTracks: this.world.midiTracks
+      midiTracks: this.world.midiTracks,
+      triggers: this.world.triggers || []
     };
   }
 
@@ -655,12 +658,14 @@ export default class Game {
       elevators: data.elevators || [],
       pixelArt: data.pixelArt || { tiles: {} },
       musicZones: data.musicZones || [],
-      midiTracks: data.midiTracks || []
+      midiTracks: data.midiTracks || [],
+      triggers: data.triggers || []
     };
     this.world.applyData(migrated);
     this.syncSpawnPoint();
     this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
     this.refreshWorldCaches();
+    this.resetTriggerState();
   }
 
 
@@ -926,6 +931,8 @@ export default class Game {
     this.testHarness.active = false;
     this.simulationActive = false;
     this.resetWorldSystems();
+    this.resetTriggerState();
+    this.runStartupTriggers();
   }
 
   buildBlankWorldData() {
@@ -1621,6 +1628,10 @@ export default class Game {
       return;
     }
 
+    if (this.updateTriggerTextOverlay(dt)) {
+      return;
+    }
+
     this.testHarness.update(this.input, this);
     const debugSlow = this.testHarness.active && this.testHarness.slowMotion;
     const timeScale = this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1;
@@ -1693,6 +1704,7 @@ export default class Game {
       return;
     }
     this.updateMusicZones(dt * timeScale, tileX, tileY);
+    this.updateWorldTriggers(tileX, tileY);
     this.player.sawDeployed = this.sawAnchor.active;
     this.updateSawAnchor(dt * timeScale, this.input);
     this.applyAnchorClimb(dt * timeScale);
@@ -3913,6 +3925,168 @@ export default class Game {
     this.musicPlayers = this.musicPlayers.filter((player) => !(player.volume <= 0 && player.targetVolume === 0));
   }
 
+
+  resetTriggerState() {
+    this.triggerState = { byId: new Map(), startupPending: new Set() };
+    (this.world.triggers || []).forEach((trigger, index) => {
+      const id = trigger.id || `trigger-${index}`;
+      this.triggerState.byId.set(id, {
+        inside: false,
+        firedStartup: false,
+        active: false,
+        queue: []
+      });
+      if (trigger.condition === 'On level start') {
+        this.triggerState.startupPending.add(id);
+      }
+    });
+    this.activeTriggerText = null;
+  }
+
+  runStartupTriggers() {
+    (this.world.triggers || []).forEach((trigger, index) => {
+      const id = trigger.id || `trigger-${index}`;
+      if (trigger.condition === 'On level start') {
+        this.fireTrigger(trigger, id);
+      }
+    });
+  }
+
+  getTriggerAtTile(tileX, tileY) {
+    return (this.world.triggers || []).find((trigger) => {
+      const [x, y, w, h] = trigger.rect || [0, 0, 0, 0];
+      return tileX >= x && tileX < x + w && tileY >= y && tileY < y + h;
+    }) || null;
+  }
+
+  updateWorldTriggers(tileX, tileY) {
+    (this.world.triggers || []).forEach((trigger, index) => {
+      const id = trigger.id || `trigger-${index}`;
+      const state = this.triggerState.byId.get(id) || { inside: false, active: false, queue: [] };
+      const [x, y, w, h] = trigger.rect || [0, 0, 0, 0];
+      const isInside = tileX >= x && tileX < x + w && tileY >= y && tileY < y + h;
+      if (trigger.condition === 'When player enters this location' && isInside && !state.inside) {
+        this.fireTrigger(trigger, id);
+      } else if (trigger.condition === 'When player presses attack' && isInside && this.input.wasPressed('attack')) {
+        this.fireTrigger(trigger, id);
+      } else if (trigger.condition === 'When player presses jump' && isInside && this.input.wasPressed('jump')) {
+        this.fireTrigger(trigger, id);
+      } else if (trigger.condition === 'When player ducks' && isInside && this.input.wasPressed('down')) {
+        this.fireTrigger(trigger, id);
+      } else if (trigger.condition === 'When player holds attack' && isInside && this.input.isDown('attack')) {
+        this.fireTrigger(trigger, id);
+      }
+      state.inside = isInside;
+      this.triggerState.byId.set(id, state);
+    });
+  }
+
+  fireTrigger(trigger, triggerId) {
+    const state = this.triggerState.byId.get(triggerId) || { inside: false, active: false, queue: [] };
+    if (state.active) return;
+    state.active = true;
+    state.queue = Array.isArray(trigger.actions) ? trigger.actions.map((action) => ({ ...action, params: { ...(action.params || {}) } })) : [];
+    this.triggerState.byId.set(triggerId, state);
+    this.processNextTriggerAction(triggerId, trigger);
+  }
+
+  processNextTriggerAction(triggerId, trigger) {
+    const state = this.triggerState.byId.get(triggerId);
+    if (!state) return;
+    if (!state.queue.length) {
+      state.active = false;
+      this.triggerState.byId.set(triggerId, state);
+      return;
+    }
+    const action = state.queue.shift();
+    this.executeTriggerAction(action, trigger, () => this.processNextTriggerAction(triggerId, trigger));
+  }
+
+  executeTriggerAction(action, trigger, onDone) {
+    const params = action?.params || {};
+    const [x, y, w, h] = trigger?.rect || [0, 0, 1, 1];
+    const centerX = (x + Math.floor(w / 2) + 0.5) * this.world.tileSize;
+    const centerY = (y + Math.floor(h / 2) + 0.5) * this.world.tileSize;
+    if (!action?.type) {
+      onDone();
+      return;
+    }
+    if (action.type === 'spawn-enemy') {
+      const enemyType = params.enemyType || 'practice';
+      const worldX = centerX + (Number(params.offsetX || 0) * this.world.tileSize);
+      const worldY = centerY + (Number(params.offsetY || 0) * this.world.tileSize);
+      this.spawnEnemyByType(enemyType, worldX, worldY);
+      onDone();
+      return;
+    }
+    if (action.type === 'load-level') {
+      const levelName = params.levelName;
+      if (levelName) {
+        const payload = vfsLoad('levels', levelName);
+        if (payload?.data) {
+          this.applyWorldData(payload.data);
+          this.resetRun({ playtest: false, startWithEverything: true });
+        }
+      }
+      onDone();
+      return;
+    }
+    if (action.type === 'display-text') {
+      this.activeTriggerText = {
+        text: String(params.text || ''),
+        position: params.position || 'middle',
+        background: params.background !== false,
+        waitForInput: params.waitForInput !== false,
+        remaining: Math.max(0, Number(params.durationMs || 0)),
+        onDone
+      };
+      return;
+    }
+    if (action.type === 'wait' || action.type === 'fade-in' || action.type === 'fade-out' || action.type === 'fade-out-music' || action.type === 'fade-in-music') {
+      const delay = Math.max(0, Number(params.durationMs || 0));
+      if (delay <= 0) {
+        onDone();
+      } else {
+        setTimeout(() => onDone(), delay);
+      }
+      return;
+    }
+    if (action.type === 'kill-player') {
+      this.player.takeDamage?.(999);
+      onDone();
+      return;
+    }
+    if (action.type === 'heal-player') {
+      const amount = Math.max(0, Number(params.amount || 0));
+      this.player.health = Math.min(this.player.maxHealth, this.player.health + amount);
+      onDone();
+      return;
+    }
+    onDone();
+  }
+
+  updateTriggerTextOverlay(dt) {
+    if (!this.activeTriggerText) return false;
+    const textState = this.activeTriggerText;
+    if (textState.waitForInput) {
+      if (this.input.wasPressed('attack') || this.input.wasPressed('interact')) {
+        const done = textState.onDone;
+        this.activeTriggerText = null;
+        done?.();
+      }
+      this.input.flush();
+      return true;
+    }
+    textState.remaining = Math.max(0, textState.remaining - dt * 1000);
+    if (textState.remaining <= 0) {
+      const done = textState.onDone;
+      this.activeTriggerText = null;
+      done?.();
+    }
+    this.input.flush();
+    return true;
+  }
+
   handleThrow() {
     if (!this.abilities.anchor) return;
     this.player.attackTimer = Math.max(this.player.attackTimer, 0.25);
@@ -5109,6 +5283,38 @@ export default class Game {
       this.drawMinimapOverlay(ctx, canvas.width, canvas.height, objectiveTarget);
     } else if (this.state === 'pause') {
       this.pauseMenu.draw(ctx, canvas.width, canvas.height, this.objective);
+    }
+
+
+    if (this.activeTriggerText) {
+      const yByPosition = {
+        top: Math.round(canvas.height * 0.18),
+        middle: Math.round(canvas.height * 0.5),
+        bottom: Math.round(canvas.height * 0.82)
+      };
+      const textY = yByPosition[this.activeTriggerText.position] || yByPosition.middle;
+      const text = this.activeTriggerText.text || '';
+      ctx.save();
+      if (this.activeTriggerText.background) {
+        const boxW = Math.min(canvas.width - 40, Math.max(240, text.length * 11));
+        const boxH = 88;
+        const boxX = Math.round((canvas.width - boxW) / 2);
+        const boxY = Math.round(textY - boxH / 2);
+        ctx.fillStyle = 'rgba(0,0,0,0.72)';
+        ctx.fillRect(boxX, boxY, boxW, boxH);
+        ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+        ctx.strokeRect(boxX, boxY, boxW, boxH);
+      }
+      ctx.fillStyle = '#fff';
+      ctx.font = '22px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText(text, canvas.width / 2, textY);
+      if (this.activeTriggerText.waitForInput) {
+        ctx.font = '14px Courier New';
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.fillText(this.isMobile ? 'Tap / Attack to continue' : 'Press Attack to continue', canvas.width / 2, textY + 32);
+      }
+      ctx.restore();
     }
 
     this.systemPrompts.forEach((prompt) => prompt.draw(ctx, canvas.width, canvas.height));
