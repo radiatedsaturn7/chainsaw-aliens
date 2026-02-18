@@ -721,11 +721,13 @@ export default class Game {
     this.playtestActive = false;
   }
 
-  enterPixelStudio() {
-    this.pixelStudioReturnState = this.state;
+  enterPixelStudio({ returnState = this.state, resetFocus = true } = {}) {
+    this.pixelStudioReturnState = returnState;
     this.transitionTo('pixel-editor');
     this.setRevAudio(false);
-    this.pixelStudio.resetFocus();
+    if (resetFocus) {
+      this.pixelStudio.resetFocus();
+    }
     this.playtestActive = false;
   }
 
@@ -733,24 +735,16 @@ export default class Game {
     const decals = this.world.decals || [];
     const decal = decals.find((entry) => entry.id === decalId);
     if (!decal?.imageDataUrl) return;
-    this.pixelStudioReturnState = 'editor';
+    this.enterPixelStudio({ returnState: 'editor', resetFocus: false });
     this.pixelStudio.loadDecalImageForEditing(decal.id, decal.imageDataUrl).catch((error) => {
       console.warn('Failed to open decal in Pixel Studio', error);
     });
-    this.transitionTo('pixel-editor');
-    this.setRevAudio(false);
-    this.pixelStudio.resetFocus();
-    this.playtestActive = false;
   }
 
   async openVisibleDecalsInPixelStudio({ bounds, decals } = {}) {
     if (!Array.isArray(decals) || !decals.length) return;
-    this.pixelStudioReturnState = 'editor';
+    this.enterPixelStudio({ returnState: 'editor', resetFocus: false });
     await this.pixelStudio.loadVisibleDecalsForSeamFix({ bounds, decals });
-    this.transitionTo('pixel-editor');
-    this.setRevAudio(false);
-    this.pixelStudio.resetFocus();
-    this.playtestActive = false;
   }
 
   exitPixelStudio({ toTitle = false } = {}) {
