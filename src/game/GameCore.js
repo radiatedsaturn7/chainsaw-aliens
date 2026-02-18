@@ -743,6 +743,16 @@ export default class Game {
     this.playtestActive = false;
   }
 
+  async openVisibleDecalsInPixelStudio({ bounds, decals } = {}) {
+    if (!Array.isArray(decals) || !decals.length) return;
+    this.pixelStudioReturnState = 'editor';
+    await this.pixelStudio.loadVisibleDecalsForSeamFix({ bounds, decals });
+    this.transitionTo('pixel-editor');
+    this.setRevAudio(false);
+    this.pixelStudio.resetFocus();
+    this.playtestActive = false;
+  }
+
   exitPixelStudio({ toTitle = false } = {}) {
     this.playtestActive = false;
     this.transitionTo(toTitle ? 'title' : (this.pixelStudioReturnState || 'title'), { forceCleanup: true });
