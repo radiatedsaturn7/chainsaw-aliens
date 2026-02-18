@@ -2665,9 +2665,6 @@ export default class PixelStudio {
   }
 
   isMobileLayout() {
-    if (this.decalEditSession?.type === 'seams') {
-      return false;
-    }
     return Boolean(this.game?.isMobile);
   }
 
