@@ -135,6 +135,7 @@ export default class PixelStudio {
     this.cloneSource = null;
     this.cloneOffset = null;
     this.cloneSourcePixels = null;
+    this.clonePickSourceArmed = false;
     this.panStart = null;
     this.longPressTimer = null;
     this.cursor = { row: 0, col: 0, x: 0, y: 0 };
@@ -446,6 +447,7 @@ export default class PixelStudio {
     this.setFrameLayers(this.animation.frames[0].layers);
     this.zoomToFitCanvas();
     this.resetFocus();
+    this.configureSeamFixCloneDefaults();
   }
 
   exportCurrentFrameDataUrl() {
@@ -637,6 +639,14 @@ export default class PixelStudio {
     this.selection.floatingBounds = null;
     this.setActiveTool(TOOL_IDS.PENCIL);
     this.triggerSelectionReady = false;
+  }
+
+  configureSeamFixCloneDefaults() {
+    this.setActiveTool(TOOL_IDS.CLONE);
+    this.clonePickSourceArmed = true;
+    this.cloneSource = null;
+    this.cloneOffset = null;
+    this.statusMessage = 'Tap canvas to set clone source';
   }
 
   handleKeyDown(event) {
@@ -1493,6 +1503,7 @@ export default class PixelStudio {
   setActiveTool(toolId) {
     this.activeToolId = toolId;
     this.lastActiveToolId = toolId;
+    if (toolId !== TOOL_IDS.CLONE) this.clonePickSourceArmed = false;
     if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.MOVE].includes(toolId)) {
       this.modeTab = 'select';
     } else if (toolId !== TOOL_IDS.EYEDROPPER) {
@@ -2160,13 +2171,23 @@ export default class PixelStudio {
   }
 
   handleCloneDown(point, modifiers = {}) {
-    if (modifiers.altKey || modifiers.fromTouch) {
+    const shouldSetSource = Boolean(modifiers.altKey) || (Boolean(modifiers.fromTouch) && this.clonePickSourceArmed);
+    if (shouldSetSource) {
       this.cloneSource = point;
+      this.cloneOffset = null;
+      this.clonePickSourceArmed = false;
       this.statusMessage = 'Clone source set';
       return;
     }
-    if (!this.cloneSource) return;
-    this.cloneOffset = { row: this.cloneSource.row - point.row, col: this.cloneSource.col - point.col };
+    if (!this.cloneSource) {
+      this.statusMessage = this.isMobileLayout()
+        ? 'Tap Set Source, then tap canvas'
+        : 'Set clone source with Alt-click first';
+      return;
+    }
+    if (!this.cloneOffset) {
+      this.cloneOffset = { row: this.cloneSource.row - point.row, col: this.cloneSource.col - point.col };
+    }
     this.startStroke(point, { mode: 'clone' });
   }
 
@@ -3427,6 +3448,40 @@ export default class PixelStudio {
       this.drawButton(ctx, plus, '+', false, { fontSize: isMobile ? 12 : 12 });
       this.registerFocusable('menu', minus, () => { this.toolOptions.ditherStrength = clamp(this.toolOptions.ditherStrength - 1, 1, 4); });
       this.registerFocusable('menu', plus, () => { this.toolOptions.ditherStrength = clamp(this.toolOptions.ditherStrength + 1, 1, 4); });
+      offsetY += isMobile ? 52 : 22;
+    }
+    if (this.activeToolId === TOOL_IDS.CLONE) {
+      const sourceLabel = this.clonePickSourceArmed ? 'Tap canvas to set source' : 'Set Source (mobile)';
+      const sourceBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 160, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, sourceBounds, sourceLabel, this.clonePickSourceArmed, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({
+        bounds: sourceBounds,
+        onClick: () => {
+          this.clonePickSourceArmed = !this.clonePickSourceArmed;
+          this.statusMessage = this.clonePickSourceArmed ? 'Tap canvas to set clone source' : '';
+        }
+      });
+      this.registerFocusable('menu', sourceBounds, () => {
+        this.clonePickSourceArmed = !this.clonePickSourceArmed;
+        this.statusMessage = this.clonePickSourceArmed ? 'Tap canvas to set clone source' : '';
+      });
+      offsetY += isMobile ? 52 : 20;
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fillText(`Clone Size: ${this.toolOptions.brushSize}`, x, offsetY);
+      const minus = { x: x + 120, y: offsetY - (isMobile ? 28 : 14), w: 36, h: isMobile ? 44 : 18 };
+      const plus = { x: x + 160, y: offsetY - (isMobile ? 28 : 14), w: 36, h: isMobile ? 44 : 18 };
+      this.uiButtons.push({
+        bounds: minus,
+        onClick: () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8); }
+      });
+      this.uiButtons.push({
+        bounds: plus,
+        onClick: () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8); }
+      });
+      this.drawButton(ctx, minus, '-', false, { fontSize: isMobile ? 12 : 12 });
+      this.drawButton(ctx, plus, '+', false, { fontSize: isMobile ? 12 : 12 });
+      this.registerFocusable('menu', minus, () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8); });
+      this.registerFocusable('menu', plus, () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8); });
       offsetY += isMobile ? 52 : 22;
     }
     if (this.activeToolId === TOOL_IDS.COLOR_REPLACE) {
