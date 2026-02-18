@@ -110,8 +110,8 @@ export default class PixelStudio {
     };
     this.clipboard = null;
     this.view = {
-      zoomLevels: [6, 8, 10, 12, 16, 20, 24, 28, 32],
-      zoomIndex: 4,
+      zoomLevels: [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32],
+      zoomIndex: 8,
       panX: 0,
       panY: 0
     };
@@ -444,6 +444,7 @@ export default class PixelStudio {
     this.artSizeDraft.width = width;
     this.artSizeDraft.height = height;
     this.setFrameLayers(this.animation.frames[0].layers);
+    this.zoomToFitCanvas();
     this.resetFocus();
   }
 
@@ -1522,7 +1523,42 @@ export default class PixelStudio {
   }
 
   resetZoom() {
-    this.view.zoomIndex = 4;
+    this.view.zoomIndex = this.view.zoomLevels.indexOf(16);
+    if (this.view.zoomIndex < 0) this.view.zoomIndex = Math.min(this.view.zoomLevels.length - 1, 0);
+    this.view.panX = 0;
+    this.view.panY = 0;
+  }
+
+  zoomToFitCanvas() {
+    const viewportW = this.game?.canvas?.width || 0;
+    const viewportH = this.game?.canvas?.height || 0;
+    if (!viewportW || !viewportH) {
+      this.view.zoomIndex = 0;
+      this.view.panX = 0;
+      this.view.panY = 0;
+      return;
+    }
+
+    const isMobile = this.isMobileLayout();
+    const padding = isMobile ? 12 : 16;
+    const topBarHeight = 0;
+    const statusHeight = 20;
+    const paletteHeight = isMobile ? 64 : 0;
+    const toolbarHeight = isMobile ? 72 : 0;
+    const timelineHeight = !isMobile && this.modeTab === 'animate' ? 120 : 0;
+    const bottomHeight = statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
+    const leftWidth = isMobile ? getSharedMobileRailWidth(viewportW, viewportH) : SHARED_EDITOR_LEFT_MENU.width();
+    const rightWidth = 0;
+
+    const canvasW = Math.max(1, viewportW - leftWidth - rightWidth - padding * 2);
+    const canvasH = Math.max(1, viewportH - (topBarHeight + padding) - bottomHeight);
+    const targetZoom = Math.max(1, Math.floor(Math.min(canvasW / Math.max(1, this.canvasState.width), canvasH / Math.max(1, this.canvasState.height))));
+
+    let zoomIndex = 0;
+    for (let i = 0; i < this.view.zoomLevels.length; i += 1) {
+      if (this.view.zoomLevels[i] <= targetZoom) zoomIndex = i;
+    }
+    this.view.zoomIndex = zoomIndex;
     this.view.panX = 0;
     this.view.panY = 0;
   }
