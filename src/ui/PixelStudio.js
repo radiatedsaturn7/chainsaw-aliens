@@ -3600,6 +3600,11 @@ export default class PixelStudio {
     bytes.set(composite);
     this.offscreenCtx.putImageData(imageData, 0, 0);
 
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.clip();
+
     if (this.tiledPreview.enabled) {
       const tileCount = this.tiledPreview.tiles;
       for (let row = -1; row <= tileCount; row += 1) {
@@ -3707,6 +3712,7 @@ export default class PixelStudio {
       ctx.strokeRect(this.gamepadCursor.x - 4, this.gamepadCursor.y - 4, 8, 8);
     }
 
+    ctx.restore();
   }
 
   drawOnionSkin(ctx, offsetX, offsetY, gridW, gridH) {
