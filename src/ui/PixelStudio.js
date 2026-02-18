@@ -31,6 +31,10 @@ import { createViewportController } from './shared/viewportController.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { ensurePixelArtStore, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
 
+const BRUSH_SIZE_MIN = 1;
+const BRUSH_SIZE_MAX = 64;
+const DEFAULT_BRUSH_SIZE = 16;
+
 
 export default class PixelStudio {
   constructor(game) {
@@ -72,7 +76,7 @@ export default class PixelStudio {
     this.tools = createToolRegistry(this);
     this.activeToolId = TOOL_IDS.PENCIL;
     this.toolOptions = {
-      brushSize: 1,
+      brushSize: DEFAULT_BRUSH_SIZE,
       linePerfect: true,
       fillContiguous: true,
       fillTolerance: 0,
@@ -690,8 +694,8 @@ export default class PixelStudio {
     if (key === 'i') this.setActiveTool(TOOL_IDS.EYEDROPPER);
     if (key === 'v') this.setActiveTool(TOOL_IDS.MOVE);
     if (key === 's') this.setActiveTool(TOOL_IDS.SELECT_RECT);
-    if (key === '[') this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8);
-    if (key === ']') this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8);
+    if (key === '[') this.setBrushSize(this.toolOptions.brushSize - 1);
+    if (key === ']') this.setBrushSize(this.toolOptions.brushSize + 1);
     if (key === '+' || key === '=') this.zoomBy(1);
     if (key === '-') this.zoomBy(-1);
     if (key === '0') this.resetZoom();
@@ -2171,12 +2175,16 @@ export default class PixelStudio {
   }
 
   handleCloneDown(point, modifiers = {}) {
-    const shouldSetSource = Boolean(modifiers.altKey) || (Boolean(modifiers.fromTouch) && this.clonePickSourceArmed);
+    const touchInput = Boolean(modifiers.fromTouch);
+    const shouldSetSource = Boolean(modifiers.altKey)
+      || (touchInput && (this.clonePickSourceArmed || !this.cloneSource));
     if (shouldSetSource) {
       this.cloneSource = point;
       this.cloneOffset = null;
       this.clonePickSourceArmed = false;
-      this.statusMessage = 'Clone source set';
+      this.statusMessage = touchInput
+        ? 'Clone source set. Tap again to paint.'
+        : 'Clone source set';
       return;
     }
     if (!this.cloneSource) {
@@ -2213,6 +2221,17 @@ export default class PixelStudio {
   cyclePalette(delta) {
     const count = this.currentPalette.colors.length;
     this.setPaletteIndex((this.paletteIndex + delta + count) % count);
+  }
+
+  setBrushSize(size) {
+    this.toolOptions.brushSize = clamp(Math.round(size), BRUSH_SIZE_MIN, BRUSH_SIZE_MAX);
+  }
+
+  setBrushSizeFromSlider(x, bounds) {
+    if (!bounds || bounds.w <= 0) return;
+    const ratio = clamp((x - bounds.x) / bounds.w, 0, 1);
+    const value = BRUSH_SIZE_MIN + ratio * (BRUSH_SIZE_MAX - BRUSH_SIZE_MIN);
+    this.setBrushSize(value);
   }
 
   setPaletteIndex(index) {
@@ -2497,7 +2516,7 @@ export default class PixelStudio {
       }
     }
     if (hit) {
-      hit.onClick?.();
+      hit.onClick?.({ x, y });
       return true;
     }
     if (this.mobileDrawer && this.mobileDrawerBounds && !this.isPointInBounds({ x, y }, this.mobileDrawerBounds)) {
@@ -3273,14 +3292,24 @@ export default class PixelStudio {
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
     ctx.fillText(`Brush Size: ${this.toolOptions.brushSize}`, x + 12, offsetY);
-    const brushMinus = { x: x + 160, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
-    const brushPlus = { x: x + 196, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
+    const brushMinus = { x: x + 160, y: offsetY - buttonHeight + 4, w: 28, h: buttonHeight };
+    const brushPlus = { x: x + 262, y: offsetY - buttonHeight + 4, w: 28, h: buttonHeight };
+    const brushSlider = { x: x + 192, y: offsetY - buttonHeight + 8, w: 66, h: Math.max(8, buttonHeight - 8) };
+    const brushT = (this.toolOptions.brushSize - BRUSH_SIZE_MIN) / (BRUSH_SIZE_MAX - BRUSH_SIZE_MIN);
+    const brushKnobX = brushSlider.x + brushT * brushSlider.w;
+    ctx.fillStyle = 'rgba(255,255,255,0.28)';
+    ctx.fillRect(brushSlider.x, brushSlider.y, brushSlider.w, brushSlider.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.strokeRect(brushSlider.x, brushSlider.y, brushSlider.w, brushSlider.h);
+    ctx.fillStyle = '#ffe16a';
+    ctx.fillRect(brushKnobX - 2, brushSlider.y - 2, 4, brushSlider.h + 4);
     this.drawButton(ctx, brushMinus, '-', false, { fontSize });
     this.drawButton(ctx, brushPlus, '+', false, { fontSize });
-    this.uiButtons.push({ bounds: brushMinus, onClick: () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8); } });
-    this.uiButtons.push({ bounds: brushPlus, onClick: () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8); } });
-    this.registerFocusable('menu', brushMinus, () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8); });
-    this.registerFocusable('menu', brushPlus, () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8); });
+    this.uiButtons.push({ bounds: brushMinus, onClick: () => { this.setBrushSize(this.toolOptions.brushSize - 1); } });
+    this.uiButtons.push({ bounds: brushPlus, onClick: () => { this.setBrushSize(this.toolOptions.brushSize + 1); } });
+    this.uiButtons.push({ bounds: brushSlider, onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, brushSlider) });
+    this.registerFocusable('menu', brushMinus, () => { this.setBrushSize(this.toolOptions.brushSize - 1); });
+    this.registerFocusable('menu', brushPlus, () => { this.setBrushSize(this.toolOptions.brushSize + 1); });
     offsetY += lineHeight;
 
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
@@ -3468,20 +3497,35 @@ export default class PixelStudio {
       offsetY += isMobile ? 52 : 20;
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.fillText(`Clone Size: ${this.toolOptions.brushSize}`, x, offsetY);
-      const minus = { x: x + 120, y: offsetY - (isMobile ? 28 : 14), w: 36, h: isMobile ? 44 : 18 };
-      const plus = { x: x + 160, y: offsetY - (isMobile ? 28 : 14), w: 36, h: isMobile ? 44 : 18 };
+      const minus = { x: x + 120, y: offsetY - (isMobile ? 28 : 14), w: 28, h: isMobile ? 44 : 18 };
+      const plus = { x: x + 224, y: offsetY - (isMobile ? 28 : 14), w: 28, h: isMobile ? 44 : 18 };
+      const slider = {
+        x: x + 152,
+        y: offsetY - (isMobile ? 22 : 9),
+        w: 68,
+        h: isMobile ? 12 : 8
+      };
+      const sliderT = (this.toolOptions.brushSize - BRUSH_SIZE_MIN) / (BRUSH_SIZE_MAX - BRUSH_SIZE_MIN);
+      const knobX = slider.x + sliderT * slider.w;
+      ctx.fillStyle = 'rgba(255,255,255,0.28)';
+      ctx.fillRect(slider.x, slider.y, slider.w, slider.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+      ctx.strokeRect(slider.x, slider.y, slider.w, slider.h);
+      ctx.fillStyle = '#ffe16a';
+      ctx.fillRect(knobX - 2, slider.y - 2, 4, slider.h + 4);
       this.uiButtons.push({
         bounds: minus,
-        onClick: () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8); }
+        onClick: () => { this.setBrushSize(this.toolOptions.brushSize - 1); }
       });
       this.uiButtons.push({
         bounds: plus,
-        onClick: () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8); }
+        onClick: () => { this.setBrushSize(this.toolOptions.brushSize + 1); }
       });
+      this.uiButtons.push({ bounds: slider, onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, slider) });
       this.drawButton(ctx, minus, '-', false, { fontSize: isMobile ? 12 : 12 });
       this.drawButton(ctx, plus, '+', false, { fontSize: isMobile ? 12 : 12 });
-      this.registerFocusable('menu', minus, () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize - 1, 1, 8); });
-      this.registerFocusable('menu', plus, () => { this.toolOptions.brushSize = clamp(this.toolOptions.brushSize + 1, 1, 8); });
+      this.registerFocusable('menu', minus, () => { this.setBrushSize(this.toolOptions.brushSize - 1); });
+      this.registerFocusable('menu', plus, () => { this.setBrushSize(this.toolOptions.brushSize + 1); });
       offsetY += isMobile ? 52 : 22;
     }
     if (this.activeToolId === TOOL_IDS.COLOR_REPLACE) {
@@ -3765,6 +3809,20 @@ export default class PixelStudio {
     if (this.gamepadCursor.active) {
       ctx.strokeStyle = UI_SUITE.colors.accent;
       ctx.strokeRect(this.gamepadCursor.x - 4, this.gamepadCursor.y - 4, 8, 8);
+    }
+
+    const previewSource = this.gamepadCursor.active
+      ? { x: this.gamepadCursor.x, y: this.gamepadCursor.y }
+      : { x: this.cursor.x, y: this.cursor.y };
+    const previewPoint = this.getGridCellFromScreen(previewSource.x, previewSource.y);
+    if (previewPoint) {
+      const radius = Math.floor(this.toolOptions.brushSize / 2);
+      const previewX = offsetX + (previewPoint.col - radius) * zoom;
+      const previewY = offsetY + (previewPoint.row - radius) * zoom;
+      const previewSize = this.toolOptions.brushSize * zoom;
+      ctx.strokeStyle = 'rgba(255, 225, 106, 0.9)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(previewX, previewY, previewSize, previewSize);
     }
 
     ctx.restore();
