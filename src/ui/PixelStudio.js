@@ -313,6 +313,18 @@ export default class PixelStudio {
     this.game.exitEditorToMainMenu('pixel');
   }
 
+  saveDecalSessionAndReturn() {
+    if (!this.decalEditSession) return;
+    this.commitDecalEditIfNeeded();
+    this.game.exitPixelStudio();
+  }
+
+  abandonDecalSessionAndReturn() {
+    if (!this.decalEditSession) return;
+    this.decalEditSession = null;
+    this.game.exitPixelStudio();
+  }
+
   async loadDecalImageForEditing(decalId, imageDataUrl) {
     if (!imageDataUrl) return;
     const image = await new Promise((resolve, reject) => {
@@ -337,7 +349,93 @@ export default class PixelStudio {
       const a = pixels[i * 4 + 3];
       layer.pixels[i] = rgbaToUint32({ r, g, b, a });
     }
-    this.decalEditSession = { decalId };
+    this.decalEditSession = { type: 'single', decalId };
+    this.canvasState.width = width;
+    this.canvasState.height = height;
+    this.animation.frames = [createFrame([layer], 120)];
+    this.animation.currentFrameIndex = 0;
+    this.canvasState.activeLayerIndex = 0;
+    this.artSizeDraft.width = width;
+    this.artSizeDraft.height = height;
+    this.setFrameLayers(this.animation.frames[0].layers);
+    this.resetFocus();
+  }
+
+  async loadVisibleDecalsForSeamFix({ bounds, decals } = {}) {
+    if (!Array.isArray(decals) || !decals.length) return;
+    const minX = Number.isFinite(bounds?.x)
+      ? bounds.x
+      : Math.min(...decals.map((decal) => Number.isFinite(decal.x) ? decal.x : 0));
+    const minY = Number.isFinite(bounds?.y)
+      ? bounds.y
+      : Math.min(...decals.map((decal) => Number.isFinite(decal.y) ? decal.y : 0));
+    const maxX = Number.isFinite(bounds?.w)
+      ? minX + bounds.w
+      : Math.max(...decals.map((decal) => (Number.isFinite(decal.x) ? decal.x : 0) + Math.max(1, Number.isFinite(decal.w) ? decal.w : 1)));
+    const maxY = Number.isFinite(bounds?.h)
+      ? minY + bounds.h
+      : Math.max(...decals.map((decal) => (Number.isFinite(decal.y) ? decal.y : 0) + Math.max(1, Number.isFinite(decal.h) ? decal.h : 1)));
+    const worldW = Math.max(1, maxX - minX);
+    const worldH = Math.max(1, maxY - minY);
+    const width = clamp(Math.round(worldW), 8, 512);
+    const height = clamp(Math.round(worldH), 8, 512);
+    const scaleX = width / worldW;
+    const scaleY = height / worldH;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const drawCtx = canvas.getContext('2d');
+    drawCtx.clearRect(0, 0, width, height);
+
+    const entries = [];
+    for (const decal of decals) {
+      if (!decal?.imageDataUrl) continue;
+      const image = await new Promise((resolve, reject) => {
+        const next = new Image();
+        next.onload = () => resolve(next);
+        next.onerror = reject;
+        next.src = decal.imageDataUrl;
+      });
+      const x = Number.isFinite(decal.x) ? decal.x : 0;
+      const y = Number.isFinite(decal.y) ? decal.y : 0;
+      const w = Math.max(1, Number.isFinite(decal.w) ? decal.w : image.width || 1);
+      const h = Math.max(1, Number.isFinite(decal.h) ? decal.h : image.height || 1);
+      const ix = (x - minX) * scaleX;
+      const iy = (y - minY) * scaleY;
+      const iw = w * scaleX;
+      const ih = h * scaleY;
+      drawCtx.drawImage(image, ix, iy, iw, ih);
+      entries.push({
+        decalId: decal.id,
+        srcWidth: image.naturalWidth || image.width || 1,
+        srcHeight: image.naturalHeight || image.height || 1,
+        x,
+        y,
+        w,
+        h,
+        canvasX: ix,
+        canvasY: iy,
+        canvasW: iw,
+        canvasH: ih
+      });
+    }
+
+    const pixels = drawCtx.getImageData(0, 0, width, height).data;
+    const layer = createLayer(width, height, 'Seam Fix Layer');
+    for (let i = 0; i < width * height; i += 1) {
+      const r = pixels[i * 4];
+      const g = pixels[i * 4 + 1];
+      const b = pixels[i * 4 + 2];
+      const a = pixels[i * 4 + 3];
+      layer.pixels[i] = rgbaToUint32({ r, g, b, a });
+    }
+
+    this.decalEditSession = {
+      type: 'seams',
+      bounds: { x: minX, y: minY, w: worldW, h: worldH },
+      entries
+    };
     this.canvasState.width = width;
     this.canvasState.height = height;
     this.animation.frames = [createFrame([layer], 120)];
@@ -371,11 +469,52 @@ export default class PixelStudio {
   }
 
   commitDecalEditIfNeeded() {
-    if (!this.decalEditSession?.decalId) return;
-    const decal = (this.game.world.decals || []).find((entry) => entry.id === this.decalEditSession.decalId);
-    if (decal) {
-      decal.imageDataUrl = this.exportCurrentFrameDataUrl();
-      this.game.editor?.persistAutosave?.();
+    if (!this.decalEditSession) return;
+    if (this.decalEditSession.type === 'single' && this.decalEditSession.decalId) {
+      const decal = (this.game.world.decals || []).find((entry) => entry.id === this.decalEditSession.decalId);
+      if (decal) {
+        decal.imageDataUrl = this.exportCurrentFrameDataUrl();
+        this.game.editor?.persistAutosave?.();
+      }
+      this.decalEditSession = null;
+      return;
+    }
+    if (this.decalEditSession.type === 'seams' && Array.isArray(this.decalEditSession.entries)) {
+      const compositeImage = new Image();
+      compositeImage.src = this.exportCurrentFrameDataUrl();
+      const apply = () => {
+        const seamCanvas = document.createElement('canvas');
+        seamCanvas.width = this.canvasState.width;
+        seamCanvas.height = this.canvasState.height;
+        const seamCtx = seamCanvas.getContext('2d');
+        seamCtx.drawImage(compositeImage, 0, 0, seamCanvas.width, seamCanvas.height);
+        const decals = this.game.world.decals || [];
+        this.decalEditSession.entries.forEach((entry) => {
+          const decal = decals.find((item) => item.id === entry.decalId);
+          if (!decal) return;
+          const decalCanvas = document.createElement('canvas');
+          decalCanvas.width = Math.max(1, Math.round(entry.srcWidth));
+          decalCanvas.height = Math.max(1, Math.round(entry.srcHeight));
+          const decalCtx = decalCanvas.getContext('2d');
+          decalCtx.drawImage(
+            seamCanvas,
+            entry.canvasX,
+            entry.canvasY,
+            entry.canvasW,
+            entry.canvasH,
+            0,
+            0,
+            decalCanvas.width,
+            decalCanvas.height
+          );
+          decal.imageDataUrl = decalCanvas.toDataURL('image/png');
+        });
+        this.game.editor?.persistAutosave?.();
+        this.decalEditSession = null;
+      };
+      if (compositeImage.complete) apply();
+      else compositeImage.onload = apply;
+      return;
     }
     this.decalEditSession = null;
   }
@@ -2671,6 +2810,10 @@ export default class PixelStudio {
         import: () => this.paletteFileInput.click()
       },
       editorSpecific: [
+        ...(this.decalEditSession ? [
+          { id: 'save-decal-session', label: 'Save Changes', onClick: () => this.saveDecalSessionAndReturn() },
+          { id: 'abandon-decal-session', label: 'Abandon Changes', onClick: () => this.abandonDecalSessionAndReturn() }
+        ] : []),
         { id: 'sprite-sheet', label: 'Sprite Sheet', onClick: () => this.exportSpriteSheet('horizontal') },
         { id: 'export-gif', label: 'Export GIF', onClick: () => this.exportGif() },
         { id: 'palette-json', label: 'Palette JSON', onClick: () => this.exportPaletteJson() },

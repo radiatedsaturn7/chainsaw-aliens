@@ -1538,28 +1538,10 @@ export default class Editor {
           onClick: () => { this.editSelectedDecal(); }
         },
         {
-          id: 'graphics-zoom-in-decal',
-          label: 'Decal Zoom +',
-          tooltip: 'Zoom selected decal in',
-          onClick: () => { this.adjustSelectedDecalZoom(1.1); }
-        },
-        {
-          id: 'graphics-zoom-out-decal',
-          label: 'Decal Zoom -',
-          tooltip: 'Zoom selected decal out',
-          onClick: () => { this.adjustSelectedDecalZoom(1 / 1.1); }
-        },
-        {
-          id: 'graphics-rotate-left-decal',
-          label: 'Rotate Left',
-          tooltip: 'Rotate selected decal left',
-          onClick: () => { this.rotateSelectedDecal(-15); }
-        },
-        {
-          id: 'graphics-rotate-right-decal',
-          label: 'Rotate Right',
-          tooltip: 'Rotate selected decal right',
-          onClick: () => { this.rotateSelectedDecal(15); }
+          id: 'graphics-fix-seams',
+          label: 'Fix Seams',
+          tooltip: 'Edit all visible decals as one canvas in Pixel Studio',
+          onClick: () => { this.fixVisibleDecalSeams(); }
         },
         {
           id: 'graphics-reset-decal-orientation',
@@ -2438,14 +2420,9 @@ Level size:`, `${current.width}x${current.height}`);
   }
 
   resolveDecalPlacement(imageWidth, imageHeight) {
-    const shot = this.lastGraphicsScreenshotWorldBounds;
-    if (shot && Number.isFinite(shot.x) && Number.isFinite(shot.y) && shot.w > 0 && shot.h > 0) {
-      return { x: shot.x, y: shot.y, w: shot.w, h: shot.h };
-    }
     const visible = this.getVisibleWorldBounds();
-    const fitScale = Math.min(visible.w / imageWidth, visible.h / imageHeight);
-    const w = imageWidth * fitScale;
-    const h = imageHeight * fitScale;
+    const w = Math.max(1, imageWidth);
+    const h = Math.max(1, imageHeight);
     return {
       x: visible.x + (visible.w - w) * 0.5,
       y: visible.y + (visible.h - h) * 0.5,
@@ -2693,6 +2670,35 @@ Level size:`, `${current.width}x${current.height}`);
     }
     this.game.openDecalInPixelStudio(decal.id);
     this.setGraphicsStatus('Opening decal in Pixel Studio');
+  }
+
+  async fixVisibleDecalSeams() {
+    const visible = this.getVisibleWorldBounds();
+    const decals = this.ensureDecals().filter((decal) => {
+      if (!decal?.imageDataUrl) return false;
+      const x = Number.isFinite(decal.x) ? decal.x : 0;
+      const y = Number.isFinite(decal.y) ? decal.y : 0;
+      const w = Math.max(1, Number.isFinite(decal.w) ? decal.w : 1);
+      const h = Math.max(1, Number.isFinite(decal.h) ? decal.h : 1);
+      return x + w >= visible.x && x <= visible.x + visible.w && y + h >= visible.y && y <= visible.y + visible.h;
+    });
+    if (!decals.length) {
+      this.setGraphicsStatus('No visible decals to seam-fix');
+      return;
+    }
+    await this.game.openVisibleDecalsInPixelStudio({
+      bounds: visible,
+      decals: decals.map((decal) => ({
+        id: decal.id,
+        imageDataUrl: decal.imageDataUrl,
+        x: decal.x,
+        y: decal.y,
+        w: decal.w,
+        h: decal.h,
+        rotation: decal.rotation
+      }))
+    });
+    this.setGraphicsStatus('Opening seam fixer in Pixel Studio');
   }
 
   cycleOption(value, options, direction = 1) {
@@ -7713,32 +7719,11 @@ Level size:`, `${current.width}x${current.height}`);
               onClick: () => { this.editSelectedDecal(); }
             },
             {
-              id: 'graphics-zoom-in-decal',
-              label: 'DECAL ZOOM +',
+              id: 'graphics-fix-seams',
+              label: 'FIX SEAMS',
               active: false,
-              tooltip: 'Zoom selected decal in',
-              onClick: () => { this.adjustSelectedDecalZoom(1.1); }
-            },
-            {
-              id: 'graphics-zoom-out-decal',
-              label: 'DECAL ZOOM -',
-              active: false,
-              tooltip: 'Zoom selected decal out',
-              onClick: () => { this.adjustSelectedDecalZoom(1 / 1.1); }
-            },
-            {
-              id: 'graphics-rotate-left-decal',
-              label: 'ROTATE LEFT',
-              active: false,
-              tooltip: 'Rotate selected decal left',
-              onClick: () => { this.rotateSelectedDecal(-15); }
-            },
-            {
-              id: 'graphics-rotate-right-decal',
-              label: 'ROTATE RIGHT',
-              active: false,
-              tooltip: 'Rotate selected decal right',
-              onClick: () => { this.rotateSelectedDecal(15); }
+              tooltip: 'Edit all visible decals as one canvas in Pixel Studio',
+              onClick: () => { this.fixVisibleDecalSeams(); }
             },
             {
               id: 'graphics-reset-decal-orientation',
