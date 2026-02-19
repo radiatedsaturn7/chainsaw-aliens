@@ -1492,7 +1492,7 @@ export default class PixelStudio {
       };
       return;
     }
-    if (payload.touchCount && this.paletteBarScrollBounds
+    if (this.isMobileLayout() && this.paletteBarScrollBounds
       && this.isPointInBounds(payload, this.paletteBarScrollBounds)
       && (this.paletteBarScrollBounds.maxScroll || 0) > 0) {
       const tappedSwatch = this.paletteBounds.find((bounds) => this.isPointInBounds(payload, bounds));
@@ -4655,19 +4655,38 @@ export default class PixelStudio {
 
     const swatchSize = 44;
     const gap = 8;
-    const maxPerRow = Math.max(1, Math.floor((w - 180) / (swatchSize + gap)));
+    const controlGap = 6;
+    const controlY = y + 10;
+    const controlH = 44;
+    const plusBounds = { x: 0, y: controlY, w: 28, h: controlH };
+    const minusBounds = { x: 0, y: controlY, w: 28, h: controlH };
+    const prevBounds = { x: 0, y: controlY, w: 28, h: controlH };
+    const nextBounds = { x: 0, y: controlY, w: 28, h: controlH };
+    const paletteButtonW = clamp(Math.floor(w * 0.22), 68, 92);
+    const moreBounds = { x: 0, y: controlY, w: paletteButtonW, h: controlH };
+
+    let controlX = x + w - 10;
+    [moreBounds, nextBounds, prevBounds, minusBounds, plusBounds].forEach((bounds) => {
+      controlX -= bounds.w;
+      bounds.x = controlX;
+      controlX -= controlGap;
+    });
+
     const startX = x + 10;
+    const swatchAreaW = Math.max(44, plusBounds.x - controlGap - startX);
+    const maxPerRow = Math.max(1, Math.floor(swatchAreaW / (swatchSize + gap)));
     const total = this.currentPalette.colors.length;
     const maxScroll = Math.max(0, total - maxPerRow);
     this.focusScroll.palette = clamp(this.focusScroll.palette || 0, 0, maxScroll);
     this.paletteBarScrollBounds = {
       x: startX,
       y: y + 18,
-      w: Math.max(40, maxPerRow * (swatchSize + gap)),
+      w: swatchAreaW,
       h: swatchSize + 12,
       maxScroll,
       step: swatchSize + gap
     };
+
     this.paletteBounds = [];
     this.focusGroupMeta.palette = { maxVisible: maxPerRow };
     const start = this.focusScroll.palette || 0;
@@ -4684,18 +4703,22 @@ export default class PixelStudio {
       this.registerFocusable('palette', bounds, () => this.setPaletteIndex(i));
     }
 
-    const prevBounds = { x: x + w - 180, y: y + 10, w: 28, h: 44 };
-    const nextBounds = { x: x + w - 146, y: y + 10, w: 28, h: 44 };
+    this.drawButton(ctx, plusBounds, '+', false, { fontSize: 12 });
+    this.drawButton(ctx, minusBounds, '-', false, { fontSize: 12 });
     this.drawButton(ctx, prevBounds, '◀', false, { fontSize: 12 });
     this.drawButton(ctx, nextBounds, '▶', false, { fontSize: 12 });
+    this.drawButton(ctx, moreBounds, this.paletteGridOpen ? 'Palette ▾' : 'Palette ▸', false, { fontSize: 12 });
+
+    this.uiButtons.push({ bounds: plusBounds, onClick: () => this.addPaletteColor() });
+    this.uiButtons.push({ bounds: minusBounds, onClick: () => this.removePaletteColor() });
     this.uiButtons.push({ bounds: prevBounds, onClick: () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) - 1, 0, maxScroll); } });
     this.uiButtons.push({ bounds: nextBounds, onClick: () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) + 1, 0, maxScroll); } });
+    this.uiButtons.push({ bounds: moreBounds, onClick: () => { this.paletteGridOpen = !this.paletteGridOpen; } });
+
+    this.registerFocusable('menu', plusBounds, () => this.addPaletteColor());
+    this.registerFocusable('menu', minusBounds, () => this.removePaletteColor());
     this.registerFocusable('menu', prevBounds, () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) - 1, 0, maxScroll); });
     this.registerFocusable('menu', nextBounds, () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) + 1, 0, maxScroll); });
-
-    const moreBounds = { x: x + w - 112, y: y + 10, w: 100, h: 44 };
-    this.drawButton(ctx, moreBounds, this.paletteGridOpen ? 'Palette ▾' : 'Palette ▸', false, { fontSize: 12 });
-    this.uiButtons.push({ bounds: moreBounds, onClick: () => { this.paletteGridOpen = !this.paletteGridOpen; } });
     this.registerFocusable('menu', moreBounds, () => { this.paletteGridOpen = !this.paletteGridOpen; });
   }
 
