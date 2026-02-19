@@ -180,6 +180,7 @@ export default class PixelStudio {
       toolOptions: 0
     };
     this.toolsPanelMeta = null;
+    this.toolsListMeta = null;
     this.tempToolOverrides = new Map();
     this.menuOpen = false;
     this.controlsOverlayOpen = false;
@@ -1388,8 +1389,23 @@ export default class PixelStudio {
       };
       return;
     }
+    if (payload.touchCount && this.leftPanelTab === 'tools' && this.toolsListMeta?.scrollBounds
+      && this.isPointInBounds(payload, this.toolsListMeta.scrollBounds)
+      && this.toolsListMeta.maxScroll > 0) {
+      this.menuScrollDrag = {
+        startY: payload.y,
+        startScroll: this.focusScroll.tools || 0,
+        moved: false,
+        hitAction: null,
+        lineHeight: Math.max(1, this.toolsListMeta.lineHeight || 20),
+        scrollGroup: 'tools',
+        maxScroll: Math.max(0, this.toolsListMeta.maxScroll || 0)
+      };
+      return;
+    }
     if (payload.touchCount && this.leftPanelTab === 'tools' && this.toolsPanelMeta?.optionsScrollBounds
-      && this.isPointInBounds(payload, this.toolsPanelMeta.optionsScrollBounds)) {
+      && this.isPointInBounds(payload, this.toolsPanelMeta.optionsScrollBounds)
+      && this.toolsPanelMeta.maxToolOptionsScroll > 0) {
       this.menuScrollDrag = {
         startY: payload.y,
         startScroll: this.focusScroll.toolOptions || 0,
@@ -1427,12 +1443,14 @@ export default class PixelStudio {
       if (this.menuScrollDrag.moved) {
         const total = (this.focusGroups.file || []).length;
         const maxVisible = this.focusGroupMeta.file?.maxVisible || 1;
-        const maxScroll = this.menuScrollDrag.scrollGroup === 'toolOptions'
+        const maxScroll = ['toolOptions', 'tools'].includes(this.menuScrollDrag.scrollGroup)
           ? (this.menuScrollDrag.maxScroll || 0)
           : Math.max(0, total - maxVisible);
         const next = this.menuScrollDrag.startScroll - Math.round(dy / this.menuScrollDrag.lineHeight);
         if (this.menuScrollDrag.scrollGroup === 'toolOptions') {
           this.focusScroll.toolOptions = clamp(next, 0, maxScroll);
+        } else if (this.menuScrollDrag.scrollGroup === 'tools') {
+          this.focusScroll.tools = clamp(next, 0, maxScroll);
         } else {
           this.focusScroll.file = clamp(next, 0, maxScroll);
         }
@@ -1468,6 +1486,17 @@ export default class PixelStudio {
   }
 
   handleWheel(payload) {
+    if (this.leftPanelTab === 'tools' && this.toolsListMeta?.scrollBounds
+      && this.isPointInBounds(payload, this.toolsListMeta.scrollBounds)
+      && this.toolsListMeta.maxScroll > 0) {
+      const delta = payload.deltaY > 0 ? 1 : -1;
+      this.focusScroll.tools = clamp(
+        (this.focusScroll.tools || 0) + delta,
+        0,
+        this.toolsListMeta.maxScroll
+      );
+      return;
+    }
     if (this.leftPanelTab === 'tools' && this.toolsPanelMeta?.optionsScrollBounds
       && this.isPointInBounds(payload, this.toolsPanelMeta.optionsScrollBounds)
       && this.toolsPanelMeta.maxToolOptionsScroll > 0) {
@@ -3382,8 +3411,15 @@ export default class PixelStudio {
     const maxVisible = Math.max(1, Math.floor((h - 140) / lineHeight));
     this.focusGroupMeta.tools = { maxVisible };
     const start = this.focusScroll.tools || 0;
+    const maxToolScroll = Math.max(0, list.length - maxVisible);
+    this.focusScroll.tools = clamp(start, 0, maxToolScroll);
+    this.toolsListMeta = {
+      scrollBounds: { x: x + 6, y: y + 26, w: w - 12, h: maxVisible * lineHeight + 8 },
+      lineHeight,
+      maxScroll: maxToolScroll
+    };
     let offsetY = y + 36;
-    list.slice(start, start + maxVisible).forEach((tool) => {
+    list.slice(this.focusScroll.tools, this.focusScroll.tools + maxVisible).forEach((tool) => {
       const isActive = tool.id === this.activeToolId;
       const bounds = { x: x + 8, y: offsetY - buttonHeight + 4, w: w - 16, h: buttonHeight };
       this.drawButton(ctx, bounds, tool.name, isActive, { fontSize });
@@ -3391,6 +3427,11 @@ export default class PixelStudio {
       this.registerFocusable('tools', bounds, () => this.setActiveTool(tool.id));
       offsetY += lineHeight;
     });
+    if (maxToolScroll > 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = `${isMobile ? 11 : 10}px ${UI_SUITE.font.family}`;
+      ctx.fillText(`Tools ${this.focusScroll.tools + 1}/${maxToolScroll + 1}`, x + 12, y + 26 + maxVisible * lineHeight + 10);
+    }
 
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
