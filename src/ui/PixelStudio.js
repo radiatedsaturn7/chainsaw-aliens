@@ -187,6 +187,16 @@ export default class PixelStudio {
     this.mobileDrawer = null;
     this.mobileDrawerBounds = null;
     this.paletteBarScrollBounds = null;
+    this.panJoystick = {
+      active: false,
+      id: null,
+      center: { x: 0, y: 0 },
+      radius: 0,
+      knobRadius: 0,
+      dx: 0,
+      dy: 0
+    };
+    this.mobileZoomSliderBounds = null;
     this.paletteGridOpen = false;
     this.sidebars = { left: true };
     this.leftPanelTabs = ['file', 'tools', 'layers', 'canvas'];
@@ -746,7 +756,16 @@ export default class PixelStudio {
     this.lastTime += dt;
     this.updateAnimation(dt);
     this.handleInput(input, dt);
+    this.applyMobilePanJoystick(dt);
     this.updateCursorPosition();
+  }
+
+  applyMobilePanJoystick(dt = 0) {
+    if (!this.isMobileLayout() || !this.panJoystick.active) return;
+    const speed = Math.max(220, Math.min(640, this.view.zoomLevels[this.view.zoomIndex] * 28));
+    const scale = dt > 0 ? (dt / 1000) : 0.016;
+    this.view.panX -= this.panJoystick.dx * speed * scale;
+    this.view.panY -= this.panJoystick.dy * speed * scale;
   }
 
   updateAnimation(dt) {
@@ -1439,6 +1458,12 @@ export default class PixelStudio {
       };
       return;
     }
+    if (payload.touchCount && this.isPointInCircle(payload.x, payload.y, this.panJoystick.center, this.panJoystick.radius * 1.2)) {
+      this.panJoystick.active = true;
+      this.panJoystick.id = payload.id ?? null;
+      this.updatePanJoystick(payload.x, payload.y);
+      return;
+    }
     if (this.handleButtonClick(payload.x, payload.y)) return;
     if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
       this.setInputMode('canvas');
@@ -1483,6 +1508,10 @@ export default class PixelStudio {
       }
       return;
     }
+    if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
+      this.updatePanJoystick(payload.x, payload.y);
+      return;
+    }
     if (this.panStart && payload.buttons) {
       const pan = this.viewportController.updatePan(payload);
       if (!pan) return;
@@ -1496,7 +1525,13 @@ export default class PixelStudio {
     }
   }
 
-  handlePointerUp() {
+  handlePointerUp(payload = {}) {
+    if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
+      this.panJoystick.active = false;
+      this.panJoystick.id = null;
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+    }
     if (this.menuScrollDrag) {
       const drag = this.menuScrollDrag;
       this.menuScrollDrag = null;
@@ -2395,6 +2430,28 @@ export default class PixelStudio {
     this.setPaletteIndex((this.paletteIndex + delta + count) % count);
   }
 
+  updatePanJoystick(x, y) {
+    const { center, radius } = this.panJoystick;
+    if (!radius) {
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+      return;
+    }
+    const dx = x - center.x;
+    const dy = y - center.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist <= 0.0001) {
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+      return;
+    }
+    const angle = Math.atan2(dy, dx);
+    const clamped = Math.min(dist, radius);
+    const scaled = clamped / radius;
+    this.panJoystick.dx = Math.cos(angle) * scaled;
+    this.panJoystick.dy = Math.sin(angle) * scaled;
+  }
+
   setBrushSize(size) {
     this.toolOptions.brushSize = clamp(Math.round(size), BRUSH_SIZE_MIN, BRUSH_SIZE_MAX);
   }
@@ -2662,6 +2719,11 @@ export default class PixelStudio {
     setTimeout(() => URL.revokeObjectURL(url), 500);
   }
 
+  isPointInCircle(x, y, center, radius) {
+    if (!center || !radius) return false;
+    return Math.hypot(x - center.x, y - center.y) <= radius;
+  }
+
   isPointInBounds(point, bounds) {
     return point.x >= bounds.x && point.x <= bounds.x + bounds.w
       && point.y >= bounds.y && point.y <= bounds.y + bounds.h;
@@ -2886,6 +2948,7 @@ export default class PixelStudio {
     if (isMobile) {
       const toolbarY = height - toolbarHeight - padding;
       this.drawMobileToolbar(ctx, canvasX, toolbarY, width - canvasX - padding, toolbarHeight);
+      this.drawMobilePanZoomControls(ctx, width, height);
       if (this.mobileDrawer && this.mobileDrawer !== 'timeline') {
         const drawerW = getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 });
         const drawerX = width - drawerW;
@@ -3331,11 +3394,25 @@ export default class PixelStudio {
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
+
+    const buttonH = h - 16;
+    const buttonY = y + 8;
+    const gap = 6;
+    const brushBounds = { x: x + 8, y: buttonY, w: 108, h: buttonH };
+    this.drawButton(ctx, brushBounds, `Brush ${this.toolOptions.brushShape}`, false, { fontSize: 12 });
+    this.uiButtons.push({ bounds: brushBounds, onClick: () => this.cycleBrushShape() });
+    this.registerFocusable('toolbar', brushBounds, () => this.cycleBrushShape());
+
+    const previewSize = Math.min(48, Math.max(34, buttonH));
+    const previewBounds = {
+      x: brushBounds.x + brushBounds.w + gap,
+      y: y + Math.floor((h - previewSize) / 2),
+      w: previewSize,
+      h: previewSize
+    };
+    this.drawBrushPreviewChip(ctx, previewBounds);
+
     const actions = [
-      {
-        label: `Brush ${this.toolOptions.brushShape}`,
-        action: () => this.cycleBrushShape()
-      },
       { label: 'Undo', action: () => this.runtime.undo() },
       { label: 'Redo', action: () => this.runtime.redo() }
     ];
@@ -3360,73 +3437,91 @@ export default class PixelStudio {
         }
       );
     }
-    const gap = 6;
-    const sliderW = Math.max(120, Math.min(220, Math.floor(w * 0.3)));
-    const buttonsAreaW = Math.max(180, w - sliderW - 12);
-    const buttonW = Math.min(112, Math.max(48, Math.floor((buttonsAreaW - gap * (actions.length - 1)) / actions.length)));
+
+    const actionsStartX = previewBounds.x + previewBounds.w + gap;
+    const availableW = Math.max(120, x + w - 8 - actionsStartX);
+    const buttonW = Math.max(52, Math.min(90, Math.floor((availableW - gap * Math.max(0, actions.length - 1)) / Math.max(1, actions.length))));
     actions.forEach((entry, index) => {
       const bounds = {
-        x: x + index * (buttonW + gap),
-        y: y + 8,
+        x: actionsStartX + index * (buttonW + gap),
+        y: buttonY,
         w: buttonW,
-        h: h - 16
+        h: buttonH
       };
       this.drawButton(ctx, bounds, entry.label, Boolean(entry.active), { fontSize: 12 });
       this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
       this.registerFocusable('toolbar', bounds, (entry.onClick || entry.action));
     });
+  }
 
-    const previewSize = Math.min(52, Math.max(36, h - 18));
-    const previewBounds = {
-      x: x + w - sliderW - previewSize - 16,
-      y: y + Math.floor((h - previewSize) / 2),
-      w: previewSize,
-      h: previewSize
+  drawMobilePanZoomControls(ctx, width, height) {
+    if (!this.isMobileLayout()) {
+      this.mobileZoomSliderBounds = null;
+      this.panJoystick.center = { x: 0, y: 0 };
+      this.panJoystick.radius = 0;
+      this.panJoystick.knobRadius = 0;
+      return;
+    }
+    const controlMargin = 18;
+    const controlBase = Math.min(width, height);
+    const joystickRadius = Math.min(78, controlBase * 0.14);
+    const knobRadius = Math.max(22, joystickRadius * 0.45);
+    const joystickCenter = {
+      x: controlMargin + joystickRadius,
+      y: height - controlMargin - joystickRadius
     };
-    this.drawBrushPreviewChip(ctx, previewBounds);
+    this.panJoystick.center = joystickCenter;
+    this.panJoystick.radius = joystickRadius;
+    this.panJoystick.knobRadius = knobRadius;
 
-    const sliderBounds = {
-      x: x + w - sliderW - 8,
-      y: y + 12,
-      w: sliderW,
-      h: Math.max(14, Math.floor((h - 24) * 0.5))
-    };
-    const sliderT = (this.toolOptions.brushSize - BRUSH_SIZE_MIN) / (BRUSH_SIZE_MAX - BRUSH_SIZE_MIN);
-    const knobX = sliderBounds.x + sliderT * sliderBounds.w;
-    ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.fillRect(sliderBounds.x, sliderBounds.y + sliderBounds.h * 0.35, sliderBounds.w, sliderBounds.h * 0.3);
-    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-    ctx.strokeRect(sliderBounds.x, sliderBounds.y + sliderBounds.h * 0.35, sliderBounds.w, sliderBounds.h * 0.3);
-    ctx.fillStyle = '#ffe16a';
-    ctx.fillRect(knobX - 3, sliderBounds.y + sliderBounds.h * 0.2, 6, sliderBounds.h * 0.6);
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.font = '11px Courier New';
-    ctx.fillText(`Size ${this.toolOptions.brushSize}`, sliderBounds.x + 6, sliderBounds.y + 11);
-    this.uiButtons.push({
-      bounds: sliderBounds,
-      onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, sliderBounds)
-    });
+    let sliderX = joystickCenter.x + joystickRadius + 24;
+    const sliderRightPadding = Math.max(controlMargin + 132, width * 0.2);
+    let sliderWidth = width - sliderX - sliderRightPadding;
+    const sliderHeight = 10;
+    const sliderY = height - controlMargin - sliderHeight;
+    if (sliderWidth < 140) {
+      sliderX = controlMargin;
+      sliderWidth = Math.max(140, width - controlMargin * 2 - 132);
+    }
+    this.mobileZoomSliderBounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
 
-    const zoomBounds = {
-      x: sliderBounds.x,
-      y: sliderBounds.y + sliderBounds.h + 6,
-      w: sliderBounds.w,
-      h: Math.max(12, sliderBounds.h - 6)
-    };
     const zoomT = this.view.zoomIndex / Math.max(1, this.view.zoomLevels.length - 1);
-    const zoomKnobX = zoomBounds.x + zoomT * zoomBounds.w;
-    ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.fillRect(zoomBounds.x, zoomBounds.y + zoomBounds.h * 0.35, zoomBounds.w, zoomBounds.h * 0.3);
-    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-    ctx.strokeRect(zoomBounds.x, zoomBounds.y + zoomBounds.h * 0.35, zoomBounds.w, zoomBounds.h * 0.3);
-    ctx.fillStyle = '#7bdcff';
-    ctx.fillRect(zoomKnobX - 3, zoomBounds.y + zoomBounds.h * 0.2, 6, zoomBounds.h * 0.6);
+    const knobX = sliderX + zoomT * sliderWidth;
+    const centerY = sliderY + sliderHeight / 2;
+    ctx.save();
+    ctx.globalAlpha = 0.92;
+    ctx.fillStyle = 'rgba(0,0,0,0.58)';
+    ctx.fillRect(sliderX, sliderY, sliderWidth, sliderHeight);
+    ctx.strokeStyle = 'rgba(255,255,255,0.44)';
+    ctx.strokeRect(sliderX, sliderY, sliderWidth, sliderHeight);
+    ctx.fillStyle = 'rgba(0,200,255,0.95)';
+    ctx.beginPath();
+    ctx.arc(knobX, centerY, Math.max(5, sliderHeight * 0.75), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.75)';
+    ctx.stroke();
+
+    const joystickKnobX = joystickCenter.x + this.panJoystick.dx * joystickRadius;
+    const joystickKnobY = joystickCenter.y + this.panJoystick.dy * joystickRadius;
+    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.beginPath();
+    ctx.arc(joystickCenter.x, joystickCenter.y, joystickRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.stroke();
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.fillText(`Zoom ${Math.round(this.view.zoomLevels[this.view.zoomIndex] * 100)}%`, zoomBounds.x + 6, zoomBounds.y + 10);
+    ctx.beginPath();
+    ctx.arc(joystickKnobX, joystickKnobY, knobRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+    ctx.stroke();
+    ctx.restore();
+
     this.uiButtons.push({
-      bounds: zoomBounds,
+      bounds: this.mobileZoomSliderBounds,
       onClick: ({ x: pointerX }) => {
-        const ratio = clamp((pointerX - zoomBounds.x) / Math.max(1, zoomBounds.w), 0, 1);
+        const ratio = clamp((pointerX - sliderX) / Math.max(1, sliderWidth), 0, 1);
         const target = Math.round(ratio * (this.view.zoomLevels.length - 1));
         this.view.zoomIndex = clamp(target, 0, this.view.zoomLevels.length - 1);
       }
