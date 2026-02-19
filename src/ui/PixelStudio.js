@@ -3917,8 +3917,10 @@ export default class PixelStudio {
   drawPaletteGridSheet(ctx, x, y, w, h) {
     const canvasW = this.canvasBounds?.w || 0;
     const canvasH = this.canvasBounds?.h || 0;
-    const sheetW = Math.min(w - 20, Math.max(420, canvasW));
-    const sheetH = Math.min(h - 16, Math.max(280, Math.min(520, canvasH)));
+    const targetW = Math.max(760, canvasW * 2.5);
+    const targetH = Math.max(640, canvasH * 2.5);
+    const sheetW = Math.min(w - 8, targetW);
+    const sheetH = Math.min(h - 8, targetH);
     const sheetX = x + Math.floor((w - sheetW) / 2);
     const sheetY = y + Math.floor((h - sheetH) / 2);
     this.paletteModalBounds = { x: sheetX, y: sheetY, w: sheetW, h: sheetH };
@@ -3928,17 +3930,17 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(sheetX, sheetY, sheetW, sheetH);
     ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
-    ctx.fillText('Palette', sheetX + 12, sheetY + 22);
+    ctx.font = '15px Courier New';
+    ctx.fillText('Palette', sheetX + 12, sheetY + 24);
 
-    const addBounds = { x: sheetX + sheetW - 150, y: sheetY + 8, w: 34, h: 28 };
-    const removeBounds = { x: sheetX + sheetW - 112, y: sheetY + 8, w: 34, h: 28 };
+    const addBounds = { x: sheetX + sheetW - 154, y: sheetY + 8, w: 34, h: 28 };
+    const removeBounds = { x: sheetX + sheetW - 114, y: sheetY + 8, w: 34, h: 28 };
     this.drawButton(ctx, addBounds, '+', false, { fontSize: 12 });
     this.drawButton(ctx, removeBounds, '-', false, { fontSize: 12 });
     this.uiButtons.push({ bounds: addBounds, onClick: () => this.openPaletteColorPicker() });
     this.uiButtons.push({ bounds: removeBounds, onClick: () => this.removePaletteColor() });
 
-    const swatchSize = 36;
+    const swatchSize = 38;
     const gap = 8;
     const maxPerRow = Math.max(1, Math.floor((sheetW - 24) / (swatchSize + gap)));
     const topY = sheetY + 44;
@@ -3962,16 +3964,29 @@ export default class PixelStudio {
       const pickerX = sheetX + 8;
       const pickerY = sheetY + 40;
       const pickerW = sheetW - 16;
-      const pickerH = sheetH - 56;
+      const pickerH = sheetH - 48;
       this.paletteColorPickerBounds = { x: pickerX, y: pickerY, w: pickerW, h: pickerH };
-      ctx.fillStyle = 'rgba(0,0,0,0.88)';
+      ctx.fillStyle = 'rgba(0,0,0,0.9)';
       ctx.fillRect(pickerX, pickerY, pickerW, pickerH);
       ctx.strokeStyle = 'rgba(255,255,255,0.35)';
       ctx.strokeRect(pickerX, pickerY, pickerW, pickerH);
 
-      const svSize = Math.max(170, Math.min(pickerW - 120, pickerH - 120));
-      const sv = { x: pickerX + 14, y: pickerY + 14, w: svSize, h: svSize };
-      const hue = { x: sv.x + sv.w + 12, y: sv.y, w: 16, h: sv.h };
+      const contentPadding = 14;
+      const footerButtonH = 32;
+      const footerGap = 10;
+      const sliderH = 12;
+      const sliderCount = 6;
+      const availableH = pickerH - (contentPadding * 2) - footerButtonH - footerGap;
+      const maxTopAreaH = Math.max(0, availableH - (sliderCount * 18));
+      const topAreaH = clamp(Math.floor(availableH * 0.45), 120, Math.max(120, maxTopAreaH));
+      const sliderAreaH = Math.max(100, availableH - topAreaH);
+      const sliderRowStep = Math.max(18, Math.floor(sliderAreaH / sliderCount));
+      const sliderBlockH = sliderCount * sliderRowStep;
+
+      const hueW = Math.max(18, Math.floor(Math.min(24, pickerW * 0.045)));
+      const svSize = Math.max(120, Math.min(topAreaH, pickerW - (contentPadding * 3) - hueW));
+      const sv = { x: pickerX + contentPadding, y: pickerY + contentPadding, w: svSize, h: svSize };
+      const hue = { x: sv.x + sv.w + contentPadding, y: sv.y, w: hueW, h: sv.h };
 
       const topColor = this.hsvToRgb(this.paletteColorDraft.h, 1, 1);
       const gradX = ctx.createLinearGradient(sv.x, sv.y, sv.x + sv.w, sv.y);
@@ -4010,43 +4025,47 @@ export default class PixelStudio {
         ctx.fillStyle = '#fff';
         ctx.fillText(`${label}: ${Math.round(val)}`, x0, y0 - 4);
         ctx.fillStyle = 'rgba(255,255,255,0.15)';
-        ctx.fillRect(x0, y0, w0, 10);
+        ctx.fillRect(x0, y0, w0, sliderH);
         ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-        ctx.strokeRect(x0, y0, w0, 10);
+        ctx.strokeRect(x0, y0, w0, sliderH);
         const t = (val - min) / Math.max(1e-6, (max - min));
         const kx = x0 + clamp(t, 0, 1) * w0;
         ctx.fillStyle = '#00c8ff';
-        ctx.fillRect(kx - 2, y0 - 2, 4, 14);
-        this.uiButtons.push({ bounds: { x: x0, y: y0 - 8, w: w0, h: 26 }, onClick: ({ x: px }) => onChange(clamp((px - x0) / Math.max(1, w0), 0, 1)) });
+        ctx.fillRect(kx - 2, y0 - 2, 4, sliderH + 4);
+        this.uiButtons.push({
+          bounds: { x: x0, y: y0 - 8, w: w0, h: sliderH + 18 },
+          onClick: ({ x: px }) => onChange(clamp((px - x0) / Math.max(1, w0), 0, 1))
+        });
       };
 
-      const sliderX = sv.x;
-      const sliderW = pickerW - 20;
-      let sy = sv.y + sv.h + 18;
+      const sliderX = pickerX + contentPadding;
+      const sliderW = pickerW - contentPadding * 2;
+      let sy = Math.min(sv.y + sv.h + 18, pickerY + pickerH - footerButtonH - footerGap - sliderBlockH);
       addSlider('H', this.paletteColorDraft.h, 0, 360, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.h = t * 360; this.syncPaletteDraftFromHsv(); });
-      sy += 24;
+      sy += sliderRowStep;
       addSlider('S', this.paletteColorDraft.s * 100, 0, 100, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.s = t; this.syncPaletteDraftFromHsv(); });
-      sy += 24;
+      sy += sliderRowStep;
       addSlider('V', this.paletteColorDraft.v * 100, 0, 100, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.v = t; this.syncPaletteDraftFromHsv(); });
-      sy += 24;
+      sy += sliderRowStep;
       addSlider('R', this.paletteColorDraft.r, 0, 255, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.r = Math.round(t * 255); const hsv = this.rgbToHsv(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b); this.paletteColorDraft.h = hsv.h; this.paletteColorDraft.s = hsv.s; this.paletteColorDraft.v = hsv.v; });
-      sy += 24;
+      sy += sliderRowStep;
       addSlider('G', this.paletteColorDraft.g, 0, 255, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.g = Math.round(t * 255); const hsv = this.rgbToHsv(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b); this.paletteColorDraft.h = hsv.h; this.paletteColorDraft.s = hsv.s; this.paletteColorDraft.v = hsv.v; });
-      sy += 24;
+      sy += sliderRowStep;
       addSlider('B', this.paletteColorDraft.b, 0, 255, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.b = Math.round(t * 255); const hsv = this.rgbToHsv(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b); this.paletteColorDraft.h = hsv.h; this.paletteColorDraft.s = hsv.s; this.paletteColorDraft.v = hsv.v; });
 
       this.uiButtons.push({ bounds: sv, onClick: ({ x: px, y: py }) => {
         this.paletteColorDraft.s = clamp((px - sv.x) / Math.max(1, sv.w), 0, 1);
         this.paletteColorDraft.v = clamp(1 - (py - sv.y) / Math.max(1, sv.h), 0, 1);
         this.syncPaletteDraftFromHsv();
-      }});
+      } });
       this.uiButtons.push({ bounds: { x: hue.x, y: hue.y, w: hue.w, h: hue.h }, onClick: ({ y: py }) => {
         this.paletteColorDraft.h = clamp((py - hue.y) / Math.max(1, hue.h), 0, 1) * 360;
         this.syncPaletteDraftFromHsv();
-      }});
+      } });
 
-      const pickerCancel = { x: sheetX + sheetW - 182, y: sheetY + sheetH - 44, w: 82, h: 30 };
-      const pickerOk = { x: sheetX + sheetW - 92, y: sheetY + sheetH - 44, w: 82, h: 30 };
+      const buttonY = pickerY + pickerH - footerButtonH - 8;
+      const pickerCancel = { x: pickerX + pickerW - 186, y: buttonY, w: 84, h: footerButtonH };
+      const pickerOk = { x: pickerX + pickerW - 94, y: buttonY, w: 84, h: footerButtonH };
       this.drawButton(ctx, pickerCancel, 'cancel', false, { fontSize: 12 });
       this.drawButton(ctx, pickerOk, 'add', false, { fontSize: 12 });
       this.uiButtons.push({ bounds: pickerCancel, onClick: () => { this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.paletteColorPickerBounds = null; } });
