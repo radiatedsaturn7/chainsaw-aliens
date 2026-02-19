@@ -34,7 +34,7 @@ import { ensurePixelArtStore, ensurePixelTileData } from '../editor/adapters/edi
 const BRUSH_SIZE_MIN = 1;
 const BRUSH_SIZE_MAX = 64;
 const DEFAULT_BRUSH_SIZE = 16;
-const BRUSH_SHAPES = ['square', 'circle'];
+const BRUSH_SHAPES = ['square', 'circle', 'diamond', 'cross', 'x', 'hline', 'vline'];
 const BRUSH_FALLOFFS = ['solid', 'soft'];
 
 
@@ -1832,17 +1832,40 @@ export default class PixelStudio {
     });
   }
 
+  doesBrushShapeIncludeOffset(shape, dx, dy, radius) {
+    if (shape === 'circle') {
+      const maxDist = Math.max(0.5, radius + 0.5);
+      return Math.hypot(dx, dy) <= maxDist;
+    }
+    if (shape === 'diamond') {
+      return Math.abs(dx) + Math.abs(dy) <= radius;
+    }
+    if (shape === 'cross') {
+      return dx === 0 || dy === 0;
+    }
+    if (shape === 'x') {
+      return Math.abs(dx) === Math.abs(dy);
+    }
+    if (shape === 'hline') {
+      return dy === 0;
+    }
+    if (shape === 'vline') {
+      return dx === 0;
+    }
+    return true;
+  }
+
   createBrushStamp(point) {
     const size = this.toolOptions.brushSize;
     const radius = Math.floor(size / 2);
     const points = [];
-    const isCircle = this.toolOptions.brushShape === 'circle';
+    const shape = this.toolOptions.brushShape;
     const isSoft = this.toolOptions.brushFalloff === 'soft';
     const maxDist = Math.max(0.5, radius + 0.5);
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
-        const dist = isCircle ? Math.hypot(dx, dy) : Math.max(Math.abs(dx), Math.abs(dy));
-        if (isCircle && dist > maxDist) continue;
+        if (!this.doesBrushShapeIncludeOffset(shape, dx, dy, radius)) continue;
+        const dist = shape === 'circle' ? Math.hypot(dx, dy) : Math.max(Math.abs(dx), Math.abs(dy));
         const weight = isSoft ? clamp(1 - (dist / maxDist), 0.08, 1) : 1;
         points.push({ row: point.row + dy, col: point.col + dx, weight });
       }
@@ -3310,15 +3333,8 @@ export default class PixelStudio {
     ctx.strokeRect(x, y, w, h);
     const actions = [
       {
-        label: `Brush ${this.toolOptions.brushShape === 'circle' ? 'Circle' : 'Square'}`,
-        action: () => {
-          if (this.toolOptions.brushShape !== 'circle') {
-            this.toolOptions.brushShape = 'circle';
-            return;
-          }
-          this.toolOptions.brushShape = 'square';
-          this.toolOptions.brushFalloff = this.toolOptions.brushFalloff === 'solid' ? 'soft' : 'solid';
-        }
+        label: `Brush ${this.toolOptions.brushShape}`,
+        action: () => this.cycleBrushShape()
       },
       { label: 'Undo', action: () => this.runtime.undo() },
       { label: 'Redo', action: () => this.runtime.redo() }
@@ -3359,6 +3375,15 @@ export default class PixelStudio {
       this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
       this.registerFocusable('toolbar', bounds, (entry.onClick || entry.action));
     });
+
+    const previewSize = Math.min(52, Math.max(36, h - 18));
+    const previewBounds = {
+      x: x + w - sliderW - previewSize - 16,
+      y: y + Math.floor((h - previewSize) / 2),
+      w: previewSize,
+      h: previewSize
+    };
+    this.drawBrushPreviewChip(ctx, previewBounds);
 
     const sliderBounds = {
       x: x + w - sliderW - 8,
@@ -3406,6 +3431,28 @@ export default class PixelStudio {
         this.view.zoomIndex = clamp(target, 0, this.view.zoomLevels.length - 1);
       }
     });
+  }
+
+  drawBrushPreviewChip(ctx, bounds) {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+
+    const radius = Math.max(1, Math.floor(this.toolOptions.brushSize / 2));
+    const centerX = Math.floor(bounds.x + bounds.w / 2);
+    const centerY = Math.floor(bounds.y + bounds.h / 2);
+    const scale = Math.max(1, Math.floor(Math.min(bounds.w, bounds.h) / Math.max(3, radius * 2 + 1)));
+    const shape = this.toolOptions.brushShape;
+    ctx.fillStyle = '#000';
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (!this.doesBrushShapeIncludeOffset(shape, dx, dy, radius)) continue;
+        const px = centerX + dx * scale - Math.floor(scale / 2);
+        const py = centerY + dy * scale - Math.floor(scale / 2);
+        ctx.fillRect(px, py, scale, scale);
+      }
+    }
   }
 
   drawMobileDrawer(ctx, x, y, w, h, type) {
