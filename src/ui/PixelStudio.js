@@ -79,6 +79,7 @@ export default class PixelStudio {
     this.activeToolId = TOOL_IDS.PENCIL;
     this.toolOptions = {
       brushSize: DEFAULT_BRUSH_SIZE,
+      brushOpacity: 1,
       brushShape: 'square',
       brushFalloff: 'solid',
       linePerfect: true,
@@ -187,6 +188,7 @@ export default class PixelStudio {
     this.mobileDrawer = null;
     this.mobileDrawerBounds = null;
     this.paletteBarScrollBounds = null;
+    this.brushPickerBounds = null;
     this.panJoystick = {
       active: false,
       id: null,
@@ -197,6 +199,9 @@ export default class PixelStudio {
       dy: 0
     };
     this.mobileZoomSliderBounds = null;
+    this.mobileZoomDrag = null;
+    this.brushPickerOpen = false;
+    this.brushPickerDraft = null;
     this.paletteGridOpen = false;
     this.sidebars = { left: true };
     this.leftPanelTabs = ['file', 'tools', 'layers', 'canvas'];
@@ -766,6 +771,29 @@ export default class PixelStudio {
     const scale = dt > 0 ? (dt / 1000) : 0.016;
     this.view.panX -= this.panJoystick.dx * speed * scale;
     this.view.panY -= this.panJoystick.dy * speed * scale;
+  }
+
+  syncBrushPickerDraft() {
+    this.brushPickerDraft = {
+      brushShape: this.toolOptions.brushShape,
+      brushSize: this.toolOptions.brushSize,
+      brushOpacity: this.toolOptions.brushOpacity
+    };
+  }
+
+  openBrushPicker() {
+    this.syncBrushPickerDraft();
+    this.brushPickerOpen = true;
+  }
+
+  closeBrushPicker({ apply = false } = {}) {
+    if (apply && this.brushPickerDraft) {
+      this.toolOptions.brushShape = this.brushPickerDraft.brushShape;
+      this.setBrushSize(this.brushPickerDraft.brushSize);
+      this.setBrushOpacity(this.brushPickerDraft.brushOpacity);
+    }
+    this.brushPickerOpen = false;
+    this.brushPickerDraft = null;
   }
 
   updateAnimation(dt) {
@@ -1396,11 +1424,20 @@ export default class PixelStudio {
     }
   }
 
+  updateZoomFromSliderX(pointerX) {
+    if (!this.mobileZoomSliderBounds) return;
+    const sliderX = this.mobileZoomSliderBounds.x;
+    const sliderWidth = this.mobileZoomSliderBounds.w;
+    const ratio = clamp((pointerX - sliderX) / Math.max(1, sliderWidth), 0, 1);
+    const target = Math.round(ratio * (this.view.zoomLevels.length - 1));
+    this.view.zoomIndex = clamp(target, 0, this.view.zoomLevels.length - 1);
+  }
+
   handlePointerDown(payload) {
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
     const button = payload.button ?? 0;
-    if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen || this.selectionContextMenu) {
+    if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen || this.selectionContextMenu || this.brushPickerOpen) {
       this.handleButtonClick(payload.x, payload.y);
       return;
     }
@@ -1458,7 +1495,12 @@ export default class PixelStudio {
       };
       return;
     }
-    if (payload.touchCount && this.isPointInCircle(payload.x, payload.y, this.panJoystick.center, this.panJoystick.radius * 1.2)) {
+    if (this.mobileZoomSliderBounds && this.isPointInBounds(payload, this.mobileZoomSliderBounds)) {
+      this.mobileZoomDrag = { id: payload.id ?? null };
+      this.updateZoomFromSliderX(payload.x);
+      return;
+    }
+    if (this.isMobileLayout() && this.isPointInCircle(payload.x, payload.y, this.panJoystick.center, this.panJoystick.radius * 1.2)) {
       this.panJoystick.active = true;
       this.panJoystick.id = payload.id ?? null;
       this.updatePanJoystick(payload.x, payload.y);
@@ -1484,6 +1526,10 @@ export default class PixelStudio {
   handlePointerMove(payload) {
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
+    if (this.mobileZoomDrag && (payload.id === undefined || payload.id === this.mobileZoomDrag.id)) {
+      this.updateZoomFromSliderX(payload.x);
+      return;
+    }
     if (this.menuScrollDrag) {
       const dy = payload.y - this.menuScrollDrag.startY;
       const dx = this.menuScrollDrag.startX != null ? payload.x - this.menuScrollDrag.startX : 0;
@@ -1526,6 +1572,9 @@ export default class PixelStudio {
   }
 
   handlePointerUp(payload = {}) {
+    if (this.mobileZoomDrag && (payload.id === undefined || payload.id === this.mobileZoomDrag.id)) {
+      this.mobileZoomDrag = null;
+    }
     if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
       this.panJoystick.active = false;
       this.panJoystick.id = null;
@@ -1708,6 +1757,7 @@ export default class PixelStudio {
     const statusHeight = 20;
     const paletteHeight = isMobile ? 64 : 0;
     const toolbarHeight = isMobile ? 72 : 0;
+    const mobileZoomReserve = isMobile ? 44 : 0;
     const timelineHeight = !isMobile && this.modeTab === 'animate' ? 120 : 0;
     const bottomHeight = statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
     const leftWidth = isMobile ? getSharedMobileRailWidth(viewportW, viewportH) : SHARED_EDITOR_LEFT_MENU.width();
@@ -1849,7 +1899,7 @@ export default class PixelStudio {
       if (this.selection.active && this.selection.mask && !this.selection.mask[row * width + col]) return;
       const index = row * width + col;
       const target = this.activeLayer.pixels[index];
-      const alpha = pt.weight ?? 1;
+      const alpha = (pt.weight ?? 1) * (this.toolOptions.brushOpacity ?? 1);
       if (alpha <= 0) return;
       if (this.strokeState.mode === 'clone') {
         this.applyCloneStroke({ row, col }, alpha);
@@ -2456,6 +2506,10 @@ export default class PixelStudio {
     this.toolOptions.brushSize = clamp(Math.round(size), BRUSH_SIZE_MIN, BRUSH_SIZE_MAX);
   }
 
+  setBrushOpacity(opacity) {
+    this.toolOptions.brushOpacity = clamp(opacity, 0.05, 1);
+  }
+
   setBrushSizeFromSlider(x, bounds) {
     if (!bounds || bounds.w <= 0) return;
     const ratio = clamp((x - bounds.x) / bounds.w, 0, 1);
@@ -2763,6 +2817,10 @@ export default class PixelStudio {
       hit.onClick?.({ x, y });
       return true;
     }
+    if (this.brushPickerOpen && this.brushPickerBounds && !this.isPointInBounds({ x, y }, this.brushPickerBounds)) {
+      this.closeBrushPicker({ apply: false });
+      return true;
+    }
     if (this.mobileDrawer && this.mobileDrawerBounds && !this.isPointInBounds({ x, y }, this.mobileDrawerBounds)) {
       this.mobileDrawer = null;
       return true;
@@ -2881,10 +2939,11 @@ export default class PixelStudio {
     const statusHeight = 20;
     const paletteHeight = isMobile ? 64 : 0;
     const toolbarHeight = isMobile ? 72 : 0;
+    const mobileZoomReserve = isMobile ? 44 : 0;
     const timelineHeight = !isMobile && this.modeTab === 'animate' ? 120 : 0;
     const bottomHeight = menuFullScreen
       ? padding * 2
-      : statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
+      : statusHeight + paletteHeight + timelineHeight + toolbarHeight + mobileZoomReserve + padding;
     const leftFrame = !isMobile && this.sidebars.left && !menuFullScreen
       ? buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height })
       : null;
@@ -2901,6 +2960,7 @@ export default class PixelStudio {
     this.focusGroupMeta = {};
     this.mobileDrawerBounds = null;
     this.paletteBarScrollBounds = null;
+    this.brushPickerBounds = null;
 
     const canvasX = leftFrame ? leftFrame.contentX : (padding + leftWidth);
     const canvasY = topBarHeight + padding;
@@ -2946,13 +3006,16 @@ export default class PixelStudio {
     }
 
     if (isMobile) {
-      const toolbarY = height - toolbarHeight - padding;
+      const toolbarY = height - toolbarHeight - padding - mobileZoomReserve;
       this.drawMobileToolbar(ctx, canvasX, toolbarY, width - canvasX - padding, toolbarHeight);
       this.drawMobilePanZoomControls(ctx, width, height);
       if (this.mobileDrawer && this.mobileDrawer !== 'timeline') {
         const drawerW = getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 });
         const drawerX = width - drawerW;
         this.drawMobileDrawer(ctx, drawerX, 0, drawerW, height, this.mobileDrawer);
+      }
+      if (this.brushPickerOpen) {
+        this.drawBrushPickerModal(ctx, padding, canvasY + Math.max(24, canvasH * 0.08), width - padding * 2, Math.min(canvasH * 0.82, height - toolbarHeight - padding * 2));
       }
       if (this.paletteGridOpen) {
         this.drawPaletteGridSheet(ctx, padding, canvasY + canvasH * 0.25, width - padding * 2, canvasH * 0.7);
@@ -3398,10 +3461,10 @@ export default class PixelStudio {
     const buttonH = h - 16;
     const buttonY = y + 8;
     const gap = 6;
-    const brushBounds = { x: x + 8, y: buttonY, w: 108, h: buttonH };
-    this.drawButton(ctx, brushBounds, `Brush ${this.toolOptions.brushShape}`, false, { fontSize: 12 });
-    this.uiButtons.push({ bounds: brushBounds, onClick: () => this.cycleBrushShape() });
-    this.registerFocusable('toolbar', brushBounds, () => this.cycleBrushShape());
+    const brushBounds = { x: x + 8, y: buttonY, w: 84, h: buttonH };
+    this.drawButton(ctx, brushBounds, 'Brush', this.brushPickerOpen, { fontSize: 12 });
+    this.uiButtons.push({ bounds: brushBounds, onClick: () => this.openBrushPicker() });
+    this.registerFocusable('toolbar', brushBounds, () => this.openBrushPicker());
 
     const previewSize = Math.min(48, Math.max(34, buttonH));
     const previewBounds = {
@@ -3412,10 +3475,7 @@ export default class PixelStudio {
     };
     this.drawBrushPreviewChip(ctx, previewBounds);
 
-    const actions = [
-      { label: 'Undo', action: () => this.runtime.undo() },
-      { label: 'Redo', action: () => this.runtime.redo() }
-    ];
+    const actions = [];
     if (this.activeToolId === TOOL_IDS.CLONE) {
       actions.push(
         {
@@ -3437,13 +3497,19 @@ export default class PixelStudio {
         }
       );
     }
+    actions.push(
+      { label: 'Undo', action: () => this.runtime.undo() },
+      { label: 'Redo', action: () => this.runtime.redo() }
+    );
 
-    const actionsStartX = previewBounds.x + previewBounds.w + gap;
-    const availableW = Math.max(120, x + w - 8 - actionsStartX);
+    const actionAreaStartX = previewBounds.x + previewBounds.w + gap;
+    const availableW = Math.max(120, x + w - 8 - actionAreaStartX);
     const buttonW = Math.max(52, Math.min(90, Math.floor((availableW - gap * Math.max(0, actions.length - 1)) / Math.max(1, actions.length))));
-    actions.forEach((entry, index) => {
+    let currentX = x + w - 8 - buttonW;
+    for (let index = actions.length - 1; index >= 0; index -= 1) {
+      const entry = actions[index];
       const bounds = {
-        x: actionsStartX + index * (buttonW + gap),
+        x: currentX,
         y: buttonY,
         w: buttonW,
         h: buttonH
@@ -3451,7 +3517,9 @@ export default class PixelStudio {
       this.drawButton(ctx, bounds, entry.label, Boolean(entry.active), { fontSize: 12 });
       this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
       this.registerFocusable('toolbar', bounds, (entry.onClick || entry.action));
-    });
+      currentX -= buttonW + gap;
+      if (currentX < actionAreaStartX) break;
+    }
   }
 
   drawMobilePanZoomControls(ctx, width, height) {
@@ -3521,9 +3589,7 @@ export default class PixelStudio {
     this.uiButtons.push({
       bounds: this.mobileZoomSliderBounds,
       onClick: ({ x: pointerX }) => {
-        const ratio = clamp((pointerX - sliderX) / Math.max(1, sliderWidth), 0, 1);
-        const target = Math.round(ratio * (this.view.zoomLevels.length - 1));
-        this.view.zoomIndex = clamp(target, 0, this.view.zoomLevels.length - 1);
+        this.updateZoomFromSliderX(pointerX);
       }
     });
   }
@@ -3548,6 +3614,111 @@ export default class PixelStudio {
         ctx.fillRect(px, py, scale, scale);
       }
     }
+  }
+
+
+  drawBrushPickerModal(ctx, x, y, w, h) {
+    const modal = {
+      x: x + Math.max(0, Math.floor((w - Math.min(w, 520)) / 2)),
+      y,
+      w: Math.min(w, 520),
+      h: Math.max(240, h)
+    };
+    this.brushPickerBounds = modal;
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    ctx.fillStyle = UI_SUITE.colors.panel;
+    ctx.fillRect(modal.x, modal.y, modal.w, modal.h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(modal.x, modal.y, modal.w, modal.h);
+
+    const titleY = modal.y + 20;
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = '12px monospace';
+    ctx.fillText('Brushes', modal.x + 12, titleY);
+
+    const cols = 4;
+    const rowGap = 8;
+    const cellGap = 8;
+    const gridY = titleY + 10;
+    const footerH = 92;
+    const gridH = Math.max(90, modal.h - footerH - 34);
+    const rows = Math.ceil(BRUSH_SHAPES.length / cols);
+    const cellW = Math.floor((modal.w - 24 - (cols - 1) * cellGap) / cols);
+    const cellH = Math.max(34, Math.floor((gridH - Math.max(0, rows - 1) * rowGap) / Math.max(1, rows)));
+    const draft = this.brushPickerDraft || this.toolOptions;
+
+    BRUSH_SHAPES.forEach((shape, index) => {
+      const col = index % cols;
+      const row = Math.floor(index / cols);
+      const bounds = {
+        x: modal.x + 12 + col * (cellW + cellGap),
+        y: gridY + row * (cellH + rowGap),
+        w: cellW,
+        h: cellH
+      };
+      const active = draft.brushShape === shape;
+      this.drawButton(ctx, bounds, shape, active, { fontSize: 11 });
+      this.uiButtons.push({
+        bounds,
+        onClick: () => {
+          if (!this.brushPickerDraft) this.syncBrushPickerDraft();
+          this.brushPickerDraft.brushShape = shape;
+        }
+      });
+    });
+
+    const footerY = modal.y + modal.h - footerH;
+    const sliderLabelY = footerY + 16;
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.fillText(`Size: ${Math.round(draft.brushSize)}`, modal.x + 12, sliderLabelY);
+    ctx.fillText(`Opacity: ${Math.round((draft.brushOpacity ?? 1) * 100)}%`, modal.x + modal.w / 2 + 6, sliderLabelY);
+
+    const sliderY = sliderLabelY + 8;
+    const sliderW = Math.floor((modal.w - 36) / 2);
+    const sizeSlider = { x: modal.x + 12, y: sliderY, w: sliderW, h: 12 };
+    const opacitySlider = { x: modal.x + modal.w / 2 + 6, y: sliderY, w: sliderW, h: 12 };
+
+    const drawSlider = (bounds, t) => {
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+      const knobX = bounds.x + clamp(t, 0, 1) * bounds.w;
+      ctx.fillStyle = 'rgba(0,200,255,0.95)';
+      ctx.fillRect(knobX - 2, bounds.y - 2, 4, bounds.h + 4);
+    };
+    drawSlider(sizeSlider, (draft.brushSize - BRUSH_SIZE_MIN) / Math.max(1, BRUSH_SIZE_MAX - BRUSH_SIZE_MIN));
+    drawSlider(opacitySlider, ((draft.brushOpacity ?? 1) - 0.05) / 0.95);
+
+    this.uiButtons.push({
+      bounds: { x: sizeSlider.x, y: sizeSlider.y - 8, w: sizeSlider.w, h: sizeSlider.h + 16 },
+      onClick: ({ x: pointerX }) => {
+        if (!this.brushPickerDraft) this.syncBrushPickerDraft();
+        const t = clamp((pointerX - sizeSlider.x) / Math.max(1, sizeSlider.w), 0, 1);
+        this.brushPickerDraft.brushSize = BRUSH_SIZE_MIN + t * (BRUSH_SIZE_MAX - BRUSH_SIZE_MIN);
+      }
+    });
+    this.uiButtons.push({
+      bounds: { x: opacitySlider.x, y: opacitySlider.y - 8, w: opacitySlider.w, h: opacitySlider.h + 16 },
+      onClick: ({ x: pointerX }) => {
+        if (!this.brushPickerDraft) this.syncBrushPickerDraft();
+        const t = clamp((pointerX - opacitySlider.x) / Math.max(1, opacitySlider.w), 0, 1);
+        this.brushPickerDraft.brushOpacity = 0.05 + t * 0.95;
+      }
+    });
+
+    const buttonY = modal.y + modal.h - 34;
+    const cancelBounds = { x: modal.x + modal.w - 180, y: buttonY, w: 80, h: 24 };
+    const okBounds = { x: modal.x + modal.w - 92, y: buttonY, w: 80, h: 24 };
+    this.drawButton(ctx, cancelBounds, 'Cancel', false, { fontSize: 12 });
+    this.drawButton(ctx, okBounds, 'OK', false, { fontSize: 12 });
+    this.uiButtons.push({ bounds: cancelBounds, onClick: () => this.closeBrushPicker({ apply: false }) });
+    this.uiButtons.push({ bounds: okBounds, onClick: () => this.closeBrushPicker({ apply: true }) });
+    ctx.restore();
   }
 
   drawMobileDrawer(ctx, x, y, w, h, type) {
