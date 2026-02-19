@@ -668,6 +668,10 @@ export default class PixelStudio {
     this.selection.floatingBounds = null;
     this.setActiveTool(TOOL_IDS.PENCIL);
     this.triggerSelectionReady = false;
+    if (this.isMobileLayout()) {
+      this.mobileDrawer = 'panel';
+      this.setLeftPanelTab('tools');
+    }
   }
 
   configureSeamFixCloneDefaults() {
@@ -1148,6 +1152,9 @@ export default class PixelStudio {
       } else {
         this.modeTab = 'draw';
       }
+    }
+    if (this.isMobileLayout() && ['file', 'tools', 'canvas'].includes(tab)) {
+      this.mobileDrawer = 'panel';
     }
   }
 
