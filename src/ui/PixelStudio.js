@@ -189,6 +189,8 @@ export default class PixelStudio {
     this.mobileDrawer = null;
     this.mobileDrawerBounds = null;
     this.paletteBarScrollBounds = null;
+    this.paletteModalBounds = null;
+    this.paletteColorPickerBounds = null;
     this.brushPickerBounds = null;
     this.brushPickerSliders = null;
     this.panJoystick = {
@@ -209,6 +211,8 @@ export default class PixelStudio {
     this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.paletteModalBounds = null;
+    this.paletteColorPickerBounds = null;
     this.sidebars = { left: true };
     this.leftPanelTabs = ['file', 'tools', 'layers', 'canvas'];
     this.leftPanelTabIndex = 1;
@@ -682,6 +686,8 @@ export default class PixelStudio {
     this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.paletteModalBounds = null;
+    this.paletteColorPickerBounds = null;
   }
 
   resetFocus() {
@@ -1048,6 +1054,8 @@ export default class PixelStudio {
       this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.paletteModalBounds = null;
+    this.paletteColorPickerBounds = null;
       return;
     }
     if (this.mobileDrawer) {
@@ -2670,14 +2678,17 @@ export default class PixelStudio {
   applyPaletteColorPickerAdd() {
     if (!this.paletteColorDraft) return;
     const hex = this.rgbToHex(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b);
-    this.addPaletteColor();
-    if (this.currentPalette.colors[this.paletteIndex]) {
-      this.currentPalette.colors[this.paletteIndex].hex = hex;
-      this.currentPalette.colors[this.paletteIndex].rgba = { ...hexToRgba(hex), a: 255 };
-    }
+    this.currentPalette.colors.push({
+      id: `color-${Date.now()}`,
+      hex,
+      rgba: { ...hexToRgba(hex), a: 255 }
+    });
+    this.paletteIndex = this.currentPalette.colors.length - 1;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.paletteColorPickerBounds = null;
   }
+
 
   movePaletteColor(delta) {
     const nextIndex = clamp(this.paletteIndex + delta, 0, this.currentPalette.colors.length - 1);
@@ -2912,6 +2923,12 @@ export default class PixelStudio {
   }
 
   handleButtonClick(x, y, payload = {}) {
+    if (this.paletteGridOpen) {
+      const activeBounds = this.paletteColorPickerOpen ? this.paletteColorPickerBounds : this.paletteModalBounds;
+      if (activeBounds && !this.isPointInBounds({ x, y }, activeBounds)) {
+        return true;
+      }
+    }
     let hit = null;
     for (let index = this.uiButtons.length - 1; index >= 0; index -= 1) {
       const button = this.uiButtons[index];
@@ -3071,6 +3088,8 @@ export default class PixelStudio {
     this.focusGroupMeta = {};
     this.mobileDrawerBounds = null;
     this.paletteBarScrollBounds = null;
+    this.paletteModalBounds = null;
+    this.paletteColorPickerBounds = null;
     this.brushPickerBounds = null;
     this.brushPickerSliders = null;
 
@@ -3896,10 +3915,13 @@ export default class PixelStudio {
   }
 
   drawPaletteGridSheet(ctx, x, y, w, h) {
-    const sheetW = Math.min(w - 40, 420);
-    const sheetH = Math.max(220, Math.min(h, 320));
+    const canvasW = this.canvasBounds?.w || 0;
+    const canvasH = this.canvasBounds?.h || 0;
+    const sheetW = Math.min(w - 20, Math.max(420, canvasW));
+    const sheetH = Math.min(h - 16, Math.max(280, Math.min(520, canvasH)));
     const sheetX = x + Math.floor((w - sheetW) / 2);
     const sheetY = y + Math.floor((h - sheetH) / 2);
+    this.paletteModalBounds = { x: sheetX, y: sheetY, w: sheetW, h: sheetH };
 
     ctx.fillStyle = 'rgba(0,0,0,0.92)';
     ctx.fillRect(sheetX, sheetY, sheetW, sheetH);
@@ -3937,16 +3959,18 @@ export default class PixelStudio {
     });
 
     if (this.paletteColorPickerOpen && this.paletteColorDraft) {
-      const pickerX = sheetX + 10;
+      const pickerX = sheetX + 8;
       const pickerY = sheetY + 40;
-      const pickerW = sheetW - 20;
-      const pickerH = sheetH - 92;
+      const pickerW = sheetW - 16;
+      const pickerH = sheetH - 56;
+      this.paletteColorPickerBounds = { x: pickerX, y: pickerY, w: pickerW, h: pickerH };
       ctx.fillStyle = 'rgba(0,0,0,0.88)';
       ctx.fillRect(pickerX, pickerY, pickerW, pickerH);
       ctx.strokeStyle = 'rgba(255,255,255,0.35)';
       ctx.strokeRect(pickerX, pickerY, pickerW, pickerH);
 
-      const sv = { x: pickerX + 10, y: pickerY + 10, w: Math.min(170, pickerW - 120), h: 120 };
+      const svSize = Math.max(170, Math.min(pickerW - 120, pickerH - 120));
+      const sv = { x: pickerX + 14, y: pickerY + 14, w: svSize, h: svSize };
       const hue = { x: sv.x + sv.w + 12, y: sv.y, w: 16, h: sv.h };
 
       const topColor = this.hsvToRgb(this.paletteColorDraft.h, 1, 1);
@@ -4021,18 +4045,19 @@ export default class PixelStudio {
         this.syncPaletteDraftFromHsv();
       }});
 
-      const pickerCancel = { x: sheetX + sheetW - 170, y: sheetY + sheetH - 44, w: 72, h: 30 };
-      const pickerOk = { x: sheetX + sheetW - 90, y: sheetY + sheetH - 44, w: 72, h: 30 };
-      this.drawButton(ctx, pickerCancel, 'Cancel', false, { fontSize: 12 });
-      this.drawButton(ctx, pickerOk, 'Add', false, { fontSize: 12 });
-      this.uiButtons.push({ bounds: pickerCancel, onClick: () => { this.paletteColorPickerOpen = false; this.paletteColorDraft = null; } });
+      const pickerCancel = { x: sheetX + sheetW - 182, y: sheetY + sheetH - 44, w: 82, h: 30 };
+      const pickerOk = { x: sheetX + sheetW - 92, y: sheetY + sheetH - 44, w: 82, h: 30 };
+      this.drawButton(ctx, pickerCancel, 'cancel', false, { fontSize: 12 });
+      this.drawButton(ctx, pickerOk, 'add', false, { fontSize: 12 });
+      this.uiButtons.push({ bounds: pickerCancel, onClick: () => { this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.paletteColorPickerBounds = null; } });
       this.uiButtons.push({ bounds: pickerOk, onClick: () => this.applyPaletteColorPickerAdd() });
     }
 
+    if (!this.paletteColorPickerOpen) this.paletteColorPickerBounds = null;
     const closeBounds = { x: sheetX + sheetW - 96, y: sheetY + sheetH - 44, w: 84, h: 32 };
     this.drawButton(ctx, closeBounds, 'Close', false, { fontSize: 12 });
-    this.uiButtons.push({ bounds: closeBounds, onClick: () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; } });
-    this.registerFocusable('menu', closeBounds, () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; });
+    this.uiButtons.push({ bounds: closeBounds, onClick: () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.paletteColorPickerBounds = null; this.paletteModalBounds = null; } });
+    this.registerFocusable('menu', closeBounds, () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.paletteColorPickerBounds = null; this.paletteModalBounds = null; });
   }
 
   drawTimelineSheet(ctx, x, y, w, h) {
