@@ -207,6 +207,8 @@ export default class PixelStudio {
     this.brushPickerDrag = null;
     this.brushPickerSliders = null;
     this.paletteGridOpen = false;
+    this.paletteColorPickerOpen = false;
+    this.paletteColorDraft = null;
     this.sidebars = { left: true };
     this.leftPanelTabs = ['file', 'tools', 'layers', 'canvas'];
     this.leftPanelTabIndex = 1;
@@ -678,6 +680,8 @@ export default class PixelStudio {
     this.controlsOverlayOpen = false;
     this.menuOpen = false;
     this.paletteGridOpen = false;
+    this.paletteColorPickerOpen = false;
+    this.paletteColorDraft = null;
   }
 
   resetFocus() {
@@ -1042,6 +1046,8 @@ export default class PixelStudio {
     }
     if (this.paletteGridOpen) {
       this.paletteGridOpen = false;
+    this.paletteColorPickerOpen = false;
+    this.paletteColorDraft = null;
       return;
     }
     if (this.mobileDrawer) {
@@ -2601,6 +2607,78 @@ export default class PixelStudio {
     this.paletteIndex = clamp(this.paletteIndex, 0, this.currentPalette.colors.length - 1);
   }
 
+
+  rgbToHsv(r, g, b) {
+    const rn = r / 255;
+    const gn = g / 255;
+    const bn = b / 255;
+    const max = Math.max(rn, gn, bn);
+    const min = Math.min(rn, gn, bn);
+    const d = max - min;
+    let h = 0;
+    if (d > 0) {
+      if (max === rn) h = ((gn - bn) / d) % 6;
+      else if (max === gn) h = (bn - rn) / d + 2;
+      else h = (rn - gn) / d + 4;
+      h *= 60;
+      if (h < 0) h += 360;
+    }
+    const s = max <= 0 ? 0 : (d / max);
+    const v = max;
+    return { h, s, v };
+  }
+
+  hsvToRgb(h, s, v) {
+    const hh = ((h % 360) + 360) % 360;
+    const c = v * s;
+    const x = c * (1 - Math.abs(((hh / 60) % 2) - 1));
+    const m = v - c;
+    let rn = 0; let gn = 0; let bn = 0;
+    if (hh < 60) { rn = c; gn = x; bn = 0; }
+    else if (hh < 120) { rn = x; gn = c; bn = 0; }
+    else if (hh < 180) { rn = 0; gn = c; bn = x; }
+    else if (hh < 240) { rn = 0; gn = x; bn = c; }
+    else if (hh < 300) { rn = x; gn = 0; bn = c; }
+    else { rn = c; gn = 0; bn = x; }
+    return {
+      r: Math.round((rn + m) * 255),
+      g: Math.round((gn + m) * 255),
+      b: Math.round((bn + m) * 255)
+    };
+  }
+
+  rgbToHex(r, g, b) {
+    return `#${[r, g, b].map((v) => clamp(Math.round(v), 0, 255).toString(16).padStart(2, '0')).join('')}`;
+  }
+
+  openPaletteColorPicker() {
+    const activeHex = this.currentPalette.colors[this.paletteIndex]?.hex || '#ffffff';
+    const rgba = hexToRgba(activeHex);
+    const hsv = this.rgbToHsv(rgba.r, rgba.g, rgba.b);
+    this.paletteColorDraft = { h: hsv.h, s: hsv.s, v: hsv.v, r: rgba.r, g: rgba.g, b: rgba.b };
+    this.paletteColorPickerOpen = true;
+  }
+
+  syncPaletteDraftFromHsv() {
+    if (!this.paletteColorDraft) return;
+    const rgb = this.hsvToRgb(this.paletteColorDraft.h, this.paletteColorDraft.s, this.paletteColorDraft.v);
+    this.paletteColorDraft.r = rgb.r;
+    this.paletteColorDraft.g = rgb.g;
+    this.paletteColorDraft.b = rgb.b;
+  }
+
+  applyPaletteColorPickerAdd() {
+    if (!this.paletteColorDraft) return;
+    const hex = this.rgbToHex(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b);
+    this.addPaletteColor();
+    if (this.currentPalette.colors[this.paletteIndex]) {
+      this.currentPalette.colors[this.paletteIndex].hex = hex;
+      this.currentPalette.colors[this.paletteIndex].rgba = { ...hexToRgba(hex), a: 255 };
+    }
+    this.paletteColorPickerOpen = false;
+    this.paletteColorDraft = null;
+  }
+
   movePaletteColor(delta) {
     const nextIndex = clamp(this.paletteIndex + delta, 0, this.currentPalette.colors.length - 1);
     if (nextIndex === this.paletteIndex) return;
@@ -3818,24 +3896,37 @@ export default class PixelStudio {
   }
 
   drawPaletteGridSheet(ctx, x, y, w, h) {
+    const sheetW = Math.min(w - 40, 420);
+    const sheetH = Math.max(220, Math.min(h, 320));
+    const sheetX = x + Math.floor((w - sheetW) / 2);
+    const sheetY = y + Math.floor((h - sheetH) / 2);
+
     ctx.fillStyle = 'rgba(0,0,0,0.92)';
-    ctx.fillRect(x, y, w, h);
+    ctx.fillRect(sheetX, sheetY, sheetW, sheetH);
     ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
+    ctx.strokeRect(sheetX, sheetY, sheetW, sheetH);
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
-    ctx.fillText('Palette', x + 12, y + 22);
-    const swatchSize = 44;
-    const gap = 10;
-    const maxPerRow = Math.max(1, Math.floor((w - 20) / (swatchSize + gap)));
-    let offsetY = y + 30;
+    ctx.fillText('Palette', sheetX + 12, sheetY + 22);
+
+    const addBounds = { x: sheetX + sheetW - 150, y: sheetY + 8, w: 34, h: 28 };
+    const removeBounds = { x: sheetX + sheetW - 112, y: sheetY + 8, w: 34, h: 28 };
+    this.drawButton(ctx, addBounds, '+', false, { fontSize: 12 });
+    this.drawButton(ctx, removeBounds, '-', false, { fontSize: 12 });
+    this.uiButtons.push({ bounds: addBounds, onClick: () => this.openPaletteColorPicker() });
+    this.uiButtons.push({ bounds: removeBounds, onClick: () => this.removePaletteColor() });
+
+    const swatchSize = 36;
+    const gap = 8;
+    const maxPerRow = Math.max(1, Math.floor((sheetW - 24) / (swatchSize + gap)));
+    const topY = sheetY + 44;
     this.paletteBounds = [];
     this.currentPalette.colors.forEach((color, index) => {
       const row = Math.floor(index / maxPerRow);
       const col = index % maxPerRow;
-      const swatchX = x + 12 + col * (swatchSize + gap);
-      const swatchY = offsetY + row * (swatchSize + gap);
-      if (swatchY + swatchSize > y + h - 40) return;
+      const swatchX = sheetX + 12 + col * (swatchSize + gap);
+      const swatchY = topY + row * (swatchSize + gap);
+      if (swatchY + swatchSize > sheetY + sheetH - 54) return;
       ctx.fillStyle = color.hex;
       ctx.fillRect(swatchX, swatchY, swatchSize, swatchSize);
       ctx.strokeStyle = index === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)';
@@ -3845,10 +3936,103 @@ export default class PixelStudio {
       this.registerFocusable('palette', bounds, () => this.setPaletteIndex(index));
     });
 
-    const closeBounds = { x: x + w - 110, y: y + h - 50, w: 90, h: 44 };
+    if (this.paletteColorPickerOpen && this.paletteColorDraft) {
+      const pickerX = sheetX + 10;
+      const pickerY = sheetY + 40;
+      const pickerW = sheetW - 20;
+      const pickerH = sheetH - 92;
+      ctx.fillStyle = 'rgba(0,0,0,0.88)';
+      ctx.fillRect(pickerX, pickerY, pickerW, pickerH);
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.strokeRect(pickerX, pickerY, pickerW, pickerH);
+
+      const sv = { x: pickerX + 10, y: pickerY + 10, w: Math.min(170, pickerW - 120), h: 120 };
+      const hue = { x: sv.x + sv.w + 12, y: sv.y, w: 16, h: sv.h };
+
+      const topColor = this.hsvToRgb(this.paletteColorDraft.h, 1, 1);
+      const gradX = ctx.createLinearGradient(sv.x, sv.y, sv.x + sv.w, sv.y);
+      gradX.addColorStop(0, '#fff');
+      gradX.addColorStop(1, this.rgbToHex(topColor.r, topColor.g, topColor.b));
+      ctx.fillStyle = gradX;
+      ctx.fillRect(sv.x, sv.y, sv.w, sv.h);
+      const gradY = ctx.createLinearGradient(sv.x, sv.y, sv.x, sv.y + sv.h);
+      gradY.addColorStop(0, 'rgba(0,0,0,0)');
+      gradY.addColorStop(1, 'rgba(0,0,0,1)');
+      ctx.fillStyle = gradY;
+      ctx.fillRect(sv.x, sv.y, sv.w, sv.h);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(sv.x, sv.y, sv.w, sv.h);
+
+      const hueGrad = ctx.createLinearGradient(hue.x, hue.y, hue.x, hue.y + hue.h);
+      hueGrad.addColorStop(0, '#f00');
+      hueGrad.addColorStop(0.17, '#ff0');
+      hueGrad.addColorStop(0.33, '#0f0');
+      hueGrad.addColorStop(0.5, '#0ff');
+      hueGrad.addColorStop(0.67, '#00f');
+      hueGrad.addColorStop(0.83, '#f0f');
+      hueGrad.addColorStop(1, '#f00');
+      ctx.fillStyle = hueGrad;
+      ctx.fillRect(hue.x, hue.y, hue.w, hue.h);
+      ctx.strokeRect(hue.x, hue.y, hue.w, hue.h);
+
+      const svX = sv.x + this.paletteColorDraft.s * sv.w;
+      const svY = sv.y + (1 - this.paletteColorDraft.v) * sv.h;
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(svX - 4, svY - 4, 8, 8);
+      const hueY = hue.y + (this.paletteColorDraft.h / 360) * hue.h;
+      ctx.strokeRect(hue.x - 2, hueY - 2, hue.w + 4, 4);
+
+      const addSlider = (label, val, min, max, x0, y0, w0, onChange) => {
+        ctx.fillStyle = '#fff';
+        ctx.fillText(`${label}: ${Math.round(val)}`, x0, y0 - 4);
+        ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        ctx.fillRect(x0, y0, w0, 10);
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+        ctx.strokeRect(x0, y0, w0, 10);
+        const t = (val - min) / Math.max(1e-6, (max - min));
+        const kx = x0 + clamp(t, 0, 1) * w0;
+        ctx.fillStyle = '#00c8ff';
+        ctx.fillRect(kx - 2, y0 - 2, 4, 14);
+        this.uiButtons.push({ bounds: { x: x0, y: y0 - 8, w: w0, h: 26 }, onClick: ({ x: px }) => onChange(clamp((px - x0) / Math.max(1, w0), 0, 1)) });
+      };
+
+      const sliderX = sv.x;
+      const sliderW = pickerW - 20;
+      let sy = sv.y + sv.h + 18;
+      addSlider('H', this.paletteColorDraft.h, 0, 360, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.h = t * 360; this.syncPaletteDraftFromHsv(); });
+      sy += 24;
+      addSlider('S', this.paletteColorDraft.s * 100, 0, 100, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.s = t; this.syncPaletteDraftFromHsv(); });
+      sy += 24;
+      addSlider('V', this.paletteColorDraft.v * 100, 0, 100, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.v = t; this.syncPaletteDraftFromHsv(); });
+      sy += 24;
+      addSlider('R', this.paletteColorDraft.r, 0, 255, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.r = Math.round(t * 255); const hsv = this.rgbToHsv(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b); this.paletteColorDraft.h = hsv.h; this.paletteColorDraft.s = hsv.s; this.paletteColorDraft.v = hsv.v; });
+      sy += 24;
+      addSlider('G', this.paletteColorDraft.g, 0, 255, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.g = Math.round(t * 255); const hsv = this.rgbToHsv(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b); this.paletteColorDraft.h = hsv.h; this.paletteColorDraft.s = hsv.s; this.paletteColorDraft.v = hsv.v; });
+      sy += 24;
+      addSlider('B', this.paletteColorDraft.b, 0, 255, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.b = Math.round(t * 255); const hsv = this.rgbToHsv(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b); this.paletteColorDraft.h = hsv.h; this.paletteColorDraft.s = hsv.s; this.paletteColorDraft.v = hsv.v; });
+
+      this.uiButtons.push({ bounds: sv, onClick: ({ x: px, y: py }) => {
+        this.paletteColorDraft.s = clamp((px - sv.x) / Math.max(1, sv.w), 0, 1);
+        this.paletteColorDraft.v = clamp(1 - (py - sv.y) / Math.max(1, sv.h), 0, 1);
+        this.syncPaletteDraftFromHsv();
+      }});
+      this.uiButtons.push({ bounds: { x: hue.x, y: hue.y, w: hue.w, h: hue.h }, onClick: ({ y: py }) => {
+        this.paletteColorDraft.h = clamp((py - hue.y) / Math.max(1, hue.h), 0, 1) * 360;
+        this.syncPaletteDraftFromHsv();
+      }});
+
+      const pickerCancel = { x: sheetX + sheetW - 170, y: sheetY + sheetH - 44, w: 72, h: 30 };
+      const pickerOk = { x: sheetX + sheetW - 90, y: sheetY + sheetH - 44, w: 72, h: 30 };
+      this.drawButton(ctx, pickerCancel, 'Cancel', false, { fontSize: 12 });
+      this.drawButton(ctx, pickerOk, 'Add', false, { fontSize: 12 });
+      this.uiButtons.push({ bounds: pickerCancel, onClick: () => { this.paletteColorPickerOpen = false; this.paletteColorDraft = null; } });
+      this.uiButtons.push({ bounds: pickerOk, onClick: () => this.applyPaletteColorPickerAdd() });
+    }
+
+    const closeBounds = { x: sheetX + sheetW - 96, y: sheetY + sheetH - 44, w: 84, h: 32 };
     this.drawButton(ctx, closeBounds, 'Close', false, { fontSize: 12 });
-    this.uiButtons.push({ bounds: closeBounds, onClick: () => { this.paletteGridOpen = false; } });
-    this.registerFocusable('menu', closeBounds, () => { this.paletteGridOpen = false; });
+    this.uiButtons.push({ bounds: closeBounds, onClick: () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; } });
+    this.registerFocusable('menu', closeBounds, () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; });
   }
 
   drawTimelineSheet(ctx, x, y, w, h) {
@@ -4658,22 +4842,20 @@ export default class PixelStudio {
     const controlGap = 6;
     const controlY = y + 10;
     const controlH = 44;
-    const plusBounds = { x: 0, y: controlY, w: 28, h: controlH };
-    const minusBounds = { x: 0, y: controlY, w: 28, h: controlH };
     const prevBounds = { x: 0, y: controlY, w: 28, h: controlH };
     const nextBounds = { x: 0, y: controlY, w: 28, h: controlH };
     const paletteButtonW = clamp(Math.floor(w * 0.22), 68, 92);
     const moreBounds = { x: 0, y: controlY, w: paletteButtonW, h: controlH };
 
     let controlX = x + w - 10;
-    [moreBounds, nextBounds, prevBounds, minusBounds, plusBounds].forEach((bounds) => {
+    [moreBounds, nextBounds, prevBounds].forEach((bounds) => {
       controlX -= bounds.w;
       bounds.x = controlX;
       controlX -= controlGap;
     });
 
     const startX = x + 10;
-    const swatchAreaW = Math.max(44, plusBounds.x - controlGap - startX);
+    const swatchAreaW = Math.max(44, prevBounds.x - controlGap - startX);
     const maxPerRow = Math.max(1, Math.floor(swatchAreaW / (swatchSize + gap)));
     const total = this.currentPalette.colors.length;
     const maxScroll = Math.max(0, total - maxPerRow);
@@ -4703,20 +4885,14 @@ export default class PixelStudio {
       this.registerFocusable('palette', bounds, () => this.setPaletteIndex(i));
     }
 
-    this.drawButton(ctx, plusBounds, '+', false, { fontSize: 12 });
-    this.drawButton(ctx, minusBounds, '-', false, { fontSize: 12 });
     this.drawButton(ctx, prevBounds, '◀', false, { fontSize: 12 });
     this.drawButton(ctx, nextBounds, '▶', false, { fontSize: 12 });
     this.drawButton(ctx, moreBounds, this.paletteGridOpen ? 'Palette ▾' : 'Palette ▸', false, { fontSize: 12 });
 
-    this.uiButtons.push({ bounds: plusBounds, onClick: () => this.addPaletteColor() });
-    this.uiButtons.push({ bounds: minusBounds, onClick: () => this.removePaletteColor() });
     this.uiButtons.push({ bounds: prevBounds, onClick: () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) - 1, 0, maxScroll); } });
     this.uiButtons.push({ bounds: nextBounds, onClick: () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) + 1, 0, maxScroll); } });
     this.uiButtons.push({ bounds: moreBounds, onClick: () => { this.paletteGridOpen = !this.paletteGridOpen; } });
 
-    this.registerFocusable('menu', plusBounds, () => this.addPaletteColor());
-    this.registerFocusable('menu', minusBounds, () => this.removePaletteColor());
     this.registerFocusable('menu', prevBounds, () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) - 1, 0, maxScroll); });
     this.registerFocusable('menu', nextBounds, () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) + 1, 0, maxScroll); });
     this.registerFocusable('menu', moreBounds, () => { this.paletteGridOpen = !this.paletteGridOpen; });
