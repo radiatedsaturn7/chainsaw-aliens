@@ -767,10 +767,10 @@ export default class PixelStudio {
 
   applyMobilePanJoystick(dt = 0) {
     if (!this.isMobileLayout() || !this.panJoystick.active) return;
-    const speed = Math.max(220, Math.min(640, this.view.zoomLevels[this.view.zoomIndex] * 28));
-    const scale = dt > 0 ? (dt / 1000) : 0.016;
-    this.view.panX -= this.panJoystick.dx * speed * scale;
-    this.view.panY -= this.panJoystick.dy * speed * scale;
+    const frameScale = dt > 0 ? (dt > 5 ? (dt / 16.6667) : (dt * 60)) : 1;
+    const speed = 8;
+    this.view.panX -= this.panJoystick.dx * speed * frameScale;
+    this.view.panY -= this.panJoystick.dy * speed * frameScale;
   }
 
   syncBrushPickerDraft() {
@@ -1762,6 +1762,7 @@ export default class PixelStudio {
     const bottomHeight = statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
     const leftWidth = isMobile ? getSharedMobileRailWidth(viewportW, viewportH) : SHARED_EDITOR_LEFT_MENU.width();
     const rightWidth = 0;
+    const mobileDrawerReserveW = isMobile ? getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 }) : 0;
 
     const canvasW = Math.max(1, viewportW - leftWidth - rightWidth - padding * 2);
     const canvasH = Math.max(1, viewportH - (topBarHeight + padding) - bottomHeight);
@@ -2951,6 +2952,7 @@ export default class PixelStudio {
       ? getSharedMobileRailWidth(width, height)
       : (leftFrame ? leftFrame.panelW : (this.sidebars.left ? SHARED_EDITOR_LEFT_MENU.width() : 0));
     const rightWidth = 0;
+    const mobileDrawerReserveW = isMobile ? getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 }) : 0;
 
     this.uiButtons = [];
     this.paletteBounds = [];
@@ -2986,12 +2988,9 @@ export default class PixelStudio {
 
     const paletteY = height - bottomHeight + padding;
     if (!menuFullScreen && paletteHeight > 0) {
-      const rightDrawerWidth = isMobile && this.mobileDrawer && this.mobileDrawer !== 'timeline'
-        ? getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 })
-        : 0;
       const paletteX = isMobile ? canvasX : padding;
       const paletteW = isMobile
-        ? Math.max(120, width - paletteX - padding - rightDrawerWidth)
+        ? Math.max(120, width - paletteX - padding - mobileDrawerReserveW)
         : (width - padding * 2);
       this.drawPaletteBar(ctx, paletteX, paletteY, paletteW, paletteHeight, { isMobile });
     }
@@ -3007,7 +3006,7 @@ export default class PixelStudio {
 
     if (isMobile) {
       const toolbarY = height - toolbarHeight - padding - mobileZoomReserve;
-      this.drawMobileToolbar(ctx, canvasX, toolbarY, width - canvasX - padding, toolbarHeight);
+      this.drawMobileToolbar(ctx, canvasX, toolbarY, Math.max(120, width - canvasX - padding - mobileDrawerReserveW), toolbarHeight);
       this.drawMobilePanZoomControls(ctx, width, height);
       if (this.mobileDrawer && this.mobileDrawer !== 'timeline') {
         const drawerW = getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 });
