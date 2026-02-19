@@ -2309,6 +2309,7 @@ export default class PixelStudio {
       this.cloneSource = point;
       this.cloneOffset = null;
       this.clonePickSourceArmed = false;
+      this.cloneColorPickArmed = false;
       this.statusMessage = touchInput
         ? 'Clone source set. Tap again to paint.'
         : 'Clone source set';
@@ -3159,7 +3160,10 @@ export default class PixelStudio {
     ctx.strokeRect(x, y, w, h);
     const zoom = this.view.zoomLevels[this.view.zoomIndex];
     const zoomPercent = Math.round(zoom * 100);
-    const statusText = `Tool ${this.getEffectiveToolId()} | Brush ${this.toolOptions.brushSize}px | Color ${getPaletteSwatchHex(this.currentPalette, this.paletteIndex)} | Layer ${this.canvasState.activeLayerIndex + 1}/${this.canvasState.layers.length} | Frame ${this.animation.currentFrameIndex + 1}/${this.animation.frames.length} | Zoom ${zoomPercent}% | Cursor ${this.cursor.col},${this.cursor.row}`;
+    const cloneOffsetText = this.activeToolId === TOOL_IDS.CLONE && this.cloneOffset
+      ? ` | Clone Δ ${this.cloneOffset.col >= 0 ? '+' : ''}${this.cloneOffset.col},${this.cloneOffset.row >= 0 ? '+' : ''}${this.cloneOffset.row}`
+      : '';
+    const statusText = `Tool ${this.getEffectiveToolId()} | Brush ${this.toolOptions.brushSize}px | Color ${getPaletteSwatchHex(this.currentPalette, this.paletteIndex)} | Layer ${this.canvasState.activeLayerIndex + 1}/${this.canvasState.layers.length} | Frame ${this.animation.currentFrameIndex + 1}/${this.animation.frames.length} | Zoom ${zoomPercent}% | Cursor ${this.cursor.col},${this.cursor.row}${cloneOffsetText}`;
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.font = '12px Courier New';
     ctx.fillText(statusText, x + 8, y + 14);
@@ -3268,14 +3272,35 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     const actions = [
-      { label: this.leftPanelTab.slice(0, 2).toUpperCase(), action: () => { this.mobileDrawer = this.mobileDrawer === 'panel' ? null : 'panel'; } },
-      { label: '🎨', action: () => { this.paletteGridOpen = !this.paletteGridOpen; } },
+      { label: this.leftPanelTab.slice(0, 2).toUpperCase(), action: () => { this.mobileDrawer = this.mobileDrawer === 'panel' ? null : 'panel'; }, active: this.mobileDrawer === 'panel' },
+      { label: '🎨', action: () => { this.paletteGridOpen = !this.paletteGridOpen; }, active: this.paletteGridOpen },
+      { label: 'B-', action: () => this.setBrushSize(this.toolOptions.brushSize - 1) },
+      { label: `B ${this.toolOptions.brushShape === 'circle' ? '○' : '□'}`, action: () => this.cycleBrushShape() },
+      { label: 'B+', action: () => this.setBrushSize(this.toolOptions.brushSize + 1) },
       { label: '↺', action: () => this.runtime.undo() },
-      { label: '↻', action: () => this.runtime.redo() },
-      { label: '🔍', action: () => this.zoomBy(this.view.zoomIndex >= this.view.zoomLevels.length - 1 ? -1 : 1) },
-      { label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
-      { label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = null; } }
+      { label: '↻', action: () => this.runtime.redo() }
     ];
+    if (this.activeToolId === TOOL_IDS.CLONE) {
+      actions.push(
+        {
+          label: this.cloneColorPickArmed ? 'Clr✓' : 'Clr',
+          action: () => {
+            this.cloneColorPickArmed = !this.cloneColorPickArmed;
+            this.statusMessage = this.cloneColorPickArmed ? 'Clone eyedropper mode' : 'Clone paint mode';
+          },
+          active: this.cloneColorPickArmed
+        },
+        {
+          label: this.clonePickSourceArmed ? 'Src✓' : 'Src',
+          action: () => {
+            this.clonePickSourceArmed = !this.clonePickSourceArmed;
+            this.cloneColorPickArmed = false;
+            this.statusMessage = this.clonePickSourceArmed ? 'Tap canvas to set clone source' : 'Clone paint mode';
+          },
+          active: this.clonePickSourceArmed
+        }
+      );
+    }
     const gap = 8;
     const buttonW = Math.min(68, Math.max(44, Math.floor((w - gap * (actions.length - 1)) / actions.length)));
     actions.forEach((entry, index) => {
@@ -3285,7 +3310,7 @@ export default class PixelStudio {
         w: buttonW,
         h: h - 16
       };
-      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+      this.drawButton(ctx, bounds, entry.label, Boolean(entry.active), { fontSize: 12 });
       this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
       this.registerFocusable('toolbar', bounds, (entry.onClick || entry.action));
     });
