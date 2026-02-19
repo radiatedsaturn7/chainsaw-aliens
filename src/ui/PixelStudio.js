@@ -188,7 +188,7 @@ export default class PixelStudio {
     this.mobileDrawerBounds = null;
     this.paletteGridOpen = false;
     this.sidebars = { left: true };
-    this.leftPanelTabs = ['file', 'tools', 'canvas'];
+    this.leftPanelTabs = ['file', 'tools', 'layers', 'canvas'];
     this.leftPanelTabIndex = 1;
     this.leftPanelTab = this.leftPanelTabs[this.leftPanelTabIndex];
     this.uiButtons = [];
@@ -1153,7 +1153,7 @@ export default class PixelStudio {
         this.modeTab = 'draw';
       }
     }
-    if (this.isMobileLayout() && ['file', 'tools', 'canvas'].includes(tab)) {
+    if (this.isMobileLayout() && ['file', 'tools', 'layers', 'canvas'].includes(tab)) {
       this.mobileDrawer = 'panel';
     }
   }
@@ -2958,6 +2958,10 @@ export default class PixelStudio {
       this.drawToolsMenu(ctx, x, y, w, h, { isMobile });
       return;
     }
+    if (this.leftPanelTab === 'layers') {
+      this.drawLayersPanel(ctx, x, y, w, h, { isMobile, showPreview: !isMobile });
+      return;
+    }
     if (this.leftPanelTab === 'canvas') {
       this.drawSwitchesPanel(ctx, x, y, w, h, { isMobile });
       return;
@@ -2966,6 +2970,10 @@ export default class PixelStudio {
 
   drawToolsMenu(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
+    if (isMobile) {
+      this.drawToolsPanel(ctx, x, y, w, h, { isMobile });
+      return;
+    }
     const gap = 12;
     const colWidth = Math.max(160, Math.floor((w - gap * 2) / 3));
     const leftX = x;
@@ -3246,6 +3254,7 @@ export default class PixelStudio {
     const actions = [
       { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
       { id: 'tools', label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
+      { id: 'layers', label: 'Layers', action: () => { this.setLeftPanelTab('layers'); this.mobileDrawer = 'panel'; } },
       { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
       { id: 'undo', label: 'Undo / Redo', action: () => { this.runtime.undo(); } }
     ];
@@ -3272,8 +3281,6 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     const actions = [
-      { label: this.leftPanelTab.slice(0, 2).toUpperCase(), action: () => { this.mobileDrawer = this.mobileDrawer === 'panel' ? null : 'panel'; }, active: this.mobileDrawer === 'panel' },
-      { label: '🎨', action: () => { this.paletteGridOpen = !this.paletteGridOpen; }, active: this.paletteGridOpen },
       {
         label: `Brush ${this.toolOptions.brushShape === 'circle' ? 'Circle' : 'Square'}`,
         action: () => {
