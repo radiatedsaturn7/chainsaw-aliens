@@ -186,6 +186,7 @@ export default class PixelStudio {
     this.controlsOverlayOpen = false;
     this.mobileDrawer = null;
     this.mobileDrawerBounds = null;
+    this.paletteBarScrollBounds = null;
     this.paletteGridOpen = false;
     this.sidebars = { left: true };
     this.leftPanelTabs = ['file', 'tools', 'layers', 'canvas'];
@@ -1424,6 +1425,20 @@ export default class PixelStudio {
       };
       return;
     }
+    if (payload.touchCount && this.paletteBarScrollBounds
+      && this.isPointInBounds(payload, this.paletteBarScrollBounds)
+      && (this.paletteBarScrollBounds.maxScroll || 0) > 0) {
+      this.menuScrollDrag = {
+        startX: payload.x,
+        startScroll: this.focusScroll.palette || 0,
+        moved: false,
+        hitAction: null,
+        lineHeight: Math.max(1, this.paletteBarScrollBounds.step || 1),
+        scrollGroup: 'paletteMobile',
+        maxScroll: Math.max(0, this.paletteBarScrollBounds.maxScroll || 0)
+      };
+      return;
+    }
     if (this.handleButtonClick(payload.x, payload.y)) return;
     if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
       this.setInputMode('canvas');
@@ -1446,18 +1461,22 @@ export default class PixelStudio {
     this.cursor.y = payload.y;
     if (this.menuScrollDrag) {
       const dy = payload.y - this.menuScrollDrag.startY;
-      if (Math.abs(dy) > 8) this.menuScrollDrag.moved = true;
+      const dx = this.menuScrollDrag.startX != null ? payload.x - this.menuScrollDrag.startX : 0;
+      if (Math.abs(dy) > 8 || Math.abs(dx) > 8) this.menuScrollDrag.moved = true;
       if (this.menuScrollDrag.moved) {
         const total = (this.focusGroups.file || []).length;
         const maxVisible = this.focusGroupMeta.file?.maxVisible || 1;
         const maxScroll = ['toolOptions', 'tools'].includes(this.menuScrollDrag.scrollGroup)
           ? (this.menuScrollDrag.maxScroll || 0)
           : Math.max(0, total - maxVisible);
-        const next = this.menuScrollDrag.startScroll - Math.round(dy / this.menuScrollDrag.lineHeight);
+        const delta = this.menuScrollDrag.scrollGroup === 'paletteMobile' ? dx : dy;
+        const next = this.menuScrollDrag.startScroll - Math.round(delta / this.menuScrollDrag.lineHeight);
         if (this.menuScrollDrag.scrollGroup === 'toolOptions') {
           this.focusScroll.toolOptions = clamp(next, 0, maxScroll);
         } else if (this.menuScrollDrag.scrollGroup === 'tools') {
           this.focusScroll.tools = clamp(next, 0, maxScroll);
+        } else if (this.menuScrollDrag.scrollGroup === 'paletteMobile') {
+          this.focusScroll.palette = clamp(next, 0, maxScroll);
         } else {
           this.focusScroll.file = clamp(next, 0, maxScroll);
         }
@@ -2796,6 +2815,7 @@ export default class PixelStudio {
     this.focusGroups = {};
     this.focusGroupMeta = {};
     this.mobileDrawerBounds = null;
+    this.paletteBarScrollBounds = null;
 
     const canvasX = leftFrame ? leftFrame.contentX : (padding + leftWidth);
     const canvasY = topBarHeight + padding;
@@ -2821,7 +2841,14 @@ export default class PixelStudio {
 
     const paletteY = height - bottomHeight + padding;
     if (!menuFullScreen && paletteHeight > 0) {
-      this.drawPaletteBar(ctx, padding, paletteY, width - padding * 2, paletteHeight, { isMobile });
+      const rightDrawerWidth = isMobile && this.mobileDrawer && this.mobileDrawer !== 'timeline'
+        ? getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 })
+        : 0;
+      const paletteX = isMobile ? canvasX : padding;
+      const paletteW = isMobile
+        ? Math.max(120, width - paletteX - padding - rightDrawerWidth)
+        : (width - padding * 2);
+      this.drawPaletteBar(ctx, paletteX, paletteY, paletteW, paletteHeight, { isMobile });
     }
     const statusY = paletteY + (paletteHeight > 0 ? paletteHeight + 6 : 0);
     if (!menuFullScreen) {
@@ -2911,6 +2938,7 @@ export default class PixelStudio {
     const labels = {
       file: SHARED_EDITOR_LEFT_MENU.fileLabel,
       tools: 'Tools',
+      layers: 'Layers',
       canvas: 'Canvas'
     };
     const { tabColumn, content } = buildSharedLeftMenuLayout({
@@ -3336,7 +3364,7 @@ export default class PixelStudio {
       x: x + w - sliderW - 8,
       y: y + 12,
       w: sliderW,
-      h: Math.max(14, h - 24)
+      h: Math.max(14, Math.floor((h - 24) * 0.5))
     };
     const sliderT = (this.toolOptions.brushSize - BRUSH_SIZE_MIN) / (BRUSH_SIZE_MAX - BRUSH_SIZE_MIN);
     const knobX = sliderBounds.x + sliderT * sliderBounds.w;
@@ -3352,6 +3380,31 @@ export default class PixelStudio {
     this.uiButtons.push({
       bounds: sliderBounds,
       onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, sliderBounds)
+    });
+
+    const zoomBounds = {
+      x: sliderBounds.x,
+      y: sliderBounds.y + sliderBounds.h + 6,
+      w: sliderBounds.w,
+      h: Math.max(12, sliderBounds.h - 6)
+    };
+    const zoomT = this.view.zoomIndex / Math.max(1, this.view.zoomLevels.length - 1);
+    const zoomKnobX = zoomBounds.x + zoomT * zoomBounds.w;
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillRect(zoomBounds.x, zoomBounds.y + zoomBounds.h * 0.35, zoomBounds.w, zoomBounds.h * 0.3);
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.strokeRect(zoomBounds.x, zoomBounds.y + zoomBounds.h * 0.35, zoomBounds.w, zoomBounds.h * 0.3);
+    ctx.fillStyle = '#7bdcff';
+    ctx.fillRect(zoomKnobX - 3, zoomBounds.y + zoomBounds.h * 0.2, 6, zoomBounds.h * 0.6);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.fillText(`Zoom ${Math.round(this.view.zoomLevels[this.view.zoomIndex] * 100)}%`, zoomBounds.x + 6, zoomBounds.y + 10);
+    this.uiButtons.push({
+      bounds: zoomBounds,
+      onClick: ({ x: pointerX }) => {
+        const ratio = clamp((pointerX - zoomBounds.x) / Math.max(1, zoomBounds.w), 0, 1);
+        const target = Math.round(ratio * (this.view.zoomLevels.length - 1));
+        this.view.zoomIndex = clamp(target, 0, this.view.zoomLevels.length - 1);
+      }
     });
   }
 
@@ -4207,9 +4260,19 @@ export default class PixelStudio {
 
     const swatchSize = 44;
     const gap = 8;
-    const maxPerRow = Math.max(1, Math.floor((w - 140) / (swatchSize + gap)));
+    const maxPerRow = Math.max(1, Math.floor((w - 180) / (swatchSize + gap)));
     const startX = x + 10;
     const total = this.currentPalette.colors.length;
+    const maxScroll = Math.max(0, total - maxPerRow);
+    this.focusScroll.palette = clamp(this.focusScroll.palette || 0, 0, maxScroll);
+    this.paletteBarScrollBounds = {
+      x: startX,
+      y: y + 18,
+      w: Math.max(40, maxPerRow * (swatchSize + gap)),
+      h: swatchSize + 12,
+      maxScroll,
+      step: swatchSize + gap
+    };
     this.paletteBounds = [];
     this.focusGroupMeta.palette = { maxVisible: maxPerRow };
     const start = this.focusScroll.palette || 0;
@@ -4225,6 +4288,15 @@ export default class PixelStudio {
       this.paletteBounds.push(bounds);
       this.registerFocusable('palette', bounds, () => this.setPaletteIndex(i));
     }
+
+    const prevBounds = { x: x + w - 180, y: y + 10, w: 28, h: 44 };
+    const nextBounds = { x: x + w - 146, y: y + 10, w: 28, h: 44 };
+    this.drawButton(ctx, prevBounds, '◀', false, { fontSize: 12 });
+    this.drawButton(ctx, nextBounds, '▶', false, { fontSize: 12 });
+    this.uiButtons.push({ bounds: prevBounds, onClick: () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) - 1, 0, maxScroll); } });
+    this.uiButtons.push({ bounds: nextBounds, onClick: () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) + 1, 0, maxScroll); } });
+    this.registerFocusable('menu', prevBounds, () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) - 1, 0, maxScroll); });
+    this.registerFocusable('menu', nextBounds, () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) + 1, 0, maxScroll); });
 
     const moreBounds = { x: x + w - 112, y: y + 10, w: 100, h: 44 };
     this.drawButton(ctx, moreBounds, this.paletteGridOpen ? 'Palette ▾' : 'Palette ▸', false, { fontSize: 12 });
