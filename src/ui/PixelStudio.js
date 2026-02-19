@@ -1495,11 +1495,12 @@ export default class PixelStudio {
     if (payload.touchCount && this.paletteBarScrollBounds
       && this.isPointInBounds(payload, this.paletteBarScrollBounds)
       && (this.paletteBarScrollBounds.maxScroll || 0) > 0) {
+      const tappedSwatch = this.paletteBounds.find((bounds) => this.isPointInBounds(payload, bounds));
       this.menuScrollDrag = {
         startX: payload.x,
         startScroll: this.focusScroll.palette || 0,
         moved: false,
-        hitAction: null,
+        hitAction: tappedSwatch ? () => this.setPaletteIndex(tappedSwatch.index) : null,
         lineHeight: Math.max(1, this.paletteBarScrollBounds.step || 1),
         scrollGroup: 'paletteMobile',
         maxScroll: Math.max(0, this.paletteBarScrollBounds.maxScroll || 0)
@@ -3026,7 +3027,7 @@ export default class PixelStudio {
       this.drawPaletteBar(ctx, paletteX, paletteY, paletteW, paletteHeight, { isMobile });
     }
     const statusY = paletteY + (paletteHeight > 0 ? paletteHeight + 6 : 0);
-    if (!menuFullScreen) {
+    if (!menuFullScreen && !isMobile) {
       this.drawStatusBar(ctx, padding, statusY, width - padding * 2, statusHeight);
     }
 
