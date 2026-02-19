@@ -3274,11 +3274,19 @@ export default class PixelStudio {
     const actions = [
       { label: this.leftPanelTab.slice(0, 2).toUpperCase(), action: () => { this.mobileDrawer = this.mobileDrawer === 'panel' ? null : 'panel'; }, active: this.mobileDrawer === 'panel' },
       { label: '🎨', action: () => { this.paletteGridOpen = !this.paletteGridOpen; }, active: this.paletteGridOpen },
-      { label: 'B-', action: () => this.setBrushSize(this.toolOptions.brushSize - 1) },
-      { label: `B ${this.toolOptions.brushShape === 'circle' ? '○' : '□'}`, action: () => this.cycleBrushShape() },
-      { label: 'B+', action: () => this.setBrushSize(this.toolOptions.brushSize + 1) },
-      { label: '↺', action: () => this.runtime.undo() },
-      { label: '↻', action: () => this.runtime.redo() }
+      {
+        label: `Brush ${this.toolOptions.brushShape === 'circle' ? 'Circle' : 'Square'}`,
+        action: () => {
+          if (this.toolOptions.brushShape !== 'circle') {
+            this.toolOptions.brushShape = 'circle';
+            return;
+          }
+          this.toolOptions.brushShape = 'square';
+          this.toolOptions.brushFalloff = this.toolOptions.brushFalloff === 'solid' ? 'soft' : 'solid';
+        }
+      },
+      { label: 'Undo', action: () => this.runtime.undo() },
+      { label: 'Redo', action: () => this.runtime.redo() }
     ];
     if (this.activeToolId === TOOL_IDS.CLONE) {
       actions.push(
@@ -3301,8 +3309,10 @@ export default class PixelStudio {
         }
       );
     }
-    const gap = 8;
-    const buttonW = Math.min(68, Math.max(44, Math.floor((w - gap * (actions.length - 1)) / actions.length)));
+    const gap = 6;
+    const sliderW = Math.max(120, Math.min(220, Math.floor(w * 0.3)));
+    const buttonsAreaW = Math.max(180, w - sliderW - 12);
+    const buttonW = Math.min(112, Math.max(48, Math.floor((buttonsAreaW - gap * (actions.length - 1)) / actions.length)));
     actions.forEach((entry, index) => {
       const bounds = {
         x: x + index * (buttonW + gap),
@@ -3313,6 +3323,28 @@ export default class PixelStudio {
       this.drawButton(ctx, bounds, entry.label, Boolean(entry.active), { fontSize: 12 });
       this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
       this.registerFocusable('toolbar', bounds, (entry.onClick || entry.action));
+    });
+
+    const sliderBounds = {
+      x: x + w - sliderW - 8,
+      y: y + 12,
+      w: sliderW,
+      h: Math.max(14, h - 24)
+    };
+    const sliderT = (this.toolOptions.brushSize - BRUSH_SIZE_MIN) / (BRUSH_SIZE_MAX - BRUSH_SIZE_MIN);
+    const knobX = sliderBounds.x + sliderT * sliderBounds.w;
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillRect(sliderBounds.x, sliderBounds.y + sliderBounds.h * 0.35, sliderBounds.w, sliderBounds.h * 0.3);
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.strokeRect(sliderBounds.x, sliderBounds.y + sliderBounds.h * 0.35, sliderBounds.w, sliderBounds.h * 0.3);
+    ctx.fillStyle = '#ffe16a';
+    ctx.fillRect(knobX - 3, sliderBounds.y + sliderBounds.h * 0.2, 6, sliderBounds.h * 0.6);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = '11px Courier New';
+    ctx.fillText(`Size ${this.toolOptions.brushSize}`, sliderBounds.x + 6, sliderBounds.y + 11);
+    this.uiButtons.push({
+      bounds: sliderBounds,
+      onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, sliderBounds)
     });
   }
 
@@ -3465,66 +3497,68 @@ export default class PixelStudio {
       ctx.fillText(`Tools ${this.focusScroll.tools + 1}/${maxToolScroll + 1}`, x + 12, y + 26 + maxVisible * lineHeight + 10);
     }
 
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
-    ctx.fillText(`Brush Size: ${this.toolOptions.brushSize}`, x + 12, offsetY);
-    const brushMinus = { x: x + 160, y: offsetY - buttonHeight + 4, w: 28, h: buttonHeight };
-    const brushPlus = { x: x + 262, y: offsetY - buttonHeight + 4, w: 28, h: buttonHeight };
-    const brushSlider = { x: x + 192, y: offsetY - buttonHeight + 8, w: 66, h: Math.max(8, buttonHeight - 8) };
-    const brushT = (this.toolOptions.brushSize - BRUSH_SIZE_MIN) / (BRUSH_SIZE_MAX - BRUSH_SIZE_MIN);
-    const brushKnobX = brushSlider.x + brushT * brushSlider.w;
-    ctx.fillStyle = 'rgba(255,255,255,0.28)';
-    ctx.fillRect(brushSlider.x, brushSlider.y, brushSlider.w, brushSlider.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-    ctx.strokeRect(brushSlider.x, brushSlider.y, brushSlider.w, brushSlider.h);
-    ctx.fillStyle = '#ffe16a';
-    ctx.fillRect(brushKnobX - 2, brushSlider.y - 2, 4, brushSlider.h + 4);
-    this.drawButton(ctx, brushMinus, '-', false, { fontSize });
-    this.drawButton(ctx, brushPlus, '+', false, { fontSize });
-    this.uiButtons.push({ bounds: brushMinus, onClick: () => { this.setBrushSize(this.toolOptions.brushSize - 1); } });
-    this.uiButtons.push({ bounds: brushPlus, onClick: () => { this.setBrushSize(this.toolOptions.brushSize + 1); } });
-    this.uiButtons.push({ bounds: brushSlider, onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, brushSlider) });
-    this.registerFocusable('menu', brushMinus, () => { this.setBrushSize(this.toolOptions.brushSize - 1); });
-    this.registerFocusable('menu', brushPlus, () => { this.setBrushSize(this.toolOptions.brushSize + 1); });
-    offsetY += lineHeight;
+    if (!isMobile) {
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
+      ctx.fillText(`Brush Size: ${this.toolOptions.brushSize}`, x + 12, offsetY);
+      const brushMinus = { x: x + 160, y: offsetY - buttonHeight + 4, w: 28, h: buttonHeight };
+      const brushPlus = { x: x + 262, y: offsetY - buttonHeight + 4, w: 28, h: buttonHeight };
+      const brushSlider = { x: x + 192, y: offsetY - buttonHeight + 8, w: 66, h: Math.max(8, buttonHeight - 8) };
+      const brushT = (this.toolOptions.brushSize - BRUSH_SIZE_MIN) / (BRUSH_SIZE_MAX - BRUSH_SIZE_MIN);
+      const brushKnobX = brushSlider.x + brushT * brushSlider.w;
+      ctx.fillStyle = 'rgba(255,255,255,0.28)';
+      ctx.fillRect(brushSlider.x, brushSlider.y, brushSlider.w, brushSlider.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+      ctx.strokeRect(brushSlider.x, brushSlider.y, brushSlider.w, brushSlider.h);
+      ctx.fillStyle = '#ffe16a';
+      ctx.fillRect(brushKnobX - 2, brushSlider.y - 2, 4, brushSlider.h + 4);
+      this.drawButton(ctx, brushMinus, '-', false, { fontSize });
+      this.drawButton(ctx, brushPlus, '+', false, { fontSize });
+      this.uiButtons.push({ bounds: brushMinus, onClick: () => { this.setBrushSize(this.toolOptions.brushSize - 1); } });
+      this.uiButtons.push({ bounds: brushPlus, onClick: () => { this.setBrushSize(this.toolOptions.brushSize + 1); } });
+      this.uiButtons.push({ bounds: brushSlider, onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, brushSlider) });
+      this.registerFocusable('menu', brushMinus, () => { this.setBrushSize(this.toolOptions.brushSize - 1); });
+      this.registerFocusable('menu', brushPlus, () => { this.setBrushSize(this.toolOptions.brushSize + 1); });
+      offsetY += lineHeight;
 
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
-    ctx.fillText(`Tile: ${this.activeTile?.label || 'None'}`, x + 12, offsetY);
-    const tileLeft = { x: x + 160, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
-    const tileRight = { x: x + 196, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
-    this.drawButton(ctx, tileLeft, '<', false, { fontSize });
-    this.drawButton(ctx, tileRight, '>', false, { fontSize });
-    this.uiButtons.push({ bounds: tileLeft, onClick: () => this.cycleTile(-1) });
-    this.uiButtons.push({ bounds: tileRight, onClick: () => this.cycleTile(1) });
-    this.registerFocusable('menu', tileLeft, () => this.cycleTile(-1));
-    this.registerFocusable('menu', tileRight, () => this.cycleTile(1));
-    offsetY += lineHeight;
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
+      ctx.fillText(`Tile: ${this.activeTile?.label || 'None'}`, x + 12, offsetY);
+      const tileLeft = { x: x + 160, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
+      const tileRight = { x: x + 196, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
+      this.drawButton(ctx, tileLeft, '<', false, { fontSize });
+      this.drawButton(ctx, tileRight, '>', false, { fontSize });
+      this.uiButtons.push({ bounds: tileLeft, onClick: () => this.cycleTile(-1) });
+      this.uiButtons.push({ bounds: tileRight, onClick: () => this.cycleTile(1) });
+      this.registerFocusable('menu', tileLeft, () => this.cycleTile(-1));
+      this.registerFocusable('menu', tileRight, () => this.cycleTile(1));
+      offsetY += lineHeight;
 
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
-    ctx.fillText('Offset Canvas', x + 12, offsetY);
-    offsetY += lineHeight;
-    const offsetButtons = [
-      { label: '←', action: () => this.offsetCanvas(-1, 0, true) },
-      { label: '→', action: () => this.offsetCanvas(1, 0, true) },
-      { label: '↑', action: () => this.offsetCanvas(0, -1, true) },
-      { label: '↓', action: () => this.offsetCanvas(0, 1, true) },
-      { label: '½W', action: () => this.offsetCanvas(Math.floor(this.canvasState.width / 2), 0, true) },
-      { label: '½H', action: () => this.offsetCanvas(0, Math.floor(this.canvasState.height / 2), true) }
-    ];
-    offsetButtons.forEach((entry, index) => {
-      const bounds = {
-        x: x + 12 + (index % 3) * (buttonHeight + 8),
-        y: offsetY + Math.floor(index / 3) * (buttonHeight + 6),
-        w: buttonHeight,
-        h: buttonHeight
-      };
-      this.drawButton(ctx, bounds, entry.label, false, { fontSize });
-      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
-      this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
-    });
-    offsetY += buttonHeight * 2 + 12;
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
+      ctx.fillText('Offset Canvas', x + 12, offsetY);
+      offsetY += lineHeight;
+      const offsetButtons = [
+        { label: '←', action: () => this.offsetCanvas(-1, 0, true) },
+        { label: '→', action: () => this.offsetCanvas(1, 0, true) },
+        { label: '↑', action: () => this.offsetCanvas(0, -1, true) },
+        { label: '↓', action: () => this.offsetCanvas(0, 1, true) },
+        { label: '½W', action: () => this.offsetCanvas(Math.floor(this.canvasState.width / 2), 0, true) },
+        { label: '½H', action: () => this.offsetCanvas(0, Math.floor(this.canvasState.height / 2), true) }
+      ];
+      offsetButtons.forEach((entry, index) => {
+        const bounds = {
+          x: x + 12 + (index % 3) * (buttonHeight + 8),
+          y: offsetY + Math.floor(index / 3) * (buttonHeight + 6),
+          w: buttonHeight,
+          h: buttonHeight
+        };
+        this.drawButton(ctx, bounds, entry.label, false, { fontSize });
+        this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+        this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
+      });
+      offsetY += buttonHeight * 2 + 12;
+    }
 
     const optionsX = x + 12;
     const optionsY = offsetY;
