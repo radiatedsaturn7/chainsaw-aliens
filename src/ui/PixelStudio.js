@@ -214,6 +214,8 @@ export default class PixelStudio {
     this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.paletteRemoveMode = false;
+    this.paletteRemoveMarked = new Set();
     this.transformModal = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
@@ -813,6 +815,8 @@ export default class PixelStudio {
     this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.paletteRemoveMode = false;
+    this.paletteRemoveMarked.clear();
     this.palettePickerDrag = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
@@ -1186,6 +1190,8 @@ export default class PixelStudio {
       this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.paletteRemoveMode = false;
+    this.paletteRemoveMarked.clear();
     this.palettePickerDrag = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
@@ -2827,6 +2833,22 @@ export default class PixelStudio {
     this.paletteIndex = clamp(this.paletteIndex, 0, this.currentPalette.colors.length - 1);
   }
 
+  applyPaletteSwatchRemoval() {
+    if (!this.paletteRemoveMarked?.size) {
+      this.paletteRemoveMode = false;
+      return;
+    }
+    const marked = Array.from(this.paletteRemoveMarked).sort((a, b) => b - a);
+    marked.forEach((index) => {
+      if (this.currentPalette.colors.length <= 1) return;
+      if (index < 0 || index >= this.currentPalette.colors.length) return;
+      this.currentPalette.colors.splice(index, 1);
+    });
+    this.paletteIndex = clamp(this.paletteIndex, 0, this.currentPalette.colors.length - 1);
+    this.paletteRemoveMarked.clear();
+    this.paletteRemoveMode = false;
+  }
+
 
   rgbToHsv(r, g, b) {
     const rn = r / 255;
@@ -2989,6 +3011,8 @@ export default class PixelStudio {
     this.paletteIndex = this.currentPalette.colors.length - 1;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.paletteRemoveMode = false;
+    this.paletteRemoveMarked.clear();
     this.palettePickerDrag = null;
     this.paletteColorPickerBounds = null;
   }
@@ -3301,7 +3325,12 @@ export default class PixelStudio {
     }
     const paletteHit = this.paletteBounds.find((bounds) => this.isPointInBounds({ x, y }, bounds));
     if (paletteHit) {
-      this.setPaletteIndex(paletteHit.index);
+      if (this.paletteGridOpen && this.paletteRemoveMode) {
+        if (this.paletteRemoveMarked.has(paletteHit.index)) this.paletteRemoveMarked.delete(paletteHit.index);
+        else this.paletteRemoveMarked.add(paletteHit.index);
+      } else {
+        this.setPaletteIndex(paletteHit.index);
+      }
       return true;
     }
     const layerHit = this.layerBounds.find((bounds) => this.isPointInBounds({ x, y }, bounds));
@@ -4379,10 +4408,12 @@ export default class PixelStudio {
 
     const addBounds = { x: sheetX + 12, y: sheetY + sheetH - 44, w: 54, h: 32 };
     const removeBounds = { x: sheetX + 72, y: sheetY + sheetH - 44, w: 54, h: 32 };
-    this.drawButton(ctx, addBounds, '+', false, { fontSize: 12 });
-    this.drawButton(ctx, removeBounds, '-', false, { fontSize: 12 });
-    this.uiButtons.push({ bounds: addBounds, onClick: () => this.openPaletteColorPicker() });
-    this.uiButtons.push({ bounds: removeBounds, onClick: () => this.removePaletteColor() });
+    if (!this.paletteRemoveMode) {
+      this.drawButton(ctx, addBounds, '+', false, { fontSize: 12 });
+      this.drawButton(ctx, removeBounds, '-', false, { fontSize: 12 });
+      this.uiButtons.push({ bounds: addBounds, onClick: () => this.openPaletteColorPicker() });
+      this.uiButtons.push({ bounds: removeBounds, onClick: () => { this.paletteRemoveMode = true; this.paletteRemoveMarked.clear(); } });
+    }
 
     const swatchSize = 38;
     const gap = 8;
@@ -4411,8 +4442,20 @@ export default class PixelStudio {
       const swatchY = topY + row * (swatchSize + gap);
       ctx.fillStyle = color.hex;
       ctx.fillRect(swatchX, swatchY, swatchSize, swatchSize);
-      ctx.strokeStyle = index === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)';
+      const marked = this.paletteRemoveMarked?.has(index);
+      ctx.strokeStyle = this.paletteRemoveMode
+        ? 'rgba(255,80,80,0.95)'
+        : (index === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)');
       ctx.strokeRect(swatchX, swatchY, swatchSize, swatchSize);
+      if (this.paletteRemoveMode && marked) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+        ctx.beginPath();
+        ctx.moveTo(swatchX + 6, swatchY + 6);
+        ctx.lineTo(swatchX + swatchSize - 6, swatchY + swatchSize - 6);
+        ctx.moveTo(swatchX + swatchSize - 6, swatchY + 6);
+        ctx.lineTo(swatchX + 6, swatchY + swatchSize - 6);
+        ctx.stroke();
+      }
       const bounds = { x: swatchX, y: swatchY, w: swatchSize, h: swatchSize, index };
       this.paletteBounds.push(bounds);
       this.registerFocusable('palette', bounds, () => this.setPaletteIndex(index));
@@ -4456,28 +4499,29 @@ export default class PixelStudio {
 
       const quantizationLevels = this.paletteColorDraft.quantization || 32;
       const quantizeHex = (rgb) => this.rgbToHex(this.quantizeChannel(rgb.r, quantizationLevels), this.quantizeChannel(rgb.g, quantizationLevels), this.quantizeChannel(rgb.b, quantizationLevels));
-      const topColor = this.hsvToRgb(this.paletteColorDraft.h, 1, 1);
-      const gradX = ctx.createLinearGradient(sv.x, sv.y, sv.x + sv.w, sv.y);
-      gradX.addColorStop(0, '#fff');
-      gradX.addColorStop(1, quantizeHex(topColor));
-      ctx.fillStyle = gradX;
-      ctx.fillRect(sv.x, sv.y, sv.w, sv.h);
-      const gradY = ctx.createLinearGradient(sv.x, sv.y, sv.x, sv.y + sv.h);
-      gradY.addColorStop(0, 'rgba(0,0,0,0)');
-      gradY.addColorStop(1, 'rgba(0,0,0,1)');
-      ctx.fillStyle = gradY;
-      ctx.fillRect(sv.x, sv.y, sv.w, sv.h);
+      const svSteps = clamp(Math.round(quantizationLevels), 8, 32);
+      const svBlockW = sv.w / svSteps;
+      const svBlockH = sv.h / svSteps;
+      for (let vy = 0; vy < svSteps; vy += 1) {
+        const v = 1 - (vy / Math.max(1, svSteps - 1));
+        for (let sx = 0; sx < svSteps; sx += 1) {
+          const sat = sx / Math.max(1, svSteps - 1);
+          const rgb = this.hsvToRgb(this.paletteColorDraft.h, sat, v);
+          ctx.fillStyle = quantizeHex(rgb);
+          ctx.fillRect(sv.x + sx * svBlockW, sv.y + vy * svBlockH, Math.ceil(svBlockW), Math.ceil(svBlockH));
+        }
+      }
       ctx.strokeStyle = '#fff';
       ctx.strokeRect(sv.x, sv.y, sv.w, sv.h);
 
-      const hueGrad = ctx.createLinearGradient(hue.x, hue.y, hue.x, hue.y + hue.h);
-      const hueStops = [0, 0.17, 0.33, 0.5, 0.67, 0.83, 1];
-      hueStops.forEach((stop) => {
-        const rgb = this.hsvToRgb(stop * 360, 1, 1);
-        hueGrad.addColorStop(stop, quantizeHex(rgb));
-      });
-      ctx.fillStyle = hueGrad;
-      ctx.fillRect(hue.x, hue.y, hue.w, hue.h);
+      const hueSteps = clamp(Math.round(quantizationLevels), 8, 64);
+      const hueBlockH = hue.h / hueSteps;
+      for (let i = 0; i < hueSteps; i += 1) {
+        const hNorm = i / Math.max(1, hueSteps - 1);
+        const rgb = this.hsvToRgb(hNorm * 360, 1, 1);
+        ctx.fillStyle = quantizeHex(rgb);
+        ctx.fillRect(hue.x, hue.y + i * hueBlockH, hue.w, Math.ceil(hueBlockH));
+      }
       ctx.strokeRect(hue.x, hue.y, hue.w, hue.h);
 
       const svX = sv.x + this.paletteColorDraft.s * sv.w;
@@ -4568,7 +4612,7 @@ export default class PixelStudio {
         this.syncPaletteDraftFromHsv();
       } });
 
-      const quantBounds = { x: pickerX + 10, y: buttonY, w: 140, h: footerButtonH };
+      const quantBounds = { x: pickerX + 10, y: pickerY + 10, w: 140, h: footerButtonH };
       const pickerCancel = { x: pickerX + pickerW - 186, y: buttonY, w: 84, h: footerButtonH };
       const pickerOk = { x: pickerX + pickerW - 94, y: buttonY, w: 84, h: footerButtonH };
       const q = this.paletteColorDraft.quantization || 32;
@@ -4591,12 +4635,37 @@ export default class PixelStudio {
     }
 
     if (!this.paletteColorPickerOpen) this.paletteColorPickerBounds = null;
-    const closeBounds = { x: sheetX + sheetW - 96, y: sheetY + sheetH - 44, w: 84, h: 32 };
-    const closeLabel = this.paletteColorPickerOpen ? 'Add' : 'Close';
-    this.drawButton(ctx, closeBounds, closeLabel, false, { fontSize: 12 });
-    this.uiButtons.push({
-      bounds: closeBounds,
-      onClick: () => {
+    if (this.paletteRemoveMode) {
+      const cancelBounds = { x: sheetX + sheetW - 186, y: sheetY + sheetH - 44, w: 84, h: 32 };
+      const removeApplyBounds = { x: sheetX + sheetW - 96, y: sheetY + sheetH - 44, w: 84, h: 32 };
+      this.drawButton(ctx, cancelBounds, 'Cancel', false, { fontSize: 12 });
+      this.drawButton(ctx, removeApplyBounds, 'Remove', false, { fontSize: 12 });
+      this.uiButtons.push({ bounds: cancelBounds, onClick: () => { this.paletteRemoveMode = false; this.paletteRemoveMarked.clear(); } });
+      this.uiButtons.push({ bounds: removeApplyBounds, onClick: () => this.applyPaletteSwatchRemoval() });
+      this.registerFocusable('menu', cancelBounds, () => { this.paletteRemoveMode = false; this.paletteRemoveMarked.clear(); });
+      this.registerFocusable('menu', removeApplyBounds, () => this.applyPaletteSwatchRemoval());
+    } else {
+      const closeBounds = { x: sheetX + sheetW - 96, y: sheetY + sheetH - 44, w: 84, h: 32 };
+      const closeLabel = this.paletteColorPickerOpen ? 'Add' : 'Close';
+      this.drawButton(ctx, closeBounds, closeLabel, false, { fontSize: 12 });
+      this.uiButtons.push({
+        bounds: closeBounds,
+        onClick: () => {
+          if (this.paletteColorPickerOpen) {
+            this.applyPaletteColorPickerAdd();
+            return;
+          }
+          this.paletteGridOpen = false;
+          this.paletteColorPickerOpen = false;
+          this.paletteColorDraft = null;
+          this.paletteRemoveMode = false;
+          this.paletteRemoveMarked.clear();
+          this.palettePickerDrag = null;
+          this.paletteColorPickerBounds = null;
+          this.paletteModalBounds = null;
+        }
+      });
+      this.registerFocusable('menu', closeBounds, () => {
         if (this.paletteColorPickerOpen) {
           this.applyPaletteColorPickerAdd();
           return;
@@ -4604,23 +4673,13 @@ export default class PixelStudio {
         this.paletteGridOpen = false;
         this.paletteColorPickerOpen = false;
         this.paletteColorDraft = null;
+        this.paletteRemoveMode = false;
+        this.paletteRemoveMarked.clear();
         this.palettePickerDrag = null;
         this.paletteColorPickerBounds = null;
         this.paletteModalBounds = null;
-      }
-    });
-    this.registerFocusable('menu', closeBounds, () => {
-      if (this.paletteColorPickerOpen) {
-        this.applyPaletteColorPickerAdd();
-        return;
-      }
-      this.paletteGridOpen = false;
-      this.paletteColorPickerOpen = false;
-      this.paletteColorDraft = null;
-      this.palettePickerDrag = null;
-      this.paletteColorPickerBounds = null;
-      this.paletteModalBounds = null;
-    });
+      });
+    }
   }
 
   drawTimelineSheet(ctx, x, y, w, h) {
