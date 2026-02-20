@@ -221,6 +221,7 @@ export default class PixelStudio {
     this.leftPanelTab = this.leftPanelTabs[this.leftPanelTabIndex];
     this.uiButtons = [];
     this.menuScrollDrag = null;
+    this.uiSliderDrag = null;
     this.artSizeDraft = { width: 16, height: 16 };
     this.paletteBounds = [];
     this.layerBounds = [];
@@ -695,6 +696,16 @@ export default class PixelStudio {
     this.transformModal.values[key] = clamp(Math.round(parsed), min, max);
   }
 
+  editTransformValue(field) {
+    if (!this.transformModal || !field) return;
+    const current = this.transformModal.values[field.key] ?? field.min;
+    const raw = window.prompt(`${field.label} (${field.min}-${field.max})`, String(Math.round(current)));
+    if (raw == null) return;
+    const parsed = Number.parseInt(raw, 10);
+    if (!Number.isFinite(parsed)) return;
+    this.setTransformValue(field.key, parsed, field.min, field.max);
+  }
+
   applyScaleCanvas(scaleX, scaleY) {
     const sx = clamp(Math.round(scaleX), 1, 16);
     const sy = clamp(Math.round(scaleY), 1, 16);
@@ -790,6 +801,7 @@ export default class PixelStudio {
     this.cancelLongPress();
     this.panStart = null;
     this.menuScrollDrag = null;
+    this.uiSliderDrag = null;
     this.gesture = null;
     this.viewportController.cancelInteractions();
     this.selectionContextMenu = null;
@@ -1585,6 +1597,10 @@ export default class PixelStudio {
     }
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
+    if (this.uiSliderDrag && (payload.id === undefined || payload.id === this.uiSliderDrag.id)) {
+      this.uiSliderDrag.onDrag?.({ x: payload.x, y: payload.y, id: payload.id });
+      return;
+    }
     if (payload.touchCount && this.leftPanelTab === 'file' && this.filePanelScroll
       && this.isPointInBounds(payload, this.filePanelScroll)) {
       const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
@@ -1754,6 +1770,9 @@ export default class PixelStudio {
     if (this.transformModal?.drag && (payload.id === undefined || payload.id === this.transformModal.drag.id)) {
       this.transformModal.drag = null;
     }
+    if (this.uiSliderDrag && (payload.id === undefined || payload.id === this.uiSliderDrag.id)) {
+      this.uiSliderDrag = null;
+    }
     if (this.brushPickerDrag && (payload.id === undefined || payload.id === this.brushPickerDrag.id)) {
       this.brushPickerDrag = null;
     }
@@ -1775,6 +1794,7 @@ export default class PixelStudio {
     if (this.menuScrollDrag) {
       const drag = this.menuScrollDrag;
       this.menuScrollDrag = null;
+    this.uiSliderDrag = null;
       if (!drag.moved && drag.hitAction) drag.hitAction();
       return;
     }
@@ -3193,6 +3213,11 @@ export default class PixelStudio {
         this.transformModal.drag = { key: sliderHit.key, id: payload.id ?? null };
         return true;
       }
+      const valueHit = (this.transformModal.fields || []).find((field) => field.valueBounds && this.isPointInBounds({ x, y }, field.valueBounds));
+      if (valueHit) {
+        this.editTransformValue(valueHit);
+        return true;
+      }
       const buttonHit = (this.transformModal.buttons || []).find((entry) => this.isPointInBounds({ x, y }, entry.bounds));
       if (buttonHit) {
         buttonHit.onClick?.();
@@ -3219,6 +3244,10 @@ export default class PixelStudio {
     }
     if (hit) {
       hit.onClick?.({ x, y, id: payload.id });
+      if (hit.onDrag) {
+        this.uiSliderDrag = { id: payload.id ?? null, onDrag: hit.onDrag };
+        hit.onDrag({ x, y, id: payload.id });
+      }
       return true;
     }
     if (this.brushPickerOpen && this.brushPickerBounds && !this.isPointInBounds({ x, y }, this.brushPickerBounds)) {
@@ -3512,20 +3541,30 @@ export default class PixelStudio {
 
     let rowY = modal.y + 50;
     rows.forEach((row) => {
-      const slider = { x: modal.x + 108, y: rowY - 10, w: modal.w - 132, h: 12 };
+      const valueW = 52;
+      const slider = { x: modal.x + 108, y: rowY - 10, w: Math.max(40, modal.w - 190), h: 12 };
+      const valueBounds = { x: slider.x + slider.w + 8, y: rowY - 11, w: valueW, h: 16 };
       const value = this.transformModal.values[row.key] ?? row.min;
       const t = clamp((value - row.min) / Math.max(1, row.max - row.min), 0, 1);
       const knobX = slider.x + t * slider.w;
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = '12px Courier New';
-      ctx.fillText(`${row.label}: ${Math.round(value)}`, modal.x + 12, rowY);
+      ctx.fillText(row.label, modal.x + 12, rowY);
       ctx.fillStyle = 'rgba(255,255,255,0.28)';
       ctx.fillRect(slider.x, slider.y, slider.w, slider.h);
       ctx.strokeStyle = 'rgba(255,255,255,0.45)';
       ctx.strokeRect(slider.x, slider.y, slider.w, slider.h);
       ctx.fillStyle = '#ffe16a';
       ctx.fillRect(knobX - 2, slider.y - 2, 4, slider.h + 4);
-      this.transformModal.fields.push({ ...row, slider });
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      ctx.fillRect(valueBounds.x, valueBounds.y, valueBounds.w, valueBounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.strokeRect(valueBounds.x, valueBounds.y, valueBounds.w, valueBounds.h);
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'right';
+      ctx.fillText(String(Math.round(value)), valueBounds.x + valueBounds.w - 6, rowY + 1);
+      ctx.textAlign = 'left';
+      this.transformModal.fields.push({ ...row, slider, valueBounds });
       rowY += 38;
     });
 
@@ -4302,8 +4341,8 @@ export default class PixelStudio {
     ctx.font = '15px Courier New';
     ctx.fillText('Palette', sheetX + 12, sheetY + 24);
 
-    const addBounds = { x: sheetX + sheetW - 154, y: sheetY + 8, w: 34, h: 28 };
-    const removeBounds = { x: sheetX + sheetW - 114, y: sheetY + 8, w: 34, h: 28 };
+    const addBounds = { x: sheetX + 12, y: sheetY + sheetH - 44, w: 34, h: 32 };
+    const removeBounds = { x: sheetX + 52, y: sheetY + sheetH - 44, w: 34, h: 32 };
     this.drawButton(ctx, addBounds, '+', false, { fontSize: 12 });
     this.drawButton(ctx, removeBounds, '-', false, { fontSize: 12 });
     this.uiButtons.push({ bounds: addBounds, onClick: () => this.openPaletteColorPicker() });
@@ -4319,7 +4358,7 @@ export default class PixelStudio {
       const col = index % maxPerRow;
       const swatchX = sheetX + 12 + col * (swatchSize + gap);
       const swatchY = topY + row * (swatchSize + gap);
-      if (swatchY + swatchSize > sheetY + sheetH - 54) return;
+      if (swatchY + swatchSize > sheetY + sheetH - 58) return;
       ctx.fillStyle = color.hex;
       ctx.fillRect(swatchX, swatchY, swatchSize, swatchSize);
       ctx.strokeStyle = index === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)';
@@ -4330,10 +4369,10 @@ export default class PixelStudio {
     });
 
     if (this.paletteColorPickerOpen && this.paletteColorDraft) {
-      const basePickerW = sheetW - 16;
-      const basePickerH = sheetH - 48;
-      const pickerW = Math.min(sheetW - 8, Math.floor(basePickerW * 1.05));
-      const pickerH = Math.min(sheetH - 8, Math.floor(basePickerH * 1.25));
+      const basePickerW = sheetW - 12;
+      const basePickerH = sheetH - 16;
+      const pickerW = Math.min(sheetW - 4, Math.floor(basePickerW * 1.1));
+      const pickerH = Math.min(sheetH - 4, Math.floor(basePickerH * 1.1));
       const pickerX = sheetX + Math.floor((sheetW - pickerW) / 2);
       const pickerY = sheetY + Math.floor((sheetH - pickerH) / 2);
       this.paletteColorPickerBounds = { x: pickerX, y: pickerY, w: pickerW, h: pickerH };
@@ -4355,7 +4394,7 @@ export default class PixelStudio {
       const hueW = clamp(Math.floor(leftW * 0.11), 18, 28);
       const hexFieldH = 24;
       const hexGap = 8;
-      const leftAreaH = Math.max(120, contentH - hexFieldH - hexGap);
+      const leftAreaH = Math.max(120, contentH - hexFieldH - hexGap - footerButtonH - 6);
       const svSize = Math.max(120, Math.min(leftW - hueW - contentPadding, leftAreaH));
       const sv = { x: pickerX + contentPadding, y: contentY, w: svSize, h: svSize };
       const hue = { x: sv.x + sv.w + contentPadding, y: sv.y, w: hueW, h: sv.h };
@@ -4399,10 +4438,11 @@ export default class PixelStudio {
       ctx.strokeRect(hue.x - 2, hueY - 2, hue.w + 4, 4);
 
       const currentHex = this.rgbToHex(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b).toUpperCase();
+      const buttonY = pickerY + pickerH - footerButtonH - 8;
       const hexBounds = {
-        x: hue.x,
-        y: hue.y + hue.h + hexGap,
-        w: Math.max(88, sliderX - hue.x - 8),
+        x: sv.x,
+        y: buttonY + Math.floor((footerButtonH - hexFieldH) / 2),
+        w: Math.max(88, sv.w),
         h: hexFieldH
       };
       ctx.fillStyle = '#fff';
@@ -4478,7 +4518,6 @@ export default class PixelStudio {
         this.syncPaletteDraftFromHsv();
       } });
 
-      const buttonY = pickerY + pickerH - footerButtonH - 8;
       const pickerCancel = { x: pickerX + pickerW - 186, y: buttonY, w: 84, h: footerButtonH };
       const pickerOk = { x: pickerX + pickerW - 94, y: buttonY, w: 84, h: footerButtonH };
       this.drawButton(ctx, pickerCancel, 'cancel', false, { fontSize: 12 });
@@ -4489,9 +4528,35 @@ export default class PixelStudio {
 
     if (!this.paletteColorPickerOpen) this.paletteColorPickerBounds = null;
     const closeBounds = { x: sheetX + sheetW - 96, y: sheetY + sheetH - 44, w: 84, h: 32 };
-    this.drawButton(ctx, closeBounds, 'Close', false, { fontSize: 12 });
-    this.uiButtons.push({ bounds: closeBounds, onClick: () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.palettePickerDrag = null; this.paletteColorPickerBounds = null; this.paletteModalBounds = null; } });
-    this.registerFocusable('menu', closeBounds, () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.palettePickerDrag = null; this.paletteColorPickerBounds = null; this.paletteModalBounds = null; });
+    const closeLabel = this.paletteColorPickerOpen ? 'Add' : 'Close';
+    this.drawButton(ctx, closeBounds, closeLabel, false, { fontSize: 12 });
+    this.uiButtons.push({
+      bounds: closeBounds,
+      onClick: () => {
+        if (this.paletteColorPickerOpen) {
+          this.applyPaletteColorPickerAdd();
+          return;
+        }
+        this.paletteGridOpen = false;
+        this.paletteColorPickerOpen = false;
+        this.paletteColorDraft = null;
+        this.palettePickerDrag = null;
+        this.paletteColorPickerBounds = null;
+        this.paletteModalBounds = null;
+      }
+    });
+    this.registerFocusable('menu', closeBounds, () => {
+      if (this.paletteColorPickerOpen) {
+        this.applyPaletteColorPickerAdd();
+        return;
+      }
+      this.paletteGridOpen = false;
+      this.paletteColorPickerOpen = false;
+      this.paletteColorDraft = null;
+      this.palettePickerDrag = null;
+      this.paletteColorPickerBounds = null;
+      this.paletteModalBounds = null;
+    });
   }
 
   drawTimelineSheet(ctx, x, y, w, h) {
@@ -4614,7 +4679,7 @@ export default class PixelStudio {
       this.drawButton(ctx, brushPlus, '+', false, { fontSize });
       this.uiButtons.push({ bounds: brushMinus, onClick: () => { this.setBrushSize(this.toolOptions.brushSize - 1); } });
       this.uiButtons.push({ bounds: brushPlus, onClick: () => { this.setBrushSize(this.toolOptions.brushSize + 1); } });
-      this.uiButtons.push({ bounds: brushSlider, onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, brushSlider) });
+      this.uiButtons.push({ bounds: brushSlider, onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, brushSlider), onDrag: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, brushSlider) });
       this.registerFocusable('menu', brushMinus, () => { this.setBrushSize(this.toolOptions.brushSize - 1); });
       this.registerFocusable('menu', brushPlus, () => { this.setBrushSize(this.toolOptions.brushSize + 1); });
       offsetY += lineHeight;
@@ -4887,7 +4952,7 @@ export default class PixelStudio {
         bounds: plus,
         onClick: () => { this.setBrushSize(this.toolOptions.brushSize + 1); }
       });
-      this.uiButtons.push({ bounds: slider, onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, slider) });
+      this.uiButtons.push({ bounds: slider, onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, slider), onDrag: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, slider) });
       this.drawButton(ctx, minus, '-', false, { fontSize: isMobile ? 12 : 12 });
       this.drawButton(ctx, plus, '+', false, { fontSize: isMobile ? 12 : 12 });
       this.registerFocusable('menu', minus, () => { this.setBrushSize(this.toolOptions.brushSize - 1); });
