@@ -208,6 +208,7 @@ export default class PixelStudio {
     this.brushPickerDraft = null;
     this.brushPickerDrag = null;
     this.brushPickerSliders = null;
+    this.palettePickerDrag = null;
     this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
@@ -686,6 +687,7 @@ export default class PixelStudio {
     this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.palettePickerDrag = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
   }
@@ -1054,6 +1056,7 @@ export default class PixelStudio {
       this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.palettePickerDrag = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
       return;
@@ -1556,6 +1559,23 @@ export default class PixelStudio {
       }
       return;
     }
+    if (this.paletteColorPickerOpen) {
+      if (this.palettePickerDrag && (payload.id === undefined || payload.id === this.palettePickerDrag.id)) {
+        if (this.palettePickerDrag.type === 'sv' && this.palettePickerDrag.bounds) {
+          const sv = this.palettePickerDrag.bounds;
+          this.paletteColorDraft.s = clamp((payload.x - sv.x) / Math.max(1, sv.w), 0, 1);
+          this.paletteColorDraft.v = clamp(1 - (payload.y - sv.y) / Math.max(1, sv.h), 0, 1);
+          this.syncPaletteDraftFromHsv();
+        } else if (this.palettePickerDrag.type === 'hue' && this.palettePickerDrag.bounds) {
+          const hue = this.palettePickerDrag.bounds;
+          this.paletteColorDraft.h = clamp((payload.y - hue.y) / Math.max(1, hue.h), 0, 1) * 360;
+          this.syncPaletteDraftFromHsv();
+        } else {
+          this.updatePaletteSliderFromX(this.palettePickerDrag.type, payload.x, this.palettePickerDrag.bounds);
+        }
+      }
+      return;
+    }
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
     if (this.mobileZoomDrag && (payload.id === undefined || payload.id === this.mobileZoomDrag.id)) {
@@ -1607,7 +1627,11 @@ export default class PixelStudio {
     if (this.brushPickerDrag && (payload.id === undefined || payload.id === this.brushPickerDrag.id)) {
       this.brushPickerDrag = null;
     }
+    if (this.palettePickerDrag && (payload.id === undefined || payload.id === this.palettePickerDrag.id)) {
+      this.palettePickerDrag = null;
+    }
     if (this.brushPickerOpen) return;
+    if (this.paletteColorPickerOpen) return;
     if (this.mobileZoomDrag && (payload.id === undefined || payload.id === this.mobileZoomDrag.id)) {
       this.mobileZoomDrag = null;
     }
@@ -2664,6 +2688,7 @@ export default class PixelStudio {
     const rgba = hexToRgba(activeHex);
     const hsv = this.rgbToHsv(rgba.r, rgba.g, rgba.b);
     this.paletteColorDraft = { h: hsv.h, s: hsv.s, v: hsv.v, r: rgba.r, g: rgba.g, b: rgba.b };
+    this.palettePickerDrag = null;
     this.paletteColorPickerOpen = true;
   }
 
@@ -2673,6 +2698,80 @@ export default class PixelStudio {
     this.paletteColorDraft.r = rgb.r;
     this.paletteColorDraft.g = rgb.g;
     this.paletteColorDraft.b = rgb.b;
+  }
+
+  syncPaletteDraftFromRgb() {
+    if (!this.paletteColorDraft) return;
+    const hsv = this.rgbToHsv(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b);
+    this.paletteColorDraft.h = hsv.h;
+    this.paletteColorDraft.s = hsv.s;
+    this.paletteColorDraft.v = hsv.v;
+  }
+
+  updatePaletteSliderFromX(type, pointerX, bounds) {
+    if (!this.paletteColorDraft || !bounds) return;
+    const t = clamp((pointerX - bounds.x) / Math.max(1, bounds.w), 0, 1);
+    if (type === 'h') {
+      this.paletteColorDraft.h = t * 360;
+      this.syncPaletteDraftFromHsv();
+      return;
+    }
+    if (type === 's') {
+      this.paletteColorDraft.s = t;
+      this.syncPaletteDraftFromHsv();
+      return;
+    }
+    if (type === 'v') {
+      this.paletteColorDraft.v = t;
+      this.syncPaletteDraftFromHsv();
+      return;
+    }
+    if (type === 'r') this.paletteColorDraft.r = Math.round(t * 255);
+    if (type === 'g') this.paletteColorDraft.g = Math.round(t * 255);
+    if (type === 'b') this.paletteColorDraft.b = Math.round(t * 255);
+    this.syncPaletteDraftFromRgb();
+  }
+
+  editPaletteSliderValue(type) {
+    if (!this.paletteColorDraft) return;
+    const meta = {
+      h: { label: 'Hue (0-360)', min: 0, max: 360, value: this.paletteColorDraft.h, kind: 'hsv' },
+      s: { label: 'Saturation (0-100)', min: 0, max: 100, value: this.paletteColorDraft.s * 100, kind: 'hsv' },
+      v: { label: 'Value (0-100)', min: 0, max: 100, value: this.paletteColorDraft.v * 100, kind: 'hsv' },
+      r: { label: 'Red (0-255)', min: 0, max: 255, value: this.paletteColorDraft.r, kind: 'rgb' },
+      g: { label: 'Green (0-255)', min: 0, max: 255, value: this.paletteColorDraft.g, kind: 'rgb' },
+      b: { label: 'Blue (0-255)', min: 0, max: 255, value: this.paletteColorDraft.b, kind: 'rgb' }
+    }[type];
+    if (!meta) return;
+    const raw = window.prompt(meta.label, String(Math.round(meta.value)));
+    if (raw == null) return;
+    const parsed = Number(raw.trim());
+    if (!Number.isFinite(parsed)) return;
+    const next = clamp(parsed, meta.min, meta.max);
+    if (type === 'h') this.paletteColorDraft.h = next;
+    if (type === 's') this.paletteColorDraft.s = next / 100;
+    if (type === 'v') this.paletteColorDraft.v = next / 100;
+    if (type === 'r') this.paletteColorDraft.r = Math.round(next);
+    if (type === 'g') this.paletteColorDraft.g = Math.round(next);
+    if (type === 'b') this.paletteColorDraft.b = Math.round(next);
+    if (meta.kind === 'hsv') this.syncPaletteDraftFromHsv();
+    else this.syncPaletteDraftFromRgb();
+  }
+
+  editPaletteHexValue() {
+    if (!this.paletteColorDraft) return;
+    const fallback = this.rgbToHex(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b).toUpperCase();
+    const raw = window.prompt('Hex color (#RRGGBB):', fallback);
+    if (raw == null) return;
+    let next = raw.trim();
+    if (!next) return;
+    if (!next.startsWith('#')) next = `#${next}`;
+    if (!/^#[0-9a-fA-F]{6}$/.test(next)) return;
+    const rgba = hexToRgba(next);
+    this.paletteColorDraft.r = rgba.r;
+    this.paletteColorDraft.g = rgba.g;
+    this.paletteColorDraft.b = rgba.b;
+    this.syncPaletteDraftFromRgb();
   }
 
   applyPaletteColorPickerAdd() {
@@ -2686,6 +2785,7 @@ export default class PixelStudio {
     this.paletteIndex = this.currentPalette.colors.length - 1;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.palettePickerDrag = null;
     this.paletteColorPickerBounds = null;
   }
 
@@ -3976,7 +4076,7 @@ export default class PixelStudio {
       const contentPadding = 14;
       const footerButtonH = 32;
       const footerGap = 10;
-      const sliderH = 12;
+      const sliderH = 18;
       const sliderCount = 6;
       const contentY = pickerY + contentPadding;
       const contentH = pickerH - (contentPadding * 2) - footerButtonH - footerGap;
@@ -3984,13 +4084,16 @@ export default class PixelStudio {
       const sliderW = Math.max(170, Math.floor(pickerW * 0.36));
       const leftW = Math.max(140, pickerW - (contentPadding * 2) - sliderGap - sliderW);
       const hueW = clamp(Math.floor(leftW * 0.11), 18, 28);
-      const svSize = Math.max(120, Math.min(leftW - hueW - contentPadding, contentH));
+      const hexFieldH = 24;
+      const hexGap = 8;
+      const leftAreaH = Math.max(120, contentH - hexFieldH - hexGap);
+      const svSize = Math.max(120, Math.min(leftW - hueW - contentPadding, leftAreaH));
       const sv = { x: pickerX + contentPadding, y: contentY, w: svSize, h: svSize };
       const hue = { x: sv.x + sv.w + contentPadding, y: sv.y, w: hueW, h: sv.h };
 
       const sliderX = hue.x + hue.w + sliderGap;
       const sliderAreaH = Math.max(100, contentH);
-      const sliderRowStep = Math.max(18, Math.floor(sliderAreaH / sliderCount));
+      const sliderRowStep = Math.max(sliderH + 6, Math.floor(sliderAreaH / sliderCount));
       const sliderBlockH = sliderCount * sliderRowStep;
 
       const topColor = this.hsvToRgb(this.paletteColorDraft.h, 1, 1);
@@ -4026,42 +4129,82 @@ export default class PixelStudio {
       const hueY = hue.y + (this.paletteColorDraft.h / 360) * hue.h;
       ctx.strokeRect(hue.x - 2, hueY - 2, hue.w + 4, 4);
 
-      const addSlider = (label, val, min, max, x0, y0, w0, onChange) => {
+      const currentHex = this.rgbToHex(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b).toUpperCase();
+      const hexBounds = {
+        x: hue.x,
+        y: hue.y + hue.h + hexGap,
+        w: Math.max(88, sliderX - hue.x - 8),
+        h: hexFieldH
+      };
+      ctx.fillStyle = '#fff';
+      ctx.fillText('HEX', hexBounds.x, hexBounds.y - 4);
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      ctx.fillRect(hexBounds.x, hexBounds.y, hexBounds.w, hexBounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.strokeRect(hexBounds.x, hexBounds.y, hexBounds.w, hexBounds.h);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(currentHex, hexBounds.x + 8, hexBounds.y + Math.floor(hexBounds.h * 0.7));
+      this.uiButtons.push({ bounds: hexBounds, onClick: () => this.editPaletteHexValue() });
+
+      const addSlider = (label, type, val, min, max, x0, y0, w0) => {
+        const labelW = 18;
+        const valueW = 44;
+        const trackX = x0 + labelW + 8;
+        const trackW = Math.max(40, w0 - labelW - valueW - 18);
+        const valueX = trackX + trackW + 8;
         ctx.fillStyle = '#fff';
-        ctx.fillText(`${label}: ${Math.round(val)}`, x0, y0 - 4);
+        ctx.fillText(label, x0, y0 + Math.floor(sliderH * 0.72));
         ctx.fillStyle = 'rgba(255,255,255,0.15)';
-        ctx.fillRect(x0, y0, w0, sliderH);
+        ctx.fillRect(trackX, y0, trackW, sliderH);
         ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-        ctx.strokeRect(x0, y0, w0, sliderH);
+        ctx.strokeRect(trackX, y0, trackW, sliderH);
         const t = (val - min) / Math.max(1e-6, (max - min));
-        const kx = x0 + clamp(t, 0, 1) * w0;
+        const kx = trackX + clamp(t, 0, 1) * trackW;
         ctx.fillStyle = '#00c8ff';
-        ctx.fillRect(kx - 2, y0 - 2, 4, sliderH + 4);
+        ctx.fillRect(kx - 3, y0 - 2, 6, sliderH + 4);
+
+        const valueBounds = { x: valueX, y: y0, w: valueW, h: sliderH };
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.fillRect(valueBounds.x, valueBounds.y, valueBounds.w, valueBounds.h);
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+        ctx.strokeRect(valueBounds.x, valueBounds.y, valueBounds.w, valueBounds.h);
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'right';
+        ctx.fillText(String(Math.round(val)), valueBounds.x + valueBounds.w - 6, y0 + Math.floor(sliderH * 0.72));
+        ctx.textAlign = 'left';
+
+        const trackBounds = { x: trackX, y: y0 - 8, w: trackW, h: sliderH + 18 };
         this.uiButtons.push({
-          bounds: { x: x0, y: y0 - 8, w: w0, h: sliderH + 18 },
-          onClick: ({ x: px }) => onChange(clamp((px - x0) / Math.max(1, w0), 0, 1))
+          bounds: trackBounds,
+          onClick: ({ x: px, id: pointerId }) => {
+            this.palettePickerDrag = { type, id: pointerId ?? null, bounds: { x: trackX, y: y0, w: trackW, h: sliderH } };
+            this.updatePaletteSliderFromX(type, px, { x: trackX, y: y0, w: trackW, h: sliderH });
+          }
         });
+        this.uiButtons.push({ bounds: valueBounds, onClick: () => this.editPaletteSliderValue(type) });
       };
 
       let sy = contentY + Math.floor((sliderAreaH - sliderBlockH) / 2);
-      addSlider('H', this.paletteColorDraft.h, 0, 360, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.h = t * 360; this.syncPaletteDraftFromHsv(); });
+      addSlider('H', 'h', this.paletteColorDraft.h, 0, 360, sliderX, sy, sliderW);
       sy += sliderRowStep;
-      addSlider('S', this.paletteColorDraft.s * 100, 0, 100, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.s = t; this.syncPaletteDraftFromHsv(); });
+      addSlider('S', 's', this.paletteColorDraft.s * 100, 0, 100, sliderX, sy, sliderW);
       sy += sliderRowStep;
-      addSlider('V', this.paletteColorDraft.v * 100, 0, 100, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.v = t; this.syncPaletteDraftFromHsv(); });
+      addSlider('V', 'v', this.paletteColorDraft.v * 100, 0, 100, sliderX, sy, sliderW);
       sy += sliderRowStep;
-      addSlider('R', this.paletteColorDraft.r, 0, 255, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.r = Math.round(t * 255); const hsv = this.rgbToHsv(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b); this.paletteColorDraft.h = hsv.h; this.paletteColorDraft.s = hsv.s; this.paletteColorDraft.v = hsv.v; });
+      addSlider('R', 'r', this.paletteColorDraft.r, 0, 255, sliderX, sy, sliderW);
       sy += sliderRowStep;
-      addSlider('G', this.paletteColorDraft.g, 0, 255, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.g = Math.round(t * 255); const hsv = this.rgbToHsv(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b); this.paletteColorDraft.h = hsv.h; this.paletteColorDraft.s = hsv.s; this.paletteColorDraft.v = hsv.v; });
+      addSlider('G', 'g', this.paletteColorDraft.g, 0, 255, sliderX, sy, sliderW);
       sy += sliderRowStep;
-      addSlider('B', this.paletteColorDraft.b, 0, 255, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.b = Math.round(t * 255); const hsv = this.rgbToHsv(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b); this.paletteColorDraft.h = hsv.h; this.paletteColorDraft.s = hsv.s; this.paletteColorDraft.v = hsv.v; });
+      addSlider('B', 'b', this.paletteColorDraft.b, 0, 255, sliderX, sy, sliderW);
 
-      this.uiButtons.push({ bounds: sv, onClick: ({ x: px, y: py }) => {
+      this.uiButtons.push({ bounds: sv, onClick: ({ x: px, y: py, id: pointerId }) => {
+        this.palettePickerDrag = { type: 'sv', id: pointerId ?? null, bounds: sv };
         this.paletteColorDraft.s = clamp((px - sv.x) / Math.max(1, sv.w), 0, 1);
         this.paletteColorDraft.v = clamp(1 - (py - sv.y) / Math.max(1, sv.h), 0, 1);
         this.syncPaletteDraftFromHsv();
       } });
-      this.uiButtons.push({ bounds: { x: hue.x, y: hue.y, w: hue.w, h: hue.h }, onClick: ({ y: py }) => {
+      this.uiButtons.push({ bounds: { x: hue.x, y: hue.y, w: hue.w, h: hue.h }, onClick: ({ y: py, id: pointerId }) => {
+        this.palettePickerDrag = { type: 'hue', id: pointerId ?? null, bounds: hue };
         this.paletteColorDraft.h = clamp((py - hue.y) / Math.max(1, hue.h), 0, 1) * 360;
         this.syncPaletteDraftFromHsv();
       } });
@@ -4071,15 +4214,15 @@ export default class PixelStudio {
       const pickerOk = { x: pickerX + pickerW - 94, y: buttonY, w: 84, h: footerButtonH };
       this.drawButton(ctx, pickerCancel, 'cancel', false, { fontSize: 12 });
       this.drawButton(ctx, pickerOk, 'add', false, { fontSize: 12 });
-      this.uiButtons.push({ bounds: pickerCancel, onClick: () => { this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.paletteColorPickerBounds = null; } });
+      this.uiButtons.push({ bounds: pickerCancel, onClick: () => { this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.palettePickerDrag = null; this.paletteColorPickerBounds = null; } });
       this.uiButtons.push({ bounds: pickerOk, onClick: () => this.applyPaletteColorPickerAdd() });
     }
 
     if (!this.paletteColorPickerOpen) this.paletteColorPickerBounds = null;
     const closeBounds = { x: sheetX + sheetW - 96, y: sheetY + sheetH - 44, w: 84, h: 32 };
     this.drawButton(ctx, closeBounds, 'Close', false, { fontSize: 12 });
-    this.uiButtons.push({ bounds: closeBounds, onClick: () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.paletteColorPickerBounds = null; this.paletteModalBounds = null; } });
-    this.registerFocusable('menu', closeBounds, () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.paletteColorPickerBounds = null; this.paletteModalBounds = null; });
+    this.uiButtons.push({ bounds: closeBounds, onClick: () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.palettePickerDrag = null; this.paletteColorPickerBounds = null; this.paletteModalBounds = null; } });
+    this.registerFocusable('menu', closeBounds, () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.palettePickerDrag = null; this.paletteColorPickerBounds = null; this.paletteModalBounds = null; });
   }
 
   drawTimelineSheet(ctx, x, y, w, h) {
