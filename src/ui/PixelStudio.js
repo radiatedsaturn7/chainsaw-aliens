@@ -84,7 +84,6 @@ export default class PixelStudio {
       brushHardness: 0,
       brushShape: 'square',
       brushFalloff: 'solid',
-      linePerfect: true,
       shapeFill: false,
       polygonSides: 5,
       magicThreshold: 24,
@@ -1729,6 +1728,11 @@ export default class PixelStudio {
       this.updatePanJoystick(payload.x, payload.y);
       return;
     }
+    if (this.activeToolId === TOOL_IDS.POLYGON && this.polygonPreview
+      && (!this.canvasBounds || !this.isPointInBounds(payload, this.canvasBounds))) {
+      this.finishPolygon();
+      return;
+    }
     if (this.handleButtonClick(payload.x, payload.y, payload)) return;
     if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
       this.setInputMode('canvas');
@@ -1991,6 +1995,7 @@ export default class PixelStudio {
     }
     if (!this.menuOpen && !this.controlsOverlayOpen && !this.transformModal && !this.paletteGridOpen && !this.brushPickerOpen) {
       this.setInputMode('canvas');
+      if (this.isMobileLayout()) this.mobileDrawer = null;
     }
   }
 
@@ -2319,8 +2324,7 @@ export default class PixelStudio {
     if (!this.linePreview) return;
     this.startHistory('line');
     const points = bresenhamLine(this.linePreview.start, this.linePreview.end);
-    const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(points) : points;
-    filtered.forEach((pt) => this.applyBrush(pt));
+    points.forEach((pt) => this.applyBrush(pt));
     this.linePreview = null;
     this.curvePreview = null;
     this.shapePreview = null;
@@ -2413,8 +2417,7 @@ export default class PixelStudio {
     }
     this.startHistory('curve');
     const points = this.sampleCurvePoints(this.curvePreview, 96);
-    const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(points) : points;
-    filtered.forEach((pt) => this.applyBrush(pt));
+    points.forEach((pt) => this.applyBrush(pt));
     this.curvePreview = null;
     this.statusMessage = '';
     this.commitHistory();
@@ -2560,6 +2563,13 @@ export default class PixelStudio {
       this.polygonPreview = { points: [point], hover: point };
       return;
     }
+    const first = this.polygonPreview.points[0];
+    if (first && this.polygonPreview.points.length >= 3
+      && Math.abs(point.col - first.col) <= 1
+      && Math.abs(point.row - first.row) <= 1) {
+      this.finishPolygon();
+      return;
+    }
     this.polygonPreview.points.push(point);
     this.polygonPreview.hover = point;
   }
@@ -2585,7 +2595,7 @@ export default class PixelStudio {
     if (closeLoop && this.polygonPreview.points.length >= 3) {
       linePoints.push(...bresenhamLine(this.polygonPreview.points[this.polygonPreview.points.length - 1], this.polygonPreview.points[0]));
     }
-    return this.expandPreviewPoints(this.toolOptions.linePerfect ? this.applyPerfectPixels(linePoints) : linePoints);
+    return this.expandPreviewPoints(linePoints);
   }
 
   finishPolygon() {
@@ -2670,22 +2680,7 @@ export default class PixelStudio {
     this.selection.mode = contiguous ? 'magic-lasso' : 'magic-color';
   }
 
-  applyPerfectPixels(points) {
-    if (points.length < 3) return points;
-    const filtered = [points[0]];
-    for (let i = 1; i < points.length - 1; i += 1) {
-      const prev = points[i - 1];
-      const current = points[i];
-      const next = points[i + 1];
-      if ((prev.row !== current.row && prev.col !== current.col)
-        && (next.row !== current.row && next.col !== current.col)) {
-        continue;
-      }
-      filtered.push(current);
-    }
-    filtered.push(points[points.length - 1]);
-    return filtered;
-  }
+
 
   applyFill(point) {
     if (!this.activeLayer || this.activeLayer.locked) return;
@@ -3187,7 +3182,10 @@ export default class PixelStudio {
   setPaletteIndex(index) {
     this.secondaryPaletteIndex = this.paletteIndex;
     this.paletteIndex = index;
-    if (!this.paletteGridOpen && !this.paletteColorPickerOpen) this.setInputMode('canvas');
+    if (!this.paletteGridOpen && !this.paletteColorPickerOpen) {
+      this.setInputMode('canvas');
+      if (this.isMobileLayout()) this.mobileDrawer = null;
+    }
   }
 
   generateRamp(steps = 4) {
@@ -5361,12 +5359,6 @@ export default class PixelStudio {
       this.registerFocusable('menu', falloffBounds, () => this.cycleBrushFalloff());
       offsetY += lineHeight;
     }
-    if ([TOOL_IDS.LINE, TOOL_IDS.CURVE].includes(this.activeToolId)) {
-      this.drawOptionToggle(ctx, x, offsetY, 'Perfect Pixels', this.toolOptions.linePerfect, () => {
-        this.toolOptions.linePerfect = !this.toolOptions.linePerfect;
-      }, { isMobile });
-      offsetY += lineHeight;
-    }
     if ([TOOL_IDS.RECT, TOOL_IDS.ELLIPSE, TOOL_IDS.POLYGON].includes(this.activeToolId)) {
       this.drawOptionToggle(ctx, x, offsetY, this.toolOptions.shapeFill ? 'Fill: On' : 'Fill: Off', this.toolOptions.shapeFill, () => {
         this.toolOptions.shapeFill = !this.toolOptions.shapeFill;
@@ -5796,14 +5788,12 @@ export default class PixelStudio {
 
     if (this.linePreview) {
       const linePoints = bresenhamLine(this.linePreview.start, this.linePreview.end);
-      const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(linePoints) : linePoints;
-      this.drawPixelPreview(ctx, this.expandPreviewPoints(filtered), offsetX, offsetY, zoom, 'rgba(255,225,106,0.72)');
+      this.drawPixelPreview(ctx, this.expandPreviewPoints(linePoints), offsetX, offsetY, zoom, 'rgba(255,225,106,0.72)');
     }
 
     if (this.curvePreview) {
       const samples = this.sampleCurvePoints(this.curvePreview, 96);
-      const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(samples) : samples;
-      this.drawPixelPreview(ctx, this.expandPreviewPoints(filtered), offsetX, offsetY, zoom, 'rgba(141,240,255,0.72)');
+      this.drawPixelPreview(ctx, this.expandPreviewPoints(samples), offsetX, offsetY, zoom, 'rgba(141,240,255,0.72)');
       const handles = [this.curvePreview.control1, this.curvePreview.control2].filter(Boolean);
       if (handles.length) {
         ctx.fillStyle = '#8df0ff';

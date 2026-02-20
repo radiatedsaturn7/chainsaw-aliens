@@ -59,7 +59,7 @@ export const createToolRegistry = (editor) => ([
     onPointerDown: (point) => editor.startLine(point),
     onPointerMove: (point) => editor.updateLine(point),
     onPointerUp: () => editor.commitLine(),
-    optionsUI: ['linePerfect', 'symmetry', 'wrap']
+    optionsUI: ['symmetry', 'wrap']
   },
   {
     id: TOOL_IDS.CURVE,
@@ -69,7 +69,7 @@ export const createToolRegistry = (editor) => ([
     onPointerDown: (point) => editor.startCurve(point),
     onPointerMove: (point) => editor.updateCurve(point),
     onPointerUp: () => editor.commitCurve(),
-    optionsUI: ['linePerfect']
+    optionsUI: []
   },
   {
     id: TOOL_IDS.RECT,
