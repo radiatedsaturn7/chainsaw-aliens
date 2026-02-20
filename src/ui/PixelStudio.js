@@ -149,6 +149,7 @@ export default class PixelStudio {
     this.linePreview = null;
     this.curvePreview = null;
     this.shapePreview = null;
+    this.polygonPreview = null;
     this.gradientPreview = null;
     this.cloneSource = null;
     this.cloneOffset = null;
@@ -1977,6 +1978,7 @@ export default class PixelStudio {
     this.linePreview = null;
     this.curvePreview = null;
     this.shapePreview = null;
+    this.polygonPreview = null;
     this.gradientPreview = null;
     if (toolId !== TOOL_IDS.CLONE) {
       this.clonePickSourceArmed = false;
@@ -1986,6 +1988,9 @@ export default class PixelStudio {
       this.modeTab = 'select';
     } else if (toolId !== TOOL_IDS.EYEDROPPER) {
       this.modeTab = this.modeTab === 'animate' ? 'animate' : 'draw';
+    }
+    if (!this.menuOpen && !this.controlsOverlayOpen && !this.transformModal && !this.paletteGridOpen && !this.brushPickerOpen) {
+      this.setInputMode('canvas');
     }
   }
 
@@ -2198,13 +2203,14 @@ export default class PixelStudio {
       const target = this.activeLayer.pixels[index];
       const alpha = (pt.weight ?? 1) * (this.toolOptions.brushOpacity ?? 1);
       if (alpha <= 0) return;
-      if (this.strokeState.mode === 'clone') {
+      const strokeMode = this.strokeState?.mode || 'paint';
+      if (strokeMode === 'clone') {
         this.applyCloneStroke({ row, col }, alpha);
         return;
       }
       let colorValue = this.getActiveColorValue();
-      if (this.strokeState.mode === 'erase') colorValue = 0;
-      if (this.strokeState.mode === 'dither') {
+      if (strokeMode === 'erase') colorValue = 0;
+      if (strokeMode === 'dither') {
         if (!this.shouldApplyDither(row, col)) return;
       }
       if (this.toolOptions.symmetry?.mirrorOnly && target === colorValue) return;
@@ -2318,6 +2324,7 @@ export default class PixelStudio {
     this.linePreview = null;
     this.curvePreview = null;
     this.shapePreview = null;
+    this.polygonPreview = null;
     this.gradientPreview = null;
     this.commitHistory();
   }
@@ -2329,44 +2336,53 @@ export default class PixelStudio {
       this.curvePreview = {
         start: point,
         end: point,
-        control: point,
+        control1: null,
+        control2: null,
         phase: 'line',
         dragging: true
       };
       return;
     }
     this.curvePreview.dragging = true;
-    if (this.curvePreview.phase === 'control') this.curvePreview.control = point;
+    if (this.curvePreview.phase === 'control1') this.curvePreview.control1 = point;
+    if (this.curvePreview.phase === 'control2') this.curvePreview.control2 = point;
   }
 
   updateCurve(point) {
     if (!this.curvePreview || !this.curvePreview.dragging) return;
     if (this.curvePreview.phase === 'line') {
       this.curvePreview.end = point;
-      this.curvePreview.control = {
-        row: Math.round((this.curvePreview.start.row + point.row) * 0.5),
-        col: Math.round((this.curvePreview.start.col + point.col) * 0.5)
-      };
       return;
     }
-    if (this.curvePreview.phase === 'control') {
-      this.curvePreview.control = point;
+    if (this.curvePreview.phase === 'control1') {
+      this.curvePreview.control1 = point;
+      return;
+    }
+    if (this.curvePreview.phase === 'control2') {
+      this.curvePreview.control2 = point;
     }
   }
 
   sampleCurvePoints(preview, steps = 64) {
     const p0 = preview.start;
-    const p2 = preview.end;
-    const p1 = preview.control || {
-      row: Math.round((p0.row + p2.row) * 0.5),
-      col: Math.round((p0.col + p2.col) * 0.5)
+    const p3 = preview.end;
+    const p1 = preview.control1 || {
+      row: Math.round((p0.row + p3.row) * 0.5),
+      col: Math.round((p0.col + p3.col) * 0.5)
     };
+    const p2 = preview.control2 || p1;
     const points = [];
     for (let i = 0; i <= steps; i += 1) {
       const t = i / steps;
       const mt = 1 - t;
-      const col = (mt * mt * p0.col) + (2 * mt * t * p1.col) + (t * t * p2.col);
-      const row = (mt * mt * p0.row) + (2 * mt * t * p1.row) + (t * t * p2.row);
+      const col = mt * mt * mt * p0.col
+        + 3 * mt * mt * t * p1.col
+        + 3 * mt * t * t * p2.col
+        + t * t * t * p3.col;
+      const row = mt * mt * mt * p0.row
+        + 3 * mt * mt * t * p1.row
+        + 3 * mt * t * t * p2.row
+        + t * t * t * p3.row;
       points.push({ row: Math.round(row), col: Math.round(col) });
     }
     return points;
@@ -2376,8 +2392,19 @@ export default class PixelStudio {
     if (!this.curvePreview) return;
     if (this.curvePreview.phase === 'line') {
       this.curvePreview.dragging = false;
-      this.curvePreview.phase = 'control';
-      this.statusMessage = 'Curve: drag to bend, release to finish';
+      this.curvePreview.phase = 'control1';
+      this.curvePreview.control1 = {
+        row: Math.round((this.curvePreview.start.row + this.curvePreview.end.row) * 0.5),
+        col: Math.round((this.curvePreview.start.col + this.curvePreview.end.col) * 0.5)
+      };
+      this.statusMessage = 'Curve: set weight 1';
+      return;
+    }
+    if (this.curvePreview.phase === 'control1') {
+      this.curvePreview.dragging = false;
+      this.curvePreview.phase = 'control2';
+      this.curvePreview.control2 = { ...this.curvePreview.control1 };
+      this.statusMessage = 'Curve: set weight 2';
       return;
     }
     if (!this.activeLayer || this.activeLayer.locked) {
@@ -2489,6 +2516,7 @@ export default class PixelStudio {
   }
 
   getShapePreviewPoints() {
+    if (this.activeToolId === TOOL_IDS.POLYGON) return this.getPolygonPreviewPoints(false);
     if (!this.shapePreview) return [];
     const { mask, bounds } = this.getShapePreviewMask(this.shapePreview);
     if (!mask || !bounds) return [];
@@ -2525,6 +2553,48 @@ export default class PixelStudio {
       );
     });
     ctx.restore();
+  }
+
+  startPolygon(point) {
+    if (!this.polygonPreview) {
+      this.polygonPreview = { points: [point], hover: point };
+      return;
+    }
+    this.polygonPreview.points.push(point);
+    this.polygonPreview.hover = point;
+  }
+
+  updatePolygon(point) {
+    if (!this.polygonPreview) return;
+    this.polygonPreview.hover = point;
+  }
+
+  commitPolygonSegment() {
+    if (!this.polygonPreview) return;
+    this.polygonPreview.hover = this.polygonPreview.points[this.polygonPreview.points.length - 1];
+  }
+
+  getPolygonPreviewPoints(closeLoop = false) {
+    if (!this.polygonPreview?.points?.length) return [];
+    const vertices = [...this.polygonPreview.points];
+    if (this.polygonPreview.hover) vertices.push(this.polygonPreview.hover);
+    const linePoints = [];
+    for (let i = 1; i < vertices.length; i += 1) {
+      linePoints.push(...bresenhamLine(vertices[i - 1], vertices[i]));
+    }
+    if (closeLoop && this.polygonPreview.points.length >= 3) {
+      linePoints.push(...bresenhamLine(this.polygonPreview.points[this.polygonPreview.points.length - 1], this.polygonPreview.points[0]));
+    }
+    return this.expandPreviewPoints(this.toolOptions.linePerfect ? this.applyPerfectPixels(linePoints) : linePoints);
+  }
+
+  finishPolygon() {
+    if (!this.polygonPreview || this.polygonPreview.points.length < 3 || !this.activeLayer || this.activeLayer.locked) return;
+    this.startHistory('polygon');
+    const points = this.getPolygonPreviewPoints(true);
+    points.forEach((pt) => this.applyBrush(pt));
+    this.polygonPreview = null;
+    this.commitHistory();
   }
 
   startGradient(point) {
@@ -3117,6 +3187,7 @@ export default class PixelStudio {
   setPaletteIndex(index) {
     this.secondaryPaletteIndex = this.paletteIndex;
     this.paletteIndex = index;
+    if (!this.paletteGridOpen && !this.paletteColorPickerOpen) this.setInputMode('canvas');
   }
 
   generateRamp(steps = 4) {
@@ -5302,10 +5373,11 @@ export default class PixelStudio {
       }, { isMobile });
       offsetY += lineHeight;
       if (this.activeToolId === TOOL_IDS.POLYGON) {
-        const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 150, h: isMobile ? 44 : 18 };
-        this.drawButton(ctx, bounds, `Sides: ${this.toolOptions.polygonSides}`, false, { fontSize: isMobile ? 12 : 12 });
-        this.uiButtons.push({ bounds, onClick: () => { this.toolOptions.polygonSides = clamp(this.toolOptions.polygonSides + 1, 3, 12); if (this.toolOptions.polygonSides >= 12) this.toolOptions.polygonSides = 3; } });
-        this.registerFocusable('menu', bounds, () => { this.toolOptions.polygonSides = clamp(this.toolOptions.polygonSides + 1, 3, 12); if (this.toolOptions.polygonSides >= 12) this.toolOptions.polygonSides = 3; });
+        const finishBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 150, h: isMobile ? 44 : 18 };
+        const canFinish = Boolean(this.polygonPreview && this.polygonPreview.points.length >= 3);
+        this.drawButton(ctx, finishBounds, canFinish ? 'Finish Polygon' : 'Polygon: tap 3+ pts', canFinish, { fontSize: isMobile ? 12 : 12 });
+        this.uiButtons.push({ bounds: finishBounds, onClick: () => this.finishPolygon() });
+        this.registerFocusable('menu', finishBounds, () => this.finishPolygon());
         offsetY += lineHeight;
       }
     }
@@ -5732,15 +5804,18 @@ export default class PixelStudio {
       const samples = this.sampleCurvePoints(this.curvePreview, 96);
       const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(samples) : samples;
       this.drawPixelPreview(ctx, this.expandPreviewPoints(filtered), offsetX, offsetY, zoom, 'rgba(141,240,255,0.72)');
-      if (this.curvePreview.control) {
+      const handles = [this.curvePreview.control1, this.curvePreview.control2].filter(Boolean);
+      if (handles.length) {
         ctx.fillStyle = '#8df0ff';
-        const hx = offsetX + (this.curvePreview.control.col + 0.5) * zoom;
-        const hy = offsetY + (this.curvePreview.control.row + 0.5) * zoom;
-        ctx.fillRect(hx - 3, hy - 3, 6, 6);
+        handles.forEach((handle) => {
+          const hx = offsetX + (handle.col + 0.5) * zoom;
+          const hy = offsetY + (handle.row + 0.5) * zoom;
+          ctx.fillRect(hx - 3, hy - 3, 6, 6);
+        });
       }
     }
 
-    if (this.shapePreview) {
+    if (this.shapePreview || this.polygonPreview) {
       this.drawPixelPreview(ctx, this.getShapePreviewPoints(), offsetX, offsetY, zoom, 'rgba(106,215,255,0.72)');
     }
 

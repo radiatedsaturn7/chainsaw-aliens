@@ -96,9 +96,9 @@ export const createToolRegistry = (editor) => ([
     name: 'Polygon',
     category: 'draw',
     cursor: 'crosshair',
-    onPointerDown: (point) => editor.startShape(point, 'polygon'),
-    onPointerMove: (point) => editor.updateShape(point),
-    onPointerUp: () => editor.commitShape(),
+    onPointerDown: (point) => editor.startPolygon(point),
+    onPointerMove: (point) => editor.updatePolygon(point),
+    onPointerUp: () => editor.commitPolygonSegment(),
     optionsUI: ['shapeFill', 'polygonSides']
   },
   {
