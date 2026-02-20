@@ -123,6 +123,7 @@ export default class PixelStudio {
       offset: { x: 0, y: 0 }
     };
     this.moveTransformDrag = null;
+    this.outsideCanvasTapGesture = { time: 0, x: 0, y: 0 };
     this.clipboard = null;
     this.magicLassoEdgeMap = null;
     this.magicLassoLastVector = null;
@@ -1834,6 +1835,19 @@ export default class PixelStudio {
       }
       if (payload.touchCount) {
         this.startLongPress(payload);
+      }
+      return;
+    }
+    if (payload.touchCount && this.selection.active) {
+      const now = performance.now();
+      const previous = this.outsideCanvasTapGesture || { time: 0, x: 0, y: 0 };
+      const withinTime = now - previous.time <= 360;
+      const withinDistance = Math.hypot(payload.x - previous.x, payload.y - previous.y) <= 28;
+      if (withinTime && withinDistance) {
+        this.clearSelection();
+        this.outsideCanvasTapGesture = { time: 0, x: payload.x, y: payload.y };
+      } else {
+        this.outsideCanvasTapGesture = { time: now, x: payload.x, y: payload.y };
       }
     }
   }
@@ -6200,6 +6214,7 @@ export default class PixelStudio {
     }
 
     const actions = [
+      { label: 'Clear Selection', action: () => this.clearSelection() },
       { label: 'Transform', action: () => { this.setActiveTool(TOOL_IDS.MOVE); this.setInputMode('canvas'); } },
       { label: 'Copy', action: () => this.copySelection() },
       { label: 'Cut', action: () => this.cutSelection() },
@@ -6213,8 +6228,7 @@ export default class PixelStudio {
       { label: 'Rot CCW', action: () => this.transformSelection('rotate-ccw') },
       { label: 'Scale 2x', action: () => this.scaleSelection(2) },
       { label: 'Scale 3x', action: () => this.scaleSelection(3) },
-      { label: 'Scale 4x', action: () => this.scaleSelection(4) },
-      { label: 'Clear Selection', action: () => this.clearSelection() }
+      { label: 'Scale 4x', action: () => this.scaleSelection(4) }
     ];
     actions.forEach((entry, index) => {
       const bounds = { x, y: y + index * rowStep, w: buttonWidth, h: rowHeight };
