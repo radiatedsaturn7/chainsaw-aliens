@@ -122,6 +122,7 @@ export default class PixelStudio {
       floatingBounds: null,
       offset: { x: 0, y: 0 }
     };
+    this.moveTransformDrag = null;
     this.clipboard = null;
     this.magicLassoEdgeMap = null;
     this.magicLassoLastVector = null;
@@ -3326,12 +3327,36 @@ export default class PixelStudio {
 
   startMove(point) {
     if (!this.selection.active) return;
+    const transformHit = this.getSelectionTransformHit(point);
+    if (transformHit?.type === 'rotate') {
+      this.moveTransformDrag = {
+        type: 'rotate',
+        start: point,
+        current: point,
+        center: this.getSelectionCenterPoint()
+      };
+      return;
+    }
+    if (transformHit?.type === 'scale') {
+      this.moveTransformDrag = {
+        type: 'scale',
+        start: point,
+        current: point,
+        center: this.getSelectionCenterPoint()
+      };
+      return;
+    }
+    this.moveTransformDrag = null;
     this.selection.floating = this.extractSelectionPixels();
     this.selection.offset = { x: 0, y: 0 };
     this.selection.start = point;
   }
 
   updateMove(point) {
+    if (this.moveTransformDrag) {
+      this.moveTransformDrag.current = point;
+      return;
+    }
     if (!this.selection.floating || !this.selection.start) return;
     this.selection.offset = {
       x: point.col - this.selection.start.col,
@@ -3340,11 +3365,88 @@ export default class PixelStudio {
   }
 
   commitMove() {
+    if (this.moveTransformDrag?.type === 'rotate') {
+      const { start, current, center } = this.moveTransformDrag;
+      this.moveTransformDrag = null;
+      const startAngle = Math.atan2(start.row - center.row, start.col - center.col);
+      const endAngle = Math.atan2(current.row - center.row, current.col - center.col);
+      const delta = endAngle - startAngle;
+      const quarterTurns = Math.round(delta / (Math.PI / 2));
+      const turns = Math.abs(quarterTurns);
+      const type = quarterTurns >= 0 ? 'rotate-cw' : 'rotate-ccw';
+      for (let i = 0; i < turns; i += 1) {
+        this.transformSelection(type);
+      }
+      return;
+    }
+    if (this.moveTransformDrag?.type === 'scale') {
+      const { start, current, center } = this.moveTransformDrag;
+      this.moveTransformDrag = null;
+      const startDist = Math.hypot(start.col - center.col, start.row - center.row);
+      const endDist = Math.hypot(current.col - center.col, current.row - center.row);
+      if (startDist > 0.001) {
+        const ratio = clamp(endDist / startDist, 0.25, 4);
+        this.scaleSelectionByRatio(ratio);
+      }
+      return;
+    }
     if (!this.selection.floating) return;
     this.startHistory('move selection');
     this.pasteSelectionPixels(this.selection.floating, this.selection.offset.x, this.selection.offset.y);
+    this.translateSelectionMask(this.selection.offset.x, this.selection.offset.y);
     this.selection.floating = null;
+    this.selection.start = null;
+    this.selection.offset = { x: 0, y: 0 };
     this.commitHistory();
+  }
+
+  getSelectionCenterPoint() {
+    const bounds = this.selection.bounds;
+    if (!bounds) return { col: 0, row: 0 };
+    return {
+      col: bounds.x + (bounds.w - 1) / 2,
+      row: bounds.y + (bounds.h - 1) / 2
+    };
+  }
+
+  getSelectionTransformHit(point) {
+    const bounds = this.selection.bounds;
+    if (!bounds) return null;
+    const centerX = bounds.x + (bounds.w - 1) / 2;
+    const rotateOrb = { col: centerX, row: bounds.y - 2 };
+    if (Math.hypot(point.col - rotateOrb.col, point.row - rotateOrb.row) <= 1.2) {
+      return { type: 'rotate' };
+    }
+    const handles = [
+      { col: bounds.x + (bounds.w - 1) / 2, row: bounds.y },
+      { col: bounds.x + bounds.w - 1, row: bounds.y + (bounds.h - 1) / 2 },
+      { col: bounds.x + (bounds.w - 1) / 2, row: bounds.y + bounds.h - 1 },
+      { col: bounds.x, row: bounds.y + (bounds.h - 1) / 2 }
+    ];
+    if (handles.some((handle) => Math.hypot(point.col - handle.col, point.row - handle.row) <= 1.2)) {
+      return { type: 'scale' };
+    }
+    return null;
+  }
+
+  translateSelectionMask(dx, dy) {
+    if (!this.selection.mask) return;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const nextMask = new Uint8Array(width * height);
+    for (let row = 0; row < height; row += 1) {
+      for (let col = 0; col < width; col += 1) {
+        const srcIndex = row * width + col;
+        if (!this.selection.mask[srcIndex]) continue;
+        const destRow = row + dy;
+        const destCol = col + dx;
+        if (destRow < 0 || destCol < 0 || destRow >= height || destCol >= width) continue;
+        nextMask[destRow * width + destCol] = 1;
+      }
+    }
+    this.selection.mask = nextMask;
+    this.selection.bounds = this.getMaskBounds(nextMask);
+    this.selection.active = Boolean(this.selection.bounds);
   }
 
   extractSelectionPixels() {
@@ -3381,6 +3483,43 @@ export default class PixelStudio {
     this.startHistory('nudge selection');
     const pixels = this.extractSelectionPixels();
     this.pasteSelectionPixels(pixels, dx, dy);
+    this.translateSelectionMask(dx, dy);
+    this.commitHistory();
+  }
+
+  scaleSelectionByRatio(ratio) {
+    if (!this.selection.active || !this.selection.mask || !this.selection.bounds) return;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const bounds = this.selection.bounds;
+    const srcMask = new Uint8Array(this.selection.mask);
+    const pixels = this.extractSelectionPixels();
+    const next = new Uint32Array(this.activeLayer.pixels);
+    const nextMask = new Uint8Array(width * height);
+    const targetW = Math.max(1, Math.round(bounds.w * ratio));
+    const targetH = Math.max(1, Math.round(bounds.h * ratio));
+    this.startHistory(`scale ${ratio.toFixed(2)}x`);
+    for (let y = 0; y < targetH; y += 1) {
+      for (let x = 0; x < targetW; x += 1) {
+        const srcLocalX = clamp(Math.floor((x / Math.max(1, targetW)) * bounds.w), 0, bounds.w - 1);
+        const srcLocalY = clamp(Math.floor((y / Math.max(1, targetH)) * bounds.h), 0, bounds.h - 1);
+        const srcCol = bounds.x + srcLocalX;
+        const srcRow = bounds.y + srcLocalY;
+        const srcIndex = srcRow * width + srcCol;
+        if (!srcMask[srcIndex]) continue;
+        const destCol = bounds.x + x;
+        const destRow = bounds.y + y;
+        if (destRow < 0 || destCol < 0 || destRow >= height || destCol >= width) continue;
+        const destIndex = destRow * width + destCol;
+        nextMask[destIndex] = 1;
+        const value = pixels[srcIndex];
+        if (value) next[destIndex] = value;
+      }
+    }
+    this.activeLayer.pixels = next;
+    this.selection.mask = nextMask;
+    this.selection.bounds = this.getMaskBounds(nextMask);
+    this.selection.active = Boolean(this.selection.bounds);
     this.commitHistory();
   }
 
@@ -5803,9 +5942,7 @@ export default class PixelStudio {
     offsetY += buttonHeight * 2 + 18;
 
     if (offsetY + lineHeight < y + h) {
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
-      ctx.fillText(`Zoom: ${Math.round(this.view.zoomLevels[this.view.zoomIndex] * 100)}%`, x + 12, offsetY);
+      // intentionally no zoom controls here; zoom is handled via canvas gestures/shortcuts/mobile slider
     }
   }
 
@@ -6061,7 +6198,7 @@ export default class PixelStudio {
     }
 
     const actions = [
-      { label: 'Transform (Move)', action: () => { this.setActiveTool(TOOL_IDS.MOVE); this.setInputMode('canvas'); } },
+      { label: 'Transform', action: () => { this.setActiveTool(TOOL_IDS.MOVE); this.setInputMode('canvas'); } },
       { label: 'Copy', action: () => this.copySelection() },
       { label: 'Cut', action: () => this.cutSelection() },
       { label: 'Delete', action: () => this.deleteSelection() },
@@ -6270,6 +6407,36 @@ export default class PixelStudio {
 
     if (this.selection.active && this.selection.bounds) {
       this.drawSelectionMarchingAnts(ctx, offsetX, offsetY, zoom);
+      if (this.activeToolId === TOOL_IDS.MOVE) {
+        const b = this.selection.bounds;
+        const centerX = offsetX + (b.x + (b.w - 1) / 2 + 0.5) * zoom;
+        const centerY = offsetY + (b.y + (b.h - 1) / 2 + 0.5) * zoom;
+        const rotateOrbX = centerX;
+        const rotateOrbY = offsetY + (b.y - 1.5) * zoom;
+        const handleRadius = Math.max(4, zoom * 0.22);
+        const handles = [
+          { x: centerX, y: offsetY + (b.y + 0.5) * zoom },
+          { x: offsetX + (b.x + b.w - 0.5) * zoom, y: centerY },
+          { x: centerX, y: offsetY + (b.y + b.h - 0.5) * zoom },
+          { x: offsetX + (b.x + 0.5) * zoom, y: centerY }
+        ];
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255,225,106,0.9)';
+        ctx.lineWidth = Math.max(1, zoom * 0.1);
+        ctx.beginPath();
+        ctx.moveTo(centerX, offsetY + (b.y + 0.5) * zoom);
+        ctx.lineTo(rotateOrbX, rotateOrbY);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(106,215,255,0.95)';
+        handles.forEach((h) => {
+          ctx.fillRect(h.x - handleRadius, h.y - handleRadius, handleRadius * 2, handleRadius * 2);
+        });
+        ctx.beginPath();
+        ctx.arc(rotateOrbX, rotateOrbY, Math.max(5, zoom * 0.32), 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,160,106,0.95)';
+        ctx.fill();
+        ctx.restore();
+      }
     }
 
     if (this.selection.floating && this.selection.floatingMode === 'paste') {
