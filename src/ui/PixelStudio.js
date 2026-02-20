@@ -855,6 +855,9 @@ export default class PixelStudio {
   }
 
   resetFocus() {
+    this.ensurePrimaryPaletteSwatches();
+    this.setPaletteIndex(0);
+    this.secondaryPaletteIndex = Math.min(1, Math.max(0, (this.currentPalette.colors?.length || 1) - 1));
     this.setInputMode('canvas');
     this.clearSelection();
     this.selection.floating = null;
@@ -865,7 +868,21 @@ export default class PixelStudio {
     if (this.isMobileLayout()) {
       this.mobileDrawer = 'panel';
       this.setLeftPanelTab('draw');
+      this.setInputMode('canvas');
     }
+  }
+
+  ensurePrimaryPaletteSwatches() {
+    const colors = this.currentPalette?.colors;
+    if (!Array.isArray(colors)) return;
+    const normalized = colors.map((entry) => ({
+      ...entry,
+      hex: typeof entry?.hex === 'string' ? entry.hex.toLowerCase() : '#000000'
+    }));
+    const black = normalized.find((entry) => entry.hex === '#000000') || { hex: '#000000' };
+    const white = normalized.find((entry) => entry.hex === '#ffffff') || { hex: '#ffffff' };
+    const rest = normalized.filter((entry) => entry.hex !== '#000000' && entry.hex !== '#ffffff');
+    this.currentPalette.colors = [black, white, ...rest];
   }
 
   configureSeamFixCloneDefaults() {
@@ -2001,7 +2018,6 @@ export default class PixelStudio {
     }
     if (!this.menuOpen && !this.controlsOverlayOpen && !this.transformModal && !this.paletteGridOpen && !this.brushPickerOpen) {
       this.setInputMode('canvas');
-      if (this.isMobileLayout()) this.mobileDrawer = null;
     }
   }
 
