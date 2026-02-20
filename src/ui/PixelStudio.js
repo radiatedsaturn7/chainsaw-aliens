@@ -33,7 +33,7 @@ import { ensurePixelArtStore, ensurePixelTileData } from '../editor/adapters/edi
 
 const BRUSH_SIZE_MIN = 1;
 const BRUSH_SIZE_MAX = 64;
-const DEFAULT_BRUSH_SIZE = 16;
+const DEFAULT_BRUSH_SIZE = 1;
 const BRUSH_SHAPES = ['square', 'circle', 'diamond', 'cross', 'x', 'hline', 'vline'];
 const BRUSH_FALLOFFS = ['solid', 'soft'];
 
@@ -130,7 +130,7 @@ export default class PixelStudio {
       maxZoom: 8,
       zoomStep: 1
     });
-    this.tiledPreview = { enabled: false, tiles: 2 };
+    this.tiledPreview = { enabled: false, tiles: 3 };
     this.animation = {
       frames: [createFrame(this.canvasState.layers, 120)],
       currentFrameIndex: 0,
@@ -212,6 +212,7 @@ export default class PixelStudio {
     this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.transformModal = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
     this.sidebars = { left: true };
@@ -665,6 +666,117 @@ export default class PixelStudio {
     this.resizeArtCanvas(dims.width, dims.height);
   }
 
+  openTransformModal(type) {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const defaults = {
+      resize: { width, height },
+      scale: { scaleX: 2, scaleY: 2 },
+      crop: { borderX: 1, borderY: 1 },
+      offset: { dx: 0, dy: 0, wrap: true }
+    };
+    this.transformModal = {
+      type,
+      values: { ...(defaults[type] || {}) },
+      bounds: null,
+      fields: [],
+      buttons: []
+    };
+  }
+
+  closeTransformModal() {
+    this.transformModal = null;
+  }
+
+  setTransformValue(key, value, min = -9999, max = 9999) {
+    if (!this.transformModal?.values) return;
+    const parsed = Number.isFinite(value) ? value : Number(value);
+    if (!Number.isFinite(parsed)) return;
+    this.transformModal.values[key] = clamp(Math.round(parsed), min, max);
+  }
+
+  applyScaleCanvas(scaleX, scaleY) {
+    const sx = clamp(Math.round(scaleX), 1, 16);
+    const sy = clamp(Math.round(scaleY), 1, 16);
+    if (sx === 1 && sy === 1) return;
+    const srcW = this.canvasState.width;
+    const srcH = this.canvasState.height;
+    const nextW = clamp(srcW * sx, 8, 512);
+    const nextH = clamp(srcH * sy, 8, 512);
+    this.animation.frames = this.animation.frames.map((frame) => ({
+      ...frame,
+      layers: frame.layers.map((layer) => {
+        const next = createLayer(nextW, nextH, layer.name);
+        for (let row = 0; row < nextH; row += 1) {
+          for (let col = 0; col < nextW; col += 1) {
+            const srcRow = Math.floor(row / sy);
+            const srcCol = Math.floor(col / sx);
+            next.pixels[row * nextW + col] = layer.pixels[srcRow * srcW + srcCol] || 0;
+          }
+        }
+        return next;
+      })
+    }));
+    this.canvasState.width = nextW;
+    this.canvasState.height = nextH;
+    this.artSizeDraft.width = nextW;
+    this.artSizeDraft.height = nextH;
+    this.animation.currentFrameIndex = clamp(this.animation.currentFrameIndex, 0, this.animation.frames.length - 1);
+    this.setFrameLayers(this.animation.frames[this.animation.currentFrameIndex].layers);
+    this.canvasState.activeLayerIndex = clamp(this.canvasState.activeLayerIndex, 0, this.canvasState.layers.length - 1);
+    this.syncTileData();
+  }
+
+  cropCanvas(borderX, borderY) {
+    const bx = clamp(Math.round(borderX), 0, 255);
+    const by = clamp(Math.round(borderY), 0, 255);
+    const srcW = this.canvasState.width;
+    const srcH = this.canvasState.height;
+    const nextW = clamp(srcW - bx * 2, 1, 512);
+    const nextH = clamp(srcH - by * 2, 1, 512);
+    if (nextW === srcW && nextH === srcH) return;
+    this.animation.frames = this.animation.frames.map((frame) => ({
+      ...frame,
+      layers: frame.layers.map((layer) => {
+        const next = createLayer(nextW, nextH, layer.name);
+        for (let row = 0; row < nextH; row += 1) {
+          for (let col = 0; col < nextW; col += 1) {
+            const srcRow = row + by;
+            const srcCol = col + bx;
+            if (srcRow < 0 || srcCol < 0 || srcRow >= srcH || srcCol >= srcW) continue;
+            next.pixels[row * nextW + col] = layer.pixels[srcRow * srcW + srcCol] || 0;
+          }
+        }
+        return next;
+      })
+    }));
+    this.canvasState.width = nextW;
+    this.canvasState.height = nextH;
+    this.artSizeDraft.width = nextW;
+    this.artSizeDraft.height = nextH;
+    this.animation.currentFrameIndex = clamp(this.animation.currentFrameIndex, 0, this.animation.frames.length - 1);
+    this.setFrameLayers(this.animation.frames[this.animation.currentFrameIndex].layers);
+    this.canvasState.activeLayerIndex = clamp(this.canvasState.activeLayerIndex, 0, this.canvasState.layers.length - 1);
+    this.syncTileData();
+  }
+
+  applyTransformModal() {
+    if (!this.transformModal) return;
+    const { type, values } = this.transformModal;
+    this.startHistory(type);
+    if (type === 'resize') {
+      this.resizeArtCanvas(values.width, values.height);
+    } else if (type === 'scale') {
+      this.applyScaleCanvas(values.scaleX, values.scaleY);
+    } else if (type === 'crop') {
+      this.cropCanvas(values.borderX, values.borderY);
+    } else if (type === 'offset') {
+      this.offsetCanvas(values.dx, values.dy, values.wrap !== false, { recordHistory: false });
+    }
+    this.commitHistory();
+    this.closeTransformModal();
+  }
+
 
   setActiveTile(tile) {
     this.activeTile = tile;
@@ -1027,6 +1139,10 @@ export default class PixelStudio {
   }
 
   handleCancel() {
+    if (this.transformModal) {
+      this.closeTransformModal();
+      return;
+    }
     if (this.controlsOverlayOpen) {
       this.controlsOverlayOpen = false;
       return;
@@ -1463,7 +1579,7 @@ export default class PixelStudio {
 
   handlePointerDown(payload) {
     const button = payload.button ?? 0;
-    if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen || this.selectionContextMenu || this.brushPickerOpen) {
+    if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen || this.selectionContextMenu || this.brushPickerOpen || this.transformModal) {
       this.handleButtonClick(payload.x, payload.y, payload);
       return;
     }
@@ -1553,6 +1669,17 @@ export default class PixelStudio {
   }
 
   handlePointerMove(payload) {
+    if (this.transformModal) {
+      if (this.transformModal.drag && (payload.id === undefined || payload.id === this.transformModal.drag.id)) {
+        const field = this.transformModal.fields?.find((entry) => entry.key === this.transformModal.drag.key);
+        if (field) {
+          const ratio = clamp((payload.x - field.slider.x) / Math.max(1, field.slider.w), 0, 1);
+          const next = field.min + ratio * (field.max - field.min);
+          this.setTransformValue(field.key, next, field.min, field.max);
+        }
+      }
+      return;
+    }
     if (this.brushPickerOpen) {
       if (this.brushPickerDrag && (payload.id === undefined || payload.id === this.brushPickerDrag.id)) {
         this.updateBrushPickerSliderFromX(this.brushPickerDrag.type, payload.x);
@@ -1624,12 +1751,16 @@ export default class PixelStudio {
   }
 
   handlePointerUp(payload = {}) {
+    if (this.transformModal?.drag && (payload.id === undefined || payload.id === this.transformModal.drag.id)) {
+      this.transformModal.drag = null;
+    }
     if (this.brushPickerDrag && (payload.id === undefined || payload.id === this.brushPickerDrag.id)) {
       this.brushPickerDrag = null;
     }
     if (this.palettePickerDrag && (payload.id === undefined || payload.id === this.palettePickerDrag.id)) {
       this.palettePickerDrag = null;
     }
+    if (this.transformModal) return;
     if (this.brushPickerOpen) return;
     if (this.paletteColorPickerOpen) return;
     if (this.mobileZoomDrag && (payload.id === undefined || payload.id === this.mobileZoomDrag.id)) {
@@ -2846,8 +2977,9 @@ export default class PixelStudio {
     return { x: minCol, y: minRow, w: maxCol - minCol + 1, h: maxRow - minRow + 1 };
   }
 
-  offsetCanvas(dx, dy, wrap = true) {
-    this.startHistory('offset');
+  offsetCanvas(dx, dy, wrap = true, options = {}) {
+    const recordHistory = options.recordHistory !== false;
+    if (recordHistory) this.startHistory('offset');
     const width = this.canvasState.width;
     const height = this.canvasState.height;
     this.canvasState.layers.forEach((layer) => {
@@ -2868,7 +3000,7 @@ export default class PixelStudio {
       }
       layer.pixels = next;
     });
-    this.commitHistory();
+    if (recordHistory) this.commitHistory();
   }
 
   addLayer() {
@@ -3007,22 +3139,49 @@ export default class PixelStudio {
   getGridCellFromScreen(x, y) {
     if (!this.canvasBounds) return null;
     const { x: startX, y: startY, cellSize } = this.canvasBounds;
-    const col = Math.floor((x - startX) / cellSize);
-    const row = Math.floor((y - startY) / cellSize);
+    let col = Math.floor((x - startX) / cellSize);
+    let row = Math.floor((y - startY) / cellSize);
+    if (this.toolOptions.wrapDraw) {
+      col = ((col % this.canvasState.width) + this.canvasState.width) % this.canvasState.width;
+      row = ((row % this.canvasState.height) + this.canvasState.height) % this.canvasState.height;
+      return { row, col };
+    }
     if (col < 0 || row < 0 || col >= this.canvasState.width || row >= this.canvasState.height) return null;
     return { row, col };
   }
 
   getScreenFromGridCell(row, col) {
     if (!this.canvasBounds) return null;
-    const { x: startX, y: startY, cellSize } = this.canvasBounds;
+    const { mainX, mainY, x: startX, y: startY, cellSize } = this.canvasBounds;
+    const originX = Number.isFinite(mainX) ? mainX : startX;
+    const originY = Number.isFinite(mainY) ? mainY : startY;
     return {
-      x: startX + col * cellSize + cellSize / 2,
-      y: startY + row * cellSize + cellSize / 2
+      x: originX + col * cellSize + cellSize / 2,
+      y: originY + row * cellSize + cellSize / 2
     };
   }
 
   handleButtonClick(x, y, payload = {}) {
+    if (this.transformModal) {
+      if (this.transformModal.bounds && !this.isPointInBounds({ x, y }, this.transformModal.bounds)) {
+        this.closeTransformModal();
+        return true;
+      }
+      const sliderHit = (this.transformModal.fields || []).find((field) => this.isPointInBounds({ x, y }, field.slider));
+      if (sliderHit) {
+        const ratio = clamp((x - sliderHit.slider.x) / Math.max(1, sliderHit.slider.w), 0, 1);
+        const next = sliderHit.min + ratio * (sliderHit.max - sliderHit.min);
+        this.setTransformValue(sliderHit.key, next, sliderHit.min, sliderHit.max);
+        this.transformModal.drag = { key: sliderHit.key, id: payload.id ?? null };
+        return true;
+      }
+      const buttonHit = (this.transformModal.buttons || []).find((entry) => this.isPointInBounds({ x, y }, entry.bounds));
+      if (buttonHit) {
+        buttonHit.onClick?.();
+        return true;
+      }
+      return true;
+    }
     if (this.paletteGridOpen) {
       const activeBounds = this.paletteColorPickerOpen ? this.paletteColorPickerBounds : this.paletteModalBounds;
       if (activeBounds && !this.isPointInBounds({ x, y }, activeBounds)) {
@@ -3260,6 +3419,10 @@ export default class PixelStudio {
       this.drawQuickWheel(ctx, width, height);
     }
 
+    if (this.transformModal) {
+      this.drawTransformModal(ctx, width, height);
+    }
+
     if (this.controlsOverlayOpen) {
       this.drawControlsOverlay(ctx, width, height);
     }
@@ -3282,6 +3445,94 @@ export default class PixelStudio {
       color,
       y: bounds.y + bounds.h / 2 + 1
     });
+  }
+
+  drawTransformModal(ctx, width, height) {
+    if (!this.transformModal) return;
+    const modalW = Math.min(420, Math.max(280, width * 0.45));
+    const modalH = Math.min(290, Math.max(220, height * 0.42));
+    const modal = {
+      x: Math.floor((width - modalW) / 2),
+      y: Math.floor((height - modalH) / 2),
+      w: Math.floor(modalW),
+      h: Math.floor(modalH)
+    };
+    this.transformModal.bounds = modal;
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#1b1b1b';
+    ctx.fillRect(modal.x, modal.y, modal.w, modal.h);
+    ctx.strokeStyle = '#ffe16a';
+    ctx.strokeRect(modal.x, modal.y, modal.w, modal.h);
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    const title = this.transformModal.type[0].toUpperCase() + this.transformModal.type.slice(1);
+    ctx.fillText(`${title} Canvas`, modal.x + 12, modal.y + 22);
+
+    const rowsByType = {
+      resize: [
+        { key: 'width', label: 'Width', min: 8, max: 512 },
+        { key: 'height', label: 'Height', min: 8, max: 512 }
+      ],
+      scale: [
+        { key: 'scaleX', label: 'Scale X', min: 1, max: 16 },
+        { key: 'scaleY', label: 'Scale Y', min: 1, max: 16 }
+      ],
+      crop: [
+        { key: 'borderX', label: 'Border X', min: 0, max: Math.max(0, Math.floor((this.canvasState.width - 1) / 2)) },
+        { key: 'borderY', label: 'Border Y', min: 0, max: Math.max(0, Math.floor((this.canvasState.height - 1) / 2)) }
+      ],
+      offset: [
+        { key: 'dx', label: 'Shift X', min: -this.canvasState.width, max: this.canvasState.width },
+        { key: 'dy', label: 'Shift Y', min: -this.canvasState.height, max: this.canvasState.height }
+      ]
+    };
+    const rows = rowsByType[this.transformModal.type] || [];
+    this.transformModal.fields = [];
+
+    let rowY = modal.y + 50;
+    rows.forEach((row) => {
+      const slider = { x: modal.x + 108, y: rowY - 10, w: modal.w - 132, h: 12 };
+      const value = this.transformModal.values[row.key] ?? row.min;
+      const t = clamp((value - row.min) / Math.max(1, row.max - row.min), 0, 1);
+      const knobX = slider.x + t * slider.w;
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '12px Courier New';
+      ctx.fillText(`${row.label}: ${Math.round(value)}`, modal.x + 12, rowY);
+      ctx.fillStyle = 'rgba(255,255,255,0.28)';
+      ctx.fillRect(slider.x, slider.y, slider.w, slider.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+      ctx.strokeRect(slider.x, slider.y, slider.w, slider.h);
+      ctx.fillStyle = '#ffe16a';
+      ctx.fillRect(knobX - 2, slider.y - 2, 4, slider.h + 4);
+      this.transformModal.fields.push({ ...row, slider });
+      rowY += 38;
+    });
+
+    if (this.transformModal.type === 'offset') {
+      const wrapBounds = { x: modal.x + 12, y: rowY - 12, w: 110, h: 20 };
+      const wrap = this.transformModal.values.wrap !== false;
+      this.drawButton(ctx, wrapBounds, wrap ? 'Wrap: On' : 'Wrap: Off', wrap, { fontSize: 12 });
+      this.uiButtons.push({ bounds: wrapBounds, onClick: () => { this.transformModal.values.wrap = !wrap; } });
+      this.registerFocusable('menu', wrapBounds, () => { this.transformModal.values.wrap = !wrap; });
+      rowY += 28;
+    }
+
+    const cancelBounds = { x: modal.x + modal.w - 180, y: modal.y + modal.h - 34, w: 80, h: 24 };
+    const okBounds = { x: modal.x + modal.w - 92, y: modal.y + modal.h - 34, w: 80, h: 24 };
+    this.drawButton(ctx, cancelBounds, 'Cancel', false, { fontSize: 12 });
+    this.drawButton(ctx, okBounds, 'Apply', true, { fontSize: 12 });
+    this.transformModal.buttons = [
+      { bounds: cancelBounds, onClick: () => this.closeTransformModal() },
+      { bounds: okBounds, onClick: () => this.applyTransformModal() }
+    ];
+    this.uiButtons.push({ bounds: cancelBounds, onClick: () => this.closeTransformModal() });
+    this.uiButtons.push({ bounds: okBounds, onClick: () => this.applyTransformModal() });
+    this.registerFocusable('menu', cancelBounds, () => this.closeTransformModal());
+    this.registerFocusable('menu', okBounds, () => this.applyTransformModal());
+    ctx.restore();
   }
 
   isMobileLayout() {
@@ -4365,26 +4616,24 @@ export default class PixelStudio {
 
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
-      ctx.fillText('Offset Canvas', x + 12, offsetY);
+      ctx.fillText('Canvas Transform', x + 12, offsetY);
       offsetY += lineHeight;
-      const offsetButtons = [
-        { label: '←', action: () => this.offsetCanvas(-1, 0, true) },
-        { label: '→', action: () => this.offsetCanvas(1, 0, true) },
-        { label: '↑', action: () => this.offsetCanvas(0, -1, true) },
-        { label: '↓', action: () => this.offsetCanvas(0, 1, true) },
-        { label: '½W', action: () => this.offsetCanvas(Math.floor(this.canvasState.width / 2), 0, true) },
-        { label: '½H', action: () => this.offsetCanvas(0, Math.floor(this.canvasState.height / 2), true) }
+      const transformButtons = [
+        { label: 'Resize', action: () => this.openTransformModal('resize') },
+        { label: 'Scale', action: () => this.openTransformModal('scale') },
+        { label: 'Crop', action: () => this.openTransformModal('crop') },
+        { label: 'Offset', action: () => this.openTransformModal('offset') }
       ];
-      offsetButtons.forEach((entry, index) => {
+      transformButtons.forEach((entry, index) => {
         const bounds = {
-          x: x + 12 + (index % 3) * (buttonHeight + 8),
-          y: offsetY + Math.floor(index / 3) * (buttonHeight + 6),
-          w: buttonHeight,
+          x: x + 12 + (index % 2) * (72 + 8),
+          y: offsetY + Math.floor(index / 2) * (buttonHeight + 6),
+          w: 72,
           h: buttonHeight
         };
-        this.drawButton(ctx, bounds, entry.label, false, { fontSize });
-        this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
-        this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
+        this.drawButton(ctx, bounds, entry.label, this.transformModal?.type === entry.label.toLowerCase(), { fontSize });
+        this.uiButtons.push({ bounds, onClick: entry.action });
+        this.registerFocusable('menu', bounds, entry.action);
       });
       offsetY += buttonHeight * 2 + 12;
     }
@@ -4440,16 +4689,24 @@ export default class PixelStudio {
     }, { isMobile });
     offsetY += lineHeight;
 
-    const tileSizeBounds = { x: x + 12, y: offsetY - buttonHeight + 4, w: 160, h: buttonHeight };
-    this.drawButton(ctx, tileSizeBounds, `Tiles: ${this.tiledPreview.tiles}x${this.tiledPreview.tiles}`, false, { fontSize });
-    this.uiButtons.push({
-      bounds: tileSizeBounds,
-      onClick: () => { this.tiledPreview.tiles = this.tiledPreview.tiles === 2 ? 3 : 2; }
-    });
-    this.registerFocusable('menu', tileSizeBounds, () => {
-      this.tiledPreview.tiles = this.tiledPreview.tiles === 2 ? 3 : 2;
-    });
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
+    ctx.fillText('Tile Preview: 3x3', x + 12, offsetY);
     offsetY += lineHeight;
+
+    const transformButtons = [
+      { label: 'Resize', action: () => this.openTransformModal('resize') },
+      { label: 'Scale', action: () => this.openTransformModal('scale') },
+      { label: 'Crop', action: () => this.openTransformModal('crop') },
+      { label: 'Offset', action: () => this.openTransformModal('offset') }
+    ];
+    transformButtons.forEach((entry, index) => {
+      const bounds = { x: x + 12 + (index % 2) * 84, y: offsetY + Math.floor(index / 2) * (buttonHeight + 8) - buttonHeight + 4, w: 78, h: buttonHeight };
+      this.drawButton(ctx, bounds, entry.label, this.transformModal?.type === entry.label.toLowerCase(), { fontSize });
+      this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('menu', bounds, entry.action);
+    });
+    offsetY += buttonHeight * 2 + 18;
 
     if (offsetY + lineHeight < y + h) {
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
@@ -4795,7 +5052,10 @@ export default class PixelStudio {
     const gridH = height * zoom;
     const offsetX = x + (w - gridW) / 2 + this.view.panX;
     const offsetY = y + (h - gridH) / 2 + this.view.panY;
-    this.canvasBounds = { x: offsetX, y: offsetY, w: gridW, h: gridH, cellSize: zoom };
+    const wrapActive = Boolean(this.toolOptions.wrapDraw);
+    this.canvasBounds = wrapActive
+      ? { x: offsetX - gridW, y: offsetY - gridH, w: gridW * 3, h: gridH * 3, cellSize: zoom, mainX: offsetX, mainY: offsetY }
+      : { x: offsetX, y: offsetY, w: gridW, h: gridH, cellSize: zoom, mainX: offsetX, mainY: offsetY };
 
     this.offscreen.width = width;
     this.offscreen.height = height;
@@ -4810,11 +5070,11 @@ export default class PixelStudio {
     ctx.rect(x, y, w, h);
     ctx.clip();
 
-    if (this.tiledPreview.enabled) {
-      const tileCount = this.tiledPreview.tiles;
-      for (let row = -1; row <= tileCount; row += 1) {
-        for (let col = -1; col <= tileCount; col += 1) {
-          ctx.globalAlpha = 0.2;
+    if (this.tiledPreview.enabled || wrapActive) {
+      for (let row = -1; row <= 1; row += 1) {
+        for (let col = -1; col <= 1; col += 1) {
+          const isCenter = row === 0 && col === 0;
+          ctx.globalAlpha = isCenter ? 1 : (wrapActive ? 0.7 : 0.2);
           ctx.drawImage(this.offscreen, offsetX + col * gridW, offsetY + row * gridH, gridW, gridH);
         }
       }
@@ -4827,18 +5087,29 @@ export default class PixelStudio {
 
     ctx.drawImage(this.offscreen, offsetX, offsetY, gridW, gridH);
 
-    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-    for (let row = 0; row <= height; row += 1) {
-      ctx.beginPath();
-      ctx.moveTo(offsetX, offsetY + row * zoom);
-      ctx.lineTo(offsetX + gridW, offsetY + row * zoom);
-      ctx.stroke();
-    }
-    for (let col = 0; col <= width; col += 1) {
-      ctx.beginPath();
-      ctx.moveTo(offsetX + col * zoom, offsetY);
-      ctx.lineTo(offsetX + col * zoom, offsetY + gridH);
-      ctx.stroke();
+    const drawGridAt = (tileX, tileY, alpha = 0.15) => {
+      ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+      for (let row = 0; row <= height; row += 1) {
+        ctx.beginPath();
+        ctx.moveTo(tileX, tileY + row * zoom);
+        ctx.lineTo(tileX + gridW, tileY + row * zoom);
+        ctx.stroke();
+      }
+      for (let col = 0; col <= width; col += 1) {
+        ctx.beginPath();
+        ctx.moveTo(tileX + col * zoom, tileY);
+        ctx.lineTo(tileX + col * zoom, tileY + gridH);
+        ctx.stroke();
+      }
+    };
+    if (this.tiledPreview.enabled || wrapActive) {
+      for (let row = -1; row <= 1; row += 1) {
+        for (let col = -1; col <= 1; col += 1) {
+          drawGridAt(offsetX + col * gridW, offsetY + row * gridH, row === 0 && col === 0 ? 0.2 : 0.12);
+        }
+      }
+    } else {
+      drawGridAt(offsetX, offsetY, 0.15);
     }
 
     if (this.selection.active && this.selection.bounds) {
