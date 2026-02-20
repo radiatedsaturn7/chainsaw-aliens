@@ -5669,10 +5669,6 @@ export default class PixelStudio {
     };
     offsetY = this.drawToolOptions(ctx, optionsX, optionsY, { isMobile, panelWidth: optionsW, panelHeight: optionsH });
 
-    if (this.leftPanelTab === 'select') {
-      this.drawSelectionActions(ctx, x + 12, offsetY, { isMobile });
-    }
-
     if (this.modeTab === 'animate') {
       this.drawAnimationControls(ctx, x + 12, offsetY, { isMobile });
     }
@@ -5941,6 +5937,15 @@ export default class PixelStudio {
       });
       offsetY += lineHeight;
     }
+
+    if (this.leftPanelTab === 'select') {
+      offsetY = this.drawSelectionActions(ctx, x, offsetY, {
+        isMobile,
+        fromToolOptions: true,
+        panelWidth
+      });
+    }
+
     contentBottom = offsetY;
     ctx.restore();
     const totalRows = Math.max(0, Math.ceil((contentBottom - startY) / rowHeight));
@@ -5960,6 +5965,13 @@ export default class PixelStudio {
 
   drawSelectionActions(ctx, x, y, options = {}) {
     const isMobile = options.isMobile;
+    const fromToolOptions = Boolean(options.fromToolOptions);
+    const rowStep = isMobile ? 52 : 20;
+    const rowHeight = isMobile ? 44 : 18;
+    const panelWidth = Math.max(120, options.panelWidth || (isMobile ? 180 : 120));
+    const buttonWidth = fromToolOptions
+      ? Math.max(120, Math.min(panelWidth, panelWidth - 6))
+      : (isMobile ? 180 : 120);
     const actions = [
       { label: 'Copy', action: () => this.copySelection() },
       { label: 'Cut', action: () => this.cutSelection() },
@@ -5977,11 +5989,12 @@ export default class PixelStudio {
       { label: 'Scale 4x', action: () => this.scaleSelection(4) }
     ];
     actions.forEach((entry, index) => {
-      const bounds = { x, y: y + index * (isMobile ? 52 : 20), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
+      const bounds = { x, y: y + index * rowStep, w: buttonWidth, h: rowHeight };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
       this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
     });
+    return y + actions.length * rowStep;
   }
 
   drawAnimationControls(ctx, x, y, options = {}) {
