@@ -911,6 +911,12 @@ export default class PixelStudio {
       event.preventDefault();
       return;
     }
+    if ((event.key === 'Delete' || event.key === 'Backspace') && this.selection.active) {
+      this.deleteSelection();
+      this.clearSelection();
+      event.preventDefault();
+      return;
+    }
     if (key === 'b') this.setActiveTool(TOOL_IDS.PENCIL);
     if (key === 'e') this.setActiveTool(TOOL_IDS.ERASER);
     if (key === 'g') this.setActiveTool(TOOL_IDS.FILL);
@@ -2556,6 +2562,53 @@ export default class PixelStudio {
       );
     });
     ctx.restore();
+  }
+
+  getSelectionEdgeSegments() {
+    if (!this.selection.active || !this.selection.mask || !this.selection.bounds) return [];
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const bounds = this.selection.bounds;
+    const segments = [];
+    for (let row = bounds.y; row < bounds.y + bounds.h; row += 1) {
+      for (let col = bounds.x; col < bounds.x + bounds.w; col += 1) {
+        if (row < 0 || col < 0 || row >= height || col >= width) continue;
+        const idx = row * width + col;
+        if (!this.selection.mask[idx]) continue;
+        const top = row === 0 || !this.selection.mask[idx - width];
+        const bottom = row === height - 1 || !this.selection.mask[idx + width];
+        const left = col === 0 || !this.selection.mask[idx - 1];
+        const right = col === width - 1 || !this.selection.mask[idx + 1];
+        if (top) segments.push({ x1: col, y1: row, x2: col + 1, y2: row });
+        if (bottom) segments.push({ x1: col, y1: row + 1, x2: col + 1, y2: row + 1 });
+        if (left) segments.push({ x1: col, y1: row, x2: col, y2: row + 1 });
+        if (right) segments.push({ x1: col + 1, y1: row, x2: col + 1, y2: row + 1 });
+      }
+    }
+    return segments;
+  }
+
+  drawSelectionMarchingAnts(ctx, offsetX, offsetY, zoom) {
+    const segments = this.getSelectionEdgeSegments();
+    if (!segments.length) return;
+    const dash = Math.max(2, Math.round(zoom * 0.6));
+    const speed = (this.lastTime || 0) * 0.02;
+    const drawPhase = (strokeStyle, offset) => {
+      ctx.save();
+      ctx.strokeStyle = strokeStyle;
+      ctx.lineWidth = Math.max(1, Math.min(2, zoom * 0.2));
+      ctx.setLineDash([dash, dash]);
+      ctx.lineDashOffset = -(speed + offset);
+      ctx.beginPath();
+      segments.forEach((segment) => {
+        ctx.moveTo(offsetX + segment.x1 * zoom, offsetY + segment.y1 * zoom);
+        ctx.lineTo(offsetX + segment.x2 * zoom, offsetY + segment.y2 * zoom);
+      });
+      ctx.stroke();
+      ctx.restore();
+    };
+    drawPhase('#000', 0);
+    drawPhase('#fff', dash);
   }
 
   startPolygon(point) {
@@ -5542,6 +5595,9 @@ export default class PixelStudio {
       { label: 'Magic Lasso', action: () => this.setActiveTool(TOOL_IDS.SELECT_MAGIC_LASSO) },
       { label: 'Color All', action: () => this.setActiveTool(TOOL_IDS.SELECT_MAGIC_COLOR) },
       { label: 'Reverse', action: () => this.invertSelection() },
+      { label: 'Copy', action: () => this.copySelection() },
+      { label: 'Cut', action: () => this.cutSelection() },
+      { label: 'Delete', action: () => this.deleteSelection() },
       { label: 'Clear', action: () => this.clearSelection() },
       { label: 'Invert', action: () => this.invertSelection() },
       { label: 'Expand', action: () => this.expandSelection(1) },
@@ -5744,14 +5800,7 @@ export default class PixelStudio {
     }
 
     if (this.selection.active && this.selection.bounds) {
-      ctx.strokeStyle = '#ffcc6a';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(
-        offsetX + this.selection.bounds.x * zoom,
-        offsetY + this.selection.bounds.y * zoom,
-        this.selection.bounds.w * zoom,
-        this.selection.bounds.h * zoom
-      );
+      this.drawSelectionMarchingAnts(ctx, offsetX, offsetY, zoom);
     }
 
     if (this.selection.floating && this.selection.floatingMode === 'paste') {
