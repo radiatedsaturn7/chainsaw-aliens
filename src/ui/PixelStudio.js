@@ -1748,11 +1748,12 @@ export default class PixelStudio {
     if (payload.touchCount && ['draw', 'select', 'tools'].includes(this.leftPanelTab) && this.toolsListMeta?.scrollBounds
       && this.isPointInBounds(payload, this.toolsListMeta.scrollBounds)
       && this.toolsListMeta.maxScroll > 0) {
+      const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
       this.menuScrollDrag = {
         startY: payload.y,
         startScroll: this.focusScroll.tools || 0,
         moved: false,
-        hitAction: null,
+        hitAction: hit?.onClick || null,
         lineHeight: Math.max(1, this.toolsListMeta.lineHeight || 20),
         scrollGroup: 'tools',
         maxScroll: Math.max(0, this.toolsListMeta.maxScroll || 0)
@@ -1762,11 +1763,12 @@ export default class PixelStudio {
     if (payload.touchCount && ['draw', 'select', 'tools'].includes(this.leftPanelTab) && this.toolsPanelMeta?.optionsScrollBounds
       && this.isPointInBounds(payload, this.toolsPanelMeta.optionsScrollBounds)
       && this.toolsPanelMeta.maxToolOptionsScroll > 0) {
+      const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
       this.menuScrollDrag = {
         startY: payload.y,
         startScroll: this.focusScroll.toolOptions || 0,
         moved: false,
-        hitAction: null,
+        hitAction: hit?.onClick || null,
         lineHeight: Math.max(1, this.toolsPanelMeta.lineHeight || 20),
         scrollGroup: 'toolOptions',
         maxScroll: Math.max(0, this.toolsPanelMeta.maxToolOptionsScroll || 0)
