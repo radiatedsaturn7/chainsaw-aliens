@@ -1744,7 +1744,7 @@ export default class PixelStudio {
       };
       return;
     }
-    if (payload.touchCount && this.leftPanelTab === 'tools' && this.toolsListMeta?.scrollBounds
+    if (payload.touchCount && ['draw', 'select', 'tools'].includes(this.leftPanelTab) && this.toolsListMeta?.scrollBounds
       && this.isPointInBounds(payload, this.toolsListMeta.scrollBounds)
       && this.toolsListMeta.maxScroll > 0) {
       this.menuScrollDrag = {
@@ -1758,7 +1758,7 @@ export default class PixelStudio {
       };
       return;
     }
-    if (payload.touchCount && this.leftPanelTab === 'tools' && this.toolsPanelMeta?.optionsScrollBounds
+    if (payload.touchCount && ['draw', 'select', 'tools'].includes(this.leftPanelTab) && this.toolsPanelMeta?.optionsScrollBounds
       && this.isPointInBounds(payload, this.toolsPanelMeta.optionsScrollBounds)
       && this.toolsPanelMeta.maxToolOptionsScroll > 0) {
       this.menuScrollDrag = {
@@ -1960,7 +1960,7 @@ export default class PixelStudio {
   }
 
   handleWheel(payload) {
-    if (this.leftPanelTab === 'tools' && this.toolsListMeta?.scrollBounds
+    if (['draw', 'select', 'tools'].includes(this.leftPanelTab) && this.toolsListMeta?.scrollBounds
       && this.isPointInBounds(payload, this.toolsListMeta.scrollBounds)
       && this.toolsListMeta.maxScroll > 0) {
       const delta = payload.deltaY > 0 ? 1 : -1;
@@ -1971,7 +1971,7 @@ export default class PixelStudio {
       );
       return;
     }
-    if (this.leftPanelTab === 'tools' && this.toolsPanelMeta?.optionsScrollBounds
+    if (['draw', 'select', 'tools'].includes(this.leftPanelTab) && this.toolsPanelMeta?.optionsScrollBounds
       && this.isPointInBounds(payload, this.toolsPanelMeta.optionsScrollBounds)
       && this.toolsPanelMeta.maxToolOptionsScroll > 0) {
       const delta = payload.deltaY > 0 ? 1 : -1;
@@ -5627,7 +5627,7 @@ export default class PixelStudio {
     ctx.fillText(title, x + 12, y + 22);
 
     const list = this.tools.filter((tool) => (tool.category || 'tools') === category);
-    const toolsTop = y + (isMobile ? 50 : 48);
+    const toolsTop = y + (isMobile ? 60 : 56);
     const toolsBottomPadding = isMobile ? 116 : 132;
     const maxVisible = Math.max(1, Math.floor((h - toolsBottomPadding) / lineHeight));
     this.focusGroupMeta.tools = { maxVisible };
@@ -5642,7 +5642,7 @@ export default class PixelStudio {
     let offsetY = toolsTop;
     list.slice(this.focusScroll.tools, this.focusScroll.tools + maxVisible).forEach((tool) => {
       const isActive = tool.id === this.activeToolId;
-      const bounds = { x: x + 8, y: offsetY - (isMobile ? 28 : 14), w: w - 16, h: buttonHeight };
+      const bounds = { x: x + 8, y: offsetY - (isMobile ? 24 : 10), w: w - 16, h: buttonHeight };
       this.drawButton(ctx, bounds, tool.name, isActive, { fontSize });
       this.uiButtons.push({ bounds, onClick: () => { this.setActiveTool(tool.id); } });
       this.registerFocusable('tools', bounds, () => this.setActiveTool(tool.id));
@@ -5803,7 +5803,7 @@ export default class PixelStudio {
     const lineHeight = isMobile ? 52 : 20;
     const rowHeight = isMobile ? 52 : 22;
     const headerH = isMobile ? 26 : 22;
-    const bodyY = y + headerH + 10;
+    const bodyY = y + headerH + 14;
     const bodyH = Math.max(28, panelHeight - headerH - 8);
     const startY = bodyY;
     const scroll = Math.max(0, this.focusScroll.toolOptions || 0);
