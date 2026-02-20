@@ -277,6 +277,20 @@ export default class PixelStudio {
         }
       };
       reader.readAsText(file);
+      event.target.value = '';
+    });
+    this.imageFileInput = document.createElement('input');
+    this.imageFileInput.type = 'file';
+    this.imageFileInput.accept = 'image/*';
+    this.imageFileInput.style.display = 'none';
+    document.body.appendChild(this.imageFileInput);
+    this.imageFileInput.addEventListener('change', (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      this.importImageFromFile(file).catch((error) => {
+        console.warn('[PixelStudio] Failed to import image.', error);
+      });
+      event.target.value = '';
     });
     this.initializePalettes();
     this.loadTileData();
@@ -288,6 +302,46 @@ export default class PixelStudio {
   async initializePalettes() {
     this.palettePresets = await loadPalettePresets();
     this.currentPalette = this.palettePresets[0] || this.currentPalette;
+  }
+
+  async importImageFromFile(file) {
+    if (!file) return;
+    const image = await new Promise((resolve, reject) => {
+      const next = new Image();
+      next.onload = () => resolve(next);
+      next.onerror = reject;
+      next.src = URL.createObjectURL(file);
+    });
+    const width = clamp(Math.round(image.width || 16), 1, 512);
+    const height = clamp(Math.round(image.height || 16), 1, 512);
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const drawCtx = canvas.getContext('2d');
+    drawCtx.imageSmoothingEnabled = false;
+    drawCtx.drawImage(image, 0, 0, width, height);
+    const pixels = drawCtx.getImageData(0, 0, width, height).data;
+    const layer = createLayer(width, height, 'Layer 1');
+    for (let i = 0; i < width * height; i += 1) {
+      const offset = i * 4;
+      layer.pixels[i] = rgbaToUint32({
+        r: pixels[offset],
+        g: pixels[offset + 1],
+        b: pixels[offset + 2],
+        a: pixels[offset + 3]
+      });
+    }
+    this.canvasState.width = width;
+    this.canvasState.height = height;
+    this.animation.frames = [createFrame([layer], 120)];
+    this.animation.currentFrameIndex = 0;
+    this.canvasState.activeLayerIndex = 0;
+    this.artSizeDraft.width = width;
+    this.artSizeDraft.height = height;
+    this.setFrameLayers(this.animation.frames[0].layers);
+    this.clearSelection();
+    this.zoomToFitCanvas();
+    this.statusMessage = `Imported ${file.name}`;
   }
 
   get activeLayer() {
@@ -4636,6 +4690,7 @@ export default class PixelStudio {
           { id: 'save-decal-session', label: 'Save Changes', onClick: () => this.saveDecalSessionAndReturn() },
           { id: 'abandon-decal-session', label: 'Abandon Changes', onClick: () => this.abandonDecalSessionAndReturn() }
         ] : []),
+        { id: 'import-image', label: 'Import Image', onClick: () => this.imageFileInput.click() },
         { id: 'sprite-sheet', label: 'Sprite Sheet', onClick: () => this.exportSpriteSheet('horizontal') },
         { id: 'export-gif', label: 'Export GIF', onClick: () => this.exportGif() },
         { id: 'palette-json', label: 'Palette JSON', onClick: () => this.exportPaletteJson() },
@@ -6055,7 +6110,8 @@ export default class PixelStudio {
       { label: 'Export GIF', action: () => this.exportGif() },
       { label: 'Palette JSON', action: () => this.exportPaletteJson() },
       { label: 'Palette HEX', action: () => this.exportPaletteHex() },
-      { label: 'Import Palette', action: () => this.paletteFileInput.click() }
+      { label: 'Import Palette', action: () => this.paletteFileInput.click() },
+      { label: 'Import Image', action: () => this.imageFileInput.click() }
     ];
     actions.forEach((entry, index) => {
       const bounds = { x, y: y + index * (isMobile ? 52 : 20), w: isMobile ? 190 : 140, h: isMobile ? 44 : 18 };
