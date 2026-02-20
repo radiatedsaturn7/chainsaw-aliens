@@ -124,6 +124,7 @@ export default class PixelStudio {
     };
     this.clipboard = null;
     this.magicLassoEdgeMap = null;
+    this.magicLassoLastVector = null;
     this.view = {
       zoomLevels: [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32],
       zoomIndex: 8,
@@ -2911,23 +2912,30 @@ export default class PixelStudio {
     this.selectionContextMenu = null;
     if (options.magic) {
       this.magicLassoEdgeMap = this.buildMagicLassoEdgeMap();
+      this.magicLassoLastVector = null;
     }
   }
 
   updateLasso(point, options = {}) {
     if (!this.selection.lassoPoints.length) return;
-    const snapped = options.magic ? this.getMagicLassoPoint(point) : point;
     const last = this.selection.lassoPoints[this.selection.lassoPoints.length - 1];
     const start = { row: Math.floor(last.y), col: Math.floor(last.x) };
-    const line = bresenhamLine(start, snapped);
-    line.forEach((pt, index) => {
-      if (index === 0) return;
+    const snapped = options.magic ? this.getMagicLassoPoint(point, start) : point;
+    const segment = options.magic
+      ? this.traceMagicLassoSegment(start, snapped)
+      : bresenhamLine(start, snapped).slice(1);
+    segment.forEach((pt) => {
       const next = { x: pt.col + 0.5, y: pt.row + 0.5 };
       const prior = this.selection.lassoPoints[this.selection.lassoPoints.length - 1];
       if (prior && prior.x === next.x && prior.y === next.y) return;
       this.selection.lassoPoints.push(next);
     });
-    this.selection.end = snapped;
+    if (segment.length) {
+      const end = segment[segment.length - 1];
+      this.selection.end = { row: end.row, col: end.col };
+    } else {
+      this.selection.end = snapped;
+    }
   }
 
   buildMagicLassoEdgeMap() {
@@ -2944,42 +2952,60 @@ export default class PixelStudio {
         const center = rgba[idx];
         let bestAlphaDelta = 0;
         let bestColorDelta = 0;
+        let meanNeighborDelta = 0;
+        let neighborCount = 0;
         for (let dy = -1; dy <= 1; dy += 1) {
           for (let dx = -1; dx <= 1; dx += 1) {
             if (!dx && !dy) continue;
             const neighbor = rgba[indexAt(row + dy, col + dx)];
             const alphaDelta = Math.abs(center.a - neighbor.a);
             const colorDelta = Math.hypot(center.r - neighbor.r, center.g - neighbor.g, center.b - neighbor.b);
+            const delta = (alphaDelta * 3.6) + colorDelta;
+            meanNeighborDelta += delta;
+            neighborCount += 1;
             if (alphaDelta > bestAlphaDelta) bestAlphaDelta = alphaDelta;
             if (colorDelta > bestColorDelta) bestColorDelta = colorDelta;
           }
         }
-        // Strongly prefer transparency boundaries (white->transparent outlines, etc),
-        // but still consider color boundaries for opaque artwork.
-        edge[idx] = (bestAlphaDelta * 3.5) + bestColorDelta;
+        const avgDelta = neighborCount ? (meanNeighborDelta / neighborCount) : 0;
+        // Favor strong white-black / opaque-transparent boundaries, and repel low-contrast zones.
+        edge[idx] = (bestAlphaDelta * 4.2) + (bestColorDelta * 1.35) + (avgDelta * 0.85);
       }
     }
     return edge;
   }
 
-  getMagicLassoPoint(point) {
+  getMagicLassoPoint(point, origin = null) {
     const edge = this.magicLassoEdgeMap;
     if (!edge) return point;
     const width = this.canvasState.width;
     const height = this.canvasState.height;
     const threshold = clamp(Number(this.toolOptions.magicThreshold) || 0, 0, 255);
-    const radius = clamp(2 + Math.round(threshold / 48), 2, 7);
+    const radius = clamp(3 + Math.round(threshold / 36), 3, 9);
     let bestRow = clamp(point.row, 0, height - 1);
     let bestCol = clamp(point.col, 0, width - 1);
     let bestScore = -Infinity;
+    const desiredVec = origin
+      ? { x: point.col - origin.col, y: point.row - origin.row }
+      : null;
+    const desiredLen = desiredVec ? Math.hypot(desiredVec.x, desiredVec.y) : 0;
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         const row = point.row + dy;
         const col = point.col + dx;
         if (row < 0 || col < 0 || row >= height || col >= width) continue;
         const idx = row * width + col;
-        const distancePenalty = Math.hypot(dx, dy) * 18;
-        const score = edge[idx] - distancePenalty;
+        const distancePenalty = Math.hypot(dx, dy) * 22;
+        let directionBonus = 0;
+        if (origin && desiredLen > 0.001) {
+          const dirX = col - origin.col;
+          const dirY = row - origin.row;
+          const dirLen = Math.hypot(dirX, dirY);
+          if (dirLen > 0.001) {
+            directionBonus = ((dirX * desiredVec.x) + (dirY * desiredVec.y)) / (dirLen * desiredLen) * 18;
+          }
+        }
+        const score = (edge[idx] * 1.8) + directionBonus - distancePenalty;
         if (score > bestScore) {
           bestScore = score;
           bestRow = row;
@@ -2988,18 +3014,78 @@ export default class PixelStudio {
       }
     }
 
-    const centerIdx = clamp(point.row, 0, height - 1) * width + clamp(point.col, 0, width - 1);
-    const centerScore = edge[centerIdx] || 0;
-    if (bestScore < centerScore + 4) {
-      return { row: clamp(point.row, 0, height - 1), col: clamp(point.col, 0, width - 1) };
+    const centerRow = clamp(point.row, 0, height - 1);
+    const centerCol = clamp(point.col, 0, width - 1);
+    const centerIdx = centerRow * width + centerCol;
+    const centerScore = (edge[centerIdx] || 0) * 1.8;
+    if (bestScore < centerScore + 8) {
+      return { row: centerRow, col: centerCol };
     }
     return { row: bestRow, col: bestCol };
+  }
+
+  traceMagicLassoSegment(start, target) {
+    const edge = this.magicLassoEdgeMap;
+    if (!edge) return bresenhamLine(start, target).slice(1);
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const path = [];
+    let current = { row: start.row, col: start.col };
+    let prevVec = this.magicLassoLastVector;
+    const maxSteps = Math.max(8, Math.min(width * height, 160));
+    const visited = new Set([`${current.row},${current.col}`]);
+
+    for (let step = 0; step < maxSteps; step += 1) {
+      if (current.row === target.row && current.col === target.col) break;
+      const currentDistance = Math.hypot(target.row - current.row, target.col - current.col);
+      let best = null;
+      for (let dy = -1; dy <= 1; dy += 1) {
+        for (let dx = -1; dx <= 1; dx += 1) {
+          if (!dx && !dy) continue;
+          const row = current.row + dy;
+          const col = current.col + dx;
+          if (row < 0 || col < 0 || row >= height || col >= width) continue;
+          const key = `${row},${col}`;
+          const idx = row * width + col;
+          const nextDistance = Math.hypot(target.row - row, target.col - col);
+          const progress = currentDistance - nextDistance;
+          const edgeStrength = edge[idx] || 0;
+          const flatPenalty = Math.max(0, 56 - edgeStrength) * 1.2;
+          const visitedPenalty = visited.has(key) ? 90 : 0;
+          let turnPenalty = 0;
+          if (prevVec) {
+            const len = Math.hypot(dx, dy);
+            const prevLen = Math.hypot(prevVec.x, prevVec.y) || 1;
+            const dot = ((dx / len) * (prevVec.x / prevLen)) + ((dy / len) * (prevVec.y / prevLen));
+            turnPenalty = (1 - dot) * 20;
+          }
+          const score = (edgeStrength * 2.3) + (progress * 72) - (nextDistance * 1.1) - flatPenalty - turnPenalty - visitedPenalty;
+          if (!best || score > best.score) {
+            best = { score, row, col, dx, dy };
+          }
+        }
+      }
+      if (!best) break;
+      if (best.score < -45) break;
+      current = { row: best.row, col: best.col };
+      path.push(current);
+      visited.add(`${current.row},${current.col}`);
+      prevVec = { x: best.dx, y: best.dy };
+      if (Math.hypot(target.row - current.row, target.col - current.col) <= 1) break;
+    }
+
+    if (path.length) {
+      this.magicLassoLastVector = prevVec;
+      return path;
+    }
+    return bresenhamLine(start, target).slice(1);
   }
 
   commitLasso() {
     if (this.selection.lassoPoints.length < 3) {
       this.selection.lassoPoints = [];
       this.magicLassoEdgeMap = null;
+      this.magicLassoLastVector = null;
       return;
     }
     this.selection.mask = createPolygonMask(this.canvasState.width, this.canvasState.height, this.selection.lassoPoints);
@@ -3007,6 +3093,7 @@ export default class PixelStudio {
     this.selection.active = Boolean(this.selection.bounds);
     this.selection.lassoPoints = [];
     this.magicLassoEdgeMap = null;
+    this.magicLassoLastVector = null;
     if (this.selection.active && this.gamepadCursor.active) {
       this.openSelectionContextMenu();
     }
@@ -3124,6 +3211,7 @@ export default class PixelStudio {
     this.selection.end = null;
     this.selection.lassoPoints = [];
     this.magicLassoEdgeMap = null;
+    this.magicLassoLastVector = null;
     this.selectionContextMenu = null;
   }
 
