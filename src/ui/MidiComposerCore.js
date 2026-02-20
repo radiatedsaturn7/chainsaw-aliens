@@ -33,6 +33,7 @@ import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as draw
 import { createViewportController } from './shared/viewportController.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
+import { openTextInputOverlay } from './shared/textInputOverlay.js';
 
 const SCALE_LIBRARY = [
   { id: 'major', label: 'Major', steps: [0, 2, 4, 5, 7, 9, 11] },
@@ -2098,7 +2099,7 @@ export default class MidiComposer {
     this.persist({ commitHistory: true });
   }
 
-  promptChordProgression() {
+  async promptChordProgression() {
     const loopBars = Math.max(1, this.song.loopBars || DEFAULT_GRID_BARS);
     const perBar = [];
     for (let bar = 1; bar <= loopBars; bar += 1) {
@@ -2107,10 +2108,14 @@ export default class MidiComposer {
       perBar.push(formatChordToken(chord));
     }
     const suggested = `1-${loopBars} ${perBar.join(' ')}`.trim();
-    const input = window.prompt(
-      'Enter chord progressions by bar (e.g. "1-4 C C D G; 5-6 D G; 7-9 C D G").',
-      suggested
-    );
+    const input = await openTextInputOverlay({
+      title: 'Chord Progression',
+      label: 'Enter chord progressions by bar (e.g. "1-4 C C D G; 5-6 D G; 7-9 C D G").',
+      initialValue: suggested,
+      inputType: 'text',
+      width: 620,
+      maxWidth: 700
+    });
     if (!input) return;
     const progression = parseChordProgressionInput(input, loopBars);
     if (!progression) {
@@ -5437,7 +5442,7 @@ export default class MidiComposer {
     this.persist({ commitHistory: true });
   }
 
-  handleTrackControl(hit) {
+  async handleTrackControl(hit) {
     if (hit.control === 'master-volume' || hit.control === 'master-pan') {
       this.draggingTrackControl = hit;
       this.updateTrackControl(hit.x, hit.y);
@@ -5468,7 +5473,14 @@ export default class MidiComposer {
       this.setTrackChannel(track, track.channel + 1);
       return;
     } else if (hit.control === 'channel-prompt') {
-      const nextChannel = window.prompt('Set channel (1-16)', String(track.channel + 1));
+      const nextChannel = await openTextInputOverlay({
+        title: 'Set MIDI Channel',
+        label: 'Set channel (1-16)',
+        initialValue: String(track.channel + 1),
+        inputType: 'int',
+        min: 1,
+        max: 16
+      });
       if (nextChannel) {
         const parsed = Number.parseInt(nextChannel, 10);
         if (Number.isInteger(parsed) && parsed >= 1 && parsed <= 16) {
@@ -5497,7 +5509,12 @@ export default class MidiComposer {
         return;
       }
       const current = `${track.bankMSB},${track.bankLSB}`;
-      const nextBank = window.prompt('Enter bank MSB,LSB (0-127,0-127)', current);
+      const nextBank = await openTextInputOverlay({
+        title: 'Set MIDI Bank',
+        label: 'Enter bank MSB,LSB (0-127,0-127)',
+        initialValue: current,
+        inputType: 'text'
+      });
       if (nextBank) {
         const [msbRaw, lsbRaw] = nextBank.split(',').map((value) => Number.parseInt(value.trim(), 10));
         if (Number.isInteger(msbRaw) && Number.isInteger(lsbRaw) && msbRaw >= 0 && msbRaw <= 127 && lsbRaw >= 0 && lsbRaw <= 127) {
@@ -5510,7 +5527,12 @@ export default class MidiComposer {
       this.persist({ commitHistory: true });
       return;
     } else if (hit.control === 'name') {
-      const nextName = window.prompt('Track name?', track.name);
+      const nextName = await openTextInputOverlay({
+        title: 'Track Name',
+        label: 'Track name?',
+        initialValue: track.name,
+        inputType: 'text'
+      });
       if (nextName) track.name = nextName;
     } else if (hit.control === 'volume') {
       this.draggingTrackControl = hit;
@@ -6758,7 +6780,12 @@ export default class MidiComposer {
 
   async promptForNewSongName() {
     const fallback = this.currentDocumentRef?.name || 'new-song';
-    const value = window.prompt('New song file name?', fallback);
+    const value = await openTextInputOverlay({
+      title: 'New Song File',
+      label: 'New song file name?',
+      initialValue: fallback,
+      inputType: 'text'
+    });
     if (value == null) return null;
     const trimmed = value.trim();
     return trimmed || fallback;
