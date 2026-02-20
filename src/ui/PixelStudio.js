@@ -1974,6 +1974,10 @@ export default class PixelStudio {
   setActiveTool(toolId) {
     this.activeToolId = toolId;
     this.lastActiveToolId = toolId;
+    this.linePreview = null;
+    this.curvePreview = null;
+    this.shapePreview = null;
+    this.gradientPreview = null;
     if (toolId !== TOOL_IDS.CLONE) {
       this.clonePickSourceArmed = false;
       this.cloneColorPickArmed = false;
@@ -2325,53 +2329,44 @@ export default class PixelStudio {
       this.curvePreview = {
         start: point,
         end: point,
-        control1: null,
-        control2: null,
+        control: point,
         phase: 'line',
         dragging: true
       };
       return;
     }
     this.curvePreview.dragging = true;
-    if (this.curvePreview.phase === 'control1' && !this.curvePreview.control1) this.curvePreview.control1 = point;
-    if (this.curvePreview.phase === 'control2' && !this.curvePreview.control2) this.curvePreview.control2 = point;
+    if (this.curvePreview.phase === 'control') this.curvePreview.control = point;
   }
 
   updateCurve(point) {
     if (!this.curvePreview || !this.curvePreview.dragging) return;
     if (this.curvePreview.phase === 'line') {
       this.curvePreview.end = point;
+      this.curvePreview.control = {
+        row: Math.round((this.curvePreview.start.row + point.row) * 0.5),
+        col: Math.round((this.curvePreview.start.col + point.col) * 0.5)
+      };
       return;
     }
-    if (this.curvePreview.phase === 'control1') {
-      this.curvePreview.control1 = point;
-      return;
-    }
-    if (this.curvePreview.phase === 'control2') {
-      this.curvePreview.control2 = point;
+    if (this.curvePreview.phase === 'control') {
+      this.curvePreview.control = point;
     }
   }
 
   sampleCurvePoints(preview, steps = 64) {
     const p0 = preview.start;
-    const p3 = preview.end;
-    const p1 = preview.control1 || {
-      row: Math.round((p0.row + p3.row) * 0.5),
-      col: Math.round((p0.col + p3.col) * 0.5)
+    const p2 = preview.end;
+    const p1 = preview.control || {
+      row: Math.round((p0.row + p2.row) * 0.5),
+      col: Math.round((p0.col + p2.col) * 0.5)
     };
-    const p2 = preview.control2 || p1;
     const points = [];
     for (let i = 0; i <= steps; i += 1) {
       const t = i / steps;
       const mt = 1 - t;
-      const col = mt * mt * mt * p0.col
-        + 3 * mt * mt * t * p1.col
-        + 3 * mt * t * t * p2.col
-        + t * t * t * p3.col;
-      const row = mt * mt * mt * p0.row
-        + 3 * mt * mt * t * p1.row
-        + 3 * mt * t * t * p2.row
-        + t * t * t * p3.row;
+      const col = (mt * mt * p0.col) + (2 * mt * t * p1.col) + (t * t * p2.col);
+      const row = (mt * mt * p0.row) + (2 * mt * t * p1.row) + (t * t * p2.row);
       points.push({ row: Math.round(row), col: Math.round(col) });
     }
     return points;
@@ -2381,17 +2376,8 @@ export default class PixelStudio {
     if (!this.curvePreview) return;
     if (this.curvePreview.phase === 'line') {
       this.curvePreview.dragging = false;
-      this.curvePreview.phase = 'control1';
-      this.curvePreview.control1 = {
-        row: Math.round((this.curvePreview.start.row + this.curvePreview.end.row) * 0.5),
-        col: Math.round((this.curvePreview.start.col + this.curvePreview.end.col) * 0.5)
-      };
-      return;
-    }
-    if (this.curvePreview.phase === 'control1') {
-      this.curvePreview.dragging = false;
-      this.curvePreview.phase = 'control2';
-      this.curvePreview.control2 = { ...this.curvePreview.control1 };
+      this.curvePreview.phase = 'control';
+      this.statusMessage = 'Curve: drag to bend, release to finish';
       return;
     }
     if (!this.activeLayer || this.activeLayer.locked) {
@@ -2403,6 +2389,7 @@ export default class PixelStudio {
     const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(points) : points;
     filtered.forEach((pt) => this.applyBrush(pt));
     this.curvePreview = null;
+    this.statusMessage = '';
     this.commitHistory();
   }
 
@@ -2461,6 +2448,83 @@ export default class PixelStudio {
     }
     this.shapePreview = null;
     this.commitHistory();
+  }
+
+  getShapePreviewMask(preview) {
+    if (!preview) return { mask: null, bounds: null };
+    const bounds = this.getBoundsFromPoints(preview.start, preview.end);
+    let mask = null;
+    if (preview.type === 'rect') {
+      mask = createRectMask(this.canvasState.width, this.canvasState.height, bounds);
+    } else if (preview.type === 'ellipse') {
+      mask = generateEllipseMask(this.canvasState.width, this.canvasState.height, bounds);
+    } else {
+      const points = this.buildRegularPolygonPoints(bounds, this.toolOptions.polygonSides);
+      mask = createPolygonMask(this.canvasState.width, this.canvasState.height, points);
+    }
+    return { mask, bounds };
+  }
+
+  expandPreviewPoints(points) {
+    const unique = new Set();
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const source = Array.isArray(points) ? points : [];
+    source.forEach((point) => {
+      const stamps = this.createBrushStamp(point);
+      const symmetryPoints = applySymmetryPoints(stamps, width, height, this.toolOptions.symmetry);
+      symmetryPoints.forEach((pt) => {
+        const row = this.wrapCoord(pt.row, height);
+        const col = this.wrapCoord(pt.col, width);
+        if (row < 0 || col < 0 || row >= height || col >= width) return;
+        const idx = row * width + col;
+        if (this.selection.active && this.selection.mask && !this.selection.mask[idx]) return;
+        unique.add(`${row},${col}`);
+      });
+    });
+    return Array.from(unique, (key) => {
+      const [row, col] = key.split(',').map((value) => Number.parseInt(value, 10));
+      return { row, col };
+    });
+  }
+
+  getShapePreviewPoints() {
+    if (!this.shapePreview) return [];
+    const { mask, bounds } = this.getShapePreviewMask(this.shapePreview);
+    if (!mask || !bounds) return [];
+    const fill = Boolean(this.toolOptions.shapeFill);
+    const points = [];
+    for (let row = bounds.y; row < bounds.y + bounds.h; row += 1) {
+      for (let col = bounds.x; col < bounds.x + bounds.w; col += 1) {
+        const idx = row * this.canvasState.width + col;
+        if (!mask[idx]) continue;
+        if (!fill) {
+          const left = col > 0 ? mask[idx - 1] : false;
+          const right = col < this.canvasState.width - 1 ? mask[idx + 1] : false;
+          const up = row > 0 ? mask[idx - this.canvasState.width] : false;
+          const down = row < this.canvasState.height - 1 ? mask[idx + this.canvasState.width] : false;
+          if (left && right && up && down) continue;
+        }
+        if (this.selection.active && this.selection.mask && !this.selection.mask[idx]) continue;
+        points.push({ row, col });
+      }
+    }
+    return points;
+  }
+
+  drawPixelPreview(ctx, points, offsetX, offsetY, zoom, color = 'rgba(255,225,106,0.75)') {
+    if (!Array.isArray(points) || !points.length) return;
+    ctx.save();
+    ctx.fillStyle = color;
+    points.forEach((point) => {
+      ctx.fillRect(
+        Math.floor(offsetX + point.col * zoom),
+        Math.floor(offsetY + point.row * zoom),
+        Math.max(1, Math.ceil(zoom)),
+        Math.max(1, Math.ceil(zoom))
+      );
+    });
+    ctx.restore();
   }
 
   startGradient(point) {
@@ -5659,47 +5723,25 @@ export default class PixelStudio {
     }
 
     if (this.linePreview) {
-      const bounds = this.getBoundsFromPoints(this.linePreview.start, this.linePreview.end);
-      ctx.strokeStyle = UI_SUITE.colors.accent;
-      ctx.strokeRect(
-        offsetX + bounds.x * zoom,
-        offsetY + bounds.y * zoom,
-        bounds.w * zoom,
-        bounds.h * zoom
-      );
+      const linePoints = bresenhamLine(this.linePreview.start, this.linePreview.end);
+      const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(linePoints) : linePoints;
+      this.drawPixelPreview(ctx, this.expandPreviewPoints(filtered), offsetX, offsetY, zoom, 'rgba(255,225,106,0.72)');
     }
 
     if (this.curvePreview) {
-      const samples = this.sampleCurvePoints(this.curvePreview, 64);
-      ctx.strokeStyle = '#8df0ff';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      samples.forEach((pt, index) => {
-        const px = offsetX + (pt.col + 0.5) * zoom;
-        const py = offsetY + (pt.row + 0.5) * zoom;
-        if (index === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      });
-      ctx.stroke();
-      const handles = [this.curvePreview.control1, this.curvePreview.control2].filter(Boolean);
-      ctx.fillStyle = '#8df0ff';
-      handles.forEach((handle) => {
-        const hx = offsetX + (handle.col + 0.5) * zoom;
-        const hy = offsetY + (handle.row + 0.5) * zoom;
+      const samples = this.sampleCurvePoints(this.curvePreview, 96);
+      const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(samples) : samples;
+      this.drawPixelPreview(ctx, this.expandPreviewPoints(filtered), offsetX, offsetY, zoom, 'rgba(141,240,255,0.72)');
+      if (this.curvePreview.control) {
+        ctx.fillStyle = '#8df0ff';
+        const hx = offsetX + (this.curvePreview.control.col + 0.5) * zoom;
+        const hy = offsetY + (this.curvePreview.control.row + 0.5) * zoom;
         ctx.fillRect(hx - 3, hy - 3, 6, 6);
-      });
+      }
     }
 
-
     if (this.shapePreview) {
-      const bounds = this.getBoundsFromPoints(this.shapePreview.start, this.shapePreview.end);
-      ctx.strokeStyle = '#6ad7ff';
-      ctx.strokeRect(
-        offsetX + bounds.x * zoom,
-        offsetY + bounds.y * zoom,
-        bounds.w * zoom,
-        bounds.h * zoom
-      );
+      this.drawPixelPreview(ctx, this.getShapePreviewPoints(), offsetX, offsetY, zoom, 'rgba(106,215,255,0.72)');
     }
 
     if (this.gradientPreview) {
