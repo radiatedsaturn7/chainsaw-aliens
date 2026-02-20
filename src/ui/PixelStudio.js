@@ -4673,10 +4673,6 @@ export default class PixelStudio {
   drawPalettePanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
     const fontSize = isMobile ? 14 : 12;
-    ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
-    ctx.fillText(`Palette: ${this.currentPalette.name}`, x + 12, y + 20);
-
     const buttonHeight = isMobile ? 44 : 18;
     const gap = isMobile ? 10 : 6;
     const controlWidth = isMobile ? 70 : 50;
@@ -4696,7 +4692,7 @@ export default class PixelStudio {
       const col = index % perRow;
       const bounds = {
         x: x + 8 + col * (controlWidth + gap),
-        y: y + 30 + row * (buttonHeight + gap),
+        y: y + 10 + row * (buttonHeight + gap),
         w: controlWidth,
         h: buttonHeight
       };
@@ -4706,7 +4702,7 @@ export default class PixelStudio {
     });
 
     const controlRows = Math.ceil(paletteControls.length / perRow);
-    let offsetY = y + 30 + controlRows * (buttonHeight + gap) + 8;
+    let offsetY = y + 10 + controlRows * (buttonHeight + gap) + 8;
     const swatchSize = isMobile ? 36 : 26;
     const swatchGap = isMobile ? 10 : 8;
     const availableHeight = Math.max(80, h - offsetY - (isMobile ? 80 : 60));
@@ -4733,10 +4729,6 @@ export default class PixelStudio {
 
     offsetY += maxRows * (swatchSize + swatchGap) + 12;
     if (offsetY + 20 < y + h) {
-      ctx.fillStyle = '#fff';
-      ctx.font = `${isMobile ? 14 : 12}px Courier New`;
-      ctx.fillText('Presets', x + 12, offsetY);
-      offsetY += 18;
       const lineHeight = isMobile ? 52 : 20;
       const maxPresetVisible = Math.max(1, Math.floor((y + h - offsetY - 8) / lineHeight));
       this.focusGroupMeta.palettePresets = { maxVisible: maxPresetVisible };
@@ -5668,7 +5660,7 @@ export default class PixelStudio {
     const optionsW = Math.max(120, w - 24);
     const optionsH = Math.max(60, y + h - optionsY - 6);
     this.toolsPanelMeta = {
-      optionsScrollBounds: { x: optionsX - 2, y: optionsY - 18, w: optionsW + 4, h: optionsH + 20 },
+      optionsScrollBounds: { x: optionsX - 2, y: optionsY + 24, w: optionsW + 4, h: Math.max(30, optionsH - 28) },
       lineHeight,
       maxToolOptionsScroll: 0
     };
@@ -5754,19 +5746,27 @@ export default class PixelStudio {
     const panelHeight = Math.max(60, options.panelHeight || 120);
     const lineHeight = isMobile ? 52 : 20;
     const rowHeight = isMobile ? 52 : 22;
-    const startY = y;
+    const headerH = isMobile ? 26 : 22;
+    const bodyY = y + headerH + 6;
+    const bodyH = Math.max(28, panelHeight - headerH - 8);
+    const startY = bodyY;
     const scroll = Math.max(0, this.focusScroll.toolOptions || 0);
     const scrollY = scroll * rowHeight;
-    let offsetY = y;
-    let contentBottom = y;
+    let offsetY = bodyY;
+    let contentBottom = bodyY;
+
     ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(x - 6, y, panelWidth + 12, panelHeight);
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.strokeRect(x - 6, y, panelWidth + 12, panelHeight);
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = `${isMobile ? 12 : 11}px ${UI_SUITE.font.family}`;
+    ctx.fillText('Tool Options', x + 2, y + (isMobile ? 16 : 15));
     ctx.beginPath();
-    ctx.rect(x - 4, y - 16, panelWidth + 8, panelHeight + 20);
+    ctx.rect(x - 4, bodyY - 2, panelWidth + 8, bodyH + 4);
     ctx.clip();
     offsetY -= scrollY;
-    ctx.fillStyle = '#fff';
-    ctx.fillText('Tool Options', x, offsetY);
-    offsetY += 18;
     const usesBrush = [TOOL_IDS.PENCIL, TOOL_IDS.ERASER, TOOL_IDS.DITHER, TOOL_IDS.CLONE].includes(this.activeToolId);
     if (usesBrush) {
       const shapeBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: Math.min(panelWidth, isMobile ? 200 : 170), h: isMobile ? 44 : 18 };
@@ -5941,7 +5941,7 @@ export default class PixelStudio {
     contentBottom = offsetY;
     ctx.restore();
     const totalRows = Math.max(0, Math.ceil((contentBottom - startY) / rowHeight));
-    const visibleRows = Math.max(1, Math.floor((panelHeight + 20) / rowHeight));
+    const visibleRows = Math.max(1, Math.floor(bodyH / rowHeight));
     const maxScroll = Math.max(0, totalRows - visibleRows);
     this.focusScroll.toolOptions = clamp(this.focusScroll.toolOptions || 0, 0, maxScroll);
     if (this.toolsPanelMeta) {
@@ -5950,7 +5950,7 @@ export default class PixelStudio {
     if (maxScroll > 0) {
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.font = `${isMobile ? 11 : 10}px ${UI_SUITE.font.family}`;
-      ctx.fillText(`Scroll ${this.focusScroll.toolOptions + 1}/${maxScroll + 1}`, x, startY + panelHeight + 10);
+      ctx.fillText(`Scroll ${this.focusScroll.toolOptions + 1}/${maxScroll + 1}`, x + 2, y + panelHeight + 10);
     }
     return offsetY;
   }
