@@ -3,6 +3,7 @@ export const TOOL_IDS = {
   ERASER: 'eraser',
   EYEDROPPER: 'eyedropper',
   LINE: 'line',
+  CURVE: 'curve',
   RECT: 'rect',
   ELLIPSE: 'ellipse',
   POLYGON: 'polygon',
@@ -59,6 +60,16 @@ export const createToolRegistry = (editor) => ([
     onPointerMove: (point) => editor.updateLine(point),
     onPointerUp: () => editor.commitLine(),
     optionsUI: ['linePerfect', 'symmetry', 'wrap']
+  },
+  {
+    id: TOOL_IDS.CURVE,
+    name: 'Curve',
+    category: 'draw',
+    cursor: 'crosshair',
+    onPointerDown: (point) => editor.startCurve(point),
+    onPointerMove: (point) => editor.updateCurve(point),
+    onPointerUp: () => editor.commitCurve(),
+    optionsUI: ['linePerfect']
   },
   {
     id: TOOL_IDS.RECT,

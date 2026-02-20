@@ -147,6 +147,7 @@ export default class PixelStudio {
     this.pendingHistory = null;
     this.strokeState = null;
     this.linePreview = null;
+    this.curvePreview = null;
     this.shapePreview = null;
     this.gradientPreview = null;
     this.cloneSource = null;
@@ -914,6 +915,7 @@ export default class PixelStudio {
     if (key === 'e') this.setActiveTool(TOOL_IDS.ERASER);
     if (key === 'g') this.setActiveTool(TOOL_IDS.FILL);
     if (key === 'i') this.setActiveTool(TOOL_IDS.EYEDROPPER);
+    if (key === 'c') this.setActiveTool(TOOL_IDS.CURVE);
     if (key === 'v') this.setActiveTool(TOOL_IDS.MOVE);
     if (key === 's') this.setActiveTool(TOOL_IDS.SELECT_RECT);
     if (key === '[') this.setBrushSize(this.toolOptions.brushSize - 1);
@@ -1387,7 +1389,7 @@ export default class PixelStudio {
     }
     if (tab === 'draw') {
       this.modeTab = 'draw';
-      if (![TOOL_IDS.PENCIL, TOOL_IDS.LINE, TOOL_IDS.RECT, TOOL_IDS.ELLIPSE, TOOL_IDS.POLYGON, TOOL_IDS.FILL].includes(this.activeToolId)) {
+      if (![TOOL_IDS.PENCIL, TOOL_IDS.LINE, TOOL_IDS.CURVE, TOOL_IDS.RECT, TOOL_IDS.ELLIPSE, TOOL_IDS.POLYGON, TOOL_IDS.FILL].includes(this.activeToolId)) {
         this.setActiveTool(TOOL_IDS.PENCIL);
       }
     }
@@ -1459,6 +1461,7 @@ export default class PixelStudio {
       { id: TOOL_IDS.ERASER, label: 'Erase' },
       { id: TOOL_IDS.FILL, label: 'Fill' },
       { id: TOOL_IDS.LINE, label: 'Line' },
+      { id: TOOL_IDS.CURVE, label: 'Curve' },
       { id: TOOL_IDS.EYEDROPPER, label: 'Pick' },
       { id: TOOL_IDS.SELECT_RECT, label: 'Rect' },
       { id: TOOL_IDS.SELECT_ELLIPSE, label: 'Ellipse' },
@@ -2309,11 +2312,99 @@ export default class PixelStudio {
     const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(points) : points;
     filtered.forEach((pt) => this.applyBrush(pt));
     this.linePreview = null;
+    this.curvePreview = null;
     this.shapePreview = null;
     this.gradientPreview = null;
     this.commitHistory();
   }
 
+
+
+  startCurve(point) {
+    if (!this.curvePreview) {
+      this.curvePreview = {
+        start: point,
+        end: point,
+        control1: null,
+        control2: null,
+        phase: 'line',
+        dragging: true
+      };
+      return;
+    }
+    this.curvePreview.dragging = true;
+    if (this.curvePreview.phase === 'control1' && !this.curvePreview.control1) this.curvePreview.control1 = point;
+    if (this.curvePreview.phase === 'control2' && !this.curvePreview.control2) this.curvePreview.control2 = point;
+  }
+
+  updateCurve(point) {
+    if (!this.curvePreview || !this.curvePreview.dragging) return;
+    if (this.curvePreview.phase === 'line') {
+      this.curvePreview.end = point;
+      return;
+    }
+    if (this.curvePreview.phase === 'control1') {
+      this.curvePreview.control1 = point;
+      return;
+    }
+    if (this.curvePreview.phase === 'control2') {
+      this.curvePreview.control2 = point;
+    }
+  }
+
+  sampleCurvePoints(preview, steps = 64) {
+    const p0 = preview.start;
+    const p3 = preview.end;
+    const p1 = preview.control1 || {
+      row: Math.round((p0.row + p3.row) * 0.5),
+      col: Math.round((p0.col + p3.col) * 0.5)
+    };
+    const p2 = preview.control2 || p1;
+    const points = [];
+    for (let i = 0; i <= steps; i += 1) {
+      const t = i / steps;
+      const mt = 1 - t;
+      const col = mt * mt * mt * p0.col
+        + 3 * mt * mt * t * p1.col
+        + 3 * mt * t * t * p2.col
+        + t * t * t * p3.col;
+      const row = mt * mt * mt * p0.row
+        + 3 * mt * mt * t * p1.row
+        + 3 * mt * t * t * p2.row
+        + t * t * t * p3.row;
+      points.push({ row: Math.round(row), col: Math.round(col) });
+    }
+    return points;
+  }
+
+  commitCurve() {
+    if (!this.curvePreview) return;
+    if (this.curvePreview.phase === 'line') {
+      this.curvePreview.dragging = false;
+      this.curvePreview.phase = 'control1';
+      this.curvePreview.control1 = {
+        row: Math.round((this.curvePreview.start.row + this.curvePreview.end.row) * 0.5),
+        col: Math.round((this.curvePreview.start.col + this.curvePreview.end.col) * 0.5)
+      };
+      return;
+    }
+    if (this.curvePreview.phase === 'control1') {
+      this.curvePreview.dragging = false;
+      this.curvePreview.phase = 'control2';
+      this.curvePreview.control2 = { ...this.curvePreview.control1 };
+      return;
+    }
+    if (!this.activeLayer || this.activeLayer.locked) {
+      this.curvePreview = null;
+      return;
+    }
+    this.startHistory('curve');
+    const points = this.sampleCurvePoints(this.curvePreview, 96);
+    const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(points) : points;
+    filtered.forEach((pt) => this.applyBrush(pt));
+    this.curvePreview = null;
+    this.commitHistory();
+  }
 
   startShape(point, type = 'rect') {
     this.shapePreview = { start: point, end: point, type };
@@ -5135,7 +5226,7 @@ export default class PixelStudio {
       this.registerFocusable('menu', falloffBounds, () => this.cycleBrushFalloff());
       offsetY += lineHeight;
     }
-    if (this.activeToolId === TOOL_IDS.LINE) {
+    if ([TOOL_IDS.LINE, TOOL_IDS.CURVE].includes(this.activeToolId)) {
       this.drawOptionToggle(ctx, x, offsetY, 'Perfect Pixels', this.toolOptions.linePerfect, () => {
         this.toolOptions.linePerfect = !this.toolOptions.linePerfect;
       }, { isMobile });
@@ -5576,6 +5667,27 @@ export default class PixelStudio {
         bounds.w * zoom,
         bounds.h * zoom
       );
+    }
+
+    if (this.curvePreview) {
+      const samples = this.sampleCurvePoints(this.curvePreview, 64);
+      ctx.strokeStyle = '#8df0ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      samples.forEach((pt, index) => {
+        const px = offsetX + (pt.col + 0.5) * zoom;
+        const py = offsetY + (pt.row + 0.5) * zoom;
+        if (index === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.stroke();
+      const handles = [this.curvePreview.control1, this.curvePreview.control2].filter(Boolean);
+      ctx.fillStyle = '#8df0ff';
+      handles.forEach((handle) => {
+        const hx = offsetX + (handle.col + 0.5) * zoom;
+        const hy = offsetY + (handle.row + 0.5) * zoom;
+        ctx.fillRect(hx - 3, hy - 3, 6, 6);
+      });
     }
 
 
