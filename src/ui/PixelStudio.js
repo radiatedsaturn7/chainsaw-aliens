@@ -245,6 +245,7 @@ export default class PixelStudio {
     this.frameBounds = [];
     this.statusMessage = '';
     this.lastTime = 0;
+    this.selectionMarchPhase = 0;
     this.spaceDown = false;
     this.altDown = false;
     this.lastActiveToolId = this.activeToolId;
@@ -966,6 +967,8 @@ export default class PixelStudio {
 
   update(input, dt = 0) {
     this.lastTime += dt;
+    const frameScale = dt > 0 ? (dt > 5 ? (dt / 16.6667) : (dt * 60)) : 1;
+    this.selectionMarchPhase = (this.selectionMarchPhase + frameScale * 0.75) % 2048;
     this.updateAnimation(dt);
     this.handleInput(input, dt);
     this.applyMobilePanJoystick(dt);
@@ -2613,13 +2616,13 @@ export default class PixelStudio {
     const segments = this.getSelectionEdgeSegments();
     if (!segments.length) return;
     const dash = Math.max(2, Math.round(zoom * 0.6));
-    const speed = (this.lastTime || 0) * 0.02;
+    const phase = this.selectionMarchPhase || 0;
     const drawPhase = (strokeStyle, offset) => {
       ctx.save();
       ctx.strokeStyle = strokeStyle;
       ctx.lineWidth = Math.max(1, Math.min(2, zoom * 0.2));
       ctx.setLineDash([dash, dash]);
-      ctx.lineDashOffset = -(speed + offset);
+      ctx.lineDashOffset = phase + offset;
       ctx.beginPath();
       segments.forEach((segment) => {
         ctx.moveTo(offsetX + segment.x1 * zoom, offsetY + segment.y1 * zoom);
@@ -5958,12 +5961,6 @@ export default class PixelStudio {
   drawSelectionActions(ctx, x, y, options = {}) {
     const isMobile = options.isMobile;
     const actions = [
-      { label: 'Rect', action: () => this.setActiveTool(TOOL_IDS.SELECT_RECT) },
-      { label: 'Oval', action: () => this.setActiveTool(TOOL_IDS.SELECT_ELLIPSE) },
-      { label: 'Lasso', action: () => this.setActiveTool(TOOL_IDS.SELECT_LASSO) },
-      { label: 'Magic Lasso', action: () => this.setActiveTool(TOOL_IDS.SELECT_MAGIC_LASSO) },
-      { label: 'Color All', action: () => this.setActiveTool(TOOL_IDS.SELECT_MAGIC_COLOR) },
-      { label: 'Reverse', action: () => this.invertSelection() },
       { label: 'Copy', action: () => this.copySelection() },
       { label: 'Cut', action: () => this.cutSelection() },
       { label: 'Delete', action: () => this.deleteSelection() },
