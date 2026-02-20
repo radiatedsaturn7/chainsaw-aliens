@@ -2068,7 +2068,25 @@ export default class PixelStudio {
 
   continueStroke(point) {
     if (!this.strokeState) return;
-    const line = bresenhamLine(this.strokeState.lastPoint, point);
+    let targetPoint = point;
+    if (this.toolOptions.wrapDraw) {
+      const last = this.strokeState.lastPoint;
+      const width = this.canvasState.width;
+      const height = this.canvasState.height;
+      const deltaCol = point.col - last.col;
+      const deltaRow = point.row - last.row;
+      const wrappedDeltaCol = Math.abs(deltaCol) > width / 2
+        ? deltaCol - Math.sign(deltaCol) * width
+        : deltaCol;
+      const wrappedDeltaRow = Math.abs(deltaRow) > height / 2
+        ? deltaRow - Math.sign(deltaRow) * height
+        : deltaRow;
+      targetPoint = {
+        row: last.row + wrappedDeltaRow,
+        col: last.col + wrappedDeltaCol
+      };
+    }
+    const line = bresenhamLine(this.strokeState.lastPoint, targetPoint);
     line.forEach((pt) => this.applyBrush(pt));
     this.strokeState.lastPoint = point;
   }
