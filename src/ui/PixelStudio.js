@@ -123,6 +123,7 @@ export default class PixelStudio {
       offset: { x: 0, y: 0 }
     };
     this.clipboard = null;
+    this.magicLassoEdgeMap = null;
     this.view = {
       zoomLevels: [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32],
       zoomIndex: 8,
@@ -2898,26 +2899,101 @@ export default class PixelStudio {
     this.setActiveTool(TOOL_IDS.PENCIL);
   }
 
-  addLassoPoint(point) {
-    if (!this.selection.lassoPoints.length) {
-      this.selection.lassoPoints = [{ x: point.col + 0.5, y: point.row + 0.5 }];
-      this.selection.active = false;
-      return;
+  startLasso(point, options = {}) {
+    const snapped = options.magic ? this.getMagicLassoPoint(point) : point;
+    this.selection.active = false;
+    this.selection.mask = null;
+    this.selection.bounds = null;
+    this.selection.mode = options.magic ? 'magic-lasso' : 'lasso';
+    this.selection.start = snapped;
+    this.selection.end = snapped;
+    this.selection.lassoPoints = [{ x: snapped.col + 0.5, y: snapped.row + 0.5 }];
+    this.selectionContextMenu = null;
+    if (options.magic) {
+      this.magicLassoEdgeMap = this.buildMagicLassoEdgeMap();
     }
+  }
+
+  updateLasso(point, options = {}) {
+    if (!this.selection.lassoPoints.length) return;
+    const snapped = options.magic ? this.getMagicLassoPoint(point) : point;
     const last = this.selection.lassoPoints[this.selection.lassoPoints.length - 1];
-    if (Math.hypot(point.col + 0.5 - last.x, point.row + 0.5 - last.y) < 1) {
-      this.commitLasso();
-      return;
+    const start = { row: Math.floor(last.y), col: Math.floor(last.x) };
+    const line = bresenhamLine(start, snapped);
+    line.forEach((pt, index) => {
+      if (index === 0) return;
+      const next = { x: pt.col + 0.5, y: pt.row + 0.5 };
+      const prior = this.selection.lassoPoints[this.selection.lassoPoints.length - 1];
+      if (prior && prior.x === next.x && prior.y === next.y) return;
+      this.selection.lassoPoints.push(next);
+    });
+    this.selection.end = snapped;
+  }
+
+  buildMagicLassoEdgeMap() {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const composite = compositeLayers(this.canvasState.layers, width, height);
+    const luminance = new Float32Array(width * height);
+    for (let i = 0; i < composite.length; i += 1) {
+      const rgba = uint32ToRgba(composite[i] || 0);
+      luminance[i] = (rgba.r * 0.299) + (rgba.g * 0.587) + (rgba.b * 0.114);
     }
-    this.selection.lassoPoints.push({ x: point.col + 0.5, y: point.row + 0.5 });
+    const edge = new Float32Array(width * height);
+    for (let row = 1; row < height - 1; row += 1) {
+      for (let col = 1; col < width - 1; col += 1) {
+        const i = row * width + col;
+        const gx =
+          -luminance[i - width - 1] + luminance[i - width + 1]
+          - (2 * luminance[i - 1]) + (2 * luminance[i + 1])
+          - luminance[i + width - 1] + luminance[i + width + 1];
+        const gy =
+          luminance[i - width - 1] + (2 * luminance[i - width]) + luminance[i - width + 1]
+          - luminance[i + width - 1] - (2 * luminance[i + width]) - luminance[i + width + 1];
+        edge[i] = Math.hypot(gx, gy);
+      }
+    }
+    return edge;
+  }
+
+  getMagicLassoPoint(point) {
+    const edge = this.magicLassoEdgeMap;
+    if (!edge) return point;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const radius = 2;
+    let bestRow = clamp(point.row, 0, height - 1);
+    let bestCol = clamp(point.col, 0, width - 1);
+    let bestScore = -1;
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        const row = point.row + dy;
+        const col = point.col + dx;
+        if (row < 0 || col < 0 || row >= height || col >= width) continue;
+        const idx = row * width + col;
+        const centerDist = Math.hypot(dx, dy);
+        const score = edge[idx] - centerDist * 6;
+        if (score > bestScore) {
+          bestScore = score;
+          bestRow = row;
+          bestCol = col;
+        }
+      }
+    }
+    return { row: bestRow, col: bestCol };
   }
 
   commitLasso() {
-    if (this.selection.lassoPoints.length < 3) return;
+    if (this.selection.lassoPoints.length < 3) {
+      this.selection.lassoPoints = [];
+      this.magicLassoEdgeMap = null;
+      return;
+    }
     this.selection.mask = createPolygonMask(this.canvasState.width, this.canvasState.height, this.selection.lassoPoints);
     this.selection.bounds = this.getMaskBounds(this.selection.mask);
-    this.selection.active = true;
+    this.selection.active = Boolean(this.selection.bounds);
     this.selection.lassoPoints = [];
+    this.magicLassoEdgeMap = null;
     if (this.selection.active && this.gamepadCursor.active) {
       this.openSelectionContextMenu();
     }
@@ -3034,6 +3110,7 @@ export default class PixelStudio {
     this.selection.start = null;
     this.selection.end = null;
     this.selection.lassoPoints = [];
+    this.magicLassoEdgeMap = null;
     this.selectionContextMenu = null;
   }
 
@@ -5849,6 +5926,21 @@ export default class PixelStudio {
         bounds.w * zoom,
         bounds.h * zoom
       );
+    }
+
+    if (this.selection.lassoPoints.length > 1) {
+      ctx.save();
+      ctx.strokeStyle = this.activeToolId === TOOL_IDS.SELECT_MAGIC_LASSO ? '#8df0ff' : '#ffcc6a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      this.selection.lassoPoints.forEach((pt, index) => {
+        const x = offsetX + pt.x * zoom;
+        const y = offsetY + pt.y * zoom;
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.restore();
     }
 
     if (this.linePreview) {

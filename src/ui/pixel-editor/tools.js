@@ -146,9 +146,9 @@ export const createToolRegistry = (editor) => ([
     name: 'Lasso Select',
     category: 'select',
     cursor: 'crosshair',
-    onPointerDown: (point) => editor.addLassoPoint(point),
-    onPointerMove: null,
-    onPointerUp: null,
+    onPointerDown: (point) => editor.startLasso(point),
+    onPointerMove: (point) => editor.updateLasso(point),
+    onPointerUp: () => editor.commitLasso(),
     optionsUI: ['selectionActions']
   },
   {
@@ -156,9 +156,9 @@ export const createToolRegistry = (editor) => ([
     name: 'Magic Lasso',
     category: 'select',
     cursor: 'crosshair',
-    onPointerDown: (point) => editor.applyMagicSelection(point, { contiguous: true }),
-    onPointerMove: null,
-    onPointerUp: null,
+    onPointerDown: (point) => editor.startLasso(point, { magic: true }),
+    onPointerMove: (point) => editor.updateLasso(point, { magic: true }),
+    onPointerUp: () => editor.commitLasso(),
     optionsUI: ['selectionActions', 'magicThreshold']
   },
   {
