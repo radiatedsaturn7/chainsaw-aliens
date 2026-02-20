@@ -3444,19 +3444,19 @@ export default class PixelStudio {
   }
 
   invertSelection() {
+    if (!this.selection.active || !this.selection.mask) return;
     const size = this.canvasState.width * this.canvasState.height;
-    if (!this.selection.mask) {
-      this.selection.mask = new Uint8Array(size);
-    }
+    const mask = new Uint8Array(this.selection.mask);
     for (let i = 0; i < size; i += 1) {
-      this.selection.mask[i] = this.selection.mask[i] ? 0 : 1;
+      mask[i] = mask[i] ? 0 : 1;
     }
-    this.selection.bounds = this.getMaskBounds(this.selection.mask);
-    this.selection.active = true;
+    this.selection.mask = mask;
+    this.selection.bounds = this.getMaskBounds(mask);
+    this.selection.active = Boolean(this.selection.bounds);
   }
 
   expandSelection(delta) {
-    if (!this.selection.mask) return;
+    if (!this.selection.active || !this.selection.mask) return;
     const width = this.canvasState.width;
     const height = this.canvasState.height;
     const nextMask = new Uint8Array(this.selection.mask);
@@ -3493,61 +3493,82 @@ export default class PixelStudio {
     }
     this.selection.mask = nextMask;
     this.selection.bounds = this.getMaskBounds(nextMask);
+    this.selection.active = Boolean(this.selection.bounds);
   }
 
   transformSelection(type) {
-    if (!this.selection.mask) return;
+    if (!this.selection.active || !this.selection.mask || !this.selection.bounds) return;
     this.startHistory(`transform ${type}`);
     const width = this.canvasState.width;
     const height = this.canvasState.height;
+    const bounds = this.selection.bounds;
     const pixels = this.extractSelectionPixels();
     const transformed = new Uint32Array(this.activeLayer.pixels);
+    const nextMask = new Uint8Array(width * height);
     for (let row = 0; row < height; row += 1) {
       for (let col = 0; col < width; col += 1) {
         const index = row * width + col;
+        if (!this.selection.mask[index]) continue;
         const value = pixels[index];
-        if (!value) continue;
         let targetRow = row;
         let targetCol = col;
-        if (type === 'flip-h') targetCol = width - 1 - col;
-        if (type === 'flip-v') targetRow = height - 1 - row;
+        if (type === 'flip-h') targetCol = bounds.x + (bounds.w - 1 - (col - bounds.x));
+        if (type === 'flip-v') targetRow = bounds.y + (bounds.h - 1 - (row - bounds.y));
         if (type === 'rotate-cw') {
-          targetRow = col;
-          targetCol = width - 1 - row;
+          const localRow = row - bounds.y;
+          const localCol = col - bounds.x;
+          targetRow = bounds.y + localCol;
+          targetCol = bounds.x + (bounds.h - 1 - localRow);
         }
         if (type === 'rotate-ccw') {
-          targetRow = height - 1 - col;
-          targetCol = row;
+          const localRow = row - bounds.y;
+          const localCol = col - bounds.x;
+          targetRow = bounds.y + (bounds.w - 1 - localCol);
+          targetCol = bounds.x + localRow;
         }
-        transformed[targetRow * width + targetCol] = value;
+        if (targetRow < 0 || targetCol < 0 || targetRow >= height || targetCol >= width) continue;
+        const targetIndex = targetRow * width + targetCol;
+        if (value) transformed[targetIndex] = value;
+        nextMask[targetIndex] = 1;
       }
     }
     this.activeLayer.pixels = transformed;
+    this.selection.mask = nextMask;
+    this.selection.bounds = this.getMaskBounds(nextMask);
+    this.selection.active = Boolean(this.selection.bounds);
     this.commitHistory();
   }
 
   scaleSelection(factor) {
-    if (!this.selection.mask) return;
+    if (!this.selection.active || !this.selection.mask || !this.selection.bounds) return;
     const width = this.canvasState.width;
     const height = this.canvasState.height;
+    const bounds = this.selection.bounds;
     const pixels = this.extractSelectionPixels();
     const next = new Uint32Array(this.activeLayer.pixels);
-    for (let row = 0; row < height; row += 1) {
-      for (let col = 0; col < width; col += 1) {
-        const value = pixels[row * width + col];
-        if (!value) continue;
+    const nextMask = new Uint8Array(width * height);
+    this.startHistory(`scale ${factor}x`);
+    for (let row = bounds.y; row < bounds.y + bounds.h; row += 1) {
+      for (let col = bounds.x; col < bounds.x + bounds.w; col += 1) {
+        const srcIndex = row * width + col;
+        if (!this.selection.mask[srcIndex]) continue;
+        const value = pixels[srcIndex];
         for (let sy = 0; sy < factor; sy += 1) {
           for (let sx = 0; sx < factor; sx += 1) {
-            const r = row * factor + sy;
-            const c = col * factor + sx;
-            if (r < height && c < width) {
-              next[r * width + c] = value;
-            }
+            const r = bounds.y + (row - bounds.y) * factor + sy;
+            const c = bounds.x + (col - bounds.x) * factor + sx;
+            if (r < 0 || c < 0 || r >= height || c >= width) continue;
+            const destIndex = r * width + c;
+            if (value) next[destIndex] = value;
+            nextMask[destIndex] = 1;
           }
         }
       }
     }
     this.activeLayer.pixels = next;
+    this.selection.mask = nextMask;
+    this.selection.bounds = this.getMaskBounds(nextMask);
+    this.selection.active = Boolean(this.selection.bounds);
     this.commitHistory();
   }
 
@@ -6029,13 +6050,21 @@ export default class PixelStudio {
     const buttonWidth = fromToolOptions
       ? Math.max(120, Math.min(panelWidth, panelWidth - 6))
       : (isMobile ? 180 : 120);
+
+    if (!this.selection.active || !this.selection.mask) {
+      ctx.fillStyle = 'rgba(255,255,255,0.65)';
+      ctx.font = `${isMobile ? 12 : 11}px ${UI_SUITE.font.family}`;
+      ctx.fillText('Make a selection to enable actions', x, y + (isMobile ? 12 : 10));
+      return y + rowStep;
+    }
+
     const actions = [
+      { label: 'Transform (Move)', action: () => { this.setActiveTool(TOOL_IDS.MOVE); this.setInputMode('canvas'); } },
       { label: 'Copy', action: () => this.copySelection() },
       { label: 'Cut', action: () => this.cutSelection() },
       { label: 'Delete', action: () => this.deleteSelection() },
-      { label: 'Clear', action: () => this.clearSelection() },
       { label: 'Invert', action: () => this.invertSelection() },
-      { label: 'Expand', action: () => this.expandSelection(1) },
+      { label: 'Grow', action: () => this.expandSelection(1) },
       { label: 'Contract', action: () => this.expandSelection(-1) },
       { label: 'Flip H', action: () => this.transformSelection('flip-h') },
       { label: 'Flip V', action: () => this.transformSelection('flip-v') },
@@ -6043,7 +6072,8 @@ export default class PixelStudio {
       { label: 'Rot CCW', action: () => this.transformSelection('rotate-ccw') },
       { label: 'Scale 2x', action: () => this.scaleSelection(2) },
       { label: 'Scale 3x', action: () => this.scaleSelection(3) },
-      { label: 'Scale 4x', action: () => this.scaleSelection(4) }
+      { label: 'Scale 4x', action: () => this.scaleSelection(4) },
+      { label: 'Clear Selection', action: () => this.clearSelection() }
     ];
     actions.forEach((entry, index) => {
       const bounds = { x, y: y + index * rowStep, w: buttonWidth, h: rowHeight };
