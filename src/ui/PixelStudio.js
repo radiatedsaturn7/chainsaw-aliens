@@ -3445,6 +3445,90 @@ export default class PixelStudio {
     return null;
   }
 
+  getSelectedPixelsSnapshot() {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const pixels = new Uint32Array(width * height);
+    this.activeLayer.pixels.forEach((value, index) => {
+      if (!this.selection.mask || !this.selection.mask[index]) return;
+      pixels[index] = value;
+    });
+    return pixels;
+  }
+
+  buildMoveTransformPreview() {
+    if (!this.moveTransformDrag || !this.selection.active || !this.selection.mask || !this.selection.bounds) return null;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const bounds = this.selection.bounds;
+    const srcMask = this.selection.mask;
+    const srcPixels = this.getSelectedPixelsSnapshot();
+    const previewPixels = new Uint32Array(width * height);
+    if (this.moveTransformDrag.type === 'rotate') {
+      const { start, current, center } = this.moveTransformDrag;
+      const startAngle = Math.atan2(start.row - center.row, start.col - center.col);
+      const endAngle = Math.atan2(current.row - center.row, current.col - center.col);
+      const quarterTurns = Math.round((endAngle - startAngle) / (Math.PI / 2));
+      const normalizedTurns = ((quarterTurns % 4) + 4) % 4;
+      const nextMask = new Uint8Array(width * height);
+      for (let row = 0; row < height; row += 1) {
+        for (let col = 0; col < width; col += 1) {
+          const index = row * width + col;
+          if (!srcMask[index]) continue;
+          let targetRow = row;
+          let targetCol = col;
+          const localRow = row - bounds.y;
+          const localCol = col - bounds.x;
+          if (normalizedTurns === 1) {
+            targetRow = bounds.y + localCol;
+            targetCol = bounds.x + (bounds.h - 1 - localRow);
+          } else if (normalizedTurns === 2) {
+            targetRow = bounds.y + (bounds.h - 1 - localRow);
+            targetCol = bounds.x + (bounds.w - 1 - localCol);
+          } else if (normalizedTurns === 3) {
+            targetRow = bounds.y + (bounds.w - 1 - localCol);
+            targetCol = bounds.x + localRow;
+          }
+          if (targetRow < 0 || targetCol < 0 || targetRow >= height || targetCol >= width) continue;
+          const targetIndex = targetRow * width + targetCol;
+          const value = srcPixels[index];
+          if (value) previewPixels[targetIndex] = value;
+          nextMask[targetIndex] = 1;
+        }
+      }
+      return { pixels: previewPixels, mask: nextMask, dragPoint: current };
+    }
+    if (this.moveTransformDrag.type === 'scale') {
+      const { start, current, center } = this.moveTransformDrag;
+      const startDist = Math.hypot(start.col - center.col, start.row - center.row);
+      const endDist = Math.hypot(current.col - center.col, current.row - center.row);
+      if (startDist <= 0.001) return null;
+      const ratio = clamp(endDist / startDist, 0.25, 4);
+      const targetW = Math.max(1, Math.round(bounds.w * ratio));
+      const targetH = Math.max(1, Math.round(bounds.h * ratio));
+      const nextMask = new Uint8Array(width * height);
+      for (let y = 0; y < targetH; y += 1) {
+        for (let x = 0; x < targetW; x += 1) {
+          const srcLocalX = clamp(Math.floor((x / Math.max(1, targetW)) * bounds.w), 0, bounds.w - 1);
+          const srcLocalY = clamp(Math.floor((y / Math.max(1, targetH)) * bounds.h), 0, bounds.h - 1);
+          const srcCol = bounds.x + srcLocalX;
+          const srcRow = bounds.y + srcLocalY;
+          const srcIndex = srcRow * width + srcCol;
+          if (!srcMask[srcIndex]) continue;
+          const destCol = bounds.x + x;
+          const destRow = bounds.y + y;
+          if (destRow < 0 || destCol < 0 || destRow >= height || destCol >= width) continue;
+          const destIndex = destRow * width + destCol;
+          const value = srcPixels[srcIndex];
+          if (value) previewPixels[destIndex] = value;
+          nextMask[destIndex] = 1;
+        }
+      }
+      return { pixels: previewPixels, mask: nextMask, dragPoint: current };
+    }
+    return null;
+  }
+
   translateSelectionMask(dx, dy) {
     if (!this.selection.mask) return;
     const width = this.canvasState.width;
@@ -5977,7 +6061,7 @@ export default class PixelStudio {
     const lineHeight = isMobile ? 52 : 20;
     const rowHeight = isMobile ? 52 : 22;
     const headerH = isMobile ? 26 : 22;
-    const bodyY = y + headerH + 18;
+    const bodyY = y + headerH + (isMobile ? 30 : 18);
     const bodyH = Math.max(28, panelHeight - headerH - 8);
     const startY = bodyY;
     const scroll = Math.max(0, this.focusScroll.toolOptions || 0);
@@ -6424,11 +6508,33 @@ export default class PixelStudio {
     if (this.selection.active && this.selection.bounds) {
       this.drawSelectionMarchingAnts(ctx, offsetX, offsetY, zoom);
       if (this.activeToolId === TOOL_IDS.MOVE) {
+        const transformPreview = this.buildMoveTransformPreview();
+        if (transformPreview?.pixels) {
+          this.floatingCanvas.width = width;
+          this.floatingCanvas.height = height;
+          const previewImage = this.floatingCtx.createImageData(width, height);
+          const previewBytes = new Uint32Array(previewImage.data.buffer);
+          previewBytes.set(transformPreview.pixels);
+          this.floatingCtx.putImageData(previewImage, 0, 0);
+          ctx.save();
+          ctx.globalAlpha = 0.78;
+          ctx.drawImage(this.floatingCanvas, offsetX, offsetY, gridW, gridH);
+          ctx.restore();
+          const previewBounds = this.getMaskBounds(transformPreview.mask);
+          if (previewBounds) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(106,215,255,0.9)';
+            ctx.lineWidth = Math.max(1, zoom * 0.1);
+            ctx.strokeRect(offsetX + previewBounds.x * zoom, offsetY + previewBounds.y * zoom, previewBounds.w * zoom, previewBounds.h * zoom);
+            ctx.restore();
+          }
+        }
         const b = this.selection.bounds;
         const centerX = offsetX + (b.x + (b.w - 1) / 2 + 0.5) * zoom;
         const centerY = offsetY + (b.y + (b.h - 1) / 2 + 0.5) * zoom;
-        const rotateOrbX = centerX;
-        const rotateOrbY = offsetY + (b.y - 1.5) * zoom;
+        const dragPoint = this.moveTransformDrag?.type === 'rotate' ? this.moveTransformDrag.current : null;
+        const rotateOrbX = dragPoint ? (offsetX + (dragPoint.col + 0.5) * zoom) : centerX;
+        const rotateOrbY = dragPoint ? (offsetY + (dragPoint.row + 0.5) * zoom) : (offsetY + (b.y - 1.5) * zoom);
         const handleRadius = Math.max(4, zoom * 0.22);
         const handles = [
           { x: centerX, y: offsetY + (b.y + 0.5) * zoom },
