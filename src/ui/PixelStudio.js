@@ -126,6 +126,8 @@ export default class PixelStudio {
     this.magicLassoEdgeMap = null;
     this.magicLassoLastVector = null;
     this.magicLassoEdgeMax = 1;
+    this.magicLassoRgbaMap = null;
+    this.magicLassoAnchorRgba = null;
     this.view = {
       zoomLevels: [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32],
       zoomIndex: 8,
@@ -2902,7 +2904,14 @@ export default class PixelStudio {
   }
 
   startLasso(point, options = {}) {
-    const snapped = options.magic ? this.getMagicLassoPoint(point) : point;
+    let snapped = point;
+    if (options.magic) {
+      this.magicLassoEdgeMap = this.buildMagicLassoEdgeMap();
+      this.magicLassoLastVector = null;
+      snapped = this.getMagicLassoPoint(point);
+      const idx = snapped.row * this.canvasState.width + snapped.col;
+      this.magicLassoAnchorRgba = this.magicLassoRgbaMap?.[idx] || null;
+    }
     this.selection.active = false;
     this.selection.mask = null;
     this.selection.bounds = null;
@@ -2911,10 +2920,6 @@ export default class PixelStudio {
     this.selection.end = snapped;
     this.selection.lassoPoints = [{ x: snapped.col + 0.5, y: snapped.row + 0.5 }];
     this.selectionContextMenu = null;
-    if (options.magic) {
-      this.magicLassoEdgeMap = this.buildMagicLassoEdgeMap();
-      this.magicLassoLastVector = null;
-    }
   }
 
   updateLasso(point, options = {}) {
@@ -2945,6 +2950,7 @@ export default class PixelStudio {
     const composite = compositeLayers(this.canvasState.layers, width, height);
     const rgba = Array.from(composite, (value) => uint32ToRgba(value || 0));
     const edge = new Float32Array(width * height);
+    this.magicLassoRgbaMap = rgba;
 
     const indexAt = (row, col) => row * width + col;
     const diff = (a, b) => {
@@ -2985,7 +2991,7 @@ export default class PixelStudio {
     const width = this.canvasState.width;
     const height = this.canvasState.height;
     const threshold = clamp(Number(this.toolOptions.magicThreshold) || 0, 0, 255);
-    const radius = clamp(4 + Math.round(threshold / 32), 4, 12);
+    const radius = clamp(2 + Math.round(threshold / 80), 2, 5);
     const centerRow = clamp(point.row, 0, height - 1);
     const centerCol = clamp(point.col, 0, width - 1);
     let bestRow = centerRow;
@@ -3004,7 +3010,18 @@ export default class PixelStudio {
         if (row < 0 || col < 0 || row >= height || col >= width) continue;
         const idx = row * width + col;
         const edgeNorm = (edge[idx] || 0) / this.magicLassoEdgeMax;
-        const distancePenalty = Math.hypot(dx, dy) * 0.12;
+        const distancePenalty = Math.hypot(dx, dy) * 0.2;
+        const candidateRgba = this.magicLassoRgbaMap?.[idx];
+        let anchorPenalty = 0;
+        if (this.magicLassoAnchorRgba && candidateRgba) {
+          const colorDistance = Math.hypot(
+            candidateRgba.r - this.magicLassoAnchorRgba.r,
+            candidateRgba.g - this.magicLassoAnchorRgba.g,
+            candidateRgba.b - this.magicLassoAnchorRgba.b,
+            (candidateRgba.a - this.magicLassoAnchorRgba.a) * 1.7
+          );
+          anchorPenalty = (colorDistance / 255) * 0.35;
+        }
         let directionBonus = 0;
         if (origin && desiredLen > 0.001) {
           const dirX = col - origin.col;
@@ -3014,7 +3031,7 @@ export default class PixelStudio {
             directionBonus = ((dirX * desiredVec.x) + (dirY * desiredVec.y)) / (dirLen * desiredLen) * 0.22;
           }
         }
-        const score = edgeNorm + directionBonus - distancePenalty;
+        const score = (edgeNorm * 1.5) + directionBonus - distancePenalty - anchorPenalty;
         if (score > bestScore) {
           bestScore = score;
           bestRow = row;
@@ -3033,7 +3050,7 @@ export default class PixelStudio {
     const width = this.canvasState.width;
     const height = this.canvasState.height;
     const threshold = clamp(Number(this.toolOptions.magicThreshold) || 0, 0, 255);
-    const padding = clamp(4 + Math.round(threshold / 24), 4, 14);
+    const padding = clamp(2 + Math.round(threshold / 72), 2, 6);
 
     const minRow = clamp(Math.min(start.row, target.row) - padding, 0, height - 1);
     const maxRow = clamp(Math.max(start.row, target.row) + padding, 0, height - 1);
@@ -3062,7 +3079,7 @@ export default class PixelStudio {
     const getStepCost = (fromIdx, toIdx, dx, dy) => {
       const toEdgeNorm = (edge[toIdx] || 0) / this.magicLassoEdgeMax;
       const stepLen = (dx && dy) ? 1.414 : 1;
-      const edgePenalty = (1 - toEdgeNorm) * 8.5;
+      const edgePenalty = (1 - toEdgeNorm) * 12;
       const from = cameFrom[fromIdx];
       let turnPenalty = 0;
       if (from >= 0) {
@@ -3081,7 +3098,18 @@ export default class PixelStudio {
         const dot = ((prev.x / aLen) * (dx / bLen)) + ((prev.y / aLen) * (dy / bLen));
         turnPenalty = (1 - dot) * 0.5;
       }
-      return stepLen * (1 + edgePenalty + turnPenalty);
+      let anchorPenalty = 0;
+      const candidateRgba = this.magicLassoRgbaMap?.[toIdx];
+      if (this.magicLassoAnchorRgba && candidateRgba) {
+        const colorDistance = Math.hypot(
+          candidateRgba.r - this.magicLassoAnchorRgba.r,
+          candidateRgba.g - this.magicLassoAnchorRgba.g,
+          candidateRgba.b - this.magicLassoAnchorRgba.b,
+          (candidateRgba.a - this.magicLassoAnchorRgba.a) * 1.7
+        );
+        anchorPenalty = (colorDistance / 255) * 1.6;
+      }
+      return stepLen * (1 + edgePenalty + turnPenalty + anchorPenalty);
     };
 
     let found = false;
@@ -3121,7 +3149,7 @@ export default class PixelStudio {
 
           cameFrom[neighborIdx] = currentIdx;
           gScore[neighborIdx] = tentative;
-          const f = tentative + heuristic(row, col) * 1.15;
+          const f = tentative + heuristic(row, col) * 0.35;
           if (!inOpen.has(neighborIdx)) {
             open.push({ idx: neighborIdx, f });
             inOpen.add(neighborIdx);
@@ -3166,6 +3194,8 @@ export default class PixelStudio {
       this.magicLassoEdgeMap = null;
       this.magicLassoLastVector = null;
       this.magicLassoEdgeMax = 1;
+      this.magicLassoRgbaMap = null;
+      this.magicLassoAnchorRgba = null;
       return;
     }
     this.selection.mask = createPolygonMask(this.canvasState.width, this.canvasState.height, this.selection.lassoPoints);
@@ -3175,6 +3205,8 @@ export default class PixelStudio {
     this.magicLassoEdgeMap = null;
     this.magicLassoLastVector = null;
     this.magicLassoEdgeMax = 1;
+    this.magicLassoRgbaMap = null;
+    this.magicLassoAnchorRgba = null;
     if (this.selection.active && this.gamepadCursor.active) {
       this.openSelectionContextMenu();
     }
@@ -3294,6 +3326,8 @@ export default class PixelStudio {
     this.magicLassoEdgeMap = null;
     this.magicLassoLastVector = null;
     this.magicLassoEdgeMax = 1;
+    this.magicLassoRgbaMap = null;
+    this.magicLassoAnchorRgba = null;
     this.selectionContextMenu = null;
   }
 
