@@ -333,3 +333,70 @@ body.mobile .hint {
   padding: 2px 8px;
   color: var(--ui-muted);
 }
+
+.shared-text-input-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  background: rgba(1, 4, 8, 0.78);
+}
+
+.shared-text-input-panel {
+  width: min(92vw, 420px);
+  background: var(--ui-panel);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.shared-text-input-title {
+  margin: 0;
+  font-size: 17px;
+}
+
+.shared-text-input-label {
+  font-size: 12px;
+  opacity: 0.9;
+  white-space: pre-wrap;
+}
+
+.shared-text-input-field {
+  width: 100%;
+  min-height: 38px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  padding: 8px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.shared-text-input-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.shared-text-input-btn {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  min-height: 34px;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.shared-text-input-btn.primary {
+  background: rgba(75, 130, 255, 0.4);
+}
