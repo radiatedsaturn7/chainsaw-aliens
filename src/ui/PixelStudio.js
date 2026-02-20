@@ -3264,7 +3264,7 @@ export default class PixelStudio {
         this.closeTransformModal();
         return true;
       }
-      const sliderHit = (this.transformModal.fields || []).find((field) => this.isPointInBounds({ x, y }, field.slider));
+      const sliderHit = (this.transformModal.fields || []).find((field) => this.isPointInBounds({ x, y }, field.sliderHitBounds || field.slider));
       if (sliderHit) {
         const ratio = clamp((x - sliderHit.slider.x) / Math.max(1, sliderHit.slider.w), 0, 1);
         const next = sliderHit.min + ratio * (sliderHit.max - sliderHit.min);
@@ -3608,6 +3608,7 @@ export default class PixelStudio {
     rows.forEach((row) => {
       const valueW = 52;
       const slider = { x: modal.x + 108, y: rowY - 12, w: Math.max(40, modal.w - 190), h: 18 };
+      const sliderHitBounds = { x: slider.x - 6, y: slider.y - 10, w: slider.w + 12, h: slider.h + 20 };
       const valueBounds = { x: slider.x + slider.w + 8, y: rowY - 12, w: valueW, h: 18 };
       const value = this.transformModal.values[row.key] ?? row.min;
       const t = clamp((value - row.min) / Math.max(1, row.max - row.min), 0, 1);
@@ -3629,7 +3630,7 @@ export default class PixelStudio {
       ctx.textAlign = 'right';
       ctx.fillText(String(Math.round(value)), valueBounds.x + valueBounds.w - 6, rowY + 1);
       ctx.textAlign = 'left';
-      this.transformModal.fields.push({ ...row, slider, valueBounds });
+      this.transformModal.fields.push({ ...row, slider, sliderHitBounds, valueBounds });
       rowY += 38;
     });
 
@@ -3717,12 +3718,6 @@ export default class PixelStudio {
       this.uiButtons.push({ bounds, onClick: () => this.setLeftPanelTab(entry.id) });
       this.registerFocusable('menu', bounds, () => this.setLeftPanelTab(entry.id));
     });
-    const lastY = topButtons[topButtons.length - 1]?.bounds?.y || tabColumn.y;
-    const undoBounds = { x: tabColumn.x, y: lastY + SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
-    this.drawButton(ctx, undoBounds, 'Undo / Redo', false, { fontSize: isMobile ? 12 : 11 });
-    this.uiButtons.push({ bounds: undoBounds, onClick: () => this.runtime.undo() });
-    this.registerFocusable('menu', undoBounds, () => this.runtime.undo());
-
     this.drawLeftPanelContent(ctx, content.x, content.y, content.w, content.h, options);
   }
 
@@ -4033,8 +4028,7 @@ export default class PixelStudio {
       { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
       { id: 'tools', label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
       { id: 'layers', label: 'Layers', action: () => { this.setLeftPanelTab('layers'); this.mobileDrawer = 'panel'; } },
-      { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
-      { id: 'undo', label: 'Undo / Redo', action: () => { this.runtime.undo(); } }
+      { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } }
     ];
     const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const buttonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
