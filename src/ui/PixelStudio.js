@@ -3961,10 +3961,12 @@ export default class PixelStudio {
     });
 
     if (this.paletteColorPickerOpen && this.paletteColorDraft) {
-      const pickerX = sheetX + 8;
-      const pickerY = sheetY + 40;
-      const pickerW = sheetW - 16;
-      const pickerH = sheetH - 48;
+      const basePickerW = sheetW - 16;
+      const basePickerH = sheetH - 48;
+      const pickerW = Math.min(sheetW - 8, Math.floor(basePickerW * 1.05));
+      const pickerH = Math.min(sheetH - 8, Math.floor(basePickerH * 1.25));
+      const pickerX = sheetX + Math.floor((sheetW - pickerW) / 2);
+      const pickerY = sheetY + Math.floor((sheetH - pickerH) / 2);
       this.paletteColorPickerBounds = { x: pickerX, y: pickerY, w: pickerW, h: pickerH };
       ctx.fillStyle = 'rgba(0,0,0,0.9)';
       ctx.fillRect(pickerX, pickerY, pickerW, pickerH);
@@ -3976,17 +3978,20 @@ export default class PixelStudio {
       const footerGap = 10;
       const sliderH = 12;
       const sliderCount = 6;
-      const availableH = pickerH - (contentPadding * 2) - footerButtonH - footerGap;
-      const maxTopAreaH = Math.max(0, availableH - (sliderCount * 18));
-      const topAreaH = clamp(Math.floor(availableH * 0.45), 120, Math.max(120, maxTopAreaH));
-      const sliderAreaH = Math.max(100, availableH - topAreaH);
+      const contentY = pickerY + contentPadding;
+      const contentH = pickerH - (contentPadding * 2) - footerButtonH - footerGap;
+      const sliderGap = Math.max(12, Math.floor(pickerW * 0.015));
+      const sliderW = Math.max(170, Math.floor(pickerW * 0.36));
+      const leftW = Math.max(140, pickerW - (contentPadding * 2) - sliderGap - sliderW);
+      const hueW = clamp(Math.floor(leftW * 0.11), 18, 28);
+      const svSize = Math.max(120, Math.min(leftW - hueW - contentPadding, contentH));
+      const sv = { x: pickerX + contentPadding, y: contentY, w: svSize, h: svSize };
+      const hue = { x: sv.x + sv.w + contentPadding, y: sv.y, w: hueW, h: sv.h };
+
+      const sliderX = hue.x + hue.w + sliderGap;
+      const sliderAreaH = Math.max(100, contentH);
       const sliderRowStep = Math.max(18, Math.floor(sliderAreaH / sliderCount));
       const sliderBlockH = sliderCount * sliderRowStep;
-
-      const hueW = Math.max(18, Math.floor(Math.min(24, pickerW * 0.045)));
-      const svSize = Math.max(120, Math.min(topAreaH, pickerW - (contentPadding * 3) - hueW));
-      const sv = { x: pickerX + contentPadding, y: pickerY + contentPadding, w: svSize, h: svSize };
-      const hue = { x: sv.x + sv.w + contentPadding, y: sv.y, w: hueW, h: sv.h };
 
       const topColor = this.hsvToRgb(this.paletteColorDraft.h, 1, 1);
       const gradX = ctx.createLinearGradient(sv.x, sv.y, sv.x + sv.w, sv.y);
@@ -4038,9 +4043,7 @@ export default class PixelStudio {
         });
       };
 
-      const sliderX = pickerX + contentPadding;
-      const sliderW = pickerW - contentPadding * 2;
-      let sy = Math.min(sv.y + sv.h + 18, pickerY + pickerH - footerButtonH - footerGap - sliderBlockH);
+      let sy = contentY + Math.floor((sliderAreaH - sliderBlockH) / 2);
       addSlider('H', this.paletteColorDraft.h, 0, 360, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.h = t * 360; this.syncPaletteDraftFromHsv(); });
       sy += sliderRowStep;
       addSlider('S', this.paletteColorDraft.s * 100, 0, 100, sliderX, sy, sliderW, (t) => { this.paletteColorDraft.s = t; this.syncPaletteDraftFromHsv(); });
