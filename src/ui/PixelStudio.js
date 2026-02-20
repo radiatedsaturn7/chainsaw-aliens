@@ -29,6 +29,7 @@ import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dithe
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
 import { createViewportController } from './shared/viewportController.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
+import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { ensurePixelArtStore, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
 
 const BRUSH_SIZE_MIN = 1;
@@ -348,7 +349,12 @@ export default class PixelStudio {
 
   async promptForNewArtName() {
     const fallback = this.currentDocumentRef?.name || 'new-art';
-    const value = window.prompt('New art file name?', fallback);
+    const value = await openTextInputOverlay({
+      title: 'New Art File',
+      label: 'New art file name?',
+      initialValue: fallback,
+      inputType: 'text'
+    });
     if (value == null) return null;
     const trimmed = value.trim();
     return trimmed || fallback;
@@ -597,7 +603,7 @@ export default class PixelStudio {
     if (!this.runtime.confirmDiscardChanges()) return;
     const name = await this.promptForNewArtName();
     if (!name) return;
-    const dims = this.promptForArtDimensions(this.artSizeDraft);
+    const dims = await this.promptForArtDimensions(this.artSizeDraft);
     if (!dims) return;
     ensurePixelArtStore(this.game.world);
     this.game.world.pixelArt.tiles = {};
@@ -640,9 +646,16 @@ export default class PixelStudio {
     this.syncTileData();
   }
 
-  setArtSizeDraftFromPrompt(kind) {
+  async setArtSizeDraftFromPrompt(kind) {
     const current = kind === 'width' ? this.artSizeDraft.width : this.artSizeDraft.height;
-    const raw = window.prompt(`${kind === 'width' ? 'Pixel width' : 'Pixel height'} (8-512):`, String(current));
+    const raw = await openTextInputOverlay({
+      title: kind === 'width' ? 'Canvas Width' : 'Canvas Height',
+      label: `${kind === 'width' ? 'Pixel width' : 'Pixel height'} (8-512):`,
+      initialValue: String(current),
+      inputType: 'int',
+      min: 8,
+      max: 512
+    });
     if (raw == null) return;
     const parsed = Number.parseInt(raw, 10);
     if (!Number.isFinite(parsed)) return;
@@ -651,9 +664,14 @@ export default class PixelStudio {
     else this.artSizeDraft.height = next;
   }
 
-  promptForArtDimensions(initial = null) {
+  async promptForArtDimensions(initial = null) {
     const current = initial || this.artSizeDraft || { width: this.canvasState.width, height: this.canvasState.height };
-    const raw = window.prompt('Art size (e.g. 32x32, 64x32, 128x256):', `${current.width}x${current.height}`);
+    const raw = await openTextInputOverlay({
+      title: 'Set Art Size',
+      label: 'Art size (e.g. 32x32, 64x32, 128x256):',
+      initialValue: `${current.width}x${current.height}`,
+      inputType: 'text'
+    });
     if (raw == null) return null;
     const match = String(raw).toLowerCase().match(/(\d+)\s*[x,]\s*(\d+)/);
     if (!match) return null;
@@ -663,8 +681,8 @@ export default class PixelStudio {
     };
   }
 
-  resizeArtDocumentPrompt() {
-    const dims = this.promptForArtDimensions({ width: this.canvasState.width, height: this.canvasState.height });
+  async resizeArtDocumentPrompt() {
+    const dims = await this.promptForArtDimensions({ width: this.canvasState.width, height: this.canvasState.height });
     if (!dims) return;
     this.artSizeDraft.width = dims.width;
     this.artSizeDraft.height = dims.height;
@@ -700,10 +718,17 @@ export default class PixelStudio {
     this.transformModal.values[key] = clamp(Math.round(parsed), min, max);
   }
 
-  editTransformValue(field) {
+  async editTransformValue(field) {
     if (!this.transformModal || !field) return;
     const current = this.transformModal.values[field.key] ?? field.min;
-    const raw = window.prompt(`${field.label} (${field.min}-${field.max})`, String(Math.round(current)));
+    const raw = await openTextInputOverlay({
+      title: `Set ${field.label}`,
+      label: `${field.label} (${field.min}-${field.max})`,
+      initialValue: String(Math.round(current)),
+      inputType: 'int',
+      min: field.min,
+      max: field.max
+    });
     if (raw == null) return;
     const parsed = Number.parseInt(raw, 10);
     if (!Number.isFinite(parsed)) return;
@@ -2958,7 +2983,7 @@ export default class PixelStudio {
     this.syncPaletteDraftFromRgb();
   }
 
-  editPaletteSliderValue(type) {
+  async editPaletteSliderValue(type) {
     if (!this.paletteColorDraft) return;
     const meta = {
       h: { label: 'Hue (0-360)', min: 0, max: 360, value: this.paletteColorDraft.h, kind: 'hsv' },
@@ -2969,7 +2994,14 @@ export default class PixelStudio {
       b: { label: 'Blue (0-255)', min: 0, max: 255, value: this.paletteColorDraft.b, kind: 'rgb' }
     }[type];
     if (!meta) return;
-    const raw = window.prompt(meta.label, String(Math.round(meta.value)));
+    const raw = await openTextInputOverlay({
+      title: `Set ${meta.label.split(' ')[0]}`,
+      label: meta.label,
+      initialValue: String(Math.round(meta.value)),
+      inputType: meta.kind === 'hsv' ? 'float' : 'int',
+      min: meta.min,
+      max: meta.max
+    });
     if (raw == null) return;
     const parsed = Number(raw.trim());
     if (!Number.isFinite(parsed)) return;
@@ -2984,10 +3016,15 @@ export default class PixelStudio {
     else this.syncPaletteDraftFromRgb();
   }
 
-  editPaletteHexValue() {
+  async editPaletteHexValue() {
     if (!this.paletteColorDraft) return;
     const fallback = this.rgbToHex(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b).toUpperCase();
-    const raw = window.prompt('Hex color (#RRGGBB):', fallback);
+    const raw = await openTextInputOverlay({
+      title: 'Hex Color',
+      label: 'Hex color (#RRGGBB):',
+      initialValue: fallback,
+      inputType: 'text'
+    });
     if (raw == null) return;
     let next = raw.trim();
     if (!next) return;
