@@ -2936,12 +2936,67 @@ export default class PixelStudio {
       if (prior && prior.x === next.x && prior.y === next.y) return;
       this.selection.lassoPoints.push(next);
     });
+    this.cleanLassoPathArtifacts();
     if (segment.length) {
       const end = segment[segment.length - 1];
       this.selection.end = { row: end.row, col: end.col };
     } else {
       this.selection.end = snapped;
     }
+  }
+
+  cleanLassoPathArtifacts() {
+    if (this.selection.lassoPoints.length < 3) return;
+    const points = this.selection.lassoPoints;
+    let changed = true;
+    while (changed && points.length >= 3) {
+      changed = false;
+      // Remove immediate backtracks A->B->A.
+      for (let i = 2; i < points.length; i += 1) {
+        const a = points[i - 2];
+        const c = points[i];
+        if (a.x === c.x && a.y === c.y) {
+          points.splice(i - 1, 1);
+          changed = true;
+          break;
+        }
+      }
+      if (changed) continue;
+      // Collapse collinear points.
+      for (let i = 2; i < points.length; i += 1) {
+        const p0 = points[i - 2];
+        const p1 = points[i - 1];
+        const p2 = points[i];
+        const x1 = p1.x - p0.x;
+        const y1 = p1.y - p0.y;
+        const x2 = p2.x - p1.x;
+        const y2 = p2.y - p1.y;
+        if ((x1 * y2) - (y1 * x2) === 0) {
+          points.splice(i - 1, 1);
+          changed = true;
+          break;
+        }
+      }
+    }
+  }
+
+  getLassoPreviewPixels() {
+    if (!this.selection.lassoPoints || this.selection.lassoPoints.length < 2) return [];
+    const unique = new Set();
+    const points = [];
+    const push = (row, col) => {
+      const key = `${row},${col}`;
+      if (unique.has(key)) return;
+      unique.add(key);
+      points.push({ row, col });
+    };
+    for (let i = 1; i < this.selection.lassoPoints.length; i += 1) {
+      const a = this.selection.lassoPoints[i - 1];
+      const b = this.selection.lassoPoints[i];
+      const line = bresenhamLine({ row: Math.floor(a.y), col: Math.floor(a.x) }, { row: Math.floor(b.y), col: Math.floor(b.x) });
+      line.forEach((pt) => push(pt.row, pt.col));
+    }
+    return points;
   }
 
   buildMagicLassoEdgeMap() {
@@ -6150,18 +6205,11 @@ export default class PixelStudio {
     }
 
     if (this.selection.lassoPoints.length > 1) {
-      ctx.save();
-      ctx.strokeStyle = this.activeToolId === TOOL_IDS.SELECT_MAGIC_LASSO ? '#8df0ff' : '#ffcc6a';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      this.selection.lassoPoints.forEach((pt, index) => {
-        const x = offsetX + pt.x * zoom;
-        const y = offsetY + pt.y * zoom;
-        if (index === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
-      ctx.restore();
+      const previewPixels = this.getLassoPreviewPixels();
+      if (previewPixels.length) {
+        const color = this.activeToolId === TOOL_IDS.SELECT_MAGIC_LASSO ? 'rgba(141,240,255,0.9)' : 'rgba(255,204,106,0.9)';
+        this.drawPixelPreview(ctx, previewPixels, offsetX, offsetY, zoom, color);
+      }
     }
 
     if (this.linePreview) {
