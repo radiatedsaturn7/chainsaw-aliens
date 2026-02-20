@@ -4646,7 +4646,7 @@ export default class PixelStudio {
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
     this.focusGroupMeta.objects = { maxVisible };
     const start = this.focusScroll.objects || 0;
-    let offsetY = y + 36;
+    let offsetY = toolsTop;
     this.tileLibrary.slice(start, start + maxVisible).forEach((tile, visibleIndex) => {
       const index = start + visibleIndex;
       const active = tile.id === this.activeTile?.id;
@@ -5627,20 +5627,22 @@ export default class PixelStudio {
     ctx.fillText(title, x + 12, y + 22);
 
     const list = this.tools.filter((tool) => (tool.category || 'tools') === category);
-    const maxVisible = Math.max(1, Math.floor((h - 140) / lineHeight));
+    const toolsTop = y + (isMobile ? 50 : 48);
+    const toolsBottomPadding = isMobile ? 116 : 132;
+    const maxVisible = Math.max(1, Math.floor((h - toolsBottomPadding) / lineHeight));
     this.focusGroupMeta.tools = { maxVisible };
     const start = this.focusScroll.tools || 0;
     const maxToolScroll = Math.max(0, list.length - maxVisible);
     this.focusScroll.tools = clamp(start, 0, maxToolScroll);
     this.toolsListMeta = {
-      scrollBounds: { x: x + 6, y: y + 26, w: w - 12, h: maxVisible * lineHeight + 8 },
+      scrollBounds: { x: x + 6, y: toolsTop - (isMobile ? 18 : 14), w: w - 12, h: maxVisible * lineHeight + (isMobile ? 24 : 18) },
       lineHeight,
       maxScroll: maxToolScroll
     };
-    let offsetY = y + 36;
+    let offsetY = toolsTop;
     list.slice(this.focusScroll.tools, this.focusScroll.tools + maxVisible).forEach((tool) => {
       const isActive = tool.id === this.activeToolId;
-      const bounds = { x: x + 8, y: offsetY - buttonHeight + 4, w: w - 16, h: buttonHeight };
+      const bounds = { x: x + 8, y: offsetY - (isMobile ? 28 : 14), w: w - 16, h: buttonHeight };
       this.drawButton(ctx, bounds, tool.name, isActive, { fontSize });
       this.uiButtons.push({ bounds, onClick: () => { this.setActiveTool(tool.id); } });
       this.registerFocusable('tools', bounds, () => this.setActiveTool(tool.id));
@@ -5649,7 +5651,7 @@ export default class PixelStudio {
     if (maxToolScroll > 0) {
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.font = `${isMobile ? 11 : 10}px ${UI_SUITE.font.family}`;
-      ctx.fillText(`Tools ${this.focusScroll.tools + 1}/${maxToolScroll + 1}`, x + 12, y + 26 + maxVisible * lineHeight + 10);
+      ctx.fillText(`Tools ${this.focusScroll.tools + 1}/${maxToolScroll + 1}`, x + 12, toolsTop + maxVisible * lineHeight + 10);
     }
 
     if (!isMobile) {
@@ -5801,7 +5803,7 @@ export default class PixelStudio {
     const lineHeight = isMobile ? 52 : 20;
     const rowHeight = isMobile ? 52 : 22;
     const headerH = isMobile ? 26 : 22;
-    const bodyY = y + headerH + 6;
+    const bodyY = y + headerH + 10;
     const bodyH = Math.max(28, panelHeight - headerH - 8);
     const startY = bodyY;
     const scroll = Math.max(0, this.focusScroll.toolOptions || 0);
