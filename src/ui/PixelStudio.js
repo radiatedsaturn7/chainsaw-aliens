@@ -85,6 +85,10 @@ export default class PixelStudio {
       brushShape: 'square',
       brushFalloff: 'solid',
       linePerfect: true,
+      shapeFill: false,
+      polygonSides: 5,
+      magicThreshold: 24,
+      gradientStrength: 100,
       fillContiguous: true,
       fillTolerance: 0,
       symmetry: { horizontal: false, vertical: false },
@@ -143,6 +147,8 @@ export default class PixelStudio {
     this.pendingHistory = null;
     this.strokeState = null;
     this.linePreview = null;
+    this.shapePreview = null;
+    this.gradientPreview = null;
     this.cloneSource = null;
     this.cloneOffset = null;
     this.cloneSourcePixels = null;
@@ -221,7 +227,7 @@ export default class PixelStudio {
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
     this.sidebars = { left: true };
-    this.leftPanelTabs = ['file', 'tools', 'layers', 'canvas'];
+    this.leftPanelTabs = ['file', 'draw', 'select', 'tools', 'canvas'];
     this.leftPanelTabIndex = 1;
     this.leftPanelTab = this.leftPanelTabs[this.leftPanelTabIndex];
     this.uiButtons = [];
@@ -857,7 +863,7 @@ export default class PixelStudio {
     this.triggerSelectionReady = false;
     if (this.isMobileLayout()) {
       this.mobileDrawer = 'panel';
-      this.setLeftPanelTab('tools');
+      this.setLeftPanelTab('draw');
     }
   }
 
@@ -1059,7 +1065,7 @@ export default class PixelStudio {
             break;
           }
           if (this.inputMode === 'canvas'
-            && [TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.MOVE].includes(this.activeToolId)) {
+            && [TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.SELECT_MAGIC_LASSO, TOOL_IDS.SELECT_MAGIC_COLOR, TOOL_IDS.MOVE].includes(this.activeToolId)) {
             this.setActiveTool(TOOL_IDS.PENCIL);
             break;
           }
@@ -1355,7 +1361,7 @@ export default class PixelStudio {
 
   openFileTab() {
     this.sidebars.left = true;
-    this.setLeftPanelTab('tools');
+    this.setLeftPanelTab('draw');
     this.setInputMode('ui');
     this.uiFocus.group = 'menu';
     this.uiFocus.index = 0;
@@ -1366,7 +1372,7 @@ export default class PixelStudio {
       this.mobileDrawer = null;
       return;
     }
-    this.setLeftPanelTab('tools');
+    this.setLeftPanelTab('draw');
   }
 
   setLeftPanelTab(tab) {
@@ -1379,18 +1385,22 @@ export default class PixelStudio {
     } else {
       this.setInputMode('ui');
     }
-    if (tab === 'animate') {
-      this.modeTab = 'animate';
-      return;
-    }
-    if (this.modeTab === 'animate') {
-      if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.MOVE].includes(this.activeToolId)) {
-        this.modeTab = 'select';
-      } else {
-        this.modeTab = 'draw';
+    if (tab === 'draw') {
+      this.modeTab = 'draw';
+      if (![TOOL_IDS.PENCIL, TOOL_IDS.LINE, TOOL_IDS.RECT, TOOL_IDS.ELLIPSE, TOOL_IDS.POLYGON, TOOL_IDS.FILL].includes(this.activeToolId)) {
+        this.setActiveTool(TOOL_IDS.PENCIL);
       }
     }
-    if (this.isMobileLayout() && ['file', 'tools', 'layers', 'canvas'].includes(tab)) {
+    if (tab === 'select') {
+      this.modeTab = 'select';
+      if (![TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.SELECT_MAGIC_LASSO, TOOL_IDS.SELECT_MAGIC_COLOR].includes(this.activeToolId)) {
+        this.setActiveTool(TOOL_IDS.SELECT_RECT);
+      }
+    }
+    if (tab === 'tools') {
+      this.modeTab = 'draw';
+    }
+    if (this.isMobileLayout() && ['file', 'draw', 'select', 'tools', 'canvas'].includes(tab)) {
       this.mobileDrawer = 'panel';
     }
   }
@@ -1965,7 +1975,7 @@ export default class PixelStudio {
       this.clonePickSourceArmed = false;
       this.cloneColorPickArmed = false;
     }
-    if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.MOVE].includes(toolId)) {
+    if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.SELECT_MAGIC_LASSO, TOOL_IDS.SELECT_MAGIC_COLOR, TOOL_IDS.MOVE].includes(toolId)) {
       this.modeTab = 'select';
     } else if (toolId !== TOOL_IDS.EYEDROPPER) {
       this.modeTab = this.modeTab === 'animate' ? 'animate' : 'draw';
@@ -1988,7 +1998,7 @@ export default class PixelStudio {
   }
 
   toggleDrawSelectMode() {
-    if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.MOVE].includes(this.activeToolId)) {
+    if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.SELECT_MAGIC_LASSO, TOOL_IDS.SELECT_MAGIC_COLOR, TOOL_IDS.MOVE].includes(this.activeToolId)) {
       this.setActiveTool(TOOL_IDS.PENCIL);
       return;
     }
@@ -2299,7 +2309,140 @@ export default class PixelStudio {
     const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(points) : points;
     filtered.forEach((pt) => this.applyBrush(pt));
     this.linePreview = null;
+    this.shapePreview = null;
+    this.gradientPreview = null;
     this.commitHistory();
+  }
+
+
+  startShape(point, type = 'rect') {
+    this.shapePreview = { start: point, end: point, type };
+  }
+
+  updateShape(point) {
+    if (!this.shapePreview) return;
+    this.shapePreview.end = point;
+  }
+
+  buildRegularPolygonPoints(bounds, sides) {
+    const cx = bounds.x + bounds.w / 2;
+    const cy = bounds.y + bounds.h / 2;
+    const rx = Math.max(1, bounds.w / 2);
+    const ry = Math.max(1, bounds.h / 2);
+    const total = clamp(Math.round(sides || 5), 3, 12);
+    const points = [];
+    for (let i = 0; i < total; i += 1) {
+      const angle = -Math.PI / 2 + (i / total) * Math.PI * 2;
+      points.push({ col: Math.round(cx + Math.cos(angle) * rx), row: Math.round(cy + Math.sin(angle) * ry) });
+    }
+    return points;
+  }
+
+  commitShape() {
+    if (!this.shapePreview || !this.activeLayer || this.activeLayer.locked) return;
+    const bounds = this.getBoundsFromPoints(this.shapePreview.start, this.shapePreview.end);
+    let mask = null;
+    if (this.shapePreview.type === 'rect') {
+      mask = createRectMask(this.canvasState.width, this.canvasState.height, bounds);
+    } else if (this.shapePreview.type === 'ellipse') {
+      mask = generateEllipseMask(this.canvasState.width, this.canvasState.height, bounds);
+    } else {
+      const points = this.buildRegularPolygonPoints(bounds, this.toolOptions.polygonSides);
+      mask = createPolygonMask(this.canvasState.width, this.canvasState.height, points);
+    }
+    const fill = Boolean(this.toolOptions.shapeFill);
+    this.startHistory(`${this.shapePreview.type} shape`);
+    const colorValue = this.getActiveColorValue();
+    for (let row = bounds.y; row < bounds.y + bounds.h; row += 1) {
+      for (let col = bounds.x; col < bounds.x + bounds.w; col += 1) {
+        const idx = row * this.canvasState.width + col;
+        if (!mask[idx]) continue;
+        if (!fill) {
+          const left = col > 0 ? mask[idx - 1] : false;
+          const right = col < this.canvasState.width - 1 ? mask[idx + 1] : false;
+          const up = row > 0 ? mask[idx - this.canvasState.width] : false;
+          const down = row < this.canvasState.height - 1 ? mask[idx + this.canvasState.width] : false;
+          if (left && right && up && down) continue;
+        }
+        if (this.selection.active && this.selection.mask && !this.selection.mask[idx]) continue;
+        this.activeLayer.pixels[idx] = colorValue;
+      }
+    }
+    this.shapePreview = null;
+    this.commitHistory();
+  }
+
+  startGradient(point) {
+    this.gradientPreview = { start: point, end: point };
+  }
+
+  updateGradient(point) {
+    if (!this.gradientPreview) return;
+    this.gradientPreview.end = point;
+  }
+
+  commitGradient() {
+    if (!this.gradientPreview || !this.activeLayer || this.activeLayer.locked) return;
+    const start = this.gradientPreview.start;
+    const end = this.gradientPreview.end;
+    const dx = end.col - start.col;
+    const dy = end.row - start.row;
+    const denom = Math.max(1, dx * dx + dy * dy);
+    const baseColor = this.getActiveColorValue();
+    this.startHistory('gradient');
+    for (let row = 0; row < this.canvasState.height; row += 1) {
+      for (let col = 0; col < this.canvasState.width; col += 1) {
+        const idx = row * this.canvasState.width + col;
+        if (this.selection.active && this.selection.mask && !this.selection.mask[idx]) continue;
+        const t = clamp((((col - start.col) * dx) + ((row - start.row) * dy)) / denom, 0, 1);
+        const alpha = (this.toolOptions.gradientStrength / 100) * t;
+        this.activeLayer.pixels[idx] = this.blendPixel(this.activeLayer.pixels[idx], baseColor, alpha);
+      }
+    }
+    this.gradientPreview = null;
+    this.commitHistory();
+  }
+
+  applyMagicSelection(point, options = {}) {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const contiguous = options.contiguous !== false;
+    const threshold = clamp(Number(this.toolOptions.magicThreshold) || 0, 0, 255);
+    const composite = compositeLayers(this.canvasState.layers, width, height);
+    const startIdx = point.row * width + point.col;
+    const targetRgba = uint32ToRgba(composite[startIdx] || 0);
+    const mask = new Uint8Array(width * height);
+
+    if (contiguous) {
+      const queue = [point];
+      const seen = new Uint8Array(width * height);
+      while (queue.length) {
+        const current = queue.pop();
+        if (current.row < 0 || current.col < 0 || current.row >= height || current.col >= width) continue;
+        const idx = current.row * width + current.col;
+        if (seen[idx]) continue;
+        seen[idx] = 1;
+        const rgba = uint32ToRgba(composite[idx] || 0);
+        const dist = Math.hypot(rgba.r - targetRgba.r, rgba.g - targetRgba.g, rgba.b - targetRgba.b);
+        if (dist > threshold) continue;
+        mask[idx] = 1;
+        queue.push({ row: current.row - 1, col: current.col });
+        queue.push({ row: current.row + 1, col: current.col });
+        queue.push({ row: current.row, col: current.col - 1 });
+        queue.push({ row: current.row, col: current.col + 1 });
+      }
+    } else {
+      for (let idx = 0; idx < composite.length; idx += 1) {
+        const rgba = uint32ToRgba(composite[idx] || 0);
+        const dist = Math.hypot(rgba.r - targetRgba.r, rgba.g - targetRgba.g, rgba.b - targetRgba.b);
+        if (dist <= threshold) mask[idx] = 1;
+      }
+    }
+
+    this.selection.mask = mask;
+    this.selection.bounds = this.getMaskBounds(mask);
+    this.selection.active = Boolean(this.selection.bounds);
+    this.selection.mode = contiguous ? 'magic-lasso' : 'magic-color';
   }
 
   applyPerfectPixels(points) {
@@ -3725,8 +3868,9 @@ export default class PixelStudio {
 
     const labels = {
       file: SHARED_EDITOR_LEFT_MENU.fileLabel,
+      draw: 'Draw',
+      select: 'Select',
       tools: 'Tools',
-      layers: 'Layers',
       canvas: 'Canvas'
     };
     const { tabColumn, content } = buildSharedLeftMenuLayout({
@@ -3764,12 +3908,8 @@ export default class PixelStudio {
       this.drawFilePanel(ctx, x, y, w, h, { isMobile });
       return;
     }
-    if (this.leftPanelTab === 'tools') {
-      this.drawToolsMenu(ctx, x, y, w, h, { isMobile });
-      return;
-    }
-    if (this.leftPanelTab === 'layers') {
-      this.drawLayersPanel(ctx, x, y, w, h, { isMobile, showPreview: !isMobile });
+    if (['draw', 'select', 'tools'].includes(this.leftPanelTab)) {
+      this.drawToolsMenu(ctx, x, y, w, h, { isMobile, category: this.leftPanelTab });
       return;
     }
     if (this.leftPanelTab === 'canvas') {
@@ -3780,18 +3920,17 @@ export default class PixelStudio {
 
   drawToolsMenu(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
+    const category = options.category || this.leftPanelTab || 'draw';
     if (isMobile) {
-      this.drawToolsPanel(ctx, x, y, w, h, { isMobile });
+      this.drawToolsPanel(ctx, x, y, w, h, { isMobile, category });
       return;
     }
     const gap = 12;
-    const colWidth = Math.max(160, Math.floor((w - gap * 2) / 3));
+    const colWidth = Math.max(160, Math.floor((w - gap) / 2));
     const leftX = x;
-    const middleX = x + colWidth + gap;
-    const rightX = x + (colWidth + gap) * 2;
+    const rightX = x + colWidth + gap;
     const columnHeight = h;
-    this.drawToolsPanel(ctx, leftX, y, colWidth, columnHeight, { isMobile });
-    this.drawLayersPanel(ctx, middleX, y, colWidth, columnHeight, { isMobile, showPreview: !isMobile });
+    this.drawToolsPanel(ctx, leftX, y, colWidth, columnHeight, { isMobile, category });
     this.drawPalettePanel(ctx, rightX, y, colWidth, columnHeight, { isMobile });
   }
 
@@ -4063,8 +4202,9 @@ export default class PixelStudio {
     ctx.strokeRect(x, y, w, h);
     const actions = [
       { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
+      { id: 'draw', label: 'Draw', action: () => { this.setLeftPanelTab('draw'); this.mobileDrawer = 'panel'; } },
+      { id: 'select', label: 'Select', action: () => { this.setLeftPanelTab('select'); this.mobileDrawer = 'panel'; } },
       { id: 'tools', label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
-      { id: 'layers', label: 'Layers', action: () => { this.setLeftPanelTab('layers'); this.mobileDrawer = 'panel'; } },
       { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } }
     ];
     const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
@@ -4781,14 +4921,16 @@ export default class PixelStudio {
 
   drawToolsPanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
+    const category = options.category || this.leftPanelTab || 'draw';
     const fontSize = isMobile ? 14 : 12;
     const lineHeight = isMobile ? 52 : 20;
     const buttonHeight = isMobile ? 44 : 18;
     ctx.fillStyle = '#fff';
     ctx.font = `${isMobile ? 16 : 14}px Courier New`;
-    ctx.fillText('Tools', x + 12, y + 22);
+    const title = category === 'draw' ? 'Draw Tools' : category === 'select' ? 'Selection Tools' : 'Extra Tools';
+    ctx.fillText(title, x + 12, y + 22);
 
-    const list = this.tools.map((tool) => tool);
+    const list = this.tools.filter((tool) => (tool.category || 'tools') === category);
     const maxVisible = Math.max(1, Math.floor((h - 140) / lineHeight));
     this.focusGroupMeta.tools = { maxVisible };
     const start = this.focusScroll.tools || 0;
@@ -4886,7 +5028,7 @@ export default class PixelStudio {
     };
     offsetY = this.drawToolOptions(ctx, optionsX, optionsY, { isMobile, panelWidth: optionsW, panelHeight: optionsH });
 
-    if (this.modeTab === 'select') {
+    if (this.leftPanelTab === 'select') {
       this.drawSelectionActions(ctx, x + 12, offsetY, { isMobile });
     }
 
@@ -4998,6 +5140,19 @@ export default class PixelStudio {
         this.toolOptions.linePerfect = !this.toolOptions.linePerfect;
       }, { isMobile });
       offsetY += lineHeight;
+    }
+    if ([TOOL_IDS.RECT, TOOL_IDS.ELLIPSE, TOOL_IDS.POLYGON].includes(this.activeToolId)) {
+      this.drawOptionToggle(ctx, x, offsetY, this.toolOptions.shapeFill ? 'Fill: On' : 'Fill: Off', this.toolOptions.shapeFill, () => {
+        this.toolOptions.shapeFill = !this.toolOptions.shapeFill;
+      }, { isMobile });
+      offsetY += lineHeight;
+      if (this.activeToolId === TOOL_IDS.POLYGON) {
+        const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 150, h: isMobile ? 44 : 18 };
+        this.drawButton(ctx, bounds, `Sides: ${this.toolOptions.polygonSides}`, false, { fontSize: isMobile ? 12 : 12 });
+        this.uiButtons.push({ bounds, onClick: () => { this.toolOptions.polygonSides = clamp(this.toolOptions.polygonSides + 1, 3, 12); if (this.toolOptions.polygonSides >= 12) this.toolOptions.polygonSides = 3; } });
+        this.registerFocusable('menu', bounds, () => { this.toolOptions.polygonSides = clamp(this.toolOptions.polygonSides + 1, 3, 12); if (this.toolOptions.polygonSides >= 12) this.toolOptions.polygonSides = 3; });
+        offsetY += lineHeight;
+      }
     }
     if (this.activeToolId === TOOL_IDS.FILL) {
       this.drawOptionToggle(ctx, x, offsetY, 'Contiguous', this.toolOptions.fillContiguous, () => {
@@ -5114,6 +5269,20 @@ export default class PixelStudio {
       offsetY += rowHeight;
 
     }
+    if (this.activeToolId === TOOL_IDS.GRADIENT) {
+      const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 150, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, bounds, `Strength: ${this.toolOptions.gradientStrength}%`, false, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({ bounds, onClick: () => { this.toolOptions.gradientStrength += 10; if (this.toolOptions.gradientStrength > 100) this.toolOptions.gradientStrength = 10; } });
+      this.registerFocusable('menu', bounds, () => { this.toolOptions.gradientStrength += 10; if (this.toolOptions.gradientStrength > 100) this.toolOptions.gradientStrength = 10; });
+      offsetY += lineHeight;
+    }
+    if ([TOOL_IDS.SELECT_MAGIC_LASSO, TOOL_IDS.SELECT_MAGIC_COLOR].includes(this.activeToolId)) {
+      const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 150, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, bounds, `Threshold: ${this.toolOptions.magicThreshold}`, false, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({ bounds, onClick: () => { this.toolOptions.magicThreshold += 8; if (this.toolOptions.magicThreshold > 255) this.toolOptions.magicThreshold = 0; } });
+      this.registerFocusable('menu', bounds, () => { this.toolOptions.magicThreshold += 8; if (this.toolOptions.magicThreshold > 255) this.toolOptions.magicThreshold = 0; });
+      offsetY += lineHeight;
+    }
     if (this.activeToolId === TOOL_IDS.COLOR_REPLACE) {
       const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
       this.drawButton(ctx, bounds, `Scope: ${this.toolOptions.replaceScope}`, false, { fontSize: isMobile ? 12 : 12 });
@@ -5148,6 +5317,12 @@ export default class PixelStudio {
   drawSelectionActions(ctx, x, y, options = {}) {
     const isMobile = options.isMobile;
     const actions = [
+      { label: 'Rect', action: () => this.setActiveTool(TOOL_IDS.SELECT_RECT) },
+      { label: 'Oval', action: () => this.setActiveTool(TOOL_IDS.SELECT_ELLIPSE) },
+      { label: 'Lasso', action: () => this.setActiveTool(TOOL_IDS.SELECT_LASSO) },
+      { label: 'Magic Lasso', action: () => this.setActiveTool(TOOL_IDS.SELECT_MAGIC_LASSO) },
+      { label: 'Color All', action: () => this.setActiveTool(TOOL_IDS.SELECT_MAGIC_COLOR) },
+      { label: 'Reverse', action: () => this.invertSelection() },
       { label: 'Clear', action: () => this.clearSelection() },
       { label: 'Invert', action: () => this.invertSelection() },
       { label: 'Expand', action: () => this.expandSelection(1) },
@@ -5401,6 +5576,26 @@ export default class PixelStudio {
         bounds.w * zoom,
         bounds.h * zoom
       );
+    }
+
+
+    if (this.shapePreview) {
+      const bounds = this.getBoundsFromPoints(this.shapePreview.start, this.shapePreview.end);
+      ctx.strokeStyle = '#6ad7ff';
+      ctx.strokeRect(
+        offsetX + bounds.x * zoom,
+        offsetY + bounds.y * zoom,
+        bounds.w * zoom,
+        bounds.h * zoom
+      );
+    }
+
+    if (this.gradientPreview) {
+      ctx.strokeStyle = '#9ddcff';
+      ctx.beginPath();
+      ctx.moveTo(offsetX + (this.gradientPreview.start.col + 0.5) * zoom, offsetY + (this.gradientPreview.start.row + 0.5) * zoom);
+      ctx.lineTo(offsetX + (this.gradientPreview.end.col + 0.5) * zoom, offsetY + (this.gradientPreview.end.row + 0.5) * zoom);
+      ctx.stroke();
     }
 
     if (this.toolOptions.symmetry.horizontal) {
