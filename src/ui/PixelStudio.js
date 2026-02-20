@@ -173,6 +173,7 @@ export default class PixelStudio {
       tools: 0,
       objects: 0,
       palette: 0,
+      paletteModal: 0,
       palettePresets: 0,
       layers: 0,
       timeline: 0,
@@ -189,6 +190,7 @@ export default class PixelStudio {
     this.mobileDrawer = null;
     this.mobileDrawerBounds = null;
     this.paletteBarScrollBounds = null;
+    this.paletteModalSwatchScrollBounds = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
     this.brushPickerBounds = null;
@@ -1656,6 +1658,21 @@ export default class PixelStudio {
       };
       return;
     }
+    if (this.paletteGridOpen && this.paletteModalSwatchScrollBounds
+      && this.isPointInBounds(payload, this.paletteModalSwatchScrollBounds)
+      && (this.paletteModalSwatchScrollBounds.maxScroll || 0) > 0) {
+      const tappedSwatch = this.paletteBounds.find((bounds) => this.isPointInBounds(payload, bounds));
+      this.menuScrollDrag = {
+        startX: payload.x,
+        startScroll: this.focusScroll.paletteModal || 0,
+        moved: false,
+        hitAction: tappedSwatch ? () => this.setPaletteIndex(tappedSwatch.index) : null,
+        lineHeight: Math.max(1, this.paletteModalSwatchScrollBounds.step || 1),
+        scrollGroup: 'paletteModal',
+        maxScroll: Math.max(0, this.paletteModalSwatchScrollBounds.maxScroll || 0)
+      };
+      return;
+    }
     if (this.mobileZoomSliderBounds && this.isPointInBounds(payload, this.mobileZoomSliderBounds)) {
       this.mobileZoomDrag = { id: payload.id ?? null };
       this.updateZoomFromSliderX(payload.x);
@@ -1732,7 +1749,7 @@ export default class PixelStudio {
       if (this.menuScrollDrag.moved) {
         const total = (this.focusGroups.file || []).length;
         const maxVisible = this.focusGroupMeta.file?.maxVisible || 1;
-        const maxScroll = ['toolOptions', 'tools'].includes(this.menuScrollDrag.scrollGroup)
+        const maxScroll = ['toolOptions', 'tools', 'paletteMobile', 'paletteModal'].includes(this.menuScrollDrag.scrollGroup)
           ? (this.menuScrollDrag.maxScroll || 0)
           : Math.max(0, total - maxVisible);
         const delta = this.menuScrollDrag.scrollGroup === 'paletteMobile' ? dx : dy;
@@ -1743,6 +1760,8 @@ export default class PixelStudio {
           this.focusScroll.tools = clamp(next, 0, maxScroll);
         } else if (this.menuScrollDrag.scrollGroup === 'paletteMobile') {
           this.focusScroll.palette = clamp(next, 0, maxScroll);
+        } else if (this.menuScrollDrag.scrollGroup === 'paletteModal') {
+          this.focusScroll.paletteModal = clamp(next, 0, maxScroll);
         } else {
           this.focusScroll.file = clamp(next, 0, maxScroll);
         }
@@ -2856,9 +2875,23 @@ export default class PixelStudio {
     const activeHex = this.currentPalette.colors[this.paletteIndex]?.hex || '#ffffff';
     const rgba = hexToRgba(activeHex);
     const hsv = this.rgbToHsv(rgba.r, rgba.g, rgba.b);
-    this.paletteColorDraft = { h: hsv.h, s: hsv.s, v: hsv.v, r: rgba.r, g: rgba.g, b: rgba.b };
+    this.paletteColorDraft = { h: hsv.h, s: hsv.s, v: hsv.v, r: rgba.r, g: rgba.g, b: rgba.b, quantization: 32 };
     this.palettePickerDrag = null;
     this.paletteColorPickerOpen = true;
+  }
+
+  quantizeChannel(value, levels = 32) {
+    const steps = clamp(Math.round(levels), 2, 256);
+    const t = clamp(value, 0, 255) / 255;
+    return Math.round((Math.round(t * (steps - 1)) / (steps - 1)) * 255);
+  }
+
+  applyPaletteDraftQuantization() {
+    if (!this.paletteColorDraft) return;
+    const levels = this.paletteColorDraft.quantization || 32;
+    this.paletteColorDraft.r = this.quantizeChannel(this.paletteColorDraft.r, levels);
+    this.paletteColorDraft.g = this.quantizeChannel(this.paletteColorDraft.g, levels);
+    this.paletteColorDraft.b = this.quantizeChannel(this.paletteColorDraft.b, levels);
   }
 
   syncPaletteDraftFromHsv() {
@@ -2867,10 +2900,12 @@ export default class PixelStudio {
     this.paletteColorDraft.r = rgb.r;
     this.paletteColorDraft.g = rgb.g;
     this.paletteColorDraft.b = rgb.b;
+    this.applyPaletteDraftQuantization();
   }
 
   syncPaletteDraftFromRgb() {
     if (!this.paletteColorDraft) return;
+    this.applyPaletteDraftQuantization();
     const hsv = this.rgbToHsv(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b);
     this.paletteColorDraft.h = hsv.h;
     this.paletteColorDraft.s = hsv.s;
@@ -3394,6 +3429,7 @@ export default class PixelStudio {
     this.focusGroupMeta = {};
     this.mobileDrawerBounds = null;
     this.paletteBarScrollBounds = null;
+    this.paletteModalSwatchScrollBounds = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
     this.brushPickerBounds = null;
@@ -3542,8 +3578,8 @@ export default class PixelStudio {
     let rowY = modal.y + 50;
     rows.forEach((row) => {
       const valueW = 52;
-      const slider = { x: modal.x + 108, y: rowY - 10, w: Math.max(40, modal.w - 190), h: 12 };
-      const valueBounds = { x: slider.x + slider.w + 8, y: rowY - 11, w: valueW, h: 16 };
+      const slider = { x: modal.x + 108, y: rowY - 12, w: Math.max(40, modal.w - 190), h: 18 };
+      const valueBounds = { x: slider.x + slider.w + 8, y: rowY - 12, w: valueW, h: 18 };
       const value = this.transformModal.values[row.key] ?? row.min;
       const t = clamp((value - row.min) / Math.max(1, row.max - row.min), 0, 1);
       const knobX = slider.x + t * slider.w;
@@ -4341,8 +4377,8 @@ export default class PixelStudio {
     ctx.font = '15px Courier New';
     ctx.fillText('Palette', sheetX + 12, sheetY + 24);
 
-    const addBounds = { x: sheetX + 12, y: sheetY + sheetH - 44, w: 34, h: 32 };
-    const removeBounds = { x: sheetX + 52, y: sheetY + sheetH - 44, w: 34, h: 32 };
+    const addBounds = { x: sheetX + 12, y: sheetY + sheetH - 44, w: 54, h: 32 };
+    const removeBounds = { x: sheetX + 72, y: sheetY + sheetH - 44, w: 54, h: 32 };
     this.drawButton(ctx, addBounds, '+', false, { fontSize: 12 });
     this.drawButton(ctx, removeBounds, '-', false, { fontSize: 12 });
     this.uiButtons.push({ bounds: addBounds, onClick: () => this.openPaletteColorPicker() });
@@ -4350,15 +4386,29 @@ export default class PixelStudio {
 
     const swatchSize = 38;
     const gap = 8;
-    const maxPerRow = Math.max(1, Math.floor((sheetW - 24) / (swatchSize + gap)));
     const topY = sheetY + 44;
+    const swatchAreaH = Math.max(80, sheetH - 106);
+    const rowsVisible = Math.max(1, Math.floor((swatchAreaH + gap) / (swatchSize + gap)));
+    const colsVisible = Math.max(1, Math.floor((sheetW - 24 + gap) / (swatchSize + gap)));
+    const maxVisible = rowsVisible * colsVisible;
+    const maxScroll = Math.max(0, this.currentPalette.colors.length - maxVisible);
+    this.focusScroll.paletteModal = clamp(this.focusScroll.paletteModal || 0, 0, maxScroll);
+    this.paletteModalSwatchScrollBounds = {
+      x: sheetX + 10,
+      y: topY - 4,
+      w: sheetW - 20,
+      h: rowsVisible * (swatchSize + gap),
+      step: swatchSize + gap,
+      maxScroll
+    };
+    const start = this.focusScroll.paletteModal || 0;
     this.paletteBounds = [];
-    this.currentPalette.colors.forEach((color, index) => {
-      const row = Math.floor(index / maxPerRow);
-      const col = index % maxPerRow;
+    this.currentPalette.colors.slice(start, start + maxVisible).forEach((color, localIndex) => {
+      const index = start + localIndex;
+      const row = Math.floor(localIndex / colsVisible);
+      const col = localIndex % colsVisible;
       const swatchX = sheetX + 12 + col * (swatchSize + gap);
       const swatchY = topY + row * (swatchSize + gap);
-      if (swatchY + swatchSize > sheetY + sheetH - 58) return;
       ctx.fillStyle = color.hex;
       ctx.fillRect(swatchX, swatchY, swatchSize, swatchSize);
       ctx.strokeStyle = index === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)';
@@ -4404,10 +4454,12 @@ export default class PixelStudio {
       const sliderRowStep = Math.max(sliderH + 6, Math.floor(sliderAreaH / sliderCount));
       const sliderBlockH = sliderCount * sliderRowStep;
 
+      const quantizationLevels = this.paletteColorDraft.quantization || 32;
+      const quantizeHex = (rgb) => this.rgbToHex(this.quantizeChannel(rgb.r, quantizationLevels), this.quantizeChannel(rgb.g, quantizationLevels), this.quantizeChannel(rgb.b, quantizationLevels));
       const topColor = this.hsvToRgb(this.paletteColorDraft.h, 1, 1);
       const gradX = ctx.createLinearGradient(sv.x, sv.y, sv.x + sv.w, sv.y);
       gradX.addColorStop(0, '#fff');
-      gradX.addColorStop(1, this.rgbToHex(topColor.r, topColor.g, topColor.b));
+      gradX.addColorStop(1, quantizeHex(topColor));
       ctx.fillStyle = gradX;
       ctx.fillRect(sv.x, sv.y, sv.w, sv.h);
       const gradY = ctx.createLinearGradient(sv.x, sv.y, sv.x, sv.y + sv.h);
@@ -4419,13 +4471,11 @@ export default class PixelStudio {
       ctx.strokeRect(sv.x, sv.y, sv.w, sv.h);
 
       const hueGrad = ctx.createLinearGradient(hue.x, hue.y, hue.x, hue.y + hue.h);
-      hueGrad.addColorStop(0, '#f00');
-      hueGrad.addColorStop(0.17, '#ff0');
-      hueGrad.addColorStop(0.33, '#0f0');
-      hueGrad.addColorStop(0.5, '#0ff');
-      hueGrad.addColorStop(0.67, '#00f');
-      hueGrad.addColorStop(0.83, '#f0f');
-      hueGrad.addColorStop(1, '#f00');
+      const hueStops = [0, 0.17, 0.33, 0.5, 0.67, 0.83, 1];
+      hueStops.forEach((stop) => {
+        const rgb = this.hsvToRgb(stop * 360, 1, 1);
+        hueGrad.addColorStop(stop, quantizeHex(rgb));
+      });
       ctx.fillStyle = hueGrad;
       ctx.fillRect(hue.x, hue.y, hue.w, hue.h);
       ctx.strokeRect(hue.x, hue.y, hue.w, hue.h);
@@ -4518,10 +4568,24 @@ export default class PixelStudio {
         this.syncPaletteDraftFromHsv();
       } });
 
+      const quantBounds = { x: pickerX + 10, y: buttonY, w: 140, h: footerButtonH };
       const pickerCancel = { x: pickerX + pickerW - 186, y: buttonY, w: 84, h: footerButtonH };
       const pickerOk = { x: pickerX + pickerW - 94, y: buttonY, w: 84, h: footerButtonH };
+      const q = this.paletteColorDraft.quantization || 32;
+      const quantLabel = q === 8 ? 'Q: 8-bit' : (q === 16 ? 'Q: 16-bit' : 'Q: 32-bit');
+      this.drawButton(ctx, quantBounds, quantLabel, false, { fontSize: 12 });
       this.drawButton(ctx, pickerCancel, 'cancel', false, { fontSize: 12 });
       this.drawButton(ctx, pickerOk, 'add', false, { fontSize: 12 });
+      this.uiButtons.push({
+        bounds: quantBounds,
+        onClick: () => {
+          const levels = [8, 16, 32];
+          const current = levels.indexOf(this.paletteColorDraft.quantization || 32);
+          const next = levels[(current + 1 + levels.length) % levels.length];
+          this.paletteColorDraft.quantization = next;
+          this.syncPaletteDraftFromRgb();
+        }
+      });
       this.uiButtons.push({ bounds: pickerCancel, onClick: () => { this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.palettePickerDrag = null; this.paletteColorPickerBounds = null; } });
       this.uiButtons.push({ bounds: pickerOk, onClick: () => this.applyPaletteColorPickerAdd() });
     }
