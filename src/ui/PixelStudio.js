@@ -5741,7 +5741,7 @@ export default class PixelStudio {
     const optionsW = Math.max(120, w - 24);
     const optionsH = Math.max(60, y + h - optionsY - 6);
     this.toolsPanelMeta = {
-      optionsScrollBounds: { x: optionsX - 2, y: optionsY + 24, w: optionsW + 4, h: Math.max(30, optionsH - 28) },
+      optionsScrollBounds: { x: optionsX - 2, y: optionsY + 30, w: optionsW + 4, h: Math.max(26, optionsH - 34) },
       lineHeight,
       maxToolOptionsScroll: 0
     };
@@ -5824,7 +5824,7 @@ export default class PixelStudio {
     const lineHeight = isMobile ? 52 : 20;
     const rowHeight = isMobile ? 52 : 22;
     const headerH = isMobile ? 26 : 22;
-    const bodyY = y + headerH + 14;
+    const bodyY = y + headerH + 18;
     const bodyH = Math.max(28, panelHeight - headerH - 8);
     const startY = bodyY;
     const scroll = Math.max(0, this.focusScroll.toolOptions || 0);
@@ -5844,6 +5844,36 @@ export default class PixelStudio {
     ctx.rect(x - 4, bodyY - 2, panelWidth + 8, bodyH + 4);
     ctx.clip();
     offsetY -= scrollY;
+
+    if (this.leftPanelTab === 'select') {
+      const selectModes = [
+        { label: 'Rect', id: TOOL_IDS.SELECT_RECT },
+        { label: 'Oval', id: TOOL_IDS.SELECT_ELLIPSE },
+        { label: 'Lasso', id: TOOL_IDS.SELECT_LASSO },
+        { label: 'Magic', id: TOOL_IDS.SELECT_MAGIC_LASSO },
+        { label: 'Color', id: TOOL_IDS.SELECT_MAGIC_COLOR }
+      ];
+      const modeCols = isMobile ? 3 : 3;
+      const modeGap = isMobile ? 8 : 6;
+      const modeW = Math.max(44, Math.floor((panelWidth - modeGap * (modeCols - 1)) / modeCols));
+      const modeH = isMobile ? 40 : 18;
+      selectModes.forEach((entry, index) => {
+        const row = Math.floor(index / modeCols);
+        const col = index % modeCols;
+        const bounds = {
+          x: x + col * (modeW + modeGap),
+          y: offsetY + row * ((isMobile ? 44 : 22)) - (isMobile ? 22 : 9),
+          w: modeW,
+          h: modeH
+        };
+        const active = this.activeToolId === entry.id;
+        this.drawButton(ctx, bounds, entry.label, active, { fontSize: isMobile ? 12 : 11 });
+        this.uiButtons.push({ bounds, onClick: () => this.setActiveTool(entry.id) });
+        this.registerFocusable('menu', bounds, () => this.setActiveTool(entry.id));
+      });
+      offsetY += (isMobile ? 2 * 44 : 2 * 22);
+    }
+
     const usesBrush = [TOOL_IDS.PENCIL, TOOL_IDS.ERASER, TOOL_IDS.DITHER, TOOL_IDS.CLONE].includes(this.activeToolId);
     if (usesBrush) {
       const shapeBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: Math.min(panelWidth, isMobile ? 200 : 170), h: isMobile ? 44 : 18 };
