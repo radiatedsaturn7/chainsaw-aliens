@@ -2934,23 +2934,29 @@ export default class PixelStudio {
     const width = this.canvasState.width;
     const height = this.canvasState.height;
     const composite = compositeLayers(this.canvasState.layers, width, height);
-    const luminance = new Float32Array(width * height);
-    for (let i = 0; i < composite.length; i += 1) {
-      const rgba = uint32ToRgba(composite[i] || 0);
-      luminance[i] = (rgba.r * 0.299) + (rgba.g * 0.587) + (rgba.b * 0.114);
-    }
+    const rgba = Array.from(composite, (value) => uint32ToRgba(value || 0));
     const edge = new Float32Array(width * height);
+
+    const indexAt = (row, col) => row * width + col;
     for (let row = 1; row < height - 1; row += 1) {
       for (let col = 1; col < width - 1; col += 1) {
-        const i = row * width + col;
-        const gx =
-          -luminance[i - width - 1] + luminance[i - width + 1]
-          - (2 * luminance[i - 1]) + (2 * luminance[i + 1])
-          - luminance[i + width - 1] + luminance[i + width + 1];
-        const gy =
-          luminance[i - width - 1] + (2 * luminance[i - width]) + luminance[i - width + 1]
-          - luminance[i + width - 1] - (2 * luminance[i + width]) - luminance[i + width + 1];
-        edge[i] = Math.hypot(gx, gy);
+        const idx = indexAt(row, col);
+        const center = rgba[idx];
+        let bestAlphaDelta = 0;
+        let bestColorDelta = 0;
+        for (let dy = -1; dy <= 1; dy += 1) {
+          for (let dx = -1; dx <= 1; dx += 1) {
+            if (!dx && !dy) continue;
+            const neighbor = rgba[indexAt(row + dy, col + dx)];
+            const alphaDelta = Math.abs(center.a - neighbor.a);
+            const colorDelta = Math.hypot(center.r - neighbor.r, center.g - neighbor.g, center.b - neighbor.b);
+            if (alphaDelta > bestAlphaDelta) bestAlphaDelta = alphaDelta;
+            if (colorDelta > bestColorDelta) bestColorDelta = colorDelta;
+          }
+        }
+        // Strongly prefer transparency boundaries (white->transparent outlines, etc),
+        // but still consider color boundaries for opaque artwork.
+        edge[idx] = (bestAlphaDelta * 3.5) + bestColorDelta;
       }
     }
     return edge;
@@ -2961,24 +2967,31 @@ export default class PixelStudio {
     if (!edge) return point;
     const width = this.canvasState.width;
     const height = this.canvasState.height;
-    const radius = 2;
+    const threshold = clamp(Number(this.toolOptions.magicThreshold) || 0, 0, 255);
+    const radius = clamp(2 + Math.round(threshold / 48), 2, 7);
     let bestRow = clamp(point.row, 0, height - 1);
     let bestCol = clamp(point.col, 0, width - 1);
-    let bestScore = -1;
+    let bestScore = -Infinity;
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         const row = point.row + dy;
         const col = point.col + dx;
         if (row < 0 || col < 0 || row >= height || col >= width) continue;
         const idx = row * width + col;
-        const centerDist = Math.hypot(dx, dy);
-        const score = edge[idx] - centerDist * 6;
+        const distancePenalty = Math.hypot(dx, dy) * 18;
+        const score = edge[idx] - distancePenalty;
         if (score > bestScore) {
           bestScore = score;
           bestRow = row;
           bestCol = col;
         }
       }
+    }
+
+    const centerIdx = clamp(point.row, 0, height - 1) * width + clamp(point.col, 0, width - 1);
+    const centerScore = edge[centerIdx] || 0;
+    if (bestScore < centerScore + 4) {
+      return { row: clamp(point.row, 0, height - 1), col: clamp(point.col, 0, width - 1) };
     }
     return { row: bestRow, col: bestCol };
   }
@@ -3865,6 +3878,10 @@ export default class PixelStudio {
     }
     if (this.mobileDrawer && this.mobileDrawerBounds && !this.isPointInBounds({ x, y }, this.mobileDrawerBounds)) {
       this.mobileDrawer = null;
+      // Allow the same tap to continue onto canvas interactions instead of requiring a second tap.
+      if (this.canvasBounds && this.isPointInBounds({ x, y }, this.canvasBounds)) {
+        return false;
+      }
       return true;
     }
     if (this.selectionContextMenu?.bounds && !this.isPointInBounds({ x, y }, this.selectionContextMenu.bounds)) {
