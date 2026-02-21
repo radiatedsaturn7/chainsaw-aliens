@@ -166,6 +166,8 @@ export default class Game {
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
     this.title = new Title();
+    this.debugMode = true;
+    this.debugRestartInFlight = false;
     vfsEnsureIndex();
     this.dialog = new Dialog(INTRO_LINES);
     this.hud = new HUD();
@@ -3746,6 +3748,26 @@ export default class Game {
     this.systemPrompts.push(new SystemPrompt(message, { mode: 'toast', duration: 2 }));
   }
 
+  async requestDebugRestartPull() {
+    if (this.debugRestartInFlight) return;
+    this.debugRestartInFlight = true;
+    this.showSystemToast('Running git pull...');
+    try {
+      const response = await fetch('/__debug/restart', { method: 'POST' });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload?.ok) {
+        const reason = payload?.stderr || payload?.error || `HTTP ${response.status}`;
+        this.showSystemToast(`Pull failed: ${String(reason).slice(0, 80)}`);
+      } else {
+        this.showSystemToast('Pull complete.');
+      }
+    } catch (error) {
+      this.showSystemToast(`Pull request failed: ${String(error).slice(0, 80)}`);
+    } finally {
+      this.debugRestartInFlight = false;
+    }
+  }
+
   showModalPrompt(message) {
     if (!message) return;
     this.modalPrompt = new SystemPrompt(message, { mode: 'modal' });
@@ -5097,7 +5119,8 @@ export default class Game {
     if (this.state === 'loading') {
       this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode, {
         isMobile: this.deviceIsMobile,
-        gamepadConnected: this.gamepadConnected
+        gamepadConnected: this.gamepadConnected,
+        debugRestartEnabled: false
       });
       ctx.save();
       ctx.fillStyle = '#fff';
@@ -5111,7 +5134,8 @@ export default class Game {
     if (this.state === 'title') {
       this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode, {
         isMobile: this.deviceIsMobile,
-        gamepadConnected: this.gamepadConnected
+        gamepadConnected: this.gamepadConnected,
+        debugRestartEnabled: this.debugMode
       });
       this.mobileControls.draw(ctx, this.state);
       return;
@@ -6453,6 +6477,11 @@ export default class Game {
         this.audio.ui();
         return;
       }
+      if (action === 'debug-restart' && this.title.screen === 'main') {
+        this.requestDebugRestartPull();
+        this.audio.ui();
+        return;
+      }
       if (action === 'options') {
         this.title.setControlsSelectionByMode(this.inputMode);
         this.title.setScreen('controls');
@@ -6624,6 +6653,13 @@ export default class Game {
         } else if (action === 'reset-all') {
           this.resetAllContent();
         }
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
+      if (action === 'debug-restart' && this.title.screen === 'main') {
+        this.requestDebugRestartPull();
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
