@@ -19,6 +19,7 @@ export default class Title {
     this.menuBounds = new Map();
     this.toolsBounds = new Map();
     this.controlsBounds = new Map();
+    this.debugRestartBounds = null;
     this.explosions = [];
     this.nextExplosion = 1.4;
     this.aliens = Array.from({ length: 12 }, (_, i) => ({
@@ -167,7 +168,7 @@ export default class Title {
     } else if (screen === 'controls') {
       this.drawControls(ctx, width, height, inputMode);
     } else {
-      this.drawMainMenu(ctx, width, height);
+      this.drawMainMenu(ctx, width, height, { showDebugRestart: Boolean(inputHints?.debugRestartEnabled) });
     }
     ctx.restore();
   }
@@ -185,7 +186,7 @@ export default class Title {
     ctx.fillText(message, width / 2, height - 140 + pulse);
   }
 
-  drawMainMenu(ctx, width, height) {
+  drawMainMenu(ctx, width, height, options = {}) {
     ctx.fillStyle = '#fff';
     ctx.font = '22px Courier New';
     ctx.textAlign = 'center';
@@ -226,6 +227,20 @@ export default class Title {
       }
       this.menuBounds.set(action, { x: buttonX, y, w: buttonWidth, h: buttonHeight });
     });
+
+    this.debugRestartBounds = null;
+    if (options.showDebugRestart) {
+      const restartBounds = { x: 18, y: height - 44, w: 140, h: 26 };
+      this.debugRestartBounds = restartBounds;
+      ctx.fillStyle = 'rgba(255,170,90,0.18)';
+      ctx.fillRect(restartBounds.x, restartBounds.y, restartBounds.w, restartBounds.h);
+      ctx.strokeStyle = 'rgba(255,170,90,0.95)';
+      ctx.strokeRect(restartBounds.x, restartBounds.y, restartBounds.w, restartBounds.h);
+      ctx.fillStyle = '#ffd5ad';
+      ctx.font = '14px Courier New';
+      ctx.fillText('Restart/Pull', restartBounds.x + restartBounds.w / 2, restartBounds.y + 17);
+    }
+
   }
 
   drawTools(ctx, width, height) {
@@ -421,6 +436,13 @@ export default class Title {
       if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
         return action;
       }
+    }
+    if (this.debugRestartBounds
+      && x >= this.debugRestartBounds.x
+      && x <= this.debugRestartBounds.x + this.debugRestartBounds.w
+      && y >= this.debugRestartBounds.y
+      && y <= this.debugRestartBounds.y + this.debugRestartBounds.h) {
+      return 'debug-restart';
     }
     return null;
   }
