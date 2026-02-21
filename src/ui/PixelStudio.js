@@ -4103,7 +4103,10 @@ export default class PixelStudio {
   setPaletteIndex(index) {
     this.secondaryPaletteIndex = this.paletteIndex;
     this.paletteIndex = index;
-    if (!this.paletteGridOpen && !this.paletteColorPickerOpen) {
+    const shouldReturnToCanvas = !this.paletteGridOpen
+      && !this.paletteColorPickerOpen
+      && !(this.isMobileLayout() && this.mobileDrawer);
+    if (shouldReturnToCanvas) {
       this.setInputMode('canvas');
     }
   }
