@@ -3416,7 +3416,7 @@ export default class PixelStudio {
       w: Math.max(1, bounds.w),
       h: Math.max(1, bounds.h),
       rotationDeg,
-      orbOffset: 2
+      orbOffset: 3.5
     });
   }
 
@@ -3426,7 +3426,7 @@ export default class PixelStudio {
     const hit = hitTestTransformHandles({
       point: { x: point.col + 0.5, y: point.row + 0.5 },
       meta,
-      radius: 1.2
+      radius: 2.0
     });
     if (hit?.type === 'scale') return { type: 'scale', handle: hit.handle.key };
     if (hit?.type === 'rotate') return { type: 'rotate' };
@@ -3459,6 +3459,10 @@ export default class PixelStudio {
       const angle = endAngle - startAngle;
       const cos = Math.cos(angle);
       const sin = Math.sin(angle);
+      let minCol = width;
+      let maxCol = -1;
+      let minRow = height;
+      let maxRow = -1;
       for (let row = 0; row < height; row += 1) {
         for (let col = 0; col < width; col += 1) {
           const srcIndex = row * width + col;
@@ -3467,9 +3471,28 @@ export default class PixelStudio {
           const ry = row - centerY;
           const tx = centerX + rx * cos - ry * sin;
           const ty = centerY + rx * sin + ry * cos;
-          const destCol = Math.round(tx);
-          const destRow = Math.round(ty);
-          if (destRow < 0 || destCol < 0 || destRow >= height || destCol >= width) continue;
+          minCol = Math.min(minCol, Math.floor(tx));
+          maxCol = Math.max(maxCol, Math.ceil(tx));
+          minRow = Math.min(minRow, Math.floor(ty));
+          maxRow = Math.max(maxRow, Math.ceil(ty));
+        }
+      }
+      if (maxCol < minCol || maxRow < minRow) return null;
+      minCol = clamp(minCol, 0, width - 1);
+      maxCol = clamp(maxCol, 0, width - 1);
+      minRow = clamp(minRow, 0, height - 1);
+      maxRow = clamp(maxRow, 0, height - 1);
+      for (let destRow = minRow; destRow <= maxRow; destRow += 1) {
+        for (let destCol = minCol; destCol <= maxCol; destCol += 1) {
+          const dx = destCol - centerX;
+          const dy = destRow - centerY;
+          const srcX = centerX + dx * cos + dy * sin;
+          const srcY = centerY - dx * sin + dy * cos;
+          const srcCol = Math.round(srcX);
+          const srcRow = Math.round(srcY);
+          if (srcRow < 0 || srcCol < 0 || srcRow >= height || srcCol >= width) continue;
+          const srcIndex = srcRow * width + srcCol;
+          if (!drag.startMask[srcIndex]) continue;
           const destIndex = destRow * width + destCol;
           nextMask[destIndex] = 1;
           const value = drag.startPixels[srcIndex];
@@ -3495,15 +3518,19 @@ export default class PixelStudio {
       const targetH = Math.max(1, halfH * 2);
       const scaleX = targetW / Math.max(1, drag.startW);
       const scaleY = targetH / Math.max(1, drag.startH);
-      for (let row = 0; row < height; row += 1) {
-        for (let col = 0; col < width; col += 1) {
-          const srcIndex = row * width + col;
+      const minCol = clamp(Math.floor(centerX - targetW * 0.5), 0, width - 1);
+      const maxCol = clamp(Math.ceil(centerX + targetW * 0.5), 0, width - 1);
+      const minRow = clamp(Math.floor(centerY - targetH * 0.5), 0, height - 1);
+      const maxRow = clamp(Math.ceil(centerY + targetH * 0.5), 0, height - 1);
+      for (let destRow = minRow; destRow <= maxRow; destRow += 1) {
+        for (let destCol = minCol; destCol <= maxCol; destCol += 1) {
+          const srcX = centerX + (destCol - centerX) / Math.max(0.0001, scaleX);
+          const srcY = centerY + (destRow - centerY) / Math.max(0.0001, scaleY);
+          const srcCol = Math.round(srcX);
+          const srcRow = Math.round(srcY);
+          if (srcRow < 0 || srcCol < 0 || srcRow >= height || srcCol >= width) continue;
+          const srcIndex = srcRow * width + srcCol;
           if (!drag.startMask[srcIndex]) continue;
-          const tx = centerX + (col - centerX) * scaleX;
-          const ty = centerY + (row - centerY) * scaleY;
-          const destCol = Math.round(tx);
-          const destRow = Math.round(ty);
-          if (destRow < 0 || destCol < 0 || destRow >= height || destCol >= width) continue;
           const destIndex = destRow * width + destCol;
           nextMask[destIndex] = 1;
           const value = drag.startPixels[srcIndex];
