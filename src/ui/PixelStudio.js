@@ -769,6 +769,24 @@ export default class PixelStudio {
       offset: { dx: 0, dy: 0, wrap: true }
     };
     this.transformModal = {
+      scope: 'canvas',
+      type,
+      values: { ...(defaults[type] || {}) },
+      bounds: null,
+      fields: [],
+      buttons: []
+    };
+  }
+
+  openSelectionTransformModal(type) {
+    const defaults = {
+      flip: { axis: 'horizontal' },
+      rotate: { angle: 90 },
+      stretch: { stretchX: 100, stretchY: 100 },
+      skew: { skewX: 0, skewY: 0 }
+    };
+    this.transformModal = {
+      scope: 'selection',
       type,
       values: { ...(defaults[type] || {}) },
       bounds: null,
@@ -872,7 +890,12 @@ export default class PixelStudio {
 
   applyTransformModal() {
     if (!this.transformModal) return;
-    const { type, values } = this.transformModal;
+    const { scope = 'canvas', type, values } = this.transformModal;
+    if (scope === 'selection') {
+      this.applySelectionModalTransform(type, values);
+      this.closeTransformModal();
+      return;
+    }
     this.startHistory(type);
     if (type === 'resize') {
       this.resizeArtCanvas(values.width, values.height);
@@ -885,6 +908,114 @@ export default class PixelStudio {
     }
     this.commitHistory();
     this.closeTransformModal();
+  }
+
+  applySelectionModalTransform(type, values = {}) {
+    if (!this.selection.active || !this.selection.mask || !this.selection.bounds) return;
+    if (type === 'flip') {
+      this.transformSelection(values.axis === 'vertical' ? 'flip-v' : 'flip-h');
+      return;
+    }
+    if (type === 'rotate') {
+      this.applySelectionAffineTransform({ rotateDeg: Number(values.angle) || 0 }, `rotate ${Math.round(Number(values.angle) || 0)}°`);
+      return;
+    }
+    if (type === 'stretch') {
+      const sx = clamp((Number(values.stretchX) || 100) / 100, 0.01, 20);
+      const sy = clamp((Number(values.stretchY) || 100) / 100, 0.01, 20);
+      this.applySelectionAffineTransform({ scaleX: sx, scaleY: sy }, `stretch ${Math.round(sx * 100)}%/${Math.round(sy * 100)}%`);
+      return;
+    }
+    if (type === 'skew') {
+      const skewX = clamp(Number(values.skewX) || 0, -89, 89);
+      const skewY = clamp(Number(values.skewY) || 0, -89, 89);
+      this.applySelectionAffineTransform({ skewXDeg: skewX, skewYDeg: skewY }, `skew ${Math.round(skewX)}°/${Math.round(skewY)}°`);
+    }
+  }
+
+  applySelectionAffineTransform(options = {}, label = 'transform') {
+    if (!this.selection.active || !this.selection.mask || !this.selection.bounds) return;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const mask = this.selection.mask;
+    const sourcePixels = this.getSelectedPixelsSnapshot(mask);
+    const center = this.getSelectionCenterPoint();
+    const rotateDeg = Number(options.rotateDeg) || 0;
+    const scaleX = Number.isFinite(options.scaleX) ? options.scaleX : 1;
+    const scaleY = Number.isFinite(options.scaleY) ? options.scaleY : 1;
+    const skewXDeg = Number(options.skewXDeg) || 0;
+    const skewYDeg = Number(options.skewYDeg) || 0;
+    const rad = rotateDeg * (Math.PI / 180);
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+    const kx = Math.tan(skewXDeg * (Math.PI / 180));
+    const ky = Math.tan(skewYDeg * (Math.PI / 180));
+    const a = cos * scaleX + (-sin) * ky * scaleY;
+    const b = cos * kx * scaleX + (-sin) * scaleY;
+    const c = sin * scaleX + cos * ky * scaleY;
+    const d = sin * kx * scaleX + cos * scaleY;
+    const det = a * d - b * c;
+    if (Math.abs(det) < 1e-6) return;
+    const invA = d / det;
+    const invB = -b / det;
+    const invC = -c / det;
+    const invD = a / det;
+    let minCol = width;
+    let minRow = height;
+    let maxCol = -1;
+    let maxRow = -1;
+    for (let row = 0; row < height; row += 1) {
+      for (let col = 0; col < width; col += 1) {
+        const i = row * width + col;
+        if (!mask[i]) continue;
+        const lx = col - center.col;
+        const ly = row - center.row;
+        const tx = center.col + (a * lx + b * ly);
+        const ty = center.row + (c * lx + d * ly);
+        minCol = Math.min(minCol, Math.floor(tx));
+        maxCol = Math.max(maxCol, Math.ceil(tx));
+        minRow = Math.min(minRow, Math.floor(ty));
+        maxRow = Math.max(maxRow, Math.ceil(ty));
+      }
+    }
+    if (maxCol < minCol || maxRow < minRow) return;
+    minCol = clamp(minCol, 0, width - 1);
+    maxCol = clamp(maxCol, 0, width - 1);
+    minRow = clamp(minRow, 0, height - 1);
+    maxRow = clamp(maxRow, 0, height - 1);
+    const transformedPixels = new Uint32Array(width * height);
+    const transformedMask = new Uint8Array(width * height);
+    for (let row = minRow; row <= maxRow; row += 1) {
+      for (let col = minCol; col <= maxCol; col += 1) {
+        const dx = col - center.col;
+        const dy = row - center.row;
+        const srcX = center.col + invA * dx + invB * dy;
+        const srcY = center.row + invC * dx + invD * dy;
+        const srcCol = Math.round(srcX);
+        const srcRow = Math.round(srcY);
+        if (srcCol < 0 || srcRow < 0 || srcCol >= width || srcRow >= height) continue;
+        const srcIndex = srcRow * width + srcCol;
+        if (!mask[srcIndex]) continue;
+        const destIndex = row * width + col;
+        transformedMask[destIndex] = 1;
+        const value = sourcePixels[srcIndex];
+        if (value) transformedPixels[destIndex] = value;
+      }
+    }
+    this.startHistory(label);
+    const nextLayer = new Uint32Array(this.activeLayer.pixels);
+    for (let i = 0; i < nextLayer.length; i += 1) {
+      if (mask[i]) nextLayer[i] = 0;
+    }
+    for (let i = 0; i < transformedPixels.length; i += 1) {
+      const value = transformedPixels[i];
+      if (value) nextLayer[i] = value;
+    }
+    this.activeLayer.pixels = nextLayer;
+    this.selection.mask = transformedMask;
+    this.selection.bounds = this.getMaskBounds(transformedMask);
+    this.selection.active = Boolean(this.selection.bounds);
+    this.commitHistory();
   }
 
 
@@ -4792,7 +4923,8 @@ export default class PixelStudio {
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
     const title = this.transformModal.type[0].toUpperCase() + this.transformModal.type.slice(1);
-    ctx.fillText(`${title} Canvas`, modal.x + 12, modal.y + 22);
+    const modalTarget = this.transformModal.scope === 'selection' ? 'Selection' : 'Canvas';
+    ctx.fillText(`${title} ${modalTarget}`, modal.x + 12, modal.y + 22);
 
     const rowsByType = {
       resize: [
@@ -4810,6 +4942,17 @@ export default class PixelStudio {
       offset: [
         { key: 'dx', label: 'Shift X', min: -this.canvasState.width, max: this.canvasState.width },
         { key: 'dy', label: 'Shift Y', min: -this.canvasState.height, max: this.canvasState.height }
+      ],
+      rotate: [
+        { key: 'angle', label: 'Angle', min: -360, max: 360 }
+      ],
+      stretch: [
+        { key: 'stretchX', label: 'Stretch X %', min: 1, max: 500 },
+        { key: 'stretchY', label: 'Stretch Y %', min: 1, max: 500 }
+      ],
+      skew: [
+        { key: 'skewX', label: 'Skew X °', min: -89, max: 89 },
+        { key: 'skewY', label: 'Skew Y °', min: -89, max: 89 }
       ]
     };
     const rows = rowsByType[this.transformModal.type] || [];
@@ -4845,6 +4988,31 @@ export default class PixelStudio {
       rowY += 38;
     });
 
+    if (this.transformModal.type === 'flip') {
+      const axis = this.transformModal.values.axis === 'vertical' ? 'vertical' : 'horizontal';
+      const flipHB = { x: modal.x + 12, y: rowY - 12, w: 140, h: 22 };
+      const flipVB = { x: modal.x + 158, y: rowY - 12, w: 140, h: 22 };
+      this.drawButton(ctx, flipHB, 'Flip Horizontal', axis === 'horizontal', { fontSize: 12 });
+      this.drawButton(ctx, flipVB, 'Flip Vertical', axis === 'vertical', { fontSize: 12 });
+      this.uiButtons.push({ bounds: flipHB, onClick: () => { this.transformModal.values.axis = 'horizontal'; } });
+      this.uiButtons.push({ bounds: flipVB, onClick: () => { this.transformModal.values.axis = 'vertical'; } });
+      this.registerFocusable('menu', flipHB, () => { this.transformModal.values.axis = 'horizontal'; });
+      this.registerFocusable('menu', flipVB, () => { this.transformModal.values.axis = 'vertical'; });
+      rowY += 32;
+    }
+
+    if (this.transformModal.type === 'rotate') {
+      const presets = [90, 180, 270];
+      presets.forEach((angle, index) => {
+        const b = { x: modal.x + 12 + index * 74, y: rowY - 12, w: 68, h: 22 };
+        const active = Math.round(this.transformModal.values.angle || 0) === angle;
+        this.drawButton(ctx, b, String(angle), active, { fontSize: 12 });
+        this.uiButtons.push({ bounds: b, onClick: () => { this.transformModal.values.angle = angle; } });
+        this.registerFocusable('menu', b, () => { this.transformModal.values.angle = angle; });
+      });
+      rowY += 32;
+    }
+
     if (this.transformModal.type === 'offset') {
       const wrapBounds = { x: modal.x + 12, y: rowY - 12, w: 110, h: 20 };
       const wrap = this.transformModal.values.wrap !== false;
@@ -4857,7 +5025,7 @@ export default class PixelStudio {
     const cancelBounds = { x: modal.x + modal.w - 180, y: modal.y + modal.h - 34, w: 80, h: 24 };
     const okBounds = { x: modal.x + modal.w - 92, y: modal.y + modal.h - 34, w: 80, h: 24 };
     this.drawButton(ctx, cancelBounds, 'Cancel', false, { fontSize: 12 });
-    this.drawButton(ctx, okBounds, 'Apply', true, { fontSize: 12 });
+    this.drawButton(ctx, okBounds, this.transformModal.scope === 'selection' ? 'OK' : 'Apply', true, { fontSize: 12 });
     this.transformModal.buttons = [
       { bounds: cancelBounds, onClick: () => this.closeTransformModal() },
       { bounds: okBounds, onClick: () => this.applyTransformModal() }
@@ -6374,13 +6542,10 @@ export default class PixelStudio {
       { label: 'Invert', action: () => this.invertSelection() },
       { label: 'Grow', action: () => this.expandSelection(1) },
       { label: 'Contract', action: () => this.expandSelection(-1) },
-      { label: 'Flip H', action: () => this.transformSelection('flip-h') },
-      { label: 'Flip V', action: () => this.transformSelection('flip-v') },
-      { label: 'Rot CW', action: () => this.transformSelection('rotate-cw') },
-      { label: 'Rot CCW', action: () => this.transformSelection('rotate-ccw') },
-      { label: 'Scale 2x', action: () => this.scaleSelection(2) },
-      { label: 'Scale 3x', action: () => this.scaleSelection(3) },
-      { label: 'Scale 4x', action: () => this.scaleSelection(4) }
+      { label: 'Flip…', action: () => this.openSelectionTransformModal('flip') },
+      { label: 'Rotate…', action: () => this.openSelectionTransformModal('rotate') },
+      { label: 'Stretch…', action: () => this.openSelectionTransformModal('stretch') },
+      { label: 'Skew…', action: () => this.openSelectionTransformModal('skew') }
     ];
     actions.forEach((entry, index) => {
       const bounds = { x, y: y + index * rowStep, w: buttonWidth, h: rowHeight };
