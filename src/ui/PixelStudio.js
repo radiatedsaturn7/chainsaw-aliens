@@ -4105,7 +4105,6 @@ export default class PixelStudio {
     this.paletteIndex = index;
     if (!this.paletteGridOpen && !this.paletteColorPickerOpen) {
       this.setInputMode('canvas');
-      if (this.isMobileLayout()) this.mobileDrawer = null;
     }
   }
 
