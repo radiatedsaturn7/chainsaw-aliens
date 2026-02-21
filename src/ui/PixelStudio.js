@@ -6331,7 +6331,7 @@ export default class PixelStudio {
       });
     }
 
-    contentBottom = offsetY;
+    contentBottom = offsetY + scrollY;
     ctx.restore();
     const totalRows = Math.max(0, Math.ceil((contentBottom - startY) / rowHeight));
     const visibleRows = Math.max(1, Math.floor(bodyH / rowHeight));
