@@ -4653,14 +4653,6 @@ export default class PixelStudio {
       this.closeBrushPicker({ apply: false });
       return true;
     }
-    if (this.mobileDrawer && this.mobileDrawerBounds && !this.isPointInBounds({ x, y }, this.mobileDrawerBounds)) {
-      // Keep drawer visible when tapping canvas so rail/panel doesn't disappear during tool use.
-      if (this.canvasBounds && this.isPointInBounds({ x, y }, this.canvasBounds)) {
-        return false;
-      }
-      this.mobileDrawer = null;
-      return true;
-    }
     if (this.selectionContextMenu?.bounds && !this.isPointInBounds({ x, y }, this.selectionContextMenu.bounds)) {
       this.selectionContextMenu = null;
       this.setInputMode('canvas');
