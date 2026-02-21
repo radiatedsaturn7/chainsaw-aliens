@@ -6134,8 +6134,8 @@ export default class PixelStudio {
     const startY = bodyY;
     const scroll = Math.max(0, this.focusScroll.toolOptions || 0);
     const scrollY = scroll * rowHeight;
-    let offsetY = bodyY;
-    let contentBottom = bodyY;
+    let offsetY = bodyY + (isMobile ? 24 : 12);
+    let contentBottom = offsetY;
 
     ctx.save();
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
