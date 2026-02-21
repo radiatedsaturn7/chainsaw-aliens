@@ -1839,6 +1839,15 @@ export default class PixelStudio {
       }
       return;
     }
+    if (this.activeToolId === TOOL_IDS.MOVE && this.selection.active) {
+      const freePoint = this.getGridCellFromScreenUnbounded(payload.x, payload.y);
+      const hit = freePoint ? this.getSelectionTransformHit(freePoint) : null;
+      if (hit?.type === 'rotate' || hit?.type === 'scale') {
+        this.setInputMode('canvas');
+        this.startMove(freePoint);
+        return;
+      }
+    }
     if (payload.touchCount && this.selection.active) {
       const now = performance.now();
       const previous = this.outsideCanvasTapGesture || { time: 0, x: 0, y: 0 };
@@ -1931,7 +1940,9 @@ export default class PixelStudio {
       this.view.panY = pan.y;
       return;
     }
-    const point = this.getGridCellFromScreen(payload.x, payload.y);
+    const point = this.moveTransformDrag
+      ? this.getGridCellFromScreenUnbounded(payload.x, payload.y)
+      : this.getGridCellFromScreen(payload.x, payload.y);
     if (point) {
       this.handleToolPointerMove(point);
     }
@@ -4423,6 +4434,19 @@ export default class PixelStudio {
     return { row, col };
   }
 
+  getGridCellFromScreenUnbounded(x, y) {
+    if (!this.canvasBounds) return null;
+    const { mainX, mainY, x: startX, y: startY, cellSize } = this.canvasBounds;
+    const originX = Number.isFinite(mainX) ? mainX : startX;
+    const originY = Number.isFinite(mainY) ? mainY : startY;
+    const col = Math.floor((x - originX) / cellSize);
+    const row = Math.floor((y - originY) / cellSize);
+    return {
+      row: clamp(row, -this.canvasState.height * 2, this.canvasState.height * 3),
+      col: clamp(col, -this.canvasState.width * 2, this.canvasState.width * 3)
+    };
+  }
+
   getScreenFromGridCell(row, col) {
     if (!this.canvasBounds) return null;
     const { mainX, mainY, x: startX, y: startY, cellSize } = this.canvasBounds;
@@ -6600,8 +6624,10 @@ export default class PixelStudio {
       }
     }
 
-    if (this.selection.floating && this.selection.floatingMode === 'paste') {
-      const floatingOffset = this.getFloatingPasteOffset();
+    if (this.selection.floating) {
+      const floatingOffset = this.selection.floatingMode === 'paste'
+        ? this.getFloatingPasteOffset()
+        : (this.selection.offset || { x: 0, y: 0 });
       this.floatingCanvas.width = width;
       this.floatingCanvas.height = height;
       const imageData = this.floatingCtx.createImageData(width, height);
@@ -6609,7 +6635,7 @@ export default class PixelStudio {
       bytes.set(this.selection.floating);
       this.floatingCtx.putImageData(imageData, 0, 0);
       ctx.save();
-      ctx.globalAlpha = 0.6;
+      ctx.globalAlpha = this.selection.floatingMode === 'paste' ? 0.6 : 0.78;
       ctx.drawImage(
         this.floatingCanvas,
         offsetX + floatingOffset.x * zoom,
