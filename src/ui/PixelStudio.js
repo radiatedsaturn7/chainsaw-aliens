@@ -3375,7 +3375,7 @@ export default class PixelStudio {
       return;
     }
     this.moveTransformDrag = null;
-    this.selection.floating = this.extractSelectionPixels();
+    this.selection.floating = this.getSelectedPixelsSnapshot();
     this.selection.offset = { x: 0, y: 0 };
     this.selection.start = point;
   }
@@ -3401,7 +3401,14 @@ export default class PixelStudio {
     }
     if (!this.selection.floating) return;
     this.startHistory('move selection');
-    this.pasteSelectionPixels(this.selection.floating, this.selection.offset.x, this.selection.offset.y);
+    const nextLayer = new Uint32Array(this.activeLayer.pixels);
+    if (this.selection.mask) {
+      for (let i = 0; i < nextLayer.length; i += 1) {
+        if (this.selection.mask[i]) nextLayer[i] = 0;
+      }
+    }
+    this.pasteSelectionPixels(this.selection.floating, this.selection.offset.x, this.selection.offset.y, nextLayer);
+    this.activeLayer.pixels = nextLayer;
     this.translateSelectionMask(this.selection.offset.x, this.selection.offset.y);
     this.selection.floating = null;
     this.selection.start = null;
@@ -3609,7 +3616,7 @@ export default class PixelStudio {
     return pixels;
   }
 
-  pasteSelectionPixels(pixels, offsetX, offsetY) {
+  pasteSelectionPixels(pixels, offsetX, offsetY, targetPixels = this.activeLayer.pixels) {
     const width = this.canvasState.width;
     const height = this.canvasState.height;
     for (let row = 0; row < height; row += 1) {
@@ -3621,7 +3628,7 @@ export default class PixelStudio {
         const destCol = col + offsetX;
         if (destRow < 0 || destCol < 0 || destRow >= height || destCol >= width) continue;
         const destIndex = destRow * width + destCol;
-        this.activeLayer.pixels[destIndex] = value;
+        targetPixels[destIndex] = value;
       }
     }
   }
@@ -4514,11 +4521,11 @@ export default class PixelStudio {
       return true;
     }
     if (this.mobileDrawer && this.mobileDrawerBounds && !this.isPointInBounds({ x, y }, this.mobileDrawerBounds)) {
-      this.mobileDrawer = null;
-      // Allow the same tap to continue onto canvas interactions instead of requiring a second tap.
+      // Keep drawer visible when tapping canvas so rail/panel doesn't disappear during tool use.
       if (this.canvasBounds && this.isPointInBounds({ x, y }, this.canvasBounds)) {
         return false;
       }
+      this.mobileDrawer = null;
       return true;
     }
     if (this.selectionContextMenu?.bounds && !this.isPointInBounds({ x, y }, this.selectionContextMenu.bounds)) {
@@ -6517,6 +6524,11 @@ export default class PixelStudio {
     const imageData = this.offscreenCtx.createImageData(width, height);
     const bytes = new Uint32Array(imageData.data.buffer);
     bytes.set(composite);
+    if (this.selection.floating && !this.selection.floatingMode && this.selection.mask) {
+      for (let i = 0; i < bytes.length; i += 1) {
+        if (this.selection.mask[i]) bytes[i] = 0;
+      }
+    }
     this.offscreenCtx.putImageData(imageData, 0, 0);
 
     ctx.save();
