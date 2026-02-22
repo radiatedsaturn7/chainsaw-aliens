@@ -197,6 +197,7 @@ export default class PixelStudio {
     this.cloneColorPickArmed = false;
     this.panStart = null;
     this.longPressTimer = null;
+    this.longPressOrigin = null;
     this.cursor = { row: 0, col: 0, x: 0, y: 0 };
     this.gamepadCursor = { x: 0, y: 0, active: false, initialized: false };
     this.gamepadDrawing = false;
@@ -1895,6 +1896,10 @@ export default class PixelStudio {
     }
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
+    if (payload.touchCount && this.longPressTimer && this.longPressOrigin) {
+      const drift = Math.hypot(payload.x - this.longPressOrigin.x, payload.y - this.longPressOrigin.y);
+      if (drift > 8) this.cancelLongPress();
+    }
     if (this.uiSliderDrag && (payload.id === undefined || payload.id === this.uiSliderDrag.id)) {
       this.uiSliderDrag.onDrag?.({ x: payload.x, y: payload.y, id: payload.id });
       return;
@@ -2222,11 +2227,13 @@ export default class PixelStudio {
 
   startLongPress(payload) {
     this.cancelLongPress();
+    this.longPressOrigin = { x: payload.x, y: payload.y };
     this.longPressTimer = setTimeout(() => {
       const point = this.getGridCellFromScreen(payload.x, payload.y);
       if (point) {
         this.pickColor(point);
       }
+      this.longPressOrigin = null;
     }, 450);
   }
 
@@ -2235,6 +2242,7 @@ export default class PixelStudio {
       clearTimeout(this.longPressTimer);
       this.longPressTimer = null;
     }
+    this.longPressOrigin = null;
   }
 
   handleToolPointerDown(point, modifiers = {}) {
