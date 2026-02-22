@@ -5626,25 +5626,7 @@ export default class PixelStudio {
   }
 
   drawBrushPreviewChip(ctx, bounds) {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.strokeStyle = 'rgba(0,0,0,0.35)';
-    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-
-    const radius = Math.max(1, Math.floor(this.toolOptions.brushSize / 2));
-    const centerX = Math.floor(bounds.x + bounds.w / 2);
-    const centerY = Math.floor(bounds.y + bounds.h / 2);
-    const scale = Math.max(1, Math.floor(Math.min(bounds.w, bounds.h) / Math.max(3, radius * 2 + 1)));
-    const shape = this.toolOptions.brushShape;
-    ctx.fillStyle = '#000';
-    for (let dy = -radius; dy <= radius; dy += 1) {
-      for (let dx = -radius; dx <= radius; dx += 1) {
-        if (!this.doesBrushShapeIncludeOffset(shape, dx, dy, radius)) continue;
-        const px = centerX + dx * scale - Math.floor(scale / 2);
-        const py = centerY + dy * scale - Math.floor(scale / 2);
-        ctx.fillRect(px, py, scale, scale);
-      }
-    }
+    this.drawBrushShapePreview(ctx, bounds, this.toolOptions.brushShape, 7);
   }
 
 
