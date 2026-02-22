@@ -108,6 +108,8 @@ export default class PixelStudio {
     this.currentPalette = buildPalette(['#000000', '#ffffff'], 'Temp');
     this.paletteIndex = 0;
     this.secondaryPaletteIndex = 1;
+    this.colorRegisters = [0, 0];
+    this.activeColorRegister = 0;
     this.paletteRamps = [];
     this.limitToPalette = false;
     this.selection = {
@@ -2552,7 +2554,8 @@ export default class PixelStudio {
     const value = composite[point.row * this.canvasState.width + point.col];
     if (!value) return;
     const rgba = uint32ToRgba(value);
-    this.paletteIndex = getNearestPaletteIndex(this.currentPalette, rgba);
+    const sampledIndex = getNearestPaletteIndex(this.currentPalette, rgba);
+    this.setPaletteIndex(sampledIndex);
     if (this.cloneColorPickArmed) {
       this.cloneColorPickArmed = false;
       this.statusMessage = 'Clone paint mode';
@@ -4119,14 +4122,26 @@ export default class PixelStudio {
   }
 
   setPaletteIndex(index) {
+    const maxIndex = Math.max(0, (this.currentPalette.colors?.length || 1) - 1);
+    const nextIndex = clamp(index, 0, maxIndex);
     this.secondaryPaletteIndex = this.paletteIndex;
-    this.paletteIndex = index;
+    this.paletteIndex = nextIndex;
+    if (Array.isArray(this.colorRegisters)) {
+      this.colorRegisters[this.activeColorRegister] = nextIndex;
+    }
     const shouldReturnToCanvas = !this.paletteGridOpen
       && !this.paletteColorPickerOpen
       && !(this.isMobileLayout() && this.mobileDrawer);
     if (shouldReturnToCanvas) {
       this.setInputMode('canvas');
     }
+  }
+
+  toggleActiveColorRegister() {
+    if (!Array.isArray(this.colorRegisters) || this.colorRegisters.length < 2) return;
+    this.activeColorRegister = this.activeColorRegister === 0 ? 1 : 0;
+    const nextIndex = clamp(this.colorRegisters[this.activeColorRegister] ?? 0, 0, Math.max(0, (this.currentPalette.colors?.length || 1) - 1));
+    this.paletteIndex = nextIndex;
   }
 
   generateRamp(steps = 4) {
@@ -5451,7 +5466,7 @@ export default class PixelStudio {
       w: previewSize,
       h: previewSize
     };
-    this.drawBrushPreviewChip(ctx, previewBounds);
+    this.drawColorRegisterToggle(ctx, previewBounds);
 
     const actions = [];
     if (this.activeToolId === TOOL_IDS.CLONE) {
@@ -5570,6 +5585,30 @@ export default class PixelStudio {
         this.updateZoomFromSliderX(pointerX);
       }
     });
+  }
+
+  drawColorRegisterToggle(ctx, bounds) {
+    const backRegister = this.activeColorRegister === 0 ? 1 : 0;
+    const frontHex = getPaletteSwatchHex(this.currentPalette, this.colorRegisters[this.activeColorRegister] ?? this.paletteIndex);
+    const backHex = getPaletteSwatchHex(this.currentPalette, this.colorRegisters[backRegister] ?? this.paletteIndex);
+    const inset = Math.max(6, Math.floor(bounds.w * 0.18));
+    const backBounds = { x: bounds.x + inset, y: bounds.y + inset, w: bounds.w - inset, h: bounds.h - inset };
+    const frontBounds = { x: bounds.x, y: bounds.y, w: bounds.w - inset, h: bounds.h - inset };
+
+    ctx.fillStyle = backHex;
+    ctx.fillRect(backBounds.x, backBounds.y, backBounds.w, backBounds.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(backBounds.x, backBounds.y, backBounds.w, backBounds.h);
+
+    ctx.fillStyle = frontHex;
+    ctx.fillRect(frontBounds.x, frontBounds.y, frontBounds.w, frontBounds.h);
+    ctx.strokeStyle = '#ffe16a';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(frontBounds.x, frontBounds.y, frontBounds.w, frontBounds.h);
+
+    this.uiButtons.push({ bounds, onClick: () => this.toggleActiveColorRegister() });
+    this.registerFocusable('toolbar', bounds, () => this.toggleActiveColorRegister());
   }
 
   drawBrushPreviewChip(ctx, bounds) {
