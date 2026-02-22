@@ -2554,7 +2554,16 @@ export default class PixelStudio {
     const value = composite[point.row * this.canvasState.width + point.col];
     if (!value) return;
     const rgba = uint32ToRgba(value);
-    const sampledIndex = getNearestPaletteIndex(this.currentPalette, rgba);
+    const sampledHex = `#${[rgba.r, rgba.g, rgba.b].map((c) => c.toString(16).padStart(2, '0')).join('')}`;
+    let sampledIndex = this.currentPalette.colors.findIndex((entry) => entry?.hex === sampledHex);
+    if (sampledIndex < 0) {
+      this.currentPalette.colors.push({
+        id: `color-${Date.now()}`,
+        hex: sampledHex,
+        rgba: { r: rgba.r, g: rgba.g, b: rgba.b, a: 255 }
+      });
+      sampledIndex = this.currentPalette.colors.length - 1;
+    }
     this.setPaletteIndex(sampledIndex);
     if (this.cloneColorPickArmed) {
       this.cloneColorPickArmed = false;
