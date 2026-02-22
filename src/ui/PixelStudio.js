@@ -97,6 +97,36 @@ export default class PixelStudio {
       ditherStrength: 2,
       replaceScope: 'layer'
     };
+    this.brushProfiles = {
+      [TOOL_IDS.PENCIL]: {
+        brushSize: this.toolOptions.brushSize,
+        brushOpacity: this.toolOptions.brushOpacity,
+        brushHardness: this.toolOptions.brushHardness,
+        brushShape: this.toolOptions.brushShape,
+        brushFalloff: this.toolOptions.brushFalloff
+      },
+      [TOOL_IDS.ERASER]: {
+        brushSize: this.toolOptions.brushSize,
+        brushOpacity: this.toolOptions.brushOpacity,
+        brushHardness: this.toolOptions.brushHardness,
+        brushShape: this.toolOptions.brushShape,
+        brushFalloff: this.toolOptions.brushFalloff
+      },
+      [TOOL_IDS.CLONE]: {
+        brushSize: this.toolOptions.brushSize,
+        brushOpacity: this.toolOptions.brushOpacity,
+        brushHardness: this.toolOptions.brushHardness,
+        brushShape: this.toolOptions.brushShape,
+        brushFalloff: this.toolOptions.brushFalloff
+      },
+      [TOOL_IDS.EYEDROPPER]: {
+        brushSize: this.toolOptions.brushSize,
+        brushOpacity: this.toolOptions.brushOpacity,
+        brushHardness: this.toolOptions.brushHardness,
+        brushShape: this.toolOptions.brushShape,
+        brushFalloff: this.toolOptions.brushFalloff
+      }
+    };
     this.canvasState = {
       width: 16,
       height: 16,
@@ -1196,6 +1226,7 @@ export default class PixelStudio {
       this.setBrushSize(this.brushPickerDraft.brushSize);
       this.setBrushOpacity(this.brushPickerDraft.brushOpacity);
       this.setBrushHardness(this.brushPickerDraft.brushHardness);
+      this.saveBrushProfile();
     }
     this.brushPickerOpen = false;
     this.brushPickerDraft = null;
@@ -2228,8 +2259,11 @@ export default class PixelStudio {
   }
 
   setActiveTool(toolId) {
+    const previousToolId = this.activeToolId;
+    if (previousToolId) this.saveBrushProfile(previousToolId);
     this.activeToolId = toolId;
     this.lastActiveToolId = toolId;
+    this.loadBrushProfile(toolId);
     this.linePreview = null;
     this.curvePreview = null;
     this.shapePreview = null;
@@ -4101,16 +4135,49 @@ export default class PixelStudio {
     this.panJoystick.dy = Math.sin(angle) * scaled;
   }
 
+  getBrushProfileToolId(toolId = this.activeToolId) {
+    return [TOOL_IDS.PENCIL, TOOL_IDS.ERASER, TOOL_IDS.CLONE, TOOL_IDS.EYEDROPPER].includes(toolId)
+      ? toolId
+      : null;
+  }
+
+  saveBrushProfile(toolId = this.activeToolId) {
+    const profileId = this.getBrushProfileToolId(toolId);
+    if (!profileId) return;
+    this.brushProfiles[profileId] = {
+      brushSize: this.toolOptions.brushSize,
+      brushOpacity: this.toolOptions.brushOpacity,
+      brushHardness: this.toolOptions.brushHardness,
+      brushShape: this.toolOptions.brushShape,
+      brushFalloff: this.toolOptions.brushFalloff
+    };
+  }
+
+  loadBrushProfile(toolId = this.activeToolId) {
+    const profileId = this.getBrushProfileToolId(toolId);
+    if (!profileId) return;
+    const profile = this.brushProfiles[profileId];
+    if (!profile) return;
+    this.toolOptions.brushSize = clamp(Math.round(profile.brushSize ?? DEFAULT_BRUSH_SIZE), BRUSH_SIZE_MIN, BRUSH_SIZE_MAX);
+    this.toolOptions.brushOpacity = clamp(profile.brushOpacity ?? 1, 0.05, 1);
+    this.toolOptions.brushHardness = clamp(profile.brushHardness ?? 0, 0, 1);
+    this.toolOptions.brushShape = BRUSH_SHAPES.includes(profile.brushShape) ? profile.brushShape : BRUSH_SHAPES[0];
+    this.toolOptions.brushFalloff = BRUSH_FALLOFFS.includes(profile.brushFalloff) ? profile.brushFalloff : BRUSH_FALLOFFS[0];
+  }
+
   setBrushSize(size) {
     this.toolOptions.brushSize = clamp(Math.round(size), BRUSH_SIZE_MIN, BRUSH_SIZE_MAX);
+    this.saveBrushProfile();
   }
 
   setBrushOpacity(opacity) {
     this.toolOptions.brushOpacity = clamp(opacity, 0.05, 1);
+    this.saveBrushProfile();
   }
 
   setBrushHardness(hardness) {
     this.toolOptions.brushHardness = clamp(hardness, 0, 1);
+    this.saveBrushProfile();
   }
 
   setBrushSizeFromSlider(x, bounds) {
@@ -4123,11 +4190,13 @@ export default class PixelStudio {
   cycleBrushShape() {
     const index = BRUSH_SHAPES.indexOf(this.toolOptions.brushShape);
     this.toolOptions.brushShape = BRUSH_SHAPES[(index + 1 + BRUSH_SHAPES.length) % BRUSH_SHAPES.length];
+    this.saveBrushProfile();
   }
 
   cycleBrushFalloff() {
     const index = BRUSH_FALLOFFS.indexOf(this.toolOptions.brushFalloff);
     this.toolOptions.brushFalloff = BRUSH_FALLOFFS[(index + 1 + BRUSH_FALLOFFS.length) % BRUSH_FALLOFFS.length];
+    this.saveBrushProfile();
   }
 
   setPaletteIndex(index) {
