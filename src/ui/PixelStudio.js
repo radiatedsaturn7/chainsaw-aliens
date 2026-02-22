@@ -5454,19 +5454,24 @@ export default class PixelStudio {
     const buttonH = h - 16;
     const buttonY = y + 8;
     const gap = 6;
-    const brushBounds = { x: x + 8, y: buttonY, w: 84, h: buttonH };
-    this.drawButton(ctx, brushBounds, 'Brush', this.brushPickerOpen, { fontSize: 12 });
-    this.uiButtons.push({ bounds: brushBounds, onClick: () => this.openBrushPicker() });
-    this.registerFocusable('toolbar', brushBounds, () => this.openBrushPicker());
-
     const previewSize = Math.min(48, Math.max(34, buttonH));
-    const previewBounds = {
-      x: brushBounds.x + brushBounds.w + gap,
+    const brushPreviewBounds = {
+      x: x + 8,
       y: y + Math.floor((h - previewSize) / 2),
       w: previewSize,
       h: previewSize
     };
-    this.drawColorRegisterToggle(ctx, previewBounds);
+    this.drawBrushPreviewChip(ctx, brushPreviewBounds);
+    this.uiButtons.push({ bounds: brushPreviewBounds, onClick: () => this.openBrushPicker() });
+    this.registerFocusable('toolbar', brushPreviewBounds, () => this.openBrushPicker());
+
+    const registerBounds = {
+      x: brushPreviewBounds.x + brushPreviewBounds.w + gap,
+      y: y + Math.floor((h - previewSize) / 2),
+      w: previewSize,
+      h: previewSize
+    };
+    this.drawColorRegisterToggle(ctx, registerBounds);
 
     const actions = [];
     if (this.activeToolId === TOOL_IDS.CLONE) {
@@ -5495,7 +5500,7 @@ export default class PixelStudio {
       { label: 'Redo', action: () => this.runtime.redo() }
     );
 
-    const actionAreaStartX = previewBounds.x + previewBounds.w + gap;
+    const actionAreaStartX = registerBounds.x + registerBounds.w + gap;
     const availableW = Math.max(120, x + w - 8 - actionAreaStartX);
     const buttonW = Math.max(52, Math.min(90, Math.floor((availableW - gap * Math.max(0, actions.length - 1)) / Math.max(1, actions.length))));
     let currentX = x + w - 8 - buttonW;
