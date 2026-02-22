@@ -6527,6 +6527,8 @@ export default class PixelStudio {
       return y + rowStep;
     }
 
+    const transformButtonHeight = isMobile ? 48 : 24;
+    const transformButtonStep = isMobile ? 56 : 30;
     const actions = [
       { label: 'Clear Selection', action: () => this.clearSelection() },
       { label: 'Transform', action: () => { this.setActiveTool(TOOL_IDS.MOVE); this.setInputMode('canvas'); } },
@@ -6536,18 +6538,25 @@ export default class PixelStudio {
       { label: 'Invert', action: () => this.invertSelection() },
       { label: 'Grow', action: () => this.expandSelection(1) },
       { label: 'Contract', action: () => this.expandSelection(-1) },
-      { label: 'Flip…', action: () => this.openSelectionTransformModal('flip') },
-      { label: 'Rotate…', action: () => this.openSelectionTransformModal('rotate') },
-      { label: 'Stretch…', action: () => this.openSelectionTransformModal('stretch') },
-      { label: 'Skew…', action: () => this.openSelectionTransformModal('skew') }
+      { label: 'Flip', tall: true, action: () => this.applySelectionModalTransform('flip', { axis: 'horizontal' }) },
+      { label: 'Rotate', tall: true, action: () => this.applySelectionModalTransform('rotate', { angle: 90 }) },
+      { label: 'Stretch', tall: true, action: () => this.applySelectionModalTransform('stretch', { stretchX: 125, stretchY: 125 }) },
+      { label: 'Skew', tall: true, action: () => this.applySelectionModalTransform('skew', { skewX: 20, skewY: 0 }) }
     ];
-    actions.forEach((entry, index) => {
-      const bounds = { x, y: y + index * rowStep, w: buttonWidth, h: rowHeight };
+    let offsetY = y;
+    actions.forEach((entry) => {
+      const bounds = {
+        x,
+        y: offsetY,
+        w: buttonWidth,
+        h: entry.tall ? transformButtonHeight : rowHeight
+      };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
       this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
+      offsetY += entry.tall ? transformButtonStep : rowStep;
     });
-    return y + actions.length * rowStep;
+    return offsetY;
   }
 
   drawAnimationControls(ctx, x, y, options = {}) {
