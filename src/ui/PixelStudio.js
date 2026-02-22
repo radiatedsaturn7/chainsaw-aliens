@@ -3716,27 +3716,63 @@ export default class PixelStudio {
     if (drag.type === 'scale') {
       const worldX = drag.current.col;
       const worldY = drag.current.row;
-      const dx = worldX - centerX;
-      const dy = worldY - centerY;
-      const rad = -(drag.startRotation * (Math.PI / 180));
-      const localX = dx * Math.cos(rad) - dy * Math.sin(rad);
-      const localY = dx * Math.sin(rad) + dy * Math.cos(rad);
-      let halfW = Math.max(0.5, Math.abs(localX));
-      let halfH = Math.max(0.5, Math.abs(localY));
-      if (drag.handle === 'n' || drag.handle === 's') halfW = Math.max(0.5, drag.startW * 0.5);
-      if (drag.handle === 'e' || drag.handle === 'w') halfH = Math.max(0.5, drag.startH * 0.5);
-      const targetW = Math.max(1, halfW * 2);
-      const targetH = Math.max(1, halfH * 2);
+      const bounds = drag.startBounds || { x: centerX, y: centerY, w: 1, h: 1 };
+      const hasWest = drag.handle?.includes('w');
+      const hasEast = drag.handle?.includes('e');
+      const hasNorth = drag.handle?.includes('n');
+      const hasSouth = drag.handle?.includes('s');
+
+      const minSize = 1;
+      const left = bounds.x;
+      const right = bounds.x + Math.max(1, bounds.w) - 1;
+      const top = bounds.y;
+      const bottom = bounds.y + Math.max(1, bounds.h) - 1;
+
+      let targetLeft = left;
+      let targetRight = right;
+      if (hasWest) {
+        targetRight = right;
+        targetLeft = Math.min(worldX, targetRight - (minSize - 1));
+      } else if (hasEast) {
+        targetLeft = left;
+        targetRight = Math.max(worldX, targetLeft + (minSize - 1));
+      } else {
+        const halfW = Math.max(0.5, Math.abs(worldX - centerX));
+        targetLeft = centerX - halfW;
+        targetRight = centerX + halfW;
+      }
+
+      let targetTop = top;
+      let targetBottom = bottom;
+      if (hasNorth) {
+        targetBottom = bottom;
+        targetTop = Math.min(worldY, targetBottom - (minSize - 1));
+      } else if (hasSouth) {
+        targetTop = top;
+        targetBottom = Math.max(worldY, targetTop + (minSize - 1));
+      } else {
+        const halfH = Math.max(0.5, Math.abs(worldY - centerY));
+        targetTop = centerY - halfH;
+        targetBottom = centerY + halfH;
+      }
+
+      const minCol = clamp(Math.floor(targetLeft), 0, width - 1);
+      const maxCol = clamp(Math.ceil(targetRight), 0, width - 1);
+      const minRow = clamp(Math.floor(targetTop), 0, height - 1);
+      const maxRow = clamp(Math.ceil(targetBottom), 0, height - 1);
+      if (maxCol < minCol || maxRow < minRow) return null;
+
+      const anchorX = hasWest ? right : hasEast ? left : centerX;
+      const anchorY = hasNorth ? bottom : hasSouth ? top : centerY;
+      const targetW = Math.max(1, maxCol - minCol + 1);
+      const targetH = Math.max(1, maxRow - minRow + 1);
       const scaleX = targetW / Math.max(1, drag.startW);
       const scaleY = targetH / Math.max(1, drag.startH);
-      const minCol = clamp(Math.floor(centerX - targetW * 0.5), 0, width - 1);
-      const maxCol = clamp(Math.ceil(centerX + targetW * 0.5), 0, width - 1);
-      const minRow = clamp(Math.floor(centerY - targetH * 0.5), 0, height - 1);
-      const maxRow = clamp(Math.ceil(centerY + targetH * 0.5), 0, height - 1);
+
       for (let destRow = minRow; destRow <= maxRow; destRow += 1) {
         for (let destCol = minCol; destCol <= maxCol; destCol += 1) {
-          const srcX = centerX + (destCol - centerX) / Math.max(0.0001, scaleX);
-          const srcY = centerY + (destRow - centerY) / Math.max(0.0001, scaleY);
+          const srcX = anchorX + (destCol - anchorX) / Math.max(0.0001, scaleX);
+          const srcY = anchorY + (destRow - anchorY) / Math.max(0.0001, scaleY);
           const srcCol = Math.round(srcX);
           const srcRow = Math.round(srcY);
           if (srcRow < 0 || srcCol < 0 || srcRow >= height || srcCol >= width) continue;
@@ -3750,6 +3786,7 @@ export default class PixelStudio {
       }
       return { pixels: nextPixels, mask: nextMask, rotationDeg: 0 };
     }
+
 
     return null;
   }
@@ -6252,7 +6289,8 @@ export default class PixelStudio {
     const title = category === 'draw' ? 'Draw Tools' : category === 'select' ? 'Selection Tools' : 'Extra Tools';
     ctx.fillText(title, x + 12, y + 22);
 
-    const list = this.tools.filter((tool) => (tool.category || 'tools') === category);
+    const list = this.tools.filter((tool) => (tool.category || 'tools') === category)
+      .filter((tool) => !(category === 'select' && tool.id === TOOL_IDS.MOVE));
     const toolsTop = y + (isMobile ? 60 : 56);
     const toolsBottomPadding = isMobile ? 116 : 132;
     const maxVisible = Math.max(1, Math.floor((h - toolsBottomPadding) / lineHeight));
