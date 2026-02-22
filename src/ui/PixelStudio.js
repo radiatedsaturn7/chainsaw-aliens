@@ -3861,15 +3861,8 @@ export default class PixelStudio {
     const mask = new Uint8Array(size);
     mask.fill(1);
     this.selection.mask = mask;
-    this.selection.bounds = {
-      minCol: 0,
-      minRow: 0,
-      maxCol: this.canvasState.width - 1,
-      maxRow: this.canvasState.height - 1,
-      width: this.canvasState.width,
-      height: this.canvasState.height
-    };
-    this.selection.active = true;
+    this.selection.bounds = this.getMaskBounds(mask);
+    this.selection.active = Boolean(this.selection.bounds);
     this.selection.mode = null;
     this.selection.start = null;
     this.selection.end = null;
