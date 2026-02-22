@@ -10,6 +10,8 @@ import { createPixelEditorAdapter } from '../editor/adapters/pixelEditorAdapter.
 import { createMidiEditorAdapter } from '../editor/adapters/midiEditorAdapter.js';
 import { normalizeMidiTracks } from '../editor/adapters/editorDataContracts.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
+import { openTextInputOverlay } from './shared/textInputOverlay.js';
+import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -2003,17 +2005,26 @@ export default class Editor {
 
   async promptForNewLevelName() {
     const fallback = this.currentDocumentRef?.name || 'new-level';
-    const value = window.prompt('New level file name?', fallback);
+    const value = await openTextInputOverlay({
+      title: 'New Level File',
+      label: 'New level file name?',
+      initialValue: fallback,
+      inputType: 'text'
+    });
     if (value == null) return null;
     const trimmed = value.trim();
     return trimmed || fallback;
   }
 
-  promptForLevelDimensions(initial = null) {
+  async promptForLevelDimensions(initial = null) {
     const current = initial || this.newLevelSizeDraft || { width: this.game.world?.width || 64, height: this.game.world?.height || 36 };
     const hint = 'Enter size (e.g. 96x54) or room preset (1x1,2x1,3x1,4x1,1x2,1x3,1x4,2x2,3x3,4x4).';
-    const value = window.prompt(`${hint}
-Level size:`, `${current.width}x${current.height}`);
+    const value = await openTextInputOverlay({
+      title: 'Set Level Size',
+      label: `${hint}\nLevel size:`,
+      initialValue: `${current.width}x${current.height}`,
+      inputType: 'text'
+    });
     if (value == null) return null;
     const raw = value.trim().toLowerCase();
     if (!raw) return null;
@@ -2534,27 +2545,8 @@ Level size:`, `${current.width}x${current.height}`);
     const w = Math.max(1, Number.isFinite(decal.w) ? decal.w : 1);
     const h = Math.max(1, Number.isFinite(decal.h) ? decal.h : 1);
     const rotation = Number.isFinite(decal.rotation) ? decal.rotation : 0;
-    const rad = rotation * (Math.PI / 180);
-    const cos = Math.cos(rad);
-    const sin = Math.sin(rad);
-    const centerX = x + w * 0.5;
-    const centerY = y + h * 0.5;
-    const toWorld = (lx, ly) => ({
-      x: centerX + lx * cos - ly * sin,
-      y: centerY + lx * sin + ly * cos
-    });
-    const handles = [
-      { key: 'nw', localX: -w * 0.5, localY: -h * 0.5 },
-      { key: 'n', localX: 0, localY: -h * 0.5 },
-      { key: 'ne', localX: w * 0.5, localY: -h * 0.5 },
-      { key: 'e', localX: w * 0.5, localY: 0 },
-      { key: 'se', localX: w * 0.5, localY: h * 0.5 },
-      { key: 's', localX: 0, localY: h * 0.5 },
-      { key: 'sw', localX: -w * 0.5, localY: h * 0.5 },
-      { key: 'w', localX: -w * 0.5, localY: 0 }
-    ].map((entry) => ({ ...entry, ...toWorld(entry.localX, entry.localY) }));
-    const rotateOrb = toWorld(0, -h * 0.5 - 24 / this.zoom);
-    return { decal, centerX, centerY, handles, rotateOrb };
+    const meta = buildTransformHandleMeta({ x, y, w, h, rotationDeg: rotation, orbOffset: 24 / this.zoom });
+    return { decal, ...meta };
   }
 
   getDecalTransformHit(screenX, screenY) {
@@ -2562,12 +2554,11 @@ Level size:`, `${current.width}x${current.height}`);
     if (!meta) return null;
     const world = this.screenToWorld(screenX, screenY);
     const handleRadius = 10 / this.zoom;
-    for (const handle of meta.handles) {
-      if (Math.hypot(world.x - handle.x, world.y - handle.y) <= handleRadius) {
-        return { type: 'scale', handle: handle.key, world, meta };
-      }
+    const handleHit = hitTestTransformHandles({ point: world, meta, radius: handleRadius });
+    if (handleHit?.type === 'scale') {
+      return { type: 'scale', handle: handleHit.handle.key, world, meta };
     }
-    if (Math.hypot(world.x - meta.rotateOrb.x, world.y - meta.rotateOrb.y) <= handleRadius * 1.2) {
+    if (handleHit?.type === 'rotate') {
       return { type: 'rotate', world, meta };
     }
     if (this.isWorldPointInsideDecal(meta.decal, world.x, world.y)) {
@@ -5627,10 +5618,17 @@ Level size:`, `${current.width}x${current.height}`);
     this.randomLevelSlider.active = 'width';
   }
 
-  promptRandomLevelDimension(kind) {
+  async promptRandomLevelDimension(kind) {
     const current = kind === 'width' ? this.randomLevelSize.width : this.randomLevelSize.height;
     const label = kind === 'width' ? 'Level width' : 'Level height';
-    const raw = window.prompt(`${label} (24-256):`, String(current));
+    const raw = await openTextInputOverlay({
+      title: kind === 'width' ? 'Random Level Width' : 'Random Level Height',
+      label: `${label} (24-256):`,
+      initialValue: String(current),
+      inputType: 'int',
+      min: 24,
+      max: 256
+    });
     if (raw == null) return;
     const parsed = Number.parseInt(raw, 10);
     if (!Number.isFinite(parsed)) return;

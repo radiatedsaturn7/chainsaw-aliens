@@ -29,11 +29,13 @@ import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dithe
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
 import { createViewportController } from './shared/viewportController.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
+import { openTextInputOverlay } from './shared/textInputOverlay.js';
+import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
 import { ensurePixelArtStore, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
 
 const BRUSH_SIZE_MIN = 1;
 const BRUSH_SIZE_MAX = 64;
-const DEFAULT_BRUSH_SIZE = 16;
+const DEFAULT_BRUSH_SIZE = 1;
 const BRUSH_SHAPES = ['square', 'circle', 'diamond', 'cross', 'x', 'hline', 'vline'];
 const BRUSH_FALLOFFS = ['solid', 'soft'];
 
@@ -83,7 +85,10 @@ export default class PixelStudio {
       brushHardness: 0,
       brushShape: 'square',
       brushFalloff: 'solid',
-      linePerfect: true,
+      shapeFill: false,
+      polygonSides: 5,
+      magicThreshold: 24,
+      gradientStrength: 100,
       fillContiguous: true,
       fillTolerance: 0,
       symmetry: { horizontal: false, vertical: false },
@@ -118,7 +123,14 @@ export default class PixelStudio {
       floatingBounds: null,
       offset: { x: 0, y: 0 }
     };
+    this.moveTransformDrag = null;
+    this.outsideCanvasTapGesture = { time: 0, x: 0, y: 0 };
     this.clipboard = null;
+    this.magicLassoEdgeMap = null;
+    this.magicLassoLastVector = null;
+    this.magicLassoEdgeMax = 1;
+    this.magicLassoRgbaMap = null;
+    this.magicLassoAnchorRgba = null;
     this.view = {
       zoomLevels: [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32],
       zoomIndex: 8,
@@ -130,7 +142,7 @@ export default class PixelStudio {
       maxZoom: 8,
       zoomStep: 1
     });
-    this.tiledPreview = { enabled: false, tiles: 2 };
+    this.tiledPreview = { enabled: false, tiles: 3 };
     this.animation = {
       frames: [createFrame(this.canvasState.layers, 120)],
       currentFrameIndex: 0,
@@ -142,6 +154,10 @@ export default class PixelStudio {
     this.pendingHistory = null;
     this.strokeState = null;
     this.linePreview = null;
+    this.curvePreview = null;
+    this.shapePreview = null;
+    this.polygonPreview = null;
+    this.gradientPreview = null;
     this.cloneSource = null;
     this.cloneOffset = null;
     this.cloneSourcePixels = null;
@@ -173,6 +189,7 @@ export default class PixelStudio {
       tools: 0,
       objects: 0,
       palette: 0,
+      paletteModal: 0,
       palettePresets: 0,
       layers: 0,
       timeline: 0,
@@ -189,6 +206,7 @@ export default class PixelStudio {
     this.mobileDrawer = null;
     this.mobileDrawerBounds = null;
     this.paletteBarScrollBounds = null;
+    this.paletteModalSwatchScrollBounds = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
     this.brushPickerBounds = null;
@@ -212,20 +230,25 @@ export default class PixelStudio {
     this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.paletteRemoveMode = false;
+    this.paletteRemoveMarked = new Set();
+    this.transformModal = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
     this.sidebars = { left: true };
-    this.leftPanelTabs = ['file', 'tools', 'layers', 'canvas'];
+    this.leftPanelTabs = ['file', 'draw', 'select', 'tools', 'canvas'];
     this.leftPanelTabIndex = 1;
     this.leftPanelTab = this.leftPanelTabs[this.leftPanelTabIndex];
     this.uiButtons = [];
     this.menuScrollDrag = null;
+    this.uiSliderDrag = null;
     this.artSizeDraft = { width: 16, height: 16 };
     this.paletteBounds = [];
     this.layerBounds = [];
     this.frameBounds = [];
     this.statusMessage = '';
     this.lastTime = 0;
+    this.selectionMarchPhase = 0;
     this.spaceDown = false;
     this.altDown = false;
     this.lastActiveToolId = this.activeToolId;
@@ -257,6 +280,20 @@ export default class PixelStudio {
         }
       };
       reader.readAsText(file);
+      event.target.value = '';
+    });
+    this.imageFileInput = document.createElement('input');
+    this.imageFileInput.type = 'file';
+    this.imageFileInput.accept = 'image/*';
+    this.imageFileInput.style.display = 'none';
+    document.body.appendChild(this.imageFileInput);
+    this.imageFileInput.addEventListener('change', (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      this.importImageFromFile(file).catch((error) => {
+        console.warn('[PixelStudio] Failed to import image.', error);
+      });
+      event.target.value = '';
     });
     this.initializePalettes();
     this.loadTileData();
@@ -268,6 +305,46 @@ export default class PixelStudio {
   async initializePalettes() {
     this.palettePresets = await loadPalettePresets();
     this.currentPalette = this.palettePresets[0] || this.currentPalette;
+  }
+
+  async importImageFromFile(file) {
+    if (!file) return;
+    const image = await new Promise((resolve, reject) => {
+      const next = new Image();
+      next.onload = () => resolve(next);
+      next.onerror = reject;
+      next.src = URL.createObjectURL(file);
+    });
+    const width = clamp(Math.round(image.width || 16), 1, 512);
+    const height = clamp(Math.round(image.height || 16), 1, 512);
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const drawCtx = canvas.getContext('2d');
+    drawCtx.imageSmoothingEnabled = false;
+    drawCtx.drawImage(image, 0, 0, width, height);
+    const pixels = drawCtx.getImageData(0, 0, width, height).data;
+    const layer = createLayer(width, height, 'Layer 1');
+    for (let i = 0; i < width * height; i += 1) {
+      const offset = i * 4;
+      layer.pixels[i] = rgbaToUint32({
+        r: pixels[offset],
+        g: pixels[offset + 1],
+        b: pixels[offset + 2],
+        a: pixels[offset + 3]
+      });
+    }
+    this.canvasState.width = width;
+    this.canvasState.height = height;
+    this.animation.frames = [createFrame([layer], 120)];
+    this.animation.currentFrameIndex = 0;
+    this.canvasState.activeLayerIndex = 0;
+    this.artSizeDraft.width = width;
+    this.artSizeDraft.height = height;
+    this.setFrameLayers(this.animation.frames[0].layers);
+    this.clearSelection();
+    this.zoomToFitCanvas();
+    this.statusMessage = `Imported ${file.name}`;
   }
 
   get activeLayer() {
@@ -342,7 +419,12 @@ export default class PixelStudio {
 
   async promptForNewArtName() {
     const fallback = this.currentDocumentRef?.name || 'new-art';
-    const value = window.prompt('New art file name?', fallback);
+    const value = await openTextInputOverlay({
+      title: 'New Art File',
+      label: 'New art file name?',
+      initialValue: fallback,
+      inputType: 'text'
+    });
     if (value == null) return null;
     const trimmed = value.trim();
     return trimmed || fallback;
@@ -591,7 +673,7 @@ export default class PixelStudio {
     if (!this.runtime.confirmDiscardChanges()) return;
     const name = await this.promptForNewArtName();
     if (!name) return;
-    const dims = this.promptForArtDimensions(this.artSizeDraft);
+    const dims = await this.promptForArtDimensions(this.artSizeDraft);
     if (!dims) return;
     ensurePixelArtStore(this.game.world);
     this.game.world.pixelArt.tiles = {};
@@ -634,9 +716,16 @@ export default class PixelStudio {
     this.syncTileData();
   }
 
-  setArtSizeDraftFromPrompt(kind) {
+  async setArtSizeDraftFromPrompt(kind) {
     const current = kind === 'width' ? this.artSizeDraft.width : this.artSizeDraft.height;
-    const raw = window.prompt(`${kind === 'width' ? 'Pixel width' : 'Pixel height'} (8-512):`, String(current));
+    const raw = await openTextInputOverlay({
+      title: kind === 'width' ? 'Canvas Width' : 'Canvas Height',
+      label: `${kind === 'width' ? 'Pixel width' : 'Pixel height'} (8-512):`,
+      initialValue: String(current),
+      inputType: 'int',
+      min: 8,
+      max: 512
+    });
     if (raw == null) return;
     const parsed = Number.parseInt(raw, 10);
     if (!Number.isFinite(parsed)) return;
@@ -645,9 +734,14 @@ export default class PixelStudio {
     else this.artSizeDraft.height = next;
   }
 
-  promptForArtDimensions(initial = null) {
+  async promptForArtDimensions(initial = null) {
     const current = initial || this.artSizeDraft || { width: this.canvasState.width, height: this.canvasState.height };
-    const raw = window.prompt('Art size (e.g. 32x32, 64x32, 128x256):', `${current.width}x${current.height}`);
+    const raw = await openTextInputOverlay({
+      title: 'Set Art Size',
+      label: 'Art size (e.g. 32x32, 64x32, 128x256):',
+      initialValue: `${current.width}x${current.height}`,
+      inputType: 'text'
+    });
     if (raw == null) return null;
     const match = String(raw).toLowerCase().match(/(\d+)\s*[x,]\s*(\d+)/);
     if (!match) return null;
@@ -657,12 +751,271 @@ export default class PixelStudio {
     };
   }
 
-  resizeArtDocumentPrompt() {
-    const dims = this.promptForArtDimensions({ width: this.canvasState.width, height: this.canvasState.height });
+  async resizeArtDocumentPrompt() {
+    const dims = await this.promptForArtDimensions({ width: this.canvasState.width, height: this.canvasState.height });
     if (!dims) return;
     this.artSizeDraft.width = dims.width;
     this.artSizeDraft.height = dims.height;
     this.resizeArtCanvas(dims.width, dims.height);
+  }
+
+  openTransformModal(type) {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const defaults = {
+      resize: { width, height },
+      scale: { scaleX: 2, scaleY: 2 },
+      crop: { borderX: 1, borderY: 1 },
+      offset: { dx: 0, dy: 0, wrap: true }
+    };
+    this.transformModal = {
+      scope: 'canvas',
+      type,
+      values: { ...(defaults[type] || {}) },
+      bounds: null,
+      fields: [],
+      buttons: []
+    };
+  }
+
+  openSelectionTransformModal(type) {
+    const defaults = {
+      flip: { axis: 'horizontal' },
+      rotate: { angle: 90 },
+      stretch: { stretchX: 100, stretchY: 100 },
+      skew: { skewX: 0, skewY: 0 }
+    };
+    this.transformModal = {
+      scope: 'selection',
+      type,
+      values: { ...(defaults[type] || {}) },
+      bounds: null,
+      fields: [],
+      buttons: []
+    };
+  }
+
+  closeTransformModal() {
+    this.transformModal = null;
+  }
+
+  setTransformValue(key, value, min = -9999, max = 9999) {
+    if (!this.transformModal?.values) return;
+    const parsed = Number.isFinite(value) ? value : Number(value);
+    if (!Number.isFinite(parsed)) return;
+    this.transformModal.values[key] = clamp(Math.round(parsed), min, max);
+  }
+
+  async editTransformValue(field) {
+    if (!this.transformModal || !field) return;
+    const current = this.transformModal.values[field.key] ?? field.min;
+    const raw = await openTextInputOverlay({
+      title: `Set ${field.label}`,
+      label: `${field.label} (${field.min}-${field.max})`,
+      initialValue: String(Math.round(current)),
+      inputType: 'int',
+      min: field.min,
+      max: field.max
+    });
+    if (raw == null) return;
+    const parsed = Number.parseInt(raw, 10);
+    if (!Number.isFinite(parsed)) return;
+    this.setTransformValue(field.key, parsed, field.min, field.max);
+  }
+
+  applyScaleCanvas(scaleX, scaleY) {
+    const sx = clamp(Math.round(scaleX), 1, 16);
+    const sy = clamp(Math.round(scaleY), 1, 16);
+    if (sx === 1 && sy === 1) return;
+    const srcW = this.canvasState.width;
+    const srcH = this.canvasState.height;
+    const nextW = clamp(srcW * sx, 8, 512);
+    const nextH = clamp(srcH * sy, 8, 512);
+    this.animation.frames = this.animation.frames.map((frame) => ({
+      ...frame,
+      layers: frame.layers.map((layer) => {
+        const next = createLayer(nextW, nextH, layer.name);
+        for (let row = 0; row < nextH; row += 1) {
+          for (let col = 0; col < nextW; col += 1) {
+            const srcRow = Math.floor(row / sy);
+            const srcCol = Math.floor(col / sx);
+            next.pixels[row * nextW + col] = layer.pixels[srcRow * srcW + srcCol] || 0;
+          }
+        }
+        return next;
+      })
+    }));
+    this.canvasState.width = nextW;
+    this.canvasState.height = nextH;
+    this.artSizeDraft.width = nextW;
+    this.artSizeDraft.height = nextH;
+    this.animation.currentFrameIndex = clamp(this.animation.currentFrameIndex, 0, this.animation.frames.length - 1);
+    this.setFrameLayers(this.animation.frames[this.animation.currentFrameIndex].layers);
+    this.canvasState.activeLayerIndex = clamp(this.canvasState.activeLayerIndex, 0, this.canvasState.layers.length - 1);
+    this.syncTileData();
+  }
+
+  cropCanvas(borderX, borderY) {
+    const bx = clamp(Math.round(borderX), 0, 255);
+    const by = clamp(Math.round(borderY), 0, 255);
+    const srcW = this.canvasState.width;
+    const srcH = this.canvasState.height;
+    const nextW = clamp(srcW - bx * 2, 1, 512);
+    const nextH = clamp(srcH - by * 2, 1, 512);
+    if (nextW === srcW && nextH === srcH) return;
+    this.animation.frames = this.animation.frames.map((frame) => ({
+      ...frame,
+      layers: frame.layers.map((layer) => {
+        const next = createLayer(nextW, nextH, layer.name);
+        for (let row = 0; row < nextH; row += 1) {
+          for (let col = 0; col < nextW; col += 1) {
+            const srcRow = row + by;
+            const srcCol = col + bx;
+            if (srcRow < 0 || srcCol < 0 || srcRow >= srcH || srcCol >= srcW) continue;
+            next.pixels[row * nextW + col] = layer.pixels[srcRow * srcW + srcCol] || 0;
+          }
+        }
+        return next;
+      })
+    }));
+    this.canvasState.width = nextW;
+    this.canvasState.height = nextH;
+    this.artSizeDraft.width = nextW;
+    this.artSizeDraft.height = nextH;
+    this.animation.currentFrameIndex = clamp(this.animation.currentFrameIndex, 0, this.animation.frames.length - 1);
+    this.setFrameLayers(this.animation.frames[this.animation.currentFrameIndex].layers);
+    this.canvasState.activeLayerIndex = clamp(this.canvasState.activeLayerIndex, 0, this.canvasState.layers.length - 1);
+    this.syncTileData();
+  }
+
+  applyTransformModal() {
+    if (!this.transformModal) return;
+    const { scope = 'canvas', type, values } = this.transformModal;
+    if (scope === 'selection') {
+      this.applySelectionModalTransform(type, values);
+      this.closeTransformModal();
+      return;
+    }
+    this.startHistory(type);
+    if (type === 'resize') {
+      this.resizeArtCanvas(values.width, values.height);
+    } else if (type === 'scale') {
+      this.applyScaleCanvas(values.scaleX, values.scaleY);
+    } else if (type === 'crop') {
+      this.cropCanvas(values.borderX, values.borderY);
+    } else if (type === 'offset') {
+      this.offsetCanvas(values.dx, values.dy, values.wrap !== false, { recordHistory: false });
+    }
+    this.commitHistory();
+    this.closeTransformModal();
+  }
+
+  applySelectionModalTransform(type, values = {}) {
+    if (!this.selection.active || !this.selection.mask || !this.selection.bounds) return;
+    if (type === 'flip') {
+      this.transformSelection(values.axis === 'vertical' ? 'flip-v' : 'flip-h');
+      return;
+    }
+    if (type === 'rotate') {
+      this.applySelectionAffineTransform({ rotateDeg: Number(values.angle) || 0 }, `rotate ${Math.round(Number(values.angle) || 0)}°`);
+      return;
+    }
+    if (type === 'stretch') {
+      const sx = clamp((Number(values.stretchX) || 100) / 100, 0.01, 20);
+      const sy = clamp((Number(values.stretchY) || 100) / 100, 0.01, 20);
+      this.applySelectionAffineTransform({ scaleX: sx, scaleY: sy }, `stretch ${Math.round(sx * 100)}%/${Math.round(sy * 100)}%`);
+      return;
+    }
+    if (type === 'skew') {
+      const skewX = clamp(Number(values.skewX) || 0, -89, 89);
+      const skewY = clamp(Number(values.skewY) || 0, -89, 89);
+      this.applySelectionAffineTransform({ skewXDeg: skewX, skewYDeg: skewY }, `skew ${Math.round(skewX)}°/${Math.round(skewY)}°`);
+    }
+  }
+
+  applySelectionAffineTransform(options = {}, label = 'transform') {
+    if (!this.selection.active || !this.selection.mask || !this.selection.bounds) return;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const mask = this.selection.mask;
+    const sourcePixels = this.getSelectedPixelsSnapshot(mask);
+    const center = this.getSelectionCenterPoint();
+    const rotateDeg = Number(options.rotateDeg) || 0;
+    const scaleX = Number.isFinite(options.scaleX) ? options.scaleX : 1;
+    const scaleY = Number.isFinite(options.scaleY) ? options.scaleY : 1;
+    const skewXDeg = Number(options.skewXDeg) || 0;
+    const skewYDeg = Number(options.skewYDeg) || 0;
+    const rad = rotateDeg * (Math.PI / 180);
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+    const kx = Math.tan(skewXDeg * (Math.PI / 180));
+    const ky = Math.tan(skewYDeg * (Math.PI / 180));
+    const a = cos * scaleX + (-sin) * ky * scaleY;
+    const b = cos * kx * scaleX + (-sin) * scaleY;
+    const c = sin * scaleX + cos * ky * scaleY;
+    const d = sin * kx * scaleX + cos * scaleY;
+    const det = a * d - b * c;
+    if (Math.abs(det) < 1e-6) return;
+    const invA = d / det;
+    const invB = -b / det;
+    const invC = -c / det;
+    const invD = a / det;
+    let minCol = width;
+    let minRow = height;
+    let maxCol = -1;
+    let maxRow = -1;
+    for (let row = 0; row < height; row += 1) {
+      for (let col = 0; col < width; col += 1) {
+        const i = row * width + col;
+        if (!mask[i]) continue;
+        const lx = col - center.col;
+        const ly = row - center.row;
+        const tx = center.col + (a * lx + b * ly);
+        const ty = center.row + (c * lx + d * ly);
+        minCol = Math.min(minCol, Math.floor(tx));
+        maxCol = Math.max(maxCol, Math.ceil(tx));
+        minRow = Math.min(minRow, Math.floor(ty));
+        maxRow = Math.max(maxRow, Math.ceil(ty));
+      }
+    }
+    if (maxCol < minCol || maxRow < minRow) return;
+    minCol = clamp(minCol, 0, width - 1);
+    maxCol = clamp(maxCol, 0, width - 1);
+    minRow = clamp(minRow, 0, height - 1);
+    maxRow = clamp(maxRow, 0, height - 1);
+    const transformedPixels = new Uint32Array(width * height);
+    const transformedMask = new Uint8Array(width * height);
+    for (let row = minRow; row <= maxRow; row += 1) {
+      for (let col = minCol; col <= maxCol; col += 1) {
+        const dx = col - center.col;
+        const dy = row - center.row;
+        const srcX = center.col + invA * dx + invB * dy;
+        const srcY = center.row + invC * dx + invD * dy;
+        const srcCol = Math.round(srcX);
+        const srcRow = Math.round(srcY);
+        if (srcCol < 0 || srcRow < 0 || srcCol >= width || srcRow >= height) continue;
+        const srcIndex = srcRow * width + srcCol;
+        if (!mask[srcIndex]) continue;
+        const destIndex = row * width + col;
+        transformedMask[destIndex] = 1;
+        const value = sourcePixels[srcIndex];
+        if (value) transformedPixels[destIndex] = value;
+      }
+    }
+    this.startHistory(label);
+    const nextLayer = new Uint32Array(this.activeLayer.pixels);
+    for (let i = 0; i < nextLayer.length; i += 1) {
+      if (mask[i]) nextLayer[i] = 0;
+    }
+    for (let i = 0; i < transformedPixels.length; i += 1) {
+      const value = transformedPixels[i];
+      if (value) nextLayer[i] = value;
+    }
+    this.activeLayer.pixels = nextLayer;
+    this.selection.mask = transformedMask;
+    this.selection.bounds = this.getMaskBounds(transformedMask);
+    this.selection.active = Boolean(this.selection.bounds);
+    this.commitHistory();
   }
 
 
@@ -678,6 +1031,7 @@ export default class PixelStudio {
     this.cancelLongPress();
     this.panStart = null;
     this.menuScrollDrag = null;
+    this.uiSliderDrag = null;
     this.gesture = null;
     this.viewportController.cancelInteractions();
     this.selectionContextMenu = null;
@@ -687,12 +1041,17 @@ export default class PixelStudio {
     this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.paletteRemoveMode = false;
+    this.paletteRemoveMarked.clear();
     this.palettePickerDrag = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
   }
 
   resetFocus() {
+    this.ensurePrimaryPaletteSwatches();
+    this.setPaletteIndex(0);
+    this.secondaryPaletteIndex = Math.min(1, Math.max(0, (this.currentPalette.colors?.length || 1) - 1));
     this.setInputMode('canvas');
     this.clearSelection();
     this.selection.floating = null;
@@ -702,8 +1061,22 @@ export default class PixelStudio {
     this.triggerSelectionReady = false;
     if (this.isMobileLayout()) {
       this.mobileDrawer = 'panel';
-      this.setLeftPanelTab('tools');
+      this.setLeftPanelTab('draw');
+      this.setInputMode('canvas');
     }
+  }
+
+  ensurePrimaryPaletteSwatches() {
+    const colors = this.currentPalette?.colors;
+    if (!Array.isArray(colors)) return;
+    const normalized = colors.map((entry) => ({
+      ...entry,
+      hex: typeof entry?.hex === 'string' ? entry.hex.toLowerCase() : '#000000'
+    }));
+    const black = normalized.find((entry) => entry.hex === '#000000') || { hex: '#000000' };
+    const white = normalized.find((entry) => entry.hex === '#ffffff') || { hex: '#ffffff' };
+    const rest = normalized.filter((entry) => entry.hex !== '#000000' && entry.hex !== '#ffffff');
+    this.currentPalette.colors = [black, white, ...rest];
   }
 
   configureSeamFixCloneDefaults() {
@@ -749,10 +1122,17 @@ export default class PixelStudio {
       event.preventDefault();
       return;
     }
+    if ((event.key === 'Delete' || event.key === 'Backspace') && this.selection.active) {
+      this.deleteSelection();
+      this.clearSelection();
+      event.preventDefault();
+      return;
+    }
     if (key === 'b') this.setActiveTool(TOOL_IDS.PENCIL);
     if (key === 'e') this.setActiveTool(TOOL_IDS.ERASER);
     if (key === 'g') this.setActiveTool(TOOL_IDS.FILL);
     if (key === 'i') this.setActiveTool(TOOL_IDS.EYEDROPPER);
+    if (key === 'c') this.setActiveTool(TOOL_IDS.CURVE);
     if (key === 'v') this.setActiveTool(TOOL_IDS.MOVE);
     if (key === 's') this.setActiveTool(TOOL_IDS.SELECT_RECT);
     if (key === '[') this.setBrushSize(this.toolOptions.brushSize - 1);
@@ -775,6 +1155,8 @@ export default class PixelStudio {
 
   update(input, dt = 0) {
     this.lastTime += dt;
+    const frameScale = dt > 0 ? (dt > 5 ? (dt / 16.6667) : (dt * 60)) : 1;
+    this.selectionMarchPhase = (this.selectionMarchPhase + frameScale * 0.75) % 2048;
     this.updateAnimation(dt);
     this.handleInput(input, dt);
     this.applyMobilePanJoystick(dt);
@@ -904,7 +1286,7 @@ export default class PixelStudio {
             break;
           }
           if (this.inputMode === 'canvas'
-            && [TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.MOVE].includes(this.activeToolId)) {
+            && [TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.SELECT_MAGIC_LASSO, TOOL_IDS.SELECT_MAGIC_COLOR, TOOL_IDS.MOVE].includes(this.activeToolId)) {
             this.setActiveTool(TOOL_IDS.PENCIL);
             break;
           }
@@ -1027,6 +1409,10 @@ export default class PixelStudio {
   }
 
   handleCancel() {
+    if (this.transformModal) {
+      this.closeTransformModal();
+      return;
+    }
     if (this.controlsOverlayOpen) {
       this.controlsOverlayOpen = false;
       return;
@@ -1056,6 +1442,8 @@ export default class PixelStudio {
       this.paletteGridOpen = false;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.paletteRemoveMode = false;
+    this.paletteRemoveMarked.clear();
     this.palettePickerDrag = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
@@ -1194,7 +1582,7 @@ export default class PixelStudio {
 
   openFileTab() {
     this.sidebars.left = true;
-    this.setLeftPanelTab('tools');
+    this.setLeftPanelTab('draw');
     this.setInputMode('ui');
     this.uiFocus.group = 'menu';
     this.uiFocus.index = 0;
@@ -1205,7 +1593,7 @@ export default class PixelStudio {
       this.mobileDrawer = null;
       return;
     }
-    this.setLeftPanelTab('tools');
+    this.setLeftPanelTab('draw');
   }
 
   setLeftPanelTab(tab) {
@@ -1218,18 +1606,22 @@ export default class PixelStudio {
     } else {
       this.setInputMode('ui');
     }
-    if (tab === 'animate') {
-      this.modeTab = 'animate';
-      return;
-    }
-    if (this.modeTab === 'animate') {
-      if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.MOVE].includes(this.activeToolId)) {
-        this.modeTab = 'select';
-      } else {
-        this.modeTab = 'draw';
+    if (tab === 'draw') {
+      this.modeTab = 'draw';
+      if (![TOOL_IDS.PENCIL, TOOL_IDS.LINE, TOOL_IDS.CURVE, TOOL_IDS.RECT, TOOL_IDS.ELLIPSE, TOOL_IDS.POLYGON, TOOL_IDS.FILL].includes(this.activeToolId)) {
+        this.setActiveTool(TOOL_IDS.PENCIL);
       }
     }
-    if (this.isMobileLayout() && ['file', 'tools', 'layers', 'canvas'].includes(tab)) {
+    if (tab === 'select') {
+      this.modeTab = 'select';
+      if (![TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.SELECT_MAGIC_LASSO, TOOL_IDS.SELECT_MAGIC_COLOR].includes(this.activeToolId)) {
+        this.setActiveTool(TOOL_IDS.SELECT_RECT);
+      }
+    }
+    if (tab === 'tools') {
+      this.modeTab = 'draw';
+    }
+    if (this.isMobileLayout() && ['file', 'draw', 'select', 'tools', 'canvas'].includes(tab)) {
       this.mobileDrawer = 'panel';
     }
   }
@@ -1288,6 +1680,7 @@ export default class PixelStudio {
       { id: TOOL_IDS.ERASER, label: 'Erase' },
       { id: TOOL_IDS.FILL, label: 'Fill' },
       { id: TOOL_IDS.LINE, label: 'Line' },
+      { id: TOOL_IDS.CURVE, label: 'Curve' },
       { id: TOOL_IDS.EYEDROPPER, label: 'Pick' },
       { id: TOOL_IDS.SELECT_RECT, label: 'Rect' },
       { id: TOOL_IDS.SELECT_ELLIPSE, label: 'Ellipse' },
@@ -1463,12 +1856,16 @@ export default class PixelStudio {
 
   handlePointerDown(payload) {
     const button = payload.button ?? 0;
-    if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen || this.selectionContextMenu || this.brushPickerOpen) {
+    if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen || this.selectionContextMenu || this.brushPickerOpen || this.transformModal) {
       this.handleButtonClick(payload.x, payload.y, payload);
       return;
     }
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
+    if (this.uiSliderDrag && (payload.id === undefined || payload.id === this.uiSliderDrag.id)) {
+      this.uiSliderDrag.onDrag?.({ x: payload.x, y: payload.y, id: payload.id });
+      return;
+    }
     if (payload.touchCount && this.leftPanelTab === 'file' && this.filePanelScroll
       && this.isPointInBounds(payload, this.filePanelScroll)) {
       const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
@@ -1481,28 +1878,30 @@ export default class PixelStudio {
       };
       return;
     }
-    if (payload.touchCount && this.leftPanelTab === 'tools' && this.toolsListMeta?.scrollBounds
+    if (payload.touchCount && ['draw', 'select', 'tools'].includes(this.leftPanelTab) && this.toolsListMeta?.scrollBounds
       && this.isPointInBounds(payload, this.toolsListMeta.scrollBounds)
       && this.toolsListMeta.maxScroll > 0) {
+      const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
       this.menuScrollDrag = {
         startY: payload.y,
         startScroll: this.focusScroll.tools || 0,
         moved: false,
-        hitAction: null,
+        hitAction: hit?.onClick || null,
         lineHeight: Math.max(1, this.toolsListMeta.lineHeight || 20),
         scrollGroup: 'tools',
         maxScroll: Math.max(0, this.toolsListMeta.maxScroll || 0)
       };
       return;
     }
-    if (payload.touchCount && this.leftPanelTab === 'tools' && this.toolsPanelMeta?.optionsScrollBounds
+    if (payload.touchCount && ['draw', 'select', 'tools'].includes(this.leftPanelTab) && this.toolsPanelMeta?.optionsScrollBounds
       && this.isPointInBounds(payload, this.toolsPanelMeta.optionsScrollBounds)
       && this.toolsPanelMeta.maxToolOptionsScroll > 0) {
+      const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
       this.menuScrollDrag = {
         startY: payload.y,
         startScroll: this.focusScroll.toolOptions || 0,
         moved: false,
-        hitAction: null,
+        hitAction: hit?.onClick || null,
         lineHeight: Math.max(1, this.toolsPanelMeta.lineHeight || 20),
         scrollGroup: 'toolOptions',
         maxScroll: Math.max(0, this.toolsPanelMeta.maxToolOptionsScroll || 0)
@@ -1517,10 +1916,29 @@ export default class PixelStudio {
         startX: payload.x,
         startScroll: this.focusScroll.palette || 0,
         moved: false,
-        hitAction: tappedSwatch ? () => this.setPaletteIndex(tappedSwatch.index) : null,
+        hitAction: tappedSwatch
+          ? (typeof tappedSwatch.action === 'function'
+            ? tappedSwatch.action
+            : () => this.setPaletteIndex(tappedSwatch.index))
+          : null,
         lineHeight: Math.max(1, this.paletteBarScrollBounds.step || 1),
         scrollGroup: 'paletteMobile',
         maxScroll: Math.max(0, this.paletteBarScrollBounds.maxScroll || 0)
+      };
+      return;
+    }
+    if (this.paletteGridOpen && this.paletteModalSwatchScrollBounds
+      && this.isPointInBounds(payload, this.paletteModalSwatchScrollBounds)
+      && (this.paletteModalSwatchScrollBounds.maxScroll || 0) > 0) {
+      const tappedSwatch = this.paletteBounds.find((bounds) => this.isPointInBounds(payload, bounds));
+      this.menuScrollDrag = {
+        startX: payload.x,
+        startScroll: this.focusScroll.paletteModal || 0,
+        moved: false,
+        hitAction: tappedSwatch ? () => this.setPaletteIndex(tappedSwatch.index) : null,
+        lineHeight: Math.max(1, this.paletteModalSwatchScrollBounds.step || 1),
+        scrollGroup: 'paletteModal',
+        maxScroll: Math.max(0, this.paletteModalSwatchScrollBounds.maxScroll || 0)
       };
       return;
     }
@@ -1533,6 +1951,11 @@ export default class PixelStudio {
       this.panJoystick.active = true;
       this.panJoystick.id = payload.id ?? null;
       this.updatePanJoystick(payload.x, payload.y);
+      return;
+    }
+    if (this.activeToolId === TOOL_IDS.POLYGON && this.polygonPreview
+      && (!this.canvasBounds || !this.isPointInBounds(payload, this.canvasBounds))) {
+      this.finishPolygon();
       return;
     }
     if (this.handleButtonClick(payload.x, payload.y, payload)) return;
@@ -1549,10 +1972,43 @@ export default class PixelStudio {
       if (payload.touchCount) {
         this.startLongPress(payload);
       }
+      return;
+    }
+    if (this.activeToolId === TOOL_IDS.MOVE && this.selection.active) {
+      const freePoint = this.getGridCellFromScreenUnbounded(payload.x, payload.y);
+      const hit = freePoint ? this.getSelectionTransformHit(freePoint) : null;
+      if (hit?.type === 'rotate' || hit?.type === 'scale') {
+        this.setInputMode('canvas');
+        this.startMove(freePoint);
+        return;
+      }
+    }
+    if (payload.touchCount && this.selection.active) {
+      const now = performance.now();
+      const previous = this.outsideCanvasTapGesture || { time: 0, x: 0, y: 0 };
+      const withinTime = now - previous.time <= 360;
+      const withinDistance = Math.hypot(payload.x - previous.x, payload.y - previous.y) <= 28;
+      if (withinTime && withinDistance) {
+        this.clearSelection();
+        this.outsideCanvasTapGesture = { time: 0, x: payload.x, y: payload.y };
+      } else {
+        this.outsideCanvasTapGesture = { time: now, x: payload.x, y: payload.y };
+      }
     }
   }
 
   handlePointerMove(payload) {
+    if (this.transformModal) {
+      if (this.transformModal.drag && (payload.id === undefined || payload.id === this.transformModal.drag.id)) {
+        const field = this.transformModal.fields?.find((entry) => entry.key === this.transformModal.drag.key);
+        if (field) {
+          const ratio = clamp((payload.x - field.slider.x) / Math.max(1, field.slider.w), 0, 1);
+          const next = field.min + ratio * (field.max - field.min);
+          this.setTransformValue(field.key, next, field.min, field.max);
+        }
+      }
+      return;
+    }
     if (this.brushPickerOpen) {
       if (this.brushPickerDrag && (payload.id === undefined || payload.id === this.brushPickerDrag.id)) {
         this.updateBrushPickerSliderFromX(this.brushPickerDrag.type, payload.x);
@@ -1589,7 +2045,7 @@ export default class PixelStudio {
       if (this.menuScrollDrag.moved) {
         const total = (this.focusGroups.file || []).length;
         const maxVisible = this.focusGroupMeta.file?.maxVisible || 1;
-        const maxScroll = ['toolOptions', 'tools'].includes(this.menuScrollDrag.scrollGroup)
+        const maxScroll = ['toolOptions', 'tools', 'paletteMobile', 'paletteModal'].includes(this.menuScrollDrag.scrollGroup)
           ? (this.menuScrollDrag.maxScroll || 0)
           : Math.max(0, total - maxVisible);
         const delta = this.menuScrollDrag.scrollGroup === 'paletteMobile' ? dx : dy;
@@ -1600,6 +2056,8 @@ export default class PixelStudio {
           this.focusScroll.tools = clamp(next, 0, maxScroll);
         } else if (this.menuScrollDrag.scrollGroup === 'paletteMobile') {
           this.focusScroll.palette = clamp(next, 0, maxScroll);
+        } else if (this.menuScrollDrag.scrollGroup === 'paletteModal') {
+          this.focusScroll.paletteModal = clamp(next, 0, maxScroll);
         } else {
           this.focusScroll.file = clamp(next, 0, maxScroll);
         }
@@ -1617,19 +2075,28 @@ export default class PixelStudio {
       this.view.panY = pan.y;
       return;
     }
-    const point = this.getGridCellFromScreen(payload.x, payload.y);
+    const point = this.moveTransformDrag
+      ? this.getGridCellFromScreenUnbounded(payload.x, payload.y)
+      : this.getGridCellFromScreen(payload.x, payload.y);
     if (point) {
       this.handleToolPointerMove(point);
     }
   }
 
   handlePointerUp(payload = {}) {
+    if (this.transformModal?.drag && (payload.id === undefined || payload.id === this.transformModal.drag.id)) {
+      this.transformModal.drag = null;
+    }
+    if (this.uiSliderDrag && (payload.id === undefined || payload.id === this.uiSliderDrag.id)) {
+      this.uiSliderDrag = null;
+    }
     if (this.brushPickerDrag && (payload.id === undefined || payload.id === this.brushPickerDrag.id)) {
       this.brushPickerDrag = null;
     }
     if (this.palettePickerDrag && (payload.id === undefined || payload.id === this.palettePickerDrag.id)) {
       this.palettePickerDrag = null;
     }
+    if (this.transformModal) return;
     if (this.brushPickerOpen) return;
     if (this.paletteColorPickerOpen) return;
     if (this.mobileZoomDrag && (payload.id === undefined || payload.id === this.mobileZoomDrag.id)) {
@@ -1644,6 +2111,7 @@ export default class PixelStudio {
     if (this.menuScrollDrag) {
       const drag = this.menuScrollDrag;
       this.menuScrollDrag = null;
+    this.uiSliderDrag = null;
       if (!drag.moved && drag.hitAction) drag.hitAction();
       return;
     }
@@ -1656,7 +2124,7 @@ export default class PixelStudio {
   }
 
   handleWheel(payload) {
-    if (this.leftPanelTab === 'tools' && this.toolsListMeta?.scrollBounds
+    if (['draw', 'select', 'tools'].includes(this.leftPanelTab) && this.toolsListMeta?.scrollBounds
       && this.isPointInBounds(payload, this.toolsListMeta.scrollBounds)
       && this.toolsListMeta.maxScroll > 0) {
       const delta = payload.deltaY > 0 ? 1 : -1;
@@ -1667,7 +2135,7 @@ export default class PixelStudio {
       );
       return;
     }
-    if (this.leftPanelTab === 'tools' && this.toolsPanelMeta?.optionsScrollBounds
+    if (['draw', 'select', 'tools'].includes(this.leftPanelTab) && this.toolsPanelMeta?.optionsScrollBounds
       && this.isPointInBounds(payload, this.toolsPanelMeta.optionsScrollBounds)
       && this.toolsPanelMeta.maxToolOptionsScroll > 0) {
       const delta = payload.deltaY > 0 ? 1 : -1;
@@ -1760,14 +2228,22 @@ export default class PixelStudio {
   setActiveTool(toolId) {
     this.activeToolId = toolId;
     this.lastActiveToolId = toolId;
+    this.linePreview = null;
+    this.curvePreview = null;
+    this.shapePreview = null;
+    this.polygonPreview = null;
+    this.gradientPreview = null;
     if (toolId !== TOOL_IDS.CLONE) {
       this.clonePickSourceArmed = false;
       this.cloneColorPickArmed = false;
     }
-    if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.MOVE].includes(toolId)) {
+    if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.SELECT_MAGIC_LASSO, TOOL_IDS.SELECT_MAGIC_COLOR, TOOL_IDS.MOVE].includes(toolId)) {
       this.modeTab = 'select';
     } else if (toolId !== TOOL_IDS.EYEDROPPER) {
       this.modeTab = this.modeTab === 'animate' ? 'animate' : 'draw';
+    }
+    if (!this.menuOpen && !this.controlsOverlayOpen && !this.transformModal && !this.paletteGridOpen && !this.brushPickerOpen) {
+      this.setInputMode('canvas');
     }
   }
 
@@ -1787,7 +2263,7 @@ export default class PixelStudio {
   }
 
   toggleDrawSelectMode() {
-    if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.MOVE].includes(this.activeToolId)) {
+    if ([TOOL_IDS.SELECT_RECT, TOOL_IDS.SELECT_ELLIPSE, TOOL_IDS.SELECT_LASSO, TOOL_IDS.SELECT_MAGIC_LASSO, TOOL_IDS.SELECT_MAGIC_COLOR, TOOL_IDS.MOVE].includes(this.activeToolId)) {
       this.setActiveTool(TOOL_IDS.PENCIL);
       return;
     }
@@ -1937,7 +2413,25 @@ export default class PixelStudio {
 
   continueStroke(point) {
     if (!this.strokeState) return;
-    const line = bresenhamLine(this.strokeState.lastPoint, point);
+    let targetPoint = point;
+    if (this.toolOptions.wrapDraw) {
+      const last = this.strokeState.lastPoint;
+      const width = this.canvasState.width;
+      const height = this.canvasState.height;
+      const deltaCol = point.col - last.col;
+      const deltaRow = point.row - last.row;
+      const wrappedDeltaCol = Math.abs(deltaCol) > width / 2
+        ? deltaCol - Math.sign(deltaCol) * width
+        : deltaCol;
+      const wrappedDeltaRow = Math.abs(deltaRow) > height / 2
+        ? deltaRow - Math.sign(deltaRow) * height
+        : deltaRow;
+      targetPoint = {
+        row: last.row + wrappedDeltaRow,
+        col: last.col + wrappedDeltaCol
+      };
+    }
+    const line = bresenhamLine(this.strokeState.lastPoint, targetPoint);
     line.forEach((pt) => this.applyBrush(pt));
     this.strokeState.lastPoint = point;
   }
@@ -1962,13 +2456,14 @@ export default class PixelStudio {
       const target = this.activeLayer.pixels[index];
       const alpha = (pt.weight ?? 1) * (this.toolOptions.brushOpacity ?? 1);
       if (alpha <= 0) return;
-      if (this.strokeState.mode === 'clone') {
+      const strokeMode = this.strokeState?.mode || 'paint';
+      if (strokeMode === 'clone') {
         this.applyCloneStroke({ row, col }, alpha);
         return;
       }
       let colorValue = this.getActiveColorValue();
-      if (this.strokeState.mode === 'erase') colorValue = 0;
-      if (this.strokeState.mode === 'dither') {
+      if (strokeMode === 'erase') colorValue = 0;
+      if (strokeMode === 'dither') {
         if (!this.shouldApplyDither(row, col)) return;
       }
       if (this.toolOptions.symmetry?.mirrorOnly && target === colorValue) return;
@@ -2077,28 +2572,410 @@ export default class PixelStudio {
     if (!this.linePreview) return;
     this.startHistory('line');
     const points = bresenhamLine(this.linePreview.start, this.linePreview.end);
-    const filtered = this.toolOptions.linePerfect ? this.applyPerfectPixels(points) : points;
-    filtered.forEach((pt) => this.applyBrush(pt));
+    points.forEach((pt) => this.applyBrush(pt));
     this.linePreview = null;
+    this.curvePreview = null;
+    this.shapePreview = null;
+    this.polygonPreview = null;
+    this.gradientPreview = null;
     this.commitHistory();
   }
 
-  applyPerfectPixels(points) {
-    if (points.length < 3) return points;
-    const filtered = [points[0]];
-    for (let i = 1; i < points.length - 1; i += 1) {
-      const prev = points[i - 1];
-      const current = points[i];
-      const next = points[i + 1];
-      if ((prev.row !== current.row && prev.col !== current.col)
-        && (next.row !== current.row && next.col !== current.col)) {
-        continue;
-      }
-      filtered.push(current);
+
+
+  startCurve(point) {
+    if (!this.curvePreview) {
+      this.curvePreview = {
+        start: point,
+        end: point,
+        control1: null,
+        control2: null,
+        phase: 'line',
+        dragging: true
+      };
+      return;
     }
-    filtered.push(points[points.length - 1]);
-    return filtered;
+    this.curvePreview.dragging = true;
+    if (this.curvePreview.phase === 'control1') this.curvePreview.control1 = point;
+    if (this.curvePreview.phase === 'control2') this.curvePreview.control2 = point;
   }
+
+  updateCurve(point) {
+    if (!this.curvePreview || !this.curvePreview.dragging) return;
+    if (this.curvePreview.phase === 'line') {
+      this.curvePreview.end = point;
+      return;
+    }
+    if (this.curvePreview.phase === 'control1') {
+      this.curvePreview.control1 = point;
+      return;
+    }
+    if (this.curvePreview.phase === 'control2') {
+      this.curvePreview.control2 = point;
+    }
+  }
+
+  sampleCurvePoints(preview, steps = 64) {
+    const p0 = preview.start;
+    const p3 = preview.end;
+    const p1 = preview.control1 || {
+      row: Math.round((p0.row + p3.row) * 0.5),
+      col: Math.round((p0.col + p3.col) * 0.5)
+    };
+    const p2 = preview.control2 || p1;
+    const points = [];
+    for (let i = 0; i <= steps; i += 1) {
+      const t = i / steps;
+      const mt = 1 - t;
+      const col = mt * mt * mt * p0.col
+        + 3 * mt * mt * t * p1.col
+        + 3 * mt * t * t * p2.col
+        + t * t * t * p3.col;
+      const row = mt * mt * mt * p0.row
+        + 3 * mt * mt * t * p1.row
+        + 3 * mt * t * t * p2.row
+        + t * t * t * p3.row;
+      points.push({ row: Math.round(row), col: Math.round(col) });
+    }
+    return points;
+  }
+
+  commitCurve() {
+    if (!this.curvePreview) return;
+    if (this.curvePreview.phase === 'line') {
+      this.curvePreview.dragging = false;
+      this.curvePreview.phase = 'control1';
+      this.curvePreview.control1 = {
+        row: Math.round((this.curvePreview.start.row + this.curvePreview.end.row) * 0.5),
+        col: Math.round((this.curvePreview.start.col + this.curvePreview.end.col) * 0.5)
+      };
+      this.statusMessage = 'Curve: set weight 1';
+      return;
+    }
+    if (this.curvePreview.phase === 'control1') {
+      this.curvePreview.dragging = false;
+      this.curvePreview.phase = 'control2';
+      this.curvePreview.control2 = { ...this.curvePreview.control1 };
+      this.statusMessage = 'Curve: set weight 2';
+      return;
+    }
+    if (!this.activeLayer || this.activeLayer.locked) {
+      this.curvePreview = null;
+      return;
+    }
+    this.startHistory('curve');
+    const points = this.sampleCurvePoints(this.curvePreview, 96);
+    points.forEach((pt) => this.applyBrush(pt));
+    this.curvePreview = null;
+    this.statusMessage = '';
+    this.commitHistory();
+  }
+
+  startShape(point, type = 'rect') {
+    this.shapePreview = { start: point, end: point, type };
+  }
+
+  updateShape(point) {
+    if (!this.shapePreview) return;
+    this.shapePreview.end = point;
+  }
+
+  buildRegularPolygonPoints(bounds, sides) {
+    const cx = bounds.x + bounds.w / 2;
+    const cy = bounds.y + bounds.h / 2;
+    const rx = Math.max(1, bounds.w / 2);
+    const ry = Math.max(1, bounds.h / 2);
+    const total = clamp(Math.round(sides || 5), 3, 12);
+    const points = [];
+    for (let i = 0; i < total; i += 1) {
+      const angle = -Math.PI / 2 + (i / total) * Math.PI * 2;
+      points.push({ col: Math.round(cx + Math.cos(angle) * rx), row: Math.round(cy + Math.sin(angle) * ry) });
+    }
+    return points;
+  }
+
+  commitShape() {
+    if (!this.shapePreview || !this.activeLayer || this.activeLayer.locked) return;
+    const bounds = this.getBoundsFromPoints(this.shapePreview.start, this.shapePreview.end);
+    let mask = null;
+    if (this.shapePreview.type === 'rect') {
+      mask = createRectMask(this.canvasState.width, this.canvasState.height, bounds);
+    } else if (this.shapePreview.type === 'ellipse') {
+      mask = generateEllipseMask(this.canvasState.width, this.canvasState.height, bounds);
+    } else {
+      const points = this.buildRegularPolygonPoints(bounds, this.toolOptions.polygonSides);
+      mask = createPolygonMask(this.canvasState.width, this.canvasState.height, points);
+    }
+    const fill = Boolean(this.toolOptions.shapeFill);
+    this.startHistory(`${this.shapePreview.type} shape`);
+    const colorValue = this.getActiveColorValue();
+    for (let row = bounds.y; row < bounds.y + bounds.h; row += 1) {
+      for (let col = bounds.x; col < bounds.x + bounds.w; col += 1) {
+        const idx = row * this.canvasState.width + col;
+        if (!mask[idx]) continue;
+        if (!fill) {
+          const left = col > 0 ? mask[idx - 1] : false;
+          const right = col < this.canvasState.width - 1 ? mask[idx + 1] : false;
+          const up = row > 0 ? mask[idx - this.canvasState.width] : false;
+          const down = row < this.canvasState.height - 1 ? mask[idx + this.canvasState.width] : false;
+          if (left && right && up && down) continue;
+        }
+        if (this.selection.active && this.selection.mask && !this.selection.mask[idx]) continue;
+        this.activeLayer.pixels[idx] = colorValue;
+      }
+    }
+    this.shapePreview = null;
+    this.commitHistory();
+  }
+
+  getShapePreviewMask(preview) {
+    if (!preview) return { mask: null, bounds: null };
+    const bounds = this.getBoundsFromPoints(preview.start, preview.end);
+    let mask = null;
+    if (preview.type === 'rect') {
+      mask = createRectMask(this.canvasState.width, this.canvasState.height, bounds);
+    } else if (preview.type === 'ellipse') {
+      mask = generateEllipseMask(this.canvasState.width, this.canvasState.height, bounds);
+    } else {
+      const points = this.buildRegularPolygonPoints(bounds, this.toolOptions.polygonSides);
+      mask = createPolygonMask(this.canvasState.width, this.canvasState.height, points);
+    }
+    return { mask, bounds };
+  }
+
+  expandPreviewPoints(points) {
+    const unique = new Set();
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const source = Array.isArray(points) ? points : [];
+    source.forEach((point) => {
+      const stamps = this.createBrushStamp(point);
+      const symmetryPoints = applySymmetryPoints(stamps, width, height, this.toolOptions.symmetry);
+      symmetryPoints.forEach((pt) => {
+        const row = this.wrapCoord(pt.row, height);
+        const col = this.wrapCoord(pt.col, width);
+        if (row < 0 || col < 0 || row >= height || col >= width) return;
+        const idx = row * width + col;
+        if (this.selection.active && this.selection.mask && !this.selection.mask[idx]) return;
+        unique.add(`${row},${col}`);
+      });
+    });
+    return Array.from(unique, (key) => {
+      const [row, col] = key.split(',').map((value) => Number.parseInt(value, 10));
+      return { row, col };
+    });
+  }
+
+  getShapePreviewPoints() {
+    if (this.activeToolId === TOOL_IDS.POLYGON) return this.getPolygonPreviewPoints(false);
+    if (!this.shapePreview) return [];
+    const { mask, bounds } = this.getShapePreviewMask(this.shapePreview);
+    if (!mask || !bounds) return [];
+    const fill = Boolean(this.toolOptions.shapeFill);
+    const points = [];
+    for (let row = bounds.y; row < bounds.y + bounds.h; row += 1) {
+      for (let col = bounds.x; col < bounds.x + bounds.w; col += 1) {
+        const idx = row * this.canvasState.width + col;
+        if (!mask[idx]) continue;
+        if (!fill) {
+          const left = col > 0 ? mask[idx - 1] : false;
+          const right = col < this.canvasState.width - 1 ? mask[idx + 1] : false;
+          const up = row > 0 ? mask[idx - this.canvasState.width] : false;
+          const down = row < this.canvasState.height - 1 ? mask[idx + this.canvasState.width] : false;
+          if (left && right && up && down) continue;
+        }
+        if (this.selection.active && this.selection.mask && !this.selection.mask[idx]) continue;
+        points.push({ row, col });
+      }
+    }
+    return points;
+  }
+
+  drawPixelPreview(ctx, points, offsetX, offsetY, zoom, color = 'rgba(255,225,106,0.75)') {
+    if (!Array.isArray(points) || !points.length) return;
+    ctx.save();
+    ctx.fillStyle = color;
+    points.forEach((point) => {
+      ctx.fillRect(
+        Math.floor(offsetX + point.col * zoom),
+        Math.floor(offsetY + point.row * zoom),
+        Math.max(1, Math.ceil(zoom)),
+        Math.max(1, Math.ceil(zoom))
+      );
+    });
+    ctx.restore();
+  }
+
+  getSelectionEdgeSegments() {
+    if (!this.selection.active || !this.selection.mask || !this.selection.bounds) return [];
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const bounds = this.selection.bounds;
+    const segments = [];
+    for (let row = bounds.y; row < bounds.y + bounds.h; row += 1) {
+      for (let col = bounds.x; col < bounds.x + bounds.w; col += 1) {
+        if (row < 0 || col < 0 || row >= height || col >= width) continue;
+        const idx = row * width + col;
+        if (!this.selection.mask[idx]) continue;
+        const top = row === 0 || !this.selection.mask[idx - width];
+        const bottom = row === height - 1 || !this.selection.mask[idx + width];
+        const left = col === 0 || !this.selection.mask[idx - 1];
+        const right = col === width - 1 || !this.selection.mask[idx + 1];
+        if (top) segments.push({ x1: col, y1: row, x2: col + 1, y2: row });
+        if (bottom) segments.push({ x1: col, y1: row + 1, x2: col + 1, y2: row + 1 });
+        if (left) segments.push({ x1: col, y1: row, x2: col, y2: row + 1 });
+        if (right) segments.push({ x1: col + 1, y1: row, x2: col + 1, y2: row + 1 });
+      }
+    }
+    return segments;
+  }
+
+  drawSelectionMarchingAnts(ctx, offsetX, offsetY, zoom) {
+    const segments = this.getSelectionEdgeSegments();
+    if (!segments.length) return;
+    const dash = Math.max(2, Math.round(zoom * 0.6));
+    const phase = this.selectionMarchPhase || 0;
+    const drawPhase = (strokeStyle, offset) => {
+      ctx.save();
+      ctx.strokeStyle = strokeStyle;
+      ctx.lineWidth = Math.max(1, Math.min(2, zoom * 0.2));
+      ctx.setLineDash([dash, dash]);
+      ctx.lineDashOffset = phase + offset;
+      ctx.beginPath();
+      segments.forEach((segment) => {
+        ctx.moveTo(offsetX + segment.x1 * zoom, offsetY + segment.y1 * zoom);
+        ctx.lineTo(offsetX + segment.x2 * zoom, offsetY + segment.y2 * zoom);
+      });
+      ctx.stroke();
+      ctx.restore();
+    };
+    drawPhase('#000', 0);
+    drawPhase('#fff', dash);
+  }
+
+  startPolygon(point) {
+    if (!this.polygonPreview) {
+      this.polygonPreview = { points: [point], hover: point };
+      return;
+    }
+    const first = this.polygonPreview.points[0];
+    if (first && this.polygonPreview.points.length >= 3
+      && Math.abs(point.col - first.col) <= 1
+      && Math.abs(point.row - first.row) <= 1) {
+      this.finishPolygon();
+      return;
+    }
+    this.polygonPreview.points.push(point);
+    this.polygonPreview.hover = point;
+  }
+
+  updatePolygon(point) {
+    if (!this.polygonPreview) return;
+    this.polygonPreview.hover = point;
+  }
+
+  commitPolygonSegment() {
+    if (!this.polygonPreview) return;
+    this.polygonPreview.hover = this.polygonPreview.points[this.polygonPreview.points.length - 1];
+  }
+
+  getPolygonPreviewPoints(closeLoop = false) {
+    if (!this.polygonPreview?.points?.length) return [];
+    const vertices = [...this.polygonPreview.points];
+    if (this.polygonPreview.hover) vertices.push(this.polygonPreview.hover);
+    const linePoints = [];
+    for (let i = 1; i < vertices.length; i += 1) {
+      linePoints.push(...bresenhamLine(vertices[i - 1], vertices[i]));
+    }
+    if (closeLoop && this.polygonPreview.points.length >= 3) {
+      linePoints.push(...bresenhamLine(this.polygonPreview.points[this.polygonPreview.points.length - 1], this.polygonPreview.points[0]));
+    }
+    return this.expandPreviewPoints(linePoints);
+  }
+
+  finishPolygon() {
+    if (!this.polygonPreview || this.polygonPreview.points.length < 3 || !this.activeLayer || this.activeLayer.locked) return;
+    this.startHistory('polygon');
+    const points = this.getPolygonPreviewPoints(true);
+    points.forEach((pt) => this.applyBrush(pt));
+    this.polygonPreview = null;
+    this.commitHistory();
+  }
+
+  startGradient(point) {
+    this.gradientPreview = { start: point, end: point };
+  }
+
+  updateGradient(point) {
+    if (!this.gradientPreview) return;
+    this.gradientPreview.end = point;
+  }
+
+  commitGradient() {
+    if (!this.gradientPreview || !this.activeLayer || this.activeLayer.locked) return;
+    const start = this.gradientPreview.start;
+    const end = this.gradientPreview.end;
+    const dx = end.col - start.col;
+    const dy = end.row - start.row;
+    const denom = Math.max(1, dx * dx + dy * dy);
+    const baseColor = this.getActiveColorValue();
+    this.startHistory('gradient');
+    for (let row = 0; row < this.canvasState.height; row += 1) {
+      for (let col = 0; col < this.canvasState.width; col += 1) {
+        const idx = row * this.canvasState.width + col;
+        if (this.selection.active && this.selection.mask && !this.selection.mask[idx]) continue;
+        const t = clamp((((col - start.col) * dx) + ((row - start.row) * dy)) / denom, 0, 1);
+        const alpha = (this.toolOptions.gradientStrength / 100) * t;
+        this.activeLayer.pixels[idx] = this.blendPixel(this.activeLayer.pixels[idx], baseColor, alpha);
+      }
+    }
+    this.gradientPreview = null;
+    this.commitHistory();
+  }
+
+  applyMagicSelection(point, options = {}) {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const contiguous = options.contiguous !== false;
+    const threshold = clamp(Number(this.toolOptions.magicThreshold) || 0, 0, 255);
+    const composite = compositeLayers(this.canvasState.layers, width, height);
+    const startIdx = point.row * width + point.col;
+    const targetRgba = uint32ToRgba(composite[startIdx] || 0);
+    const mask = new Uint8Array(width * height);
+
+    if (contiguous) {
+      const queue = [point];
+      const seen = new Uint8Array(width * height);
+      while (queue.length) {
+        const current = queue.pop();
+        if (current.row < 0 || current.col < 0 || current.row >= height || current.col >= width) continue;
+        const idx = current.row * width + current.col;
+        if (seen[idx]) continue;
+        seen[idx] = 1;
+        const rgba = uint32ToRgba(composite[idx] || 0);
+        const dist = Math.hypot(rgba.r - targetRgba.r, rgba.g - targetRgba.g, rgba.b - targetRgba.b);
+        if (dist > threshold) continue;
+        mask[idx] = 1;
+        queue.push({ row: current.row - 1, col: current.col });
+        queue.push({ row: current.row + 1, col: current.col });
+        queue.push({ row: current.row, col: current.col - 1 });
+        queue.push({ row: current.row, col: current.col + 1 });
+      }
+    } else {
+      for (let idx = 0; idx < composite.length; idx += 1) {
+        const rgba = uint32ToRgba(composite[idx] || 0);
+        const dist = Math.hypot(rgba.r - targetRgba.r, rgba.g - targetRgba.g, rgba.b - targetRgba.b);
+        if (dist <= threshold) mask[idx] = 1;
+      }
+    }
+
+    this.selection.mask = mask;
+    this.selection.bounds = this.getMaskBounds(mask);
+    this.selection.active = Boolean(this.selection.bounds);
+    this.selection.mode = contiguous ? 'magic-lasso' : 'magic-color';
+  }
+
+
 
   applyFill(point) {
     if (!this.activeLayer || this.activeLayer.locked) return;
@@ -2247,26 +3124,365 @@ export default class PixelStudio {
     this.setActiveTool(TOOL_IDS.PENCIL);
   }
 
-  addLassoPoint(point) {
-    if (!this.selection.lassoPoints.length) {
-      this.selection.lassoPoints = [{ x: point.col + 0.5, y: point.row + 0.5 }];
-      this.selection.active = false;
-      return;
+  startLasso(point, options = {}) {
+    let snapped = point;
+    if (options.magic) {
+      this.magicLassoEdgeMap = this.buildMagicLassoEdgeMap();
+      this.magicLassoLastVector = null;
+      snapped = this.getMagicLassoPoint(point);
+      const idx = snapped.row * this.canvasState.width + snapped.col;
+      this.magicLassoAnchorRgba = this.magicLassoRgbaMap?.[idx] || null;
     }
+    this.selection.active = false;
+    this.selection.mask = null;
+    this.selection.bounds = null;
+    this.selection.mode = options.magic ? 'magic-lasso' : 'lasso';
+    this.selection.start = snapped;
+    this.selection.end = snapped;
+    this.selection.lassoPoints = [{ x: snapped.col + 0.5, y: snapped.row + 0.5 }];
+    this.selectionContextMenu = null;
+  }
+
+  updateLasso(point, options = {}) {
+    if (!this.selection.lassoPoints.length) return;
     const last = this.selection.lassoPoints[this.selection.lassoPoints.length - 1];
-    if (Math.hypot(point.col + 0.5 - last.x, point.row + 0.5 - last.y) < 1) {
-      this.commitLasso();
-      return;
+    const start = { row: Math.floor(last.y), col: Math.floor(last.x) };
+    const snapped = options.magic ? this.getMagicLassoPoint(point, start) : point;
+    const segment = options.magic
+      ? this.traceMagicLassoSegment(start, snapped)
+      : bresenhamLine(start, snapped).slice(1);
+    segment.forEach((pt) => {
+      const next = { x: pt.col + 0.5, y: pt.row + 0.5 };
+      const prior = this.selection.lassoPoints[this.selection.lassoPoints.length - 1];
+      if (prior && prior.x === next.x && prior.y === next.y) return;
+      this.selection.lassoPoints.push(next);
+    });
+    this.cleanLassoPathArtifacts();
+    if (segment.length) {
+      const end = segment[segment.length - 1];
+      this.selection.end = { row: end.row, col: end.col };
+    } else {
+      this.selection.end = snapped;
     }
-    this.selection.lassoPoints.push({ x: point.col + 0.5, y: point.row + 0.5 });
+  }
+
+  cleanLassoPathArtifacts() {
+    if (this.selection.lassoPoints.length < 3) return;
+    const points = this.selection.lassoPoints;
+    let changed = true;
+    while (changed && points.length >= 3) {
+      changed = false;
+      // Remove immediate backtracks A->B->A.
+      for (let i = 2; i < points.length; i += 1) {
+        const a = points[i - 2];
+        const c = points[i];
+        if (a.x === c.x && a.y === c.y) {
+          points.splice(i - 1, 1);
+          changed = true;
+          break;
+        }
+      }
+      if (changed) continue;
+      // Collapse collinear points.
+      for (let i = 2; i < points.length; i += 1) {
+        const p0 = points[i - 2];
+        const p1 = points[i - 1];
+        const p2 = points[i];
+        const x1 = p1.x - p0.x;
+        const y1 = p1.y - p0.y;
+        const x2 = p2.x - p1.x;
+        const y2 = p2.y - p1.y;
+        if ((x1 * y2) - (y1 * x2) === 0) {
+          points.splice(i - 1, 1);
+          changed = true;
+          break;
+        }
+      }
+    }
+  }
+
+  getLassoPreviewPixels() {
+    if (!this.selection.lassoPoints || this.selection.lassoPoints.length < 2) return [];
+    const unique = new Set();
+    const points = [];
+    const push = (row, col) => {
+      const key = `${row},${col}`;
+      if (unique.has(key)) return;
+      unique.add(key);
+      points.push({ row, col });
+    };
+    for (let i = 1; i < this.selection.lassoPoints.length; i += 1) {
+      const a = this.selection.lassoPoints[i - 1];
+      const b = this.selection.lassoPoints[i];
+      const line = bresenhamLine({ row: Math.floor(a.y), col: Math.floor(a.x) }, { row: Math.floor(b.y), col: Math.floor(b.x) });
+      line.forEach((pt) => push(pt.row, pt.col));
+    }
+    return points;
+  }
+
+  buildMagicLassoEdgeMap() {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const composite = compositeLayers(this.canvasState.layers, width, height);
+    const rgba = Array.from(composite, (value) => uint32ToRgba(value || 0));
+    const edge = new Float32Array(width * height);
+    this.magicLassoRgbaMap = rgba;
+
+    const indexAt = (row, col) => row * width + col;
+    const diff = (a, b) => {
+      if (!a || !b) return 0;
+      const colorDelta = Math.hypot(a.r - b.r, a.g - b.g, a.b - b.b);
+      const alphaDelta = Math.abs(a.a - b.a);
+      return colorDelta + alphaDelta * 3.5;
+    };
+
+    let maxEdge = 1;
+    for (let row = 1; row < height - 1; row += 1) {
+      for (let col = 1; col < width - 1; col += 1) {
+        const idx = indexAt(row, col);
+        const left = rgba[indexAt(row, col - 1)];
+        const right = rgba[indexAt(row, col + 1)];
+        const up = rgba[indexAt(row - 1, col)];
+        const down = rgba[indexAt(row + 1, col)];
+        const upLeft = rgba[indexAt(row - 1, col - 1)];
+        const upRight = rgba[indexAt(row - 1, col + 1)];
+        const downLeft = rgba[indexAt(row + 1, col - 1)];
+        const downRight = rgba[indexAt(row + 1, col + 1)];
+
+        const gx = diff(right, left) + diff(downRight, downLeft) * 0.5 + diff(upRight, upLeft) * 0.5;
+        const gy = diff(down, up) + diff(downRight, upRight) * 0.5 + diff(downLeft, upLeft) * 0.5;
+        const strength = Math.hypot(gx, gy);
+        edge[idx] = strength;
+        if (strength > maxEdge) maxEdge = strength;
+      }
+    }
+
+    this.magicLassoEdgeMax = Math.max(1, maxEdge);
+    return edge;
+  }
+
+  getMagicLassoPoint(point, origin = null) {
+    const edge = this.magicLassoEdgeMap;
+    if (!edge) return point;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const threshold = clamp(Number(this.toolOptions.magicThreshold) || 0, 0, 255);
+    const radius = clamp(2 + Math.round(threshold / 80), 2, 5);
+    const centerRow = clamp(point.row, 0, height - 1);
+    const centerCol = clamp(point.col, 0, width - 1);
+    let bestRow = centerRow;
+    let bestCol = centerCol;
+    let bestScore = -Infinity;
+
+    const desiredVec = origin
+      ? { x: centerCol - origin.col, y: centerRow - origin.row }
+      : null;
+    const desiredLen = desiredVec ? Math.hypot(desiredVec.x, desiredVec.y) : 0;
+
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        const row = centerRow + dy;
+        const col = centerCol + dx;
+        if (row < 0 || col < 0 || row >= height || col >= width) continue;
+        const idx = row * width + col;
+        const edgeNorm = (edge[idx] || 0) / this.magicLassoEdgeMax;
+        const distancePenalty = Math.hypot(dx, dy) * 0.2;
+        const candidateRgba = this.magicLassoRgbaMap?.[idx];
+        let anchorPenalty = 0;
+        if (this.magicLassoAnchorRgba && candidateRgba) {
+          const colorDistance = Math.hypot(
+            candidateRgba.r - this.magicLassoAnchorRgba.r,
+            candidateRgba.g - this.magicLassoAnchorRgba.g,
+            candidateRgba.b - this.magicLassoAnchorRgba.b,
+            (candidateRgba.a - this.magicLassoAnchorRgba.a) * 1.7
+          );
+          anchorPenalty = (colorDistance / 255) * 0.35;
+        }
+        let directionBonus = 0;
+        if (origin && desiredLen > 0.001) {
+          const dirX = col - origin.col;
+          const dirY = row - origin.row;
+          const dirLen = Math.hypot(dirX, dirY);
+          if (dirLen > 0.001) {
+            directionBonus = ((dirX * desiredVec.x) + (dirY * desiredVec.y)) / (dirLen * desiredLen) * 0.22;
+          }
+        }
+        const score = (edgeNorm * 1.5) + directionBonus - distancePenalty - anchorPenalty;
+        if (score > bestScore) {
+          bestScore = score;
+          bestRow = row;
+          bestCol = col;
+        }
+      }
+    }
+
+    return { row: bestRow, col: bestCol };
+  }
+
+  traceMagicLassoSegment(start, target) {
+    const edge = this.magicLassoEdgeMap;
+    if (!edge) return bresenhamLine(start, target).slice(1);
+
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const threshold = clamp(Number(this.toolOptions.magicThreshold) || 0, 0, 255);
+    const padding = clamp(2 + Math.round(threshold / 72), 2, 6);
+
+    const minRow = clamp(Math.min(start.row, target.row) - padding, 0, height - 1);
+    const maxRow = clamp(Math.max(start.row, target.row) + padding, 0, height - 1);
+    const minCol = clamp(Math.min(start.col, target.col) - padding, 0, width - 1);
+    const maxCol = clamp(Math.max(start.col, target.col) + padding, 0, width - 1);
+
+    const nodeCount = width * height;
+    const gScore = new Float32Array(nodeCount);
+    const cameFrom = new Int32Array(nodeCount);
+    const closed = new Uint8Array(nodeCount);
+    gScore.fill(Number.POSITIVE_INFINITY);
+    cameFrom.fill(-1);
+
+    const startIdx = start.row * width + start.col;
+    const targetIdx = target.row * width + target.col;
+    gScore[startIdx] = 0;
+
+    const open = [{ idx: startIdx, f: 0 }];
+    const inOpen = new Set([startIdx]);
+
+    const rowOf = (idx) => Math.floor(idx / width);
+    const colOf = (idx) => idx % width;
+
+    const heuristic = (row, col) => Math.hypot(target.row - row, target.col - col);
+
+    const getStepCost = (fromIdx, toIdx, dx, dy) => {
+      const toEdgeNorm = (edge[toIdx] || 0) / this.magicLassoEdgeMax;
+      const stepLen = (dx && dy) ? 1.414 : 1;
+      const edgePenalty = (1 - toEdgeNorm) * 12;
+      const from = cameFrom[fromIdx];
+      let turnPenalty = 0;
+      if (from >= 0) {
+        const pRow = rowOf(from);
+        const pCol = colOf(from);
+        const aX = colOf(fromIdx) - pCol;
+        const aY = rowOf(fromIdx) - pRow;
+        const aLen = Math.hypot(aX, aY) || 1;
+        const bLen = Math.hypot(dx, dy) || 1;
+        const dot = ((aX / aLen) * (dx / bLen)) + ((aY / aLen) * (dy / bLen));
+        turnPenalty = (1 - dot) * 0.7;
+      } else if (this.magicLassoLastVector) {
+        const prev = this.magicLassoLastVector;
+        const aLen = Math.hypot(prev.x, prev.y) || 1;
+        const bLen = Math.hypot(dx, dy) || 1;
+        const dot = ((prev.x / aLen) * (dx / bLen)) + ((prev.y / aLen) * (dy / bLen));
+        turnPenalty = (1 - dot) * 0.5;
+      }
+      let anchorPenalty = 0;
+      const candidateRgba = this.magicLassoRgbaMap?.[toIdx];
+      if (this.magicLassoAnchorRgba && candidateRgba) {
+        const colorDistance = Math.hypot(
+          candidateRgba.r - this.magicLassoAnchorRgba.r,
+          candidateRgba.g - this.magicLassoAnchorRgba.g,
+          candidateRgba.b - this.magicLassoAnchorRgba.b,
+          (candidateRgba.a - this.magicLassoAnchorRgba.a) * 1.7
+        );
+        anchorPenalty = (colorDistance / 255) * 1.6;
+      }
+      return stepLen * (1 + edgePenalty + turnPenalty + anchorPenalty);
+    };
+
+    let found = false;
+    let iterations = 0;
+    const maxIterations = Math.max(200, (maxRow - minRow + 1) * (maxCol - minCol + 1) * 2);
+
+    while (open.length && iterations < maxIterations) {
+      iterations += 1;
+      let bestOpenIndex = 0;
+      for (let i = 1; i < open.length; i += 1) {
+        if (open[i].f < open[bestOpenIndex].f) bestOpenIndex = i;
+      }
+      const currentNode = open.splice(bestOpenIndex, 1)[0];
+      inOpen.delete(currentNode.idx);
+      const currentIdx = currentNode.idx;
+      if (currentIdx === targetIdx) {
+        found = true;
+        break;
+      }
+      if (closed[currentIdx]) continue;
+      closed[currentIdx] = 1;
+
+      const currentRow = rowOf(currentIdx);
+      const currentCol = colOf(currentIdx);
+
+      for (let dy = -1; dy <= 1; dy += 1) {
+        for (let dx = -1; dx <= 1; dx += 1) {
+          if (!dx && !dy) continue;
+          const row = currentRow + dy;
+          const col = currentCol + dx;
+          if (row < minRow || row > maxRow || col < minCol || col > maxCol) continue;
+          const neighborIdx = row * width + col;
+          if (closed[neighborIdx]) continue;
+
+          const tentative = gScore[currentIdx] + getStepCost(currentIdx, neighborIdx, dx, dy);
+          if (tentative >= gScore[neighborIdx]) continue;
+
+          cameFrom[neighborIdx] = currentIdx;
+          gScore[neighborIdx] = tentative;
+          const f = tentative + heuristic(row, col) * 0.35;
+          if (!inOpen.has(neighborIdx)) {
+            open.push({ idx: neighborIdx, f });
+            inOpen.add(neighborIdx);
+          } else {
+            for (let i = 0; i < open.length; i += 1) {
+              if (open[i].idx === neighborIdx) {
+                open[i].f = f;
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (!found) {
+      return bresenhamLine(start, target).slice(1);
+    }
+
+    const reversed = [];
+    let walk = targetIdx;
+    while (walk >= 0 && walk !== startIdx) {
+      reversed.push({ row: rowOf(walk), col: colOf(walk) });
+      walk = cameFrom[walk];
+      if (walk < 0) break;
+    }
+    const path = reversed.reverse();
+    if (!path.length) return bresenhamLine(start, target).slice(1);
+
+    const last = path[path.length - 1];
+    const beforeLast = path.length > 1 ? path[path.length - 2] : start;
+    this.magicLassoLastVector = {
+      x: last.col - beforeLast.col,
+      y: last.row - beforeLast.row
+    };
+    return path;
   }
 
   commitLasso() {
-    if (this.selection.lassoPoints.length < 3) return;
+    if (this.selection.lassoPoints.length < 3) {
+      this.selection.lassoPoints = [];
+      this.magicLassoEdgeMap = null;
+      this.magicLassoLastVector = null;
+      this.magicLassoEdgeMax = 1;
+      this.magicLassoRgbaMap = null;
+      this.magicLassoAnchorRgba = null;
+      return;
+    }
     this.selection.mask = createPolygonMask(this.canvasState.width, this.canvasState.height, this.selection.lassoPoints);
     this.selection.bounds = this.getMaskBounds(this.selection.mask);
-    this.selection.active = true;
+    this.selection.active = Boolean(this.selection.bounds);
     this.selection.lassoPoints = [];
+    this.magicLassoEdgeMap = null;
+    this.magicLassoLastVector = null;
+    this.magicLassoEdgeMax = 1;
+    this.magicLassoRgbaMap = null;
+    this.magicLassoAnchorRgba = null;
     if (this.selection.active && this.gamepadCursor.active) {
       this.openSelectionContextMenu();
     }
@@ -2274,12 +3490,36 @@ export default class PixelStudio {
 
   startMove(point) {
     if (!this.selection.active) return;
-    this.selection.floating = this.extractSelectionPixels();
+    const transformHit = this.getSelectionTransformHit(point);
+    if (transformHit?.type === 'rotate' || transformHit?.type === 'scale') {
+      const startMask = new Uint8Array(this.selection.mask);
+      const startBounds = this.selection.bounds ? { ...this.selection.bounds } : null;
+      this.moveTransformDrag = {
+        type: transformHit.type,
+        handle: transformHit.handle || null,
+        start: point,
+        current: point,
+        center: this.getSelectionCenterPoint(),
+        startMask,
+        startPixels: this.getSelectedPixelsSnapshot(startMask),
+        startBounds,
+        startRotation: 0,
+        startW: Math.max(1, startBounds?.w || 1),
+        startH: Math.max(1, startBounds?.h || 1)
+      };
+      return;
+    }
+    this.moveTransformDrag = null;
+    this.selection.floating = this.getSelectedPixelsSnapshot();
     this.selection.offset = { x: 0, y: 0 };
     this.selection.start = point;
   }
 
   updateMove(point) {
+    if (this.moveTransformDrag) {
+      this.moveTransformDrag.current = point;
+      return;
+    }
     if (!this.selection.floating || !this.selection.start) return;
     this.selection.offset = {
       x: point.col - this.selection.start.col,
@@ -2288,11 +3528,215 @@ export default class PixelStudio {
   }
 
   commitMove() {
+    if (this.moveTransformDrag?.type === 'rotate' || this.moveTransformDrag?.type === 'scale') {
+      const drag = this.moveTransformDrag;
+      this.moveTransformDrag = null;
+      this.commitSelectionTransformDrag(drag);
+      return;
+    }
     if (!this.selection.floating) return;
     this.startHistory('move selection');
-    this.pasteSelectionPixels(this.selection.floating, this.selection.offset.x, this.selection.offset.y);
+    const nextLayer = new Uint32Array(this.activeLayer.pixels);
+    if (this.selection.mask) {
+      for (let i = 0; i < nextLayer.length; i += 1) {
+        if (this.selection.mask[i]) nextLayer[i] = 0;
+      }
+    }
+    this.pasteSelectionPixels(this.selection.floating, this.selection.offset.x, this.selection.offset.y, nextLayer);
+    this.activeLayer.pixels = nextLayer;
+    this.translateSelectionMask(this.selection.offset.x, this.selection.offset.y);
     this.selection.floating = null;
+    this.selection.start = null;
+    this.selection.offset = { x: 0, y: 0 };
     this.commitHistory();
+  }
+
+  getSelectionCenterPoint() {
+    const bounds = this.selection.bounds;
+    if (!bounds) return { col: 0, row: 0 };
+    return {
+      col: bounds.x + (bounds.w - 1) / 2,
+      row: bounds.y + (bounds.h - 1) / 2
+    };
+  }
+
+  getSelectionTransformMeta(rotationDeg = 0) {
+    const bounds = this.selection.bounds;
+    if (!bounds) return null;
+    return buildTransformHandleMeta({
+      x: bounds.x,
+      y: bounds.y,
+      w: Math.max(1, bounds.w),
+      h: Math.max(1, bounds.h),
+      rotationDeg,
+      orbOffset: 3.5
+    });
+  }
+
+  getSelectionTransformHit(point) {
+    const meta = this.getSelectionTransformMeta(0);
+    if (!meta) return null;
+    const hit = hitTestTransformHandles({
+      point: { x: point.col + 0.5, y: point.row + 0.5 },
+      meta,
+      radius: 2.0
+    });
+    if (hit?.type === 'scale') return { type: 'scale', handle: hit.handle.key };
+    if (hit?.type === 'rotate') return { type: 'rotate' };
+    return null;
+  }
+
+  getSelectedPixelsSnapshot(mask = this.selection.mask) {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const pixels = new Uint32Array(width * height);
+    this.activeLayer.pixels.forEach((value, index) => {
+      if (!mask || !mask[index]) return;
+      pixels[index] = value;
+    });
+    return pixels;
+  }
+
+  buildSelectionTransformResult(drag) {
+    if (!drag || !drag.startMask || !drag.startPixels || !drag.startBounds) return null;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const nextPixels = new Uint32Array(width * height);
+    const nextMask = new Uint8Array(width * height);
+    const centerX = drag.center.col;
+    const centerY = drag.center.row;
+
+    if (drag.type === 'rotate') {
+      const startAngle = Math.atan2(drag.start.row - centerY, drag.start.col - centerX);
+      const endAngle = Math.atan2(drag.current.row - centerY, drag.current.col - centerX);
+      const angle = endAngle - startAngle;
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
+      let minCol = width;
+      let maxCol = -1;
+      let minRow = height;
+      let maxRow = -1;
+      for (let row = 0; row < height; row += 1) {
+        for (let col = 0; col < width; col += 1) {
+          const srcIndex = row * width + col;
+          if (!drag.startMask[srcIndex]) continue;
+          const rx = col - centerX;
+          const ry = row - centerY;
+          const tx = centerX + rx * cos - ry * sin;
+          const ty = centerY + rx * sin + ry * cos;
+          minCol = Math.min(minCol, Math.floor(tx));
+          maxCol = Math.max(maxCol, Math.ceil(tx));
+          minRow = Math.min(minRow, Math.floor(ty));
+          maxRow = Math.max(maxRow, Math.ceil(ty));
+        }
+      }
+      if (maxCol < minCol || maxRow < minRow) return null;
+      minCol = clamp(minCol, 0, width - 1);
+      maxCol = clamp(maxCol, 0, width - 1);
+      minRow = clamp(minRow, 0, height - 1);
+      maxRow = clamp(maxRow, 0, height - 1);
+      for (let destRow = minRow; destRow <= maxRow; destRow += 1) {
+        for (let destCol = minCol; destCol <= maxCol; destCol += 1) {
+          const dx = destCol - centerX;
+          const dy = destRow - centerY;
+          const srcX = centerX + dx * cos + dy * sin;
+          const srcY = centerY - dx * sin + dy * cos;
+          const srcCol = Math.round(srcX);
+          const srcRow = Math.round(srcY);
+          if (srcRow < 0 || srcCol < 0 || srcRow >= height || srcCol >= width) continue;
+          const srcIndex = srcRow * width + srcCol;
+          if (!drag.startMask[srcIndex]) continue;
+          const destIndex = destRow * width + destCol;
+          nextMask[destIndex] = 1;
+          const value = drag.startPixels[srcIndex];
+          if (value) nextPixels[destIndex] = value;
+        }
+      }
+      return { pixels: nextPixels, mask: nextMask, rotationDeg: angle * (180 / Math.PI) };
+    }
+
+    if (drag.type === 'scale') {
+      const worldX = drag.current.col;
+      const worldY = drag.current.row;
+      const dx = worldX - centerX;
+      const dy = worldY - centerY;
+      const rad = -(drag.startRotation * (Math.PI / 180));
+      const localX = dx * Math.cos(rad) - dy * Math.sin(rad);
+      const localY = dx * Math.sin(rad) + dy * Math.cos(rad);
+      let halfW = Math.max(0.5, Math.abs(localX));
+      let halfH = Math.max(0.5, Math.abs(localY));
+      if (drag.handle === 'n' || drag.handle === 's') halfW = Math.max(0.5, drag.startW * 0.5);
+      if (drag.handle === 'e' || drag.handle === 'w') halfH = Math.max(0.5, drag.startH * 0.5);
+      const targetW = Math.max(1, halfW * 2);
+      const targetH = Math.max(1, halfH * 2);
+      const scaleX = targetW / Math.max(1, drag.startW);
+      const scaleY = targetH / Math.max(1, drag.startH);
+      const minCol = clamp(Math.floor(centerX - targetW * 0.5), 0, width - 1);
+      const maxCol = clamp(Math.ceil(centerX + targetW * 0.5), 0, width - 1);
+      const minRow = clamp(Math.floor(centerY - targetH * 0.5), 0, height - 1);
+      const maxRow = clamp(Math.ceil(centerY + targetH * 0.5), 0, height - 1);
+      for (let destRow = minRow; destRow <= maxRow; destRow += 1) {
+        for (let destCol = minCol; destCol <= maxCol; destCol += 1) {
+          const srcX = centerX + (destCol - centerX) / Math.max(0.0001, scaleX);
+          const srcY = centerY + (destRow - centerY) / Math.max(0.0001, scaleY);
+          const srcCol = Math.round(srcX);
+          const srcRow = Math.round(srcY);
+          if (srcRow < 0 || srcCol < 0 || srcRow >= height || srcCol >= width) continue;
+          const srcIndex = srcRow * width + srcCol;
+          if (!drag.startMask[srcIndex]) continue;
+          const destIndex = destRow * width + destCol;
+          nextMask[destIndex] = 1;
+          const value = drag.startPixels[srcIndex];
+          if (value) nextPixels[destIndex] = value;
+        }
+      }
+      return { pixels: nextPixels, mask: nextMask, rotationDeg: 0 };
+    }
+
+    return null;
+  }
+
+  buildMoveTransformPreview() {
+    return this.buildSelectionTransformResult(this.moveTransformDrag);
+  }
+
+  commitSelectionTransformDrag(drag) {
+    const transformed = this.buildSelectionTransformResult(drag);
+    if (!transformed) return;
+    this.startHistory(drag.type === 'rotate' ? 'rotate selection' : 'scale selection');
+    const nextLayer = new Uint32Array(this.activeLayer.pixels);
+    for (let i = 0; i < nextLayer.length; i += 1) {
+      if (drag.startMask[i]) nextLayer[i] = 0;
+    }
+    for (let i = 0; i < transformed.pixels.length; i += 1) {
+      const value = transformed.pixels[i];
+      if (value) nextLayer[i] = value;
+    }
+    this.activeLayer.pixels = nextLayer;
+    this.selection.mask = transformed.mask;
+    this.selection.bounds = this.getMaskBounds(transformed.mask);
+    this.selection.active = Boolean(this.selection.bounds);
+    this.commitHistory();
+  }
+
+  translateSelectionMask(dx, dy) {
+    if (!this.selection.mask) return;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const nextMask = new Uint8Array(width * height);
+    for (let row = 0; row < height; row += 1) {
+      for (let col = 0; col < width; col += 1) {
+        const srcIndex = row * width + col;
+        if (!this.selection.mask[srcIndex]) continue;
+        const destRow = row + dy;
+        const destCol = col + dx;
+        if (destRow < 0 || destCol < 0 || destRow >= height || destCol >= width) continue;
+        nextMask[destRow * width + destCol] = 1;
+      }
+    }
+    this.selection.mask = nextMask;
+    this.selection.bounds = this.getMaskBounds(nextMask);
+    this.selection.active = Boolean(this.selection.bounds);
   }
 
   extractSelectionPixels() {
@@ -2307,7 +3751,7 @@ export default class PixelStudio {
     return pixels;
   }
 
-  pasteSelectionPixels(pixels, offsetX, offsetY) {
+  pasteSelectionPixels(pixels, offsetX, offsetY, targetPixels = this.activeLayer.pixels) {
     const width = this.canvasState.width;
     const height = this.canvasState.height;
     for (let row = 0; row < height; row += 1) {
@@ -2319,7 +3763,7 @@ export default class PixelStudio {
         const destCol = col + offsetX;
         if (destRow < 0 || destCol < 0 || destRow >= height || destCol >= width) continue;
         const destIndex = destRow * width + destCol;
-        this.activeLayer.pixels[destIndex] = value;
+        targetPixels[destIndex] = value;
       }
     }
   }
@@ -2329,6 +3773,43 @@ export default class PixelStudio {
     this.startHistory('nudge selection');
     const pixels = this.extractSelectionPixels();
     this.pasteSelectionPixels(pixels, dx, dy);
+    this.translateSelectionMask(dx, dy);
+    this.commitHistory();
+  }
+
+  scaleSelectionByRatio(ratio) {
+    if (!this.selection.active || !this.selection.mask || !this.selection.bounds) return;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const bounds = this.selection.bounds;
+    const srcMask = new Uint8Array(this.selection.mask);
+    const pixels = this.extractSelectionPixels();
+    const next = new Uint32Array(this.activeLayer.pixels);
+    const nextMask = new Uint8Array(width * height);
+    const targetW = Math.max(1, Math.round(bounds.w * ratio));
+    const targetH = Math.max(1, Math.round(bounds.h * ratio));
+    this.startHistory(`scale ${ratio.toFixed(2)}x`);
+    for (let y = 0; y < targetH; y += 1) {
+      for (let x = 0; x < targetW; x += 1) {
+        const srcLocalX = clamp(Math.floor((x / Math.max(1, targetW)) * bounds.w), 0, bounds.w - 1);
+        const srcLocalY = clamp(Math.floor((y / Math.max(1, targetH)) * bounds.h), 0, bounds.h - 1);
+        const srcCol = bounds.x + srcLocalX;
+        const srcRow = bounds.y + srcLocalY;
+        const srcIndex = srcRow * width + srcCol;
+        if (!srcMask[srcIndex]) continue;
+        const destCol = bounds.x + x;
+        const destRow = bounds.y + y;
+        if (destRow < 0 || destCol < 0 || destRow >= height || destCol >= width) continue;
+        const destIndex = destRow * width + destCol;
+        nextMask[destIndex] = 1;
+        const value = pixels[srcIndex];
+        if (value) next[destIndex] = value;
+      }
+    }
+    this.activeLayer.pixels = next;
+    this.selection.mask = nextMask;
+    this.selection.bounds = this.getMaskBounds(nextMask);
+    this.selection.active = Boolean(this.selection.bounds);
     this.commitHistory();
   }
 
@@ -2375,6 +3856,27 @@ export default class PixelStudio {
     this.commitHistory();
   }
 
+  selectAllSelection() {
+    const size = this.canvasState.width * this.canvasState.height;
+    const mask = new Uint8Array(size);
+    mask.fill(1);
+    this.selection.mask = mask;
+    this.selection.bounds = {
+      minCol: 0,
+      minRow: 0,
+      maxCol: this.canvasState.width - 1,
+      maxRow: this.canvasState.height - 1,
+      width: this.canvasState.width,
+      height: this.canvasState.height
+    };
+    this.selection.active = true;
+    this.selection.mode = null;
+    this.selection.start = null;
+    this.selection.end = null;
+    this.selection.lassoPoints = [];
+    this.selectionContextMenu = null;
+  }
+
   clearSelection() {
     this.selection.active = false;
     this.selection.mask = null;
@@ -2383,23 +3885,28 @@ export default class PixelStudio {
     this.selection.start = null;
     this.selection.end = null;
     this.selection.lassoPoints = [];
+    this.magicLassoEdgeMap = null;
+    this.magicLassoLastVector = null;
+    this.magicLassoEdgeMax = 1;
+    this.magicLassoRgbaMap = null;
+    this.magicLassoAnchorRgba = null;
     this.selectionContextMenu = null;
   }
 
   invertSelection() {
+    if (!this.selection.active || !this.selection.mask) return;
     const size = this.canvasState.width * this.canvasState.height;
-    if (!this.selection.mask) {
-      this.selection.mask = new Uint8Array(size);
-    }
+    const mask = new Uint8Array(this.selection.mask);
     for (let i = 0; i < size; i += 1) {
-      this.selection.mask[i] = this.selection.mask[i] ? 0 : 1;
+      mask[i] = mask[i] ? 0 : 1;
     }
-    this.selection.bounds = this.getMaskBounds(this.selection.mask);
-    this.selection.active = true;
+    this.selection.mask = mask;
+    this.selection.bounds = this.getMaskBounds(mask);
+    this.selection.active = Boolean(this.selection.bounds);
   }
 
   expandSelection(delta) {
-    if (!this.selection.mask) return;
+    if (!this.selection.active || !this.selection.mask) return;
     const width = this.canvasState.width;
     const height = this.canvasState.height;
     const nextMask = new Uint8Array(this.selection.mask);
@@ -2436,61 +3943,82 @@ export default class PixelStudio {
     }
     this.selection.mask = nextMask;
     this.selection.bounds = this.getMaskBounds(nextMask);
+    this.selection.active = Boolean(this.selection.bounds);
   }
 
   transformSelection(type) {
-    if (!this.selection.mask) return;
+    if (!this.selection.active || !this.selection.mask || !this.selection.bounds) return;
     this.startHistory(`transform ${type}`);
     const width = this.canvasState.width;
     const height = this.canvasState.height;
+    const bounds = this.selection.bounds;
     const pixels = this.extractSelectionPixels();
     const transformed = new Uint32Array(this.activeLayer.pixels);
+    const nextMask = new Uint8Array(width * height);
     for (let row = 0; row < height; row += 1) {
       for (let col = 0; col < width; col += 1) {
         const index = row * width + col;
+        if (!this.selection.mask[index]) continue;
         const value = pixels[index];
-        if (!value) continue;
         let targetRow = row;
         let targetCol = col;
-        if (type === 'flip-h') targetCol = width - 1 - col;
-        if (type === 'flip-v') targetRow = height - 1 - row;
+        if (type === 'flip-h') targetCol = bounds.x + (bounds.w - 1 - (col - bounds.x));
+        if (type === 'flip-v') targetRow = bounds.y + (bounds.h - 1 - (row - bounds.y));
         if (type === 'rotate-cw') {
-          targetRow = col;
-          targetCol = width - 1 - row;
+          const localRow = row - bounds.y;
+          const localCol = col - bounds.x;
+          targetRow = bounds.y + localCol;
+          targetCol = bounds.x + (bounds.h - 1 - localRow);
         }
         if (type === 'rotate-ccw') {
-          targetRow = height - 1 - col;
-          targetCol = row;
+          const localRow = row - bounds.y;
+          const localCol = col - bounds.x;
+          targetRow = bounds.y + (bounds.w - 1 - localCol);
+          targetCol = bounds.x + localRow;
         }
-        transformed[targetRow * width + targetCol] = value;
+        if (targetRow < 0 || targetCol < 0 || targetRow >= height || targetCol >= width) continue;
+        const targetIndex = targetRow * width + targetCol;
+        if (value) transformed[targetIndex] = value;
+        nextMask[targetIndex] = 1;
       }
     }
     this.activeLayer.pixels = transformed;
+    this.selection.mask = nextMask;
+    this.selection.bounds = this.getMaskBounds(nextMask);
+    this.selection.active = Boolean(this.selection.bounds);
     this.commitHistory();
   }
 
   scaleSelection(factor) {
-    if (!this.selection.mask) return;
+    if (!this.selection.active || !this.selection.mask || !this.selection.bounds) return;
     const width = this.canvasState.width;
     const height = this.canvasState.height;
+    const bounds = this.selection.bounds;
     const pixels = this.extractSelectionPixels();
     const next = new Uint32Array(this.activeLayer.pixels);
-    for (let row = 0; row < height; row += 1) {
-      for (let col = 0; col < width; col += 1) {
-        const value = pixels[row * width + col];
-        if (!value) continue;
+    const nextMask = new Uint8Array(width * height);
+    this.startHistory(`scale ${factor}x`);
+    for (let row = bounds.y; row < bounds.y + bounds.h; row += 1) {
+      for (let col = bounds.x; col < bounds.x + bounds.w; col += 1) {
+        const srcIndex = row * width + col;
+        if (!this.selection.mask[srcIndex]) continue;
+        const value = pixels[srcIndex];
         for (let sy = 0; sy < factor; sy += 1) {
           for (let sx = 0; sx < factor; sx += 1) {
-            const r = row * factor + sy;
-            const c = col * factor + sx;
-            if (r < height && c < width) {
-              next[r * width + c] = value;
-            }
+            const r = bounds.y + (row - bounds.y) * factor + sy;
+            const c = bounds.x + (col - bounds.x) * factor + sx;
+            if (r < 0 || c < 0 || r >= height || c >= width) continue;
+            const destIndex = r * width + c;
+            if (value) next[destIndex] = value;
+            nextMask[destIndex] = 1;
           }
         }
       }
     }
     this.activeLayer.pixels = next;
+    this.selection.mask = nextMask;
+    this.selection.bounds = this.getMaskBounds(nextMask);
+    this.selection.active = Boolean(this.selection.bounds);
     this.commitHistory();
   }
 
@@ -2600,6 +4128,12 @@ export default class PixelStudio {
   setPaletteIndex(index) {
     this.secondaryPaletteIndex = this.paletteIndex;
     this.paletteIndex = index;
+    const shouldReturnToCanvas = !this.paletteGridOpen
+      && !this.paletteColorPickerOpen
+      && !(this.isMobileLayout() && this.mobileDrawer);
+    if (shouldReturnToCanvas) {
+      this.setInputMode('canvas');
+    }
   }
 
   generateRamp(steps = 4) {
@@ -2637,6 +4171,22 @@ export default class PixelStudio {
     if (this.currentPalette.colors.length <= 1) return;
     this.currentPalette.colors.splice(this.paletteIndex, 1);
     this.paletteIndex = clamp(this.paletteIndex, 0, this.currentPalette.colors.length - 1);
+  }
+
+  applyPaletteSwatchRemoval() {
+    if (!this.paletteRemoveMarked?.size) {
+      this.paletteRemoveMode = false;
+      return;
+    }
+    const marked = Array.from(this.paletteRemoveMarked).sort((a, b) => b - a);
+    marked.forEach((index) => {
+      if (this.currentPalette.colors.length <= 1) return;
+      if (index < 0 || index >= this.currentPalette.colors.length) return;
+      this.currentPalette.colors.splice(index, 1);
+    });
+    this.paletteIndex = clamp(this.paletteIndex, 0, this.currentPalette.colors.length - 1);
+    this.paletteRemoveMarked.clear();
+    this.paletteRemoveMode = false;
   }
 
 
@@ -2687,9 +4237,23 @@ export default class PixelStudio {
     const activeHex = this.currentPalette.colors[this.paletteIndex]?.hex || '#ffffff';
     const rgba = hexToRgba(activeHex);
     const hsv = this.rgbToHsv(rgba.r, rgba.g, rgba.b);
-    this.paletteColorDraft = { h: hsv.h, s: hsv.s, v: hsv.v, r: rgba.r, g: rgba.g, b: rgba.b };
+    this.paletteColorDraft = { h: hsv.h, s: hsv.s, v: hsv.v, r: rgba.r, g: rgba.g, b: rgba.b, quantization: 32 };
     this.palettePickerDrag = null;
     this.paletteColorPickerOpen = true;
+  }
+
+  quantizeChannel(value, levels = 32) {
+    const steps = clamp(Math.round(levels), 2, 256);
+    const t = clamp(value, 0, 255) / 255;
+    return Math.round((Math.round(t * (steps - 1)) / (steps - 1)) * 255);
+  }
+
+  applyPaletteDraftQuantization() {
+    if (!this.paletteColorDraft) return;
+    const levels = this.paletteColorDraft.quantization || 32;
+    this.paletteColorDraft.r = this.quantizeChannel(this.paletteColorDraft.r, levels);
+    this.paletteColorDraft.g = this.quantizeChannel(this.paletteColorDraft.g, levels);
+    this.paletteColorDraft.b = this.quantizeChannel(this.paletteColorDraft.b, levels);
   }
 
   syncPaletteDraftFromHsv() {
@@ -2698,10 +4262,12 @@ export default class PixelStudio {
     this.paletteColorDraft.r = rgb.r;
     this.paletteColorDraft.g = rgb.g;
     this.paletteColorDraft.b = rgb.b;
+    this.applyPaletteDraftQuantization();
   }
 
   syncPaletteDraftFromRgb() {
     if (!this.paletteColorDraft) return;
+    this.applyPaletteDraftQuantization();
     const hsv = this.rgbToHsv(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b);
     this.paletteColorDraft.h = hsv.h;
     this.paletteColorDraft.s = hsv.s;
@@ -2732,7 +4298,7 @@ export default class PixelStudio {
     this.syncPaletteDraftFromRgb();
   }
 
-  editPaletteSliderValue(type) {
+  async editPaletteSliderValue(type) {
     if (!this.paletteColorDraft) return;
     const meta = {
       h: { label: 'Hue (0-360)', min: 0, max: 360, value: this.paletteColorDraft.h, kind: 'hsv' },
@@ -2743,7 +4309,14 @@ export default class PixelStudio {
       b: { label: 'Blue (0-255)', min: 0, max: 255, value: this.paletteColorDraft.b, kind: 'rgb' }
     }[type];
     if (!meta) return;
-    const raw = window.prompt(meta.label, String(Math.round(meta.value)));
+    const raw = await openTextInputOverlay({
+      title: `Set ${meta.label.split(' ')[0]}`,
+      label: meta.label,
+      initialValue: String(Math.round(meta.value)),
+      inputType: meta.kind === 'hsv' ? 'float' : 'int',
+      min: meta.min,
+      max: meta.max
+    });
     if (raw == null) return;
     const parsed = Number(raw.trim());
     if (!Number.isFinite(parsed)) return;
@@ -2758,10 +4331,15 @@ export default class PixelStudio {
     else this.syncPaletteDraftFromRgb();
   }
 
-  editPaletteHexValue() {
+  async editPaletteHexValue() {
     if (!this.paletteColorDraft) return;
     const fallback = this.rgbToHex(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b).toUpperCase();
-    const raw = window.prompt('Hex color (#RRGGBB):', fallback);
+    const raw = await openTextInputOverlay({
+      title: 'Hex Color',
+      label: 'Hex color (#RRGGBB):',
+      initialValue: fallback,
+      inputType: 'text'
+    });
     if (raw == null) return;
     let next = raw.trim();
     if (!next) return;
@@ -2785,6 +4363,8 @@ export default class PixelStudio {
     this.paletteIndex = this.currentPalette.colors.length - 1;
     this.paletteColorPickerOpen = false;
     this.paletteColorDraft = null;
+    this.paletteRemoveMode = false;
+    this.paletteRemoveMarked.clear();
     this.palettePickerDrag = null;
     this.paletteColorPickerBounds = null;
   }
@@ -2846,8 +4426,9 @@ export default class PixelStudio {
     return { x: minCol, y: minRow, w: maxCol - minCol + 1, h: maxRow - minRow + 1 };
   }
 
-  offsetCanvas(dx, dy, wrap = true) {
-    this.startHistory('offset');
+  offsetCanvas(dx, dy, wrap = true, options = {}) {
+    const recordHistory = options.recordHistory !== false;
+    if (recordHistory) this.startHistory('offset');
     const width = this.canvasState.width;
     const height = this.canvasState.height;
     this.canvasState.layers.forEach((layer) => {
@@ -2868,7 +4449,7 @@ export default class PixelStudio {
       }
       layer.pixels = next;
     });
-    this.commitHistory();
+    if (recordHistory) this.commitHistory();
   }
 
   addLayer() {
@@ -3007,22 +4588,67 @@ export default class PixelStudio {
   getGridCellFromScreen(x, y) {
     if (!this.canvasBounds) return null;
     const { x: startX, y: startY, cellSize } = this.canvasBounds;
-    const col = Math.floor((x - startX) / cellSize);
-    const row = Math.floor((y - startY) / cellSize);
+    let col = Math.floor((x - startX) / cellSize);
+    let row = Math.floor((y - startY) / cellSize);
+    if (this.toolOptions.wrapDraw) {
+      col = ((col % this.canvasState.width) + this.canvasState.width) % this.canvasState.width;
+      row = ((row % this.canvasState.height) + this.canvasState.height) % this.canvasState.height;
+      return { row, col };
+    }
     if (col < 0 || row < 0 || col >= this.canvasState.width || row >= this.canvasState.height) return null;
     return { row, col };
   }
 
+  getGridCellFromScreenUnbounded(x, y) {
+    if (!this.canvasBounds) return null;
+    const { mainX, mainY, x: startX, y: startY, cellSize } = this.canvasBounds;
+    const originX = Number.isFinite(mainX) ? mainX : startX;
+    const originY = Number.isFinite(mainY) ? mainY : startY;
+    const col = Math.floor((x - originX) / cellSize);
+    const row = Math.floor((y - originY) / cellSize);
+    return {
+      row: clamp(row, -this.canvasState.height * 2, this.canvasState.height * 3),
+      col: clamp(col, -this.canvasState.width * 2, this.canvasState.width * 3)
+    };
+  }
+
   getScreenFromGridCell(row, col) {
     if (!this.canvasBounds) return null;
-    const { x: startX, y: startY, cellSize } = this.canvasBounds;
+    const { mainX, mainY, x: startX, y: startY, cellSize } = this.canvasBounds;
+    const originX = Number.isFinite(mainX) ? mainX : startX;
+    const originY = Number.isFinite(mainY) ? mainY : startY;
     return {
-      x: startX + col * cellSize + cellSize / 2,
-      y: startY + row * cellSize + cellSize / 2
+      x: originX + col * cellSize + cellSize / 2,
+      y: originY + row * cellSize + cellSize / 2
     };
   }
 
   handleButtonClick(x, y, payload = {}) {
+    if (this.transformModal) {
+      if (this.transformModal.bounds && !this.isPointInBounds({ x, y }, this.transformModal.bounds)) {
+        this.closeTransformModal();
+        return true;
+      }
+      const sliderHit = (this.transformModal.fields || []).find((field) => this.isPointInBounds({ x, y }, field.sliderHitBounds || field.slider));
+      if (sliderHit) {
+        const ratio = clamp((x - sliderHit.slider.x) / Math.max(1, sliderHit.slider.w), 0, 1);
+        const next = sliderHit.min + ratio * (sliderHit.max - sliderHit.min);
+        this.setTransformValue(sliderHit.key, next, sliderHit.min, sliderHit.max);
+        this.transformModal.drag = { key: sliderHit.key, id: payload.id ?? null };
+        return true;
+      }
+      const valueHit = (this.transformModal.fields || []).find((field) => field.valueBounds && this.isPointInBounds({ x, y }, field.valueBounds));
+      if (valueHit) {
+        this.editTransformValue(valueHit);
+        return true;
+      }
+      const buttonHit = (this.transformModal.buttons || []).find((entry) => this.isPointInBounds({ x, y }, entry.bounds));
+      if (buttonHit) {
+        buttonHit.onClick?.();
+        return true;
+      }
+      return true;
+    }
     if (this.paletteGridOpen) {
       const activeBounds = this.paletteColorPickerOpen ? this.paletteColorPickerBounds : this.paletteModalBounds;
       if (activeBounds && !this.isPointInBounds({ x, y }, activeBounds)) {
@@ -3042,14 +4668,14 @@ export default class PixelStudio {
     }
     if (hit) {
       hit.onClick?.({ x, y, id: payload.id });
+      if (hit.onDrag) {
+        this.uiSliderDrag = { id: payload.id ?? null, onDrag: hit.onDrag };
+        hit.onDrag({ x, y, id: payload.id });
+      }
       return true;
     }
     if (this.brushPickerOpen && this.brushPickerBounds && !this.isPointInBounds({ x, y }, this.brushPickerBounds)) {
       this.closeBrushPicker({ apply: false });
-      return true;
-    }
-    if (this.mobileDrawer && this.mobileDrawerBounds && !this.isPointInBounds({ x, y }, this.mobileDrawerBounds)) {
-      this.mobileDrawer = null;
       return true;
     }
     if (this.selectionContextMenu?.bounds && !this.isPointInBounds({ x, y }, this.selectionContextMenu.bounds)) {
@@ -3060,7 +4686,14 @@ export default class PixelStudio {
     }
     const paletteHit = this.paletteBounds.find((bounds) => this.isPointInBounds({ x, y }, bounds));
     if (paletteHit) {
-      this.setPaletteIndex(paletteHit.index);
+      if (typeof paletteHit.action === 'function') {
+        paletteHit.action();
+      } else if (this.paletteGridOpen && this.paletteRemoveMode) {
+        if (this.paletteRemoveMarked.has(paletteHit.index)) this.paletteRemoveMarked.delete(paletteHit.index);
+        else this.paletteRemoveMarked.add(paletteHit.index);
+      } else {
+        this.setPaletteIndex(paletteHit.index);
+      }
       return true;
     }
     const layerHit = this.layerBounds.find((bounds) => this.isPointInBounds({ x, y }, bounds));
@@ -3188,6 +4821,7 @@ export default class PixelStudio {
     this.focusGroupMeta = {};
     this.mobileDrawerBounds = null;
     this.paletteBarScrollBounds = null;
+    this.paletteModalSwatchScrollBounds = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
     this.brushPickerBounds = null;
@@ -3260,6 +4894,10 @@ export default class PixelStudio {
       this.drawQuickWheel(ctx, width, height);
     }
 
+    if (this.transformModal) {
+      this.drawTransformModal(ctx, width, height);
+    }
+
     if (this.controlsOverlayOpen) {
       this.drawControlsOverlay(ctx, width, height);
     }
@@ -3282,6 +4920,142 @@ export default class PixelStudio {
       color,
       y: bounds.y + bounds.h / 2 + 1
     });
+  }
+
+  drawTransformModal(ctx, width, height) {
+    if (!this.transformModal) return;
+    const modalW = Math.min(420, Math.max(280, width * 0.45));
+    const modalH = Math.min(290, Math.max(220, height * 0.42));
+    const modal = {
+      x: Math.floor((width - modalW) / 2),
+      y: Math.floor((height - modalH) / 2),
+      w: Math.floor(modalW),
+      h: Math.floor(modalH)
+    };
+    this.transformModal.bounds = modal;
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#1b1b1b';
+    ctx.fillRect(modal.x, modal.y, modal.w, modal.h);
+    ctx.strokeStyle = '#ffe16a';
+    ctx.strokeRect(modal.x, modal.y, modal.w, modal.h);
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    const title = this.transformModal.type[0].toUpperCase() + this.transformModal.type.slice(1);
+    const modalTarget = this.transformModal.scope === 'selection' ? 'Selection' : 'Canvas';
+    ctx.fillText(`${title} ${modalTarget}`, modal.x + 12, modal.y + 22);
+
+    const rowsByType = {
+      resize: [
+        { key: 'width', label: 'Width', min: 8, max: 512 },
+        { key: 'height', label: 'Height', min: 8, max: 512 }
+      ],
+      scale: [
+        { key: 'scaleX', label: 'Scale X', min: 1, max: 16 },
+        { key: 'scaleY', label: 'Scale Y', min: 1, max: 16 }
+      ],
+      crop: [
+        { key: 'borderX', label: 'Border X', min: 0, max: Math.max(0, Math.floor((this.canvasState.width - 1) / 2)) },
+        { key: 'borderY', label: 'Border Y', min: 0, max: Math.max(0, Math.floor((this.canvasState.height - 1) / 2)) }
+      ],
+      offset: [
+        { key: 'dx', label: 'Shift X', min: -this.canvasState.width, max: this.canvasState.width },
+        { key: 'dy', label: 'Shift Y', min: -this.canvasState.height, max: this.canvasState.height }
+      ],
+      rotate: [
+        { key: 'angle', label: 'Angle', min: -360, max: 360 }
+      ],
+      stretch: [
+        { key: 'stretchX', label: 'Stretch X %', min: 1, max: 500 },
+        { key: 'stretchY', label: 'Stretch Y %', min: 1, max: 500 }
+      ],
+      skew: [
+        { key: 'skewX', label: 'Skew X °', min: -89, max: 89 },
+        { key: 'skewY', label: 'Skew Y °', min: -89, max: 89 }
+      ]
+    };
+    const rows = rowsByType[this.transformModal.type] || [];
+    this.transformModal.fields = [];
+
+    let rowY = modal.y + 50;
+    rows.forEach((row) => {
+      const valueW = 52;
+      const slider = { x: modal.x + 108, y: rowY - 12, w: Math.max(40, modal.w - 190), h: 18 };
+      const sliderHitBounds = { x: slider.x - 6, y: slider.y - 10, w: slider.w + 12, h: slider.h + 20 };
+      const valueBounds = { x: slider.x + slider.w + 8, y: rowY - 12, w: valueW, h: 18 };
+      const value = this.transformModal.values[row.key] ?? row.min;
+      const t = clamp((value - row.min) / Math.max(1, row.max - row.min), 0, 1);
+      const knobX = slider.x + t * slider.w;
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '12px Courier New';
+      ctx.fillText(row.label, modal.x + 12, rowY);
+      ctx.fillStyle = 'rgba(255,255,255,0.28)';
+      ctx.fillRect(slider.x, slider.y, slider.w, slider.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+      ctx.strokeRect(slider.x, slider.y, slider.w, slider.h);
+      ctx.fillStyle = '#ffe16a';
+      ctx.fillRect(knobX - 2, slider.y - 2, 4, slider.h + 4);
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      ctx.fillRect(valueBounds.x, valueBounds.y, valueBounds.w, valueBounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.strokeRect(valueBounds.x, valueBounds.y, valueBounds.w, valueBounds.h);
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'right';
+      ctx.fillText(String(Math.round(value)), valueBounds.x + valueBounds.w - 6, rowY + 1);
+      ctx.textAlign = 'left';
+      this.transformModal.fields.push({ ...row, slider, sliderHitBounds, valueBounds });
+      rowY += 38;
+    });
+
+    if (this.transformModal.type === 'flip') {
+      const axis = this.transformModal.values.axis === 'vertical' ? 'vertical' : 'horizontal';
+      const flipHB = { x: modal.x + 12, y: rowY - 12, w: 140, h: 22 };
+      const flipVB = { x: modal.x + 158, y: rowY - 12, w: 140, h: 22 };
+      this.drawButton(ctx, flipHB, 'Flip Horizontal', axis === 'horizontal', { fontSize: 12 });
+      this.drawButton(ctx, flipVB, 'Flip Vertical', axis === 'vertical', { fontSize: 12 });
+      this.uiButtons.push({ bounds: flipHB, onClick: () => { this.transformModal.values.axis = 'horizontal'; } });
+      this.uiButtons.push({ bounds: flipVB, onClick: () => { this.transformModal.values.axis = 'vertical'; } });
+      this.registerFocusable('menu', flipHB, () => { this.transformModal.values.axis = 'horizontal'; });
+      this.registerFocusable('menu', flipVB, () => { this.transformModal.values.axis = 'vertical'; });
+      rowY += 32;
+    }
+
+    if (this.transformModal.type === 'rotate') {
+      const presets = [90, 180, 270];
+      presets.forEach((angle, index) => {
+        const b = { x: modal.x + 12 + index * 74, y: rowY - 12, w: 68, h: 22 };
+        const active = Math.round(this.transformModal.values.angle || 0) === angle;
+        this.drawButton(ctx, b, String(angle), active, { fontSize: 12 });
+        this.uiButtons.push({ bounds: b, onClick: () => { this.transformModal.values.angle = angle; } });
+        this.registerFocusable('menu', b, () => { this.transformModal.values.angle = angle; });
+      });
+      rowY += 32;
+    }
+
+    if (this.transformModal.type === 'offset') {
+      const wrapBounds = { x: modal.x + 12, y: rowY - 12, w: 110, h: 20 };
+      const wrap = this.transformModal.values.wrap !== false;
+      this.drawButton(ctx, wrapBounds, wrap ? 'Wrap: On' : 'Wrap: Off', wrap, { fontSize: 12 });
+      this.uiButtons.push({ bounds: wrapBounds, onClick: () => { this.transformModal.values.wrap = !wrap; } });
+      this.registerFocusable('menu', wrapBounds, () => { this.transformModal.values.wrap = !wrap; });
+      rowY += 28;
+    }
+
+    const cancelBounds = { x: modal.x + modal.w - 180, y: modal.y + modal.h - 34, w: 80, h: 24 };
+    const okBounds = { x: modal.x + modal.w - 92, y: modal.y + modal.h - 34, w: 80, h: 24 };
+    this.drawButton(ctx, cancelBounds, 'Cancel', false, { fontSize: 12 });
+    this.drawButton(ctx, okBounds, this.transformModal.scope === 'selection' ? 'OK' : 'Apply', true, { fontSize: 12 });
+    this.transformModal.buttons = [
+      { bounds: cancelBounds, onClick: () => this.closeTransformModal() },
+      { bounds: okBounds, onClick: () => this.applyTransformModal() }
+    ];
+    this.uiButtons.push({ bounds: cancelBounds, onClick: () => this.closeTransformModal() });
+    this.uiButtons.push({ bounds: okBounds, onClick: () => this.applyTransformModal() });
+    this.registerFocusable('menu', cancelBounds, () => this.closeTransformModal());
+    this.registerFocusable('menu', okBounds, () => this.applyTransformModal());
+    ctx.restore();
   }
 
   isMobileLayout() {
@@ -3314,8 +5088,9 @@ export default class PixelStudio {
 
     const labels = {
       file: SHARED_EDITOR_LEFT_MENU.fileLabel,
+      draw: 'Draw',
+      select: 'Select',
       tools: 'Tools',
-      layers: 'Layers',
       canvas: 'Canvas'
     };
     const { tabColumn, content } = buildSharedLeftMenuLayout({
@@ -3344,12 +5119,6 @@ export default class PixelStudio {
       this.uiButtons.push({ bounds, onClick: () => this.setLeftPanelTab(entry.id) });
       this.registerFocusable('menu', bounds, () => this.setLeftPanelTab(entry.id));
     });
-    const lastY = topButtons[topButtons.length - 1]?.bounds?.y || tabColumn.y;
-    const undoBounds = { x: tabColumn.x, y: lastY + SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
-    this.drawButton(ctx, undoBounds, 'Undo / Redo', false, { fontSize: isMobile ? 12 : 11 });
-    this.uiButtons.push({ bounds: undoBounds, onClick: () => this.runtime.undo() });
-    this.registerFocusable('menu', undoBounds, () => this.runtime.undo());
-
     this.drawLeftPanelContent(ctx, content.x, content.y, content.w, content.h, options);
   }
 
@@ -3359,12 +5128,8 @@ export default class PixelStudio {
       this.drawFilePanel(ctx, x, y, w, h, { isMobile });
       return;
     }
-    if (this.leftPanelTab === 'tools') {
-      this.drawToolsMenu(ctx, x, y, w, h, { isMobile });
-      return;
-    }
-    if (this.leftPanelTab === 'layers') {
-      this.drawLayersPanel(ctx, x, y, w, h, { isMobile, showPreview: !isMobile });
+    if (['draw', 'select', 'tools'].includes(this.leftPanelTab)) {
+      this.drawToolsMenu(ctx, x, y, w, h, { isMobile, category: this.leftPanelTab });
       return;
     }
     if (this.leftPanelTab === 'canvas') {
@@ -3375,18 +5140,17 @@ export default class PixelStudio {
 
   drawToolsMenu(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
+    const category = options.category || this.leftPanelTab || 'draw';
     if (isMobile) {
-      this.drawToolsPanel(ctx, x, y, w, h, { isMobile });
+      this.drawToolsPanel(ctx, x, y, w, h, { isMobile, category });
       return;
     }
     const gap = 12;
-    const colWidth = Math.max(160, Math.floor((w - gap * 2) / 3));
+    const colWidth = Math.max(160, Math.floor((w - gap) / 2));
     const leftX = x;
-    const middleX = x + colWidth + gap;
-    const rightX = x + (colWidth + gap) * 2;
+    const rightX = x + colWidth + gap;
     const columnHeight = h;
-    this.drawToolsPanel(ctx, leftX, y, colWidth, columnHeight, { isMobile });
-    this.drawLayersPanel(ctx, middleX, y, colWidth, columnHeight, { isMobile, showPreview: !isMobile });
+    this.drawToolsPanel(ctx, leftX, y, colWidth, columnHeight, { isMobile, category });
     this.drawPalettePanel(ctx, rightX, y, colWidth, columnHeight, { isMobile });
   }
 
@@ -3399,7 +5163,7 @@ export default class PixelStudio {
     const maxVisible = Math.max(1, Math.floor((h - 30) / lineHeight));
     this.focusGroupMeta.objects = { maxVisible };
     const start = this.focusScroll.objects || 0;
-    let offsetY = y + 36;
+    let offsetY = toolsTop;
     this.tileLibrary.slice(start, start + maxVisible).forEach((tile, visibleIndex) => {
       const index = start + visibleIndex;
       const active = tile.id === this.activeTile?.id;
@@ -3443,6 +5207,7 @@ export default class PixelStudio {
           { id: 'save-decal-session', label: 'Save Changes', onClick: () => this.saveDecalSessionAndReturn() },
           { id: 'abandon-decal-session', label: 'Abandon Changes', onClick: () => this.abandonDecalSessionAndReturn() }
         ] : []),
+        { id: 'import-image', label: 'Import Image', onClick: () => this.imageFileInput.click() },
         { id: 'sprite-sheet', label: 'Sprite Sheet', onClick: () => this.exportSpriteSheet('horizontal') },
         { id: 'export-gif', label: 'Export GIF', onClick: () => this.exportGif() },
         { id: 'palette-json', label: 'Palette JSON', onClick: () => this.exportPaletteJson() },
@@ -3483,10 +5248,6 @@ export default class PixelStudio {
   drawPalettePanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
     const fontSize = isMobile ? 14 : 12;
-    ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
-    ctx.fillText(`Palette: ${this.currentPalette.name}`, x + 12, y + 20);
-
     const buttonHeight = isMobile ? 44 : 18;
     const gap = isMobile ? 10 : 6;
     const controlWidth = isMobile ? 70 : 50;
@@ -3506,7 +5267,7 @@ export default class PixelStudio {
       const col = index % perRow;
       const bounds = {
         x: x + 8 + col * (controlWidth + gap),
-        y: y + 30 + row * (buttonHeight + gap),
+        y: y + 10 + row * (buttonHeight + gap),
         w: controlWidth,
         h: buttonHeight
       };
@@ -3516,7 +5277,7 @@ export default class PixelStudio {
     });
 
     const controlRows = Math.ceil(paletteControls.length / perRow);
-    let offsetY = y + 30 + controlRows * (buttonHeight + gap) + 8;
+    let offsetY = y + 10 + controlRows * (buttonHeight + gap) + 8;
     const swatchSize = isMobile ? 36 : 26;
     const swatchGap = isMobile ? 10 : 8;
     const availableHeight = Math.max(80, h - offsetY - (isMobile ? 80 : 60));
@@ -3543,10 +5304,6 @@ export default class PixelStudio {
 
     offsetY += maxRows * (swatchSize + swatchGap) + 12;
     if (offsetY + 20 < y + h) {
-      ctx.fillStyle = '#fff';
-      ctx.font = `${isMobile ? 14 : 12}px Courier New`;
-      ctx.fillText('Presets', x + 12, offsetY);
-      offsetY += 18;
       const lineHeight = isMobile ? 52 : 20;
       const maxPresetVisible = Math.max(1, Math.floor((y + h - offsetY - 8) / lineHeight));
       this.focusGroupMeta.palettePresets = { maxVisible: maxPresetVisible };
@@ -3658,10 +5415,10 @@ export default class PixelStudio {
     ctx.strokeRect(x, y, w, h);
     const actions = [
       { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
+      { id: 'draw', label: 'Draw', action: () => { this.setLeftPanelTab('draw'); this.mobileDrawer = 'panel'; } },
+      { id: 'select', label: 'Select', action: () => { this.setLeftPanelTab('select'); this.mobileDrawer = 'panel'; } },
       { id: 'tools', label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
-      { id: 'layers', label: 'Layers', action: () => { this.setLeftPanelTab('layers'); this.mobileDrawer = 'panel'; } },
-      { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
-      { id: 'undo', label: 'Undo / Redo', action: () => { this.runtime.undo(); } }
+      { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } }
     ];
     const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const buttonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
@@ -4033,38 +5790,66 @@ export default class PixelStudio {
     ctx.font = '15px Courier New';
     ctx.fillText('Palette', sheetX + 12, sheetY + 24);
 
-    const addBounds = { x: sheetX + sheetW - 154, y: sheetY + 8, w: 34, h: 28 };
-    const removeBounds = { x: sheetX + sheetW - 114, y: sheetY + 8, w: 34, h: 28 };
-    this.drawButton(ctx, addBounds, '+', false, { fontSize: 12 });
-    this.drawButton(ctx, removeBounds, '-', false, { fontSize: 12 });
-    this.uiButtons.push({ bounds: addBounds, onClick: () => this.openPaletteColorPicker() });
-    this.uiButtons.push({ bounds: removeBounds, onClick: () => this.removePaletteColor() });
+    const addBounds = { x: sheetX + 12, y: sheetY + sheetH - 44, w: 54, h: 32 };
+    const removeBounds = { x: sheetX + 72, y: sheetY + sheetH - 44, w: 54, h: 32 };
+    if (!this.paletteRemoveMode) {
+      this.drawButton(ctx, addBounds, '+', false, { fontSize: 12 });
+      this.drawButton(ctx, removeBounds, '-', false, { fontSize: 12 });
+      this.uiButtons.push({ bounds: addBounds, onClick: () => this.openPaletteColorPicker() });
+      this.uiButtons.push({ bounds: removeBounds, onClick: () => { this.paletteRemoveMode = true; this.paletteRemoveMarked.clear(); } });
+    }
 
     const swatchSize = 38;
     const gap = 8;
-    const maxPerRow = Math.max(1, Math.floor((sheetW - 24) / (swatchSize + gap)));
     const topY = sheetY + 44;
+    const swatchAreaH = Math.max(80, sheetH - 106);
+    const rowsVisible = Math.max(1, Math.floor((swatchAreaH + gap) / (swatchSize + gap)));
+    const colsVisible = Math.max(1, Math.floor((sheetW - 24 + gap) / (swatchSize + gap)));
+    const maxVisible = rowsVisible * colsVisible;
+    const maxScroll = Math.max(0, this.currentPalette.colors.length - maxVisible);
+    this.focusScroll.paletteModal = clamp(this.focusScroll.paletteModal || 0, 0, maxScroll);
+    this.paletteModalSwatchScrollBounds = {
+      x: sheetX + 10,
+      y: topY - 4,
+      w: sheetW - 20,
+      h: rowsVisible * (swatchSize + gap),
+      step: swatchSize + gap,
+      maxScroll
+    };
+    const start = this.focusScroll.paletteModal || 0;
     this.paletteBounds = [];
-    this.currentPalette.colors.forEach((color, index) => {
-      const row = Math.floor(index / maxPerRow);
-      const col = index % maxPerRow;
+    this.currentPalette.colors.slice(start, start + maxVisible).forEach((color, localIndex) => {
+      const index = start + localIndex;
+      const row = Math.floor(localIndex / colsVisible);
+      const col = localIndex % colsVisible;
       const swatchX = sheetX + 12 + col * (swatchSize + gap);
       const swatchY = topY + row * (swatchSize + gap);
-      if (swatchY + swatchSize > sheetY + sheetH - 54) return;
       ctx.fillStyle = color.hex;
       ctx.fillRect(swatchX, swatchY, swatchSize, swatchSize);
-      ctx.strokeStyle = index === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)';
+      const marked = this.paletteRemoveMarked?.has(index);
+      ctx.strokeStyle = this.paletteRemoveMode
+        ? 'rgba(255,80,80,0.95)'
+        : (index === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)');
       ctx.strokeRect(swatchX, swatchY, swatchSize, swatchSize);
+      if (this.paletteRemoveMode && marked) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+        ctx.beginPath();
+        ctx.moveTo(swatchX + 6, swatchY + 6);
+        ctx.lineTo(swatchX + swatchSize - 6, swatchY + swatchSize - 6);
+        ctx.moveTo(swatchX + swatchSize - 6, swatchY + 6);
+        ctx.lineTo(swatchX + 6, swatchY + swatchSize - 6);
+        ctx.stroke();
+      }
       const bounds = { x: swatchX, y: swatchY, w: swatchSize, h: swatchSize, index };
       this.paletteBounds.push(bounds);
       this.registerFocusable('palette', bounds, () => this.setPaletteIndex(index));
     });
 
     if (this.paletteColorPickerOpen && this.paletteColorDraft) {
-      const basePickerW = sheetW - 16;
-      const basePickerH = sheetH - 48;
-      const pickerW = Math.min(sheetW - 8, Math.floor(basePickerW * 1.05));
-      const pickerH = Math.min(sheetH - 8, Math.floor(basePickerH * 1.25));
+      const basePickerW = sheetW - 12;
+      const basePickerH = sheetH - 16;
+      const pickerW = Math.min(sheetW - 4, Math.floor(basePickerW * 1.1));
+      const pickerH = Math.min(sheetH - 4, Math.floor(basePickerH * 1.1));
       const pickerX = sheetX + Math.floor((sheetW - pickerW) / 2);
       const pickerY = sheetY + Math.floor((sheetH - pickerH) / 2);
       this.paletteColorPickerBounds = { x: pickerX, y: pickerY, w: pickerW, h: pickerH };
@@ -4086,7 +5871,7 @@ export default class PixelStudio {
       const hueW = clamp(Math.floor(leftW * 0.11), 18, 28);
       const hexFieldH = 24;
       const hexGap = 8;
-      const leftAreaH = Math.max(120, contentH - hexFieldH - hexGap);
+      const leftAreaH = Math.max(120, contentH - hexFieldH - hexGap - footerButtonH - 6);
       const svSize = Math.max(120, Math.min(leftW - hueW - contentPadding, leftAreaH));
       const sv = { x: pickerX + contentPadding, y: contentY, w: svSize, h: svSize };
       const hue = { x: sv.x + sv.w + contentPadding, y: sv.y, w: hueW, h: sv.h };
@@ -4096,30 +5881,31 @@ export default class PixelStudio {
       const sliderRowStep = Math.max(sliderH + 6, Math.floor(sliderAreaH / sliderCount));
       const sliderBlockH = sliderCount * sliderRowStep;
 
-      const topColor = this.hsvToRgb(this.paletteColorDraft.h, 1, 1);
-      const gradX = ctx.createLinearGradient(sv.x, sv.y, sv.x + sv.w, sv.y);
-      gradX.addColorStop(0, '#fff');
-      gradX.addColorStop(1, this.rgbToHex(topColor.r, topColor.g, topColor.b));
-      ctx.fillStyle = gradX;
-      ctx.fillRect(sv.x, sv.y, sv.w, sv.h);
-      const gradY = ctx.createLinearGradient(sv.x, sv.y, sv.x, sv.y + sv.h);
-      gradY.addColorStop(0, 'rgba(0,0,0,0)');
-      gradY.addColorStop(1, 'rgba(0,0,0,1)');
-      ctx.fillStyle = gradY;
-      ctx.fillRect(sv.x, sv.y, sv.w, sv.h);
+      const quantizationLevels = this.paletteColorDraft.quantization || 32;
+      const quantizeHex = (rgb) => this.rgbToHex(this.quantizeChannel(rgb.r, quantizationLevels), this.quantizeChannel(rgb.g, quantizationLevels), this.quantizeChannel(rgb.b, quantizationLevels));
+      const svSteps = clamp(Math.round(quantizationLevels), 8, 32);
+      const svBlockW = sv.w / svSteps;
+      const svBlockH = sv.h / svSteps;
+      for (let vy = 0; vy < svSteps; vy += 1) {
+        const v = 1 - (vy / Math.max(1, svSteps - 1));
+        for (let sx = 0; sx < svSteps; sx += 1) {
+          const sat = sx / Math.max(1, svSteps - 1);
+          const rgb = this.hsvToRgb(this.paletteColorDraft.h, sat, v);
+          ctx.fillStyle = quantizeHex(rgb);
+          ctx.fillRect(sv.x + sx * svBlockW, sv.y + vy * svBlockH, Math.ceil(svBlockW), Math.ceil(svBlockH));
+        }
+      }
       ctx.strokeStyle = '#fff';
       ctx.strokeRect(sv.x, sv.y, sv.w, sv.h);
 
-      const hueGrad = ctx.createLinearGradient(hue.x, hue.y, hue.x, hue.y + hue.h);
-      hueGrad.addColorStop(0, '#f00');
-      hueGrad.addColorStop(0.17, '#ff0');
-      hueGrad.addColorStop(0.33, '#0f0');
-      hueGrad.addColorStop(0.5, '#0ff');
-      hueGrad.addColorStop(0.67, '#00f');
-      hueGrad.addColorStop(0.83, '#f0f');
-      hueGrad.addColorStop(1, '#f00');
-      ctx.fillStyle = hueGrad;
-      ctx.fillRect(hue.x, hue.y, hue.w, hue.h);
+      const hueSteps = clamp(Math.round(quantizationLevels), 8, 64);
+      const hueBlockH = hue.h / hueSteps;
+      for (let i = 0; i < hueSteps; i += 1) {
+        const hNorm = i / Math.max(1, hueSteps - 1);
+        const rgb = this.hsvToRgb(hNorm * 360, 1, 1);
+        ctx.fillStyle = quantizeHex(rgb);
+        ctx.fillRect(hue.x, hue.y + i * hueBlockH, hue.w, Math.ceil(hueBlockH));
+      }
       ctx.strokeRect(hue.x, hue.y, hue.w, hue.h);
 
       const svX = sv.x + this.paletteColorDraft.s * sv.w;
@@ -4130,10 +5916,11 @@ export default class PixelStudio {
       ctx.strokeRect(hue.x - 2, hueY - 2, hue.w + 4, 4);
 
       const currentHex = this.rgbToHex(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b).toUpperCase();
+      const buttonY = pickerY + pickerH - footerButtonH - 8;
       const hexBounds = {
-        x: hue.x,
-        y: hue.y + hue.h + hexGap,
-        w: Math.max(88, sliderX - hue.x - 8),
+        x: sv.x,
+        y: buttonY + Math.floor((footerButtonH - hexFieldH) / 2),
+        w: Math.max(88, sv.w),
         h: hexFieldH
       };
       ctx.fillStyle = '#fff';
@@ -4209,20 +5996,74 @@ export default class PixelStudio {
         this.syncPaletteDraftFromHsv();
       } });
 
-      const buttonY = pickerY + pickerH - footerButtonH - 8;
+      const quantBounds = { x: pickerX + 10, y: pickerY + 10, w: 140, h: footerButtonH };
       const pickerCancel = { x: pickerX + pickerW - 186, y: buttonY, w: 84, h: footerButtonH };
       const pickerOk = { x: pickerX + pickerW - 94, y: buttonY, w: 84, h: footerButtonH };
+      const q = this.paletteColorDraft.quantization || 32;
+      const quantLabel = q === 8 ? 'Q: 8-bit' : (q === 16 ? 'Q: 16-bit' : 'Q: 32-bit');
+      this.drawButton(ctx, quantBounds, quantLabel, false, { fontSize: 12 });
       this.drawButton(ctx, pickerCancel, 'cancel', false, { fontSize: 12 });
       this.drawButton(ctx, pickerOk, 'add', false, { fontSize: 12 });
+      this.uiButtons.push({
+        bounds: quantBounds,
+        onClick: () => {
+          const levels = [8, 16, 32];
+          const current = levels.indexOf(this.paletteColorDraft.quantization || 32);
+          const next = levels[(current + 1 + levels.length) % levels.length];
+          this.paletteColorDraft.quantization = next;
+          this.syncPaletteDraftFromRgb();
+        }
+      });
       this.uiButtons.push({ bounds: pickerCancel, onClick: () => { this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.palettePickerDrag = null; this.paletteColorPickerBounds = null; } });
       this.uiButtons.push({ bounds: pickerOk, onClick: () => this.applyPaletteColorPickerAdd() });
     }
 
     if (!this.paletteColorPickerOpen) this.paletteColorPickerBounds = null;
-    const closeBounds = { x: sheetX + sheetW - 96, y: sheetY + sheetH - 44, w: 84, h: 32 };
-    this.drawButton(ctx, closeBounds, 'Close', false, { fontSize: 12 });
-    this.uiButtons.push({ bounds: closeBounds, onClick: () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.palettePickerDrag = null; this.paletteColorPickerBounds = null; this.paletteModalBounds = null; } });
-    this.registerFocusable('menu', closeBounds, () => { this.paletteGridOpen = false; this.paletteColorPickerOpen = false; this.paletteColorDraft = null; this.palettePickerDrag = null; this.paletteColorPickerBounds = null; this.paletteModalBounds = null; });
+    if (this.paletteRemoveMode) {
+      const cancelBounds = { x: sheetX + sheetW - 186, y: sheetY + sheetH - 44, w: 84, h: 32 };
+      const removeApplyBounds = { x: sheetX + sheetW - 96, y: sheetY + sheetH - 44, w: 84, h: 32 };
+      this.drawButton(ctx, cancelBounds, 'Cancel', false, { fontSize: 12 });
+      this.drawButton(ctx, removeApplyBounds, 'Remove', false, { fontSize: 12 });
+      this.uiButtons.push({ bounds: cancelBounds, onClick: () => { this.paletteRemoveMode = false; this.paletteRemoveMarked.clear(); } });
+      this.uiButtons.push({ bounds: removeApplyBounds, onClick: () => this.applyPaletteSwatchRemoval() });
+      this.registerFocusable('menu', cancelBounds, () => { this.paletteRemoveMode = false; this.paletteRemoveMarked.clear(); });
+      this.registerFocusable('menu', removeApplyBounds, () => this.applyPaletteSwatchRemoval());
+    } else {
+      const closeBounds = { x: sheetX + sheetW - 96, y: sheetY + sheetH - 44, w: 84, h: 32 };
+      const closeLabel = this.paletteColorPickerOpen ? 'Add' : 'Close';
+      this.drawButton(ctx, closeBounds, closeLabel, false, { fontSize: 12 });
+      this.uiButtons.push({
+        bounds: closeBounds,
+        onClick: () => {
+          if (this.paletteColorPickerOpen) {
+            this.applyPaletteColorPickerAdd();
+            return;
+          }
+          this.paletteGridOpen = false;
+          this.paletteColorPickerOpen = false;
+          this.paletteColorDraft = null;
+          this.paletteRemoveMode = false;
+          this.paletteRemoveMarked.clear();
+          this.palettePickerDrag = null;
+          this.paletteColorPickerBounds = null;
+          this.paletteModalBounds = null;
+        }
+      });
+      this.registerFocusable('menu', closeBounds, () => {
+        if (this.paletteColorPickerOpen) {
+          this.applyPaletteColorPickerAdd();
+          return;
+        }
+        this.paletteGridOpen = false;
+        this.paletteColorPickerOpen = false;
+        this.paletteColorDraft = null;
+        this.paletteRemoveMode = false;
+        this.paletteRemoveMarked.clear();
+        this.palettePickerDrag = null;
+        this.paletteColorPickerBounds = null;
+        this.paletteModalBounds = null;
+      });
+    }
   }
 
   drawTimelineSheet(ctx, x, y, w, h) {
@@ -4293,28 +6134,32 @@ export default class PixelStudio {
 
   drawToolsPanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
+    const category = options.category || this.leftPanelTab || 'draw';
     const fontSize = isMobile ? 14 : 12;
     const lineHeight = isMobile ? 52 : 20;
     const buttonHeight = isMobile ? 44 : 18;
     ctx.fillStyle = '#fff';
     ctx.font = `${isMobile ? 16 : 14}px Courier New`;
-    ctx.fillText('Tools', x + 12, y + 22);
+    const title = category === 'draw' ? 'Draw Tools' : category === 'select' ? 'Selection Tools' : 'Extra Tools';
+    ctx.fillText(title, x + 12, y + 22);
 
-    const list = this.tools.map((tool) => tool);
-    const maxVisible = Math.max(1, Math.floor((h - 140) / lineHeight));
+    const list = this.tools.filter((tool) => (tool.category || 'tools') === category);
+    const toolsTop = y + (isMobile ? 60 : 56);
+    const toolsBottomPadding = isMobile ? 116 : 132;
+    const maxVisible = Math.max(1, Math.floor((h - toolsBottomPadding) / lineHeight));
     this.focusGroupMeta.tools = { maxVisible };
     const start = this.focusScroll.tools || 0;
     const maxToolScroll = Math.max(0, list.length - maxVisible);
     this.focusScroll.tools = clamp(start, 0, maxToolScroll);
     this.toolsListMeta = {
-      scrollBounds: { x: x + 6, y: y + 26, w: w - 12, h: maxVisible * lineHeight + 8 },
+      scrollBounds: { x: x + 6, y: toolsTop - (isMobile ? 18 : 14), w: w - 12, h: maxVisible * lineHeight + (isMobile ? 24 : 18) },
       lineHeight,
       maxScroll: maxToolScroll
     };
-    let offsetY = y + 36;
+    let offsetY = toolsTop;
     list.slice(this.focusScroll.tools, this.focusScroll.tools + maxVisible).forEach((tool) => {
       const isActive = tool.id === this.activeToolId;
-      const bounds = { x: x + 8, y: offsetY - buttonHeight + 4, w: w - 16, h: buttonHeight };
+      const bounds = { x: x + 8, y: offsetY - (isMobile ? 24 : 10), w: w - 16, h: buttonHeight };
       this.drawButton(ctx, bounds, tool.name, isActive, { fontSize });
       this.uiButtons.push({ bounds, onClick: () => { this.setActiveTool(tool.id); } });
       this.registerFocusable('tools', bounds, () => this.setActiveTool(tool.id));
@@ -4323,7 +6168,7 @@ export default class PixelStudio {
     if (maxToolScroll > 0) {
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.font = `${isMobile ? 11 : 10}px ${UI_SUITE.font.family}`;
-      ctx.fillText(`Tools ${this.focusScroll.tools + 1}/${maxToolScroll + 1}`, x + 12, y + 26 + maxVisible * lineHeight + 10);
+      ctx.fillText(`Tools ${this.focusScroll.tools + 1}/${maxToolScroll + 1}`, x + 12, toolsTop + maxVisible * lineHeight + 10);
     }
 
     if (!isMobile) {
@@ -4345,7 +6190,7 @@ export default class PixelStudio {
       this.drawButton(ctx, brushPlus, '+', false, { fontSize });
       this.uiButtons.push({ bounds: brushMinus, onClick: () => { this.setBrushSize(this.toolOptions.brushSize - 1); } });
       this.uiButtons.push({ bounds: brushPlus, onClick: () => { this.setBrushSize(this.toolOptions.brushSize + 1); } });
-      this.uiButtons.push({ bounds: brushSlider, onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, brushSlider) });
+      this.uiButtons.push({ bounds: brushSlider, onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, brushSlider), onDrag: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, brushSlider) });
       this.registerFocusable('menu', brushMinus, () => { this.setBrushSize(this.toolOptions.brushSize - 1); });
       this.registerFocusable('menu', brushPlus, () => { this.setBrushSize(this.toolOptions.brushSize + 1); });
       offsetY += lineHeight;
@@ -4365,26 +6210,24 @@ export default class PixelStudio {
 
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
-      ctx.fillText('Offset Canvas', x + 12, offsetY);
+      ctx.fillText('Canvas Transform', x + 12, offsetY);
       offsetY += lineHeight;
-      const offsetButtons = [
-        { label: '←', action: () => this.offsetCanvas(-1, 0, true) },
-        { label: '→', action: () => this.offsetCanvas(1, 0, true) },
-        { label: '↑', action: () => this.offsetCanvas(0, -1, true) },
-        { label: '↓', action: () => this.offsetCanvas(0, 1, true) },
-        { label: '½W', action: () => this.offsetCanvas(Math.floor(this.canvasState.width / 2), 0, true) },
-        { label: '½H', action: () => this.offsetCanvas(0, Math.floor(this.canvasState.height / 2), true) }
+      const transformButtons = [
+        { label: 'Resize', action: () => this.openTransformModal('resize') },
+        { label: 'Scale', action: () => this.openTransformModal('scale') },
+        { label: 'Crop', action: () => this.openTransformModal('crop') },
+        { label: 'Offset', action: () => this.openTransformModal('offset') }
       ];
-      offsetButtons.forEach((entry, index) => {
+      transformButtons.forEach((entry, index) => {
         const bounds = {
-          x: x + 12 + (index % 3) * (buttonHeight + 8),
-          y: offsetY + Math.floor(index / 3) * (buttonHeight + 6),
-          w: buttonHeight,
+          x: x + 12 + (index % 2) * (72 + 8),
+          y: offsetY + Math.floor(index / 2) * (buttonHeight + 6),
+          w: 72,
           h: buttonHeight
         };
-        this.drawButton(ctx, bounds, entry.label, false, { fontSize });
-        this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
-        this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
+        this.drawButton(ctx, bounds, entry.label, this.transformModal?.type === entry.label.toLowerCase(), { fontSize });
+        this.uiButtons.push({ bounds, onClick: entry.action });
+        this.registerFocusable('menu', bounds, entry.action);
       });
       offsetY += buttonHeight * 2 + 12;
     }
@@ -4394,15 +6237,11 @@ export default class PixelStudio {
     const optionsW = Math.max(120, w - 24);
     const optionsH = Math.max(60, y + h - optionsY - 6);
     this.toolsPanelMeta = {
-      optionsScrollBounds: { x: optionsX - 2, y: optionsY - 18, w: optionsW + 4, h: optionsH + 20 },
+      optionsScrollBounds: { x: optionsX - 2, y: optionsY + 30, w: optionsW + 4, h: Math.max(26, optionsH - 34) },
       lineHeight,
       maxToolOptionsScroll: 0
     };
     offsetY = this.drawToolOptions(ctx, optionsX, optionsY, { isMobile, panelWidth: optionsW, panelHeight: optionsH });
-
-    if (this.modeTab === 'select') {
-      this.drawSelectionActions(ctx, x + 12, offsetY, { isMobile });
-    }
 
     if (this.modeTab === 'animate') {
       this.drawAnimationControls(ctx, x + 12, offsetY, { isMobile });
@@ -4440,21 +6279,27 @@ export default class PixelStudio {
     }, { isMobile });
     offsetY += lineHeight;
 
-    const tileSizeBounds = { x: x + 12, y: offsetY - buttonHeight + 4, w: 160, h: buttonHeight };
-    this.drawButton(ctx, tileSizeBounds, `Tiles: ${this.tiledPreview.tiles}x${this.tiledPreview.tiles}`, false, { fontSize });
-    this.uiButtons.push({
-      bounds: tileSizeBounds,
-      onClick: () => { this.tiledPreview.tiles = this.tiledPreview.tiles === 2 ? 3 : 2; }
-    });
-    this.registerFocusable('menu', tileSizeBounds, () => {
-      this.tiledPreview.tiles = this.tiledPreview.tiles === 2 ? 3 : 2;
-    });
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
+    ctx.fillText('Tile Preview: 3x3', x + 12, offsetY);
     offsetY += lineHeight;
 
+    const transformButtons = [
+      { label: 'Resize', action: () => this.openTransformModal('resize') },
+      { label: 'Scale', action: () => this.openTransformModal('scale') },
+      { label: 'Crop', action: () => this.openTransformModal('crop') },
+      { label: 'Offset', action: () => this.openTransformModal('offset') }
+    ];
+    transformButtons.forEach((entry, index) => {
+      const bounds = { x: x + 12 + (index % 2) * 84, y: offsetY + Math.floor(index / 2) * (buttonHeight + 8) - buttonHeight + 4, w: 78, h: buttonHeight };
+      this.drawButton(ctx, bounds, entry.label, this.transformModal?.type === entry.label.toLowerCase(), { fontSize });
+      this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('menu', bounds, entry.action);
+    });
+    offsetY += buttonHeight * 2 + 18;
+
     if (offsetY + lineHeight < y + h) {
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
-      ctx.fillText(`Zoom: ${Math.round(this.view.zoomLevels[this.view.zoomIndex] * 100)}%`, x + 12, offsetY);
+      // intentionally no zoom controls here; zoom is handled via canvas gestures/shortcuts/mobile slider
     }
   }
 
@@ -4472,20 +6317,30 @@ export default class PixelStudio {
     const panelHeight = Math.max(60, options.panelHeight || 120);
     const lineHeight = isMobile ? 52 : 20;
     const rowHeight = isMobile ? 52 : 22;
-    const startY = y;
+    const headerH = isMobile ? 26 : 22;
+    const bodyY = y + headerH + (isMobile ? 30 : 18);
+    const bodyH = Math.max(28, panelHeight - headerH - 8);
+    const startY = bodyY;
     const scroll = Math.max(0, this.focusScroll.toolOptions || 0);
     const scrollY = scroll * rowHeight;
-    let offsetY = y;
-    let contentBottom = y;
+    let offsetY = bodyY + (isMobile ? 24 : 12);
+    let contentBottom = offsetY;
+
     ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(x - 6, y, panelWidth + 12, panelHeight);
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.strokeRect(x - 6, y, panelWidth + 12, panelHeight);
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = `${isMobile ? 12 : 11}px ${UI_SUITE.font.family}`;
+    ctx.fillText('Tool Options', x + 2, y + (isMobile ? 16 : 15));
     ctx.beginPath();
-    ctx.rect(x - 4, y - 16, panelWidth + 8, panelHeight + 20);
+    ctx.rect(x - 4, bodyY - 2, panelWidth + 8, bodyH + 4);
     ctx.clip();
     offsetY -= scrollY;
-    ctx.fillStyle = '#fff';
-    ctx.fillText('Tool Options', x, offsetY);
-    offsetY += 18;
+
     const usesBrush = [TOOL_IDS.PENCIL, TOOL_IDS.ERASER, TOOL_IDS.DITHER, TOOL_IDS.CLONE].includes(this.activeToolId);
+
     if (usesBrush) {
       const shapeBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: Math.min(panelWidth, isMobile ? 200 : 170), h: isMobile ? 44 : 18 };
       this.drawButton(ctx, shapeBounds, `Brush Shape: ${this.toolOptions.brushShape}`, false, { fontSize: isMobile ? 12 : 12 });
@@ -4499,11 +6354,19 @@ export default class PixelStudio {
       this.registerFocusable('menu', falloffBounds, () => this.cycleBrushFalloff());
       offsetY += lineHeight;
     }
-    if (this.activeToolId === TOOL_IDS.LINE) {
-      this.drawOptionToggle(ctx, x, offsetY, 'Perfect Pixels', this.toolOptions.linePerfect, () => {
-        this.toolOptions.linePerfect = !this.toolOptions.linePerfect;
+    if ([TOOL_IDS.RECT, TOOL_IDS.ELLIPSE, TOOL_IDS.POLYGON].includes(this.activeToolId)) {
+      this.drawOptionToggle(ctx, x, offsetY, this.toolOptions.shapeFill ? 'Fill: On' : 'Fill: Off', this.toolOptions.shapeFill, () => {
+        this.toolOptions.shapeFill = !this.toolOptions.shapeFill;
       }, { isMobile });
       offsetY += lineHeight;
+      if (this.activeToolId === TOOL_IDS.POLYGON) {
+        const finishBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 150, h: isMobile ? 44 : 18 };
+        const canFinish = Boolean(this.polygonPreview && this.polygonPreview.points.length >= 3);
+        this.drawButton(ctx, finishBounds, canFinish ? 'Finish Polygon' : 'Polygon: tap 3+ pts', canFinish, { fontSize: isMobile ? 12 : 12 });
+        this.uiButtons.push({ bounds: finishBounds, onClick: () => this.finishPolygon() });
+        this.registerFocusable('menu', finishBounds, () => this.finishPolygon());
+        offsetY += lineHeight;
+      }
     }
     if (this.activeToolId === TOOL_IDS.FILL) {
       this.drawOptionToggle(ctx, x, offsetY, 'Contiguous', this.toolOptions.fillContiguous, () => {
@@ -4612,13 +6475,27 @@ export default class PixelStudio {
         bounds: plus,
         onClick: () => { this.setBrushSize(this.toolOptions.brushSize + 1); }
       });
-      this.uiButtons.push({ bounds: slider, onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, slider) });
+      this.uiButtons.push({ bounds: slider, onClick: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, slider), onDrag: ({ x: pointerX }) => this.setBrushSizeFromSlider(pointerX, slider) });
       this.drawButton(ctx, minus, '-', false, { fontSize: isMobile ? 12 : 12 });
       this.drawButton(ctx, plus, '+', false, { fontSize: isMobile ? 12 : 12 });
       this.registerFocusable('menu', minus, () => { this.setBrushSize(this.toolOptions.brushSize - 1); });
       this.registerFocusable('menu', plus, () => { this.setBrushSize(this.toolOptions.brushSize + 1); });
       offsetY += rowHeight;
 
+    }
+    if (this.activeToolId === TOOL_IDS.GRADIENT) {
+      const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 150, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, bounds, `Strength: ${this.toolOptions.gradientStrength}%`, false, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({ bounds, onClick: () => { this.toolOptions.gradientStrength += 10; if (this.toolOptions.gradientStrength > 100) this.toolOptions.gradientStrength = 10; } });
+      this.registerFocusable('menu', bounds, () => { this.toolOptions.gradientStrength += 10; if (this.toolOptions.gradientStrength > 100) this.toolOptions.gradientStrength = 10; });
+      offsetY += lineHeight;
+    }
+    if ([TOOL_IDS.SELECT_MAGIC_LASSO, TOOL_IDS.SELECT_MAGIC_COLOR].includes(this.activeToolId)) {
+      const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 150, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, bounds, `Threshold: ${this.toolOptions.magicThreshold}`, false, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({ bounds, onClick: () => { this.toolOptions.magicThreshold += 8; if (this.toolOptions.magicThreshold > 255) this.toolOptions.magicThreshold = 0; } });
+      this.registerFocusable('menu', bounds, () => { this.toolOptions.magicThreshold += 8; if (this.toolOptions.magicThreshold > 255) this.toolOptions.magicThreshold = 0; });
+      offsetY += lineHeight;
     }
     if (this.activeToolId === TOOL_IDS.COLOR_REPLACE) {
       const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
@@ -4634,10 +6511,19 @@ export default class PixelStudio {
       });
       offsetY += lineHeight;
     }
-    contentBottom = offsetY;
+
+    if (this.leftPanelTab === 'select') {
+      offsetY = this.drawSelectionActions(ctx, x, offsetY, {
+        isMobile,
+        fromToolOptions: true,
+        panelWidth
+      });
+    }
+
+    contentBottom = offsetY + scrollY;
     ctx.restore();
     const totalRows = Math.max(0, Math.ceil((contentBottom - startY) / rowHeight));
-    const visibleRows = Math.max(1, Math.floor((panelHeight + 20) / rowHeight));
+    const visibleRows = Math.max(1, Math.floor(bodyH / rowHeight));
     const maxScroll = Math.max(0, totalRows - visibleRows);
     this.focusScroll.toolOptions = clamp(this.focusScroll.toolOptions || 0, 0, maxScroll);
     if (this.toolsPanelMeta) {
@@ -4646,32 +6532,45 @@ export default class PixelStudio {
     if (maxScroll > 0) {
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.font = `${isMobile ? 11 : 10}px ${UI_SUITE.font.family}`;
-      ctx.fillText(`Scroll ${this.focusScroll.toolOptions + 1}/${maxScroll + 1}`, x, startY + panelHeight + 10);
+      ctx.fillText(`Scroll ${this.focusScroll.toolOptions + 1}/${maxScroll + 1}`, x + 2, y + panelHeight + 10);
     }
     return offsetY;
   }
 
   drawSelectionActions(ctx, x, y, options = {}) {
     const isMobile = options.isMobile;
+    const fromToolOptions = Boolean(options.fromToolOptions);
+    const rowStep = isMobile ? 52 : 20;
+    const rowHeight = isMobile ? 44 : 18;
+    const panelWidth = Math.max(120, options.panelWidth || (isMobile ? 180 : 120));
+    const buttonWidth = fromToolOptions
+      ? Math.max(120, Math.min(panelWidth, panelWidth - 6))
+      : (isMobile ? 180 : 120);
+
+    if (!this.selection.active || !this.selection.mask) {
+      ctx.fillStyle = 'rgba(255,255,255,0.65)';
+      ctx.font = `${isMobile ? 12 : 11}px ${UI_SUITE.font.family}`;
+      ctx.fillText('Make a selection to enable actions', x, y + (isMobile ? 12 : 10));
+      return y + rowStep;
+    }
+
     const actions = [
-      { label: 'Clear', action: () => this.clearSelection() },
+      { label: 'Copy', action: () => this.copySelection() },
+      { label: 'Cut', action: () => this.cutSelection() },
+      { label: 'Delete', action: () => this.deleteSelection() },
       { label: 'Invert', action: () => this.invertSelection() },
-      { label: 'Expand', action: () => this.expandSelection(1) },
-      { label: 'Contract', action: () => this.expandSelection(-1) },
-      { label: 'Flip H', action: () => this.transformSelection('flip-h') },
-      { label: 'Flip V', action: () => this.transformSelection('flip-v') },
-      { label: 'Rot CW', action: () => this.transformSelection('rotate-cw') },
-      { label: 'Rot CCW', action: () => this.transformSelection('rotate-ccw') },
-      { label: 'Scale 2x', action: () => this.scaleSelection(2) },
-      { label: 'Scale 3x', action: () => this.scaleSelection(3) },
-      { label: 'Scale 4x', action: () => this.scaleSelection(4) }
+      { label: 'Grow', action: () => this.expandSelection(1) },
+      { label: 'Contract', action: () => this.expandSelection(-1) }
     ];
-    actions.forEach((entry, index) => {
-      const bounds = { x, y: y + index * (isMobile ? 52 : 20), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
+    let offsetY = y;
+    actions.forEach((entry) => {
+      const bounds = { x, y: offsetY, w: buttonWidth, h: rowHeight };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
       this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
+      offsetY += rowStep;
     });
+    return offsetY;
   }
 
   drawAnimationControls(ctx, x, y, options = {}) {
@@ -4732,7 +6631,8 @@ export default class PixelStudio {
       { label: 'Export GIF', action: () => this.exportGif() },
       { label: 'Palette JSON', action: () => this.exportPaletteJson() },
       { label: 'Palette HEX', action: () => this.exportPaletteHex() },
-      { label: 'Import Palette', action: () => this.paletteFileInput.click() }
+      { label: 'Import Palette', action: () => this.paletteFileInput.click() },
+      { label: 'Import Image', action: () => this.imageFileInput.click() }
     ];
     actions.forEach((entry, index) => {
       const bounds = { x, y: y + index * (isMobile ? 52 : 20), w: isMobile ? 190 : 140, h: isMobile ? 44 : 18 };
@@ -4795,7 +6695,10 @@ export default class PixelStudio {
     const gridH = height * zoom;
     const offsetX = x + (w - gridW) / 2 + this.view.panX;
     const offsetY = y + (h - gridH) / 2 + this.view.panY;
-    this.canvasBounds = { x: offsetX, y: offsetY, w: gridW, h: gridH, cellSize: zoom };
+    const wrapActive = Boolean(this.toolOptions.wrapDraw);
+    this.canvasBounds = wrapActive
+      ? { x: offsetX - gridW, y: offsetY - gridH, w: gridW * 3, h: gridH * 3, cellSize: zoom, mainX: offsetX, mainY: offsetY }
+      : { x: offsetX, y: offsetY, w: gridW, h: gridH, cellSize: zoom, mainX: offsetX, mainY: offsetY };
 
     this.offscreen.width = width;
     this.offscreen.height = height;
@@ -4803,6 +6706,11 @@ export default class PixelStudio {
     const imageData = this.offscreenCtx.createImageData(width, height);
     const bytes = new Uint32Array(imageData.data.buffer);
     bytes.set(composite);
+    if (this.selection.floating && !this.selection.floatingMode && this.selection.mask) {
+      for (let i = 0; i < bytes.length; i += 1) {
+        if (this.selection.mask[i]) bytes[i] = 0;
+      }
+    }
     this.offscreenCtx.putImageData(imageData, 0, 0);
 
     ctx.save();
@@ -4810,11 +6718,11 @@ export default class PixelStudio {
     ctx.rect(x, y, w, h);
     ctx.clip();
 
-    if (this.tiledPreview.enabled) {
-      const tileCount = this.tiledPreview.tiles;
-      for (let row = -1; row <= tileCount; row += 1) {
-        for (let col = -1; col <= tileCount; col += 1) {
-          ctx.globalAlpha = 0.2;
+    if (this.tiledPreview.enabled || wrapActive) {
+      for (let row = -1; row <= 1; row += 1) {
+        for (let col = -1; col <= 1; col += 1) {
+          const isCenter = row === 0 && col === 0;
+          ctx.globalAlpha = isCenter ? 1 : (wrapActive ? 0.7 : 0.2);
           ctx.drawImage(this.offscreen, offsetX + col * gridW, offsetY + row * gridH, gridW, gridH);
         }
       }
@@ -4827,33 +6735,93 @@ export default class PixelStudio {
 
     ctx.drawImage(this.offscreen, offsetX, offsetY, gridW, gridH);
 
-    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-    for (let row = 0; row <= height; row += 1) {
-      ctx.beginPath();
-      ctx.moveTo(offsetX, offsetY + row * zoom);
-      ctx.lineTo(offsetX + gridW, offsetY + row * zoom);
-      ctx.stroke();
-    }
-    for (let col = 0; col <= width; col += 1) {
-      ctx.beginPath();
-      ctx.moveTo(offsetX + col * zoom, offsetY);
-      ctx.lineTo(offsetX + col * zoom, offsetY + gridH);
-      ctx.stroke();
+    const drawGridAt = (tileX, tileY, alpha = 0.15) => {
+      ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+      for (let row = 0; row <= height; row += 1) {
+        ctx.beginPath();
+        ctx.moveTo(tileX, tileY + row * zoom);
+        ctx.lineTo(tileX + gridW, tileY + row * zoom);
+        ctx.stroke();
+      }
+      for (let col = 0; col <= width; col += 1) {
+        ctx.beginPath();
+        ctx.moveTo(tileX + col * zoom, tileY);
+        ctx.lineTo(tileX + col * zoom, tileY + gridH);
+        ctx.stroke();
+      }
+    };
+    if (this.tiledPreview.enabled || wrapActive) {
+      for (let row = -1; row <= 1; row += 1) {
+        for (let col = -1; col <= 1; col += 1) {
+          drawGridAt(offsetX + col * gridW, offsetY + row * gridH, row === 0 && col === 0 ? 0.2 : 0.12);
+        }
+      }
+    } else {
+      drawGridAt(offsetX, offsetY, 0.15);
     }
 
     if (this.selection.active && this.selection.bounds) {
-      ctx.strokeStyle = '#ffcc6a';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(
-        offsetX + this.selection.bounds.x * zoom,
-        offsetY + this.selection.bounds.y * zoom,
-        this.selection.bounds.w * zoom,
-        this.selection.bounds.h * zoom
-      );
+      this.drawSelectionMarchingAnts(ctx, offsetX, offsetY, zoom);
+      if (this.activeToolId === TOOL_IDS.MOVE) {
+        const transformPreview = this.buildMoveTransformPreview();
+        if (transformPreview?.pixels) {
+          this.floatingCanvas.width = width;
+          this.floatingCanvas.height = height;
+          const previewImage = this.floatingCtx.createImageData(width, height);
+          const previewBytes = new Uint32Array(previewImage.data.buffer);
+          previewBytes.set(transformPreview.pixels);
+          this.floatingCtx.putImageData(previewImage, 0, 0);
+          ctx.save();
+          ctx.globalAlpha = 0.78;
+          ctx.drawImage(this.floatingCanvas, offsetX, offsetY, gridW, gridH);
+          ctx.restore();
+          const previewBounds = this.getMaskBounds(transformPreview.mask);
+          if (previewBounds) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(106,215,255,0.9)';
+            ctx.lineWidth = Math.max(1, zoom * 0.1);
+            ctx.strokeRect(offsetX + previewBounds.x * zoom, offsetY + previewBounds.y * zoom, previewBounds.w * zoom, previewBounds.h * zoom);
+            ctx.restore();
+          }
+        }
+        const previewRotation = transformPreview?.rotationDeg || 0;
+        const meta = this.getSelectionTransformMeta(previewRotation) || this.getSelectionTransformMeta(0);
+        if (meta) {
+          const handleRadius = Math.max(4, zoom * 0.22);
+        const handles = (meta.handles || []).map((handle) => ({
+          key: handle.key,
+          x: offsetX + handle.x * zoom,
+          y: offsetY + handle.y * zoom
+        }));
+        const dragPoint = this.moveTransformDrag?.type === 'rotate' ? this.moveTransformDrag.current : null;
+        const centerX = offsetX + meta.centerX * zoom;
+        const topHandle = handles.find((entry) => entry.key === 'n') || { x: centerX, y: offsetY + meta.centerY * zoom };
+        const rotateOrbX = dragPoint ? (offsetX + (dragPoint.col + 0.5) * zoom) : (offsetX + meta.rotateOrb.x * zoom);
+        const rotateOrbY = dragPoint ? (offsetY + (dragPoint.row + 0.5) * zoom) : (offsetY + meta.rotateOrb.y * zoom);
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255,225,106,0.9)';
+        ctx.lineWidth = Math.max(1, zoom * 0.1);
+        ctx.beginPath();
+        ctx.moveTo(topHandle.x, topHandle.y);
+        ctx.lineTo(rotateOrbX, rotateOrbY);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(106,215,255,0.95)';
+        handles.forEach((h) => {
+          ctx.fillRect(h.x - handleRadius, h.y - handleRadius, handleRadius * 2, handleRadius * 2);
+        });
+        ctx.beginPath();
+        ctx.arc(rotateOrbX, rotateOrbY, Math.max(5, zoom * 0.32), 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,160,106,0.95)';
+        ctx.fill();
+        ctx.restore();
+        }
+      }
     }
 
-    if (this.selection.floating && this.selection.floatingMode === 'paste') {
-      const floatingOffset = this.getFloatingPasteOffset();
+    if (this.selection.floating) {
+      const floatingOffset = this.selection.floatingMode === 'paste'
+        ? this.getFloatingPasteOffset()
+        : (this.selection.offset || { x: 0, y: 0 });
       this.floatingCanvas.width = width;
       this.floatingCanvas.height = height;
       const imageData = this.floatingCtx.createImageData(width, height);
@@ -4861,7 +6829,7 @@ export default class PixelStudio {
       bytes.set(this.selection.floating);
       this.floatingCtx.putImageData(imageData, 0, 0);
       ctx.save();
-      ctx.globalAlpha = 0.6;
+      ctx.globalAlpha = this.selection.floatingMode === 'paste' ? 0.6 : 0.78;
       ctx.drawImage(
         this.floatingCanvas,
         offsetX + floatingOffset.x * zoom,
@@ -4884,15 +6852,43 @@ export default class PixelStudio {
       );
     }
 
+    if (this.selection.lassoPoints.length > 1) {
+      const previewPixels = this.getLassoPreviewPixels();
+      if (previewPixels.length) {
+        const color = this.activeToolId === TOOL_IDS.SELECT_MAGIC_LASSO ? 'rgba(141,240,255,0.9)' : 'rgba(255,204,106,0.9)';
+        this.drawPixelPreview(ctx, previewPixels, offsetX, offsetY, zoom, color);
+      }
+    }
+
     if (this.linePreview) {
-      const bounds = this.getBoundsFromPoints(this.linePreview.start, this.linePreview.end);
-      ctx.strokeStyle = UI_SUITE.colors.accent;
-      ctx.strokeRect(
-        offsetX + bounds.x * zoom,
-        offsetY + bounds.y * zoom,
-        bounds.w * zoom,
-        bounds.h * zoom
-      );
+      const linePoints = bresenhamLine(this.linePreview.start, this.linePreview.end);
+      this.drawPixelPreview(ctx, this.expandPreviewPoints(linePoints), offsetX, offsetY, zoom, 'rgba(255,225,106,0.72)');
+    }
+
+    if (this.curvePreview) {
+      const samples = this.sampleCurvePoints(this.curvePreview, 96);
+      this.drawPixelPreview(ctx, this.expandPreviewPoints(samples), offsetX, offsetY, zoom, 'rgba(141,240,255,0.72)');
+      const handles = [this.curvePreview.control1, this.curvePreview.control2].filter(Boolean);
+      if (handles.length) {
+        ctx.fillStyle = '#8df0ff';
+        handles.forEach((handle) => {
+          const hx = offsetX + (handle.col + 0.5) * zoom;
+          const hy = offsetY + (handle.row + 0.5) * zoom;
+          ctx.fillRect(hx - 3, hy - 3, 6, 6);
+        });
+      }
+    }
+
+    if (this.shapePreview || this.polygonPreview) {
+      this.drawPixelPreview(ctx, this.getShapePreviewPoints(), offsetX, offsetY, zoom, 'rgba(106,215,255,0.72)');
+    }
+
+    if (this.gradientPreview) {
+      ctx.strokeStyle = '#9ddcff';
+      ctx.beginPath();
+      ctx.moveTo(offsetX + (this.gradientPreview.start.col + 0.5) * zoom, offsetY + (this.gradientPreview.start.row + 0.5) * zoom);
+      ctx.lineTo(offsetX + (this.gradientPreview.end.col + 0.5) * zoom, offsetY + (this.gradientPreview.end.row + 0.5) * zoom);
+      ctx.stroke();
     }
 
     if (this.toolOptions.symmetry.horizontal) {
@@ -4971,7 +6967,8 @@ export default class PixelStudio {
 
     ctx.fillStyle = '#fff';
     ctx.font = `${isMobile ? 12 : 14}px Courier New`;
-    ctx.fillText(`Palette: ${this.currentPalette.name}`, x + 10, y + 18);
+    const mobileSelectRail = isMobile && this.leftPanelTab === 'select';
+    ctx.fillText(mobileSelectRail ? 'Selection Actions' : `Palette: ${this.currentPalette.name}`, x + 10, y + 18);
 
     if (!isMobile) {
       const paletteControls = [
@@ -5027,65 +7024,93 @@ export default class PixelStudio {
       return;
     }
 
-    const swatchSize = 44;
+    const showSelectActionRail = this.leftPanelTab === 'select';
+    const itemW = showSelectActionRail ? 108 : 44;
     const gap = 8;
     const controlGap = 6;
     const controlY = y + 10;
     const controlH = 44;
     const prevBounds = { x: 0, y: controlY, w: 28, h: controlH };
     const nextBounds = { x: 0, y: controlY, w: 28, h: controlH };
-    const paletteButtonW = clamp(Math.floor(w * 0.22), 68, 92);
-    const moreBounds = { x: 0, y: controlY, w: paletteButtonW, h: controlH };
+    const tailControls = showSelectActionRail
+      ? [nextBounds, prevBounds]
+      : (() => {
+        const paletteButtonW = clamp(Math.floor(w * 0.22), 68, 92);
+        const moreBounds = { x: 0, y: controlY, w: paletteButtonW, h: controlH };
+        return [moreBounds, nextBounds, prevBounds];
+      })();
 
     let controlX = x + w - 10;
-    [moreBounds, nextBounds, prevBounds].forEach((bounds) => {
+    tailControls.forEach((bounds) => {
       controlX -= bounds.w;
       bounds.x = controlX;
       controlX -= controlGap;
     });
 
     const startX = x + 10;
-    const swatchAreaW = Math.max(44, prevBounds.x - controlGap - startX);
-    const maxPerRow = Math.max(1, Math.floor(swatchAreaW / (swatchSize + gap)));
-    const total = this.currentPalette.colors.length;
-    const maxScroll = Math.max(0, total - maxPerRow);
+    const itemAreaW = Math.max(itemW, prevBounds.x - controlGap - startX);
+    const entries = showSelectActionRail
+      ? [
+        { label: 'Select All', action: () => this.selectAllSelection() },
+        { label: 'Select None', action: () => this.clearSelection() },
+        { label: 'Transform', action: () => { this.setActiveTool(TOOL_IDS.MOVE); this.setInputMode('canvas'); } },
+        { label: 'Flip', action: () => this.applySelectionModalTransform('flip', { axis: 'horizontal' }) },
+        { label: 'Rotate', action: () => this.applySelectionModalTransform('rotate', { angle: 90 }) },
+        { label: 'Skew', action: () => this.applySelectionModalTransform('skew', { skewX: 20, skewY: 0 }) },
+        { label: 'Stretch', action: () => this.applySelectionModalTransform('stretch', { stretchX: 125, stretchY: 125 }) }
+      ]
+      : this.currentPalette.colors.map((color, index) => ({ color, index }));
+
+    const maxPerRow = Math.max(1, Math.floor(itemAreaW / (itemW + gap)));
+    const maxScroll = Math.max(0, entries.length - maxPerRow);
     this.focusScroll.palette = clamp(this.focusScroll.palette || 0, 0, maxScroll);
     this.paletteBarScrollBounds = {
       x: startX,
       y: y + 18,
-      w: swatchAreaW,
-      h: swatchSize + 12,
+      w: itemAreaW,
+      h: 56,
       maxScroll,
-      step: swatchSize + gap
+      step: itemW + gap
     };
 
     this.paletteBounds = [];
     this.focusGroupMeta.palette = { maxVisible: maxPerRow };
     const start = this.focusScroll.palette || 0;
-    for (let i = start; i < Math.min(total, start + maxPerRow); i += 1) {
+    for (let i = start; i < Math.min(entries.length, start + maxPerRow); i += 1) {
       const col = i - start;
-      const swatchX = startX + col * (swatchSize + gap);
-      const swatchY = y + 20;
-      ctx.fillStyle = this.currentPalette.colors[i].hex;
-      ctx.fillRect(swatchX, swatchY, swatchSize, swatchSize);
-      ctx.strokeStyle = i === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)';
-      ctx.strokeRect(swatchX, swatchY, swatchSize, swatchSize);
-      const bounds = { x: swatchX, y: swatchY, w: swatchSize, h: swatchSize, index: i };
-      this.paletteBounds.push(bounds);
-      this.registerFocusable('palette', bounds, () => this.setPaletteIndex(i));
+      const itemX = startX + col * (itemW + gap);
+      const itemY = y + 20;
+      if (showSelectActionRail) {
+        const entry = entries[i];
+        const bounds = { x: itemX, y: itemY, w: itemW, h: 44, action: entry.action };
+        this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+        this.paletteBounds.push(bounds);
+        this.registerFocusable('menu', bounds, entry.action);
+      } else {
+        const swatchSize = itemW;
+        ctx.fillStyle = entries[i].color.hex;
+        ctx.fillRect(itemX, itemY, swatchSize, swatchSize);
+        ctx.strokeStyle = entries[i].index === this.paletteIndex ? '#ffe16a' : 'rgba(255,255,255,0.3)';
+        ctx.strokeRect(itemX, itemY, swatchSize, swatchSize);
+        const bounds = { x: itemX, y: itemY, w: swatchSize, h: swatchSize, index: entries[i].index };
+        this.paletteBounds.push(bounds);
+        this.registerFocusable('palette', bounds, () => this.setPaletteIndex(entries[i].index));
+      }
     }
 
     this.drawButton(ctx, prevBounds, '◀', false, { fontSize: 12 });
     this.drawButton(ctx, nextBounds, '▶', false, { fontSize: 12 });
-    this.drawButton(ctx, moreBounds, this.paletteGridOpen ? 'Palette ▾' : 'Palette ▸', false, { fontSize: 12 });
-
     this.uiButtons.push({ bounds: prevBounds, onClick: () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) - 1, 0, maxScroll); } });
     this.uiButtons.push({ bounds: nextBounds, onClick: () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) + 1, 0, maxScroll); } });
-    this.uiButtons.push({ bounds: moreBounds, onClick: () => { this.paletteGridOpen = !this.paletteGridOpen; } });
-
     this.registerFocusable('menu', prevBounds, () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) - 1, 0, maxScroll); });
     this.registerFocusable('menu', nextBounds, () => { this.focusScroll.palette = clamp((this.focusScroll.palette || 0) + 1, 0, maxScroll); });
-    this.registerFocusable('menu', moreBounds, () => { this.paletteGridOpen = !this.paletteGridOpen; });
+
+    if (!showSelectActionRail) {
+      const moreBounds = tailControls[0];
+      this.drawButton(ctx, moreBounds, this.paletteGridOpen ? 'Palette ▾' : 'Palette ▸', false, { fontSize: 12 });
+      this.uiButtons.push({ bounds: moreBounds, onClick: () => { this.paletteGridOpen = !this.paletteGridOpen; } });
+      this.registerFocusable('menu', moreBounds, () => { this.paletteGridOpen = !this.paletteGridOpen; });
+    }
   }
 
   drawTimeline(ctx, x, y, w, h) {
