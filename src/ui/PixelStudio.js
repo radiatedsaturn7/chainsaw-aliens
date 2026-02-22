@@ -1896,7 +1896,7 @@ export default class PixelStudio {
     }
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
-    if (payload.touchCount && this.longPressTimer && this.longPressOrigin) {
+    if (this.longPressTimer && this.longPressOrigin) {
       const drift = Math.hypot(payload.x - this.longPressOrigin.x, payload.y - this.longPressOrigin.y);
       if (drift > 8) this.cancelLongPress();
     }
@@ -2072,6 +2072,10 @@ export default class PixelStudio {
     }
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
+    if (this.longPressTimer && this.longPressOrigin) {
+      const drift = Math.hypot(payload.x - this.longPressOrigin.x, payload.y - this.longPressOrigin.y);
+      if (drift > 8) this.cancelLongPress();
+    }
     if (this.mobileZoomDrag && (payload.id === undefined || payload.id === this.mobileZoomDrag.id)) {
       this.updateZoomFromSliderX(payload.x);
       return;
