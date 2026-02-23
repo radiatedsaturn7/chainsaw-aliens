@@ -1241,7 +1241,8 @@ export default class PixelStudio {
   updateAnimation(dt) {
     if (!this.animation.playing) return;
     const frame = this.currentFrame;
-    frame.elapsed = (frame.elapsed || 0) + dt;
+    const dtMs = dt > 5 ? dt : dt * 1000;
+    frame.elapsed = (frame.elapsed || 0) + dtMs;
     if (frame.elapsed >= frame.durationMs) {
       frame.elapsed = 0;
       const nextIndex = this.animation.currentFrameIndex + 1;
@@ -5080,6 +5081,15 @@ export default class PixelStudio {
       ctx.strokeRect(canvasX, canvasY, canvasW, canvasH);
 
       this.drawCanvasArea(ctx, canvasX, canvasY, canvasW, canvasH);
+      if (!isMobile) {
+        const activeLayer = this.canvasState.layers[this.canvasState.activeLayerIndex];
+        ctx.fillStyle = '#4fc3ff';
+        ctx.font = 'bold 14px Courier New';
+        ctx.fillText(`Frame ${this.animation.currentFrameIndex + 1}`, padding + 10, padding + 16);
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.font = '12px Courier New';
+        ctx.fillText(`Layer ${this.canvasState.activeLayerIndex + 1}: ${activeLayer?.name || 'Layer'}`, padding + 10, padding + 32);
+      }
     } else {
       this.canvasBounds = null;
     }
@@ -6924,10 +6934,9 @@ export default class PixelStudio {
       const index = this.canvasState.layers.length - 1 - reversedIndex;
       const active = index === this.canvasState.activeLayerIndex;
       const bounds = { x: x + 8, y: offsetY - (isMobile ? 20 : 14), w: w - 16, h: buttonHeight, index };
-      ctx.fillStyle = active ? '#ffe16a' : 'rgba(255,255,255,0.7)';
-      ctx.font = `${isMobile ? 13 : 12}px Courier New`;
-      ctx.fillText(`${layer.visible ? '👁' : '⛔'} ${layer.name}`, x + 12, offsetY);
+      this.drawButton(ctx, bounds, `${layer.visible ? '👁' : '⛔'} ${layer.name}`, active, { fontSize: isMobile ? 12 : 11 });
       this.layerBounds.push(bounds);
+      this.uiButtons.push({ bounds, onClick: () => { this.canvasState.activeLayerIndex = index; } });
       this.registerFocusable('layers', bounds, () => { this.canvasState.activeLayerIndex = index; });
       offsetY += lineHeight;
     });
@@ -6980,9 +6989,6 @@ export default class PixelStudio {
 
     ctx.drawImage(this.offscreen, offsetX, offsetY, gridW, gridH);
 
-    ctx.fillStyle = '#4fc3ff';
-    ctx.font = 'bold 14px Courier New';
-    ctx.fillText(`F${this.animation.currentFrameIndex + 1}`, offsetX + 6, offsetY + 16);
 
     const drawGridAt = (tileX, tileY, alpha = 0.15) => {
       ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
@@ -7221,6 +7227,15 @@ export default class PixelStudio {
         { label: '+Layer', action: () => this.addLayer() },
         { label: '-Layer', action: () => this.deleteLayer(this.canvasState.activeLayerIndex) },
         { label: 'Rename', action: () => this.renameLayer(this.canvasState.activeLayerIndex) },
+        {
+          label: this.activeLayer?.visible === false ? 'Show' : 'Hide',
+          action: () => {
+            const layer = this.activeLayer;
+            if (!layer) return;
+            layer.visible = !layer.visible;
+            this.syncTileData();
+          }
+        },
         { label: 'Up', action: () => this.moveLayerBy(1) },
         { label: 'Down', action: () => this.moveLayerBy(-1) }
       ];
