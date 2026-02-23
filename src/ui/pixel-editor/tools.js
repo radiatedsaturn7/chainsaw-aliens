@@ -34,7 +34,7 @@ export const createToolRegistry = (editor) => ([
   {
     id: TOOL_IDS.ERASER,
     name: 'Eraser',
-    category: 'select',
+    category: 'tools',
     cursor: 'cell',
     onPointerDown: (point) => editor.startStroke(point, { mode: 'erase' }),
     onPointerMove: (point) => editor.continueStroke(point),

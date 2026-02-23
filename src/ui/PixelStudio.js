@@ -3050,20 +3050,6 @@ export default class PixelStudio {
       this.pendingHistory = null;
       return;
     }
-    if (!this.toolOptions.fillContiguous) {
-      const tolerance = this.toolOptions.fillTolerance;
-      const targetRgba = uint32ToRgba(target);
-      for (let i = 0; i < this.activeLayer.pixels.length; i += 1) {
-        if (this.selection.mask && this.selection.active && !this.selection.mask[i]) continue;
-        const currentValue = this.activeLayer.pixels[i];
-        const currentRgba = uint32ToRgba(currentValue);
-        const dist = Math.hypot(currentRgba.r - targetRgba.r, currentRgba.g - targetRgba.g, currentRgba.b - targetRgba.b);
-        if (dist > tolerance) continue;
-        this.activeLayer.pixels[i] = replacement;
-      }
-      this.commitHistory();
-      return;
-    }
     const queue = [point];
     const visited = new Set();
     const tolerance = this.toolOptions.fillTolerance;
@@ -6489,7 +6475,7 @@ export default class PixelStudio {
     ctx.clip();
     offsetY -= scrollY;
 
-    const usesBrush = [TOOL_IDS.PENCIL, TOOL_IDS.ERASER].includes(this.activeToolId);
+    const usesBrush = this.activeToolId === TOOL_IDS.ERASER;
 
     if (usesBrush) {
       const shapeBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: Math.min(panelWidth, isMobile ? 200 : 170), h: isMobile ? 44 : 18 };
@@ -6509,20 +6495,8 @@ export default class PixelStudio {
         this.toolOptions.shapeFill = !this.toolOptions.shapeFill;
       }, { isMobile });
       offsetY += lineHeight;
-      if (this.activeToolId === TOOL_IDS.POLYGON) {
-        const finishBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 150, h: isMobile ? 44 : 18 };
-        const canFinish = Boolean(this.polygonPreview && this.polygonPreview.points.length >= 3);
-        this.drawButton(ctx, finishBounds, canFinish ? 'Finish Polygon' : 'Polygon: tap 3+ pts', canFinish, { fontSize: isMobile ? 12 : 12 });
-        this.uiButtons.push({ bounds: finishBounds, onClick: () => this.finishPolygon() });
-        this.registerFocusable('menu', finishBounds, () => this.finishPolygon());
-        offsetY += lineHeight;
-      }
     }
     if (this.activeToolId === TOOL_IDS.FILL) {
-      this.drawOptionToggle(ctx, x, offsetY, 'Contiguous', this.toolOptions.fillContiguous, () => {
-        this.toolOptions.fillContiguous = !this.toolOptions.fillContiguous;
-      }, { isMobile });
-      offsetY += lineHeight;
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.fillText(`Tolerance: ${this.toolOptions.fillTolerance}`, x, offsetY);
       const minus = { x: x + 120, y: offsetY - (isMobile ? 28 : 14), w: 36, h: isMobile ? 44 : 18 };
