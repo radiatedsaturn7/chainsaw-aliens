@@ -36,8 +36,7 @@ import { ensurePixelArtStore, ensurePixelTileData } from '../editor/adapters/edi
 const BRUSH_SIZE_MIN = 1;
 const BRUSH_SIZE_MAX = 64;
 const DEFAULT_BRUSH_SIZE = 1;
-const BRUSH_SHAPES = ['square', 'circle', 'diamond', 'cross', 'x', 'hline', 'vline'];
-const BRUSH_FALLOFFS = ['solid', 'soft'];
+const BRUSH_SHAPES = ['circle', 'square', 'diamond', 'cross', 'x', 'hline', 'vline'];
 
 
 export default class PixelStudio {
@@ -83,8 +82,8 @@ export default class PixelStudio {
       brushSize: DEFAULT_BRUSH_SIZE,
       brushOpacity: 1,
       brushHardness: 0,
-      brushShape: 'square',
-      brushFalloff: 'solid',
+      brushShape: 'circle',
+      brushFalloff: 0.5,
       shapeFill: false,
       polygonSides: 5,
       magicThreshold: 24,
@@ -1209,7 +1208,8 @@ export default class PixelStudio {
       brushShape: this.toolOptions.brushShape,
       brushSize: this.toolOptions.brushSize,
       brushOpacity: this.toolOptions.brushOpacity,
-      brushHardness: this.toolOptions.brushHardness
+      brushHardness: this.toolOptions.brushHardness,
+      brushFalloff: this.toolOptions.brushFalloff
     };
   }
 
@@ -1227,6 +1227,7 @@ export default class PixelStudio {
       this.setBrushSize(this.brushPickerDraft.brushSize);
       this.setBrushOpacity(this.brushPickerDraft.brushOpacity);
       this.setBrushHardness(this.brushPickerDraft.brushHardness);
+      this.toolOptions.brushFalloff = clamp(this.brushPickerDraft.brushFalloff ?? 0.5, 0, 1);
       this.saveBrushProfile();
     }
     this.brushPickerOpen = false;
@@ -2544,26 +2545,40 @@ export default class PixelStudio {
     return true;
   }
 
+  getBrushShapeEdgeT(shape, dx, dy, radius) {
+    const safeRadius = Math.max(1, radius);
+    if (shape === 'circle') {
+      return clamp(Math.hypot(dx, dy) / Math.max(0.5, safeRadius + 0.5), 0, 1);
+    }
+    if (shape === 'diamond') {
+      return clamp((Math.abs(dx) + Math.abs(dy)) / safeRadius, 0, 1);
+    }
+    if (shape === 'cross' || shape === 'x') {
+      return clamp(Math.max(Math.abs(dx), Math.abs(dy)) / safeRadius, 0, 1);
+    }
+    if (shape === 'hline') {
+      return clamp(Math.abs(dx) / safeRadius, 0, 1);
+    }
+    if (shape === 'vline') {
+      return clamp(Math.abs(dy) / safeRadius, 0, 1);
+    }
+    return clamp(Math.max(Math.abs(dx), Math.abs(dy)) / Math.max(0.5, safeRadius + 0.5), 0, 1);
+  }
+
   createBrushStamp(point) {
     const size = this.toolOptions.brushSize;
     const radius = Math.floor(size / 2);
     const points = [];
     const shape = this.toolOptions.brushShape;
-    const isSoft = this.toolOptions.brushFalloff === 'soft';
     const hardness = clamp(this.toolOptions.brushHardness ?? 0, 0, 1);
-    const maxDist = Math.max(0.5, radius + 0.5);
+    const falloff = clamp(this.toolOptions.brushFalloff ?? 0.5, 0, 1);
+    const falloffExponent = 1 + falloff * 3;
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (!this.doesBrushShapeIncludeOffset(shape, dx, dy, radius)) continue;
-        const dist = shape === 'circle' ? Math.hypot(dx, dy) : Math.max(Math.abs(dx), Math.abs(dy));
-        const edgeT = clamp(dist / maxDist, 0, 1);
-        let weight = 1;
-        if (isSoft) {
-          const softExponent = 1 + (1 - hardness) * 2;
-          weight = Math.pow(1 - edgeT, softExponent);
-        } else if (hardness > 0) {
-          weight = clamp(1 - edgeT * hardness, 0, 1);
-        }
+        const edgeT = this.getBrushShapeEdgeT(shape, dx, dy, radius);
+        const softWeight = Math.pow(Math.max(0, 1 - edgeT), falloffExponent);
+        const weight = lerp(softWeight, 1, hardness);
         points.push({ row: point.row + dy, col: point.col + dx, weight });
       }
     }
@@ -4200,7 +4215,10 @@ export default class PixelStudio {
     this.toolOptions.brushOpacity = clamp(profile.brushOpacity ?? 1, 0.05, 1);
     this.toolOptions.brushHardness = clamp(profile.brushHardness ?? 0, 0, 1);
     this.toolOptions.brushShape = BRUSH_SHAPES.includes(profile.brushShape) ? profile.brushShape : BRUSH_SHAPES[0];
-    this.toolOptions.brushFalloff = BRUSH_FALLOFFS.includes(profile.brushFalloff) ? profile.brushFalloff : BRUSH_FALLOFFS[0];
+    const profileFalloff = typeof profile.brushFalloff === 'number'
+      ? profile.brushFalloff
+      : (profile.brushFalloff === 'soft' ? 1 : 0.5);
+    this.toolOptions.brushFalloff = clamp(profileFalloff, 0, 1);
   }
 
   setBrushSize(size) {
@@ -4228,12 +4246,6 @@ export default class PixelStudio {
   cycleBrushShape() {
     const index = BRUSH_SHAPES.indexOf(this.toolOptions.brushShape);
     this.toolOptions.brushShape = BRUSH_SHAPES[(index + 1 + BRUSH_SHAPES.length) % BRUSH_SHAPES.length];
-    this.saveBrushProfile();
-  }
-
-  cycleBrushFalloff() {
-    const index = BRUSH_FALLOFFS.indexOf(this.toolOptions.brushFalloff);
-    this.toolOptions.brushFalloff = BRUSH_FALLOFFS[(index + 1 + BRUSH_FALLOFFS.length) % BRUSH_FALLOFFS.length];
     this.saveBrushProfile();
   }
 
@@ -5749,6 +5761,8 @@ export default class PixelStudio {
       this.brushPickerDraft.brushOpacity = 0.05 + t * 0.95;
     } else if (type === 'hardness') {
       this.brushPickerDraft.brushHardness = t;
+    } else if (type === 'falloff') {
+      this.brushPickerDraft.brushFalloff = t;
     }
   }
 
@@ -5799,7 +5813,7 @@ export default class PixelStudio {
     const rowGap = 8;
     const cellGap = 8;
     const gridY = titleY + 10;
-    const footerH = 114;
+    const footerH = 140;
     const gridH = Math.max(90, modal.h - footerH - 34);
     const rows = Math.ceil(BRUSH_SHAPES.length / cols);
     const cellW = Math.floor((modal.w - 24 - (cols - 1) * cellGap) / cols);
@@ -5841,6 +5855,9 @@ export default class PixelStudio {
     const hardnessLabelY = sliderY + 30;
     ctx.fillText(`Hardness: ${Math.round((draft.brushHardness ?? 0) * 100)}%`, modal.x + 12, hardnessLabelY);
     const hardnessSlider = { x: modal.x + 12, y: hardnessLabelY + 8, w: modal.w - 24, h: 12 };
+    const falloffLabelY = hardnessSlider.y + 30;
+    ctx.fillText(`Falloff: ${Math.round((draft.brushFalloff ?? 0.5) * 100)}%`, modal.x + 12, falloffLabelY);
+    const falloffSlider = { x: modal.x + 12, y: falloffLabelY + 8, w: modal.w - 24, h: 12 };
 
     const drawSlider = (bounds, t) => {
       ctx.fillStyle = 'rgba(0,0,0,0.4)';
@@ -5854,8 +5871,9 @@ export default class PixelStudio {
     drawSlider(sizeSlider, (draft.brushSize - BRUSH_SIZE_MIN) / Math.max(1, BRUSH_SIZE_MAX - BRUSH_SIZE_MIN));
     drawSlider(opacitySlider, ((draft.brushOpacity ?? 1) - 0.05) / 0.95);
     drawSlider(hardnessSlider, draft.brushHardness ?? 0);
+    drawSlider(falloffSlider, draft.brushFalloff ?? 0.5);
 
-    this.brushPickerSliders = { size: sizeSlider, opacity: opacitySlider, hardness: hardnessSlider };
+    this.brushPickerSliders = { size: sizeSlider, opacity: opacitySlider, hardness: hardnessSlider, falloff: falloffSlider };
 
     this.uiButtons.push({
       bounds: { x: sizeSlider.x, y: sizeSlider.y - 8, w: sizeSlider.w, h: sizeSlider.h + 16 },
@@ -5879,6 +5897,14 @@ export default class PixelStudio {
         if (!this.brushPickerDraft) this.syncBrushPickerDraft();
         this.brushPickerDrag = { type: 'hardness', id: pointerId ?? null };
         this.updateBrushPickerSliderFromX('hardness', pointerX);
+      }
+    });
+    this.uiButtons.push({
+      bounds: { x: falloffSlider.x, y: falloffSlider.y - 8, w: falloffSlider.w, h: falloffSlider.h + 16 },
+      onClick: ({ x: pointerX, id: pointerId }) => {
+        if (!this.brushPickerDraft) this.syncBrushPickerDraft();
+        this.brushPickerDrag = { type: 'falloff', id: pointerId ?? null };
+        this.updateBrushPickerSliderFromX('falloff', pointerX);
       }
     });
 
@@ -6475,21 +6501,6 @@ export default class PixelStudio {
     ctx.clip();
     offsetY -= scrollY;
 
-    const usesBrush = this.activeToolId === TOOL_IDS.ERASER;
-
-    if (usesBrush) {
-      const shapeBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: Math.min(panelWidth, isMobile ? 200 : 170), h: isMobile ? 44 : 18 };
-      this.drawButton(ctx, shapeBounds, `Brush Shape: ${this.toolOptions.brushShape}`, false, { fontSize: isMobile ? 12 : 12 });
-      this.uiButtons.push({ bounds: shapeBounds, onClick: () => this.cycleBrushShape() });
-      this.registerFocusable('menu', shapeBounds, () => this.cycleBrushShape());
-      offsetY += lineHeight;
-
-      const falloffBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: Math.min(panelWidth, isMobile ? 200 : 170), h: isMobile ? 44 : 18 };
-      this.drawButton(ctx, falloffBounds, `Brush Falloff: ${this.toolOptions.brushFalloff}`, false, { fontSize: isMobile ? 12 : 12 });
-      this.uiButtons.push({ bounds: falloffBounds, onClick: () => this.cycleBrushFalloff() });
-      this.registerFocusable('menu', falloffBounds, () => this.cycleBrushFalloff());
-      offsetY += lineHeight;
-    }
     if ([TOOL_IDS.RECT, TOOL_IDS.ELLIPSE, TOOL_IDS.POLYGON].includes(this.activeToolId)) {
       this.drawOptionToggle(ctx, x, offsetY, this.toolOptions.shapeFill ? 'Fill: On' : 'Fill: Off', this.toolOptions.shapeFill, () => {
         this.toolOptions.shapeFill = !this.toolOptions.shapeFill;
