@@ -83,7 +83,7 @@ export default class PixelStudio {
       brushOpacity: 1,
       brushHardness: 0,
       brushShape: 'circle',
-      brushFalloff: 1,
+      brushFalloff: 0,
       shapeFill: false,
       polygonSides: 5,
       magicThreshold: 24,
@@ -1228,7 +1228,7 @@ export default class PixelStudio {
       this.setBrushSize(this.brushPickerDraft.brushSize);
       this.setBrushOpacity(this.brushPickerDraft.brushOpacity);
       this.setBrushHardness(this.brushPickerDraft.brushHardness);
-      this.toolOptions.brushFalloff = clamp(this.brushPickerDraft.brushFalloff ?? 1, 0, 1);
+      this.toolOptions.brushFalloff = clamp(this.brushPickerDraft.brushFalloff ?? 0, 0, 1);
       this.saveBrushProfile();
     }
     this.brushPickerOpen = false;
@@ -2506,9 +2506,9 @@ export default class PixelStudio {
   }
 
   getStrokeFalloffWeight(strokeDistance = 0) {
-    const falloff = clamp(this.toolOptions.brushFalloff ?? 1, 0, 1);
-    if (falloff >= 0.999) return 1;
-    const decayDistance = lerp(8, 600, Math.pow(falloff, 1.75));
+    const falloff = clamp(this.toolOptions.brushFalloff ?? 0, 0, 1);
+    if (falloff <= 0.001) return 1;
+    const decayDistance = lerp(600, 2, Math.pow(falloff, 1.3));
     return Math.exp(-Math.max(0, strokeDistance) / Math.max(1, decayDistance));
   }
 
@@ -2569,7 +2569,7 @@ export default class PixelStudio {
   getBrushShapeEdgeT(shape, dx, dy, radius) {
     const safeRadius = Math.max(1, radius);
     if (shape === 'circle') {
-      return clamp(Math.hypot(dx, dy) / Math.max(0.5, safeRadius + 0.5), 0, 1);
+      return clamp(Math.hypot(dx, dy) / Math.max(0.5, safeRadius), 0, 1);
     }
     if (shape === 'diamond') {
       return clamp((Math.abs(dx) + Math.abs(dy)) / safeRadius, 0, 1);
@@ -2583,7 +2583,7 @@ export default class PixelStudio {
     if (shape === 'vline') {
       return clamp(Math.abs(dy) / safeRadius, 0, 1);
     }
-    return clamp(Math.max(Math.abs(dx), Math.abs(dy)) / Math.max(0.5, safeRadius + 0.5), 0, 1);
+    return clamp(Math.max(Math.abs(dx), Math.abs(dy)) / Math.max(0.5, safeRadius), 0, 1);
   }
 
   createBrushStamp(point) {
@@ -2594,7 +2594,7 @@ export default class PixelStudio {
     const hardness = clamp(this.toolOptions.brushHardness ?? 0, 0, 1);
     const featherStart = hardness;
     const featherWidth = Math.max(0.0001, 1 - featherStart);
-    const edgeSoftnessExponent = 1.4;
+    const edgeSoftnessExponent = 1;
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (!this.doesBrushShapeIncludeOffset(shape, dx, dy, radius)) continue;
@@ -4242,7 +4242,7 @@ export default class PixelStudio {
     this.toolOptions.brushShape = BRUSH_SHAPES.includes(profile.brushShape) ? profile.brushShape : BRUSH_SHAPES[0];
     const profileFalloff = typeof profile.brushFalloff === 'number'
       ? profile.brushFalloff
-      : (profile.brushFalloff === 'soft' ? 0.35 : 1);
+      : (profile.brushFalloff === 'soft' ? 0.65 : 0);
     this.toolOptions.brushFalloff = clamp(profileFalloff, 0, 1);
   }
 
@@ -5880,7 +5880,7 @@ export default class PixelStudio {
     const hardnessLabelY = sliderY + 30;
     const secondarySliderW = Math.floor((modal.w - 36) / 2);
     ctx.fillText(`Hardness: ${Math.round((draft.brushHardness ?? 0) * 100)}%`, modal.x + 12, hardnessLabelY);
-    ctx.fillText(`Stroke Falloff: ${Math.round((draft.brushFalloff ?? 1) * 100)}%`, modal.x + modal.w / 2 + 6, hardnessLabelY);
+    ctx.fillText(`Stroke Falloff: ${Math.round((draft.brushFalloff ?? 0) * 100)}% (0=none, 100=max)`, modal.x + modal.w / 2 + 6, hardnessLabelY);
     const hardnessSlider = { x: modal.x + 12, y: hardnessLabelY + 8, w: secondarySliderW, h: 12 };
     const falloffSlider = { x: modal.x + modal.w / 2 + 6, y: hardnessLabelY + 8, w: secondarySliderW, h: 12 };
 
@@ -5896,7 +5896,7 @@ export default class PixelStudio {
     drawSlider(sizeSlider, (draft.brushSize - BRUSH_SIZE_MIN) / Math.max(1, BRUSH_SIZE_MAX - BRUSH_SIZE_MIN));
     drawSlider(opacitySlider, ((draft.brushOpacity ?? 1) - 0.05) / 0.95);
     drawSlider(hardnessSlider, draft.brushHardness ?? 0);
-    drawSlider(falloffSlider, draft.brushFalloff ?? 1);
+    drawSlider(falloffSlider, draft.brushFalloff ?? 0);
 
     this.brushPickerSliders = { size: sizeSlider, opacity: opacitySlider, hardness: hardnessSlider, falloff: falloffSlider };
 
