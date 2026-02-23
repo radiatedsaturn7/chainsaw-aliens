@@ -2458,7 +2458,9 @@ export default class PixelStudio {
       mode,
       lastPoint: point,
       pathPoint: point,
-      strokeDistance: 0
+      strokeDistance: 0,
+      basePixels: mode === 'clone' ? null : new Uint32Array(this.activeLayer.pixels),
+      alphaMap: mode === 'clone' ? null : new Float32Array(this.canvasState.width * this.canvasState.height)
     };
     this.applyBrush(point, 0);
   }
@@ -2536,10 +2538,19 @@ export default class PixelStudio {
       if (strokeMode === 'dither') {
         if (!this.shouldApplyDither(row, col)) return;
       }
+      let alphaToApply = alpha;
+      let blendSource = target;
+      if (this.strokeState?.alphaMap && this.strokeState?.basePixels) {
+        const prevAlpha = this.strokeState.alphaMap[index] || 0;
+        if (alpha <= prevAlpha) return;
+        this.strokeState.alphaMap[index] = alpha;
+        alphaToApply = alpha;
+        blendSource = this.strokeState.basePixels[index];
+      }
       if (this.toolOptions.symmetry?.mirrorOnly && target === colorValue) return;
-      this.activeLayer.pixels[index] = alpha >= 1
+      this.activeLayer.pixels[index] = alphaToApply >= 1
         ? colorValue
-        : this.blendPixel(target, colorValue, alpha);
+        : this.blendPixel(blendSource, colorValue, alphaToApply);
     });
   }
 
@@ -4834,7 +4845,7 @@ export default class PixelStudio {
       return true;
     }
     if (this.brushPickerOpen && this.brushPickerBounds && !this.isPointInBounds({ x, y }, this.brushPickerBounds)) {
-      this.closeBrushPicker({ apply: false });
+      this.closeBrushPicker({ apply: true });
       return true;
     }
     if (this.selectionContextMenu?.bounds && !this.isPointInBounds({ x, y }, this.selectionContextMenu.bounds)) {
@@ -5932,8 +5943,8 @@ export default class PixelStudio {
     });
 
     const buttonY = modal.y + modal.h - 34;
-    const cancelBounds = { x: modal.x + modal.w - 180, y: buttonY, w: 80, h: 24 };
-    const okBounds = { x: modal.x + modal.w - 92, y: buttonY, w: 80, h: 24 };
+    const cancelBounds = { x: modal.x + modal.w - 212, y: buttonY - 2, w: 96, h: 28 };
+    const okBounds = { x: modal.x + modal.w - 106, y: buttonY - 2, w: 96, h: 28 };
     this.drawButton(ctx, cancelBounds, 'Cancel', false, { fontSize: 12 });
     this.drawButton(ctx, okBounds, 'OK', false, { fontSize: 12 });
     this.uiButtons.push({ bounds: cancelBounds, onClick: () => this.closeBrushPicker({ apply: false }) });
