@@ -2592,18 +2592,12 @@ export default class PixelStudio {
     const points = [];
     const shape = this.toolOptions.brushShape;
     const hardness = clamp(this.toolOptions.brushHardness ?? 0, 0, 1);
-    const featherStart = hardness;
-    const featherWidth = Math.max(0.0001, 1 - featherStart);
-    const edgeSoftnessExponent = 1;
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (!this.doesBrushShapeIncludeOffset(shape, dx, dy, radius)) continue;
         const edgeT = this.getBrushShapeEdgeT(shape, dx, dy, radius);
-        let weight = 1;
-        if (edgeT > featherStart) {
-          const featherT = clamp((edgeT - featherStart) / featherWidth, 0, 1);
-          weight = Math.pow(Math.max(0, 1 - featherT), edgeSoftnessExponent);
-        }
+        const centerToEdgeWeight = Math.max(0, 1 - edgeT);
+        const weight = lerp(centerToEdgeWeight, 1, hardness);
         points.push({ row: point.row + dy, col: point.col + dx, weight });
       }
     }
