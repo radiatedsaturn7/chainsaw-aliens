@@ -81,7 +81,7 @@ export default class PixelStudio {
     this.toolOptions = {
       brushSize: DEFAULT_BRUSH_SIZE,
       brushOpacity: 1,
-      brushHardness: 0,
+      brushHardness: 1,
       brushShape: 'circle',
       brushFalloff: 0,
       shapeFill: false,
@@ -2602,7 +2602,7 @@ export default class PixelStudio {
     const radius = Math.floor(size / 2);
     const points = [];
     const shape = this.toolOptions.brushShape;
-    const hardness = clamp(this.toolOptions.brushHardness ?? 0, 0, 1);
+    const hardness = clamp(this.toolOptions.brushHardness ?? 1, 0, 1);
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (!this.doesBrushShapeIncludeOffset(shape, dx, dy, radius)) continue;
@@ -4247,7 +4247,7 @@ export default class PixelStudio {
     if (!profile) return;
     this.toolOptions.brushSize = clamp(Math.round(profile.brushSize ?? DEFAULT_BRUSH_SIZE), BRUSH_SIZE_MIN, BRUSH_SIZE_MAX);
     this.toolOptions.brushOpacity = clamp(profile.brushOpacity ?? 1, 0.05, 1);
-    this.toolOptions.brushHardness = clamp(profile.brushHardness ?? 0, 0, 1);
+    this.toolOptions.brushHardness = clamp(profile.brushHardness ?? 1, 0, 1);
     this.toolOptions.brushShape = BRUSH_SHAPES.includes(profile.brushShape) ? profile.brushShape : BRUSH_SHAPES[0];
     const profileFalloff = typeof profile.brushFalloff === 'number'
       ? profile.brushFalloff

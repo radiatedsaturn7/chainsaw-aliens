@@ -91,14 +91,23 @@ export const createRectMask = (width, height, bounds) => {
 
 export const applySymmetryPoints = (points, width, height, symmetry) => {
   const output = new Map();
-  points.forEach(({ row, col }) => {
-    const candidates = [{ row, col }];
-    if (symmetry.horizontal) candidates.push({ row, col: width - 1 - col });
-    if (symmetry.vertical) candidates.push({ row: height - 1 - row, col });
+  points.forEach(({ row, col, weight }) => {
+    const candidates = [{ row, col, weight }];
+    if (symmetry.horizontal) candidates.push({ row, col: width - 1 - col, weight });
+    if (symmetry.vertical) candidates.push({ row: height - 1 - row, col, weight });
     if (symmetry.horizontal && symmetry.vertical) {
-      candidates.push({ row: height - 1 - row, col: width - 1 - col });
+      candidates.push({ row: height - 1 - row, col: width - 1 - col, weight });
     }
-    candidates.forEach((point) => output.set(`${point.row},${point.col}`, point));
+    candidates.forEach((point) => {
+      const key = `${point.row},${point.col}`;
+      const existing = output.get(key);
+      if (!existing) {
+        output.set(key, point);
+        return;
+      }
+      const nextWeight = Math.max(existing.weight ?? 1, point.weight ?? 1);
+      output.set(key, { ...existing, weight: nextWeight });
+    });
   });
   return Array.from(output.values());
 };
