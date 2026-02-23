@@ -83,7 +83,7 @@ export default class PixelStudio {
       brushOpacity: 1,
       brushHardness: 0,
       brushShape: 'circle',
-      brushFalloff: 0.5,
+      brushFalloff: 1,
       shapeFill: false,
       polygonSides: 5,
       magicThreshold: 24,
@@ -166,7 +166,8 @@ export default class PixelStudio {
       zoomLevels: [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32],
       zoomIndex: 8,
       panX: 0,
-      panY: 0
+      panY: 0,
+      showGrid: true
     };
     this.viewportController = createViewportController({
       minZoom: 0,
@@ -1227,7 +1228,7 @@ export default class PixelStudio {
       this.setBrushSize(this.brushPickerDraft.brushSize);
       this.setBrushOpacity(this.brushPickerDraft.brushOpacity);
       this.setBrushHardness(this.brushPickerDraft.brushHardness);
-      this.toolOptions.brushFalloff = clamp(this.brushPickerDraft.brushFalloff ?? 0.5, 0, 1);
+      this.toolOptions.brushFalloff = clamp(this.brushPickerDraft.brushFalloff ?? 1, 0, 1);
       this.saveBrushProfile();
     }
     this.brushPickerOpen = false;
@@ -2455,9 +2456,11 @@ export default class PixelStudio {
       : null;
     this.strokeState = {
       mode,
-      lastPoint: point
+      lastPoint: point,
+      pathPoint: point,
+      strokeDistance: 0
     };
-    this.applyBrush(point);
+    this.applyBrush(point, 0);
   }
 
   continueStroke(point) {
@@ -2480,8 +2483,18 @@ export default class PixelStudio {
         col: last.col + wrappedDeltaCol
       };
     }
-    const line = bresenhamLine(this.strokeState.lastPoint, targetPoint);
-    line.forEach((pt) => this.applyBrush(pt));
+    const line = bresenhamLine(this.strokeState.pathPoint || this.strokeState.lastPoint, targetPoint);
+    let strokeDistance = this.strokeState.strokeDistance || 0;
+    let prevPoint = this.strokeState.pathPoint || this.strokeState.lastPoint;
+    line.forEach((pt, index) => {
+      if (index > 0) {
+        strokeDistance += Math.hypot(pt.col - prevPoint.col, pt.row - prevPoint.row);
+      }
+      this.applyBrush(pt, strokeDistance);
+      prevPoint = pt;
+    });
+    this.strokeState.strokeDistance = strokeDistance;
+    this.strokeState.pathPoint = targetPoint;
     this.strokeState.lastPoint = point;
   }
 
@@ -2492,7 +2505,14 @@ export default class PixelStudio {
     this.commitHistory();
   }
 
-  applyBrush(point) {
+  getStrokeFalloffWeight(strokeDistance = 0) {
+    const falloff = clamp(this.toolOptions.brushFalloff ?? 1, 0, 1);
+    if (falloff >= 0.999) return 1;
+    const decayDistance = lerp(8, 600, Math.pow(falloff, 1.75));
+    return Math.exp(-Math.max(0, strokeDistance) / Math.max(1, decayDistance));
+  }
+
+  applyBrush(point, strokeDistance = 0) {
     const { width, height } = this.canvasState;
     const points = this.createBrushStamp(point);
     const symmetryPoints = applySymmetryPoints(points, width, height, this.toolOptions.symmetry);
@@ -2503,7 +2523,8 @@ export default class PixelStudio {
       if (this.selection.active && this.selection.mask && !this.selection.mask[row * width + col]) return;
       const index = row * width + col;
       const target = this.activeLayer.pixels[index];
-      const alpha = (pt.weight ?? 1) * (this.toolOptions.brushOpacity ?? 1);
+      const strokeWeight = this.getStrokeFalloffWeight(strokeDistance);
+      const alpha = (pt.weight ?? 1) * (this.toolOptions.brushOpacity ?? 1) * strokeWeight;
       if (alpha <= 0) return;
       const strokeMode = this.strokeState?.mode || 'paint';
       if (strokeMode === 'clone') {
@@ -2571,18 +2592,17 @@ export default class PixelStudio {
     const points = [];
     const shape = this.toolOptions.brushShape;
     const hardness = clamp(this.toolOptions.brushHardness ?? 0, 0, 1);
-    const falloff = clamp(this.toolOptions.brushFalloff ?? 0.5, 0, 1);
-    const featherWidth = Math.max(0.001, 1 - hardness);
-    const hardCoreEnd = 1 - featherWidth;
-    const falloffExponent = lerp(0.45, 3.5, falloff);
+    const featherStart = hardness;
+    const featherWidth = Math.max(0.0001, 1 - featherStart);
+    const edgeSoftnessExponent = 1.4;
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (!this.doesBrushShapeIncludeOffset(shape, dx, dy, radius)) continue;
         const edgeT = this.getBrushShapeEdgeT(shape, dx, dy, radius);
         let weight = 1;
-        if (edgeT > hardCoreEnd) {
-          const featherT = clamp((edgeT - hardCoreEnd) / featherWidth, 0, 1);
-          weight = Math.pow(Math.max(0, 1 - featherT), falloffExponent);
+        if (edgeT > featherStart) {
+          const featherT = clamp((edgeT - featherStart) / featherWidth, 0, 1);
+          weight = Math.pow(Math.max(0, 1 - featherT), edgeSoftnessExponent);
         }
         points.push({ row: point.row + dy, col: point.col + dx, weight });
       }
@@ -4222,7 +4242,7 @@ export default class PixelStudio {
     this.toolOptions.brushShape = BRUSH_SHAPES.includes(profile.brushShape) ? profile.brushShape : BRUSH_SHAPES[0];
     const profileFalloff = typeof profile.brushFalloff === 'number'
       ? profile.brushFalloff
-      : (profile.brushFalloff === 'soft' ? 1 : 0.5);
+      : (profile.brushFalloff === 'soft' ? 0.35 : 1);
     this.toolOptions.brushFalloff = clamp(profileFalloff, 0, 1);
   }
 
@@ -5860,7 +5880,7 @@ export default class PixelStudio {
     const hardnessLabelY = sliderY + 30;
     const secondarySliderW = Math.floor((modal.w - 36) / 2);
     ctx.fillText(`Hardness: ${Math.round((draft.brushHardness ?? 0) * 100)}%`, modal.x + 12, hardnessLabelY);
-    ctx.fillText(`Falloff: ${Math.round((draft.brushFalloff ?? 0.5) * 100)}%`, modal.x + modal.w / 2 + 6, hardnessLabelY);
+    ctx.fillText(`Stroke Falloff: ${Math.round((draft.brushFalloff ?? 1) * 100)}%`, modal.x + modal.w / 2 + 6, hardnessLabelY);
     const hardnessSlider = { x: modal.x + 12, y: hardnessLabelY + 8, w: secondarySliderW, h: 12 };
     const falloffSlider = { x: modal.x + modal.w / 2 + 6, y: hardnessLabelY + 8, w: secondarySliderW, h: 12 };
 
@@ -5876,7 +5896,7 @@ export default class PixelStudio {
     drawSlider(sizeSlider, (draft.brushSize - BRUSH_SIZE_MIN) / Math.max(1, BRUSH_SIZE_MAX - BRUSH_SIZE_MIN));
     drawSlider(opacitySlider, ((draft.brushOpacity ?? 1) - 0.05) / 0.95);
     drawSlider(hardnessSlider, draft.brushHardness ?? 0);
-    drawSlider(falloffSlider, draft.brushFalloff ?? 0.5);
+    drawSlider(falloffSlider, draft.brushFalloff ?? 1);
 
     this.brushPickerSliders = { size: sizeSlider, opacity: opacitySlider, hardness: hardnessSlider, falloff: falloffSlider };
 
@@ -6441,6 +6461,10 @@ export default class PixelStudio {
       this.toolOptions.wrapDraw = !this.toolOptions.wrapDraw;
     }, { isMobile });
     offsetY += lineHeight;
+    this.drawOptionToggle(ctx, x + 12, offsetY, 'Grid', this.view.showGrid !== false, () => {
+      this.view.showGrid = this.view.showGrid === false;
+    }, { isMobile });
+    offsetY += lineHeight;
     this.drawOptionToggle(ctx, x + 12, offsetY, 'Tiled Preview', this.tiledPreview.enabled, () => {
       this.tiledPreview.enabled = !this.tiledPreview.enabled;
     }, { isMobile });
@@ -6856,14 +6880,16 @@ export default class PixelStudio {
         ctx.stroke();
       }
     };
-    if (this.tiledPreview.enabled || wrapActive) {
-      for (let row = -1; row <= 1; row += 1) {
-        for (let col = -1; col <= 1; col += 1) {
-          drawGridAt(offsetX + col * gridW, offsetY + row * gridH, row === 0 && col === 0 ? 0.2 : 0.12);
+    if (this.view.showGrid !== false) {
+      if (this.tiledPreview.enabled || wrapActive) {
+        for (let row = -1; row <= 1; row += 1) {
+          for (let col = -1; col <= 1; col += 1) {
+            drawGridAt(offsetX + col * gridW, offsetY + row * gridH, row === 0 && col === 0 ? 0.2 : 0.12);
+          }
         }
+      } else {
+        drawGridAt(offsetX, offsetY, 0.15);
       }
-    } else {
-      drawGridAt(offsetX, offsetY, 0.15);
     }
 
     if (this.selection.active && this.selection.bounds) {
