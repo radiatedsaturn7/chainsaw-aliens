@@ -6901,6 +6901,11 @@ export default class PixelStudio {
       }
     }
 
+    // Always show the primary image bounds, even when cell grid lines are hidden.
+    ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(offsetX, offsetY, gridW, gridH);
+
     if (this.selection.active && this.selection.bounds) {
       this.drawSelectionMarchingAnts(ctx, offsetX, offsetY, zoom);
       if (this.activeToolId === TOOL_IDS.MOVE) {
