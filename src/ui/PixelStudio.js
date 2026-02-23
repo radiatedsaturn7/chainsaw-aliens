@@ -2596,8 +2596,12 @@ export default class PixelStudio {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (!this.doesBrushShapeIncludeOffset(shape, dx, dy, radius)) continue;
         const edgeT = this.getBrushShapeEdgeT(shape, dx, dy, radius);
-        const centerToEdgeWeight = Math.max(0, 1 - edgeT);
-        const weight = lerp(centerToEdgeWeight, 1, hardness);
+        // Hardness is a center-to-edge gradient control:
+        // - hardness=1 => flat 1.0 opacity across the whole brush
+        // - hardness=0 => full gradient (1.0 at center down to 0.0 at edge)
+        // - hardness=0.5 => edge is 0.5 opacity, still 1.0 at center
+        const edgeAlpha = hardness;
+        const weight = lerp(1, edgeAlpha, edgeT);
         points.push({ row: point.row + dy, col: point.col + dx, weight });
       }
     }
