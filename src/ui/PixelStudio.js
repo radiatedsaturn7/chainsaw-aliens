@@ -5090,7 +5090,11 @@ export default class PixelStudio {
       const paletteW = isMobile
         ? Math.max(120, width - paletteX - padding - mobileDrawerReserveW)
         : (width - padding * 2);
-      this.drawPaletteBar(ctx, paletteX, paletteY, paletteW, paletteHeight, { isMobile });
+      if (['layers', 'animation'].includes(this.leftPanelTab)) {
+        this.drawManagementActionRail(ctx, paletteX, paletteY, paletteW, paletteHeight, { isMobile });
+      } else {
+        this.drawPaletteBar(ctx, paletteX, paletteY, paletteW, paletteHeight, { isMobile });
+      }
     }
     const statusY = paletteY + (paletteHeight > 0 ? paletteHeight + 6 : 0);
     if (!menuFullScreen && !isMobile) {
@@ -5584,22 +5588,7 @@ export default class PixelStudio {
     ctx.fillText(statusText, x + 8, y + 14);
 
     if (['layers', 'animation'].includes(this.leftPanelTab)) {
-      const actions = this.leftPanelTab === 'layers'
-        ? [
-          { label: '+Layer', action: () => this.addLayer() },
-          { label: '-Layer', action: () => this.deleteLayer(this.canvasState.activeLayerIndex) },
-          { label: 'Rename', action: () => this.renameLayer(this.canvasState.activeLayerIndex) },
-          { label: 'Up', action: () => this.moveLayerBy(1) },
-          { label: 'Down', action: () => this.moveLayerBy(-1) }
-        ]
-        : [
-          { label: '+Frame', action: () => this.addFrame() },
-          { label: '-Frame', action: () => this.deleteFrame(this.animation.currentFrameIndex) },
-          { label: 'Delay', action: () => this.setCurrentFrameDelayFps() },
-          { label: this.animation.loop ? 'Loop ✓' : 'Loop', action: () => { this.animation.loop = !this.animation.loop; } },
-          { label: 'Up', action: () => this.moveFrameBy(1) },
-          { label: 'Down', action: () => this.moveFrameBy(-1) }
-        ];
+      const actions = this.getBottomRailActions();
       const buttonW = 62;
       const gap = 6;
       let bx = x + w - (actions.length * (buttonW + gap));
@@ -7224,6 +7213,55 @@ export default class PixelStudio {
     ctx.drawImage(this.offscreen, offsetX, offsetY, gridW, gridH);
 
     ctx.restore();
+  }
+
+  getBottomRailActions() {
+    if (this.leftPanelTab === 'layers') {
+      return [
+        { label: '+Layer', action: () => this.addLayer() },
+        { label: '-Layer', action: () => this.deleteLayer(this.canvasState.activeLayerIndex) },
+        { label: 'Rename', action: () => this.renameLayer(this.canvasState.activeLayerIndex) },
+        { label: 'Up', action: () => this.moveLayerBy(1) },
+        { label: 'Down', action: () => this.moveLayerBy(-1) }
+      ];
+    }
+    if (this.leftPanelTab === 'animation') {
+      return [
+        { label: '+Frame', action: () => this.addFrame() },
+        { label: '-Frame', action: () => this.deleteFrame(this.animation.currentFrameIndex) },
+        { label: 'Delay', action: () => this.setCurrentFrameDelayFps() },
+        { label: this.animation.loop ? 'Loop ✓' : 'Loop', action: () => { this.animation.loop = !this.animation.loop; } },
+        { label: 'Up', action: () => this.moveFrameBy(1) },
+        { label: 'Down', action: () => this.moveFrameBy(-1) }
+      ];
+    }
+    return [];
+  }
+
+  drawManagementActionRail(ctx, x, y, w, h, options = {}) {
+    const isMobile = options.isMobile;
+    const actions = this.getBottomRailActions();
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(x, y, w, h);
+    const title = this.leftPanelTab === 'layers' ? 'Layer Actions' : 'Animation Actions';
+    ctx.fillStyle = '#fff';
+    ctx.font = `${isMobile ? 12 : 14}px Courier New`;
+    ctx.fillText(title, x + 10, y + 18);
+
+    const gap = 8;
+    const top = y + 22;
+    const buttonH = Math.max(20, h - 30);
+    const buttonW = Math.max(52, Math.floor((w - 20 - gap * Math.max(0, actions.length - 1)) / Math.max(1, actions.length)));
+    let buttonX = x + 10;
+    actions.forEach((entry) => {
+      const bounds = { x: buttonX, y: top, w: buttonW, h: buttonH };
+      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+      this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('menu', bounds, entry.action);
+      buttonX += buttonW + gap;
+    });
   }
 
   drawPaletteBar(ctx, x, y, w, h, options = {}) {
