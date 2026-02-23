@@ -36,8 +36,8 @@ import { ensurePixelArtStore, ensurePixelTileData } from '../editor/adapters/edi
 const BRUSH_SIZE_MIN = 1;
 const BRUSH_SIZE_MAX = 64;
 const DEFAULT_BRUSH_SIZE = 1;
-const BRUSH_SHAPES = ['square', 'circle', 'diamond', 'cross', 'x', 'hline', 'vline'];
-const BRUSH_FALLOFFS = ['solid', 'soft'];
+const DEFAULT_FRAME_DURATION_MS = Math.round(1000 / 32);
+const BRUSH_SHAPES = ['circle', 'square', 'diamond', 'cross', 'x', 'hline', 'vline'];
 
 
 export default class PixelStudio {
@@ -82,9 +82,9 @@ export default class PixelStudio {
     this.toolOptions = {
       brushSize: DEFAULT_BRUSH_SIZE,
       brushOpacity: 1,
-      brushHardness: 0,
-      brushShape: 'square',
-      brushFalloff: 'solid',
+      brushHardness: 1,
+      brushShape: 'circle',
+      brushFalloff: 0,
       shapeFill: false,
       polygonSides: 5,
       magicThreshold: 24,
@@ -128,9 +128,9 @@ export default class PixelStudio {
       }
     };
     this.canvasState = {
-      width: 16,
-      height: 16,
-      layers: [createLayer(16, 16, 'Layer 1')],
+      width: 256,
+      height: 256,
+      layers: [createLayer(256, 256, 'Layer 1')],
       activeLayerIndex: 0
     };
     this.palettePresets = [];
@@ -167,7 +167,8 @@ export default class PixelStudio {
       zoomLevels: [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32],
       zoomIndex: 8,
       panX: 0,
-      panY: 0
+      panY: 0,
+      showGrid: true
     };
     this.viewportController = createViewportController({
       minZoom: 0,
@@ -176,7 +177,7 @@ export default class PixelStudio {
     });
     this.tiledPreview = { enabled: false, tiles: 3 };
     this.animation = {
-      frames: [createFrame(this.canvasState.layers, 120)],
+      frames: [createFrame(this.canvasState.layers, DEFAULT_FRAME_DURATION_MS)],
       currentFrameIndex: 0,
       playing: false,
       loop: true,
@@ -269,13 +270,13 @@ export default class PixelStudio {
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
     this.sidebars = { left: true };
-    this.leftPanelTabs = ['file', 'draw', 'select', 'tools', 'canvas'];
+    this.leftPanelTabs = ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'animation'];
     this.leftPanelTabIndex = 1;
     this.leftPanelTab = this.leftPanelTabs[this.leftPanelTabIndex];
     this.uiButtons = [];
     this.menuScrollDrag = null;
     this.uiSliderDrag = null;
-    this.artSizeDraft = { width: 16, height: 16 };
+    this.artSizeDraft = { width: 256, height: 256 };
     this.paletteBounds = [];
     this.layerBounds = [];
     this.frameBounds = [];
@@ -369,7 +370,7 @@ export default class PixelStudio {
     }
     this.canvasState.width = width;
     this.canvasState.height = height;
-    this.animation.frames = [createFrame([layer], 120)];
+    this.animation.frames = [createFrame([layer], DEFAULT_FRAME_DURATION_MS)];
     this.animation.currentFrameIndex = 0;
     this.canvasState.activeLayerIndex = 0;
     this.artSizeDraft.width = width;
@@ -410,7 +411,7 @@ export default class PixelStudio {
       pixelData.editor = {
         width: size,
         height: size,
-        frames: [createFrame([baseLayer], 120)],
+        frames: [createFrame([baseLayer], DEFAULT_FRAME_DURATION_MS)],
         activeLayerIndex: 0
       };
     }
@@ -507,7 +508,7 @@ export default class PixelStudio {
     this.decalEditSession = { type: 'single', decalId };
     this.canvasState.width = width;
     this.canvasState.height = height;
-    this.animation.frames = [createFrame([layer], 120)];
+    this.animation.frames = [createFrame([layer], DEFAULT_FRAME_DURATION_MS)];
     this.animation.currentFrameIndex = 0;
     this.canvasState.activeLayerIndex = 0;
     this.artSizeDraft.width = width;
@@ -594,7 +595,7 @@ export default class PixelStudio {
     };
     this.canvasState.width = width;
     this.canvasState.height = height;
-    this.animation.frames = [createFrame([layer], 120)];
+    this.animation.frames = [createFrame([layer], DEFAULT_FRAME_DURATION_MS)];
     this.animation.currentFrameIndex = 0;
     this.canvasState.activeLayerIndex = 0;
     this.artSizeDraft.width = width;
@@ -1209,7 +1210,8 @@ export default class PixelStudio {
       brushShape: this.toolOptions.brushShape,
       brushSize: this.toolOptions.brushSize,
       brushOpacity: this.toolOptions.brushOpacity,
-      brushHardness: this.toolOptions.brushHardness
+      brushHardness: this.toolOptions.brushHardness,
+      brushFalloff: this.toolOptions.brushFalloff
     };
   }
 
@@ -1227,6 +1229,7 @@ export default class PixelStudio {
       this.setBrushSize(this.brushPickerDraft.brushSize);
       this.setBrushOpacity(this.brushPickerDraft.brushOpacity);
       this.setBrushHardness(this.brushPickerDraft.brushHardness);
+      this.toolOptions.brushFalloff = clamp(this.brushPickerDraft.brushFalloff ?? 0, 0, 1);
       this.saveBrushProfile();
     }
     this.brushPickerOpen = false;
@@ -1238,7 +1241,8 @@ export default class PixelStudio {
   updateAnimation(dt) {
     if (!this.animation.playing) return;
     const frame = this.currentFrame;
-    frame.elapsed = (frame.elapsed || 0) + dt;
+    const dtMs = dt > 5 ? dt : dt * 1000;
+    frame.elapsed = (frame.elapsed || 0) + dtMs;
     if (frame.elapsed >= frame.durationMs) {
       frame.elapsed = 0;
       const nextIndex = this.animation.currentFrameIndex + 1;
@@ -1655,7 +1659,13 @@ export default class PixelStudio {
     if (tab === 'tools') {
       this.modeTab = 'draw';
     }
-    if (this.isMobileLayout() && ['file', 'draw', 'select', 'tools', 'canvas'].includes(tab)) {
+    if (tab === 'layers') {
+      this.modeTab = 'draw';
+    }
+    if (tab === 'animation') {
+      this.modeTab = 'animate';
+    }
+    if (this.isMobileLayout() && ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'animation'].includes(tab)) {
       this.mobileDrawer = 'panel';
     }
   }
@@ -2345,7 +2355,7 @@ export default class PixelStudio {
     const timelineHeight = !isMobile && this.modeTab === 'animate' ? 120 : 0;
     const bottomHeight = statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
     const leftWidth = isMobile ? getSharedMobileRailWidth(viewportW, viewportH) : SHARED_EDITOR_LEFT_MENU.width();
-    const rightWidth = 0;
+    const rightWidth = (!isMobile && ['layers', 'animation'].includes(this.leftPanelTab)) ? 220 : 0;
     const mobileDrawerReserveW = isMobile ? getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 }) : 0;
 
     const canvasW = Math.max(1, viewportW - leftWidth - rightWidth - padding * 2);
@@ -2454,9 +2464,13 @@ export default class PixelStudio {
       : null;
     this.strokeState = {
       mode,
-      lastPoint: point
+      lastPoint: point,
+      pathPoint: point,
+      strokeDistance: 0,
+      basePixels: mode === 'clone' ? null : new Uint32Array(this.activeLayer.pixels),
+      alphaMap: mode === 'clone' ? null : new Float32Array(this.canvasState.width * this.canvasState.height)
     };
-    this.applyBrush(point);
+    this.applyBrush(point, 0);
   }
 
   continueStroke(point) {
@@ -2479,8 +2493,18 @@ export default class PixelStudio {
         col: last.col + wrappedDeltaCol
       };
     }
-    const line = bresenhamLine(this.strokeState.lastPoint, targetPoint);
-    line.forEach((pt) => this.applyBrush(pt));
+    const line = bresenhamLine(this.strokeState.pathPoint || this.strokeState.lastPoint, targetPoint);
+    let strokeDistance = this.strokeState.strokeDistance || 0;
+    let prevPoint = this.strokeState.pathPoint || this.strokeState.lastPoint;
+    line.forEach((pt, index) => {
+      if (index > 0) {
+        strokeDistance += Math.hypot(pt.col - prevPoint.col, pt.row - prevPoint.row);
+      }
+      this.applyBrush(pt, strokeDistance);
+      prevPoint = pt;
+    });
+    this.strokeState.strokeDistance = strokeDistance;
+    this.strokeState.pathPoint = targetPoint;
     this.strokeState.lastPoint = point;
   }
 
@@ -2491,7 +2515,14 @@ export default class PixelStudio {
     this.commitHistory();
   }
 
-  applyBrush(point) {
+  getStrokeFalloffWeight(strokeDistance = 0) {
+    const falloff = clamp(this.toolOptions.brushFalloff ?? 0, 0, 1);
+    if (falloff <= 0.001) return 1;
+    const decayDistance = lerp(600, 2, Math.pow(falloff, 1.3));
+    return Math.exp(-Math.max(0, strokeDistance) / Math.max(1, decayDistance));
+  }
+
+  applyBrush(point, strokeDistance = 0) {
     const { width, height } = this.canvasState;
     const points = this.createBrushStamp(point);
     const symmetryPoints = applySymmetryPoints(points, width, height, this.toolOptions.symmetry);
@@ -2502,7 +2533,8 @@ export default class PixelStudio {
       if (this.selection.active && this.selection.mask && !this.selection.mask[row * width + col]) return;
       const index = row * width + col;
       const target = this.activeLayer.pixels[index];
-      const alpha = (pt.weight ?? 1) * (this.toolOptions.brushOpacity ?? 1);
+      const strokeWeight = this.getStrokeFalloffWeight(strokeDistance);
+      const alpha = (pt.weight ?? 1) * (this.toolOptions.brushOpacity ?? 1) * strokeWeight;
       if (alpha <= 0) return;
       const strokeMode = this.strokeState?.mode || 'paint';
       if (strokeMode === 'clone') {
@@ -2514,10 +2546,19 @@ export default class PixelStudio {
       if (strokeMode === 'dither') {
         if (!this.shouldApplyDither(row, col)) return;
       }
+      let alphaToApply = alpha;
+      let blendSource = target;
+      if (this.strokeState?.alphaMap && this.strokeState?.basePixels) {
+        const prevAlpha = this.strokeState.alphaMap[index] || 0;
+        if (alpha <= prevAlpha) return;
+        this.strokeState.alphaMap[index] = alpha;
+        alphaToApply = alpha;
+        blendSource = this.strokeState.basePixels[index];
+      }
       if (this.toolOptions.symmetry?.mirrorOnly && target === colorValue) return;
-      this.activeLayer.pixels[index] = alpha >= 1
+      this.activeLayer.pixels[index] = alphaToApply >= 1
         ? colorValue
-        : this.blendPixel(target, colorValue, alpha);
+        : this.blendPixel(blendSource, colorValue, alphaToApply);
     });
   }
 
@@ -2544,26 +2585,42 @@ export default class PixelStudio {
     return true;
   }
 
+  getBrushShapeEdgeT(shape, dx, dy, radius) {
+    const safeRadius = Math.max(1, radius);
+    if (shape === 'circle') {
+      return clamp(Math.hypot(dx, dy) / Math.max(0.5, safeRadius), 0, 1);
+    }
+    if (shape === 'diamond') {
+      return clamp((Math.abs(dx) + Math.abs(dy)) / safeRadius, 0, 1);
+    }
+    if (shape === 'cross' || shape === 'x') {
+      return clamp(Math.max(Math.abs(dx), Math.abs(dy)) / safeRadius, 0, 1);
+    }
+    if (shape === 'hline') {
+      return clamp(Math.abs(dx) / safeRadius, 0, 1);
+    }
+    if (shape === 'vline') {
+      return clamp(Math.abs(dy) / safeRadius, 0, 1);
+    }
+    return clamp(Math.max(Math.abs(dx), Math.abs(dy)) / Math.max(0.5, safeRadius), 0, 1);
+  }
+
   createBrushStamp(point) {
     const size = this.toolOptions.brushSize;
     const radius = Math.floor(size / 2);
     const points = [];
     const shape = this.toolOptions.brushShape;
-    const isSoft = this.toolOptions.brushFalloff === 'soft';
-    const hardness = clamp(this.toolOptions.brushHardness ?? 0, 0, 1);
-    const maxDist = Math.max(0.5, radius + 0.5);
+    const hardness = clamp(this.toolOptions.brushHardness ?? 1, 0, 1);
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (!this.doesBrushShapeIncludeOffset(shape, dx, dy, radius)) continue;
-        const dist = shape === 'circle' ? Math.hypot(dx, dy) : Math.max(Math.abs(dx), Math.abs(dy));
-        const edgeT = clamp(dist / maxDist, 0, 1);
-        let weight = 1;
-        if (isSoft) {
-          const softExponent = 1 + (1 - hardness) * 2;
-          weight = Math.pow(1 - edgeT, softExponent);
-        } else if (hardness > 0) {
-          weight = clamp(1 - edgeT * hardness, 0, 1);
-        }
+        const edgeT = this.getBrushShapeEdgeT(shape, dx, dy, radius);
+        // Hardness is a center-to-edge gradient control:
+        // - hardness=1 => flat 1.0 opacity across the whole brush
+        // - hardness=0 => full gradient (1.0 at center down to 0.0 at edge)
+        // - hardness=0.5 => edge is 0.5 opacity, still 1.0 at center
+        const edgeAlpha = hardness;
+        const weight = lerp(1, edgeAlpha, edgeT);
         points.push({ row: point.row + dy, col: point.col + dx, weight });
       }
     }
@@ -3048,20 +3105,6 @@ export default class PixelStudio {
     const replacement = this.getActiveColorValue();
     if (target === replacement) {
       this.pendingHistory = null;
-      return;
-    }
-    if (!this.toolOptions.fillContiguous) {
-      const tolerance = this.toolOptions.fillTolerance;
-      const targetRgba = uint32ToRgba(target);
-      for (let i = 0; i < this.activeLayer.pixels.length; i += 1) {
-        if (this.selection.mask && this.selection.active && !this.selection.mask[i]) continue;
-        const currentValue = this.activeLayer.pixels[i];
-        const currentRgba = uint32ToRgba(currentValue);
-        const dist = Math.hypot(currentRgba.r - targetRgba.r, currentRgba.g - targetRgba.g, currentRgba.b - targetRgba.b);
-        if (dist > tolerance) continue;
-        this.activeLayer.pixels[i] = replacement;
-      }
-      this.commitHistory();
       return;
     }
     const queue = [point];
@@ -4212,9 +4255,12 @@ export default class PixelStudio {
     if (!profile) return;
     this.toolOptions.brushSize = clamp(Math.round(profile.brushSize ?? DEFAULT_BRUSH_SIZE), BRUSH_SIZE_MIN, BRUSH_SIZE_MAX);
     this.toolOptions.brushOpacity = clamp(profile.brushOpacity ?? 1, 0.05, 1);
-    this.toolOptions.brushHardness = clamp(profile.brushHardness ?? 0, 0, 1);
+    this.toolOptions.brushHardness = clamp(profile.brushHardness ?? 1, 0, 1);
     this.toolOptions.brushShape = BRUSH_SHAPES.includes(profile.brushShape) ? profile.brushShape : BRUSH_SHAPES[0];
-    this.toolOptions.brushFalloff = BRUSH_FALLOFFS.includes(profile.brushFalloff) ? profile.brushFalloff : BRUSH_FALLOFFS[0];
+    const profileFalloff = typeof profile.brushFalloff === 'number'
+      ? profile.brushFalloff
+      : (profile.brushFalloff === 'soft' ? 0.65 : 0);
+    this.toolOptions.brushFalloff = clamp(profileFalloff, 0, 1);
   }
 
   setBrushSize(size) {
@@ -4242,12 +4288,6 @@ export default class PixelStudio {
   cycleBrushShape() {
     const index = BRUSH_SHAPES.indexOf(this.toolOptions.brushShape);
     this.toolOptions.brushShape = BRUSH_SHAPES[(index + 1 + BRUSH_SHAPES.length) % BRUSH_SHAPES.length];
-    this.saveBrushProfile();
-  }
-
-  cycleBrushFalloff() {
-    const index = BRUSH_FALLOFFS.indexOf(this.toolOptions.brushFalloff);
-    this.toolOptions.brushFalloff = BRUSH_FALLOFFS[(index + 1 + BRUSH_FALLOFFS.length) % BRUSH_FALLOFFS.length];
     this.saveBrushProfile();
   }
 
@@ -4636,8 +4676,31 @@ export default class PixelStudio {
     this.syncTileData();
   }
 
+  moveLayerBy(delta) {
+    const from = this.canvasState.activeLayerIndex;
+    const to = clamp(from + delta, 0, this.canvasState.layers.length - 1);
+    if (to === from) return;
+    this.reorderLayer(from, to);
+  }
+
+  async renameLayer(index) {
+    const layer = this.canvasState.layers[index];
+    if (!layer) return;
+    const raw = await openTextInputOverlay({
+      title: 'Rename Layer',
+      label: 'Layer name:',
+      initialValue: layer.name || `Layer ${index + 1}`,
+      inputType: 'text'
+    });
+    if (raw == null) return;
+    const name = raw.trim();
+    if (!name) return;
+    layer.name = name;
+    this.syncTileData();
+  }
+
   addFrame() {
-    const newFrame = createFrame(this.canvasState.layers, 120);
+    const newFrame = createFrame(this.canvasState.layers, this.currentFrame?.durationMs || DEFAULT_FRAME_DURATION_MS);
     this.animation.frames.push(newFrame);
     this.animation.currentFrameIndex = this.animation.frames.length - 1;
     this.setFrameLayers(newFrame.layers);
@@ -4657,6 +4720,36 @@ export default class PixelStudio {
     this.animation.frames.splice(index, 1);
     this.animation.currentFrameIndex = clamp(this.animation.currentFrameIndex, 0, this.animation.frames.length - 1);
     this.setFrameLayers(this.animation.frames[this.animation.currentFrameIndex].layers);
+    this.syncTileData();
+  }
+
+  moveFrameBy(delta) {
+    const from = this.animation.currentFrameIndex;
+    const to = clamp(from + delta, 0, this.animation.frames.length - 1);
+    if (to === from) return;
+    const frame = this.animation.frames.splice(from, 1)[0];
+    this.animation.frames.splice(to, 0, frame);
+    this.animation.currentFrameIndex = to;
+    this.setFrameLayers(this.currentFrame.layers);
+    this.syncTileData();
+  }
+
+  async setCurrentFrameDelayFps() {
+    const frame = this.currentFrame;
+    if (!frame) return;
+    const currentFps = Math.max(1, Math.round(1000 / Math.max(1, frame.durationMs || DEFAULT_FRAME_DURATION_MS)));
+    const raw = await openTextInputOverlay({
+      title: 'Frame Rate',
+      label: 'FPS (default 32):',
+      initialValue: String(currentFps),
+      inputType: 'int',
+      min: 1,
+      max: 120
+    });
+    if (raw == null) return;
+    const fps = clamp(Math.round(Number(raw.trim()) || 32), 1, 120);
+    frame.durationMs = Math.max(1, Math.round(1000 / fps));
+    frame.elapsed = 0;
     this.syncTileData();
   }
 
@@ -4813,7 +4906,7 @@ export default class PixelStudio {
       return true;
     }
     if (this.brushPickerOpen && this.brushPickerBounds && !this.isPointInBounds({ x, y }, this.brushPickerBounds)) {
-      this.closeBrushPicker({ apply: false });
+      this.closeBrushPicker({ apply: true });
       return true;
     }
     if (this.selectionContextMenu?.bounds && !this.isPointInBounds({ x, y }, this.selectionContextMenu.bounds)) {
@@ -4948,7 +5041,7 @@ export default class PixelStudio {
     const leftWidth = isMobile
       ? getSharedMobileRailWidth(width, height)
       : (leftFrame ? leftFrame.panelW : (this.sidebars.left ? SHARED_EDITOR_LEFT_MENU.width() : 0));
-    const rightWidth = 0;
+    const rightWidth = (!isMobile && ['layers', 'animation'].includes(this.leftPanelTab)) ? 220 : 0;
     const mobileDrawerReserveW = isMobile ? getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 }) : 0;
 
     this.uiButtons = [];
@@ -4967,13 +5060,18 @@ export default class PixelStudio {
 
     const canvasX = leftFrame ? leftFrame.contentX : (padding + leftWidth);
     const canvasY = topBarHeight + padding;
-    const canvasW = leftFrame ? leftFrame.contentW : (width - leftWidth - rightWidth - padding * 2);
+    const canvasW = leftFrame ? (leftFrame.contentW - rightWidth - (rightWidth > 0 ? 8 : 0)) : (width - leftWidth - rightWidth - padding * 2);
     const canvasH = height - canvasY - bottomHeight;
 
     if (isMobile) {
       this.drawMobileRail(ctx, 0, 0, leftWidth, height);
     } else if (this.sidebars.left) {
       this.drawLeftPanel(ctx, leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH, { isMobile: false });
+    }
+
+    if (!menuFullScreen && !isMobile && rightWidth > 0) {
+      const rightX = canvasX + canvasW + 8;
+      this.drawRightRail(ctx, rightX, canvasY, rightWidth, canvasH);
     }
 
     if (!menuFullScreen) {
@@ -4983,6 +5081,15 @@ export default class PixelStudio {
       ctx.strokeRect(canvasX, canvasY, canvasW, canvasH);
 
       this.drawCanvasArea(ctx, canvasX, canvasY, canvasW, canvasH);
+      if (!isMobile) {
+        const activeLayer = this.canvasState.layers[this.canvasState.activeLayerIndex];
+        ctx.fillStyle = '#4fc3ff';
+        ctx.font = 'bold 14px Courier New';
+        ctx.fillText(`Frame ${this.animation.currentFrameIndex + 1}`, padding + 10, padding + 16);
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.font = '12px Courier New';
+        ctx.fillText(`Layer ${this.canvasState.activeLayerIndex + 1}: ${activeLayer?.name || 'Layer'}`, padding + 10, padding + 32);
+      }
     } else {
       this.canvasBounds = null;
     }
@@ -4993,11 +5100,15 @@ export default class PixelStudio {
       const paletteW = isMobile
         ? Math.max(120, width - paletteX - padding - mobileDrawerReserveW)
         : (width - padding * 2);
-      this.drawPaletteBar(ctx, paletteX, paletteY, paletteW, paletteHeight, { isMobile });
+      if (['layers', 'animation'].includes(this.leftPanelTab)) {
+        this.drawManagementActionRail(ctx, paletteX, paletteY, paletteW, paletteHeight, { isMobile });
+      } else {
+        this.drawPaletteBar(ctx, paletteX, paletteY, paletteW, paletteHeight, { isMobile });
+      }
     }
     const statusY = paletteY + (paletteHeight > 0 ? paletteHeight + 6 : 0);
     if (!menuFullScreen && !isMobile) {
-      this.drawStatusBar(ctx, padding, statusY, width - padding * 2, statusHeight);
+      this.drawStatusBar(ctx, padding, statusY, width - padding * 2, statusHeight, { isMobile });
     }
 
     if (!menuFullScreen && !isMobile && this.modeTab === 'animate') {
@@ -5229,7 +5340,9 @@ export default class PixelStudio {
       draw: 'Draw',
       select: 'Select',
       tools: 'Tools',
-      canvas: 'Canvas'
+      canvas: 'Canvas',
+      layers: 'Layers',
+      animation: 'Anim'
     };
     const { tabColumn, content } = buildSharedLeftMenuLayout({
       x,
@@ -5272,6 +5385,14 @@ export default class PixelStudio {
     }
     if (this.leftPanelTab === 'canvas') {
       this.drawSwitchesPanel(ctx, x, y, w, h, { isMobile });
+      return;
+    }
+    if (this.leftPanelTab === 'layers') {
+      this.drawLayersPanel(ctx, x, y, w, h, { isMobile, controls: false });
+      return;
+    }
+    if (this.leftPanelTab === 'animation') {
+      this.drawFramesPanel(ctx, x, y, w, h, { isMobile, controls: false });
       return;
     }
   }
@@ -5461,7 +5582,7 @@ export default class PixelStudio {
     }
   }
 
-  drawStatusBar(ctx, x, y, w, h) {
+  drawStatusBar(ctx, x, y, w, h, options = {}) {
     ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
@@ -5475,6 +5596,20 @@ export default class PixelStudio {
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.font = '12px Courier New';
     ctx.fillText(statusText, x + 8, y + 14);
+
+    if (['layers', 'animation'].includes(this.leftPanelTab)) {
+      const actions = this.getBottomRailActions();
+      const buttonW = 62;
+      const gap = 6;
+      let bx = x + w - (actions.length * (buttonW + gap));
+      actions.forEach((entry) => {
+        const bounds = { x: bx, y: y + 1, w: buttonW, h: h - 2 };
+        this.drawButton(ctx, bounds, entry.label, false, { fontSize: 11 });
+        this.uiButtons.push({ bounds, onClick: entry.action });
+        this.registerFocusable('menu', bounds, entry.action);
+        bx += buttonW + gap;
+      });
+    }
   }
 
   drawSelectionContextMenu(ctx, width, height) {
@@ -5556,7 +5691,9 @@ export default class PixelStudio {
       { id: 'draw', label: 'Draw', action: () => { this.setLeftPanelTab('draw'); this.mobileDrawer = 'panel'; } },
       { id: 'select', label: 'Select', action: () => { this.setLeftPanelTab('select'); this.mobileDrawer = 'panel'; } },
       { id: 'tools', label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
-      { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } }
+      { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
+      { id: 'layers', label: 'Layers', action: () => { this.setLeftPanelTab('layers'); this.mobileDrawer = 'panel'; } },
+      { id: 'animation', label: 'Anim', action: () => { this.setLeftPanelTab('animation'); this.mobileDrawer = 'panel'; } }
     ];
     const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const buttonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
@@ -5629,6 +5766,12 @@ export default class PixelStudio {
       { label: 'Undo', action: () => this.runtime.undo() },
       { label: 'Redo', action: () => this.runtime.redo() }
     );
+    if (this.leftPanelTab === 'animation') {
+      actions.unshift({
+        label: this.animation.playing ? '⏸' : '▶',
+        action: () => { this.animation.playing = !this.animation.playing; }
+      });
+    }
 
     const actionAreaStartX = registerBounds.x + registerBounds.w + gap;
     const availableW = Math.max(120, x + w - 8 - actionAreaStartX);
@@ -5763,6 +5906,8 @@ export default class PixelStudio {
       this.brushPickerDraft.brushOpacity = 0.05 + t * 0.95;
     } else if (type === 'hardness') {
       this.brushPickerDraft.brushHardness = t;
+    } else if (type === 'falloff') {
+      this.brushPickerDraft.brushFalloff = t;
     }
   }
 
@@ -5813,7 +5958,7 @@ export default class PixelStudio {
     const rowGap = 8;
     const cellGap = 8;
     const gridY = titleY + 10;
-    const footerH = 114;
+    const footerH = 118;
     const gridH = Math.max(90, modal.h - footerH - 34);
     const rows = Math.ceil(BRUSH_SHAPES.length / cols);
     const cellW = Math.floor((modal.w - 24 - (cols - 1) * cellGap) / cols);
@@ -5853,8 +5998,11 @@ export default class PixelStudio {
     const sizeSlider = { x: modal.x + 12, y: sliderY, w: sliderW, h: 12 };
     const opacitySlider = { x: modal.x + modal.w / 2 + 6, y: sliderY, w: sliderW, h: 12 };
     const hardnessLabelY = sliderY + 30;
+    const secondarySliderW = Math.floor((modal.w - 36) / 2);
     ctx.fillText(`Hardness: ${Math.round((draft.brushHardness ?? 0) * 100)}%`, modal.x + 12, hardnessLabelY);
-    const hardnessSlider = { x: modal.x + 12, y: hardnessLabelY + 8, w: modal.w - 24, h: 12 };
+    ctx.fillText(`Stroke Falloff: ${Math.round((draft.brushFalloff ?? 0) * 100)}% (0=none, 100=max)`, modal.x + modal.w / 2 + 6, hardnessLabelY);
+    const hardnessSlider = { x: modal.x + 12, y: hardnessLabelY + 8, w: secondarySliderW, h: 12 };
+    const falloffSlider = { x: modal.x + modal.w / 2 + 6, y: hardnessLabelY + 8, w: secondarySliderW, h: 12 };
 
     const drawSlider = (bounds, t) => {
       ctx.fillStyle = 'rgba(0,0,0,0.4)';
@@ -5868,8 +6016,9 @@ export default class PixelStudio {
     drawSlider(sizeSlider, (draft.brushSize - BRUSH_SIZE_MIN) / Math.max(1, BRUSH_SIZE_MAX - BRUSH_SIZE_MIN));
     drawSlider(opacitySlider, ((draft.brushOpacity ?? 1) - 0.05) / 0.95);
     drawSlider(hardnessSlider, draft.brushHardness ?? 0);
+    drawSlider(falloffSlider, draft.brushFalloff ?? 0);
 
-    this.brushPickerSliders = { size: sizeSlider, opacity: opacitySlider, hardness: hardnessSlider };
+    this.brushPickerSliders = { size: sizeSlider, opacity: opacitySlider, hardness: hardnessSlider, falloff: falloffSlider };
 
     this.uiButtons.push({
       bounds: { x: sizeSlider.x, y: sizeSlider.y - 8, w: sizeSlider.w, h: sizeSlider.h + 16 },
@@ -5895,10 +6044,18 @@ export default class PixelStudio {
         this.updateBrushPickerSliderFromX('hardness', pointerX);
       }
     });
+    this.uiButtons.push({
+      bounds: { x: falloffSlider.x, y: falloffSlider.y - 8, w: falloffSlider.w, h: falloffSlider.h + 16 },
+      onClick: ({ x: pointerX, id: pointerId }) => {
+        if (!this.brushPickerDraft) this.syncBrushPickerDraft();
+        this.brushPickerDrag = { type: 'falloff', id: pointerId ?? null };
+        this.updateBrushPickerSliderFromX('falloff', pointerX);
+      }
+    });
 
     const buttonY = modal.y + modal.h - 34;
-    const cancelBounds = { x: modal.x + modal.w - 180, y: buttonY, w: 80, h: 24 };
-    const okBounds = { x: modal.x + modal.w - 92, y: buttonY, w: 80, h: 24 };
+    const cancelBounds = { x: modal.x + modal.w - 212, y: buttonY - 2, w: 96, h: 28 };
+    const okBounds = { x: modal.x + modal.w - 106, y: buttonY - 2, w: 96, h: 28 };
     this.drawButton(ctx, cancelBounds, 'Cancel', false, { fontSize: 12 });
     this.drawButton(ctx, okBounds, 'OK', false, { fontSize: 12 });
     this.uiButtons.push({ bounds: cancelBounds, onClick: () => this.closeBrushPicker({ apply: false }) });
@@ -6424,6 +6581,10 @@ export default class PixelStudio {
       this.toolOptions.wrapDraw = !this.toolOptions.wrapDraw;
     }, { isMobile });
     offsetY += lineHeight;
+    this.drawOptionToggle(ctx, x + 12, offsetY, 'Grid', this.view.showGrid !== false, () => {
+      this.view.showGrid = this.view.showGrid === false;
+    }, { isMobile });
+    offsetY += lineHeight;
     this.drawOptionToggle(ctx, x + 12, offsetY, 'Tiled Preview', this.tiledPreview.enabled, () => {
       this.tiledPreview.enabled = !this.tiledPreview.enabled;
     }, { isMobile });
@@ -6489,40 +6650,13 @@ export default class PixelStudio {
     ctx.clip();
     offsetY -= scrollY;
 
-    const usesBrush = [TOOL_IDS.PENCIL, TOOL_IDS.ERASER].includes(this.activeToolId);
-
-    if (usesBrush) {
-      const shapeBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: Math.min(panelWidth, isMobile ? 200 : 170), h: isMobile ? 44 : 18 };
-      this.drawButton(ctx, shapeBounds, `Brush Shape: ${this.toolOptions.brushShape}`, false, { fontSize: isMobile ? 12 : 12 });
-      this.uiButtons.push({ bounds: shapeBounds, onClick: () => this.cycleBrushShape() });
-      this.registerFocusable('menu', shapeBounds, () => this.cycleBrushShape());
-      offsetY += lineHeight;
-
-      const falloffBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: Math.min(panelWidth, isMobile ? 200 : 170), h: isMobile ? 44 : 18 };
-      this.drawButton(ctx, falloffBounds, `Brush Falloff: ${this.toolOptions.brushFalloff}`, false, { fontSize: isMobile ? 12 : 12 });
-      this.uiButtons.push({ bounds: falloffBounds, onClick: () => this.cycleBrushFalloff() });
-      this.registerFocusable('menu', falloffBounds, () => this.cycleBrushFalloff());
-      offsetY += lineHeight;
-    }
     if ([TOOL_IDS.RECT, TOOL_IDS.ELLIPSE, TOOL_IDS.POLYGON].includes(this.activeToolId)) {
       this.drawOptionToggle(ctx, x, offsetY, this.toolOptions.shapeFill ? 'Fill: On' : 'Fill: Off', this.toolOptions.shapeFill, () => {
         this.toolOptions.shapeFill = !this.toolOptions.shapeFill;
       }, { isMobile });
       offsetY += lineHeight;
-      if (this.activeToolId === TOOL_IDS.POLYGON) {
-        const finishBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 150, h: isMobile ? 44 : 18 };
-        const canFinish = Boolean(this.polygonPreview && this.polygonPreview.points.length >= 3);
-        this.drawButton(ctx, finishBounds, canFinish ? 'Finish Polygon' : 'Polygon: tap 3+ pts', canFinish, { fontSize: isMobile ? 12 : 12 });
-        this.uiButtons.push({ bounds: finishBounds, onClick: () => this.finishPolygon() });
-        this.registerFocusable('menu', finishBounds, () => this.finishPolygon());
-        offsetY += lineHeight;
-      }
     }
     if (this.activeToolId === TOOL_IDS.FILL) {
-      this.drawOptionToggle(ctx, x, offsetY, 'Contiguous', this.toolOptions.fillContiguous, () => {
-        this.toolOptions.fillContiguous = !this.toolOptions.fillContiguous;
-      }, { isMobile });
-      offsetY += lineHeight;
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.fillText(`Tolerance: ${this.toolOptions.fillTolerance}`, x, offsetY);
       const minus = { x: x + 120, y: offsetY - (isMobile ? 28 : 14), w: 36, h: isMobile ? 44 : 18 };
@@ -6761,6 +6895,7 @@ export default class PixelStudio {
   drawLayersPanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
     const showPreview = options.showPreview;
+    const showControls = options.controls !== false;
     const buttonHeight = isMobile ? 44 : 18;
     let offsetY = y;
     if (showPreview) {
@@ -6778,13 +6913,17 @@ export default class PixelStudio {
       { label: 'Merge', action: () => this.mergeLayerDown(this.canvasState.activeLayerIndex) },
       { label: 'Flatten', action: () => this.flattenAllLayers() }
     ];
-    controls.forEach((entry, index) => {
-      const bounds = { x: x + 12 + index * (buttonHeight + 6), y: offsetY + 28, w: buttonHeight, h: buttonHeight };
-      this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
-      this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
-      this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
-    });
-    offsetY += 60;
+    if (showControls) {
+      controls.forEach((entry, index) => {
+        const bounds = { x: x + 12 + index * (buttonHeight + 6), y: offsetY + 28, w: buttonHeight, h: buttonHeight };
+        this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
+        this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
+        this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
+      });
+      offsetY += 60;
+    } else {
+      offsetY += 26;
+    }
     this.layerBounds = [];
     const lineHeight = isMobile ? 52 : 20;
     this.focusGroupMeta.layers = { maxVisible: Math.max(1, Math.floor((h - 80) / lineHeight)) };
@@ -6795,10 +6934,9 @@ export default class PixelStudio {
       const index = this.canvasState.layers.length - 1 - reversedIndex;
       const active = index === this.canvasState.activeLayerIndex;
       const bounds = { x: x + 8, y: offsetY - (isMobile ? 20 : 14), w: w - 16, h: buttonHeight, index };
-      ctx.fillStyle = active ? '#ffe16a' : 'rgba(255,255,255,0.7)';
-      ctx.font = `${isMobile ? 13 : 12}px Courier New`;
-      ctx.fillText(`${layer.visible ? '👁' : '⛔'} ${layer.name}`, x + 12, offsetY);
+      this.drawButton(ctx, bounds, `${layer.visible ? '👁' : '⛔'} ${layer.name}`, active, { fontSize: isMobile ? 12 : 11 });
       this.layerBounds.push(bounds);
+      this.uiButtons.push({ bounds, onClick: () => { this.canvasState.activeLayerIndex = index; } });
       this.registerFocusable('layers', bounds, () => { this.canvasState.activeLayerIndex = index; });
       offsetY += lineHeight;
     });
@@ -6851,6 +6989,7 @@ export default class PixelStudio {
 
     ctx.drawImage(this.offscreen, offsetX, offsetY, gridW, gridH);
 
+
     const drawGridAt = (tileX, tileY, alpha = 0.15) => {
       ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
       for (let row = 0; row <= height; row += 1) {
@@ -6866,15 +7005,22 @@ export default class PixelStudio {
         ctx.stroke();
       }
     };
-    if (this.tiledPreview.enabled || wrapActive) {
-      for (let row = -1; row <= 1; row += 1) {
-        for (let col = -1; col <= 1; col += 1) {
-          drawGridAt(offsetX + col * gridW, offsetY + row * gridH, row === 0 && col === 0 ? 0.2 : 0.12);
+    if (this.view.showGrid !== false) {
+      if (this.tiledPreview.enabled || wrapActive) {
+        for (let row = -1; row <= 1; row += 1) {
+          for (let col = -1; col <= 1; col += 1) {
+            drawGridAt(offsetX + col * gridW, offsetY + row * gridH, row === 0 && col === 0 ? 0.2 : 0.12);
+          }
         }
+      } else {
+        drawGridAt(offsetX, offsetY, 0.15);
       }
-    } else {
-      drawGridAt(offsetX, offsetY, 0.15);
     }
+
+    // Always show the primary image bounds, even when cell grid lines are hidden.
+    ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(offsetX, offsetY, gridW, gridH);
 
     if (this.selection.active && this.selection.bounds) {
       this.drawSelectionMarchingAnts(ctx, offsetX, offsetY, zoom);
@@ -7071,7 +7217,66 @@ export default class PixelStudio {
     ctx.save();
     ctx.globalAlpha = alpha;
     ctx.drawImage(this.offscreen, offsetX, offsetY, gridW, gridH);
+
     ctx.restore();
+  }
+
+  getBottomRailActions() {
+    if (this.leftPanelTab === 'layers') {
+      return [
+        { label: '+Layer', action: () => this.addLayer() },
+        { label: '-Layer', action: () => this.deleteLayer(this.canvasState.activeLayerIndex) },
+        { label: 'Rename', action: () => this.renameLayer(this.canvasState.activeLayerIndex) },
+        {
+          label: this.activeLayer?.visible === false ? 'Show' : 'Hide',
+          action: () => {
+            const layer = this.activeLayer;
+            if (!layer) return;
+            layer.visible = !layer.visible;
+            this.syncTileData();
+          }
+        },
+        { label: 'Up', action: () => this.moveLayerBy(-1) },
+        { label: 'Down', action: () => this.moveLayerBy(1) }
+      ];
+    }
+    if (this.leftPanelTab === 'animation') {
+      return [
+        { label: '+Frame', action: () => this.addFrame() },
+        { label: '-Frame', action: () => this.deleteFrame(this.animation.currentFrameIndex) },
+        { label: 'Delay', action: () => this.setCurrentFrameDelayFps() },
+        { label: this.animation.loop ? 'Loop ✓' : 'Loop', action: () => { this.animation.loop = !this.animation.loop; } },
+        { label: 'Up', action: () => this.moveFrameBy(-1) },
+        { label: 'Down', action: () => this.moveFrameBy(1) }
+      ];
+    }
+    return [];
+  }
+
+  drawManagementActionRail(ctx, x, y, w, h, options = {}) {
+    const isMobile = options.isMobile;
+    const actions = this.getBottomRailActions();
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(x, y, w, h);
+    const title = this.leftPanelTab === 'layers' ? 'Layer Actions' : 'Animation Actions';
+    ctx.fillStyle = '#fff';
+    ctx.font = `${isMobile ? 12 : 14}px Courier New`;
+    ctx.fillText(title, x + 10, y + 18);
+
+    const gap = 8;
+    const top = y + 22;
+    const buttonH = Math.max(20, h - 30);
+    const buttonW = Math.max(52, Math.floor((w - 20 - gap * Math.max(0, actions.length - 1)) / Math.max(1, actions.length)));
+    let buttonX = x + 10;
+    actions.forEach((entry) => {
+      const bounds = { x: buttonX, y: top, w: buttonW, h: buttonH };
+      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+      this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('menu', bounds, entry.action);
+      buttonX += buttonW + gap;
+    });
   }
 
   drawPaletteBar(ctx, x, y, w, h, options = {}) {
@@ -7278,6 +7483,58 @@ export default class PixelStudio {
       this.drawButton(ctx, bounds, entry.label);
       this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
       this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
+    });
+  }
+
+
+  drawRightRail(ctx, x, y, w, h) {
+    ctx.fillStyle = UI_SUITE.colors.panel;
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(x, y, w, h);
+    if (this.leftPanelTab === 'animation') {
+      this.drawFramesPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false, controls: false });
+      return;
+    }
+    this.drawLayersPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false, controls: false });
+  }
+
+  drawFramesPanel(ctx, x, y, w, h, options = {}) {
+    const isMobile = options.isMobile;
+    const showControls = options.controls !== false;
+    const buttonHeight = isMobile ? 44 : 18;
+    const lineHeight = isMobile ? 52 : 20;
+    ctx.fillStyle = '#fff';
+    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+    ctx.fillText('Frames', x + 12, y + 20);
+    let offsetY = y + 34;
+    if (showControls) {
+      const controls = [
+        { label: '+', action: () => this.addFrame() },
+        { label: '-', action: () => this.deleteFrame(this.animation.currentFrameIndex) },
+        { label: 'Dup', action: () => this.duplicateFrame(this.animation.currentFrameIndex) }
+      ];
+      controls.forEach((entry, index) => {
+        const bounds = { x: x + 12 + index * (buttonHeight + 6), y: y + 28, w: buttonHeight + 10, h: buttonHeight };
+        this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+        this.uiButtons.push({ bounds, onClick: entry.action });
+        this.registerFocusable('menu', bounds, entry.action);
+      });
+      offsetY += 24;
+    }
+    this.frameBounds = [];
+    const maxVisible = Math.max(1, Math.floor((h - 44) / lineHeight));
+    this.focusGroupMeta.frames = { maxVisible };
+    const start = this.focusScroll.frames || 0;
+    this.animation.frames.slice(start, start + maxVisible).forEach((frame, visibleIndex) => {
+      const index = start + visibleIndex;
+      const active = index === this.animation.currentFrameIndex;
+      const fps = Math.max(1, Math.round(1000 / Math.max(1, frame.durationMs || DEFAULT_FRAME_DURATION_MS)));
+      const bounds = { x: x + 8, y: offsetY + visibleIndex * lineHeight - (isMobile ? 20 : 14), w: w - 16, h: buttonHeight, index };
+      this.drawButton(ctx, bounds, `F${index + 1}  ${fps}fps`, active, { fontSize: 12 });
+      this.frameBounds.push(bounds);
+      this.uiButtons.push({ bounds, onClick: () => { this.animation.currentFrameIndex = index; this.setFrameLayers(this.currentFrame.layers); } });
+      this.registerFocusable('frames', bounds, () => { this.animation.currentFrameIndex = index; this.setFrameLayers(this.currentFrame.layers); });
     });
   }
 
