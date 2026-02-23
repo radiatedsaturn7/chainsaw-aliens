@@ -7236,8 +7236,8 @@ export default class PixelStudio {
             this.syncTileData();
           }
         },
-        { label: 'Up', action: () => this.moveLayerBy(1) },
-        { label: 'Down', action: () => this.moveLayerBy(-1) }
+        { label: 'Up', action: () => this.moveLayerBy(-1) },
+        { label: 'Down', action: () => this.moveLayerBy(1) }
       ];
     }
     if (this.leftPanelTab === 'animation') {
@@ -7246,8 +7246,8 @@ export default class PixelStudio {
         { label: '-Frame', action: () => this.deleteFrame(this.animation.currentFrameIndex) },
         { label: 'Delay', action: () => this.setCurrentFrameDelayFps() },
         { label: this.animation.loop ? 'Loop ✓' : 'Loop', action: () => { this.animation.loop = !this.animation.loop; } },
-        { label: 'Up', action: () => this.moveFrameBy(1) },
-        { label: 'Down', action: () => this.moveFrameBy(-1) }
+        { label: 'Up', action: () => this.moveFrameBy(-1) },
+        { label: 'Down', action: () => this.moveFrameBy(1) }
       ];
     }
     return [];
