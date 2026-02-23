@@ -127,9 +127,9 @@ export default class PixelStudio {
       }
     };
     this.canvasState = {
-      width: 16,
-      height: 16,
-      layers: [createLayer(16, 16, 'Layer 1')],
+      width: 256,
+      height: 256,
+      layers: [createLayer(256, 256, 'Layer 1')],
       activeLayerIndex: 0
     };
     this.palettePresets = [];
@@ -274,7 +274,7 @@ export default class PixelStudio {
     this.uiButtons = [];
     this.menuScrollDrag = null;
     this.uiSliderDrag = null;
-    this.artSizeDraft = { width: 16, height: 16 };
+    this.artSizeDraft = { width: 256, height: 256 };
     this.paletteBounds = [];
     this.layerBounds = [];
     this.frameBounds = [];
@@ -2572,13 +2572,18 @@ export default class PixelStudio {
     const shape = this.toolOptions.brushShape;
     const hardness = clamp(this.toolOptions.brushHardness ?? 0, 0, 1);
     const falloff = clamp(this.toolOptions.brushFalloff ?? 0.5, 0, 1);
-    const falloffExponent = 1 + falloff * 3;
+    const featherWidth = Math.max(0.001, 1 - hardness);
+    const hardCoreEnd = 1 - featherWidth;
+    const falloffExponent = lerp(0.45, 3.5, falloff);
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (!this.doesBrushShapeIncludeOffset(shape, dx, dy, radius)) continue;
         const edgeT = this.getBrushShapeEdgeT(shape, dx, dy, radius);
-        const softWeight = Math.pow(Math.max(0, 1 - edgeT), falloffExponent);
-        const weight = lerp(softWeight, 1, hardness);
+        let weight = 1;
+        if (edgeT > hardCoreEnd) {
+          const featherT = clamp((edgeT - hardCoreEnd) / featherWidth, 0, 1);
+          weight = Math.pow(Math.max(0, 1 - featherT), falloffExponent);
+        }
         points.push({ row: point.row + dy, col: point.col + dx, weight });
       }
     }
@@ -5813,7 +5818,7 @@ export default class PixelStudio {
     const rowGap = 8;
     const cellGap = 8;
     const gridY = titleY + 10;
-    const footerH = 140;
+    const footerH = 118;
     const gridH = Math.max(90, modal.h - footerH - 34);
     const rows = Math.ceil(BRUSH_SHAPES.length / cols);
     const cellW = Math.floor((modal.w - 24 - (cols - 1) * cellGap) / cols);
@@ -5853,11 +5858,11 @@ export default class PixelStudio {
     const sizeSlider = { x: modal.x + 12, y: sliderY, w: sliderW, h: 12 };
     const opacitySlider = { x: modal.x + modal.w / 2 + 6, y: sliderY, w: sliderW, h: 12 };
     const hardnessLabelY = sliderY + 30;
+    const secondarySliderW = Math.floor((modal.w - 36) / 2);
     ctx.fillText(`Hardness: ${Math.round((draft.brushHardness ?? 0) * 100)}%`, modal.x + 12, hardnessLabelY);
-    const hardnessSlider = { x: modal.x + 12, y: hardnessLabelY + 8, w: modal.w - 24, h: 12 };
-    const falloffLabelY = hardnessSlider.y + 30;
-    ctx.fillText(`Falloff: ${Math.round((draft.brushFalloff ?? 0.5) * 100)}%`, modal.x + 12, falloffLabelY);
-    const falloffSlider = { x: modal.x + 12, y: falloffLabelY + 8, w: modal.w - 24, h: 12 };
+    ctx.fillText(`Falloff: ${Math.round((draft.brushFalloff ?? 0.5) * 100)}%`, modal.x + modal.w / 2 + 6, hardnessLabelY);
+    const hardnessSlider = { x: modal.x + 12, y: hardnessLabelY + 8, w: secondarySliderW, h: 12 };
+    const falloffSlider = { x: modal.x + modal.w / 2 + 6, y: hardnessLabelY + 8, w: secondarySliderW, h: 12 };
 
     const drawSlider = (bounds, t) => {
       ctx.fillStyle = 'rgba(0,0,0,0.4)';
