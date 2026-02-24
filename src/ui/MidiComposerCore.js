@@ -676,6 +676,9 @@ export default class MidiComposer {
       play: null,
       stop: null,
       loopToggle: null,
+      railInstruments: null,
+      railSettings: null,
+      railZoom: null,
       returnStart: null,
       setStart: null,
       setEnd: null,
@@ -2938,10 +2941,14 @@ export default class MidiComposer {
         }
       }
 
-      if (!this.recordModeActive && this.gridBounds) {
+      if (!this.recordModeActive && this.gridBounds && !this.gamepadResizeMode.active) {
         const panDeadzone = 0.2;
-        const panX = Math.abs(axes.rightX) > panDeadzone ? axes.rightX : 0;
-        const panY = Math.abs(axes.rightY) > panDeadzone ? axes.rightY : 0;
+        const rightPanX = Math.abs(axes.rightX) > panDeadzone ? axes.rightX : 0;
+        const rightPanY = Math.abs(axes.rightY) > panDeadzone ? axes.rightY : 0;
+        const leftPanX = Math.abs(axes.leftX) > panDeadzone ? axes.leftX : 0;
+        const leftPanY = Math.abs(axes.leftY) > panDeadzone ? axes.leftY : 0;
+        const panX = rightPanX || leftPanX;
+        const panY = rightPanY || leftPanY;
         if (panX || panY) {
           const panSpeed = 420;
           this.gridOffset.x -= panX * panSpeed * dt;
@@ -3365,6 +3372,20 @@ export default class MidiComposer {
       this.pastePreview = null;
       this.noteLengthMenu.open = false;
       this.tempoSliderOpen = false;
+      return;
+    }
+
+    if (this.bounds.railInstruments && this.pointInBounds(x, y, this.bounds.railInstruments)) {
+      this.activeTab = 'instruments';
+      return;
+    }
+    if (this.bounds.railSettings && this.pointInBounds(x, y, this.bounds.railSettings)) {
+      this.activeTab = 'settings';
+      return;
+    }
+    if (this.bounds.railZoom && this.pointInBounds(x, y, this.bounds.railZoom)) {
+      this.dragState = { mode: 'slider', id: 'grid-zoom-x', bounds: this.bounds.railZoom };
+      this.updateSliderValue(x, y, 'grid-zoom-x', this.bounds.railZoom);
       return;
     }
 
@@ -6695,6 +6716,14 @@ export default class MidiComposer {
       const tempo = Math.round(40 + ratio * 200);
       this.setTempo(tempo);
     }
+    if (id === 'grid-zoom-x') {
+      const zoomXLimits = this.getGridZoomLimitsX();
+      this.gridZoomX = clamp(
+        zoomXLimits.minZoom + ratio * (zoomXLimits.maxZoom - zoomXLimits.minZoom),
+        zoomXLimits.minZoom,
+        zoomXLimits.maxZoom
+      );
+    }
     this.saveAudioSettings();
     this.applyAudioSettings();
   }
@@ -7655,6 +7684,9 @@ export default class MidiComposer {
     this.bounds.tempoButton = null;
     this.bounds.tempoSlider = null;
     this.bounds.noteLengthMenu = [];
+    this.bounds.railInstruments = null;
+    this.bounds.railSettings = null;
+    this.bounds.railZoom = null;
     this.editorShellTheme = resolveEditorShellTheme();
 
     const isMobile = this.isMobileLayout();
@@ -7701,7 +7733,7 @@ export default class MidiComposer {
 
 
   drawDesktopLayout(ctx, width, height, track, pattern) {
-    const transportH = 96;
+    const transportH = 132;
     const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
     const shellLayout = createEditorShellLayout({
       viewportWidth: width,
@@ -8201,7 +8233,8 @@ export default class MidiComposer {
     this.bounds.transportBar = { x, y, w, h };
     const isMobile = this.isMobileLayout();
     const gap = 12;
-    const buttonH = Math.max(44, h - 26);
+    const topAreaH = Math.max(46, h * 0.5);
+    const buttonH = Math.max(34, topAreaH - 20);
     const baseButtonW = Math.min(72, (w - gap * 7) / 6);
     const buttonSpecs = [
       { id: 'returnStart', label: '⏮', w: baseButtonW },
@@ -8215,7 +8248,7 @@ export default class MidiComposer {
     const scale = rawTotalW > w ? w / rawTotalW : 1;
     const totalW = rawTotalW * scale;
     const startX = x + (w - totalW) / 2;
-    const centerY = y + (h - buttonH) / 2;
+    const centerY = y + 10;
     const drawTransportButton = (button, bx) => {
       const buttonW = button.w * scale;
       const bounds = { x: bx, y: centerY, w: buttonW, h: buttonH };
@@ -8233,10 +8266,42 @@ export default class MidiComposer {
       cursorX += button.w * scale + gap;
     });
 
+    const railY = y + topAreaH;
+    const railPadding = 12;
+    const railGap = 10;
+    const railH = 24;
+    const railW = w - railPadding * 2;
+    const zoomW = Math.max(220, Math.round(railW * 0.36));
+    const buttonW = Math.max(96, Math.round((railW - zoomW - railGap * 3) / 3));
+    let railX = x + railPadding;
+    this.bounds.railInstruments = { x: railX, y: railY, w: buttonW, h: railH };
+    this.drawSmallButton(ctx, this.bounds.railInstruments, 'Instruments', this.activeTab === 'instruments');
+    railX += buttonW + railGap;
+    this.bounds.railSettings = { x: railX, y: railY, w: buttonW, h: railH };
+    this.drawSmallButton(ctx, this.bounds.railSettings, 'Settings', this.activeTab === 'settings');
+    railX += buttonW + railGap;
+    this.bounds.loopToggle = { x: railX, y: railY, w: buttonW, h: railH };
+    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+
+    const zoomXLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+    const zoomRatio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
+    const sliderY = railY + railH + 8;
+    this.bounds.railZoom = { x: x + w - railPadding - zoomW, y: sliderY, w: zoomW, h: 12 };
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
+    ctx.fillStyle = '#ffe16a';
+    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w * zoomRatio, this.bounds.railZoom.h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
+    ctx.fillStyle = '#fff';
+    ctx.font = '11px Courier New';
+    ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 4);
+
     if (this.singleNoteRecordMode.active) {
       ctx.fillStyle = '#ff9c42';
       ctx.font = isMobile ? '12px Courier New' : '13px Courier New';
-      ctx.fillText('Single Note Mode', x + 12, y + h - 10);
+      ctx.fillText('Single Note Mode', x + 12, y + h - 6);
     }
 
     const position = this.getPositionLabel();
