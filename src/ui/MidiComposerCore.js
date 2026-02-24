@@ -2942,13 +2942,13 @@ export default class MidiComposer {
       }
 
       if (!this.recordModeActive && this.gridBounds && !this.gamepadResizeMode.active) {
-        const panDeadzone = 0.2;
+        const panDeadzone = 0.12;
         const rightPanX = Math.abs(axes.rightX) > panDeadzone ? axes.rightX : 0;
         const rightPanY = Math.abs(axes.rightY) > panDeadzone ? axes.rightY : 0;
         const leftPanX = Math.abs(axes.leftX) > panDeadzone ? axes.leftX : 0;
         const leftPanY = Math.abs(axes.leftY) > panDeadzone ? axes.leftY : 0;
-        const panX = rightPanX || leftPanX;
-        const panY = rightPanY || leftPanY;
+        const panX = Math.abs(leftPanX) > Math.abs(rightPanX) ? leftPanX : rightPanX;
+        const panY = Math.abs(leftPanY) > Math.abs(rightPanY) ? leftPanY : rightPanY;
         if (panX || panY) {
           const panSpeed = 420;
           this.gridOffset.x -= panX * panSpeed * dt;
@@ -7894,7 +7894,7 @@ export default class MidiComposer {
     const sidebarX = 0;
     const sidebarY = 0;
     const isLandscape = width > height;
-    const railH = isLandscape ? 86 : 0;
+    const railH = isLandscape ? 190 : 0;
     const sidebarH = height;
     const contentX = sidebarX + sidebarW + gap;
     const contentY = padding;
@@ -7907,7 +7907,7 @@ export default class MidiComposer {
       this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.drawGridZoomControls(ctx, contentX, contentY, contentW, contentH);
       if (isLandscape) {
-        this.drawMobileBottomRail(ctx, contentX, contentY + contentH + 8, contentW, railH - 8);
+        this.drawMobileBottomRail(ctx, contentX, contentY + contentH + 8, contentW, railH - 8, track);
       }
     } else if (this.activeTab === 'song') {
       this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
@@ -8141,7 +8141,8 @@ export default class MidiComposer {
     });
   }
 
-  drawMobileBottomRail(ctx, x, y, w, h) {
+  drawMobileBottomRail(ctx, x, y, w, h, track) {
+    this.bounds.instrumentSettingsControls = [];
     ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
@@ -8149,21 +8150,100 @@ export default class MidiComposer {
 
     const padding = 8;
     const gap = 8;
-    const rowH = 26;
-    const sliderH = 10;
-    const buttonW = (w - padding * 2 - gap * 2) / 3;
-    this.bounds.railInstruments = { x: x + padding, y: y + 8, w: buttonW, h: rowH };
-    this.bounds.railSettings = { x: x + padding + buttonW + gap, y: y + 8, w: buttonW, h: rowH };
-    this.bounds.loopToggle = { x: x + padding + (buttonW + gap) * 2, y: y + 8, w: buttonW, h: rowH };
+    const rowH = 24;
+    const row1Y = y + 8;
+    const row2Y = row1Y + rowH + 8;
+    const row3Y = row2Y + rowH + 8;
+    const innerW = w - padding * 2;
 
+    const buttonW = (innerW - gap * 2) / 3;
+    this.bounds.railInstruments = { x: x + padding, y: row1Y, w: buttonW, h: rowH };
+    this.bounds.railSettings = { x: x + padding + buttonW + gap, y: row1Y, w: buttonW, h: rowH };
+    this.bounds.loopToggle = { x: x + padding + (buttonW + gap) * 2, y: row1Y, w: buttonW, h: rowH };
     this.drawSmallButton(ctx, this.bounds.railInstruments, 'Instruments', this.activeTab === 'instruments');
     this.drawSmallButton(ctx, this.bounds.railSettings, 'Settings', this.activeTab === 'settings');
     this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
 
+    const navW = 28;
+    const instrumentLabelW = Math.max(100, Math.floor(innerW * 0.28));
+    this.bounds.instrumentPrev = { x: x + padding, y: row2Y, w: navW, h: rowH };
+    this.bounds.instrumentLabel = { x: x + padding + navW + 4, y: row2Y, w: instrumentLabelW, h: rowH };
+    this.bounds.instrumentNext = { x: this.bounds.instrumentLabel.x + instrumentLabelW + 4, y: row2Y, w: navW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.instrumentPrev, '<', false);
+    const instrumentLabel = track
+      ? isDrumTrack(track)
+        ? this.getDrumKitLabel(track)
+        : this.getProgramLabel(track.program)
+      : 'Instrument';
+    this.drawSmallButton(ctx, this.bounds.instrumentLabel, instrumentLabel, false);
+    this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
+
+    const noteW = 86;
+    const quantW = 74;
+    const tempoW = Math.max(96, Math.min(136, innerW - (navW * 2 + instrumentLabelW + noteW + quantW + gap * 5)));
+    this.bounds.noteLength = { x: this.bounds.instrumentNext.x + navW + gap, y: row2Y, w: noteW, h: rowH };
+    const noteLabel = `Note ${this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex])}`;
+    this.drawSmallButton(ctx, this.bounds.noteLength, noteLabel, false);
+    this.bounds.quantizeValue = { x: this.bounds.noteLength.x + noteW + gap, y: row2Y, w: quantW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.quantizeValue, this.quantizeOptions[this.quantizeIndex].label, this.quantizeEnabled);
+    this.bounds.tempoButton = { x: this.bounds.quantizeValue.x + quantW + gap, y: row2Y, w: tempoW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.tempoButton, `Tempo ${this.song.tempo}BPM`, this.tempoSliderOpen);
+
+    const transportGap = 6;
+    const transportCols = 7;
+    const transportW = (innerW - transportGap * (transportCols - 1)) / transportCols;
+    const transportButtons = [
+      { id: 'record', label: '●', active: this.recordModeActive },
+      { id: 'returnStart', label: '⏮' },
+      { id: 'prevBar', label: '⏪' },
+      { id: 'play', label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying },
+      { id: 'nextBar', label: '⏩' },
+      { id: 'goEnd', label: '⏭' },
+      { id: 'metronome', label: this.metronomeEnabled ? 'M On' : 'M Off', active: this.metronomeEnabled }
+    ];
+    transportButtons.forEach((button, index) => {
+      const bounds = {
+        x: x + padding + index * (transportW + transportGap),
+        y: row3Y,
+        w: transportW,
+        h: rowH
+      };
+      this.bounds[button.id] = bounds;
+      this.drawSmallButton(ctx, bounds, button.label, Boolean(button.active));
+    });
+
+    if (track) {
+      const mix = this.getTrackPlaybackMix(track);
+      const mixW = 120;
+      const mixX = this.bounds.tempoButton.x + this.bounds.tempoButton.w + gap;
+      const mixAvailable = x + w - padding - mixX;
+      if (mixAvailable > mixW + 12) {
+        const muteBounds = { x: mixX, y: row2Y, w: 48, h: rowH, trackIndex: this.selectedTrackIndex, control: 'mute' };
+        const soloBounds = { x: mixX + 52, y: row2Y, w: 48, h: rowH, trackIndex: this.selectedTrackIndex, control: 'solo' };
+        this.drawSmallButton(ctx, muteBounds, 'Mute', track.mute);
+        this.drawSmallButton(ctx, soloBounds, 'Solo', track.solo);
+        this.bounds.instrumentSettingsControls = [muteBounds, soloBounds];
+
+        const volBounds = { x: mixX, y: row3Y, w: mixW, h: 8, trackIndex: this.selectedTrackIndex, control: 'volume' };
+        const panBounds = { x: mixX, y: row3Y + 14, w: mixW, h: 8, trackIndex: this.selectedTrackIndex, control: 'pan' };
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(volBounds.x, volBounds.y, volBounds.w, volBounds.h);
+        ctx.fillRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
+        ctx.fillStyle = '#ffe16a';
+        ctx.fillRect(volBounds.x, volBounds.y, volBounds.w * mix.volume, volBounds.h);
+        ctx.fillStyle = '#4fb7ff';
+        ctx.fillRect(panBounds.x, panBounds.y, panBounds.w * ((mix.pan + 1) / 2), panBounds.h);
+        ctx.strokeStyle = UI_SUITE.colors.border;
+        ctx.strokeRect(volBounds.x, volBounds.y, volBounds.w, volBounds.h);
+        ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
+        this.bounds.instrumentSettingsControls.push(volBounds, panBounds);
+      }
+    }
+
     const zoomXLimits = this.getGridZoomLimitsX();
     this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
     const ratio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
-    this.bounds.railZoom = { x: x + padding, y: y + rowH + 24, w: w - padding * 2, h: sliderH };
+    this.bounds.railZoom = { x: x + padding, y: y + h - 14, w: w - padding * 2, h: 10 };
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
     ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
     ctx.fillStyle = '#ffe16a';
@@ -8172,8 +8252,9 @@ export default class MidiComposer {
     ctx.strokeRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.font = '11px Courier New';
-    ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 4);
+    ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 2);
   }
+
 
   getSidebarWidth(viewWidth, {
     ratio,
