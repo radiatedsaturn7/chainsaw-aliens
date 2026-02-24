@@ -4775,7 +4775,7 @@ export default class MidiComposer {
       }
       this.dragState = {
         mode: 'move',
-        startTick: cell.tick,
+        startTick: this.snapTick(cell.tick),
         startPitch: cell.pitch,
         startX: x,
         startY: y,
