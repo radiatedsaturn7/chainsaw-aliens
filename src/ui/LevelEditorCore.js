@@ -4961,14 +4961,20 @@ export default class Editor {
           const rows = this.midiGridBounds?.rows || 12;
           const basePitch = 60;
           const noteRow = rows - 1 - ((noteHit.note.pitch - basePitch + rows) % rows);
+          const noteStart = Math.max(0, Math.round(Number(noteHit.note.start) || 0));
+          const noteLength = Math.max(1, Math.round(Number(noteHit.note.length) || 1));
+          const notePitch = Math.round(Number(noteHit.note.pitch) || basePitch);
+          noteHit.note.start = noteStart;
+          noteHit.note.length = noteLength;
+          noteHit.note.pitch = notePitch;
           this.midiNoteDrag = {
             note: noteHit.note,
             type: noteHit.edge === 'end' ? 'resize' : 'move',
-            offsetCol: cell.col - noteHit.note.start,
+            offsetCol: cell.col - noteStart,
             offsetRow: cell.row - noteRow,
-            originStart: noteHit.note.start,
-            originLength: noteHit.note.length || 1,
-            originPitch: noteHit.note.pitch
+            originStart: noteStart,
+            originLength: noteLength,
+            originPitch: notePitch
           };
           this.midiNoteDirty = false;
         }
@@ -5123,16 +5129,16 @@ export default class Editor {
       const row = clamp(Math.floor((payload.y - gridY) / cellSize), 0, rows - 1);
       const basePitch = 60;
       if (this.midiNoteDrag.type === 'resize') {
-        const start = this.midiNoteDrag.note.start;
+        const start = Math.max(0, Math.round(Number(this.midiNoteDrag.note.start) || 0));
         const nextLength = clamp(col - start + 1, 1, cols - start);
-        this.midiNoteDrag.note.length = nextLength;
+        this.midiNoteDrag.note.length = Math.max(1, Math.round(nextLength));
       } else {
-        const length = clamp(this.midiNoteDrag.note.length || 1, 1, cols);
+        const length = clamp(Math.max(1, Math.round(Number(this.midiNoteDrag.note.length) || 1)), 1, cols);
         const nextStart = clamp(col - this.midiNoteDrag.offsetCol, 0, cols - length);
         const nextRow = clamp(row - this.midiNoteDrag.offsetRow, 0, rows - 1);
         const nextPitch = basePitch + (rows - 1 - nextRow);
-        this.midiNoteDrag.note.start = nextStart;
-        this.midiNoteDrag.note.pitch = nextPitch;
+        this.midiNoteDrag.note.start = Math.max(0, Math.round(nextStart));
+        this.midiNoteDrag.note.pitch = Math.round(nextPitch);
       }
       this.midiNoteDirty = true;
       return;
