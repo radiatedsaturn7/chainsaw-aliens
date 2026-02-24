@@ -7893,17 +7893,22 @@ export default class MidiComposer {
     const sidebarW = getSharedMobileRailWidth(width, height);
     const sidebarX = 0;
     const sidebarY = 0;
+    const isLandscape = width > height;
+    const railH = isLandscape ? 86 : 0;
     const sidebarH = height;
     const contentX = sidebarX + sidebarW + gap;
     const contentY = padding;
     const contentW = width - contentX - padding;
-    const contentH = height - padding * 2;
+    const contentH = height - padding * 2 - railH;
 
-    this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track);
+    this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: isLandscape });
 
     if (this.activeTab === 'grid') {
       this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.drawGridZoomControls(ctx, contentX, contentY, contentW, contentH);
+      if (isLandscape) {
+        this.drawMobileBottomRail(ctx, contentX, contentY + contentH + 8, contentW, railH - 8);
+      }
     } else if (this.activeTab === 'song') {
       this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'instruments') {
@@ -7915,7 +7920,7 @@ export default class MidiComposer {
     }
   }
 
-  drawMobileSidebar(ctx, x, y, w, h, track) {
+  drawMobileSidebar(ctx, x, y, w, h, track, options = {}) {
     const panelGap = 10;
     const rowH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
     const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
@@ -7959,6 +7964,10 @@ export default class MidiComposer {
       this.bounds.redoButton = { x: innerX + undoW + rowGap, y: cursorY, w: undoW, h: rowH };
     }
     this.drawSmallButton(ctx, this.bounds.redoButton, 'Redo', false);
+
+    if (options.menuOnly) {
+      return;
+    }
 
     ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(controlsX, controlsY, w, controlsH);
@@ -8130,6 +8139,40 @@ export default class MidiComposer {
       this.bounds[button.id] = bounds;
       this.drawSmallButton(ctx, bounds, button.label, button.id === 'play' && this.isPlaying);
     });
+  }
+
+  drawMobileBottomRail(ctx, x, y, w, h) {
+    ctx.fillStyle = UI_SUITE.colors.panel;
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(x, y, w, h);
+
+    const padding = 8;
+    const gap = 8;
+    const rowH = 26;
+    const sliderH = 10;
+    const buttonW = (w - padding * 2 - gap * 2) / 3;
+    this.bounds.railInstruments = { x: x + padding, y: y + 8, w: buttonW, h: rowH };
+    this.bounds.railSettings = { x: x + padding + buttonW + gap, y: y + 8, w: buttonW, h: rowH };
+    this.bounds.loopToggle = { x: x + padding + (buttonW + gap) * 2, y: y + 8, w: buttonW, h: rowH };
+
+    this.drawSmallButton(ctx, this.bounds.railInstruments, 'Instruments', this.activeTab === 'instruments');
+    this.drawSmallButton(ctx, this.bounds.railSettings, 'Settings', this.activeTab === 'settings');
+    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+
+    const zoomXLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+    const ratio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
+    this.bounds.railZoom = { x: x + padding, y: y + rowH + 24, w: w - padding * 2, h: sliderH };
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
+    ctx.fillStyle = '#ffe16a';
+    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w * ratio, this.bounds.railZoom.h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = '11px Courier New';
+    ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 4);
   }
 
   getSidebarWidth(viewWidth, {
