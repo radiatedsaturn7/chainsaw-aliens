@@ -34,6 +34,7 @@ import { createViewportController } from './shared/viewportController.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
+import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
 
 const SCALE_LIBRARY = [
   { id: 'major', label: 'Major', steps: [0, 2, 4, 5, 7, 9, 11] },
@@ -8331,17 +8332,22 @@ export default class MidiComposer {
     const zoomXLimits = this.getGridZoomLimitsX();
     this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
     const ratio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
-    const sliderY = row2Y + rowH + 10;
-    this.bounds.railZoom = { x: x + padding, y: sliderY, w: w - padding * 2, h: 14 };
-    ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
-    ctx.fillStyle = '#ffe16a';
-    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w * ratio, this.bounds.railZoom.h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.font = '12px Courier New';
-    ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 4);
+
+    const viewportWidth = this.viewportWidth || (x + w);
+    const viewportHeight = this.viewportHeight || (y + h);
+    const controlBase = Math.min(viewportWidth, viewportHeight);
+    const controlMargin = Math.max(16, controlBase * 0.04);
+    const joystickRadius = Math.min(78, controlBase * 0.14);
+    const joystickCenterX = controlMargin + joystickRadius;
+    const { railBounds, hitBounds } = getSharedMobileZoomSliderLayout({
+      width: viewportWidth,
+      height: viewportHeight,
+      joystickCenterX,
+      joystickRadius,
+      controlMargin
+    });
+    this.bounds.railZoom = hitBounds;
+    drawSharedMobileZoomSlider(ctx, railBounds, ratio);
   }
 
 

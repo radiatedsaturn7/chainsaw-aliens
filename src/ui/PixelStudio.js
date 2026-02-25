@@ -31,6 +31,7 @@ import { createViewportController } from './shared/viewportController.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
+import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
 import { ensurePixelArtStore, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
 
 const BRUSH_SIZE_MIN = 1;
@@ -5813,32 +5814,18 @@ export default class PixelStudio {
     this.panJoystick.radius = joystickRadius;
     this.panJoystick.knobRadius = knobRadius;
 
-    let sliderX = joystickCenter.x + joystickRadius + 24;
-    const sliderRightPadding = Math.max(controlMargin + 132, width * 0.2);
-    let sliderWidth = width - sliderX - sliderRightPadding;
-    const sliderHeight = 10;
-    const sliderY = height - controlMargin - sliderHeight;
-    if (sliderWidth < 140) {
-      sliderX = controlMargin;
-      sliderWidth = Math.max(140, width - controlMargin * 2 - 132);
-    }
-    this.mobileZoomSliderBounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
+    const { railBounds, hitBounds } = getSharedMobileZoomSliderLayout({
+      width,
+      height,
+      joystickCenterX: joystickCenter.x,
+      joystickRadius,
+      controlMargin
+    });
+    this.mobileZoomSliderBounds = hitBounds;
 
     const zoomT = this.view.zoomIndex / Math.max(1, this.view.zoomLevels.length - 1);
-    const knobX = sliderX + zoomT * sliderWidth;
-    const centerY = sliderY + sliderHeight / 2;
     ctx.save();
-    ctx.globalAlpha = 0.92;
-    ctx.fillStyle = 'rgba(0,0,0,0.58)';
-    ctx.fillRect(sliderX, sliderY, sliderWidth, sliderHeight);
-    ctx.strokeStyle = 'rgba(255,255,255,0.44)';
-    ctx.strokeRect(sliderX, sliderY, sliderWidth, sliderHeight);
-    ctx.fillStyle = 'rgba(0,200,255,0.95)';
-    ctx.beginPath();
-    ctx.arc(knobX, centerY, Math.max(5, sliderHeight * 0.75), 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(0,0,0,0.75)';
-    ctx.stroke();
+    drawSharedMobileZoomSlider(ctx, railBounds, zoomT);
 
     const joystickKnobX = joystickCenter.x + this.panJoystick.dx * joystickRadius;
     const joystickKnobY = joystickCenter.y + this.panJoystick.dy * joystickRadius;
