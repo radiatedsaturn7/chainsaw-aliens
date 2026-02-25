@@ -652,6 +652,15 @@ export default class MidiComposer {
     };
     this.tempoSliderOpen = false;
     this.pastePreview = null;
+    this.panJoystick = {
+      active: false,
+      id: null,
+      dx: 0,
+      dy: 0,
+      center: { x: 0, y: 0 },
+      radius: 0,
+      knobRadius: 0
+    };
     this.gridZoomX = null;
     this.gridZoomY = null;
     this.gridOffset = { x: 0, y: 0 };
@@ -2547,10 +2556,50 @@ export default class MidiComposer {
     });
   }
 
+  isMobileLandscapeGridMode() {
+    return this.isMobileLayout()
+      && this.viewportWidth > this.viewportHeight
+      && this.activeTab === 'grid'
+      && !this.recordModeActive;
+  }
+
+  applyMobilePanJoystick(dt = 0) {
+    if (!this.isMobileLandscapeGridMode() || !this.panJoystick.active || !this.gridBounds) return;
+    const frameScale = dt > 0 ? dt * 60 : 1;
+    const speed = 11;
+    this.gridOffset.x -= this.panJoystick.dx * speed * frameScale;
+    this.gridOffset.y -= this.panJoystick.dy * speed * frameScale;
+    this.ensureGridPanCapacity(this.gridOffset.x);
+    this.clampGridOffset(
+      this.gridBounds.w,
+      this.gridBounds.h,
+      this.getExpandedGridWidth(),
+      this.gridBounds.gridH
+    );
+    this.updateTimelineStartTickFromGrid();
+  }
+
+  updatePanJoystick(x, y) {
+    const { center, radius } = this.panJoystick;
+    const dx = x - center.x;
+    const dy = y - center.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist <= 0.0001 || radius <= 0) {
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+      return;
+    }
+    const clamped = Math.min(dist, radius);
+    const angle = Math.atan2(dy, dx);
+    this.panJoystick.dx = Math.cos(angle) * (clamped / radius);
+    this.panJoystick.dy = Math.sin(angle) * (clamped / radius);
+  }
+
   update(input, dt) {
     this.maybeEnsureState();
     this.handleKeyboardShortcuts(input);
     this.handleGamepadInput(input, dt);
+    this.applyMobilePanJoystick(dt);
     this.updateRecordMode(dt);
     if (this.isPlaying) {
       this.advancePlayhead(dt);
@@ -3193,6 +3242,17 @@ export default class MidiComposer {
       }
     }
     const { x, y } = payload;
+    if (this.isMobileLandscapeGridMode() && payload.touchCount > 0 && this.panJoystick.radius > 0) {
+      const dx = payload.x - this.panJoystick.center.x;
+      const dy = payload.y - this.panJoystick.center.y;
+      if (Math.hypot(dx, dy) <= this.panJoystick.radius * 1.2) {
+        this.panJoystick.active = true;
+        this.panJoystick.id = payload.id ?? 'touch';
+        this.updatePanJoystick(payload.x, payload.y);
+        return;
+      }
+    }
+
     if (this.recordModeActive) {
       const action = this.recordLayout.handlePointerDown(payload);
       if (action?.type === 'device') {
@@ -4047,6 +4107,11 @@ export default class MidiComposer {
       this.recordLayout.handlePointerMove(payload);
       return;
     }
+
+    if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id || this.panJoystick.id === 'touch')) {
+      this.updatePanJoystick(payload.x, payload.y);
+      return;
+    }
     if (this.qaOverlayOpen) return;
     if (this.dragState?.mode === 'song-pan-or-select') {
       const dx = payload.x - this.dragState.startX;
@@ -4378,6 +4443,14 @@ export default class MidiComposer {
     this.lastPointer = { x: payload.x, y: payload.y };
     if (this.recordModeActive) {
       this.recordLayout.handlePointerUp(payload);
+      return;
+    }
+
+    if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id || this.panJoystick.id === 'touch')) {
+      this.panJoystick.active = false;
+      this.panJoystick.id = null;
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
       return;
     }
     if (this.longPressTimer) {
@@ -7729,6 +7802,8 @@ export default class MidiComposer {
       this.drawQaOverlay(ctx, width, height);
     }
 
+    this.drawMobilePanJoystick(ctx, width, height);
+
     ctx.restore();
     if (perfEnabled) {
       const elapsed = performance.now() - perfStart;
@@ -8143,6 +8218,48 @@ export default class MidiComposer {
     });
   }
 
+  drawMobilePanJoystick(ctx, width, height) {
+    if (!this.isMobileLandscapeGridMode()) {
+      this.panJoystick.center = { x: 0, y: 0 };
+      this.panJoystick.radius = 0;
+      this.panJoystick.knobRadius = 0;
+      this.panJoystick.active = false;
+      this.panJoystick.id = null;
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+      return;
+    }
+    const controlBase = Math.min(width, height);
+    const controlMargin = Math.max(16, controlBase * 0.04);
+    const joystickRadius = Math.min(78, controlBase * 0.14);
+    const knobRadius = Math.max(22, joystickRadius * 0.45);
+    const center = {
+      x: controlMargin + joystickRadius,
+      y: height - controlMargin - joystickRadius
+    };
+    this.panJoystick.center = center;
+    this.panJoystick.radius = joystickRadius;
+    this.panJoystick.knobRadius = knobRadius;
+
+    const joystickKnobX = center.x + this.panJoystick.dx * joystickRadius;
+    const joystickKnobY = center.y + this.panJoystick.dy * joystickRadius;
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.42)';
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, joystickRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, joystickRadius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.beginPath();
+    ctx.arc(joystickKnobX, joystickKnobY, knobRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
   drawMobileBottomRail(ctx, x, y, w, h, track) {
     this.bounds.instrumentSettingsControls = [];
     this.bounds.railInstruments = null;
@@ -8160,25 +8277,9 @@ export default class MidiComposer {
     const row3Y = row2Y + rowH + 10;
     const innerW = w - padding * 2;
 
-    const stickPadSize = Math.min(rowH, 44);
-    const stickPadX = x + padding;
-    const stickPadY = row1Y + Math.max(0, (rowH - stickPadSize) / 2);
-    const stickRadius = stickPadSize / 2;
-    ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.beginPath();
-    ctx.arc(stickPadX + stickRadius, stickPadY + stickRadius, stickRadius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.beginPath();
-    ctx.arc(stickPadX + stickRadius, stickPadY + stickRadius, stickRadius, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.beginPath();
-    ctx.arc(stickPadX + stickRadius, stickPadY + stickRadius, Math.max(6, stickRadius * 0.42), 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = '13px Courier New';
-    ctx.fillText('Left Stick: Pan Grid', stickPadX + stickPadSize + 10, row1Y + Math.round(rowH * 0.62));
+
+    this.bounds.loopToggle = { x: x + padding, y: row1Y, w: innerW, h: rowH };
+    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
 
     const navW = 48;
     const instrumentLabelW = Math.max(100, Math.floor(innerW * 0.38));
