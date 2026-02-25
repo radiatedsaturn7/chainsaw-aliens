@@ -3349,6 +3349,15 @@ export default class MidiComposer {
       return;
     }
 
+    if (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) {
+      this.activeTab = 'settings';
+      this.closeSelectionMenu();
+      this.pastePreview = null;
+      this.noteLengthMenu.open = false;
+      this.tempoSliderOpen = false;
+      return;
+    }
+
     if (this.activeTab === 'file') {
       if (this.fileMenuListBounds && this.pointInBounds(x, y, this.fileMenuListBounds)) {
         const fileHit = this.fileMenuBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -3479,14 +3488,6 @@ export default class MidiComposer {
     }
     if (this.bounds.undoButton && this.pointInBounds(x, y, this.bounds.undoButton)) {
       this.runtime.undo();
-      return;
-    }
-    if (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) {
-      this.activeTab = 'settings';
-      this.closeSelectionMenu();
-      this.pastePreview = null;
-      this.noteLengthMenu.open = false;
-      this.tempoSliderOpen = false;
       return;
     }
     if (this.bounds.redoButton && this.pointInBounds(x, y, this.bounds.redoButton)) {
