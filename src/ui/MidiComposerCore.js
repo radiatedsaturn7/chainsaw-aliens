@@ -7978,7 +7978,7 @@ export default class MidiComposer {
     const sidebarX = 0;
     const sidebarY = 0;
     const isLandscape = width > height;
-    const railH = isLandscape ? 300 : 0;
+    const railH = isLandscape ? 220 : 0;
     const sidebarH = height;
     const contentX = sidebarX + sidebarW + gap;
     const contentY = padding;
@@ -8274,18 +8274,13 @@ export default class MidiComposer {
     const rowH = 48;
     const row1Y = y + 8;
     const row2Y = row1Y + rowH + 10;
-    const row3Y = row2Y + rowH + 10;
     const innerW = w - padding * 2;
-
-
-    this.bounds.loopToggle = { x: x + padding, y: row1Y, w: innerW, h: rowH };
-    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
 
     const navW = 48;
     const instrumentLabelW = Math.max(100, Math.floor(innerW * 0.38));
-    this.bounds.instrumentPrev = { x: x + padding, y: row2Y, w: navW, h: rowH };
-    this.bounds.instrumentLabel = { x: x + padding + navW + 4, y: row2Y, w: instrumentLabelW, h: rowH };
-    this.bounds.instrumentNext = { x: this.bounds.instrumentLabel.x + instrumentLabelW + 4, y: row2Y, w: navW, h: rowH };
+    this.bounds.instrumentPrev = { x: x + padding, y: row1Y, w: navW, h: rowH };
+    this.bounds.instrumentLabel = { x: x + padding + navW + 4, y: row1Y, w: instrumentLabelW, h: rowH };
+    this.bounds.instrumentNext = { x: this.bounds.instrumentLabel.x + instrumentLabelW + 4, y: row1Y, w: navW, h: rowH };
     this.drawSmallButton(ctx, this.bounds.instrumentPrev, '<', false);
     const instrumentLabel = track
       ? isDrumTrack(track)
@@ -8296,15 +8291,18 @@ export default class MidiComposer {
     this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
 
     const noteW = 130;
-    const loopW = 170;
     const tempoX = this.bounds.instrumentNext.x + navW + gap;
-    this.bounds.noteLength = { x: tempoX, y: row2Y, w: noteW, h: rowH };
+    this.bounds.noteLength = { x: tempoX, y: row1Y, w: noteW, h: rowH };
     const noteLabel = this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex]);
     this.drawSmallButton(ctx, this.bounds.noteLength, noteLabel, false);
     this.bounds.quantizeValue = null;
-    this.bounds.loopToggle = { x: this.bounds.noteLength.x + noteW + gap, y: row2Y, w: loopW, h: rowH };
-    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
-    this.bounds.tempoButton = { x: this.bounds.loopToggle.x + loopW + gap, y: row2Y, w: Math.max(120, x + w - padding - (this.bounds.loopToggle.x + loopW + gap)), h: rowH };
+    this.bounds.loopToggle = null;
+    this.bounds.tempoButton = {
+      x: this.bounds.noteLength.x + noteW + gap,
+      y: row1Y,
+      w: Math.max(120, x + w - padding - (this.bounds.noteLength.x + noteW + gap)),
+      h: rowH
+    };
     this.drawSmallButton(ctx, this.bounds.tempoButton, `${this.song.tempo} BPM`, this.tempoSliderOpen);
 
     const transportGap = 6;
@@ -8322,7 +8320,7 @@ export default class MidiComposer {
     transportButtons.forEach((button, index) => {
       const bounds = {
         x: x + padding + index * (transportW + transportGap),
-        y: row3Y,
+        y: row2Y,
         w: transportW,
         h: rowH
       };
@@ -8333,7 +8331,8 @@ export default class MidiComposer {
     const zoomXLimits = this.getGridZoomLimitsX();
     this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
     const ratio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
-    this.bounds.railZoom = { x: x + padding, y: y + h - 20, w: w - padding * 2, h: 14 };
+    const sliderY = row2Y + rowH + 10;
+    this.bounds.railZoom = { x: x + padding, y: sliderY, w: w - padding * 2, h: 14 };
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
     ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
     ctx.fillStyle = '#ffe16a';
