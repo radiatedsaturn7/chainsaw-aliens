@@ -396,7 +396,7 @@ export default class Editor {
       enemies: true,
       prefabs: true
     };
-    this.panelTabs = ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'npcs', 'prefabs', 'graphics', 'music'];
+    this.panelTabs = ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'npcs', 'prefabs', 'graphics', 'music', 'midi'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       file: 0,
@@ -445,7 +445,7 @@ export default class Editor {
     this.drawer = {
       open: false,
       tabIndex: 0,
-      tabs: ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'npcs', 'prefabs', 'graphics', 'music'],
+      tabs: ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'npcs', 'prefabs', 'graphics', 'music', 'midi'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -493,6 +493,9 @@ export default class Editor {
       active: false,
       id: null
     };
+    this.midiGridViewStart = 0;
+    this.midiGridViewPitch = 60;
+    this.midiLoopEnabled = false;
     this.randomLevelSize = { width: 150, height: 100 };
     this.newLevelSizeDraft = { width: ROOM_BASE_WIDTH, height: ROOM_BASE_HEIGHT };
     this.randomLevelSlider = {
@@ -742,7 +745,7 @@ export default class Editor {
     if (!width || !height) return;
     const controlMargin = 18;
     const controlBase = Math.min(width, height);
-    if (this.isMobileLayout()) {
+    if (this.isMobileLayout() || this.mode === 'midi') {
       const joystickRadius = Math.min(78, controlBase * 0.14);
       const knobRadius = Math.max(22, joystickRadius * 0.45);
       const center = {
@@ -1056,7 +1059,7 @@ export default class Editor {
   update(input, dt) {
     this.handleKeyboard(input, dt);
     this.handleGamepad(input, dt);
-    if (!this.isMobileLayout()) {
+    if (!this.isMobileLayout() && this.mode !== 'midi') {
       if (this.panJoystick.active || this.panJoystick.dx !== 0 || this.panJoystick.dy !== 0) {
         this.panJoystick.active = false;
         this.panJoystick.id = null;
@@ -1068,10 +1071,17 @@ export default class Editor {
         this.zoomSlider.id = null;
       }
     } else if (Math.abs(this.panJoystick.dx) > 0.01 || Math.abs(this.panJoystick.dy) > 0.01) {
-      const panSpeed = 320 * dt * (1 / this.zoom);
-      this.camera.x += this.panJoystick.dx * panSpeed;
-      this.camera.y += this.panJoystick.dy * panSpeed;
-      this.clampCamera();
+      if (this.mode === 'midi') {
+        const nextStart = Math.max(0, this.midiGridViewStart + this.panJoystick.dx * 24 * dt);
+        const nextPitch = clamp(this.midiGridViewPitch - this.panJoystick.dy * 24 * dt, 0, 115);
+        this.midiGridViewStart = Math.round(nextStart);
+        this.midiGridViewPitch = Math.round(nextPitch);
+      } else {
+        const panSpeed = 320 * dt * (1 / this.zoom);
+        this.camera.x += this.panJoystick.dx * panSpeed;
+        this.camera.y += this.panJoystick.dy * panSpeed;
+        this.clampCamera();
+      }
     }
     this.sanitizeView('update');
     this.updateHover();
@@ -1173,6 +1183,10 @@ export default class Editor {
     if (tabId === 'music') {
       this.getMusicTracks();
     }
+    if (tabId === 'midi') {
+      this.ensureMidiTracks();
+      this.mode = 'midi';
+    }
   }
 
   cyclePanelTab(direction) {
@@ -1192,7 +1206,7 @@ export default class Editor {
 
   closeFileMenu() {
     this.setPanelTab('toolbox');
-    if (this.isMobileLayout()) {
+    if (this.isMobileLayout() || this.mode === 'midi') {
       this.drawer.open = false;
     }
   }
@@ -4835,7 +4849,7 @@ export default class Editor {
       return;
     }
 
-    if (this.isMobileLayout()) {
+    if (this.isMobileLayout() || this.mode === 'midi') {
       if (this.isPointInCircle(payload.x, payload.y, this.panJoystick.center, this.panJoystick.radius * 1.2)) {
         this.panJoystick.active = true;
         this.panJoystick.id = payload.id ?? null;
@@ -4844,7 +4858,7 @@ export default class Editor {
       }
 
       if (this.isPointInBounds(payload.x, payload.y, this.zoomSlider.bounds)) {
-        if (this.isPointInBounds(payload.x, payload.y, this.zoomSlider.playZoomBounds)) {
+        if (this.isMobileLayout() && this.isPointInBounds(payload.x, payload.y, this.zoomSlider.playZoomBounds)) {
           this.setZoom(1, payload.x, payload.y);
           return;
         }
@@ -4961,14 +4975,20 @@ export default class Editor {
           const rows = this.midiGridBounds?.rows || 12;
           const basePitch = 60;
           const noteRow = rows - 1 - ((noteHit.note.pitch - basePitch + rows) % rows);
+          const noteStart = Math.max(0, Math.round(Number(noteHit.note.start) || 0));
+          const noteLength = Math.max(1, Math.round(Number(noteHit.note.length) || 1));
+          const notePitch = Math.round(Number(noteHit.note.pitch) || basePitch);
+          noteHit.note.start = noteStart;
+          noteHit.note.length = noteLength;
+          noteHit.note.pitch = notePitch;
           this.midiNoteDrag = {
             note: noteHit.note,
             type: noteHit.edge === 'end' ? 'resize' : 'move',
-            offsetCol: cell.col - noteHit.note.start,
-            offsetRow: cell.row - noteRow,
-            originStart: noteHit.note.start,
-            originLength: noteHit.note.length || 1,
-            originPitch: noteHit.note.pitch
+            offsetCol: cell.col - noteHit.note.__viewCol,
+            offsetRow: cell.row - noteHit.note.__viewRow,
+            originStart: noteStart,
+            originLength: noteLength,
+            originPitch: notePitch
           };
           this.midiNoteDirty = false;
         }
@@ -4976,10 +4996,10 @@ export default class Editor {
       }
       const cell = this.getMidiCellAt(payload.x, payload.y);
       if (cell) {
-        const rows = this.midiGridBounds?.rows || 12;
-        const basePitch = 60;
-        const pitch = basePitch + (rows - 1 - cell.row);
-        this.toggleMidiNote(pitch, cell.col, this.midiNoteLength);
+        const { rows, start, pitch } = this.getMidiGridView();
+        const absoluteStart = start + cell.col;
+        const notePitch = pitch + (rows - 1 - cell.row);
+        this.toggleMidiNote(notePitch, absoluteStart, this.midiNoteLength);
         return;
       }
     }
@@ -5013,7 +5033,7 @@ export default class Editor {
       return;
     }
 
-    if (this.isMobileLayout()) {
+    if (this.isMobileLayout() || this.mode === 'midi') {
       if (!this.isPointerInEditorArea(payload.x, payload.y)) return;
       const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
       this.pendingPointer = {
@@ -5119,20 +5139,22 @@ export default class Editor {
       const bounds = this.midiGridBounds;
       if (!bounds) return;
       const { x: gridX, y: gridY, cellSize, rows, cols } = bounds;
+      const gridView = this.getMidiGridView();
       const col = clamp(Math.floor((payload.x - gridX) / cellSize), 0, cols - 1);
       const row = clamp(Math.floor((payload.y - gridY) / cellSize), 0, rows - 1);
-      const basePitch = 60;
+      const basePitch = gridView.pitch;
       if (this.midiNoteDrag.type === 'resize') {
-        const start = this.midiNoteDrag.note.start;
-        const nextLength = clamp(col - start + 1, 1, cols - start);
-        this.midiNoteDrag.note.length = nextLength;
+        const start = Math.max(0, Math.round(Number(this.midiNoteDrag.note.start) || 0));
+        const absoluteCol = gridView.start + col;
+        const nextLength = clamp(absoluteCol - start + 1, 1, Math.max(1, 1024 - start));
+        this.midiNoteDrag.note.length = Math.max(1, Math.round(nextLength));
       } else {
-        const length = clamp(this.midiNoteDrag.note.length || 1, 1, cols);
-        const nextStart = clamp(col - this.midiNoteDrag.offsetCol, 0, cols - length);
+        const length = Math.max(1, Math.round(Number(this.midiNoteDrag.note.length) || 1));
+        const nextStart = clamp(gridView.start + col - this.midiNoteDrag.offsetCol, 0, Math.max(0, 1024 - length));
         const nextRow = clamp(row - this.midiNoteDrag.offsetRow, 0, rows - 1);
         const nextPitch = basePitch + (rows - 1 - nextRow);
-        this.midiNoteDrag.note.start = nextStart;
-        this.midiNoteDrag.note.pitch = nextPitch;
+        this.midiNoteDrag.note.start = Math.max(0, Math.round(nextStart));
+        this.midiNoteDrag.note.pitch = Math.round(nextPitch);
       }
       this.midiNoteDirty = true;
       return;
@@ -5150,7 +5172,7 @@ export default class Editor {
       return;
     }
 
-    if (this.isMobileLayout()) {
+    if (this.isMobileLayout() || this.mode === 'midi') {
       if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
         this.updatePanJoystick(payload.x, payload.y);
         return;
@@ -5352,7 +5374,7 @@ export default class Editor {
       return;
     }
 
-    if (this.isMobileLayout()) {
+    if (this.isMobileLayout() || this.mode === 'midi') {
       if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
         this.panJoystick.active = false;
         this.panJoystick.id = null;
@@ -5544,6 +5566,20 @@ export default class Editor {
     const row = Math.floor((y - gridY) / cellSize);
     if (col < 0 || row < 0 || col >= cols || row >= rows) return null;
     return { col, row };
+  }
+
+  getMidiGridView() {
+    const cols = this.midiGridBounds?.cols || 16;
+    const rows = this.midiGridBounds?.rows || 12;
+    const start = Math.max(0, Math.round(this.midiGridViewStart || 0));
+    const pitch = clamp(Math.round(this.midiGridViewPitch || 60), 0, Math.max(0, 127 - rows + 1));
+    const maxStart = Math.max(0, 1024 - cols);
+    return {
+      start: clamp(start, 0, maxStart),
+      pitch,
+      cols,
+      rows
+    };
   }
 
   getMidiNoteHit(x, y) {
@@ -7250,7 +7286,7 @@ export default class Editor {
     const sliderHeight = 10;
     let sliderY = height;
 
-    if (this.isMobileLayout()) {
+    if (this.isMobileLayout() || this.mode === 'midi') {
       joystickRadius = Math.min(78, controlBase * 0.14);
       knobRadius = Math.max(22, joystickRadius * 0.45);
       joystickCenter = {
@@ -7316,7 +7352,7 @@ export default class Editor {
         { id: 'prefabs', label: 'Structures' },
         { id: 'graphics', label: 'Graphics' },
         { id: 'music', label: 'Music' },
-        { id: 'undo-redo', label: 'Undo / Redo' }
+        { id: 'midi', label: 'MIDI' }
       ];
 
       const activeTab = this.getActivePanelTab();
@@ -7335,12 +7371,8 @@ export default class Editor {
           tab.label,
           activeTab === tab.id,
           () => {
-            if (tab.id === 'undo-redo') {
-              this.undo();
-            } else {
-              this.setPanelTab(tab.id);
-              this.drawer.open = true;
-            }
+            this.setPanelTab(tab.id);
+            this.drawer.open = true;
           },
           ''
         );
@@ -7357,7 +7389,7 @@ export default class Editor {
         const contentW = drawerWidth - panelPadding * 2;
         const baseContentY = tabY;
         let contentY = baseContentY;
-        const reservedBottom = activeTab === 'file' ? 12 : (joystickRadius * 2 + 32);
+        const reservedBottom = activeTab === 'file' ? 12 : (joystickRadius * 2 + 96);
         const fileFooterReserved = 0;
         let contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom - fileFooterReserved);
         const isPreviewTab = activeTab === 'tiles'
@@ -7947,8 +7979,8 @@ export default class Editor {
         { id: 'prefabs', label: 'STRUCTURES' },
         { id: 'graphics', label: 'GRAPHICS' },
         { id: 'music', label: 'MUSIC' },
-        { id: 'undo-redo', label: 'UNDO / REDO' }
-      ].map((entry) => ({ ...entry, action: () => (entry.id === 'undo-redo' ? this.undo() : this.setPanelTab(entry.id)), active: activeTab === entry.id }));
+        { id: 'midi', label: 'MIDI' }
+      ].map((entry) => ({ ...entry, action: () => this.setPanelTab(entry.id), active: activeTab === entry.id }));
       const topButtons = buildSharedLeftMenuButtons({
         x: tabColumn.x,
         y: tabColumn.y,
@@ -8645,13 +8677,14 @@ export default class Editor {
 
     if (this.mode === 'midi') {
       const track = this.getActiveMidiTrack();
-      const panelWidth = 360;
+      const panelWidth = this.isMobileLayout()
+        ? Math.max(220, this.editorBounds.w - 24)
+        : 420;
       const panelX = this.isMobileLayout()
         ? this.editorBounds.x + 12
         : 12;
-      const panelY = this.isMobileLayout()
-        ? this.editorBounds.y + this.editorBounds.h - 300
-        : infoPanelBottom;
+      const bottomRailH = this.isMobileLayout() ? 186 : 154;
+      const panelY = this.editorBounds.y + this.editorBounds.h - bottomRailH;
       const instrumentColumns = 4;
       const instrumentButtonW = 80;
       const instrumentButtonH = 24;
@@ -8662,12 +8695,12 @@ export default class Editor {
       const gridRows = 12;
       const gridCols = 16;
       const gridCellSize = 14;
-      const gridH = gridRows * gridCellSize;
+      const gridH = this.editorBounds.h - bottomRailH - 26;
       const noteButtonH = 20;
       const noteButtonW = 60;
       const noteButtonGap = 6;
       const noteSectionHeight = 12 + noteButtonH + 6;
-      const panelHeight = 120 + noteSectionHeight + visibleInstrumentRows * instrumentRowHeight + gridH;
+      const panelHeight = bottomRailH;
       ctx.save();
       ctx.globalAlpha = UI_SUITE.editorPanel.alpha;
       ctx.fillStyle = UI_SUITE.editorPanel.background;
@@ -8712,7 +8745,19 @@ export default class Editor {
         () => this.removeMidiTrack(),
         'Remove track'
       );
-      const noteLabelY = panelY + 72;
+      drawButton(
+        controlX,
+        panelY + 66,
+        controlButtonW,
+        controlButtonH,
+        this.midiLoopEnabled ? 'LOOP: ON' : 'LOOP: OFF',
+        this.midiLoopEnabled,
+        () => {
+          this.midiLoopEnabled = !this.midiLoopEnabled;
+        },
+        'Toggle MIDI loop mode'
+      );
+      const noteLabelY = panelY + 92;
       ctx.font = UI_SUITE.editorPanel.bodyFont;
       ctx.fillStyle = UI_SUITE.editorPanel.text;
       ctx.fillText('Note Length:', panelX + 12, noteLabelY);
@@ -8796,8 +8841,11 @@ export default class Editor {
         );
       }
 
-      const gridX = panelX + 12;
-      const gridY = instrumentStartY + visibleInstrumentHeight + 10;
+      const { start: gridStart, pitch: gridPitch } = this.getMidiGridView();
+      this.midiGridViewStart = gridStart;
+      this.midiGridViewPitch = gridPitch;
+      const gridX = this.editorBounds.x + 12;
+      const gridY = this.editorBounds.y + 12;
       const gridW = gridCols * gridCellSize;
       this.midiGridBounds = { x: gridX, y: gridY, cellSize: gridCellSize, rows: gridRows, cols: gridCols };
       ctx.fillStyle = 'rgba(255,255,255,0.05)';
@@ -8817,16 +8865,18 @@ export default class Editor {
       }
       if (track?.notes) {
         track.notes.forEach((note) => {
-          const pitchOffset = note.pitch - 60;
-          const row = gridRows - 1 - ((pitchOffset % gridRows + gridRows) % gridRows);
-          const col = note.start % gridCols;
-          const length = clamp(note.length || 1, 1, gridCols - col);
+          const col = Math.round(note.start) - gridStart;
+          const row = gridRows - 1 - (Math.round(note.pitch) - gridPitch);
+          if (col < 0 || col >= gridCols || row < 0 || row >= gridRows) return;
+          const length = clamp(Math.round(note.length || 1), 1, gridCols - col);
           ctx.fillStyle = 'rgba(120,200,255,0.7)';
           const noteX = gridX + col * gridCellSize + 1;
           const noteY = gridY + row * gridCellSize + 1;
           const noteW = length * gridCellSize - 2;
           const noteH = gridCellSize - 2;
           ctx.fillRect(noteX, noteY, noteW, noteH);
+          note.__viewCol = col;
+          note.__viewRow = row;
           this.midiNoteBounds.push({
             x: noteX,
             y: noteY,
@@ -8837,22 +8887,38 @@ export default class Editor {
         });
       }
       ctx.restore();
+
+      this.zoomSlider.bounds = {
+        x: this.editorBounds.x + 150,
+        y: this.editorBounds.y + this.editorBounds.h - 36,
+        w: Math.max(140, this.editorBounds.w - 310),
+        h: 30
+      };
+      this.panJoystick.center = {
+        x: this.editorBounds.x + 72,
+        y: this.editorBounds.y + this.editorBounds.h - 34
+      };
+      this.panJoystick.radius = 28;
+      this.panJoystick.knobRadius = 13;
     }
 
-    if (this.isMobileLayout()) {
-      const zoomT = this.zoomToSliderT(this.zoom);
-      const sliderKnobX = sliderX + zoomT * sliderWidth;
-      const sliderCenterY = sliderY + sliderHeight / 2;
+    if (this.isMobileLayout() || this.mode === 'midi') {
+      const sliderBounds = this.zoomSlider.bounds || { x: 0, y: 0, w: 0, h: 0 };
+      const sliderXActual = sliderBounds.x;
+      const sliderWidthActual = sliderBounds.w;
+      const sliderCenterY = sliderBounds.y + sliderBounds.h * 0.5;
       const sliderKnobRadius = sliderHeight * 1.6;
+      const zoomT = this.zoomToSliderT(this.zoom);
+      const sliderKnobX = sliderXActual + zoomT * sliderWidthActual;
       ctx.save();
       ctx.globalAlpha = 0.85;
       ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      ctx.fillRect(sliderX, sliderCenterY - sliderHeight / 2, sliderWidth, sliderHeight);
+      ctx.fillRect(sliderXActual, sliderCenterY - sliderHeight / 2, sliderWidthActual, sliderHeight);
       ctx.strokeStyle = 'rgba(255,255,255,0.4)';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(sliderX, sliderCenterY);
-      ctx.lineTo(sliderX + sliderWidth, sliderCenterY);
+      ctx.moveTo(sliderXActual, sliderCenterY);
+      ctx.lineTo(sliderXActual + sliderWidthActual, sliderCenterY);
       ctx.stroke();
       ctx.fillStyle = '#fff';
       ctx.beginPath();
@@ -8861,40 +8927,51 @@ export default class Editor {
       ctx.strokeStyle = 'rgba(0,0,0,0.7)';
       ctx.stroke();
 
-      const playZoomT = this.zoomToSliderT(1);
-      const playZoomX = sliderX + playZoomT * sliderWidth;
-      const markerRadius = Math.max(5, sliderHeight * 0.75);
-      ctx.fillStyle = 'rgba(0,200,255,0.95)';
-      ctx.beginPath();
-      ctx.arc(playZoomX, sliderCenterY, markerRadius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,0.75)';
-      ctx.stroke();
-      this.zoomSlider.playZoomBounds = {
-        x: playZoomX - markerRadius - 8,
-        y: sliderCenterY - markerRadius - 8,
-        w: markerRadius * 2 + 16,
-        h: markerRadius * 2 + 16
-      };
+      if (this.isMobileLayout()) {
+        const playZoomT = this.zoomToSliderT(1);
+        const playZoomX = sliderXActual + playZoomT * sliderWidthActual;
+        const markerRadius = Math.max(5, sliderHeight * 0.75);
+        ctx.fillStyle = 'rgba(0,200,255,0.95)';
+        ctx.beginPath();
+        ctx.arc(playZoomX, sliderCenterY, markerRadius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.75)';
+        ctx.stroke();
+        this.zoomSlider.playZoomBounds = {
+          x: playZoomX - markerRadius - 8,
+          y: sliderCenterY - markerRadius - 8,
+          w: markerRadius * 2 + 16,
+          h: markerRadius * 2 + 16
+        };
+      } else {
+        this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
+      }
       ctx.restore();
 
-      const joystickKnobX = joystickCenter.x + this.panJoystick.dx * joystickRadius;
-      const joystickKnobY = joystickCenter.y + this.panJoystick.dy * joystickRadius;
-      ctx.save();
-      ctx.globalAlpha = 0.85;
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      ctx.beginPath();
-      ctx.arc(joystickCenter.x, joystickCenter.y, joystickRadius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-      ctx.stroke();
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
-      ctx.beginPath();
-      ctx.arc(joystickKnobX, joystickKnobY, knobRadius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-      ctx.stroke();
-      ctx.restore();
+      if (this.panJoystick.radius > 0) {
+        const joystickKnobX = this.panJoystick.center.x + this.panJoystick.dx * this.panJoystick.radius;
+        const joystickKnobY = this.panJoystick.center.y + this.panJoystick.dy * this.panJoystick.radius;
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.beginPath();
+        ctx.arc(this.panJoystick.center.x, this.panJoystick.center.y, this.panJoystick.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.beginPath();
+        ctx.arc(joystickKnobX, joystickKnobY, this.panJoystick.knobRadius || knobRadius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      const railY = this.isMobileLayout() ? height - 52 : height - 56;
+      const buttonH = this.isMobileLayout() ? 36 : 40;
+      drawButton(width - 196, railY + 8, 86, buttonH, 'Undo', false, () => this.undo(), 'Undo last change (Ctrl+Z)');
+      drawButton(width - 102, railY + 8, 86, buttonH, 'Redo', false, () => this.redo(), 'Redo last change (Ctrl+Y)');
     }
 
     if (this.randomLevelDialog.open) {

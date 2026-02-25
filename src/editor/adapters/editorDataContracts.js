@@ -39,9 +39,9 @@ export function normalizeMidiTracks(rawTracks, fallbackInstrument = 'piano') {
     instrument: track.instrument || fallbackInstrument,
     notes: Array.isArray(track.notes)
       ? track.notes.map((note) => ({
-        pitch: note.pitch,
-        start: note.start,
-        length: note.length || 1
+        pitch: Number.isFinite(note?.pitch) ? Math.round(note.pitch) : 60,
+        start: Math.max(0, Number.isFinite(note?.start) ? Math.round(note.start) : 0),
+        length: Math.max(1, Number.isFinite(note?.length) ? Math.round(note.length) : 1)
       }))
       : []
   }));
