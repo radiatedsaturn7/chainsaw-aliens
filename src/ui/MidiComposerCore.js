@@ -8292,16 +8292,26 @@ export default class MidiComposer {
     this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
 
     const noteW = 130;
-    const tempoX = this.bounds.instrumentNext.x + navW + gap;
-    this.bounds.noteLength = { x: tempoX, y: row1Y, w: noteW, h: rowH };
+    const noteX = this.bounds.instrumentNext.x + navW + gap;
+    this.bounds.noteLength = { x: noteX, y: row1Y, w: noteW, h: rowH };
     const noteLabel = this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex]);
     this.drawSmallButton(ctx, this.bounds.noteLength, noteLabel, false);
     this.bounds.quantizeValue = null;
     this.bounds.loopToggle = null;
+
+    const afterNoteX = this.bounds.noteLength.x + noteW + gap;
+    const rowRight = x + w - padding;
+    const rowRemaining = Math.max(0, rowRight - afterNoteX);
+    const metronomeW = Math.max(88, Math.min(116, Math.round(rowRemaining * 0.56)));
+    const tempoW = Math.max(74, rowRemaining - metronomeW - gap);
+
+    this.bounds.metronome = { x: afterNoteX, y: row1Y, w: metronomeW, h: rowH };
+    this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
+
     this.bounds.tempoButton = {
-      x: this.bounds.noteLength.x + noteW + gap,
+      x: this.bounds.metronome.x + this.bounds.metronome.w + gap,
       y: row1Y,
-      w: Math.max(120, x + w - padding - (this.bounds.noteLength.x + noteW + gap)),
+      w: tempoW,
       h: rowH
     };
     this.drawSmallButton(ctx, this.bounds.tempoButton, `${this.song.tempo} BPM`, this.tempoSliderOpen);
@@ -8315,8 +8325,7 @@ export default class MidiComposer {
       { id: 'prevBar', label: '⏪' },
       { id: 'play', label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying },
       { id: 'nextBar', label: '⏩' },
-      { id: 'goEnd', label: '⏭' },
-      { id: 'metronome', label: this.metronomeEnabled ? 'M On' : 'M Off', active: this.metronomeEnabled }
+      { id: 'goEnd', label: '⏭' }
     ];
     transportButtons.forEach((button, index) => {
       const bounds = {
@@ -10274,10 +10283,12 @@ export default class MidiComposer {
       this.bounds.drumView = null;
     }
 
-    const tempoX = noteLengthX;
-    const tempoLabel = `Tempo ${this.song.tempo}BPM`;
-    ctx.font = '12px Courier New';
-    const tempoW = Math.min(180, Math.max(120, ctx.measureText(tempoLabel).width + 28));
+    this.bounds.metronome = { x: noteLengthX, y: controlsRowY, w: 108, h: rowH };
+    this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
+
+    const tempoX = noteLengthX + this.bounds.metronome.w + 8;
+    const tempoLabel = `${this.song.tempo} BPM`;
+    const tempoW = isMobile ? 88 : 96;
     this.bounds.tempoButton = { x: tempoX, y: controlsRowY, w: tempoW, h: rowH };
     this.drawSmallButton(ctx, this.bounds.tempoButton, tempoLabel, this.tempoSliderOpen);
   }
