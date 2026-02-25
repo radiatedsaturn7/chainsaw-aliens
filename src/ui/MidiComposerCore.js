@@ -652,6 +652,15 @@ export default class MidiComposer {
     };
     this.tempoSliderOpen = false;
     this.pastePreview = null;
+    this.panJoystick = {
+      active: false,
+      id: null,
+      dx: 0,
+      dy: 0,
+      center: { x: 0, y: 0 },
+      radius: 0,
+      knobRadius: 0
+    };
     this.gridZoomX = null;
     this.gridZoomY = null;
     this.gridOffset = { x: 0, y: 0 };
@@ -676,6 +685,9 @@ export default class MidiComposer {
       play: null,
       stop: null,
       loopToggle: null,
+      railInstruments: null,
+      railSettings: null,
+      railZoom: null,
       returnStart: null,
       setStart: null,
       setEnd: null,
@@ -2544,10 +2556,50 @@ export default class MidiComposer {
     });
   }
 
+  isMobileLandscapeGridMode() {
+    return this.isMobileLayout()
+      && this.viewportWidth > this.viewportHeight
+      && this.activeTab === 'grid'
+      && !this.recordModeActive;
+  }
+
+  applyMobilePanJoystick(dt = 0) {
+    if (!this.isMobileLandscapeGridMode() || !this.panJoystick.active || !this.gridBounds) return;
+    const frameScale = dt > 0 ? dt * 60 : 1;
+    const speed = 11;
+    this.gridOffset.x -= this.panJoystick.dx * speed * frameScale;
+    this.gridOffset.y -= this.panJoystick.dy * speed * frameScale;
+    this.ensureGridPanCapacity(this.gridOffset.x);
+    this.clampGridOffset(
+      this.gridBounds.w,
+      this.gridBounds.h,
+      this.getExpandedGridWidth(),
+      this.gridBounds.gridH
+    );
+    this.updateTimelineStartTickFromGrid();
+  }
+
+  updatePanJoystick(x, y) {
+    const { center, radius } = this.panJoystick;
+    const dx = x - center.x;
+    const dy = y - center.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist <= 0.0001 || radius <= 0) {
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+      return;
+    }
+    const clamped = Math.min(dist, radius);
+    const angle = Math.atan2(dy, dx);
+    this.panJoystick.dx = Math.cos(angle) * (clamped / radius);
+    this.panJoystick.dy = Math.sin(angle) * (clamped / radius);
+  }
+
   update(input, dt) {
     this.maybeEnsureState();
     this.handleKeyboardShortcuts(input);
     this.handleGamepadInput(input, dt);
+    this.applyMobilePanJoystick(dt);
     this.updateRecordMode(dt);
     if (this.isPlaying) {
       this.advancePlayhead(dt);
@@ -2938,10 +2990,14 @@ export default class MidiComposer {
         }
       }
 
-      if (!this.recordModeActive && this.gridBounds) {
-        const panDeadzone = 0.2;
-        const panX = Math.abs(axes.rightX) > panDeadzone ? axes.rightX : 0;
-        const panY = Math.abs(axes.rightY) > panDeadzone ? axes.rightY : 0;
+      if (!this.recordModeActive && this.gridBounds && !this.gamepadResizeMode.active) {
+        const panDeadzone = 0.12;
+        const rightPanX = Math.abs(axes.rightX) > panDeadzone ? axes.rightX : 0;
+        const rightPanY = Math.abs(axes.rightY) > panDeadzone ? axes.rightY : 0;
+        const leftPanX = Math.abs(axes.leftX) > panDeadzone ? axes.leftX : 0;
+        const leftPanY = Math.abs(axes.leftY) > panDeadzone ? axes.leftY : 0;
+        const panX = Math.abs(leftPanX) > Math.abs(rightPanX) ? leftPanX : rightPanX;
+        const panY = Math.abs(leftPanY) > Math.abs(rightPanY) ? leftPanY : rightPanY;
         if (panX || panY) {
           const panSpeed = 420;
           this.gridOffset.x -= panX * panSpeed * dt;
@@ -3186,6 +3242,17 @@ export default class MidiComposer {
       }
     }
     const { x, y } = payload;
+    if (this.isMobileLandscapeGridMode() && payload.touchCount > 0 && this.panJoystick.radius > 0) {
+      const dx = payload.x - this.panJoystick.center.x;
+      const dy = payload.y - this.panJoystick.center.y;
+      if (Math.hypot(dx, dy) <= this.panJoystick.radius * 1.2) {
+        this.panJoystick.active = true;
+        this.panJoystick.id = payload.id ?? 'touch';
+        this.updatePanJoystick(payload.x, payload.y);
+        return;
+      }
+    }
+
     if (this.recordModeActive) {
       const action = this.recordLayout.handlePointerDown(payload);
       if (action?.type === 'device') {
@@ -3239,7 +3306,16 @@ export default class MidiComposer {
         this.exitRecordMode();
         return;
       }
-      if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
+      if (this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings)) {
+      this.activeTab = 'settings';
+      this.closeSelectionMenu();
+      this.pastePreview = null;
+      this.noteLengthMenu.open = false;
+      this.tempoSliderOpen = false;
+      return;
+    }
+
+    if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
         if (this.activeTab === 'instruments') {
           this.confirmInstrumentSelection();
         }
@@ -3365,6 +3441,20 @@ export default class MidiComposer {
       this.pastePreview = null;
       this.noteLengthMenu.open = false;
       this.tempoSliderOpen = false;
+      return;
+    }
+
+    if (this.bounds.railInstruments && this.pointInBounds(x, y, this.bounds.railInstruments)) {
+      this.activeTab = 'instruments';
+      return;
+    }
+    if (this.bounds.railSettings && this.pointInBounds(x, y, this.bounds.railSettings)) {
+      this.activeTab = 'settings';
+      return;
+    }
+    if (this.bounds.railZoom && this.pointInBounds(x, y, this.bounds.railZoom)) {
+      this.dragState = { mode: 'slider', id: 'grid-zoom-x', bounds: this.bounds.railZoom };
+      this.updateSliderValue(x, y, 'grid-zoom-x', this.bounds.railZoom);
       return;
     }
 
@@ -4017,6 +4107,11 @@ export default class MidiComposer {
       this.recordLayout.handlePointerMove(payload);
       return;
     }
+
+    if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id || this.panJoystick.id === 'touch')) {
+      this.updatePanJoystick(payload.x, payload.y);
+      return;
+    }
     if (this.qaOverlayOpen) return;
     if (this.dragState?.mode === 'song-pan-or-select') {
       const dx = payload.x - this.dragState.startX;
@@ -4348,6 +4443,14 @@ export default class MidiComposer {
     this.lastPointer = { x: payload.x, y: payload.y };
     if (this.recordModeActive) {
       this.recordLayout.handlePointerUp(payload);
+      return;
+    }
+
+    if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id || this.panJoystick.id === 'touch')) {
+      this.panJoystick.active = false;
+      this.panJoystick.id = null;
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
       return;
     }
     if (this.longPressTimer) {
@@ -4775,7 +4878,7 @@ export default class MidiComposer {
       }
       this.dragState = {
         mode: 'move',
-        startTick: cell.tick,
+        startTick: this.snapTick(cell.tick),
         startPitch: cell.pitch,
         startX: x,
         startY: y,
@@ -6695,6 +6798,14 @@ export default class MidiComposer {
       const tempo = Math.round(40 + ratio * 200);
       this.setTempo(tempo);
     }
+    if (id === 'grid-zoom-x') {
+      const zoomXLimits = this.getGridZoomLimitsX();
+      this.gridZoomX = clamp(
+        zoomXLimits.minZoom + ratio * (zoomXLimits.maxZoom - zoomXLimits.minZoom),
+        zoomXLimits.minZoom,
+        zoomXLimits.maxZoom
+      );
+    }
     this.saveAudioSettings();
     this.applyAudioSettings();
   }
@@ -7655,6 +7766,9 @@ export default class MidiComposer {
     this.bounds.tempoButton = null;
     this.bounds.tempoSlider = null;
     this.bounds.noteLengthMenu = [];
+    this.bounds.railInstruments = null;
+    this.bounds.railSettings = null;
+    this.bounds.railZoom = null;
     this.editorShellTheme = resolveEditorShellTheme();
 
     const isMobile = this.isMobileLayout();
@@ -7688,6 +7802,8 @@ export default class MidiComposer {
       this.drawQaOverlay(ctx, width, height);
     }
 
+    this.drawMobilePanJoystick(ctx, width, height);
+
     ctx.restore();
     if (perfEnabled) {
       const elapsed = performance.now() - perfStart;
@@ -7701,7 +7817,7 @@ export default class MidiComposer {
 
 
   drawDesktopLayout(ctx, width, height, track, pattern) {
-    const transportH = 96;
+    const transportH = 132;
     const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
     const shellLayout = createEditorShellLayout({
       viewportWidth: width,
@@ -7861,17 +7977,22 @@ export default class MidiComposer {
     const sidebarW = getSharedMobileRailWidth(width, height);
     const sidebarX = 0;
     const sidebarY = 0;
+    const isLandscape = width > height;
+    const railH = isLandscape ? 220 : 0;
     const sidebarH = height;
     const contentX = sidebarX + sidebarW + gap;
     const contentY = padding;
     const contentW = width - contentX - padding;
-    const contentH = height - padding * 2;
+    const contentH = height - padding * 2 - railH;
 
-    this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track);
+    this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: isLandscape });
 
     if (this.activeTab === 'grid') {
       this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.drawGridZoomControls(ctx, contentX, contentY, contentW, contentH);
+      if (isLandscape) {
+        this.drawMobileBottomRail(ctx, contentX, contentY + contentH + 8, contentW, railH - 8, track);
+      }
     } else if (this.activeTab === 'song') {
       this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'instruments') {
@@ -7883,13 +8004,13 @@ export default class MidiComposer {
     }
   }
 
-  drawMobileSidebar(ctx, x, y, w, h, track) {
+  drawMobileSidebar(ctx, x, y, w, h, track, options = {}) {
     const panelGap = 10;
     const rowH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
     const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const panelPadding = clamp(Math.round(rowH * 0.25), 8, 12);
     const menuRows = TAB_OPTIONS.length + 2;
-    const menuH = Math.min(h * 0.46, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
+    const menuH = Math.min(h * 0.62, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
     const menuX = x;
     const menuY = y;
     const controlsX = x;
@@ -7916,17 +8037,14 @@ export default class MidiComposer {
       this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
       cursorY += rowH + rowGap;
     });
-    const undoCols = innerW < 190 ? 1 : 2;
-    const undoW = undoCols === 1 ? innerW : (innerW - rowGap) / 2;
-    this.bounds.undoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
-    this.drawSmallButton(ctx, this.bounds.undoButton, 'Undo', false);
-    if (undoCols === 1) {
-      cursorY += rowH + rowGap;
-      this.bounds.redoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
-    } else {
-      this.bounds.redoButton = { x: innerX + undoW + rowGap, y: cursorY, w: undoW, h: rowH };
+    this.bounds.undoButton = null;
+    this.bounds.redoButton = null;
+    this.bounds.settings = { x: innerX + (innerW - menuButtonW) * 0.5, y: cursorY, w: menuButtonW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.settings, 'Settings', this.activeTab === 'settings');
+
+    if (options.menuOnly) {
+      return;
     }
-    this.drawSmallButton(ctx, this.bounds.redoButton, 'Redo', false);
 
     ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(controlsX, controlsY, w, controlsH);
@@ -8100,6 +8218,134 @@ export default class MidiComposer {
     });
   }
 
+  drawMobilePanJoystick(ctx, width, height) {
+    if (!this.isMobileLandscapeGridMode()) {
+      this.panJoystick.center = { x: 0, y: 0 };
+      this.panJoystick.radius = 0;
+      this.panJoystick.knobRadius = 0;
+      this.panJoystick.active = false;
+      this.panJoystick.id = null;
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+      return;
+    }
+    const controlBase = Math.min(width, height);
+    const controlMargin = Math.max(16, controlBase * 0.04);
+    const joystickRadius = Math.min(78, controlBase * 0.14);
+    const knobRadius = Math.max(22, joystickRadius * 0.45);
+    const center = {
+      x: controlMargin + joystickRadius,
+      y: height - controlMargin - joystickRadius
+    };
+    this.panJoystick.center = center;
+    this.panJoystick.radius = joystickRadius;
+    this.panJoystick.knobRadius = knobRadius;
+
+    const joystickKnobX = center.x + this.panJoystick.dx * joystickRadius;
+    const joystickKnobY = center.y + this.panJoystick.dy * joystickRadius;
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.42)';
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, joystickRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, joystickRadius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.beginPath();
+    ctx.arc(joystickKnobX, joystickKnobY, knobRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  drawMobileBottomRail(ctx, x, y, w, h, track) {
+    this.bounds.instrumentSettingsControls = [];
+    this.bounds.railInstruments = null;
+    this.bounds.railSettings = null;
+    ctx.fillStyle = UI_SUITE.colors.panel;
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(x, y, w, h);
+
+    const padding = 8;
+    const gap = 8;
+    const rowH = 48;
+    const row1Y = y + 8;
+    const row2Y = row1Y + rowH + 10;
+    const innerW = w - padding * 2;
+
+    const navW = 48;
+    const instrumentLabelW = Math.max(100, Math.floor(innerW * 0.38));
+    this.bounds.instrumentPrev = { x: x + padding, y: row1Y, w: navW, h: rowH };
+    this.bounds.instrumentLabel = { x: x + padding + navW + 4, y: row1Y, w: instrumentLabelW, h: rowH };
+    this.bounds.instrumentNext = { x: this.bounds.instrumentLabel.x + instrumentLabelW + 4, y: row1Y, w: navW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.instrumentPrev, '<', false);
+    const instrumentLabel = track
+      ? isDrumTrack(track)
+        ? this.getDrumKitLabel(track)
+        : this.getProgramLabel(track.program)
+      : 'Instrument';
+    this.drawSmallButton(ctx, this.bounds.instrumentLabel, instrumentLabel, false);
+    this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
+
+    const noteW = 130;
+    const tempoX = this.bounds.instrumentNext.x + navW + gap;
+    this.bounds.noteLength = { x: tempoX, y: row1Y, w: noteW, h: rowH };
+    const noteLabel = this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex]);
+    this.drawSmallButton(ctx, this.bounds.noteLength, noteLabel, false);
+    this.bounds.quantizeValue = null;
+    this.bounds.loopToggle = null;
+    this.bounds.tempoButton = {
+      x: this.bounds.noteLength.x + noteW + gap,
+      y: row1Y,
+      w: Math.max(120, x + w - padding - (this.bounds.noteLength.x + noteW + gap)),
+      h: rowH
+    };
+    this.drawSmallButton(ctx, this.bounds.tempoButton, `${this.song.tempo} BPM`, this.tempoSliderOpen);
+
+    const transportGap = 6;
+    const transportCols = 7;
+    const transportW = (innerW - transportGap * (transportCols - 1)) / transportCols;
+    const transportButtons = [
+      { id: 'record', label: '●', active: this.recordModeActive },
+      { id: 'returnStart', label: '⏮' },
+      { id: 'prevBar', label: '⏪' },
+      { id: 'play', label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying },
+      { id: 'nextBar', label: '⏩' },
+      { id: 'goEnd', label: '⏭' },
+      { id: 'metronome', label: this.metronomeEnabled ? 'M On' : 'M Off', active: this.metronomeEnabled }
+    ];
+    transportButtons.forEach((button, index) => {
+      const bounds = {
+        x: x + padding + index * (transportW + transportGap),
+        y: row2Y,
+        w: transportW,
+        h: rowH
+      };
+      this.bounds[button.id] = bounds;
+      this.drawSmallButton(ctx, bounds, button.label, Boolean(button.active));
+    });
+
+    const zoomXLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+    const ratio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
+    const sliderY = row2Y + rowH + 10;
+    this.bounds.railZoom = { x: x + padding, y: sliderY, w: w - padding * 2, h: 14 };
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
+    ctx.fillStyle = '#ffe16a';
+    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w * ratio, this.bounds.railZoom.h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = '12px Courier New';
+    ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 4);
+  }
+
+
+
   getSidebarWidth(viewWidth, {
     ratio,
     min,
@@ -8201,7 +8447,8 @@ export default class MidiComposer {
     this.bounds.transportBar = { x, y, w, h };
     const isMobile = this.isMobileLayout();
     const gap = 12;
-    const buttonH = Math.max(44, h - 26);
+    const topAreaH = Math.max(46, h * 0.5);
+    const buttonH = Math.max(34, topAreaH - 20);
     const baseButtonW = Math.min(72, (w - gap * 7) / 6);
     const buttonSpecs = [
       { id: 'returnStart', label: '⏮', w: baseButtonW },
@@ -8215,7 +8462,7 @@ export default class MidiComposer {
     const scale = rawTotalW > w ? w / rawTotalW : 1;
     const totalW = rawTotalW * scale;
     const startX = x + (w - totalW) / 2;
-    const centerY = y + (h - buttonH) / 2;
+    const centerY = y + 10;
     const drawTransportButton = (button, bx) => {
       const buttonW = button.w * scale;
       const bounds = { x: bx, y: centerY, w: buttonW, h: buttonH };
@@ -8233,10 +8480,42 @@ export default class MidiComposer {
       cursorX += button.w * scale + gap;
     });
 
+    const railY = y + topAreaH;
+    const railPadding = 12;
+    const railGap = 10;
+    const railH = 24;
+    const railW = w - railPadding * 2;
+    const zoomW = Math.max(220, Math.round(railW * 0.36));
+    const buttonW = Math.max(96, Math.round((railW - zoomW - railGap * 3) / 3));
+    let railX = x + railPadding;
+    this.bounds.railInstruments = { x: railX, y: railY, w: buttonW, h: railH };
+    this.drawSmallButton(ctx, this.bounds.railInstruments, 'Instruments', this.activeTab === 'instruments');
+    railX += buttonW + railGap;
+    this.bounds.railSettings = { x: railX, y: railY, w: buttonW, h: railH };
+    this.drawSmallButton(ctx, this.bounds.railSettings, 'Settings', this.activeTab === 'settings');
+    railX += buttonW + railGap;
+    this.bounds.loopToggle = { x: railX, y: railY, w: buttonW, h: railH };
+    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+
+    const zoomXLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+    const zoomRatio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
+    const sliderY = railY + railH + 8;
+    this.bounds.railZoom = { x: x + w - railPadding - zoomW, y: sliderY, w: zoomW, h: 12 };
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
+    ctx.fillStyle = '#ffe16a';
+    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w * zoomRatio, this.bounds.railZoom.h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
+    ctx.fillStyle = '#fff';
+    ctx.font = '11px Courier New';
+    ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 4);
+
     if (this.singleNoteRecordMode.active) {
       ctx.fillStyle = '#ff9c42';
       ctx.font = isMobile ? '12px Courier New' : '13px Courier New';
-      ctx.fillText('Single Note Mode', x + 12, y + h - 10);
+      ctx.fillText('Single Note Mode', x + 12, y + h - 6);
     }
 
     const position = this.getPositionLabel();
