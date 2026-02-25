@@ -7779,6 +7779,7 @@ export default class MidiComposer {
     ctx.fillRect(0, 0, width, height);
     this.bounds.tempoButton = null;
     this.bounds.tempoSlider = null;
+    this.bounds.settings = null;
     this.bounds.noteLengthMenu = [];
     this.bounds.railInstruments = null;
     this.bounds.railSettings = null;
@@ -7895,6 +7896,7 @@ export default class MidiComposer {
       w: tabColumn.w,
       h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop
     };
+    this.bounds.settings = { ...this.bounds.leftSettings };
     this.drawButton(ctx, this.bounds.leftSettings, 'Settings', this.activeTab === 'settings', false);
 
     if (this.activeTab === 'file') {
