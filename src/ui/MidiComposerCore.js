@@ -8326,9 +8326,8 @@ export default class MidiComposer {
     const afterNoteX = this.bounds.noteLength.x + noteW + gap;
     const rowRight = x + w - padding;
     const rowRemaining = Math.max(0, rowRight - afterNoteX);
-    const tempoW = Math.max(72, Math.min(86, Math.round(rowRemaining * 0.24)));
-    const loopW = Math.max(92, Math.min(118, Math.round(rowRemaining * 0.34)));
-    const metronomeW = Math.max(84, rowRemaining - tempoW - loopW - gap * 2);
+    const tempoW = Math.max(108, Math.min(148, Math.round(rowRemaining * 0.42)));
+    const metronomeW = Math.max(84, rowRemaining - tempoW - gap);
 
     this.bounds.metronome = { x: afterNoteX, y: row1Y, w: metronomeW, h: rowH };
     this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
@@ -8341,14 +8340,6 @@ export default class MidiComposer {
     };
     this.drawSmallButton(ctx, this.bounds.tempoButton, `${this.song.tempo} BPM`, this.tempoSliderOpen);
 
-    this.bounds.loopToggle = {
-      x: this.bounds.tempoButton.x + this.bounds.tempoButton.w + gap,
-      y: row1Y,
-      w: loopW,
-      h: rowH
-    };
-    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
-
     const transportGap = 6;
     const transportCols = 7;
     const transportW = (innerW - transportGap * (transportCols - 1)) / transportCols;
@@ -8358,7 +8349,8 @@ export default class MidiComposer {
       { id: 'prevBar', label: '⏪' },
       { id: 'play', label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying },
       { id: 'nextBar', label: '⏩' },
-      { id: 'goEnd', label: '⏭' }
+      { id: 'goEnd', label: '⏭' },
+      { id: 'loopToggle', label: this.song.loopEnabled ? 'Loop On' : 'Loop Off', active: this.song.loopEnabled }
     ];
     transportButtons.forEach((button, index) => {
       const bounds = {
