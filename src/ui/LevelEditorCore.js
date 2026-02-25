@@ -5,6 +5,7 @@ import { clamp, randInt, pickOne } from '../editor/input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from '../editor/playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
 import { createViewportController, screenToWorld, worldToScreen } from './shared/viewportController.js';
+import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { createPixelEditorAdapter } from '../editor/adapters/pixelEditorAdapter.js';
 import { createMidiEditorAdapter } from '../editor/adapters/midiEditorAdapter.js';
@@ -7261,20 +7262,18 @@ export default class Editor {
       this.panJoystick.radius = joystickRadius;
       this.panJoystick.knobRadius = knobRadius;
 
-      sliderX = joystickCenter.x + joystickRadius + 24;
-      const sliderRightPadding = Math.max(controlMargin + 132, width * 0.2);
-      sliderWidth = width - sliderX - sliderRightPadding;
-      sliderY = height - controlMargin - sliderHeight;
-      if (sliderWidth < 140) {
-        sliderX = controlMargin;
-        sliderWidth = Math.max(140, width - controlMargin * 2 - 132);
-      }
-      this.zoomSlider.bounds = {
-        x: sliderX,
-        y: sliderY - 14,
-        w: sliderWidth,
-        h: sliderHeight + 28
-      };
+      const { railBounds, hitBounds } = getSharedMobileZoomSliderLayout({
+        width,
+        height,
+        joystickCenterX: joystickCenter.x,
+        joystickRadius,
+        controlMargin,
+        sliderHeight
+      });
+      sliderX = railBounds.x;
+      sliderY = railBounds.y;
+      sliderWidth = railBounds.w;
+      this.zoomSlider.bounds = hitBounds;
       this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
     } else {
       this.panJoystick.center = { x: 0, y: 0 };
@@ -8841,25 +8840,15 @@ export default class Editor {
 
     if (this.isMobileLayout()) {
       const zoomT = this.zoomToSliderT(this.zoom);
-      const sliderKnobX = sliderX + zoomT * sliderWidth;
       const sliderCenterY = sliderY + sliderHeight / 2;
-      const sliderKnobRadius = sliderHeight * 1.6;
       ctx.save();
-      ctx.globalAlpha = 0.85;
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      ctx.fillRect(sliderX, sliderCenterY - sliderHeight / 2, sliderWidth, sliderHeight);
-      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(sliderX, sliderCenterY);
-      ctx.lineTo(sliderX + sliderWidth, sliderCenterY);
-      ctx.stroke();
-      ctx.fillStyle = '#fff';
-      ctx.beginPath();
-      ctx.arc(sliderKnobX, sliderCenterY, sliderKnobRadius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,0.7)';
-      ctx.stroke();
+      drawSharedMobileZoomSlider(ctx, { x: sliderX, y: sliderCenterY - sliderHeight / 2, w: sliderWidth, h: sliderHeight }, zoomT, {
+        knobColor: '#fff',
+        railColor: 'rgba(0,0,0,0.6)',
+        railStroke: 'rgba(255,255,255,0.4)',
+        knobStroke: 'rgba(0,0,0,0.7)',
+        alpha: 0.85
+      });
 
       const playZoomT = this.zoomToSliderT(1);
       const playZoomX = sliderX + playZoomT * sliderWidth;
