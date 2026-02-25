@@ -8322,13 +8322,13 @@ export default class MidiComposer {
     const noteLabel = this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex]);
     this.drawSmallButton(ctx, this.bounds.noteLength, noteLabel, false);
     this.bounds.quantizeValue = null;
-    this.bounds.loopToggle = null;
 
     const afterNoteX = this.bounds.noteLength.x + noteW + gap;
     const rowRight = x + w - padding;
     const rowRemaining = Math.max(0, rowRight - afterNoteX);
-    const metronomeW = Math.max(88, Math.min(116, Math.round(rowRemaining * 0.56)));
-    const tempoW = Math.max(74, rowRemaining - metronomeW - gap);
+    const tempoW = Math.max(72, Math.min(86, Math.round(rowRemaining * 0.24)));
+    const loopW = Math.max(92, Math.min(118, Math.round(rowRemaining * 0.34)));
+    const metronomeW = Math.max(84, rowRemaining - tempoW - loopW - gap * 2);
 
     this.bounds.metronome = { x: afterNoteX, y: row1Y, w: metronomeW, h: rowH };
     this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
@@ -8340,6 +8340,14 @@ export default class MidiComposer {
       h: rowH
     };
     this.drawSmallButton(ctx, this.bounds.tempoButton, `${this.song.tempo} BPM`, this.tempoSliderOpen);
+
+    this.bounds.loopToggle = {
+      x: this.bounds.tempoButton.x + this.bounds.tempoButton.w + gap,
+      y: row1Y,
+      w: loopW,
+      h: rowH
+    };
+    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
 
     const transportGap = 6;
     const transportCols = 7;
