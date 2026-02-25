@@ -102,7 +102,7 @@ export default class TouchInput {
   }
 
   computeDrumLayout(bounds) {
-    const cols = 5;
+    const cols = 3;
     const rows = Math.ceil(DRUM_MAP.length / cols);
     const padW = bounds.w / cols;
     const padH = bounds.h / rows;
@@ -166,12 +166,12 @@ export default class TouchInput {
         h: stringGap * 0.7,
         open: true
       });
-      for (let fret = 0; fret < fretCount; fret += 1) {
+      for (let fret = 1; fret <= fretCount; fret += 1) {
         this.stringRects.push({
           pitch: basePitch + fret,
           stringIndex,
           fret,
-          x: boardX + fret * fretW,
+          x: boardX + (fret - 1) * fretW,
           y: y - stringGap * 0.35,
           w: fretW,
           h: stringGap * 0.7
