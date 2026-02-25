@@ -7894,7 +7894,7 @@ export default class MidiComposer {
     const sidebarX = 0;
     const sidebarY = 0;
     const isLandscape = width > height;
-    const railH = isLandscape ? 190 : 0;
+    const railH = isLandscape ? 300 : 0;
     const sidebarH = height;
     const contentX = sidebarX + sidebarW + gap;
     const contentY = padding;
@@ -7926,7 +7926,7 @@ export default class MidiComposer {
     const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const panelPadding = clamp(Math.round(rowH * 0.25), 8, 12);
     const menuRows = TAB_OPTIONS.length + 2;
-    const menuH = Math.min(h * 0.46, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
+    const menuH = Math.min(h * 0.62, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
     const menuX = x;
     const menuY = y;
     const controlsX = x;
@@ -8143,6 +8143,8 @@ export default class MidiComposer {
 
   drawMobileBottomRail(ctx, x, y, w, h, track) {
     this.bounds.instrumentSettingsControls = [];
+    this.bounds.railInstruments = null;
+    this.bounds.railSettings = null;
     ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
@@ -8150,22 +8152,17 @@ export default class MidiComposer {
 
     const padding = 8;
     const gap = 8;
-    const rowH = 24;
+    const rowH = 48;
     const row1Y = y + 8;
-    const row2Y = row1Y + rowH + 8;
-    const row3Y = row2Y + rowH + 8;
+    const row2Y = row1Y + rowH + 10;
+    const row3Y = row2Y + rowH + 10;
     const innerW = w - padding * 2;
 
-    const buttonW = (innerW - gap * 2) / 3;
-    this.bounds.railInstruments = { x: x + padding, y: row1Y, w: buttonW, h: rowH };
-    this.bounds.railSettings = { x: x + padding + buttonW + gap, y: row1Y, w: buttonW, h: rowH };
-    this.bounds.loopToggle = { x: x + padding + (buttonW + gap) * 2, y: row1Y, w: buttonW, h: rowH };
-    this.drawSmallButton(ctx, this.bounds.railInstruments, 'Instruments', this.activeTab === 'instruments');
-    this.drawSmallButton(ctx, this.bounds.railSettings, 'Settings', this.activeTab === 'settings');
+    this.bounds.loopToggle = { x: x + padding, y: row1Y, w: innerW, h: rowH };
     this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
 
-    const navW = 28;
-    const instrumentLabelW = Math.max(100, Math.floor(innerW * 0.28));
+    const navW = 48;
+    const instrumentLabelW = Math.max(100, Math.floor(innerW * 0.38));
     this.bounds.instrumentPrev = { x: x + padding, y: row2Y, w: navW, h: rowH };
     this.bounds.instrumentLabel = { x: x + padding + navW + 4, y: row2Y, w: instrumentLabelW, h: rowH };
     this.bounds.instrumentNext = { x: this.bounds.instrumentLabel.x + instrumentLabelW + 4, y: row2Y, w: navW, h: rowH };
@@ -8178,15 +8175,16 @@ export default class MidiComposer {
     this.drawSmallButton(ctx, this.bounds.instrumentLabel, instrumentLabel, false);
     this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
 
-    const noteW = 86;
-    const quantW = 74;
-    const tempoW = Math.max(96, Math.min(136, innerW - (navW * 2 + instrumentLabelW + noteW + quantW + gap * 5)));
-    this.bounds.noteLength = { x: this.bounds.instrumentNext.x + navW + gap, y: row2Y, w: noteW, h: rowH };
+    const noteW = 130;
+    const quantW = 96;
+    const tempoX = this.bounds.instrumentNext.x + navW + gap;
+    const tempoW = Math.max(120, x + w - padding - tempoX);
+    this.bounds.noteLength = { x: tempoX, y: row2Y, w: noteW, h: rowH };
     const noteLabel = `Note ${this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex])}`;
     this.drawSmallButton(ctx, this.bounds.noteLength, noteLabel, false);
     this.bounds.quantizeValue = { x: this.bounds.noteLength.x + noteW + gap, y: row2Y, w: quantW, h: rowH };
     this.drawSmallButton(ctx, this.bounds.quantizeValue, this.quantizeOptions[this.quantizeIndex].label, this.quantizeEnabled);
-    this.bounds.tempoButton = { x: this.bounds.quantizeValue.x + quantW + gap, y: row2Y, w: tempoW, h: rowH };
+    this.bounds.tempoButton = { x: this.bounds.quantizeValue.x + quantW + gap, y: row2Y, w: Math.max(120, x + w - padding - (this.bounds.quantizeValue.x + quantW + gap)), h: rowH };
     this.drawSmallButton(ctx, this.bounds.tempoButton, `Tempo ${this.song.tempo}BPM`, this.tempoSliderOpen);
 
     const transportGap = 6;
@@ -8212,38 +8210,10 @@ export default class MidiComposer {
       this.drawSmallButton(ctx, bounds, button.label, Boolean(button.active));
     });
 
-    if (track) {
-      const mix = this.getTrackPlaybackMix(track);
-      const mixW = 120;
-      const mixX = this.bounds.tempoButton.x + this.bounds.tempoButton.w + gap;
-      const mixAvailable = x + w - padding - mixX;
-      if (mixAvailable > mixW + 12) {
-        const muteBounds = { x: mixX, y: row2Y, w: 48, h: rowH, trackIndex: this.selectedTrackIndex, control: 'mute' };
-        const soloBounds = { x: mixX + 52, y: row2Y, w: 48, h: rowH, trackIndex: this.selectedTrackIndex, control: 'solo' };
-        this.drawSmallButton(ctx, muteBounds, 'Mute', track.mute);
-        this.drawSmallButton(ctx, soloBounds, 'Solo', track.solo);
-        this.bounds.instrumentSettingsControls = [muteBounds, soloBounds];
-
-        const volBounds = { x: mixX, y: row3Y, w: mixW, h: 8, trackIndex: this.selectedTrackIndex, control: 'volume' };
-        const panBounds = { x: mixX, y: row3Y + 14, w: mixW, h: 8, trackIndex: this.selectedTrackIndex, control: 'pan' };
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
-        ctx.fillRect(volBounds.x, volBounds.y, volBounds.w, volBounds.h);
-        ctx.fillRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
-        ctx.fillStyle = '#ffe16a';
-        ctx.fillRect(volBounds.x, volBounds.y, volBounds.w * mix.volume, volBounds.h);
-        ctx.fillStyle = '#4fb7ff';
-        ctx.fillRect(panBounds.x, panBounds.y, panBounds.w * ((mix.pan + 1) / 2), panBounds.h);
-        ctx.strokeStyle = UI_SUITE.colors.border;
-        ctx.strokeRect(volBounds.x, volBounds.y, volBounds.w, volBounds.h);
-        ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
-        this.bounds.instrumentSettingsControls.push(volBounds, panBounds);
-      }
-    }
-
     const zoomXLimits = this.getGridZoomLimitsX();
     this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
     const ratio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
-    this.bounds.railZoom = { x: x + padding, y: y + h - 14, w: w - padding * 2, h: 10 };
+    this.bounds.railZoom = { x: x + padding, y: y + h - 20, w: w - padding * 2, h: 14 };
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
     ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
     ctx.fillStyle = '#ffe16a';
@@ -8251,9 +8221,10 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.font = '11px Courier New';
-    ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 2);
+    ctx.font = '12px Courier New';
+    ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 4);
   }
+
 
 
   getSidebarWidth(viewWidth, {
