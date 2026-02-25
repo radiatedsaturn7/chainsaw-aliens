@@ -678,6 +678,7 @@ export default class MidiComposer {
     this.bounds = {
       headerInstrument: null,
       fileButton: null,
+      leftSettings: null,
       headerTempoDown: null,
       headerTempoUp: null,
       headerPlayState: null,
@@ -3332,6 +3333,10 @@ export default class MidiComposer {
         this.runtime.redo();
         return;
       }
+      if (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) {
+        this.activeTab = 'settings';
+        return;
+      }
       return;
     }
     if (this.qaOverlayOpen) {
@@ -3474,6 +3479,14 @@ export default class MidiComposer {
     }
     if (this.bounds.undoButton && this.pointInBounds(x, y, this.bounds.undoButton)) {
       this.runtime.undo();
+      return;
+    }
+    if (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) {
+      this.activeTab = 'settings';
+      this.closeSelectionMenu();
+      this.pastePreview = null;
+      this.noteLengthMenu.open = false;
+      this.tempoSliderOpen = false;
       return;
     }
     if (this.bounds.redoButton && this.pointInBounds(x, y, this.bounds.redoButton)) {
@@ -7770,6 +7783,7 @@ export default class MidiComposer {
     this.bounds.railInstruments = null;
     this.bounds.railSettings = null;
     this.bounds.railZoom = null;
+    this.bounds.leftSettings = null;
     this.editorShellTheme = resolveEditorShellTheme();
 
     const isMobile = this.isMobileLayout();
@@ -7875,6 +7889,13 @@ export default class MidiComposer {
     const tabTail = topButtons[topButtons.length - 1]?.bounds || { x: tabColumn.x, y: tabColumn.y, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
     this.bounds.undoButton = { x: tabColumn.x, y: tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
     this.drawButton(ctx, this.bounds.undoButton, 'Undo / Redo', false, false);
+    this.bounds.leftSettings = {
+      x: tabColumn.x,
+      y: this.bounds.undoButton.y + this.bounds.undoButton.h + SHARED_EDITOR_LEFT_MENU.buttonGap,
+      w: tabColumn.w,
+      h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop
+    };
+    this.drawButton(ctx, this.bounds.leftSettings, 'Settings', this.activeTab === 'settings', false);
 
     if (this.activeTab === 'file') {
       this.drawFilePanel(ctx, content.x, content.y, content.w, content.h);
@@ -11312,7 +11333,6 @@ export default class MidiComposer {
         { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
         { id: 'save-paint', label: 'Save and Paint' },
         { id: 'play-robtersession', label: 'Play in RobterSession' },
-        { id: 'settings', label: 'Settings' },
         { id: 'theme', label: 'Generate Theme' },
         { id: 'sample', label: 'Load Sample Song' }
       ]
