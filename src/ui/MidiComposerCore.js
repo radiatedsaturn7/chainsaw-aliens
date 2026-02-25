@@ -3246,7 +3246,16 @@ export default class MidiComposer {
         this.exitRecordMode();
         return;
       }
-      if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
+      if (this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings)) {
+      this.activeTab = 'settings';
+      this.closeSelectionMenu();
+      this.pastePreview = null;
+      this.noteLengthMenu.open = false;
+      this.tempoSliderOpen = false;
+      return;
+    }
+
+    if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
         if (this.activeTab === 'instruments') {
           this.confirmInstrumentSelection();
         }
@@ -7953,17 +7962,10 @@ export default class MidiComposer {
       this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
       cursorY += rowH + rowGap;
     });
-    const undoCols = innerW < 190 ? 1 : 2;
-    const undoW = undoCols === 1 ? innerW : (innerW - rowGap) / 2;
-    this.bounds.undoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
-    this.drawSmallButton(ctx, this.bounds.undoButton, 'Undo', false);
-    if (undoCols === 1) {
-      cursorY += rowH + rowGap;
-      this.bounds.redoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
-    } else {
-      this.bounds.redoButton = { x: innerX + undoW + rowGap, y: cursorY, w: undoW, h: rowH };
-    }
-    this.drawSmallButton(ctx, this.bounds.redoButton, 'Redo', false);
+    this.bounds.undoButton = null;
+    this.bounds.redoButton = null;
+    this.bounds.settings = { x: innerX + (innerW - menuButtonW) * 0.5, y: cursorY, w: menuButtonW, h: rowH };
+    this.drawSmallButton(ctx, this.bounds.settings, 'Settings', this.activeTab === 'settings');
 
     if (options.menuOnly) {
       return;
@@ -8158,8 +8160,25 @@ export default class MidiComposer {
     const row3Y = row2Y + rowH + 10;
     const innerW = w - padding * 2;
 
-    this.bounds.loopToggle = { x: x + padding, y: row1Y, w: innerW, h: rowH };
-    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+    const stickPadSize = Math.min(rowH, 44);
+    const stickPadX = x + padding;
+    const stickPadY = row1Y + Math.max(0, (rowH - stickPadSize) / 2);
+    const stickRadius = stickPadSize / 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.beginPath();
+    ctx.arc(stickPadX + stickRadius, stickPadY + stickRadius, stickRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.beginPath();
+    ctx.arc(stickPadX + stickRadius, stickPadY + stickRadius, stickRadius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.beginPath();
+    ctx.arc(stickPadX + stickRadius, stickPadY + stickRadius, Math.max(6, stickRadius * 0.42), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = '13px Courier New';
+    ctx.fillText('Left Stick: Pan Grid', stickPadX + stickPadSize + 10, row1Y + Math.round(rowH * 0.62));
 
     const navW = 48;
     const instrumentLabelW = Math.max(100, Math.floor(innerW * 0.38));
@@ -8176,16 +8195,16 @@ export default class MidiComposer {
     this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
 
     const noteW = 130;
-    const quantW = 96;
+    const loopW = 170;
     const tempoX = this.bounds.instrumentNext.x + navW + gap;
-    const tempoW = Math.max(120, x + w - padding - tempoX);
     this.bounds.noteLength = { x: tempoX, y: row2Y, w: noteW, h: rowH };
-    const noteLabel = `Note ${this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex])}`;
+    const noteLabel = this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex]);
     this.drawSmallButton(ctx, this.bounds.noteLength, noteLabel, false);
-    this.bounds.quantizeValue = { x: this.bounds.noteLength.x + noteW + gap, y: row2Y, w: quantW, h: rowH };
-    this.drawSmallButton(ctx, this.bounds.quantizeValue, this.quantizeOptions[this.quantizeIndex].label, this.quantizeEnabled);
-    this.bounds.tempoButton = { x: this.bounds.quantizeValue.x + quantW + gap, y: row2Y, w: Math.max(120, x + w - padding - (this.bounds.quantizeValue.x + quantW + gap)), h: rowH };
-    this.drawSmallButton(ctx, this.bounds.tempoButton, `Tempo ${this.song.tempo}BPM`, this.tempoSliderOpen);
+    this.bounds.quantizeValue = null;
+    this.bounds.loopToggle = { x: this.bounds.noteLength.x + noteW + gap, y: row2Y, w: loopW, h: rowH };
+    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+    this.bounds.tempoButton = { x: this.bounds.loopToggle.x + loopW + gap, y: row2Y, w: Math.max(120, x + w - padding - (this.bounds.loopToggle.x + loopW + gap)), h: rowH };
+    this.drawSmallButton(ctx, this.bounds.tempoButton, `${this.song.tempo} BPM`, this.tempoSliderOpen);
 
     const transportGap = 6;
     const transportCols = 7;
