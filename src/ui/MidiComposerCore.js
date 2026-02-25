@@ -3349,7 +3349,8 @@ export default class MidiComposer {
       return;
     }
 
-    if (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) {
+    if ((this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings))
+      || (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings))) {
       this.activeTab = 'settings';
       this.closeSelectionMenu();
       this.pastePreview = null;
