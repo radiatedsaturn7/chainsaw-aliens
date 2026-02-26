@@ -297,15 +297,15 @@ export const GM_DRUM_NOTE_MIN = 35;
 export const GM_DRUM_NOTE_MAX = 81;
 
 export const GM_DRUM_PAD_ROWS = [
-  { label: 'Kick', pitch: 36 },
-  { label: 'Snare', pitch: 38 },
-  { label: 'Closed Hat', pitch: 42 },
-  { label: 'Open Hat', pitch: 46 },
+  { label: 'Crash', pitch: 49 },
+  { label: 'Ride', pitch: 51 },
+  { label: 'Open Hi-Hat', pitch: 46 },
   { label: 'Low Tom', pitch: 45 },
   { label: 'Mid Tom', pitch: 47 },
+  { label: 'Closed Hi-Hat', pitch: 42 },
+  { label: 'Kick', pitch: 36 },
   { label: 'High Tom', pitch: 50 },
-  { label: 'Crash', pitch: 49 },
-  { label: 'Ride', pitch: 51 }
+  { label: 'Snare', pitch: 38 }
 ];
 
 export const GM_DRUM_ROWS = GM_DRUM_PAD_ROWS.map((row) => ({ ...row }));
@@ -360,10 +360,7 @@ export const GM_DRUMS = [
   { pitch: 81, label: 'Open Triangle' }
 ];
 
-export const GM_DRUM_PAD_LAYOUT = GM_DRUMS.map((drum) => ({
-  label: drum.label,
-  pitch: drum.pitch
-}));
+export const GM_DRUM_PAD_LAYOUT = GM_DRUM_PAD_ROWS.map((row) => ({ ...row }));
 
 export const GM_DRUM_KITS = [
   { id: 'standard', label: 'Standard Kit', bankMSB: GM_DRUM_BANK_MSB, bankLSB: GM_DRUM_BANK_LSB, program: 0, soundfont: 'standard_kit' },

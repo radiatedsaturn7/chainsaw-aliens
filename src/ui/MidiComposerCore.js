@@ -678,6 +678,7 @@ export default class MidiComposer {
     this.bounds = {
       headerInstrument: null,
       fileButton: null,
+      leftSettings: null,
       headerTempoDown: null,
       headerTempoUp: null,
       headerPlayState: null,
@@ -3332,6 +3333,10 @@ export default class MidiComposer {
         this.runtime.redo();
         return;
       }
+      if (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) {
+        this.activeTab = 'settings';
+        return;
+      }
       return;
     }
     if (this.qaOverlayOpen) {
@@ -3341,6 +3346,16 @@ export default class MidiComposer {
         if (hit.id === 'qa-run') this.runQaChecks();
         if (hit.id === 'qa-close') this.qaOverlayOpen = false;
       }
+      return;
+    }
+
+    if ((this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings))
+      || (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings))) {
+      this.activeTab = 'settings';
+      this.closeSelectionMenu();
+      this.pastePreview = null;
+      this.noteLengthMenu.open = false;
+      this.tempoSliderOpen = false;
       return;
     }
 
@@ -7766,10 +7781,12 @@ export default class MidiComposer {
     ctx.fillRect(0, 0, width, height);
     this.bounds.tempoButton = null;
     this.bounds.tempoSlider = null;
+    this.bounds.settings = null;
     this.bounds.noteLengthMenu = [];
     this.bounds.railInstruments = null;
     this.bounds.railSettings = null;
     this.bounds.railZoom = null;
+    this.bounds.leftSettings = null;
     this.editorShellTheme = resolveEditorShellTheme();
 
     const isMobile = this.isMobileLayout();
@@ -7875,6 +7892,14 @@ export default class MidiComposer {
     const tabTail = topButtons[topButtons.length - 1]?.bounds || { x: tabColumn.x, y: tabColumn.y, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
     this.bounds.undoButton = { x: tabColumn.x, y: tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
     this.drawButton(ctx, this.bounds.undoButton, 'Undo / Redo', false, false);
+    this.bounds.leftSettings = {
+      x: tabColumn.x,
+      y: this.bounds.undoButton.y + this.bounds.undoButton.h + SHARED_EDITOR_LEFT_MENU.buttonGap,
+      w: tabColumn.w,
+      h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop
+    };
+    this.bounds.settings = { ...this.bounds.leftSettings };
+    this.drawButton(ctx, this.bounds.leftSettings, 'Settings', this.activeTab === 'settings', false);
 
     if (this.activeTab === 'file') {
       this.drawFilePanel(ctx, content.x, content.y, content.w, content.h);
@@ -8292,16 +8317,25 @@ export default class MidiComposer {
     this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
 
     const noteW = 130;
-    const tempoX = this.bounds.instrumentNext.x + navW + gap;
-    this.bounds.noteLength = { x: tempoX, y: row1Y, w: noteW, h: rowH };
+    const noteX = this.bounds.instrumentNext.x + navW + gap;
+    this.bounds.noteLength = { x: noteX, y: row1Y, w: noteW, h: rowH };
     const noteLabel = this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex]);
     this.drawSmallButton(ctx, this.bounds.noteLength, noteLabel, false);
     this.bounds.quantizeValue = null;
-    this.bounds.loopToggle = null;
+
+    const afterNoteX = this.bounds.noteLength.x + noteW + gap;
+    const rowRight = x + w - padding;
+    const rowRemaining = Math.max(0, rowRight - afterNoteX);
+    const tempoW = Math.max(108, Math.min(148, Math.round(rowRemaining * 0.42)));
+    const metronomeW = Math.max(84, rowRemaining - tempoW - gap);
+
+    this.bounds.metronome = { x: afterNoteX, y: row1Y, w: metronomeW, h: rowH };
+    this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
+
     this.bounds.tempoButton = {
-      x: this.bounds.noteLength.x + noteW + gap,
+      x: this.bounds.metronome.x + this.bounds.metronome.w + gap,
       y: row1Y,
-      w: Math.max(120, x + w - padding - (this.bounds.noteLength.x + noteW + gap)),
+      w: tempoW,
       h: rowH
     };
     this.drawSmallButton(ctx, this.bounds.tempoButton, `${this.song.tempo} BPM`, this.tempoSliderOpen);
@@ -8316,7 +8350,7 @@ export default class MidiComposer {
       { id: 'play', label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying },
       { id: 'nextBar', label: '⏩' },
       { id: 'goEnd', label: '⏭' },
-      { id: 'metronome', label: this.metronomeEnabled ? 'M On' : 'M Off', active: this.metronomeEnabled }
+      { id: 'loopToggle', label: this.song.loopEnabled ? 'Loop On' : 'Loop Off', active: this.song.loopEnabled }
     ];
     transportButtons.forEach((button, index) => {
       const bounds = {
@@ -10274,10 +10308,12 @@ export default class MidiComposer {
       this.bounds.drumView = null;
     }
 
-    const tempoX = noteLengthX;
-    const tempoLabel = `Tempo ${this.song.tempo}BPM`;
-    ctx.font = '12px Courier New';
-    const tempoW = Math.min(180, Math.max(120, ctx.measureText(tempoLabel).width + 28));
+    this.bounds.metronome = { x: noteLengthX, y: controlsRowY, w: 108, h: rowH };
+    this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
+
+    const tempoX = noteLengthX + this.bounds.metronome.w + 8;
+    const tempoLabel = `${this.song.tempo} BPM`;
+    const tempoW = isMobile ? 88 : 96;
     this.bounds.tempoButton = { x: tempoX, y: controlsRowY, w: tempoW, h: rowH };
     this.drawSmallButton(ctx, this.bounds.tempoButton, tempoLabel, this.tempoSliderOpen);
   }
@@ -11301,7 +11337,6 @@ export default class MidiComposer {
         { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
         { id: 'save-paint', label: 'Save and Paint' },
         { id: 'play-robtersession', label: 'Play in RobterSession' },
-        { id: 'settings', label: 'Settings' },
         { id: 'theme', label: 'Generate Theme' },
         { id: 'sample', label: 'Load Sample Song' }
       ]
