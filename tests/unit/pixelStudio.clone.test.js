@@ -94,7 +94,7 @@ test('mobile set-source mode allows touch to choose clone source', () => {
   assert.deepEqual(editor.cloneSource, point);
   assert.equal(editor.cloneOffset, null);
   assert.equal(editor.clonePickSourceArmed, false);
-  assert.equal(editor.statusMessage, 'Clone source set');
+  assert.equal(editor.statusMessage, 'Clone source set. Tap again to paint.');
 });
 
 
@@ -105,14 +105,29 @@ test('seam-fix entry defaults to clone tool with source-pick armed', () => {
     cloneSource: { row: 1, col: 1 },
     cloneOffset: { row: 2, col: 2 },
     statusMessage: '',
+    view: { showGrid: true },
+    toolOptions: { brushSize: 1, brushOpacity: 1, brushHardness: 1 },
     setActiveTool(toolId) {
       this.activeToolId = toolId;
+    },
+    setBrushSize(value) {
+      this.toolOptions.brushSize = value;
+    },
+    setBrushHardness(value) {
+      this.toolOptions.brushHardness = value;
+    },
+    setBrushOpacity(value) {
+      this.toolOptions.brushOpacity = value;
     }
   };
 
   configureSeamFixCloneDefaults.call(editor);
 
   assert.equal(editor.activeToolId, 'clone');
+  assert.equal(editor.view.showGrid, false);
+  assert.equal(editor.toolOptions.brushSize, 16);
+  assert.equal(editor.toolOptions.brushHardness, 0);
+  assert.equal(editor.toolOptions.brushOpacity, 0.5);
   assert.equal(editor.clonePickSourceArmed, true);
   assert.equal(editor.cloneSource, null);
   assert.equal(editor.cloneOffset, null);

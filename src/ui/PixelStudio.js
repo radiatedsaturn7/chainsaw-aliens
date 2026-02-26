@@ -81,9 +81,9 @@ export default class PixelStudio {
     this.tools = createToolRegistry(this);
     this.activeToolId = TOOL_IDS.PENCIL;
     this.toolOptions = {
-      brushSize: DEFAULT_BRUSH_SIZE,
-      brushOpacity: 1,
-      brushHardness: 1,
+      brushSize: 16,
+      brushOpacity: 0.5,
+      brushHardness: 0,
       brushShape: 'circle',
       brushFalloff: 0,
       shapeFill: false,
@@ -169,7 +169,7 @@ export default class PixelStudio {
       zoomIndex: 8,
       panX: 0,
       panY: 0,
-      showGrid: true
+      showGrid: false
     };
     this.viewportController = createViewportController({
       minZoom: 0,
@@ -602,7 +602,22 @@ export default class PixelStudio {
     this.artSizeDraft.width = width;
     this.artSizeDraft.height = height;
     this.setFrameLayers(this.animation.frames[0].layers);
-    this.zoomToFitCanvas();
+    this.view.showGrid = false;
+    const requestedZoom = Number.isFinite(bounds?.zoom) ? bounds.zoom : null;
+    const requestedScreenW = Number.isFinite(bounds?.screenW) ? bounds.screenW : null;
+    const requestedScreenH = Number.isFinite(bounds?.screenH) ? bounds.screenH : null;
+    if (requestedZoom && requestedZoom > 0 && requestedScreenW && requestedScreenH) {
+      const targetZoom = Math.max(1, Math.round(Math.min((requestedScreenW * requestedZoom) / Math.max(1, width), (requestedScreenH * requestedZoom) / Math.max(1, height))));
+      let zoomIndex = 0;
+      for (let i = 0; i < this.view.zoomLevels.length; i += 1) {
+        if (this.view.zoomLevels[i] <= targetZoom) zoomIndex = i;
+      }
+      this.view.zoomIndex = zoomIndex;
+      this.view.panX = 0;
+      this.view.panY = 0;
+    } else {
+      this.zoomToFitCanvas();
+    }
     this.resetFocus();
     this.configureSeamFixCloneDefaults();
   }
@@ -669,9 +684,9 @@ export default class PixelStudio {
             for (let col = startX; col < endX; col += 1) {
               const seamIndex = row * this.canvasState.width + col;
               if (currentComposite[seamIndex] === baseComposite[seamIndex]) continue;
-              const u = (col + 0.5 - entry.canvasX) / Math.max(1e-6, entry.canvasW);
-              const v = (row + 0.5 - entry.canvasY) / Math.max(1e-6, entry.canvasH);
-              if (u < 0 || u > 1 || v < 0 || v > 1) continue;
+              const u = (col - entry.canvasX) / Math.max(1e-6, entry.canvasW);
+              const v = (row - entry.canvasY) / Math.max(1e-6, entry.canvasH);
+              if (u < 0 || u >= 1 || v < 0 || v >= 1) continue;
               const decalCol = clamp(Math.floor(u * decalCanvas.width), 0, decalCanvas.width - 1);
               const decalRow = clamp(Math.floor(v * decalCanvas.height), 0, decalCanvas.height - 1);
               const decalIndex = decalRow * decalCanvas.width + decalCol;
@@ -1115,7 +1130,11 @@ export default class PixelStudio {
   }
 
   configureSeamFixCloneDefaults() {
+    this.view.showGrid = false;
     this.setActiveTool(TOOL_IDS.CLONE);
+    this.setBrushSize(16);
+    this.setBrushHardness(0);
+    this.setBrushOpacity(0.5);
     this.clonePickSourceArmed = true;
     this.cloneSource = null;
     this.cloneOffset = null;
