@@ -27,7 +27,7 @@ export function drawRecordModeSidebar(composer, ctx, x, y, w, h, tabOptions) {
   tabOptions.forEach((tab) => {
     const bounds = { x: innerX, y: cursorY, w: innerW, h: rowH, id: tab.id };
     composer.bounds.tabs.push(bounds);
-    composer.drawButton(ctx, bounds, tab.label, composer.activeTab === tab.id, false);
+    composer.drawButton(ctx, bounds, tab.label, composer.isLeftRailTabActive(tab.id), false);
     cursorY += rowH + rowGap;
   });
   const undoCols = innerW < 190 ? 1 : 2;
