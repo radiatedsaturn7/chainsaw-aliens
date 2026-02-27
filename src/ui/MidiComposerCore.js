@@ -96,7 +96,7 @@ const TIME_SIGNATURE_UNITS = [2, 4, 8, 16];
 const TAB_OPTIONS = [
   { id: 'grid', label: 'Grid' },
   { id: 'song', label: 'Song' },
-  { id: 'instruments', label: 'Mixer' }
+  { id: 'instruments', label: 'Virtual Inst' }
 ];
 
 const TOOL_OPTIONS = [
@@ -2565,8 +2565,15 @@ export default class MidiComposer {
       && !this.recordModeActive;
   }
 
+  isMobileLandscapeThumbZoomMode() {
+    return this.isMobileLayout()
+      && this.viewportWidth > this.viewportHeight
+      && this.activeTab !== 'instruments'
+      && !this.recordModeActive;
+  }
+
   applyMobilePanJoystick(dt = 0) {
-    if (!this.isMobileLandscapeGridMode() || !this.panJoystick.active || !this.gridBounds) return;
+    if (!this.isMobileLandscapeThumbZoomMode() || !this.panJoystick.active || !this.gridBounds) return;
     const frameScale = dt > 0 ? dt * 60 : 1;
     const speed = 11;
     this.gridOffset.x -= this.panJoystick.dx * speed * frameScale;
@@ -3244,7 +3251,7 @@ export default class MidiComposer {
       }
     }
     const { x, y } = payload;
-    if (this.isMobileLandscapeGridMode() && payload.touchCount > 0 && this.panJoystick.radius > 0) {
+    if (this.isMobileLandscapeThumbZoomMode() && payload.touchCount > 0 && this.panJoystick.radius > 0) {
       const dx = payload.x - this.panJoystick.center.x;
       const dy = payload.y - this.panJoystick.center.y;
       if (Math.hypot(dx, dy) <= this.panJoystick.radius * 1.2) {
@@ -7858,6 +7865,7 @@ export default class MidiComposer {
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
+      this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
     }
   }
@@ -8026,7 +8034,12 @@ export default class MidiComposer {
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
+      this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
+    }
+
+    if (isLandscape && this.activeTab !== 'instruments' && this.activeTab !== 'grid') {
+      this.drawLandscapeZoomOverlay(ctx, width, height);
     }
   }
 
@@ -8245,7 +8258,7 @@ export default class MidiComposer {
   }
 
   drawMobilePanJoystick(ctx, width, height) {
-    if (!this.isMobileLandscapeGridMode()) {
+    if (!this.isMobileLandscapeThumbZoomMode()) {
       this.panJoystick.center = { x: 0, y: 0 };
       this.panJoystick.radius = 0;
       this.panJoystick.knobRadius = 0;
@@ -8284,6 +8297,25 @@ export default class MidiComposer {
     ctx.arc(joystickKnobX, joystickKnobY, knobRadius, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
+  }
+
+  drawLandscapeZoomOverlay(ctx, width, height) {
+    const zoomXLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+    const ratio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
+    const controlBase = Math.min(width, height);
+    const controlMargin = Math.max(16, controlBase * 0.04);
+    const joystickRadius = Math.min(78, controlBase * 0.14);
+    const joystickCenterX = controlMargin + joystickRadius;
+    const { railBounds, hitBounds } = getSharedMobileZoomSliderLayout({
+      width,
+      height,
+      joystickCenterX,
+      joystickRadius,
+      controlMargin
+    });
+    this.bounds.railZoom = hitBounds;
+    drawSharedMobileZoomSlider(ctx, railBounds, ratio);
   }
 
   drawMobileBottomRail(ctx, x, y, w, h, track) {
