@@ -543,6 +543,7 @@ export default class PixelStudio {
     canvas.width = width;
     canvas.height = height;
     const drawCtx = canvas.getContext('2d');
+    drawCtx.imageSmoothingEnabled = false;
     drawCtx.clearRect(0, 0, width, height);
 
     const entries = [];
@@ -643,6 +644,47 @@ export default class PixelStudio {
     return canvas.toDataURL('image/png');
   }
 
+  mapSeamEditsToDecalPixels({
+    entry,
+    seamPixels,
+    seamBasePixels,
+    seamWidth,
+    seamHeight,
+    decalPixels,
+    decalWidth,
+    decalHeight
+  }) {
+    if (!entry || !seamPixels || !seamBasePixels || !decalPixels) return false;
+    const safeSeamW = Math.max(1, seamWidth | 0);
+    const safeSeamH = Math.max(1, seamHeight | 0);
+    const safeDecalW = Math.max(1, decalWidth | 0);
+    const safeDecalH = Math.max(1, decalHeight | 0);
+    const invDecalW = 1 / safeDecalW;
+    const invDecalH = 1 / safeDecalH;
+    const entryW = Math.max(1e-6, Number(entry.canvasW) || 0);
+    const entryH = Math.max(1e-6, Number(entry.canvasH) || 0);
+    const entryX = Number(entry.canvasX) || 0;
+    const entryY = Number(entry.canvasY) || 0;
+    let changed = false;
+
+    for (let decalRow = 0; decalRow < safeDecalH; decalRow += 1) {
+      for (let decalCol = 0; decalCol < safeDecalW; decalCol += 1) {
+        const u = (decalCol + 0.5) * invDecalW;
+        const v = (decalRow + 0.5) * invDecalH;
+        const seamCol = Math.floor(entryX + u * entryW);
+        const seamRow = Math.floor(entryY + v * entryH);
+        if (seamCol < 0 || seamRow < 0 || seamCol >= safeSeamW || seamRow >= safeSeamH) continue;
+        const seamIndex = seamRow * safeSeamW + seamCol;
+        if (seamPixels[seamIndex] === seamBasePixels[seamIndex]) continue;
+        const decalIndex = decalRow * safeDecalW + decalCol;
+        decalPixels[decalIndex] = seamPixels[seamIndex];
+        changed = true;
+      }
+    }
+
+    return changed;
+  }
+
   commitDecalEditIfNeeded() {
     if (!this.decalEditSession) return;
     if (this.decalEditSession.type === 'single' && this.decalEditSession.decalId) {
@@ -672,28 +714,20 @@ export default class PixelStudio {
           decalCanvas.width = Math.max(1, Math.round(entry.srcWidth));
           decalCanvas.height = Math.max(1, Math.round(entry.srcHeight));
           const decalCtx = decalCanvas.getContext('2d');
+          decalCtx.imageSmoothingEnabled = false;
           decalCtx.drawImage(image, 0, 0, decalCanvas.width, decalCanvas.height);
           const imageData = decalCtx.getImageData(0, 0, decalCanvas.width, decalCanvas.height);
           const decalPixels = new Uint32Array(imageData.data.buffer);
-          const startX = Math.max(0, Math.floor(entry.canvasX));
-          const endX = Math.min(this.canvasState.width, Math.ceil(entry.canvasX + entry.canvasW));
-          const startY = Math.max(0, Math.floor(entry.canvasY));
-          const endY = Math.min(this.canvasState.height, Math.ceil(entry.canvasY + entry.canvasH));
-          let changed = false;
-          for (let row = startY; row < endY; row += 1) {
-            for (let col = startX; col < endX; col += 1) {
-              const seamIndex = row * this.canvasState.width + col;
-              if (currentComposite[seamIndex] === baseComposite[seamIndex]) continue;
-              const u = (col - entry.canvasX) / Math.max(1e-6, entry.canvasW);
-              const v = (row - entry.canvasY) / Math.max(1e-6, entry.canvasH);
-              if (u < 0 || u >= 1 || v < 0 || v >= 1) continue;
-              const decalCol = clamp(Math.floor(u * decalCanvas.width), 0, decalCanvas.width - 1);
-              const decalRow = clamp(Math.floor(v * decalCanvas.height), 0, decalCanvas.height - 1);
-              const decalIndex = decalRow * decalCanvas.width + decalCol;
-              decalPixels[decalIndex] = currentComposite[seamIndex];
-              changed = true;
-            }
-          }
+          const changed = this.mapSeamEditsToDecalPixels({
+            entry,
+            seamPixels: currentComposite,
+            seamBasePixels: baseComposite,
+            seamWidth: this.canvasState.width,
+            seamHeight: this.canvasState.height,
+            decalPixels,
+            decalWidth: decalCanvas.width,
+            decalHeight: decalCanvas.height
+          });
           if (changed) {
             decalCtx.putImageData(imageData, 0, 0);
             decal.imageDataUrl = decalCanvas.toDataURL('image/png');
