@@ -96,7 +96,8 @@ const TIME_SIGNATURE_UNITS = [2, 4, 8, 16];
 const TAB_OPTIONS = [
   { id: 'grid', label: 'Grid' },
   { id: 'song', label: 'Song' },
-  { id: 'instruments', label: 'Virtual Inst' }
+  { id: 'instruments', label: 'Mixer' },
+  { id: 'virtual-instruments', label: 'Virtual Instruments' }
 ];
 
 const TOOL_OPTIONS = [
@@ -2193,6 +2194,22 @@ export default class MidiComposer {
     this.recordGridZoomedOut = false;
   }
 
+  isLeftRailTabActive(tabId) {
+    if (tabId === 'virtual-instruments') return this.recordModeActive;
+    return this.activeTab === tabId;
+  }
+
+  activateLeftRailTab(tabId) {
+    if (this.activeTab === 'instruments' && (tabId === 'grid' || tabId === 'song' || tabId === 'virtual-instruments')) {
+      this.confirmInstrumentSelection();
+    }
+    if (tabId === 'virtual-instruments') {
+      this.enterRecordMode();
+      return;
+    }
+    this.activeTab = tabId;
+  }
+
   toggleSingleNoteRecordMode() {
     if (this.singleNoteRecordMode.active) {
       this.exitSingleNoteRecordMode();
@@ -2568,7 +2585,6 @@ export default class MidiComposer {
   isMobileLandscapeThumbZoomMode() {
     return this.isMobileLayout()
       && this.viewportWidth > this.viewportHeight
-      && this.activeTab !== 'instruments'
       && !this.recordModeActive;
   }
 
@@ -3308,11 +3324,8 @@ export default class MidiComposer {
       }
       const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
       if (tabHit) {
-        if (this.activeTab === 'instruments' && (tabHit.id === 'grid' || tabHit.id === 'song')) {
-          this.confirmInstrumentSelection();
-        }
-        this.activeTab = tabHit.id;
         this.exitRecordMode();
+        this.activateLeftRailTab(tabHit.id);
         return;
       }
       if (this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings)) {
@@ -3456,10 +3469,7 @@ export default class MidiComposer {
 
     const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
     if (tabHit) {
-      if (this.activeTab === 'instruments' && (tabHit.id === 'grid' || tabHit.id === 'song')) {
-        this.confirmInstrumentSelection();
-      }
-      this.activeTab = tabHit.id;
+      this.activateLeftRailTab(tabHit.id);
       this.closeSelectionMenu();
       this.pastePreview = null;
       this.noteLengthMenu.open = false;
@@ -7895,7 +7905,7 @@ export default class MidiComposer {
     topButtons.slice(1).forEach((entry) => {
       const bounds = { ...entry.bounds, id: entry.id };
       this.bounds.tabs.push(bounds);
-      this.drawButton(ctx, bounds, entry.label, this.activeTab === entry.id, false);
+      this.drawButton(ctx, bounds, entry.label, this.isLeftRailTabActive(entry.id), false);
     });
     const tabTail = topButtons[topButtons.length - 1]?.bounds || { x: tabColumn.x, y: tabColumn.y, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
     this.bounds.undoButton = { x: tabColumn.x, y: tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
@@ -8073,7 +8083,7 @@ export default class MidiComposer {
     TAB_OPTIONS.forEach((tab) => {
       const bounds = { x: innerX + (innerW - menuButtonW) * 0.5, y: cursorY, w: menuButtonW, h: rowH, id: tab.id };
       this.bounds.tabs.push(bounds);
-      this.drawButton(ctx, bounds, tab.label, this.activeTab === tab.id, false);
+      this.drawButton(ctx, bounds, tab.label, this.isLeftRailTabActive(tab.id), false);
       cursorY += rowH + rowGap;
     });
     this.bounds.undoButton = null;
@@ -8506,7 +8516,7 @@ export default class MidiComposer {
       const tabX = cursorX + index * (tabW + gap);
       const bounds = { x: tabX, y, w: tabW, h, id: tab.id };
       this.bounds.tabs.push(bounds);
-      const active = this.activeTab === tab.id;
+      const active = this.isLeftRailTabActive(tab.id);
       this.drawButton(ctx, bounds, tab.label, active, false);
     });
   }
