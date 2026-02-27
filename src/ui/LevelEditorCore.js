@@ -2679,7 +2679,12 @@ export default class Editor {
       return;
     }
     await this.game.openVisibleDecalsInPixelStudio({
-      bounds: visible,
+      bounds: {
+        ...visible,
+        screenW: Math.max(1, Math.round(this.editorBounds?.w || this.game.canvas?.width || visible.w || 1)),
+        screenH: Math.max(1, Math.round(this.editorBounds?.h || this.game.canvas?.height || visible.h || 1)),
+        zoom: this.zoom
+      },
       decals: decals.map((decal) => ({
         id: decal.id,
         imageDataUrl: decal.imageDataUrl,
