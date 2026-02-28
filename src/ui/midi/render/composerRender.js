@@ -1,47 +1,50 @@
-import { UI_SUITE } from '../../uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons } from '../../uiSuite.js';
 
-const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 export function drawRecordModeSidebar(composer, ctx, x, y, w, h, tabOptions) {
-  const rowH = clamp(Math.round(h * 0.055), 40, 48);
-  const rowGap = clamp(Math.round(rowH * 0.2), 6, 10);
-  const panelPadding = clamp(Math.round(rowH * 0.25), 8, 12);
-  const menuRows = tabOptions.length + 2;
-  const menuH = Math.min(h, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
-  const menuX = x;
-  const menuY = y;
+  const isMobile = typeof composer.isMobileLayout === 'function' && composer.isMobileLayout();
+  const rowH = isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop;
 
-  ctx.fillStyle = 'rgba(255,255,255,0.05)';
-  ctx.fillRect(menuX, menuY, w, menuH);
+  ctx.fillStyle = UI_SUITE.colors.panel;
+  ctx.fillRect(x, y, w, h);
   ctx.strokeStyle = UI_SUITE.colors.border;
-  ctx.strokeRect(menuX, menuY, w, menuH);
+  ctx.strokeRect(x, y, w, h);
 
-  const innerX = menuX + panelPadding;
-  const innerW = w - panelPadding * 2;
-  let cursorY = menuY + panelPadding;
-  composer.bounds.tabs = [];
-  composer.bounds.fileButton = { x: innerX, y: cursorY, w: innerW, h: rowH };
-  composer.drawButton(ctx, composer.bounds.fileButton, 'File', composer.activeTab === 'file', false);
-  cursorY += rowH + rowGap;
-
-  tabOptions.forEach((tab) => {
-    const bounds = { x: innerX, y: cursorY, w: innerW, h: rowH, id: tab.id };
-    composer.bounds.tabs.push(bounds);
-    composer.drawButton(ctx, bounds, tab.label, composer.activeTab === tab.id, false);
-    cursorY += rowH + rowGap;
+  const { tabColumn } = buildSharedLeftMenuLayout({ x, y, width: w, height: h, isMobile });
+  const topButtons = buildSharedLeftMenuButtons({
+    x: tabColumn.x,
+    y: tabColumn.y,
+    height: tabColumn.h,
+    additionalButtons: tabOptions.map((tab) => ({ id: tab.id, label: tab.label })),
+    isMobile,
+    width: tabColumn.w
   });
-  const undoCols = innerW < 190 ? 1 : 2;
-  const undoW = undoCols === 1 ? innerW : (innerW - rowGap) / 2;
-  composer.bounds.undoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
-  composer.drawSmallButton(ctx, composer.bounds.undoButton, 'Undo', false);
-  if (undoCols === 1) {
-    cursorY += rowH + rowGap;
-    composer.bounds.redoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
-  } else {
-    composer.bounds.redoButton = { x: innerX + undoW + rowGap, y: cursorY, w: undoW, h: rowH };
+
+  composer.bounds.tabs = [];
+  composer.bounds.fileButton = topButtons[0]?.bounds || null;
+  if (composer.bounds.fileButton) {
+    composer.drawButton(ctx, composer.bounds.fileButton, 'File', composer.activeTab === 'file', false);
   }
-  composer.drawSmallButton(ctx, composer.bounds.redoButton, 'Redo', false);
-  return menuH;
+
+  topButtons.slice(1).forEach((entry) => {
+    const bounds = { ...entry.bounds, id: entry.id };
+    composer.bounds.tabs.push(bounds);
+    composer.drawButton(ctx, bounds, entry.label, composer.isLeftRailTabActive(entry.id), false);
+  });
+
+  const tabTail = topButtons[topButtons.length - 1]?.bounds || { x: tabColumn.x, y: tabColumn.y, h: rowH };
+  composer.bounds.undoButton = null;
+  composer.bounds.redoButton = null;
+  composer.bounds.settings = {
+    x: tabColumn.x,
+    y: tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap,
+    w: tabColumn.w,
+    h: rowH
+  };
+  composer.bounds.leftSettings = { ...composer.bounds.settings };
+  composer.drawButton(ctx, composer.bounds.settings, 'Settings', composer.activeTab === 'settings', false);
+
+  return Math.min(h, composer.bounds.settings.y + composer.bounds.settings.h - y + SHARED_EDITOR_LEFT_MENU.panelPadding);
 }
 
 export function drawGhostNotes(composer, ctx) {
