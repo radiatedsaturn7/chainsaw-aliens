@@ -7972,16 +7972,17 @@ export default class MidiComposer {
   }
 
   drawRecordMode(ctx, width, height, track, pattern) {
-    const padding = 16;
-    const gap = 12;
-    const sidebarW = SHARED_EDITOR_LEFT_MENU.width();
-    const sidebarX = 0;
-    const sidebarY = 0;
-    const sidebarH = height;
-    const contentX = sidebarX + sidebarW + gap;
-    const contentY = padding;
-    const contentW = width - contentX - padding;
-    const contentH = height - padding * 2;
+    const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
+    const sidebarX = leftFrame.panelX;
+    const sidebarY = leftFrame.panelY;
+    const sidebarW = leftFrame.panelW;
+    const sidebarH = leftFrame.panelH;
+    const contentX = leftFrame.contentX;
+    const contentY = leftFrame.outerPadding;
+    const contentW = leftFrame.contentW;
+    const contentH = Math.max(0, height - leftFrame.outerPadding * 2);
+    const padding = leftFrame.outerPadding;
+    const gap = leftFrame.contentGap;
 
     const menuH = this.drawRecordModeSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH);
 
@@ -8006,6 +8007,17 @@ export default class MidiComposer {
     });
     const grid = layout.grid;
     const instrument = layout.instrument;
+
+    const railButtonGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+    const railButtonH = this.isMobileLayout() ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop;
+    const railButtonW = this.isMobileLayout() ? SHARED_EDITOR_LEFT_MENU.buttonWidthMobile : SHARED_EDITOR_LEFT_MENU.tabWidthDesktop;
+    const undoY = Math.max(contentY, instrument.y - railButtonH - 6);
+    const redoX = contentX + contentW - railButtonW;
+    const undoX = redoX - railButtonW - railButtonGap;
+    this.bounds.undoButton = { x: undoX, y: undoY, w: railButtonW, h: railButtonH };
+    this.bounds.redoButton = { x: redoX, y: undoY, w: railButtonW, h: railButtonH };
+    this.drawButton(ctx, this.bounds.undoButton, 'Undo', false, false);
+    this.drawButton(ctx, this.bounds.redoButton, 'Redo', false, false);
     if (!this.recordGridZoomedOut && track) {
       const rows = isDrumTrack(track)
         ? this.getDrumRows().length
