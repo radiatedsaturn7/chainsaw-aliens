@@ -30,17 +30,12 @@ export function drawRecordModeSidebar(composer, ctx, x, y, w, h, tabOptions) {
     composer.drawButton(ctx, bounds, tab.label, composer.isLeftRailTabActive(tab.id), false);
     cursorY += rowH + rowGap;
   });
-  const undoCols = innerW < 190 ? 1 : 2;
-  const undoW = undoCols === 1 ? innerW : (innerW - rowGap) / 2;
-  composer.bounds.undoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
-  composer.drawSmallButton(ctx, composer.bounds.undoButton, 'Undo', false);
-  if (undoCols === 1) {
-    cursorY += rowH + rowGap;
-    composer.bounds.redoButton = { x: innerX, y: cursorY, w: undoW, h: rowH };
-  } else {
-    composer.bounds.redoButton = { x: innerX + undoW + rowGap, y: cursorY, w: undoW, h: rowH };
-  }
-  composer.drawSmallButton(ctx, composer.bounds.redoButton, 'Redo', false);
+
+  composer.bounds.undoButton = null;
+  composer.bounds.redoButton = null;
+  composer.bounds.settings = { x: innerX, y: cursorY, w: innerW, h: rowH };
+  composer.bounds.leftSettings = { ...composer.bounds.settings };
+  composer.drawButton(ctx, composer.bounds.settings, 'Settings', composer.activeTab === 'settings', false);
   return menuH;
 }
 
