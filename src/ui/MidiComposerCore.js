@@ -7972,36 +7972,29 @@ export default class MidiComposer {
   }
 
   drawRecordMode(ctx, width, height, track, pattern) {
-    const transportH = 132;
     const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
-    const shellLayout = createEditorShellLayout({
-      viewportWidth: width,
-      viewportHeight: height,
-      leftPanelFrame: leftFrame,
-      bottomBarHeight: transportH
-    });
-    const { topBar, leftRail, mainContent, bottomBar } = shellLayout;
-
-    this.drawHeader(ctx, topBar.x, topBar.y, topBar.w, topBar.h, track);
-    this.drawDesktopLeftPanel(ctx, leftRail.x, leftRail.y, leftRail.w, leftRail.h);
-    this.drawTransportBar(ctx, bottomBar.x, bottomBar.y, bottomBar.w, bottomBar.h);
-
-    const contentX = mainContent.x;
-    const contentY = mainContent.y;
-    const contentW = mainContent.w;
-    const contentH = mainContent.h;
+    const sidebarX = leftFrame.panelX;
+    const sidebarY = leftFrame.panelY;
+    const sidebarW = leftFrame.panelW;
+    const sidebarH = leftFrame.panelH;
+    const contentX = leftFrame.contentX;
+    const contentY = leftFrame.outerPadding;
+    const contentW = leftFrame.contentW;
+    const contentH = Math.max(0, height - leftFrame.outerPadding * 2);
+    const padding = leftFrame.outerPadding;
     const gap = leftFrame.contentGap;
 
-    const menuH = Math.max(0, (this.bounds.leftSettings?.y ?? leftRail.y) + (this.bounds.leftSettings?.h ?? 0) - leftRail.y + SHARED_EDITOR_LEFT_MENU.panelPadding);
+    this.drawDesktopLeftPanel(ctx, sidebarX, sidebarY, sidebarW, sidebarH);
+    const menuH = Math.max(0, (this.bounds.leftSettings?.y ?? sidebarY) + (this.bounds.leftSettings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
 
     const gridBounds = {
       x: contentX,
-      y: contentY,
+      y: padding,
       w: contentW,
       h: menuH
     };
-    const instrumentY = contentY + menuH + gap;
-    const instrumentH = Math.max(0, (contentY + contentH) - instrumentY);
+    const instrumentY = padding + menuH + gap;
+    const instrumentH = Math.max(0, height - instrumentY - padding);
     const instrumentBounds = {
       x: 0,
       y: instrumentY,
