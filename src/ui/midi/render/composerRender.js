@@ -11,10 +11,10 @@ export function drawRecordModeSidebar(composer, ctx, x, y, w, h, tabOptions) {
   const menuX = x;
   const menuY = y;
 
-  ctx.fillStyle = 'rgba(255,255,255,0.05)';
-  ctx.fillRect(menuX, menuY, w, menuH);
+  ctx.fillStyle = UI_SUITE.colors.panel;
+  ctx.fillRect(menuX, menuY, w, h);
   ctx.strokeStyle = UI_SUITE.colors.border;
-  ctx.strokeRect(menuX, menuY, w, menuH);
+  ctx.strokeRect(menuX, menuY, w, h);
 
   const innerX = menuX + panelPadding;
   const innerW = w - panelPadding * 2;
