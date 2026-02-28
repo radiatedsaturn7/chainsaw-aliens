@@ -7984,7 +7984,8 @@ export default class MidiComposer {
     const padding = leftFrame.outerPadding;
     const gap = leftFrame.contentGap;
 
-    const menuH = this.drawRecordModeSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH);
+    this.drawDesktopLeftPanel(ctx, sidebarX, sidebarY, sidebarW, sidebarH);
+    const menuH = Math.max(0, (this.bounds.leftSettings?.y ?? sidebarY) + (this.bounds.leftSettings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
 
     const gridBounds = {
       x: contentX,
@@ -8006,11 +8007,6 @@ export default class MidiComposer {
       instrumentBounds
     });
     const grid = layout.grid;
-    const instrument = layout.instrument;
-
-    const railButtonGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
-    const railButtonH = this.isMobileLayout() ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop;
-    const railButtonW = this.isMobileLayout() ? SHARED_EDITOR_LEFT_MENU.buttonWidthMobile : SHARED_EDITOR_LEFT_MENU.tabWidthDesktop;
     if (!this.recordGridZoomedOut && track) {
       const rows = isDrumTrack(track)
         ? this.getDrumRows().length
@@ -8049,16 +8045,6 @@ export default class MidiComposer {
       stickIndicators: this.recordStickIndicators,
       nowPlaying: this.nowPlaying
     });
-
-    const countInButton = this.recordLayout?.bounds?.settingsButtons?.find((button) => button.id === 'countin');
-    const undoY = countInButton?.y ?? Math.max(contentY, instrument.y - railButtonH - 6);
-    const rightAnchor = (instrument?.x ?? contentX) + (instrument?.w ?? contentW) - 16;
-    const redoX = rightAnchor - railButtonW;
-    const undoX = redoX - railButtonW - railButtonGap;
-    this.bounds.undoButton = { x: undoX, y: undoY, w: railButtonW, h: railButtonH };
-    this.bounds.redoButton = { x: redoX, y: undoY, w: railButtonW, h: railButtonH };
-    this.drawButton(ctx, this.bounds.undoButton, 'Undo', false, false);
-    this.drawButton(ctx, this.bounds.redoButton, 'Redo', false, false);
 
   }
 
