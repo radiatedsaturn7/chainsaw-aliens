@@ -2217,6 +2217,7 @@ export default class MidiComposer {
 
   isLeftRailTabActive(tabId) {
     if (tabId === 'virtual-instruments') return this.recordModeActive;
+    if (this.recordModeActive && tabId === 'grid') return false;
     return this.activeTab === tabId;
   }
 
@@ -7973,14 +7974,7 @@ export default class MidiComposer {
   drawRecordMode(ctx, width, height, track, pattern) {
     const padding = 16;
     const gap = 12;
-    const sidebarW = this.getSidebarWidth(width, {
-      ratio: 0.24,
-      min: SHARED_EDITOR_LEFT_MENU.width(),
-      max: SHARED_EDITOR_LEFT_MENU.width(),
-      padding,
-      gap,
-      minContent: 240
-    });
+    const sidebarW = SHARED_EDITOR_LEFT_MENU.width();
     const sidebarX = 0;
     const sidebarY = 0;
     const sidebarH = height;
