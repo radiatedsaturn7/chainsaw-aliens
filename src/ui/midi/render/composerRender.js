@@ -1,11 +1,11 @@
-import { UI_SUITE } from '../../uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU } from '../../uiSuite.js';
 
-const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 export function drawRecordModeSidebar(composer, ctx, x, y, w, h, tabOptions) {
-  const rowH = clamp(Math.round(h * 0.055), 40, 48);
-  const rowGap = clamp(Math.round(rowH * 0.2), 6, 10);
-  const panelPadding = clamp(Math.round(rowH * 0.25), 8, 12);
+  const isMobile = typeof composer.isMobileLayout === 'function' && composer.isMobileLayout();
+  const rowH = isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop;
+  const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+  const panelPadding = SHARED_EDITOR_LEFT_MENU.panelPadding;
   const menuRows = tabOptions.length + 2;
   const menuH = Math.min(h, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
   const menuX = x;

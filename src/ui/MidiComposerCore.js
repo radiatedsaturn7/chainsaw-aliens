@@ -97,7 +97,7 @@ const TAB_OPTIONS = [
   { id: 'grid', label: 'Grid' },
   { id: 'song', label: 'Song' },
   { id: 'instruments', label: 'Mixer' },
-  { id: 'virtual-instruments', label: 'Virtual Instruments' }
+  { id: 'virtual-instruments', label: 'Record' }
 ];
 
 const TOOL_OPTIONS = [
