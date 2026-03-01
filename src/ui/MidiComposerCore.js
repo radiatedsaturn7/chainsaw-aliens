@@ -7980,33 +7980,54 @@ export default class MidiComposer {
   }
 
   drawRecordMode(ctx, width, height, track, pattern) {
-    const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
-    const sidebarX = leftFrame.panelX;
-    const sidebarY = leftFrame.panelY;
-    const sidebarW = leftFrame.panelW;
-    const sidebarH = leftFrame.panelH;
-    const contentX = leftFrame.contentX;
-    const contentY = leftFrame.outerPadding;
-    const contentW = leftFrame.contentW;
-    const contentH = Math.max(0, height - leftFrame.outerPadding * 2);
-    const padding = leftFrame.outerPadding;
-    const gap = leftFrame.contentGap;
+    const isMobile = this.isMobileLayout();
+    let contentX;
+    let contentY;
+    let contentW;
+    let contentH;
+    let menuH;
+    let gap;
 
-    this.drawDesktopLeftPanel(ctx, sidebarX, sidebarY, sidebarW, sidebarH);
-    const menuH = Math.max(0, (this.bounds.leftSettings?.y ?? sidebarY) + (this.bounds.leftSettings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
+    if (isMobile) {
+      const padding = 10;
+      gap = 10;
+      const sidebarW = getSharedMobileRailWidth(width, height);
+      const sidebarX = 0;
+      const sidebarY = 0;
+      const sidebarH = height;
+      this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: true });
+      contentX = sidebarX + sidebarW + gap;
+      contentY = padding;
+      contentW = width - contentX - padding;
+      contentH = height - padding * 2;
+      menuH = Math.max(0, (this.bounds.settings?.y ?? sidebarY) + (this.bounds.settings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
+    } else {
+      const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
+      const sidebarX = leftFrame.panelX;
+      const sidebarY = leftFrame.panelY;
+      const sidebarW = leftFrame.panelW;
+      const sidebarH = leftFrame.panelH;
+      contentX = leftFrame.contentX;
+      contentY = leftFrame.outerPadding;
+      contentW = leftFrame.contentW;
+      contentH = Math.max(0, height - leftFrame.outerPadding * 2);
+      gap = leftFrame.contentGap;
+      this.drawDesktopLeftPanel(ctx, sidebarX, sidebarY, sidebarW, sidebarH);
+      menuH = Math.max(0, (this.bounds.leftSettings?.y ?? sidebarY) + (this.bounds.leftSettings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
+    }
 
     const gridBounds = {
       x: contentX,
-      y: padding,
+      y: contentY,
       w: contentW,
       h: menuH
     };
-    const instrumentY = padding + menuH + gap;
-    const instrumentH = Math.max(0, height - instrumentY - padding);
+    const instrumentY = contentY + menuH + gap;
+    const instrumentH = Math.max(0, (contentY + contentH) - instrumentY);
     const instrumentBounds = {
-      x: 0,
+      x: contentX,
       y: instrumentY,
-      w: width,
+      w: contentW,
       h: instrumentH
     };
 
