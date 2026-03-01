@@ -8021,11 +8021,11 @@ export default class MidiComposer {
       h: menuH
     };
     const instrumentY = contentY + menuH + gap;
-    const instrumentH = Math.max(0, (contentY + contentH) - instrumentY);
+    const instrumentH = Math.max(0, height - instrumentY);
     const instrumentBounds = {
-      x: contentX,
+      x: 0,
       y: instrumentY,
-      w: contentW,
+      w: width,
       h: instrumentH
     };
 
