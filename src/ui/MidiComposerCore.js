@@ -8014,10 +8014,18 @@ export default class MidiComposer {
       menuH = Math.max(0, (this.bounds.leftSettings?.y ?? sidebarY) + (this.bounds.leftSettings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
     }
 
+    const controlRailW = clamp(Math.round(contentW * 0.2), 132, 204);
+    const controlRailGap = 10;
+    const controlRailBounds = {
+      x: contentX + contentW - controlRailW,
+      y: contentY,
+      w: controlRailW,
+      h: menuH
+    };
     const gridBounds = {
       x: contentX,
       y: contentY,
-      w: contentW,
+      w: Math.max(0, contentW - controlRailW - controlRailGap),
       h: menuH
     };
     const instrumentY = contentY + menuH + gap;
@@ -8031,7 +8039,8 @@ export default class MidiComposer {
 
     const layout = this.recordLayout.layout(contentW, contentH, contentX, contentY, {
       gridBounds,
-      instrumentBounds
+      instrumentBounds,
+      controlRailBounds
     });
     const grid = layout.grid;
     if (!this.recordGridZoomedOut && track) {

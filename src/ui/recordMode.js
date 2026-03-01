@@ -47,6 +47,7 @@ export default class RecordModeLayout {
     const gridGap = 12;
     const gridBounds = config.gridBounds;
     const instrumentBounds = config.instrumentBounds;
+    const controlRailBounds = config.controlRailBounds;
     if (gridBounds && instrumentBounds) {
       this.bounds.grid = { ...gridBounds };
       this.bounds.instrument = { ...instrumentBounds };
@@ -65,15 +66,20 @@ export default class RecordModeLayout {
     const rowH = clamp(Math.round(this.bounds.instrument.h * 0.08), 36, 48);
     const rowGap = clamp(Math.round(rowH * 0.28), 8, 12);
     const railPadding = 12;
-    const railInnerW = clamp(Math.round(this.bounds.instrument.w * 0.22), 110, 180);
-    const railW = railInnerW + railPadding * 2;
-    const railX = this.bounds.instrument.x + this.bounds.instrument.w - railW - 12;
-    const railY = this.bounds.instrument.y + 12;
-    const railH = this.bounds.instrument.h - 24;
+    const fallbackInnerW = clamp(Math.round(this.bounds.instrument.w * 0.22), 110, 180);
+    const fallbackRailW = fallbackInnerW + railPadding * 2;
+    const fallbackRailX = this.bounds.instrument.x + this.bounds.instrument.w - fallbackRailW - 12;
+    const fallbackRailY = this.bounds.instrument.y + 12;
+    const fallbackRailH = this.bounds.instrument.h - 24;
+    const railX = controlRailBounds?.x ?? fallbackRailX;
+    const railY = controlRailBounds?.y ?? fallbackRailY;
+    const railW = controlRailBounds?.w ?? fallbackRailW;
+    const railH = controlRailBounds?.h ?? fallbackRailH;
+    const railInnerW = Math.max(80, railW - railPadding * 2);
     const touchAreaPadding = 12;
     const touchX = this.bounds.instrument.x + touchAreaPadding;
     const touchY = this.bounds.instrument.y + touchAreaPadding;
-    const touchW = Math.max(0, railX - touchAreaPadding - touchX - 12);
+    const touchW = this.bounds.instrument.w - touchAreaPadding * 2;
     const touchH = this.bounds.instrument.h - touchAreaPadding * 2;
     this.bounds.controlRail = {
       x: railX,
@@ -246,6 +252,12 @@ export default class RecordModeLayout {
     const gap = this.header.rowGap;
     const maxButtonH = Math.max(24, Math.floor((rail.h - rail.padding * 2 - gap * 6) / 7));
     const buttonH = Math.min(this.header.rowH, maxButtonH);
+    ctx.save();
+    ctx.fillStyle = 'rgba(8,10,12,0.92)';
+    ctx.fillRect(rail.x, rail.y, rail.w, rail.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.strokeRect(rail.x, rail.y, rail.w, rail.h);
+    ctx.restore();
     this.bounds.settingsButtons = [
       {
         id: 'quantize',
