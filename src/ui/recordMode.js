@@ -28,6 +28,7 @@ export default class RecordModeLayout {
     this.metronomeEnabled = false;
     this.instrumentMenuOpen = false;
     this.instrumentModalBounds = null;
+    this.availableInstruments = ['guitar', 'bass', 'keyboard', 'drums'];
   }
 
   setDevice(device) {
@@ -38,6 +39,14 @@ export default class RecordModeLayout {
     this.instrument = instrument;
     if (this.touchInput) {
       this.touchInput.setInstrument(instrument);
+    }
+  }
+
+  setAvailableInstruments(instruments = []) {
+    const valid = Array.isArray(instruments) && instruments.length ? instruments : ['guitar', 'bass', 'keyboard', 'drums'];
+    this.availableInstruments = [...new Set(valid)];
+    if (!this.availableInstruments.includes(this.instrument)) {
+      this.setInstrument(this.availableInstruments[0]);
     }
   }
 
@@ -183,7 +192,7 @@ export default class RecordModeLayout {
       this.bounds.instrumentButtons = [];
       return;
     }
-    const instruments = ['guitar', 'bass', 'keyboard', 'drums'];
+    const instruments = this.availableInstruments;
     const gap = 10;
     const totalW = this.instrumentModalBounds?.w ? this.instrumentModalBounds.w - 32 : this.bounds.instrument.w - 24;
     const minButtonW = 96;
@@ -220,7 +229,7 @@ export default class RecordModeLayout {
     ctx.fillRect(instrument.x, instrument.y, instrument.w, instrument.h);
 
     const modalW = Math.min(520, instrument.w - 24);
-    const instruments = ['guitar', 'bass', 'keyboard', 'drums'];
+    const instruments = this.availableInstruments;
     const gap = 10;
     const minButtonW = 96;
     const columns = Math.max(1, Math.floor((modalW - 32 + gap) / (minButtonW + gap)));
