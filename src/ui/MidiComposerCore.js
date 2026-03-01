@@ -105,15 +105,16 @@ const TOOL_OPTIONS = [
 ];
 
 const INSTRUMENT_FAMILY_TABS = [
-  { id: 'favorites', label: 'Favorites' },
   { id: 'piano-keys', label: 'Piano/Keys' },
   { id: 'guitars', label: 'Guitars' },
   { id: 'bass', label: 'Bass' },
+  { id: 'drum-kits', label: 'Drum Kits' },
+  { id: 'drums-perc', label: 'Drums/Perc' },
+  { id: 'favorites', label: 'Favorites' },
   { id: 'strings', label: 'Strings' },
   { id: 'brass', label: 'Brass' },
   { id: 'woodwinds', label: 'Woodwinds' },
   { id: 'synth', label: 'Synth' },
-  { id: 'drums-perc', label: 'Drums/Perc' },
   { id: 'fx', label: 'FX' },
   { id: 'choir-voice', label: 'Choir/Voice' },
   { id: 'ethnic', label: 'Ethnic' },
@@ -1491,6 +1492,20 @@ export default class MidiComposer {
         return nameMatch || numberMatch;
       });
     }
+    if (familyId === 'drum-kits') {
+      const availableKits = this.game?.audio?.listAvailableDrumKits?.();
+      const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
+      return drumKits.filter((kit) => {
+        if (!search) return true;
+        return String(kit.label || '').toLowerCase().includes(search)
+          || formatProgramNumber(kit.program || 0).includes(search);
+      }).map((kit) => ({
+        program: clamp(kit.preset ?? kit.program ?? 0, 0, 127),
+        name: kit.label || 'Drum Kit',
+        kitId: kit.id,
+        family: 'Drums'
+      }));
+    }
     return GM_PROGRAMS.filter((entry) => {
       const matchesFamily = this.getInstrumentCategory(entry.program) === familyId;
       if (!matchesFamily) return false;
@@ -1509,7 +1524,7 @@ export default class MidiComposer {
 
   getInstrumentPickerTabs() {
     if (this.isEditingDrumInstrument()) {
-      return INSTRUMENT_FAMILY_TABS.filter((tab) => tab.id === 'drums-perc');
+      return INSTRUMENT_FAMILY_TABS.filter((tab) => tab.id === 'drum-kits' || tab.id === 'drums-perc');
     }
     return INSTRUMENT_FAMILY_TABS;
   }
@@ -1624,7 +1639,12 @@ export default class MidiComposer {
     this.instrumentPicker.scroll = 0;
     this.instrumentPicker.scrollStep = 0;
     this.instrumentPicker.drumKitBounds = null;
-    this.instrumentPicker.drumKitId = this.audioSettings?.drumKitId || 'standard';
+    const availableKits = this.game?.audio?.listAvailableDrumKits?.();
+    const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
+    const matchedKit = track && isDrumTrack(track)
+      ? drumKits.find((kit) => kit.program === track.program && kit.bankMSB === track.bankMSB && kit.bankLSB === track.bankLSB)
+      : null;
+    this.instrumentPicker.drumKitId = matchedKit?.id || this.audioSettings?.drumKitId || 'standard';
   }
 
   confirmInstrumentSelection() {
@@ -1667,7 +1687,7 @@ export default class MidiComposer {
       .find((kit) => kit.id === this.instrumentPicker.drumKitId);
     if (this.instrumentPicker.mode === 'add') {
       if (!Number.isInteger(program)) return;
-      const addingDrums = this.instrumentPicker.familyTab === 'drums-perc';
+      const addingDrums = this.instrumentPicker.familyTab === 'drums-perc' || this.instrumentPicker.familyTab === 'drum-kits';
       const resolvedProgram = addingDrums ? clamp(selectedKit?.preset ?? selectedKit?.program ?? 0, 0, 127) : program;
       const baseName = addingDrums ? (selectedKit?.label || 'Drums') : (GM_PROGRAMS[program]?.name || 'Track');
       const name = this.getUniqueTrackName(baseName);
@@ -3717,7 +3737,14 @@ export default class MidiComposer {
         const pickHit = this.instrumentPicker.bounds.find((bounds) => this.pointInBounds(x, y, bounds));
         if (pickHit) {
           this.instrumentPicker.selectedProgram = pickHit.program;
-          this.previewInstrument(pickHit.program);
+          if (pickHit.kitId) {
+            this.instrumentPicker.drumKitId = pickHit.kitId;
+            this.audioSettings.drumKitId = pickHit.kitId;
+            this.saveAudioSettings();
+            this.applyAudioSettings();
+          } else {
+            this.previewInstrument(pickHit.program);
+          }
           return;
         }
         if (this.instrumentPicker.scrollUpBounds && this.pointInBounds(x, y, this.instrumentPicker.scrollUpBounds)) {
@@ -9742,6 +9769,7 @@ export default class MidiComposer {
       const tiles = programs.length
         ? programs.map((entry) => ({
           program: entry.program,
+          kitId: entry.kitId || null,
           label: `${formatProgramNumber(entry.program)} ${entry.name}`
         }))
         : [{ type: 'empty', label: 'No instruments in this tab yet.' }];
@@ -9769,7 +9797,7 @@ export default class MidiComposer {
           tileX = rightX + padding;
           return;
         }
-        const bounds = { x: tileX, y: tileY, w: tileW, h: tileH, program: item.program };
+        const bounds = { x: tileX, y: tileY, w: tileW, h: tileH, program: item.program, kitId: item.kitId || null };
         if (tileY + tileH >= scrollY - tileH && tileY <= scrollY + scrollH + tileH) {
           const isSelected = this.instrumentPicker.selectedProgram === item.program;
           this.drawButton(ctx, bounds, item.label, isSelected, true);
