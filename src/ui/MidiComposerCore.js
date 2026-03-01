@@ -3379,13 +3379,10 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings)) {
-      this.activeTab = 'settings';
-      this.closeSelectionMenu();
-      this.pastePreview = null;
-      this.noteLengthMenu.open = false;
-      this.tempoSliderOpen = false;
-      return;
-    }
+        this.exitRecordMode();
+        this.activateLeftRailTab('settings');
+        return;
+      }
 
     if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
         if (this.activeTab === 'instruments') {
@@ -3404,7 +3401,8 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) {
-        this.activeTab = 'settings';
+        this.exitRecordMode();
+        this.activateLeftRailTab('settings');
         return;
       }
       return;
@@ -7955,11 +7953,19 @@ export default class MidiComposer {
       this.drawButton(ctx, bounds, entry.label, this.isLeftRailTabActive(entry.id), false);
     });
     const tabTail = topButtons[topButtons.length - 1]?.bounds || { x: tabColumn.x, y: tabColumn.y, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
-    this.bounds.undoButton = { x: tabColumn.x, y: tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
-    this.drawButton(ctx, this.bounds.undoButton, 'Undo / Redo', false, false);
+    const showUndoRedo = !this.isMobileLayout();
+    if (showUndoRedo) {
+      this.bounds.undoButton = { x: tabColumn.x, y: tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
+      this.drawButton(ctx, this.bounds.undoButton, 'Undo / Redo', false, false);
+    } else {
+      this.bounds.undoButton = null;
+    }
+    const settingsY = showUndoRedo
+      ? this.bounds.undoButton.y + this.bounds.undoButton.h + SHARED_EDITOR_LEFT_MENU.buttonGap
+      : tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap;
     this.bounds.leftSettings = {
       x: tabColumn.x,
-      y: this.bounds.undoButton.y + this.bounds.undoButton.h + SHARED_EDITOR_LEFT_MENU.buttonGap,
+      y: settingsY,
       w: tabColumn.w,
       h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop
     };
@@ -7972,29 +7978,50 @@ export default class MidiComposer {
   }
 
   drawRecordMode(ctx, width, height, track, pattern) {
-    const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
-    const sidebarX = leftFrame.panelX;
-    const sidebarY = leftFrame.panelY;
-    const sidebarW = leftFrame.panelW;
-    const sidebarH = leftFrame.panelH;
-    const contentX = leftFrame.contentX;
-    const contentY = leftFrame.outerPadding;
-    const contentW = leftFrame.contentW;
-    const contentH = Math.max(0, height - leftFrame.outerPadding * 2);
-    const padding = leftFrame.outerPadding;
-    const gap = leftFrame.contentGap;
+    const isMobile = this.isMobileLayout();
+    let contentX;
+    let contentY;
+    let contentW;
+    let contentH;
+    let menuH;
+    let gap;
 
-    this.drawDesktopLeftPanel(ctx, sidebarX, sidebarY, sidebarW, sidebarH);
-    const menuH = Math.max(0, (this.bounds.leftSettings?.y ?? sidebarY) + (this.bounds.leftSettings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
+    if (isMobile) {
+      const padding = 10;
+      gap = 10;
+      const sidebarW = getSharedMobileRailWidth(width, height);
+      const sidebarX = 0;
+      const sidebarY = 0;
+      const sidebarH = height;
+      this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: true });
+      contentX = sidebarX + sidebarW + gap;
+      contentY = padding;
+      contentW = width - contentX - padding;
+      contentH = height - padding * 2;
+      menuH = Math.max(0, (this.bounds.settings?.y ?? sidebarY) + (this.bounds.settings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
+    } else {
+      const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
+      const sidebarX = leftFrame.panelX;
+      const sidebarY = leftFrame.panelY;
+      const sidebarW = leftFrame.panelW;
+      const sidebarH = leftFrame.panelH;
+      contentX = leftFrame.contentX;
+      contentY = leftFrame.outerPadding;
+      contentW = leftFrame.contentW;
+      contentH = Math.max(0, height - leftFrame.outerPadding * 2);
+      gap = leftFrame.contentGap;
+      this.drawDesktopLeftPanel(ctx, sidebarX, sidebarY, sidebarW, sidebarH);
+      menuH = Math.max(0, (this.bounds.leftSettings?.y ?? sidebarY) + (this.bounds.leftSettings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
+    }
 
     const gridBounds = {
       x: contentX,
-      y: padding,
+      y: contentY,
       w: contentW,
       h: menuH
     };
-    const instrumentY = padding + menuH + gap;
-    const instrumentH = Math.max(0, height - instrumentY - padding);
+    const instrumentY = contentY + menuH + gap;
+    const instrumentH = Math.max(0, height - instrumentY);
     const instrumentBounds = {
       x: 0,
       y: instrumentY,

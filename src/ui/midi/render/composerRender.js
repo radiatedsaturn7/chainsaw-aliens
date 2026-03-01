@@ -23,7 +23,7 @@ export function drawRecordModeSidebar(composer, ctx, x, y, w, h, tabOptions) {
   composer.bounds.tabs = [];
   composer.bounds.fileButton = topButtons[0]?.bounds || null;
   if (composer.bounds.fileButton) {
-    composer.drawButton(ctx, composer.bounds.fileButton, 'File', composer.activeTab === 'file', false);
+    composer.drawButton(ctx, composer.bounds.fileButton, SHARED_EDITOR_LEFT_MENU.fileLabel, composer.activeTab === 'file', false);
   }
 
   topButtons.slice(1).forEach((entry) => {
@@ -33,11 +33,17 @@ export function drawRecordModeSidebar(composer, ctx, x, y, w, h, tabOptions) {
   });
 
   const tabTail = topButtons[topButtons.length - 1]?.bounds || { x: tabColumn.x, y: tabColumn.y, h: rowH };
-  composer.bounds.undoButton = null;
+  composer.bounds.undoButton = {
+    x: tabColumn.x,
+    y: tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap,
+    w: tabColumn.w,
+    h: rowH
+  };
+  composer.drawButton(ctx, composer.bounds.undoButton, 'Undo / Redo', false, false);
   composer.bounds.redoButton = null;
   composer.bounds.settings = {
     x: tabColumn.x,
-    y: tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap,
+    y: composer.bounds.undoButton.y + composer.bounds.undoButton.h + SHARED_EDITOR_LEFT_MENU.buttonGap,
     w: tabColumn.w,
     h: rowH
   };
