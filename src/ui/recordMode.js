@@ -6,6 +6,8 @@ export default class RecordModeLayout {
     this.bounds = {
       grid: null,
       instrument: null,
+      controlRail: null,
+      performanceArea: null,
       instrumentButtons: [],
       settingsButtons: []
     };
@@ -60,30 +62,48 @@ export default class RecordModeLayout {
         h: height - (gridY + gridH + gridGap) - padding
       };
     }
-    const headerPadding = 12;
     const rowH = clamp(Math.round(this.bounds.instrument.h * 0.08), 36, 48);
-    const rowGap = clamp(Math.round(rowH * 0.35), 8, 12);
-    const totalW = this.bounds.instrument.w - 24;
-    const minButtonW = 90;
-    const columns = Math.max(1, Math.floor((totalW + rowGap) / (minButtonW + rowGap)));
-    const settingsRows = Math.ceil(7 / columns);
-    const settingsBlockH = settingsRows * rowH + Math.max(0, settingsRows - 1) * rowGap;
-    const headerH = headerPadding + settingsBlockH + rowGap + rowH;
+    const rowGap = clamp(Math.round(rowH * 0.28), 8, 12);
+    const railPadding = 12;
+    const railInnerW = clamp(Math.round(this.bounds.instrument.w * 0.22), 110, 180);
+    const railW = railInnerW + railPadding * 2;
+    const railX = this.bounds.instrument.x + this.bounds.instrument.w - railW - 12;
+    const railY = this.bounds.instrument.y + 12;
+    const railH = this.bounds.instrument.h - 24;
+    const touchAreaPadding = 12;
+    const touchX = this.bounds.instrument.x + touchAreaPadding;
+    const touchY = this.bounds.instrument.y + touchAreaPadding;
+    const touchW = Math.max(0, railX - touchAreaPadding - touchX - 12);
+    const touchH = this.bounds.instrument.h - touchAreaPadding * 2;
+    this.bounds.controlRail = {
+      x: railX,
+      y: railY,
+      w: railW,
+      h: railH,
+      buttonW: railInnerW,
+      buttonGap: rowGap,
+      padding: railPadding
+    };
+    this.bounds.performanceArea = {
+      x: touchX,
+      y: touchY,
+      w: touchW,
+      h: touchH
+    };
     this.header = {
-      x: this.bounds.instrument.x + 12,
-      y: this.bounds.instrument.y + 12,
+      x: railX + railPadding,
+      y: railY + railPadding,
       rowH,
       rowGap,
-      settingsY: this.bounds.instrument.y + 12,
-      instrumentY: this.bounds.instrument.y + 12 + settingsBlockH + rowGap,
-      headerH
+      settingsY: railY + railPadding,
+      instrumentY: railY + railPadding,
+      headerH: railH
     };
     if (this.touchInput) {
-      const touchH = Math.max(0, this.bounds.instrument.h - headerH - 16);
       this.touchInput.setBounds({
-        x: this.bounds.instrument.x + 12,
-        y: this.bounds.instrument.y + headerH,
-        w: this.bounds.instrument.w - 24,
+        x: touchX,
+        y: touchY,
+        w: touchW,
         h: touchH
       });
     }
@@ -218,13 +238,14 @@ export default class RecordModeLayout {
   }
 
   drawSettingButtons(ctx, isPlaying, isRecording) {
-    const gap = 10;
-    const totalW = this.bounds.instrument.w - 24;
-    const minButtonW = 90;
-    const columns = Math.max(1, Math.floor((totalW + gap) / (minButtonW + gap)));
-    const buttonW = Math.max(minButtonW, (totalW - gap * (columns - 1)) / columns);
+    const rail = this.bounds.controlRail;
+    if (!rail) return;
+    const buttonW = rail.buttonW;
     const x = this.header.x;
     const y = this.header.settingsY;
+    const gap = this.header.rowGap;
+    const maxButtonH = Math.max(24, Math.floor((rail.h - rail.padding * 2 - gap * 6) / 7));
+    const buttonH = Math.min(this.header.rowH, maxButtonH);
     this.bounds.settingsButtons = [
       {
         id: 'quantize',
@@ -232,73 +253,64 @@ export default class RecordModeLayout {
         x,
         y,
         w: buttonW,
-        h: this.header.rowH,
+        h: buttonH,
         active: this.quantizeEnabled
       },
       {
         id: 'countin',
         label: this.countInEnabled ? 'Count-in On' : 'Count-in Off',
-        x: x + (buttonW + gap),
-        y,
+        x,
+        y: y + (buttonH + gap),
         w: buttonW,
-        h: this.header.rowH,
+        h: buttonH,
         active: this.countInEnabled
       },
       {
         id: 'metronome',
         label: this.metronomeEnabled ? 'Click On' : 'Click Off',
-        x: x + (buttonW + gap) * 2,
-        y,
+        x,
+        y: y + (buttonH + gap) * 2,
         w: buttonW,
-        h: this.header.rowH,
+        h: buttonH,
         active: this.metronomeEnabled
       },
       {
         id: 'virtual',
         label: 'Virtual Instruments',
-        x: x + (buttonW + gap) * 3,
-        y,
+        x,
+        y: y + (buttonH + gap) * 3,
         w: buttonW,
-        h: this.header.rowH,
+        h: buttonH,
         active: this.instrumentMenuOpen
       },
       {
         id: 'record-toggle',
         label: '●',
-        x: x + (buttonW + gap) * 4,
-        y,
+        x,
+        y: y + (buttonH + gap) * 4,
         w: buttonW,
-        h: this.header.rowH,
+        h: buttonH,
         active: isRecording
       },
       {
         id: 'playback-play',
         label: isPlaying ? '❚❚' : '▶',
-        x: x + (buttonW + gap) * 5,
-        y,
+        x,
+        y: y + (buttonH + gap) * 5,
         w: buttonW,
-        h: this.header.rowH,
+        h: buttonH,
         active: isPlaying
       },
       {
         id: 'playback-stop',
         label: '⏹',
-        x: x + (buttonW + gap) * 6,
-        y,
+        x,
+        y: y + (buttonH + gap) * 6,
         w: buttonW,
-        h: this.header.rowH,
+        h: buttonH,
         active: false
       }
     ];
-    this.bounds.settingsButtons = this.bounds.settingsButtons.map((button, index) => {
-      const row = Math.floor(index / columns);
-      const col = index % columns;
-      return {
-        ...button,
-        x: x + col * (buttonW + gap),
-        y: y + row * (this.header.rowH + gap)
-      };
-    });
     this.bounds.settingsButtons.forEach((btn) => {
       this.drawButton(ctx, btn, btn.label, btn.active);
     });
