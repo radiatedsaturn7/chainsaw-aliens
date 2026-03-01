@@ -3379,13 +3379,10 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings)) {
-      this.activeTab = 'settings';
-      this.closeSelectionMenu();
-      this.pastePreview = null;
-      this.noteLengthMenu.open = false;
-      this.tempoSliderOpen = false;
-      return;
-    }
+        this.exitRecordMode();
+        this.activateLeftRailTab('settings');
+        return;
+      }
 
     if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
         if (this.activeTab === 'instruments') {
@@ -3404,7 +3401,8 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) {
-        this.activeTab = 'settings';
+        this.exitRecordMode();
+        this.activateLeftRailTab('settings');
         return;
       }
       return;
