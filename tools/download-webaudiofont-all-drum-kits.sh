@@ -13,7 +13,7 @@ set -euo pipefail
 # {
 #   "standard": "Chaos_sf2_file",
 #   "room": "FluidR3_GM_sf2_file",
-#   "power": "Aspirin_sf2_file",
+#   "power": "SBLive_sf2",
 #   "electronic": "JCLive_sf2_file",
 #   "jazz": "SomeOtherKitToken",
 #   "brush": "SomeOtherKitToken",
@@ -34,13 +34,13 @@ fi
 
 declare -A KIT_MAP=(
   [standard]="Chaos_sf2_file"
-  [room]="Chaos_sf2_file"
-  [power]="Chaos_sf2_file"
-  [electronic]="Chaos_sf2_file"
-  [jazz]="Chaos_sf2_file"
+  [room]="FluidR3_GM_sf2_file"
+  [power]="SBLive_sf2"
+  [electronic]="JCLive_sf2_file"
+  [jazz]="FluidR3_GM_sf2_file"
   [brush]="Chaos_sf2_file"
-  [orchestra]="Chaos_sf2_file"
-  [sfx]="Chaos_sf2_file"
+  [orchestra]="JCLive_sf2_file"
+  [sfx]="SBLive_sf2"
 )
 
 declare -A KIT_PRESET=(
