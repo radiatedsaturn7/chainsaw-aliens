@@ -3723,6 +3723,7 @@ export default class MidiComposer {
               startX: x,
               startY: y,
               tabId: familyHit.id,
+              startTabIndex: this.getInstrumentPickerTabs().findIndex((tab) => tab.id === this.instrumentPicker.familyTab),
               moved: false
             };
             return;
@@ -3739,6 +3740,7 @@ export default class MidiComposer {
             startX: x,
             startY: y,
             tabId: null,
+            startTabIndex: this.getInstrumentPickerTabs().findIndex((tab) => tab.id === this.instrumentPicker.familyTab),
             moved: false
           };
           return;
@@ -4506,9 +4508,21 @@ export default class MidiComposer {
     }
     if (this.dragState?.mode === 'instrument-tab-swipe') {
       const dx = payload.x - this.dragState.startX;
-      const threshold = 14;
-      if (!this.dragState.moved && Math.abs(dx) > threshold) {
-        this.dragState.moved = true;
+      const tabs = this.getInstrumentPickerTabs().map((tab) => tab.id);
+      if (tabs.length) {
+        const baseIndex = Number.isInteger(this.dragState.startTabIndex)
+          ? clamp(this.dragState.startTabIndex, 0, tabs.length - 1)
+          : Math.max(0, tabs.indexOf(this.instrumentPicker.familyTab));
+        const step = Math.trunc(dx / 64);
+        const nextIndex = clamp(baseIndex + step, 0, tabs.length - 1);
+        const nextTab = tabs[nextIndex];
+        if (nextTab && nextTab !== this.instrumentPicker.familyTab) {
+          this.instrumentPicker.familyTab = nextTab;
+          this.instrumentPicker.scroll = 0;
+        }
+        if (!this.dragState.moved && Math.abs(dx) > 6) {
+          this.dragState.moved = true;
+        }
       }
       return;
     }
@@ -4672,11 +4686,7 @@ export default class MidiComposer {
       return;
     }
     if (this.dragState?.mode === 'instrument-tab-swipe') {
-      const dx = payload.x - this.dragState.startX;
-      const threshold = 24;
-      if (Math.abs(dx) > threshold) {
-        this.shiftInstrumentPickerTab(dx < 0 ? 1 : -1);
-      } else if (this.dragState.tabId) {
+      if (!this.dragState.moved && this.dragState.tabId) {
         this.instrumentPicker.familyTab = this.dragState.tabId;
         this.instrumentPicker.scroll = 0;
       }
