@@ -675,8 +675,9 @@ export default class AudioSystem {
     if (isDrums) {
       resolvedPitch = clampDrumPitch(resolvedPitch);
       resolvedBankMSB = GM_DRUM_BANK_MSB;
-      resolvedBankLSB = GM_DRUM_BANK_LSB;
-      const resolvedKit = this.drumKitManager.getDrumKit();
+      resolvedBankLSB = Number.isInteger(bankLSB) ? bankLSB : GM_DRUM_BANK_LSB;
+      const resolvedKit = this.drumKitManager.resolveKitFromBankProgram(resolvedBankMSB, resolvedBankLSB, clampedProgram)
+        || this.drumKitManager.getDrumKit();
       if (resolvedKit?.soundfont) {
         this.soundfont.setDrumKitName(resolvedKit.soundfont);
         this.drumKitManager.setDrumKit(resolvedKit.id);
@@ -684,7 +685,7 @@ export default class AudioSystem {
       }
       channelState.bankMSB = resolvedBankMSB;
       channelState.bankLSB = resolvedBankLSB;
-      channelState.program = 0;
+      channelState.program = clampedProgram;
       const drumLabel = GM_DRUMS.find((entry) => entry.pitch === resolvedPitch)?.label || 'Unknown Drum';
       this.midiDebug.lastDrumNote = { pitch: resolvedPitch, label: drumLabel };
       this.midiDebug.lastChannelType = 'percussion';
@@ -703,7 +704,7 @@ export default class AudioSystem {
         channel: resolvedChannel,
         isDrum: isDrums,
         pitch: resolvedPitch,
-        program: isDrums ? 0 : clampedProgram,
+        program: clampedProgram,
         bankMSB: resolvedBankMSB,
         bankLSB: resolvedBankLSB
       });
@@ -717,15 +718,15 @@ export default class AudioSystem {
           name: resolvedPresetName,
           bankMSB: resolvedBankMSB,
           bankLSB: resolvedBankLSB,
-          preset: 0,
+          preset: clampedProgram,
           percussion: true
         });
         this.logDrumNote({
           backend: 'fallback',
           bankMSB: resolvedBankMSB,
           bankLSB: resolvedBankLSB,
-          program: 0,
-          preset: 0,
+          program: clampedProgram,
+          preset: clampedProgram,
           cacheKey,
           resolvedPresetName,
           note: resolvedPitch,
@@ -781,7 +782,8 @@ export default class AudioSystem {
         resolvedNote: resolvedPitch,
         bankMSB: resolvedBankMSB,
         bankLSB: resolvedBankLSB,
-        program: isDrums ? 0 : clampedProgram
+        program: clampedProgram,
+        preset: isDrums ? clampedProgram : undefined
       }
     })
       .then((voice) => {
@@ -798,17 +800,17 @@ export default class AudioSystem {
             name: resolvedPresetName,
             bankMSB: resolvedBankMSB,
             bankLSB: resolvedBankLSB,
-            preset: 0,
+            preset: clampedProgram,
             percussion: true
           });
-          const message = `Drum SoundFont missing preset (bankMSB=${resolvedBankMSB}, bankLSB=${resolvedBankLSB}, preset=0).`;
+          const message = `Drum SoundFont missing preset (bankMSB=${resolvedBankMSB}, bankLSB=${resolvedBankLSB}, preset=${clampedProgram}).`;
           this.gmError = message;
           this.logDrumNote({
             backend: 'soundfont',
             bankMSB: resolvedBankMSB,
             bankLSB: resolvedBankLSB,
-            program: 0,
-            preset: 0,
+            program: clampedProgram,
+            preset: clampedProgram,
             cacheKey,
             resolvedPresetName,
             note: resolvedPitch,
@@ -850,8 +852,9 @@ export default class AudioSystem {
     if (isDrums) {
       resolvedPitch = clampDrumPitch(resolvedPitch);
       resolvedBankMSB = GM_DRUM_BANK_MSB;
-      resolvedBankLSB = GM_DRUM_BANK_LSB;
-      const resolvedKit = this.drumKitManager.getDrumKit();
+      resolvedBankLSB = Number.isInteger(bankLSB) ? bankLSB : GM_DRUM_BANK_LSB;
+      const resolvedKit = this.drumKitManager.resolveKitFromBankProgram(resolvedBankMSB, resolvedBankLSB, clampedProgram)
+        || this.drumKitManager.getDrumKit();
       if (resolvedKit?.soundfont) {
         this.soundfont.setDrumKitName(resolvedKit.soundfont);
         this.drumKitManager.setDrumKit(resolvedKit.id);
@@ -859,7 +862,7 @@ export default class AudioSystem {
       }
       channelState.bankMSB = resolvedBankMSB;
       channelState.bankLSB = resolvedBankLSB;
-      channelState.program = 0;
+      channelState.program = clampedProgram;
       const drumLabel = GM_DRUMS.find((entry) => entry.pitch === resolvedPitch)?.label || 'Unknown Drum';
       this.midiDebug.lastDrumNote = { pitch: resolvedPitch, label: drumLabel };
       this.midiDebug.lastChannelType = 'percussion';
@@ -878,7 +881,7 @@ export default class AudioSystem {
         channel: resolvedChannel,
         isDrum: isDrums,
         pitch: resolvedPitch,
-        program: isDrums ? 0 : clampedProgram,
+        program: clampedProgram,
         bankMSB: resolvedBankMSB,
         bankLSB: resolvedBankLSB
       });
@@ -919,7 +922,8 @@ export default class AudioSystem {
         resolvedNote: resolvedPitch,
         bankMSB: resolvedBankMSB,
         bankLSB: resolvedBankLSB,
-        program: isDrums ? 0 : clampedProgram
+        program: clampedProgram,
+        preset: isDrums ? clampedProgram : undefined
       }
     })
       .then((voice) => {
@@ -939,17 +943,17 @@ export default class AudioSystem {
             name: resolvedPresetName,
             bankMSB: resolvedBankMSB,
             bankLSB: resolvedBankLSB,
-            preset: 0,
+            preset: clampedProgram,
             percussion: true
           });
-          const message = `Drum SoundFont missing preset (bankMSB=${resolvedBankMSB}, bankLSB=${resolvedBankLSB}, preset=0).`;
+          const message = `Drum SoundFont missing preset (bankMSB=${resolvedBankMSB}, bankLSB=${resolvedBankLSB}, preset=${clampedProgram}).`;
           this.gmError = message;
           this.logDrumNote({
             backend: 'soundfont',
             bankMSB: resolvedBankMSB,
             bankLSB: resolvedBankLSB,
-            program: 0,
-            preset: 0,
+            program: clampedProgram,
+            preset: clampedProgram,
             cacheKey,
             resolvedPresetName,
             note: resolvedPitch,
@@ -988,7 +992,7 @@ export default class AudioSystem {
     return this.soundfontLoader.ensureLoaded({
       channel: resolvedChannel,
       isDrum: isDrums,
-      program: isDrums ? 0 : meta.program,
+      program: meta.program,
       bankMSB: meta.bankMSB,
       bankLSB: meta.bankLSB,
       kitName: kit?.soundfont
