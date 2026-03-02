@@ -1642,7 +1642,10 @@ export default class MidiComposer {
     this.instrumentPicker.scrollDownBounds = null;
     this.instrumentPicker.scroll = 0;
     this.instrumentPicker.scrollStep = 0;
+    this.instrumentPicker.tabPageSize = 1;
     this.instrumentPicker.drumKitBounds = null;
+    const selectedTabIndex = Math.max(0, tabs.findIndex((tab) => tab.id === this.instrumentPicker.familyTab));
+    this.instrumentPicker.tabPageStart = selectedTabIndex;
     const availableKits = this.game?.audio?.listAvailableDrumKits?.();
     const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
     const matchedKit = track && isDrumTrack(track)
@@ -1679,12 +1682,16 @@ export default class MidiComposer {
   }
 
   shiftInstrumentPickerTab(delta) {
-    const tabs = this.getInstrumentPickerTabs().map((tab) => tab.id);
-    const currentIndex = tabs.indexOf(this.instrumentPicker.familyTab);
-    const baseIndex = currentIndex === -1 ? 0 : currentIndex;
-    const nextIndex = (baseIndex + delta + tabs.length) % tabs.length;
-    this.instrumentPicker.familyTab = tabs[nextIndex];
-    this.instrumentPicker.scroll = 0;
+    const tabs = this.getInstrumentPickerTabs();
+    if (!tabs.length) return;
+    const pageSize = Math.max(1, Number(this.instrumentPicker.tabPageSize) || 1);
+    const maxStart = Math.max(0, tabs.length - pageSize);
+    const nextStart = clamp(
+      (Number(this.instrumentPicker.tabPageStart) || 0) + delta * pageSize,
+      0,
+      maxStart
+    );
+    this.instrumentPicker.tabPageStart = nextStart;
   }
 
   getInstrumentPickerItems() {
@@ -3727,7 +3734,7 @@ export default class MidiComposer {
               startX: x,
               startY: y,
               tabId: familyHit.id,
-              startTabIndex: this.getInstrumentPickerTabs().findIndex((tab) => tab.id === this.instrumentPicker.familyTab),
+              startTabPageStart: this.instrumentPicker.tabPageStart || 0,
               moved: false
             };
             return;
@@ -3744,7 +3751,7 @@ export default class MidiComposer {
             startX: x,
             startY: y,
             tabId: null,
-            startTabIndex: this.getInstrumentPickerTabs().findIndex((tab) => tab.id === this.instrumentPicker.familyTab),
+            startTabPageStart: this.instrumentPicker.tabPageStart || 0,
             moved: false
           };
           return;
@@ -4520,10 +4527,16 @@ export default class MidiComposer {
       if (!this.dragState.moved && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
         this.dragState.moved = true;
       }
-      const tabHit = this.instrumentPicker.tabBounds.find((bounds) => this.pointInBounds(payload.x, payload.y, bounds));
-      if (tabHit && tabHit.id !== this.instrumentPicker.familyTab) {
-        this.instrumentPicker.familyTab = tabHit.id;
-        this.instrumentPicker.scroll = 0;
+      if (this.dragState.moved) {
+        const tabs = this.getInstrumentPickerTabs();
+        const pageSize = Math.max(1, Number(this.instrumentPicker.tabPageSize) || 1);
+        const maxStart = Math.max(0, tabs.length - pageSize);
+        const step = Math.round(-dx / 48);
+        this.instrumentPicker.tabPageStart = clamp(
+          (Number(this.dragState.startTabPageStart) || 0) + step,
+          0,
+          maxStart
+        );
       }
       return;
     }
@@ -9795,8 +9808,10 @@ export default class MidiComposer {
       const tabCols = Math.max(1, Math.floor((tabsAvailableW + tabGap) / (minTabW + tabGap)));
       const tabsPerPage = tabCols * tabRows;
       const pickerTabs = this.getInstrumentPickerTabs();
-      const currentIndex = Math.max(0, pickerTabs.findIndex((tab) => tab.id === this.instrumentPicker.familyTab));
-      const pageStart = Math.floor(currentIndex / tabsPerPage) * tabsPerPage;
+      const maxPageStart = Math.max(0, pickerTabs.length - tabsPerPage);
+      const pageStart = clamp(Number(this.instrumentPicker.tabPageStart) || 0, 0, maxPageStart);
+      this.instrumentPicker.tabPageStart = pageStart;
+      this.instrumentPicker.tabPageSize = tabsPerPage;
       const visibleTabs = pickerTabs.slice(pageStart, pageStart + tabsPerPage);
       const tabW = (tabsAvailableW - Math.max(0, tabCols - 1) * tabGap) / Math.max(1, tabCols);
       this.instrumentPicker.tabBounds = [];
