@@ -775,8 +775,10 @@ export default class MidiComposer {
       songZoomIn: null,
       songZoomOut: null,
       keyframeToggle: null,
+      keyframePrev: null,
       keyframeSet: null,
       keyframeRemove: null,
+      keyframeNext: null,
       songMixVolumeTab: null,
       songMixPanTab: null,
       songMixRail: null
@@ -795,6 +797,12 @@ export default class MidiComposer {
     this.songLaneBounds = [];
     this.songLabelBounds = [];
     this.songAutomationBounds = [];
+    this.bounds.keyframePrev = null;
+    this.bounds.keyframeSet = null;
+    this.bounds.keyframeRemove = null;
+    this.bounds.keyframeNext = null;
+    this.bounds.songMixVolumeTab = null;
+    this.bounds.songMixPanTab = null;
     this.songActionBounds = [];
     this.songPartBounds = [];
     this.songPartHandleBounds = [];
@@ -3575,6 +3583,10 @@ export default class MidiComposer {
       this.keyframePanelOpen = !this.keyframePanelOpen;
       return;
     }
+    if (this.bounds.keyframePrev && this.pointInBounds(x, y, this.bounds.keyframePrev)) {
+      this.jumpSongMixKeyframe(-1);
+      return;
+    }
     if (this.bounds.keyframeSet && this.pointInBounds(x, y, this.bounds.keyframeSet)) {
       const track = this.getActiveTrack();
       if (track) {
@@ -3609,6 +3621,10 @@ export default class MidiComposer {
           this.removeSongAutomationKeyframe(track, 'pan', tick);
         }
       }
+      return;
+    }
+    if (this.bounds.keyframeNext && this.pointInBounds(x, y, this.bounds.keyframeNext)) {
+      this.jumpSongMixKeyframe(1);
       return;
     }
 
@@ -6142,6 +6158,30 @@ export default class MidiComposer {
     this.selectedTrackIndex = targetStartTrackIndex;
     this.persist({ commitHistory: true });
     this.finalizeSongSelection();
+  }
+
+  getSongMixAutomationType() {
+    return this.songMixControlMode === 'pan' ? 'pan' : 'padding';
+  }
+
+  jumpSongMixKeyframe(direction) {
+    if (this.activeTab !== 'song') return;
+    const track = this.getActiveTrack();
+    if (!track) return;
+    const type = this.getSongMixAutomationType();
+    const frames = track.automation?.[type] || [];
+    if (!frames.length) return;
+    const sorted = [...frames].sort((a, b) => a.tick - b.tick);
+    const threshold = this.ticksPerBeat / 8;
+    const currentTick = this.snapTick(this.playheadTick);
+    let target = null;
+    if (direction < 0) {
+      target = [...sorted].reverse().find((frame) => frame.tick < currentTick - threshold) || sorted[sorted.length - 1];
+    } else {
+      target = sorted.find((frame) => frame.tick > currentTick + threshold) || sorted[0];
+    }
+    if (!target) return;
+    this.playheadTick = clamp(target.tick, 0, this.getSongTimelineTicks());
   }
 
   addSongAutomationKeyframe(track, type, tick, value) {
@@ -9188,16 +9228,20 @@ export default class MidiComposer {
       ctx.strokeRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
       this.bounds.instrumentSettingsControls.push(sliderBounds);
 
-      const buttonGap = 12;
+      const buttonGap = 8;
       const buttonY = sliderBounds.y + sliderBounds.h + 10;
-      const buttonW = (sliderBounds.w - buttonGap) / 2;
-      this.bounds.keyframeSet = { x: sliderBounds.x, y: buttonY, w: buttonW, h: 28 };
-      this.bounds.keyframeRemove = { x: sliderBounds.x + buttonW + buttonGap, y: buttonY, w: buttonW, h: 28 };
-      this.drawSmallButton(ctx, this.bounds.keyframeSet, 'Set Keyframe', false);
-      this.drawSmallButton(ctx, this.bounds.keyframeRemove, 'Remove Keyframe', false);
+      const buttonW = (sliderBounds.w - buttonGap * 3) / 4;
+      this.bounds.keyframePrev = { x: sliderBounds.x, y: buttonY, w: buttonW, h: 28 };
+      this.bounds.keyframeSet = { x: sliderBounds.x + (buttonW + buttonGap), y: buttonY, w: buttonW, h: 28 };
+      this.bounds.keyframeRemove = { x: sliderBounds.x + (buttonW + buttonGap) * 2, y: buttonY, w: buttonW, h: 28 };
+      this.bounds.keyframeNext = { x: sliderBounds.x + (buttonW + buttonGap) * 3, y: buttonY, w: buttonW, h: 28 };
+      this.drawSmallButton(ctx, this.bounds.keyframePrev, '◀ Prev', false);
+      this.drawSmallButton(ctx, this.bounds.keyframeSet, 'Set', false);
+      this.drawSmallButton(ctx, this.bounds.keyframeRemove, 'Remove', false);
+      this.drawSmallButton(ctx, this.bounds.keyframeNext, 'Next ▶', false);
     }
 
-    this.songAddBounds = { x: x + padding, y: addY, w: w - padding * 2, h: addH };
+    this.songAddBounds = { x: x + padding, y: addY, w: labelW, h: addH };
     this.drawButton(ctx, this.songAddBounds, 'Add Instrument', false, false);
     this.drawSongPlayhead(ctx, this.songTimelineBounds.y, laneAreaY + laneAreaH);
     this.drawSongSelectionMenu(ctx);
@@ -9609,8 +9653,10 @@ export default class MidiComposer {
     ctx.font = '13px Courier New';
     this.bounds.instrumentSettingsControls = [];
     this.bounds.keyframeToggle = null;
+    this.bounds.keyframePrev = null;
     this.bounds.keyframeSet = null;
     this.bounds.keyframeRemove = null;
+    this.bounds.keyframeNext = null;
     const drumGrid = isDrumTrack(track);
     const label = track
       ? drumGrid
