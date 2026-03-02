@@ -9721,12 +9721,13 @@ export default class MidiComposer {
   drawInstrumentPanel(ctx, x, y, w, h, track) {
     const isMobile = this.isMobileLayout();
     const padding = 12;
+    const bottomPadding = this.instrumentPicker.mode ? 4 : padding;
     const panelGap = 12;
     const leftW = clamp(w * 0.32, 240, 360);
     const rightW = Math.max(0, w - padding * 2 - leftW - panelGap);
     const leftX = x + padding;
     const leftY = y + padding;
-    const panelH = h - padding * 2;
+    const panelH = h - padding - bottomPadding;
     const rightX = leftX + leftW + panelGap;
     const rightY = leftY;
     const rowH = clamp(Math.round(h * 0.08), isMobile ? 48 : 44, isMobile ? 60 : 54);
@@ -9837,7 +9838,7 @@ export default class MidiComposer {
       });
 
       const selectorY = tabY + tabRows * tabH + Math.max(0, tabRows - 1) * tabGap + 10;
-      const footerH = 94;
+      const footerH = this.instrumentPicker.familyTab === 'drum-kits' ? 126 : 94;
       const scrollY = selectorY;
       const scrollH = rightY + panelH - scrollY - footerH;
       this.instrumentPicker.sectionBounds = [{ x: rightX + padding, y: scrollY, w: rightW - padding * 2, h: scrollH }];
