@@ -257,19 +257,25 @@ export default class AudioSystem {
     if (this.drumFont.loadingNotes.has(noteKey)) {
       return this.drumFont.loadingNotes.get(noteKey);
     }
-    const url = `${this.drumFont.baseUrl}128${note}_${clampedPreset}_${this.drumFont.kit}.js`;
-    const promise = this.loadScriptOnce(url)
-      .then(() => {
-        const data = globalThis[this.getDrumFontVarName(note, clampedPreset)];
-        if (!data) {
-          throw new Error(`Missing drum font data for note ${note}`);
-        }
-        this.drumFont.loadedNotes.add(noteKey);
-        return data;
-      })
+    const loadPreset = (slot) => {
+      const presetKey = this.getDrumFontNoteKey(note, slot);
+      const url = `${this.drumFont.baseUrl}128${note}_${slot}_${this.drumFont.kit}.js`;
+      return this.loadScriptOnce(url)
+        .then(() => {
+          const data = globalThis[this.getDrumFontVarName(note, slot)];
+          if (!data) {
+            throw new Error(`Missing drum font data for note ${note}`);
+          }
+          this.drumFont.loadedNotes.add(presetKey);
+          return data;
+        });
+    };
+    const promise = loadPreset(clampedPreset)
       .catch((error) => {
-        this.drumFont.failed = true;
-        throw error;
+        if (clampedPreset === 0) {
+          throw error;
+        }
+        return loadPreset(0);
       })
       .finally(() => {
         this.drumFont.loadingNotes.delete(noteKey);
