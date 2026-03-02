@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Downloads WebAudioFont drum-note assets for multiple logical drum kits.
+# Downloads WebAudioFont drum-note assets for GM drum-kit programs (0-7).
 #
-# By default, all logical kits map to Chaos_sf2_file because that source is
-# reliably available. To get different kit timbres, provide a mapping file via:
-#   WEB_AUDIOFONT_KIT_MAP=path/to/kit-map.json ./tools/download-webaudiofont-all-drum-kits.sh
+# Output files are always written under <repo>/vendor/webaudiofont so they are
+# usable by the app regardless of the directory from which this script runs.
+#
+# Optional kit map:
+#   WEB_AUDIOFONT_KIT_MAP=tools/webaudiofont-drum-kit-map.json ./tools/download-webaudiofont-all-drum-kits.sh
 #
 # Mapping file format:
 # {
@@ -19,13 +21,15 @@ set -euo pipefail
 #   "sfx": "SomeOtherKitToken"
 # }
 
-DEST_DIR="vendor/webaudiofont"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+DEST_DIR="$REPO_ROOT/vendor/webaudiofont"
 BASE_URL="https://surikov.github.io/webaudiofontdata/sound"
 PLAYER_URL="https://unpkg.com/webaudiofont@3.0.4/npm/dist/WebAudioFontPlayer.js"
 
 KIT_MAP_FILE="${WEB_AUDIOFONT_KIT_MAP:-}"
-if [[ -z "${KIT_MAP_FILE}" && -f "tools/webaudiofont-drum-kit-map.json" ]]; then
-  KIT_MAP_FILE="tools/webaudiofont-drum-kit-map.json"
+if [[ -z "${KIT_MAP_FILE}" && -f "$REPO_ROOT/tools/webaudiofont-drum-kit-map.json" ]]; then
+  KIT_MAP_FILE="$REPO_ROOT/tools/webaudiofont-drum-kit-map.json"
 fi
 
 declare -A KIT_MAP=(
@@ -37,6 +41,17 @@ declare -A KIT_MAP=(
   [brush]="Chaos_sf2_file"
   [orchestra]="Chaos_sf2_file"
   [sfx]="Chaos_sf2_file"
+)
+
+declare -A KIT_PRESET=(
+  [standard]=0
+  [room]=1
+  [power]=2
+  [electronic]=3
+  [jazz]=4
+  [brush]=5
+  [orchestra]=6
+  [sfx]=7
 )
 
 if [[ -n "${KIT_MAP_FILE}" ]]; then
@@ -84,23 +99,41 @@ download_source_notes() {
   return 0
 }
 
-create_alias_kit() {
+create_preset_alias_files() {
   local logical="$1"
   local source="$2"
-  local alias="${logical}_kit"
-  if [[ "$alias" == "$source" ]]; then
+  local preset="$3"
+
+  if [[ "$preset" == "0" && "$source" == "Chaos_sf2_file" ]]; then
     return 0
   fi
-  echo "Creating alias files for '$logical' -> '$source' as '$alias'..."
+
+  echo "Creating preset alias files for '$logical' (preset $preset) from '$source'..."
   for note in $(seq 35 81); do
-    cp "$DEST_DIR/128${note}_0_${source}.js" "$DEST_DIR/128${note}_0_${alias}.js"
+    local src="$DEST_DIR/128${note}_0_${source}.js"
+    local dst="$DEST_DIR/128${note}_${preset}_Chaos_sf2_file.js"
+    python - "$src" "$dst" "$note" "$source" "$preset" <<'PY'
+import pathlib
+import re
+import sys
+
+src, dst, note, source, preset = sys.argv[1:]
+text = pathlib.Path(src).read_text()
+text = re.sub(
+    rf"_drum_{note}_0_{re.escape(source)}",
+    f"_drum_{note}_{preset}_Chaos_sf2_file",
+    text,
+)
+pathlib.Path(dst).write_text(text)
+PY
   done
 }
 
 for logical in standard room power electronic jazz brush orchestra sfx; do
   source="${KIT_MAP[$logical]}"
+  preset="${KIT_PRESET[$logical]}"
   if download_source_notes "$source"; then
-    create_alias_kit "$logical" "$source"
+    create_preset_alias_files "$logical" "$source" "$preset"
   else
     echo "WARN: logical kit '$logical' unresolved because source '$source' could not be downloaded." >&2
   fi
@@ -109,8 +142,8 @@ done
 echo
 printf 'Kit mapping used:\n'
 for logical in standard room power electronic jazz brush orchestra sfx; do
-  printf '  %-10s -> %s\n' "$logical" "${KIT_MAP[$logical]}"
+  printf '  %-10s -> %s (preset %s)\n' "$logical" "${KIT_MAP[$logical]}" "${KIT_PRESET[$logical]}"
 done
 
 echo
-echo "Done. Files written to: $DEST_DIR"
+printf 'Done. Files written to: %s\n' "$DEST_DIR"
