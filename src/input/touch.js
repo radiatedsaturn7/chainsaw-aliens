@@ -532,10 +532,12 @@ export default class TouchInput {
   handleStrum(pointerId, y) {
     const layout = this.stringLayout;
     if (!layout) return;
-    const stringIndex = Math.min(
-      layout.stringCount - 1,
-      Math.max(0, Math.floor((y - this.bounds.y) / layout.stringGap))
-    );
+    // Strings are centered at bounds.y + (index + 1) * stringGap.
+    // Use nearest-string mapping instead of floor-bucketing to avoid
+    // over-selecting higher indices (lower-pitched strings).
+    const relativeY = (y - this.bounds.y) / layout.stringGap;
+    const nearestIndex = Math.round(relativeY - 1);
+    const stringIndex = clamp(nearestIndex, 0, layout.stringCount - 1);
     const strum = this.activeStrums.get(pointerId);
     if (!strum) return;
     if (strum.lastStringIndex === stringIndex) return;

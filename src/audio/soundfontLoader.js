@@ -3,6 +3,7 @@ import { GM_DRUM_BANK_LSB, GM_DRUM_BANK_MSB, GM_DRUM_CHANNEL, isDrumChannel } fr
 const DRUM_PRESET = 0;
 
 const toInt = (value, fallback = 0) => (Number.isInteger(value) ? value : fallback);
+const resolveDrumPreset = (request = {}) => toInt(request.preset, toInt(request.program, DRUM_PRESET));
 
 export default class SoundfontLoader {
   constructor({
@@ -22,10 +23,11 @@ export default class SoundfontLoader {
     this.preloadPromise = null;
   }
 
-  buildKey({ channel = 0, program = 0, bankMSB = 0, bankLSB = 0, isDrum = false, kitName = 'standard_kit' } = {}) {
+  buildKey({ channel = 0, program = 0, bankMSB = 0, bankLSB = 0, isDrum = false, kitName = 'standard_kit', preset = null } = {}) {
     const resolvedDrum = isDrumChannel(channel) || isDrum;
     if (resolvedDrum) {
-      return `drum:${GM_DRUM_CHANNEL}:${GM_DRUM_BANK_MSB}:${bankLSB}:${DRUM_PRESET}:${kitName}`;
+      const drumPreset = toInt(preset, toInt(program, DRUM_PRESET));
+      return `drum:${GM_DRUM_CHANNEL}:${GM_DRUM_BANK_MSB}:${bankLSB}:${drumPreset}:${kitName}`;
     }
     return `inst:${channel}:${bankMSB}:${bankLSB}:${program}`;
   }
@@ -37,7 +39,7 @@ export default class SoundfontLoader {
         return this.soundfont.loadDrumKit(request.kitName, {
           bankMSB: GM_DRUM_BANK_MSB,
           bankLSB: toInt(request.bankLSB, GM_DRUM_BANK_LSB),
-          preset: DRUM_PRESET
+          preset: resolveDrumPreset(request)
         });
       }
       return this.soundfont.loadInstrument(toInt(request.program, 0));
@@ -56,7 +58,7 @@ export default class SoundfontLoader {
       ? this.soundfont.loadDrumKit(request.kitName, {
         bankMSB: GM_DRUM_BANK_MSB,
         bankLSB: toInt(request.bankLSB, GM_DRUM_BANK_LSB),
-        preset: DRUM_PRESET
+        preset: resolveDrumPreset(request)
       })
       : this.soundfont.loadInstrument(toInt(request.program, 0)))
       .then((instrument) => {
