@@ -1614,13 +1614,20 @@ export default class MidiComposer {
   }
 
   openInstrumentPicker(mode, trackIndex = null) {
+    const previousTab = this.activeTab;
     this.activeTab = 'instruments';
     this.instrumentPicker.mode = mode;
+    this.instrumentPicker.returnTab = previousTab;
     this.instrumentPicker.trackIndex = trackIndex ?? this.selectedTrackIndex;
     const track = this.song.tracks[this.instrumentPicker.trackIndex];
     this.instrumentPicker.selectedProgram = mode === 'add' ? null : track?.program ?? null;
     const tabs = this.getInstrumentPickerTabs();
-    this.instrumentPicker.familyTab = tabs[0]?.id || 'drums-perc';
+    const preferredTab = (mode === 'edit' && track)
+      ? (isDrumTrack(track) ? 'drum-kits' : this.getInstrumentCategory(track.program))
+      : null;
+    this.instrumentPicker.familyTab = tabs.some((tab) => tab.id === preferredTab)
+      ? preferredTab
+      : (tabs[0]?.id || 'drums-perc');
     this.instrumentPicker.bounds = [];
     this.instrumentPicker.favoriteBounds = [];
     this.instrumentPicker.sectionBounds = [];
@@ -1664,16 +1671,11 @@ export default class MidiComposer {
       : (selectingDrumKit ? kitChanged : (hasSelection && track && selectedProgram !== track.program));
     if (!changed) {
       this.instrumentPicker.mode = null;
+      this.instrumentPicker.returnTab = null;
       return true;
     }
-    const apply = window.confirm('Apply this instrument? Yes / No');
-    if (apply) {
-      this.applyInstrumentSelection(selectedProgram);
-      return true;
-    }
-    this.instrumentPicker.selectedProgram = track?.program ?? null;
-    this.instrumentPicker.mode = null;
-    return false;
+    this.applyInstrumentSelection(selectedProgram);
+    return true;
   }
 
   shiftInstrumentPickerTab(delta) {
@@ -1747,7 +1749,8 @@ export default class MidiComposer {
     this.instrumentPicker.mode = null;
     this.instrumentPicker.selectedProgram = null;
     this.preloadTrackPrograms();
-    this.activeTab = 'grid';
+    this.activeTab = this.instrumentPicker.returnTab || 'grid';
+    this.instrumentPicker.returnTab = null;
   }
 
   resetTransientInteractionState() {
@@ -1772,6 +1775,7 @@ export default class MidiComposer {
     this.songSelectionMenu.open = false;
     this.songSelectionMenu.bounds = [];
     this.instrumentPicker.mode = null;
+    this.instrumentPicker.returnTab = null;
   }
 
   isModalOpen() {
@@ -3817,6 +3821,7 @@ export default class MidiComposer {
         if (this.instrumentPicker.cancelBounds && this.pointInBounds(x, y, this.instrumentPicker.cancelBounds)) {
           this.instrumentPicker.mode = null;
           this.instrumentPicker.selectedProgram = null;
+          this.instrumentPicker.returnTab = null;
           return;
         }
         if (this.instrumentPicker.sectionBounds.find((bounds) => this.pointInBounds(x, y, bounds))) {
