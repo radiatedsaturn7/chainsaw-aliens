@@ -3792,19 +3792,6 @@ export default class MidiComposer {
           );
           return;
         }
-        if (this.instrumentPicker.drumKitBounds && this.pointInBounds(x, y, this.instrumentPicker.drumKitBounds)) {
-          const availableKits = this.game?.audio?.listAvailableDrumKits?.();
-          const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
-          if (drumKits.length) {
-            const currentIndex = Math.max(0, drumKits.findIndex((kit) => kit.id === this.instrumentPicker.drumKitId));
-            const nextIndex = (currentIndex + 1) % drumKits.length;
-            this.instrumentPicker.drumKitId = drumKits[nextIndex].id;
-            this.audioSettings.drumKitId = drumKits[nextIndex].id;
-            this.saveAudioSettings();
-            this.applyAudioSettings();
-          }
-          return;
-        }
         if (this.instrumentPicker.downloadBounds && this.pointInBounds(x, y, this.instrumentPicker.downloadBounds)) {
           const pickerTrack = this.song.tracks[this.instrumentPicker.trackIndex ?? this.selectedTrackIndex];
           const downloadProgram = Number.isInteger(this.instrumentPicker.selectedProgram)
@@ -9874,7 +9861,7 @@ export default class MidiComposer {
       ctx.restore();
 
       const selectorY = tabY + tabH + 10;
-      const footerH = this.instrumentPicker.familyTab === 'drum-kits' ? 126 : 94;
+      const footerH = 94;
       const scrollY = selectorY;
       const scrollH = rightY + panelH - scrollY - footerH;
       this.instrumentPicker.sectionBounds = [{ x: rightX + padding, y: scrollY, w: rightW - padding * 2, h: scrollH }];
@@ -9958,22 +9945,8 @@ export default class MidiComposer {
 
       const footerY = rightY + panelH - footerH + 6;
       const footerButtonH = 32;
-      const showDrumKitPicker = this.instrumentPicker.familyTab === 'drum-kits';
-      if (showDrumKitPicker) {
-        const availableKits = this.game?.audio?.listAvailableDrumKits?.();
-        const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
-        const activeKit = drumKits.find((kit) => kit.id === this.instrumentPicker.drumKitId) || drumKits[0];
-        this.instrumentPicker.drumKitBounds = {
-          x: rightX + padding,
-          y: footerY,
-          w: rightW - padding * 2,
-          h: footerButtonH
-        };
-        this.drawButton(ctx, this.instrumentPicker.drumKitBounds, `Drum Kit: ${activeKit?.label || 'Standard'}`, true, false);
-      } else {
-        this.instrumentPicker.drumKitBounds = null;
-      }
-      const downloadY = showDrumKitPicker ? footerY + footerButtonH + 8 : footerY;
+      this.instrumentPicker.drumKitBounds = null;
+      const downloadY = footerY;
       this.instrumentPicker.downloadBounds = {
         x: rightX + padding,
         y: downloadY,
