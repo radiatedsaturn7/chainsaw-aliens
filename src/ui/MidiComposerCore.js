@@ -1523,9 +1523,6 @@ export default class MidiComposer {
   }
 
   getInstrumentPickerTabs() {
-    if (this.isEditingDrumInstrument()) {
-      return INSTRUMENT_FAMILY_TABS.filter((tab) => tab.id === 'drum-kits' || tab.id === 'drums-perc');
-    }
     return INSTRUMENT_FAMILY_TABS;
   }
 
@@ -1654,7 +1651,17 @@ export default class MidiComposer {
     const selectedProgram = this.instrumentPicker.selectedProgram;
     const hasSelection = Number.isInteger(selectedProgram);
     const isAddMode = this.instrumentPicker.mode === 'add';
-    const changed = hasSelection && (isAddMode || (track && selectedProgram !== track.program));
+    const selectingDrumKit = this.instrumentPicker.familyTab === 'drum-kits';
+    const selectedKit = (this.game?.audio?.listAvailableDrumKits?.() || GM_DRUM_KITS)
+      .find((kit) => kit.id === this.instrumentPicker.drumKitId);
+    const currentKit = track && isDrumTrack(track)
+      ? (this.game?.audio?.listAvailableDrumKits?.() || GM_DRUM_KITS)
+        .find((kit) => kit.program === track.program && kit.bankMSB === track.bankMSB && kit.bankLSB === track.bankLSB)
+      : null;
+    const kitChanged = Boolean(selectingDrumKit && track && (!currentKit || currentKit.id !== selectedKit?.id));
+    const changed = isAddMode
+      ? hasSelection
+      : (selectingDrumKit ? kitChanged : (hasSelection && track && selectedProgram !== track.program));
     if (!changed) {
       this.instrumentPicker.mode = null;
       return true;
@@ -1685,9 +1692,10 @@ export default class MidiComposer {
   applyInstrumentSelection(program) {
     const selectedKit = (this.game?.audio?.listAvailableDrumKits?.() || GM_DRUM_KITS)
       .find((kit) => kit.id === this.instrumentPicker.drumKitId);
+    const selectingDrumKit = this.instrumentPicker.familyTab === 'drum-kits';
     if (this.instrumentPicker.mode === 'add') {
       if (!Number.isInteger(program)) return;
-      const addingDrums = this.instrumentPicker.familyTab === 'drums-perc' || this.instrumentPicker.familyTab === 'drum-kits';
+      const addingDrums = selectingDrumKit;
       const resolvedProgram = addingDrums ? clamp(selectedKit?.preset ?? selectedKit?.program ?? 0, 0, 127) : program;
       const baseName = addingDrums ? (selectedKit?.label || 'Drums') : (GM_PROGRAMS[program]?.name || 'Track');
       const name = this.getUniqueTrackName(baseName);
@@ -1715,7 +1723,7 @@ export default class MidiComposer {
       const targetIndex = this.instrumentPicker.trackIndex ?? this.selectedTrackIndex;
       const track = this.song.tracks[targetIndex];
       if (!track) return;
-      if (isDrumTrack(track)) {
+      if (selectingDrumKit) {
         track.instrument = 'drums';
         track.channel = GM_DRUM_CHANNEL;
         track.bankMSB = selectedKit?.bankMSB ?? DRUM_BANK_MSB;
@@ -1724,7 +1732,13 @@ export default class MidiComposer {
         track.instrumentFamily = 'Drums';
       } else {
         if (!Number.isInteger(program)) return;
+        if (isDrumTrack(track)) {
+          track.channel = this.getNextAvailableChannel();
+          delete track.instrument;
+        }
         track.program = program;
+        track.bankMSB = DEFAULT_BANK_MSB;
+        track.bankLSB = DEFAULT_BANK_LSB;
         track.instrumentFamily = this.getProgramFamilyLabel(program);
         this.addRecentInstrument(program);
       }
@@ -3790,7 +3804,7 @@ export default class MidiComposer {
           return;
         }
         if (this.instrumentPicker.confirmBounds && this.pointInBounds(x, y, this.instrumentPicker.confirmBounds)) {
-          if (Number.isInteger(this.instrumentPicker.selectedProgram) || this.isEditingDrumInstrument()) {
+          if (Number.isInteger(this.instrumentPicker.selectedProgram) || this.instrumentPicker.familyTab === 'drum-kits') {
             this.applyInstrumentSelection(this.instrumentPicker.selectedProgram);
           }
           return;
@@ -9844,7 +9858,8 @@ export default class MidiComposer {
 
       const footerY = rightY + panelH - footerH + 6;
       const footerButtonH = 32;
-      if (this.instrumentPicker.mode === 'add' || this.isEditingDrumInstrument()) {
+      const showDrumKitPicker = this.instrumentPicker.familyTab === 'drum-kits';
+      if (showDrumKitPicker) {
         const availableKits = this.game?.audio?.listAvailableDrumKits?.();
         const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
         const activeKit = drumKits.find((kit) => kit.id === this.instrumentPicker.drumKitId) || drumKits[0];
@@ -9854,11 +9869,10 @@ export default class MidiComposer {
           w: rightW - padding * 2,
           h: footerButtonH
         };
-        this.drawButton(ctx, this.instrumentPicker.drumKitBounds, `Drum Kit: ${activeKit?.label || 'Standard'}`, this.instrumentPicker.familyTab === 'drums-perc', false);
+        this.drawButton(ctx, this.instrumentPicker.drumKitBounds, `Drum Kit: ${activeKit?.label || 'Standard'}`, true, false);
       } else {
         this.instrumentPicker.drumKitBounds = null;
       }
-      const showDrumKitPicker = this.instrumentPicker.mode === 'add' || this.isEditingDrumInstrument();
       const downloadY = showDrumKitPicker ? footerY + footerButtonH + 8 : footerY;
       this.instrumentPicker.downloadBounds = {
         x: rightX + padding,
