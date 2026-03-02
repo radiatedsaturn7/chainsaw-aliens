@@ -1671,16 +1671,11 @@ export default class MidiComposer {
       : (selectingDrumKit ? kitChanged : (hasSelection && track && selectedProgram !== track.program));
     if (!changed) {
       this.instrumentPicker.mode = null;
+      this.instrumentPicker.returnTab = null;
       return true;
     }
-    const apply = window.confirm('Apply this instrument? Yes / No');
-    if (apply) {
-      this.applyInstrumentSelection(selectedProgram);
-      return true;
-    }
-    this.instrumentPicker.selectedProgram = track?.program ?? null;
-    this.instrumentPicker.mode = null;
-    return false;
+    this.applyInstrumentSelection(selectedProgram);
+    return true;
   }
 
   shiftInstrumentPickerTab(delta) {
@@ -1780,6 +1775,7 @@ export default class MidiComposer {
     this.songSelectionMenu.open = false;
     this.songSelectionMenu.bounds = [];
     this.instrumentPicker.mode = null;
+    this.instrumentPicker.returnTab = null;
   }
 
   isModalOpen() {
@@ -3825,6 +3821,7 @@ export default class MidiComposer {
         if (this.instrumentPicker.cancelBounds && this.pointInBounds(x, y, this.instrumentPicker.cancelBounds)) {
           this.instrumentPicker.mode = null;
           this.instrumentPicker.selectedProgram = null;
+          this.instrumentPicker.returnTab = null;
           return;
         }
         if (this.instrumentPicker.sectionBounds.find((bounds) => this.pointInBounds(x, y, bounds))) {
