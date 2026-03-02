@@ -4516,21 +4516,14 @@ export default class MidiComposer {
     }
     if (this.dragState?.mode === 'instrument-tab-swipe') {
       const dx = payload.x - this.dragState.startX;
-      const tabs = this.getInstrumentPickerTabs().map((tab) => tab.id);
-      if (tabs.length) {
-        const baseIndex = Number.isInteger(this.dragState.startTabIndex)
-          ? clamp(this.dragState.startTabIndex, 0, tabs.length - 1)
-          : Math.max(0, tabs.indexOf(this.instrumentPicker.familyTab));
-        const step = Math.trunc(dx / 64);
-        const nextIndex = clamp(baseIndex + step, 0, tabs.length - 1);
-        const nextTab = tabs[nextIndex];
-        if (nextTab && nextTab !== this.instrumentPicker.familyTab) {
-          this.instrumentPicker.familyTab = nextTab;
-          this.instrumentPicker.scroll = 0;
-        }
-        if (!this.dragState.moved && Math.abs(dx) > 6) {
-          this.dragState.moved = true;
-        }
+      const dy = payload.y - this.dragState.startY;
+      if (!this.dragState.moved && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+        this.dragState.moved = true;
+      }
+      const tabHit = this.instrumentPicker.tabBounds.find((bounds) => this.pointInBounds(payload.x, payload.y, bounds));
+      if (tabHit && tabHit.id !== this.instrumentPicker.familyTab) {
+        this.instrumentPicker.familyTab = tabHit.id;
+        this.instrumentPicker.scroll = 0;
       }
       return;
     }
