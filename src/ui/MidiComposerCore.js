@@ -573,6 +573,8 @@ export default class MidiComposer {
     this.settingsOpen = false;
     this.settingsScroll = 0;
     this.settingsScrollMax = 0;
+    this.instrumentListScroll = 0;
+    this.instrumentListScrollMax = 0;
     this.lastPersistedSnapshot = null;
     this.lastSavedSnapshot = null;
     this._dirty = false;
@@ -759,6 +761,8 @@ export default class MidiComposer {
       instrumentLabel: null,
       instrumentAdd: null,
       instrumentList: [],
+      instrumentListScrollUp: null,
+      instrumentListScrollDown: null,
       instrumentSettingsControls: [],
       selectionMenu: [],
       noteLengthMenu: [],
@@ -1642,7 +1646,10 @@ export default class MidiComposer {
     this.instrumentPicker.scrollDownBounds = null;
     this.instrumentPicker.scroll = 0;
     this.instrumentPicker.scrollStep = 0;
+    this.instrumentPicker.tabScrollX = 0;
     this.instrumentPicker.drumKitBounds = null;
+    const selectedTabIndex = Math.max(0, tabs.findIndex((tab) => tab.id === this.instrumentPicker.familyTab));
+    this.instrumentPicker.tabScrollX = Math.max(0, selectedTabIndex * 96);
     const availableKits = this.game?.audio?.listAvailableDrumKits?.();
     const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
     const matchedKit = track && isDrumTrack(track)
@@ -1679,12 +1686,15 @@ export default class MidiComposer {
   }
 
   shiftInstrumentPickerTab(delta) {
-    const tabs = this.getInstrumentPickerTabs().map((tab) => tab.id);
-    const currentIndex = tabs.indexOf(this.instrumentPicker.familyTab);
-    const baseIndex = currentIndex === -1 ? 0 : currentIndex;
-    const nextIndex = (baseIndex + delta + tabs.length) % tabs.length;
-    this.instrumentPicker.familyTab = tabs[nextIndex];
-    this.instrumentPicker.scroll = 0;
+    const tabs = this.getInstrumentPickerTabs();
+    if (!tabs.length) return;
+    const step = Math.max(40, Number(this.instrumentPicker.tabScrollStep) || 120);
+    const maxScroll = Math.max(0, Number(this.instrumentPicker.tabScrollMax) || 0);
+    this.instrumentPicker.tabScrollX = clamp(
+      (Number(this.instrumentPicker.tabScrollX) || 0) + delta * step,
+      0,
+      maxScroll
+    );
   }
 
   getInstrumentPickerItems() {
@@ -1719,6 +1729,7 @@ export default class MidiComposer {
       };
       this.song.tracks.push(addingDrums ? this.ensureDrumTrackSettings(track) : track);
       this.selectedTrackIndex = this.song.tracks.length - 1;
+      this.instrumentListScroll = Number.POSITIVE_INFINITY;
       this.persist({ commitHistory: true });
       this.addRecentInstrument(program);
     } else {
@@ -3727,7 +3738,7 @@ export default class MidiComposer {
               startX: x,
               startY: y,
               tabId: familyHit.id,
-              startTabIndex: this.getInstrumentPickerTabs().findIndex((tab) => tab.id === this.instrumentPicker.familyTab),
+              startTabScrollX: this.instrumentPicker.tabScrollX || 0,
               moved: false
             };
             return;
@@ -3744,7 +3755,7 @@ export default class MidiComposer {
             startX: x,
             startY: y,
             tabId: null,
-            startTabIndex: this.getInstrumentPickerTabs().findIndex((tab) => tab.id === this.instrumentPicker.familyTab),
+            startTabScrollX: this.instrumentPicker.tabScrollX || 0,
             moved: false
           };
           return;
@@ -3786,19 +3797,6 @@ export default class MidiComposer {
           );
           return;
         }
-        if (this.instrumentPicker.drumKitBounds && this.pointInBounds(x, y, this.instrumentPicker.drumKitBounds)) {
-          const availableKits = this.game?.audio?.listAvailableDrumKits?.();
-          const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
-          if (drumKits.length) {
-            const currentIndex = Math.max(0, drumKits.findIndex((kit) => kit.id === this.instrumentPicker.drumKitId));
-            const nextIndex = (currentIndex + 1) % drumKits.length;
-            this.instrumentPicker.drumKitId = drumKits[nextIndex].id;
-            this.audioSettings.drumKitId = drumKits[nextIndex].id;
-            this.saveAudioSettings();
-            this.applyAudioSettings();
-          }
-          return;
-        }
         if (this.instrumentPicker.downloadBounds && this.pointInBounds(x, y, this.instrumentPicker.downloadBounds)) {
           const pickerTrack = this.song.tracks[this.instrumentPicker.trackIndex ?? this.selectedTrackIndex];
           const downloadProgram = Number.isInteger(this.instrumentPicker.selectedProgram)
@@ -3824,6 +3822,42 @@ export default class MidiComposer {
           this.instrumentPicker.returnTab = null;
           return;
         }
+        if (this.bounds.instrumentListScrollUp && this.pointInBounds(x, y, this.bounds.instrumentListScrollUp)) {
+          this.instrumentListScroll = clamp(this.instrumentListScroll - Math.max(1, Math.round((this.bounds.instrumentList?.[0]?.h || 44) * 0.9)), 0, this.instrumentListScrollMax);
+          return;
+        }
+        if (this.bounds.instrumentListScrollDown && this.pointInBounds(x, y, this.bounds.instrumentListScrollDown)) {
+          this.instrumentListScroll = clamp(this.instrumentListScroll + Math.max(1, Math.round((this.bounds.instrumentList?.[0]?.h || 44) * 0.9)), 0, this.instrumentListScrollMax);
+          return;
+        }
+        const pickerTrackHit = this.bounds.instrumentList?.find((bounds) => this.pointInBounds(x, y, bounds));
+        if (pickerTrackHit) {
+          this.selectedTrackIndex = pickerTrackHit.trackIndex;
+          this.selection.clear();
+          this.instrumentPicker.trackIndex = pickerTrackHit.trackIndex;
+          const pickerTrack = this.song.tracks[pickerTrackHit.trackIndex];
+          if (pickerTrack) {
+            this.instrumentPicker.selectedProgram = pickerTrack.program ?? null;
+            const tabs = this.getInstrumentPickerTabs();
+            const preferredTab = isDrumTrack(pickerTrack)
+              ? 'drum-kits'
+              : this.getInstrumentCategory(pickerTrack.program);
+            this.instrumentPicker.familyTab = tabs.some((tab) => tab.id === preferredTab)
+              ? preferredTab
+              : (tabs[0]?.id || this.instrumentPicker.familyTab || 'drums-perc');
+            this.instrumentPicker.tabScrollX = Math.max(0, tabs.findIndex((tab) => tab.id === this.instrumentPicker.familyTab) * 96);
+            const availableKits = this.game?.audio?.listAvailableDrumKits?.();
+            const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
+            const matchedKit = isDrumTrack(pickerTrack)
+              ? drumKits.find((kit) => kit.program === pickerTrack.program && kit.bankMSB === pickerTrack.bankMSB && kit.bankLSB === pickerTrack.bankLSB)
+              : null;
+            if (matchedKit?.id) {
+              this.instrumentPicker.drumKitId = matchedKit.id;
+            }
+            this.previewInstrument(pickerTrack.program, pickerTrack);
+          }
+          return;
+        }
         if (this.instrumentPicker.sectionBounds.find((bounds) => this.pointInBounds(x, y, bounds))) {
           this.dragState = {
             mode: 'instrument-scroll',
@@ -3834,6 +3868,14 @@ export default class MidiComposer {
         return;
       }
 
+      if (this.bounds.instrumentListScrollUp && this.pointInBounds(x, y, this.bounds.instrumentListScrollUp)) {
+        this.instrumentListScroll = clamp(this.instrumentListScroll - Math.max(1, Math.round((this.bounds.instrumentList?.[0]?.h || 44) * 0.9)), 0, this.instrumentListScrollMax);
+        return;
+      }
+      if (this.bounds.instrumentListScrollDown && this.pointInBounds(x, y, this.bounds.instrumentListScrollDown)) {
+        this.instrumentListScroll = clamp(this.instrumentListScroll + Math.max(1, Math.round((this.bounds.instrumentList?.[0]?.h || 44) * 0.9)), 0, this.instrumentListScrollMax);
+        return;
+      }
       const listHit = this.bounds.instrumentList?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (listHit) {
         this.selectedTrackIndex = listHit.trackIndex;
@@ -4516,21 +4558,17 @@ export default class MidiComposer {
     }
     if (this.dragState?.mode === 'instrument-tab-swipe') {
       const dx = payload.x - this.dragState.startX;
-      const tabs = this.getInstrumentPickerTabs().map((tab) => tab.id);
-      if (tabs.length) {
-        const baseIndex = Number.isInteger(this.dragState.startTabIndex)
-          ? clamp(this.dragState.startTabIndex, 0, tabs.length - 1)
-          : Math.max(0, tabs.indexOf(this.instrumentPicker.familyTab));
-        const step = Math.trunc(dx / 64);
-        const nextIndex = clamp(baseIndex + step, 0, tabs.length - 1);
-        const nextTab = tabs[nextIndex];
-        if (nextTab && nextTab !== this.instrumentPicker.familyTab) {
-          this.instrumentPicker.familyTab = nextTab;
-          this.instrumentPicker.scroll = 0;
-        }
-        if (!this.dragState.moved && Math.abs(dx) > 6) {
-          this.dragState.moved = true;
-        }
+      const dy = payload.y - this.dragState.startY;
+      if (!this.dragState.moved && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+        this.dragState.moved = true;
+      }
+      if (this.dragState.moved) {
+        const maxScroll = Math.max(0, Number(this.instrumentPicker.tabScrollMax) || 0);
+        this.instrumentPicker.tabScrollX = clamp(
+          (Number(this.dragState.startTabScrollX) || 0) - dx,
+          0,
+          maxScroll
+        );
       }
       return;
     }
@@ -9721,12 +9759,13 @@ export default class MidiComposer {
   drawInstrumentPanel(ctx, x, y, w, h, track) {
     const isMobile = this.isMobileLayout();
     const padding = 12;
+    const bottomPadding = this.instrumentPicker.mode ? 4 : padding;
     const panelGap = 12;
     const leftW = clamp(w * 0.32, 240, 360);
     const rightW = Math.max(0, w - padding * 2 - leftW - panelGap);
     const leftX = x + padding;
     const leftY = y + padding;
-    const panelH = h - padding * 2;
+    const panelH = h - padding - bottomPadding;
     const rightX = leftX + leftW + panelGap;
     const rightY = leftY;
     const rowH = clamp(Math.round(h * 0.08), isMobile ? 48 : 44, isMobile ? 60 : 54);
@@ -9745,12 +9784,28 @@ export default class MidiComposer {
     ctx.font = '14px Courier New';
     ctx.fillText('Instruments', leftX + 10, leftY + 18);
     const listStartY = leftY + 28;
+    const listX = leftX + 8;
+    const listW = leftW - 16;
     const listH = Math.max(0, panelH - addButtonH - 20 - controlsH);
     const listEndY = listStartY + listH;
-    let cursorY = listStartY;
+    const rowStep = rowH + 6;
+    const totalListHeight = Math.max(0, this.song.tracks.length * rowStep - 6);
+    this.instrumentListScrollMax = Math.max(0, totalListHeight - listH);
+    this.instrumentListScroll = clamp(this.instrumentListScroll, 0, this.instrumentListScrollMax);
+    this.bounds.instrumentListScrollUp = null;
+    this.bounds.instrumentListScrollDown = null;
+    let cursorY = listStartY - this.instrumentListScroll;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(listX, listStartY, listW, listH);
+    ctx.clip();
     this.song.tracks.forEach((listTrack, index) => {
-      if (cursorY + rowH > listEndY) return;
-      const bounds = { x: leftX + 8, y: cursorY, w: leftW - 16, h: rowH, trackIndex: index };
+      if (cursorY + rowH < listStartY) {
+        cursorY += rowStep;
+        return;
+      }
+      if (cursorY > listEndY) return;
+      const bounds = { x: listX, y: cursorY, w: listW, h: rowH, trackIndex: index };
       const isActive = index === this.selectedTrackIndex;
       ctx.fillStyle = isActive ? 'rgba(255,225,106,0.18)' : 'rgba(0,0,0,0.45)';
       ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
@@ -9766,10 +9821,31 @@ export default class MidiComposer {
         : this.getProgramLabel(listTrack.program);
       ctx.fillText(label, bounds.x + 10, bounds.y + 36);
       this.bounds.instrumentList.push(bounds);
-      cursorY += rowH + 6;
+      cursorY += rowStep;
     });
+    ctx.restore();
 
-    this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - 8, w: leftW - 16, h: addButtonH };
+    if (this.instrumentListScrollMax > 0) {
+      const scrollButtonW = 24;
+      const scrollButtonH = 20;
+      const scrollX = listX + listW - scrollButtonW - 4;
+      this.bounds.instrumentListScrollUp = {
+        x: scrollX,
+        y: listStartY + 4,
+        w: scrollButtonW,
+        h: scrollButtonH
+      };
+      this.bounds.instrumentListScrollDown = {
+        x: scrollX,
+        y: listEndY - scrollButtonH - 4,
+        w: scrollButtonW,
+        h: scrollButtonH
+      };
+      this.drawSmallButton(ctx, this.bounds.instrumentListScrollUp, '▲', false);
+      this.drawSmallButton(ctx, this.bounds.instrumentListScrollDown, '▼', false);
+    }
+
+    this.bounds.instrumentAdd = { x: listX, y: leftY + panelH - addButtonH - 8, w: listW, h: addButtonH };
     this.drawButton(ctx, this.bounds.instrumentAdd, 'Add Instrument', false, false);
 
     ctx.fillStyle = 'rgba(0,0,0,0.3)';
@@ -9797,14 +9873,17 @@ export default class MidiComposer {
       const tabsX = rightX + padding + tabNavW + tabNavGap;
       const tabGap = 6;
       const minTabW = 90;
-      const tabRows = rightW < 420 ? 2 : 1;
-      const tabCols = Math.max(1, Math.floor((tabsAvailableW + tabGap) / (minTabW + tabGap)));
-      const tabsPerPage = tabCols * tabRows;
       const pickerTabs = this.getInstrumentPickerTabs();
-      const currentIndex = Math.max(0, pickerTabs.findIndex((tab) => tab.id === this.instrumentPicker.familyTab));
-      const pageStart = Math.floor(currentIndex / tabsPerPage) * tabsPerPage;
-      const visibleTabs = pickerTabs.slice(pageStart, pageStart + tabsPerPage);
+      const tabRows = 1;
+      const tabCols = Math.max(1, Math.floor((tabsAvailableW + tabGap) / (minTabW + tabGap)));
       const tabW = (tabsAvailableW - Math.max(0, tabCols - 1) * tabGap) / Math.max(1, tabCols);
+      const tabStride = tabW + tabGap;
+      const tabContentW = Math.max(0, pickerTabs.length * tabStride - tabGap);
+      const maxTabScroll = Math.max(0, tabContentW - tabsAvailableW);
+      this.instrumentPicker.tabScrollMax = maxTabScroll;
+      this.instrumentPicker.tabScrollStep = Math.max(tabStride * 2, tabsAvailableW * 0.7);
+      const tabScrollX = clamp(Number(this.instrumentPicker.tabScrollX) || 0, 0, maxTabScroll);
+      this.instrumentPicker.tabScrollX = tabScrollX;
       this.instrumentPicker.tabBounds = [];
       this.instrumentPicker.tabPrevBounds = {
         x: rightX + padding,
@@ -9826,17 +9905,20 @@ export default class MidiComposer {
       };
       this.drawSmallButton(ctx, this.instrumentPicker.tabPrevBounds, '<', false);
       this.drawSmallButton(ctx, this.instrumentPicker.tabNextBounds, '>', false);
-      visibleTabs.forEach((tab, index) => {
-        const row = Math.floor(index / tabCols);
-        const col = index % tabCols;
-        const tabX = tabsX + col * (tabW + tabGap);
-        const tabYPos = tabY + row * (tabH + tabGap);
-        const bounds = { x: tabX, y: tabYPos, w: tabW, h: tabH, id: tab.id };
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(tabsX, tabY, tabsAvailableW, tabH);
+      ctx.clip();
+      pickerTabs.forEach((tab, index) => {
+        const tabX = tabsX + index * tabStride - tabScrollX;
+        if ((tabX + tabW) < tabsX || tabX > (tabsX + tabsAvailableW)) return;
+        const bounds = { x: tabX, y: tabY, w: tabW, h: tabH, id: tab.id };
         this.instrumentPicker.tabBounds.push(bounds);
         this.drawButton(ctx, bounds, tab.label, this.instrumentPicker.familyTab === tab.id, false);
       });
+      ctx.restore();
 
-      const selectorY = tabY + tabRows * tabH + Math.max(0, tabRows - 1) * tabGap + 10;
+      const selectorY = tabY + tabH + 10;
       const footerH = 94;
       const scrollY = selectorY;
       const scrollH = rightY + panelH - scrollY - footerH;
@@ -9921,22 +10003,8 @@ export default class MidiComposer {
 
       const footerY = rightY + panelH - footerH + 6;
       const footerButtonH = 32;
-      const showDrumKitPicker = this.instrumentPicker.familyTab === 'drum-kits';
-      if (showDrumKitPicker) {
-        const availableKits = this.game?.audio?.listAvailableDrumKits?.();
-        const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
-        const activeKit = drumKits.find((kit) => kit.id === this.instrumentPicker.drumKitId) || drumKits[0];
-        this.instrumentPicker.drumKitBounds = {
-          x: rightX + padding,
-          y: footerY,
-          w: rightW - padding * 2,
-          h: footerButtonH
-        };
-        this.drawButton(ctx, this.instrumentPicker.drumKitBounds, `Drum Kit: ${activeKit?.label || 'Standard'}`, true, false);
-      } else {
-        this.instrumentPicker.drumKitBounds = null;
-      }
-      const downloadY = showDrumKitPicker ? footerY + footerButtonH + 8 : footerY;
+      this.instrumentPicker.drumKitBounds = null;
+      const downloadY = footerY;
       this.instrumentPicker.downloadBounds = {
         x: rightX + padding,
         y: downloadY,
