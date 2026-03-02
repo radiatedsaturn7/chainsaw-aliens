@@ -3752,15 +3752,18 @@ export default class MidiComposer {
         }
         const pickHit = this.instrumentPicker.bounds.find((bounds) => this.pointInBounds(x, y, bounds));
         if (pickHit) {
-          this.instrumentPicker.selectedProgram = pickHit.program;
-          if (pickHit.kitId) {
-            this.instrumentPicker.drumKitId = pickHit.kitId;
-            this.audioSettings.drumKitId = pickHit.kitId;
-            this.saveAudioSettings();
-            this.applyAudioSettings();
-          } else {
-            this.previewInstrument(pickHit.program);
+          if (payload.touchCount) {
+            this.dragState = {
+              mode: 'instrument-scroll',
+              startY: y,
+              startScroll: this.instrumentPicker.scroll,
+              startX: x,
+              moved: false,
+              pendingPick: { ...pickHit }
+            };
+            return;
           }
+          this.selectInstrumentPickerItem(pickHit);
           return;
         }
         if (this.instrumentPicker.scrollUpBounds && this.pointInBounds(x, y, this.instrumentPicker.scrollUpBounds)) {
@@ -4528,7 +4531,12 @@ export default class MidiComposer {
     }
     if (this.dragState?.mode === 'instrument-scroll') {
       const delta = this.dragState.startY - payload.y;
-      this.instrumentPicker.scroll = clamp(this.dragState.startScroll + delta, 0, this.instrumentPicker.scrollMax);
+      if (!this.dragState.moved && Math.abs(delta) > 6) {
+        this.dragState.moved = true;
+      }
+      if (this.dragState.moved) {
+        this.instrumentPicker.scroll = clamp(this.dragState.startScroll + delta, 0, this.instrumentPicker.scrollMax);
+      }
       return;
     }
     if (this.dragState?.mode === 'settings-scroll') {
@@ -4696,6 +4704,9 @@ export default class MidiComposer {
     if (this.dragState?.mode === 'instrument-scroll'
       || this.dragState?.mode === 'settings-scroll'
       || this.dragState?.mode === 'slider') {
+      if (this.dragState?.mode === 'instrument-scroll' && !this.dragState.moved && this.dragState.pendingPick) {
+        this.selectInstrumentPickerItem(this.dragState.pendingPick);
+      }
       if (this.dragState?.mode === 'slider') {
         this.commitHistorySnapshot();
       }
@@ -5510,6 +5521,43 @@ export default class MidiComposer {
     const resolvedPitch = drumTrack ? this.coercePitchForTrack(pitch, track, GM_DRUM_ROWS) : pitch;
     const duration = drumTrack ? this.getDrumHitDurationTicks() / this.ticksPerBeat : 0.4;
     this.playGmNote(resolvedPitch, duration, track.volume, track);
+  }
+
+  selectInstrumentPickerItem(pickHit) {
+    if (!pickHit) return;
+    this.instrumentPicker.selectedProgram = pickHit.program;
+    if (pickHit.kitId) {
+      this.instrumentPicker.drumKitId = pickHit.kitId;
+      this.audioSettings.drumKitId = pickHit.kitId;
+      this.saveAudioSettings();
+      this.applyAudioSettings();
+      this.previewDrumKitSelection(pickHit);
+      return;
+    }
+    this.previewInstrument(pickHit.program);
+  }
+
+  previewDrumKitSelection(pickHit) {
+    const now = performance.now();
+    if (now - this.lastAuditionTime < 120) return;
+    this.lastAuditionTime = now;
+    const availableKits = this.game?.audio?.listAvailableDrumKits?.();
+    const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
+    const selectedKit = drumKits.find((kit) => kit.id === pickHit?.kitId) || drumKits[0];
+    if (!selectedKit) return;
+    const previewTrack = {
+      instrument: 'drums',
+      channel: GM_DRUM_CHANNEL,
+      program: clamp(selectedKit.preset ?? selectedKit.program ?? 0, 0, 127),
+      bankMSB: selectedKit.bankMSB ?? DRUM_BANK_MSB,
+      bankLSB: selectedKit.bankLSB ?? DRUM_BANK_LSB,
+      volume: 0.9
+    };
+    [36, 38, 42, 49].forEach((pitch, index) => {
+      window.setTimeout(() => {
+        this.playGmNote(pitch, 0.45, 0.95, previewTrack);
+      }, index * 150);
+    });
   }
 
   previewInstrument(program, trackOverride = null) {
