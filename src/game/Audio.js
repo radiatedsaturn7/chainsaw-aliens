@@ -240,24 +240,31 @@ export default class AudioSystem {
     return this.drumFont.available === true && !this.drumFont.failed;
   }
 
-  getDrumFontVarName(note) {
-    return `_drum_${note}_0_${this.drumFont.kit}`;
+  getDrumFontNoteKey(note, preset = 0) {
+    return `${note}:${Math.max(0, Math.trunc(preset || 0))}`;
   }
 
-  async loadDrumFontNote(note) {
+  getDrumFontVarName(note, preset = 0) {
+    const slot = Math.max(0, Math.trunc(preset || 0));
+    return `_drum_${note}_${slot}_${this.drumFont.kit}`;
+  }
+
+  async loadDrumFontNote(note, preset = 0) {
     if (this.drumFont.failed) return null;
-    if (this.drumFont.loadedNotes.has(note)) return globalThis[this.getDrumFontVarName(note)] || null;
-    if (this.drumFont.loadingNotes.has(note)) {
-      return this.drumFont.loadingNotes.get(note);
+    const clampedPreset = Math.max(0, Math.trunc(preset || 0));
+    const noteKey = this.getDrumFontNoteKey(note, clampedPreset);
+    if (this.drumFont.loadedNotes.has(noteKey)) return globalThis[this.getDrumFontVarName(note, clampedPreset)] || null;
+    if (this.drumFont.loadingNotes.has(noteKey)) {
+      return this.drumFont.loadingNotes.get(noteKey);
     }
-    const url = `${this.drumFont.baseUrl}128${note}_0_${this.drumFont.kit}.js`;
+    const url = `${this.drumFont.baseUrl}128${note}_${clampedPreset}_${this.drumFont.kit}.js`;
     const promise = this.loadScriptOnce(url)
       .then(() => {
-        const data = globalThis[this.getDrumFontVarName(note)];
+        const data = globalThis[this.getDrumFontVarName(note, clampedPreset)];
         if (!data) {
           throw new Error(`Missing drum font data for note ${note}`);
         }
-        this.drumFont.loadedNotes.add(note);
+        this.drumFont.loadedNotes.add(noteKey);
         return data;
       })
       .catch((error) => {
@@ -265,18 +272,18 @@ export default class AudioSystem {
         throw error;
       })
       .finally(() => {
-        this.drumFont.loadingNotes.delete(note);
+        this.drumFont.loadingNotes.delete(noteKey);
       });
-    this.drumFont.loadingNotes.set(note, promise);
+    this.drumFont.loadingNotes.set(noteKey, promise);
     return promise;
   }
 
-  playWebAudioFontDrum({ note, when, duration, volume }) {
+  playWebAudioFontDrum({ note, when, duration, volume, preset = 0 }) {
     if (!this.isWebAudioFontReady()) return false;
     const play = async () => {
       const player = await this.ensureDrumFontPlayer();
       if (!player) return;
-      const data = await this.loadDrumFontNote(note);
+      const data = await this.loadDrumFontNote(note, preset);
       if (!data) return;
       const target = this.midiBus || this.master;
       player.queueWaveTable(this.ctx, target, data, when, note, duration, volume);
@@ -755,7 +762,6 @@ export default class AudioSystem {
     }
     const preferWebAudioFont = isDrums
       && resolvedChannel === GM_DRUM_CHANNEL
-      && clampedProgram === 0
       && resolvedBankLSB === GM_DRUM_BANK_LSB;
     if (preferWebAudioFont && this.drumFont.available === null) {
       this.ensureWebAudioFontAvailability();
@@ -766,7 +772,8 @@ export default class AudioSystem {
         note: resolvedPitch,
         when,
         duration,
-        volume: clampedVolume
+        volume: clampedVolume,
+        preset: clampedProgram
       });
       if (used) return;
     }
@@ -898,7 +905,6 @@ export default class AudioSystem {
     }
     const preferWebAudioFont = isDrums
       && resolvedChannel === GM_DRUM_CHANNEL
-      && clampedProgram === 0
       && resolvedBankLSB === GM_DRUM_BANK_LSB;
     if (preferWebAudioFont && this.drumFont.available === null) {
       this.ensureWebAudioFontAvailability();
@@ -909,7 +915,8 @@ export default class AudioSystem {
         note: resolvedPitch,
         when,
         duration,
-        volume: clampedVolume
+        volume: clampedVolume,
+        preset: clampedProgram
       });
       if (used) return;
     }
