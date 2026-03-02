@@ -1,0 +1,10 @@
+{
+  "standard": "Chaos_sf2_file",
+  "room": "FluidR3_GM_sf2_file",
+  "power": "SBLive_sf2",
+  "electronic": "JCLive_sf2_file",
+  "jazz": "FluidR3_GM_sf2_file",
+  "brush": "Chaos_sf2_file",
+  "orchestra": "JCLive_sf2_file",
+  "sfx": "SBLive_sf2"
+}
