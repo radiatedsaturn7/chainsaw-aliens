@@ -8932,7 +8932,7 @@ export default class MidiComposer {
     const addY = y + h - padding - addH;
     const laneAreaY = rulerY + rulerH;
     const mixRailH = Math.max(176, Math.min(240, Math.round(h * 0.32)));
-    const laneAreaH = Math.max(0, addY - laneAreaY - mixRailH + 4);
+    const laneAreaH = Math.max(0, addY - laneAreaY - 8);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = trackCount > 8 ? 6 : 10;
     const laneBlockH = Math.max(22, Math.min(112, (laneAreaH - laneGap * (trackCount - 1)) / trackCount));
