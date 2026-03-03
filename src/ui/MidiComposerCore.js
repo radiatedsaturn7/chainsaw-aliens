@@ -8934,8 +8934,8 @@ export default class MidiComposer {
     const mixRailH = Math.max(176, Math.min(240, Math.round(h * 0.32)));
     const laneAreaH = Math.max(0, addY - laneAreaY - mixRailH - 12);
     const trackCount = Math.max(1, this.song.tracks.length);
-    const laneGap = 12;
-    const laneBlockH = Math.max(74, Math.min(112, (laneAreaH - laneGap * (trackCount - 1)) / trackCount));
+    const laneGap = trackCount > 8 ? 6 : 10;
+    const laneBlockH = Math.max(22, Math.min(112, (laneAreaH - laneGap * (trackCount - 1)) / trackCount));
     const isMobile = this.isMobileLayout();
     const labelW = isMobile ? DEFAULT_LABEL_WIDTH_MOBILE : DEFAULT_LABEL_WIDTH;
     const laneX = x + padding + labelW;
@@ -8991,7 +8991,6 @@ export default class MidiComposer {
 
     this.song.tracks.forEach((track, index) => {
       const laneTop = laneAreaY + index * (laneBlockH + laneGap);
-      if (laneTop + laneBlockH > laneAreaY + laneAreaH + 4) return;
       const labelX = x + padding;
       ctx.fillStyle = index === this.selectedTrackIndex ? 'rgba(255,225,106,0.3)' : 'rgba(0,0,0,0.35)';
       ctx.fillRect(labelX, laneTop, labelW, laneBlockH);
