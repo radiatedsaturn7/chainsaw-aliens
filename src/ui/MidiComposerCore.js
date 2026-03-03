@@ -578,6 +578,18 @@ export default class MidiComposer {
     this.instrumentListScroll = 0;
     this.instrumentListScrollMax = 0;
     this.pendingTrackFocusIndex = null;
+    this.confirmModal = {
+      open: false,
+      title: '',
+      message: '',
+      confirmLabel: 'Confirm',
+      cancelLabel: 'Cancel',
+      onConfirm: null,
+      onCancel: null,
+      confirmBounds: null,
+      cancelBounds: null,
+      dialogBounds: null
+    };
     this.lastPersistedSnapshot = null;
     this.lastSavedSnapshot = null;
     this._dirty = false;
@@ -594,7 +606,7 @@ export default class MidiComposer {
           discardChanges: 'Discard unsaved song changes?',
           closePrompt: 'Save changes before closing?'
         },
-        confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
+        confirm: (ctx, message) => ctx.confirmDiscardChangesModal(message),
         serialize: (ctx) => JSON.parse(JSON.stringify(ctx.song)),
         applyLoadedData: (ctx, data, meta) => {
           ctx.applyImportedSong(data);
@@ -827,7 +839,7 @@ export default class MidiComposer {
       this.importSongFile(file)
         .catch((error) => {
           console.warn('Invalid song file', error);
-          window.alert('Failed to import song data.');
+          this.showEditorMessage('Failed to import song data.');
         })
         .finally(() => {
           this.fileInput.value = '';
@@ -1063,7 +1075,7 @@ export default class MidiComposer {
     if (!session) return;
     const blob = await this.buildRobterSessionZip();
     if (!blob) {
-      window.alert('No notes available to play in RobterSession yet.');
+      this.showEditorMessage('No notes available to play in RobterSession yet.');
       return;
     }
     this.stopPlayback();
@@ -1079,8 +1091,8 @@ export default class MidiComposer {
     }
   }
 
-  loadSongFromLibrary() {
-    this.runtime.open();
+  async loadSongFromLibrary() {
+    await this.runtime.open();
   }
 
   loadInstrumentList(key, fallback) {
@@ -1805,14 +1817,63 @@ export default class MidiComposer {
   }
 
   isModalOpen() {
-    return this.qaOverlayOpen;
+    return this.qaOverlayOpen || this.confirmModal.open;
   }
 
   closeModal() {
+    if (this.confirmModal.open) {
+      this.closeConfirmModal(false);
+      return;
+    }
     if (this.qaOverlayOpen) {
       this.qaOverlayOpen = false;
     }
   }
+
+  openConfirmModal({ title = 'Are you sure?', message = '', confirmLabel = 'Confirm', cancelLabel = 'Cancel', onConfirm = null, onCancel = null } = {}) {
+    this.confirmModal.open = true;
+    this.confirmModal.title = title;
+    this.confirmModal.message = message;
+    this.confirmModal.confirmLabel = confirmLabel;
+    this.confirmModal.cancelLabel = cancelLabel;
+    this.confirmModal.onConfirm = typeof onConfirm === 'function' ? onConfirm : null;
+    this.confirmModal.onCancel = typeof onCancel === 'function' ? onCancel : null;
+  }
+
+  closeConfirmModal(confirmed) {
+    const onConfirm = this.confirmModal.onConfirm;
+    const onCancel = this.confirmModal.onCancel;
+    this.confirmModal.open = false;
+    this.confirmModal.confirmBounds = null;
+    this.confirmModal.cancelBounds = null;
+    this.confirmModal.dialogBounds = null;
+    this.confirmModal.onConfirm = null;
+    this.confirmModal.onCancel = null;
+    if (confirmed) {
+      onConfirm?.();
+    } else {
+      onCancel?.();
+    }
+  }
+
+  confirmDiscardChangesModal(message) {
+    if (!this.runtime?.hasUnsavedChanges?.()) return true;
+    return new Promise((resolve) => {
+      this.openConfirmModal({
+        title: 'Unsaved Changes',
+        message: message || 'You have unfinished changes.',
+        confirmLabel: 'Continue',
+        cancelLabel: 'Cancel',
+        onConfirm: () => resolve(true),
+        onCancel: () => resolve(false)
+      });
+    });
+  }
+
+  showEditorMessage(message) {
+    this.game?.showSystemToast?.(String(message || ''));
+  }
+
 
   getLoopTicks() {
     const gridTicks = this.getGridTicks();
@@ -2261,7 +2322,7 @@ export default class MidiComposer {
     if (!input) return;
     const progression = parseChordProgressionInput(input, loopBars);
     if (!progression) {
-      window.alert('Could not parse chord progression. Try format: 1-4 C C D G');
+      this.showEditorMessage('Could not parse chord progression. Try format: 1-4 C C D G');
       return;
     }
     this.song.progression = progression;
@@ -3532,6 +3593,21 @@ export default class MidiComposer {
       return;
     }
 
+    if (this.confirmModal.open) {
+      if (this.confirmModal.confirmBounds && this.pointInBounds(x, y, this.confirmModal.confirmBounds)) {
+        this.closeConfirmModal(true);
+        return;
+      }
+      if (this.confirmModal.cancelBounds && this.pointInBounds(x, y, this.confirmModal.cancelBounds)) {
+        this.closeConfirmModal(false);
+        return;
+      }
+      if (this.confirmModal.dialogBounds && !this.pointInBounds(x, y, this.confirmModal.dialogBounds)) {
+        this.closeConfirmModal(false);
+      }
+      return;
+    }
+
     if ((this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings))
       || (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings))) {
       this.activeTab = 'settings';
@@ -4009,16 +4085,22 @@ export default class MidiComposer {
         this.songMixControlMode = 'pan';
         return;
       }
+      if (this.bounds.songRemoveTrack && this.pointInBounds(x, y, this.bounds.songRemoveTrack)) {
+        this.removeTrack();
+        return;
+      }
+      const labelHit = this.songLabelBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      const laneTapHit = this.songLaneBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (payload.touchCount && this.bounds.songTrackScrollArea && this.pointInBounds(x, y, this.bounds.songTrackScrollArea)) {
         this.dragState = {
           mode: 'song-track-scroll',
           startY: y,
           startScroll: this.songTrackScroll,
-          moved: false
+          moved: false,
+          pendingTrackHit: labelHit || laneTapHit || null
         };
         return;
       }
-      const labelHit = this.songLabelBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (labelHit) {
         this.selectedTrackIndex = labelHit.trackIndex;
         this.clearSongSelection();
@@ -4782,6 +4864,10 @@ export default class MidiComposer {
       return;
     }
     if (this.dragState?.mode === 'song-track-scroll') {
+      if (!this.dragState.moved && this.dragState.pendingTrackHit && Number.isInteger(this.dragState.pendingTrackHit.trackIndex)) {
+        this.selectedTrackIndex = this.dragState.pendingTrackHit.trackIndex;
+        this.clearSongSelection();
+      }
       this.dragState = null;
       return;
     }
@@ -5882,10 +5968,24 @@ export default class MidiComposer {
 
   removeTrack() {
     if (this.song.tracks.length <= 1) return;
-    this.song.tracks.splice(this.selectedTrackIndex, 1);
-    this.selectedTrackIndex = clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
-    this.syncCursorToTrack();
-    this.persist({ commitHistory: true });
+    const track = this.getActiveTrack();
+    const noteCount = track?.patterns?.reduce((sum, pattern) => sum + (pattern?.notes?.length || 0), 0) || 0;
+    const trackName = track?.name || 'this track';
+    const detail = noteCount > 0
+      ? `This will delete "${trackName}" and ${noteCount} note${noteCount === 1 ? '' : 's'}.`
+      : `This will delete "${trackName}".`;
+    this.openConfirmModal({
+      title: 'Remove Instrument?',
+      message: detail,
+      confirmLabel: 'Remove',
+      cancelLabel: 'Cancel',
+      onConfirm: () => {
+        this.song.tracks.splice(this.selectedTrackIndex, 1);
+        this.selectedTrackIndex = clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
+        this.syncCursorToTrack();
+        this.persist({ commitHistory: true });
+      }
+    });
   }
 
   duplicateTrack() {
@@ -5950,7 +6050,7 @@ export default class MidiComposer {
         if (Number.isInteger(parsed) && parsed >= 1 && parsed <= 16) {
           this.setTrackChannel(track, parsed - 1);
         } else {
-          window.alert('Channel must be 1-16.');
+          this.showEditorMessage('Channel must be 1-16.');
         }
       }
       return;
@@ -5985,7 +6085,7 @@ export default class MidiComposer {
           track.bankMSB = msbRaw;
           track.bankLSB = lsbRaw;
         } else {
-          window.alert('Bank values must be 0-127.');
+          this.showEditorMessage('Bank values must be 0-127.');
         }
       }
       this.persist({ commitHistory: true });
@@ -7217,7 +7317,7 @@ export default class MidiComposer {
     return track.mute;
   }
 
-  handleToolsMenu(action) {
+  async handleToolsMenu(action) {
     if (action === 'generate') {
       this.genreMenuOpen = true;
       this.toolsMenuOpen = false;
@@ -7233,7 +7333,7 @@ export default class MidiComposer {
       this.exportSongMidiZip();
     }
     if (action === 'import') {
-      this.importSong();
+      await this.importSong();
     }
     if (action === 'qa') {
       this.qaOverlayOpen = true;
@@ -7282,7 +7382,7 @@ export default class MidiComposer {
 
   async handleFileMenu(action) {
     if (action === 'new') {
-      if (!this.runtime.confirmDiscardChanges()) return;
+      if (!(await this.confirmDiscardChangesModal('Discard unsaved song changes?'))) return;
       const result = await openProjectBrowser({
         mode: 'saveAs',
         fixedFolder: 'music',
@@ -7320,7 +7420,7 @@ export default class MidiComposer {
       return;
     }
     if (action === 'load') {
-      this.loadSongFromLibrary();
+      await this.loadSongFromLibrary();
       return;
     }
     if (action === 'export-json') {
@@ -7336,7 +7436,7 @@ export default class MidiComposer {
       return;
     }
     if (action === 'import') {
-      this.importSong();
+      await this.importSong();
       return;
     }
     if (action === 'undo') {
@@ -7360,7 +7460,7 @@ export default class MidiComposer {
       return;
     }
     if (action === 'sample') {
-      if (!this.runtime.confirmDiscardChanges()) return;
+      if (!(await this.confirmDiscardChangesModal('Discard unsaved song changes?'))) return;
       this.loadDemoSong();
       return;
     }
@@ -7650,8 +7750,8 @@ export default class MidiComposer {
     this.downloadBlob(blob, `${this.getExportBaseName()}-stems.zip`);
   }
 
-  importSong() {
-    if (!this.runtime.confirmDiscardChanges()) return;
+  async importSong() {
+    if (!(await this.confirmDiscardChangesModal('Discard unsaved song changes?'))) return;
     if (this.fileInput) {
       this.fileInput.click();
     }
@@ -7792,7 +7892,7 @@ export default class MidiComposer {
     if (!validation.valid) {
       const message = validation.error || 'Invalid song schema.';
       console.warn(message);
-      window.alert(message);
+      this.showEditorMessage(message);
       return;
     }
     this.song = this.migrateSong(data);
@@ -8177,6 +8277,10 @@ export default class MidiComposer {
       this.drawQaOverlay(ctx, width, height);
     }
 
+    if (this.confirmModal.open) {
+      this.drawConfirmModal(ctx, width, height);
+    }
+
     this.drawMobilePanJoystick(ctx, width, height);
 
     ctx.restore();
@@ -8190,6 +8294,56 @@ export default class MidiComposer {
     }
   }
 
+
+
+  drawDangerButton(ctx, bounds, label) {
+    if (!bounds) return;
+    ctx.save();
+    ctx.fillStyle = 'rgba(145,30,30,0.95)';
+    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.strokeStyle = 'rgba(255,130,130,0.95)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px Courier New';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
+    ctx.restore();
+  }
+
+  drawConfirmModal(ctx, width, height) {
+    if (!this.confirmModal.open) return;
+    const overlay = 'rgba(0,0,0,0.62)';
+    const modalW = Math.min(width - 32, 620);
+    const modalH = 220;
+    const modalX = Math.round((width - modalW) / 2);
+    const modalY = Math.round((height - modalH) / 2);
+    this.confirmModal.dialogBounds = { x: modalX, y: modalY, w: modalW, h: modalH };
+    ctx.save();
+    ctx.fillStyle = overlay;
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = UI_SUITE.colors.panel;
+    ctx.fillRect(modalX, modalY, modalW, modalH);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(modalX, modalY, modalW, modalH);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 20px Courier New';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText(this.confirmModal.title || 'Are you sure?', modalX + 18, modalY + 18);
+    ctx.font = '14px Courier New';
+    this.wrapText(ctx, this.confirmModal.message || '', modalX + 18, modalY + 56, modalW - 36, 18);
+    const buttonY = modalY + modalH - 54;
+    const buttonW = 140;
+    const buttonH = 36;
+    this.confirmModal.cancelBounds = { x: modalX + modalW - buttonW * 2 - 28, y: buttonY, w: buttonW, h: buttonH };
+    this.confirmModal.confirmBounds = { x: modalX + modalW - buttonW - 18, y: buttonY, w: buttonW, h: buttonH };
+    this.drawButton(ctx, this.confirmModal.cancelBounds, this.confirmModal.cancelLabel || 'Cancel', false, false);
+    this.drawDangerButton(ctx, this.confirmModal.confirmBounds, this.confirmModal.confirmLabel || 'Confirm');
+    ctx.restore();
+  }
 
   drawDesktopLayout(ctx, width, height, track, pattern) {
     const transportH = 132;
@@ -9266,6 +9420,7 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(mixRailBounds.x, mixRailBounds.y, mixRailBounds.w, mixRailBounds.h);
 
+    this.bounds.songRemoveTrack = null;
     if (selectedTrack) {
       const panelPad = 12;
       const rowH = 44;
@@ -9276,6 +9431,13 @@ export default class MidiComposer {
       this.bounds.songMixPanTab = { x: mixRailBounds.x + panelPad + tabW + tabGap, y: tabY, w: tabW, h: rowH };
       this.drawButton(ctx, this.bounds.songMixVolumeTab, 'Volume', this.songMixControlMode === 'volume', false);
       this.drawButton(ctx, this.bounds.songMixPanTab, 'Pan', this.songMixControlMode === 'pan', false);
+      this.bounds.songRemoveTrack = {
+        x: mixRailBounds.x + mixRailBounds.w - panelPad - 156,
+        y: tabY,
+        w: 156,
+        h: rowH
+      };
+      this.drawDangerButton(ctx, this.bounds.songRemoveTrack, 'Remove Instrument');
 
       ctx.fillStyle = 'rgba(255,255,255,0.75)';
       ctx.font = '13px Courier New';
@@ -10220,7 +10382,7 @@ export default class MidiComposer {
     };
     this.drawButton(ctx, changeBounds, 'Change', false, false);
     this.drawButton(ctx, renameBounds, 'Rename', false, false);
-    this.drawButton(ctx, removeBounds, 'Remove', false, false);
+    this.drawDangerButton(ctx, removeBounds, 'Remove');
     this.bounds.instrumentSettingsControls.push(changeBounds, renameBounds, removeBounds);
 
     const mix = this.getTrackPlaybackMix(track);
@@ -10760,7 +10922,7 @@ export default class MidiComposer {
     cursorX += 70;
 
     this.bounds.removeTrack = { x: cursorX, y: instrumentRowY, w: 78, h: rowH };
-    this.drawSmallButton(ctx, this.bounds.removeTrack, 'Remove', false);
+    this.drawDangerButton(ctx, this.bounds.removeTrack, 'Remove');
 
     const controlStartX = isMobile ? x + 12 : x + w - 400;
     const playW = isMobile ? 90 : 100;
@@ -10973,7 +11135,7 @@ export default class MidiComposer {
     this.bounds.removeTrack = { x: x + 104, y: buttonY, w: 90, h: buttonH };
     this.bounds.duplicateTrack = { x: x + 202, y: buttonY, w: 120, h: buttonH };
     this.drawSmallButton(ctx, this.bounds.addTrack, 'Add', false);
-    this.drawSmallButton(ctx, this.bounds.removeTrack, 'Remove', false);
+    this.drawDangerButton(ctx, this.bounds.removeTrack, 'Remove');
     this.drawSmallButton(ctx, this.bounds.duplicateTrack, 'Duplicate', false);
 
     this.trackBounds = [];

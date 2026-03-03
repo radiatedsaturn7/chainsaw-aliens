@@ -14,9 +14,10 @@ export function createDocumentLifecycle(adapter) {
     return captureSnapshot(context) !== context.savedSnapshot;
   };
 
-  const confirmDiscardChanges = (context) => {
+  const confirmDiscardChanges = async (context) => {
     if (!hasUnsavedChanges(context)) return true;
-    return adapter.confirm?.(context, adapter.strings.discardChanges) ?? false;
+    const result = adapter.confirm?.(context, adapter.strings.discardChanges);
+    return (await Promise.resolve(result)) ?? false;
   };
 
   const saveAsOrCurrent = async (context, options = {}) => {
@@ -41,8 +42,8 @@ export function createDocumentLifecycle(adapter) {
     return { id: name, name };
   };
 
-  const open = (context) => {
-    if (!confirmDiscardChanges(context)) return false;
+  const open = async (context) => {
+    if (!(await confirmDiscardChanges(context))) return false;
     openProjectBrowser({
       mode: 'open',
       fixedFolder: adapter.folder,
@@ -61,7 +62,7 @@ export function createDocumentLifecycle(adapter) {
 
   const closeWithPrompt = async (context, onClose) => {
     if (hasUnsavedChanges(context)) {
-      const shouldSave = adapter.confirm?.(context, adapter.strings.closePrompt);
+      const shouldSave = await Promise.resolve(adapter.confirm?.(context, adapter.strings.closePrompt));
       if (shouldSave) {
         const saved = await saveAsOrCurrent(context);
         if (!saved) return false;

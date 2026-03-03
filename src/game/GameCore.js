@@ -1046,11 +1046,63 @@ export default class Game {
 
   showInlineConfirm(message) {
     const text = String(message ?? 'Are you sure?');
-    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
-      return window.confirm(text);
+    if (typeof document === 'undefined') {
+      this.showSystemToast?.(text);
+      return Promise.resolve(true);
     }
-    this.showSystemToast?.(text);
-    return true;
+    return new Promise((resolve) => {
+      const overlay = document.createElement('div');
+      overlay.className = 'chainsaw-confirm-overlay';
+      Object.assign(overlay.style, {
+        position: 'fixed',
+        inset: '0',
+        background: 'rgba(0,0,0,0.62)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: '99999'
+      });
+      const modal = document.createElement('div');
+      Object.assign(modal.style, {
+        width: 'min(560px, calc(100vw - 32px))',
+        background: '#121212',
+        border: '2px solid rgba(255,255,255,0.35)',
+        color: '#fff',
+        padding: '18px',
+        fontFamily: 'Courier New, monospace'
+      });
+      const title = document.createElement('div');
+      title.textContent = 'Unsaved Changes';
+      Object.assign(title.style, { fontWeight: '700', fontSize: '20px', marginBottom: '10px' });
+      const body = document.createElement('div');
+      body.textContent = text;
+      Object.assign(body.style, { fontSize: '14px', lineHeight: '1.4', marginBottom: '16px' });
+      const row = document.createElement('div');
+      Object.assign(row.style, { display: 'flex', justifyContent: 'flex-end', gap: '10px' });
+      const cancel = document.createElement('button');
+      cancel.textContent = 'Cancel';
+      const confirm = document.createElement('button');
+      confirm.textContent = 'Continue';
+      Object.assign(cancel.style, {
+        padding: '8px 14px', border: '1px solid rgba(255,255,255,0.6)', background: '#1f1f1f', color: '#fff', cursor: 'pointer'
+      });
+      Object.assign(confirm.style, {
+        padding: '8px 14px', border: '1px solid #ff8b8b', background: '#7e2222', color: '#fff', cursor: 'pointer'
+      });
+      const close = (value) => {
+        overlay.remove();
+        resolve(value);
+      };
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) close(false);
+      });
+      cancel.addEventListener('click', () => close(false));
+      confirm.addEventListener('click', () => close(true));
+      row.append(cancel, confirm);
+      modal.append(title, body, row);
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+    });
   }
 
   resetAllContent() {
