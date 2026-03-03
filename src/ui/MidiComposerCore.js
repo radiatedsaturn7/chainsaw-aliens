@@ -1634,7 +1634,6 @@ export default class MidiComposer {
 
   openInstrumentPicker(mode, trackIndex = null) {
     const previousTab = this.activeTab;
-    this.activeTab = 'instruments';
     this.instrumentPicker.mode = mode;
     this.instrumentPicker.returnTab = previousTab;
     this.instrumentPicker.trackIndex = trackIndex ?? this.selectedTrackIndex;
@@ -1663,6 +1662,7 @@ export default class MidiComposer {
     this.instrumentPicker.scrollStep = 0;
     this.instrumentPicker.tabScrollX = 0;
     this.instrumentPicker.drumKitBounds = null;
+    this.instrumentPicker.modalBounds = null;
     const selectedTabIndex = Math.max(0, tabs.findIndex((tab) => tab.id === this.instrumentPicker.familyTab));
     this.instrumentPicker.tabScrollX = Math.max(0, selectedTabIndex * 96);
     const availableKits = this.game?.audio?.listAvailableDrumKits?.();
@@ -3500,7 +3500,7 @@ export default class MidiComposer {
       }
 
     if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
-        if (this.activeTab === 'instruments') {
+        if (this.activeTab === 'instruments' || this.instrumentPicker.mode) {
           this.confirmInstrumentSelection();
         }
         this.activeTab = 'file';
@@ -3574,6 +3574,13 @@ export default class MidiComposer {
         return;
       }
       this.genreMenuOpen = false;
+    }
+
+    if (this.instrumentPicker.mode && this.instrumentPicker.modalBounds && !this.pointInBounds(x, y, this.instrumentPicker.modalBounds)) {
+      this.instrumentPicker.mode = null;
+      this.instrumentPicker.selectedProgram = null;
+      this.instrumentPicker.returnTab = null;
+      return;
     }
 
     const noteLengthHit = this.bounds.noteLengthMenu?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -3677,7 +3684,7 @@ export default class MidiComposer {
     }
 
     if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
-      if (this.activeTab === 'instruments') {
+      if (this.activeTab === 'instruments' || this.instrumentPicker.mode) {
         this.confirmInstrumentSelection();
       }
       this.activeTab = 'file';
@@ -3757,7 +3764,7 @@ export default class MidiComposer {
       this.noteLengthMenu.open = false;
     }
 
-    if (this.activeTab === 'instruments') {
+    if (this.activeTab === 'instruments' || this.instrumentPicker.mode) {
       if (this.instrumentPicker.mode) {
         if (this.instrumentPicker.tabPrevBounds && this.pointInBounds(x, y, this.instrumentPicker.tabPrevBounds)) {
           this.shiftInstrumentPickerTab(-1);
@@ -8175,6 +8182,10 @@ export default class MidiComposer {
       this.drawGenreMenu(ctx, width, height);
     }
 
+    if (this.instrumentPicker.mode) {
+      this.drawInstrumentPickerModal(ctx, width, height, track);
+    }
+
     if (this.qaOverlayOpen) {
       this.drawQaOverlay(ctx, width, height);
     }
@@ -11688,6 +11699,17 @@ export default class MidiComposer {
         this.drawToolsMenu(ctx, transportX + transportW - 180, transportY + 12);
       }
     }
+  }
+
+  drawInstrumentPickerModal(ctx, width, height, track) {
+    const modalW = Math.min(width - 32, Math.max(760, Math.round(width * 0.86)));
+    const modalH = Math.min(height - 32, Math.max(500, Math.round(height * 0.84)));
+    const modalX = Math.round((width - modalW) / 2);
+    const modalY = Math.round((height - modalH) / 2);
+    this.instrumentPicker.modalBounds = { x: modalX, y: modalY, w: modalW, h: modalH };
+    ctx.fillStyle = 'rgba(0,0,0,0.58)';
+    ctx.fillRect(0, 0, width, height);
+    this.drawInstrumentPanel(ctx, modalX, modalY, modalW, modalH, track);
   }
 
   drawInstrumentPicker(ctx, width, height) {
