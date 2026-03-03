@@ -573,6 +573,10 @@ export default class MidiComposer {
     this.settingsOpen = false;
     this.settingsScroll = 0;
     this.settingsScrollMax = 0;
+    this.songTrackScroll = 0;
+    this.songTrackScrollMax = 0;
+    this.instrumentListScroll = 0;
+    this.instrumentListScrollMax = 0;
     this.lastPersistedSnapshot = null;
     this.lastSavedSnapshot = null;
     this._dirty = false;
@@ -760,6 +764,8 @@ export default class MidiComposer {
       instrumentLabel: null,
       instrumentAdd: null,
       instrumentList: [],
+      instrumentListScrollArea: null,
+      songTrackScrollArea: null,
       instrumentSettingsControls: [],
       selectionMenu: [],
       noteLengthMenu: [],
@@ -3890,6 +3896,16 @@ export default class MidiComposer {
       }
 
       const listHit = this.bounds.instrumentList?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (payload.touchCount && this.bounds.instrumentListScrollArea && this.pointInBounds(x, y, this.bounds.instrumentListScrollArea)) {
+        this.dragState = {
+          mode: 'instrument-list-scroll',
+          startY: y,
+          startScroll: this.instrumentListScroll,
+          moved: false,
+          pendingTrackHit: listHit ? { ...listHit } : null
+        };
+        return;
+      }
       if (listHit) {
         this.selectedTrackIndex = listHit.trackIndex;
         this.selection.clear();
@@ -3995,6 +4011,15 @@ export default class MidiComposer {
       }
       if (this.bounds.songMixPanTab && this.pointInBounds(x, y, this.bounds.songMixPanTab)) {
         this.songMixControlMode = 'pan';
+        return;
+      }
+      if (payload.touchCount && this.bounds.songTrackScrollArea && this.pointInBounds(x, y, this.bounds.songTrackScrollArea)) {
+        this.dragState = {
+          mode: 'song-track-scroll',
+          startY: y,
+          startScroll: this.songTrackScroll,
+          moved: false
+        };
         return;
       }
       const labelHit = this.songLabelBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -4367,6 +4392,26 @@ export default class MidiComposer {
       return;
     }
     if (this.qaOverlayOpen) return;
+    if (this.dragState?.mode === 'song-track-scroll') {
+      const delta = this.dragState.startY - payload.y;
+      if (!this.dragState.moved && Math.abs(delta) > 6) {
+        this.dragState.moved = true;
+      }
+      if (this.dragState.moved) {
+        this.songTrackScroll = clamp(this.dragState.startScroll + delta, 0, this.songTrackScrollMax);
+      }
+      return;
+    }
+    if (this.dragState?.mode === 'instrument-list-scroll') {
+      const delta = this.dragState.startY - payload.y;
+      if (!this.dragState.moved && Math.abs(delta) > 6) {
+        this.dragState.moved = true;
+      }
+      if (this.dragState.moved) {
+        this.instrumentListScroll = clamp(this.dragState.startScroll + delta, 0, this.instrumentListScrollMax);
+      }
+      return;
+    }
     if (this.dragState?.mode === 'song-pan-or-select') {
       const dx = payload.x - this.dragState.startX;
       const dy = payload.y - this.dragState.startY;
@@ -4735,6 +4780,23 @@ export default class MidiComposer {
         if (this.dragState.mode === 'touch-pan' && cell) {
           this.selection.clear();
           this.toggleNoteAt(cell.tick, cell.pitch);
+        }
+      }
+      this.dragState = null;
+      return;
+    }
+    if (this.dragState?.mode === 'song-track-scroll') {
+      this.dragState = null;
+      return;
+    }
+    if (this.dragState?.mode === 'instrument-list-scroll') {
+      if (!this.dragState.moved && this.dragState.pendingTrackHit) {
+        const trackIndex = this.dragState.pendingTrackHit.trackIndex;
+        this.selectedTrackIndex = trackIndex;
+        this.selection.clear();
+        const selectedTrack = this.song.tracks[trackIndex];
+        if (selectedTrack) {
+          this.previewInstrument(selectedTrack.program, selectedTrack);
         }
       }
       this.dragState = null;
@@ -8935,7 +8997,11 @@ export default class MidiComposer {
     const laneAreaH = Math.max(0, addY - laneAreaY - 8);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = trackCount > 8 ? 6 : 10;
-    const laneBlockH = Math.max(22, Math.min(112, (laneAreaH - laneGap * (trackCount - 1)) / trackCount));
+    const laneBlockH = Math.max(48, Math.min(112, (laneAreaH - laneGap * 3) / 4));
+    const laneContentH = Math.max(0, trackCount * laneBlockH + Math.max(0, trackCount - 1) * laneGap);
+    this.songTrackScrollMax = Math.max(0, laneContentH - laneAreaH);
+    this.songTrackScroll = clamp(this.songTrackScroll, 0, this.songTrackScrollMax);
+    const laneScrollY = this.songTrackScroll;
     const isMobile = this.isMobileLayout();
     const labelW = isMobile ? DEFAULT_LABEL_WIDTH_MOBILE : DEFAULT_LABEL_WIDTH;
     const laneX = x + padding + labelW;
@@ -8956,6 +9022,7 @@ export default class MidiComposer {
     this.songLaneBounds = [];
     this.songLabelBounds = [];
     this.songAutomationBounds = [];
+    this.bounds.songTrackScrollArea = { x: x + padding, y: laneAreaY, w: w - padding * 2, h: laneAreaH };
     let timelineTicks = this.getSongTimelineTicks();
     const baseCellWidth = laneW / timelineTicks;
     const zoomXLimits = this.getGridZoomLimitsX();
@@ -8990,7 +9057,8 @@ export default class MidiComposer {
     this.drawTimelineRuler(ctx, laneX, rulerY, laneW, rulerH, timelineTicks, this.songTimelineBounds);
 
     this.song.tracks.forEach((track, index) => {
-      const laneTop = laneAreaY + index * (laneBlockH + laneGap);
+      const laneTop = laneAreaY - laneScrollY + index * (laneBlockH + laneGap);
+      if (laneTop + laneBlockH < laneAreaY - 4 || laneTop > laneAreaY + laneAreaH + 4) return;
       const labelX = x + padding;
       ctx.fillStyle = index === this.selectedTrackIndex ? 'rgba(255,225,106,0.3)' : 'rgba(0,0,0,0.35)';
       ctx.fillRect(labelX, laneTop, labelW, laneBlockH);
@@ -9859,6 +9927,7 @@ export default class MidiComposer {
     const controlsH = 0;
 
     this.bounds.instrumentList = [];
+    this.bounds.instrumentListScrollArea = null;
     this.bounds.instrumentSettingsControls = [];
 
     ctx.fillStyle = UI_SUITE.colors.panel;
@@ -9871,11 +9940,19 @@ export default class MidiComposer {
     ctx.fillText('Instruments', leftX + 10, leftY + 18);
     const listStartY = leftY + 28;
     const listH = Math.max(0, panelH - addButtonH - 20 - controlsH);
-    const listEndY = listStartY + listH;
-    let cursorY = listStartY;
+    this.bounds.instrumentListScrollArea = { x: leftX + 4, y: listStartY, w: leftW - 8, h: listH };
+    const listItemGap = 6;
+    const listRowH = Math.max(rowH, Math.min(96, (listH - listItemGap * 3) / 4));
+    const listContentH = Math.max(0, this.song.tracks.length * listRowH + Math.max(0, this.song.tracks.length - 1) * listItemGap);
+    this.instrumentListScrollMax = Math.max(0, listContentH - listH);
+    this.instrumentListScroll = clamp(this.instrumentListScroll, 0, this.instrumentListScrollMax);
+    let cursorY = listStartY - this.instrumentListScroll;
     this.song.tracks.forEach((listTrack, index) => {
-      if (cursorY + rowH > listEndY) return;
-      const bounds = { x: leftX + 8, y: cursorY, w: leftW - 16, h: rowH, trackIndex: index };
+      const bounds = { x: leftX + 8, y: cursorY, w: leftW - 16, h: listRowH, trackIndex: index };
+      if (bounds.y + bounds.h < listStartY - 4 || bounds.y > listStartY + listH + 4) {
+        cursorY += listRowH + listItemGap;
+        return;
+      }
       const isActive = index === this.selectedTrackIndex;
       ctx.fillStyle = isActive ? 'rgba(255,225,106,0.18)' : 'rgba(0,0,0,0.45)';
       ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
@@ -9891,7 +9968,7 @@ export default class MidiComposer {
         : this.getProgramLabel(listTrack.program);
       ctx.fillText(label, bounds.x + 10, bounds.y + 36);
       this.bounds.instrumentList.push(bounds);
-      cursorY += rowH + 6;
+      cursorY += listRowH + listItemGap;
     });
 
     this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - 8, w: leftW - 16, h: addButtonH };
