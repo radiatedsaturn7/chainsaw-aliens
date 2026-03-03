@@ -8315,35 +8315,82 @@ export default class MidiComposer {
   drawConfirmModal(ctx, width, height) {
     if (!this.confirmModal.open) return;
     const overlay = 'rgba(0,0,0,0.62)';
-    const modalW = Math.min(width - 32, 620);
-    const modalH = 220;
+    const modalW = Math.min(width - 24, 620);
+    const modalH = Math.min(height - 24, 260);
     const modalX = Math.round((width - modalW) / 2);
     const modalY = Math.round((height - modalH) / 2);
     this.confirmModal.dialogBounds = { x: modalX, y: modalY, w: modalW, h: modalH };
+
     ctx.save();
     ctx.fillStyle = overlay;
     ctx.fillRect(0, 0, width, height);
+
     ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(modalX, modalY, modalW, modalH);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.lineWidth = 2;
     ctx.strokeRect(modalX, modalY, modalW, modalH);
+
+    const panelPad = 16;
+    const footerH = 54;
+    const contentTop = modalY + panelPad;
+    const contentBottom = modalY + modalH - footerH - 8;
+
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 20px Courier New';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText(this.confirmModal.title || 'Are you sure?', modalX + 18, modalY + 18);
+    ctx.fillText(this.confirmModal.title || 'Are you sure?', modalX + panelPad, contentTop);
+
     ctx.font = '14px Courier New';
-    this.wrapText(ctx, this.confirmModal.message || '', modalX + 18, modalY + 56, modalW - 36, 18);
-    const buttonY = modalY + modalH - 54;
-    const buttonW = 140;
-    const buttonH = 36;
-    this.confirmModal.cancelBounds = { x: modalX + modalW - buttonW * 2 - 28, y: buttonY, w: buttonW, h: buttonH };
-    this.confirmModal.confirmBounds = { x: modalX + modalW - buttonW - 18, y: buttonY, w: buttonW, h: buttonH };
+    const text = String(this.confirmModal.message || '');
+    const words = text.split(/\s+/).filter(Boolean);
+    const lineH = 18;
+    const maxLines = Math.max(2, Math.floor((contentBottom - (contentTop + 34)) / lineH));
+    const maxW = modalW - panelPad * 2;
+    const lines = [];
+    let current = '';
+    words.forEach((word) => {
+      const candidate = current ? `${current} ${word}` : word;
+      if (ctx.measureText(candidate).width <= maxW || !current) {
+        current = candidate;
+      } else {
+        lines.push(current);
+        current = word;
+      }
+    });
+    if (current) lines.push(current);
+    if (lines.length > maxLines) {
+      const clipped = lines.slice(0, maxLines);
+      const last = clipped[maxLines - 1];
+      clipped[maxLines - 1] = `${last.replace(/[. ]+$/, '')}…`;
+      lines.length = 0;
+      lines.push(...clipped);
+    }
+    lines.forEach((line, index) => {
+      ctx.fillText(line, modalX + panelPad, contentTop + 34 + index * lineH);
+    });
+
+    const buttonY = modalY + modalH - footerH + 6;
+    const buttonW = Math.min(140, Math.floor((modalW - panelPad * 2 - 10) / 2));
+    const buttonH = 34;
+    this.confirmModal.cancelBounds = {
+      x: modalX + modalW - panelPad - buttonW * 2 - 10,
+      y: buttonY,
+      w: buttonW,
+      h: buttonH
+    };
+    this.confirmModal.confirmBounds = {
+      x: modalX + modalW - panelPad - buttonW,
+      y: buttonY,
+      w: buttonW,
+      h: buttonH
+    };
     this.drawButton(ctx, this.confirmModal.cancelBounds, this.confirmModal.cancelLabel || 'Cancel', false, false);
     this.drawDangerButton(ctx, this.confirmModal.confirmBounds, this.confirmModal.confirmLabel || 'Confirm');
     ctx.restore();
   }
+
 
   drawDesktopLayout(ctx, width, height, track, pattern) {
     const transportH = 132;
