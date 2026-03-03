@@ -8931,7 +8931,7 @@ export default class MidiComposer {
     const addH = 34;
     const addY = y + h - padding - addH;
     const laneAreaY = rulerY + rulerH;
-    const mixRailH = Math.max(92, Math.min(126, Math.round(h * 0.2)));
+    const mixRailH = Math.max(176, Math.min(240, Math.round(h * 0.32)));
     const laneAreaH = Math.max(0, addY - laneAreaY - mixRailH - 12);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = 12;
@@ -9194,27 +9194,27 @@ export default class MidiComposer {
     ctx.strokeRect(mixRailBounds.x, mixRailBounds.y, mixRailBounds.w, mixRailBounds.h);
 
     if (selectedTrack) {
-      const panelPad = 10;
-      const tabW = 96;
-      const tabH = 26;
-      const tabGap = 8;
+      const panelPad = 12;
+      const rowH = 44;
+      const tabGap = 10;
+      const tabW = 132;
       const tabY = mixRailBounds.y + panelPad;
-      this.bounds.songMixVolumeTab = { x: mixRailBounds.x + panelPad, y: tabY, w: tabW, h: tabH };
-      this.bounds.songMixPanTab = { x: mixRailBounds.x + panelPad + tabW + tabGap, y: tabY, w: tabW, h: tabH };
-      this.drawSmallButton(ctx, this.bounds.songMixVolumeTab, 'Volume', this.songMixControlMode === 'volume');
-      this.drawSmallButton(ctx, this.bounds.songMixPanTab, 'Pan', this.songMixControlMode === 'pan');
+      this.bounds.songMixVolumeTab = { x: mixRailBounds.x + panelPad, y: tabY, w: tabW, h: rowH };
+      this.bounds.songMixPanTab = { x: mixRailBounds.x + panelPad + tabW + tabGap, y: tabY, w: tabW, h: rowH };
+      this.drawButton(ctx, this.bounds.songMixVolumeTab, 'Volume', this.songMixControlMode === 'volume', false);
+      this.drawButton(ctx, this.bounds.songMixPanTab, 'Pan', this.songMixControlMode === 'pan', false);
 
       ctx.fillStyle = 'rgba(255,255,255,0.75)';
-      ctx.font = '11px Courier New';
+      ctx.font = '13px Courier New';
       const mixLabel = this.songMixControlMode === 'pan' ? 'Pan (L/R)' : 'Volume';
-      ctx.fillText(`Mix: ${mixLabel} • ${selectedTrack.name || 'Track'}`, mixRailBounds.x + panelPad, tabY + tabH + 16);
+      ctx.fillText(`Mix: ${mixLabel} • ${selectedTrack.name || 'Track'}`, mixRailBounds.x + panelPad, tabY + rowH + 18);
 
-      const sliderY = tabY + tabH + 22;
+      const sliderY = tabY + rowH + 24;
       const sliderBounds = {
         x: mixRailBounds.x + panelPad,
         y: sliderY,
         w: mixRailBounds.w - panelPad * 2,
-        h: 14,
+        h: 20,
         trackIndex: this.selectedTrackIndex,
         control: this.songMixControlMode
       };
@@ -9228,17 +9228,17 @@ export default class MidiComposer {
       ctx.strokeRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
       this.bounds.instrumentSettingsControls.push(sliderBounds);
 
-      const buttonGap = 8;
-      const buttonY = sliderBounds.y + sliderBounds.h + 10;
+      const buttonGap = 10;
+      const buttonY = sliderBounds.y + sliderBounds.h + 14;
       const buttonW = (sliderBounds.w - buttonGap * 3) / 4;
-      this.bounds.keyframePrev = { x: sliderBounds.x, y: buttonY, w: buttonW, h: 28 };
-      this.bounds.keyframeSet = { x: sliderBounds.x + (buttonW + buttonGap), y: buttonY, w: buttonW, h: 28 };
-      this.bounds.keyframeRemove = { x: sliderBounds.x + (buttonW + buttonGap) * 2, y: buttonY, w: buttonW, h: 28 };
-      this.bounds.keyframeNext = { x: sliderBounds.x + (buttonW + buttonGap) * 3, y: buttonY, w: buttonW, h: 28 };
-      this.drawSmallButton(ctx, this.bounds.keyframePrev, '◀ Prev', false);
-      this.drawSmallButton(ctx, this.bounds.keyframeSet, 'Set', false);
-      this.drawSmallButton(ctx, this.bounds.keyframeRemove, 'Remove', false);
-      this.drawSmallButton(ctx, this.bounds.keyframeNext, 'Next ▶', false);
+      this.bounds.keyframePrev = { x: sliderBounds.x, y: buttonY, w: buttonW, h: rowH };
+      this.bounds.keyframeSet = { x: sliderBounds.x + (buttonW + buttonGap), y: buttonY, w: buttonW, h: rowH };
+      this.bounds.keyframeRemove = { x: sliderBounds.x + (buttonW + buttonGap) * 2, y: buttonY, w: buttonW, h: rowH };
+      this.bounds.keyframeNext = { x: sliderBounds.x + (buttonW + buttonGap) * 3, y: buttonY, w: buttonW, h: rowH };
+      this.drawButton(ctx, this.bounds.keyframePrev, '◀ Prev', false, false);
+      this.drawButton(ctx, this.bounds.keyframeSet, 'Set', false, false);
+      this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove', false, false);
+      this.drawButton(ctx, this.bounds.keyframeNext, 'Next ▶', false, false);
     }
 
     this.songAddBounds = { x: x + padding, y: addY, w: labelW, h: addH };
