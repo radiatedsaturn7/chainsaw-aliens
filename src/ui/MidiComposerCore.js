@@ -734,6 +734,7 @@ export default class MidiComposer {
       play: null,
       stop: null,
       loopToggle: null,
+      transportLoopToggle: null,
       railInstruments: null,
       railSettings: null,
       railZoom: null,
@@ -3789,7 +3790,8 @@ export default class MidiComposer {
       this.stopPlayback();
       return;
     }
-    if (this.bounds.loopToggle && this.pointInBounds(x, y, this.bounds.loopToggle)) {
+    if ((this.bounds.transportLoopToggle && this.pointInBounds(x, y, this.bounds.transportLoopToggle))
+      || (this.bounds.loopToggle && this.pointInBounds(x, y, this.bounds.loopToggle))) {
       this.toggleLoopEnabled();
       return;
     }
@@ -8239,6 +8241,7 @@ export default class MidiComposer {
     this.bounds.railInstruments = null;
     this.bounds.railSettings = null;
     this.bounds.railZoom = null;
+    this.bounds.transportLoopToggle = null;
     this.bounds.leftSettings = null;
     this.editorShellTheme = resolveEditorShellTheme();
 
@@ -9149,8 +9152,9 @@ export default class MidiComposer {
     this.bounds.railSettings = { x: railX, y: railY, w: buttonW, h: railH };
     this.drawSmallButton(ctx, this.bounds.railSettings, 'Settings', this.activeTab === 'settings');
     railX += buttonW + railGap;
-    this.bounds.loopToggle = { x: railX, y: railY, w: buttonW, h: railH };
-    this.drawToggle(ctx, this.bounds.loopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+    this.bounds.transportLoopToggle = { x: railX, y: railY, w: buttonW, h: railH };
+    this.bounds.loopToggle = this.bounds.transportLoopToggle;
+    this.drawToggle(ctx, this.bounds.transportLoopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
 
     const zoomXLimits = this.getGridZoomLimitsX();
     this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
@@ -9460,7 +9464,7 @@ export default class MidiComposer {
 
     const selectedTrack = this.song.tracks[this.selectedTrackIndex];
     const mixRailY = laneAreaY + laneAreaH + 8;
-    const mixRailBounds = { x: laneX, y: mixRailY, w: laneW, h: mixRailH };
+    const mixRailBounds = { x: x + padding, y: mixRailY, w: w - padding * 2, h: mixRailH };
     this.bounds.songMixRail = mixRailBounds;
     ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(mixRailBounds.x, mixRailBounds.y, mixRailBounds.w, mixRailBounds.h);
