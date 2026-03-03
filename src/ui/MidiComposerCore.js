@@ -3809,6 +3809,18 @@ export default class MidiComposer {
           this.toggleFavoriteInstrument(favHit.program);
           return;
         }
+        if (this.instrumentPicker.confirmBounds && this.pointInBounds(x, y, this.instrumentPicker.confirmBounds)) {
+          if (Number.isInteger(this.instrumentPicker.selectedProgram) || this.instrumentPicker.familyTab === 'drum-kits') {
+            this.applyInstrumentSelection(this.instrumentPicker.selectedProgram);
+          }
+          return;
+        }
+        if (this.instrumentPicker.cancelBounds && this.pointInBounds(x, y, this.instrumentPicker.cancelBounds)) {
+          this.instrumentPicker.mode = null;
+          this.instrumentPicker.selectedProgram = null;
+          this.instrumentPicker.returnTab = null;
+          return;
+        }
         const pickHit = this.instrumentPicker.bounds.find((bounds) => this.pointInBounds(x, y, bounds));
         if (pickHit) {
           if (payload.touchCount) {
@@ -3839,31 +3851,6 @@ export default class MidiComposer {
             0,
             this.instrumentPicker.scrollMax
           );
-          return;
-        }
-        if (this.instrumentPicker.downloadBounds && this.pointInBounds(x, y, this.instrumentPicker.downloadBounds)) {
-          const pickerTrack = this.song.tracks[this.instrumentPicker.trackIndex ?? this.selectedTrackIndex];
-          const downloadProgram = Number.isInteger(this.instrumentPicker.selectedProgram)
-            ? this.instrumentPicker.selectedProgram
-            : pickerTrack?.program;
-          this.downloadInstrumentProgram(
-            downloadProgram,
-            pickerTrack?.channel ?? 0,
-            pickerTrack?.bankMSB ?? DEFAULT_BANK_MSB,
-            pickerTrack?.bankLSB ?? DEFAULT_BANK_LSB
-          );
-          return;
-        }
-        if (this.instrumentPicker.confirmBounds && this.pointInBounds(x, y, this.instrumentPicker.confirmBounds)) {
-          if (Number.isInteger(this.instrumentPicker.selectedProgram) || this.instrumentPicker.familyTab === 'drum-kits') {
-            this.applyInstrumentSelection(this.instrumentPicker.selectedProgram);
-          }
-          return;
-        }
-        if (this.instrumentPicker.cancelBounds && this.pointInBounds(x, y, this.instrumentPicker.cancelBounds)) {
-          this.instrumentPicker.mode = null;
-          this.instrumentPicker.selectedProgram = null;
-          this.instrumentPicker.returnTab = null;
           return;
         }
         const pickerTrackHit = this.bounds.instrumentList?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -9929,17 +9916,18 @@ export default class MidiComposer {
     }
   }
 
-  drawInstrumentPanel(ctx, x, y, w, h, track) {
+  drawInstrumentPanel(ctx, x, y, w, h, track, options = {}) {
     const isMobile = this.isMobileLayout();
     const padding = 12;
     const bottomPadding = this.instrumentPicker.mode ? 4 : padding;
-    const panelGap = 12;
-    const leftW = clamp(w * 0.32, 240, 360);
-    const rightW = Math.max(0, w - padding * 2 - leftW - panelGap);
+    const modalOnly = options.modalOnly === true;
+    const panelGap = modalOnly ? 0 : 12;
+    const leftW = modalOnly ? 0 : clamp(w * 0.32, 240, 360);
+    const rightW = modalOnly ? Math.max(0, w - padding * 2) : Math.max(0, w - padding * 2 - leftW - panelGap);
     const leftX = x + padding;
     const leftY = y + padding;
     const panelH = h - padding - bottomPadding;
-    const rightX = leftX + leftW + panelGap;
+    const rightX = modalOnly ? leftX : (leftX + leftW + panelGap);
     const rightY = leftY;
     const rowH = clamp(Math.round(h * 0.08), isMobile ? 48 : 44, isMobile ? 60 : 54);
     const addButtonH = clamp(Math.round(rowH * 0.8), 32, 40);
@@ -9949,57 +9937,61 @@ export default class MidiComposer {
     this.bounds.instrumentListScrollArea = null;
     this.bounds.instrumentSettingsControls = [];
 
-    ctx.fillStyle = UI_SUITE.colors.panel;
-    ctx.fillRect(leftX, leftY, leftW, panelH);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(leftX, leftY, leftW, panelH);
+    if (!modalOnly) {
+      ctx.fillStyle = UI_SUITE.colors.panel;
+      ctx.fillRect(leftX, leftY, leftW, panelH);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(leftX, leftY, leftW, panelH);
 
-    ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
-    ctx.fillText('Instruments', leftX + 10, leftY + 18);
-    const listStartY = leftY + 28;
-    const listH = Math.max(0, panelH - addButtonH - 20 - controlsH);
-    this.bounds.instrumentListScrollArea = { x: leftX + 4, y: listStartY, w: leftW - 8, h: listH };
-    const listItemGap = 6;
-    const listRowH = Math.max(rowH, Math.min(96, (listH - listItemGap * 3) / 4));
-    const listContentH = Math.max(0, this.song.tracks.length * listRowH + Math.max(0, this.song.tracks.length - 1) * listItemGap);
-    this.instrumentListScrollMax = Math.max(0, listContentH - listH);
-    this.instrumentListScroll = clamp(this.instrumentListScroll, 0, this.instrumentListScrollMax);
-    if (Number.isInteger(this.pendingTrackFocusIndex) && this.activeTab === 'instruments') {
-      const focusTop = this.pendingTrackFocusIndex * (listRowH + listItemGap);
-      const centered = focusTop - (listH - listRowH) * 0.5;
-      this.instrumentListScroll = clamp(centered, 0, this.instrumentListScrollMax);
-      this.pendingTrackFocusIndex = null;
-    }
-    let cursorY = listStartY - this.instrumentListScroll;
-    this.song.tracks.forEach((listTrack, index) => {
-      const bounds = { x: leftX + 8, y: cursorY, w: leftW - 16, h: listRowH, trackIndex: index };
-      if (bounds.y + bounds.h < listStartY - 4 || bounds.y > listStartY + listH + 4) {
-        cursorY += listRowH + listItemGap;
-        return;
-      }
-      const isActive = index === this.selectedTrackIndex;
-      ctx.fillStyle = isActive ? 'rgba(255,225,106,0.18)' : 'rgba(0,0,0,0.45)';
-      ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-      ctx.strokeStyle = listTrack.color || 'rgba(255,255,255,0.2)';
-      ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
       ctx.fillStyle = '#fff';
-      ctx.font = '13px Courier New';
-      ctx.fillText(listTrack.name, bounds.x + 10, bounds.y + 18);
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.font = '11px Courier New';
-      const label = isDrumChannel(listTrack.channel)
-        ? this.getDrumKitLabel(listTrack)
-        : this.getProgramLabel(listTrack.program);
-      ctx.fillText(label, bounds.x + 10, bounds.y + 36);
-      this.bounds.instrumentList.push(bounds);
-      cursorY += listRowH + listItemGap;
-    });
+      ctx.font = '14px Courier New';
+      ctx.fillText('Instruments', leftX + 10, leftY + 18);
+      const listStartY = leftY + 28;
+      const listH = Math.max(0, panelH - addButtonH - 20 - controlsH);
+      this.bounds.instrumentListScrollArea = { x: leftX + 4, y: listStartY, w: leftW - 8, h: listH };
+      const listItemGap = 6;
+      const listRowH = Math.max(rowH, Math.min(96, (listH - listItemGap * 3) / 4));
+      const listContentH = Math.max(0, this.song.tracks.length * listRowH + Math.max(0, this.song.tracks.length - 1) * listItemGap);
+      this.instrumentListScrollMax = Math.max(0, listContentH - listH);
+      this.instrumentListScroll = clamp(this.instrumentListScroll, 0, this.instrumentListScrollMax);
+      if (Number.isInteger(this.pendingTrackFocusIndex) && this.activeTab === 'instruments') {
+        const focusTop = this.pendingTrackFocusIndex * (listRowH + listItemGap);
+        const centered = focusTop - (listH - listRowH) * 0.5;
+        this.instrumentListScroll = clamp(centered, 0, this.instrumentListScrollMax);
+        this.pendingTrackFocusIndex = null;
+      }
+      let cursorY = listStartY - this.instrumentListScroll;
+      this.song.tracks.forEach((listTrack, index) => {
+        const bounds = { x: leftX + 8, y: cursorY, w: leftW - 16, h: listRowH, trackIndex: index };
+        if (bounds.y + bounds.h < listStartY - 4 || bounds.y > listStartY + listH + 4) {
+          cursorY += listRowH + listItemGap;
+          return;
+        }
+        const isActive = index === this.selectedTrackIndex;
+        ctx.fillStyle = isActive ? 'rgba(255,225,106,0.18)' : 'rgba(0,0,0,0.45)';
+        ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+        ctx.strokeStyle = listTrack.color || 'rgba(255,255,255,0.2)';
+        ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+        ctx.fillStyle = '#fff';
+        ctx.font = '13px Courier New';
+        ctx.fillText(listTrack.name, bounds.x + 10, bounds.y + 18);
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.font = '11px Courier New';
+        const label = isDrumChannel(listTrack.channel)
+          ? this.getDrumKitLabel(listTrack)
+          : this.getProgramLabel(listTrack.program);
+        ctx.fillText(label, bounds.x + 10, bounds.y + 36);
+        this.bounds.instrumentList.push(bounds);
+        cursorY += listRowH + listItemGap;
+      });
 
-    this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - 8, w: leftW - 16, h: addButtonH };
-    this.drawButton(ctx, this.bounds.instrumentAdd, 'Add Instrument', false, false);
+      this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - 8, w: leftW - 16, h: addButtonH };
+      this.drawButton(ctx, this.bounds.instrumentAdd, 'Add Instrument', false, false);
+    } else {
+      this.bounds.instrumentAdd = null;
+    }
 
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(rightX, rightY, rightW, panelH);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(rightX, rightY, rightW, panelH);
@@ -10070,7 +10062,7 @@ export default class MidiComposer {
       ctx.restore();
 
       const selectorY = tabY + tabH + 10;
-      const footerH = 94;
+      const footerH = 52;
       const scrollY = selectorY;
       const scrollH = rightY + panelH - scrollY - footerH;
       this.instrumentPicker.sectionBounds = [{ x: rightX + padding, y: scrollY, w: rightW - padding * 2, h: scrollH }];
@@ -10155,29 +10147,9 @@ export default class MidiComposer {
       const footerY = rightY + panelH - footerH + 6;
       const footerButtonH = 32;
       this.instrumentPicker.drumKitBounds = null;
-      const downloadY = footerY;
-      this.instrumentPicker.downloadBounds = {
-        x: rightX + padding,
-        y: downloadY,
-        w: rightW - padding * 2,
-        h: footerButtonH
-      };
-      const pickerTrack = this.song.tracks[this.instrumentPicker.trackIndex ?? this.selectedTrackIndex] || track;
-      const downloadProgram = Number.isInteger(this.instrumentPicker.selectedProgram)
-        ? this.instrumentPicker.selectedProgram
-        : pickerTrack?.program;
-      const downloadKey = this.getCacheKeyForProgram(
-        downloadProgram,
-        pickerTrack?.channel ?? 0,
-        pickerTrack?.bankMSB ?? DEFAULT_BANK_MSB,
-        pickerTrack?.bankLSB ?? DEFAULT_BANK_LSB
-      );
-      const isCached = downloadKey ? this.cachedPrograms.has(downloadKey) : false;
-      const isDownloading = this.instrumentDownload.loading && this.instrumentDownload.key === downloadKey;
-      const downloadLabel = isDownloading ? 'Downloading…' : isCached ? 'Downloaded' : 'Download Instrument';
-      this.drawButton(ctx, this.instrumentPicker.downloadBounds, downloadLabel, isCached, false);
+      this.instrumentPicker.downloadBounds = null;
 
-      const actionY = downloadY + footerButtonH + 10;
+      const actionY = footerY;
       const buttonW = (rightW - padding * 2 - 12) / 2;
       this.instrumentPicker.confirmBounds = {
         x: rightX + padding,
@@ -11709,7 +11681,7 @@ export default class MidiComposer {
     this.instrumentPicker.modalBounds = { x: modalX, y: modalY, w: modalW, h: modalH };
     ctx.fillStyle = 'rgba(0,0,0,0.58)';
     ctx.fillRect(0, 0, width, height);
-    this.drawInstrumentPanel(ctx, modalX, modalY, modalW, modalH, track);
+    this.drawInstrumentPanel(ctx, modalX, modalY, modalW, modalH, track, { modalOnly: true });
   }
 
   drawInstrumentPicker(ctx, width, height) {
