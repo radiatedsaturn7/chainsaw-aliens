@@ -577,6 +577,7 @@ export default class MidiComposer {
     this.songTrackScrollMax = 0;
     this.instrumentListScroll = 0;
     this.instrumentListScrollMax = 0;
+    this.pendingTrackFocusIndex = null;
     this.lastPersistedSnapshot = null;
     this.lastSavedSnapshot = null;
     this._dirty = false;
@@ -1743,6 +1744,7 @@ export default class MidiComposer {
       };
       this.song.tracks.push(addingDrums ? this.ensureDrumTrackSettings(track) : track);
       this.selectedTrackIndex = this.song.tracks.length - 1;
+      this.pendingTrackFocusIndex = this.selectedTrackIndex;
       this.persist({ commitHistory: true });
       this.addRecentInstrument(program);
     } else {
@@ -9001,6 +9003,12 @@ export default class MidiComposer {
     const laneContentH = Math.max(0, trackCount * laneBlockH + Math.max(0, trackCount - 1) * laneGap);
     this.songTrackScrollMax = Math.max(0, laneContentH - laneAreaH);
     this.songTrackScroll = clamp(this.songTrackScroll, 0, this.songTrackScrollMax);
+    if (Number.isInteger(this.pendingTrackFocusIndex) && this.activeTab === 'song') {
+      const focusTop = this.pendingTrackFocusIndex * (laneBlockH + laneGap);
+      const centered = focusTop - (laneAreaH - laneBlockH) * 0.5;
+      this.songTrackScroll = clamp(centered, 0, this.songTrackScrollMax);
+      this.pendingTrackFocusIndex = null;
+    }
     const laneScrollY = this.songTrackScroll;
     const isMobile = this.isMobileLayout();
     const labelW = isMobile ? DEFAULT_LABEL_WIDTH_MOBILE : DEFAULT_LABEL_WIDTH;
@@ -9946,6 +9954,12 @@ export default class MidiComposer {
     const listContentH = Math.max(0, this.song.tracks.length * listRowH + Math.max(0, this.song.tracks.length - 1) * listItemGap);
     this.instrumentListScrollMax = Math.max(0, listContentH - listH);
     this.instrumentListScroll = clamp(this.instrumentListScroll, 0, this.instrumentListScrollMax);
+    if (Number.isInteger(this.pendingTrackFocusIndex) && this.activeTab === 'instruments') {
+      const focusTop = this.pendingTrackFocusIndex * (listRowH + listItemGap);
+      const centered = focusTop - (listH - listRowH) * 0.5;
+      this.instrumentListScroll = clamp(centered, 0, this.instrumentListScrollMax);
+      this.pendingTrackFocusIndex = null;
+    }
     let cursorY = listStartY - this.instrumentListScroll;
     this.song.tracks.forEach((listTrack, index) => {
       const bounds = { x: leftX + 8, y: cursorY, w: leftW - 16, h: listRowH, trackIndex: index };
