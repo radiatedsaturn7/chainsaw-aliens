@@ -9202,7 +9202,8 @@ export default class MidiComposer {
     const laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = trackCount > 8 ? 6 : 10;
-    const laneBlockH = Math.max(48, Math.min(112, (laneAreaH - laneGap * 3) / 4));
+    const visibleLaneCount = Math.min(4, trackCount);
+    const laneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
     const laneContentH = Math.max(0, trackCount * laneBlockH + Math.max(0, trackCount - 1) * laneGap);
     this.songTrackScrollMax = Math.max(0, laneContentH - laneAreaH);
     this.songTrackScroll = clamp(this.songTrackScroll, 0, this.songTrackScrollMax);
