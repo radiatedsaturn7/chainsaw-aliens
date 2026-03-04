@@ -9207,14 +9207,10 @@ export default class MidiComposer {
     const visibleLaneCount = Math.min(4, trackCount);
     let laneBlockH;
     if (isMobile) {
-      const defaultGridNoteH = 24;
-      const desiredLaneBlockH = Math.max(48, defaultGridNoteH * 3);
-      const requiredVisibleLaneH = desiredLaneBlockH * visibleLaneCount + laneGap * Math.max(0, visibleLaneCount - 1);
-      const maxAllowedMixRailH = Math.max(0, h - rulerH - railGap + extraTrackRowH - requiredVisibleLaneH);
-      const minMixRailH = 56;
-      baseMixRailH = clamp(baseMixRailH, minMixRailH, Math.max(minMixRailH, maxAllowedMixRailH));
-      laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
-      laneBlockH = desiredLaneBlockH;
+      const referenceCellHeight = Number.isFinite(this.gridBounds?.cellHeight)
+        ? this.gridBounds.cellHeight
+        : 24;
+      laneBlockH = Math.max(48, Math.round(referenceCellHeight * 3));
     } else {
       laneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
     }
