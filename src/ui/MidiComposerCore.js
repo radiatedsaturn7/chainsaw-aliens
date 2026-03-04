@@ -9198,7 +9198,7 @@ export default class MidiComposer {
     const laneAreaY = rulerY + rulerH;
     const baseMixRailH = this.isMobileLayout() ? 104 : 112;
     const railGap = 8;
-    const extraTrackRowH = this.isMobileLayout() ? 0 : 48;
+    const extraTrackRowH = this.isMobileLayout() ? 16 : 48;
     const laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = trackCount > 8 ? 6 : 10;
