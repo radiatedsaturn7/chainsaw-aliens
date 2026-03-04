@@ -9195,11 +9195,10 @@ export default class MidiComposer {
     const padding = 0;
     const rulerH = DEFAULT_RULER_HEIGHT;
     const rulerY = y + padding;
-    const addH = 34;
-    const addY = y + h - padding - addH;
     const laneAreaY = rulerY + rulerH;
-    const mixRailH = Math.max(176, Math.min(240, Math.round(h * 0.32)));
-    const laneAreaH = Math.max(0, addY - laneAreaY - 8);
+    const mixRailH = Math.max(220, Math.min(280, Math.round(h * 0.36)));
+    const railGap = 8;
+    const laneAreaH = Math.max(0, h - rulerH - mixRailH - railGap);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = trackCount > 8 ? 6 : 10;
     const laneBlockH = Math.max(48, Math.min(112, (laneAreaH - laneGap * 3) / 4));
@@ -9463,7 +9462,7 @@ export default class MidiComposer {
     });
 
     const selectedTrack = this.song.tracks[this.selectedTrackIndex];
-    const mixRailY = laneAreaY + laneAreaH + 8;
+    const mixRailY = laneAreaY + laneAreaH + railGap;
     const mixRailBounds = { x: x + padding, y: mixRailY, w: w - padding * 2, h: mixRailH };
     this.bounds.songMixRail = mixRailBounds;
     ctx.fillStyle = UI_SUITE.colors.panel;
@@ -9482,13 +9481,23 @@ export default class MidiComposer {
       this.bounds.songMixPanTab = { x: mixRailBounds.x + panelPad + tabW + tabGap, y: tabY, w: tabW, h: rowH };
       this.drawButton(ctx, this.bounds.songMixVolumeTab, 'Volume', this.songMixControlMode === 'volume', false);
       this.drawButton(ctx, this.bounds.songMixPanTab, 'Pan', this.songMixControlMode === 'pan', false);
+      const actionW = 156;
+      const actionGap = 10;
+      const removeX = mixRailBounds.x + mixRailBounds.w - panelPad - actionW;
       this.bounds.songRemoveTrack = {
-        x: mixRailBounds.x + mixRailBounds.w - panelPad - 156,
+        x: removeX,
         y: tabY,
-        w: 156,
+        w: actionW,
         h: rowH
       };
       this.drawDangerButton(ctx, this.bounds.songRemoveTrack, 'Remove Instrument');
+      this.songAddBounds = {
+        x: removeX - actionGap - actionW,
+        y: tabY,
+        w: actionW,
+        h: rowH
+      };
+      this.drawButton(ctx, this.songAddBounds, 'Add Instrument', false, false);
 
       ctx.fillStyle = 'rgba(255,255,255,0.75)';
       ctx.font = '13px Courier New';
@@ -9527,8 +9536,9 @@ export default class MidiComposer {
       this.drawButton(ctx, this.bounds.keyframeNext, 'Next ▶', false, false);
     }
 
-    this.songAddBounds = { x: x + padding, y: addY, w: labelW, h: addH };
-    this.drawButton(ctx, this.songAddBounds, 'Add Instrument', false, false);
+    if (!selectedTrack) {
+      this.songAddBounds = null;
+    }
     this.drawSongPlayhead(ctx, this.songTimelineBounds.y, laneAreaY + laneAreaH);
     this.drawSongSelectionMenu(ctx);
     this.drawSongSplitTool(ctx);
