@@ -8614,8 +8614,7 @@ export default class MidiComposer {
         this.drawMobileBottomRail(ctx, contentX, contentY + contentH + 8, contentW, railH - 8, track);
       }
     } else if (this.activeTab === 'song') {
-      const songContentH = isLandscape ? (contentH + railH) : contentH;
-      this.drawSongTab(ctx, contentX, contentY, contentW, songContentH);
+      this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'instruments') {
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
     } else if (this.activeTab === 'settings') {
@@ -9199,7 +9198,7 @@ export default class MidiComposer {
     const laneAreaY = rulerY + rulerH;
     const baseMixRailH = this.isMobileLayout() ? 104 : 112;
     const railGap = 8;
-    const extraTrackRowH = this.isMobileLayout() ? 40 : 48;
+    const extraTrackRowH = this.isMobileLayout() ? 0 : 48;
     const laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = trackCount > 8 ? 6 : 10;
