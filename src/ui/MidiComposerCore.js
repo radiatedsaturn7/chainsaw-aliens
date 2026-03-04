@@ -9203,7 +9203,15 @@ export default class MidiComposer {
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = trackCount > 8 ? 6 : 10;
     const visibleLaneCount = Math.min(4, trackCount);
-    const laneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
+    let laneBlockH;
+    if (this.isMobileLayout()) {
+      const referenceCellHeight = Number.isFinite(this.gridBounds?.cellHeight)
+        ? this.gridBounds.cellHeight
+        : Math.min(24, (h - DEFAULT_RULER_HEIGHT - 16) / Math.max(1, DEFAULT_VISIBLE_ROWS));
+      laneBlockH = Math.max(48, Math.round(referenceCellHeight * 3));
+    } else {
+      laneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
+    }
     const laneContentH = Math.max(0, trackCount * laneBlockH + Math.max(0, trackCount - 1) * laneGap);
     this.songTrackScrollMax = Math.max(0, laneContentH - laneAreaH);
     this.songTrackScroll = clamp(this.songTrackScroll, 0, this.songTrackScrollMax);
