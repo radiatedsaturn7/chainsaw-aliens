@@ -9196,19 +9196,28 @@ export default class MidiComposer {
     const rulerH = DEFAULT_RULER_HEIGHT;
     const rulerY = y + padding;
     const laneAreaY = rulerY + rulerH;
-    const baseMixRailH = this.isMobileLayout() ? 88 : 112;
+    const isMobile = this.isMobileLayout();
+    let baseMixRailH = isMobile ? 88 : 112;
     const railGap = 8;
-    const extraTrackRowH = this.isMobileLayout() ? 0 : 48;
-    const laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
+    const extraTrackRowH = isMobile ? 0 : 48;
+    let laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = trackCount > 8 ? 6 : 10;
     const visibleLaneCount = Math.min(4, trackCount);
     let laneBlockH;
-    if (this.isMobileLayout()) {
-      const referenceCellHeight = Number.isFinite(this.gridBounds?.cellHeight)
-        ? this.gridBounds.cellHeight
-        : Math.min(24, (h - DEFAULT_RULER_HEIGHT - 16) / Math.max(1, DEFAULT_VISIBLE_ROWS));
-      laneBlockH = Math.max(48, Math.round(referenceCellHeight * 3));
+    if (isMobile) {
+      const referenceCellHeight = Math.min(24, (h - DEFAULT_RULER_HEIGHT - 16) / Math.max(1, DEFAULT_VISIBLE_ROWS));
+      const desiredLaneBlockH = Math.max(48, Math.round(referenceCellHeight * 3));
+      const requiredVisibleLaneH = desiredLaneBlockH * visibleLaneCount + laneGap * Math.max(0, visibleLaneCount - 1);
+      if (requiredVisibleLaneH > laneAreaH) {
+        const minMixRailH = 72;
+        const reclaimableRailH = Math.max(0, baseMixRailH - minMixRailH);
+        const railShift = Math.min(reclaimableRailH, requiredVisibleLaneH - laneAreaH);
+        baseMixRailH -= railShift;
+        laneAreaH += railShift;
+      }
+      const maxLaneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
+      laneBlockH = Math.min(desiredLaneBlockH, maxLaneBlockH);
     } else {
       laneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
     }
@@ -9222,7 +9231,6 @@ export default class MidiComposer {
       this.pendingTrackFocusIndex = null;
     }
     const laneScrollY = this.songTrackScroll;
-    const isMobile = this.isMobileLayout();
     const labelW = isMobile ? DEFAULT_LABEL_WIDTH_MOBILE : DEFAULT_LABEL_WIDTH;
     const laneX = x + padding + labelW;
     const laneW = w - padding * 2 - labelW;
