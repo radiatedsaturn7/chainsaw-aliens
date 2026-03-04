@@ -9206,18 +9206,14 @@ export default class MidiComposer {
     const visibleLaneCount = Math.min(4, trackCount);
     let laneBlockH;
     if (isMobile) {
-      const referenceCellHeight = Math.min(24, (h - DEFAULT_RULER_HEIGHT - 16) / Math.max(1, DEFAULT_VISIBLE_ROWS));
-      const desiredLaneBlockH = Math.max(48, Math.round(referenceCellHeight * 3));
+      const defaultGridNoteH = 24;
+      const desiredLaneBlockH = Math.max(48, defaultGridNoteH * 3);
       const requiredVisibleLaneH = desiredLaneBlockH * visibleLaneCount + laneGap * Math.max(0, visibleLaneCount - 1);
-      if (requiredVisibleLaneH > laneAreaH) {
-        const minMixRailH = 72;
-        const reclaimableRailH = Math.max(0, baseMixRailH - minMixRailH);
-        const railShift = Math.min(reclaimableRailH, requiredVisibleLaneH - laneAreaH);
-        baseMixRailH -= railShift;
-        laneAreaH += railShift;
-      }
-      const maxLaneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
-      laneBlockH = Math.min(desiredLaneBlockH, maxLaneBlockH);
+      const maxAllowedMixRailH = Math.max(0, h - rulerH - railGap + extraTrackRowH - requiredVisibleLaneH);
+      const minMixRailH = 56;
+      baseMixRailH = clamp(baseMixRailH, minMixRailH, Math.max(minMixRailH, maxAllowedMixRailH));
+      laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
+      laneBlockH = desiredLaneBlockH;
     } else {
       laneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
     }
