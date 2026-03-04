@@ -9196,9 +9196,10 @@ export default class MidiComposer {
     const rulerH = DEFAULT_RULER_HEIGHT;
     const rulerY = y + padding;
     const laneAreaY = rulerY + rulerH;
-    const mixRailH = this.isMobileLayout() ? 104 : 112;
+    const baseMixRailH = this.isMobileLayout() ? 104 : 112;
     const railGap = 8;
-    const laneAreaH = Math.max(0, h - rulerH - mixRailH - railGap);
+    const extraTrackRowH = this.isMobileLayout() ? 40 : 48;
+    const laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = trackCount > 8 ? 6 : 10;
     const laneBlockH = Math.max(48, Math.min(112, (laneAreaH - laneGap * 3) / 4));
@@ -9463,6 +9464,7 @@ export default class MidiComposer {
 
     const selectedTrack = this.song.tracks[this.selectedTrackIndex];
     const mixRailY = laneAreaY + laneAreaH + railGap;
+    const mixRailH = Math.max(baseMixRailH, y + h - mixRailY);
     const mixRailBounds = { x: x + padding, y: mixRailY, w: w - padding * 2, h: mixRailH };
     this.bounds.songMixRail = mixRailBounds;
     ctx.fillStyle = UI_SUITE.colors.panel;
