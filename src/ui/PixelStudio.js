@@ -749,12 +749,12 @@ export default class PixelStudio {
     return this.runtime.saveAsOrCurrent(options);
   }
 
-  loadArtDocument() {
-    this.runtime.open();
+  async loadArtDocument() {
+    await this.runtime.open();
   }
 
   async newArtDocument() {
-    if (!this.runtime.confirmDiscardChanges()) return;
+    if (!(await this.runtime.confirmDiscardChanges())) return;
     const name = await this.promptForNewArtName();
     if (!name) return;
     const dims = await this.promptForArtDimensions(this.artSizeDraft);
