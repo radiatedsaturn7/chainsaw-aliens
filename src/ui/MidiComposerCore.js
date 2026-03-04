@@ -8614,7 +8614,8 @@ export default class MidiComposer {
         this.drawMobileBottomRail(ctx, contentX, contentY + contentH + 8, contentW, railH - 8, track);
       }
     } else if (this.activeTab === 'song') {
-      this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
+      const songContentH = isLandscape ? (contentH + railH) : contentH;
+      this.drawSongTab(ctx, contentX, contentY, contentW, songContentH);
     } else if (this.activeTab === 'instruments') {
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
     } else if (this.activeTab === 'settings') {
