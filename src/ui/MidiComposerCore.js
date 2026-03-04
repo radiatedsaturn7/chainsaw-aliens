@@ -9196,7 +9196,7 @@ export default class MidiComposer {
     const rulerH = DEFAULT_RULER_HEIGHT;
     const rulerY = y + padding;
     const laneAreaY = rulerY + rulerH;
-    const mixRailH = this.isMobileLayout() ? 120 : 132;
+    const mixRailH = this.isMobileLayout() ? 104 : 112;
     const railGap = 8;
     const laneAreaH = Math.max(0, h - rulerH - mixRailH - railGap);
     const trackCount = Math.max(1, this.song.tracks.length);
