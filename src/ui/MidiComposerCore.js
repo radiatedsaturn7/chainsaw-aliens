@@ -9254,7 +9254,7 @@ export default class MidiComposer {
     let automationH;
     if (isMobile) {
       // Keep mobile Song lanes visually aligned with Grid lanes (about 3 note rows tall).
-      laneH = Math.max(48, Math.round(referenceCellHeight * 3));
+      laneH = Math.max(60, Math.round(referenceCellHeight * 3));
       if (showAutomation) {
         automationH = Math.max(12, Math.round(referenceCellHeight * 0.9));
         laneBlockH = laneH + 6 + automationH + 6 + automationH;
@@ -9583,8 +9583,6 @@ export default class MidiComposer {
     if (this.songBottomRailMode === 'music-controls') {
       const rowHControls = 44;
       const gap = 8;
-      const buttonW = Math.max(78, Math.min(110, Math.floor((mixRailBounds.w - panelPad * 2 - gap * 5) / 6)));
-      let xCursor = mixRailBounds.x + panelPad;
       const controls = [
         { key: 'songTransportBack', label: '⏪' },
         { key: 'songTransportPlay', label: '▶', active: this.isPlaying },
@@ -9593,11 +9591,18 @@ export default class MidiComposer {
         { key: 'songTransportForward', label: '⏩' },
         { key: 'songTransportLoop', label: `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, active: this.song.loopEnabled }
       ];
+      const totalGap = gap * Math.max(0, controls.length - 1);
+      const availableW = mixRailBounds.w - panelPad * 2 - totalGap;
+      const baseW = Math.floor(availableW / controls.length);
+      let remainder = availableW - (baseW * controls.length);
+      let xCursor = mixRailBounds.x + panelPad;
       controls.forEach((entry) => {
-        const bounds = { x: xCursor, y: bodyY, w: buttonW, h: rowHControls };
+        const width = baseW + (remainder > 0 ? 1 : 0);
+        if (remainder > 0) remainder -= 1;
+        const bounds = { x: xCursor, y: bodyY, w: width, h: rowHControls };
         this.bounds[entry.key] = bounds;
         this.drawButton(ctx, bounds, entry.label, Boolean(entry.active), false);
-        xCursor += buttonW + gap;
+        xCursor += width + gap;
       });
     }
 
@@ -9632,12 +9637,17 @@ export default class MidiComposer {
     if (selectedTrack && (this.songBottomRailMode === 'volume' || this.songBottomRailMode === 'pan')) {
       const control = this.songBottomRailMode === 'pan' ? 'pan' : 'volume';
       this.songMixControlMode = control;
+      const contentX = mixRailBounds.x + panelPad;
+      const contentW = mixRailBounds.w - panelPad * 2;
+      const columnGap = 10;
       const sliderY = bodyY + 8;
+      const sliderW = Math.floor((contentW - columnGap * 2) * 0.5);
+      const sliderH = 40;
       const sliderBounds = {
-        x: mixRailBounds.x + panelPad,
+        x: contentX,
         y: sliderY,
-        w: mixRailBounds.w - panelPad * 2,
-        h: 20,
+        w: sliderW,
+        h: sliderH,
         trackIndex: this.selectedTrackIndex,
         control
       };
@@ -9651,20 +9661,20 @@ export default class MidiComposer {
       ctx.strokeRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
       this.bounds.instrumentSettingsControls.push(sliderBounds);
 
-      const buttonGap = 10;
-      const buttonY = sliderY + sliderBounds.h + 10;
-      const buttonW = Math.floor((mixRailBounds.w - panelPad * 2 - buttonGap) / 2);
+      const buttonW = Math.max(72, Math.floor((contentW - sliderW - columnGap * 2) / 2));
+      const buttonH = 64;
+      const buttonsX = contentX + sliderW + columnGap;
       this.bounds.keyframeSet = {
-        x: mixRailBounds.x + panelPad,
-        y: buttonY,
+        x: buttonsX,
+        y: sliderY,
         w: buttonW,
-        h: 32
+        h: buttonH
       };
       this.bounds.keyframeRemove = {
-        x: mixRailBounds.x + panelPad + buttonW + buttonGap,
-        y: buttonY,
+        x: buttonsX + buttonW + columnGap,
+        y: sliderY,
         w: buttonW,
-        h: 32
+        h: buttonH
       };
       this.drawButton(ctx, this.bounds.keyframeSet, 'Set Keyframe', false, false);
       this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove Keyframe', false, false);
