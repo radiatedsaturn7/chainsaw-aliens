@@ -4081,6 +4081,7 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.songMixVolumeTab && this.pointInBounds(x, y, this.bounds.songMixVolumeTab)) {
+        this.songBottomRailMode = 'volume';
         this.songMixControlMode = 'volume';
         return;
       }
@@ -4095,16 +4096,6 @@ export default class MidiComposer {
       const songToolActionHit = this.bounds.songToolsActions?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (songToolActionHit) {
         this.handleSongAction(songToolActionHit.action);
-        return;
-      }
-      if (this.bounds.songToolsVolumeTab && this.pointInBounds(x, y, this.bounds.songToolsVolumeTab)) {
-        this.songBottomRailMode = 'music-controls';
-        this.songMixControlMode = 'volume';
-        return;
-      }
-      if (this.bounds.songToolsPanTab && this.pointInBounds(x, y, this.bounds.songToolsPanTab)) {
-        this.songBottomRailMode = 'music-controls';
-        this.songMixControlMode = 'pan';
         return;
       }
       if (this.bounds.songTransportBack && this.pointInBounds(x, y, this.bounds.songTransportBack)) {
@@ -4132,6 +4123,7 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.songMixPanTab && this.pointInBounds(x, y, this.bounds.songMixPanTab)) {
+        this.songBottomRailMode = 'pan';
         this.songMixControlMode = 'pan';
         return;
       }
@@ -9559,14 +9551,7 @@ export default class MidiComposer {
 
     const panelPad = 12;
     const rowH = 36;
-    const tabGap = 10;
-    const musicTabW = isMobile ? 172 : 188;
-    const toolsTabW = isMobile ? 112 : 128;
     const tabY = mixRailBounds.y + panelPad;
-    this.bounds.songRailMusicControls = { x: mixRailBounds.x + panelPad, y: tabY, w: musicTabW, h: rowH };
-    this.bounds.songRailToolsTab = { x: this.bounds.songRailMusicControls.x + musicTabW + tabGap, y: tabY, w: toolsTabW, h: rowH };
-    this.drawButton(ctx, this.bounds.songRailMusicControls, 'Music Controls', this.songBottomRailMode === 'music-controls', false);
-    this.drawButton(ctx, this.bounds.songRailToolsTab, 'Tools', this.songBottomRailMode === 'tools', false);
 
     this.bounds.songTransportBack = null;
     this.bounds.songTransportPlay = null;
@@ -9576,8 +9561,45 @@ export default class MidiComposer {
     this.bounds.songTransportLoop = null;
     this.bounds.songMixVolumeTab = null;
     this.bounds.songMixPanTab = null;
-    this.bounds.songToolsVolumeTab = null;
-    this.bounds.songToolsPanTab = null;
+
+    const topTabGap = 8;
+    const topTabY = tabY;
+    const topTabH = rowH;
+    const modeTabs = [
+      { key: 'songRailMusicControls', label: 'Music Controls', mode: 'music-controls', w: isMobile ? 152 : 176 },
+      { key: 'songRailToolsTab', label: 'Tools', mode: 'tools', w: isMobile ? 86 : 96 },
+      { key: 'songMixVolumeTab', label: 'Volume', mode: 'volume', w: isMobile ? 92 : 102 },
+      { key: 'songMixPanTab', label: 'Pan', mode: 'pan', w: isMobile ? 76 : 86 }
+    ];
+    let tabX = mixRailBounds.x + panelPad;
+    modeTabs.forEach((entry) => {
+      const bounds = { x: tabX, y: topTabY, w: entry.w, h: topTabH };
+      this.bounds[entry.key] = bounds;
+      this.drawButton(ctx, bounds, entry.label, this.songBottomRailMode === entry.mode, false);
+      tabX += entry.w + topTabGap;
+    });
+
+    const bodyY = topTabY + topTabH + 10;
+    if (this.songBottomRailMode === 'music-controls') {
+      const rowHControls = 44;
+      const gap = 8;
+      const buttonW = Math.max(78, Math.min(110, Math.floor((mixRailBounds.w - panelPad * 2 - gap * 5) / 6)));
+      let xCursor = mixRailBounds.x + panelPad;
+      const controls = [
+        { key: 'songTransportBack', label: '⏪' },
+        { key: 'songTransportPlay', label: '▶', active: this.isPlaying },
+        { key: 'songTransportPause', label: '❚❚' },
+        { key: 'songTransportStop', label: '■' },
+        { key: 'songTransportForward', label: '⏩' },
+        { key: 'songTransportLoop', label: `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, active: this.song.loopEnabled }
+      ];
+      controls.forEach((entry) => {
+        const bounds = { x: xCursor, y: bodyY, w: buttonW, h: rowHControls };
+        this.bounds[entry.key] = bounds;
+        this.drawButton(ctx, bounds, entry.label, Boolean(entry.active), false);
+        xCursor += buttonW + gap;
+      });
+    }
 
     if (this.songBottomRailMode === 'tools') {
       const actions = [
@@ -9588,24 +9610,15 @@ export default class MidiComposer {
         { action: 'song-duplicate', label: 'Duplicate' },
         { action: 'song-delete', label: 'Delete' }
       ];
-      const toolButtonH = isMobile ? 30 : 28;
+      const toolButtonH = 32;
       const toolGap = 8;
-      const toolButtonY = tabY + rowH + 14;
-      const utilityTabs = selectedTrack
-        ? [
-          { key: 'songToolsVolumeTab', label: 'Volume', active: this.songMixControlMode === 'volume' },
-          { key: 'songToolsPanTab', label: 'Pan', active: this.songMixControlMode === 'pan' }
-        ]
-        : [];
-      const buttonCount = actions.length + utilityTabs.length;
-      const totalGap = toolGap * Math.max(0, buttonCount - 1);
-      const availableW = mixRailBounds.w - panelPad * 2 - totalGap;
-      const toolButtonW = Math.max(74, Math.floor(availableW / Math.max(1, buttonCount)));
+      const availableW = mixRailBounds.w - panelPad * 2 - toolGap * (actions.length - 1);
+      const toolButtonW = Math.max(74, Math.floor(availableW / actions.length));
       let buttonX = mixRailBounds.x + panelPad;
       actions.forEach((entry) => {
         const bounds = {
           x: buttonX,
-          y: toolButtonY,
+          y: bodyY,
           w: toolButtonW,
           h: toolButtonH,
           action: entry.action
@@ -9614,71 +9627,47 @@ export default class MidiComposer {
         this.bounds.songToolsActions.push(bounds);
         buttonX += toolButtonW + toolGap;
       });
-      utilityTabs.forEach((entry) => {
-        const bounds = { x: buttonX, y: toolButtonY, w: toolButtonW, h: toolButtonH };
-        this.bounds[entry.key] = bounds;
-        this.drawButton(ctx, bounds, entry.label, entry.active, false);
-        buttonX += toolButtonW + toolGap;
-      });
     }
 
-    if (this.songBottomRailMode === 'music-controls') {
-      const controlsY = tabY + rowH + 8;
-      const gap = 8;
-      const transportH = Math.max(34, Math.min(46, mixRailBounds.h - controlsY + mixRailBounds.y - 48));
-      const baseButtonW = Math.min(72, (mixRailBounds.w - panelPad * 2 - gap * 7) / 6);
-      const transportSpecs = [
-        { key: 'songTransportBack', icon: '⏪', w: baseButtonW },
-        { key: 'songTransportPlay', icon: this.isPlaying ? '❚❚' : '▶', w: baseButtonW * 1.3, active: this.isPlaying, emphasis: true },
-        { key: 'songTransportPause', icon: '❚❚', w: baseButtonW },
-        { key: 'songTransportStop', icon: '■', w: baseButtonW },
-        { key: 'songTransportForward', icon: '⏩', w: baseButtonW },
-        { key: 'songTransportLoop', icon: '↺', w: baseButtonW, active: this.song.loopEnabled }
-      ];
-      const rawTotalW = transportSpecs.reduce((sum, button) => sum + button.w, 0) + gap * (transportSpecs.length - 1);
-      const transportAvailableW = selectedTrack ? mixRailBounds.w - panelPad * 2 - 240 - gap : mixRailBounds.w - panelPad * 2;
-      const scale = rawTotalW > transportAvailableW ? transportAvailableW / rawTotalW : 1;
-      let controlX = mixRailBounds.x + panelPad;
-      transportSpecs.forEach((entry) => {
-        const bounds = { x: controlX, y: controlsY, w: entry.w * scale, h: transportH };
-        this.bounds[entry.key] = bounds;
-        drawSharedTransportIconButton(ctx, bounds, {
-          icon: entry.icon,
-          active: Boolean(entry.active),
-          emphasis: Boolean(entry.emphasis),
-          role: 'default'
-        });
-        controlX += entry.w * scale + gap;
-      });
+    if (selectedTrack && (this.songBottomRailMode === 'volume' || this.songBottomRailMode === 'pan')) {
+      const control = this.songBottomRailMode === 'pan' ? 'pan' : 'volume';
+      this.songMixControlMode = control;
+      const sliderY = bodyY + 8;
+      const sliderBounds = {
+        x: mixRailBounds.x + panelPad,
+        y: sliderY,
+        w: mixRailBounds.w - panelPad * 2,
+        h: 20,
+        trackIndex: this.selectedTrackIndex,
+        control
+      };
+      const mix = this.getTrackPlaybackMix(selectedTrack, this.playheadTick);
+      const value = control === 'pan' ? ((mix.pan + 1) / 2) : mix.volume;
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
+      ctx.fillStyle = control === 'pan' ? '#4fb7ff' : '#ffe16a';
+      ctx.fillRect(sliderBounds.x, sliderBounds.y, sliderBounds.w * value, sliderBounds.h);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
+      this.bounds.instrumentSettingsControls.push(sliderBounds);
 
-      if (selectedTrack) {
-        const mixTabW = 108;
-        const mixTabH = transportH;
-        const rightEdge = mixRailBounds.x + mixRailBounds.w - panelPad;
-        this.bounds.songMixPanTab = { x: rightEdge - mixTabW, y: controlsY, w: mixTabW, h: mixTabH };
-        this.bounds.songMixVolumeTab = { x: this.bounds.songMixPanTab.x - gap - mixTabW, y: controlsY, w: mixTabW, h: mixTabH };
-        this.drawButton(ctx, this.bounds.songMixVolumeTab, 'Volume', this.songMixControlMode === 'volume', false);
-        this.drawButton(ctx, this.bounds.songMixPanTab, 'Pan', this.songMixControlMode === 'pan', false);
-
-        const sliderY = controlsY + transportH + 14;
-        const sliderBounds = {
-          x: mixRailBounds.x + panelPad,
-          y: sliderY,
-          w: mixRailBounds.w - panelPad * 2,
-          h: 20,
-          trackIndex: this.selectedTrackIndex,
-          control: this.songMixControlMode
-        };
-        const mix = this.getTrackPlaybackMix(selectedTrack, this.playheadTick);
-        const value = this.songMixControlMode === 'pan' ? ((mix.pan + 1) / 2) : mix.volume;
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
-        ctx.fillRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
-        ctx.fillStyle = this.songMixControlMode === 'pan' ? '#4fb7ff' : '#ffe16a';
-        ctx.fillRect(sliderBounds.x, sliderBounds.y, sliderBounds.w * value, sliderBounds.h);
-        ctx.strokeStyle = UI_SUITE.colors.border;
-        ctx.strokeRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
-        this.bounds.instrumentSettingsControls.push(sliderBounds);
-      }
+      const buttonGap = 10;
+      const buttonY = sliderY + sliderBounds.h + 10;
+      const buttonW = Math.floor((mixRailBounds.w - panelPad * 2 - buttonGap) / 2);
+      this.bounds.keyframeSet = {
+        x: mixRailBounds.x + panelPad,
+        y: buttonY,
+        w: buttonW,
+        h: 32
+      };
+      this.bounds.keyframeRemove = {
+        x: mixRailBounds.x + panelPad + buttonW + buttonGap,
+        y: buttonY,
+        w: buttonW,
+        h: 32
+      };
+      this.drawButton(ctx, this.bounds.keyframeSet, 'Set Keyframe', false, false);
+      this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove Keyframe', false, false);
     }
 
     if (!selectedTrack) {
