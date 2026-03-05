@@ -9205,14 +9205,27 @@ export default class MidiComposer {
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = trackCount > 8 ? 6 : 10;
     const visibleLaneCount = Math.min(4, trackCount);
+    const showAutomation = this.keyframePanelOpen;
+    const referenceCellHeight = Number.isFinite(this.gridBounds?.cellHeight)
+      ? this.gridBounds.cellHeight
+      : 24;
     let laneBlockH;
+    let laneH;
+    let automationH;
     if (isMobile) {
-      const referenceCellHeight = Number.isFinite(this.gridBounds?.cellHeight)
-        ? this.gridBounds.cellHeight
-        : 24;
-      laneBlockH = Math.max(48, Math.round(referenceCellHeight * 3));
+      // Keep mobile Song lanes visually aligned with Grid lanes (about 3 note rows tall).
+      laneH = Math.max(48, Math.round(referenceCellHeight * 3));
+      if (showAutomation) {
+        automationH = Math.max(12, Math.round(referenceCellHeight * 0.9));
+        laneBlockH = laneH + 6 + automationH + 6 + automationH;
+      } else {
+        automationH = 0;
+        laneBlockH = laneH;
+      }
     } else {
       laneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
+      laneH = showAutomation ? Math.max(36, laneBlockH * 0.42) : laneBlockH;
+      automationH = showAutomation ? Math.max(12, (laneBlockH - laneH) / 2 - 6) : 0;
     }
     const laneContentH = Math.max(0, trackCount * laneBlockH + Math.max(0, trackCount - 1) * laneGap);
     this.songTrackScrollMax = Math.max(0, laneContentH - laneAreaH);
@@ -9227,9 +9240,6 @@ export default class MidiComposer {
     const labelW = isMobile ? DEFAULT_LABEL_WIDTH_MOBILE : DEFAULT_LABEL_WIDTH;
     const laneX = x + padding + labelW;
     const laneW = w - padding * 2 - labelW;
-    const showAutomation = this.keyframePanelOpen;
-    const laneH = showAutomation ? Math.max(36, laneBlockH * 0.42) : laneBlockH;
-    const automationH = showAutomation ? Math.max(12, (laneBlockH - laneH) / 2 - 6) : 0;
     this.songActionBounds = [];
     this.songPartBounds = [];
     this.songPartHandleBounds = [];
