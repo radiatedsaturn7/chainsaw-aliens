@@ -9198,15 +9198,18 @@ export default class MidiComposer {
     const rulerY = y + padding;
     const laneAreaY = rulerY + rulerH;
     const isMobile = this.isMobileLayout();
+    const isMobileLandscape = isMobile && w > h;
     let baseMixRailH = isMobile ? 88 : 112;
     const railGap = 8;
     const extraTrackRowH = isMobile ? 0 : 48;
     let laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = trackCount > 8 ? 6 : 10;
-    const visibleLaneCount = Math.min(4, trackCount);
+    const visibleLaneCount = isMobileLandscape ? trackCount : Math.min(4, trackCount);
     let laneBlockH;
-    if (isMobile) {
+    if (isMobileLandscape) {
+      laneBlockH = Math.max(18, (laneAreaH - laneGap * Math.max(0, trackCount - 1)) / trackCount);
+    } else if (isMobile) {
       const referenceCellHeight = Number.isFinite(this.gridBounds?.cellHeight)
         ? this.gridBounds.cellHeight
         : 24;
@@ -9439,6 +9442,7 @@ export default class MidiComposer {
         ctx.fillStyle = 'rgba(0,0,0,0.62)';
         ctx.fillRect(laneBounds.x, laneBounds.y, laneBounds.w, laneBounds.h);
       }
+      this.drawSongTrackMixOverlay(ctx, laneBounds, track, timeline, this.songMixControlMode);
       ctx.restore();
 
       if (showAutomation) {
@@ -9485,27 +9489,43 @@ export default class MidiComposer {
     this.bounds.songRemoveTrack = null;
     if (selectedTrack) {
       const panelPad = 12;
-      const rowH = 44;
-      const tabGap = 10;
-      const tabW = 132;
+      const rowH = isMobile ? 38 : 44;
+      const tabGap = isMobile ? 8 : 10;
       const tabY = mixRailBounds.y + panelPad;
+      const topRowW = mixRailBounds.w - panelPad * 2;
+      const tabW = Math.max(70, Math.floor((topRowW - tabGap * 3) / 4));
       this.bounds.songMixVolumeTab = { x: mixRailBounds.x + panelPad, y: tabY, w: tabW, h: rowH };
       this.bounds.songMixPanTab = { x: mixRailBounds.x + panelPad + tabW + tabGap, y: tabY, w: tabW, h: rowH };
       this.drawButton(ctx, this.bounds.songMixVolumeTab, 'Volume', this.songMixControlMode === 'volume', false);
       this.drawButton(ctx, this.bounds.songMixPanTab, 'Pan', this.songMixControlMode === 'pan', false);
-      const actionW = 156;
+      this.bounds.keyframeSet = {
+        x: mixRailBounds.x + panelPad + (tabW + tabGap) * 2,
+        y: tabY,
+        w: tabW,
+        h: rowH
+      };
+      this.bounds.keyframeRemove = {
+        x: mixRailBounds.x + panelPad + (tabW + tabGap) * 3,
+        y: tabY,
+        w: tabW,
+        h: rowH
+      };
+      this.drawButton(ctx, this.bounds.keyframeSet, 'Set Key', false, false);
+      this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove Key', false, false);
+      const actionW = isMobile ? 120 : 156;
       const actionGap = 10;
+      const actionY = isMobile ? tabY + rowH + 8 : tabY;
       const removeX = mixRailBounds.x + mixRailBounds.w - panelPad - actionW;
       this.bounds.songRemoveTrack = {
         x: removeX,
-        y: tabY,
+        y: actionY,
         w: actionW,
         h: rowH
       };
       this.drawDangerButton(ctx, this.bounds.songRemoveTrack, 'Remove Instrument');
       this.songAddBounds = {
         x: removeX - actionGap - actionW,
-        y: tabY,
+        y: actionY,
         w: actionW,
         h: rowH
       };
@@ -9514,9 +9534,10 @@ export default class MidiComposer {
       ctx.fillStyle = 'rgba(255,255,255,0.75)';
       ctx.font = '13px Courier New';
       const mixLabel = this.songMixControlMode === 'pan' ? 'Pan (L/R)' : 'Volume';
-      ctx.fillText(`Mix: ${mixLabel} • ${selectedTrack.name || 'Track'}`, mixRailBounds.x + panelPad, tabY + rowH + 18);
+      const labelY = isMobile ? actionY + rowH + 16 : tabY + rowH + 18;
+      ctx.fillText(`Mix: ${mixLabel} • ${selectedTrack.name || 'Track'}`, mixRailBounds.x + panelPad, labelY);
 
-      const sliderY = tabY + rowH + 24;
+      const sliderY = labelY + 8;
       const sliderBounds = {
         x: mixRailBounds.x + panelPad,
         y: sliderY,
@@ -9535,21 +9556,16 @@ export default class MidiComposer {
       ctx.strokeRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
       this.bounds.instrumentSettingsControls.push(sliderBounds);
 
-      const buttonGap = 10;
-      const buttonY = sliderBounds.y + sliderBounds.h + 14;
-      const buttonW = (sliderBounds.w - buttonGap * 3) / 4;
-      this.bounds.keyframePrev = { x: sliderBounds.x, y: buttonY, w: buttonW, h: rowH };
-      this.bounds.keyframeSet = { x: sliderBounds.x + (buttonW + buttonGap), y: buttonY, w: buttonW, h: rowH };
-      this.bounds.keyframeRemove = { x: sliderBounds.x + (buttonW + buttonGap) * 2, y: buttonY, w: buttonW, h: rowH };
-      this.bounds.keyframeNext = { x: sliderBounds.x + (buttonW + buttonGap) * 3, y: buttonY, w: buttonW, h: rowH };
-      this.drawButton(ctx, this.bounds.keyframePrev, '◀ Prev', false, false);
-      this.drawButton(ctx, this.bounds.keyframeSet, 'Set', false, false);
-      this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove', false, false);
-      this.drawButton(ctx, this.bounds.keyframeNext, 'Next ▶', false, false);
+      this.bounds.keyframePrev = null;
+      this.bounds.keyframeNext = null;
     }
 
     if (!selectedTrack) {
       this.songAddBounds = null;
+      this.bounds.keyframeSet = null;
+      this.bounds.keyframeRemove = null;
+      this.bounds.keyframePrev = null;
+      this.bounds.keyframeNext = null;
     }
     this.drawSongPlayhead(ctx, this.songTimelineBounds.y, laneAreaY + laneAreaH);
     this.drawSongSelectionMenu(ctx);
@@ -9879,6 +9895,61 @@ export default class MidiComposer {
     this.songShiftTool.bounds.cancel = cancel;
     this.drawSmallButton(ctx, apply, 'Apply', true);
     this.drawSmallButton(ctx, cancel, 'Cancel', false);
+  }
+
+  drawSongTrackMixOverlay(ctx, laneBounds, track, timeline, controlMode) {
+    if (!laneBounds || !track || !timeline || !controlMode) return;
+    const isPan = controlMode === 'pan';
+    const type = isPan ? 'pan' : 'padding';
+    const minValue = isPan ? -1 : 0;
+    const maxValue = 1;
+    const baseValue = isPan ? (track.pan ?? 0) : (track.volume ?? 0.8);
+    const keyframes = track.automation?.[type] || [];
+    const sorted = keyframes.length ? [...keyframes].sort((a, b) => a.tick - b.tick) : [];
+    const totalTicks = this.getSongTimelineTicks();
+    const sampleStep = Math.max(1, Math.floor(totalTicks / Math.max(1, laneBounds.w)));
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(laneBounds.x, laneBounds.y, laneBounds.w, laneBounds.h);
+    ctx.clip();
+
+    ctx.strokeStyle = isPan ? 'rgba(79,183,255,0.95)' : 'rgba(255,225,106,0.95)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let tick = 0; tick <= totalTicks; tick += sampleStep) {
+      const value = this.getAutomationValueAtTick(sorted, tick, baseValue);
+      const clamped = clamp(value, minValue, maxValue);
+      const x = timeline.originX + tick * timeline.cellWidth;
+      const ratio = (clamped - minValue) / (maxValue - minValue || 1);
+      const y = laneBounds.y + laneBounds.h - ratio * laneBounds.h;
+      if (tick === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    }
+    const finalTick = totalTicks;
+    if (finalTick % sampleStep !== 0) {
+      const finalValue = this.getAutomationValueAtTick(sorted, finalTick, baseValue);
+      const finalClamped = clamp(finalValue, minValue, maxValue);
+      const finalX = timeline.originX + finalTick * timeline.cellWidth;
+      const finalRatio = (finalClamped - minValue) / (maxValue - minValue || 1);
+      const finalY = laneBounds.y + laneBounds.h - finalRatio * laneBounds.h;
+      ctx.lineTo(finalX, finalY);
+    }
+    ctx.stroke();
+
+    const currentValue = this.getTrackAutomationValue(track, type, this.playheadTick, baseValue);
+    const currentRatio = (clamp(currentValue, minValue, maxValue) - minValue) / (maxValue - minValue || 1);
+    const currentX = timeline.originX + this.playheadTick * timeline.cellWidth;
+    const currentY = laneBounds.y + laneBounds.h - currentRatio * laneBounds.h;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(currentX, currentY, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
   }
 
   drawAutomationLane(ctx, bounds, keyframes, minValue, maxValue, label, timeline, indicator = null) {
