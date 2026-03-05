@@ -4147,16 +4147,6 @@ export default class MidiComposer {
       }
       const labelHit = this.songLabelBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       const laneTapHit = this.songLaneBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
-      if (payload.touchCount && this.bounds.songTrackScrollArea && this.pointInBounds(x, y, this.bounds.songTrackScrollArea)) {
-        this.dragState = {
-          mode: 'song-track-scroll',
-          startY: y,
-          startScroll: this.songTrackScroll,
-          moved: false,
-          pendingTrackHit: labelHit || laneTapHit || null
-        };
-        return;
-      }
       if (labelHit) {
         this.selectedTrackIndex = labelHit.trackIndex;
         this.clearSongSelection();
@@ -4217,6 +4207,21 @@ export default class MidiComposer {
         const value = minValue + ratio * (maxValue - minValue);
         this.selectedTrackIndex = automationHit.trackIndex;
         this.addSongAutomationKeyframe(track, automationHit.type, tick, value);
+        return;
+      }
+
+      if (payload.touchCount
+        && this.bounds.songTrackScrollArea
+        && this.pointInBounds(x, y, this.bounds.songTrackScrollArea)
+        && !labelHit
+        && !laneTapHit) {
+        this.dragState = {
+          mode: 'song-track-scroll',
+          startY: y,
+          startScroll: this.songTrackScroll,
+          moved: false,
+          pendingTrackHit: null
+        };
         return;
       }
       const laneHit = this.songLaneBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
