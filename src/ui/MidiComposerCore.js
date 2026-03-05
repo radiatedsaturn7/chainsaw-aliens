@@ -4097,6 +4097,30 @@ export default class MidiComposer {
         this.handleSongAction(songToolActionHit.action);
         return;
       }
+      if (this.bounds.songTransportBack && this.pointInBounds(x, y, this.bounds.songTransportBack)) {
+        this.jumpPlayheadBars(-1);
+        return;
+      }
+      if (this.bounds.songTransportPlay && this.pointInBounds(x, y, this.bounds.songTransportPlay)) {
+        if (!this.isPlaying) this.togglePlayback();
+        return;
+      }
+      if (this.bounds.songTransportPause && this.pointInBounds(x, y, this.bounds.songTransportPause)) {
+        if (this.isPlaying) this.togglePlayback();
+        return;
+      }
+      if (this.bounds.songTransportStop && this.pointInBounds(x, y, this.bounds.songTransportStop)) {
+        this.stopPlayback();
+        return;
+      }
+      if (this.bounds.songTransportForward && this.pointInBounds(x, y, this.bounds.songTransportForward)) {
+        this.jumpPlayheadBars(1);
+        return;
+      }
+      if (this.bounds.songTransportLoop && this.pointInBounds(x, y, this.bounds.songTransportLoop)) {
+        this.toggleLoopEnabled();
+        return;
+      }
       if (this.bounds.songMixPanTab && this.pointInBounds(x, y, this.bounds.songMixPanTab)) {
         this.songMixControlMode = 'pan';
         return;
@@ -9534,21 +9558,16 @@ export default class MidiComposer {
     this.drawButton(ctx, this.bounds.songRailMusicControls, 'Music Controls', this.songBottomRailMode === 'music-controls', false);
     this.drawButton(ctx, this.bounds.songRailToolsTab, 'Tools', this.songBottomRailMode === 'tools', false);
 
-    if (this.songBottomRailMode === 'tools') {
-      const selectionReady = Boolean(selectionRange);
-      ctx.fillStyle = selectionReady ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.5)';
-      ctx.font = '13px Courier New';
-      ctx.fillText(
-        selectionReady
-          ? 'Select a region, then run tools.'
-          : 'Hold Shift + drag on Song lanes to select a region first.',
-        mixRailBounds.x + panelPad,
-        tabY + rowH + 18
-      );
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.font = '12px Courier New';
-      ctx.fillText('Selected regions can be dragged to move/copy between tracks.', mixRailBounds.x + panelPad, tabY + rowH + 38);
+    this.bounds.songTransportBack = null;
+    this.bounds.songTransportPlay = null;
+    this.bounds.songTransportPause = null;
+    this.bounds.songTransportStop = null;
+    this.bounds.songTransportForward = null;
+    this.bounds.songTransportLoop = null;
+    this.bounds.songMixVolumeTab = null;
+    this.bounds.songMixPanTab = null;
 
+    if (this.songBottomRailMode === 'tools') {
       const actions = [
         { action: 'song-splice', label: 'Split' },
         { action: 'song-copy', label: 'Copy' },
@@ -9559,7 +9578,7 @@ export default class MidiComposer {
       ];
       const toolButtonH = isMobile ? 30 : 28;
       const toolGap = 8;
-      const toolButtonY = tabY + rowH + 48;
+      const toolButtonY = tabY + rowH + 14;
       const buttonCount = actions.length;
       const totalGap = toolGap * Math.max(0, buttonCount - 1);
       const availableW = mixRailBounds.w - panelPad * 2 - totalGap;
@@ -9579,93 +9598,60 @@ export default class MidiComposer {
       });
     }
 
-    if (selectedTrack) {
-      this.bounds.songMixVolumeTab = null;
-      this.bounds.songMixPanTab = null;
-      if (this.songBottomRailMode === 'music-controls') {
-        const mixTabY = tabY + rowH + 8;
-        const mixTabW = 132;
-        const mixTabH = 36;
-        this.bounds.songMixVolumeTab = { x: mixRailBounds.x + panelPad, y: mixTabY, w: mixTabW, h: mixTabH };
-        this.bounds.songMixPanTab = { x: mixRailBounds.x + panelPad + mixTabW + tabGap, y: mixTabY, w: mixTabW, h: mixTabH };
+    if (this.songBottomRailMode === 'music-controls') {
+      const controlsY = tabY + rowH + 8;
+      const controlH = 32;
+      const controlGap = 8;
+      const transportSpecs = [
+        { key: 'songTransportBack', label: '<<' },
+        { key: 'songTransportPlay', label: 'Play' },
+        { key: 'songTransportPause', label: 'Pause' },
+        { key: 'songTransportStop', label: 'Stop' },
+        { key: 'songTransportForward', label: '>>' },
+        { key: 'songTransportLoop', label: `Loop ${this.song.loopEnabled ? 'On' : 'Off'}` }
+      ];
+      const smallW = isMobile ? 52 : 56;
+      const regularW = isMobile ? 78 : 88;
+      let controlX = mixRailBounds.x + panelPad;
+      transportSpecs.forEach((entry) => {
+        const width = entry.key === 'songTransportBack' || entry.key === 'songTransportForward' ? smallW : regularW;
+        const bounds = { x: controlX, y: controlsY, w: width, h: controlH };
+        this.bounds[entry.key] = bounds;
+        const selected = entry.key === 'songTransportPlay'
+          ? this.isPlaying
+          : (entry.key === 'songTransportPause' ? !this.isPlaying : (entry.key === 'songTransportLoop' ? this.song.loopEnabled : false));
+        this.drawSmallButton(ctx, bounds, entry.label, selected);
+        controlX += width + controlGap;
+      });
+
+      if (selectedTrack) {
+        const mixTabW = 108;
+        const mixTabH = controlH;
+        const rightEdge = mixRailBounds.x + mixRailBounds.w - panelPad;
+        this.bounds.songMixPanTab = { x: rightEdge - mixTabW, y: controlsY, w: mixTabW, h: mixTabH };
+        this.bounds.songMixVolumeTab = { x: this.bounds.songMixPanTab.x - controlGap - mixTabW, y: controlsY, w: mixTabW, h: mixTabH };
         this.drawButton(ctx, this.bounds.songMixVolumeTab, 'Volume', this.songMixControlMode === 'volume', false);
         this.drawButton(ctx, this.bounds.songMixPanTab, 'Pan', this.songMixControlMode === 'pan', false);
+
+        const sliderY = controlsY + controlH + 14;
+        const sliderBounds = {
+          x: mixRailBounds.x + panelPad,
+          y: sliderY,
+          w: mixRailBounds.w - panelPad * 2,
+          h: 20,
+          trackIndex: this.selectedTrackIndex,
+          control: this.songMixControlMode
+        };
+        const mix = this.getTrackPlaybackMix(selectedTrack, this.playheadTick);
+        const value = this.songMixControlMode === 'pan' ? ((mix.pan + 1) / 2) : mix.volume;
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
+        ctx.fillStyle = this.songMixControlMode === 'pan' ? '#4fb7ff' : '#ffe16a';
+        ctx.fillRect(sliderBounds.x, sliderBounds.y, sliderBounds.w * value, sliderBounds.h);
+        ctx.strokeStyle = UI_SUITE.colors.border;
+        ctx.strokeRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
+        this.bounds.instrumentSettingsControls.push(sliderBounds);
       }
-
-      if (this.songBottomRailMode === 'music-controls') {
-      const actionGap = 10;
-      const setKeyW = 108;
-      const removeKeyW = 132;
-      const addInstrumentW = 156;
-      const removeInstrumentW = 156;
-      let actionCursorX = mixRailBounds.x + mixRailBounds.w - panelPad;
-      const actionY = tabY + rowH + 8;
-      const actionH = 36;
-
-      actionCursorX -= removeInstrumentW;
-      this.bounds.songRemoveTrack = {
-        x: actionCursorX,
-        y: actionY,
-        w: removeInstrumentW,
-        h: actionH
-      };
-      this.drawDangerButton(ctx, this.bounds.songRemoveTrack, 'Remove Instrument');
-
-      actionCursorX -= actionGap + addInstrumentW;
-      this.songAddBounds = {
-        x: actionCursorX,
-        y: actionY,
-        w: addInstrumentW,
-        h: actionH
-      };
-      this.drawButton(ctx, this.songAddBounds, 'Add Instrument', false, false);
-
-      actionCursorX -= actionGap + removeKeyW;
-      this.bounds.keyframeRemove = {
-        x: actionCursorX,
-        y: actionY,
-        w: removeKeyW,
-        h: actionH
-      };
-      this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove Key', false, false);
-
-      actionCursorX -= actionGap + setKeyW;
-      this.bounds.keyframeSet = {
-        x: actionCursorX,
-        y: actionY,
-        w: setKeyW,
-        h: actionH
-      };
-      this.drawButton(ctx, this.bounds.keyframeSet, 'Set Key', false, false);
-
-      this.bounds.keyframePrev = null;
-      this.bounds.keyframeNext = null;
-
-      ctx.fillStyle = 'rgba(255,255,255,0.75)';
-      ctx.font = '13px Courier New';
-      const mixLabel = this.songMixControlMode === 'pan' ? 'Pan (L/R)' : 'Volume';
-      ctx.fillText(`Mix: ${mixLabel} • ${selectedTrack.name || 'Track'}`, mixRailBounds.x + panelPad, actionY + actionH + 18);
-
-      const sliderY = actionY + actionH + 24;
-      const sliderBounds = {
-        x: mixRailBounds.x + panelPad,
-        y: sliderY,
-        w: mixRailBounds.w - panelPad * 2,
-        h: 20,
-        trackIndex: this.selectedTrackIndex,
-        control: this.songMixControlMode
-      };
-      const mix = this.getTrackPlaybackMix(selectedTrack, this.playheadTick);
-      const value = this.songMixControlMode === 'pan' ? ((mix.pan + 1) / 2) : mix.volume;
-      ctx.fillStyle = 'rgba(0,0,0,0.5)';
-      ctx.fillRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
-      ctx.fillStyle = this.songMixControlMode === 'pan' ? '#4fb7ff' : '#ffe16a';
-      ctx.fillRect(sliderBounds.x, sliderBounds.y, sliderBounds.w * value, sliderBounds.h);
-      ctx.strokeStyle = UI_SUITE.colors.border;
-      ctx.strokeRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
-      this.bounds.instrumentSettingsControls.push(sliderBounds);
-      }
-
     }
 
     if (!selectedTrack) {
