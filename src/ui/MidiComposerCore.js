@@ -4162,18 +4162,6 @@ export default class MidiComposer {
         this.clearSongSelection();
         return;
       }
-      const automationHit = this.songAutomationBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
-      if (automationHit) {
-        const track = this.song.tracks[automationHit.trackIndex];
-        const tick = this.getSongTickFromX(x, automationHit);
-        const ratio = clamp((automationHit.y + automationHit.h - y) / automationHit.h, 0, 1);
-        const minValue = automationHit.type === 'pan' ? -1 : 0;
-        const maxValue = automationHit.type === 'pan' ? 1 : 1;
-        const value = minValue + ratio * (maxValue - minValue);
-        this.selectedTrackIndex = automationHit.trackIndex;
-        this.addSongAutomationKeyframe(track, automationHit.type, tick, value);
-        return;
-      }
       const partHandleHit = this.songPartHandleBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (partHandleHit) {
         this.selectedTrackIndex = partHandleHit.trackIndex;
@@ -4217,6 +4205,18 @@ export default class MidiComposer {
           targetStartTick: partHit.startTick,
           moved: false
         };
+        return;
+      }
+      const automationHit = this.songAutomationBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (automationHit) {
+        const track = this.song.tracks[automationHit.trackIndex];
+        const tick = this.getSongTickFromX(x, automationHit);
+        const ratio = clamp((automationHit.y + automationHit.h - y) / automationHit.h, 0, 1);
+        const minValue = automationHit.type === 'pan' ? -1 : 0;
+        const maxValue = automationHit.type === 'pan' ? 1 : 1;
+        const value = minValue + ratio * (maxValue - minValue);
+        this.selectedTrackIndex = automationHit.trackIndex;
+        this.addSongAutomationKeyframe(track, automationHit.type, tick, value);
         return;
       }
       const laneHit = this.songLaneBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
