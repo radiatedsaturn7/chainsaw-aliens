@@ -4093,32 +4093,46 @@ export default class MidiComposer {
         this.songBottomRailMode = 'tools';
         return;
       }
-      const songToolActionHit = this.bounds.songToolsActions?.find((bounds) => this.pointInBounds(x, y, bounds));
+      const songToolActionHit = this.songBottomRailMode === 'tools'
+        ? this.bounds.songToolsActions?.find((bounds) => this.pointInBounds(x, y, bounds))
+        : null;
       if (songToolActionHit) {
         this.handleSongAction(songToolActionHit.action);
         return;
       }
-      if (this.bounds.songTransportBack && this.pointInBounds(x, y, this.bounds.songTransportBack)) {
+      if (this.songBottomRailMode === 'music-controls'
+        && this.bounds.songTransportBack
+        && this.pointInBounds(x, y, this.bounds.songTransportBack)) {
         this.jumpPlayheadBars(-1);
         return;
       }
-      if (this.bounds.songTransportPlay && this.pointInBounds(x, y, this.bounds.songTransportPlay)) {
+      if (this.songBottomRailMode === 'music-controls'
+        && this.bounds.songTransportPlay
+        && this.pointInBounds(x, y, this.bounds.songTransportPlay)) {
         if (!this.isPlaying) this.togglePlayback();
         return;
       }
-      if (this.bounds.songTransportPause && this.pointInBounds(x, y, this.bounds.songTransportPause)) {
+      if (this.songBottomRailMode === 'music-controls'
+        && this.bounds.songTransportPause
+        && this.pointInBounds(x, y, this.bounds.songTransportPause)) {
         if (this.isPlaying) this.togglePlayback();
         return;
       }
-      if (this.bounds.songTransportStop && this.pointInBounds(x, y, this.bounds.songTransportStop)) {
+      if (this.songBottomRailMode === 'music-controls'
+        && this.bounds.songTransportStop
+        && this.pointInBounds(x, y, this.bounds.songTransportStop)) {
         this.stopPlayback();
         return;
       }
-      if (this.bounds.songTransportForward && this.pointInBounds(x, y, this.bounds.songTransportForward)) {
+      if (this.songBottomRailMode === 'music-controls'
+        && this.bounds.songTransportForward
+        && this.pointInBounds(x, y, this.bounds.songTransportForward)) {
         this.jumpPlayheadBars(1);
         return;
       }
-      if (this.bounds.songTransportLoop && this.pointInBounds(x, y, this.bounds.songTransportLoop)) {
+      if (this.songBottomRailMode === 'music-controls'
+        && this.bounds.songTransportLoop
+        && this.pointInBounds(x, y, this.bounds.songTransportLoop)) {
         this.toggleLoopEnabled();
         return;
       }
@@ -8945,6 +8959,31 @@ export default class MidiComposer {
     drawSharedMobileZoomSlider(ctx, railBounds, ratio);
   }
 
+  drawEqualWidthButtonRow(ctx, items, options = {}) {
+    const {
+      x,
+      y,
+      width,
+      height,
+      gap = 8,
+      draw = (bounds, item) => this.drawButton(ctx, bounds, item.label, Boolean(item.active), false)
+    } = options;
+    if (!Array.isArray(items) || !items.length || !Number.isFinite(width) || width <= 0) return [];
+    const totalGap = gap * Math.max(0, items.length - 1);
+    const availableW = Math.max(0, width - totalGap);
+    const baseW = Math.floor(availableW / items.length);
+    let remainder = availableW - (baseW * items.length);
+    let xCursor = x;
+    return items.map((item) => {
+      const itemW = baseW + (remainder > 0 ? 1 : 0);
+      if (remainder > 0) remainder -= 1;
+      const bounds = { x: xCursor, y, w: itemW, h: height };
+      draw(bounds, item);
+      xCursor += itemW + gap;
+      return bounds;
+    });
+  }
+
   drawMobileBottomRail(ctx, x, y, w, h, track) {
     this.bounds.instrumentSettingsControls = [];
     this.bounds.railInstruments = null;
@@ -9550,7 +9589,7 @@ export default class MidiComposer {
     this.bounds.keyframeNext = null;
 
     const panelPad = 12;
-    const rowH = 36;
+    const rowH = 44;
     const tabY = mixRailBounds.y + panelPad;
 
     this.bounds.songTransportBack = null;
@@ -9581,7 +9620,7 @@ export default class MidiComposer {
 
     const bodyY = topTabY + topTabH + 10;
     if (this.songBottomRailMode === 'music-controls') {
-      const rowHControls = 44;
+      const rowHControls = rowH;
       const gap = 8;
       const controls = [
         { key: 'songTransportBack', label: '⏪' },
@@ -9591,18 +9630,16 @@ export default class MidiComposer {
         { key: 'songTransportForward', label: '⏩' },
         { key: 'songTransportLoop', label: `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, active: this.song.loopEnabled }
       ];
-      const totalGap = gap * Math.max(0, controls.length - 1);
-      const availableW = mixRailBounds.w - panelPad * 2 - totalGap;
-      const baseW = Math.floor(availableW / controls.length);
-      let remainder = availableW - (baseW * controls.length);
-      let xCursor = mixRailBounds.x + panelPad;
-      controls.forEach((entry) => {
-        const width = baseW + (remainder > 0 ? 1 : 0);
-        if (remainder > 0) remainder -= 1;
-        const bounds = { x: xCursor, y: bodyY, w: width, h: rowHControls };
-        this.bounds[entry.key] = bounds;
-        this.drawButton(ctx, bounds, entry.label, Boolean(entry.active), false);
-        xCursor += width + gap;
+      const boundsList = this.drawEqualWidthButtonRow(ctx, controls, {
+        x: mixRailBounds.x + panelPad,
+        y: bodyY,
+        width: mixRailBounds.w - panelPad * 2,
+        height: rowHControls,
+        gap,
+        draw: (bounds, entry) => this.drawButton(ctx, bounds, entry.label, Boolean(entry.active), false)
+      });
+      controls.forEach((entry, index) => {
+        this.bounds[entry.key] = boundsList[index] || null;
       });
     }
 
@@ -9615,23 +9652,20 @@ export default class MidiComposer {
         { action: 'song-duplicate', label: 'Duplicate' },
         { action: 'song-delete', label: 'Delete' }
       ];
-      const toolButtonH = 32;
+      const toolButtonH = rowH;
       const toolGap = 8;
-      const availableW = mixRailBounds.w - panelPad * 2 - toolGap * (actions.length - 1);
-      const toolButtonW = Math.max(74, Math.floor(availableW / actions.length));
-      let buttonX = mixRailBounds.x + panelPad;
-      actions.forEach((entry) => {
-        const bounds = {
-          x: buttonX,
-          y: bodyY,
-          w: toolButtonW,
-          h: toolButtonH,
-          action: entry.action
-        };
-        this.drawSmallButton(ctx, bounds, entry.label, false);
-        this.bounds.songToolsActions.push(bounds);
-        buttonX += toolButtonW + toolGap;
+      const actionBounds = this.drawEqualWidthButtonRow(ctx, actions, {
+        x: mixRailBounds.x + panelPad,
+        y: bodyY,
+        width: mixRailBounds.w - panelPad * 2,
+        height: toolButtonH,
+        gap: toolGap,
+        draw: (bounds, entry) => this.drawSmallButton(ctx, bounds, entry.label, false)
       });
+      this.bounds.songToolsActions = actionBounds.map((bounds, index) => ({
+        ...bounds,
+        action: actions[index].action
+      }));
     }
 
     if (selectedTrack && (this.songBottomRailMode === 'volume' || this.songBottomRailMode === 'pan')) {
@@ -9662,7 +9696,7 @@ export default class MidiComposer {
       this.bounds.instrumentSettingsControls.push(sliderBounds);
 
       const buttonW = Math.max(72, Math.floor((contentW - sliderW - columnGap * 2) / 2));
-      const buttonH = 64;
+      const buttonH = rowH;
       const buttonsX = contentX + sliderW + columnGap;
       this.bounds.keyframeSet = {
         x: buttonsX,
