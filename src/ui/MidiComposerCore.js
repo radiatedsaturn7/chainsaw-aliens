@@ -9435,6 +9435,13 @@ export default class MidiComposer {
         }
       }
 
+      this.drawSongAutomationOverlay(ctx, laneBounds, track, {
+        originX,
+        cellWidth,
+        timelineTicks,
+        mode: this.songMixControlMode
+      });
+
       if (selectionRange && index >= selectionRange.trackStartIndex && index <= selectionRange.trackEndIndex) {
         const selStart = originX + selectionRange.startTick * cellWidth;
         const selEnd = originX + selectionRange.endTick * cellWidth;
@@ -9906,6 +9913,77 @@ export default class MidiComposer {
     this.songShiftTool.bounds.cancel = cancel;
     this.drawSmallButton(ctx, apply, 'Apply', true);
     this.drawSmallButton(ctx, cancel, 'Cancel', false);
+  }
+
+
+  drawSongAutomationOverlay(ctx, laneBounds, track, options = {}) {
+    if (!laneBounds || !track) return;
+    const mode = options.mode === 'pan' ? 'pan' : 'volume';
+    const automationType = mode === 'pan' ? 'pan' : 'padding';
+    const minValue = mode === 'pan' ? -1 : 0;
+    const maxValue = mode === 'pan' ? 1 : 1;
+    const defaultValue = mode === 'pan'
+      ? clamp(track.pan ?? 0, -1, 1)
+      : clamp(track.volume ?? 0.8, 0, 1);
+    const totalTicks = Math.max(1, options.timelineTicks || this.getSongTimelineTicks());
+    const originX = Number.isFinite(options.originX) ? options.originX : laneBounds.x;
+    const cellWidth = Number.isFinite(options.cellWidth) ? options.cellWidth : (laneBounds.w / totalTicks);
+    const keyframes = Array.isArray(track.automation?.[automationType])
+      ? track.automation[automationType]
+      : [];
+
+    const sorted = [...keyframes]
+      .filter((frame) => Number.isFinite(frame?.tick))
+      .sort((a, b) => a.tick - b.tick);
+
+    const ticks = sorted.length
+      ? [0, ...sorted.map((frame) => clamp(frame.tick, 0, totalTicks)), totalTicks]
+      : [0, totalTicks];
+    const uniqueTicks = [...new Set(ticks)].sort((a, b) => a - b);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(laneBounds.x, laneBounds.y, laneBounds.w, laneBounds.h);
+    ctx.clip();
+
+    if (mode === 'pan') {
+      const centerY = laneBounds.y + laneBounds.h / 2;
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(laneBounds.x, centerY);
+      ctx.lineTo(laneBounds.x + laneBounds.w, centerY);
+      ctx.stroke();
+    }
+
+    const strokeColor = mode === 'pan' ? 'rgba(79,183,255,0.95)' : 'rgba(255,225,106,0.95)';
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    uniqueTicks.forEach((tick, index) => {
+      const raw = this.getTrackAutomationValue(track, automationType, tick, defaultValue);
+      const value = clamp(raw, minValue, maxValue);
+      const valueRatio = (value - minValue) / (maxValue - minValue || 1);
+      const x = originX + tick * cellWidth;
+      const y = laneBounds.y + laneBounds.h - valueRatio * laneBounds.h;
+      if (index === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    sorted.forEach((frame) => {
+      const tick = clamp(frame.tick, 0, totalTicks);
+      const value = clamp(frame.value ?? defaultValue, minValue, maxValue);
+      const valueRatio = (value - minValue) / (maxValue - minValue || 1);
+      const x = originX + tick * cellWidth;
+      const y = laneBounds.y + laneBounds.h - valueRatio * laneBounds.h;
+      ctx.fillStyle = strokeColor;
+      ctx.beginPath();
+      ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    ctx.restore();
   }
 
   drawAutomationLane(ctx, bounds, keyframes, minValue, maxValue, label, timeline, indicator = null) {
