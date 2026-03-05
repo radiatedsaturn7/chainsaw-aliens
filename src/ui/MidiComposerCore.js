@@ -9493,23 +9493,51 @@ export default class MidiComposer {
       this.bounds.songMixPanTab = { x: mixRailBounds.x + panelPad + tabW + tabGap, y: tabY, w: tabW, h: rowH };
       this.drawButton(ctx, this.bounds.songMixVolumeTab, 'Volume', this.songMixControlMode === 'volume', false);
       this.drawButton(ctx, this.bounds.songMixPanTab, 'Pan', this.songMixControlMode === 'pan', false);
-      const actionW = 156;
       const actionGap = 10;
-      const removeX = mixRailBounds.x + mixRailBounds.w - panelPad - actionW;
+      const setKeyW = 108;
+      const removeKeyW = 132;
+      const addInstrumentW = 156;
+      const removeInstrumentW = 156;
+      let actionCursorX = mixRailBounds.x + mixRailBounds.w - panelPad;
+
+      actionCursorX -= removeInstrumentW;
       this.bounds.songRemoveTrack = {
-        x: removeX,
+        x: actionCursorX,
         y: tabY,
-        w: actionW,
+        w: removeInstrumentW,
         h: rowH
       };
       this.drawDangerButton(ctx, this.bounds.songRemoveTrack, 'Remove Instrument');
+
+      actionCursorX -= actionGap + addInstrumentW;
       this.songAddBounds = {
-        x: removeX - actionGap - actionW,
+        x: actionCursorX,
         y: tabY,
-        w: actionW,
+        w: addInstrumentW,
         h: rowH
       };
       this.drawButton(ctx, this.songAddBounds, 'Add Instrument', false, false);
+
+      actionCursorX -= actionGap + removeKeyW;
+      this.bounds.keyframeRemove = {
+        x: actionCursorX,
+        y: tabY,
+        w: removeKeyW,
+        h: rowH
+      };
+      this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove Key', false, false);
+
+      actionCursorX -= actionGap + setKeyW;
+      this.bounds.keyframeSet = {
+        x: actionCursorX,
+        y: tabY,
+        w: setKeyW,
+        h: rowH
+      };
+      this.drawButton(ctx, this.bounds.keyframeSet, 'Set Key', false, false);
+
+      this.bounds.keyframePrev = null;
+      this.bounds.keyframeNext = null;
 
       ctx.fillStyle = 'rgba(255,255,255,0.75)';
       ctx.font = '13px Courier New';
@@ -9535,17 +9563,6 @@ export default class MidiComposer {
       ctx.strokeRect(sliderBounds.x, sliderBounds.y, sliderBounds.w, sliderBounds.h);
       this.bounds.instrumentSettingsControls.push(sliderBounds);
 
-      const buttonGap = 10;
-      const buttonY = sliderBounds.y + sliderBounds.h + 14;
-      const buttonW = (sliderBounds.w - buttonGap * 3) / 4;
-      this.bounds.keyframePrev = { x: sliderBounds.x, y: buttonY, w: buttonW, h: rowH };
-      this.bounds.keyframeSet = { x: sliderBounds.x + (buttonW + buttonGap), y: buttonY, w: buttonW, h: rowH };
-      this.bounds.keyframeRemove = { x: sliderBounds.x + (buttonW + buttonGap) * 2, y: buttonY, w: buttonW, h: rowH };
-      this.bounds.keyframeNext = { x: sliderBounds.x + (buttonW + buttonGap) * 3, y: buttonY, w: buttonW, h: rowH };
-      this.drawButton(ctx, this.bounds.keyframePrev, '◀ Prev', false, false);
-      this.drawButton(ctx, this.bounds.keyframeSet, 'Set', false, false);
-      this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove', false, false);
-      this.drawButton(ctx, this.bounds.keyframeNext, 'Next ▶', false, false);
     }
 
     if (!selectedTrack) {
