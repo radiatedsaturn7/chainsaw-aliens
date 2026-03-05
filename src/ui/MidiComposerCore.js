@@ -9198,18 +9198,25 @@ export default class MidiComposer {
     const rulerY = y + padding;
     const laneAreaY = rulerY + rulerH;
     const isMobile = this.isMobileLayout();
-    let baseMixRailH = isMobile ? 72 : 112;
+    const isMobileLandscape = isMobile && w > h;
+    let baseMixRailH = isMobile ? 88 : 112;
     const railGap = 8;
     const extraTrackRowH = isMobile ? 0 : 48;
     let laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
     const trackCount = Math.max(1, this.song.tracks.length);
     const laneGap = trackCount > 8 ? 6 : 10;
-    const visibleLaneCount = Math.max(1, trackCount);
-    const laneBlockH = clamp(
-      (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount,
-      isMobile ? 24 : 32,
-      isMobile ? 64 : 140
-    );
+    const visibleLaneCount = isMobileLandscape ? trackCount : Math.min(4, trackCount);
+    let laneBlockH;
+    if (isMobileLandscape) {
+      laneBlockH = Math.max(18, (laneAreaH - laneGap * Math.max(0, trackCount - 1)) / trackCount);
+    } else if (isMobile) {
+      const referenceCellHeight = Number.isFinite(this.gridBounds?.cellHeight)
+        ? this.gridBounds.cellHeight
+        : 24;
+      laneBlockH = Math.max(48, Math.round(referenceCellHeight * 3));
+    } else {
+      laneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
+    }
     const laneContentH = Math.max(0, trackCount * laneBlockH + Math.max(0, trackCount - 1) * laneGap);
     this.songTrackScrollMax = Math.max(0, laneContentH - laneAreaH);
     this.songTrackScroll = clamp(this.songTrackScroll, 0, this.songTrackScrollMax);
@@ -9482,10 +9489,11 @@ export default class MidiComposer {
     this.bounds.songRemoveTrack = null;
     if (selectedTrack) {
       const panelPad = 12;
-      const rowH = 44;
-      const tabGap = 10;
-      const tabW = 100;
+      const rowH = isMobile ? 38 : 44;
+      const tabGap = isMobile ? 8 : 10;
       const tabY = mixRailBounds.y + panelPad;
+      const topRowW = mixRailBounds.w - panelPad * 2;
+      const tabW = Math.max(70, Math.floor((topRowW - tabGap * 3) / 4));
       this.bounds.songMixVolumeTab = { x: mixRailBounds.x + panelPad, y: tabY, w: tabW, h: rowH };
       this.bounds.songMixPanTab = { x: mixRailBounds.x + panelPad + tabW + tabGap, y: tabY, w: tabW, h: rowH };
       this.drawButton(ctx, this.bounds.songMixVolumeTab, 'Volume', this.songMixControlMode === 'volume', false);
@@ -9504,19 +9512,20 @@ export default class MidiComposer {
       };
       this.drawButton(ctx, this.bounds.keyframeSet, 'Set Key', false, false);
       this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove Key', false, false);
-      const actionW = 156;
+      const actionW = isMobile ? 120 : 156;
       const actionGap = 10;
+      const actionY = isMobile ? tabY + rowH + 8 : tabY;
       const removeX = mixRailBounds.x + mixRailBounds.w - panelPad - actionW;
       this.bounds.songRemoveTrack = {
         x: removeX,
-        y: tabY,
+        y: actionY,
         w: actionW,
         h: rowH
       };
       this.drawDangerButton(ctx, this.bounds.songRemoveTrack, 'Remove Instrument');
       this.songAddBounds = {
         x: removeX - actionGap - actionW,
-        y: tabY,
+        y: actionY,
         w: actionW,
         h: rowH
       };
@@ -9525,9 +9534,10 @@ export default class MidiComposer {
       ctx.fillStyle = 'rgba(255,255,255,0.75)';
       ctx.font = '13px Courier New';
       const mixLabel = this.songMixControlMode === 'pan' ? 'Pan (L/R)' : 'Volume';
-      ctx.fillText(`Mix: ${mixLabel} • ${selectedTrack.name || 'Track'}`, mixRailBounds.x + panelPad, tabY + rowH + 18);
+      const labelY = isMobile ? actionY + rowH + 16 : tabY + rowH + 18;
+      ctx.fillText(`Mix: ${mixLabel} • ${selectedTrack.name || 'Track'}`, mixRailBounds.x + panelPad, labelY);
 
-      const sliderY = tabY + rowH + 24;
+      const sliderY = labelY + 8;
       const sliderBounds = {
         x: mixRailBounds.x + panelPad,
         y: sliderY,
