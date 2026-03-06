@@ -4004,6 +4004,10 @@ export default class MidiComposer {
     }
 
     if (this.activeTab === 'song') {
+      if (this.bounds.songMixRail && this.pointInBounds(x, y, this.bounds.songMixRail)) {
+        this.handleSongBottomRailPointerDown(x, y);
+        return;
+      }
       if (this.songSplitTool.active) {
         const splitActionHit = this.songSplitTool.bounds?.splitAction && this.pointInBounds(x, y, this.songSplitTool.bounds.splitAction);
         if (splitActionHit) {
@@ -4079,71 +4083,6 @@ export default class MidiComposer {
       }
       if (this.songAddBounds && this.pointInBounds(x, y, this.songAddBounds)) {
         this.addTrack();
-        return;
-      }
-      if (this.bounds.songMixVolumeTab && this.pointInBounds(x, y, this.bounds.songMixVolumeTab)) {
-        this.setSongBottomRailMode('volume');
-        this.songMixControlMode = 'volume';
-        return;
-      }
-      if (this.bounds.songRailMusicControls && this.pointInBounds(x, y, this.bounds.songRailMusicControls)) {
-        this.setSongBottomRailMode('music-controls');
-        return;
-      }
-      if (this.bounds.songRailEditTab && this.pointInBounds(x, y, this.bounds.songRailEditTab)) {
-        this.setSongBottomRailMode('edit');
-        return;
-      }
-      if (this.bounds.songRailToolsTab && this.pointInBounds(x, y, this.bounds.songRailToolsTab)) {
-        this.setSongBottomRailMode('tools');
-        return;
-      }
-      const songToolActionHit = (this.songBottomRailMode === 'tools' || this.songBottomRailMode === 'edit')
-        ? this.bounds.songToolsActions?.find((bounds) => this.pointInBounds(x, y, bounds))
-        : null;
-      if (songToolActionHit) {
-        this.handleSongAction(songToolActionHit.action);
-        return;
-      }
-      if (this.songBottomRailMode === 'music-controls'
-        && this.bounds.songTransportBack
-        && this.pointInBounds(x, y, this.bounds.songTransportBack)) {
-        this.jumpPlayheadBars(-1);
-        return;
-      }
-      if (this.songBottomRailMode === 'music-controls'
-        && this.bounds.songTransportPlay
-        && this.pointInBounds(x, y, this.bounds.songTransportPlay)) {
-        if (!this.isPlaying) this.togglePlayback();
-        return;
-      }
-      if (this.songBottomRailMode === 'music-controls'
-        && this.bounds.songTransportPause
-        && this.pointInBounds(x, y, this.bounds.songTransportPause)) {
-        if (this.isPlaying) this.togglePlayback();
-        return;
-      }
-      if (this.songBottomRailMode === 'music-controls'
-        && this.bounds.songTransportStop
-        && this.pointInBounds(x, y, this.bounds.songTransportStop)) {
-        this.stopPlayback();
-        return;
-      }
-      if (this.songBottomRailMode === 'music-controls'
-        && this.bounds.songTransportForward
-        && this.pointInBounds(x, y, this.bounds.songTransportForward)) {
-        this.jumpPlayheadBars(1);
-        return;
-      }
-      if (this.songBottomRailMode === 'music-controls'
-        && this.bounds.songTransportLoop
-        && this.pointInBounds(x, y, this.bounds.songTransportLoop)) {
-        this.toggleLoopEnabled();
-        return;
-      }
-      if (this.bounds.songMixPanTab && this.pointInBounds(x, y, this.bounds.songMixPanTab)) {
-        this.setSongBottomRailMode('pan');
-        this.songMixControlMode = 'pan';
         return;
       }
       if (this.bounds.songRemoveTrack && this.pointInBounds(x, y, this.bounds.songRemoveTrack)) {
@@ -7147,6 +7086,75 @@ export default class MidiComposer {
       this.song.loopEnabled = true;
       this.persist({ commitHistory: true });
     }
+  }
+
+  handleSongBottomRailPointerDown(x, y) {
+    if (this.bounds.songMixVolumeTab && this.pointInBounds(x, y, this.bounds.songMixVolumeTab)) {
+      this.setSongBottomRailMode('volume');
+      this.songMixControlMode = 'volume';
+      return true;
+    }
+    if (this.bounds.songRailMusicControls && this.pointInBounds(x, y, this.bounds.songRailMusicControls)) {
+      this.setSongBottomRailMode('music-controls');
+      return true;
+    }
+    if (this.bounds.songRailEditTab && this.pointInBounds(x, y, this.bounds.songRailEditTab)) {
+      this.setSongBottomRailMode('edit');
+      return true;
+    }
+    if (this.bounds.songRailToolsTab && this.pointInBounds(x, y, this.bounds.songRailToolsTab)) {
+      this.setSongBottomRailMode('tools');
+      return true;
+    }
+    if (this.bounds.songMixPanTab && this.pointInBounds(x, y, this.bounds.songMixPanTab)) {
+      this.setSongBottomRailMode('pan');
+      this.songMixControlMode = 'pan';
+      return true;
+    }
+    const songToolActionHit = (this.songBottomRailMode === 'tools' || this.songBottomRailMode === 'edit')
+      ? this.bounds.songToolsActions?.find((bounds) => this.pointInBounds(x, y, bounds))
+      : null;
+    if (songToolActionHit) {
+      this.handleSongAction(songToolActionHit.action);
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportBack
+      && this.pointInBounds(x, y, this.bounds.songTransportBack)) {
+      this.jumpPlayheadBars(-1);
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportPlay
+      && this.pointInBounds(x, y, this.bounds.songTransportPlay)) {
+      if (!this.isPlaying) this.togglePlayback();
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportPause
+      && this.pointInBounds(x, y, this.bounds.songTransportPause)) {
+      if (this.isPlaying) this.togglePlayback();
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportStop
+      && this.pointInBounds(x, y, this.bounds.songTransportStop)) {
+      this.stopPlayback();
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportForward
+      && this.pointInBounds(x, y, this.bounds.songTransportForward)) {
+      this.jumpPlayheadBars(1);
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportLoop
+      && this.pointInBounds(x, y, this.bounds.songTransportLoop)) {
+      this.toggleLoopEnabled();
+      return true;
+    }
+    return false;
   }
 
   setSongBottomRailMode(mode) {
