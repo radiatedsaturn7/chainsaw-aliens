@@ -3722,7 +3722,7 @@ export default class MidiComposer {
       return;
     }
 
-    if (this.bounds.record && this.pointInBounds(x, y, this.bounds.record)) {
+    if (this.activeTab === 'grid' && this.bounds.record && this.pointInBounds(x, y, this.bounds.record)) {
       this.enterRecordMode();
       return;
     }
@@ -6949,6 +6949,33 @@ export default class MidiComposer {
   }
 
   handleSongAction(action) {
+    if (action === 'song-splice') {
+      const totalTicks = this.getSongTimelineTicks();
+      const splitTick = clamp(Math.round(this.playheadTick), 1, Math.max(1, totalTicks - 1));
+      const range = this.getSongSelectionRange();
+      let tracks = [];
+      if (range) {
+        tracks = range.trackIndices.map((trackIndex) => ({
+          trackIndex,
+          track: this.song.tracks[trackIndex],
+          pattern: this.song.tracks[trackIndex]?.patterns?.[this.selectedPatternIndex]
+        })).filter((entry) => entry.track && entry.pattern);
+      } else {
+        const track = this.song.tracks[this.selectedTrackIndex];
+        const pattern = track?.patterns?.[this.selectedPatternIndex];
+        if (track && pattern) {
+          tracks = [{ trackIndex: this.selectedTrackIndex, track, pattern }];
+        }
+      }
+      if (!tracks.length) return;
+      const splitParts = this.splitSongTrackPartsAtTicks(tracks, [splitTick], totalTicks);
+      const splitNotes = this.splitSongTracksAtTicks(tracks, [splitTick]);
+      if (splitParts > 0 || splitNotes > 0) {
+        this.persist({ commitHistory: true });
+      }
+      return;
+    }
+
     const range = this.getSongSelectionRange();
     if (!range) return;
     const tracks = range.trackIndices.map((trackIndex) => ({
@@ -7022,11 +7049,6 @@ export default class MidiComposer {
         this.refreshPatternPartRange(entry.pattern, this.getSongTimelineTicks());
       });
       this.persist({ commitHistory: true });
-      return;
-    }
-
-    if (action === 'song-splice') {
-      this.startSongSplitTool(range);
       return;
     }
 
