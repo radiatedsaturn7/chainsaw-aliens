@@ -802,6 +802,7 @@ export default class MidiComposer {
       keyframeNext: null,
       songMixVolumeTab: null,
       songMixPanTab: null,
+      songRailEditTab: null,
       songMixRail: null
     };
     this.trackBounds = [];
@@ -4089,11 +4090,15 @@ export default class MidiComposer {
         this.songBottomRailMode = 'music-controls';
         return;
       }
+      if (this.bounds.songRailEditTab && this.pointInBounds(x, y, this.bounds.songRailEditTab)) {
+        this.songBottomRailMode = 'edit';
+        return;
+      }
       if (this.bounds.songRailToolsTab && this.pointInBounds(x, y, this.bounds.songRailToolsTab)) {
         this.songBottomRailMode = 'tools';
         return;
       }
-      const songToolActionHit = this.songBottomRailMode === 'tools'
+      const songToolActionHit = (this.songBottomRailMode === 'tools' || this.songBottomRailMode === 'edit')
         ? this.bounds.songToolsActions?.find((bounds) => this.pointInBounds(x, y, bounds))
         : null;
       if (songToolActionHit) {
@@ -9585,6 +9590,7 @@ export default class MidiComposer {
 
     this.bounds.songRemoveTrack = null;
     this.bounds.songRailMusicControls = null;
+    this.bounds.songRailEditTab = null;
     this.bounds.songRailToolsTab = null;
     this.bounds.songToolsActions = [];
     this.songAddBounds = null;
@@ -9611,6 +9617,7 @@ export default class MidiComposer {
     const topTabH = rowH;
     const modeTabs = [
       { key: 'songRailMusicControls', label: 'Music Controls', mode: 'music-controls', w: isMobile ? 152 : 176 },
+      { key: 'songRailEditTab', label: 'Edit', mode: 'edit', w: isMobile ? 78 : 88 },
       { key: 'songRailToolsTab', label: 'Tools', mode: 'tools', w: isMobile ? 86 : 96 },
       { key: 'songMixVolumeTab', label: 'Volume', mode: 'volume', w: isMobile ? 92 : 102 },
       { key: 'songMixPanTab', label: 'Pan', mode: 'pan', w: isMobile ? 76 : 86 }
@@ -9648,15 +9655,23 @@ export default class MidiComposer {
       });
     }
 
-    if (this.songBottomRailMode === 'tools') {
-      const actions = [
-        { action: 'song-splice', label: 'Split' },
-        { action: 'song-copy', label: 'Copy' },
-        { action: 'song-merge-left', label: 'Merge Left' },
-        { action: 'song-merge-right', label: 'Merge Right' },
-        { action: 'song-duplicate', label: 'Duplicate' },
-        { action: 'song-delete', label: 'Delete' }
-      ];
+    if (this.songBottomRailMode === 'edit' || this.songBottomRailMode === 'tools') {
+      const actions = this.songBottomRailMode === 'edit'
+        ? [
+          { action: 'song-copy', label: 'Copy' },
+          { action: 'song-cut', label: 'Cut' },
+          { action: 'song-delete', label: 'Delete' },
+          { action: 'song-paste', label: 'Paste' },
+          { action: 'song-duplicate', label: 'Duplicate' }
+        ]
+        : [
+          { action: 'song-splice', label: 'Split' },
+          { action: 'song-merge-left', label: 'Merge Left' },
+          { action: 'song-merge-right', label: 'Merge Right' },
+          { action: 'song-clone-paint', label: 'Clone Paint' },
+          { action: 'song-loop-selection', label: 'Loop This' },
+          { action: 'song-shift-note', label: 'Shift Note' }
+        ];
       const toolButtonH = rowH;
       const toolGap = 8;
       const actionBounds = this.drawEqualWidthButtonRow(ctx, actions, {
