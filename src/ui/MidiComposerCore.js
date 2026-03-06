@@ -6199,7 +6199,9 @@ export default class MidiComposer {
     this.songSelection.trackStartIndex = clamp(this.songSelection.trackStartIndex ?? this.songSelection.trackIndex ?? 0, 0, maxTrack);
     this.songSelection.trackEndIndex = clamp(this.songSelection.trackEndIndex ?? this.songSelection.trackIndex ?? 0, 0, maxTrack);
     this.songSelection.trackIndex = clamp(this.songSelection.trackIndex ?? this.songSelection.trackStartIndex ?? 0, 0, maxTrack);
-    this.songSelectionMenu.open = Boolean(this.getSongSelectionRange());
+    // Song actions now live in the bottom rail; keep selection without opening the floating context menu.
+    this.songSelectionMenu.open = false;
+    this.songSelectionMenu.bounds = [];
     this.songSelectionMenu.x = this.lastPointer.x;
     this.songSelectionMenu.y = this.lastPointer.y;
     if (this.songClonePaintTool.active) {
