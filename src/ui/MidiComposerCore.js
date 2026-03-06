@@ -4082,20 +4082,20 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.songMixVolumeTab && this.pointInBounds(x, y, this.bounds.songMixVolumeTab)) {
-        this.songBottomRailMode = 'volume';
+        this.setSongBottomRailMode('volume');
         this.songMixControlMode = 'volume';
         return;
       }
       if (this.bounds.songRailMusicControls && this.pointInBounds(x, y, this.bounds.songRailMusicControls)) {
-        this.songBottomRailMode = 'music-controls';
+        this.setSongBottomRailMode('music-controls');
         return;
       }
       if (this.bounds.songRailEditTab && this.pointInBounds(x, y, this.bounds.songRailEditTab)) {
-        this.songBottomRailMode = 'edit';
+        this.setSongBottomRailMode('edit');
         return;
       }
       if (this.bounds.songRailToolsTab && this.pointInBounds(x, y, this.bounds.songRailToolsTab)) {
-        this.songBottomRailMode = 'tools';
+        this.setSongBottomRailMode('tools');
         return;
       }
       const songToolActionHit = (this.songBottomRailMode === 'tools' || this.songBottomRailMode === 'edit')
@@ -4142,7 +4142,7 @@ export default class MidiComposer {
         return;
       }
       if (this.bounds.songMixPanTab && this.pointInBounds(x, y, this.bounds.songMixPanTab)) {
-        this.songBottomRailMode = 'pan';
+        this.setSongBottomRailMode('pan');
         this.songMixControlMode = 'pan';
         return;
       }
@@ -7147,6 +7147,17 @@ export default class MidiComposer {
       this.song.loopEnabled = true;
       this.persist({ commitHistory: true });
     }
+  }
+
+  setSongBottomRailMode(mode) {
+    this.songBottomRailMode = mode;
+    this.bounds.songToolsActions = [];
+    this.bounds.songTransportBack = null;
+    this.bounds.songTransportPlay = null;
+    this.bounds.songTransportPause = null;
+    this.bounds.songTransportStop = null;
+    this.bounds.songTransportForward = null;
+    this.bounds.songTransportLoop = null;
   }
 
   setTrackChannel(track, channel) {
