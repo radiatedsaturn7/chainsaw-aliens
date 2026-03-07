@@ -9385,8 +9385,8 @@ export default class MidiComposer {
         ? (this.gridBounds.cellHeight / this.gridZoomY)
         : referenceCellHeight;
       const songLaneCellHeight = clamp(zoomDecoupledCellHeight, 8, 24);
-      // Keep Song ribbons fixed at ~3 grid-note rows, independent of live grid zoom.
-      laneH = Math.max(44, Math.round(songLaneCellHeight * 3));
+      // Keep Song ribbons fixed at ~3 grid-note rows (slightly padded for touch clarity), independent of live grid zoom.
+      laneH = Math.max(48, Math.round(songLaneCellHeight * 3.25));
       if (showAutomation) {
         automationH = Math.max(12, Math.round(songLaneCellHeight * 0.9));
         laneBlockH = laneH + 6 + automationH + 6 + automationH;
@@ -9681,18 +9681,20 @@ export default class MidiComposer {
     const zoomRailLimits = this.getGridZoomLimitsX();
     this.gridZoomX = clamp(this.gridZoomX, zoomRailLimits.minZoom, zoomRailLimits.maxZoom);
     const zoomRatio = clamp((this.gridZoomX - zoomRailLimits.minZoom) / Math.max(0.0001, zoomRailLimits.maxZoom - zoomRailLimits.minZoom), 0, 1);
-    const zoomRailBounds = {
-      x: mixRailBounds.x + 12,
-      y: mixRailBounds.y + mixRailBounds.h - 12 - 10,
-      w: mixRailBounds.w - 24,
-      h: 10
-    };
-    this.bounds.railZoom = {
-      x: zoomRailBounds.x,
-      y: zoomRailBounds.y - 14,
-      w: zoomRailBounds.w,
-      h: zoomRailBounds.h + 28
-    };
+    const viewportWidth = this.viewportWidth || (x + w);
+    const viewportHeight = this.viewportHeight || (y + h);
+    const controlBase = Math.min(viewportWidth, viewportHeight);
+    const controlMargin = Math.max(16, controlBase * 0.04);
+    const joystickRadius = Math.min(78, controlBase * 0.14);
+    const joystickCenterX = controlMargin + joystickRadius;
+    const { railBounds: zoomRailBounds, hitBounds: zoomHitBounds } = getSharedMobileZoomSliderLayout({
+      width: viewportWidth,
+      height: viewportHeight,
+      joystickCenterX,
+      joystickRadius,
+      controlMargin
+    });
+    this.bounds.railZoom = zoomHitBounds;
     drawSharedMobileZoomSlider(ctx, zoomRailBounds, zoomRatio);
 
     this.bounds.songRemoveTrack = null;
