@@ -3784,64 +3784,66 @@ export default class MidiComposer {
       return;
     }
 
-    if (this.bounds.play && this.pointInBounds(x, y, this.bounds.play)) {
-      this.togglePlayback();
-      return;
-    }
-    if (this.bounds.stop && this.pointInBounds(x, y, this.bounds.stop)) {
-      this.stopPlayback();
-      return;
-    }
-    if ((this.bounds.transportLoopToggle && this.pointInBounds(x, y, this.bounds.transportLoopToggle))
-      || (this.bounds.loopToggle && this.pointInBounds(x, y, this.bounds.loopToggle))) {
-      this.toggleLoopEnabled();
-      return;
-    }
-    if (this.bounds.returnStart && this.pointInBounds(x, y, this.bounds.returnStart)) {
-      this.returnToStart();
-      return;
-    }
-    if (this.bounds.setStart && this.pointInBounds(x, y, this.bounds.setStart)) {
-      this.setLoopStartTick(this.playheadTick);
-      return;
-    }
-    if (this.bounds.setEnd && this.pointInBounds(x, y, this.bounds.setEnd)) {
-      this.setLoopEndTick(this.playheadTick);
-      return;
-    }
-    if (this.bounds.prevBar && this.pointInBounds(x, y, this.bounds.prevBar)) {
-      this.jumpPlayheadBars(-1);
-      return;
-    }
-    if (this.bounds.nextBar && this.pointInBounds(x, y, this.bounds.nextBar)) {
-      this.jumpPlayheadBars(1);
-      return;
-    }
-    if (this.bounds.goEnd && this.pointInBounds(x, y, this.bounds.goEnd)) {
-      this.goToEnd();
-      return;
-    }
-    if (this.bounds.metronome && this.pointInBounds(x, y, this.bounds.metronome)) {
-      this.metronomeEnabled = !this.metronomeEnabled;
-      return;
-    }
-    if (this.bounds.tempoButton && this.pointInBounds(x, y, this.bounds.tempoButton)) {
-      this.tempoSliderOpen = !this.tempoSliderOpen;
-      this.noteLengthMenu.open = false;
-      return;
-    }
-    if (this.tempoSliderOpen) {
-      this.tempoSliderOpen = false;
-    }
-    if (this.bounds.noteLength && this.pointInBounds(x, y, this.bounds.noteLength)) {
-      if (isDrumTrack(this.getActiveTrack())) return;
-      this.noteLengthMenu.open = !this.noteLengthMenu.open;
-      this.noteLengthMenu.anchor = { ...this.bounds.noteLength };
-      this.tempoSliderOpen = false;
-      return;
-    }
-    if (this.noteLengthMenu.open) {
-      this.noteLengthMenu.open = false;
+    if (this.activeTab === 'grid') {
+      if (this.bounds.play && this.pointInBounds(x, y, this.bounds.play)) {
+        this.togglePlayback();
+        return;
+      }
+      if (this.bounds.stop && this.pointInBounds(x, y, this.bounds.stop)) {
+        this.stopPlayback();
+        return;
+      }
+      if ((this.bounds.transportLoopToggle && this.pointInBounds(x, y, this.bounds.transportLoopToggle))
+        || (this.bounds.loopToggle && this.pointInBounds(x, y, this.bounds.loopToggle))) {
+        this.toggleLoopEnabled();
+        return;
+      }
+      if (this.bounds.returnStart && this.pointInBounds(x, y, this.bounds.returnStart)) {
+        this.returnToStart();
+        return;
+      }
+      if (this.bounds.setStart && this.pointInBounds(x, y, this.bounds.setStart)) {
+        this.setLoopStartTick(this.playheadTick);
+        return;
+      }
+      if (this.bounds.setEnd && this.pointInBounds(x, y, this.bounds.setEnd)) {
+        this.setLoopEndTick(this.playheadTick);
+        return;
+      }
+      if (this.bounds.prevBar && this.pointInBounds(x, y, this.bounds.prevBar)) {
+        this.jumpPlayheadBars(-1);
+        return;
+      }
+      if (this.bounds.nextBar && this.pointInBounds(x, y, this.bounds.nextBar)) {
+        this.jumpPlayheadBars(1);
+        return;
+      }
+      if (this.bounds.goEnd && this.pointInBounds(x, y, this.bounds.goEnd)) {
+        this.goToEnd();
+        return;
+      }
+      if (this.bounds.metronome && this.pointInBounds(x, y, this.bounds.metronome)) {
+        this.metronomeEnabled = !this.metronomeEnabled;
+        return;
+      }
+      if (this.bounds.tempoButton && this.pointInBounds(x, y, this.bounds.tempoButton)) {
+        this.tempoSliderOpen = !this.tempoSliderOpen;
+        this.noteLengthMenu.open = false;
+        return;
+      }
+      if (this.tempoSliderOpen) {
+        this.tempoSliderOpen = false;
+      }
+      if (this.bounds.noteLength && this.pointInBounds(x, y, this.bounds.noteLength)) {
+        if (isDrumTrack(this.getActiveTrack())) return;
+        this.noteLengthMenu.open = !this.noteLengthMenu.open;
+        this.noteLengthMenu.anchor = { ...this.bounds.noteLength };
+        this.tempoSliderOpen = false;
+        return;
+      }
+      if (this.noteLengthMenu.open) {
+        this.noteLengthMenu.open = false;
+      }
     }
 
     if (this.activeTab === 'instruments' || this.instrumentPicker.mode) {
@@ -4004,6 +4006,9 @@ export default class MidiComposer {
     }
 
     if (this.activeTab === 'song') {
+      if (this.handleSongBottomRailPointerDown(x, y)) {
+        return;
+      }
       if (this.songSplitTool.active) {
         const splitActionHit = this.songSplitTool.bounds?.splitAction && this.pointInBounds(x, y, this.songSplitTool.bounds.splitAction);
         if (splitActionHit) {
@@ -4079,71 +4084,6 @@ export default class MidiComposer {
       }
       if (this.songAddBounds && this.pointInBounds(x, y, this.songAddBounds)) {
         this.addTrack();
-        return;
-      }
-      if (this.bounds.songMixVolumeTab && this.pointInBounds(x, y, this.bounds.songMixVolumeTab)) {
-        this.songBottomRailMode = 'volume';
-        this.songMixControlMode = 'volume';
-        return;
-      }
-      if (this.bounds.songRailMusicControls && this.pointInBounds(x, y, this.bounds.songRailMusicControls)) {
-        this.songBottomRailMode = 'music-controls';
-        return;
-      }
-      if (this.bounds.songRailEditTab && this.pointInBounds(x, y, this.bounds.songRailEditTab)) {
-        this.songBottomRailMode = 'edit';
-        return;
-      }
-      if (this.bounds.songRailToolsTab && this.pointInBounds(x, y, this.bounds.songRailToolsTab)) {
-        this.songBottomRailMode = 'tools';
-        return;
-      }
-      const songToolActionHit = (this.songBottomRailMode === 'tools' || this.songBottomRailMode === 'edit')
-        ? this.bounds.songToolsActions?.find((bounds) => this.pointInBounds(x, y, bounds))
-        : null;
-      if (songToolActionHit) {
-        this.handleSongAction(songToolActionHit.action);
-        return;
-      }
-      if (this.songBottomRailMode === 'music-controls'
-        && this.bounds.songTransportBack
-        && this.pointInBounds(x, y, this.bounds.songTransportBack)) {
-        this.jumpPlayheadBars(-1);
-        return;
-      }
-      if (this.songBottomRailMode === 'music-controls'
-        && this.bounds.songTransportPlay
-        && this.pointInBounds(x, y, this.bounds.songTransportPlay)) {
-        if (!this.isPlaying) this.togglePlayback();
-        return;
-      }
-      if (this.songBottomRailMode === 'music-controls'
-        && this.bounds.songTransportPause
-        && this.pointInBounds(x, y, this.bounds.songTransportPause)) {
-        if (this.isPlaying) this.togglePlayback();
-        return;
-      }
-      if (this.songBottomRailMode === 'music-controls'
-        && this.bounds.songTransportStop
-        && this.pointInBounds(x, y, this.bounds.songTransportStop)) {
-        this.stopPlayback();
-        return;
-      }
-      if (this.songBottomRailMode === 'music-controls'
-        && this.bounds.songTransportForward
-        && this.pointInBounds(x, y, this.bounds.songTransportForward)) {
-        this.jumpPlayheadBars(1);
-        return;
-      }
-      if (this.songBottomRailMode === 'music-controls'
-        && this.bounds.songTransportLoop
-        && this.pointInBounds(x, y, this.bounds.songTransportLoop)) {
-        this.toggleLoopEnabled();
-        return;
-      }
-      if (this.bounds.songMixPanTab && this.pointInBounds(x, y, this.bounds.songMixPanTab)) {
-        this.songBottomRailMode = 'pan';
-        this.songMixControlMode = 'pan';
         return;
       }
       if (this.bounds.songRemoveTrack && this.pointInBounds(x, y, this.bounds.songRemoveTrack)) {
@@ -6708,10 +6648,33 @@ export default class MidiComposer {
       if (!pattern) return;
       if (Array.isArray(pattern.partRanges) && pattern.partRanges.length > 0) {
         const ranges = this.normalizePartRanges(pattern.partRanges, limit);
-        const leftIndex = ranges.findIndex((range) => range.endTick === boundary);
+        if (ranges.length < 2) return;
+        let leftIndex = ranges.findIndex((range, index) => (
+          index < ranges.length - 1
+            && range.endTick === boundary
+            && ranges[index + 1].startTick === boundary
+        ));
+        if (leftIndex === -1) {
+          leftIndex = ranges.findIndex((range, index) => (
+            index < ranges.length - 1
+              && boundary >= range.endTick
+              && boundary <= ranges[index + 1].startTick
+          ));
+        }
+        if (leftIndex === -1) {
+          let closestDistance = Number.POSITIVE_INFINITY;
+          for (let index = 0; index < ranges.length - 1; index += 1) {
+            const leftGap = Math.abs(boundary - ranges[index].endTick);
+            const rightGap = Math.abs(boundary - ranges[index + 1].startTick);
+            const distance = Math.min(leftGap, rightGap);
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              leftIndex = index;
+            }
+          }
+        }
         if (leftIndex === -1 || leftIndex >= ranges.length - 1) return;
         const rightIndex = leftIndex + 1;
-        if (ranges[rightIndex].startTick !== boundary) return;
         const mergedRange = {
           startTick: ranges[leftIndex].startTick,
           endTick: ranges[rightIndex].endTick
@@ -6722,10 +6685,17 @@ export default class MidiComposer {
         return;
       }
       const existing = Array.isArray(pattern.partBoundaries) ? pattern.partBoundaries : [];
-      const next = existing
-        .filter((tick) => Math.round(tick) !== boundary)
+      const normalized = existing
         .map((tick) => clamp(Math.round(tick), 1, limit - 1));
-      if (next.length !== existing.length) {
+      if (!normalized.length) return;
+      let dropBoundary = boundary;
+      if (!normalized.includes(boundary)) {
+        dropBoundary = normalized.reduce((closest, tick) => (
+          Math.abs(tick - boundary) < Math.abs(closest - boundary) ? tick : closest
+        ), normalized[0]);
+      }
+      const next = normalized.filter((tick) => tick !== dropBoundary);
+      if (next.length !== normalized.length) {
         pattern.partBoundaries = [...new Set(next)].sort((a, b) => a - b);
         merged += 1;
       }
@@ -6976,6 +6946,37 @@ export default class MidiComposer {
       return;
     }
 
+    if (action === 'song-paste') {
+      const notesByTrack = this.songClipboard?.notesByTrack;
+      if (!Array.isArray(notesByTrack) || notesByTrack.length === 0) return;
+      const totalTicks = Math.max(1, this.getSongTimelineTicks());
+      const startTick = clamp(Math.round(this.playheadTick || 0), 0, totalTicks);
+      const anchorTrack = Number.isInteger(this.songClipboard.anchorTrackIndex)
+        ? this.songClipboard.anchorTrackIndex
+        : clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
+      const targetAnchorTrack = clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
+      notesByTrack.forEach((entry) => {
+        const targetTrackIndex = clamp(
+          targetAnchorTrack + (entry.trackIndex - anchorTrack),
+          0,
+          this.song.tracks.length - 1
+        );
+        const targetPattern = this.song.tracks[targetTrackIndex]?.patterns?.[this.selectedPatternIndex];
+        if (!targetPattern) return;
+        entry.notes.forEach((note) => {
+          targetPattern.notes.push({
+            ...note,
+            id: uid(),
+            startTick: startTick + note.startTick
+          });
+        });
+        this.refreshPatternPartRange(targetPattern, totalTicks + (this.songClipboard.durationTicks || 0));
+      });
+      this.ensureGridCapacity(startTick + (this.songClipboard.durationTicks || 0));
+      this.persist({ commitHistory: true });
+      return;
+    }
+
     const range = this.getSongSelectionRange();
     if (!range) return;
     const tracks = range.trackIndices.map((trackIndex) => ({
@@ -6998,34 +6999,6 @@ export default class MidiComposer {
         durationTicks: range.durationTicks,
         notesByTrack
       };
-      return;
-    }
-
-    if (action === 'song-paste') {
-      const notesByTrack = this.songClipboard?.notesByTrack;
-      if (!Array.isArray(notesByTrack) || notesByTrack.length === 0) return;
-      const startTick = range.startTick;
-      const anchorTrack = Number.isInteger(this.songClipboard.anchorTrackIndex)
-        ? this.songClipboard.anchorTrackIndex
-        : range.trackStartIndex;
-      notesByTrack.forEach((entry) => {
-        const targetTrackIndex = clamp(
-          range.trackStartIndex + (entry.trackIndex - anchorTrack),
-          0,
-          this.song.tracks.length - 1
-        );
-        const targetPattern = this.song.tracks[targetTrackIndex]?.patterns?.[this.selectedPatternIndex];
-        if (!targetPattern) return;
-        entry.notes.forEach((note) => {
-          targetPattern.notes.push({
-            ...note,
-            id: uid(),
-            startTick: startTick + note.startTick
-          });
-        });
-      });
-      this.ensureGridCapacity(startTick + this.songClipboard.durationTicks);
-      this.persist({ commitHistory: true });
       return;
     }
 
@@ -7147,6 +7120,86 @@ export default class MidiComposer {
       this.song.loopEnabled = true;
       this.persist({ commitHistory: true });
     }
+  }
+
+  handleSongBottomRailPointerDown(x, y) {
+    if (this.bounds.songMixVolumeTab && this.pointInBounds(x, y, this.bounds.songMixVolumeTab)) {
+      this.setSongBottomRailMode('volume');
+      this.songMixControlMode = 'volume';
+      return true;
+    }
+    if (this.bounds.songRailMusicControls && this.pointInBounds(x, y, this.bounds.songRailMusicControls)) {
+      this.setSongBottomRailMode('music-controls');
+      return true;
+    }
+    if (this.bounds.songRailEditTab && this.pointInBounds(x, y, this.bounds.songRailEditTab)) {
+      this.setSongBottomRailMode('edit');
+      return true;
+    }
+    if (this.bounds.songRailToolsTab && this.pointInBounds(x, y, this.bounds.songRailToolsTab)) {
+      this.setSongBottomRailMode('tools');
+      return true;
+    }
+    if (this.bounds.songMixPanTab && this.pointInBounds(x, y, this.bounds.songMixPanTab)) {
+      this.setSongBottomRailMode('pan');
+      this.songMixControlMode = 'pan';
+      return true;
+    }
+    const songToolActionHit = (this.songBottomRailMode === 'tools' || this.songBottomRailMode === 'edit')
+      ? this.bounds.songToolsActions?.find((bounds) => this.pointInBounds(x, y, bounds))
+      : null;
+    if (songToolActionHit) {
+      this.handleSongAction(songToolActionHit.action);
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportBack
+      && this.pointInBounds(x, y, this.bounds.songTransportBack)) {
+      this.jumpPlayheadBars(-1);
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportPlay
+      && this.pointInBounds(x, y, this.bounds.songTransportPlay)) {
+      if (!this.isPlaying) this.togglePlayback();
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportPause
+      && this.pointInBounds(x, y, this.bounds.songTransportPause)) {
+      if (this.isPlaying) this.togglePlayback();
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportStop
+      && this.pointInBounds(x, y, this.bounds.songTransportStop)) {
+      this.stopPlayback();
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportForward
+      && this.pointInBounds(x, y, this.bounds.songTransportForward)) {
+      this.jumpPlayheadBars(1);
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportLoop
+      && this.pointInBounds(x, y, this.bounds.songTransportLoop)) {
+      this.toggleLoopEnabled();
+      return true;
+    }
+    return false;
+  }
+
+  setSongBottomRailMode(mode) {
+    this.songBottomRailMode = mode;
+    this.bounds.songToolsActions = [];
+    this.bounds.songTransportBack = null;
+    this.bounds.songTransportPlay = null;
+    this.bounds.songTransportPause = null;
+    this.bounds.songTransportStop = null;
+    this.bounds.songTransportForward = null;
+    this.bounds.songTransportLoop = null;
   }
 
   setTrackChannel(track, channel) {
@@ -8702,7 +8755,7 @@ export default class MidiComposer {
         this.drawMobileBottomRail(ctx, contentX, contentY + contentH + 8, contentW, railH - 8, track);
       }
     } else if (this.activeTab === 'song') {
-      const songContentH = isLandscape ? Math.min(height - padding * 2, contentH + Math.round(railH * 0.45)) : contentH;
+      const songContentH = isLandscape ? (height - padding * 2) : contentH;
       this.drawSongTab(ctx, contentX, contentY, contentW, songContentH);
     } else if (this.activeTab === 'instruments') {
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
@@ -8713,7 +8766,7 @@ export default class MidiComposer {
       this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
     }
 
-    if (isLandscape && this.activeTab !== 'instruments' && this.activeTab !== 'grid') {
+    if (isLandscape && this.activeTab !== 'instruments' && this.activeTab !== 'grid' && this.activeTab !== 'song') {
       this.drawLandscapeZoomOverlay(ctx, width, height);
     }
   }
@@ -9270,9 +9323,9 @@ export default class MidiComposer {
     this.bounds.loopToggle = this.bounds.transportLoopToggle;
     this.drawToggle(ctx, this.bounds.transportLoopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
 
-    const zoomXLimits = this.getGridZoomLimitsX();
-    this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
-    const zoomRatio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
+    const zoomRailLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomRailLimits.minZoom, zoomRailLimits.maxZoom);
+    const zoomRatio = clamp((this.gridZoomX - zoomRailLimits.minZoom) / Math.max(0.0001, zoomRailLimits.maxZoom - zoomRailLimits.minZoom), 0, 1);
     const sliderY = railY + railH + 8;
     this.bounds.railZoom = { x: x + w - railPadding - zoomW, y: sliderY, w: zoomW, h: 12 };
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
@@ -9311,7 +9364,7 @@ export default class MidiComposer {
     const rulerY = y + padding;
     const laneAreaY = rulerY + rulerH;
     const isMobile = this.isMobileLayout();
-    let baseMixRailH = isMobile ? 88 : 112;
+    let baseMixRailH = isMobile ? 148 : 120;
     const railGap = 8;
     const extraTrackRowH = isMobile ? 0 : 48;
     let laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
@@ -9326,15 +9379,23 @@ export default class MidiComposer {
     let laneH;
     let automationH;
     if (isMobile) {
-      // Keep mobile Song lanes visually aligned with Grid lanes (about 3 note rows tall).
-      laneH = Math.max(60, Math.round(referenceCellHeight * 3));
+      const zoomDecoupledCellHeight = (Number.isFinite(this.gridBounds?.cellHeight)
+        && Number.isFinite(this.gridZoomY)
+        && this.gridZoomY > 0)
+        ? (this.gridBounds.cellHeight / this.gridZoomY)
+        : referenceCellHeight;
+      const songLaneCellHeight = clamp(zoomDecoupledCellHeight, 8, 24);
+      // Keep Song ribbons fixed around ~3 grid-note rows, with a touch-friendly height boost, independent of live grid zoom.
+      laneH = Math.max(56, Math.round(songLaneCellHeight * 3.8));
       if (showAutomation) {
-        automationH = Math.max(12, Math.round(referenceCellHeight * 0.9));
+        automationH = Math.max(12, Math.round(songLaneCellHeight * 0.9));
         laneBlockH = laneH + 6 + automationH + 6 + automationH;
       } else {
         automationH = 0;
         laneBlockH = laneH;
       }
+      const desiredLaneAreaH = visibleLaneCount * laneBlockH + Math.max(0, visibleLaneCount - 1) * laneGap;
+      laneAreaH = Math.min(laneAreaH, desiredLaneAreaH);
     } else {
       laneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
       laneH = showAutomation ? Math.max(36, laneBlockH * 0.42) : laneBlockH;
@@ -9548,12 +9609,17 @@ export default class MidiComposer {
         }
       }
 
-      this.drawSongAutomationOverlay(ctx, laneBounds, track, {
-        originX,
-        cellWidth,
-        timelineTicks,
-        mode: this.songMixControlMode
-      });
+      const laneOverlayMode = this.songBottomRailMode === 'pan'
+        ? 'pan'
+        : (this.songBottomRailMode === 'volume' ? 'volume' : null);
+      if (laneOverlayMode) {
+        this.drawSongAutomationOverlay(ctx, laneBounds, track, {
+          originX,
+          cellWidth,
+          timelineTicks,
+          mode: laneOverlayMode
+        });
+      }
 
       if (selectionRange && index >= selectionRange.trackStartIndex && index <= selectionRange.trackEndIndex) {
         const selStart = originX + selectionRange.startTick * cellWidth;
@@ -9611,6 +9677,25 @@ export default class MidiComposer {
     ctx.fillRect(mixRailBounds.x, mixRailBounds.y, mixRailBounds.w, mixRailBounds.h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(mixRailBounds.x, mixRailBounds.y, mixRailBounds.w, mixRailBounds.h);
+
+    const zoomRailLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomRailLimits.minZoom, zoomRailLimits.maxZoom);
+    const zoomRatio = clamp((this.gridZoomX - zoomRailLimits.minZoom) / Math.max(0.0001, zoomRailLimits.maxZoom - zoomRailLimits.minZoom), 0, 1);
+    const viewportWidth = this.viewportWidth || (x + w);
+    const viewportHeight = this.viewportHeight || (y + h);
+    const controlBase = Math.min(viewportWidth, viewportHeight);
+    const controlMargin = Math.max(16, controlBase * 0.04);
+    const joystickRadius = Math.min(78, controlBase * 0.14);
+    const joystickCenterX = controlMargin + joystickRadius;
+    const { railBounds: zoomRailBounds, hitBounds: zoomHitBounds } = getSharedMobileZoomSliderLayout({
+      width: viewportWidth,
+      height: viewportHeight,
+      joystickCenterX,
+      joystickRadius,
+      controlMargin
+    });
+    this.bounds.railZoom = zoomHitBounds;
+    drawSharedMobileZoomSlider(ctx, zoomRailBounds, zoomRatio);
 
     this.bounds.songRemoveTrack = null;
     this.bounds.songRailMusicControls = null;
