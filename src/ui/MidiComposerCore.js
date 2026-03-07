@@ -4006,8 +4006,7 @@ export default class MidiComposer {
     }
 
     if (this.activeTab === 'song') {
-      if (this.bounds.songMixRail && this.pointInBounds(x, y, this.bounds.songMixRail)) {
-        this.handleSongBottomRailPointerDown(x, y);
+      if (this.handleSongBottomRailPointerDown(x, y)) {
         return;
       }
       if (this.songSplitTool.active) {
@@ -6947,6 +6946,37 @@ export default class MidiComposer {
       return;
     }
 
+    if (action === 'song-paste') {
+      const notesByTrack = this.songClipboard?.notesByTrack;
+      if (!Array.isArray(notesByTrack) || notesByTrack.length === 0) return;
+      const totalTicks = Math.max(1, this.getSongTimelineTicks());
+      const startTick = clamp(Math.round(this.playheadTick || 0), 0, totalTicks);
+      const anchorTrack = Number.isInteger(this.songClipboard.anchorTrackIndex)
+        ? this.songClipboard.anchorTrackIndex
+        : clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
+      const targetAnchorTrack = clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
+      notesByTrack.forEach((entry) => {
+        const targetTrackIndex = clamp(
+          targetAnchorTrack + (entry.trackIndex - anchorTrack),
+          0,
+          this.song.tracks.length - 1
+        );
+        const targetPattern = this.song.tracks[targetTrackIndex]?.patterns?.[this.selectedPatternIndex];
+        if (!targetPattern) return;
+        entry.notes.forEach((note) => {
+          targetPattern.notes.push({
+            ...note,
+            id: uid(),
+            startTick: startTick + note.startTick
+          });
+        });
+        this.refreshPatternPartRange(targetPattern, totalTicks + (this.songClipboard.durationTicks || 0));
+      });
+      this.ensureGridCapacity(startTick + (this.songClipboard.durationTicks || 0));
+      this.persist({ commitHistory: true });
+      return;
+    }
+
     const range = this.getSongSelectionRange();
     if (!range) return;
     const tracks = range.trackIndices.map((trackIndex) => ({
@@ -6969,34 +6999,6 @@ export default class MidiComposer {
         durationTicks: range.durationTicks,
         notesByTrack
       };
-      return;
-    }
-
-    if (action === 'song-paste') {
-      const notesByTrack = this.songClipboard?.notesByTrack;
-      if (!Array.isArray(notesByTrack) || notesByTrack.length === 0) return;
-      const startTick = range.startTick;
-      const anchorTrack = Number.isInteger(this.songClipboard.anchorTrackIndex)
-        ? this.songClipboard.anchorTrackIndex
-        : range.trackStartIndex;
-      notesByTrack.forEach((entry) => {
-        const targetTrackIndex = clamp(
-          range.trackStartIndex + (entry.trackIndex - anchorTrack),
-          0,
-          this.song.tracks.length - 1
-        );
-        const targetPattern = this.song.tracks[targetTrackIndex]?.patterns?.[this.selectedPatternIndex];
-        if (!targetPattern) return;
-        entry.notes.forEach((note) => {
-          targetPattern.notes.push({
-            ...note,
-            id: uid(),
-            startTick: startTick + note.startTick
-          });
-        });
-      });
-      this.ensureGridCapacity(startTick + this.songClipboard.durationTicks);
-      this.persist({ commitHistory: true });
       return;
     }
 
@@ -9599,12 +9601,17 @@ export default class MidiComposer {
         }
       }
 
-      this.drawSongAutomationOverlay(ctx, laneBounds, track, {
-        originX,
-        cellWidth,
-        timelineTicks,
-        mode: this.songMixControlMode
-      });
+      const laneOverlayMode = this.songBottomRailMode === 'pan'
+        ? 'pan'
+        : (this.songBottomRailMode === 'volume' ? 'volume' : null);
+      if (laneOverlayMode) {
+        this.drawSongAutomationOverlay(ctx, laneBounds, track, {
+          originX,
+          cellWidth,
+          timelineTicks,
+          mode: laneOverlayMode
+        });
+      }
 
       if (selectionRange && index >= selectionRange.trackStartIndex && index <= selectionRange.trackEndIndex) {
         const selStart = originX + selectionRange.startTick * cellWidth;
