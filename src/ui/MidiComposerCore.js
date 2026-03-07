@@ -4102,6 +4102,10 @@ export default class MidiComposer {
         this.selectedTrackIndex = partHandleHit.trackIndex;
         const pattern = this.song.tracks[partHandleHit.trackIndex]?.patterns?.[this.selectedPatternIndex];
         const range = this.getPatternPartRange(pattern, partHandleHit.partIndex, this.getSongTimelineTicks());
+        const clonePaintHandleDrag = this.songClonePaintTool.active
+          && this.songClonePaintTool.trackIndex === partHandleHit.trackIndex
+          && this.songClonePaintTool.baseStartTick === range.startTick
+          && this.songClonePaintTool.baseEndTick === range.endTick;
         this.songSelection = {
           active: true,
           trackIndex: partHandleHit.trackIndex,
@@ -4114,13 +4118,17 @@ export default class MidiComposer {
           mode: 'song-part-resize',
           trackIndex: partHandleHit.trackIndex,
           partIndex: partHandleHit.partIndex,
-          edge: partHandleHit.edge
+          edge: clonePaintHandleDrag ? 'end' : partHandleHit.edge
         };
         return;
       }
       const partHit = this.songPartBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (partHit) {
         const tappedTick = clamp(this.getSongTickFromX(x, partHit), 0, this.getSongTimelineTicks());
+        const clonePaintBodyDrag = this.songClonePaintTool.active
+          && this.songClonePaintTool.trackIndex === partHit.trackIndex
+          && this.songClonePaintTool.baseStartTick === partHit.startTick
+          && this.songClonePaintTool.baseEndTick === partHit.endTick;
         this.selectedTrackIndex = partHit.trackIndex;
         this.playheadTick = tappedTick;
         this.songSelection = {
@@ -4131,17 +4139,24 @@ export default class MidiComposer {
           startTick: partHit.startTick,
           endTick: partHit.endTick
         };
-        this.dragState = {
-          mode: 'song-part-move',
-          startX: x,
-          startY: y,
-          sourceTrackIndex: partHit.trackIndex,
-          partIndex: partHit.partIndex,
-          offsetTick: this.getSongTickFromX(x, partHit) - partHit.startTick,
-          targetTrackIndex: partHit.trackIndex,
-          targetStartTick: partHit.startTick,
-          moved: false
-        };
+        this.dragState = clonePaintBodyDrag
+          ? {
+            mode: 'song-part-resize',
+            trackIndex: partHit.trackIndex,
+            partIndex: partHit.partIndex,
+            edge: 'end'
+          }
+          : {
+            mode: 'song-part-move',
+            startX: x,
+            startY: y,
+            sourceTrackIndex: partHit.trackIndex,
+            partIndex: partHit.partIndex,
+            offsetTick: this.getSongTickFromX(x, partHit) - partHit.startTick,
+            targetTrackIndex: partHit.trackIndex,
+            targetStartTick: partHit.startTick,
+            moved: false
+          };
         return;
       }
       const automationHit = this.songAutomationBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -9591,6 +9606,10 @@ export default class MidiComposer {
           if (partSelected) {
             const handleW = 14;
             const handleHitPad = 8;
+            const clonePaintSelectedPart = this.songClonePaintTool.active
+              && this.songClonePaintTool.trackIndex === index
+              && this.songClonePaintTool.baseStartTick === partStart
+              && this.songClonePaintTool.baseEndTick === partEnd;
             const leftHandle = {
               x: partX - handleW / 2,
               y: laneBounds.y + 2,
@@ -9625,8 +9644,15 @@ export default class MidiComposer {
                 h: rightHandle.h + handleHitPad * 2
               }
             );
-            ctx.fillStyle = 'rgba(255,225,106,0.95)';
+            const leftHandleColor = clonePaintSelectedPart
+              ? 'rgba(120,170,255,0.9)'
+              : 'rgba(255,225,106,0.95)';
+            const rightHandleColor = clonePaintSelectedPart
+              ? 'rgba(80,255,205,0.98)'
+              : 'rgba(255,225,106,0.95)';
+            ctx.fillStyle = leftHandleColor;
             ctx.fillRect(leftHandle.x, leftHandle.y, leftHandle.w, leftHandle.h);
+            ctx.fillStyle = rightHandleColor;
             ctx.fillRect(rightHandle.x, rightHandle.y, rightHandle.w, rightHandle.h);
           }
         });
