@@ -9364,7 +9364,7 @@ export default class MidiComposer {
     const rulerY = y + padding;
     const laneAreaY = rulerY + rulerH;
     const isMobile = this.isMobileLayout();
-    let baseMixRailH = isMobile ? 88 : 112;
+    let baseMixRailH = isMobile ? 168 : 132;
     const railGap = 8;
     const extraTrackRowH = isMobile ? 0 : 48;
     let laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
@@ -9815,6 +9815,31 @@ export default class MidiComposer {
       this.drawButton(ctx, this.bounds.keyframeSet, 'Set Keyframe', false, false);
       this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove Keyframe', false, false);
     }
+
+    const zoomSliderLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomSliderLimits.minZoom, zoomSliderLimits.maxZoom);
+    const zoomRatio = clamp(
+      (this.gridZoomX - zoomSliderLimits.minZoom) / Math.max(0.0001, zoomSliderLimits.maxZoom - zoomSliderLimits.minZoom),
+      0,
+      1
+    );
+    const zoomSliderH = 12;
+    const zoomSliderY = mixRailBounds.y + mixRailBounds.h - panelPad - zoomSliderH;
+    this.bounds.railZoom = {
+      x: mixRailBounds.x + panelPad,
+      y: zoomSliderY,
+      w: mixRailBounds.w - panelPad * 2,
+      h: zoomSliderH
+    };
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
+    ctx.fillStyle = '#ffe16a';
+    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w * zoomRatio, this.bounds.railZoom.h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
+    ctx.fillStyle = '#fff';
+    ctx.font = '11px Courier New';
+    ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 4);
 
     if (!selectedTrack) {
       this.songAddBounds = null;
