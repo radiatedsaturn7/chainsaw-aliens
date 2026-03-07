@@ -6647,10 +6647,33 @@ export default class MidiComposer {
       if (!pattern) return;
       if (Array.isArray(pattern.partRanges) && pattern.partRanges.length > 0) {
         const ranges = this.normalizePartRanges(pattern.partRanges, limit);
-        const leftIndex = ranges.findIndex((range) => range.endTick === boundary);
+        if (ranges.length < 2) return;
+        let leftIndex = ranges.findIndex((range, index) => (
+          index < ranges.length - 1
+            && range.endTick === boundary
+            && ranges[index + 1].startTick === boundary
+        ));
+        if (leftIndex === -1) {
+          leftIndex = ranges.findIndex((range, index) => (
+            index < ranges.length - 1
+              && boundary >= range.endTick
+              && boundary <= ranges[index + 1].startTick
+          ));
+        }
+        if (leftIndex === -1) {
+          let closestDistance = Number.POSITIVE_INFINITY;
+          for (let index = 0; index < ranges.length - 1; index += 1) {
+            const leftGap = Math.abs(boundary - ranges[index].endTick);
+            const rightGap = Math.abs(boundary - ranges[index + 1].startTick);
+            const distance = Math.min(leftGap, rightGap);
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              leftIndex = index;
+            }
+          }
+        }
         if (leftIndex === -1 || leftIndex >= ranges.length - 1) return;
         const rightIndex = leftIndex + 1;
-        if (ranges[rightIndex].startTick !== boundary) return;
         const mergedRange = {
           startTick: ranges[leftIndex].startTick,
           endTick: ranges[rightIndex].endTick
@@ -6661,10 +6684,17 @@ export default class MidiComposer {
         return;
       }
       const existing = Array.isArray(pattern.partBoundaries) ? pattern.partBoundaries : [];
-      const next = existing
-        .filter((tick) => Math.round(tick) !== boundary)
+      const normalized = existing
         .map((tick) => clamp(Math.round(tick), 1, limit - 1));
-      if (next.length !== existing.length) {
+      if (!normalized.length) return;
+      let dropBoundary = boundary;
+      if (!normalized.includes(boundary)) {
+        dropBoundary = normalized.reduce((closest, tick) => (
+          Math.abs(tick - boundary) < Math.abs(closest - boundary) ? tick : closest
+        ), normalized[0]);
+      }
+      const next = normalized.filter((tick) => tick !== dropBoundary);
+      if (next.length !== normalized.length) {
         pattern.partBoundaries = [...new Set(next)].sort((a, b) => a - b);
         merged += 1;
       }
