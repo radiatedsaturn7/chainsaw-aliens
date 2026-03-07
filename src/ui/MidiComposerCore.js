@@ -4120,7 +4120,9 @@ export default class MidiComposer {
       }
       const partHit = this.songPartBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (partHit) {
+        const tappedTick = clamp(this.getSongTickFromX(x, partHit), 0, this.getSongTimelineTicks());
         this.selectedTrackIndex = partHit.trackIndex;
+        this.playheadTick = tappedTick;
         this.songSelection = {
           active: true,
           trackIndex: partHit.trackIndex,
