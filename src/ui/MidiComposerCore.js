@@ -9323,9 +9323,9 @@ export default class MidiComposer {
     this.bounds.loopToggle = this.bounds.transportLoopToggle;
     this.drawToggle(ctx, this.bounds.transportLoopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
 
-    const zoomXLimits = this.getGridZoomLimitsX();
-    this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
-    const zoomRatio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
+    const zoomRailLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomRailLimits.minZoom, zoomRailLimits.maxZoom);
+    const zoomRatio = clamp((this.gridZoomX - zoomRailLimits.minZoom) / Math.max(0.0001, zoomRailLimits.maxZoom - zoomRailLimits.minZoom), 0, 1);
     const sliderY = railY + railH + 8;
     this.bounds.railZoom = { x: x + w - railPadding - zoomW, y: sliderY, w: zoomW, h: 12 };
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
@@ -9678,9 +9678,9 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(mixRailBounds.x, mixRailBounds.y, mixRailBounds.w, mixRailBounds.h);
 
-    const zoomXLimits = this.getGridZoomLimitsX();
-    this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
-    const zoomRatio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
+    const zoomRailLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomRailLimits.minZoom, zoomRailLimits.maxZoom);
+    const zoomRatio = clamp((this.gridZoomX - zoomRailLimits.minZoom) / Math.max(0.0001, zoomRailLimits.maxZoom - zoomRailLimits.minZoom), 0, 1);
     const zoomRailBounds = {
       x: mixRailBounds.x + 12,
       y: mixRailBounds.y + mixRailBounds.h - 12 - 10,
