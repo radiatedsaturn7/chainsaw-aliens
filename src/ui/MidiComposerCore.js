@@ -9364,7 +9364,7 @@ export default class MidiComposer {
     const rulerY = y + padding;
     const laneAreaY = rulerY + rulerH;
     const isMobile = this.isMobileLayout();
-    let baseMixRailH = isMobile ? 168 : 132;
+    let baseMixRailH = isMobile ? 104 : 120;
     const railGap = 8;
     const extraTrackRowH = isMobile ? 0 : 48;
     let laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
@@ -9379,15 +9379,23 @@ export default class MidiComposer {
     let laneH;
     let automationH;
     if (isMobile) {
-      // Keep mobile Song lanes visually aligned with Grid lanes (about 3 note rows tall).
-      laneH = Math.max(60, Math.round(referenceCellHeight * 3));
+      const zoomDecoupledCellHeight = (Number.isFinite(this.gridBounds?.cellHeight)
+        && Number.isFinite(this.gridZoomY)
+        && this.gridZoomY > 0)
+        ? (this.gridBounds.cellHeight / this.gridZoomY)
+        : referenceCellHeight;
+      const songLaneCellHeight = clamp(zoomDecoupledCellHeight, 8, 24);
+      // Keep Song ribbons fixed at ~12 grid-note rows, independent of live grid zoom.
+      laneH = Math.max(72, Math.round(songLaneCellHeight * 12));
       if (showAutomation) {
-        automationH = Math.max(12, Math.round(referenceCellHeight * 0.9));
+        automationH = Math.max(12, Math.round(songLaneCellHeight * 0.9));
         laneBlockH = laneH + 6 + automationH + 6 + automationH;
       } else {
         automationH = 0;
         laneBlockH = laneH;
       }
+      const desiredLaneAreaH = visibleLaneCount * laneBlockH + Math.max(0, visibleLaneCount - 1) * laneGap;
+      laneAreaH = Math.min(laneAreaH, desiredLaneAreaH);
     } else {
       laneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
       laneH = showAutomation ? Math.max(36, laneBlockH * 0.42) : laneBlockH;
@@ -9815,31 +9823,6 @@ export default class MidiComposer {
       this.drawButton(ctx, this.bounds.keyframeSet, 'Set Keyframe', false, false);
       this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove Keyframe', false, false);
     }
-
-    const zoomSliderLimits = this.getGridZoomLimitsX();
-    this.gridZoomX = clamp(this.gridZoomX, zoomSliderLimits.minZoom, zoomSliderLimits.maxZoom);
-    const zoomRatio = clamp(
-      (this.gridZoomX - zoomSliderLimits.minZoom) / Math.max(0.0001, zoomSliderLimits.maxZoom - zoomSliderLimits.minZoom),
-      0,
-      1
-    );
-    const zoomSliderH = 12;
-    const zoomSliderY = mixRailBounds.y + mixRailBounds.h - panelPad - zoomSliderH;
-    this.bounds.railZoom = {
-      x: mixRailBounds.x + panelPad,
-      y: zoomSliderY,
-      w: mixRailBounds.w - panelPad * 2,
-      h: zoomSliderH
-    };
-    ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
-    ctx.fillStyle = '#ffe16a';
-    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w * zoomRatio, this.bounds.railZoom.h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
-    ctx.fillStyle = '#fff';
-    ctx.font = '11px Courier New';
-    ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 4);
 
     if (!selectedTrack) {
       this.songAddBounds = null;
