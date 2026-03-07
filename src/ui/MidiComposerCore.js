@@ -8755,7 +8755,7 @@ export default class MidiComposer {
         this.drawMobileBottomRail(ctx, contentX, contentY + contentH + 8, contentW, railH - 8, track);
       }
     } else if (this.activeTab === 'song') {
-      const songContentH = isLandscape ? Math.min(height - padding * 2, contentH + Math.round(railH * 0.45)) : contentH;
+      const songContentH = isLandscape ? (height - padding * 2) : contentH;
       this.drawSongTab(ctx, contentX, contentY, contentW, songContentH);
     } else if (this.activeTab === 'instruments') {
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
@@ -9385,8 +9385,8 @@ export default class MidiComposer {
         ? (this.gridBounds.cellHeight / this.gridZoomY)
         : referenceCellHeight;
       const songLaneCellHeight = clamp(zoomDecoupledCellHeight, 8, 24);
-      // Keep Song ribbons fixed at ~3 grid-note rows (slightly padded for touch clarity), independent of live grid zoom.
-      laneH = Math.max(48, Math.round(songLaneCellHeight * 3.25));
+      // Keep Song ribbons fixed around ~3 grid-note rows, with a touch-friendly height boost, independent of live grid zoom.
+      laneH = Math.max(56, Math.round(songLaneCellHeight * 3.8));
       if (showAutomation) {
         automationH = Math.max(12, Math.round(songLaneCellHeight * 0.9));
         laneBlockH = laneH + 6 + automationH + 6 + automationH;
