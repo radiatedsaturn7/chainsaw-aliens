@@ -8766,7 +8766,7 @@ export default class MidiComposer {
       this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
     }
 
-    if (isLandscape && this.activeTab !== 'instruments' && this.activeTab !== 'grid') {
+    if (isLandscape && this.activeTab !== 'instruments' && this.activeTab !== 'grid' && this.activeTab !== 'song') {
       this.drawLandscapeZoomOverlay(ctx, width, height);
     }
   }
@@ -9364,7 +9364,7 @@ export default class MidiComposer {
     const rulerY = y + padding;
     const laneAreaY = rulerY + rulerH;
     const isMobile = this.isMobileLayout();
-    let baseMixRailH = isMobile ? 104 : 120;
+    let baseMixRailH = isMobile ? 148 : 120;
     const railGap = 8;
     const extraTrackRowH = isMobile ? 0 : 48;
     let laneAreaH = Math.max(0, h - rulerH - baseMixRailH - railGap + extraTrackRowH);
@@ -9385,8 +9385,8 @@ export default class MidiComposer {
         ? (this.gridBounds.cellHeight / this.gridZoomY)
         : referenceCellHeight;
       const songLaneCellHeight = clamp(zoomDecoupledCellHeight, 8, 24);
-      // Keep Song ribbons fixed at ~12 grid-note rows, independent of live grid zoom.
-      laneH = Math.max(72, Math.round(songLaneCellHeight * 12));
+      // Keep Song ribbons fixed at ~3 grid-note rows, independent of live grid zoom.
+      laneH = Math.max(44, Math.round(songLaneCellHeight * 3));
       if (showAutomation) {
         automationH = Math.max(12, Math.round(songLaneCellHeight * 0.9));
         laneBlockH = laneH + 6 + automationH + 6 + automationH;
@@ -9677,6 +9677,23 @@ export default class MidiComposer {
     ctx.fillRect(mixRailBounds.x, mixRailBounds.y, mixRailBounds.w, mixRailBounds.h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(mixRailBounds.x, mixRailBounds.y, mixRailBounds.w, mixRailBounds.h);
+
+    const zoomXLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
+    const zoomRatio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
+    const zoomRailBounds = {
+      x: mixRailBounds.x + 12,
+      y: mixRailBounds.y + mixRailBounds.h - 12 - 10,
+      w: mixRailBounds.w - 24,
+      h: 10
+    };
+    this.bounds.railZoom = {
+      x: zoomRailBounds.x,
+      y: zoomRailBounds.y - 14,
+      w: zoomRailBounds.w,
+      h: zoomRailBounds.h + 28
+    };
+    drawSharedMobileZoomSlider(ctx, zoomRailBounds, zoomRatio);
 
     this.bounds.songRemoveTrack = null;
     this.bounds.songRailMusicControls = null;
