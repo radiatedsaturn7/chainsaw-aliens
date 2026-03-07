@@ -6373,7 +6373,7 @@ export default class MidiComposer {
       track.automation = { pan: [], padding: [] };
     }
     const frames = track.automation[type] || [];
-    const existing = frames.find((frame) => Math.abs(frame.tick - tick) <= this.ticksPerBeat / 4);
+    const existing = frames.find((frame) => Math.abs(frame.tick - tick) <= this.ticksPerBeat / 2);
     if (existing) {
       existing.value = value;
     } else {
@@ -6387,7 +6387,7 @@ export default class MidiComposer {
   removeSongAutomationKeyframe(track, type, tick) {
     if (!track?.automation?.[type]) return;
     const frames = track.automation[type];
-    const threshold = this.ticksPerBeat / 4;
+    const threshold = this.ticksPerBeat / 2;
     const index = frames.findIndex((frame) => Math.abs(frame.tick - tick) <= threshold);
     if (index < 0) return;
     frames.splice(index, 1);
@@ -9451,7 +9451,7 @@ export default class MidiComposer {
       // Keep Song ribbons fixed around ~3 grid-note rows, with a touch-friendly height boost, independent of live grid zoom.
       laneH = Math.max(56, Math.round(songLaneCellHeight * 3.8));
       if (showAutomation) {
-        automationH = Math.max(18, Math.round(songLaneCellHeight));
+        automationH = Math.max(24, Math.round(songLaneCellHeight * 1.2));
         laneBlockH = laneH + 6 + automationH + 6 + automationH;
       } else {
         automationH = 0;
@@ -9462,7 +9462,7 @@ export default class MidiComposer {
     } else {
       laneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
       laneH = showAutomation ? Math.max(36, laneBlockH * 0.42) : laneBlockH;
-      automationH = showAutomation ? Math.max(18, (laneBlockH - laneH) / 2 - 6) : 0;
+      automationH = showAutomation ? Math.max(24, (laneBlockH - laneH) / 2 - 6) : 0;
     }
     const laneContentH = Math.max(0, trackCount * laneBlockH + Math.max(0, trackCount - 1) * laneGap);
     this.songTrackScrollMax = Math.max(0, laneContentH - laneAreaH);
@@ -10318,7 +10318,7 @@ export default class MidiComposer {
       const valueRatio = (value - minValue) / (maxValue - minValue || 1);
       const x = originX + tick * cellWidth;
       const y = laneBounds.y + laneBounds.h - valueRatio * laneBounds.h;
-      const markerSize = this.isMobileLayout() ? 9 : 7;
+      const markerSize = this.isMobileLayout() ? 18 : 14;
       const markerHalf = markerSize / 2;
       ctx.fillStyle = strokeColor;
       ctx.fillRect(x - markerHalf, y - markerHalf, markerSize, markerSize);
@@ -10330,7 +10330,7 @@ export default class MidiComposer {
   }
 
   drawAutomationLane(ctx, bounds, keyframes, minValue, maxValue, label, timeline, indicator = null) {
-    const keyframeSize = this.isMobileLayout() ? 12 : 10;
+    const keyframeSize = this.isMobileLayout() ? 24 : 20;
     const keyframeHalf = keyframeSize / 2;
     ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
