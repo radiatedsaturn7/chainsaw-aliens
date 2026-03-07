@@ -9451,7 +9451,7 @@ export default class MidiComposer {
       // Keep Song ribbons fixed around ~3 grid-note rows, with a touch-friendly height boost, independent of live grid zoom.
       laneH = Math.max(56, Math.round(songLaneCellHeight * 3.8));
       if (showAutomation) {
-        automationH = Math.max(12, Math.round(songLaneCellHeight * 0.9));
+        automationH = Math.max(18, Math.round(songLaneCellHeight));
         laneBlockH = laneH + 6 + automationH + 6 + automationH;
       } else {
         automationH = 0;
@@ -9462,7 +9462,7 @@ export default class MidiComposer {
     } else {
       laneBlockH = Math.max(48, (laneAreaH - laneGap * Math.max(0, visibleLaneCount - 1)) / visibleLaneCount);
       laneH = showAutomation ? Math.max(36, laneBlockH * 0.42) : laneBlockH;
-      automationH = showAutomation ? Math.max(12, (laneBlockH - laneH) / 2 - 6) : 0;
+      automationH = showAutomation ? Math.max(18, (laneBlockH - laneH) / 2 - 6) : 0;
     }
     const laneContentH = Math.max(0, trackCount * laneBlockH + Math.max(0, trackCount - 1) * laneGap);
     this.songTrackScrollMax = Math.max(0, laneContentH - laneAreaH);
@@ -10318,16 +10318,20 @@ export default class MidiComposer {
       const valueRatio = (value - minValue) / (maxValue - minValue || 1);
       const x = originX + tick * cellWidth;
       const y = laneBounds.y + laneBounds.h - valueRatio * laneBounds.h;
+      const markerSize = this.isMobileLayout() ? 9 : 7;
+      const markerHalf = markerSize / 2;
       ctx.fillStyle = strokeColor;
-      ctx.beginPath();
-      ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.fillRect(x - markerHalf, y - markerHalf, markerSize, markerSize);
+      ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+      ctx.strokeRect(x - markerHalf, y - markerHalf, markerSize, markerSize);
     });
 
     ctx.restore();
   }
 
   drawAutomationLane(ctx, bounds, keyframes, minValue, maxValue, label, timeline, indicator = null) {
+    const keyframeSize = this.isMobileLayout() ? 12 : 10;
+    const keyframeHalf = keyframeSize / 2;
     ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.strokeStyle = 'rgba(255,255,255,0.15)';
@@ -10350,9 +10354,9 @@ export default class MidiComposer {
         ctx.rect(bounds.x, bounds.y, bounds.w, bounds.h);
         ctx.clip();
         ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(x, y, 3.5, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.fillRect(x - keyframeHalf, y - keyframeHalf, keyframeSize, keyframeSize);
+        ctx.strokeStyle = 'rgba(0,0,0,0.45)';
+        ctx.strokeRect(x - keyframeHalf, y - keyframeHalf, keyframeSize, keyframeSize);
         ctx.restore();
       }
       return;
@@ -10382,9 +10386,9 @@ export default class MidiComposer {
       const x = originX + frame.tick * cellWidth;
       const y = bounds.y + bounds.h - valueRatio * bounds.h;
       ctx.fillStyle = '#ffe16a';
-      ctx.beginPath();
-      ctx.arc(x, y, 3, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.fillRect(x - keyframeHalf, y - keyframeHalf, keyframeSize, keyframeSize);
+      ctx.strokeStyle = 'rgba(0,0,0,0.45)';
+      ctx.strokeRect(x - keyframeHalf, y - keyframeHalf, keyframeSize, keyframeSize);
     });
     if (indicator && Number.isFinite(indicator.tick) && Number.isFinite(indicator.value)) {
       const value = clamp(indicator.value, minValue, maxValue);
@@ -10392,9 +10396,9 @@ export default class MidiComposer {
       const x = originX + indicator.tick * cellWidth;
       const y = bounds.y + bounds.h - valueRatio * bounds.h;
       ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(x, y, 3.5, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.fillRect(x - keyframeHalf, y - keyframeHalf, keyframeSize, keyframeSize);
+      ctx.strokeStyle = 'rgba(0,0,0,0.45)';
+      ctx.strokeRect(x - keyframeHalf, y - keyframeHalf, keyframeSize, keyframeSize);
     }
     ctx.restore();
   }
