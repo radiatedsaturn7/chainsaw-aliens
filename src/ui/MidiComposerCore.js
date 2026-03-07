@@ -3784,64 +3784,66 @@ export default class MidiComposer {
       return;
     }
 
-    if (this.bounds.play && this.pointInBounds(x, y, this.bounds.play)) {
-      this.togglePlayback();
-      return;
-    }
-    if (this.bounds.stop && this.pointInBounds(x, y, this.bounds.stop)) {
-      this.stopPlayback();
-      return;
-    }
-    if ((this.bounds.transportLoopToggle && this.pointInBounds(x, y, this.bounds.transportLoopToggle))
-      || (this.bounds.loopToggle && this.pointInBounds(x, y, this.bounds.loopToggle))) {
-      this.toggleLoopEnabled();
-      return;
-    }
-    if (this.bounds.returnStart && this.pointInBounds(x, y, this.bounds.returnStart)) {
-      this.returnToStart();
-      return;
-    }
-    if (this.bounds.setStart && this.pointInBounds(x, y, this.bounds.setStart)) {
-      this.setLoopStartTick(this.playheadTick);
-      return;
-    }
-    if (this.bounds.setEnd && this.pointInBounds(x, y, this.bounds.setEnd)) {
-      this.setLoopEndTick(this.playheadTick);
-      return;
-    }
-    if (this.bounds.prevBar && this.pointInBounds(x, y, this.bounds.prevBar)) {
-      this.jumpPlayheadBars(-1);
-      return;
-    }
-    if (this.bounds.nextBar && this.pointInBounds(x, y, this.bounds.nextBar)) {
-      this.jumpPlayheadBars(1);
-      return;
-    }
-    if (this.bounds.goEnd && this.pointInBounds(x, y, this.bounds.goEnd)) {
-      this.goToEnd();
-      return;
-    }
-    if (this.bounds.metronome && this.pointInBounds(x, y, this.bounds.metronome)) {
-      this.metronomeEnabled = !this.metronomeEnabled;
-      return;
-    }
-    if (this.bounds.tempoButton && this.pointInBounds(x, y, this.bounds.tempoButton)) {
-      this.tempoSliderOpen = !this.tempoSliderOpen;
-      this.noteLengthMenu.open = false;
-      return;
-    }
-    if (this.tempoSliderOpen) {
-      this.tempoSliderOpen = false;
-    }
-    if (this.bounds.noteLength && this.pointInBounds(x, y, this.bounds.noteLength)) {
-      if (isDrumTrack(this.getActiveTrack())) return;
-      this.noteLengthMenu.open = !this.noteLengthMenu.open;
-      this.noteLengthMenu.anchor = { ...this.bounds.noteLength };
-      this.tempoSliderOpen = false;
-      return;
-    }
-    if (this.noteLengthMenu.open) {
-      this.noteLengthMenu.open = false;
+    if (this.activeTab === 'grid') {
+      if (this.bounds.play && this.pointInBounds(x, y, this.bounds.play)) {
+        this.togglePlayback();
+        return;
+      }
+      if (this.bounds.stop && this.pointInBounds(x, y, this.bounds.stop)) {
+        this.stopPlayback();
+        return;
+      }
+      if ((this.bounds.transportLoopToggle && this.pointInBounds(x, y, this.bounds.transportLoopToggle))
+        || (this.bounds.loopToggle && this.pointInBounds(x, y, this.bounds.loopToggle))) {
+        this.toggleLoopEnabled();
+        return;
+      }
+      if (this.bounds.returnStart && this.pointInBounds(x, y, this.bounds.returnStart)) {
+        this.returnToStart();
+        return;
+      }
+      if (this.bounds.setStart && this.pointInBounds(x, y, this.bounds.setStart)) {
+        this.setLoopStartTick(this.playheadTick);
+        return;
+      }
+      if (this.bounds.setEnd && this.pointInBounds(x, y, this.bounds.setEnd)) {
+        this.setLoopEndTick(this.playheadTick);
+        return;
+      }
+      if (this.bounds.prevBar && this.pointInBounds(x, y, this.bounds.prevBar)) {
+        this.jumpPlayheadBars(-1);
+        return;
+      }
+      if (this.bounds.nextBar && this.pointInBounds(x, y, this.bounds.nextBar)) {
+        this.jumpPlayheadBars(1);
+        return;
+      }
+      if (this.bounds.goEnd && this.pointInBounds(x, y, this.bounds.goEnd)) {
+        this.goToEnd();
+        return;
+      }
+      if (this.bounds.metronome && this.pointInBounds(x, y, this.bounds.metronome)) {
+        this.metronomeEnabled = !this.metronomeEnabled;
+        return;
+      }
+      if (this.bounds.tempoButton && this.pointInBounds(x, y, this.bounds.tempoButton)) {
+        this.tempoSliderOpen = !this.tempoSliderOpen;
+        this.noteLengthMenu.open = false;
+        return;
+      }
+      if (this.tempoSliderOpen) {
+        this.tempoSliderOpen = false;
+      }
+      if (this.bounds.noteLength && this.pointInBounds(x, y, this.bounds.noteLength)) {
+        if (isDrumTrack(this.getActiveTrack())) return;
+        this.noteLengthMenu.open = !this.noteLengthMenu.open;
+        this.noteLengthMenu.anchor = { ...this.bounds.noteLength };
+        this.tempoSliderOpen = false;
+        return;
+      }
+      if (this.noteLengthMenu.open) {
+        this.noteLengthMenu.open = false;
+      }
     }
 
     if (this.activeTab === 'instruments' || this.instrumentPicker.mode) {
