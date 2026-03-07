@@ -6952,11 +6952,37 @@ export default class MidiComposer {
       const notesByTrack = this.songClipboard?.notesByTrack;
       if (!Array.isArray(notesByTrack) || notesByTrack.length === 0) return;
       const totalTicks = Math.max(1, this.getSongTimelineTicks());
-      const startTick = clamp(Math.round(this.playheadTick || 0), 0, totalTicks);
+      const durationTicks = Math.max(1, Math.round(this.songClipboard.durationTicks || this.ticksPerBeat));
+      const expandedTicks = totalTicks + durationTicks;
+      const startTick = clamp(Math.round(this.playheadTick || 0), 0, expandedTicks - 1);
+      const endTick = clamp(startTick + durationTicks, startTick + 1, expandedTicks);
       const anchorTrack = Number.isInteger(this.songClipboard.anchorTrackIndex)
         ? this.songClipboard.anchorTrackIndex
         : clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
       const targetAnchorTrack = clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
+      const pastedTracks = [];
+      notesByTrack.forEach((entry) => {
+        const targetTrackIndex = clamp(
+          targetAnchorTrack + (entry.trackIndex - anchorTrack),
+          0,
+          this.song.tracks.length - 1
+        );
+        const targetPattern = this.song.tracks[targetTrackIndex]?.patterns?.[this.selectedPatternIndex];
+        if (!targetPattern) return;
+        pastedTracks.push({ trackIndex: targetTrackIndex, pattern: targetPattern });
+      });
+      const uniquePastedTracks = pastedTracks.filter((entry, index, list) => (
+        list.findIndex((candidate) => candidate.trackIndex === entry.trackIndex) === index
+      ));
+      this.splitSongTrackPartsAtTicks(uniquePastedTracks, [startTick, endTick], expandedTicks);
+      uniquePastedTracks.forEach((entry) => {
+        const ranges = this.getPatternPartRanges(entry.pattern, expandedTicks);
+        ranges.push({ startTick, endTick });
+        entry.pattern.partRanges = this.normalizePartRanges(ranges, expandedTicks);
+        entry.pattern.partBoundaries = [];
+        entry.pattern.partRangeStart = null;
+        entry.pattern.partRangeEnd = null;
+      });
       notesByTrack.forEach((entry) => {
         const targetTrackIndex = clamp(
           targetAnchorTrack + (entry.trackIndex - anchorTrack),
@@ -6972,9 +6998,22 @@ export default class MidiComposer {
             startTick: startTick + note.startTick
           });
         });
-        this.refreshPatternPartRange(targetPattern, totalTicks + (this.songClipboard.durationTicks || 0));
+        this.refreshPatternPartRange(targetPattern, expandedTicks);
       });
-      this.ensureGridCapacity(startTick + (this.songClipboard.durationTicks || 0));
+      if (uniquePastedTracks.length > 0) {
+        const trackIndices = uniquePastedTracks.map((entry) => entry.trackIndex).sort((a, b) => a - b);
+        this.songSelection = {
+          active: true,
+          trackIndex: trackIndices[0],
+          trackStartIndex: trackIndices[0],
+          trackEndIndex: trackIndices[trackIndices.length - 1],
+          startTick,
+          endTick
+        };
+        this.selectedTrackIndex = trackIndices[0];
+      }
+      this.songSelectionMenu.open = false;
+      this.ensureGridCapacity(endTick);
       this.persist({ commitHistory: true });
       return;
     }
