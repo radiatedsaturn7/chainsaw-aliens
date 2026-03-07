@@ -7171,9 +7171,16 @@ export default class MidiComposer {
     }
 
     if (action === 'song-loop-selection') {
-      this.setLoopStartTick(range.startTick);
-      this.setLoopEndTick(range.endTick);
-      this.song.loopEnabled = true;
+      const sameLoopRange = this.song.loopEnabled
+        && this.song.loopStartTick === range.startTick
+        && this.song.loopEndTick === range.endTick;
+      if (sameLoopRange) {
+        this.song.loopEnabled = false;
+      } else {
+        this.setLoopStartTick(range.startTick);
+        this.setLoopEndTick(range.endTick);
+        this.song.loopEnabled = true;
+      }
       this.persist({ commitHistory: true });
     }
   }
@@ -9832,6 +9839,12 @@ export default class MidiComposer {
     }
 
     if (this.songBottomRailMode === 'edit' || this.songBottomRailMode === 'tools') {
+      const isSelectionLoopActive = Boolean(
+        selectionRange
+        && this.song.loopEnabled
+        && this.song.loopStartTick === selectionRange.startTick
+        && this.song.loopEndTick === selectionRange.endTick
+      );
       const actions = this.songBottomRailMode === 'edit'
         ? [
           { action: 'song-copy', label: 'Copy' },
@@ -9844,8 +9857,8 @@ export default class MidiComposer {
           { action: 'song-splice', label: 'Split' },
           { action: 'song-merge-left', label: 'Merge Left' },
           { action: 'song-merge-right', label: 'Merge Right' },
-          { action: 'song-clone-paint', label: 'Clone Paint' },
-          { action: 'song-loop-selection', label: 'Loop This' },
+          { action: 'song-clone-paint', label: 'Clone Paint', active: this.songClonePaintTool.active },
+          { action: 'song-loop-selection', label: 'Loop This', active: isSelectionLoopActive },
           { action: 'song-shift-note', label: 'Shift Note' }
         ];
       const toolButtonH = rowH;
@@ -9856,7 +9869,7 @@ export default class MidiComposer {
         width: mixRailBounds.w - panelPad * 2,
         height: toolButtonH,
         gap: toolGap,
-        draw: (bounds, entry) => this.drawSmallButton(ctx, bounds, entry.label, false)
+        draw: (bounds, entry) => this.drawSmallButton(ctx, bounds, entry.label, Boolean(entry.active))
       });
       this.bounds.songToolsActions = actionBounds.map((bounds, index) => ({
         ...bounds,
