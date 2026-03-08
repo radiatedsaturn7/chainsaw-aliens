@@ -10484,8 +10484,9 @@ export default class MidiComposer {
       const sliderX = x + panelPadding;
       const sliderH = 16;
       const sliderGap = 20;
-      const mixVolume = clamp(track.volume ?? 0.8, 0, 1);
-      const mixPan = clamp(track.pan ?? 0, -1, 1);
+      const mixAtPlayhead = this.getTrackPlaybackMix(track, this.playheadTick);
+      const mixVolume = clamp(mixAtPlayhead.volume ?? track.volume ?? 0.8, 0, 1);
+      const mixPan = clamp(mixAtPlayhead.pan ?? track.pan ?? 0, -1, 1);
 
       const panelHeight = panelPadding + 10 + sliderH + sliderGap + sliderH + 18 + 32 + panelPadding;
       ctx.fillStyle = UI_SUITE.colors.panel;
@@ -10509,7 +10510,7 @@ export default class MidiComposer {
       ctx.strokeRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
       ctx.fillStyle = 'rgba(255,255,255,0.75)';
       ctx.font = '11px Courier New';
-      ctx.fillText('Volume', sliderX, volumeBounds.y - 6);
+      ctx.fillText(`Volume ${Math.round(mixVolume * 100)}%`, sliderX, volumeBounds.y - 6);
       this.bounds.instrumentSettingsControls.push(volumeBounds);
 
       const panBounds = {
@@ -10528,7 +10529,7 @@ export default class MidiComposer {
       ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
       ctx.fillStyle = 'rgba(255,255,255,0.75)';
       ctx.font = '11px Courier New';
-      ctx.fillText('Pan (L/R)', sliderX, panBounds.y - 6);
+      ctx.fillText(`Pan (L/R) ${Math.round(mixPan * 100)}%`, sliderX, panBounds.y - 6);
       this.bounds.instrumentSettingsControls.push(panBounds);
 
       const buttonY = panBounds.y + sliderH + 18;
