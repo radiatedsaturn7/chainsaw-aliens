@@ -3680,17 +3680,14 @@ export default class MidiComposer {
       if (track) {
         const tick = this.snapTick(this.playheadTick);
         const control = this.activeTab === 'song' ? this.songMixControlMode : null;
+        const mixAtTick = this.getTrackPlaybackMix(track, tick);
         if (control === 'pan') {
-          const pan = clamp(track.pan ?? 0, -1, 1);
-          this.addSongAutomationKeyframe(track, 'pan', tick, pan);
+          this.addSongAutomationKeyframe(track, 'pan', tick, mixAtTick.pan);
         } else if (control === 'volume') {
-          const volume = clamp(track.volume ?? 0.8, 0, 1);
-          this.addSongAutomationKeyframe(track, 'padding', tick, volume);
+          this.addSongAutomationKeyframe(track, 'padding', tick, mixAtTick.volume);
         } else {
-          const volume = clamp(track.volume ?? 0.8, 0, 1);
-          const pan = clamp(track.pan ?? 0, -1, 1);
-          this.addSongAutomationKeyframe(track, 'padding', tick, volume);
-          this.addSongAutomationKeyframe(track, 'pan', tick, pan);
+          this.addSongAutomationKeyframe(track, 'padding', tick, mixAtTick.volume);
+          this.addSongAutomationKeyframe(track, 'pan', tick, mixAtTick.pan);
         }
       }
       return;
