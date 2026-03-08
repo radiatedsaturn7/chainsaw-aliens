@@ -6358,7 +6358,7 @@ export default class MidiComposer {
     this.playheadTick = clamp(target.tick, 0, this.getSongTimelineTicks());
   }
 
-  addSongAutomationKeyframe(track, type, tick, value) {
+  addSongAutomationKeyframe(track, type, tick, value, options = {}) {
     if (!track) return;
     if (!track.automation) {
       track.automation = { pan: [], padding: [] };
@@ -6372,7 +6372,8 @@ export default class MidiComposer {
     }
     frames.sort((a, b) => a.tick - b.tick);
     track.automation[type] = frames;
-    this.persist({ commitHistory: true });
+    const commitHistory = options.commitHistory !== false;
+    this.persist({ commitHistory });
   }
 
   removeSongAutomationKeyframe(track, type, tick) {
@@ -7285,6 +7286,16 @@ export default class MidiComposer {
     const track = this.song.tracks[hit.trackIndex];
     if (!track) return;
     const ratio = clamp((x - hit.x) / hit.w, 0, 1);
+    if (this.activeTab === 'song' && (hit.control === 'volume' || hit.control === 'pan')) {
+      const tick = this.snapTick(this.playheadTick);
+      if (hit.control === 'volume') {
+        this.addSongAutomationKeyframe(track, 'padding', tick, ratio, { commitHistory: false });
+      } else {
+        this.addSongAutomationKeyframe(track, 'pan', tick, clamp(ratio * 2 - 1, -1, 1), { commitHistory: false });
+      }
+      this.scheduleHistoryCommit();
+      return;
+    }
     if (hit.control === 'volume') {
       track.volume = ratio;
     }
