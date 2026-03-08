@@ -2215,12 +2215,6 @@ export default class MidiComposer {
 
   getTrackPlaybackMix(track, tick = this.playheadTick) {
     if (!track) return { volume: 0, pan: 0 };
-    if (!this.isPlaying) {
-      return {
-        volume: clamp(track.volume ?? 0.8, 0, 1),
-        pan: clamp(track.pan ?? 0, -1, 1)
-      };
-    }
     const volume = this.getTrackAutomationValue(track, 'padding', tick, track.volume ?? 0.8);
     const pan = this.getTrackAutomationValue(track, 'pan', tick, track.pan ?? 0);
     return {
