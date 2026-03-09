@@ -9780,6 +9780,7 @@ export default class MidiComposer {
     this.bounds.songRailMusicControls = null;
     this.bounds.songRailEditTab = null;
     this.bounds.songRailToolsTab = null;
+    this.bounds.instrumentSettingsControls = [];
     this.bounds.songToolsActions = [];
     this.songAddBounds = null;
     this.bounds.keyframeSet = null;
