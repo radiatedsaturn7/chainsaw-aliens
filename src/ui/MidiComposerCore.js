@@ -3682,12 +3682,12 @@ export default class MidiComposer {
         const control = this.activeTab === 'song' ? this.songMixControlMode : null;
         const mixAtTick = this.getTrackPlaybackMix(track, tick);
         if (control === 'pan') {
-          this.addSongAutomationKeyframe(track, 'pan', tick, mixAtTick.pan);
+          this.addSongAutomationKeyframe(track, 'pan', tick, mixAtTick.pan, { exactTick: true });
         } else if (control === 'volume') {
-          this.addSongAutomationKeyframe(track, 'padding', tick, mixAtTick.volume);
+          this.addSongAutomationKeyframe(track, 'padding', tick, mixAtTick.volume, { exactTick: true });
         } else {
-          this.addSongAutomationKeyframe(track, 'padding', tick, mixAtTick.volume);
-          this.addSongAutomationKeyframe(track, 'pan', tick, mixAtTick.pan);
+          this.addSongAutomationKeyframe(track, 'padding', tick, mixAtTick.volume, { exactTick: true });
+          this.addSongAutomationKeyframe(track, 'pan', tick, mixAtTick.pan, { exactTick: true });
         }
       }
       return;
@@ -6364,7 +6364,10 @@ export default class MidiComposer {
       track.automation = { pan: [], padding: [] };
     }
     const frames = track.automation[type] || [];
-    const existing = frames.find((frame) => Math.abs(frame.tick - tick) <= this.ticksPerBeat / 2);
+    const exactTick = options.exactTick === true;
+    const existing = exactTick
+      ? frames.find((frame) => frame.tick === tick)
+      : frames.find((frame) => Math.abs(frame.tick - tick) <= this.ticksPerBeat / 2);
     if (existing) {
       existing.value = value;
     } else {
@@ -7289,9 +7292,9 @@ export default class MidiComposer {
     if (this.activeTab === 'song' && (hit.control === 'volume' || hit.control === 'pan')) {
       const tick = this.snapTick(this.playheadTick);
       if (hit.control === 'volume') {
-        this.addSongAutomationKeyframe(track, 'padding', tick, ratio, { commitHistory: false });
+        this.addSongAutomationKeyframe(track, 'padding', tick, ratio, { commitHistory: false, exactTick: true });
       } else {
-        this.addSongAutomationKeyframe(track, 'pan', tick, clamp(ratio * 2 - 1, -1, 1), { commitHistory: false });
+        this.addSongAutomationKeyframe(track, 'pan', tick, clamp(ratio * 2 - 1, -1, 1), { commitHistory: false, exactTick: true });
       }
       this.scheduleHistoryCommit();
       return;
