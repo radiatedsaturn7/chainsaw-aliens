@@ -7211,27 +7211,27 @@ export default class MidiComposer {
       return true;
     }
     if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportRecord
+      && this.pointInBounds(x, y, this.bounds.songTransportRecord)) {
+      this.enterRecordMode();
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportStart
+      && this.pointInBounds(x, y, this.bounds.songTransportStart)) {
+      this.playheadTick = 0;
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
       && this.bounds.songTransportBack
       && this.pointInBounds(x, y, this.bounds.songTransportBack)) {
       this.jumpPlayheadBars(-1);
       return true;
     }
     if (this.songBottomRailMode === 'music-controls'
-      && this.bounds.songTransportPlay
-      && this.pointInBounds(x, y, this.bounds.songTransportPlay)) {
-      if (!this.isPlaying) this.togglePlayback();
-      return true;
-    }
-    if (this.songBottomRailMode === 'music-controls'
-      && this.bounds.songTransportPause
-      && this.pointInBounds(x, y, this.bounds.songTransportPause)) {
-      if (this.isPlaying) this.togglePlayback();
-      return true;
-    }
-    if (this.songBottomRailMode === 'music-controls'
-      && this.bounds.songTransportStop
-      && this.pointInBounds(x, y, this.bounds.songTransportStop)) {
-      this.stopPlayback();
+      && this.bounds.songTransportPlayPause
+      && this.pointInBounds(x, y, this.bounds.songTransportPlayPause)) {
+      this.togglePlayback();
       return true;
     }
     if (this.songBottomRailMode === 'music-controls'
@@ -7241,8 +7241,14 @@ export default class MidiComposer {
       return true;
     }
     if (this.songBottomRailMode === 'music-controls'
-      && this.bounds.songTransportLoop
-      && this.pointInBounds(x, y, this.bounds.songTransportLoop)) {
+      && this.bounds.songTransportEnd
+      && this.pointInBounds(x, y, this.bounds.songTransportEnd)) {
+      this.playheadTick = this.getSongTimelineTicks();
+      return true;
+    }
+    if (this.songBottomRailMode === 'music-controls'
+      && this.bounds.songTransportLoopThis
+      && this.pointInBounds(x, y, this.bounds.songTransportLoopThis)) {
       this.toggleLoopEnabled();
       return true;
     }
@@ -7252,12 +7258,13 @@ export default class MidiComposer {
   setSongBottomRailMode(mode) {
     this.songBottomRailMode = mode;
     this.bounds.songToolsActions = [];
+    this.bounds.songTransportRecord = null;
+    this.bounds.songTransportStart = null;
     this.bounds.songTransportBack = null;
-    this.bounds.songTransportPlay = null;
-    this.bounds.songTransportPause = null;
-    this.bounds.songTransportStop = null;
+    this.bounds.songTransportPlayPause = null;
     this.bounds.songTransportForward = null;
-    this.bounds.songTransportLoop = null;
+    this.bounds.songTransportEnd = null;
+    this.bounds.songTransportLoopThis = null;
   }
 
   setTrackChannel(track, channel) {
@@ -9792,12 +9799,13 @@ export default class MidiComposer {
     const rowH = 44;
     const tabY = mixRailBounds.y + panelPad;
 
+    this.bounds.songTransportRecord = null;
+    this.bounds.songTransportStart = null;
     this.bounds.songTransportBack = null;
-    this.bounds.songTransportPlay = null;
-    this.bounds.songTransportPause = null;
-    this.bounds.songTransportStop = null;
+    this.bounds.songTransportPlayPause = null;
     this.bounds.songTransportForward = null;
-    this.bounds.songTransportLoop = null;
+    this.bounds.songTransportEnd = null;
+    this.bounds.songTransportLoopThis = null;
     this.bounds.songMixVolumeTab = null;
     this.bounds.songMixPanTab = null;
 
@@ -9824,12 +9832,13 @@ export default class MidiComposer {
       const rowHControls = rowH;
       const gap = 8;
       const controls = [
+        { key: 'songTransportRecord', label: '● REC', active: this.recordModeActive },
+        { key: 'songTransportStart', label: '⏮' },
         { key: 'songTransportBack', label: '⏪' },
-        { key: 'songTransportPlay', label: '▶', active: this.isPlaying },
-        { key: 'songTransportPause', label: '❚❚' },
-        { key: 'songTransportStop', label: '■' },
+        { key: 'songTransportPlayPause', label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying },
         { key: 'songTransportForward', label: '⏩' },
-        { key: 'songTransportLoop', label: `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, active: this.song.loopEnabled }
+        { key: 'songTransportEnd', label: '⏭' },
+        { key: 'songTransportLoopThis', label: 'Loop This', active: this.song.loopEnabled }
       ];
       const boundsList = this.drawEqualWidthButtonRow(ctx, controls, {
         x: mixRailBounds.x + panelPad,
