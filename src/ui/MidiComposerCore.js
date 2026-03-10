@@ -3769,18 +3769,19 @@ export default class MidiComposer {
     }
 
     const pedalPickerHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds) && bounds.control === 'pedal-picker-item');
-    if (pedalPickerHit) {
-      this.insertPedalIntoSlot(this.pedalUiState.pickerSlot ?? 0, pedalPickerHit.pedalType);
-      return;
-    }
     const pedalPickerScrollAreaHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds) && bounds.control === 'pedal-picker-scroll-area');
     if (pedalPickerScrollAreaHit) {
       this.dragState = {
         mode: 'pedal-picker-scroll',
         startY: y,
         startScroll: this.pedalUiState.pickerScroll || 0,
-        moved: false
+        moved: false,
+        pendingPick: pedalPickerHit ? { ...pedalPickerHit } : null
       };
+      return;
+    }
+    if (pedalPickerHit) {
+      this.insertPedalIntoSlot(this.pedalUiState.pickerSlot ?? 0, pedalPickerHit.pedalType);
       return;
     }
     const pedalInspectorHit = this.pedalInspectorBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -5057,6 +5058,9 @@ export default class MidiComposer {
       }
       if (this.dragState?.mode === 'slider' || (this.dragState?.mode === 'pedal-knob-turn' && !this.pedalUiState.editorOpen)) {
         this.commitHistorySnapshot();
+      }
+      if (this.dragState?.mode === 'pedal-picker-scroll' && !this.dragState.moved && this.dragState.pendingPick) {
+        this.insertPedalIntoSlot(this.pedalUiState.pickerSlot ?? 0, this.dragState.pendingPick.pedalType);
       }
       this.dragState = null;
       return;
