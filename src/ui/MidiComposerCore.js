@@ -35,6 +35,10 @@ import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
+import { PEDAL_DEFINITIONS, PEDAL_DEFINITION_BY_TYPE, PEDAL_COLORS, PEDAL_FONTS } from './midi/pedals/pedalDefinitions.js';
+import { createDefaultPedal } from './midi/pedals/pedalDefaults.js';
+import { normalizeMidiPedals } from './midi/pedals/normalizeMidiPedals.js';
+import { applyPedalChain } from './midi/pedals/applyPedalChain.js';
 
 const SCALE_LIBRARY = [
   { id: 'major', label: 'Major', steps: [0, 2, 4, 5, 7, 9, 11] },
@@ -803,10 +807,17 @@ export default class MidiComposer {
       songMixVolumeTab: null,
       songMixPanTab: null,
       songRailEditTab: null,
-      songMixRail: null
+      songMixRail: null,
+      pedalInspectorToggle: null
     };
     this.trackBounds = [];
     this.trackControlBounds = [];
+    this.pedalSlotBounds = [];
+    this.pedalPickerBounds = [];
+    this.pedalInspectorBounds = [];
+    this.pedalEditorOverlayBounds = null;
+    this.pedalEditorModalBounds = null;
+    this.pedalUiState = { selectedSlot: null, pickerSlot: null, pickerOpen: false, pickerPage: 0, pickerScroll: 0, editorOpen: false, draftPedal: null };
     this.patternBounds = [];
     this.noteBounds = [];
     this.toolsMenuBounds = [];
@@ -1405,6 +1416,7 @@ export default class MidiComposer {
         pan: Array.isArray(track.automation?.pan) ? track.automation.pan : [],
         padding: Array.isArray(track.automation?.padding) ? track.automation.padding : []
       },
+      midiPedals: normalizeMidiPedals(track.midiPedals),
       patterns: Array.isArray(track.patterns) && track.patterns.length > 0
         ? track.patterns
         : [{ id: `pattern-${track.id || uid()}`, bars: loopBars, notes: [] }]
@@ -3364,7 +3376,14 @@ export default class MidiComposer {
         if (this.isTrackMuted(track)) return;
         const pattern = track.patterns[this.selectedPatternIndex];
         if (!pattern) return;
-        pattern.notes.forEach((note) => {
+        const processed = this.getTrackPedalProcessing(track, pattern);
+        processed.cc?.forEach((event) => {
+          const tick = Number(event.tick) || 0;
+          if (tick >= range.start && tick < range.end) {
+            this.applyPedalCcEvent(event, track);
+          }
+        });
+        processed.notes.forEach((note) => {
           const noteStart = this.getSwingedTick(note.startTick);
           if (noteStart >= range.start && noteStart < range.end) {
             if (this.shouldSlurNote(track, pattern, note)) return;
@@ -3436,10 +3455,38 @@ export default class MidiComposer {
       this.ensureDrumTrackSettings(track);
     }
     const mix = this.getTrackPlaybackMix(track, startTick);
-    this.playGmNote(pitch, duration, velocity * mix.volume, track, mix.pan);
+    const pedalPanOffset = clamp(track?._pedalPanOffset ?? 0, -1, 1);
+    const resolvedPan = clamp(mix.pan + pedalPanOffset, -1, 1);
+    this.playGmNote(pitch, duration, velocity * mix.volume, track, resolvedPan);
     const now = performance.now();
     this.activeNotes.set(note.id, { trackId: track.id, expires: now + duration * 1000 + 120 });
     this.lastPlaybackTick = startTick;
+  }
+
+  applyPedalCcEvent(event, track) {
+    const controller = Number(event?.controller);
+    const value = clamp((Number(event?.value) || 0) / 127, 0, 1);
+    const audio = this.game?.audio;
+    if (!audio) return;
+    if (controller === 91) {
+      audio.setMidiReverbEnabled?.(value > 0.01);
+      audio.setMidiReverbLevel?.(value);
+      return;
+    }
+    if (controller === 74) {
+      const shaped = clamp(0.42 + (value * 0.92), 0, 1);
+      audio.setMidiVolume?.(shaped);
+      audio.setMidiReverbLevel?.(clamp(this.audioSettings.reverbLevel * 0.65 + value * 0.25, 0, 1));
+      return;
+    }
+    if (controller === 10) {
+      if (track) track._pedalPanOffset = (value * 2 - 1) * 0.75;
+      return;
+    }
+    if (controller === 1 || controller === 71) {
+      const bend = (value - 0.5) * (controller === 1 ? 3.2 : 1.6);
+      audio.setMidiPitchBend?.(bend, Number.isFinite(track?.channel) ? track.channel : null);
+    }
   }
 
   playGmNote(pitch, duration, volume, track, pan = 0) {
@@ -3720,6 +3767,77 @@ export default class MidiComposer {
     if (this.tempoSliderOpen && this.bounds.tempoSlider && this.pointInBounds(x, y, this.bounds.tempoSlider)) {
       this.dragState = { mode: 'slider', id: 'song-tempo', bounds: this.bounds.tempoSlider };
       this.updateSliderValue(x, y, 'song-tempo', this.bounds.tempoSlider);
+      return;
+    }
+
+    const pedalPickerHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds) && bounds.control === 'pedal-picker-item');
+    const pedalPickerScrollAreaHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds) && bounds.control === 'pedal-picker-scroll-area');
+    if (pedalPickerScrollAreaHit) {
+      this.dragState = {
+        mode: 'pedal-picker-scroll',
+        startY: y,
+        startScroll: this.pedalUiState.pickerScroll || 0,
+        moved: false,
+        pendingPick: pedalPickerHit ? { ...pedalPickerHit } : null
+      };
+      return;
+    }
+    if (pedalPickerHit) {
+      this.insertPedalIntoSlot(this.pedalUiState.pickerSlot ?? 0, pedalPickerHit.pedalType);
+      return;
+    }
+    const pedalInspectorHit = this.pedalInspectorBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+    if (pedalInspectorHit) {
+      const slot = this.pedalUiState.selectedSlot;
+      const track = this.getActiveTrack();
+      if (!track || !Number.isInteger(slot)) return;
+      const pedals = normalizeMidiPedals(track.midiPedals);
+      const sourcePedal = this.pedalUiState.editorOpen
+        ? this.pedalUiState.draftPedal
+        : pedals[slot];
+      if (pedalInspectorHit.control === 'pedal-delete') {
+        this.deletePedalFromEditor();
+      } else if (pedalInspectorHit.control === 'pedal-ok') {
+        this.commitPedalEditor();
+      } else if (pedalInspectorHit.control === 'pedal-cancel') {
+        this.cancelPedalEditor();
+      } else if (pedalInspectorHit.control === 'pedal-stomp-toggle' && sourcePedal) {
+        if (this.pedalUiState.editorOpen) {
+          this.pedalUiState.draftPedal = { ...sourcePedal, enabled: !sourcePedal.enabled };
+        } else {
+          pedals[slot] = { ...sourcePedal, enabled: !sourcePedal.enabled };
+          track.midiPedals = pedals;
+          this.persist({ commitHistory: true });
+        }
+      } else if (pedalInspectorHit.control === 'pedal-knob') {
+        const current = Number(sourcePedal?.knobs?.[pedalInspectorHit.knobKey]);
+        this.dragState = {
+          mode: 'pedal-knob-turn',
+          bounds: pedalInspectorHit,
+          startY: y,
+          startValue: Number.isFinite(current) ? current : pedalInspectorHit.min
+        };
+        return;
+      }
+      return;
+    }
+    if (this.pedalUiState.editorOpen && this.pedalEditorOverlayBounds && this.pointInBounds(x, y, this.pedalEditorOverlayBounds)) {
+      return;
+    }
+    const pedalSlotHit = this.pedalSlotBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+    if (pedalSlotHit) {
+      const track = this.getActiveTrack();
+      const pedals = normalizeMidiPedals(track?.midiPedals);
+      if (pedals[pedalSlotHit.slotIndex]) {
+        this.openPedalEditorForSlot(pedalSlotHit.slotIndex);
+      } else {
+        this.pedalUiState.pickerSlot = pedalSlotHit.slotIndex;
+        this.pedalUiState.pickerOpen = true;
+        this.pedalUiState.pickerPage = 0;
+        this.pedalUiState.pickerScroll = 0;
+        this.pedalUiState.editorOpen = false;
+        this.pedalUiState.draftPedal = null;
+      }
       return;
     }
 
@@ -4760,6 +4878,23 @@ export default class MidiComposer {
       this.updateSliderValue(payload.x, payload.y, this.dragState.id, this.dragState.bounds);
       return;
     }
+    if (this.dragState?.mode === 'pedal-picker-scroll') {
+      const dy = this.dragState.startY - payload.y;
+      if (!this.dragState.moved && Math.abs(dy) > 6) this.dragState.moved = true;
+      if (this.dragState.moved) {
+        this.pedalUiState.pickerScroll = clamp(this.dragState.startScroll + dy, 0, this.pedalUiState.pickerScrollMax || 0);
+      }
+      return;
+    }
+    if (this.dragState?.mode === 'pedal-knob-turn') {
+      const bounds = this.dragState.bounds;
+      const delta = (this.dragState.startY - payload.y) / 120;
+      const min = Number.isFinite(bounds?.min) ? bounds.min : 0;
+      const max = Number.isFinite(bounds?.max) ? bounds.max : 1;
+      const next = clamp(this.dragState.startValue + delta * (max - min), min, max);
+      this.updateSelectedPedalKnob(bounds.knobKey, next);
+      return;
+    }
     if (this.draggingTrackControl) {
       this.updateTrackControl(payload.x, payload.y);
       return;
@@ -4920,12 +5055,17 @@ export default class MidiComposer {
     }
     if (this.dragState?.mode === 'instrument-scroll'
       || this.dragState?.mode === 'settings-scroll'
-      || this.dragState?.mode === 'slider') {
+      || this.dragState?.mode === 'slider'
+      || this.dragState?.mode === 'pedal-knob-turn'
+      || this.dragState?.mode === 'pedal-picker-scroll') {
       if (this.dragState?.mode === 'instrument-scroll' && !this.dragState.moved && this.dragState.pendingPick) {
         this.selectInstrumentPickerItem(this.dragState.pendingPick);
       }
-      if (this.dragState?.mode === 'slider') {
+      if (this.dragState?.mode === 'slider' || (this.dragState?.mode === 'pedal-knob-turn' && !this.pedalUiState.editorOpen)) {
         this.commitHistorySnapshot();
+      }
+      if (this.dragState?.mode === 'pedal-picker-scroll' && !this.dragState.moved && this.dragState.pendingPick) {
+        this.insertPedalIntoSlot(this.pedalUiState.pickerSlot ?? 0, this.dragState.pendingPick.pedalType);
       }
       this.dragState = null;
       return;
@@ -5821,7 +5961,8 @@ export default class MidiComposer {
     const pattern = this.getActivePattern();
     const track = this.getActiveTrack();
     if (!pattern || !track) return;
-    pattern.notes.forEach((note) => {
+    const processed = this.getTrackPedalProcessing(track, pattern);
+    processed.notes.forEach((note) => {
       const durationTicks = this.getEffectiveDurationTicks(note, track);
       if (note.startTick <= tick && note.startTick + durationTicks > tick) {
         this.previewNote(note, note.pitch);
@@ -6009,6 +6150,7 @@ export default class MidiComposer {
       ...track,
       id: `track-${uid()}`,
       name: `${track.name} Copy`,
+      midiPedals: normalizeMidiPedals(track.midiPedals).map((pedal) => (pedal ? { ...pedal, id: `pedal_${uid()}`, knobs: { ...pedal.knobs } } : null)),
       patterns: track.patterns.map((pattern) => ({
         ...pattern,
         id: `pattern-${uid()}`,
@@ -6032,8 +6174,32 @@ export default class MidiComposer {
       track.mute = !track.mute;
     } else if (hit.control === 'solo') {
       track.solo = !track.solo;
+    } else if (hit.control === 'duplicate') {
+      this.duplicateTrack();
+      return;
     } else if (hit.control === 'remove') {
       this.removeTrack();
+      return;
+    } else if (hit.control === 'transport-home') {
+      this.returnToStart();
+      return;
+    } else if (hit.control === 'transport-rewind') {
+      this.jumpPlayheadBars(-1);
+      return;
+    } else if (hit.control === 'transport-play') {
+      this.togglePlayback();
+      return;
+    } else if (hit.control === 'transport-forward') {
+      this.jumpPlayheadBars(1);
+      return;
+    } else if (hit.control === 'transport-end') {
+      this.goToEnd();
+      return;
+    } else if (hit.control === 'transport-loop') {
+      this.toggleLoopEnabled();
+      return;
+    } else if (hit.control === 'transport-record') {
+      this.enterRecordMode();
       return;
     } else if (hit.control === 'instrument') {
       if (isDrumTrack(track)) {
@@ -7848,9 +8014,103 @@ export default class MidiComposer {
     return { key: keyLabel, scale };
   }
 
+
+
+  getTrackPedalProcessing(track, pattern) {
+    const sourceNotes = (pattern?.notes || []).map((note) => ({ ...note }));
+    return applyPedalChain({
+      notes: sourceNotes,
+      cc: [],
+      pedals: track?.midiPedals || [],
+      track,
+      songSettings: {
+        ticksPerBeat: this.ticksPerBeat,
+        beatsPerBar: this.beatsPerBar,
+        tempo: this.song?.tempo || 120
+      }
+    });
+  }
+
+  insertPedalIntoSlot(slotIndex, pedalType) {
+    const track = this.getActiveTrack();
+    if (!track || slotIndex < 0 || slotIndex > 3) return;
+    const pedal = createDefaultPedal(pedalType);
+    if (!pedal) return;
+    const next = normalizeMidiPedals(track.midiPedals);
+    next[slotIndex] = pedal;
+    track.midiPedals = next;
+    this.pedalUiState.selectedSlot = slotIndex;
+    this.pedalUiState.pickerSlot = null;
+    this.pedalUiState.pickerOpen = false;
+    this.pedalUiState.editorOpen = true;
+    this.pedalUiState.draftPedal = JSON.parse(JSON.stringify(pedal));
+    this.persist({ commitHistory: true });
+  }
+
+  updateSelectedPedalKnob(knobKey, value) {
+    const track = this.getActiveTrack();
+    const slot = this.pedalUiState.selectedSlot;
+    if (!track || !Number.isInteger(slot)) return;
+    if (this.pedalUiState.editorOpen && this.pedalUiState.draftPedal) {
+      this.pedalUiState.draftPedal = {
+        ...this.pedalUiState.draftPedal,
+        knobs: { ...this.pedalUiState.draftPedal.knobs, [knobKey]: value }
+      };
+      return;
+    }
+    const pedals = normalizeMidiPedals(track.midiPedals);
+    const pedal = pedals[slot];
+    if (!pedal) return;
+    pedals[slot] = { ...pedal, knobs: { ...pedal.knobs, [knobKey]: value } };
+    track.midiPedals = pedals;
+    this.persist({ commitHistory: true });
+  }
+
+  openPedalEditorForSlot(slotIndex) {
+    const track = this.getActiveTrack();
+    const pedals = normalizeMidiPedals(track?.midiPedals);
+    const pedal = pedals?.[slotIndex] || null;
+    if (!pedal) return;
+    this.pedalUiState.selectedSlot = slotIndex;
+    this.pedalUiState.editorOpen = true;
+    this.pedalUiState.pickerOpen = false;
+    this.pedalUiState.draftPedal = JSON.parse(JSON.stringify(pedal));
+  }
+
+  commitPedalEditor() {
+    const track = this.getActiveTrack();
+    const slot = this.pedalUiState.selectedSlot;
+    if (!track || !Number.isInteger(slot) || !this.pedalUiState.draftPedal) return;
+    const pedals = normalizeMidiPedals(track.midiPedals);
+    pedals[slot] = JSON.parse(JSON.stringify(this.pedalUiState.draftPedal));
+    track.midiPedals = pedals;
+    this.pedalUiState.editorOpen = false;
+    this.pedalUiState.draftPedal = null;
+    this.persist({ commitHistory: true });
+  }
+
+  cancelPedalEditor() {
+    this.pedalUiState.editorOpen = false;
+    this.pedalUiState.draftPedal = null;
+  }
+
+  deletePedalFromEditor() {
+    const track = this.getActiveTrack();
+    const slot = this.pedalUiState.selectedSlot;
+    if (!track || !Number.isInteger(slot)) return;
+    const pedals = normalizeMidiPedals(track.midiPedals);
+    pedals[slot] = null;
+    track.midiPedals = pedals;
+    this.pedalUiState.editorOpen = false;
+    this.pedalUiState.draftPedal = null;
+    this.pedalUiState.selectedSlot = null;
+    this.persist({ commitHistory: true });
+  }
+
   buildExportTrackNotes(track, pattern, ticksPerSecond) {
-    if (!pattern?.notes?.length) return [];
-    return pattern.notes.map((note) => {
+    if (!pattern?.notes?.length) return { notes: [], cc: [] };
+    const processed = this.getTrackPedalProcessing(track, pattern);
+    const notes = processed.notes.map((note) => {
       const startTick = Math.max(0, note.startTick ?? 0);
       const durationTicks = Math.max(1, this.getEffectiveDurationTicks(note, track));
       const endTick = startTick + durationTicks;
@@ -7861,6 +8121,12 @@ export default class MidiComposer {
         vel: clamp(note.velocity ?? 0.8, 0.05, 1)
       };
     });
+    const cc = (processed.cc || []).map((event) => ({
+      controller: event.controller,
+      value: event.value,
+      tSec: Math.max(0, (event.tick || 0) / ticksPerSecond)
+    }));
+    return { notes, cc };
   }
 
   buildExportTracks() {
@@ -7869,13 +8135,14 @@ export default class MidiComposer {
     return this.song.tracks
       .map((track, index) => {
         const pattern = track.patterns?.[this.selectedPatternIndex];
-        const notes = this.buildExportTrackNotes(track, pattern, ticksPerSecond);
+        const { notes, cc } = this.buildExportTrackNotes(track, pattern, ticksPerSecond);
         return {
           id: track.id || `track-${index + 1}`,
           name: track.name || `Track ${index + 1}`,
           channel: Number.isFinite(track.channel) ? track.channel : 0,
           program: Number.isFinite(track.program) ? track.program : 0,
-          notes
+          notes,
+          cc
         };
       })
       .filter((track) => track.notes.length > 0);
@@ -7889,10 +8156,11 @@ export default class MidiComposer {
     const stems = this.song.tracks
       .map((track, index) => {
         const pattern = track.patterns?.[this.selectedPatternIndex];
-        const notes = this.buildExportTrackNotes(track, pattern, ticksPerSecond);
+        const { notes, cc } = this.buildExportTrackNotes(track, pattern, ticksPerSecond);
         if (!notes.length) return null;
         const bytes = buildMidiBytes({
           notes,
+          cc,
           bpm: tempo,
           timeSignature,
           keySignature,
@@ -7947,10 +8215,11 @@ export default class MidiComposer {
     const stems = this.song.tracks
       .map((track, index) => {
         const pattern = track.patterns?.[this.selectedPatternIndex];
-        const notes = this.buildExportTrackNotes(track, pattern, ticksPerSecond);
+        const { notes, cc } = this.buildExportTrackNotes(track, pattern, ticksPerSecond);
         if (!notes.length) return null;
         const bytes = buildMidiBytes({
           notes,
+          cc,
           bpm: tempo,
           timeSignature,
           keySignature,
@@ -8612,7 +8881,7 @@ export default class MidiComposer {
 
 
   drawDesktopLayout(ctx, width, height, track, pattern) {
-    const transportH = 132;
+    const transportH = this.activeTab === 'instruments' ? 0 : 132;
     const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
     const shellLayout = createEditorShellLayout({
       viewportWidth: width,
@@ -8623,7 +8892,9 @@ export default class MidiComposer {
 
     this.drawHeader(ctx, shellLayout.topBar.x, shellLayout.topBar.y, shellLayout.topBar.w, shellLayout.topBar.h, track);
     this.drawDesktopLeftPanel(ctx, shellLayout.leftRail.x, shellLayout.leftRail.y, shellLayout.leftRail.w, shellLayout.leftRail.h);
-    this.drawTransportBar(ctx, shellLayout.bottomBar.x, shellLayout.bottomBar.y, shellLayout.bottomBar.w, shellLayout.bottomBar.h);
+    if (shellLayout.bottomBar.h > 0) {
+      this.drawTransportBar(ctx, shellLayout.bottomBar.x, shellLayout.bottomBar.y, shellLayout.bottomBar.w, shellLayout.bottomBar.h);
+    }
 
     const { x: contentX, y: contentY, w: contentW, h: contentH } = shellLayout.mainContent;
     if (this.activeTab === 'grid') {
@@ -8631,7 +8902,15 @@ export default class MidiComposer {
     } else if (this.activeTab === 'song') {
       this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'instruments') {
-      this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
+      const pedalTransportH = 48;
+      const minMixerH = Math.min(300, Math.max(180, contentH - pedalTransportH - 160));
+      const preferredPedalBoardH = Math.min(260, Math.max(200, Math.round(contentH * 0.3)));
+      const maxPedalBoardH = Math.max(160, contentH - pedalTransportH - minMixerH);
+      const pedalBoardAreaH = clamp(preferredPedalBoardH, 160, maxPedalBoardH);
+      const mixerH = Math.max(minMixerH, contentH - pedalBoardAreaH - pedalTransportH);
+      this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
+      this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track);
+      this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH + pedalTransportH, contentW, pedalBoardAreaH, track);
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
@@ -8833,7 +9112,15 @@ export default class MidiComposer {
       const songContentH = isLandscape ? (height - padding * 2) : contentH;
       this.drawSongTab(ctx, contentX, contentY, contentW, songContentH);
     } else if (this.activeTab === 'instruments') {
-      this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
+      const pedalTransportH = 48;
+      const minMixerH = Math.min(300, Math.max(180, contentH - pedalTransportH - 160));
+      const preferredPedalBoardH = Math.min(260, Math.max(200, Math.round(contentH * 0.3)));
+      const maxPedalBoardH = Math.max(160, contentH - pedalTransportH - minMixerH);
+      const pedalBoardAreaH = clamp(preferredPedalBoardH, 160, maxPedalBoardH);
+      const mixerH = Math.max(minMixerH, contentH - pedalBoardAreaH - pedalTransportH);
+      this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
+      this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track);
+      this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH + pedalTransportH, contentW, pedalBoardAreaH, track);
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
@@ -9242,6 +9529,266 @@ export default class MidiComposer {
     });
     this.bounds.railZoom = hitBounds;
     drawSharedMobileZoomSlider(ctx, railBounds, ratio);
+  }
+
+
+  drawMixerPedalTransport(ctx, x, y, w, h, track) {
+    const panelX = x + 10;
+    const panelY = y + 4;
+    const panelW = w - 20;
+    const panelH = Math.max(36, h - 8);
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+    ctx.fillRect(panelX, panelY, panelW, panelH);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(panelX, panelY, panelW, panelH);
+    const buttons = [
+      { label: '●', control: 'transport-record' },
+      { label: '⏮', control: 'transport-home' },
+      { label: '⏪', control: 'transport-rewind' },
+      { label: this.isPlaying ? '❚❚' : '▶', control: 'transport-play', active: this.isPlaying },
+      { label: '⏩', control: 'transport-forward' },
+      { label: '⏭', control: 'transport-end' },
+      { label: this.song.loopEnabled ? 'Loop On' : 'Loop', control: 'transport-loop', active: this.song.loopEnabled }
+    ];
+    const gap = 6;
+    const bw = (panelW - 16 - gap * (buttons.length - 1)) / buttons.length;
+    buttons.forEach((entry, i) => {
+      const b = {
+        x: panelX + 8 + i * (bw + gap),
+        y: panelY + 6,
+        w: bw,
+        h: panelH - 12,
+        trackIndex: this.selectedTrackIndex,
+        control: entry.control
+      };
+      this.drawSmallButton(ctx, b, entry.label, Boolean(entry.active));
+      this.bounds.instrumentSettingsControls.push(b);
+    });
+  }
+
+
+  drawPedalBoardPanel(ctx, x, y, w, h, track) {
+    this.pedalSlotBounds = [];
+    this.pedalPickerBounds = [];
+    this.pedalInspectorBounds = [];
+    this.pedalEditorOverlayBounds = null;
+    this.pedalEditorModalBounds = null;
+    if (!track) return;
+    const panelX = x + 10;
+    const panelW = w - 20;
+    const panelH = Math.max(96, h - 8);
+    const panelY = y + h - panelH - 2;
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+    ctx.fillRect(panelX, panelY, panelW, panelH);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(panelX, panelY, panelW, panelH);
+    ctx.fillStyle = '#fff';
+    ctx.font = '13px Courier New';
+    ctx.fillText('Pedal Board', panelX + 10, panelY + 16);
+
+    const pedals = normalizeMidiPedals(track.midiPedals);
+    if (Number.isInteger(this.pedalUiState.selectedSlot) && !pedals[this.pedalUiState.selectedSlot]) {
+      this.pedalUiState.selectedSlot = null;
+      this.pedalUiState.editorOpen = false;
+      this.pedalUiState.draftPedal = null;
+    }
+
+    const slotY = panelY + 24;
+    const gap = 8;
+    const slotW = Math.floor((panelW - 20 - gap * 3) / 4);
+    const slotH = Math.max(64, panelH - 32);
+    for (let i = 0; i < 4; i += 1) {
+      const bx = panelX + 10 + i * (slotW + gap);
+      const b = { x: bx, y: slotY, w: slotW, h: slotH, slotIndex: i, control: 'pedal-slot' };
+      this.pedalSlotBounds.push(b);
+      const pedal = pedals[i];
+      const body = pedal ? (PEDAL_COLORS[pedal.color] || '#666') : 'rgba(90,90,90,0.6)';
+      ctx.fillStyle = body;
+      ctx.fillRect(b.x, b.y, b.w, b.h);
+      ctx.strokeStyle = this.pedalUiState.selectedSlot === i ? '#ffe16a' : 'rgba(0,0,0,0.65)';
+      ctx.lineWidth = this.pedalUiState.selectedSlot === i ? 3 : 2;
+      ctx.strokeRect(b.x, b.y, b.w, b.h);
+      ctx.lineWidth = 1;
+      if (!pedal) {
+        ctx.fillStyle = '#fff';
+        ctx.font = '24px Courier New';
+        ctx.fillText('+', b.x + b.w / 2 - 7, b.y + b.h * 0.6);
+      } else {
+        const pedalDef = PEDAL_DEFINITION_BY_TYPE[pedal.type];
+        ctx.fillStyle = pedal.enabled ? '#fff' : 'rgba(255,255,255,0.65)';
+        ctx.font = PEDAL_FONTS[pedal.type] || 'bold 12px Courier New';
+        ctx.fillText(pedal.name, b.x + 6, b.y + 18);
+        ctx.font = 'bold 10px Courier New';
+        ctx.fillText(pedalDef?.effectLabel || pedal.type, b.x + 6, b.y + 32);
+        ctx.fillStyle = pedal.enabled ? '#73ff8f' : '#555';
+        ctx.fillRect(b.x + b.w - 12, b.y + 6, 6, 6);
+        const knobY = b.y + b.h - 16;
+        [0.24, 0.5, 0.76].forEach((pos) => {
+          const kx = b.x + b.w * pos;
+          ctx.fillStyle = 'rgba(16,16,20,0.95)';
+          ctx.beginPath();
+          ctx.arc(kx, knobY, 5, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+    }
+
+    if (this.pedalUiState.pickerOpen) {
+      const viewportW = this.viewportWidth || w;
+      const viewportH = this.viewportHeight || (y + h + 100);
+      const mw = Math.min(420, Math.max(280, Math.round(w * 0.34)));
+      const mh = Math.min(520, Math.max(320, Math.round(viewportH * 0.62)));
+      const mx = Math.round((viewportW - mw) / 2);
+      const my = Math.round((viewportH - mh) / 2);
+      ctx.fillStyle = 'rgba(0,0,0,0.62)';
+      ctx.fillRect(0, 0, viewportW, viewportH);
+      ctx.fillStyle = 'rgba(10,10,12,0.97)';
+      ctx.fillRect(mx, my, mw, mh);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(mx, my, mw, mh);
+      ctx.fillStyle = '#fff';
+      ctx.font = '14px Courier New';
+      ctx.fillText('Choose Pedal', mx + 12, my + 20);
+      const list = { x: mx + 10, y: my + 30, w: mw - 20, h: mh - 40, control: 'pedal-picker-scroll-area' };
+      this.pedalPickerBounds.push(list);
+      const itemH = 56;
+      const gapY = 8;
+      const contentH = PEDAL_DEFINITIONS.length * (itemH + gapY);
+      this.pedalUiState.pickerScrollMax = Math.max(0, contentH - list.h);
+      this.pedalUiState.pickerScroll = clamp(this.pedalUiState.pickerScroll || 0, 0, this.pedalUiState.pickerScrollMax);
+      let rowY = list.y - this.pedalUiState.pickerScroll;
+      PEDAL_DEFINITIONS.forEach((def) => {
+        const b = { x: list.x + 4, y: rowY, w: list.w - 8, h: itemH, control: 'pedal-picker-item', pedalType: def.type };
+        if (b.y + b.h >= list.y - 8 && b.y <= list.y + list.h + 8) {
+          this.pedalPickerBounds.push(b);
+          ctx.fillStyle = PEDAL_COLORS[def.color] || '#666';
+          ctx.fillRect(b.x, b.y, b.w, b.h);
+          ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+          ctx.strokeRect(b.x, b.y, b.w, b.h);
+          ctx.fillStyle = '#fff';
+          ctx.font = PEDAL_FONTS[def.type] || 'bold 13px Courier New';
+          ctx.fillText(def.name, b.x + 8, b.y + 20);
+          ctx.font = '11px Courier New';
+          ctx.fillText(def.effectLabel || def.type, b.x + 8, b.y + 38);
+        }
+        rowY += itemH + gapY;
+      });
+    }
+
+
+    const selectedSlot = this.pedalUiState.selectedSlot;
+    const selectedPedal = Number.isInteger(selectedSlot) ? pedals[selectedSlot] : null;
+    const editorPedal = this.pedalUiState.editorOpen ? (this.pedalUiState.draftPedal || selectedPedal) : null;
+    if (!editorPedal || !this.pedalUiState.editorOpen) return;
+
+    const def = PEDAL_DEFINITION_BY_TYPE[editorPedal.type];
+    const modalW = Math.min(320, Math.max(220, Math.round(w * 0.28)));
+    const modalH = Math.min(560, Math.max(360, modalW * 2));
+    const viewportW = this.viewportWidth || w;
+    const viewportH = this.viewportHeight || (y + h + 100);
+    const modalX = Math.round((viewportW - modalW) / 2);
+    const modalY = Math.round((viewportH - modalH) / 2);
+    this.pedalEditorOverlayBounds = { x: 0, y: 0, w: viewportW, h: viewportH };
+    this.pedalEditorModalBounds = { x: modalX, y: modalY, w: modalW, h: modalH };
+    ctx.fillStyle = 'rgba(0,0,0,0.62)';
+    ctx.fillRect(0, 0, viewportW, viewportH);
+    ctx.fillStyle = PEDAL_COLORS[editorPedal.color] || '#666';
+    ctx.fillRect(modalX, modalY, modalW, modalH);
+    ctx.strokeStyle = '#111';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(modalX, modalY, modalW, modalH);
+    ctx.lineWidth = 1;
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.fillRect(modalX + 8, modalY + 8, modalW - 16, 20);
+    const editorDef = PEDAL_DEFINITION_BY_TYPE[editorPedal.type];
+    ctx.fillStyle = '#fff';
+    ctx.font = (PEDAL_FONTS[editorPedal.type] || 'bold 20px Courier New').replace('12px', '20px');
+    ctx.fillText(editorPedal.name, modalX + 12, modalY + 25);
+    ctx.font = 'bold 16px Courier New';
+    ctx.fillText(editorDef?.effectLabel || editorPedal.type, modalX + 12, modalY + 46);
+
+    const ledRadius = 6;
+    const ledX = modalX + modalW - 24;
+    const ledY = modalY + 20;
+    ctx.beginPath();
+    ctx.fillStyle = editorPedal.enabled ? '#36f26d' : '#e14343';
+    ctx.arc(ledX, ledY, ledRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 12px Courier New';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(editorPedal.enabled ? 'ON' : 'OFF', ledX - 10, ledY);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+
+    const patterns = {
+      octave: [[0.3, 0.28], [0.7, 0.28], [0.3, 0.5], [0.7, 0.5]],
+      compressor: [[0.22, 0.32], [0.4, 0.32], [0.58, 0.32], [0.76, 0.32]],
+      wah: [[0.5, 0.26], [0.35, 0.42], [0.65, 0.42], [0.5, 0.56]],
+      chorus: [[0.25, 0.38], [0.75, 0.38], [0.5, 0.54], [0.5, 0.72]],
+      eq: [[0.2, 0.48], [0.4, 0.42], [0.6, 0.42], [0.8, 0.48]],
+      overdrive: [[0.28, 0.34], [0.72, 0.34], [0.5, 0.56], [0.5, 0.76]],
+      reverb: [[0.26, 0.4], [0.74, 0.4], [0.26, 0.64], [0.74, 0.64]],
+      phaser: [[0.5, 0.34], [0.5, 0.52], [0.3, 0.68], [0.7, 0.68]]
+    };
+    const knobDefs = def?.knobs?.slice(0, 4) || [];
+    const points = patterns[editorPedal.type] || patterns.chorus;
+    knobDefs.forEach((knob, index) => {
+      const [nx, ny] = points[index] || [0.5, 0.5];
+      const centerX = modalX + modalW * nx;
+      const centerY = modalY + modalH * ny - 20;
+      const radius = 26;
+      const hit = { x: centerX - 30, y: centerY - 30, w: 60, h: 72, control: 'pedal-knob', knobKey: knob.key, min: knob.min, max: knob.max };
+      this.pedalInspectorBounds.push(hit);
+      const raw = editorPedal.knobs?.[knob.key] ?? knob.defaultValue;
+      const ratio = (raw - knob.min) / Math.max(0.0001, knob.max - knob.min);
+      const angle = (-140 + ratio * 280) * (Math.PI / 180);
+      ctx.fillStyle = 'rgba(12,12,16,0.96)';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.stroke();
+      ctx.strokeStyle = '#ffe16a';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(centerX + Math.cos(angle) * (radius - 4), centerY + Math.sin(angle) * (radius - 4));
+      ctx.stroke();
+      ctx.lineWidth = 1;
+      ctx.fillStyle = '#fff';
+      ctx.font = '12px Courier New';
+      ctx.fillText(knob.label, centerX - 18, centerY + 42);
+    });
+
+    const stompY = modalY + Math.round(modalH * 0.7);
+    const stompH = Math.round(modalH * 0.2);
+    const stomp = { x: modalX + 10, y: stompY, w: modalW - 20, h: stompH, control: 'pedal-stomp-toggle' };
+    this.pedalInspectorBounds.push(stomp);
+    ctx.fillStyle = 'rgba(0,0,0,0.92)';
+    ctx.fillRect(stomp.x, stomp.y, stomp.w, stomp.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(stomp.x, stomp.y, stomp.w, stomp.h);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 20px Courier New';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(editorPedal.enabled ? 'ON' : 'OFF', stomp.x + stomp.w / 2, stomp.y + stomp.h / 2);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+
+    const btnY = modalY + modalH - 40;
+    const btnW = Math.floor((modalW - 28) / 3);
+    const cancel = { x: modalX + 8, y: btnY, w: btnW, h: 34, control: 'pedal-cancel' };
+    const ok = { x: cancel.x + btnW + 6, y: btnY, w: btnW, h: 34, control: 'pedal-ok' };
+    const del = { x: ok.x + btnW + 6, y: btnY, w: btnW, h: 34, control: 'pedal-delete' };
+    this.pedalInspectorBounds.push(cancel, ok, del);
+    this.drawButton(ctx, cancel, 'Cancel', false, false);
+    this.drawButton(ctx, ok, 'OK', true, false);
+    this.drawDangerButton(ctx, del, 'Delete');
   }
 
 
@@ -10648,7 +11195,9 @@ export default class MidiComposer {
       ctx.font = '14px Courier New';
       ctx.fillText('Instruments', leftX + 10, leftY + 18);
       const listStartY = leftY + 28;
-      const listH = Math.max(0, panelH - addButtonH - 20 - controlsH);
+      const addButtonBottomInset = 4;
+      const listBottomGap = 8;
+      const listH = Math.max(0, panelH - addButtonH - listBottomGap - addButtonBottomInset - controlsH);
       this.bounds.instrumentListScrollArea = { x: leftX + 4, y: listStartY, w: leftW - 8, h: listH };
       const listItemGap = 6;
       const listRowH = Math.max(rowH, Math.min(96, (listH - listItemGap * 3) / 4));
@@ -10662,6 +11211,10 @@ export default class MidiComposer {
         this.pendingTrackFocusIndex = null;
       }
       let cursorY = listStartY - this.instrumentListScroll;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(this.bounds.instrumentListScrollArea.x, this.bounds.instrumentListScrollArea.y, this.bounds.instrumentListScrollArea.w, this.bounds.instrumentListScrollArea.h);
+      ctx.clip();
       this.song.tracks.forEach((listTrack, index) => {
         const bounds = { x: leftX + 8, y: cursorY, w: leftW - 16, h: listRowH, trackIndex: index };
         if (bounds.y + bounds.h < listStartY - 4 || bounds.y > listStartY + listH + 4) {
@@ -10685,8 +11238,9 @@ export default class MidiComposer {
         this.bounds.instrumentList.push(bounds);
         cursorY += listRowH + listItemGap;
       });
+      ctx.restore();
 
-      this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - 8, w: leftW - 16, h: addButtonH };
+      this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - addButtonBottomInset, w: leftW - 16, h: addButtonH };
       this.drawButton(ctx, this.bounds.instrumentAdd, 'Add Instrument', false, false);
     } else {
       this.bounds.instrumentAdd = null;
@@ -10894,7 +11448,7 @@ export default class MidiComposer {
 
     const buttonRowY = infoY + 40 + previewOffset;
     const buttonGap = 8;
-    const buttonW = (rightW - padding * 2 - buttonGap * 2) / 3;
+    const buttonW = (rightW - padding * 2 - buttonGap * 3) / 4;
     const changeBounds = {
       x: rightX + padding,
       y: buttonRowY,
@@ -10904,15 +11458,23 @@ export default class MidiComposer {
       control: 'instrument'
     };
     const renameBounds = {
-      x: rightX + padding + buttonW + buttonGap,
+      x: rightX + padding + (buttonW + buttonGap),
       y: buttonRowY,
       w: buttonW,
       h: 32,
       trackIndex: this.selectedTrackIndex,
       control: 'name'
     };
-    const removeBounds = {
+    const duplicateBounds = {
       x: rightX + padding + (buttonW + buttonGap) * 2,
+      y: buttonRowY,
+      w: buttonW,
+      h: 32,
+      trackIndex: this.selectedTrackIndex,
+      control: 'duplicate'
+    };
+    const removeBounds = {
+      x: rightX + padding + (buttonW + buttonGap) * 3,
       y: buttonRowY,
       w: buttonW,
       h: 32,
@@ -10921,8 +11483,9 @@ export default class MidiComposer {
     };
     this.drawButton(ctx, changeBounds, 'Change', false, false);
     this.drawButton(ctx, renameBounds, 'Rename', false, false);
+    this.drawButton(ctx, duplicateBounds, 'Duplicate', false, false);
     this.drawDangerButton(ctx, removeBounds, 'Remove');
-    this.bounds.instrumentSettingsControls.push(changeBounds, renameBounds, removeBounds);
+    this.bounds.instrumentSettingsControls.push(changeBounds, renameBounds, duplicateBounds, removeBounds);
 
     const mix = this.getTrackPlaybackMix(track);
     const toggleRowY = buttonRowY + 44;

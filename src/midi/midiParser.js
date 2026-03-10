@@ -74,6 +74,7 @@ const normalizeMidiNotes = (notes, { bpm, timeSignature, ...options } = {}) => {
 
 export const buildMidiBytes = ({
   notes = [],
+  cc = [],
   bpm = 120,
   timeSignature = null,
   keySignature = null,
@@ -111,6 +112,15 @@ export const buildMidiBytes = ({
       time: start,
       duration,
       velocity: clamp(Number.isFinite(note.vel) ? note.vel : 0.8, 0.05, 1)
+    });
+  });
+
+  cc.forEach((event) => {
+    const time = Math.max(0, event.tSec ?? event.timeSec ?? event.tickSec ?? 0);
+    track.addCC({
+      number: Math.max(0, Math.min(127, event.controller ?? event.number ?? 74)),
+      time,
+      value: clamp((event.value ?? 64) / 127, 0, 1)
     });
   });
   return midi.toArray();
@@ -158,6 +168,15 @@ export const buildMultiTrackMidiBytes = ({
         time: start,
         duration,
         velocity: clamp(Number.isFinite(note.vel) ? note.vel : 0.8, 0.05, 1)
+      });
+    });
+
+    (trackData?.cc || []).forEach((event) => {
+      const time = Math.max(0, event.tSec ?? event.timeSec ?? event.tickSec ?? 0);
+      track.addCC({
+        number: Math.max(0, Math.min(127, event.controller ?? event.number ?? 74)),
+        time,
+        value: clamp((event.value ?? 64) / 127, 0, 1)
       });
     });
   });
