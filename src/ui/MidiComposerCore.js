@@ -8743,8 +8743,10 @@ export default class MidiComposer {
     } else if (this.activeTab === 'song') {
       this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'instruments') {
-      this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
-      this.drawPedalBoardPanel(ctx, contentX, contentY, contentW, contentH, track);
+      const pedalBoardAreaH = Math.min(280, Math.max(180, Math.round(contentH * 0.36)));
+      const mixerH = Math.max(120, contentH - pedalBoardAreaH);
+      this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
+      this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH, contentW, pedalBoardAreaH, track);
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
@@ -8946,8 +8948,10 @@ export default class MidiComposer {
       const songContentH = isLandscape ? (height - padding * 2) : contentH;
       this.drawSongTab(ctx, contentX, contentY, contentW, songContentH);
     } else if (this.activeTab === 'instruments') {
-      this.drawInstrumentPanel(ctx, contentX, contentY, contentW, contentH, track);
-      this.drawPedalBoardPanel(ctx, contentX, contentY, contentW, contentH, track);
+      const pedalBoardAreaH = Math.min(280, Math.max(180, Math.round(contentH * 0.36)));
+      const mixerH = Math.max(120, contentH - pedalBoardAreaH);
+      this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
+      this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH, contentW, pedalBoardAreaH, track);
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
@@ -9364,10 +9368,10 @@ export default class MidiComposer {
     this.pedalPickerBounds = [];
     this.pedalInspectorBounds = [];
     if (!track) return;
-    const panelH = Math.min(250, Math.max(170, Math.round(h * 0.34)));
-    const panelY = y + h - panelH - 24;
     const panelX = x + 10;
+    const panelY = y + 8;
     const panelW = w - 20;
+    const panelH = Math.max(150, h - 12);
     ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(panelX, panelY, panelW, panelH);
     ctx.strokeStyle = UI_SUITE.colors.border;
