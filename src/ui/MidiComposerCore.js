@@ -11222,7 +11222,9 @@ export default class MidiComposer {
       const listH = Math.max(0, panelH - addButtonH - listBottomGap - addButtonBottomInset - controlsH);
       this.bounds.instrumentListScrollArea = { x: leftX + 4, y: listStartY, w: leftW - 8, h: listH };
       const listItemGap = 6;
-      const listRowH = Math.max(rowH, Math.min(96, (listH - listItemGap * 3) / 4));
+      const visibleRows = Math.max(4, Math.min(5, this.song.tracks.length || 4));
+      const compactRowH = Math.floor((listH - listItemGap * Math.max(0, visibleRows - 1)) / Math.max(1, visibleRows));
+      const listRowH = clamp(compactRowH, 32, 96);
       const listContentH = Math.max(0, this.song.tracks.length * listRowH + Math.max(0, this.song.tracks.length - 1) * listItemGap);
       this.instrumentListScrollMax = Math.max(0, listContentH - listH);
       this.instrumentListScroll = clamp(this.instrumentListScroll, 0, this.instrumentListScrollMax);
@@ -11263,6 +11265,8 @@ export default class MidiComposer {
       ctx.restore();
 
       this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - addButtonBottomInset, w: leftW - 16, h: addButtonH };
+      ctx.fillStyle = UI_SUITE.colors.panel;
+      ctx.fillRect(this.bounds.instrumentAdd.x, this.bounds.instrumentAdd.y, this.bounds.instrumentAdd.w, this.bounds.instrumentAdd.h);
       this.drawButton(ctx, this.bounds.instrumentAdd, 'Add Instrument', false, false);
     } else {
       this.bounds.instrumentAdd = null;
