@@ -108,6 +108,12 @@ function getTouchGesture(touches) {
 
 let gestureActive = false;
 const activeTouches = new Map();
+let lastTouchInteractionAt = 0;
+const GHOST_MOUSE_BLOCK_MS = 800;
+
+function shouldIgnoreMouseFromRecentTouch() {
+  return (Date.now() - lastTouchInteractionAt) < GHOST_MOUSE_BLOCK_MS;
+}
 
 function resetTouchSession(reason = 'unknown') {
   if (gestureActive && game.handleGestureEnd) {
@@ -130,21 +136,25 @@ function bindInputListeners() {
   }));
 
   listenerDisposer.add(addDOMListener(canvas, 'click', (event) => {
+    if (shouldIgnoreMouseFromRecentTouch()) return;
     const { x, y } = getCanvasPosition(event);
     game.handleClick?.(x, y);
   }));
 
   listenerDisposer.add(addDOMListener(canvas, 'mousedown', (event) => {
+    if (shouldIgnoreMouseFromRecentTouch()) return;
     const { x, y } = getCanvasPosition(event);
     game.handlePointerDown?.({ x, y, button: event.button, buttons: event.buttons });
   }));
 
   listenerDisposer.add(addDOMListener(canvas, 'mousemove', (event) => {
+    if (shouldIgnoreMouseFromRecentTouch()) return;
     const { x, y } = getCanvasPosition(event);
     game.handlePointerMove?.({ x, y, buttons: event.buttons });
   }));
 
   listenerDisposer.add(addDOMListener(window, 'mouseup', (event) => {
+    if (shouldIgnoreMouseFromRecentTouch()) return;
     const { x, y } = getCanvasPosition(event);
     game.handlePointerUp?.({ x, y, button: event.button });
   }));
@@ -156,6 +166,7 @@ function bindInputListeners() {
   }, { passive: false }));
 
   listenerDisposer.add(addDOMListener(canvas, 'touchstart', (event) => {
+    lastTouchInteractionAt = Date.now();
     const gesturesAllowed = !(game.state === 'midi-editor' && game.midiComposer?.recordModeActive);
     const shouldStartGesture = () => {
       if (!game.handleGestureStart) return false;
@@ -191,6 +202,7 @@ function bindInputListeners() {
   }, { passive: false }));
 
   listenerDisposer.add(addDOMListener(canvas, 'touchmove', (event) => {
+    lastTouchInteractionAt = Date.now();
     if (game.state === 'midi-editor' && game.midiComposer?.recordModeActive) {
       gestureActive = false;
     }
@@ -215,6 +227,7 @@ function bindInputListeners() {
   };
 
   listenerDisposer.add(addDOMListener(canvas, 'touchend', (event) => {
+    lastTouchInteractionAt = Date.now();
     if (gestureActive && event.touches.length < 2) {
       endGesture();
     }
@@ -228,6 +241,7 @@ function bindInputListeners() {
   }));
 
   listenerDisposer.add(addDOMListener(canvas, 'touchcancel', (event) => {
+    lastTouchInteractionAt = Date.now();
     endGesture();
     Array.from(event.changedTouches).forEach((touch) => {
       const position = activeTouches.get(touch.identifier) || getCanvasPosition(touch);
