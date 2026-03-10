@@ -3375,6 +3375,12 @@ export default class MidiComposer {
         const pattern = track.patterns[this.selectedPatternIndex];
         if (!pattern) return;
         const processed = this.getTrackPedalProcessing(track, pattern);
+        processed.cc?.forEach((event) => {
+          const tick = Number(event.tick) || 0;
+          if (tick >= range.start && tick < range.end) {
+            this.applyPedalCcEvent(event, track);
+          }
+        });
         processed.notes.forEach((note) => {
           const noteStart = this.getSwingedTick(note.startTick);
           if (noteStart >= range.start && noteStart < range.end) {
@@ -3451,6 +3457,27 @@ export default class MidiComposer {
     const now = performance.now();
     this.activeNotes.set(note.id, { trackId: track.id, expires: now + duration * 1000 + 120 });
     this.lastPlaybackTick = startTick;
+  }
+
+  applyPedalCcEvent(event, track) {
+    const controller = Number(event?.controller);
+    const value = clamp((Number(event?.value) || 0) / 127, 0, 1);
+    const audio = this.game?.audio;
+    if (!audio) return;
+    if (controller === 91) {
+      audio.setMidiReverbEnabled?.(value > 0.01);
+      audio.setMidiReverbLevel?.(value);
+      return;
+    }
+    if (controller === 74) {
+      const shaped = clamp(0.55 + (value - 0.5) * 0.5, 0, 1);
+      audio.setMidiVolume?.(shaped);
+      return;
+    }
+    if (controller === 1 || controller === 71) {
+      const bend = (value - 0.5) * (controller === 1 ? 1.8 : 0.8);
+      audio.setMidiPitchBend?.(bend, Number.isFinite(track?.channel) ? track.channel : null);
+    }
   }
 
   playGmNote(pitch, duration, volume, track, pan = 0) {
@@ -3753,7 +3780,14 @@ export default class MidiComposer {
         pedals[slot] = { ...pedals[slot], enabled: !pedals[slot].enabled };
         track.midiPedals = pedals;
       } else if (pedalInspectorHit.control === 'pedal-knob') {
-        this.dragState = { mode: 'slider', id: 'pedal-knob', bounds: pedalInspectorHit };
+        const current = Number(pedals[slot]?.knobs?.[pedalInspectorHit.knobKey]);
+        this.dragState = {
+          mode: 'pedal-knob-turn',
+          bounds: pedalInspectorHit,
+          startY: y,
+          startValue: Number.isFinite(current) ? current : pedalInspectorHit.min
+        };
+        return;
       }
       this.persist({ commitHistory: true });
       return;
@@ -4807,6 +4841,15 @@ export default class MidiComposer {
     }
     if (this.dragState?.mode === 'slider') {
       this.updateSliderValue(payload.x, payload.y, this.dragState.id, this.dragState.bounds);
+      return;
+    }
+    if (this.dragState?.mode === 'pedal-knob-turn') {
+      const bounds = this.dragState.bounds;
+      const delta = (this.dragState.startY - payload.y) / 120;
+      const min = Number.isFinite(bounds?.min) ? bounds.min : 0;
+      const max = Number.isFinite(bounds?.max) ? bounds.max : 1;
+      const next = clamp(this.dragState.startValue + delta * (max - min), min, max);
+      this.updateSelectedPedalKnob(bounds.knobKey, next);
       return;
     }
     if (this.draggingTrackControl) {
@@ -7543,15 +7586,6 @@ export default class MidiComposer {
         zoomXLimits.maxZoom
       );
     }
-    if (id === 'pedal-knob') {
-      const knobBounds = bounds || this.dragState?.bounds;
-      if (knobBounds?.knobKey) {
-        const min = Number.isFinite(knobBounds.min) ? knobBounds.min : 0;
-        const max = Number.isFinite(knobBounds.max) ? knobBounds.max : 1;
-        const value = min + ratio * (max - min);
-        this.updateSelectedPedalKnob(knobBounds.knobKey, value);
-      }
-    }
     this.saveAudioSettings();
     this.applyAudioSettings();
   }
@@ -8724,7 +8758,7 @@ export default class MidiComposer {
 
 
   drawDesktopLayout(ctx, width, height, track, pattern) {
-    const transportH = 132;
+    const transportH = this.activeTab === 'instruments' ? 88 : 132;
     const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
     const shellLayout = createEditorShellLayout({
       viewportWidth: width,
@@ -9427,21 +9461,35 @@ export default class MidiComposer {
       this.pedalInspectorBounds.push(toggle, remove);
       this.drawSmallButton(ctx, toggle, selected.enabled ? 'On' : 'Byp', selected.enabled);
       this.drawDangerButton(ctx, remove, 'X');
-      def?.knobs?.slice(0, 4).forEach((knob, index) => {
-        const y0 = ins.y + 28 + index * 18;
-        const slider = { x: ins.x + 64, y: y0, w: ins.w - 74, h: 10, control: 'pedal-knob', knobKey: knob.key, min: knob.min, max: knob.max };
-        this.pedalInspectorBounds.push(slider);
+      const knobDefs = def?.knobs?.slice(0, 4) || [];
+      const knobAreaY = ins.y + 26;
+      const knobCount = Math.max(1, knobDefs.length);
+      const knobSpacing = Math.min(84, (ins.w - 26) / knobCount);
+      knobDefs.forEach((knob, index) => {
+        const centerX = ins.x + 18 + knobSpacing * index + knobSpacing * 0.45;
+        const centerY = knobAreaY + 26;
+        const radius = 14;
+        const hit = { x: centerX - 18, y: centerY - 18, w: 36, h: 44, control: 'pedal-knob', knobKey: knob.key, min: knob.min, max: knob.max };
+        this.pedalInspectorBounds.push(hit);
         const raw = selected.knobs?.[knob.key] ?? knob.defaultValue;
         const ratio = (raw - knob.min) / Math.max(0.0001, knob.max - knob.min);
-        ctx.fillStyle = 'rgba(0,0,0,0.55)';
-        ctx.fillRect(slider.x, slider.y, slider.w, slider.h);
-        ctx.fillStyle = '#ffe16a';
-        ctx.fillRect(slider.x, slider.y, slider.w * ratio, slider.h);
-        ctx.strokeStyle = UI_SUITE.colors.border;
-        ctx.strokeRect(slider.x, slider.y, slider.w, slider.h);
+        const angle = (-140 + ratio * 280) * (Math.PI / 180);
+        ctx.fillStyle = 'rgba(18,18,20,0.95)';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+        ctx.stroke();
+        ctx.strokeStyle = '#ffe16a';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(centerX + Math.cos(angle) * (radius - 3), centerY + Math.sin(angle) * (radius - 3));
+        ctx.stroke();
+        ctx.lineWidth = 1;
         ctx.fillStyle = '#fff';
         ctx.font = '10px Courier New';
-        ctx.fillText(knob.label, ins.x + 8, y0 + 8);
+        ctx.fillText(knob.label, centerX - 14, centerY + 24);
       });
     }
 
