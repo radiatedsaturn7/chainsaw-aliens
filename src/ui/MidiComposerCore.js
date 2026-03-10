@@ -35,7 +35,7 @@ import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
-import { PEDAL_DEFINITIONS, PEDAL_DEFINITION_BY_TYPE, PEDAL_COLORS } from './midi/pedals/pedalDefinitions.js';
+import { PEDAL_DEFINITIONS, PEDAL_DEFINITION_BY_TYPE, PEDAL_COLORS, PEDAL_FONTS } from './midi/pedals/pedalDefinitions.js';
 import { createDefaultPedal } from './midi/pedals/pedalDefaults.js';
 import { normalizeMidiPedals } from './midi/pedals/normalizeMidiPedals.js';
 import { applyPedalChain } from './midi/pedals/applyPedalChain.js';
@@ -815,7 +815,7 @@ export default class MidiComposer {
     this.pedalSlotBounds = [];
     this.pedalPickerBounds = [];
     this.pedalInspectorBounds = [];
-    this.pedalUiState = { selectedSlot: null, pickerSlot: null, pickerOpen: false, editorOpen: false, draftPedal: null };
+    this.pedalUiState = { selectedSlot: null, pickerSlot: null, pickerOpen: false, pickerPage: 0, editorOpen: false, draftPedal: null };
     this.patternBounds = [];
     this.noteBounds = [];
     this.toolsMenuBounds = [];
@@ -3453,7 +3453,9 @@ export default class MidiComposer {
       this.ensureDrumTrackSettings(track);
     }
     const mix = this.getTrackPlaybackMix(track, startTick);
-    this.playGmNote(pitch, duration, velocity * mix.volume, track, mix.pan);
+    const pedalPanOffset = clamp(track?._pedalPanOffset ?? 0, -1, 1);
+    const resolvedPan = clamp(mix.pan + pedalPanOffset, -1, 1);
+    this.playGmNote(pitch, duration, velocity * mix.volume, track, resolvedPan);
     const now = performance.now();
     this.activeNotes.set(note.id, { trackId: track.id, expires: now + duration * 1000 + 120 });
     this.lastPlaybackTick = startTick;
@@ -3473,6 +3475,10 @@ export default class MidiComposer {
       const shaped = clamp(0.42 + (value * 0.92), 0, 1);
       audio.setMidiVolume?.(shaped);
       audio.setMidiReverbLevel?.(clamp(this.audioSettings.reverbLevel * 0.65 + value * 0.25, 0, 1));
+      return;
+    }
+    if (controller === 10) {
+      if (track) track._pedalPanOffset = (value * 2 - 1) * 0.75;
       return;
     }
     if (controller === 1 || controller === 71) {
@@ -3762,9 +3768,15 @@ export default class MidiComposer {
       return;
     }
 
-    const pedalPickerHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+    const pedalPickerHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds) && bounds.control === 'pedal-picker-item');
     if (pedalPickerHit) {
       this.insertPedalIntoSlot(this.pedalUiState.pickerSlot ?? 0, pedalPickerHit.pedalType);
+      return;
+    }
+    const pedalPickerNavHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds) && bounds.control === 'pedal-picker-nav');
+    if (pedalPickerNavHit) {
+      const totalPages = Math.max(1, Math.ceil(PEDAL_DEFINITIONS.length / 8));
+      this.pedalUiState.pickerPage = clamp(this.pedalUiState.pickerPage + pedalPickerNavHit.delta, 0, totalPages - 1);
       return;
     }
     const pedalInspectorHit = this.pedalInspectorBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -3811,6 +3823,7 @@ export default class MidiComposer {
       } else {
         this.pedalUiState.pickerSlot = pedalSlotHit.slotIndex;
         this.pedalUiState.pickerOpen = true;
+        this.pedalUiState.pickerPage = 0;
         this.pedalUiState.editorOpen = false;
         this.pedalUiState.draftPedal = null;
       }
@@ -6114,6 +6127,7 @@ export default class MidiComposer {
       ...track,
       id: `track-${uid()}`,
       name: `${track.name} Copy`,
+      midiPedals: normalizeMidiPedals(track.midiPedals).map((pedal) => (pedal ? { ...pedal, id: `pedal_${uid()}`, knobs: { ...pedal.knobs } } : null)),
       patterns: track.patterns.map((pattern) => ({
         ...pattern,
         id: `pattern-${uid()}`,
@@ -6137,8 +6151,32 @@ export default class MidiComposer {
       track.mute = !track.mute;
     } else if (hit.control === 'solo') {
       track.solo = !track.solo;
+    } else if (hit.control === 'duplicate') {
+      this.duplicateTrack();
+      return;
     } else if (hit.control === 'remove') {
       this.removeTrack();
+      return;
+    } else if (hit.control === 'transport-home') {
+      this.returnToStart();
+      return;
+    } else if (hit.control === 'transport-rewind') {
+      this.jumpPlayheadBars(-1);
+      return;
+    } else if (hit.control === 'transport-play') {
+      this.togglePlayback();
+      return;
+    } else if (hit.control === 'transport-forward') {
+      this.jumpPlayheadBars(1);
+      return;
+    } else if (hit.control === 'transport-end') {
+      this.goToEnd();
+      return;
+    } else if (hit.control === 'transport-loop') {
+      this.toggleLoopEnabled();
+      return;
+    } else if (hit.control === 'transport-record') {
+      this.enterRecordMode();
       return;
     } else if (hit.control === 'instrument') {
       if (isDrumTrack(track)) {
@@ -8839,8 +8877,8 @@ export default class MidiComposer {
     } else if (this.activeTab === 'song') {
       this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'instruments') {
-      const pedalBoardAreaH = Math.min(132, Math.max(108, Math.round(contentH * 0.2)));
-      const mixerH = Math.max(220, contentH - pedalBoardAreaH);
+      const pedalBoardAreaH = Math.min(280, Math.max(220, Math.round(contentH * 0.34)));
+      const mixerH = Math.max(300, contentH - pedalBoardAreaH);
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
       this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH, contentW, pedalBoardAreaH, track);
     } else if (this.activeTab === 'settings') {
@@ -9044,8 +9082,8 @@ export default class MidiComposer {
       const songContentH = isLandscape ? (height - padding * 2) : contentH;
       this.drawSongTab(ctx, contentX, contentY, contentW, songContentH);
     } else if (this.activeTab === 'instruments') {
-      const pedalBoardAreaH = Math.min(132, Math.max(108, Math.round(contentH * 0.2)));
-      const mixerH = Math.max(220, contentH - pedalBoardAreaH);
+      const pedalBoardAreaH = Math.min(280, Math.max(220, Math.round(contentH * 0.34)));
+      const mixerH = Math.max(300, contentH - pedalBoardAreaH);
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
       this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH, contentW, pedalBoardAreaH, track);
     } else if (this.activeTab === 'settings') {
@@ -9504,9 +9542,12 @@ export default class MidiComposer {
         ctx.font = '24px Courier New';
         ctx.fillText('+', b.x + b.w / 2 - 7, b.y + b.h * 0.6);
       } else {
+        const pedalDef = PEDAL_DEFINITION_BY_TYPE[pedal.type];
         ctx.fillStyle = pedal.enabled ? '#fff' : 'rgba(255,255,255,0.65)';
-        ctx.font = '10px Courier New';
-        ctx.fillText(pedal.name, b.x + 6, b.y + 14);
+        ctx.font = PEDAL_FONTS[pedal.type] || 'bold 12px Courier New';
+        ctx.fillText(pedal.name, b.x + 6, b.y + 18);
+        ctx.font = 'bold 10px Courier New';
+        ctx.fillText(pedalDef?.effectLabel || pedal.type, b.x + 6, b.y + 32);
         ctx.fillStyle = pedal.enabled ? '#73ff8f' : '#555';
         ctx.fillRect(b.x + b.w - 12, b.y + 6, 6, 6);
         const knobY = b.y + b.h - 16;
@@ -9531,9 +9572,13 @@ export default class MidiComposer {
       ctx.strokeRect(px, py, pw, ph);
       const cols = 4;
       const rows = 2;
+      const totalPages = Math.max(1, Math.ceil(PEDAL_DEFINITIONS.length / 8));
+      this.pedalUiState.pickerPage = clamp(this.pedalUiState.pickerPage, 0, totalPages - 1);
+      const pageStart = this.pedalUiState.pickerPage * 8;
+      const pageDefs = PEDAL_DEFINITIONS.slice(pageStart, pageStart + 8);
       const cellW = Math.floor((pw - 14) / cols);
-      const cellH = Math.floor((ph - 12) / rows);
-      PEDAL_DEFINITIONS.slice(0, 8).forEach((def, index) => {
+      const cellH = Math.floor((ph - 16) / rows);
+      pageDefs.forEach((def, index) => {
         const col = index % cols;
         const row = Math.floor(index / cols);
         const b = { x: px + 6 + col * cellW, y: py + 6 + row * cellH, w: cellW - 4, h: cellH - 4, control: 'pedal-picker-item', pedalType: def.type };
@@ -9543,9 +9588,21 @@ export default class MidiComposer {
         ctx.strokeStyle = 'rgba(0,0,0,0.6)';
         ctx.strokeRect(b.x, b.y, b.w, b.h);
         ctx.fillStyle = '#fff';
-        ctx.font = '10px Courier New';
+        ctx.font = PEDAL_FONTS[def.type] || 'bold 11px Courier New';
         ctx.fillText(def.name, b.x + 4, b.y + 14);
+        ctx.font = '10px Courier New';
+        ctx.fillText(def.effectLabel || def.type, b.x + 4, b.y + 27);
       });
+      if (totalPages > 1) {
+        const prev = { x: px + 8, y: py + ph - 18, w: 22, h: 12, control: 'pedal-picker-nav', delta: -1 };
+        const next = { x: px + pw - 30, y: py + ph - 18, w: 22, h: 12, control: 'pedal-picker-nav', delta: 1 };
+        this.pedalPickerBounds.push(prev, next);
+        this.drawSmallButton(ctx, prev, '<', this.pedalUiState.pickerPage > 0);
+        this.drawSmallButton(ctx, next, '>', this.pedalUiState.pickerPage < totalPages - 1);
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.font = '10px Courier New';
+        ctx.fillText(`Page ${this.pedalUiState.pickerPage + 1}/${totalPages}`, px + pw / 2 - 34, py + ph - 8);
+      }
     }
 
     const selectedSlot = this.pedalUiState.selectedSlot;
@@ -9568,18 +9625,21 @@ export default class MidiComposer {
     ctx.lineWidth = 1;
     ctx.fillStyle = 'rgba(255,255,255,0.25)';
     ctx.fillRect(modalX + 8, modalY + 8, modalW - 16, 20);
+    const editorDef = PEDAL_DEFINITION_BY_TYPE[editorPedal.type];
     ctx.fillStyle = '#fff';
-    ctx.font = '13px Courier New';
-    ctx.fillText(editorPedal.name, modalX + 12, modalY + 22);
+    ctx.font = (PEDAL_FONTS[editorPedal.type] || 'bold 16px Courier New').replace('12px','16px');
+    ctx.fillText(editorPedal.name, modalX + 12, modalY + 23);
+    ctx.font = 'bold 12px Courier New';
+    ctx.fillText(editorDef?.effectLabel || editorPedal.type, modalX + 12, modalY + 38);
 
     const toggle = { x: modalX + modalW - 54, y: modalY + 10, w: 42, h: 20, control: 'pedal-toggle' };
     this.pedalInspectorBounds.push(toggle);
     this.drawSmallButton(ctx, toggle, editorPedal.enabled ? 'On' : 'Byp', editorPedal.enabled);
 
     const patterns = {
-      octave: [[0.3, 0.36], [0.7, 0.36], [0.3, 0.58], [0.7, 0.58]],
-      compressor: [[0.22, 0.42], [0.4, 0.42], [0.58, 0.42], [0.76, 0.42]],
-      wah: [[0.5, 0.32], [0.35, 0.52], [0.65, 0.52], [0.5, 0.7]],
+      octave: [[0.3, 0.28], [0.7, 0.28], [0.3, 0.5], [0.7, 0.5]],
+      compressor: [[0.22, 0.32], [0.4, 0.32], [0.58, 0.32], [0.76, 0.32]],
+      wah: [[0.5, 0.26], [0.35, 0.42], [0.65, 0.42], [0.5, 0.56]],
       chorus: [[0.25, 0.38], [0.75, 0.38], [0.5, 0.54], [0.5, 0.72]],
       eq: [[0.2, 0.48], [0.4, 0.42], [0.6, 0.42], [0.8, 0.48]],
       overdrive: [[0.28, 0.34], [0.72, 0.34], [0.5, 0.56], [0.5, 0.76]],
@@ -9615,6 +9675,13 @@ export default class MidiComposer {
       ctx.font = '10px Courier New';
       ctx.fillText(knob.label, centerX - 14, centerY + 36);
     });
+
+    const stompY = modalY + Math.round(modalH * 0.66);
+    const stompH = Math.round(modalH * 0.28);
+    ctx.fillStyle = 'rgba(0,0,0,0.92)';
+    ctx.fillRect(modalX + 10, stompY, modalW - 20, stompH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(modalX + 10, stompY, modalW - 20, stompH);
 
     const btnY = modalY + modalH - 34;
     const btnW = Math.floor((modalW - 28) / 3);
@@ -11277,7 +11344,7 @@ export default class MidiComposer {
 
     const buttonRowY = infoY + 40 + previewOffset;
     const buttonGap = 8;
-    const buttonW = (rightW - padding * 2 - buttonGap * 2) / 3;
+    const buttonW = (rightW - padding * 2 - buttonGap * 3) / 4;
     const changeBounds = {
       x: rightX + padding,
       y: buttonRowY,
@@ -11287,15 +11354,23 @@ export default class MidiComposer {
       control: 'instrument'
     };
     const renameBounds = {
-      x: rightX + padding + buttonW + buttonGap,
+      x: rightX + padding + (buttonW + buttonGap),
       y: buttonRowY,
       w: buttonW,
       h: 32,
       trackIndex: this.selectedTrackIndex,
       control: 'name'
     };
-    const removeBounds = {
+    const duplicateBounds = {
       x: rightX + padding + (buttonW + buttonGap) * 2,
+      y: buttonRowY,
+      w: buttonW,
+      h: 32,
+      trackIndex: this.selectedTrackIndex,
+      control: 'duplicate'
+    };
+    const removeBounds = {
+      x: rightX + padding + (buttonW + buttonGap) * 3,
       y: buttonRowY,
       w: buttonW,
       h: 32,
@@ -11304,11 +11379,37 @@ export default class MidiComposer {
     };
     this.drawButton(ctx, changeBounds, 'Change', false, false);
     this.drawButton(ctx, renameBounds, 'Rename', false, false);
+    this.drawButton(ctx, duplicateBounds, 'Duplicate', false, false);
     this.drawDangerButton(ctx, removeBounds, 'Remove');
-    this.bounds.instrumentSettingsControls.push(changeBounds, renameBounds, removeBounds);
+    this.bounds.instrumentSettingsControls.push(changeBounds, renameBounds, duplicateBounds, removeBounds);
+
+    const transportRowY = buttonRowY + 42;
+    const transportGap = 6;
+    const transportButtons = [
+      { label: '⏮', control: 'transport-home' },
+      { label: '⏪', control: 'transport-rewind' },
+      { label: this.isPlaying ? '❚❚' : '▶', control: 'transport-play' },
+      { label: '⏩', control: 'transport-forward' },
+      { label: '⏭', control: 'transport-end' },
+      { label: this.song.loopEnabled ? 'Loop On' : 'Loop', control: 'transport-loop' },
+      { label: '●', control: 'transport-record' }
+    ];
+    const transportW = (rightW - padding * 2 - transportGap * (transportButtons.length - 1)) / transportButtons.length;
+    transportButtons.forEach((entry, index) => {
+      const bounds = {
+        x: rightX + padding + index * (transportW + transportGap),
+        y: transportRowY,
+        w: transportW,
+        h: 28,
+        trackIndex: this.selectedTrackIndex,
+        control: entry.control
+      };
+      this.drawSmallButton(ctx, bounds, entry.label, entry.control === 'transport-play' ? this.isPlaying : (entry.control === 'transport-loop' ? this.song.loopEnabled : false));
+      this.bounds.instrumentSettingsControls.push(bounds);
+    });
 
     const mix = this.getTrackPlaybackMix(track);
-    const toggleRowY = buttonRowY + 44;
+    const toggleRowY = transportRowY + 38;
     const muteBounds = {
       x: rightX + padding,
       y: toggleRowY,
