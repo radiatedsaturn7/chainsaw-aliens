@@ -9093,7 +9093,8 @@ export default class MidiComposer {
     const sidebarX = 0;
     const sidebarY = 0;
     const isLandscape = width > height;
-    const railH = isLandscape ? 220 : 0;
+    const showsGridBottomRail = isLandscape && this.activeTab === 'grid';
+    const railH = showsGridBottomRail ? 220 : 0;
     const sidebarH = height;
     const contentX = sidebarX + sidebarW + gap;
     const contentY = padding;
@@ -9105,7 +9106,7 @@ export default class MidiComposer {
     if (this.activeTab === 'grid') {
       this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.drawGridZoomControls(ctx, contentX, contentY, contentW, contentH);
-      if (isLandscape) {
+      if (showsGridBottomRail) {
         this.drawMobileBottomRail(ctx, contentX, contentY + contentH + 8, contentW, railH - 8, track);
       }
     } else if (this.activeTab === 'song') {
