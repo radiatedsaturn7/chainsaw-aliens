@@ -3786,6 +3786,12 @@ export default class MidiComposer {
       this.insertPedalIntoSlot(this.pedalUiState.pickerSlot ?? 0, pedalPickerHit.pedalType);
       return;
     }
+    if (this.pedalUiState.pickerOpen) {
+      this.pedalUiState.pickerOpen = false;
+      this.pedalUiState.pickerSlot = null;
+      this.pedalUiState.pickerScroll = 0;
+      return;
+    }
     const pedalInspectorHit = this.pedalInspectorBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
     if (pedalInspectorHit) {
       const slot = this.pedalUiState.selectedSlot;
@@ -9113,15 +9119,23 @@ export default class MidiComposer {
       const songContentH = isLandscape ? (height - padding * 2) : contentH;
       this.drawSongTab(ctx, contentX, contentY, contentW, songContentH);
     } else if (this.activeTab === 'instruments') {
-      const pedalTransportH = 44;
+      const pedalTransportH = 64;
       const minMixerH = Math.min(380, Math.max(220, contentH - pedalTransportH - 140));
       const preferredPedalBoardH = Math.min(210, Math.max(140, Math.round(contentH * 0.22)));
       const maxPedalBoardH = Math.max(140, contentH - pedalTransportH - minMixerH);
       const pedalBoardAreaH = clamp(preferredPedalBoardH, 140, maxPedalBoardH);
       const mixerH = Math.max(minMixerH, contentH - pedalBoardAreaH - pedalTransportH);
+      const bottomPanelX = contentX + 10;
+      const bottomPanelY = contentY + mixerH + 4;
+      const bottomPanelW = contentW - 20;
+      const bottomPanelH = pedalTransportH + pedalBoardAreaH - 8;
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
-      this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track);
-      this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH + pedalTransportH, contentW, pedalBoardAreaH, track);
+      ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+      ctx.fillRect(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH);
+      this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track, { embedded: true, rowH: 48 });
+      this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH + pedalTransportH, contentW, pedalBoardAreaH, track, { embedded: true });
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
@@ -9533,15 +9547,19 @@ export default class MidiComposer {
   }
 
 
-  drawMixerPedalTransport(ctx, x, y, w, h, track) {
-    const panelX = x + 10;
-    const panelY = y + 4;
-    const panelW = w - 20;
-    const panelH = Math.max(36, h - 8);
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(panelX, panelY, panelW, panelH);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(panelX, panelY, panelW, panelH);
+  drawMixerPedalTransport(ctx, x, y, w, h, track, options = {}) {
+    const embedded = options.embedded === true;
+    const rowH = options.rowH || 36;
+    const panelX = embedded ? (x + 18) : (x + 10);
+    const panelY = embedded ? (y + 8) : (y + 4);
+    const panelW = embedded ? (w - 36) : (w - 20);
+    const panelH = Math.max(rowH + 12, h - (embedded ? 16 : 8));
+    if (!embedded) {
+      ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+      ctx.fillRect(panelX, panelY, panelW, panelH);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(panelX, panelY, panelW, panelH);
+    }
     const buttons = [
       { label: '●', control: 'transport-record' },
       { label: '⏮', control: 'transport-home' },
@@ -9558,7 +9576,7 @@ export default class MidiComposer {
         x: panelX + 8 + i * (bw + gap),
         y: panelY + 6,
         w: bw,
-        h: panelH - 12,
+        h: rowH,
         trackIndex: this.selectedTrackIndex,
         control: entry.control
       };
@@ -9568,21 +9586,24 @@ export default class MidiComposer {
   }
 
 
-  drawPedalBoardPanel(ctx, x, y, w, h, track) {
+  drawPedalBoardPanel(ctx, x, y, w, h, track, options = {}) {
     this.pedalSlotBounds = [];
     this.pedalPickerBounds = [];
     this.pedalInspectorBounds = [];
     this.pedalEditorOverlayBounds = null;
     this.pedalEditorModalBounds = null;
     if (!track) return;
-    const panelX = x + 10;
-    const panelW = w - 20;
-    const panelH = Math.max(96, h - 8);
-    const panelY = y + h - panelH - 2;
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(panelX, panelY, panelW, panelH);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(panelX, panelY, panelW, panelH);
+    const embedded = options.embedded === true;
+    const panelX = embedded ? (x + 18) : (x + 10);
+    const panelW = embedded ? (w - 36) : (w - 20);
+    const panelH = Math.max(96, h - (embedded ? 10 : 8));
+    const panelY = embedded ? (y + 4) : (y + h - panelH - 2);
+    if (!embedded) {
+      ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+      ctx.fillRect(panelX, panelY, panelW, panelH);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(panelX, panelY, panelW, panelH);
+    }
     ctx.fillStyle = '#fff';
     ctx.font = '13px Courier New';
     ctx.fillText('Pedal Board', panelX + 10, panelY + 16);
