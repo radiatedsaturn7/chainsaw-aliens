@@ -815,7 +815,7 @@ export default class MidiComposer {
     this.pedalSlotBounds = [];
     this.pedalPickerBounds = [];
     this.pedalInspectorBounds = [];
-    this.pedalUiState = { selectedSlot: null, pickerSlot: null, pickerOpen: false, pickerPage: 0, editorOpen: false, draftPedal: null };
+    this.pedalUiState = { selectedSlot: null, pickerSlot: null, pickerOpen: false, pickerPage: 0, pickerScroll: 0, editorOpen: false, draftPedal: null };
     this.patternBounds = [];
     this.noteBounds = [];
     this.toolsMenuBounds = [];
@@ -3773,10 +3773,14 @@ export default class MidiComposer {
       this.insertPedalIntoSlot(this.pedalUiState.pickerSlot ?? 0, pedalPickerHit.pedalType);
       return;
     }
-    const pedalPickerNavHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds) && bounds.control === 'pedal-picker-nav');
-    if (pedalPickerNavHit) {
-      const totalPages = Math.max(1, Math.ceil(PEDAL_DEFINITIONS.length / 8));
-      this.pedalUiState.pickerPage = clamp(this.pedalUiState.pickerPage + pedalPickerNavHit.delta, 0, totalPages - 1);
+    const pedalPickerScrollAreaHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds) && bounds.control === 'pedal-picker-scroll-area');
+    if (pedalPickerScrollAreaHit) {
+      this.dragState = {
+        mode: 'pedal-picker-scroll',
+        startY: y,
+        startScroll: this.pedalUiState.pickerScroll || 0,
+        moved: false
+      };
       return;
     }
     const pedalInspectorHit = this.pedalInspectorBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -3824,6 +3828,7 @@ export default class MidiComposer {
         this.pedalUiState.pickerSlot = pedalSlotHit.slotIndex;
         this.pedalUiState.pickerOpen = true;
         this.pedalUiState.pickerPage = 0;
+        this.pedalUiState.pickerScroll = 0;
         this.pedalUiState.editorOpen = false;
         this.pedalUiState.draftPedal = null;
       }
@@ -4867,6 +4872,14 @@ export default class MidiComposer {
       this.updateSliderValue(payload.x, payload.y, this.dragState.id, this.dragState.bounds);
       return;
     }
+    if (this.dragState?.mode === 'pedal-picker-scroll') {
+      const dy = this.dragState.startY - payload.y;
+      if (!this.dragState.moved && Math.abs(dy) > 6) this.dragState.moved = true;
+      if (this.dragState.moved) {
+        this.pedalUiState.pickerScroll = clamp(this.dragState.startScroll + dy, 0, this.pedalUiState.pickerScrollMax || 0);
+      }
+      return;
+    }
     if (this.dragState?.mode === 'pedal-knob-turn') {
       const bounds = this.dragState.bounds;
       const delta = (this.dragState.startY - payload.y) / 120;
@@ -5037,7 +5050,8 @@ export default class MidiComposer {
     if (this.dragState?.mode === 'instrument-scroll'
       || this.dragState?.mode === 'settings-scroll'
       || this.dragState?.mode === 'slider'
-      || this.dragState?.mode === 'pedal-knob-turn') {
+      || this.dragState?.mode === 'pedal-knob-turn'
+      || this.dragState?.mode === 'pedal-picker-scroll') {
       if (this.dragState?.mode === 'instrument-scroll' && !this.dragState.moved && this.dragState.pendingPick) {
         this.selectInstrumentPickerItem(this.dragState.pendingPick);
       }
@@ -8878,9 +8892,11 @@ export default class MidiComposer {
       this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'instruments') {
       const pedalBoardAreaH = Math.min(280, Math.max(220, Math.round(contentH * 0.34)));
-      const mixerH = Math.max(300, contentH - pedalBoardAreaH);
+      const pedalTransportH = 48;
+      const mixerH = Math.max(300, contentH - pedalBoardAreaH - pedalTransportH);
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
-      this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH, contentW, pedalBoardAreaH, track);
+      this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track);
+      this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH + pedalTransportH, contentW, pedalBoardAreaH, track);
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
@@ -9083,9 +9099,11 @@ export default class MidiComposer {
       this.drawSongTab(ctx, contentX, contentY, contentW, songContentH);
     } else if (this.activeTab === 'instruments') {
       const pedalBoardAreaH = Math.min(280, Math.max(220, Math.round(contentH * 0.34)));
-      const mixerH = Math.max(300, contentH - pedalBoardAreaH);
+      const pedalTransportH = 48;
+      const mixerH = Math.max(300, contentH - pedalBoardAreaH - pedalTransportH);
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
-      this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH, contentW, pedalBoardAreaH, track);
+      this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track);
+      this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH + pedalTransportH, contentW, pedalBoardAreaH, track);
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
@@ -9497,15 +9515,50 @@ export default class MidiComposer {
   }
 
 
+  drawMixerPedalTransport(ctx, x, y, w, h, track) {
+    const panelX = x + 10;
+    const panelY = y + 4;
+    const panelW = w - 20;
+    const panelH = Math.max(36, h - 8);
+    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+    ctx.fillRect(panelX, panelY, panelW, panelH);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(panelX, panelY, panelW, panelH);
+    const buttons = [
+      { label: '●', control: 'transport-record' },
+      { label: '⏮', control: 'transport-home' },
+      { label: '⏪', control: 'transport-rewind' },
+      { label: this.isPlaying ? '❚❚' : '▶', control: 'transport-play', active: this.isPlaying },
+      { label: '⏩', control: 'transport-forward' },
+      { label: '⏭', control: 'transport-end' },
+      { label: this.song.loopEnabled ? 'Loop On' : 'Loop', control: 'transport-loop', active: this.song.loopEnabled }
+    ];
+    const gap = 6;
+    const bw = (panelW - 16 - gap * (buttons.length - 1)) / buttons.length;
+    buttons.forEach((entry, i) => {
+      const b = {
+        x: panelX + 8 + i * (bw + gap),
+        y: panelY + 6,
+        w: bw,
+        h: panelH - 12,
+        trackIndex: this.selectedTrackIndex,
+        control: entry.control
+      };
+      this.drawSmallButton(ctx, b, entry.label, Boolean(entry.active));
+      this.bounds.instrumentSettingsControls.push(b);
+    });
+  }
+
+
   drawPedalBoardPanel(ctx, x, y, w, h, track) {
     this.pedalSlotBounds = [];
     this.pedalPickerBounds = [];
     this.pedalInspectorBounds = [];
     if (!track) return;
     const panelX = x + 10;
-    const panelY = y + 4;
     const panelW = w - 20;
     const panelH = Math.max(96, h - 8);
+    const panelY = y + h - panelH - 2;
     ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(panelX, panelY, panelW, panelH);
     ctx.strokeStyle = UI_SUITE.colors.border;
@@ -9562,48 +9615,47 @@ export default class MidiComposer {
     }
 
     if (this.pedalUiState.pickerOpen) {
-      const px = panelX + 6;
-      const py = panelY - 120;
-      const pw = panelW - 12;
-      const ph = 114;
+      const viewportW = this.viewportWidth || w;
+      const viewportH = this.viewportHeight || (y + h + 100);
+      const mw = Math.min(420, Math.max(280, Math.round(w * 0.34)));
+      const mh = Math.min(520, Math.max(320, Math.round(viewportH * 0.62)));
+      const mx = Math.round((viewportW - mw) / 2);
+      const my = Math.round((viewportH - mh) / 2);
+      ctx.fillStyle = 'rgba(0,0,0,0.62)';
+      ctx.fillRect(0, 0, viewportW, viewportH);
       ctx.fillStyle = 'rgba(10,10,12,0.97)';
-      ctx.fillRect(px, py, pw, ph);
+      ctx.fillRect(mx, my, mw, mh);
       ctx.strokeStyle = UI_SUITE.colors.border;
-      ctx.strokeRect(px, py, pw, ph);
-      const cols = 4;
-      const rows = 2;
-      const totalPages = Math.max(1, Math.ceil(PEDAL_DEFINITIONS.length / 8));
-      this.pedalUiState.pickerPage = clamp(this.pedalUiState.pickerPage, 0, totalPages - 1);
-      const pageStart = this.pedalUiState.pickerPage * 8;
-      const pageDefs = PEDAL_DEFINITIONS.slice(pageStart, pageStart + 8);
-      const cellW = Math.floor((pw - 14) / cols);
-      const cellH = Math.floor((ph - 16) / rows);
-      pageDefs.forEach((def, index) => {
-        const col = index % cols;
-        const row = Math.floor(index / cols);
-        const b = { x: px + 6 + col * cellW, y: py + 6 + row * cellH, w: cellW - 4, h: cellH - 4, control: 'pedal-picker-item', pedalType: def.type };
-        this.pedalPickerBounds.push(b);
-        ctx.fillStyle = PEDAL_COLORS[def.color] || '#666';
-        ctx.fillRect(b.x, b.y, b.w, b.h);
-        ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-        ctx.strokeRect(b.x, b.y, b.w, b.h);
-        ctx.fillStyle = '#fff';
-        ctx.font = PEDAL_FONTS[def.type] || 'bold 11px Courier New';
-        ctx.fillText(def.name, b.x + 4, b.y + 14);
-        ctx.font = '10px Courier New';
-        ctx.fillText(def.effectLabel || def.type, b.x + 4, b.y + 27);
+      ctx.strokeRect(mx, my, mw, mh);
+      ctx.fillStyle = '#fff';
+      ctx.font = '14px Courier New';
+      ctx.fillText('Choose Pedal', mx + 12, my + 20);
+      const list = { x: mx + 10, y: my + 30, w: mw - 20, h: mh - 40, control: 'pedal-picker-scroll-area' };
+      this.pedalPickerBounds.push(list);
+      const itemH = 56;
+      const gapY = 8;
+      const contentH = PEDAL_DEFINITIONS.length * (itemH + gapY);
+      this.pedalUiState.pickerScrollMax = Math.max(0, contentH - list.h);
+      this.pedalUiState.pickerScroll = clamp(this.pedalUiState.pickerScroll || 0, 0, this.pedalUiState.pickerScrollMax);
+      let rowY = list.y - this.pedalUiState.pickerScroll;
+      PEDAL_DEFINITIONS.forEach((def) => {
+        const b = { x: list.x + 4, y: rowY, w: list.w - 8, h: itemH, control: 'pedal-picker-item', pedalType: def.type };
+        if (b.y + b.h >= list.y - 8 && b.y <= list.y + list.h + 8) {
+          this.pedalPickerBounds.push(b);
+          ctx.fillStyle = PEDAL_COLORS[def.color] || '#666';
+          ctx.fillRect(b.x, b.y, b.w, b.h);
+          ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+          ctx.strokeRect(b.x, b.y, b.w, b.h);
+          ctx.fillStyle = '#fff';
+          ctx.font = PEDAL_FONTS[def.type] || 'bold 13px Courier New';
+          ctx.fillText(def.name, b.x + 8, b.y + 20);
+          ctx.font = '11px Courier New';
+          ctx.fillText(def.effectLabel || def.type, b.x + 8, b.y + 38);
+        }
+        rowY += itemH + gapY;
       });
-      if (totalPages > 1) {
-        const prev = { x: px + 8, y: py + ph - 18, w: 22, h: 12, control: 'pedal-picker-nav', delta: -1 };
-        const next = { x: px + pw - 30, y: py + ph - 18, w: 22, h: 12, control: 'pedal-picker-nav', delta: 1 };
-        this.pedalPickerBounds.push(prev, next);
-        this.drawSmallButton(ctx, prev, '<', this.pedalUiState.pickerPage > 0);
-        this.drawSmallButton(ctx, next, '>', this.pedalUiState.pickerPage < totalPages - 1);
-        ctx.fillStyle = 'rgba(255,255,255,0.8)';
-        ctx.font = '10px Courier New';
-        ctx.fillText(`Page ${this.pedalUiState.pickerPage + 1}/${totalPages}`, px + pw / 2 - 34, py + ph - 8);
-      }
     }
+
 
     const selectedSlot = this.pedalUiState.selectedSlot;
     const selectedPedal = Number.isInteger(selectedSlot) ? pedals[selectedSlot] : null;
@@ -9613,10 +9665,12 @@ export default class MidiComposer {
     const def = PEDAL_DEFINITION_BY_TYPE[editorPedal.type];
     const modalW = Math.min(320, Math.max(220, Math.round(w * 0.28)));
     const modalH = Math.min(560, Math.max(360, modalW * 2));
-    const modalX = panelX + Math.max(8, (panelW - modalW) * 0.5);
-    const modalY = Math.max(y - modalH - 14, 58);
+    const viewportW = this.viewportWidth || w;
+    const viewportH = this.viewportHeight || (y + h + 100);
+    const modalX = Math.round((viewportW - modalW) / 2);
+    const modalY = Math.round((viewportH - modalH) / 2);
     ctx.fillStyle = 'rgba(0,0,0,0.62)';
-    ctx.fillRect(x, 0, w, y + h);
+    ctx.fillRect(0, 0, viewportW, viewportH);
     ctx.fillStyle = PEDAL_COLORS[editorPedal.color] || '#666';
     ctx.fillRect(modalX, modalY, modalW, modalH);
     ctx.strokeStyle = '#111';
