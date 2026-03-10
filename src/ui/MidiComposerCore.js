@@ -3703,6 +3703,132 @@ export default class MidiComposer {
       return;
     }
 
+    if (this.instrumentPicker.mode) {
+      if (this.instrumentPicker.tabPrevBounds && this.pointInBounds(x, y, this.instrumentPicker.tabPrevBounds)) {
+        this.shiftInstrumentPickerTab(-1);
+        return;
+      }
+      if (this.instrumentPicker.tabNextBounds && this.pointInBounds(x, y, this.instrumentPicker.tabNextBounds)) {
+        this.shiftInstrumentPickerTab(1);
+        return;
+      }
+      const familyHit = this.instrumentPicker.tabBounds.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (familyHit) {
+        if (payload.touchCount) {
+          this.dragState = {
+            mode: 'instrument-tab-swipe',
+            startX: x,
+            startY: y,
+            tabId: familyHit.id,
+            startTabScrollX: this.instrumentPicker.tabScrollX || 0,
+            moved: false
+          };
+          return;
+        }
+        this.instrumentPicker.familyTab = familyHit.id;
+        this.instrumentPicker.scroll = 0;
+        return;
+      }
+      if (payload.touchCount
+        && this.instrumentPicker.tabAreaBounds
+        && this.pointInBounds(x, y, this.instrumentPicker.tabAreaBounds)) {
+        this.dragState = {
+          mode: 'instrument-tab-swipe',
+          startX: x,
+          startY: y,
+          tabId: null,
+          startTabScrollX: this.instrumentPicker.tabScrollX || 0,
+          moved: false
+        };
+        return;
+      }
+      const favHit = this.instrumentPicker.favoriteBounds.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (favHit) {
+        this.toggleFavoriteInstrument(favHit.program);
+        return;
+      }
+      if (this.instrumentPicker.confirmBounds && this.pointInBounds(x, y, this.instrumentPicker.confirmBounds)) {
+        if (Number.isInteger(this.instrumentPicker.selectedProgram) || this.instrumentPicker.familyTab === 'drum-kits') {
+          this.applyInstrumentSelection(this.instrumentPicker.selectedProgram);
+        }
+        return;
+      }
+      if (this.instrumentPicker.cancelBounds && this.pointInBounds(x, y, this.instrumentPicker.cancelBounds)) {
+        this.instrumentPicker.mode = null;
+        this.instrumentPicker.selectedProgram = null;
+        this.instrumentPicker.returnTab = null;
+        return;
+      }
+      const pickHit = this.instrumentPicker.bounds.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (pickHit) {
+        if (payload.touchCount) {
+          this.dragState = {
+            mode: 'instrument-scroll',
+            startY: y,
+            startScroll: this.instrumentPicker.scroll,
+            startX: x,
+            moved: false,
+            pendingPick: { ...pickHit }
+          };
+          return;
+        }
+        this.selectInstrumentPickerItem(pickHit);
+        return;
+      }
+      if (this.instrumentPicker.scrollUpBounds && this.pointInBounds(x, y, this.instrumentPicker.scrollUpBounds)) {
+        this.instrumentPicker.scroll = clamp(
+          this.instrumentPicker.scroll - Math.max(1, this.instrumentPicker.scrollStep),
+          0,
+          this.instrumentPicker.scrollMax
+        );
+        return;
+      }
+      if (this.instrumentPicker.scrollDownBounds && this.pointInBounds(x, y, this.instrumentPicker.scrollDownBounds)) {
+        this.instrumentPicker.scroll = clamp(
+          this.instrumentPicker.scroll + Math.max(1, this.instrumentPicker.scrollStep),
+          0,
+          this.instrumentPicker.scrollMax
+        );
+        return;
+      }
+      const pickerTrackHit = this.bounds.instrumentList?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (pickerTrackHit) {
+        this.selectedTrackIndex = pickerTrackHit.trackIndex;
+        this.selection.clear();
+        this.instrumentPicker.trackIndex = pickerTrackHit.trackIndex;
+        const pickerTrack = this.song.tracks[pickerTrackHit.trackIndex];
+        if (pickerTrack) {
+          this.instrumentPicker.selectedProgram = pickerTrack.program ?? null;
+          const tabs = this.getInstrumentPickerTabs();
+          const preferredTab = isDrumTrack(pickerTrack)
+            ? 'drum-kits'
+            : this.getInstrumentCategory(pickerTrack.program);
+          this.instrumentPicker.familyTab = tabs.some((tab) => tab.id === preferredTab)
+            ? preferredTab
+            : (tabs[0]?.id || this.instrumentPicker.familyTab || 'drums-perc');
+          this.instrumentPicker.tabScrollX = Math.max(0, tabs.findIndex((tab) => tab.id === this.instrumentPicker.familyTab) * 96);
+          const availableKits = this.game?.audio?.listAvailableDrumKits?.();
+          const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
+          const matchedKit = isDrumTrack(pickerTrack)
+            ? drumKits.find((kit) => kit.program === pickerTrack.program && kit.bankMSB === pickerTrack.bankMSB && kit.bankLSB === pickerTrack.bankLSB)
+            : null;
+          if (matchedKit?.id) {
+            this.instrumentPicker.drumKitId = matchedKit.id;
+          }
+          this.previewInstrument(pickerTrack.program, pickerTrack);
+        }
+        return;
+      }
+      if (this.instrumentPicker.sectionBounds.find((bounds) => this.pointInBounds(x, y, bounds))) {
+        this.dragState = {
+          mode: 'instrument-scroll',
+          startY: y,
+          startScroll: this.instrumentPicker.scroll
+        };
+      }
+      return;
+    }
+
     const noteLengthHit = this.bounds.noteLengthMenu?.find((bounds) => this.pointInBounds(x, y, bounds));
     if (noteLengthHit) {
       if (isDrumTrack(this.getActiveTrack())) {
@@ -12965,7 +13091,7 @@ export default class MidiComposer {
   }
 
   drawInstrumentPickerModal(ctx, width, height, track) {
-    const modalW = Math.min(width - 32, Math.max(760, Math.round(width * 0.86)));
+    const modalW = clamp(Math.round(width * 0.625), 420, width - 32);
     const modalH = Math.min(height - 32, Math.max(500, Math.round(height * 0.84)));
     const modalX = Math.round((width - modalW) / 2);
     const modalY = Math.round((height - modalH) / 2);
