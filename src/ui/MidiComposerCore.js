@@ -8902,11 +8902,11 @@ export default class MidiComposer {
     } else if (this.activeTab === 'song') {
       this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'instruments') {
-      const pedalTransportH = 48;
-      const minMixerH = Math.min(300, Math.max(180, contentH - pedalTransportH - 160));
-      const preferredPedalBoardH = Math.min(260, Math.max(200, Math.round(contentH * 0.3)));
-      const maxPedalBoardH = Math.max(160, contentH - pedalTransportH - minMixerH);
-      const pedalBoardAreaH = clamp(preferredPedalBoardH, 160, maxPedalBoardH);
+      const pedalTransportH = 44;
+      const minMixerH = Math.min(380, Math.max(220, contentH - pedalTransportH - 140));
+      const preferredPedalBoardH = Math.min(210, Math.max(140, Math.round(contentH * 0.22)));
+      const maxPedalBoardH = Math.max(140, contentH - pedalTransportH - minMixerH);
+      const pedalBoardAreaH = clamp(preferredPedalBoardH, 140, maxPedalBoardH);
       const mixerH = Math.max(minMixerH, contentH - pedalBoardAreaH - pedalTransportH);
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
       this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track);
@@ -9112,11 +9112,11 @@ export default class MidiComposer {
       const songContentH = isLandscape ? (height - padding * 2) : contentH;
       this.drawSongTab(ctx, contentX, contentY, contentW, songContentH);
     } else if (this.activeTab === 'instruments') {
-      const pedalTransportH = 48;
-      const minMixerH = Math.min(300, Math.max(180, contentH - pedalTransportH - 160));
-      const preferredPedalBoardH = Math.min(260, Math.max(200, Math.round(contentH * 0.3)));
-      const maxPedalBoardH = Math.max(160, contentH - pedalTransportH - minMixerH);
-      const pedalBoardAreaH = clamp(preferredPedalBoardH, 160, maxPedalBoardH);
+      const pedalTransportH = 44;
+      const minMixerH = Math.min(380, Math.max(220, contentH - pedalTransportH - 140));
+      const preferredPedalBoardH = Math.min(210, Math.max(140, Math.round(contentH * 0.22)));
+      const maxPedalBoardH = Math.max(140, contentH - pedalTransportH - minMixerH);
+      const pedalBoardAreaH = clamp(preferredPedalBoardH, 140, maxPedalBoardH);
       const mixerH = Math.max(minMixerH, contentH - pedalBoardAreaH - pedalTransportH);
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
       this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track);
