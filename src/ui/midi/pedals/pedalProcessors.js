@@ -28,9 +28,9 @@ const processors = {
     const v = clamp(note.velocity ?? 0.8, 0.05, 1);
     const over = Math.max(0, v - threshold);
     const under = Math.max(0, threshold - v);
-    const compressed = threshold + over * (1 - ratio * 0.75) - under * ratio * 0.35;
+    const compressed = threshold + over * (1 - ratio * 0.9) + under * ratio * 0.55;
     const accent = idx % 4 === 0 ? punch * 0.08 : 0;
-    return { ...note, velocity: clamp(compressed + makeup * 0.2 + accent, 0.05, 1) };
+    return { ...note, velocity: clamp(compressed + makeup * 0.35 + accent, 0.05, 1) };
   }) }),
   wah: ({ notes, cc, pedal, songSettings }) => {
     const maxTick = Math.max(0, ...notes.map((n) => (n.startTick || 0) + (n.durationTicks || 1)));
@@ -41,7 +41,7 @@ const processors = {
     const beats = Math.max(1, Math.round(2 + (1 - rate) * 6));
     const beatTicks = songSettings?.ticksPerBeat || 4;
     for (let tick = 0; tick < maxTick + beatTicks; tick += beatTicks * beats) {
-      pushCcCurve({ cc, controller: 74, startTick: tick, endTick: tick + beatTicks * beats, steps: 12, fn: (t) => 0.5 + Math.sin(t * Math.PI * 2) * sweep * 0.45 * mix + (q - 0.5) * 0.1 });
+      pushCcCurve({ cc, controller: 74, startTick: tick, endTick: tick + beatTicks * beats, steps: 12, fn: (t) => 0.5 + Math.sin(t * Math.PI * 2) * sweep * 0.62 * mix + (q - 0.5) * 0.18 });
     }
     return { notes, cc };
   },
@@ -54,7 +54,7 @@ const processors = {
     notes.forEach((note, idx) => {
       if (idx % 2 !== 0) return;
       const driftSeed = randomish(idx + (note.pitch || 0));
-      out.push({ ...note, id: `${note.id || idx}-ch`, startTick: Math.max(0, note.startTick + Math.round((driftSeed - 0.5) * 6 * depth)), velocity: clamp((note.velocity ?? 0.8) * (0.7 + mix * 0.3 + spread * 0.1), 0.05, 1) });
+      out.push({ ...note, id: `${note.id || idx}-ch`, pitch: note.pitch + (idx % 4 === 0 ? 1 : 0), startTick: Math.max(0, note.startTick + Math.round((driftSeed - 0.5) * 10 * depth)), velocity: clamp((note.velocity ?? 0.8) * (0.62 + mix * 0.45 + spread * 0.18), 0.05, 1) });
     });
     return { notes: out };
   },
@@ -63,8 +63,8 @@ const processors = {
     const presence = clamp(pedal.knobs.presence ?? 0.5, 0, 1);
     const low = clamp(pedal.knobs.low ?? 0.5, 0, 1);
     const mid = clamp(pedal.knobs.mid ?? 0.5, 0, 1);
-    const velocityBias = (high - low) * 0.12 + (presence - 0.5) * 0.07;
-    const notesOut = notes.map((note) => ({ ...note, velocity: clamp((note.velocity ?? 0.8) + velocityBias + ((note.pitch > 72 ? high : low) - 0.5) * 0.03, 0.05, 1) }));
+    const velocityBias = (high - low) * 0.2 + (presence - 0.5) * 0.12;
+    const notesOut = notes.map((note) => ({ ...note, velocity: clamp((note.velocity ?? 0.8) + velocityBias + ((note.pitch > 72 ? high : low) - 0.5) * 0.08, 0.05, 1) }));
     cc.push({ tick: 0, controller: 74, value: Math.round(clamp(0.5 + (high - 0.5) * 0.5 + (presence - 0.5) * 0.25 - (mid - 0.5) * 0.15, 0, 1) * 127) });
     return { notes: notesOut, cc };
   },
@@ -73,8 +73,8 @@ const processors = {
     const bite = clamp(pedal.knobs.bite ?? 0.5, 0, 1);
     const tone = clamp(pedal.knobs.tone ?? 0.5, 0, 1);
     const mix = clamp(pedal.knobs.mix ?? 0.7, 0, 1);
-    const notesOut = notes.map((note, idx) => ({ ...note, velocity: clamp((note.velocity ?? 0.8) * (1 + drive * 0.35 * mix) + (idx % 4 === 0 ? bite * 0.08 : 0), 0.05, 1), durationTicks: Math.max(1, Math.round((note.durationTicks ?? 1) * (1 - bite * 0.15 * mix))) }));
-    cc.push({ tick: 0, controller: 74, value: Math.round(clamp(0.45 + tone * 0.45, 0, 1) * 127) });
+    const notesOut = notes.map((note, idx) => ({ ...note, velocity: clamp((note.velocity ?? 0.8) * (1 + drive * 0.7 * mix) + (idx % 3 === 0 ? bite * 0.14 : 0), 0.05, 1), durationTicks: Math.max(1, Math.round((note.durationTicks ?? 1) * (1 - bite * 0.26 * mix))) }));
+    cc.push({ tick: 0, controller: 74, value: Math.round(clamp(0.35 + tone * 0.62, 0, 1) * 127) });
     return { notes: notesOut, cc };
   },
   reverb: ({ notes, cc, pedal }) => {
@@ -95,7 +95,7 @@ const processors = {
     const beatTicks = songSettings?.ticksPerBeat || 4;
     const cycle = Math.max(beatTicks, Math.round((1.5 - rate) * beatTicks * 2));
     for (let tick = 0; tick < maxTick + cycle; tick += cycle) {
-      pushCcCurve({ cc, controller: 1, startTick: tick, endTick: tick + cycle, steps: 10, fn: (t) => 0.5 + Math.sin(t * Math.PI * 2 + sweep * Math.PI) * 0.45 * depth * mix });
+      pushCcCurve({ cc, controller: 1, startTick: tick, endTick: tick + cycle, steps: 10, fn: (t) => 0.5 + Math.sin(t * Math.PI * 2 + sweep * Math.PI) * 0.62 * depth * mix });
     }
     return { notes, cc };
   }
