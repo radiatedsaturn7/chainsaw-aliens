@@ -8900,9 +8900,12 @@ export default class MidiComposer {
     } else if (this.activeTab === 'song') {
       this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'instruments') {
-      const pedalBoardAreaH = Math.min(280, Math.max(220, Math.round(contentH * 0.34)));
       const pedalTransportH = 48;
-      const mixerH = Math.max(300, contentH - pedalBoardAreaH - pedalTransportH);
+      const minMixerH = Math.min(300, Math.max(180, contentH - pedalTransportH - 160));
+      const preferredPedalBoardH = Math.min(260, Math.max(200, Math.round(contentH * 0.3)));
+      const maxPedalBoardH = Math.max(160, contentH - pedalTransportH - minMixerH);
+      const pedalBoardAreaH = clamp(preferredPedalBoardH, 160, maxPedalBoardH);
+      const mixerH = Math.max(minMixerH, contentH - pedalBoardAreaH - pedalTransportH);
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
       this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track);
       this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH + pedalTransportH, contentW, pedalBoardAreaH, track);
@@ -9107,9 +9110,12 @@ export default class MidiComposer {
       const songContentH = isLandscape ? (height - padding * 2) : contentH;
       this.drawSongTab(ctx, contentX, contentY, contentW, songContentH);
     } else if (this.activeTab === 'instruments') {
-      const pedalBoardAreaH = Math.min(280, Math.max(220, Math.round(contentH * 0.34)));
       const pedalTransportH = 48;
-      const mixerH = Math.max(300, contentH - pedalBoardAreaH - pedalTransportH);
+      const minMixerH = Math.min(300, Math.max(180, contentH - pedalTransportH - 160));
+      const preferredPedalBoardH = Math.min(260, Math.max(200, Math.round(contentH * 0.3)));
+      const maxPedalBoardH = Math.max(160, contentH - pedalTransportH - minMixerH);
+      const pedalBoardAreaH = clamp(preferredPedalBoardH, 160, maxPedalBoardH);
+      const mixerH = Math.max(minMixerH, contentH - pedalBoardAreaH - pedalTransportH);
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
       this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track);
       this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH + pedalTransportH, contentW, pedalBoardAreaH, track);
@@ -11187,7 +11193,9 @@ export default class MidiComposer {
       ctx.font = '14px Courier New';
       ctx.fillText('Instruments', leftX + 10, leftY + 18);
       const listStartY = leftY + 28;
-      const listH = Math.max(0, panelH - addButtonH - 20 - controlsH);
+      const addButtonBottomInset = 2;
+      const listBottomGap = 16;
+      const listH = Math.max(0, panelH - addButtonH - listBottomGap - addButtonBottomInset - controlsH);
       this.bounds.instrumentListScrollArea = { x: leftX + 4, y: listStartY, w: leftW - 8, h: listH };
       const listItemGap = 6;
       const listRowH = Math.max(rowH, Math.min(96, (listH - listItemGap * 3) / 4));
@@ -11201,6 +11209,10 @@ export default class MidiComposer {
         this.pendingTrackFocusIndex = null;
       }
       let cursorY = listStartY - this.instrumentListScroll;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(this.bounds.instrumentListScrollArea.x, this.bounds.instrumentListScrollArea.y, this.bounds.instrumentListScrollArea.w, this.bounds.instrumentListScrollArea.h);
+      ctx.clip();
       this.song.tracks.forEach((listTrack, index) => {
         const bounds = { x: leftX + 8, y: cursorY, w: leftW - 16, h: listRowH, trackIndex: index };
         if (bounds.y + bounds.h < listStartY - 4 || bounds.y > listStartY + listH + 4) {
@@ -11224,8 +11236,9 @@ export default class MidiComposer {
         this.bounds.instrumentList.push(bounds);
         cursorY += listRowH + listItemGap;
       });
+      ctx.restore();
 
-      this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - 8, w: leftW - 16, h: addButtonH };
+      this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - addButtonBottomInset, w: leftW - 16, h: addButtonH };
       this.drawButton(ctx, this.bounds.instrumentAdd, 'Add Instrument', false, false);
     } else {
       this.bounds.instrumentAdd = null;
