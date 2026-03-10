@@ -11437,33 +11437,8 @@ export default class MidiComposer {
     this.drawDangerButton(ctx, removeBounds, 'Remove');
     this.bounds.instrumentSettingsControls.push(changeBounds, renameBounds, duplicateBounds, removeBounds);
 
-    const transportRowY = buttonRowY + 42;
-    const transportGap = 6;
-    const transportButtons = [
-      { label: '⏮', control: 'transport-home' },
-      { label: '⏪', control: 'transport-rewind' },
-      { label: this.isPlaying ? '❚❚' : '▶', control: 'transport-play' },
-      { label: '⏩', control: 'transport-forward' },
-      { label: '⏭', control: 'transport-end' },
-      { label: this.song.loopEnabled ? 'Loop On' : 'Loop', control: 'transport-loop' },
-      { label: '●', control: 'transport-record' }
-    ];
-    const transportW = (rightW - padding * 2 - transportGap * (transportButtons.length - 1)) / transportButtons.length;
-    transportButtons.forEach((entry, index) => {
-      const bounds = {
-        x: rightX + padding + index * (transportW + transportGap),
-        y: transportRowY,
-        w: transportW,
-        h: 28,
-        trackIndex: this.selectedTrackIndex,
-        control: entry.control
-      };
-      this.drawSmallButton(ctx, bounds, entry.label, entry.control === 'transport-play' ? this.isPlaying : (entry.control === 'transport-loop' ? this.song.loopEnabled : false));
-      this.bounds.instrumentSettingsControls.push(bounds);
-    });
-
     const mix = this.getTrackPlaybackMix(track);
-    const toggleRowY = transportRowY + 38;
+    const toggleRowY = buttonRowY + 44;
     const muteBounds = {
       x: rightX + padding,
       y: toggleRowY,
