@@ -8881,7 +8881,7 @@ export default class MidiComposer {
 
 
   drawDesktopLayout(ctx, width, height, track, pattern) {
-    const transportH = this.activeTab === 'instruments' ? 56 : 132;
+    const transportH = this.activeTab === 'instruments' ? 0 : 132;
     const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
     const shellLayout = createEditorShellLayout({
       viewportWidth: width,
@@ -8892,7 +8892,9 @@ export default class MidiComposer {
 
     this.drawHeader(ctx, shellLayout.topBar.x, shellLayout.topBar.y, shellLayout.topBar.w, shellLayout.topBar.h, track);
     this.drawDesktopLeftPanel(ctx, shellLayout.leftRail.x, shellLayout.leftRail.y, shellLayout.leftRail.w, shellLayout.leftRail.h);
-    this.drawTransportBar(ctx, shellLayout.bottomBar.x, shellLayout.bottomBar.y, shellLayout.bottomBar.w, shellLayout.bottomBar.h);
+    if (shellLayout.bottomBar.h > 0) {
+      this.drawTransportBar(ctx, shellLayout.bottomBar.x, shellLayout.bottomBar.y, shellLayout.bottomBar.w, shellLayout.bottomBar.h);
+    }
 
     const { x: contentX, y: contentY, w: contentW, h: contentH } = shellLayout.mainContent;
     if (this.activeTab === 'grid') {
@@ -11193,8 +11195,8 @@ export default class MidiComposer {
       ctx.font = '14px Courier New';
       ctx.fillText('Instruments', leftX + 10, leftY + 18);
       const listStartY = leftY + 28;
-      const addButtonBottomInset = 2;
-      const listBottomGap = 16;
+      const addButtonBottomInset = 4;
+      const listBottomGap = 8;
       const listH = Math.max(0, panelH - addButtonH - listBottomGap - addButtonBottomInset - controlsH);
       this.bounds.instrumentListScrollArea = { x: leftX + 4, y: listStartY, w: leftW - 8, h: listH };
       const listItemGap = 6;
