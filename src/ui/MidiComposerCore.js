@@ -4088,6 +4088,10 @@ export default class MidiComposer {
         return;
       }
 
+      if (this.bounds.instrumentAdd && this.pointInBounds(x, y, this.bounds.instrumentAdd)) {
+        this.openInstrumentPicker('add', this.selectedTrackIndex);
+        return;
+      }
       const listHit = this.bounds.instrumentList?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (payload.touchCount && this.bounds.instrumentListScrollArea && this.pointInBounds(x, y, this.bounds.instrumentListScrollArea)) {
         this.dragState = {
@@ -4106,10 +4110,6 @@ export default class MidiComposer {
         if (selectedTrack) {
           this.previewInstrument(selectedTrack.program, selectedTrack);
         }
-        return;
-      }
-      if (this.bounds.instrumentAdd && this.pointInBounds(x, y, this.bounds.instrumentAdd)) {
-        this.openInstrumentPicker('add', this.selectedTrackIndex);
         return;
       }
       const settingHit = this.bounds.instrumentSettingsControls?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -11219,7 +11219,8 @@ export default class MidiComposer {
       const listStartY = leftY + 28;
       const addButtonBottomInset = 4;
       const listBottomGap = 8;
-      const listH = Math.max(0, panelH - addButtonH - listBottomGap - addButtonBottomInset - controlsH);
+      const listTopInset = listStartY - leftY;
+      const listH = Math.max(0, panelH - listTopInset - addButtonH - listBottomGap - addButtonBottomInset - controlsH);
       this.bounds.instrumentListScrollArea = { x: leftX + 4, y: listStartY, w: leftW - 8, h: listH };
       const listItemGap = 6;
       const visibleRows = Math.max(4, Math.min(5, this.song.tracks.length || 4));
