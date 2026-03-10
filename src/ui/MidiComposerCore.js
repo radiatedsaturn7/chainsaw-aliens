@@ -3786,6 +3786,12 @@ export default class MidiComposer {
       this.insertPedalIntoSlot(this.pedalUiState.pickerSlot ?? 0, pedalPickerHit.pedalType);
       return;
     }
+    if (this.pedalUiState.pickerOpen) {
+      this.pedalUiState.pickerOpen = false;
+      this.pedalUiState.pickerSlot = null;
+      this.pedalUiState.pickerScroll = 0;
+      return;
+    }
     const pedalInspectorHit = this.pedalInspectorBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
     if (pedalInspectorHit) {
       const slot = this.pedalUiState.selectedSlot;
@@ -8902,11 +8908,11 @@ export default class MidiComposer {
     } else if (this.activeTab === 'song') {
       this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'instruments') {
-      const pedalTransportH = 48;
-      const minMixerH = Math.min(300, Math.max(180, contentH - pedalTransportH - 160));
-      const preferredPedalBoardH = Math.min(260, Math.max(200, Math.round(contentH * 0.3)));
-      const maxPedalBoardH = Math.max(160, contentH - pedalTransportH - minMixerH);
-      const pedalBoardAreaH = clamp(preferredPedalBoardH, 160, maxPedalBoardH);
+      const pedalTransportH = 44;
+      const minMixerH = Math.min(380, Math.max(220, contentH - pedalTransportH - 140));
+      const preferredPedalBoardH = Math.min(210, Math.max(140, Math.round(contentH * 0.22)));
+      const maxPedalBoardH = Math.max(140, contentH - pedalTransportH - minMixerH);
+      const pedalBoardAreaH = clamp(preferredPedalBoardH, 140, maxPedalBoardH);
       const mixerH = Math.max(minMixerH, contentH - pedalBoardAreaH - pedalTransportH);
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
       this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track);
@@ -9093,7 +9099,8 @@ export default class MidiComposer {
     const sidebarX = 0;
     const sidebarY = 0;
     const isLandscape = width > height;
-    const railH = isLandscape ? 220 : 0;
+    const showsGridBottomRail = isLandscape && this.activeTab === 'grid';
+    const railH = showsGridBottomRail ? 220 : 0;
     const sidebarH = height;
     const contentX = sidebarX + sidebarW + gap;
     const contentY = padding;
@@ -9105,22 +9112,30 @@ export default class MidiComposer {
     if (this.activeTab === 'grid') {
       this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.drawGridZoomControls(ctx, contentX, contentY, contentW, contentH);
-      if (isLandscape) {
+      if (showsGridBottomRail) {
         this.drawMobileBottomRail(ctx, contentX, contentY + contentH + 8, contentW, railH - 8, track);
       }
     } else if (this.activeTab === 'song') {
       const songContentH = isLandscape ? (height - padding * 2) : contentH;
       this.drawSongTab(ctx, contentX, contentY, contentW, songContentH);
     } else if (this.activeTab === 'instruments') {
-      const pedalTransportH = 48;
-      const minMixerH = Math.min(300, Math.max(180, contentH - pedalTransportH - 160));
-      const preferredPedalBoardH = Math.min(260, Math.max(200, Math.round(contentH * 0.3)));
-      const maxPedalBoardH = Math.max(160, contentH - pedalTransportH - minMixerH);
-      const pedalBoardAreaH = clamp(preferredPedalBoardH, 160, maxPedalBoardH);
+      const pedalTransportH = 64;
+      const minMixerH = Math.min(380, Math.max(220, contentH - pedalTransportH - 140));
+      const preferredPedalBoardH = Math.min(210, Math.max(140, Math.round(contentH * 0.22)));
+      const maxPedalBoardH = Math.max(140, contentH - pedalTransportH - minMixerH);
+      const pedalBoardAreaH = clamp(preferredPedalBoardH, 140, maxPedalBoardH);
       const mixerH = Math.max(minMixerH, contentH - pedalBoardAreaH - pedalTransportH);
+      const bottomPanelX = contentX + 10;
+      const bottomPanelY = contentY + mixerH + 4;
+      const bottomPanelW = contentW - 20;
+      const bottomPanelH = pedalTransportH + pedalBoardAreaH - 8;
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
-      this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track);
-      this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH + pedalTransportH, contentW, pedalBoardAreaH, track);
+      ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+      ctx.fillRect(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH);
+      this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track, { embedded: true, rowH: 48 });
+      this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH + pedalTransportH, contentW, pedalBoardAreaH, track, { embedded: true });
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
@@ -9532,15 +9547,19 @@ export default class MidiComposer {
   }
 
 
-  drawMixerPedalTransport(ctx, x, y, w, h, track) {
-    const panelX = x + 10;
-    const panelY = y + 4;
-    const panelW = w - 20;
-    const panelH = Math.max(36, h - 8);
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(panelX, panelY, panelW, panelH);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(panelX, panelY, panelW, panelH);
+  drawMixerPedalTransport(ctx, x, y, w, h, track, options = {}) {
+    const embedded = options.embedded === true;
+    const rowH = options.rowH || 36;
+    const panelX = embedded ? (x + 18) : (x + 10);
+    const panelY = embedded ? (y + 8) : (y + 4);
+    const panelW = embedded ? (w - 36) : (w - 20);
+    const panelH = Math.max(rowH + 12, h - (embedded ? 16 : 8));
+    if (!embedded) {
+      ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+      ctx.fillRect(panelX, panelY, panelW, panelH);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(panelX, panelY, panelW, panelH);
+    }
     const buttons = [
       { label: '●', control: 'transport-record' },
       { label: '⏮', control: 'transport-home' },
@@ -9557,7 +9576,7 @@ export default class MidiComposer {
         x: panelX + 8 + i * (bw + gap),
         y: panelY + 6,
         w: bw,
-        h: panelH - 12,
+        h: rowH,
         trackIndex: this.selectedTrackIndex,
         control: entry.control
       };
@@ -9567,21 +9586,24 @@ export default class MidiComposer {
   }
 
 
-  drawPedalBoardPanel(ctx, x, y, w, h, track) {
+  drawPedalBoardPanel(ctx, x, y, w, h, track, options = {}) {
     this.pedalSlotBounds = [];
     this.pedalPickerBounds = [];
     this.pedalInspectorBounds = [];
     this.pedalEditorOverlayBounds = null;
     this.pedalEditorModalBounds = null;
     if (!track) return;
-    const panelX = x + 10;
-    const panelW = w - 20;
-    const panelH = Math.max(96, h - 8);
-    const panelY = y + h - panelH - 2;
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(panelX, panelY, panelW, panelH);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(panelX, panelY, panelW, panelH);
+    const embedded = options.embedded === true;
+    const panelX = embedded ? (x + 18) : (x + 10);
+    const panelW = embedded ? (w - 36) : (w - 20);
+    const panelH = Math.max(96, h - (embedded ? 10 : 8));
+    const panelY = embedded ? (y + 4) : (y + h - panelH - 2);
+    if (!embedded) {
+      ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+      ctx.fillRect(panelX, panelY, panelW, panelH);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(panelX, panelY, panelW, panelH);
+    }
     ctx.fillStyle = '#fff';
     ctx.font = '13px Courier New';
     ctx.fillText('Pedal Board', panelX + 10, panelY + 16);
@@ -11200,7 +11222,9 @@ export default class MidiComposer {
       const listH = Math.max(0, panelH - addButtonH - listBottomGap - addButtonBottomInset - controlsH);
       this.bounds.instrumentListScrollArea = { x: leftX + 4, y: listStartY, w: leftW - 8, h: listH };
       const listItemGap = 6;
-      const listRowH = Math.max(rowH, Math.min(96, (listH - listItemGap * 3) / 4));
+      const visibleRows = Math.max(4, Math.min(5, this.song.tracks.length || 4));
+      const compactRowH = Math.floor((listH - listItemGap * Math.max(0, visibleRows - 1)) / Math.max(1, visibleRows));
+      const listRowH = clamp(compactRowH, 32, 96);
       const listContentH = Math.max(0, this.song.tracks.length * listRowH + Math.max(0, this.song.tracks.length - 1) * listItemGap);
       this.instrumentListScrollMax = Math.max(0, listContentH - listH);
       this.instrumentListScroll = clamp(this.instrumentListScroll, 0, this.instrumentListScrollMax);
@@ -11241,6 +11265,8 @@ export default class MidiComposer {
       ctx.restore();
 
       this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - addButtonBottomInset, w: leftW - 16, h: addButtonH };
+      ctx.fillStyle = UI_SUITE.colors.panel;
+      ctx.fillRect(this.bounds.instrumentAdd.x, this.bounds.instrumentAdd.y, this.bounds.instrumentAdd.w, this.bounds.instrumentAdd.h);
       this.drawButton(ctx, this.bounds.instrumentAdd, 'Add Instrument', false, false);
     } else {
       this.bounds.instrumentAdd = null;
