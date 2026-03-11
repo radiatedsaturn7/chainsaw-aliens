@@ -3703,6 +3703,132 @@ export default class MidiComposer {
       return;
     }
 
+    if (this.instrumentPicker.mode) {
+      if (this.instrumentPicker.tabPrevBounds && this.pointInBounds(x, y, this.instrumentPicker.tabPrevBounds)) {
+        this.shiftInstrumentPickerTab(-1);
+        return;
+      }
+      if (this.instrumentPicker.tabNextBounds && this.pointInBounds(x, y, this.instrumentPicker.tabNextBounds)) {
+        this.shiftInstrumentPickerTab(1);
+        return;
+      }
+      const familyHit = this.instrumentPicker.tabBounds.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (familyHit) {
+        if (payload.touchCount) {
+          this.dragState = {
+            mode: 'instrument-tab-swipe',
+            startX: x,
+            startY: y,
+            tabId: familyHit.id,
+            startTabScrollX: this.instrumentPicker.tabScrollX || 0,
+            moved: false
+          };
+          return;
+        }
+        this.instrumentPicker.familyTab = familyHit.id;
+        this.instrumentPicker.scroll = 0;
+        return;
+      }
+      if (payload.touchCount
+        && this.instrumentPicker.tabAreaBounds
+        && this.pointInBounds(x, y, this.instrumentPicker.tabAreaBounds)) {
+        this.dragState = {
+          mode: 'instrument-tab-swipe',
+          startX: x,
+          startY: y,
+          tabId: null,
+          startTabScrollX: this.instrumentPicker.tabScrollX || 0,
+          moved: false
+        };
+        return;
+      }
+      const favHit = this.instrumentPicker.favoriteBounds.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (favHit) {
+        this.toggleFavoriteInstrument(favHit.program);
+        return;
+      }
+      if (this.instrumentPicker.confirmBounds && this.pointInBounds(x, y, this.instrumentPicker.confirmBounds)) {
+        if (Number.isInteger(this.instrumentPicker.selectedProgram) || this.instrumentPicker.familyTab === 'drum-kits') {
+          this.applyInstrumentSelection(this.instrumentPicker.selectedProgram);
+        }
+        return;
+      }
+      if (this.instrumentPicker.cancelBounds && this.pointInBounds(x, y, this.instrumentPicker.cancelBounds)) {
+        this.instrumentPicker.mode = null;
+        this.instrumentPicker.selectedProgram = null;
+        this.instrumentPicker.returnTab = null;
+        return;
+      }
+      const pickHit = this.instrumentPicker.bounds.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (pickHit) {
+        if (payload.touchCount) {
+          this.dragState = {
+            mode: 'instrument-scroll',
+            startY: y,
+            startScroll: this.instrumentPicker.scroll,
+            startX: x,
+            moved: false,
+            pendingPick: { ...pickHit }
+          };
+          return;
+        }
+        this.selectInstrumentPickerItem(pickHit);
+        return;
+      }
+      if (this.instrumentPicker.scrollUpBounds && this.pointInBounds(x, y, this.instrumentPicker.scrollUpBounds)) {
+        this.instrumentPicker.scroll = clamp(
+          this.instrumentPicker.scroll - Math.max(1, this.instrumentPicker.scrollStep),
+          0,
+          this.instrumentPicker.scrollMax
+        );
+        return;
+      }
+      if (this.instrumentPicker.scrollDownBounds && this.pointInBounds(x, y, this.instrumentPicker.scrollDownBounds)) {
+        this.instrumentPicker.scroll = clamp(
+          this.instrumentPicker.scroll + Math.max(1, this.instrumentPicker.scrollStep),
+          0,
+          this.instrumentPicker.scrollMax
+        );
+        return;
+      }
+      const pickerTrackHit = this.bounds.instrumentList?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (pickerTrackHit) {
+        this.selectedTrackIndex = pickerTrackHit.trackIndex;
+        this.selection.clear();
+        this.instrumentPicker.trackIndex = pickerTrackHit.trackIndex;
+        const pickerTrack = this.song.tracks[pickerTrackHit.trackIndex];
+        if (pickerTrack) {
+          this.instrumentPicker.selectedProgram = pickerTrack.program ?? null;
+          const tabs = this.getInstrumentPickerTabs();
+          const preferredTab = isDrumTrack(pickerTrack)
+            ? 'drum-kits'
+            : this.getInstrumentCategory(pickerTrack.program);
+          this.instrumentPicker.familyTab = tabs.some((tab) => tab.id === preferredTab)
+            ? preferredTab
+            : (tabs[0]?.id || this.instrumentPicker.familyTab || 'drums-perc');
+          this.instrumentPicker.tabScrollX = Math.max(0, tabs.findIndex((tab) => tab.id === this.instrumentPicker.familyTab) * 96);
+          const availableKits = this.game?.audio?.listAvailableDrumKits?.();
+          const drumKits = Array.isArray(availableKits) && availableKits.length ? availableKits : GM_DRUM_KITS;
+          const matchedKit = isDrumTrack(pickerTrack)
+            ? drumKits.find((kit) => kit.program === pickerTrack.program && kit.bankMSB === pickerTrack.bankMSB && kit.bankLSB === pickerTrack.bankLSB)
+            : null;
+          if (matchedKit?.id) {
+            this.instrumentPicker.drumKitId = matchedKit.id;
+          }
+          this.previewInstrument(pickerTrack.program, pickerTrack);
+        }
+        return;
+      }
+      if (this.instrumentPicker.sectionBounds.find((bounds) => this.pointInBounds(x, y, bounds))) {
+        this.dragState = {
+          mode: 'instrument-scroll',
+          startY: y,
+          startScroll: this.instrumentPicker.scroll
+        };
+      }
+      return;
+    }
+
     const noteLengthHit = this.bounds.noteLengthMenu?.find((bounds) => this.pointInBounds(x, y, bounds));
     if (noteLengthHit) {
       if (isDrumTrack(this.getActiveTrack())) {
@@ -4088,6 +4214,10 @@ export default class MidiComposer {
         return;
       }
 
+      if (this.bounds.instrumentAdd && this.pointInBounds(x, y, this.bounds.instrumentAdd)) {
+        this.openInstrumentPicker('add', this.selectedTrackIndex);
+        return;
+      }
       const listHit = this.bounds.instrumentList?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (payload.touchCount && this.bounds.instrumentListScrollArea && this.pointInBounds(x, y, this.bounds.instrumentListScrollArea)) {
         this.dragState = {
@@ -4106,10 +4236,6 @@ export default class MidiComposer {
         if (selectedTrack) {
           this.previewInstrument(selectedTrack.program, selectedTrack);
         }
-        return;
-      }
-      if (this.bounds.instrumentAdd && this.pointInBounds(x, y, this.bounds.instrumentAdd)) {
-        this.openInstrumentPicker('add', this.selectedTrackIndex);
         return;
       }
       const settingHit = this.bounds.instrumentSettingsControls?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -11219,7 +11345,8 @@ export default class MidiComposer {
       const listStartY = leftY + 28;
       const addButtonBottomInset = 4;
       const listBottomGap = 8;
-      const listH = Math.max(0, panelH - addButtonH - listBottomGap - addButtonBottomInset - controlsH);
+      const listTopInset = listStartY - leftY;
+      const listH = Math.max(0, panelH - listTopInset - addButtonH - listBottomGap - addButtonBottomInset - controlsH);
       this.bounds.instrumentListScrollArea = { x: leftX + 4, y: listStartY, w: leftW - 8, h: listH };
       const listItemGap = 6;
       const visibleRows = Math.max(4, Math.min(5, this.song.tracks.length || 4));
@@ -12964,7 +13091,7 @@ export default class MidiComposer {
   }
 
   drawInstrumentPickerModal(ctx, width, height, track) {
-    const modalW = Math.min(width - 32, Math.max(760, Math.round(width * 0.86)));
+    const modalW = clamp(Math.round(width * 0.625), 420, width - 32);
     const modalH = Math.min(height - 32, Math.max(500, Math.round(height * 0.84)));
     const modalX = Math.round((width - modalW) / 2);
     const modalY = Math.round((height - modalH) / 2);
