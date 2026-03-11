@@ -3493,6 +3493,23 @@ export default class MidiComposer {
     }
   }
 
+  getPlaybackPedalsForTrack(track) {
+    const normalized = normalizeMidiPedals(track?.midiPedals);
+    const activeTrack = this.getActiveTrack?.();
+    const isEditingThisTrack = Boolean(
+      track
+      && activeTrack
+      && track.id === activeTrack.id
+      && this.pedalUiState?.editorOpen
+      && Number.isInteger(this.pedalUiState?.selectedSlot)
+      && this.pedalUiState?.draftPedal
+    );
+    if (!isEditingThisTrack) return normalized;
+    const slot = this.pedalUiState.selectedSlot;
+    normalized[slot] = JSON.parse(JSON.stringify(this.pedalUiState.draftPedal));
+    return normalized;
+  }
+
   playGmNote(pitch, duration, volume, track, pan = 0) {
     if (this.game?.audio?.playGmNote) {
       const drumTrack = isDrumTrack(track);
@@ -3509,7 +3526,7 @@ export default class MidiComposer {
         channel: drumTrack ? GM_DRUM_CHANNEL : track.channel,
         bankMSB: drumTrack ? (track.bankMSB ?? DRUM_BANK_MSB) : track.bankMSB,
         bankLSB: drumTrack ? DRUM_BANK_LSB : track.bankLSB,
-        pedals: track?.midiPedals || [],
+        pedals: this.getPlaybackPedalsForTrack(track),
         pan
       });
       return;
