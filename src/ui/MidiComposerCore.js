@@ -3377,12 +3377,6 @@ export default class MidiComposer {
         const pattern = track.patterns[this.selectedPatternIndex];
         if (!pattern) return;
         const processed = this.getTrackPedalProcessing(track, pattern);
-        processed.cc?.forEach((event) => {
-          const tick = Number(event.tick) || 0;
-          if (tick >= range.start && tick < range.end) {
-            this.applyPedalCcEvent(event, track);
-          }
-        });
         processed.notes.forEach((note) => {
           const noteStart = this.getSwingedTick(note.startTick);
           if (noteStart >= range.start && noteStart < range.end) {
@@ -3505,6 +3499,7 @@ export default class MidiComposer {
         channel: drumTrack ? GM_DRUM_CHANNEL : track.channel,
         bankMSB: drumTrack ? (track.bankMSB ?? DRUM_BANK_MSB) : track.bankMSB,
         bankLSB: drumTrack ? DRUM_BANK_LSB : track.bankLSB,
+        pedals: track?.midiPedals || [],
         pan
       });
       return;
