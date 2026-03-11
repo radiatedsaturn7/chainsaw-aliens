@@ -482,7 +482,14 @@ export default class RecordModeLayout {
     const modalH = 130;
     const modalX = instrument.x + (instrument.w - modalW) / 2;
     const modalY = placement === 'preview'
-      ? Math.max(instrument.y + 8, this.bounds.grid ? this.bounds.grid.y + 12 : instrument.y + 8)
+      ? (() => {
+        const previewTop = this.bounds.grid?.y ?? instrument.y;
+        const previewH = this.bounds.grid?.h ?? instrument.h;
+        const minTopBandY = previewTop + previewH * 0.05;
+        const maxTopBandY = previewTop + previewH * 0.3;
+        const preferredY = previewTop + previewH * 0.12;
+        return clamp(preferredY, minTopBandY, Math.max(minTopBandY, maxTopBandY - modalH));
+      })()
       : instrument.y + (instrument.h - modalH) / 2;
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.75)';
