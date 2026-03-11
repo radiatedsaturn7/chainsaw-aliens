@@ -1096,7 +1096,17 @@ export default class MidiComposer {
     const file = new File([blob], `${this.getExportBaseName()}-robtersession.zip`, { type: 'application/zip' });
     session.enter();
     const selectedTrack = this.song?.tracks?.[this.selectedTrackIndex] || null;
-    session.setMidiLaunchContext({ instrument: this.getRobterSessionInstrumentFromTrack(selectedTrack) });
+    const pedalsByInstrument = {};
+    (this.song?.tracks || []).forEach((track) => {
+      const instrument = this.getRobterSessionInstrumentFromTrack(track);
+      const pedals = normalizeMidiPedals(track?.midiPedals).filter((pedal) => pedal && pedal.enabled !== false);
+      if (!pedals.length || pedalsByInstrument[instrument]) return;
+      pedalsByInstrument[instrument] = pedals.map((pedal) => ({ ...pedal, knobs: { ...(pedal.knobs || {}) } }));
+    });
+    session.setMidiLaunchContext({
+      instrument: this.getRobterSessionInstrumentFromTrack(selectedTrack),
+      pedalsByInstrument
+    });
     await session.loadUploadedZip(file);
     if (this.game) {
       this.game.robterSessionReturnState = 'midi-editor';
