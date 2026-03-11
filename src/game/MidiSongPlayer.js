@@ -143,6 +143,7 @@ export default class MidiSongPlayer {
       bankMSB,
       bankLSB,
       pan,
+      pedals: track?.midiPedals || [],
       trackId: track.id ?? null
     });
   }

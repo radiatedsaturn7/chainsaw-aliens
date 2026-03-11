@@ -37,7 +37,7 @@ import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
 import { PEDAL_DEFINITIONS, PEDAL_DEFINITION_BY_TYPE, PEDAL_COLORS, PEDAL_FONTS } from './midi/pedals/pedalDefinitions.js';
 import { createDefaultPedal } from './midi/pedals/pedalDefaults.js';
-import { normalizeMidiPedals } from './midi/pedals/normalizeMidiPedals.js';
+import { normalizeMidiPedals, sortMidiPedalsBySignalChain } from './midi/pedals/normalizeMidiPedals.js';
 import { applyPedalChain } from './midi/pedals/applyPedalChain.js';
 
 const SCALE_LIBRARY = [
@@ -1096,7 +1096,17 @@ export default class MidiComposer {
     const file = new File([blob], `${this.getExportBaseName()}-robtersession.zip`, { type: 'application/zip' });
     session.enter();
     const selectedTrack = this.song?.tracks?.[this.selectedTrackIndex] || null;
-    session.setMidiLaunchContext({ instrument: this.getRobterSessionInstrumentFromTrack(selectedTrack) });
+    const pedalsByInstrument = {};
+    (this.song?.tracks || []).forEach((track) => {
+      const instrument = this.getRobterSessionInstrumentFromTrack(track);
+      const pedals = normalizeMidiPedals(track?.midiPedals).filter((pedal) => pedal && pedal.enabled !== false);
+      if (!pedals.length || pedalsByInstrument[instrument]) return;
+      pedalsByInstrument[instrument] = pedals.map((pedal) => ({ ...pedal, knobs: { ...(pedal.knobs || {}) } }));
+    });
+    session.setMidiLaunchContext({
+      instrument: this.getRobterSessionInstrumentFromTrack(selectedTrack),
+      pedalsByInstrument
+    });
     await session.loadUploadedZip(file);
     if (this.game) {
       this.game.robterSessionReturnState = 'midi-editor';
@@ -2554,11 +2564,13 @@ export default class MidiComposer {
   playLivePreviewNote(id, pitch, velocity, track, pan = 0) {
     if (!id || !track) return;
     const drumTrack = isDrumTrack(track);
+    const pedals = this.getPlaybackPedalsForTrack(track);
+    const hasPedals = Array.isArray(pedals) && pedals.some((pedal) => pedal && pedal.enabled !== false);
     if (drumTrack) {
       this.playGmNote(pitch, 0.4, (velocity / 127) * track.volume, track, pan);
       return;
     }
-    if (this.game?.audio?.startLiveGmNote) {
+    if (!hasPedals && this.game?.audio?.startLiveGmNote) {
       this.game.audio.startLiveGmNote({
         id,
         pitch,
@@ -3377,12 +3389,6 @@ export default class MidiComposer {
         const pattern = track.patterns[this.selectedPatternIndex];
         if (!pattern) return;
         const processed = this.getTrackPedalProcessing(track, pattern);
-        processed.cc?.forEach((event) => {
-          const tick = Number(event.tick) || 0;
-          if (tick >= range.start && tick < range.end) {
-            this.applyPedalCcEvent(event, track);
-          }
-        });
         processed.notes.forEach((note) => {
           const noteStart = this.getSwingedTick(note.startTick);
           if (noteStart >= range.start && noteStart < range.end) {
@@ -3489,6 +3495,23 @@ export default class MidiComposer {
     }
   }
 
+  getPlaybackPedalsForTrack(track) {
+    const normalized = normalizeMidiPedals(track?.midiPedals);
+    const activeTrack = this.getActiveTrack?.();
+    const isEditingThisTrack = Boolean(
+      track
+      && activeTrack
+      && track.id === activeTrack.id
+      && this.pedalUiState?.editorOpen
+      && Number.isInteger(this.pedalUiState?.selectedSlot)
+      && this.pedalUiState?.draftPedal
+    );
+    if (!isEditingThisTrack) return normalized;
+    const slot = this.pedalUiState.selectedSlot;
+    normalized[slot] = JSON.parse(JSON.stringify(this.pedalUiState.draftPedal));
+    return normalized;
+  }
+
   playGmNote(pitch, duration, volume, track, pan = 0) {
     if (this.game?.audio?.playGmNote) {
       const drumTrack = isDrumTrack(track);
@@ -3505,6 +3528,7 @@ export default class MidiComposer {
         channel: drumTrack ? GM_DRUM_CHANNEL : track.channel,
         bankMSB: drumTrack ? (track.bankMSB ?? DRUM_BANK_MSB) : track.bankMSB,
         bankLSB: drumTrack ? DRUM_BANK_LSB : track.bankLSB,
+        pedals: this.getPlaybackPedalsForTrack(track),
         pan
       });
       return;
@@ -8170,8 +8194,9 @@ export default class MidiComposer {
     if (!pedal) return;
     const next = normalizeMidiPedals(track.midiPedals);
     next[slotIndex] = pedal;
-    track.midiPedals = next;
-    this.pedalUiState.selectedSlot = slotIndex;
+    track.midiPedals = sortMidiPedalsBySignalChain(next);
+    const selectedIndex = track.midiPedals.findIndex((entry) => entry?.id === pedal.id);
+    this.pedalUiState.selectedSlot = selectedIndex >= 0 ? selectedIndex : null;
     this.pedalUiState.pickerSlot = null;
     this.pedalUiState.pickerOpen = false;
     this.pedalUiState.editorOpen = true;
@@ -9893,13 +9918,31 @@ export default class MidiComposer {
       this.pedalInspectorBounds.push(hit);
       const raw = editorPedal.knobs?.[knob.key] ?? knob.defaultValue;
       const ratio = (raw - knob.min) / Math.max(0.0001, knob.max - knob.min);
-      const angle = (-140 + ratio * 280) * (Math.PI / 180);
+      const minAngleDeg = 225;
+      const maxAngleDeg = 315;
+      const angle = (minAngleDeg + ratio * (maxAngleDeg - minAngleDeg)) * (Math.PI / 180);
       ctx.fillStyle = 'rgba(12,12,16,0.96)';
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
       ctx.fill();
       ctx.strokeStyle = 'rgba(255,255,255,0.25)';
       ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius + 5, (minAngleDeg * Math.PI) / 180, (maxAngleDeg * Math.PI) / 180);
+      ctx.stroke();
+      ctx.lineWidth = 1;
+      const minX = centerX + Math.cos((minAngleDeg * Math.PI) / 180) * (radius + 9);
+      const minY = centerY + Math.sin((minAngleDeg * Math.PI) / 180) * (radius + 9);
+      const maxX = centerX + Math.cos((maxAngleDeg * Math.PI) / 180) * (radius + 9);
+      const maxY = centerY + Math.sin((maxAngleDeg * Math.PI) / 180) * (radius + 9);
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.font = '10px Courier New';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('min', minX - 8, minY + 8);
+      ctx.fillText('max', maxX + 8, maxY + 8);
       ctx.strokeStyle = '#ffe16a';
       ctx.lineWidth = 3;
       ctx.beginPath();
@@ -9909,7 +9952,13 @@ export default class MidiComposer {
       ctx.lineWidth = 1;
       ctx.fillStyle = '#fff';
       ctx.font = '12px Courier New';
-      ctx.fillText(knob.label, centerX - 18, centerY + 42);
+      ctx.fillText(knob.label, centerX, centerY + 42);
+      const scaled = ((raw - knob.min) / Math.max(0.0001, knob.max - knob.min)) * 10;
+      ctx.font = 'bold 11px Courier New';
+      ctx.fillStyle = '#ffe16a';
+      ctx.fillText(`${scaled.toFixed(1)}/10`, centerX, centerY + 56);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
     });
 
     const stompY = modalY + Math.round(modalH * 0.7);

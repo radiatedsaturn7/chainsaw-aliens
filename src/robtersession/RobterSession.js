@@ -855,12 +855,30 @@ export default class RobterSession {
     return true;
   }
 
-  setMidiLaunchContext({ instrument } = {}) {
+  setMidiLaunchContext({ instrument, pedalsByInstrument = null } = {}) {
     if (!instrument) {
       this.midiLaunchContext = null;
       return;
     }
-    this.midiLaunchContext = { source: 'midi', instrument };
+    this.midiLaunchContext = {
+      source: 'midi',
+      instrument,
+      pedalsByInstrument: pedalsByInstrument && typeof pedalsByInstrument === 'object'
+        ? pedalsByInstrument
+        : null
+    };
+  }
+
+  getLaunchPedalsForInstrument(instrument = this.instrument) {
+    const pedals = this.midiLaunchContext?.pedalsByInstrument?.[instrument];
+    return Array.isArray(pedals) ? pedals : [];
+  }
+
+  playSessionGmNote(noteConfig = {}, instrument = this.instrument) {
+    this.audio.playGmNote?.({
+      ...noteConfig,
+      pedals: this.getLaunchPedalsForInstrument(instrument)
+    });
   }
 
   enter() {
@@ -1321,7 +1339,7 @@ export default class RobterSession {
       state.timer -= state.beatInterval;
       state.pulse = 1;
       if (state.mode === 'audio') {
-        this.audio.playGmNote?.({
+        this.playSessionGmNote({
           pitch: 37,
           duration: 0.08,
           volume: 0.7,
@@ -1994,7 +2012,7 @@ export default class RobterSession {
       const duration = event.sustain ? event.sustain * this.songData.tempo.secondsPerBeat : 0.5;
       pitches.forEach((pitch) => {
         if (this.instrument === 'drums') {
-          this.audio.playGmNote?.({
+          this.playSessionGmNote({
             pitch,
             duration: 0.35,
             volume: 0.7,
@@ -2004,7 +2022,7 @@ export default class RobterSession {
         } else {
           const sound = this.resolveInstrumentSound(this.instrument, event.section);
           const channel = INSTRUMENT_CHANNELS[this.instrument] ?? 0;
-          this.audio.playGmNote?.({
+          this.playSessionGmNote({
             pitch,
             duration,
             volume: 0.55,
@@ -2323,17 +2341,17 @@ export default class RobterSession {
           const duration = event.sustain ? event.sustain * this.songData.tempo.secondsPerBeat : 0.5;
           pitches.forEach((pitch) => {
             if (track === 'drums') {
-              this.audio.playGmNote?.({
+              this.playSessionGmNote({
                 pitch,
                 duration: 0.35,
                 volume: 0.6,
                 program: 0,
                 channel: 9
-              });
+              }, track);
             } else {
               const sound = this.resolveInstrumentSound(track, event.section);
               const channel = INSTRUMENT_CHANNELS[track] ?? 0;
-              this.audio.playGmNote?.({
+              this.playSessionGmNote({
                 pitch,
                 duration,
                 volume: 0.45,
@@ -2341,7 +2359,7 @@ export default class RobterSession {
                 channel,
                 bankMSB: sound.bankMSB,
                 bankLSB: sound.bankLSB
-              });
+              }, track);
             }
           });
         }
@@ -2367,13 +2385,13 @@ export default class RobterSession {
           const channel = mappedInstrument === 'drums' ? 9 : (INSTRUMENT_CHANNELS[mappedInstrument] ?? 0);
           const program = stem.playbackProgram ?? STEM_PROGRAM_MAP[mappedInstrument] ?? 0;
           const mixVolume = isActiveStem ? volume : volume * 0.6;
-          this.audio.playGmNote?.({
+          this.playSessionGmNote({
             pitch: note.midi,
             duration,
             volume: Math.min(1, Math.max(0.1, (note.vel ?? 0.8) * mixVolume)),
             program,
             channel
-          });
+          }, mappedInstrument);
         }
         index += 1;
       }
@@ -2764,30 +2782,55 @@ export default class RobterSession {
       const instrument = this.instrument;
       const velocity = clamp((event.velocity ?? 96) / 127, 0.1, 1);
       const sectionName = this.getCurrentSectionLabel()?.toLowerCase() || null;
+      const pedals = this.getLaunchPedalsForInstrument(instrument);
+      const hasPedals = Array.isArray(pedals) && pedals.some((pedal) => pedal && pedal.enabled !== false);
       if (instrument === 'drums') {
-        this.audio.startLiveGmNote?.({
-          id: event.id,
-          pitch,
-          duration: 0.8,
-          volume: velocity,
-          program: 0,
-          channel: 9
-        });
+        if (hasPedals) {
+          this.playSessionGmNote({
+            pitch,
+            duration: 0.35,
+            volume: velocity,
+            program: 0,
+            channel: 9
+          }, instrument);
+        } else {
+          this.audio.startLiveGmNote?.({
+            id: event.id,
+            pitch,
+            duration: 0.8,
+            volume: velocity,
+            program: 0,
+            channel: 9
+          });
+          this.robterspielNotes.add(event.id);
+        }
       } else {
         const sound = this.resolveInstrumentSound(instrument, sectionName);
         const channel = INSTRUMENT_CHANNELS[instrument] ?? 0;
-        this.audio.startLiveGmNote?.({
-          id: event.id,
-          pitch,
-          duration: 1.4,
-          volume: velocity,
-          program: sound.program,
-          channel,
-          bankMSB: sound.bankMSB,
-          bankLSB: sound.bankLSB
-        });
+        if (hasPedals) {
+          this.playSessionGmNote({
+            pitch,
+            duration: 0.45,
+            volume: velocity,
+            program: sound.program,
+            channel,
+            bankMSB: sound.bankMSB,
+            bankLSB: sound.bankLSB
+          }, instrument);
+        } else {
+          this.audio.startLiveGmNote?.({
+            id: event.id,
+            pitch,
+            duration: 1.4,
+            volume: velocity,
+            program: sound.program,
+            channel,
+            bankMSB: sound.bankMSB,
+            bankLSB: sound.bankLSB
+          });
+          this.robterspielNotes.add(event.id);
+        }
       }
-      this.robterspielNotes.add(event.id);
     });
     this.inputBus.on('noteoff', (event) => {
       if (!event?.id) return;
@@ -2821,7 +2864,7 @@ export default class RobterSession {
     if (instrument === 'drums') {
       const drumMap = { A: 38, X: 45, Y: 48, B: 50 };
       const pitch = drumMap[normalized.button] ?? 38;
-      this.audio.playGmNote?.({
+      this.playSessionGmNote({
         pitch,
         duration: 0.35,
         volume: velocity,
@@ -2849,7 +2892,7 @@ export default class RobterSession {
         pitch += 12;
       }
       const sound = this.resolveInstrumentSound(instrument, sectionName);
-      this.audio.playGmNote?.({
+      this.playSessionGmNote({
         pitch,
         duration: 0.45,
         volume: velocity,
@@ -2900,7 +2943,7 @@ export default class RobterSession {
     pitches = this.applyInversion(pitches, inversion);
     const sound = this.resolveInstrumentSound(instrument, sectionName);
     pitches.forEach((pitch) => {
-      this.audio.playGmNote?.({
+      this.playSessionGmNote({
         pitch,
         duration: 0.6,
         volume: velocity,

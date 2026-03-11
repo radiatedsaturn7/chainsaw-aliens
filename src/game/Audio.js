@@ -102,6 +102,7 @@ export default class AudioSystem {
       lastChannel: null,
       lastChannelType: null
     };
+    this.pedalImpulseCache = new Map();
     this.drumFont = {
       baseUrl: WEB_AUDIOFONT_BASE_URL,
       kit: WEB_AUDIOFONT_KIT,
@@ -660,6 +661,290 @@ export default class AudioSystem {
     return presets[instrument] || presets.sine;
   }
 
+  getPedalByType(pedals = [], type) {
+    return pedals.find((pedal) => pedal && pedal.enabled !== false && pedal.type === type) || null;
+  }
+
+  buildDistortionCurve(amount = 0.6, samples = 1024) {
+    const curve = new Float32Array(samples);
+    const k = 5 + amount * 80;
+    const deg = Math.PI / 180;
+    for (let i = 0; i < samples; i += 1) {
+      const x = (i * 2) / samples - 1;
+      curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+    }
+    return curve;
+  }
+
+  getPedalImpulse(room = 0.5, decay = 0.5) {
+    const key = `${Math.round(room * 100)}:${Math.round(decay * 100)}`;
+    if (this.pedalImpulseCache.has(key)) return this.pedalImpulseCache.get(key);
+    const duration = 0.25 + room * 1.8;
+    const sharpness = 1.2 + decay * 4;
+    const impulse = this.buildImpulseResponse(duration, sharpness);
+    this.pedalImpulseCache.set(key, impulse);
+    return impulse;
+  }
+
+  applyPitchPhaserToSource(source, pedals = [], when = 0, duration = 0.4) {
+    const pedal = this.getPedalByType(pedals, 'pitchPhaser');
+    if (!pedal || !source?.playbackRate) return;
+    const up = clamp(Number(pedal.knobs?.up) || 0, 0, 1);
+    const down = clamp(Number(pedal.knobs?.down) || 0, 0, 1);
+    const phase = clamp(Number(pedal.knobs?.phase) || 0.5, 0, 1);
+    const depthSemis = 0.5 + ((up + down) * 1.25);
+    const hz = 0.2 + phase * 3.2;
+    const points = 48;
+    const curve = new Float32Array(points);
+    for (let i = 0; i < points; i += 1) {
+      const t = i / (points - 1);
+      const semitoneShift = Math.sin(t * Math.PI * 2 * hz * Math.max(0.2, duration)) * depthSemis;
+      curve[i] = 2 ** (semitoneShift / 12);
+    }
+    source.playbackRate.setValueCurveAtTime(curve, when, Math.max(0.08, duration));
+  }
+
+  applyPedalChainToNote(inputNode, pedals = [], when = 0, duration = 0.4) {
+    this.ensure();
+    const enabled = Array.isArray(pedals) ? pedals.filter((pedal) => pedal && pedal.enabled !== false) : [];
+    let current = inputNode;
+    const stopFns = [];
+    enabled.forEach((pedal) => {
+      const knobs = pedal.knobs || {};
+      if (pedal.type === 'compressor') {
+        const comp = this.ctx.createDynamicsCompressor();
+        comp.threshold.value = -44 + clamp(knobs.threshold ?? 0.5, 0, 1) * 42;
+        comp.ratio.value = 1.5 + clamp(knobs.ratio ?? 0.5, 0, 1) * 16;
+        comp.attack.value = 0.002 + (1 - clamp(knobs.ratio ?? 0.5, 0, 1)) * 0.03;
+        comp.release.value = 0.06 + clamp(knobs.makeup ?? 0.4, 0, 1) * 0.32;
+        const makeup = this.ctx.createGain();
+        makeup.gain.value = 0.85 + clamp(knobs.makeup ?? 0.4, 0, 1) * 1.1;
+        current.connect(comp);
+        comp.connect(makeup);
+        current = makeup;
+      } else if (pedal.type === 'eq') {
+        const low = this.ctx.createBiquadFilter();
+        low.type = 'lowshelf';
+        low.frequency.value = 180;
+        low.gain.value = (clamp(knobs.low ?? 0.5, 0, 1) - 0.5) * 24;
+        const mid = this.ctx.createBiquadFilter();
+        mid.type = 'peaking';
+        mid.frequency.value = 1150;
+        mid.Q.value = 0.9;
+        mid.gain.value = (clamp(knobs.mid ?? 0.5, 0, 1) - 0.5) * 20;
+        const high = this.ctx.createBiquadFilter();
+        high.type = 'highshelf';
+        high.frequency.value = 3400;
+        high.gain.value = (clamp(knobs.high ?? 0.5, 0, 1) - 0.5) * 24;
+        const presence = this.ctx.createBiquadFilter();
+        presence.type = 'peaking';
+        presence.frequency.value = 4200;
+        presence.Q.value = 1.2;
+        presence.gain.value = (clamp(knobs.presence ?? 0.5, 0, 1) - 0.5) * 12;
+        current.connect(low); low.connect(mid); mid.connect(high); high.connect(presence);
+        current = presence;
+      } else if (pedal.type === 'overdrive') {
+        const pre = this.ctx.createGain();
+        pre.gain.value = 1 + clamp(knobs.drive ?? 0.6, 0, 1) * 6;
+        const shape = this.ctx.createWaveShaper();
+        shape.curve = this.buildDistortionCurve(clamp(knobs.drive ?? 0.6, 0, 1));
+        shape.oversample = '4x';
+        const tone = this.ctx.createBiquadFilter();
+        tone.type = 'lowpass';
+        tone.frequency.value = 900 + clamp(knobs.tone ?? 0.5, 0, 1) * 7000;
+        const bite = this.ctx.createBiquadFilter();
+        bite.type = 'highpass';
+        bite.frequency.value = 40 + clamp(knobs.bite ?? 0.5, 0, 1) * 650;
+        const out = this.ctx.createGain();
+        out.gain.value = 0.65;
+        current.connect(pre); pre.connect(shape); shape.connect(tone); tone.connect(bite); bite.connect(out);
+        current = out;
+      } else if (pedal.type === 'wah') {
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.Q.value = 1 + clamp(knobs.mix ?? 0.7, 0, 1) * 10;
+        const lfo = this.ctx.createOscillator();
+        const lfoGain = this.ctx.createGain();
+        lfo.frequency.value = 0.4 + clamp(knobs.rate ?? 0.5, 0, 1) * 5;
+        lfoGain.gain.value = 320 + clamp(knobs.sweep ?? 0.6, 0, 1) * 3400;
+        filter.frequency.value = 380;
+        lfo.connect(lfoGain);
+        lfoGain.connect(filter.frequency);
+        lfo.start(when);
+        lfo.stop(when + duration + 0.2);
+        stopFns.push(() => lfo.disconnect());
+        current.connect(filter);
+        current = filter;
+      } else if (pedal.type === 'chorus') {
+        const mix = clamp(knobs.mix ?? 0.7, 0, 1);
+        const depth = clamp(knobs.depth ?? 0.5, 0, 1);
+        const spread = clamp(knobs.spread ?? 0.4, 0, 1);
+        const dry = this.ctx.createGain();
+        dry.gain.value = 1 - mix * 0.55;
+        const wet = this.ctx.createGain();
+        wet.gain.value = mix * 0.5;
+        const delay = this.ctx.createDelay(0.06);
+        delay.delayTime.value = 0.012 + spread * 0.016;
+        const lfo = this.ctx.createOscillator();
+        const lfoGain = this.ctx.createGain();
+        lfo.frequency.value = 0.15 + depth * 2.4;
+        lfoGain.gain.value = 0.001 + depth * 0.004;
+        lfo.connect(lfoGain);
+        lfoGain.connect(delay.delayTime);
+        lfo.start(when);
+        lfo.stop(when + duration + 0.2);
+        stopFns.push(() => lfo.disconnect());
+        const sum = this.ctx.createGain();
+        current.connect(dry);
+        current.connect(delay);
+        delay.connect(wet);
+        dry.connect(sum);
+        wet.connect(sum);
+        current = sum;
+      } else if (pedal.type === 'phaser') {
+        const rate = clamp(knobs.rate ?? 0.6, 0, 1);
+        const depth = clamp(knobs.depth ?? 0.6, 0, 1);
+        const mix = clamp(knobs.mix ?? 0.6, 0, 1);
+        const dry = this.ctx.createGain();
+        dry.gain.value = 1 - mix * 0.5;
+        const wet = this.ctx.createGain();
+        wet.gain.value = mix * 0.6;
+        const stages = Array.from({ length: 4 }, () => this.ctx.createBiquadFilter());
+        stages.forEach((stage) => {
+          stage.type = 'allpass';
+          stage.frequency.value = 400;
+          stage.Q.value = 0.8;
+        });
+        const lfo = this.ctx.createOscillator();
+        const lfoGain = this.ctx.createGain();
+        lfo.frequency.value = 0.2 + rate * 4.2;
+        lfoGain.gain.value = 180 + depth * 1400;
+        lfo.connect(lfoGain);
+        stages.forEach((stage) => lfoGain.connect(stage.frequency));
+        lfo.start(when);
+        lfo.stop(when + duration + 0.2);
+        stopFns.push(() => lfo.disconnect());
+        const sum = this.ctx.createGain();
+        current.connect(dry);
+        current.connect(stages[0]);
+        stages.reduce((prev, next) => { prev.connect(next); return next; });
+        stages[stages.length - 1].connect(wet);
+        dry.connect(sum);
+        wet.connect(sum);
+        current = sum;
+      } else if (pedal.type === 'reverb') {
+        const mix = clamp(knobs.mix ?? 0.6, 0, 1);
+        const room = clamp(knobs.room ?? 0.5, 0, 1);
+        const decay = clamp(knobs.decay ?? 0.6, 0, 1);
+        const dry = this.ctx.createGain();
+        const wet = this.ctx.createGain();
+        dry.gain.value = 1 - mix * 0.6;
+        wet.gain.value = mix * 0.8;
+        const convolver = this.ctx.createConvolver();
+        convolver.buffer = this.getPedalImpulse(room, decay);
+        const sum = this.ctx.createGain();
+        current.connect(dry);
+        current.connect(convolver);
+        convolver.connect(wet);
+        dry.connect(sum);
+        wet.connect(sum);
+        current = sum;
+      } else if (pedal.type === 'echo') {
+        const time = clamp(knobs.time ?? 0.45, 0, 1);
+        const feedback = clamp(knobs.feedback ?? 0.35, 0, 0.95);
+        const mix = clamp(knobs.mix ?? 0.65, 0, 1);
+        const delay = this.ctx.createDelay(1.5);
+        delay.delayTime.value = 0.06 + time * 0.64;
+        const fb = this.ctx.createGain();
+        fb.gain.value = 0.15 + feedback * 0.72;
+        const tone = this.ctx.createBiquadFilter();
+        tone.type = 'lowpass';
+        tone.frequency.value = 1300 + (1 - feedback) * 5200;
+        const dry = this.ctx.createGain();
+        dry.gain.value = 1 - mix * 0.55;
+        const wet = this.ctx.createGain();
+        wet.gain.value = mix * 0.65;
+        const sum = this.ctx.createGain();
+        current.connect(dry);
+        current.connect(delay);
+        delay.connect(tone);
+        tone.connect(fb);
+        fb.connect(delay);
+        delay.connect(wet);
+        dry.connect(sum);
+        wet.connect(sum);
+        current = sum;
+      } else if (pedal.type === 'volumePhaser') {
+        const minV = clamp(knobs.down ?? 0.35, 0.02, 1);
+        const maxV = clamp(knobs.up ?? 0.95, 0.02, 1);
+        const phase = clamp(knobs.phase ?? 0.55, 0, 1);
+        const gain = this.ctx.createGain();
+        gain.gain.value = (minV + maxV) * 0.45;
+        const lfo = this.ctx.createOscillator();
+        const lfoGain = this.ctx.createGain();
+        lfo.frequency.value = 0.2 + phase * 4;
+        lfoGain.gain.value = Math.max(0.0001, (maxV - minV) * 0.5);
+        lfo.connect(lfoGain);
+        lfoGain.connect(gain.gain);
+        lfo.start(when);
+        lfo.stop(when + duration + 0.2);
+        stopFns.push(() => lfo.disconnect());
+        current.connect(gain);
+        current = gain;
+      } else if (pedal.type === 'panPhaser' && this.ctx.createStereoPanner) {
+        const maxL = clamp(knobs.left ?? 0.85, 0, 1);
+        const maxR = clamp(knobs.right ?? 0.85, 0, 1);
+        const phase = clamp(knobs.phase ?? 0.6, 0, 1);
+        const panner = this.ctx.createStereoPanner();
+        panner.pan.value = 0;
+        const lfo = this.ctx.createOscillator();
+        const lfoGain = this.ctx.createGain();
+        lfo.frequency.value = 0.2 + phase * 4.4;
+        lfoGain.gain.value = Math.max(0.05, Math.min(1, (maxL + maxR) * 0.5));
+        lfo.connect(lfoGain);
+        lfoGain.connect(panner.pan);
+        lfo.start(when);
+        lfo.stop(when + duration + 0.2);
+        stopFns.push(() => lfo.disconnect());
+        current.connect(panner);
+        current = panner;
+      }
+    });
+
+    return {
+      output: current,
+      cleanup: () => stopFns.forEach((fn) => {
+        try { fn(); } catch (error) { /* ignore */ }
+      })
+    };
+  }
+
+  playDspPedalGmNote({ pitch, duration, volume, program, pan, isDrums, when, pedals = [] }) {
+    const instrument = isDrums
+      ? this.getFallbackDrum(pitch)
+      : this.getFallbackInstrument(program);
+    const octave = this.getPedalByType(pedals, 'octave');
+    const voices = [{ semitones: 0, level: 1 }];
+    if (octave) {
+      const up = Math.round(clamp(octave.knobs?.up ?? 0, 0, 2));
+      const down = Math.round(clamp(octave.knobs?.down ?? 0, 0, 2));
+      const mix = clamp(octave.knobs?.mix ?? 0.75, 0, 1);
+      if (up > 0) voices.push({ semitones: up * 12, level: mix * 0.75 });
+      if (down > 0) voices.push({ semitones: -down * 12, level: mix * 0.75 });
+    }
+    voices.forEach((voice) => {
+      this.playSampledNote({
+        pitch: clamp(Math.round(pitch + voice.semitones), 0, 127),
+        duration,
+        volume: clamp(volume * voice.level, 0, 1),
+        instrument,
+        when,
+        pan,
+        pedals
+      });
+    });
+  }
+
   /**
    * GM channel 10 (index 9) is percussion: note numbers map directly to drum sounds,
    * and kit selection is driven by Bank Select (CC0/CC32) plus Program Change.
@@ -673,6 +958,7 @@ export default class AudioSystem {
     bankMSB = 0,
     bankLSB = 0,
     pan = 0,
+    pedals = [],
     trackId = null
   }) {
     this.ensureMidiSampler();
@@ -722,6 +1008,21 @@ export default class AudioSystem {
         bankLSB: resolvedBankLSB
       });
     }
+    const when = this.ctx.currentTime + this.midiLatency;
+    const enabledPedals = Array.isArray(pedals) ? pedals.filter((pedal) => pedal && pedal.enabled !== false) : [];
+    if (enabledPedals.length) {
+      this.playDspPedalGmNote({
+        pitch: resolvedPitch,
+        duration,
+        volume: clampedVolume,
+        program: clampedProgram,
+        pan: clampedPan,
+        isDrums,
+        when,
+        pedals: enabledPedals
+      });
+      return;
+    }
     const fallback = () => {
       this.gmError = 'SoundFont failed; using fallback synth.';
       if (isDrums) {
@@ -751,7 +1052,7 @@ export default class AudioSystem {
           duration,
           volume: clampedVolume,
           instrument: this.getFallbackDrum(resolvedPitch),
-          when: this.ctx.currentTime + this.midiLatency,
+          when,
           pan: clampedPan
         });
         return;
@@ -783,7 +1084,6 @@ export default class AudioSystem {
       });
       if (used) return;
     }
-    const when = this.ctx.currentTime + this.midiLatency;
     this.gmNoteOnWithLoader({
       pitch: resolvedPitch,
       volume: clampedVolume,
@@ -1118,7 +1418,15 @@ export default class AudioSystem {
     osc.stop(now + duration + release + 0.02);
   }
 
-  playSampledNote({ pitch = 60, duration = 0.4, volume = 0.8, instrument = 'lead', when = null, pan = 0 }) {
+  playSampledNote({
+    pitch = 60,
+    duration = 0.4,
+    volume = 0.8,
+    instrument = 'lead',
+    when = null,
+    pan = 0,
+    pedals = []
+  }) {
     this.ensureMidiSampler();
     const sample = this.midiSamples[instrument] || this.midiSamples.lead;
     if (!sample?.buffer) return;
@@ -1133,8 +1441,11 @@ export default class AudioSystem {
     filter.type = 'lowpass';
     filter.frequency.value = 9000;
     source.connect(filter);
-    filter.connect(gain);
     const panNode = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
+    const now = when ?? this.ctx.currentTime;
+    this.applyPitchPhaserToSource(source, pedals, now, duration);
+    const chain = this.applyPedalChainToNote(filter, pedals, now, duration);
+    chain.output.connect(gain);
     if (panNode) {
       panNode.pan.value = clamp(pan ?? 0, -1, 1);
       gain.connect(panNode);
@@ -1146,10 +1457,12 @@ export default class AudioSystem {
     reverbSend.gain.value = 0.2;
     gain.connect(reverbSend);
     reverbSend.connect(this.midiReverb);
-    const now = when ?? this.ctx.currentTime;
     source.start(now);
     source.stop(now + duration + 0.1);
     this.registerMidiVoice({ source, gain, stopTime: now + duration + 0.12 });
+    source.onended = () => {
+      chain.cleanup?.();
+    };
   }
 
   getFallbackInstrument(program) {
