@@ -2564,11 +2564,13 @@ export default class MidiComposer {
   playLivePreviewNote(id, pitch, velocity, track, pan = 0) {
     if (!id || !track) return;
     const drumTrack = isDrumTrack(track);
+    const pedals = this.getPlaybackPedalsForTrack(track);
+    const hasPedals = Array.isArray(pedals) && pedals.some((pedal) => pedal && pedal.enabled !== false);
     if (drumTrack) {
       this.playGmNote(pitch, 0.4, (velocity / 127) * track.volume, track, pan);
       return;
     }
-    if (this.game?.audio?.startLiveGmNote) {
+    if (!hasPedals && this.game?.audio?.startLiveGmNote) {
       this.game.audio.startLiveGmNote({
         id,
         pitch,

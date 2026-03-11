@@ -2782,30 +2782,55 @@ export default class RobterSession {
       const instrument = this.instrument;
       const velocity = clamp((event.velocity ?? 96) / 127, 0.1, 1);
       const sectionName = this.getCurrentSectionLabel()?.toLowerCase() || null;
+      const pedals = this.getLaunchPedalsForInstrument(instrument);
+      const hasPedals = Array.isArray(pedals) && pedals.some((pedal) => pedal && pedal.enabled !== false);
       if (instrument === 'drums') {
-        this.audio.startLiveGmNote?.({
-          id: event.id,
-          pitch,
-          duration: 0.8,
-          volume: velocity,
-          program: 0,
-          channel: 9
-        });
+        if (hasPedals) {
+          this.playSessionGmNote({
+            pitch,
+            duration: 0.35,
+            volume: velocity,
+            program: 0,
+            channel: 9
+          }, instrument);
+        } else {
+          this.audio.startLiveGmNote?.({
+            id: event.id,
+            pitch,
+            duration: 0.8,
+            volume: velocity,
+            program: 0,
+            channel: 9
+          });
+          this.robterspielNotes.add(event.id);
+        }
       } else {
         const sound = this.resolveInstrumentSound(instrument, sectionName);
         const channel = INSTRUMENT_CHANNELS[instrument] ?? 0;
-        this.audio.startLiveGmNote?.({
-          id: event.id,
-          pitch,
-          duration: 1.4,
-          volume: velocity,
-          program: sound.program,
-          channel,
-          bankMSB: sound.bankMSB,
-          bankLSB: sound.bankLSB
-        });
+        if (hasPedals) {
+          this.playSessionGmNote({
+            pitch,
+            duration: 0.45,
+            volume: velocity,
+            program: sound.program,
+            channel,
+            bankMSB: sound.bankMSB,
+            bankLSB: sound.bankLSB
+          }, instrument);
+        } else {
+          this.audio.startLiveGmNote?.({
+            id: event.id,
+            pitch,
+            duration: 1.4,
+            volume: velocity,
+            program: sound.program,
+            channel,
+            bankMSB: sound.bankMSB,
+            bankLSB: sound.bankLSB
+          });
+          this.robterspielNotes.add(event.id);
+        }
       }
-      this.robterspielNotes.add(event.id);
     });
     this.inputBus.on('noteoff', (event) => {
       if (!event?.id) return;
