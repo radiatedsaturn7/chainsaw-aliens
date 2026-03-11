@@ -6,7 +6,10 @@ const toPitchBendValue = (semitones, range = 2) => {
   const normalized = clamp(semitones / Math.max(0.001, range), -1, 1);
   return Math.round(((normalized + 1) / 2) * 16383);
 };
-
+const SLIDE_HORIZONTAL_MIN_PX = 8;
+const PULLOFF_VERTICAL_MIN_PX = 10;
+const HORIZONTAL_DOMINANCE_RATIO = 1.25;
+const VERTICAL_DOMINANCE_RATIO = 1.1;
 
 const DRUM_MAP = GM_DRUM_PAD_LAYOUT;
 
@@ -234,9 +237,12 @@ export default class TouchInput {
       this.activeFrets.set(pointerId, {
         ...hit,
         time: performance.now(),
+        startX: x,
         startY: y,
+        currentX: x,
         currentY: y,
-        bendSemitones: 0
+        bendSemitones: 0,
+        pullOffArmed: false
       });
       this.updateFrettedNotes(hit.stringIndex);
       this.updateStringPitchBend();
@@ -267,27 +273,35 @@ export default class TouchInput {
       }
       if (!this.activeFrets.has(pointerId)) return;
       const current = this.activeFrets.get(pointerId);
+      const currentX = Number.isFinite(x) ? x : current.currentX;
       const currentY = Number.isFinite(y) ? y : current.currentY;
+      const dx = currentX - (Number.isFinite(current.startX) ? current.startX : currentX);
+      const dy = currentY - (Number.isFinite(current.startY) ? current.startY : currentY);
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+      const horizontalIntent = absDx >= SLIDE_HORIZONTAL_MIN_PX && absDx > absDy * HORIZONTAL_DOMINANCE_RATIO;
+      const verticalIntent = absDy >= PULLOFF_VERTICAL_MIN_PX && absDy > absDx * VERTICAL_DOMINANCE_RATIO;
       const stringIndex = current.stringIndex;
-      const fret = this.getFretFromX(x) ?? current.fret;
+      const nextFret = horizontalIntent ? (this.getFretFromX(currentX) ?? current.fret) : current.fret;
       const bend = this.computeStringBendSemitones(stringIndex, currentY);
-      const pitch = this.getPitchForStringFret(stringIndex, fret);
-      if (fret === current.fret) {
-        this.activeFrets.set(pointerId, {
-          ...current,
-          currentY,
-          bendSemitones: bend
-        });
+      const pitch = this.getPitchForStringFret(stringIndex, nextFret);
+      const nextState = {
+        ...current,
+        currentX,
+        currentY,
+        bendSemitones: bend,
+        pullOffArmed: current.pullOffArmed || verticalIntent
+      };
+      if (nextFret === current.fret) {
+        this.activeFrets.set(pointerId, nextState);
         this.updateStringPitchBend();
         return;
       }
       this.activeFrets.set(pointerId, {
-        ...current,
-        fret,
+        ...nextState,
+        fret: nextFret,
         pitch: pitch ?? current.pitch,
-        time: performance.now(),
-        currentY,
-        bendSemitones: bend
+        time: performance.now()
       });
       this.updateFrettedNotes(stringIndex);
       this.updateStringPitchBend();
@@ -324,7 +338,7 @@ export default class TouchInput {
         this.activeFrets.delete(pointerId);
         this.updateStringPitchBend();
         this.updateFrettedNotes(stringIndex);
-        const canPullOff = this.shouldTriggerPullOff(released, releaseY);
+        const canPullOff = this.shouldTriggerPullOff(released, releaseY, released.pullOffArmed);
         if (canPullOff && !this.hasFretOnString(stringIndex) && this.activeStrings.has(stringIndex)) {
           const openPitch = this.getOpenPitch(stringIndex);
           this.playStringNote(stringIndex, openPitch);
@@ -552,7 +566,7 @@ export default class TouchInput {
     return Math.round(semitones * 2) / 2;
   }
 
-  shouldTriggerPullOff(releasedFret, releaseY) {
+  shouldTriggerPullOff(releasedFret, releaseY, pullOffArmed = false) {
     if (!releasedFret || !Number.isFinite(releaseY)) return false;
     if (!Number.isFinite(releasedFret.fret) || releasedFret.fret <= 0) return false;
     const layout = this.stringLayout;
@@ -560,7 +574,8 @@ export default class TouchInput {
     const centerY = this.getStringCenterY(releasedFret.stringIndex);
     if (!Number.isFinite(centerY)) return false;
     const pullThreshold = Math.max(8, layout.stringGap * 0.24);
-    return Math.abs(releaseY - centerY) >= pullThreshold;
+    const verticalRelease = Math.abs(releaseY - centerY) >= pullThreshold;
+    return pullOffArmed || verticalRelease;
   }
 
   updateStringPitchBend(forceCenter = false) {
