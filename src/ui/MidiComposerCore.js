@@ -37,7 +37,7 @@ import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
 import { PEDAL_DEFINITIONS, PEDAL_DEFINITION_BY_TYPE, PEDAL_COLORS, PEDAL_FONTS } from './midi/pedals/pedalDefinitions.js';
 import { createDefaultPedal } from './midi/pedals/pedalDefaults.js';
-import { normalizeMidiPedals } from './midi/pedals/normalizeMidiPedals.js';
+import { normalizeMidiPedals, sortMidiPedalsBySignalChain } from './midi/pedals/normalizeMidiPedals.js';
 import { applyPedalChain } from './midi/pedals/applyPedalChain.js';
 
 const SCALE_LIBRARY = [
@@ -8175,8 +8175,9 @@ export default class MidiComposer {
     if (!pedal) return;
     const next = normalizeMidiPedals(track.midiPedals);
     next[slotIndex] = pedal;
-    track.midiPedals = next;
-    this.pedalUiState.selectedSlot = slotIndex;
+    track.midiPedals = sortMidiPedalsBySignalChain(next);
+    const selectedIndex = track.midiPedals.findIndex((entry) => entry?.id === pedal.id);
+    this.pedalUiState.selectedSlot = selectedIndex >= 0 ? selectedIndex : null;
     this.pedalUiState.pickerSlot = null;
     this.pedalUiState.pickerOpen = false;
     this.pedalUiState.editorOpen = true;
