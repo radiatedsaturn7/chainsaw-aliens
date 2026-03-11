@@ -9230,7 +9230,8 @@ export default class MidiComposer {
       isRecording: this.recorder.isRecording,
       selector: recordSelector,
       stickIndicators: this.recordStickIndicators,
-      nowPlaying: this.nowPlaying
+      nowPlaying: this.nowPlaying,
+      nowPlayingPlacement: this.isMobileLayout() && this.viewportWidth > this.viewportHeight ? 'preview' : 'instrument'
     });
 
   }
