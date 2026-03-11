@@ -200,6 +200,20 @@ export default class TouchInput {
       || null;
   }
 
+  getFretFromX(x) {
+    const layout = this.stringLayout;
+    if (!layout || !Number.isFinite(x)) return null;
+    if (x <= layout.headX + layout.headW) return 0;
+    const relative = Math.floor((x - layout.boardX) / Math.max(1, layout.fretW));
+    return clamp(relative + 1, 1, layout.fretCount);
+  }
+
+  getPitchForStringFret(stringIndex, fret) {
+    const openPitch = this.getOpenPitch(stringIndex);
+    if (!Number.isFinite(openPitch)) return null;
+    return openPitch + clamp(Math.round(fret || 0), 0, this.stringLayout?.fretCount || 12);
+  }
+
   handlePointerDown({ x, y, id }) {
     if (!this.bounds) return;
     const pointerId = id ?? 'mouse';
@@ -254,19 +268,11 @@ export default class TouchInput {
       if (!this.activeFrets.has(pointerId)) return;
       const current = this.activeFrets.get(pointerId);
       const currentY = Number.isFinite(y) ? y : current.currentY;
-      const hit = this.findHit(x, y);
-      if (!hit) {
-        const bend = this.computeStringBendSemitones(current.stringIndex, currentY);
-        this.activeFrets.set(pointerId, {
-          ...current,
-          currentY,
-          bendSemitones: bend
-        });
-        this.updateStringPitchBend();
-        return;
-      }
-      if (hit.stringIndex === current.stringIndex && hit.fret === current.fret) {
-        const bend = this.computeStringBendSemitones(hit.stringIndex, currentY);
+      const stringIndex = current.stringIndex;
+      const fret = this.getFretFromX(x) ?? current.fret;
+      const bend = this.computeStringBendSemitones(stringIndex, currentY);
+      const pitch = this.getPitchForStringFret(stringIndex, fret);
+      if (fret === current.fret) {
         this.activeFrets.set(pointerId, {
           ...current,
           currentY,
@@ -276,13 +282,14 @@ export default class TouchInput {
         return;
       }
       this.activeFrets.set(pointerId, {
-        ...hit,
+        ...current,
+        fret,
+        pitch: pitch ?? current.pitch,
         time: performance.now(),
-        startY: current.startY,
         currentY,
-        bendSemitones: this.computeStringBendSemitones(hit.stringIndex, currentY)
+        bendSemitones: bend
       });
-      this.updateFrettedNotes(hit.stringIndex);
+      this.updateFrettedNotes(stringIndex);
       this.updateStringPitchBend();
       return;
     }
@@ -552,7 +559,7 @@ export default class TouchInput {
     if (!layout) return false;
     const centerY = this.getStringCenterY(releasedFret.stringIndex);
     if (!Number.isFinite(centerY)) return false;
-    const pullThreshold = Math.max(10, layout.stringGap * 0.38);
+    const pullThreshold = Math.max(3, layout.stringGap * 0.08);
     return Math.abs(releaseY - centerY) >= pullThreshold;
   }
 
