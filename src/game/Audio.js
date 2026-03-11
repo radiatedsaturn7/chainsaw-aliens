@@ -891,6 +891,23 @@ export default class AudioSystem {
         stopFns.push(() => lfo.disconnect());
         current.connect(gain);
         current = gain;
+      } else if (pedal.type === 'panPhaser' && this.ctx.createStereoPanner) {
+        const maxL = clamp(knobs.left ?? 0.85, 0, 1);
+        const maxR = clamp(knobs.right ?? 0.85, 0, 1);
+        const phase = clamp(knobs.phase ?? 0.6, 0, 1);
+        const panner = this.ctx.createStereoPanner();
+        panner.pan.value = 0;
+        const lfo = this.ctx.createOscillator();
+        const lfoGain = this.ctx.createGain();
+        lfo.frequency.value = 0.2 + phase * 4.4;
+        lfoGain.gain.value = Math.max(0.05, Math.min(1, (maxL + maxR) * 0.5));
+        lfo.connect(lfoGain);
+        lfoGain.connect(panner.pan);
+        lfo.start(when);
+        lfo.stop(when + duration + 0.2);
+        stopFns.push(() => lfo.disconnect());
+        current.connect(panner);
+        current = panner;
       }
     });
 
