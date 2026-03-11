@@ -559,7 +559,7 @@ export default class TouchInput {
     if (!layout) return false;
     const centerY = this.getStringCenterY(releasedFret.stringIndex);
     if (!Number.isFinite(centerY)) return false;
-    const pullThreshold = Math.max(3, layout.stringGap * 0.08);
+    const pullThreshold = Math.max(8, layout.stringGap * 0.24);
     return Math.abs(releaseY - centerY) >= pullThreshold;
   }
 
