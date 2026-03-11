@@ -662,7 +662,7 @@ export default class AudioSystem {
   }
 
   getPedalByType(pedals = [], type) {
-    return pedals.find((pedal) => pedal?.enabled !== false && pedal?.type === type) || null;
+    return pedals.find((pedal) => pedal && pedal.enabled !== false && pedal.type === type) || null;
   }
 
   buildDistortionCurve(amount = 0.6, samples = 1024) {
@@ -706,7 +706,7 @@ export default class AudioSystem {
 
   applyPedalChainToNote(inputNode, pedals = [], when = 0, duration = 0.4) {
     this.ensure();
-    const enabled = Array.isArray(pedals) ? pedals.filter((pedal) => pedal?.enabled !== false) : [];
+    const enabled = Array.isArray(pedals) ? pedals.filter((pedal) => pedal && pedal.enabled !== false) : [];
     let current = inputNode;
     const stopFns = [];
     enabled.forEach((pedal) => {
@@ -992,7 +992,7 @@ export default class AudioSystem {
       });
     }
     const when = this.ctx.currentTime + this.midiLatency;
-    const enabledPedals = Array.isArray(pedals) ? pedals.filter((pedal) => pedal?.enabled !== false) : [];
+    const enabledPedals = Array.isArray(pedals) ? pedals.filter((pedal) => pedal && pedal.enabled !== false) : [];
     if (enabledPedals.length) {
       this.playDspPedalGmNote({
         pitch: resolvedPitch,
