@@ -5825,20 +5825,18 @@ export default class Editor {
     }
   }
 
+  clearTileOverlays(tileX, tileY) {
+    this.setElevatorPath(tileX, tileY, false);
+    this.setElevatorPlatform(tileX, tileY, false);
+  }
+
   applyPaint(tileX, tileY, mode) {
     const ensured = this.ensureInBounds(tileX, tileY);
     if (!ensured) return;
     const { tileX: safeX, tileY: safeY } = ensured;
 
     if (mode === 'erase') {
-      if (this.tileType.special === 'elevator-path') {
-        this.setElevatorPath(safeX, safeY, false);
-        return;
-      }
-      if (this.tileType.special === 'elevator-platform') {
-        this.setElevatorPlatform(safeX, safeY, false);
-        return;
-      }
+      this.clearTileOverlays(safeX, safeY);
       this.setTile(safeX, safeY, '.');
       return;
     }
@@ -5859,6 +5857,9 @@ export default class Editor {
     }
 
     const char = this.tileType.char || '.';
+    if (char === '.') {
+      this.clearTileOverlays(safeX, safeY);
+    }
     this.setTile(safeX, safeY, char);
   }
 
@@ -6233,6 +6234,9 @@ export default class Editor {
     tiles.forEach((tile) => {
       const ensured = this.ensureInBounds(tile.x, tile.y);
       if (!ensured) return;
+      if (tile.char === '.') {
+        this.clearTileOverlays(ensured.tileX, ensured.tileY);
+      }
       this.setTile(ensured.tileX, ensured.tileY, tile.char);
     });
     if (this.shapeTool.placeholder) {
