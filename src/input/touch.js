@@ -2,7 +2,14 @@ import { GM_DRUM_PAD_LAYOUT } from '../audio/gm.js';
 import { KEY_LABELS } from '../ui/midi/helpers/chords.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-
+const toPitchBendValue = (semitones, range = 2) => {
+  const normalized = clamp(semitones / Math.max(0.001, range), -1, 1);
+  return Math.round(((normalized + 1) / 2) * 16383);
+};
+const SLIDE_HORIZONTAL_MIN_PX = 8;
+const PULLOFF_VERTICAL_MIN_PX = 10;
+const HORIZONTAL_DOMINANCE_RATIO = 1.25;
+const VERTICAL_DOMINANCE_RATIO = 1.1;
 
 const DRUM_MAP = GM_DRUM_PAD_LAYOUT;
 
@@ -22,6 +29,7 @@ export default class TouchInput {
     this.reverseStrings = false;
     this.stringLayout = null;
     this.stringVibrations = new Map();
+    this.lastPitchBendValue = 8192;
   }
 
   setInstrument(instrument) {
@@ -195,6 +203,20 @@ export default class TouchInput {
       || null;
   }
 
+  getFretFromX(x) {
+    const layout = this.stringLayout;
+    if (!layout || !Number.isFinite(x)) return null;
+    if (x <= layout.headX + layout.headW) return 0;
+    const relative = Math.floor((x - layout.boardX) / Math.max(1, layout.fretW));
+    return clamp(relative + 1, 1, layout.fretCount);
+  }
+
+  getPitchForStringFret(stringIndex, fret) {
+    const openPitch = this.getOpenPitch(stringIndex);
+    if (!Number.isFinite(openPitch)) return null;
+    return openPitch + clamp(Math.round(fret || 0), 0, this.stringLayout?.fretCount || 12);
+  }
+
   handlePointerDown({ x, y, id }) {
     if (!this.bounds) return;
     const pointerId = id ?? 'mouse';
@@ -212,8 +234,18 @@ export default class TouchInput {
       }
       const hit = this.findHit(x, y);
       if (!hit) return;
-      this.activeFrets.set(pointerId, { ...hit, time: performance.now() });
+      this.activeFrets.set(pointerId, {
+        ...hit,
+        time: performance.now(),
+        startX: x,
+        startY: y,
+        currentX: x,
+        currentY: y,
+        bendSemitones: 0,
+        pullOffArmed: false
+      });
       this.updateFrettedNotes(hit.stringIndex);
+      this.updateStringPitchBend();
       return;
     }
     const hit = this.findHit(x, y);
@@ -241,11 +273,38 @@ export default class TouchInput {
       }
       if (!this.activeFrets.has(pointerId)) return;
       const current = this.activeFrets.get(pointerId);
-      const hit = this.findHit(x, y);
-      if (!hit) return;
-      if (hit.stringIndex === current.stringIndex && hit.fret === current.fret) return;
-      this.activeFrets.set(pointerId, { ...hit, time: performance.now() });
-      this.updateFrettedNotes(hit.stringIndex);
+      const currentX = Number.isFinite(x) ? x : current.currentX;
+      const currentY = Number.isFinite(y) ? y : current.currentY;
+      const dx = currentX - (Number.isFinite(current.startX) ? current.startX : currentX);
+      const dy = currentY - (Number.isFinite(current.startY) ? current.startY : currentY);
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+      const horizontalIntent = absDx >= SLIDE_HORIZONTAL_MIN_PX && absDx > absDy * HORIZONTAL_DOMINANCE_RATIO;
+      const verticalIntent = absDy >= PULLOFF_VERTICAL_MIN_PX && absDy > absDx * VERTICAL_DOMINANCE_RATIO;
+      const stringIndex = current.stringIndex;
+      const nextFret = horizontalIntent ? (this.getFretFromX(currentX) ?? current.fret) : current.fret;
+      const bend = this.computeStringBendSemitones(stringIndex, currentY);
+      const pitch = this.getPitchForStringFret(stringIndex, nextFret);
+      const nextState = {
+        ...current,
+        currentX,
+        currentY,
+        bendSemitones: bend,
+        pullOffArmed: current.pullOffArmed || verticalIntent
+      };
+      if (nextFret === current.fret) {
+        this.activeFrets.set(pointerId, nextState);
+        this.updateStringPitchBend();
+        return;
+      }
+      this.activeFrets.set(pointerId, {
+        ...nextState,
+        fret: nextFret,
+        pitch: pitch ?? current.pitch,
+        time: performance.now()
+      });
+      this.updateFrettedNotes(stringIndex);
+      this.updateStringPitchBend();
       return;
     }
     if (!this.activeTouches.has(pointerId)) return;
@@ -266,17 +325,21 @@ export default class TouchInput {
     });
   }
 
-  handlePointerUp({ id }) {
+  handlePointerUp({ id, y }) {
     const pointerId = id ?? 'mouse';
     if (this.instrument === 'guitar' || this.instrument === 'bass') {
       if (this.activeStrums.has(pointerId)) {
         this.activeStrums.delete(pointerId);
       }
       if (this.activeFrets.has(pointerId)) {
-        const { stringIndex } = this.activeFrets.get(pointerId);
+        const released = this.activeFrets.get(pointerId);
+        const { stringIndex } = released;
+        const releaseY = Number.isFinite(y) ? y : released.currentY;
         this.activeFrets.delete(pointerId);
+        this.updateStringPitchBend();
         this.updateFrettedNotes(stringIndex);
-        if (!this.hasFretOnString(stringIndex) && this.activeStrings.has(stringIndex)) {
+        const canPullOff = this.shouldTriggerPullOff(released, releaseY, released.pullOffArmed);
+        if (canPullOff && !this.hasFretOnString(stringIndex) && this.activeStrings.has(stringIndex)) {
           const openPitch = this.getOpenPitch(stringIndex);
           this.playStringNote(stringIndex, openPitch);
         }
@@ -484,6 +547,52 @@ export default class TouchInput {
     this.activeStrings.clear();
     this.stringNoteTimers.forEach((timer) => clearTimeout(timer));
     this.stringNoteTimers.clear();
+    this.updateStringPitchBend(true);
+  }
+
+  getStringCenterY(stringIndex) {
+    const layout = this.stringLayout;
+    if (!layout || !this.bounds) return null;
+    return this.bounds.y + (stringIndex + 1) * layout.stringGap;
+  }
+
+  computeStringBendSemitones(stringIndex, pointerY) {
+    const layout = this.stringLayout;
+    if (!layout || !Number.isFinite(pointerY)) return 0;
+    const centerY = this.getStringCenterY(stringIndex);
+    if (!Number.isFinite(centerY)) return 0;
+    const normalized = clamp((centerY - pointerY) / Math.max(1, layout.stringGap * 0.8), -1, 1);
+    const semitones = normalized * 2;
+    return Math.round(semitones * 2) / 2;
+  }
+
+  shouldTriggerPullOff(releasedFret, releaseY, pullOffArmed = false) {
+    if (!releasedFret || !Number.isFinite(releaseY)) return false;
+    if (!Number.isFinite(releasedFret.fret) || releasedFret.fret <= 0) return false;
+    const layout = this.stringLayout;
+    if (!layout) return false;
+    const centerY = this.getStringCenterY(releasedFret.stringIndex);
+    if (!Number.isFinite(centerY)) return false;
+    const pullThreshold = Math.max(8, layout.stringGap * 0.24);
+    const verticalRelease = Math.abs(releaseY - centerY) >= pullThreshold;
+    return pullOffArmed || verticalRelease;
+  }
+
+  updateStringPitchBend(forceCenter = false) {
+    if (this.instrument !== 'guitar' && this.instrument !== 'bass') return;
+    let semitones = 0;
+    if (!forceCenter) {
+      this.activeFrets.forEach((fret) => {
+        if (!Number.isFinite(fret.bendSemitones)) return;
+        if (Math.abs(fret.bendSemitones) > Math.abs(semitones)) {
+          semitones = fret.bendSemitones;
+        }
+      });
+    }
+    const bendValue = toPitchBendValue(semitones, 2);
+    if (bendValue === this.lastPitchBendValue) return;
+    this.lastPitchBendValue = bendValue;
+    this.bus.emit('pitchbend', { value: bendValue, source: 'touch' });
   }
 
   getOpenPitch(stringIndex) {

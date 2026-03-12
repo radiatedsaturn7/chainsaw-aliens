@@ -131,7 +131,8 @@ export default class RecordModeLayout {
     isRecording,
     selector,
     stickIndicators,
-    nowPlaying
+    nowPlaying,
+    nowPlayingPlacement = 'instrument'
   }) {
     const { instrument } = this.bounds;
     if (!instrument) return;
@@ -155,7 +156,7 @@ export default class RecordModeLayout {
     }
 
     this.drawStickIndicators(ctx, stickIndicators);
-    this.drawNowPlayingModal(ctx, nowPlaying);
+    this.drawNowPlayingModal(ctx, nowPlaying, nowPlayingPlacement);
     this.drawInstrumentModal(ctx);
 
     ctx.restore();
@@ -473,14 +474,23 @@ export default class RecordModeLayout {
     }
   }
 
-  drawNowPlayingModal(ctx, nowPlaying) {
+  drawNowPlayingModal(ctx, nowPlaying, placement = 'instrument') {
     if (!nowPlaying?.active) return;
     const { instrument } = this.bounds;
     if (!instrument) return;
     const modalW = Math.min(520, instrument.w - 40);
     const modalH = 130;
     const modalX = instrument.x + (instrument.w - modalW) / 2;
-    const modalY = instrument.y + (instrument.h - modalH) / 2;
+    const modalY = placement === 'preview'
+      ? (() => {
+        const previewTop = this.bounds.grid?.y ?? instrument.y;
+        const previewH = this.bounds.grid?.h ?? instrument.h;
+        const minTopBandY = previewTop + previewH * 0.05;
+        const maxTopBandY = previewTop + previewH * 0.3;
+        const preferredY = previewTop + previewH * 0.12;
+        return clamp(preferredY, minTopBandY, Math.max(minTopBandY, maxTopBandY - modalH));
+      })()
+      : instrument.y + (instrument.h - modalH) / 2;
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.75)';
     ctx.fillRect(modalX, modalY, modalW, modalH);
