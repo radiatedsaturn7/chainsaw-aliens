@@ -21,6 +21,7 @@ const ROOM_SIZE_PRESETS = [
 ];
 const ROOM_BASE_WIDTH = 38;
 const ROOM_BASE_HEIGHT = 18;
+const EDITOR_WEST_NORTH_PAN_BUFFER_TILES = 4;
 
 const EDITOR_MIN_ZOOM = 0.25;
 const EDITOR_MAX_ZOOM = 3;
@@ -1298,8 +1299,6 @@ export default class Editor {
         tooltip: `Tile: ${tile.label}`,
         onClick: () => {
           this.setTileType(tile);
-          this.mode = 'tile';
-          this.tileTool = 'paint';
         }
       }));
     } else if (tabId === 'triggers') {
@@ -1360,8 +1359,6 @@ export default class Editor {
         tooltip: `Powerup: ${powerup.label}`,
         onClick: () => {
           this.setTileType(powerup);
-          this.mode = 'tile';
-          this.tileTool = 'paint';
         }
       }));
       columns = 2;
@@ -5650,6 +5647,7 @@ export default class Editor {
     const tileSize = this.game.world.tileSize;
     const worldW = this.game.world.width * tileSize;
     const worldH = this.game.world.height * tileSize;
+    const panBuffer = tileSize * EDITOR_WEST_NORTH_PAN_BUFFER_TILES;
     const canvasW = this.game.canvas.width;
     const canvasH = this.game.canvas.height;
     const editorX = Number.isFinite(this.editorBounds?.x) ? this.editorBounds.x : 0;
@@ -5660,9 +5658,9 @@ export default class Editor {
     const editorH = Number.isFinite(this.editorBounds?.h) && this.editorBounds.h > 0
       ? this.editorBounds.h
       : canvasH;
-    const minX = -editorX / this.zoom;
+    const minX = (-editorX - panBuffer) / this.zoom;
     const maxX = Math.max(worldW - (editorX + editorW) / this.zoom, minX);
-    const minY = -editorY / this.zoom;
+    const minY = (-editorY - panBuffer) / this.zoom;
     const maxY = Math.max(worldH - (editorY + editorH) / this.zoom, minY);
     return { minX, maxX, minY, maxY };
   }
@@ -6455,8 +6453,6 @@ export default class Editor {
       const platformTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'elevator-platform');
       if (platformTile) {
         this.setTileType(platformTile);
-        this.mode = 'tile';
-        this.tileTool = 'paint';
       }
       return;
     }
@@ -6464,8 +6460,6 @@ export default class Editor {
       const pathTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'elevator-path');
       if (pathTile) {
         this.setTileType(pathTile);
-        this.mode = 'tile';
-        this.tileTool = 'paint';
       }
       return;
     }
@@ -6474,8 +6468,6 @@ export default class Editor {
       const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
       if (spawnTile) {
         this.setTileType(spawnTile);
-        this.mode = 'tile';
-        this.tileTool = 'paint';
       }
       return;
     }
@@ -6483,14 +6475,10 @@ export default class Editor {
     const known = DEFAULT_TILE_TYPES.find((tile) => tile.char === char);
     if (known) {
       this.setTileType(known);
-      this.mode = 'tile';
-      this.tileTool = 'paint';
       return;
     }
     this.customTile = { id: 'custom', label: `Tile ${char}`, char };
     this.tileType = this.customTile;
-    this.mode = 'tile';
-    this.tileTool = 'paint';
   }
 
   updateHover() {
@@ -7462,8 +7450,6 @@ export default class Editor {
             tooltip: `Tile: ${tile.label}`,
             onClick: () => {
               this.setTileType(tile);
-              this.mode = 'tile';
-              this.tileTool = 'paint';
             }
           }));
           columns = 1;
@@ -7559,8 +7545,6 @@ export default class Editor {
             tooltip: `Powerup: ${powerup.label}`,
             onClick: () => {
               this.setTileType(powerup);
-              this.mode = 'tile';
-              this.tileTool = 'paint';
             }
           }));
           columns = 1;
