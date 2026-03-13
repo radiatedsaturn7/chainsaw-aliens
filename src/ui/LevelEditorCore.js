@@ -1397,8 +1397,15 @@ export default class Editor {
           this.setShapeTool(shape);
           this.mode = 'shape';
         }
-      }))
+      })),
+        {
+          id: 'crop-level',
+          label: 'Crop',
+          tooltip: 'Crop level to smallest bounds containing placed content',
+          onClick: () => this.cropLevelToContent()
+        }
       ];
+      columns = 2;
     } else if (tabId === 'pixels') {
       items = [
         {
@@ -2082,6 +2089,135 @@ export default class Editor {
     this.randomLevelFocusRepeat = 0;
     this.randomLevelSize.width = this.game.world.width;
     this.randomLevelSize.height = this.game.world.height;
+  }
+
+  cropLevelToContent() {
+    const source = this.game.buildWorldData();
+    const width = source.width || this.game.world.width;
+    const height = source.height || this.game.world.height;
+    const tileSize = source.tileSize || this.game.world.tileSize || 32;
+    let minX = width - 1;
+    let minY = height - 1;
+    let maxX = 0;
+    let maxY = 0;
+    let hasBounds = false;
+
+    const includeTile = (x, y) => {
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+      const tx = clamp(Math.floor(x), 0, width - 1);
+      const ty = clamp(Math.floor(y), 0, height - 1);
+      if (!hasBounds) {
+        minX = tx;
+        maxX = tx;
+        minY = ty;
+        maxY = ty;
+        hasBounds = true;
+        return;
+      }
+      minX = Math.min(minX, tx);
+      minY = Math.min(minY, ty);
+      maxX = Math.max(maxX, tx);
+      maxY = Math.max(maxY, ty);
+    };
+    const includeRect = (x, y, w = 1, h = 1) => {
+      if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(w) || !Number.isFinite(h)) return;
+      includeTile(x, y);
+      includeTile(x + Math.max(1, w) - 1, y + Math.max(1, h) - 1);
+    };
+
+    (source.tiles || []).forEach((row, y) => {
+      for (let x = 0; x < width; x += 1) {
+        const tile = row?.[x] || '.';
+        if (tile !== '.') includeTile(x, y);
+      }
+    });
+
+    includeTile(source.spawn?.x ?? this.game.world.spawn?.x, source.spawn?.y ?? this.game.world.spawn?.y);
+    (source.enemies || []).forEach((enemy) => includeTile(enemy.x, enemy.y));
+    (source.elevatorPaths || []).forEach((path) => includeTile(path.x, path.y));
+    (source.elevators || []).forEach((platform) => includeTile(platform.x, platform.y));
+    (source.regions || []).forEach((region) => {
+      const [x, y, w, h] = region?.rect || [];
+      includeRect(x, y, w, h);
+    });
+    (source.musicZones || []).forEach((zone) => {
+      const [x, y, w, h] = zone?.rect || [];
+      includeRect(x, y, w, h);
+    });
+    (source.triggers || []).forEach((trigger) => {
+      const [x, y, w, h] = trigger?.rect || [];
+      includeRect(x, y, w, h);
+    });
+    (source.decals || []).forEach((decal) => {
+      const x = Number.isFinite(decal?.x) ? decal.x : 0;
+      const y = Number.isFinite(decal?.y) ? decal.y : 0;
+      const w = Number.isFinite(decal?.w) ? decal.w : tileSize;
+      const h = Number.isFinite(decal?.h) ? decal.h : tileSize;
+      const minTileX = Math.floor(x / tileSize);
+      const minTileY = Math.floor(y / tileSize);
+      const maxTileX = Math.ceil((x + Math.max(1, w)) / tileSize) - 1;
+      const maxTileY = Math.ceil((y + Math.max(1, h)) / tileSize) - 1;
+      includeRect(minTileX, minTileY, maxTileX - minTileX + 1, maxTileY - minTileY + 1);
+    });
+
+    if (!hasBounds) {
+      this.activeTooltip = 'Crop skipped: no content found';
+      this.tooltipTimer = 2;
+      return;
+    }
+
+    const nextW = maxX - minX + 1;
+    const nextH = maxY - minY + 1;
+    if (nextW === width && nextH === height && minX === 0 && minY === 0) {
+      this.activeTooltip = 'Crop skipped: level already tight';
+      this.tooltipTimer = 2;
+      return;
+    }
+
+    const data = JSON.parse(JSON.stringify(source));
+    data.width = nextW;
+    data.height = nextH;
+    data.tiles = Array.from({ length: nextH }, (_, row) => {
+      const sourceRow = source.tiles[minY + row] || ''.padEnd(width, '.');
+      return sourceRow.slice(minX, minX + nextW).padEnd(nextW, '.');
+    });
+
+    if (data.spawn) {
+      data.spawn.x = clamp(data.spawn.x - minX, 0, nextW - 1);
+      data.spawn.y = clamp(data.spawn.y - minY, 0, nextH - 1);
+    }
+    (data.enemies || []).forEach((enemy) => {
+      enemy.x -= minX;
+      enemy.y -= minY;
+    });
+    (data.elevatorPaths || []).forEach((path) => {
+      path.x -= minX;
+      path.y -= minY;
+    });
+    (data.elevators || []).forEach((platform) => {
+      platform.x -= minX;
+      platform.y -= minY;
+    });
+    const shiftRect = (entry) => {
+      if (!Array.isArray(entry?.rect) || entry.rect.length < 4) return;
+      entry.rect[0] -= minX;
+      entry.rect[1] -= minY;
+    };
+    (data.regions || []).forEach(shiftRect);
+    (data.musicZones || []).forEach(shiftRect);
+    (data.triggers || []).forEach(shiftRect);
+    (data.decals || []).forEach((decal) => {
+      if (Number.isFinite(decal.x)) decal.x -= minX * tileSize;
+      if (Number.isFinite(decal.y)) decal.y -= minY * tileSize;
+    });
+
+    this.game.applyWorldData(data);
+    this.newLevelSizeDraft = { width: data.width, height: data.height };
+    this.resetView();
+    this.syncPreviewMinimap();
+    this.persistAutosave();
+    this.activeTooltip = `Cropped to ${data.width}×${data.height}`;
+    this.tooltipTimer = 2;
   }
 
   async newLevelDocument() {
