@@ -21,6 +21,9 @@ const ROOM_SIZE_PRESETS = [
 ];
 const ROOM_BASE_WIDTH = 38;
 const ROOM_BASE_HEIGHT = 18;
+const EDITOR_WEST_NORTH_PAN_BUFFER_TILES = 4;
+const EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL = 48;
+const EDITOR_MAJOR_GRID_VERTICAL_INTERVAL = 23;
 
 const EDITOR_MIN_ZOOM = 0.25;
 const EDITOR_MAX_ZOOM = 3;
@@ -1298,8 +1301,6 @@ export default class Editor {
         tooltip: `Tile: ${tile.label}`,
         onClick: () => {
           this.setTileType(tile);
-          this.mode = 'tile';
-          this.tileTool = 'paint';
         }
       }));
     } else if (tabId === 'triggers') {
@@ -1360,8 +1361,6 @@ export default class Editor {
         tooltip: `Powerup: ${powerup.label}`,
         onClick: () => {
           this.setTileType(powerup);
-          this.mode = 'tile';
-          this.tileTool = 'paint';
         }
       }));
       columns = 2;
@@ -5650,6 +5649,7 @@ export default class Editor {
     const tileSize = this.game.world.tileSize;
     const worldW = this.game.world.width * tileSize;
     const worldH = this.game.world.height * tileSize;
+    const panBuffer = tileSize * EDITOR_WEST_NORTH_PAN_BUFFER_TILES;
     const canvasW = this.game.canvas.width;
     const canvasH = this.game.canvas.height;
     const editorX = Number.isFinite(this.editorBounds?.x) ? this.editorBounds.x : 0;
@@ -5660,9 +5660,9 @@ export default class Editor {
     const editorH = Number.isFinite(this.editorBounds?.h) && this.editorBounds.h > 0
       ? this.editorBounds.h
       : canvasH;
-    const minX = -editorX / this.zoom;
+    const minX = (-editorX - panBuffer) / this.zoom;
     const maxX = Math.max(worldW - (editorX + editorW) / this.zoom, minX);
-    const minY = -editorY / this.zoom;
+    const minY = (-editorY - panBuffer) / this.zoom;
     const maxY = Math.max(worldH - (editorY + editorH) / this.zoom, minY);
     return { minX, maxX, minY, maxY };
   }
@@ -5827,20 +5827,18 @@ export default class Editor {
     }
   }
 
+  clearTileOverlays(tileX, tileY) {
+    this.setElevatorPath(tileX, tileY, false);
+    this.setElevatorPlatform(tileX, tileY, false);
+  }
+
   applyPaint(tileX, tileY, mode) {
     const ensured = this.ensureInBounds(tileX, tileY);
     if (!ensured) return;
     const { tileX: safeX, tileY: safeY } = ensured;
 
     if (mode === 'erase') {
-      if (this.tileType.special === 'elevator-path') {
-        this.setElevatorPath(safeX, safeY, false);
-        return;
-      }
-      if (this.tileType.special === 'elevator-platform') {
-        this.setElevatorPlatform(safeX, safeY, false);
-        return;
-      }
+      this.clearTileOverlays(safeX, safeY);
       this.setTile(safeX, safeY, '.');
       return;
     }
@@ -5861,6 +5859,9 @@ export default class Editor {
     }
 
     const char = this.tileType.char || '.';
+    if (char === '.') {
+      this.clearTileOverlays(safeX, safeY);
+    }
     this.setTile(safeX, safeY, char);
   }
 
@@ -6235,6 +6236,9 @@ export default class Editor {
     tiles.forEach((tile) => {
       const ensured = this.ensureInBounds(tile.x, tile.y);
       if (!ensured) return;
+      if (tile.char === '.') {
+        this.clearTileOverlays(ensured.tileX, ensured.tileY);
+      }
       this.setTile(ensured.tileX, ensured.tileY, tile.char);
     });
     if (this.shapeTool.placeholder) {
@@ -6455,8 +6459,6 @@ export default class Editor {
       const platformTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'elevator-platform');
       if (platformTile) {
         this.setTileType(platformTile);
-        this.mode = 'tile';
-        this.tileTool = 'paint';
       }
       return;
     }
@@ -6464,8 +6466,6 @@ export default class Editor {
       const pathTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'elevator-path');
       if (pathTile) {
         this.setTileType(pathTile);
-        this.mode = 'tile';
-        this.tileTool = 'paint';
       }
       return;
     }
@@ -6474,8 +6474,6 @@ export default class Editor {
       const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
       if (spawnTile) {
         this.setTileType(spawnTile);
-        this.mode = 'tile';
-        this.tileTool = 'paint';
       }
       return;
     }
@@ -6483,14 +6481,10 @@ export default class Editor {
     const known = DEFAULT_TILE_TYPES.find((tile) => tile.char === char);
     if (known) {
       this.setTileType(known);
-      this.mode = 'tile';
-      this.tileTool = 'paint';
       return;
     }
     this.customTile = { id: 'custom', label: `Tile ${char}`, char };
     this.tileType = this.customTile;
-    this.mode = 'tile';
-    this.tileTool = 'paint';
   }
 
   updateHover() {
@@ -6834,24 +6828,32 @@ export default class Editor {
 
   drawGrid(ctx) {
     const tileSize = this.game.world.tileSize;
+    const worldWidth = this.game.world.width;
+    const worldHeight = this.game.world.height;
     ctx.save();
     const glow = this.dragging || this.radialMenu.active;
-    ctx.strokeStyle = glow ? 'rgba(120,200,255,0.2)' : 'rgba(255,255,255,0.08)';
-    ctx.lineWidth = glow ? 1.4 : 1;
+    const baseStroke = glow ? 'rgba(120,200,255,0.2)' : 'rgba(255,255,255,0.08)';
+    const majorStroke = glow ? 'rgba(120,200,255,0.36)' : 'rgba(255,255,255,0.2)';
     if (glow) {
       ctx.shadowColor = 'rgba(120,200,255,0.35)';
       ctx.shadowBlur = 8;
     }
-    for (let x = 0; x <= this.game.world.width; x += 1) {
+    for (let x = 0; x <= worldWidth; x += 1) {
+      const isMajorLine = x % EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL === 0;
+      ctx.strokeStyle = isMajorLine ? majorStroke : baseStroke;
+      ctx.lineWidth = isMajorLine ? (glow ? 2 : 1.6) : (glow ? 1.4 : 1);
       ctx.beginPath();
       ctx.moveTo(x * tileSize, 0);
-      ctx.lineTo(x * tileSize, this.game.world.height * tileSize);
+      ctx.lineTo(x * tileSize, worldHeight * tileSize);
       ctx.stroke();
     }
-    for (let y = 0; y <= this.game.world.height; y += 1) {
+    for (let y = 0; y <= worldHeight; y += 1) {
+      const isMajorLine = y % EDITOR_MAJOR_GRID_VERTICAL_INTERVAL === 0;
+      ctx.strokeStyle = isMajorLine ? majorStroke : baseStroke;
+      ctx.lineWidth = isMajorLine ? (glow ? 2 : 1.6) : (glow ? 1.4 : 1);
       ctx.beginPath();
       ctx.moveTo(0, y * tileSize);
-      ctx.lineTo(this.game.world.width * tileSize, y * tileSize);
+      ctx.lineTo(worldWidth * tileSize, y * tileSize);
       ctx.stroke();
     }
     ctx.restore();
@@ -7462,8 +7464,6 @@ export default class Editor {
             tooltip: `Tile: ${tile.label}`,
             onClick: () => {
               this.setTileType(tile);
-              this.mode = 'tile';
-              this.tileTool = 'paint';
             }
           }));
           columns = 1;
@@ -7559,8 +7559,6 @@ export default class Editor {
             tooltip: `Powerup: ${powerup.label}`,
             onClick: () => {
               this.setTileType(powerup);
-              this.mode = 'tile';
-              this.tileTool = 'paint';
             }
           }));
           columns = 1;
