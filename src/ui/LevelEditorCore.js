@@ -21,9 +21,11 @@ const ROOM_SIZE_PRESETS = [
 ];
 const ROOM_BASE_WIDTH = 38;
 const ROOM_BASE_HEIGHT = 18;
-const EDITOR_WEST_NORTH_PAN_BUFFER_TILES = 4;
-const EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL = 48;
-const EDITOR_MAJOR_GRID_VERTICAL_INTERVAL = 23;
+const EDITOR_PAN_BUFFER_TILES = 4;
+const EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL = 46;
+const EDITOR_MAJOR_GRID_VERTICAL_INTERVAL = 22;
+const EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL = 23;
+const EDITOR_DOTTED_GRID_VERTICAL_INTERVAL = 11;
 
 const EDITOR_MIN_ZOOM = 0.25;
 const EDITOR_MAX_ZOOM = 3;
@@ -5649,7 +5651,7 @@ export default class Editor {
     const tileSize = this.game.world.tileSize;
     const worldW = this.game.world.width * tileSize;
     const worldH = this.game.world.height * tileSize;
-    const panBuffer = tileSize * EDITOR_WEST_NORTH_PAN_BUFFER_TILES;
+    const panBuffer = tileSize * EDITOR_PAN_BUFFER_TILES;
     const canvasW = this.game.canvas.width;
     const canvasH = this.game.canvas.height;
     const editorX = Number.isFinite(this.editorBounds?.x) ? this.editorBounds.x : 0;
@@ -5661,9 +5663,9 @@ export default class Editor {
       ? this.editorBounds.h
       : canvasH;
     const minX = (-editorX - panBuffer) / this.zoom;
-    const maxX = Math.max(worldW - (editorX + editorW) / this.zoom, minX);
+    const maxX = Math.max(worldW - (editorX + editorW) / this.zoom + panBuffer / this.zoom, minX);
     const minY = (-editorY - panBuffer) / this.zoom;
-    const maxY = Math.max(worldH - (editorY + editorH) / this.zoom, minY);
+    const maxY = Math.max(worldH - (editorY + editorH) / this.zoom + panBuffer / this.zoom, minY);
     return { minX, maxX, minY, maxY };
   }
 
@@ -6834,6 +6836,7 @@ export default class Editor {
     const glow = this.dragging || this.radialMenu.active;
     const baseStroke = glow ? 'rgba(120,200,255,0.2)' : 'rgba(255,255,255,0.08)';
     const majorStroke = glow ? 'rgba(120,200,255,0.36)' : 'rgba(255,255,255,0.2)';
+    const dottedStroke = glow ? 'rgba(120,200,255,0.28)' : 'rgba(255,255,255,0.14)';
     if (glow) {
       ctx.shadowColor = 'rgba(120,200,255,0.35)';
       ctx.shadowBlur = 8;
@@ -6856,6 +6859,26 @@ export default class Editor {
       ctx.lineTo(worldWidth * tileSize, y * tileSize);
       ctx.stroke();
     }
+    ctx.setLineDash([2, 6]);
+    ctx.strokeStyle = dottedStroke;
+    ctx.lineWidth = glow ? 1.6 : 1;
+    for (let x = 0; x <= worldWidth; x += 1) {
+      const isMajorLine = x % EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL === 0;
+      if (isMajorLine || x % EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL !== 0) continue;
+      ctx.beginPath();
+      ctx.moveTo(x * tileSize, 0);
+      ctx.lineTo(x * tileSize, worldHeight * tileSize);
+      ctx.stroke();
+    }
+    for (let y = 0; y <= worldHeight; y += 1) {
+      const isMajorLine = y % EDITOR_MAJOR_GRID_VERTICAL_INTERVAL === 0;
+      if (isMajorLine || y % EDITOR_DOTTED_GRID_VERTICAL_INTERVAL !== 0) continue;
+      ctx.beginPath();
+      ctx.moveTo(0, y * tileSize);
+      ctx.lineTo(worldWidth * tileSize, y * tileSize);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
     ctx.restore();
   }
 
