@@ -6844,9 +6844,11 @@ export default class Editor {
     const spawn = this.game.world.spawn;
     const gridAnchorX = Number.isFinite(spawn?.x) ? spawn.x + 1 : 0;
     const gridAnchorY = Number.isFinite(spawn?.y) ? spawn.y : 0;
+    const majorAnchorX = gridAnchorX + EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL;
+    const majorAnchorY = gridAnchorY + EDITOR_DOTTED_GRID_VERTICAL_INTERVAL;
     const isAlignedToAnchor = (value, anchor, interval) => ((value - anchor) % interval + interval) % interval === 0;
     for (let x = 0; x <= worldWidth; x += 1) {
-      const isMajorLine = isAlignedToAnchor(x, gridAnchorX, EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL);
+      const isMajorLine = isAlignedToAnchor(x, majorAnchorX, EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL);
       ctx.strokeStyle = isMajorLine ? majorStroke : baseStroke;
       ctx.lineWidth = isMajorLine ? (glow ? 2 : 1.6) : (glow ? 1.4 : 1);
       ctx.beginPath();
@@ -6855,7 +6857,7 @@ export default class Editor {
       ctx.stroke();
     }
     for (let y = 0; y <= worldHeight; y += 1) {
-      const isMajorLine = isAlignedToAnchor(y, gridAnchorY, EDITOR_MAJOR_GRID_VERTICAL_INTERVAL);
+      const isMajorLine = isAlignedToAnchor(y, majorAnchorY, EDITOR_MAJOR_GRID_VERTICAL_INTERVAL);
       ctx.strokeStyle = isMajorLine ? majorStroke : baseStroke;
       ctx.lineWidth = isMajorLine ? (glow ? 2 : 1.6) : (glow ? 1.4 : 1);
       ctx.beginPath();
@@ -6867,7 +6869,7 @@ export default class Editor {
     ctx.strokeStyle = dottedStroke;
     ctx.lineWidth = glow ? 1.6 : 1;
     for (let x = 0; x <= worldWidth; x += 1) {
-      const isMajorLine = isAlignedToAnchor(x, gridAnchorX, EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL);
+      const isMajorLine = isAlignedToAnchor(x, majorAnchorX, EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL);
       if (isMajorLine || !isAlignedToAnchor(x, gridAnchorX, EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL)) continue;
       ctx.beginPath();
       ctx.moveTo(x * tileSize, 0);
@@ -6875,7 +6877,7 @@ export default class Editor {
       ctx.stroke();
     }
     for (let y = 0; y <= worldHeight; y += 1) {
-      const isMajorLine = isAlignedToAnchor(y, gridAnchorY, EDITOR_MAJOR_GRID_VERTICAL_INTERVAL);
+      const isMajorLine = isAlignedToAnchor(y, majorAnchorY, EDITOR_MAJOR_GRID_VERTICAL_INTERVAL);
       if (isMajorLine || !isAlignedToAnchor(y, gridAnchorY, EDITOR_DOTTED_GRID_VERTICAL_INTERVAL)) continue;
       ctx.beginPath();
       ctx.moveTo(0, y * tileSize);
