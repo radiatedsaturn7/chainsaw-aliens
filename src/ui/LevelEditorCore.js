@@ -22,6 +22,8 @@ const ROOM_SIZE_PRESETS = [
 const ROOM_BASE_WIDTH = 38;
 const ROOM_BASE_HEIGHT = 18;
 const EDITOR_WEST_NORTH_PAN_BUFFER_TILES = 4;
+const EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL = 48;
+const EDITOR_MAJOR_GRID_VERTICAL_INTERVAL = 23;
 
 const EDITOR_MIN_ZOOM = 0.25;
 const EDITOR_MAX_ZOOM = 3;
@@ -6826,24 +6828,32 @@ export default class Editor {
 
   drawGrid(ctx) {
     const tileSize = this.game.world.tileSize;
+    const worldWidth = this.game.world.width;
+    const worldHeight = this.game.world.height;
     ctx.save();
     const glow = this.dragging || this.radialMenu.active;
-    ctx.strokeStyle = glow ? 'rgba(120,200,255,0.2)' : 'rgba(255,255,255,0.08)';
-    ctx.lineWidth = glow ? 1.4 : 1;
+    const baseStroke = glow ? 'rgba(120,200,255,0.2)' : 'rgba(255,255,255,0.08)';
+    const majorStroke = glow ? 'rgba(120,200,255,0.36)' : 'rgba(255,255,255,0.2)';
     if (glow) {
       ctx.shadowColor = 'rgba(120,200,255,0.35)';
       ctx.shadowBlur = 8;
     }
-    for (let x = 0; x <= this.game.world.width; x += 1) {
+    for (let x = 0; x <= worldWidth; x += 1) {
+      const isMajorLine = x % EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL === 0;
+      ctx.strokeStyle = isMajorLine ? majorStroke : baseStroke;
+      ctx.lineWidth = isMajorLine ? (glow ? 2 : 1.6) : (glow ? 1.4 : 1);
       ctx.beginPath();
       ctx.moveTo(x * tileSize, 0);
-      ctx.lineTo(x * tileSize, this.game.world.height * tileSize);
+      ctx.lineTo(x * tileSize, worldHeight * tileSize);
       ctx.stroke();
     }
-    for (let y = 0; y <= this.game.world.height; y += 1) {
+    for (let y = 0; y <= worldHeight; y += 1) {
+      const isMajorLine = y % EDITOR_MAJOR_GRID_VERTICAL_INTERVAL === 0;
+      ctx.strokeStyle = isMajorLine ? majorStroke : baseStroke;
+      ctx.lineWidth = isMajorLine ? (glow ? 2 : 1.6) : (glow ? 1.4 : 1);
       ctx.beginPath();
       ctx.moveTo(0, y * tileSize);
-      ctx.lineTo(this.game.world.width * tileSize, y * tileSize);
+      ctx.lineTo(worldWidth * tileSize, y * tileSize);
       ctx.stroke();
     }
     ctx.restore();
