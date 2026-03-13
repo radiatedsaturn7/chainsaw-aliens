@@ -6859,12 +6859,17 @@ export default class Editor {
       ctx.lineTo(worldWidth * tileSize, y * tileSize);
       ctx.stroke();
     }
+    const spawn = this.game.world.spawn;
+    const dottedAnchorX = Number.isFinite(spawn?.x) ? spawn.x + 1 : 0;
+    const dottedAnchorY = Number.isFinite(spawn?.y) ? spawn.y : 0;
+    const isAlignedToAnchor = (value, anchor, interval) => ((value - anchor) % interval + interval) % interval === 0;
+
     ctx.setLineDash([2, 6]);
     ctx.strokeStyle = dottedStroke;
     ctx.lineWidth = glow ? 1.6 : 1;
     for (let x = 0; x <= worldWidth; x += 1) {
       const isMajorLine = x % EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL === 0;
-      if (isMajorLine || x % EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL !== 0) continue;
+      if (isMajorLine || !isAlignedToAnchor(x, dottedAnchorX, EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL)) continue;
       ctx.beginPath();
       ctx.moveTo(x * tileSize, 0);
       ctx.lineTo(x * tileSize, worldHeight * tileSize);
@@ -6872,7 +6877,7 @@ export default class Editor {
     }
     for (let y = 0; y <= worldHeight; y += 1) {
       const isMajorLine = y % EDITOR_MAJOR_GRID_VERTICAL_INTERVAL === 0;
-      if (isMajorLine || y % EDITOR_DOTTED_GRID_VERTICAL_INTERVAL !== 0) continue;
+      if (isMajorLine || !isAlignedToAnchor(y, dottedAnchorY, EDITOR_DOTTED_GRID_VERTICAL_INTERVAL)) continue;
       ctx.beginPath();
       ctx.moveTo(0, y * tileSize);
       ctx.lineTo(worldWidth * tileSize, y * tileSize);
