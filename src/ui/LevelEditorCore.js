@@ -1255,6 +1255,7 @@ export default class Editor {
         },
         extras: [
           { id: 'resize-level', label: 'Resize', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
+          { id: 'crop-level', label: 'Crop', tooltip: 'Crop level to smallest bounds containing placed content', onClick: () => this.cropLevelToContent() },
           { divider: true },
           {
             id: 'playtest',
@@ -1397,15 +1398,8 @@ export default class Editor {
           this.setShapeTool(shape);
           this.mode = 'shape';
         }
-      })),
-        {
-          id: 'crop-level',
-          label: 'Crop',
-          tooltip: 'Crop level to smallest bounds containing placed content',
-          onClick: () => this.cropLevelToContent()
-        }
+      }))
       ];
-      columns = 2;
     } else if (tabId === 'pixels') {
       items = [
         {
@@ -7583,6 +7577,7 @@ export default class Editor {
             },
             extras: [
               { id: 'resize-level', label: 'Resize', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
+              { id: 'crop-level', label: 'Crop', tooltip: 'Crop level to smallest bounds containing placed content', onClick: () => this.cropLevelToContent() },
               { divider: true },
               {
                 id: 'playtest',
