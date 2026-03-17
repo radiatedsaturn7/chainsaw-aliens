@@ -21,9 +21,11 @@ const ROOM_SIZE_PRESETS = [
 ];
 const ROOM_BASE_WIDTH = 38;
 const ROOM_BASE_HEIGHT = 18;
-const EDITOR_WEST_NORTH_PAN_BUFFER_TILES = 4;
-const EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL = 48;
-const EDITOR_MAJOR_GRID_VERTICAL_INTERVAL = 23;
+const EDITOR_PAN_BUFFER_TILES = 4;
+const EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL = 40;
+const EDITOR_MAJOR_GRID_VERTICAL_INTERVAL = 20;
+const EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL = 20;
+const EDITOR_DOTTED_GRID_VERTICAL_INTERVAL = 10;
 
 const EDITOR_MIN_ZOOM = 0.25;
 const EDITOR_MAX_ZOOM = 3;
@@ -1253,6 +1255,7 @@ export default class Editor {
         },
         extras: [
           { id: 'resize-level', label: 'Resize', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
+          { id: 'crop-level', label: 'Crop', tooltip: 'Crop level to smallest bounds containing placed content', onClick: () => this.cropLevelToContent() },
           { divider: true },
           {
             id: 'playtest',
@@ -2080,6 +2083,135 @@ export default class Editor {
     this.randomLevelFocusRepeat = 0;
     this.randomLevelSize.width = this.game.world.width;
     this.randomLevelSize.height = this.game.world.height;
+  }
+
+  cropLevelToContent() {
+    const source = this.game.buildWorldData();
+    const width = source.width || this.game.world.width;
+    const height = source.height || this.game.world.height;
+    const tileSize = source.tileSize || this.game.world.tileSize || 32;
+    let minX = width - 1;
+    let minY = height - 1;
+    let maxX = 0;
+    let maxY = 0;
+    let hasBounds = false;
+
+    const includeTile = (x, y) => {
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+      const tx = clamp(Math.floor(x), 0, width - 1);
+      const ty = clamp(Math.floor(y), 0, height - 1);
+      if (!hasBounds) {
+        minX = tx;
+        maxX = tx;
+        minY = ty;
+        maxY = ty;
+        hasBounds = true;
+        return;
+      }
+      minX = Math.min(minX, tx);
+      minY = Math.min(minY, ty);
+      maxX = Math.max(maxX, tx);
+      maxY = Math.max(maxY, ty);
+    };
+    const includeRect = (x, y, w = 1, h = 1) => {
+      if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(w) || !Number.isFinite(h)) return;
+      includeTile(x, y);
+      includeTile(x + Math.max(1, w) - 1, y + Math.max(1, h) - 1);
+    };
+
+    (source.tiles || []).forEach((row, y) => {
+      for (let x = 0; x < width; x += 1) {
+        const tile = row?.[x] || '.';
+        if (tile !== '.') includeTile(x, y);
+      }
+    });
+
+    includeTile(source.spawn?.x ?? this.game.world.spawn?.x, source.spawn?.y ?? this.game.world.spawn?.y);
+    (source.enemies || []).forEach((enemy) => includeTile(enemy.x, enemy.y));
+    (source.elevatorPaths || []).forEach((path) => includeTile(path.x, path.y));
+    (source.elevators || []).forEach((platform) => includeTile(platform.x, platform.y));
+    (source.regions || []).forEach((region) => {
+      const [x, y, w, h] = region?.rect || [];
+      includeRect(x, y, w, h);
+    });
+    (source.musicZones || []).forEach((zone) => {
+      const [x, y, w, h] = zone?.rect || [];
+      includeRect(x, y, w, h);
+    });
+    (source.triggers || []).forEach((trigger) => {
+      const [x, y, w, h] = trigger?.rect || [];
+      includeRect(x, y, w, h);
+    });
+    (source.decals || []).forEach((decal) => {
+      const x = Number.isFinite(decal?.x) ? decal.x : 0;
+      const y = Number.isFinite(decal?.y) ? decal.y : 0;
+      const w = Number.isFinite(decal?.w) ? decal.w : tileSize;
+      const h = Number.isFinite(decal?.h) ? decal.h : tileSize;
+      const minTileX = Math.floor(x / tileSize);
+      const minTileY = Math.floor(y / tileSize);
+      const maxTileX = Math.ceil((x + Math.max(1, w)) / tileSize) - 1;
+      const maxTileY = Math.ceil((y + Math.max(1, h)) / tileSize) - 1;
+      includeRect(minTileX, minTileY, maxTileX - minTileX + 1, maxTileY - minTileY + 1);
+    });
+
+    if (!hasBounds) {
+      this.activeTooltip = 'Crop skipped: no content found';
+      this.tooltipTimer = 2;
+      return;
+    }
+
+    const nextW = maxX - minX + 1;
+    const nextH = maxY - minY + 1;
+    if (nextW === width && nextH === height && minX === 0 && minY === 0) {
+      this.activeTooltip = 'Crop skipped: level already tight';
+      this.tooltipTimer = 2;
+      return;
+    }
+
+    const data = JSON.parse(JSON.stringify(source));
+    data.width = nextW;
+    data.height = nextH;
+    data.tiles = Array.from({ length: nextH }, (_, row) => {
+      const sourceRow = source.tiles[minY + row] || ''.padEnd(width, '.');
+      return sourceRow.slice(minX, minX + nextW).padEnd(nextW, '.');
+    });
+
+    if (data.spawn) {
+      data.spawn.x = clamp(data.spawn.x - minX, 0, nextW - 1);
+      data.spawn.y = clamp(data.spawn.y - minY, 0, nextH - 1);
+    }
+    (data.enemies || []).forEach((enemy) => {
+      enemy.x -= minX;
+      enemy.y -= minY;
+    });
+    (data.elevatorPaths || []).forEach((path) => {
+      path.x -= minX;
+      path.y -= minY;
+    });
+    (data.elevators || []).forEach((platform) => {
+      platform.x -= minX;
+      platform.y -= minY;
+    });
+    const shiftRect = (entry) => {
+      if (!Array.isArray(entry?.rect) || entry.rect.length < 4) return;
+      entry.rect[0] -= minX;
+      entry.rect[1] -= minY;
+    };
+    (data.regions || []).forEach(shiftRect);
+    (data.musicZones || []).forEach(shiftRect);
+    (data.triggers || []).forEach(shiftRect);
+    (data.decals || []).forEach((decal) => {
+      if (Number.isFinite(decal.x)) decal.x -= minX * tileSize;
+      if (Number.isFinite(decal.y)) decal.y -= minY * tileSize;
+    });
+
+    this.game.applyWorldData(data);
+    this.newLevelSizeDraft = { width: data.width, height: data.height };
+    this.resetView();
+    this.syncPreviewMinimap();
+    this.persistAutosave();
+    this.activeTooltip = `Cropped to ${data.width}×${data.height}`;
+    this.tooltipTimer = 2;
   }
 
   async newLevelDocument() {
@@ -5649,7 +5781,7 @@ export default class Editor {
     const tileSize = this.game.world.tileSize;
     const worldW = this.game.world.width * tileSize;
     const worldH = this.game.world.height * tileSize;
-    const panBuffer = tileSize * EDITOR_WEST_NORTH_PAN_BUFFER_TILES;
+    const panBuffer = tileSize * EDITOR_PAN_BUFFER_TILES;
     const canvasW = this.game.canvas.width;
     const canvasH = this.game.canvas.height;
     const editorX = Number.isFinite(this.editorBounds?.x) ? this.editorBounds.x : 0;
@@ -5661,9 +5793,9 @@ export default class Editor {
       ? this.editorBounds.h
       : canvasH;
     const minX = (-editorX - panBuffer) / this.zoom;
-    const maxX = Math.max(worldW - (editorX + editorW) / this.zoom, minX);
+    const maxX = Math.max(worldW - (editorX + editorW) / this.zoom + panBuffer / this.zoom, minX);
     const minY = (-editorY - panBuffer) / this.zoom;
-    const maxY = Math.max(worldH - (editorY + editorH) / this.zoom, minY);
+    const maxY = Math.max(worldH - (editorY + editorH) / this.zoom + panBuffer / this.zoom, minY);
     return { minX, maxX, minY, maxY };
   }
 
@@ -6834,12 +6966,19 @@ export default class Editor {
     const glow = this.dragging || this.radialMenu.active;
     const baseStroke = glow ? 'rgba(120,200,255,0.2)' : 'rgba(255,255,255,0.08)';
     const majorStroke = glow ? 'rgba(120,200,255,0.36)' : 'rgba(255,255,255,0.2)';
+    const dottedStroke = glow ? 'rgba(120,200,255,0.28)' : 'rgba(255,255,255,0.14)';
     if (glow) {
       ctx.shadowColor = 'rgba(120,200,255,0.35)';
       ctx.shadowBlur = 8;
     }
+    const spawn = this.game.world.spawn;
+    const gridAnchorX = Number.isFinite(spawn?.x) ? spawn.x + 1 : 0;
+    const gridAnchorY = Number.isFinite(spawn?.y) ? spawn.y : 0;
+    const majorAnchorX = gridAnchorX + EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL;
+    const majorAnchorY = gridAnchorY + EDITOR_DOTTED_GRID_VERTICAL_INTERVAL;
+    const isAlignedToAnchor = (value, anchor, interval) => ((value - anchor) % interval + interval) % interval === 0;
     for (let x = 0; x <= worldWidth; x += 1) {
-      const isMajorLine = x % EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL === 0;
+      const isMajorLine = isAlignedToAnchor(x, majorAnchorX, EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL);
       ctx.strokeStyle = isMajorLine ? majorStroke : baseStroke;
       ctx.lineWidth = isMajorLine ? (glow ? 2 : 1.6) : (glow ? 1.4 : 1);
       ctx.beginPath();
@@ -6848,7 +6987,7 @@ export default class Editor {
       ctx.stroke();
     }
     for (let y = 0; y <= worldHeight; y += 1) {
-      const isMajorLine = y % EDITOR_MAJOR_GRID_VERTICAL_INTERVAL === 0;
+      const isMajorLine = isAlignedToAnchor(y, majorAnchorY, EDITOR_MAJOR_GRID_VERTICAL_INTERVAL);
       ctx.strokeStyle = isMajorLine ? majorStroke : baseStroke;
       ctx.lineWidth = isMajorLine ? (glow ? 2 : 1.6) : (glow ? 1.4 : 1);
       ctx.beginPath();
@@ -6856,6 +6995,26 @@ export default class Editor {
       ctx.lineTo(worldWidth * tileSize, y * tileSize);
       ctx.stroke();
     }
+    ctx.setLineDash([2, 6]);
+    ctx.strokeStyle = dottedStroke;
+    ctx.lineWidth = glow ? 1.6 : 1;
+    for (let x = 0; x <= worldWidth; x += 1) {
+      const isMajorLine = isAlignedToAnchor(x, majorAnchorX, EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL);
+      if (isMajorLine || !isAlignedToAnchor(x, gridAnchorX, EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL)) continue;
+      ctx.beginPath();
+      ctx.moveTo(x * tileSize, 0);
+      ctx.lineTo(x * tileSize, worldHeight * tileSize);
+      ctx.stroke();
+    }
+    for (let y = 0; y <= worldHeight; y += 1) {
+      const isMajorLine = isAlignedToAnchor(y, majorAnchorY, EDITOR_MAJOR_GRID_VERTICAL_INTERVAL);
+      if (isMajorLine || !isAlignedToAnchor(y, gridAnchorY, EDITOR_DOTTED_GRID_VERTICAL_INTERVAL)) continue;
+      ctx.beginPath();
+      ctx.moveTo(0, y * tileSize);
+      ctx.lineTo(worldWidth * tileSize, y * tileSize);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
     ctx.restore();
   }
 
@@ -7418,6 +7577,7 @@ export default class Editor {
             },
             extras: [
               { id: 'resize-level', label: 'Resize', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
+              { id: 'crop-level', label: 'Crop', tooltip: 'Crop level to smallest bounds containing placed content', onClick: () => this.cropLevelToContent() },
               { divider: true },
               {
                 id: 'playtest',
