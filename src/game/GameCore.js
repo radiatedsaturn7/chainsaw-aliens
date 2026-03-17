@@ -5259,11 +5259,20 @@ export default class Game {
     }
     if (!tools.length) return false;
 
+    const aimY = this.player.aimY ?? 0;
     const yOffsets = mode === 'attack'
-      ? [-this.player.height * 0.35, -6, this.player.height * 0.2]
+      ? [
+          -this.player.height * 0.45,
+          -this.player.height * 0.2,
+          -6,
+          this.player.height * 0.2,
+          this.player.height * 0.45,
+          aimY < -0.35 ? -tileSize * 0.75 : null,
+          aimY > 0.35 ? tileSize * 0.75 : null
+        ].filter((value) => value !== null)
       : [-6];
     const xOffsets = mode === 'attack'
-      ? [tileSize * 0.55, tileSize * 0.85, tileSize * 1.1]
+      ? [tileSize * 0.45, tileSize * 0.75, tileSize * 1.05, tileSize * 1.35, tileSize * 1.65]
       : [tileSize * 0.55];
 
     for (const xOffset of xOffsets) {
