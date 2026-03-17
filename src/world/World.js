@@ -115,7 +115,7 @@ export default class World {
     this.width = data.width;
     this.height = data.height;
     const normalizedTiles = (data.tiles || []).map((row) => row.replace(/Y/g, 'K'));
-    this.tiles = normalizedTiles;
+    this.tiles = [...normalizedTiles];
     this.regions = data.regions || [];
     const spawn = data.spawn || DEFAULT_SPAWN;
     this.spawn = { x: spawn.x ?? DEFAULT_SPAWN.x, y: spawn.y ?? DEFAULT_SPAWN.y };
@@ -147,7 +147,7 @@ export default class World {
       })) : []
     }));
     this.decals = (data.decals || []).map((decal) => ({ ...decal }));
-    this.data = { ...data, tiles: normalizedTiles };
+    this.data = { ...data, tiles: [...normalizedTiles] };
     if (this.data) {
       this.data.elevatorPaths = this.elevatorPaths;
       this.data.elevators = this.elevators;
