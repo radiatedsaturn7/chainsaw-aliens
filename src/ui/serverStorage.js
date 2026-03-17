@@ -72,7 +72,7 @@ function writeLocalSnapshot(snapshot) {
   const index = normalizeIndex(snapshot?.index);
   const files = snapshot?.files && typeof snapshot.files === 'object' ? snapshot.files : {};
 
-    FOLDERS.forEach((folder) => {
+  FOLDERS.forEach((folder) => {
     Object.keys(index[folder] || {}).forEach((name) => {
       const key = fileKey(folder, name);
       if (typeof files[key] === 'string') {
@@ -85,7 +85,32 @@ function writeLocalSnapshot(snapshot) {
   return true;
 }
 
-function mergeSnapshots(localSnapshot, serverSnapshot) {
+function getConflicts(localSnapshot, serverSnapshot) {
+  const local = {
+    index: normalizeIndex(localSnapshot?.index),
+    files: localSnapshot?.files && typeof localSnapshot.files === 'object' ? localSnapshot.files : {}
+  };
+  const server = {
+    index: normalizeIndex(serverSnapshot?.index),
+    files: serverSnapshot?.files && typeof serverSnapshot.files === 'object' ? serverSnapshot.files : {}
+  };
+
+  const conflicts = [];
+  FOLDERS.forEach((folder) => {
+    const localNames = Object.keys(local.index[folder] || {});
+    localNames.forEach((name) => {
+      const key = fileKey(folder, name);
+      const localRaw = local.files[key];
+      const serverRaw = server.files[key];
+      if (typeof localRaw !== 'string' || typeof serverRaw !== 'string') return;
+      if (localRaw === serverRaw) return;
+      conflicts.push({ folder, name });
+    });
+  });
+  return conflicts;
+}
+
+function mergeSnapshots(localSnapshot, serverSnapshot, duplicatePreference = 'local') {
   const local = {
     index: normalizeIndex(localSnapshot?.index),
     files: localSnapshot?.files && typeof localSnapshot.files === 'object' ? localSnapshot.files : {}
@@ -97,7 +122,7 @@ function mergeSnapshots(localSnapshot, serverSnapshot) {
 
   const mergedIndex = emptyIndex();
   const mergedFiles = {};
-  const stats = { keptLocal: 0, pulledServer: 0, merged: 0 };
+  const stats = { keptLocal: 0, pulledServer: 0, merged: 0, conflictsResolved: 0 };
 
   FOLDERS.forEach((folder) => {
     const names = new Set([
@@ -118,7 +143,10 @@ function mergeSnapshots(localSnapshot, serverSnapshot) {
       let winner = 'local';
       if (!hasLocal) winner = 'server';
       else if (!hasServer) winner = 'local';
-      else {
+      else if (localRaw !== serverRaw) {
+        winner = duplicatePreference === 'server' ? 'server' : 'local';
+        stats.conflictsResolved += 1;
+      } else {
         const localTs = readTimestamp(localMeta, localRaw);
         const serverTs = readTimestamp(serverMeta, serverRaw);
         winner = serverTs > localTs ? 'server' : 'local';
@@ -165,14 +193,14 @@ export function setServerStorageEnabled(enabled) {
   storage.setItem(SETTINGS_KEY, enabled ? '1' : '0');
 }
 
-export async function pullServerSnapshot() {
+export async function pullServerSnapshot(duplicatePreference = 'server') {
   if (!isServerStorageEnabled()) return { ok: false, reason: 'disabled' };
   const local = readLocalSnapshot();
   if (!local) return { ok: false, reason: 'storage-unavailable' };
   try {
     const remote = await fetchServerSnapshot();
     if (!remote.ok) return remote;
-    const merged = mergeSnapshots(local, remote.snapshot);
+    const merged = mergeSnapshots(local, remote.snapshot, duplicatePreference);
     const wrote = writeLocalSnapshot(merged.snapshot);
     return { ok: wrote, stats: merged.stats };
   } catch (error) {
@@ -200,19 +228,30 @@ export async function pushServerSnapshot(snapshotOverride = null) {
   }
 }
 
-export async function bootstrapServerStorage() {
+export async function bootstrapServerStorage(options = {}) {
   if (!isServerStorageEnabled()) return { ok: false, reason: 'disabled' };
   const local = readLocalSnapshot();
   if (!local) return { ok: false, reason: 'storage-unavailable' };
+  const duplicatePreference = options?.duplicatePreference;
   try {
     const remote = await fetchServerSnapshot();
     if (!remote.ok) return remote;
-    const merged = mergeSnapshots(local, remote.snapshot);
+    const conflicts = getConflicts(local, remote.snapshot);
+    if (conflicts.length > 0 && duplicatePreference !== 'local' && duplicatePreference !== 'server') {
+      return {
+        ok: false,
+        requiresResolution: true,
+        conflicts: conflicts.length,
+        sample: conflicts.slice(0, 5)
+      };
+    }
+    const mergeChoice = conflicts.length > 0 ? duplicatePreference : 'local';
+    const merged = mergeSnapshots(local, remote.snapshot, mergeChoice);
     const wrote = writeLocalSnapshot(merged.snapshot);
     if (!wrote) return { ok: false, reason: 'storage-unavailable' };
     const pushed = await pushServerSnapshot(merged.snapshot);
     if (!pushed.ok) return pushed;
-    return { ok: true, stats: merged.stats };
+    return { ok: true, stats: merged.stats, conflicts: conflicts.length, preference: mergeChoice };
   } catch (error) {
     return { ok: false, reason: String(error) };
   }

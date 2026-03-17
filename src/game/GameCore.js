@@ -1018,12 +1018,33 @@ export default class Game {
     this.showSystemToast('No saved levels yet. Opened Level Editor.');
   }
 
+
+  async promptServerStorageConflictPreference(conflictCount = 0) {
+    const message = `Found ${conflictCount} duplicate project file${conflictCount === 1 ? '' : 's'} with different content. Type "local" to keep browser versions, "server" to keep server versions, or cancel.`;
+    if (typeof window !== 'undefined' && typeof window.prompt === 'function') {
+      const input = window.prompt(message, 'local');
+      const value = String(input || '').trim().toLowerCase();
+      if (value === 'local' || value === 'server') return value;
+      return null;
+    }
+    return null;
+  }
+
   async handleServerStorageAction(action) {
     if (action === 'toggle-server-storage') {
       const enabled = !isServerStorageEnabled();
       setServerStorageEnabled(enabled);
       if (enabled) {
-        const result = await bootstrapServerStorage();
+        let result = await bootstrapServerStorage();
+        if (result?.requiresResolution) {
+          const preference = await this.promptServerStorageConflictPreference(result.conflicts || 0);
+          if (!preference) {
+            setServerStorageEnabled(false);
+            this.showSystemToast('Server storage enable cancelled.');
+            return;
+          }
+          result = await bootstrapServerStorage({ duplicatePreference: preference });
+        }
         if (result?.ok && result.stats) {
           this.showSystemToast(`Server storage enabled (${result.stats.keptLocal} local, ${result.stats.pulledServer} server).`);
           return;
