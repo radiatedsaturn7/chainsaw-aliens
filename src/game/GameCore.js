@@ -716,7 +716,7 @@ export default class Game {
     this.editorReturnState = this.state;
     if (this.playtestActive) {
       this.world.reset();
-      this.initializeElevators();
+      this.initElevators();
     }
     this.transitionTo('editor');
     this.setRevAudio(false);
@@ -853,7 +853,7 @@ export default class Game {
       this.editor.setFocusOverride({ x: this.player.x, y: this.player.y });
     }
     this.world.reset();
-    this.initializeElevators();
+    this.initElevators();
     this.transitionTo('editor', { forceCleanup: true });
     this.editor.activate();
     this.playtestActive = false;
