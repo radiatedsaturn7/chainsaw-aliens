@@ -1912,10 +1912,12 @@ export default class Game {
           if (!this.tryObstacleInteraction('attack')) {
             this.handleAttack();
           }
-        } else if (this.abilities.anchor && allowAnchorShot) {
-          this.handleAnchorShot();
         } else if (!this.tryObstacleInteraction('attack')) {
-          this.handleAttack();
+          if (this.abilities.anchor && allowAnchorShot) {
+            this.handleAnchorShot();
+          } else {
+            this.handleAttack();
+          }
         }
       }
     } else if (!this.input.isDown('attack')) {
