@@ -69,7 +69,7 @@ import { OBSTACLES } from '../world/Obstacles.js';
 import { MOVEMENT_MODEL } from './MovementModel.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsList, vfsLoad } from '../ui/vfs.js';
-import { isServerStorageEnabled, pullServerSnapshot, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
+import { bootstrapServerStorage, isServerStorageEnabled, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
 import { drawSharedPlayStopButton } from '../ui/uiSuite.js';
 
 const BOSS_TYPES = new Set([
@@ -399,7 +399,7 @@ export default class Game {
   async init() {
     try {
       if (isServerStorageEnabled()) {
-        await pullServerSnapshot();
+        await bootstrapServerStorage();
       }
       await this.world.load();
       await this.autoRepair.load();
@@ -1023,9 +1023,15 @@ export default class Game {
       const enabled = !isServerStorageEnabled();
       setServerStorageEnabled(enabled);
       if (enabled) {
-        await pullServerSnapshot();
+        const result = await bootstrapServerStorage();
+        if (result?.ok && result.stats) {
+          this.showSystemToast(`Server storage enabled (${result.stats.keptLocal} local, ${result.stats.pulledServer} server).`);
+          return;
+        }
+        this.showSystemToast(`Server storage enabled. Sync warning: ${String(result?.reason || 'unknown').slice(0, 64)}`);
+        return;
       }
-      this.showSystemToast(`Server storage ${enabled ? 'enabled' : 'disabled'}.`);
+      this.showSystemToast('Server storage disabled.');
       return;
     }
     if (action === 'sync-github') {
