@@ -4,7 +4,7 @@ export const OBSTACLES = {
     label: 'Wood Barricade',
     material: 'wood',
     interactions: {
-      chainsaw: { hits: 2, noise: 0.15, verb: 'cut' },
+      chainsaw: { hits: 1, noise: 0.15, verb: 'cut' },
       flame: { hits: 1, noise: 0.5, verb: 'burn' }
     }
   },
