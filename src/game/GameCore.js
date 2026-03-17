@@ -6654,6 +6654,10 @@ export default class Game {
         return;
       }
     }
+    if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(payload.x, payload.y)) {
+      this.returnToEditorFromPlaytest();
+      return;
+    }
     if (
       (this.state === 'playing' || this.state === 'pause')
       && this.minimapBounds
@@ -6668,10 +6672,6 @@ export default class Game {
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
-      return;
-    }
-    if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(payload.x, payload.y)) {
-      this.returnToEditorFromPlaytest();
       return;
     }
     if (this.state === 'title' && !this.testDashboard.visible) {
