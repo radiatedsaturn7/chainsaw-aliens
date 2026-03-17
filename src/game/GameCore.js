@@ -6644,6 +6644,10 @@ export default class Game {
       this.recordFeedback('menu navigate', 'visual');
       return;
     }
+    if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(payload.x, payload.y)) {
+      this.returnToEditorFromPlaytest();
+      return;
+    }
     if (this.state === 'playing') {
       const weaponIndex = this.hud.getWeaponButtonAt(payload.x, payload.y);
       if (weaponIndex !== null && weaponIndex !== undefined) {
@@ -6653,10 +6657,6 @@ export default class Game {
         this.recordFeedback('weapon select', 'visual');
         return;
       }
-    }
-    if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(payload.x, payload.y)) {
-      this.returnToEditorFromPlaytest();
-      return;
     }
     if (
       (this.state === 'playing' || this.state === 'pause')
