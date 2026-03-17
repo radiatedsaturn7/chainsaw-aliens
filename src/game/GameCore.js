@@ -832,6 +832,7 @@ export default class Game {
       return;
     }
     this.playtestActive = false;
+    this.storyData = this.buildWorldData();
     if (toTitle) {
       this.transitionTo('title', { forceCleanup: true });
     } else if (this.editorReturnState === 'playing' || this.editorReturnState === 'pause') {
@@ -1002,6 +1003,16 @@ export default class Game {
 
 
   playMostRecentLevel() {
+    if (this.editor?.loadAutosave?.()) {
+      this.gameMode = 'story';
+      this.storyData = this.buildWorldData();
+      this.playtestActive = false;
+      this.simulationActive = false;
+      this.resetRun({ playtest: false, startWithEverything: false });
+      this.transitionTo('playing');
+      this.showSystemToast('Playing latest edited level from autosave.');
+      return;
+    }
     const levels = vfsList('levels');
     const latest = levels[0];
     if (latest) {
@@ -1009,6 +1020,7 @@ export default class Game {
       if (payload?.data) {
         this.applyWorldData(payload.data);
         this.gameMode = 'story';
+        this.storyData = this.buildWorldData();
         this.playtestActive = false;
         this.simulationActive = false;
         this.resetRun({ playtest: false, startWithEverything: false });
@@ -5231,7 +5243,6 @@ export default class Game {
     if (this.sawAnchor.active) return false;
     if (this.obstacleCooldown > 0) return false;
     const tileSize = this.world.tileSize;
-    const checkX = this.player.x + this.player.facing * tileSize * 0.55;
     let tool = null;
     if (mode === 'attack') {
       tool = 'chainsaw';
@@ -5247,13 +5258,19 @@ export default class Game {
     const yOffsets = mode === 'attack'
       ? [-this.player.height * 0.35, -6, this.player.height * 0.2]
       : [-6];
+    const xOffsets = mode === 'attack'
+      ? [tileSize * 0.55, tileSize * 0.85, tileSize * 1.1]
+      : [tileSize * 0.55];
 
-    for (const offset of yOffsets) {
-      const checkY = this.player.y + offset;
-      const tileX = Math.floor(checkX / tileSize);
-      const tileY = Math.floor(checkY / tileSize);
-      if (this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 })) {
-        return true;
+    for (const xOffset of xOffsets) {
+      const probeX = this.player.x + this.player.facing * xOffset;
+      const tileX = Math.floor(probeX / tileSize);
+      for (const offset of yOffsets) {
+        const checkY = this.player.y + offset;
+        const tileY = Math.floor(checkY / tileSize);
+        if (this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 })) {
+          return true;
+        }
       }
     }
     return false;
