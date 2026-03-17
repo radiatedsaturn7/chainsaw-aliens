@@ -5949,7 +5949,22 @@ export default class Game {
           ctx.lineTo(x * tileSize + tileSize / 2, y * tileSize + tileSize - 6);
           ctx.stroke();
         }
-        if (OBSTACLES[tile] && !['N', 'P'].includes(tile)) {
+        if (tile === 'W') {
+          const baseX = x * tileSize;
+          const baseY = y * tileSize;
+          ctx.fillStyle = '#6f4321';
+          ctx.fillRect(baseX + 2, baseY + 2, tileSize - 4, tileSize - 4);
+          ctx.fillStyle = '#c78b4f';
+          ctx.fillRect(baseX + 6, baseY + 6, tileSize - 12, tileSize - 12);
+          ctx.strokeStyle = '#5a361a';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(baseX + 2, baseY + 2, tileSize - 4, tileSize - 4);
+          ctx.beginPath();
+          ctx.moveTo(baseX + 6, baseY + tileSize - 6);
+          ctx.lineTo(baseX + tileSize - 6, baseY + 6);
+          ctx.stroke();
+          ctx.lineWidth = 1;
+        } else if (OBSTACLES[tile] && !['N', 'P'].includes(tile)) {
           ctx.strokeStyle = '#fff';
           ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
           ctx.beginPath();
