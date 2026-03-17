@@ -5259,22 +5259,40 @@ export default class Game {
     }
     if (!tools.length) return false;
 
-    const aimY = this.player.aimY ?? 0;
-    const yOffsets = mode === 'attack'
-      ? [
-          -this.player.height * 0.45,
-          -this.player.height * 0.2,
-          -6,
-          this.player.height * 0.2,
-          this.player.height * 0.45,
-          aimY < -0.35 ? -tileSize * 0.75 : null,
-          aimY > 0.35 ? tileSize * 0.75 : null
-        ].filter((value) => value !== null)
-      : [-6];
-    const xOffsets = mode === 'attack'
-      ? [tileSize * 0.45, tileSize * 0.75, tileSize * 1.05, tileSize * 1.35, tileSize * 1.65]
-      : [tileSize * 0.55];
+    if (mode === 'attack') {
+      let aimX = this.player.aimX ?? (this.player.facing || 1);
+      let aimY = this.player.aimY ?? 0;
+      if (Math.abs(aimX) < 0.01 && Math.abs(aimY) < 0.01) {
+        aimX = this.player.facing || 1;
+      }
+      const aimLength = Math.hypot(aimX, aimY) || 1;
+      const dirX = aimX / aimLength;
+      const dirY = aimY / aimLength;
+      const perpX = -dirY;
+      const perpY = dirX;
+      const originX = this.player.x + this.player.facing * tileSize * 0.1;
+      const originY = this.player.y - 6;
+      const distances = [tileSize * 0.35, tileSize * 0.65, tileSize * 0.95, tileSize * 1.25, tileSize * 1.5];
+      const lateralOffsets = [0, -tileSize * 0.35, tileSize * 0.35];
 
+      for (const distance of distances) {
+        for (const lateral of lateralOffsets) {
+          const probeX = originX + dirX * distance + perpX * lateral;
+          const probeY = originY + dirY * distance + perpY * lateral;
+          const tileX = Math.floor(probeX / tileSize);
+          const tileY = Math.floor(probeY / tileSize);
+          for (const tool of tools) {
+            if (this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 })) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    const yOffsets = [-6];
+    const xOffsets = [tileSize * 0.55];
     for (const xOffset of xOffsets) {
       const probeX = this.player.x + this.player.facing * xOffset;
       const tileX = Math.floor(probeX / tileSize);
