@@ -5243,17 +5243,21 @@ export default class Game {
     if (this.sawAnchor.active) return false;
     if (this.obstacleCooldown > 0) return false;
     const tileSize = this.world.tileSize;
-    let tool = null;
+    let tools = [];
     if (mode === 'attack') {
-      tool = 'chainsaw';
+      tools = ['chainsaw'];
     } else if (mode === 'rev') {
       if (this.player.flameMode && this.abilities.flame) {
-        tool = 'flame';
+        tools = ['flame'];
       } else if (this.abilities.resonance) {
-        tool = 'resonance';
+        // Keep core chainsaw behavior active even after upgrades.
+        // This allows hold/rev to still cut wood while also shattering brittle tiles.
+        tools = ['chainsaw', 'resonance'];
+      } else {
+        tools = ['chainsaw'];
       }
     }
-    if (!tool) return false;
+    if (!tools.length) return false;
 
     const yOffsets = mode === 'attack'
       ? [-this.player.height * 0.35, -6, this.player.height * 0.2]
@@ -5268,8 +5272,10 @@ export default class Game {
       for (const offset of yOffsets) {
         const checkY = this.player.y + offset;
         const tileY = Math.floor(checkY / tileSize);
-        if (this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 })) {
-          return true;
+        for (const tool of tools) {
+          if (this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 })) {
+            return true;
+          }
         }
       }
     }
