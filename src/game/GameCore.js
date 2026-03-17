@@ -3425,6 +3425,7 @@ export default class Game {
 
   handleAttack() {
     if (this.sawAnchor.active) return;
+    if (this.tryObstacleInteraction('attack')) return;
     const attackRange = this.world.tileSize * 2.5;
     if (!this.player.onGround && this.player.aimingDown) {
       this.player.attackTimer = Math.max(this.player.attackTimer, 0.3);
