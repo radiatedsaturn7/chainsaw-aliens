@@ -5270,10 +5270,19 @@ export default class Game {
       const dirY = aimY / aimLength;
       const perpX = -dirY;
       const perpY = dirX;
-      const originX = this.player.x + this.player.facing * tileSize * 0.1;
-      const originY = this.player.y - 6;
-      const distances = [tileSize * 0.35, tileSize * 0.65, tileSize * 0.95, tileSize * 1.25, tileSize * 1.6, tileSize * 2.0];
-      const lateralOffsets = [0, -tileSize * 0.45, tileSize * 0.45];
+      const originX = this.player.x;
+      const originY = this.player.y;
+      const distances = [
+        tileSize * 0.25,
+        tileSize * 0.5,
+        tileSize * 0.75,
+        tileSize * 1.0,
+        tileSize * 1.25,
+        tileSize * 1.5,
+        tileSize * 1.75,
+        tileSize * 2.0
+      ];
+      const lateralOffsets = [0, -tileSize * 0.5, tileSize * 0.5];
 
       for (const distance of distances) {
         for (const lateral of lateralOffsets) {
