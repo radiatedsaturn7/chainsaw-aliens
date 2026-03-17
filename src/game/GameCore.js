@@ -5081,7 +5081,7 @@ export default class Game {
     for (let y = originY - 4; y <= originY + 4; y += 1) {
       for (let x = originX - 6; x <= originX + 6; x += 1) {
         if (this.world.getTile(x, y) === 'U') {
-          this.world.setTile(x, y, '.');
+          this.world.setTile(x, y, '.', { persist: !this.playtestActive });
           cleared = true;
         }
       }
@@ -5115,7 +5115,7 @@ export default class Game {
       this.obstacleCooldown = options.cooldown;
     }
     if (next >= (interaction.hits || 1)) {
-      this.world.setTile(tileX, tileY, '.');
+      this.world.setTile(tileX, tileY, '.', { persist: !this.playtestActive });
       if (tile === 'B') {
         this.world.bossGate = null;
       }

@@ -316,12 +316,12 @@ export default class World {
     return ONE_WAY_TILES.has(this.getTile(x, y));
   }
 
-  setTile(x, y, char) {
+  setTile(x, y, char, { persist = true } = {}) {
     if (x < 0 || y < 0 || x >= this.width || y >= this.height) return false;
     const row = this.tiles[y];
     const next = `${row.substring(0, x)}${char}${row.substring(x + 1)}`;
     this.tiles[y] = next;
-    if (this.data?.tiles) {
+    if (persist && this.data?.tiles) {
       this.data.tiles[y] = next;
     }
     return true;
