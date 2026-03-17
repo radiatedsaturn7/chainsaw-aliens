@@ -714,6 +714,10 @@ export default class Game {
 
   enterEditor({ tab = null } = {}) {
     this.editorReturnState = this.state;
+    if (this.playtestActive) {
+      this.world.reset();
+      this.initializeElevators();
+    }
     this.transitionTo('editor');
     this.setRevAudio(false);
     this.editor.activate();
@@ -1380,6 +1384,8 @@ export default class Game {
         this.exitPixelStudio();
       } else if (this.state === 'midi-editor') {
         this.exitMidiComposer();
+      } else if (this.playtestActive && this.state === 'playing') {
+        this.returnToEditorFromPlaytest();
       } else {
         this.enterEditor();
       }
