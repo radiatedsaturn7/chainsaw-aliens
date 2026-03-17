@@ -3,7 +3,7 @@ export default class Title {
     this.timer = 0;
     this.screen = 'intro';
     this.transition = null;
-    this.menuOrder = ['campaign', 'robtersession', 'tools', 'options'];
+    this.menuOrder = ['recent-level', 'robtersession', 'storage', 'tools', 'options'];
     this.toolsOrder = [
       'project-browser',
       'level-editor',
@@ -13,12 +13,14 @@ export default class Title {
       'back'
     ];
     this.controlsOrder = ['mobile', 'gamepad', 'keyboard', 'back'];
+    this.storageOrder = ['toggle-server-storage', 'sync-github', 'back'];
     this.menuSelection = 0;
     this.toolsSelection = 0;
     this.controlsSelection = 0;
     this.menuBounds = new Map();
     this.toolsBounds = new Map();
     this.controlsBounds = new Map();
+    this.storageBounds = new Map();
     this.debugRestartBounds = null;
     this.explosions = [];
     this.nextExplosion = 1.4;
@@ -167,6 +169,8 @@ export default class Title {
       this.drawTools(ctx, width, height);
     } else if (screen === 'controls') {
       this.drawControls(ctx, width, height, inputMode);
+    } else if (screen === 'storage') {
+      this.drawStorage(ctx, width, height, inputHints);
     } else {
       this.drawMainMenu(ctx, width, height, { showDebugRestart: Boolean(inputHints?.debugRestartEnabled) });
     }
@@ -208,13 +212,15 @@ export default class Title {
       ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
       ctx.fillStyle = '#fff';
       ctx.font = '18px Courier New';
-      const label = action === 'campaign'
-        ? 'Campaign'
+      const label = action === 'recent-level'
+        ? 'Recent Level'
         : action === 'robtersession'
           ? 'Songs'
-        : action === 'tools'
-            ? 'Tools'
-            : 'Options';
+          : action === 'storage'
+            ? 'Server Storage'
+            : action === 'tools'
+              ? 'Tools'
+              : 'Options';
       ctx.fillText(label, width / 2, y + 22);
       if (selected) {
         ctx.fillStyle = '#fff';
@@ -241,6 +247,52 @@ export default class Title {
       ctx.fillText('Restart/Pull', restartBounds.x + restartBounds.w / 2, restartBounds.y + 17);
     }
 
+  }
+
+
+  drawStorage(ctx, width, height, inputHints = {}) {
+    ctx.fillStyle = '#fff';
+    ctx.font = '22px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('Server Storage', width / 2, 180);
+    ctx.font = '14px Courier New';
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.fillText('Persist projects on server + GitHub sync', width / 2, 206);
+
+    const buttonWidth = 420;
+    const buttonHeight = 34;
+    const buttonX = width / 2 - buttonWidth / 2;
+    const startY = 245;
+    const gap = 42;
+
+    this.storageBounds.clear();
+    this.storageOrder.forEach((action, index) => {
+      const y = startY + index * gap;
+      const selected = this.storageOrder[this.controlsSelection] === action;
+      ctx.fillStyle = selected ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)';
+      ctx.fillRect(buttonX, y, buttonWidth, buttonHeight);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
+      ctx.fillStyle = '#fff';
+      ctx.font = '18px Courier New';
+      const enabled = Boolean(inputHints?.serverStorageEnabled);
+      const label = action === 'toggle-server-storage'
+        ? `Server Storage: ${enabled ? 'ON' : 'OFF'}`
+        : action === 'sync-github'
+          ? 'Sync Snapshot to GitHub'
+          : 'Back';
+      ctx.fillText(label, width / 2, y + 22);
+      if (selected) {
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.moveTo(buttonX - 14, y + buttonHeight / 2);
+        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 - 6);
+        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 + 6);
+        ctx.closePath();
+        ctx.fill();
+      }
+      this.storageBounds.set(action, { x: buttonX, y, w: buttonWidth, h: buttonHeight });
+    });
   }
 
   drawTools(ctx, width, height) {
@@ -391,8 +443,8 @@ export default class Title {
       this.toolsSelection = (this.toolsSelection + direction + count) % count;
       return;
     }
-    if (this.screen === 'controls') {
-      const count = this.controlsOrder.length;
+    if (this.screen === 'controls' || this.screen === 'storage') {
+      const count = this.screen === 'controls' ? this.controlsOrder.length : this.storageOrder.length;
       if (!count) return;
       this.controlsSelection = (this.controlsSelection + direction + count) % count;
       return;
@@ -409,7 +461,10 @@ export default class Title {
     if (this.screen === 'controls') {
       return this.controlsOrder[this.controlsSelection] || 'back';
     }
-    return this.menuOrder[this.menuSelection] || 'campaign';
+    if (this.screen === 'storage') {
+      return this.storageOrder[this.controlsSelection] || 'back';
+    }
+    return this.menuOrder[this.menuSelection] || 'recent-level';
   }
 
   getActionAt(x, y) {
@@ -426,6 +481,14 @@ export default class Title {
     }
     if (this.screen === 'controls') {
       for (const [action, bounds] of this.controlsBounds.entries()) {
+        if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
+          return action;
+        }
+      }
+      return null;
+    }
+    if (this.screen === 'storage') {
+      for (const [action, bounds] of this.storageBounds.entries()) {
         if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
           return action;
         }
@@ -456,6 +519,9 @@ export default class Title {
       duration: 0.35
     };
     this.screen = target;
+    if (target === 'controls') this.setControlsSelectionByMode();
+    if (target === 'tools') this.toolsSelection = 0;
+    if (target === 'storage') this.controlsSelection = 0;
   }
 
   setControlsSelectionByMode(mode) {

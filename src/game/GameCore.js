@@ -69,6 +69,7 @@ import { OBSTACLES } from '../world/Obstacles.js';
 import { MOVEMENT_MODEL } from './MovementModel.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsList, vfsLoad } from '../ui/vfs.js';
+import { isServerStorageEnabled, pullServerSnapshot, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
 import { drawSharedPlayStopButton } from '../ui/uiSuite.js';
 
 const BOSS_TYPES = new Set([
@@ -397,6 +398,9 @@ export default class Game {
 
   async init() {
     try {
+      if (isServerStorageEnabled()) {
+        await pullServerSnapshot();
+      }
       await this.world.load();
       await this.autoRepair.load();
       this.autoRepair.applyPersistentPatches();
@@ -996,6 +1000,46 @@ export default class Game {
   }
 
 
+
+  openMostRecentLevelInEditor() {
+    const levels = vfsList('levels');
+    const latest = levels[0];
+    if (latest) {
+      const payload = vfsLoad('levels', latest.name);
+      if (payload?.data) {
+        this.applyWorldData(payload.data);
+        this.enterEditor({ tab: 'tiles' });
+        this.editor.currentDocumentRef = { folder: 'levels', name: latest.name };
+        this.showSystemToast(`Loaded latest level: ${latest.name}`);
+        return;
+      }
+    }
+    this.enterEditor({ tab: 'tiles' });
+    this.showSystemToast('No saved levels yet. Opened Level Editor.');
+  }
+
+  async handleServerStorageAction(action) {
+    if (action === 'toggle-server-storage') {
+      const enabled = !isServerStorageEnabled();
+      setServerStorageEnabled(enabled);
+      if (enabled) {
+        await pullServerSnapshot();
+      }
+      this.showSystemToast(`Server storage ${enabled ? 'enabled' : 'disabled'}.`);
+      return;
+    }
+    if (action === 'sync-github') {
+      this.showSystemToast('Syncing server snapshot to GitHub...');
+      const result = await syncServerSnapshotToGitHub();
+      if (!result.ok) {
+        this.showSystemToast(`GitHub sync failed: ${String(result.reason || 'unknown').slice(0, 80)}`);
+        return;
+      }
+      this.showSystemToast('GitHub sync complete.');
+      return;
+    }
+  }
+
   openProjectBrowserFromTitle() {
     openProjectBrowser({
       mode: 'open',
@@ -1578,8 +1622,8 @@ export default class Game {
             this.title.setScreen('main');
           } else {
             this.setInputMode(action);
+            this.title.setControlsSelectionByMode(this.inputMode);
           }
-          this.title.setControlsSelectionByMode(this.inputMode);
         } else if (this.title.screen === 'tools') {
           if (action === 'back') {
             this.title.setScreen('main');
@@ -1594,23 +1638,24 @@ export default class Game {
           } else if (action === 'reset-all') {
             this.resetAllContent();
           }
+        } else if (this.title.screen === 'storage') {
+          if (action === 'back') {
+            this.title.setScreen('main');
+          } else {
+            this.handleServerStorageAction(action);
+          }
         } else if (action === 'options') {
           this.title.setControlsSelectionByMode(this.inputMode);
           this.title.setScreen('controls');
         } else if (action === 'tools') {
           this.title.setScreen('tools');
+        } else if (action === 'storage') {
+          this.title.setScreen('storage');
         } else if (action === 'robtersession') {
           this.robterSession.enter();
           this.transitionTo('robtersession');
-        } else {
-          if (this.gameMode !== 'story' && this.storyData) {
-            this.gameMode = 'story';
-            this.applyWorldData(this.storyData);
-            this.resetRun();
-          } else {
-            this.gameMode = 'story';
-          }
-          this.transitionTo('dialog');
+        } else if (action === 'recent-level') {
+          this.openMostRecentLevelInEditor();
         }
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
@@ -5180,7 +5225,8 @@ export default class Game {
       this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode, {
         isMobile: this.deviceIsMobile,
         gamepadConnected: this.gamepadConnected,
-        debugRestartEnabled: false
+        debugRestartEnabled: false,
+        serverStorageEnabled: isServerStorageEnabled()
       });
       ctx.save();
       ctx.fillStyle = '#fff';
@@ -5195,7 +5241,8 @@ export default class Game {
       this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode, {
         isMobile: this.deviceIsMobile,
         gamepadConnected: this.gamepadConnected,
-        debugRestartEnabled: this.debugMode
+        debugRestartEnabled: this.debugMode,
+        serverStorageEnabled: isServerStorageEnabled()
       });
       this.mobileControls.draw(ctx, this.state);
       return;
@@ -6537,6 +6584,15 @@ export default class Game {
         this.audio.ui();
         return;
       }
+      if (this.title.screen === 'storage') {
+        if (action === 'back') {
+          this.title.setScreen('main');
+        } else {
+          this.handleServerStorageAction(action);
+        }
+        this.audio.ui();
+        return;
+      }
       if (action === 'debug-restart' && this.title.screen === 'main') {
         this.requestDebugRestartPull();
         this.audio.ui();
@@ -6553,21 +6609,19 @@ export default class Game {
         this.audio.ui();
         return;
       }
+      if (action === 'storage') {
+        this.title.setScreen('storage');
+        this.audio.ui();
+        return;
+      }
       if (action === 'robtersession') {
         this.robterSession.enter();
         this.transitionTo('robtersession');
         this.audio.ui();
         return;
       }
-      if (action === 'campaign') {
-        if (this.gameMode !== 'story' && this.storyData) {
-          this.gameMode = 'story';
-          this.applyWorldData(this.storyData);
-          this.resetRun();
-        } else {
-          this.gameMode = 'story';
-        }
-        this.transitionTo('dialog');
+      if (action === 'recent-level') {
+        this.openMostRecentLevelInEditor();
         this.audio.ui();
       }
     }
@@ -6718,6 +6772,17 @@ export default class Game {
         this.recordFeedback('menu navigate', 'visual');
         return;
       }
+      if (this.title.screen === 'storage') {
+        if (action === 'back') {
+          this.title.setScreen('main');
+        } else {
+          this.handleServerStorageAction(action);
+        }
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
       if (action === 'debug-restart' && this.title.screen === 'main') {
         this.requestDebugRestartPull();
         this.audio.ui();
@@ -6740,6 +6805,13 @@ export default class Game {
         this.recordFeedback('menu navigate', 'visual');
         return;
       }
+      if (action === 'storage') {
+        this.title.setScreen('storage');
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
       if (action === 'robtersession') {
         this.robterSession.enter();
         this.transitionTo('robtersession');
@@ -6748,15 +6820,8 @@ export default class Game {
         this.recordFeedback('menu navigate', 'visual');
         return;
       }
-      if (action === 'campaign') {
-        if (this.gameMode !== 'story' && this.storyData) {
-          this.gameMode = 'story';
-          this.applyWorldData(this.storyData);
-          this.resetRun();
-        } else {
-          this.gameMode = 'story';
-        }
-        this.transitionTo('dialog');
+      if (action === 'recent-level') {
+        this.openMostRecentLevelInEditor();
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
