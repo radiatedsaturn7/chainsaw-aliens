@@ -617,7 +617,7 @@ export default class Game {
         prevTile: null,
         nextTile: null,
         dir: { dx: 0, dy: 0 },
-        speed: tileSize * 0.9,
+        speed: tileSize * 1.35,
         tiles
       };
       const neighbors = this.getElevatorGroupNeighbors(platform);
@@ -848,6 +848,8 @@ export default class Game {
     } else {
       this.editor.setFocusOverride({ x: this.player.x, y: this.player.y });
     }
+    this.world.reset();
+    this.initializeElevators();
     this.transitionTo('editor', { forceCleanup: true });
     this.editor.activate();
     this.playtestActive = false;
