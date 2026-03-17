@@ -5232,9 +5232,6 @@ export default class Game {
     if (this.obstacleCooldown > 0) return false;
     const tileSize = this.world.tileSize;
     const checkX = this.player.x + this.player.facing * tileSize * 0.55;
-    const checkY = this.player.y - 6;
-    const tileX = Math.floor(checkX / tileSize);
-    const tileY = Math.floor(checkY / tileSize);
     let tool = null;
     if (mode === 'attack') {
       tool = 'chainsaw';
@@ -5246,7 +5243,20 @@ export default class Game {
       }
     }
     if (!tool) return false;
-    return this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 });
+
+    const yOffsets = mode === 'attack'
+      ? [-this.player.height * 0.35, -6, this.player.height * 0.2]
+      : [-6];
+
+    for (const offset of yOffsets) {
+      const checkY = this.player.y + offset;
+      const tileX = Math.floor(checkX / tileSize);
+      const tileY = Math.floor(checkY / tileSize);
+      if (this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 })) {
+        return true;
+      }
+    }
+    return false;
   }
 
   _drawByState(delegate = null) {
