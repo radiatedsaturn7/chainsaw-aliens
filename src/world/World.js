@@ -115,7 +115,7 @@ export default class World {
     this.width = data.width;
     this.height = data.height;
     const normalizedTiles = (data.tiles || []).map((row) => row.replace(/Y/g, 'K'));
-    this.tiles = normalizedTiles;
+    this.tiles = [...normalizedTiles];
     this.regions = data.regions || [];
     const spawn = data.spawn || DEFAULT_SPAWN;
     this.spawn = { x: spawn.x ?? DEFAULT_SPAWN.x, y: spawn.y ?? DEFAULT_SPAWN.y };
@@ -147,7 +147,7 @@ export default class World {
       })) : []
     }));
     this.decals = (data.decals || []).map((decal) => ({ ...decal }));
-    this.data = { ...data, tiles: normalizedTiles };
+    this.data = { ...data, tiles: [...normalizedTiles] };
     if (this.data) {
       this.data.elevatorPaths = this.elevatorPaths;
       this.data.elevators = this.elevators;
@@ -316,12 +316,12 @@ export default class World {
     return ONE_WAY_TILES.has(this.getTile(x, y));
   }
 
-  setTile(x, y, char) {
+  setTile(x, y, char, { persist = true } = {}) {
     if (x < 0 || y < 0 || x >= this.width || y >= this.height) return false;
     const row = this.tiles[y];
     const next = `${row.substring(0, x)}${char}${row.substring(x + 1)}`;
     this.tiles[y] = next;
-    if (this.data?.tiles) {
+    if (persist && this.data?.tiles) {
       this.data.tiles[y] = next;
     }
     return true;

@@ -617,7 +617,7 @@ export default class Game {
         prevTile: null,
         nextTile: null,
         dir: { dx: 0, dy: 0 },
-        speed: tileSize * 0.9,
+        speed: tileSize * 1.35,
         tiles
       };
       const neighbors = this.getElevatorGroupNeighbors(platform);
@@ -714,6 +714,10 @@ export default class Game {
 
   enterEditor({ tab = null } = {}) {
     this.editorReturnState = this.state;
+    if (this.playtestActive) {
+      this.world.reset();
+      this.initElevators();
+    }
     this.transitionTo('editor');
     this.setRevAudio(false);
     this.editor.activate();
@@ -848,6 +852,8 @@ export default class Game {
     } else {
       this.editor.setFocusOverride({ x: this.player.x, y: this.player.y });
     }
+    this.world.reset();
+    this.initElevators();
     this.transitionTo('editor', { forceCleanup: true });
     this.editor.activate();
     this.playtestActive = false;
@@ -1378,6 +1384,8 @@ export default class Game {
         this.exitPixelStudio();
       } else if (this.state === 'midi-editor') {
         this.exitMidiComposer();
+      } else if (this.playtestActive && this.state === 'playing') {
+        this.returnToEditorFromPlaytest();
       } else {
         this.enterEditor();
       }
@@ -5081,7 +5089,7 @@ export default class Game {
     for (let y = originY - 4; y <= originY + 4; y += 1) {
       for (let x = originX - 6; x <= originX + 6; x += 1) {
         if (this.world.getTile(x, y) === 'U') {
-          this.world.setTile(x, y, '.');
+          this.world.setTile(x, y, '.', { persist: !this.playtestActive });
           cleared = true;
         }
       }
@@ -5115,7 +5123,7 @@ export default class Game {
       this.obstacleCooldown = options.cooldown;
     }
     if (next >= (interaction.hits || 1)) {
-      this.world.setTile(tileX, tileY, '.');
+      this.world.setTile(tileX, tileY, '.', { persist: !this.playtestActive });
       if (tile === 'B') {
         this.world.bossGate = null;
       }
@@ -6636,6 +6644,10 @@ export default class Game {
       this.recordFeedback('menu navigate', 'visual');
       return;
     }
+    if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(payload.x, payload.y)) {
+      this.returnToEditorFromPlaytest();
+      return;
+    }
     if (this.state === 'playing') {
       const weaponIndex = this.hud.getWeaponButtonAt(payload.x, payload.y);
       if (weaponIndex !== null && weaponIndex !== undefined) {
@@ -6660,10 +6672,6 @@ export default class Game {
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
-      return;
-    }
-    if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(payload.x, payload.y)) {
-      this.returnToEditorFromPlaytest();
       return;
     }
     if (this.state === 'title' && !this.testDashboard.visible) {
