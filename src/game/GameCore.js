@@ -1001,21 +1001,23 @@ export default class Game {
 
 
 
-  openMostRecentLevelInEditor() {
+  playMostRecentLevel() {
     const levels = vfsList('levels');
     const latest = levels[0];
     if (latest) {
       const payload = vfsLoad('levels', latest.name);
       if (payload?.data) {
         this.applyWorldData(payload.data);
-        this.enterEditor({ tab: 'tiles' });
-        this.editor.currentDocumentRef = { folder: 'levels', name: latest.name };
-        this.showSystemToast(`Loaded latest level: ${latest.name}`);
+        this.gameMode = 'story';
+        this.playtestActive = false;
+        this.simulationActive = false;
+        this.resetRun({ playtest: false, startWithEverything: false });
+        this.transitionTo('playing');
+        this.showSystemToast(`Playing latest level: ${latest.name}`);
         return;
       }
     }
-    this.enterEditor({ tab: 'tiles' });
-    this.showSystemToast('No saved levels yet. Opened Level Editor.');
+    this.showSystemToast('No saved levels found. Open Level Editor from Tools first.');
   }
 
 
@@ -1682,7 +1684,7 @@ export default class Game {
           this.robterSession.enter();
           this.transitionTo('robtersession');
         } else if (action === 'recent-level') {
-          this.openMostRecentLevelInEditor();
+          this.playMostRecentLevel();
         }
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
@@ -6648,7 +6650,7 @@ export default class Game {
         return;
       }
       if (action === 'recent-level') {
-        this.openMostRecentLevelInEditor();
+        this.playMostRecentLevel();
         this.audio.ui();
       }
     }
@@ -6848,7 +6850,7 @@ export default class Game {
         return;
       }
       if (action === 'recent-level') {
-        this.openMostRecentLevelInEditor();
+        this.playMostRecentLevel();
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
