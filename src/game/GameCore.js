@@ -253,6 +253,7 @@ export default class Game {
     this.activeRoomAmbient = [];
     this.activeRoomWeather = null;
     this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
+    this.weatherWind = { value: 0, target: 0, timer: 0 };
     this.slowTimer = 0;
     this.doorTransition = null;
     this.doorCooldown = 0;
@@ -504,6 +505,7 @@ export default class Game {
     this.activeRoomAmbient = [];
     this.activeRoomWeather = null;
     this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
+    this.weatherWind = { value: 0, target: 0, timer: 0 };
   }
 
   rebuildRoomEnemySpawns() {
@@ -542,6 +544,9 @@ export default class Game {
     if (!this.weatherLightning) {
       this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
     }
+    if (!this.weatherWind) {
+      this.weatherWind = { value: 0, target: 0, timer: 0 };
+    }
     this.activeRoomAmbient = roomIndex === null || roomIndex === undefined
       ? []
       : (this.roomAmbientSpawns.get(roomIndex) || []).map((spawn) => ({ ...spawn }));
@@ -551,6 +556,8 @@ export default class Game {
       this.weatherLightning.roomIndex = roomIndex ?? null;
       this.weatherLightning.timer = 0;
       this.weatherLightning.flash = 0;
+      this.weatherWind.target = 0;
+      this.weatherWind.timer = 0;
     }
   }
 
@@ -587,10 +594,31 @@ export default class Game {
 
   updateAmbientSystems(dt) {
     this.weatherLightning.flash = Math.max(0, this.weatherLightning.flash - dt * 2.6);
+    const windyWeather = new Set(['weather-storm', 'weather-hurricane', 'weather-blizzard']);
+    if (!this.weatherWind) {
+      this.weatherWind = { value: 0, target: 0, timer: 0 };
+    }
+    if (windyWeather.has(this.activeRoomWeather)) {
+      this.weatherWind.timer -= dt;
+      if (this.weatherWind.timer <= 0) {
+        const gustSpread = this.activeRoomWeather === 'weather-hurricane' ? 180 : this.activeRoomWeather === 'weather-blizzard' ? 140 : 110;
+        this.weatherWind.target = (Math.random() * 2 - 1) * gustSpread;
+        this.weatherWind.timer = 0.28 + Math.random() * 0.5;
+      }
+      this.weatherWind.value += (this.weatherWind.target - this.weatherWind.value) * Math.min(1, dt * 2.4);
+    } else {
+      this.weatherWind.target = 0;
+      this.weatherWind.value += (0 - this.weatherWind.value) * Math.min(1, dt * 2.8);
+      this.weatherWind.timer = 0;
+    }
+
     this.ambientParticles.forEach((particle) => {
       particle.life -= dt;
       particle.x += particle.vx * dt;
       particle.y += particle.vy * dt;
+      if (particle.style.kind === 'weather') {
+        particle.x += this.weatherWind.value * dt;
+      }
       if (particle.style.swayAmplitude) {
         particle.sway += dt * (particle.style.swaySpeed || 3);
         particle.x += Math.sin(particle.sway) * particle.style.swayAmplitude * dt;
@@ -649,8 +677,10 @@ export default class Game {
     const top = room.minY * tileSize;
     const bottom = (room.maxY + 1) * tileSize;
     const weatherProfile = {
-      'weather-rain': { rate: 24, vy: 320, vx: -20, color: 'rgba(120,180,255,0.45)', size: 8 },
+      'weather-rain': { kind: 'weather', rate: 24, vy: 320, vx: -20, color: 'rgba(120,180,255,0.45)', size: 8 },
       'weather-storm': {
+        kind: 'weather',
+        screenFill: true,
         rate: 72,
         vy: 450,
         vx: -48,
@@ -665,6 +695,8 @@ export default class Game {
         fogAlpha: 0.18
       },
       'weather-hurricane': {
+        kind: 'weather',
+        screenFill: true,
         rate: 96,
         vy: 540,
         vx: -86,
@@ -678,8 +710,10 @@ export default class Game {
         fogColor: 'rgba(102,112,125,0.24)',
         fogAlpha: 0.24
       },
-      'weather-snow': { rate: 16, vy: 48, vx: -8, color: 'rgba(255,255,255,0.75)', size: 4, swayAmplitude: 16, swaySpeed: 2 },
+      'weather-snow': { kind: 'weather', rate: 16, vy: 48, vx: -8, color: 'rgba(255,255,255,0.75)', size: 4, swayAmplitude: 16, swaySpeed: 2 },
       'weather-blizzard': {
+        kind: 'weather',
+        screenFill: true,
         rate: 92,
         vy: 128,
         vx: -72,
@@ -697,13 +731,21 @@ export default class Game {
       }
     }[this.activeRoomWeather];
     const count = Math.max(1, Math.ceil(dt * weatherProfile.rate));
+    const precipitationWind = weatherProfile.vx + this.weatherWind.value;
+    const precipitationOverscan = weatherProfile.screenFill ? Math.max(64, Math.abs(precipitationWind) * 0.45) : 0;
     for (let i = 0; i < count; i += 1) {
+      const spawnX = weatherProfile.screenFill
+        ? left - precipitationOverscan + Math.random() * ((right - left) + precipitationOverscan * 2)
+        : left + Math.random() * (right - left);
+      const spawnY = weatherProfile.screenFill
+        ? top - 16 + Math.random() * ((bottom - top) + 32)
+        : top - 8;
       this.emitAmbientParticle(
-        left + Math.random() * (right - left),
-        top - 8,
-        weatherProfile.vx + (Math.random() - 0.5) * 16,
+        spawnX,
+        spawnY,
+        precipitationWind + (Math.random() - 0.5) * 22,
         weatherProfile.vy * (0.8 + Math.random() * 0.4),
-        Math.max(0.5, (bottom - top) / weatherProfile.vy),
+        Math.max(0.5, (bottom - top + precipitationOverscan) / weatherProfile.vy),
         weatherProfile
       );
     }
@@ -1156,6 +1198,7 @@ export default class Game {
     this.activeRoomAmbient = [];
     this.activeRoomWeather = null;
     this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
+    this.weatherWind = { value: 0, target: 0, timer: 0 };
     this.spawnEnemies({ allowStoryFallback: !playtest });
     this.bossInteractions = {
       anchor: false,
