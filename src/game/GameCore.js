@@ -650,10 +650,51 @@ export default class Game {
     const bottom = (room.maxY + 1) * tileSize;
     const weatherProfile = {
       'weather-rain': { rate: 24, vy: 320, vx: -20, color: 'rgba(120,180,255,0.45)', size: 8 },
-      'weather-storm': { rate: 60, vy: 430, vx: -30, color: 'rgba(120,180,255,0.62)', size: 11 },
-      'weather-hurricane': { rate: 78, vy: 500, vx: -65, color: 'rgba(140,200,255,0.72)', size: 13 },
+      'weather-storm': {
+        rate: 72,
+        vy: 450,
+        vx: -48,
+        color: 'rgba(132,190,255,0.68)',
+        size: 12,
+        gustRate: 10,
+        gustVx: -240,
+        gustVy: -18,
+        gustColor: 'rgba(210,220,235,0.18)',
+        gustLength: 34,
+        fogColor: 'rgba(120,130,145,0.18)',
+        fogAlpha: 0.18
+      },
+      'weather-hurricane': {
+        rate: 96,
+        vy: 540,
+        vx: -86,
+        color: 'rgba(150,205,255,0.78)',
+        size: 14,
+        gustRate: 18,
+        gustVx: -340,
+        gustVy: -28,
+        gustColor: 'rgba(205,215,228,0.24)',
+        gustLength: 46,
+        fogColor: 'rgba(102,112,125,0.24)',
+        fogAlpha: 0.24
+      },
       'weather-snow': { rate: 16, vy: 48, vx: -8, color: 'rgba(255,255,255,0.75)', size: 4, swayAmplitude: 16, swaySpeed: 2 },
-      'weather-blizzard': { rate: 52, vy: 105, vx: -40, color: 'rgba(255,255,255,0.85)', size: 5, swayAmplitude: 24, swaySpeed: 4 }
+      'weather-blizzard': {
+        rate: 92,
+        vy: 128,
+        vx: -72,
+        color: 'rgba(255,255,255,0.92)',
+        size: 6,
+        swayAmplitude: 30,
+        swaySpeed: 5,
+        gustRate: 20,
+        gustVx: -300,
+        gustVy: -20,
+        gustColor: 'rgba(255,255,255,0.3)',
+        gustLength: 42,
+        fogColor: 'rgba(245,248,255,0.2)',
+        fogAlpha: 0.2
+      }
     }[this.activeRoomWeather];
     const count = Math.max(1, Math.ceil(dt * weatherProfile.rate));
     for (let i = 0; i < count; i += 1) {
@@ -665,6 +706,25 @@ export default class Game {
         Math.max(0.5, (bottom - top) / weatherProfile.vy),
         weatherProfile
       );
+    }
+    if (weatherProfile.gustRate) {
+      const gustCount = Math.max(1, Math.ceil(dt * weatherProfile.gustRate));
+      for (let i = 0; i < gustCount; i += 1) {
+        this.emitAmbientParticle(
+          left + Math.random() * (right - left),
+          top + Math.random() * (bottom - top),
+          weatherProfile.gustVx * (0.75 + Math.random() * 0.45),
+          weatherProfile.gustVy + (Math.random() - 0.5) * 26,
+          0.28 + Math.random() * 0.2,
+          {
+            kind: 'gust',
+            color: weatherProfile.gustColor,
+            size: weatherProfile.gustLength,
+            fogColor: weatherProfile.fogColor,
+            fogAlpha: weatherProfile.fogAlpha
+          }
+        );
+      }
     }
     this.ambientParticles = this.ambientParticles.filter((particle) => {
       if (particle.style === weatherProfile) {
@@ -5928,11 +5988,36 @@ export default class Game {
   drawAmbientEffects(ctx) {
     if (this.ambientParticles.length === 0 && this.weatherLightning.flash <= 0) return;
     ctx.save();
+    if (this.activeRoomWeather && this.activeRoomIndex !== null && this.activeRoomIndex !== undefined) {
+      const room = this.world.getRoomBounds(this.activeRoomIndex);
+      const fogProfile = {
+        'weather-storm': { color: 'rgba(120,130,145,0.18)', alpha: 0.18 },
+        'weather-hurricane': { color: 'rgba(102,112,125,0.24)', alpha: 0.24 },
+        'weather-blizzard': { color: 'rgba(245,248,255,0.2)', alpha: 0.2 }
+      }[this.activeRoomWeather];
+      if (room && fogProfile) {
+        const tileSize = this.world.tileSize;
+        const left = room.minX * tileSize;
+        const top = room.minY * tileSize;
+        const width = (room.maxX - room.minX + 1) * tileSize;
+        const height = (room.maxY - room.minY + 1) * tileSize;
+        ctx.globalAlpha = fogProfile.alpha * (0.8 + Math.sin(this.worldTime * 0.7) * 0.08);
+        ctx.fillStyle = fogProfile.color;
+        ctx.fillRect(left, top, width, height);
+      }
+    }
     this.ambientParticles.forEach((particle) => {
       const alpha = clamp01(particle.life / Math.max(0.0001, particle.maxLife));
       ctx.globalAlpha = alpha;
       ctx.fillStyle = particle.style.color;
-      if (particle.style.vy > 200) {
+      if (particle.style.kind === 'gust') {
+        ctx.strokeStyle = particle.style.color;
+        ctx.lineWidth = Math.max(2, particle.size * 0.08);
+        ctx.beginPath();
+        ctx.moveTo(particle.x + particle.size * 0.5, particle.y - particle.size * 0.08);
+        ctx.lineTo(particle.x - particle.size * 0.5, particle.y + particle.size * 0.08);
+        ctx.stroke();
+      } else if (particle.style.vy > 200) {
         ctx.fillRect(particle.x - 1, particle.y - particle.size, 2, particle.size + 2);
       } else {
         ctx.beginPath();
