@@ -5250,8 +5250,6 @@ export default class Game {
       if (this.player.flameMode && this.abilities.flame) {
         tools = ['flame'];
       } else if (this.abilities.resonance) {
-        // Keep core chainsaw behavior active even after upgrades.
-        // This allows hold/rev to still cut wood while also shattering brittle tiles.
         tools = ['chainsaw', 'resonance'];
       } else {
         tools = ['chainsaw'];
@@ -5270,21 +5268,14 @@ export default class Game {
       const dirY = aimY / aimLength;
       const perpX = -dirY;
       const perpY = dirX;
-      const originX = this.player.x;
-      const originY = this.player.y;
-      const distances = [
-        tileSize * 0.25,
-        tileSize * 0.5,
-        tileSize * 0.75,
-        tileSize * 1.0,
-        tileSize * 1.25,
-        tileSize * 1.5,
-        tileSize * 1.75,
-        tileSize * 2.0
-      ];
-      const lateralOffsets = [0, -tileSize * 0.5, tileSize * 0.5];
 
-      for (const distance of distances) {
+      const originX = this.player.x + dirX * tileSize * 0.15;
+      const originY = this.player.y - 6 + dirY * tileSize * 0.15;
+      const maxDistance = tileSize * 2.2;
+      const step = tileSize * 0.2;
+      const lateralOffsets = [0, -tileSize * 0.45, tileSize * 0.45];
+
+      for (let distance = step; distance <= maxDistance; distance += step) {
         for (const lateral of lateralOffsets) {
           const probeX = originX + dirX * distance + perpX * lateral;
           const probeY = originY + dirY * distance + perpY * lateral;
@@ -5317,6 +5308,7 @@ export default class Game {
     }
     return false;
   }
+
 
   _drawByState(delegate = null) {
     const { ctx, canvas } = this;
