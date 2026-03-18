@@ -5269,21 +5269,28 @@ export default class Game {
       const perpX = -dirY;
       const perpY = dirX;
 
-      const originX = this.player.x + dirX * tileSize * 0.15;
-      const originY = this.player.y - 6 + dirY * tileSize * 0.15;
-      const maxDistance = tileSize * 2.2;
-      const step = tileSize * 0.2;
-      const lateralOffsets = [0, -tileSize * 0.45, tileSize * 0.45];
+      const originOffsets = [
+        { x: 0, y: 0 },
+        { x: 0, y: -this.player.height * 0.2 },
+        { x: 0, y: this.player.height * 0.2 }
+      ];
+      const maxDistance = tileSize * 2.25;
+      const step = tileSize * 0.16;
+      const lateralOffsets = [0, -tileSize * 0.5, tileSize * 0.5];
 
-      for (let distance = step; distance <= maxDistance; distance += step) {
-        for (const lateral of lateralOffsets) {
-          const probeX = originX + dirX * distance + perpX * lateral;
-          const probeY = originY + dirY * distance + perpY * lateral;
-          const tileX = Math.floor(probeX / tileSize);
-          const tileY = Math.floor(probeY / tileSize);
-          for (const tool of tools) {
-            if (this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 })) {
-              return true;
+      for (const originOffset of originOffsets) {
+        const originX = this.player.x + originOffset.x + dirX * tileSize * 0.12;
+        const originY = this.player.y + originOffset.y + dirY * tileSize * 0.12;
+        for (let distance = step; distance <= maxDistance; distance += step) {
+          for (const lateral of lateralOffsets) {
+            const probeX = originX + dirX * distance + perpX * lateral;
+            const probeY = originY + dirY * distance + perpY * lateral;
+            const tileX = Math.floor(probeX / tileSize);
+            const tileY = Math.floor(probeY / tileSize);
+            for (const tool of tools) {
+              if (this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 })) {
+                return true;
+              }
             }
           }
         }
