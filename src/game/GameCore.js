@@ -6093,10 +6093,10 @@ export default class Game {
       }
     };
 
-    const drawElectricBranch = (points, { glow = 7, core = 2.2, alpha = 1 } = {}) => {
+    const drawElectricBranch = (points, phaseSeed, { glow = 7, core = 2.2, alpha = 1 } = {}) => {
       if (points.length < 2) return;
       const jittered = [points[0]];
-      const phase = time * 18 + x * 0.9 + y * 1.1;
+      const phase = time * 18 + phaseSeed;
       for (let i = 1; i < points.length - 1; i += 1) {
         const prev = points[i - 1];
         const point = points[i];
@@ -6301,7 +6301,8 @@ export default class Game {
             branches.push([[centerX, baseY + 4], [centerX - 2, baseY + tileSize * 0.35], [centerX + 2, baseY + tileSize * 0.68], [centerX, baseY + tileSize - 4]]);
           }
 
-          branches.forEach((points) => drawElectricBranch(points, { glow: 8, core: 2.4 }));
+          const electricPhaseSeed = x * 0.9 + y * 1.1;
+          branches.forEach((points) => drawElectricBranch(points, electricPhaseSeed, { glow: 8, core: 2.4 }));
 
           if (connectorCount >= 2 || branches.length === 0) {
             const forkPhase = time * 16 + x * 1.3 - y * 0.8;
@@ -6309,7 +6310,7 @@ export default class Game {
               [centerX - 5, centerY + Math.sin(forkPhase) * 2],
               [centerX, centerY - 1],
               [centerX + 6, centerY + Math.cos(forkPhase) * 2]
-            ], { glow: 5, core: 1.4, alpha: 0.9 });
+            ], electricPhaseSeed + 1.6, { glow: 5, core: 1.4, alpha: 0.9 });
           }
 
           ctx.save();
