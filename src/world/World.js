@@ -59,7 +59,7 @@ const DOOR_TILE = 'D';
 const ROOM_BLOCKERS = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', 'N', 'P', 'Q', 'E', 'G', 'J', 'V']);
 const SOLID_TILES = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', 'N', 'P', 'Q', 'E', 'G', 'J', 'V']);
 const ONE_WAY_TILES = new Set(['=', 's']);
-const HAZARD_TILES = new Set(['!', 'A', 'L', '*']);
+const HAZARD_TILES = new Set(['!', 'A', 'L', '*', 'e']);
 
 const isRoomTile = (tile) => tile && tile !== DOOR_TILE && !ROOM_BLOCKERS.has(tile);
 

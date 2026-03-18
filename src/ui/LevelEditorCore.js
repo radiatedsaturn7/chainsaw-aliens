@@ -45,6 +45,7 @@ const DEFAULT_TILE_TYPES = [
   { id: 'conveyor-left', label: 'Conveyor Left', char: '<' },
   { id: 'conveyor-right', label: 'Conveyor Right', char: '>' },
   { id: 'spikes', label: 'Spike', char: '*' },
+  { id: 'electric', label: 'Electric Current', char: 'e' },
   { id: 'acid', label: 'Acid', char: 'A' },
   { id: 'water', label: 'Water', char: '~' },
   { id: 'lava', label: 'Lava', char: 'L' },
@@ -88,7 +89,16 @@ const STANDARD_ENEMY_TYPES = [
   { id: 'pouncer', label: 'Pouncer', glyph: 'PN', description: 'Spring-loaded hunter that lunges forward.' },
   { id: 'coward', label: 'Coward', glyph: 'CW', description: 'Shy skirmisher that backs away when you approach.' },
   { id: 'ranger', label: 'Ranger', glyph: 'RG', description: 'Marksman that kites and fires precise shots.' },
-  { id: 'sentinel', label: 'Sentinel', glyph: 'SE', description: 'Orbital sentinel that fires in pulses.' }
+  { id: 'sentinel', label: 'Sentinel', glyph: 'SE', description: 'Orbital sentinel that fires in pulses.' },
+  { id: 'water-drip', label: 'Water Drip', glyph: 'WD', description: 'Invisible spawner that drips water straight down until blocked.' },
+  { id: 'acid-drip', label: 'Acid Drip', glyph: 'AD', description: 'Invisible spawner that drips corrosive fluid straight down until blocked.' },
+  { id: 'lava-drip', label: 'Lava Drip', glyph: 'LD', description: 'Invisible spawner that drips molten lava straight down until blocked.' },
+  { id: 'steam-gasket', label: 'Steam Gasket', glyph: 'SG', description: 'Vent that emits a hot steam column upward.' },
+  { id: 'weather-rain', label: 'Rain Weather', glyph: 'RN', description: 'Makes the current room drizzle with light rain.' },
+  { id: 'weather-storm', label: 'Storm Weather', glyph: 'ST', description: 'Makes the current room fill with heavy rain.' },
+  { id: 'weather-hurricane', label: 'Hurricane Weather', glyph: 'HU', description: 'Heavy rain plus periodic lightning across the current room.' },
+  { id: 'weather-snow', label: 'Snow Weather', glyph: 'SN', description: 'Makes the current room fill with gentle snowfall.' },
+  { id: 'weather-blizzard', label: 'Blizzard Weather', glyph: 'BZ', description: 'Makes the current room fill with heavy snow and wind.' }
 ];
 
 const BOSS_ENEMY_TYPES = [

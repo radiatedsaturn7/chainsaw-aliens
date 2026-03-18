@@ -84,6 +84,23 @@ const BOSS_TYPES = new Set([
   'cataclysmcolossus'
 ]);
 
+const AMBIENT_SPAWN_TYPES = new Set([
+  'water-drip',
+  'acid-drip',
+  'lava-drip',
+  'steam-gasket',
+  'weather-rain',
+  'weather-storm',
+  'weather-hurricane',
+  'weather-snow',
+  'weather-blizzard'
+]);
+
+
+const DRIP_TYPES = new Set(['water-drip', 'acid-drip', 'lava-drip']);
+
+const clamp01 = (value) => Math.max(0, Math.min(1, value));
+
 const INTRO_LINES = [
   'The entire planet of earth has literally run out of all our ammunition...',
   '...and the aliens are still coming!',
@@ -227,10 +244,15 @@ export default class Game {
     this.activeRoomIndex = null;
     this.roomEnemySpawns = new Map();
     this.roomBossSpawns = new Map();
+    this.roomAmbientSpawns = new Map();
     this.roomVisited = new Set();
     this.roomExitTimes = new Map();
     this.roomRespawnTimers = new Map();
     this.cameraBounds = null;
+    this.ambientParticles = [];
+    this.activeRoomAmbient = [];
+    this.activeRoomWeather = null;
+    this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
     this.slowTimer = 0;
     this.doorTransition = null;
     this.doorCooldown = 0;
@@ -478,17 +500,26 @@ export default class Game {
     this.roomExitTimes.clear();
     this.roomRespawnTimers.clear();
     this.cameraBounds = null;
+    this.ambientParticles = [];
+    this.activeRoomAmbient = [];
+    this.activeRoomWeather = null;
+    this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
   }
 
   rebuildRoomEnemySpawns() {
     this.roomEnemySpawns.clear();
     this.roomBossSpawns.clear();
+    this.roomAmbientSpawns.clear();
     if (!this.world.enemies) return;
     this.world.enemies.forEach((spawn) => {
       if (!spawn) return;
       const roomIndex = this.world.roomAtTile(spawn.x, spawn.y);
       if (roomIndex === null || roomIndex === undefined) return;
-      if (BOSS_TYPES.has(spawn.type)) {
+      if (AMBIENT_SPAWN_TYPES.has(spawn.type)) {
+        const list = this.roomAmbientSpawns.get(roomIndex) || [];
+        list.push({ ...spawn });
+        this.roomAmbientSpawns.set(roomIndex, list);
+      } else if (BOSS_TYPES.has(spawn.type)) {
         const list = this.roomBossSpawns.get(roomIndex) || [];
         list.push({ ...spawn });
         this.roomBossSpawns.set(roomIndex, list);
@@ -498,6 +529,152 @@ export default class Game {
         this.roomEnemySpawns.set(roomIndex, list);
       }
     });
+  }
+
+
+  refreshRoomAmbient(roomIndex = this.activeRoomIndex) {
+    this.activeRoomAmbient = roomIndex === null || roomIndex === undefined
+      ? []
+      : (this.roomAmbientSpawns.get(roomIndex) || []).map((spawn) => ({ ...spawn }));
+    const weatherPriority = ['weather-hurricane', 'weather-blizzard', 'weather-storm', 'weather-rain', 'weather-snow'];
+    this.activeRoomWeather = weatherPriority.find((type) => this.activeRoomAmbient.some((spawn) => spawn.type === type)) || null;
+    if (this.weatherLightning.roomIndex !== roomIndex) {
+      this.weatherLightning.roomIndex = roomIndex ?? null;
+      this.weatherLightning.timer = 0;
+      this.weatherLightning.flash = 0;
+    }
+  }
+
+  getAmbientColumnBounds(spawn, direction = 1) {
+    const tileSize = this.world.tileSize;
+    const centerX = (spawn.x + 0.5) * tileSize;
+    const originY = (spawn.y + 0.5) * tileSize;
+    let endTileY = spawn.y;
+    for (let y = spawn.y + direction; y >= 0 && y < this.world.height; y += direction) {
+      if (this.world.isSolid(spawn.x, y, this.abilities, { ignoreOneWay: true })) {
+        break;
+      }
+      endTileY = y;
+    }
+    const endY = (endTileY + 0.5) * tileSize;
+    return {
+      x: centerX,
+      startY: direction > 0 ? originY : endY,
+      endY: direction > 0 ? endY : originY
+    };
+  }
+
+  emitAmbientParticle(x, y, vx, vy, life, style) {
+    this.ambientParticles.push({ x, y, vx, vy, life, maxLife: life, style, size: style.size || 4, sway: Math.random() * Math.PI * 2 });
+  }
+
+  applyAmbientDamage(column, radius, damage = 1) {
+    const withinX = Math.abs(this.player.x - column.x) <= radius;
+    const withinY = this.player.y >= column.startY - 12 && this.player.y <= column.endY + 12;
+    if (withinX && withinY) {
+      this.player.takeDamage(damage);
+    }
+  }
+
+  updateAmbientSystems(dt) {
+    this.weatherLightning.flash = Math.max(0, this.weatherLightning.flash - dt * 2.6);
+    this.ambientParticles.forEach((particle) => {
+      particle.life -= dt;
+      particle.x += particle.vx * dt;
+      particle.y += particle.vy * dt;
+      if (particle.style.swayAmplitude) {
+        particle.sway += dt * (particle.style.swaySpeed || 3);
+        particle.x += Math.sin(particle.sway) * particle.style.swayAmplitude * dt;
+      }
+    });
+    this.ambientParticles = this.ambientParticles.filter((particle) => particle.life > 0);
+
+    this.activeRoomAmbient.forEach((spawn) => {
+      if (DRIP_TYPES.has(spawn.type)) {
+        const column = this.getAmbientColumnBounds(spawn, 1);
+        const travel = Math.max(16, column.endY - column.startY);
+        const speed = spawn.type === 'lava-drip' ? 150 : spawn.type === 'acid-drip' ? 200 : 220;
+        const count = Math.max(1, Math.ceil(dt * (spawn.type === 'water-drip' ? 14 : 18)));
+        for (let i = 0; i < count; i += 1) {
+          const offset = Math.random() * travel;
+          this.emitAmbientParticle(
+            column.x + (Math.random() - 0.5) * 6,
+            column.startY + offset,
+            (Math.random() - 0.5) * 10,
+            speed,
+            Math.max(0.15, (travel - offset) / speed),
+            spawn.type === 'water-drip'
+              ? { color: 'rgba(110,190,255,0.75)', size: 3 }
+              : spawn.type === 'acid-drip'
+                ? { color: 'rgba(120,255,170,0.8)', size: 4 }
+                : { color: 'rgba(255,170,90,0.82)', size: 4 }
+          );
+        }
+        if (spawn.type !== 'water-drip') {
+          this.applyAmbientDamage(column, 10, 1);
+        }
+      } else if (spawn.type === 'steam-gasket') {
+        const column = this.getAmbientColumnBounds(spawn, -1);
+        const travel = Math.max(16, column.endY - column.startY);
+        const count = Math.max(1, Math.ceil(dt * 16));
+        for (let i = 0; i < count; i += 1) {
+          const offset = Math.random() * travel;
+          this.emitAmbientParticle(
+            column.x + (Math.random() - 0.5) * 8,
+            column.endY - offset,
+            (Math.random() - 0.5) * 12,
+            -55 - Math.random() * 40,
+            0.6 + Math.random() * 0.5,
+            { color: 'rgba(235,235,235,0.55)', size: 8 + Math.random() * 6, swayAmplitude: 10, swaySpeed: 5 }
+          );
+        }
+        this.applyAmbientDamage(column, 14, 1);
+      }
+    });
+
+    const room = this.activeRoomIndex === null || this.activeRoomIndex === undefined ? null : this.world.getRoomBounds(this.activeRoomIndex);
+    if (!room || !this.activeRoomWeather) return;
+    const tileSize = this.world.tileSize;
+    const left = room.minX * tileSize;
+    const right = (room.maxX + 1) * tileSize;
+    const top = room.minY * tileSize;
+    const bottom = (room.maxY + 1) * tileSize;
+    const weatherProfile = {
+      'weather-rain': { rate: 24, vy: 320, vx: -20, color: 'rgba(120,180,255,0.45)', size: 8 },
+      'weather-storm': { rate: 60, vy: 430, vx: -30, color: 'rgba(120,180,255,0.62)', size: 11 },
+      'weather-hurricane': { rate: 78, vy: 500, vx: -65, color: 'rgba(140,200,255,0.72)', size: 13 },
+      'weather-snow': { rate: 16, vy: 48, vx: -8, color: 'rgba(255,255,255,0.75)', size: 4, swayAmplitude: 16, swaySpeed: 2 },
+      'weather-blizzard': { rate: 52, vy: 105, vx: -40, color: 'rgba(255,255,255,0.85)', size: 5, swayAmplitude: 24, swaySpeed: 4 }
+    }[this.activeRoomWeather];
+    const count = Math.max(1, Math.ceil(dt * weatherProfile.rate));
+    for (let i = 0; i < count; i += 1) {
+      this.emitAmbientParticle(
+        left + Math.random() * (right - left),
+        top - 8,
+        weatherProfile.vx + (Math.random() - 0.5) * 16,
+        weatherProfile.vy * (0.8 + Math.random() * 0.4),
+        Math.max(0.5, (bottom - top) / weatherProfile.vy),
+        weatherProfile
+      );
+    }
+    this.ambientParticles = this.ambientParticles.filter((particle) => {
+      if (particle.style === weatherProfile) {
+        return particle.y <= bottom + 24 && particle.x >= left - 64 && particle.x <= right + 64 && particle.life > 0;
+      }
+      return true;
+    });
+
+    if (this.activeRoomWeather === 'weather-hurricane') {
+      this.weatherLightning.timer -= dt;
+      if (this.weatherLightning.timer <= 0) {
+        this.weatherLightning.timer = 1.8 + Math.random() * 2.4;
+        this.weatherLightning.flash = 1;
+        this.weatherLightning.x = left + Math.random() * (right - left);
+        if (Math.abs(this.player.x - this.weatherLightning.x) < tileSize * 1.25 && this.player.y >= top && this.player.y <= bottom) {
+          this.player.takeDamage(1);
+        }
+      }
+    }
   }
 
   buildElevatorGraph() {
@@ -906,6 +1083,10 @@ export default class Game {
     this.lootDrops = [];
     this.healthDrops = [];
     this.effects = [];
+    this.ambientParticles = [];
+    this.activeRoomAmbient = [];
+    this.activeRoomWeather = null;
+    this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
     this.spawnEnemies({ allowStoryFallback: !playtest });
     this.bossInteractions = {
       anchor: false,
@@ -1373,6 +1554,7 @@ export default class Game {
       if (roomIndex !== null && roomIndex !== undefined) {
         this.activeRoomIndex = roomIndex;
         this.handleRoomEntry(roomIndex);
+        this.refreshRoomAmbient(roomIndex);
       }
       return;
     }
@@ -1982,6 +2164,7 @@ export default class Game {
       }
     }
 
+    this.updateAmbientSystems(dt * timeScale);
     this.updateEnemies(dt * timeScale);
     this.applyIgnitirEnemyPull(dt * timeScale);
     this.updateProjectiles(dt * timeScale);
@@ -2107,16 +2290,19 @@ export default class Game {
       }
       if (this.activeRoomIndex !== null && this.activeRoomIndex !== undefined) {
         this.handleRoomEntry(this.activeRoomIndex);
+        this.refreshRoomAmbient(this.activeRoomIndex);
       }
     }
 
     if (this.activeRoomIndex === null) {
       this.cameraBounds = null;
+      this.refreshRoomAmbient(null);
       return;
     }
     const room = this.world.getRoomBounds(this.activeRoomIndex);
     if (!room) {
       this.cameraBounds = null;
+      this.refreshRoomAmbient(null);
       return;
     }
     const doorPadding = tileSize * (this.isMobile ? 4 : 2);
@@ -2162,6 +2348,7 @@ export default class Game {
       return;
     }
     this.roomVisited.add(roomIndex);
+    this.refreshRoomAmbient(roomIndex);
     this.respawnRoomEnemies(roomIndex);
     this.spawnRoomBosses(roomIndex);
   }
@@ -5408,6 +5595,7 @@ export default class Game {
     this.debris.forEach((piece) => piece.draw(ctx));
     this.shards.forEach((shard) => shard.draw(ctx));
     this.effects.forEach((effect) => effect.draw(ctx));
+    this.drawAmbientEffects(ctx);
     this.lootDrops.forEach((drop) => {
       const dist = Math.hypot(drop.x - this.player.x, drop.y - this.player.y);
       drop.draw(ctx, dist < 40);
@@ -5728,6 +5916,48 @@ export default class Game {
     ctx.restore();
   }
 
+  drawAmbientEffects(ctx) {
+    if (this.ambientParticles.length === 0 && this.weatherLightning.flash <= 0) return;
+    ctx.save();
+    this.ambientParticles.forEach((particle) => {
+      const alpha = clamp01(particle.life / Math.max(0.0001, particle.maxLife));
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = particle.style.color;
+      if (particle.style.vy > 200) {
+        ctx.fillRect(particle.x - 1, particle.y - particle.size, 2, particle.size + 2);
+      } else {
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, Math.max(1.5, particle.size * 0.5), 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+    if (this.weatherLightning.flash > 0 && this.activeRoomIndex !== null && this.activeRoomIndex !== undefined) {
+      const room = this.world.getRoomBounds(this.activeRoomIndex);
+      if (room) {
+        const tileSize = this.world.tileSize;
+        const left = room.minX * tileSize;
+        const top = room.minY * tileSize;
+        const width = (room.maxX - room.minX + 1) * tileSize;
+        const height = (room.maxY - room.minY + 1) * tileSize;
+        ctx.globalAlpha = this.weatherLightning.flash * 0.2;
+        ctx.fillStyle = '#dff6ff';
+        ctx.fillRect(left, top, width, height);
+        ctx.globalAlpha = this.weatherLightning.flash * 0.95;
+        ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+        ctx.lineWidth = 3;
+        const x = this.weatherLightning.x;
+        ctx.beginPath();
+        ctx.moveTo(x, top);
+        ctx.lineTo(x - 12, top + height * 0.25);
+        ctx.lineTo(x + 6, top + height * 0.45);
+        ctx.lineTo(x - 10, top + height * 0.7);
+        ctx.lineTo(x + 12, top + height * 0.92);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
   drawWorld(ctx, { showDoors = false, decalAlphaMultiplier = 1 } = {}) {
     const tileSize = this.world.tileSize;
     const time = this.worldTime;
@@ -5989,6 +6219,29 @@ export default class Game {
         }
         if (tile === '!') {
           drawSpikeTile(x, y, '#c98bff');
+        }
+        if (tile === 'e') {
+          const baseX = x * tileSize;
+          const baseY = y * tileSize;
+          ctx.fillStyle = '#0f2433';
+          ctx.fillRect(baseX, baseY, tileSize, tileSize);
+          ctx.strokeStyle = '#1f4b69';
+          ctx.strokeRect(baseX, baseY, tileSize, tileSize);
+          ctx.strokeStyle = 'rgba(120,220,255,0.95)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(baseX + 5, baseY + tileSize * 0.25);
+          ctx.lineTo(baseX + tileSize * 0.42, baseY + tileSize * 0.18 + Math.sin(time * 12 + x) * 2);
+          ctx.lineTo(baseX + tileSize * 0.35, baseY + tileSize * 0.52);
+          ctx.lineTo(baseX + tileSize * 0.7, baseY + tileSize * 0.46 + Math.cos(time * 10 + y) * 2);
+          ctx.lineTo(baseX + tileSize * 0.6, baseY + tileSize - 5);
+          ctx.stroke();
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = 'rgba(180,245,255,0.55)';
+          ctx.beginPath();
+          ctx.moveTo(baseX + 8, baseY + 8);
+          ctx.lineTo(baseX + tileSize - 10, baseY + tileSize - 10);
+          ctx.stroke();
         }
         if (tile === 'I') {
           ctx.fillStyle = '#8fd6ff';
