@@ -10,6 +10,8 @@
  *   is the editor-specific JSON object already used by the app.
  */
 
+import { queueServerSnapshotPush } from './serverStorage.js';
+
 const VFS_PREFIX = 'robter:vfs:';
 const INDEX_KEY = `${VFS_PREFIX}index`;
 const FOLDERS = ['levels', 'art', 'music'];
@@ -117,6 +119,7 @@ export function vfsSave(folder, name, dataObj) {
   const index = vfsEnsureIndex();
   index[folder][clean] = { updatedAt: savedAt, size: raw.length };
   saveIndex(index);
+  queueServerSnapshotPush();
   return payload;
 }
 
@@ -129,6 +132,7 @@ export function vfsDelete(folder, name) {
   const index = vfsEnsureIndex();
   if (index[folder]) delete index[folder][clean];
   saveIndex(index);
+  queueServerSnapshotPush();
 }
 
 export function vfsRename(folder, oldName, newName) {
@@ -139,6 +143,7 @@ export function vfsRename(folder, oldName, newName) {
   if (!payload) return null;
   const saved = vfsSave(folder, nextClean, payload.data);
   vfsDelete(folder, oldClean);
+  queueServerSnapshotPush();
   return saved;
 }
 
@@ -148,7 +153,9 @@ export function vfsDuplicate(folder, name, newName) {
   if (!oldClean || !nextClean) return null;
   const payload = vfsLoad(folder, oldClean);
   if (!payload) return null;
-  return vfsSave(folder, nextClean, payload.data);
+  const saved = vfsSave(folder, nextClean, payload.data);
+  queueServerSnapshotPush();
+  return saved;
 }
 
 export { FOLDERS as VFS_FOLDERS };

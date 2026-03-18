@@ -69,6 +69,7 @@ import { OBSTACLES } from '../world/Obstacles.js';
 import { MOVEMENT_MODEL } from './MovementModel.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsList, vfsLoad } from '../ui/vfs.js';
+import { bootstrapServerStorage, isServerStorageEnabled, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
 import { drawSharedPlayStopButton } from '../ui/uiSuite.js';
 
 const BOSS_TYPES = new Set([
@@ -262,6 +263,7 @@ export default class Game {
     this.attackHoldTimer = 0;
     this.attackHoldThreshold = 0.22;
     this.lastAttackFromGamepad = false;
+    this.attackPressConsumed = false;
     this.obstacleDamage = new Map();
     this.obstacleCooldown = 0;
     this.noiseCooldown = 0;
@@ -397,6 +399,9 @@ export default class Game {
 
   async init() {
     try {
+      if (isServerStorageEnabled()) {
+        await bootstrapServerStorage();
+      }
       await this.world.load();
       await this.autoRepair.load();
       this.autoRepair.applyPersistentPatches();
@@ -828,6 +833,7 @@ export default class Game {
       return;
     }
     this.playtestActive = false;
+    this.storyData = this.buildWorldData();
     if (toTitle) {
       this.transitionTo('title', { forceCleanup: true });
     } else if (this.editorReturnState === 'playing' || this.editorReturnState === 'pause') {
@@ -930,6 +936,7 @@ export default class Game {
     this.attackTapTimer = 0;
     this.attackHoldTimer = 0;
     this.lastAttackFromGamepad = false;
+    this.attackPressConsumed = false;
     this.prevHealth = this.player.health;
     this.damageFlashTimer = 0;
     this.decalImageCache = new Map();
@@ -995,6 +1002,86 @@ export default class Game {
     };
   }
 
+
+
+  playMostRecentLevel() {
+    if (this.editor?.loadAutosave?.()) {
+      this.gameMode = 'story';
+      this.storyData = this.buildWorldData();
+      this.playtestActive = false;
+      this.simulationActive = false;
+      this.resetRun({ playtest: false, startWithEverything: false });
+      this.transitionTo('playing');
+      this.showSystemToast('Playing latest edited level from autosave.');
+      return;
+    }
+    const levels = vfsList('levels');
+    const latest = levels[0];
+    if (latest) {
+      const payload = vfsLoad('levels', latest.name);
+      if (payload?.data) {
+        this.applyWorldData(payload.data);
+        this.gameMode = 'story';
+        this.storyData = this.buildWorldData();
+        this.playtestActive = false;
+        this.simulationActive = false;
+        this.resetRun({ playtest: false, startWithEverything: false });
+        this.transitionTo('playing');
+        this.showSystemToast(`Playing latest level: ${latest.name}`);
+        return;
+      }
+    }
+    this.showSystemToast('No saved levels found. Open Level Editor from Tools first.');
+  }
+
+
+  async promptServerStorageConflictPreference(conflictCount = 0) {
+    const message = `Found ${conflictCount} duplicate project file${conflictCount === 1 ? '' : 's'} with different content. Type "local" to keep browser versions, "server" to keep server versions, or cancel.`;
+    if (typeof window !== 'undefined' && typeof window.prompt === 'function') {
+      const input = window.prompt(message, 'local');
+      const value = String(input || '').trim().toLowerCase();
+      if (value === 'local' || value === 'server') return value;
+      return null;
+    }
+    return null;
+  }
+
+  async handleServerStorageAction(action) {
+    if (action === 'toggle-server-storage') {
+      const enabled = !isServerStorageEnabled();
+      setServerStorageEnabled(enabled);
+      if (enabled) {
+        let result = await bootstrapServerStorage();
+        if (result?.requiresResolution) {
+          const preference = await this.promptServerStorageConflictPreference(result.conflicts || 0);
+          if (!preference) {
+            setServerStorageEnabled(false);
+            this.showSystemToast('Server storage enable cancelled.');
+            return;
+          }
+          result = await bootstrapServerStorage({ duplicatePreference: preference });
+        }
+        if (result?.ok && result.stats) {
+          this.showSystemToast(`Server storage enabled (${result.stats.keptLocal} local, ${result.stats.pulledServer} server).`);
+          return;
+        }
+        this.showSystemToast(`Server storage enabled. Sync warning: ${String(result?.reason || 'unknown').slice(0, 64)}`);
+        return;
+      }
+      this.showSystemToast('Server storage disabled.');
+      return;
+    }
+    if (action === 'sync-github') {
+      this.showSystemToast('Syncing server snapshot to GitHub...');
+      const result = await syncServerSnapshotToGitHub();
+      if (!result.ok) {
+        this.showSystemToast(`GitHub sync failed: ${String(result.reason || 'unknown').slice(0, 80)}`);
+        return;
+      }
+      this.showSystemToast('GitHub sync complete.');
+      return;
+    }
+  }
 
   openProjectBrowserFromTitle() {
     openProjectBrowser({
@@ -1578,8 +1665,8 @@ export default class Game {
             this.title.setScreen('main');
           } else {
             this.setInputMode(action);
+            this.title.setControlsSelectionByMode(this.inputMode);
           }
-          this.title.setControlsSelectionByMode(this.inputMode);
         } else if (this.title.screen === 'tools') {
           if (action === 'back') {
             this.title.setScreen('main');
@@ -1594,23 +1681,24 @@ export default class Game {
           } else if (action === 'reset-all') {
             this.resetAllContent();
           }
+        } else if (this.title.screen === 'storage') {
+          if (action === 'back') {
+            this.title.setScreen('main');
+          } else {
+            this.handleServerStorageAction(action);
+          }
         } else if (action === 'options') {
           this.title.setControlsSelectionByMode(this.inputMode);
           this.title.setScreen('controls');
         } else if (action === 'tools') {
           this.title.setScreen('tools');
+        } else if (action === 'storage') {
+          this.title.setScreen('storage');
         } else if (action === 'robtersession') {
           this.robterSession.enter();
           this.transitionTo('robtersession');
-        } else {
-          if (this.gameMode !== 'story' && this.storyData) {
-            this.gameMode = 'story';
-            this.applyWorldData(this.storyData);
-            this.resetRun();
-          } else {
-            this.gameMode = 'story';
-          }
-          this.transitionTo('dialog');
+        } else if (action === 'recent-level') {
+          this.playMostRecentLevel();
         }
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
@@ -1759,6 +1847,10 @@ export default class Game {
     if (this.input.wasPressed('attack')) {
       this.attackHoldTimer = 0;
       this.lastAttackFromGamepad = this.gamepadConnected && this.input.wasGamepadPressed('attack');
+      this.attackPressConsumed = false;
+      if (!usingIgnitir && !usingFlamethrower && !this.sawAnchor.active && this.tryObstacleInteraction('attack')) {
+        this.attackPressConsumed = true;
+      }
     }
     if (this.input.isDown('attack')) {
       this.attackHoldTimer += dt * timeScale;
@@ -1818,7 +1910,9 @@ export default class Game {
     if (this.input.wasReleased('attack')) {
       const heldDuration = this.attackHoldTimer;
       this.attackHoldTimer = 0;
-      if (usingIgnitir) {
+      if (this.attackPressConsumed) {
+        this.attackPressConsumed = false;
+      } else if (usingIgnitir) {
         if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold && this.ignitirReady) {
           this.fireIgnitir();
         } else if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold && !this.ignitirReady) {
@@ -1838,14 +1932,17 @@ export default class Game {
           if (!this.tryObstacleInteraction('attack')) {
             this.handleAttack();
           }
-        } else if (this.abilities.anchor && allowAnchorShot) {
-          this.handleAnchorShot();
         } else if (!this.tryObstacleInteraction('attack')) {
-          this.handleAttack();
+          if (this.abilities.anchor && allowAnchorShot) {
+            this.handleAnchorShot();
+          } else {
+            this.handleAttack();
+          }
         }
       }
     } else if (!this.input.isDown('attack')) {
       this.attackHoldTimer = 0;
+      this.attackPressConsumed = false;
     }
     if (this.sawAnchor.embedded && this.input.wasPressed('jump')) {
       this.startAnchorRetract(0.2);
@@ -3349,6 +3446,7 @@ export default class Game {
 
   handleAttack() {
     if (this.sawAnchor.active) return;
+    if (this.tryObstacleInteraction('attack')) return;
     const attackRange = this.world.tileSize * 2.5;
     if (!this.player.onGround && this.player.aimingDown) {
       this.player.attackTimer = Math.max(this.player.attackTimer, 0.3);
@@ -5154,23 +5252,79 @@ export default class Game {
     if (this.sawAnchor.active) return false;
     if (this.obstacleCooldown > 0) return false;
     const tileSize = this.world.tileSize;
-    const checkX = this.player.x + this.player.facing * tileSize * 0.55;
-    const checkY = this.player.y - 6;
-    const tileX = Math.floor(checkX / tileSize);
-    const tileY = Math.floor(checkY / tileSize);
-    let tool = null;
+    let tools = [];
     if (mode === 'attack') {
-      tool = 'chainsaw';
+      tools = ['chainsaw'];
     } else if (mode === 'rev') {
       if (this.player.flameMode && this.abilities.flame) {
-        tool = 'flame';
+        tools = ['flame'];
       } else if (this.abilities.resonance) {
-        tool = 'resonance';
+        tools = ['chainsaw', 'resonance'];
+      } else {
+        tools = ['chainsaw'];
       }
     }
-    if (!tool) return false;
-    return this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 });
+    if (!tools.length) return false;
+
+    if (mode === 'attack') {
+      let aimX = this.player.aimX ?? (this.player.facing || 1);
+      let aimY = this.player.aimY ?? 0;
+      if (Math.abs(aimX) < 0.01 && Math.abs(aimY) < 0.01) {
+        aimX = this.player.facing || 1;
+      }
+      const aimLength = Math.hypot(aimX, aimY) || 1;
+      const dirX = aimX / aimLength;
+      const dirY = aimY / aimLength;
+      const perpX = -dirY;
+      const perpY = dirX;
+
+      const originOffsets = [
+        { x: 0, y: 0 },
+        { x: 0, y: -this.player.height * 0.2 },
+        { x: 0, y: this.player.height * 0.2 }
+      ];
+      const maxDistance = tileSize * 2.25;
+      const step = tileSize * 0.16;
+      const lateralOffsets = [0, -tileSize * 0.5, tileSize * 0.5];
+
+      for (const originOffset of originOffsets) {
+        const originX = this.player.x + originOffset.x + dirX * tileSize * 0.12;
+        const originY = this.player.y + originOffset.y + dirY * tileSize * 0.12;
+        for (let distance = step; distance <= maxDistance; distance += step) {
+          for (const lateral of lateralOffsets) {
+            const probeX = originX + dirX * distance + perpX * lateral;
+            const probeY = originY + dirY * distance + perpY * lateral;
+            const tileX = Math.floor(probeX / tileSize);
+            const tileY = Math.floor(probeY / tileSize);
+            for (const tool of tools) {
+              if (this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 })) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    const yOffsets = [-6];
+    const xOffsets = [tileSize * 0.55];
+    for (const xOffset of xOffsets) {
+      const probeX = this.player.x + this.player.facing * xOffset;
+      const tileX = Math.floor(probeX / tileSize);
+      for (const offset of yOffsets) {
+        const checkY = this.player.y + offset;
+        const tileY = Math.floor(checkY / tileSize);
+        for (const tool of tools) {
+          if (this.applyObstacleDamage(tileX, tileY, tool, { cooldown: 0.2 })) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
+
 
   _drawByState(delegate = null) {
     const { ctx, canvas } = this;
@@ -5180,7 +5334,8 @@ export default class Game {
       this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode, {
         isMobile: this.deviceIsMobile,
         gamepadConnected: this.gamepadConnected,
-        debugRestartEnabled: false
+        debugRestartEnabled: false,
+        serverStorageEnabled: isServerStorageEnabled()
       });
       ctx.save();
       ctx.fillStyle = '#fff';
@@ -5195,7 +5350,8 @@ export default class Game {
       this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode, {
         isMobile: this.deviceIsMobile,
         gamepadConnected: this.gamepadConnected,
-        debugRestartEnabled: this.debugMode
+        debugRestartEnabled: this.debugMode,
+        serverStorageEnabled: isServerStorageEnabled()
       });
       this.mobileControls.draw(ctx, this.state);
       return;
@@ -5873,7 +6029,22 @@ export default class Game {
           ctx.lineTo(x * tileSize + tileSize / 2, y * tileSize + tileSize - 6);
           ctx.stroke();
         }
-        if (OBSTACLES[tile] && !['N', 'P'].includes(tile)) {
+        if (tile === 'W') {
+          const baseX = x * tileSize;
+          const baseY = y * tileSize;
+          ctx.fillStyle = '#6f4321';
+          ctx.fillRect(baseX + 2, baseY + 2, tileSize - 4, tileSize - 4);
+          ctx.fillStyle = '#c78b4f';
+          ctx.fillRect(baseX + 6, baseY + 6, tileSize - 12, tileSize - 12);
+          ctx.strokeStyle = '#5a361a';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(baseX + 2, baseY + 2, tileSize - 4, tileSize - 4);
+          ctx.beginPath();
+          ctx.moveTo(baseX + 6, baseY + tileSize - 6);
+          ctx.lineTo(baseX + tileSize - 6, baseY + 6);
+          ctx.stroke();
+          ctx.lineWidth = 1;
+        } else if (OBSTACLES[tile] && !['N', 'P'].includes(tile)) {
           ctx.strokeStyle = '#fff';
           ctx.strokeRect(x * tileSize + 2, y * tileSize + 2, tileSize - 4, tileSize - 4);
           ctx.beginPath();
@@ -6537,6 +6708,15 @@ export default class Game {
         this.audio.ui();
         return;
       }
+      if (this.title.screen === 'storage') {
+        if (action === 'back') {
+          this.title.setScreen('main');
+        } else {
+          this.handleServerStorageAction(action);
+        }
+        this.audio.ui();
+        return;
+      }
       if (action === 'debug-restart' && this.title.screen === 'main') {
         this.requestDebugRestartPull();
         this.audio.ui();
@@ -6553,21 +6733,19 @@ export default class Game {
         this.audio.ui();
         return;
       }
+      if (action === 'storage') {
+        this.title.setScreen('storage');
+        this.audio.ui();
+        return;
+      }
       if (action === 'robtersession') {
         this.robterSession.enter();
         this.transitionTo('robtersession');
         this.audio.ui();
         return;
       }
-      if (action === 'campaign') {
-        if (this.gameMode !== 'story' && this.storyData) {
-          this.gameMode = 'story';
-          this.applyWorldData(this.storyData);
-          this.resetRun();
-        } else {
-          this.gameMode = 'story';
-        }
-        this.transitionTo('dialog');
+      if (action === 'recent-level') {
+        this.playMostRecentLevel();
         this.audio.ui();
       }
     }
@@ -6718,6 +6896,17 @@ export default class Game {
         this.recordFeedback('menu navigate', 'visual');
         return;
       }
+      if (this.title.screen === 'storage') {
+        if (action === 'back') {
+          this.title.setScreen('main');
+        } else {
+          this.handleServerStorageAction(action);
+        }
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
       if (action === 'debug-restart' && this.title.screen === 'main') {
         this.requestDebugRestartPull();
         this.audio.ui();
@@ -6740,6 +6929,13 @@ export default class Game {
         this.recordFeedback('menu navigate', 'visual');
         return;
       }
+      if (action === 'storage') {
+        this.title.setScreen('storage');
+        this.audio.ui();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
       if (action === 'robtersession') {
         this.robterSession.enter();
         this.transitionTo('robtersession');
@@ -6748,15 +6944,8 @@ export default class Game {
         this.recordFeedback('menu navigate', 'visual');
         return;
       }
-      if (action === 'campaign') {
-        if (this.gameMode !== 'story' && this.storyData) {
-          this.gameMode = 'story';
-          this.applyWorldData(this.storyData);
-          this.resetRun();
-        } else {
-          this.gameMode = 'story';
-        }
-        this.transitionTo('dialog');
+      if (action === 'recent-level') {
+        this.playMostRecentLevel();
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
