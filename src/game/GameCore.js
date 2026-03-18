@@ -533,6 +533,15 @@ export default class Game {
 
 
   refreshRoomAmbient(roomIndex = this.activeRoomIndex) {
+    if (!(this.roomAmbientSpawns instanceof Map)) {
+      this.roomAmbientSpawns = new Map();
+    }
+    if (!Array.isArray(this.activeRoomAmbient)) {
+      this.activeRoomAmbient = [];
+    }
+    if (!this.weatherLightning) {
+      this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
+    }
     this.activeRoomAmbient = roomIndex === null || roomIndex === undefined
       ? []
       : (this.roomAmbientSpawns.get(roomIndex) || []).map((spawn) => ({ ...spawn }));
