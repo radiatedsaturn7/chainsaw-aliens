@@ -5970,6 +5970,7 @@ export default class Editor {
   clearTileOverlays(tileX, tileY) {
     this.setElevatorPath(tileX, tileY, false);
     this.setElevatorPlatform(tileX, tileY, false);
+    this.removeEnemy(tileX, tileY);
   }
 
   applyPaint(tileX, tileY, mode) {

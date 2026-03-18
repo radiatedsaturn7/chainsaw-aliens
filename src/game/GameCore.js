@@ -6092,6 +6092,47 @@ export default class Game {
         }
       }
     };
+
+    const drawElectricBranch = (points, { glow = 7, core = 2.2, alpha = 1 } = {}) => {
+      if (points.length < 2) return;
+      const jittered = [points[0]];
+      const phase = time * 18 + x * 0.9 + y * 1.1;
+      for (let i = 1; i < points.length - 1; i += 1) {
+        const prev = points[i - 1];
+        const point = points[i];
+        const next = points[i + 1];
+        const dx = next[0] - prev[0];
+        const dy = next[1] - prev[1];
+        const length = Math.hypot(dx, dy) || 1;
+        const normalX = -dy / length;
+        const normalY = dx / length;
+        const wobble = Math.sin(phase + i * 1.7) * 2.4;
+        jittered.push([point[0] + normalX * wobble, point[1] + normalY * wobble]);
+      }
+      jittered.push(points[points.length - 1]);
+
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.globalAlpha = alpha * 0.9;
+      ctx.strokeStyle = 'rgba(72, 196, 255, 0.35)';
+      ctx.shadowColor = 'rgba(72, 196, 255, 0.75)';
+      ctx.shadowBlur = glow;
+      ctx.lineWidth = glow;
+      ctx.beginPath();
+      ctx.moveTo(jittered[0][0], jittered[0][1]);
+      jittered.slice(1).forEach(([px, py]) => ctx.lineTo(px, py));
+      ctx.stroke();
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = 'rgba(220, 248, 255, 0.95)';
+      ctx.shadowBlur = 0;
+      ctx.lineWidth = core;
+      ctx.beginPath();
+      ctx.moveTo(jittered[0][0], jittered[0][1]);
+      jittered.slice(1).forEach(([px, py]) => ctx.lineTo(px, py));
+      ctx.stroke();
+      ctx.restore();
+    };
     for (let y = 0; y < this.world.height; y += 1) {
       for (let x = 0; x < this.world.width; x += 1) {
         const tile = this.world.getTile(x, y);
@@ -6232,25 +6273,53 @@ export default class Game {
         if (tile === 'e') {
           const baseX = x * tileSize;
           const baseY = y * tileSize;
-          ctx.fillStyle = '#0f2433';
+          const centerX = baseX + tileSize / 2;
+          const centerY = baseY + tileSize / 2;
+          const connectedLeft = this.world.getTile(x - 1, y) === 'e';
+          const connectedRight = this.world.getTile(x + 1, y) === 'e';
+          const connectedUp = this.world.getTile(x, y - 1) === 'e';
+          const connectedDown = this.world.getTile(x, y + 1) === 'e';
+          const connectorCount = [connectedLeft, connectedRight, connectedUp, connectedDown].filter(Boolean).length;
+
+          const plate = ctx.createLinearGradient(baseX, baseY, baseX, baseY + tileSize);
+          plate.addColorStop(0, '#09131c');
+          plate.addColorStop(0.5, '#102635');
+          plate.addColorStop(1, '#081018');
+          ctx.fillStyle = plate;
           ctx.fillRect(baseX, baseY, tileSize, tileSize);
-          ctx.strokeStyle = '#1f4b69';
+          ctx.strokeStyle = '#1d425d';
           ctx.strokeRect(baseX, baseY, tileSize, tileSize);
-          ctx.strokeStyle = 'rgba(120,220,255,0.95)';
-          ctx.lineWidth = 2;
+          ctx.fillStyle = 'rgba(75, 170, 220, 0.14)';
+          ctx.fillRect(baseX + 3, baseY + 3, tileSize - 6, tileSize - 6);
+
+          const branches = [];
+          if (connectedLeft) branches.push([[baseX, centerY], [baseX + tileSize * 0.24, centerY], [centerX, centerY]]);
+          if (connectedRight) branches.push([[centerX, centerY], [baseX + tileSize * 0.76, centerY], [baseX + tileSize, centerY]]);
+          if (connectedUp) branches.push([[centerX, baseY], [centerX, baseY + tileSize * 0.24], [centerX, centerY]]);
+          if (connectedDown) branches.push([[centerX, centerY], [centerX, baseY + tileSize * 0.76], [centerX, baseY + tileSize]]);
+          if (branches.length === 0) {
+            branches.push([[centerX, baseY + 4], [centerX - 2, baseY + tileSize * 0.35], [centerX + 2, baseY + tileSize * 0.68], [centerX, baseY + tileSize - 4]]);
+          }
+
+          branches.forEach((points) => drawElectricBranch(points, { glow: 8, core: 2.4 }));
+
+          if (connectorCount >= 2 || branches.length === 0) {
+            const forkPhase = time * 16 + x * 1.3 - y * 0.8;
+            drawElectricBranch([
+              [centerX - 5, centerY + Math.sin(forkPhase) * 2],
+              [centerX, centerY - 1],
+              [centerX + 6, centerY + Math.cos(forkPhase) * 2]
+            ], { glow: 5, core: 1.4, alpha: 0.9 });
+          }
+
+          ctx.save();
+          ctx.fillStyle = 'rgba(210, 245, 255, 0.9)';
+          ctx.shadowColor = 'rgba(130, 225, 255, 0.95)';
+          ctx.shadowBlur = 10;
           ctx.beginPath();
-          ctx.moveTo(baseX + 5, baseY + tileSize * 0.25);
-          ctx.lineTo(baseX + tileSize * 0.42, baseY + tileSize * 0.18 + Math.sin(time * 12 + x) * 2);
-          ctx.lineTo(baseX + tileSize * 0.35, baseY + tileSize * 0.52);
-          ctx.lineTo(baseX + tileSize * 0.7, baseY + tileSize * 0.46 + Math.cos(time * 10 + y) * 2);
-          ctx.lineTo(baseX + tileSize * 0.6, baseY + tileSize - 5);
-          ctx.stroke();
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = 'rgba(180,245,255,0.55)';
-          ctx.beginPath();
-          ctx.moveTo(baseX + 8, baseY + 8);
-          ctx.lineTo(baseX + tileSize - 10, baseY + tileSize - 10);
-          ctx.stroke();
+          ctx.arc(centerX, centerY, 2.4 + Math.sin(time * 10 + x + y) * 0.45, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
         }
         if (tile === 'I') {
           ctx.fillStyle = '#8fd6ff';
