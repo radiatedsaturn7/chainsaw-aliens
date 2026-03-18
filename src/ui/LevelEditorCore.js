@@ -89,7 +89,10 @@ const STANDARD_ENEMY_TYPES = [
   { id: 'pouncer', label: 'Pouncer', glyph: 'PN', description: 'Spring-loaded hunter that lunges forward.' },
   { id: 'coward', label: 'Coward', glyph: 'CW', description: 'Shy skirmisher that backs away when you approach.' },
   { id: 'ranger', label: 'Ranger', glyph: 'RG', description: 'Marksman that kites and fires precise shots.' },
-  { id: 'sentinel', label: 'Sentinel', glyph: 'SE', description: 'Orbital sentinel that fires in pulses.' },
+  { id: 'sentinel', label: 'Sentinel', glyph: 'SE', description: 'Orbital sentinel that fires in pulses.' }
+];
+
+const AMBIENT_ENEMY_TYPES = [
   { id: 'water-drip', label: 'Water Drip', glyph: 'WD', description: 'Invisible spawner that drips water straight down until blocked.' },
   { id: 'acid-drip', label: 'Acid Drip', glyph: 'AD', description: 'Invisible spawner that drips corrosive fluid straight down until blocked.' },
   { id: 'lava-drip', label: 'Lava Drip', glyph: 'LD', description: 'Invisible spawner that drips molten lava straight down until blocked.' },
@@ -125,7 +128,7 @@ const BOSS_ROOM_PREFS = {
   cataclysmcolossus: { shape: 'large', theme: 'cave', hazards: ['L'] }
 };
 
-const ENEMY_TYPES = [...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
+const ENEMY_TYPES = [...STANDARD_ENEMY_TYPES, ...AMBIENT_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
 
 const SHAPE_TOOLS = [
   { id: 'rect', label: 'Rectangle Fill', short: 'RECT' },
@@ -410,7 +413,7 @@ export default class Editor {
       enemies: true,
       prefabs: true
     };
-    this.panelTabs = ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'npcs', 'prefabs', 'graphics', 'music'];
+    this.panelTabs = ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       file: 0,
@@ -459,7 +462,7 @@ export default class Editor {
     this.drawer = {
       open: false,
       tabIndex: 0,
-      tabs: ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'npcs', 'prefabs', 'graphics', 'music'],
+      tabs: ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -1345,6 +1348,18 @@ export default class Editor {
           label: `${enemy.label} [${enemy.glyph}]`,
           enemy,
           tooltip: `Enemy: ${enemy.label}`,
+          onClick: () => {
+            this.enemyCategory = 'standard';
+            this.setEnemyType(enemy);
+            this.mode = 'enemy';
+          }
+        })),
+        { id: 'npc-sep-ambience', label: '──────── AMBIENCE ────────', tooltip: 'Ambient weather and spawners', separator: true, onClick: () => {} },
+        ...AMBIENT_ENEMY_TYPES.map((enemy) => ({
+          id: `npc-${enemy.id}`,
+          label: `${enemy.label} [${enemy.glyph}]`,
+          enemy,
+          tooltip: `Ambience: ${enemy.label}`,
           onClick: () => {
             this.enemyCategory = 'standard';
             this.setEnemyType(enemy);
@@ -7484,9 +7499,9 @@ export default class Editor {
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
         { id: 'toolbox', label: 'Toolbox' },
         { id: 'tiles', label: 'Tiles' },
+        { id: 'npcs', label: 'NPCs' },
         { id: 'triggers', label: 'Triggers' },
         { id: 'powerups', label: 'Powerups' },
-        { id: 'npcs', label: 'NPCs' },
         { id: 'prefabs', label: 'Structures' },
         { id: 'graphics', label: 'Graphics' },
         { id: 'music', label: 'Music' },
@@ -7698,6 +7713,19 @@ export default class Editor {
               active: this.enemyType.id === enemy.id,
               preview: { type: 'enemy', enemy },
               tooltip: `Enemy: ${enemy.label}`,
+              onClick: () => {
+                this.enemyCategory = 'standard';
+                this.setEnemyType(enemy);
+                this.mode = 'enemy';
+              }
+            })),
+            { id: 'npc-sep-ambience', label: '──────── AMBIENCE ────────', separator: true, active: false, tooltip: 'Ambient weather and spawners', onClick: () => {} },
+            ...AMBIENT_ENEMY_TYPES.map((enemy) => ({
+              id: `npc-${enemy.id}`,
+              label: `${enemy.label} [${enemy.glyph}]`,
+              active: this.enemyType.id === enemy.id,
+              preview: { type: 'enemy', enemy },
+              tooltip: `Ambience: ${enemy.label}`,
               onClick: () => {
                 this.enemyCategory = 'standard';
                 this.setEnemyType(enemy);
@@ -8112,9 +8140,9 @@ export default class Editor {
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
         { id: 'toolbox', label: 'TOOLBOX' },
         { id: 'tiles', label: 'TILES' },
+        { id: 'npcs', label: 'NPCS' },
         { id: 'triggers', label: 'TRIGGERS' },
         { id: 'powerups', label: 'POWERUPS' },
-        { id: 'npcs', label: 'NPCS' },
         { id: 'prefabs', label: 'STRUCTURES' },
         { id: 'graphics', label: 'GRAPHICS' },
         { id: 'music', label: 'MUSIC' },
