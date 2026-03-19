@@ -6618,6 +6618,7 @@ export default class Game {
 
       ctx.save();
       if (hasLongCenterSpan) {
+        drawDoorFillerSegment(baseX, baseY, width, height, fillerTile || '#');
         if (cluster.horizontal) {
           const fillerWidth = Math.max(0, width - capSpan * 2);
           if (fillerWidth > 0) {
