@@ -629,10 +629,10 @@ export default class Game {
       this.roomLightFlicker.timer -= dt;
       if (this.roomLightFlicker.timer <= 0) {
         const pulse = Math.random();
-        this.roomLightFlicker.target = pulse < 0.12 ? 0.42 : pulse < 0.42 ? 0.18 : 0.06;
-        this.roomLightFlicker.timer = pulse < 0.12 ? 0.05 + Math.random() * 0.08 : 0.12 + Math.random() * 0.22;
+        this.roomLightFlicker.target = pulse < 0.14 ? 0.72 : pulse < 0.44 ? 0.4 : 0.14;
+        this.roomLightFlicker.timer = pulse < 0.14 ? 0.04 + Math.random() * 0.06 : 0.1 + Math.random() * 0.16;
       }
-      this.roomLightFlicker.value += (this.roomLightFlicker.target - this.roomLightFlicker.value) * Math.min(1, dt * 9);
+      this.roomLightFlicker.value += (this.roomLightFlicker.target - this.roomLightFlicker.value) * Math.min(1, dt * 12);
     } else {
       this.roomLightFlicker.target = 0;
       this.roomLightFlicker.value += (0 - this.roomLightFlicker.value) * Math.min(1, dt * 5);
@@ -6242,34 +6242,20 @@ export default class Game {
     if (this.ambientParticles.length === 0 && this.weatherLightning.flash <= 0 && !hasFlicker) return;
     ctx.save();
     if (hasFlicker) {
-      const room = this.world.getRoomBounds(this.activeRoomIndex);
-      if (room) {
-        const tileSize = this.world.tileSize;
-        const left = room.minX * tileSize;
-        const top = room.minY * tileSize;
-        const width = (room.maxX - room.minX + 1) * tileSize;
-        const height = (room.maxY - room.minY + 1) * tileSize;
-        ctx.globalAlpha = this.roomLightFlicker.value;
-        ctx.fillStyle = 'rgba(10, 12, 18, 0.95)';
-        ctx.fillRect(left, top, width, height);
-      }
+      ctx.globalAlpha = this.roomLightFlicker.value;
+      ctx.fillStyle = 'rgba(6, 8, 12, 0.98)';
+      ctx.fillRect(this.camera.x, this.camera.y, this.camera.width, this.camera.height);
     }
     if (this.activeRoomWeather && this.activeRoomIndex !== null && this.activeRoomIndex !== undefined) {
-      const room = this.world.getRoomBounds(this.activeRoomIndex);
       const fogProfile = {
-        'weather-storm': { color: 'rgba(120,130,145,0.18)', alpha: 0.18 },
-        'weather-hurricane': { color: 'rgba(102,112,125,0.24)', alpha: 0.24 },
-        'weather-blizzard': { color: 'rgba(245,248,255,0.2)', alpha: 0.2 }
+        'weather-storm': { color: 'rgba(120,130,145,0.24)', alpha: 0.24 },
+        'weather-hurricane': { color: 'rgba(102,112,125,0.32)', alpha: 0.32 },
+        'weather-blizzard': { color: 'rgba(245,248,255,0.26)', alpha: 0.26 }
       }[this.activeRoomWeather];
-      if (room && fogProfile) {
-        const tileSize = this.world.tileSize;
-        const left = room.minX * tileSize;
-        const top = room.minY * tileSize;
-        const width = (room.maxX - room.minX + 1) * tileSize;
-        const height = (room.maxY - room.minY + 1) * tileSize;
+      if (fogProfile) {
         ctx.globalAlpha = fogProfile.alpha * (0.8 + Math.sin(this.worldTime * 0.7) * 0.08);
         ctx.fillStyle = fogProfile.color;
-        ctx.fillRect(left, top, width, height);
+        ctx.fillRect(this.camera.x, this.camera.y, this.camera.width, this.camera.height);
       }
     }
     this.ambientParticles.forEach((particle) => {
