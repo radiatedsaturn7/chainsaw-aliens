@@ -6646,7 +6646,6 @@ export default class Game {
         } else {
           const centerY = baseY + capSpan;
           const centerHeight = Math.max(0, height - capSpan * 2);
-          drawDoorFillerSegment(baseX, baseY, width, height, fillerTile || '#', { darker: true });
           drawDoorModule(baseX, baseY, width, capSpan, true);
           drawDoorModule(baseX, baseY + height - capSpan, width, capSpan, true);
           if (centerHeight > 0) {
