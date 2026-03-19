@@ -2452,9 +2452,9 @@ export default class Game {
     const rightDoor = roomDoorTiles.some(({ x }) => x > room.maxX);
     const topDoor = roomDoorTiles.some(({ y }) => y < room.minY);
     const bottomDoor = roomDoorTiles.some(({ y }) => y > room.maxY);
-    const leftPadding = leftDoor ? tileSize : 0;
-    const rightPadding = rightDoor ? tileSize : 0;
-    const topPadding = topDoor ? tileSize : 0;
+    const leftPadding = Math.max(leftDoor ? tileSize : 0, tileSize);
+    const rightPadding = Math.max(rightDoor ? tileSize : 0, tileSize);
+    const topPadding = Math.max(topDoor ? tileSize : 0, tileSize);
     const bottomPadding = Math.max(bottomDoor ? tileSize : 0, tileSize);
     const worldRight = this.world.width * tileSize;
     const worldBottom = this.world.height * tileSize;
@@ -6236,9 +6236,12 @@ export default class Game {
   }
 
   drawAmbientEffects(ctx) {
-    if (this.ambientParticles.length === 0 && this.weatherLightning.flash <= 0) return;
+    const hasFlicker = this.activeRoomIndex !== null
+      && this.activeRoomIndex !== undefined
+      && this.roomLightFlicker?.value > 0.01;
+    if (this.ambientParticles.length === 0 && this.weatherLightning.flash <= 0 && !hasFlicker) return;
     ctx.save();
-    if (this.activeRoomIndex !== null && this.activeRoomIndex !== undefined && this.roomLightFlicker?.value > 0.01) {
+    if (hasFlicker) {
       const room = this.world.getRoomBounds(this.activeRoomIndex);
       if (room) {
         const tileSize = this.world.tileSize;
@@ -6556,7 +6559,17 @@ export default class Game {
       ctx.lineWidth = 2;
       ctx.shadowColor = glowColor;
       ctx.shadowBlur = 8;
-      ctx.strokeRect(baseX + 1, baseY + 1, width - 2, height - 2);
+      if (hasLongCenterSpan) {
+        if (cluster.horizontal) {
+          ctx.strokeRect(baseX + 1, baseY + 1, capSpan - 2, height - 2);
+          ctx.strokeRect(baseX + width - capSpan + 1, baseY + 1, capSpan - 2, height - 2);
+        } else {
+          ctx.strokeRect(baseX + 1, baseY + 1, width - 2, capSpan - 2);
+          ctx.strokeRect(baseX + 1, baseY + height - capSpan + 1, width - 2, capSpan - 2);
+        }
+      } else {
+        ctx.strokeRect(baseX + 1, baseY + 1, width - 2, height - 2);
+      }
       ctx.shadowBlur = 0;
 
       if (hasLongCenterSpan && fillerTile) {
@@ -6584,10 +6597,19 @@ export default class Game {
         ctx.fillRect(baseX + 6, baseY + height - 6 - innerH + panelTravel, Math.max(0, leftSpan - 12), innerH);
         ctx.fillRect(baseX + width - rightSpan + 6, baseY + height - 6 - innerH + panelTravel, Math.max(0, rightSpan - 12), innerH);
         ctx.strokeStyle = frameColor;
-        ctx.beginPath();
-        ctx.moveTo(baseX + 6, baseY + height * 0.5);
-        ctx.lineTo(baseX + width - 6, baseY + height * 0.5);
-        ctx.stroke();
+        if (hasLongCenterSpan) {
+          ctx.beginPath();
+          ctx.moveTo(baseX + 6, baseY + height * 0.5);
+          ctx.lineTo(baseX + leftSpan - 6, baseY + height * 0.5);
+          ctx.moveTo(baseX + width - rightSpan + 6, baseY + height * 0.5);
+          ctx.lineTo(baseX + width - 6, baseY + height * 0.5);
+          ctx.stroke();
+        } else {
+          ctx.beginPath();
+          ctx.moveTo(baseX + 6, baseY + height * 0.5);
+          ctx.lineTo(baseX + width - 6, baseY + height * 0.5);
+          ctx.stroke();
+        }
       } else {
         const panelTravel = Math.max(0, width * 0.5 - bezel - 3) * openAmount;
         const panelWidth = Math.max(4, width * 0.5 - bezel - 2);
@@ -6605,10 +6627,19 @@ export default class Game {
         ctx.fillRect(baseX + 6 - panelTravel, baseY + height - bottomSpan + 6, innerW, Math.max(0, bottomSpan - 12));
         ctx.fillRect(baseX + width - 6 - innerW + panelTravel, baseY + height - bottomSpan + 6, innerW, Math.max(0, bottomSpan - 12));
         ctx.strokeStyle = frameColor;
-        ctx.beginPath();
-        ctx.moveTo(baseX + width * 0.5, baseY + 6);
-        ctx.lineTo(baseX + width * 0.5, baseY + height - 6);
-        ctx.stroke();
+        if (hasLongCenterSpan) {
+          ctx.beginPath();
+          ctx.moveTo(baseX + width * 0.5, baseY + 6);
+          ctx.lineTo(baseX + width * 0.5, baseY + topSpan - 6);
+          ctx.moveTo(baseX + width * 0.5, baseY + height - bottomSpan + 6);
+          ctx.lineTo(baseX + width * 0.5, baseY + height - 6);
+          ctx.stroke();
+        } else {
+          ctx.beginPath();
+          ctx.moveTo(baseX + width * 0.5, baseY + 6);
+          ctx.lineTo(baseX + width * 0.5, baseY + height - 6);
+          ctx.stroke();
+        }
       }
 
       const lightSize = Math.max(6, Math.min(cluster.horizontal ? height : width, 12));
