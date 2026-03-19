@@ -2455,7 +2455,7 @@ export default class Game {
     const leftPadding = leftDoor ? tileSize : 0;
     const rightPadding = rightDoor ? tileSize : 0;
     const topPadding = topDoor ? tileSize : 0;
-    const bottomPadding = bottomDoor ? tileSize : 0;
+    const bottomPadding = Math.max(bottomDoor ? tileSize : 0, tileSize);
     const worldRight = this.world.width * tileSize;
     const worldBottom = this.world.height * tileSize;
     const left = Math.max(0, room.minX * tileSize - leftPadding);
@@ -4608,6 +4608,16 @@ export default class Game {
     }
     const width = maxX - minX + 1;
     const height = maxY - minY + 1;
+    const hasLeftRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x - 1, y) !== null);
+    const hasRightRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x + 1, y) !== null);
+    const hasTopRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x, y - 1) !== null);
+    const hasBottomRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x, y + 1) !== null);
+    let orientation = width >= height ? 'horizontal' : 'vertical';
+    if (hasLeftRoom && hasRightRoom && !(hasTopRoom && hasBottomRoom)) {
+      orientation = 'vertical';
+    } else if (hasTopRoom && hasBottomRoom && !(hasLeftRoom && hasRightRoom)) {
+      orientation = 'horizontal';
+    }
     return {
       tiles,
       key: tiles.map(({ x, y }) => `${x},${y}`).sort().join('|'),
@@ -4617,7 +4627,8 @@ export default class Game {
       maxY,
       width,
       height,
-      horizontal: width >= height
+      horizontal: orientation === 'horizontal',
+      orientation
     };
   }
 
