@@ -350,6 +350,7 @@ export default class Editor {
     this.triggerOptionPicker = null;
     this.triggerLoadLevelPlacement = null;
     this.triggerResizeId = null;
+    this.triggerMoveDrag = null;
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
     this.triggerEditorScroll = 0;
@@ -2358,6 +2359,36 @@ export default class Editor {
     return trigger;
   }
 
+  getTriggerAtTile(tileX, tileY) {
+    const triggers = this.ensureTriggers();
+    for (let index = triggers.length - 1; index >= 0; index -= 1) {
+      const trigger = triggers[index];
+      const [x, y, w, h] = trigger.rect || [0, 0, 0, 0];
+      if (tileX >= x && tileX < x + w && tileY >= y && tileY < y + h) {
+        return trigger;
+      }
+    }
+    return null;
+  }
+
+  deleteSelectedTrigger() {
+    const selected = this.getSelectedTrigger();
+    if (!selected) return false;
+    const triggers = this.ensureTriggers();
+    const index = triggers.findIndex((entry) => entry.id === selected.id);
+    if (index < 0) return false;
+    triggers.splice(index, 1);
+    this.selectedTriggerId = triggers[0]?.id || null;
+    this.triggerEditorOpen = Boolean(this.selectedTriggerId);
+    this.triggerEditorView = 'main';
+    this.triggerActionDraft = null;
+    this.triggerEditingActionId = null;
+    this.triggerEditorScroll = 0;
+    this.triggerMoveDrag = null;
+    this.persistAutosave();
+    return true;
+  }
+
   createTriggerAction(typeId) {
     const base = {
       id: `action-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
@@ -2466,6 +2497,7 @@ export default class Editor {
     this.triggerOptionPicker = null;
     this.triggerLoadLevelPlacement = null;
     this.triggerResizeId = null;
+    this.triggerMoveDrag = null;
   }
 
   applyTriggerEditor(trigger) {
@@ -5181,8 +5213,22 @@ export default class Editor {
       if (this.triggerEditorOpen) return;
       if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
       const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
-      this.triggerZoneStart = { x: tileX, y: tileY };
-      this.triggerZoneTarget = { x: tileX, y: tileY };
+      const existingTrigger = this.getTriggerAtTile(tileX, tileY);
+      if (existingTrigger) {
+        const [x, y, w, h] = existingTrigger.rect || [tileX, tileY, 1, 1];
+        this.selectedTriggerId = existingTrigger.id;
+        this.triggerMoveDrag = {
+          id: payload.id ?? null,
+          triggerId: existingTrigger.id,
+          startTileX: tileX,
+          startTileY: tileY,
+          rect: [x, y, w, h],
+          moved: false
+        };
+      } else {
+        this.triggerZoneStart = { x: tileX, y: tileY };
+        this.triggerZoneTarget = { x: tileX, y: tileY };
+      }
       return;
     }
 
@@ -5321,6 +5367,24 @@ export default class Editor {
         this.midiNoteDrag.note.pitch = nextPitch;
       }
       this.midiNoteDirty = true;
+      return;
+    }
+
+    if (this.triggerMoveDrag && this.mode === 'trigger'
+      && (payload.id === undefined || this.triggerMoveDrag.id === (payload.id ?? null))) {
+      const { tileX, tileY } = this.screenToTile(payload.x ?? this.lastPointer.x, payload.y ?? this.lastPointer.y);
+      const deltaX = tileX - this.triggerMoveDrag.startTileX;
+      const deltaY = tileY - this.triggerMoveDrag.startTileY;
+      if (deltaX !== 0 || deltaY !== 0) {
+        this.triggerMoveDrag.moved = true;
+      }
+      const trigger = this.ensureTriggers().find((entry) => entry.id === this.triggerMoveDrag.triggerId);
+      if (trigger) {
+        const [startX, startY, width, height] = this.triggerMoveDrag.rect;
+        const nextX = clamp(startX + deltaX, 0, Math.max(0, this.game.world.width - width));
+        const nextY = clamp(startY + deltaY, 0, Math.max(0, this.game.world.height - height));
+        trigger.rect = [nextX, nextY, width, height];
+      }
       return;
     }
 
@@ -5485,6 +5549,28 @@ export default class Editor {
       }
       return;
     }
+    if (this.triggerMoveDrag && this.mode === 'trigger'
+      && (payload.id === undefined || this.triggerMoveDrag.id === (payload.id ?? null))) {
+      const drag = this.triggerMoveDrag;
+      this.triggerMoveDrag = null;
+      const trigger = this.ensureTriggers().find((entry) => entry.id === drag.triggerId);
+      if (trigger) {
+        if (drag.moved) {
+          this.focusCameraOnTrigger(trigger);
+          this.persistAutosave();
+        } else {
+          this.selectedTriggerId = trigger.id;
+          this.triggerEditorOpen = true;
+          this.triggerEditorView = 'main';
+          this.triggerActionDraft = null;
+          this.triggerEditingActionId = null;
+          this.triggerEditorScroll = 0;
+          this.focusCameraOnTrigger(trigger);
+        }
+      }
+      return;
+    }
+
     if (this.triggerZoneStart && this.mode === 'trigger') {
       const { tileX, tileY } = this.screenToTile(payload.x ?? this.lastPointer.x, payload.y ?? this.lastPointer.y);
       this.triggerZoneTarget = { x: tileX, y: tileY };
@@ -5509,6 +5595,7 @@ export default class Editor {
       }
       this.triggerZoneStart = null;
       this.triggerZoneTarget = null;
+      this.triggerMoveDrag = null;
       return;
     }
 
@@ -8522,25 +8609,13 @@ export default class Editor {
             this.triggerEditingActionId = null;
             this.triggerPlacementMode = null;
             this.triggerResizeId = selected.id;
+            this.triggerMoveDrag = null;
             this.mode = 'trigger';
             const [zoneX, zoneY, zoneW, zoneH] = selected.rect;
             this.triggerZoneStart = { x: zoneX, y: zoneY };
             this.triggerZoneTarget = { x: zoneX + zoneW - 1, y: zoneY + zoneH - 1 };
           }, 'Resize trigger zone by redrawing it');
-          drawButton(panelX + 16 + bottomButtonW, deleteTriggerY, bottomButtonW, 40, 'Delete Trigger', false, () => {
-            const triggers = this.ensureTriggers();
-            const idx = triggers.findIndex((entry) => entry.id === selected.id);
-            if (idx >= 0) {
-              triggers.splice(idx, 1);
-              this.selectedTriggerId = triggers[0]?.id || null;
-              this.triggerEditorOpen = Boolean(this.selectedTriggerId);
-              this.triggerEditorView = 'main';
-              this.triggerActionDraft = null;
-              this.triggerEditingActionId = null;
-              this.triggerEditorScroll = 0;
-              this.persistAutosave();
-            }
-          }, 'Remove trigger zone');
+          drawButton(panelX + 16 + bottomButtonW, deleteTriggerY, bottomButtonW, 40, 'Delete Trigger', false, () => { this.deleteSelectedTrigger(); }, 'Remove trigger zone');
         } else if (this.triggerEditorView === 'pick-condition') {
           drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Back', false, () => { this.triggerEditorView = 'main'; this.triggerEditorScroll = 0; }, 'Return to trigger');
           y += sectionButtonH + rowGap;
@@ -8648,9 +8723,10 @@ export default class Editor {
         }
         ctx.restore();
 
-        const footerButtonW = (panelWidth - 36) / 2;
-        drawButton(panelX + 12, footerY, footerButtonW, 40, 'Cancel', false, () => { this.closeTriggerEditor(); }, 'Close trigger editor');
-        drawButton(panelX + 20 + footerButtonW, footerY, footerButtonW, 40, 'Apply', false, () => { this.applyTriggerEditor(selected); }, 'Apply trigger changes');
+        const footerButtonW = (panelWidth - 40) / 3;
+        drawButton(panelX + 12, footerY, footerButtonW, 40, 'Delete', false, () => { this.deleteSelectedTrigger(); }, 'Delete this trigger');
+        drawButton(panelX + 16 + footerButtonW, footerY, footerButtonW, 40, 'Cancel', false, () => { this.closeTriggerEditor(); }, 'Close trigger editor');
+        drawButton(panelX + 20 + footerButtonW * 2, footerY, footerButtonW, 40, 'Apply', false, () => { this.applyTriggerEditor(selected); }, 'Apply trigger changes');
 
         if (maxScroll > 0) {
           const barW = 6;
