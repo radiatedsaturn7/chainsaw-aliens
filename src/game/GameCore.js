@@ -259,6 +259,7 @@ export default class Game {
     this.slowTimer = 0;
     this.doorTransition = null;
     this.doorCooldown = 0;
+    this.doorVisualStates = new Map();
     this.boss = null;
     this.bossActive = false;
     this.bossInteractions = {
@@ -990,6 +991,7 @@ export default class Game {
     this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
     this.refreshWorldCaches();
     this.resetTriggerState();
+    this.doorVisualStates = new Map();
   }
 
 
@@ -2133,6 +2135,7 @@ export default class Game {
     this.damageFlashTimer = Math.max(0, this.damageFlashTimer - dt * timeScale);
     this.ignitirFlashTimer = Math.max(0, this.ignitirFlashTimer - dt * timeScale);
     this.doorCooldown = Math.max(0, this.doorCooldown - dt * timeScale);
+    this.updateDoorVisualStates(dt * timeScale);
     if (this.spawnPauseTimer > 0) {
       this.spawnPauseTimer = Math.max(0, this.spawnPauseTimer - dt);
       this.updateEffects(dt);
@@ -2579,6 +2582,7 @@ export default class Game {
 
   startDoorTransition(tileX, tileY, input) {
     if (this.doorTransition || this.doorCooldown > 0) return false;
+    if (this.world.isDoorLocked(tileX, tileY)) return false;
     const inputH = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
     const inputV = (input.isDown('down') ? 1 : 0) - (input.isDown('up') ? 1 : 0);
     let primaryDir = { dx: 0, dy: 0 };
@@ -4536,16 +4540,113 @@ export default class Game {
     });
   }
 
-  setRoomDoorsLocked(roomIndex, locked) {
+  getRoomDoorTiles(roomIndex) {
     const room = this.world.getRoomBounds?.(roomIndex);
-    if (!room) return;
+    if (!room) return [];
+    const tiles = [];
+    const seen = new Set();
+    const addDoorTile = (x, y) => {
+      if (this.world.getTile(x, y) !== 'D') return;
+      const key = `${x},${y}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      tiles.push({ x, y });
+    };
+    for (let x = room.minX; x <= room.maxX; x += 1) {
+      addDoorTile(x, room.minY - 1);
+      addDoorTile(x, room.maxY + 1);
+    }
     for (let y = room.minY; y <= room.maxY; y += 1) {
-      for (let x = room.minX; x <= room.maxX; x += 1) {
-        if (this.world.getTile(x, y) === 'D') {
-          this.world.setDoorLocked(x, y, locked);
-        }
+      addDoorTile(room.minX - 1, y);
+      addDoorTile(room.maxX + 1, y);
+    }
+    return tiles;
+  }
+
+  setRoomDoorsLocked(roomIndex, locked) {
+    this.getRoomDoorTiles(roomIndex).forEach(({ x, y }) => this.world.setDoorLocked(x, y, locked));
+  }
+
+  getDoorClusterAtTile(tileX, tileY) {
+    if (this.world.getTile(tileX, tileY) !== 'D') return null;
+    const stack = [{ x: tileX, y: tileY }];
+    const visited = new Set([`${tileX},${tileY}`]);
+    const tiles = [];
+    let minX = tileX;
+    let maxX = tileX;
+    let minY = tileY;
+    let maxY = tileY;
+    while (stack.length) {
+      const current = stack.pop();
+      tiles.push(current);
+      minX = Math.min(minX, current.x);
+      maxX = Math.max(maxX, current.x);
+      minY = Math.min(minY, current.y);
+      maxY = Math.max(maxY, current.y);
+      [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1]
+      ].forEach(([dx, dy]) => {
+        const nextX = current.x + dx;
+        const nextY = current.y + dy;
+        if (this.world.getTile(nextX, nextY) !== 'D') return;
+        const key = `${nextX},${nextY}`;
+        if (visited.has(key)) return;
+        visited.add(key);
+        stack.push({ x: nextX, y: nextY });
+      });
+    }
+    const width = maxX - minX + 1;
+    const height = maxY - minY + 1;
+    return {
+      tiles,
+      key: tiles.map(({ x, y }) => `${x},${y}`).sort().join('|'),
+      minX,
+      minY,
+      maxX,
+      maxY,
+      width,
+      height,
+      horizontal: width >= height
+    };
+  }
+
+  getDoorVisualState(clusterKey) {
+    let state = this.doorVisualStates.get(clusterKey);
+    if (!state) {
+      state = { open: 0 };
+      this.doorVisualStates.set(clusterKey, state);
+    }
+    return state;
+  }
+
+  updateDoorVisualStates(dt) {
+    const tileSize = this.world.tileSize;
+    const playerTileX = Math.floor(this.player.x / tileSize);
+    const playerTileY = Math.floor(this.player.y / tileSize);
+    const activeCluster = this.world.getTile(playerTileX, playerTileY) === 'D'
+      ? this.getDoorClusterAtTile(playerTileX, playerTileY)
+      : null;
+    const activeKey = activeCluster?.key || null;
+    const touched = new Set();
+    for (let y = 0; y < this.world.height; y += 1) {
+      for (let x = 0; x < this.world.width; x += 1) {
+        if (this.world.getTile(x, y) !== 'D') continue;
+        const cluster = this.getDoorClusterAtTile(x, y);
+        if (!cluster || touched.has(cluster.key)) continue;
+        touched.add(cluster.key);
+        const isLocked = cluster.tiles.some(({ x: doorX, y: doorY }) => this.world.isDoorLocked(doorX, doorY));
+        const state = this.getDoorVisualState(cluster.key);
+        const targetOpen = !isLocked && cluster.key === activeKey ? 1 : 0;
+        const speed = targetOpen > state.open ? 8 : 6;
+        state.open += (targetOpen - state.open) * Math.min(1, dt * speed);
       }
     }
+    Array.from(this.doorVisualStates.keys()).forEach((key) => {
+      if (!touched.has(key)) this.doorVisualStates.delete(key);
+    });
   }
 
   fireTrigger(trigger, triggerId) {
@@ -6195,7 +6296,7 @@ export default class Game {
     ctx.restore();
   }
 
-  drawWorld(ctx, { showDoors = false, decalAlphaMultiplier = 1 } = {}) {
+  drawWorld(ctx, { showDoors = true, decalAlphaMultiplier = 1 } = {}) {
     const tileSize = this.world.tileSize;
     const time = this.worldTime;
     const ignitirTint = this.getIgnitirTint();
@@ -6361,6 +6462,75 @@ export default class Game {
       ctx.stroke();
       ctx.restore();
     };
+    const drawDoorCluster = (cluster) => {
+      if (!cluster) return;
+      const state = this.getDoorVisualState(cluster.key);
+      const openAmount = Math.max(0, Math.min(1, state?.open || 0));
+      const isLocked = cluster.tiles.some(({ x, y }) => this.world.isDoorLocked(x, y));
+      const frameColor = isLocked ? '#d34b4b' : '#69d8ff';
+      const glowColor = isLocked ? 'rgba(255, 90, 90, 0.75)' : 'rgba(90, 225, 255, 0.75)';
+      const panelColor = isLocked ? '#5a1418' : '#163545';
+      const innerColor = isLocked ? '#a32028' : '#1b7ea3';
+      const baseX = cluster.minX * tileSize;
+      const baseY = cluster.minY * tileSize;
+      const width = cluster.width * tileSize;
+      const height = cluster.height * tileSize;
+      const bezel = 3;
+
+      ctx.save();
+      ctx.fillStyle = 'rgba(8, 15, 22, 0.92)';
+      ctx.fillRect(baseX, baseY, width, height);
+      ctx.strokeStyle = frameColor;
+      ctx.lineWidth = 2;
+      ctx.shadowColor = glowColor;
+      ctx.shadowBlur = 8;
+      ctx.strokeRect(baseX + 1, baseY + 1, width - 2, height - 2);
+      ctx.shadowBlur = 0;
+
+      if (cluster.horizontal) {
+        const panelTravel = Math.max(0, height * 0.5 - bezel - 3) * openAmount;
+        const panelHeight = Math.max(4, height * 0.5 - bezel - 2);
+        ctx.fillStyle = panelColor;
+        ctx.fillRect(baseX + bezel, baseY + bezel - panelTravel, width - bezel * 2, panelHeight);
+        ctx.fillRect(baseX + bezel, baseY + height - bezel - panelHeight + panelTravel, width - bezel * 2, panelHeight);
+        ctx.fillStyle = innerColor;
+        ctx.fillRect(baseX + 6, baseY + 6 - panelTravel, width - 12, Math.max(2, panelHeight - 6));
+        ctx.fillRect(baseX + 6, baseY + height - 6 - Math.max(2, panelHeight - 6) + panelTravel, width - 12, Math.max(2, panelHeight - 6));
+        ctx.strokeStyle = frameColor;
+        ctx.beginPath();
+        ctx.moveTo(baseX + 6, baseY + height * 0.5);
+        ctx.lineTo(baseX + width - 6, baseY + height * 0.5);
+        ctx.stroke();
+      } else {
+        const panelTravel = Math.max(0, width * 0.5 - bezel - 3) * openAmount;
+        const panelWidth = Math.max(4, width * 0.5 - bezel - 2);
+        ctx.fillStyle = panelColor;
+        ctx.fillRect(baseX + bezel - panelTravel, baseY + bezel, panelWidth, height - bezel * 2);
+        ctx.fillRect(baseX + width - bezel - panelWidth + panelTravel, baseY + bezel, panelWidth, height - bezel * 2);
+        ctx.fillStyle = innerColor;
+        ctx.fillRect(baseX + 6 - panelTravel, baseY + 6, Math.max(2, panelWidth - 6), height - 12);
+        ctx.fillRect(baseX + width - 6 - Math.max(2, panelWidth - 6) + panelTravel, baseY + 6, Math.max(2, panelWidth - 6), height - 12);
+        ctx.strokeStyle = frameColor;
+        ctx.beginPath();
+        ctx.moveTo(baseX + width * 0.5, baseY + 6);
+        ctx.lineTo(baseX + width * 0.5, baseY + height - 6);
+        ctx.stroke();
+      }
+
+      const lightSize = Math.max(6, Math.min(cluster.horizontal ? height : width, 12));
+      ctx.fillStyle = isLocked ? '#ff5252' : '#8df0ff';
+      ctx.shadowColor = glowColor;
+      ctx.shadowBlur = 10;
+      if (cluster.horizontal) {
+        ctx.fillRect(baseX + 6, baseY + height * 0.5 - lightSize * 0.5, 6, lightSize);
+        ctx.fillRect(baseX + width - 12, baseY + height * 0.5 - lightSize * 0.5, 6, lightSize);
+      } else {
+        ctx.fillRect(baseX + width * 0.5 - lightSize * 0.5, baseY + 6, lightSize, 6);
+        ctx.fillRect(baseX + width * 0.5 - lightSize * 0.5, baseY + height - 12, lightSize, 6);
+      }
+      ctx.restore();
+    };
+    const renderedDoorClusters = new Set();
     for (let y = 0; y < this.world.height; y += 1) {
       for (let x = 0; x < this.world.width; x += 1) {
         const tile = this.world.getTile(x, y);
@@ -6582,12 +6752,11 @@ export default class Game {
           ctx.stroke();
         }
         if (tile === 'D' && showDoors) {
-          ctx.strokeStyle = '#fff';
-          ctx.strokeRect(x * tileSize + 4, y * tileSize + 4, tileSize - 8, tileSize - 8);
-          ctx.beginPath();
-          ctx.moveTo(x * tileSize + tileSize / 2, y * tileSize + 6);
-          ctx.lineTo(x * tileSize + tileSize / 2, y * tileSize + tileSize - 6);
-          ctx.stroke();
+          const cluster = this.getDoorClusterAtTile(x, y);
+          if (cluster && !renderedDoorClusters.has(cluster.key)) {
+            renderedDoorClusters.add(cluster.key);
+            drawDoorCluster(cluster);
+          }
         }
         if (tile === 'W') {
           const baseX = x * tileSize;
