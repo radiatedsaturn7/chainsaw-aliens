@@ -97,6 +97,7 @@ const AMBIENT_ENEMY_TYPES = [
   { id: 'acid-drip', label: 'Acid Drip', glyph: 'AD', description: 'Invisible spawner that drips corrosive fluid straight down until blocked.' },
   { id: 'lava-drip', label: 'Lava Drip', glyph: 'LD', description: 'Invisible spawner that drips molten lava straight down until blocked.' },
   { id: 'steam-gasket', label: 'Steam Gasket', glyph: 'SG', description: 'Vent that emits a hot steam column upward.' },
+  { id: 'light-flicker', label: 'Light Flicker', glyph: 'LF', description: 'Makes the current room’s lighting flicker and occasionally dim out.' },
   { id: 'weather-rain', label: 'Rain Weather', glyph: 'RN', description: 'Makes the current room drizzle with light rain.' },
   { id: 'weather-storm', label: 'Storm Weather', glyph: 'ST', description: 'Makes the current room fill with heavy rain.' },
   { id: 'weather-hurricane', label: 'Hurricane Weather', glyph: 'HU', description: 'Heavy rain plus periodic lightning across the current room.' },

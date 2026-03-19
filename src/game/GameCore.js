@@ -89,6 +89,7 @@ const AMBIENT_SPAWN_TYPES = new Set([
   'acid-drip',
   'lava-drip',
   'steam-gasket',
+  'light-flicker',
   'weather-rain',
   'weather-storm',
   'weather-hurricane',
@@ -254,6 +255,7 @@ export default class Game {
     this.activeRoomWeather = null;
     this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
     this.weatherWind = { value: 0, target: 0, timer: 0 };
+    this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
     this.slowTimer = 0;
     this.doorTransition = null;
     this.doorCooldown = 0;
@@ -506,6 +508,7 @@ export default class Game {
     this.activeRoomWeather = null;
     this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
     this.weatherWind = { value: 0, target: 0, timer: 0 };
+    this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
   }
 
   rebuildRoomEnemySpawns() {
@@ -547,6 +550,9 @@ export default class Game {
     if (!this.weatherWind) {
       this.weatherWind = { value: 0, target: 0, timer: 0 };
     }
+    if (!this.roomLightFlicker) {
+      this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
+    }
     this.activeRoomAmbient = roomIndex === null || roomIndex === undefined
       ? []
       : (this.roomAmbientSpawns.get(roomIndex) || []).map((spawn) => ({ ...spawn }));
@@ -558,6 +564,8 @@ export default class Game {
       this.weatherLightning.flash = 0;
       this.weatherWind.target = 0;
       this.weatherWind.timer = 0;
+      this.roomLightFlicker.target = 0;
+      this.roomLightFlicker.timer = 0;
     }
   }
 
@@ -610,6 +618,24 @@ export default class Game {
       this.weatherWind.target = 0;
       this.weatherWind.value += (0 - this.weatherWind.value) * Math.min(1, dt * 2.8);
       this.weatherWind.timer = 0;
+    }
+
+    const hasLightFlicker = this.activeRoomAmbient.some((spawn) => spawn.type === 'light-flicker');
+    if (!this.roomLightFlicker) {
+      this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
+    }
+    if (hasLightFlicker) {
+      this.roomLightFlicker.timer -= dt;
+      if (this.roomLightFlicker.timer <= 0) {
+        const pulse = Math.random();
+        this.roomLightFlicker.target = pulse < 0.12 ? 0.42 : pulse < 0.42 ? 0.18 : 0.06;
+        this.roomLightFlicker.timer = pulse < 0.12 ? 0.05 + Math.random() * 0.08 : 0.12 + Math.random() * 0.22;
+      }
+      this.roomLightFlicker.value += (this.roomLightFlicker.target - this.roomLightFlicker.value) * Math.min(1, dt * 9);
+    } else {
+      this.roomLightFlicker.target = 0;
+      this.roomLightFlicker.value += (0 - this.roomLightFlicker.value) * Math.min(1, dt * 5);
+      this.roomLightFlicker.timer = 0;
     }
 
     this.ambientParticles.forEach((particle) => {
@@ -1199,6 +1225,7 @@ export default class Game {
     this.activeRoomWeather = null;
     this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
     this.weatherWind = { value: 0, target: 0, timer: 0 };
+    this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
     this.spawnEnemies({ allowStoryFallback: !playtest });
     this.bossInteractions = {
       anchor: false,
@@ -6031,6 +6058,19 @@ export default class Game {
   drawAmbientEffects(ctx) {
     if (this.ambientParticles.length === 0 && this.weatherLightning.flash <= 0) return;
     ctx.save();
+    if (this.activeRoomIndex !== null && this.activeRoomIndex !== undefined && this.roomLightFlicker?.value > 0.01) {
+      const room = this.world.getRoomBounds(this.activeRoomIndex);
+      if (room) {
+        const tileSize = this.world.tileSize;
+        const left = room.minX * tileSize;
+        const top = room.minY * tileSize;
+        const width = (room.maxX - room.minX + 1) * tileSize;
+        const height = (room.maxY - room.minY + 1) * tileSize;
+        ctx.globalAlpha = this.roomLightFlicker.value;
+        ctx.fillStyle = 'rgba(10, 12, 18, 0.95)';
+        ctx.fillRect(left, top, width, height);
+      }
+    }
     if (this.activeRoomWeather && this.activeRoomIndex !== null && this.activeRoomIndex !== undefined) {
       const room = this.world.getRoomBounds(this.activeRoomIndex);
       const fogProfile = {
