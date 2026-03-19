@@ -1342,24 +1342,24 @@ export default class Editor {
       ];
     } else if (tabId === 'npcs') {
       items = [
-        { id: 'npc-sep-standard', label: '──────── ENEMIES ────────', tooltip: 'Standard enemies', separator: true, onClick: () => {} },
-        ...STANDARD_ENEMY_TYPES.map((enemy) => ({
-          id: `npc-${enemy.id}`,
-          label: `${enemy.label} [${enemy.glyph}]`,
-          enemy,
-          tooltip: `Enemy: ${enemy.label}`,
-          onClick: () => {
-            this.enemyCategory = 'standard';
-            this.setEnemyType(enemy);
-            this.mode = 'enemy';
-          }
-        })),
         { id: 'npc-sep-ambience', label: '──────── AMBIENCE ────────', tooltip: 'Ambient weather and spawners', separator: true, onClick: () => {} },
         ...AMBIENT_ENEMY_TYPES.map((enemy) => ({
           id: `npc-${enemy.id}`,
           label: `${enemy.label} [${enemy.glyph}]`,
           enemy,
           tooltip: `Ambience: ${enemy.label}`,
+          onClick: () => {
+            this.enemyCategory = 'standard';
+            this.setEnemyType(enemy);
+            this.mode = 'enemy';
+          }
+        })),
+        { id: 'npc-sep-standard', label: '──────── ENEMIES ────────', tooltip: 'Standard enemies', separator: true, onClick: () => {} },
+        ...STANDARD_ENEMY_TYPES.map((enemy) => ({
+          id: `npc-${enemy.id}`,
+          label: `${enemy.label} [${enemy.glyph}]`,
+          enemy,
+          tooltip: `Enemy: ${enemy.label}`,
           onClick: () => {
             this.enemyCategory = 'standard';
             this.setEnemyType(enemy);
@@ -7706,19 +7706,6 @@ export default class Editor {
           columns = 1;
         } else if (activeTab === 'npcs') {
           items = [
-            { id: 'npc-sep-standard', label: '──────── ENEMIES ────────', separator: true, active: false, tooltip: 'Standard enemies', onClick: () => {} },
-            ...STANDARD_ENEMY_TYPES.map((enemy) => ({
-              id: `npc-${enemy.id}`,
-              label: `${enemy.label} [${enemy.glyph}]`,
-              active: this.enemyType.id === enemy.id,
-              preview: { type: 'enemy', enemy },
-              tooltip: `Enemy: ${enemy.label}`,
-              onClick: () => {
-                this.enemyCategory = 'standard';
-                this.setEnemyType(enemy);
-                this.mode = 'enemy';
-              }
-            })),
             { id: 'npc-sep-ambience', label: '──────── AMBIENCE ────────', separator: true, active: false, tooltip: 'Ambient weather and spawners', onClick: () => {} },
             ...AMBIENT_ENEMY_TYPES.map((enemy) => ({
               id: `npc-${enemy.id}`,
@@ -7726,6 +7713,19 @@ export default class Editor {
               active: this.enemyType.id === enemy.id,
               preview: { type: 'enemy', enemy },
               tooltip: `Ambience: ${enemy.label}`,
+              onClick: () => {
+                this.enemyCategory = 'standard';
+                this.setEnemyType(enemy);
+                this.mode = 'enemy';
+              }
+            })),
+            { id: 'npc-sep-standard', label: '──────── ENEMIES ────────', separator: true, active: false, tooltip: 'Standard enemies', onClick: () => {} },
+            ...STANDARD_ENEMY_TYPES.map((enemy) => ({
+              id: `npc-${enemy.id}`,
+              label: `${enemy.label} [${enemy.glyph}]`,
+              active: this.enemyType.id === enemy.id,
+              preview: { type: 'enemy', enemy },
+              tooltip: `Enemy: ${enemy.label}`,
               onClick: () => {
                 this.enemyCategory = 'standard';
                 this.setEnemyType(enemy);
