@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 import World from '../../src/world/World.js';
 
-test('normalizes oversized vertical door columns into two doors with a wall span between them', () => {
+test('oversized door spans stay as unlocked non-solid door tiles for traversal', () => {
   const world = new World();
   const width = 24;
   const height = 24;
@@ -27,13 +27,10 @@ test('normalizes oversized vertical door columns into two doors with a wall span
     regions: []
   });
 
-  for (let y = 4; y <= 5; y += 1) {
-    for (let x = 10; x <= 13; x += 1) assert.equal(world.getTile(x, y), 'D');
-  }
-  for (let y = 6; y <= 17; y += 1) {
-    for (let x = 10; x <= 13; x += 1) assert.equal(world.getTile(x, y), '#');
-  }
-  for (let y = 18; y <= 19; y += 1) {
-    for (let x = 10; x <= 13; x += 1) assert.equal(world.getTile(x, y), 'D');
+  for (let y = 4; y <= 19; y += 1) {
+    for (let x = 10; x <= 13; x += 1) {
+      assert.equal(world.getTile(x, y), 'D');
+      assert.equal(world.isSolid(x, y, {}), false);
+    }
   }
 });

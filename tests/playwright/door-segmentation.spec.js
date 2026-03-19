@@ -26,31 +26,24 @@ async function loadSegmentedDoorScene(page) {
       regions: []
     });
     window.__game.state = 'playing';
+    window.__game.player.x = 11.5 * 32;
+    window.__game.player.y = 12.5 * 32;
     window.__game.camera.x = 0;
     window.__game.camera.y = 0;
     window.__game.draw();
   });
 }
 
-test('normalizes a tall shared doorway into two door caps and saves a visual regression screenshot', async ({ page }, testInfo) => {
+test('renders long doorway fillers as dark foreground blocks while leaving the span traversable', async ({ page }, testInfo) => {
   await loadSegmentedDoorScene(page);
 
-  const tiles = await page.evaluate(() => {
-    const readColumn = (x, yStart, yEnd) => {
-      const out = [];
-      for (let y = yStart; y <= yEnd; y += 1) out.push(window.__game.world.getTile(x, y));
-      return out;
-    };
-    return {
-      upper: readColumn(11, 4, 5),
-      middle: readColumn(11, 6, 17),
-      lower: readColumn(11, 18, 19)
-    };
-  });
+  const state = await page.evaluate(() => ({
+    midTile: window.__game.world.getTile(11, 12),
+    midSolid: window.__game.world.isSolid(11, 12, window.__game.abilities),
+  }));
 
-  expect(tiles.upper).toEqual(['D', 'D']);
-  expect(tiles.middle).toEqual(Array(12).fill('#'));
-  expect(tiles.lower).toEqual(['D', 'D']);
+  expect(state.midTile).toBe('D');
+  expect(state.midSolid).toBe(false);
 
   await page.screenshot({ path: testInfo.outputPath('door-segmentation.png'), fullPage: true });
 });

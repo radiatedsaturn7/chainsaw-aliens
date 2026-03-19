@@ -5958,6 +5958,7 @@ export default class Game {
         ctx.restore();
       }
     }
+    this.drawDoorForegroundOverlays(ctx);
     if (this.testHarness.active && this.testHarness.showCollision) {
       this.drawCollisionBoxes(ctx);
     }
@@ -6308,6 +6309,7 @@ export default class Game {
     const tileSize = this.world.tileSize;
     const time = this.worldTime;
     const ignitirTint = this.getIgnitirTint();
+    const doorForegroundOverlays = [];
     const revealHiddenPaths = this.ignitirSequence
       && this.ignitirSequence.time >= 2.4
       && this.ignitirSequence.time <= 4.6;
@@ -6485,51 +6487,57 @@ export default class Game {
       }
       return candidates.find((tile) => tile && tile !== 'D' && tile !== '.') || '#';
     };
-    const drawDoorFillerSegment = (x, y, width, height, tile) => {
+    const drawDoorFillerSegment = (x, y, width, height, tile, { foreground = false } = {}) => {
       const cols = Math.max(1, Math.round(width / tileSize));
       const rows = Math.max(1, Math.round(height / tileSize));
       for (let row = 0; row < rows; row += 1) {
         for (let col = 0; col < cols; col += 1) {
           const cellX = x + col * tileSize;
           const cellY = y + row * tileSize;
+          const drawFillerTile = (fillStyle, strokeStyle, innerStrokeStyle = null) => {
+            ctx.fillStyle = fillStyle;
+            ctx.fillRect(cellX, cellY, tileSize, tileSize);
+            ctx.strokeStyle = strokeStyle;
+            ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+            if (innerStrokeStyle) {
+              ctx.strokeStyle = innerStrokeStyle;
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+            }
+          };
           switch (tile) {
             case 'R':
-              ctx.fillStyle = '#8a5a2b';
-              ctx.fillRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = '#6d4221';
-              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = '#4b2f17';
-              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              drawFillerTile(
+                foreground ? 'rgba(98, 61, 30, 0.9)' : '#8a5a2b',
+                foreground ? 'rgba(72, 42, 20, 0.95)' : '#6d4221',
+                foreground ? 'rgba(46, 27, 13, 0.95)' : '#4b2f17'
+              );
               break;
             case 'F':
-              ctx.fillStyle = '#bfe9ff';
-              ctx.fillRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = '#86c9f0';
-              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              drawFillerTile(
+                foreground ? 'rgba(164, 208, 232, 0.88)' : '#bfe9ff',
+                foreground ? 'rgba(98, 151, 181, 0.95)' : '#86c9f0'
+              );
               break;
             case 'E':
-              ctx.fillStyle = '#d6b06d';
-              ctx.fillRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = '#b58b4a';
-              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = '#9b773d';
-              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              drawFillerTile(
+                foreground ? 'rgba(171, 138, 86, 0.9)' : '#d6b06d',
+                foreground ? 'rgba(132, 101, 53, 0.95)' : '#b58b4a',
+                foreground ? 'rgba(104, 77, 37, 0.95)' : '#9b773d'
+              );
               break;
             case 'Q':
-              ctx.fillStyle = '#6b2bbd';
-              ctx.fillRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = '#4c1f8a';
-              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = '#3a176a';
-              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              drawFillerTile(
+                foreground ? 'rgba(78, 32, 137, 0.9)' : '#6b2bbd',
+                foreground ? 'rgba(52, 21, 96, 0.95)' : '#4c1f8a',
+                foreground ? 'rgba(38, 14, 70, 0.95)' : '#3a176a'
+              );
               break;
             default:
-              ctx.fillStyle = '#3a3a3a';
-              ctx.fillRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = '#2b2b2b';
-              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = '#1f1f1f';
-              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              drawFillerTile(
+                foreground ? 'rgba(42, 42, 42, 0.92)' : '#3a3a3a',
+                foreground ? 'rgba(24, 24, 24, 0.98)' : '#2b2b2b',
+                foreground ? 'rgba(12, 12, 12, 0.98)' : '#1f1f1f'
+              );
               break;
           }
         }
@@ -6610,11 +6618,30 @@ export default class Game {
 
       ctx.save();
       if (hasLongCenterSpan) {
-        drawDoorFillerSegment(baseX, baseY, width, height, fillerTile || '#');
         if (cluster.horizontal) {
+          const fillerWidth = Math.max(0, width - capSpan * 2);
+          if (fillerWidth > 0) {
+            doorForegroundOverlays.push({
+              x: baseX + capSpan,
+              y: baseY,
+              width: fillerWidth,
+              height,
+              tile: fillerTile || '#'
+            });
+          }
           drawDoorModule(baseX, baseY, capSpan, height, true);
           drawDoorModule(baseX + width - capSpan, baseY, capSpan, height, true);
         } else {
+          const fillerHeight = Math.max(0, height - capSpan * 2);
+          if (fillerHeight > 0) {
+            doorForegroundOverlays.push({
+              x: baseX,
+              y: baseY + capSpan,
+              width,
+              height: fillerHeight,
+              tile: fillerTile || '#'
+            });
+          }
           drawDoorModule(baseX, baseY, width, capSpan, false);
           drawDoorModule(baseX, baseY + height - capSpan, width, capSpan, false);
         }
@@ -6944,6 +6971,51 @@ export default class Game {
         ctx.drawImage(image, x, y, w, h);
       }
       ctx.restore();
+    });
+
+    this.doorForegroundOverlays = doorForegroundOverlays;
+  }
+
+  drawDoorForegroundOverlays(ctx) {
+    const overlays = this.doorForegroundOverlays || [];
+    if (!overlays.length) return;
+    const tileSize = this.world.tileSize;
+    overlays.forEach(({ x, y, width, height, tile }) => {
+      const cols = Math.max(1, Math.round(width / tileSize));
+      const rows = Math.max(1, Math.round(height / tileSize));
+      for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < cols; col += 1) {
+          const cellX = x + col * tileSize;
+          const cellY = y + row * tileSize;
+          const drawOverlayTile = (fillStyle, strokeStyle, innerStrokeStyle = null) => {
+            ctx.fillStyle = fillStyle;
+            ctx.fillRect(cellX, cellY, tileSize, tileSize);
+            ctx.strokeStyle = strokeStyle;
+            ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+            if (innerStrokeStyle) {
+              ctx.strokeStyle = innerStrokeStyle;
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+            }
+          };
+          switch (tile) {
+            case 'R':
+              drawOverlayTile('rgba(98, 61, 30, 0.9)', 'rgba(72, 42, 20, 0.95)', 'rgba(46, 27, 13, 0.95)');
+              break;
+            case 'F':
+              drawOverlayTile('rgba(164, 208, 232, 0.88)', 'rgba(98, 151, 181, 0.95)');
+              break;
+            case 'E':
+              drawOverlayTile('rgba(171, 138, 86, 0.9)', 'rgba(132, 101, 53, 0.95)', 'rgba(104, 77, 37, 0.95)');
+              break;
+            case 'Q':
+              drawOverlayTile('rgba(78, 32, 137, 0.9)', 'rgba(52, 21, 96, 0.95)', 'rgba(38, 14, 70, 0.95)');
+              break;
+            default:
+              drawOverlayTile('rgba(42, 42, 42, 0.92)', 'rgba(24, 24, 24, 0.98)', 'rgba(12, 12, 12, 0.98)');
+              break;
+          }
+        }
+      }
     });
   }
 
