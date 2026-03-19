@@ -6481,6 +6481,55 @@ export default class Game {
       ctx.stroke();
       ctx.restore();
     };
+    const pickDoorFillerTile = (cluster) => {
+      const candidates = [];
+      if (cluster.horizontal) {
+        cluster.tiles.forEach(({ x, y }) => {
+          candidates.push(this.world.getTile(x, y - 1));
+          candidates.push(this.world.getTile(x, y + 1));
+        });
+      } else {
+        cluster.tiles.forEach(({ x, y }) => {
+          candidates.push(this.world.getTile(x - 1, y));
+          candidates.push(this.world.getTile(x + 1, y));
+        });
+      }
+      return candidates.find((tile) => tile && tile !== 'D' && tile !== '.') || '#';
+    };
+    const drawDoorFillerSegment = (x, y, width, height, tile) => {
+      switch (tile) {
+        case 'R':
+          ctx.fillStyle = '#8a5a2b';
+          ctx.fillRect(x, y, width, height);
+          ctx.strokeStyle = '#4b2f17';
+          ctx.strokeRect(x + 2, y + 2, Math.max(0, width - 4), Math.max(0, height - 4));
+          break;
+        case 'F':
+          ctx.fillStyle = '#bfe9ff';
+          ctx.fillRect(x, y, width, height);
+          ctx.strokeStyle = '#86c9f0';
+          ctx.strokeRect(x, y, width, height);
+          break;
+        case 'E':
+          ctx.fillStyle = '#d6b06d';
+          ctx.fillRect(x, y, width, height);
+          ctx.strokeStyle = '#9b773d';
+          ctx.strokeRect(x + 2, y + 2, Math.max(0, width - 4), Math.max(0, height - 4));
+          break;
+        case 'Q':
+          ctx.fillStyle = '#6b2bbd';
+          ctx.fillRect(x, y, width, height);
+          ctx.strokeStyle = '#3a176a';
+          ctx.strokeRect(x + 2, y + 2, Math.max(0, width - 4), Math.max(0, height - 4));
+          break;
+        default:
+          ctx.fillStyle = '#3a3a3a';
+          ctx.fillRect(x, y, width, height);
+          ctx.strokeStyle = '#1f1f1f';
+          ctx.strokeRect(x + 2, y + 2, Math.max(0, width - 4), Math.max(0, height - 4));
+          break;
+      }
+    };
     const drawDoorCluster = (cluster) => {
       if (!cluster) return;
       const state = this.getDoorVisualState(cluster.key);
@@ -6495,6 +6544,10 @@ export default class Game {
       const width = cluster.width * tileSize;
       const height = cluster.height * tileSize;
       const bezel = 3;
+      const majorAxisLength = cluster.horizontal ? cluster.width : cluster.height;
+      const hasLongCenterSpan = majorAxisLength > 4;
+      const capSpan = hasLongCenterSpan ? tileSize * 2 : (cluster.horizontal ? width * 0.5 : height * 0.5);
+      const fillerTile = hasLongCenterSpan ? pickDoorFillerTile(cluster) : null;
 
       ctx.save();
       ctx.fillStyle = 'rgba(8, 15, 22, 0.92)';
@@ -6506,15 +6559,30 @@ export default class Game {
       ctx.strokeRect(baseX + 1, baseY + 1, width - 2, height - 2);
       ctx.shadowBlur = 0;
 
+      if (hasLongCenterSpan && fillerTile) {
+        if (cluster.horizontal) {
+          drawDoorFillerSegment(baseX + capSpan, baseY, Math.max(0, width - capSpan * 2), height, fillerTile);
+        } else {
+          drawDoorFillerSegment(baseX, baseY + capSpan, width, Math.max(0, height - capSpan * 2), fillerTile);
+        }
+      }
+
       if (cluster.horizontal) {
         const panelTravel = Math.max(0, height * 0.5 - bezel - 3) * openAmount;
         const panelHeight = Math.max(4, height * 0.5 - bezel - 2);
+        const leftSpan = hasLongCenterSpan ? capSpan : width;
+        const rightSpan = hasLongCenterSpan ? capSpan : width;
         ctx.fillStyle = panelColor;
-        ctx.fillRect(baseX + bezel, baseY + bezel - panelTravel, width - bezel * 2, panelHeight);
-        ctx.fillRect(baseX + bezel, baseY + height - bezel - panelHeight + panelTravel, width - bezel * 2, panelHeight);
+        ctx.fillRect(baseX + bezel, baseY + bezel - panelTravel, leftSpan - bezel * 2, panelHeight);
+        ctx.fillRect(baseX + width - rightSpan + bezel, baseY + bezel - panelTravel, rightSpan - bezel * 2, panelHeight);
+        ctx.fillRect(baseX + bezel, baseY + height - bezel - panelHeight + panelTravel, leftSpan - bezel * 2, panelHeight);
+        ctx.fillRect(baseX + width - rightSpan + bezel, baseY + height - bezel - panelHeight + panelTravel, rightSpan - bezel * 2, panelHeight);
         ctx.fillStyle = innerColor;
-        ctx.fillRect(baseX + 6, baseY + 6 - panelTravel, width - 12, Math.max(2, panelHeight - 6));
-        ctx.fillRect(baseX + 6, baseY + height - 6 - Math.max(2, panelHeight - 6) + panelTravel, width - 12, Math.max(2, panelHeight - 6));
+        const innerH = Math.max(2, panelHeight - 6);
+        ctx.fillRect(baseX + 6, baseY + 6 - panelTravel, Math.max(0, leftSpan - 12), innerH);
+        ctx.fillRect(baseX + width - rightSpan + 6, baseY + 6 - panelTravel, Math.max(0, rightSpan - 12), innerH);
+        ctx.fillRect(baseX + 6, baseY + height - 6 - innerH + panelTravel, Math.max(0, leftSpan - 12), innerH);
+        ctx.fillRect(baseX + width - rightSpan + 6, baseY + height - 6 - innerH + panelTravel, Math.max(0, rightSpan - 12), innerH);
         ctx.strokeStyle = frameColor;
         ctx.beginPath();
         ctx.moveTo(baseX + 6, baseY + height * 0.5);
@@ -6523,12 +6591,19 @@ export default class Game {
       } else {
         const panelTravel = Math.max(0, width * 0.5 - bezel - 3) * openAmount;
         const panelWidth = Math.max(4, width * 0.5 - bezel - 2);
+        const topSpan = hasLongCenterSpan ? capSpan : height;
+        const bottomSpan = hasLongCenterSpan ? capSpan : height;
         ctx.fillStyle = panelColor;
-        ctx.fillRect(baseX + bezel - panelTravel, baseY + bezel, panelWidth, height - bezel * 2);
-        ctx.fillRect(baseX + width - bezel - panelWidth + panelTravel, baseY + bezel, panelWidth, height - bezel * 2);
+        ctx.fillRect(baseX + bezel - panelTravel, baseY + bezel, panelWidth, topSpan - bezel * 2);
+        ctx.fillRect(baseX + width - bezel - panelWidth + panelTravel, baseY + bezel, panelWidth, topSpan - bezel * 2);
+        ctx.fillRect(baseX + bezel - panelTravel, baseY + height - bottomSpan + bezel, panelWidth, bottomSpan - bezel * 2);
+        ctx.fillRect(baseX + width - bezel - panelWidth + panelTravel, baseY + height - bottomSpan + bezel, panelWidth, bottomSpan - bezel * 2);
         ctx.fillStyle = innerColor;
-        ctx.fillRect(baseX + 6 - panelTravel, baseY + 6, Math.max(2, panelWidth - 6), height - 12);
-        ctx.fillRect(baseX + width - 6 - Math.max(2, panelWidth - 6) + panelTravel, baseY + 6, Math.max(2, panelWidth - 6), height - 12);
+        const innerW = Math.max(2, panelWidth - 6);
+        ctx.fillRect(baseX + 6 - panelTravel, baseY + 6, innerW, Math.max(0, topSpan - 12));
+        ctx.fillRect(baseX + width - 6 - innerW + panelTravel, baseY + 6, innerW, Math.max(0, topSpan - 12));
+        ctx.fillRect(baseX + 6 - panelTravel, baseY + height - bottomSpan + 6, innerW, Math.max(0, bottomSpan - 12));
+        ctx.fillRect(baseX + width - 6 - innerW + panelTravel, baseY + height - bottomSpan + 6, innerW, Math.max(0, bottomSpan - 12));
         ctx.strokeStyle = frameColor;
         ctx.beginPath();
         ctx.moveTo(baseX + width * 0.5, baseY + 6);
