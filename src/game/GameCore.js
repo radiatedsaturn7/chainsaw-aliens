@@ -6486,37 +6486,53 @@ export default class Game {
       return candidates.find((tile) => tile && tile !== 'D' && tile !== '.') || '#';
     };
     const drawDoorFillerSegment = (x, y, width, height, tile) => {
-      switch (tile) {
-        case 'R':
-          ctx.fillStyle = '#8a5a2b';
-          ctx.fillRect(x, y, width, height);
-          ctx.strokeStyle = '#4b2f17';
-          ctx.strokeRect(x + 2, y + 2, Math.max(0, width - 4), Math.max(0, height - 4));
-          break;
-        case 'F':
-          ctx.fillStyle = '#bfe9ff';
-          ctx.fillRect(x, y, width, height);
-          ctx.strokeStyle = '#86c9f0';
-          ctx.strokeRect(x, y, width, height);
-          break;
-        case 'E':
-          ctx.fillStyle = '#d6b06d';
-          ctx.fillRect(x, y, width, height);
-          ctx.strokeStyle = '#9b773d';
-          ctx.strokeRect(x + 2, y + 2, Math.max(0, width - 4), Math.max(0, height - 4));
-          break;
-        case 'Q':
-          ctx.fillStyle = '#6b2bbd';
-          ctx.fillRect(x, y, width, height);
-          ctx.strokeStyle = '#3a176a';
-          ctx.strokeRect(x + 2, y + 2, Math.max(0, width - 4), Math.max(0, height - 4));
-          break;
-        default:
-          ctx.fillStyle = '#3a3a3a';
-          ctx.fillRect(x, y, width, height);
-          ctx.strokeStyle = '#1f1f1f';
-          ctx.strokeRect(x + 2, y + 2, Math.max(0, width - 4), Math.max(0, height - 4));
-          break;
+      const cols = Math.max(1, Math.round(width / tileSize));
+      const rows = Math.max(1, Math.round(height / tileSize));
+      for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < cols; col += 1) {
+          const cellX = x + col * tileSize;
+          const cellY = y + row * tileSize;
+          switch (tile) {
+            case 'R':
+              ctx.fillStyle = '#8a5a2b';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#6d4221';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#4b2f17';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+            case 'F':
+              ctx.fillStyle = '#bfe9ff';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#86c9f0';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              break;
+            case 'E':
+              ctx.fillStyle = '#d6b06d';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#b58b4a';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#9b773d';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+            case 'Q':
+              ctx.fillStyle = '#6b2bbd';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#4c1f8a';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#3a176a';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+            default:
+              ctx.fillStyle = '#3a3a3a';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#2b2b2b';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#1f1f1f';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+          }
+        }
       }
     };
     const drawDoorCluster = (cluster) => {
