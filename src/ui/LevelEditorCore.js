@@ -187,6 +187,8 @@ const POWERUP_TYPES = [
 
 const TRIGGER_CONDITIONS = [
   'On level start',
+  'When player enters this room',
+  'When all enemies in this room are dead',
   'When player enters this location',
   'When player presses attack',
   'When player presses jump',
@@ -207,6 +209,10 @@ const TRIGGER_ACTION_TYPES = [
   { id: 'add-item', label: 'Add Weapon / Item' },
   { id: 'play-animation', label: 'Play Animation' },
   { id: 'move-entity', label: 'Move Entity / Object' },
+  { id: 'lock-all-doors', label: 'Lock All Doors' },
+  { id: 'unlock-all-doors', label: 'Unlock All Doors' },
+  { id: 'become-solid', label: 'Become Solid (Invisible)' },
+  { id: 'become-tile', label: 'Become Tile' },
   { id: 'fade-in', label: 'Fade In' },
   { id: 'fade-out', label: 'Fade Out' },
   { id: 'display-text', label: 'Display Text' },
@@ -2386,6 +2392,14 @@ export default class Editor {
       case 'move-entity':
         base.params = { target: TRIGGER_TARGET_OPTIONS[0], dx: 0, dy: 0 };
         break;
+      case 'lock-all-doors':
+      case 'unlock-all-doors':
+      case 'become-solid':
+        base.params = {};
+        break;
+      case 'become-tile':
+        base.params = { tileChar: '#' };
+        break;
       case 'fade-in':
       case 'fade-out':
       case 'fade-out-music':
@@ -2506,6 +2520,9 @@ export default class Editor {
         if (!Number.isFinite(action.params.spawnX)) action.params.spawnX = null;
         if (!Number.isFinite(action.params.spawnY)) action.params.spawnY = null;
         if (typeof action.params.useFade !== 'boolean') action.params.useFade = true;
+      }
+      if (action.type === 'become-tile') {
+        if (typeof action.params.tileChar !== 'string' || !action.params.tileChar) action.params.tileChar = '#';
       }
       return action;
     });
@@ -2892,6 +2909,14 @@ export default class Editor {
         return `${params.animationId || 'animation'} on ${params.target || 'zone'}`;
       case 'move-entity':
         return `${params.target || 'player'} by (${params.dx || 0}, ${params.dy || 0})`;
+      case 'lock-all-doors':
+        return 'Current room';
+      case 'unlock-all-doors':
+        return 'Current room';
+      case 'become-solid':
+        return 'Trigger zone becomes invisible solid';
+      case 'become-tile':
+        return `Tile: ${params.tileChar || '#'}`;
       case 'fade-in':
         return `Duration: ${params.durationMs || 0}ms`;
       case 'fade-out':
@@ -8430,6 +8455,8 @@ export default class Editor {
             local += sectionButtonH + 4 + sectionButtonH + 4;
           } else if (draft.type === 'move-entity') {
             local += sectionButtonH + 4 + numericAdvance + numericAdvance;
+          } else if (draft.type === 'become-tile') {
+            local += sectionButtonH + 4;
           } else if (draft.type === 'display-text') {
             local += sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4 + numericAdvance;
           } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {
@@ -8595,6 +8622,9 @@ export default class Editor {
             y += sectionButtonH + 4;
             numericRow('Delta X', 'dx', 1, -200, 200);
             numericRow('Delta Y', 'dy', 1, -200, 200);
+          } else if (draft.type === 'become-tile') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Tile: ${draft.params.tileChar || '#'}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Tile', options: DEFAULT_TILE_TYPES.map((entry) => entry.char).filter(Boolean), selectedValue: draft.params.tileChar || '#', onPick: (value) => { draft.params.tileChar = value; } }); }, 'Pick tile character');
+            y += sectionButtonH + 4;
           } else if (draft.type === 'display-text') {
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Text: ${draft.params.text || TRIGGER_TEXT_OPTIONS[0]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Text', options: TRIGGER_TEXT_OPTIONS, selectedValue: draft.params.text || TRIGGER_TEXT_OPTIONS[0], onPick: (value) => { draft.params.text = value; } }); }, 'Pick text');
             y += sectionButtonH + 4;

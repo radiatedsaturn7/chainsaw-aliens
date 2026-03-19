@@ -4461,6 +4461,8 @@ export default class Game {
       const id = trigger.id || `trigger-${index}`;
       this.triggerState.byId.set(id, {
         inside: false,
+        roomInside: false,
+        roomClear: false,
         firedStartup: false,
         active: false,
         queue: []
@@ -4489,12 +4491,20 @@ export default class Game {
   }
 
   updateWorldTriggers(tileX, tileY) {
+    const playerRoomIndex = this.world.roomAtTile?.(tileX, tileY);
     (this.world.triggers || []).forEach((trigger, index) => {
       const id = trigger.id || `trigger-${index}`;
-      const state = this.triggerState.byId.get(id) || { inside: false, active: false, queue: [] };
+      const state = this.triggerState.byId.get(id) || { inside: false, roomInside: false, roomClear: false, active: false, queue: [] };
       const [x, y, w, h] = trigger.rect || [0, 0, 0, 0];
       const isInside = tileX >= x && tileX < x + w && tileY >= y && tileY < y + h;
+      const triggerRoomIndex = this.world.roomAtTile?.(x, y);
+      const isInTriggerRoom = triggerRoomIndex != null && playerRoomIndex != null && triggerRoomIndex === playerRoomIndex;
+      const roomClear = triggerRoomIndex != null ? this.isRoomCleared(triggerRoomIndex) : false;
       if (trigger.condition === 'When player enters this location' && isInside && !state.inside) {
+        this.fireTrigger(trigger, id);
+      } else if (trigger.condition === 'When player enters this room' && isInTriggerRoom && !state.roomInside) {
+        this.fireTrigger(trigger, id);
+      } else if (trigger.condition === 'When all enemies in this room are dead' && roomClear && !state.roomClear) {
         this.fireTrigger(trigger, id);
       } else if (trigger.condition === 'When player presses attack' && isInside && this.input.wasPressed('attack')) {
         this.fireTrigger(trigger, id);
@@ -4506,8 +4516,36 @@ export default class Game {
         this.fireTrigger(trigger, id);
       }
       state.inside = isInside;
+      state.roomInside = isInTriggerRoom;
+      state.roomClear = roomClear;
       this.triggerState.byId.set(id, state);
     });
+  }
+
+  isRoomCleared(roomIndex) {
+    if (roomIndex == null) return false;
+    const tileSize = this.world?.tileSize || 32;
+    const entities = [...(this.enemies || [])];
+    if (this.boss) entities.push(this.boss);
+    const livingEnemies = entities.filter((enemy) => enemy && !enemy.dead && !enemy.training);
+    if (!livingEnemies.length) return true;
+    return !livingEnemies.some((enemy) => {
+      const enemyTileX = Math.floor((enemy.x || 0) / tileSize);
+      const enemyTileY = Math.floor((enemy.y || 0) / tileSize);
+      return this.world.roomAtTile?.(enemyTileX, enemyTileY) === roomIndex;
+    });
+  }
+
+  setRoomDoorsLocked(roomIndex, locked) {
+    const room = this.world.getRoomBounds?.(roomIndex);
+    if (!room) return;
+    for (let y = room.minY; y <= room.maxY; y += 1) {
+      for (let x = room.minX; x <= room.maxX; x += 1) {
+        if (this.world.getTile(x, y) === 'D') {
+          this.world.setDoorLocked(x, y, locked);
+        }
+      }
+    }
   }
 
   fireTrigger(trigger, triggerId) {
@@ -4583,6 +4621,28 @@ export default class Game {
         remaining: Math.max(0, Number(params.durationMs || 0)),
         onDone
       };
+      return;
+    }
+    if (action.type === 'lock-all-doors' || action.type === 'unlock-all-doors') {
+      const roomIndex = this.world.roomAtTile?.(x, y);
+      this.setRoomDoorsLocked(roomIndex, action.type === 'lock-all-doors');
+      onDone();
+      return;
+    }
+    if (action.type === 'become-solid') {
+      this.world.setSolidZone([x, y, w, h], true);
+      onDone();
+      return;
+    }
+    if (action.type === 'become-tile') {
+      const tileChar = typeof params.tileChar === 'string' && params.tileChar ? params.tileChar[0] : '#';
+      for (let tileY = y; tileY < y + h; tileY += 1) {
+        for (let tileX = x; tileX < x + w; tileX += 1) {
+          this.world.setTile(tileX, tileY, tileChar, { persist: !this.playtestActive });
+        }
+      }
+      this.world.rebuildCaches();
+      onDone();
       return;
     }
     if (action.type === 'wait' || action.type === 'fade-in' || action.type === 'fade-out' || action.type === 'fade-out-music' || action.type === 'fade-in-music') {

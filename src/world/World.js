@@ -60,6 +60,10 @@ const ROOM_BLOCKERS = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U',
 const SOLID_TILES = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', 'N', 'P', 'Q', 'E', 'G', 'J', 'V']);
 const ONE_WAY_TILES = new Set(['=', 's']);
 const HAZARD_TILES = new Set(['!', 'A', 'L', '*', 'e']);
+const DEFAULT_DYNAMIC_STATE = () => ({
+  lockedDoors: new Set(),
+  solidZones: []
+});
 
 const isRoomTile = (tile) => tile && tile !== DOOR_TILE && !ROOM_BLOCKERS.has(tile);
 
@@ -94,6 +98,7 @@ export default class World {
     this.data = null;
     this.rooms = [];
     this.roomIndexByTile = [];
+    this.dynamicState = DEFAULT_DYNAMIC_STATE();
   }
 
   async load() {
@@ -157,6 +162,7 @@ export default class World {
       this.data.triggers = this.triggers;
       this.data.decals = this.decals;
     }
+    this.dynamicState = DEFAULT_DYNAMIC_STATE();
     this.rebuildCaches();
   }
 
@@ -297,6 +303,8 @@ export default class World {
 
   isSolid(x, y, abilities, options = {}) {
     const tile = this.getTile(x, y);
+    if (tile === DOOR_TILE && this.isDoorLocked(x, y)) return true;
+    if (this.isTileInsideSolidZone(x, y)) return true;
     if (SOLID_TILES.has(tile)) return true;
     if (ONE_WAY_TILES.has(tile)) return !options.ignoreOneWay;
     return false;
@@ -314,6 +322,54 @@ export default class World {
 
   isOneWay(x, y) {
     return ONE_WAY_TILES.has(this.getTile(x, y));
+  }
+
+
+  isDoorLocked(x, y) {
+    return this.dynamicState?.lockedDoors?.has(`${x},${y}`) || false;
+  }
+
+  setDoorLocked(x, y, locked = true) {
+    const key = `${x},${y}`;
+    if (!this.dynamicState) this.dynamicState = DEFAULT_DYNAMIC_STATE();
+    if (locked) {
+      this.dynamicState.lockedDoors.add(key);
+    } else {
+      this.dynamicState.lockedDoors.delete(key);
+    }
+  }
+
+  clearDoorLocks() {
+    if (!this.dynamicState) this.dynamicState = DEFAULT_DYNAMIC_STATE();
+    this.dynamicState.lockedDoors.clear();
+  }
+
+  setSolidZone(rect, active = true) {
+    if (!this.dynamicState) this.dynamicState = DEFAULT_DYNAMIC_STATE();
+    const normalized = Array.isArray(rect) && rect.length >= 4
+      ? [Math.floor(rect[0]), Math.floor(rect[1]), Math.max(1, Math.floor(rect[2])), Math.max(1, Math.floor(rect[3]))]
+      : null;
+    if (!normalized) return false;
+    const key = normalized.join(',');
+    const zones = this.dynamicState.solidZones;
+    const index = zones.findIndex((zone) => zone.key === key);
+    if (active) {
+      if (index >= 0) return false;
+      zones.push({ key, rect: normalized });
+    } else if (index >= 0) {
+      zones.splice(index, 1);
+    }
+    return true;
+  }
+
+  clearSolidZones() {
+    if (!this.dynamicState) this.dynamicState = DEFAULT_DYNAMIC_STATE();
+    this.dynamicState.solidZones = [];
+  }
+
+  isTileInsideSolidZone(x, y) {
+    const zones = this.dynamicState?.solidZones || [];
+    return zones.some(({ rect }) => x >= rect[0] && x < rect[0] + rect[2] && y >= rect[1] && y < rect[1] + rect[3]);
   }
 
   setTile(x, y, char, { persist = true } = {}) {
