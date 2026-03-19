@@ -45,6 +45,7 @@ const DEFAULT_TILE_TYPES = [
   { id: 'conveyor-left', label: 'Conveyor Left', char: '<' },
   { id: 'conveyor-right', label: 'Conveyor Right', char: '>' },
   { id: 'spikes', label: 'Spike', char: '*' },
+  { id: 'electric', label: 'Electric Current', char: 'e' },
   { id: 'acid', label: 'Acid', char: 'A' },
   { id: 'water', label: 'Water', char: '~' },
   { id: 'lava', label: 'Lava', char: 'L' },
@@ -91,6 +92,19 @@ const STANDARD_ENEMY_TYPES = [
   { id: 'sentinel', label: 'Sentinel', glyph: 'SE', description: 'Orbital sentinel that fires in pulses.' }
 ];
 
+const AMBIENT_ENEMY_TYPES = [
+  { id: 'water-drip', label: 'Water Drip', glyph: 'WD', description: 'Invisible spawner that drips water straight down until blocked.' },
+  { id: 'acid-drip', label: 'Acid Drip', glyph: 'AD', description: 'Invisible spawner that drips corrosive fluid straight down until blocked.' },
+  { id: 'lava-drip', label: 'Lava Drip', glyph: 'LD', description: 'Invisible spawner that drips molten lava straight down until blocked.' },
+  { id: 'steam-gasket', label: 'Steam Gasket', glyph: 'SG', description: 'Vent that emits a hot steam column upward.' },
+  { id: 'light-flicker', label: 'Light Flicker', glyph: 'LF', description: 'Makes the current room’s lighting flicker and occasionally dim out.' },
+  { id: 'weather-rain', label: 'Rain Weather', glyph: 'RN', description: 'Makes the current room drizzle with light rain.' },
+  { id: 'weather-storm', label: 'Storm Weather', glyph: 'ST', description: 'Makes the current room fill with heavy rain.' },
+  { id: 'weather-hurricane', label: 'Hurricane Weather', glyph: 'HU', description: 'Heavy rain plus periodic lightning across the current room.' },
+  { id: 'weather-snow', label: 'Snow Weather', glyph: 'SN', description: 'Makes the current room fill with gentle snowfall.' },
+  { id: 'weather-blizzard', label: 'Blizzard Weather', glyph: 'BZ', description: 'Makes the current room fill with heavy snow and wind.' }
+];
+
 const BOSS_ENEMY_TYPES = [
   { id: 'finalboss', label: 'Rift Tyrant', glyph: 'RT', description: 'Commanding rift entity that unleashes volatile blasts.' },
   { id: 'sunderbehemoth', label: 'Sunder Behemoth', glyph: 'SB', description: 'Towering brute that smashes the arena.' },
@@ -115,7 +129,7 @@ const BOSS_ROOM_PREFS = {
   cataclysmcolossus: { shape: 'large', theme: 'cave', hazards: ['L'] }
 };
 
-const ENEMY_TYPES = [...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
+const ENEMY_TYPES = [...AMBIENT_ENEMY_TYPES, ...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
 
 const SHAPE_TOOLS = [
   { id: 'rect', label: 'Rectangle Fill', short: 'RECT' },
@@ -173,6 +187,8 @@ const POWERUP_TYPES = [
 
 const TRIGGER_CONDITIONS = [
   'On level start',
+  'When player enters this room',
+  'When all enemies in this room are dead',
   'When player enters this location',
   'When player presses attack',
   'When player presses jump',
@@ -193,6 +209,10 @@ const TRIGGER_ACTION_TYPES = [
   { id: 'add-item', label: 'Add Weapon / Item' },
   { id: 'play-animation', label: 'Play Animation' },
   { id: 'move-entity', label: 'Move Entity / Object' },
+  { id: 'lock-all-doors', label: 'Lock All Doors' },
+  { id: 'unlock-all-doors', label: 'Unlock All Doors' },
+  { id: 'become-solid', label: 'Become Solid (Invisible)' },
+  { id: 'become-tile', label: 'Become Tile' },
   { id: 'fade-in', label: 'Fade In' },
   { id: 'fade-out', label: 'Fade Out' },
   { id: 'display-text', label: 'Display Text' },
@@ -300,7 +320,7 @@ export default class Editor {
     this.tileTool = 'paint';
     this.tileType = DEFAULT_TILE_TYPES[0];
     this.customTile = null;
-    this.enemyType = ENEMY_TYPES[0];
+    this.enemyType = STANDARD_ENEMY_TYPES[0] || ENEMY_TYPES[0];
     this.enemyCategory = 'standard';
     this.shapeTool = SHAPE_TOOLS[0];
     this.prefabType = PREFAB_TYPES[0];
@@ -330,6 +350,7 @@ export default class Editor {
     this.triggerOptionPicker = null;
     this.triggerLoadLevelPlacement = null;
     this.triggerResizeId = null;
+    this.triggerMoveDrag = null;
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
     this.triggerEditorScroll = 0;
@@ -400,7 +421,7 @@ export default class Editor {
       enemies: true,
       prefabs: true
     };
-    this.panelTabs = ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'npcs', 'prefabs', 'graphics', 'music'];
+    this.panelTabs = ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       file: 0,
@@ -449,7 +470,7 @@ export default class Editor {
     this.drawer = {
       open: false,
       tabIndex: 0,
-      tabs: ['file', 'toolbox', 'tiles', 'triggers', 'powerups', 'npcs', 'prefabs', 'graphics', 'music'],
+      tabs: ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -1329,6 +1350,18 @@ export default class Editor {
       ];
     } else if (tabId === 'npcs') {
       items = [
+        { id: 'npc-sep-ambience', label: '──────── AMBIENCE ────────', tooltip: 'Ambient weather and spawners', separator: true, onClick: () => {} },
+        ...AMBIENT_ENEMY_TYPES.map((enemy) => ({
+          id: `npc-${enemy.id}`,
+          label: `${enemy.label} [${enemy.glyph}]`,
+          enemy,
+          tooltip: `Ambience: ${enemy.label}`,
+          onClick: () => {
+            this.enemyCategory = 'standard';
+            this.setEnemyType(enemy);
+            this.mode = 'enemy';
+          }
+        })),
         { id: 'npc-sep-standard', label: '──────── ENEMIES ────────', tooltip: 'Standard enemies', separator: true, onClick: () => {} },
         ...STANDARD_ENEMY_TYPES.map((enemy) => ({
           id: `npc-${enemy.id}`,
@@ -2326,6 +2359,36 @@ export default class Editor {
     return trigger;
   }
 
+  getTriggerAtTile(tileX, tileY) {
+    const triggers = this.ensureTriggers();
+    for (let index = triggers.length - 1; index >= 0; index -= 1) {
+      const trigger = triggers[index];
+      const [x, y, w, h] = trigger.rect || [0, 0, 0, 0];
+      if (tileX >= x && tileX < x + w && tileY >= y && tileY < y + h) {
+        return trigger;
+      }
+    }
+    return null;
+  }
+
+  deleteSelectedTrigger() {
+    const selected = this.getSelectedTrigger();
+    if (!selected) return false;
+    const triggers = this.ensureTriggers();
+    const index = triggers.findIndex((entry) => entry.id === selected.id);
+    if (index < 0) return false;
+    triggers.splice(index, 1);
+    this.selectedTriggerId = triggers[0]?.id || null;
+    this.triggerEditorOpen = Boolean(this.selectedTriggerId);
+    this.triggerEditorView = 'main';
+    this.triggerActionDraft = null;
+    this.triggerEditingActionId = null;
+    this.triggerEditorScroll = 0;
+    this.triggerMoveDrag = null;
+    this.persistAutosave();
+    return true;
+  }
+
   createTriggerAction(typeId) {
     const base = {
       id: `action-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
@@ -2359,6 +2422,14 @@ export default class Editor {
         break;
       case 'move-entity':
         base.params = { target: TRIGGER_TARGET_OPTIONS[0], dx: 0, dy: 0 };
+        break;
+      case 'lock-all-doors':
+      case 'unlock-all-doors':
+      case 'become-solid':
+        base.params = {};
+        break;
+      case 'become-tile':
+        base.params = { tileChar: '#' };
         break;
       case 'fade-in':
       case 'fade-out':
@@ -2426,6 +2497,7 @@ export default class Editor {
     this.triggerOptionPicker = null;
     this.triggerLoadLevelPlacement = null;
     this.triggerResizeId = null;
+    this.triggerMoveDrag = null;
   }
 
   applyTriggerEditor(trigger) {
@@ -2480,6 +2552,9 @@ export default class Editor {
         if (!Number.isFinite(action.params.spawnX)) action.params.spawnX = null;
         if (!Number.isFinite(action.params.spawnY)) action.params.spawnY = null;
         if (typeof action.params.useFade !== 'boolean') action.params.useFade = true;
+      }
+      if (action.type === 'become-tile') {
+        if (typeof action.params.tileChar !== 'string' || !action.params.tileChar) action.params.tileChar = '#';
       }
       return action;
     });
@@ -2866,6 +2941,14 @@ export default class Editor {
         return `${params.animationId || 'animation'} on ${params.target || 'zone'}`;
       case 'move-entity':
         return `${params.target || 'player'} by (${params.dx || 0}, ${params.dy || 0})`;
+      case 'lock-all-doors':
+        return 'Current room';
+      case 'unlock-all-doors':
+        return 'Current room';
+      case 'become-solid':
+        return 'Trigger zone becomes invisible solid';
+      case 'become-tile':
+        return `Tile: ${params.tileChar || '#'}`;
       case 'fade-in':
         return `Duration: ${params.durationMs || 0}ms`;
       case 'fade-out':
@@ -5130,8 +5213,22 @@ export default class Editor {
       if (this.triggerEditorOpen) return;
       if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
       const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
-      this.triggerZoneStart = { x: tileX, y: tileY };
-      this.triggerZoneTarget = { x: tileX, y: tileY };
+      const existingTrigger = this.getTriggerAtTile(tileX, tileY);
+      if (existingTrigger) {
+        const [x, y, w, h] = existingTrigger.rect || [tileX, tileY, 1, 1];
+        this.selectedTriggerId = existingTrigger.id;
+        this.triggerMoveDrag = {
+          id: payload.id ?? null,
+          triggerId: existingTrigger.id,
+          startTileX: tileX,
+          startTileY: tileY,
+          rect: [x, y, w, h],
+          moved: false
+        };
+      } else {
+        this.triggerZoneStart = { x: tileX, y: tileY };
+        this.triggerZoneTarget = { x: tileX, y: tileY };
+      }
       return;
     }
 
@@ -5270,6 +5367,24 @@ export default class Editor {
         this.midiNoteDrag.note.pitch = nextPitch;
       }
       this.midiNoteDirty = true;
+      return;
+    }
+
+    if (this.triggerMoveDrag && this.mode === 'trigger'
+      && (payload.id === undefined || this.triggerMoveDrag.id === (payload.id ?? null))) {
+      const { tileX, tileY } = this.screenToTile(payload.x ?? this.lastPointer.x, payload.y ?? this.lastPointer.y);
+      const deltaX = tileX - this.triggerMoveDrag.startTileX;
+      const deltaY = tileY - this.triggerMoveDrag.startTileY;
+      if (deltaX !== 0 || deltaY !== 0) {
+        this.triggerMoveDrag.moved = true;
+      }
+      const trigger = this.ensureTriggers().find((entry) => entry.id === this.triggerMoveDrag.triggerId);
+      if (trigger) {
+        const [startX, startY, width, height] = this.triggerMoveDrag.rect;
+        const nextX = clamp(startX + deltaX, 0, Math.max(0, this.game.world.width - width));
+        const nextY = clamp(startY + deltaY, 0, Math.max(0, this.game.world.height - height));
+        trigger.rect = [nextX, nextY, width, height];
+      }
       return;
     }
 
@@ -5434,6 +5549,28 @@ export default class Editor {
       }
       return;
     }
+    if (this.triggerMoveDrag && this.mode === 'trigger'
+      && (payload.id === undefined || this.triggerMoveDrag.id === (payload.id ?? null))) {
+      const drag = this.triggerMoveDrag;
+      this.triggerMoveDrag = null;
+      const trigger = this.ensureTriggers().find((entry) => entry.id === drag.triggerId);
+      if (trigger) {
+        if (drag.moved) {
+          this.focusCameraOnTrigger(trigger);
+          this.persistAutosave();
+        } else {
+          this.selectedTriggerId = trigger.id;
+          this.triggerEditorOpen = true;
+          this.triggerEditorView = 'main';
+          this.triggerActionDraft = null;
+          this.triggerEditingActionId = null;
+          this.triggerEditorScroll = 0;
+          this.focusCameraOnTrigger(trigger);
+        }
+      }
+      return;
+    }
+
     if (this.triggerZoneStart && this.mode === 'trigger') {
       const { tileX, tileY } = this.screenToTile(payload.x ?? this.lastPointer.x, payload.y ?? this.lastPointer.y);
       this.triggerZoneTarget = { x: tileX, y: tileY };
@@ -5458,6 +5595,7 @@ export default class Editor {
       }
       this.triggerZoneStart = null;
       this.triggerZoneTarget = null;
+      this.triggerMoveDrag = null;
       return;
     }
 
@@ -5960,6 +6098,7 @@ export default class Editor {
   clearTileOverlays(tileX, tileY) {
     this.setElevatorPath(tileX, tileY, false);
     this.setElevatorPlatform(tileX, tileY, false);
+    this.removeEnemy(tileX, tileY);
   }
 
   applyPaint(tileX, tileY, mode) {
@@ -7473,9 +7612,9 @@ export default class Editor {
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
         { id: 'toolbox', label: 'Toolbox' },
         { id: 'tiles', label: 'Tiles' },
+        { id: 'npcs', label: 'NPCs' },
         { id: 'triggers', label: 'Triggers' },
         { id: 'powerups', label: 'Powerups' },
-        { id: 'npcs', label: 'NPCs' },
         { id: 'prefabs', label: 'Structures' },
         { id: 'graphics', label: 'Graphics' },
         { id: 'music', label: 'Music' },
@@ -7680,6 +7819,19 @@ export default class Editor {
           columns = 1;
         } else if (activeTab === 'npcs') {
           items = [
+            { id: 'npc-sep-ambience', label: '──────── AMBIENCE ────────', separator: true, active: false, tooltip: 'Ambient weather and spawners', onClick: () => {} },
+            ...AMBIENT_ENEMY_TYPES.map((enemy) => ({
+              id: `npc-${enemy.id}`,
+              label: `${enemy.label} [${enemy.glyph}]`,
+              active: this.enemyType.id === enemy.id,
+              preview: { type: 'enemy', enemy },
+              tooltip: `Ambience: ${enemy.label}`,
+              onClick: () => {
+                this.enemyCategory = 'standard';
+                this.setEnemyType(enemy);
+                this.mode = 'enemy';
+              }
+            })),
             { id: 'npc-sep-standard', label: '──────── ENEMIES ────────', separator: true, active: false, tooltip: 'Standard enemies', onClick: () => {} },
             ...STANDARD_ENEMY_TYPES.map((enemy) => ({
               id: `npc-${enemy.id}`,
@@ -8101,9 +8253,9 @@ export default class Editor {
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
         { id: 'toolbox', label: 'TOOLBOX' },
         { id: 'tiles', label: 'TILES' },
+        { id: 'npcs', label: 'NPCS' },
         { id: 'triggers', label: 'TRIGGERS' },
         { id: 'powerups', label: 'POWERUPS' },
-        { id: 'npcs', label: 'NPCS' },
         { id: 'prefabs', label: 'STRUCTURES' },
         { id: 'graphics', label: 'GRAPHICS' },
         { id: 'music', label: 'MUSIC' },
@@ -8390,6 +8542,8 @@ export default class Editor {
             local += sectionButtonH + 4 + sectionButtonH + 4;
           } else if (draft.type === 'move-entity') {
             local += sectionButtonH + 4 + numericAdvance + numericAdvance;
+          } else if (draft.type === 'become-tile') {
+            local += sectionButtonH + 4;
           } else if (draft.type === 'display-text') {
             local += sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4 + numericAdvance;
           } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {
@@ -8455,25 +8609,13 @@ export default class Editor {
             this.triggerEditingActionId = null;
             this.triggerPlacementMode = null;
             this.triggerResizeId = selected.id;
+            this.triggerMoveDrag = null;
             this.mode = 'trigger';
             const [zoneX, zoneY, zoneW, zoneH] = selected.rect;
             this.triggerZoneStart = { x: zoneX, y: zoneY };
             this.triggerZoneTarget = { x: zoneX + zoneW - 1, y: zoneY + zoneH - 1 };
           }, 'Resize trigger zone by redrawing it');
-          drawButton(panelX + 16 + bottomButtonW, deleteTriggerY, bottomButtonW, 40, 'Delete Trigger', false, () => {
-            const triggers = this.ensureTriggers();
-            const idx = triggers.findIndex((entry) => entry.id === selected.id);
-            if (idx >= 0) {
-              triggers.splice(idx, 1);
-              this.selectedTriggerId = triggers[0]?.id || null;
-              this.triggerEditorOpen = Boolean(this.selectedTriggerId);
-              this.triggerEditorView = 'main';
-              this.triggerActionDraft = null;
-              this.triggerEditingActionId = null;
-              this.triggerEditorScroll = 0;
-              this.persistAutosave();
-            }
-          }, 'Remove trigger zone');
+          drawButton(panelX + 16 + bottomButtonW, deleteTriggerY, bottomButtonW, 40, 'Delete Trigger', false, () => { this.deleteSelectedTrigger(); }, 'Remove trigger zone');
         } else if (this.triggerEditorView === 'pick-condition') {
           drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Back', false, () => { this.triggerEditorView = 'main'; this.triggerEditorScroll = 0; }, 'Return to trigger');
           y += sectionButtonH + rowGap;
@@ -8555,6 +8697,9 @@ export default class Editor {
             y += sectionButtonH + 4;
             numericRow('Delta X', 'dx', 1, -200, 200);
             numericRow('Delta Y', 'dy', 1, -200, 200);
+          } else if (draft.type === 'become-tile') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Tile: ${draft.params.tileChar || '#'}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Tile', options: DEFAULT_TILE_TYPES.map((entry) => entry.char).filter(Boolean), selectedValue: draft.params.tileChar || '#', onPick: (value) => { draft.params.tileChar = value; } }); }, 'Pick tile character');
+            y += sectionButtonH + 4;
           } else if (draft.type === 'display-text') {
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Text: ${draft.params.text || TRIGGER_TEXT_OPTIONS[0]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Text', options: TRIGGER_TEXT_OPTIONS, selectedValue: draft.params.text || TRIGGER_TEXT_OPTIONS[0], onPick: (value) => { draft.params.text = value; } }); }, 'Pick text');
             y += sectionButtonH + 4;
@@ -8578,9 +8723,10 @@ export default class Editor {
         }
         ctx.restore();
 
-        const footerButtonW = (panelWidth - 36) / 2;
-        drawButton(panelX + 12, footerY, footerButtonW, 40, 'Cancel', false, () => { this.closeTriggerEditor(); }, 'Close trigger editor');
-        drawButton(panelX + 20 + footerButtonW, footerY, footerButtonW, 40, 'Apply', false, () => { this.applyTriggerEditor(selected); }, 'Apply trigger changes');
+        const footerButtonW = (panelWidth - 40) / 3;
+        drawButton(panelX + 12, footerY, footerButtonW, 40, 'Delete', false, () => { this.deleteSelectedTrigger(); }, 'Delete this trigger');
+        drawButton(panelX + 16 + footerButtonW, footerY, footerButtonW, 40, 'Cancel', false, () => { this.closeTriggerEditor(); }, 'Close trigger editor');
+        drawButton(panelX + 20 + footerButtonW * 2, footerY, footerButtonW, 40, 'Apply', false, () => { this.applyTriggerEditor(selected); }, 'Apply trigger changes');
 
         if (maxScroll > 0) {
           const barW = 6;

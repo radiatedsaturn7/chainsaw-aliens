@@ -84,6 +84,24 @@ const BOSS_TYPES = new Set([
   'cataclysmcolossus'
 ]);
 
+const AMBIENT_SPAWN_TYPES = new Set([
+  'water-drip',
+  'acid-drip',
+  'lava-drip',
+  'steam-gasket',
+  'light-flicker',
+  'weather-rain',
+  'weather-storm',
+  'weather-hurricane',
+  'weather-snow',
+  'weather-blizzard'
+]);
+
+
+const DRIP_TYPES = new Set(['water-drip', 'acid-drip', 'lava-drip']);
+
+const clamp01 = (value) => Math.max(0, Math.min(1, value));
+
 const INTRO_LINES = [
   'The entire planet of earth has literally run out of all our ammunition...',
   '...and the aliens are still coming!',
@@ -227,13 +245,21 @@ export default class Game {
     this.activeRoomIndex = null;
     this.roomEnemySpawns = new Map();
     this.roomBossSpawns = new Map();
+    this.roomAmbientSpawns = new Map();
     this.roomVisited = new Set();
     this.roomExitTimes = new Map();
     this.roomRespawnTimers = new Map();
     this.cameraBounds = null;
+    this.ambientParticles = [];
+    this.activeRoomAmbient = [];
+    this.activeRoomWeather = null;
+    this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
+    this.weatherWind = { value: 0, target: 0, timer: 0 };
+    this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
     this.slowTimer = 0;
     this.doorTransition = null;
     this.doorCooldown = 0;
+    this.doorVisualStates = new Map();
     this.boss = null;
     this.bossActive = false;
     this.bossInteractions = {
@@ -478,17 +504,28 @@ export default class Game {
     this.roomExitTimes.clear();
     this.roomRespawnTimers.clear();
     this.cameraBounds = null;
+    this.ambientParticles = [];
+    this.activeRoomAmbient = [];
+    this.activeRoomWeather = null;
+    this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
+    this.weatherWind = { value: 0, target: 0, timer: 0 };
+    this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
   }
 
   rebuildRoomEnemySpawns() {
     this.roomEnemySpawns.clear();
     this.roomBossSpawns.clear();
+    this.roomAmbientSpawns.clear();
     if (!this.world.enemies) return;
     this.world.enemies.forEach((spawn) => {
       if (!spawn) return;
       const roomIndex = this.world.roomAtTile(spawn.x, spawn.y);
       if (roomIndex === null || roomIndex === undefined) return;
-      if (BOSS_TYPES.has(spawn.type)) {
+      if (AMBIENT_SPAWN_TYPES.has(spawn.type)) {
+        const list = this.roomAmbientSpawns.get(roomIndex) || [];
+        list.push({ ...spawn });
+        this.roomAmbientSpawns.set(roomIndex, list);
+      } else if (BOSS_TYPES.has(spawn.type)) {
         const list = this.roomBossSpawns.get(roomIndex) || [];
         list.push({ ...spawn });
         this.roomBossSpawns.set(roomIndex, list);
@@ -498,6 +535,284 @@ export default class Game {
         this.roomEnemySpawns.set(roomIndex, list);
       }
     });
+  }
+
+
+  refreshRoomAmbient(roomIndex = this.activeRoomIndex) {
+    if (!(this.roomAmbientSpawns instanceof Map)) {
+      this.roomAmbientSpawns = new Map();
+    }
+    if (!Array.isArray(this.activeRoomAmbient)) {
+      this.activeRoomAmbient = [];
+    }
+    if (!this.weatherLightning) {
+      this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
+    }
+    if (!this.weatherWind) {
+      this.weatherWind = { value: 0, target: 0, timer: 0 };
+    }
+    if (!this.roomLightFlicker) {
+      this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
+    }
+    this.activeRoomAmbient = roomIndex === null || roomIndex === undefined
+      ? []
+      : (this.roomAmbientSpawns.get(roomIndex) || []).map((spawn) => ({ ...spawn }));
+    const weatherPriority = ['weather-hurricane', 'weather-blizzard', 'weather-storm', 'weather-rain', 'weather-snow'];
+    this.activeRoomWeather = weatherPriority.find((type) => this.activeRoomAmbient.some((spawn) => spawn.type === type)) || null;
+    if (this.weatherLightning.roomIndex !== roomIndex) {
+      this.weatherLightning.roomIndex = roomIndex ?? null;
+      this.weatherLightning.timer = 0;
+      this.weatherLightning.flash = 0;
+      this.weatherWind.target = 0;
+      this.weatherWind.timer = 0;
+      this.roomLightFlicker.target = 0;
+      this.roomLightFlicker.timer = 0;
+    }
+  }
+
+  getAmbientColumnBounds(spawn, direction = 1) {
+    const tileSize = this.world.tileSize;
+    const centerX = (spawn.x + 0.5) * tileSize;
+    const originY = (spawn.y + 0.5) * tileSize;
+    let endTileY = spawn.y;
+    for (let y = spawn.y + direction; y >= 0 && y < this.world.height; y += direction) {
+      if (this.world.isSolid(spawn.x, y, this.abilities, { ignoreOneWay: true })) {
+        break;
+      }
+      endTileY = y;
+    }
+    const endY = (endTileY + 0.5) * tileSize;
+    return {
+      x: centerX,
+      startY: direction > 0 ? originY : endY,
+      endY: direction > 0 ? endY : originY
+    };
+  }
+
+  emitAmbientParticle(x, y, vx, vy, life, style) {
+    this.ambientParticles.push({ x, y, vx, vy, life, maxLife: life, style, size: style.size || 4, sway: Math.random() * Math.PI * 2 });
+  }
+
+  applyAmbientDamage(column, radius, damage = 1) {
+    const withinX = Math.abs(this.player.x - column.x) <= radius;
+    const withinY = this.player.y >= column.startY - 12 && this.player.y <= column.endY + 12;
+    if (withinX && withinY) {
+      this.player.takeDamage(damage);
+    }
+  }
+
+  updateAmbientSystems(dt) {
+    this.weatherLightning.flash = Math.max(0, this.weatherLightning.flash - dt * 2.6);
+    const windyWeather = new Set(['weather-storm', 'weather-hurricane', 'weather-blizzard']);
+    if (!this.weatherWind) {
+      this.weatherWind = { value: 0, target: 0, timer: 0 };
+    }
+    if (windyWeather.has(this.activeRoomWeather)) {
+      this.weatherWind.timer -= dt;
+      if (this.weatherWind.timer <= 0) {
+        const gustSpread = this.activeRoomWeather === 'weather-hurricane' ? 180 : this.activeRoomWeather === 'weather-blizzard' ? 140 : 110;
+        this.weatherWind.target = (Math.random() * 2 - 1) * gustSpread;
+        this.weatherWind.timer = 0.28 + Math.random() * 0.5;
+      }
+      this.weatherWind.value += (this.weatherWind.target - this.weatherWind.value) * Math.min(1, dt * 2.4);
+    } else {
+      this.weatherWind.target = 0;
+      this.weatherWind.value += (0 - this.weatherWind.value) * Math.min(1, dt * 2.8);
+      this.weatherWind.timer = 0;
+    }
+
+    const hasLightFlicker = this.activeRoomAmbient.some((spawn) => spawn.type === 'light-flicker');
+    if (!this.roomLightFlicker) {
+      this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
+    }
+    if (hasLightFlicker) {
+      this.roomLightFlicker.timer -= dt;
+      if (this.roomLightFlicker.timer <= 0) {
+        const pulse = Math.random();
+        this.roomLightFlicker.target = pulse < 0.14 ? 0.72 : pulse < 0.44 ? 0.4 : 0.14;
+        this.roomLightFlicker.timer = pulse < 0.14 ? 0.04 + Math.random() * 0.06 : 0.1 + Math.random() * 0.16;
+      }
+      this.roomLightFlicker.value += (this.roomLightFlicker.target - this.roomLightFlicker.value) * Math.min(1, dt * 12);
+    } else {
+      this.roomLightFlicker.target = 0;
+      this.roomLightFlicker.value += (0 - this.roomLightFlicker.value) * Math.min(1, dt * 5);
+      this.roomLightFlicker.timer = 0;
+    }
+
+    this.ambientParticles.forEach((particle) => {
+      particle.life -= dt;
+      particle.x += particle.vx * dt;
+      particle.y += particle.vy * dt;
+      if (particle.style.kind === 'weather') {
+        particle.x += this.weatherWind.value * dt;
+      }
+      if (particle.style.swayAmplitude) {
+        particle.sway += dt * (particle.style.swaySpeed || 3);
+        particle.x += Math.sin(particle.sway) * particle.style.swayAmplitude * dt;
+      }
+    });
+    this.ambientParticles = this.ambientParticles.filter((particle) => particle.life > 0);
+
+    this.activeRoomAmbient.forEach((spawn) => {
+      if (DRIP_TYPES.has(spawn.type)) {
+        const column = this.getAmbientColumnBounds(spawn, 1);
+        const travel = Math.max(16, column.endY - column.startY);
+        const speed = spawn.type === 'lava-drip' ? 150 : spawn.type === 'acid-drip' ? 200 : 220;
+        const count = Math.max(1, Math.ceil(dt * (spawn.type === 'water-drip' ? 14 : 18)));
+        for (let i = 0; i < count; i += 1) {
+          const offset = Math.random() * travel;
+          this.emitAmbientParticle(
+            column.x + (Math.random() - 0.5) * 6,
+            column.startY + offset,
+            (Math.random() - 0.5) * 10,
+            speed,
+            Math.max(0.15, (travel - offset) / speed),
+            spawn.type === 'water-drip'
+              ? { color: 'rgba(110,190,255,0.75)', size: 3 }
+              : spawn.type === 'acid-drip'
+                ? { color: 'rgba(120,255,170,0.8)', size: 4 }
+                : { color: 'rgba(255,170,90,0.82)', size: 4 }
+          );
+        }
+        if (spawn.type !== 'water-drip') {
+          this.applyAmbientDamage(column, 10, 1);
+        }
+      } else if (spawn.type === 'steam-gasket') {
+        const column = this.getAmbientColumnBounds(spawn, -1);
+        const travel = Math.max(16, column.endY - column.startY);
+        const count = Math.max(1, Math.ceil(dt * 16));
+        for (let i = 0; i < count; i += 1) {
+          const offset = Math.random() * travel;
+          this.emitAmbientParticle(
+            column.x + (Math.random() - 0.5) * 8,
+            column.endY - offset,
+            (Math.random() - 0.5) * 12,
+            -55 - Math.random() * 40,
+            0.6 + Math.random() * 0.5,
+            { color: 'rgba(235,235,235,0.55)', size: 8 + Math.random() * 6, swayAmplitude: 10, swaySpeed: 5 }
+          );
+        }
+        this.applyAmbientDamage(column, 14, 1);
+      }
+    });
+
+    const room = this.activeRoomIndex === null || this.activeRoomIndex === undefined ? null : this.world.getRoomBounds(this.activeRoomIndex);
+    if (!room || !this.activeRoomWeather) return;
+    const tileSize = this.world.tileSize;
+    const left = room.minX * tileSize;
+    const right = (room.maxX + 1) * tileSize;
+    const top = room.minY * tileSize;
+    const bottom = (room.maxY + 1) * tileSize;
+    const weatherProfile = {
+      'weather-rain': { kind: 'weather', rate: 24, vy: 320, vx: -20, color: 'rgba(120,180,255,0.45)', size: 8 },
+      'weather-storm': {
+        kind: 'weather',
+        screenFill: true,
+        rate: 72,
+        vy: 450,
+        vx: -48,
+        color: 'rgba(132,190,255,0.68)',
+        size: 12,
+        gustRate: 10,
+        gustVx: -240,
+        gustVy: -18,
+        gustColor: 'rgba(210,220,235,0.18)',
+        gustLength: 34,
+        fogColor: 'rgba(120,130,145,0.18)',
+        fogAlpha: 0.18
+      },
+      'weather-hurricane': {
+        kind: 'weather',
+        screenFill: true,
+        rate: 96,
+        vy: 540,
+        vx: -86,
+        color: 'rgba(150,205,255,0.78)',
+        size: 14,
+        gustRate: 18,
+        gustVx: -340,
+        gustVy: -28,
+        gustColor: 'rgba(205,215,228,0.24)',
+        gustLength: 46,
+        fogColor: 'rgba(102,112,125,0.24)',
+        fogAlpha: 0.24
+      },
+      'weather-snow': { kind: 'weather', rate: 16, vy: 48, vx: -8, color: 'rgba(255,255,255,0.75)', size: 4, swayAmplitude: 16, swaySpeed: 2 },
+      'weather-blizzard': {
+        kind: 'weather',
+        screenFill: true,
+        rate: 92,
+        vy: 128,
+        vx: -72,
+        color: 'rgba(255,255,255,0.92)',
+        size: 6,
+        swayAmplitude: 30,
+        swaySpeed: 5,
+        gustRate: 20,
+        gustVx: -300,
+        gustVy: -20,
+        gustColor: 'rgba(255,255,255,0.3)',
+        gustLength: 42,
+        fogColor: 'rgba(245,248,255,0.2)',
+        fogAlpha: 0.2
+      }
+    }[this.activeRoomWeather];
+    const count = Math.max(1, Math.ceil(dt * weatherProfile.rate));
+    const precipitationWind = weatherProfile.vx + this.weatherWind.value;
+    const precipitationOverscan = weatherProfile.screenFill ? Math.max(64, Math.abs(precipitationWind) * 0.45) : 0;
+    for (let i = 0; i < count; i += 1) {
+      const spawnX = weatherProfile.screenFill
+        ? left - precipitationOverscan + Math.random() * ((right - left) + precipitationOverscan * 2)
+        : left + Math.random() * (right - left);
+      const spawnY = weatherProfile.screenFill
+        ? top - 16 + Math.random() * ((bottom - top) + 32)
+        : top - 8;
+      this.emitAmbientParticle(
+        spawnX,
+        spawnY,
+        precipitationWind + (Math.random() - 0.5) * 22,
+        weatherProfile.vy * (0.8 + Math.random() * 0.4),
+        Math.max(0.5, (bottom - top + precipitationOverscan) / weatherProfile.vy),
+        weatherProfile
+      );
+    }
+    if (weatherProfile.gustRate) {
+      const gustCount = Math.max(1, Math.ceil(dt * weatherProfile.gustRate));
+      for (let i = 0; i < gustCount; i += 1) {
+        this.emitAmbientParticle(
+          left + Math.random() * (right - left),
+          top + Math.random() * (bottom - top),
+          weatherProfile.gustVx * (0.75 + Math.random() * 0.45),
+          weatherProfile.gustVy + (Math.random() - 0.5) * 26,
+          0.28 + Math.random() * 0.2,
+          {
+            kind: 'gust',
+            color: weatherProfile.gustColor,
+            size: weatherProfile.gustLength,
+            fogColor: weatherProfile.fogColor,
+            fogAlpha: weatherProfile.fogAlpha
+          }
+        );
+      }
+    }
+    this.ambientParticles = this.ambientParticles.filter((particle) => {
+      if (particle.style === weatherProfile) {
+        return particle.y <= bottom + 24 && particle.x >= left - 64 && particle.x <= right + 64 && particle.life > 0;
+      }
+      return true;
+    });
+
+    if (this.activeRoomWeather === 'weather-hurricane') {
+      this.weatherLightning.timer -= dt;
+      if (this.weatherLightning.timer <= 0) {
+        this.weatherLightning.timer = 1.8 + Math.random() * 2.4;
+        this.weatherLightning.flash = 1;
+        this.weatherLightning.x = left + Math.random() * (right - left);
+        if (Math.abs(this.player.x - this.weatherLightning.x) < tileSize * 1.25 && this.player.y >= top && this.player.y <= bottom) {
+          this.player.takeDamage(1);
+        }
+      }
+    }
   }
 
   buildElevatorGraph() {
@@ -676,6 +991,7 @@ export default class Game {
     this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
     this.refreshWorldCaches();
     this.resetTriggerState();
+    this.doorVisualStates = new Map();
   }
 
 
@@ -906,6 +1222,12 @@ export default class Game {
     this.lootDrops = [];
     this.healthDrops = [];
     this.effects = [];
+    this.ambientParticles = [];
+    this.activeRoomAmbient = [];
+    this.activeRoomWeather = null;
+    this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
+    this.weatherWind = { value: 0, target: 0, timer: 0 };
+    this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
     this.spawnEnemies({ allowStoryFallback: !playtest });
     this.bossInteractions = {
       anchor: false,
@@ -1373,6 +1695,7 @@ export default class Game {
       if (roomIndex !== null && roomIndex !== undefined) {
         this.activeRoomIndex = roomIndex;
         this.handleRoomEntry(roomIndex);
+        this.refreshRoomAmbient(roomIndex);
       }
       return;
     }
@@ -1812,6 +2135,7 @@ export default class Game {
     this.damageFlashTimer = Math.max(0, this.damageFlashTimer - dt * timeScale);
     this.ignitirFlashTimer = Math.max(0, this.ignitirFlashTimer - dt * timeScale);
     this.doorCooldown = Math.max(0, this.doorCooldown - dt * timeScale);
+    this.updateDoorVisualStates(dt * timeScale);
     if (this.spawnPauseTimer > 0) {
       this.spawnPauseTimer = Math.max(0, this.spawnPauseTimer - dt);
       this.updateEffects(dt);
@@ -1982,6 +2306,7 @@ export default class Game {
       }
     }
 
+    this.updateAmbientSystems(dt * timeScale);
     this.updateEnemies(dt * timeScale);
     this.applyIgnitirEnemyPull(dt * timeScale);
     this.updateProjectiles(dt * timeScale);
@@ -2107,25 +2432,36 @@ export default class Game {
       }
       if (this.activeRoomIndex !== null && this.activeRoomIndex !== undefined) {
         this.handleRoomEntry(this.activeRoomIndex);
+        this.refreshRoomAmbient(this.activeRoomIndex);
       }
     }
 
     if (this.activeRoomIndex === null) {
       this.cameraBounds = null;
+      this.refreshRoomAmbient(null);
       return;
     }
     const room = this.world.getRoomBounds(this.activeRoomIndex);
     if (!room) {
       this.cameraBounds = null;
+      this.refreshRoomAmbient(null);
       return;
     }
-    const doorPadding = tileSize * (this.isMobile ? 4 : 2);
+    const roomDoorTiles = this.getRoomDoorTiles(this.activeRoomIndex);
+    const leftDoor = roomDoorTiles.some(({ x }) => x < room.minX);
+    const rightDoor = roomDoorTiles.some(({ x }) => x > room.maxX);
+    const topDoor = roomDoorTiles.some(({ y }) => y < room.minY);
+    const bottomDoor = roomDoorTiles.some(({ y }) => y > room.maxY);
+    const leftPadding = Math.max(leftDoor ? tileSize : 0, tileSize);
+    const rightPadding = Math.max(rightDoor ? tileSize : 0, tileSize);
+    const topPadding = Math.max(topDoor ? tileSize : 0, tileSize);
+    const bottomPadding = Math.max(bottomDoor ? tileSize : 0, tileSize);
     const worldRight = this.world.width * tileSize;
     const worldBottom = this.world.height * tileSize;
-    const left = Math.max(0, room.minX * tileSize - doorPadding);
-    const top = Math.max(0, room.minY * tileSize - doorPadding);
-    const right = Math.min(worldRight, (room.maxX + 1) * tileSize + doorPadding);
-    const bottom = Math.min(worldBottom, (room.maxY + 1) * tileSize + doorPadding);
+    const left = Math.max(0, room.minX * tileSize - leftPadding);
+    const top = Math.max(0, room.minY * tileSize - topPadding);
+    const right = Math.min(worldRight, (room.maxX + 1) * tileSize + rightPadding);
+    const bottom = Math.min(worldBottom, (room.maxY + 1) * tileSize + bottomPadding);
     const roomWidth = right - left;
     const roomHeight = bottom - top;
     let minX = left;
@@ -2162,6 +2498,7 @@ export default class Game {
       return;
     }
     this.roomVisited.add(roomIndex);
+    this.refreshRoomAmbient(roomIndex);
     this.respawnRoomEnemies(roomIndex);
     this.spawnRoomBosses(roomIndex);
   }
@@ -2253,6 +2590,7 @@ export default class Game {
 
   startDoorTransition(tileX, tileY, input) {
     if (this.doorTransition || this.doorCooldown > 0) return false;
+    if (this.world.isDoorLocked(tileX, tileY)) return false;
     const inputH = (input.isDown('right') ? 1 : 0) - (input.isDown('left') ? 1 : 0);
     const inputV = (input.isDown('down') ? 1 : 0) - (input.isDown('up') ? 1 : 0);
     let primaryDir = { dx: 0, dy: 0 };
@@ -4135,6 +4473,8 @@ export default class Game {
       const id = trigger.id || `trigger-${index}`;
       this.triggerState.byId.set(id, {
         inside: false,
+        roomInside: false,
+        roomClear: false,
         firedStartup: false,
         active: false,
         queue: []
@@ -4163,12 +4503,20 @@ export default class Game {
   }
 
   updateWorldTriggers(tileX, tileY) {
+    const playerRoomIndex = this.world.roomAtTile?.(tileX, tileY);
     (this.world.triggers || []).forEach((trigger, index) => {
       const id = trigger.id || `trigger-${index}`;
-      const state = this.triggerState.byId.get(id) || { inside: false, active: false, queue: [] };
+      const state = this.triggerState.byId.get(id) || { inside: false, roomInside: false, roomClear: false, active: false, queue: [] };
       const [x, y, w, h] = trigger.rect || [0, 0, 0, 0];
       const isInside = tileX >= x && tileX < x + w && tileY >= y && tileY < y + h;
+      const triggerRoomIndex = this.world.roomAtTile?.(x, y);
+      const isInTriggerRoom = triggerRoomIndex != null && playerRoomIndex != null && triggerRoomIndex === playerRoomIndex;
+      const roomClear = triggerRoomIndex != null ? this.isRoomCleared(triggerRoomIndex) : false;
       if (trigger.condition === 'When player enters this location' && isInside && !state.inside) {
+        this.fireTrigger(trigger, id);
+      } else if (trigger.condition === 'When player enters this room' && isInTriggerRoom && !state.roomInside) {
+        this.fireTrigger(trigger, id);
+      } else if (trigger.condition === 'When all enemies in this room are dead' && roomClear && !state.roomClear) {
         this.fireTrigger(trigger, id);
       } else if (trigger.condition === 'When player presses attack' && isInside && this.input.wasPressed('attack')) {
         this.fireTrigger(trigger, id);
@@ -4180,7 +4528,143 @@ export default class Game {
         this.fireTrigger(trigger, id);
       }
       state.inside = isInside;
+      state.roomInside = isInTriggerRoom;
+      state.roomClear = roomClear;
       this.triggerState.byId.set(id, state);
+    });
+  }
+
+  isRoomCleared(roomIndex) {
+    if (roomIndex == null) return false;
+    const tileSize = this.world?.tileSize || 32;
+    const entities = [...(this.enemies || [])];
+    if (this.boss) entities.push(this.boss);
+    const livingEnemies = entities.filter((enemy) => enemy && !enemy.dead && !enemy.training);
+    if (!livingEnemies.length) return true;
+    return !livingEnemies.some((enemy) => {
+      const enemyTileX = Math.floor((enemy.x || 0) / tileSize);
+      const enemyTileY = Math.floor((enemy.y || 0) / tileSize);
+      return this.world.roomAtTile?.(enemyTileX, enemyTileY) === roomIndex;
+    });
+  }
+
+  getRoomDoorTiles(roomIndex) {
+    const room = this.world.getRoomBounds?.(roomIndex);
+    if (!room) return [];
+    const tiles = [];
+    const seen = new Set();
+    const addDoorTile = (x, y) => {
+      if (this.world.getTile(x, y) !== 'D') return;
+      const key = `${x},${y}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      tiles.push({ x, y });
+    };
+    for (let x = room.minX; x <= room.maxX; x += 1) {
+      addDoorTile(x, room.minY - 1);
+      addDoorTile(x, room.maxY + 1);
+    }
+    for (let y = room.minY; y <= room.maxY; y += 1) {
+      addDoorTile(room.minX - 1, y);
+      addDoorTile(room.maxX + 1, y);
+    }
+    return tiles;
+  }
+
+  setRoomDoorsLocked(roomIndex, locked) {
+    this.getRoomDoorTiles(roomIndex).forEach(({ x, y }) => this.world.setDoorLocked(x, y, locked));
+  }
+
+  getDoorClusterAtTile(tileX, tileY) {
+    if (this.world.getTile(tileX, tileY) !== 'D') return null;
+    const stack = [{ x: tileX, y: tileY }];
+    const visited = new Set([`${tileX},${tileY}`]);
+    const tiles = [];
+    let minX = tileX;
+    let maxX = tileX;
+    let minY = tileY;
+    let maxY = tileY;
+    while (stack.length) {
+      const current = stack.pop();
+      tiles.push(current);
+      minX = Math.min(minX, current.x);
+      maxX = Math.max(maxX, current.x);
+      minY = Math.min(minY, current.y);
+      maxY = Math.max(maxY, current.y);
+      [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1]
+      ].forEach(([dx, dy]) => {
+        const nextX = current.x + dx;
+        const nextY = current.y + dy;
+        if (this.world.getTile(nextX, nextY) !== 'D') return;
+        const key = `${nextX},${nextY}`;
+        if (visited.has(key)) return;
+        visited.add(key);
+        stack.push({ x: nextX, y: nextY });
+      });
+    }
+    const width = maxX - minX + 1;
+    const height = maxY - minY + 1;
+    const hasLeftRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x - 1, y) !== null);
+    const hasRightRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x + 1, y) !== null);
+    const hasTopRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x, y - 1) !== null);
+    const hasBottomRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x, y + 1) !== null);
+    let orientation = width >= height ? 'horizontal' : 'vertical';
+    if (hasLeftRoom && hasRightRoom && !(hasTopRoom && hasBottomRoom)) {
+      orientation = 'vertical';
+    } else if (hasTopRoom && hasBottomRoom && !(hasLeftRoom && hasRightRoom)) {
+      orientation = 'horizontal';
+    }
+    return {
+      tiles,
+      key: tiles.map(({ x, y }) => `${x},${y}`).sort().join('|'),
+      minX,
+      minY,
+      maxX,
+      maxY,
+      width,
+      height,
+      horizontal: orientation === 'horizontal',
+      orientation
+    };
+  }
+
+  getDoorVisualState(clusterKey) {
+    let state = this.doorVisualStates.get(clusterKey);
+    if (!state) {
+      state = { open: 0 };
+      this.doorVisualStates.set(clusterKey, state);
+    }
+    return state;
+  }
+
+  updateDoorVisualStates(dt) {
+    const tileSize = this.world.tileSize;
+    const playerTileX = Math.floor(this.player.x / tileSize);
+    const playerTileY = Math.floor(this.player.y / tileSize);
+    const activeCluster = this.world.getTile(playerTileX, playerTileY) === 'D'
+      ? this.getDoorClusterAtTile(playerTileX, playerTileY)
+      : null;
+    const activeKey = activeCluster?.key || null;
+    const touched = new Set();
+    for (let y = 0; y < this.world.height; y += 1) {
+      for (let x = 0; x < this.world.width; x += 1) {
+        if (this.world.getTile(x, y) !== 'D') continue;
+        const cluster = this.getDoorClusterAtTile(x, y);
+        if (!cluster || touched.has(cluster.key)) continue;
+        touched.add(cluster.key);
+        const isLocked = cluster.tiles.some(({ x: doorX, y: doorY }) => this.world.isDoorLocked(doorX, doorY));
+        const state = this.getDoorVisualState(cluster.key);
+        const targetOpen = !isLocked && cluster.key === activeKey ? 1 : 0;
+        const speed = targetOpen > state.open ? 8 : 6;
+        state.open += (targetOpen - state.open) * Math.min(1, dt * speed);
+      }
+    }
+    Array.from(this.doorVisualStates.keys()).forEach((key) => {
+      if (!touched.has(key)) this.doorVisualStates.delete(key);
     });
   }
 
@@ -4257,6 +4741,28 @@ export default class Game {
         remaining: Math.max(0, Number(params.durationMs || 0)),
         onDone
       };
+      return;
+    }
+    if (action.type === 'lock-all-doors' || action.type === 'unlock-all-doors') {
+      const roomIndex = this.world.roomAtTile?.(x, y);
+      this.setRoomDoorsLocked(roomIndex, action.type === 'lock-all-doors');
+      onDone();
+      return;
+    }
+    if (action.type === 'become-solid') {
+      this.world.setSolidZone([x, y, w, h], true);
+      onDone();
+      return;
+    }
+    if (action.type === 'become-tile') {
+      const tileChar = typeof params.tileChar === 'string' && params.tileChar ? params.tileChar[0] : '#';
+      for (let tileY = y; tileY < y + h; tileY += 1) {
+        for (let tileX = x; tileX < x + w; tileX += 1) {
+          this.world.setTile(tileX, tileY, tileChar, { persist: !this.playtestActive });
+        }
+      }
+      this.world.rebuildCaches();
+      onDone();
       return;
     }
     if (action.type === 'wait' || action.type === 'fade-in' || action.type === 'fade-out' || action.type === 'fade-out-music' || action.type === 'fade-in-music') {
@@ -5408,6 +5914,7 @@ export default class Game {
     this.debris.forEach((piece) => piece.draw(ctx));
     this.shards.forEach((shard) => shard.draw(ctx));
     this.effects.forEach((effect) => effect.draw(ctx));
+    this.drawAmbientEffects(ctx);
     this.lootDrops.forEach((drop) => {
       const dist = Math.hypot(drop.x - this.player.x, drop.y - this.player.y);
       drop.draw(ctx, dist < 40);
@@ -5728,7 +6235,76 @@ export default class Game {
     ctx.restore();
   }
 
-  drawWorld(ctx, { showDoors = false, decalAlphaMultiplier = 1 } = {}) {
+  drawAmbientEffects(ctx) {
+    const hasFlicker = this.activeRoomIndex !== null
+      && this.activeRoomIndex !== undefined
+      && this.roomLightFlicker?.value > 0.01;
+    if (this.ambientParticles.length === 0 && this.weatherLightning.flash <= 0 && !hasFlicker) return;
+    ctx.save();
+    if (hasFlicker) {
+      ctx.globalAlpha = this.roomLightFlicker.value;
+      ctx.fillStyle = 'rgba(6, 8, 12, 0.98)';
+      ctx.fillRect(this.camera.x, this.camera.y, this.camera.width, this.camera.height);
+    }
+    if (this.activeRoomWeather && this.activeRoomIndex !== null && this.activeRoomIndex !== undefined) {
+      const fogProfile = {
+        'weather-storm': { color: 'rgba(120,130,145,0.24)', alpha: 0.24 },
+        'weather-hurricane': { color: 'rgba(102,112,125,0.32)', alpha: 0.32 },
+        'weather-blizzard': { color: 'rgba(245,248,255,0.26)', alpha: 0.26 }
+      }[this.activeRoomWeather];
+      if (fogProfile) {
+        ctx.globalAlpha = fogProfile.alpha * (0.8 + Math.sin(this.worldTime * 0.7) * 0.08);
+        ctx.fillStyle = fogProfile.color;
+        ctx.fillRect(this.camera.x, this.camera.y, this.camera.width, this.camera.height);
+      }
+    }
+    this.ambientParticles.forEach((particle) => {
+      const alpha = clamp01(particle.life / Math.max(0.0001, particle.maxLife));
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = particle.style.color;
+      if (particle.style.kind === 'gust') {
+        ctx.strokeStyle = particle.style.color;
+        ctx.lineWidth = Math.max(2, particle.size * 0.08);
+        ctx.beginPath();
+        ctx.moveTo(particle.x + particle.size * 0.5, particle.y - particle.size * 0.08);
+        ctx.lineTo(particle.x - particle.size * 0.5, particle.y + particle.size * 0.08);
+        ctx.stroke();
+      } else if (particle.style.vy > 200) {
+        ctx.fillRect(particle.x - 1, particle.y - particle.size, 2, particle.size + 2);
+      } else {
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, Math.max(1.5, particle.size * 0.5), 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+    if (this.weatherLightning.flash > 0 && this.activeRoomIndex !== null && this.activeRoomIndex !== undefined) {
+      const room = this.world.getRoomBounds(this.activeRoomIndex);
+      if (room) {
+        const tileSize = this.world.tileSize;
+        const left = room.minX * tileSize;
+        const top = room.minY * tileSize;
+        const width = (room.maxX - room.minX + 1) * tileSize;
+        const height = (room.maxY - room.minY + 1) * tileSize;
+        ctx.globalAlpha = this.weatherLightning.flash * 0.2;
+        ctx.fillStyle = '#dff6ff';
+        ctx.fillRect(left, top, width, height);
+        ctx.globalAlpha = this.weatherLightning.flash * 0.95;
+        ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+        ctx.lineWidth = 3;
+        const x = this.weatherLightning.x;
+        ctx.beginPath();
+        ctx.moveTo(x, top);
+        ctx.lineTo(x - 12, top + height * 0.25);
+        ctx.lineTo(x + 6, top + height * 0.45);
+        ctx.lineTo(x - 10, top + height * 0.7);
+        ctx.lineTo(x + 12, top + height * 0.92);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
+  drawWorld(ctx, { showDoors = true, decalAlphaMultiplier = 1 } = {}) {
     const tileSize = this.world.tileSize;
     const time = this.worldTime;
     const ignitirTint = this.getIgnitirTint();
@@ -5853,6 +6429,205 @@ export default class Game {
         }
       }
     };
+
+    const drawElectricBranch = (points, phaseSeed, { glow = 7, core = 2.2, alpha = 1 } = {}) => {
+      if (points.length < 2) return;
+      const jittered = [points[0]];
+      const phase = time * 18 + phaseSeed;
+      for (let i = 1; i < points.length - 1; i += 1) {
+        const prev = points[i - 1];
+        const point = points[i];
+        const next = points[i + 1];
+        const dx = next[0] - prev[0];
+        const dy = next[1] - prev[1];
+        const length = Math.hypot(dx, dy) || 1;
+        const normalX = -dy / length;
+        const normalY = dx / length;
+        const wobble = Math.sin(phase + i * 1.7) * 2.4;
+        jittered.push([point[0] + normalX * wobble, point[1] + normalY * wobble]);
+      }
+      jittered.push(points[points.length - 1]);
+
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.globalAlpha = alpha * 0.9;
+      ctx.strokeStyle = 'rgba(72, 196, 255, 0.35)';
+      ctx.shadowColor = 'rgba(72, 196, 255, 0.75)';
+      ctx.shadowBlur = glow;
+      ctx.lineWidth = glow;
+      ctx.beginPath();
+      ctx.moveTo(jittered[0][0], jittered[0][1]);
+      jittered.slice(1).forEach(([px, py]) => ctx.lineTo(px, py));
+      ctx.stroke();
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = 'rgba(220, 248, 255, 0.95)';
+      ctx.shadowBlur = 0;
+      ctx.lineWidth = core;
+      ctx.beginPath();
+      ctx.moveTo(jittered[0][0], jittered[0][1]);
+      jittered.slice(1).forEach(([px, py]) => ctx.lineTo(px, py));
+      ctx.stroke();
+      ctx.restore();
+    };
+    const pickDoorFillerTile = (cluster) => {
+      const candidates = [];
+      if (cluster.horizontal) {
+        cluster.tiles.forEach(({ x, y }) => {
+          candidates.push(this.world.getTile(x, y - 1));
+          candidates.push(this.world.getTile(x, y + 1));
+        });
+      } else {
+        cluster.tiles.forEach(({ x, y }) => {
+          candidates.push(this.world.getTile(x - 1, y));
+          candidates.push(this.world.getTile(x + 1, y));
+        });
+      }
+      return candidates.find((tile) => tile && tile !== 'D' && tile !== '.') || '#';
+    };
+    const drawDoorFillerSegment = (x, y, width, height, tile) => {
+      const cols = Math.max(1, Math.round(width / tileSize));
+      const rows = Math.max(1, Math.round(height / tileSize));
+      for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < cols; col += 1) {
+          const cellX = x + col * tileSize;
+          const cellY = y + row * tileSize;
+          switch (tile) {
+            case 'R':
+              ctx.fillStyle = '#8a5a2b';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#6d4221';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#4b2f17';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+            case 'F':
+              ctx.fillStyle = '#bfe9ff';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#86c9f0';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              break;
+            case 'E':
+              ctx.fillStyle = '#d6b06d';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#b58b4a';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#9b773d';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+            case 'Q':
+              ctx.fillStyle = '#6b2bbd';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#4c1f8a';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#3a176a';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+            default:
+              ctx.fillStyle = '#3a3a3a';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#2b2b2b';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = '#1f1f1f';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+          }
+        }
+      }
+    };
+    const drawDoorCluster = (cluster) => {
+      if (!cluster) return;
+      const state = this.getDoorVisualState(cluster.key);
+      const openAmount = Math.max(0, Math.min(1, state?.open || 0));
+      const isLocked = cluster.tiles.some(({ x, y }) => this.world.isDoorLocked(x, y));
+      const frameColor = isLocked ? '#d34b4b' : '#69d8ff';
+      const glowColor = isLocked ? 'rgba(255, 90, 90, 0.75)' : 'rgba(90, 225, 255, 0.75)';
+      const panelColor = isLocked ? '#5a1418' : '#163545';
+      const innerColor = isLocked ? '#a32028' : '#1b7ea3';
+      const baseX = cluster.minX * tileSize;
+      const baseY = cluster.minY * tileSize;
+      const width = cluster.width * tileSize;
+      const height = cluster.height * tileSize;
+      const bezel = 3;
+      const majorAxisLength = cluster.horizontal ? cluster.width : cluster.height;
+      const hasLongCenterSpan = majorAxisLength > 4;
+      const capSpan = hasLongCenterSpan ? tileSize * 2 : (cluster.horizontal ? width * 0.5 : height * 0.5);
+      const fillerTile = hasLongCenterSpan ? pickDoorFillerTile(cluster) : null;
+      const drawDoorModule = (x, y, moduleWidth, moduleHeight, horizontal) => {
+        ctx.fillStyle = 'rgba(8, 15, 22, 0.92)';
+        ctx.fillRect(x, y, moduleWidth, moduleHeight);
+        ctx.strokeStyle = frameColor;
+        ctx.lineWidth = 2;
+        ctx.shadowColor = glowColor;
+        ctx.shadowBlur = 8;
+        ctx.strokeRect(x + 1, y + 1, moduleWidth - 2, moduleHeight - 2);
+        ctx.shadowBlur = 0;
+        if (horizontal) {
+          const panelTravel = Math.max(0, moduleHeight * 0.5 - bezel - 3) * openAmount;
+          const panelHeight = Math.max(4, moduleHeight * 0.5 - bezel - 2);
+          ctx.fillStyle = panelColor;
+          ctx.fillRect(x + bezel, y + bezel - panelTravel, moduleWidth - bezel * 2, panelHeight);
+          ctx.fillRect(x + bezel, y + moduleHeight - bezel - panelHeight + panelTravel, moduleWidth - bezel * 2, panelHeight);
+          ctx.fillStyle = innerColor;
+          const innerH = Math.max(2, panelHeight - 6);
+          ctx.fillRect(x + 6, y + 6 - panelTravel, Math.max(0, moduleWidth - 12), innerH);
+          ctx.fillRect(x + 6, y + moduleHeight - 6 - innerH + panelTravel, Math.max(0, moduleWidth - 12), innerH);
+          ctx.strokeStyle = frameColor;
+          ctx.beginPath();
+          ctx.moveTo(x + 6, y + moduleHeight * 0.5);
+          ctx.lineTo(x + moduleWidth - 6, y + moduleHeight * 0.5);
+          ctx.stroke();
+          const lightSize = Math.max(6, Math.min(moduleHeight, 12));
+          ctx.fillStyle = isLocked ? '#ff5252' : '#8df0ff';
+          ctx.shadowColor = glowColor;
+          ctx.shadowBlur = 10;
+          ctx.fillRect(x + 6, y + moduleHeight * 0.5 - lightSize * 0.5, 6, lightSize);
+          ctx.fillRect(x + moduleWidth - 12, y + moduleHeight * 0.5 - lightSize * 0.5, 6, lightSize);
+        } else {
+          const panelTravel = Math.max(0, moduleWidth * 0.5 - bezel - 3) * openAmount;
+          const panelWidth = Math.max(4, moduleWidth * 0.5 - bezel - 2);
+          ctx.fillStyle = panelColor;
+          ctx.fillRect(x + bezel - panelTravel, y + bezel, panelWidth, moduleHeight - bezel * 2);
+          ctx.fillRect(x + moduleWidth - bezel - panelWidth + panelTravel, y + bezel, panelWidth, moduleHeight - bezel * 2);
+          ctx.fillStyle = innerColor;
+          const innerW = Math.max(2, panelWidth - 6);
+          ctx.fillRect(x + 6 - panelTravel, y + 6, innerW, Math.max(0, moduleHeight - 12));
+          ctx.fillRect(x + moduleWidth - 6 - innerW + panelTravel, y + 6, innerW, Math.max(0, moduleHeight - 12));
+          ctx.strokeStyle = frameColor;
+          ctx.beginPath();
+          ctx.moveTo(x + moduleWidth * 0.5, y + 6);
+          ctx.lineTo(x + moduleWidth * 0.5, y + moduleHeight - 6);
+          ctx.stroke();
+          const lightSize = Math.max(6, Math.min(moduleWidth, 12));
+          ctx.fillStyle = isLocked ? '#ff5252' : '#8df0ff';
+          ctx.shadowColor = glowColor;
+          ctx.shadowBlur = 10;
+          ctx.fillRect(x + moduleWidth * 0.5 - lightSize * 0.5, y + 6, lightSize, 6);
+          ctx.fillRect(x + moduleWidth * 0.5 - lightSize * 0.5, y + moduleHeight - 12, lightSize, 6);
+        }
+        ctx.shadowBlur = 0;
+      };
+
+      ctx.save();
+      if (hasLongCenterSpan) {
+        drawDoorFillerSegment(baseX, baseY, width, height, fillerTile || '#');
+        if (cluster.horizontal) {
+          drawDoorModule(baseX, baseY, capSpan, height, true);
+          drawDoorModule(baseX + width - capSpan, baseY, capSpan, height, true);
+        } else {
+          drawDoorModule(baseX, baseY, width, capSpan, false);
+          drawDoorModule(baseX, baseY + height - capSpan, width, capSpan, false);
+        }
+      } else {
+        if (cluster.horizontal) {
+          drawDoorModule(baseX, baseY, width, height, true);
+        } else {
+          drawDoorModule(baseX, baseY, width, height, false);
+        }
+      }
+      ctx.restore();
+    };
+    const renderedDoorClusters = new Set();
     for (let y = 0; y < this.world.height; y += 1) {
       for (let x = 0; x < this.world.width; x += 1) {
         const tile = this.world.getTile(x, y);
@@ -5990,6 +6765,58 @@ export default class Game {
         if (tile === '!') {
           drawSpikeTile(x, y, '#c98bff');
         }
+        if (tile === 'e') {
+          const baseX = x * tileSize;
+          const baseY = y * tileSize;
+          const centerX = baseX + tileSize / 2;
+          const centerY = baseY + tileSize / 2;
+          const connectedLeft = this.world.getTile(x - 1, y) === 'e';
+          const connectedRight = this.world.getTile(x + 1, y) === 'e';
+          const connectedUp = this.world.getTile(x, y - 1) === 'e';
+          const connectedDown = this.world.getTile(x, y + 1) === 'e';
+          const connectorCount = [connectedLeft, connectedRight, connectedUp, connectedDown].filter(Boolean).length;
+
+          const plate = ctx.createLinearGradient(baseX, baseY, baseX, baseY + tileSize);
+          plate.addColorStop(0, '#09131c');
+          plate.addColorStop(0.5, '#102635');
+          plate.addColorStop(1, '#081018');
+          ctx.fillStyle = plate;
+          ctx.fillRect(baseX, baseY, tileSize, tileSize);
+          ctx.strokeStyle = '#1d425d';
+          ctx.strokeRect(baseX, baseY, tileSize, tileSize);
+          ctx.fillStyle = 'rgba(75, 170, 220, 0.14)';
+          ctx.fillRect(baseX + 3, baseY + 3, tileSize - 6, tileSize - 6);
+
+          const branches = [];
+          if (connectedLeft) branches.push([[baseX, centerY], [baseX + tileSize * 0.24, centerY], [centerX, centerY]]);
+          if (connectedRight) branches.push([[centerX, centerY], [baseX + tileSize * 0.76, centerY], [baseX + tileSize, centerY]]);
+          if (connectedUp) branches.push([[centerX, baseY], [centerX, baseY + tileSize * 0.24], [centerX, centerY]]);
+          if (connectedDown) branches.push([[centerX, centerY], [centerX, baseY + tileSize * 0.76], [centerX, baseY + tileSize]]);
+          if (branches.length === 0) {
+            branches.push([[centerX, baseY + 4], [centerX - 2, baseY + tileSize * 0.35], [centerX + 2, baseY + tileSize * 0.68], [centerX, baseY + tileSize - 4]]);
+          }
+
+          const electricPhaseSeed = x * 0.9 + y * 1.1;
+          branches.forEach((points) => drawElectricBranch(points, electricPhaseSeed, { glow: 8, core: 2.4 }));
+
+          if (connectorCount >= 2 || branches.length === 0) {
+            const forkPhase = time * 16 + x * 1.3 - y * 0.8;
+            drawElectricBranch([
+              [centerX - 5, centerY + Math.sin(forkPhase) * 2],
+              [centerX, centerY - 1],
+              [centerX + 6, centerY + Math.cos(forkPhase) * 2]
+            ], electricPhaseSeed + 1.6, { glow: 5, core: 1.4, alpha: 0.9 });
+          }
+
+          ctx.save();
+          ctx.fillStyle = 'rgba(210, 245, 255, 0.9)';
+          ctx.shadowColor = 'rgba(130, 225, 255, 0.95)';
+          ctx.shadowBlur = 10;
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, 2.4 + Math.sin(time * 10 + x + y) * 0.45, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
         if (tile === 'I') {
           ctx.fillStyle = '#8fd6ff';
           ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
@@ -6022,12 +6849,11 @@ export default class Game {
           ctx.stroke();
         }
         if (tile === 'D' && showDoors) {
-          ctx.strokeStyle = '#fff';
-          ctx.strokeRect(x * tileSize + 4, y * tileSize + 4, tileSize - 8, tileSize - 8);
-          ctx.beginPath();
-          ctx.moveTo(x * tileSize + tileSize / 2, y * tileSize + 6);
-          ctx.lineTo(x * tileSize + tileSize / 2, y * tileSize + tileSize - 6);
-          ctx.stroke();
+          const cluster = this.getDoorClusterAtTile(x, y);
+          if (cluster && !renderedDoorClusters.has(cluster.key)) {
+            renderedDoorClusters.add(cluster.key);
+            drawDoorCluster(cluster);
+          }
         }
         if (tile === 'W') {
           const baseX = x * tileSize;
