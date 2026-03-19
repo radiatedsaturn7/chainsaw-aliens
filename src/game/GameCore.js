@@ -2447,13 +2447,21 @@ export default class Game {
       this.refreshRoomAmbient(null);
       return;
     }
-    const doorPadding = tileSize * (this.isMobile ? 4 : 2);
+    const roomDoorTiles = this.getRoomDoorTiles(this.activeRoomIndex);
+    const leftDoor = roomDoorTiles.some(({ x }) => x < room.minX);
+    const rightDoor = roomDoorTiles.some(({ x }) => x > room.maxX);
+    const topDoor = roomDoorTiles.some(({ y }) => y < room.minY);
+    const bottomDoor = roomDoorTiles.some(({ y }) => y > room.maxY);
+    const leftPadding = leftDoor ? tileSize : 0;
+    const rightPadding = rightDoor ? tileSize : 0;
+    const topPadding = topDoor ? tileSize : 0;
+    const bottomPadding = bottomDoor ? tileSize : 0;
     const worldRight = this.world.width * tileSize;
     const worldBottom = this.world.height * tileSize;
-    const left = Math.max(0, room.minX * tileSize - doorPadding);
-    const top = Math.max(0, room.minY * tileSize - doorPadding);
-    const right = Math.min(worldRight, (room.maxX + 1) * tileSize + doorPadding);
-    const bottom = Math.min(worldBottom, (room.maxY + 1) * tileSize + doorPadding);
+    const left = Math.max(0, room.minX * tileSize - leftPadding);
+    const top = Math.max(0, room.minY * tileSize - topPadding);
+    const right = Math.min(worldRight, (room.maxX + 1) * tileSize + rightPadding);
+    const bottom = Math.min(worldBottom, (room.maxY + 1) * tileSize + bottomPadding);
     const roomWidth = right - left;
     const roomHeight = bottom - top;
     let minX = left;
