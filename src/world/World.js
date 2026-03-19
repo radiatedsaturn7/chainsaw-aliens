@@ -66,6 +66,7 @@ const DEFAULT_DYNAMIC_STATE = () => ({
 });
 
 const isRoomTile = (tile) => tile && tile !== DOOR_TILE && !ROOM_BLOCKERS.has(tile);
+const DOOR_CAP_DEPTH = 2;
 
 export default class World {
   constructor() {
@@ -119,7 +120,7 @@ export default class World {
     this.tileSize = data.tileSize;
     this.width = data.width;
     this.height = data.height;
-    const normalizedTiles = (data.tiles || []).map((row) => row.replace(/Y/g, 'K'));
+    const normalizedTiles = this.normalizeDoorTiles((data.tiles || []).map((row) => row.replace(/Y/g, 'K')));
     this.tiles = [...normalizedTiles];
     this.regions = data.regions || [];
     const spawn = data.spawn || DEFAULT_SPAWN;
@@ -164,6 +165,84 @@ export default class World {
     }
     this.dynamicState = DEFAULT_DYNAMIC_STATE();
     this.rebuildCaches();
+  }
+
+
+  normalizeDoorTiles(rows) {
+    const tiles = rows.map((row) => row.split(''));
+    const visited = new Set();
+    const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    const inBounds = (x, y) => y >= 0 && y < tiles.length && x >= 0 && x < (tiles[y]?.length || 0);
+
+    const inferWallTile = (cluster) => {
+      const counts = new Map();
+      for (let y = cluster.minY - 1; y <= cluster.maxY + 1; y += 1) {
+        for (let x = cluster.minX - 1; x <= cluster.maxX + 1; x += 1) {
+          if (!inBounds(x, y)) continue;
+          if (x >= cluster.minX && x <= cluster.maxX && y >= cluster.minY && y <= cluster.maxY) continue;
+          const tile = tiles[y][x];
+          if (!tile || tile === DOOR_TILE || tile === '.') continue;
+          if (!ROOM_BLOCKERS.has(tile)) continue;
+          counts.set(tile, (counts.get(tile) || 0) + 1);
+        }
+      }
+      return Array.from(counts.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] || '#';
+    };
+
+    for (let y = 0; y < tiles.length; y += 1) {
+      for (let x = 0; x < (tiles[y]?.length || 0); x += 1) {
+        if (tiles[y][x] !== DOOR_TILE) continue;
+        const key = `${x},${y}`;
+        if (visited.has(key)) continue;
+        const stack = [{ x, y }];
+        const cluster = [];
+        let minX = x;
+        let maxX = x;
+        let minY = y;
+        let maxY = y;
+        while (stack.length) {
+          const current = stack.pop();
+          const currentKey = `${current.x},${current.y}`;
+          if (visited.has(currentKey)) continue;
+          visited.add(currentKey);
+          cluster.push(current);
+          minX = Math.min(minX, current.x);
+          maxX = Math.max(maxX, current.x);
+          minY = Math.min(minY, current.y);
+          maxY = Math.max(maxY, current.y);
+          dirs.forEach(([dx, dy]) => {
+            const nextX = current.x + dx;
+            const nextY = current.y + dy;
+            if (!inBounds(nextX, nextY) || tiles[nextY][nextX] !== DOOR_TILE) return;
+            const nextKey = `${nextX},${nextY}`;
+            if (!visited.has(nextKey)) stack.push({ x: nextX, y: nextY });
+          });
+        }
+
+        const width = maxX - minX + 1;
+        const height = maxY - minY + 1;
+        const isRectangular = cluster.length === width * height;
+        const majorAxisLength = Math.max(width, height);
+        if (!isRectangular || majorAxisLength <= DOOR_CAP_DEPTH * 2) continue;
+
+        const fillerTile = inferWallTile({ minX, minY, maxX, maxY });
+        if (height >= width) {
+          for (let fillY = minY + DOOR_CAP_DEPTH; fillY <= maxY - DOOR_CAP_DEPTH; fillY += 1) {
+            for (let fillX = minX; fillX <= maxX; fillX += 1) {
+              tiles[fillY][fillX] = fillerTile;
+            }
+          }
+        } else {
+          for (let fillX = minX + DOOR_CAP_DEPTH; fillX <= maxX - DOOR_CAP_DEPTH; fillX += 1) {
+            for (let fillY = minY; fillY <= maxY; fillY += 1) {
+              tiles[fillY][fillX] = fillerTile;
+            }
+          }
+        }
+      }
+    }
+
+    return tiles.map((row) => row.join(''));
   }
 
   rebuildCaches() {
