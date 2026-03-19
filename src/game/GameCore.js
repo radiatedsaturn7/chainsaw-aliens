@@ -6537,107 +6537,77 @@ export default class Game {
       const hasLongCenterSpan = majorAxisLength > 4;
       const capSpan = hasLongCenterSpan ? tileSize * 2 : (cluster.horizontal ? width * 0.5 : height * 0.5);
       const fillerTile = hasLongCenterSpan ? pickDoorFillerTile(cluster) : null;
+      const drawDoorModule = (x, y, moduleWidth, moduleHeight, horizontal) => {
+        ctx.fillStyle = 'rgba(8, 15, 22, 0.92)';
+        ctx.fillRect(x, y, moduleWidth, moduleHeight);
+        ctx.strokeStyle = frameColor;
+        ctx.lineWidth = 2;
+        ctx.shadowColor = glowColor;
+        ctx.shadowBlur = 8;
+        ctx.strokeRect(x + 1, y + 1, moduleWidth - 2, moduleHeight - 2);
+        ctx.shadowBlur = 0;
+        if (horizontal) {
+          const panelTravel = Math.max(0, moduleHeight * 0.5 - bezel - 3) * openAmount;
+          const panelHeight = Math.max(4, moduleHeight * 0.5 - bezel - 2);
+          ctx.fillStyle = panelColor;
+          ctx.fillRect(x + bezel, y + bezel - panelTravel, moduleWidth - bezel * 2, panelHeight);
+          ctx.fillRect(x + bezel, y + moduleHeight - bezel - panelHeight + panelTravel, moduleWidth - bezel * 2, panelHeight);
+          ctx.fillStyle = innerColor;
+          const innerH = Math.max(2, panelHeight - 6);
+          ctx.fillRect(x + 6, y + 6 - panelTravel, Math.max(0, moduleWidth - 12), innerH);
+          ctx.fillRect(x + 6, y + moduleHeight - 6 - innerH + panelTravel, Math.max(0, moduleWidth - 12), innerH);
+          ctx.strokeStyle = frameColor;
+          ctx.beginPath();
+          ctx.moveTo(x + 6, y + moduleHeight * 0.5);
+          ctx.lineTo(x + moduleWidth - 6, y + moduleHeight * 0.5);
+          ctx.stroke();
+          const lightSize = Math.max(6, Math.min(moduleHeight, 12));
+          ctx.fillStyle = isLocked ? '#ff5252' : '#8df0ff';
+          ctx.shadowColor = glowColor;
+          ctx.shadowBlur = 10;
+          ctx.fillRect(x + 6, y + moduleHeight * 0.5 - lightSize * 0.5, 6, lightSize);
+          ctx.fillRect(x + moduleWidth - 12, y + moduleHeight * 0.5 - lightSize * 0.5, 6, lightSize);
+        } else {
+          const panelTravel = Math.max(0, moduleWidth * 0.5 - bezel - 3) * openAmount;
+          const panelWidth = Math.max(4, moduleWidth * 0.5 - bezel - 2);
+          ctx.fillStyle = panelColor;
+          ctx.fillRect(x + bezel - panelTravel, y + bezel, panelWidth, moduleHeight - bezel * 2);
+          ctx.fillRect(x + moduleWidth - bezel - panelWidth + panelTravel, y + bezel, panelWidth, moduleHeight - bezel * 2);
+          ctx.fillStyle = innerColor;
+          const innerW = Math.max(2, panelWidth - 6);
+          ctx.fillRect(x + 6 - panelTravel, y + 6, innerW, Math.max(0, moduleHeight - 12));
+          ctx.fillRect(x + moduleWidth - 6 - innerW + panelTravel, y + 6, innerW, Math.max(0, moduleHeight - 12));
+          ctx.strokeStyle = frameColor;
+          ctx.beginPath();
+          ctx.moveTo(x + moduleWidth * 0.5, y + 6);
+          ctx.lineTo(x + moduleWidth * 0.5, y + moduleHeight - 6);
+          ctx.stroke();
+          const lightSize = Math.max(6, Math.min(moduleWidth, 12));
+          ctx.fillStyle = isLocked ? '#ff5252' : '#8df0ff';
+          ctx.shadowColor = glowColor;
+          ctx.shadowBlur = 10;
+          ctx.fillRect(x + moduleWidth * 0.5 - lightSize * 0.5, y + 6, lightSize, 6);
+          ctx.fillRect(x + moduleWidth * 0.5 - lightSize * 0.5, y + moduleHeight - 12, lightSize, 6);
+        }
+        ctx.shadowBlur = 0;
+      };
 
       ctx.save();
-      ctx.fillStyle = 'rgba(8, 15, 22, 0.92)';
-      ctx.fillRect(baseX, baseY, width, height);
-      ctx.strokeStyle = frameColor;
-      ctx.lineWidth = 2;
-      ctx.shadowColor = glowColor;
-      ctx.shadowBlur = 8;
       if (hasLongCenterSpan) {
+        drawDoorFillerSegment(baseX, baseY, width, height, fillerTile || '#');
         if (cluster.horizontal) {
-          ctx.strokeRect(baseX + 1, baseY + 1, capSpan - 2, height - 2);
-          ctx.strokeRect(baseX + width - capSpan + 1, baseY + 1, capSpan - 2, height - 2);
+          drawDoorModule(baseX, baseY, capSpan, height, true);
+          drawDoorModule(baseX + width - capSpan, baseY, capSpan, height, true);
         } else {
-          ctx.strokeRect(baseX + 1, baseY + 1, width - 2, capSpan - 2);
-          ctx.strokeRect(baseX + 1, baseY + height - capSpan + 1, width - 2, capSpan - 2);
+          drawDoorModule(baseX, baseY, width, capSpan, false);
+          drawDoorModule(baseX, baseY + height - capSpan, width, capSpan, false);
         }
       } else {
-        ctx.strokeRect(baseX + 1, baseY + 1, width - 2, height - 2);
-      }
-      ctx.shadowBlur = 0;
-
-      if (hasLongCenterSpan && fillerTile) {
         if (cluster.horizontal) {
-          drawDoorFillerSegment(baseX + capSpan, baseY, Math.max(0, width - capSpan * 2), height, fillerTile);
+          drawDoorModule(baseX, baseY, width, height, true);
         } else {
-          drawDoorFillerSegment(baseX, baseY + capSpan, width, Math.max(0, height - capSpan * 2), fillerTile);
+          drawDoorModule(baseX, baseY, width, height, false);
         }
-      }
-
-      if (cluster.horizontal) {
-        const panelTravel = Math.max(0, height * 0.5 - bezel - 3) * openAmount;
-        const panelHeight = Math.max(4, height * 0.5 - bezel - 2);
-        const leftSpan = hasLongCenterSpan ? capSpan : width;
-        const rightSpan = hasLongCenterSpan ? capSpan : width;
-        ctx.fillStyle = panelColor;
-        ctx.fillRect(baseX + bezel, baseY + bezel - panelTravel, leftSpan - bezel * 2, panelHeight);
-        ctx.fillRect(baseX + width - rightSpan + bezel, baseY + bezel - panelTravel, rightSpan - bezel * 2, panelHeight);
-        ctx.fillRect(baseX + bezel, baseY + height - bezel - panelHeight + panelTravel, leftSpan - bezel * 2, panelHeight);
-        ctx.fillRect(baseX + width - rightSpan + bezel, baseY + height - bezel - panelHeight + panelTravel, rightSpan - bezel * 2, panelHeight);
-        ctx.fillStyle = innerColor;
-        const innerH = Math.max(2, panelHeight - 6);
-        ctx.fillRect(baseX + 6, baseY + 6 - panelTravel, Math.max(0, leftSpan - 12), innerH);
-        ctx.fillRect(baseX + width - rightSpan + 6, baseY + 6 - panelTravel, Math.max(0, rightSpan - 12), innerH);
-        ctx.fillRect(baseX + 6, baseY + height - 6 - innerH + panelTravel, Math.max(0, leftSpan - 12), innerH);
-        ctx.fillRect(baseX + width - rightSpan + 6, baseY + height - 6 - innerH + panelTravel, Math.max(0, rightSpan - 12), innerH);
-        ctx.strokeStyle = frameColor;
-        if (hasLongCenterSpan) {
-          ctx.beginPath();
-          ctx.moveTo(baseX + 6, baseY + height * 0.5);
-          ctx.lineTo(baseX + leftSpan - 6, baseY + height * 0.5);
-          ctx.moveTo(baseX + width - rightSpan + 6, baseY + height * 0.5);
-          ctx.lineTo(baseX + width - 6, baseY + height * 0.5);
-          ctx.stroke();
-        } else {
-          ctx.beginPath();
-          ctx.moveTo(baseX + 6, baseY + height * 0.5);
-          ctx.lineTo(baseX + width - 6, baseY + height * 0.5);
-          ctx.stroke();
-        }
-      } else {
-        const panelTravel = Math.max(0, width * 0.5 - bezel - 3) * openAmount;
-        const panelWidth = Math.max(4, width * 0.5 - bezel - 2);
-        const topSpan = hasLongCenterSpan ? capSpan : height;
-        const bottomSpan = hasLongCenterSpan ? capSpan : height;
-        ctx.fillStyle = panelColor;
-        ctx.fillRect(baseX + bezel - panelTravel, baseY + bezel, panelWidth, topSpan - bezel * 2);
-        ctx.fillRect(baseX + width - bezel - panelWidth + panelTravel, baseY + bezel, panelWidth, topSpan - bezel * 2);
-        ctx.fillRect(baseX + bezel - panelTravel, baseY + height - bottomSpan + bezel, panelWidth, bottomSpan - bezel * 2);
-        ctx.fillRect(baseX + width - bezel - panelWidth + panelTravel, baseY + height - bottomSpan + bezel, panelWidth, bottomSpan - bezel * 2);
-        ctx.fillStyle = innerColor;
-        const innerW = Math.max(2, panelWidth - 6);
-        ctx.fillRect(baseX + 6 - panelTravel, baseY + 6, innerW, Math.max(0, topSpan - 12));
-        ctx.fillRect(baseX + width - 6 - innerW + panelTravel, baseY + 6, innerW, Math.max(0, topSpan - 12));
-        ctx.fillRect(baseX + 6 - panelTravel, baseY + height - bottomSpan + 6, innerW, Math.max(0, bottomSpan - 12));
-        ctx.fillRect(baseX + width - 6 - innerW + panelTravel, baseY + height - bottomSpan + 6, innerW, Math.max(0, bottomSpan - 12));
-        ctx.strokeStyle = frameColor;
-        if (hasLongCenterSpan) {
-          ctx.beginPath();
-          ctx.moveTo(baseX + width * 0.5, baseY + 6);
-          ctx.lineTo(baseX + width * 0.5, baseY + topSpan - 6);
-          ctx.moveTo(baseX + width * 0.5, baseY + height - bottomSpan + 6);
-          ctx.lineTo(baseX + width * 0.5, baseY + height - 6);
-          ctx.stroke();
-        } else {
-          ctx.beginPath();
-          ctx.moveTo(baseX + width * 0.5, baseY + 6);
-          ctx.lineTo(baseX + width * 0.5, baseY + height - 6);
-          ctx.stroke();
-        }
-      }
-
-      const lightSize = Math.max(6, Math.min(cluster.horizontal ? height : width, 12));
-      ctx.fillStyle = isLocked ? '#ff5252' : '#8df0ff';
-      ctx.shadowColor = glowColor;
-      ctx.shadowBlur = 10;
-      if (cluster.horizontal) {
-        ctx.fillRect(baseX + 6, baseY + height * 0.5 - lightSize * 0.5, 6, lightSize);
-        ctx.fillRect(baseX + width - 12, baseY + height * 0.5 - lightSize * 0.5, 6, lightSize);
-      } else {
-        ctx.fillRect(baseX + width * 0.5 - lightSize * 0.5, baseY + 6, lightSize, 6);
-        ctx.fillRect(baseX + width * 0.5 - lightSize * 0.5, baseY + height - 12, lightSize, 6);
       }
       ctx.restore();
     };
