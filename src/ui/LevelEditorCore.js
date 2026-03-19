@@ -6854,6 +6854,7 @@ export default class Editor {
     ctx.scale(this.zoom, this.zoom);
     ctx.translate(-this.camera.x, -this.camera.y);
     this.game.drawWorld(ctx, { showDoors: true, decalAlphaMultiplier: this.getDecalOverlayAlpha() });
+    this.game.drawDoorForegroundOverlays(ctx);
     this.drawEditorMarkers(ctx);
     this.drawGrid(ctx);
     this.drawCursor(ctx);

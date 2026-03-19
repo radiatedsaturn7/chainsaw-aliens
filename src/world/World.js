@@ -166,6 +166,8 @@ export default class World {
     this.rebuildCaches();
   }
 
+
+
   rebuildCaches() {
     this.abilityPickups = [];
     this.mapPickups = [];
