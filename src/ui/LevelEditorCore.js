@@ -128,7 +128,7 @@ const BOSS_ROOM_PREFS = {
   cataclysmcolossus: { shape: 'large', theme: 'cave', hazards: ['L'] }
 };
 
-const ENEMY_TYPES = [...STANDARD_ENEMY_TYPES, ...AMBIENT_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
+const ENEMY_TYPES = [...AMBIENT_ENEMY_TYPES, ...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
 
 const SHAPE_TOOLS = [
   { id: 'rect', label: 'Rectangle Fill', short: 'RECT' },
@@ -313,7 +313,7 @@ export default class Editor {
     this.tileTool = 'paint';
     this.tileType = DEFAULT_TILE_TYPES[0];
     this.customTile = null;
-    this.enemyType = ENEMY_TYPES[0];
+    this.enemyType = STANDARD_ENEMY_TYPES[0] || ENEMY_TYPES[0];
     this.enemyCategory = 'standard';
     this.shapeTool = SHAPE_TOOLS[0];
     this.prefabType = PREFAB_TYPES[0];
