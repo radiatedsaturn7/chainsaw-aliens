@@ -6308,7 +6308,7 @@ export default class Game {
   drawDoorForegroundOverlays(ctx) {
     const overlays = this.doorForegroundOverlays || [];
     const tileSize = this.world.tileSize;
-    overlays.forEach(({ x, y, width, height }) => {
+    overlays.forEach(({ x, y, width, height, tile = '#' }) => {
       if (width <= 0 || height <= 0) return;
       const cols = Math.max(1, Math.round(width / tileSize));
       const rows = Math.max(1, Math.round(height / tileSize));
@@ -6316,12 +6316,46 @@ export default class Game {
         for (let col = 0; col < cols; col += 1) {
           const cellX = x + col * tileSize;
           const cellY = y + row * tileSize;
-          ctx.fillStyle = 'rgba(44, 44, 44, 0.96)';
-          ctx.fillRect(cellX, cellY, tileSize, tileSize);
-          ctx.strokeStyle = 'rgba(20, 20, 20, 0.92)';
-          ctx.strokeRect(cellX, cellY, tileSize, tileSize);
-          ctx.strokeStyle = 'rgba(10, 10, 10, 0.88)';
-          ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+          switch (tile) {
+            case 'R':
+              ctx.fillStyle = 'rgba(106, 70, 36, 0.96)';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(72, 45, 22, 0.92)';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(52, 31, 15, 0.88)';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+            case 'F':
+              ctx.fillStyle = 'rgba(162, 208, 230, 0.96)';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(110, 163, 191, 0.92)';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              break;
+            case 'E':
+              ctx.fillStyle = 'rgba(181, 145, 91, 0.96)';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(145, 110, 60, 0.92)';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(108, 80, 42, 0.88)';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+            case 'Q':
+              ctx.fillStyle = 'rgba(84, 35, 144, 0.96)';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(58, 24, 102, 0.92)';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(41, 16, 73, 0.88)';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+            default:
+              ctx.fillStyle = 'rgba(44, 44, 44, 0.96)';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(20, 20, 20, 0.92)';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(10, 10, 10, 0.88)';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+          }
         }
       }
     });
@@ -6498,10 +6532,16 @@ export default class Game {
       const candidates = [];
       if (cluster.horizontal) {
         cluster.tiles.forEach(({ x, y }) => {
+          candidates.push(this.world.getTile(x - 1, y));
+          candidates.push(this.world.getTile(x + 1, y));
           candidates.push(this.world.getTile(x, y - 1));
           candidates.push(this.world.getTile(x, y + 1));
         });
       } else {
+        for (let x = cluster.minX; x <= cluster.maxX; x += 1) {
+          candidates.push(this.world.getTile(x, cluster.minY - 1));
+          candidates.push(this.world.getTile(x, cluster.maxY + 1));
+        }
         cluster.tiles.forEach(({ x, y }) => {
           candidates.push(this.world.getTile(x - 1, y));
           candidates.push(this.world.getTile(x + 1, y));
@@ -6644,7 +6684,7 @@ export default class Game {
           drawDoorModule(baseX, baseY, width, capSpan, true);
           drawDoorModule(baseX, baseY + height - capSpan, width, capSpan, true);
           if (centerHeight > 0) {
-            doorForegroundOverlays.push({ x: baseX, y: centerY, width, height: centerHeight });
+            doorForegroundOverlays.push({ x: baseX, y: centerY, width, height: centerHeight, tile: fillerTile || '#' });
           }
         }
       } else {
