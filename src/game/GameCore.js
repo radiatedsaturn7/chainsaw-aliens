@@ -6307,68 +6307,22 @@ export default class Game {
 
   drawDoorForegroundOverlays(ctx) {
     const overlays = this.doorForegroundOverlays || [];
-    overlays.forEach(({ x, y, width, height, tile = '#', addLip = false }) => {
+    const tileSize = this.world.tileSize;
+    overlays.forEach(({ x, y, width, height }) => {
       if (width <= 0 || height <= 0) return;
-      const tileSize = this.world.tileSize;
       const cols = Math.max(1, Math.round(width / tileSize));
       const rows = Math.max(1, Math.round(height / tileSize));
       for (let row = 0; row < rows; row += 1) {
         for (let col = 0; col < cols; col += 1) {
           const cellX = x + col * tileSize;
           const cellY = y + row * tileSize;
-          switch (tile) {
-            case 'R':
-              ctx.fillStyle = 'rgba(106, 68, 32, 0.94)';
-              ctx.fillRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = 'rgba(78, 47, 22, 0.92)';
-              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = 'rgba(58, 34, 16, 0.88)';
-              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
-              break;
-            case 'F':
-              ctx.fillStyle = 'rgba(154, 198, 220, 0.92)';
-              ctx.fillRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = 'rgba(109, 160, 188, 0.92)';
-              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
-              break;
-            case 'E':
-              ctx.fillStyle = 'rgba(176, 140, 82, 0.94)';
-              ctx.fillRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = 'rgba(142, 108, 58, 0.92)';
-              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = 'rgba(110, 82, 44, 0.88)';
-              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
-              break;
-            case 'Q':
-              ctx.fillStyle = 'rgba(82, 33, 140, 0.94)';
-              ctx.fillRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = 'rgba(59, 22, 103, 0.92)';
-              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = 'rgba(44, 16, 78, 0.88)';
-              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
-              break;
-            default:
-              ctx.fillStyle = 'rgba(47, 47, 47, 0.94)';
-              ctx.fillRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = 'rgba(24, 24, 24, 0.92)';
-              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = 'rgba(12, 12, 12, 0.88)';
-              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
-              break;
-          }
+          ctx.fillStyle = 'rgba(44, 44, 44, 0.96)';
+          ctx.fillRect(cellX, cellY, tileSize, tileSize);
+          ctx.strokeStyle = 'rgba(20, 20, 20, 0.92)';
+          ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+          ctx.strokeStyle = 'rgba(10, 10, 10, 0.88)';
+          ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
         }
-      }
-      if (addLip) {
-        ctx.fillStyle = 'rgba(12, 12, 12, 0.78)';
-        ctx.fillRect(x, y, width, 4);
-        ctx.fillRect(x, y + height - 4, width, 4);
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.beginPath();
-        ctx.moveTo(x, y + 4);
-        ctx.lineTo(x + width, y + 4);
-        ctx.moveTo(x, y + height - 4);
-        ctx.lineTo(x + width, y + height - 4);
-        ctx.stroke();
       }
     });
   }
@@ -6555,8 +6509,7 @@ export default class Game {
       }
       return candidates.find((tile) => tile && tile !== 'D' && tile !== '.') || '#';
     };
-    const drawDoorFillerSegment = (x, y, width, height, tile, options = {}) => {
-      const { darker = false } = options;
+    const drawDoorFillerSegment = (x, y, width, height, tile) => {
       const cols = Math.max(1, Math.round(width / tileSize));
       const rows = Math.max(1, Math.round(height / tileSize));
       for (let row = 0; row < rows; row += 1) {
@@ -6594,18 +6547,14 @@ export default class Game {
               ctx.strokeStyle = '#3a176a';
               ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
               break;
-            default: {
-              const fillStyle = darker ? '#2f2f2f' : '#3a3a3a';
-              const outerStroke = darker ? '#242424' : '#2b2b2b';
-              const innerStroke = darker ? '#181818' : '#1f1f1f';
-              ctx.fillStyle = fillStyle;
+            default:
+              ctx.fillStyle = '#3a3a3a';
               ctx.fillRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = outerStroke;
+              ctx.strokeStyle = '#2b2b2b';
               ctx.strokeRect(cellX, cellY, tileSize, tileSize);
-              ctx.strokeStyle = innerStroke;
+              ctx.strokeStyle = '#1f1f1f';
               ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
               break;
-            }
           }
         }
       }
@@ -6695,7 +6644,7 @@ export default class Game {
           drawDoorModule(baseX, baseY, width, capSpan, true);
           drawDoorModule(baseX, baseY + height - capSpan, width, capSpan, true);
           if (centerHeight > 0) {
-            doorForegroundOverlays.push({ x: baseX, y: centerY, width, height: centerHeight, tile: fillerTile || '#', addLip: true });
+            doorForegroundOverlays.push({ x: baseX, y: centerY, width, height: centerHeight });
           }
         }
       } else {
