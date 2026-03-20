@@ -6323,7 +6323,7 @@ export default class Game {
   drawDoorForegroundOverlays(ctx) {
     const overlays = this.doorForegroundOverlays || [];
     const tileSize = this.world.tileSize;
-    overlays.forEach(({ x, y, width, height, tile = '#', breakEdges = false }) => {
+    overlays.forEach(({ x, y, width, height, tile = '#', breakEdges = false, horizontal = false }) => {
       if (width <= 0 || height <= 0) return;
       const cols = Math.max(1, Math.round(width / tileSize));
       const rows = Math.max(1, Math.round(height / tileSize));
@@ -6375,8 +6375,13 @@ export default class Game {
       }
       if (breakEdges) {
         ctx.fillStyle = 'rgba(6, 12, 18, 0.72)';
-        ctx.fillRect(x, y, width, 3);
-        ctx.fillRect(x, y + height - 3, width, 3);
+        if (horizontal) {
+          ctx.fillRect(x, y, 3, height);
+          ctx.fillRect(x + width - 3, y, 3, height);
+        } else {
+          ctx.fillRect(x, y, width, 3);
+          ctx.fillRect(x, y + height - 3, width, 3);
+        }
       }
     });
   }
@@ -6653,17 +6658,6 @@ export default class Game {
       const hasLongCenterSpan = majorAxisLength > 4;
       const capSpan = hasLongCenterSpan ? tileSize * 2 : (cluster.horizontal ? width * 0.5 : height * 0.5);
       const fillerTile = hasLongCenterSpan ? pickDoorFillerTile(cluster) : null;
-      const drawDoorBreak = (x, y, moduleWidth, moduleHeight, horizontal) => {
-        ctx.fillStyle = 'rgba(6, 12, 18, 0.72)';
-        if (horizontal) {
-          ctx.fillRect(x - 1, y, 3, moduleHeight);
-          ctx.fillRect(x + moduleWidth - 2, y, 3, moduleHeight);
-        } else {
-          ctx.fillRect(x, y - 1, moduleWidth, 3);
-          ctx.fillRect(x, y + moduleHeight - 2, moduleWidth, 3);
-        }
-      };
-
       const drawDoorModule = (x, y, moduleWidth, moduleHeight, horizontal) => {
         ctx.fillStyle = 'rgba(8, 15, 22, 0.92)';
         ctx.fillRect(x, y, moduleWidth, moduleHeight);
@@ -6722,12 +6716,12 @@ export default class Game {
       ctx.save();
       if (hasLongCenterSpan) {
         if (cluster.horizontal) {
-          drawDoorFillerSegment(baseX, baseY, width, height, fillerTile || '#');
+          const centerX = baseX + capSpan;
+          const centerWidth = Math.max(0, width - capSpan * 2);
           drawDoorModule(baseX, baseY, capSpan, height, true);
           drawDoorModule(baseX + width - capSpan, baseY, capSpan, height, true);
-          if (width > capSpan * 2) {
-            drawDoorBreak(baseX + capSpan, baseY, 0, height, true);
-            drawDoorBreak(baseX + width - capSpan, baseY, 0, height, true);
+          if (centerWidth > 0) {
+            doorForegroundOverlays.push({ x: centerX, y: baseY, width: centerWidth, height, tile: fillerTile || '#', breakEdges: true, horizontal: true });
           }
         } else {
           const centerY = baseY + capSpan;
@@ -6735,7 +6729,7 @@ export default class Game {
           drawDoorModule(baseX, baseY, width, capSpan, true);
           drawDoorModule(baseX, baseY + height - capSpan, width, capSpan, true);
           if (centerHeight > 0) {
-            doorForegroundOverlays.push({ x: baseX, y: centerY, width, height: centerHeight, tile: fillerTile || '#', breakEdges: true });
+            doorForegroundOverlays.push({ x: baseX, y: centerY, width, height: centerHeight, tile: fillerTile || '#', breakEdges: true, horizontal: false });
           }
         }
       } else {
