@@ -4608,31 +4608,7 @@ export default class Game {
     }
     const width = maxX - minX + 1;
     const height = maxY - minY + 1;
-    const isOpenNeighbor = (tx, ty) => {
-      const tile = this.world.getTile(tx, ty);
-      if (tile === 'D') return false;
-      return !this.world.isSolid(tx, ty, this.abilities, { ignoreOneWay: true });
-    };
-    const leftEntranceCount = tiles.filter(({ x, y }) => x === minX && isOpenNeighbor(x - 1, y)).length;
-    const rightEntranceCount = tiles.filter(({ x, y }) => x === maxX && isOpenNeighbor(x + 1, y)).length;
-    const topEntranceCount = tiles.filter(({ x, y }) => y === minY && isOpenNeighbor(x, y - 1)).length;
-    const bottomEntranceCount = tiles.filter(({ x, y }) => y === maxY && isOpenNeighbor(x, y + 1)).length;
-    const hasLateralEntrances = leftEntranceCount > 0 && rightEntranceCount > 0;
-    const hasVerticalEntrances = topEntranceCount > 0 && bottomEntranceCount > 0;
-    let orientation = width >= height ? 'horizontal' : 'vertical';
-    if (hasLateralEntrances && !hasVerticalEntrances) {
-      orientation = 'vertical';
-    } else if (hasVerticalEntrances && !hasLateralEntrances) {
-      orientation = 'horizontal';
-    } else {
-      const lateralOpenings = leftEntranceCount + rightEntranceCount;
-      const verticalOpenings = topEntranceCount + bottomEntranceCount;
-      if (lateralOpenings > verticalOpenings) {
-        orientation = 'vertical';
-      } else if (verticalOpenings > lateralOpenings) {
-        orientation = 'horizontal';
-      }
-    }
+    const orientation = width >= height ? 'horizontal' : 'vertical';
     return {
       tiles,
       key: tiles.map(({ x, y }) => `${x},${y}`).sort().join('|'),
