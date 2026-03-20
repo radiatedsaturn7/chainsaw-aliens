@@ -6694,8 +6694,8 @@ export default class Game {
         if (cluster.horizontal) {
           const centerX = baseX + capSpan;
           const centerWidth = Math.max(0, width - capSpan * 2);
-          drawDoorModule(baseX, baseY, capSpan, height, true);
-          drawDoorModule(baseX + width - capSpan, baseY, capSpan, height, true);
+          drawDoorModule(baseX, baseY, capSpan, height, false);
+          drawDoorModule(baseX + width - capSpan, baseY, capSpan, height, false);
           if (centerWidth > 0) {
             doorForegroundOverlays.push({ x: centerX, y: baseY, width: centerWidth, height, tile: fillerTile || '#', breakEdges: true, horizontal: true });
           }
@@ -6710,7 +6710,7 @@ export default class Game {
         }
       } else {
         if (cluster.horizontal) {
-          drawDoorModule(baseX, baseY, width, height, true);
+          drawDoorModule(baseX, baseY, width, height, false);
         } else {
           drawDoorModule(baseX, baseY, width, height, false);
         }
