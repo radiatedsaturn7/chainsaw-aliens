@@ -4608,14 +4608,21 @@ export default class Game {
     }
     const width = maxX - minX + 1;
     const height = maxY - minY + 1;
-    const hasLeftRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x - 1, y) !== null);
-    const hasRightRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x + 1, y) !== null);
-    const hasTopRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x, y - 1) !== null);
-    const hasBottomRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x, y + 1) !== null);
+    const isOpenNeighbor = (tx, ty) => {
+      const tile = this.world.getTile(tx, ty);
+      if (tile === 'D') return false;
+      return !this.world.isSolid(tx, ty, this.abilities, { ignoreOneWay: true });
+    };
+    const leftOpenCount = tiles.filter(({ x, y }) => isOpenNeighbor(x - 1, y)).length;
+    const rightOpenCount = tiles.filter(({ x, y }) => isOpenNeighbor(x + 1, y)).length;
+    const topOpenCount = tiles.filter(({ x, y }) => isOpenNeighbor(x, y - 1)).length;
+    const bottomOpenCount = tiles.filter(({ x, y }) => isOpenNeighbor(x, y + 1)).length;
+    const lateralOpenings = leftOpenCount + rightOpenCount;
+    const verticalOpenings = topOpenCount + bottomOpenCount;
     let orientation = width >= height ? 'horizontal' : 'vertical';
-    if (hasLeftRoom && hasRightRoom && !(hasTopRoom && hasBottomRoom)) {
+    if (lateralOpenings > verticalOpenings) {
       orientation = 'vertical';
-    } else if (hasTopRoom && hasBottomRoom && !(hasLeftRoom && hasRightRoom)) {
+    } else if (verticalOpenings > lateralOpenings) {
       orientation = 'horizontal';
     }
     return {
