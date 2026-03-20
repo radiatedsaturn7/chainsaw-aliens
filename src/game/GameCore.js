@@ -4608,37 +4608,30 @@ export default class Game {
     }
     const width = maxX - minX + 1;
     const height = maxY - minY + 1;
-    const hasLeftRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x - 1, y) !== null);
-    const hasRightRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x + 1, y) !== null);
-    const hasTopRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x, y - 1) !== null);
-    const hasBottomRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x, y + 1) !== null);
     const isOpenNeighbor = (tx, ty) => {
       const tile = this.world.getTile(tx, ty);
       if (tile === 'D') return false;
       return !this.world.isSolid(tx, ty, this.abilities, { ignoreOneWay: true });
     };
-    const capInset = 2;
-    const coreTiles = tiles.filter(({ x, y }) => {
-      if (height > 4 && y >= minY + capInset && y <= maxY - capInset) return true;
-      if (width > 4 && x >= minX + capInset && x <= maxX - capInset) return true;
-      return height <= 4 && width <= 4;
-    });
-    const samples = coreTiles.length ? coreTiles : tiles;
-    const leftOpenCount = samples.filter(({ x, y }) => isOpenNeighbor(x - 1, y)).length;
-    const rightOpenCount = samples.filter(({ x, y }) => isOpenNeighbor(x + 1, y)).length;
-    const topOpenCount = samples.filter(({ x, y }) => isOpenNeighbor(x, y - 1)).length;
-    const bottomOpenCount = samples.filter(({ x, y }) => isOpenNeighbor(x, y + 1)).length;
-    const lateralOpenings = leftOpenCount + rightOpenCount;
-    const verticalOpenings = topOpenCount + bottomOpenCount;
+    const leftEntranceCount = tiles.filter(({ x, y }) => x === minX && isOpenNeighbor(x - 1, y)).length;
+    const rightEntranceCount = tiles.filter(({ x, y }) => x === maxX && isOpenNeighbor(x + 1, y)).length;
+    const topEntranceCount = tiles.filter(({ x, y }) => y === minY && isOpenNeighbor(x, y - 1)).length;
+    const bottomEntranceCount = tiles.filter(({ x, y }) => y === maxY && isOpenNeighbor(x, y + 1)).length;
+    const hasLateralEntrances = leftEntranceCount > 0 && rightEntranceCount > 0;
+    const hasVerticalEntrances = topEntranceCount > 0 && bottomEntranceCount > 0;
     let orientation = width >= height ? 'horizontal' : 'vertical';
-    if (hasLeftRoom && hasRightRoom && !(hasTopRoom && hasBottomRoom)) {
+    if (hasLateralEntrances && !hasVerticalEntrances) {
       orientation = 'vertical';
-    } else if (hasTopRoom && hasBottomRoom && !(hasLeftRoom && hasRightRoom)) {
+    } else if (hasVerticalEntrances && !hasLateralEntrances) {
       orientation = 'horizontal';
-    } else if (lateralOpenings > verticalOpenings) {
-      orientation = 'vertical';
-    } else if (verticalOpenings > lateralOpenings) {
-      orientation = 'horizontal';
+    } else {
+      const lateralOpenings = leftEntranceCount + rightEntranceCount;
+      const verticalOpenings = topEntranceCount + bottomEntranceCount;
+      if (lateralOpenings > verticalOpenings) {
+        orientation = 'vertical';
+      } else if (verticalOpenings > lateralOpenings) {
+        orientation = 'horizontal';
+      }
     }
     return {
       tiles,
@@ -6558,23 +6551,39 @@ export default class Game {
     const pickDoorFillerTile = (cluster) => {
       const candidates = [];
       if (cluster.horizontal) {
-        cluster.tiles.forEach(({ x, y }) => {
-          candidates.push(this.world.getTile(x - 1, y));
-          candidates.push(this.world.getTile(x + 1, y));
-          candidates.push(this.world.getTile(x, y - 1));
-          candidates.push(this.world.getTile(x, y + 1));
-        });
-      } else {
-        for (let x = cluster.minX; x <= cluster.maxX; x += 1) {
-          candidates.push(this.world.getTile(x, cluster.minY - 1));
-          candidates.push(this.world.getTile(x, cluster.maxY + 1));
+        const middleX = Math.floor((cluster.minX + cluster.maxX) / 2);
+        for (let y = cluster.minY; y <= cluster.maxY; y += 1) {
+          for (let x = middleX; x >= 0; x -= 1) {
+            const tile = this.world.getTile(x, y);
+            if (tile === 'D' || tile === '.') continue;
+            candidates.push(tile);
+            break;
+          }
+          for (let x = middleX; x < this.world.width; x += 1) {
+            const tile = this.world.getTile(x, y);
+            if (tile === 'D' || tile === '.') continue;
+            candidates.push(tile);
+            break;
+          }
         }
-        cluster.tiles.forEach(({ x, y }) => {
-          candidates.push(this.world.getTile(x - 1, y));
-          candidates.push(this.world.getTile(x + 1, y));
-        });
+      } else {
+        const middleY = Math.floor((cluster.minY + cluster.maxY) / 2);
+        for (let x = cluster.minX; x <= cluster.maxX; x += 1) {
+          for (let y = middleY; y >= 0; y -= 1) {
+            const tile = this.world.getTile(x, y);
+            if (tile === 'D' || tile === '.') continue;
+            candidates.push(tile);
+            break;
+          }
+          for (let y = middleY; y < this.world.height; y += 1) {
+            const tile = this.world.getTile(x, y);
+            if (tile === 'D' || tile === '.') continue;
+            candidates.push(tile);
+            break;
+          }
+        }
       }
-      return candidates.find((tile) => tile && tile !== 'D' && tile !== '.') || '#';
+      return candidates.find((tile) => tile) || '#';
     };
     const drawDoorFillerSegment = (x, y, width, height, tile) => {
       const cols = Math.max(1, Math.round(width / tileSize));
