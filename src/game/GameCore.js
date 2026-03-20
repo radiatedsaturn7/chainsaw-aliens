@@ -6653,6 +6653,17 @@ export default class Game {
       const hasLongCenterSpan = majorAxisLength > 4;
       const capSpan = hasLongCenterSpan ? tileSize * 2 : (cluster.horizontal ? width * 0.5 : height * 0.5);
       const fillerTile = hasLongCenterSpan ? pickDoorFillerTile(cluster) : null;
+      const drawDoorBreak = (x, y, moduleWidth, moduleHeight, horizontal) => {
+        ctx.fillStyle = 'rgba(6, 12, 18, 0.72)';
+        if (horizontal) {
+          ctx.fillRect(x - 1, y, 3, moduleHeight);
+          ctx.fillRect(x + moduleWidth - 2, y, 3, moduleHeight);
+        } else {
+          ctx.fillRect(x, y - 1, moduleWidth, 3);
+          ctx.fillRect(x, y + moduleHeight - 2, moduleWidth, 3);
+        }
+      };
+
       const drawDoorModule = (x, y, moduleWidth, moduleHeight, horizontal) => {
         ctx.fillStyle = 'rgba(8, 15, 22, 0.92)';
         ctx.fillRect(x, y, moduleWidth, moduleHeight);
@@ -6714,6 +6725,10 @@ export default class Game {
           drawDoorFillerSegment(baseX, baseY, width, height, fillerTile || '#');
           drawDoorModule(baseX, baseY, capSpan, height, true);
           drawDoorModule(baseX + width - capSpan, baseY, capSpan, height, true);
+          if (width > capSpan * 2) {
+            drawDoorBreak(baseX + capSpan, baseY, 0, height, true);
+            drawDoorBreak(baseX + width - capSpan, baseY, 0, height, true);
+          }
         } else {
           const centerY = baseY + capSpan;
           const centerHeight = Math.max(0, height - capSpan * 2);
