@@ -4608,16 +4608,7 @@ export default class Game {
     }
     const width = maxX - minX + 1;
     const height = maxY - minY + 1;
-    const hasLeftRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x - 1, y) !== null);
-    const hasRightRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x + 1, y) !== null);
-    const hasTopRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x, y - 1) !== null);
-    const hasBottomRoom = tiles.some(({ x, y }) => this.world.roomAtTile?.(x, y + 1) !== null);
-    let orientation = width >= height ? 'horizontal' : 'vertical';
-    if (hasLeftRoom && hasRightRoom && !(hasTopRoom && hasBottomRoom)) {
-      orientation = 'vertical';
-    } else if (hasTopRoom && hasBottomRoom && !(hasLeftRoom && hasRightRoom)) {
-      orientation = 'horizontal';
-    }
+    const orientation = width >= height ? 'horizontal' : 'vertical';
     return {
       tiles,
       key: tiles.map(({ x, y }) => `${x},${y}`).sort().join('|'),
@@ -5958,6 +5949,7 @@ export default class Game {
         ctx.restore();
       }
     }
+    this.drawDoorForegroundOverlays(ctx);
     if (this.testHarness.active && this.testHarness.showCollision) {
       this.drawCollisionBoxes(ctx);
     }
@@ -6304,6 +6296,72 @@ export default class Game {
     ctx.restore();
   }
 
+  drawDoorForegroundOverlays(ctx) {
+    const overlays = this.doorForegroundOverlays || [];
+    const tileSize = this.world.tileSize;
+    overlays.forEach(({ x, y, width, height, tile = '#', breakEdges = false, horizontal = false }) => {
+      if (width <= 0 || height <= 0) return;
+      const cols = Math.max(1, Math.round(width / tileSize));
+      const rows = Math.max(1, Math.round(height / tileSize));
+      for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < cols; col += 1) {
+          const cellX = x + col * tileSize;
+          const cellY = y + row * tileSize;
+          switch (tile) {
+            case 'R':
+              ctx.fillStyle = 'rgba(106, 70, 36, 0.96)';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(72, 45, 22, 0.92)';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(52, 31, 15, 0.88)';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+            case 'F':
+              ctx.fillStyle = 'rgba(162, 208, 230, 0.96)';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(110, 163, 191, 0.92)';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              break;
+            case 'E':
+              ctx.fillStyle = 'rgba(181, 145, 91, 0.96)';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(145, 110, 60, 0.92)';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(108, 80, 42, 0.88)';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+            case 'Q':
+              ctx.fillStyle = 'rgba(84, 35, 144, 0.96)';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(58, 24, 102, 0.92)';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(41, 16, 73, 0.88)';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+            default:
+              ctx.fillStyle = 'rgba(44, 44, 44, 0.96)';
+              ctx.fillRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(20, 20, 20, 0.92)';
+              ctx.strokeRect(cellX, cellY, tileSize, tileSize);
+              ctx.strokeStyle = 'rgba(10, 10, 10, 0.88)';
+              ctx.strokeRect(cellX + 2, cellY + 2, tileSize - 4, tileSize - 4);
+              break;
+          }
+        }
+      }
+      if (breakEdges) {
+        ctx.fillStyle = 'rgba(6, 12, 18, 0.72)';
+        if (horizontal) {
+          ctx.fillRect(x, y, 3, height);
+          ctx.fillRect(x + width - 3, y, 3, height);
+        } else {
+          ctx.fillRect(x, y, width, 3);
+          ctx.fillRect(x, y + height - 3, width, 3);
+        }
+      }
+    });
+  }
+
   drawWorld(ctx, { showDoors = true, decalAlphaMultiplier = 1 } = {}) {
     const tileSize = this.world.tileSize;
     const time = this.worldTime;
@@ -6311,6 +6369,7 @@ export default class Game {
     const revealHiddenPaths = this.ignitirSequence
       && this.ignitirSequence.time >= 2.4
       && this.ignitirSequence.time <= 4.6;
+    const doorForegroundOverlays = [];
     const isSolidTile = (tx, ty) => this.world.isSolid(tx, ty, this.abilities);
     const drawLiquid = (x, y, fill, highlight, surfaceActive = true) => {
       const baseX = x * tileSize;
@@ -6473,17 +6532,39 @@ export default class Game {
     const pickDoorFillerTile = (cluster) => {
       const candidates = [];
       if (cluster.horizontal) {
-        cluster.tiles.forEach(({ x, y }) => {
-          candidates.push(this.world.getTile(x, y - 1));
-          candidates.push(this.world.getTile(x, y + 1));
-        });
+        const middleX = Math.floor((cluster.minX + cluster.maxX) / 2);
+        for (let y = cluster.minY; y <= cluster.maxY; y += 1) {
+          for (let x = middleX; x >= 0; x -= 1) {
+            const tile = this.world.getTile(x, y);
+            if (tile === 'D' || tile === '.') continue;
+            candidates.push(tile);
+            break;
+          }
+          for (let x = middleX; x < this.world.width; x += 1) {
+            const tile = this.world.getTile(x, y);
+            if (tile === 'D' || tile === '.') continue;
+            candidates.push(tile);
+            break;
+          }
+        }
       } else {
-        cluster.tiles.forEach(({ x, y }) => {
-          candidates.push(this.world.getTile(x - 1, y));
-          candidates.push(this.world.getTile(x + 1, y));
-        });
+        const middleY = Math.floor((cluster.minY + cluster.maxY) / 2);
+        for (let x = cluster.minX; x <= cluster.maxX; x += 1) {
+          for (let y = middleY; y >= 0; y -= 1) {
+            const tile = this.world.getTile(x, y);
+            if (tile === 'D' || tile === '.') continue;
+            candidates.push(tile);
+            break;
+          }
+          for (let y = middleY; y < this.world.height; y += 1) {
+            const tile = this.world.getTile(x, y);
+            if (tile === 'D' || tile === '.') continue;
+            candidates.push(tile);
+            break;
+          }
+        }
       }
-      return candidates.find((tile) => tile && tile !== 'D' && tile !== '.') || '#';
+      return candidates.find((tile) => tile) || '#';
     };
     const drawDoorFillerSegment = (x, y, width, height, tile) => {
       const cols = Math.max(1, Math.round(width / tileSize));
@@ -6610,17 +6691,26 @@ export default class Game {
 
       ctx.save();
       if (hasLongCenterSpan) {
-        drawDoorFillerSegment(baseX, baseY, width, height, fillerTile || '#');
         if (cluster.horizontal) {
-          drawDoorModule(baseX, baseY, capSpan, height, true);
-          drawDoorModule(baseX + width - capSpan, baseY, capSpan, height, true);
+          const centerX = baseX + capSpan;
+          const centerWidth = Math.max(0, width - capSpan * 2);
+          drawDoorModule(baseX, baseY, capSpan, height, false);
+          drawDoorModule(baseX + width - capSpan, baseY, capSpan, height, false);
+          if (centerWidth > 0) {
+            doorForegroundOverlays.push({ x: centerX, y: baseY, width: centerWidth, height, tile: fillerTile || '#', breakEdges: true, horizontal: true });
+          }
         } else {
-          drawDoorModule(baseX, baseY, width, capSpan, false);
-          drawDoorModule(baseX, baseY + height - capSpan, width, capSpan, false);
+          const centerY = baseY + capSpan;
+          const centerHeight = Math.max(0, height - capSpan * 2);
+          drawDoorModule(baseX, baseY, width, capSpan, true);
+          drawDoorModule(baseX, baseY + height - capSpan, width, capSpan, true);
+          if (centerHeight > 0) {
+            doorForegroundOverlays.push({ x: baseX, y: centerY, width, height: centerHeight, tile: fillerTile || '#', breakEdges: true, horizontal: false });
+          }
         }
       } else {
         if (cluster.horizontal) {
-          drawDoorModule(baseX, baseY, width, height, true);
+          drawDoorModule(baseX, baseY, width, height, false);
         } else {
           drawDoorModule(baseX, baseY, width, height, false);
         }
@@ -6914,6 +7004,8 @@ export default class Game {
         }
       }
     }
+
+    this.doorForegroundOverlays = doorForegroundOverlays;
 
     const decals = this.world.decals || [];
     decals.forEach((decal) => {
