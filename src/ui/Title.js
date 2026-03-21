@@ -8,7 +8,7 @@ export default class Title {
       'project-browser',
       'level-editor',
       'pixel-editor',
-      'npc-editor',
+      'actor-editor',
       'midi-editor',
       'reset-all',
       'back'
@@ -330,8 +330,8 @@ export default class Title {
           ? 'Project Browser'
           : action === 'pixel-editor'
             ? 'Pixel Editor'
-            : action === 'npc-editor'
-              ? 'NPC Editor'
+            : action === 'actor-editor'
+              ? 'Actor Editor'
               : action === 'midi-editor'
                 ? 'MIDI Editor'
               : action === 'reset-all'

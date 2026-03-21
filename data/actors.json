@@ -1,0 +1,46 @@
+[
+  {
+    "id": "actor-camp-mechanic",
+    "name": "Camp Mechanic",
+    "actorType": "npc",
+    "alignment": "friendly",
+    "description": "Workshop tender and repair vendor.",
+    "tags": ["town", "vendor"],
+    "visuals": { "assetType": "vfs-art", "artDocument": "actor-camp-mechanic", "artTile": "01" },
+    "clips": [
+      { "id": "idle", "name": "Idle", "startFrame": 0, "endFrame": 0, "fps": 8, "loop": true },
+      { "id": "talk", "name": "Talk", "startFrame": 0, "endFrame": 1, "fps": 6, "loop": true }
+    ],
+    "states": [
+      { "id": "idle", "name": "Idle", "clipId": "idle", "movementMode": "idle", "behaviorMode": "talk", "canAttack": false, "canMove": false, "canSpawn": false, "canInteract": true, "invulnerable": false, "transitions": [] },
+      { "id": "talk", "name": "Talk", "clipId": "talk", "movementMode": "idle", "behaviorMode": "talk", "canAttack": false, "canMove": false, "canSpawn": false, "canInteract": true, "invulnerable": false, "transitions": [] }
+    ],
+    "behavior": { "mode": "shopkeeper", "movementSpeed": 0, "aggroRange": 0, "leashRange": 0, "patrolRadius": 0, "patrolPoints": [], "wanderRadius": 0, "lineOfSightRequired": false, "preferredAttackRange": 0, "cooldown": 0, "retreatDistance": 0, "targetPlayer": false, "targetAlignments": [], "ignorePlayerUnlessAttacked": true, "activateOnlyOnTrigger": false },
+    "interaction": { "dialogueId": "camp-mechanic-intro", "interactType": "shop", "shopId": "repair-bay", "scriptHook": "" },
+    "editor": { "color": "#67d5b5", "glyph": "FR" }
+  },
+  {
+    "id": "actor-rift-scavenger",
+    "name": "Rift Scavenger",
+    "actorType": "enemy",
+    "alignment": "enemy",
+    "description": "Hostile scavenger that prowls nearby scrap.",
+    "tags": ["hostile", "wildlife"],
+    "visuals": { "assetType": "vfs-art", "artDocument": "actor-rift-scavenger", "artTile": "02" },
+    "clips": [
+      { "id": "idle", "name": "Idle", "startFrame": 0, "endFrame": 0, "fps": 8, "loop": true },
+      { "id": "walk", "name": "Walk", "startFrame": 0, "endFrame": 3, "fps": 10, "loop": true },
+      { "id": "attack", "name": "Attack", "startFrame": 1, "endFrame": 3, "fps": 14, "loop": false }
+    ],
+    "states": [
+      { "id": "idle", "name": "Idle", "clipId": "idle", "movementMode": "idle", "behaviorMode": "chase", "canAttack": false, "canMove": true, "canSpawn": false, "canInteract": false, "invulnerable": false, "transitions": [{ "id": "t1", "targetStateId": "attack", "condition": "playerInRange", "value": 28, "chance": 1, "flag": "" }] },
+      { "id": "attack", "name": "Attack", "clipId": "attack", "movementMode": "walk", "behaviorMode": "meleeAttacker", "canAttack": true, "canMove": true, "canSpawn": false, "canInteract": false, "invulnerable": false, "transitions": [{ "id": "t2", "targetStateId": "idle", "condition": "attackFinished", "value": 0, "chance": 1, "flag": "" }] }
+    ],
+    "behavior": { "mode": "meleeAttacker", "movementSpeed": 66, "aggroRange": 128, "leashRange": 180, "patrolRadius": 0, "patrolPoints": [], "wanderRadius": 56, "lineOfSightRequired": false, "preferredAttackRange": 26, "cooldown": 1.1, "retreatDistance": 0, "targetPlayer": true, "targetAlignments": ["friendly", "impartial"], "ignorePlayerUnlessAttacked": false, "activateOnlyOnTrigger": false },
+    "attacks": [
+      { "id": "slash", "name": "Slash", "type": "melee", "startup": 0.15, "active": 0.12, "recovery": 0.25, "cooldown": 1.1, "range": 26, "damage": 1, "knockback": 140, "hitbox": { "shape": "box", "w": 18, "h": 14, "offsetX": 12, "offsetY": 0 }, "projectile": { "actorId": "", "count": 1, "spread": 0, "angle": 0, "speed": 0, "gravity": 0, "homing": false, "target": "player", "variance": 0 }, "spawn": { "actorId": "", "count": 1, "offsetX": 0, "offsetY": 0, "interval": 0 }, "telegraph": { "duration": 0.08, "fx": "red-flash", "sound": "" } }
+    ],
+    "lootTable": [{ "id": "scrap", "itemId": "scrap", "probability": 0.65, "minQuantity": 1, "maxQuantity": 3, "guaranteed": false, "condition": "" }],
+    "editor": { "color": "#ff6b6b", "glyph": "EN" }
+  }
+]
