@@ -23,6 +23,16 @@ test('smoke: load app and visit each editor with view/canvas checks', async ({ p
   expect(editorView.canvasHeight).toBeGreaterThan(0);
 
   await page.evaluate(() => {
+    window.__game.enterNpcEditor();
+  });
+  await page.waitForFunction(() => window.__game.state === 'npc-editor');
+  const npcView = await page.evaluate(() => ({
+    editorVisible: window.getComputedStyle(window.__game.npcEditor?.root || document.body).display !== 'none',
+    selectedId: window.__game.npcEditor?.selectedId || null
+  }));
+  expect(npcView.editorVisible).toBeTruthy();
+
+  await page.evaluate(() => {
     window.__game.enterPixelStudio();
   });
   await page.waitForFunction(() => window.__game.state === 'pixel-editor');

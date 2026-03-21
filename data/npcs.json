@@ -1,0 +1,77 @@
+[
+  {
+    "id": "npc-camp-mechanic",
+    "name": "Camp Mechanic",
+    "alignment": "friendly",
+    "description": "A workshop tender that offers hints and repairs.",
+    "tags": ["town", "vendor", "friendly"],
+    "spriteSource": {
+      "image": "",
+      "metadata": "",
+      "documentName": ""
+    },
+    "animationSet": {
+      "sourceType": "sprite-sheet-json",
+      "image": "",
+      "metadata": "",
+      "clips": {
+        "idle": { "type": "indices", "frames": [0], "fps": 8 },
+        "talk": { "type": "indices", "frames": [0, 1], "fps": 6 }
+      },
+      "roles": { "idle": "idle", "talk": "talk", "interact": "talk" }
+    },
+    "behavior": { "archetype": "talk", "parameters": { "interactionRange": 58 } },
+    "interaction": { "dialogueId": "camp-mechanic-intro", "interactType": "talk", "shopId": "repair-bay" },
+    "editorPreview": { "color": "#67d5b5", "glyph": "FR" }
+  },
+  {
+    "id": "npc-rift-scavenger",
+    "name": "Rift Scavenger",
+    "alignment": "enemy",
+    "description": "A hostile scavenger that prowls around scrap piles.",
+    "tags": ["hostile", "wildlife"],
+    "spriteSource": {
+      "image": "",
+      "metadata": "",
+      "documentName": ""
+    },
+    "animationSet": {
+      "sourceType": "sprite-sheet-json",
+      "image": "",
+      "metadata": "",
+      "clips": {
+        "idle": { "type": "indices", "frames": [0], "fps": 8 },
+        "walk": { "type": "range", "start": 0, "end": 3, "fps": 10 },
+        "attack": { "type": "range", "start": 1, "end": 3, "fps": 14 }
+      },
+      "roles": { "idle": "idle", "walk": "walk", "attack": "attack" }
+    },
+    "stats": { "maxHealth": 4, "moveSpeed": 66, "aggroRange": 128, "contactDamage": 1, "knockback": 140 },
+    "behavior": { "archetype": "meleeAttack", "parameters": { "detectionRange": 128, "attackRange": 26, "attackCooldown": 1.1, "wanderRadius": 56 } },
+    "editorPreview": { "color": "#ff6b6b", "glyph": "EN" }
+  },
+  {
+    "id": "npc-drifter-herd",
+    "name": "Drifter Herdling",
+    "alignment": "impartial",
+    "description": "A neutral creature that wanders unless threatened.",
+    "tags": ["wildlife", "neutral"],
+    "spriteSource": {
+      "image": "",
+      "metadata": "",
+      "documentName": ""
+    },
+    "animationSet": {
+      "sourceType": "sprite-sheet-json",
+      "image": "",
+      "metadata": "",
+      "clips": {
+        "idle": { "type": "indices", "frames": [0], "fps": 6 },
+        "walk": { "type": "range", "start": 0, "end": 2, "fps": 8 }
+      },
+      "roles": { "idle": "idle", "walk": "walk" }
+    },
+    "behavior": { "archetype": "wander", "parameters": { "wanderRadius": 72, "moveSpeedMultiplier": 0.75 } },
+    "editorPreview": { "color": "#cdb4db", "glyph": "IM" }
+  }
+]

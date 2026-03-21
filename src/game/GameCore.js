@@ -46,7 +46,10 @@ import Shop from '../ui/Shop.js';
 import Pause from '../ui/Pause.js';
 import MobileControls from '../ui/MobileControls.js';
 import PixelStudio from '../ui/PixelStudio.js';
+import NpcEditor from '../ui/npc-editor/NpcEditor.js';
 import MidiComposer from '../ui/MidiComposer.js';
+import { npcRegistry } from '../npc/NpcRegistry.js';
+import { spawnNpcEntities } from '../npc/runtime.js';
 import MidiSongPlayer from './MidiSongPlayer.js';
 import RobterSession from '../robtersession/RobterSession.js';
 import TestHarness from '../debug/TestHarness.js';
@@ -203,6 +206,7 @@ export default class Game {
     this.triggerState = { byId: new Map(), startupPending: new Set() };
     this.activeTriggerText = null;
     this.enemies = [];
+    this.npcs = [];
     this.projectiles = [];
     this.debris = [];
     this.shards = [];
@@ -346,22 +350,28 @@ export default class Game {
     this.pickupPauseTimer = 0;
     this.editor = new Editor(this);
     this.pixelStudio = new PixelStudio(this);
+    this.npcEditor = new NpcEditor(this);
     this.midiComposer = new MidiComposer(this);
     this.editorStateTargetKeys = {
       editor: 'editor',
       'pixel-editor': 'pixelStudio',
+      'npc-editor': 'npcEditor',
       'midi-editor': 'midiComposer'
     };
     this.editorStateDrawArgs = {
       editor: () => [this.ctx],
       'pixel-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
+      'npc-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
       'midi-editor': () => [this.ctx, this.canvas.width, this.canvas.height]
     };
     this.robterSession = new RobterSession({ input: this.input, audio: this.audio, isMobile: this.deviceIsMobile });
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
+    this.npcEditorReturnState = 'title';
     this.midiComposerReturnState = 'title';
     this.robterSessionReturnState = 'title';
+    npcRegistry.restoreCache();
+    npcRegistry.load();
     this.robterSessionAutoReturn = false;
     this.pixelPreviewReturnState = null;
     this.pixelPreviewSnapshot = null;
@@ -958,6 +968,7 @@ export default class Game {
       tiles: this.world.tiles,
       regions: this.world.regions,
       enemies: this.world.enemies,
+      npcs: this.world.npcs,
       elevatorPaths: this.world.elevatorPaths,
       elevators: this.world.elevators,
       pixelArt: this.world.pixelArt,
@@ -978,6 +989,7 @@ export default class Game {
       tiles: data.tiles,
       regions: data.regions || [],
       enemies: data.enemies || [],
+      npcs: data.npcs || [],
       elevatorPaths: data.elevatorPaths || [],
       elevators: data.elevators || [],
       pixelArt: data.pixelArt || { tiles: {} },
@@ -986,17 +998,19 @@ export default class Game {
       triggers: data.triggers || [],
       decals: data.decals || []
     };
+    if (!npcRegistry.loaded) { npcRegistry.restoreCache(); npcRegistry.load(); }
     this.world.applyData(migrated);
     this.syncSpawnPoint();
     this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
     this.refreshWorldCaches();
+    this.npcs = spawnNpcEntities({ world: this.world, registry: npcRegistry, tileSize: this.world.tileSize });
     this.resetTriggerState();
     this.doorVisualStates = new Map();
   }
 
 
   handleSharedStateTransitionCleanup({ from, to, forceCleanup = false } = {}) {
-    const editorStates = new Set(['editor', 'pixel-editor', 'midi-editor', 'pixel-preview']);
+    const editorStates = new Set(['editor', 'pixel-editor', 'npc-editor', 'midi-editor', 'pixel-preview']);
     const shouldCleanup = forceCleanup
       || this.playtestActive
       || editorStates.has(from)
@@ -1020,7 +1034,7 @@ export default class Game {
           document.body.classList.remove(className);
         }
       });
-      if (to === 'editor' || to === 'pixel-editor' || to === 'midi-editor') {
+      if (to === 'editor' || to === 'pixel-editor' || to === 'npc-editor' || to === 'midi-editor') {
         document.body.classList.add('editor-active');
       }
     }
@@ -1046,6 +1060,20 @@ export default class Game {
       this.editor.setPanelTab(tab);
     }
     this.playtestActive = false;
+  }
+
+  enterNpcEditor({ returnState = this.state } = {}) {
+    this.npcEditorReturnState = returnState;
+    this.transitionTo('npc-editor');
+    this.setRevAudio(false);
+    this.npcEditor.activate();
+    this.playtestActive = false;
+  }
+
+  exitNpcEditor({ toTitle = false } = {}) {
+    this.npcEditor.deactivate();
+    this.playtestActive = false;
+    this.transitionTo(toTitle ? 'title' : (this.npcEditorReturnState || 'title'), { forceCleanup: true });
   }
 
   enterPixelStudio({ returnState = this.state, resetFocus = true } = {}) {
@@ -1686,6 +1714,7 @@ export default class Game {
   spawnEnemies({ allowStoryFallback = true } = {}) {
     if (this.world.enemies && this.world.enemies.length > 0) {
       this.enemies = [];
+      this.npcs = spawnNpcEntities({ world: this.world, registry: npcRegistry, tileSize: this.world.tileSize });
       this.boss = null;
       this.bossActive = false;
       const tileSize = this.world.tileSize;
@@ -1702,11 +1731,13 @@ export default class Game {
 
     if (this.gameMode === 'endless' || !allowStoryFallback) {
       this.enemies = [];
+      this.npcs = spawnNpcEntities({ world: this.world, registry: npcRegistry, tileSize: this.world.tileSize });
       this.boss = null;
       this.bossActive = false;
       return;
     }
 
+    this.npcs = spawnNpcEntities({ world: this.world, registry: npcRegistry, tileSize: this.world.tileSize });
     this.enemies = [
       new PracticeDrone(32 * 40, 32 * 19),
       new Skitter(32 * 38, 32 * 19),
@@ -1737,6 +1768,7 @@ export default class Game {
   }
 
   spawnTestEnemies() {
+    this.npcs = spawnNpcEntities({ world: this.world, registry: npcRegistry, tileSize: this.world.tileSize });
     this.enemies = [
       new PracticeDrone(32 * 8, 32 * 8),
       new Skitter(32 * 16, 32 * 8),
@@ -1809,6 +1841,17 @@ export default class Game {
       return;
     }
 
+    if (this.state === 'npc-editor') {
+      if (this.input.wasPressed('cancel')) {
+        this.exitNpcEditor();
+        this.input.flush();
+        return;
+      }
+      this.npcEditor.update(this.input, dt);
+      this.input.flush();
+      return;
+    }
+
     if (this.state === 'pixel-editor') {
       if (this.input.wasPressed('cancel')) {
         this.exitPixelStudio();
@@ -1843,6 +1886,8 @@ export default class Game {
         this.robterSession.enter();
         const returnState = this.robterSessionReturnState || 'title';
         this.robterSessionReturnState = 'title';
+    npcRegistry.restoreCache();
+    npcRegistry.load();
         if (returnState === 'midi-editor') {
           this.enterMidiComposer();
           this.midiComposerReturnState = 'title';
@@ -1857,6 +1902,8 @@ export default class Game {
         this.robterSessionAutoReturn = false;
         const returnState = this.robterSessionReturnState || 'title';
         this.robterSessionReturnState = 'title';
+    npcRegistry.restoreCache();
+    npcRegistry.load();
         if (returnState === 'midi-editor') {
           this.enterMidiComposer();
           this.midiComposerReturnState = 'title';
@@ -1999,6 +2046,8 @@ export default class Game {
             this.enterEditor({ tab: 'tiles' });
           } else if (action === 'pixel-editor') {
             this.enterPixelStudio();
+          } else if (action === 'npc-editor') {
+            this.enterNpcEditor();
           } else if (action === 'midi-editor') {
             this.enterMidiComposer();
           } else if (action === 'reset-all') {
@@ -2193,6 +2242,7 @@ export default class Game {
     }
     const prevPlayer = { x: this.player.x, y: this.player.y };
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
+    this.npcs?.forEach((npc) => npc.update?.(dt * timeScale, this));
     this.updateElevators(dt * timeScale, prevPlayer);
     const tileSize = this.world.tileSize;
     const tileX = Math.floor(this.player.x / tileSize);
@@ -5895,6 +5945,7 @@ export default class Game {
         this.drawIgnitirDissolve(ctx, enemy);
       }
     });
+    this.npcs?.forEach((npc) => npc.draw?.(ctx));
 
     if (this.boss && !this.boss.dead) {
       this.boss.draw(ctx);
@@ -6167,6 +6218,7 @@ export default class Game {
     this.enemies.forEach((enemy) => {
       if (!enemy.dead || enemy.deathTimer > 0) enemy.draw(ctx);
     });
+    this.npcs?.forEach((npc) => npc.draw?.(ctx));
     if (this.boss && !this.boss.dead) {
       this.boss.draw(ctx);
     }
@@ -7490,6 +7542,7 @@ export default class Game {
   loadObstacleTestRoom() {
     this.world.applyData(ObstacleTestMap);
     this.refreshWorldCaches();
+    this.npcs = spawnNpcEntities({ world: this.world, registry: npcRegistry, tileSize: this.world.tileSize });
     this.abilities = {
       anchor: true,
       flame: true,
@@ -7618,6 +7671,8 @@ export default class Game {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
+        } else if (action === 'npc-editor') {
+          this.enterNpcEditor();
         } else if (action === 'midi-editor') {
           this.enterMidiComposer();
         } else if (action === 'reset-all') {
@@ -7804,6 +7859,8 @@ export default class Game {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
+        } else if (action === 'npc-editor') {
+          this.enterNpcEditor();
         } else if (action === 'midi-editor') {
           this.enterMidiComposer();
         } else if (action === 'reset-all') {
@@ -7990,6 +8047,7 @@ export default class Game {
     this.stateManager.register('pixel-preview', new GameplayState(this));
     this.stateManager.register('editor', createDelegatedState(this, 'editor'));
     this.stateManager.register('pixel-editor', createDelegatedState(this, 'pixelStudio'));
+    this.stateManager.register('npc-editor', createDelegatedState(this, 'npcEditor'));
     this.stateManager.register('midi-editor', createDelegatedState(this, 'midiComposer'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }
