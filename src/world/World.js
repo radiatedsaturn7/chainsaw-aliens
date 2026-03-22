@@ -85,6 +85,7 @@ export default class World {
     this.bossGate = null;
     this.objectives = [];
     this.enemies = [];
+    this.npcs = [];
     this.boxes = [];
     this.elevatorPaths = [];
     this.elevatorPathSet = new Set();
@@ -137,6 +138,7 @@ export default class World {
     this.bossGate = null;
     this.objectives = [];
     this.enemies = (data.enemies || []).map((enemy) => ({ ...enemy }));
+    this.npcs = (data.npcs || []).map((npc) => ({ ...npc }));
     this.elevatorPaths = (data.elevatorPaths || []).map((path) => ({ ...path }));
     this.elevatorPathSet = new Set(this.elevatorPaths.map((path) => `${path.x},${path.y}`));
     this.elevators = (data.elevators || []).map((elevator) => ({ ...elevator }));
@@ -154,6 +156,7 @@ export default class World {
     this.decals = (data.decals || []).map((decal) => ({ ...decal }));
     this.data = { ...data, tiles: [...normalizedTiles] };
     if (this.data) {
+      this.data.npcs = this.npcs;
       this.data.elevatorPaths = this.elevatorPaths;
       this.data.elevators = this.elevators;
       this.data.pixelArt = this.pixelArt;
@@ -415,6 +418,7 @@ export default class World {
       this.elevatorPaths = this.elevatorPaths.filter((path) => !(path.x === x && path.y === y));
     }
     if (this.data) {
+      this.data.npcs = this.npcs;
       this.data.elevatorPaths = this.elevatorPaths;
     }
     return true;
@@ -451,6 +455,7 @@ export default class World {
     }
     if (this.data) {
       this.data.enemies = this.enemies;
+      this.data.npcs = this.npcs;
     }
   }
 
@@ -459,6 +464,32 @@ export default class World {
     this.enemies = this.enemies.filter((enemy) => !(enemy.x === tileX && enemy.y === tileY));
     if (this.enemies.length !== before && this.data) {
       this.data.enemies = this.enemies;
+      this.data.npcs = this.npcs;
+    }
+  }
+
+  npcAt(tileX, tileY) {
+    return this.npcs.find((npc) => npc.x === tileX && npc.y === tileY) || null;
+  }
+
+  setNpc(instance) {
+    if (!instance) return;
+    const existing = this.npcAt(instance.x, instance.y);
+    if (existing) {
+      Object.assign(existing, instance);
+    } else {
+      this.npcs.push({ ...instance });
+    }
+    if (this.data) {
+      this.data.npcs = this.npcs;
+    }
+  }
+
+  removeNpc(tileX, tileY) {
+    const before = this.npcs.length;
+    this.npcs = this.npcs.filter((npc) => !(npc.x === tileX && npc.y === tileY));
+    if (this.npcs.length !== before && this.data) {
+      this.data.npcs = this.npcs;
     }
   }
 
@@ -507,6 +538,13 @@ export default class World {
         enemy.x += left;
         enemy.y += top;
       });
+      this.npcs.forEach((npc) => {
+        npc.x += left;
+        npc.y += top;
+        if (Array.isArray(npc.patrolPoints)) {
+          npc.patrolPoints = npc.patrolPoints.map((point) => ({ x: point.x + left, y: point.y + top }));
+        }
+      });
       this.elevatorPaths.forEach((path) => {
         path.x += left;
         path.y += top;
@@ -531,6 +569,7 @@ export default class World {
         this.data.spawn = { x: this.spawn.x, y: this.spawn.y };
       }
       this.data.enemies = this.enemies;
+      this.data.npcs = this.npcs;
       this.data.elevatorPaths = this.elevatorPaths;
       this.data.elevators = this.elevators;
     }

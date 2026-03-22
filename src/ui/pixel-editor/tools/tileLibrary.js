@@ -1,3 +1,9 @@
+const ACTOR_ART_TILES = Array.from({ length: 16 }, (_, index) => ({
+  id: `actor-art-${String(index + 1).padStart(2, '0')}`,
+  label: `Actor Art Slot ${index + 1}`,
+  char: String(index + 1).padStart(2, '0')
+}));
+
 export const TILE_LIBRARY = [
   { id: 'solid', label: 'Solid Block', char: '#' },
   { id: 'hidden-path', label: 'Hidden Path Block', char: 'Z' },
@@ -40,5 +46,6 @@ export const TILE_LIBRARY = [
   { id: 'health', label: 'Vitality Core', char: 'H' },
   { id: 'checkpoint', label: 'Checkpoint', char: 'S' },
   { id: 'shop', label: 'Shop', char: '$' },
-  { id: 'objective', label: 'Objective', char: 'O' }
+  { id: 'objective', label: 'Objective', char: 'O' },
+  ...ACTOR_ART_TILES
 ];

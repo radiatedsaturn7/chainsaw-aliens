@@ -13,6 +13,8 @@ import { normalizeMidiTracks } from '../editor/adapters/editorDataContracts.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
+import { actorRegistry } from '../actors/ActorRegistry.js';
+import { createActorInstance, normalizeActorInstance } from '../actors/definitions.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -130,6 +132,7 @@ const BOSS_ROOM_PREFS = {
 };
 
 const ENEMY_TYPES = [...AMBIENT_ENEMY_TYPES, ...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
+const NPC_ALIGNMENT_LABELS = { friendly: 'FRIENDLY', enemy: 'ENEMY', impartial: 'IMPARTIAL' };
 
 const SHAPE_TOOLS = [
   { id: 'rect', label: 'Rectangle Fill', short: 'RECT' },
@@ -549,6 +552,9 @@ export default class Editor {
     this.fileInput = null;
     this.midiFileInput = null;
     this.decalImageInput = null;
+    this.npcRegistry = actorRegistry;
+    this.npcDefinitionCache = [];
+    this.npcType = null;
   }
 
 
@@ -904,6 +910,9 @@ export default class Editor {
     this.fileInput = null;
     this.midiFileInput = null;
     this.decalImageInput = null;
+    this.npcRegistry = actorRegistry;
+    this.npcDefinitionCache = [];
+    this.npcType = null;
   }
 
   syncPreviewMinimap() {
@@ -1349,7 +1358,28 @@ export default class Editor {
         }))
       ];
     } else if (tabId === 'npcs') {
+      const npcDefs = this.getNpcDefinitions();
       items = [
+        { id: 'npc-editor-open', label: 'Open Actor Editor', tooltip: 'Create and edit shared actor definitions', onClick: () => this.game.enterActorEditor({ returnState: 'editor' }) },
+        ...(npcDefs.length ? [{ id: 'npc-sep-custom', label: '──────── DEFINITIONS ────────', tooltip: 'Reusable NPC definitions', separator: true, onClick: () => {} }] : []),
+        ...npcDefs.flatMap((npc, index, list) => {
+          const header = index === 0 || list[index - 1].alignment !== npc.alignment
+            ? [{ id: `npc-align-${npc.alignment}-${index}`, label: `──────── ${NPC_ALIGNMENT_LABELS[npc.alignment] || npc.alignment.toUpperCase()} ────────`, tooltip: npc.alignment, separator: true, onClick: () => {} }]
+            : [];
+          return [
+            ...header,
+            {
+              id: `npc-def-${npc.id}`,
+              label: `${npc.name} [${npc.editor?.glyph || npc.editorPreview?.glyph || 'AC'}]`,
+              npc,
+              tooltip: npc.description || npc.id,
+              onClick: () => {
+                this.setNpcType(npc);
+                this.mode = 'npc';
+              }
+            }
+          ];
+        }),
         { id: 'npc-sep-ambience', label: '──────── AMBIENCE ────────', tooltip: 'Ambient weather and spawners', separator: true, onClick: () => {} },
         ...AMBIENT_ENEMY_TYPES.map((enemy) => ({
           id: `npc-${enemy.id}`,
@@ -1929,7 +1959,7 @@ export default class Editor {
       this.dragButton = pressSecondary ? 2 : 0;
       const { tileX, tileY } = this.screenToTile(this.lastPointer.x, this.lastPointer.y);
       const dragMode = pressSecondary
-        ? (this.mode === 'enemy' ? 'enemy' : 'erase')
+        ? ((this.mode === 'enemy' || this.mode === 'npc') ? 'enemy' : 'erase')
         : this.resolveDragMode(this.mode);
       this.beginStroke(dragMode, tileX, tileY, 'gamepad');
     }
@@ -2030,7 +2060,7 @@ export default class Editor {
       if (tileTool === 'erase') return 'erase';
       return 'paint';
     }
-    if (mode === 'enemy') return 'enemy';
+    if (mode === 'enemy' || mode === 'npc') return 'enemy';
     if (mode === 'prefab') return 'prefab';
     if (mode === 'shape') return 'shape';
     return 'paint';
@@ -2096,6 +2126,7 @@ export default class Editor {
       tiles,
       regions: [],
       enemies: [],
+      npcs: [],
       elevatorPaths: [],
       elevators: [],
       pixelArt: { tiles: {} },
@@ -2159,6 +2190,7 @@ export default class Editor {
 
     includeTile(source.spawn?.x ?? this.game.world.spawn?.x, source.spawn?.y ?? this.game.world.spawn?.y);
     (source.enemies || []).forEach((enemy) => includeTile(enemy.x, enemy.y));
+    (source.npcs || []).forEach((npc) => includeTile(npc.x, npc.y));
     (source.elevatorPaths || []).forEach((path) => includeTile(path.x, path.y));
     (source.elevators || []).forEach((platform) => includeTile(platform.x, platform.y));
     (source.regions || []).forEach((region) => {
@@ -4744,6 +4776,7 @@ export default class Editor {
     enforceSpikeSupports();
 
     const enemies = [];
+    const npcs = [];
     const difficultyOrder = [
       'practice',
       'skitter',
@@ -4842,6 +4875,7 @@ export default class Editor {
       tiles: tiles.map((row) => row.join('')),
       regions,
       enemies: filteredEnemies,
+      npcs,
       elevatorPaths: filteredElevatorPaths,
       elevators: filteredElevators
     };
@@ -5947,6 +5981,30 @@ export default class Editor {
     this.recordRecent('tiles', tile);
   }
 
+  getNpcDefinitions() {
+    if (!this.npcRegistry.loaded) {
+      this.npcRegistry.restoreCache();
+      this.npcRegistry.load();
+    }
+    this.npcDefinitionCache = this.npcRegistry.list();
+    if (!this.npcType && this.npcDefinitionCache.length) this.npcType = this.npcDefinitionCache[0];
+    return this.npcDefinitionCache;
+  }
+
+  setNpcType(npc) {
+    this.npcType = npc;
+    this.recordRecent('enemies', { id: npc.id, label: npc.name, glyph: npc.editor?.glyph || npc.editorPreview?.glyph || 'AC', definition: npc, npc: true });
+  }
+
+  openNpcPaletteForActor(actorId) {
+    this.setPanelTab('npcs');
+    const definition = this.getNpcDefinitions().find((entry) => entry.id === actorId);
+    if (!definition) return false;
+    this.setNpcType(definition);
+    this.mode = 'npc';
+    return true;
+  }
+
   setEnemyType(enemy) {
     this.enemyType = enemy;
     this.enemyCategory = BOSS_ENEMY_TYPES.some((entry) => entry.id === enemy.id) ? 'boss' : 'standard';
@@ -6658,11 +6716,25 @@ export default class Editor {
   }
 
   removeEnemy(tileX, tileY) {
+    const prevNpc = this.game.world.npcAt?.(tileX, tileY);
+    if (prevNpc) {
+      this.game.world.removeNpc(tileX, tileY);
+      this.triggerHaptic();
+      return;
+    }
     const prev = this.game.world.enemyAt(tileX, tileY);
     if (!prev) return;
     this.game.world.removeEnemy(tileX, tileY);
     this.triggerHaptic();
     this.recordEnemyChange(tileX, tileY, prev.type, null);
+  }
+
+  setNpc(tileX, tileY, npcId) {
+    const prev = this.game.world.npcAt?.(tileX, tileY);
+    if ((prev?.actorId || prev?.npcId) === npcId) return;
+    const instance = normalizeActorInstance(createActorInstance({ actorId: npcId, npcId, x: tileX, y: tileY }));
+    this.game.world.setNpc(instance);
+    this.triggerHaptic();
   }
 
   applyEnemy(tileX, tileY, mode) {
@@ -6673,11 +6745,19 @@ export default class Editor {
       this.removeEnemy(safeX, safeY);
       return;
     }
+    if (this.mode === 'npc' && this.npcType?.id) {
+      this.setNpc(safeX, safeY, this.npcType.id);
+      return;
+    }
     this.setEnemy(safeX, safeY, this.enemyType.id);
   }
 
   pickMoveSelection(tileX, tileY) {
     if (!this.isInBounds(tileX, tileY)) return null;
+    const npc = this.game.world.npcAt?.(tileX, tileY);
+    if (npc) {
+      return { kind: 'npc', type: npc.actorId || npc.npcId, origin: { x: tileX, y: tileY } };
+    }
     const enemy = this.game.world.enemyAt(tileX, tileY);
     if (enemy) {
       return { kind: 'enemy', type: enemy.type, origin: { x: tileX, y: tileY } };
@@ -6702,6 +6782,11 @@ export default class Editor {
     const { tileX: safeX, tileY: safeY } = ensured;
     const { kind, origin } = this.moveSelection;
     if (origin.x === safeX && origin.y === safeY) return;
+    if (kind === 'npc') {
+      this.game.world.removeNpc(origin.x, origin.y);
+      this.setNpc(safeX, safeY, this.moveSelection.type);
+      return;
+    }
     if (kind === 'enemy') {
       this.removeEnemy(origin.x, origin.y);
       this.setEnemy(safeX, safeY, this.moveSelection.type);
@@ -6724,6 +6809,15 @@ export default class Editor {
 
   selectTile(tileX, tileY) {
     if (!this.isInBounds(tileX, tileY)) return;
+    const npc = this.game.world.npcAt?.(tileX, tileY);
+    if (npc) {
+      const definition = this.getNpcDefinitions().find((entry) => entry.id === (npc.actorId || npc.npcId));
+      if (definition) {
+        this.setNpcType(definition);
+        this.mode = 'npc';
+        return;
+      }
+    }
     if (this.game.world.hasElevatorPlatform(tileX, tileY)) {
       const platformTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'elevator-platform');
       if (platformTile) {
@@ -7065,6 +7159,23 @@ export default class Editor {
       }
     }
 
+    (this.game.world.npcs || []).forEach((npc) => {
+      const cx = npc.x * tileSize + tileSize / 2;
+      const cy = npc.y * tileSize + tileSize / 2;
+      const definition = this.getNpcDefinitions().find((entry) => entry.id === (npc.actorId || npc.npcId));
+      const glyph = definition?.editor?.glyph || definition?.editorPreview?.glyph || 'AC';
+      const color = definition?.editor?.color || definition?.editorPreview?.color || '#8ecae6';
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(cx - 12, cy - 12, 24, 24);
+      ctx.fillStyle = color;
+      ctx.font = '10px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText(glyph, cx, cy + 4);
+      ctx.restore();
+    });
+
     this.game.world.enemies.forEach((enemy) => {
       const cx = enemy.x * tileSize + tileSize / 2;
       const cy = enemy.y * tileSize + tileSize / 2;
@@ -7211,13 +7322,14 @@ export default class Editor {
     if (this.mode === 'tile' && this.tileTool === 'erase') {
       ctx.fillStyle = 'rgba(255,80,80,0.25)';
       ctx.fillRect(ghostX, ghostY, tileSize, tileSize);
-    } else if (this.mode === 'enemy') {
-      ctx.fillStyle = 'rgba(255,120,120,0.18)';
+    } else if (this.mode === 'enemy' || this.mode === 'npc') {
+      const isNpc = this.mode === 'npc';
+      ctx.fillStyle = isNpc ? 'rgba(120,190,255,0.18)' : 'rgba(255,120,120,0.18)';
       ctx.fillRect(ghostX, ghostY, tileSize, tileSize);
-      ctx.fillStyle = 'rgba(255,180,180,0.85)';
+      ctx.fillStyle = isNpc ? 'rgba(180,220,255,0.9)' : 'rgba(255,180,180,0.85)';
       ctx.font = '10px Courier New';
       ctx.textAlign = 'center';
-      ctx.fillText(this.enemyType?.glyph || 'EN', ghostX + tileSize / 2, ghostY + tileSize / 2 + 4);
+      ctx.fillText(isNpc ? (this.npcType?.editor?.glyph || this.npcType?.editorPreview?.glyph || 'AC') : (this.enemyType?.glyph || 'EN'), ghostX + tileSize / 2, ghostY + tileSize / 2 + 4);
     } else if (this.mode === 'tile') {
       ctx.fillStyle = 'rgba(140,200,255,0.2)';
       ctx.fillRect(ghostX, ghostY, tileSize, tileSize);
@@ -7818,7 +7930,25 @@ export default class Editor {
           ];
           columns = 1;
         } else if (activeTab === 'npcs') {
+          const npcDefs = this.getNpcDefinitions();
           items = [
+            { id: 'npc-editor-open', label: 'OPEN ACTOR EDITOR', active: false, tooltip: 'Create and edit shared actor definitions', onClick: () => this.game.enterActorEditor({ returnState: 'editor' }) },
+            ...(npcDefs.length ? npcDefs.flatMap((npc, index, list) => {
+              const header = index === 0 || list[index - 1].alignment !== npc.alignment
+                ? [{ id: `npc-align-${npc.alignment}-${index}`, label: `──────── ${NPC_ALIGNMENT_LABELS[npc.alignment] || npc.alignment.toUpperCase()} ────────`, separator: true, active: false, tooltip: npc.alignment, onClick: () => {} }]
+                : [];
+              return [
+                ...header,
+                {
+                  id: `npc-def-${npc.id}`,
+                  label: `${npc.name} [${npc.editor?.glyph || npc.editorPreview?.glyph || 'AC'}]`,
+                  active: this.mode === 'npc' && this.npcType?.id === npc.id,
+                  preview: { type: 'npc', npc },
+                  tooltip: npc.description || npc.id,
+                  onClick: () => { this.setNpcType(npc); this.mode = 'npc'; }
+                }
+              ];
+            }) : []),
             { id: 'npc-sep-ambience', label: '──────── AMBIENCE ────────', separator: true, active: false, tooltip: 'Ambient weather and spawners', onClick: () => {} },
             ...AMBIENT_ENEMY_TYPES.map((enemy) => ({
               id: `npc-${enemy.id}`,
@@ -8326,7 +8456,7 @@ export default class Editor {
           return false;
         }
         if (activeTab === 'tiles' || activeTab === 'powerups') return this.tileType.id === item.id;
-        if (activeTab === 'npcs') return this.enemyType.id === item.enemy?.id;
+        if (activeTab === 'npcs') return this.enemyType.id === item.enemy?.id || this.npcType?.id === item.npc?.id;
         if (activeTab === 'prefabs') return this.prefabType.id === item.id;
         if (activeTab === 'toolbox') {
           if (item.id?.startsWith('tile-')) {
@@ -9384,8 +9514,9 @@ export default class Editor {
       stopWhenActive: true
     });
 
+    const npcInfo = this.npcType?.description;
     const enemyInfo = this.enemyType?.description;
-    const showEnemyInfo = enemyInfo && (this.getActivePanelTab() === 'npcs' || this.mode === 'enemy');
+    const showEnemyInfo = (enemyInfo && (this.getActivePanelTab() === 'npcs' || this.mode === 'enemy')) || (npcInfo && this.mode === 'npc');
     if (showEnemyInfo) {
       ctx.save();
       const boxWidth = this.isMobileLayout()
@@ -9396,8 +9527,8 @@ export default class Editor {
       ctx.font = '12px Courier New';
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      const title = `${this.enemyType.label}`;
-      const lines = wrapText(enemyInfo, maxTextWidth);
+      const infoTitle = this.mode === 'npc' ? (this.npcType?.name || 'Actor') : `${this.enemyType.label}`;
+      const lines = wrapText(this.mode === 'npc' ? npcInfo : enemyInfo, maxTextWidth);
       const boxHeight = 18 + lines.length * 16 + 16;
       const tooltipHeight = this.isMobileLayout() ? 22 : 24;
       const maxY = this.isMobileLayout()
@@ -9409,7 +9540,7 @@ export default class Editor {
       ctx.strokeStyle = 'rgba(255,255,255,0.6)';
       ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
       ctx.fillStyle = '#fff';
-      ctx.fillText(title, boxX + 10, boxY + 8);
+      ctx.fillText(infoTitle, boxX + 10, boxY + 8);
       lines.forEach((line, index) => {
         ctx.fillText(line, boxX + 10, boxY + 26 + index * 16);
       });
