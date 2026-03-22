@@ -37,6 +37,7 @@ import { DebrisPiece, Shard } from '../entities/Debris.js';
 import LootDrop from '../entities/LootDrop.js';
 import HealthDrop from '../entities/HealthDrop.js';
 import PracticeDrone from '../entities/PracticeDrone.js';
+import ScriptedActor from '../entities/ScriptedActor.js';
 import Effect from '../entities/Effect.js';
 import Title from '../ui/Title.js';
 import Dialog from '../ui/Dialog.js';
@@ -961,6 +962,7 @@ export default class Game {
       elevatorPaths: this.world.elevatorPaths,
       elevators: this.world.elevators,
       pixelArt: this.world.pixelArt,
+      actorLibrary: this.world.actorLibrary || [],
       musicZones: this.world.musicZones,
       midiTracks: this.world.midiTracks,
       triggers: this.world.triggers || [],
@@ -981,6 +983,7 @@ export default class Game {
       elevatorPaths: data.elevatorPaths || [],
       elevators: data.elevators || [],
       pixelArt: data.pixelArt || { tiles: {} },
+      actorLibrary: data.actorLibrary || [],
       musicZones: data.musicZones || [],
       midiTracks: data.midiTracks || [],
       triggers: data.triggers || [],
@@ -1319,6 +1322,7 @@ export default class Game {
       elevatorPaths: [],
       elevators: [],
       pixelArt: { tiles: {} },
+      actorLibrary: [],
       musicZones: [],
       midiTracks: []
     };
@@ -1588,79 +1592,91 @@ export default class Game {
     this.spawnEnemyByType(type, spawn.x, spawn.y);
   }
 
-  spawnEnemyByType(type, worldX, worldY) {
+  spawnEnemyByType(type, worldX, worldY, options = {}) {
+    const actorDef = (this.world.actorLibrary || []).find((entry) => entry.id === type);
+    if (actorDef) {
+      const actor = new ScriptedActor(worldX, worldY, actorDef, {
+        world: this.world,
+        linkedRoot: options.linkedRoot || null,
+        linkOffsetX: options.linkOffsetX || 0,
+        linkOffsetY: options.linkOffsetY || 0,
+        isLinkedPart: Boolean(options.isLinkedPart)
+      });
+      this.enemies.push(actor);
+      return actor;
+    }
     switch (type) {
       case 'practice':
         this.enemies.push(new PracticeDrone(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'skitter':
         this.enemies.push(new Skitter(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'spitter':
         this.enemies.push(new Spitter(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'bulwark':
         this.enemies.push(new Bulwark(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'floater':
         this.enemies.push(new Floater(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'slicer':
         this.enemies.push(new Slicer(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'hivenode':
         this.enemies.push(new HiveNode(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'sentinel':
         this.enemies.push(new SentinelElite(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'drifter':
         this.enemies.push(new Drifter(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'bobber':
         this.enemies.push(new Bobber(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'harrier':
         this.enemies.push(new Harrier(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'bouncer':
         this.enemies.push(new Bouncer(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'coward':
         this.enemies.push(new Coward(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'ranger':
         this.enemies.push(new Ranger(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'pouncer':
         this.enemies.push(new Pouncer(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'sunderbehemoth':
         this.enemies.push(new SunderBehemoth(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'riftram':
         this.enemies.push(new RiftRam(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'broodtitan':
         this.enemies.push(new BroodTitan(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'nullaegis':
         this.enemies.push(new NullAegis(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'hexmatron':
         this.enemies.push(new HexMatron(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'gravewarden':
         this.enemies.push(new GraveWarden(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'obsidiancrown':
         this.enemies.push(new ObsidianCrown(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       case 'cataclysmcolossus':
         this.enemies.push(new CataclysmColossus(worldX, worldY));
-        break;
+        return this.enemies[this.enemies.length - 1];
       default:
-        break;
+        return null;
     }
   }
 
@@ -3575,6 +3591,7 @@ export default class Game {
       const overlapY = Math.min(rect.y + rect.h - tileRect.y, tileRect.y + tileRect.h - rect.y);
       if (overlapX < overlapY) {
         enemy.x += rect.x < tileRect.x ? -overlapX : overlapX;
+        enemy.markTouchedWall?.();
         if (enemy.bounceOnWalls) {
           enemy.vx = -enemy.vx;
           enemy.facing = Math.sign(enemy.vx) || enemy.facing;
@@ -3615,6 +3632,7 @@ export default class Game {
     );
     if (hitLeft || hitRight) {
       enemy.vy = 0;
+      enemy.markTouchedFloor?.();
       return;
     }
     enemy.y = nextY;
@@ -3980,6 +3998,29 @@ export default class Game {
     }
   }
 
+
+  spawnConfiguredLoot(x, y, lootEntries = []) {
+    lootEntries.forEach((entry) => {
+      const guaranteed = entry.guaranteed === true;
+      const probability = guaranteed ? 1 : Number(entry.probability ?? 1);
+      if (Math.random() > probability) return;
+      const min = Math.max(1, Math.floor(entry.min || 1));
+      const max = Math.max(min, Math.floor(entry.max || min));
+      const count = min + Math.floor(Math.random() * (max - min + 1));
+      for (let i = 0; i < count; i += 1) {
+        switch (entry.itemId) {
+          case 'health':
+            this.healthDrops.push(new HealthDrop(x + (Math.random() - 0.5) * 18, y + (Math.random() - 0.5) * 18));
+            break;
+          case 'loot':
+          default:
+            this.lootDrops.push(new LootDrop(x + (Math.random() - 0.5) * 18, y + (Math.random() - 0.5) * 18, 1));
+            break;
+        }
+      }
+    });
+  }
+
   spawnExecutionDebris(enemy, variant) {
     const base = this.getEnemyPolygon(enemy);
     let normal = [1, 0];
@@ -4031,6 +4072,15 @@ export default class Game {
     const context = {
       spawnProjectile: this.spawnProjectile.bind(this),
       spawnMinion: (x, y) => this.requestSpawn('skitter', x, y),
+      spawnActor: (type, x, y) => this.spawnEnemyByType(type, x, y),
+      spawnLinkedParts: (root, linkedParts = []) => {
+        root.spawnedChildren = (linkedParts || []).map((part) => this.spawnEnemyByType(part.actorId, root.x + (part.offsetX || 0), root.y + (part.offsetY || 0), {
+          linkedRoot: root,
+          linkOffsetX: part.offsetX || 0,
+          linkOffsetY: part.offsetY || 0,
+          isLinkedPart: true
+        })).filter(Boolean);
+      },
       canShoot: (enemy, range = 320, padding = 80) => this.canEnemyShoot(enemy, range, padding),
       isVisible: (enemy, padding = 80) => this.isEnemyVisible(enemy, padding)
     };
@@ -4044,6 +4094,10 @@ export default class Game {
       if (enemy.dead) {
         if (enemy.deathTimer > 0 && enemy.updateDeath) {
           enemy.updateDeath(dt);
+        }
+        if (enemy.pendingLootDrops?.length && !enemy.lootGranted) {
+          this.spawnConfiguredLoot(enemy.x, enemy.y, enemy.pendingLootDrops);
+          enemy.lootGranted = true;
         }
         return;
       }
@@ -4069,8 +4123,9 @@ export default class Game {
       const dy = enemy.y - this.player.y;
       const dist = Math.hypot(dx, dy);
       if (dist < 24) {
-        if (!enemy.training) {
-          const tookDamage = this.player.takeDamage(1);
+        if (!enemy.training && (enemy.bodyContactDamage !== false)) {
+          const damageAmount = enemy.contactDamageAmount || 1;
+          const tookDamage = this.player.takeDamage(damageAmount);
           if (tookDamage) {
             this.applyPlayerKnockback(enemy);
             enemy.hitPause = 0.2;

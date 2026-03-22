@@ -13,6 +13,7 @@ import { normalizeMidiTracks } from '../editor/adapters/editorDataContracts.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
+import { ACTOR_ATTACK_TARGETS, MOVEMENT_PRESETS, MOVEMENT_PARAM_CONFIG, CONDITION_TYPES, ACTION_TYPES, LOOT_ITEM_OPTIONS, BEHAVIOR_PRESET_SUMMARY, createActorDefinition as createActorBlueprint, createDefaultState, createDefaultCondition, createDefaultAction, createDefaultLootEntry, createDefaultLinkedPart, ensureActorLibrary, ensureActorDefinitionShape, slugifyActorName } from '../editor/actorDefinitions.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -344,6 +345,10 @@ export default class Editor {
     this.triggerZoneTarget = null;
     this.inputActionNormalizer = new EditorInputActionNormalizer();
     this.triggerEditorOpen = false;
+    this.actorEditorOpen = false;
+    this.actorEditorView = 'main';
+    this.actorEditorActorId = null;
+    this.actorEditorStateId = null;
     this.selectedTriggerId = null;
     this.triggerEditorView = 'main';
     this.triggerPlacementMode = null;
@@ -421,7 +426,7 @@ export default class Editor {
       enemies: true,
       prefabs: true
     };
-    this.panelTabs = ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'];
+    this.panelTabs = ['file', 'toolbox', 'tiles', 'npcs', 'actors', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       file: 0,
@@ -430,6 +435,7 @@ export default class Editor {
       triggers: 0,
       powerups: 0,
       npcs: 0,
+      actors: 0,
       prefabs: 0,
       shapes: 0,
       pixels: 0,
@@ -443,6 +449,7 @@ export default class Editor {
       triggers: 0,
       powerups: 0,
       npcs: 0,
+      actors: 0,
       prefabs: 0,
       shapes: 0,
       pixels: 0,
@@ -460,6 +467,7 @@ export default class Editor {
       triggers: 0,
       powerups: 0,
       npcs: 0,
+      actors: 0,
       prefabs: 0,
       shapes: 0,
       pixels: 0,
@@ -470,7 +478,7 @@ export default class Editor {
     this.drawer = {
       open: false,
       tabIndex: 0,
-      tabs: ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'],
+      tabs: ['file', 'toolbox', 'tiles', 'npcs', 'actors', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -1057,6 +1065,10 @@ export default class Editor {
       this.centerCameraOnWorld(worldX, worldY);
     }
     this.triggerEditorOpen = false;
+    this.actorEditorOpen = false;
+    this.actorEditorView = 'main';
+    this.actorEditorActorId = null;
+    this.actorEditorStateId = null;
     this.triggerPlacementMode = 'load-level-spawn';
     this.mode = 'trigger';
   }
@@ -1349,6 +1361,7 @@ export default class Editor {
         }))
       ];
     } else if (tabId === 'npcs') {
+      const customActors = this.getActorLibraryChoices().filter((entry) => entry.actor.rootPlaceable !== false);
       items = [
         { id: 'npc-sep-ambience', label: '──────── AMBIENCE ────────', tooltip: 'Ambient weather and spawners', separator: true, onClick: () => {} },
         ...AMBIENT_ENEMY_TYPES.map((enemy) => ({
@@ -1374,6 +1387,18 @@ export default class Editor {
             this.mode = 'enemy';
           }
         })),
+        { id: 'npc-sep-custom', label: '──────── CUSTOM ACTORS ────────', tooltip: 'Actors authored in Actor Editor', separator: true, onClick: () => {} },
+        ...customActors.map((entry) => ({
+          id: `npc-${entry.actor.id}`,
+          label: `${entry.actor.name} [AC]`,
+          enemy: entry.enemy,
+          tooltip: 'Placeable root actor',
+          onClick: () => {
+            this.enemyCategory = 'standard';
+            this.setEnemyType(entry.enemy);
+            this.mode = 'enemy';
+          }
+        })),
         { id: 'npc-sep-boss', label: '──────── BOSSES ────────', tooltip: 'Boss enemies', separator: true, onClick: () => {} },
         ...BOSS_ENEMY_TYPES.map((enemy) => ({
           id: `npc-${enemy.id}`,
@@ -1385,6 +1410,23 @@ export default class Editor {
             this.setEnemyType(enemy);
             this.mode = 'enemy';
           }
+        }))
+      ];
+    } else if (tabId === 'actors') {
+      const library = this.ensureActorLibrary();
+      items = [
+        {
+          id: 'actor-create',
+          label: 'Create Actor',
+          tooltip: 'Start with name, Idle state, and actor-level settings',
+          onClick: () => this.createActorDefinition()
+        },
+        ...library.map((actor) => ({
+          id: `actor-${actor.id}`,
+          label: actor.name,
+          enemy: { id: actor.id, label: actor.name, glyph: actor.rootPlaceable === false ? 'PT' : 'AC' },
+          tooltip: actor.rootPlaceable === false ? 'Linked child actor only' : 'Root placeable actor',
+          onClick: () => this.openActorEditor(actor.id)
         }))
       ];
     } else if (tabId === 'powerups') {
@@ -2099,6 +2141,7 @@ export default class Editor {
       elevatorPaths: [],
       elevators: [],
       pixelArt: { tiles: {} },
+      actorLibrary: [],
       musicZones: [],
       midiTracks: []
     };
@@ -2305,6 +2348,140 @@ export default class Editor {
   }
 
 
+  ensureActorLibrary() {
+    const library = ensureActorLibrary(this.game.world);
+    for (let i = 0; i < library.length; i += 1) {
+      library[i] = ensureActorDefinitionShape(library[i]);
+    }
+    if (!this.actorEditorActorId && library[0]) {
+      this.actorEditorActorId = library[0].id;
+      this.actorEditorStateId = library[0].states[0]?.id || null;
+    }
+    return library;
+  }
+
+  getActorLibraryChoices() {
+    return this.ensureActorLibrary().map((actor) => ({
+      id: actor.id,
+      label: actor.name,
+      enemy: { id: actor.id, label: actor.name, glyph: 'AC', description: 'Custom actor authored in Actor Editor.' },
+      tooltip: actor.rootPlaceable === false ? 'Linked child actor' : 'Root placeable actor',
+      actor
+    }));
+  }
+
+  getSelectedActorDefinition() {
+    return this.ensureActorLibrary().find((entry) => entry.id === this.actorEditorActorId) || null;
+  }
+
+  getSelectedActorState() {
+    const actor = this.getSelectedActorDefinition();
+    return actor?.states?.find((state) => state.id === this.actorEditorStateId) || actor?.states?.[0] || null;
+  }
+
+  syncActorDefinition(definition) {
+    if (!definition) return null;
+    definition.id = slugifyActorName(definition.name || definition.id || 'actor');
+    definition.states = (definition.states || []).map((state, index) => {
+      const nextId = slugifyActorName(state.name || `state-${index + 1}`);
+      return {
+        ...state,
+        id: nextId,
+        artKey: state.artKey || `actor:${definition.id}:${nextId}`,
+        movement: { type: state.movement?.type || 'none', params: { ...(state.movement?.params || {}) } },
+        conditions: Array.isArray(state.conditions) && state.conditions.length ? state.conditions : [createDefaultCondition('always')],
+        actions: Array.isArray(state.actions) ? state.actions : []
+      };
+    });
+    if (!definition.states.length) definition.states = [createDefaultState(definition.id, 'Idle')];
+    if (!definition.states.find((state) => state.id === this.actorEditorStateId)) {
+      this.actorEditorStateId = definition.states[0].id;
+    }
+    return definition;
+  }
+
+  createActorDefinition() {
+    const library = this.ensureActorLibrary();
+    const actor = createActorBlueprint(`New Actor ${library.length + 1}`);
+    library.push(actor);
+    this.actorEditorActorId = actor.id;
+    this.actorEditorStateId = actor.states[0]?.id || null;
+    this.actorEditorOpen = true;
+    this.persistAutosave();
+  }
+
+  duplicateActorDefinition(actorId) {
+    const library = this.ensureActorLibrary();
+    const actor = library.find((entry) => entry.id === actorId);
+    if (!actor) return;
+    const copy = ensureActorDefinitionShape(JSON.parse(JSON.stringify(actor)));
+    copy.name = `${actor.name} Copy`;
+    copy.id = slugifyActorName(copy.name);
+    copy.states = copy.states.map((state) => ({ ...state, artKey: `actor:${copy.id}:${state.id}` }));
+    library.push(copy);
+    this.actorEditorActorId = copy.id;
+    this.actorEditorStateId = copy.states[0]?.id || null;
+    this.persistAutosave();
+  }
+
+  deleteActorDefinition(actorId) {
+    const library = this.ensureActorLibrary();
+    const index = library.findIndex((entry) => entry.id === actorId);
+    if (index < 0) return;
+    library.splice(index, 1);
+    this.actorEditorActorId = library[0]?.id || null;
+    this.actorEditorStateId = library[0]?.states?.[0]?.id || null;
+    this.actorEditorOpen = Boolean(this.actorEditorActorId);
+    this.persistAutosave();
+  }
+
+  addActorState(actor) {
+    const state = createDefaultState(actor.id, `State ${actor.states.length + 1}`);
+    actor.states.push(state);
+    this.actorEditorStateId = state.id;
+    this.persistAutosave();
+  }
+
+  duplicateActorState(actor, stateId) {
+    const state = actor.states.find((entry) => entry.id === stateId);
+    if (!state) return;
+    const copy = JSON.parse(JSON.stringify(state));
+    copy.name = `${state.name} Copy`;
+    copy.id = slugifyActorName(copy.name);
+    copy.artKey = `actor:${actor.id}:${copy.id}`;
+    copy.conditions = (copy.conditions || []).map((entry) => ({ ...entry, id: `${entry.id}-copy` }));
+    copy.actions = (copy.actions || []).map((entry) => ({ ...entry, id: `${entry.id}-copy` }));
+    actor.states.push(copy);
+    this.actorEditorStateId = copy.id;
+    this.persistAutosave();
+  }
+
+  deleteActorState(actor, stateId) {
+    if (actor.states.length <= 1) return;
+    const index = actor.states.findIndex((entry) => entry.id === stateId);
+    if (index < 0) return;
+    actor.states.splice(index, 1);
+    this.actorEditorStateId = actor.states[0]?.id || null;
+    this.persistAutosave();
+  }
+
+  openActorEditor(actorId = null) {
+    const library = this.ensureActorLibrary();
+    if (!library.length) this.createActorDefinition();
+    const actor = actorId ? library.find((entry) => entry.id === actorId) : (library[0] || null);
+    if (!actor) return;
+    this.actorEditorActorId = actor.id;
+    this.actorEditorStateId = actor.states[0]?.id || null;
+    this.actorEditorOpen = true;
+  }
+
+  openActorStateInPixelEditor(actor, state) {
+    if (!actor || !state) return;
+    this.syncActorDefinition(actor);
+    this.game.enterPixelStudio({ returnState: 'editor', resetFocus: false });
+    this.game.pixelStudio.setActiveTile({ id: state.artKey, label: `${actor.name}: ${state.name}`, char: state.artKey });
+  }
+
   ensureTriggers() {
     if (!this.game.world.triggers) {
       this.game.world.triggers = [];
@@ -2485,6 +2662,10 @@ export default class Editor {
 
   closeTriggerEditor() {
     this.triggerEditorOpen = false;
+    this.actorEditorOpen = false;
+    this.actorEditorView = 'main';
+    this.actorEditorActorId = null;
+    this.actorEditorStateId = null;
     this.triggerEditorView = 'main';
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
@@ -7613,6 +7794,7 @@ export default class Editor {
         { id: 'toolbox', label: 'Toolbox' },
         { id: 'tiles', label: 'Tiles' },
         { id: 'npcs', label: 'NPCs' },
+        { id: 'actors', label: 'Actors' },
         { id: 'triggers', label: 'Triggers' },
         { id: 'powerups', label: 'Powerups' },
         { id: 'prefabs', label: 'Structures' },
@@ -7665,7 +7847,8 @@ export default class Editor {
         const isPreviewTab = activeTab === 'tiles'
           || activeTab === 'prefabs'
           || activeTab === 'powerups'
-          || activeTab === 'npcs';
+          || activeTab === 'npcs'
+          || activeTab === 'actors';
         const buttonHeight = activeTab === 'file'
           ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile
           : (isPreviewTab ? 60 : 52);
@@ -8254,6 +8437,7 @@ export default class Editor {
         { id: 'toolbox', label: 'TOOLBOX' },
         { id: 'tiles', label: 'TILES' },
         { id: 'npcs', label: 'NPCS' },
+        { id: 'actors', label: 'ACTORS' },
         { id: 'triggers', label: 'TRIGGERS' },
         { id: 'powerups', label: 'POWERUPS' },
         { id: 'prefabs', label: 'STRUCTURES' },
@@ -8327,6 +8511,7 @@ export default class Editor {
         }
         if (activeTab === 'tiles' || activeTab === 'powerups') return this.tileType.id === item.id;
         if (activeTab === 'npcs') return this.enemyType.id === item.enemy?.id;
+        if (activeTab === 'actors') return this.actorEditorActorId === item.actor?.id || item.id === 'actor-create';
         if (activeTab === 'prefabs') return this.prefabType.id === item.id;
         if (activeTab === 'toolbox') {
           if (item.id?.startsWith('tile-')) {
@@ -8455,6 +8640,147 @@ export default class Editor {
         ctx.fillText(line, infoX + 12, infoY + 22 + index * 18);
       });
       infoPanelBottom = infoY + infoHeight + 12;
+      }
+    }
+
+
+    if (this.actorEditorOpen) {
+      const actor = this.getSelectedActorDefinition();
+      if (actor) {
+        this.syncActorDefinition(actor);
+        const state = this.getSelectedActorState();
+        const panelWidth = this.isMobileLayout() ? Math.min(width - 20, 860) : 860;
+        const panelHeight = this.isMobileLayout() ? Math.min(height - 20, 640) : 620;
+        const panelX = (width - panelWidth) / 2;
+        const panelY = (height - panelHeight) / 2;
+        ctx.save();
+        ctx.globalAlpha = 0.96;
+        ctx.fillStyle = 'rgba(8,12,18,0.98)';
+        ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
+        ctx.strokeStyle = UI_SUITE.editorPanel.border;
+        ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
+        ctx.fillStyle = UI_SUITE.editorPanel.text;
+        ctx.font = UI_SUITE.editorPanel.titleFont;
+        ctx.fillText('Actor Editor', panelX + 12, panelY + 22);
+
+        const leftW = 220;
+        const rightX = panelX + leftW + 24;
+        const rightW = panelWidth - leftW - 36;
+        let listY = panelY + 44;
+        drawButton(panelX + 12, listY, leftW - 24, 36, 'New Actor', false, () => this.createActorDefinition(), 'Create actor');
+        listY += 42;
+        this.ensureActorLibrary().forEach((entry) => {
+          drawButton(panelX + 12, listY, leftW - 24, 34, entry.name, this.actorEditorActorId === entry.id, () => { this.actorEditorActorId = entry.id; this.actorEditorStateId = entry.states[0]?.id || null; }, entry.rootPlaceable === false ? 'Linked child actor' : 'Root placeable actor');
+          listY += 38;
+        });
+
+        let y = panelY + 44;
+        drawButton(rightX, y, rightW - 340, 36, `Name: ${actor.name}`, false, async () => {
+          const value = await openTextInputOverlay({ title: 'Actor Name', label: 'Name', value: actor.name || '', maxLength: 40 });
+          if (value) { actor.name = value; actor.id = slugifyActorName(value); this.persistAutosave(); }
+        }, 'Rename actor');
+        drawButton(rightX + rightW - 328, y, 104, 36, `Attack: ${(ACTOR_ATTACK_TARGETS.find((entry) => entry.id === actor.attackTarget) || ACTOR_ATTACK_TARGETS[0]).label}`, false, () => { actor.attackTarget = this.cycleOption(actor.attackTarget, ACTOR_ATTACK_TARGETS.map((entry) => entry.id), 1); this.persistAutosave(); }, 'Choose what this actor attacks');
+        drawButton(rightX + rightW - 216, y, 104, 36, `Gravity: ${actor.gravity !== false ? 'On' : 'Off'}`, actor.gravity !== false, () => { actor.gravity = !(actor.gravity !== false); this.persistAutosave(); }, 'Toggle gravity');
+        drawButton(rightX + rightW - 104, y, 104, 36, 'Advanced', false, () => { actor.advanced.open = !actor.advanced?.open; this.persistAutosave(); }, 'Toggle advanced/internal fields');
+        y += 44;
+        drawButton(rightX, y, 148, 34, `Touch Damage: ${actor.bodyContactDamage ? 'On' : 'Off'}`, actor.bodyContactDamage, () => { actor.bodyContactDamage = !actor.bodyContactDamage; this.persistAutosave(); }, 'Whether body contact hurts');
+        drawButton(rightX + 156, y, 148, 34, `Damage: ${actor.contactDamageAmount || 1}`, false, () => { actor.contactDamageAmount = clamp((actor.contactDamageAmount || 1) + 1, 1, 10); this.persistAutosave(); }, 'Contact damage amount');
+        drawButton(rightX + 312, y, 148, 34, `Invulnerable: ${actor.invulnerableByDefault ? 'On' : 'Off'}`, actor.invulnerableByDefault, () => { actor.invulnerableByDefault = !actor.invulnerableByDefault; this.persistAutosave(); }, 'Default invulnerability');
+        drawButton(rightX + 468, y, 148, 34, `Destructible: ${actor.destructible !== false ? 'On' : 'Off'}`, actor.destructible !== false, () => { actor.destructible = !(actor.destructible !== false); this.persistAutosave(); }, 'Destructible on/off');
+        drawButton(rightX + 624, y, 148, 34, actor.rootPlaceable === false ? 'Linked Child' : 'Root Placeable', actor.rootPlaceable !== false, () => { actor.rootPlaceable = !(actor.rootPlaceable !== false); this.persistAutosave(); }, 'Only root actors appear in Level Editor');
+        y += 46;
+        ctx.font = UI_SUITE.editorPanel.bodyFont;
+        ctx.fillStyle = UI_SUITE.colors.muted;
+        ctx.fillText(`Health: ${actor.maxHealth || 3}  •  Preset hints from repo: ${BEHAVIOR_PRESET_SUMMARY[actor.id] || 'custom'}`, rightX, y + 10);
+        y += 18;
+        drawButton(rightX, y, 100, 34, '- HP', false, () => { actor.maxHealth = Math.max(1, (actor.maxHealth || 3) - 1); this.persistAutosave(); }, 'Decrease health');
+        drawButton(rightX + 108, y, 100, 34, '+ HP', false, () => { actor.maxHealth = Math.min(50, (actor.maxHealth || 3) + 1); this.persistAutosave(); }, 'Increase health');
+        drawButton(rightX + 220, y, 130, 34, 'Duplicate Actor', false, () => this.duplicateActorDefinition(actor.id), 'Copy actor');
+        drawButton(rightX + 358, y, 130, 34, 'Delete Actor', false, () => this.deleteActorDefinition(actor.id), 'Delete actor');
+        y += 50;
+        ctx.fillStyle = UI_SUITE.editorPanel.text;
+        ctx.fillText('States', rightX, y);
+        y += 12;
+        let stateY = y + 6;
+        (actor.states || []).forEach((entry) => {
+          drawButton(rightX, stateY, 180, 34, entry.name, this.actorEditorStateId === entry.id, () => { this.actorEditorStateId = entry.id; }, 'Select state');
+          stateY += 38;
+        });
+        drawButton(rightX, stateY, 180, 34, 'Add State', false, () => this.addActorState(actor), 'Add state');
+        drawButton(rightX + 188, stateY, 180, 34, 'Duplicate State', false, () => this.duplicateActorState(actor, state?.id), 'Duplicate state');
+        drawButton(rightX + 376, stateY, 180, 34, 'Delete State', false, () => this.deleteActorState(actor, state?.id), 'Delete state');
+
+        if (state) {
+          const previewX = rightX + 200;
+          const previewY = y + 6;
+          const previewSize = 96;
+          ctx.save();
+          ctx.fillStyle = 'rgba(255,255,255,0.05)';
+          ctx.fillRect(previewX, previewY, previewSize, previewSize);
+          const pixelData = this.getPixelArtData(state.artKey);
+          const frame = pixelData?.frames?.[0] || [];
+          const size = pixelData?.size || 16;
+          const cell = previewSize / size;
+          for (let row = 0; row < size; row += 1) {
+            for (let col = 0; col < size; col += 1) {
+              const color = frame[row * size + col];
+              if (!color) continue;
+              ctx.fillStyle = color;
+              ctx.fillRect(previewX + col * cell, previewY + row * cell, Math.ceil(cell), Math.ceil(cell));
+            }
+          }
+          ctx.restore();
+          this.addUIButton({ x: previewX, y: previewY, w: previewSize, h: previewSize }, () => this.openActorStateInPixelEditor(actor, state), 'Edit animation in Pixel Editor');
+          drawButton(previewX + 104, previewY, 148, 34, 'Edit Animation', false, () => this.openActorStateInPixelEditor(actor, state), 'Open Pixel Editor');
+          drawButton(previewX + 104, previewY + 42, 148, 34, `Move: ${(MOVEMENT_PRESETS.find((entry) => entry.id === state.movement?.type) || MOVEMENT_PRESETS[0]).label}`, false, () => { state.movement.type = this.cycleOption(state.movement?.type, MOVEMENT_PRESETS.map((entry) => entry.id), 1); this.persistAutosave(); }, 'Movement preset');
+          const params = MOVEMENT_PARAM_CONFIG[state.movement?.type] || [];
+          params.forEach((param, index) => {
+            const py = previewY + 84 + index * 38;
+            if (param.type === 'boolean') {
+              drawButton(previewX + 104, py, 148, 34, `${param.label}: ${state.movement.params?.[param.key] ?? param.default ? 'On' : 'Off'}`, Boolean(state.movement.params?.[param.key] ?? param.default), () => { state.movement.params[param.key] = !(state.movement.params?.[param.key] ?? param.default); this.persistAutosave(); }, param.label);
+            } else {
+              const current = state.movement.params?.[param.key] ?? param.default;
+              drawButton(previewX + 104, py, 148, 34, `${param.label}: ${current}`, false, () => { state.movement.params[param.key] = Math.min(param.max, Number((current + param.step).toFixed(2))); this.persistAutosave(); }, param.label);
+            }
+          });
+
+          let secY = previewY + 210;
+          ctx.fillStyle = UI_SUITE.editorPanel.text;
+          ctx.fillText(`Conditions (${state.conditionMode?.toUpperCase() || 'ALL'})`, rightX + 200, secY);
+          drawButton(rightX + 336, secY - 16, 88, 30, state.conditionMode === 'any' ? 'ANY' : 'ALL', false, () => { state.conditionMode = state.conditionMode === 'any' ? 'all' : 'any'; this.persistAutosave(); }, 'Switch ALL/ANY');
+          drawButton(rightX + 432, secY - 16, 124, 30, 'Add Condition', false, () => { state.conditions.push(createDefaultCondition('always')); this.persistAutosave(); }, 'Add condition');
+          secY += 8;
+          state.conditions.forEach((condition, index) => {
+            drawButton(rightX + 200, secY + index * 34, 356, 30, `${index + 1}. ${(CONDITION_TYPES.find((entry) => entry.id === condition.type) || CONDITION_TYPES[0]).label}`, false, () => { condition.type = this.cycleOption(condition.type, CONDITION_TYPES.map((entry) => entry.id), 1); this.persistAutosave(); }, 'Cycle condition type');
+          });
+          secY += Math.max(1, state.conditions.length) * 34 + 12;
+          ctx.fillStyle = UI_SUITE.editorPanel.text;
+          ctx.fillText('Actions', rightX + 200, secY);
+          drawButton(rightX + 432, secY - 16, 124, 30, 'Add Action', false, () => { state.actions.push(createDefaultAction('switch-state')); this.persistAutosave(); }, 'Add action');
+          secY += 8;
+          state.actions.forEach((action, index) => {
+            drawButton(rightX + 200, secY + index * 34, 356, 30, `${index + 1}. ${(ACTION_TYPES.find((entry) => entry.id === action.type) || ACTION_TYPES[0]).label}`, false, () => { action.type = this.cycleOption(action.type, ACTION_TYPES.map((entry) => entry.id), 1); this.persistAutosave(); }, 'Cycle action type');
+          });
+          secY += Math.max(1, state.actions.length) * 34 + 12;
+          ctx.fillText('Loot On Death', rightX + 200, secY);
+          drawButton(rightX + 432, secY - 16, 124, 30, 'Add Loot', false, () => { actor.loot.push(createDefaultLootEntry()); this.persistAutosave(); }, 'Add loot drop');
+          secY += 8;
+          actor.loot.forEach((entry, index) => {
+            drawButton(rightX + 200, secY + index * 34, 356, 30, `${index + 1}. ${(LOOT_ITEM_OPTIONS.find((item) => item.id === entry.itemId) || LOOT_ITEM_OPTIONS[0]).label} ${(entry.guaranteed ? '(Guaranteed)' : `${Math.round((entry.probability || 0) * 100)}%`)}`, false, () => { entry.itemId = this.cycleOption(entry.itemId, LOOT_ITEM_OPTIONS.map((item) => item.id), 1); this.persistAutosave(); }, 'Cycle loot item');
+          });
+          secY += Math.max(1, actor.loot.length) * 34 + 12;
+          ctx.fillText('Linked Parts', rightX + 200, secY);
+          drawButton(rightX + 432, secY - 16, 124, 30, 'Add Part', false, () => { actor.linkedParts.push(createDefaultLinkedPart()); this.persistAutosave(); }, 'Link child actor/part');
+          secY += 8;
+          actor.linkedParts.forEach((part, index) => {
+            drawButton(rightX + 200, secY + index * 34, 356, 30, `${index + 1}. ${part.actorId || 'Choose actor'} @ (${part.offsetX || 0}, ${part.offsetY || 0})`, false, () => { const options = this.ensureActorLibrary().filter((entry) => entry.id !== actor.id).map((entry) => entry.id); if (options.length) { part.actorId = this.cycleOption(part.actorId || options[0], options, 1); this.persistAutosave(); } }, 'Pick linked child actor');
+          });
+        }
+
+        const footerY = panelY + panelHeight - 48;
+        drawButton(panelX + panelWidth - 220, footerY, 100, 36, 'Close', false, () => { this.actorEditorOpen = false; }, 'Close actor editor');
+        drawButton(panelX + panelWidth - 110, footerY, 98, 36, 'Apply', false, () => { this.persistAutosave(); this.actorEditorOpen = false; }, 'Save actor changes');
+        ctx.restore();
       }
     }
 
@@ -8604,6 +8930,10 @@ export default class Editor {
           const bottomButtonW = (panelWidth - 28) / 2;
           drawButton(panelX + 12, deleteTriggerY, bottomButtonW, 40, 'Resize Trigger', false, () => {
             this.triggerEditorOpen = false;
+    this.actorEditorOpen = false;
+    this.actorEditorView = 'main';
+    this.actorEditorActorId = null;
+    this.actorEditorStateId = null;
             this.triggerEditorView = 'main';
             this.triggerActionDraft = null;
             this.triggerEditingActionId = null;
