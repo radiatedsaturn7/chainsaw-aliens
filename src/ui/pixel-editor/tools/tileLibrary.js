@@ -46,6 +46,6 @@ export const TILE_LIBRARY = [
   { id: 'health', label: 'Vitality Core', char: 'H' },
   { id: 'checkpoint', label: 'Checkpoint', char: 'S' },
   { id: 'shop', label: 'Shop', char: '$' },
-  { id: 'objective', label: 'Objective', char: 'O' }
+  { id: 'objective', label: 'Objective', char: 'O' },
   ...ACTOR_ART_TILES
 ];
