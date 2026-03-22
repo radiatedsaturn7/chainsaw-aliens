@@ -9,12 +9,36 @@ export const ACTOR_ART_TILE_SLOTS = Array.from({ length: 16 }, (_, index) => ({
   label: `Actor Art ${index + 1}`,
   char: String(index + 1).padStart(2, '0')
 }));
+export const ACTOR_EDITOR_PRESETS = ['friendlyNpc', 'basicEnemy', 'turret', 'spawner', 'boss', 'blankAdvanced'];
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 const obj = (value, fallback = {}) => (value && typeof value === 'object' && !Array.isArray(value) ? value : fallback);
 const arr = (value, fallback = []) => (Array.isArray(value) ? value : fallback);
 const num = (value, fallback) => (Number.isFinite(Number(value)) ? Number(value) : fallback);
 const str = (value, fallback = '') => String(value ?? fallback);
+export const slugifyActorId = (value, fallback = 'actor-new') => {
+  const slug = str(value, fallback)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return slug || fallback;
+};
+
+const createClip = (id, name, { startFrame = 0, endFrame = 0, fps = 8, loop = true } = {}) => ({ id, name, startFrame, endFrame, fps, loop });
+const createState = (id, name, clipId, overrides = {}) => ({
+  id,
+  name,
+  clipId,
+  movementMode: 'idle',
+  behaviorMode: 'idle',
+  canAttack: false,
+  canMove: true,
+  canSpawn: false,
+  canInteract: true,
+  invulnerable: false,
+  transitions: [],
+  ...overrides
+});
 
 export const createDefaultActorDefinition = (overrides = {}) => ({
   schemaVersion: 2,
@@ -114,6 +138,137 @@ export const createDefaultActorDefinition = (overrides = {}) => ({
   },
   ...overrides
 });
+
+export const createActorPresetDefinition = (presetId = 'blankAdvanced', overrides = {}) => {
+  const base = createDefaultActorDefinition();
+  const presets = {
+    friendlyNpc: createDefaultActorDefinition({
+      id: 'friendly-npc',
+      name: 'Friendly NPC',
+      actorType: 'npc',
+      alignment: 'friendly',
+      description: 'A friendly character that can talk to the player.',
+      stats: { ...base.stats, maxHealth: 5, moveSpeed: 36, contactDamage: 0 },
+      clips: [
+        createClip('idle', 'Idle', { fps: 6 }),
+        createClip('talk', 'Talk', { fps: 8 })
+      ],
+      states: [
+        createState('idle', 'Idle', 'idle', { behaviorMode: 'talk', canAttack: false, canInteract: true }),
+        createState('talk', 'Talk', 'talk', { behaviorMode: 'talk', canAttack: false, canInteract: true, canMove: false })
+      ],
+      behavior: { ...base.behavior, mode: 'talk', movementSpeed: 0, targetPlayer: false, targetAlignments: [] },
+      vulnerabilities: { ...base.vulnerabilities, destructible: false },
+      interaction: { ...base.interaction, interactType: 'talk' },
+      editor: { color: '#67d5b5', glyph: 'NP', category: 'actors' }
+    }),
+    basicEnemy: createDefaultActorDefinition({
+      id: 'basic-enemy',
+      name: 'Basic Enemy',
+      actorType: 'enemy',
+      alignment: 'enemy',
+      description: 'A simple ground enemy that walks back and forth and damages on contact.',
+      stats: { ...base.stats, maxHealth: 3, moveSpeed: 48, aggroRange: 96, leashRange: 160, contactDamage: 1, knockback: 120 },
+      clips: [
+        createClip('idle', 'Idle', { fps: 6 }),
+        createClip('move', 'Move', { fps: 10 }),
+        createClip('hurt', 'Hurt', { fps: 8, loop: false }),
+        createClip('death', 'Death', { fps: 10, loop: false })
+      ],
+      states: [
+        createState('idle', 'Idle', 'idle', { movementMode: 'idle', behaviorMode: 'patrol', canAttack: true, canInteract: false }),
+        createState('move', 'Move', 'move', { movementMode: 'walk', behaviorMode: 'patrol', canAttack: true, canInteract: false }),
+        createState('hurt', 'Hurt', 'hurt', { movementMode: 'idle', behaviorMode: 'idle', canAttack: false, canInteract: false }),
+        createState('death', 'Death', 'death', { movementMode: 'idle', behaviorMode: 'idle', canAttack: false, canMove: false, canInteract: false })
+      ],
+      behavior: {
+        ...base.behavior,
+        mode: 'patrol',
+        movementSpeed: 48,
+        gravityEnabled: true,
+        wallResponse: 'bounce',
+        edgeResponse: 'turn',
+        patrolStyle: 'wallBounce',
+        targetAlignments: ['friendly', 'impartial']
+      },
+      lootTable: [{ id: 'loot-1', itemId: 'health-small', probability: 0.2, minQuantity: 1, maxQuantity: 1, guaranteed: false, condition: '' }],
+      editor: { color: '#ff6b6b', glyph: 'EN', category: 'actors' }
+    }),
+    turret: createDefaultActorDefinition({
+      id: 'turret',
+      name: 'Turret',
+      actorType: 'turret',
+      alignment: 'enemy',
+      description: 'A stationary actor that attacks from a fixed position.',
+      stats: { ...base.stats, maxHealth: 4, moveSpeed: 0, contactDamage: 1 },
+      dimensions: { ...base.dimensions, physics: 'static' },
+      clips: [
+        createClip('idle', 'Idle', { fps: 4 }),
+        createClip('attack', 'Attack', { fps: 8, loop: false }),
+        createClip('destroyed', 'Destroyed', { fps: 8, loop: false })
+      ],
+      states: [
+        createState('idle', 'Idle', 'idle', { movementMode: 'stationary', behaviorMode: 'stationaryTurret', canAttack: true, canMove: false, canInteract: false }),
+        createState('attack', 'Attack', 'attack', { movementMode: 'stationary', behaviorMode: 'stationaryTurret', canAttack: true, canMove: false, canInteract: false }),
+        createState('destroyed', 'Destroyed', 'destroyed', { movementMode: 'stationary', behaviorMode: 'idle', canAttack: false, canMove: false, canInteract: false })
+      ],
+      behavior: { ...base.behavior, mode: 'stationaryTurret', movementSpeed: 0, gravityEnabled: false, targetAlignments: ['friendly', 'impartial'] },
+      editor: { color: '#f4a261', glyph: 'TU', category: 'actors' }
+    }),
+    spawner: createDefaultActorDefinition({
+      id: 'spawner',
+      name: 'Spawner',
+      actorType: 'spawner',
+      alignment: 'enemy',
+      description: 'A utility actor that periodically creates other actors.',
+      stats: { ...base.stats, maxHealth: 6, moveSpeed: 0, contactDamage: 0 },
+      clips: [
+        createClip('idle', 'Idle', { fps: 4 }),
+        createClip('spawn', 'Spawn', { fps: 8, loop: false }),
+        createClip('destroyed', 'Destroyed', { fps: 8, loop: false })
+      ],
+      states: [
+        createState('idle', 'Idle', 'idle', { movementMode: 'stationary', behaviorMode: 'spawner', canAttack: false, canSpawn: true, canMove: false, canInteract: false }),
+        createState('spawn', 'Spawn', 'spawn', { movementMode: 'stationary', behaviorMode: 'spawner', canAttack: false, canSpawn: true, canMove: false, canInteract: false }),
+        createState('destroyed', 'Destroyed', 'destroyed', { movementMode: 'stationary', behaviorMode: 'idle', canAttack: false, canSpawn: false, canMove: false, canInteract: false })
+      ],
+      behavior: { ...base.behavior, mode: 'spawner', movementSpeed: 0, gravityEnabled: false, targetPlayer: false, targetAlignments: [] },
+      spawnRules: { ...base.spawnRules, enabled: true, spawnInterval: 3, spawnCount: 1 },
+      editor: { color: '#c77dff', glyph: 'SP', category: 'actors' }
+    }),
+    boss: createDefaultActorDefinition({
+      id: 'boss',
+      name: 'Boss',
+      actorType: 'boss',
+      alignment: 'enemy',
+      description: 'A boss base actor with room for custom states, attacks, and parts.',
+      stats: { ...base.stats, maxHealth: 24, moveSpeed: 42, contactDamage: 2, knockback: 180 },
+      clips: [
+        createClip('idle', 'Idle', { fps: 6 }),
+        createClip('move', 'Move', { fps: 8 }),
+        createClip('hurt', 'Hurt', { fps: 8, loop: false }),
+        createClip('death', 'Death', { fps: 10, loop: false })
+      ],
+      states: [
+        createState('idle', 'Idle', 'idle', { movementMode: 'idle', behaviorMode: 'bossController', canAttack: true, canInteract: false }),
+        createState('move', 'Move', 'move', { movementMode: 'walk', behaviorMode: 'bossController', canAttack: true, canInteract: false }),
+        createState('hurt', 'Hurt', 'hurt', { movementMode: 'idle', behaviorMode: 'bossController', canAttack: false, canInteract: false }),
+        createState('death', 'Death', 'death', { movementMode: 'idle', behaviorMode: 'idle', canAttack: false, canMove: false, canInteract: false })
+      ],
+      behavior: { ...base.behavior, mode: 'bossController', movementSpeed: 42, gravityEnabled: true, targetAlignments: ['friendly', 'impartial'] },
+      editor: { color: '#ef476f', glyph: 'BS', category: 'actors' }
+    }),
+    blankAdvanced: createDefaultActorDefinition({
+      id: 'actor-new',
+      name: 'New Actor',
+      actorType: 'npc',
+      alignment: 'impartial',
+      description: '',
+      editor: { color: '#8ecae6', glyph: 'AC', category: 'actors' }
+    })
+  };
+  return cloneActorDefinition({ ...(presets[presetId] || presets.blankAdvanced), ...overrides });
+};
 
 export const normalizeActorDefinition = (input = {}) => {
   const legacyVisuals = obj(input.visuals);

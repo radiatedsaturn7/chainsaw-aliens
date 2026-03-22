@@ -1085,6 +1085,11 @@ export default class Game {
     this.exitActorEditor(options);
   }
 
+  openLevelEditorForActor(actorId) {
+    this.enterEditor({ tab: 'npcs' });
+    this.editor.openNpcPaletteForActor?.(actorId);
+  }
+
   async createActorArtDocument(actor) {
     const baseName = actor?.id || 'actor-art';
     const existing = vfsLoad('art', baseName)?.data;

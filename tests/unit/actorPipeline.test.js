@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import World from '../../src/world/World.js';
-import { createDefaultActorDefinition, normalizeActorInstance, validateActorDefinition } from '../../src/actors/definitions.js';
+import { createActorPresetDefinition, createDefaultActorDefinition, normalizeActorInstance, validateActorDefinition, slugifyActorId } from '../../src/actors/definitions.js';
 import { spawnActorEntities } from '../../src/actors/runtime.js';
 
 const registry = (...defs) => ({ get: (id) => defs.find((entry) => entry.id === id) || null });
@@ -37,4 +37,20 @@ test('runtime resolves actorId definitions into actor entities', () => {
   const entities = spawnActorEntities({ world: { npcs: [normalizeActorInstance({ actorId: 'actor-rift-scavenger', x: 3, y: 1, enabled: true })] }, registry: registry(def), tileSize: 32 });
   assert.equal(entities.length, 1);
   assert.equal(entities[0].definition.id, 'actor-rift-scavenger');
+});
+
+test('basic enemy preset scaffolds guided defaults', () => {
+  const actor = createActorPresetDefinition('basicEnemy', { name: 'Rift Hopper' });
+  assert.equal(actor.actorType, 'enemy');
+  assert.equal(actor.alignment, 'enemy');
+  assert.equal(actor.behavior.mode, 'patrol');
+  assert.equal(actor.behavior.gravityEnabled, true);
+  assert.equal(actor.behavior.wallResponse, 'bounce');
+  assert.deepEqual(actor.states.map((state) => state.id), ['idle', 'move', 'hurt', 'death']);
+  assert.equal(actor.lootTable[0]?.itemId, 'health-small');
+});
+
+test('slugifyActorId generates stable actor ids for guided mode', () => {
+  assert.equal(slugifyActorId('My First Enemy!'), 'my-first-enemy');
+  assert.equal(slugifyActorId('  '), 'actor-new');
 });

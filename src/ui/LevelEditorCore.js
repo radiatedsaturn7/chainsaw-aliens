@@ -5996,6 +5996,15 @@ export default class Editor {
     this.recordRecent('enemies', { id: npc.id, label: npc.name, glyph: npc.editor?.glyph || npc.editorPreview?.glyph || 'AC', definition: npc, npc: true });
   }
 
+  openNpcPaletteForActor(actorId) {
+    this.setPanelTab('npcs');
+    const definition = this.getNpcDefinitions().find((entry) => entry.id === actorId);
+    if (!definition) return false;
+    this.setNpcType(definition);
+    this.mode = 'npc';
+    return true;
+  }
+
   setEnemyType(enemy) {
     this.enemyType = enemy;
     this.enemyCategory = BOSS_ENEMY_TYPES.some((entry) => entry.id === enemy.id) ? 'boss' : 'standard';
