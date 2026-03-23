@@ -429,8 +429,10 @@ body.mobile .hint {
 .actor-editor-list-row.stack { flex-direction: column; align-items: flex-start; }
 .actor-editor-state-row.active { outline: 2px solid #7fd0ff; }
 .actor-editor-state-meta { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.actor-editor-preview { min-width: 92px; min-height: 52px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.28); background: #0b1120; color: #fff; cursor: pointer; }
-.actor-editor-preview.large { width: 100%; min-height: 80px; margin: 10px 0; }
+.actor-editor-preview { min-width: 92px; min-height: 52px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.28); background: #0b1120; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.actor-editor-preview.large { width: 100%; min-height: 160px; margin: 10px 0; }
+.actor-editor-preview-image { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; background: radial-gradient(circle at center, rgba(255,255,255,0.08), rgba(0,0,0,0.24)); }
+.actor-editor-preview-label { position: absolute; left: 8px; bottom: 8px; padding: 4px 8px; border-radius: 999px; background: rgba(0,0,0,0.62); font-size: 12px; }
 .actor-editor-subsection { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
 .actor-editor-note { color: rgba(255,255,255,0.72); font-size: 13px; line-height: 1.4; }
 .actor-editor-workflow { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }

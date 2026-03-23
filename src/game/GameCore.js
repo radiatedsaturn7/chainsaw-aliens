@@ -1500,6 +1500,10 @@ export default class Game {
           this.enterMidiComposer();
           this.midiComposer.applyImportedSong(payload.data);
           this.midiComposer.currentDocumentRef = { folder: 'music', name: name || 'Song' };
+        } else if (folder === 'actors') {
+          this.enterActorEditor();
+          this.actorEditor.currentDocumentRef = { folder: 'actors', name: name || 'Actor' };
+          this.actorEditor.setActor(payload.data);
         }
       },
       onNew: (folder) => {
@@ -1512,6 +1516,10 @@ export default class Game {
           this.enterMidiComposer();
           this.midiComposer.song = this.midiComposer.song || {};
           this.midiComposer.currentDocumentRef = null;
+        }
+        if (folder === 'actors') {
+          this.enterActorEditor();
+          this.actorEditor.newActor();
         }
       },
       onExportZip: () => {

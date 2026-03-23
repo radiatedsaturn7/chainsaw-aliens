@@ -279,6 +279,27 @@ export default class ActorEditor {
     return section;
   }
 
+
+  buildStatePreviewButton(state, { large = false } = {}) {
+    const preview = el('button', `actor-editor-preview${large ? ' large' : ''}`);
+    preview.type = 'button';
+    preview.onclick = (event) => {
+      event.stopPropagation();
+      this.openStateAnimation(state);
+    };
+    if (state.animation?.imageDataUrl) {
+      const image = el('img', 'actor-editor-preview-image');
+      image.src = state.animation.imageDataUrl;
+      image.alt = `${state.name} preview`;
+      preview.appendChild(image);
+      const label = el('span', 'actor-editor-preview-label', large ? 'Edit animation in Pixel Editor' : 'Edit');
+      preview.appendChild(label);
+    } else {
+      preview.textContent = large ? 'Create animation in Pixel Editor' : 'Draw';
+    }
+    return preview;
+  }
+
   renderStateList(actor) {
     const section = el('section', 'actor-editor-card');
     section.appendChild(el('h2', '', '2. States'));
@@ -291,9 +312,7 @@ export default class ActorEditor {
     actor.states.forEach((state, index) => {
       const row = el('div', `actor-editor-state-row${this.selectedStateId === state.id ? ' active' : ''}`);
       row.onclick = () => { this.selectedStateId = state.id; this.render(); };
-      const preview = el('button', 'actor-editor-preview');
-      preview.textContent = state.animation?.imageDataUrl ? 'Preview ✓' : 'Draw';
-      preview.onclick = (event) => { event.stopPropagation(); this.openStateAnimation(state); };
+      const preview = this.buildStatePreviewButton(state);
       const meta = el('div', 'actor-editor-state-meta');
       meta.append(el('strong', '', state.name), el('span', '', `${state.movement.type} • ${state.actions.length} action(s)`));
       const rowBtns = el('div', 'actor-editor-inline-actions');
@@ -327,9 +346,7 @@ export default class ActorEditor {
     if (!state) return section;
     const name = el('input'); name.value = state.name; name.oninput = (event) => this.updateSelectedState((draft) => { draft.name = event.target.value; });
     section.appendChild(name);
-    const preview = el('button', 'actor-editor-preview large', state.animation?.imageDataUrl ? 'Edit animation in Pixel Editor' : 'Create animation in Pixel Editor');
-    preview.onclick = () => this.openStateAnimation(state);
-    section.appendChild(preview);
+    section.appendChild(this.buildStatePreviewButton(state, { large: true }));
 
     const movementWrap = el('div', 'actor-editor-subsection');
     movementWrap.appendChild(el('h3', '', 'Movement behavior'));
