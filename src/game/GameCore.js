@@ -32,6 +32,7 @@ import HexMatron from '../entities/HexMatron.js';
 import GraveWarden from '../entities/GraveWarden.js';
 import ObsidianCrown from '../entities/ObsidianCrown.js';
 import CataclysmColossus from '../entities/CataclysmColossus.js';
+import ScriptedActor, { loadActorDefinitionById } from '../entities/ScriptedActor.js';
 import Projectile from '../entities/Projectile.js';
 import { DebrisPiece, Shard } from '../entities/Debris.js';
 import LootDrop from '../entities/LootDrop.js';
@@ -47,6 +48,7 @@ import Pause from '../ui/Pause.js';
 import MobileControls from '../ui/MobileControls.js';
 import PixelStudio from '../ui/PixelStudio.js';
 import MidiComposer from '../ui/MidiComposer.js';
+import ActorEditor from '../ui/ActorEditor.js';
 import MidiSongPlayer from './MidiSongPlayer.js';
 import RobterSession from '../robtersession/RobterSession.js';
 import TestHarness from '../debug/TestHarness.js';
@@ -347,20 +349,24 @@ export default class Game {
     this.editor = new Editor(this);
     this.pixelStudio = new PixelStudio(this);
     this.midiComposer = new MidiComposer(this);
+    this.actorEditor = new ActorEditor(this);
     this.editorStateTargetKeys = {
       editor: 'editor',
       'pixel-editor': 'pixelStudio',
-      'midi-editor': 'midiComposer'
+      'midi-editor': 'midiComposer',
+      'actor-editor': 'actorEditor'
     };
     this.editorStateDrawArgs = {
       editor: () => [this.ctx],
       'pixel-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
-      'midi-editor': () => [this.ctx, this.canvas.width, this.canvas.height]
+      'midi-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
+      'actor-editor': () => [this.ctx, this.canvas.width, this.canvas.height]
     };
     this.robterSession = new RobterSession({ input: this.input, audio: this.audio, isMobile: this.deviceIsMobile });
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
     this.midiComposerReturnState = 'title';
+    this.actorEditorReturnState = 'title';
     this.robterSessionReturnState = 'title';
     this.robterSessionAutoReturn = false;
     this.pixelPreviewReturnState = null;
@@ -996,7 +1002,7 @@ export default class Game {
 
 
   handleSharedStateTransitionCleanup({ from, to, forceCleanup = false } = {}) {
-    const editorStates = new Set(['editor', 'pixel-editor', 'midi-editor', 'pixel-preview']);
+    const editorStates = new Set(['editor', 'pixel-editor', 'midi-editor', 'actor-editor', 'pixel-preview']);
     const shouldCleanup = forceCleanup
       || this.playtestActive
       || editorStates.has(from)
@@ -1020,7 +1026,7 @@ export default class Game {
           document.body.classList.remove(className);
         }
       });
-      if (to === 'editor' || to === 'pixel-editor' || to === 'midi-editor') {
+      if (to === 'editor' || to === 'pixel-editor' || to === 'midi-editor' || to === 'actor-editor') {
         document.body.classList.add('editor-active');
       }
     }
@@ -1048,7 +1054,18 @@ export default class Game {
     this.playtestActive = false;
   }
 
+  enterActorEditor() {
+    this.actorEditorReturnState = this.state;
+    this.transitionTo('actor-editor');
+    this.setRevAudio(false);
+    this.actorEditor.activate();
+    this.playtestActive = false;
+  }
+
   enterPixelStudio({ returnState = this.state, resetFocus = true } = {}) {
+    if (this.state === 'actor-editor') {
+      this.actorEditor.deactivate();
+    }
     this.pixelStudioReturnState = returnState;
     this.transitionTo('pixel-editor');
     this.setRevAudio(false);
@@ -1076,7 +1093,11 @@ export default class Game {
 
   exitPixelStudio({ toTitle = false } = {}) {
     this.playtestActive = false;
-    this.transitionTo(toTitle ? 'title' : (this.pixelStudioReturnState || 'title'), { forceCleanup: true });
+    const destination = toTitle ? 'title' : (this.pixelStudioReturnState || 'title');
+    this.transitionTo(destination, { forceCleanup: true });
+    if (destination === 'actor-editor') {
+      this.actorEditor.activate();
+    }
   }
 
   enterPixelPreview(tile) {
@@ -1588,7 +1609,25 @@ export default class Game {
     this.spawnEnemyByType(type, spawn.x, spawn.y);
   }
 
-  spawnEnemyByType(type, worldX, worldY) {
+  spawnEnemyByType(type, worldX, worldY, options = {}) {
+    if (String(type || '').startsWith('custom:')) {
+      const actorId = String(type).slice('custom:'.length);
+      const definition = loadActorDefinitionById(actorId);
+      if (!definition) return null;
+      const actor = new ScriptedActor(worldX, worldY, definition, { type });
+      this.enemies.push(actor);
+      if (options.spawnLinkedParts !== false) {
+        (definition.linkedParts || []).forEach((part) => {
+          const partDef = loadActorDefinitionById(part.actorId);
+          if (!partDef) return;
+          const child = new ScriptedActor(worldX + Number(part.offsetX || 0), worldY + Number(part.offsetY || 0), partDef, { type: `custom:${partDef.id}` });
+          child.noLootDrops = true;
+          actor.linkedChildren.push(child);
+          this.enemies.push(child);
+        });
+      }
+      return actor;
+    }
     switch (type) {
       case 'practice':
         this.enemies.push(new PracticeDrone(worldX, worldY));
@@ -1662,6 +1701,7 @@ export default class Game {
       default:
         break;
     }
+    return this.enemies[this.enemies.length - 1] || null;
   }
 
   getEndlessSpawnPoint() {
@@ -1832,6 +1872,17 @@ export default class Game {
         return;
       }
       this.midiComposer.update(this.input, dt);
+      this.input.flush();
+      return;
+    }
+
+    if (this.state === 'actor-editor') {
+      if (this.input.wasPressed('cancel')) {
+        this.actorEditor.exitToMenu();
+        this.input.flush();
+        return;
+      }
+      this.actorEditor.update(this.input, dt);
       this.input.flush();
       return;
     }
@@ -4070,7 +4121,8 @@ export default class Game {
       const dist = Math.hypot(dx, dy);
       if (dist < 24) {
         if (!enemy.training) {
-          const tookDamage = this.player.takeDamage(1);
+          const bodyDamage = enemy.bodyDamageEnabled === false ? 0 : (enemy.contactDamage || 1);
+          const tookDamage = bodyDamage > 0 ? this.player.takeDamage(bodyDamage) : false;
           if (tookDamage) {
             this.applyPlayerKnockback(enemy);
             enemy.hitPause = 0.2;
@@ -7618,6 +7670,8 @@ export default class Game {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
+        } else if (action === 'actor-editor') {
+          this.enterActorEditor();
         } else if (action === 'midi-editor') {
           this.enterMidiComposer();
         } else if (action === 'reset-all') {
@@ -7804,6 +7858,8 @@ export default class Game {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
+        } else if (action === 'actor-editor') {
+          this.enterActorEditor();
         } else if (action === 'midi-editor') {
           this.enterMidiComposer();
         } else if (action === 'reset-all') {
@@ -7991,6 +8047,7 @@ export default class Game {
     this.stateManager.register('editor', createDelegatedState(this, 'editor'));
     this.stateManager.register('pixel-editor', createDelegatedState(this, 'pixelStudio'));
     this.stateManager.register('midi-editor', createDelegatedState(this, 'midiComposer'));
+    this.stateManager.register('actor-editor', createDelegatedState(this, 'actorEditor'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }
 

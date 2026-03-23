@@ -14,7 +14,7 @@ import { queueServerSnapshotPush } from './serverStorage.js';
 
 const VFS_PREFIX = 'robter:vfs:';
 const INDEX_KEY = `${VFS_PREFIX}index`;
-const FOLDERS = ['levels', 'art', 'music'];
+const FOLDERS = ['levels', 'art', 'music', 'actors'];
 
 const getStorage = () => {
   try {
@@ -24,7 +24,7 @@ const getStorage = () => {
   }
 };
 
-const emptyIndex = () => ({ levels: {}, art: {}, music: {} });
+const emptyIndex = () => ({ levels: {}, art: {}, music: {}, actors: {} });
 
 export function vfsEnsureIndex() {
   const storage = getStorage();
@@ -36,7 +36,8 @@ export function vfsEnsureIndex() {
       index = {
         levels: parsed.levels && typeof parsed.levels === 'object' ? parsed.levels : {},
         art: parsed.art && typeof parsed.art === 'object' ? parsed.art : {},
-        music: parsed.music && typeof parsed.music === 'object' ? parsed.music : {}
+        music: parsed.music && typeof parsed.music === 'object' ? parsed.music : {},
+        actors: parsed.actors && typeof parsed.actors === 'object' ? parsed.actors : {}
       };
     }
   } catch (error) {

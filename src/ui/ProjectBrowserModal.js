@@ -11,8 +11,8 @@ import {
 } from './vfs.js';
 import { fileTypeBadge } from './uiSuite.js';
 
-const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music' };
-const DEFAULT_FOLDERS = ['levels', 'art', 'music'];
+const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors' };
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors'];
 
 function formatDate(ts) {
   if (!ts) return '—';
@@ -60,6 +60,7 @@ function isAllowedFile(folder, name) {
   if (!value) return false;
   if (folder === 'levels') return value.endsWith('.json') || !value.includes('.');
   if (folder === 'music') return value.endsWith('.json') || value.endsWith('.mid') || !value.includes('.');
+  if (folder === 'actors') return value.endsWith('.json') || !value.includes('.');
   return true;
 }
 

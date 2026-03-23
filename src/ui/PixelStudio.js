@@ -518,6 +518,52 @@ export default class PixelStudio {
     this.resetFocus();
   }
 
+
+  async loadActorStateImageForEditing({ actorId, stateId, imageDataUrl = '', onCommit = null } = {}) {
+    const width = 32;
+    const height = 32;
+    let layer = createLayer(width, height, 'Actor State Layer');
+    if (imageDataUrl) {
+      const image = await new Promise((resolve, reject) => {
+        const next = new Image();
+        next.onload = () => resolve(next);
+        next.onerror = reject;
+        next.src = imageDataUrl;
+      });
+      const safeWidth = clamp(Math.round(image.width || width), 8, 512);
+      const safeHeight = clamp(Math.round(image.height || height), 8, 512);
+      layer = createLayer(safeWidth, safeHeight, 'Actor State Layer');
+      const canvas = document.createElement('canvas');
+      canvas.width = safeWidth;
+      canvas.height = safeHeight;
+      const drawCtx = canvas.getContext('2d');
+      drawCtx.drawImage(image, 0, 0, safeWidth, safeHeight);
+      const pixels = drawCtx.getImageData(0, 0, safeWidth, safeHeight).data;
+      for (let i = 0; i < safeWidth * safeHeight; i += 1) {
+        const r = pixels[i * 4];
+        const g = pixels[i * 4 + 1];
+        const b = pixels[i * 4 + 2];
+        const a = pixels[i * 4 + 3];
+        layer.pixels[i] = rgbaToUint32({ r, g, b, a });
+      }
+      this.canvasState.width = safeWidth;
+      this.canvasState.height = safeHeight;
+      this.artSizeDraft.width = safeWidth;
+      this.artSizeDraft.height = safeHeight;
+    } else {
+      this.canvasState.width = width;
+      this.canvasState.height = height;
+      this.artSizeDraft.width = width;
+      this.artSizeDraft.height = height;
+    }
+    this.decalEditSession = { type: 'actor-state', actorId, stateId, onCommit };
+    this.animation.frames = [createFrame([layer], DEFAULT_FRAME_DURATION_MS)];
+    this.animation.currentFrameIndex = 0;
+    this.canvasState.activeLayerIndex = 0;
+    this.setFrameLayers(this.animation.frames[0].layers);
+    this.resetFocus();
+  }
+
   async loadVisibleDecalsForSeamFix({ bounds, decals } = {}) {
     if (!Array.isArray(decals) || !decals.length) return;
     const minX = Number.isFinite(bounds?.x)
@@ -693,6 +739,12 @@ export default class PixelStudio {
         decal.imageDataUrl = this.exportCurrentFrameDataUrl();
         this.game.editor?.persistAutosave?.();
       }
+      this.decalEditSession = null;
+      return;
+    }
+    if (this.decalEditSession.type === 'actor-state') {
+      const imageDataUrl = this.exportCurrentFrameDataUrl();
+      this.decalEditSession.onCommit?.(imageDataUrl);
       this.decalEditSession = null;
       return;
     }
