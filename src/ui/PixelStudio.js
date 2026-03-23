@@ -81,8 +81,8 @@ export default class PixelStudio {
     this.tools = createToolRegistry(this);
     this.activeToolId = TOOL_IDS.PENCIL;
     this.toolOptions = {
-      brushSize: 16,
-      brushOpacity: 0.5,
+      brushSize: 1,
+      brushOpacity: 1,
       brushHardness: 0,
       brushShape: 'circle',
       brushFalloff: 0,
@@ -137,9 +137,9 @@ export default class PixelStudio {
     this.palettePresets = [];
     this.customPalettes = loadCustomPalettes();
     this.currentPalette = buildPalette(['#000000', '#ffffff'], 'Temp');
-    this.paletteIndex = 0;
-    this.secondaryPaletteIndex = 1;
-    this.colorRegisters = [0, 0];
+    this.paletteIndex = 1;
+    this.secondaryPaletteIndex = 0;
+    this.colorRegisters = [1, 0];
     this.activeColorRegister = 0;
     this.paletteRamps = [];
     this.limitToPalette = false;
@@ -5570,7 +5570,8 @@ export default class PixelStudio {
       editorSpecific: [
         ...(this.decalEditSession ? [
           { id: 'save-decal-session', label: 'Save Changes', onClick: () => this.saveDecalSessionAndReturn() },
-          { id: 'abandon-decal-session', label: 'Abandon Changes', onClick: () => this.abandonDecalSessionAndReturn() }
+          { id: 'abandon-decal-session', label: 'Abandon Changes', onClick: () => this.abandonDecalSessionAndReturn() },
+          ...(this.decalEditSession.type === 'actor-state' ? [{ id: 'test-actor-session', label: 'Test Actor', onClick: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId) }] : [])
         ] : []),
         { id: 'import-image', label: 'Import Image', onClick: () => this.imageFileInput.click() },
         { id: 'sprite-sheet', label: 'Sprite Sheet', onClick: () => this.exportSpriteSheet('horizontal') },
@@ -5594,7 +5595,11 @@ export default class PixelStudio {
         const onClick = item.footer
           ? (item.id === 'close-menu' ? () => this.closeFileMenu() : () => this.exitToMainMenu())
           : (item.onClick || item.action);
-        const footerExitLabel = this.game.pixelStudioReturnState === 'editor' ? 'Return To Level Editor' : 'Exit to Main Menu';
+        const footerExitLabel = this.game.pixelStudioReturnState === 'editor'
+          ? 'Return To Level Editor'
+          : this.game.pixelStudioReturnState === 'actor-editor'
+            ? 'Return To Actor'
+            : 'Exit to Main Menu';
         const label = item.footer && item.id !== 'close-menu' ? footerExitLabel : item.label;
         this.drawButton(ctx, bounds, label, false, { fontSize: isMobile ? 12 : 12 });
         this.uiButtons.push({ bounds, onClick });

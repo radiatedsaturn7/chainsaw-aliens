@@ -375,6 +375,7 @@ export default class Game {
     this.playtestActive = false;
     this.playtestButtonBounds = null;
     this.playtestPauseLock = 0;
+    this.actorEditorTestSnapshot = null;
     this.elevatorPlatforms = [];
     this.elevatorGraph = null;
     this.isMobile = false;
@@ -1141,6 +1142,48 @@ export default class Game {
     return null;
   }
 
+
+  buildActorTestWorldData(actorId) {
+    const size = 50;
+    const rows = Array.from({ length: size }, (_, y) => {
+      if (y === 0 || y === size - 1) return '#'.repeat(size);
+      return `#${'.'.repeat(size - 2)}#`;
+    });
+    return {
+      schemaVersion: 1,
+      tileSize: 32,
+      width: size,
+      height: size,
+      spawn: { x: 25, y: 25 },
+      tiles: rows,
+      regions: [],
+      enemies: [{ x: 35, y: 15, type: `custom:${actorId}` }],
+      elevatorPaths: [],
+      elevators: [],
+      pixelArt: { tiles: {} },
+      musicZones: [],
+      midiTracks: [],
+      triggers: [],
+      decals: []
+    };
+  }
+
+  startActorEditorPlaytest(actorId) {
+    if (!actorId) return;
+    this.actorEditorTestSnapshot = {
+      worldData: this.buildWorldData(),
+      state: this.state,
+      pixelReturnState: this.pixelStudioReturnState,
+      actorReturnState: this.actorEditorReturnState
+    };
+    this.applyWorldData(this.buildActorTestWorldData(actorId));
+    this.playtestActive = true;
+    this.playtestPauseLock = 0.35;
+    this.resetRun({ playtest: false, startWithEverything: true });
+    this.transitionTo('playing', { forceCleanup: true });
+    this.startSpawnPause();
+  }
+
   enterMidiComposer() {
     this.midiComposerReturnState = this.state;
     this.transitionTo('midi-editor');
@@ -1183,6 +1226,17 @@ export default class Game {
 
   returnToEditorFromPlaytest() {
     if (!this.playtestActive) return;
+    if (this.actorEditorTestSnapshot) {
+      const snapshot = this.actorEditorTestSnapshot;
+      this.actorEditorTestSnapshot = null;
+      this.applyWorldData(snapshot.worldData);
+      this.playtestActive = false;
+      this.pixelStudioReturnState = snapshot.pixelReturnState || 'actor-editor';
+      this.actorEditorReturnState = snapshot.actorReturnState || 'title';
+      this.transitionTo('actor-editor', { forceCleanup: true });
+      this.actorEditor.activate();
+      return;
+    }
     const tileSize = this.world.tileSize;
     const tileX = Math.floor(this.player.x / tileSize);
     const tileY = Math.floor(this.player.y / tileSize);
