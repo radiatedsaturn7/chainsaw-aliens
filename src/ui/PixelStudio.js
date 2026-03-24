@@ -519,20 +519,23 @@ export default class PixelStudio {
   }
 
 
-  async loadActorStateImageForEditing({ actorId, stateId, imageDataUrl = '', onCommit = null } = {}) {
-    const width = 32;
-    const height = 32;
-    let layer = createLayer(width, height, 'Actor State Layer');
-    if (imageDataUrl) {
+  async loadActorStateImageForEditing({ actorId, stateId, animation = {}, onCommit = null } = {}) {
+    const fallbackWidth = 32;
+    const fallbackHeight = 32;
+    const sources = Array.isArray(animation?.frames) && animation.frames.length
+      ? animation.frames.filter((frame) => frame?.imageDataUrl)
+      : (animation?.imageDataUrl ? [{ imageDataUrl: animation.imageDataUrl, durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || 8))) }] : []);
+    const loadedFrames = [];
+    for (const source of sources) {
       const image = await new Promise((resolve, reject) => {
         const next = new Image();
         next.onload = () => resolve(next);
         next.onerror = reject;
-        next.src = imageDataUrl;
+        next.src = source.imageDataUrl;
       });
-      const safeWidth = clamp(Math.round(image.width || width), 8, 512);
-      const safeHeight = clamp(Math.round(image.height || height), 8, 512);
-      layer = createLayer(safeWidth, safeHeight, 'Actor State Layer');
+      const safeWidth = clamp(Math.round(image.width || fallbackWidth), 8, 512);
+      const safeHeight = clamp(Math.round(image.height || fallbackHeight), 8, 512);
+      const layer = createLayer(safeWidth, safeHeight, 'Actor State Layer');
       const canvas = document.createElement('canvas');
       canvas.width = safeWidth;
       canvas.height = safeHeight;
@@ -546,18 +549,21 @@ export default class PixelStudio {
         const a = pixels[i * 4 + 3];
         layer.pixels[i] = rgbaToUint32({ r, g, b, a });
       }
+      loadedFrames.push(createFrame([layer], Number(source.durationMs || DEFAULT_FRAME_DURATION_MS)));
       this.canvasState.width = safeWidth;
       this.canvasState.height = safeHeight;
       this.artSizeDraft.width = safeWidth;
       this.artSizeDraft.height = safeHeight;
-    } else {
-      this.canvasState.width = width;
-      this.canvasState.height = height;
-      this.artSizeDraft.width = width;
-      this.artSizeDraft.height = height;
+    }
+    if (!loadedFrames.length) {
+      this.canvasState.width = fallbackWidth;
+      this.canvasState.height = fallbackHeight;
+      this.artSizeDraft.width = fallbackWidth;
+      this.artSizeDraft.height = fallbackHeight;
+      loadedFrames.push(createFrame([createLayer(fallbackWidth, fallbackHeight, 'Actor State Layer')], DEFAULT_FRAME_DURATION_MS));
     }
     this.decalEditSession = { type: 'actor-state', actorId, stateId, onCommit };
-    this.animation.frames = [createFrame([layer], DEFAULT_FRAME_DURATION_MS)];
+    this.animation.frames = loadedFrames;
     this.animation.currentFrameIndex = 0;
     this.canvasState.activeLayerIndex = 0;
     this.setFrameLayers(this.animation.frames[0].layers);
@@ -743,8 +749,20 @@ export default class PixelStudio {
       return;
     }
     if (this.decalEditSession.type === 'actor-state') {
-      const imageDataUrl = this.exportCurrentFrameDataUrl();
-      this.decalEditSession.onCommit?.(imageDataUrl);
+      const frames = this.animation.frames.map((frame) => {
+        const previousIndex = this.animation.currentFrameIndex;
+        this.animation.currentFrameIndex = this.animation.frames.indexOf(frame);
+        this.setFrameLayers(frame.layers);
+        const imageDataUrl = this.exportCurrentFrameDataUrl();
+        this.animation.currentFrameIndex = previousIndex;
+        this.setFrameLayers(this.animation.frames[this.animation.currentFrameIndex].layers);
+        return { imageDataUrl, durationMs: Number(frame.durationMs || DEFAULT_FRAME_DURATION_MS) };
+      });
+      this.decalEditSession.onCommit?.({
+        imageDataUrl: frames[0]?.imageDataUrl || '',
+        frames,
+        fps: Math.max(1, Math.round(1000 / Math.max(1, Number(frames[0]?.durationMs || DEFAULT_FRAME_DURATION_MS))))
+      });
       this.decalEditSession = null;
       return;
     }
@@ -5874,6 +5892,7 @@ export default class PixelStudio {
       );
     }
     actions.push(
+      ...(this.decalEditSession?.type === 'actor-state' ? [{ label: 'Test', action: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId) }] : []),
       { label: 'Undo', action: () => this.runtime.undo() },
       { label: 'Redo', action: () => this.runtime.redo() }
     );

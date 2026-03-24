@@ -64,7 +64,7 @@ export function createDefaultState(name = 'Idle') {
   return {
     id: slugify(name),
     name,
-    animation: { imageDataUrl: '', updatedAt: 0 },
+    animation: { imageDataUrl: '', frames: [], fps: 8, updatedAt: 0 },
     movement: { type: 'none', params: {} },
     overrides: { bodyDamageEnabled: null, contactDamage: null, invulnerable: null },
     conditions: [{ id: 'always', type: 'always', params: {} }],
@@ -111,7 +111,15 @@ export function ensureActorDefinition(actor) {
     ? actor.states.map((state, index) => ({
       ...createDefaultState(state?.name || `State ${index + 1}`),
       ...(state || {}),
-      animation: { imageDataUrl: state?.animation?.imageDataUrl || '', updatedAt: Number(state?.animation?.updatedAt || 0) },
+      animation: {
+        imageDataUrl: state?.animation?.imageDataUrl || '',
+        frames: Array.isArray(state?.animation?.frames) ? state.animation.frames.map((frame) => ({
+          imageDataUrl: frame?.imageDataUrl || '',
+          durationMs: Number(frame?.durationMs || Math.round(1000 / Number(state?.animation?.fps || 8)))
+        })).filter((frame) => frame.imageDataUrl) : [],
+        fps: Number(state?.animation?.fps || 8),
+        updatedAt: Number(state?.animation?.updatedAt || 0)
+      },
       movement: {
         type: state?.movement?.type || 'none',
         params: { ...(MOVEMENT_PRESET_TEMPLATES[state?.movement?.type || 'none'] || {}), ...(state?.movement?.params || {}) }

@@ -7872,7 +7872,7 @@ export default class Editor {
               }
             })),
             { id: 'npc-sep-standard', label: '──────── ENEMIES ────────', separator: true, active: false, tooltip: 'Standard enemies', onClick: () => {} },
-            ...[...STANDARD_ENEMY_TYPES, ...getCustomActorEnemyTypes()].map((enemy) => ({
+            ...STANDARD_ENEMY_TYPES.map((enemy) => ({
               id: `npc-${enemy.id}`,
               label: `${enemy.label} [${enemy.glyph}]`,
               active: this.enemyType.id === enemy.id,
@@ -7893,6 +7893,19 @@ export default class Editor {
               tooltip: `Enemy: ${enemy.label}`,
               onClick: () => {
                 this.enemyCategory = 'boss';
+                this.setEnemyType(enemy);
+                this.mode = 'enemy';
+              }
+            })),
+            { id: 'npc-sep-custom', label: '──────── CUSTOM ────────', separator: true, active: false, tooltip: 'Custom actor roots', onClick: () => {} },
+            ...getCustomActorEnemyTypes().map((enemy) => ({
+              id: `npc-${enemy.id}`,
+              label: `${enemy.label} [${enemy.glyph}]`,
+              active: this.enemyType.id === enemy.id,
+              preview: { type: 'enemy', enemy },
+              tooltip: `Custom actor: ${enemy.label}`,
+              onClick: () => {
+                this.enemyCategory = 'standard';
                 this.setEnemyType(enemy);
                 this.mode = 'enemy';
               }

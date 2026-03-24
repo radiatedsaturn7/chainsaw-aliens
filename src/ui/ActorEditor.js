@@ -21,6 +21,7 @@ export default class ActorEditor {
     this.stateClipboard = null;
     this.overlay = null;
     this.partRefreshToken = 0;
+    this.previewTimers = [];
   }
 
   activate() {
@@ -28,8 +29,14 @@ export default class ActorEditor {
     this.mount();
   }
 
+  clearPreviewTimers() {
+    this.previewTimers.forEach((timer) => clearInterval(timer));
+    this.previewTimers = [];
+  }
+
   deactivate() {
     this.active = false;
+    this.clearPreviewTimers();
     this.overlay?.remove();
     this.overlay = null;
   }
@@ -106,12 +113,12 @@ export default class ActorEditor {
     this.game.pixelStudio.loadActorStateImageForEditing({
       actorId: this.actor.id,
       stateId: state.id,
-      imageDataUrl: state.animation?.imageDataUrl || '',
-      onCommit: (imageDataUrl) => {
+      animation: state.animation || {},
+      onCommit: (animation) => {
         const next = clone(this.actor);
         const target = next.states.find((entry) => entry.id === state.id);
         if (!target) return;
-        target.animation = { imageDataUrl, updatedAt: Date.now() };
+        target.animation = { ...animation, updatedAt: Date.now() };
         this.actor = ensureActorDefinition(next);
         this.render();
       }
@@ -178,6 +185,7 @@ export default class ActorEditor {
 
   render() {
     if (!this.overlay) return;
+    this.clearPreviewTimers();
     this.ensureStateSelection();
     const actor = this.actor;
     const state = this.selectedState;
@@ -287,12 +295,23 @@ export default class ActorEditor {
       event.stopPropagation();
       this.openStateAnimation(state);
     };
-    if (state.animation?.imageDataUrl) {
+    const frames = Array.isArray(state.animation?.frames) && state.animation.frames.length
+      ? state.animation.frames.filter((frame) => frame?.imageDataUrl)
+      : (state.animation?.imageDataUrl ? [{ imageDataUrl: state.animation.imageDataUrl, durationMs: Math.round(1000 / Math.max(1, Number(state.animation?.fps || 8))) }] : []);
+    if (frames.length) {
       const image = el('img', 'actor-editor-preview-image');
-      image.src = state.animation.imageDataUrl;
+      image.src = frames[0].imageDataUrl;
       image.alt = `${state.name} preview`;
       preview.appendChild(image);
-      const label = el('span', 'actor-editor-preview-label', large ? 'Edit animation in Pixel Editor' : 'Edit');
+      if (frames.length > 1) {
+        let frameIndex = 0;
+        const timer = setInterval(() => {
+          frameIndex = (frameIndex + 1) % frames.length;
+          image.src = frames[frameIndex].imageDataUrl;
+        }, Math.max(80, Number(frames[0].durationMs || Math.round(1000 / Math.max(1, Number(state.animation?.fps || 8))))));
+        this.previewTimers.push(timer);
+      }
+      const label = el('span', 'actor-editor-preview-label', large ? 'Edit animation in Pixel Editor' : `${frames.length}f`);
       preview.appendChild(label);
     } else {
       preview.textContent = large ? 'Create animation in Pixel Editor' : 'Draw';
