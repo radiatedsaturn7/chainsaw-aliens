@@ -1159,7 +1159,7 @@ export default class Game {
       spawn: { x: 25, y: 25 },
       tiles: rows,
       regions: [],
-      enemies: [{ x: 35, y: 15, type: `custom:${actorId}` }],
+      enemies: [{ x: 31, y: 24, type: `custom:${actorId}` }],
       elevatorPaths: [],
       elevators: [],
       pixelArt: { tiles: {} },
@@ -1823,6 +1823,20 @@ export default class Game {
         this.activeRoomIndex = roomIndex;
         this.handleRoomEntry(roomIndex);
         this.refreshRoomAmbient(roomIndex);
+      } else {
+        this.world.enemies.forEach((spawn) => {
+          if (!spawn || AMBIENT_SPAWN_TYPES.has(spawn.type)) return;
+          const worldX = (spawn.x + 0.5) * tileSize;
+          const worldY = (spawn.y + 0.5) * tileSize;
+          if (spawn.type === 'finalboss') {
+            if (!this.boss) {
+              this.boss = new FinalBoss(worldX, worldY);
+              this.bossActive = true;
+            }
+            return;
+          }
+          this.spawnEnemyByType(spawn.type, worldX, worldY, { spawnLinkedParts: true });
+        });
       }
       return;
     }
