@@ -45,6 +45,7 @@ export default class ScriptedActor extends EnemyBase {
     this.baseY = y;
     this.linkedChildren = [];
     this.lootTable = this.definition.loot || [];
+    this._imageCache = new Map();
   }
 
   get currentState() {
@@ -192,5 +193,76 @@ export default class ScriptedActor extends EnemyBase {
     this.contactDamage = overrides.contactDamage == null ? this.definition.contactDamage : Number(overrides.contactDamage || 0);
     this.invulnerable = overrides.invulnerable == null ? this.definition.invulnerable : !!overrides.invulnerable;
     this.stagger = Math.max(0, this.stagger - dt * 0.5);
+  }
+
+  getAnimationFrames() {
+    const state = this.currentState;
+    if (!state?.animation) return [];
+    const fromFrames = Array.isArray(state.animation.frames)
+      ? state.animation.frames.filter((frame) => frame?.imageDataUrl)
+      : [];
+    if (fromFrames.length) return fromFrames;
+    if (state.animation.imageDataUrl) {
+      return [{
+        imageDataUrl: state.animation.imageDataUrl,
+        durationMs: Math.round(1000 / Math.max(1, Number(state.animation.fps || 8)))
+      }];
+    }
+    return [];
+  }
+
+  getCurrentAnimationFrame() {
+    const frames = this.getAnimationFrames();
+    if (!frames.length) return null;
+    const totalDurationMs = frames.reduce((sum, frame) => sum + Math.max(16, Number(frame.durationMs || 120)), 0);
+    if (totalDurationMs <= 0) return frames[0];
+    let cursor = ((this.stateTimer * 1000) % totalDurationMs + totalDurationMs) % totalDurationMs;
+    for (const frame of frames) {
+      const durationMs = Math.max(16, Number(frame.durationMs || 120));
+      if (cursor <= durationMs) return frame;
+      cursor -= durationMs;
+    }
+    return frames[frames.length - 1];
+  }
+
+  getFrameImage(imageDataUrl) {
+    if (!imageDataUrl || typeof Image === 'undefined') return null;
+    let entry = this._imageCache.get(imageDataUrl);
+    if (!entry) {
+      const image = new Image();
+      entry = { image, ready: false };
+      image.onload = () => { entry.ready = true; };
+      image.onerror = () => {
+        this._imageCache.delete(imageDataUrl);
+      };
+      image.src = imageDataUrl;
+      this._imageCache.set(imageDataUrl, entry);
+    }
+    return entry.ready ? entry.image : null;
+  }
+
+  draw(ctx) {
+    const frame = this.getCurrentAnimationFrame();
+    const image = this.getFrameImage(frame?.imageDataUrl || '');
+    if (!image) {
+      super.draw(ctx);
+      return;
+    }
+    const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
+    const drawW = this.width;
+    const drawH = this.height;
+    ctx.save();
+    ctx.translate(this.x + offsetX, this.y + offsetY);
+    ctx.imageSmoothingEnabled = false;
+    if (this.facing < 0) {
+      ctx.scale(-1, 1);
+    }
+    ctx.drawImage(image, -drawW / 2, -drawH / 2, drawW, drawH);
+    if (flash) {
+      ctx.globalCompositeOperation = 'screen';
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.fillRect(-drawW / 2, -drawH / 2, drawW, drawH);
+    }
+    ctx.restore();
   }
 }
