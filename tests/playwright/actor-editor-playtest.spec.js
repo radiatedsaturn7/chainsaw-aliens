@@ -43,8 +43,12 @@ test('actor editor workflow renders a white-square custom actor in playtest', as
     const sy = Math.round(enemy.y - game.camera.y);
     if (!Number.isFinite(sx) || !Number.isFinite(sy)) return false;
     if (sx < 0 || sy < 0 || sx >= game.canvas.width || sy >= game.canvas.height) return false;
-    const pixel = game.ctx.getImageData(sx, sy, 1, 1).data;
-    return pixel[0] >= 200 && pixel[1] >= 200 && pixel[2] >= 200;
+    const center = game.ctx.getImageData(sx, sy, 1, 1).data;
+    const nearEdgeX = Math.min(game.canvas.width - 1, sx + 14);
+    const nearEdge = game.ctx.getImageData(nearEdgeX, sy, 1, 1).data;
+    const centerBright = center[0] >= 200 && center[1] >= 200 && center[2] >= 200;
+    const nearEdgeBright = nearEdge[0] >= 180 && nearEdge[1] >= 180 && nearEdge[2] >= 180;
+    return centerBright && nearEdgeBright;
   }), {
     timeout: 15_000
   }).toBeTruthy();

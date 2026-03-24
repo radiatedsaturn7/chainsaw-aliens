@@ -249,8 +249,12 @@ export default class ScriptedActor extends EnemyBase {
       return;
     }
     const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
-    const drawW = this.width;
-    const drawH = this.height;
+    const nativeW = Number(image?.naturalWidth || image?.width || 0);
+    const nativeH = Number(image?.naturalHeight || image?.height || 0);
+    const imageScaledW = nativeW > 0 ? (nativeW / 16) * 32 : 0;
+    const imageScaledH = nativeH > 0 ? (nativeH / 16) * 32 : 0;
+    const drawW = Math.max(this.width, imageScaledW || 0);
+    const drawH = Math.max(this.height, imageScaledH || 0);
     ctx.save();
     ctx.translate(this.x + offsetX, this.y + offsetY);
     ctx.imageSmoothingEnabled = false;
