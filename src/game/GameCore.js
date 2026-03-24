@@ -1060,14 +1060,19 @@ export default class Game {
   }
 
   enterActorEditor() {
+    const fromState = this.state;
     this.actorEditorReturnState = this.state;
     this.transitionTo('actor-editor');
     this.setRevAudio(false);
     this.actorEditor.activate();
+    if (fromState === 'title' && !this.actorEditor.currentDocumentRef) {
+      this.restoreMostRecentActorDocument();
+    }
     this.playtestActive = false;
   }
 
   enterPixelStudio({ returnState = this.state, resetFocus = true } = {}) {
+    const fromState = this.state;
     if (this.state === 'actor-editor') {
       this.actorEditor.deactivate();
     }
@@ -1076,6 +1081,9 @@ export default class Game {
     this.setRevAudio(false);
     if (resetFocus) {
       this.pixelStudio.resetFocus();
+    }
+    if (fromState === 'title' && returnState === 'title' && !this.pixelStudio.currentDocumentRef) {
+      this.restoreMostRecentArtDocument();
     }
     this.playtestActive = false;
   }
@@ -1219,10 +1227,45 @@ export default class Game {
   }
 
   enterMidiComposer() {
+    const fromState = this.state;
     this.midiComposerReturnState = this.state;
     this.transitionTo('midi-editor');
     this.setRevAudio(false);
+    if (fromState === 'title' && !this.midiComposer.currentDocumentRef) {
+      this.restoreMostRecentMusicDocument();
+    }
     this.playtestActive = false;
+  }
+
+  restoreMostRecentActorDocument() {
+    const latest = vfsList('actors')[0];
+    if (!latest?.name) return false;
+    const payload = vfsLoad('actors', latest.name);
+    if (!payload?.data) return false;
+    this.actorEditor.currentDocumentRef = { folder: 'actors', name: latest.name };
+    this.actorEditor.setActor(payload.data);
+    return true;
+  }
+
+  restoreMostRecentArtDocument() {
+    const latest = vfsList('art')[0];
+    if (!latest?.name) return false;
+    const payload = vfsLoad('art', latest.name);
+    if (!payload?.data) return false;
+    this.world.pixelArt = payload.data;
+    this.pixelStudio.currentDocumentRef = { folder: 'art', name: latest.name };
+    this.pixelStudio.loadTileData();
+    return true;
+  }
+
+  restoreMostRecentMusicDocument() {
+    const latest = vfsList('music')[0];
+    if (!latest?.name) return false;
+    const payload = vfsLoad('music', latest.name);
+    if (!payload?.data) return false;
+    this.midiComposer.applyImportedSong(payload.data);
+    this.midiComposer.currentDocumentRef = { folder: 'music', name: latest.name };
+    return true;
   }
 
   exitMidiComposer() {
