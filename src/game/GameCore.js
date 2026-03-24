@@ -73,7 +73,7 @@ import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsList, vfsLoad } from '../ui/vfs.js';
 import { bootstrapServerStorage, isServerStorageEnabled, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
 import { drawSharedPlayStopButton } from '../ui/uiSuite.js';
-import { ensureActorDefinition } from '../content/actorEditorData.js';
+import { createDefaultActor, ensureActorDefinition } from '../content/actorEditorData.js';
 
 const BOSS_TYPES = new Set([
   'finalboss',
@@ -378,6 +378,7 @@ export default class Game {
     this.playtestPauseLock = 0;
     this.actorEditorTestSnapshot = null;
     this.runtimeActorDefinitions = new Map();
+    this.missingRuntimeActorWarnings = new Set();
     this.elevatorPlatforms = [];
     this.elevatorGraph = null;
     this.isMobile = false;
@@ -1147,9 +1148,16 @@ export default class Game {
 
   buildActorTestWorldData(actorId) {
     const size = 50;
+    const floorY = 26;
     const rows = Array.from({ length: size }, (_, y) => {
       if (y === 0 || y === size - 1) return '#'.repeat(size);
-      return `#${'.'.repeat(size - 2)}#`;
+      const cells = Array.from({ length: size }, (_, x) => (x === 0 || x === size - 1 ? '#' : '.'));
+      if (y === floorY) {
+        for (let x = 16; x <= 44; x += 1) {
+          cells[x] = '#';
+        }
+      }
+      return cells.join('');
     });
     return {
       schemaVersion: 1,
@@ -1159,7 +1167,7 @@ export default class Game {
       spawn: { x: 25, y: 25 },
       tiles: rows,
       regions: [],
-      enemies: [{ x: 31, y: 24, type: `custom:${actorId}` }],
+      enemies: [{ x: 31, y: 25, type: `custom:${actorId}` }],
       elevatorPaths: [],
       elevators: [],
       pixelArt: { tiles: {} },
@@ -1699,8 +1707,16 @@ export default class Game {
   spawnEnemyByType(type, worldX, worldY, options = {}) {
     if (String(type || '').startsWith('custom:')) {
       const actorId = String(type).slice('custom:'.length);
-      const definition = this.getRuntimeActorDefinition(actorId) || loadActorDefinitionById(actorId);
-      if (!definition) return null;
+      let definition = this.getRuntimeActorDefinition(actorId) || loadActorDefinitionById(actorId);
+      if (!definition) {
+        definition = ensureActorDefinition(createDefaultActor(actorId));
+        definition.gravity = false;
+        this.registerRuntimeActorDefinition(definition);
+        if (!this.missingRuntimeActorWarnings.has(actorId)) {
+          this.missingRuntimeActorWarnings.add(actorId);
+          this.showSystemToast?.(`Missing actor "${actorId}" in storage; spawned fallback actor.`);
+        }
+      }
       const actor = new ScriptedActor(worldX, worldY, definition, { type });
       this.enemies.push(actor);
       if (options.spawnLinkedParts !== false) {
