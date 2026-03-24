@@ -58,3 +58,32 @@ test('actor editor workflow renders a white-square custom actor in playtest', as
     fullPage: false
   });
 });
+
+test('level editor tiles persist after playtest round-trip', async ({ page }) => {
+  await waitForGameReady(page);
+
+  await page.evaluate(() => {
+    window.__game.enterEditor({ tab: 'tiles' });
+  });
+  await page.waitForFunction(() => window.__game.state === 'editor');
+
+  const markerTile = await page.evaluate(() => {
+    const marker = 'X';
+    window.__game.world.setTile(12, 12, marker, { persist: true });
+    return window.__game.world.getTile(12, 12);
+  });
+  expect(markerTile).toBe('X');
+
+  await page.evaluate(() => {
+    window.__game.exitEditor({ playtest: true });
+  });
+  await page.waitForFunction(() => window.__game.state === 'playing' && window.__game.playtestActive === true);
+
+  await page.evaluate(() => {
+    window.__game.returnToEditorFromPlaytest();
+  });
+  await page.waitForFunction(() => window.__game.state === 'editor' && window.__game.playtestActive === false);
+
+  const tileAfterReturn = await page.evaluate(() => window.__game.world.getTile(12, 12));
+  expect(tileAfterReturn).toBe('X');
+});

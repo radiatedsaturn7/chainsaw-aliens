@@ -377,6 +377,7 @@ export default class Game {
     this.playtestButtonBounds = null;
     this.playtestPauseLock = 0;
     this.actorEditorTestSnapshot = null;
+    this.levelEditorPlaytestSnapshot = null;
     this.runtimeActorDefinitions = new Map();
     this.missingRuntimeActorWarnings = new Set();
     this.elevatorPlatforms = [];
@@ -1233,6 +1234,9 @@ export default class Game {
     this.editor.deactivate();
     this.editor.flushWorldRefresh();
     if (playtest) {
+      this.levelEditorPlaytestSnapshot = {
+        worldData: this.buildWorldData()
+      };
       this.syncSpawnPoint();
       this.transitionTo('playing', { forceCleanup: true });
       this.playtestActive = true;
@@ -1246,6 +1250,7 @@ export default class Game {
       return;
     }
     this.playtestActive = false;
+    this.levelEditorPlaytestSnapshot = null;
     this.storyData = this.buildWorldData();
     if (toTitle) {
       this.transitionTo('title', { forceCleanup: true });
@@ -1268,6 +1273,15 @@ export default class Game {
       this.actorEditorReturnState = snapshot.actorReturnState || 'title';
       this.transitionTo('actor-editor', { forceCleanup: true });
       this.actorEditor.activate();
+      return;
+    }
+    if (this.levelEditorPlaytestSnapshot?.worldData) {
+      const snapshot = this.levelEditorPlaytestSnapshot;
+      this.levelEditorPlaytestSnapshot = null;
+      this.applyWorldData(snapshot.worldData);
+      this.transitionTo('editor', { forceCleanup: true });
+      this.editor.activate();
+      this.playtestActive = false;
       return;
     }
     const tileSize = this.world.tileSize;
