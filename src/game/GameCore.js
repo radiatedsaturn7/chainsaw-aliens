@@ -1336,6 +1336,10 @@ export default class Game {
     this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
     this.weatherWind = { value: 0, target: 0, timer: 0 };
     this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
+    this.activeRoomIndex = null;
+    this.roomVisited.clear();
+    this.roomExitTimes.clear();
+    this.roomRespawnTimers.clear();
     this.spawnEnemies({ allowStoryFallback: !playtest });
     this.bossInteractions = {
       anchor: false,
