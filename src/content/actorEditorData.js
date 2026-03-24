@@ -143,6 +143,6 @@ export function getBehaviorPresetCatalog() {
     { id: 'float', label: 'Float', derivedFrom: ['Floater', 'Drifter', 'Bobber'], notes: 'Sinusoidal hover / bob motion.' },
     { id: 'pause-bounce', label: 'Pause and bounce', derivedFrom: ['Pouncer', 'Bouncer'], notes: 'Wind up, then lunge or bounce.' },
     { id: 'patrol-platform', label: 'Patrol platform', derivedFrom: ['Bulwark'], notes: 'Ground patrol with optional wall turning.' },
-    { id: 'custom', label: 'Custom advanced', derivedFrom: ['Hive Node', 'Sentinel Elite', bosses], notes: 'Spawner / barrage bosses still need advanced state logic.' }
+    { id: 'custom', label: 'Custom advanced', derivedFrom: ['Hive Node', 'Sentinel Elite', 'Bosses'], notes: 'Spawner / barrage bosses still need advanced state logic.' }
   ];
 }

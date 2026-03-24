@@ -381,8 +381,9 @@ export default class ActorEditor {
     movementSelect.oninput = (event) => this.updateSelectedState((draft) => { draft.movement.type = event.target.value; draft.movement.params = { ...(MOVEMENT_PRESET_TEMPLATES[event.target.value] || {}) }; });
     movementWrap.appendChild(movementSelect);
     const behavior = MOVEMENT_BEHAVIORS.find((entry) => entry.id === state.movement.type) || MOVEMENT_BEHAVIORS[0];
+    const behaviorParams = Array.isArray(behavior?.params) ? behavior.params : [];
     movementWrap.appendChild(el('div', 'actor-editor-note', behavior.description));
-    behavior.params.forEach((param) => {
+    behaviorParams.forEach((param) => {
       const field = el('label', 'actor-editor-field');
       field.appendChild(el('span', 'actor-editor-field-label', param));
       const input = el('input'); input.value = state.movement.params?.[param] ?? ''; input.oninput = (event) => this.updateSelectedState((draft) => { draft.movement.params[param] = event.target.value === 'true' ? true : event.target.value === 'false' ? false : (Number(event.target.value) || event.target.value); });
