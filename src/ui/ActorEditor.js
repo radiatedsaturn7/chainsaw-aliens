@@ -69,6 +69,7 @@ export default class ActorEditor {
 
   setActor(next) {
     this.actor = ensureActorDefinition(next);
+    this.game.registerRuntimeActorDefinition?.(this.actor);
     this.ensureStateSelection();
     this.render();
   }
@@ -106,6 +107,12 @@ export default class ActorEditor {
   exitToMenu() {
     this.deactivate();
     this.game.transitionTo('title', { forceCleanup: true });
+  }
+
+  playtestActor() {
+    const normalized = ensureActorDefinition(this.actor);
+    this.game.registerRuntimeActorDefinition?.(normalized);
+    this.game.startActorEditorPlaytest(normalized.id, normalized);
   }
 
   openStateAnimation(state) {
@@ -195,7 +202,7 @@ export default class ActorEditor {
 
     const top = el('div', 'actor-editor-topbar');
     shell.appendChild(top);
-    [['New', () => this.newActor()], ['Open', () => this.openActor()], ['Save', () => this.saveActor(false)], ['Save As', () => this.saveActor(true)], ['Back', () => this.exitToMenu()]].forEach(([label, handler]) => {
+    [['New', () => this.newActor()], ['Open', () => this.openActor()], ['Save', () => this.saveActor(false)], ['Save As', () => this.saveActor(true)], ['Playtest', () => this.playtestActor()], ['Back', () => this.exitToMenu()]].forEach(([label, handler]) => {
       const btn = el('button', 'actor-editor-btn', label);
       btn.onclick = handler;
       top.appendChild(btn);

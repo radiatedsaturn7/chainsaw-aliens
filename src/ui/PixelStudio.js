@@ -5589,7 +5589,7 @@ export default class PixelStudio {
         ...(this.decalEditSession ? [
           { id: 'save-decal-session', label: 'Save Changes', onClick: () => this.saveDecalSessionAndReturn() },
           { id: 'abandon-decal-session', label: 'Abandon Changes', onClick: () => this.abandonDecalSessionAndReturn() },
-          ...(this.decalEditSession.type === 'actor-state' ? [{ id: 'test-actor-session', label: 'Test Actor', onClick: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId) }] : [])
+          ...(this.decalEditSession.type === 'actor-state' ? [{ id: 'test-actor-session', label: 'Test Actor', onClick: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) }] : [])
         ] : []),
         { id: 'import-image', label: 'Import Image', onClick: () => this.imageFileInput.click() },
         { id: 'sprite-sheet', label: 'Sprite Sheet', onClick: () => this.exportSpriteSheet('horizontal') },
@@ -5892,7 +5892,7 @@ export default class PixelStudio {
       );
     }
     actions.push(
-      ...(this.decalEditSession?.type === 'actor-state' ? [{ label: 'Test', action: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId) }] : []),
+      ...(this.decalEditSession?.type === 'actor-state' ? [{ label: 'Test', action: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) }] : []),
       { label: 'Undo', action: () => this.runtime.undo() },
       { label: 'Redo', action: () => this.runtime.redo() }
     );

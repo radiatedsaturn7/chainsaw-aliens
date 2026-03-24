@@ -73,6 +73,7 @@ import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsList, vfsLoad } from '../ui/vfs.js';
 import { bootstrapServerStorage, isServerStorageEnabled, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
 import { drawSharedPlayStopButton } from '../ui/uiSuite.js';
+import { ensureActorDefinition } from '../content/actorEditorData.js';
 
 const BOSS_TYPES = new Set([
   'finalboss',
@@ -376,6 +377,7 @@ export default class Game {
     this.playtestButtonBounds = null;
     this.playtestPauseLock = 0;
     this.actorEditorTestSnapshot = null;
+    this.runtimeActorDefinitions = new Map();
     this.elevatorPlatforms = [];
     this.elevatorGraph = null;
     this.isMobile = false;
@@ -1168,8 +1170,30 @@ export default class Game {
     };
   }
 
-  startActorEditorPlaytest(actorId) {
+
+  registerRuntimeActorDefinition(actorDefinition) {
+    const normalized = ensureActorDefinition(actorDefinition || null);
+    if (!normalized?.id) return null;
+    this.runtimeActorDefinitions.set(normalized.id, normalized);
+    return normalized;
+  }
+
+  getRuntimeActorDefinition(actorId) {
+    if (!actorId) return null;
+    return this.runtimeActorDefinitions.get(actorId) || null;
+  }
+
+  startActorEditorPlaytest(actorId, actorDefinition = null) {
     if (!actorId) return;
+    const sourceDefinition = actorDefinition
+      || (this.actorEditor?.actor?.id === actorId ? this.actorEditor.actor : null)
+      || this.getRuntimeActorDefinition(actorId)
+      || loadActorDefinitionById(actorId);
+    if (!sourceDefinition) {
+      this.showSystemToast?.('Save actor once before playtesting.');
+      return;
+    }
+    this.registerRuntimeActorDefinition(sourceDefinition);
     this.actorEditorTestSnapshot = {
       worldData: this.buildWorldData(),
       state: this.state,
@@ -1531,7 +1555,7 @@ export default class Game {
 
   exitEditorToMainMenu(editorId = 'level') {
     if (editorId === 'pixel') {
-      const toTitle = this.pixelStudioReturnState !== 'editor';
+      const toTitle = !['editor', 'actor-editor'].includes(this.pixelStudioReturnState);
       this.exitPixelStudio({ toTitle });
       return;
     }
@@ -1674,13 +1698,13 @@ export default class Game {
   spawnEnemyByType(type, worldX, worldY, options = {}) {
     if (String(type || '').startsWith('custom:')) {
       const actorId = String(type).slice('custom:'.length);
-      const definition = loadActorDefinitionById(actorId);
+      const definition = this.getRuntimeActorDefinition(actorId) || loadActorDefinitionById(actorId);
       if (!definition) return null;
       const actor = new ScriptedActor(worldX, worldY, definition, { type });
       this.enemies.push(actor);
       if (options.spawnLinkedParts !== false) {
         (definition.linkedParts || []).forEach((part) => {
-          const partDef = loadActorDefinitionById(part.actorId);
+          const partDef = this.getRuntimeActorDefinition(part.actorId) || loadActorDefinitionById(part.actorId);
           if (!partDef) return;
           const child = new ScriptedActor(worldX + Number(part.offsetX || 0), worldY + Number(part.offsetY || 0), partDef, { type: `custom:${partDef.id}` });
           child.noLootDrops = true;
