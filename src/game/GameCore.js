@@ -1185,6 +1185,7 @@ export default class Game {
 
   startActorEditorPlaytest(actorId, actorDefinition = null) {
     if (!actorId) return;
+    this.actorEditor?.deactivate?.();
     const sourceDefinition = actorDefinition
       || (this.actorEditor?.actor?.id === actorId ? this.actorEditor.actor : null)
       || this.getRuntimeActorDefinition(actorId)
