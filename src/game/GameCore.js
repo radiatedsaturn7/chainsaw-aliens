@@ -4954,14 +4954,46 @@ export default class Game {
       return;
     }
     if (action.type === 'display-text') {
+      const text = String(params.text || '');
+      const typewriterMsPerChar = Math.max(0, Number(params.typewriterMsPerChar || 0));
+      const totalTypeMs = text.length * typewriterMsPerChar;
       this.activeTriggerText = {
-        text: String(params.text || ''),
+        type: 'text',
+        text,
         position: params.position || 'middle',
+        offsetX: Number(params.offsetX || 0),
+        offsetY: Number(params.offsetY || 0),
+        width: Math.max(40, Number(params.width || 520)),
+        height: Math.max(24, Number(params.height || 88)),
+        textColor: typeof params.textColor === 'string' && params.textColor ? params.textColor : '#ffffff',
+        backgroundColor: typeof params.backgroundColor === 'string' && params.backgroundColor ? params.backgroundColor : 'rgba(0,0,0,0.72)',
+        backgroundImageDecalId: typeof params.backgroundImageDecalId === 'string' ? params.backgroundImageDecalId : null,
         background: params.background !== false,
+        waitForInput: params.waitForInput !== false,
+        typewriterMsPerChar,
+        revealElapsedMs: 0,
+        revealCount: typewriterMsPerChar > 0 ? 0 : text.length,
+        remaining: Math.max(0, Number(params.durationMs || 0)) + totalTypeMs,
+        holdDurationMs: Math.max(0, Number(params.durationMs || 0)),
+        onDone
+      };
+      this.resolveTriggerOverlayImage(this.activeTriggerText.backgroundImageDecalId);
+      return;
+    }
+    if (action.type === 'display-image') {
+      this.activeTriggerText = {
+        type: 'image',
+        imageDecalId: typeof params.imageDecalId === 'string' ? params.imageDecalId : null,
+        offsetX: Number(params.offsetX || 0),
+        offsetY: Number(params.offsetY || 0),
+        width: Math.max(40, Number(params.width || 480)),
+        height: Math.max(24, Number(params.height || 270)),
+        backgroundColor: typeof params.backgroundColor === 'string' && params.backgroundColor ? params.backgroundColor : 'rgba(0,0,0,0.4)',
         waitForInput: params.waitForInput !== false,
         remaining: Math.max(0, Number(params.durationMs || 0)),
         onDone
       };
+      this.resolveTriggerOverlayImage(this.activeTriggerText.imageDecalId);
       return;
     }
     if (action.type === 'lock-all-doors' || action.type === 'unlock-all-doors') {
@@ -5012,6 +5044,13 @@ export default class Game {
   updateTriggerTextOverlay(dt) {
     if (!this.activeTriggerText) return false;
     const textState = this.activeTriggerText;
+    if (textState.type === 'text' && textState.typewriterMsPerChar > 0 && textState.revealCount < (textState.text?.length || 0)) {
+      textState.revealElapsedMs = (textState.revealElapsedMs || 0) + (dt * 1000);
+      textState.revealCount = Math.min(
+        textState.text.length,
+        Math.floor(textState.revealElapsedMs / textState.typewriterMsPerChar)
+      );
+    }
     if (textState.waitForInput) {
       if (this.input.wasPressed('attack') || this.input.wasPressed('interact')) {
         const done = textState.onDone;
@@ -5029,6 +5068,20 @@ export default class Game {
     }
     this.input.flush();
     return true;
+  }
+
+  resolveTriggerOverlayImage(decalId) {
+    if (!decalId) return null;
+    const decal = (this.world.decals || []).find((entry) => entry.id === decalId && entry.imageDataUrl);
+    if (!decal?.imageDataUrl) return null;
+    const cacheKey = decal.id || decal.imageDataUrl;
+    let image = this.decalImageCache.get(cacheKey);
+    if (!image) {
+      image = new Image();
+      image.src = decal.imageDataUrl;
+      this.decalImageCache.set(cacheKey, image);
+    }
+    return image;
   }
 
   handleThrow() {
@@ -6298,27 +6351,54 @@ export default class Game {
         middle: Math.round(canvas.height * 0.5),
         bottom: Math.round(canvas.height * 0.82)
       };
-      const textY = yByPosition[this.activeTriggerText.position] || yByPosition.middle;
-      const text = this.activeTriggerText.text || '';
+      const textY = (yByPosition[this.activeTriggerText.position] || yByPosition.middle) + Number(this.activeTriggerText.offsetY || 0);
+      const centerX = Math.round(canvas.width * 0.5) + Number(this.activeTriggerText.offsetX || 0);
       ctx.save();
-      if (this.activeTriggerText.background) {
-        const boxW = Math.min(canvas.width - 40, Math.max(240, text.length * 11));
-        const boxH = 88;
-        const boxX = Math.round((canvas.width - boxW) / 2);
+      if (this.activeTriggerText.type === 'image') {
+        if (this.activeTriggerText.backgroundColor) {
+          ctx.fillStyle = this.activeTriggerText.backgroundColor;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        const image = this.resolveTriggerOverlayImage(this.activeTriggerText.imageDecalId);
+        const boxW = Math.max(40, Number(this.activeTriggerText.width || 480));
+        const boxH = Math.max(24, Number(this.activeTriggerText.height || 270));
+        const boxX = Math.round(centerX - boxW / 2);
         const boxY = Math.round(textY - boxH / 2);
-        ctx.fillStyle = 'rgba(0,0,0,0.72)';
-        ctx.fillRect(boxX, boxY, boxW, boxH);
-        ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)';
         ctx.strokeRect(boxX, boxY, boxW, boxH);
+        if (image?.complete) {
+          ctx.drawImage(image, boxX, boxY, boxW, boxH);
+        }
+      } else {
+        const text = this.activeTriggerText.text || '';
+        const revealCount = Number.isFinite(this.activeTriggerText.revealCount)
+          ? this.activeTriggerText.revealCount
+          : text.length;
+        const displayText = text.slice(0, Math.max(0, revealCount));
+        const boxW = Math.min(canvas.width - 40, Math.max(120, Number(this.activeTriggerText.width || Math.max(240, text.length * 11))));
+        const boxH = Math.max(24, Number(this.activeTriggerText.height || 88));
+        const boxX = Math.round(centerX - boxW / 2);
+        const boxY = Math.round(textY - boxH / 2);
+        const backgroundImage = this.resolveTriggerOverlayImage(this.activeTriggerText.backgroundImageDecalId);
+        if (backgroundImage?.complete) {
+          ctx.drawImage(backgroundImage, boxX, boxY, boxW, boxH);
+        }
+        if (this.activeTriggerText.background) {
+          ctx.fillStyle = this.activeTriggerText.backgroundColor || 'rgba(0,0,0,0.72)';
+          ctx.fillRect(boxX, boxY, boxW, boxH);
+          ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+          ctx.strokeRect(boxX, boxY, boxW, boxH);
+        }
+        ctx.fillStyle = this.activeTriggerText.textColor || '#fff';
+        ctx.font = '22px Courier New';
+        ctx.textAlign = 'center';
+        ctx.fillText(displayText, centerX, textY);
       }
-      ctx.fillStyle = '#fff';
-      ctx.font = '22px Courier New';
-      ctx.textAlign = 'center';
-      ctx.fillText(text, canvas.width / 2, textY);
       if (this.activeTriggerText.waitForInput) {
         ctx.font = '14px Courier New';
         ctx.fillStyle = 'rgba(255,255,255,0.9)';
-        ctx.fillText(this.isMobile ? 'Tap / Attack to continue' : 'Press Attack to continue', canvas.width / 2, textY + 32);
+        ctx.textAlign = 'center';
+        ctx.fillText(this.isMobile ? 'Tap / Attack to continue' : 'Press Attack to continue', centerX, textY + 32);
       }
       ctx.restore();
     }
