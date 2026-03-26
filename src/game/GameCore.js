@@ -32,6 +32,7 @@ import HexMatron from '../entities/HexMatron.js';
 import GraveWarden from '../entities/GraveWarden.js';
 import ObsidianCrown from '../entities/ObsidianCrown.js';
 import CataclysmColossus from '../entities/CataclysmColossus.js';
+import ScriptedActor, { loadActorDefinitionById } from '../entities/ScriptedActor.js';
 import Projectile from '../entities/Projectile.js';
 import { DebrisPiece, Shard } from '../entities/Debris.js';
 import LootDrop from '../entities/LootDrop.js';
@@ -47,6 +48,7 @@ import Pause from '../ui/Pause.js';
 import MobileControls from '../ui/MobileControls.js';
 import PixelStudio from '../ui/PixelStudio.js';
 import MidiComposer from '../ui/MidiComposer.js';
+import ActorEditor from '../ui/ActorEditor.js';
 import MidiSongPlayer from './MidiSongPlayer.js';
 import RobterSession from '../robtersession/RobterSession.js';
 import TestHarness from '../debug/TestHarness.js';
@@ -71,6 +73,7 @@ import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsList, vfsLoad } from '../ui/vfs.js';
 import { bootstrapServerStorage, isServerStorageEnabled, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
 import { drawSharedPlayStopButton } from '../ui/uiSuite.js';
+import { createDefaultActor, ensureActorDefinition } from '../content/actorEditorData.js';
 
 const BOSS_TYPES = new Set([
   'finalboss',
@@ -347,20 +350,24 @@ export default class Game {
     this.editor = new Editor(this);
     this.pixelStudio = new PixelStudio(this);
     this.midiComposer = new MidiComposer(this);
+    this.actorEditor = new ActorEditor(this);
     this.editorStateTargetKeys = {
       editor: 'editor',
       'pixel-editor': 'pixelStudio',
-      'midi-editor': 'midiComposer'
+      'midi-editor': 'midiComposer',
+      'actor-editor': 'actorEditor'
     };
     this.editorStateDrawArgs = {
       editor: () => [this.ctx],
       'pixel-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
-      'midi-editor': () => [this.ctx, this.canvas.width, this.canvas.height]
+      'midi-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
+      'actor-editor': () => [this.ctx, this.canvas.width, this.canvas.height]
     };
     this.robterSession = new RobterSession({ input: this.input, audio: this.audio, isMobile: this.deviceIsMobile });
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
     this.midiComposerReturnState = 'title';
+    this.actorEditorReturnState = 'title';
     this.robterSessionReturnState = 'title';
     this.robterSessionAutoReturn = false;
     this.pixelPreviewReturnState = null;
@@ -369,6 +376,10 @@ export default class Game {
     this.playtestActive = false;
     this.playtestButtonBounds = null;
     this.playtestPauseLock = 0;
+    this.actorEditorTestSnapshot = null;
+    this.levelEditorPlaytestSnapshot = null;
+    this.runtimeActorDefinitions = new Map();
+    this.missingRuntimeActorWarnings = new Set();
     this.elevatorPlatforms = [];
     this.elevatorGraph = null;
     this.isMobile = false;
@@ -996,7 +1007,7 @@ export default class Game {
 
 
   handleSharedStateTransitionCleanup({ from, to, forceCleanup = false } = {}) {
-    const editorStates = new Set(['editor', 'pixel-editor', 'midi-editor', 'pixel-preview']);
+    const editorStates = new Set(['editor', 'pixel-editor', 'midi-editor', 'actor-editor', 'pixel-preview']);
     const shouldCleanup = forceCleanup
       || this.playtestActive
       || editorStates.has(from)
@@ -1020,7 +1031,7 @@ export default class Game {
           document.body.classList.remove(className);
         }
       });
-      if (to === 'editor' || to === 'pixel-editor' || to === 'midi-editor') {
+      if (to === 'editor' || to === 'pixel-editor' || to === 'midi-editor' || to === 'actor-editor') {
         document.body.classList.add('editor-active');
       }
     }
@@ -1048,12 +1059,31 @@ export default class Game {
     this.playtestActive = false;
   }
 
+  enterActorEditor() {
+    const fromState = this.state;
+    this.actorEditorReturnState = this.state;
+    this.transitionTo('actor-editor');
+    this.setRevAudio(false);
+    this.actorEditor.activate();
+    if (fromState === 'title' && !this.actorEditor.currentDocumentRef) {
+      this.restoreMostRecentActorDocument();
+    }
+    this.playtestActive = false;
+  }
+
   enterPixelStudio({ returnState = this.state, resetFocus = true } = {}) {
+    const fromState = this.state;
+    if (this.state === 'actor-editor') {
+      this.actorEditor.deactivate();
+    }
     this.pixelStudioReturnState = returnState;
     this.transitionTo('pixel-editor');
     this.setRevAudio(false);
     if (resetFocus) {
       this.pixelStudio.resetFocus();
+    }
+    if (fromState === 'title' && returnState === 'title' && !this.pixelStudio.currentDocumentRef) {
+      this.restoreMostRecentArtDocument();
     }
     this.playtestActive = false;
   }
@@ -1076,7 +1106,11 @@ export default class Game {
 
   exitPixelStudio({ toTitle = false } = {}) {
     this.playtestActive = false;
-    this.transitionTo(toTitle ? 'title' : (this.pixelStudioReturnState || 'title'), { forceCleanup: true });
+    const destination = toTitle ? 'title' : (this.pixelStudioReturnState || 'title');
+    this.transitionTo(destination, { forceCleanup: true });
+    if (destination === 'actor-editor') {
+      this.actorEditor.activate();
+    }
   }
 
   enterPixelPreview(tile) {
@@ -1120,11 +1154,118 @@ export default class Game {
     return null;
   }
 
+
+  buildActorTestWorldData(actorId) {
+    const size = 50;
+    const floorY = 26;
+    const rows = Array.from({ length: size }, (_, y) => {
+      if (y === 0 || y === size - 1) return '#'.repeat(size);
+      const cells = Array.from({ length: size }, (_, x) => (x === 0 || x === size - 1 ? '#' : '.'));
+      if (y === floorY) {
+        for (let x = 16; x <= 44; x += 1) {
+          cells[x] = '#';
+        }
+      }
+      return cells.join('');
+    });
+    return {
+      schemaVersion: 1,
+      tileSize: 32,
+      width: size,
+      height: size,
+      spawn: { x: 25, y: 25 },
+      tiles: rows,
+      regions: [],
+      enemies: [{ x: 31, y: 25, type: `custom:${actorId}` }],
+      elevatorPaths: [],
+      elevators: [],
+      pixelArt: { tiles: {} },
+      musicZones: [],
+      midiTracks: [],
+      triggers: [],
+      decals: []
+    };
+  }
+
+
+  registerRuntimeActorDefinition(actorDefinition) {
+    const normalized = ensureActorDefinition(actorDefinition || null);
+    if (!normalized?.id) return null;
+    this.runtimeActorDefinitions.set(normalized.id, normalized);
+    return normalized;
+  }
+
+  getRuntimeActorDefinition(actorId) {
+    if (!actorId) return null;
+    return this.runtimeActorDefinitions.get(actorId) || null;
+  }
+
+  startActorEditorPlaytest(actorId, actorDefinition = null) {
+    if (!actorId) return;
+    this.actorEditor?.deactivate?.();
+    const sourceDefinition = actorDefinition
+      || (this.actorEditor?.actor?.id === actorId ? this.actorEditor.actor : null)
+      || this.getRuntimeActorDefinition(actorId)
+      || loadActorDefinitionById(actorId);
+    if (!sourceDefinition) {
+      this.showSystemToast?.('Save actor once before playtesting.');
+      return;
+    }
+    this.registerRuntimeActorDefinition(sourceDefinition);
+    this.actorEditorTestSnapshot = {
+      worldData: this.buildWorldData(),
+      state: this.state,
+      pixelReturnState: this.pixelStudioReturnState,
+      actorReturnState: this.actorEditorReturnState
+    };
+    this.applyWorldData(this.buildActorTestWorldData(actorId));
+    this.playtestActive = true;
+    this.playtestPauseLock = 0.35;
+    this.resetRun({ playtest: false, startWithEverything: true });
+    this.transitionTo('playing', { forceCleanup: true });
+    this.startSpawnPause();
+  }
+
   enterMidiComposer() {
+    const fromState = this.state;
     this.midiComposerReturnState = this.state;
     this.transitionTo('midi-editor');
     this.setRevAudio(false);
+    if (fromState === 'title' && !this.midiComposer.currentDocumentRef) {
+      this.restoreMostRecentMusicDocument();
+    }
     this.playtestActive = false;
+  }
+
+  restoreMostRecentActorDocument() {
+    const latest = vfsList('actors')[0];
+    if (!latest?.name) return false;
+    const payload = vfsLoad('actors', latest.name);
+    if (!payload?.data) return false;
+    this.actorEditor.currentDocumentRef = { folder: 'actors', name: latest.name };
+    this.actorEditor.setActor(payload.data);
+    return true;
+  }
+
+  restoreMostRecentArtDocument() {
+    const latest = vfsList('art')[0];
+    if (!latest?.name) return false;
+    const payload = vfsLoad('art', latest.name);
+    if (!payload?.data) return false;
+    this.world.pixelArt = payload.data;
+    this.pixelStudio.currentDocumentRef = { folder: 'art', name: latest.name };
+    this.pixelStudio.loadTileData();
+    return true;
+  }
+
+  restoreMostRecentMusicDocument() {
+    const latest = vfsList('music')[0];
+    if (!latest?.name) return false;
+    const payload = vfsLoad('music', latest.name);
+    if (!payload?.data) return false;
+    this.midiComposer.applyImportedSong(payload.data);
+    this.midiComposer.currentDocumentRef = { folder: 'music', name: latest.name };
+    return true;
   }
 
   exitMidiComposer() {
@@ -1136,6 +1277,9 @@ export default class Game {
     this.editor.deactivate();
     this.editor.flushWorldRefresh();
     if (playtest) {
+      this.levelEditorPlaytestSnapshot = {
+        worldData: this.buildWorldData()
+      };
       this.syncSpawnPoint();
       this.transitionTo('playing', { forceCleanup: true });
       this.playtestActive = true;
@@ -1149,6 +1293,7 @@ export default class Game {
       return;
     }
     this.playtestActive = false;
+    this.levelEditorPlaytestSnapshot = null;
     this.storyData = this.buildWorldData();
     if (toTitle) {
       this.transitionTo('title', { forceCleanup: true });
@@ -1162,6 +1307,26 @@ export default class Game {
 
   returnToEditorFromPlaytest() {
     if (!this.playtestActive) return;
+    if (this.actorEditorTestSnapshot) {
+      const snapshot = this.actorEditorTestSnapshot;
+      this.actorEditorTestSnapshot = null;
+      this.applyWorldData(snapshot.worldData);
+      this.playtestActive = false;
+      this.pixelStudioReturnState = snapshot.pixelReturnState || 'actor-editor';
+      this.actorEditorReturnState = snapshot.actorReturnState || 'title';
+      this.transitionTo('actor-editor', { forceCleanup: true });
+      this.actorEditor.activate();
+      return;
+    }
+    if (this.levelEditorPlaytestSnapshot?.worldData) {
+      const snapshot = this.levelEditorPlaytestSnapshot;
+      this.levelEditorPlaytestSnapshot = null;
+      this.applyWorldData(snapshot.worldData);
+      this.transitionTo('editor', { forceCleanup: true });
+      this.editor.activate();
+      this.playtestActive = false;
+      return;
+    }
     const tileSize = this.world.tileSize;
     const tileX = Math.floor(this.player.x / tileSize);
     const tileY = Math.floor(this.player.y / tileSize);
@@ -1228,6 +1393,10 @@ export default class Game {
     this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
     this.weatherWind = { value: 0, target: 0, timer: 0 };
     this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
+    this.activeRoomIndex = null;
+    this.roomVisited.clear();
+    this.roomExitTimes.clear();
+    this.roomRespawnTimers.clear();
     this.spawnEnemies({ allowStoryFallback: !playtest });
     this.bossInteractions = {
       anchor: false,
@@ -1425,6 +1594,10 @@ export default class Game {
           this.enterMidiComposer();
           this.midiComposer.applyImportedSong(payload.data);
           this.midiComposer.currentDocumentRef = { folder: 'music', name: name || 'Song' };
+        } else if (folder === 'actors') {
+          this.enterActorEditor();
+          this.actorEditor.currentDocumentRef = { folder: 'actors', name: name || 'Actor' };
+          this.actorEditor.setActor(payload.data);
         }
       },
       onNew: (folder) => {
@@ -1438,6 +1611,10 @@ export default class Game {
           this.midiComposer.song = this.midiComposer.song || {};
           this.midiComposer.currentDocumentRef = null;
         }
+        if (folder === 'actors') {
+          this.enterActorEditor();
+          this.actorEditor.newActor();
+        }
       },
       onExportZip: () => {
         this.showPrompt('TODO: ZIP export hook');
@@ -1448,7 +1625,7 @@ export default class Game {
 
   exitEditorToMainMenu(editorId = 'level') {
     if (editorId === 'pixel') {
-      const toTitle = this.pixelStudioReturnState !== 'editor';
+      const toTitle = !['editor', 'actor-editor'].includes(this.pixelStudioReturnState);
       this.exitPixelStudio({ toTitle });
       return;
     }
@@ -1588,7 +1765,33 @@ export default class Game {
     this.spawnEnemyByType(type, spawn.x, spawn.y);
   }
 
-  spawnEnemyByType(type, worldX, worldY) {
+  spawnEnemyByType(type, worldX, worldY, options = {}) {
+    if (String(type || '').startsWith('custom:')) {
+      const actorId = String(type).slice('custom:'.length);
+      let definition = this.getRuntimeActorDefinition(actorId) || loadActorDefinitionById(actorId);
+      if (!definition) {
+        definition = ensureActorDefinition(createDefaultActor(actorId));
+        definition.gravity = false;
+        this.registerRuntimeActorDefinition(definition);
+        if (!this.missingRuntimeActorWarnings.has(actorId)) {
+          this.missingRuntimeActorWarnings.add(actorId);
+          this.showSystemToast?.(`Missing actor "${actorId}" in storage; spawned fallback actor.`);
+        }
+      }
+      const actor = new ScriptedActor(worldX, worldY, definition, { type });
+      this.enemies.push(actor);
+      if (options.spawnLinkedParts !== false) {
+        (definition.linkedParts || []).forEach((part) => {
+          const partDef = this.getRuntimeActorDefinition(part.actorId) || loadActorDefinitionById(part.actorId);
+          if (!partDef) return;
+          const child = new ScriptedActor(worldX + Number(part.offsetX || 0), worldY + Number(part.offsetY || 0), partDef, { type: `custom:${partDef.id}` });
+          child.noLootDrops = true;
+          actor.linkedChildren.push(child);
+          this.enemies.push(child);
+        });
+      }
+      return actor;
+    }
     switch (type) {
       case 'practice':
         this.enemies.push(new PracticeDrone(worldX, worldY));
@@ -1662,6 +1865,7 @@ export default class Game {
       default:
         break;
     }
+    return this.enemies[this.enemies.length - 1] || null;
   }
 
   getEndlessSpawnPoint() {
@@ -1696,6 +1900,20 @@ export default class Game {
         this.activeRoomIndex = roomIndex;
         this.handleRoomEntry(roomIndex);
         this.refreshRoomAmbient(roomIndex);
+      } else {
+        this.world.enemies.forEach((spawn) => {
+          if (!spawn || AMBIENT_SPAWN_TYPES.has(spawn.type)) return;
+          const worldX = (spawn.x + 0.5) * tileSize;
+          const worldY = (spawn.y + 0.5) * tileSize;
+          if (spawn.type === 'finalboss') {
+            if (!this.boss) {
+              this.boss = new FinalBoss(worldX, worldY);
+              this.bossActive = true;
+            }
+            return;
+          }
+          this.spawnEnemyByType(spawn.type, worldX, worldY, { spawnLinkedParts: true });
+        });
       }
       return;
     }
@@ -1832,6 +2050,17 @@ export default class Game {
         return;
       }
       this.midiComposer.update(this.input, dt);
+      this.input.flush();
+      return;
+    }
+
+    if (this.state === 'actor-editor') {
+      if (this.input.wasPressed('cancel')) {
+        this.actorEditor.exitToMenu();
+        this.input.flush();
+        return;
+      }
+      this.actorEditor.update(this.input, dt);
       this.input.flush();
       return;
     }
@@ -4070,7 +4299,8 @@ export default class Game {
       const dist = Math.hypot(dx, dy);
       if (dist < 24) {
         if (!enemy.training) {
-          const tookDamage = this.player.takeDamage(1);
+          const bodyDamage = enemy.bodyDamageEnabled === false ? 0 : (enemy.contactDamage || 1);
+          const tookDamage = bodyDamage > 0 ? this.player.takeDamage(bodyDamage) : false;
           if (tookDamage) {
             this.applyPlayerKnockback(enemy);
             enemy.hitPause = 0.2;
@@ -7618,6 +7848,8 @@ export default class Game {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
+        } else if (action === 'actor-editor') {
+          this.enterActorEditor();
         } else if (action === 'midi-editor') {
           this.enterMidiComposer();
         } else if (action === 'reset-all') {
@@ -7804,6 +8036,8 @@ export default class Game {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
+        } else if (action === 'actor-editor') {
+          this.enterActorEditor();
         } else if (action === 'midi-editor') {
           this.enterMidiComposer();
         } else if (action === 'reset-all') {
@@ -7991,6 +8225,7 @@ export default class Game {
     this.stateManager.register('editor', createDelegatedState(this, 'editor'));
     this.stateManager.register('pixel-editor', createDelegatedState(this, 'pixelStudio'));
     this.stateManager.register('midi-editor', createDelegatedState(this, 'midiComposer'));
+    this.stateManager.register('actor-editor', createDelegatedState(this, 'actorEditor'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }
 

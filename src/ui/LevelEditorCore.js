@@ -131,6 +131,32 @@ const BOSS_ROOM_PREFS = {
 
 const ENEMY_TYPES = [...AMBIENT_ENEMY_TYPES, ...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
 
+function getCustomActorEnemyTypes() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const index = JSON.parse(window.localStorage.getItem('robter:vfs:index') || 'null');
+    return Object.keys(index?.actors || {}).map((name) => {
+      const payload = JSON.parse(window.localStorage.getItem(`robter:vfs:actors:${name}`) || 'null');
+      const actor = payload?.data || {};
+      if (!actor?.isRoot) return null;
+      const id = actor?.id || String(name).replace(/\.json$/i, '');
+      return {
+        id: `custom:${id}`,
+        label: actor?.name || id,
+        glyph: 'CA',
+        description: 'Custom actor root from Actor Editor.'
+      };
+    }).filter(Boolean);
+  } catch (error) {
+    return [];
+  }
+}
+
+function getEnemyTypes() {
+  return [...AMBIENT_ENEMY_TYPES, ...STANDARD_ENEMY_TYPES, ...getCustomActorEnemyTypes(), ...BOSS_ENEMY_TYPES];
+}
+
+
 const SHAPE_TOOLS = [
   { id: 'rect', label: 'Rectangle Fill', short: 'RECT' },
   { id: 'hollow', label: 'Hollow Rectangle', short: 'HOLL' },
@@ -1235,7 +1261,7 @@ export default class Editor {
     const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
     let items = [];
     let columns = 1;
-    const enemySource = this.enemyCategory === 'boss' ? BOSS_ENEMY_TYPES : STANDARD_ENEMY_TYPES;
+    const enemySource = this.enemyCategory === 'boss' ? BOSS_ENEMY_TYPES : [...STANDARD_ENEMY_TYPES, ...getCustomActorEnemyTypes()];
 
     if (tabId === 'playtest') {
       items = [{
@@ -1382,6 +1408,18 @@ export default class Editor {
           tooltip: `Enemy: ${enemy.label}`,
           onClick: () => {
             this.enemyCategory = 'boss';
+            this.setEnemyType(enemy);
+            this.mode = 'enemy';
+          }
+        })),
+        { id: 'npc-sep-custom', label: '──────── CUSTOM ────────', tooltip: 'Custom actor roots', separator: true, onClick: () => {} },
+        ...getCustomActorEnemyTypes().map((enemy) => ({
+          id: `npc-${enemy.id}`,
+          label: `${enemy.label} [${enemy.glyph}]`,
+          enemy,
+          tooltip: `Custom actor: ${enemy.label}`,
+          onClick: () => {
+            this.enemyCategory = 'standard';
             this.setEnemyType(enemy);
             this.mode = 'enemy';
           }
@@ -2006,8 +2044,9 @@ export default class Editor {
       return;
     }
     if (this.mode === 'enemy') {
-      const index = Math.max(0, ENEMY_TYPES.findIndex((enemy) => enemy.id === this.enemyType.id));
-      const next = ENEMY_TYPES[(index + direction + ENEMY_TYPES.length) % ENEMY_TYPES.length];
+      const enemyTypes = getEnemyTypes();
+      const index = Math.max(0, enemyTypes.findIndex((enemy) => enemy.id === this.enemyType.id));
+      const next = enemyTypes[(index + direction + enemyTypes.length) % enemyTypes.length];
       this.setEnemyType(next);
       return;
     }
@@ -7068,7 +7107,7 @@ export default class Editor {
     this.game.world.enemies.forEach((enemy) => {
       const cx = enemy.x * tileSize + tileSize / 2;
       const cy = enemy.y * tileSize + tileSize / 2;
-      const marker = ENEMY_TYPES.find((entry) => entry.id === enemy.type);
+      const marker = getEnemyTypes().find((entry) => entry.id === enemy.type);
       const isBoss = BOSS_ENEMY_TYPES.some((entry) => entry.id === enemy.type);
       const color = isBoss ? '#ffb3d6' : '#f66';
       ctx.save();
@@ -7857,6 +7896,19 @@ export default class Editor {
                 this.setEnemyType(enemy);
                 this.mode = 'enemy';
               }
+            })),
+            { id: 'npc-sep-custom', label: '──────── CUSTOM ────────', separator: true, active: false, tooltip: 'Custom actor roots', onClick: () => {} },
+            ...getCustomActorEnemyTypes().map((enemy) => ({
+              id: `npc-${enemy.id}`,
+              label: `${enemy.label} [${enemy.glyph}]`,
+              active: this.enemyType.id === enemy.id,
+              preview: { type: 'enemy', enemy },
+              tooltip: `Custom actor: ${enemy.label}`,
+              onClick: () => {
+                this.enemyCategory = 'standard';
+                this.setEnemyType(enemy);
+                this.mode = 'enemy';
+              }
             }))
           ];
           columns = 1;
@@ -8467,7 +8519,7 @@ export default class Editor {
         const panelX = (width - panelWidth) / 2;
         const panelY = (height - panelHeight) / 2;
         const levelNames = this.getTriggerLevelNames();
-        const enemyOptions = [...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES].map((entry) => entry.id);
+        const enemyOptions = [...STANDARD_ENEMY_TYPES, ...getCustomActorEnemyTypes(), ...BOSS_ENEMY_TYPES].map((entry) => entry.id);
         const sectionButtonH = 40;
         const rowGap = 8;
         const draft = this.triggerActionDraft;

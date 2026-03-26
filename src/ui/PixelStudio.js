@@ -81,8 +81,8 @@ export default class PixelStudio {
     this.tools = createToolRegistry(this);
     this.activeToolId = TOOL_IDS.PENCIL;
     this.toolOptions = {
-      brushSize: 16,
-      brushOpacity: 0.5,
+      brushSize: 1,
+      brushOpacity: 1,
       brushHardness: 0,
       brushShape: 'circle',
       brushFalloff: 0,
@@ -137,9 +137,9 @@ export default class PixelStudio {
     this.palettePresets = [];
     this.customPalettes = loadCustomPalettes();
     this.currentPalette = buildPalette(['#000000', '#ffffff'], 'Temp');
-    this.paletteIndex = 0;
-    this.secondaryPaletteIndex = 1;
-    this.colorRegisters = [0, 0];
+    this.paletteIndex = 1;
+    this.secondaryPaletteIndex = 0;
+    this.colorRegisters = [1, 0];
     this.activeColorRegister = 0;
     this.paletteRamps = [];
     this.limitToPalette = false;
@@ -518,6 +518,58 @@ export default class PixelStudio {
     this.resetFocus();
   }
 
+
+  async loadActorStateImageForEditing({ actorId, stateId, animation = {}, onCommit = null } = {}) {
+    const fallbackWidth = 32;
+    const fallbackHeight = 32;
+    const sources = Array.isArray(animation?.frames) && animation.frames.length
+      ? animation.frames.filter((frame) => frame?.imageDataUrl)
+      : (animation?.imageDataUrl ? [{ imageDataUrl: animation.imageDataUrl, durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || 8))) }] : []);
+    const loadedFrames = [];
+    for (const source of sources) {
+      const image = await new Promise((resolve, reject) => {
+        const next = new Image();
+        next.onload = () => resolve(next);
+        next.onerror = reject;
+        next.src = source.imageDataUrl;
+      });
+      const safeWidth = clamp(Math.round(image.width || fallbackWidth), 8, 512);
+      const safeHeight = clamp(Math.round(image.height || fallbackHeight), 8, 512);
+      const layer = createLayer(safeWidth, safeHeight, 'Actor State Layer');
+      const canvas = document.createElement('canvas');
+      canvas.width = safeWidth;
+      canvas.height = safeHeight;
+      const drawCtx = canvas.getContext('2d');
+      drawCtx.drawImage(image, 0, 0, safeWidth, safeHeight);
+      const pixels = drawCtx.getImageData(0, 0, safeWidth, safeHeight).data;
+      for (let i = 0; i < safeWidth * safeHeight; i += 1) {
+        const r = pixels[i * 4];
+        const g = pixels[i * 4 + 1];
+        const b = pixels[i * 4 + 2];
+        const a = pixels[i * 4 + 3];
+        layer.pixels[i] = rgbaToUint32({ r, g, b, a });
+      }
+      loadedFrames.push(createFrame([layer], Number(source.durationMs || DEFAULT_FRAME_DURATION_MS)));
+      this.canvasState.width = safeWidth;
+      this.canvasState.height = safeHeight;
+      this.artSizeDraft.width = safeWidth;
+      this.artSizeDraft.height = safeHeight;
+    }
+    if (!loadedFrames.length) {
+      this.canvasState.width = fallbackWidth;
+      this.canvasState.height = fallbackHeight;
+      this.artSizeDraft.width = fallbackWidth;
+      this.artSizeDraft.height = fallbackHeight;
+      loadedFrames.push(createFrame([createLayer(fallbackWidth, fallbackHeight, 'Actor State Layer')], DEFAULT_FRAME_DURATION_MS));
+    }
+    this.decalEditSession = { type: 'actor-state', actorId, stateId, onCommit };
+    this.animation.frames = loadedFrames;
+    this.animation.currentFrameIndex = 0;
+    this.canvasState.activeLayerIndex = 0;
+    this.setFrameLayers(this.animation.frames[0].layers);
+    this.resetFocus();
+  }
+
   async loadVisibleDecalsForSeamFix({ bounds, decals } = {}) {
     if (!Array.isArray(decals) || !decals.length) return;
     const minX = Number.isFinite(bounds?.x)
@@ -693,6 +745,24 @@ export default class PixelStudio {
         decal.imageDataUrl = this.exportCurrentFrameDataUrl();
         this.game.editor?.persistAutosave?.();
       }
+      this.decalEditSession = null;
+      return;
+    }
+    if (this.decalEditSession.type === 'actor-state') {
+      const frames = this.animation.frames.map((frame) => {
+        const previousIndex = this.animation.currentFrameIndex;
+        this.animation.currentFrameIndex = this.animation.frames.indexOf(frame);
+        this.setFrameLayers(frame.layers);
+        const imageDataUrl = this.exportCurrentFrameDataUrl();
+        this.animation.currentFrameIndex = previousIndex;
+        this.setFrameLayers(this.animation.frames[this.animation.currentFrameIndex].layers);
+        return { imageDataUrl, durationMs: Number(frame.durationMs || DEFAULT_FRAME_DURATION_MS) };
+      });
+      this.decalEditSession.onCommit?.({
+        imageDataUrl: frames[0]?.imageDataUrl || '',
+        frames,
+        fps: Math.max(1, Math.round(1000 / Math.max(1, Number(frames[0]?.durationMs || DEFAULT_FRAME_DURATION_MS))))
+      });
       this.decalEditSession = null;
       return;
     }
@@ -5518,7 +5588,8 @@ export default class PixelStudio {
       editorSpecific: [
         ...(this.decalEditSession ? [
           { id: 'save-decal-session', label: 'Save Changes', onClick: () => this.saveDecalSessionAndReturn() },
-          { id: 'abandon-decal-session', label: 'Abandon Changes', onClick: () => this.abandonDecalSessionAndReturn() }
+          { id: 'abandon-decal-session', label: 'Abandon Changes', onClick: () => this.abandonDecalSessionAndReturn() },
+          ...(this.decalEditSession.type === 'actor-state' ? [{ id: 'test-actor-session', label: 'Test Actor', onClick: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) }] : [])
         ] : []),
         { id: 'import-image', label: 'Import Image', onClick: () => this.imageFileInput.click() },
         { id: 'sprite-sheet', label: 'Sprite Sheet', onClick: () => this.exportSpriteSheet('horizontal') },
@@ -5542,7 +5613,11 @@ export default class PixelStudio {
         const onClick = item.footer
           ? (item.id === 'close-menu' ? () => this.closeFileMenu() : () => this.exitToMainMenu())
           : (item.onClick || item.action);
-        const footerExitLabel = this.game.pixelStudioReturnState === 'editor' ? 'Return To Level Editor' : 'Exit to Main Menu';
+        const footerExitLabel = this.game.pixelStudioReturnState === 'editor'
+          ? 'Return To Level Editor'
+          : this.game.pixelStudioReturnState === 'actor-editor'
+            ? 'Return To Actor'
+            : 'Exit to Main Menu';
         const label = item.footer && item.id !== 'close-menu' ? footerExitLabel : item.label;
         this.drawButton(ctx, bounds, label, false, { fontSize: isMobile ? 12 : 12 });
         this.uiButtons.push({ bounds, onClick });
@@ -5817,6 +5892,7 @@ export default class PixelStudio {
       );
     }
     actions.push(
+      ...(this.decalEditSession?.type === 'actor-state' ? [{ label: 'Test', action: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) }] : []),
       { label: 'Undo', action: () => this.runtime.undo() },
       { label: 'Redo', action: () => this.runtime.redo() }
     );
