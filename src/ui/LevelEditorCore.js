@@ -242,6 +242,7 @@ const TRIGGER_ACTION_TYPES = [
   { id: 'fade-in', label: 'Fade In' },
   { id: 'fade-out', label: 'Fade Out' },
   { id: 'display-text', label: 'Display Text' },
+  { id: 'display-image', label: 'Display Image' },
   { id: 'wait', label: 'Wait (ms)' },
   { id: 'fade-out-music', label: 'Fade Out Music' },
   { id: 'fade-in-music', label: 'Fade In Music' }
@@ -253,6 +254,7 @@ const TRIGGER_TARGET_OPTIONS = ['player', 'enemy', 'object'];
 const TRIGGER_ENEMY_TARGET_OPTIONS = ['nearest', 'all-in-zone', 'by-tag'];
 const TRIGGER_TEXT_OPTIONS = ['Warning!', 'Door unlocked.', 'Boss incoming!', 'Checkpoint reached.', 'Objective updated.'];
 const TRIGGER_TEXT_POSITIONS = ['top', 'middle', 'bottom'];
+const TRIGGER_TEXT_COLORS = ['#ffffff', '#ffe082', '#9ad9ff', '#ff9ecb', '#9fffb3'];
 
 const BIOME_THEMES = [
   { id: 'white', name: 'White', color: '#ffffff' },
@@ -2115,6 +2117,29 @@ export default class Editor {
     return this.parseLevelSize(raw);
   }
 
+  async promptForTriggerText(initialValue = '') {
+    const value = await openTextInputOverlay({
+      title: 'Trigger Text',
+      label: 'Text to display:',
+      initialValue: String(initialValue || ''),
+      inputType: 'text'
+    });
+    if (value == null) return null;
+    return String(value);
+  }
+
+  async promptForTriggerColor(initialValue = '#ffffff', { title = 'Trigger Color', label = 'Color (hex or rgba):' } = {}) {
+    const value = await openTextInputOverlay({
+      title,
+      label,
+      initialValue: String(initialValue || ''),
+      inputType: 'text'
+    });
+    if (value == null) return null;
+    const trimmed = String(value).trim();
+    return trimmed || String(initialValue || '#ffffff');
+  }
+
   buildEmptyLevelData(width, height) {
     const w = clamp(Math.round(width), 24, 256);
     const h = clamp(Math.round(height), 24, 256);
@@ -2483,7 +2508,27 @@ export default class Editor {
           text: TRIGGER_TEXT_OPTIONS[0],
           durationMs: 2000,
           position: TRIGGER_TEXT_POSITIONS[1],
+          offsetX: 0,
+          offsetY: 0,
+          width: 520,
+          height: 88,
+          textColor: '#ffffff',
+          backgroundColor: 'rgba(0,0,0,0.72)',
           background: true,
+          backgroundImageDecalId: null,
+          typewriterMsPerChar: 28,
+          waitForInput: true
+        };
+        break;
+      case 'display-image':
+        base.params = {
+          imageDecalId: null,
+          offsetX: 0,
+          offsetY: 0,
+          width: 480,
+          height: 270,
+          backgroundColor: 'rgba(0,0,0,0.4)',
+          durationMs: 2000,
           waitForInput: true
         };
         break;
@@ -2585,6 +2630,23 @@ export default class Editor {
         if (!TRIGGER_TEXT_POSITIONS.includes(action.params.position)) action.params.position = TRIGGER_TEXT_POSITIONS[1];
         if (typeof action.params.background !== 'boolean') action.params.background = true;
         if (typeof action.params.waitForInput !== 'boolean') action.params.waitForInput = true;
+        if (!Number.isFinite(action.params.offsetX)) action.params.offsetX = 0;
+        if (!Number.isFinite(action.params.offsetY)) action.params.offsetY = 0;
+        if (!Number.isFinite(action.params.width) || action.params.width <= 0) action.params.width = 520;
+        if (!Number.isFinite(action.params.height) || action.params.height <= 0) action.params.height = 88;
+        if (typeof action.params.textColor !== 'string' || !action.params.textColor) action.params.textColor = '#ffffff';
+        if (typeof action.params.backgroundColor !== 'string' || !action.params.backgroundColor) action.params.backgroundColor = 'rgba(0,0,0,0.72)';
+        if (typeof action.params.backgroundImageDecalId !== 'string') action.params.backgroundImageDecalId = null;
+        if (!Number.isFinite(action.params.typewriterMsPerChar) || action.params.typewriterMsPerChar < 0) action.params.typewriterMsPerChar = 28;
+      }
+      if (action.type === 'display-image') {
+        if (typeof action.params.imageDecalId !== 'string') action.params.imageDecalId = null;
+        if (!Number.isFinite(action.params.offsetX)) action.params.offsetX = 0;
+        if (!Number.isFinite(action.params.offsetY)) action.params.offsetY = 0;
+        if (!Number.isFinite(action.params.width) || action.params.width <= 0) action.params.width = 480;
+        if (!Number.isFinite(action.params.height) || action.params.height <= 0) action.params.height = 270;
+        if (typeof action.params.backgroundColor !== 'string' || !action.params.backgroundColor) action.params.backgroundColor = 'rgba(0,0,0,0.4)';
+        if (typeof action.params.waitForInput !== 'boolean') action.params.waitForInput = true;
       }
       if (action.type === 'load-level') {
         if (typeof action.params.levelName !== 'string' || !action.params.levelName) action.params.levelName = 'Level 1';
@@ -2602,6 +2664,18 @@ export default class Editor {
   getTriggerLevelNames() {
     const levels = vfsList('levels').map((entry) => entry.name);
     return levels.length ? levels : ['Level 1'];
+  }
+
+  getTriggerDecalOptions() {
+    const decals = this.ensureDecals();
+    if (!decals.length) return ['(none)'];
+    return ['(none)', ...decals.map((decal) => decal.id)];
+  }
+
+  getDecalLabelById(decalId) {
+    if (!decalId) return '(none)';
+    const decal = this.ensureDecals().find((entry) => entry.id === decalId);
+    return decal?.name || decal?.id || '(none)';
   }
 
   ensureDecals() {
@@ -2993,7 +3067,9 @@ export default class Editor {
       case 'fade-out':
         return `Duration: ${params.durationMs || 0}ms`;
       case 'display-text':
-        return `"${params.text || ''}" ${params.position || 'middle'} ${params.background ? '[box]' : '[plain]'}${params.waitForInput ? ' [input]' : ''}`;
+        return `"${params.text || ''}" ${params.position || 'middle'} (${params.width || 520}x${params.height || 88})${params.backgroundImageDecalId ? ' [bg img]' : ''}${params.waitForInput ? ' [input]' : ''}`;
+      case 'display-image':
+        return `${this.getDecalLabelById(params.imageDecalId)} (${params.width || 480}x${params.height || 270}) @ (${params.offsetX || 0}, ${params.offsetY || 0})${params.waitForInput ? ' [input]' : ''}`;
       case 'wait':
         return `${params.durationMs || 0}ms`;
       case 'fade-out-music':
@@ -8597,7 +8673,11 @@ export default class Editor {
           } else if (draft.type === 'become-tile') {
             local += sectionButtonH + 4;
           } else if (draft.type === 'display-text') {
-            local += sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4 + numericAdvance;
+            local += sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4;
+            local += numericAdvance + numericAdvance + numericAdvance + numericAdvance + numericAdvance + numericAdvance;
+          } else if (draft.type === 'display-image') {
+            local += sectionButtonH + 4 + sectionButtonH + 4;
+            local += numericAdvance + numericAdvance + numericAdvance + numericAdvance + numericAdvance;
           } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {
             local += numericAdvance;
           } else if (draft.type === 'fade-in-music') {
@@ -8753,15 +8833,62 @@ export default class Editor {
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Tile: ${draft.params.tileChar || '#'}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Tile', options: DEFAULT_TILE_TYPES.map((entry) => entry.char).filter(Boolean), selectedValue: draft.params.tileChar || '#', onPick: (value) => { draft.params.tileChar = value; } }); }, 'Pick tile character');
             y += sectionButtonH + 4;
           } else if (draft.type === 'display-text') {
-            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Text: ${draft.params.text || TRIGGER_TEXT_OPTIONS[0]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Text', options: TRIGGER_TEXT_OPTIONS, selectedValue: draft.params.text || TRIGGER_TEXT_OPTIONS[0], onPick: (value) => { draft.params.text = value; } }); }, 'Pick text');
+            const decalOptions = this.getTriggerDecalOptions();
+            const bgLabel = draft.params.backgroundImageDecalId ? this.getDecalLabelById(draft.params.backgroundImageDecalId) : '(none)';
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Text: ${draft.params.text || TRIGGER_TEXT_OPTIONS[0]}`, false, () => { this.promptForTriggerText(draft.params.text || '').then((value) => { if (value != null) draft.params.text = value; }); }, 'Edit text');
             y += sectionButtonH + 4;
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Position: ${draft.params.position || TRIGGER_TEXT_POSITIONS[1]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Position', options: TRIGGER_TEXT_POSITIONS, selectedValue: draft.params.position || TRIGGER_TEXT_POSITIONS[1], onPick: (value) => { draft.params.position = value; } }); }, 'Pick text position');
             y += sectionButtonH + 4;
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Background: ${draft.params.background ? 'On' : 'Off'}`, Boolean(draft.params.background), () => { draft.params.background = !draft.params.background; }, 'Toggle textbox background');
             y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Background Image: ${bgLabel}`, false, () => {
+              this.openTriggerOptionPicker({
+                title: 'Choose Background Image',
+                options: decalOptions,
+                selectedValue: draft.params.backgroundImageDecalId || '(none)',
+                onPick: (value) => { draft.params.backgroundImageDecalId = value === '(none)' ? null : value; }
+              });
+            }, 'Pick background image from decals/pixel editor');
+            y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Text Color: ${draft.params.textColor || TRIGGER_TEXT_COLORS[0]}`, false, () => {
+              this.promptForTriggerColor(draft.params.textColor || TRIGGER_TEXT_COLORS[0], { title: 'Text Color', label: 'Text color (hex or rgba):' }).then((value) => { if (value != null) draft.params.textColor = value; });
+            }, 'Set text color');
+            y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Box Color: ${draft.params.backgroundColor || 'rgba(0,0,0,0.72)'}`, false, () => {
+              this.promptForTriggerColor(draft.params.backgroundColor || 'rgba(0,0,0,0.72)', { title: 'Box Color', label: 'Box/background color (hex or rgba):' }).then((value) => { if (value != null) draft.params.backgroundColor = value; });
+            }, 'Set background color');
+            y += sectionButtonH + 4;
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Wait For Input: ${draft.params.waitForInput ? 'On' : 'Off'}`, Boolean(draft.params.waitForInput), () => { draft.params.waitForInput = !draft.params.waitForInput; }, 'Pause until attack/tap');
             y += sectionButtonH + 4;
+            numericRow('Offset X', 'offsetX', 8, -2000, 2000);
+            numericRow('Offset Y', 'offsetY', 8, -2000, 2000);
+            numericRow('Width', 'width', 8, 40, 2200);
+            numericRow('Height', 'height', 8, 24, 1400);
+            numericRow('Typewriter (ms/ch)', 'typewriterMsPerChar', 2, 0, 1000);
             numericRow('Duration (ms)', 'durationMs', 100, 100, 15000);
+          } else if (draft.type === 'display-image') {
+            const decalOptions = this.getTriggerDecalOptions();
+            const imageLabel = draft.params.imageDecalId ? this.getDecalLabelById(draft.params.imageDecalId) : '(none)';
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Image: ${imageLabel}`, false, () => {
+              this.openTriggerOptionPicker({
+                title: 'Choose Display Image',
+                options: decalOptions,
+                selectedValue: draft.params.imageDecalId || '(none)',
+                onPick: (value) => { draft.params.imageDecalId = value === '(none)' ? null : value; }
+              });
+            }, 'Pick image from decals/pixel editor');
+            y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Backdrop Color: ${draft.params.backgroundColor || 'rgba(0,0,0,0.4)'}`, false, () => {
+              this.promptForTriggerColor(draft.params.backgroundColor || 'rgba(0,0,0,0.4)', { title: 'Backdrop Color', label: 'Backdrop color (hex or rgba):' }).then((value) => { if (value != null) draft.params.backgroundColor = value; });
+            }, 'Set screen backdrop color');
+            y += sectionButtonH + 4;
+            numericRow('Offset X', 'offsetX', 8, -2000, 2000);
+            numericRow('Offset Y', 'offsetY', 8, -2000, 2000);
+            numericRow('Width', 'width', 8, 40, 2200);
+            numericRow('Height', 'height', 8, 24, 1400);
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Wait For Input: ${draft.params.waitForInput ? 'On' : 'Off'}`, Boolean(draft.params.waitForInput), () => { draft.params.waitForInput = !draft.params.waitForInput; }, 'Pause until attack/tap');
+            y += sectionButtonH + 4;
+            numericRow('Duration (ms)', 'durationMs', 100, 0, 15000);
           } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {
             numericRow('Duration (ms)', 'durationMs', 100, 0, 15000);
           } else if (draft.type === 'fade-in-music') {
