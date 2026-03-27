@@ -36,6 +36,7 @@ export default class CompanionBot {
 
     this.behaviorTimer = 0;
     this.attackTimer = 0;
+    this.utilityTimer = 0;
     this.bootTimer = 1.3;
     this.wrongTargetTimer = 0;
     this.stutterTimer = 0;
@@ -108,6 +109,7 @@ export default class CompanionBot {
     if (this.state === BOT_STATES.INACTIVE || this.state === BOT_STATES.REMOVED) return;
 
     this.attackTimer = Math.max(0, this.attackTimer - dt);
+    this.utilityTimer = Math.max(0, this.utilityTimer - dt);
     this.behaviorTimer = Math.max(0, this.behaviorTimer - dt);
     this.hesitationTimer = Math.max(0, this.hesitationTimer - dt);
     this.wrongTargetTimer = Math.max(0, this.wrongTargetTimer - dt);
@@ -122,6 +124,9 @@ export default class CompanionBot {
 
     const playerDistance = Math.hypot(player.x - this.x, player.y - this.y);
     if (playerDistance > 560) {
+      this.snapNearPlayer(player, world);
+    } else if (Math.abs(player.y - this.y) > 180 && playerDistance > 210) {
+      // Lightweight ledge/room recovery without pathfinding.
       this.snapNearPlayer(player, world);
     }
 
@@ -167,10 +172,11 @@ export default class CompanionBot {
     const immobilized = this.hesitationTimer > 0 || this.stutterTimer > 0;
     this.applyMovement(dt, world, target, immobilized);
 
-    if (!immobilized && this.state === BOT_STATES.ASSIST_SWITCH && this.targetSwitch) {
+    if (!immobilized && this.state === BOT_STATES.ASSIST_SWITCH && this.targetSwitch && this.utilityTimer <= 0) {
       const range = Math.hypot(this.x - this.targetSwitch.x, this.y - this.targetSwitch.y);
       if (range < 18 && (!this.shouldFailAction() || this.assistLevel >= 4)) {
-        onAssistSwitch?.(this.targetSwitch.tileX, this.targetSwitch.tileY, this);
+        const assisted = onAssistSwitch?.(this.targetSwitch.tileX, this.targetSwitch.tileY, this);
+        this.utilityTimer = assisted ? 0.9 : 0.35;
       }
     }
 
@@ -273,6 +279,11 @@ export default class CompanionBot {
   applyMovement(dt, world, target, immobilized) {
     const desiredDx = target.x - this.x;
     const desiredDy = target.y - this.y;
+    const nearTarget = Math.abs(desiredDx) < 8 && Math.abs(desiredDy) < 12;
+    if (nearTarget && this.onGround) {
+      this.vx *= 0.75;
+      this.vy = Math.min(this.vy, 0);
+    }
     if (!immobilized) {
       const desiredVx = clamp(desiredDx * 3.2, -140, 140);
       this.vx += (desiredVx - this.vx) * clamp(dt * 7, 0, 1);
@@ -311,10 +322,14 @@ export default class CompanionBot {
 
     const signX = Math.sign(this.vx);
     if (signX !== 0) {
+      const currentRect = this.rect;
       const testX = nextX + signX * rect.w * 0.5;
-      const topY = rect.y + 3;
-      const bottomY = rect.y + rect.h - 3;
+      const topY = currentRect.y + 3;
+      const bottomY = currentRect.y + currentRect.h - 3;
       if (checkSolid(testX, topY, true) || checkSolid(testX, bottomY, true)) {
+        if (this.onGround && Math.abs(this.vx) > 40) {
+          this.vy = Math.min(this.vy, -MOVEMENT_MODEL.baseJumpPower * 0.45);
+        }
         this.vx = 0;
       } else {
         this.x = nextX;
@@ -325,10 +340,11 @@ export default class CompanionBot {
 
     const signY = Math.sign(this.vy);
     if (signY !== 0) {
+      const currentRect = this.rect;
       const testY = nextY + signY * rect.h * 0.5;
       const ignoreOneWay = signY < 0;
-      const leftX = rect.x + 3;
-      const rightX = rect.x + rect.w - 3;
+      const leftX = currentRect.x + 3;
+      const rightX = currentRect.x + currentRect.w - 3;
       if (checkSolid(leftX, testY, ignoreOneWay) || checkSolid(rightX, testY, ignoreOneWay)) {
         if (signY > 0) {
           this.onGround = true;

@@ -2643,19 +2643,26 @@ export default class Game {
 
   updateCompanion(dt) {
     if (!this.companion || this.player.dead) return;
+    const assistTargets = this.enemies.filter((enemy) => !enemy.dead);
+    if (this.boss && !this.boss.dead && !this.boss.invulnerable) {
+      assistTargets.push(this.boss);
+    }
     this.companion.update(dt, {
       player: this.player,
       world: this.world,
-      enemies: this.enemies,
+      enemies: assistTargets,
       onAssistAttack: (enemy, damage) => {
         if (!enemy || enemy.dead) return;
-        enemy.takeDamage?.(damage);
+        enemy.damage?.(damage);
         this.spawnEffect('hit', enemy.x, enemy.y - 8);
+        this.spawnEffect('oil', enemy.x, enemy.y - 2);
       },
       onAssistSwitch: (tileX, tileY) => {
-        if (this.clearHeavyDebris(tileX, tileY)) {
+        const assisted = this.handleCompanionUtilityAtTile(tileX, tileY);
+        if (assisted) {
           this.spawnEffect('interact', (tileX + 0.5) * this.world.tileSize, (tileY + 0.5) * this.world.tileSize - 8);
         }
+        return assisted;
       }
     });
     const distance = Math.hypot(this.player.x - this.companion.x, this.player.y - this.companion.y);
@@ -2667,6 +2674,20 @@ export default class Game {
   drawCompanion(ctx) {
     if (!this.companion) return;
     this.companion.draw(ctx);
+  }
+
+  handleCompanionUtilityAtTile(tileX, tileY) {
+    let assisted = this.clearHeavyDebris(tileX, tileY);
+    (this.world.triggers || []).forEach((trigger, index) => {
+      if (trigger.condition !== 'When player enters this location') return;
+      const [x, y, w, h] = trigger.rect || [0, 0, 0, 0];
+      const inside = tileX >= x && tileX < x + w && tileY >= y && tileY < y + h;
+      if (!inside) return;
+      const id = trigger.id || `trigger-${index}`;
+      this.fireTrigger(trigger, id);
+      assisted = true;
+    });
+    return assisted;
   }
 
   startDeathSequence() {
@@ -5102,10 +5123,10 @@ export default class Game {
     }
     if (action.type === 'spawn-companion') {
       const worldX = Number.isFinite(params.x)
-        ? Number(params.x) * this.world.tileSize
+        ? (Math.floor(Number(params.x)) + 0.5) * this.world.tileSize
         : centerX;
       const worldY = Number.isFinite(params.y)
-        ? Number(params.y) * this.world.tileSize
+        ? (Math.floor(Number(params.y)) + 0.5) * this.world.tileSize
         : centerY;
       if (!this.companion) {
         this.spawnCompanion(worldX, worldY);
