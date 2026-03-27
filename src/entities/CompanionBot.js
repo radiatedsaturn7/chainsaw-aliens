@@ -43,6 +43,12 @@ export default class CompanionBot {
     this.targetEnemy = null;
     this.targetSwitch = null;
     this.teleportDistanceTiles = 11;
+    this.playerTrail = [];
+    this.trailClock = 0;
+    this.trailSampleTimer = 0;
+    this.replayDelay = 0.42;
+    this.replayActive = false;
+    this.replayModeTimer = 0;
   }
 
   get rect() {
@@ -116,6 +122,8 @@ export default class CompanionBot {
     this.hesitationTimer = Math.max(0, this.hesitationTimer - dt);
     this.wrongTargetTimer = Math.max(0, this.wrongTargetTimer - dt);
     this.stutterTimer = Math.max(0, this.stutterTimer - dt);
+    this.replayModeTimer = Math.max(0, this.replayModeTimer - dt);
+    this.recordPlayerTrail(player, dt);
 
     if (this.state === BOT_STATES.BOOTING) {
       this.bootTimer = Math.max(0, this.bootTimer - dt);
@@ -127,7 +135,15 @@ export default class CompanionBot {
     const playerDistance = Math.hypot(player.x - this.x, player.y - this.y);
     const teleportDistance = this.teleportDistanceTiles * world.tileSize;
     if (playerDistance > teleportDistance) {
-      this.snapNearPlayer(player, world);
+      if (!this.replayActive) {
+        this.replayActive = true;
+        this.replayModeTimer = 1.15;
+      } else if (this.replayModeTimer <= 0 && playerDistance > teleportDistance) {
+        this.snapNearPlayer(player, world);
+        this.replayActive = false;
+      }
+    } else if (this.replayActive && playerDistance <= this.followSlack * 1.2) {
+      this.replayActive = false;
     }
 
     if (this.state === BOT_STATES.CORRUPTED || this.state === BOT_STATES.FAILING) {
@@ -143,6 +159,10 @@ export default class CompanionBot {
     }
 
     let target = this.computeFollowTarget(player);
+    let replaySnapshot = this.getReplaySnapshot();
+    if (this.replayActive && replaySnapshot) {
+      target = { x: replaySnapshot.x, y: replaySnapshot.y };
+    }
     let desiredState = this.state;
 
     if (this.state !== BOT_STATES.BOOTING) {
@@ -170,7 +190,7 @@ export default class CompanionBot {
     }
 
     const immobilized = this.hesitationTimer > 0 || this.stutterTimer > 0;
-    this.applyMovement(dt, world, target, immobilized);
+    this.applyMovement(dt, world, target, immobilized, replaySnapshot);
 
     if (!immobilized && this.state === BOT_STATES.ASSIST_SWITCH && this.targetSwitch && this.utilityTimer <= 0) {
       const range = Math.hypot(this.x - this.targetSwitch.x, this.y - this.targetSwitch.y);
@@ -224,6 +244,36 @@ export default class CompanionBot {
       x: player.x - side * this.followSlack,
       y: player.y - 4
     };
+  }
+
+  recordPlayerTrail(player, dt) {
+    this.trailClock += dt;
+    this.trailSampleTimer = Math.max(0, this.trailSampleTimer - dt);
+    if (this.trailSampleTimer > 0) return;
+    this.trailSampleTimer = 0.05;
+    this.playerTrail.push({
+      time: this.trailClock,
+      x: player.x,
+      y: player.y,
+      vy: player.vy,
+      facing: player.facing
+    });
+    const maxEntries = 220;
+    if (this.playerTrail.length > maxEntries) {
+      this.playerTrail.splice(0, this.playerTrail.length - maxEntries);
+    }
+  }
+
+  getReplaySnapshot() {
+    if (!this.playerTrail.length) return null;
+    const targetTime = this.trailClock - this.replayDelay;
+    for (let index = this.playerTrail.length - 1; index >= 0; index -= 1) {
+      const entry = this.playerTrail[index];
+      if (entry.time <= targetTime) {
+        return entry;
+      }
+    }
+    return this.playerTrail[0];
   }
 
   pickFollowSide(player, distance) {
@@ -280,7 +330,7 @@ export default class CompanionBot {
     return { x: target.x, y: target.y - 4, enemy: target };
   }
 
-  applyMovement(dt, world, target, immobilized) {
+  applyMovement(dt, world, target, immobilized, replaySnapshot = null) {
     const desiredDx = target.x - this.x;
     const desiredDy = target.y - this.y;
     const nearTarget = Math.abs(desiredDx) < 8 && Math.abs(desiredDy) < 12;
@@ -294,9 +344,10 @@ export default class CompanionBot {
       if (Math.abs(desiredDx) > 8) {
         this.facing = Math.sign(desiredDx) || this.facing;
       }
-      const shouldJump = this.onGround && desiredDy < -26 && Math.abs(desiredDx) < 84;
+      const replayJump = replaySnapshot && replaySnapshot.vy < -MOVEMENT_MODEL.baseJumpPower * 0.42;
+      const shouldJump = this.onGround && (desiredDy < -26 || replayJump) && Math.abs(desiredDx) < 96;
       if (shouldJump) {
-        this.vy = -MOVEMENT_MODEL.baseJumpPower * 0.78;
+        this.vy = -MOVEMENT_MODEL.baseJumpPower;
         this.onGround = false;
       }
     } else {
