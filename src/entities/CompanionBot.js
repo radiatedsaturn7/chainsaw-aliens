@@ -65,7 +65,8 @@ export default class CompanionBot {
     this.assistLevel = Math.max(1, Math.floor(level));
     this.reactionDelay = clamp(0.5 - (this.assistLevel - 1) * 0.07, 0.15, 0.55);
     this.attackCooldown = clamp(1.8 - (this.assistLevel - 1) * 0.22, 0.45, 2);
-    this.followSlack = clamp(64 - (this.assistLevel - 1) * 5, 28, 70);
+    // Keep a little more space so jumps/double-jumps do not cause nervous close tracking.
+    this.followSlack = clamp(84 - (this.assistLevel - 1) * 6, 44, 92);
   }
 
   addAssistLevels(amount = 1) {
@@ -215,6 +216,10 @@ export default class CompanionBot {
 
   computeFollowTarget(player) {
     const distance = Math.hypot(player.x - this.x, player.y - this.y);
+    const verticalDelta = Math.abs(player.y - this.y);
+    if (distance < this.followSlack * 0.78 && verticalDelta < 82) {
+      return { x: this.x, y: this.y };
+    }
     const side = this.pickFollowSide(player, distance);
     return {
       x: player.x - side * this.followSlack,
@@ -383,23 +388,53 @@ export default class CompanionBot {
     if (!this.isActive()) return;
     const booting = this.state === BOT_STATES.BOOTING;
     const broken = this.state === BOT_STATES.FAILING;
-    const core = this.state === BOT_STATES.CORRUPTED || broken
-      ? '#ff8ca1'
-      : '#9be9ff';
+    const corrupted = this.state === BOT_STATES.CORRUPTED || broken;
+    const bodyFill = broken ? '#b78795' : '#ff8fb4';
+    const stroke = corrupted ? '#5f2f3b' : '#7a2e45';
+    const eyeColor = corrupted ? '#ffd4df' : '#fff6fb';
+    const accent = corrupted ? '#ff617f' : '#ffc1d5';
+    const walkPhase = performance.now() * 0.012;
+    const armSwing = Math.sin(walkPhase) * 2.4;
+    const legSwing = Math.sin(walkPhase + Math.PI) * 2.8;
 
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.globalAlpha = booting ? 0.55 + Math.sin(performance.now() * 0.01) * 0.25 : 1;
 
-    ctx.fillStyle = broken ? '#5f6774' : '#8a93a6';
-    ctx.fillRect(-8, -9, 16, 18);
-    ctx.fillStyle = '#293040';
-    ctx.fillRect(-6, -7, 12, 14);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = stroke;
+    ctx.fillStyle = bodyFill;
 
-    ctx.fillStyle = core;
-    ctx.fillRect(2 * this.facing - 3, -2, 6, 4);
-    ctx.fillStyle = '#1a202b';
-    ctx.fillRect(-7, 9, 14, 2);
+    // Player-like silhouette, but compact and pink.
+    ctx.beginPath();
+    ctx.arc(0, -8, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(-5, -3);
+    ctx.lineTo(5, -3);
+    ctx.lineTo(6, 7);
+    ctx.lineTo(-6, 7);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(-7, -2);
+    ctx.lineTo(-10 - armSwing, 4);
+    ctx.moveTo(7, -2);
+    ctx.lineTo(10 + armSwing, 4);
+    ctx.moveTo(-3, 7);
+    ctx.lineTo(-4 - legSwing * 0.45, 13);
+    ctx.moveTo(3, 7);
+    ctx.lineTo(4 + legSwing * 0.45, 13);
+    ctx.stroke();
+
+    ctx.fillStyle = eyeColor;
+    ctx.fillRect(this.facing > 0 ? 1 : -3, -9, 3, 2);
+    ctx.fillStyle = accent;
+    ctx.fillRect(-4, 1, 8, 2);
 
     if (this.corruption > 0) {
       ctx.strokeStyle = `rgba(255, 122, 148, ${0.25 + this.corruption * 0.5})`;
