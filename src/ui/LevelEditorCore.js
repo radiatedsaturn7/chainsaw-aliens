@@ -75,6 +75,7 @@ const DEFAULT_TILE_TYPES = [
 ];
 
 const STANDARD_ENEMY_TYPES = [
+  { id: 'companion', label: 'Companion Bot', glyph: 'CB', description: 'Silent support bot. Spawns as your companion instead of an enemy.' },
   { id: 'practice', label: 'Pulse Drone', glyph: 'PD', description: 'Restless drone that fires pulse volleys while circling the arena.' },
   { id: 'skitter', label: 'Skitter', glyph: 'SK', description: 'Fast ground skimmer that rushes the player.' },
   { id: 'spitter', label: 'Spitter', glyph: 'SP', description: 'Ranged turret that spits corrosive shots.' },

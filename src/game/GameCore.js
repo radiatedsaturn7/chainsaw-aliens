@@ -251,6 +251,7 @@ export default class Game {
     this.roomEnemySpawns = new Map();
     this.roomBossSpawns = new Map();
     this.roomAmbientSpawns = new Map();
+    this.roomCompanionSpawns = new Map();
     this.roomVisited = new Set();
     this.roomExitTimes = new Map();
     this.roomRespawnTimers = new Map();
@@ -529,6 +530,7 @@ export default class Game {
     this.roomEnemySpawns.clear();
     this.roomBossSpawns.clear();
     this.roomAmbientSpawns.clear();
+    this.roomCompanionSpawns.clear();
     if (!this.world.enemies) return;
     this.world.enemies.forEach((spawn) => {
       if (!spawn) return;
@@ -538,6 +540,10 @@ export default class Game {
         const list = this.roomAmbientSpawns.get(roomIndex) || [];
         list.push({ ...spawn });
         this.roomAmbientSpawns.set(roomIndex, list);
+      } else if (spawn.type === 'companion') {
+        const list = this.roomCompanionSpawns.get(roomIndex) || [];
+        list.push({ ...spawn });
+        this.roomCompanionSpawns.set(roomIndex, list);
       } else if (BOSS_TYPES.has(spawn.type)) {
         const list = this.roomBossSpawns.get(roomIndex) || [];
         list.push({ ...spawn });
@@ -1769,6 +1775,12 @@ export default class Game {
   }
 
   spawnEnemyByType(type, worldX, worldY, options = {}) {
+    if (type === 'companion') {
+      if (!this.companion) {
+        return this.spawnCompanion(worldX, worldY);
+      }
+      return this.companion;
+    }
     if (String(type || '').startsWith('custom:')) {
       const actorId = String(type).slice('custom:'.length);
       let definition = this.getRuntimeActorDefinition(actorId) || loadActorDefinitionById(actorId);
@@ -1908,6 +1920,12 @@ export default class Game {
           if (!spawn || AMBIENT_SPAWN_TYPES.has(spawn.type)) return;
           const worldX = (spawn.x + 0.5) * tileSize;
           const worldY = (spawn.y + 0.5) * tileSize;
+          if (spawn.type === 'companion') {
+            if (!this.companion) {
+              this.spawnCompanion(worldX, worldY);
+            }
+            return;
+          }
           if (spawn.type === 'finalboss') {
             if (!this.boss) {
               this.boss = new FinalBoss(worldX, worldY);
@@ -2811,8 +2829,18 @@ export default class Game {
     }
     this.roomVisited.add(roomIndex);
     this.refreshRoomAmbient(roomIndex);
+    this.spawnRoomCompanions(roomIndex);
     this.respawnRoomEnemies(roomIndex);
     this.spawnRoomBosses(roomIndex);
+  }
+
+  spawnRoomCompanions(roomIndex) {
+    if (this.companion) return;
+    const spawns = this.roomCompanionSpawns.get(roomIndex) || [];
+    if (!spawns.length) return;
+    const tileSize = this.world.tileSize;
+    const spawn = spawns[0];
+    this.spawnCompanion((spawn.x + 0.5) * tileSize, (spawn.y + 0.5) * tileSize);
   }
 
   updateRoomRespawns(dt) {
