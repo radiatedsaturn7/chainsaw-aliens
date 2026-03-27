@@ -93,6 +93,9 @@ const STANDARD_ENEMY_TYPES = [
   { id: 'sentinel', label: 'Sentinel', glyph: 'SE', description: 'Orbital sentinel that fires in pulses.' }
 ];
 
+const COMPANION_NPC_TYPES = STANDARD_ENEMY_TYPES.filter((enemy) => enemy.id === 'companion');
+const STANDARD_HOSTILE_ENEMY_TYPES = STANDARD_ENEMY_TYPES.filter((enemy) => enemy.id !== 'companion');
+
 const AMBIENT_ENEMY_TYPES = [
   { id: 'water-drip', label: 'Water Drip', glyph: 'WD', description: 'Invisible spawner that drips water straight down until blocked.' },
   { id: 'acid-drip', label: 'Acid Drip', glyph: 'AD', description: 'Invisible spawner that drips corrosive fluid straight down until blocked.' },
@@ -1396,8 +1399,20 @@ export default class Editor {
             this.mode = 'enemy';
           }
         })),
+        { id: 'npc-sep-companions', label: '──────── COMPANIONS ────────', tooltip: 'Friendly companion units', separator: true, onClick: () => {} },
+        ...COMPANION_NPC_TYPES.map((enemy) => ({
+          id: `npc-${enemy.id}`,
+          label: `${enemy.label} [${enemy.glyph}]`,
+          enemy,
+          tooltip: `Companion: ${enemy.label}`,
+          onClick: () => {
+            this.enemyCategory = 'standard';
+            this.setEnemyType(enemy);
+            this.mode = 'enemy';
+          }
+        })),
         { id: 'npc-sep-standard', label: '──────── ENEMIES ────────', tooltip: 'Standard enemies', separator: true, onClick: () => {} },
-        ...STANDARD_ENEMY_TYPES.map((enemy) => ({
+        ...STANDARD_HOSTILE_ENEMY_TYPES.map((enemy) => ({
           id: `npc-${enemy.id}`,
           label: `${enemy.label} [${enemy.glyph}]`,
           enemy,
@@ -7989,8 +8004,21 @@ export default class Editor {
                 this.mode = 'enemy';
               }
             })),
+            { id: 'npc-sep-companions', label: '──────── COMPANIONS ────────', separator: true, active: false, tooltip: 'Friendly companion units', onClick: () => {} },
+            ...COMPANION_NPC_TYPES.map((enemy) => ({
+              id: `npc-${enemy.id}`,
+              label: `${enemy.label} [${enemy.glyph}]`,
+              active: this.enemyType.id === enemy.id,
+              preview: { type: 'enemy', enemy },
+              tooltip: `Companion: ${enemy.label}`,
+              onClick: () => {
+                this.enemyCategory = 'standard';
+                this.setEnemyType(enemy);
+                this.mode = 'enemy';
+              }
+            })),
             { id: 'npc-sep-standard', label: '──────── ENEMIES ────────', separator: true, active: false, tooltip: 'Standard enemies', onClick: () => {} },
-            ...STANDARD_ENEMY_TYPES.map((enemy) => ({
+            ...STANDARD_HOSTILE_ENEMY_TYPES.map((enemy) => ({
               id: `npc-${enemy.id}`,
               label: `${enemy.label} [${enemy.glyph}]`,
               active: this.enemyType.id === enemy.id,
