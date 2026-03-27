@@ -22,6 +22,8 @@ export default class CompanionBot {
     this.width = 22;
     this.height = 34;
     this.onGround = false;
+    this.maxAirJumps = 1;
+    this.airJumpsRemaining = this.maxAirJumps;
     this.facing = 1;
     this.state = BOT_STATES.BOOTING;
 
@@ -111,6 +113,7 @@ export default class CompanionBot {
     this.vx = 0;
     this.vy = 0;
     this.onGround = false;
+    this.airJumpsRemaining = this.maxAirJumps;
   }
 
   update(dt, context = {}) {
@@ -403,9 +406,14 @@ export default class CompanionBot {
         this.facing = Math.sign(desiredDx) || this.facing;
       }
       const replayJump = replaySnapshot && replaySnapshot.vy < -MOVEMENT_MODEL.baseJumpPower * 0.42;
-      const shouldJump = this.onGround && (desiredDy < -26 || replayJump) && Math.abs(desiredDx) < 96;
+      const canGroundJump = this.onGround;
+      const canAirJump = !this.onGround && this.airJumpsRemaining > 0 && replayJump;
+      const shouldJump = (canGroundJump || canAirJump) && (desiredDy < -26 || replayJump) && Math.abs(desiredDx) < 96;
       if (shouldJump) {
         this.vy = -MOVEMENT_MODEL.baseJumpPower;
+        if (!canGroundJump) {
+          this.airJumpsRemaining = Math.max(0, this.airJumpsRemaining - 1);
+        }
         this.onGround = false;
       }
     } else {
@@ -461,6 +469,7 @@ export default class CompanionBot {
       if (checkSolid(leftX, testY, ignoreOneWay) || checkSolid(rightX, testY, ignoreOneWay)) {
         if (signY > 0) {
           this.onGround = true;
+          this.airJumpsRemaining = this.maxAirJumps;
         }
         this.vy = 0;
       } else {
