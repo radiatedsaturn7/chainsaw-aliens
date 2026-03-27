@@ -49,6 +49,8 @@ export default class CompanionBot {
     this.replayDelay = 0.42;
     this.replayActive = false;
     this.replayModeTimer = 0;
+    this.replayAnchor = null;
+    this.sharedCheckpoints = [];
   }
 
   get rect() {
@@ -124,6 +126,7 @@ export default class CompanionBot {
     this.stutterTimer = Math.max(0, this.stutterTimer - dt);
     this.replayModeTimer = Math.max(0, this.replayModeTimer - dt);
     this.recordPlayerTrail(player, dt);
+    this.recordSharedCheckpoint(player);
 
     if (this.state === BOT_STATES.BOOTING) {
       this.bootTimer = Math.max(0, this.bootTimer - dt);
@@ -136,14 +139,32 @@ export default class CompanionBot {
     const teleportDistance = this.teleportDistanceTiles * world.tileSize;
     if (playerDistance > teleportDistance) {
       if (!this.replayActive) {
+        const checkpoint = this.getSharedCheckpoint();
+        if (checkpoint) {
+          this.x = checkpoint.companionX;
+          this.y = checkpoint.companionY;
+          this.vx = 0;
+          this.vy = 0;
+          this.replayAnchor = {
+            playerX: checkpoint.playerX,
+            playerY: checkpoint.playerY,
+            companionX: checkpoint.companionX,
+            companionY: checkpoint.companionY,
+            time: checkpoint.time
+          };
+        } else {
+          this.replayAnchor = null;
+        }
         this.replayActive = true;
-        this.replayModeTimer = 1.15;
+        this.replayModeTimer = 1.6;
       } else if (this.replayModeTimer <= 0 && playerDistance > teleportDistance) {
         this.snapNearPlayer(player, world);
         this.replayActive = false;
+        this.replayAnchor = null;
       }
     } else if (this.replayActive && playerDistance <= this.followSlack * 1.2) {
       this.replayActive = false;
+      this.replayAnchor = null;
     }
 
     if (this.state === BOT_STATES.CORRUPTED || this.state === BOT_STATES.FAILING) {
@@ -161,7 +182,14 @@ export default class CompanionBot {
     let target = this.computeFollowTarget(player);
     let replaySnapshot = this.getReplaySnapshot();
     if (this.replayActive && replaySnapshot) {
-      target = { x: replaySnapshot.x, y: replaySnapshot.y };
+      if (this.replayAnchor && replaySnapshot.time >= this.replayAnchor.time) {
+        target = {
+          x: this.replayAnchor.companionX + (replaySnapshot.x - this.replayAnchor.playerX),
+          y: this.replayAnchor.companionY + (replaySnapshot.y - this.replayAnchor.playerY)
+        };
+      } else {
+        target = { x: replaySnapshot.x, y: replaySnapshot.y };
+      }
     }
     let desiredState = this.state;
 
@@ -274,6 +302,36 @@ export default class CompanionBot {
       }
     }
     return this.playerTrail[0];
+  }
+
+  recordSharedCheckpoint(player) {
+    const closeEnough = Math.hypot(player.x - this.x, player.y - this.y) <= 22;
+    if (!closeEnough) return;
+    const last = this.sharedCheckpoints[this.sharedCheckpoints.length - 1];
+    if (last && this.trailClock - last.time < 0.12) return;
+    this.sharedCheckpoints.push({
+      time: this.trailClock,
+      playerX: player.x,
+      playerY: player.y,
+      companionX: this.x,
+      companionY: this.y
+    });
+    const maxEntries = 40;
+    if (this.sharedCheckpoints.length > maxEntries) {
+      this.sharedCheckpoints.splice(0, this.sharedCheckpoints.length - maxEntries);
+    }
+  }
+
+  getSharedCheckpoint() {
+    if (!this.sharedCheckpoints.length) return null;
+    const minRecentTime = this.trailClock - 7;
+    for (let index = this.sharedCheckpoints.length - 1; index >= 0; index -= 1) {
+      const entry = this.sharedCheckpoints[index];
+      if (entry.time >= minRecentTime) {
+        return entry;
+      }
+    }
+    return this.sharedCheckpoints[this.sharedCheckpoints.length - 1];
   }
 
   pickFollowSide(player, distance) {
