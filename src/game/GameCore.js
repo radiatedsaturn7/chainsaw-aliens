@@ -2684,7 +2684,8 @@ export default class Game {
       }
     });
     const distance = Math.hypot(this.player.x - this.companion.x, this.player.y - this.companion.y);
-    if (distance > 520 || this.doorTransition) {
+    const teleportDistance = (this.companion.teleportDistanceTiles || 11) * this.world.tileSize;
+    if (distance > teleportDistance || this.doorTransition) {
       this.companion.snapNearPlayer(this.player, this.world);
     }
   }

@@ -19,8 +19,8 @@ export default class CompanionBot {
     this.y = y;
     this.vx = 0;
     this.vy = 0;
-    this.width = 18;
-    this.height = 18;
+    this.width = 22;
+    this.height = 34;
     this.onGround = false;
     this.facing = 1;
     this.state = BOT_STATES.BOOTING;
@@ -42,6 +42,7 @@ export default class CompanionBot {
     this.stutterTimer = 0;
     this.targetEnemy = null;
     this.targetSwitch = null;
+    this.teleportDistanceTiles = 11;
   }
 
   get rect() {
@@ -124,10 +125,8 @@ export default class CompanionBot {
     }
 
     const playerDistance = Math.hypot(player.x - this.x, player.y - this.y);
-    if (playerDistance > 560) {
-      this.snapNearPlayer(player, world);
-    } else if (Math.abs(player.y - this.y) > 180 && playerDistance > 210) {
-      // Lightweight ledge/room recovery without pathfinding.
+    const teleportDistance = this.teleportDistanceTiles * world.tileSize;
+    if (playerDistance > teleportDistance) {
       this.snapNearPlayer(player, world);
     }
 
@@ -396,6 +395,8 @@ export default class CompanionBot {
     const walkPhase = performance.now() * 0.012;
     const armSwing = Math.sin(walkPhase) * 2.4;
     const legSwing = Math.sin(walkPhase + Math.PI) * 2.8;
+    const hipY = 10;
+    const shoulderY = -8;
 
     ctx.save();
     ctx.translate(this.x, this.y);
@@ -405,36 +406,36 @@ export default class CompanionBot {
     ctx.strokeStyle = stroke;
     ctx.fillStyle = bodyFill;
 
-    // Player-like silhouette, but compact and pink.
+    // Player-like silhouette with companion pink styling.
     ctx.beginPath();
-    ctx.arc(0, -8, 5, 0, Math.PI * 2);
+    ctx.arc(0, -this.height / 2 + 8, 6, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.moveTo(-5, -3);
-    ctx.lineTo(5, -3);
-    ctx.lineTo(6, 7);
-    ctx.lineTo(-6, 7);
+    ctx.moveTo(-6, shoulderY);
+    ctx.lineTo(6, shoulderY);
+    ctx.lineTo(8, hipY);
+    ctx.lineTo(-8, hipY);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.moveTo(-7, -2);
-    ctx.lineTo(-10 - armSwing, 4);
-    ctx.moveTo(7, -2);
-    ctx.lineTo(10 + armSwing, 4);
-    ctx.moveTo(-3, 7);
-    ctx.lineTo(-4 - legSwing * 0.45, 13);
-    ctx.moveTo(3, 7);
-    ctx.lineTo(4 + legSwing * 0.45, 13);
+    ctx.moveTo(-10, shoulderY);
+    ctx.lineTo(-14 - armSwing, shoulderY + 8);
+    ctx.moveTo(10, shoulderY);
+    ctx.lineTo(14 + armSwing, shoulderY + 8);
+    ctx.moveTo(-6, hipY);
+    ctx.lineTo(-7 - legSwing * 0.45, hipY + 12);
+    ctx.moveTo(6, hipY);
+    ctx.lineTo(7 + legSwing * 0.45, hipY + 12);
     ctx.stroke();
 
     ctx.fillStyle = eyeColor;
-    ctx.fillRect(this.facing > 0 ? 1 : -3, -9, 3, 2);
+    ctx.fillRect(this.facing > 0 ? 1 : -4, -this.height / 2 + 7, 4, 2);
     ctx.fillStyle = accent;
-    ctx.fillRect(-4, 1, 8, 2);
+    ctx.fillRect(-5, shoulderY + 7, 10, 2);
 
     if (this.corruption > 0) {
       ctx.strokeStyle = `rgba(255, 122, 148, ${0.25 + this.corruption * 0.5})`;
