@@ -243,6 +243,11 @@ const TRIGGER_ACTION_TYPES = [
   { id: 'fade-out', label: 'Fade Out' },
   { id: 'display-text', label: 'Display Text' },
   { id: 'display-image', label: 'Display Image' },
+  { id: 'spawn-companion', label: 'Spawn Companion' },
+  { id: 'upgrade-companion', label: 'Upgrade Companion' },
+  { id: 'corrupt-companion', label: 'Corrupt Companion' },
+  { id: 'remove-companion', label: 'Remove Companion' },
+  { id: 'force-companion-loss', label: 'Force Companion Loss' },
   { id: 'wait', label: 'Wait (ms)' },
   { id: 'fade-out-music', label: 'Fade Out Music' },
   { id: 'fade-in-music', label: 'Fade In Music' }
@@ -2535,6 +2540,21 @@ export default class Editor {
       case 'wait':
         base.params = { durationMs: 500 };
         break;
+      case 'spawn-companion':
+        base.params = { x: null, y: null };
+        break;
+      case 'upgrade-companion':
+        base.params = { levels: 1, toast: true };
+        break;
+      case 'corrupt-companion':
+        base.params = { amount: 0.2 };
+        break;
+      case 'remove-companion':
+        base.params = { toast: true };
+        break;
+      case 'force-companion-loss':
+        base.params = { text: 'Companion offline.', toast: true };
+        break;
       default:
         base.params = {};
     }
@@ -3072,6 +3092,18 @@ export default class Editor {
         return `${this.getDecalLabelById(params.imageDecalId)} (${params.width || 480}x${params.height || 270}) @ (${params.offsetX || 0}, ${params.offsetY || 0})${params.waitForInput ? ' [input]' : ''}`;
       case 'wait':
         return `${params.durationMs || 0}ms`;
+      case 'spawn-companion':
+        return Number.isFinite(params.x) && Number.isFinite(params.y)
+          ? `At (${params.x}, ${params.y})`
+          : 'Near trigger';
+      case 'upgrade-companion':
+        return `Levels: +${params.levels || 1}`;
+      case 'corrupt-companion':
+        return `Amount: ${Number(params.amount || 0).toFixed(2)}`;
+      case 'remove-companion':
+        return 'Remove active companion';
+      case 'force-companion-loss':
+        return params.text ? `\"${params.text}\"` : 'Scripted loss';
       case 'fade-out-music':
         return `Duration: ${params.durationMs || 0}ms`;
       case 'fade-in-music':
@@ -5237,6 +5269,15 @@ export default class Editor {
       const centerY = zoneY + Math.floor(zoneH / 2);
       this.triggerActionDraft.params.offsetX = tileX - centerX;
       this.triggerActionDraft.params.offsetY = tileY - centerY;
+      this.triggerPlacementMode = null;
+      return;
+    }
+
+    if (this.triggerEditorOpen && this.triggerPlacementMode === 'spawn-companion' && this.triggerActionDraft) {
+      if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
+      const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
+      this.triggerActionDraft.params.x = tileX;
+      this.triggerActionDraft.params.y = tileY;
       this.triggerPlacementMode = null;
       return;
     }
@@ -8678,6 +8719,16 @@ export default class Editor {
           } else if (draft.type === 'display-image') {
             local += sectionButtonH + 4 + sectionButtonH + 4;
             local += numericAdvance + numericAdvance + numericAdvance + numericAdvance + numericAdvance;
+          } else if (draft.type === 'spawn-companion') {
+            local += sectionButtonH + 4;
+          } else if (draft.type === 'upgrade-companion') {
+            local += numericAdvance + sectionButtonH + 4;
+          } else if (draft.type === 'corrupt-companion') {
+            local += numericAdvance;
+          } else if (draft.type === 'remove-companion') {
+            local += sectionButtonH + 4;
+          } else if (draft.type === 'force-companion-loss') {
+            local += sectionButtonH + 4 + sectionButtonH + 4;
           } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {
             local += numericAdvance;
           } else if (draft.type === 'fade-in-music') {
@@ -8889,6 +8940,24 @@ export default class Editor {
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Wait For Input: ${draft.params.waitForInput ? 'On' : 'Off'}`, Boolean(draft.params.waitForInput), () => { draft.params.waitForInput = !draft.params.waitForInput; }, 'Pause until attack/tap');
             y += sectionButtonH + 4;
             numericRow('Duration (ms)', 'durationMs', 100, 0, 15000);
+          } else if (draft.type === 'spawn-companion') {
+            const hasPoint = Number.isFinite(draft.params.x) && Number.isFinite(draft.params.y);
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, hasPoint ? `Spawn: (${draft.params.x}, ${draft.params.y})` : 'Spawn: trigger center', this.triggerPlacementMode === 'spawn-companion', () => { this.triggerPlacementMode = this.triggerPlacementMode === 'spawn-companion' ? null : 'spawn-companion'; }, 'Pick spawn point (tile)');
+            y += sectionButtonH + 4;
+          } else if (draft.type === 'upgrade-companion') {
+            numericRow('Assist Levels', 'levels', 1, 1, 8);
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Toast: ${draft.params.toast === false ? 'Off' : 'On'}`, draft.params.toast !== false, () => { draft.params.toast = !(draft.params.toast === false); }, 'Show short status toast');
+            y += sectionButtonH + 4;
+          } else if (draft.type === 'corrupt-companion') {
+            numericRow('Amount x100', 'amount', 0.05, 0.05, 1);
+          } else if (draft.type === 'remove-companion') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Toast: ${draft.params.toast === false ? 'Off' : 'On'}`, draft.params.toast !== false, () => { draft.params.toast = !(draft.params.toast === false); }, 'Show short status toast');
+            y += sectionButtonH + 4;
+          } else if (draft.type === 'force-companion-loss') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Prompt: ${draft.params.text || 'Companion offline.'}`, false, () => { this.promptForTriggerText(draft.params.text || '').then((value) => { if (value != null) draft.params.text = value; }); }, 'Set short loss line');
+            y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Toast: ${draft.params.toast === false ? 'Off' : 'On'}`, draft.params.toast !== false, () => { draft.params.toast = !(draft.params.toast === false); }, 'Show short status toast');
+            y += sectionButtonH + 4;
           } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {
             numericRow('Duration (ms)', 'durationMs', 100, 0, 15000);
           } else if (draft.type === 'fade-in-music') {

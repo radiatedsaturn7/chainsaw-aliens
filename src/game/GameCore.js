@@ -9,6 +9,7 @@ import AudioSystem from './Audio.js';
 import World from '../world/World.js';
 import Minimap from '../world/Minimap.js';
 import Player from '../entities/Player.js';
+import CompanionBot from '../entities/CompanionBot.js';
 import Skitter from '../entities/Skitter.js';
 import Spitter from '../entities/Spitter.js';
 import Bulwark from '../entities/Bulwark.js';
@@ -185,6 +186,7 @@ export default class Game {
     this.minimap = new Minimap(this.world);
     this.spawnPoint = { x: 32 * 28, y: 32 * 19 };
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
+    this.companion = null;
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
     this.title = new Title();
@@ -1349,6 +1351,7 @@ export default class Game {
   resetRun({ playtest = false, startWithEverything = true } = {}) {
     this.world.reset();
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
+    this.companion = null;
     const startLoaded = this.gameMode === 'endless' || (playtest && startWithEverything);
     if (startLoaded) {
       this.player.equippedUpgrades = [...UPGRADE_LIST];
@@ -2367,6 +2370,7 @@ export default class Game {
     this.updateDoorVisualStates(dt * timeScale);
     if (this.spawnPauseTimer > 0) {
       this.spawnPauseTimer = Math.max(0, this.spawnPauseTimer - dt);
+      this.updateCompanion(dt * timeScale);
       this.updateEffects(dt);
       this.setRevAudio(false);
       this.input.flush();
@@ -2374,6 +2378,7 @@ export default class Game {
     }
     if (this.pickupPauseTimer > 0) {
       this.pickupPauseTimer = Math.max(0, this.pickupPauseTimer - dt);
+      this.updateCompanion(dt * timeScale);
       this.updateEffects(dt);
       this.setRevAudio(false);
       this.input.flush();
@@ -2381,6 +2386,7 @@ export default class Game {
     }
     if (this.doorTransition) {
       this.updateDoorTransition(dt * timeScale);
+      this.updateCompanion(dt * timeScale);
       this.updateEffects(dt * timeScale);
       this.updateRoomCameraBounds();
       this.camera.follow(this.player, dt, this.cameraBounds);
@@ -2536,6 +2542,7 @@ export default class Game {
     }
 
     this.updateAmbientSystems(dt * timeScale);
+    this.updateCompanion(dt * timeScale);
     this.updateEnemies(dt * timeScale);
     this.applyIgnitirEnemyPull(dt * timeScale);
     this.updateProjectiles(dt * timeScale);
@@ -2605,6 +2612,61 @@ export default class Game {
     this.ignitirCharge = 0;
     this.ignitirReady = false;
     this.lowHealthAlarmTimer = 0;
+    if (this.companion?.isActive?.()) {
+      this.companion.snapNearPlayer(this.player, this.world);
+    }
+  }
+
+  spawnCompanion(x = this.player.x - 42, y = this.player.y - 4) {
+    this.companion = new CompanionBot(x, y);
+    this.companion.snapNearPlayer(this.player, this.world);
+    this.showSystemToast('Companion online.');
+    return this.companion;
+  }
+
+  removeCompanion({ silent = false } = {}) {
+    if (!this.companion) return;
+    this.companion.remove?.();
+    this.companion = null;
+    if (!silent) {
+      this.showSystemToast('Companion signal lost.');
+    }
+  }
+
+  beginCompanionCorruption(amount = 0.2) {
+    if (!this.companion) return;
+    this.companion.beginCorruption(amount);
+    if (this.companion.corruption >= 0.35) {
+      this.showSystemToast('Companion behavior unstable.');
+    }
+  }
+
+  updateCompanion(dt) {
+    if (!this.companion || this.player.dead) return;
+    this.companion.update(dt, {
+      player: this.player,
+      world: this.world,
+      enemies: this.enemies,
+      onAssistAttack: (enemy, damage) => {
+        if (!enemy || enemy.dead) return;
+        enemy.takeDamage?.(damage);
+        this.spawnEffect('hit', enemy.x, enemy.y - 8);
+      },
+      onAssistSwitch: (tileX, tileY) => {
+        if (this.clearHeavyDebris(tileX, tileY)) {
+          this.spawnEffect('interact', (tileX + 0.5) * this.world.tileSize, (tileY + 0.5) * this.world.tileSize - 8);
+        }
+      }
+    });
+    const distance = Math.hypot(this.player.x - this.companion.x, this.player.y - this.companion.y);
+    if (distance > 520 || this.doorTransition) {
+      this.companion.snapNearPlayer(this.player, this.world);
+    }
+  }
+
+  drawCompanion(ctx) {
+    if (!this.companion) return;
+    this.companion.draw(ctx);
   }
 
   startDeathSequence() {
@@ -5038,6 +5100,50 @@ export default class Game {
       onDone();
       return;
     }
+    if (action.type === 'spawn-companion') {
+      const worldX = Number.isFinite(params.x)
+        ? Number(params.x) * this.world.tileSize
+        : centerX;
+      const worldY = Number.isFinite(params.y)
+        ? Number(params.y) * this.world.tileSize
+        : centerY;
+      if (!this.companion) {
+        this.spawnCompanion(worldX, worldY);
+      } else {
+        this.companion.snapNearPlayer(this.player, this.world);
+      }
+      onDone();
+      return;
+    }
+    if (action.type === 'upgrade-companion') {
+      if (this.companion) {
+        const levels = Math.max(1, Number(params.levels || 1));
+        this.companion.addAssistLevels(levels);
+        if (params.toast !== false) {
+          this.showSystemToast('Companion routines expanded.');
+        }
+      }
+      onDone();
+      return;
+    }
+    if (action.type === 'corrupt-companion') {
+      this.beginCompanionCorruption(Math.max(0, Number(params.amount || 0.2)));
+      onDone();
+      return;
+    }
+    if (action.type === 'remove-companion') {
+      this.removeCompanion({ silent: params.toast === false });
+      onDone();
+      return;
+    }
+    if (action.type === 'force-companion-loss') {
+      if (params.text) {
+        this.showSystemToast(String(params.text));
+      }
+      this.removeCompanion({ silent: params.toast === false });
+      onDone();
+      return;
+    }
     onDone();
   }
 
@@ -6202,6 +6308,7 @@ export default class Game {
       }
     });
     this.healthDrops.forEach((drop) => drop.draw(ctx));
+    this.drawCompanion(ctx);
     if (!this.player.dead) {
       if (this.getActiveWeapon()?.id === 'ignitir' && this.ignitirReady) {
         ctx.save();
