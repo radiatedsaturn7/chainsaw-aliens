@@ -1,12 +1,12 @@
 const DEFAULT_ACTIONS = [
-  { type: 'walk-left', dir: -1, maxTime: 0.9 },
-  { type: 'walk-right', dir: 1, maxTime: 0.9 },
-  { type: 'jump-up', dir: 0, maxTime: 1.2 },
-  { type: 'jump-left', dir: -1, maxTime: 1.2 },
-  { type: 'jump-right', dir: 1, maxTime: 1.2 },
-  { type: 'double-jump-up', dir: 0, maxTime: 1.35 },
-  { type: 'double-jump-left', dir: -1, maxTime: 1.35 },
-  { type: 'double-jump-right', dir: 1, maxTime: 1.35 },
+  { type: 'walk-left', dir: -1, maxTime: 1.05 },
+  { type: 'walk-right', dir: 1, maxTime: 1.05 },
+  { type: 'jump-up', dir: 0, maxTime: 1.45 },
+  { type: 'jump-left', dir: -1, maxTime: 1.45 },
+  { type: 'jump-right', dir: 1, maxTime: 1.45 },
+  { type: 'double-jump-up', dir: 0, maxTime: 1.6 },
+  { type: 'double-jump-left', dir: -1, maxTime: 1.6 },
+  { type: 'double-jump-right', dir: 1, maxTime: 1.6 },
   { type: 'drop', dir: 0, maxTime: 0.9 }
 ];
 
@@ -120,7 +120,7 @@ export default class CompanionTraversalGraph {
     const tileSize = world.tileSize;
     const width = 22;
     const height = 34;
-    const speed = 140;
+    const speed = 165;
     const gravity = 940;
     const jumpPower = 430;
     const dt = 1 / 60;

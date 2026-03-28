@@ -151,7 +151,11 @@ export default class CompanionBot {
     const playerDistance = Math.hypot(player.x - this.x, player.y - this.y);
     const teleportDistance = this.teleportDistanceTiles * world.tileSize;
     if (playerDistance > teleportDistance) {
-      if (!this.replayActive) {
+      const hasRoomPath = this.hasRoomPathToPlayer(player, world);
+      if (hasRoomPath) {
+        this.replayActive = false;
+        this.replayAnchor = null;
+      } else if (!this.replayActive) {
         const checkpoint = this.getSharedCheckpoint();
         if (checkpoint) {
           this.x = checkpoint.companionX;
@@ -348,6 +352,9 @@ export default class CompanionBot {
       const path = this.pathfinder.findPath(graph, startNode.id, goalNode.id);
       if (path?.edges?.length) {
         this.pathExecutor.setPath(path.edges);
+        if (this.debugTraversal) {
+          console.debug('Companion A* path edges', path.edges.length, startNode.id, '->', goalNode.id);
+        }
         this.pathReplanTimer = 0.45;
       } else {
         this.pathExecutor.clear();
@@ -362,6 +369,20 @@ export default class CompanionBot {
       return null;
     }
     return step;
+  }
+
+  hasRoomPathToPlayer(player, world) {
+    const tileSize = world.tileSize;
+    const roomIndex = world.roomAtTile?.(Math.floor(this.x / tileSize), Math.floor(this.y / tileSize));
+    const playerRoom = world.roomAtTile?.(Math.floor(player.x / tileSize), Math.floor(player.y / tileSize));
+    if (roomIndex == null || playerRoom == null || roomIndex !== playerRoom) return false;
+    const graph = this.pathGraph.getRoomGraph(roomIndex, world);
+    if (!graph) return false;
+    const startNode = this.pathGraph.getClosestNode(graph, this.x, this.y);
+    const goalNode = this.pathGraph.getClosestNode(graph, player.x, player.y);
+    if (!startNode || !goalNode) return false;
+    const path = this.pathfinder.findPath(graph, startNode.id, goalNode.id);
+    return Boolean(path?.edges?.length);
   }
 
   recordSharedCheckpoint(player) {
