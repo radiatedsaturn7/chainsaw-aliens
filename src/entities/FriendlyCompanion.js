@@ -50,6 +50,9 @@ export default class FriendlyCompanion extends Player {
     this.attackCooldown = 0;
     this.jumpDecisionCooldown = 0;
     this.aiAirJumpUsed = false;
+    this.jumpStallCounter = 0;
+    this.jumpStallBestY = Number.POSITIVE_INFINITY;
+    this.jumpSuppressTimer = 0;
     this.assistTarget = null;
     this.assistHoldTimer = 0;
   }
@@ -113,13 +116,43 @@ export default class FriendlyCompanion extends Player {
     const playerTileY = Math.floor((player.y + player.height / 2 - 1) / tileSize);
     const facing = player.facing || 1;
     const verticalOffsets = [0, -1, 1, -2, 2];
-    const horizontalSteps = [2, 1, 0];
-    for (let stepIndex = 0; stepIndex < horizontalSteps.length; stepIndex += 1) {
-      const step = horizontalSteps[stepIndex];
-      const candidateX = playerTileX - facing * step;
+    const behindColumns = [2, 1, 0].map((step) => playerTileX - facing * step);
+    const adjacentColumns = [
+      playerTileX - facing * 3,
+      playerTileX + 1,
+      playerTileX - 1,
+      playerTileX + 2,
+      playerTileX - 2,
+      playerTileX + 3,
+      playerTileX - 3
+    ];
+    const uniqueColumns = [];
+    [...behindColumns, ...adjacentColumns].forEach((column) => {
+      if (!uniqueColumns.includes(column)) uniqueColumns.push(column);
+    });
+    const playerStanding = Boolean(player.onGround);
+    const prioritizedVertical = playerStanding ? [0, 1, -1, 2, -2] : verticalOffsets;
+    for (let stepIndex = 0; stepIndex < uniqueColumns.length; stepIndex += 1) {
+      const candidateX = uniqueColumns[stepIndex];
+      for (let i = 0; i < prioritizedVertical.length; i += 1) {
+        const candidateY = playerTileY + prioritizedVertical[i];
+        if (Math.abs(candidateY - playerTileY) > 2) continue;
+        if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
+          return { x: candidateX, y: candidateY };
+        }
+      }
       for (let i = 0; i < verticalOffsets.length; i += 1) {
         const candidateY = playerTileY + verticalOffsets[i];
         if (Math.abs(candidateY - playerTileY) > 2) continue;
+        if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
+          return { x: candidateX, y: candidateY };
+        }
+      }
+    }
+    for (let stepIndex = 0; stepIndex < uniqueColumns.length; stepIndex += 1) {
+      const candidateX = uniqueColumns[stepIndex];
+      for (let i = 0; i < verticalOffsets.length; i += 1) {
+        const candidateY = playerTileY + verticalOffsets[i] + 1;
         if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
           return { x: candidateX, y: candidateY };
         }
@@ -153,8 +186,11 @@ export default class FriendlyCompanion extends Player {
     this.attackCooldown = Math.max(0, this.attackCooldown - dt);
     this.jumpDecisionCooldown = Math.max(0, this.jumpDecisionCooldown - dt);
     this.assistHoldTimer = Math.max(0, this.assistHoldTimer - dt);
+    this.jumpSuppressTimer = Math.max(0, this.jumpSuppressTimer - dt);
     if (this.onGround) {
       this.aiAirJumpUsed = false;
+      this.jumpStallCounter = 0;
+      this.jumpStallBestY = this.y;
     }
 
     const playerRoom = world.roomAtTile?.(
@@ -196,6 +232,11 @@ export default class FriendlyCompanion extends Player {
     const dx = target.x - this.x;
     const dy = target.y - this.y;
     const nextInput = new Set();
+    const flankX = player.x - (player.facing || 1) * world.tileSize * 2;
+    if (this.jumpSuppressTimer > 0 && Math.abs(dx) < world.tileSize * 1.25) {
+      if (flankX < this.x - 4) nextInput.add('left');
+      if (flankX > this.x + 4) nextInput.add('right');
+    }
     if (dx < -14) nextInput.add('left');
     if (dx > 14) nextInput.add('right');
 
@@ -208,12 +249,27 @@ export default class FriendlyCompanion extends Player {
       && this.vy > -40;
     const shouldJump = this.jumpDecisionCooldown <= 0
       && (dy < -22 && canGroundJump || canAirRecoverJump);
-    if (shouldJump) {
+    const flappingRisk = dy < -52 && Math.abs(dx) < 18 && this.onWall === 0;
+    if (shouldJump && this.jumpSuppressTimer <= 0 && !flappingRisk) {
       nextInput.add('jump');
       this.jumpDecisionCooldown = 0.2;
       if (!canGroundJump) {
         this.aiAirJumpUsed = true;
       }
+      if (dy < -22) {
+        if (this.y >= this.jumpStallBestY - 8) {
+          this.jumpStallCounter += 1;
+        } else {
+          this.jumpStallCounter = 0;
+          this.jumpStallBestY = this.y;
+        }
+      }
+    } else if (flappingRisk) {
+      this.jumpStallCounter += 1;
+    }
+    if (this.jumpStallCounter >= 3) {
+      this.jumpSuppressTimer = 0.85;
+      this.jumpStallCounter = 0;
     }
     this.aiInput.beginFrame(nextInput);
 
