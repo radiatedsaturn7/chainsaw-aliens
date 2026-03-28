@@ -1,4 +1,7 @@
 import { MOVEMENT_MODEL } from '../game/MovementModel.js';
+import CompanionTraversalGraph from '../ai/CompanionTraversalGraph.js';
+import CompanionPathfinder from '../ai/CompanionPathfinder.js';
+import CompanionPathExecutor from '../ai/CompanionPathExecutor.js';
 
 const BOT_STATES = {
   INACTIVE: 'inactive',
@@ -53,6 +56,12 @@ export default class CompanionBot {
     this.replayModeTimer = 0;
     this.replayAnchor = null;
     this.sharedCheckpoints = [];
+    this.pathReplanTimer = 0;
+    this.pathGraph = new CompanionTraversalGraph();
+    this.pathfinder = new CompanionPathfinder();
+    this.pathExecutor = new CompanionPathExecutor();
+    this.activeRoomIndex = null;
+    this.debugTraversal = false;
   }
 
   get rect() {
@@ -128,6 +137,7 @@ export default class CompanionBot {
     this.wrongTargetTimer = Math.max(0, this.wrongTargetTimer - dt);
     this.stutterTimer = Math.max(0, this.stutterTimer - dt);
     this.replayModeTimer = Math.max(0, this.replayModeTimer - dt);
+    this.pathReplanTimer = Math.max(0, this.pathReplanTimer - dt);
     this.recordPlayerTrail(player, dt);
     this.recordSharedCheckpoint(player);
 
@@ -183,6 +193,7 @@ export default class CompanionBot {
     }
 
     let target = this.computeFollowTarget(player);
+    let actionHint = null;
     let replaySnapshot = this.getReplaySnapshot();
     if (this.replayActive && replaySnapshot) {
       if (this.replayAnchor && replaySnapshot.time >= this.replayAnchor.time) {
@@ -192,6 +203,12 @@ export default class CompanionBot {
         };
       } else {
         target = { x: replaySnapshot.x, y: replaySnapshot.y };
+      }
+    } else {
+      const traversal = this.getTraversalTarget(player, world, dt);
+      if (traversal?.target) {
+        target = traversal.target;
+        actionHint = traversal.actionHint || null;
       }
     }
     let desiredState = this.state;
@@ -221,7 +238,7 @@ export default class CompanionBot {
     }
 
     const immobilized = this.hesitationTimer > 0 || this.stutterTimer > 0;
-    this.applyMovement(dt, world, target, immobilized, replaySnapshot);
+    this.applyMovement(dt, world, target, immobilized, replaySnapshot, actionHint);
 
     if (!immobilized && this.state === BOT_STATES.ASSIST_SWITCH && this.targetSwitch && this.utilityTimer <= 0) {
       const range = Math.hypot(this.x - this.targetSwitch.x, this.y - this.targetSwitch.y);
@@ -305,6 +322,46 @@ export default class CompanionBot {
       }
     }
     return this.playerTrail[0];
+  }
+
+  getTraversalTarget(player, world, dt) {
+    const tileSize = world.tileSize;
+    const roomIndex = world.roomAtTile?.(Math.floor(this.x / tileSize), Math.floor(this.y / tileSize));
+    const playerRoom = world.roomAtTile?.(Math.floor(player.x / tileSize), Math.floor(player.y / tileSize));
+    if (roomIndex == null || playerRoom == null || roomIndex !== playerRoom) {
+      this.pathExecutor.clear();
+      return null;
+    }
+    if (this.activeRoomIndex !== roomIndex) {
+      this.activeRoomIndex = roomIndex;
+      this.pathExecutor.clear();
+      this.pathReplanTimer = 0;
+    }
+
+    const graph = this.pathGraph.getRoomGraph(roomIndex, world);
+    if (!graph) return null;
+    const startNode = this.pathGraph.getClosestNode(graph, this.x, this.y);
+    const goalNode = this.pathGraph.getClosestNode(graph, player.x, player.y);
+    if (!startNode || !goalNode) return null;
+
+    if (!this.pathExecutor.hasPath() || this.pathReplanTimer <= 0) {
+      const path = this.pathfinder.findPath(graph, startNode.id, goalNode.id);
+      if (path?.edges?.length) {
+        this.pathExecutor.setPath(path.edges);
+        this.pathReplanTimer = 0.45;
+      } else {
+        this.pathExecutor.clear();
+        this.pathReplanTimer = 0.35;
+      }
+    }
+
+    const step = this.pathExecutor.update(this, dt, graph);
+    if (step.failed) {
+      this.pathExecutor.clear();
+      this.pathReplanTimer = 0;
+      return null;
+    }
+    return step;
   }
 
   recordSharedCheckpoint(player) {
@@ -391,7 +448,7 @@ export default class CompanionBot {
     return { x: target.x, y: target.y - 4, enemy: target };
   }
 
-  applyMovement(dt, world, target, immobilized, replaySnapshot = null) {
+  applyMovement(dt, world, target, immobilized, replaySnapshot = null, actionHint = null) {
     const desiredDx = target.x - this.x;
     const desiredDy = target.y - this.y;
     const nearTarget = Math.abs(desiredDx) < 8 && Math.abs(desiredDy) < 12;
@@ -405,7 +462,9 @@ export default class CompanionBot {
       if (Math.abs(desiredDx) > 8) {
         this.facing = Math.sign(desiredDx) || this.facing;
       }
-      const replayJump = replaySnapshot && replaySnapshot.vy < -MOVEMENT_MODEL.baseJumpPower * 0.42;
+      const replayJump = (replaySnapshot && replaySnapshot.vy < -MOVEMENT_MODEL.baseJumpPower * 0.42)
+        || Boolean(actionHint?.jump)
+        || Boolean(actionHint?.doubleJump);
       const canGroundJump = this.onGround;
       const canAirJump = !this.onGround && this.airJumpsRemaining > 0 && replayJump;
       const shouldJump = (canGroundJump || canAirJump) && (desiredDy < -26 || replayJump) && Math.abs(desiredDx) < 96;
@@ -503,6 +562,9 @@ export default class CompanionBot {
 
   draw(ctx) {
     if (!this.isActive()) return;
+    if (this.debugTraversal) {
+      this.drawTraversalDebug(ctx);
+    }
     const booting = this.state === BOT_STATES.BOOTING;
     const broken = this.state === BOT_STATES.FAILING;
     const corrupted = this.state === BOT_STATES.CORRUPTED || broken;
@@ -565,6 +627,29 @@ export default class CompanionBot {
       ctx.stroke();
     }
 
+    ctx.restore();
+  }
+
+  drawTraversalDebug(ctx) {
+    const debug = this.pathGraph.getDebugData?.();
+    if (!debug?.nodes || !debug?.edges) return;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255, 120, 210, 0.2)';
+    debug.edges.forEach((list) => {
+      list.forEach((edge) => {
+        const from = debug.nodes.get(edge.from);
+        const to = debug.nodes.get(edge.to);
+        if (!from || !to) return;
+        ctx.beginPath();
+        ctx.moveTo(from.x, from.y);
+        ctx.lineTo(to.x, to.y);
+        ctx.stroke();
+      });
+    });
+    ctx.fillStyle = 'rgba(255, 170, 220, 0.45)';
+    debug.nodes.forEach((node) => {
+      ctx.fillRect(node.x - 1, node.y - 1, 2, 2);
+    });
     ctx.restore();
   }
 }
