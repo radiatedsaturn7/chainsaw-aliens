@@ -1,0 +1,195 @@
+import Player from './Player.js';
+
+class CompanionInput {
+  constructor() {
+    this.down = new Set();
+    this.prevDown = new Set();
+  }
+
+  beginFrame(nextDown) {
+    this.prevDown = this.down;
+    this.down = new Set(nextDown);
+  }
+
+  isDown(action) {
+    return this.down.has(action);
+  }
+
+  wasPressed(action) {
+    return this.down.has(action) && !this.prevDown.has(action);
+  }
+
+  wasReleased(action) {
+    return !this.down.has(action) && this.prevDown.has(action);
+  }
+
+  isGamepadDown() {
+    return false;
+  }
+
+  wasGamepadPressed() {
+    return false;
+  }
+
+  getGamepadAxes() {
+    return { leftX: 0, leftY: 0 };
+  }
+}
+
+export default class FriendlyCompanion extends Player {
+  constructor(x, y) {
+    super(x, y);
+    this.type = 'friendly-companion';
+    this.friendly = true;
+    this.health = this.maxHealth;
+    this.assistEnabled = true;
+    this.aiInput = new CompanionInput();
+    this.followOffsetX = -52;
+    this.followOffsetY = -6;
+    this.teleportDistance = 760;
+    this.attackCooldown = 0;
+    this.jumpDecisionCooldown = 0;
+    this.assistTarget = null;
+    this.assistHoldTimer = 0;
+  }
+
+  getDrawPalette(flash) {
+    return {
+      bodyFill: '#ff9ad7',
+      accentStroke: flash ? '#ffd3ef' : '#7a2b65',
+      chainStroke: '#5c1b4c',
+      superGlow: 'rgba(255,120,220,0.85)',
+      oilGlow: '#ff77cc'
+    };
+  }
+
+  canRev() {
+    return false;
+  }
+
+  takeDamage() {
+    return false;
+  }
+
+  removeAssistTarget() {
+    this.assistTarget = null;
+    this.assistHoldTimer = 0;
+  }
+
+  acquireAssistTarget(player, enemies, boss) {
+    if (!this.assistEnabled) return null;
+    const candidates = [...(enemies || [])];
+    if (boss && !boss.dead) candidates.push(boss);
+    let best = null;
+    let bestScore = Infinity;
+    candidates.forEach((enemy) => {
+      if (!enemy || enemy.dead || enemy.training) return;
+      const nearPlayer = Math.hypot(enemy.x - player.x, enemy.y - player.y);
+      if (nearPlayer > 220) return;
+      const nearSelf = Math.hypot(enemy.x - this.x, enemy.y - this.y);
+      if (nearSelf > 300) return;
+      const score = nearPlayer * 0.65 + nearSelf * 0.35;
+      if (score < bestScore) {
+        bestScore = score;
+        best = enemy;
+      }
+    });
+    return best;
+  }
+
+  buildFollowTarget(player) {
+    const desiredX = player.x + (player.facing >= 0 ? this.followOffsetX : -this.followOffsetX);
+    return {
+      x: desiredX,
+      y: player.y + this.followOffsetY
+    };
+  }
+
+  buildAssistTarget(player) {
+    if (!this.assistTarget) return this.buildFollowTarget(player);
+    const dir = Math.sign(this.assistTarget.x - this.x) || this.facing || 1;
+    return {
+      x: this.assistTarget.x - dir * 20,
+      y: this.assistTarget.y - 4
+    };
+  }
+
+  update(dt, world, abilities, context = {}) {
+    const player = context.player;
+    if (!player) return;
+
+    this.attackCooldown = Math.max(0, this.attackCooldown - dt);
+    this.jumpDecisionCooldown = Math.max(0, this.jumpDecisionCooldown - dt);
+    this.assistHoldTimer = Math.max(0, this.assistHoldTimer - dt);
+
+    const playerRoom = world.roomAtTile?.(
+      Math.floor(player.x / world.tileSize),
+      Math.floor(player.y / world.tileSize)
+    );
+    const myRoom = world.roomAtTile?.(
+      Math.floor(this.x / world.tileSize),
+      Math.floor(this.y / world.tileSize)
+    );
+    const tooFar = Math.hypot(player.x - this.x, player.y - this.y) > this.teleportDistance;
+    if (tooFar || (playerRoom != null && myRoom != null && playerRoom !== myRoom)) {
+      this.x = player.x + (player.facing || 1) * -26;
+      this.y = player.y - 6;
+      this.vx = 0;
+      this.vy = 0;
+      this.removeAssistTarget();
+    }
+
+    if (this.assistTarget?.dead) {
+      this.removeAssistTarget();
+    }
+    if (!this.assistTarget && this.attackCooldown <= 0) {
+      this.assistTarget = this.acquireAssistTarget(player, context.enemies, context.boss);
+      if (this.assistTarget) {
+        this.assistHoldTimer = 1.2;
+      }
+    }
+    if (this.assistTarget) {
+      const nearPlayer = Math.hypot(this.assistTarget.x - player.x, this.assistTarget.y - player.y);
+      if (nearPlayer > 280 || this.assistHoldTimer <= 0) {
+        this.removeAssistTarget();
+      }
+    }
+
+    const target = this.assistTarget ? this.buildAssistTarget(player) : this.buildFollowTarget(player);
+    const dx = target.x - this.x;
+    const dy = target.y - this.y;
+    const nextInput = new Set();
+    if (dx < -14) nextInput.add('left');
+    if (dx > 14) nextInput.add('right');
+
+    const shouldJump = dy < -22 && this.jumpDecisionCooldown <= 0 && (this.onGround || this.coyote > 0 || this.jumpsRemaining > 0);
+    const wallJump = dy < -14 && this.jumpDecisionCooldown <= 0 && this.onWall !== 0;
+    if (shouldJump || wallJump) {
+      nextInput.add('jump');
+      this.jumpDecisionCooldown = 0.2;
+    }
+    this.aiInput.beginFrame(nextInput);
+
+    super.update(dt, this.aiInput, world, abilities);
+    this.revving = false;
+    this.flameMode = false;
+
+    if (this.assistTarget && this.attackCooldown <= 0) {
+      const enemy = this.assistTarget;
+      const attackDx = enemy.x - this.x;
+      const attackDy = Math.abs(enemy.y - this.y);
+      if (Math.abs(attackDx) < world.tileSize * 1.8 && attackDy < 42) {
+        this.facing = Math.sign(attackDx) || this.facing;
+        this.startLunge(enemy.x, { speed: 280, duration: 0.1 });
+        this.attackTimer = Math.max(this.attackTimer, 0.2);
+        enemy.damage?.(1);
+        context.onAssistHit?.(enemy);
+        if (enemy.dead) {
+          context.onAssistKill?.(enemy);
+          this.removeAssistTarget();
+        }
+        this.attackCooldown = 0.45;
+      }
+    }
+  }
+}

@@ -9,6 +9,7 @@ import AudioSystem from './Audio.js';
 import World from '../world/World.js';
 import Minimap from '../world/Minimap.js';
 import Player from '../entities/Player.js';
+import FriendlyCompanion from '../entities/FriendlyCompanion.js';
 import Skitter from '../entities/Skitter.js';
 import Spitter from '../entities/Spitter.js';
 import Bulwark from '../entities/Bulwark.js';
@@ -102,6 +103,7 @@ const AMBIENT_SPAWN_TYPES = new Set([
 
 
 const DRIP_TYPES = new Set(['water-drip', 'acid-drip', 'lava-drip']);
+const FRIENDLY_COMPANION_TYPE = 'friendly-companion';
 
 const clamp01 = (value) => Math.max(0, Math.min(1, value));
 
@@ -185,6 +187,7 @@ export default class Game {
     this.minimap = new Minimap(this.world);
     this.spawnPoint = { x: 32 * 28, y: 32 * 19 };
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
+    this.friendlyCompanion = null;
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
     this.title = new Title();
@@ -530,6 +533,7 @@ export default class Game {
     if (!this.world.enemies) return;
     this.world.enemies.forEach((spawn) => {
       if (!spawn) return;
+      if (spawn.type === FRIENDLY_COMPANION_TYPE) return;
       const roomIndex = this.world.roomAtTile(spawn.x, spawn.y);
       if (roomIndex === null || roomIndex === undefined) return;
       if (AMBIENT_SPAWN_TYPES.has(spawn.type)) {
@@ -1349,6 +1353,7 @@ export default class Game {
   resetRun({ playtest = false, startWithEverything = true } = {}) {
     this.world.reset();
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
+    this.friendlyCompanion = null;
     const startLoaded = this.gameMode === 'endless' || (playtest && startWithEverything);
     if (startLoaded) {
       this.player.equippedUpgrades = [...UPGRADE_LIST];
@@ -1766,6 +1771,9 @@ export default class Game {
   }
 
   spawnEnemyByType(type, worldX, worldY, options = {}) {
+    if (type === FRIENDLY_COMPANION_TYPE) {
+      return this.spawnFriendlyCompanion(worldX, worldY, options);
+    }
     if (String(type || '').startsWith('custom:')) {
       const actorId = String(type).slice('custom:'.length);
       let definition = this.getRuntimeActorDefinition(actorId) || loadActorDefinitionById(actorId);
@@ -1868,6 +1876,37 @@ export default class Game {
     return this.enemies[this.enemies.length - 1] || null;
   }
 
+  spawnFriendlyCompanion(worldX, worldY, options = {}) {
+    if (this.friendlyCompanion) {
+      this.friendlyCompanion.x = worldX;
+      this.friendlyCompanion.y = worldY;
+      this.friendlyCompanion.vx = 0;
+      this.friendlyCompanion.vy = 0;
+      if (typeof options.assistEnabled === 'boolean') {
+        this.friendlyCompanion.assistEnabled = options.assistEnabled;
+      }
+      return this.friendlyCompanion;
+    }
+    this.friendlyCompanion = new FriendlyCompanion(worldX, worldY);
+    if (typeof options.assistEnabled === 'boolean') {
+      this.friendlyCompanion.assistEnabled = options.assistEnabled;
+    }
+    return this.friendlyCompanion;
+  }
+
+  removeFriendlyCompanion() {
+    this.friendlyCompanion = null;
+  }
+
+  snapFriendlyCompanionNearPlayer() {
+    if (!this.friendlyCompanion || !this.player) return;
+    const dir = this.player.facing || 1;
+    this.friendlyCompanion.x = this.player.x - dir * 28;
+    this.friendlyCompanion.y = this.player.y - 6;
+    this.friendlyCompanion.vx = 0;
+    this.friendlyCompanion.vy = 0;
+  }
+
   getEndlessSpawnPoint() {
     const tileSize = this.world.tileSize;
     const tries = 40;
@@ -1888,7 +1927,13 @@ export default class Game {
   }
 
   spawnEnemies({ allowStoryFallback = true } = {}) {
+    this.friendlyCompanion = null;
     if (this.world.enemies && this.world.enemies.length > 0) {
+      const companionSpawn = this.world.enemies.find((spawn) => spawn?.type === FRIENDLY_COMPANION_TYPE);
+      if (companionSpawn) {
+        const tileSize = this.world.tileSize;
+        this.spawnFriendlyCompanion((companionSpawn.x + 0.5) * tileSize, (companionSpawn.y + 0.5) * tileSize);
+      }
       this.enemies = [];
       this.boss = null;
       this.bossActive = false;
@@ -2422,6 +2467,24 @@ export default class Game {
     }
     const prevPlayer = { x: this.player.x, y: this.player.y };
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
+    if (this.friendlyCompanion) {
+      this.friendlyCompanion.update(dt * timeScale, this.world, this.abilities, {
+        player: this.player,
+        enemies: this.enemies,
+        boss: this.boss,
+        onAssistHit: (enemy) => {
+          this.audio.hit();
+          this.spawnEffect('hit', enemy.x, enemy.y);
+          this.spawnEffect('oil', enemy.x, enemy.y + 6);
+        },
+        onAssistKill: (enemy) => {
+          if (!enemy.training) {
+            this.spawnDeathDebris(enemy);
+          }
+          this.awardLoot(enemy);
+        }
+      });
+    }
     this.updateElevators(dt * timeScale, prevPlayer);
     const tileSize = this.world.tileSize;
     const tileX = Math.floor(this.player.x / tileSize);
@@ -2605,6 +2668,7 @@ export default class Game {
     this.ignitirCharge = 0;
     this.ignitirReady = false;
     this.lowHealthAlarmTimer = 0;
+    this.snapFriendlyCompanionNearPlayer();
   }
 
   startDeathSequence() {
@@ -2876,6 +2940,7 @@ export default class Game {
         this.player.onGround = false;
       }
       this.doorTransition = null;
+      this.snapFriendlyCompanionNearPlayer();
     }
   }
 
@@ -4927,6 +4992,30 @@ export default class Game {
       onDone();
       return;
     }
+    if (action.type === 'spawn-companion') {
+      const worldX = centerX + (Number(params.offsetX || 0) * this.world.tileSize);
+      const worldY = centerY + (Number(params.offsetY || 0) * this.world.tileSize);
+      this.spawnFriendlyCompanion(worldX, worldY, { assistEnabled: params.assistEnabled !== false });
+      onDone();
+      return;
+    }
+    if (action.type === 'remove-companion') {
+      this.removeFriendlyCompanion();
+      onDone();
+      return;
+    }
+    if (action.type === 'set-companion-assist') {
+      if (this.friendlyCompanion) {
+        this.friendlyCompanion.assistEnabled = params.enabled !== false;
+      }
+      onDone();
+      return;
+    }
+    if (action.type === 'snap-companion') {
+      this.snapFriendlyCompanionNearPlayer();
+      onDone();
+      return;
+    }
     if (action.type === 'load-level') {
       const levelName = params.levelName;
       const completeLoad = () => {
@@ -6178,6 +6267,9 @@ export default class Game {
         this.drawIgnitirDissolve(ctx, enemy);
       }
     });
+    if (this.friendlyCompanion) {
+      this.friendlyCompanion.draw(ctx);
+    }
 
     if (this.boss && !this.boss.dead) {
       this.boss.draw(ctx);
@@ -6479,6 +6571,9 @@ export default class Game {
     });
     if (this.boss && !this.boss.dead) {
       this.boss.draw(ctx);
+    }
+    if (this.friendlyCompanion) {
+      this.friendlyCompanion.draw(ctx);
     }
     this.player.draw(ctx);
     ctx.restore();

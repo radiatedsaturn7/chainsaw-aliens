@@ -75,6 +75,7 @@ const DEFAULT_TILE_TYPES = [
 ];
 
 const STANDARD_ENEMY_TYPES = [
+  { id: 'friendly-companion', label: 'Friendly Companion', glyph: 'FC', description: 'Pink player-like ally that follows and assists in combat.' },
   { id: 'practice', label: 'Pulse Drone', glyph: 'PD', description: 'Restless drone that fires pulse volleys while circling the arena.' },
   { id: 'skitter', label: 'Skitter', glyph: 'SK', description: 'Fast ground skimmer that rushes the player.' },
   { id: 'spitter', label: 'Spitter', glyph: 'SP', description: 'Ranged turret that spits corrosive shots.' },
@@ -229,6 +230,10 @@ const TRIGGER_ACTION_TYPES = [
   { id: 'kill-player', label: 'Kill Player' },
   { id: 'kill-enemy', label: 'Kill Enemy' },
   { id: 'spawn-enemy', label: 'Spawn Enemy' },
+  { id: 'spawn-companion', label: 'Spawn Companion' },
+  { id: 'remove-companion', label: 'Remove Companion' },
+  { id: 'set-companion-assist', label: 'Set Companion Assist' },
+  { id: 'snap-companion', label: 'Snap Companion To Player' },
   { id: 'heal-player', label: 'Heal Player' },
   { id: 'heal-enemy', label: 'Heal Enemy' },
   { id: 'save-game', label: 'Save Game' },
@@ -2469,6 +2474,12 @@ export default class Editor {
       case 'spawn-enemy':
         base.params = { enemyType: STANDARD_ENEMY_TYPES[0]?.id || 'practice', offsetX: 0, offsetY: 0 };
         break;
+      case 'spawn-companion':
+        base.params = { offsetX: 0, offsetY: 0, assistEnabled: true };
+        break;
+      case 'set-companion-assist':
+        base.params = { enabled: true };
+        break;
       case 'heal-player':
         base.params = { amount: 2 };
         break;
@@ -2656,6 +2667,14 @@ export default class Editor {
       }
       if (action.type === 'become-tile') {
         if (typeof action.params.tileChar !== 'string' || !action.params.tileChar) action.params.tileChar = '#';
+      }
+      if (action.type === 'spawn-companion') {
+        if (!Number.isFinite(action.params.offsetX)) action.params.offsetX = 0;
+        if (!Number.isFinite(action.params.offsetY)) action.params.offsetY = 0;
+        if (typeof action.params.assistEnabled !== 'boolean') action.params.assistEnabled = true;
+      }
+      if (action.type === 'set-companion-assist') {
+        if (typeof action.params.enabled !== 'boolean') action.params.enabled = true;
       }
       return action;
     });
@@ -3042,6 +3061,14 @@ export default class Editor {
         return `Target: ${params.target || 'nearest'}`;
       case 'spawn-enemy':
         return `Enemy: ${params.enemyType || 'practice'} @ (${params.offsetX || 0}, ${params.offsetY || 0})`;
+      case 'spawn-companion':
+        return `Spawn @ (${params.offsetX || 0}, ${params.offsetY || 0}) assist:${params.assistEnabled !== false ? 'on' : 'off'}`;
+      case 'remove-companion':
+        return 'Remove active companion';
+      case 'set-companion-assist':
+        return `Assist: ${params.enabled !== false ? 'enabled' : 'disabled'}`;
+      case 'snap-companion':
+        return 'Teleport near player';
       case 'heal-player':
         return `Amount: +${params.amount || 0}`;
       case 'heal-enemy':
@@ -5227,7 +5254,7 @@ export default class Editor {
       return;
     }
 
-    if (this.triggerEditorOpen && this.triggerPlacementMode === 'spawn-enemy' && this.triggerActionDraft) {
+    if (this.triggerEditorOpen && (this.triggerPlacementMode === 'spawn-enemy' || this.triggerPlacementMode === 'spawn-companion') && this.triggerActionDraft) {
       if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
       const selectedTrigger = this.getSelectedTrigger();
       if (!selectedTrigger) return;
@@ -8656,6 +8683,10 @@ export default class Editor {
             local += sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4;
           } else if (draft.type === 'spawn-enemy') {
             local += sectionButtonH + 4 + sectionButtonH + 4;
+          } else if (draft.type === 'spawn-companion') {
+            local += sectionButtonH + 4 + sectionButtonH + 4;
+          } else if (draft.type === 'set-companion-assist') {
+            local += sectionButtonH + 4;
           } else if (draft.type === 'heal-player') {
             local += numericAdvance;
           } else if (draft.type === 'heal-enemy') {
@@ -8803,6 +8834,14 @@ export default class Editor {
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Enemy: ${draft.params.enemyType || enemyOptions[0]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Enemy', options: enemyOptions, selectedValue: draft.params.enemyType || enemyOptions[0], onPick: (value) => { draft.params.enemyType = value; } }); }, 'Pick enemy');
             y += sectionButtonH + 4;
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Spawn Point: (${draft.params.offsetX || 0}, ${draft.params.offsetY || 0})`, this.triggerPlacementMode === 'spawn-enemy', () => { this.triggerPlacementMode = this.triggerPlacementMode === 'spawn-enemy' ? null : 'spawn-enemy'; }, 'Tap, then click in the level to place enemy');
+            y += sectionButtonH + 4;
+          } else if (draft.type === 'spawn-companion') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Spawn Point: (${draft.params.offsetX || 0}, ${draft.params.offsetY || 0})`, this.triggerPlacementMode === 'spawn-companion', () => { this.triggerPlacementMode = this.triggerPlacementMode === 'spawn-companion' ? null : 'spawn-companion'; }, 'Tap, then click in the level to place companion');
+            y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Assist: ${draft.params.assistEnabled !== false ? 'On' : 'Off'}`, draft.params.assistEnabled !== false, () => { draft.params.assistEnabled = !(draft.params.assistEnabled !== false); }, 'Toggle companion assist behavior');
+            y += sectionButtonH + 4;
+          } else if (draft.type === 'set-companion-assist') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Assist: ${draft.params.enabled !== false ? 'On' : 'Off'}`, draft.params.enabled !== false, () => { draft.params.enabled = !(draft.params.enabled !== false); }, 'Toggle companion assist behavior');
             y += sectionButtonH + 4;
           } else if (draft.type === 'heal-player' || draft.type === 'heal-enemy') {
             numericRow('Amount', 'amount', 1, 0, 99);
