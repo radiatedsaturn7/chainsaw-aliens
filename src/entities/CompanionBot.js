@@ -345,15 +345,15 @@ export default class CompanionBot {
     const graph = this.pathGraph.getRoomGraph(roomIndex, world);
     if (!graph) return null;
     const startNode = this.pathGraph.getClosestNode(graph, this.x, this.y);
-    const goalNode = this.pathGraph.getClosestNode(graph, player.x, player.y);
-    if (!startNode || !goalNode) return null;
+    if (!startNode) return null;
 
     if (!this.pathExecutor.hasPath() || this.pathReplanTimer <= 0) {
-      const path = this.pathfinder.findPath(graph, startNode.id, goalNode.id);
+      const selection = this.findPathToPlayerGoal(graph, startNode, player);
+      const path = selection?.path || null;
       if (path?.edges?.length) {
         this.pathExecutor.setPath(path.edges);
         if (this.debugTraversal) {
-          console.debug('Companion A* path edges', path.edges.length, startNode.id, '->', goalNode.id);
+          console.debug('Companion A* path edges', path.edges.length, startNode.id, '->', selection.goalNode.id);
         }
         this.pathReplanTimer = 0.45;
       } else {
@@ -379,10 +379,30 @@ export default class CompanionBot {
     const graph = this.pathGraph.getRoomGraph(roomIndex, world);
     if (!graph) return false;
     const startNode = this.pathGraph.getClosestNode(graph, this.x, this.y);
-    const goalNode = this.pathGraph.getClosestNode(graph, player.x, player.y);
-    if (!startNode || !goalNode) return false;
-    const path = this.pathfinder.findPath(graph, startNode.id, goalNode.id);
-    return Boolean(path?.edges?.length);
+    if (!startNode) return false;
+    const selection = this.findPathToPlayerGoal(graph, startNode, player);
+    return Boolean(selection?.path?.edges?.length);
+  }
+
+  findPathToPlayerGoal(graph, startNode, player) {
+    const candidates = [...graph.nodes.values()].map((node) => {
+      const dx = Math.abs(node.x - player.x);
+      const dy = Math.abs(node.y - player.y);
+      const belowPenalty = Math.max(0, node.y - player.y) * 3.6;
+      const closeButBelowPenalty = dx < 48 && node.y > player.y + 18 ? 220 : 0;
+      const score = dx + (dy * 1.4) + belowPenalty + closeButBelowPenalty;
+      return { node, score };
+    }).sort((a, b) => a.score - b.score);
+
+    const maxCandidates = Math.min(14, candidates.length);
+    for (let i = 0; i < maxCandidates; i += 1) {
+      const candidate = candidates[i].node;
+      const path = this.pathfinder.findPath(graph, startNode.id, candidate.id);
+      if (path?.edges?.length) {
+        return { goalNode: candidate, path };
+      }
+    }
+    return null;
   }
 
   recordSharedCheckpoint(player) {
