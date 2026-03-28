@@ -2466,6 +2466,7 @@ export default class Game {
       this.applyIgnitirPlayerImpulse();
     }
     const prevPlayer = { x: this.player.x, y: this.player.y };
+    const prevCompanion = this.friendlyCompanion ? { x: this.friendlyCompanion.x, y: this.friendlyCompanion.y } : null;
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
     if (this.friendlyCompanion) {
       this.friendlyCompanion.update(dt * timeScale, this.world, this.abilities, {
@@ -2485,7 +2486,7 @@ export default class Game {
         }
       });
     }
-    this.updateElevators(dt * timeScale, prevPlayer);
+    this.updateElevators(dt * timeScale, prevPlayer, prevCompanion);
     const tileSize = this.world.tileSize;
     const tileX = Math.floor(this.player.x / tileSize);
     const tileY = Math.floor(this.player.y / tileSize);
@@ -5908,13 +5909,34 @@ export default class Game {
     }
   }
 
-  updateElevators(dt, prevPlayer) {
+  updateElevators(dt, prevPlayer, prevCompanion = null) {
     if (!this.elevatorPlatforms.length) return;
-    const prevPlayerRect = {
-      x: prevPlayer.x - this.player.width / 2,
-      y: prevPlayer.y - this.player.height / 2,
-      w: this.player.width,
-      h: this.player.height
+    const applyElevatorToActor = (actor, previousPosition, prevElevatorRects, nextElevatorRects, deltaX, deltaY) => {
+      if (!actor || !previousPosition) return;
+      const prevActorRect = {
+        x: previousPosition.x - actor.width / 2,
+        y: previousPosition.y - actor.height / 2,
+        w: actor.width,
+        h: actor.height
+      };
+      const wasOnElevator = prevElevatorRects.some((rect) => this.isPlayerOnElevator(prevActorRect, rect));
+      if (wasOnElevator) {
+        actor.x += deltaX;
+        actor.y += deltaY;
+        actor.onGround = true;
+        actor.vy = Math.min(actor.vy, 0);
+      }
+      const currentRect = actor.rect;
+      for (const nextElevatorRect of nextElevatorRects) {
+        const wasAbove = prevActorRect.y + prevActorRect.h <= nextElevatorRect.y + 2;
+        const nowOnTop = this.isPlayerOnElevator(currentRect, nextElevatorRect);
+        if (actor.vy >= 0 && wasAbove && nowOnTop) {
+          actor.y = nextElevatorRect.y - actor.height / 2;
+          actor.vy = 0;
+          actor.onGround = true;
+          break;
+        }
+      }
     };
     const tileSize = this.world.tileSize;
     for (const platform of this.elevatorPlatforms) {
@@ -5932,24 +5954,8 @@ export default class Game {
       ));
       const deltaX = platform.x - prevX;
       const deltaY = platform.y - prevY;
-      const wasOnElevator = prevElevatorRects.some((rect) => this.isPlayerOnElevator(prevPlayerRect, rect));
-      if (wasOnElevator) {
-        this.player.x += deltaX;
-        this.player.y += deltaY;
-        this.player.onGround = true;
-        this.player.vy = Math.min(this.player.vy, 0);
-      }
-      const currentRect = this.player.rect;
-      for (const nextElevatorRect of nextElevatorRects) {
-        const wasAbove = prevPlayerRect.y + prevPlayerRect.h <= nextElevatorRect.y + 2;
-        const nowOnTop = this.isPlayerOnElevator(currentRect, nextElevatorRect);
-        if (this.player.vy >= 0 && wasAbove && nowOnTop) {
-          this.player.y = nextElevatorRect.y - this.player.height / 2;
-          this.player.vy = 0;
-          this.player.onGround = true;
-          break;
-        }
-      }
+      applyElevatorToActor(this.player, prevPlayer, prevElevatorRects, nextElevatorRects, deltaX, deltaY);
+      applyElevatorToActor(this.friendlyCompanion, prevCompanion, prevElevatorRects, nextElevatorRects, deltaX, deltaY);
     }
   }
 

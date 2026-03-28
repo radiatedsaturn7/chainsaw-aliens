@@ -49,6 +49,7 @@ export default class FriendlyCompanion extends Player {
     this.teleportDistance = 760;
     this.attackCooldown = 0;
     this.jumpDecisionCooldown = 0;
+    this.aiAirJumpUsed = false;
     this.assistTarget = null;
     this.assistHoldTimer = 0;
   }
@@ -109,7 +110,7 @@ export default class FriendlyCompanion extends Player {
   findFollowStandTile(player, world, abilities) {
     const tileSize = world.tileSize;
     const playerTileX = Math.floor(player.x / tileSize);
-    const playerTileY = Math.floor(player.y / tileSize);
+    const playerTileY = Math.floor((player.y + player.height / 2 - 1) / tileSize);
     const facing = player.facing || 1;
     const verticalOffsets = [0, -1, 1, -2, 2];
     const horizontalSteps = [2, 1, 0];
@@ -152,6 +153,9 @@ export default class FriendlyCompanion extends Player {
     this.attackCooldown = Math.max(0, this.attackCooldown - dt);
     this.jumpDecisionCooldown = Math.max(0, this.jumpDecisionCooldown - dt);
     this.assistHoldTimer = Math.max(0, this.assistHoldTimer - dt);
+    if (this.onGround) {
+      this.aiAirJumpUsed = false;
+    }
 
     const playerRoom = world.roomAtTile?.(
       Math.floor(player.x / world.tileSize),
@@ -195,11 +199,21 @@ export default class FriendlyCompanion extends Player {
     if (dx < -14) nextInput.add('left');
     if (dx > 14) nextInput.add('right');
 
-    const shouldJump = dy < -22 && this.jumpDecisionCooldown <= 0 && (this.onGround || this.coyote > 0 || this.jumpsRemaining > 0);
-    const wallJump = dy < -14 && this.jumpDecisionCooldown <= 0 && this.onWall !== 0;
-    if (shouldJump || wallJump) {
+    const canGroundJump = this.onGround || this.coyote > 0 || this.onWall !== 0;
+    const canAirRecoverJump = !canGroundJump
+      && this.jumpsRemaining > 0
+      && !this.aiAirJumpUsed
+      && dy < -70
+      && Math.abs(dx) > 24
+      && this.vy > -40;
+    const shouldJump = this.jumpDecisionCooldown <= 0
+      && (dy < -22 && canGroundJump || canAirRecoverJump);
+    if (shouldJump) {
       nextInput.add('jump');
       this.jumpDecisionCooldown = 0.2;
+      if (!canGroundJump) {
+        this.aiAirJumpUsed = true;
+      }
     }
     this.aiInput.beginFrame(nextInput);
 
