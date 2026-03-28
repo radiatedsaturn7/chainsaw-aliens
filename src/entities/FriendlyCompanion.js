@@ -97,16 +97,47 @@ export default class FriendlyCompanion extends Player {
     return best;
   }
 
-  buildFollowTarget(player) {
-    const desiredX = player.x + (player.facing >= 0 ? this.followOffsetX : -this.followOffsetX);
+  canStandOnTile(tileX, tileY, world, abilities) {
+    if (tileX < 0 || tileX >= world.width || tileY < 1 || tileY >= world.height - 1) return false;
+    if (world.isHazard?.(tileX, tileY) || world.isHazard?.(tileX, tileY + 1)) return false;
+    const bodyClear = !world.isSolid(tileX, tileY, abilities, { ignoreOneWay: true });
+    const headClear = !world.isSolid(tileX, tileY - 1, abilities, { ignoreOneWay: true });
+    if (!bodyClear || !headClear) return false;
+    return world.isSolid(tileX, tileY + 1, abilities, { ignoreOneWay: false });
+  }
+
+  findFollowStandTile(player, world, abilities) {
+    const tileSize = world.tileSize;
+    const playerTileX = Math.floor(player.x / tileSize);
+    const playerTileY = Math.floor(player.y / tileSize);
+    const facing = player.facing || 1;
+    const verticalOffsets = [0, -1, 1, -2, 2];
+    const horizontalSteps = [2, 1, 0];
+    for (let stepIndex = 0; stepIndex < horizontalSteps.length; stepIndex += 1) {
+      const step = horizontalSteps[stepIndex];
+      const candidateX = playerTileX - facing * step;
+      for (let i = 0; i < verticalOffsets.length; i += 1) {
+        const candidateY = playerTileY + verticalOffsets[i];
+        if (Math.abs(candidateY - playerTileY) > 2) continue;
+        if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
+          return { x: candidateX, y: candidateY };
+        }
+      }
+    }
+    return { x: playerTileX, y: playerTileY };
+  }
+
+  buildFollowTarget(player, world, abilities) {
+    const tileSize = world.tileSize;
+    const standTile = this.findFollowStandTile(player, world, abilities);
     return {
-      x: desiredX,
-      y: player.y + this.followOffsetY
+      x: (standTile.x + 0.5) * tileSize,
+      y: (standTile.y + 0.5) * tileSize
     };
   }
 
-  buildAssistTarget(player) {
-    if (!this.assistTarget) return this.buildFollowTarget(player);
+  buildAssistTarget(player, world, abilities) {
+    if (!this.assistTarget) return this.buildFollowTarget(player, world, abilities);
     const dir = Math.sign(this.assistTarget.x - this.x) || this.facing || 1;
     return {
       x: this.assistTarget.x - dir * 20,
@@ -155,7 +186,9 @@ export default class FriendlyCompanion extends Player {
       }
     }
 
-    const target = this.assistTarget ? this.buildAssistTarget(player) : this.buildFollowTarget(player);
+    const target = this.assistTarget
+      ? this.buildAssistTarget(player, world, abilities)
+      : this.buildFollowTarget(player, world, abilities);
     const dx = target.x - this.x;
     const dy = target.y - this.y;
     const nextInput = new Set();
