@@ -256,6 +256,7 @@ export default class Game {
     this.roomExitTimes = new Map();
     this.roomRespawnTimers = new Map();
     this.cameraBounds = null;
+    this.pixelFrameCanvasCache = new Map();
     this.ambientParticles = [];
     this.activeRoomAmbient = [];
     this.activeRoomWeather = null;
@@ -524,6 +525,7 @@ export default class Game {
     this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
     this.weatherWind = { value: 0, target: 0, timer: 0 };
     this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
+    this.pixelFrameCanvasCache.clear();
   }
 
   rebuildRoomEnemySpawns() {
@@ -6841,7 +6843,6 @@ export default class Game {
       ctx.restore();
     };
     const pixelTiles = this.world.pixelArt?.tiles || {};
-    const pixelFrameCanvasCache = new Map();
     const drawPixelTile = (x, y, tile) => {
       const pixelData = pixelTiles[tile];
       if (!pixelData || !Array.isArray(pixelData.frames) || pixelData.frames.length === 0) {
@@ -6856,15 +6857,18 @@ export default class Game {
       const baseX = x * tileSize;
       const baseY = y * tileSize;
       let hasPaint = false;
+      let hash = 2166136261;
       for (let index = 0; index < frame.length; index += 1) {
-        if (frame[index]) {
+        const color = frame[index];
+        if (color) {
           hasPaint = true;
-          break;
+          hash ^= color.length;
+          hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
         }
       }
       if (!hasPaint) return false;
-      const cacheKey = `${tile}:${size}:${frameIndex}`;
-      let frameCanvas = pixelFrameCanvasCache.get(cacheKey);
+      const cacheKey = `${tile}:${size}:${frameIndex}:${hash >>> 0}`;
+      let frameCanvas = this.pixelFrameCanvasCache.get(cacheKey);
       if (!frameCanvas) {
         frameCanvas = document.createElement('canvas');
         frameCanvas.width = size;
@@ -6880,7 +6884,7 @@ export default class Game {
             frameCtx.fillRect(px, py, 1, 1);
           }
         }
-        pixelFrameCanvasCache.set(cacheKey, frameCanvas);
+        this.pixelFrameCanvasCache.set(cacheKey, frameCanvas);
       }
       ctx.drawImage(frameCanvas, baseX, baseY, tileSize, tileSize);
       return true;
