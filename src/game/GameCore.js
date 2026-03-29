@@ -1114,7 +1114,7 @@ export default class Game {
       this.pixelStudio.resetFocus();
     }
     if (tilePicker && returnState === 'title' && !this.pixelStudio.currentDocumentRef) {
-      if (!this.restoreTileArtAutosaveDocument()) {
+      if (!this.restoreBestTileArtFromAutosaves()) {
         this.restoreMostRecentArtDocument();
       }
     } else if (fromState === 'title' && returnState === 'title' && !this.pixelStudio.currentDocumentRef) {
@@ -1299,6 +1299,37 @@ export default class Game {
     if (!payload?.data) return false;
     this.world.pixelArt = payload.data;
     this.pixelStudio.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
+    this.pixelStudio.loadTileData();
+    return true;
+  }
+
+  restoreBestTileArtFromAutosaves() {
+    const hasTileEntries = (data) => Boolean(data?.tiles && Object.keys(data.tiles).length > 0);
+    const candidates = [];
+    const artPayload = vfsLoad('art', 'Tile Art Autosave');
+    if (artPayload?.data && hasTileEntries(artPayload.data)) {
+      candidates.push({
+        source: 'art',
+        name: 'Tile Art Autosave',
+        savedAt: Number(artPayload.savedAt) || 0,
+        data: artPayload.data
+      });
+    }
+    const levelPayload = vfsLoad('levels', 'Level Editor Autosave');
+    const levelPixelArt = levelPayload?.data?.pixelArt;
+    if (hasTileEntries(levelPixelArt)) {
+      candidates.push({
+        source: 'levels',
+        name: 'Level Editor Autosave',
+        savedAt: Number(levelPayload.savedAt) || 0,
+        data: levelPixelArt
+      });
+    }
+    if (!candidates.length) return false;
+    candidates.sort((a, b) => b.savedAt - a.savedAt);
+    const selected = candidates[0];
+    this.world.pixelArt = selected.data;
+    this.pixelStudio.currentDocumentRef = { folder: selected.source, name: selected.name };
     this.pixelStudio.loadTileData();
     return true;
   }
