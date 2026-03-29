@@ -6872,7 +6872,7 @@ export default class Game {
           const editorSize = pixelData.editor.width || size;
           const composite = new Array(editorSize * editorSize).fill(null);
           (editorFrame?.layers || []).forEach((layer) => {
-            if (!layer?.visible || !layer?.pixels) return;
+            if (layer?.visible === false || !layer?.pixels) return;
             for (let i = 0; i < composite.length; i += 1) {
               const packed = layer.pixels[i];
               if (!packed) continue;
