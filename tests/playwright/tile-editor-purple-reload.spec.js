@@ -25,7 +25,7 @@ test('tile editor solid block stays purple after full browser reopen from editor
     studio.setActiveTile(solidTile);
     studio.tilePickerMode = false;
     studio.loadTileData();
-    const packedPurple = ((255 << 24) | (255 << 8) | 255) >>> 0;
+    const packedPurple = (0xffff00ff) >>> 0;
     studio.activeLayer.pixels.fill(packedPurple);
     studio.syncTileData();
     studio.currentDocumentRef = { folder: 'art', name: 'solid-purple-reload' };
