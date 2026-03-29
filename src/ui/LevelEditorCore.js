@@ -1,5 +1,5 @@
 import Minimap from '../world/Minimap.js';
-import { vfsList, vfsLoad } from './vfs.js';
+import { vfsDelete, vfsList, vfsLoad, vfsSave } from './vfs.js';
 import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPlayStopButton, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { clamp, randInt, pickOne } from '../editor/input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from '../editor/playtest/transitions.js';
@@ -330,6 +330,7 @@ const MIDI_NOTE_LENGTHS = [
 ];
 
 const EDITOR_AUTOSAVE_KEY = 'chainsaw-editor-autosave';
+const LEVEL_EDITOR_AUTOSAVE_DOC = 'Level Editor Autosave';
 
 const EDITOR_GAMEPAD_BINDINGS = {
   [EDITOR_INPUT_ACTIONS.CONFIRM]: 'jump',
@@ -978,9 +979,9 @@ export default class Editor {
   }
 
   clearAutosave() {
+    vfsDelete('levels', LEVEL_EDITOR_AUTOSAVE_DOC);
     const storage = this.getStorage();
-    if (!storage) return;
-    storage.removeItem(this.autosaveKey);
+    if (storage) storage.removeItem(this.autosaveKey);
     this.autosaveLoaded = false;
   }
 
@@ -994,6 +995,12 @@ export default class Editor {
   }
 
   loadAutosave() {
+    const vfsPayload = vfsLoad('levels', LEVEL_EDITOR_AUTOSAVE_DOC);
+    if (vfsPayload?.data?.tiles && vfsPayload?.data?.width && vfsPayload?.data?.height) {
+      this.game.applyWorldData(vfsPayload.data);
+      this.syncPreviewMinimap();
+      return true;
+    }
     const storage = this.getStorage();
     if (!storage) return false;
     const raw = storage.getItem(this.autosaveKey);
@@ -1006,6 +1013,7 @@ export default class Editor {
       }
       this.game.applyWorldData(data);
       this.syncPreviewMinimap();
+      vfsSave('levels', LEVEL_EDITOR_AUTOSAVE_DOC, data);
       return true;
     } catch (error) {
       storage.removeItem(this.autosaveKey);
@@ -1014,10 +1022,13 @@ export default class Editor {
   }
 
   persistAutosave() {
-    const storage = this.getStorage();
-    if (!storage) return;
     try {
-      storage.setItem(this.autosaveKey, JSON.stringify(this.game.buildWorldData()));
+      const data = this.game.buildWorldData();
+      vfsSave('levels', LEVEL_EDITOR_AUTOSAVE_DOC, data);
+      const storage = this.getStorage();
+      if (storage) {
+        storage.setItem(this.autosaveKey, JSON.stringify(data));
+      }
     } catch (error) {
       console.warn('Unable to save editor autosave:', error);
     }
