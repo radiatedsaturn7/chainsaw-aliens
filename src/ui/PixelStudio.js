@@ -54,6 +54,9 @@ export default class PixelStudio {
     this.savedSnapshot = null;
     this.tilePickerMode = false;
     this.lastTileArtAutosaveAt = 0;
+    this.tilePickerScroll = 0;
+    this.tilePickerScrollBounds = null;
+    this.tilePickerMaxScroll = 0;
     this.runtime = createEditorRuntime({
       context: this,
       document: {
@@ -481,7 +484,7 @@ export default class PixelStudio {
   }
 
   drawTilePickerScreen(ctx, width, height) {
-    const rowH = 40;
+    const rowH = 80;
     const previewSize = 24;
     const startY = 96;
     const left = 28;
@@ -495,9 +498,15 @@ export default class PixelStudio {
     ctx.fillText('Pick a tile, then Edit or Reset.', left, 64);
     const backBounds = { x: width - 120, y: 20, w: 92, h: 28 };
     this.drawButton(ctx, backBounds, 'Back', false, { fontSize: 12 });
-    this.uiButtons.push({ bounds: backBounds, onClick: () => this.game.returnFromPixelStudio() });
-    tiles.forEach((tile, index) => {
-      const y = startY + index * rowH;
+    this.uiButtons.push({ bounds: backBounds, onClick: () => this.game.exitPixelStudio({ toTitle: true }) });
+    const listHeight = Math.max(80, height - startY - 24);
+    const visibleRows = Math.max(1, Math.floor(listHeight / rowH));
+    this.tilePickerMaxScroll = Math.max(0, tiles.length - visibleRows);
+    this.tilePickerScroll = clamp(this.tilePickerScroll || 0, 0, this.tilePickerMaxScroll);
+    this.tilePickerScrollBounds = { x: left, y: startY, w: width - left * 2, h: visibleRows * rowH };
+    tiles.slice(this.tilePickerScroll, this.tilePickerScroll + visibleRows).forEach((tile, visibleIndex) => {
+      const index = this.tilePickerScroll + visibleIndex;
+      const y = startY + visibleIndex * rowH;
       const rowBounds = { x: left, y, w: width - left * 2, h: rowH - 6 };
       ctx.fillStyle = 'rgba(255,255,255,0.06)';
       ctx.fillRect(rowBounds.x, rowBounds.y, rowBounds.w, rowBounds.h);
@@ -544,6 +553,9 @@ export default class PixelStudio {
           this.resetActiveTileArt();
         }
       });
+      ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.font = '11px Courier New';
+      ctx.fillText(`${index + 1}/${tiles.length}`, left + 42, y + 42);
     });
   }
 
@@ -2160,6 +2172,21 @@ export default class PixelStudio {
       };
       return;
     }
+    if (payload.touchCount && this.tilePickerMode && this.tilePickerScrollBounds
+      && this.isPointInBounds(payload, this.tilePickerScrollBounds)
+      && this.tilePickerMaxScroll > 0) {
+      const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
+      this.menuScrollDrag = {
+        startY: payload.y,
+        startScroll: this.tilePickerScroll || 0,
+        moved: false,
+        hitAction: hit?.onClick || null,
+        lineHeight: Math.max(1, this.tilePickerScrollBounds.h / Math.max(1, Math.floor(this.tilePickerScrollBounds.h / 80))),
+        scrollGroup: 'tilePicker',
+        maxScroll: this.tilePickerMaxScroll
+      };
+      return;
+    }
     if (payload.touchCount && ['draw', 'select', 'tools'].includes(this.leftPanelTab) && this.toolsPanelMeta?.optionsScrollBounds
       && this.isPointInBounds(payload, this.toolsPanelMeta.optionsScrollBounds)
       && this.toolsPanelMeta.maxToolOptionsScroll > 0) {
@@ -2329,6 +2356,8 @@ export default class PixelStudio {
           this.focusScroll.palette = clamp(next, 0, maxScroll);
         } else if (this.menuScrollDrag.scrollGroup === 'paletteModal') {
           this.focusScroll.paletteModal = clamp(next, 0, maxScroll);
+        } else if (this.menuScrollDrag.scrollGroup === 'tilePicker') {
+          this.tilePickerScroll = clamp(next, 0, maxScroll);
         } else {
           this.focusScroll.file = clamp(next, 0, maxScroll);
         }
