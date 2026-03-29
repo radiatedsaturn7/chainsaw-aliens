@@ -9,7 +9,7 @@ import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './s
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { createPixelEditorAdapter } from '../editor/adapters/pixelEditorAdapter.js';
 import { createMidiEditorAdapter } from '../editor/adapters/midiEditorAdapter.js';
-import { normalizeMidiTracks } from '../editor/adapters/editorDataContracts.js';
+import { ensurePixelPreviewFrame, normalizeMidiTracks } from '../editor/adapters/editorDataContracts.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
@@ -2358,7 +2358,9 @@ export default class Editor {
   }
 
   getPixelArtData(tileChar) {
-    return this.pixelAdapter.getPixelData(tileChar);
+    const data = this.pixelAdapter.getPixelData(tileChar);
+    ensurePixelPreviewFrame(data, this.pixelFrameIndex);
+    return data;
   }
 
   getActivePixelFrame() {
@@ -9076,7 +9078,7 @@ export default class Editor {
 
       const pixelData = this.getPixelArtData(this.pixelTarget?.char);
       const size = pixelData?.size || PIXEL_GRID_SIZE;
-      const frame = pixelData?.frames?.[this.pixelFrameIndex] || [];
+      const frame = ensurePixelPreviewFrame(pixelData, this.pixelFrameIndex) || [];
       const cellSize = 12;
       const gridX = panelX + panelPadding;
       const gridY = panelY + 36;

@@ -33,7 +33,7 @@ import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
-import { ensurePixelArtStore, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
+import { ensurePixelArtStore, ensurePixelPreviewFrame, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
 
 const BRUSH_SIZE_MIN = 1;
 const BRUSH_SIZE_MAX = 64;
@@ -570,7 +570,7 @@ export default class PixelStudio {
       ctx.fillStyle = '#111';
       ctx.fillRect(left + 8, y + 5, previewSize, previewSize);
       const tileData = this.game.world.pixelArt?.tiles?.[tile.char];
-      const frame = Array.isArray(tileData?.frames) && tileData.frames.length ? (tileData.frames[0] || []) : null;
+      const frame = ensurePixelPreviewFrame(tileData, 0) || null;
       if (frame?.length) {
         const size = tileData.size || 16;
         const pixelSize = previewSize / size;
