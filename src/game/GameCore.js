@@ -1289,6 +1289,7 @@ export default class Game {
     const payload = vfsLoad('art', latest.name);
     if (!payload?.data) return false;
     this.world.pixelArt = payload.data;
+    this.pixelStudio.hydrateTileArtRefs?.();
     this.pixelStudio.currentDocumentRef = { folder: 'art', name: latest.name };
     this.pixelStudio.loadTileData();
     return true;
@@ -1298,6 +1299,7 @@ export default class Game {
     const payload = vfsLoad('art', 'Tile Art Autosave');
     if (!payload?.data) return false;
     this.world.pixelArt = payload.data;
+    this.pixelStudio.hydrateTileArtRefs?.();
     this.pixelStudio.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
     this.pixelStudio.loadTileData();
     return true;
@@ -1308,6 +1310,7 @@ export default class Game {
     const artPayload = vfsLoad('art', 'Tile Art Autosave');
     if (artPayload?.data && hasTileEntries(artPayload.data)) {
       this.world.pixelArt = artPayload.data;
+      this.pixelStudio.hydrateTileArtRefs?.();
       this.pixelStudio.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
       this.pixelStudio.loadTileData();
       return true;
@@ -1316,6 +1319,7 @@ export default class Game {
     const levelPixelArt = levelPayload?.data?.pixelArt;
     if (hasTileEntries(levelPixelArt)) {
       this.world.pixelArt = levelPixelArt;
+      this.pixelStudio.hydrateTileArtRefs?.();
       this.pixelStudio.currentDocumentRef = { folder: 'levels', name: 'Level Editor Autosave' };
       this.pixelStudio.loadTileData();
       return true;

@@ -406,6 +406,7 @@ export default class PixelStudio {
     const autosave = vfsLoad('art', 'Tile Art Autosave');
     if (autosave?.data) {
       this.game.world.pixelArt = autosave.data;
+      this.hydrateTileArtRefs();
       this.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
       return;
     }
@@ -413,8 +414,28 @@ export default class PixelStudio {
     const payload = latest?.name ? vfsLoad('art', latest.name) : null;
     if (payload?.data) {
       this.game.world.pixelArt = payload.data;
+      this.hydrateTileArtRefs();
       this.currentDocumentRef = { folder: 'art', name: latest.name };
     }
+  }
+
+  getTileArtDocName(tileChar) {
+    const code = String(tileChar || '').charCodeAt(0);
+    const safeCode = Number.isFinite(code) ? code.toString(16).padStart(2, '0') : '00';
+    return `Tile Art ${safeCode}`;
+  }
+
+  hydrateTileArtRefs() {
+    const store = ensurePixelArtStore(this.game.world);
+    Object.entries(store.tiles).forEach(([tileChar, tileData]) => {
+      if (!tileData || typeof tileData !== 'object') return;
+      if ((!tileData.frames || !tileData.frames.length) && (!tileData.editor || !tileData.editor.frames) && tileData.ref) {
+        const payload = vfsLoad('art', tileData.ref);
+        if (payload?.data) {
+          store.tiles[tileChar] = { ...payload.data, ref: tileData.ref };
+        }
+      }
+    });
   }
 
   loadTileData() {
@@ -511,6 +532,17 @@ export default class PixelStudio {
       });
     });
     pixelData.fps = Math.round(1000 / (this.animation.frames[0]?.durationMs || 120));
+    const tileDocName = this.getTileArtDocName(tileChar);
+    const tileDocPayload = {
+      size: pixelData.size,
+      fps: pixelData.fps,
+      frames: pixelData.frames,
+      editor: pixelData.editor
+    };
+    const savedDoc = vfsSave('art', tileDocName, tileDocPayload);
+    if (savedDoc?.name) {
+      pixelData.ref = savedDoc.name;
+    }
     this.persistTileArtAutosave();
   }
 
@@ -518,7 +550,27 @@ export default class PixelStudio {
     const now = Date.now();
     if (!force && now - this.lastTileArtAutosaveAt < 1000) return;
     this.lastTileArtAutosaveAt = now;
-    const saved = vfsSave('art', 'Tile Art Autosave', this.game.world.pixelArt || { tiles: {} });
+    const store = ensurePixelArtStore(this.game.world);
+    const refs = {};
+    Object.entries(store.tiles).forEach(([tileChar, tileData]) => {
+      if (!tileData) return;
+      const existingRef = typeof tileData.ref === 'string' ? tileData.ref : null;
+      const docName = existingRef || this.getTileArtDocName(tileChar);
+      if (!existingRef) {
+        const tileDocPayload = {
+          size: tileData.size,
+          fps: tileData.fps,
+          frames: tileData.frames,
+          editor: tileData.editor
+        };
+        const savedTileDoc = vfsSave('art', docName, tileDocPayload);
+        if (savedTileDoc?.name) {
+          tileData.ref = savedTileDoc.name;
+        }
+      }
+      refs[tileChar] = { ref: tileData.ref || docName };
+    });
+    const saved = vfsSave('art', 'Tile Art Autosave', { tiles: refs });
     if (saved) {
       this.currentDocumentRef = { folder: 'art', name: saved.name };
     }
