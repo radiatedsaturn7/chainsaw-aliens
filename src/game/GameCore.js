@@ -6816,7 +6816,7 @@ export default class Game {
     });
   }
 
-  drawWorld(ctx, { showDoors = true, decalAlphaMultiplier = 1 } = {}) {
+  drawWorld(ctx, { showDoors = true, decalAlphaMultiplier = 1, cameraOverride = null } = {}) {
     const tileSize = this.world.tileSize;
     const time = this.worldTime;
     const ignitirTint = this.getIgnitirTint();
@@ -6824,10 +6824,11 @@ export default class Game {
       && this.ignitirSequence.time >= 2.4
       && this.ignitirSequence.time <= 4.6;
     const doorForegroundOverlays = [];
-    const cameraX = Number.isFinite(this.camera.x) ? this.camera.x : 0;
-    const cameraY = Number.isFinite(this.camera.y) ? this.camera.y : 0;
-    const cameraWidth = Math.max(1, Number(this.camera.width) || Number(this.canvas?.width) || 1);
-    const cameraHeight = Math.max(1, Number(this.camera.height) || Number(this.canvas?.height) || 1);
+    const activeCamera = cameraOverride || this.camera;
+    const cameraX = Number.isFinite(activeCamera?.x) ? activeCamera.x : 0;
+    const cameraY = Number.isFinite(activeCamera?.y) ? activeCamera.y : 0;
+    const cameraWidth = Math.max(1, Number(activeCamera?.width) || Number(this.canvas?.width) || 1);
+    const cameraHeight = Math.max(1, Number(activeCamera?.height) || Number(this.canvas?.height) || 1);
     const viewMarginTiles = 3;
     const minTileX = Math.max(0, Math.floor(cameraX / tileSize) - viewMarginTiles);
     const maxTileX = Math.min(this.world.width - 1, Math.ceil((cameraX + cameraWidth) / tileSize) + viewMarginTiles);

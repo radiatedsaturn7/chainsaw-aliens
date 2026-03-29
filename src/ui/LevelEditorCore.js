@@ -7040,7 +7040,16 @@ export default class Editor {
     ctx.save();
     ctx.scale(this.zoom, this.zoom);
     ctx.translate(-this.camera.x, -this.camera.y);
-    this.game.drawWorld(ctx, { showDoors: true, decalAlphaMultiplier: this.getDecalOverlayAlpha() });
+    this.game.drawWorld(ctx, {
+      showDoors: true,
+      decalAlphaMultiplier: this.getDecalOverlayAlpha(),
+      cameraOverride: {
+        x: this.camera.x,
+        y: this.camera.y,
+        width: canvas.width / this.zoom,
+        height: canvas.height / this.zoom
+      }
+    });
     this.drawEditorMarkers(ctx);
     this.drawGrid(ctx);
     this.drawCursor(ctx);
