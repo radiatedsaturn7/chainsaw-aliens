@@ -177,6 +177,22 @@ test('prefers tile autosave over loaded non-art world data', () => {
   assert.deepEqual(editor.currentDocumentRef, { folder: 'art', name: 'Tile Art Autosave' });
 });
 
+test('falls back to level autosave pixel art when tile autosave is absent', () => {
+  vfsSave('levels', 'Level Editor Autosave', {
+    pixelArt: {
+      tiles: {
+        '#': { frames: [['#44ccff']], editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] } }
+      }
+    }
+  });
+  const editor = createEditor({});
+
+  restoreStoredTileArtIfNeeded.call(editor);
+
+  assert.equal(editor.game.world.pixelArt.tiles['#'].frames[0][0], '#44ccff');
+  assert.deepEqual(editor.currentDocumentRef, { folder: 'levels', name: 'Level Editor Autosave' });
+});
+
 test('does not overwrite existing tile autosave with an empty store', () => {
   vfsSave('art', 'Tile Art Autosave', {
     tiles: {

@@ -418,6 +418,15 @@ export default class PixelStudio {
       this.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
       return;
     }
+    const levelAutosave = vfsLoad('levels', 'Level Editor Autosave');
+    const levelPixelArt = levelAutosave?.data?.pixelArt;
+    const levelAutosaveHasTiles = Object.keys(levelPixelArt?.tiles || {}).length > 0;
+    if (levelAutosaveHasTiles) {
+      this.game.world.pixelArt = levelPixelArt;
+      this.hydrateTileArtRefs();
+      this.currentDocumentRef = { folder: 'levels', name: 'Level Editor Autosave' };
+      return;
+    }
     if (hadLoadedInMemory || this.hasLoadedPixelArtData(store)) return;
     const latest = vfsList('art')[0];
     const payload = latest?.name ? vfsLoad('art', latest.name) : null;
