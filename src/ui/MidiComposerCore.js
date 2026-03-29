@@ -14,7 +14,7 @@ import {
 import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/midiParser.js';
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
-import { vfsSave } from './vfs.js';
+import { vfsLoad, vfsSave } from './vfs.js';
 import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedTransportIconButton, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
@@ -60,6 +60,8 @@ const QUANTIZE_OPTIONS = [
   { id: '1/16', label: '1/16', divisor: 16 },
   { id: '1/32', label: '1/32', divisor: 32 }
 ];
+
+const MIDI_COMPOSER_AUTOSAVE_DOC = 'MIDI Composer Autosave';
 
 const NOTE_LENGTH_OPTIONS = [
   { id: '1', label: '1', icon: 'w', divisor: 1 },
@@ -886,6 +888,13 @@ export default class MidiComposer {
   }
 
   loadSong() {
+    const vfsPayload = vfsLoad('music', MIDI_COMPOSER_AUTOSAVE_DOC);
+    if (vfsPayload?.data) {
+      const validation = this.validateSong(vfsPayload.data);
+      if (validation.valid) {
+        return this.migrateSong(vfsPayload.data);
+      }
+    }
     const stored = localStorage.getItem(this.storageKey);
     if (!stored) return createDefaultSong();
     try {
@@ -980,6 +989,7 @@ export default class MidiComposer {
       if (snapshot !== this.lastPersistedSnapshot) {
         this.lastPersistedSnapshot = snapshot;
         localStorage.setItem(this.storageKey, snapshot);
+        vfsSave('music', MIDI_COMPOSER_AUTOSAVE_DOC, JSON.parse(snapshot));
       }
     } catch (error) {
       console.warn('persist failed', error);
