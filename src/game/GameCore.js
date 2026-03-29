@@ -6905,8 +6905,34 @@ export default class Game {
         return null;
       };
       const pixelData = pixelTiles[tile];
-      if (!pixelData || !Array.isArray(pixelData.frames) || pixelData.frames.length === 0) {
-        return false;
+      if (!pixelData) return false;
+      const buildCompositeFrameFromEditor = (source, targetSize, targetFrameIndex = 0) => {
+        const editorFrames = source?.editor?.frames;
+        if (!Array.isArray(editorFrames) || editorFrames.length === 0) return null;
+        const editorFrame = editorFrames[targetFrameIndex] || editorFrames[0];
+        if (!editorFrame) return null;
+        const editorSize = source.editor.width || targetSize || source.size || 16;
+        const composite = new Array(editorSize * editorSize).fill(null);
+        (editorFrame.layers || []).forEach((layer) => {
+          if (layer?.visible === false || !Array.isArray(layer.pixels)) return;
+          for (let i = 0; i < composite.length; i += 1) {
+            const packed = layer.pixels[i];
+            if (!packed) continue;
+            const r = packed & 255;
+            const g = (packed >> 8) & 255;
+            const b = (packed >> 16) & 255;
+            const a = (packed >> 24) & 255;
+            if (!a) continue;
+            composite[i] = `#${[r, g, b].map((value) => value.toString(16).padStart(2, '0')).join('')}`;
+          }
+        });
+        return composite.some((entry) => entry) ? { frame: composite, size: editorSize } : null;
+      };
+      if (!Array.isArray(pixelData.frames) || pixelData.frames.length === 0) {
+        const synthesized = buildCompositeFrameFromEditor(pixelData, pixelData.size || 16, 0);
+        if (!synthesized) return false;
+        pixelData.size = synthesized.size;
+        pixelData.frames = [synthesized.frame];
       }
       const size = pixelData.size || 16;
       const frames = pixelData.frames;
@@ -6928,27 +6954,12 @@ export default class Game {
           frameIndex = fallbackIndex;
           frame = frames[fallbackIndex];
         } else if (pixelData.editor?.frames?.length) {
-          const editorFrame = pixelData.editor.frames[frameIndex] || pixelData.editor.frames[0];
-          const editorSize = pixelData.editor.width || size;
-          const composite = new Array(editorSize * editorSize).fill(null);
-          (editorFrame?.layers || []).forEach((layer) => {
-            if (layer?.visible === false || !layer?.pixels) return;
-            for (let i = 0; i < composite.length; i += 1) {
-              const packed = layer.pixels[i];
-              if (!packed) continue;
-              const r = packed & 255;
-              const g = (packed >> 8) & 255;
-              const b = (packed >> 16) & 255;
-              const a = (packed >> 24) & 255;
-              if (!a) continue;
-              composite[i] = `#${[r, g, b].map((value) => value.toString(16).padStart(2, '0')).join('')}`;
-            }
-          });
-          if (composite.some((entry) => entry)) {
-            pixelData.size = editorSize;
-            pixelData.frames = [composite];
+          const synthesized = buildCompositeFrameFromEditor(pixelData, size, frameIndex);
+          if (synthesized) {
+            pixelData.size = synthesized.size;
+            pixelData.frames = [synthesized.frame];
             frameIndex = 0;
-            frame = composite;
+            frame = synthesized.frame;
           }
         }
       }
