@@ -6867,6 +6867,29 @@ export default class Game {
         if (fallbackIndex >= 0) {
           frameIndex = fallbackIndex;
           frame = frames[fallbackIndex];
+        } else if (pixelData.editor?.frames?.length) {
+          const editorFrame = pixelData.editor.frames[frameIndex] || pixelData.editor.frames[0];
+          const editorSize = pixelData.editor.width || size;
+          const composite = new Array(editorSize * editorSize).fill(null);
+          (editorFrame?.layers || []).forEach((layer) => {
+            if (!layer?.visible || !layer?.pixels) return;
+            for (let i = 0; i < composite.length; i += 1) {
+              const packed = layer.pixels[i];
+              if (!packed) continue;
+              const r = packed & 255;
+              const g = (packed >> 8) & 255;
+              const b = (packed >> 16) & 255;
+              const a = (packed >> 24) & 255;
+              if (!a) continue;
+              composite[i] = `#${[r, g, b].map((value) => value.toString(16).padStart(2, '0')).join('')}`;
+            }
+          });
+          if (composite.some((entry) => entry)) {
+            pixelData.size = editorSize;
+            pixelData.frames = [composite];
+            frameIndex = 0;
+            frame = composite;
+          }
         }
       }
       if (!frameHasPaint(frame)) return false;
