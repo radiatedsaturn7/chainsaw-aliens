@@ -1051,6 +1051,10 @@ export default class Game {
   }
 
   enterEditor({ tab = null } = {}) {
+    const fromState = this.state;
+    if (fromState === 'title' && !this.hasCustomTileArtInWorld()) {
+      this.restoreMostRecentArtDocument();
+    }
     this.editorReturnState = this.state;
     if (this.playtestActive) {
       this.world.reset();
@@ -1063,6 +1067,18 @@ export default class Game {
       this.editor.setPanelTab(tab);
     }
     this.playtestActive = false;
+  }
+
+  hasCustomTileArtInWorld() {
+    const tiles = this.world.pixelArt?.tiles;
+    if (!tiles || typeof tiles !== 'object') return false;
+    return Object.values(tiles).some((tileData) => {
+      if (!tileData) return false;
+      if (Array.isArray(tileData.frames) && tileData.frames.some((frame) => Array.isArray(frame) && frame.some((value) => Boolean(value)))) {
+        return true;
+      }
+      return Boolean(tileData.editor?.frames?.length);
+    });
   }
 
   enterActorEditor() {
