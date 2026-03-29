@@ -72,6 +72,34 @@ export function vfsSanitizeName(name) {
 export function vfsList(folder) {
   assertFolder(folder);
   const index = vfsEnsureIndex();
+  const listed = Object.entries(index[folder] || {})
+    .map(([name, meta]) => ({
+      name,
+      updatedAt: Number(meta?.updatedAt || 0),
+      size: Number(meta?.size || 0)
+    }))
+    .sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
+  if (listed.length) return listed;
+  const storage = getStorage();
+  if (!storage) return listed;
+  const folderPrefix = `${VFS_PREFIX}${folder}:`;
+  for (let i = 0; i < storage.length; i += 1) {
+    const key = storage.key(i);
+    if (!key || !key.startsWith(folderPrefix)) continue;
+    const name = key.slice(folderPrefix.length);
+    try {
+      const raw = storage.getItem(key);
+      if (!raw) continue;
+      const payload = JSON.parse(raw);
+      index[folder][name] = {
+        updatedAt: Number(payload?.savedAt || Date.now()),
+        size: raw.length
+      };
+    } catch (error) {
+      // ignore malformed entries and continue rebuilding index
+    }
+  }
+  saveIndex(index);
   return Object.entries(index[folder] || {})
     .map(([name, meta]) => ({
       name,

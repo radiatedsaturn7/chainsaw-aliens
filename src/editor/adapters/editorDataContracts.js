@@ -24,6 +24,37 @@ export function ensurePixelTileData(world, tileChar, options = {}) {
   return store.tiles[tileChar];
 }
 
+export function ensurePixelPreviewFrame(pixelData, frameIndex = 0) {
+  if (!pixelData || typeof pixelData !== 'object') return null;
+  const frames = Array.isArray(pixelData.frames) ? pixelData.frames : [];
+  const hasPaint = (frame) => Array.isArray(frame) && frame.some((value) => Boolean(value));
+  const existing = frames[frameIndex] || frames[0];
+  if (hasPaint(existing)) return existing;
+  const editorFrames = pixelData.editor?.frames;
+  if (!Array.isArray(editorFrames) || editorFrames.length === 0) return existing || null;
+  const selected = editorFrames[frameIndex] || editorFrames[0];
+  if (!selected) return existing || null;
+  const size = Math.max(1, Number(pixelData.editor?.width) || Number(pixelData.size) || PIXEL_GRID_SIZE);
+  const composite = new Array(size * size).fill(null);
+  (selected.layers || []).forEach((layer) => {
+    if (layer?.visible === false || !layer?.pixels) return;
+    for (let i = 0; i < composite.length; i += 1) {
+      const packed = Number(layer.pixels[i] || 0) >>> 0;
+      if (!packed) continue;
+      const r = packed & 255;
+      const g = (packed >> 8) & 255;
+      const b = (packed >> 16) & 255;
+      const a = (packed >> 24) & 255;
+      if (!a) continue;
+      composite[i] = `#${[r, g, b].map((value) => value.toString(16).padStart(2, '0')).join('')}`;
+    }
+  });
+  if (!composite.some((value) => value)) return existing || null;
+  pixelData.size = size;
+  pixelData.frames = [composite];
+  return composite;
+}
+
 export function ensureMusicZones(world) {
   if (!Array.isArray(world.musicZones)) {
     world.musicZones = [];

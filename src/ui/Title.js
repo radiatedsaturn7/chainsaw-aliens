@@ -7,6 +7,7 @@ export default class Title {
     this.toolsOrder = [
       'project-browser',
       'level-editor',
+      'tile-editor',
       'pixel-editor',
       'actor-editor',
       'midi-editor',
@@ -326,6 +327,8 @@ export default class Title {
       ctx.font = '18px Courier New';
       const label = action === 'level-editor'
         ? 'Level Editor'
+        : action === 'tile-editor'
+          ? 'Tile Editor'
         : action === 'project-browser'
           ? 'Project Browser'
           : action === 'pixel-editor'
