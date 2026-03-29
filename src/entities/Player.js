@@ -537,6 +537,16 @@ export default class Player {
     return true;
   }
 
+  getDrawPalette(flash) {
+    return {
+      bodyFill: '#ffffff',
+      accentStroke: flash ? '#ffffff' : '#111111',
+      chainStroke: '#1b1b1b',
+      superGlow: 'rgba(120,255,180,0.8)',
+      oilGlow: '#38e073'
+    };
+  }
+
   draw(ctx) {
     ctx.save();
     const hurtShake = this.hurtTimer > 0 ? 1 : 0;
@@ -554,10 +564,9 @@ export default class Player {
     const crouchShrink = this.state === 'duck' ? 6 : 0;
     const aimTilt = this.aimingUp ? this.aimAngle : 0;
     const flash = this.hurtTimer > 0 && Math.floor(this.animTime * 20) % 2 === 0;
-    const bodyFill = '#ffffff';
-    const accentStroke = flash ? '#ffffff' : '#111111';
-    ctx.fillStyle = bodyFill;
-    ctx.strokeStyle = accentStroke;
+    const palette = this.getDrawPalette(flash);
+    ctx.fillStyle = palette.bodyFill;
+    ctx.strokeStyle = palette.accentStroke;
     ctx.lineWidth = 2;
     ctx.rotate((dashTilt * Math.PI) / 180);
     const hipY = 10 + crouchOffset;
@@ -632,9 +641,9 @@ export default class Player {
     const curveHeight = this.revving ? 10 : 7;
     if (this.superReady) {
       ctx.save();
-      ctx.strokeStyle = 'rgba(120,255,180,0.8)';
+      ctx.strokeStyle = palette.superGlow;
       ctx.lineWidth = 4;
-      ctx.shadowColor = 'rgba(120,255,180,0.8)';
+      ctx.shadowColor = palette.superGlow;
       ctx.shadowBlur = 10;
       ctx.beginPath();
       ctx.moveTo(0, -4 + crouchOffset);
@@ -661,7 +670,7 @@ export default class Player {
       };
     };
     ctx.save();
-    ctx.strokeStyle = '#1b1b1b';
+    ctx.strokeStyle = palette.chainStroke;
     ctx.lineWidth = 1.5;
     for (let i = 0; i < toothCount; i += 1) {
       const t = (i / toothCount + chainOffset) % 1;
@@ -713,7 +722,7 @@ export default class Player {
     if (this.oilLevel > 0) {
       ctx.save();
       ctx.globalAlpha = 0.5 * this.oilLevel;
-      ctx.strokeStyle = '#38e073';
+      ctx.strokeStyle = palette.oilGlow;
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.arc(0, -this.height / 2 + 8 + crouchOffset, 6, 0, Math.PI * 2);

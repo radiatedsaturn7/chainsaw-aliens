@@ -9,6 +9,7 @@ import AudioSystem from './Audio.js';
 import World from '../world/World.js';
 import Minimap from '../world/Minimap.js';
 import Player from '../entities/Player.js';
+import FriendlyCompanion from '../entities/FriendlyCompanion.js';
 import Skitter from '../entities/Skitter.js';
 import Spitter from '../entities/Spitter.js';
 import Bulwark from '../entities/Bulwark.js';
@@ -102,6 +103,7 @@ const AMBIENT_SPAWN_TYPES = new Set([
 
 
 const DRIP_TYPES = new Set(['water-drip', 'acid-drip', 'lava-drip']);
+const FRIENDLY_COMPANION_TYPE = 'friendly-companion';
 
 const clamp01 = (value) => Math.max(0, Math.min(1, value));
 
@@ -185,6 +187,7 @@ export default class Game {
     this.minimap = new Minimap(this.world);
     this.spawnPoint = { x: 32 * 28, y: 32 * 19 };
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
+    this.friendlyCompanion = null;
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
     this.title = new Title();
@@ -530,6 +533,7 @@ export default class Game {
     if (!this.world.enemies) return;
     this.world.enemies.forEach((spawn) => {
       if (!spawn) return;
+      if (spawn.type === FRIENDLY_COMPANION_TYPE) return;
       const roomIndex = this.world.roomAtTile(spawn.x, spawn.y);
       if (roomIndex === null || roomIndex === undefined) return;
       if (AMBIENT_SPAWN_TYPES.has(spawn.type)) {
@@ -1071,7 +1075,7 @@ export default class Game {
     this.playtestActive = false;
   }
 
-  enterPixelStudio({ returnState = this.state, resetFocus = true } = {}) {
+  enterPixelStudio({ returnState = this.state, resetFocus = true, tilePicker = false } = {}) {
     const fromState = this.state;
     if (this.state === 'actor-editor') {
       this.actorEditor.deactivate();
@@ -1079,6 +1083,7 @@ export default class Game {
     this.pixelStudioReturnState = returnState;
     this.transitionTo('pixel-editor');
     this.setRevAudio(false);
+    this.pixelStudio.setTilePickerMode(tilePicker);
     if (resetFocus) {
       this.pixelStudio.resetFocus();
     }
@@ -1349,6 +1354,7 @@ export default class Game {
   resetRun({ playtest = false, startWithEverything = true } = {}) {
     this.world.reset();
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
+    this.friendlyCompanion = null;
     const startLoaded = this.gameMode === 'endless' || (playtest && startWithEverything);
     if (startLoaded) {
       this.player.equippedUpgrades = [...UPGRADE_LIST];
@@ -1766,6 +1772,9 @@ export default class Game {
   }
 
   spawnEnemyByType(type, worldX, worldY, options = {}) {
+    if (type === FRIENDLY_COMPANION_TYPE) {
+      return this.spawnFriendlyCompanion(worldX, worldY, options);
+    }
     if (String(type || '').startsWith('custom:')) {
       const actorId = String(type).slice('custom:'.length);
       let definition = this.getRuntimeActorDefinition(actorId) || loadActorDefinitionById(actorId);
@@ -1868,6 +1877,37 @@ export default class Game {
     return this.enemies[this.enemies.length - 1] || null;
   }
 
+  spawnFriendlyCompanion(worldX, worldY, options = {}) {
+    if (this.friendlyCompanion) {
+      this.friendlyCompanion.x = worldX;
+      this.friendlyCompanion.y = worldY;
+      this.friendlyCompanion.vx = 0;
+      this.friendlyCompanion.vy = 0;
+      if (typeof options.assistEnabled === 'boolean') {
+        this.friendlyCompanion.assistEnabled = options.assistEnabled;
+      }
+      return this.friendlyCompanion;
+    }
+    this.friendlyCompanion = new FriendlyCompanion(worldX, worldY);
+    if (typeof options.assistEnabled === 'boolean') {
+      this.friendlyCompanion.assistEnabled = options.assistEnabled;
+    }
+    return this.friendlyCompanion;
+  }
+
+  removeFriendlyCompanion() {
+    this.friendlyCompanion = null;
+  }
+
+  snapFriendlyCompanionNearPlayer() {
+    if (!this.friendlyCompanion || !this.player) return;
+    const dir = this.player.facing || 1;
+    this.friendlyCompanion.x = this.player.x - dir * 28;
+    this.friendlyCompanion.y = this.player.y - 6;
+    this.friendlyCompanion.vx = 0;
+    this.friendlyCompanion.vy = 0;
+  }
+
   getEndlessSpawnPoint() {
     const tileSize = this.world.tileSize;
     const tries = 40;
@@ -1888,7 +1928,13 @@ export default class Game {
   }
 
   spawnEnemies({ allowStoryFallback = true } = {}) {
+    this.friendlyCompanion = null;
     if (this.world.enemies && this.world.enemies.length > 0) {
+      const companionSpawn = this.world.enemies.find((spawn) => spawn?.type === FRIENDLY_COMPANION_TYPE);
+      if (companionSpawn) {
+        const tileSize = this.world.tileSize;
+        this.spawnFriendlyCompanion((companionSpawn.x + 0.5) * tileSize, (companionSpawn.y + 0.5) * tileSize);
+      }
       this.enemies = [];
       this.boss = null;
       this.bossActive = false;
@@ -2226,6 +2272,8 @@ export default class Game {
             this.openProjectBrowserFromTitle();
           } else if (action === 'level-editor') {
             this.enterEditor({ tab: 'tiles' });
+          } else if (action === 'tile-editor') {
+            this.enterPixelStudio({ tilePicker: true });
           } else if (action === 'pixel-editor') {
             this.enterPixelStudio();
           } else if (action === 'midi-editor') {
@@ -2421,8 +2469,27 @@ export default class Game {
       this.applyIgnitirPlayerImpulse();
     }
     const prevPlayer = { x: this.player.x, y: this.player.y };
+    const prevCompanion = this.friendlyCompanion ? { x: this.friendlyCompanion.x, y: this.friendlyCompanion.y } : null;
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
-    this.updateElevators(dt * timeScale, prevPlayer);
+    if (this.friendlyCompanion) {
+      this.friendlyCompanion.update(dt * timeScale, this.world, this.abilities, {
+        player: this.player,
+        enemies: this.enemies,
+        boss: this.boss,
+        onAssistHit: (enemy) => {
+          this.audio.hit();
+          this.spawnEffect('hit', enemy.x, enemy.y);
+          this.spawnEffect('oil', enemy.x, enemy.y + 6);
+        },
+        onAssistKill: (enemy) => {
+          if (!enemy.training) {
+            this.spawnDeathDebris(enemy);
+          }
+          this.awardLoot(enemy);
+        }
+      });
+    }
+    this.updateElevators(dt * timeScale, prevPlayer, prevCompanion);
     const tileSize = this.world.tileSize;
     const tileX = Math.floor(this.player.x / tileSize);
     const tileY = Math.floor(this.player.y / tileSize);
@@ -2605,6 +2672,7 @@ export default class Game {
     this.ignitirCharge = 0;
     this.ignitirReady = false;
     this.lowHealthAlarmTimer = 0;
+    this.snapFriendlyCompanionNearPlayer();
   }
 
   startDeathSequence() {
@@ -2876,6 +2944,7 @@ export default class Game {
         this.player.onGround = false;
       }
       this.doorTransition = null;
+      this.snapFriendlyCompanionNearPlayer();
     }
   }
 
@@ -4927,6 +4996,30 @@ export default class Game {
       onDone();
       return;
     }
+    if (action.type === 'spawn-companion') {
+      const worldX = centerX + (Number(params.offsetX || 0) * this.world.tileSize);
+      const worldY = centerY + (Number(params.offsetY || 0) * this.world.tileSize);
+      this.spawnFriendlyCompanion(worldX, worldY, { assistEnabled: params.assistEnabled !== false });
+      onDone();
+      return;
+    }
+    if (action.type === 'remove-companion') {
+      this.removeFriendlyCompanion();
+      onDone();
+      return;
+    }
+    if (action.type === 'set-companion-assist') {
+      if (this.friendlyCompanion) {
+        this.friendlyCompanion.assistEnabled = params.enabled !== false;
+      }
+      onDone();
+      return;
+    }
+    if (action.type === 'snap-companion') {
+      this.snapFriendlyCompanionNearPlayer();
+      onDone();
+      return;
+    }
     if (action.type === 'load-level') {
       const levelName = params.levelName;
       const completeLoad = () => {
@@ -5819,13 +5912,34 @@ export default class Game {
     }
   }
 
-  updateElevators(dt, prevPlayer) {
+  updateElevators(dt, prevPlayer, prevCompanion = null) {
     if (!this.elevatorPlatforms.length) return;
-    const prevPlayerRect = {
-      x: prevPlayer.x - this.player.width / 2,
-      y: prevPlayer.y - this.player.height / 2,
-      w: this.player.width,
-      h: this.player.height
+    const applyElevatorToActor = (actor, previousPosition, prevElevatorRects, nextElevatorRects, deltaX, deltaY) => {
+      if (!actor || !previousPosition) return;
+      const prevActorRect = {
+        x: previousPosition.x - actor.width / 2,
+        y: previousPosition.y - actor.height / 2,
+        w: actor.width,
+        h: actor.height
+      };
+      const wasOnElevator = prevElevatorRects.some((rect) => this.isPlayerOnElevator(prevActorRect, rect));
+      if (wasOnElevator) {
+        actor.x += deltaX;
+        actor.y += deltaY;
+        actor.onGround = true;
+        actor.vy = Math.min(actor.vy, 0);
+      }
+      const currentRect = actor.rect;
+      for (const nextElevatorRect of nextElevatorRects) {
+        const wasAbove = prevActorRect.y + prevActorRect.h <= nextElevatorRect.y + 2;
+        const nowOnTop = this.isPlayerOnElevator(currentRect, nextElevatorRect);
+        if (actor.vy >= 0 && wasAbove && nowOnTop) {
+          actor.y = nextElevatorRect.y - actor.height / 2;
+          actor.vy = 0;
+          actor.onGround = true;
+          break;
+        }
+      }
     };
     const tileSize = this.world.tileSize;
     for (const platform of this.elevatorPlatforms) {
@@ -5843,24 +5957,8 @@ export default class Game {
       ));
       const deltaX = platform.x - prevX;
       const deltaY = platform.y - prevY;
-      const wasOnElevator = prevElevatorRects.some((rect) => this.isPlayerOnElevator(prevPlayerRect, rect));
-      if (wasOnElevator) {
-        this.player.x += deltaX;
-        this.player.y += deltaY;
-        this.player.onGround = true;
-        this.player.vy = Math.min(this.player.vy, 0);
-      }
-      const currentRect = this.player.rect;
-      for (const nextElevatorRect of nextElevatorRects) {
-        const wasAbove = prevPlayerRect.y + prevPlayerRect.h <= nextElevatorRect.y + 2;
-        const nowOnTop = this.isPlayerOnElevator(currentRect, nextElevatorRect);
-        if (this.player.vy >= 0 && wasAbove && nowOnTop) {
-          this.player.y = nextElevatorRect.y - this.player.height / 2;
-          this.player.vy = 0;
-          this.player.onGround = true;
-          break;
-        }
-      }
+      applyElevatorToActor(this.player, prevPlayer, prevElevatorRects, nextElevatorRects, deltaX, deltaY);
+      applyElevatorToActor(this.friendlyCompanion, prevCompanion, prevElevatorRects, nextElevatorRects, deltaX, deltaY);
     }
   }
 
@@ -6178,6 +6276,9 @@ export default class Game {
         this.drawIgnitirDissolve(ctx, enemy);
       }
     });
+    if (this.friendlyCompanion) {
+      this.friendlyCompanion.draw(ctx);
+    }
 
     if (this.boss && !this.boss.dead) {
       this.boss.draw(ctx);
@@ -6480,6 +6581,9 @@ export default class Game {
     if (this.boss && !this.boss.dead) {
       this.boss.draw(ctx);
     }
+    if (this.friendlyCompanion) {
+      this.friendlyCompanion.draw(ctx);
+    }
     this.player.draw(ctx);
     ctx.restore();
   }
@@ -6680,6 +6784,11 @@ export default class Game {
       && this.ignitirSequence.time >= 2.4
       && this.ignitirSequence.time <= 4.6;
     const doorForegroundOverlays = [];
+    const viewMarginTiles = 3;
+    const minTileX = Math.max(0, Math.floor(this.camera.x / tileSize) - viewMarginTiles);
+    const maxTileX = Math.min(this.world.width - 1, Math.ceil((this.camera.x + this.camera.width) / tileSize) + viewMarginTiles);
+    const minTileY = Math.max(0, Math.floor(this.camera.y / tileSize) - viewMarginTiles);
+    const maxTileY = Math.min(this.world.height - 1, Math.ceil((this.camera.y + this.camera.height) / tileSize) + viewMarginTiles);
     const isSolidTile = (tx, ty) => this.world.isSolid(tx, ty, this.abilities);
     const drawLiquid = (x, y, fill, highlight, surfaceActive = true) => {
       const baseX = x * tileSize;
@@ -6732,6 +6841,7 @@ export default class Game {
       ctx.restore();
     };
     const pixelTiles = this.world.pixelArt?.tiles || {};
+    const pixelFrameCanvasCache = new Map();
     const drawPixelTile = (x, y, tile) => {
       const pixelData = pixelTiles[tile];
       if (!pixelData || !Array.isArray(pixelData.frames) || pixelData.frames.length === 0) {
@@ -6743,17 +6853,36 @@ export default class Game {
       const frameIndex = Math.floor(time * fps) % frames.length;
       const frame = frames[frameIndex] || frames[0];
       if (!frame) return false;
-      const pixelSize = tileSize / size;
       const baseX = x * tileSize;
       const baseY = y * tileSize;
-      for (let py = 0; py < size; py += 1) {
-        for (let px = 0; px < size; px += 1) {
-          const color = frame[py * size + px];
-          if (!color) continue;
-          ctx.fillStyle = color;
-          ctx.fillRect(baseX + px * pixelSize, baseY + py * pixelSize, pixelSize, pixelSize);
+      let hasPaint = false;
+      for (let index = 0; index < frame.length; index += 1) {
+        if (frame[index]) {
+          hasPaint = true;
+          break;
         }
       }
+      if (!hasPaint) return false;
+      const cacheKey = `${tile}:${size}:${frameIndex}`;
+      let frameCanvas = pixelFrameCanvasCache.get(cacheKey);
+      if (!frameCanvas) {
+        frameCanvas = document.createElement('canvas');
+        frameCanvas.width = size;
+        frameCanvas.height = size;
+        const frameCtx = frameCanvas.getContext('2d');
+        if (!frameCtx) return false;
+        frameCtx.clearRect(0, 0, size, size);
+        for (let py = 0; py < size; py += 1) {
+          for (let px = 0; px < size; px += 1) {
+            const color = frame[py * size + px];
+            if (!color) continue;
+            frameCtx.fillStyle = color;
+            frameCtx.fillRect(px, py, 1, 1);
+          }
+        }
+        pixelFrameCanvasCache.set(cacheKey, frameCanvas);
+      }
+      ctx.drawImage(frameCanvas, baseX, baseY, tileSize, tileSize);
       return true;
     };
     const drawSpikeTile = (x, y, color = '#fff') => {
@@ -7028,8 +7157,8 @@ export default class Game {
       ctx.restore();
     };
     const renderedDoorClusters = new Set();
-    for (let y = 0; y < this.world.height; y += 1) {
-      for (let x = 0; x < this.world.width; x += 1) {
+    for (let y = minTileY; y <= maxTileY; y += 1) {
+      for (let x = minTileX; x <= maxTileX; x += 1) {
         const tile = this.world.getTile(x, y);
         if (drawPixelTile(x, y, tile)) {
           continue;
@@ -7318,6 +7447,10 @@ export default class Game {
     this.doorForegroundOverlays = doorForegroundOverlays;
 
     const decals = this.world.decals || [];
+    const viewLeft = this.camera.x - tileSize * 2;
+    const viewTop = this.camera.y - tileSize * 2;
+    const viewRight = this.camera.x + this.camera.width + tileSize * 2;
+    const viewBottom = this.camera.y + this.camera.height + tileSize * 2;
     decals.forEach((decal) => {
       if (!decal?.imageDataUrl) return;
       const cacheKey = decal.id || decal.imageDataUrl;
@@ -7332,6 +7465,7 @@ export default class Game {
       const y = Number.isFinite(decal.y) ? decal.y : 0;
       const w = Number.isFinite(decal.w) ? decal.w : this.world.width * tileSize;
       const h = Number.isFinite(decal.h) ? decal.h : this.world.height * tileSize;
+      if (x + w < viewLeft || x > viewRight || y + h < viewTop || y > viewBottom) return;
       const rotation = Number.isFinite(decal.rotation) ? decal.rotation : 0;
       ctx.save();
       const decalAlpha = Number.isFinite(decal.alpha) ? Math.max(0, Math.min(1, decal.alpha)) : 1;
@@ -7926,6 +8060,8 @@ export default class Game {
           this.openProjectBrowserFromTitle();
         } else if (action === 'level-editor') {
           this.enterEditor({ tab: 'tiles' });
+        } else if (action === 'tile-editor') {
+          this.enterPixelStudio({ tilePicker: true });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
         } else if (action === 'actor-editor') {
@@ -8114,6 +8250,8 @@ export default class Game {
           this.openProjectBrowserFromTitle();
         } else if (action === 'level-editor') {
           this.enterEditor({ tab: 'tiles' });
+        } else if (action === 'tile-editor') {
+          this.enterPixelStudio({ tilePicker: true });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
         } else if (action === 'actor-editor') {
