@@ -6851,19 +6851,27 @@ export default class Game {
       const size = pixelData.size || 16;
       const frames = pixelData.frames;
       const fps = Math.max(1, pixelData.fps || 6);
-      const frameIndex = Math.floor(time * fps) % frames.length;
-      const frame = frames[frameIndex] || frames[0];
+      const frameHasPaint = (candidate) => {
+        if (!candidate) return false;
+        for (let i = 0; i < candidate.length; i += 1) {
+          if (candidate[i]) return true;
+        }
+        return false;
+      };
+      const animatedFrameIndex = Math.floor(time * fps) % frames.length;
+      let frameIndex = animatedFrameIndex;
+      let frame = frames[frameIndex] || frames[0];
       if (!frame) return false;
-      const baseX = x * tileSize;
-      const baseY = y * tileSize;
-      let hasPaint = false;
-      for (let index = 0; index < frame.length; index += 1) {
-        if (frame[index]) {
-          hasPaint = true;
-          break;
+      if (!frameHasPaint(frame)) {
+        const fallbackIndex = frames.findIndex((entry) => frameHasPaint(entry));
+        if (fallbackIndex >= 0) {
+          frameIndex = fallbackIndex;
+          frame = frames[fallbackIndex];
         }
       }
-      if (!hasPaint) return false;
+      if (!frameHasPaint(frame)) return false;
+      const baseX = x * tileSize;
+      const baseY = y * tileSize;
       const frameSignature = frame.join('|');
       const cacheKey = `${tile}:${size}:${frameIndex}:${frameSignature}`;
       let frameCanvas = this.pixelFrameCanvasCache.get(cacheKey);
