@@ -454,7 +454,7 @@ export default class Editor {
       enemies: true,
       prefabs: true
     };
-    this.panelTabs = ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'];
+    this.panelTabs = ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       file: 0,
@@ -503,7 +503,7 @@ export default class Editor {
     this.drawer = {
       open: false,
       tabIndex: 0,
-      tabs: ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'],
+      tabs: ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -1479,6 +1479,18 @@ export default class Editor {
     } else if (tabId === 'pixels') {
       items = [
         {
+          id: 'pixel-open-selected',
+          label: `Open ${this.tileType?.label || 'tile'} in Pixel Editor`,
+          tooltip: 'Open currently selected tile from Tiles tab in the pixel editor',
+          onClick: () => this.openTileInPixelEditor(this.tileType)
+        },
+        {
+          id: 'pixel-revert-selected',
+          label: `Revert ${this.pixelTarget?.label || this.tileType?.label || 'tile'} to Default`,
+          tooltip: 'Remove custom pixel art and restore built-in tile rendering',
+          onClick: () => this.revertTilePixelArt(this.pixelTarget || this.tileType)
+        },
+        {
           id: 'pixel-brush',
           label: 'Pixel Brush',
           tooltip: 'Paint pixels',
@@ -1541,7 +1553,7 @@ export default class Editor {
         tooltip: `Pixel target: ${tile.label}`,
         onClick: () => {
           this.pixelTarget = tile;
-          this.mode = 'pixel';
+          this.setGraphicsStatus(`Tile target: ${tile.label} [${tile.char}]`);
         }
       })));
       columns = 2;
@@ -2371,6 +2383,26 @@ export default class Editor {
 
   adjustPixelFps(delta) {
     this.pixelAdapter.adjustFps(delta);
+  }
+
+  openTileInPixelEditor(tile = this.tileType) {
+    if (!tile?.char) return;
+    this.pixelTarget = tile;
+    this.mode = 'pixel';
+    this.setGraphicsStatus(`Editing tile ${tile.label} [${tile.char}]`);
+  }
+
+  revertTilePixelArt(tile = this.pixelTarget || this.tileType) {
+    const tileChar = tile?.char;
+    if (!tileChar) return;
+    const store = this.ensurePixelArtStore();
+    if (!store.tiles?.[tileChar]) {
+      this.setGraphicsStatus(`Tile ${tile.label} already uses default art`);
+      return;
+    }
+    delete store.tiles[tileChar];
+    this.persistAutosave();
+    this.setGraphicsStatus(`Reverted tile ${tile.label} [${tileChar}] to default art`);
   }
 
 
@@ -7754,6 +7786,7 @@ export default class Editor {
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
         { id: 'toolbox', label: 'Toolbox' },
         { id: 'tiles', label: 'Tiles' },
+        { id: 'pixels', label: 'Tile Editor' },
         { id: 'npcs', label: 'NPCs' },
         { id: 'triggers', label: 'Triggers' },
         { id: 'powerups', label: 'Powerups' },
@@ -8043,6 +8076,20 @@ export default class Editor {
         } else if (activeTab === 'pixels') {
           items = [
             {
+              id: 'pixel-open-selected',
+              label: `OPEN ${this.tileType?.label?.toUpperCase?.() || 'TILE'} IN PIXEL EDITOR`,
+              active: false,
+              tooltip: 'Open currently selected tile from Tiles tab in the pixel editor',
+              onClick: () => this.openTileInPixelEditor(this.tileType)
+            },
+            {
+              id: 'pixel-revert-selected',
+              label: `REVERT ${this.pixelTarget?.label?.toUpperCase?.() || this.tileType?.label?.toUpperCase?.() || 'TILE'} TO DEFAULT`,
+              active: false,
+              tooltip: 'Remove custom pixel art and restore built-in tile rendering',
+              onClick: () => this.revertTilePixelArt(this.pixelTarget || this.tileType)
+            },
+            {
               id: 'pixel-brush',
               label: 'PIXEL BRUSH',
               active: this.mode === 'pixel' && this.pixelTool === 'paint',
@@ -8100,7 +8147,7 @@ export default class Editor {
             tooltip: `Pixel target: ${tile.label}`,
             onClick: () => {
               this.pixelTarget = tile;
-              this.mode = 'pixel';
+              this.setGraphicsStatus(`Tile target: ${tile.label} [${tile.char}]`);
             }
           })));
           columns = 1;
@@ -8408,6 +8455,7 @@ export default class Editor {
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
         { id: 'toolbox', label: 'TOOLBOX' },
         { id: 'tiles', label: 'TILES' },
+        { id: 'pixels', label: 'TILE EDITOR' },
         { id: 'npcs', label: 'NPCS' },
         { id: 'triggers', label: 'TRIGGERS' },
         { id: 'powerups', label: 'POWERUPS' },

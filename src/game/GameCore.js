@@ -2271,6 +2271,8 @@ export default class Game {
             this.openProjectBrowserFromTitle();
           } else if (action === 'level-editor') {
             this.enterEditor({ tab: 'tiles' });
+          } else if (action === 'tile-editor') {
+            this.enterEditor({ tab: 'pixels' });
           } else if (action === 'pixel-editor') {
             this.enterPixelStudio();
           } else if (action === 'midi-editor') {
@@ -6833,6 +6835,7 @@ export default class Game {
       ctx.restore();
     };
     const pixelTiles = this.world.pixelArt?.tiles || {};
+    const pixelFrameCanvasCache = new Map();
     const drawPixelTile = (x, y, tile) => {
       const pixelData = pixelTiles[tile];
       if (!pixelData || !Array.isArray(pixelData.frames) || pixelData.frames.length === 0) {
@@ -6844,17 +6847,36 @@ export default class Game {
       const frameIndex = Math.floor(time * fps) % frames.length;
       const frame = frames[frameIndex] || frames[0];
       if (!frame) return false;
-      const pixelSize = tileSize / size;
       const baseX = x * tileSize;
       const baseY = y * tileSize;
-      for (let py = 0; py < size; py += 1) {
-        for (let px = 0; px < size; px += 1) {
-          const color = frame[py * size + px];
-          if (!color) continue;
-          ctx.fillStyle = color;
-          ctx.fillRect(baseX + px * pixelSize, baseY + py * pixelSize, pixelSize, pixelSize);
+      let hasPaint = false;
+      for (let index = 0; index < frame.length; index += 1) {
+        if (frame[index]) {
+          hasPaint = true;
+          break;
         }
       }
+      if (!hasPaint) return false;
+      const cacheKey = `${tile}:${size}:${frameIndex}`;
+      let frameCanvas = pixelFrameCanvasCache.get(cacheKey);
+      if (!frameCanvas) {
+        frameCanvas = document.createElement('canvas');
+        frameCanvas.width = size;
+        frameCanvas.height = size;
+        const frameCtx = frameCanvas.getContext('2d');
+        if (!frameCtx) return false;
+        frameCtx.clearRect(0, 0, size, size);
+        for (let py = 0; py < size; py += 1) {
+          for (let px = 0; px < size; px += 1) {
+            const color = frame[py * size + px];
+            if (!color) continue;
+            frameCtx.fillStyle = color;
+            frameCtx.fillRect(px, py, 1, 1);
+          }
+        }
+        pixelFrameCanvasCache.set(cacheKey, frameCanvas);
+      }
+      ctx.drawImage(frameCanvas, baseX, baseY, tileSize, tileSize);
       return true;
     };
     const drawSpikeTile = (x, y, color = '#fff') => {
@@ -8027,6 +8049,8 @@ export default class Game {
           this.openProjectBrowserFromTitle();
         } else if (action === 'level-editor') {
           this.enterEditor({ tab: 'tiles' });
+        } else if (action === 'tile-editor') {
+          this.enterEditor({ tab: 'pixels' });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
         } else if (action === 'actor-editor') {
@@ -8215,6 +8239,8 @@ export default class Game {
           this.openProjectBrowserFromTitle();
         } else if (action === 'level-editor') {
           this.enterEditor({ tab: 'tiles' });
+        } else if (action === 'tile-editor') {
+          this.enterEditor({ tab: 'pixels' });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
         } else if (action === 'actor-editor') {
