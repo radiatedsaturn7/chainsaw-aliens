@@ -28,6 +28,7 @@ import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
 import { createViewportController } from './shared/viewportController.js';
+import { vfsSave } from './vfs.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
@@ -52,6 +53,7 @@ export default class PixelStudio {
     this.currentDocumentRef = null;
     this.savedSnapshot = null;
     this.tilePickerMode = false;
+    this.lastTileArtAutosaveAt = 0;
     this.runtime = createEditorRuntime({
       context: this,
       document: {
@@ -451,6 +453,17 @@ export default class PixelStudio {
       });
     });
     pixelData.fps = Math.round(1000 / (this.animation.frames[0]?.durationMs || 120));
+    this.persistTileArtAutosave();
+  }
+
+  persistTileArtAutosave() {
+    const now = Date.now();
+    if (now - this.lastTileArtAutosaveAt < 1000) return;
+    this.lastTileArtAutosaveAt = now;
+    const saved = vfsSave('art', 'Tile Art Autosave', this.game.world.pixelArt || { tiles: {} });
+    if (saved) {
+      this.currentDocumentRef = { folder: 'art', name: saved.name };
+    }
   }
 
   resetActiveTileArt() {
@@ -460,6 +473,7 @@ export default class PixelStudio {
     delete this.game.world.pixelArt.tiles[tileChar];
     this.loadTileData();
     this.game.editor?.persistAutosave?.();
+    this.persistTileArtAutosave();
   }
 
   setTilePickerMode(enabled) {

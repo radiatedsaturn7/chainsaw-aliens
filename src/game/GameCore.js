@@ -6802,11 +6802,13 @@ export default class Game {
       && this.ignitirSequence.time >= 2.4
       && this.ignitirSequence.time <= 4.6;
     const doorForegroundOverlays = [];
+    const cameraWidth = Math.max(1, Number(this.camera.width) || Number(this.canvas?.width) || 1);
+    const cameraHeight = Math.max(1, Number(this.camera.height) || Number(this.canvas?.height) || 1);
     const viewMarginTiles = 3;
     const minTileX = Math.max(0, Math.floor(this.camera.x / tileSize) - viewMarginTiles);
-    const maxTileX = Math.min(this.world.width - 1, Math.ceil((this.camera.x + this.camera.width) / tileSize) + viewMarginTiles);
+    const maxTileX = Math.min(this.world.width - 1, Math.ceil((this.camera.x + cameraWidth) / tileSize) + viewMarginTiles);
     const minTileY = Math.max(0, Math.floor(this.camera.y / tileSize) - viewMarginTiles);
-    const maxTileY = Math.min(this.world.height - 1, Math.ceil((this.camera.y + this.camera.height) / tileSize) + viewMarginTiles);
+    const maxTileY = Math.min(this.world.height - 1, Math.ceil((this.camera.y + cameraHeight) / tileSize) + viewMarginTiles);
     const isSolidTile = (tx, ty) => this.world.isSolid(tx, ty, this.abilities);
     const drawLiquid = (x, y, fill, highlight, surfaceActive = true) => {
       const baseX = x * tileSize;
@@ -7523,8 +7525,8 @@ export default class Game {
     const decals = this.world.decals || [];
     const viewLeft = this.camera.x - tileSize * 2;
     const viewTop = this.camera.y - tileSize * 2;
-    const viewRight = this.camera.x + this.camera.width + tileSize * 2;
-    const viewBottom = this.camera.y + this.camera.height + tileSize * 2;
+    const viewRight = this.camera.x + cameraWidth + tileSize * 2;
+    const viewBottom = this.camera.y + cameraHeight + tileSize * 2;
     decals.forEach((decal) => {
       if (!decal?.imageDataUrl) return;
       const cacheKey = decal.id || decal.imageDataUrl;
