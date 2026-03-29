@@ -179,6 +179,27 @@ export default class FriendlyCompanion extends Player {
     };
   }
 
+  findDropDirection(target, world, abilities) {
+    const tileSize = world.tileSize;
+    const footTileX = Math.floor(this.x / tileSize);
+    const footTileY = Math.floor((this.y + this.height / 2 - 1) / tileSize);
+    const preferredDir = Math.sign(target.x - this.x) || 1;
+    const dirs = preferredDir > 0 ? [1, -1] : [-1, 1];
+    for (let step = 1; step <= 4; step += 1) {
+      for (let i = 0; i < dirs.length; i += 1) {
+        const dir = dirs[i];
+        const testX = footTileX + dir * step;
+        const bodyClear = !world.isSolid(testX, footTileY, abilities, { ignoreOneWay: true });
+        const headClear = !world.isSolid(testX, footTileY - 1, abilities, { ignoreOneWay: true });
+        const supportBelow = world.isSolid(testX, footTileY + 1, abilities, { ignoreOneWay: false });
+        if (bodyClear && headClear && !supportBelow) {
+          return dir;
+        }
+      }
+    }
+    return 0;
+  }
+
   update(dt, world, abilities, context = {}) {
     const player = context.player;
     if (!player) return;
@@ -240,6 +261,22 @@ export default class FriendlyCompanion extends Player {
     if (dx < -14) nextInput.add('left');
     if (dx > 14) nextInput.add('right');
 
+    const wantsToDescend = dy > world.tileSize * 1.1;
+    const onOneWay = this.onGround && world.isOneWay?.(
+      Math.floor(this.x / world.tileSize),
+      Math.floor((this.y + this.height / 2 - 1) / world.tileSize)
+    );
+    if (wantsToDescend && this.onGround && Math.abs(dx) < world.tileSize * 0.55) {
+      const dropDir = this.findDropDirection(target, world, abilities);
+      if (dropDir < 0) nextInput.add('left');
+      if (dropDir > 0) nextInput.add('right');
+      if (onOneWay && this.jumpDecisionCooldown <= 0 && Math.abs(dx) < world.tileSize * 0.4) {
+        nextInput.add('down');
+        nextInput.add('jump');
+        this.jumpDecisionCooldown = 0.25;
+      }
+    }
+
     const canGroundJump = this.onGround || this.coyote > 0 || this.onWall !== 0;
     const canAirRecoverJump = !canGroundJump
       && this.jumpsRemaining > 0
@@ -249,6 +286,11 @@ export default class FriendlyCompanion extends Player {
       && this.vy > -40;
     const shouldJump = this.jumpDecisionCooldown <= 0
       && (dy < -22 && canGroundJump || canAirRecoverJump);
+    const wallClimbJump = this.onWall !== 0 && dy < -18 && abilities.magboots;
+    if (wallClimbJump) {
+      if (this.onWall > 0) nextInput.add('right');
+      if (this.onWall < 0) nextInput.add('left');
+    }
     const flappingRisk = dy < -52 && Math.abs(dx) < 18 && this.onWall === 0;
     if (shouldJump && this.jumpSuppressTimer <= 0 && !flappingRisk) {
       nextInput.add('jump');
@@ -264,6 +306,9 @@ export default class FriendlyCompanion extends Player {
           this.jumpStallBestY = this.y;
         }
       }
+    } else if (wallClimbJump && this.jumpDecisionCooldown <= 0 && this.jumpSuppressTimer <= 0) {
+      nextInput.add('jump');
+      this.jumpDecisionCooldown = 0.16;
     } else if (flappingRisk) {
       this.jumpStallCounter += 1;
     }
