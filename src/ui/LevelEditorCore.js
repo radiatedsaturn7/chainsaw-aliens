@@ -429,9 +429,10 @@ export default class Editor {
           closePrompt: 'Save changes before closing?'
         },
         confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
-        serialize: (ctx) => ctx.game.buildWorldData(),
+        serialize: (ctx) => ctx.serializeLevelDocument(),
         applyLoadedData: (ctx, data) => {
           ctx.game.applyWorldData(data);
+          ctx.game.restoreBestTileArtFromAutosaves?.();
           ctx.flushWorldRefresh();
         }
       },
@@ -1015,7 +1016,7 @@ export default class Editor {
       this.game.applyWorldData(data);
       this.game.restoreBestTileArtFromAutosaves?.();
       this.syncPreviewMinimap();
-      vfsSave('levels', LEVEL_EDITOR_AUTOSAVE_DOC, data);
+      vfsSave('levels', LEVEL_EDITOR_AUTOSAVE_DOC, this.serializeLevelDocument(data));
       return true;
     } catch (error) {
       storage.removeItem(this.autosaveKey);
@@ -1025,7 +1026,7 @@ export default class Editor {
 
   persistAutosave() {
     try {
-      const data = this.game.buildWorldData();
+      const data = this.serializeLevelDocument();
       vfsSave('levels', LEVEL_EDITOR_AUTOSAVE_DOC, data);
       const storage = this.getStorage();
       if (storage) {
@@ -1034,6 +1035,15 @@ export default class Editor {
     } catch (error) {
       console.warn('Unable to save editor autosave:', error);
     }
+  }
+
+  serializeLevelDocument(sourceData = null) {
+    const worldData = sourceData || this.game.buildWorldData();
+    return {
+      ...worldData,
+      pixelArt: { tiles: {} },
+      pixelArtRef: 'Tile Art Autosave'
+    };
   }
 
   resetView() {
