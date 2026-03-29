@@ -961,7 +961,9 @@ export default class PixelStudio {
 
 
   async saveArtDocument(options = {}) {
-    return this.runtime.saveAsOrCurrent(options);
+    const result = await this.runtime.saveAsOrCurrent(options);
+    this.persistTileArtAutosave(true);
+    return result;
   }
 
   async loadArtDocument() {

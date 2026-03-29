@@ -1105,8 +1105,14 @@ export default class Game {
     if (resetFocus) {
       this.pixelStudio.resetFocus();
     }
-    if (fromState === 'title' && returnState === 'title' && !this.pixelStudio.currentDocumentRef) {
-      this.restoreMostRecentArtDocument();
+    if (fromState === 'title' && returnState === 'title') {
+      if (tilePicker) {
+        if (!this.restoreTileArtAutosaveDocument() && !this.pixelStudio.currentDocumentRef) {
+          this.restoreMostRecentArtDocument();
+        }
+      } else if (!this.pixelStudio.currentDocumentRef) {
+        this.restoreMostRecentArtDocument();
+      }
     }
     this.playtestActive = false;
   }
@@ -1278,6 +1284,15 @@ export default class Game {
     if (!payload?.data) return false;
     this.world.pixelArt = payload.data;
     this.pixelStudio.currentDocumentRef = { folder: 'art', name: latest.name };
+    this.pixelStudio.loadTileData();
+    return true;
+  }
+
+  restoreTileArtAutosaveDocument() {
+    const payload = vfsLoad('art', 'Tile Art Autosave');
+    if (!payload?.data) return false;
+    this.world.pixelArt = payload.data;
+    this.pixelStudio.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
     this.pixelStudio.loadTileData();
     return true;
   }
