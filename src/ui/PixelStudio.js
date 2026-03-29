@@ -402,7 +402,15 @@ export default class PixelStudio {
   }
 
   restoreStoredTileArtIfNeeded() {
-    if (this.currentDocumentRef || this.game?.pixelStudioReturnState !== 'title') return;
+    if (this.currentDocumentRef) return;
+    const store = ensurePixelArtStore(this.game.world);
+    // Restore logic must be data-driven, not route-driven: PixelStudio can be entered from
+    // multiple UI flows, and navigation state should not decide whether persisted art reloads.
+    if (this.hasLoadedPixelArtData(store)) return;
+    if (Object.keys(store.tiles || {}).length) {
+      this.hydrateTileArtRefs();
+      if (this.hasLoadedPixelArtData(store)) return;
+    }
     const autosave = vfsLoad('art', 'Tile Art Autosave');
     if (autosave?.data) {
       this.game.world.pixelArt = autosave.data;
@@ -417,6 +425,17 @@ export default class PixelStudio {
       this.hydrateTileArtRefs();
       this.currentDocumentRef = { folder: 'art', name: latest.name };
     }
+  }
+
+  hasLoadedPixelArtData(pixelArt = this.game?.world?.pixelArt) {
+    const tiles = pixelArt?.tiles;
+    if (!tiles || typeof tiles !== 'object') return false;
+    return Object.values(tiles).some((tileData) => {
+      if (!tileData || typeof tileData !== 'object') return false;
+      const frameCount = Array.isArray(tileData.frames) ? tileData.frames.length : 0;
+      const editorFrameCount = Array.isArray(tileData.editor?.frames) ? tileData.editor.frames.length : 0;
+      return frameCount > 0 || editorFrameCount > 0;
+    });
   }
 
   getTileArtDocName(tileChar) {
