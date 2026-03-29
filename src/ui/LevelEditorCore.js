@@ -1,5 +1,5 @@
 import Minimap from '../world/Minimap.js';
-import { vfsList, vfsLoad } from './vfs.js';
+import { vfsDelete, vfsList, vfsLoad, vfsSave } from './vfs.js';
 import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPlayStopButton, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { clamp, randInt, pickOne } from '../editor/input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from '../editor/playtest/transitions.js';
@@ -9,7 +9,7 @@ import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './s
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { createPixelEditorAdapter } from '../editor/adapters/pixelEditorAdapter.js';
 import { createMidiEditorAdapter } from '../editor/adapters/midiEditorAdapter.js';
-import { normalizeMidiTracks } from '../editor/adapters/editorDataContracts.js';
+import { ensurePixelPreviewFrame, normalizeMidiTracks } from '../editor/adapters/editorDataContracts.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
@@ -75,6 +75,7 @@ const DEFAULT_TILE_TYPES = [
 ];
 
 const STANDARD_ENEMY_TYPES = [
+  { id: 'friendly-companion', label: 'Friendly Companion', glyph: 'FC', description: 'Pink player-like ally that follows and assists in combat.' },
   { id: 'practice', label: 'Pulse Drone', glyph: 'PD', description: 'Restless drone that fires pulse volleys while circling the arena.' },
   { id: 'skitter', label: 'Skitter', glyph: 'SK', description: 'Fast ground skimmer that rushes the player.' },
   { id: 'spitter', label: 'Spitter', glyph: 'SP', description: 'Ranged turret that spits corrosive shots.' },
@@ -229,6 +230,10 @@ const TRIGGER_ACTION_TYPES = [
   { id: 'kill-player', label: 'Kill Player' },
   { id: 'kill-enemy', label: 'Kill Enemy' },
   { id: 'spawn-enemy', label: 'Spawn Enemy' },
+  { id: 'spawn-companion', label: 'Spawn Companion' },
+  { id: 'remove-companion', label: 'Remove Companion' },
+  { id: 'set-companion-assist', label: 'Set Companion Assist' },
+  { id: 'snap-companion', label: 'Snap Companion To Player' },
   { id: 'heal-player', label: 'Heal Player' },
   { id: 'heal-enemy', label: 'Heal Enemy' },
   { id: 'save-game', label: 'Save Game' },
@@ -325,6 +330,7 @@ const MIDI_NOTE_LENGTHS = [
 ];
 
 const EDITOR_AUTOSAVE_KEY = 'chainsaw-editor-autosave';
+const LEVEL_EDITOR_AUTOSAVE_DOC = 'Level Editor Autosave';
 
 const EDITOR_GAMEPAD_BINDINGS = {
   [EDITOR_INPUT_ACTIONS.CONFIRM]: 'jump',
@@ -973,9 +979,9 @@ export default class Editor {
   }
 
   clearAutosave() {
+    vfsDelete('levels', LEVEL_EDITOR_AUTOSAVE_DOC);
     const storage = this.getStorage();
-    if (!storage) return;
-    storage.removeItem(this.autosaveKey);
+    if (storage) storage.removeItem(this.autosaveKey);
     this.autosaveLoaded = false;
   }
 
@@ -989,6 +995,13 @@ export default class Editor {
   }
 
   loadAutosave() {
+    const vfsPayload = vfsLoad('levels', LEVEL_EDITOR_AUTOSAVE_DOC);
+    if (vfsPayload?.data?.tiles && vfsPayload?.data?.width && vfsPayload?.data?.height) {
+      this.game.applyWorldData(vfsPayload.data);
+      this.game.restoreBestTileArtFromAutosaves?.();
+      this.syncPreviewMinimap();
+      return true;
+    }
     const storage = this.getStorage();
     if (!storage) return false;
     const raw = storage.getItem(this.autosaveKey);
@@ -1000,7 +1013,9 @@ export default class Editor {
         return false;
       }
       this.game.applyWorldData(data);
+      this.game.restoreBestTileArtFromAutosaves?.();
       this.syncPreviewMinimap();
+      vfsSave('levels', LEVEL_EDITOR_AUTOSAVE_DOC, data);
       return true;
     } catch (error) {
       storage.removeItem(this.autosaveKey);
@@ -1009,10 +1024,13 @@ export default class Editor {
   }
 
   persistAutosave() {
-    const storage = this.getStorage();
-    if (!storage) return;
     try {
-      storage.setItem(this.autosaveKey, JSON.stringify(this.game.buildWorldData()));
+      const data = this.game.buildWorldData();
+      vfsSave('levels', LEVEL_EDITOR_AUTOSAVE_DOC, data);
+      const storage = this.getStorage();
+      if (storage) {
+        storage.setItem(this.autosaveKey, JSON.stringify(data));
+      }
     } catch (error) {
       console.warn('Unable to save editor autosave:', error);
     }
@@ -1474,6 +1492,18 @@ export default class Editor {
     } else if (tabId === 'pixels') {
       items = [
         {
+          id: 'pixel-open-selected',
+          label: `Open ${this.tileType?.label || 'tile'} in Pixel Editor`,
+          tooltip: 'Open currently selected tile from Tiles tab in the pixel editor',
+          onClick: () => this.openTileInPixelEditor(this.tileType)
+        },
+        {
+          id: 'pixel-revert-selected',
+          label: `Revert ${this.pixelTarget?.label || this.tileType?.label || 'tile'} to Default`,
+          tooltip: 'Remove custom pixel art and restore built-in tile rendering',
+          onClick: () => this.revertTilePixelArt(this.pixelTarget || this.tileType)
+        },
+        {
           id: 'pixel-brush',
           label: 'Pixel Brush',
           tooltip: 'Paint pixels',
@@ -1536,7 +1566,7 @@ export default class Editor {
         tooltip: `Pixel target: ${tile.label}`,
         onClick: () => {
           this.pixelTarget = tile;
-          this.mode = 'pixel';
+          this.setGraphicsStatus(`Tile target: ${tile.label} [${tile.char}]`);
         }
       })));
       columns = 2;
@@ -2341,7 +2371,9 @@ export default class Editor {
   }
 
   getPixelArtData(tileChar) {
-    return this.pixelAdapter.getPixelData(tileChar);
+    const data = this.pixelAdapter.getPixelData(tileChar);
+    ensurePixelPreviewFrame(data, this.pixelFrameIndex);
+    return data;
   }
 
   getActivePixelFrame() {
@@ -2366,6 +2398,26 @@ export default class Editor {
 
   adjustPixelFps(delta) {
     this.pixelAdapter.adjustFps(delta);
+  }
+
+  openTileInPixelEditor(tile = this.tileType) {
+    if (!tile?.char) return;
+    this.pixelTarget = tile;
+    this.mode = 'pixel';
+    this.setGraphicsStatus(`Editing tile ${tile.label} [${tile.char}]`);
+  }
+
+  revertTilePixelArt(tile = this.pixelTarget || this.tileType) {
+    const tileChar = tile?.char;
+    if (!tileChar) return;
+    const store = this.ensurePixelArtStore();
+    if (!store.tiles?.[tileChar]) {
+      this.setGraphicsStatus(`Tile ${tile.label} already uses default art`);
+      return;
+    }
+    delete store.tiles[tileChar];
+    this.persistAutosave();
+    this.setGraphicsStatus(`Reverted tile ${tile.label} [${tileChar}] to default art`);
   }
 
 
@@ -2468,6 +2520,12 @@ export default class Editor {
         break;
       case 'spawn-enemy':
         base.params = { enemyType: STANDARD_ENEMY_TYPES[0]?.id || 'practice', offsetX: 0, offsetY: 0 };
+        break;
+      case 'spawn-companion':
+        base.params = { offsetX: 0, offsetY: 0, assistEnabled: true };
+        break;
+      case 'set-companion-assist':
+        base.params = { enabled: true };
         break;
       case 'heal-player':
         base.params = { amount: 2 };
@@ -2656,6 +2714,14 @@ export default class Editor {
       }
       if (action.type === 'become-tile') {
         if (typeof action.params.tileChar !== 'string' || !action.params.tileChar) action.params.tileChar = '#';
+      }
+      if (action.type === 'spawn-companion') {
+        if (!Number.isFinite(action.params.offsetX)) action.params.offsetX = 0;
+        if (!Number.isFinite(action.params.offsetY)) action.params.offsetY = 0;
+        if (typeof action.params.assistEnabled !== 'boolean') action.params.assistEnabled = true;
+      }
+      if (action.type === 'set-companion-assist') {
+        if (typeof action.params.enabled !== 'boolean') action.params.enabled = true;
       }
       return action;
     });
@@ -3042,6 +3108,14 @@ export default class Editor {
         return `Target: ${params.target || 'nearest'}`;
       case 'spawn-enemy':
         return `Enemy: ${params.enemyType || 'practice'} @ (${params.offsetX || 0}, ${params.offsetY || 0})`;
+      case 'spawn-companion':
+        return `Spawn @ (${params.offsetX || 0}, ${params.offsetY || 0}) assist:${params.assistEnabled !== false ? 'on' : 'off'}`;
+      case 'remove-companion':
+        return 'Remove active companion';
+      case 'set-companion-assist':
+        return `Assist: ${params.enabled !== false ? 'enabled' : 'disabled'}`;
+      case 'snap-companion':
+        return 'Teleport near player';
       case 'heal-player':
         return `Amount: +${params.amount || 0}`;
       case 'heal-enemy':
@@ -5227,7 +5301,7 @@ export default class Editor {
       return;
     }
 
-    if (this.triggerEditorOpen && this.triggerPlacementMode === 'spawn-enemy' && this.triggerActionDraft) {
+    if (this.triggerEditorOpen && (this.triggerPlacementMode === 'spawn-enemy' || this.triggerPlacementMode === 'spawn-companion') && this.triggerActionDraft) {
       if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
       const selectedTrigger = this.getSelectedTrigger();
       if (!selectedTrigger) return;
@@ -6968,7 +7042,16 @@ export default class Editor {
     ctx.save();
     ctx.scale(this.zoom, this.zoom);
     ctx.translate(-this.camera.x, -this.camera.y);
-    this.game.drawWorld(ctx, { showDoors: true, decalAlphaMultiplier: this.getDecalOverlayAlpha() });
+    this.game.drawWorld(ctx, {
+      showDoors: true,
+      decalAlphaMultiplier: this.getDecalOverlayAlpha(),
+      cameraOverride: {
+        x: this.camera.x,
+        y: this.camera.y,
+        width: canvas.width / this.zoom,
+        height: canvas.height / this.zoom
+      }
+    });
     this.drawEditorMarkers(ctx);
     this.drawGrid(ctx);
     this.drawCursor(ctx);
@@ -8016,6 +8099,20 @@ export default class Editor {
         } else if (activeTab === 'pixels') {
           items = [
             {
+              id: 'pixel-open-selected',
+              label: `OPEN ${this.tileType?.label?.toUpperCase?.() || 'TILE'} IN PIXEL EDITOR`,
+              active: false,
+              tooltip: 'Open currently selected tile from Tiles tab in the pixel editor',
+              onClick: () => this.openTileInPixelEditor(this.tileType)
+            },
+            {
+              id: 'pixel-revert-selected',
+              label: `REVERT ${this.pixelTarget?.label?.toUpperCase?.() || this.tileType?.label?.toUpperCase?.() || 'TILE'} TO DEFAULT`,
+              active: false,
+              tooltip: 'Remove custom pixel art and restore built-in tile rendering',
+              onClick: () => this.revertTilePixelArt(this.pixelTarget || this.tileType)
+            },
+            {
               id: 'pixel-brush',
               label: 'PIXEL BRUSH',
               active: this.mode === 'pixel' && this.pixelTool === 'paint',
@@ -8073,7 +8170,7 @@ export default class Editor {
             tooltip: `Pixel target: ${tile.label}`,
             onClick: () => {
               this.pixelTarget = tile;
-              this.mode = 'pixel';
+              this.setGraphicsStatus(`Tile target: ${tile.label} [${tile.char}]`);
             }
           })));
           columns = 1;
@@ -8656,6 +8753,10 @@ export default class Editor {
             local += sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4;
           } else if (draft.type === 'spawn-enemy') {
             local += sectionButtonH + 4 + sectionButtonH + 4;
+          } else if (draft.type === 'spawn-companion') {
+            local += sectionButtonH + 4 + sectionButtonH + 4;
+          } else if (draft.type === 'set-companion-assist') {
+            local += sectionButtonH + 4;
           } else if (draft.type === 'heal-player') {
             local += numericAdvance;
           } else if (draft.type === 'heal-enemy') {
@@ -8803,6 +8904,14 @@ export default class Editor {
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Enemy: ${draft.params.enemyType || enemyOptions[0]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Enemy', options: enemyOptions, selectedValue: draft.params.enemyType || enemyOptions[0], onPick: (value) => { draft.params.enemyType = value; } }); }, 'Pick enemy');
             y += sectionButtonH + 4;
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Spawn Point: (${draft.params.offsetX || 0}, ${draft.params.offsetY || 0})`, this.triggerPlacementMode === 'spawn-enemy', () => { this.triggerPlacementMode = this.triggerPlacementMode === 'spawn-enemy' ? null : 'spawn-enemy'; }, 'Tap, then click in the level to place enemy');
+            y += sectionButtonH + 4;
+          } else if (draft.type === 'spawn-companion') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Spawn Point: (${draft.params.offsetX || 0}, ${draft.params.offsetY || 0})`, this.triggerPlacementMode === 'spawn-companion', () => { this.triggerPlacementMode = this.triggerPlacementMode === 'spawn-companion' ? null : 'spawn-companion'; }, 'Tap, then click in the level to place companion');
+            y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Assist: ${draft.params.assistEnabled !== false ? 'On' : 'Off'}`, draft.params.assistEnabled !== false, () => { draft.params.assistEnabled = !(draft.params.assistEnabled !== false); }, 'Toggle companion assist behavior');
+            y += sectionButtonH + 4;
+          } else if (draft.type === 'set-companion-assist') {
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Assist: ${draft.params.enabled !== false ? 'On' : 'Off'}`, draft.params.enabled !== false, () => { draft.params.enabled = !(draft.params.enabled !== false); }, 'Toggle companion assist behavior');
             y += sectionButtonH + 4;
           } else if (draft.type === 'heal-player' || draft.type === 'heal-enemy') {
             numericRow('Amount', 'amount', 1, 0, 99);
@@ -8991,7 +9100,7 @@ export default class Editor {
 
       const pixelData = this.getPixelArtData(this.pixelTarget?.char);
       const size = pixelData?.size || PIXEL_GRID_SIZE;
-      const frame = pixelData?.frames?.[this.pixelFrameIndex] || [];
+      const frame = ensurePixelPreviewFrame(pixelData, this.pixelFrameIndex) || [];
       const cellSize = 12;
       const gridX = panelX + panelPadding;
       const gridY = panelY + 36;
