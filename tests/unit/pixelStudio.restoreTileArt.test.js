@@ -72,7 +72,7 @@ test('restores autosave tile art even when not returning from title', () => {
   assert.deepEqual(editor.currentDocumentRef, { folder: 'art', name: 'Tile Art Autosave' });
 });
 
-test('does not overwrite already loaded in-memory tile art data', () => {
+test('does not overwrite already loaded art document data', () => {
   vfsSave('art', 'Tile Art Autosave', {
     tiles: {
       '#': { frames: [['#00ff00']] }
@@ -89,11 +89,12 @@ test('does not overwrite already loaded in-memory tile art data', () => {
       }
     }
   });
+  editor.currentDocumentRef = { folder: 'art', name: 'existing-art-doc' };
 
   restoreStoredTileArtIfNeeded.call(editor);
 
   assert.equal(editor.game.world.pixelArt.tiles['#'].frames[0][0], '#ff0000');
-  assert.equal(editor.currentDocumentRef, null);
+  assert.deepEqual(editor.currentDocumentRef, { folder: 'art', name: 'existing-art-doc' });
 });
 
 test('restores autosave over plain frame-only in-memory tile data', () => {
@@ -150,6 +151,27 @@ test('restores autosave even when current document ref points at a level doc', (
   restoreStoredTileArtIfNeeded.call(editor);
 
   assert.equal(editor.game.world.pixelArt.tiles['#'].frames[0][0], '#aa00ff');
+  assert.deepEqual(editor.currentDocumentRef, { folder: 'art', name: 'Tile Art Autosave' });
+});
+
+test('prefers tile autosave over loaded non-art world data', () => {
+  vfsSave('art', 'Tile Art Autosave', {
+    tiles: {
+      '#': { frames: [['#a000ff']], editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] } }
+    }
+  });
+  const editor = createEditor({
+    pixelArt: {
+      tiles: {
+        '#': { frames: [['#ff0000']], editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] } }
+      }
+    }
+  });
+  editor.currentDocumentRef = { folder: 'levels', name: 'Level Editor Autosave' };
+
+  restoreStoredTileArtIfNeeded.call(editor);
+
+  assert.equal(editor.game.world.pixelArt.tiles['#'].frames[0][0], '#a000ff');
   assert.deepEqual(editor.currentDocumentRef, { folder: 'art', name: 'Tile Art Autosave' });
 });
 

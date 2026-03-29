@@ -406,18 +406,19 @@ export default class PixelStudio {
     const store = ensurePixelArtStore(this.game.world);
     // Restore logic must be data-driven, not route-driven: PixelStudio can be entered from
     // multiple UI flows, and navigation state should not decide whether persisted art reloads.
-    if (this.hasLoadedPixelArtData(store)) return;
+    const hadLoadedInMemory = this.hasLoadedPixelArtData(store);
     if (Object.keys(store.tiles || {}).length) {
       this.hydrateTileArtRefs();
-      if (this.hasLoadedPixelArtData(store)) return;
     }
     const autosave = vfsLoad('art', 'Tile Art Autosave');
-    if (autosave?.data) {
+    const autosaveHasTiles = Object.keys(autosave?.data?.tiles || {}).length > 0;
+    if (autosave?.data && autosaveHasTiles) {
       this.game.world.pixelArt = autosave.data;
       this.hydrateTileArtRefs();
       this.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
       return;
     }
+    if (hadLoadedInMemory || this.hasLoadedPixelArtData(store)) return;
     const latest = vfsList('art')[0];
     const payload = latest?.name ? vfsLoad('art', latest.name) : null;
     if (payload?.data) {
