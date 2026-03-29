@@ -6844,6 +6844,30 @@ export default class Game {
     };
     const pixelTiles = this.world.pixelArt?.tiles || {};
     const drawPixelTile = (x, y, tile) => {
+      const normalizePixelColor = (value) => {
+        if (!value) return null;
+        if (typeof value === 'string') {
+          if (value.startsWith('#')) return value;
+          return null;
+        }
+        if (typeof value === 'number') {
+          const r = value & 255;
+          const g = (value >> 8) & 255;
+          const b = (value >> 16) & 255;
+          const a = (value >> 24) & 255;
+          if (!a) return null;
+          return `#${[r, g, b].map((entry) => entry.toString(16).padStart(2, '0')).join('')}`;
+        }
+        if (typeof value === 'object' && value !== null) {
+          const r = Number(value.r);
+          const g = Number(value.g);
+          const b = Number(value.b);
+          const a = Number.isFinite(value.a) ? Number(value.a) : 255;
+          if (![r, g, b].every(Number.isFinite) || a <= 0) return null;
+          return `#${[r, g, b].map((entry) => Math.max(0, Math.min(255, entry)).toString(16).padStart(2, '0')).join('')}`;
+        }
+        return null;
+      };
       const pixelData = pixelTiles[tile];
       if (!pixelData || !Array.isArray(pixelData.frames) || pixelData.frames.length === 0) {
         return false;
@@ -6854,7 +6878,7 @@ export default class Game {
       const frameHasPaint = (candidate) => {
         if (!candidate) return false;
         for (let i = 0; i < candidate.length; i += 1) {
-          if (candidate[i]) return true;
+          if (normalizePixelColor(candidate[i])) return true;
         }
         return false;
       };
@@ -6908,8 +6932,9 @@ export default class Game {
         for (let py = 0; py < size; py += 1) {
           for (let px = 0; px < size; px += 1) {
             const color = frame[py * size + px];
-            if (!color) continue;
-            frameCtx.fillStyle = color;
+            const normalized = normalizePixelColor(color);
+            if (!normalized) continue;
+            frameCtx.fillStyle = normalized;
             frameCtx.fillRect(px, py, 1, 1);
           }
         }
