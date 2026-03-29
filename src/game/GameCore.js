@@ -1128,6 +1128,7 @@ export default class Game {
   }
 
   exitPixelStudio({ toTitle = false } = {}) {
+    this.pixelStudio?.persistTileArtAutosave?.(true);
     this.playtestActive = false;
     const destination = toTitle ? 'title' : (this.pixelStudioReturnState || 'title');
     this.transitionTo(destination, { forceCleanup: true });
@@ -6802,13 +6803,15 @@ export default class Game {
       && this.ignitirSequence.time >= 2.4
       && this.ignitirSequence.time <= 4.6;
     const doorForegroundOverlays = [];
+    const cameraX = Number.isFinite(this.camera.x) ? this.camera.x : 0;
+    const cameraY = Number.isFinite(this.camera.y) ? this.camera.y : 0;
     const cameraWidth = Math.max(1, Number(this.camera.width) || Number(this.canvas?.width) || 1);
     const cameraHeight = Math.max(1, Number(this.camera.height) || Number(this.canvas?.height) || 1);
     const viewMarginTiles = 3;
-    const minTileX = Math.max(0, Math.floor(this.camera.x / tileSize) - viewMarginTiles);
-    const maxTileX = Math.min(this.world.width - 1, Math.ceil((this.camera.x + cameraWidth) / tileSize) + viewMarginTiles);
-    const minTileY = Math.max(0, Math.floor(this.camera.y / tileSize) - viewMarginTiles);
-    const maxTileY = Math.min(this.world.height - 1, Math.ceil((this.camera.y + cameraHeight) / tileSize) + viewMarginTiles);
+    const minTileX = Math.max(0, Math.floor(cameraX / tileSize) - viewMarginTiles);
+    const maxTileX = Math.min(this.world.width - 1, Math.ceil((cameraX + cameraWidth) / tileSize) + viewMarginTiles);
+    const minTileY = Math.max(0, Math.floor(cameraY / tileSize) - viewMarginTiles);
+    const maxTileY = Math.min(this.world.height - 1, Math.ceil((cameraY + cameraHeight) / tileSize) + viewMarginTiles);
     const isSolidTile = (tx, ty) => this.world.isSolid(tx, ty, this.abilities);
     const drawLiquid = (x, y, fill, highlight, surfaceActive = true) => {
       const baseX = x * tileSize;
@@ -7523,10 +7526,10 @@ export default class Game {
     this.doorForegroundOverlays = doorForegroundOverlays;
 
     const decals = this.world.decals || [];
-    const viewLeft = this.camera.x - tileSize * 2;
-    const viewTop = this.camera.y - tileSize * 2;
-    const viewRight = this.camera.x + cameraWidth + tileSize * 2;
-    const viewBottom = this.camera.y + cameraHeight + tileSize * 2;
+    const viewLeft = cameraX - tileSize * 2;
+    const viewTop = cameraY - tileSize * 2;
+    const viewRight = cameraX + cameraWidth + tileSize * 2;
+    const viewBottom = cameraY + cameraHeight + tileSize * 2;
     decals.forEach((decal) => {
       if (!decal?.imageDataUrl) return;
       const cacheKey = decal.id || decal.imageDataUrl;

@@ -456,9 +456,9 @@ export default class PixelStudio {
     this.persistTileArtAutosave();
   }
 
-  persistTileArtAutosave() {
+  persistTileArtAutosave(force = false) {
     const now = Date.now();
-    if (now - this.lastTileArtAutosaveAt < 1000) return;
+    if (!force && now - this.lastTileArtAutosaveAt < 1000) return;
     this.lastTileArtAutosaveAt = now;
     const saved = vfsSave('art', 'Tile Art Autosave', this.game.world.pixelArt || { tiles: {} });
     if (saved) {
