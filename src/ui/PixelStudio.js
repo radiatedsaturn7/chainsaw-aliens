@@ -69,7 +69,7 @@ export default class PixelStudio {
         },
         confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
         serialize: (ctx) => {
-          ctx.syncTileData();
+          ctx.syncTileData({ persist: false });
           return ctx.game.world.pixelArt || { tiles: {} };
         },
         applyLoadedData: (ctx, data) => {
@@ -528,7 +528,7 @@ export default class PixelStudio {
     this.setFrameLayers(this.animation.frames[0].layers);
   }
 
-  syncTileData() {
+  syncTileData({ persist = true } = {}) {
     if (this.decalEditSession) return;
     const tileChar = this.activeTile?.char;
     if (!tileChar || !this.game?.world?.pixelArt?.tiles) return;
@@ -552,18 +552,20 @@ export default class PixelStudio {
       });
     });
     pixelData.fps = Math.round(1000 / (this.animation.frames[0]?.durationMs || 120));
-    const tileDocName = this.getTileArtDocName(tileChar);
-    const tileDocPayload = {
-      size: pixelData.size,
-      fps: pixelData.fps,
-      frames: pixelData.frames,
-      editor: pixelData.editor
-    };
-    const savedDoc = vfsSave('art', tileDocName, tileDocPayload);
-    if (savedDoc?.name) {
-      pixelData.ref = savedDoc.name;
+    if (persist) {
+      const tileDocName = this.getTileArtDocName(tileChar);
+      const tileDocPayload = {
+        size: pixelData.size,
+        fps: pixelData.fps,
+        frames: pixelData.frames,
+        editor: pixelData.editor
+      };
+      const savedDoc = vfsSave('art', tileDocName, tileDocPayload);
+      if (savedDoc?.name) {
+        pixelData.ref = savedDoc.name;
+      }
+      this.persistTileArtAutosave();
     }
-    this.persistTileArtAutosave();
   }
 
   persistTileArtAutosave(force = false) {

@@ -8,6 +8,7 @@ const restoreStoredTileArtIfNeeded = PixelStudio.prototype.restoreStoredTileArtI
 const hasLoadedPixelArtData = PixelStudio.prototype.hasLoadedPixelArtData;
 const hydrateTileArtRefs = PixelStudio.prototype.hydrateTileArtRefs;
 const persistTileArtAutosave = PixelStudio.prototype.persistTileArtAutosave;
+const syncTileData = PixelStudio.prototype.syncTileData;
 
 class MemoryStorage {
   constructor() {
@@ -172,4 +173,38 @@ test('does not overwrite existing tile autosave with an empty store', () => {
 
   const after = window.localStorage.getItem('robter:vfs:art:Tile Art Autosave');
   assert.equal(after, before);
+});
+
+test('syncTileData updates in-memory tile state without persisting when persist=false', () => {
+  const editor = {
+    decalEditSession: null,
+    activeTile: { char: '#' },
+    game: { world: { pixelArt: { tiles: { '#': { frames: [[]], size: 1, fps: 6 } } } } },
+    canvasState: { width: 1, height: 1, activeLayerIndex: 0 },
+    animation: {
+      frames: [{
+        durationMs: 120,
+        layers: [{
+          name: 'Layer 1',
+          visible: true,
+          locked: false,
+          opacity: 1,
+          pixels: new Uint32Array([0xff00ffff >>> 0])
+        }]
+      }]
+    },
+    persistTileArtAutosave() {
+      throw new Error('should not persist autosave when persist=false');
+    },
+    getTileArtDocName() {
+      return 'Tile Art 23';
+    }
+  };
+
+  syncTileData.call(editor, { persist: false });
+
+  const tile = editor.game.world.pixelArt.tiles['#'];
+  assert.equal(tile.frames[0][0], '#ffff00');
+  assert.equal(window.localStorage.getItem('robter:vfs:art:Tile Art 23'), null);
+  assert.equal(window.localStorage.getItem('robter:vfs:art:Tile Art Autosave'), null);
 });
