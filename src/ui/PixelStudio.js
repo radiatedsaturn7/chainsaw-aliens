@@ -406,6 +406,42 @@ export default class PixelStudio {
     const tileChar = this.activeTile?.char;
     if (!tileChar) return;
     const pixelData = ensurePixelTileData(this.game.world, tileChar, { size: 16, fps: 6 });
+    const normalizeEditorData = (editor, fallbackSize) => {
+      const width = Math.max(1, Number(editor?.width) || fallbackSize);
+      const height = Math.max(1, Number(editor?.height) || fallbackSize);
+      const total = width * height;
+      const frames = Array.isArray(editor?.frames) ? editor.frames : [];
+      const normalizedFrames = frames.map((frame) => ({
+        durationMs: Math.max(20, Number(frame?.durationMs) || DEFAULT_FRAME_DURATION_MS),
+        layers: (Array.isArray(frame?.layers) ? frame.layers : []).map((layer, index) => {
+          const pixels = new Uint32Array(total);
+          const source = layer?.pixels;
+          if (source) {
+            for (let i = 0; i < total; i += 1) {
+              const value = Number(source[i] || 0);
+              pixels[i] = Number.isFinite(value) ? (value >>> 0) : 0;
+            }
+          }
+          return {
+            name: layer?.name || `Layer ${index + 1}`,
+            visible: layer?.visible !== false,
+            locked: Boolean(layer?.locked),
+            opacity: Number.isFinite(layer?.opacity) ? layer.opacity : 1,
+            pixels
+          };
+        })
+      }));
+      if (!normalizedFrames.length || !normalizedFrames[0].layers.length) {
+        normalizedFrames.length = 0;
+        normalizedFrames.push(createFrame([createLayer(width, height, 'Layer 1')], DEFAULT_FRAME_DURATION_MS));
+      }
+      return {
+        width,
+        height,
+        frames: normalizedFrames,
+        activeLayerIndex: clamp(Number(editor?.activeLayerIndex) || 0, 0, normalizedFrames[0].layers.length - 1)
+      };
+    };
     if (!pixelData.editor) {
       const size = pixelData.size || 16;
       const baseLayer = createLayer(size, size, 'Layer 1');
@@ -421,6 +457,8 @@ export default class PixelStudio {
         frames: [createFrame([baseLayer], DEFAULT_FRAME_DURATION_MS)],
         activeLayerIndex: 0
       };
+    } else {
+      pixelData.editor = normalizeEditorData(pixelData.editor, pixelData.size || 16);
     }
     this.canvasState.width = pixelData.editor.width;
     this.canvasState.height = pixelData.editor.height;
