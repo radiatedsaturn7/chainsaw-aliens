@@ -1105,14 +1105,12 @@ export default class Game {
     if (resetFocus) {
       this.pixelStudio.resetFocus();
     }
-    if (fromState === 'title' && returnState === 'title') {
-      if (tilePicker) {
-        if (!this.restoreTileArtAutosaveDocument() && !this.pixelStudio.currentDocumentRef) {
-          this.restoreMostRecentArtDocument();
-        }
-      } else if (!this.pixelStudio.currentDocumentRef) {
+    if (tilePicker && returnState === 'title' && !this.pixelStudio.currentDocumentRef) {
+      if (!this.restoreTileArtAutosaveDocument()) {
         this.restoreMostRecentArtDocument();
       }
+    } else if (fromState === 'title' && returnState === 'title' && !this.pixelStudio.currentDocumentRef) {
+      this.restoreMostRecentArtDocument();
     }
     this.playtestActive = false;
   }

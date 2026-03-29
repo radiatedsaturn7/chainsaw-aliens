@@ -28,7 +28,7 @@ import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
 import { createViewportController } from './shared/viewportController.js';
-import { vfsSave } from './vfs.js';
+import { vfsList, vfsLoad, vfsSave } from './vfs.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
@@ -401,7 +401,24 @@ export default class PixelStudio {
     this.currentFrame.layers = layers;
   }
 
+  restoreStoredTileArtIfNeeded() {
+    if (this.currentDocumentRef || this.game?.pixelStudioReturnState !== 'title') return;
+    const autosave = vfsLoad('art', 'Tile Art Autosave');
+    if (autosave?.data) {
+      this.game.world.pixelArt = autosave.data;
+      this.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
+      return;
+    }
+    const latest = vfsList('art')[0];
+    const payload = latest?.name ? vfsLoad('art', latest.name) : null;
+    if (payload?.data) {
+      this.game.world.pixelArt = payload.data;
+      this.currentDocumentRef = { folder: 'art', name: latest.name };
+    }
+  }
+
   loadTileData() {
+    this.restoreStoredTileArtIfNeeded();
     ensurePixelArtStore(this.game.world);
     const tileChar = this.activeTile?.char;
     if (!tileChar) return;
@@ -1324,6 +1341,7 @@ export default class PixelStudio {
     this.activeTile = tile;
     const index = this.tileLibrary.findIndex((entry) => entry.id === tile?.id);
     if (index >= 0) this.tileIndex = index;
+    this.restoreStoredTileArtIfNeeded();
     this.loadTileData();
   }
 
