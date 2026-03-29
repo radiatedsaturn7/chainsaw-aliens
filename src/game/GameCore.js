@@ -1077,7 +1077,15 @@ export default class Game {
       if (Array.isArray(tileData.frames) && tileData.frames.some((frame) => Array.isArray(frame) && frame.some((value) => Boolean(value)))) {
         return true;
       }
-      return Boolean(tileData.editor?.frames?.length);
+      const editorFrames = tileData.editor?.frames;
+      if (!Array.isArray(editorFrames) || editorFrames.length === 0) return false;
+      return editorFrames.some((frame) => Array.isArray(frame?.layers) && frame.layers.some((layer) => {
+        if (layer?.visible === false || !layer?.pixels) return false;
+        for (let i = 0; i < layer.pixels.length; i += 1) {
+          if (Number(layer.pixels[i] || 0) >>> 0) return true;
+        }
+        return false;
+      }));
     });
   }
 
