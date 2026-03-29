@@ -454,7 +454,7 @@ export default class Editor {
       enemies: true,
       prefabs: true
     };
-    this.panelTabs = ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'];
+    this.panelTabs = ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       file: 0,
@@ -503,7 +503,7 @@ export default class Editor {
     this.drawer = {
       open: false,
       tabIndex: 0,
-      tabs: ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'],
+      tabs: ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -7786,7 +7786,6 @@ export default class Editor {
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
         { id: 'toolbox', label: 'Toolbox' },
         { id: 'tiles', label: 'Tiles' },
-        { id: 'pixels', label: 'Tile Editor' },
         { id: 'npcs', label: 'NPCs' },
         { id: 'triggers', label: 'Triggers' },
         { id: 'powerups', label: 'Powerups' },
@@ -8455,7 +8454,6 @@ export default class Editor {
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
         { id: 'toolbox', label: 'TOOLBOX' },
         { id: 'tiles', label: 'TILES' },
-        { id: 'pixels', label: 'TILE EDITOR' },
         { id: 'npcs', label: 'NPCS' },
         { id: 'triggers', label: 'TRIGGERS' },
         { id: 'powerups', label: 'POWERUPS' },

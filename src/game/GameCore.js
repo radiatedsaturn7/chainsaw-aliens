@@ -2272,7 +2272,7 @@ export default class Game {
           } else if (action === 'level-editor') {
             this.enterEditor({ tab: 'tiles' });
           } else if (action === 'tile-editor') {
-            this.enterEditor({ tab: 'pixels' });
+            this.enterPixelStudio();
           } else if (action === 'pixel-editor') {
             this.enterPixelStudio();
           } else if (action === 'midi-editor') {
@@ -8050,7 +8050,7 @@ export default class Game {
         } else if (action === 'level-editor') {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'tile-editor') {
-          this.enterEditor({ tab: 'pixels' });
+          this.enterPixelStudio();
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
         } else if (action === 'actor-editor') {
@@ -8240,7 +8240,7 @@ export default class Game {
         } else if (action === 'level-editor') {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'tile-editor') {
-          this.enterEditor({ tab: 'pixels' });
+          this.enterPixelStudio();
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
         } else if (action === 'actor-editor') {

@@ -452,6 +452,15 @@ export default class PixelStudio {
     pixelData.fps = Math.round(1000 / (this.animation.frames[0]?.durationMs || 120));
   }
 
+  resetActiveTileArt() {
+    if (this.decalEditSession) return;
+    const tileChar = this.activeTile?.char;
+    if (!tileChar || !this.game?.world?.pixelArt?.tiles) return;
+    delete this.game.world.pixelArt.tiles[tileChar];
+    this.loadTileData();
+    this.game.editor?.persistAutosave?.();
+  }
+
   async promptForNewArtName() {
     const fallback = this.currentDocumentRef?.name || 'new-art';
     const value = await openTextInputOverlay({
@@ -6623,12 +6632,16 @@ export default class PixelStudio {
       ctx.fillText(`Tile: ${this.activeTile?.label || 'None'}`, x + 12, offsetY);
       const tileLeft = { x: x + 160, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
       const tileRight = { x: x + 196, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
+      const tileReset = { x: x + 232, y: offsetY - buttonHeight + 4, w: 56, h: buttonHeight };
       this.drawButton(ctx, tileLeft, '<', false, { fontSize });
       this.drawButton(ctx, tileRight, '>', false, { fontSize });
+      this.drawButton(ctx, tileReset, 'Reset', false, { fontSize: Math.max(10, fontSize - 1) });
       this.uiButtons.push({ bounds: tileLeft, onClick: () => this.cycleTile(-1) });
       this.uiButtons.push({ bounds: tileRight, onClick: () => this.cycleTile(1) });
+      this.uiButtons.push({ bounds: tileReset, onClick: () => this.resetActiveTileArt() });
       this.registerFocusable('menu', tileLeft, () => this.cycleTile(-1));
       this.registerFocusable('menu', tileRight, () => this.cycleTile(1));
+      this.registerFocusable('menu', tileReset, () => this.resetActiveTileArt());
       offsetY += lineHeight;
 
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
