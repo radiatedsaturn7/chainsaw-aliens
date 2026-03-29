@@ -51,6 +51,7 @@ export default class PixelStudio {
     this.tileIndex = 0;
     this.currentDocumentRef = null;
     this.savedSnapshot = null;
+    this.tilePickerMode = false;
     this.runtime = createEditorRuntime({
       context: this,
       document: {
@@ -459,6 +460,77 @@ export default class PixelStudio {
     delete this.game.world.pixelArt.tiles[tileChar];
     this.loadTileData();
     this.game.editor?.persistAutosave?.();
+  }
+
+  setTilePickerMode(enabled) {
+    this.tilePickerMode = Boolean(enabled);
+  }
+
+  drawTilePickerScreen(ctx, width, height) {
+    const rowH = 40;
+    const previewSize = 24;
+    const startY = 96;
+    const left = 28;
+    const rightActionX = width - 220;
+    const tiles = this.tileLibrary.filter((tile) => tile?.char);
+    ctx.fillStyle = '#fff';
+    ctx.font = '24px Courier New';
+    ctx.fillText('Tile Editor', left, 42);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = '13px Courier New';
+    ctx.fillText('Pick a tile, then Edit or Reset.', left, 64);
+    const backBounds = { x: width - 120, y: 20, w: 92, h: 28 };
+    this.drawButton(ctx, backBounds, 'Back', false, { fontSize: 12 });
+    this.uiButtons.push({ bounds: backBounds, onClick: () => this.game.returnFromPixelStudio() });
+    tiles.forEach((tile, index) => {
+      const y = startY + index * rowH;
+      const rowBounds = { x: left, y, w: width - left * 2, h: rowH - 6 };
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      ctx.fillRect(rowBounds.x, rowBounds.y, rowBounds.w, rowBounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.strokeRect(rowBounds.x, rowBounds.y, rowBounds.w, rowBounds.h);
+      ctx.fillStyle = '#111';
+      ctx.fillRect(left + 8, y + 5, previewSize, previewSize);
+      const tileData = this.game.world.pixelArt?.tiles?.[tile.char];
+      const frame = Array.isArray(tileData?.frames) && tileData.frames.length ? (tileData.frames[0] || []) : null;
+      if (frame?.length) {
+        const size = tileData.size || 16;
+        const pixelSize = previewSize / size;
+        for (let py = 0; py < size; py += 1) {
+          for (let px = 0; px < size; px += 1) {
+            const color = frame[py * size + px];
+            if (!color) continue;
+            ctx.fillStyle = color;
+            ctx.fillRect(left + 8 + px * pixelSize, y + 5 + py * pixelSize, pixelSize, pixelSize);
+          }
+        }
+      } else {
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.font = 'bold 14px Courier New';
+        ctx.fillText(tile.char, left + 18, y + 21);
+      }
+      ctx.fillStyle = '#fff';
+      ctx.font = '14px Courier New';
+      ctx.fillText(`${tile.label} [${tile.char}]`, left + 42, y + 22);
+      const editBounds = { x: rightActionX, y: y + 6, w: 82, h: 24 };
+      const resetBounds = { x: rightActionX + 92, y: y + 6, w: 92, h: 24 };
+      this.drawButton(ctx, editBounds, 'Edit', false, { fontSize: 11 });
+      this.drawButton(ctx, resetBounds, 'Reset', false, { fontSize: 11 });
+      this.uiButtons.push({
+        bounds: editBounds,
+        onClick: () => {
+          this.setActiveTile(tile);
+          this.tilePickerMode = false;
+        }
+      });
+      this.uiButtons.push({
+        bounds: resetBounds,
+        onClick: () => {
+          this.setActiveTile(tile);
+          this.resetActiveTileArt();
+        }
+      });
+    });
   }
 
   async promptForNewArtName() {
@@ -5190,6 +5262,13 @@ export default class PixelStudio {
     this.paletteColorPickerBounds = null;
     this.brushPickerBounds = null;
     this.brushPickerSliders = null;
+
+    if (this.tilePickerMode) {
+      this.drawTilePickerScreen(ctx, width, height);
+      this.drawFocusHighlight(ctx);
+      ctx.restore();
+      return;
+    }
 
     const canvasX = leftFrame ? leftFrame.contentX : (padding + leftWidth);
     const canvasY = topBarHeight + padding;

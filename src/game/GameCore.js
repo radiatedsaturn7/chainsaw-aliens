@@ -1075,7 +1075,7 @@ export default class Game {
     this.playtestActive = false;
   }
 
-  enterPixelStudio({ returnState = this.state, resetFocus = true } = {}) {
+  enterPixelStudio({ returnState = this.state, resetFocus = true, tilePicker = false } = {}) {
     const fromState = this.state;
     if (this.state === 'actor-editor') {
       this.actorEditor.deactivate();
@@ -1083,6 +1083,7 @@ export default class Game {
     this.pixelStudioReturnState = returnState;
     this.transitionTo('pixel-editor');
     this.setRevAudio(false);
+    this.pixelStudio.setTilePickerMode(tilePicker);
     if (resetFocus) {
       this.pixelStudio.resetFocus();
     }
@@ -2272,7 +2273,7 @@ export default class Game {
           } else if (action === 'level-editor') {
             this.enterEditor({ tab: 'tiles' });
           } else if (action === 'tile-editor') {
-            this.enterPixelStudio();
+            this.enterPixelStudio({ tilePicker: true });
           } else if (action === 'pixel-editor') {
             this.enterPixelStudio();
           } else if (action === 'midi-editor') {
@@ -8050,7 +8051,7 @@ export default class Game {
         } else if (action === 'level-editor') {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'tile-editor') {
-          this.enterPixelStudio();
+          this.enterPixelStudio({ tilePicker: true });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
         } else if (action === 'actor-editor') {
@@ -8240,7 +8241,7 @@ export default class Game {
         } else if (action === 'level-editor') {
           this.enterEditor({ tab: 'tiles' });
         } else if (action === 'tile-editor') {
-          this.enterPixelStudio();
+          this.enterPixelStudio({ tilePicker: true });
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
         } else if (action === 'actor-editor') {
