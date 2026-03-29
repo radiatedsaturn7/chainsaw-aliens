@@ -7,6 +7,7 @@ import { vfsSave } from '../../src/ui/vfs.js';
 const restoreStoredTileArtIfNeeded = PixelStudio.prototype.restoreStoredTileArtIfNeeded;
 const hasLoadedPixelArtData = PixelStudio.prototype.hasLoadedPixelArtData;
 const hydrateTileArtRefs = PixelStudio.prototype.hydrateTileArtRefs;
+const persistTileArtAutosave = PixelStudio.prototype.persistTileArtAutosave;
 
 class MemoryStorage {
   constructor() {
@@ -133,4 +134,42 @@ test('hydrates ref-only in-memory tiles before attempting fallback restore', () 
 
   assert.equal(editor.game.world.pixelArt.tiles['#'].frames[0][0], '#123456');
   assert.equal(editor.currentDocumentRef, null);
+});
+
+test('restores autosave even when current document ref points at a level doc', () => {
+  vfsSave('art', 'Tile Art Autosave', {
+    tiles: {
+      '#': { frames: [['#aa00ff']], editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] } }
+    }
+  });
+
+  const editor = createEditor({});
+  editor.currentDocumentRef = { folder: 'levels', name: 'Level Editor Autosave' };
+
+  restoreStoredTileArtIfNeeded.call(editor);
+
+  assert.equal(editor.game.world.pixelArt.tiles['#'].frames[0][0], '#aa00ff');
+  assert.deepEqual(editor.currentDocumentRef, { folder: 'art', name: 'Tile Art Autosave' });
+});
+
+test('does not overwrite existing tile autosave with an empty store', () => {
+  vfsSave('art', 'Tile Art Autosave', {
+    tiles: {
+      '#': { ref: 'Tile Art 23' }
+    }
+  });
+  const before = window.localStorage.getItem('robter:vfs:art:Tile Art Autosave');
+  const editor = {
+    game: { world: { pixelArt: { tiles: {} } } },
+    lastTileArtAutosaveAt: 0,
+    getTileArtDocName() {
+      return 'Tile Art 00';
+    },
+    currentDocumentRef: null
+  };
+
+  persistTileArtAutosave.call(editor, true);
+
+  const after = window.localStorage.getItem('robter:vfs:art:Tile Art Autosave');
+  assert.equal(after, before);
 });

@@ -402,7 +402,7 @@ export default class PixelStudio {
   }
 
   restoreStoredTileArtIfNeeded() {
-    if (this.currentDocumentRef) return;
+    if (this.currentDocumentRef?.folder === 'art') return;
     const store = ensurePixelArtStore(this.game.world);
     // Restore logic must be data-driven, not route-driven: PixelStudio can be entered from
     // multiple UI flows, and navigation state should not decide whether persisted art reloads.
@@ -590,6 +590,9 @@ export default class PixelStudio {
       }
       refs[tileChar] = { ref: tileData.ref || docName };
     });
+    if (!Object.keys(refs).length) {
+      return;
+    }
     const saved = vfsSave('art', 'Tile Art Autosave', { tiles: refs });
     if (saved) {
       this.currentDocumentRef = { folder: 'art', name: saved.name };
