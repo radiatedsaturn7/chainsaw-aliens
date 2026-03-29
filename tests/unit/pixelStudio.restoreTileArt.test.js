@@ -7,6 +7,7 @@ import { vfsSave } from '../../src/ui/vfs.js';
 const restoreStoredTileArtIfNeeded = PixelStudio.prototype.restoreStoredTileArtIfNeeded;
 const hasLoadedPixelArtData = PixelStudio.prototype.hasLoadedPixelArtData;
 const hydrateTileArtRefs = PixelStudio.prototype.hydrateTileArtRefs;
+const hydrateTileArtRef = PixelStudio.prototype.hydrateTileArtRef;
 const persistTileArtAutosave = PixelStudio.prototype.persistTileArtAutosave;
 const syncTileData = PixelStudio.prototype.syncTileData;
 
@@ -45,6 +46,7 @@ function createEditor(world = {}) {
     game: { world, pixelStudioReturnState: 'editor' },
     currentDocumentRef: null,
     hasLoadedPixelArtData,
+    hydrateTileArtRef,
     hydrateTileArtRefs,
     restoreStoredTileArtIfNeeded
   };
@@ -229,4 +231,21 @@ test('syncTileData updates in-memory tile state without persisting when persist=
   assert.equal(tile.frames[0][0], '#ffff00');
   assert.equal(window.localStorage.getItem('robter:vfs:art:Tile Art 23'), null);
   assert.equal(window.localStorage.getItem('robter:vfs:art:Tile Art Autosave'), null);
+});
+
+test('hydrateTileArtRef hydrates a single ref-only tile for preview use', () => {
+  vfsSave('art', 'Tile Art 23', {
+    size: 1,
+    frames: [['#ff00ff']],
+    editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] }
+  });
+  const store = { tiles: { '#': { ref: 'Tile Art 23' } } };
+  const editor = {
+    game: { world: { pixelArt: store } }
+  };
+
+  const hydrated = hydrateTileArtRef.call(editor, '#', store.tiles['#']);
+
+  assert.equal(hydrated.frames[0][0], '#ff00ff');
+  assert.equal(store.tiles['#'].frames[0][0], '#ff00ff');
 });

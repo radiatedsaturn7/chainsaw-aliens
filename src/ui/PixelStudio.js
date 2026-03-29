@@ -449,14 +449,20 @@ export default class PixelStudio {
   hydrateTileArtRefs() {
     const store = ensurePixelArtStore(this.game.world);
     Object.entries(store.tiles).forEach(([tileChar, tileData]) => {
-      if (!tileData || typeof tileData !== 'object') return;
-      if ((!tileData.frames || !tileData.frames.length) && (!tileData.editor || !tileData.editor.frames) && tileData.ref) {
-        const payload = vfsLoad('art', tileData.ref);
-        if (payload?.data) {
-          store.tiles[tileChar] = { ...payload.data, ref: tileData.ref };
-        }
-      }
+      this.hydrateTileArtRef(tileChar, tileData, store);
     });
+  }
+
+  hydrateTileArtRef(tileChar, tileData, storeOverride = null) {
+    if (!tileData || typeof tileData !== 'object') return tileData;
+    if ((tileData.frames && tileData.frames.length) || (tileData.editor && tileData.editor.frames)) return tileData;
+    if (!tileData.ref) return tileData;
+    const payload = vfsLoad('art', tileData.ref);
+    if (!payload?.data) return tileData;
+    const hydrated = { ...payload.data, ref: tileData.ref };
+    const store = storeOverride || ensurePixelArtStore(this.game.world);
+    store.tiles[tileChar] = hydrated;
+    return hydrated;
   }
 
   loadTileData() {
@@ -647,7 +653,7 @@ export default class PixelStudio {
       ctx.strokeRect(rowBounds.x, rowBounds.y, rowBounds.w, rowBounds.h);
       ctx.fillStyle = '#111';
       ctx.fillRect(left + 8, y + 5, previewSize, previewSize);
-      const tileData = this.game.world.pixelArt?.tiles?.[tile.char];
+      const tileData = this.hydrateTileArtRef(tile.char, this.game.world.pixelArt?.tiles?.[tile.char]);
       const frame = ensurePixelPreviewFrame(tileData, 0) || null;
       if (frame?.length) {
         const size = tileData.size || 16;
