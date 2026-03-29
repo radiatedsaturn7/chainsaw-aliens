@@ -80,7 +80,10 @@ test('does not overwrite already loaded in-memory tile art data', () => {
   const editor = createEditor({
     pixelArt: {
       tiles: {
-        '#': { frames: [['#ff0000']] }
+        '#': {
+          frames: [['#ff0000']],
+          editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] }
+        }
       }
     }
   });
@@ -89,6 +92,27 @@ test('does not overwrite already loaded in-memory tile art data', () => {
 
   assert.equal(editor.game.world.pixelArt.tiles['#'].frames[0][0], '#ff0000');
   assert.equal(editor.currentDocumentRef, null);
+});
+
+test('restores autosave over plain frame-only in-memory tile data', () => {
+  vfsSave('art', 'Tile Art Autosave', {
+    tiles: {
+      '#': { frames: [['#00ff00']], editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] } }
+    }
+  });
+
+  const editor = createEditor({
+    pixelArt: {
+      tiles: {
+        '#': { frames: [['#ff0000']] }
+      }
+    }
+  });
+
+  restoreStoredTileArtIfNeeded.call(editor);
+
+  assert.equal(editor.game.world.pixelArt.tiles['#'].frames[0][0], '#00ff00');
+  assert.deepEqual(editor.currentDocumentRef, { folder: 'art', name: 'Tile Art Autosave' });
 });
 
 test('hydrates ref-only in-memory tiles before attempting fallback restore', () => {

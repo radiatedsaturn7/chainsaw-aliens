@@ -432,9 +432,10 @@ export default class PixelStudio {
     if (!tiles || typeof tiles !== 'object') return false;
     return Object.values(tiles).some((tileData) => {
       if (!tileData || typeof tileData !== 'object') return false;
+      const hasRef = typeof tileData.ref === 'string' && tileData.ref.length > 0;
       const frameCount = Array.isArray(tileData.frames) ? tileData.frames.length : 0;
       const editorFrameCount = Array.isArray(tileData.editor?.frames) ? tileData.editor.frames.length : 0;
-      return frameCount > 0 || editorFrameCount > 0;
+      return editorFrameCount > 0 || (hasRef && frameCount > 0);
     });
   }
 
