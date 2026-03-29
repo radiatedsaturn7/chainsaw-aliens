@@ -45,6 +45,7 @@ function createEditor(world = {}) {
   return {
     game: { world, pixelStudioReturnState: 'editor' },
     currentDocumentRef: null,
+    tilePickerMode: false,
     hasLoadedPixelArtData,
     hydrateTileArtRef,
     hydrateTileArtRefs,
@@ -97,6 +98,29 @@ test('does not overwrite already loaded art document data', () => {
 
   assert.equal(editor.game.world.pixelArt.tiles['#'].frames[0][0], '#ff0000');
   assert.deepEqual(editor.currentDocumentRef, { folder: 'art', name: 'existing-art-doc' });
+});
+
+test('tile picker mode can restore autosave even with an existing art currentDocumentRef', () => {
+  vfsSave('art', 'Tile Art Autosave', {
+    tiles: {
+      '#': { frames: [['#55aaff']], editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] } }
+    }
+  });
+
+  const editor = createEditor({
+    pixelArt: {
+      tiles: {
+        '#': { frames: [['#ff0000']], editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] } }
+      }
+    }
+  });
+  editor.tilePickerMode = true;
+  editor.currentDocumentRef = { folder: 'art', name: 'old-art-doc' };
+
+  restoreStoredTileArtIfNeeded.call(editor);
+
+  assert.equal(editor.game.world.pixelArt.tiles['#'].frames[0][0], '#55aaff');
+  assert.deepEqual(editor.currentDocumentRef, { folder: 'art', name: 'Tile Art Autosave' });
 });
 
 test('restores autosave over plain frame-only in-memory tile data', () => {

@@ -402,7 +402,7 @@ export default class PixelStudio {
   }
 
   restoreStoredTileArtIfNeeded() {
-    if (this.currentDocumentRef?.folder === 'art') return;
+    if (this.currentDocumentRef?.folder === 'art' && !this.tilePickerMode) return;
     const store = ensurePixelArtStore(this.game.world);
     // Restore logic must be data-driven, not route-driven: PixelStudio can be entered from
     // multiple UI flows, and navigation state should not decide whether persisted art reloads.
