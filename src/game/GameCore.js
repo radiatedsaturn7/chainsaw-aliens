@@ -6857,17 +6857,15 @@ export default class Game {
       const baseX = x * tileSize;
       const baseY = y * tileSize;
       let hasPaint = false;
-      let hash = 2166136261;
       for (let index = 0; index < frame.length; index += 1) {
-        const color = frame[index];
-        if (color) {
+        if (frame[index]) {
           hasPaint = true;
-          hash ^= color.length;
-          hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+          break;
         }
       }
       if (!hasPaint) return false;
-      const cacheKey = `${tile}:${size}:${frameIndex}:${hash >>> 0}`;
+      const frameSignature = frame.join('|');
+      const cacheKey = `${tile}:${size}:${frameIndex}:${frameSignature}`;
       let frameCanvas = this.pixelFrameCanvasCache.get(cacheKey);
       if (!frameCanvas) {
         frameCanvas = document.createElement('canvas');
