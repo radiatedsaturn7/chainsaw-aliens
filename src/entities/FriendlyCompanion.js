@@ -112,7 +112,7 @@ export default class FriendlyCompanion extends Player {
     return world.isSolid(tileX, tileY + 1, abilities, { ignoreOneWay: false });
   }
 
-  findFollowStandTile(player, world, abilities) {
+  buildFollowStandCandidates(player, world) {
     const tileSize = world.tileSize;
     const playerTileX = Math.floor(player.x / tileSize);
     const playerTileY = Math.floor((player.y + player.height / 2 - 1) / tileSize);
@@ -126,40 +126,54 @@ export default class FriendlyCompanion extends Player {
       playerTileX + 2,
       playerTileX - 2,
       playerTileX + 3,
-      playerTileX - 3
+      playerTileX - 3,
+      playerTileX + 4,
+      playerTileX - 4,
+      playerTileX + 5,
+      playerTileX - 5
     ];
     const uniqueColumns = [];
     [...behindColumns, ...adjacentColumns].forEach((column) => {
       if (!uniqueColumns.includes(column)) uniqueColumns.push(column);
     });
-    const playerStanding = Boolean(player.onGround);
-    const prioritizedVertical = playerStanding ? [0, 1, -1, 2, -2] : verticalOffsets;
+    const prioritizedVertical = player.onGround ? [0, 1, -1, 2, -2] : verticalOffsets;
+    const candidates = [];
+    const seen = new Set();
+    const pushCandidate = (x, y) => {
+      const key = `${x},${y}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      candidates.push({ x, y });
+    };
     for (let stepIndex = 0; stepIndex < uniqueColumns.length; stepIndex += 1) {
       const candidateX = uniqueColumns[stepIndex];
       for (let i = 0; i < prioritizedVertical.length; i += 1) {
         const candidateY = playerTileY + prioritizedVertical[i];
-        if (Math.abs(candidateY - playerTileY) > 2) continue;
-        if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
-          return { x: candidateX, y: candidateY };
-        }
+        if (Math.abs(candidateY - playerTileY) > 3) continue;
+        pushCandidate(candidateX, candidateY);
       }
       for (let i = 0; i < verticalOffsets.length; i += 1) {
         const candidateY = playerTileY + verticalOffsets[i];
-        if (Math.abs(candidateY - playerTileY) > 2) continue;
-        if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
-          return { x: candidateX, y: candidateY };
-        }
+        if (Math.abs(candidateY - playerTileY) > 3) continue;
+        pushCandidate(candidateX, candidateY);
       }
-    }
-    for (let stepIndex = 0; stepIndex < uniqueColumns.length; stepIndex += 1) {
-      const candidateX = uniqueColumns[stepIndex];
       for (let i = 0; i < verticalOffsets.length; i += 1) {
-        const candidateY = playerTileY + verticalOffsets[i] + 1;
-        if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
-          return { x: candidateX, y: candidateY };
-        }
+        pushCandidate(candidateX, playerTileY + verticalOffsets[i] + 1);
       }
     }
+    pushCandidate(playerTileX, playerTileY);
+    return candidates;
+  }
+
+  findFollowStandTile(player, world, abilities) {
+    const tileSize = world.tileSize;
+    const candidates = this.buildFollowStandCandidates(player, world);
+    for (let i = 0; i < candidates.length; i += 1) {
+      const candidate = candidates[i];
+      if (this.canStandOnTile(candidate.x, candidate.y, world, abilities)) return candidate;
+    }
+    const playerTileX = Math.floor(player.x / tileSize);
+    const playerTileY = Math.floor((player.y + player.height / 2 - 1) / tileSize);
     return { x: playerTileX, y: playerTileY };
   }
 
@@ -398,7 +412,18 @@ export default class FriendlyCompanion extends Player {
     if (!this.assistTarget) {
       const followTile = this.findFollowStandTile(player, world, abilities);
       if (this.routePlanCooldown <= 0 || !this.routeStepTile) {
-        this.routeStepTile = this.findRouteStepToward(followTile, world, abilities);
+        const candidateTiles = this.buildFollowStandCandidates(player, world)
+          .filter((tile) => this.canStandOnTile(tile.x, tile.y, world, abilities))
+          .slice(0, 10);
+        let plannedStep = null;
+        for (let i = 0; i < candidateTiles.length; i += 1) {
+          const step = this.findRouteStepToward(candidateTiles[i], world, abilities);
+          if (step) {
+            plannedStep = step;
+            break;
+          }
+        }
+        this.routeStepTile = plannedStep || this.findRouteStepToward(followTile, world, abilities);
         this.routePlanCooldown = 0.16;
       }
       if (this.routeStepTile) {
