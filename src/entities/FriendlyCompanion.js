@@ -185,7 +185,7 @@ export default class FriendlyCompanion extends Player {
     const dirs = [-1, 1];
     dirs.forEach((dir) => {
       addNeighbor(tile.x + dir, tile.y);
-      for (let jumpUp = 1; jumpUp <= 4; jumpUp += 1) {
+      for (let jumpUp = 1; jumpUp <= 5; jumpUp += 1) {
         for (let run = 1; run <= 2; run += 1) {
           addNeighbor(tile.x + dir * run, tile.y - jumpUp);
         }
@@ -196,7 +196,7 @@ export default class FriendlyCompanion extends Player {
         }
       }
     });
-    for (let jumpUp = 1; jumpUp <= 3; jumpUp += 1) {
+    for (let jumpUp = 1; jumpUp <= 5; jumpUp += 1) {
       addNeighbor(tile.x, tile.y - jumpUp);
     }
     for (let dropDown = 1; dropDown <= 4; dropDown += 1) {
@@ -209,65 +209,80 @@ export default class FriendlyCompanion extends Player {
     const start = this.getFootStandTile(world);
     if (!this.canStandOnTile(start.x, start.y, world, abilities)) return null;
     if (start.x === goalTile.x && start.y === goalTile.y) return goalTile;
-    const horizontalPadding = Math.max(14, Math.abs(goalTile.x - start.x) + 6);
-    const verticalPadding = Math.max(12, Math.abs(goalTile.y - start.y) + 6);
-    const minX = Math.max(0, Math.min(start.x, goalTile.x) - horizontalPadding);
-    const maxX = Math.min(world.width - 1, Math.max(start.x, goalTile.x) + horizontalPadding);
-    const minY = Math.max(1, Math.min(start.y, goalTile.y) - verticalPadding);
-    const maxY = Math.min(world.height - 2, Math.max(start.y, goalTile.y) + verticalPadding);
+    const horizontalPadding = Math.max(16, Math.abs(goalTile.x - start.x) + 8);
+    const verticalPadding = Math.max(14, Math.abs(goalTile.y - start.y) + 8);
     const keyOf = (tile) => `${tile.x},${tile.y}`;
     const startKey = keyOf(start);
     const heuristic = (tile) => {
       const dx = Math.abs(tile.x - goalTile.x);
       const dy = Math.abs(tile.y - goalTile.y);
-      return Math.max(dx, Math.ceil(dy / 4));
+      return Math.max(dx, Math.ceil(dy / 5));
     };
-    const open = [start];
-    const openSet = new Set([startKey]);
-    const parents = new Map([[startKey, null]]);
-    const gScore = new Map([[startKey, 0]]);
-    const fScore = new Map([[startKey, heuristic(start)]]);
-    while (open.length > 0) {
-      let bestIndex = 0;
-      let bestKey = keyOf(open[0]);
-      let bestF = fScore.get(bestKey) ?? Number.POSITIVE_INFINITY;
-      for (let i = 1; i < open.length; i += 1) {
-        const candidateKey = keyOf(open[i]);
-        const candidateF = fScore.get(candidateKey) ?? Number.POSITIVE_INFINITY;
-        if (candidateF < bestF) {
-          bestF = candidateF;
-          bestIndex = i;
-          bestKey = candidateKey;
+
+    const searchWindows = [
+      {
+        minX: Math.max(0, Math.min(start.x, goalTile.x) - horizontalPadding),
+        maxX: Math.min(world.width - 1, Math.max(start.x, goalTile.x) + horizontalPadding),
+        minY: Math.max(1, Math.min(start.y, goalTile.y) - verticalPadding),
+        maxY: Math.min(world.height - 2, Math.max(start.y, goalTile.y) + verticalPadding),
+        maxExpansions: 1400
+      },
+      { minX: 0, maxX: world.width - 1, minY: 1, maxY: world.height - 2, maxExpansions: 5000 }
+    ];
+
+    for (let windowIndex = 0; windowIndex < searchWindows.length; windowIndex += 1) {
+      const {
+        minX, maxX, minY, maxY, maxExpansions
+      } = searchWindows[windowIndex];
+      const open = [start];
+      const openSet = new Set([startKey]);
+      const parents = new Map([[startKey, null]]);
+      const gScore = new Map([[startKey, 0]]);
+      const fScore = new Map([[startKey, heuristic(start)]]);
+      let expansions = 0;
+      while (open.length > 0 && expansions < maxExpansions) {
+        expansions += 1;
+        let bestIndex = 0;
+        let bestKey = keyOf(open[0]);
+        let bestF = fScore.get(bestKey) ?? Number.POSITIVE_INFINITY;
+        for (let i = 1; i < open.length; i += 1) {
+          const candidateKey = keyOf(open[i]);
+          const candidateF = fScore.get(candidateKey) ?? Number.POSITIVE_INFINITY;
+          if (candidateF < bestF) {
+            bestF = candidateF;
+            bestIndex = i;
+            bestKey = candidateKey;
+          }
         }
+        const [current] = open.splice(bestIndex, 1);
+        if (!current) break;
+        const currentKey = keyOf(current);
+        openSet.delete(currentKey);
+        if (current.x === goalTile.x && current.y === goalTile.y) {
+          let step = current;
+          let parentKey = parents.get(currentKey);
+          while (parentKey && parentKey !== startKey) {
+            const [px, py] = parentKey.split(',').map((value) => Number(value));
+            step = { x: px, y: py };
+            parentKey = parents.get(parentKey);
+          }
+          return step;
+        }
+        const neighbors = this.buildPathNeighbors(current, world, abilities);
+        neighbors.forEach((neighbor) => {
+          if (neighbor.x < minX || neighbor.x > maxX || neighbor.y < minY || neighbor.y > maxY) return;
+          const key = keyOf(neighbor);
+          const tentative = (gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + 1;
+          if (tentative >= (gScore.get(key) ?? Number.POSITIVE_INFINITY)) return;
+          parents.set(key, currentKey);
+          gScore.set(key, tentative);
+          fScore.set(key, tentative + heuristic(neighbor));
+          if (!openSet.has(key)) {
+            open.push(neighbor);
+            openSet.add(key);
+          }
+        });
       }
-      const [current] = open.splice(bestIndex, 1);
-      if (!current) break;
-      const currentKey = keyOf(current);
-      openSet.delete(currentKey);
-      if (current.x === goalTile.x && current.y === goalTile.y) {
-        let step = current;
-        let parentKey = parents.get(currentKey);
-        while (parentKey && parentKey !== startKey) {
-          const [px, py] = parentKey.split(',').map((value) => Number(value));
-          step = { x: px, y: py };
-          parentKey = parents.get(parentKey);
-        }
-        return step;
-      }
-      const neighbors = this.buildPathNeighbors(current, world, abilities);
-      neighbors.forEach((neighbor) => {
-        if (neighbor.x < minX || neighbor.x > maxX || neighbor.y < minY || neighbor.y > maxY) return;
-        const key = keyOf(neighbor);
-        const tentative = (gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + 1;
-        if (tentative >= (gScore.get(key) ?? Number.POSITIVE_INFINITY)) return;
-        parents.set(key, currentKey);
-        gScore.set(key, tentative);
-        fScore.set(key, tentative + heuristic(neighbor));
-        if (!openSet.has(key)) {
-          open.push(neighbor);
-          openSet.add(key);
-        }
-      });
     }
     return null;
   }
