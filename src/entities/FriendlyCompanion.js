@@ -64,7 +64,7 @@ export default class FriendlyCompanion extends Player {
     this.traceTailDelay = 12;
     this.inputTrace = [];
     this.inputTraceClock = 0;
-    this.inputTraceDelay = 1;
+    this.inputTraceDelay = 0.25;
     this.inputTraceMax = 900;
   }
 
@@ -498,7 +498,10 @@ export default class FriendlyCompanion extends Player {
   recordPlayerInputTrace(playerInput, dt) {
     if (!playerInput) return;
     this.inputTraceClock += dt;
-    const tracked = ['left', 'right', 'up', 'down', 'jump', 'drop', 'attack', 'rev'];
+    const tracked = [
+      'left', 'right', 'up', 'down', 'jump', 'drop', 'attack', 'rev',
+      'aimMode', 'aimUp', 'aimDown', 'dpadLeft', 'dpadRight', 'dpadUp', 'dpadDown'
+    ];
     const actions = tracked.filter((action) => playerInput.isDown?.(action));
     this.inputTrace.push({ time: this.inputTraceClock, actions });
     if (this.inputTrace.length > this.inputTraceMax) {
@@ -537,15 +540,14 @@ export default class FriendlyCompanion extends Player {
     this.recordPlayerTraceTile(player, world, abilities, dt);
     this.recordPlayerInputTrace(context.playerInput, dt);
 
-    if (this.traceOnlyFollow && !this.assistTarget) {
-      const delayedActions = this.getDelayedInputActions();
-      if (delayedActions) {
-        this.aiInput.beginFrame(delayedActions);
-        super.update(dt, this.aiInput, world, abilities);
-        this.revving = false;
-        this.flameMode = false;
-        return;
-      }
+    if (this.traceOnlyFollow) {
+      this.assistTarget = null;
+      const delayedActions = this.getDelayedInputActions() || [];
+      this.aiInput.beginFrame(delayedActions);
+      super.update(dt, this.aiInput, world, abilities);
+      this.revving = false;
+      this.flameMode = false;
+      return;
     }
 
     const playerRoom = world.roomAtTile?.(
