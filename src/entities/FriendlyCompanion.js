@@ -387,6 +387,29 @@ export default class FriendlyCompanion extends Player {
     return 0;
   }
 
+  findDetourStandTile(goalTile, world, abilities) {
+    const start = this.getFootStandTile(world);
+    if (!this.canStandOnTile(start.x, start.y, world, abilities)) return null;
+    const preferredDir = Math.sign(goalTile.x - start.x) || 1;
+    const dirs = preferredDir > 0 ? [1, -1] : [-1, 1];
+    const hasHeadroom = (x, y) => {
+      for (let up = 1; up <= 4; up += 1) {
+        if (world.isSolid(x, y - up, abilities, { ignoreOneWay: true })) return false;
+      }
+      return true;
+    };
+    for (let step = 1; step <= 8; step += 1) {
+      for (let i = 0; i < dirs.length; i += 1) {
+        const x = start.x + dirs[i] * step;
+        const y = start.y;
+        if (!this.canStandOnTile(x, y, world, abilities)) continue;
+        if (!hasHeadroom(x, y)) continue;
+        return { x, y };
+      }
+    }
+    return null;
+  }
+
   update(dt, world, abilities, context = {}) {
     const player = context.player;
     if (!player) return;
@@ -440,6 +463,7 @@ export default class FriendlyCompanion extends Player {
       : this.buildFollowTarget(player, world, abilities);
     if (!this.assistTarget) {
       const followTile = this.findFollowStandTile(player, world, abilities);
+      let failedRoutePlan = false;
       if (this.routePlanCooldown <= 0 || !this.routeStepTile) {
         const candidateTiles = this.buildFollowStandCandidates(player, world)
           .filter((tile) => this.canStandOnTile(tile.x, tile.y, world, abilities))
@@ -453,6 +477,7 @@ export default class FriendlyCompanion extends Player {
           }
         }
         this.routeStepTile = plannedStep || this.findRouteStepToward(followTile, world, abilities);
+        failedRoutePlan = !this.routeStepTile;
         this.routePlanCooldown = 0.16;
       }
       if (this.routeStepTile) {
@@ -460,6 +485,15 @@ export default class FriendlyCompanion extends Player {
           x: (this.routeStepTile.x + 0.5) * world.tileSize,
           y: (this.routeStepTile.y + 0.5) * world.tileSize
         };
+      } else if (failedRoutePlan) {
+        const detourTile = this.findDetourStandTile(followTile, world, abilities);
+        if (detourTile) {
+          target = {
+            x: (detourTile.x + 0.5) * world.tileSize,
+            y: (detourTile.y + 0.5) * world.tileSize
+          };
+          this.jumpSuppressTimer = Math.max(this.jumpSuppressTimer, 0.35);
+        }
       }
     }
     const dx = target.x - this.x;
