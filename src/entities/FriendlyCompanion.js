@@ -188,10 +188,39 @@ export default class FriendlyCompanion extends Player {
   buildPathNeighbors(tile, world, abilities) {
     const neighbors = [];
     const seen = new Set();
+    const isAirClear = (x, y) => !world.isSolid(x, y, abilities, { ignoreOneWay: true }) && !world.isHazard?.(x, y);
+    const canTraverse = (from, to) => {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      if (dy < 0) {
+        for (let y = from.y - 1; y >= to.y - 1; y -= 1) {
+          if (!isAirClear(from.x, y)) return false;
+        }
+        const step = Math.sign(dx);
+        let x = from.x;
+        while (x !== to.x) {
+          x += step;
+          if (!isAirClear(x, to.y) || !isAirClear(x, to.y - 1)) return false;
+        }
+      }
+      if (dy > 0) {
+        const step = Math.sign(dx);
+        let x = from.x;
+        while (x !== to.x) {
+          x += step;
+          if (!isAirClear(x, from.y) || !isAirClear(x, from.y - 1)) return false;
+        }
+        for (let y = from.y; y <= to.y; y += 1) {
+          if (!isAirClear(to.x, y - 1)) return false;
+        }
+      }
+      return true;
+    };
     const addNeighbor = (x, y) => {
       const key = `${x},${y}`;
       if (seen.has(key)) return;
-      if (this.canStandOnTile(x, y, world, abilities)) {
+      const target = { x, y };
+      if (this.canStandOnTile(x, y, world, abilities) && canTraverse(tile, target)) {
         neighbors.push({ x, y });
         seen.add(key);
       }
