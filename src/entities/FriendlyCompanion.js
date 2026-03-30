@@ -60,6 +60,7 @@ export default class FriendlyCompanion extends Player {
     this.traceRecordCooldown = 0;
     this.playerTraceTiles = [];
     this.playerTraceMax = 120;
+    this.traceOnlyFollow = true;
   }
 
   getDrawPalette(flash) {
@@ -466,6 +467,23 @@ export default class FriendlyCompanion extends Player {
     return null;
   }
 
+  findNextTraceTile(world) {
+    if (!this.playerTraceTiles.length) return null;
+    const start = this.getFootStandTile(world);
+    let nearestIndex = 0;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < this.playerTraceTiles.length; i += 1) {
+      const node = this.playerTraceTiles[i];
+      const dist = Math.abs(node.x - start.x) + Math.abs(node.y - start.y);
+      if (dist < bestDistance) {
+        bestDistance = dist;
+        nearestIndex = i;
+      }
+    }
+    const nextIndex = Math.min(this.playerTraceTiles.length - 1, nearestIndex + 1);
+    return this.playerTraceTiles[nextIndex];
+  }
+
   update(dt, world, abilities, context = {}) {
     const player = context.player;
     if (!player) return;
@@ -519,6 +537,18 @@ export default class FriendlyCompanion extends Player {
       ? this.buildAssistTarget(player, world, abilities)
       : this.buildFollowTarget(player, world, abilities);
     if (!this.assistTarget) {
+      if (this.traceOnlyFollow) {
+        const traceTile = this.findNextTraceTile(world);
+        if (traceTile) {
+          target = {
+            x: (traceTile.x + 0.5) * world.tileSize,
+            y: (traceTile.y + 0.5) * world.tileSize
+          };
+          this.routeStepTile = traceTile;
+          this.routePlanCooldown = 0.18;
+        }
+      }
+      if (!this.traceOnlyFollow || !this.routeStepTile) {
       const followTile = this.findFollowStandTile(player, world, abilities);
       let failedRoutePlan = false;
       if (this.routePlanCooldown <= 0 || !this.routeStepTile) {
@@ -559,6 +589,7 @@ export default class FriendlyCompanion extends Player {
             this.jumpSuppressTimer = Math.max(this.jumpSuppressTimer, 0.35);
           }
         }
+      }
       }
     }
     const dx = target.x - this.x;

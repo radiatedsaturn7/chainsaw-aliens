@@ -119,3 +119,13 @@ test('trace routing probes next trace node first, then reverse-binary fallbacks'
   assert.equal(attempted[0], 5);
   assert.equal(attempted[1], 7);
 });
+
+test('trace-only helper returns immediate next trace node from nearest point', () => {
+  const world = buildCRoomWorld();
+  const bot = new FriendlyCompanion(0, 0);
+  bot.playerTraceTiles = [{ x: 2, y: 9 }, { x: 3, y: 9 }, { x: 4, y: 9 }];
+  bot.getFootStandTile = () => ({ x: 3, y: 9 });
+
+  const next = bot.findNextTraceTile(world);
+  assert.deepEqual(next, { x: 4, y: 9 });
+});
