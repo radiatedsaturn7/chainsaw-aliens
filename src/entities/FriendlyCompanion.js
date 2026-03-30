@@ -201,18 +201,37 @@ export default class FriendlyCompanion extends Player {
     const start = this.getFootStandTile(world);
     if (!this.canStandOnTile(start.x, start.y, world, abilities)) return null;
     if (start.x === goalTile.x && start.y === goalTile.y) return goalTile;
-    const minX = Math.max(0, Math.min(start.x, goalTile.x) - 12);
-    const maxX = Math.min(world.width - 1, Math.max(start.x, goalTile.x) + 12);
-    const minY = Math.max(1, Math.min(start.y, goalTile.y) - 10);
-    const maxY = Math.min(world.height - 2, Math.max(start.y, goalTile.y) + 10);
+    const horizontalPadding = Math.max(12, Math.abs(goalTile.x - start.x) + 4);
+    const verticalPadding = Math.max(10, Math.abs(goalTile.y - start.y) + 4);
+    const minX = Math.max(0, Math.min(start.x, goalTile.x) - horizontalPadding);
+    const maxX = Math.min(world.width - 1, Math.max(start.x, goalTile.x) + horizontalPadding);
+    const minY = Math.max(1, Math.min(start.y, goalTile.y) - verticalPadding);
+    const maxY = Math.min(world.height - 2, Math.max(start.y, goalTile.y) + verticalPadding);
     const keyOf = (tile) => `${tile.x},${tile.y}`;
     const startKey = keyOf(start);
-    const queue = [start];
+    const heuristic = (tile) => Math.abs(tile.x - goalTile.x) + Math.abs(tile.y - goalTile.y);
+    const open = [start];
+    const openSet = new Set([startKey]);
     const parents = new Map([[startKey, null]]);
-    while (queue.length > 0) {
-      const current = queue.shift();
+    const gScore = new Map([[startKey, 0]]);
+    const fScore = new Map([[startKey, heuristic(start)]]);
+    while (open.length > 0) {
+      let bestIndex = 0;
+      let bestKey = keyOf(open[0]);
+      let bestF = fScore.get(bestKey) ?? Number.POSITIVE_INFINITY;
+      for (let i = 1; i < open.length; i += 1) {
+        const candidateKey = keyOf(open[i]);
+        const candidateF = fScore.get(candidateKey) ?? Number.POSITIVE_INFINITY;
+        if (candidateF < bestF) {
+          bestF = candidateF;
+          bestIndex = i;
+          bestKey = candidateKey;
+        }
+      }
+      const [current] = open.splice(bestIndex, 1);
       if (!current) break;
       const currentKey = keyOf(current);
+      openSet.delete(currentKey);
       if (current.x === goalTile.x && current.y === goalTile.y) {
         let step = current;
         let parentKey = parents.get(currentKey);
@@ -227,9 +246,15 @@ export default class FriendlyCompanion extends Player {
       neighbors.forEach((neighbor) => {
         if (neighbor.x < minX || neighbor.x > maxX || neighbor.y < minY || neighbor.y > maxY) return;
         const key = keyOf(neighbor);
-        if (parents.has(key)) return;
+        const tentative = (gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + 1;
+        if (tentative >= (gScore.get(key) ?? Number.POSITIVE_INFINITY)) return;
         parents.set(key, currentKey);
-        queue.push(neighbor);
+        gScore.set(key, tentative);
+        fScore.set(key, tentative + heuristic(neighbor));
+        if (!openSet.has(key)) {
+          open.push(neighbor);
+          openSet.add(key);
+        }
       });
     }
     return null;
