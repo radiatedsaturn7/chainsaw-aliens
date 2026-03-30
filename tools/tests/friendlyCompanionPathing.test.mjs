@@ -99,3 +99,23 @@ test('player trace recording is capped to configured history length', () => {
   assert.ok(bot.playerTraceTiles.length <= bot.playerTraceMax);
   assert.equal(bot.playerTraceMax, 120);
 });
+
+test('trace routing probes next trace node first, then reverse-binary fallbacks', () => {
+  const world = buildCRoomWorld();
+  const bot = new FriendlyCompanion(0, 0);
+  bot.playerTraceTiles = [
+    { x: 2, y: 9 }, { x: 3, y: 9 }, { x: 4, y: 9 }, { x: 5, y: 9 },
+    { x: 6, y: 9 }, { x: 7, y: 9 }, { x: 8, y: 9 }, { x: 9, y: 9 }
+  ];
+  bot.getFootStandTile = () => ({ x: 4, y: 9 }); // nearest index = 2, primary should be index 3.
+
+  const attempted = [];
+  bot.findRouteStepToward = (goal) => {
+    attempted.push(goal.x);
+    return null;
+  };
+
+  bot.findTraceRouteStep(world, {});
+  assert.equal(attempted[0], 5);
+  assert.equal(attempted[1], 7);
+});

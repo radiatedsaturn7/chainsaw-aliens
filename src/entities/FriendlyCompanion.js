@@ -420,26 +420,47 @@ export default class FriendlyCompanion extends Player {
 
   findTraceRouteStep(world, abilities) {
     if (!this.playerTraceTiles.length) return null;
-    const sampled = [];
-    const seen = new Set();
-    const pushByFraction = (fraction) => {
-      const idx = Math.max(0, Math.min(this.playerTraceTiles.length - 1, Math.floor((this.playerTraceTiles.length - 1) * fraction)));
-      if (seen.has(idx)) return;
-      seen.add(idx);
-      sampled.push(this.playerTraceTiles[idx]);
+    const start = this.getFootStandTile(world);
+    const lastIndex = this.playerTraceTiles.length - 1;
+    let nearestIndex = 0;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < this.playerTraceTiles.length; i += 1) {
+      const node = this.playerTraceTiles[i];
+      const dist = Math.abs(node.x - start.x) + Math.abs(node.y - start.y);
+      if (dist < bestDistance) {
+        bestDistance = dist;
+        nearestIndex = i;
+      }
+    }
+
+    const candidateIndices = [];
+    const used = new Set();
+    const pushIndex = (idx) => {
+      const clamped = Math.max(0, Math.min(lastIndex, idx));
+      if (used.has(clamped)) return;
+      used.add(clamped);
+      candidateIndices.push(clamped);
     };
 
-    // Reverse-binary search over player history: latest, 50%, 75%, 87.5%, ...
-    const reverseBinaryFractions = [1, 0.5, 0.75, 0.875, 0.9375, 0.96875];
-    reverseBinaryFractions.forEach(pushByFraction);
+    // Primary target: the next step after where the companion currently aligns on the trace.
+    pushIndex(nearestIndex + 1);
 
-    for (let i = this.playerTraceTiles.length - 1; i >= 0 && sampled.length < 10; i -= 6) {
-      if (seen.has(i)) continue;
-      seen.add(i);
-      sampled.push(this.playerTraceTiles[i]);
+    // Reverse-binary fallback from that point toward the newest trace.
+    let probe = Math.max(nearestIndex + 1, 0);
+    for (let i = 0; i < 6; i += 1) {
+      probe = Math.floor((probe + lastIndex) / 2);
+      pushIndex(probe);
+      if (probe >= lastIndex) break;
     }
-    for (let i = 0; i < sampled.length; i += 1) {
-      const step = this.findRouteStepToward(sampled[i], world, abilities);
+
+    pushIndex(lastIndex);
+
+    for (let i = nearestIndex; i >= 0 && candidateIndices.length < 12; i -= 3) {
+      pushIndex(i);
+    }
+
+    for (let i = 0; i < candidateIndices.length; i += 1) {
+      const step = this.findRouteStepToward(this.playerTraceTiles[candidateIndices[i]], world, abilities);
       if (step) return step;
     }
     return null;
