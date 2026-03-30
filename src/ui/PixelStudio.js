@@ -629,6 +629,10 @@ export default class PixelStudio {
 
   setTilePickerMode(enabled) {
     this.tilePickerMode = Boolean(enabled);
+    if (this.tilePickerMode) {
+      this.restoreStoredTileArtIfNeeded();
+      this.hydrateTileArtRefs();
+    }
   }
 
   drawTilePickerScreen(ctx, width, height) {

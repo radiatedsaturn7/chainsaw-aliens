@@ -10,6 +10,7 @@ const hydrateTileArtRefs = PixelStudio.prototype.hydrateTileArtRefs;
 const hydrateTileArtRef = PixelStudio.prototype.hydrateTileArtRef;
 const persistTileArtAutosave = PixelStudio.prototype.persistTileArtAutosave;
 const syncTileData = PixelStudio.prototype.syncTileData;
+const setTilePickerMode = PixelStudio.prototype.setTilePickerMode;
 
 class MemoryStorage {
   constructor() {
@@ -288,4 +289,24 @@ test('hydrateTileArtRef hydrates a single ref-only tile for preview use', () => 
 
   assert.equal(hydrated.frames[0][0], '#ff00ff');
   assert.equal(store.tiles['#'].frames[0][0], '#ff00ff');
+});
+
+test('setTilePickerMode(true) triggers restore/hydration for preview rendering', () => {
+  let restoreCalls = 0;
+  let hydrateCalls = 0;
+  const editor = {
+    tilePickerMode: false,
+    restoreStoredTileArtIfNeeded() {
+      restoreCalls += 1;
+    },
+    hydrateTileArtRefs() {
+      hydrateCalls += 1;
+    }
+  };
+
+  setTilePickerMode.call(editor, true);
+
+  assert.equal(editor.tilePickerMode, true);
+  assert.equal(restoreCalls, 1);
+  assert.equal(hydrateCalls, 1);
 });
