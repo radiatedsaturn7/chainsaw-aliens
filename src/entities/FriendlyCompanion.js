@@ -192,27 +192,12 @@ export default class FriendlyCompanion extends Player {
     const canTraverse = (from, to) => {
       const dx = to.x - from.x;
       const dy = to.y - from.y;
-      if (dy < 0) {
-        for (let y = from.y - 1; y >= to.y - 1; y -= 1) {
-          if (!isAirClear(from.x, y)) return false;
-        }
-        const step = Math.sign(dx);
-        let x = from.x;
-        while (x !== to.x) {
-          x += step;
-          if (!isAirClear(x, to.y) || !isAirClear(x, to.y - 1)) return false;
-        }
-      }
-      if (dy > 0) {
-        const step = Math.sign(dx);
-        let x = from.x;
-        while (x !== to.x) {
-          x += step;
-          if (!isAirClear(x, from.y) || !isAirClear(x, from.y - 1)) return false;
-        }
-        for (let y = from.y; y <= to.y; y += 1) {
-          if (!isAirClear(to.x, y - 1)) return false;
-        }
+      const samples = Math.max(Math.abs(dx), Math.abs(dy)) * 3;
+      for (let i = 1; i <= samples; i += 1) {
+        const t = i / samples;
+        const x = Math.round(from.x + dx * t);
+        const y = Math.round(from.y + dy * t);
+        if (!isAirClear(x, y) || !isAirClear(x, y - 1)) return false;
       }
       return true;
     };
@@ -268,9 +253,9 @@ export default class FriendlyCompanion extends Player {
         maxX: Math.min(world.width - 1, Math.max(start.x, goalTile.x) + horizontalPadding),
         minY: Math.max(1, Math.min(start.y, goalTile.y) - verticalPadding),
         maxY: Math.min(world.height - 2, Math.max(start.y, goalTile.y) + verticalPadding),
-        maxExpansions: 1400
+        maxExpansions: 900
       },
-      { minX: 0, maxX: world.width - 1, minY: 1, maxY: world.height - 2, maxExpansions: 5000 }
+      { minX: 0, maxX: world.width - 1, minY: 1, maxY: world.height - 2, maxExpansions: 1800 }
     ];
 
     for (let windowIndex = 0; windowIndex < searchWindows.length; windowIndex += 1) {
@@ -467,7 +452,7 @@ export default class FriendlyCompanion extends Player {
       if (this.routePlanCooldown <= 0 || !this.routeStepTile) {
         const candidateTiles = this.buildFollowStandCandidates(player, world)
           .filter((tile) => this.canStandOnTile(tile.x, tile.y, world, abilities))
-          .slice(0, 10);
+          .slice(0, 4);
         let plannedStep = null;
         for (let i = 0; i < candidateTiles.length; i += 1) {
           const step = this.findRouteStepToward(candidateTiles[i], world, abilities);
@@ -478,7 +463,7 @@ export default class FriendlyCompanion extends Player {
         }
         this.routeStepTile = plannedStep || this.findRouteStepToward(followTile, world, abilities);
         failedRoutePlan = !this.routeStepTile;
-        this.routePlanCooldown = 0.16;
+        this.routePlanCooldown = 0.28;
       }
       if (this.routeStepTile) {
         target = {
