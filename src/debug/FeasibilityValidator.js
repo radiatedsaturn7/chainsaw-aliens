@@ -85,23 +85,37 @@ export default class FeasibilityValidator {
         path: []
       };
     }
-    const queue = [startNode.key];
-    const visited = new Set();
-    const prev = new Map();
-    while (queue.length) {
-      const key = queue.shift();
-      if (visited.has(key)) continue;
-      visited.add(key);
-      if (key === targetNode.key) break;
-      const edgesFrom = edges.get(key) || [];
-      edgesFrom.forEach((next) => {
-        if (!visited.has(next)) {
-          prev.set(next, key);
-          queue.push(next);
+    const open = [startNode.key];
+    const closed = new Set();
+    const cameFrom = new Map();
+    const gScore = new Map([[startNode.key, 0]]);
+    const heuristic = (key) => {
+      const node = nodes.get(key);
+      return node ? Math.abs(node.tx - targetNode.tx) + Math.abs(node.ty - targetNode.ty) : Infinity;
+    };
+    const fScore = new Map([[startNode.key, heuristic(startNode.key)]]);
+    while (open.length) {
+      let bestIndex = 0;
+      for (let i = 1; i < open.length; i += 1) {
+        if ((fScore.get(open[i]) ?? Infinity) < (fScore.get(open[bestIndex]) ?? Infinity)) {
+          bestIndex = i;
         }
+      }
+      const current = open.splice(bestIndex, 1)[0];
+      if (current === targetNode.key) break;
+      closed.add(current);
+      const edgesFrom = edges.get(current) || [];
+      edgesFrom.forEach((next) => {
+        if (closed.has(next)) return;
+        const tentativeG = (gScore.get(current) ?? Infinity) + 1;
+        if (tentativeG >= (gScore.get(next) ?? Infinity)) return;
+        cameFrom.set(next, current);
+        gScore.set(next, tentativeG);
+        fScore.set(next, tentativeG + heuristic(next));
+        if (!open.includes(next)) open.push(next);
       });
     }
-    if (!visited.has(targetNode.key)) {
+    if (!cameFrom.has(targetNode.key) && startNode.key !== targetNode.key) {
       const reachable = this.walkGraph(nodes, edges, abilities);
       const nearest = this.findNearestNode(nodes, reachable, target.tx, target.ty);
       return {
@@ -116,7 +130,7 @@ export default class FeasibilityValidator {
     while (current) {
       const node = nodes.get(current);
       if (node) path.push(node);
-      current = prev.get(current);
+      current = cameFrom.get(current);
     }
     path.reverse();
     return { status: 'pass', path };
@@ -214,10 +228,10 @@ export default class FeasibilityValidator {
   simulateArc(dx, dy, profile, useDash) {
     const targetX = dx * this.world.tileSize;
     const targetY = dy * this.world.tileSize;
-    const dir = Math.sign(dx) || 1;
+    const dir = Math.sign(dx);
     let x = 0;
     let y = 0;
-    let vx = profile.speed * dir;
+    let vx = dx === 0 ? 0 : profile.speed * dir;
     let vy = dy < 0 ? -profile.jumpPower : 0;
     let dashTimer = 0;
     const dashStart = 0.1;
