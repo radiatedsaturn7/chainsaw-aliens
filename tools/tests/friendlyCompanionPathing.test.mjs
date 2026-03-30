@@ -129,3 +129,14 @@ test('trace-only helper returns immediate next trace node from nearest point', (
   const next = bot.findNextTraceTile(world);
   assert.deepEqual(next, { x: 4, y: 9 });
 });
+
+test('tail trace helper returns delayed historical node', () => {
+  const bot = new FriendlyCompanion(0, 0);
+  bot.traceTailDelay = 3;
+  bot.playerTraceTiles = [
+    { x: 1, y: 9 }, { x: 2, y: 9 }, { x: 3, y: 9 }, { x: 4, y: 9 }, { x: 5, y: 9 }
+  ];
+
+  const tail = bot.findTailTraceTile();
+  assert.deepEqual(tail, { x: 2, y: 9 });
+});

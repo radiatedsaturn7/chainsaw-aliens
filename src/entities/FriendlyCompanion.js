@@ -61,6 +61,7 @@ export default class FriendlyCompanion extends Player {
     this.playerTraceTiles = [];
     this.playerTraceMax = 120;
     this.traceOnlyFollow = true;
+    this.traceTailDelay = 12;
   }
 
   getDrawPalette(flash) {
@@ -484,6 +485,12 @@ export default class FriendlyCompanion extends Player {
     return this.playerTraceTiles[nextIndex];
   }
 
+  findTailTraceTile() {
+    if (!this.playerTraceTiles.length) return null;
+    const index = Math.max(0, this.playerTraceTiles.length - 1 - this.traceTailDelay);
+    return this.playerTraceTiles[index];
+  }
+
   update(dt, world, abilities, context = {}) {
     const player = context.player;
     if (!player) return;
@@ -538,7 +545,7 @@ export default class FriendlyCompanion extends Player {
       : this.buildFollowTarget(player, world, abilities);
     if (!this.assistTarget) {
       if (this.traceOnlyFollow) {
-        const traceTile = this.findNextTraceTile(world);
+        const traceTile = this.findTailTraceTile() || this.findNextTraceTile(world);
         if (traceTile) {
           target = {
             x: (traceTile.x + 0.5) * world.tileSize,
