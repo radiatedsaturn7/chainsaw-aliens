@@ -173,26 +173,34 @@ export default class FriendlyCompanion extends Player {
 
   buildPathNeighbors(tile, world, abilities) {
     const neighbors = [];
+    const seen = new Set();
+    const addNeighbor = (x, y) => {
+      const key = `${x},${y}`;
+      if (seen.has(key)) return;
+      if (this.canStandOnTile(x, y, world, abilities)) {
+        neighbors.push({ x, y });
+        seen.add(key);
+      }
+    };
     const dirs = [-1, 1];
     dirs.forEach((dir) => {
-      const walk = { x: tile.x + dir, y: tile.y };
-      if (this.canStandOnTile(walk.x, walk.y, world, abilities)) neighbors.push(walk);
-      for (let jumpUp = 1; jumpUp <= 3; jumpUp += 1) {
-        const jump = { x: tile.x + dir, y: tile.y - jumpUp };
-        if (this.canStandOnTile(jump.x, jump.y, world, abilities)) neighbors.push(jump);
+      addNeighbor(tile.x + dir, tile.y);
+      for (let jumpUp = 1; jumpUp <= 4; jumpUp += 1) {
+        for (let run = 1; run <= 2; run += 1) {
+          addNeighbor(tile.x + dir * run, tile.y - jumpUp);
+        }
       }
       for (let dropDown = 1; dropDown <= 4; dropDown += 1) {
-        const drop = { x: tile.x + dir, y: tile.y + dropDown };
-        if (this.canStandOnTile(drop.x, drop.y, world, abilities)) neighbors.push(drop);
+        for (let drift = 1; drift <= 2; drift += 1) {
+          addNeighbor(tile.x + dir * drift, tile.y + dropDown);
+        }
       }
     });
-    for (let jumpUp = 1; jumpUp <= 2; jumpUp += 1) {
-      const jump = { x: tile.x, y: tile.y - jumpUp };
-      if (this.canStandOnTile(jump.x, jump.y, world, abilities)) neighbors.push(jump);
+    for (let jumpUp = 1; jumpUp <= 3; jumpUp += 1) {
+      addNeighbor(tile.x, tile.y - jumpUp);
     }
     for (let dropDown = 1; dropDown <= 4; dropDown += 1) {
-      const drop = { x: tile.x, y: tile.y + dropDown };
-      if (this.canStandOnTile(drop.x, drop.y, world, abilities)) neighbors.push(drop);
+      addNeighbor(tile.x, tile.y + dropDown);
     }
     return neighbors;
   }
@@ -201,15 +209,19 @@ export default class FriendlyCompanion extends Player {
     const start = this.getFootStandTile(world);
     if (!this.canStandOnTile(start.x, start.y, world, abilities)) return null;
     if (start.x === goalTile.x && start.y === goalTile.y) return goalTile;
-    const horizontalPadding = Math.max(12, Math.abs(goalTile.x - start.x) + 4);
-    const verticalPadding = Math.max(10, Math.abs(goalTile.y - start.y) + 4);
+    const horizontalPadding = Math.max(14, Math.abs(goalTile.x - start.x) + 6);
+    const verticalPadding = Math.max(12, Math.abs(goalTile.y - start.y) + 6);
     const minX = Math.max(0, Math.min(start.x, goalTile.x) - horizontalPadding);
     const maxX = Math.min(world.width - 1, Math.max(start.x, goalTile.x) + horizontalPadding);
     const minY = Math.max(1, Math.min(start.y, goalTile.y) - verticalPadding);
     const maxY = Math.min(world.height - 2, Math.max(start.y, goalTile.y) + verticalPadding);
     const keyOf = (tile) => `${tile.x},${tile.y}`;
     const startKey = keyOf(start);
-    const heuristic = (tile) => Math.abs(tile.x - goalTile.x) + Math.abs(tile.y - goalTile.y);
+    const heuristic = (tile) => {
+      const dx = Math.abs(tile.x - goalTile.x);
+      const dy = Math.abs(tile.y - goalTile.y);
+      return Math.max(dx, Math.ceil(dy / 4));
+    };
     const open = [start];
     const openSet = new Set([startKey]);
     const parents = new Map([[startKey, null]]);
