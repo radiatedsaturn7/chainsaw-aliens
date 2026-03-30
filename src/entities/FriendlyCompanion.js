@@ -197,6 +197,7 @@ export default class FriendlyCompanion extends Player {
         const t = i / samples;
         const x = Math.round(from.x + dx * t);
         const y = Math.round(from.y + dy * t);
+        if (dy < 0 && x === to.x && y >= to.y + 1) continue;
         if (!isAirClear(x, y) || !isAirClear(x, y - 1)) return false;
       }
       return true;
