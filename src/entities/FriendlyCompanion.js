@@ -57,6 +57,9 @@ export default class FriendlyCompanion extends Player {
     this.assistHoldTimer = 0;
     this.routePlanCooldown = 0;
     this.routeStepTile = null;
+    this.traceRecordCooldown = 0;
+    this.playerTraceTiles = [];
+    this.playerTraceMax = 180;
   }
 
   getDrawPalette(flash) {
@@ -396,6 +399,39 @@ export default class FriendlyCompanion extends Player {
     return null;
   }
 
+  recordPlayerTraceTile(player, world, abilities, dt) {
+    this.traceRecordCooldown = Math.max(0, this.traceRecordCooldown - dt);
+    if (this.traceRecordCooldown > 0) return;
+    const tileSize = world.tileSize;
+    const tile = {
+      x: Math.floor(player.x / tileSize),
+      y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
+    };
+    if (!this.canStandOnTile(tile.x, tile.y, world, abilities)) return;
+    const last = this.playerTraceTiles[this.playerTraceTiles.length - 1];
+    if (!last || last.x !== tile.x || last.y !== tile.y) {
+      this.playerTraceTiles.push(tile);
+      if (this.playerTraceTiles.length > this.playerTraceMax) {
+        this.playerTraceTiles.splice(0, this.playerTraceTiles.length - this.playerTraceMax);
+      }
+    }
+    this.traceRecordCooldown = 0.08;
+  }
+
+  findTraceRouteStep(world, abilities) {
+    if (!this.playerTraceTiles.length) return null;
+    const sampled = [];
+    for (let i = this.playerTraceTiles.length - 1; i >= 0; i -= 2) {
+      sampled.push(this.playerTraceTiles[i]);
+      if (sampled.length >= 8) break;
+    }
+    for (let i = 0; i < sampled.length; i += 1) {
+      const step = this.findRouteStepToward(sampled[i], world, abilities);
+      if (step) return step;
+    }
+    return null;
+  }
+
   update(dt, world, abilities, context = {}) {
     const player = context.player;
     if (!player) return;
@@ -410,6 +446,7 @@ export default class FriendlyCompanion extends Player {
       this.jumpStallCounter = 0;
       this.jumpStallBestY = this.y;
     }
+    this.recordPlayerTraceTile(player, world, abilities, dt);
 
     const playerRoom = world.roomAtTile?.(
       Math.floor(player.x / world.tileSize),
@@ -472,13 +509,21 @@ export default class FriendlyCompanion extends Player {
           y: (this.routeStepTile.y + 0.5) * world.tileSize
         };
       } else if (failedRoutePlan) {
-        const detourTile = this.findDetourStandTile(followTile, world, abilities);
-        if (detourTile) {
+        const traceStep = this.findTraceRouteStep(world, abilities);
+        if (traceStep) {
           target = {
-            x: (detourTile.x + 0.5) * world.tileSize,
-            y: (detourTile.y + 0.5) * world.tileSize
+            x: (traceStep.x + 0.5) * world.tileSize,
+            y: (traceStep.y + 0.5) * world.tileSize
           };
-          this.jumpSuppressTimer = Math.max(this.jumpSuppressTimer, 0.35);
+        } else {
+          const detourTile = this.findDetourStandTile(followTile, world, abilities);
+          if (detourTile) {
+            target = {
+              x: (detourTile.x + 0.5) * world.tileSize,
+              y: (detourTile.y + 0.5) * world.tileSize
+            };
+            this.jumpSuppressTimer = Math.max(this.jumpSuppressTimer, 0.35);
+          }
         }
       }
     }

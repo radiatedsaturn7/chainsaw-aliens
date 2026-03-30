@@ -72,3 +72,14 @@ test('detour fallback finds lateral stand tile with headroom', () => {
   assert.ok(detour, 'expected detour tile');
   assert.notEqual(detour.x, 10, 'detour should move laterally out from under ceiling');
 });
+
+test('trace fallback samples recent player tiles and returns first routable step', () => {
+  const world = buildCRoomWorld();
+  const bot = new FriendlyCompanion(0, 0);
+
+  bot.playerTraceTiles = [{ x: 3, y: 9 }, { x: 5, y: 9 }, { x: 7, y: 9 }];
+  bot.findRouteStepToward = (goal) => (goal.x === 7 ? { x: 9, y: 9 } : null);
+
+  const step = bot.findTraceRouteStep(world, {});
+  assert.deepEqual(step, { x: 9, y: 9 });
+});
