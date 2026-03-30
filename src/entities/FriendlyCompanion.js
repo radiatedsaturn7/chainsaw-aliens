@@ -62,6 +62,10 @@ export default class FriendlyCompanion extends Player {
     this.playerTraceMax = 120;
     this.traceOnlyFollow = true;
     this.traceTailDelay = 12;
+    this.inputTrace = [];
+    this.inputTraceClock = 0;
+    this.inputTraceDelay = 1;
+    this.inputTraceMax = 900;
   }
 
   getDrawPalette(flash) {
@@ -491,6 +495,31 @@ export default class FriendlyCompanion extends Player {
     return this.playerTraceTiles[index];
   }
 
+  recordPlayerInputTrace(playerInput, dt) {
+    if (!playerInput) return;
+    this.inputTraceClock += dt;
+    const tracked = ['left', 'right', 'up', 'down', 'jump', 'drop', 'attack', 'rev'];
+    const actions = tracked.filter((action) => playerInput.isDown?.(action));
+    this.inputTrace.push({ time: this.inputTraceClock, actions });
+    if (this.inputTrace.length > this.inputTraceMax) {
+      this.inputTrace.splice(0, this.inputTrace.length - this.inputTraceMax);
+    }
+  }
+
+  getDelayedInputActions() {
+    const targetTime = this.inputTraceClock - this.inputTraceDelay;
+    if (targetTime <= 0 || !this.inputTrace.length) return null;
+    let candidate = null;
+    for (let i = this.inputTrace.length - 1; i >= 0; i -= 1) {
+      const snap = this.inputTrace[i];
+      if (snap.time <= targetTime) {
+        candidate = snap;
+        break;
+      }
+    }
+    return candidate ? candidate.actions : null;
+  }
+
   update(dt, world, abilities, context = {}) {
     const player = context.player;
     if (!player) return;
@@ -506,6 +535,18 @@ export default class FriendlyCompanion extends Player {
       this.jumpStallBestY = this.y;
     }
     this.recordPlayerTraceTile(player, world, abilities, dt);
+    this.recordPlayerInputTrace(context.playerInput, dt);
+
+    if (this.traceOnlyFollow && !this.assistTarget) {
+      const delayedActions = this.getDelayedInputActions();
+      if (delayedActions) {
+        this.aiInput.beginFrame(delayedActions);
+        super.update(dt, this.aiInput, world, abilities);
+        this.revving = false;
+        this.flameMode = false;
+        return;
+      }
+    }
 
     const playerRoom = world.roomAtTile?.(
       Math.floor(player.x / world.tileSize),

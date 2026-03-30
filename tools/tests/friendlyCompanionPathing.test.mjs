@@ -140,3 +140,21 @@ test('tail trace helper returns delayed historical node', () => {
   const tail = bot.findTailTraceTile();
   assert.deepEqual(tail, { x: 2, y: 9 });
 });
+
+test('input trace returns delayed player actions for tail replay', () => {
+  const bot = new FriendlyCompanion(0, 0);
+  bot.inputTraceDelay = 1;
+  const makeInput = (down) => ({ isDown: (action) => down.includes(action) });
+
+  for (let i = 0; i < 30; i += 1) {
+    bot.recordPlayerInputTrace(makeInput(['right']), 1 / 60);
+  }
+  for (let i = 0; i < 40; i += 1) {
+    bot.recordPlayerInputTrace(makeInput(['left', 'jump']), 1 / 60);
+  }
+
+  const delayed = bot.getDelayedInputActions();
+  assert.ok(Array.isArray(delayed));
+  assert.ok(delayed.includes('right'));
+  assert.equal(delayed.includes('left'), false);
+});
