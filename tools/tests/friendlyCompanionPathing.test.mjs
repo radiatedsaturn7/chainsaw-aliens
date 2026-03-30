@@ -83,3 +83,19 @@ test('trace fallback samples recent player tiles and returns first routable step
   const step = bot.findTraceRouteStep(world, {});
   assert.deepEqual(step, { x: 9, y: 9 });
 });
+
+test('player trace recording is capped to configured history length', () => {
+  const world = buildCRoomWorld();
+  const bot = new FriendlyCompanion(0, 0);
+  const abilities = {};
+  const player = { x: 0, y: 0, width: 32, height: 32 };
+
+  for (let i = 0; i < 220; i += 1) {
+    player.x = ((i % 18) + 1) * world.tileSize;
+    player.y = 9 * world.tileSize;
+    bot.recordPlayerTraceTile(player, world, abilities, 0.1);
+  }
+
+  assert.ok(bot.playerTraceTiles.length <= bot.playerTraceMax);
+  assert.equal(bot.playerTraceMax, 120);
+});

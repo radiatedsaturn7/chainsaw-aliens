@@ -59,7 +59,7 @@ export default class FriendlyCompanion extends Player {
     this.routeStepTile = null;
     this.traceRecordCooldown = 0;
     this.playerTraceTiles = [];
-    this.playerTraceMax = 180;
+    this.playerTraceMax = 120;
   }
 
   getDrawPalette(flash) {
@@ -421,9 +421,22 @@ export default class FriendlyCompanion extends Player {
   findTraceRouteStep(world, abilities) {
     if (!this.playerTraceTiles.length) return null;
     const sampled = [];
-    for (let i = this.playerTraceTiles.length - 1; i >= 0; i -= 2) {
+    const seen = new Set();
+    const pushByFraction = (fraction) => {
+      const idx = Math.max(0, Math.min(this.playerTraceTiles.length - 1, Math.floor((this.playerTraceTiles.length - 1) * fraction)));
+      if (seen.has(idx)) return;
+      seen.add(idx);
+      sampled.push(this.playerTraceTiles[idx]);
+    };
+
+    // Reverse-binary search over player history: latest, 50%, 75%, 87.5%, ...
+    const reverseBinaryFractions = [1, 0.5, 0.75, 0.875, 0.9375, 0.96875];
+    reverseBinaryFractions.forEach(pushByFraction);
+
+    for (let i = this.playerTraceTiles.length - 1; i >= 0 && sampled.length < 10; i -= 6) {
+      if (seen.has(i)) continue;
+      seen.add(i);
       sampled.push(this.playerTraceTiles[i]);
-      if (sampled.length >= 8) break;
     }
     for (let i = 0; i < sampled.length; i += 1) {
       const step = this.findRouteStepToward(sampled[i], world, abilities);
