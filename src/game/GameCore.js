@@ -2538,6 +2538,7 @@ export default class Game {
     if (this.friendlyCompanion) {
       this.friendlyCompanion.update(dt * timeScale, this.world, this.abilities, {
         player: this.player,
+        playerInput: this.input,
         enemies: this.enemies,
         boss: this.boss,
         onAssistHit: (enemy) => {

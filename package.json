@@ -15,6 +15,7 @@
   "scripts": {
     "prepare:playwright": "npx playwright install",
     "test:dashboard": "npm run prepare:playwright && node tools/test-runner/run.cjs",
+    "test:companion-pathing": "node --test tools/tests/friendlyCompanionPathing.test.mjs",
     "test:robtersession-songs": "node tools/robtersession/song-generator-harness.js",
     "test:robtersession-midi": "node tools/robtersession-midi-tests.cjs",
     "test:playwright": "playwright test tests/playwright",
