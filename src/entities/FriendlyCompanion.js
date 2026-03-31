@@ -223,11 +223,40 @@ export default class FriendlyCompanion extends Player {
       }
       return true;
     };
+    const canTraversePhysics = (from, to) => {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const jump = dy < 0;
+      let x = from.x;
+      let y = from.y;
+      let vx = Math.max(-0.9, Math.min(0.9, dx * 0.12));
+      let vy = jump ? -(1.8 + Math.abs(dy) * 0.55) : 0.4;
+      const gravity = 0.34;
+      const maxSteps = jump ? 26 : 20;
+      for (let step = 0; step < maxSteps; step += 1) {
+        x += vx;
+        y += vy;
+        vy += gravity;
+        const tx = Math.round(x);
+        const ty = Math.round(y);
+        const bodyBlocked = world.isSolid(tx, ty, abilities, { ignoreOneWay: true });
+        const headBlocked = world.isSolid(tx, ty - 1, abilities, { ignoreOneWay: true });
+        const hazard = world.isHazard?.(tx, ty) || world.isHazard?.(tx, ty - 1);
+        if ((bodyBlocked || headBlocked || hazard) && !(tx === to.x && ty >= to.y + 1)) {
+          return false;
+        }
+        if (Math.abs(tx - to.x) <= 0 && Math.abs(ty - to.y) <= 0 && vy >= 0) {
+          return true;
+        }
+      }
+      return false;
+    };
     const addNeighbor = (x, y) => {
       const key = `${x},${y}`;
       if (seen.has(key)) return;
       const target = { x, y };
-      if (this.canStandOnTile(x, y, world, abilities) && canTraverseArc(tile, target)) {
+      if (this.canStandOnTile(x, y, world, abilities)
+        && (canTraversePhysics(tile, target) || canTraverseArc(tile, target))) {
         neighbors.push({ x, y });
         seen.add(key);
       }
@@ -276,9 +305,9 @@ export default class FriendlyCompanion extends Player {
         maxX: Math.min(world.width - 1, Math.max(start.x, goalTile.x) + horizontalPadding),
         minY: Math.max(1, Math.min(start.y, goalTile.y) - verticalPadding),
         maxY: Math.min(world.height - 2, Math.max(start.y, goalTile.y) + verticalPadding),
-        maxExpansions: 900
+        maxExpansions: 1200
       },
-      { minX: 0, maxX: world.width - 1, minY: 1, maxY: world.height - 2, maxExpansions: 1800 }
+      { minX: 0, maxX: world.width - 1, minY: 1, maxY: world.height - 2, maxExpansions: 2600 }
     ];
 
     for (let windowIndex = 0; windowIndex < searchWindows.length; windowIndex += 1) {
