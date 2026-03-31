@@ -2335,8 +2335,8 @@ export default class Game {
           if (action === 'back') {
             this.title.setScreen('main');
           } else if (action === 'test-ai') {
-            this.transitionTo('playing');
-            this.aiTestHarness.enable(this, 0);
+            this.title.setAiTestActions(this.aiTestHarness.getScenarioMenuActions());
+            this.title.setScreen('ai-test');
           } else if (action === 'project-browser') {
             this.openProjectBrowserFromTitle();
           } else if (action === 'level-editor') {
@@ -2349,6 +2349,14 @@ export default class Game {
             this.enterMidiComposer();
           } else if (action === 'reset-all') {
             this.resetAllContent();
+          }
+        } else if (this.title.screen === 'ai-test') {
+          if (action === 'back') {
+            this.title.setScreen('tools');
+          } else if (action.startsWith('ai-test-scenario-')) {
+            const index = Number(action.slice('ai-test-scenario-'.length));
+            this.transitionTo('playing');
+            this.aiTestHarness.enable(this, Number.isFinite(index) ? index : 0);
           }
         } else if (this.title.screen === 'storage') {
           if (action === 'back') {
@@ -2474,10 +2482,10 @@ export default class Game {
       return;
     }
 
-    this.testHarness.update(this.input, this);
-    this.aiTestHarness.update(this.input, this, dt * timeScale);
     const debugSlow = this.testHarness.active && this.testHarness.slowMotion;
     const timeScale = this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1;
+    this.testHarness.update(this.input, this);
+    this.aiTestHarness.update(this.input, this, dt * timeScale);
     this.slowTimer = Math.max(0, this.slowTimer - dt);
     this.damageFlashTimer = Math.max(0, this.damageFlashTimer - dt * timeScale);
     this.ignitirFlashTimer = Math.max(0, this.ignitirFlashTimer - dt * timeScale);
@@ -8201,8 +8209,8 @@ export default class Game {
         if (action === 'back') {
           this.title.setScreen('main');
         } else if (action === 'test-ai') {
-          this.transitionTo('playing');
-          this.aiTestHarness.enable(this, 0);
+          this.title.setAiTestActions(this.aiTestHarness.getScenarioMenuActions());
+          this.title.setScreen('ai-test');
         } else if (action === 'project-browser') {
           this.openProjectBrowserFromTitle();
         } else if (action === 'level-editor') {
@@ -8217,6 +8225,17 @@ export default class Game {
           this.enterMidiComposer();
         } else if (action === 'reset-all') {
           this.resetAllContent();
+        }
+        this.audio.ui();
+        return;
+      }
+      if (this.title.screen === 'ai-test') {
+        if (action === 'back') {
+          this.title.setScreen('tools');
+        } else if (action.startsWith('ai-test-scenario-')) {
+          const index = Number(action.slice('ai-test-scenario-'.length));
+          this.transitionTo('playing');
+          this.aiTestHarness.enable(this, Number.isFinite(index) ? index : 0);
         }
         this.audio.ui();
         return;

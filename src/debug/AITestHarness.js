@@ -122,7 +122,12 @@ export default class AITestHarness {
     this.index = 0;
     this.scenarios = buildScenarios();
     this.success = false;
+    this.failed = false;
     this.elapsed = 0;
+    this.timeLimit = 25;
+    this.autoRun = false;
+    this.autoAdvanceTimer = 0;
+    this.results = new Map();
   }
 
   enable(game, index = 0) {
@@ -149,8 +154,18 @@ export default class AITestHarness {
     game.effects = [];
     game.spawnFriendlyCompanion((entry.companionTile.x + 0.5) * game.world.tileSize, (entry.companionTile.y + 0.5) * game.world.tileSize, { assistEnabled: false });
     this.success = false;
+    this.failed = false;
     this.elapsed = 0;
+    this.autoAdvanceTimer = 0;
     game.showSystemToast(`AI Test: ${entry.name}`);
+  }
+
+  getScenarioMenuActions() {
+    return this.scenarios.map((scenario, index) => ({
+      action: `ai-test-scenario-${index}`,
+      label: scenario.name,
+      index
+    }));
   }
 
   update(input, game, dt) {
@@ -171,9 +186,31 @@ export default class AITestHarness {
       this.loadCurrent(game);
       return;
     }
+    if (input.wasPressed('up')) {
+      this.autoRun = !this.autoRun;
+      game.showSystemToast(this.autoRun ? 'AI Test auto-run: ON' : 'AI Test auto-run: OFF');
+    }
+    if (input.wasPressed('down')) {
+      this.loadCurrent(game);
+      return;
+    }
     const c = game.friendlyCompanion;
     if (c && Math.hypot(c.x - game.player.x, c.y - game.player.y) < game.world.tileSize * 1.5) {
       this.success = true;
+    }
+    if (!this.success && this.elapsed >= this.timeLimit) {
+      this.failed = true;
+    }
+    const finished = this.success || this.failed;
+    if (finished) {
+      this.results.set(this.index, this.success ? 'pass' : 'fail');
+    }
+    if (this.autoRun && finished) {
+      this.autoAdvanceTimer += dt;
+      if (this.autoAdvanceTimer >= 1.2) {
+        this.index = (this.index + 1) % this.scenarios.length;
+        this.loadCurrent(game);
+      }
     }
   }
 
@@ -182,14 +219,18 @@ export default class AITestHarness {
     const entry = this.scenarios[this.index];
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.72)';
-    ctx.fillRect(16, 16, 520, 88);
+    ctx.fillRect(16, 16, 680, 104);
     ctx.strokeStyle = '#fff';
-    ctx.strokeRect(16, 16, 520, 88);
+    ctx.strokeRect(16, 16, 680, 104);
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
     ctx.fillText(`AI TEST ${this.index + 1}/${this.scenarios.length}: ${entry?.name || ''}`, 28, 42);
-    ctx.fillText(`Status: ${this.success ? 'PASS' : 'RUNNING'}  Time: ${this.elapsed.toFixed(1)}s`, 28, 62);
-    ctx.fillText('Left/Right: scenario  Backspace: exit', 28, 82);
+    const status = this.success ? 'PASS' : this.failed ? 'FAIL' : 'RUNNING';
+    const passCount = Array.from(this.results.values()).filter((result) => result === 'pass').length;
+    const failCount = Array.from(this.results.values()).filter((result) => result === 'fail').length;
+    ctx.fillText(`Status: ${status}  Time: ${this.elapsed.toFixed(1)}s/${this.timeLimit.toFixed(0)}s  Auto-run: ${this.autoRun ? 'ON' : 'OFF'}`, 28, 62);
+    ctx.fillText(`Results: ${passCount} pass / ${failCount} fail`, 28, 82);
+    ctx.fillText('Left/Right: scenario  Up: toggle auto-run  Down: restart  Backspace: exit', 28, 102);
     ctx.restore();
   }
 }
