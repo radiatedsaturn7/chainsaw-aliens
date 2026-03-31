@@ -158,3 +158,17 @@ test('input trace returns delayed player actions for tail replay', () => {
   assert.ok(delayed.includes('right'));
   assert.equal(delayed.includes('left'), false);
 });
+
+test('path neighbors include both diagonal arcs and up-then-over style jump landings', () => {
+  const solids = new Set();
+  const add = (x, y) => solids.add(`${x},${y}`);
+  for (let x = 0; x < 24; x += 1) add(x, 10);
+  add(12, 8); // support for diagonal landing at (12,7)
+  add(9, 7); // support for taller up-then-over landing at (9,6)
+  const world = createWorld(24, 14, solids);
+  const bot = new FriendlyCompanion(0, 0);
+
+  const neighbors = bot.buildPathNeighbors({ x: 10, y: 9 }, world, {});
+  assert.ok(neighbors.some((n) => n.x === 12 && n.y === 7), 'expected diagonal-style landing');
+  assert.ok(neighbors.some((n) => n.x === 9 && n.y === 6), 'expected up-then-over style landing');
+});

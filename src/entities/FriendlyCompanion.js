@@ -264,8 +264,7 @@ export default class FriendlyCompanion extends Player {
       if (seen.has(key)) return;
       const target = { x, y };
       if (this.canStandOnTile(x, y, world, abilities)
-        && canTraversePhysics(tile, target)
-        && canTraverseArc(tile, target)) {
+        && (canTraversePhysics(tile, target) || canTraverseArc(tile, target))) {
         neighbors.push({ x, y });
         seen.add(key);
       }
