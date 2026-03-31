@@ -11,6 +11,7 @@ export default class Title {
       'pixel-editor',
       'actor-editor',
       'midi-editor',
+      'test-ai',
       'reset-all',
       'back'
     ];
@@ -337,6 +338,8 @@ export default class Title {
               ? 'Actor Editor'
               : action === 'midi-editor'
               ? 'MIDI Editor'
+              : action === 'test-ai'
+                ? 'Test AI'
               : action === 'reset-all'
                 ? 'Reset All'
                 : 'Back';
