@@ -228,6 +228,12 @@ export default class FriendlyCompanion extends Player {
       const dy = to.y - from.y;
       if (dy < 0) {
         // Platformer-friendly "upside-down L": go up first, then move sideways, then descend.
+        const sideDir = Math.sign(dx);
+        if (sideDir !== 0) {
+          for (let y = from.y - 1; y >= from.y - 2; y -= 1) {
+            if (!isAirClear(from.x + sideDir, y) || !isAirClear(from.x + sideDir, y - 1)) return false;
+          }
+        }
         const jumpHeight = Math.abs(dy);
         const apexY = from.y - jumpHeight;
         for (let y = from.y - 1; y >= apexY - 1; y -= 1) {
@@ -291,10 +297,15 @@ export default class FriendlyCompanion extends Player {
       const key = `${x},${y}`;
       if (seen.has(key)) return;
       const target = { x, y };
-      if (this.canStandOnTile(x, y, world, abilities)
-        && (canTraversePhysics(tile, target)
-          || canTraverseArc(tile, target)
-          || canTraverseDoubleJump(tile, target))) {
+      if (!this.canStandOnTile(x, y, world, abilities)) return;
+      const dy = y - tile.y;
+      const physicsOk = canTraversePhysics(tile, target);
+      const arcOk = canTraverseArc(tile, target);
+      const doubleJumpOk = canTraverseDoubleJump(tile, target);
+      const traversalOk = dy < 0
+        ? (physicsOk || doubleJumpOk || arcOk)
+        : (physicsOk || arcOk);
+      if (traversalOk) {
         neighbors.push({ x, y });
         seen.add(key);
       }

@@ -198,3 +198,17 @@ test('blocked diagonal arc is rejected when collision cells are occupied', () =>
   const neighbors = bot.buildPathNeighbors({ x: 10, y: 9 }, world, {});
   assert.equal(neighbors.some((n) => n.x === 12 && n.y === 7), false);
 });
+
+test('jump-right launch is rejected when immediate above-right headroom is blocked', () => {
+  const solids = new Set();
+  const add = (x, y) => solids.add(`${x},${y}`);
+  for (let x = 0; x < 24; x += 1) add(x, 10);
+  add(12, 8); // support for tempting landing
+  add(11, 8);
+  add(11, 7); // block launch-side headroom
+  const world = createWorld(24, 14, solids);
+  const bot = new FriendlyCompanion(0, 0);
+
+  const neighbors = bot.buildPathNeighbors({ x: 10, y: 9 }, world, {});
+  assert.equal(neighbors.some((n) => n.x === 12 && n.y === 7), false);
+});
