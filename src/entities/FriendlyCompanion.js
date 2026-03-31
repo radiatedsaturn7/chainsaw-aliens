@@ -259,12 +259,42 @@ export default class FriendlyCompanion extends Player {
       }
       return true;
     };
+    const canTraverseDoubleJump = (from, to) => {
+      const dx = to.x - from.x;
+      const dir = Math.sign(dx);
+      let x = from.x;
+      let y = from.y;
+      let vx = dir * 0.45;
+      let vy = -3.9;
+      let secondJumpUsed = false;
+      const gravity = 0.34;
+      for (let step = 0; step < 36; step += 1) {
+        const desiredVx = dir * 0.95;
+        vx += (desiredVx - vx) * 0.25;
+        x += vx;
+        y += vy;
+        vy += gravity;
+        if (!secondJumpUsed && step >= 5 && (y <= from.y - 2 || vy > -0.15)) {
+          vy = -3.5;
+          secondJumpUsed = true;
+        }
+        const tx = Math.round(x);
+        const ty = Math.round(y);
+        if (!isAirClear(tx, ty) || !isAirClear(tx, ty - 1)) return false;
+        if (Math.abs(tx - to.x) <= 0 && Math.abs(ty - to.y) <= 1 && vy >= 0) {
+          return true;
+        }
+      }
+      return false;
+    };
     const addNeighbor = (x, y) => {
       const key = `${x},${y}`;
       if (seen.has(key)) return;
       const target = { x, y };
       if (this.canStandOnTile(x, y, world, abilities)
-        && (canTraversePhysics(tile, target) || canTraverseArc(tile, target))) {
+        && (canTraversePhysics(tile, target)
+          || canTraverseArc(tile, target)
+          || canTraverseDoubleJump(tile, target))) {
         neighbors.push({ x, y });
         seen.add(key);
       }
@@ -277,8 +307,8 @@ export default class FriendlyCompanion extends Player {
 
     // Jump arcs (includes practical "double-jump-like" reach envelope).
     for (let dx = -3; dx <= 3; dx += 1) {
-      for (let jumpUp = 1; jumpUp <= 8; jumpUp += 1) {
-        if (dx === 0 && jumpUp > 6) continue;
+      for (let jumpUp = 1; jumpUp <= 10; jumpUp += 1) {
+        if (dx === 0 && jumpUp > 7) continue;
         addNeighbor(tile.x + dx, tile.y - jumpUp);
       }
     }

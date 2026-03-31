@@ -172,3 +172,29 @@ test('path neighbors include both diagonal arcs and up-then-over style jump land
   assert.ok(neighbors.some((n) => n.x === 12 && n.y === 7), 'expected diagonal-style landing');
   assert.ok(neighbors.some((n) => n.x === 9 && n.y === 6), 'expected up-then-over style landing');
 });
+
+test('path neighbors can include tall double-jump-like landings when space is clear', () => {
+  const solids = new Set();
+  const add = (x, y) => solids.add(`${x},${y}`);
+  for (let x = 0; x < 24; x += 1) add(x, 10);
+  add(12, 3); // support for landing at (12,2)
+  const world = createWorld(24, 16, solids);
+  const bot = new FriendlyCompanion(0, 0);
+
+  const neighbors = bot.buildPathNeighbors({ x: 10, y: 9 }, world, {});
+  assert.ok(neighbors.some((n) => n.x === 12 && n.y === 2), 'expected tall landing to be considered');
+});
+
+test('blocked diagonal arc is rejected when collision cells are occupied', () => {
+  const solids = new Set();
+  const add = (x, y) => solids.add(`${x},${y}`);
+  for (let x = 0; x < 24; x += 1) add(x, 10);
+  add(12, 8); // support for landing candidate
+  add(11, 7);
+  add(11, 6); // block diagonal and apex corridor
+  const world = createWorld(24, 14, solids);
+  const bot = new FriendlyCompanion(0, 0);
+
+  const neighbors = bot.buildPathNeighbors({ x: 10, y: 9 }, world, {});
+  assert.equal(neighbors.some((n) => n.x === 12 && n.y === 7), false);
+});
