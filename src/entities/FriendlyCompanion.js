@@ -360,6 +360,27 @@ export default class FriendlyCompanion extends Player {
         addNeighbor(tile.x + dx, tile.y + dropDown);
       }
     }
+
+    // Safety fallback: if strict traversal filters everything, keep a minimal reachable set
+    // so companion doesn't stall completely.
+    if (neighbors.length === 0) {
+      const pushIfStandable = (x, y) => {
+        const key = `${x},${y}`;
+        if (seen.has(key)) return;
+        if (this.canStandOnTile(x, y, world, abilities)) {
+          neighbors.push({ x, y });
+          seen.add(key);
+        }
+      };
+      pushIfStandable(tile.x - 1, tile.y);
+      pushIfStandable(tile.x + 1, tile.y);
+      for (let jumpUp = 1; jumpUp <= 4; jumpUp += 1) {
+        pushIfStandable(tile.x, tile.y - jumpUp);
+      }
+      for (let dropDown = 1; dropDown <= 4; dropDown += 1) {
+        pushIfStandable(tile.x, tile.y + dropDown);
+      }
+    }
     return neighbors;
   }
 
