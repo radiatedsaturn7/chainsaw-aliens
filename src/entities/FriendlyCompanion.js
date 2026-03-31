@@ -499,8 +499,8 @@ export default class FriendlyCompanion extends Player {
     if (!playerInput) return;
     this.inputTraceClock += dt;
     const tracked = [
-      'left', 'right', 'up', 'down', 'jump', 'drop', 'attack', 'rev',
-      'aimMode', 'aimUp', 'aimDown', 'dpadLeft', 'dpadRight', 'dpadUp', 'dpadDown'
+      'left', 'right', 'up', 'down', 'jump', 'drop',
+      'dash', 'attack', 'rev', 'flame', 'throw'
     ];
     const actions = tracked.filter((action) => playerInput.isDown?.(action));
     this.inputTrace.push({ time: this.inputTraceClock, actions });
