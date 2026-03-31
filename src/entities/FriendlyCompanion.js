@@ -66,6 +66,7 @@ export default class FriendlyCompanion extends Player {
     this.inputTraceClock = 0;
     this.inputTraceDelay = 0.25;
     this.inputTraceMax = 900;
+    this.jumpStrafeDelay = 0;
   }
 
   getDrawPalette(flash) {
@@ -622,6 +623,7 @@ export default class FriendlyCompanion extends Player {
     this.jumpDecisionCooldown = Math.max(0, this.jumpDecisionCooldown - dt);
     this.assistHoldTimer = Math.max(0, this.assistHoldTimer - dt);
     this.jumpSuppressTimer = Math.max(0, this.jumpSuppressTimer - dt);
+    this.jumpStrafeDelay = Math.max(0, this.jumpStrafeDelay - dt);
     this.routePlanCooldown = Math.max(0, this.routePlanCooldown - dt);
     if (this.onGround) {
       this.aiAirJumpUsed = false;
@@ -743,6 +745,10 @@ export default class FriendlyCompanion extends Player {
     }
     if (dx < -14) nextInput.add('left');
     if (dx > 14) nextInput.add('right');
+    if (!this.onGround && this.vy < 0 && this.jumpStrafeDelay > 0) {
+      nextInput.delete('left');
+      nextInput.delete('right');
+    }
 
     const wantsToDescend = dy > world.tileSize * 1.1;
     const onOneWay = this.onGround && world.isOneWay?.(
@@ -783,6 +789,7 @@ export default class FriendlyCompanion extends Player {
     const flappingRisk = dy < -52 && Math.abs(dx) < 18 && this.onWall === 0 && climbDir === 0;
     if (shouldJump && this.jumpSuppressTimer <= 0 && !flappingRisk) {
       nextInput.add('jump');
+      this.jumpStrafeDelay = 0.18;
       this.jumpDecisionCooldown = 0.2;
       if (!canGroundJump) {
         this.aiAirJumpUsed = true;
@@ -797,6 +804,7 @@ export default class FriendlyCompanion extends Player {
       }
     } else if (wallClimbJump && this.jumpDecisionCooldown <= 0 && this.jumpSuppressTimer <= 0) {
       nextInput.add('jump');
+      this.jumpStrafeDelay = 0.12;
       this.jumpDecisionCooldown = 0.16;
     } else if (flappingRisk) {
       this.jumpStallCounter += 1;
