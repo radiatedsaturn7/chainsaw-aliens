@@ -66,7 +66,6 @@ export default class FriendlyCompanion extends Player {
     this.inputTraceClock = 0;
     this.inputTraceDelay = 0.25;
     this.inputTraceMax = 900;
-    this.jumpStrafeDelay = 0;
   }
 
   getDrawPalette(flash) {
@@ -205,22 +204,31 @@ export default class FriendlyCompanion extends Player {
     const canTraverseArc = (from, to) => {
       const dx = to.x - from.x;
       const dy = to.y - from.y;
-      const samples = Math.max(Math.abs(dx), Math.abs(dy), 1) * 5;
+      const samples = Math.max(Math.abs(dx), Math.abs(dy), 1) * 8;
       const isJump = to.y < from.y;
       const peakY = isJump
         ? Math.min(from.y, to.y) - Math.max(1, Math.ceil(Math.abs(dy) * 0.75))
         : from.y;
+      let prevX = from.x;
+      let prevY = from.y;
       for (let i = 1; i <= samples; i += 1) {
         const t = i / samples;
-        const x = Math.round(from.x + dx * t);
+        const x = from.x + dx * t;
         let y;
         if (isJump) {
           const inv = 1 - t;
-          y = Math.round(inv * inv * from.y + 2 * inv * t * peakY + t * t * to.y);
+          y = inv * inv * from.y + 2 * inv * t * peakY + t * t * to.y;
         } else {
-          y = Math.round(from.y + dy * t);
+          y = from.y + dy * t;
         }
-        if (!isAirClear(x, y) || !isAirClear(x, y - 1)) return false;
+        for (let sub = 1; sub <= 3; sub += 1) {
+          const st = sub / 3;
+          const sx = Math.round(prevX + (x - prevX) * st);
+          const sy = Math.round(prevY + (y - prevY) * st);
+          if (!isAirClear(sx, sy) || !isAirClear(sx, sy - 1)) return false;
+        }
+        prevX = x;
+        prevY = y;
       }
       return true;
     };
@@ -278,6 +286,8 @@ export default class FriendlyCompanion extends Player {
       for (let step = 0; step < 36; step += 1) {
         const desiredVx = dir * 0.95;
         vx += (desiredVx - vx) * 0.25;
+        const prevX = x;
+        const prevY = y;
         x += vx;
         y += vy;
         vy += gravity;
@@ -287,7 +297,12 @@ export default class FriendlyCompanion extends Player {
         }
         const tx = Math.round(x);
         const ty = Math.round(y);
-        if (!isAirClear(tx, ty) || !isAirClear(tx, ty - 1)) return false;
+        for (let sub = 1; sub <= 3; sub += 1) {
+          const st = sub / 3;
+          const sx = Math.round(prevX + (x - prevX) * st);
+          const sy = Math.round(prevY + (y - prevY) * st);
+          if (!isAirClear(sx, sy) || !isAirClear(sx, sy - 1)) return false;
+        }
         if (Math.abs(tx - to.x) <= 0 && Math.abs(ty - to.y) <= 1 && vy >= 0) {
           return true;
         }
@@ -623,7 +638,6 @@ export default class FriendlyCompanion extends Player {
     this.jumpDecisionCooldown = Math.max(0, this.jumpDecisionCooldown - dt);
     this.assistHoldTimer = Math.max(0, this.assistHoldTimer - dt);
     this.jumpSuppressTimer = Math.max(0, this.jumpSuppressTimer - dt);
-    this.jumpStrafeDelay = Math.max(0, this.jumpStrafeDelay - dt);
     this.routePlanCooldown = Math.max(0, this.routePlanCooldown - dt);
     if (this.onGround) {
       this.aiAirJumpUsed = false;
@@ -745,10 +759,6 @@ export default class FriendlyCompanion extends Player {
     }
     if (dx < -14) nextInput.add('left');
     if (dx > 14) nextInput.add('right');
-    if (!this.onGround && this.vy < 0 && this.jumpStrafeDelay > 0) {
-      nextInput.delete('left');
-      nextInput.delete('right');
-    }
 
     const wantsToDescend = dy > world.tileSize * 1.1;
     const onOneWay = this.onGround && world.isOneWay?.(
@@ -789,7 +799,6 @@ export default class FriendlyCompanion extends Player {
     const flappingRisk = dy < -52 && Math.abs(dx) < 18 && this.onWall === 0 && climbDir === 0;
     if (shouldJump && this.jumpSuppressTimer <= 0 && !flappingRisk) {
       nextInput.add('jump');
-      this.jumpStrafeDelay = 0.18;
       this.jumpDecisionCooldown = 0.2;
       if (!canGroundJump) {
         this.aiAirJumpUsed = true;
@@ -804,7 +813,6 @@ export default class FriendlyCompanion extends Player {
       }
     } else if (wallClimbJump && this.jumpDecisionCooldown <= 0 && this.jumpSuppressTimer <= 0) {
       nextInput.add('jump');
-      this.jumpStrafeDelay = 0.12;
       this.jumpDecisionCooldown = 0.16;
     } else if (flappingRisk) {
       this.jumpStallCounter += 1;
