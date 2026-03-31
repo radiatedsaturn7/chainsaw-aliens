@@ -197,10 +197,23 @@ export default class FriendlyCompanion extends Player {
   buildPathNeighbors(tile, world, abilities) {
     const neighbors = [];
     const seen = new Set();
+    const bodyHalfWidth = 0.32;
     const isAirClear = (x, y) => (
       !world.isSolid(x, y, abilities, { ignoreOneWay: true })
       && !world.isHazard?.(x, y)
     );
+    const isBodyClear = (px, py) => {
+      const minX = Math.floor(px - bodyHalfWidth);
+      const maxX = Math.floor(px + bodyHalfWidth);
+      const minY = Math.floor(py - 1);
+      const maxY = Math.floor(py);
+      for (let x = minX; x <= maxX; x += 1) {
+        for (let y = minY; y <= maxY; y += 1) {
+          if (!isAirClear(x, y)) return false;
+        }
+      }
+      return true;
+    };
     const canTraverseArc = (from, to) => {
       const dx = to.x - from.x;
       const dy = to.y - from.y;
@@ -223,9 +236,9 @@ export default class FriendlyCompanion extends Player {
         }
         for (let sub = 1; sub <= 3; sub += 1) {
           const st = sub / 3;
-          const sx = Math.round(prevX + (x - prevX) * st);
-          const sy = Math.round(prevY + (y - prevY) * st);
-          if (!isAirClear(sx, sy) || !isAirClear(sx, sy - 1)) return false;
+          const sx = prevX + (x - prevX) * st;
+          const sy = prevY + (y - prevY) * st;
+          if (!isBodyClear(sx, sy)) return false;
         }
         prevX = x;
         prevY = y;
@@ -240,23 +253,23 @@ export default class FriendlyCompanion extends Player {
         const sideDir = Math.sign(dx);
         if (sideDir !== 0) {
           for (let y = from.y - 1; y >= from.y - 2; y -= 1) {
-            if (!isAirClear(from.x + sideDir, y) || !isAirClear(from.x + sideDir, y - 1)) return false;
+            if (!isBodyClear(from.x + sideDir, y)) return false;
           }
         }
         const jumpHeight = Math.abs(dy);
         const apexY = from.y - jumpHeight;
         for (let y = from.y - 1; y >= apexY - 1; y -= 1) {
-          if (!isAirClear(from.x, y) || !isAirClear(from.x, y - 1)) return false;
+          if (!isBodyClear(from.x, y)) return false;
         }
         const stepX = Math.sign(dx);
         let x = from.x;
         while (x !== to.x) {
           x += stepX;
-          if (!isAirClear(x, apexY) || !isAirClear(x, apexY - 1)) return false;
+          if (!isBodyClear(x, apexY)) return false;
         }
         for (let y = apexY; y <= to.y; y += 1) {
           if (x === to.x && y >= to.y + 1) continue;
-          if (!isAirClear(to.x, y) || !isAirClear(to.x, y - 1)) return false;
+          if (!isBodyClear(to.x, y)) return false;
         }
         return true;
       }
@@ -266,11 +279,11 @@ export default class FriendlyCompanion extends Player {
       let x = from.x;
       while (x !== to.x) {
         x += stepX;
-        if (!isAirClear(x, from.y) || !isAirClear(x, from.y - 1)) return false;
+        if (!isBodyClear(x, from.y)) return false;
       }
       for (let y = from.y; y <= to.y; y += 1) {
         if (x === to.x && y >= to.y + 1) continue;
-        if (!isAirClear(to.x, y) || !isAirClear(to.x, y - 1)) return false;
+        if (!isBodyClear(to.x, y)) return false;
       }
       return true;
     };
@@ -299,9 +312,9 @@ export default class FriendlyCompanion extends Player {
         const ty = Math.round(y);
         for (let sub = 1; sub <= 3; sub += 1) {
           const st = sub / 3;
-          const sx = Math.round(prevX + (x - prevX) * st);
-          const sy = Math.round(prevY + (y - prevY) * st);
-          if (!isAirClear(sx, sy) || !isAirClear(sx, sy - 1)) return false;
+          const sx = prevX + (x - prevX) * st;
+          const sy = prevY + (y - prevY) * st;
+          if (!isBodyClear(sx, sy)) return false;
         }
         if (Math.abs(tx - to.x) <= 0 && Math.abs(ty - to.y) <= 1 && vy >= 0) {
           return true;
