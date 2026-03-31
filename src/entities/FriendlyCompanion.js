@@ -60,7 +60,7 @@ export default class FriendlyCompanion extends Player {
     this.traceRecordCooldown = 0;
     this.playerTraceTiles = [];
     this.playerTraceMax = 120;
-    this.traceOnlyFollow = true;
+    this.traceOnlyFollow = false;
     this.traceTailDelay = 12;
     this.inputTrace = [];
     this.inputTraceClock = 0;
@@ -197,16 +197,28 @@ export default class FriendlyCompanion extends Player {
   buildPathNeighbors(tile, world, abilities) {
     const neighbors = [];
     const seen = new Set();
-    const isAirClear = (x, y) => !world.isSolid(x, y, abilities, { ignoreOneWay: true }) && !world.isHazard?.(x, y);
-    const canTraverse = (from, to) => {
+    const isAirClear = (x, y) => (
+      !world.isSolid(x, y, abilities, { ignoreOneWay: true })
+      && !world.isHazard?.(x, y)
+    );
+    const canTraverseArc = (from, to) => {
       const dx = to.x - from.x;
       const dy = to.y - from.y;
-      const samples = Math.max(Math.abs(dx), Math.abs(dy)) * 3;
+      const samples = Math.max(Math.abs(dx), Math.abs(dy), 1) * 5;
+      const isJump = to.y < from.y;
+      const peakY = isJump
+        ? Math.min(from.y, to.y) - Math.max(1, Math.ceil(Math.abs(dy) * 0.75))
+        : from.y;
       for (let i = 1; i <= samples; i += 1) {
         const t = i / samples;
         const x = Math.round(from.x + dx * t);
-        const y = Math.round(from.y + dy * t);
-        if (dy < 0 && x === to.x && y >= to.y + 1) continue;
+        let y;
+        if (isJump) {
+          const inv = 1 - t;
+          y = Math.round(inv * inv * from.y + 2 * inv * t * peakY + t * t * to.y);
+        } else {
+          y = Math.round(from.y + dy * t);
+        }
         if (!isAirClear(x, y) || !isAirClear(x, y - 1)) return false;
       }
       return true;
@@ -215,30 +227,31 @@ export default class FriendlyCompanion extends Player {
       const key = `${x},${y}`;
       if (seen.has(key)) return;
       const target = { x, y };
-      if (this.canStandOnTile(x, y, world, abilities) && canTraverse(tile, target)) {
+      if (this.canStandOnTile(x, y, world, abilities) && canTraverseArc(tile, target)) {
         neighbors.push({ x, y });
         seen.add(key);
       }
     };
-    const dirs = [-1, 1];
-    dirs.forEach((dir) => {
-      addNeighbor(tile.x + dir, tile.y);
-      for (let jumpUp = 1; jumpUp <= 5; jumpUp += 1) {
-        for (let run = 1; run <= 2; run += 1) {
-          addNeighbor(tile.x + dir * run, tile.y - jumpUp);
-        }
+    const onOneWay = world.isOneWay?.(tile.x, tile.y + 1);
+
+    // Ground walk.
+    addNeighbor(tile.x - 1, tile.y);
+    addNeighbor(tile.x + 1, tile.y);
+
+    // Jump arcs (includes practical "double-jump-like" reach envelope).
+    for (let dx = -3; dx <= 3; dx += 1) {
+      for (let jumpUp = 1; jumpUp <= 8; jumpUp += 1) {
+        if (dx === 0 && jumpUp > 6) continue;
+        addNeighbor(tile.x + dx, tile.y - jumpUp);
       }
-      for (let dropDown = 1; dropDown <= 4; dropDown += 1) {
-        for (let drift = 1; drift <= 2; drift += 1) {
-          addNeighbor(tile.x + dir * drift, tile.y + dropDown);
-        }
-      }
-    });
-    for (let jumpUp = 1; jumpUp <= 5; jumpUp += 1) {
-      addNeighbor(tile.x, tile.y - jumpUp);
     }
-    for (let dropDown = 1; dropDown <= 4; dropDown += 1) {
-      addNeighbor(tile.x, tile.y + dropDown);
+
+    // Downward arcs / drops.
+    for (let dx = -2; dx <= 2; dx += 1) {
+      for (let dropDown = 1; dropDown <= 6; dropDown += 1) {
+        if (!onOneWay && dx === 0 && dropDown > 3) continue;
+        addNeighbor(tile.x + dx, tile.y + dropDown);
+      }
     }
     return neighbors;
   }
