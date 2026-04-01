@@ -121,22 +121,41 @@ export default class FriendlyCompanion extends Player {
       stuckCounter: 0,
       jumpFailCounter: 0,
       noProgressTimer: 0,
+      oscillationTimer: 0,
+      lastPosX: x,
+      lastPosY: y,
       activeReason: 'init',
       lastMoveSignature: null,
       localFailCount: 0,
       plannerFailCount: 0,
       pathVersion: 0,
+      lastRouteFromCache: false,
       pathCache: new Map(),
       edgeValidationCache: new Map(),
+      poisonedEdges: new Map(),
       routeTargetKey: null
+    };
+    this.moveExecution = {
+      active: false,
+      profile: 'direct',
+      phase: 'idle',
+      elapsed: 0,
+      hold: 0,
+      lockDirection: 0,
+      sourceNode: null,
+      targetNode: null
     };
     this.navDebug = {
       mode: 'direct',
       targetTile: null,
       nextPathNode: null,
       moveProfile: null,
+      executionPhase: 'idle',
+      alignmentBucket: 'center',
       stuckCounter: 0,
-      replanReason: 'init'
+      replanReason: 'init',
+      poisonedEdgeCount: 0,
+      routeFromCache: false
     };
   }
 
@@ -197,7 +216,8 @@ export default class FriendlyCompanion extends Player {
     const tileSize = world.tileSize;
     return {
       x: Math.floor(x / tileSize),
-      y: Math.floor((y + this.height / 2 - 1) / tileSize)
+      y: Math.floor((y + this.height / 2 - 1) / tileSize),
+      align: this.getAlignmentBucket(world, x)
     };
   }
 
@@ -206,14 +226,28 @@ export default class FriendlyCompanion extends Player {
   }
 
   tileCenter(tile, world) {
+    const offset = tile.align === 'left' ? -world.tileSize * 0.2 : tile.align === 'right' ? world.tileSize * 0.2 : 0;
     return {
-      x: (tile.x + 0.5) * world.tileSize,
+      x: (tile.x + 0.5) * world.tileSize + offset,
       y: (tile.y + 0.5) * world.tileSize
     };
   }
 
+  getAlignmentBucket(world, x = this.x) {
+    const tileSize = world.tileSize;
+    const tileX = Math.floor(x / tileSize);
+    const frac = (x - tileX * tileSize) / tileSize;
+    if (frac < 0.34) return 'left';
+    if (frac > 0.66) return 'right';
+    return 'center';
+  }
+
+  withAlign(tile, align = 'center') {
+    return { x: tile.x, y: tile.y, align };
+  }
+
   tileKey(tile) {
-    return `${tile.x},${tile.y}`;
+    return `${tile.x},${tile.y},${tile.align || 'center'}`;
   }
 
   findFollowStandTile(player, world, abilities) {
@@ -244,11 +278,11 @@ export default class FriendlyCompanion extends Player {
         const candidateY = playerTileY + prioritizedVertical[i];
         if (Math.abs(candidateY - playerTileY) > 2) continue;
         if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
-          return { x: candidateX, y: candidateY };
+          return { x: candidateX, y: candidateY, align: 'center' };
         }
       }
     }
-    return { x: playerTileX, y: playerTileY };
+    return { x: playerTileX, y: playerTileY, align: 'center' };
   }
 
   // Hybrid nav layer selection: keep direct movement as default and only escalate when repeated lack of progress is detected.
@@ -282,22 +316,39 @@ export default class FriendlyCompanion extends Player {
   detectStuckState(dt, targetWorld) {
     const state = this.navState;
     const d = Math.hypot(targetWorld.x - this.x, targetWorld.y - this.y);
+    const travel = Math.hypot(this.x - state.lastPosX, this.y - state.lastPosY);
+    state.lastPosX = this.x;
+    state.lastPosY = this.y;
     if (d < state.lastProgressDistance - 6) {
       state.lastProgressDistance = d;
       state.lastProgressTime = 0;
       state.noProgressTimer = 0;
       state.stuckCounter = Math.max(0, state.stuckCounter - 1);
       state.jumpFailCounter = Math.max(0, state.jumpFailCounter - 1);
+      state.oscillationTimer = 0;
     } else {
       state.lastProgressTime += dt;
       state.noProgressTimer += dt;
+      if (travel < 1.8 && Math.abs(this.vx) > 20) {
+        state.oscillationTimer += dt;
+      } else {
+        state.oscillationTimer = Math.max(0, state.oscillationTimer - dt * 0.5);
+      }
     }
     if (this.justJumped && Math.abs(this.vy) < 20 && !this.onGround) {
+      state.jumpFailCounter += 1;
+    }
+    if (this.moveExecution.profile.includes('Jump') && this.onGround && Math.abs(this.vy) < 5 && state.noProgressTimer > 0.25) {
       state.jumpFailCounter += 1;
     }
     if (state.noProgressTimer > 0.55 && Math.abs(this.vx) < 20 && Math.abs(this.vy) < 35) {
       state.stuckCounter += 1;
       state.noProgressTimer = 0;
+    }
+    if (state.jumpFailCounter >= 3 || state.oscillationTimer > 0.65) {
+      state.stuckCounter += 1;
+      state.jumpFailCounter = 0;
+      state.oscillationTimer = 0;
     }
   }
 
@@ -323,7 +374,7 @@ export default class FriendlyCompanion extends Player {
     if (this.assistTarget) {
       const dir = Math.sign(this.assistTarget.x - this.x) || this.facing || 1;
       return {
-        tile: this.getBodyTile(world, this.assistTarget.x - dir * 20, this.assistTarget.y),
+        tile: this.withAlign(this.getBodyTile(world, this.assistTarget.x - dir * 20, this.assistTarget.y), 'center'),
         world: { x: this.assistTarget.x - dir * 20, y: this.assistTarget.y - 4 }
       };
     }
@@ -336,6 +387,12 @@ export default class FriendlyCompanion extends Player {
     const dx = to.x - from.x;
     const dy = to.y - from.y;
     const profiles = [];
+    if (dx === 0 && dy === 0 && from.align !== to.align) {
+      if (to.align === 'left') profiles.push({ type: 'microAlignLeft', dir: -1, hold: 0.08, cost: 0.45 });
+      if (to.align === 'right') profiles.push({ type: 'microAlignRight', dir: 1, hold: 0.08, cost: 0.45 });
+      if (to.align === 'center') profiles.push({ type: 'settleCenter', dir: 0, hold: 0.1, cost: 0.55 });
+      return profiles;
+    }
     if (dy === 0 && Math.abs(dx) === 1) {
       profiles.push({ type: 'walk', dir, hold: 0.18, cost: 1 });
     }
@@ -357,14 +414,14 @@ export default class FriendlyCompanion extends Player {
   validateMovementEdge(from, to, world, abilities) {
     if (!this.canStandOnTile(to.x, to.y, world, abilities)) return null;
     const state = this.navState;
-    const alignmentBucket = Math.round(((this.x / world.tileSize) % 1) * 4);
-    const cacheKey = `${from.x},${from.y}->${to.x},${to.y}|${alignmentBucket}`;
+    const cacheKey = `${this.tileKey(from)}->${this.tileKey(to)}`;
     const cached = state.edgeValidationCache.get(cacheKey);
     if (cached) return cached;
     const profiles = this.buildEdgeProfiles(from, to);
     let best = null;
     for (let i = 0; i < profiles.length; i += 1) {
       const profile = profiles[i];
+      if (this.isEdgePoisoned(from, to, profile.type)) continue;
       const result = this.simulateMoveProfile(from, to, profile, world, abilities);
       if (!result.ok) continue;
       if (!best || result.cost < best.cost) {
@@ -390,13 +447,12 @@ export default class FriendlyCompanion extends Player {
   simulateMoveProfile(from, to, profile, world, abilities) {
     const tileSize = world.tileSize;
     const target = this.tileCenter(to, world);
-    const launch = this.tileCenter(from, world);
-    const alignmentOffsets = [0, -tileSize * 0.22, tileSize * 0.22];
+    const launch = this.tileCenter(this.withAlign(from, from.align || 'center'), world);
     const dt = 1 / 30;
-    const maxT = profile.type === 'drop' ? 0.75 : 0.65;
+    const maxT = profile.type === 'drop' ? 0.8 : 0.72;
     let bestCost = Infinity;
     let found = false;
-    let needAlign = false;
+    let needAlign = from.align !== 'center';
 
     const collides = (x, y, ignoreOneWay = false) => {
       const left = x - this.width / 2 + 4;
@@ -415,78 +471,98 @@ export default class FriendlyCompanion extends Player {
       return false;
     };
 
-    for (let offsetIndex = 0; offsetIndex < alignmentOffsets.length; offsetIndex += 1) {
-      let x = launch.x + alignmentOffsets[offsetIndex];
-      let y = launch.y;
-      let vx = 0;
-      let vy = 0;
-      let coyote = MOVEMENT_MODEL.coyoteTime;
-      let jumps = 1;
-      let jumped = false;
-      let t = 0;
-      let bonk = false;
-      while (t < maxT) {
-        let move = 0;
-        let jumpNow = false;
-        if (profile.type === 'walk') {
-          move = profile.dir;
-        } else if (profile.type === 'drop') {
-          move = profile.dir;
-        } else if (profile.type === 'verticalJump') {
-          if (!jumped && t < 0.06) jumpNow = true;
-        } else if (profile.type === 'diagJump') {
-          move = profile.dir;
-          if (!jumped && t < 0.06) jumpNow = true;
-        } else if (profile.type === 'upThenDrift') {
-          if (!jumped && t < 0.06) jumpNow = true;
-          if (t >= (profile.driftDelay || 0.08)) move = profile.dir;
-        }
+    let x = launch.x;
+    let y = launch.y;
+    let vx = 0;
+    let vy = 0;
+    let coyote = MOVEMENT_MODEL.coyoteTime;
+    let jumps = 1;
+    let jumped = false;
+    let t = 0;
+    let bonk = false;
+    let wallBump = 0;
+    let descentStarted = false;
+    if ((profile.type === 'diagJump' || profile.type === 'verticalJump' || profile.type === 'upThenDrift')
+      && collides(x, y - this.height / 2 - 6, true)) {
+      return { ok: false };
+    }
+    while (t < maxT) {
+      let move = 0;
+      let jumpNow = false;
+      if (profile.type === 'walk') {
+        move = profile.dir;
+      } else if (profile.type === 'drop') {
+        move = profile.dir;
+      } else if (profile.type === 'verticalJump') {
+        if (!jumped && t < 0.06) jumpNow = true;
+      } else if (profile.type === 'diagJump') {
+        move = profile.dir;
+        if (!jumped && t < 0.05) jumpNow = true;
+      } else if (profile.type === 'upThenDrift') {
+        if (!jumped && t < 0.06) jumpNow = true;
+        if (t >= (profile.driftDelay || 0.09)) move = profile.dir;
+      } else if (profile.type === 'microAlignLeft') {
+        move = -1;
+      } else if (profile.type === 'microAlignRight') {
+        move = 1;
+      } else if (profile.type === 'settleCenter') {
+        const frac = ((x / tileSize) % 1 + 1) % 1;
+        move = frac < 0.48 ? 1 : frac > 0.52 ? -1 : 0;
+      }
 
-        vx = move * this.speed;
-        if (jumpNow && (coyote > 0 || jumps > 0)) {
-          vy = -this.jumpPower;
-          jumped = true;
-          coyote = 0;
-          jumps = Math.max(0, jumps - 1);
-        }
+      vx = move * this.speed * 0.85;
+      if (jumpNow && (coyote > 0 || jumps > 0)) {
+        vy = -this.jumpPower;
+        jumped = true;
+        coyote = 0;
+        jumps = Math.max(0, jumps - 1);
+      }
 
-        vy += MOVEMENT_MODEL.gravity * dt;
-        const nextX = x + vx * dt;
-        const nextY = y + vy * dt;
+      vy += MOVEMENT_MODEL.gravity * dt;
+      if (vy > 0) descentStarted = true;
+      const nextX = x + vx * dt;
+      const nextY = y + vy * dt;
 
-        const hitWall = collides(nextX, y, true);
-        if (!hitWall) {
-          x = nextX;
-        }
-        const hitHeadOrFloor = collides(x, nextY, vy < 0);
-        if (!hitHeadOrFloor) {
-          y = nextY;
-        } else {
-          if (vy < 0) bonk = true;
-          vy = 0;
-        }
+      const hitWall = collides(nextX, y, true);
+      if (!hitWall) {
+        x = nextX;
+      } else {
+        wallBump += 1;
+      }
+      const hitHeadOrFloor = collides(x, nextY, vy < 0);
+      if (!hitHeadOrFloor) {
+        y = nextY;
+      } else {
+        if (vy < 0) bonk = true;
+        vy = 0;
+      }
 
-        const onGround = collides(x, y + this.height / 2 + 2, false);
-        if (onGround) {
-          coyote = MOVEMENT_MODEL.coyoteTime;
-          jumps = 1;
-        } else {
-          coyote = Math.max(0, coyote - dt);
-        }
+      const onGround = collides(x, y + this.height / 2 + 2, false);
+      if (onGround) {
+        coyote = MOVEMENT_MODEL.coyoteTime;
+        jumps = 1;
+      } else {
+        coyote = Math.max(0, coyote - dt);
+      }
 
-        const nearTarget = Math.abs(x - target.x) < tileSize * 0.42 && Math.abs(y - target.y) < tileSize * 0.52;
-        if (nearTarget && onGround && !bonk) {
-          const distPenalty = Math.hypot(x - target.x, y - target.y) * 0.01;
-          const cost = (profile.cost || 1) + t * 0.3 + distPenalty;
-          if (cost < bestCost) {
-            bestCost = cost;
-            found = true;
-            needAlign = offsetIndex !== 0;
-          }
-          break;
+      const nearTarget = Math.abs(x - target.x) < tileSize * 0.4 && Math.abs(y - target.y) < tileSize * 0.5;
+      const stableLanding = onGround && (!jumped || descentStarted);
+      const riskyLip = wallBump > 0 && jumped && Math.abs(y - target.y) < tileSize * 0.8;
+      if (nearTarget && stableLanding && !bonk && !riskyLip) {
+        const distPenalty = Math.hypot(x - target.x, y - target.y) * 0.02;
+        const wobblePenalty = wallBump * 0.35;
+        const cost = (profile.cost || 1) + t * 0.35 + distPenalty + wobblePenalty;
+        if (cost < bestCost) {
+          bestCost = cost;
+          found = true;
         }
+        break;
+      }
 
-        t += dt;
+      t += dt;
+      if (wallBump > 2 && jumped) {
+        bonk = true;
+        break;
       }
     }
 
@@ -497,18 +573,22 @@ export default class FriendlyCompanion extends Player {
   getNeighborCandidates(tile, world) {
     const dirs = [-1, 1];
     const neighbors = [];
-    dirs.forEach((dir) => {
-      neighbors.push({ x: tile.x + dir, y: tile.y });
-      neighbors.push({ x: tile.x + dir, y: tile.y - 1 });
-      neighbors.push({ x: tile.x + dir, y: tile.y - 2 });
-      neighbors.push({ x: tile.x + dir * 2, y: tile.y - 1 });
-      neighbors.push({ x: tile.x + dir, y: tile.y + 1 });
-      neighbors.push({ x: tile.x + dir, y: tile.y + 2 });
+    const aligns = ['left', 'center', 'right'];
+    aligns.forEach((align) => {
+      if (align !== (tile.align || 'center')) neighbors.push({ x: tile.x, y: tile.y, align });
     });
-    neighbors.push({ x: tile.x, y: tile.y - 1 });
-    neighbors.push({ x: tile.x, y: tile.y - 2 });
-    neighbors.push({ x: tile.x, y: tile.y + 1 });
-    neighbors.push({ x: tile.x, y: tile.y + 2 });
+    dirs.forEach((dir) => {
+      neighbors.push({ x: tile.x + dir, y: tile.y, align: 'center' });
+      neighbors.push({ x: tile.x + dir, y: tile.y - 1, align: 'center' });
+      neighbors.push({ x: tile.x + dir, y: tile.y - 2, align: 'center' });
+      neighbors.push({ x: tile.x + dir * 2, y: tile.y - 1, align: 'center' });
+      neighbors.push({ x: tile.x + dir, y: tile.y + 1, align: 'center' });
+      neighbors.push({ x: tile.x + dir, y: tile.y + 2, align: 'center' });
+    });
+    neighbors.push({ x: tile.x, y: tile.y - 1, align: 'center' });
+    neighbors.push({ x: tile.x, y: tile.y - 2, align: 'center' });
+    neighbors.push({ x: tile.x, y: tile.y + 1, align: 'center' });
+    neighbors.push({ x: tile.x, y: tile.y + 2, align: 'center' });
     return neighbors;
   }
 
@@ -543,7 +623,11 @@ export default class FriendlyCompanion extends Player {
     const state = this.navState;
     const cacheKey = `${this.tileKey(start)}=>${this.tileKey(goal)}`;
     const cached = state.pathCache.get(cacheKey);
-    if (cached && cached.age < 1.3) return cached.path;
+    if (cached && cached.age < 1.3) {
+      state.lastRouteFromCache = true;
+      return cached.path;
+    }
+    state.lastRouteFromCache = false;
 
     const open = new MinBinaryHeap();
     const gScore = new Map();
@@ -572,7 +656,7 @@ export default class FriendlyCompanion extends Player {
         const edge = this.validateMovementEdge(current, next, world, abilities);
         if (!edge?.ok) continue;
         const nextKey = this.tileKey(next);
-        const currentScore = gScore.get(this.tileKey(current)) || Infinity;
+        const currentScore = gScore.get(this.tileKey(current)) ?? Infinity;
         const tentative = currentScore + edge.cost + Math.abs(next.y - current.y) * 0.2;
         if (tentative >= (gScore.get(nextKey) ?? Infinity)) continue;
         parent.set(nextKey, this.tileKey(current));
@@ -592,8 +676,8 @@ export default class FriendlyCompanion extends Player {
     const path = [];
     let key = goalKey;
     while (key && key !== this.tileKey(start)) {
-      const [x, y] = key.split(',').map((n) => Number(n));
-      path.unshift({ tile: { x, y }, edge: meta.get(key) || null });
+      const [x, y, align] = key.split(',');
+      path.unshift({ tile: { x: Number(x), y: Number(y), align: align || 'center' }, edge: meta.get(key) || null });
       key = parents.get(key);
     }
     return path;
@@ -605,6 +689,47 @@ export default class FriendlyCompanion extends Player {
       value.age += dt;
       if (value.age > 2.5) state.pathCache.delete(key);
     });
+    state.poisonedEdges.forEach((value, key) => {
+      value.ttl -= dt;
+      if (value.ttl <= 0) state.poisonedEdges.delete(key);
+    });
+  }
+
+  edgeAttemptKey(from, to, profile) {
+    return `${this.tileKey(from)}>${this.tileKey(to)}:${profile}`;
+  }
+
+  markEdgeFailure(from, to, profile) {
+    const state = this.navState;
+    const key = this.edgeAttemptKey(from, to, profile);
+    const prev = state.poisonedEdges.get(key);
+    const fails = (prev?.fails || 0) + 1;
+    state.poisonedEdges.set(key, {
+      fails,
+      ttl: Math.min(2.2, 0.9 + fails * 0.35)
+    });
+  }
+
+  isEdgePoisoned(from, to, profile) {
+    const state = this.navState;
+    const key = this.edgeAttemptKey(from, to, profile);
+    const data = state.poisonedEdges.get(key);
+    return Boolean(data && data.ttl > 0 && data.fails >= 2);
+  }
+
+  isRouteStillValid(path, world, abilities) {
+    if (!path.length) return false;
+    const current = this.getFootStandTile(world);
+    const first = path[0]?.tile;
+    if (!first) return false;
+    if (Math.abs(first.x - current.x) > 4 || Math.abs(first.y - current.y) > 3) return false;
+    const lookahead = Math.min(3, path.length);
+    for (let i = 0; i < lookahead; i += 1) {
+      const segment = path[i];
+      if (!segment?.tile || !this.canStandOnTile(segment.tile.x, segment.tile.y, world, abilities)) return false;
+      if (segment.edge?.profile?.type && this.isEdgePoisoned(current, segment.tile, segment.edge.profile.type)) return false;
+    }
+    return true;
   }
 
   chooseRecoveryAction(targetTile, world) {
@@ -628,44 +753,90 @@ export default class FriendlyCompanion extends Player {
     };
   }
 
+  beginMoveExecution(move, profile, world) {
+    if (!move) return;
+    const dir = Math.sign((move.target?.x || this.x) - this.x) || this.facing || 1;
+    this.moveExecution = {
+      active: true,
+      profile,
+      phase: profile === 'upThenDrift' ? 'align' : profile.startsWith('microAlign') || profile === 'settleCenter' ? 'align' : 'travel',
+      elapsed: 0,
+      hold: profile === 'upThenDrift' ? 0.22 : profile.startsWith('microAlign') ? 0.12 : 0.18,
+      lockDirection: dir,
+      sourceNode: this.getFootStandTile(world),
+      targetNode: move.nextTile
+    };
+  }
+
+  buildExecutionIntent(execution, dx, dy, world) {
+    const input = new Set();
+    const dir = execution.lockDirection || (dx < 0 ? -1 : 1);
+    const profile = execution.profile;
+    if (execution.phase === 'align') {
+      if (profile === 'microAlignLeft') input.add('left');
+      else if (profile === 'microAlignRight') input.add('right');
+      else if (profile === 'settleCenter') {
+        const align = this.getAlignmentBucket(world);
+        if (align === 'left') input.add('right');
+        if (align === 'right') input.add('left');
+      } else if (profile === 'upThenDrift') {
+        if (Math.abs(dx) > world.tileSize * 0.2) input.add(dir < 0 ? 'left' : 'right');
+      }
+      if (execution.elapsed > execution.hold * 0.5 && (profile === 'upThenDrift' || profile === 'settleCenter')) {
+        execution.phase = 'launch';
+      }
+      return input;
+    }
+    if (execution.phase === 'launch') {
+      input.add('jump');
+      if (profile === 'diagJump') input.add(dir < 0 ? 'left' : 'right');
+      if (execution.elapsed > 0.08) {
+        execution.phase = profile === 'upThenDrift' ? 'drift' : 'travel';
+      }
+      return input;
+    }
+    if (execution.phase === 'drift') {
+      input.add(dir < 0 ? 'left' : 'right');
+      if (execution.elapsed > execution.hold) execution.phase = 'travel';
+      return input;
+    }
+    if (dx < -10) input.add('left');
+    if (dx > 10) input.add('right');
+    if (profile === 'drop' && this.onGround && Math.abs(dx) < world.tileSize * 0.65 && dy > world.tileSize * 0.9) {
+      input.add('down');
+      input.add('jump');
+    }
+    if ((profile === 'diagJump' || profile === 'verticalJump' || profile === 'upThenDrift')
+      && (this.onGround || this.coyote > 0) && this.jumpDecisionCooldown <= 0) {
+      input.add('jump');
+      if (profile === 'diagJump' || (profile === 'upThenDrift' && execution.phase === 'drift')) {
+        input.add(dir < 0 ? 'left' : 'right');
+      }
+      this.jumpDecisionCooldown = 0.18;
+    }
+    return input;
+  }
+
   applyMoveIntent(move, targetWorld, world, abilities) {
     const nextInput = new Set();
     const activeTarget = move?.target || targetWorld;
     const dx = activeTarget.x - this.x;
     const dy = activeTarget.y - this.y;
     const profile = move?.edge?.profile?.type || 'direct';
-
-    if (dx < -10) nextInput.add('left');
-    if (dx > 10) nextInput.add('right');
-
-    const wantsDrop = dy > world.tileSize * 1.1;
-    const onOneWay = this.onGround && world.isOneWay?.(
-      Math.floor(this.x / world.tileSize),
-      Math.floor((this.y + this.height / 2 - 1) / world.tileSize)
-    );
-    if (wantsDrop && this.onGround && Math.abs(dx) < world.tileSize * 0.65 && onOneWay) {
-      nextInput.add('down');
-      nextInput.add('jump');
+    const execution = this.moveExecution;
+    if (!execution.active || execution.profile !== profile
+      || (move?.nextTile && this.tileKey(execution.targetNode || { x: 0, y: 0, align: 'center' }) !== this.tileKey(move.nextTile))) {
+      this.beginMoveExecution(move, profile, world);
     }
+    this.moveExecution.elapsed += 1 / 60;
+    const phaseInput = this.buildExecutionIntent(this.moveExecution, dx, dy, world);
+    phaseInput.forEach((key) => nextInput.add(key));
 
-    const canGroundJump = this.onGround || this.coyote > 0 || this.onWall !== 0;
-    const shouldJump = this.jumpDecisionCooldown <= 0
-      && (profile === 'diagJump' || profile === 'verticalJump' || profile === 'upThenDrift'
-        || (dy < -24 && canGroundJump));
-
-    if (profile === 'upThenDrift' && Math.abs(dx) < world.tileSize * 0.15 && this.onGround) {
-      // Explicit straight-up jump profile for low-ceiling/lip routes where diagonal bonks.
-      nextInput.delete('left');
-      nextInput.delete('right');
-      nextInput.add('jump');
-      this.jumpDecisionCooldown = 0.18;
-    } else if (shouldJump && this.jumpSuppressTimer <= 0) {
-      nextInput.add('jump');
-      this.jumpDecisionCooldown = 0.2;
-    }
-
-    if (profile === 'drop' && this.onGround && Math.abs(dx) > 8) {
-      nextInput.add(dx < 0 ? 'left' : 'right');
+    // fallback direct drive to avoid any idle "thinking pauses" while planning updates.
+    if (!nextInput.size) {
+      if (dx < -10) nextInput.add('left');
+      if (dx > 10) nextInput.add('right');
+      if (dy < -28 && this.onGround && this.jumpDecisionCooldown <= 0) nextInput.add('jump');
     }
 
     return { input: nextInput, profile };
@@ -688,17 +859,25 @@ export default class FriendlyCompanion extends Player {
 
     let path = state.path;
     let reason = 'commit';
+    const targetChanged = !state.targetTile
+      || Math.abs((state.targetTile.x || 0) - targetTile.x) > 1
+      || Math.abs((state.targetTile.y || 0) - targetTile.y) > 1;
+    const canKeepRoute = this.isRouteStillValid(path, world, abilities) && !targetChanged;
     if (state.commitTimer <= 0 && (desiredMode !== state.mode || this.shouldEscalateToPlanner(targetTile, world))) {
       state.mode = desiredMode;
       reason = `mode:${desiredMode}`;
     }
+    if (canKeepRoute && (state.mode === 'local' || state.mode === 'astar')) {
+      reason = 'route-commit';
+      state.replanCooldown = Math.max(state.replanCooldown, 0.12);
+    }
 
-    if (state.mode === 'local' && this.shouldReplan(targetTile, reason)) {
+    if (!canKeepRoute && state.mode === 'local' && this.shouldReplan(targetTile, reason)) {
       path = this.planLocalRoute(startTile, targetTile, world, abilities);
       state.localFailCount = path.length ? 0 : state.localFailCount + 1;
       state.replanCooldown = 0.2;
       reason = path.length ? 'local-route' : 'local-fail';
-    } else if (state.mode === 'astar' && this.shouldReplan(targetTile, reason)) {
+    } else if (!canKeepRoute && state.mode === 'astar' && this.shouldReplan(targetTile, reason)) {
       path = this.planSmartRouteAStar(startTile, targetTile, world, abilities);
       state.plannerFailCount = path.length ? 0 : state.plannerFailCount + 1;
       state.replanCooldown = 0.35;
@@ -724,6 +903,11 @@ export default class FriendlyCompanion extends Player {
     state.routeAge += dt;
     const nextMove = this.chooseMoveFromPath(path, world);
     const intent = this.applyMoveIntent(nextMove, targetWorld, world, abilities);
+    if (nextMove?.edge?.profile?.type && state.stuckCounter >= 2 && state.noProgressTimer > 0.25) {
+      this.markEdgeFailure(startTile, nextMove.nextTile, nextMove.edge.profile.type);
+      reason = 'edge-poisoned';
+      state.replanCooldown = 0;
+    }
 
     const moveSignature = `${state.mode}:${intent.profile}:${nextMove?.nextTile ? this.tileKey(nextMove.nextTile) : 'direct'}`;
     this.updateRouteCommitment(dt, moveSignature);
@@ -736,8 +920,12 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.targetTile = `${targetTile.x},${targetTile.y}`;
     this.navDebug.nextPathNode = state.nextNode ? `${state.nextNode.x},${state.nextNode.y}` : 'none';
     this.navDebug.moveProfile = state.moveProfile;
+    this.navDebug.executionPhase = this.moveExecution.phase;
+    this.navDebug.alignmentBucket = this.getAlignmentBucket(world);
     this.navDebug.stuckCounter = state.stuckCounter;
     this.navDebug.replanReason = reason;
+    this.navDebug.poisonedEdgeCount = state.poisonedEdges.size;
+    this.navDebug.routeFromCache = Boolean(state.lastRouteFromCache);
 
     return {
       mode: state.mode,
