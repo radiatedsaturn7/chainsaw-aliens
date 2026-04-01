@@ -2335,8 +2335,8 @@ export default class Game {
           if (action === 'back') {
             this.title.setScreen('main');
           } else if (action === 'test-ai') {
-            this.title.setAiTestActions(this.aiTestHarness.getScenarioMenuActions());
-            this.title.setScreen('ai-test');
+            this.transitionTo('playing');
+            this.aiTestHarness.enable(this, 0);
           } else if (action === 'project-browser') {
             this.openProjectBrowserFromTitle();
           } else if (action === 'level-editor') {
@@ -8209,8 +8209,8 @@ export default class Game {
         if (action === 'back') {
           this.title.setScreen('main');
         } else if (action === 'test-ai') {
-          this.title.setAiTestActions(this.aiTestHarness.getScenarioMenuActions());
-          this.title.setScreen('ai-test');
+          this.transitionTo('playing');
+          this.aiTestHarness.enable(this, 0);
         } else if (action === 'project-browser') {
           this.openProjectBrowserFromTitle();
         } else if (action === 'level-editor') {
