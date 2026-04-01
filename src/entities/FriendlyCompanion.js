@@ -122,6 +122,10 @@ export default class FriendlyCompanion extends Player {
       jumpFailCounter: 0,
       noProgressTimer: 0,
       oscillationTimer: 0,
+      jumpSpamCounter: 0,
+      jumpSpamTime: 0,
+      lastJumpX: x,
+      lastJumpY: y,
       lastPosX: x,
       lastPosY: y,
       activeReason: 'init',
@@ -134,6 +138,7 @@ export default class FriendlyCompanion extends Player {
       pathCache: new Map(),
       edgeValidationCache: new Map(),
       poisonedEdges: new Map(),
+      elevatorHintCache: null,
       routeTargetKey: null
     };
     this.moveExecution = {
@@ -162,7 +167,8 @@ export default class FriendlyCompanion extends Player {
       executionSignature: 'none',
       routeKeepReason: 'none',
       replanDeferred: false,
-      edgePoisonedLastFrame: false
+      edgePoisonedLastFrame: false,
+      jumpSpamCounter: 0
     };
   }
 
@@ -257,6 +263,64 @@ export default class FriendlyCompanion extends Player {
     return `${tile.x},${tile.y},${tile.align || 'center'}`;
   }
 
+  buildElevatorHints(world, abilities) {
+    const cache = this.navState.elevatorHintCache;
+    const cacheKey = `${world.elevatorPaths?.length || 0}:${world.elevators?.length || 0}`;
+    if (cache?.key === cacheKey) return cache.data;
+    const pathTiles = world.elevatorPaths || [];
+    const pathSet = new Set(pathTiles.map((t) => `${t.x},${t.y}`));
+    const visited = new Set();
+    const components = [];
+    const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    pathTiles.forEach((tile) => {
+      const key = `${tile.x},${tile.y}`;
+      if (visited.has(key)) return;
+      const queue = [tile];
+      visited.add(key);
+      const nodes = [];
+      while (queue.length) {
+        const n = queue.shift();
+        if (!n) break;
+        nodes.push(n);
+        dirs.forEach(([dx, dy]) => {
+          const nx = n.x + dx;
+          const ny = n.y + dy;
+          const nKey = `${nx},${ny}`;
+          if (!pathSet.has(nKey) || visited.has(nKey)) return;
+          visited.add(nKey);
+          queue.push({ x: nx, y: ny });
+        });
+      }
+      const boardTiles = [];
+      nodes.forEach((node) => {
+        [-1, 1].forEach((side) => {
+          const stand = { x: node.x + side, y: node.y, align: side < 0 ? 'right' : 'left' };
+          if (this.canStandOnTile(stand.x, stand.y, world, abilities)) boardTiles.push(stand);
+        });
+      });
+      components.push({ nodes, boardTiles });
+    });
+    const data = { components, pathSet };
+    this.navState.elevatorHintCache = { key: cacheKey, data };
+    return data;
+  }
+
+  findNearbyElevatorComponent(tile, world, abilities) {
+    const hints = this.buildElevatorHints(world, abilities);
+    let best = null;
+    let bestDist = Infinity;
+    hints.components.forEach((component) => {
+      component.boardTiles.forEach((board) => {
+        const d = Math.abs(board.x - tile.x) + Math.abs(board.y - tile.y);
+        if (d < bestDist) {
+          bestDist = d;
+          best = component;
+        }
+      });
+    });
+    return bestDist <= 4 ? best : null;
+  }
+
   findFollowStandTile(player, world, abilities) {
     const tileSize = world.tileSize;
     const playerTileX = Math.floor(player.x / tileSize);
@@ -296,8 +360,12 @@ export default class FriendlyCompanion extends Player {
   chooseNavigationMode(targetTile, world, abilities) {
     const state = this.navState;
     const distToGoal = Math.hypot(targetTile.x * world.tileSize - this.x, targetTile.y * world.tileSize - this.y);
+    const currentTile = this.getFootStandTile(world);
+    const verticalGap = Math.abs(targetTile.y - currentTile.y);
+    const elevatorNearby = Boolean(this.findNearbyElevatorComponent(currentTile, world, abilities));
     if (state.mode === 'recovery' && state.commitTimer > 0) return 'recovery';
     if (this.shouldUseDirectFollow(targetTile, world, abilities)) return 'direct';
+    if (verticalGap >= 6 || state.jumpSpamCounter >= 3 || (elevatorNearby && verticalGap >= 4)) return 'astar';
     if (distToGoal < world.tileSize * 8 && state.localFailCount < 2) return 'local';
     return 'astar';
   }
@@ -317,7 +385,12 @@ export default class FriendlyCompanion extends Player {
     const state = this.navState;
     const current = this.getFootStandTile(world);
     const dist = Math.abs(targetTile.x - current.x) + Math.abs(targetTile.y - current.y);
-    return state.stuckCounter >= 2 || state.noProgressTimer > 0.65 || dist > 8;
+    const verticalGap = Math.abs(targetTile.y - current.y);
+    return state.stuckCounter >= 2
+      || state.noProgressTimer > 0.65
+      || dist > 8
+      || verticalGap > 5
+      || state.jumpSpamCounter >= 2;
   }
 
   detectStuckState(dt, targetWorld) {
@@ -345,6 +418,20 @@ export default class FriendlyCompanion extends Player {
     if (this.justJumped && Math.abs(this.vy) < 20 && !this.onGround) {
       state.jumpFailCounter += 1;
     }
+    if (this.justJumped) {
+      const jumpDx = Math.abs(this.x - state.lastJumpX);
+      const jumpDy = Math.abs(this.y - state.lastJumpY);
+      if (jumpDx < 10 && jumpDy < 12) {
+        state.jumpSpamCounter += 1;
+        state.jumpSpamTime = 0.45;
+      } else {
+        state.jumpSpamCounter = Math.max(0, state.jumpSpamCounter - 1);
+      }
+      state.lastJumpX = this.x;
+      state.lastJumpY = this.y;
+    }
+    state.jumpSpamTime = Math.max(0, state.jumpSpamTime - dt);
+    if (state.jumpSpamTime <= 0) state.jumpSpamCounter = Math.max(0, state.jumpSpamCounter - 1);
     if (this.moveExecution.profile.includes('Jump') && this.onGround && Math.abs(this.vy) < 5 && state.noProgressTimer > 0.25) {
       state.jumpFailCounter += 1;
     }
@@ -356,6 +443,10 @@ export default class FriendlyCompanion extends Player {
       state.stuckCounter += 1;
       state.jumpFailCounter = 0;
       state.oscillationTimer = 0;
+    }
+    if (state.jumpSpamCounter >= 4) {
+      state.stuckCounter += 1;
+      state.noProgressTimer = Math.max(state.noProgressTimer, 0.7);
     }
   }
 
@@ -401,7 +492,12 @@ export default class FriendlyCompanion extends Player {
       return profiles;
     }
     if (dy === 0 && Math.abs(dx) === 1) {
+      profiles.push({ type: 'corridorAdvance', dir, hold: 0.16, cost: 0.85 });
       profiles.push({ type: 'walk', dir, hold: 0.18, cost: 1 });
+    }
+    if (dy === -1 && Math.abs(dx) === 1) {
+      profiles.push({ type: 'stepUp', dir: dir || 1, hold: 0.15, cost: 1.2 });
+      profiles.push({ type: 'shortHopForward', dir: dir || 1, hold: 0.16, cost: 1.5 });
     }
     if (dy <= 0 && Math.abs(dx) <= 2) {
       profiles.push({ type: 'diagJump', dir: dir || 1, hold: 0.2, driftDelay: 0, cost: 3 + Math.abs(dy) });
@@ -415,6 +511,9 @@ export default class FriendlyCompanion extends Player {
       profiles.push({ type: 'upThenDrift', dir: 1, hold: 0.2, driftDelay: 0.09, cost: 3.8 + Math.abs(dy) });
       profiles.push({ type: 'upThenDrift', dir: -1, hold: 0.2, driftDelay: 0.09, cost: 3.8 + Math.abs(dy) });
     }
+    if (Math.abs(dx) <= 1 && dy <= 0) {
+      profiles.push({ type: 'lowCeilingStep', dir: dir || 1, hold: 0.14, cost: 1.4 + Math.abs(dy) * 0.5 });
+    }
     return profiles;
   }
 
@@ -425,10 +524,26 @@ export default class FriendlyCompanion extends Player {
     const cached = state.edgeValidationCache.get(cacheKey);
     if (cached) return cached;
     const profiles = this.buildEdgeProfiles(from, to);
+    if (to.viaElevator) {
+      profiles.unshift({ type: 'elevatorRide', dir: 0, hold: 0.3, cost: 1.8 + Math.abs(to.y - from.y) * 0.18 });
+    }
     let best = null;
     for (let i = 0; i < profiles.length; i += 1) {
       const profile = profiles[i];
       if (this.isEdgePoisoned(from, to, profile.type)) continue;
+      if (profile.type === 'elevatorRide') {
+        const component = this.findNearbyElevatorComponent(from, world, abilities);
+        const canBoard = Boolean(component?.boardTiles?.some((board) => board.x === to.x && board.y === to.y));
+        if (!canBoard) continue;
+        best = {
+          ok: true,
+          profile,
+          cost: profile.cost,
+          moveType: profile.type,
+          needAlign: false
+        };
+        break;
+      }
       const result = this.simulateMoveProfile(from, to, profile, world, abilities);
       if (!result.ok) continue;
       if (!best || result.cost < best.cost) {
@@ -498,6 +613,17 @@ export default class FriendlyCompanion extends Player {
       let jumpNow = false;
       if (profile.type === 'walk') {
         move = profile.dir;
+      } else if (profile.type === 'corridorAdvance') {
+        move = profile.dir;
+      } else if (profile.type === 'stepUp') {
+        move = profile.dir;
+        if (!jumped && t < 0.04) jumpNow = true;
+      } else if (profile.type === 'shortHopForward') {
+        move = profile.dir;
+        if (!jumped && t < 0.05) jumpNow = true;
+      } else if (profile.type === 'lowCeilingStep') {
+        move = profile.dir;
+        if (!jumped && t < 0.03 && !collides(x, y - this.height / 2 - 10, true)) jumpNow = true;
       } else if (profile.type === 'drop') {
         move = profile.dir;
       } else if (profile.type === 'verticalJump') {
@@ -577,7 +703,7 @@ export default class FriendlyCompanion extends Player {
     return { ok: true, cost: bestCost, needAlign };
   }
 
-  getNeighborCandidates(tile, world) {
+  getNeighborCandidates(tile, world, abilities, goal) {
     const dirs = [-1, 1];
     const neighbors = [];
     const aligns = ['left', 'center', 'right'];
@@ -596,6 +722,16 @@ export default class FriendlyCompanion extends Player {
     neighbors.push({ x: tile.x, y: tile.y - 2, align: 'center' });
     neighbors.push({ x: tile.x, y: tile.y + 1, align: 'center' });
     neighbors.push({ x: tile.x, y: tile.y + 2, align: 'center' });
+    const nearElevator = this.findNearbyElevatorComponent(tile, world, abilities);
+    if (nearElevator?.boardTiles?.length) {
+      const sortedBoards = [...nearElevator.boardTiles]
+        .sort((a, b) => Math.abs((goal?.y || tile.y) - a.y) - Math.abs((goal?.y || tile.y) - b.y))
+        .slice(0, 6);
+      sortedBoards.forEach((board) => {
+        if (Math.abs(board.x - tile.x) + Math.abs(board.y - tile.y) <= 1) return;
+        neighbors.push({ x: board.x, y: board.y, align: board.align || 'center', viaElevator: true });
+      });
+    }
     return neighbors;
   }
 
@@ -610,7 +746,7 @@ export default class FriendlyCompanion extends Player {
       if (!current) break;
       seen += 1;
       if (current.x === goal.x && current.y === goal.y) break;
-      const candidates = this.getNeighborCandidates(current, world);
+      const candidates = this.getNeighborCandidates(current, world, abilities, goal);
       for (let i = 0; i < candidates.length; i += 1) {
         const next = candidates[i];
         if (Math.abs(next.x - start.x) > 8 || Math.abs(next.y - start.y) > 6) continue;
@@ -656,7 +792,7 @@ export default class FriendlyCompanion extends Player {
         if (result.length) state.pathCache.set(cacheKey, { path: result, age: 0 });
         return result;
       }
-      const candidates = this.getNeighborCandidates(current, world);
+      const candidates = this.getNeighborCandidates(current, world, abilities, goal);
       for (let i = 0; i < candidates.length; i += 1) {
         const next = candidates[i];
         if (Math.abs(next.x - start.x) > 16 || Math.abs(next.y - start.y) > 12) continue;
@@ -800,7 +936,13 @@ export default class FriendlyCompanion extends Player {
     this.moveExecution = {
       active: true,
       profile,
-      phase: profile === 'upThenDrift' ? 'align' : profile.startsWith('microAlign') || profile === 'settleCenter' ? 'align' : 'travel',
+      phase: profile === 'upThenDrift'
+        ? 'align'
+        : (profile.startsWith('microAlign') || profile === 'settleCenter')
+          ? 'align'
+          : (profile === 'stepUp' || profile === 'shortHopForward' || profile === 'lowCeilingStep')
+            ? 'launch'
+            : 'travel',
       elapsed: 0,
       hold: profile === 'upThenDrift' ? 0.22 : profile.startsWith('microAlign') ? 0.12 : 0.18,
       lockDirection: dir,
@@ -830,7 +972,9 @@ export default class FriendlyCompanion extends Player {
     }
     if (execution.phase === 'launch') {
       input.add('jump');
-      if (profile === 'diagJump') input.add(dir < 0 ? 'left' : 'right');
+      if (profile === 'diagJump' || profile === 'stepUp' || profile === 'shortHopForward' || profile === 'lowCeilingStep') {
+        input.add(dir < 0 ? 'left' : 'right');
+      }
       if (execution.elapsed > 0.08) {
         execution.phase = profile === 'upThenDrift' ? 'drift' : 'travel';
       }
@@ -841,13 +985,18 @@ export default class FriendlyCompanion extends Player {
       if (execution.elapsed > execution.hold) execution.phase = 'travel';
       return input;
     }
+    if (profile === 'elevatorRide') {
+      if (Math.abs(dx) > 6) input.add(dx < 0 ? 'left' : 'right');
+      return input;
+    }
     if (dx < -10) input.add('left');
     if (dx > 10) input.add('right');
     if (profile === 'drop' && this.onGround && Math.abs(dx) < world.tileSize * 0.65 && dy > world.tileSize * 0.9) {
       input.add('down');
       input.add('jump');
     }
-    if ((profile === 'diagJump' || profile === 'verticalJump' || profile === 'upThenDrift')
+    if ((profile === 'diagJump' || profile === 'verticalJump' || profile === 'upThenDrift'
+      || profile === 'stepUp' || profile === 'shortHopForward' || profile === 'lowCeilingStep')
       && (this.onGround || this.coyote > 0) && this.jumpDecisionCooldown <= 0) {
       input.add('jump');
       if (profile === 'diagJump' || (profile === 'upThenDrift' && execution.phase === 'drift')) {
@@ -987,6 +1136,7 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.routeKeepReason = routeKeepReason;
     this.navDebug.replanDeferred = replanDeferred;
     this.navDebug.edgePoisonedLastFrame = Boolean(state.lastEdgePoisoned);
+    this.navDebug.jumpSpamCounter = state.jumpSpamCounter;
 
     return {
       mode: state.mode,
