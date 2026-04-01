@@ -312,11 +312,16 @@ export default class Title {
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.fillText('Editors & Reset', width / 2, 206);
 
-    const buttonWidth = 360;
-    const buttonHeight = 34;
+    const count = this.toolsOrder.length;
+    const topY = 220;
+    const bottomPadding = 24;
+    const available = Math.max(120, height - topY - bottomPadding);
+    const gap = Math.max(22, Math.floor(available / Math.max(1, count)));
+    const buttonHeight = Math.max(18, gap - 6);
+    const buttonWidth = Math.min(360, width - 80);
     const buttonX = width / 2 - buttonWidth / 2;
-    const startY = 245;
-    const gap = 42;
+    const usedHeight = gap * count;
+    const startY = topY + Math.max(0, Math.floor((available - usedHeight) / 2));
 
     this.toolsBounds.clear();
     this.toolsOrder.forEach((action, index) => {
@@ -330,7 +335,7 @@ export default class Title {
       ctx.strokeStyle = isReset ? 'rgba(255,140,140,0.9)' : '#fff';
       ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
       ctx.fillStyle = '#fff';
-      ctx.font = '18px Courier New';
+      ctx.font = `${Math.max(13, Math.min(18, buttonHeight - 8))}px Courier New`;
       const label = action === 'level-editor'
         ? 'Level Editor'
         : action === 'tile-editor'
@@ -348,7 +353,7 @@ export default class Title {
               : action === 'reset-all'
                 ? 'Reset All'
                 : 'Back';
-      ctx.fillText(label, width / 2, y + 22);
+      ctx.fillText(label, width / 2, y + Math.floor(buttonHeight * 0.68));
       if (selected) {
         ctx.fillStyle = '#fff';
         ctx.beginPath();
@@ -423,11 +428,16 @@ export default class Title {
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.fillText('Choose a room to run with the live companion AI.', width / 2, 196);
 
-    const buttonWidth = 520;
-    const buttonHeight = 30;
+    const count = this.aiTestOrder.length;
+    const topY = 220;
+    const bottomPadding = 20;
+    const available = Math.max(120, height - topY - bottomPadding);
+    const gap = Math.max(20, Math.floor(available / Math.max(1, count)));
+    const buttonHeight = Math.max(16, gap - 4);
+    const buttonWidth = Math.min(520, width - 70);
     const buttonX = width / 2 - buttonWidth / 2;
-    const startY = 228;
-    const gap = 36;
+    const usedHeight = gap * count;
+    const startY = topY + Math.max(0, Math.floor((available - usedHeight) / 2));
     this.aiTestBounds.clear();
     this.aiTestOrder.forEach((action, index) => {
       const y = startY + index * gap;
@@ -437,8 +447,8 @@ export default class Title {
       ctx.strokeStyle = '#fff';
       ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
       ctx.fillStyle = '#fff';
-      ctx.font = '16px Courier New';
-      ctx.fillText(action === 'back' ? 'Back' : this.getAiTestLabel(action), width / 2, y + 20);
+      ctx.font = `${Math.max(12, Math.min(16, buttonHeight - 6))}px Courier New`;
+      ctx.fillText(action === 'back' ? 'Back' : this.getAiTestLabel(action), width / 2, y + Math.floor(buttonHeight * 0.68));
       if (selected) {
         ctx.beginPath();
         ctx.moveTo(buttonX - 14, y + buttonHeight / 2);
