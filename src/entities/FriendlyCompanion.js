@@ -130,6 +130,7 @@ export default class FriendlyCompanion extends Player {
       plannerFailCount: 0,
       pathVersion: 0,
       lastRouteFromCache: false,
+      lastEdgePoisoned: false,
       pathCache: new Map(),
       edgeValidationCache: new Map(),
       poisonedEdges: new Map(),
@@ -155,7 +156,13 @@ export default class FriendlyCompanion extends Player {
       stuckCounter: 0,
       replanReason: 'init',
       poisonedEdgeCount: 0,
-      routeFromCache: false
+      routeFromCache: false,
+      executionSource: 'none',
+      executionTarget: 'none',
+      executionSignature: 'none',
+      routeKeepReason: 'none',
+      replanDeferred: false,
+      edgePoisonedLastFrame: false
     };
   }
 
@@ -699,6 +706,12 @@ export default class FriendlyCompanion extends Player {
     return `${this.tileKey(from)}>${this.tileKey(to)}:${profile}`;
   }
 
+  getSegmentSourceNode(path, index, currentNode) {
+    if (index <= 0) return currentNode;
+    const prev = path[index - 1]?.tile;
+    return prev || currentNode;
+  }
+
   markEdgeFailure(from, to, profile) {
     const state = this.navState;
     const key = this.edgeAttemptKey(from, to, profile);
@@ -726,8 +739,9 @@ export default class FriendlyCompanion extends Player {
     const lookahead = Math.min(3, path.length);
     for (let i = 0; i < lookahead; i += 1) {
       const segment = path[i];
+      const source = this.getSegmentSourceNode(path, i, current);
       if (!segment?.tile || !this.canStandOnTile(segment.tile.x, segment.tile.y, world, abilities)) return false;
-      if (segment.edge?.profile?.type && this.isEdgePoisoned(current, segment.tile, segment.edge.profile.type)) return false;
+      if (segment.edge?.profile?.type && this.isEdgePoisoned(source, segment.tile, segment.edge.profile.type)) return false;
     }
     return true;
   }
@@ -753,6 +767,33 @@ export default class FriendlyCompanion extends Player {
     };
   }
 
+  getExecutionSignature(sourceNode, move, profile) {
+    const src = sourceNode ? this.tileKey(sourceNode) : 'none';
+    const dst = move?.nextTile ? this.tileKey(move.nextTile) : 'none';
+    return `${profile}:${src}->${dst}`;
+  }
+
+  shouldRestartExecution(execution, sourceNode, move, profile, forceRestart = false) {
+    if (forceRestart || !execution.active) return true;
+    if (execution.profile !== profile) return true;
+    if (!move?.nextTile || !execution.targetNode) return true;
+    const sameTarget = this.tileKey(execution.targetNode) === this.tileKey(move.nextTile);
+    if (!sameTarget) {
+      const closeTile = execution.targetNode.x === move.nextTile.x && execution.targetNode.y === move.nextTile.y;
+      const alignCompat = execution.targetNode.align === move.nextTile.align
+        || execution.phase === 'travel'
+        || profile === 'walk'
+        || profile === 'direct';
+      if (!(closeTile && alignCompat)) return true;
+    }
+    if (execution.phase === 'align' || execution.phase === 'launch') return false;
+    if (execution.sourceNode && sourceNode) {
+      const movedTooFar = Math.abs(execution.sourceNode.x - sourceNode.x) > 1 || Math.abs(execution.sourceNode.y - sourceNode.y) > 1;
+      if (movedTooFar) return true;
+    }
+    return false;
+  }
+
   beginMoveExecution(move, profile, world) {
     if (!move) return;
     const dir = Math.sign((move.target?.x || this.x) - this.x) || this.facing || 1;
@@ -768,7 +809,7 @@ export default class FriendlyCompanion extends Player {
     };
   }
 
-  buildExecutionIntent(execution, dx, dy, world) {
+  buildExecutionIntent(execution, dx, dy, world, dt) {
     const input = new Set();
     const dir = execution.lockDirection || (dx < 0 ? -1 : 1);
     const profile = execution.profile;
@@ -817,19 +858,22 @@ export default class FriendlyCompanion extends Player {
     return input;
   }
 
-  applyMoveIntent(move, targetWorld, world, abilities) {
+  applyMoveIntent(move, targetWorld, world, abilities, dt) {
     const nextInput = new Set();
     const activeTarget = move?.target || targetWorld;
     const dx = activeTarget.x - this.x;
     const dy = activeTarget.y - this.y;
     const profile = move?.edge?.profile?.type || 'direct';
     const execution = this.moveExecution;
-    if (!execution.active || execution.profile !== profile
-      || (move?.nextTile && this.tileKey(execution.targetNode || { x: 0, y: 0, align: 'center' }) !== this.tileKey(move.nextTile))) {
+    const sourceNode = this.getFootStandTile(world);
+    const nextPoisoned = move?.edge?.profile?.type
+      ? this.isEdgePoisoned(sourceNode, move?.nextTile, move.edge.profile.type)
+      : false;
+    if (this.shouldRestartExecution(execution, sourceNode, move, profile, nextPoisoned)) {
       this.beginMoveExecution(move, profile, world);
     }
-    this.moveExecution.elapsed += 1 / 60;
-    const phaseInput = this.buildExecutionIntent(this.moveExecution, dx, dy, world);
+    this.moveExecution.elapsed += dt;
+    const phaseInput = this.buildExecutionIntent(this.moveExecution, dx, dy, world, dt);
     phaseInput.forEach((key) => nextInput.add(key));
 
     // fallback direct drive to avoid any idle "thinking pauses" while planning updates.
@@ -859,6 +903,8 @@ export default class FriendlyCompanion extends Player {
 
     let path = state.path;
     let reason = 'commit';
+    let routeKeepReason = 'none';
+    let replanDeferred = false;
     const targetChanged = !state.targetTile
       || Math.abs((state.targetTile.x || 0) - targetTile.x) > 1
       || Math.abs((state.targetTile.y || 0) - targetTile.y) > 1;
@@ -869,6 +915,8 @@ export default class FriendlyCompanion extends Player {
     }
     if (canKeepRoute && (state.mode === 'local' || state.mode === 'astar')) {
       reason = 'route-commit';
+      routeKeepReason = targetChanged ? 'target-shift-small' : 'path-still-valid';
+      replanDeferred = true;
       state.replanCooldown = Math.max(state.replanCooldown, 0.12);
     }
 
@@ -902,11 +950,18 @@ export default class FriendlyCompanion extends Player {
     state.routeTargetKey = this.tileKey(targetTile);
     state.routeAge += dt;
     const nextMove = this.chooseMoveFromPath(path, world);
-    const intent = this.applyMoveIntent(nextMove, targetWorld, world, abilities);
-    if (nextMove?.edge?.profile?.type && state.stuckCounter >= 2 && state.noProgressTimer > 0.25) {
-      this.markEdgeFailure(startTile, nextMove.nextTile, nextMove.edge.profile.type);
+    const intent = this.applyMoveIntent(nextMove, targetWorld, world, abilities, dt);
+    const activeExec = this.moveExecution;
+    const failedEdgeProfile = activeExec?.profile && activeExec.profile !== 'direct' ? activeExec.profile : nextMove?.edge?.profile?.type;
+    if (failedEdgeProfile && state.stuckCounter >= 2 && state.noProgressTimer > 0.25) {
+      const failSource = activeExec?.sourceNode || startTile;
+      const failTarget = activeExec?.targetNode || nextMove?.nextTile;
+      if (failTarget) this.markEdgeFailure(failSource, failTarget, failedEdgeProfile);
       reason = 'edge-poisoned';
       state.replanCooldown = 0;
+      state.lastEdgePoisoned = true;
+    } else {
+      state.lastEdgePoisoned = false;
     }
 
     const moveSignature = `${state.mode}:${intent.profile}:${nextMove?.nextTile ? this.tileKey(nextMove.nextTile) : 'direct'}`;
@@ -926,6 +981,12 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.replanReason = reason;
     this.navDebug.poisonedEdgeCount = state.poisonedEdges.size;
     this.navDebug.routeFromCache = Boolean(state.lastRouteFromCache);
+    this.navDebug.executionSource = this.moveExecution.sourceNode ? this.tileKey(this.moveExecution.sourceNode) : 'none';
+    this.navDebug.executionTarget = this.moveExecution.targetNode ? this.tileKey(this.moveExecution.targetNode) : 'none';
+    this.navDebug.executionSignature = this.getExecutionSignature(this.moveExecution.sourceNode, { nextTile: this.moveExecution.targetNode }, this.moveExecution.profile);
+    this.navDebug.routeKeepReason = routeKeepReason;
+    this.navDebug.replanDeferred = replanDeferred;
+    this.navDebug.edgePoisonedLastFrame = Boolean(state.lastEdgePoisoned);
 
     return {
       mode: state.mode,
