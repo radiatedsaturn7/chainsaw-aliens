@@ -11,11 +11,14 @@ export default class Title {
       'pixel-editor',
       'actor-editor',
       'midi-editor',
+      'test-ai',
       'reset-all',
       'back'
     ];
     this.controlsOrder = ['mobile', 'gamepad', 'keyboard', 'back'];
     this.storageOrder = ['toggle-server-storage', 'sync-github', 'back'];
+    this.aiTestOrder = ['back'];
+    this.aiTestLabels = new Map();
     this.menuSelection = 0;
     this.toolsSelection = 0;
     this.controlsSelection = 0;
@@ -23,6 +26,7 @@ export default class Title {
     this.toolsBounds = new Map();
     this.controlsBounds = new Map();
     this.storageBounds = new Map();
+    this.aiTestBounds = new Map();
     this.debugRestartBounds = null;
     this.explosions = [];
     this.nextExplosion = 1.4;
@@ -173,6 +177,8 @@ export default class Title {
       this.drawControls(ctx, width, height, inputMode);
     } else if (screen === 'storage') {
       this.drawStorage(ctx, width, height, inputHints);
+    } else if (screen === 'ai-test') {
+      this.drawAiTests(ctx, width, height);
     } else {
       this.drawMainMenu(ctx, width, height, { showDebugRestart: Boolean(inputHints?.debugRestartEnabled) });
     }
@@ -306,11 +312,16 @@ export default class Title {
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.fillText('Editors & Reset', width / 2, 206);
 
-    const buttonWidth = 360;
-    const buttonHeight = 34;
+    const count = this.toolsOrder.length;
+    const topY = 220;
+    const bottomPadding = 24;
+    const available = Math.max(120, height - topY - bottomPadding);
+    const gap = Math.max(22, Math.floor(available / Math.max(1, count)));
+    const buttonHeight = Math.max(18, gap - 6);
+    const buttonWidth = Math.min(360, width - 80);
     const buttonX = width / 2 - buttonWidth / 2;
-    const startY = 245;
-    const gap = 42;
+    const usedHeight = gap * count;
+    const startY = topY + Math.max(0, Math.floor((available - usedHeight) / 2));
 
     this.toolsBounds.clear();
     this.toolsOrder.forEach((action, index) => {
@@ -324,7 +335,7 @@ export default class Title {
       ctx.strokeStyle = isReset ? 'rgba(255,140,140,0.9)' : '#fff';
       ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
       ctx.fillStyle = '#fff';
-      ctx.font = '18px Courier New';
+      ctx.font = `${Math.max(13, Math.min(18, buttonHeight - 8))}px Courier New`;
       const label = action === 'level-editor'
         ? 'Level Editor'
         : action === 'tile-editor'
@@ -337,10 +348,12 @@ export default class Title {
               ? 'Actor Editor'
               : action === 'midi-editor'
               ? 'MIDI Editor'
+              : action === 'test-ai'
+                ? 'Test AI'
               : action === 'reset-all'
                 ? 'Reset All'
                 : 'Back';
-      ctx.fillText(label, width / 2, y + 22);
+      ctx.fillText(label, width / 2, y + Math.floor(buttonHeight * 0.68));
       if (selected) {
         ctx.fillStyle = '#fff';
         ctx.beginPath();
@@ -406,6 +419,52 @@ export default class Title {
     });
   }
 
+  drawAiTests(ctx, width, height) {
+    ctx.fillStyle = '#fff';
+    ctx.font = '22px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('AI Test Scenarios', width / 2, 170);
+    ctx.font = '14px Courier New';
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.fillText('Choose a room to run with the live companion AI.', width / 2, 196);
+
+    const count = this.aiTestOrder.length;
+    const topY = 220;
+    const bottomPadding = 20;
+    const available = Math.max(120, height - topY - bottomPadding);
+    const gap = Math.max(20, Math.floor(available / Math.max(1, count)));
+    const buttonHeight = Math.max(16, gap - 4);
+    const buttonWidth = Math.min(520, width - 70);
+    const buttonX = width / 2 - buttonWidth / 2;
+    const usedHeight = gap * count;
+    const startY = topY + Math.max(0, Math.floor((available - usedHeight) / 2));
+    this.aiTestBounds.clear();
+    this.aiTestOrder.forEach((action, index) => {
+      const y = startY + index * gap;
+      const selected = this.aiTestOrder[this.toolsSelection] === action;
+      ctx.fillStyle = selected ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)';
+      ctx.fillRect(buttonX, y, buttonWidth, buttonHeight);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
+      ctx.fillStyle = '#fff';
+      ctx.font = `${Math.max(12, Math.min(16, buttonHeight - 6))}px Courier New`;
+      ctx.fillText(action === 'back' ? 'Back' : this.getAiTestLabel(action), width / 2, y + Math.floor(buttonHeight * 0.68));
+      if (selected) {
+        ctx.beginPath();
+        ctx.moveTo(buttonX - 14, y + buttonHeight / 2);
+        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 - 6);
+        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 + 6);
+        ctx.closePath();
+        ctx.fill();
+      }
+      this.aiTestBounds.set(action, { x: buttonX, y, w: buttonWidth, h: buttonHeight });
+    });
+  }
+
+  getAiTestLabel(action) {
+    return this.aiTestLabels.get(action) || action;
+  }
+
   spawnExplosion() {
     const angle = Math.random() * Math.PI * 2;
     const radius = Math.random() * 0.8 + 0.1;
@@ -449,6 +508,12 @@ export default class Title {
       this.toolsSelection = (this.toolsSelection + direction + count) % count;
       return;
     }
+    if (this.screen === 'ai-test') {
+      const count = this.aiTestOrder.length;
+      if (!count) return;
+      this.toolsSelection = (this.toolsSelection + direction + count) % count;
+      return;
+    }
     if (this.screen === 'controls' || this.screen === 'storage') {
       const count = this.screen === 'controls' ? this.controlsOrder.length : this.storageOrder.length;
       if (!count) return;
@@ -466,6 +531,9 @@ export default class Title {
     }
     if (this.screen === 'controls') {
       return this.controlsOrder[this.controlsSelection] || 'back';
+    }
+    if (this.screen === 'ai-test') {
+      return this.aiTestOrder[this.toolsSelection] || 'back';
     }
     if (this.screen === 'storage') {
       return this.storageOrder[this.controlsSelection] || 'back';
@@ -487,6 +555,14 @@ export default class Title {
     }
     if (this.screen === 'controls') {
       for (const [action, bounds] of this.controlsBounds.entries()) {
+        if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
+          return action;
+        }
+      }
+      return null;
+    }
+    if (this.screen === 'ai-test') {
+      for (const [action, bounds] of this.aiTestBounds.entries()) {
         if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
           return action;
         }
@@ -527,7 +603,18 @@ export default class Title {
     this.screen = target;
     if (target === 'controls') this.setControlsSelectionByMode();
     if (target === 'tools') this.toolsSelection = 0;
+    if (target === 'ai-test') this.toolsSelection = 0;
     if (target === 'storage') this.controlsSelection = 0;
+  }
+
+  setAiTestActions(actions = []) {
+    this.aiTestLabels.clear();
+    this.aiTestOrder = actions.map((entry) => {
+      this.aiTestLabels.set(entry.action, entry.label);
+      return entry.action;
+    });
+    this.aiTestOrder.push('back');
+    this.toolsSelection = 0;
   }
 
   setControlsSelectionByMode(mode) {

@@ -62,6 +62,7 @@ import FeasibilityValidator from '../debug/FeasibilityValidator.js';
 import GoldenPathRunner from '../debug/GoldenPathRunner.js';
 import AutoRepair from '../debug/AutoRepair.js';
 import TestDashboard from '../debug/TestDashboard.js';
+import AITestHarness from '../debug/AITestHarness.js';
 import WorldValidityTest from '../debug/validators/WorldValidityTest.js';
 import RoomCoverageTest from '../debug/validators/RoomCoverageTest.js';
 import EncounterAuditTest from '../debug/validators/EncounterAuditTest.js';
@@ -301,6 +302,7 @@ export default class Game {
     this.obstacleCooldown = 0;
     this.noiseCooldown = 0;
     this.testHarness = new TestHarness();
+    this.aiTestHarness = new AITestHarness();
     this.validator = new Validator(this.world, this.player);
     this.feasibilityValidator = new FeasibilityValidator(this.world, this.player);
     this.consoleOverlay = new ConsoleOverlay();
@@ -2332,6 +2334,9 @@ export default class Game {
         } else if (this.title.screen === 'tools') {
           if (action === 'back') {
             this.title.setScreen('main');
+          } else if (action === 'test-ai') {
+            this.transitionTo('playing');
+            this.aiTestHarness.enable(this, 0);
           } else if (action === 'project-browser') {
             this.openProjectBrowserFromTitle();
           } else if (action === 'level-editor') {
@@ -2344,6 +2349,14 @@ export default class Game {
             this.enterMidiComposer();
           } else if (action === 'reset-all') {
             this.resetAllContent();
+          }
+        } else if (this.title.screen === 'ai-test') {
+          if (action === 'back') {
+            this.title.setScreen('tools');
+          } else if (action.startsWith('ai-test-scenario-')) {
+            const index = Number(action.slice('ai-test-scenario-'.length));
+            this.transitionTo('playing');
+            this.aiTestHarness.enable(this, Number.isFinite(index) ? index : 0);
           }
         } else if (this.title.screen === 'storage') {
           if (action === 'back') {
@@ -2469,9 +2482,10 @@ export default class Game {
       return;
     }
 
-    this.testHarness.update(this.input, this);
     const debugSlow = this.testHarness.active && this.testHarness.slowMotion;
     const timeScale = this.slowTimer > 0 ? 0.25 : debugSlow ? 0.5 : 1;
+    this.testHarness.update(this.input, this);
+    this.aiTestHarness.update(this.input, this, dt * timeScale);
     this.slowTimer = Math.max(0, this.slowTimer - dt);
     this.damageFlashTimer = Math.max(0, this.damageFlashTimer - dt * timeScale);
     this.ignitirFlashTimer = Math.max(0, this.ignitirFlashTimer - dt * timeScale);
@@ -2538,6 +2552,7 @@ export default class Game {
     if (this.friendlyCompanion) {
       this.friendlyCompanion.update(dt * timeScale, this.world, this.abilities, {
         player: this.player,
+        playerInput: this.input,
         enemies: this.enemies,
         boss: this.boss,
         onAssistHit: (enemy) => {
@@ -6586,6 +6601,7 @@ export default class Game {
     this.consoleOverlay.draw(ctx, canvas.width, canvas.height);
     this.checklist.draw(ctx, this, canvas.width, canvas.height);
     this.testHarness.draw(ctx, this, canvas.width, canvas.height);
+    this.aiTestHarness.draw(ctx, canvas.width, canvas.height);
     this.testDashboard.draw(ctx, canvas.width, canvas.height);
     if (this.victory) {
       this.drawVictory(ctx, canvas.width, canvas.height);
@@ -8192,6 +8208,9 @@ export default class Game {
       if (this.title.screen === 'tools') {
         if (action === 'back') {
           this.title.setScreen('main');
+        } else if (action === 'test-ai') {
+          this.transitionTo('playing');
+          this.aiTestHarness.enable(this, 0);
         } else if (action === 'project-browser') {
           this.openProjectBrowserFromTitle();
         } else if (action === 'level-editor') {
@@ -8206,6 +8225,17 @@ export default class Game {
           this.enterMidiComposer();
         } else if (action === 'reset-all') {
           this.resetAllContent();
+        }
+        this.audio.ui();
+        return;
+      }
+      if (this.title.screen === 'ai-test') {
+        if (action === 'back') {
+          this.title.setScreen('tools');
+        } else if (action.startsWith('ai-test-scenario-')) {
+          const index = Number(action.slice('ai-test-scenario-'.length));
+          this.transitionTo('playing');
+          this.aiTestHarness.enable(this, Number.isFinite(index) ? index : 0);
         }
         this.audio.ui();
         return;

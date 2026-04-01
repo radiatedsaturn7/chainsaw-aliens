@@ -57,6 +57,15 @@ export default class FriendlyCompanion extends Player {
     this.assistHoldTimer = 0;
     this.routePlanCooldown = 0;
     this.routeStepTile = null;
+    this.traceRecordCooldown = 0;
+    this.playerTraceTiles = [];
+    this.playerTraceMax = 120;
+    this.traceOnlyFollow = false;
+    this.traceTailDelay = 12;
+    this.inputTrace = [];
+    this.inputTraceClock = 0;
+    this.inputTraceDelay = 0.25;
+    this.inputTraceMax = 900;
   }
 
   getDrawPalette(flash) {
@@ -112,7 +121,7 @@ export default class FriendlyCompanion extends Player {
     return world.isSolid(tileX, tileY + 1, abilities, { ignoreOneWay: false });
   }
 
-  findFollowStandTile(player, world, abilities) {
+  buildFollowStandCandidates(player, world) {
     const tileSize = world.tileSize;
     const playerTileX = Math.floor(player.x / tileSize);
     const playerTileY = Math.floor((player.y + player.height / 2 - 1) / tileSize);
@@ -126,40 +135,54 @@ export default class FriendlyCompanion extends Player {
       playerTileX + 2,
       playerTileX - 2,
       playerTileX + 3,
-      playerTileX - 3
+      playerTileX - 3,
+      playerTileX + 4,
+      playerTileX - 4,
+      playerTileX + 5,
+      playerTileX - 5
     ];
     const uniqueColumns = [];
     [...behindColumns, ...adjacentColumns].forEach((column) => {
       if (!uniqueColumns.includes(column)) uniqueColumns.push(column);
     });
-    const playerStanding = Boolean(player.onGround);
-    const prioritizedVertical = playerStanding ? [0, 1, -1, 2, -2] : verticalOffsets;
+    const prioritizedVertical = player.onGround ? [0, 1, -1, 2, -2] : verticalOffsets;
+    const candidates = [];
+    const seen = new Set();
+    const pushCandidate = (x, y) => {
+      const key = `${x},${y}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      candidates.push({ x, y });
+    };
     for (let stepIndex = 0; stepIndex < uniqueColumns.length; stepIndex += 1) {
       const candidateX = uniqueColumns[stepIndex];
       for (let i = 0; i < prioritizedVertical.length; i += 1) {
         const candidateY = playerTileY + prioritizedVertical[i];
-        if (Math.abs(candidateY - playerTileY) > 2) continue;
-        if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
-          return { x: candidateX, y: candidateY };
-        }
+        if (Math.abs(candidateY - playerTileY) > 3) continue;
+        pushCandidate(candidateX, candidateY);
       }
       for (let i = 0; i < verticalOffsets.length; i += 1) {
         const candidateY = playerTileY + verticalOffsets[i];
-        if (Math.abs(candidateY - playerTileY) > 2) continue;
-        if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
-          return { x: candidateX, y: candidateY };
-        }
+        if (Math.abs(candidateY - playerTileY) > 3) continue;
+        pushCandidate(candidateX, candidateY);
       }
-    }
-    for (let stepIndex = 0; stepIndex < uniqueColumns.length; stepIndex += 1) {
-      const candidateX = uniqueColumns[stepIndex];
       for (let i = 0; i < verticalOffsets.length; i += 1) {
-        const candidateY = playerTileY + verticalOffsets[i] + 1;
-        if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
-          return { x: candidateX, y: candidateY };
-        }
+        pushCandidate(candidateX, playerTileY + verticalOffsets[i] + 1);
       }
     }
+    pushCandidate(playerTileX, playerTileY);
+    return candidates;
+  }
+
+  findFollowStandTile(player, world, abilities) {
+    const tileSize = world.tileSize;
+    const candidates = this.buildFollowStandCandidates(player, world);
+    for (let i = 0; i < candidates.length; i += 1) {
+      const candidate = candidates[i];
+      if (this.canStandOnTile(candidate.x, candidate.y, world, abilities)) return candidate;
+    }
+    const playerTileX = Math.floor(player.x / tileSize);
+    const playerTileY = Math.floor((player.y + player.height / 2 - 1) / tileSize);
     return { x: playerTileX, y: playerTileY };
   }
 
@@ -173,26 +196,190 @@ export default class FriendlyCompanion extends Player {
 
   buildPathNeighbors(tile, world, abilities) {
     const neighbors = [];
-    const dirs = [-1, 1];
-    dirs.forEach((dir) => {
-      const walk = { x: tile.x + dir, y: tile.y };
-      if (this.canStandOnTile(walk.x, walk.y, world, abilities)) neighbors.push(walk);
-      for (let jumpUp = 1; jumpUp <= 3; jumpUp += 1) {
-        const jump = { x: tile.x + dir, y: tile.y - jumpUp };
-        if (this.canStandOnTile(jump.x, jump.y, world, abilities)) neighbors.push(jump);
+    const seen = new Set();
+    const bodyHalfWidth = 0.32;
+    const isAirClear = (x, y) => (
+      !world.isSolid(x, y, abilities, { ignoreOneWay: true })
+      && !world.isHazard?.(x, y)
+    );
+    const isBodyClear = (px, py) => {
+      const minX = Math.floor(px - bodyHalfWidth);
+      const maxX = Math.floor(px + bodyHalfWidth);
+      const minY = Math.floor(py - 1);
+      const maxY = Math.floor(py);
+      for (let x = minX; x <= maxX; x += 1) {
+        for (let y = minY; y <= maxY; y += 1) {
+          if (!isAirClear(x, y)) return false;
+        }
+      }
+      return true;
+    };
+    const canTraverseArc = (from, to) => {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const samples = Math.max(Math.abs(dx), Math.abs(dy), 1) * 8;
+      const isJump = to.y < from.y;
+      const peakY = isJump
+        ? Math.min(from.y, to.y) - Math.max(1, Math.ceil(Math.abs(dy) * 0.75))
+        : from.y;
+      let prevX = from.x;
+      let prevY = from.y;
+      for (let i = 1; i <= samples; i += 1) {
+        const t = i / samples;
+        const x = from.x + dx * t;
+        let y;
+        if (isJump) {
+          const inv = 1 - t;
+          y = inv * inv * from.y + 2 * inv * t * peakY + t * t * to.y;
+        } else {
+          y = from.y + dy * t;
+        }
+        for (let sub = 1; sub <= 3; sub += 1) {
+          const st = sub / 3;
+          const sx = prevX + (x - prevX) * st;
+          const sy = prevY + (y - prevY) * st;
+          if (!isBodyClear(sx, sy)) return false;
+        }
+        prevX = x;
+        prevY = y;
+      }
+      return true;
+    };
+    const canTraversePhysics = (from, to) => {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      if (dy < 0) {
+        // Platformer-friendly "upside-down L": go up first, then move sideways, then descend.
+        const sideDir = Math.sign(dx);
+        if (sideDir !== 0) {
+          for (let y = from.y - 1; y >= from.y - 2; y -= 1) {
+            if (!isBodyClear(from.x + sideDir, y)) return false;
+          }
+        }
+        const jumpHeight = Math.abs(dy);
+        const apexY = from.y - jumpHeight;
+        for (let y = from.y - 1; y >= apexY - 1; y -= 1) {
+          if (!isBodyClear(from.x, y)) return false;
+        }
+        const stepX = Math.sign(dx);
+        let x = from.x;
+        while (x !== to.x) {
+          x += stepX;
+          if (!isBodyClear(x, apexY)) return false;
+        }
+        for (let y = apexY; y <= to.y; y += 1) {
+          if (x === to.x && y >= to.y + 1) continue;
+          if (!isBodyClear(to.x, y)) return false;
+        }
+        return true;
+      }
+
+      // Fall / drop: drift laterally first, then descend.
+      const stepX = Math.sign(dx);
+      let x = from.x;
+      while (x !== to.x) {
+        x += stepX;
+        if (!isBodyClear(x, from.y)) return false;
+      }
+      for (let y = from.y; y <= to.y; y += 1) {
+        if (x === to.x && y >= to.y + 1) continue;
+        if (!isBodyClear(to.x, y)) return false;
+      }
+      return true;
+    };
+    const canTraverseDoubleJump = (from, to) => {
+      const dx = to.x - from.x;
+      const dir = Math.sign(dx);
+      let x = from.x;
+      let y = from.y;
+      let vx = dir * 0.45;
+      let vy = -3.9;
+      let secondJumpUsed = false;
+      const gravity = 0.34;
+      for (let step = 0; step < 36; step += 1) {
+        const desiredVx = dir * 0.95;
+        vx += (desiredVx - vx) * 0.25;
+        const prevX = x;
+        const prevY = y;
+        x += vx;
+        y += vy;
+        vy += gravity;
+        if (!secondJumpUsed && step >= 5 && (y <= from.y - 2 || vy > -0.15)) {
+          vy = -3.5;
+          secondJumpUsed = true;
+        }
+        const tx = Math.round(x);
+        const ty = Math.round(y);
+        for (let sub = 1; sub <= 3; sub += 1) {
+          const st = sub / 3;
+          const sx = prevX + (x - prevX) * st;
+          const sy = prevY + (y - prevY) * st;
+          if (!isBodyClear(sx, sy)) return false;
+        }
+        if (Math.abs(tx - to.x) <= 0 && Math.abs(ty - to.y) <= 1 && vy >= 0) {
+          return true;
+        }
+      }
+      return false;
+    };
+    const addNeighbor = (x, y) => {
+      const key = `${x},${y}`;
+      if (seen.has(key)) return;
+      const target = { x, y };
+      if (!this.canStandOnTile(x, y, world, abilities)) return;
+      const dy = y - tile.y;
+      const physicsOk = canTraversePhysics(tile, target);
+      const arcOk = canTraverseArc(tile, target);
+      const doubleJumpOk = canTraverseDoubleJump(tile, target);
+      const traversalOk = dy < 0
+        ? (physicsOk || doubleJumpOk || arcOk)
+        : (physicsOk || arcOk);
+      if (traversalOk) {
+        neighbors.push({ x, y });
+        seen.add(key);
+      }
+    };
+    const onOneWay = world.isOneWay?.(tile.x, tile.y + 1);
+
+    // Ground walk.
+    addNeighbor(tile.x - 1, tile.y);
+    addNeighbor(tile.x + 1, tile.y);
+
+    // Jump arcs (includes practical "double-jump-like" reach envelope).
+    for (let dx = -3; dx <= 3; dx += 1) {
+      for (let jumpUp = 1; jumpUp <= 10; jumpUp += 1) {
+        if (dx === 0 && jumpUp > 7) continue;
+        addNeighbor(tile.x + dx, tile.y - jumpUp);
+      }
+    }
+
+    // Downward arcs / drops.
+    for (let dx = -2; dx <= 2; dx += 1) {
+      for (let dropDown = 1; dropDown <= 6; dropDown += 1) {
+        if (!onOneWay && dx === 0 && dropDown > 3) continue;
+        addNeighbor(tile.x + dx, tile.y + dropDown);
+      }
+    }
+
+    // Safety fallback: if strict traversal filters everything, keep a minimal reachable set
+    // so companion doesn't stall completely.
+    if (neighbors.length === 0) {
+      const pushIfStandable = (x, y) => {
+        const key = `${x},${y}`;
+        if (seen.has(key)) return;
+        if (this.canStandOnTile(x, y, world, abilities)) {
+          neighbors.push({ x, y });
+          seen.add(key);
+        }
+      };
+      pushIfStandable(tile.x - 1, tile.y);
+      pushIfStandable(tile.x + 1, tile.y);
+      for (let jumpUp = 1; jumpUp <= 4; jumpUp += 1) {
+        pushIfStandable(tile.x, tile.y - jumpUp);
       }
       for (let dropDown = 1; dropDown <= 4; dropDown += 1) {
-        const drop = { x: tile.x + dir, y: tile.y + dropDown };
-        if (this.canStandOnTile(drop.x, drop.y, world, abilities)) neighbors.push(drop);
+        pushIfStandable(tile.x, tile.y + dropDown);
       }
-    });
-    for (let jumpUp = 1; jumpUp <= 2; jumpUp += 1) {
-      const jump = { x: tile.x, y: tile.y - jumpUp };
-      if (this.canStandOnTile(jump.x, jump.y, world, abilities)) neighbors.push(jump);
-    }
-    for (let dropDown = 1; dropDown <= 4; dropDown += 1) {
-      const drop = { x: tile.x, y: tile.y + dropDown };
-      if (this.canStandOnTile(drop.x, drop.y, world, abilities)) neighbors.push(drop);
     }
     return neighbors;
   }
@@ -201,36 +388,80 @@ export default class FriendlyCompanion extends Player {
     const start = this.getFootStandTile(world);
     if (!this.canStandOnTile(start.x, start.y, world, abilities)) return null;
     if (start.x === goalTile.x && start.y === goalTile.y) return goalTile;
-    const minX = Math.max(0, Math.min(start.x, goalTile.x) - 12);
-    const maxX = Math.min(world.width - 1, Math.max(start.x, goalTile.x) + 12);
-    const minY = Math.max(1, Math.min(start.y, goalTile.y) - 10);
-    const maxY = Math.min(world.height - 2, Math.max(start.y, goalTile.y) + 10);
+    const horizontalPadding = Math.max(16, Math.abs(goalTile.x - start.x) + 8);
+    const verticalPadding = Math.max(14, Math.abs(goalTile.y - start.y) + 8);
     const keyOf = (tile) => `${tile.x},${tile.y}`;
     const startKey = keyOf(start);
-    const queue = [start];
-    const parents = new Map([[startKey, null]]);
-    while (queue.length > 0) {
-      const current = queue.shift();
-      if (!current) break;
-      const currentKey = keyOf(current);
-      if (current.x === goalTile.x && current.y === goalTile.y) {
-        let step = current;
-        let parentKey = parents.get(currentKey);
-        while (parentKey && parentKey !== startKey) {
-          const [px, py] = parentKey.split(',').map((value) => Number(value));
-          step = { x: px, y: py };
-          parentKey = parents.get(parentKey);
+    const heuristic = (tile) => {
+      const dx = Math.abs(tile.x - goalTile.x);
+      const dy = Math.abs(tile.y - goalTile.y);
+      return Math.max(dx, Math.ceil(dy / 5));
+    };
+
+    const searchWindows = [
+      {
+        minX: Math.max(0, Math.min(start.x, goalTile.x) - horizontalPadding),
+        maxX: Math.min(world.width - 1, Math.max(start.x, goalTile.x) + horizontalPadding),
+        minY: Math.max(1, Math.min(start.y, goalTile.y) - verticalPadding),
+        maxY: Math.min(world.height - 2, Math.max(start.y, goalTile.y) + verticalPadding),
+        maxExpansions: 1200
+      },
+      { minX: 0, maxX: world.width - 1, minY: 1, maxY: world.height - 2, maxExpansions: 2600 }
+    ];
+
+    for (let windowIndex = 0; windowIndex < searchWindows.length; windowIndex += 1) {
+      const {
+        minX, maxX, minY, maxY, maxExpansions
+      } = searchWindows[windowIndex];
+      const open = [start];
+      const openSet = new Set([startKey]);
+      const parents = new Map([[startKey, null]]);
+      const gScore = new Map([[startKey, 0]]);
+      const fScore = new Map([[startKey, heuristic(start)]]);
+      let expansions = 0;
+      while (open.length > 0 && expansions < maxExpansions) {
+        expansions += 1;
+        let bestIndex = 0;
+        let bestKey = keyOf(open[0]);
+        let bestF = fScore.get(bestKey) ?? Number.POSITIVE_INFINITY;
+        for (let i = 1; i < open.length; i += 1) {
+          const candidateKey = keyOf(open[i]);
+          const candidateF = fScore.get(candidateKey) ?? Number.POSITIVE_INFINITY;
+          if (candidateF < bestF) {
+            bestF = candidateF;
+            bestIndex = i;
+            bestKey = candidateKey;
+          }
         }
-        return step;
+        const [current] = open.splice(bestIndex, 1);
+        if (!current) break;
+        const currentKey = keyOf(current);
+        openSet.delete(currentKey);
+        if (current.x === goalTile.x && current.y === goalTile.y) {
+          let step = current;
+          let parentKey = parents.get(currentKey);
+          while (parentKey && parentKey !== startKey) {
+            const [px, py] = parentKey.split(',').map((value) => Number(value));
+            step = { x: px, y: py };
+            parentKey = parents.get(parentKey);
+          }
+          return step;
+        }
+        const neighbors = this.buildPathNeighbors(current, world, abilities);
+        neighbors.forEach((neighbor) => {
+          if (neighbor.x < minX || neighbor.x > maxX || neighbor.y < minY || neighbor.y > maxY) return;
+          const key = keyOf(neighbor);
+          const tentative = (gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + 1;
+          if (tentative >= (gScore.get(key) ?? Number.POSITIVE_INFINITY)) return;
+          parents.set(key, currentKey);
+          gScore.set(key, tentative);
+          fScore.set(key, tentative + heuristic(neighbor));
+          if (!openSet.has(key)) {
+            open.push(neighbor);
+            openSet.add(key);
+          }
+        });
       }
-      const neighbors = this.buildPathNeighbors(current, world, abilities);
-      neighbors.forEach((neighbor) => {
-        if (neighbor.x < minX || neighbor.x > maxX || neighbor.y < minY || neighbor.y > maxY) return;
-        const key = keyOf(neighbor);
-        if (parents.has(key)) return;
-        parents.set(key, currentKey);
-        queue.push(neighbor);
-      });
     }
     return null;
   }
@@ -292,6 +523,147 @@ export default class FriendlyCompanion extends Player {
     return 0;
   }
 
+  findDetourStandTile(goalTile, world, abilities) {
+    const start = this.getFootStandTile(world);
+    if (!this.canStandOnTile(start.x, start.y, world, abilities)) return null;
+    const preferredDir = Math.sign(goalTile.x - start.x) || 1;
+    const dirs = preferredDir > 0 ? [1, -1] : [-1, 1];
+    const hasHeadroom = (x, y) => {
+      for (let up = 1; up <= 4; up += 1) {
+        if (world.isSolid(x, y - up, abilities, { ignoreOneWay: true })) return false;
+      }
+      return true;
+    };
+    for (let step = 1; step <= 8; step += 1) {
+      for (let i = 0; i < dirs.length; i += 1) {
+        const x = start.x + dirs[i] * step;
+        const y = start.y;
+        if (!this.canStandOnTile(x, y, world, abilities)) continue;
+        if (!hasHeadroom(x, y)) continue;
+        return { x, y };
+      }
+    }
+    return null;
+  }
+
+  recordPlayerTraceTile(player, world, abilities, dt) {
+    this.traceRecordCooldown = Math.max(0, this.traceRecordCooldown - dt);
+    if (this.traceRecordCooldown > 0) return;
+    const tileSize = world.tileSize;
+    const tile = {
+      x: Math.floor(player.x / tileSize),
+      y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
+    };
+    if (!this.canStandOnTile(tile.x, tile.y, world, abilities)) return;
+    const last = this.playerTraceTiles[this.playerTraceTiles.length - 1];
+    if (!last || last.x !== tile.x || last.y !== tile.y) {
+      this.playerTraceTiles.push(tile);
+      if (this.playerTraceTiles.length > this.playerTraceMax) {
+        this.playerTraceTiles.splice(0, this.playerTraceTiles.length - this.playerTraceMax);
+      }
+    }
+    this.traceRecordCooldown = 0.08;
+  }
+
+  findTraceRouteStep(world, abilities) {
+    if (!this.playerTraceTiles.length) return null;
+    const start = this.getFootStandTile(world);
+    const lastIndex = this.playerTraceTiles.length - 1;
+    let nearestIndex = 0;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < this.playerTraceTiles.length; i += 1) {
+      const node = this.playerTraceTiles[i];
+      const dist = Math.abs(node.x - start.x) + Math.abs(node.y - start.y);
+      if (dist < bestDistance) {
+        bestDistance = dist;
+        nearestIndex = i;
+      }
+    }
+
+    const candidateIndices = [];
+    const used = new Set();
+    const pushIndex = (idx) => {
+      const clamped = Math.max(0, Math.min(lastIndex, idx));
+      if (used.has(clamped)) return;
+      used.add(clamped);
+      candidateIndices.push(clamped);
+    };
+
+    // Primary target: the next step after where the companion currently aligns on the trace.
+    pushIndex(nearestIndex + 1);
+
+    // Reverse-binary fallback from that point toward the newest trace.
+    let probe = Math.max(nearestIndex + 1, 0);
+    for (let i = 0; i < 6; i += 1) {
+      probe = Math.floor((probe + lastIndex) / 2);
+      pushIndex(probe);
+      if (probe >= lastIndex) break;
+    }
+
+    pushIndex(lastIndex);
+
+    for (let i = nearestIndex; i >= 0 && candidateIndices.length < 12; i -= 3) {
+      pushIndex(i);
+    }
+
+    for (let i = 0; i < candidateIndices.length; i += 1) {
+      const step = this.findRouteStepToward(this.playerTraceTiles[candidateIndices[i]], world, abilities);
+      if (step) return step;
+    }
+    return null;
+  }
+
+  findNextTraceTile(world) {
+    if (!this.playerTraceTiles.length) return null;
+    const start = this.getFootStandTile(world);
+    let nearestIndex = 0;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < this.playerTraceTiles.length; i += 1) {
+      const node = this.playerTraceTiles[i];
+      const dist = Math.abs(node.x - start.x) + Math.abs(node.y - start.y);
+      if (dist < bestDistance) {
+        bestDistance = dist;
+        nearestIndex = i;
+      }
+    }
+    const nextIndex = Math.min(this.playerTraceTiles.length - 1, nearestIndex + 1);
+    return this.playerTraceTiles[nextIndex];
+  }
+
+  findTailTraceTile() {
+    if (!this.playerTraceTiles.length) return null;
+    const index = Math.max(0, this.playerTraceTiles.length - 1 - this.traceTailDelay);
+    return this.playerTraceTiles[index];
+  }
+
+  recordPlayerInputTrace(playerInput, dt) {
+    if (!playerInput) return;
+    this.inputTraceClock += dt;
+    const tracked = [
+      'left', 'right', 'up', 'down', 'jump', 'drop',
+      'dash', 'attack', 'rev', 'flame', 'throw'
+    ];
+    const actions = tracked.filter((action) => playerInput.isDown?.(action));
+    this.inputTrace.push({ time: this.inputTraceClock, actions });
+    if (this.inputTrace.length > this.inputTraceMax) {
+      this.inputTrace.splice(0, this.inputTrace.length - this.inputTraceMax);
+    }
+  }
+
+  getDelayedInputActions() {
+    const targetTime = this.inputTraceClock - this.inputTraceDelay;
+    if (targetTime <= 0 || !this.inputTrace.length) return null;
+    let candidate = null;
+    for (let i = this.inputTrace.length - 1; i >= 0; i -= 1) {
+      const snap = this.inputTrace[i];
+      if (snap.time <= targetTime) {
+        candidate = snap;
+        break;
+      }
+    }
+    return candidate ? candidate.actions : null;
+  }
+
   update(dt, world, abilities, context = {}) {
     const player = context.player;
     if (!player) return;
@@ -305,6 +677,18 @@ export default class FriendlyCompanion extends Player {
       this.aiAirJumpUsed = false;
       this.jumpStallCounter = 0;
       this.jumpStallBestY = this.y;
+    }
+    this.recordPlayerTraceTile(player, world, abilities, dt);
+    this.recordPlayerInputTrace(context.playerInput, dt);
+
+    if (this.traceOnlyFollow) {
+      this.assistTarget = null;
+      const delayedActions = this.getDelayedInputActions() || [];
+      this.aiInput.beginFrame(delayedActions);
+      super.update(dt, this.aiInput, world, abilities);
+      this.revving = false;
+      this.flameMode = false;
+      return;
     }
 
     const playerRoom = world.roomAtTile?.(
@@ -344,16 +728,59 @@ export default class FriendlyCompanion extends Player {
       ? this.buildAssistTarget(player, world, abilities)
       : this.buildFollowTarget(player, world, abilities);
     if (!this.assistTarget) {
+      if (this.traceOnlyFollow) {
+        const traceTile = this.findTailTraceTile() || this.findNextTraceTile(world);
+        if (traceTile) {
+          target = {
+            x: (traceTile.x + 0.5) * world.tileSize,
+            y: (traceTile.y + 0.5) * world.tileSize
+          };
+          this.routeStepTile = traceTile;
+          this.routePlanCooldown = 0.18;
+        }
+      }
+      if (!this.traceOnlyFollow || !this.routeStepTile) {
       const followTile = this.findFollowStandTile(player, world, abilities);
+      let failedRoutePlan = false;
       if (this.routePlanCooldown <= 0 || !this.routeStepTile) {
-        this.routeStepTile = this.findRouteStepToward(followTile, world, abilities);
-        this.routePlanCooldown = 0.16;
+        const candidateTiles = this.buildFollowStandCandidates(player, world)
+          .filter((tile) => this.canStandOnTile(tile.x, tile.y, world, abilities))
+          .slice(0, 4);
+        let plannedStep = null;
+        for (let i = 0; i < candidateTiles.length; i += 1) {
+          const step = this.findRouteStepToward(candidateTiles[i], world, abilities);
+          if (step) {
+            plannedStep = step;
+            break;
+          }
+        }
+        this.routeStepTile = plannedStep || this.findRouteStepToward(followTile, world, abilities);
+        failedRoutePlan = !this.routeStepTile;
+        this.routePlanCooldown = 0.28;
       }
       if (this.routeStepTile) {
         target = {
           x: (this.routeStepTile.x + 0.5) * world.tileSize,
           y: (this.routeStepTile.y + 0.5) * world.tileSize
         };
+      } else if (failedRoutePlan) {
+        const traceStep = this.findTraceRouteStep(world, abilities);
+        if (traceStep) {
+          target = {
+            x: (traceStep.x + 0.5) * world.tileSize,
+            y: (traceStep.y + 0.5) * world.tileSize
+          };
+        } else {
+          const detourTile = this.findDetourStandTile(followTile, world, abilities);
+          if (detourTile) {
+            target = {
+              x: (detourTile.x + 0.5) * world.tileSize,
+              y: (detourTile.y + 0.5) * world.tileSize
+            };
+            this.jumpSuppressTimer = Math.max(this.jumpSuppressTimer, 0.35);
+          }
+        }
+      }
       }
     }
     const dx = target.x - this.x;
