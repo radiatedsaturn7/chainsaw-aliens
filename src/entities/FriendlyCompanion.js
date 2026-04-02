@@ -864,39 +864,19 @@ export default class FriendlyCompanion extends Player {
     return neighbors;
   }
 
-  getSurfaceGraphCacheKey(start, goal, world) {
+  getTraversalGraphCacheKey(start, goal, world) {
     return `${world.width}x${world.height}:${start.x},${start.y}->${goal.x},${goal.y}`;
   }
 
-  buildSurfaceGraph(start, goal, world, abilities) {
-    const state = this.navState;
-    const cacheKey = this.getSurfaceGraphCacheKey(start, goal, world);
-    const cached = state.surfaceGraphCache;
-    if (cached?.key === cacheKey && cached.age < 0.45) return cached.graph;
-
-    const marginX = 26;
-    const marginY = 16;
-    const minX = Math.max(0, Math.min(start.x, goal.x) - marginX);
-    const maxX = Math.min(world.width - 1, Math.max(start.x, goal.x) + marginX);
-    const minY = Math.max(1, Math.min(start.y, goal.y) - marginY);
-    const maxY = Math.min(world.height - 2, Math.max(start.y, goal.y) + marginY);
-
-    const walkable = new Map();
-    for (let y = minY; y <= maxY; y += 1) {
-      for (let x = minX; x <= maxX; x += 1) {
-        if (!this.canStandOnTile(x, y, world, abilities)) continue;
-        walkable.set(`${x},${y}`, { x, y, align: 'center' });
-      }
-    }
-
+  classifySurfaceSegments(walkable) {
     const tileToSurface = new Map();
     const surfaces = [];
     const visited = new Set();
     const queue = [];
     const neighbors = [
-      [1, 0], [-1, 0], [1, -1], [-1, -1], [1, 1], [-1, 1]
+      [1, 0], [-1, 0], [0, 1], [0, -1],
+      [1, -1], [-1, -1], [1, 1], [-1, 1]
     ];
-
     walkable.forEach((tile, key) => {
       if (visited.has(key)) return;
       const id = `surface-${surfaces.length}`;
@@ -917,84 +897,120 @@ export default class FriendlyCompanion extends Player {
           queue.push(walkable.get(nKey));
         }
       }
-      tiles.sort((a, b) => (a.x - b.x) || (a.y - b.y));
-      const mid = tiles[Math.floor(tiles.length / 2)];
+      const sortedByX = [...tiles].sort((a, b) => (a.x - b.x) || (a.y - b.y));
+      const sortedByY = [...tiles].sort((a, b) => (a.y - b.y) || (a.x - b.x));
+      const anchor = sortedByX[Math.floor(sortedByX.length / 2)];
       surfaces.push({
         id,
         tiles,
-        anchor: mid,
-        left: tiles[0],
-        right: tiles[tiles.length - 1]
+        anchor,
+        left: sortedByX[0],
+        right: sortedByX[sortedByX.length - 1],
+        top: sortedByY[0],
+        bottom: sortedByY[sortedByY.length - 1]
       });
     });
+    return { surfaces, tileToSurface };
+  }
 
-    const nodeEdges = new Map();
-    surfaces.forEach((surface) => nodeEdges.set(surface.id, []));
-    const addEdge = (from, to, edge) => {
+  classifyTraversalEdgeType(fromTile, toTile, world, abilities) {
+    const dx = toTile.x - fromTile.x;
+    const dy = toTile.y - fromTile.y;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+    const lowCeiling = this.collidesBodyAt(
+      (fromTile.x + 0.5) * world.tileSize,
+      (fromTile.y + 0.5) * world.tileSize - 8,
+      world,
+      abilities,
+      { ignoreOneWay: true }
+    );
+    if (dy === 0 && absDx <= 2) return lowCeiling ? 'corridorAdvance' : 'walk';
+    if (dy === -1 && absDx <= 1) return 'stepUp';
+    if (dy === 1 && absDx <= 1) return 'drop';
+    if (dy < -1 && absDx <= 2) return 'shortHop';
+    if (dy > 1) return 'drop';
+    if (absDy <= 1 && absDx <= 1) return 'slopeWalk';
+    return 'jumpArc';
+  }
+
+  traversalEdgeCost(type, fromTile, toTile) {
+    const dx = Math.abs(toTile.x - fromTile.x);
+    const dy = toTile.y - fromTile.y;
+    if (type === 'walk' || type === 'slopeWalk' || type === 'corridorAdvance') return 1 + dx * 0.2;
+    if (type === 'stepUp') return 1.4 + dx * 0.2;
+    if (type === 'shortHop') return 2.1 + Math.abs(dy) * 0.4;
+    if (type === 'drop') return 1.6 + Math.max(0, dy) * 0.3;
+    if (type === 'jumpArc') return 3 + Math.abs(dy) * 0.5 + dx * 0.25;
+    return 1.5;
+  }
+
+  connectSurfaceTransitions(graph, world, abilities) {
+    const { surfaces, tileToSurface } = graph;
+    const nodeEdges = graph.nodeEdges;
+    const addEdge = (from, edge) => {
       if (!nodeEdges.has(from)) nodeEdges.set(from, []);
-      nodeEdges.get(from).push(edge);
+      const existing = nodeEdges.get(from).some((candidate) => (
+        candidate.to === edge.to
+        && candidate.type === edge.type
+        && candidate.targetTile?.x === edge.targetTile?.x
+        && candidate.targetTile?.y === edge.targetTile?.y
+      ));
+      if (!existing) nodeEdges.get(from).push(edge);
     };
-
     surfaces.forEach((surface) => {
-      const boundary = [
-        surface.left,
-        surface.anchor,
-        surface.right
-      ];
-      for (let i = 0; i < boundary.length; i += 1) {
-        const fromTile = boundary[i];
+      surface.tiles.forEach((fromTile) => {
         for (let dx = -2; dx <= 2; dx += 1) {
           for (let dy = -3; dy <= 3; dy += 1) {
             if (dx === 0 && dy === 0) continue;
-            const tx = fromTile.x + dx;
-            const ty = fromTile.y + dy;
-            const targetSurface = tileToSurface.get(`${tx},${ty}`);
-            if (!targetSurface || targetSurface === surface.id) continue;
-            const absDx = Math.abs(dx);
-            const absDy = Math.abs(dy);
-            let type = 'jumpArc';
-            let cost = 2.6 + absDy * 0.6 + absDx * 0.35;
-            if (absDy <= 1 && absDx <= 1) {
-              type = dy < 0 ? 'stepUp' : 'corridorAdvance';
-              cost = 1.2 + absDy * 0.2;
-            } else if (dy > 0) {
-              type = 'drop';
-              cost = 1.6 + absDy * 0.35;
-            } else if (dy === 0 && absDx <= 2) {
-              type = 'walk';
-              cost = 1.1 + absDx * 0.2;
-            }
-            addEdge(surface.id, targetSurface, {
+            const toTile = { x: fromTile.x + dx, y: fromTile.y + dy, align: 'center' };
+            const toSurface = tileToSurface.get(`${toTile.x},${toTile.y}`);
+            if (!toSurface || toSurface === surface.id) continue;
+            if (!this.canStandOnTile(toTile.x, toTile.y, world, abilities)) continue;
+            const type = this.classifyTraversalEdgeType(fromTile, toTile, world, abilities);
+            const validation = this.validateMovementEdge(fromTile, toTile, world, abilities);
+            if (!validation?.ok) continue;
+            const cost = this.traversalEdgeCost(type, fromTile, toTile) + (validation.cost || 0);
+            addEdge(surface.id, {
               from: surface.id,
-              to: targetSurface,
+              to: toSurface,
               type,
               cost,
-              targetTile: { x: tx, y: ty, align: 'center' }
+              targetTile: toTile
             });
           }
         }
-      }
+      });
     });
+  }
 
+  connectElevatorRoutes(graph, world, abilities) {
     const elevatorHints = this.buildElevatorHints(world, abilities);
+    const { tileToSurface, nodeEdges } = graph;
+    const addEdge = (from, edge) => {
+      if (!nodeEdges.has(from)) nodeEdges.set(from, []);
+      nodeEdges.get(from).push(edge);
+    };
     elevatorHints.components.forEach((component, index) => {
       const elevatorNode = `elevator-${index}`;
-      nodeEdges.set(elevatorNode, []);
+      if (!nodeEdges.has(elevatorNode)) nodeEdges.set(elevatorNode, []);
       const boardBySurface = new Map();
       component.boardTiles.forEach((board) => {
         const sid = tileToSurface.get(`${board.x},${board.y}`);
         if (!sid) return;
         if (!boardBySurface.has(sid)) boardBySurface.set(sid, board);
       });
-      boardBySurface.forEach((board, sid) => {
-        addEdge(sid, elevatorNode, {
+      const surfaceIds = Array.from(boardBySurface.keys());
+      surfaceIds.forEach((sid) => {
+        const board = boardBySurface.get(sid);
+        addEdge(sid, {
           from: sid,
           to: elevatorNode,
           type: 'elevatorBoard',
           cost: 1.1,
           targetTile: board
         });
-        addEdge(elevatorNode, sid, {
+        addEdge(elevatorNode, {
           from: elevatorNode,
           to: sid,
           type: 'elevatorExit',
@@ -1002,22 +1018,21 @@ export default class FriendlyCompanion extends Player {
           targetTile: board
         });
       });
-      const surfacesForElevator = Array.from(boardBySurface.keys());
-      for (let i = 0; i < surfacesForElevator.length; i += 1) {
-        for (let j = i + 1; j < surfacesForElevator.length; j += 1) {
-          const a = surfacesForElevator[i];
-          const b = surfacesForElevator[j];
+      for (let i = 0; i < surfaceIds.length; i += 1) {
+        for (let j = i + 1; j < surfaceIds.length; j += 1) {
+          const a = surfaceIds[i];
+          const b = surfaceIds[j];
           const boardA = boardBySurface.get(a);
           const boardB = boardBySurface.get(b);
-          const rideCost = 1.8 + Math.abs(boardA.y - boardB.y) * 0.2;
-          addEdge(a, b, {
+          const rideCost = 1.6 + Math.abs(boardA.y - boardB.y) * 0.2;
+          addEdge(a, {
             from: a,
             to: b,
             type: 'elevatorRide',
             cost: rideCost,
             targetTile: boardB
           });
-          addEdge(b, a, {
+          addEdge(b, {
             from: b,
             to: a,
             type: 'elevatorRide',
@@ -1027,8 +1042,35 @@ export default class FriendlyCompanion extends Player {
         }
       }
     });
+  }
 
+  buildTraversalGraph(start, goal, world, abilities) {
+    const state = this.navState;
+    const cacheKey = this.getTraversalGraphCacheKey(start, goal, world);
+    const cached = state.surfaceGraphCache;
+    if (cached?.key === cacheKey && cached.age < 0.45) return cached.graph;
+
+    const marginX = 26;
+    const marginY = 16;
+    const minX = Math.max(0, Math.min(start.x, goal.x) - marginX);
+    const maxX = Math.min(world.width - 1, Math.max(start.x, goal.x) + marginX);
+    const minY = Math.max(1, Math.min(start.y, goal.y) - marginY);
+    const maxY = Math.min(world.height - 2, Math.max(start.y, goal.y) + marginY);
+
+    const walkable = new Map();
+    for (let y = minY; y <= maxY; y += 1) {
+      for (let x = minX; x <= maxX; x += 1) {
+        if (!this.canStandOnTile(x, y, world, abilities)) continue;
+        walkable.set(`${x},${y}`, { x, y, align: 'center' });
+      }
+    }
+
+    const { surfaces, tileToSurface } = this.classifySurfaceSegments(walkable);
+    const nodeEdges = new Map();
+    surfaces.forEach((surface) => nodeEdges.set(surface.id, []));
     const graph = { surfaces, tileToSurface, nodeEdges };
+    this.connectSurfaceTransitions(graph, world, abilities);
+    this.connectElevatorRoutes(graph, world, abilities);
     state.surfaceGraphCache = { key: cacheKey, graph, age: 0 };
     return graph;
   }
@@ -1045,8 +1087,8 @@ export default class FriendlyCompanion extends Player {
     return Math.abs(sNode.anchor.x - sGoal.anchor.x) + Math.abs(sNode.anchor.y - sGoal.anchor.y) * 1.2;
   }
 
-  findSurfaceRoute(startTile, goalTile, world, abilities) {
-    const graph = this.buildSurfaceGraph(startTile, goalTile, world, abilities);
+  findTraversalRoute(startTile, goalTile, world, abilities) {
+    const graph = this.buildTraversalGraph(startTile, goalTile, world, abilities);
     const startSurface = this.getSurfaceForTile(startTile, graph);
     const goalSurface = this.getSurfaceForTile(goalTile, graph);
     if (!startSurface || !goalSurface) {
@@ -1093,13 +1135,17 @@ export default class FriendlyCompanion extends Player {
     return { route, graph, startSurface, goalSurface };
   }
 
-  buildSegmentsFromSurfaceRoute(route, goalTile) {
+  buildSegmentsFromTraversalRoute(route, goalTile) {
     if (!route.length) return [];
     return route.map((edge) => ({
       tile: edge.targetTile || goalTile,
       edge: {
         profile: {
-          type: edge.type === 'jumpArc' ? 'diagJump' : edge.type
+          type: edge.type === 'jumpArc'
+            ? 'diagJump'
+            : edge.type === 'shortHop'
+              ? 'shortHopForward'
+              : edge.type
         }
       }
     }));
@@ -1438,7 +1484,7 @@ export default class FriendlyCompanion extends Player {
     this.detectStuckState(dt, targetWorld);
     const desiredMode = this.chooseNavigationMode(targetTile, world, abilities);
     const verticalToTarget = targetTile.y - startTile.y;
-    const surfacePlan = this.findSurfaceRoute(startTile, targetTile, world, abilities);
+    const surfacePlan = this.findTraversalRoute(startTile, targetTile, world, abilities);
     const sameSurface = Boolean(surfacePlan.startSurface && surfacePlan.goalSurface && surfacePlan.startSurface === surfacePlan.goalSurface);
     const forceRoute = this.shouldForceRouteBecauseVerticalMismatch(startTile, targetTile) || this.detectJumpSpamFailure();
 
@@ -1466,7 +1512,7 @@ export default class FriendlyCompanion extends Player {
       path = this.buildDirectSurfaceSegment(startTile, targetTile);
       reason = 'surface-direct';
     } else if ((!canKeepRoute || state.mode !== 'direct') && this.shouldReplan(targetTile, reason)) {
-      path = this.buildSegmentsFromSurfaceRoute(surfacePlan.route, targetTile);
+      path = this.buildSegmentsFromTraversalRoute(surfacePlan.route, targetTile);
       state.replanCooldown = 0.22;
       reason = path.length ? 'surface-route' : 'surface-route-fail';
     }
