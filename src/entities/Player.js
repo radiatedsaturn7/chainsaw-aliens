@@ -387,14 +387,18 @@ export default class Player {
   }
 
   moveAndCollide(dt, world, abilities) {
-    const nextX = this.x + this.vx * dt;
     const nextY = this.y + this.vy * dt;
-    const rect = this.rect;
     const tileSize = world.tileSize;
 
     const wasOnGround = this.onGround;
     this.onGround = false;
     this.onWall = 0;
+    const getRect = () => ({
+      x: this.x - this.width / 2,
+      y: this.y - this.height / 2,
+      w: this.width,
+      h: this.height
+    });
 
     const check = (x, y, options = {}) => {
       const tileX = Math.floor(x / tileSize);
@@ -418,44 +422,56 @@ export default class Player {
     };
 
     // Horizontal
-    const signX = Math.sign(this.vx);
-    if (signX !== 0) {
-      const testX = nextX + (signX * rect.w) / 2;
-      if (check(testX, rect.y + 4, { ignoreOneWay: true }) || check(testX, rect.y + rect.h - 4, { ignoreOneWay: true })) {
-        const canOccupyAt = (candidateX, candidateY) => {
-          const candidateTop = candidateY - rect.h / 2;
-          const candidateBottom = candidateY + rect.h / 2;
-          const candidateEdgeX = candidateX + (signX * rect.w) / 2;
-          return !check(candidateEdgeX, candidateTop + 4, { ignoreOneWay: true })
-            && !check(candidateEdgeX, candidateBottom - 4, { ignoreOneWay: true });
-        };
-        const stepHeights = wasOnGround
-          ? [tileSize - 2, Math.floor(tileSize * 0.75), Math.floor(tileSize * 0.5), Math.floor(tileSize * 0.33)]
-          : [];
-        let stepped = false;
-        for (let i = 0; i < stepHeights.length; i += 1) {
-          const stepHeight = stepHeights[i];
-          if (stepHeight <= 0) continue;
-          const steppedY = this.y - stepHeight;
-          if (!canOccupyAt(nextX, steppedY)) continue;
-          this.x = nextX;
-          this.y = steppedY;
-          this.onGround = true;
-          stepped = true;
-          break;
-        }
-        if (!stepped) {
-          this.vx = 0;
-          this.onWall = signX;
-        }
-      } else {
-        this.x = nextX;
+    let remainingX = this.vx * dt;
+    const maxStepX = Math.max(1, tileSize * 0.35);
+    while (Math.abs(remainingX) > 0.001) {
+      const stepX = Math.sign(remainingX) * Math.min(Math.abs(remainingX), maxStepX);
+      const signX = Math.sign(stepX);
+      const rect = getRect();
+      const nextStepX = this.x + stepX;
+      const testX = nextStepX + (signX * rect.w) / 2;
+      const blocked = check(testX, rect.y + 4, { ignoreOneWay: true }) || check(testX, rect.y + rect.h - 4, { ignoreOneWay: true });
+      if (!blocked) {
+        this.x = nextStepX;
+        remainingX -= stepX;
+        continue;
       }
-    } else {
-      this.x = nextX;
+      const canOccupyAt = (candidateX, candidateY) => {
+        const candidateRect = {
+          x: candidateX - rect.w / 2,
+          y: candidateY - rect.h / 2,
+          w: rect.w,
+          h: rect.h
+        };
+        const candidateEdgeX = candidateX + (signX * candidateRect.w) / 2;
+        return !check(candidateEdgeX, candidateRect.y + 4, { ignoreOneWay: true })
+          && !check(candidateEdgeX, candidateRect.y + candidateRect.h - 4, { ignoreOneWay: true });
+      };
+      const stepHeights = wasOnGround
+        ? [tileSize - 2, Math.floor(tileSize * 0.75), Math.floor(tileSize * 0.5), Math.floor(tileSize * 0.33)]
+        : [];
+      let stepped = false;
+      for (let i = 0; i < stepHeights.length; i += 1) {
+        const stepHeight = stepHeights[i];
+        if (stepHeight <= 0) continue;
+        const steppedY = this.y - stepHeight;
+        if (!canOccupyAt(nextStepX, steppedY)) continue;
+        this.x = nextStepX;
+        this.y = steppedY;
+        this.onGround = true;
+        stepped = true;
+        break;
+      }
+      if (!stepped) {
+        this.vx = 0;
+        this.onWall = signX;
+        break;
+      }
+      remainingX -= stepX;
     }
 
     // Vertical
+    const rect = getRect();
     const signY = Math.sign(this.vy);
     if (signY !== 0) {
       const testY = nextY + (signY * rect.h) / 2;
