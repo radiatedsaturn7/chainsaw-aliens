@@ -739,11 +739,22 @@ export default class FriendlyCompanion extends Player {
       } else {
         let stepped = false;
         if (onGround && (profile.type === 'walk' || profile.type === 'slopeWalk' || profile.type === 'corridorAdvance' || profile.type === 'stepUp' || profile.type === 'lowCeilingStep')) {
-          const stepHeights = [tileSize - 2, Math.floor(tileSize * 0.75), Math.floor(tileSize * 0.5), Math.floor(tileSize * 0.33)];
+          const signX = Math.sign(nextX - x) || profile.dir || 1;
+          const canOccupyStep = (candidateX, candidateY) => {
+            const rectLeft = candidateX - this.width / 2;
+            const rectRight = candidateX + this.width / 2;
+            const rectTop = candidateY - this.height / 2;
+            const rectBottom = candidateY + this.height / 2;
+            const edgeX = candidateX + signX * this.width / 2;
+            return !this.isPointBlockedLikePlayer(rectLeft + 4, rectTop + 4, world, abilities, { ignoreOneWay: true })
+              && !this.isPointBlockedLikePlayer(rectRight - 4, rectTop + 4, world, abilities, { ignoreOneWay: true })
+              && !this.isPointBlockedLikePlayer(edgeX, rectBottom - 4, world, abilities, { ignoreOneWay: true });
+          };
+          const stepHeights = [tileSize, tileSize - 2, Math.floor(tileSize * 0.75), Math.floor(tileSize * 0.5), Math.floor(tileSize * 0.4), Math.floor(tileSize * 0.33)];
           for (let s = 0; s < stepHeights.length; s += 1) {
             const stepHeight = stepHeights[s];
             if (stepHeight <= 0) continue;
-            if (this.collidesBodyAt(nextX, y - stepHeight, world, abilities, { ignoreOneWay: true })) continue;
+            if (!canOccupyStep(nextX, y - stepHeight)) continue;
             x = nextX;
             y -= stepHeight;
             onGround = true;

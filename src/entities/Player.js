@@ -458,12 +458,17 @@ export default class Player {
           h: rect.h
         };
         const candidateEdgeX = candidateX + (signX * candidateRect.w) / 2;
-        return !check(candidateEdgeX, candidateRect.y + 4, { ignoreOneWay: true })
-          && !check(candidateEdgeX, candidateRect.y + candidateRect.h - 4, { ignoreOneWay: true });
+        const leftX = candidateRect.x + 4;
+        const rightX = candidateRect.x + candidateRect.w - 4;
+        const topY = candidateRect.y + 4;
+        const bottomY = candidateRect.y + candidateRect.h - 4;
+        return !check(leftX, topY, { ignoreOneWay: true })
+          && !check(rightX, topY, { ignoreOneWay: true })
+          && !check(candidateEdgeX, bottomY, { ignoreOneWay: true });
       };
-      const canAttemptStep = wasOnGround || hasStepSupportAt(this.x, this.y);
+      const canAttemptStep = wasOnGround || this.coyote > 0 || hasStepSupportAt(this.x, this.y);
       const stepHeights = canAttemptStep
-        ? [tileSize - 2, Math.floor(tileSize * 0.75), Math.floor(tileSize * 0.5), Math.floor(tileSize * 0.33)]
+        ? [tileSize, tileSize - 2, Math.floor(tileSize * 0.75), Math.floor(tileSize * 0.5), Math.floor(tileSize * 0.4), Math.floor(tileSize * 0.33)]
         : [];
       let stepped = false;
       for (let i = 0; i < stepHeights.length; i += 1) {
