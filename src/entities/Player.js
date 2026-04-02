@@ -422,16 +422,29 @@ export default class Player {
     if (signX !== 0) {
       const testX = nextX + (signX * rect.w) / 2;
       if (check(testX, rect.y + 4, { ignoreOneWay: true }) || check(testX, rect.y + rect.h - 4, { ignoreOneWay: true })) {
-        const stepHeight = wasOnGround ? tileSize - 2 : 0;
-        const steppedTop = rect.y - stepHeight;
-        const canStep = stepHeight > 0
-          && !check(testX, steppedTop + 4, { ignoreOneWay: true })
-          && !check(testX, steppedTop + rect.h - 4, { ignoreOneWay: true });
-        if (canStep) {
+        const canOccupyAt = (candidateX, candidateY) => {
+          const candidateTop = candidateY - rect.h / 2;
+          const candidateBottom = candidateY + rect.h / 2;
+          const candidateEdgeX = candidateX + (signX * rect.w) / 2;
+          return !check(candidateEdgeX, candidateTop + 4, { ignoreOneWay: true })
+            && !check(candidateEdgeX, candidateBottom - 4, { ignoreOneWay: true });
+        };
+        const stepHeights = wasOnGround
+          ? [tileSize - 2, Math.floor(tileSize * 0.75), Math.floor(tileSize * 0.5), Math.floor(tileSize * 0.33)]
+          : [];
+        let stepped = false;
+        for (let i = 0; i < stepHeights.length; i += 1) {
+          const stepHeight = stepHeights[i];
+          if (stepHeight <= 0) continue;
+          const steppedY = this.y - stepHeight;
+          if (!canOccupyAt(nextX, steppedY)) continue;
           this.x = nextX;
-          this.y -= stepHeight;
+          this.y = steppedY;
           this.onGround = true;
-        } else {
+          stepped = true;
+          break;
+        }
+        if (!stepped) {
           this.vx = 0;
           this.onWall = signX;
         }

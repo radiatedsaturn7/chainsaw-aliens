@@ -737,15 +737,22 @@ export default class FriendlyCompanion extends Player {
       if (!hitWall) {
         x = nextX;
       } else {
-        const stepHeight = onGround ? tileSize - 2 : 0;
-        const canStepUp = stepHeight > 0
-          && !this.collidesBodyAt(nextX, y - stepHeight, world, abilities, { ignoreOneWay: true });
-        if (canStepUp && (profile.type === 'walk' || profile.type === 'slopeWalk' || profile.type === 'corridorAdvance' || profile.type === 'stepUp' || profile.type === 'lowCeilingStep')) {
-          x = nextX;
-          y -= stepHeight;
-          onGround = true;
-          vy = Math.min(vy, 0);
-        } else {
+        let stepped = false;
+        if (onGround && (profile.type === 'walk' || profile.type === 'slopeWalk' || profile.type === 'corridorAdvance' || profile.type === 'stepUp' || profile.type === 'lowCeilingStep')) {
+          const stepHeights = [tileSize - 2, Math.floor(tileSize * 0.75), Math.floor(tileSize * 0.5), Math.floor(tileSize * 0.33)];
+          for (let s = 0; s < stepHeights.length; s += 1) {
+            const stepHeight = stepHeights[s];
+            if (stepHeight <= 0) continue;
+            if (this.collidesBodyAt(nextX, y - stepHeight, world, abilities, { ignoreOneWay: true })) continue;
+            x = nextX;
+            y -= stepHeight;
+            onGround = true;
+            vy = Math.min(vy, 0);
+            stepped = true;
+            break;
+          }
+        }
+        if (!stepped) {
           wallBump += 1;
         }
       }
