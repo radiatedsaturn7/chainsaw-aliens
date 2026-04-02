@@ -403,7 +403,9 @@ export default class FriendlyCompanion extends Player {
   findFollowStandTile(player, world, abilities) {
     const tileSize = world.tileSize;
     const playerTileX = Math.floor(player.x / tileSize);
-    const playerTileY = Math.floor((player.y + player.height / 2 - 1) / tileSize);
+    const playerTileY = player.onGround
+      ? Math.floor((player.y + player.height / 2 - 1) / tileSize)
+      : Math.floor(player.y / tileSize);
     const facing = player.facing || 1;
     const verticalOffsets = [0, -1, 1, -2, 2];
     const behindColumns = [2, 1, 0].map((step) => playerTileX - facing * step);
@@ -421,12 +423,16 @@ export default class FriendlyCompanion extends Player {
       if (!uniqueColumns.includes(column)) uniqueColumns.push(column);
     });
     const playerStanding = Boolean(player.onGround);
-    const prioritizedVertical = playerStanding ? [0, 1, -1, 2, -2] : verticalOffsets;
+    const playerAboveCompanion = player.y < this.y - tileSize * 0.6;
+    const prioritizedVertical = playerAboveCompanion
+      ? (playerStanding ? [0, -1, 1, -2, 2] : [0, -1, -2, 1, 2])
+      : (playerStanding ? [0, 1, -1, 2, -2] : verticalOffsets);
     for (let stepIndex = 0; stepIndex < uniqueColumns.length; stepIndex += 1) {
       const candidateX = uniqueColumns[stepIndex];
       for (let i = 0; i < prioritizedVertical.length; i += 1) {
         const candidateY = playerTileY + prioritizedVertical[i];
         if (Math.abs(candidateY - playerTileY) > 2) continue;
+        if (playerAboveCompanion && candidateY > playerTileY) continue;
         if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
           return { x: candidateX, y: candidateY, align: 'center' };
         }
@@ -926,10 +932,15 @@ export default class FriendlyCompanion extends Player {
     const surfaces = [];
     const visited = new Set();
     const queue = [];
-    const neighbors = [
-      [1, 0], [-1, 0], [0, 1], [0, -1],
-      [1, -1], [-1, -1], [1, 1], [-1, 1]
-    ];
+    const isConnectedSurfaceStep = (from, to) => {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      if (Math.abs(dx) > 1 || Math.abs(dy) > 1) return false;
+      if (dx === 0 && dy === 0) return false;
+      // Same-height contiguous floor.
+      if (dy === 0 && Math.abs(dx) === 1) return true;
+      return false;
+    };
     walkable.forEach((tile, key) => {
       if (visited.has(key)) return;
       const id = `surface-${surfaces.length}`;
@@ -941,13 +952,15 @@ export default class FriendlyCompanion extends Player {
         if (!current) break;
         tiles.push(current);
         tileToSurface.set(`${current.x},${current.y}`, id);
-        for (let i = 0; i < neighbors.length; i += 1) {
-          const nx = current.x + neighbors[i][0];
-          const ny = current.y + neighbors[i][1];
-          const nKey = `${nx},${ny}`;
-          if (!walkable.has(nKey) || visited.has(nKey)) continue;
-          visited.add(nKey);
-          queue.push(walkable.get(nKey));
+        for (let nx = current.x - 1; nx <= current.x + 1; nx += 1) {
+          for (let ny = current.y - 1; ny <= current.y + 1; ny += 1) {
+            const nKey = `${nx},${ny}`;
+            if (!walkable.has(nKey) || visited.has(nKey)) continue;
+            const candidate = walkable.get(nKey);
+            if (!candidate || !isConnectedSurfaceStep(current, candidate)) continue;
+            visited.add(nKey);
+            queue.push(candidate);
+          }
         }
       }
       const sortedByX = [...tiles].sort((a, b) => (a.x - b.x) || (a.y - b.y));
@@ -1196,8 +1209,8 @@ export default class FriendlyCompanion extends Player {
         const isBacktrack = prevNode && edge.to === prevNode;
         const backtrackPenalty = isBacktrack ? 1.25 : 0;
         const upwardBonus = goalIsAbove && (edge.type === 'stepUp' || edge.type === 'shortHop' || edge.type === 'elevatorRide') ? -0.35 : 0;
-        const tentative = (gScore.get(current) || Infinity) + edge.cost + backtrackPenalty + upwardBonus;
-        if (tentative >= (gScore.get(edge.to) || Infinity)) continue;
+        const tentative = (gScore.get(current) ?? Infinity) + edge.cost + backtrackPenalty + upwardBonus;
+        if (tentative >= (gScore.get(edge.to) ?? Infinity)) continue;
         gScore.set(edge.to, tentative);
         parent.set(edge.to, current);
         viaEdge.set(edge.to, edge);
@@ -1654,7 +1667,14 @@ export default class FriendlyCompanion extends Player {
       && (this.onGround || this.coyote > 0);
     state.forcedClimbTriggered = shouldForceClimb;
 
-    if (sameSurface && !forceRoute && state.stuckCounter < 2 && Math.abs(verticalToTarget) <= 2 && state.upwardPursuitTimer <= 0) {
+    const elevatedDetourNeeded = targetTile.y < startTile.y - 1 && !this.isNearTile(path[0]?.edge?.sourceTile || targetTile, world, 0.75);
+    if (sameSurface
+      && !forceRoute
+      && !blockedTowardTarget
+      && !elevatedDetourNeeded
+      && state.stuckCounter < 2
+      && Math.abs(verticalToTarget) <= 2
+      && state.upwardPursuitTimer <= 0) {
       state.mode = 'direct';
       path = this.buildDirectSurfaceSegment(startTile, targetTile);
       reason = 'surface-direct';
