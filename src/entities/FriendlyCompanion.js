@@ -141,7 +141,8 @@ export default class FriendlyCompanion extends Player {
       poisonedEdges: new Map(),
       elevatorHintCache: null,
       surfaceGraphCache: null,
-      routeTargetKey: null
+      routeTargetKey: null,
+      lastPoisonReason: 'none'
     };
     this.moveExecution = {
       active: false,
@@ -177,7 +178,12 @@ export default class FriendlyCompanion extends Player {
       elevatorRoutingActive: false,
       currentSurfaceId: 'none',
       targetSurfaceId: 'none',
-      routeKind: 'direct'
+      routeKind: 'direct',
+      transitionTakeoff: 'none',
+      transitionLanding: 'none',
+      transitionStage: 'idle',
+      jumpFailureStage: 'none',
+      poisonReason: 'none'
     };
   }
 
@@ -988,7 +994,10 @@ export default class FriendlyCompanion extends Player {
               to: toSurface,
               type,
               cost,
-              targetTile: toTile
+              sourceTile: { x: fromTile.x, y: fromTile.y, align: fromTile.align || 'center' },
+              targetTile: { x: toTile.x, y: toTile.y, align: toTile.align || 'center' },
+              launchProfile: validation.profile?.type || null,
+              needAlign: Boolean(validation.needAlign)
             });
           }
         }
@@ -1108,6 +1117,20 @@ export default class FriendlyCompanion extends Player {
       || profile === 'lowCeilingStep';
   }
 
+  isJumpTransitionEdge(edge) {
+    const profile = edge?.profile?.type;
+    return this.isJumpProfile(profile)
+      || edge?.transitionType === 'jumpArc'
+      || edge?.transitionType === 'shortHop';
+  }
+
+  isNearTile(tile, world, tolerance = 0.55) {
+    if (!tile) return false;
+    const center = this.tileCenter(tile, world);
+    return Math.abs(this.x - center.x) <= world.tileSize * tolerance
+      && Math.abs(this.y - center.y) <= world.tileSize * tolerance;
+  }
+
   findTraversalRoute(startTile, goalTile, world, abilities) {
     const graph = this.buildTraversalGraph(startTile, goalTile, world, abilities);
     const startSurface = this.getSurfaceForTile(startTile, graph);
@@ -1167,12 +1190,17 @@ export default class FriendlyCompanion extends Player {
       tile: edge.targetTile || goalTile,
       edge: {
         profile: {
-          type: edge.type === 'jumpArc'
+          type: edge.launchProfile
+            || (edge.type === 'jumpArc'
             ? 'diagJump'
             : edge.type === 'shortHop'
               ? 'shortHopForward'
-              : edge.type
-        }
+              : edge.type)
+        },
+        sourceTile: edge.sourceTile || null,
+        targetTile: edge.targetTile || goalTile,
+        needAlign: Boolean(edge.needAlign),
+        transitionType: edge.type
       }
     }));
   }
@@ -1305,7 +1333,8 @@ export default class FriendlyCompanion extends Player {
 
   getSegmentSourceNode(path, index, currentNode) {
     if (index <= 0) return currentNode;
-    const prev = path[index - 1]?.tile;
+    const prevSegment = path[index - 1];
+    const prev = prevSegment?.edge?.targetTile || prevSegment?.tile;
     return prev || currentNode;
   }
 
@@ -1334,7 +1363,10 @@ export default class FriendlyCompanion extends Player {
   isRouteStillValid(path, world, abilities) {
     if (!path.length) return false;
     const current = this.getFootStandTile(world);
-    const first = path[0]?.tile;
+    const firstSegment = path[0];
+    const first = this.isJumpTransitionEdge(firstSegment?.edge) && firstSegment?.edge?.sourceTile
+      ? firstSegment.edge.sourceTile
+      : firstSegment?.tile;
     if (!first) return false;
     if (Math.abs(first.x - current.x) > 4 || Math.abs(first.y - current.y) > 3) return false;
     const lookahead = Math.min(3, path.length);
@@ -1360,11 +1392,23 @@ export default class FriendlyCompanion extends Player {
   chooseMoveFromPath(path, world) {
     if (!path.length) return null;
     const segment = path[0];
-    const worldTarget = this.tileCenter(segment.tile, world);
+    const edge = segment.edge || {};
+    const takeoffTile = edge.sourceTile || null;
+    const landingTile = edge.targetTile || segment.tile;
+    const isJumpTransition = this.isJumpTransitionEdge(edge);
+    const atTakeoff = !takeoffTile || this.isNearTile(takeoffTile, world, 0.45);
+    const useTakeoffPrep = isJumpTransition && !atTakeoff;
+    const activeTile = useTakeoffPrep ? takeoffTile : landingTile;
+    const worldTarget = this.tileCenter(activeTile || segment.tile, world);
     return {
       target: worldTarget,
-      nextTile: segment.tile,
-      edge: segment.edge
+      nextTile: activeTile || segment.tile,
+      edge: {
+        ...edge,
+        takeoffTile,
+        landingTile,
+        executionStage: useTakeoffPrep ? 'takeoff-prep' : (isJumpTransition ? 'launch' : 'travel')
+      }
     };
   }
 
@@ -1402,10 +1446,13 @@ export default class FriendlyCompanion extends Player {
   beginMoveExecution(move, profile, world) {
     if (!move) return;
     const dir = Math.sign((move.target?.x || this.x) - this.x) || this.facing || 1;
+    const transitionStage = move?.edge?.executionStage || null;
     this.moveExecution = {
       active: true,
       profile,
-      phase: profile === 'upThenDrift'
+      phase: transitionStage === 'takeoff-prep'
+        ? 'takeoff-prep'
+        : profile === 'upThenDrift'
         ? 'align'
         : (profile.startsWith('microAlign') || profile === 'settleCenter')
           ? 'align'
@@ -1413,10 +1460,13 @@ export default class FriendlyCompanion extends Player {
             ? 'launch'
             : 'travel',
       elapsed: 0,
-      hold: profile === 'upThenDrift' ? 0.22 : profile.startsWith('microAlign') ? 0.12 : 0.18,
+      hold: transitionStage === 'takeoff-prep' ? 0.24 : profile === 'upThenDrift' ? 0.22 : profile.startsWith('microAlign') ? 0.12 : 0.18,
       lockDirection: dir,
       sourceNode: this.getFootStandTile(world),
-      targetNode: move.nextTile
+      targetNode: move.nextTile,
+      takeoffTile: move?.edge?.takeoffTile || move?.edge?.sourceTile || null,
+      landingTile: move?.edge?.landingTile || move?.edge?.targetTile || move.nextTile,
+      transitionStage
     };
   }
 
@@ -1424,6 +1474,15 @@ export default class FriendlyCompanion extends Player {
     const input = new Set();
     const dir = execution.lockDirection || (dx < 0 ? -1 : 1);
     const profile = execution.profile;
+    if (execution.phase === 'takeoff-prep') {
+      if (dx < -8) input.add('left');
+      if (dx > 8) input.add('right');
+      const closeEnough = Math.abs(dx) <= world.tileSize * 0.28;
+      if (closeEnough || execution.elapsed > execution.hold) {
+        execution.phase = this.isJumpProfile(profile) ? 'launch' : 'travel';
+      }
+      return input;
+    }
     if (execution.phase === 'align') {
       if (profile === 'microAlignLeft') input.add('left');
       else if (profile === 'microAlignRight') input.add('right');
@@ -1526,8 +1585,9 @@ export default class FriendlyCompanion extends Player {
     let reason = 'commit';
     let routeKeepReason = 'none';
     let replanDeferred = false;
-    const inCommittedJump = !this.onGround
-      && (this.moveExecution.phase === 'launch' || this.moveExecution.phase === 'drift' || this.isJumpProfile(this.moveExecution.profile));
+    const inCommittedJump = this.moveExecution.phase === 'takeoff-prep'
+      || (!this.onGround
+        && (this.moveExecution.phase === 'launch' || this.moveExecution.phase === 'drift' || this.isJumpProfile(this.moveExecution.profile)));
     const targetChanged = !state.targetTile
       || Math.abs((state.targetTile.x || 0) - targetTile.x) > 1
       || Math.abs((state.targetTile.y || 0) - targetTile.y) > 1;
@@ -1572,15 +1632,22 @@ export default class FriendlyCompanion extends Player {
     const intent = this.applyMoveIntent(nextMove, targetWorld, world, abilities, dt);
     const activeExec = this.moveExecution;
     const failedEdgeProfile = activeExec?.profile && activeExec.profile !== 'direct' ? activeExec.profile : nextMove?.edge?.profile?.type;
-    if (failedEdgeProfile && state.stuckCounter >= 2 && state.noProgressTimer > 0.25) {
+    const takeoffContextValid = !activeExec?.takeoffTile || this.isNearTile(activeExec.takeoffTile, world, 0.75);
+    if (failedEdgeProfile && state.stuckCounter >= 2 && state.noProgressTimer > 0.25 && takeoffContextValid) {
       const failSource = activeExec?.sourceNode || startTile;
       const failTarget = activeExec?.targetNode || nextMove?.nextTile;
       if (failTarget) this.markEdgeFailure(failSource, failTarget, failedEdgeProfile);
       reason = 'edge-poisoned';
       state.replanCooldown = 0;
       state.lastEdgePoisoned = true;
+      state.lastPoisonReason = activeExec?.phase === 'launch' || activeExec?.phase === 'drift'
+        ? 'launch-failure'
+        : 'takeoff-context';
     } else {
       state.lastEdgePoisoned = false;
+      if (failedEdgeProfile && state.stuckCounter >= 2 && state.noProgressTimer > 0.25 && !takeoffContextValid) {
+        state.lastPoisonReason = 'wrong-position';
+      }
     }
 
     const moveSignature = `${state.mode}:${intent.profile}:${nextMove?.nextTile ? this.tileKey(nextMove.nextTile) : 'direct'}`;
@@ -1614,6 +1681,19 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.currentSurfaceId = surfacePlan.startSurface || 'none';
     this.navDebug.targetSurfaceId = surfacePlan.goalSurface || 'none';
     this.navDebug.routeKind = state.mode === 'direct' ? 'direct' : 'surface-graph';
+    this.navDebug.transitionTakeoff = this.moveExecution.takeoffTile ? this.tileKey(this.moveExecution.takeoffTile) : 'none';
+    this.navDebug.transitionLanding = this.moveExecution.landingTile ? this.tileKey(this.moveExecution.landingTile) : 'none';
+    this.navDebug.transitionStage = this.moveExecution.phase || 'idle';
+    this.navDebug.poisonReason = state.lastPoisonReason || 'none';
+    this.navDebug.jumpFailureStage = state.lastEdgePoisoned
+      ? (this.moveExecution.phase === 'takeoff-prep'
+        ? 'before-takeoff'
+        : this.moveExecution.phase === 'launch'
+          ? 'during-launch'
+          : this.moveExecution.phase === 'drift'
+            ? 'after-launch'
+            : 'landing-miss')
+      : 'none';
 
     return {
       mode: state.mode,
