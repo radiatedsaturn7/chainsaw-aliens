@@ -327,7 +327,7 @@ export default class FriendlyCompanion extends Player {
   }
 
   tileKey(tile) {
-    return `${tile.x},${tile.y},${tile.align || 'center'}`;
+    return `${tile.x},${tile.y}`;
   }
 
   buildElevatorHints(world, abilities) {
@@ -573,12 +573,7 @@ export default class FriendlyCompanion extends Player {
     const dx = to.x - from.x;
     const dy = to.y - from.y;
     const profiles = [];
-    if (dx === 0 && dy === 0 && from.align !== to.align) {
-      if (to.align === 'left') profiles.push({ type: 'microAlignLeft', dir: -1, hold: 0.08, cost: 0.45 });
-      if (to.align === 'right') profiles.push({ type: 'microAlignRight', dir: 1, hold: 0.08, cost: 0.45 });
-      if (to.align === 'center') profiles.push({ type: 'settleCenter', dir: 0, hold: 0.1, cost: 0.55 });
-      return profiles;
-    }
+    if (dx === 0 && dy === 0 && from.align !== to.align) return profiles;
     if (dy === 0 && Math.abs(dx) === 1) {
       if (this.isSlopeAt(from.x, from.y + 1, world) || this.isSlopeAt(to.x, to.y + 1, world)) {
         profiles.push({ type: 'slopeWalk', dir, hold: 0.16, cost: 0.78 });
@@ -647,6 +642,25 @@ export default class FriendlyCompanion extends Player {
         };
       }
     }
+    if (!best) {
+      const dx = Math.abs(to.x - from.x);
+      const dy = to.y - from.y;
+      if (dy === -1 && dx <= 1) {
+        const fromCenter = this.tileCenter(from, world);
+        const toCenter = this.tileCenter(to, world);
+        const fromClear = !this.collidesBodyAt(fromCenter.x, fromCenter.y - world.tileSize * 0.55, world, abilities, { ignoreOneWay: true });
+        const toClear = !this.collidesBodyAt(toCenter.x, toCenter.y - world.tileSize * 0.35, world, abilities, { ignoreOneWay: true });
+        if (fromClear && toClear) {
+          best = {
+            ok: true,
+            profile: { type: 'stepUp', dir: Math.sign(to.x - from.x) || 1, hold: 0.16, cost: 1.5 },
+            cost: 1.5,
+            moveType: 'stepUp',
+            needAlign: false
+          };
+        }
+      }
+    }
     const miss = { ok: false };
     state.edgeValidationCache.set(cacheKey, best || miss);
     if (state.edgeValidationCache.size > 1800) {
@@ -662,7 +676,7 @@ export default class FriendlyCompanion extends Player {
     const target = this.tileCenter(to, world);
     const launch = this.tileCenter(this.withAlign(from, from.align || 'center'), world);
     const dt = 1 / 30;
-    const maxT = profile.type === 'drop' ? 0.8 : 0.72;
+    const maxT = profile.type === 'drop' ? 0.85 : 0.9;
     let bestCost = Infinity;
     let found = false;
     let needAlign = from.align !== 'center';
@@ -805,9 +819,9 @@ export default class FriendlyCompanion extends Player {
         coyote = Math.max(0, coyote - dt);
       }
 
-      const nearTarget = Math.abs(x - target.x) < tileSize * 0.4 && Math.abs(y - target.y) < tileSize * 0.5;
+      const nearTarget = Math.abs(x - target.x) < tileSize * 0.58 && Math.abs(y - target.y) < tileSize * 0.7;
       const stableLanding = onGround && (!jumped || descentStarted);
-      const riskyLip = wallBump > 0 && jumped && Math.abs(y - target.y) < tileSize * 0.8;
+      const riskyLip = wallBump > 1 && jumped && Math.abs(y - target.y) < tileSize * 0.55;
       if (nearTarget && stableLanding && !bonk && !riskyLip) {
         const distPenalty = Math.hypot(x - target.x, y - target.y) * 0.02;
         const wobblePenalty = wallBump * 0.35;
@@ -833,22 +847,20 @@ export default class FriendlyCompanion extends Player {
   getNeighborCandidates(tile, world, abilities, goal) {
     const dirs = [-1, 1];
     const neighbors = [];
-    const aligns = ['left', 'center', 'right'];
-    aligns.forEach((align) => {
-      if (align !== (tile.align || 'center')) neighbors.push({ x: tile.x, y: tile.y, align });
-    });
     dirs.forEach((dir) => {
       neighbors.push({ x: tile.x + dir, y: tile.y, align: 'center' });
-      neighbors.push({ x: tile.x + dir, y: tile.y, align: dir > 0 ? 'left' : 'right' });
       neighbors.push({ x: tile.x + dir, y: tile.y - 1, align: 'center' });
       neighbors.push({ x: tile.x + dir, y: tile.y - 2, align: 'center' });
+      neighbors.push({ x: tile.x + dir, y: tile.y - 3, align: 'center' });
       neighbors.push({ x: tile.x + dir * 2, y: tile.y - 1, align: 'center' });
+      neighbors.push({ x: tile.x + dir * 2, y: tile.y - 2, align: 'center' });
       neighbors.push({ x: tile.x + dir, y: tile.y + 1, align: 'center' });
       neighbors.push({ x: tile.x + dir, y: tile.y + 2, align: 'center' });
       neighbors.push({ x: tile.x + dir * 2, y: tile.y, align: 'center' });
     });
     neighbors.push({ x: tile.x, y: tile.y - 1, align: 'center' });
     neighbors.push({ x: tile.x, y: tile.y - 2, align: 'center' });
+    neighbors.push({ x: tile.x, y: tile.y - 3, align: 'center' });
     neighbors.push({ x: tile.x, y: tile.y + 1, align: 'center' });
     neighbors.push({ x: tile.x, y: tile.y + 2, align: 'center' });
     const nearElevator = this.findNearbyElevatorComponent(tile, world, abilities);
@@ -1087,6 +1099,15 @@ export default class FriendlyCompanion extends Player {
     return Math.abs(sNode.anchor.x - sGoal.anchor.x) + Math.abs(sNode.anchor.y - sGoal.anchor.y) * 1.2;
   }
 
+  isJumpProfile(profile) {
+    return profile === 'diagJump'
+      || profile === 'verticalJump'
+      || profile === 'upThenDrift'
+      || profile === 'stepUp'
+      || profile === 'shortHopForward'
+      || profile === 'lowCeilingStep';
+  }
+
   findTraversalRoute(startTile, goalTile, world, abilities) {
     const graph = this.buildTraversalGraph(startTile, goalTile, world, abilities);
     const startSurface = this.getSurfaceForTile(startTile, graph);
@@ -1104,15 +1125,20 @@ export default class FriendlyCompanion extends Player {
     open.push({ key: startSurface, score: 0 });
     let expanded = 0;
     const maxExpanded = 180;
+    const goalIsAbove = goalTile.y < startTile.y;
     while (open.size && expanded < maxExpanded) {
       const current = open.pop()?.key;
       if (!current) break;
       expanded += 1;
       if (current === goalSurface) break;
       const edges = graph.nodeEdges.get(current) || [];
+      const prevNode = parent.get(current);
       for (let i = 0; i < edges.length; i += 1) {
         const edge = edges[i];
-        const tentative = (gScore.get(current) || Infinity) + edge.cost;
+        const isBacktrack = prevNode && edge.to === prevNode;
+        const backtrackPenalty = isBacktrack ? 1.25 : 0;
+        const upwardBonus = goalIsAbove && (edge.type === 'stepUp' || edge.type === 'shortHop' || edge.type === 'elevatorRide') ? -0.35 : 0;
+        const tentative = (gScore.get(current) || Infinity) + edge.cost + backtrackPenalty + upwardBonus;
         if (tentative >= (gScore.get(edge.to) || Infinity)) continue;
         gScore.set(edge.to, tentative);
         parent.set(edge.to, current);
@@ -1250,8 +1276,8 @@ export default class FriendlyCompanion extends Player {
     const path = [];
     let key = goalKey;
     while (key && key !== this.tileKey(start)) {
-      const [x, y, align] = key.split(',');
-      path.unshift({ tile: { x: Number(x), y: Number(y), align: align || 'center' }, edge: meta.get(key) || null });
+      const [x, y] = key.split(',');
+      path.unshift({ tile: { x: Number(x), y: Number(y), align: 'center' }, edge: meta.get(key) || null });
       key = parents.get(key);
     }
     return path;
@@ -1288,9 +1314,12 @@ export default class FriendlyCompanion extends Player {
     const key = this.edgeAttemptKey(from, to, profile);
     const prev = state.poisonedEdges.get(key);
     const fails = (prev?.fails || 0) + 1;
+    const jumpLike = this.isJumpProfile(profile);
     state.poisonedEdges.set(key, {
       fails,
-      ttl: Math.min(2.2, 0.9 + fails * 0.35)
+      ttl: jumpLike
+        ? Math.min(1.7, 0.7 + fails * 0.22)
+        : Math.min(2.2, 0.9 + fails * 0.35)
     });
   }
 
@@ -1298,7 +1327,8 @@ export default class FriendlyCompanion extends Player {
     const state = this.navState;
     const key = this.edgeAttemptKey(from, to, profile);
     const data = state.poisonedEdges.get(key);
-    return Boolean(data && data.ttl > 0 && data.fails >= 2);
+    const threshold = this.isJumpProfile(profile) ? 3 : 2;
+    return Boolean(data && data.ttl > 0 && data.fails >= threshold);
   }
 
   isRouteStillValid(path, world, abilities) {
@@ -1346,7 +1376,10 @@ export default class FriendlyCompanion extends Player {
 
   shouldRestartExecution(execution, sourceNode, move, profile, forceRestart = false) {
     if (forceRestart || !execution.active) return true;
-    if (execution.profile !== profile) return true;
+    if (execution.profile !== profile) {
+      const bothJumpLike = this.isJumpProfile(execution.profile) && this.isJumpProfile(profile);
+      if (!bothJumpLike) return true;
+    }
     if (!move?.nextTile || !execution.targetNode) return true;
     const sameTarget = this.tileKey(execution.targetNode) === this.tileKey(move.nextTile);
     if (!sameTarget) {
@@ -1355,7 +1388,8 @@ export default class FriendlyCompanion extends Player {
         || execution.phase === 'travel'
         || profile === 'walk'
         || profile === 'direct';
-      if (!(closeTile && alignCompat)) return true;
+      const tinyDrift = Math.abs(execution.targetNode.x - move.nextTile.x) <= 1 && Math.abs(execution.targetNode.y - move.nextTile.y) <= 1;
+      if (!(closeTile && alignCompat) && !(tinyDrift && this.isJumpProfile(profile))) return true;
     }
     if (execution.phase === 'align' || execution.phase === 'launch') return false;
     if (execution.sourceNode && sourceNode) {
@@ -1492,17 +1526,19 @@ export default class FriendlyCompanion extends Player {
     let reason = 'commit';
     let routeKeepReason = 'none';
     let replanDeferred = false;
+    const inCommittedJump = !this.onGround
+      && (this.moveExecution.phase === 'launch' || this.moveExecution.phase === 'drift' || this.isJumpProfile(this.moveExecution.profile));
     const targetChanged = !state.targetTile
       || Math.abs((state.targetTile.x || 0) - targetTile.x) > 1
       || Math.abs((state.targetTile.y || 0) - targetTile.y) > 1;
-    const canKeepRoute = this.isRouteStillValid(path, world, abilities) && !targetChanged;
+    const canKeepRoute = this.isRouteStillValid(path, world, abilities) && (!targetChanged || inCommittedJump);
     if (state.commitTimer <= 0 && (desiredMode !== state.mode || this.shouldEscalateToPlanner(targetTile, world))) {
       state.mode = desiredMode;
       reason = `mode:${desiredMode}`;
     }
     if (canKeepRoute && state.mode !== 'direct') {
       reason = 'route-commit';
-      routeKeepReason = targetChanged ? 'target-shift-small' : 'path-still-valid';
+      routeKeepReason = inCommittedJump ? 'jump-commit' : (targetChanged ? 'target-shift-small' : 'path-still-valid');
       replanDeferred = true;
       state.replanCooldown = Math.max(state.replanCooldown, 0.12);
     }
@@ -1511,7 +1547,7 @@ export default class FriendlyCompanion extends Player {
       state.mode = 'direct';
       path = this.buildDirectSurfaceSegment(startTile, targetTile);
       reason = 'surface-direct';
-    } else if ((!canKeepRoute || state.mode !== 'direct') && this.shouldReplan(targetTile, reason)) {
+    } else if ((!canKeepRoute || state.mode !== 'direct') && !inCommittedJump && this.shouldReplan(targetTile, reason)) {
       path = this.buildSegmentsFromTraversalRoute(surfacePlan.route, targetTile);
       state.replanCooldown = 0.22;
       reason = path.length ? 'surface-route' : 'surface-route-fail';
