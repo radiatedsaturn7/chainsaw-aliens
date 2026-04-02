@@ -419,6 +419,21 @@ export default class Player {
       const offset = tile === '^' ? (1 - localX) : localX;
       return tileY * tileSize + offset * tileSize;
     };
+    const hasStepSupportAt = (x, y) => {
+      const footY = y + this.height / 2;
+      const sampleXs = [x - this.width / 2 + 6, x + this.width / 2 - 6];
+      for (let i = 0; i < sampleXs.length; i += 1) {
+        const sampleX = sampleXs[i];
+        if (check(sampleX, footY + 2, { ignoreOneWay: false })) return true;
+        const tileX = Math.floor(sampleX / tileSize);
+        const tileY = Math.floor(footY / tileSize);
+        const tile = world.getTile(tileX, tileY);
+        if (tile !== '^' && tile !== 'v') continue;
+        const surfaceY = slopeSurface(tile, tileX, tileY, sampleX);
+        if (footY >= surfaceY - 6 && footY <= surfaceY + tileSize * 0.6) return true;
+      }
+      return false;
+    };
 
     // Horizontal
     let remainingX = this.vx * dt;
@@ -446,7 +461,8 @@ export default class Player {
         return !check(candidateEdgeX, candidateRect.y + 4, { ignoreOneWay: true })
           && !check(candidateEdgeX, candidateRect.y + candidateRect.h - 4, { ignoreOneWay: true });
       };
-      const stepHeights = wasOnGround
+      const canAttemptStep = wasOnGround || hasStepSupportAt(this.x, this.y);
+      const stepHeights = canAttemptStep
         ? [tileSize - 2, Math.floor(tileSize * 0.75), Math.floor(tileSize * 0.5), Math.floor(tileSize * 0.33)]
         : [];
       let stepped = false;
