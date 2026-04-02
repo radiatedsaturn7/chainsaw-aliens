@@ -140,6 +140,7 @@ export default class FriendlyCompanion extends Player {
       edgeValidationCache: new Map(),
       poisonedEdges: new Map(),
       elevatorHintCache: null,
+      surfaceGraphCache: null,
       routeTargetKey: null
     };
     this.moveExecution = {
@@ -173,7 +174,10 @@ export default class FriendlyCompanion extends Player {
       stairTraversalChosen: false,
       jumpSpamFailureTriggered: false,
       escalatedForUpwardFailure: false,
-      elevatorRoutingActive: false
+      elevatorRoutingActive: false,
+      currentSurfaceId: 'none',
+      targetSurfaceId: 'none',
+      routeKind: 'direct'
     };
   }
 
@@ -428,8 +432,8 @@ export default class FriendlyCompanion extends Player {
     const elevatorNearby = Boolean(this.findNearbyElevatorComponent(currentTile, world, abilities));
     if (state.mode === 'recovery' && state.commitTimer > 0) return 'recovery';
     if (this.shouldUseDirectFollow(targetTile, world, abilities)) return 'direct';
-    if (verticalGap >= 5 || state.jumpSpamCounter >= 3 || state.jumpLoopCounter >= 2 || (elevatorNearby && verticalGap >= 3)) return 'astar';
-    if (distToGoal < world.tileSize * 8 && state.localFailCount < 2) return 'local';
+    if (verticalGap >= 4 || state.jumpSpamCounter >= 2 || state.jumpLoopCounter >= 1 || (elevatorNearby && verticalGap >= 2)) return 'astar';
+    if (distToGoal < world.tileSize * 6 && state.stuckCounter < 2) return 'direct';
     return 'astar';
   }
 
@@ -832,6 +836,252 @@ export default class FriendlyCompanion extends Player {
     return neighbors;
   }
 
+  getSurfaceGraphCacheKey(start, goal, world) {
+    return `${world.width}x${world.height}:${start.x},${start.y}->${goal.x},${goal.y}`;
+  }
+
+  buildSurfaceGraph(start, goal, world, abilities) {
+    const state = this.navState;
+    const cacheKey = this.getSurfaceGraphCacheKey(start, goal, world);
+    const cached = state.surfaceGraphCache;
+    if (cached?.key === cacheKey && cached.age < 0.45) return cached.graph;
+
+    const marginX = 26;
+    const marginY = 16;
+    const minX = Math.max(0, Math.min(start.x, goal.x) - marginX);
+    const maxX = Math.min(world.width - 1, Math.max(start.x, goal.x) + marginX);
+    const minY = Math.max(1, Math.min(start.y, goal.y) - marginY);
+    const maxY = Math.min(world.height - 2, Math.max(start.y, goal.y) + marginY);
+
+    const walkable = new Map();
+    for (let y = minY; y <= maxY; y += 1) {
+      for (let x = minX; x <= maxX; x += 1) {
+        if (!this.canStandOnTile(x, y, world, abilities)) continue;
+        walkable.set(`${x},${y}`, { x, y, align: 'center' });
+      }
+    }
+
+    const tileToSurface = new Map();
+    const surfaces = [];
+    const visited = new Set();
+    const queue = [];
+    const neighbors = [
+      [1, 0], [-1, 0], [1, -1], [-1, -1], [1, 1], [-1, 1]
+    ];
+
+    walkable.forEach((tile, key) => {
+      if (visited.has(key)) return;
+      const id = `surface-${surfaces.length}`;
+      const tiles = [];
+      visited.add(key);
+      queue.push(tile);
+      while (queue.length) {
+        const current = queue.shift();
+        if (!current) break;
+        tiles.push(current);
+        tileToSurface.set(`${current.x},${current.y}`, id);
+        for (let i = 0; i < neighbors.length; i += 1) {
+          const nx = current.x + neighbors[i][0];
+          const ny = current.y + neighbors[i][1];
+          const nKey = `${nx},${ny}`;
+          if (!walkable.has(nKey) || visited.has(nKey)) continue;
+          visited.add(nKey);
+          queue.push(walkable.get(nKey));
+        }
+      }
+      tiles.sort((a, b) => (a.x - b.x) || (a.y - b.y));
+      const mid = tiles[Math.floor(tiles.length / 2)];
+      surfaces.push({
+        id,
+        tiles,
+        anchor: mid,
+        left: tiles[0],
+        right: tiles[tiles.length - 1]
+      });
+    });
+
+    const nodeEdges = new Map();
+    surfaces.forEach((surface) => nodeEdges.set(surface.id, []));
+    const addEdge = (from, to, edge) => {
+      if (!nodeEdges.has(from)) nodeEdges.set(from, []);
+      nodeEdges.get(from).push(edge);
+    };
+
+    surfaces.forEach((surface) => {
+      const boundary = [
+        surface.left,
+        surface.anchor,
+        surface.right
+      ];
+      for (let i = 0; i < boundary.length; i += 1) {
+        const fromTile = boundary[i];
+        for (let dx = -2; dx <= 2; dx += 1) {
+          for (let dy = -3; dy <= 3; dy += 1) {
+            if (dx === 0 && dy === 0) continue;
+            const tx = fromTile.x + dx;
+            const ty = fromTile.y + dy;
+            const targetSurface = tileToSurface.get(`${tx},${ty}`);
+            if (!targetSurface || targetSurface === surface.id) continue;
+            const absDx = Math.abs(dx);
+            const absDy = Math.abs(dy);
+            let type = 'jumpArc';
+            let cost = 2.6 + absDy * 0.6 + absDx * 0.35;
+            if (absDy <= 1 && absDx <= 1) {
+              type = dy < 0 ? 'stepUp' : 'corridorAdvance';
+              cost = 1.2 + absDy * 0.2;
+            } else if (dy > 0) {
+              type = 'drop';
+              cost = 1.6 + absDy * 0.35;
+            } else if (dy === 0 && absDx <= 2) {
+              type = 'walk';
+              cost = 1.1 + absDx * 0.2;
+            }
+            addEdge(surface.id, targetSurface, {
+              from: surface.id,
+              to: targetSurface,
+              type,
+              cost,
+              targetTile: { x: tx, y: ty, align: 'center' }
+            });
+          }
+        }
+      }
+    });
+
+    const elevatorHints = this.buildElevatorHints(world, abilities);
+    elevatorHints.components.forEach((component, index) => {
+      const elevatorNode = `elevator-${index}`;
+      nodeEdges.set(elevatorNode, []);
+      const boardBySurface = new Map();
+      component.boardTiles.forEach((board) => {
+        const sid = tileToSurface.get(`${board.x},${board.y}`);
+        if (!sid) return;
+        if (!boardBySurface.has(sid)) boardBySurface.set(sid, board);
+      });
+      boardBySurface.forEach((board, sid) => {
+        addEdge(sid, elevatorNode, {
+          from: sid,
+          to: elevatorNode,
+          type: 'elevatorBoard',
+          cost: 1.1,
+          targetTile: board
+        });
+        addEdge(elevatorNode, sid, {
+          from: elevatorNode,
+          to: sid,
+          type: 'elevatorExit',
+          cost: 1.1,
+          targetTile: board
+        });
+      });
+      const surfacesForElevator = Array.from(boardBySurface.keys());
+      for (let i = 0; i < surfacesForElevator.length; i += 1) {
+        for (let j = i + 1; j < surfacesForElevator.length; j += 1) {
+          const a = surfacesForElevator[i];
+          const b = surfacesForElevator[j];
+          const boardA = boardBySurface.get(a);
+          const boardB = boardBySurface.get(b);
+          const rideCost = 1.8 + Math.abs(boardA.y - boardB.y) * 0.2;
+          addEdge(a, b, {
+            from: a,
+            to: b,
+            type: 'elevatorRide',
+            cost: rideCost,
+            targetTile: boardB
+          });
+          addEdge(b, a, {
+            from: b,
+            to: a,
+            type: 'elevatorRide',
+            cost: rideCost,
+            targetTile: boardA
+          });
+        }
+      }
+    });
+
+    const graph = { surfaces, tileToSurface, nodeEdges };
+    state.surfaceGraphCache = { key: cacheKey, graph, age: 0 };
+    return graph;
+  }
+
+  getSurfaceForTile(tile, graph) {
+    return graph.tileToSurface.get(`${tile.x},${tile.y}`) || null;
+  }
+
+  heuristicSurfaceDistance(node, goalNode, graph) {
+    if (node === goalNode) return 0;
+    const sNode = graph.surfaces.find((surface) => surface.id === node);
+    const sGoal = graph.surfaces.find((surface) => surface.id === goalNode);
+    if (!sNode || !sGoal) return 2;
+    return Math.abs(sNode.anchor.x - sGoal.anchor.x) + Math.abs(sNode.anchor.y - sGoal.anchor.y) * 1.2;
+  }
+
+  findSurfaceRoute(startTile, goalTile, world, abilities) {
+    const graph = this.buildSurfaceGraph(startTile, goalTile, world, abilities);
+    const startSurface = this.getSurfaceForTile(startTile, graph);
+    const goalSurface = this.getSurfaceForTile(goalTile, graph);
+    if (!startSurface || !goalSurface) {
+      return { route: [], graph, startSurface, goalSurface };
+    }
+    if (startSurface === goalSurface) {
+      return { route: [], graph, startSurface, goalSurface };
+    }
+    const open = new MinBinaryHeap();
+    const gScore = new Map([[startSurface, 0]]);
+    const parent = new Map([[startSurface, null]]);
+    const viaEdge = new Map();
+    open.push({ key: startSurface, score: 0 });
+    let expanded = 0;
+    const maxExpanded = 180;
+    while (open.size && expanded < maxExpanded) {
+      const current = open.pop()?.key;
+      if (!current) break;
+      expanded += 1;
+      if (current === goalSurface) break;
+      const edges = graph.nodeEdges.get(current) || [];
+      for (let i = 0; i < edges.length; i += 1) {
+        const edge = edges[i];
+        const tentative = (gScore.get(current) || Infinity) + edge.cost;
+        if (tentative >= (gScore.get(edge.to) || Infinity)) continue;
+        gScore.set(edge.to, tentative);
+        parent.set(edge.to, current);
+        viaEdge.set(edge.to, edge);
+        const h = this.heuristicSurfaceDistance(edge.to, goalSurface, graph);
+        open.push({ key: edge.to, score: tentative + h });
+      }
+    }
+    if (!parent.has(goalSurface)) {
+      return { route: [], graph, startSurface, goalSurface };
+    }
+    const route = [];
+    let cursor = goalSurface;
+    while (cursor && cursor !== startSurface) {
+      const edge = viaEdge.get(cursor);
+      if (!edge) break;
+      route.unshift(edge);
+      cursor = parent.get(cursor);
+    }
+    return { route, graph, startSurface, goalSurface };
+  }
+
+  buildSegmentsFromSurfaceRoute(route, goalTile) {
+    if (!route.length) {
+      return [{
+        tile: goalTile,
+        edge: { profile: { type: 'walk' } }
+      }];
+    }
+    return route.map((edge) => ({
+      tile: edge.targetTile || goalTile,
+      edge: {
+        profile: {
+          type: edge.type === 'jumpArc' ? 'diagJump' : edge.type
+        }
+      }
+    }));
+  }
+
   planLocalRoute(start, goal, world, abilities) {
     const maxNodes = 80;
     const queue = [start];
@@ -925,6 +1175,10 @@ export default class FriendlyCompanion extends Player {
 
   ageNavigationCaches(dt) {
     const state = this.navState;
+    if (state.surfaceGraphCache) {
+      state.surfaceGraphCache.age += dt;
+      if (state.surfaceGraphCache.age > 0.8) state.surfaceGraphCache = null;
+    }
     state.pathCache.forEach((value, key) => {
       value.age += dt;
       if (value.age > 2.5) state.pathCache.delete(key);
@@ -1146,6 +1400,8 @@ export default class FriendlyCompanion extends Player {
     this.detectStuckState(dt, targetWorld);
     const desiredMode = this.chooseNavigationMode(targetTile, world, abilities);
     const verticalToTarget = targetTile.y - startTile.y;
+    const surfacePlan = this.findSurfaceRoute(startTile, targetTile, world, abilities);
+    const sameSurface = Boolean(surfacePlan.startSurface && surfacePlan.goalSurface && surfacePlan.startSurface === surfacePlan.goalSurface);
 
     let path = state.path;
     let reason = 'commit';
@@ -1159,28 +1415,24 @@ export default class FriendlyCompanion extends Player {
       state.mode = desiredMode;
       reason = `mode:${desiredMode}`;
     }
-    if (canKeepRoute && (state.mode === 'local' || state.mode === 'astar')) {
+    if (canKeepRoute && state.mode !== 'direct') {
       reason = 'route-commit';
       routeKeepReason = targetChanged ? 'target-shift-small' : 'path-still-valid';
       replanDeferred = true;
       state.replanCooldown = Math.max(state.replanCooldown, 0.12);
     }
 
-    if (!canKeepRoute && state.mode === 'local' && this.shouldReplan(targetTile, reason)) {
-      path = this.planLocalRoute(startTile, targetTile, world, abilities);
-      state.localFailCount = path.length ? 0 : state.localFailCount + 1;
-      state.replanCooldown = 0.2;
-      reason = path.length ? 'local-route' : 'local-fail';
-    } else if (!canKeepRoute && state.mode === 'astar' && this.shouldReplan(targetTile, reason)) {
-      path = this.planSmartRouteAStar(startTile, targetTile, world, abilities);
-      state.plannerFailCount = path.length ? 0 : state.plannerFailCount + 1;
-      state.replanCooldown = 0.35;
-      reason = path.length ? 'astar-route' : 'astar-fail';
-    } else if (state.mode === 'direct') {
+    if (sameSurface && state.stuckCounter < 2 && Math.abs(verticalToTarget) <= 2) {
+      state.mode = 'direct';
       path = [];
+      reason = 'surface-direct';
+    } else if ((!canKeepRoute || state.mode !== 'direct') && this.shouldReplan(targetTile, reason)) {
+      path = this.buildSegmentsFromSurfaceRoute(surfacePlan.route, targetTile);
+      state.replanCooldown = 0.22;
+      reason = path.length ? 'surface-route' : 'surface-route-fail';
     }
 
-    if ((state.mode === 'local' || state.mode === 'astar') && !path.length && state.stuckCounter >= 3) {
+    if (state.mode !== 'direct' && !path.length && state.stuckCounter >= 3) {
       const recovery = this.chooseRecoveryAction(targetTile, world);
       state.mode = recovery.mode;
       state.moveProfile = recovery.moveProfile;
@@ -1238,6 +1490,9 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.jumpSpamFailureTriggered = state.jumpLoopCounter >= 2 || state.jumpSpamCounter >= 4;
     this.navDebug.escalatedForUpwardFailure = desiredMode === 'astar' && (verticalToTarget <= -3 || state.jumpLoopCounter >= 2);
     this.navDebug.elevatorRoutingActive = Boolean(path?.some((segment) => segment?.edge?.profile?.type === 'elevatorRide'));
+    this.navDebug.currentSurfaceId = surfacePlan.startSurface || 'none';
+    this.navDebug.targetSurfaceId = surfacePlan.goalSurface || 'none';
+    this.navDebug.routeKind = state.mode === 'direct' ? 'direct' : 'surface-graph';
 
     return {
       mode: state.mode,
