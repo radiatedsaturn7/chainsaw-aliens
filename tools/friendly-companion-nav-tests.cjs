@@ -59,10 +59,13 @@ async function run() {
   settledCompanion.y = settleTarget.world.y;
   const navA = settledCompanion.updateNavigation(0.016, idlePlayer, flatWorld, {});
   const navB = settledCompanion.updateNavigation(0.016, idlePlayer, flatWorld, {});
+  const navC = settledCompanion.updateNavigation(0.016, idlePlayer, flatWorld, {});
   const dirA = navA.input.has('left') ? -1 : navA.input.has('right') ? 1 : 0;
   const dirB = navB.input.has('left') ? -1 : navB.input.has('right') ? 1 : 0;
+  const dirC = navC.input.has('left') ? -1 : navC.input.has('right') ? 1 : 0;
   assert.ok(!(dirA === -dirB && dirA !== 0), 'expected no immediate left/right oscillation near rest');
-  assert.ok(settledCompanion.navDebug.settledActive || settledCompanion.navDebug.arrivalDeadzoneActive, 'expected settle/deadzone behavior near player');
+  assert.ok(!(dirB === -dirC && dirB !== 0), 'expected no persistent oscillation while anchored');
+  assert.ok(settledCompanion.navDebug.restModeActive || settledCompanion.navDebug.settledActive, 'expected anchored rest mode near player');
 
   // 2) Sticky follow target: tiny player jitter should not flap follow tile every frame.
   const stickyCompanion = new FriendlyCompanion((3.5) * tileSize, (4.5) * tileSize);
@@ -111,11 +114,24 @@ async function run() {
   const bounceInput = bounceCompanion.buildExecutionIntent(bounceExecution, 1, -40, flatWorld, 0.016);
   assert.strictEqual(bounceInput.has('jump'), false, 'expected jump suppression for useless bounce context');
 
-  // 5) Same-surface follow still works at moderate distance.
+  // 5) Forced climb flag alone must not cause blind hopping.
+  const forcedClimbCompanion = new FriendlyCompanion((4.5) * tileSize, (4.5) * tileSize);
+  forcedClimbCompanion.navState.forcedClimbTriggered = true;
+  forcedClimbCompanion.navState.forcedClimbJumpAllowed = false;
+  const noBlindHop = forcedClimbCompanion.buildExecutionIntent(
+    { profile: 'walk', phase: 'travel', lockDirection: 1, elapsed: 0, hold: 0 },
+    18,
+    -12,
+    flatWorld,
+    0.016
+  );
+  assert.strictEqual(noBlindHop.has('jump'), false, 'forced climb without route evidence must not inject jump');
+
+  // 6) Same-surface follow still works at moderate distance.
   const followCompanion = new FriendlyCompanion((2.5) * tileSize, (4.5) * tileSize);
   assert.strictEqual(followCompanion.shouldUseDirectFollow({ x: 6, y: 4, align: 'center' }, flatWorld, {}), true);
 
-  // 6) Teleport fallback still works when truly far away.
+  // 7) Teleport fallback still works when truly far away.
   const teleportCompanion = new FriendlyCompanion((1.5) * tileSize, (4.5) * tileSize);
   const farPlayer = {
     x: 50 * tileSize,

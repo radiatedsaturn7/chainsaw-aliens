@@ -150,7 +150,14 @@ export default class FriendlyCompanion extends Player {
       stableFollowTile: null,
       stableFollowScore: Infinity,
       stableFollowHold: 0,
-      jumpCancelReason: 'none'
+      jumpCancelReason: 'none',
+      restMode: false,
+      restLockTimer: 0,
+      restTile: null,
+      oscillationDampTimer: 0,
+      lastLateralDir: 0,
+      lateralFlipCount: 0,
+      forcedClimbJumpAllowed: false
     };
     this.moveExecution = {
       active: false,
@@ -199,7 +206,9 @@ export default class FriendlyCompanion extends Player {
       stableFollowTile: 'none',
       arrivalDeadzoneActive: false,
       jumpCanceled: false,
-      jumpCancelReason: 'none'
+      jumpCancelReason: 'none',
+      restModeActive: false,
+      oscillationSuppressed: false
     };
   }
 
@@ -626,13 +635,15 @@ export default class FriendlyCompanion extends Player {
     const current = state.stableFollowTile;
     const currentScore = Math.hypot(current.x - Math.floor(player.x / world.tileSize), current.y - Math.floor(player.y / world.tileSize));
     const candidateScore = Math.hypot(candidateTile.x - Math.floor(player.x / world.tileSize), candidateTile.y - Math.floor(player.y / world.tileSize));
+    const disruptionCost = Math.hypot(candidateTile.x - current.x, candidateTile.y - current.y) * 0.8;
+    const candidateTotal = candidateScore + disruptionCost;
     const nearEquivalent = Math.abs(candidateScore - currentScore) < 0.9
       && Math.abs(candidateTile.x - current.x) <= 1
       && Math.abs(candidateTile.y - current.y) <= 1;
     if (nearEquivalent && state.stableFollowHold > 0) {
       return current;
     }
-    const materiallyBetter = candidateScore + 0.75 < currentScore;
+    const materiallyBetter = candidateTotal + 0.95 < currentScore;
     if (materiallyBetter || state.stableFollowHold <= 0) {
       state.stableFollowTile = { ...candidateTile };
       state.stableFollowScore = candidateScore;
@@ -640,6 +651,19 @@ export default class FriendlyCompanion extends Player {
       return candidateTile;
     }
     return current;
+  }
+
+  shouldStayInRestMode(player, world, abilities) {
+    const state = this.navState;
+    if (!state.restMode || !state.restTile) return false;
+    if (this.assistTarget) return false;
+    if (!this.canStandOnTile(state.restTile.x, state.restTile.y, world, abilities)) return false;
+    const playerMoved = Math.abs(player?.vx || 0) > 26 || Math.abs(player?.vy || 0) > 36;
+    if (playerMoved) return false;
+    const restCenter = this.tileCenter(state.restTile, world);
+    const displaced = Math.hypot(this.x - restCenter.x, this.y - restCenter.y) > world.tileSize * 0.9;
+    if (displaced) return false;
+    return state.restLockTimer > 0 || this.isPlayerMostlyStill(player);
   }
 
   buildNavigationTarget(player, world, abilities) {
@@ -1631,13 +1655,22 @@ export default class FriendlyCompanion extends Player {
         this.navState.jumpCancelReason = 'useless-bounce';
         return input;
       }
+      if (execution.landingTile) {
+        const landing = this.tileCenter(execution.landingTile, world);
+        const advance = Math.hypot(this.x - landing.x, this.y - landing.y);
+        const targetAdvance = Math.hypot((this.x + (dir < 0 ? -world.tileSize : world.tileSize)) - landing.x, this.y - world.tileSize * 0.4 - landing.y);
+        if (targetAdvance >= advance - 2) {
+          this.navState.jumpCancelReason = 'no-route-advance';
+          return input;
+        }
+      }
       input.add('jump');
       if (profile === 'diagJump' || (profile === 'upThenDrift' && execution.phase === 'drift')) {
         input.add(dir < 0 ? 'left' : 'right');
       }
       this.jumpDecisionCooldown = 0.18;
     }
-    if (this.navState.forcedClimbTriggered && (this.onGround || this.coyote > 0) && this.jumpDecisionCooldown <= 0) {
+    if (this.navState.forcedClimbJumpAllowed && (this.onGround || this.coyote > 0) && this.jumpDecisionCooldown <= 0) {
       input.add('jump');
       input.add(dir < 0 ? 'left' : 'right');
       this.jumpDecisionCooldown = 0.2;
@@ -1685,6 +1718,8 @@ export default class FriendlyCompanion extends Player {
   updateNavigation(dt, player, world, abilities) {
     const state = this.navState;
     state.replanCooldown = Math.max(0, state.replanCooldown - dt);
+    state.restLockTimer = Math.max(0, state.restLockTimer - dt);
+    state.oscillationDampTimer = Math.max(0, state.oscillationDampTimer - dt);
     this.jumpDecisionCooldown = Math.max(0, this.jumpDecisionCooldown - dt);
     this.jumpSuppressTimer = Math.max(0, this.jumpSuppressTimer - dt);
     this.ageNavigationCaches(dt);
@@ -1696,8 +1731,21 @@ export default class FriendlyCompanion extends Player {
     const distToFollow = Math.hypot(targetWorld.x - this.x, targetWorld.y - this.y);
     const playerStill = this.isPlayerMostlyStill(player);
     const arrivalDeadzone = world.tileSize * 0.42;
+    if (this.shouldStayInRestMode(player, world, abilities)) {
+      state.restMode = true;
+      state.settled = true;
+      this.moveExecution.active = false;
+      this.moveExecution.phase = 'idle';
+      this.navDebug.arrivalDeadzoneActive = true;
+      this.navDebug.settledActive = true;
+      this.navDebug.restModeActive = true;
+      return { mode: 'direct', input: new Set(), moveProfile: 'rest', targetTile: state.restTile };
+    }
     if (playerStill && distToFollow <= arrivalDeadzone && Math.abs(this.vx) < 22 && Math.abs(this.vy) < 30) {
       state.settled = true;
+      state.restMode = true;
+      state.restTile = state.stableFollowTile ? { ...state.stableFollowTile } : { ...targetTile };
+      state.restLockTimer = 0.55;
       state.mode = 'direct';
       state.path = [];
       state.targetTile = targetTile;
@@ -1712,10 +1760,12 @@ export default class FriendlyCompanion extends Player {
       this.navDebug.executionPhase = 'idle';
       this.navDebug.arrivalDeadzoneActive = true;
       this.navDebug.settledActive = true;
+      this.navDebug.restModeActive = true;
       this.navDebug.stableFollowTile = state.stableFollowTile ? this.tileKey(state.stableFollowTile) : 'none';
       return { mode: 'direct', input: new Set(), moveProfile: 'settled', targetTile };
     }
     state.settled = false;
+    state.restMode = false;
 
     this.updateUpwardPursuitState(dt, player, startTile, targetTile);
     this.detectStuckState(dt, targetWorld);
@@ -1756,6 +1806,7 @@ export default class FriendlyCompanion extends Player {
       && blockedTowardTarget
       && (this.onGround || this.coyote > 0);
     state.forcedClimbTriggered = shouldForceClimb;
+    state.forcedClimbJumpAllowed = false;
 
     const elevatedDetourNeeded = targetTile.y < startTile.y - 1 && !this.isNearTile(path[0]?.edge?.sourceTile || targetTile, world, 0.75);
     if (sameSurface
@@ -1779,6 +1830,9 @@ export default class FriendlyCompanion extends Player {
         first.edge.profile.type = 'shortHopForward';
         reason = 'obstacle-forced-climb';
       }
+      const jumpLikeFirst = this.isJumpProfile(first?.edge?.profile?.type);
+      const nearTakeoff = !first?.edge?.sourceTile || this.isNearTile(first.edge.sourceTile, world, 0.9);
+      state.forcedClimbJumpAllowed = Boolean(jumpLikeFirst && nearTakeoff && targetTile.y < startTile.y);
     }
 
     if (!path.length && (state.stuckCounter >= 2 || this.detectJumpSpamFailure())) {
@@ -1798,6 +1852,25 @@ export default class FriendlyCompanion extends Player {
     state.routeAge += dt;
     const nextMove = this.chooseMoveFromPath(path, world);
     const intent = this.applyMoveIntent(nextMove, targetWorld, world, abilities, dt);
+    const lateralDir = intent.input.has('left') ? -1 : intent.input.has('right') ? 1 : 0;
+    const nearTargetForDamping = playerStill && distToFollow <= world.tileSize * 0.75;
+    if (nearTargetForDamping && lateralDir !== 0 && state.lastLateralDir !== 0 && lateralDir !== state.lastLateralDir) {
+      state.lateralFlipCount += 1;
+    } else if (lateralDir !== 0) {
+      state.lateralFlipCount = Math.max(0, state.lateralFlipCount - 1);
+    }
+    state.lastLateralDir = lateralDir || state.lastLateralDir;
+    if (nearTargetForDamping && state.lateralFlipCount >= 2) {
+      state.oscillationDampTimer = 0.22;
+      state.lateralFlipCount = 0;
+      this.moveExecution.active = false;
+      this.moveExecution.phase = 'idle';
+      intent.input.clear();
+      state.jumpCancelReason = 'oscillation-damped';
+    }
+    if (state.oscillationDampTimer > 0) {
+      intent.input.clear();
+    }
     const activeExec = this.moveExecution;
     const failedEdgeProfile = activeExec?.profile && activeExec.profile !== 'direct' ? activeExec.profile : nextMove?.edge?.profile?.type;
     const takeoffContextValid = !activeExec?.takeoffTile || this.isNearTile(activeExec.takeoffTile, world, 0.75);
@@ -1866,10 +1939,12 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.upwardPursuitReason = state.upwardPursuitReason || 'none';
     this.navDebug.obstacleForcedClimb = Boolean(state.forcedClimbTriggered);
     this.navDebug.settledActive = Boolean(state.settled);
+    this.navDebug.restModeActive = Boolean(state.restMode);
     this.navDebug.stableFollowTile = state.stableFollowTile ? this.tileKey(state.stableFollowTile) : 'none';
     this.navDebug.arrivalDeadzoneActive = this.isPlayerMostlyStill(player) && Math.hypot(targetWorld.x - this.x, targetWorld.y - this.y) <= world.tileSize * 0.42;
     this.navDebug.jumpCanceled = state.jumpCancelReason !== 'none';
     this.navDebug.jumpCancelReason = state.jumpCancelReason || 'none';
+    this.navDebug.oscillationSuppressed = state.oscillationDampTimer > 0;
     state.jumpCancelReason = 'none';
 
     return {
