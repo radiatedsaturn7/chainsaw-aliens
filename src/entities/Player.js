@@ -387,7 +387,6 @@ export default class Player {
   }
 
   moveAndCollide(dt, world, abilities) {
-    const nextY = this.y + this.vy * dt;
     const tileSize = world.tileSize;
 
     const wasOnGround = this.onGround;
@@ -471,6 +470,7 @@ export default class Player {
     }
 
     // Vertical
+    const nextY = this.y + this.vy * dt;
     const rect = getRect();
     const signY = Math.sign(this.vy);
     if (signY !== 0) {
