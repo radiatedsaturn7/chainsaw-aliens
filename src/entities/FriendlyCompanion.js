@@ -124,6 +124,7 @@ export default class FriendlyCompanion extends Player {
       oscillationTimer: 0,
       jumpSpamCounter: 0,
       jumpSpamTime: 0,
+      jumpLoopCounter: 0,
       lastJumpX: x,
       lastJumpY: y,
       lastPosX: x,
@@ -168,7 +169,11 @@ export default class FriendlyCompanion extends Player {
       routeKeepReason: 'none',
       replanDeferred: false,
       edgePoisonedLastFrame: false,
-      jumpSpamCounter: 0
+      jumpSpamCounter: 0,
+      stairTraversalChosen: false,
+      jumpSpamFailureTriggered: false,
+      escalatedForUpwardFailure: false,
+      elevatorRoutingActive: false
     };
   }
 
@@ -219,10 +224,68 @@ export default class FriendlyCompanion extends Player {
   canStandOnTile(tileX, tileY, world, abilities) {
     if (tileX < 0 || tileX >= world.width || tileY < 1 || tileY >= world.height - 1) return false;
     if (world.isHazard?.(tileX, tileY) || world.isHazard?.(tileX, tileY + 1)) return false;
-    const bodyClear = !world.isSolid(tileX, tileY, abilities, { ignoreOneWay: true });
-    const headClear = !world.isSolid(tileX, tileY - 1, abilities, { ignoreOneWay: true });
-    if (!bodyClear || !headClear) return false;
-    return world.isSolid(tileX, tileY + 1, abilities, { ignoreOneWay: false });
+    const center = this.tileCenter({ x: tileX, y: tileY, align: 'center' }, world);
+    if (this.collidesBodyAt(center.x, center.y, world, abilities, { ignoreOneWay: true })) return false;
+    return this.hasGroundSupportAt(center.x, center.y, world, abilities);
+  }
+
+  isSlopeTile(tile) {
+    return tile === '^' || tile === 'v';
+  }
+
+  isPointBlockedLikePlayer(x, y, world, abilities, options = {}) {
+    const tileSize = world.tileSize;
+    const tileX = Math.floor(x / tileSize);
+    const tileY = Math.floor(y / tileSize);
+    const tile = world.getTile(tileX, tileY);
+    if (this.isSlopeTile(tile)) {
+      const localX = (x - tileX * tileSize) / tileSize;
+      const localY = (y - tileY * tileSize) / tileSize;
+      if (tile === '^') return localY >= 1 - localX;
+      return localY >= localX;
+    }
+    const ignoreOneWay = options.ignoreOneWay || false;
+    return world.isSolid(tileX, tileY, abilities, { ...options, ignoreOneWay });
+  }
+
+  getSlopeSurfaceY(tile, tileX, tileY, worldX, tileSize) {
+    const localX = (worldX - tileX * tileSize) / tileSize;
+    const offset = tile === '^' ? (1 - localX) : localX;
+    return tileY * tileSize + offset * tileSize;
+  }
+
+  isSlopeAt(tileX, tileY, world) {
+    return this.isSlopeTile(world.getTile(tileX, tileY));
+  }
+
+  collidesBodyAt(x, y, world, abilities, options = {}) {
+    const points = [
+      [x - this.width / 2 + 4, y - this.height / 2 + 4],
+      [x + this.width / 2 - 4, y - this.height / 2 + 4],
+      [x - this.width / 2 + 4, y + this.height / 2 - 4],
+      [x + this.width / 2 - 4, y + this.height / 2 - 4]
+    ];
+    for (let i = 0; i < points.length; i += 1) {
+      if (this.isPointBlockedLikePlayer(points[i][0], points[i][1], world, abilities, options)) return true;
+    }
+    return false;
+  }
+
+  hasGroundSupportAt(x, y, world, abilities) {
+    const tileSize = world.tileSize;
+    const footY = y + this.height / 2;
+    const sampleXs = [x - this.width / 2 + 6, x + this.width / 2 - 6];
+    for (let i = 0; i < sampleXs.length; i += 1) {
+      const sampleX = sampleXs[i];
+      if (this.isPointBlockedLikePlayer(sampleX, footY + 1, world, abilities, { ignoreOneWay: false })) return true;
+      const tileX = Math.floor(sampleX / tileSize);
+      const tileY = Math.floor(footY / tileSize);
+      const tile = world.getTile(tileX, tileY);
+      if (!this.isSlopeTile(tile)) continue;
+      const surfaceY = this.getSlopeSurfaceY(tile, tileX, tileY, sampleX, tileSize);
+      if (footY >= surfaceY - 6 && footY <= surfaceY + tileSize * 0.6) return true;
+    }
+    return false;
   }
 
   getBodyTile(world, x = this.x, y = this.y) {
@@ -365,7 +428,7 @@ export default class FriendlyCompanion extends Player {
     const elevatorNearby = Boolean(this.findNearbyElevatorComponent(currentTile, world, abilities));
     if (state.mode === 'recovery' && state.commitTimer > 0) return 'recovery';
     if (this.shouldUseDirectFollow(targetTile, world, abilities)) return 'direct';
-    if (verticalGap >= 6 || state.jumpSpamCounter >= 3 || (elevatorNearby && verticalGap >= 4)) return 'astar';
+    if (verticalGap >= 5 || state.jumpSpamCounter >= 3 || state.jumpLoopCounter >= 2 || (elevatorNearby && verticalGap >= 3)) return 'astar';
     if (distToGoal < world.tileSize * 8 && state.localFailCount < 2) return 'local';
     return 'astar';
   }
@@ -390,7 +453,8 @@ export default class FriendlyCompanion extends Player {
       || state.noProgressTimer > 0.65
       || dist > 8
       || verticalGap > 5
-      || state.jumpSpamCounter >= 2;
+      || state.jumpSpamCounter >= 2
+      || state.jumpLoopCounter >= 2;
   }
 
   detectStuckState(dt, targetWorld) {
@@ -424,8 +488,12 @@ export default class FriendlyCompanion extends Player {
       if (jumpDx < 10 && jumpDy < 12) {
         state.jumpSpamCounter += 1;
         state.jumpSpamTime = 0.45;
+        if (state.noProgressTimer > 0.25) {
+          state.jumpLoopCounter += 1;
+        }
       } else {
         state.jumpSpamCounter = Math.max(0, state.jumpSpamCounter - 1);
+        state.jumpLoopCounter = Math.max(0, state.jumpLoopCounter - 1);
       }
       state.lastJumpX = this.x;
       state.lastJumpY = this.y;
@@ -447,6 +515,12 @@ export default class FriendlyCompanion extends Player {
     if (state.jumpSpamCounter >= 4) {
       state.stuckCounter += 1;
       state.noProgressTimer = Math.max(state.noProgressTimer, 0.7);
+      state.jumpLoopCounter += 1;
+    }
+    if (state.jumpLoopCounter >= 2) {
+      state.stuckCounter += 1;
+      state.jumpFailCounter = 0;
+      state.jumpSpamCounter = Math.max(state.jumpSpamCounter, 3);
     }
   }
 
@@ -480,7 +554,7 @@ export default class FriendlyCompanion extends Player {
     return { tile, world: this.tileCenter(tile, world) };
   }
 
-  buildEdgeProfiles(from, to) {
+  buildEdgeProfiles(from, to, world) {
     const dir = Math.sign(to.x - from.x);
     const dx = to.x - from.x;
     const dy = to.y - from.y;
@@ -492,6 +566,9 @@ export default class FriendlyCompanion extends Player {
       return profiles;
     }
     if (dy === 0 && Math.abs(dx) === 1) {
+      if (this.isSlopeAt(from.x, from.y + 1, world) || this.isSlopeAt(to.x, to.y + 1, world)) {
+        profiles.push({ type: 'slopeWalk', dir, hold: 0.16, cost: 0.78 });
+      }
       profiles.push({ type: 'corridorAdvance', dir, hold: 0.16, cost: 0.85 });
       profiles.push({ type: 'walk', dir, hold: 0.18, cost: 1 });
     }
@@ -523,7 +600,7 @@ export default class FriendlyCompanion extends Player {
     const cacheKey = `${this.tileKey(from)}->${this.tileKey(to)}`;
     const cached = state.edgeValidationCache.get(cacheKey);
     if (cached) return cached;
-    const profiles = this.buildEdgeProfiles(from, to);
+    const profiles = this.buildEdgeProfiles(from, to, world);
     if (to.viaElevator) {
       profiles.unshift({ type: 'elevatorRide', dir: 0, hold: 0.3, cost: 1.8 + Math.abs(to.y - from.y) * 0.18 });
     }
@@ -576,23 +653,6 @@ export default class FriendlyCompanion extends Player {
     let found = false;
     let needAlign = from.align !== 'center';
 
-    const collides = (x, y, ignoreOneWay = false) => {
-      const left = x - this.width / 2 + 4;
-      const right = x + this.width / 2 - 4;
-      const top = y - this.height / 2 + 4;
-      const bottom = y + this.height / 2 - 4;
-      const points = [
-        [left, top], [right, top], [left, bottom], [right, bottom]
-      ];
-      for (let i = 0; i < points.length; i += 1) {
-        const [px, py] = points[i];
-        const tx = Math.floor(px / tileSize);
-        const ty = Math.floor(py / tileSize);
-        if (world.isSolid(tx, ty, abilities, { ignoreOneWay })) return true;
-      }
-      return false;
-    };
-
     let x = launch.x;
     let y = launch.y;
     let vx = 0;
@@ -600,18 +660,21 @@ export default class FriendlyCompanion extends Player {
     let coyote = MOVEMENT_MODEL.coyoteTime;
     let jumps = 1;
     let jumped = false;
+    let onGround = this.hasGroundSupportAt(x, y, world, abilities);
     let t = 0;
     let bonk = false;
     let wallBump = 0;
     let descentStarted = false;
     if ((profile.type === 'diagJump' || profile.type === 'verticalJump' || profile.type === 'upThenDrift')
-      && collides(x, y - this.height / 2 - 6, true)) {
+      && this.collidesBodyAt(x, y - 6, world, abilities, { ignoreOneWay: true })) {
       return { ok: false };
     }
     while (t < maxT) {
       let move = 0;
       let jumpNow = false;
       if (profile.type === 'walk') {
+        move = profile.dir;
+      } else if (profile.type === 'slopeWalk') {
         move = profile.dir;
       } else if (profile.type === 'corridorAdvance') {
         move = profile.dir;
@@ -623,7 +686,7 @@ export default class FriendlyCompanion extends Player {
         if (!jumped && t < 0.05) jumpNow = true;
       } else if (profile.type === 'lowCeilingStep') {
         move = profile.dir;
-        if (!jumped && t < 0.03 && !collides(x, y - this.height / 2 - 10, true)) jumpNow = true;
+        if (!jumped && t < 0.03 && !this.collidesBodyAt(x, y - 10, world, abilities, { ignoreOneWay: true })) jumpNow = true;
       } else if (profile.type === 'drop') {
         move = profile.dir;
       } else if (profile.type === 'verticalJump') {
@@ -656,13 +719,23 @@ export default class FriendlyCompanion extends Player {
       const nextX = x + vx * dt;
       const nextY = y + vy * dt;
 
-      const hitWall = collides(nextX, y, true);
+      const hitWall = this.collidesBodyAt(nextX, y, world, abilities, { ignoreOneWay: true });
       if (!hitWall) {
         x = nextX;
       } else {
-        wallBump += 1;
+        const stepHeight = onGround ? tileSize - 2 : 0;
+        const canStepUp = stepHeight > 0
+          && !this.collidesBodyAt(nextX, y - stepHeight, world, abilities, { ignoreOneWay: true });
+        if (canStepUp && (profile.type === 'walk' || profile.type === 'slopeWalk' || profile.type === 'corridorAdvance' || profile.type === 'stepUp' || profile.type === 'lowCeilingStep')) {
+          x = nextX;
+          y -= stepHeight;
+          onGround = true;
+          vy = Math.min(vy, 0);
+        } else {
+          wallBump += 1;
+        }
       }
-      const hitHeadOrFloor = collides(x, nextY, vy < 0);
+      const hitHeadOrFloor = this.collidesBodyAt(x, nextY, world, abilities, { ignoreOneWay: vy < 0 });
       if (!hitHeadOrFloor) {
         y = nextY;
       } else {
@@ -670,7 +743,29 @@ export default class FriendlyCompanion extends Player {
         vy = 0;
       }
 
-      const onGround = collides(x, y + this.height / 2 + 2, false);
+      if (vy >= 0 || onGround) {
+        const footY = y + this.height / 2;
+        const sampleXs = [x - this.width / 2 + 6, x + this.width / 2 - 6];
+        let bestSurface = null;
+        for (let i = 0; i < sampleXs.length; i += 1) {
+          const sampleX = sampleXs[i];
+          const tileX = Math.floor(sampleX / tileSize);
+          const tileY = Math.floor(footY / tileSize);
+          const tile = world.getTile(tileX, tileY);
+          if (!this.isSlopeTile(tile)) continue;
+          const surfaceY = this.getSlopeSurfaceY(tile, tileX, tileY, sampleX, tileSize);
+          if (footY >= surfaceY - 6 && footY <= surfaceY + tileSize * 0.6) {
+            if (bestSurface === null || surfaceY < bestSurface) bestSurface = surfaceY;
+          }
+        }
+        if (bestSurface !== null) {
+          y = bestSurface - this.height / 2;
+          onGround = true;
+          vy = Math.min(vy, 0);
+        }
+      }
+
+      onGround = this.hasGroundSupportAt(x, y, world, abilities);
       if (onGround) {
         coyote = MOVEMENT_MODEL.coyoteTime;
         jumps = 1;
@@ -712,11 +807,13 @@ export default class FriendlyCompanion extends Player {
     });
     dirs.forEach((dir) => {
       neighbors.push({ x: tile.x + dir, y: tile.y, align: 'center' });
+      neighbors.push({ x: tile.x + dir, y: tile.y, align: dir > 0 ? 'left' : 'right' });
       neighbors.push({ x: tile.x + dir, y: tile.y - 1, align: 'center' });
       neighbors.push({ x: tile.x + dir, y: tile.y - 2, align: 'center' });
       neighbors.push({ x: tile.x + dir * 2, y: tile.y - 1, align: 'center' });
       neighbors.push({ x: tile.x + dir, y: tile.y + 1, align: 'center' });
       neighbors.push({ x: tile.x + dir, y: tile.y + 2, align: 'center' });
+      neighbors.push({ x: tile.x + dir * 2, y: tile.y, align: 'center' });
     });
     neighbors.push({ x: tile.x, y: tile.y - 1, align: 'center' });
     neighbors.push({ x: tile.x, y: tile.y - 2, align: 'center' });
@@ -1029,7 +1126,6 @@ export default class FriendlyCompanion extends Player {
     if (!nextInput.size) {
       if (dx < -10) nextInput.add('left');
       if (dx > 10) nextInput.add('right');
-      if (dy < -28 && this.onGround && this.jumpDecisionCooldown <= 0) nextInput.add('jump');
     }
 
     return { input: nextInput, profile };
@@ -1049,6 +1145,7 @@ export default class FriendlyCompanion extends Player {
 
     this.detectStuckState(dt, targetWorld);
     const desiredMode = this.chooseNavigationMode(targetTile, world, abilities);
+    const verticalToTarget = targetTile.y - startTile.y;
 
     let path = state.path;
     let reason = 'commit';
@@ -1137,6 +1234,10 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.replanDeferred = replanDeferred;
     this.navDebug.edgePoisonedLastFrame = Boolean(state.lastEdgePoisoned);
     this.navDebug.jumpSpamCounter = state.jumpSpamCounter;
+    this.navDebug.stairTraversalChosen = ['stepUp', 'slopeWalk', 'corridorAdvance', 'lowCeilingStep'].includes(state.moveProfile);
+    this.navDebug.jumpSpamFailureTriggered = state.jumpLoopCounter >= 2 || state.jumpSpamCounter >= 4;
+    this.navDebug.escalatedForUpwardFailure = desiredMode === 'astar' && (verticalToTarget <= -3 || state.jumpLoopCounter >= 2);
+    this.navDebug.elevatorRoutingActive = Boolean(path?.some((segment) => segment?.edge?.profile?.type === 'elevatorRide'));
 
     return {
       mode: state.mode,
@@ -1233,9 +1334,12 @@ export default class FriendlyCompanion extends Player {
   getNavigationDebugScenarios() {
     return [
       'same-platform follow',
+      'stair / slope walk',
+      'corridor advance',
       'jump with headroom',
       'vertical jump then drift',
       'drop to lower platform',
+      'elevator traverse',
       'detour around block',
       'narrow lip / ceiling approach',
       'moving target while committed route'
