@@ -142,7 +142,10 @@ export default class FriendlyCompanion extends Player {
       elevatorHintCache: null,
       surfaceGraphCache: null,
       routeTargetKey: null,
-      lastPoisonReason: 'none'
+      lastPoisonReason: 'none',
+      upwardPursuitTimer: 0,
+      upwardPursuitReason: 'none',
+      forcedClimbTriggered: false
     };
     this.moveExecution = {
       active: false,
@@ -183,7 +186,10 @@ export default class FriendlyCompanion extends Player {
       transitionLanding: 'none',
       transitionStage: 'idle',
       jumpFailureStage: 'none',
-      poisonReason: 'none'
+      poisonReason: 'none',
+      upwardPursuitActive: false,
+      upwardPursuitReason: 'none',
+      obstacleForcedClimb: false
     };
   }
 
@@ -437,6 +443,7 @@ export default class FriendlyCompanion extends Player {
     const verticalGap = Math.abs(targetTile.y - currentTile.y);
     const elevatorNearby = Boolean(this.findNearbyElevatorComponent(currentTile, world, abilities));
     if (state.mode === 'recovery' && state.commitTimer > 0) return 'recovery';
+    if (state.upwardPursuitTimer > 0 && targetTile.y < currentTile.y) return 'astar';
     if (this.shouldUseDirectFollow(targetTile, world, abilities)) return 'direct';
     if (verticalGap >= 4 || state.jumpSpamCounter >= 2 || state.jumpLoopCounter >= 1 || (elevatorNearby && verticalGap >= 2)) return 'astar';
     if (distToGoal < world.tileSize * 6 && state.stuckCounter < 2) return 'direct';
@@ -448,6 +455,7 @@ export default class FriendlyCompanion extends Player {
     const currentTile = this.getFootStandTile(world);
     const dx = targetTile.x - currentTile.x;
     const dy = targetTile.y - currentTile.y;
+    if (state.upwardPursuitTimer > 0 && dy < -1) return false;
     if (Math.abs(dx) <= 2 && Math.abs(dy) <= 1) return true;
     if (Math.abs(dx) <= 5 && Math.abs(dy) <= 1 && state.stuckCounter < 2) return true;
     if (state.mode === 'direct' && state.noProgressTimer < 0.5 && Math.abs(dy) <= 2) return true;
@@ -475,6 +483,29 @@ export default class FriendlyCompanion extends Player {
   detectJumpSpamFailure() {
     const state = this.navState;
     return state.jumpLoopCounter >= 2 || state.jumpSpamCounter >= 4;
+  }
+
+  updateUpwardPursuitState(dt, player, startTile, targetTile) {
+    const state = this.navState;
+    state.upwardPursuitTimer = Math.max(0, state.upwardPursuitTimer - dt);
+    state.forcedClimbTriggered = false;
+    const playerRising = player.vy < -40 || player.justJumped || (!player.onGround && player.y < this.y - 14);
+    const targetAbove = targetTile.y < startTile.y - 1;
+    const meaningfulGap = (startTile.y - targetTile.y) >= 2;
+    if ((playerRising && targetAbove) || meaningfulGap) {
+      state.upwardPursuitTimer = Math.max(state.upwardPursuitTimer, meaningfulGap ? 0.9 : 0.65);
+      state.upwardPursuitReason = playerRising ? 'player-ascent' : 'height-gap';
+    }
+    if (state.stuckCounter >= 1 && targetAbove) {
+      state.upwardPursuitTimer = Math.max(state.upwardPursuitTimer, 0.85);
+      state.upwardPursuitReason = 'stalled-below';
+    }
+  }
+
+  isForwardBlocked(world, abilities, dir) {
+    const step = Math.sign(dir || this.facing || 1);
+    const probeX = this.x + step * (this.width * 0.55);
+    return this.collidesBodyAt(probeX, this.y, world, abilities, { ignoreOneWay: true });
   }
 
   detectStuckState(dt, targetWorld) {
@@ -591,7 +622,7 @@ export default class FriendlyCompanion extends Player {
       profiles.push({ type: 'stepUp', dir: dir || 1, hold: 0.15, cost: 1.2 });
       profiles.push({ type: 'shortHopForward', dir: dir || 1, hold: 0.16, cost: 1.5 });
     }
-    if (dy <= 0 && Math.abs(dx) <= 2) {
+    if (dy <= 0 && Math.abs(dx) <= 3) {
       profiles.push({ type: 'diagJump', dir: dir || 1, hold: 0.2, driftDelay: 0, cost: 3 + Math.abs(dy) });
       profiles.push({ type: 'upThenDrift', dir: dir || 1, hold: 0.24, driftDelay: 0.07, cost: 3.5 + Math.abs(dy) });
     }
@@ -858,8 +889,11 @@ export default class FriendlyCompanion extends Player {
       neighbors.push({ x: tile.x + dir, y: tile.y - 1, align: 'center' });
       neighbors.push({ x: tile.x + dir, y: tile.y - 2, align: 'center' });
       neighbors.push({ x: tile.x + dir, y: tile.y - 3, align: 'center' });
+      neighbors.push({ x: tile.x + dir, y: tile.y - 4, align: 'center' });
       neighbors.push({ x: tile.x + dir * 2, y: tile.y - 1, align: 'center' });
       neighbors.push({ x: tile.x + dir * 2, y: tile.y - 2, align: 'center' });
+      neighbors.push({ x: tile.x + dir * 3, y: tile.y - 1, align: 'center' });
+      neighbors.push({ x: tile.x + dir * 2, y: tile.y - 3, align: 'center' });
       neighbors.push({ x: tile.x + dir, y: tile.y + 1, align: 'center' });
       neighbors.push({ x: tile.x + dir, y: tile.y + 2, align: 'center' });
       neighbors.push({ x: tile.x + dir * 2, y: tile.y, align: 'center' });
@@ -867,6 +901,7 @@ export default class FriendlyCompanion extends Player {
     neighbors.push({ x: tile.x, y: tile.y - 1, align: 'center' });
     neighbors.push({ x: tile.x, y: tile.y - 2, align: 'center' });
     neighbors.push({ x: tile.x, y: tile.y - 3, align: 'center' });
+    neighbors.push({ x: tile.x, y: tile.y - 4, align: 'center' });
     neighbors.push({ x: tile.x, y: tile.y + 1, align: 'center' });
     neighbors.push({ x: tile.x, y: tile.y + 2, align: 'center' });
     const nearElevator = this.findNearbyElevatorComponent(tile, world, abilities);
@@ -1532,6 +1567,11 @@ export default class FriendlyCompanion extends Player {
       }
       this.jumpDecisionCooldown = 0.18;
     }
+    if (this.navState.forcedClimbTriggered && (this.onGround || this.coyote > 0) && this.jumpDecisionCooldown <= 0) {
+      input.add('jump');
+      input.add(dir < 0 ? 'left' : 'right');
+      this.jumpDecisionCooldown = 0.2;
+    }
     return input;
   }
 
@@ -1574,12 +1614,15 @@ export default class FriendlyCompanion extends Player {
     const targetWorld = navTarget.world;
     const startTile = this.getFootStandTile(world);
 
+    this.updateUpwardPursuitState(dt, player, startTile, targetTile);
     this.detectStuckState(dt, targetWorld);
     const desiredMode = this.chooseNavigationMode(targetTile, world, abilities);
     const verticalToTarget = targetTile.y - startTile.y;
     const surfacePlan = this.findTraversalRoute(startTile, targetTile, world, abilities);
     const sameSurface = Boolean(surfacePlan.startSurface && surfacePlan.goalSurface && surfacePlan.startSurface === surfacePlan.goalSurface);
-    const forceRoute = this.shouldForceRouteBecauseVerticalMismatch(startTile, targetTile) || this.detectJumpSpamFailure();
+    const forceRoute = this.shouldForceRouteBecauseVerticalMismatch(startTile, targetTile)
+      || this.detectJumpSpamFailure()
+      || (state.upwardPursuitTimer > 0 && targetTile.y < startTile.y);
 
     let path = state.path;
     let reason = 'commit';
@@ -1603,7 +1646,15 @@ export default class FriendlyCompanion extends Player {
       state.replanCooldown = Math.max(state.replanCooldown, 0.12);
     }
 
-    if (sameSurface && !forceRoute && state.stuckCounter < 2 && Math.abs(verticalToTarget) <= 2) {
+    const horizontalDir = Math.sign(targetWorld.x - this.x) || this.facing || 1;
+    const blockedTowardTarget = this.isForwardBlocked(world, abilities, horizontalDir);
+    const shouldForceClimb = state.upwardPursuitTimer > 0
+      && targetTile.y < startTile.y
+      && blockedTowardTarget
+      && (this.onGround || this.coyote > 0);
+    state.forcedClimbTriggered = shouldForceClimb;
+
+    if (sameSurface && !forceRoute && state.stuckCounter < 2 && Math.abs(verticalToTarget) <= 2 && state.upwardPursuitTimer <= 0) {
       state.mode = 'direct';
       path = this.buildDirectSurfaceSegment(startTile, targetTile);
       reason = 'surface-direct';
@@ -1611,6 +1662,13 @@ export default class FriendlyCompanion extends Player {
       path = this.buildSegmentsFromTraversalRoute(surfacePlan.route, targetTile);
       state.replanCooldown = 0.22;
       reason = path.length ? 'surface-route' : 'surface-route-fail';
+    }
+    if (shouldForceClimb && path.length) {
+      const first = path[0];
+      if (first?.edge?.profile?.type === 'walk' || first?.edge?.profile?.type === 'corridorAdvance') {
+        first.edge.profile.type = 'shortHopForward';
+        reason = 'obstacle-forced-climb';
+      }
     }
 
     if (!path.length && (state.stuckCounter >= 2 || this.detectJumpSpamFailure())) {
@@ -1694,6 +1752,9 @@ export default class FriendlyCompanion extends Player {
             ? 'after-launch'
             : 'landing-miss')
       : 'none';
+    this.navDebug.upwardPursuitActive = state.upwardPursuitTimer > 0;
+    this.navDebug.upwardPursuitReason = state.upwardPursuitReason || 'none';
+    this.navDebug.obstacleForcedClimb = Boolean(state.forcedClimbTriggered);
 
     return {
       mode: state.mode,

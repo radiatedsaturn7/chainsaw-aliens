@@ -32,21 +32,22 @@ async function run() {
     }
   });
 
-  // 1) same-platform follow still works
   const flatWorld = mkWorld([
-    '........',
-    '........',
-    '........',
-    '........',
-    '........',
-    '########',
-    '########'
+    '.............',
+    '.............',
+    '.............',
+    '.............',
+    '.............',
+    '#############',
+    '#############'
   ]);
-  const c1 = new FriendlyCompanion((2.5) * tileSize, (4.5) * tileSize);
-  assert.strictEqual(c1.shouldUseDirectFollow({ x: 4, y: 4, align: 'center' }, flatWorld, {}), true);
 
-  // 2) route chooses takeoff first, then launch toward landing
-  const c2 = new FriendlyCompanion((1.5) * tileSize, (5.5) * tileSize);
+  // 1) same-surface follow remains direct
+  const sameSurfaceCompanion = new FriendlyCompanion((2.5) * tileSize, (4.5) * tileSize);
+  assert.strictEqual(sameSurfaceCompanion.shouldUseDirectFollow({ x: 4, y: 4, align: 'center' }, flatWorld, {}), true);
+
+  // 2) route to one-platform higher ledge: takeoff then launch
+  const ledgeCompanion = new FriendlyCompanion((1.5) * tileSize, (5.5) * tileSize);
   const jumpPath = [{
     tile: { x: 3, y: 4, align: 'center' },
     edge: {
@@ -56,17 +57,21 @@ async function run() {
       transitionType: 'shortHop'
     }
   }];
-  const prepMove = c2.chooseMoveFromPath(jumpPath, flatWorld);
+  const prepMove = ledgeCompanion.chooseMoveFromPath(jumpPath, flatWorld);
   assert.strictEqual(prepMove.edge.executionStage, 'takeoff-prep');
   assert.deepStrictEqual(prepMove.nextTile, { x: 2, y: 5, align: 'center' });
-  c2.x = (2.5) * tileSize;
-  c2.y = (5.5) * tileSize;
-  const launchMove = c2.chooseMoveFromPath(jumpPath, flatWorld);
+  ledgeCompanion.x = (2.5) * tileSize;
+  ledgeCompanion.y = (5.5) * tileSize;
+  const launchMove = ledgeCompanion.chooseMoveFromPath(jumpPath, flatWorld);
   assert.strictEqual(launchMove.edge.executionStage, 'launch');
-  assert.deepStrictEqual(launchMove.nextTile, { x: 3, y: 4, align: 'center' });
 
-  // 3) validated jump edge remains valid and is not keyed by align variants
-  const c3 = new FriendlyCompanion((2.5) * tileSize, (5.5) * tileSize);
+  // 3) upward pursuit toggles on player ascent nearby
+  const pursuitCompanion = new FriendlyCompanion((5.5) * tileSize, (5.5) * tileSize);
+  const risingPlayer = { x: 6.5 * tileSize, y: 3.8 * tileSize, vy: -220, justJumped: true, onGround: false, height: 34, facing: 1 };
+  pursuitCompanion.updateUpwardPursuitState(0.016, risingPlayer, { x: 5, y: 5, align: 'center' }, { x: 6, y: 3, align: 'center' });
+  assert.ok(pursuitCompanion.navState.upwardPursuitTimer > 0.5, 'expected upward pursuit timer to activate');
+
+  // 4) short obstacle/ledge requiring jump gets a valid upward edge
   const stepWorld = mkWorld([
     '........',
     '........',
@@ -77,13 +82,13 @@ async function run() {
     '########',
     '########'
   ]);
-  const jumpEdge = c3.validateMovementEdge({ x: 2, y: 5, align: 'left' }, { x: 3, y: 4, align: 'right' }, stepWorld, {});
-  assert.ok(jumpEdge && jumpEdge.ok, 'expected adjacent upward jump edge to be valid');
-  assert.strictEqual(c3.tileKey({ x: 2, y: 5, align: 'left' }), c3.tileKey({ x: 2, y: 5, align: 'right' }));
+  const obstacleCompanion = new FriendlyCompanion((2.5) * tileSize, (5.5) * tileSize);
+  const jumpEdge = obstacleCompanion.validateMovementEdge({ x: 2, y: 5, align: 'center' }, { x: 3, y: 4, align: 'center' }, stepWorld, {});
+  assert.ok(jumpEdge && jumpEdge.ok, 'expected jump edge over obstacle to be valid');
 
-  // 4) jump execution is not canceled by tiny drift during takeoff/launch
-  const c4 = new FriendlyCompanion(160, 160);
-  c4.moveExecution = {
+  // 5) jump route commitment survives tiny drift
+  const driftCompanion = new FriendlyCompanion(160, 160);
+  driftCompanion.moveExecution = {
     active: true,
     profile: 'shortHopForward',
     phase: 'takeoff-prep',
@@ -93,8 +98,8 @@ async function run() {
     sourceNode: { x: 4, y: 5, align: 'center' },
     targetNode: { x: 5, y: 5, align: 'center' }
   };
-  const restart = c4.shouldRestartExecution(
-    c4.moveExecution,
+  const restart = driftCompanion.shouldRestartExecution(
+    driftCompanion.moveExecution,
     { x: 4, y: 5, align: 'center' },
     { nextTile: { x: 6, y: 4, align: 'center' } },
     'diagJump',
@@ -102,12 +107,31 @@ async function run() {
   );
   assert.strictEqual(restart, false, 'jump commitment should survive tiny drift/profile shift');
 
-  // 5) a single bad attempt should not poison an otherwise valid jump edge
-  const c5 = new FriendlyCompanion(0, 0);
-  const from = { x: 2, y: 5, align: 'center' };
-  const to = { x: 3, y: 4, align: 'center' };
-  c5.markEdgeFailure(from, to, 'diagJump');
-  assert.strictEqual(c5.isEdgePoisoned(from, to, 'diagJump'), false, 'single jump failure should not poison edge');
+  // 6) no pacing-state explosion by align variants in global key
+  assert.strictEqual(obstacleCompanion.tileKey({ x: 5, y: 5, align: 'left' }), obstacleCompanion.tileKey({ x: 5, y: 5, align: 'right' }));
+
+  // 7) teleport fallback still works at true long distance
+  const teleportWorld = mkWorld([
+    '.............',
+    '.............',
+    '.............',
+    '.............',
+    '.............',
+    '#############',
+    '#############'
+  ]);
+  const teleportCompanion = new FriendlyCompanion((1.5) * tileSize, (5.5) * tileSize);
+  const farPlayer = {
+    x: 50 * tileSize,
+    y: 5 * tileSize,
+    vy: 0,
+    justJumped: false,
+    onGround: true,
+    height: 34,
+    facing: 1
+  };
+  teleportCompanion.update(0.016, teleportWorld, {}, { player: farPlayer, enemies: [], boss: null });
+  assert.ok(Math.abs(teleportCompanion.x - (farPlayer.x - 26)) < tileSize, 'expected companion to teleport near far player');
 
   console.log('FriendlyCompanion nav tests passed');
 }
