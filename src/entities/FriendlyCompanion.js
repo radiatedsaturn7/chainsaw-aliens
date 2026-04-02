@@ -145,7 +145,12 @@ export default class FriendlyCompanion extends Player {
       lastPoisonReason: 'none',
       upwardPursuitTimer: 0,
       upwardPursuitReason: 'none',
-      forcedClimbTriggered: false
+      forcedClimbTriggered: false,
+      settled: false,
+      stableFollowTile: null,
+      stableFollowScore: Infinity,
+      stableFollowHold: 0,
+      jumpCancelReason: 'none'
     };
     this.moveExecution = {
       active: false,
@@ -189,7 +194,12 @@ export default class FriendlyCompanion extends Player {
       poisonReason: 'none',
       upwardPursuitActive: false,
       upwardPursuitReason: 'none',
-      obstacleForcedClimb: false
+      obstacleForcedClimb: false,
+      settledActive: false,
+      stableFollowTile: 'none',
+      arrivalDeadzoneActive: false,
+      jumpCanceled: false,
+      jumpCancelReason: 'none'
     };
   }
 
@@ -599,6 +609,39 @@ export default class FriendlyCompanion extends Player {
     return false;
   }
 
+  isPlayerMostlyStill(player) {
+    return Math.abs(player?.vx || 0) < 10 && Math.abs(player?.vy || 0) < 18 && Boolean(player?.onGround);
+  }
+
+  chooseStickyFollowTile(candidateTile, player, world) {
+    const state = this.navState;
+    state.stableFollowHold = Math.max(0, state.stableFollowHold - 1);
+    const playerStill = this.isPlayerMostlyStill(player);
+    if (!state.stableFollowTile || !playerStill) {
+      state.stableFollowTile = { ...candidateTile };
+      state.stableFollowScore = Math.hypot(candidateTile.x - Math.floor(player.x / world.tileSize), candidateTile.y - Math.floor(player.y / world.tileSize));
+      state.stableFollowHold = playerStill ? 18 : 0;
+      return candidateTile;
+    }
+    const current = state.stableFollowTile;
+    const currentScore = Math.hypot(current.x - Math.floor(player.x / world.tileSize), current.y - Math.floor(player.y / world.tileSize));
+    const candidateScore = Math.hypot(candidateTile.x - Math.floor(player.x / world.tileSize), candidateTile.y - Math.floor(player.y / world.tileSize));
+    const nearEquivalent = Math.abs(candidateScore - currentScore) < 0.9
+      && Math.abs(candidateTile.x - current.x) <= 1
+      && Math.abs(candidateTile.y - current.y) <= 1;
+    if (nearEquivalent && state.stableFollowHold > 0) {
+      return current;
+    }
+    const materiallyBetter = candidateScore + 0.75 < currentScore;
+    if (materiallyBetter || state.stableFollowHold <= 0) {
+      state.stableFollowTile = { ...candidateTile };
+      state.stableFollowScore = candidateScore;
+      state.stableFollowHold = playerStill ? 18 : 0;
+      return candidateTile;
+    }
+    return current;
+  }
+
   buildNavigationTarget(player, world, abilities) {
     if (this.assistTarget) {
       const dir = Math.sign(this.assistTarget.x - this.x) || this.facing || 1;
@@ -607,7 +650,8 @@ export default class FriendlyCompanion extends Player {
         world: { x: this.assistTarget.x - dir * 20, y: this.assistTarget.y - 4 }
       };
     }
-    const tile = this.findFollowStandTile(player, world, abilities);
+    const candidateTile = this.findFollowStandTile(player, world, abilities);
+    const tile = this.chooseStickyFollowTile(candidateTile, player, world);
     return { tile, world: this.tileCenter(tile, world) };
   }
 
@@ -1547,6 +1591,11 @@ export default class FriendlyCompanion extends Player {
       return input;
     }
     if (execution.phase === 'launch') {
+      if (execution.takeoffTile && !this.isNearTile(execution.takeoffTile, world, 0.7) && this.onGround) {
+        execution.phase = 'travel';
+        this.navState.jumpCancelReason = 'invalid-takeoff';
+        return input;
+      }
       input.add('jump');
       if (profile === 'diagJump' || profile === 'stepUp' || profile === 'shortHopForward' || profile === 'lowCeilingStep') {
         input.add(dir < 0 ? 'left' : 'right');
@@ -1574,6 +1623,14 @@ export default class FriendlyCompanion extends Player {
     if ((profile === 'diagJump' || profile === 'verticalJump' || profile === 'upThenDrift'
       || profile === 'stepUp' || profile === 'shortHopForward' || profile === 'lowCeilingStep')
       && (this.onGround || this.coyote > 0) && this.jumpDecisionCooldown <= 0) {
+      if (execution.takeoffTile && !this.isNearTile(execution.takeoffTile, world, 0.72)) {
+        this.navState.jumpCancelReason = 'takeoff-drift';
+        return input;
+      }
+      if (Math.abs(dx) < world.tileSize * 0.18 && this.navState.jumpLoopCounter >= 1) {
+        this.navState.jumpCancelReason = 'useless-bounce';
+        return input;
+      }
       input.add('jump');
       if (profile === 'diagJump' || (profile === 'upThenDrift' && execution.phase === 'drift')) {
         input.add(dir < 0 ? 'left' : 'right');
@@ -1602,14 +1659,24 @@ export default class FriendlyCompanion extends Player {
     if (this.shouldRestartExecution(execution, sourceNode, move, profile, nextPoisoned)) {
       this.beginMoveExecution(move, profile, world);
     }
+    if (this.isJumpProfile(profile) && move?.edge?.takeoffTile && !this.isNearTile(move.edge.takeoffTile, world, 1.25) && this.navState.noProgressTimer > 0.25) {
+      this.moveExecution.active = false;
+      this.moveExecution.phase = 'idle';
+      this.navState.replanCooldown = 0;
+      this.navState.jumpCancelReason = 'stale-jump-context';
+      return { input: new Set(), profile: 'replan' };
+    }
     this.moveExecution.elapsed += dt;
     const phaseInput = this.buildExecutionIntent(this.moveExecution, dx, dy, world, dt);
     phaseInput.forEach((key) => nextInput.add(key));
 
     // fallback direct drive to avoid any idle "thinking pauses" while planning updates.
     if (!nextInput.size) {
-      if (dx < -10) nextInput.add('left');
-      if (dx > 10) nextInput.add('right');
+      const deadzone = world.tileSize * 0.28;
+      if (Math.abs(dx) > deadzone) {
+        if (dx < -10) nextInput.add('left');
+        if (dx > 10) nextInput.add('right');
+      }
     }
 
     return { input: nextInput, profile };
@@ -1626,6 +1693,29 @@ export default class FriendlyCompanion extends Player {
     const targetTile = navTarget.tile;
     const targetWorld = navTarget.world;
     const startTile = this.getFootStandTile(world);
+    const distToFollow = Math.hypot(targetWorld.x - this.x, targetWorld.y - this.y);
+    const playerStill = this.isPlayerMostlyStill(player);
+    const arrivalDeadzone = world.tileSize * 0.42;
+    if (playerStill && distToFollow <= arrivalDeadzone && Math.abs(this.vx) < 22 && Math.abs(this.vy) < 30) {
+      state.settled = true;
+      state.mode = 'direct';
+      state.path = [];
+      state.targetTile = targetTile;
+      state.nextNode = null;
+      state.moveProfile = 'settled';
+      this.moveExecution.active = false;
+      this.moveExecution.phase = 'idle';
+      this.navDebug.mode = state.mode;
+      this.navDebug.targetTile = `${targetTile.x},${targetTile.y}`;
+      this.navDebug.nextPathNode = 'none';
+      this.navDebug.moveProfile = 'settled';
+      this.navDebug.executionPhase = 'idle';
+      this.navDebug.arrivalDeadzoneActive = true;
+      this.navDebug.settledActive = true;
+      this.navDebug.stableFollowTile = state.stableFollowTile ? this.tileKey(state.stableFollowTile) : 'none';
+      return { mode: 'direct', input: new Set(), moveProfile: 'settled', targetTile };
+    }
+    state.settled = false;
 
     this.updateUpwardPursuitState(dt, player, startTile, targetTile);
     this.detectStuckState(dt, targetWorld);
@@ -1775,6 +1865,12 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.upwardPursuitActive = state.upwardPursuitTimer > 0;
     this.navDebug.upwardPursuitReason = state.upwardPursuitReason || 'none';
     this.navDebug.obstacleForcedClimb = Boolean(state.forcedClimbTriggered);
+    this.navDebug.settledActive = Boolean(state.settled);
+    this.navDebug.stableFollowTile = state.stableFollowTile ? this.tileKey(state.stableFollowTile) : 'none';
+    this.navDebug.arrivalDeadzoneActive = this.isPlayerMostlyStill(player) && Math.hypot(targetWorld.x - this.x, targetWorld.y - this.y) <= world.tileSize * 0.42;
+    this.navDebug.jumpCanceled = state.jumpCancelReason !== 'none';
+    this.navDebug.jumpCancelReason = state.jumpCancelReason || 'none';
+    state.jumpCancelReason = 'none';
 
     return {
       mode: state.mode,

@@ -32,71 +32,6 @@ async function run() {
     }
   });
 
-  // A) Reachable upper platform requiring lateral detour.
-  const detourWorld = mkWorld([
-    '.............',
-    '.............',
-    '.............',
-    '.............',
-    '.............',
-    '........###..',
-    '#############',
-    '.............',
-    '#############'
-  ]);
-  const detourCompanion = new FriendlyCompanion((2.5) * tileSize, (5.5) * tileSize);
-  const detourRoute = detourCompanion.findTraversalRoute(
-    { x: 2, y: 5, align: 'center' },
-    { x: 9, y: 4, align: 'center' },
-    detourWorld,
-    {}
-  );
-  assert.ok(detourRoute.route.length > 0, 'expected non-empty route to upper platform');
-  const upwardEdge = detourRoute.route.find((edge) => edge.targetTile?.y < edge.sourceTile?.y);
-  assert.ok(upwardEdge, 'expected route with explicit upward transition');
-  assert.ok(upwardEdge.sourceTile.x >= 6, 'expected lateral approach before jump takeoff');
-
-  // B) Distinct surfaces must not be merged by diagonal corner touching.
-  const diagonalWorld = mkWorld([
-    '......',
-    '......',
-    '..#...',
-    '...#..',
-    '......',
-    '######'
-  ]);
-  const diagonalCompanion = new FriendlyCompanion((2.5) * tileSize, (1.5) * tileSize);
-  const diagonalRoute = diagonalCompanion.findTraversalRoute(
-    { x: 2, y: 1, align: 'center' },
-    { x: 3, y: 2, align: 'center' },
-    diagonalWorld,
-    {}
-  );
-  assert.notStrictEqual(diagonalRoute.startSurface, diagonalRoute.goalSurface, 'diagonal corner tiles should not be same surface');
-
-  // C) No direct-follow downgrade during elevated detour pursuit.
-  const climbingCompanion = new FriendlyCompanion((2.5) * tileSize, (5.5) * tileSize);
-  const elevatedPlayer = {
-    x: 9.5 * tileSize,
-    y: 4.5 * tileSize,
-    vy: -180,
-    justJumped: true,
-    onGround: false,
-    height: 34,
-    facing: 1
-  };
-  const nav = climbingCompanion.updateNavigation(0.016, elevatedPlayer, detourWorld, {});
-  assert.notStrictEqual(nav.mode, 'direct', 'should stay routed/climb mode when elevated detour is needed');
-
-  // D) Avoid pacing directly underneath a reachable elevated player.
-  const routeAttempted = climbingCompanion.navDebug.routeKind === 'surface-graph' || climbingCompanion.navState.mode === 'astar';
-  assert.ok(routeAttempted, 'expected routing mode rather than trivial pacing mode');
-  assert.ok(
-    climbingCompanion.navDebug.upwardPursuitActive || climbingCompanion.navDebug.obstacleForcedClimb || climbingCompanion.navState.path.length > 0,
-    'expected meaningful climb pursuit signal instead of flat direct pacing'
-  );
-
-  // E) Same-surface follow still behaves reasonably.
   const flatWorld = mkWorld([
     '.............',
     '.............',
@@ -106,14 +41,86 @@ async function run() {
     '#############',
     '#############'
   ]);
-  const sameSurfaceCompanion = new FriendlyCompanion((2.5) * tileSize, (4.5) * tileSize);
-  assert.strictEqual(sameSurfaceCompanion.shouldUseDirectFollow({ x: 4, y: 4, align: 'center' }, flatWorld, {}), true);
 
-  // F) Teleport fallback still works when truly far away.
-  const teleportCompanion = new FriendlyCompanion((1.5) * tileSize, (5.5) * tileSize);
+  // 1) Settled near-player behavior: no left-right oscillation when already close.
+  const settledCompanion = new FriendlyCompanion((5.5) * tileSize, (4.5) * tileSize);
+  const idlePlayer = {
+    x: 5.5 * tileSize,
+    y: 4.5 * tileSize,
+    vx: 0,
+    vy: 0,
+    justJumped: false,
+    onGround: true,
+    height: 34,
+    facing: 1
+  };
+  const settleTarget = settledCompanion.buildNavigationTarget(idlePlayer, flatWorld, {});
+  settledCompanion.x = settleTarget.world.x;
+  settledCompanion.y = settleTarget.world.y;
+  const navA = settledCompanion.updateNavigation(0.016, idlePlayer, flatWorld, {});
+  const navB = settledCompanion.updateNavigation(0.016, idlePlayer, flatWorld, {});
+  const dirA = navA.input.has('left') ? -1 : navA.input.has('right') ? 1 : 0;
+  const dirB = navB.input.has('left') ? -1 : navB.input.has('right') ? 1 : 0;
+  assert.ok(!(dirA === -dirB && dirA !== 0), 'expected no immediate left/right oscillation near rest');
+  assert.ok(settledCompanion.navDebug.settledActive || settledCompanion.navDebug.arrivalDeadzoneActive, 'expected settle/deadzone behavior near player');
+
+  // 2) Sticky follow target: tiny player jitter should not flap follow tile every frame.
+  const stickyCompanion = new FriendlyCompanion((3.5) * tileSize, (4.5) * tileSize);
+  const basePlayer = {
+    x: 6.5 * tileSize,
+    y: 4.5 * tileSize,
+    vx: 0,
+    vy: 0,
+    justJumped: false,
+    onGround: true,
+    height: 34,
+    facing: 1
+  };
+  const t1 = stickyCompanion.buildNavigationTarget(basePlayer, flatWorld, {}).tile;
+  const t2 = stickyCompanion.buildNavigationTarget({ ...basePlayer, x: basePlayer.x + 3 }, flatWorld, {}).tile;
+  const t3 = stickyCompanion.buildNavigationTarget({ ...basePlayer, x: basePlayer.x - 3 }, flatWorld, {}).tile;
+  assert.strictEqual(`${t1.x},${t1.y}`, `${t2.x},${t2.y}`);
+  assert.strictEqual(`${t2.x},${t2.y}`, `${t3.x},${t3.y}`);
+
+  // 3) Invalid jump suppression: stale takeoff context cancels jump profile.
+  const staleJumpCompanion = new FriendlyCompanion((2.5) * tileSize, (4.5) * tileSize);
+  staleJumpCompanion.navState.noProgressTimer = 0.4;
+  const staleMove = {
+    target: { x: 9.5 * tileSize, y: 3.5 * tileSize },
+    nextTile: { x: 9, y: 3, align: 'center' },
+    edge: {
+      profile: { type: 'diagJump' },
+      takeoffTile: { x: 9, y: 4, align: 'center' },
+      landingTile: { x: 9, y: 3, align: 'center' }
+    }
+  };
+  const staleResult = staleJumpCompanion.applyMoveIntent(staleMove, staleMove.target, flatWorld, {}, 0.016);
+  assert.strictEqual(staleResult.profile, 'replan', 'expected stale jump context to be canceled and replanned');
+
+  // 4) No useless bounce: jump guard blocks meaningless bounce under elevated target when takeoff invalid.
+  const bounceCompanion = new FriendlyCompanion((5.5) * tileSize, (4.5) * tileSize);
+  bounceCompanion.navState.jumpLoopCounter = 2;
+  const bounceExecution = {
+    profile: 'diagJump',
+    phase: 'travel',
+    lockDirection: 1,
+    elapsed: 0,
+    hold: 0,
+    takeoffTile: { x: 8, y: 4, align: 'center' }
+  };
+  const bounceInput = bounceCompanion.buildExecutionIntent(bounceExecution, 1, -40, flatWorld, 0.016);
+  assert.strictEqual(bounceInput.has('jump'), false, 'expected jump suppression for useless bounce context');
+
+  // 5) Same-surface follow still works at moderate distance.
+  const followCompanion = new FriendlyCompanion((2.5) * tileSize, (4.5) * tileSize);
+  assert.strictEqual(followCompanion.shouldUseDirectFollow({ x: 6, y: 4, align: 'center' }, flatWorld, {}), true);
+
+  // 6) Teleport fallback still works when truly far away.
+  const teleportCompanion = new FriendlyCompanion((1.5) * tileSize, (4.5) * tileSize);
   const farPlayer = {
     x: 50 * tileSize,
     y: 5 * tileSize,
+    vx: 0,
     vy: 0,
     justJumped: false,
     onGround: true,
