@@ -157,7 +157,10 @@ export default class FriendlyCompanion extends Player {
       oscillationDampTimer: 0,
       lastLateralDir: 0,
       lateralFlipCount: 0,
-      forcedClimbJumpAllowed: false
+      forcedClimbJumpAllowed: false,
+      jumpNoProgressStreak: 0,
+      jumpSuppressionTimer: 0,
+      lastRouteDistance: Infinity
     };
     this.moveExecution = {
       active: false,
@@ -766,6 +769,12 @@ export default class FriendlyCompanion extends Player {
       if (!result.ok) continue;
       const progress = Math.abs(to.x - from.x) + Math.abs(to.y - from.y);
       if (this.isJumpProfile(profile.type) && progress <= 1 && result.cost > 2.6) continue;
+      if (this.isJumpProfile(profile.type)) {
+        const horizontalGain = Math.abs(to.x - from.x);
+        const verticalGain = from.y - to.y;
+        const weakVertical = horizontalGain === 0 && verticalGain <= 2;
+        if (weakVertical && result.cost > 2.2) continue;
+      }
       if (!best || result.cost < best.cost) {
         best = {
           ok: true,
@@ -1105,11 +1114,11 @@ export default class FriendlyCompanion extends Player {
   traversalEdgeCost(type, fromTile, toTile) {
     const dx = Math.abs(toTile.x - fromTile.x);
     const dy = toTile.y - fromTile.y;
-    if (type === 'walk' || type === 'slopeWalk' || type === 'corridorAdvance') return 1 + dx * 0.2;
-    if (type === 'stepUp') return 1.4 + dx * 0.2;
-    if (type === 'shortHop') return 2.1 + Math.abs(dy) * 0.4;
+    if (type === 'walk' || type === 'slopeWalk' || type === 'corridorAdvance') return 0.85 + dx * 0.18;
+    if (type === 'stepUp') return 1.1 + dx * 0.18;
+    if (type === 'shortHop') return 2.6 + Math.abs(dy) * 0.5 + (dx === 0 ? 1.1 : 0);
     if (type === 'drop') return 1.6 + Math.max(0, dy) * 0.3;
-    if (type === 'jumpArc') return 3 + Math.abs(dy) * 0.5 + dx * 0.25;
+    if (type === 'jumpArc') return 3.6 + Math.abs(dy) * 0.55 + dx * 0.22 + (dx === 0 ? 1.4 : 0);
     return 1.5;
   }
 
@@ -1685,6 +1694,10 @@ export default class FriendlyCompanion extends Player {
       || profile === 'paramJump'
       || profile === 'stepUp' || profile === 'shortHopForward' || profile === 'lowCeilingStep')
       && (this.onGround || this.coyote > 0) && this.jumpDecisionCooldown <= 0) {
+      if (this.navState.jumpSuppressionTimer > 0 && profile !== 'stepUp' && profile !== 'shortHopForward') {
+        this.navState.jumpCancelReason = 'anti-pogo-suppress';
+        return input;
+      }
       if (execution.takeoffTile && !this.isNearTile(execution.takeoffTile, world, 0.72)) {
         this.navState.jumpCancelReason = 'takeoff-drift';
         return input;
@@ -1758,6 +1771,7 @@ export default class FriendlyCompanion extends Player {
     state.replanCooldown = Math.max(0, state.replanCooldown - dt);
     state.restLockTimer = Math.max(0, state.restLockTimer - dt);
     state.oscillationDampTimer = Math.max(0, state.oscillationDampTimer - dt);
+    state.jumpSuppressionTimer = Math.max(0, state.jumpSuppressionTimer - dt);
     this.jumpDecisionCooldown = Math.max(0, this.jumpDecisionCooldown - dt);
     this.jumpSuppressTimer = Math.max(0, this.jumpSuppressTimer - dt);
     this.ageNavigationCaches(dt);
@@ -1769,6 +1783,20 @@ export default class FriendlyCompanion extends Player {
     const distToFollow = Math.hypot(targetWorld.x - this.x, targetWorld.y - this.y);
     const playerStill = this.isPlayerMostlyStill(player);
     const arrivalDeadzone = world.tileSize * 0.42;
+    if (this.justJumped) {
+      const horizontalProgress = Math.abs(this.x - state.lastJumpX);
+      const improvedRoute = distToFollow < state.lastRouteDistance - 6;
+      if (horizontalProgress < 8 && !improvedRoute) {
+        state.jumpNoProgressStreak += 1;
+      } else {
+        state.jumpNoProgressStreak = Math.max(0, state.jumpNoProgressStreak - 1);
+      }
+      if (state.jumpNoProgressStreak >= 2) {
+        state.jumpSuppressionTimer = 0.65;
+        state.jumpCancelReason = 'pogo-loop';
+      }
+    }
+    state.lastRouteDistance = distToFollow;
     if (this.shouldStayInRestMode(player, world, abilities)) {
       state.restMode = true;
       state.settled = true;
@@ -1864,13 +1892,11 @@ export default class FriendlyCompanion extends Player {
     }
     if (shouldForceClimb && path.length) {
       const first = path[0];
-      if (first?.edge?.profile?.type === 'walk' || first?.edge?.profile?.type === 'corridorAdvance') {
-        first.edge.profile.type = 'shortHopForward';
-        reason = 'obstacle-forced-climb';
-      }
       const jumpLikeFirst = this.isJumpProfile(first?.edge?.profile?.type);
       const nearTakeoff = !first?.edge?.sourceTile || this.isNearTile(first.edge.sourceTile, world, 0.9);
-      state.forcedClimbJumpAllowed = Boolean(jumpLikeFirst && nearTakeoff && targetTile.y < startTile.y);
+      const usefulJump = jumpLikeFirst && Math.abs((first.edge?.targetTile?.x || startTile.x) - (first.edge?.sourceTile?.x || startTile.x)) > 0;
+      state.forcedClimbJumpAllowed = Boolean(usefulJump && nearTakeoff && targetTile.y < startTile.y);
+      if (state.forcedClimbJumpAllowed) reason = 'obstacle-forced-climb';
     }
 
     if (!path.length && (state.stuckCounter >= 2 || this.detectJumpSpamFailure())) {
