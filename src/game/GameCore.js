@@ -379,6 +379,8 @@ export default class Game {
     this.pixelPreviewTarget = null;
     this.playtestActive = false;
     this.playtestButtonBounds = null;
+    this.companionDebugButtonBounds = null;
+    this.showCompanionPathDebug = false;
     this.playtestPauseLock = 0;
     this.actorEditorTestSnapshot = null;
     this.levelEditorPlaytestSnapshot = null;
@@ -1963,15 +1965,6 @@ export default class Game {
     this.friendlyCompanion = null;
   }
 
-  snapFriendlyCompanionNearPlayer() {
-    if (!this.friendlyCompanion || !this.player) return;
-    const dir = this.player.facing || 1;
-    this.friendlyCompanion.x = this.player.x - dir * 28;
-    this.friendlyCompanion.y = this.player.y - 6;
-    this.friendlyCompanion.vx = 0;
-    this.friendlyCompanion.vy = 0;
-  }
-
   getEndlessSpawnPoint() {
     const tileSize = this.world.tileSize;
     const tries = 40;
@@ -2550,7 +2543,8 @@ export default class Game {
             this.spawnDeathDebris(enemy);
           }
           this.awardLoot(enemy);
-        }
+        },
+        elevatorPlatforms: this.elevatorPlatforms
       });
     }
     this.updateElevators(dt * timeScale, prevPlayer, prevCompanion);
@@ -2736,7 +2730,6 @@ export default class Game {
     this.ignitirCharge = 0;
     this.ignitirReady = false;
     this.lowHealthAlarmTimer = 0;
-    this.snapFriendlyCompanionNearPlayer();
   }
 
   startDeathSequence() {
@@ -3008,7 +3001,6 @@ export default class Game {
         this.player.onGround = false;
       }
       this.doorTransition = null;
-      this.snapFriendlyCompanionNearPlayer();
     }
   }
 
@@ -5080,7 +5072,6 @@ export default class Game {
       return;
     }
     if (action.type === 'snap-companion') {
-      this.snapFriendlyCompanionNearPlayer();
       onDone();
       return;
     }
@@ -6342,6 +6333,9 @@ export default class Game {
     });
     if (this.friendlyCompanion) {
       this.friendlyCompanion.draw(ctx);
+      if (this.showCompanionPathDebug) {
+        this.friendlyCompanion.drawPathDebug(ctx, this.world);
+      }
     }
 
     if (this.boss && !this.boss.dead) {
@@ -6484,6 +6478,26 @@ export default class Game {
       });
     } else {
       this.playtestButtonBounds = null;
+    }
+    if (this.debugMode && this.friendlyCompanion && (this.state === 'playing' || this.state === 'pause')) {
+      const buttonWidth = 110;
+      const buttonHeight = 28;
+      const buttonX = canvas.width - 180;
+      const buttonY = 152;
+      this.companionDebugButtonBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
+      ctx.save();
+      ctx.fillStyle = this.showCompanionPathDebug ? '#174f2a' : '#2a2a2a';
+      ctx.strokeStyle = this.showCompanionPathDebug ? '#4aff86' : '#bbbbbb';
+      ctx.lineWidth = 2;
+      ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+      ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '12px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText(`PATH ${this.showCompanionPathDebug ? 'ON' : 'OFF'}`, buttonX + buttonWidth / 2, buttonY + 18);
+      ctx.restore();
+    } else {
+      this.companionDebugButtonBounds = null;
     }
     this.drawWaypoint(ctx, canvas.width, canvas.height, objectiveTarget);
 
@@ -8326,6 +8340,19 @@ export default class Game {
     }
     if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(payload.x, payload.y)) {
       this.returnToEditorFromPlaytest();
+      return;
+    }
+    if (
+      this.debugMode
+      && this.companionDebugButtonBounds
+      && payload.x >= this.companionDebugButtonBounds.x
+      && payload.x <= this.companionDebugButtonBounds.x + this.companionDebugButtonBounds.w
+      && payload.y >= this.companionDebugButtonBounds.y
+      && payload.y <= this.companionDebugButtonBounds.y + this.companionDebugButtonBounds.h
+    ) {
+      this.showCompanionPathDebug = !this.showCompanionPathDebug;
+      this.audio.ui();
+      this.recordFeedback('menu navigate', 'audio');
       return;
     }
     if (this.state === 'playing') {
