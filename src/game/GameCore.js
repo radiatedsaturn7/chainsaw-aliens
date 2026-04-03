@@ -2327,6 +2327,8 @@ export default class Game {
         if (this.title.screen === 'controls') {
           if (action === 'back') {
             this.title.setScreen('main');
+          } else if (action === 'companion-debug') {
+            this.companionNavDebugEnabled = !this.companionNavDebugEnabled;
           } else {
             this.setInputMode(action);
             this.title.setControlsSelectionByMode(this.inputMode);
@@ -6304,7 +6306,8 @@ export default class Game {
         isMobile: this.deviceIsMobile,
         gamepadConnected: this.gamepadConnected,
         debugRestartEnabled: this.debugMode,
-        serverStorageEnabled: isServerStorageEnabled()
+        serverStorageEnabled: isServerStorageEnabled(),
+        companionDebugEnabled: this.companionNavDebugEnabled
       });
       this.mobileControls.draw(ctx, this.state);
       return;
@@ -7885,7 +7888,7 @@ export default class Game {
     const buttonWidth = 130;
     const buttonHeight = 32;
     const buttonGap = 16;
-    const buttonsTotal = buttonWidth * 2 + buttonGap;
+    const buttonsTotal = buttonWidth * 3 + buttonGap * 2;
     const buttonX = mapX + Math.max(0, (mapWidth - buttonsTotal) / 2);
     const buttonY = mapY + mapHeight + 28;
     ctx.save();
@@ -7908,17 +7911,26 @@ export default class Game {
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
     ctx.fillRect(buttonX + buttonWidth + buttonGap, buttonY, buttonWidth, buttonHeight);
+    ctx.fillRect(buttonX + (buttonWidth + buttonGap) * 2, buttonY, buttonWidth, buttonHeight);
     ctx.strokeStyle = '#fff';
     ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
     ctx.strokeRect(buttonX + buttonWidth + buttonGap, buttonY, buttonWidth, buttonHeight);
+    ctx.strokeRect(buttonX + (buttonWidth + buttonGap) * 2, buttonY, buttonWidth, buttonHeight);
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
     ctx.fillText('BACK', buttonX + buttonWidth / 2, buttonY + 21);
-    ctx.fillText('EXIT', buttonX + buttonWidth + buttonGap + buttonWidth / 2, buttonY + 21);
+    ctx.fillText(`COMP DBG: ${this.companionNavDebugEnabled ? 'ON' : 'OFF'}`, buttonX + buttonWidth + buttonGap + buttonWidth / 2, buttonY + 21);
+    ctx.fillText('EXIT', buttonX + (buttonWidth + buttonGap) * 2 + buttonWidth / 2, buttonY + 21);
     ctx.restore();
     this.minimapBackBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
-    this.minimapExitBounds = {
+    this.minimapCompanionDebugBounds = {
       x: buttonX + buttonWidth + buttonGap,
+      y: buttonY,
+      w: buttonWidth,
+      h: buttonHeight
+    };
+    this.minimapExitBounds = {
+      x: buttonX + (buttonWidth + buttonGap) * 2,
       y: buttonY,
       w: buttonWidth,
       h: buttonHeight
@@ -8379,6 +8391,21 @@ export default class Game {
     ) {
       this.transitionTo('playing');
       this.minimapSelected = false;
+      this.audio.menu();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
+      return;
+    }
+    if (
+      this.state === 'pause'
+      && this.minimapSelected
+      && this.minimapCompanionDebugBounds
+      && payload.x >= this.minimapCompanionDebugBounds.x
+      && payload.x <= this.minimapCompanionDebugBounds.x + this.minimapCompanionDebugBounds.w
+      && payload.y >= this.minimapCompanionDebugBounds.y
+      && payload.y <= this.minimapCompanionDebugBounds.y + this.minimapCompanionDebugBounds.h
+    ) {
+      this.companionNavDebugEnabled = !this.companionNavDebugEnabled;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
