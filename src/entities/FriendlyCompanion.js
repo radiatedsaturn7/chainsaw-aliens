@@ -246,6 +246,8 @@ export default class FriendlyCompanion extends Player {
       goalCandidates: [],
       chosenGoalScore: null,
       chosenGoalReason: 'none',
+      chosenGoalRank: null,
+      usedFallback25: false,
       goalOnPlayerSurface: false,
       routeFollowingChosenGoal: true
     };
@@ -463,101 +465,120 @@ export default class FriendlyCompanion extends Player {
     return bestDist <= 4 ? best : null;
   }
 
-  generateFollowTileCandidates(player, world, abilities) {
-    const tileSize = world.tileSize;
-    const playerTileX = Math.floor(player.x / tileSize);
-    const playerTileY = player.onGround
-      ? Math.floor((player.y + player.height / 2 - 1) / tileSize)
-      : Math.floor(player.y / tileSize);
-    const facing = player.facing || 1;
-    const offsets = [];
-    for (let dy = -2; dy <= 2; dy += 1) {
-      for (let dx = -3; dx <= 3; dx += 1) {
-        offsets.push({ dx, dy });
-      }
-    }
-    offsets.push({ dx: -facing * 2, dy: 0 });
-    offsets.push({ dx: -facing * 1, dy: 0 });
-    offsets.push({ dx: 0, dy: 0 });
-    const seen = new Set();
-    const candidates = [];
-    for (let i = 0; i < offsets.length; i += 1) {
-      const o = offsets[i];
-      const tile = { x: playerTileX + o.dx, y: playerTileY + o.dy, align: 'center' };
-      const key = this.tileKey(tile);
-      if (seen.has(key)) continue;
-      seen.add(key);
-      if (!this.canStandOnTile(tile.x, tile.y, world, abilities)) continue;
-      candidates.push(tile);
-      if (candidates.length >= 24) break;
-    }
-    if (!candidates.length && this.canStandOnTile(playerTileX, playerTileY, world, abilities)) {
-      candidates.push({ x: playerTileX, y: playerTileY, align: 'center' });
-    }
-    return candidates;
+  getFollowPriorityOffsets(facing = 1) {
+    const mirror = facing < 0 ? -1 : 1;
+    const ranked = [
+      { rank: 13, dx: -2, dy: -2 }, { rank: 17, dx: -1, dy: -2 }, { rank: 21, dx: 0, dy: -2 }, { rank: 19, dx: 1, dy: -2 }, { rank: 15, dx: 2, dy: -2 },
+      { rank: 3, dx: -2, dy: -1 }, { rank: 5, dx: -1, dy: -1 }, { rank: 23, dx: 0, dy: -1 }, { rank: 11, dx: 1, dy: -1 }, { rank: 9, dx: 2, dy: -1 },
+      { rank: 1, dx: -2, dy: 0 }, { rank: 2, dx: -1, dy: 0 }, { rank: 25, dx: 0, dy: 0 }, { rank: 7, dx: 1, dy: 0 }, { rank: 8, dx: 2, dy: 0 },
+      { rank: 4, dx: -2, dy: 1 }, { rank: 6, dx: -1, dy: 1 }, { rank: 24, dx: 0, dy: 1 }, { rank: 12, dx: 1, dy: 1 }, { rank: 10, dx: 2, dy: 1 },
+      { rank: 14, dx: -2, dy: 2 }, { rank: 18, dx: -1, dy: 2 }, { rank: 22, dx: 0, dy: 2 }, { rank: 20, dx: 1, dy: 2 }, { rank: 16, dx: 2, dy: 2 }
+    ];
+    return ranked
+      .sort((a, b) => a.rank - b.rank)
+      .map((item) => ({ rank: item.rank, dx: item.dx * mirror, dy: item.dy }));
   }
 
-  evaluateFollowCandidate(tile, player, startTile, world, abilities) {
-    const facing = player.facing || 1;
+  generateFollowTileCandidates(player, world) {
+    const tileSize = world.tileSize;
     const playerTile = {
-      x: Math.floor(player.x / world.tileSize),
+      x: Math.floor(player.x / tileSize),
       y: player.onGround
-        ? Math.floor((player.y + player.height / 2 - 1) / world.tileSize)
-        : Math.floor(player.y / world.tileSize)
+        ? Math.floor((player.y + player.height / 2 - 1) / tileSize)
+        : Math.floor(player.y / tileSize)
     };
-    const behindNudge = ((tile.x - playerTile.x) * facing) < 0 ? -0.25 : 0;
-    const closeNudge = Math.min(1.5, Math.hypot(tile.x - playerTile.x, tile.y - playerTile.y) * 0.12);
-    const verticalMismatchPenalty = Math.abs(tile.y - playerTile.y) * 2.2;
-    const belowPlayerPenalty = tile.y > playerTile.y + 1 ? 3.2 : 0;
-    const route = this.findTraversalRoute(startTile, tile, world, abilities);
+    const orderedOffsets = this.getFollowPriorityOffsets(player.facing || 1);
+    return orderedOffsets.map((offset) => ({
+      rank: offset.rank,
+      tile: {
+        x: playerTile.x + offset.dx,
+        y: playerTile.y + offset.dy,
+        align: 'center'
+      },
+      isFallback: offset.rank === 25
+    }));
+  }
+
+  isReachableFollowTile(startTile, candidateTile, world, abilities) {
+    const route = this.findTraversalRoute(startTile, candidateTile, world, abilities);
     const sameSurface = Boolean(route.startSurface && route.goalSurface && route.startSurface === route.goalSurface);
-    if (!sameSurface && !route.route.length) return null;
+    const reachable = sameSurface || route.route.length > 0 || (startTile.x === candidateTile.x && startTile.y === candidateTile.y);
     const routeCost = sameSurface
-      ? this.routeTileDistance(startTile, tile) * 0.9
+      ? this.routeTileDistance(startTile, candidateTile)
       : route.route.reduce((sum, edge) => sum + (edge.cost || 1), 0);
-    const score = routeCost + closeNudge + verticalMismatchPenalty + belowPlayerPenalty + behindNudge;
-    return {
-      tile,
-      score,
-      routeCost,
-      sameSurfaceAsPlayer: route.goalSurface && route.goalSurface === this.getSurfaceForTile(playerTile, route.graph),
-      reason: sameSurface ? 'same-surface-route' : `graph-edges:${route.route.length}`
-    };
+    return { reachable, routeCost, edges: route.route.length, sameSurface };
   }
 
   chooseBestFollowTile(player, world, abilities) {
     const state = this.navState;
     const startTile = this.getFootStandTile(world);
-    const candidates = this.generateFollowTileCandidates(player, world, abilities);
-    const scored = [];
+    const candidates = this.generateFollowTileCandidates(player, world);
+    const evaluations = [];
+    let chosen = null;
     for (let i = 0; i < candidates.length; i += 1) {
-      const result = this.evaluateFollowCandidate(candidates[i], player, startTile, world, abilities);
-      if (result) scored.push(result);
+      const candidate = candidates[i];
+      const tile = candidate.tile;
+      const standable = candidate.isFallback ? true : this.canStandOnTile(tile.x, tile.y, world, abilities);
+      if (!standable) {
+        evaluations.push({ rank: candidate.rank, tile, accepted: false, reason: 'not-standable', routeCost: Infinity });
+        continue;
+      }
+      if (candidate.isFallback) {
+        chosen = {
+          tile,
+          rank: candidate.rank,
+          routeCost: this.routeTileDistance(startTile, tile),
+          reason: 'fallback-player-tile',
+          usedFallback25: true
+        };
+        evaluations.push({ rank: candidate.rank, tile, accepted: true, reason: chosen.reason, routeCost: chosen.routeCost });
+        break;
+      }
+      const reach = this.isReachableFollowTile(startTile, tile, world, abilities);
+      if (!reach.reachable) {
+        evaluations.push({ rank: candidate.rank, tile, accepted: false, reason: 'unreachable', routeCost: reach.routeCost });
+        continue;
+      }
+      chosen = {
+        tile,
+        rank: candidate.rank,
+        routeCost: reach.routeCost,
+        reason: reach.sameSurface ? 'reachable-same-surface' : `reachable-edges:${reach.edges}`,
+        usedFallback25: false
+      };
+      evaluations.push({ rank: candidate.rank, tile, accepted: true, reason: chosen.reason, routeCost: chosen.routeCost });
+      break;
     }
-    if (!scored.length) return { tile: this.withAlign(startTile, 'center'), score: Infinity, reason: 'fallback-current' };
-    scored.sort((a, b) => a.score - b.score);
-    let chosen = scored[0];
-    state.followGoalCandidates = scored.slice(0, 8).map((entry) => ({
-      tile: entry.tile,
-      score: entry.score,
-      routeCost: entry.routeCost,
-      reason: entry.reason
-    }));
+    if (!chosen) {
+      chosen = {
+        tile: this.withAlign(startTile, 'center'),
+        rank: 25,
+        routeCost: Infinity,
+        reason: 'fallback-current',
+        usedFallback25: true
+      };
+    }
+    const playerMoved = !this.isPlayerMostlyStill(player);
     state.followGoalLockTimer = Math.max(0, state.followGoalLockTimer - 1);
-    if (state.followGoalTile) {
-      const locked = scored.find((entry) => this.tileKey(entry.tile) === this.tileKey(state.followGoalTile));
-      if (locked) {
-        const better = scored[0];
-        const keepLocked = state.followGoalLockTimer > 0 && (!better || better.score + 0.95 >= locked.score);
-        if (keepLocked) chosen = locked;
+    if (state.followGoalTile && state.followGoalLockTimer > 0 && !playerMoved) {
+      const lockedEval = evaluations.find((entry) => this.tileKey(entry.tile) === this.tileKey(state.followGoalTile) && entry.accepted);
+      if (lockedEval && lockedEval.rank <= chosen.rank + 1) {
+        chosen = {
+          tile: { ...state.followGoalTile },
+          rank: lockedEval.rank,
+          routeCost: lockedEval.routeCost,
+          reason: 'goal-lock',
+          usedFallback25: lockedEval.rank === 25
+        };
       }
     }
     if (!state.followGoalTile || this.tileKey(state.followGoalTile) !== this.tileKey(chosen.tile)) {
       state.followGoalTile = { ...chosen.tile };
-      state.followGoalLockTimer = 18;
+      state.followGoalLockTimer = 14;
     }
-    state.followGoalScore = chosen.score;
+    state.followGoalScore = chosen.routeCost;
     state.followGoalReason = chosen.reason;
+    state.followGoalCandidates = evaluations;
     return chosen;
   }
 
@@ -2301,13 +2322,18 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.groundedPreferenceReason = state.groundedPreferenceReason || 'none';
     this.navDebug.airborneSalvageActive = Boolean(state.airborneSalvageActive);
     this.navDebug.goalCandidates = (state.followGoalCandidates || []).map((entry) => ({
+      rank: entry.rank,
       tile: this.tileKey(entry.tile),
-      score: Number(entry.score.toFixed(2)),
-      routeCost: Number(entry.routeCost.toFixed(2)),
+      routeCost: Number.isFinite(entry.routeCost) ? Number(entry.routeCost.toFixed(2)) : null,
+      accepted: Boolean(entry.accepted),
       reason: entry.reason
     }));
-    this.navDebug.chosenGoalScore = followChoice ? Number((followChoice.score || 0).toFixed(2)) : null;
+    this.navDebug.chosenGoalScore = followChoice && Number.isFinite(followChoice.routeCost)
+      ? Number(followChoice.routeCost.toFixed(2))
+      : null;
     this.navDebug.chosenGoalReason = followChoice?.reason || state.followGoalReason || 'none';
+    this.navDebug.chosenGoalRank = followChoice?.rank ?? null;
+    this.navDebug.usedFallback25 = Boolean(followChoice?.usedFallback25);
     const playerTile = {
       x: Math.floor(player.x / world.tileSize),
       y: player.onGround

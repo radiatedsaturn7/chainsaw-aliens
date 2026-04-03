@@ -347,8 +347,10 @@ async function run() {
   goalCompanion.updateNavigation(0.016, goalPlayer, upperRouteWorld, {});
   const goalDebug = goalCompanion.getNavigationDebugSnapshot();
   assert.ok(goalDebug.goalCandidates.length > 1, 'expected multiple candidate goals to be evaluated');
-  const sortedCandidates = [...goalDebug.goalCandidates].sort((a, b) => a.score - b.score);
-  assert.strictEqual(goalDebug.targetTile, sortedCandidates[0].tile, 'expected chosen goal to match best route-scored candidate');
+  const firstAccepted = goalDebug.goalCandidates.find((candidate) => candidate.accepted);
+  assert.ok(firstAccepted, 'expected at least one accepted candidate');
+  assert.strictEqual(goalDebug.targetTile, firstAccepted.tile, 'expected chosen goal to match first reachable candidate in priority order');
+  assert.strictEqual(goalDebug.chosenGoalRank, firstAccepted.rank, 'expected debug rank to match winning priority candidate');
 
   // 22) Goal stability: tiny player jitter should not flap chosen goal every frame.
   const stableGoalCompanion = new FriendlyCompanion(2.5 * tileSize, 2.5 * tileSize);
@@ -357,6 +359,40 @@ async function run() {
   const stableP3 = stableGoalCompanion.buildNavigationTarget({ ...goalPlayer, x: goalPlayer.x - 4 }, upperRouteWorld, {}).tile;
   assert.strictEqual(`${stableP1.x},${stableP1.y}`, `${stableP2.x},${stableP2.y}`);
   assert.strictEqual(`${stableP2.x},${stableP2.y}`, `${stableP3.x},${stableP3.y}`);
+
+  // 23) Candidate 25 fallback: if 1-24 fail, player tile is used.
+  const fallbackWorld = mkWorld([
+    '#####',
+    '#####',
+    '##.##',
+    '#####',
+    '#####'
+  ]);
+  const fallbackCompanion = new FriendlyCompanion(2.5 * tileSize, 2.5 * tileSize);
+  const fallbackPlayer = {
+    x: 2.5 * tileSize,
+    y: 2.5 * tileSize,
+    vx: 0,
+    vy: 0,
+    justJumped: false,
+    onGround: false,
+    height: 34,
+    facing: 1
+  };
+  const fallbackTarget = fallbackCompanion.buildNavigationTarget(fallbackPlayer, fallbackWorld, {});
+  assert.strictEqual(`${fallbackTarget.tile.x},${fallbackTarget.tile.y}`, '2,2', 'expected player tile fallback when no standable reachable candidates exist');
+  fallbackCompanion.updateNavigation(0.016, fallbackPlayer, fallbackWorld, {});
+  const fallbackDebug = fallbackCompanion.getNavigationDebugSnapshot();
+  assert.strictEqual(fallbackDebug.usedFallback25, true, 'expected fallback rank 25 flag in debug snapshot');
+
+  // 24) Facing mirror: ordered offsets are mirrored horizontally when player faces left.
+  const mirrorCompanion = new FriendlyCompanion(2.5 * tileSize, 2.5 * tileSize);
+  const rightOffsets = mirrorCompanion.getFollowPriorityOffsets(1);
+  const leftOffsets = mirrorCompanion.getFollowPriorityOffsets(-1);
+  const rank1Right = rightOffsets.find((entry) => entry.rank === 1);
+  const rank1Left = leftOffsets.find((entry) => entry.rank === 1);
+  assert.strictEqual(rank1Right.dx, -rank1Left.dx, 'expected mirrored horizontal offset for rank-1 candidate');
+  assert.strictEqual(rank1Right.dy, rank1Left.dy, 'expected mirrored candidate to preserve vertical offset');
 
   console.log('FriendlyCompanion nav tests passed');
 }
