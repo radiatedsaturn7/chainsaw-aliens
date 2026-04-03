@@ -188,6 +188,7 @@ export default class Game {
     this.spawnPoint = { x: 32 * 28, y: 32 * 19 };
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
     this.friendlyCompanion = null;
+    this.companionNavDebugEnabled = false;
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
     this.title = new Title();
@@ -2233,6 +2234,7 @@ export default class Game {
       this.transitionTo('pause');
       this.minimapSelected = true;
       this.minimapPan = { x: 0, y: 0 };
+      this.pauseMenu.companionDebug = this.companionNavDebugEnabled;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
@@ -2325,6 +2327,8 @@ export default class Game {
         if (this.title.screen === 'controls') {
           if (action === 'back') {
             this.title.setScreen('main');
+          } else if (action === 'companion-debug') {
+            this.companionNavDebugEnabled = !this.companionNavDebugEnabled;
           } else {
             this.setInputMode(action);
             this.title.setControlsSelectionByMode(this.inputMode);
@@ -2460,6 +2464,7 @@ export default class Game {
           this.triggerMenuFlash();
         }
         this.audio.setVolume(this.pauseMenu.volume);
+        this.companionNavDebugEnabled = this.pauseMenu.companionDebug;
       }
       this.input.flush();
       return;
@@ -2716,6 +2721,9 @@ export default class Game {
     }
     if (this.input.wasPressedCode('KeyB')) {
       this.loadObstacleTestRoom();
+    }
+    if (this.input.wasPressedCode('KeyN')) {
+      this.companionNavDebugEnabled = !this.companionNavDebugEnabled;
     }
     this.input.flush();
   }
@@ -5084,6 +5092,11 @@ export default class Game {
       onDone();
       return;
     }
+    if (action.type === 'set-companion-debug') {
+      this.companionNavDebugEnabled = params.enabled !== false;
+      onDone();
+      return;
+    }
     if (action.type === 'load-level') {
       const levelName = params.levelName;
       const completeLoad = () => {
@@ -6293,7 +6306,8 @@ export default class Game {
         isMobile: this.deviceIsMobile,
         gamepadConnected: this.gamepadConnected,
         debugRestartEnabled: this.debugMode,
-        serverStorageEnabled: isServerStorageEnabled()
+        serverStorageEnabled: isServerStorageEnabled(),
+        companionDebugEnabled: this.companionNavDebugEnabled
       });
       this.mobileControls.draw(ctx, this.state);
       return;
@@ -6342,6 +6356,7 @@ export default class Game {
     });
     if (this.friendlyCompanion) {
       this.friendlyCompanion.draw(ctx);
+      this.drawCompanionNavigationDebug(ctx);
     }
 
     if (this.boss && !this.boss.dead) {
@@ -6649,6 +6664,102 @@ export default class Game {
       this.friendlyCompanion.draw(ctx);
     }
     this.player.draw(ctx);
+    ctx.restore();
+  }
+
+  parseDebugTile(tileKey) {
+    if (!tileKey || tileKey === 'none' || typeof tileKey !== 'string') return null;
+    const [xRaw, yRaw] = tileKey.split(',');
+    const x = Number(xRaw);
+    const y = Number(yRaw);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    return { x, y };
+  }
+
+  tileToWorldCenter(tile) {
+    if (!tile) return null;
+    const ts = this.world.tileSize;
+    return { x: (tile.x + 0.5) * ts, y: (tile.y + 0.5) * ts };
+  }
+
+  drawCompanionNavigationDebug(ctx) {
+    if (!this.companionNavDebugEnabled || !this.friendlyCompanion?.getNavigationDebugSnapshot) return;
+    const companion = this.friendlyCompanion;
+    const debug = companion.getNavigationDebugSnapshot() || {};
+    const ts = this.world.tileSize;
+    const current = { x: companion.x, y: companion.y };
+    const goalTile = this.parseDebugTile(debug.targetTile);
+    const nextTile = this.parseDebugTile(debug.nextPathNode);
+    const takeoffTile = this.parseDebugTile(debug.transitionTakeoff);
+    const landingTile = this.parseDebugTile(debug.transitionLanding);
+    const goal = this.tileToWorldCenter(goalTile);
+    const next = this.tileToWorldCenter(nextTile);
+    const takeoff = this.tileToWorldCenter(takeoffTile);
+    const landing = this.tileToWorldCenter(landingTile);
+    const moveProfile = String(debug.moveProfile || 'none');
+    const expectedPath = Array.isArray(debug.expectedPath) ? debug.expectedPath : [];
+    const stairLike = ['stepUp', 'slopeWalk', 'corridorAdvance', 'lowCeilingStep'].includes(moveProfile);
+    const jumpLike = ['diagJump', 'verticalJump', 'upThenDrift', 'paramJump', 'shortHopForward', 'stepUp'].includes(moveProfile)
+      || ['launch', 'drift', 'takeoff-prep'].includes(String(debug.executionPhase || ''));
+    const falling = !companion.onGround && companion.vy > 20;
+
+    ctx.save();
+    ctx.lineWidth = 2;
+
+    if (goalTile && goal) {
+      ctx.strokeStyle = '#32d74b';
+      ctx.strokeRect(goalTile.x * ts + 2, goalTile.y * ts + 2, ts - 4, ts - 4);
+    }
+
+    if (expectedPath.length) {
+      expectedPath.forEach((segment) => {
+        const from = this.tileToWorldCenter(this.parseDebugTile(segment?.from));
+        const to = this.tileToWorldCenter(this.parseDebugTile(segment?.to));
+        if (!from || !to) return;
+        const transitionType = String(segment?.transitionType || 'direct');
+        const jumpSegment = ['jumpArc', 'diagJump', 'verticalJump', 'paramJump', 'upThenDrift', 'shortHopForward', 'stepUp'].includes(transitionType);
+        const fallSegment = ['drop'].includes(transitionType);
+        const stairSegment = ['stepUp', 'slopeWalk', 'corridorAdvance', 'lowCeilingStep'].includes(transitionType);
+        ctx.strokeStyle = jumpSegment ? '#ff453a' : fallSegment ? '#34c759' : stairSegment ? '#ffd60a' : '#2d7cff';
+        ctx.beginPath();
+        ctx.moveTo(from.x, from.y);
+        ctx.lineTo(to.x, to.y);
+        ctx.stroke();
+      });
+    } else if (next) {
+      ctx.strokeStyle = stairLike ? '#ffd60a' : '#2d7cff';
+      ctx.beginPath();
+      ctx.moveTo(current.x, current.y);
+      ctx.lineTo(next.x, next.y);
+      ctx.stroke();
+    }
+
+    if (jumpLike && landing) {
+      ctx.strokeStyle = '#ff453a';
+      ctx.beginPath();
+      ctx.moveTo(current.x, current.y);
+      if (takeoff) {
+        ctx.lineTo(takeoff.x, takeoff.y);
+      }
+      ctx.lineTo(landing.x, landing.y);
+      ctx.stroke();
+      if (takeoffTile) {
+        ctx.strokeRect(takeoffTile.x * ts + 6, takeoffTile.y * ts + 6, ts - 12, ts - 12);
+      }
+      if (landingTile) {
+        ctx.strokeRect(landingTile.x * ts + 6, landingTile.y * ts + 6, ts - 12, ts - 12);
+      }
+    }
+
+    if (falling && (next || goal)) {
+      const fallTarget = next || goal;
+      ctx.strokeStyle = '#34c759';
+      ctx.beginPath();
+      ctx.moveTo(current.x, current.y);
+      ctx.lineTo(fallTarget.x, fallTarget.y);
+      ctx.stroke();
+    }
+
     ctx.restore();
   }
 
@@ -7793,7 +7904,7 @@ export default class Game {
     const buttonWidth = 130;
     const buttonHeight = 32;
     const buttonGap = 16;
-    const buttonsTotal = buttonWidth * 2 + buttonGap;
+    const buttonsTotal = buttonWidth * 3 + buttonGap * 2;
     const buttonX = mapX + Math.max(0, (mapWidth - buttonsTotal) / 2);
     const buttonY = mapY + mapHeight + 28;
     ctx.save();
@@ -7816,17 +7927,26 @@ export default class Game {
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
     ctx.fillRect(buttonX + buttonWidth + buttonGap, buttonY, buttonWidth, buttonHeight);
+    ctx.fillRect(buttonX + (buttonWidth + buttonGap) * 2, buttonY, buttonWidth, buttonHeight);
     ctx.strokeStyle = '#fff';
     ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
     ctx.strokeRect(buttonX + buttonWidth + buttonGap, buttonY, buttonWidth, buttonHeight);
+    ctx.strokeRect(buttonX + (buttonWidth + buttonGap) * 2, buttonY, buttonWidth, buttonHeight);
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
     ctx.fillText('BACK', buttonX + buttonWidth / 2, buttonY + 21);
-    ctx.fillText('EXIT', buttonX + buttonWidth + buttonGap + buttonWidth / 2, buttonY + 21);
+    ctx.fillText(`COMP DBG: ${this.companionNavDebugEnabled ? 'ON' : 'OFF'}`, buttonX + buttonWidth + buttonGap + buttonWidth / 2, buttonY + 21);
+    ctx.fillText('EXIT', buttonX + (buttonWidth + buttonGap) * 2 + buttonWidth / 2, buttonY + 21);
     ctx.restore();
     this.minimapBackBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
-    this.minimapExitBounds = {
+    this.minimapCompanionDebugBounds = {
       x: buttonX + buttonWidth + buttonGap,
+      y: buttonY,
+      w: buttonWidth,
+      h: buttonHeight
+    };
+    this.minimapExitBounds = {
+      x: buttonX + (buttonWidth + buttonGap) * 2,
       y: buttonY,
       w: buttonWidth,
       h: buttonHeight
@@ -8287,6 +8407,21 @@ export default class Game {
     ) {
       this.transitionTo('playing');
       this.minimapSelected = false;
+      this.audio.menu();
+      this.recordFeedback('menu navigate', 'audio');
+      this.recordFeedback('menu navigate', 'visual');
+      return;
+    }
+    if (
+      this.state === 'pause'
+      && this.minimapSelected
+      && this.minimapCompanionDebugBounds
+      && payload.x >= this.minimapCompanionDebugBounds.x
+      && payload.x <= this.minimapCompanionDebugBounds.x + this.minimapCompanionDebugBounds.w
+      && payload.y >= this.minimapCompanionDebugBounds.y
+      && payload.y <= this.minimapCompanionDebugBounds.y + this.minimapCompanionDebugBounds.h
+    ) {
+      this.companionNavDebugEnabled = !this.companionNavDebugEnabled;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');

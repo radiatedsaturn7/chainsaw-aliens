@@ -14,7 +14,7 @@ export default class Title {
       'reset-all',
       'back'
     ];
-    this.controlsOrder = ['mobile', 'gamepad', 'keyboard', 'back'];
+    this.controlsOrder = ['mobile', 'gamepad', 'keyboard', 'companion-debug', 'back'];
     this.storageOrder = ['toggle-server-storage', 'sync-github', 'back'];
     this.menuSelection = 0;
     this.toolsSelection = 0;
@@ -170,7 +170,7 @@ export default class Title {
     } else if (screen === 'tools') {
       this.drawTools(ctx, width, height);
     } else if (screen === 'controls') {
-      this.drawControls(ctx, width, height, inputMode);
+      this.drawControls(ctx, width, height, inputMode, inputHints);
     } else if (screen === 'storage') {
       this.drawStorage(ctx, width, height, inputHints);
     } else {
@@ -354,7 +354,7 @@ export default class Title {
     });
   }
 
-  drawControls(ctx, width, height, inputMode) {
+  drawControls(ctx, width, height, inputMode, inputHints = {}) {
     ctx.fillStyle = '#fff';
     ctx.font = '22px Courier New';
     ctx.textAlign = 'center';
@@ -373,7 +373,9 @@ export default class Title {
     this.controlsOrder.forEach((action, index) => {
       const y = startY + index * gap;
       const selected = this.controlsOrder[this.controlsSelection] === action;
-      const active = inputMode === action;
+      const active = action === 'companion-debug'
+        ? Boolean(inputHints?.companionDebugEnabled)
+        : inputMode === action;
       ctx.fillStyle = selected ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)';
       ctx.fillRect(buttonX, y, buttonWidth, buttonHeight);
       ctx.strokeStyle = active ? '#ffe16a' : '#fff';
@@ -386,9 +388,11 @@ export default class Title {
           ? 'Controller / Gamepad'
           : action === 'keyboard'
             ? 'Keyboard'
+            : action === 'companion-debug'
+              ? `Companion Debug: ${active ? 'ON' : 'OFF'}`
             : 'Back';
       ctx.fillText(label, width / 2, y + 22);
-      if (active && action !== 'back') {
+      if (active && action !== 'back' && action !== 'companion-debug') {
         ctx.font = '12px Courier New';
         ctx.fillStyle = '#ffe16a';
         ctx.fillText('Active', width / 2, y + 40);

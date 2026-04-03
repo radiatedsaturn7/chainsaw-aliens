@@ -387,14 +387,17 @@ export default class Player {
   }
 
   moveAndCollide(dt, world, abilities) {
-    const nextX = this.x + this.vx * dt;
-    const nextY = this.y + this.vy * dt;
-    const rect = this.rect;
     const tileSize = world.tileSize;
 
     const wasOnGround = this.onGround;
     this.onGround = false;
     this.onWall = 0;
+    const getRect = () => ({
+      x: this.x - this.width / 2,
+      y: this.y - this.height / 2,
+      w: this.width,
+      h: this.height
+    });
 
     const check = (x, y, options = {}) => {
       const tileX = Math.floor(x / tileSize);
@@ -416,33 +419,80 @@ export default class Player {
       const offset = tile === '^' ? (1 - localX) : localX;
       return tileY * tileSize + offset * tileSize;
     };
+    const hasStepSupportAt = (x, y) => {
+      const footY = y + this.height / 2;
+      const sampleXs = [x - this.width / 2 + 6, x + this.width / 2 - 6];
+      for (let i = 0; i < sampleXs.length; i += 1) {
+        const sampleX = sampleXs[i];
+        if (check(sampleX, footY + 2, { ignoreOneWay: false })) return true;
+        const tileX = Math.floor(sampleX / tileSize);
+        const tileY = Math.floor(footY / tileSize);
+        const tile = world.getTile(tileX, tileY);
+        if (tile !== '^' && tile !== 'v') continue;
+        const surfaceY = slopeSurface(tile, tileX, tileY, sampleX);
+        if (footY >= surfaceY - 6 && footY <= surfaceY + tileSize * 0.6) return true;
+      }
+      return false;
+    };
 
     // Horizontal
-    const signX = Math.sign(this.vx);
-    if (signX !== 0) {
-      const testX = nextX + (signX * rect.w) / 2;
-      if (check(testX, rect.y + 4, { ignoreOneWay: true }) || check(testX, rect.y + rect.h - 4, { ignoreOneWay: true })) {
-        const stepHeight = wasOnGround ? tileSize - 2 : 0;
-        const steppedTop = rect.y - stepHeight;
-        const canStep = stepHeight > 0
-          && !check(testX, steppedTop + 4, { ignoreOneWay: true })
-          && !check(testX, steppedTop + rect.h - 4, { ignoreOneWay: true });
-        if (canStep) {
-          this.x = nextX;
-          this.y -= stepHeight;
-          this.onGround = true;
-        } else {
-          this.vx = 0;
-          this.onWall = signX;
-        }
-      } else {
-        this.x = nextX;
+    let remainingX = this.vx * dt;
+    const maxStepX = Math.max(1, tileSize * 0.35);
+    while (Math.abs(remainingX) > 0.001) {
+      const stepX = Math.sign(remainingX) * Math.min(Math.abs(remainingX), maxStepX);
+      const signX = Math.sign(stepX);
+      const rect = getRect();
+      const nextStepX = this.x + stepX;
+      const testX = nextStepX + (signX * rect.w) / 2;
+      const blocked = check(testX, rect.y + 4, { ignoreOneWay: true }) || check(testX, rect.y + rect.h - 4, { ignoreOneWay: true });
+      if (!blocked) {
+        this.x = nextStepX;
+        remainingX -= stepX;
+        continue;
       }
-    } else {
-      this.x = nextX;
+      const canOccupyAt = (candidateX, candidateY) => {
+        const candidateRect = {
+          x: candidateX - rect.w / 2,
+          y: candidateY - rect.h / 2,
+          w: rect.w,
+          h: rect.h
+        };
+        const candidateEdgeX = candidateX + (signX * candidateRect.w) / 2;
+        const leftX = candidateRect.x + 4;
+        const rightX = candidateRect.x + candidateRect.w - 4;
+        const topY = candidateRect.y + 4;
+        const bottomY = candidateRect.y + candidateRect.h - 4;
+        return !check(leftX, topY, { ignoreOneWay: true })
+          && !check(rightX, topY, { ignoreOneWay: true })
+          && !check(candidateEdgeX, bottomY, { ignoreOneWay: true });
+      };
+      const canAttemptStep = wasOnGround || this.coyote > 0 || hasStepSupportAt(this.x, this.y);
+      const stepHeights = canAttemptStep
+        ? [tileSize, tileSize - 2, Math.floor(tileSize * 0.75), Math.floor(tileSize * 0.5), Math.floor(tileSize * 0.4), Math.floor(tileSize * 0.33)]
+        : [];
+      let stepped = false;
+      for (let i = 0; i < stepHeights.length; i += 1) {
+        const stepHeight = stepHeights[i];
+        if (stepHeight <= 0) continue;
+        const steppedY = this.y - stepHeight;
+        if (!canOccupyAt(nextStepX, steppedY)) continue;
+        this.x = nextStepX;
+        this.y = steppedY;
+        this.onGround = true;
+        stepped = true;
+        break;
+      }
+      if (!stepped) {
+        this.vx = 0;
+        this.onWall = signX;
+        break;
+      }
+      remainingX -= stepX;
     }
 
     // Vertical
+    const nextY = this.y + this.vy * dt;
+    const rect = getRect();
     const signY = Math.sign(this.vy);
     if (signY !== 0) {
       const testY = nextY + (signY * rect.h) / 2;
