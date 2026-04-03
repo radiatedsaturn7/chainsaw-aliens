@@ -2,12 +2,13 @@ export default class Pause {
   constructor() {
     this.volume = 0.4;
     this.shake = true;
+    this.companionDebug = false;
     this.selection = 0;
     this.exitBounds = null;
   }
 
   move(dir) {
-    this.selection = (this.selection + dir + 2) % 2;
+    this.selection = (this.selection + dir + 3) % 3;
   }
 
   adjust(dir) {
@@ -16,6 +17,9 @@ export default class Pause {
     }
     if (this.selection === 1) {
       this.shake = !this.shake;
+    }
+    if (this.selection === 2) {
+      this.companionDebug = !this.companionDebug;
     }
   }
 
@@ -31,7 +35,8 @@ export default class Pause {
     ctx.textAlign = 'left';
     const items = [
       `Volume: ${(this.volume * 100).toFixed(0)}%`,
-      `Screen Shake: ${this.shake ? 'ON' : 'OFF'}`
+      `Screen Shake: ${this.shake ? 'ON' : 'OFF'}`,
+      `Companion Debug: ${this.companionDebug ? 'ON' : 'OFF'}`
     ];
     items.forEach((text, index) => {
       const prefix = index === this.selection ? '> ' : '  ';

@@ -2234,6 +2234,7 @@ export default class Game {
       this.transitionTo('pause');
       this.minimapSelected = true;
       this.minimapPan = { x: 0, y: 0 };
+      this.pauseMenu.companionDebug = this.companionNavDebugEnabled;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
@@ -2461,6 +2462,7 @@ export default class Game {
           this.triggerMenuFlash();
         }
         this.audio.setVolume(this.pauseMenu.volume);
+        this.companionNavDebugEnabled = this.pauseMenu.companionDebug;
       }
       this.input.flush();
       return;
