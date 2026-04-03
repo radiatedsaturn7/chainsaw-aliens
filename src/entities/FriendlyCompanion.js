@@ -160,7 +160,16 @@ export default class FriendlyCompanion extends Player {
       forcedClimbJumpAllowed: false,
       jumpNoProgressStreak: 0,
       jumpSuppressionTimer: 0,
-      lastRouteDistance: Infinity
+      lastRouteDistance: Infinity,
+      jumpInFlight: false,
+      jumpStartTile: null,
+      jumpStartSurface: null,
+      jumpLandingTile: null,
+      jumpRouteDistanceBefore: Infinity,
+      jumpRouteDistanceAfter: Infinity,
+      jumpMeaningfulLast: true,
+      jumpContextBlocks: new Map(),
+      lastRouteEdges: []
     };
     this.moveExecution = {
       active: false,
@@ -211,7 +220,15 @@ export default class FriendlyCompanion extends Player {
       jumpCanceled: false,
       jumpCancelReason: 'none',
       restModeActive: false,
-      oscillationSuppressed: false
+      oscillationSuppressed: false,
+      routeEdges: [],
+      selectedEdge: 'none',
+      selectedProfileSignature: 'none',
+      routeDistanceBeforeLastJump: null,
+      routeDistanceAfterLastJump: null,
+      lastJumpMeaningful: true,
+      betterGroundedEdgeAvailable: false,
+      routeExecutionMismatch: 'none'
     };
   }
 
@@ -362,6 +379,11 @@ export default class FriendlyCompanion extends Player {
 
   tileKey(tile) {
     return `${tile.x},${tile.y}`;
+  }
+
+  routeTileDistance(a, b) {
+    if (!a || !b) return Infinity;
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) * 1.4;
   }
 
   buildElevatorHints(world, abilities) {
@@ -1118,7 +1140,7 @@ export default class FriendlyCompanion extends Player {
     if (type === 'stepUp') return 1.1 + dx * 0.18;
     if (type === 'shortHop') return 2.6 + Math.abs(dy) * 0.5 + (dx === 0 ? 1.1 : 0);
     if (type === 'drop') return 1.6 + Math.max(0, dy) * 0.3;
-    if (type === 'jumpArc') return 3.6 + Math.abs(dy) * 0.55 + dx * 0.22 + (dx === 0 ? 1.4 : 0);
+    if (type === 'jumpArc') return 3.6 + Math.abs(dy) * 0.55 + dx * 0.22 + (dx === 0 ? 2.6 : 0);
     return 1.5;
   }
 
@@ -1485,6 +1507,10 @@ export default class FriendlyCompanion extends Player {
       value.ttl -= dt;
       if (value.ttl <= 0) state.poisonedEdges.delete(key);
     });
+    state.jumpContextBlocks.forEach((value, key) => {
+      value.ttl -= dt;
+      if (value.ttl <= 0) state.jumpContextBlocks.delete(key);
+    });
   }
 
   edgeAttemptKey(from, to, profile) {
@@ -1537,6 +1563,45 @@ export default class FriendlyCompanion extends Player {
       if (segment.edge?.profile?.type && this.isEdgePoisoned(source, segment.tile, segment.edge.profile.type)) return false;
     }
     return true;
+  }
+
+  getJumpContextKey(source, target, profile) {
+    const src = source ? this.tileKey(source) : 'none';
+    const dst = target ? this.tileKey(target) : 'none';
+    const family = profile?.startsWith('pj:') ? 'paramJump' : profile;
+    return `${src}->${dst}:${family || 'jump'}`;
+  }
+
+  markJumpContextBlocked(source, target, profile, ttl = 1.1) {
+    const key = this.getJumpContextKey(source, target, profile);
+    this.navState.jumpContextBlocks.set(key, { ttl });
+  }
+
+  isJumpContextBlocked(source, target, profile) {
+    const key = this.getJumpContextKey(source, target, profile);
+    const data = this.navState.jumpContextBlocks.get(key);
+    return Boolean(data && data.ttl > 0);
+  }
+
+  findBestGroundedProgressEdge(startTile, targetTile, world, abilities) {
+    const candidates = this.getNeighborCandidates(startTile, world, abilities, targetTile);
+    const startDist = this.routeTileDistance(startTile, targetTile);
+    let best = null;
+    for (let i = 0; i < candidates.length; i += 1) {
+      const next = candidates[i];
+      if (Math.abs(next.y - startTile.y) > 1) continue;
+      const edge = this.validateMovementEdge(startTile, next, world, abilities);
+      if (!edge?.ok) continue;
+      if (this.isJumpProfile(edge.profile?.type)) continue;
+      const dist = this.routeTileDistance(next, targetTile);
+      const gain = startDist - dist;
+      if (gain < 0.35) continue;
+      const score = dist + edge.cost * 0.35;
+      if (!best || score < best.score) {
+        best = { tile: next, edge, score, gain };
+      }
+    }
+    return best;
   }
 
   chooseRecoveryAction(targetTile, world) {
@@ -1721,11 +1786,6 @@ export default class FriendlyCompanion extends Player {
       }
       this.jumpDecisionCooldown = 0.18;
     }
-    if (this.navState.forcedClimbJumpAllowed && (this.onGround || this.coyote > 0) && this.jumpDecisionCooldown <= 0) {
-      input.add('jump');
-      input.add(dir < 0 ? 'left' : 'right');
-      this.jumpDecisionCooldown = 0.2;
-    }
     return input;
   }
 
@@ -1743,6 +1803,14 @@ export default class FriendlyCompanion extends Player {
     if (this.shouldRestartExecution(execution, sourceNode, move, profile, nextPoisoned)) {
       this.beginMoveExecution(move, profile, world);
     }
+    if (this.isJumpProfile(profile)
+      && this.isJumpContextBlocked(this.moveExecution.sourceNode, this.moveExecution.landingTile || this.moveExecution.targetNode, this.moveExecution.profileSignature || profile)) {
+      this.moveExecution.active = false;
+      this.moveExecution.phase = 'idle';
+      this.navState.replanCooldown = 0;
+      this.navState.jumpCancelReason = 'jump-context-blocked';
+      return { input: new Set(), profile: 'replan' };
+    }
     if (this.isJumpProfile(profile) && move?.edge?.takeoffTile && !this.isNearTile(move.edge.takeoffTile, world, 1.25) && this.navState.noProgressTimer > 0.25) {
       this.moveExecution.active = false;
       this.moveExecution.phase = 'idle';
@@ -1752,6 +1820,12 @@ export default class FriendlyCompanion extends Player {
     }
     this.moveExecution.elapsed += dt;
     const phaseInput = this.buildExecutionIntent(this.moveExecution, dx, dy, world, dt);
+    if (phaseInput.has('jump') && !this.navState.jumpInFlight) {
+      this.navState.jumpInFlight = true;
+      this.navState.jumpStartTile = sourceNode;
+      this.navState.jumpLandingTile = this.moveExecution.landingTile || this.moveExecution.targetNode || move?.nextTile || null;
+      this.navState.jumpRouteDistanceBefore = this.routeTileDistance(sourceNode, move?.nextTile || this.navState.targetTile);
+    }
     phaseInput.forEach((key) => nextInput.add(key));
 
     // fallback direct drive to avoid any idle "thinking pauses" while planning updates.
@@ -1783,6 +1857,27 @@ export default class FriendlyCompanion extends Player {
     const distToFollow = Math.hypot(targetWorld.x - this.x, targetWorld.y - this.y);
     const playerStill = this.isPlayerMostlyStill(player);
     const arrivalDeadzone = world.tileSize * 0.42;
+    if (this.navState.jumpInFlight && this.justLanded) {
+      const jumpStart = state.jumpStartTile || startTile;
+      const landing = this.getFootStandTile(world);
+      const before = Number.isFinite(state.jumpRouteDistanceBefore) ? state.jumpRouteDistanceBefore : this.routeTileDistance(jumpStart, targetTile);
+      const after = this.routeTileDistance(landing, targetTile);
+      state.jumpRouteDistanceAfter = after;
+      const sameNeighborhood = Math.abs(landing.x - jumpStart.x) <= 1 && Math.abs(landing.y - jumpStart.y) <= 1;
+      const meaningful = (before - after) > 1.2 && !sameNeighborhood;
+      state.jumpMeaningfulLast = meaningful;
+      if (!meaningful) {
+        const prof = this.moveExecution.profileSignature || this.moveExecution.profile || 'jump';
+        this.markJumpContextBlocked(state.jumpStartTile, state.jumpLandingTile || landing, prof, 1.25);
+        this.markEdgeFailure(state.jumpStartTile || jumpStart, state.jumpLandingTile || landing, prof);
+        state.jumpSuppressionTimer = Math.max(state.jumpSuppressionTimer, 0.75);
+        state.replanCooldown = 0;
+      }
+      state.jumpInFlight = false;
+      state.jumpStartTile = null;
+      state.jumpLandingTile = null;
+      state.jumpRouteDistanceBefore = Infinity;
+    }
     if (this.justJumped) {
       const horizontalProgress = Math.abs(this.x - state.lastJumpX);
       const improvedRoute = distToFollow < state.lastRouteDistance - 6;
@@ -1914,7 +2009,28 @@ export default class FriendlyCompanion extends Player {
     state.targetTile = targetTile;
     state.routeTargetKey = this.tileKey(targetTile);
     state.routeAge += dt;
-    const nextMove = this.chooseMoveFromPath(path, world);
+    let nextMove = this.chooseMoveFromPath(path, world);
+    const groundedAlt = this.findBestGroundedProgressEdge(startTile, targetTile, world, abilities);
+    const selectedEdgeType = nextMove?.edge?.transitionType || nextMove?.edge?.profile?.type || 'direct';
+    const selectedJumpLike = this.isJumpTransitionEdge(nextMove?.edge);
+    if (selectedJumpLike && groundedAlt) {
+      const jumpDist = this.routeTileDistance(nextMove?.edge?.landingTile || nextMove?.nextTile || startTile, targetTile);
+      const groundDist = this.routeTileDistance(groundedAlt.tile, targetTile);
+      const groundingClearlyBetter = groundDist + 0.35 < jumpDist;
+      if (groundingClearlyBetter) {
+        nextMove = {
+          target: this.tileCenter(groundedAlt.tile, world),
+          nextTile: groundedAlt.tile,
+          edge: {
+            profile: groundedAlt.edge.profile,
+            sourceTile: startTile,
+            targetTile: groundedAlt.tile,
+            transitionType: 'grounded-reposition'
+          }
+        };
+        reason = 'prefer-grounded-ascent';
+      }
+    }
     const intent = this.applyMoveIntent(nextMove, targetWorld, world, abilities, dt);
     const lateralDir = intent.input.has('left') ? -1 : intent.input.has('right') ? 1 : 0;
     const nearTargetForDamping = playerStill && distToFollow <= world.tileSize * 0.75;
@@ -2011,6 +2127,21 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.jumpCanceled = state.jumpCancelReason !== 'none';
     this.navDebug.jumpCancelReason = state.jumpCancelReason || 'none';
     this.navDebug.oscillationSuppressed = state.oscillationDampTimer > 0;
+    this.navDebug.routeEdges = surfacePlan.route.slice(0, 6).map((edge) => ({
+      type: edge.type,
+      from: edge.from,
+      to: edge.to,
+      sourceTile: edge.sourceTile ? this.tileKey(edge.sourceTile) : 'none',
+      targetTile: edge.targetTile ? this.tileKey(edge.targetTile) : 'none',
+      launchProfile: edge.launchProfile || 'none'
+    }));
+    this.navDebug.selectedEdge = selectedEdgeType;
+    this.navDebug.selectedProfileSignature = this.moveExecution.profileSignature || this.moveExecution.profile || 'none';
+    this.navDebug.routeDistanceBeforeLastJump = Number.isFinite(state.jumpRouteDistanceBefore) ? state.jumpRouteDistanceBefore : null;
+    this.navDebug.routeDistanceAfterLastJump = Number.isFinite(state.jumpRouteDistanceAfter) ? state.jumpRouteDistanceAfter : null;
+    this.navDebug.lastJumpMeaningful = Boolean(state.jumpMeaningfulLast);
+    this.navDebug.betterGroundedEdgeAvailable = Boolean(groundedAlt);
+    this.navDebug.routeExecutionMismatch = selectedJumpLike && groundedAlt ? 'jump-when-grounded-available' : 'none';
     state.jumpCancelReason = 'none';
 
     return {

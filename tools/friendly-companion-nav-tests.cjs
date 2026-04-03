@@ -42,6 +42,17 @@ async function run() {
     '#############'
   ]);
 
+  const staircaseWorld = mkWorld([
+    '...............',
+    '...............',
+    '...............',
+    '.....#.........',
+    '......#...##...',
+    '.......#.......',
+    '###############',
+    '###############'
+  ]);
+
   // 1) Settled near-player behavior: no left-right oscillation when already close.
   const settledCompanion = new FriendlyCompanion((5.5) * tileSize, (4.5) * tileSize);
   const idlePlayer = {
@@ -181,6 +192,65 @@ async function run() {
   };
   teleportCompanion.update(0.016, flatWorld, {}, { player: farPlayer, enemies: [], boss: null });
   assert.ok(Math.abs(teleportCompanion.x - (farPlayer.x - 26)) < tileSize, 'expected companion to teleport near far player');
+
+  // 12) Integration: staircase lateral ascent should beat local pogo under elevated target.
+  const stairCompanion = new FriendlyCompanion(10.5 * tileSize, 5.5 * tileSize);
+  const stairPlayer = {
+    x: 5.5 * tileSize,
+    y: 2.5 * tileSize,
+    vx: 0,
+    vy: 0,
+    justJumped: false,
+    onGround: true,
+    height: 34,
+    facing: -1
+  };
+  let jumpFrames = 0;
+  let leftFrames = 0;
+  for (let i = 0; i < 70; i += 1) {
+    stairCompanion.update(1 / 60, staircaseWorld, {}, { player: stairPlayer, enemies: [], boss: null });
+    if (stairCompanion.aiInput.isDown('jump')) jumpFrames += 1;
+    if (stairCompanion.aiInput.isDown('left')) leftFrames += 1;
+  }
+  assert.ok(leftFrames > jumpFrames, 'expected staircase pursuit to prefer grounded lateral ascent over pogo jumps');
+  assert.ok(stairCompanion.x < 10.5 * tileSize - tileSize * 1.2, 'expected meaningful lateral progress toward staircase');
+
+  // 13) Integration: no second jump after no-progress landing context.
+  const pogoCompanion = new FriendlyCompanion(8.5 * tileSize, 5.5 * tileSize);
+  const sourceTile = pogoCompanion.getFootStandTile(flatWorld);
+  const landingTile = { x: sourceTile.x, y: sourceTile.y - 1, align: 'center' };
+  pogoCompanion.markJumpContextBlocked(sourceTile, landingTile, 'verticalJump', 0.9);
+  const blockedMove = {
+    target: pogoCompanion.tileCenter(landingTile, flatWorld),
+    nextTile: landingTile,
+    edge: { profile: { type: 'verticalJump' }, takeoffTile: sourceTile, landingTile }
+  };
+  const blockedResult = pogoCompanion.applyMoveIntent(blockedMove, blockedMove.target, flatWorld, {}, 0.016);
+  assert.strictEqual(blockedResult.profile, 'replan', 'expected blocked no-progress jump context to prevent immediate second jump');
+
+  // 14) Route/execution fidelity: selected jump edge should preserve takeoff metadata.
+  const fidelityCompanion = new FriendlyCompanion(9.5 * tileSize, 5.5 * tileSize);
+  const fidelityStart = { x: 9, y: 5, align: 'center' };
+  const fidelityGoal = { x: 6, y: 3, align: 'center' };
+  const fidelityPlan = fidelityCompanion.findTraversalRoute(fidelityStart, fidelityGoal, staircaseWorld, {});
+  if (fidelityPlan.route.length) {
+    const fidelitySegments = fidelityCompanion.buildSegmentsFromTraversalRoute(fidelityPlan.route, fidelityGoal);
+    const nextMove = fidelityCompanion.chooseMoveFromPath(fidelitySegments, staircaseWorld);
+    if (fidelityCompanion.isJumpTransitionEdge(nextMove?.edge)) {
+      assert.ok(nextMove.edge.takeoffTile, 'expected jump transition to retain takeoff tile');
+      assert.ok(nextMove.edge.landingTile, 'expected jump transition to retain landing tile');
+    }
+  }
+
+  // 15) Grounded ascent preference: when a grounded option exists, it is discovered and favored.
+  const preferGroundCompanion = new FriendlyCompanion(10.5 * tileSize, 5.5 * tileSize);
+  const groundedAlt = preferGroundCompanion.findBestGroundedProgressEdge(
+    { x: 10, y: 5, align: 'center' },
+    { x: 5, y: 3, align: 'center' },
+    staircaseWorld,
+    {}
+  );
+  assert.ok(groundedAlt, 'expected grounded ascent alternative to be detected in staircase scenario');
 
   console.log('FriendlyCompanion nav tests passed');
 }
