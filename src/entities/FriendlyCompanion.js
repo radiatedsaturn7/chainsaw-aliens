@@ -480,14 +480,40 @@ export default class FriendlyCompanion extends Player {
       .map((item) => ({ rank: item.rank, dx: item.dx * mirror, dy: item.dy }));
   }
 
-  generateFollowTileCandidates(player, world) {
+  findNearestPlayerStandTile(player, world, abilities) {
     const tileSize = world.tileSize;
-    const playerTile = {
-      x: Math.floor(player.x / tileSize),
-      y: player.onGround
-        ? Math.floor((player.y + player.height / 2 - 1) / tileSize)
-        : Math.floor(player.y / tileSize)
+    const footX = player.x;
+    const footY = player.y + (player.height || this.height) / 2 - 1;
+    const baseTile = {
+      x: Math.floor(footX / tileSize),
+      y: Math.floor(footY / tileSize)
     };
+    const maxRadius = 4;
+    let best = null;
+    let bestScore = Infinity;
+    for (let radius = 0; radius <= maxRadius; radius += 1) {
+      for (let dy = -radius; dy <= radius; dy += 1) {
+        for (let dx = -radius; dx <= radius; dx += 1) {
+          const x = baseTile.x + dx;
+          const y = baseTile.y + dy;
+          if (x < 0 || x >= world.width || y < 0 || y >= world.height - 1) continue;
+          if (!this.canStandOnTile(x, y, world, abilities)) continue;
+          const center = this.tileCenter({ x, y, align: 'center' }, world);
+          const score = Math.hypot(center.x - footX, center.y - footY);
+          if (score < bestScore) {
+            bestScore = score;
+            best = { x, y, align: 'center' };
+          }
+        }
+      }
+      if (best) break;
+    }
+    if (best) return best;
+    return this.withAlign(baseTile, 'center');
+  }
+
+  generateFollowTileCandidates(player, world, abilities) {
+    const playerTile = this.findNearestPlayerStandTile(player, world, abilities);
     const orderedOffsets = this.getFollowPriorityOffsets(player.facing || 1);
     return orderedOffsets.map((offset) => ({
       rank: offset.rank,
@@ -513,7 +539,7 @@ export default class FriendlyCompanion extends Player {
   chooseBestFollowTile(player, world, abilities) {
     const state = this.navState;
     const startTile = this.getFootStandTile(world);
-    const candidates = this.generateFollowTileCandidates(player, world);
+    const candidates = this.generateFollowTileCandidates(player, world, abilities);
     const evaluations = [];
     const fallback = candidates.find((entry) => entry.rank === 25);
     const chosenTile = fallback?.tile || this.withAlign(startTile, 'center');
@@ -2033,6 +2059,7 @@ export default class FriendlyCompanion extends Player {
       this.navDebug.arrivalDeadzoneActive = true;
       this.navDebug.settledActive = true;
       this.navDebug.restModeActive = true;
+      this.navDebug.expectedPath = [];
       return { mode: 'direct', input: new Set(), moveProfile: 'rest', targetTile: state.restTile };
     }
     if (playerStill && distToFollow <= arrivalDeadzone && Math.abs(this.vx) < 22 && Math.abs(this.vy) < 30) {
@@ -2056,6 +2083,7 @@ export default class FriendlyCompanion extends Player {
       this.navDebug.settledActive = true;
       this.navDebug.restModeActive = true;
       this.navDebug.stableFollowTile = state.stableFollowTile ? this.tileKey(state.stableFollowTile) : 'none';
+      this.navDebug.expectedPath = [];
       return { mode: 'direct', input: new Set(), moveProfile: 'settled', targetTile };
     }
     state.settled = false;
