@@ -328,7 +328,7 @@ async function run() {
   }], flatWorld);
   assert.strictEqual(saneJumpMove.edge.executionStage, 'launch', 'expected valid nearby jump launch to remain available');
 
-  // 20) Reachable upper-platform goal beats lower under-player tile.
+  // 20) Follow goal always tracks rank-25 (player tile).
   const goalCompanion = new FriendlyCompanion(2.5 * tileSize, 2.5 * tileSize);
   const goalPlayer = {
     x: 4.5 * tileSize,
@@ -341,24 +341,25 @@ async function run() {
     facing: 1
   };
   const goalTarget = goalCompanion.buildNavigationTarget(goalPlayer, upperRouteWorld, {});
-  assert.ok(goalTarget.tile.y <= 2, 'expected route-aware follow goal near the upper player platform');
+  assert.strictEqual(`${goalTarget.tile.x},${goalTarget.tile.y}`, '4,1', 'expected rank-25 follow goal to match player tile');
 
-  // 21) Candidate selection uses route score (best scored candidate wins), not first-match scan order.
+  // 21) Candidate selection remains fixed to rank-25 and debug marks non-25 as unselected.
   goalCompanion.updateNavigation(0.016, goalPlayer, upperRouteWorld, {});
   const goalDebug = goalCompanion.getNavigationDebugSnapshot();
   assert.ok(goalDebug.goalCandidates.length > 1, 'expected multiple candidate goals to be evaluated');
-  const firstAccepted = goalDebug.goalCandidates.find((candidate) => candidate.accepted);
-  assert.ok(firstAccepted, 'expected at least one accepted candidate');
-  assert.strictEqual(goalDebug.targetTile, firstAccepted.tile, 'expected chosen goal to match first reachable candidate in priority order');
-  assert.strictEqual(goalDebug.chosenGoalRank, firstAccepted.rank, 'expected debug rank to match winning priority candidate');
+  const accepted = goalDebug.goalCandidates.filter((candidate) => candidate.accepted);
+  assert.strictEqual(accepted.length, 1, 'expected exactly one accepted goal candidate');
+  assert.strictEqual(accepted[0].rank, 25, 'expected rank-25 candidate to be the only accepted goal');
+  assert.strictEqual(goalDebug.targetTile, accepted[0].tile, 'expected chosen goal to match accepted rank-25 candidate');
+  assert.strictEqual(goalDebug.chosenGoalRank, 25, 'expected chosen goal rank to stay fixed at rank-25');
 
-  // 22) Goal stability: tiny player jitter should not flap chosen goal every frame.
+  // 22) Goal updates every frame to the latest player tile.
   const stableGoalCompanion = new FriendlyCompanion(2.5 * tileSize, 2.5 * tileSize);
   const stableP1 = stableGoalCompanion.buildNavigationTarget(goalPlayer, upperRouteWorld, {}).tile;
-  const stableP2 = stableGoalCompanion.buildNavigationTarget({ ...goalPlayer, x: goalPlayer.x + 4 }, upperRouteWorld, {}).tile;
-  const stableP3 = stableGoalCompanion.buildNavigationTarget({ ...goalPlayer, x: goalPlayer.x - 4 }, upperRouteWorld, {}).tile;
-  assert.strictEqual(`${stableP1.x},${stableP1.y}`, `${stableP2.x},${stableP2.y}`);
-  assert.strictEqual(`${stableP2.x},${stableP2.y}`, `${stableP3.x},${stableP3.y}`);
+  const stableP2 = stableGoalCompanion.buildNavigationTarget({ ...goalPlayer, x: goalPlayer.x + tileSize }, upperRouteWorld, {}).tile;
+  const stableP3 = stableGoalCompanion.buildNavigationTarget({ ...goalPlayer, x: goalPlayer.x - tileSize }, upperRouteWorld, {}).tile;
+  assert.notStrictEqual(`${stableP1.x},${stableP1.y}`, `${stableP2.x},${stableP2.y}`, 'expected goal tile to update when player tile moves right');
+  assert.notStrictEqual(`${stableP2.x},${stableP2.y}`, `${stableP3.x},${stableP3.y}`, 'expected goal tile to update when player tile moves left');
 
   // 23) Candidate 25 fallback: if 1-24 fail, player tile is used.
   const fallbackWorld = mkWorld([
@@ -384,6 +385,7 @@ async function run() {
   fallbackCompanion.updateNavigation(0.016, fallbackPlayer, fallbackWorld, {});
   const fallbackDebug = fallbackCompanion.getNavigationDebugSnapshot();
   assert.strictEqual(fallbackDebug.usedFallback25, true, 'expected fallback rank 25 flag in debug snapshot');
+  assert.ok(Array.isArray(fallbackDebug.expectedPath), 'expected debug snapshot to expose expected planned path segments');
 
   // 24) Facing mirror: ordered offsets are mirrored horizontally when player faces left.
   const mirrorCompanion = new FriendlyCompanion(2.5 * tileSize, 2.5 * tileSize);

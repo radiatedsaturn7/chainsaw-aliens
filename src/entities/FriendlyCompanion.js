@@ -249,7 +249,8 @@ export default class FriendlyCompanion extends Player {
       chosenGoalRank: null,
       usedFallback25: false,
       goalOnPlayerSurface: false,
-      routeFollowingChosenGoal: true
+      routeFollowingChosenGoal: true,
+      expectedPath: []
     };
   }
 
@@ -514,71 +515,46 @@ export default class FriendlyCompanion extends Player {
     const startTile = this.getFootStandTile(world);
     const candidates = this.generateFollowTileCandidates(player, world);
     const evaluations = [];
-    let chosen = null;
+    const fallback = candidates.find((entry) => entry.rank === 25);
+    const chosenTile = fallback?.tile || this.withAlign(startTile, 'center');
     for (let i = 0; i < candidates.length; i += 1) {
       const candidate = candidates[i];
       const tile = candidate.tile;
       const standable = candidate.isFallback ? true : this.canStandOnTile(tile.x, tile.y, world, abilities);
-      if (!standable) {
-        evaluations.push({ rank: candidate.rank, tile, accepted: false, reason: 'not-standable', routeCost: Infinity });
-        continue;
-      }
       if (candidate.isFallback) {
-        chosen = {
-          tile,
+        evaluations.push({
           rank: candidate.rank,
-          routeCost: this.routeTileDistance(startTile, tile),
+          tile,
+          accepted: true,
           reason: 'fallback-player-tile',
-          usedFallback25: true
-        };
-        evaluations.push({ rank: candidate.rank, tile, accepted: true, reason: chosen.reason, routeCost: chosen.routeCost });
-        break;
-      }
-      const reach = this.isReachableFollowTile(startTile, tile, world, abilities);
-      if (!reach.reachable) {
-        evaluations.push({ rank: candidate.rank, tile, accepted: false, reason: 'unreachable', routeCost: reach.routeCost });
-        continue;
-      }
-      chosen = {
-        tile,
-        rank: candidate.rank,
-        routeCost: reach.routeCost,
-        reason: reach.sameSurface ? 'reachable-same-surface' : `reachable-edges:${reach.edges}`,
-        usedFallback25: false
-      };
-      evaluations.push({ rank: candidate.rank, tile, accepted: true, reason: chosen.reason, routeCost: chosen.routeCost });
-      break;
-    }
-    if (!chosen) {
-      const fallback = candidates.find((entry) => entry.rank === 25);
-      chosen = {
-        tile: fallback?.tile || this.withAlign(startTile, 'center'),
-        rank: 25,
-        routeCost: fallback ? this.routeTileDistance(startTile, fallback.tile) : Infinity,
-        reason: 'fallback-player-tile',
-        usedFallback25: true
-      };
-    }
-    const playerMoved = !this.isPlayerMostlyStill(player);
-    state.followGoalLockTimer = Math.max(0, state.followGoalLockTimer - 1);
-    if (state.followGoalTile && state.followGoalLockTimer > 0 && !playerMoved) {
-      const lockedEval = evaluations.find((entry) => this.tileKey(entry.tile) === this.tileKey(state.followGoalTile) && entry.accepted);
-      if (lockedEval && lockedEval.rank <= chosen.rank + 1) {
-        chosen = {
-          tile: { ...state.followGoalTile },
-          rank: lockedEval.rank,
-          routeCost: lockedEval.routeCost,
-          reason: 'goal-lock',
-          usedFallback25: lockedEval.rank === 25
-        };
+          routeCost: this.routeTileDistance(startTile, tile)
+        });
+      } else if (!standable) {
+        evaluations.push({ rank: candidate.rank, tile, accepted: false, reason: 'not-standable', routeCost: Infinity });
+      } else {
+        const reach = this.isReachableFollowTile(startTile, tile, world, abilities);
+        evaluations.push({
+          rank: candidate.rank,
+          tile,
+          accepted: false,
+          reason: reach.reachable ? 'reachable-not-selected' : 'unreachable',
+          routeCost: reach.routeCost
+        });
       }
     }
-    if (!state.followGoalTile || this.tileKey(state.followGoalTile) !== this.tileKey(chosen.tile)) {
-      state.followGoalTile = { ...chosen.tile };
-      state.followGoalLockTimer = 14;
-    }
+    const chosen = {
+      tile: chosenTile,
+      rank: 25,
+      routeCost: fallback ? this.routeTileDistance(startTile, chosenTile) : Infinity,
+      reason: 'fallback-player-tile',
+      usedFallback25: true
+    };
+    state.followGoalTile = { ...chosen.tile };
     state.followGoalScore = chosen.routeCost;
     state.followGoalReason = chosen.reason;
+    state.stableFollowTile = { ...chosen.tile };
+    state.stableFollowScore = 0;
+    state.stableFollowHold = 0;
     state.followGoalCandidates = evaluations;
     return chosen;
   }
@@ -2166,29 +2142,13 @@ export default class FriendlyCompanion extends Player {
     state.targetTile = targetTile;
     state.routeTargetKey = this.tileKey(targetTile);
     state.routeAge += dt;
-    const groundedLookahead = this.findGroundedRecoveryPlan(startTile, targetTile, world, abilities, 4);
-    if (path.length && this.isJumpTransitionEdge(path[0]?.edge) && groundedLookahead && groundedLookahead.gain > 0.85) {
-      path = [{
-        tile: groundedLookahead.firstMove.tile,
-        edge: {
-          profile: groundedLookahead.firstMove.edge.profile,
-          sourceTile: startTile,
-          targetTile: groundedLookahead.firstMove.tile,
-          transitionType: 'grounded-lookahead'
-        }
-      }];
-      state.path = path;
-      reason = 'grounded-lookahead-dominates';
-      state.groundedPreferenceReason = `lookahead-gain:${groundedLookahead.gain.toFixed(2)}`;
-    } else {
-      state.groundedPreferenceReason = 'none';
-    }
+    state.groundedPreferenceReason = 'none';
     const plannedFirstTile = path[0]?.tile || null;
     let nextMove = this.chooseMoveFromPath(path, world);
     const groundedAlt = this.findBestGroundedProgressEdge(startTile, targetTile, world, abilities);
     const selectedEdgeType = nextMove?.edge?.transitionType || nextMove?.edge?.profile?.type || 'direct';
     const selectedJumpLike = this.isJumpTransitionEdge(nextMove?.edge);
-    if (selectedJumpLike && groundedAlt) {
+    if (!path.length && selectedJumpLike && groundedAlt) {
       const jumpDist = this.routeTileDistance(nextMove?.edge?.landingTile || nextMove?.nextTile || startTile, targetTile);
       const groundDist = this.routeTileDistance(groundedAlt.tile, targetTile);
       const groundingClearlyBetter = groundDist + 0.35 < jumpDist;
@@ -2346,6 +2306,11 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.routeFollowingChosenGoal = !plannedFirstTile
       || !nextMove?.nextTile
       || this.tileKey(nextMove.nextTile) === this.tileKey(plannedFirstTile);
+    this.navDebug.expectedPath = path.map((segment) => ({
+      from: segment?.edge?.sourceTile ? this.tileKey(segment.edge.sourceTile) : this.tileKey(startTile),
+      to: segment?.tile ? this.tileKey(segment.tile) : 'none',
+      transitionType: segment?.edge?.transitionType || segment?.edge?.profile?.type || 'direct'
+    }));
     state.jumpCancelReason = 'none';
 
     return {

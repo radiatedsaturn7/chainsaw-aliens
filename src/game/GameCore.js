@@ -6697,6 +6697,7 @@ export default class Game {
     const takeoff = this.tileToWorldCenter(takeoffTile);
     const landing = this.tileToWorldCenter(landingTile);
     const moveProfile = String(debug.moveProfile || 'none');
+    const expectedPath = Array.isArray(debug.expectedPath) ? debug.expectedPath : [];
     const stairLike = ['stepUp', 'slopeWalk', 'corridorAdvance', 'lowCeilingStep'].includes(moveProfile);
     const jumpLike = ['diagJump', 'verticalJump', 'upThenDrift', 'paramJump', 'shortHopForward', 'stepUp'].includes(moveProfile)
       || ['launch', 'drift', 'takeoff-prep'].includes(String(debug.executionPhase || ''));
@@ -6710,7 +6711,22 @@ export default class Game {
       ctx.strokeRect(goalTile.x * ts + 2, goalTile.y * ts + 2, ts - 4, ts - 4);
     }
 
-    if (next) {
+    if (expectedPath.length) {
+      expectedPath.forEach((segment) => {
+        const from = this.tileToWorldCenter(this.parseDebugTile(segment?.from));
+        const to = this.tileToWorldCenter(this.parseDebugTile(segment?.to));
+        if (!from || !to) return;
+        const transitionType = String(segment?.transitionType || 'direct');
+        const jumpSegment = ['jumpArc', 'diagJump', 'verticalJump', 'paramJump', 'upThenDrift', 'shortHopForward', 'stepUp'].includes(transitionType);
+        const fallSegment = ['drop'].includes(transitionType);
+        const stairSegment = ['stepUp', 'slopeWalk', 'corridorAdvance', 'lowCeilingStep'].includes(transitionType);
+        ctx.strokeStyle = jumpSegment ? '#ff453a' : fallSegment ? '#34c759' : stairSegment ? '#ffd60a' : '#2d7cff';
+        ctx.beginPath();
+        ctx.moveTo(from.x, from.y);
+        ctx.lineTo(to.x, to.y);
+        ctx.stroke();
+      });
+    } else if (next) {
       ctx.strokeStyle = stairLike ? '#ffd60a' : '#2d7cff';
       ctx.beginPath();
       ctx.moveTo(current.x, current.y);
