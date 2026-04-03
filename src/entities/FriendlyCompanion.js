@@ -1,7 +1,7 @@
 import Player from './Player.js';
 
 const TARGET_PRIORITY_FACING_RIGHT = [
-  [8, 16, 21, 19, 17],
+  [8, 15, 21, 19, 17],
   [3, 5, 23, 13, 11],
   [1, 2, 25, 9, 10],
   [4, 6, 24, 14, 12],
@@ -56,6 +56,7 @@ export default class FriendlyCompanion extends Player {
     this.currentPathTiles = [];
     this.currentGoalTile = null;
     this.debugPenalizedTiles = [];
+    this.debugStandableTiles = [];
   }
 
   getDrawPalette(flash) {
@@ -223,19 +224,23 @@ export default class FriendlyCompanion extends Player {
   }
 
   planPathToPlayer(player, world, abilities, context) {
-    const startTile = this.getFootTile(world);
-    if (!this.isWalkableTile(startTile.x, startTile.y, world, abilities, context)) {
+    const rawStart = this.getFootTile(world);
+    const startTile = this.findNearestWalkableTile(rawStart, world, abilities, context, 8);
+    if (!startTile) {
       this.currentPathTiles = [];
       this.currentGoalTile = null;
       this.debugPenalizedTiles = [];
+      this.debugStandableTiles = [];
       return;
     }
 
     const candidates = this.getPriorityTilesAroundPlayer(player, world);
     const penalized = [];
+    const standable = [];
     for (let i = 0; i < candidates.length; i += 1) {
       const candidate = candidates[i];
       if (!this.isWalkableTile(candidate.x, candidate.y, world, abilities, context)) continue;
+      standable.push({ x: candidate.x, y: candidate.y });
       if (this.isHazardTile(candidate.x, candidate.y, world)) {
         penalized.push({ x: candidate.x, y: candidate.y });
       }
@@ -244,12 +249,28 @@ export default class FriendlyCompanion extends Player {
       this.currentPathTiles = path;
       this.currentGoalTile = { x: candidate.x, y: candidate.y };
       this.debugPenalizedTiles = penalized;
+      this.debugStandableTiles = standable;
       return;
     }
 
     this.currentPathTiles = [];
     this.currentGoalTile = null;
     this.debugPenalizedTiles = penalized;
+    this.debugStandableTiles = standable;
+  }
+
+  findNearestWalkableTile(origin, world, abilities, context, maxRadius = 8) {
+    if (this.isWalkableTile(origin.x, origin.y, world, abilities, context)) return { ...origin };
+    for (let radius = 1; radius <= maxRadius; radius += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        for (let dy = -radius; dy <= radius; dy += 1) {
+          if (Math.abs(dx) !== radius && Math.abs(dy) !== radius) continue;
+          const tile = { x: origin.x + dx, y: origin.y + dy };
+          if (this.isWalkableTile(tile.x, tile.y, world, abilities, context)) return tile;
+        }
+      }
+    }
+    return null;
   }
 
   update(dt, world, abilities, context = {}) {
@@ -262,41 +283,26 @@ export default class FriendlyCompanion extends Player {
       this.pathReplanTimer = 0.2;
     }
 
-    const nextInput = new Set();
-    const nextTile = this.currentPathTiles.length > 1 ? this.currentPathTiles[1] : null;
-    if (nextTile) {
-      const tileSize = world.tileSize;
-      const targetX = (nextTile.x + 0.5) * tileSize;
-      const targetY = (nextTile.y + 0.5) * tileSize;
-      const dx = targetX - this.x;
-      const dy = targetY - this.y;
-
-      if (dx < -6) nextInput.add('left');
-      if (dx > 6) nextInput.add('right');
-
-      const canJump = this.onGround || this.coyote > 0 || this.onWall !== 0;
-      if (dy < -10 && canJump) {
-        nextInput.add('jump');
-      }
-      if (dy > tileSize * 0.7 && this.onGround && world.isOneWay?.(nextTile.x, nextTile.y + 1)) {
-        nextInput.add('down');
-        nextInput.add('jump');
-      }
-
-      const closeEnough = Math.abs(dx) < 8 && Math.abs(dy) < tileSize * 0.6;
-      if (closeEnough) {
-        this.currentPathTiles.shift();
-      }
-    }
-
-    this.aiInput.beginFrame(nextInput);
-    super.update(dt, this.aiInput, world, abilities);
+    this.aiInput.beginFrame(new Set());
+    this.vx = 0;
+    this.vy = 0;
     this.revving = false;
     this.flameMode = false;
+    this.onGround = true;
   }
 
   drawPathDebug(ctx, world) {
     const tileSize = world.tileSize;
+    if (this.debugStandableTiles.length) {
+      ctx.save();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#f1df53';
+      this.debugStandableTiles.forEach((tile) => {
+        ctx.strokeRect(tile.x * tileSize + 3, tile.y * tileSize + 3, tileSize - 6, tileSize - 6);
+      });
+      ctx.restore();
+    }
+
     if (this.currentPathTiles.length > 1) {
       ctx.save();
       ctx.lineWidth = 2;
@@ -325,14 +331,5 @@ export default class FriendlyCompanion extends Player {
       ctx.restore();
     }
 
-    if (this.debugPenalizedTiles.length) {
-      ctx.save();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#ff4b4b';
-      this.debugPenalizedTiles.forEach((tile) => {
-        ctx.strokeRect(tile.x * tileSize + 4, tile.y * tileSize + 4, tileSize - 8, tileSize - 8);
-      });
-      ctx.restore();
-    }
   }
 }
