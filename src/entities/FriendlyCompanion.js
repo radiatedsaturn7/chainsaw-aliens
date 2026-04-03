@@ -57,6 +57,7 @@ export default class FriendlyCompanion extends Player {
     this.currentGoalTile = null;
     this.debugPenalizedTiles = [];
     this.debugStandableTiles = [];
+    this.debugCandidateTiles = [];
   }
 
   getDrawPalette(flash) {
@@ -226,30 +227,48 @@ export default class FriendlyCompanion extends Player {
   planPathToPlayer(player, world, abilities, context) {
     const rawStart = this.getFootTile(world);
     const startTile = this.findNearestWalkableTile(rawStart, world, abilities, context, 8);
+    const candidates = this.getPriorityTilesAroundPlayer(player, world);
+    const debugCandidates = candidates.map((candidate) => ({ ...candidate, status: 'unchecked' }));
     if (!startTile) {
       this.currentPathTiles = [];
       this.currentGoalTile = null;
       this.debugPenalizedTiles = [];
       this.debugStandableTiles = [];
+      this.debugCandidateTiles = debugCandidates.map((candidate) => ({ ...candidate, status: 'no-path' }));
       return;
     }
 
-    const candidates = this.getPriorityTilesAroundPlayer(player, world);
     const penalized = [];
     const standable = [];
-    for (let i = 0; i < candidates.length; i += 1) {
-      const candidate = candidates[i];
-      if (!this.isWalkableTile(candidate.x, candidate.y, world, abilities, context)) continue;
+    for (let i = 0; i < debugCandidates.length; i += 1) {
+      const candidate = debugCandidates[i];
+      const hasSupport = this.isCollidable(candidate.x, candidate.y + 1, world, abilities, context);
+      if (!hasSupport) {
+        candidate.status = 'no-support';
+        continue;
+      }
+      const bodyBlocked = this.isCollidable(candidate.x, candidate.y, world, abilities, context);
+      const headBlocked = this.isCollidable(candidate.x, candidate.y - 1, world, abilities, context);
+      if (bodyBlocked || headBlocked) {
+        candidate.status = 'blocked';
+        continue;
+      }
       standable.push({ x: candidate.x, y: candidate.y });
       if (this.isHazardTile(candidate.x, candidate.y, world)) {
         penalized.push({ x: candidate.x, y: candidate.y });
+        candidate.status = 'hazard';
       }
       const path = this.getAStarPath(startTile, candidate, world, abilities, context);
-      if (!path || path.length < 2) continue;
+      if (!path || path.length < 2) {
+        candidate.status = 'no-path';
+        continue;
+      }
+      if (candidate.status !== 'hazard') candidate.status = 'valid';
       this.currentPathTiles = path;
       this.currentGoalTile = { x: candidate.x, y: candidate.y };
       this.debugPenalizedTiles = penalized;
       this.debugStandableTiles = standable;
+      this.debugCandidateTiles = debugCandidates;
       return;
     }
 
@@ -257,6 +276,7 @@ export default class FriendlyCompanion extends Player {
     this.currentGoalTile = null;
     this.debugPenalizedTiles = penalized;
     this.debugStandableTiles = standable;
+    this.debugCandidateTiles = debugCandidates;
   }
 
   findNearestWalkableTile(origin, world, abilities, context, maxRadius = 8) {
@@ -293,26 +313,37 @@ export default class FriendlyCompanion extends Player {
 
   drawPathDebug(ctx, world) {
     const tileSize = world.tileSize;
-    if (this.debugStandableTiles.length) {
+    const colorByStatus = {
+      'no-support': 'rgba(60, 60, 60, 0.95)',
+      hazard: 'rgba(255, 80, 80, 0.95)',
+      'no-path': 'rgba(255, 167, 48, 0.95)',
+      blocked: 'rgba(110, 120, 170, 0.9)',
+      valid: 'rgba(241, 223, 83, 0.95)',
+      unchecked: 'rgba(140, 140, 140, 0.6)'
+    };
+    if (this.debugCandidateTiles.length) {
       ctx.save();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#f1df53';
-      this.debugStandableTiles.forEach((tile) => {
-        ctx.strokeRect(tile.x * tileSize + 3, tile.y * tileSize + 3, tileSize - 6, tileSize - 6);
+      this.debugCandidateTiles.forEach((tile) => {
+        const color = colorByStatus[tile.status] || colorByStatus.unchecked;
+        ctx.fillStyle = color.replace('0.95', '0.25').replace('0.9', '0.22').replace('0.6', '0.18');
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.fillRect(tile.x * tileSize + 2, tile.y * tileSize + 2, tileSize - 4, tileSize - 4);
+        ctx.strokeRect(tile.x * tileSize + 2, tile.y * tileSize + 2, tileSize - 4, tileSize - 4);
       });
       ctx.restore();
     }
 
     if (this.currentPathTiles.length > 1) {
       ctx.save();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(70, 235, 120, 0.95)';
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = 'rgba(70, 235, 120, 0.98)';
       ctx.beginPath();
-      this.currentPathTiles.forEach((tile, index) => {
+      ctx.moveTo(this.x, this.y);
+      this.currentPathTiles.forEach((tile) => {
         const x = (tile.x + 0.5) * tileSize;
         const y = (tile.y + 0.5) * tileSize;
-        if (index === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        ctx.lineTo(x, y);
       });
       ctx.stroke();
       ctx.restore();
