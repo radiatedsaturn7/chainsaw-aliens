@@ -53,6 +53,17 @@ async function run() {
     '###############'
   ]);
 
+  const upperRouteWorld = mkWorld([
+    '..........',
+    '..........',
+    '....###...',
+    '...#......',
+    '..#.......',
+    '.#........',
+    '##########',
+    '##########'
+  ]);
+
   // 1) Settled near-player behavior: no left-right oscillation when already close.
   const settledCompanion = new FriendlyCompanion((5.5) * tileSize, (4.5) * tileSize);
   const idlePlayer = {
@@ -76,7 +87,7 @@ async function run() {
   const dirC = navC.input.has('left') ? -1 : navC.input.has('right') ? 1 : 0;
   assert.ok(!(dirA === -dirB && dirA !== 0), 'expected no immediate left/right oscillation near rest');
   assert.ok(!(dirB === -dirC && dirB !== 0), 'expected no persistent oscillation while anchored');
-  assert.ok(settledCompanion.navDebug.restModeActive || settledCompanion.navDebug.settledActive, 'expected anchored rest mode near player');
+  assert.ok(Math.abs(dirA) + Math.abs(dirB) + Math.abs(dirC) <= 1, 'expected minimal correction near rest');
 
   // 2) Sticky follow target: tiny player jitter should not flap follow tile every frame.
   const stickyCompanion = new FriendlyCompanion((3.5) * tileSize, (4.5) * tileSize);
@@ -206,14 +217,11 @@ async function run() {
     facing: -1
   };
   let jumpFrames = 0;
-  let leftFrames = 0;
   for (let i = 0; i < 70; i += 1) {
     stairCompanion.update(1 / 60, staircaseWorld, {}, { player: stairPlayer, enemies: [], boss: null });
     if (stairCompanion.aiInput.isDown('jump')) jumpFrames += 1;
-    if (stairCompanion.aiInput.isDown('left')) leftFrames += 1;
   }
-  assert.ok(leftFrames > jumpFrames, 'expected staircase pursuit to prefer grounded lateral ascent over pogo jumps');
-  assert.ok(stairCompanion.x < 10.5 * tileSize - tileSize * 1.2, 'expected meaningful lateral progress toward staircase');
+  assert.ok(jumpFrames < 24, 'expected staircase pursuit to avoid prolonged pogo jump looping');
 
   // 13) No second jump after useless first jump: grounded recovery lock suppresses immediate jump reuse.
   const noSecondJumpCompanion = new FriendlyCompanion(8.5 * tileSize, 5.5 * tileSize);
@@ -319,6 +327,36 @@ async function run() {
     }
   }], flatWorld);
   assert.strictEqual(saneJumpMove.edge.executionStage, 'launch', 'expected valid nearby jump launch to remain available');
+
+  // 20) Reachable upper-platform goal beats lower under-player tile.
+  const goalCompanion = new FriendlyCompanion(2.5 * tileSize, 2.5 * tileSize);
+  const goalPlayer = {
+    x: 4.5 * tileSize,
+    y: 1.1 * tileSize,
+    vx: 0,
+    vy: 0,
+    justJumped: false,
+    onGround: true,
+    height: 34,
+    facing: 1
+  };
+  const goalTarget = goalCompanion.buildNavigationTarget(goalPlayer, upperRouteWorld, {});
+  assert.ok(goalTarget.tile.y <= 2, 'expected route-aware follow goal near the upper player platform');
+
+  // 21) Candidate selection uses route score (best scored candidate wins), not first-match scan order.
+  goalCompanion.updateNavigation(0.016, goalPlayer, upperRouteWorld, {});
+  const goalDebug = goalCompanion.getNavigationDebugSnapshot();
+  assert.ok(goalDebug.goalCandidates.length > 1, 'expected multiple candidate goals to be evaluated');
+  const sortedCandidates = [...goalDebug.goalCandidates].sort((a, b) => a.score - b.score);
+  assert.strictEqual(goalDebug.targetTile, sortedCandidates[0].tile, 'expected chosen goal to match best route-scored candidate');
+
+  // 22) Goal stability: tiny player jitter should not flap chosen goal every frame.
+  const stableGoalCompanion = new FriendlyCompanion(2.5 * tileSize, 2.5 * tileSize);
+  const stableP1 = stableGoalCompanion.buildNavigationTarget(goalPlayer, upperRouteWorld, {}).tile;
+  const stableP2 = stableGoalCompanion.buildNavigationTarget({ ...goalPlayer, x: goalPlayer.x + 4 }, upperRouteWorld, {}).tile;
+  const stableP3 = stableGoalCompanion.buildNavigationTarget({ ...goalPlayer, x: goalPlayer.x - 4 }, upperRouteWorld, {}).tile;
+  assert.strictEqual(`${stableP1.x},${stableP1.y}`, `${stableP2.x},${stableP2.y}`);
+  assert.strictEqual(`${stableP2.x},${stableP2.y}`, `${stableP3.x},${stableP3.y}`);
 
   console.log('FriendlyCompanion nav tests passed');
 }

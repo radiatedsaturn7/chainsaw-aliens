@@ -174,7 +174,12 @@ export default class FriendlyCompanion extends Player {
       suppressConsecutiveJump: false,
       secondJumpSuppressed: false,
       airborneSalvageActive: false,
-      groundedPreferenceReason: 'none'
+      groundedPreferenceReason: 'none',
+      followGoalTile: null,
+      followGoalScore: Infinity,
+      followGoalLockTimer: 0,
+      followGoalReason: 'none',
+      followGoalCandidates: []
     };
     this.moveExecution = {
       active: false,
@@ -237,7 +242,12 @@ export default class FriendlyCompanion extends Player {
       groundedRecoveryActive: false,
       secondJumpSuppressed: false,
       groundedPreferenceReason: 'none',
-      airborneSalvageActive: false
+      airborneSalvageActive: false,
+      goalCandidates: [],
+      chosenGoalScore: null,
+      chosenGoalReason: 'none',
+      goalOnPlayerSurface: false,
+      routeFollowingChosenGoal: true
     };
   }
 
@@ -453,45 +463,106 @@ export default class FriendlyCompanion extends Player {
     return bestDist <= 4 ? best : null;
   }
 
-  findFollowStandTile(player, world, abilities) {
+  generateFollowTileCandidates(player, world, abilities) {
     const tileSize = world.tileSize;
     const playerTileX = Math.floor(player.x / tileSize);
     const playerTileY = player.onGround
       ? Math.floor((player.y + player.height / 2 - 1) / tileSize)
       : Math.floor(player.y / tileSize);
     const facing = player.facing || 1;
-    const verticalOffsets = [0, -1, 1, -2, 2];
-    const behindColumns = [2, 1, 0].map((step) => playerTileX - facing * step);
-    const adjacentColumns = [
-      playerTileX - facing * 3,
-      playerTileX + 1,
-      playerTileX - 1,
-      playerTileX + 2,
-      playerTileX - 2,
-      playerTileX + 3,
-      playerTileX - 3
-    ];
-    const uniqueColumns = [];
-    [...behindColumns, ...adjacentColumns].forEach((column) => {
-      if (!uniqueColumns.includes(column)) uniqueColumns.push(column);
-    });
-    const playerStanding = Boolean(player.onGround);
-    const playerAboveCompanion = player.y < this.y - tileSize * 0.6;
-    const prioritizedVertical = playerAboveCompanion
-      ? (playerStanding ? [0, -1, 1, -2, 2] : [0, -1, -2, 1, 2])
-      : (playerStanding ? [0, 1, -1, 2, -2] : verticalOffsets);
-    for (let stepIndex = 0; stepIndex < uniqueColumns.length; stepIndex += 1) {
-      const candidateX = uniqueColumns[stepIndex];
-      for (let i = 0; i < prioritizedVertical.length; i += 1) {
-        const candidateY = playerTileY + prioritizedVertical[i];
-        if (Math.abs(candidateY - playerTileY) > 2) continue;
-        if (playerAboveCompanion && candidateY > playerTileY) continue;
-        if (this.canStandOnTile(candidateX, candidateY, world, abilities)) {
-          return { x: candidateX, y: candidateY, align: 'center' };
-        }
+    const offsets = [];
+    for (let dy = -2; dy <= 2; dy += 1) {
+      for (let dx = -3; dx <= 3; dx += 1) {
+        offsets.push({ dx, dy });
       }
     }
-    return { x: playerTileX, y: playerTileY, align: 'center' };
+    offsets.push({ dx: -facing * 2, dy: 0 });
+    offsets.push({ dx: -facing * 1, dy: 0 });
+    offsets.push({ dx: 0, dy: 0 });
+    const seen = new Set();
+    const candidates = [];
+    for (let i = 0; i < offsets.length; i += 1) {
+      const o = offsets[i];
+      const tile = { x: playerTileX + o.dx, y: playerTileY + o.dy, align: 'center' };
+      const key = this.tileKey(tile);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      if (!this.canStandOnTile(tile.x, tile.y, world, abilities)) continue;
+      candidates.push(tile);
+      if (candidates.length >= 24) break;
+    }
+    if (!candidates.length && this.canStandOnTile(playerTileX, playerTileY, world, abilities)) {
+      candidates.push({ x: playerTileX, y: playerTileY, align: 'center' });
+    }
+    return candidates;
+  }
+
+  evaluateFollowCandidate(tile, player, startTile, world, abilities) {
+    const facing = player.facing || 1;
+    const playerTile = {
+      x: Math.floor(player.x / world.tileSize),
+      y: player.onGround
+        ? Math.floor((player.y + player.height / 2 - 1) / world.tileSize)
+        : Math.floor(player.y / world.tileSize)
+    };
+    const behindNudge = ((tile.x - playerTile.x) * facing) < 0 ? -0.25 : 0;
+    const closeNudge = Math.min(1.5, Math.hypot(tile.x - playerTile.x, tile.y - playerTile.y) * 0.12);
+    const verticalMismatchPenalty = Math.abs(tile.y - playerTile.y) * 2.2;
+    const belowPlayerPenalty = tile.y > playerTile.y + 1 ? 3.2 : 0;
+    const route = this.findTraversalRoute(startTile, tile, world, abilities);
+    const sameSurface = Boolean(route.startSurface && route.goalSurface && route.startSurface === route.goalSurface);
+    if (!sameSurface && !route.route.length) return null;
+    const routeCost = sameSurface
+      ? this.routeTileDistance(startTile, tile) * 0.9
+      : route.route.reduce((sum, edge) => sum + (edge.cost || 1), 0);
+    const score = routeCost + closeNudge + verticalMismatchPenalty + belowPlayerPenalty + behindNudge;
+    return {
+      tile,
+      score,
+      routeCost,
+      sameSurfaceAsPlayer: route.goalSurface && route.goalSurface === this.getSurfaceForTile(playerTile, route.graph),
+      reason: sameSurface ? 'same-surface-route' : `graph-edges:${route.route.length}`
+    };
+  }
+
+  chooseBestFollowTile(player, world, abilities) {
+    const state = this.navState;
+    const startTile = this.getFootStandTile(world);
+    const candidates = this.generateFollowTileCandidates(player, world, abilities);
+    const scored = [];
+    for (let i = 0; i < candidates.length; i += 1) {
+      const result = this.evaluateFollowCandidate(candidates[i], player, startTile, world, abilities);
+      if (result) scored.push(result);
+    }
+    if (!scored.length) return { tile: this.withAlign(startTile, 'center'), score: Infinity, reason: 'fallback-current' };
+    scored.sort((a, b) => a.score - b.score);
+    let chosen = scored[0];
+    state.followGoalCandidates = scored.slice(0, 8).map((entry) => ({
+      tile: entry.tile,
+      score: entry.score,
+      routeCost: entry.routeCost,
+      reason: entry.reason
+    }));
+    state.followGoalLockTimer = Math.max(0, state.followGoalLockTimer - 1);
+    if (state.followGoalTile) {
+      const locked = scored.find((entry) => this.tileKey(entry.tile) === this.tileKey(state.followGoalTile));
+      if (locked) {
+        const better = scored[0];
+        const keepLocked = state.followGoalLockTimer > 0 && (!better || better.score + 0.95 >= locked.score);
+        if (keepLocked) chosen = locked;
+      }
+    }
+    if (!state.followGoalTile || this.tileKey(state.followGoalTile) !== this.tileKey(chosen.tile)) {
+      state.followGoalTile = { ...chosen.tile };
+      state.followGoalLockTimer = 18;
+    }
+    state.followGoalScore = chosen.score;
+    state.followGoalReason = chosen.reason;
+    return chosen;
+  }
+
+  findFollowStandTile(player, world, abilities) {
+    return this.chooseBestFollowTile(player, world, abilities).tile;
   }
 
   // Hybrid nav layer selection: keep direct movement as default and only escalate when repeated lack of progress is detected.
@@ -708,9 +779,9 @@ export default class FriendlyCompanion extends Player {
         world: { x: this.assistTarget.x - dir * 20, y: this.assistTarget.y - 4 }
       };
     }
-    const candidateTile = this.findFollowStandTile(player, world, abilities);
-    const tile = this.chooseStickyFollowTile(candidateTile, player, world);
-    return { tile, world: this.tileCenter(tile, world) };
+    const chosen = this.chooseBestFollowTile(player, world, abilities);
+    const tile = chosen.tile || this.findFollowStandTile(player, world, abilities);
+    return { tile, world: this.tileCenter(tile, world), followChoice: chosen };
   }
 
   buildEdgeProfiles(from, to, world) {
@@ -1912,6 +1983,7 @@ export default class FriendlyCompanion extends Player {
     const navTarget = this.buildNavigationTarget(player, world, abilities);
     const targetTile = navTarget.tile;
     const targetWorld = navTarget.world;
+    const followChoice = navTarget.followChoice || null;
     const startTile = this.getFootStandTile(world);
     const distToFollow = Math.hypot(targetWorld.x - this.x, targetWorld.y - this.y);
     const playerStill = this.isPlayerMostlyStill(player);
@@ -2089,6 +2161,7 @@ export default class FriendlyCompanion extends Player {
     } else {
       state.groundedPreferenceReason = 'none';
     }
+    const plannedFirstTile = path[0]?.tile || null;
     let nextMove = this.chooseMoveFromPath(path, world);
     const groundedAlt = this.findBestGroundedProgressEdge(startTile, targetTile, world, abilities);
     const selectedEdgeType = nextMove?.edge?.transitionType || nextMove?.edge?.profile?.type || 'direct';
@@ -2227,6 +2300,25 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.secondJumpSuppressed = Boolean(state.secondJumpSuppressed);
     this.navDebug.groundedPreferenceReason = state.groundedPreferenceReason || 'none';
     this.navDebug.airborneSalvageActive = Boolean(state.airborneSalvageActive);
+    this.navDebug.goalCandidates = (state.followGoalCandidates || []).map((entry) => ({
+      tile: this.tileKey(entry.tile),
+      score: Number(entry.score.toFixed(2)),
+      routeCost: Number(entry.routeCost.toFixed(2)),
+      reason: entry.reason
+    }));
+    this.navDebug.chosenGoalScore = followChoice ? Number((followChoice.score || 0).toFixed(2)) : null;
+    this.navDebug.chosenGoalReason = followChoice?.reason || state.followGoalReason || 'none';
+    const playerTile = {
+      x: Math.floor(player.x / world.tileSize),
+      y: player.onGround
+        ? Math.floor((player.y + player.height / 2 - 1) / world.tileSize)
+        : Math.floor(player.y / world.tileSize)
+    };
+    const playerSurface = this.getSurfaceForTile(playerTile, surfacePlan.graph) || 'none';
+    this.navDebug.goalOnPlayerSurface = Boolean(surfacePlan.goalSurface && playerSurface !== 'none' && surfacePlan.goalSurface === playerSurface);
+    this.navDebug.routeFollowingChosenGoal = !plannedFirstTile
+      || !nextMove?.nextTile
+      || this.tileKey(nextMove.nextTile) === this.tileKey(plannedFirstTile);
     state.jumpCancelReason = 'none';
 
     return {
