@@ -192,12 +192,7 @@ export default class FriendlyCompanion extends Player {
         return path;
       }
 
-      const neighbors = [
-        { x: current.x + 1, y: current.y },
-        { x: current.x - 1, y: current.y },
-        { x: current.x, y: current.y + 1 },
-        { x: current.x, y: current.y - 1 }
-      ];
+      const neighbors = this.getPathNeighbors(current, world, abilities, context);
 
       for (let i = 0; i < neighbors.length; i += 1) {
         const neighbor = neighbors[i];
@@ -220,6 +215,32 @@ export default class FriendlyCompanion extends Player {
     }
 
     return null;
+  }
+
+  getPathNeighbors(tile, world, abilities, context) {
+    const neighbors = [];
+    const dirs = [-1, 1];
+    dirs.forEach((dir) => {
+      const walk = { x: tile.x + dir, y: tile.y };
+      if (this.isWalkableTile(walk.x, walk.y, world, abilities, context)) neighbors.push(walk);
+      for (let jumpUp = 1; jumpUp <= 3; jumpUp += 1) {
+        const jump = { x: tile.x + dir, y: tile.y - jumpUp };
+        if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) neighbors.push(jump);
+      }
+      for (let dropDown = 1; dropDown <= 4; dropDown += 1) {
+        const drop = { x: tile.x + dir, y: tile.y + dropDown };
+        if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) neighbors.push(drop);
+      }
+    });
+    for (let jumpUp = 1; jumpUp <= 2; jumpUp += 1) {
+      const jump = { x: tile.x, y: tile.y - jumpUp };
+      if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) neighbors.push(jump);
+    }
+    for (let dropDown = 1; dropDown <= 4; dropDown += 1) {
+      const drop = { x: tile.x, y: tile.y + dropDown };
+      if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) neighbors.push(drop);
+    }
+    return neighbors;
   }
 
   planPathToPlayer(player, world, abilities, context) {
