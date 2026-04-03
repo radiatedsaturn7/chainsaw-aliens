@@ -550,11 +550,12 @@ export default class FriendlyCompanion extends Player {
       break;
     }
     if (!chosen) {
+      const fallback = candidates.find((entry) => entry.rank === 25);
       chosen = {
-        tile: this.withAlign(startTile, 'center'),
+        tile: fallback?.tile || this.withAlign(startTile, 'center'),
         rank: 25,
-        routeCost: Infinity,
-        reason: 'fallback-current',
+        routeCost: fallback ? this.routeTileDistance(startTile, fallback.tile) : Infinity,
+        reason: 'fallback-player-tile',
         usedFallback25: true
       };
     }
