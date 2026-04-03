@@ -696,7 +696,27 @@ export default class FriendlyCompanion extends Player {
       profiles.push({ type: 'stepUp', dir: dir || 1, hold: 0.15, cost: 1.2 });
       profiles.push({ type: 'shortHopForward', dir: dir || 1, hold: 0.16, cost: 1.5 });
     }
-    if (dy <= 0 && Math.abs(dx) <= 3) {
+    if (dy <= 0 && Math.abs(dx) <= 4) {
+      const jumpDirs = dx === 0 ? [-1, 1] : [dir || 1];
+      const driftDelays = [0, 0.06, 0.12];
+      jumpDirs.forEach((jumpDir) => {
+        driftDelays.forEach((driftDelay) => {
+          const ambition = Math.max(1, Math.abs(dx));
+          const secondJumpOptions = Math.abs(dy) >= 2 ? [null, 0.18, 0.26] : [null];
+          secondJumpOptions.forEach((secondJumpAt) => {
+            const signature = `pj:${jumpDir}:${driftDelay.toFixed(2)}:${secondJumpAt == null ? 'none' : secondJumpAt.toFixed(2)}:${ambition}`;
+            profiles.push({
+              type: 'paramJump',
+              signature,
+              dir: jumpDir,
+              hold: 0.2 + ambition * 0.01,
+              driftDelay,
+              secondJumpAt,
+              cost: 2.8 + Math.abs(dy) * 0.65 + ambition * 0.22 + (secondJumpAt != null ? 0.2 : 0)
+            });
+          });
+        });
+      });
       profiles.push({ type: 'diagJump', dir: dir || 1, hold: 0.2, driftDelay: 0, cost: 3 + Math.abs(dy) });
       profiles.push({ type: 'upThenDrift', dir: dir || 1, hold: 0.24, driftDelay: 0.07, cost: 3.5 + Math.abs(dy) });
     }
@@ -727,7 +747,8 @@ export default class FriendlyCompanion extends Player {
     let best = null;
     for (let i = 0; i < profiles.length; i += 1) {
       const profile = profiles[i];
-      if (this.isEdgePoisoned(from, to, profile.type)) continue;
+      const profileKey = profile.signature || profile.type;
+      if (this.isEdgePoisoned(from, to, profileKey)) continue;
       if (profile.type === 'elevatorRide') {
         const component = this.findNearbyElevatorComponent(from, world, abilities);
         const canBoard = Boolean(component?.boardTiles?.some((board) => board.x === to.x && board.y === to.y));
@@ -743,10 +764,13 @@ export default class FriendlyCompanion extends Player {
       }
       const result = this.simulateMoveProfile(from, to, profile, world, abilities);
       if (!result.ok) continue;
+      const progress = Math.abs(to.x - from.x) + Math.abs(to.y - from.y);
+      if (this.isJumpProfile(profile.type) && progress <= 1 && result.cost > 2.6) continue;
       if (!best || result.cost < best.cost) {
         best = {
           ok: true,
           profile,
+          profileKey,
           cost: result.cost,
           moveType: profile.type,
           needAlign: result.needAlign
@@ -765,6 +789,7 @@ export default class FriendlyCompanion extends Player {
           best = {
             ok: true,
             profile: { type: 'stepUp', dir: Math.sign(to.x - from.x) || 1, hold: 0.16, cost: 1.5 },
+            profileKey: 'stepUp',
             cost: 1.5,
             moveType: 'stepUp',
             needAlign: false
@@ -797,8 +822,9 @@ export default class FriendlyCompanion extends Player {
     let vx = 0;
     let vy = 0;
     let coyote = MOVEMENT_MODEL.coyoteTime;
-    let jumps = 1;
+    let jumps = 2;
     let jumped = false;
+    let secondJumped = false;
     let onGround = this.hasGroundSupportAt(x, y, world, abilities);
     let t = 0;
     let bonk = false;
@@ -836,6 +862,9 @@ export default class FriendlyCompanion extends Player {
       } else if (profile.type === 'upThenDrift') {
         if (!jumped && t < 0.06) jumpNow = true;
         if (t >= (profile.driftDelay || 0.09)) move = profile.dir;
+      } else if (profile.type === 'paramJump') {
+        if (!jumped && t < 0.06) jumpNow = true;
+        if (t >= (profile.driftDelay || 0)) move = profile.dir;
       } else if (profile.type === 'microAlignLeft') {
         move = -1;
       } else if (profile.type === 'microAlignRight') {
@@ -851,6 +880,11 @@ export default class FriendlyCompanion extends Player {
         jumped = true;
         coyote = 0;
         jumps = Math.max(0, jumps - 1);
+      }
+      if (profile.type === 'paramJump' && profile.secondJumpAt != null && jumped && !secondJumped && t >= profile.secondJumpAt && jumps > 0) {
+        vy = -this.jumpPower * 0.96;
+        jumps = Math.max(0, jumps - 1);
+        secondJumped = true;
       }
 
       vy += MOVEMENT_MODEL.gravity * dt;
@@ -1230,7 +1264,8 @@ export default class FriendlyCompanion extends Player {
       || profile === 'upThenDrift'
       || profile === 'stepUp'
       || profile === 'shortHopForward'
-      || profile === 'lowCeilingStep';
+      || profile === 'lowCeilingStep'
+      || profile === 'paramJump';
   }
 
   isJumpTransitionEdge(edge) {
@@ -1512,7 +1547,8 @@ export default class FriendlyCompanion extends Player {
     const takeoffTile = edge.sourceTile || null;
     const landingTile = edge.targetTile || segment.tile;
     const isJumpTransition = this.isJumpTransitionEdge(edge);
-    const atTakeoff = !takeoffTile || this.isNearTile(takeoffTile, world, 0.45);
+    const takeoffTolerance = isJumpTransition ? 0.72 : 0.45;
+    const atTakeoff = !takeoffTile || this.isNearTile(takeoffTile, world, takeoffTolerance);
     const useTakeoffPrep = isJumpTransition && !atTakeoff;
     const activeTile = useTakeoffPrep ? takeoffTile : landingTile;
     const worldTarget = this.tileCenter(activeTile || segment.tile, world);
@@ -1582,7 +1618,8 @@ export default class FriendlyCompanion extends Player {
       targetNode: move.nextTile,
       takeoffTile: move?.edge?.takeoffTile || move?.edge?.sourceTile || null,
       landingTile: move?.edge?.landingTile || move?.edge?.targetTile || move.nextTile,
-      transitionStage
+      transitionStage,
+      profileSignature: move?.edge?.profile?.signature || profile
     };
   }
 
@@ -1621,7 +1658,7 @@ export default class FriendlyCompanion extends Player {
         return input;
       }
       input.add('jump');
-      if (profile === 'diagJump' || profile === 'stepUp' || profile === 'shortHopForward' || profile === 'lowCeilingStep') {
+      if (profile === 'diagJump' || profile === 'stepUp' || profile === 'shortHopForward' || profile === 'lowCeilingStep' || profile === 'paramJump') {
         input.add(dir < 0 ? 'left' : 'right');
       }
       if (execution.elapsed > 0.08) {
@@ -1645,6 +1682,7 @@ export default class FriendlyCompanion extends Player {
       input.add('jump');
     }
     if ((profile === 'diagJump' || profile === 'verticalJump' || profile === 'upThenDrift'
+      || profile === 'paramJump'
       || profile === 'stepUp' || profile === 'shortHopForward' || profile === 'lowCeilingStep')
       && (this.onGround || this.coyote > 0) && this.jumpDecisionCooldown <= 0) {
       if (execution.takeoffTile && !this.isNearTile(execution.takeoffTile, world, 0.72)) {
@@ -1705,7 +1743,7 @@ export default class FriendlyCompanion extends Player {
 
     // fallback direct drive to avoid any idle "thinking pauses" while planning updates.
     if (!nextInput.size) {
-      const deadzone = world.tileSize * 0.28;
+      const deadzone = world.tileSize * 0.4;
       if (Math.abs(dx) > deadzone) {
         if (dx < -10) nextInput.add('left');
         if (dx > 10) nextInput.add('right');
@@ -1872,7 +1910,9 @@ export default class FriendlyCompanion extends Player {
       intent.input.clear();
     }
     const activeExec = this.moveExecution;
-    const failedEdgeProfile = activeExec?.profile && activeExec.profile !== 'direct' ? activeExec.profile : nextMove?.edge?.profile?.type;
+    const failedEdgeProfile = activeExec?.profile && activeExec.profile !== 'direct'
+      ? (activeExec.profileSignature || activeExec.profile)
+      : (nextMove?.edge?.profile?.signature || nextMove?.edge?.profile?.type);
     const takeoffContextValid = !activeExec?.takeoffTile || this.isNearTile(activeExec.takeoffTile, world, 0.75);
     if (failedEdgeProfile && state.stuckCounter >= 2 && state.noProgressTimer > 0.25 && takeoffContextValid) {
       const failSource = activeExec?.sourceNode || startTile;

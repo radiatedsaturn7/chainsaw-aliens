@@ -85,7 +85,20 @@ async function run() {
   assert.strictEqual(`${t1.x},${t1.y}`, `${t2.x},${t2.y}`);
   assert.strictEqual(`${t2.x},${t2.y}`, `${t3.x},${t3.y}`);
 
-  // 3) Invalid jump suppression: stale takeoff context cancels jump profile.
+  // 3) Launch tolerance band: near takeoff should launch instead of endless micro-correct.
+  const launchBandCompanion = new FriendlyCompanion((4.9) * tileSize, (4.5) * tileSize);
+  const launchMove = launchBandCompanion.chooseMoveFromPath([{
+    tile: { x: 7, y: 3, align: 'center' },
+    edge: {
+      profile: { type: 'paramJump', signature: 'pj:test' },
+      sourceTile: { x: 5, y: 4, align: 'center' },
+      targetTile: { x: 7, y: 3, align: 'center' },
+      transitionType: 'jumpArc'
+    }
+  }], flatWorld);
+  assert.strictEqual(launchMove.edge.executionStage, 'launch', 'expected launch when inside takeoff tolerance band');
+
+  // 4) Invalid jump suppression: stale takeoff context cancels jump profile.
   const staleJumpCompanion = new FriendlyCompanion((2.5) * tileSize, (4.5) * tileSize);
   staleJumpCompanion.navState.noProgressTimer = 0.4;
   const staleMove = {
@@ -100,7 +113,24 @@ async function run() {
   const staleResult = staleJumpCompanion.applyMoveIntent(staleMove, staleMove.target, flatWorld, {}, 0.016);
   assert.strictEqual(staleResult.profile, 'replan', 'expected stale jump context to be canceled and replanned');
 
-  // 4) No useless bounce: jump guard blocks meaningless bounce under elevated target when takeoff invalid.
+  // 5) Broader jump-family generation includes param variants and double-jump timing options.
+  const familyCompanion = new FriendlyCompanion((2.5) * tileSize, (4.5) * tileSize);
+  const families = familyCompanion.buildEdgeProfiles({ x: 2, y: 5, align: 'center' }, { x: 6, y: 2, align: 'center' }, flatWorld);
+  const paramFamilies = families.filter((p) => p.type === 'paramJump');
+  assert.ok(paramFamilies.length >= 4, 'expected multiple parameterized jump variants');
+  assert.ok(paramFamilies.some((p) => p.secondJumpAt != null), 'expected second-jump timing variants for tall climbs');
+
+  // 6) Penalize useless jump families after repeated no-progress failures.
+  familyCompanion.markEdgeFailure({ x: 2, y: 5, align: 'center' }, { x: 6, y: 2, align: 'center' }, 'pj:test-family');
+  familyCompanion.markEdgeFailure({ x: 2, y: 5, align: 'center' }, { x: 6, y: 2, align: 'center' }, 'pj:test-family');
+  familyCompanion.markEdgeFailure({ x: 2, y: 5, align: 'center' }, { x: 6, y: 2, align: 'center' }, 'pj:test-family');
+  assert.strictEqual(
+    familyCompanion.isEdgePoisoned({ x: 2, y: 5, align: 'center' }, { x: 6, y: 2, align: 'center' }, 'pj:test-family'),
+    true,
+    'expected repeated useless jump family to be suppressed'
+  );
+
+  // 7) No useless bounce: jump guard blocks meaningless bounce under elevated target when takeoff invalid.
   const bounceCompanion = new FriendlyCompanion((5.5) * tileSize, (4.5) * tileSize);
   bounceCompanion.navState.jumpLoopCounter = 2;
   const bounceExecution = {
@@ -114,7 +144,7 @@ async function run() {
   const bounceInput = bounceCompanion.buildExecutionIntent(bounceExecution, 1, -40, flatWorld, 0.016);
   assert.strictEqual(bounceInput.has('jump'), false, 'expected jump suppression for useless bounce context');
 
-  // 5) Forced climb flag alone must not cause blind hopping.
+  // 8) Forced climb flag alone must not cause blind hopping.
   const forcedClimbCompanion = new FriendlyCompanion((4.5) * tileSize, (4.5) * tileSize);
   forcedClimbCompanion.navState.forcedClimbTriggered = true;
   forcedClimbCompanion.navState.forcedClimbJumpAllowed = false;
@@ -127,11 +157,11 @@ async function run() {
   );
   assert.strictEqual(noBlindHop.has('jump'), false, 'forced climb without route evidence must not inject jump');
 
-  // 6) Same-surface follow still works at moderate distance.
+  // 9) Same-surface follow still works at moderate distance.
   const followCompanion = new FriendlyCompanion((2.5) * tileSize, (4.5) * tileSize);
   assert.strictEqual(followCompanion.shouldUseDirectFollow({ x: 6, y: 4, align: 'center' }, flatWorld, {}), true);
 
-  // 7) Teleport fallback still works when truly far away.
+  // 10) Teleport fallback still works when truly far away.
   const teleportCompanion = new FriendlyCompanion((1.5) * tileSize, (4.5) * tileSize);
   const farPlayer = {
     x: 50 * tileSize,
