@@ -155,11 +155,6 @@ export default class FriendlyCompanion extends Player {
     };
     const heuristic = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     const withinBounds = (tile) => tile.x >= 0 && tile.x < world.width && tile.y >= 1 && tile.y < world.height - 1;
-    const maxRadius = 18;
-    const minX = Math.max(0, Math.min(startTile.x, goalTile.x) - maxRadius);
-    const maxX = Math.min(world.width - 1, Math.max(startTile.x, goalTile.x) + maxRadius);
-    const minY = Math.max(1, Math.min(startTile.y, goalTile.y) - maxRadius);
-    const maxY = Math.min(world.height - 2, Math.max(startTile.y, goalTile.y) + maxRadius);
 
     const open = [startTile];
     const cameFrom = new Map();
@@ -203,7 +198,6 @@ export default class FriendlyCompanion extends Player {
       for (let i = 0; i < neighbors.length; i += 1) {
         const neighbor = neighbors[i];
         if (!withinBounds(neighbor)) continue;
-        if (neighbor.x < minX || neighbor.x > maxX || neighbor.y < minY || neighbor.y > maxY) continue;
         if (!this.isWalkableTile(neighbor.x, neighbor.y, world, abilities, context)) continue;
 
         const currentKey = this.tileKey(current);
@@ -240,6 +234,8 @@ export default class FriendlyCompanion extends Player {
 
     const penalized = [];
     const standable = [];
+    let bestPath = null;
+    let bestGoal = null;
     for (let i = 0; i < debugCandidates.length; i += 1) {
       const candidate = debugCandidates[i];
       const hasSupport = this.isCollidable(candidate.x, candidate.y + 1, world, abilities, context);
@@ -264,16 +260,14 @@ export default class FriendlyCompanion extends Player {
         continue;
       }
       if (candidate.status !== 'hazard') candidate.status = 'valid';
-      this.currentPathTiles = path;
-      this.currentGoalTile = { x: candidate.x, y: candidate.y };
-      this.debugPenalizedTiles = penalized;
-      this.debugStandableTiles = standable;
-      this.debugCandidateTiles = debugCandidates;
-      return;
+      if (!bestPath) {
+        bestPath = path;
+        bestGoal = { x: candidate.x, y: candidate.y };
+      }
     }
 
-    this.currentPathTiles = [];
-    this.currentGoalTile = null;
+    this.currentPathTiles = bestPath || [];
+    this.currentGoalTile = bestGoal;
     this.debugPenalizedTiles = penalized;
     this.debugStandableTiles = standable;
     this.debugCandidateTiles = debugCandidates;
