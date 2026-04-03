@@ -157,6 +157,7 @@ export default class FriendlyCompanion extends Player {
     const withinBounds = (tile) => tile.x >= 0 && tile.x < world.width && tile.y >= 1 && tile.y < world.height - 1;
 
     const open = [startTile];
+    const closed = new Set();
     const cameFrom = new Map();
     const gScore = new Map([[this.tileKey(startTile), 0]]);
     const fScore = new Map([[this.tileKey(startTile), heuristic(startTile, goalTile)]]);
@@ -176,9 +177,12 @@ export default class FriendlyCompanion extends Player {
 
     while (open.length > 0) {
       const current = popBest();
+      const currentKey = this.tileKey(current);
+      if (closed.has(currentKey)) continue;
+      closed.add(currentKey);
       if (current.x === goalTile.x && current.y === goalTile.y) {
         const path = [current];
-        let key = this.tileKey(current);
+        let key = currentKey;
         while (cameFrom.has(key)) {
           const prev = cameFrom.get(key);
           path.push(prev);
@@ -200,8 +204,8 @@ export default class FriendlyCompanion extends Player {
         if (!withinBounds(neighbor)) continue;
         if (!this.isWalkableTile(neighbor.x, neighbor.y, world, abilities, context)) continue;
 
-        const currentKey = this.tileKey(current);
         const neighborKey = this.tileKey(neighbor);
+        if (closed.has(neighborKey)) continue;
         const tentative = (gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + nodeCost(neighbor);
 
         if (tentative < (gScore.get(neighborKey) ?? Number.POSITIVE_INFINITY)) {
@@ -220,18 +224,9 @@ export default class FriendlyCompanion extends Player {
 
   planPathToPlayer(player, world, abilities, context) {
     const rawStart = this.getFootTile(world);
-    const startTile = this.findNearestWalkableTile(rawStart, world, abilities, context, 8);
+    const startTile = this.findNearestWalkableTile(rawStart, world, abilities, context);
     const candidates = this.getPriorityTilesAroundPlayer(player, world);
     const debugCandidates = candidates.map((candidate) => ({ ...candidate, status: 'unchecked' }));
-    if (!startTile) {
-      this.currentPathTiles = [];
-      this.currentGoalTile = null;
-      this.debugPenalizedTiles = [];
-      this.debugStandableTiles = [];
-      this.debugCandidateTiles = debugCandidates.map((candidate) => ({ ...candidate, status: 'no-path' }));
-      return;
-    }
-
     const penalized = [];
     const standable = [];
     let bestPath = null;
@@ -254,6 +249,10 @@ export default class FriendlyCompanion extends Player {
         penalized.push({ x: candidate.x, y: candidate.y });
         candidate.status = 'hazard';
       }
+      if (!startTile) {
+        candidate.status = 'no-path';
+        continue;
+      }
       const path = this.getAStarPath(startTile, candidate, world, abilities, context);
       if (!path || path.length < 2) {
         candidate.status = 'no-path';
@@ -273,9 +272,12 @@ export default class FriendlyCompanion extends Player {
     this.debugCandidateTiles = debugCandidates;
   }
 
-  findNearestWalkableTile(origin, world, abilities, context, maxRadius = 8) {
+  findNearestWalkableTile(origin, world, abilities, context, maxRadius = null) {
+    const effectiveRadius = Number.isFinite(maxRadius)
+      ? Math.max(0, Math.floor(maxRadius))
+      : Math.max(world.width, world.height);
     if (this.isWalkableTile(origin.x, origin.y, world, abilities, context)) return { ...origin };
-    for (let radius = 1; radius <= maxRadius; radius += 1) {
+    for (let radius = 1; radius <= effectiveRadius; radius += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         for (let dy = -radius; dy <= radius; dy += 1) {
           if (Math.abs(dx) !== radius && Math.abs(dy) !== radius) continue;
