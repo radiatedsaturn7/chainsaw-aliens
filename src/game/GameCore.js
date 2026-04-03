@@ -188,6 +188,7 @@ export default class Game {
     this.spawnPoint = { x: 32 * 28, y: 32 * 19 };
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
     this.friendlyCompanion = null;
+    this.companionNavDebugEnabled = false;
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
     this.title = new Title();
@@ -2717,6 +2718,9 @@ export default class Game {
     if (this.input.wasPressedCode('KeyB')) {
       this.loadObstacleTestRoom();
     }
+    if (this.input.wasPressedCode('KeyN')) {
+      this.companionNavDebugEnabled = !this.companionNavDebugEnabled;
+    }
     this.input.flush();
   }
 
@@ -5084,6 +5088,11 @@ export default class Game {
       onDone();
       return;
     }
+    if (action.type === 'set-companion-debug') {
+      this.companionNavDebugEnabled = params.enabled !== false;
+      onDone();
+      return;
+    }
     if (action.type === 'load-level') {
       const levelName = params.levelName;
       const completeLoad = () => {
@@ -6342,6 +6351,7 @@ export default class Game {
     });
     if (this.friendlyCompanion) {
       this.friendlyCompanion.draw(ctx);
+      this.drawCompanionNavigationDebug(ctx);
     }
 
     if (this.boss && !this.boss.dead) {
@@ -6649,6 +6659,86 @@ export default class Game {
       this.friendlyCompanion.draw(ctx);
     }
     this.player.draw(ctx);
+    ctx.restore();
+  }
+
+  parseDebugTile(tileKey) {
+    if (!tileKey || tileKey === 'none' || typeof tileKey !== 'string') return null;
+    const [xRaw, yRaw] = tileKey.split(',');
+    const x = Number(xRaw);
+    const y = Number(yRaw);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    return { x, y };
+  }
+
+  tileToWorldCenter(tile) {
+    if (!tile) return null;
+    const ts = this.world.tileSize;
+    return { x: (tile.x + 0.5) * ts, y: (tile.y + 0.5) * ts };
+  }
+
+  drawCompanionNavigationDebug(ctx) {
+    if (!this.companionNavDebugEnabled || !this.friendlyCompanion?.getNavigationDebugSnapshot) return;
+    const companion = this.friendlyCompanion;
+    const debug = companion.getNavigationDebugSnapshot() || {};
+    const ts = this.world.tileSize;
+    const current = { x: companion.x, y: companion.y };
+    const goalTile = this.parseDebugTile(debug.targetTile);
+    const nextTile = this.parseDebugTile(debug.nextPathNode);
+    const takeoffTile = this.parseDebugTile(debug.transitionTakeoff);
+    const landingTile = this.parseDebugTile(debug.transitionLanding);
+    const goal = this.tileToWorldCenter(goalTile);
+    const next = this.tileToWorldCenter(nextTile);
+    const takeoff = this.tileToWorldCenter(takeoffTile);
+    const landing = this.tileToWorldCenter(landingTile);
+    const moveProfile = String(debug.moveProfile || 'none');
+    const stairLike = ['stepUp', 'slopeWalk', 'corridorAdvance', 'lowCeilingStep'].includes(moveProfile);
+    const jumpLike = ['diagJump', 'verticalJump', 'upThenDrift', 'paramJump', 'shortHopForward', 'stepUp'].includes(moveProfile)
+      || ['launch', 'drift', 'takeoff-prep'].includes(String(debug.executionPhase || ''));
+    const falling = !companion.onGround && companion.vy > 20;
+
+    ctx.save();
+    ctx.lineWidth = 2;
+
+    if (goalTile && goal) {
+      ctx.strokeStyle = '#32d74b';
+      ctx.strokeRect(goalTile.x * ts + 2, goalTile.y * ts + 2, ts - 4, ts - 4);
+    }
+
+    if (next) {
+      ctx.strokeStyle = stairLike ? '#ffd60a' : '#2d7cff';
+      ctx.beginPath();
+      ctx.moveTo(current.x, current.y);
+      ctx.lineTo(next.x, next.y);
+      ctx.stroke();
+    }
+
+    if (jumpLike && landing) {
+      ctx.strokeStyle = '#ff453a';
+      ctx.beginPath();
+      ctx.moveTo(current.x, current.y);
+      if (takeoff) {
+        ctx.lineTo(takeoff.x, takeoff.y);
+      }
+      ctx.lineTo(landing.x, landing.y);
+      ctx.stroke();
+      if (takeoffTile) {
+        ctx.strokeRect(takeoffTile.x * ts + 6, takeoffTile.y * ts + 6, ts - 12, ts - 12);
+      }
+      if (landingTile) {
+        ctx.strokeRect(landingTile.x * ts + 6, landingTile.y * ts + 6, ts - 12, ts - 12);
+      }
+    }
+
+    if (falling && (next || goal)) {
+      const fallTarget = next || goal;
+      ctx.strokeStyle = '#34c759';
+      ctx.beginPath();
+      ctx.moveTo(current.x, current.y);
+      ctx.lineTo(fallTarget.x, fallTarget.y);
+      ctx.stroke();
+    }
+
     ctx.restore();
   }
 
