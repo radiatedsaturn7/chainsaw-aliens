@@ -215,7 +215,21 @@ async function run() {
   assert.ok(leftFrames > jumpFrames, 'expected staircase pursuit to prefer grounded lateral ascent over pogo jumps');
   assert.ok(stairCompanion.x < 10.5 * tileSize - tileSize * 1.2, 'expected meaningful lateral progress toward staircase');
 
-  // 13) Integration: no second jump after no-progress landing context.
+  // 13) No second jump after useless first jump: grounded recovery lock suppresses immediate jump reuse.
+  const noSecondJumpCompanion = new FriendlyCompanion(8.5 * tileSize, 5.5 * tileSize);
+  const noSecondPlayer = { ...idlePlayer, x: 11.5 * tileSize, y: 3.5 * tileSize, facing: 1 };
+  noSecondJumpCompanion.navState.jumpInFlight = true;
+  noSecondJumpCompanion.navState.jumpStartTile = noSecondJumpCompanion.getFootStandTile(flatWorld);
+  noSecondJumpCompanion.navState.jumpLandingTile = noSecondJumpCompanion.getFootStandTile(flatWorld);
+  noSecondJumpCompanion.navState.jumpRouteDistanceBefore = 4.5;
+  noSecondJumpCompanion.moveExecution.profile = 'verticalJump';
+  noSecondJumpCompanion.justLanded = true;
+  noSecondJumpCompanion.updateNavigation(0.016, noSecondPlayer, flatWorld, {});
+  const recoveryNav = noSecondJumpCompanion.updateNavigation(0.016, noSecondPlayer, flatWorld, {});
+  assert.strictEqual(recoveryNav.input.has('jump'), false, 'expected grounded recovery to suppress immediate second jump');
+  assert.ok(noSecondJumpCompanion.navDebug.groundedRecoveryActive, 'expected grounded recovery mode after useless jump');
+
+  // 14) Integration: no second jump after no-progress landing context.
   const pogoCompanion = new FriendlyCompanion(8.5 * tileSize, 5.5 * tileSize);
   const sourceTile = pogoCompanion.getFootStandTile(flatWorld);
   const landingTile = { x: sourceTile.x, y: sourceTile.y - 1, align: 'center' };
@@ -228,7 +242,7 @@ async function run() {
   const blockedResult = pogoCompanion.applyMoveIntent(blockedMove, blockedMove.target, flatWorld, {}, 0.016);
   assert.strictEqual(blockedResult.profile, 'replan', 'expected blocked no-progress jump context to prevent immediate second jump');
 
-  // 14) Route/execution fidelity: selected jump edge should preserve takeoff metadata.
+  // 15) Route/execution fidelity: selected jump edge should preserve takeoff metadata.
   const fidelityCompanion = new FriendlyCompanion(9.5 * tileSize, 5.5 * tileSize);
   const fidelityStart = { x: 9, y: 5, align: 'center' };
   const fidelityGoal = { x: 6, y: 3, align: 'center' };
@@ -242,7 +256,7 @@ async function run() {
     }
   }
 
-  // 15) Grounded ascent preference: when a grounded option exists, it is discovered and favored.
+  // 16) Grounded ascent preference: when a grounded option exists, it is discovered and favored.
   const preferGroundCompanion = new FriendlyCompanion(10.5 * tileSize, 5.5 * tileSize);
   const groundedAlt = preferGroundCompanion.findBestGroundedProgressEdge(
     { x: 10, y: 5, align: 'center' },
@@ -251,6 +265,60 @@ async function run() {
     {}
   );
   assert.ok(groundedAlt, 'expected grounded ascent alternative to be detected in staircase scenario');
+
+  // 17) Grounded lookahead discovery should find short-horizon ascent path beyond immediate tile.
+  const lookahead = preferGroundCompanion.findGroundedRecoveryPlan(
+    { x: 10, y: 5, align: 'center' },
+    { x: 5, y: 3, align: 'center' },
+    staircaseWorld,
+    {},
+    4
+  );
+  assert.ok(lookahead, 'expected short-horizon grounded lookahead to discover ascent route');
+  assert.ok(lookahead.depth >= 2, 'expected grounded lookahead to evaluate multi-step route');
+
+  // 18) Airborne salvage drift: while falling below target, lateral drift should be applied.
+  const airborneCompanion = new FriendlyCompanion(6.5 * tileSize, 3.5 * tileSize);
+  airborneCompanion.onGround = false;
+  airborneCompanion.vy = 120;
+  airborneCompanion.moveExecution = {
+    active: true,
+    profile: 'diagJump',
+    phase: 'travel',
+    elapsed: 0.12,
+    hold: 0.2,
+    lockDirection: 1,
+    sourceNode: { x: 6, y: 3, align: 'center' },
+    targetNode: { x: 8, y: 2, align: 'center' },
+    landingTile: { x: 8, y: 2, align: 'center' },
+    profileSignature: 'diagJump'
+  };
+  const airborneIntent = airborneCompanion.applyMoveIntent(
+    {
+      target: { x: 8.5 * tileSize, y: 2.5 * tileSize },
+      nextTile: { x: 8, y: 2, align: 'center' },
+      edge: { profile: { type: 'diagJump' } }
+    },
+    { x: 8.5 * tileSize, y: 2.5 * tileSize },
+    flatWorld,
+    {},
+    0.016
+  );
+  assert.strictEqual(airborneIntent.input.has('right'), true, 'expected airborne salvage drift toward route side');
+  assert.strictEqual(airborneCompanion.navState.airborneSalvageActive, true);
+
+  // 19) Existing sane jump case still works.
+  const saneJumpCompanion = new FriendlyCompanion(5.45 * tileSize, 4.5 * tileSize);
+  const saneJumpMove = saneJumpCompanion.chooseMoveFromPath([{
+    tile: { x: 7, y: 3, align: 'center' },
+    edge: {
+      profile: { type: 'diagJump', signature: 'diagJump' },
+      sourceTile: { x: 5, y: 4, align: 'center' },
+      targetTile: { x: 7, y: 3, align: 'center' },
+      transitionType: 'jumpArc'
+    }
+  }], flatWorld);
+  assert.strictEqual(saneJumpMove.edge.executionStage, 'launch', 'expected valid nearby jump launch to remain available');
 
   console.log('FriendlyCompanion nav tests passed');
 }

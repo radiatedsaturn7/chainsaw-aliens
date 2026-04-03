@@ -169,7 +169,12 @@ export default class FriendlyCompanion extends Player {
       jumpRouteDistanceAfter: Infinity,
       jumpMeaningfulLast: true,
       jumpContextBlocks: new Map(),
-      lastRouteEdges: []
+      lastRouteEdges: [],
+      groundedRecoveryTimer: 0,
+      suppressConsecutiveJump: false,
+      secondJumpSuppressed: false,
+      airborneSalvageActive: false,
+      groundedPreferenceReason: 'none'
     };
     this.moveExecution = {
       active: false,
@@ -228,7 +233,11 @@ export default class FriendlyCompanion extends Player {
       routeDistanceAfterLastJump: null,
       lastJumpMeaningful: true,
       betterGroundedEdgeAvailable: false,
-      routeExecutionMismatch: 'none'
+      routeExecutionMismatch: 'none',
+      groundedRecoveryActive: false,
+      secondJumpSuppressed: false,
+      groundedPreferenceReason: 'none',
+      airborneSalvageActive: false
     };
   }
 
@@ -795,7 +804,8 @@ export default class FriendlyCompanion extends Player {
         const horizontalGain = Math.abs(to.x - from.x);
         const verticalGain = from.y - to.y;
         const weakVertical = horizontalGain === 0 && verticalGain <= 2;
-        if (weakVertical && result.cost > 2.2) continue;
+        if (weakVertical && result.cost > 1.9) continue;
+        if (horizontalGain === 0 && verticalGain <= 1) continue;
       }
       if (!best || result.cost < best.cost) {
         best = {
@@ -1604,6 +1614,38 @@ export default class FriendlyCompanion extends Player {
     return best;
   }
 
+  findGroundedRecoveryPlan(startTile, targetTile, world, abilities, maxDepth = 4) {
+    const startKey = this.tileKey(startTile);
+    const queue = [{ tile: startTile, depth: 0, firstMove: null }];
+    const seen = new Set([startKey]);
+    const startDist = this.routeTileDistance(startTile, targetTile);
+    let best = null;
+    while (queue.length) {
+      const current = queue.shift();
+      if (!current || current.depth >= maxDepth) continue;
+      const candidates = this.getNeighborCandidates(current.tile, world, abilities, targetTile);
+      for (let i = 0; i < candidates.length; i += 1) {
+        const next = candidates[i];
+        if (Math.abs(next.y - current.tile.y) > 1) continue;
+        const edge = this.validateMovementEdge(current.tile, next, world, abilities);
+        if (!edge?.ok) continue;
+        if (this.isJumpProfile(edge.profile?.type)) continue;
+        const key = this.tileKey(next);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const firstMove = current.firstMove || { tile: next, edge };
+        const dist = this.routeTileDistance(next, targetTile);
+        const gain = startDist - dist;
+        const score = gain * 2 - dist * 0.12 - current.depth * 0.18;
+        if (!best || score > best.score) {
+          best = { firstMove, score, gain, depth: current.depth + 1, endTile: next };
+        }
+        queue.push({ tile: next, depth: current.depth + 1, firstMove });
+      }
+    }
+    return best && best.gain > 0.6 ? best : null;
+  }
+
   chooseRecoveryAction(targetTile, world) {
     const dir = Math.sign(targetTile.x - this.getFootStandTile(world).x) || this.facing || 1;
     return {
@@ -1803,6 +1845,14 @@ export default class FriendlyCompanion extends Player {
     if (this.shouldRestartExecution(execution, sourceNode, move, profile, nextPoisoned)) {
       this.beginMoveExecution(move, profile, world);
     }
+    if (this.navState.groundedRecoveryTimer > 0 && this.isJumpProfile(profile)) {
+      this.navState.secondJumpSuppressed = true;
+      this.navState.jumpCancelReason = 'grounded-recovery-lock';
+      return {
+        input: dx < -world.tileSize * 0.2 ? new Set(['left']) : dx > world.tileSize * 0.2 ? new Set(['right']) : new Set(),
+        profile: 'grounded-recovery'
+      };
+    }
     if (this.isJumpProfile(profile)
       && this.isJumpContextBlocked(this.moveExecution.sourceNode, this.moveExecution.landingTile || this.moveExecution.targetNode, this.moveExecution.profileSignature || profile)) {
       this.moveExecution.active = false;
@@ -1828,6 +1878,13 @@ export default class FriendlyCompanion extends Player {
     }
     phaseInput.forEach((key) => nextInput.add(key));
 
+    if (!this.onGround && this.vy > 25 && Math.abs(dx) > world.tileSize * 0.15) {
+      this.navState.airborneSalvageActive = true;
+      nextInput.add(dx < 0 ? 'left' : 'right');
+    } else {
+      this.navState.airborneSalvageActive = false;
+    }
+
     // fallback direct drive to avoid any idle "thinking pauses" while planning updates.
     if (!nextInput.size) {
       const deadzone = world.tileSize * 0.4;
@@ -1846,6 +1903,8 @@ export default class FriendlyCompanion extends Player {
     state.restLockTimer = Math.max(0, state.restLockTimer - dt);
     state.oscillationDampTimer = Math.max(0, state.oscillationDampTimer - dt);
     state.jumpSuppressionTimer = Math.max(0, state.jumpSuppressionTimer - dt);
+    state.groundedRecoveryTimer = Math.max(0, state.groundedRecoveryTimer - dt);
+    state.secondJumpSuppressed = false;
     this.jumpDecisionCooldown = Math.max(0, this.jumpDecisionCooldown - dt);
     this.jumpSuppressTimer = Math.max(0, this.jumpSuppressTimer - dt);
     this.ageNavigationCaches(dt);
@@ -1871,7 +1930,11 @@ export default class FriendlyCompanion extends Player {
         this.markJumpContextBlocked(state.jumpStartTile, state.jumpLandingTile || landing, prof, 1.25);
         this.markEdgeFailure(state.jumpStartTile || jumpStart, state.jumpLandingTile || landing, prof);
         state.jumpSuppressionTimer = Math.max(state.jumpSuppressionTimer, 0.75);
+        state.groundedRecoveryTimer = Math.max(state.groundedRecoveryTimer, 0.7);
+        state.suppressConsecutiveJump = true;
         state.replanCooldown = 0;
+      } else {
+        state.suppressConsecutiveJump = false;
       }
       state.jumpInFlight = false;
       state.jumpStartTile = null;
@@ -2009,6 +2072,23 @@ export default class FriendlyCompanion extends Player {
     state.targetTile = targetTile;
     state.routeTargetKey = this.tileKey(targetTile);
     state.routeAge += dt;
+    const groundedLookahead = this.findGroundedRecoveryPlan(startTile, targetTile, world, abilities, 4);
+    if (path.length && this.isJumpTransitionEdge(path[0]?.edge) && groundedLookahead && groundedLookahead.gain > 0.85) {
+      path = [{
+        tile: groundedLookahead.firstMove.tile,
+        edge: {
+          profile: groundedLookahead.firstMove.edge.profile,
+          sourceTile: startTile,
+          targetTile: groundedLookahead.firstMove.tile,
+          transitionType: 'grounded-lookahead'
+        }
+      }];
+      state.path = path;
+      reason = 'grounded-lookahead-dominates';
+      state.groundedPreferenceReason = `lookahead-gain:${groundedLookahead.gain.toFixed(2)}`;
+    } else {
+      state.groundedPreferenceReason = 'none';
+    }
     let nextMove = this.chooseMoveFromPath(path, world);
     const groundedAlt = this.findBestGroundedProgressEdge(startTile, targetTile, world, abilities);
     const selectedEdgeType = nextMove?.edge?.transitionType || nextMove?.edge?.profile?.type || 'direct';
@@ -2029,6 +2109,7 @@ export default class FriendlyCompanion extends Player {
           }
         };
         reason = 'prefer-grounded-ascent';
+        state.groundedPreferenceReason = `local-override:${(jumpDist - groundDist).toFixed(2)}`;
       }
     }
     const intent = this.applyMoveIntent(nextMove, targetWorld, world, abilities, dt);
@@ -2142,6 +2223,10 @@ export default class FriendlyCompanion extends Player {
     this.navDebug.lastJumpMeaningful = Boolean(state.jumpMeaningfulLast);
     this.navDebug.betterGroundedEdgeAvailable = Boolean(groundedAlt);
     this.navDebug.routeExecutionMismatch = selectedJumpLike && groundedAlt ? 'jump-when-grounded-available' : 'none';
+    this.navDebug.groundedRecoveryActive = state.groundedRecoveryTimer > 0;
+    this.navDebug.secondJumpSuppressed = Boolean(state.secondJumpSuppressed);
+    this.navDebug.groundedPreferenceReason = state.groundedPreferenceReason || 'none';
+    this.navDebug.airborneSalvageActive = Boolean(state.airborneSalvageActive);
     state.jumpCancelReason = 'none';
 
     return {
