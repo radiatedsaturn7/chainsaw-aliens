@@ -56,3 +56,33 @@ test('A* traversal prefers flat walking over unnecessary jump arcs', () => {
   assert.equal(traversalPath.at(-1).y, 5);
   assert.ok(traversalPath.every((tile) => tile.y === 5));
 });
+
+test('planPathToPlayer evaluates walking paths before traversal paths', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const player = { x: 64, y: 160, height: 32, onGround: true, facing: 1 };
+
+  companion.getFootTile = () => ({ x: 1, y: 5 });
+  companion.findNearestWalkableTile = (origin) => ({ ...origin });
+  companion.getPriorityTilesAroundPlayer = () => [{ x: 2, y: 5, priority: 1 }];
+
+  let traversalCalled = false;
+  companion.getAStarPath = (startTile, goalTile, _world, _abilities, _ctx, resolver) => {
+    if (resolver?.name?.includes('getWalkingNeighbors')) return [startTile, goalTile];
+    if (resolver?.name?.includes('getTraversalNeighbors')) {
+      traversalCalled = true;
+      return [startTile, goalTile];
+    }
+    return null;
+  };
+
+  companion.planPathToPlayer(player, world, abilities, context);
+
+  assert.equal(traversalCalled, false);
+  assert.deepEqual(
+    companion.currentPathTiles.map((tile) => ({ x: tile.x, y: tile.y })),
+    [{ x: 1, y: 5 }, { x: 2, y: 5 }]
+  );
+});

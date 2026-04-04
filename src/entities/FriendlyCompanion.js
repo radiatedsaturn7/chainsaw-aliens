@@ -364,9 +364,10 @@ export default class FriendlyCompanion extends Player {
       this.debugPenalizedTiles = [];
       return;
     }
-    const debugCandidates = candidates.map((candidate) => ({ ...candidate, status: 'unchecked' }));
+    const debugCandidates = candidates.map((candidate) => ({ ...candidate, status: 'unchecked', hazard: false }));
     const penalized = [];
     const standable = [];
+    const pathableCandidates = [];
     let bestPath = null;
     let bestGoal = null;
     for (let i = 0; i < debugCandidates.length; i += 1) {
@@ -385,22 +386,41 @@ export default class FriendlyCompanion extends Player {
       standable.push({ x: candidate.x, y: candidate.y });
       if (this.isHazardTile(candidate.x, candidate.y, world)) {
         penalized.push({ x: candidate.x, y: candidate.y });
+        candidate.hazard = true;
         candidate.status = 'hazard';
       }
       if (!startTile) {
         candidate.status = 'no-path';
         continue;
       }
-      const path = this.getAStarPath(startTile, candidate, world, abilities, context, this.getTraversalNeighbors.bind(this));
-      if (!path || path.length < 1) {
-        candidate.status = 'no-path';
-        continue;
+      pathableCandidates.push(candidate);
+    }
+
+    const tryResolver = (neighborResolver) => {
+      for (let i = 0; i < pathableCandidates.length; i += 1) {
+        const candidate = pathableCandidates[i];
+        const path = this.getAStarPath(startTile, candidate, world, abilities, context, neighborResolver);
+        if (!path || path.length < 1) continue;
+        if (!bestPath) {
+          bestPath = path;
+          bestGoal = { x: candidate.x, y: candidate.y };
+        }
+        if (!candidate.hazard) candidate.status = 'valid';
       }
-      if (candidate.status !== 'hazard') candidate.status = 'valid';
+    };
+
+    if (startTile) {
+      // Evaluate walking-only routes first to avoid unnecessary jump plans on flat terrain.
+      tryResolver(this.getWalkingNeighbors.bind(this));
+      // Only consider jump-capable traversal if no walking path exists.
       if (!bestPath) {
-        bestPath = path;
-        bestGoal = { x: candidate.x, y: candidate.y };
+        tryResolver(this.getTraversalNeighbors.bind(this));
       }
+    }
+    if (!bestPath) {
+      pathableCandidates.forEach((candidate) => {
+        if (candidate.status !== 'hazard') candidate.status = 'no-path';
+      });
     }
 
     const fallbackPlayerTile = {
