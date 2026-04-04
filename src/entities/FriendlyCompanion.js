@@ -202,7 +202,8 @@ export default class FriendlyCompanion extends Player {
 
         const neighborKey = this.tileKey(neighbor);
         if (closed.has(neighborKey)) continue;
-        const tentative = (gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + nodeCost(neighbor);
+        const edgeCost = Number.isFinite(neighbor.cost) ? neighbor.cost : 1;
+        const tentative = (gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + nodeCost(neighbor) + edgeCost;
 
         if (tentative < (gScore.get(neighborKey) ?? Number.POSITIVE_INFINITY)) {
           cameFrom.set(neighborKey, current);
@@ -228,92 +229,54 @@ export default class FriendlyCompanion extends Player {
       neighborSet.add(key);
       neighbors.push(candidate);
     };
+    const jumpHeightTiles = Math.max(2, Math.floor((this.jumpPower ** 2) / (2 * MOVEMENT_MODEL.gravity * world.tileSize)));
+    const doubleJumpHeightTiles = Math.max(jumpHeightTiles + 1, jumpHeightTiles * 2 - 1);
     const dirs = [-1, 1];
     dirs.forEach((dir) => {
-      const walk = { x: tile.x + dir, y: tile.y };
+      const walk = { x: tile.x + dir, y: tile.y, cost: 1 };
       if (this.isWalkableTile(walk.x, walk.y, world, abilities, context)) pushNeighbor(walk);
-      for (let jumpUp = 1; jumpUp <= 3; jumpUp += 1) {
-        const jump = { x: tile.x + dir, y: tile.y - jumpUp };
+      for (let jumpUp = 1; jumpUp <= jumpHeightTiles; jumpUp += 1) {
+        const jump = { x: tile.x + dir, y: tile.y - jumpUp, cost: 1.35 + jumpUp * 0.08 };
         if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
       }
       for (let dropDown = 1; dropDown <= 8; dropDown += 1) {
-        const drop = { x: tile.x + dir, y: tile.y + dropDown };
+        const drop = { x: tile.x + dir, y: tile.y + dropDown, cost: 1.1 + dropDown * 0.05 };
         if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) pushNeighbor(drop);
       }
     });
-    for (let jumpUp = 1; jumpUp <= 2; jumpUp += 1) {
-      const jump = { x: tile.x, y: tile.y - jumpUp };
+    for (let jumpUp = 1; jumpUp <= jumpHeightTiles; jumpUp += 1) {
+      const jump = { x: tile.x, y: tile.y - jumpUp, cost: 1.2 + jumpUp * 0.06 };
       if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
     }
     for (let dropDown = 1; dropDown <= 12; dropDown += 1) {
-      const drop = { x: tile.x, y: tile.y + dropDown };
+      const drop = { x: tile.x, y: tile.y + dropDown, cost: 1.05 + dropDown * 0.04 };
       if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) pushNeighbor(drop);
     }
-    this.getSimulatedJumpNeighbors(tile, world, abilities, context).forEach(pushNeighbor);
-    return neighbors;
-  }
-
-  getSimulatedJumpNeighbors(tile, world, abilities, context) {
-    const patterns = [
-      { dir: 0, secondJumpAt: null },
-      { dir: -1, secondJumpAt: null },
-      { dir: 1, secondJumpAt: null },
-      { dir: 0, secondJumpAt: 0.22 },
-      { dir: -1, secondJumpAt: 0.22 },
-      { dir: 1, secondJumpAt: 0.22 },
-      { dir: -1, secondJumpAt: 0.36 },
-      { dir: 1, secondJumpAt: 0.36 }
-    ];
-    const landings = [];
-    patterns.forEach((pattern) => {
-      const landing = this.simulateJumpLanding(tile, pattern, world, abilities, context);
-      if (landing) landings.push(landing);
+    dirs.forEach((dir) => {
+      for (let lateral = 2; lateral <= 3; lateral += 1) {
+        for (let jumpUp = 1; jumpUp <= jumpHeightTiles; jumpUp += 1) {
+          const jump = { x: tile.x + dir * lateral, y: tile.y - jumpUp, cost: 1.55 + lateral * 0.18 + jumpUp * 0.08 };
+          if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
+        }
+      }
     });
-    return landings;
-  }
-
-  simulateJumpLanding(startTile, pattern, world, abilities, context) {
-    const tileSize = world.tileSize;
-    let x = (startTile.x + 0.5) * tileSize;
-    let y = (startTile.y + 0.5) * tileSize;
-    const vx = pattern.dir * this.speed * 0.82;
-    let vy = -this.jumpPower;
-    const gravity = MOVEMENT_MODEL.gravity;
-    const dt = 1 / 60;
-    let secondJumpUsed = false;
-    for (let t = 0; t <= 1.3; t += dt) {
-      if (!secondJumpUsed && Number.isFinite(pattern.secondJumpAt) && t >= pattern.secondJumpAt) {
-        vy = -this.jumpPower;
-        secondJumpUsed = true;
-      }
-      x += vx * dt;
-      y += vy * dt;
-      vy += gravity * dt;
-      if (this.isBodyBlockedAt(x, y, world, abilities, context)) {
-        return null;
-      }
-      if (vy <= 0) continue;
-      const tileX = Math.floor(x / tileSize);
-      const tileY = Math.floor((y + this.height / 2 - 1) / tileSize);
-      if (this.isWalkableTile(tileX, tileY, world, abilities, context)) {
-        return { x: tileX, y: tileY };
-      }
+    for (let jumpUp = jumpHeightTiles + 1; jumpUp <= doubleJumpHeightTiles; jumpUp += 1) {
+      const jump = { x: tile.x, y: tile.y - jumpUp, cost: 2.4 + jumpUp * 0.08 };
+      if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
     }
-    return null;
-  }
-
-  isBodyBlockedAt(x, y, world, abilities, context) {
-    const tileSize = world.tileSize;
-    const left = Math.floor((x - this.width / 2 + 1) / tileSize);
-    const right = Math.floor((x + this.width / 2 - 1) / tileSize);
-    const top = Math.floor((y - this.height / 2 + 1) / tileSize);
-    const bottom = Math.floor((y + this.height / 2 - 1) / tileSize);
-    for (let ty = top; ty <= bottom; ty += 1) {
-      for (let tx = left; tx <= right; tx += 1) {
-        if (this.isCollidable(tx, ty, world, abilities, context)) return true;
+    dirs.forEach((dir) => {
+      for (let lateral = 1; lateral <= 4; lateral += 1) {
+        for (let jumpUp = jumpHeightTiles; jumpUp <= doubleJumpHeightTiles; jumpUp += 1) {
+          const jump = {
+            x: tile.x + dir * lateral,
+            y: tile.y - jumpUp,
+            cost: 2.7 + lateral * 0.2 + jumpUp * 0.07
+          };
+          if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
+        }
       }
-    }
-    return false;
+    });
+    return neighbors;
   }
 
   planPathToPlayer(player, world, abilities, context) {
