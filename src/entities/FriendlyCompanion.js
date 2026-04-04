@@ -61,6 +61,8 @@ export default class FriendlyCompanion extends Player {
     this.jumpTargetTile = null;
     this.jumpTraceTile = null;
     this.prevPlayerOnGround = true;
+    this.playerJumpStart = null;
+    this.playerJumpSamples = [];
     this.debugPenalizedTiles = [];
     this.debugStandableTiles = [];
     this.debugCandidateTiles = [];
@@ -298,9 +300,8 @@ export default class FriendlyCompanion extends Player {
     };
     const playerAirborne = !player.onGround;
     if (playerAirborne && this.jumpTraceTile && startTile) {
-      const jumpGoalTile = this.findNearestWalkableTile(playerTile, world, abilities, context, 6) || this.jumpTraceTile;
       const pathToTrace = this.getAStarPath(startTile, this.jumpTraceTile, world, abilities, context, this.getWalkingNeighbors.bind(this));
-      const pathToPlayer = this.getAStarPath(this.jumpTraceTile, jumpGoalTile, world, abilities, context, this.getJumpingNeighbors.bind(this));
+      const pathToPlayer = this.buildReplayJumpPath(world);
       const mergedPath = pathToTrace
         ? [...pathToTrace, ...(pathToPlayer ? pathToPlayer.slice(1) : [])]
         : [];
@@ -393,9 +394,16 @@ export default class FriendlyCompanion extends Player {
         x: Math.floor(player.x / tileSize),
         y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
       };
+      this.playerJumpStart = { x: player.x, y: player.y };
+      this.playerJumpSamples = [{ x: player.x, y: player.y, vx: player.vx, vy: player.vy }];
+    } else if (!player.onGround) {
+      this.playerJumpSamples.push({ x: player.x, y: player.y, vx: player.vx, vy: player.vy });
+      if (this.playerJumpSamples.length > 120) this.playerJumpSamples.shift();
     }
     if (player.onGround) {
       this.jumpTraceTile = null;
+      this.playerJumpStart = null;
+      this.playerJumpSamples = [];
     }
     this.prevPlayerOnGround = Boolean(player.onGround);
 
@@ -411,6 +419,28 @@ export default class FriendlyCompanion extends Player {
     this.revving = false;
     this.flameMode = false;
     this.onGround = true;
+  }
+
+  buildReplayJumpPath(world) {
+    if (!this.jumpTraceTile || !this.playerJumpStart || this.playerJumpSamples.length < 1) return [];
+    const tileSize = world.tileSize;
+    const startWorldX = (this.jumpTraceTile.x + 0.5) * tileSize;
+    const startWorldY = (this.jumpTraceTile.y + 0.5) * tileSize;
+    const tiles = [];
+    const seen = new Set();
+    this.playerJumpSamples.forEach((sample) => {
+      const mappedX = startWorldX + (sample.x - this.playerJumpStart.x);
+      const mappedY = startWorldY + (sample.y - this.playerJumpStart.y);
+      const tile = {
+        x: Math.floor(mappedX / tileSize),
+        y: Math.floor(mappedY / tileSize)
+      };
+      const key = this.tileKey(tile);
+      if (seen.has(key)) return;
+      seen.add(key);
+      tiles.push(tile);
+    });
+    return tiles;
   }
 
   drawPathDebug(ctx, world) {
