@@ -1,4 +1,5 @@
 import Player from './Player.js';
+import { MOVEMENT_MODEL } from '../game/MovementModel.js';
 
 const TARGET_PRIORITY_FACING_RIGHT = [
   [8, 15, 21, 19, 17],
@@ -219,28 +220,100 @@ export default class FriendlyCompanion extends Player {
 
   getPathNeighbors(tile, world, abilities, context) {
     const neighbors = [];
+    const neighborSet = new Set();
+    const pushNeighbor = (candidate) => {
+      if (!candidate) return;
+      const key = this.tileKey(candidate);
+      if (neighborSet.has(key)) return;
+      neighborSet.add(key);
+      neighbors.push(candidate);
+    };
     const dirs = [-1, 1];
     dirs.forEach((dir) => {
       const walk = { x: tile.x + dir, y: tile.y };
-      if (this.isWalkableTile(walk.x, walk.y, world, abilities, context)) neighbors.push(walk);
+      if (this.isWalkableTile(walk.x, walk.y, world, abilities, context)) pushNeighbor(walk);
       for (let jumpUp = 1; jumpUp <= 3; jumpUp += 1) {
         const jump = { x: tile.x + dir, y: tile.y - jumpUp };
-        if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) neighbors.push(jump);
+        if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
       }
       for (let dropDown = 1; dropDown <= 8; dropDown += 1) {
         const drop = { x: tile.x + dir, y: tile.y + dropDown };
-        if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) neighbors.push(drop);
+        if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) pushNeighbor(drop);
       }
     });
     for (let jumpUp = 1; jumpUp <= 2; jumpUp += 1) {
       const jump = { x: tile.x, y: tile.y - jumpUp };
-      if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) neighbors.push(jump);
+      if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
     }
     for (let dropDown = 1; dropDown <= 12; dropDown += 1) {
       const drop = { x: tile.x, y: tile.y + dropDown };
-      if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) neighbors.push(drop);
+      if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) pushNeighbor(drop);
     }
+    this.getSimulatedJumpNeighbors(tile, world, abilities, context).forEach(pushNeighbor);
     return neighbors;
+  }
+
+  getSimulatedJumpNeighbors(tile, world, abilities, context) {
+    const patterns = [
+      { dir: 0, secondJumpAt: null },
+      { dir: -1, secondJumpAt: null },
+      { dir: 1, secondJumpAt: null },
+      { dir: 0, secondJumpAt: 0.22 },
+      { dir: -1, secondJumpAt: 0.22 },
+      { dir: 1, secondJumpAt: 0.22 },
+      { dir: -1, secondJumpAt: 0.36 },
+      { dir: 1, secondJumpAt: 0.36 }
+    ];
+    const landings = [];
+    patterns.forEach((pattern) => {
+      const landing = this.simulateJumpLanding(tile, pattern, world, abilities, context);
+      if (landing) landings.push(landing);
+    });
+    return landings;
+  }
+
+  simulateJumpLanding(startTile, pattern, world, abilities, context) {
+    const tileSize = world.tileSize;
+    let x = (startTile.x + 0.5) * tileSize;
+    let y = (startTile.y + 0.5) * tileSize;
+    const vx = pattern.dir * this.speed * 0.82;
+    let vy = -this.jumpPower;
+    const gravity = MOVEMENT_MODEL.gravity;
+    const dt = 1 / 60;
+    let secondJumpUsed = false;
+    for (let t = 0; t <= 1.3; t += dt) {
+      if (!secondJumpUsed && Number.isFinite(pattern.secondJumpAt) && t >= pattern.secondJumpAt) {
+        vy = -this.jumpPower;
+        secondJumpUsed = true;
+      }
+      x += vx * dt;
+      y += vy * dt;
+      vy += gravity * dt;
+      if (this.isBodyBlockedAt(x, y, world, abilities, context)) {
+        return null;
+      }
+      if (vy <= 0) continue;
+      const tileX = Math.floor(x / tileSize);
+      const tileY = Math.floor((y + this.height / 2 - 1) / tileSize);
+      if (this.isWalkableTile(tileX, tileY, world, abilities, context)) {
+        return { x: tileX, y: tileY };
+      }
+    }
+    return null;
+  }
+
+  isBodyBlockedAt(x, y, world, abilities, context) {
+    const tileSize = world.tileSize;
+    const left = Math.floor((x - this.width / 2 + 1) / tileSize);
+    const right = Math.floor((x + this.width / 2 - 1) / tileSize);
+    const top = Math.floor((y - this.height / 2 + 1) / tileSize);
+    const bottom = Math.floor((y + this.height / 2 - 1) / tileSize);
+    for (let ty = top; ty <= bottom; ty += 1) {
+      for (let tx = left; tx <= right; tx += 1) {
+        if (this.isCollidable(tx, ty, world, abilities, context)) return true;
+      }
+    }
+    return false;
   }
 
   planPathToPlayer(player, world, abilities, context) {
