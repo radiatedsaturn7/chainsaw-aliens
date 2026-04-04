@@ -298,13 +298,14 @@ export default class FriendlyCompanion extends Player {
     };
     const playerAirborne = !player.onGround;
     if (playerAirborne && this.jumpTraceTile && startTile) {
+      const jumpGoalTile = this.findNearestWalkableTile(playerTile, world, abilities, context, 6) || this.jumpTraceTile;
       const pathToTrace = this.getAStarPath(startTile, this.jumpTraceTile, world, abilities, context, this.getWalkingNeighbors.bind(this));
-      const pathToPlayer = this.getAStarPath(this.jumpTraceTile, playerTile, world, abilities, context, this.getJumpingNeighbors.bind(this));
+      const pathToPlayer = this.getAStarPath(this.jumpTraceTile, jumpGoalTile, world, abilities, context, this.getJumpingNeighbors.bind(this));
       const mergedPath = pathToTrace
         ? [...pathToTrace, ...(pathToPlayer ? pathToPlayer.slice(1) : [])]
         : [];
       this.walkingPathTiles = pathToTrace || [];
-      this.jumpingPathTiles = pathToPlayer || [];
+      this.jumpingPathTiles = pathToPlayer || [this.jumpTraceTile];
       this.jumpTargetTile = playerTile;
       this.currentPathTiles = mergedPath;
       this.currentGoalTile = this.jumpTraceTile;
@@ -449,7 +450,7 @@ export default class FriendlyCompanion extends Player {
       ctx.stroke();
       ctx.restore();
     }
-    if (this.jumpingPathTiles.length > 1) {
+    if (this.jumpingPathTiles.length > 0) {
       ctx.save();
       ctx.lineWidth = 3;
       ctx.strokeStyle = 'rgba(95, 150, 255, 0.98)';
@@ -461,6 +462,9 @@ export default class FriendlyCompanion extends Player {
         const y = (tile.y + 0.5) * tileSize;
         ctx.lineTo(x, y);
       });
+      if (this.jumpTargetTile) {
+        ctx.lineTo((this.jumpTargetTile.x + 0.5) * tileSize, (this.jumpTargetTile.y + 0.5) * tileSize);
+      }
       ctx.stroke();
       ctx.restore();
     }
