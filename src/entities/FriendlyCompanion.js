@@ -56,6 +56,8 @@ export default class FriendlyCompanion extends Player {
     this.pathReplanTimer = 0;
     this.currentPathTiles = [];
     this.currentGoalTile = null;
+    this.jumpTraceTile = null;
+    this.prevPlayerOnGround = true;
     this.debugPenalizedTiles = [];
     this.debugStandableTiles = [];
     this.debugCandidateTiles = [];
@@ -148,7 +150,7 @@ export default class FriendlyCompanion extends Player {
     return ranked;
   }
 
-  getAStarPath(startTile, goalTile, world, abilities, context) {
+  getAStarPath(startTile, goalTile, world, abilities, context, neighborResolver = null) {
     const nodeCost = (tile) => {
       let cost = 1;
       if (this.isHazardTile(tile.x, tile.y, world)) cost += 18;
@@ -193,7 +195,7 @@ export default class FriendlyCompanion extends Player {
         return path;
       }
 
-      const neighbors = this.getPathNeighbors(current, world, abilities, context);
+      const neighbors = (neighborResolver || this.getWalkingNeighbors.bind(this))(current, world, abilities, context);
 
       for (let i = 0; i < neighbors.length; i += 1) {
         const neighbor = neighbors[i];
@@ -202,8 +204,7 @@ export default class FriendlyCompanion extends Player {
 
         const neighborKey = this.tileKey(neighbor);
         if (closed.has(neighborKey)) continue;
-        const edgeCost = Number.isFinite(neighbor.cost) ? neighbor.cost : 1;
-        const tentative = (gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + nodeCost(neighbor) + edgeCost;
+        const tentative = (gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + nodeCost(neighbor) + 1;
 
         if (tentative < (gScore.get(neighborKey) ?? Number.POSITIVE_INFINITY)) {
           cameFrom.set(neighborKey, current);
@@ -219,7 +220,35 @@ export default class FriendlyCompanion extends Player {
     return null;
   }
 
-  getPathNeighbors(tile, world, abilities, context) {
+  getWalkingNeighbors(tile, world, abilities, context) {
+    const neighbors = [];
+    const neighborSet = new Set();
+    const pushNeighbor = (candidate) => {
+      if (!candidate) return;
+      const key = this.tileKey(candidate);
+      if (neighborSet.has(key)) return;
+      neighborSet.add(key);
+      neighbors.push(candidate);
+    };
+    const dirs = [-1, 1];
+    dirs.forEach((dir) => {
+      const walk = { x: tile.x + dir, y: tile.y };
+      if (this.isWalkableTile(walk.x, walk.y, world, abilities, context)) pushNeighbor(walk);
+      const stepUp = { x: tile.x + dir, y: tile.y - 1 };
+      if (this.isWalkableTile(stepUp.x, stepUp.y, world, abilities, context)) pushNeighbor(stepUp);
+      for (let dropDown = 1; dropDown <= 8; dropDown += 1) {
+        const drop = { x: tile.x + dir, y: tile.y + dropDown };
+        if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) pushNeighbor(drop);
+      }
+    });
+    for (let dropDown = 1; dropDown <= 12; dropDown += 1) {
+      const drop = { x: tile.x, y: tile.y + dropDown };
+      if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) pushNeighbor(drop);
+    }
+    return neighbors;
+  }
+
+  getJumpingNeighbors(tile, world, abilities, context) {
     const neighbors = [];
     const neighborSet = new Set();
     const pushNeighbor = (candidate) => {
@@ -233,45 +262,21 @@ export default class FriendlyCompanion extends Player {
     const doubleJumpHeightTiles = Math.max(jumpHeightTiles + 1, jumpHeightTiles * 2 - 1);
     const dirs = [-1, 1];
     dirs.forEach((dir) => {
-      const walk = { x: tile.x + dir, y: tile.y, cost: 1 };
-      if (this.isWalkableTile(walk.x, walk.y, world, abilities, context)) pushNeighbor(walk);
-      for (let jumpUp = 1; jumpUp <= jumpHeightTiles; jumpUp += 1) {
-        const jump = { x: tile.x + dir, y: tile.y - jumpUp, cost: 1.35 + jumpUp * 0.08 };
-        if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
-      }
-      for (let dropDown = 1; dropDown <= 8; dropDown += 1) {
-        const drop = { x: tile.x + dir, y: tile.y + dropDown, cost: 1.1 + dropDown * 0.05 };
-        if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) pushNeighbor(drop);
-      }
-    });
-    for (let jumpUp = 1; jumpUp <= jumpHeightTiles; jumpUp += 1) {
-      const jump = { x: tile.x, y: tile.y - jumpUp, cost: 1.2 + jumpUp * 0.06 };
-      if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
-    }
-    for (let dropDown = 1; dropDown <= 12; dropDown += 1) {
-      const drop = { x: tile.x, y: tile.y + dropDown, cost: 1.05 + dropDown * 0.04 };
-      if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) pushNeighbor(drop);
-    }
-    dirs.forEach((dir) => {
-      for (let lateral = 2; lateral <= 3; lateral += 1) {
+      for (let lateral = 1; lateral <= 3; lateral += 1) {
         for (let jumpUp = 1; jumpUp <= jumpHeightTiles; jumpUp += 1) {
-          const jump = { x: tile.x + dir * lateral, y: tile.y - jumpUp, cost: 1.55 + lateral * 0.18 + jumpUp * 0.08 };
+          const jump = { x: tile.x + dir * lateral, y: tile.y - jumpUp };
           if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
         }
       }
     });
     for (let jumpUp = jumpHeightTiles + 1; jumpUp <= doubleJumpHeightTiles; jumpUp += 1) {
-      const jump = { x: tile.x, y: tile.y - jumpUp, cost: 2.4 + jumpUp * 0.08 };
+      const jump = { x: tile.x, y: tile.y - jumpUp };
       if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
     }
     dirs.forEach((dir) => {
       for (let lateral = 1; lateral <= 4; lateral += 1) {
         for (let jumpUp = jumpHeightTiles; jumpUp <= doubleJumpHeightTiles; jumpUp += 1) {
-          const jump = {
-            x: tile.x + dir * lateral,
-            y: tile.y - jumpUp,
-            cost: 2.7 + lateral * 0.2 + jumpUp * 0.07
-          };
+          const jump = { x: tile.x + dir * lateral, y: tile.y - jumpUp };
           if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
         }
       }
@@ -283,6 +288,25 @@ export default class FriendlyCompanion extends Player {
     const rawStart = this.getFootTile(world);
     const startTile = this.findNearestWalkableTile(rawStart, world, abilities, context);
     const candidates = this.getPriorityTilesAroundPlayer(player, world);
+    const tileSize = world.tileSize;
+    const playerTile = {
+      x: Math.floor(player.x / tileSize),
+      y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
+    };
+    const playerAirborne = !player.onGround;
+    if (playerAirborne && this.jumpTraceTile && startTile) {
+      const pathToTrace = this.getAStarPath(startTile, this.jumpTraceTile, world, abilities, context, this.getWalkingNeighbors.bind(this));
+      const pathToPlayer = this.getAStarPath(this.jumpTraceTile, playerTile, world, abilities, context, this.getJumpingNeighbors.bind(this));
+      const mergedPath = pathToTrace && pathToPlayer
+        ? [...pathToTrace, ...pathToPlayer.slice(1)]
+        : null;
+      this.currentPathTiles = mergedPath || [];
+      this.currentGoalTile = playerTile;
+      this.debugCandidateTiles = candidates.map((candidate) => ({ ...candidate, status: 'unchecked' }));
+      this.debugStandableTiles = [];
+      this.debugPenalizedTiles = [];
+      return;
+    }
     const debugCandidates = candidates.map((candidate) => ({ ...candidate, status: 'unchecked' }));
     const penalized = [];
     const standable = [];
@@ -310,7 +334,7 @@ export default class FriendlyCompanion extends Player {
         candidate.status = 'no-path';
         continue;
       }
-      const path = this.getAStarPath(startTile, candidate, world, abilities, context);
+      const path = this.getAStarPath(startTile, candidate, world, abilities, context, this.getWalkingNeighbors.bind(this));
       if (!path || path.length < 1) {
         candidate.status = 'no-path';
         continue;
@@ -322,7 +346,6 @@ export default class FriendlyCompanion extends Player {
       }
     }
 
-    const tileSize = world.tileSize;
     const fallbackPlayerTile = {
       x: Math.floor(player.x / tileSize),
       y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
@@ -354,6 +377,17 @@ export default class FriendlyCompanion extends Player {
   update(dt, world, abilities, context = {}) {
     const player = context.player;
     if (!player) return;
+    if (this.prevPlayerOnGround && !player.onGround) {
+      const tileSize = world.tileSize;
+      this.jumpTraceTile = {
+        x: Math.floor(player.x / tileSize),
+        y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
+      };
+    }
+    if (player.onGround) {
+      this.jumpTraceTile = null;
+    }
+    this.prevPlayerOnGround = Boolean(player.onGround);
 
     this.pathReplanTimer = Math.max(0, this.pathReplanTimer - dt);
     if (this.pathReplanTimer <= 0 || !this.currentPathTiles.length) {
