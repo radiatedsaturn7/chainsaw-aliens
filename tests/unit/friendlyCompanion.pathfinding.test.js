@@ -108,7 +108,7 @@ test('airborne replay prefers sampled replay path before traversal A* path', () 
   const world = createWorld();
   const abilities = {};
   const context = {};
-  const player = { x: 160, y: 130, height: 32, onGround: false, facing: 1 };
+  const player = { x: 128, y: 130, height: 32, onGround: false, facing: 1 };
 
   companion.playerAirborneFrames = 3;
   companion.jumpTraceTile = { x: 5, y: 5 };
@@ -127,14 +127,14 @@ test('airborne replay prefers sampled replay path before traversal A* path', () 
   assert.deepEqual(companion.jumpingPathTiles, [{ x: 5, y: 5 }, { x: 5, y: 4 }, { x: 5, y: 3 }]);
 });
 
-test('planner ignores transient airborne frames while player is effectively grounded', () => {
+test('planner treats supported non-descending player as grounded even if onGround is false', () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();
   const abilities = {};
   const context = {};
   const player = { x: 64, y: 160, height: 32, onGround: false, vy: 0, facing: 1 };
 
-  companion.playerAirborneFrames = 1;
+  companion.playerAirborneFrames = 10;
   companion.jumpTraceTile = { x: 5, y: 5 };
   companion.getFootTile = () => ({ x: 1, y: 5 });
   companion.findNearestWalkableTile = (origin) => ({ ...origin });

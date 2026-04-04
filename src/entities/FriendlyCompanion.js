@@ -335,7 +335,11 @@ export default class FriendlyCompanion extends Player {
       x: Math.floor(player.x / tileSize),
       y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
     };
+    const playerSupported = this.isCollidable(playerTile.x, playerTile.y + 1, world, abilities, context);
+    const playerMovingDown = (player.vy || 0) > 0;
+    const groundedBySupport = playerSupported && !playerMovingDown;
     const playerAirborne = !player.onGround
+      && !groundedBySupport
       && (this.playerAirborneFrames >= 3 || Math.abs(player.vy || 0) > 25);
     const replayActive = playerAirborne || this.jumpReplayLocked;
     if (replayActive && this.jumpTraceTile && startTile) {
@@ -462,11 +466,17 @@ export default class FriendlyCompanion extends Player {
   update(dt, world, abilities, context = {}) {
     const player = context.player;
     if (!player) return;
+    const tileSize = world.tileSize;
+    const playerTileX = Math.floor(player.x / tileSize);
+    const playerTileY = Math.floor((player.y + player.height / 2 - 1) / tileSize);
+    const playerSupported = this.isCollidable(playerTileX, playerTileY + 1, world, abilities, context);
+    const playerMovingDown = (player.vy || 0) > 0;
+    const groundedBySupport = playerSupported && !playerMovingDown;
     this.playerAirborneFrames = player.onGround ? 0 : this.playerAirborneFrames + 1;
     const stablePlayerAirborne = !player.onGround
+      && !groundedBySupport
       && (this.playerAirborneFrames >= 3 || Math.abs(player.vy || 0) > 25);
     if (this.prevPlayerOnGround && stablePlayerAirborne) {
-      const tileSize = world.tileSize;
       this.jumpTraceTile = {
         x: Math.floor(player.x / tileSize),
         y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
