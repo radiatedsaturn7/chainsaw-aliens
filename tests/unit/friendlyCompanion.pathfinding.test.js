@@ -86,3 +86,42 @@ test('planPathToPlayer evaluates walking paths before traversal paths', () => {
     [{ x: 1, y: 5 }, { x: 2, y: 5 }]
   );
 });
+
+test('buildReplayJumpPath keeps straight-up jumps centered despite tiny horizontal drift', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  companion.jumpTraceTile = { x: 5, y: 5 };
+  companion.playerJumpStart = { x: 176, y: 176 };
+  companion.playerJumpSamples = [
+    { x: 176, y: 176 },
+    { x: 179, y: 170 },
+    { x: 178, y: 164 }
+  ];
+
+  const replayPath = companion.buildReplayJumpPath(world);
+  assert.ok(replayPath.length > 0);
+  assert.ok(replayPath.every((tile) => tile.x === 5));
+});
+
+test('airborne replay prefers sampled replay path before traversal A* path', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const player = { x: 160, y: 130, height: 32, onGround: false, facing: 1 };
+
+  companion.jumpTraceTile = { x: 5, y: 5 };
+  companion.getFootTile = () => ({ x: 5, y: 5 });
+  companion.findNearestWalkableTile = (origin) => ({ ...origin });
+  companion.getPriorityTilesAroundPlayer = () => [{ x: 5, y: 5, priority: 1 }];
+  companion.buildReplayJumpPath = () => [{ x: 5, y: 5 }, { x: 5, y: 4 }, { x: 5, y: 3 }];
+
+  companion.getAStarPath = (startTile, goalTile, _world, _abilities, _ctx, resolver) => {
+    if (resolver?.name?.includes('getWalkingNeighbors')) return [startTile, goalTile];
+    if (resolver?.name?.includes('getTraversalNeighbors')) return [{ x: 5, y: 5 }, { x: 6, y: 5 }];
+    return null;
+  };
+
+  companion.planPathToPlayer(player, world, abilities, context);
+  assert.deepEqual(companion.jumpingPathTiles, [{ x: 5, y: 5 }, { x: 5, y: 4 }, { x: 5, y: 3 }]);
+});

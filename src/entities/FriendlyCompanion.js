@@ -338,17 +338,20 @@ export default class FriendlyCompanion extends Player {
     const replayActive = playerAirborne || this.jumpReplayLocked;
     if (replayActive && this.jumpTraceTile && startTile) {
       const pathToTrace = this.getAStarPath(startTile, this.jumpTraceTile, world, abilities, context, this.getWalkingNeighbors.bind(this));
-      const jumpGoalTile = this.findNearestWalkableTile(playerTile, world, abilities, context, 6) || playerTile;
-      const jumpAStarPath = this.getAStarPath(
-        this.jumpTraceTile,
-        jumpGoalTile,
-        world,
-        abilities,
-        context,
-        this.getTraversalNeighbors.bind(this)
-      );
       const replayPath = this.buildReplayJumpPath(world);
-      const pathToPlayer = jumpAStarPath || replayPath;
+      let pathToPlayer = replayPath;
+      if (!playerAirborne || !pathToPlayer?.length) {
+        const jumpGoalTile = this.findNearestWalkableTile(playerTile, world, abilities, context, 6) || playerTile;
+        const jumpAStarPath = this.getAStarPath(
+          this.jumpTraceTile,
+          jumpGoalTile,
+          world,
+          abilities,
+          context,
+          this.getTraversalNeighbors.bind(this)
+        );
+        pathToPlayer = jumpAStarPath || replayPath;
+      }
       const mergedPath = pathToTrace
         ? [...pathToTrace, ...(pathToPlayer ? pathToPlayer.slice(1) : [])]
         : [];
@@ -560,10 +563,13 @@ export default class FriendlyCompanion extends Player {
     const tileSize = world.tileSize;
     const startWorldX = (this.jumpTraceTile.x + 0.5) * tileSize;
     const startWorldY = (this.jumpTraceTile.y + 0.5) * tileSize;
+    const lateralDeadzone = tileSize * 0.35;
     const tiles = [];
     const seen = new Set();
     this.playerJumpSamples.forEach((sample) => {
-      const mappedX = startWorldX + (sample.x - this.playerJumpStart.x);
+      const rawDeltaX = sample.x - this.playerJumpStart.x;
+      const mappedDeltaX = Math.abs(rawDeltaX) < lateralDeadzone ? 0 : rawDeltaX;
+      const mappedX = startWorldX + mappedDeltaX;
       const mappedY = startWorldY + (sample.y - this.playerJumpStart.y);
       const tile = {
         x: Math.floor(mappedX / tileSize),
