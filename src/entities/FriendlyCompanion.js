@@ -167,6 +167,14 @@ export default class FriendlyCompanion extends Player {
       return cost;
     };
     const heuristic = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    const traversalCost = (from, to) => {
+      const dx = Math.abs(to.x - from.x);
+      const dy = to.y - from.y;
+      const tileDistance = dx + Math.abs(dy);
+      const jumpMove = dy < -1 || dx > 1;
+      const jumpPenalty = jumpMove ? 3 : 0;
+      return nodeCost(to) + tileDistance + jumpPenalty;
+    };
     const withinBounds = (tile) => tile.x >= 0 && tile.x < world.width && tile.y >= 1 && tile.y < world.height - 1;
 
     const open = [startTile];
@@ -214,7 +222,7 @@ export default class FriendlyCompanion extends Player {
 
         const neighborKey = this.tileKey(neighbor);
         if (closed.has(neighborKey)) continue;
-        const tentative = (gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + nodeCost(neighbor) + 1;
+        const tentative = (gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + traversalCost(current, neighbor);
 
         if (tentative < (gScore.get(neighborKey) ?? Number.POSITIVE_INFINITY)) {
           cameFrom.set(neighborKey, current);

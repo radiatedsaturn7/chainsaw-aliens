@@ -41,3 +41,18 @@ test('A* traversal can use jump neighbors to reach elevated goals', () => {
   assert.ok(traversalPath);
   assert.deepEqual(traversalPath.at(-1), goal);
 });
+
+test('A* traversal prefers flat walking over unnecessary jump arcs', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const start = { x: 1, y: 5 };
+  const goal = { x: 4, y: 5 };
+
+  const traversalPath = companion.getAStarPath(start, goal, world, abilities, context);
+  assert.ok(traversalPath);
+  assert.equal(traversalPath[0].y, 5);
+  assert.equal(traversalPath.at(-1).y, 5);
+  assert.ok(traversalPath.every((tile) => tile.y === 5));
+});
