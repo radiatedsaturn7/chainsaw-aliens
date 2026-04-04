@@ -205,7 +205,7 @@ export default class FriendlyCompanion extends Player {
         return path;
       }
 
-      const neighbors = (neighborResolver || this.getWalkingNeighbors.bind(this))(current, world, abilities, context);
+      const neighbors = (neighborResolver || this.getTraversalNeighbors.bind(this))(current, world, abilities, context);
 
       for (let i = 0; i < neighbors.length; i += 1) {
         const neighbor = neighbors[i];
@@ -302,6 +302,21 @@ export default class FriendlyCompanion extends Player {
     return neighbors;
   }
 
+  getTraversalNeighbors(tile, world, abilities, context) {
+    const neighbors = [];
+    const neighborSet = new Set();
+    const pushUnique = (candidate) => {
+      if (!candidate) return;
+      const key = this.tileKey(candidate);
+      if (neighborSet.has(key)) return;
+      neighborSet.add(key);
+      neighbors.push(candidate);
+    };
+    this.getWalkingNeighbors(tile, world, abilities, context).forEach(pushUnique);
+    this.getJumpingNeighbors(tile, world, abilities, context).forEach(pushUnique);
+    return neighbors;
+  }
+
   planPathToPlayer(player, world, abilities, context) {
     const rawStart = this.getFootTile(world);
     const startTile = this.findNearestWalkableTile(rawStart, world, abilities, context);
@@ -322,7 +337,7 @@ export default class FriendlyCompanion extends Player {
         world,
         abilities,
         context,
-        this.getJumpingNeighbors.bind(this)
+        this.getTraversalNeighbors.bind(this)
       );
       const replayPath = this.buildReplayJumpPath(world);
       const pathToPlayer = jumpAStarPath || replayPath;
@@ -368,7 +383,7 @@ export default class FriendlyCompanion extends Player {
         candidate.status = 'no-path';
         continue;
       }
-      const path = this.getAStarPath(startTile, candidate, world, abilities, context, this.getWalkingNeighbors.bind(this));
+      const path = this.getAStarPath(startTile, candidate, world, abilities, context, this.getTraversalNeighbors.bind(this));
       if (!path || path.length < 1) {
         candidate.status = 'no-path';
         continue;
