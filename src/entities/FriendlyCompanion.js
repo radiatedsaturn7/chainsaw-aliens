@@ -271,6 +271,17 @@ export default class FriendlyCompanion extends Player {
     const jumpHeightTiles = Math.max(2, Math.floor((this.jumpPower ** 2) / (2 * MOVEMENT_MODEL.gravity * world.tileSize)));
     const doubleJumpHeightTiles = Math.max(jumpHeightTiles + 1, jumpHeightTiles * 2 - 1);
     const dirs = [-1, 1];
+    // Jump straight up.
+    for (let jumpUp = 1; jumpUp <= jumpHeightTiles; jumpUp += 1) {
+      const jump = { x: tile.x, y: tile.y - jumpUp };
+      if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
+    }
+    // Jump straight up twice (double jump).
+    for (let jumpUp = jumpHeightTiles + 1; jumpUp <= doubleJumpHeightTiles; jumpUp += 1) {
+      const jump = { x: tile.x, y: tile.y - jumpUp };
+      if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
+    }
+    // Jump up and left/right.
     dirs.forEach((dir) => {
       for (let lateral = 1; lateral <= 3; lateral += 1) {
         for (let jumpUp = 1; jumpUp <= jumpHeightTiles; jumpUp += 1) {
@@ -279,16 +290,13 @@ export default class FriendlyCompanion extends Player {
         }
       }
     });
-    for (let jumpUp = jumpHeightTiles + 1; jumpUp <= doubleJumpHeightTiles; jumpUp += 1) {
-      const jump = { x: tile.x, y: tile.y - jumpUp };
-      if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
-    }
+    // Jump up until max height, then move left/right.
     dirs.forEach((dir) => {
       for (let lateral = 1; lateral <= 4; lateral += 1) {
-        for (let jumpUp = jumpHeightTiles; jumpUp <= doubleJumpHeightTiles; jumpUp += 1) {
-          const jump = { x: tile.x + dir * lateral, y: tile.y - jumpUp };
-          if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
-        }
+        const singleApexShift = { x: tile.x + dir * lateral, y: tile.y - jumpHeightTiles };
+        if (this.isWalkableTile(singleApexShift.x, singleApexShift.y, world, abilities, context)) pushNeighbor(singleApexShift);
+        const doubleApexShift = { x: tile.x + dir * lateral, y: tile.y - doubleJumpHeightTiles };
+        if (this.isWalkableTile(doubleApexShift.x, doubleApexShift.y, world, abilities, context)) pushNeighbor(doubleApexShift);
       }
     });
     return neighbors;
