@@ -56,6 +56,9 @@ export default class FriendlyCompanion extends Player {
     this.pathReplanTimer = 0;
     this.currentPathTiles = [];
     this.currentGoalTile = null;
+    this.walkingPathTiles = [];
+    this.jumpingPathTiles = [];
+    this.jumpTargetTile = null;
     this.jumpTraceTile = null;
     this.prevPlayerOnGround = true;
     this.debugPenalizedTiles = [];
@@ -297,11 +300,14 @@ export default class FriendlyCompanion extends Player {
     if (playerAirborne && this.jumpTraceTile && startTile) {
       const pathToTrace = this.getAStarPath(startTile, this.jumpTraceTile, world, abilities, context, this.getWalkingNeighbors.bind(this));
       const pathToPlayer = this.getAStarPath(this.jumpTraceTile, playerTile, world, abilities, context, this.getJumpingNeighbors.bind(this));
-      const mergedPath = pathToTrace && pathToPlayer
-        ? [...pathToTrace, ...pathToPlayer.slice(1)]
-        : null;
-      this.currentPathTiles = mergedPath || [];
-      this.currentGoalTile = playerTile;
+      const mergedPath = pathToTrace
+        ? [...pathToTrace, ...(pathToPlayer ? pathToPlayer.slice(1) : [])]
+        : [];
+      this.walkingPathTiles = pathToTrace || [];
+      this.jumpingPathTiles = pathToPlayer || [];
+      this.jumpTargetTile = playerTile;
+      this.currentPathTiles = mergedPath;
+      this.currentGoalTile = this.jumpTraceTile;
       this.debugCandidateTiles = candidates.map((candidate) => ({ ...candidate, status: 'unchecked' }));
       this.debugStandableTiles = [];
       this.debugPenalizedTiles = [];
@@ -352,6 +358,9 @@ export default class FriendlyCompanion extends Player {
     };
     this.currentPathTiles = bestPath || [];
     this.currentGoalTile = bestGoal || (standable.length === 0 ? fallbackPlayerTile : null);
+    this.walkingPathTiles = this.currentPathTiles.slice();
+    this.jumpingPathTiles = [];
+    this.jumpTargetTile = null;
     this.debugPenalizedTiles = penalized;
     this.debugStandableTiles = standable;
     this.debugCandidateTiles = debugCandidates;
@@ -426,13 +435,28 @@ export default class FriendlyCompanion extends Player {
       ctx.restore();
     }
 
-    if (this.currentPathTiles.length > 1) {
+    if (this.walkingPathTiles.length > 1) {
       ctx.save();
       ctx.lineWidth = 3;
       ctx.strokeStyle = 'rgba(70, 235, 120, 0.98)';
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
-      this.currentPathTiles.forEach((tile) => {
+      this.walkingPathTiles.forEach((tile) => {
+        const x = (tile.x + 0.5) * tileSize;
+        const y = (tile.y + 0.5) * tileSize;
+        ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.restore();
+    }
+    if (this.jumpingPathTiles.length > 1) {
+      ctx.save();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = 'rgba(95, 150, 255, 0.98)';
+      ctx.beginPath();
+      const first = this.jumpingPathTiles[0];
+      ctx.moveTo((first.x + 0.5) * tileSize, (first.y + 0.5) * tileSize);
+      this.jumpingPathTiles.forEach((tile) => {
         const x = (tile.x + 0.5) * tileSize;
         const y = (tile.y + 0.5) * tileSize;
         ctx.lineTo(x, y);
@@ -450,6 +474,18 @@ export default class FriendlyCompanion extends Player {
         this.currentGoalTile.y * tileSize + 1,
         tileSize - 2,
         tileSize - 2
+      );
+      ctx.restore();
+    }
+    if (this.jumpTargetTile) {
+      ctx.save();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#6aa4ff';
+      ctx.strokeRect(
+        this.jumpTargetTile.x * tileSize + 3,
+        this.jumpTargetTile.y * tileSize + 3,
+        tileSize - 6,
+        tileSize - 6
       );
       ctx.restore();
     }
