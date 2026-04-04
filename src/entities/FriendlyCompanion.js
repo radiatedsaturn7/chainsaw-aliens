@@ -64,6 +64,7 @@ export default class FriendlyCompanion extends Player {
     this.playerJumpStart = null;
     this.playerJumpSamples = [];
     this.playerJumpTriggerFrames = [];
+    this.playerAirborneFrames = 0;
     this.jumpReplayLocked = false;
     this.companionReplayAirborneSeen = false;
     this.companionAirTicks = 0;
@@ -334,7 +335,8 @@ export default class FriendlyCompanion extends Player {
       x: Math.floor(player.x / tileSize),
       y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
     };
-    const playerAirborne = !player.onGround;
+    const playerAirborne = !player.onGround
+      && (this.playerAirborneFrames >= 3 || Math.abs(player.vy || 0) > 25);
     const replayActive = playerAirborne || this.jumpReplayLocked;
     if (replayActive && this.jumpTraceTile && startTile) {
       const pathToTrace = this.getAStarPath(startTile, this.jumpTraceTile, world, abilities, context, this.getWalkingNeighbors.bind(this));
@@ -460,7 +462,10 @@ export default class FriendlyCompanion extends Player {
   update(dt, world, abilities, context = {}) {
     const player = context.player;
     if (!player) return;
-    if (this.prevPlayerOnGround && !player.onGround) {
+    this.playerAirborneFrames = player.onGround ? 0 : this.playerAirborneFrames + 1;
+    const stablePlayerAirborne = !player.onGround
+      && (this.playerAirborneFrames >= 3 || Math.abs(player.vy || 0) > 25);
+    if (this.prevPlayerOnGround && stablePlayerAirborne) {
       const tileSize = world.tileSize;
       this.jumpTraceTile = {
         x: Math.floor(player.x / tileSize),
@@ -470,7 +475,7 @@ export default class FriendlyCompanion extends Player {
       this.playerJumpSamples = [{ x: player.x, y: player.y, vx: player.vx, vy: player.vy }];
       this.playerJumpTriggerFrames = [0];
       this.jumpReplayLocked = false;
-    } else if (!player.onGround && !this.jumpReplayLocked) {
+    } else if (stablePlayerAirborne && !this.jumpReplayLocked) {
       const prevSample = this.playerJumpSamples[this.playerJumpSamples.length - 1] || null;
       this.playerJumpSamples.push({ x: player.x, y: player.y, vx: player.vx, vy: player.vy });
       if (prevSample && player.vy < prevSample.vy - 180) {
