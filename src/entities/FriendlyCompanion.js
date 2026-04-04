@@ -413,12 +413,39 @@ export default class FriendlyCompanion extends Player {
       this.pathReplanTimer = 0.2;
     }
 
-    this.aiInput.beginFrame(new Set());
-    this.vx = 0;
-    this.vy = 0;
+    const nextInput = new Set();
+    const nextTile = this.currentPathTiles.length > 1 ? this.currentPathTiles[1] : this.currentPathTiles[0] || null;
+    if (nextTile) {
+      const tileSize = world.tileSize;
+      const targetX = (nextTile.x + 0.5) * tileSize;
+      const targetY = (nextTile.y + 0.5) * tileSize;
+      const dx = targetX - this.x;
+      const dy = targetY - this.y;
+      if (dx < -6) nextInput.add('left');
+      if (dx > 6) nextInput.add('right');
+      const canGroundJump = this.onGround || this.coyote > 0 || this.onWall !== 0;
+      const canAirJump = !canGroundJump && this.jumpsRemaining > 0 && dy < -16 && this.vy > -90;
+      if ((dy < -14 && canGroundJump) || canAirJump) {
+        nextInput.add('jump');
+      }
+      const closeEnough = Math.abs(dx) < 9 && Math.abs(dy) < tileSize * 0.6;
+      if (closeEnough && this.currentPathTiles.length > 1) {
+        this.currentPathTiles.shift();
+      }
+      const onOneWay = this.onGround && world.isOneWay?.(
+        Math.floor(this.x / tileSize),
+        Math.floor((this.y + this.height / 2 - 1) / tileSize)
+      );
+      if (dy > tileSize * 0.9 && onOneWay && this.onGround) {
+        nextInput.add('down');
+        nextInput.add('jump');
+      }
+    }
+
+    this.aiInput.beginFrame(nextInput);
+    super.update(dt, this.aiInput, world, abilities);
     this.revving = false;
     this.flameMode = false;
-    this.onGround = true;
   }
 
   buildReplayJumpPath(world) {

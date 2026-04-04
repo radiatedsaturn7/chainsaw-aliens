@@ -2526,7 +2526,7 @@ export default class Game {
       this.applyIgnitirPlayerImpulse();
     }
     const prevPlayer = { x: this.player.x, y: this.player.y };
-    const prevCompanion = null;
+    const prevCompanion = this.friendlyCompanion ? { x: this.friendlyCompanion.x, y: this.friendlyCompanion.y } : null;
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
     if (this.friendlyCompanion) {
       this.friendlyCompanion.update(dt * timeScale, this.world, this.abilities, {
