@@ -63,6 +63,9 @@ export default class FriendlyCompanion extends Player {
     this.prevPlayerOnGround = true;
     this.playerJumpStart = null;
     this.playerJumpSamples = [];
+    this.playerJumpTriggerFrames = [];
+    this.companionAirTicks = 0;
+    this.companionUsedJumpTriggerFrames = new Set();
     this.debugPenalizedTiles = [];
     this.debugStandableTiles = [];
     this.debugCandidateTiles = [];
@@ -396,16 +399,28 @@ export default class FriendlyCompanion extends Player {
       };
       this.playerJumpStart = { x: player.x, y: player.y };
       this.playerJumpSamples = [{ x: player.x, y: player.y, vx: player.vx, vy: player.vy }];
+      this.playerJumpTriggerFrames = [0];
     } else if (!player.onGround) {
+      const prevSample = this.playerJumpSamples[this.playerJumpSamples.length - 1] || null;
       this.playerJumpSamples.push({ x: player.x, y: player.y, vx: player.vx, vy: player.vy });
+      if (prevSample && player.vy < prevSample.vy - 180) {
+        this.playerJumpTriggerFrames.push(this.playerJumpSamples.length - 1);
+      }
       if (this.playerJumpSamples.length > 120) this.playerJumpSamples.shift();
     }
     if (player.onGround) {
       this.jumpTraceTile = null;
       this.playerJumpStart = null;
       this.playerJumpSamples = [];
+      this.playerJumpTriggerFrames = [];
     }
     this.prevPlayerOnGround = Boolean(player.onGround);
+    if (!this.onGround) {
+      this.companionAirTicks += 1;
+    } else {
+      this.companionAirTicks = 0;
+      this.companionUsedJumpTriggerFrames.clear();
+    }
 
     this.pathReplanTimer = Math.max(0, this.pathReplanTimer - dt);
     if (this.pathReplanTimer <= 0 || !this.currentPathTiles.length) {
@@ -427,6 +442,17 @@ export default class FriendlyCompanion extends Player {
       const canAirJump = !canGroundJump && this.jumpsRemaining > 0 && dy < -16 && this.vy > -90;
       if ((dy < -14 && canGroundJump) || canAirJump) {
         nextInput.add('jump');
+      }
+      if (!this.onGround && this.jumpsRemaining > 0 && this.playerJumpTriggerFrames.length > 1) {
+        for (let i = 1; i < this.playerJumpTriggerFrames.length; i += 1) {
+          const triggerFrame = this.playerJumpTriggerFrames[i];
+          if (this.companionUsedJumpTriggerFrames.has(triggerFrame)) continue;
+          if (Math.abs(this.companionAirTicks - triggerFrame) <= 1) {
+            nextInput.add('jump');
+            this.companionUsedJumpTriggerFrames.add(triggerFrame);
+            break;
+          }
+        }
       }
       const closeEnough = Math.abs(dx) < 9 && Math.abs(dy) < tileSize * 0.6;
       if (closeEnough && this.currentPathTiles.length > 1) {
