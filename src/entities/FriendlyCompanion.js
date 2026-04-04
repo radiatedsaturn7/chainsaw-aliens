@@ -64,6 +64,8 @@ export default class FriendlyCompanion extends Player {
     this.playerJumpStart = null;
     this.playerJumpSamples = [];
     this.playerJumpTriggerFrames = [];
+    this.jumpReplayLocked = false;
+    this.companionReplayAirborneSeen = false;
     this.companionAirTicks = 0;
     this.companionUsedJumpTriggerFrames = new Set();
     this.debugPenalizedTiles = [];
@@ -302,7 +304,8 @@ export default class FriendlyCompanion extends Player {
       y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
     };
     const playerAirborne = !player.onGround;
-    if (playerAirborne && this.jumpTraceTile && startTile) {
+    const replayActive = playerAirborne || this.jumpReplayLocked;
+    if (replayActive && this.jumpTraceTile && startTile) {
       const pathToTrace = this.getAStarPath(startTile, this.jumpTraceTile, world, abilities, context, this.getWalkingNeighbors.bind(this));
       const pathToPlayer = this.buildReplayJumpPath(world);
       const mergedPath = pathToTrace
@@ -310,7 +313,9 @@ export default class FriendlyCompanion extends Player {
         : [];
       this.walkingPathTiles = pathToTrace || [];
       this.jumpingPathTiles = pathToPlayer || [this.jumpTraceTile];
-      this.jumpTargetTile = playerTile;
+      this.jumpTargetTile = playerAirborne
+        ? playerTile
+        : this.jumpingPathTiles[this.jumpingPathTiles.length - 1] || this.jumpTraceTile;
       this.currentPathTiles = mergedPath;
       this.currentGoalTile = this.jumpTraceTile;
       this.debugCandidateTiles = candidates.map((candidate) => ({ ...candidate, status: 'unchecked' }));
@@ -400,7 +405,8 @@ export default class FriendlyCompanion extends Player {
       this.playerJumpStart = { x: player.x, y: player.y };
       this.playerJumpSamples = [{ x: player.x, y: player.y, vx: player.vx, vy: player.vy }];
       this.playerJumpTriggerFrames = [0];
-    } else if (!player.onGround) {
+      this.jumpReplayLocked = false;
+    } else if (!player.onGround && !this.jumpReplayLocked) {
       const prevSample = this.playerJumpSamples[this.playerJumpSamples.length - 1] || null;
       this.playerJumpSamples.push({ x: player.x, y: player.y, vx: player.vx, vy: player.vy });
       if (prevSample && player.vy < prevSample.vy - 180) {
@@ -409,15 +415,29 @@ export default class FriendlyCompanion extends Player {
       if (this.playerJumpSamples.length > 120) this.playerJumpSamples.shift();
     }
     if (player.onGround) {
-      this.jumpTraceTile = null;
-      this.playerJumpStart = null;
-      this.playerJumpSamples = [];
-      this.playerJumpTriggerFrames = [];
+      if (!this.prevPlayerOnGround && this.playerJumpSamples.length > 0) {
+        this.jumpReplayLocked = true;
+        this.companionReplayAirborneSeen = false;
+      } else if (!this.jumpReplayLocked) {
+        this.jumpTraceTile = null;
+        this.playerJumpStart = null;
+        this.playerJumpSamples = [];
+        this.playerJumpTriggerFrames = [];
+      }
     }
     this.prevPlayerOnGround = Boolean(player.onGround);
     if (!this.onGround) {
       this.companionAirTicks += 1;
+      if (this.jumpReplayLocked) this.companionReplayAirborneSeen = true;
     } else {
+      if (this.jumpReplayLocked && this.companionReplayAirborneSeen) {
+        this.jumpReplayLocked = false;
+        this.companionReplayAirborneSeen = false;
+        this.jumpTraceTile = null;
+        this.playerJumpStart = null;
+        this.playerJumpSamples = [];
+        this.playerJumpTriggerFrames = [];
+      }
       this.companionAirTicks = 0;
       this.companionUsedJumpTriggerFrames.clear();
     }
