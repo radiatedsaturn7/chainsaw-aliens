@@ -156,3 +156,24 @@ test('planner treats supported non-descending player as grounded even if onGroun
     [{ x: 3, y: 4 }]
   );
 });
+
+test('clearJumpReplayState resets replay lock and sampled jump traces', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  companion.jumpReplayLocked = true;
+  companion.jumpReplayLockTimer = 1.2;
+  companion.companionReplayAirborneSeen = true;
+  companion.jumpTraceTile = { x: 4, y: 6 };
+  companion.playerJumpStart = { x: 100, y: 120 };
+  companion.playerJumpSamples = [{ x: 1, y: 2 }];
+  companion.playerJumpTriggerFrames = [0, 3];
+
+  companion.clearJumpReplayState();
+
+  assert.equal(companion.jumpReplayLocked, false);
+  assert.equal(companion.jumpReplayLockTimer, 0);
+  assert.equal(companion.companionReplayAirborneSeen, false);
+  assert.equal(companion.jumpTraceTile, null);
+  assert.equal(companion.playerJumpStart, null);
+  assert.deepEqual(companion.playerJumpSamples, []);
+  assert.deepEqual(companion.playerJumpTriggerFrames, []);
+});

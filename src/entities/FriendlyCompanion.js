@@ -66,6 +66,7 @@ export default class FriendlyCompanion extends Player {
     this.playerJumpTriggerFrames = [];
     this.playerAirborneFrames = 0;
     this.jumpReplayLocked = false;
+    this.jumpReplayLockTimer = 0;
     this.companionReplayAirborneSeen = false;
     this.companionAirTicks = 0;
     this.companionUsedJumpTriggerFrames = new Set();
@@ -90,6 +91,16 @@ export default class FriendlyCompanion extends Player {
 
   takeDamage() {
     return false;
+  }
+
+  clearJumpReplayState() {
+    this.jumpReplayLocked = false;
+    this.jumpReplayLockTimer = 0;
+    this.companionReplayAirborneSeen = false;
+    this.jumpTraceTile = null;
+    this.playerJumpStart = null;
+    this.playerJumpSamples = [];
+    this.playerJumpTriggerFrames = [];
   }
 
   getFootTile(world) {
@@ -511,6 +522,7 @@ export default class FriendlyCompanion extends Player {
     if (player.onGround) {
       if (!this.prevPlayerOnGround && this.playerJumpSamples.length > 0) {
         this.jumpReplayLocked = true;
+        this.jumpReplayLockTimer = 0;
         this.companionReplayAirborneSeen = false;
       } else if (!this.jumpReplayLocked) {
         this.jumpTraceTile = null;
@@ -525,15 +537,19 @@ export default class FriendlyCompanion extends Player {
       if (this.jumpReplayLocked) this.companionReplayAirborneSeen = true;
     } else {
       if (this.jumpReplayLocked && this.companionReplayAirborneSeen) {
-        this.jumpReplayLocked = false;
-        this.companionReplayAirborneSeen = false;
-        this.jumpTraceTile = null;
-        this.playerJumpStart = null;
-        this.playerJumpSamples = [];
-        this.playerJumpTriggerFrames = [];
+        this.clearJumpReplayState();
       }
       this.companionAirTicks = 0;
       this.companionUsedJumpTriggerFrames.clear();
+    }
+    if (this.jumpReplayLocked) {
+      this.jumpReplayLockTimer += dt;
+      // If the companion never actually entered replay-airborne mode, don't stay locked indefinitely.
+      if (this.onGround && !this.companionReplayAirborneSeen && this.jumpReplayLockTimer > 0.4) {
+        this.clearJumpReplayState();
+      }
+    } else {
+      this.jumpReplayLockTimer = 0;
     }
 
     this.pathReplanTimer = Math.max(0, this.pathReplanTimer - dt);
