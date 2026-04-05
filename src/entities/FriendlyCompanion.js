@@ -73,6 +73,7 @@ export default class FriendlyCompanion extends Player {
     this.debugPenalizedTiles = [];
     this.debugStandableTiles = [];
     this.debugCandidateTiles = [];
+    this.jumpOffsetCache = new Map();
   }
 
   getDrawPalette(flash) {
@@ -303,38 +304,79 @@ export default class FriendlyCompanion extends Player {
       neighborSet.add(key);
       neighbors.push(candidate);
     };
-    const jumpHeightTiles = Math.max(2, Math.floor((this.jumpPower ** 2) / (2 * MOVEMENT_MODEL.gravity * world.tileSize)));
-    const doubleJumpHeightTiles = Math.max(jumpHeightTiles + 1, jumpHeightTiles * 2 - 1);
-    const dirs = [-1, 1];
-    // Jump straight up.
-    for (let jumpUp = 1; jumpUp <= jumpHeightTiles; jumpUp += 1) {
-      const jump = { x: tile.x, y: tile.y - jumpUp };
+    const offsets = this.getSimulatedJumpOffsets(world);
+    offsets.forEach((offset) => {
+      const jump = { x: tile.x + offset.dx, y: tile.y + offset.dy };
       if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
-    }
-    // Jump straight up twice (double jump).
-    for (let jumpUp = jumpHeightTiles + 1; jumpUp <= doubleJumpHeightTiles; jumpUp += 1) {
-      const jump = { x: tile.x, y: tile.y - jumpUp };
-      if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
-    }
-    // Jump up and left/right.
-    dirs.forEach((dir) => {
-      for (let lateral = 1; lateral <= 3; lateral += 1) {
-        for (let jumpUp = 1; jumpUp <= jumpHeightTiles; jumpUp += 1) {
-          const jump = { x: tile.x + dir * lateral, y: tile.y - jumpUp };
-          if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
-        }
-      }
-    });
-    // Jump up until max height, then move left/right.
-    dirs.forEach((dir) => {
-      for (let lateral = 1; lateral <= 4; lateral += 1) {
-        const singleApexShift = { x: tile.x + dir * lateral, y: tile.y - jumpHeightTiles };
-        if (this.isWalkableTile(singleApexShift.x, singleApexShift.y, world, abilities, context)) pushNeighbor(singleApexShift);
-        const doubleApexShift = { x: tile.x + dir * lateral, y: tile.y - doubleJumpHeightTiles };
-        if (this.isWalkableTile(doubleApexShift.x, doubleApexShift.y, world, abilities, context)) pushNeighbor(doubleApexShift);
-      }
     });
     return neighbors;
+  }
+
+  getSimulatedJumpOffsets(world) {
+    const tileSize = world.tileSize;
+    const cacheKey = `${tileSize}|${this.jumpPower}|${this.speed}`;
+    if (this.jumpOffsetCache.has(cacheKey)) return this.jumpOffsetCache.get(cacheKey);
+
+    const offsets = new Set();
+    const dt = 1 / 60;
+    const gravity = MOVEMENT_MODEL.gravity;
+    const speed = this.speed;
+    const jumpPower = this.jumpPower;
+    const maxFrames = 120;
+    const addOffset = (x, y) => {
+      const dx = Math.floor((x + tileSize * 0.5) / tileSize);
+      const dy = Math.floor((y + tileSize * 0.5) / tileSize);
+      if (dx === 0 && dy === 0) return;
+      if (Math.abs(dx) > 10 || dy > 2 || dy < -10) return;
+      offsets.add(`${dx},${dy}`);
+    };
+    const simulateArc = (initialDir, holdDir, secondJumpFrame = null) => {
+      let x = 0;
+      let y = 0;
+      let vx = initialDir * speed;
+      let vy = -jumpPower;
+      let jumpsUsed = 1;
+      for (let frame = 0; frame < maxFrames; frame += 1) {
+        const moveInput = holdDir;
+        const targetVx = moveInput * speed;
+        const accel = moveInput !== 0 ? 0.12 : 0.04;
+        vx += (targetVx - vx) * accel;
+        if (moveInput === 0) vx *= 0.98;
+        if (secondJumpFrame !== null && jumpsUsed < 2 && frame >= secondJumpFrame && vy > -jumpPower * 0.45) {
+          vy = -jumpPower;
+          jumpsUsed += 1;
+        }
+        vy += gravity * dt;
+        x += vx * dt;
+        y += vy * dt;
+        addOffset(x, y);
+        if (frame > 6 && y > tileSize * 2.5) break;
+      }
+    };
+
+    const movementPatterns = [
+      { initialDir: 0, holdDir: 0 },
+      { initialDir: -1, holdDir: -1 },
+      { initialDir: 1, holdDir: 1 },
+      { initialDir: -1, holdDir: 0 },
+      { initialDir: 1, holdDir: 0 },
+      { initialDir: -1, holdDir: 1 },
+      { initialDir: 1, holdDir: -1 }
+    ];
+    const doubleJumpFrames = [null, 8, 12, 16, 20, 24];
+    movementPatterns.forEach((pattern) => {
+      doubleJumpFrames.forEach((frame) => {
+        simulateArc(pattern.initialDir, pattern.holdDir, frame);
+      });
+    });
+
+    const parsed = Array.from(offsets).map((key) => {
+      const [dx, dy] = key.split(',').map((v) => Number(v));
+      return { dx, dy };
+    });
+    parsed.sort((a, b) => Math.abs(a.dx) + Math.abs(a.dy) - (Math.abs(b.dx) + Math.abs(b.dy)));
+    this.jumpOffsetCache.set(cacheKey, parsed);
+    return parsed;
   }
 
   getTraversalNeighbors(tile, world, abilities, context) {

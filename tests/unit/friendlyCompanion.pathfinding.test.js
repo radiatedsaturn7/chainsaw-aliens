@@ -199,3 +199,11 @@ test('airborne companion targets player mid-air directly instead of returning to
   assert.deepEqual(companion.currentPathTiles, [{ x: 6, y: 3 }, { x: 8, y: 2 }]);
   assert.deepEqual(companion.jumpingPathTiles, [{ x: 6, y: 3 }, { x: 8, y: 2 }]);
 });
+
+test('simulated jump offsets include long running-jump reach on level landing', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const offsets = companion.getSimulatedJumpOffsets(world);
+  const hasLongFlatReach = offsets.some((offset) => Math.abs(offset.dx) >= 8 && Math.abs(offset.dy) <= 1);
+  assert.equal(hasLongFlatReach, true);
+});
