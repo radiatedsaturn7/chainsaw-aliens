@@ -100,6 +100,21 @@ export default class FriendlyCompanion extends Player {
     };
   }
 
+  isPlayerGroundSupported(player, world, abilities, context) {
+    const tileSize = world.tileSize;
+    const footTileY = Math.floor((player.y + player.height / 2 + 1) / tileSize);
+    const footXs = [
+      player.x - player.width / 2 + 6,
+      player.x + player.width / 2 - 6,
+      player.x
+    ];
+    for (let i = 0; i < footXs.length; i += 1) {
+      const tileX = Math.floor(footXs[i] / tileSize);
+      if (this.isCollidable(tileX, footTileY, world, abilities, context)) return true;
+    }
+    return false;
+  }
+
   tileKey(tile) {
     return `${tile.x},${tile.y}`;
   }
@@ -335,8 +350,8 @@ export default class FriendlyCompanion extends Player {
       x: Math.floor(player.x / tileSize),
       y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
     };
-    const playerSupported = this.isCollidable(playerTile.x, playerTile.y + 1, world, abilities, context);
-    const playerMovingDown = (player.vy || 0) > 0;
+    const playerSupported = this.isPlayerGroundSupported(player, world, abilities, context);
+    const playerMovingDown = (player.vy || 0) > 24;
     const groundedBySupport = playerSupported && !playerMovingDown;
     const playerAirborne = !player.onGround
       && !groundedBySupport
@@ -469,8 +484,8 @@ export default class FriendlyCompanion extends Player {
     const tileSize = world.tileSize;
     const playerTileX = Math.floor(player.x / tileSize);
     const playerTileY = Math.floor((player.y + player.height / 2 - 1) / tileSize);
-    const playerSupported = this.isCollidable(playerTileX, playerTileY + 1, world, abilities, context);
-    const playerMovingDown = (player.vy || 0) > 0;
+    const playerSupported = this.isPlayerGroundSupported(player, world, abilities, context);
+    const playerMovingDown = (player.vy || 0) > 24;
     const groundedBySupport = playerSupported && !playerMovingDown;
     this.playerAirborneFrames = player.onGround ? 0 : this.playerAirborneFrames + 1;
     const stablePlayerAirborne = !player.onGround

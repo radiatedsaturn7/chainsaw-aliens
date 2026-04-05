@@ -129,23 +129,30 @@ test('airborne replay prefers sampled replay path before traversal A* path', () 
 
 test('planner treats supported non-descending player as grounded even if onGround is false', () => {
   const companion = new FriendlyCompanion(0, 0);
-  const world = createWorld();
+  const world = {
+    width: 10,
+    height: 10,
+    tileSize: 32,
+    isSolid(x, y) {
+      return x === 3 && y === 5;
+    }
+  };
   const abilities = {};
   const context = {};
-  const player = { x: 64, y: 160, height: 32, onGround: false, vy: 0, facing: 1 };
+  const player = { x: 95, y: 160, width: 22, height: 34, onGround: false, vy: 8, facing: 1 };
 
   companion.playerAirborneFrames = 10;
   companion.jumpTraceTile = { x: 5, y: 5 };
-  companion.getFootTile = () => ({ x: 1, y: 5 });
+  companion.getFootTile = () => ({ x: 3, y: 4 });
   companion.findNearestWalkableTile = (origin) => ({ ...origin });
-  companion.getPriorityTilesAroundPlayer = () => [{ x: 2, y: 5, priority: 1 }];
-  companion.getAStarPath = () => [{ x: 1, y: 5 }, { x: 2, y: 5 }];
+  companion.getPriorityTilesAroundPlayer = () => [{ x: 3, y: 4, priority: 1 }];
+  companion.getAStarPath = () => [{ x: 3, y: 4 }];
 
   companion.planPathToPlayer(player, world, abilities, context);
 
   assert.deepEqual(companion.jumpingPathTiles, []);
   assert.deepEqual(
     companion.currentPathTiles.map((tile) => ({ x: tile.x, y: tile.y })),
-    [{ x: 1, y: 5 }, { x: 2, y: 5 }]
+    [{ x: 3, y: 4 }]
   );
 });
