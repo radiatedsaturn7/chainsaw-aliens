@@ -369,6 +369,17 @@ export default class FriendlyCompanion extends Player {
       && (this.playerAirborneFrames >= 3 || Math.abs(player.vy || 0) > 25);
     const replayActive = playerAirborne || this.jumpReplayLocked;
     if (replayActive && this.jumpTraceTile && startTile) {
+      if (playerAirborne && !this.onGround) {
+        this.walkingPathTiles = [];
+        this.jumpingPathTiles = [rawStart, playerTile];
+        this.jumpTargetTile = playerTile;
+        this.currentPathTiles = [rawStart, playerTile];
+        this.currentGoalTile = playerTile;
+        this.debugCandidateTiles = candidates.map((candidate) => ({ ...candidate, status: 'unchecked' }));
+        this.debugStandableTiles = [];
+        this.debugPenalizedTiles = [];
+        return;
+      }
       const pathToTrace = this.getAStarPath(startTile, this.jumpTraceTile, world, abilities, context, this.getWalkingNeighbors.bind(this));
       const replayPath = this.buildReplayJumpPath(world);
       let pathToPlayer = replayPath;

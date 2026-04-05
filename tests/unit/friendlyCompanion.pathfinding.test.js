@@ -110,6 +110,7 @@ test('airborne replay prefers sampled replay path before traversal A* path', () 
   const context = {};
   const player = { x: 128, y: 130, height: 32, onGround: false, facing: 1 };
 
+  companion.onGround = true;
   companion.playerAirborneFrames = 3;
   companion.jumpTraceTile = { x: 5, y: 5 };
   companion.getFootTile = () => ({ x: 5, y: 5 });
@@ -176,4 +177,25 @@ test('clearJumpReplayState resets replay lock and sampled jump traces', () => {
   assert.equal(companion.playerJumpStart, null);
   assert.deepEqual(companion.playerJumpSamples, []);
   assert.deepEqual(companion.playerJumpTriggerFrames, []);
+});
+
+test('airborne companion targets player mid-air directly instead of returning to jump trace', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const player = { x: 8 * 32 + 16, y: 2 * 32 + 16, height: 32, onGround: false, vy: -20, facing: 1 };
+
+  companion.onGround = false;
+  companion.playerAirborneFrames = 5;
+  companion.jumpTraceTile = { x: 5, y: 5 };
+  companion.getFootTile = () => ({ x: 6, y: 3 });
+  companion.findNearestWalkableTile = (origin) => ({ ...origin });
+  companion.getPriorityTilesAroundPlayer = () => [{ x: 8, y: 2, priority: 1 }];
+
+  companion.planPathToPlayer(player, world, abilities, context);
+
+  assert.deepEqual(companion.currentGoalTile, { x: 8, y: 2 });
+  assert.deepEqual(companion.currentPathTiles, [{ x: 6, y: 3 }, { x: 8, y: 2 }]);
+  assert.deepEqual(companion.jumpingPathTiles, [{ x: 6, y: 3 }, { x: 8, y: 2 }]);
 });
