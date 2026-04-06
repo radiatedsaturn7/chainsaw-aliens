@@ -307,9 +307,29 @@ export default class FriendlyCompanion extends Player {
     const offsets = this.getSimulatedJumpOffsets(world);
     offsets.forEach((offset) => {
       const jump = { x: tile.x + offset.dx, y: tile.y + offset.dy };
-      if (this.isWalkableTile(jump.x, jump.y, world, abilities, context)) pushNeighbor(jump);
+      if (!this.isWalkableTile(jump.x, jump.y, world, abilities, context)) return;
+      if (!this.isJumpTrajectoryClear(tile, offset.samples, world, abilities, context)) return;
+      pushNeighbor(jump);
     });
     return neighbors;
+  }
+
+  isJumpTrajectoryClear(startTile, samples, world, abilities, context) {
+    if (!Array.isArray(samples) || samples.length === 0) return false;
+    const tileSize = world.tileSize;
+    const startWorldX = (startTile.x + 0.5) * tileSize;
+    const startWorldY = (startTile.y + 0.5) * tileSize;
+    for (let i = 0; i < samples.length; i += 1) {
+      const sample = samples[i];
+      const worldX = startWorldX + sample.x;
+      const worldY = startWorldY + sample.y;
+      const tileX = Math.floor(worldX / tileSize);
+      const tileY = Math.floor(worldY / tileSize);
+      if (tileX < 0 || tileX >= world.width || tileY < 1 || tileY >= world.height - 1) return false;
+      if (this.isCollidable(tileX, tileY, world, abilities, context)) return false;
+      if (this.isCollidable(tileX, tileY - 1, world, abilities, context)) return false;
+    }
+    return true;
   }
 
   getSimulatedJumpOffsets(world) {
@@ -317,18 +337,23 @@ export default class FriendlyCompanion extends Player {
     const cacheKey = `${tileSize}|${this.jumpPower}|${this.speed}`;
     if (this.jumpOffsetCache.has(cacheKey)) return this.jumpOffsetCache.get(cacheKey);
 
-    const offsets = new Set();
+    const offsetMap = new Map();
     const dt = 1 / 60;
     const gravity = MOVEMENT_MODEL.gravity;
     const speed = this.speed;
     const jumpPower = this.jumpPower;
     const maxFrames = 120;
-    const addOffset = (x, y) => {
+    const addOffset = (x, y, trajectory) => {
       const dx = Math.floor((x + tileSize * 0.5) / tileSize);
       const dy = Math.floor((y + tileSize * 0.5) / tileSize);
       if (dx === 0 && dy === 0) return;
       if (Math.abs(dx) > 10 || dy > 2 || dy < -10) return;
-      offsets.add(`${dx},${dy}`);
+      const key = `${dx},${dy}`;
+      const entry = { dx, dy, samples: trajectory.map((sample) => ({ ...sample })) };
+      const existing = offsetMap.get(key);
+      if (!existing || entry.samples.length < existing.samples.length) {
+        offsetMap.set(key, entry);
+      }
     };
     const simulateArc = (initialDir, holdDir, secondJumpFrame = null) => {
       let x = 0;
@@ -336,6 +361,7 @@ export default class FriendlyCompanion extends Player {
       let vx = initialDir * speed;
       let vy = -jumpPower;
       let jumpsUsed = 1;
+      const trajectory = [];
       for (let frame = 0; frame < maxFrames; frame += 1) {
         const moveInput = holdDir;
         const targetVx = moveInput * speed;
@@ -349,7 +375,8 @@ export default class FriendlyCompanion extends Player {
         vy += gravity * dt;
         x += vx * dt;
         y += vy * dt;
-        addOffset(x, y);
+        trajectory.push({ x, y });
+        addOffset(x, y, trajectory);
         if (frame > 6 && y > tileSize * 2.5) break;
       }
     };
@@ -370,10 +397,7 @@ export default class FriendlyCompanion extends Player {
       });
     });
 
-    const parsed = Array.from(offsets).map((key) => {
-      const [dx, dy] = key.split(',').map((v) => Number(v));
-      return { dx, dy };
-    });
+    const parsed = Array.from(offsetMap.values());
     parsed.sort((a, b) => Math.abs(a.dx) + Math.abs(a.dy) - (Math.abs(b.dx) + Math.abs(b.dy)));
     this.jumpOffsetCache.set(cacheKey, parsed);
     return parsed;

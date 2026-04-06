@@ -208,6 +208,27 @@ test('simulated jump offsets include long running-jump reach on level landing', 
   assert.equal(hasLongFlatReach, true);
 });
 
+test('jump neighbors reject arcs that intersect solid ceiling tiles', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const abilities = {};
+  const context = {};
+  const solids = new Set();
+  for (let x = 0; x < 10; x += 1) solids.add(`${x},6`); // floor
+  solids.add('3,4'); // low ceiling above start
+  const world = {
+    width: 10,
+    height: 10,
+    tileSize: 32,
+    isSolid(x, y) {
+      return solids.has(`${x},${y}`);
+    }
+  };
+
+  const neighbors = companion.getJumpingNeighbors({ x: 3, y: 5 }, world, abilities, context);
+  const straightUp = neighbors.find((tile) => tile.x === 3 && tile.y < 5);
+  assert.equal(Boolean(straightUp), false);
+});
+
 test('airborne planning prefers straight-down drop landing as start tile over lateral nearest walkable', () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();
