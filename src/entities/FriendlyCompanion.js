@@ -74,8 +74,8 @@ export default class FriendlyCompanion extends Player {
     this.debugStandableTiles = [];
     this.debugCandidateTiles = [];
     this.jumpOffsetCache = new Map();
-    this.maxAStarExpansions = 5000;
-    this.maxAStarMs = 50;
+    this.maxAStarExpansions = 2000;
+    this.maxAStarMs = 12;
     this.pathPlanQueued = false;
     this.pathPlanRequest = null;
   }

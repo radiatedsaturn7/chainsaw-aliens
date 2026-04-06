@@ -21,6 +21,8 @@ function createWorld() {
 
 test('A* traversal can use jump neighbors to reach elevated goals', () => {
   const companion = new FriendlyCompanion(0, 0);
+  companion.maxAStarMs = 120;
+  companion.maxAStarExpansions = 10000;
   const world = createWorld();
   const abilities = {};
   const context = {};
@@ -44,6 +46,8 @@ test('A* traversal can use jump neighbors to reach elevated goals', () => {
 
 test('A* traversal prefers flat walking over unnecessary jump arcs', () => {
   const companion = new FriendlyCompanion(0, 0);
+  companion.maxAStarMs = 120;
+  companion.maxAStarExpansions = 10000;
   const world = createWorld();
   const abilities = {};
   const context = {};
