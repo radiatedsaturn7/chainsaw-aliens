@@ -353,3 +353,35 @@ test('planner picks lower-cost candidate path instead of first valid candidate',
   companion.planPathToPlayer(player, world, abilities, context);
   assert.deepEqual(companion.currentGoalTile, { x: 4, y: 5 });
 });
+
+test('A* respects expansion budget limit and aborts expensive searches', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const start = { x: 1, y: 5 };
+  const goal = { x: 8, y: 5 };
+
+  companion.maxAStarExpansions = 1;
+  const path = companion.getAStarPath(start, goal, world, abilities, context);
+  assert.equal(path, null);
+});
+
+test('schedulePlanPathToPlayer runs asynchronously and coalesces to latest request', async () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const calls = [];
+  companion.planPathToPlayer = (player, queuedWorld) => {
+    calls.push({ x: player.x, world: queuedWorld });
+  };
+
+  companion.schedulePlanPathToPlayer({ x: 10, y: 0 }, world, abilities, {});
+  companion.schedulePlanPathToPlayer({ x: 20, y: 0 }, world, abilities, {});
+  assert.equal(calls.length, 0);
+
+  await Promise.resolve();
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].x, 20);
+  assert.equal(calls[0].world, world);
+});

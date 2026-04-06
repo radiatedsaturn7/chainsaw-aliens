@@ -74,6 +74,10 @@ export default class FriendlyCompanion extends Player {
     this.debugStandableTiles = [];
     this.debugCandidateTiles = [];
     this.jumpOffsetCache = new Map();
+    this.maxAStarExpansions = 5000;
+    this.maxAStarMs = 50;
+    this.pathPlanQueued = false;
+    this.pathPlanRequest = null;
   }
 
   getDrawPalette(flash) {
@@ -129,6 +133,11 @@ export default class FriendlyCompanion extends Player {
 
   tileKey(tile) {
     return `${tile.x},${tile.y}`;
+  }
+
+  getNowMs() {
+    if (typeof performance !== 'undefined' && typeof performance.now === 'function') return performance.now();
+    return Date.now();
   }
 
   isHazardTile(tileX, tileY, world) {
@@ -210,6 +219,8 @@ export default class FriendlyCompanion extends Player {
     const cameFrom = new Map();
     const gScore = new Map([[this.tileKey(startTile), 0]]);
     const fScore = new Map([[this.tileKey(startTile), heuristic(startTile, goalTile)]]);
+    const deadline = this.getNowMs() + this.maxAStarMs;
+    let expansions = 0;
 
     const popBest = () => {
       let bestIndex = 0;
@@ -225,6 +236,7 @@ export default class FriendlyCompanion extends Player {
     };
 
     while (open.length > 0) {
+      if (expansions >= this.maxAStarExpansions || this.getNowMs() > deadline) return null;
       const current = popBest();
       const currentKey = this.tileKey(current);
       if (closed.has(currentKey)) continue;
@@ -242,6 +254,7 @@ export default class FriendlyCompanion extends Player {
       }
 
       const neighbors = (neighborResolver || this.getTraversalNeighbors.bind(this))(current, world, abilities, context);
+      expansions += 1;
 
       for (let i = 0; i < neighbors.length; i += 1) {
         const neighbor = neighbors[i];
@@ -427,6 +440,22 @@ export default class FriendlyCompanion extends Player {
       distance += Math.abs(current.x - prev.x) + Math.abs(current.y - prev.y);
     }
     return distance;
+  }
+
+  schedulePlanPathToPlayer(player, world, abilities, context) {
+    this.pathPlanRequest = { player, world, abilities, context };
+    if (this.pathPlanQueued) return;
+    this.pathPlanQueued = true;
+    const schedule = typeof queueMicrotask === 'function'
+      ? queueMicrotask
+      : (fn) => Promise.resolve().then(fn);
+    schedule(() => {
+      this.pathPlanQueued = false;
+      const request = this.pathPlanRequest;
+      this.pathPlanRequest = null;
+      if (!request?.player || !request?.world) return;
+      this.planPathToPlayer(request.player, request.world, request.abilities, request.context);
+    });
   }
 
   planPathToPlayer(player, world, abilities, context) {
@@ -708,7 +737,7 @@ export default class FriendlyCompanion extends Player {
 
     this.pathReplanTimer = Math.max(0, this.pathReplanTimer - dt);
     if (this.pathReplanTimer <= 0 || !this.currentPathTiles.length) {
-      this.planPathToPlayer(player, world, abilities, context);
+      this.schedulePlanPathToPlayer(player, world, abilities, context);
       this.pathReplanTimer = 0.2;
     }
 
