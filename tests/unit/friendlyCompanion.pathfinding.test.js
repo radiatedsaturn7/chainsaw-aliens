@@ -250,6 +250,47 @@ test('airborne planning prefers straight-down drop landing as start tile over la
   assert.deepEqual(observedStart, { x: 3, y: 5 });
 });
 
+test('drop landing path must be vertically clear (no falling through solid tiles)', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const abilities = {};
+  const context = {};
+  const solids = new Set();
+  for (let x = 0; x < 10; x += 1) solids.add(`${x},6`);
+  solids.add('3,4'); // blocker in drop column
+  const world = {
+    width: 10,
+    height: 10,
+    tileSize: 32,
+    isSolid(x, y) {
+      return solids.has(`${x},${y}`);
+    }
+  };
+  const landing = companion.findDropLandingTile({ x: 3, y: 3 }, world, abilities, context, 8);
+  assert.equal(landing, null);
+});
+
+test('airborne start can choose lateral nearest landing when it is much closer to player', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const player = { x: 1 * 32 + 16, y: 5 * 32 + 16, height: 32, onGround: true, vy: 0, facing: 1 };
+
+  companion.onGround = false;
+  companion.getFootTile = () => ({ x: 3, y: 3 });
+  companion.findDropLandingTile = () => ({ x: 3, y: 5 });
+  companion.findNearestWalkableTile = () => ({ x: 1, y: 5 });
+  companion.getPriorityTilesAroundPlayer = () => [{ x: 1, y: 5, priority: 1 }];
+  let observedStart = null;
+  companion.getAStarPath = (startTile, goalTile) => {
+    observedStart = startTile;
+    return [startTile, goalTile];
+  };
+
+  companion.planPathToPlayer(player, world, abilities, context);
+  assert.deepEqual(observedStart, { x: 1, y: 5 });
+});
+
 test('planner picks lower-cost candidate path instead of first valid candidate', () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();

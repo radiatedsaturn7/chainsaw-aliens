@@ -420,15 +420,22 @@ export default class FriendlyCompanion extends Player {
 
   planPathToPlayer(player, world, abilities, context) {
     const rawStart = this.getFootTile(world);
-    const startTile = !this.onGround
-      ? this.findDropLandingTile(rawStart, world, abilities, context, 16) || this.findNearestWalkableTile(rawStart, world, abilities, context)
-      : this.findNearestWalkableTile(rawStart, world, abilities, context);
-    const candidates = this.getPriorityTilesAroundPlayer(player, world);
     const tileSize = world.tileSize;
     const playerTile = {
       x: Math.floor(player.x / tileSize),
       y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
     };
+    const startTile = (() => {
+      if (this.onGround) return this.findNearestWalkableTile(rawStart, world, abilities, context);
+      const dropTile = this.findDropLandingTile(rawStart, world, abilities, context, 16);
+      const nearestTile = this.findNearestWalkableTile(rawStart, world, abilities, context);
+      if (!dropTile) return nearestTile;
+      if (!nearestTile) return dropTile;
+      const dropDx = Math.abs(dropTile.x - playerTile.x);
+      const nearestDx = Math.abs(nearestTile.x - playerTile.x);
+      return nearestDx + 1 < dropDx ? nearestTile : dropTile;
+    })();
+    const candidates = this.getPriorityTilesAroundPlayer(player, world);
     const playerSupported = this.isPlayerGroundSupported(player, world, abilities, context);
     const playerMovingDown = (player.vy || 0) > 24;
     const groundedBySupport = playerSupported && !playerMovingDown;
@@ -580,9 +587,20 @@ export default class FriendlyCompanion extends Player {
     const dropLimit = Math.max(1, Math.floor(maxDrop));
     for (let drop = 1; drop <= dropLimit; drop += 1) {
       const tile = { x: origin.x, y: origin.y + drop };
-      if (this.isWalkableTile(tile.x, tile.y, world, abilities, context)) return tile;
+      if (!this.isWalkableTile(tile.x, tile.y, world, abilities, context)) continue;
+      if (!this.isDropPathClear(origin, tile, world, abilities, context)) continue;
+      return tile;
     }
     return null;
+  }
+
+  isDropPathClear(origin, destination, world, abilities, context) {
+    if (destination.x !== origin.x || destination.y <= origin.y) return false;
+    for (let y = origin.y + 1; y <= destination.y; y += 1) {
+      if (this.isCollidable(origin.x, y, world, abilities, context)) return false;
+      if (this.isCollidable(origin.x, y - 1, world, abilities, context)) return false;
+    }
+    return true;
   }
 
   update(dt, world, abilities, context = {}) {
