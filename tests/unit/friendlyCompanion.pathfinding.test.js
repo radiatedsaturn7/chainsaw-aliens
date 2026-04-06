@@ -120,7 +120,10 @@ test('airborne replay prefers sampled replay path before traversal A* path', () 
 
   companion.getAStarPath = (startTile, goalTile, _world, _abilities, _ctx, resolver) => {
     if (resolver?.name?.includes('getWalkingNeighbors')) return [startTile, goalTile];
-    if (resolver?.name?.includes('getTraversalNeighbors')) return [{ x: 5, y: 5 }, { x: 6, y: 5 }];
+    if (resolver?.name?.includes('getTraversalNeighbors')) {
+      if (startTile.x === 5 && startTile.y === 5 && goalTile.x === 4 && goalTile.y === 4) return null;
+      return [{ x: 5, y: 5 }, { x: 6, y: 5 }];
+    }
     return null;
   };
 
@@ -198,6 +201,41 @@ test('airborne companion targets player mid-air directly instead of returning to
   assert.deepEqual(companion.currentGoalTile, { x: 8, y: 2 });
   assert.deepEqual(companion.currentPathTiles, [{ x: 6, y: 3 }, { x: 8, y: 2 }]);
   assert.deepEqual(companion.jumpingPathTiles, [{ x: 6, y: 3 }, { x: 8, y: 2 }]);
+});
+
+test('replay planning replans directly to airborne player when that path is shorter than going back to trace', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const player = { x: 8 * 32 + 16, y: 2 * 32 + 16, height: 32, onGround: false, vy: -40, facing: 1 };
+
+  companion.onGround = true;
+  companion.playerAirborneFrames = 5;
+  companion.jumpReplayLocked = true;
+  companion.jumpTraceTile = { x: 2, y: 5 };
+  companion.getFootTile = () => ({ x: 6, y: 5 });
+  companion.findNearestWalkableTile = (_origin, _world, _abilities, _context, radius) => {
+    if (radius === 6) return { x: 8, y: 2 };
+    return { x: 6, y: 5 };
+  };
+  companion.getPriorityTilesAroundPlayer = () => [{ x: 8, y: 2, priority: 1 }];
+  companion.buildReplayJumpPath = () => [{ x: 2, y: 5 }, { x: 3, y: 4 }, { x: 4, y: 3 }];
+  companion.getAStarPath = (startTile, goalTile, _world, _abilities, _ctx, resolver) => {
+    if (resolver?.name?.includes('getWalkingNeighbors')) {
+      return [startTile, { x: 5, y: 5 }, { x: 4, y: 5 }, { x: 3, y: 5 }, goalTile];
+    }
+    if (resolver?.name?.includes('getTraversalNeighbors')) {
+      if (startTile.x === 6 && startTile.y === 5) return [startTile, { x: 7, y: 4 }, goalTile];
+      return [startTile, goalTile];
+    }
+    return null;
+  };
+
+  companion.planPathToPlayer(player, world, abilities, context);
+
+  assert.deepEqual(companion.currentGoalTile, { x: 8, y: 2 });
+  assert.deepEqual(companion.currentPathTiles, [{ x: 6, y: 5 }, { x: 7, y: 4 }, { x: 8, y: 2 }]);
 });
 
 test('simulated jump offsets include long running-jump reach on level landing', () => {

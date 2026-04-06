@@ -418,6 +418,17 @@ export default class FriendlyCompanion extends Player {
     return neighbors;
   }
 
+  estimatePathDistance(path) {
+    if (!Array.isArray(path) || path.length < 2) return Number.POSITIVE_INFINITY;
+    let distance = 0;
+    for (let i = 1; i < path.length; i += 1) {
+      const prev = path[i - 1];
+      const current = path[i];
+      distance += Math.abs(current.x - prev.x) + Math.abs(current.y - prev.y);
+    }
+    return distance;
+  }
+
   planPathToPlayer(player, world, abilities, context) {
     const rawStart = this.getFootTile(world);
     const tileSize = world.tileSize;
@@ -457,9 +468,17 @@ export default class FriendlyCompanion extends Player {
       }
       const pathToTrace = this.getAStarPath(startTile, this.jumpTraceTile, world, abilities, context, this.getWalkingNeighbors.bind(this));
       const replayPath = this.buildReplayJumpPath(world);
+      const jumpGoalTile = this.findNearestWalkableTile(playerTile, world, abilities, context, 6) || playerTile;
+      const directToPlayerPath = this.getAStarPath(
+        startTile,
+        jumpGoalTile,
+        world,
+        abilities,
+        context,
+        this.getTraversalNeighbors.bind(this)
+      );
       let pathToPlayer = replayPath;
       if (!playerAirborne || !pathToPlayer?.length) {
-        const jumpGoalTile = this.findNearestWalkableTile(playerTile, world, abilities, context, 6) || playerTile;
         const jumpAStarPath = this.getAStarPath(
           this.jumpTraceTile,
           jumpGoalTile,
@@ -473,13 +492,34 @@ export default class FriendlyCompanion extends Player {
       const mergedPath = pathToTrace
         ? [...pathToTrace, ...(pathToPlayer ? pathToPlayer.slice(1) : [])]
         : [];
-      this.walkingPathTiles = pathToTrace || [];
-      this.jumpingPathTiles = pathToPlayer || [this.jumpTraceTile];
+
+      let selectedPath = mergedPath;
+      let selectedWalkingPath = pathToTrace || [];
+      let selectedJumpingPath = pathToPlayer || [this.jumpTraceTile];
+      let selectedGoal = this.jumpTraceTile;
+
+      // While the player is still airborne, continuously re-plan toward their current tile.
+      // This avoids stale "return to jump origin" behavior after failed jump attempts.
+      if (playerAirborne && directToPlayerPath?.length) {
+        const directDistance = this.estimatePathDistance(directToPlayerPath);
+        const mergedDistance = this.estimatePathDistance(mergedPath);
+        if (!mergedPath.length || directDistance <= mergedDistance + 1) {
+          selectedPath = directToPlayerPath;
+          selectedWalkingPath = [];
+          selectedJumpingPath = directToPlayerPath;
+          selectedGoal = jumpGoalTile;
+        } else {
+          selectedGoal = jumpGoalTile;
+        }
+      }
+
+      this.walkingPathTiles = selectedWalkingPath;
+      this.jumpingPathTiles = selectedJumpingPath;
       this.jumpTargetTile = playerAirborne
         ? playerTile
         : this.jumpingPathTiles[this.jumpingPathTiles.length - 1] || this.jumpTraceTile;
-      this.currentPathTiles = mergedPath;
-      this.currentGoalTile = this.jumpTraceTile;
+      this.currentPathTiles = selectedPath;
+      this.currentGoalTile = selectedGoal;
       this.debugCandidateTiles = candidates.map((candidate) => ({ ...candidate, status: 'unchecked' }));
       this.debugStandableTiles = [];
       this.debugPenalizedTiles = [];
