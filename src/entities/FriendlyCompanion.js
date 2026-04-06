@@ -396,7 +396,9 @@ export default class FriendlyCompanion extends Player {
 
   planPathToPlayer(player, world, abilities, context) {
     const rawStart = this.getFootTile(world);
-    const startTile = this.findNearestWalkableTile(rawStart, world, abilities, context);
+    const startTile = !this.onGround
+      ? this.findDropLandingTile(rawStart, world, abilities, context, 16) || this.findNearestWalkableTile(rawStart, world, abilities, context)
+      : this.findNearestWalkableTile(rawStart, world, abilities, context);
     const candidates = this.getPriorityTilesAroundPlayer(player, world);
     const tileSize = world.tileSize;
     const playerTile = {
@@ -458,6 +460,7 @@ export default class FriendlyCompanion extends Player {
     const pathableCandidates = [];
     let bestPath = null;
     let bestGoal = null;
+    let bestScore = Number.POSITIVE_INFINITY;
     for (let i = 0; i < debugCandidates.length; i += 1) {
       const candidate = debugCandidates[i];
       const hasSupport = this.isCollidable(candidate.x, candidate.y + 1, world, abilities, context);
@@ -489,9 +492,16 @@ export default class FriendlyCompanion extends Player {
         const candidate = pathableCandidates[i];
         const path = this.getAStarPath(startTile, candidate, world, abilities, context, neighborResolver);
         if (!path || path.length < 1) continue;
-        if (!bestPath) {
+        const pathDistance = path.reduce((sum, node, idx) => {
+          if (idx === 0) return 0;
+          const prev = path[idx - 1];
+          return sum + Math.abs(node.x - prev.x) + Math.abs(node.y - prev.y);
+        }, 0);
+        const score = pathDistance + candidate.priority * 0.1 + (candidate.hazard ? 30 : 0);
+        if (!bestPath || score < bestScore) {
           bestPath = path;
           bestGoal = { x: candidate.x, y: candidate.y };
+          bestScore = score;
         }
         if (!candidate.hazard) candidate.status = 'valid';
       }
@@ -538,6 +548,15 @@ export default class FriendlyCompanion extends Player {
           if (this.isWalkableTile(tile.x, tile.y, world, abilities, context)) return tile;
         }
       }
+    }
+    return null;
+  }
+
+  findDropLandingTile(origin, world, abilities, context, maxDrop = 16) {
+    const dropLimit = Math.max(1, Math.floor(maxDrop));
+    for (let drop = 1; drop <= dropLimit; drop += 1) {
+      const tile = { x: origin.x, y: origin.y + drop };
+      if (this.isWalkableTile(tile.x, tile.y, world, abilities, context)) return tile;
     }
     return null;
   }

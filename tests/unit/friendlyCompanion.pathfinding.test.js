@@ -207,3 +207,49 @@ test('simulated jump offsets include long running-jump reach on level landing', 
   const hasLongFlatReach = offsets.some((offset) => Math.abs(offset.dx) >= 8 && Math.abs(offset.dy) <= 1);
   assert.equal(hasLongFlatReach, true);
 });
+
+test('airborne planning prefers straight-down drop landing as start tile over lateral nearest walkable', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const player = { x: 4 * 32 + 16, y: 5 * 32 + 16, height: 32, onGround: true, vy: 0, facing: 1 };
+
+  companion.onGround = false;
+  companion.getFootTile = () => ({ x: 3, y: 3 });
+  companion.findNearestWalkableTile = () => ({ x: 1, y: 5 });
+  companion.getPriorityTilesAroundPlayer = () => [{ x: 4, y: 5, priority: 1 }];
+  let observedStart = null;
+  companion.getAStarPath = (startTile, goalTile) => {
+    observedStart = startTile;
+    return [startTile, goalTile];
+  };
+
+  companion.planPathToPlayer(player, world, abilities, context);
+  assert.deepEqual(observedStart, { x: 3, y: 5 });
+});
+
+test('planner picks lower-cost candidate path instead of first valid candidate', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const player = { x: 5 * 32 + 16, y: 5 * 32 + 16, height: 32, onGround: true, vy: 0, facing: 1 };
+
+  companion.onGround = true;
+  companion.getFootTile = () => ({ x: 3, y: 5 });
+  companion.findNearestWalkableTile = (origin) => ({ ...origin });
+  companion.getPriorityTilesAroundPlayer = () => [
+    { x: 8, y: 5, priority: 1 },
+    { x: 4, y: 5, priority: 20 }
+  ];
+  companion.getAStarPath = (startTile, goalTile) => {
+    const path = [{ ...startTile }];
+    const step = startTile.x <= goalTile.x ? 1 : -1;
+    for (let x = startTile.x + step; x !== goalTile.x + step; x += step) path.push({ x, y: startTile.y });
+    return path;
+  };
+
+  companion.planPathToPlayer(player, world, abilities, context);
+  assert.deepEqual(companion.currentGoalTile, { x: 4, y: 5 });
+});
