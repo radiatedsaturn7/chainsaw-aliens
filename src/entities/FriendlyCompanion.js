@@ -486,6 +486,11 @@ export default class FriendlyCompanion extends Player {
   }
 
   planPathToPlayer(player, world, abilities, context) {
+    const previousPathTiles = this.currentPathTiles.map((tile) => ({ ...tile }));
+    const previousGoalTile = this.currentGoalTile ? { ...this.currentGoalTile } : null;
+    const previousWalkingPathTiles = this.walkingPathTiles.map((tile) => ({ ...tile }));
+    const previousJumpingPathTiles = this.jumpingPathTiles.map((tile) => ({ ...tile }));
+    const previousJumpTargetTile = this.jumpTargetTile ? { ...this.jumpTargetTile } : null;
     const rawStart = this.getFootTile(world);
     const tileSize = world.tileSize;
     const playerTile = {
@@ -575,9 +580,21 @@ export default class FriendlyCompanion extends Player {
       this.jumpTargetTile = playerAirborne
         ? playerTile
         : this.jumpingPathTiles[this.jumpingPathTiles.length - 1] || this.jumpTraceTile;
-      this.currentPathTiles = selectedPath;
-      this.currentGoalTile = selectedGoal;
-      this.noPathStreak = selectedPath?.length ? 0 : this.noPathStreak + 1;
+      const hasSelectedPath = Array.isArray(selectedPath) && selectedPath.length > 0;
+      if (hasSelectedPath) {
+        this.currentPathTiles = selectedPath;
+        this.currentGoalTile = selectedGoal;
+      } else if (previousPathTiles.length > 0) {
+        this.currentPathTiles = previousPathTiles;
+        this.currentGoalTile = previousGoalTile;
+        this.walkingPathTiles = previousWalkingPathTiles;
+        this.jumpingPathTiles = previousJumpingPathTiles;
+        this.jumpTargetTile = previousJumpTargetTile;
+      } else {
+        this.currentPathTiles = [];
+        this.currentGoalTile = selectedGoal;
+      }
+      this.noPathStreak = hasSelectedPath ? 0 : this.noPathStreak + 1;
       this.debugCandidateTiles = candidates.map((candidate) => ({ ...candidate, status: 'unchecked' }));
       this.debugStandableTiles = [];
       this.debugPenalizedTiles = [];
@@ -659,12 +676,28 @@ export default class FriendlyCompanion extends Player {
       x: Math.floor(player.x / tileSize),
       y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
     };
-    this.currentPathTiles = bestPath || [];
-    this.currentGoalTile = bestGoal || (standable.length === 0 ? fallbackPlayerTile : null);
-    this.noPathStreak = bestPath ? 0 : this.noPathStreak + 1;
-    this.walkingPathTiles = this.currentPathTiles.slice();
-    this.jumpingPathTiles = [];
-    this.jumpTargetTile = null;
+    if (bestPath) {
+      this.currentPathTiles = bestPath;
+      this.currentGoalTile = bestGoal;
+      this.walkingPathTiles = this.currentPathTiles.slice();
+      this.jumpingPathTiles = [];
+      this.jumpTargetTile = null;
+      this.noPathStreak = 0;
+    } else if (previousPathTiles.length > 0) {
+      this.currentPathTiles = previousPathTiles;
+      this.currentGoalTile = previousGoalTile;
+      this.walkingPathTiles = previousWalkingPathTiles;
+      this.jumpingPathTiles = previousJumpingPathTiles;
+      this.jumpTargetTile = previousJumpTargetTile;
+      this.noPathStreak += 1;
+    } else {
+      this.currentPathTiles = [];
+      this.currentGoalTile = standable.length === 0 ? fallbackPlayerTile : null;
+      this.walkingPathTiles = [];
+      this.jumpingPathTiles = [];
+      this.jumpTargetTile = null;
+      this.noPathStreak += 1;
+    }
     this.debugPenalizedTiles = penalized;
     this.debugStandableTiles = standable;
     this.debugCandidateTiles = debugCandidates;
