@@ -358,6 +358,37 @@ test('planner picks lower-cost candidate path instead of first valid candidate',
   assert.deepEqual(companion.currentGoalTile, { x: 4, y: 5 });
 });
 
+test('planner limits number of candidate A* evaluations per plan pass', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const player = { x: 5 * 32 + 16, y: 5 * 32 + 16, height: 32, onGround: true, vy: 0, facing: 1 };
+
+  companion.maxPathCandidatesPerPlan = 3;
+  companion.onGround = true;
+  companion.getFootTile = () => ({ x: 3, y: 5 });
+  companion.findNearestWalkableTile = (origin) => ({ ...origin });
+  companion.getPriorityTilesAroundPlayer = () => [
+    { x: 0, y: 5, priority: 1 },
+    { x: 1, y: 5, priority: 2 },
+    { x: 2, y: 5, priority: 3 },
+    { x: 3, y: 5, priority: 4 },
+    { x: 4, y: 5, priority: 5 },
+    { x: 5, y: 5, priority: 6 },
+    { x: 6, y: 5, priority: 7 }
+  ];
+  let calls = 0;
+  companion.getAStarPath = () => {
+    calls += 1;
+    return null;
+  };
+
+  companion.planPathToPlayer(player, world, abilities, context);
+  assert.equal(calls, 6); // 3 walking + 3 traversal
+  assert.ok(companion.noPathStreak > 0);
+});
+
 test('A* respects expansion budget limit and aborts expensive searches', () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();

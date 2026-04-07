@@ -79,6 +79,9 @@ export default class FriendlyCompanion extends Player {
     this.pathPlanQueued = false;
     this.pathPlanRequest = null;
     this.aStarSearchCache = new Map();
+    this.maxPathCandidatesPerPlan = 6;
+    this.pathCandidateScanOffset = 0;
+    this.noPathStreak = 0;
   }
 
   getDrawPalette(flash) {
@@ -514,6 +517,7 @@ export default class FriendlyCompanion extends Player {
         this.jumpTargetTile = playerTile;
         this.currentPathTiles = [rawStart, playerTile];
         this.currentGoalTile = playerTile;
+        this.noPathStreak = 0;
         this.debugCandidateTiles = candidates.map((candidate) => ({ ...candidate, status: 'unchecked' }));
         this.debugStandableTiles = [];
         this.debugPenalizedTiles = [];
@@ -573,6 +577,7 @@ export default class FriendlyCompanion extends Player {
         : this.jumpingPathTiles[this.jumpingPathTiles.length - 1] || this.jumpTraceTile;
       this.currentPathTiles = selectedPath;
       this.currentGoalTile = selectedGoal;
+      this.noPathStreak = selectedPath?.length ? 0 : this.noPathStreak + 1;
       this.debugCandidateTiles = candidates.map((candidate) => ({ ...candidate, status: 'unchecked' }));
       this.debugStandableTiles = [];
       this.debugPenalizedTiles = [];
@@ -612,8 +617,12 @@ export default class FriendlyCompanion extends Player {
     }
 
     const tryResolver = (neighborResolver) => {
-      for (let i = 0; i < pathableCandidates.length; i += 1) {
-        const candidate = pathableCandidates[i];
+      if (pathableCandidates.length === 0) return;
+      const perPlanLimit = Math.max(1, Math.floor(this.maxPathCandidatesPerPlan || 1));
+      const candidateCount = Math.min(pathableCandidates.length, perPlanLimit);
+      for (let i = 0; i < candidateCount; i += 1) {
+        const idx = (this.pathCandidateScanOffset + i) % pathableCandidates.length;
+        const candidate = pathableCandidates[idx];
         const path = this.getAStarPath(startTile, candidate, world, abilities, context, neighborResolver);
         if (!path || path.length < 1) continue;
         const pathDistance = path.reduce((sum, node, idx) => {
@@ -629,6 +638,7 @@ export default class FriendlyCompanion extends Player {
         }
         if (!candidate.hazard) candidate.status = 'valid';
       }
+      this.pathCandidateScanOffset = (this.pathCandidateScanOffset + candidateCount) % pathableCandidates.length;
     };
 
     if (startTile) {
@@ -651,6 +661,7 @@ export default class FriendlyCompanion extends Player {
     };
     this.currentPathTiles = bestPath || [];
     this.currentGoalTile = bestGoal || (standable.length === 0 ? fallbackPlayerTile : null);
+    this.noPathStreak = bestPath ? 0 : this.noPathStreak + 1;
     this.walkingPathTiles = this.currentPathTiles.slice();
     this.jumpingPathTiles = [];
     this.jumpTargetTile = null;
@@ -762,7 +773,8 @@ export default class FriendlyCompanion extends Player {
     this.pathReplanTimer = Math.max(0, this.pathReplanTimer - dt);
     if (this.pathReplanTimer <= 0 || !this.currentPathTiles.length) {
       this.schedulePlanPathToPlayer(player, world, abilities, context);
-      this.pathReplanTimer = 0.2;
+      const noPathBackoff = Math.min(1.0, this.noPathStreak * 0.08);
+      this.pathReplanTimer = 0.2 + noPathBackoff;
     }
 
     const nextInput = new Set();
