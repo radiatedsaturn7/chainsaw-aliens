@@ -469,6 +469,25 @@ export default class FriendlyCompanion extends Player {
     return distance;
   }
 
+  getSimpleHazardSafeWalkPath(startTile, playerTile, world, abilities, context, maxSteps = 12) {
+    if (!startTile || !playerTile) return null;
+    if (Math.abs(playerTile.y - startTile.y) > 1) return null;
+    const dir = Math.sign(playerTile.x - startTile.x);
+    if (dir === 0) return [startTile];
+    const path = [{ ...startTile }];
+    let currentX = startTile.x;
+    const steps = Math.min(Math.abs(playerTile.x - startTile.x), Math.max(1, Math.floor(maxSteps)));
+    for (let i = 0; i < steps; i += 1) {
+      currentX += dir;
+      const tile = { x: currentX, y: startTile.y };
+      if (!this.isWalkableTile(tile.x, tile.y, world, abilities, context)) break;
+      if (this.isHazardTile(tile.x, tile.y, world)) break;
+      path.push(tile);
+      if (tile.x === playerTile.x) break;
+    }
+    return path.length > 1 ? path : null;
+  }
+
   schedulePlanPathToPlayer(player, world, abilities, context) {
     this.pathPlanRequest = { player, world, abilities, context };
     if (this.pathPlanQueued) return;
@@ -691,11 +710,22 @@ export default class FriendlyCompanion extends Player {
       this.jumpTargetTile = previousJumpTargetTile;
       this.noPathStreak += 1;
     } else {
-      this.currentPathTiles = [];
-      this.currentGoalTile = standable.length === 0 ? fallbackPlayerTile : null;
-      this.walkingPathTiles = [];
-      this.jumpingPathTiles = [];
-      this.jumpTargetTile = null;
+      const simplePath = this.noPathStreak >= 2
+        ? this.getSimpleHazardSafeWalkPath(startTile, fallbackPlayerTile, world, abilities, context, 10)
+        : null;
+      if (simplePath) {
+        this.currentPathTiles = simplePath;
+        this.currentGoalTile = simplePath[simplePath.length - 1];
+        this.walkingPathTiles = simplePath.slice();
+        this.jumpingPathTiles = [];
+        this.jumpTargetTile = null;
+      } else {
+        this.currentPathTiles = [];
+        this.currentGoalTile = standable.length === 0 ? fallbackPlayerTile : null;
+        this.walkingPathTiles = [];
+        this.jumpingPathTiles = [];
+        this.jumpTargetTile = null;
+      }
       this.noPathStreak += 1;
     }
     this.debugPenalizedTiles = penalized;

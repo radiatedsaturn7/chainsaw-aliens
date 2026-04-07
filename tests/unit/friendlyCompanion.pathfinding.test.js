@@ -411,6 +411,27 @@ test('planner keeps previous route when new replan has no completed path yet', (
   assert.deepEqual(companion.currentGoalTile, { x: 4, y: 5 });
 });
 
+test('planner falls back to simple hazard-safe walking when repeated replans fail', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const player = { x: 6 * 32 + 16, y: 5 * 32 + 16, height: 32, onGround: true, vy: 0, facing: 1 };
+
+  companion.noPathStreak = 2;
+  companion.onGround = true;
+  companion.getFootTile = () => ({ x: 3, y: 5 });
+  companion.findNearestWalkableTile = (origin) => ({ ...origin });
+  companion.getPriorityTilesAroundPlayer = () => [{ x: 6, y: 5, priority: 1 }];
+  companion.getAStarPath = () => null;
+
+  companion.planPathToPlayer(player, world, abilities, context);
+
+  assert.ok(companion.currentPathTiles.length > 1);
+  assert.deepEqual(companion.currentPathTiles[0], { x: 3, y: 5 });
+  assert.deepEqual(companion.currentPathTiles.at(-1), { x: 4, y: 5 });
+});
+
 test('A* respects expansion budget limit and aborts expensive searches', () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();
