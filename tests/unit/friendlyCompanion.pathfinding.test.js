@@ -371,6 +371,27 @@ test('A* respects expansion budget limit and aborts expensive searches', () => {
   assert.equal(path, null);
 });
 
+test('A* resumes from cached progress across calls when capped by frame budget', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const start = { x: 1, y: 5 };
+  const goal = { x: 4, y: 5 };
+
+  companion.maxAStarExpansions = 1;
+  companion.maxAStarMs = 100;
+
+  let path = null;
+  for (let i = 0; i < 20; i += 1) {
+    path = companion.getAStarPath(start, goal, world, abilities, context);
+    if (path) break;
+  }
+
+  assert.ok(path);
+  assert.deepEqual(path.at(-1), goal);
+});
+
 test('schedulePlanPathToPlayer runs asynchronously and coalesces to latest request', async () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();

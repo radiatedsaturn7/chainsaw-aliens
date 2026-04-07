@@ -74,10 +74,11 @@ export default class FriendlyCompanion extends Player {
     this.debugStandableTiles = [];
     this.debugCandidateTiles = [];
     this.jumpOffsetCache = new Map();
-    this.maxAStarExpansions = 2000;
-    this.maxAStarMs = 12;
+    this.maxAStarExpansions = 600;
+    this.maxAStarMs = 4;
     this.pathPlanQueued = false;
     this.pathPlanRequest = null;
+    this.aStarSearchCache = new Map();
   }
 
   getDrawPalette(flash) {
@@ -214,42 +215,63 @@ export default class FriendlyCompanion extends Player {
     };
     const withinBounds = (tile) => tile.x >= 0 && tile.x < world.width && tile.y >= 1 && tile.y < world.height - 1;
 
-    const open = [startTile];
-    const closed = new Set();
-    const cameFrom = new Map();
-    const gScore = new Map([[this.tileKey(startTile), 0]]);
-    const fScore = new Map([[this.tileKey(startTile), heuristic(startTile, goalTile)]]);
-    const deadline = this.getNowMs() + this.maxAStarMs;
-    let expansions = 0;
+    const resolverTag = neighborResolver?.name || 'default';
+    const searchKey = `${this.tileKey(startTile)}|${this.tileKey(goalTile)}|${resolverTag}`;
+    const now = this.getNowMs();
+    for (const [key, search] of this.aStarSearchCache.entries()) {
+      if (now - search.lastTouchedMs > 1500) this.aStarSearchCache.delete(key);
+    }
+    let search = this.aStarSearchCache.get(searchKey);
+    if (!search) {
+      const startKey = this.tileKey(startTile);
+      search = {
+        open: [startTile],
+        closed: new Set(),
+        cameFrom: new Map(),
+        gScore: new Map([[startKey, 0]]),
+        fScore: new Map([[startKey, heuristic(startTile, goalTile)]]),
+        tileByKey: new Map([[startKey, { ...startTile }]]),
+        lastTouchedMs: now
+      };
+      this.aStarSearchCache.set(searchKey, search);
+    }
 
     const popBest = () => {
       let bestIndex = 0;
-      let bestScore = fScore.get(this.tileKey(open[0])) ?? Number.POSITIVE_INFINITY;
-      for (let i = 1; i < open.length; i += 1) {
-        const score = fScore.get(this.tileKey(open[i])) ?? Number.POSITIVE_INFINITY;
+      let bestScore = search.fScore.get(this.tileKey(search.open[0])) ?? Number.POSITIVE_INFINITY;
+      for (let i = 1; i < search.open.length; i += 1) {
+        const score = search.fScore.get(this.tileKey(search.open[i])) ?? Number.POSITIVE_INFINITY;
         if (score < bestScore) {
           bestScore = score;
           bestIndex = i;
         }
       }
-      return open.splice(bestIndex, 1)[0];
+      return search.open.splice(bestIndex, 1)[0];
     };
 
-    while (open.length > 0) {
-      if (expansions >= this.maxAStarExpansions || this.getNowMs() > deadline) return null;
+    const deadline = now + this.maxAStarMs;
+    let expansions = 0;
+    while (search.open.length > 0) {
+      if (expansions >= this.maxAStarExpansions || this.getNowMs() > deadline) {
+        search.lastTouchedMs = this.getNowMs();
+        return null;
+      }
       const current = popBest();
       const currentKey = this.tileKey(current);
-      if (closed.has(currentKey)) continue;
-      closed.add(currentKey);
+      if (search.closed.has(currentKey)) continue;
+      search.closed.add(currentKey);
       if (current.x === goalTile.x && current.y === goalTile.y) {
         const path = [current];
         let key = currentKey;
-        while (cameFrom.has(key)) {
-          const prev = cameFrom.get(key);
+        while (search.cameFrom.has(key)) {
+          const prevKey = search.cameFrom.get(key);
+          const prev = search.tileByKey.get(prevKey);
+          if (!prev) break;
           path.push(prev);
-          key = this.tileKey(prev);
+          key = prevKey;
         }
         path.reverse();
+        this.aStarSearchCache.delete(searchKey);
         return path;
       }
 
@@ -262,20 +284,22 @@ export default class FriendlyCompanion extends Player {
         if (!this.isWalkableTile(neighbor.x, neighbor.y, world, abilities, context)) continue;
 
         const neighborKey = this.tileKey(neighbor);
-        if (closed.has(neighborKey)) continue;
-        const tentative = (gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + traversalCost(current, neighbor);
+        if (search.closed.has(neighborKey)) continue;
+        const tentative = (search.gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + traversalCost(current, neighbor);
 
-        if (tentative < (gScore.get(neighborKey) ?? Number.POSITIVE_INFINITY)) {
-          cameFrom.set(neighborKey, current);
-          gScore.set(neighborKey, tentative);
-          fScore.set(neighborKey, tentative + heuristic(neighbor, goalTile));
-          if (!open.some((node) => node.x === neighbor.x && node.y === neighbor.y)) {
-            open.push(neighbor);
+        if (tentative < (search.gScore.get(neighborKey) ?? Number.POSITIVE_INFINITY)) {
+          search.cameFrom.set(neighborKey, currentKey);
+          search.gScore.set(neighborKey, tentative);
+          search.fScore.set(neighborKey, tentative + heuristic(neighbor, goalTile));
+          search.tileByKey.set(neighborKey, { x: neighbor.x, y: neighbor.y });
+          if (!search.open.some((node) => node.x === neighbor.x && node.y === neighbor.y)) {
+            search.open.push({ x: neighbor.x, y: neighbor.y });
           }
         }
       }
     }
 
+    this.aStarSearchCache.delete(searchKey);
     return null;
   }
 
