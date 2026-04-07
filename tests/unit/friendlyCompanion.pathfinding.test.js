@@ -371,31 +371,6 @@ test('A* respects expansion budget limit and aborts expensive searches', () => {
   assert.equal(path, null);
 });
 
-test('A* jump cost penalizes reversing horizontal momentum to reduce left-right ping-pong', () => {
-  const companion = new FriendlyCompanion(0, 0);
-  const world = createWorld();
-  const abilities = {};
-  const context = {};
-  companion.vx = 120; // moving right in air
-  companion.maxAStarMs = 120;
-  companion.maxAStarExpansions = 10000;
-  companion.isWalkableTile = () => true;
-
-  const start = { x: 5, y: 5 };
-  const rightApex = { x: 6, y: 3 };
-  const leftApex = { x: 4, y: 3 };
-  const goal = { x: 5, y: 1 };
-  const resolver = (tile) => {
-    if (tile.x === start.x && tile.y === start.y) return [leftApex, rightApex]; // intentionally put left first
-    if ((tile.x === leftApex.x && tile.y === leftApex.y) || (tile.x === rightApex.x && tile.y === rightApex.y)) return [goal];
-    return [];
-  };
-
-  const path = companion.getAStarPath(start, goal, world, abilities, context, resolver);
-  assert.ok(path);
-  assert.deepEqual(path[1], rightApex);
-});
-
 test('schedulePlanPathToPlayer runs asynchronously and coalesces to latest request', async () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();

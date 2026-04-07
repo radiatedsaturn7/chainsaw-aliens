@@ -205,18 +205,11 @@ export default class FriendlyCompanion extends Player {
     };
     const heuristic = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     const traversalCost = (from, to) => {
-      const signedDx = to.x - from.x;
-      const dx = Math.abs(signedDx);
+      const dx = Math.abs(to.x - from.x);
       const dy = to.y - from.y;
       const tileDistance = dx + Math.abs(dy);
       const jumpMove = dy < -1 || dx > 1;
-      let jumpPenalty = jumpMove ? 3 : 0;
-      if (jumpMove && signedDx !== 0) {
-        const goalDx = goalTile.x - from.x;
-        if (goalDx !== 0 && Math.sign(signedDx) !== Math.sign(goalDx)) jumpPenalty += 4;
-        const currentVxDir = Math.sign(this.vx || 0);
-        if (currentVxDir !== 0 && Math.sign(signedDx) !== currentVxDir) jumpPenalty += 2;
-      }
+      const jumpPenalty = jumpMove ? 3 : 0;
       return nodeCost(to) + tileDistance + jumpPenalty;
     };
     const withinBounds = (tile) => tile.x >= 0 && tile.x < world.width && tile.y >= 1 && tile.y < world.height - 1;
