@@ -46,12 +46,18 @@ class CompanionInput {
 }
 
 export default class FriendlyCompanion extends Player {
+  static SPEED_BOOST_MULTIPLIER = 1.18;
+
+  static JUMP_BOOST_MULTIPLIER = 1.1;
+
   constructor(x, y) {
     super(x, y);
     this.type = 'friendly-companion';
     this.friendly = true;
     this.health = this.maxHealth;
     this.assistEnabled = false;
+    this.speed *= FriendlyCompanion.SPEED_BOOST_MULTIPLIER;
+    this.jumpPower *= FriendlyCompanion.JUMP_BOOST_MULTIPLIER;
     this.aiInput = new CompanionInput();
     this.pathReplanTimer = 0;
     this.currentPathTiles = [];

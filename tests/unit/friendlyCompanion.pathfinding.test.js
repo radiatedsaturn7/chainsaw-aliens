@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import FriendlyCompanion from '../../src/entities/FriendlyCompanion.js';
+import { MOVEMENT_MODEL } from '../../src/game/MovementModel.js';
 
 function createWorld() {
   const solid = new Set();
@@ -21,6 +22,9 @@ function createWorld() {
 
 test('A* traversal can use jump neighbors to reach elevated goals', () => {
   const companion = new FriendlyCompanion(0, 0);
+  companion.speed = MOVEMENT_MODEL.baseSpeed;
+  companion.jumpPower = MOVEMENT_MODEL.baseJumpPower;
+  companion.jumpOffsetCache.clear();
   companion.maxAStarMs = 120;
   companion.maxAStarExpansions = 10000;
   const world = createWorld();
@@ -42,6 +46,12 @@ test('A* traversal can use jump neighbors to reach elevated goals', () => {
   const traversalPath = companion.getAStarPath(start, goal, world, abilities, context);
   assert.ok(traversalPath);
   assert.deepEqual(traversalPath.at(-1), goal);
+});
+
+test('friendly companion has boosted base movement speed and jump power', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  assert.ok(companion.speed > MOVEMENT_MODEL.baseSpeed);
+  assert.ok(companion.jumpPower > MOVEMENT_MODEL.baseJumpPower);
 });
 
 test('A* traversal prefers flat walking over unnecessary jump arcs', () => {

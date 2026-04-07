@@ -3000,6 +3000,16 @@ export default class Game {
         this.player.vy = Math.min(this.player.vy, -this.player.jumpPower);
         this.player.onGround = false;
       }
+      if (this.friendlyCompanion && !this.friendlyCompanion.dead) {
+        this.friendlyCompanion.x = this.player.x;
+        this.friendlyCompanion.y = this.player.y;
+        this.friendlyCompanion.vx = 0;
+        this.friendlyCompanion.vy = 0;
+        this.friendlyCompanion.currentPathTiles = [];
+        this.friendlyCompanion.walkingPathTiles = [];
+        this.friendlyCompanion.jumpingPathTiles = [];
+        this.friendlyCompanion.currentGoalTile = null;
+      }
       this.doorTransition = null;
     }
   }
