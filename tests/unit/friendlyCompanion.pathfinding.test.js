@@ -440,6 +440,20 @@ test('planner marks jump-containing path as jumping path for debug rendering', (
   assert.deepEqual(companion.jumpingPathTiles, [{ x: 3, y: 5 }, { x: 4, y: 3 }, { x: 6, y: 5 }]);
 });
 
+test('pathHasJumpSegments treats non-walkable arc nodes as jump path even with small deltas', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const hasJump = companion.pathHasJumpSegments(
+    [{ x: 3, y: 5 }, { x: 3, y: 4 }, { x: 4, y: 5 }],
+    world,
+    abilities,
+    context
+  );
+  assert.equal(hasJump, true);
+});
+
 test('planner falls back to simple hazard-safe walking when repeated replans fail', () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();

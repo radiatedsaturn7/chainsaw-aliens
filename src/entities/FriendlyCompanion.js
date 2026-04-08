@@ -544,12 +544,13 @@ export default class FriendlyCompanion extends Player {
     return null;
   }
 
-  pathHasJumpSegments(path) {
+  pathHasJumpSegments(path, world, abilities, context) {
     if (!Array.isArray(path) || path.length < 2) return false;
     for (let i = 1; i < path.length; i += 1) {
       const dx = Math.abs(path[i].x - path[i - 1].x);
       const dy = path[i].y - path[i - 1].y;
       if (dy < -1 || dx > 1) return true;
+      if (!this.isWalkableTile(path[i].x, path[i].y, world, abilities, context)) return true;
     }
     return false;
   }
@@ -773,7 +774,7 @@ export default class FriendlyCompanion extends Player {
     if (bestPath) {
       this.currentPathTiles = bestPath;
       this.currentGoalTile = bestGoal;
-      if (this.pathHasJumpSegments(bestPath)) {
+      if (this.pathHasJumpSegments(bestPath, world, abilities, context)) {
         this.walkingPathTiles = [];
         this.jumpingPathTiles = this.currentPathTiles.slice();
       } else {
@@ -923,6 +924,18 @@ export default class FriendlyCompanion extends Player {
     const nextInput = new Set();
     if (this.currentPathTiles.length > 0) {
       const tileSize = world.tileSize;
+      if (!this.jumpCommitActive && this.currentPathTiles.length > 1) {
+        const landingCandidate = this.findJumpLandingTileInPath(this.currentPathTiles, world, abilities, context);
+        if (landingCandidate) {
+          const landingIndex = this.currentPathTiles.findIndex((tile) => tile.x === landingCandidate.x && tile.y === landingCandidate.y);
+          const hasAirNodeBeforeLanding = this.currentPathTiles.slice(1, landingIndex > 0 ? landingIndex : this.currentPathTiles.length)
+            .some((tile) => !this.isWalkableTile(tile.x, tile.y, world, abilities, context));
+          if (hasAirNodeBeforeLanding) {
+            this.jumpCommitLandingTile = landingCandidate;
+            this.jumpCommitActive = true;
+          }
+        }
+      }
       this.pruneJumpIntermediateNodesTowardLanding(world, abilities, context);
       const nextTile = this.currentPathTiles.length > 1 ? this.currentPathTiles[1] : this.currentPathTiles[0] || null;
       if (!nextTile) {
