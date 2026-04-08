@@ -481,7 +481,7 @@ test('pruneJumpIntermediateNodesTowardLanding skips non-walkable arc nodes befor
 
   companion.pruneJumpIntermediateNodesTowardLanding(world, abilities, context);
 
-  assert.deepEqual(companion.currentPathTiles, [{ x: 3, y: 4 }, { x: 4, y: 5 }]);
+  assert.deepEqual(companion.currentPathTiles, [{ x: 3, y: 5 }, { x: 4, y: 5 }]);
 });
 
 test('A* respects expansion budget limit and aborts expensive searches', () => {

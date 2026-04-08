@@ -550,7 +550,7 @@ export default class FriendlyCompanion extends Player {
       const next = this.currentPathTiles[1];
       if (next.x === this.jumpCommitLandingTile.x && next.y === this.jumpCommitLandingTile.y) break;
       if (this.isWalkableTile(next.x, next.y, world, abilities, context)) break;
-      this.currentPathTiles.shift();
+      this.currentPathTiles.splice(1, 1);
     }
   }
 
