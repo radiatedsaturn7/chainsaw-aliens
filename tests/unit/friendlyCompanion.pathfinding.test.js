@@ -470,6 +470,20 @@ test('findJumpLandingTileInPath picks first walkable landing from expanded jump 
   assert.deepEqual(landing, { x: 4, y: 5 });
 });
 
+test('pruneJumpIntermediateNodesTowardLanding skips non-walkable arc nodes before landing', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  companion.jumpCommitActive = true;
+  companion.jumpCommitLandingTile = { x: 4, y: 5 };
+  companion.currentPathTiles = [{ x: 3, y: 5 }, { x: 3, y: 4 }, { x: 4, y: 5 }];
+
+  companion.pruneJumpIntermediateNodesTowardLanding(world, abilities, context);
+
+  assert.deepEqual(companion.currentPathTiles, [{ x: 3, y: 4 }, { x: 4, y: 5 }]);
+});
+
 test('A* respects expansion budget limit and aborts expensive searches', () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();

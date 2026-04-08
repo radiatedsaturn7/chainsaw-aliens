@@ -544,6 +544,16 @@ export default class FriendlyCompanion extends Player {
     return null;
   }
 
+  pruneJumpIntermediateNodesTowardLanding(world, abilities, context) {
+    if (!this.jumpCommitActive || !this.jumpCommitLandingTile) return;
+    while (this.currentPathTiles.length > 1) {
+      const next = this.currentPathTiles[1];
+      if (next.x === this.jumpCommitLandingTile.x && next.y === this.jumpCommitLandingTile.y) break;
+      if (this.isWalkableTile(next.x, next.y, world, abilities, context)) break;
+      this.currentPathTiles.shift();
+    }
+  }
+
   schedulePlanPathToPlayer(player, world, abilities, context) {
     this.pathPlanRequest = { player, world, abilities, context };
     if (this.pathPlanQueued) return;
@@ -897,9 +907,17 @@ export default class FriendlyCompanion extends Player {
     }
 
     const nextInput = new Set();
-    const nextTile = this.currentPathTiles.length > 1 ? this.currentPathTiles[1] : this.currentPathTiles[0] || null;
-    if (nextTile) {
+    if (this.currentPathTiles.length > 0) {
       const tileSize = world.tileSize;
+      this.pruneJumpIntermediateNodesTowardLanding(world, abilities, context);
+      const nextTile = this.currentPathTiles.length > 1 ? this.currentPathTiles[1] : this.currentPathTiles[0] || null;
+      if (!nextTile) {
+        this.aiInput.beginFrame(nextInput);
+        super.update(dt, this.aiInput, world, abilities);
+        this.revving = false;
+        this.flameMode = false;
+        return;
+      }
       const jumpLandingTile = this.jumpCommitLandingTile;
       const steeringTile = this.jumpCommitActive && jumpLandingTile ? jumpLandingTile : nextTile;
       const targetX = (steeringTile.x + 0.5) * tileSize;
@@ -931,7 +949,11 @@ export default class FriendlyCompanion extends Player {
       const pathDx = ((nextTile.x + 0.5) * tileSize) - this.x;
       const pathDy = ((nextTile.y + 0.5) * tileSize) - this.y;
       const closeEnough = Math.abs(pathDx) < 9 && Math.abs(pathDy) < tileSize * 0.6;
+      const isLandingNode = Boolean(this.jumpCommitLandingTile)
+        && nextTile.x === this.jumpCommitLandingTile.x
+        && nextTile.y === this.jumpCommitLandingTile.y;
       const jumpForgivingAdvance = this.jumpCommitActive && !this.onGround
+        && !isLandingNode
         && (Math.abs(pathDx) < tileSize * 0.9 || Math.abs(pathDy) < tileSize * 0.9);
       if ((closeEnough || jumpForgivingAdvance) && this.currentPathTiles.length > 1) {
         this.currentPathTiles.shift();
