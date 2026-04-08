@@ -544,12 +544,21 @@ export default class FriendlyCompanion extends Player {
     return null;
   }
 
+  pathHasJumpSegments(path) {
+    if (!Array.isArray(path) || path.length < 2) return false;
+    for (let i = 1; i < path.length; i += 1) {
+      const dx = Math.abs(path[i].x - path[i - 1].x);
+      const dy = path[i].y - path[i - 1].y;
+      if (dy < -1 || dx > 1) return true;
+    }
+    return false;
+  }
+
   pruneJumpIntermediateNodesTowardLanding(world, abilities, context) {
     if (!this.jumpCommitActive || !this.jumpCommitLandingTile) return;
     while (this.currentPathTiles.length > 1) {
       const next = this.currentPathTiles[1];
       if (next.x === this.jumpCommitLandingTile.x && next.y === this.jumpCommitLandingTile.y) break;
-      if (this.isWalkableTile(next.x, next.y, world, abilities, context)) break;
       this.currentPathTiles.splice(1, 1);
     }
   }
@@ -764,8 +773,13 @@ export default class FriendlyCompanion extends Player {
     if (bestPath) {
       this.currentPathTiles = bestPath;
       this.currentGoalTile = bestGoal;
-      this.walkingPathTiles = this.currentPathTiles.slice();
-      this.jumpingPathTiles = [];
+      if (this.pathHasJumpSegments(bestPath)) {
+        this.walkingPathTiles = [];
+        this.jumpingPathTiles = this.currentPathTiles.slice();
+      } else {
+        this.walkingPathTiles = this.currentPathTiles.slice();
+        this.jumpingPathTiles = [];
+      }
       this.jumpTargetTile = null;
       this.noPathStreak = 0;
     } else if (previousPathTiles.length > 0) {

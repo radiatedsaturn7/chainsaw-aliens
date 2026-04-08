@@ -421,6 +421,25 @@ test('planner keeps previous route when new replan has no completed path yet', (
   assert.deepEqual(companion.currentGoalTile, { x: 4, y: 5 });
 });
 
+test('planner marks jump-containing path as jumping path for debug rendering', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const player = { x: 6 * 32 + 16, y: 5 * 32 + 16, height: 32, onGround: true, vy: 0, facing: 1 };
+
+  companion.onGround = true;
+  companion.getFootTile = () => ({ x: 3, y: 5 });
+  companion.findNearestWalkableTile = (origin) => ({ ...origin });
+  companion.getPriorityTilesAroundPlayer = () => [{ x: 6, y: 5, priority: 1 }];
+  companion.getAStarPath = () => [{ x: 3, y: 5 }, { x: 4, y: 3 }, { x: 6, y: 5 }];
+
+  companion.planPathToPlayer(player, world, abilities, context);
+
+  assert.deepEqual(companion.walkingPathTiles, []);
+  assert.deepEqual(companion.jumpingPathTiles, [{ x: 3, y: 5 }, { x: 4, y: 3 }, { x: 6, y: 5 }]);
+});
+
 test('planner falls back to simple hazard-safe walking when repeated replans fail', () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();
