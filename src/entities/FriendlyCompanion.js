@@ -88,6 +88,8 @@ export default class FriendlyCompanion extends Player {
     this.maxPathCandidatesPerPlan = 6;
     this.pathCandidateScanOffset = 0;
     this.noPathStreak = 0;
+    this.jumpCommitActive = false;
+    this.jumpCommitLandingTile = null;
   }
 
   getDrawPalette(flash) {
@@ -533,6 +535,15 @@ export default class FriendlyCompanion extends Player {
     return expanded;
   }
 
+  findJumpLandingTileInPath(path, world, abilities, context) {
+    if (!Array.isArray(path) || path.length < 2) return null;
+    for (let i = 1; i < path.length; i += 1) {
+      const tile = path[i];
+      if (this.isWalkableTile(tile.x, tile.y, world, abilities, context)) return { ...tile };
+    }
+    return null;
+  }
+
   schedulePlanPathToPlayer(player, world, abilities, context) {
     this.pathPlanRequest = { player, world, abilities, context };
     if (this.pathPlanQueued) return;
@@ -889,8 +900,10 @@ export default class FriendlyCompanion extends Player {
     const nextTile = this.currentPathTiles.length > 1 ? this.currentPathTiles[1] : this.currentPathTiles[0] || null;
     if (nextTile) {
       const tileSize = world.tileSize;
-      const targetX = (nextTile.x + 0.5) * tileSize;
-      const targetY = (nextTile.y + 0.5) * tileSize;
+      const jumpLandingTile = this.jumpCommitLandingTile;
+      const steeringTile = this.jumpCommitActive && jumpLandingTile ? jumpLandingTile : nextTile;
+      const targetX = (steeringTile.x + 0.5) * tileSize;
+      const targetY = (steeringTile.y + 0.5) * tileSize;
       const dx = targetX - this.x;
       const dy = targetY - this.y;
       if (dx < -6) nextInput.add('left');
@@ -899,6 +912,10 @@ export default class FriendlyCompanion extends Player {
       const canAirJump = !canGroundJump && this.jumpsRemaining > 0 && dy < -16 && this.vy > -90;
       if ((dy < -14 && canGroundJump) || canAirJump) {
         nextInput.add('jump');
+        if (!this.jumpCommitActive && canGroundJump && this.currentPathTiles.length > 1) {
+          this.jumpCommitLandingTile = this.findJumpLandingTileInPath(this.currentPathTiles, world, abilities, context);
+          this.jumpCommitActive = Boolean(this.jumpCommitLandingTile);
+        }
       }
       if (!this.onGround && this.jumpsRemaining > 0 && this.playerJumpTriggerFrames.length > 1) {
         for (let i = 1; i < this.playerJumpTriggerFrames.length; i += 1) {
@@ -911,9 +928,23 @@ export default class FriendlyCompanion extends Player {
           }
         }
       }
-      const closeEnough = Math.abs(dx) < 9 && Math.abs(dy) < tileSize * 0.6;
-      if (closeEnough && this.currentPathTiles.length > 1) {
+      const pathDx = ((nextTile.x + 0.5) * tileSize) - this.x;
+      const pathDy = ((nextTile.y + 0.5) * tileSize) - this.y;
+      const closeEnough = Math.abs(pathDx) < 9 && Math.abs(pathDy) < tileSize * 0.6;
+      const jumpForgivingAdvance = this.jumpCommitActive && !this.onGround
+        && (Math.abs(pathDx) < tileSize * 0.9 || Math.abs(pathDy) < tileSize * 0.9);
+      if ((closeEnough || jumpForgivingAdvance) && this.currentPathTiles.length > 1) {
         this.currentPathTiles.shift();
+      }
+      if (this.jumpCommitActive && this.jumpCommitLandingTile) {
+        const landingX = (this.jumpCommitLandingTile.x + 0.5) * tileSize;
+        const landingY = (this.jumpCommitLandingTile.y + 0.5) * tileSize;
+        const landingReached = Math.abs(this.x - landingX) < tileSize * 0.55 && Math.abs(this.y - landingY) < tileSize * 0.75;
+        const landingMissed = this.y > landingY + tileSize * 1.2;
+        if (this.onGround || landingReached || landingMissed) {
+          this.jumpCommitActive = false;
+          this.jumpCommitLandingTile = null;
+        }
       }
       const onOneWay = this.onGround && world.isOneWay?.(
         Math.floor(this.x / tileSize),
@@ -923,6 +954,10 @@ export default class FriendlyCompanion extends Player {
         nextInput.add('down');
         nextInput.add('jump');
       }
+    }
+    if (this.onGround && this.jumpCommitActive) {
+      this.jumpCommitActive = false;
+      this.jumpCommitLandingTile = null;
     }
 
     this.aiInput.beginFrame(nextInput);

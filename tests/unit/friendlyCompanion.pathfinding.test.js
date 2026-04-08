@@ -456,6 +456,20 @@ test('A* expands jump edges with intermediate arc tiles for movement steering', 
   assert.ok(expanded.some((tile) => tile.y === 4));
 });
 
+test('findJumpLandingTileInPath picks first walkable landing from expanded jump path', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  const abilities = {};
+  const context = {};
+  const landing = companion.findJumpLandingTileInPath(
+    [{ x: 3, y: 3 }, { x: 3, y: 4 }, { x: 4, y: 5 }],
+    world,
+    abilities,
+    context
+  );
+  assert.deepEqual(landing, { x: 4, y: 5 });
+});
+
 test('A* respects expansion budget limit and aborts expensive searches', () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();
