@@ -281,7 +281,7 @@ export default class FriendlyCompanion extends Player {
         }
         path.reverse();
         this.aStarSearchCache.delete(searchKey);
-        return path;
+        return this.expandPathWithJumpIntermediates(path, world);
       }
 
       const neighbors = (neighborResolver || this.getTraversalNeighbors.bind(this))(current, world, abilities, context);
@@ -492,6 +492,45 @@ export default class FriendlyCompanion extends Player {
       if (tile.x === playerTile.x) break;
     }
     return path.length > 1 ? path : null;
+  }
+
+  getJumpOffsetForDelta(dx, dy, world) {
+    const offsets = this.getSimulatedJumpOffsets(world);
+    for (let i = 0; i < offsets.length; i += 1) {
+      if (offsets[i].dx === dx && offsets[i].dy === dy) return offsets[i];
+    }
+    return null;
+  }
+
+  expandPathWithJumpIntermediates(path, world) {
+    if (!Array.isArray(path) || path.length < 2) return path || [];
+    const tileSize = world.tileSize;
+    const expanded = [{ ...path[0] }];
+    for (let i = 1; i < path.length; i += 1) {
+      const from = path[i - 1];
+      const to = path[i];
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const jumpMove = dy < -1 || Math.abs(dx) > 1;
+      if (jumpMove) {
+        const jumpOffset = this.getJumpOffsetForDelta(dx, dy, world);
+        if (jumpOffset?.samples?.length) {
+          const startWorldX = (from.x + 0.5) * tileSize;
+          const startWorldY = (from.y + 0.5) * tileSize;
+          jumpOffset.samples.forEach((sample) => {
+            const tile = {
+              x: Math.floor((startWorldX + sample.x) / tileSize),
+              y: Math.floor((startWorldY + sample.y) / tileSize)
+            };
+            const last = expanded[expanded.length - 1];
+            if (!last || last.x !== tile.x || last.y !== tile.y) expanded.push(tile);
+          });
+        }
+      }
+      const last = expanded[expanded.length - 1];
+      if (!last || last.x !== to.x || last.y !== to.y) expanded.push({ ...to });
+    }
+    return expanded;
   }
 
   schedulePlanPathToPlayer(player, world, abilities, context) {

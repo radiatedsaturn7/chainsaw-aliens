@@ -442,6 +442,20 @@ test('planner falls back to simple hazard-safe walking when repeated replans fai
   assert.deepEqual(companion.currentPathTiles.at(-1), { x: 4, y: 5 });
 });
 
+test('A* expands jump edges with intermediate arc tiles for movement steering', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  const world = createWorld();
+  companion.speed = MOVEMENT_MODEL.baseSpeed;
+  companion.jumpPower = MOVEMENT_MODEL.baseJumpPower;
+  companion.jumpOffsetCache.clear();
+  const expanded = companion.expandPathWithJumpIntermediates(
+    [{ x: 5, y: 5 }, { x: 5, y: 3 }],
+    world
+  );
+  assert.ok(expanded.length > 2);
+  assert.ok(expanded.some((tile) => tile.y === 4));
+});
+
 test('A* respects expansion budget limit and aborts expensive searches', () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();
