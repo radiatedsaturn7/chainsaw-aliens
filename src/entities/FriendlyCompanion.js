@@ -90,6 +90,7 @@ export default class FriendlyCompanion extends Player {
     this.goalFailureCounts = new Map();
     this.repathMinIntervalMs = 120;
     this.repathMaxIntervalMs = 320;
+    this.repathEndpointHysteresisTiles = 5;
     this.lastRepathAtMs = 0;
     this.lastPlannedPlayerTile = null;
     this.stuckFrames = 0;
@@ -221,15 +222,13 @@ export default class FriendlyCompanion extends Player {
       return 'waypoint-blocked';
     }
 
-    if (!this.lastPlannedPlayerTile
+    const playerMovedTile = !this.lastPlannedPlayerTile
       || playerTile.x !== this.lastPlannedPlayerTile.x
-      || playerTile.y !== this.lastPlannedPlayerTile.y) {
-      return 'player-moved-tile';
-    }
-
+      || playerTile.y !== this.lastPlannedPlayerTile.y;
     if (this.currentGoalTile) {
       const driftFromGoal = this.getTileDistance(playerTile, this.currentGoalTile);
-      if (driftFromGoal >= 5) return 'goal-drift';
+      if (playerMovedTile && driftFromGoal >= this.repathEndpointHysteresisTiles) return 'player-goal-hysteresis';
+      if (!playerMovedTile && driftFromGoal >= this.repathEndpointHysteresisTiles + 1) return 'goal-drift';
     }
 
     const movement = Math.hypot(this.x - this.lastStuckSample.x, this.y - this.lastStuckSample.y);
@@ -250,7 +249,7 @@ export default class FriendlyCompanion extends Player {
 
   getRepathCooldownMs(reason) {
     if (reason === 'waypoint-blocked' || reason === 'stuck' || reason === 'path-ended') return this.repathMinIntervalMs;
-    if (reason === 'player-moved-tile' || reason === 'goal-drift') return 180;
+    if (reason === 'player-goal-hysteresis' || reason === 'goal-drift') return 180;
     return this.repathMaxIntervalMs;
   }
 
