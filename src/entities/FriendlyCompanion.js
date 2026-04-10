@@ -128,6 +128,42 @@ export default class FriendlyCompanion extends Player {
     };
   }
 
+  getActorElevatorPlatform(actor, world, context) {
+    const platforms = context?.elevatorPlatforms || [];
+    if (!platforms.length || !actor) return null;
+    const tileSize = world.tileSize;
+    const footY = actor.y + actor.height / 2;
+    const leftX = actor.x - actor.width / 2 + 2;
+    const rightX = actor.x + actor.width / 2 - 2;
+    for (let i = 0; i < platforms.length; i += 1) {
+      const platform = platforms[i];
+      const tiles = platform.tiles || [{ dx: 0, dy: 0 }];
+      for (let t = 0; t < tiles.length; t += 1) {
+        const node = tiles[t];
+        const platformX = platform.x + node.dx * tileSize;
+        const platformY = platform.y + node.dy * tileSize;
+        const platformHalfW = (tileSize - 12) * 0.5;
+        const topY = platformY - 6;
+        const withinX = rightX > platformX - platformHalfW + 2 && leftX < platformX + platformHalfW - 2;
+        const withinY = footY >= topY - 8 && footY <= topY + 12;
+        if (withinX && withinY) return platform;
+      }
+    }
+    return null;
+  }
+
+  shouldHoldPositionOnSharedElevator(player, world, context) {
+    if (!player) return false;
+    const myPlatform = this.getActorElevatorPlatform(this, world, context);
+    if (!myPlatform) return false;
+    const playerPlatform = this.getActorElevatorPlatform(player, world, context);
+    if (!playerPlatform || playerPlatform.id !== myPlatform.id) return false;
+    const tileSize = world.tileSize;
+    const dxTiles = Math.abs(player.x - this.x) / tileSize;
+    const dyTiles = Math.abs(player.y - this.y) / tileSize;
+    return dxTiles <= 25 && dyTiles <= 25;
+  }
+
   isPlayerGroundSupported(player, world, abilities, context) {
     const tileSize = world.tileSize;
     const footTileY = Math.floor((player.y + player.height / 2 + 1) / tileSize);
@@ -186,6 +222,22 @@ export default class FriendlyCompanion extends Player {
     const bodyBlocked = this.isCollidable(tileX, tileY, world, abilities, context);
     const headBlocked = this.isCollidable(tileX, tileY - 1, world, abilities, context);
     return !bodyBlocked && !headBlocked;
+  }
+
+  hasDiagonalCornerBlock(fromTile, toTile, world, abilities, context) {
+    if (!fromTile || !toTile) return false;
+    const dx = toTile.x - fromTile.x;
+    const dy = toTile.y - fromTile.y;
+    if (Math.abs(dx) !== 1 || Math.abs(dy) !== 1) return false;
+    const sideA = this.isCollidable(fromTile.x + dx, fromTile.y, world, abilities, context);
+    const sideB = this.isCollidable(fromTile.x, fromTile.y + dy, world, abilities, context);
+    return sideA && sideB;
+  }
+
+  canTraverseBetweenTiles(fromTile, toTile, world, abilities, context) {
+    if (!fromTile || !toTile) return false;
+    if (this.hasDiagonalCornerBlock(fromTile, toTile, world, abilities, context)) return false;
+    return true;
   }
 
   getPriorityTilesAroundPlayer(player, world) {
@@ -327,17 +379,29 @@ export default class FriendlyCompanion extends Player {
     const dirs = [-1, 1];
     dirs.forEach((dir) => {
       const walk = { x: tile.x + dir, y: tile.y };
-      if (this.isWalkableTile(walk.x, walk.y, world, abilities, context)) pushNeighbor(walk);
+      if (this.isWalkableTile(walk.x, walk.y, world, abilities, context)
+        && this.canTraverseBetweenTiles(tile, walk, world, abilities, context)) {
+        pushNeighbor(walk);
+      }
       const stepUp = { x: tile.x + dir, y: tile.y - 1 };
-      if (this.isWalkableTile(stepUp.x, stepUp.y, world, abilities, context)) pushNeighbor(stepUp);
+      if (this.isWalkableTile(stepUp.x, stepUp.y, world, abilities, context)
+        && this.canTraverseBetweenTiles(tile, stepUp, world, abilities, context)) {
+        pushNeighbor(stepUp);
+      }
       for (let dropDown = 1; dropDown <= 8; dropDown += 1) {
         const drop = { x: tile.x + dir, y: tile.y + dropDown };
-        if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) pushNeighbor(drop);
+        if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)
+          && this.canTraverseBetweenTiles(tile, drop, world, abilities, context)) {
+          pushNeighbor(drop);
+        }
       }
     });
     for (let dropDown = 1; dropDown <= 12; dropDown += 1) {
       const drop = { x: tile.x, y: tile.y + dropDown };
-      if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) pushNeighbor(drop);
+      if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)
+        && this.canTraverseBetweenTiles(tile, drop, world, abilities, context)) {
+        pushNeighbor(drop);
+      }
     }
     return neighbors;
   }
@@ -367,15 +431,50 @@ export default class FriendlyCompanion extends Player {
     const tileSize = world.tileSize;
     const startWorldX = (startTile.x + 0.5) * tileSize;
     const startWorldY = (startTile.y + 0.5) * tileSize;
+    const halfW = Math.max(2, this.width / 2 - 3);
+    const halfH = Math.max(2, this.height / 2 - 2);
+    const probeOffsets = [
+      { x: -halfW, y: -halfH },
+      { x: halfW, y: -halfH },
+      { x: -halfW, y: halfH },
+      { x: halfW, y: halfH },
+      { x: 0, y: -halfH },
+      { x: 0, y: halfH }
+    ];
+
+    const isBlockedAtWorldPoint = (worldX, worldY) => {
+      for (let p = 0; p < probeOffsets.length; p += 1) {
+        const probe = probeOffsets[p];
+        const probeX = worldX + probe.x;
+        const probeY = worldY + probe.y;
+        const tileX = Math.floor(probeX / tileSize);
+        const tileY = Math.floor(probeY / tileSize);
+        if (tileX < 0 || tileX >= world.width || tileY < 1 || tileY >= world.height - 1) return true;
+        if (this.isCollidable(tileX, tileY, world, abilities, context)) return true;
+      }
+      return false;
+    };
+
+    let prevWorldX = startWorldX;
+    let prevWorldY = startWorldY;
+    let prevCenterTile = { x: Math.floor(startWorldX / tileSize), y: Math.floor(startWorldY / tileSize) };
     for (let i = 0; i < samples.length; i += 1) {
       const sample = samples[i];
       const worldX = startWorldX + sample.x;
       const worldY = startWorldY + sample.y;
-      const tileX = Math.floor(worldX / tileSize);
-      const tileY = Math.floor(worldY / tileSize);
-      if (tileX < 0 || tileX >= world.width || tileY < 1 || tileY >= world.height - 1) return false;
-      if (this.isCollidable(tileX, tileY, world, abilities, context)) return false;
-      if (this.isCollidable(tileX, tileY - 1, world, abilities, context)) return false;
+      const segmentLength = Math.hypot(worldX - prevWorldX, worldY - prevWorldY);
+      const subSteps = Math.max(1, Math.ceil(segmentLength / (tileSize * 0.2)));
+      for (let step = 1; step <= subSteps; step += 1) {
+        const t = step / subSteps;
+        const testX = prevWorldX + (worldX - prevWorldX) * t;
+        const testY = prevWorldY + (worldY - prevWorldY) * t;
+        if (isBlockedAtWorldPoint(testX, testY)) return false;
+        const centerTile = { x: Math.floor(testX / tileSize), y: Math.floor(testY / tileSize) };
+        if (this.hasDiagonalCornerBlock(prevCenterTile, centerTile, world, abilities, context)) return false;
+        prevCenterTile = centerTile;
+      }
+      prevWorldX = worldX;
+      prevWorldY = worldY;
     }
     return true;
   }
@@ -602,6 +701,18 @@ export default class FriendlyCompanion extends Player {
       const nearestDx = Math.abs(nearestTile.x - playerTile.x);
       return nearestDx + 1 < dropDx ? nearestTile : dropTile;
     })();
+    if (this.shouldHoldPositionOnSharedElevator(player, world, context)) {
+      this.currentPathTiles = [];
+      this.currentGoalTile = null;
+      this.walkingPathTiles = [];
+      this.jumpingPathTiles = [];
+      this.jumpTargetTile = null;
+      this.noPathStreak = 0;
+      this.debugPenalizedTiles = [];
+      this.debugStandableTiles = [];
+      this.debugCandidateTiles = [];
+      return;
+    }
     const candidates = this.getPriorityTilesAroundPlayer(player, world);
     const playerSupported = this.isPlayerGroundSupported(player, world, abilities, context);
     const playerMovingDown = (player.vy || 0) > 24;
