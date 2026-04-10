@@ -712,6 +712,37 @@ export default class FriendlyCompanion extends Player {
     return path.length > 1 ? path : null;
   }
 
+  hasClearHorizontalLine(startTile, endTile, world, abilities, context) {
+    if (!startTile || !endTile) return false;
+    if (startTile.y !== endTile.y) return false;
+    const dir = Math.sign(endTile.x - startTile.x);
+    if (dir === 0) return true;
+    let x = startTile.x;
+    while (x !== endTile.x) {
+      x += dir;
+      if (!this.isWalkableTile(x, startTile.y, world, abilities, context)) return false;
+      if (this.isHazardTile(x, startTile.y, world)) return false;
+    }
+    return true;
+  }
+
+  getDirectChasePath(startTile, playerTile, world, abilities, context) {
+    if (!startTile || !playerTile) return null;
+    if (Math.abs(playerTile.y - startTile.y) > 1) return null;
+    const laneY = startTile.y;
+    const sameLaneTarget = { x: playerTile.x, y: laneY };
+    if (!this.hasClearHorizontalLine(startTile, sameLaneTarget, world, abilities, context)) return null;
+    const path = [{ ...startTile }];
+    const dir = Math.sign(playerTile.x - startTile.x);
+    if (dir === 0) return path;
+    let x = startTile.x;
+    while (x !== playerTile.x) {
+      x += dir;
+      path.push({ x, y: laneY });
+    }
+    return path.length > 1 ? path : null;
+  }
+
   getJumpOffsetForDelta(dx, dy, world) {
     const offsets = this.getSimulatedJumpOffsets(world);
     for (let i = 0; i < offsets.length; i += 1) {
@@ -819,6 +850,20 @@ export default class FriendlyCompanion extends Player {
       const nearestDx = Math.abs(nearestTile.x - playerTile.x);
       return nearestDx + 1 < dropDx ? nearestTile : dropTile;
     })();
+    const directChasePath = this.getDirectChasePath(startTile, playerTile, world, abilities, context);
+    if (directChasePath?.length > 1) {
+      this.currentPathTiles = directChasePath;
+      this.currentGoalTile = directChasePath[directChasePath.length - 1];
+      this.walkingPathTiles = directChasePath.slice();
+      this.jumpingPathTiles = [];
+      this.jumpTargetTile = null;
+      this.noPathStreak = 0;
+      this.clearGoalFailure(this.currentGoalTile);
+      this.debugPenalizedTiles = [];
+      this.debugStandableTiles = [];
+      this.debugCandidateTiles = [];
+      return;
+    }
     if (this.shouldHoldPositionOnSharedElevator(player, world, context)) {
       this.currentPathTiles = [];
       this.currentGoalTile = null;
