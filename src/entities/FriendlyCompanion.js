@@ -90,6 +90,7 @@ export default class FriendlyCompanion extends Player {
     this.noPathStreak = 0;
     this.jumpCommitActive = false;
     this.jumpCommitLandingTile = null;
+    this.pathQueryCache = null;
   }
 
   getDrawPalette(flash) {
@@ -188,40 +189,75 @@ export default class FriendlyCompanion extends Player {
     return Date.now();
   }
 
+
+  getPathCacheKey(tileX, tileY) {
+    return `${tileX},${tileY}`;
+  }
+
+  withPathQueryCache(cache, fn) {
+    const previous = this.pathQueryCache;
+    this.pathQueryCache = cache;
+    try {
+      return fn();
+    } finally {
+      this.pathQueryCache = previous;
+    }
+  }
+
+  getCachedPathValue(bucket, tileX, tileY, compute) {
+    const cache = this.pathQueryCache?.[bucket];
+    if (!cache) return compute();
+    const key = this.getPathCacheKey(tileX, tileY);
+    if (cache.has(key)) return cache.get(key);
+    const value = compute();
+    cache.set(key, value);
+    return value;
+  }
+
   isHazardTile(tileX, tileY, world) {
-    return Boolean(world.isHazard?.(tileX, tileY) || world.isHazard?.(tileX, tileY - 1) || world.isHazard?.(tileX, tileY + 1));
+    return this.getCachedPathValue('hazard', tileX, tileY, () => Boolean(
+      world.isHazard?.(tileX, tileY)
+      || world.isHazard?.(tileX, tileY - 1)
+      || world.isHazard?.(tileX, tileY + 1)
+    ));
   }
 
   isElevatorSupportTile(tileX, tileY, world, context) {
-    if (world.hasElevatorPlatform?.(tileX, tileY)) return true;
-    const platforms = context?.elevatorPlatforms || [];
-    if (!platforms.length) return false;
-    const tileSize = world.tileSize;
-    for (let i = 0; i < platforms.length; i += 1) {
-      const platform = platforms[i];
-      const tiles = platform.tiles || [{ dx: 0, dy: 0 }];
-      for (let t = 0; t < tiles.length; t += 1) {
-        const node = tiles[t];
-        const px = Math.floor((platform.x + node.dx * tileSize) / tileSize);
-        const py = Math.floor((platform.y + node.dy * tileSize) / tileSize);
-        if (px === tileX && py === tileY) return true;
+    return this.getCachedPathValue('elevatorSupport', tileX, tileY, () => {
+      if (world.hasElevatorPlatform?.(tileX, tileY)) return true;
+      const platforms = context?.elevatorPlatforms || [];
+      if (!platforms.length) return false;
+      const tileSize = world.tileSize;
+      for (let i = 0; i < platforms.length; i += 1) {
+        const platform = platforms[i];
+        const tiles = platform.tiles || [{ dx: 0, dy: 0 }];
+        for (let t = 0; t < tiles.length; t += 1) {
+          const node = tiles[t];
+          const px = Math.floor((platform.x + node.dx * tileSize) / tileSize);
+          const py = Math.floor((platform.y + node.dy * tileSize) / tileSize);
+          if (px === tileX && py === tileY) return true;
+        }
       }
-    }
-    return false;
+      return false;
+    });
   }
 
   isCollidable(tileX, tileY, world, abilities, context) {
-    if (world.isSolid(tileX, tileY, abilities, { ignoreOneWay: false })) return true;
-    return this.isElevatorSupportTile(tileX, tileY, world, context);
+    return this.getCachedPathValue('collidable', tileX, tileY, () => {
+      if (world.isSolid(tileX, tileY, abilities, { ignoreOneWay: false })) return true;
+      return this.isElevatorSupportTile(tileX, tileY, world, context);
+    });
   }
 
   isWalkableTile(tileX, tileY, world, abilities, context) {
-    if (tileX < 0 || tileX >= world.width || tileY < 1 || tileY >= world.height - 1) return false;
-    const support = this.isCollidable(tileX, tileY + 1, world, abilities, context);
-    if (!support) return false;
-    const bodyBlocked = this.isCollidable(tileX, tileY, world, abilities, context);
-    const headBlocked = this.isCollidable(tileX, tileY - 1, world, abilities, context);
-    return !bodyBlocked && !headBlocked;
+    return this.getCachedPathValue('walkable', tileX, tileY, () => {
+      if (tileX < 0 || tileX >= world.width || tileY < 1 || tileY >= world.height - 1) return false;
+      const support = this.isCollidable(tileX, tileY + 1, world, abilities, context);
+      if (!support) return false;
+      const bodyBlocked = this.isCollidable(tileX, tileY, world, abilities, context);
+      const headBlocked = this.isCollidable(tileX, tileY - 1, world, abilities, context);
+      return !bodyBlocked && !headBlocked;
+    });
   }
 
   hasDiagonalCornerBlock(fromTile, toTile, world, abilities, context) {
@@ -289,6 +325,7 @@ export default class FriendlyCompanion extends Player {
       const startKey = this.tileKey(startTile);
       search = {
         open: [startTile],
+        openKeys: new Set([startKey]),
         closed: new Set(),
         cameFrom: new Map(),
         gScore: new Map([[startKey, 0]]),
@@ -297,6 +334,9 @@ export default class FriendlyCompanion extends Player {
         lastTouchedMs: now
       };
       this.aStarSearchCache.set(searchKey, search);
+    }
+    if (!search.openKeys) {
+      search.openKeys = new Set(search.open.map((node) => this.tileKey(node)));
     }
 
     const popBest = () => {
@@ -309,61 +349,71 @@ export default class FriendlyCompanion extends Player {
           bestIndex = i;
         }
       }
-      return search.open.splice(bestIndex, 1)[0];
+      const [best] = search.open.splice(bestIndex, 1);
+      if (best) search.openKeys.delete(this.tileKey(best));
+      return best;
     };
 
     const deadline = now + this.maxAStarMs;
     let expansions = 0;
-    while (search.open.length > 0) {
-      if (expansions >= this.maxAStarExpansions || this.getNowMs() > deadline) {
-        search.lastTouchedMs = this.getNowMs();
-        return null;
-      }
-      const current = popBest();
-      const currentKey = this.tileKey(current);
-      if (search.closed.has(currentKey)) continue;
-      search.closed.add(currentKey);
-      if (current.x === goalTile.x && current.y === goalTile.y) {
-        const path = [current];
-        let key = currentKey;
-        while (search.cameFrom.has(key)) {
-          const prevKey = search.cameFrom.get(key);
-          const prev = search.tileByKey.get(prevKey);
-          if (!prev) break;
-          path.push(prev);
-          key = prevKey;
+    return this.withPathQueryCache({
+      hazard: new Map(),
+      elevatorSupport: new Map(),
+      collidable: new Map(),
+      walkable: new Map()
+    }, () => {
+      while (search.open.length > 0) {
+        if (expansions >= this.maxAStarExpansions || this.getNowMs() > deadline) {
+          search.lastTouchedMs = this.getNowMs();
+          return null;
         }
-        path.reverse();
-        this.aStarSearchCache.delete(searchKey);
-        return this.expandPathWithJumpIntermediates(path, world);
-      }
+        const current = popBest();
+        const currentKey = this.tileKey(current);
+        if (search.closed.has(currentKey)) continue;
+        search.closed.add(currentKey);
+        if (current.x === goalTile.x && current.y === goalTile.y) {
+          const path = [current];
+          let key = currentKey;
+          while (search.cameFrom.has(key)) {
+            const prevKey = search.cameFrom.get(key);
+            const prev = search.tileByKey.get(prevKey);
+            if (!prev) break;
+            path.push(prev);
+            key = prevKey;
+          }
+          path.reverse();
+          this.aStarSearchCache.delete(searchKey);
+          return this.expandPathWithJumpIntermediates(path, world);
+        }
 
-      const neighbors = (neighborResolver || this.getTraversalNeighbors.bind(this))(current, world, abilities, context);
-      expansions += 1;
+        const neighbors = (neighborResolver || this.getTraversalNeighbors.bind(this))(current, world, abilities, context);
+        expansions += 1;
 
-      for (let i = 0; i < neighbors.length; i += 1) {
-        const neighbor = neighbors[i];
-        if (!withinBounds(neighbor)) continue;
-        if (!this.isWalkableTile(neighbor.x, neighbor.y, world, abilities, context)) continue;
+        for (let i = 0; i < neighbors.length; i += 1) {
+          const neighbor = neighbors[i];
+          if (!withinBounds(neighbor)) continue;
+          if (!this.isWalkableTile(neighbor.x, neighbor.y, world, abilities, context)) continue;
 
-        const neighborKey = this.tileKey(neighbor);
-        if (search.closed.has(neighborKey)) continue;
-        const tentative = (search.gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + traversalCost(current, neighbor);
+          const neighborKey = this.tileKey(neighbor);
+          if (search.closed.has(neighborKey)) continue;
+          const tentative = (search.gScore.get(currentKey) ?? Number.POSITIVE_INFINITY) + traversalCost(current, neighbor);
 
-        if (tentative < (search.gScore.get(neighborKey) ?? Number.POSITIVE_INFINITY)) {
-          search.cameFrom.set(neighborKey, currentKey);
-          search.gScore.set(neighborKey, tentative);
-          search.fScore.set(neighborKey, tentative + heuristic(neighbor, goalTile));
-          search.tileByKey.set(neighborKey, { x: neighbor.x, y: neighbor.y });
-          if (!search.open.some((node) => node.x === neighbor.x && node.y === neighbor.y)) {
-            search.open.push({ x: neighbor.x, y: neighbor.y });
+          if (tentative < (search.gScore.get(neighborKey) ?? Number.POSITIVE_INFINITY)) {
+            search.cameFrom.set(neighborKey, currentKey);
+            search.gScore.set(neighborKey, tentative);
+            search.fScore.set(neighborKey, tentative + heuristic(neighbor, goalTile));
+            search.tileByKey.set(neighborKey, { x: neighbor.x, y: neighbor.y });
+            if (!search.openKeys.has(neighborKey)) {
+              search.open.push({ x: neighbor.x, y: neighbor.y });
+              search.openKeys.add(neighborKey);
+            }
           }
         }
       }
-    }
 
-    this.aStarSearchCache.delete(searchKey);
-    return null;
+      this.aStarSearchCache.delete(searchKey);
+      return null;
+    });
   }
 
   getWalkingNeighbors(tile, world, abilities, context) {
