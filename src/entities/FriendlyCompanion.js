@@ -224,6 +224,22 @@ export default class FriendlyCompanion extends Player {
     return !bodyBlocked && !headBlocked;
   }
 
+  hasDiagonalCornerBlock(fromTile, toTile, world, abilities, context) {
+    if (!fromTile || !toTile) return false;
+    const dx = toTile.x - fromTile.x;
+    const dy = toTile.y - fromTile.y;
+    if (Math.abs(dx) !== 1 || Math.abs(dy) !== 1) return false;
+    const sideA = this.isCollidable(fromTile.x + dx, fromTile.y, world, abilities, context);
+    const sideB = this.isCollidable(fromTile.x, fromTile.y + dy, world, abilities, context);
+    return sideA && sideB;
+  }
+
+  canTraverseBetweenTiles(fromTile, toTile, world, abilities, context) {
+    if (!fromTile || !toTile) return false;
+    if (this.hasDiagonalCornerBlock(fromTile, toTile, world, abilities, context)) return false;
+    return true;
+  }
+
   getPriorityTilesAroundPlayer(player, world) {
     const tileSize = world.tileSize;
     const playerTileX = Math.floor(player.x / tileSize);
@@ -363,17 +379,29 @@ export default class FriendlyCompanion extends Player {
     const dirs = [-1, 1];
     dirs.forEach((dir) => {
       const walk = { x: tile.x + dir, y: tile.y };
-      if (this.isWalkableTile(walk.x, walk.y, world, abilities, context)) pushNeighbor(walk);
+      if (this.isWalkableTile(walk.x, walk.y, world, abilities, context)
+        && this.canTraverseBetweenTiles(tile, walk, world, abilities, context)) {
+        pushNeighbor(walk);
+      }
       const stepUp = { x: tile.x + dir, y: tile.y - 1 };
-      if (this.isWalkableTile(stepUp.x, stepUp.y, world, abilities, context)) pushNeighbor(stepUp);
+      if (this.isWalkableTile(stepUp.x, stepUp.y, world, abilities, context)
+        && this.canTraverseBetweenTiles(tile, stepUp, world, abilities, context)) {
+        pushNeighbor(stepUp);
+      }
       for (let dropDown = 1; dropDown <= 8; dropDown += 1) {
         const drop = { x: tile.x + dir, y: tile.y + dropDown };
-        if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) pushNeighbor(drop);
+        if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)
+          && this.canTraverseBetweenTiles(tile, drop, world, abilities, context)) {
+          pushNeighbor(drop);
+        }
       }
     });
     for (let dropDown = 1; dropDown <= 12; dropDown += 1) {
       const drop = { x: tile.x, y: tile.y + dropDown };
-      if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)) pushNeighbor(drop);
+      if (this.isWalkableTile(drop.x, drop.y, world, abilities, context)
+        && this.canTraverseBetweenTiles(tile, drop, world, abilities, context)) {
+        pushNeighbor(drop);
+      }
     }
     return neighbors;
   }
@@ -429,6 +457,7 @@ export default class FriendlyCompanion extends Player {
 
     let prevWorldX = startWorldX;
     let prevWorldY = startWorldY;
+    let prevCenterTile = { x: Math.floor(startWorldX / tileSize), y: Math.floor(startWorldY / tileSize) };
     for (let i = 0; i < samples.length; i += 1) {
       const sample = samples[i];
       const worldX = startWorldX + sample.x;
@@ -440,6 +469,9 @@ export default class FriendlyCompanion extends Player {
         const testX = prevWorldX + (worldX - prevWorldX) * t;
         const testY = prevWorldY + (worldY - prevWorldY) * t;
         if (isBlockedAtWorldPoint(testX, testY)) return false;
+        const centerTile = { x: Math.floor(testX / tileSize), y: Math.floor(testY / tileSize) };
+        if (this.hasDiagonalCornerBlock(prevCenterTile, centerTile, world, abilities, context)) return false;
+        prevCenterTile = centerTile;
       }
       prevWorldX = worldX;
       prevWorldY = worldY;
