@@ -59,7 +59,6 @@ export default class FriendlyCompanion extends Player {
     this.speed *= FriendlyCompanion.SPEED_BOOST_MULTIPLIER;
     this.jumpPower *= FriendlyCompanion.JUMP_BOOST_MULTIPLIER;
     this.aiInput = new CompanionInput();
-    this.pathReplanTimer = 0;
     this.currentPathTiles = [];
     this.currentGoalTile = null;
     this.walkingPathTiles = [];
@@ -89,6 +88,12 @@ export default class FriendlyCompanion extends Player {
     this.pathCandidateScanOffset = 0;
     this.noPathStreak = 0;
     this.goalFailureCounts = new Map();
+    this.repathMinIntervalMs = 120;
+    this.repathMaxIntervalMs = 320;
+    this.lastRepathAtMs = 0;
+    this.lastPlannedPlayerTile = null;
+    this.stuckFrames = 0;
+    this.lastStuckSample = { x, y };
     this.jumpCommitActive = false;
     this.jumpCommitLandingTile = null;
     this.pathQueryCache = null;
@@ -201,6 +206,54 @@ export default class FriendlyCompanion extends Player {
     return (this.goalFailureCounts.get(this.tileKey(tile)) || 0) >= threshold;
   }
 
+  getTileDistance(a, b) {
+    if (!a || !b) return Number.POSITIVE_INFINITY;
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+  }
+
+  getRepathReason(playerTile, world, abilities, context) {
+    const currentTile = this.getFootTile(world);
+    const nextWaypoint = this.currentPathTiles.length > 1 ? this.currentPathTiles[1] : null;
+    const pathEnded = this.currentPathTiles.length <= 1;
+    if (pathEnded) return 'path-ended';
+
+    if (nextWaypoint && !this.isWalkableTile(nextWaypoint.x, nextWaypoint.y, world, abilities, context)) {
+      return 'waypoint-blocked';
+    }
+
+    if (!this.lastPlannedPlayerTile
+      || playerTile.x !== this.lastPlannedPlayerTile.x
+      || playerTile.y !== this.lastPlannedPlayerTile.y) {
+      return 'player-moved-tile';
+    }
+
+    if (this.currentGoalTile) {
+      const driftFromGoal = this.getTileDistance(playerTile, this.currentGoalTile);
+      if (driftFromGoal >= 5) return 'goal-drift';
+    }
+
+    const movement = Math.hypot(this.x - this.lastStuckSample.x, this.y - this.lastStuckSample.y);
+    if (movement < 0.6 && this.currentPathTiles.length > 1 && this.getTileDistance(currentTile, playerTile) > 1) {
+      this.stuckFrames += 1;
+    } else {
+      this.stuckFrames = 0;
+      this.lastStuckSample = { x: this.x, y: this.y };
+    }
+    if (this.stuckFrames >= 24) {
+      this.stuckFrames = 0;
+      this.lastStuckSample = { x: this.x, y: this.y };
+      return 'stuck';
+    }
+
+    return null;
+  }
+
+  getRepathCooldownMs(reason) {
+    if (reason === 'waypoint-blocked' || reason === 'stuck' || reason === 'path-ended') return this.repathMinIntervalMs;
+    if (reason === 'player-moved-tile' || reason === 'goal-drift') return 180;
+    return this.repathMaxIntervalMs;
+  }
+
   getNowMs() {
     if (typeof performance !== 'undefined' && typeof performance.now === 'function') return performance.now();
     return Date.now();
@@ -295,8 +348,6 @@ export default class FriendlyCompanion extends Player {
 
   getPriorityTilesAroundPlayer(player, world) {
     const tileSize = world.tileSize;
-    const playerTileX = Math.floor(player.x / tileSize);
-    const playerTileY = Math.floor((player.y + player.height / 2 - 1) / tileSize);
     const facingRight = (player.facing || 1) >= 0;
     const ranked = [];
     for (let row = 0; row < 5; row += 1) {
@@ -758,6 +809,7 @@ export default class FriendlyCompanion extends Player {
       x: Math.floor(player.x / tileSize),
       y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
     };
+    this.lastPlannedPlayerTile = { ...playerTile };
     const startTile = (() => {
       if (this.onGround) return this.findNearestWalkableTile(rawStart, world, abilities, context);
       const dropTile = this.findDropLandingTile(rawStart, world, abilities, context, 16);
@@ -1108,11 +1160,19 @@ export default class FriendlyCompanion extends Player {
       this.jumpReplayLockTimer = 0;
     }
 
-    this.pathReplanTimer = Math.max(0, this.pathReplanTimer - dt);
-    if (this.pathReplanTimer <= 0 || !this.currentPathTiles.length) {
-      this.schedulePlanPathToPlayer(player, world, abilities, context);
-      const noPathBackoff = Math.min(1.0, this.noPathStreak * 0.08);
-      this.pathReplanTimer = 0.2 + noPathBackoff;
+    const playerTile = {
+      x: Math.floor(player.x / tileSize),
+      y: Math.floor((player.y + player.height / 2 - 1) / tileSize)
+    };
+    const repathReason = this.getRepathReason(playerTile, world, abilities, context);
+    if (repathReason) {
+      const nowMs = this.getNowMs();
+      const elapsed = nowMs - this.lastRepathAtMs;
+      const cooldownMs = this.getRepathCooldownMs(repathReason);
+      if (elapsed >= cooldownMs) {
+        this.schedulePlanPathToPlayer(player, world, abilities, context);
+        this.lastRepathAtMs = nowMs;
+      }
     }
 
     const nextInput = new Set();
