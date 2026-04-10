@@ -88,6 +88,7 @@ export default class FriendlyCompanion extends Player {
     this.maxPathCandidatesPerPlan = 6;
     this.pathCandidateScanOffset = 0;
     this.noPathStreak = 0;
+    this.goalFailureCounts = new Map();
     this.jumpCommitActive = false;
     this.jumpCommitLandingTile = null;
     this.pathQueryCache = null;
@@ -182,6 +183,22 @@ export default class FriendlyCompanion extends Player {
 
   tileKey(tile) {
     return `${tile.x},${tile.y}`;
+  }
+
+  markGoalFailure(tile) {
+    if (!tile) return;
+    const key = this.tileKey(tile);
+    this.goalFailureCounts.set(key, (this.goalFailureCounts.get(key) || 0) + 1);
+  }
+
+  clearGoalFailure(tile) {
+    if (!tile) return;
+    this.goalFailureCounts.delete(this.tileKey(tile));
+  }
+
+  shouldAvoidGoal(tile, threshold = 2) {
+    if (!tile) return false;
+    return (this.goalFailureCounts.get(this.tileKey(tile)) || 0) >= threshold;
   }
 
   getNowMs() {
@@ -888,14 +905,20 @@ export default class FriendlyCompanion extends Player {
       }
       pathableCandidates.push(candidate);
     }
+    const preferredCandidates = pathableCandidates.filter((candidate) => !this.shouldAvoidGoal(candidate, 2));
+    const blockedCandidates = pathableCandidates.filter((candidate) => this.shouldAvoidGoal(candidate, 2));
+    blockedCandidates.forEach((candidate) => {
+      if (candidate.status === 'unchecked') candidate.status = 'reroute';
+    });
 
     const tryResolver = (neighborResolver) => {
-      if (pathableCandidates.length === 0) return;
+      const activeCandidates = preferredCandidates.length > 0 ? preferredCandidates : pathableCandidates;
+      if (activeCandidates.length === 0) return;
       const perPlanLimit = Math.max(1, Math.floor(this.maxPathCandidatesPerPlan || 1));
-      const candidateCount = Math.min(pathableCandidates.length, perPlanLimit);
+      const candidateCount = Math.min(activeCandidates.length, perPlanLimit);
       for (let i = 0; i < candidateCount; i += 1) {
-        const idx = (this.pathCandidateScanOffset + i) % pathableCandidates.length;
-        const candidate = pathableCandidates[idx];
+        const idx = (this.pathCandidateScanOffset + i) % activeCandidates.length;
+        const candidate = activeCandidates[idx];
         const path = this.getAStarPath(startTile, candidate, world, abilities, context, neighborResolver);
         if (!path || path.length < 1) continue;
         const pathDistance = path.reduce((sum, node, idx) => {
@@ -911,7 +934,7 @@ export default class FriendlyCompanion extends Player {
         }
         if (!candidate.hazard) candidate.status = 'valid';
       }
-      this.pathCandidateScanOffset = (this.pathCandidateScanOffset + candidateCount) % pathableCandidates.length;
+      this.pathCandidateScanOffset = (this.pathCandidateScanOffset + candidateCount) % activeCandidates.length;
     };
 
     if (startTile) {
@@ -935,6 +958,7 @@ export default class FriendlyCompanion extends Player {
     if (bestPath) {
       this.currentPathTiles = bestPath;
       this.currentGoalTile = bestGoal;
+      this.clearGoalFailure(bestGoal);
       if (this.pathHasJumpSegments(bestPath, world, abilities, context)) {
         this.walkingPathTiles = [];
         this.jumpingPathTiles = this.currentPathTiles.slice();
@@ -945,13 +969,22 @@ export default class FriendlyCompanion extends Player {
       this.jumpTargetTile = null;
       this.noPathStreak = 0;
     } else if (previousPathTiles.length > 0) {
+      if (this.currentGoalTile) this.markGoalFailure(this.currentGoalTile);
       this.currentPathTiles = previousPathTiles;
       this.currentGoalTile = previousGoalTile;
       this.walkingPathTiles = previousWalkingPathTiles;
       this.jumpingPathTiles = previousJumpingPathTiles;
       this.jumpTargetTile = previousJumpTargetTile;
       this.noPathStreak += 1;
+      if (this.shouldAvoidGoal(this.currentGoalTile, 2)) {
+        this.currentPathTiles = [];
+        this.currentGoalTile = null;
+        this.walkingPathTiles = [];
+        this.jumpingPathTiles = [];
+        this.jumpTargetTile = null;
+      }
     } else {
+      if (this.currentGoalTile) this.markGoalFailure(this.currentGoalTile);
       const simplePath = this.noPathStreak >= 2
         ? this.getSimpleHazardSafeWalkPath(startTile, fallbackPlayerTile, world, abilities, context, 10)
         : null;
@@ -1207,6 +1240,7 @@ export default class FriendlyCompanion extends Player {
       'no-support': 'rgba(60, 60, 60, 0.95)',
       hazard: 'rgba(255, 80, 80, 0.95)',
       'no-path': 'rgba(255, 167, 48, 0.95)',
+      reroute: 'rgba(147, 116, 255, 0.92)',
       blocked: 'rgba(110, 120, 170, 0.9)',
       valid: 'rgba(241, 223, 83, 0.95)',
       unchecked: 'rgba(140, 140, 140, 0.6)'
