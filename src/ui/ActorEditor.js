@@ -1,6 +1,7 @@
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsLoad, vfsSave } from './vfs.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
+import { SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 
 const ACTOR_FOLDER = 'actors';
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -376,6 +377,23 @@ export default class ActorEditor {
     const left = el('div', 'actor-editor-left');
     const right = el('div', 'actor-editor-right');
     body.append(left, right);
+    const railWidth = SHARED_EDITOR_LEFT_MENU.width();
+    shell.style.display = 'flex';
+    shell.style.flexDirection = 'column';
+    shell.style.height = '100%';
+    shell.style.gap = `${UI_SUITE.spacing.gap}px`;
+    body.style.display = 'flex';
+    body.style.gap = `${SHARED_EDITOR_LEFT_MENU.desktopContentGap}px`;
+    body.style.flex = '1';
+    body.style.minHeight = '0';
+    left.style.width = `${railWidth}px`;
+    left.style.flex = `0 0 ${railWidth}px`;
+    left.style.display = 'flex';
+    left.style.flexDirection = 'column';
+    left.style.gap = `${UI_SUITE.spacing.gap}px`;
+    right.style.flex = '1';
+    right.style.minWidth = '0';
+    right.style.overflow = 'auto';
 
     left.appendChild(this.renderSidebarMenu());
     right.appendChild(this.renderMainPanel(actor, state));
@@ -420,8 +438,31 @@ export default class ActorEditor {
     menu.appendChild(makeMenuBtn('Actor', 'actor'));
     menu.appendChild(makeMenuBtn('States', 'states'));
     menu.appendChild(makeMenuBtn('Linked Parts', 'linked-parts'));
+    if (this.activeMenuSection === 'states') {
+      menu.appendChild(this.renderStateRailSection());
+    }
     section.appendChild(menu);
     return section;
+  }
+
+  renderStateRailSection() {
+    const wrap = el('div', 'actor-editor-list');
+    const controls = el('div', 'actor-editor-inline-actions');
+    [['Add', () => this.addState()], ['Paste', () => this.pasteState()]].forEach(([label, handler]) => {
+      const btn = el('button', 'actor-editor-btn small', label);
+      btn.onclick = handler;
+      controls.appendChild(btn);
+    });
+    wrap.appendChild(controls);
+    this.actor.states.forEach((state) => {
+      const btn = el('button', `actor-editor-btn small${this.selectedStateId === state.id ? ' active' : ''}`, state.name || state.id);
+      btn.onclick = () => {
+        this.selectedStateId = state.id;
+        this.render();
+      };
+      wrap.appendChild(btn);
+    });
+    return wrap;
   }
 
   renderMainPanel(actor, state) {
@@ -434,7 +475,6 @@ export default class ActorEditor {
       wrap.appendChild(this.renderLinkedParts(actor));
       return wrap;
     }
-    wrap.appendChild(this.renderStateList(actor));
     wrap.appendChild(this.renderStateEditor(state));
     return wrap;
   }
