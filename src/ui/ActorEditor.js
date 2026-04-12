@@ -1,6 +1,6 @@
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsLoad, vfsSave } from './vfs.js';
-import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, ensureActorDefinition, getBehaviorPresetCatalog, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
+import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
 
 const ACTOR_FOLDER = 'actors';
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -76,6 +76,8 @@ export default class ActorEditor {
     this.overlay = null;
     this.partRefreshToken = 0;
     this.previewTimers = [];
+    this.activeMenuSection = 'states';
+    this.fileMenuOpen = false;
   }
 
   captureFocusedInputState() {
@@ -365,11 +367,6 @@ export default class ActorEditor {
 
     const top = el('div', 'actor-editor-topbar');
     shell.appendChild(top);
-    [['New', () => this.newActor()], ['Open', () => this.openActor()], ['Save', () => this.saveActor(false)], ['Save As', () => this.saveActor(true)], ['Playtest', () => this.playtestActor()], ['Back', () => this.exitToMenu()]].forEach(([label, handler]) => {
-      const btn = el('button', 'actor-editor-btn', label);
-      btn.onclick = handler;
-      top.appendChild(btn);
-    });
     const title = el('div', 'actor-editor-title');
     title.textContent = this.currentDocumentRef?.name ? `Actor Editor • ${this.currentDocumentRef.name}` : 'Actor Editor';
     top.appendChild(title);
@@ -380,14 +377,66 @@ export default class ActorEditor {
     const right = el('div', 'actor-editor-right');
     body.append(left, right);
 
-    left.appendChild(this.renderActorSettings(actor));
-    left.appendChild(this.renderStateList(actor));
-    left.appendChild(this.renderBehaviorAnalysis());
-
-    right.appendChild(this.renderStateEditor(state));
-    right.appendChild(this.renderLinkedParts(actor));
-    right.appendChild(this.renderWorkflowCard());
+    left.appendChild(this.renderSidebarMenu());
+    right.appendChild(this.renderMainPanel(actor, state));
     this.restoreFocusedInputState(focusState);
+  }
+
+  renderSidebarMenu() {
+    const section = el('section', 'actor-editor-card');
+    section.appendChild(el('h2', '', 'Menu'));
+    const menu = el('div', 'actor-editor-toolbar');
+    const makeMenuBtn = (label, id, onClick) => {
+      const btn = el('button', `actor-editor-btn${this.activeMenuSection === id ? ' active' : ''}`, label);
+      btn.onclick = onClick || (() => {
+        this.activeMenuSection = id;
+        this.fileMenuOpen = false;
+        this.render();
+      });
+      return btn;
+    };
+    const fileBtn = el('button', `actor-editor-btn${this.fileMenuOpen ? ' active' : ''}`, 'File');
+    fileBtn.onclick = () => {
+      this.fileMenuOpen = !this.fileMenuOpen;
+      this.render();
+    };
+    menu.appendChild(fileBtn);
+    if (this.fileMenuOpen) {
+      const fileItems = el('div', 'actor-editor-list');
+      [
+        ['New', () => this.newActor()],
+        ['Open', () => this.openActor()],
+        ['Save', () => this.saveActor(false)],
+        ['Save As', () => this.saveActor(true)],
+        ['Play Test', () => this.playtestActor()],
+        ['Exit', () => this.exitToMenu()]
+      ].forEach(([label, handler]) => {
+        const btn = el('button', 'actor-editor-btn small', label);
+        btn.onclick = handler;
+        fileItems.appendChild(btn);
+      });
+      menu.appendChild(fileItems);
+    }
+    menu.appendChild(makeMenuBtn('Actor', 'actor'));
+    menu.appendChild(makeMenuBtn('States', 'states'));
+    menu.appendChild(makeMenuBtn('Linked Parts', 'linked-parts'));
+    section.appendChild(menu);
+    return section;
+  }
+
+  renderMainPanel(actor, state) {
+    const wrap = el('div', 'actor-editor-main-panel');
+    if (this.activeMenuSection === 'actor') {
+      wrap.appendChild(this.renderActorSettings(actor));
+      return wrap;
+    }
+    if (this.activeMenuSection === 'linked-parts') {
+      wrap.appendChild(this.renderLinkedParts(actor));
+      return wrap;
+    }
+    wrap.appendChild(this.renderStateList(actor));
+    wrap.appendChild(this.renderStateEditor(state));
+    return wrap;
   }
 
   renderActorSettings(actor) {
@@ -512,19 +561,6 @@ export default class ActorEditor {
       row.append(preview, meta, rowBtns);
       list.appendChild(row);
       if (index === 0) row.dataset.initial = 'true';
-    });
-    section.appendChild(list);
-    return section;
-  }
-
-  renderBehaviorAnalysis() {
-    const section = el('section', 'actor-editor-card');
-    section.appendChild(el('h2', '', 'Repo behavior presets'));
-    const list = el('div', 'actor-editor-list');
-    getBehaviorPresetCatalog().forEach((preset) => {
-      const row = el('div', 'actor-editor-list-row stack');
-      row.append(el('strong', '', `${preset.label} (${preset.derivedFrom.join(', ')})`), el('span', '', preset.notes));
-      list.appendChild(row);
     });
     section.appendChild(list);
     return section;
@@ -685,14 +721,4 @@ export default class ActorEditor {
     return section;
   }
 
-  renderWorkflowCard() {
-    const section = el('section', 'actor-editor-card');
-    section.appendChild(el('h2', '', 'Default workflow'));
-    const ol = el('ol', 'actor-editor-workflow');
-    ['Name the actor.', 'Leave Attack Who as none or set it to player.', 'Idle state exists automatically.', 'Click the animation preview to open Pixel Editor.', 'Add movement / death / attack states as needed.', 'Author conditions and actions visually per state.', 'Set contact damage, invulnerability, loot, and linked parts.', 'Save, then place only the root actor in Level Editor.'].forEach((step) => {
-      const li = el('li'); li.textContent = step; ol.appendChild(li);
-    });
-    section.appendChild(ol);
-    return section;
-  }
 }
