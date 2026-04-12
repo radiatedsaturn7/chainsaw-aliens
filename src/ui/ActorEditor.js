@@ -24,6 +24,43 @@ export default class ActorEditor {
     this.previewTimers = [];
   }
 
+  captureFocusedInputState() {
+    const active = document.activeElement;
+    if (!this.overlay || !active || !this.overlay.contains(active)) return null;
+    const tag = active.tagName;
+    if (tag !== 'INPUT' && tag !== 'TEXTAREA') return null;
+    const path = [];
+    let node = active;
+    while (node && node !== this.overlay) {
+      const parent = node.parentElement;
+      if (!parent) return null;
+      path.unshift(Array.prototype.indexOf.call(parent.children, node));
+      node = parent;
+    }
+    return {
+      path,
+      selectionStart: typeof active.selectionStart === 'number' ? active.selectionStart : null,
+      selectionEnd: typeof active.selectionEnd === 'number' ? active.selectionEnd : null
+    };
+  }
+
+  restoreFocusedInputState(focusState) {
+    if (!focusState || !this.overlay) return;
+    let node = this.overlay;
+    for (const index of focusState.path) {
+      node = node?.children?.[index] || null;
+      if (!node) return;
+    }
+    if (!(node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement)) return;
+    node.focus();
+    if (typeof focusState.selectionStart === 'number' && typeof focusState.selectionEnd === 'number') {
+      const maxSelection = String(node.value || '').length;
+      const start = Math.min(focusState.selectionStart, maxSelection);
+      const end = Math.min(focusState.selectionEnd, maxSelection);
+      node.setSelectionRange(start, end);
+    }
+  }
+
   activate() {
     this.active = true;
     this.mount();
@@ -192,6 +229,7 @@ export default class ActorEditor {
 
   render() {
     if (!this.overlay) return;
+    const focusState = this.captureFocusedInputState();
     this.clearPreviewTimers();
     this.ensureStateSelection();
     const actor = this.actor;
@@ -224,6 +262,7 @@ export default class ActorEditor {
     right.appendChild(this.renderStateEditor(state));
     right.appendChild(this.renderLinkedParts(actor));
     right.appendChild(this.renderWorkflowCard());
+    this.restoreFocusedInputState(focusState);
   }
 
   renderActorSettings(actor) {
