@@ -1,7 +1,7 @@
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsLoad, vfsSave } from './vfs.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
-import { SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
+import { getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 
 const ACTOR_FOLDER = 'actors';
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -372,7 +372,12 @@ export default class ActorEditor {
     const center = el('div', 'actor-editor-center');
     const rightRail = el('div', 'actor-editor-right-rail');
     body.append(left, center, rightRail);
-    const railWidth = SHARED_EDITOR_LEFT_MENU.width();
+    const viewportW = Number(window.innerWidth || 0);
+    const viewportH = Number(window.innerHeight || 0);
+    const isMobileViewport = Math.min(viewportW, viewportH) <= 900;
+    const railWidth = isMobileViewport
+      ? getSharedMobileRailWidth(viewportW, viewportH)
+      : SHARED_EDITOR_LEFT_MENU.width();
     shell.style.display = 'flex';
     shell.style.flexDirection = 'column';
     shell.style.height = '100%';
