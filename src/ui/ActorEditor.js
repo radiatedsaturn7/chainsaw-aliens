@@ -366,22 +366,16 @@ export default class ActorEditor {
     const shell = el('div', 'actor-editor-shell');
     this.overlay.appendChild(shell);
 
-    const top = el('div', 'actor-editor-topbar');
-    shell.appendChild(top);
-    const title = el('div', 'actor-editor-title');
-    title.textContent = this.currentDocumentRef?.name ? `Actor Editor • ${this.currentDocumentRef.name}` : 'Actor Editor';
-    top.appendChild(title);
-
     const body = el('div', 'actor-editor-body');
     shell.appendChild(body);
     const left = el('div', 'actor-editor-left');
-    const right = el('div', 'actor-editor-right');
-    body.append(left, right);
+    const center = el('div', 'actor-editor-center');
+    const rightRail = el('div', 'actor-editor-right-rail');
+    body.append(left, center, rightRail);
     const railWidth = SHARED_EDITOR_LEFT_MENU.width();
     shell.style.display = 'flex';
     shell.style.flexDirection = 'column';
     shell.style.height = '100%';
-    shell.style.gap = `${UI_SUITE.spacing.gap}px`;
     body.style.display = 'flex';
     body.style.gap = `${SHARED_EDITOR_LEFT_MENU.desktopContentGap}px`;
     body.style.flex = '1';
@@ -393,19 +387,22 @@ export default class ActorEditor {
     left.style.gap = `${UI_SUITE.spacing.gap}px`;
     left.style.overflow = 'visible';
     left.style.zIndex = '2';
-    right.style.flex = '1';
-    right.style.minWidth = '0';
-    right.style.overflow = 'auto';
+    center.style.flex = '1';
+    center.style.minWidth = '0';
+    center.style.overflow = 'auto';
+    rightRail.style.width = `${railWidth}px`;
+    rightRail.style.flex = `0 0 ${railWidth}px`;
+    rightRail.style.display = 'flex';
+    rightRail.style.flexDirection = 'column';
+    rightRail.style.gap = `${UI_SUITE.spacing.gap}px`;
 
     left.appendChild(this.renderSidebarMenu());
-    right.appendChild(this.renderMainPanel(actor, state));
+    center.appendChild(this.renderMainPanel(actor, state));
+    rightRail.appendChild(this.renderRightRail());
     this.restoreFocusedInputState(focusState);
   }
 
   renderSidebarMenu() {
-    const railShell = el('div', 'actor-editor-rail-shell');
-    railShell.style.position = 'relative';
-    railShell.style.height = '100%';
     const menu = el('div', 'actor-editor-menu-rail');
     menu.style.display = 'flex';
     menu.style.flexDirection = 'column';
@@ -434,22 +431,11 @@ export default class ActorEditor {
     menu.appendChild(makeMenuBtn('Actor', 'actor'));
     menu.appendChild(makeMenuBtn('States', 'states'));
     menu.appendChild(makeMenuBtn('Linked Parts', 'linked-parts'));
-    if (this.activeMenuSection === 'states') {
-      menu.appendChild(this.renderStateRailSection());
-    }
-    railShell.appendChild(menu);
-    if (this.fileMenuOpen) {
-      railShell.appendChild(this.renderFileSubmenuRail());
-    }
-    return railShell;
+    return menu;
   }
 
-  renderFileSubmenuRail() {
+  renderFileMenuRail() {
     const subRail = el('div', 'actor-editor-file-subrail');
-    subRail.style.position = 'absolute';
-    subRail.style.top = '0';
-    subRail.style.left = `calc(100% + ${SHARED_EDITOR_LEFT_MENU.desktopContentGap}px)`;
-    subRail.style.width = `${SHARED_EDITOR_LEFT_MENU.width()}px`;
     subRail.style.background = 'rgba(4, 10, 22, 0.96)';
     subRail.style.border = '1px solid rgba(255,255,255,0.18)';
     subRail.style.padding = '8px';
@@ -470,6 +456,17 @@ export default class ActorEditor {
       subRail.appendChild(btn);
     });
     return subRail;
+  }
+
+  renderRightRail() {
+    if (this.fileMenuOpen) return this.renderFileMenuRail();
+    if (this.activeMenuSection === 'states') return this.renderStateRailSection();
+    const rail = el('div', 'actor-editor-menu-rail');
+    rail.style.background = 'rgba(4, 10, 22, 0.92)';
+    rail.style.border = '1px solid rgba(255,255,255,0.18)';
+    rail.style.padding = '8px';
+    rail.style.minHeight = '120px';
+    return rail;
   }
 
   styleRailButton(btn, active = false) {
