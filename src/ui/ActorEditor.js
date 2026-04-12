@@ -10,6 +10,60 @@ const el = (tag, className, text) => {
   if (text != null) node.textContent = text;
   return node;
 };
+const toTitleLabel = (value) => String(value || '').split('-').map((part) => part ? `${part[0].toUpperCase()}${part.slice(1)}` : '').join(' ');
+const STATE_OPTION_TYPE = 'state-option';
+const LOOT_OPTION_TYPE = 'loot-option';
+const PLAYER_INPUT_OPTIONS = [
+  { id: 'attack', label: 'Attack' },
+  { id: 'jump', label: 'Jump' },
+  { id: 'action', label: 'Action' },
+  { id: 'down', label: 'Down' }
+];
+const CONDITION_SPECS = {
+  always: { label: 'Always', fields: [] },
+  'timer-elapsed': { label: 'After X milliseconds', fields: [{ key: 'seconds', label: 'Milliseconds', type: 'number', min: 0, step: 10, defaultValue: 1000, toDisplay: (v) => Math.round(Number(v || 0) * 1000), fromDisplay: (v) => Number(v || 0) / 1000 }] },
+  'actor-health-below': { label: 'My health is below', fields: [{ key: 'ratio', label: 'Health %', type: 'number', min: 0, max: 100, step: 1, defaultValue: 50, toDisplay: (v) => Math.round(Number(v ?? 0.5) * 100), fromDisplay: (v) => Number(v || 0) / 100 }] },
+  'player-health-below': { label: 'Player health is below', fields: [{ key: 'ratio', label: 'Health %', type: 'number', min: 0, max: 100, step: 1, defaultValue: 50, toDisplay: (v) => Math.round(Number(v ?? 0.5) * 100), fromDisplay: (v) => Number(v || 0) / 100 }] },
+  'can-see-player': { label: 'Can see player', fields: [] },
+  'cannot-see-player': { label: 'Cannot see player', fields: [] },
+  'player-within': { label: 'Player within distance', fields: [{ key: 'distance', label: 'Distance (px)', type: 'number', min: 0, step: 1, defaultValue: 160 }] },
+  'player-farther-than': { label: 'Player farther than distance', fields: [{ key: 'distance', label: 'Distance (px)', type: 'number', min: 0, step: 1, defaultValue: 200 }] },
+  'player-has-item': { label: 'Player has item', fields: [{ key: 'itemId', label: 'Item', type: LOOT_OPTION_TYPE, defaultValue: 'health' }] },
+  'player-presses-action': { label: 'Player presses button', fields: [{ key: 'action', label: 'Button', type: 'select', options: PLAYER_INPUT_OPTIONS, defaultValue: 'action' }] },
+  'touched-wall': { label: 'Touched wall', fields: [] },
+  'touched-floor': { label: 'Touched floor', fields: [] },
+  'touched-ceiling': { label: 'Touched ceiling', fields: [] },
+  'took-damage': { label: 'Took damage', fields: [] },
+  'random-chance': { label: 'Random chance succeeds', fields: [{ key: 'chance', label: 'Chance %', type: 'number', min: 0, max: 100, step: 1, defaultValue: 25, toDisplay: (v) => Math.round(Number(v || 0) * 100), fromDisplay: (v) => Number(v || 0) / 100 }] },
+  'cooldown-ready': { label: 'Cooldown is ready', fields: [{ key: 'key', label: 'Cooldown key', type: 'text', defaultValue: 'default' }] },
+  'linked-part-destroyed': { label: 'Linked part destroyed', fields: [{ key: 'partId', label: 'Part ID / Role', type: 'text', defaultValue: '' }] },
+  'root-entered-state': { label: 'Root entered state', fields: [{ key: 'stateId', label: 'State', type: STATE_OPTION_TYPE, defaultValue: '' }] },
+  'child-entered-state': { label: 'Child entered state', fields: [{ key: 'stateId', label: 'State', type: STATE_OPTION_TYPE, defaultValue: '' }] }
+};
+const ACTION_SPECS = {
+  'switch-state': { label: 'Switch to state', fields: [{ key: 'stateId', label: 'State', type: STATE_OPTION_TYPE, defaultValue: '' }] },
+  'reverse-direction': { label: 'Reverse direction', fields: [] },
+  'set-velocity': { label: 'Set velocity', fields: [{ key: 'vx', label: 'X speed', type: 'number', step: 1, defaultValue: 0 }, { key: 'vy', label: 'Y speed', type: 'number', step: 1, defaultValue: 0 }] },
+  jump: { label: 'Jump', fields: [{ key: 'speed', label: 'Jump speed', type: 'number', min: 0, step: 1, defaultValue: 220 }] },
+  'stop-moving': { label: 'Stop moving', fields: [] },
+  'emit-damage': { label: 'Emit area damage', fields: [{ key: 'amount', label: 'Damage amount', type: 'number', min: 0, step: 1, defaultValue: 1 }, { key: 'radius', label: 'Radius (px)', type: 'number', min: 0, step: 1, defaultValue: 32 }] },
+  'spawn-bullets': { label: 'Spawn bullet', fields: [{ key: 'aimAtPlayer', label: 'Aim at player', type: 'checkbox', defaultValue: true }, { key: 'angle', label: 'Angle (degrees)', type: 'number', step: 1, defaultValue: 0, toDisplay: (v) => Math.round(Number(v || 0) * (180 / Math.PI)), fromDisplay: (v) => Number(v || 0) * (Math.PI / 180) }, { key: 'speed', label: 'Bullet speed', type: 'number', min: 0, step: 1, defaultValue: 220 }] },
+  'spawn-actor': { label: 'Spawn actor', fields: [{ key: 'actorId', label: 'Actor ID', type: 'text', defaultValue: '' }, { key: 'offsetX', label: 'Offset X', type: 'number', step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Offset Y', type: 'number', step: 1, defaultValue: 0 }] },
+  'delete-actor': { label: 'Delete actor', fields: [] },
+  'play-sound': { label: 'Play sound', fields: [{ key: 'soundId', label: 'Sound ID', type: 'text', defaultValue: '' }] },
+  'play-fx': { label: 'Play FX', fields: [{ key: 'fxId', label: 'FX ID', type: 'text', defaultValue: '' }] },
+  'become-invulnerable': { label: 'Become invulnerable', fields: [] },
+  'become-vulnerable': { label: 'Become vulnerable', fields: [] },
+  'enable-body-damage': { label: 'Enable body damage', fields: [] },
+  'disable-body-damage': { label: 'Disable body damage', fields: [] },
+  'drop-loot': { label: 'Drop loot', fields: [{ key: 'itemId', label: 'Item', type: LOOT_OPTION_TYPE, defaultValue: 'loot' }, { key: 'chance', label: 'Chance %', type: 'number', min: 0, max: 100, step: 1, defaultValue: 100, toDisplay: (v) => Math.round(Number(v || 0) * 100), fromDisplay: (v) => Number(v || 0) / 100 }] },
+  'face-player': { label: 'Face player', fields: [] },
+  'signal-root': { label: 'Signal root actor', fields: [{ key: 'signal', label: 'Signal name', type: 'text', defaultValue: '' }] },
+  'signal-children': { label: 'Signal child actors', fields: [{ key: 'signal', label: 'Signal name', type: 'text', defaultValue: '' }] },
+  'destroy-linked-part': { label: 'Destroy linked part', fields: [{ key: 'partId', label: 'Part ID / Role', type: 'text', defaultValue: '' }] },
+  'open-weak-point': { label: 'Open weak point', fields: [{ key: 'weakPointId', label: 'Weak point ID', type: 'text', defaultValue: '' }] },
+  'close-weak-point': { label: 'Close weak point', fields: [{ key: 'weakPointId', label: 'Weak point ID', type: 'text', defaultValue: '' }] }
+};
 
 export default class ActorEditor {
   constructor(game) {
@@ -59,6 +113,77 @@ export default class ActorEditor {
       const end = Math.min(focusState.selectionEnd, maxSelection);
       node.setSelectionRange(start, end);
     }
+  }
+
+  getConditionSpec(type) {
+    return CONDITION_SPECS[type] || { label: toTitleLabel(type), fields: [] };
+  }
+
+  getActionSpec(type) {
+    return ACTION_SPECS[type] || { label: toTitleLabel(type), fields: [] };
+  }
+
+  createParamsFromSpec(spec, stateOptions = []) {
+    const params = {};
+    (spec?.fields || []).forEach((field) => {
+      if (field.type === STATE_OPTION_TYPE) {
+        params[field.key] = field.defaultValue || stateOptions[0]?.id || '';
+        return;
+      }
+      params[field.key] = field.defaultValue ?? '';
+    });
+    return params;
+  }
+
+  renderParamFields({ fields, params, onParamInput, stateOptions }) {
+    const wrap = el('div', 'actor-editor-inline-actions');
+    (fields || []).forEach((field) => {
+      const fieldWrap = el('label', 'actor-editor-field');
+      fieldWrap.appendChild(el('span', 'actor-editor-field-label', field.label));
+      let input = null;
+      if (field.type === 'checkbox') {
+        input = el('input');
+        input.type = 'checkbox';
+        input.checked = !!params?.[field.key];
+        input.oninput = (event) => onParamInput(field, event.target.checked);
+      } else if (field.type === 'select' || field.type === STATE_OPTION_TYPE || field.type === LOOT_OPTION_TYPE) {
+        input = el('select');
+        const options = field.type === STATE_OPTION_TYPE
+          ? stateOptions
+          : field.type === LOOT_OPTION_TYPE
+            ? LOOT_ITEM_OPTIONS
+            : (field.options || []);
+        options.forEach((option) => {
+          const node = el('option');
+          node.value = option.id;
+          node.textContent = option.label || option.id;
+          input.appendChild(node);
+        });
+        const selected = params?.[field.key] ?? field.defaultValue ?? options[0]?.id ?? '';
+        input.value = selected;
+        input.oninput = (event) => onParamInput(field, event.target.value);
+      } else {
+        input = el('input');
+        if (field.type === 'number') {
+          input.type = 'number';
+          if (field.min != null) input.min = String(field.min);
+          if (field.max != null) input.max = String(field.max);
+          if (field.step != null) input.step = String(field.step);
+        } else {
+          input.type = 'text';
+        }
+        const storedValue = params?.[field.key];
+        const displayValue = field.toDisplay ? field.toDisplay(storedValue) : (storedValue ?? field.defaultValue ?? '');
+        input.value = displayValue;
+        input.oninput = (event) => {
+          const raw = field.type === 'number' ? Number(event.target.value || 0) : event.target.value;
+          onParamInput(field, raw);
+        };
+      }
+      fieldWrap.appendChild(input);
+      wrap.appendChild(fieldWrap);
+    });
+    return wrap;
   }
 
   activate() {
@@ -452,15 +577,37 @@ export default class ActorEditor {
     mode.oninput = (event) => this.updateSelectedState((draft) => { draft.conditionMode = event.target.value; });
     section.appendChild(mode);
     const list = el('div', 'actor-editor-list');
+    const stateOptions = this.actor.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
     state.conditions.forEach((condition, index) => {
       const row = el('div', 'actor-editor-list-row');
-      const type = el('select'); CONDITION_TYPES.forEach((entry) => { const option = el('option'); option.value = entry; option.textContent = entry; if (entry === condition.type) option.selected = true; type.appendChild(option); });
-      type.oninput = (event) => this.updateSelectedState((draft) => { draft.conditions[index].type = event.target.value; });
-      const params = el('input'); params.value = JSON.stringify(condition.params || {}); params.onchange = (event) => this.updateSelectedState((draft) => { try { draft.conditions[index].params = JSON.parse(event.target.value || '{}'); } catch { draft.conditions[index].params = { value: event.target.value }; } });
+      const spec = this.getConditionSpec(condition.type);
+      const type = el('select');
+      CONDITION_TYPES.forEach((entry) => {
+        const option = el('option');
+        option.value = entry;
+        option.textContent = this.getConditionSpec(entry).label;
+        if (entry === condition.type) option.selected = true;
+        type.appendChild(option);
+      });
+      type.oninput = (event) => this.updateSelectedState((draft) => {
+        const nextType = event.target.value;
+        draft.conditions[index].type = nextType;
+        draft.conditions[index].params = this.createParamsFromSpec(this.getConditionSpec(nextType), stateOptions);
+      });
+      const params = this.renderParamFields({
+        fields: spec.fields,
+        params: condition.params || {},
+        stateOptions,
+        onParamInput: (field, value) => this.updateSelectedState((draft) => {
+          const nextValue = field.fromDisplay ? field.fromDisplay(value) : value;
+          draft.conditions[index].params = draft.conditions[index].params || {};
+          draft.conditions[index].params[field.key] = nextValue;
+        })
+      });
       const remove = el('button', 'actor-editor-btn small', 'Remove'); remove.onclick = () => this.updateSelectedState((draft) => { draft.conditions.splice(index, 1); if (!draft.conditions.length) draft.conditions.push({ id: 'always', type: 'always', params: {} }); });
       row.append(type, params, remove); list.appendChild(row);
     });
-    const add = el('button', 'actor-editor-btn', 'Add condition'); add.onclick = () => this.updateSelectedState((draft) => { draft.conditions.push({ id: `cond-${Date.now()}`, type: 'timer-elapsed', params: { seconds: 1 } }); });
+    const add = el('button', 'actor-editor-btn', 'Add condition'); add.onclick = () => this.updateSelectedState((draft) => { draft.conditions.push({ id: `cond-${Date.now()}`, type: 'timer-elapsed', params: this.createParamsFromSpec(this.getConditionSpec('timer-elapsed'), stateOptions) }); });
     section.append(list, add);
     return section;
   }
@@ -469,15 +616,40 @@ export default class ActorEditor {
     const section = el('div', 'actor-editor-subsection');
     section.appendChild(el('h3', '', 'Actions'));
     const list = el('div', 'actor-editor-list');
+    const stateOptions = this.actor.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
     state.actions.forEach((action, index) => {
       const row = el('div', 'actor-editor-list-row');
-      const type = el('select'); ACTION_TYPES.forEach((entry) => { const option = el('option'); option.value = entry; option.textContent = entry; if (entry === action.type) option.selected = true; type.appendChild(option); });
-      type.oninput = (event) => this.updateSelectedState((draft) => { draft.actions[index].type = event.target.value; });
-      const params = el('input'); params.value = JSON.stringify(action.params || {}); params.onchange = (event) => this.updateSelectedState((draft) => { try { draft.actions[index].params = JSON.parse(event.target.value || '{}'); } catch { draft.actions[index].params = { value: event.target.value }; } });
+      const spec = this.getActionSpec(action.type);
+      const type = el('select');
+      ACTION_TYPES.forEach((entry) => {
+        const option = el('option');
+        option.value = entry;
+        option.textContent = this.getActionSpec(entry).label;
+        if (entry === action.type) option.selected = true;
+        type.appendChild(option);
+      });
+      type.oninput = (event) => this.updateSelectedState((draft) => {
+        const nextType = event.target.value;
+        draft.actions[index].type = nextType;
+        draft.actions[index].params = this.createParamsFromSpec(this.getActionSpec(nextType), stateOptions);
+      });
+      const params = this.renderParamFields({
+        fields: spec.fields,
+        params: action.params || {},
+        stateOptions,
+        onParamInput: (field, value) => this.updateSelectedState((draft) => {
+          const nextValue = field.fromDisplay ? field.fromDisplay(value) : value;
+          draft.actions[index].params = draft.actions[index].params || {};
+          draft.actions[index].params[field.key] = nextValue;
+        })
+      });
       const remove = el('button', 'actor-editor-btn small', 'Remove'); remove.onclick = () => this.updateSelectedState((draft) => { draft.actions.splice(index, 1); });
       row.append(type, params, remove); list.appendChild(row);
     });
-    const add = el('button', 'actor-editor-btn', 'Add action'); add.onclick = () => this.updateSelectedState((draft) => { draft.actions.push({ id: `action-${Date.now()}`, type: 'switch-state', params: { stateId: draft.id } }); });
+    const add = el('button', 'actor-editor-btn', 'Add action'); add.onclick = () => this.updateSelectedState((draft, actorDraft) => {
+      const actorStateOptions = actorDraft.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
+      draft.actions.push({ id: `action-${Date.now()}`, type: 'switch-state', params: this.createParamsFromSpec(this.getActionSpec('switch-state'), actorStateOptions) });
+    });
     section.append(list, add);
     return section;
   }
