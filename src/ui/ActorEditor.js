@@ -391,6 +391,8 @@ export default class ActorEditor {
     left.style.display = 'flex';
     left.style.flexDirection = 'column';
     left.style.gap = `${UI_SUITE.spacing.gap}px`;
+    left.style.overflow = 'visible';
+    left.style.zIndex = '2';
     right.style.flex = '1';
     right.style.minWidth = '0';
     right.style.overflow = 'auto';
@@ -401,11 +403,20 @@ export default class ActorEditor {
   }
 
   renderSidebarMenu() {
-    const section = el('section', 'actor-editor-card');
-    section.appendChild(el('h2', '', 'Menu'));
-    const menu = el('div', 'actor-editor-toolbar');
+    const railShell = el('div', 'actor-editor-rail-shell');
+    railShell.style.position = 'relative';
+    railShell.style.height = '100%';
+    const menu = el('div', 'actor-editor-menu-rail');
+    menu.style.display = 'flex';
+    menu.style.flexDirection = 'column';
+    menu.style.gap = '6px';
+    menu.style.background = 'rgba(4, 10, 22, 0.92)';
+    menu.style.border = '1px solid rgba(255,255,255,0.18)';
+    menu.style.padding = '8px';
+    menu.style.height = '100%';
     const makeMenuBtn = (label, id, onClick) => {
       const btn = el('button', `actor-editor-btn${this.activeMenuSection === id ? ' active' : ''}`, label);
+      this.styleRailButton(btn, this.activeMenuSection === id);
       btn.onclick = onClick || (() => {
         this.activeMenuSection = id;
         this.fileMenuOpen = false;
@@ -414,48 +425,83 @@ export default class ActorEditor {
       return btn;
     };
     const fileBtn = el('button', `actor-editor-btn${this.fileMenuOpen ? ' active' : ''}`, 'File');
+    this.styleRailButton(fileBtn, this.fileMenuOpen);
     fileBtn.onclick = () => {
       this.fileMenuOpen = !this.fileMenuOpen;
       this.render();
     };
     menu.appendChild(fileBtn);
-    if (this.fileMenuOpen) {
-      const fileItems = el('div', 'actor-editor-list');
-      [
-        ['New', () => this.newActor()],
-        ['Open', () => this.openActor()],
-        ['Save', () => this.saveActor(false)],
-        ['Save As', () => this.saveActor(true)],
-        ['Play Test', () => this.playtestActor()],
-        ['Exit', () => this.exitToMenu()]
-      ].forEach(([label, handler]) => {
-        const btn = el('button', 'actor-editor-btn small', label);
-        btn.onclick = handler;
-        fileItems.appendChild(btn);
-      });
-      menu.appendChild(fileItems);
-    }
     menu.appendChild(makeMenuBtn('Actor', 'actor'));
     menu.appendChild(makeMenuBtn('States', 'states'));
     menu.appendChild(makeMenuBtn('Linked Parts', 'linked-parts'));
     if (this.activeMenuSection === 'states') {
       menu.appendChild(this.renderStateRailSection());
     }
-    section.appendChild(menu);
-    return section;
+    railShell.appendChild(menu);
+    if (this.fileMenuOpen) {
+      railShell.appendChild(this.renderFileSubmenuRail());
+    }
+    return railShell;
+  }
+
+  renderFileSubmenuRail() {
+    const subRail = el('div', 'actor-editor-file-subrail');
+    subRail.style.position = 'absolute';
+    subRail.style.top = '0';
+    subRail.style.left = `calc(100% + ${SHARED_EDITOR_LEFT_MENU.desktopContentGap}px)`;
+    subRail.style.width = `${SHARED_EDITOR_LEFT_MENU.width()}px`;
+    subRail.style.background = 'rgba(4, 10, 22, 0.96)';
+    subRail.style.border = '1px solid rgba(255,255,255,0.18)';
+    subRail.style.padding = '8px';
+    subRail.style.display = 'flex';
+    subRail.style.flexDirection = 'column';
+    subRail.style.gap = '6px';
+    [
+      ['New', () => this.newActor()],
+      ['Open', () => this.openActor()],
+      ['Save', () => this.saveActor(false)],
+      ['Save As', () => this.saveActor(true)],
+      ['Play Test', () => this.playtestActor()],
+      ['Exit', () => this.exitToMenu()]
+    ].forEach(([label, handler]) => {
+      const btn = el('button', 'actor-editor-btn', label);
+      this.styleRailButton(btn, false);
+      btn.onclick = handler;
+      subRail.appendChild(btn);
+    });
+    return subRail;
+  }
+
+  styleRailButton(btn, active = false) {
+    btn.style.display = 'block';
+    btn.style.width = '100%';
+    btn.style.textAlign = 'left';
+    btn.style.borderRadius = '0';
+    btn.style.border = '1px solid rgba(255,255,255,0.2)';
+    btn.style.padding = '10px 12px';
+    btn.style.background = active ? 'rgba(176, 156, 83, 0.9)' : 'rgba(56, 64, 78, 0.85)';
+    btn.style.color = active ? '#101114' : '#f2f4f8';
   }
 
   renderStateRailSection() {
     const wrap = el('div', 'actor-editor-list');
+    wrap.style.display = 'flex';
+    wrap.style.flexDirection = 'column';
+    wrap.style.gap = '6px';
     const controls = el('div', 'actor-editor-inline-actions');
+    controls.style.display = 'flex';
+    controls.style.flexDirection = 'column';
+    controls.style.gap = '6px';
     [['Add', () => this.addState()], ['Paste', () => this.pasteState()]].forEach(([label, handler]) => {
       const btn = el('button', 'actor-editor-btn small', label);
+      this.styleRailButton(btn, false);
       btn.onclick = handler;
       controls.appendChild(btn);
     });
     wrap.appendChild(controls);
     this.actor.states.forEach((state) => {
       const btn = el('button', `actor-editor-btn small${this.selectedStateId === state.id ? ' active' : ''}`, state.name || state.id);
+      this.styleRailButton(btn, this.selectedStateId === state.id);
       btn.onclick = () => {
         this.selectedStateId = state.id;
         this.render();
