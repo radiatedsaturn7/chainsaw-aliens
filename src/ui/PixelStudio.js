@@ -4358,15 +4358,26 @@ export default class PixelStudio {
   }
 
   copySelection() {
-    if (!this.selection.active || !this.selection.mask) return;
-    const width = this.canvasState.width;
-    const height = this.canvasState.height;
+    if (!this.selection.active || !this.selection.mask) {
+      this.selectAllSelection();
+    }
+    const bounds = this.selection.bounds;
+    if (!bounds || !this.selection.mask) return;
+    const canvasWidth = this.canvasState.width;
+    const width = Math.max(1, bounds.w);
+    const height = Math.max(1, bounds.h);
     const pixels = new Uint32Array(width * height);
-    this.activeLayer.pixels.forEach((value, index) => {
-      if (!this.selection.mask[index]) return;
-      pixels[index] = value;
-    });
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const srcX = bounds.x + x;
+        const srcY = bounds.y + y;
+        const srcIndex = srcY * canvasWidth + srcX;
+        if (!this.selection.mask[srcIndex]) continue;
+        pixels[y * width + x] = this.activeLayer.pixels[srcIndex];
+      }
+    }
     this.clipboard = { width, height, pixels };
+    this.writeClipboardToSystem(this.clipboard).catch(() => {});
   }
 
   cutSelection() {
@@ -4391,13 +4402,116 @@ export default class PixelStudio {
   }
 
   pasteClipboard() {
-    if (!this.clipboard) return;
-    this.startHistory('paste');
-    this.clipboard.pixels.forEach((value, index) => {
-      if (!value) return;
-      this.activeLayer.pixels[index] = value;
+    this.readClipboardFromSystem().finally(() => {
+      if (!this.clipboard) return;
+      const srcW = Number(this.clipboard.width || 0);
+      const srcH = Number(this.clipboard.height || 0);
+      if (!srcW || !srcH || !this.clipboard.pixels) return;
+      this.startHistory('paste');
+      const maxW = this.canvasState.width;
+      const maxH = this.canvasState.height;
+      for (let y = 0; y < srcH; y += 1) {
+        for (let x = 0; x < srcW; x += 1) {
+          if (x >= maxW || y >= maxH) continue;
+          const value = this.clipboard.pixels[y * srcW + x];
+          if (!value) continue;
+          this.activeLayer.pixels[y * maxW + x] = value;
+        }
+      }
+      this.commitHistory();
     });
-    this.commitHistory();
+  }
+
+  async writeClipboardToSystem(clipboard) {
+    if (!clipboard || !navigator?.clipboard || typeof ClipboardItem === 'undefined') return;
+    const imageData = new ImageData(clipboard.width, clipboard.height);
+    clipboard.pixels.forEach((value, index) => {
+      const rgba = uint32ToRgba(value || 0);
+      const base = index * 4;
+      imageData.data[base] = rgba.r;
+      imageData.data[base + 1] = rgba.g;
+      imageData.data[base + 2] = rgba.b;
+      imageData.data[base + 3] = rgba.a;
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = clipboard.width;
+    canvas.height = clipboard.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.putImageData(imageData, 0, 0);
+    const pngBlob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+    if (!pngBlob) return;
+    const textBlob = new Blob([JSON.stringify({
+      type: 'pixelstudio-clipboard',
+      width: clipboard.width,
+      height: clipboard.height,
+      pixels: Array.from(clipboard.pixels)
+    })], { type: 'text/plain' });
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'image/png': pngBlob,
+        'text/plain': textBlob
+      })
+    ]);
+  }
+
+  async readClipboardFromSystem() {
+    if (!navigator?.clipboard) return;
+    try {
+      if (typeof navigator.clipboard.read === 'function') {
+        const items = await navigator.clipboard.read();
+        for (const item of items) {
+          if (item.types.includes('image/png')) {
+            const blob = await item.getType('image/png');
+            const bitmap = await createImageBitmap(blob);
+            const canvas = document.createElement('canvas');
+            canvas.width = bitmap.width;
+            canvas.height = bitmap.height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            ctx.drawImage(bitmap, 0, 0);
+            const imageData = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+            const pixels = new Uint32Array(bitmap.width * bitmap.height);
+            for (let i = 0; i < pixels.length; i += 1) {
+              const base = i * 4;
+              pixels[i] = rgbaToUint32({
+                r: imageData.data[base],
+                g: imageData.data[base + 1],
+                b: imageData.data[base + 2],
+                a: imageData.data[base + 3]
+              });
+            }
+            this.clipboard = { width: bitmap.width, height: bitmap.height, pixels };
+            return;
+          }
+          if (item.types.includes('text/plain')) {
+            const textBlob = await item.getType('text/plain');
+            const text = await textBlob.text();
+            const parsed = JSON.parse(text);
+            if (parsed?.type === 'pixelstudio-clipboard' && parsed?.width > 0 && parsed?.height > 0 && Array.isArray(parsed?.pixels)) {
+              this.clipboard = {
+                width: parsed.width,
+                height: parsed.height,
+                pixels: Uint32Array.from(parsed.pixels)
+              };
+              return;
+            }
+          }
+        }
+      } else if (typeof navigator.clipboard.readText === 'function') {
+        const text = await navigator.clipboard.readText();
+        const parsed = JSON.parse(text);
+        if (parsed?.type === 'pixelstudio-clipboard' && parsed?.width > 0 && parsed?.height > 0 && Array.isArray(parsed?.pixels)) {
+          this.clipboard = {
+            width: parsed.width,
+            height: parsed.height,
+            pixels: Uint32Array.from(parsed.pixels)
+          };
+        }
+      }
+    } catch (error) {
+      console.warn('PixelStudio clipboard read failed; using internal clipboard fallback.', error);
+    }
   }
 
   selectAllSelection() {
@@ -5880,8 +5994,8 @@ export default class PixelStudio {
         { id: 'import-image', label: 'Import Image', onClick: () => this.imageFileInput.click() },
         { id: 'sprite-sheet', label: 'Sprite Sheet', onClick: () => this.exportSpriteSheet('horizontal') },
         { id: 'export-gif', label: 'Export GIF', onClick: () => this.exportGif() },
-        { id: 'palette-json', label: 'Palette JSON', onClick: () => this.exportPaletteJson() },
-        { id: 'palette-hex', label: 'Palette HEX', onClick: () => this.exportPaletteHex() },
+        { id: 'copy-image', label: 'Copy', onClick: () => this.copySelection() },
+        { id: 'paste-image', label: 'Paste', onClick: () => this.pasteClipboard() },
         { id: 'controls', label: 'Controls', onClick: () => { this.controlsOverlayOpen = true; } }
       ]
     });
@@ -7285,8 +7399,8 @@ export default class PixelStudio {
       { label: 'Export PNG', action: () => this.exportPng() },
       { label: 'Sprite Sheet', action: () => this.exportSpriteSheet('horizontal') },
       { label: 'Export GIF', action: () => this.exportGif() },
-      { label: 'Palette JSON', action: () => this.exportPaletteJson() },
-      { label: 'Palette HEX', action: () => this.exportPaletteHex() },
+      { label: 'Copy', action: () => this.copySelection() },
+      { label: 'Paste', action: () => this.pasteClipboard() },
       { label: 'Import Palette', action: () => this.paletteFileInput.click() },
       { label: 'Import Image', action: () => this.imageFileInput.click() }
     ];
