@@ -274,6 +274,7 @@ export default class PixelStudio {
     this.paletteRemoveMode = false;
     this.paletteRemoveMarked = new Set();
     this.transformModal = null;
+    this.pasteImportModal = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
     this.sidebars = { left: true };
@@ -2286,7 +2287,7 @@ export default class PixelStudio {
 
   handlePointerDown(payload) {
     const button = payload.button ?? 0;
-    if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen || this.selectionContextMenu || this.brushPickerOpen || this.transformModal) {
+    if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen || this.selectionContextMenu || this.brushPickerOpen || this.transformModal || this.pasteImportModal) {
       this.handleButtonClick(payload.x, payload.y, payload);
       return;
     }
@@ -2703,7 +2704,7 @@ export default class PixelStudio {
     } else if (toolId !== TOOL_IDS.EYEDROPPER) {
       this.modeTab = this.modeTab === 'animate' ? 'animate' : 'draw';
     }
-    if (!this.menuOpen && !this.controlsOverlayOpen && !this.transformModal && !this.paletteGridOpen && !this.brushPickerOpen) {
+    if (!this.menuOpen && !this.controlsOverlayOpen && !this.transformModal && !this.pasteImportModal && !this.paletteGridOpen && !this.brushPickerOpen) {
       this.setInputMode('canvas');
     }
   }
@@ -4404,39 +4405,45 @@ export default class PixelStudio {
   pasteClipboard() {
     this.readClipboardFromSystem().finally(() => {
       if (!this.clipboard) return;
-      let source = this.clipboard;
-      let srcW = Number(source.width || 0);
-      let srcH = Number(source.height || 0);
+      const source = this.clipboard;
+      const srcW = Number(source.width || 0);
+      const srcH = Number(source.height || 0);
       if (!srcW || !srcH || !this.clipboard.pixels) return;
-      let maxW = this.canvasState.width;
-      let maxH = this.canvasState.height;
+      const maxW = this.canvasState.width;
+      const maxH = this.canvasState.height;
       if (srcW > maxW || srcH > maxH) {
-        const choice = String(window.prompt(
-          `Pasted content is ${srcW}×${srcH}, canvas is ${maxW}×${maxH}. Type "resize", "scale", or "cancel".`,
-          'scale'
-        ) || 'scale').toLowerCase();
-        if (choice === 'cancel') return;
-        if (choice === 'resize') {
-          this.resizeArtCanvas(srcW, srcH);
-          maxW = this.canvasState.width;
-          maxH = this.canvasState.height;
-        } else {
-          source = this.scaleClipboardToFit(source, maxW, maxH);
-          srcW = source.width;
-          srcH = source.height;
-        }
+        this.openPasteImportModal(source);
+        return;
       }
-      this.startHistory('paste');
-      for (let y = 0; y < srcH; y += 1) {
-        for (let x = 0; x < srcW; x += 1) {
-          if (x >= maxW || y >= maxH) continue;
-          const value = source.pixels[y * srcW + x];
-          if (!value) continue;
-          this.activeLayer.pixels[y * maxW + x] = value;
-        }
-      }
-      this.commitHistory();
+      this.applyClipboardPaste(source);
     });
+  }
+
+  applyClipboardPaste(source) {
+    const srcW = Number(source?.width || 0);
+    const srcH = Number(source?.height || 0);
+    if (!srcW || !srcH || !source?.pixels) return;
+    const maxW = this.canvasState.width;
+    const maxH = this.canvasState.height;
+    this.startHistory('paste');
+    for (let y = 0; y < srcH; y += 1) {
+      for (let x = 0; x < srcW; x += 1) {
+        if (x >= maxW || y >= maxH) continue;
+        const value = source.pixels[y * srcW + x];
+        if (!value) continue;
+        this.activeLayer.pixels[y * maxW + x] = value;
+      }
+    }
+    this.commitHistory();
+  }
+
+  openPasteImportModal(source) {
+    this.pasteImportModal = {
+      source,
+      mode: 'scale',
+      crop: true,
+      buttons: []
+    };
   }
 
   async writeClipboardToSystem(clipboard) {
@@ -4611,6 +4618,36 @@ export default class PixelStudio {
       }
     }
     return { width: targetW, height: targetH, pixels };
+  }
+
+  cropClipboardToOpaqueBounds(clipboard) {
+    const srcW = Number(clipboard?.width || 0);
+    const srcH = Number(clipboard?.height || 0);
+    if (!srcW || !srcH || !clipboard?.pixels) return clipboard;
+    let minX = srcW;
+    let minY = srcH;
+    let maxX = -1;
+    let maxY = -1;
+    for (let y = 0; y < srcH; y += 1) {
+      for (let x = 0; x < srcW; x += 1) {
+        const value = clipboard.pixels[y * srcW + x];
+        if (!value || uint32ToRgba(value).a === 0) continue;
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
+    }
+    if (maxX < minX || maxY < minY) return clipboard;
+    const width = maxX - minX + 1;
+    const height = maxY - minY + 1;
+    const pixels = new Uint32Array(width * height);
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        pixels[y * width + x] = clipboard.pixels[(minY + y) * srcW + (minX + x)];
+      }
+    }
+    return { width, height, pixels };
   }
 
   async parseClipboardTextPayload(text) {
@@ -5550,6 +5587,18 @@ export default class PixelStudio {
   }
 
   handleButtonClick(x, y, payload = {}) {
+    if (this.pasteImportModal) {
+      const bounds = this.pasteImportModal.bounds;
+      if (bounds && !this.isPointInBounds({ x, y }, bounds)) {
+        this.pasteImportModal = null;
+        return true;
+      }
+      const hit = (this.pasteImportModal.buttons || []).find((entry) => this.isPointInBounds({ x, y }, entry.bounds));
+      if (hit) {
+        hit.onClick?.();
+      }
+      return true;
+    }
     if (this.transformModal) {
       if (this.transformModal.bounds && !this.isPointInBounds({ x, y }, this.transformModal.bounds)) {
         this.closeTransformModal();
@@ -5848,6 +5897,9 @@ export default class PixelStudio {
     if (this.transformModal) {
       this.drawTransformModal(ctx, width, height);
     }
+    if (this.pasteImportModal) {
+      this.drawPasteImportModal(ctx, width, height);
+    }
 
     if (this.controlsOverlayOpen) {
       this.drawControlsOverlay(ctx, width, height);
@@ -6007,6 +6059,115 @@ export default class PixelStudio {
     this.registerFocusable('menu', cancelBounds, () => this.closeTransformModal());
     this.registerFocusable('menu', okBounds, () => this.applyTransformModal());
     ctx.restore();
+  }
+
+  drawPasteImportModal(ctx, width, height) {
+    if (!this.pasteImportModal?.source) return;
+    const modalW = Math.min(860, Math.max(560, width * 0.78));
+    const modalH = Math.min(560, Math.max(360, height * 0.74));
+    const modal = {
+      x: Math.floor((width - modalW) / 2),
+      y: Math.floor((height - modalH) / 2),
+      w: Math.floor(modalW),
+      h: Math.floor(modalH)
+    };
+    this.pasteImportModal.bounds = modal;
+    this.pasteImportModal.buttons = [];
+    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = 'rgba(12,16,24,0.96)';
+    ctx.fillRect(modal.x, modal.y, modal.w, modal.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.strokeRect(modal.x, modal.y, modal.w, modal.h);
+    ctx.fillStyle = '#fff';
+    ctx.font = '16px Courier New';
+    ctx.fillText('Paste Import Options', modal.x + 16, modal.y + 24);
+
+    const sourceBase = this.pasteImportModal.crop
+      ? this.cropClipboardToOpaqueBounds(this.pasteImportModal.source)
+      : this.pasteImportModal.source;
+    const previewTop = modal.y + 46;
+    const previewW = Math.floor((modal.w - 48) / 2);
+    const previewH = modal.h - 156;
+    const leftPreview = { x: modal.x + 16, y: previewTop, w: previewW, h: previewH };
+    const rightPreview = { x: modal.x + 32 + previewW, y: previewTop, w: previewW, h: previewH };
+    this.drawPastePreviewCard(ctx, leftPreview, 'Scale to Canvas', this.scaleClipboardToFit(sourceBase, this.canvasState.width, this.canvasState.height), this.pasteImportModal.mode === 'scale');
+    this.drawPastePreviewCard(ctx, rightPreview, 'Resize Canvas', sourceBase, this.pasteImportModal.mode === 'resize');
+
+    const cropBounds = { x: modal.x + 16, y: modal.y + modal.h - 94, w: 170, h: 28 };
+    this.drawButton(ctx, cropBounds, this.pasteImportModal.crop ? '☑ Crop' : '☐ Crop', this.pasteImportModal.crop, { fontSize: 12 });
+    this.pasteImportModal.buttons.push({
+      bounds: cropBounds,
+      onClick: () => { this.pasteImportModal.crop = !this.pasteImportModal.crop; }
+    });
+    const cancelBounds = { x: modal.x + modal.w - 206, y: modal.y + modal.h - 94, w: 90, h: 28 };
+    const importBounds = { x: modal.x + modal.w - 108, y: modal.y + modal.h - 94, w: 90, h: 28 };
+    this.drawButton(ctx, cancelBounds, 'Cancel', false, { fontSize: 12 });
+    this.drawButton(ctx, importBounds, 'Import', true, { fontSize: 12 });
+    this.pasteImportModal.buttons.push({ bounds: cancelBounds, onClick: () => { this.pasteImportModal = null; } });
+    this.pasteImportModal.buttons.push({
+      bounds: importBounds,
+      onClick: () => {
+        const working = this.pasteImportModal.crop
+          ? this.cropClipboardToOpaqueBounds(this.pasteImportModal.source)
+          : this.pasteImportModal.source;
+        if (this.pasteImportModal.mode === 'resize') {
+          this.resizeArtCanvas(working.width, working.height);
+          this.applyClipboardPaste(working);
+        } else {
+          this.applyClipboardPaste(this.scaleClipboardToFit(working, this.canvasState.width, this.canvasState.height));
+        }
+        this.pasteImportModal = null;
+      }
+    });
+  }
+
+  drawPastePreviewCard(ctx, bounds, label, clipboard, active = false) {
+    if (!clipboard?.pixels) return;
+    ctx.fillStyle = active ? 'rgba(255,225,106,0.2)' : 'rgba(0,0,0,0.45)';
+    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.strokeStyle = active ? 'rgba(255,225,106,0.9)' : 'rgba(255,255,255,0.2)';
+    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    const titleBounds = { x: bounds.x + 8, y: bounds.y + 8, w: bounds.w - 16, h: 24 };
+    this.drawButton(ctx, titleBounds, label, active, { fontSize: 11 });
+    this.pasteImportModal.buttons.push({
+      bounds,
+      onClick: () => { this.pasteImportModal.mode = label.startsWith('Scale') ? 'scale' : 'resize'; }
+    });
+    const pxW = Number(clipboard?.width || 1);
+    const pxH = Number(clipboard?.height || 1);
+    const imageData = new ImageData(pxW, pxH);
+    for (let i = 0; i < clipboard.pixels.length; i += 1) {
+      const rgba = uint32ToRgba(clipboard.pixels[i] || 0);
+      const base = i * 4;
+      imageData.data[base] = rgba.r;
+      imageData.data[base + 1] = rgba.g;
+      imageData.data[base + 2] = rgba.b;
+      imageData.data[base + 3] = rgba.a;
+    }
+    const off = document.createElement('canvas');
+    off.width = pxW;
+    off.height = pxH;
+    const offCtx = off.getContext('2d');
+    if (!offCtx) return;
+    offCtx.putImageData(imageData, 0, 0);
+    const previewPad = 12;
+    const previewArea = {
+      x: bounds.x + previewPad,
+      y: bounds.y + 40,
+      w: bounds.w - previewPad * 2,
+      h: bounds.h - 62
+    };
+    const fit = Math.min(previewArea.w / pxW, previewArea.h / pxH);
+    const drawW = Math.max(1, Math.floor(pxW * fit));
+    const drawH = Math.max(1, Math.floor(pxH * fit));
+    const drawX = previewArea.x + Math.floor((previewArea.w - drawW) / 2);
+    const drawY = previewArea.y + Math.floor((previewArea.h - drawH) / 2);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(off, drawX, drawY, drawW, drawH);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = '11px Courier New';
+    ctx.fillText(`${pxW}×${pxH}`, bounds.x + 10, bounds.y + bounds.h - 10);
   }
 
   isMobileLayout() {
