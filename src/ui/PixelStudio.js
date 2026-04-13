@@ -4477,6 +4477,9 @@ export default class PixelStudio {
     try {
       if (typeof navigator.clipboard.read === 'function') {
         const items = await navigator.clipboard.read();
+        let imageClipboard = null;
+        let parsedTextClipboard = null;
+        let plainTextClipboard = '';
         for (const item of items) {
           const imageType = item.types.find((type) => type.startsWith('image/'));
           if (imageType) {
@@ -4499,20 +4502,59 @@ export default class PixelStudio {
                 a: imageData.data[base + 3]
               });
             }
-            this.clipboard = { width: bitmap.width, height: bitmap.height, pixels };
-            return;
+            imageClipboard = { width: bitmap.width, height: bitmap.height, pixels };
+            continue;
           }
           if (item.types.includes('text/plain')) {
             const textBlob = await item.getType('text/plain');
             const text = await textBlob.text();
             const parsedClipboard = await this.parseClipboardTextPayload(text);
-            if (parsedClipboard) { this.clipboard = parsedClipboard; return; }
+            if (parsedClipboard) {
+              parsedTextClipboard = parsedClipboard;
+            } else {
+              plainTextClipboard = text;
+            }
           }
+        }
+        if (imageClipboard && (parsedTextClipboard || plainTextClipboard)) {
+          const choice = String(window.prompt('Clipboard has image + text. Type "image", "text", or "cancel".', 'image') || 'image').toLowerCase();
+          if (choice === 'cancel') return;
+          if (choice === 'text') {
+            this.clipboard = parsedTextClipboard || this.textToClipboardPayload(plainTextClipboard);
+            return;
+          }
+          this.clipboard = imageClipboard;
+          return;
+        }
+        if (imageClipboard) {
+          this.clipboard = imageClipboard;
+          return;
+        }
+        if (parsedTextClipboard) {
+          this.clipboard = parsedTextClipboard;
+          return;
+        }
+        if (plainTextClipboard) {
+          const choice = String(window.prompt('Clipboard contains text. Type "text" to paste as text art, "internal" to use previous copied pixels, or "cancel".', 'text') || 'text').toLowerCase();
+          if (choice === 'cancel') return;
+          if (choice === 'internal') return;
+          const textClipboard = this.textToClipboardPayload(plainTextClipboard);
+          if (textClipboard) this.clipboard = textClipboard;
         }
       } else if (typeof navigator.clipboard.readText === 'function') {
         const text = await navigator.clipboard.readText();
         const parsedClipboard = await this.parseClipboardTextPayload(text);
-        if (parsedClipboard) this.clipboard = parsedClipboard;
+        if (parsedClipboard) {
+          this.clipboard = parsedClipboard;
+          return;
+        }
+        if (text) {
+          const choice = String(window.prompt('Clipboard contains text. Type "text" to paste as text art, "internal" to use previous copied pixels, or "cancel".', 'text') || 'text').toLowerCase();
+          if (choice === 'text') {
+            const textClipboard = this.textToClipboardPayload(text);
+            if (textClipboard) this.clipboard = textClipboard;
+          }
+        }
       }
     } catch (error) {
       console.warn('PixelStudio clipboard read failed; using internal clipboard fallback.', error);
@@ -4577,6 +4619,44 @@ export default class PixelStudio {
     } catch {
       return null;
     }
+  }
+
+  textToClipboardPayload(text) {
+    const content = String(text || '').trim();
+    if (!content) return null;
+    const lines = content.slice(0, 1200).split(/\r?\n/).slice(0, 24);
+    const fontSize = 16;
+    const padding = 8;
+    const measure = document.createElement('canvas').getContext('2d');
+    if (!measure) return null;
+    measure.font = `${fontSize}px monospace`;
+    const textWidth = Math.ceil(lines.reduce((max, line) => Math.max(max, measure.measureText(line).width), 0));
+    const width = Math.max(1, textWidth + padding * 2);
+    const height = Math.max(1, lines.length * (fontSize + 4) + padding * 2);
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `${fontSize}px monospace`;
+    ctx.textBaseline = 'top';
+    lines.forEach((line, index) => {
+      ctx.fillText(line, padding, padding + index * (fontSize + 4));
+    });
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const pixels = new Uint32Array(width * height);
+    for (let i = 0; i < pixels.length; i += 1) {
+      const base = i * 4;
+      pixels[i] = rgbaToUint32({
+        r: imageData.data[base],
+        g: imageData.data[base + 1],
+        b: imageData.data[base + 2],
+        a: imageData.data[base + 3]
+      });
+    }
+    return { width, height, pixels };
   }
 
   selectAllSelection() {
