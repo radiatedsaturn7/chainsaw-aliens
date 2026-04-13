@@ -4404,16 +4404,33 @@ export default class PixelStudio {
   pasteClipboard() {
     this.readClipboardFromSystem().finally(() => {
       if (!this.clipboard) return;
-      const srcW = Number(this.clipboard.width || 0);
-      const srcH = Number(this.clipboard.height || 0);
+      let source = this.clipboard;
+      let srcW = Number(source.width || 0);
+      let srcH = Number(source.height || 0);
       if (!srcW || !srcH || !this.clipboard.pixels) return;
+      let maxW = this.canvasState.width;
+      let maxH = this.canvasState.height;
+      if (srcW > maxW || srcH > maxH) {
+        const choice = String(window.prompt(
+          `Pasted content is ${srcW}×${srcH}, canvas is ${maxW}×${maxH}. Type "resize", "scale", or "cancel".`,
+          'scale'
+        ) || 'scale').toLowerCase();
+        if (choice === 'cancel') return;
+        if (choice === 'resize') {
+          this.resizeArtCanvas(srcW, srcH);
+          maxW = this.canvasState.width;
+          maxH = this.canvasState.height;
+        } else {
+          source = this.scaleClipboardToFit(source, maxW, maxH);
+          srcW = source.width;
+          srcH = source.height;
+        }
+      }
       this.startHistory('paste');
-      const maxW = this.canvasState.width;
-      const maxH = this.canvasState.height;
       for (let y = 0; y < srcH; y += 1) {
         for (let x = 0; x < srcW; x += 1) {
           if (x >= maxW || y >= maxH) continue;
-          const value = this.clipboard.pixels[y * srcW + x];
+          const value = source.pixels[y * srcW + x];
           if (!value) continue;
           this.activeLayer.pixels[y * maxW + x] = value;
         }
@@ -4461,8 +4478,9 @@ export default class PixelStudio {
       if (typeof navigator.clipboard.read === 'function') {
         const items = await navigator.clipboard.read();
         for (const item of items) {
-          if (item.types.includes('image/png')) {
-            const blob = await item.getType('image/png');
+          const imageType = item.types.find((type) => type.startsWith('image/'));
+          if (imageType) {
+            const blob = await item.getType(imageType);
             const bitmap = await createImageBitmap(blob);
             const canvas = document.createElement('canvas');
             canvas.width = bitmap.width;
@@ -4487,30 +4505,77 @@ export default class PixelStudio {
           if (item.types.includes('text/plain')) {
             const textBlob = await item.getType('text/plain');
             const text = await textBlob.text();
-            const parsed = JSON.parse(text);
-            if (parsed?.type === 'pixelstudio-clipboard' && parsed?.width > 0 && parsed?.height > 0 && Array.isArray(parsed?.pixels)) {
-              this.clipboard = {
-                width: parsed.width,
-                height: parsed.height,
-                pixels: Uint32Array.from(parsed.pixels)
-              };
-              return;
-            }
+            const parsedClipboard = await this.parseClipboardTextPayload(text);
+            if (parsedClipboard) { this.clipboard = parsedClipboard; return; }
           }
         }
       } else if (typeof navigator.clipboard.readText === 'function') {
         const text = await navigator.clipboard.readText();
-        const parsed = JSON.parse(text);
-        if (parsed?.type === 'pixelstudio-clipboard' && parsed?.width > 0 && parsed?.height > 0 && Array.isArray(parsed?.pixels)) {
-          this.clipboard = {
-            width: parsed.width,
-            height: parsed.height,
-            pixels: Uint32Array.from(parsed.pixels)
-          };
-        }
+        const parsedClipboard = await this.parseClipboardTextPayload(text);
+        if (parsedClipboard) this.clipboard = parsedClipboard;
       }
     } catch (error) {
       console.warn('PixelStudio clipboard read failed; using internal clipboard fallback.', error);
+    }
+  }
+
+  scaleClipboardToFit(clipboard, maxW, maxH) {
+    const srcW = Number(clipboard?.width || 0);
+    const srcH = Number(clipboard?.height || 0);
+    if (!srcW || !srcH || !clipboard?.pixels) return clipboard;
+    const ratio = Math.min(maxW / srcW, maxH / srcH);
+    const targetW = Math.max(1, Math.floor(srcW * ratio));
+    const targetH = Math.max(1, Math.floor(srcH * ratio));
+    if (targetW === srcW && targetH === srcH) return clipboard;
+    const pixels = new Uint32Array(targetW * targetH);
+    for (let y = 0; y < targetH; y += 1) {
+      for (let x = 0; x < targetW; x += 1) {
+        const srcX = Math.min(srcW - 1, Math.floor((x / targetW) * srcW));
+        const srcY = Math.min(srcH - 1, Math.floor((y / targetH) * srcH));
+        pixels[y * targetW + x] = clipboard.pixels[srcY * srcW + srcX];
+      }
+    }
+    return { width: targetW, height: targetH, pixels };
+  }
+
+  async parseClipboardTextPayload(text) {
+    if (!text) return null;
+    try {
+      const parsed = JSON.parse(text);
+      if (parsed?.type === 'pixelstudio-clipboard' && parsed?.width > 0 && parsed?.height > 0 && Array.isArray(parsed?.pixels)) {
+        return {
+          width: parsed.width,
+          height: parsed.height,
+          pixels: Uint32Array.from(parsed.pixels)
+        };
+      }
+    } catch {}
+    const dataUrlMatch = String(text).match(/data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/);
+    if (!dataUrlMatch) return null;
+    try {
+      const response = await fetch(dataUrlMatch[0]);
+      const blob = await response.blob();
+      const bitmap = await createImageBitmap(blob);
+      const canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      ctx.drawImage(bitmap, 0, 0);
+      const imageData = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+      const pixels = new Uint32Array(bitmap.width * bitmap.height);
+      for (let i = 0; i < pixels.length; i += 1) {
+        const base = i * 4;
+        pixels[i] = rgbaToUint32({
+          r: imageData.data[base],
+          g: imageData.data[base + 1],
+          b: imageData.data[base + 2],
+          a: imageData.data[base + 3]
+        });
+      }
+      return { width: bitmap.width, height: bitmap.height, pixels };
+    } catch {
+      return null;
     }
   }
 
