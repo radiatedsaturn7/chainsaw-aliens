@@ -4505,6 +4505,15 @@ export default class PixelStudio {
             imageClipboard = { width: bitmap.width, height: bitmap.height, pixels };
             continue;
           }
+          if (item.types.includes('text/html')) {
+            const htmlBlob = await item.getType('text/html');
+            const html = await htmlBlob.text();
+            const htmlImageClipboard = await this.parseClipboardHtmlImage(html);
+            if (htmlImageClipboard) {
+              imageClipboard = htmlImageClipboard;
+              continue;
+            }
+          }
           if (item.types.includes('text/plain')) {
             const textBlob = await item.getType('text/plain');
             const text = await textBlob.text();
@@ -4515,16 +4524,6 @@ export default class PixelStudio {
               plainTextClipboard = text;
             }
           }
-        }
-        if (imageClipboard && (parsedTextClipboard || plainTextClipboard)) {
-          const choice = String(window.prompt('Clipboard has image + text. Type "image", "text", or "cancel".', 'image') || 'image').toLowerCase();
-          if (choice === 'cancel') return;
-          if (choice === 'text') {
-            this.clipboard = parsedTextClipboard || this.textToClipboardPayload(plainTextClipboard);
-            return;
-          }
-          this.clipboard = imageClipboard;
-          return;
         }
         if (imageClipboard) {
           this.clipboard = imageClipboard;
@@ -4558,6 +4557,40 @@ export default class PixelStudio {
       }
     } catch (error) {
       console.warn('PixelStudio clipboard read failed; using internal clipboard fallback.', error);
+    }
+  }
+
+  async parseClipboardHtmlImage(html) {
+    const source = String(html || '');
+    if (!source) return null;
+    const imgSrcMatch = source.match(/<img[^>]+src=["']([^"']+)["']/i);
+    const src = imgSrcMatch?.[1] || '';
+    if (!src) return null;
+    if (!/^data:image\//i.test(src) && !/^https?:\/\//i.test(src)) return null;
+    try {
+      const response = await fetch(src);
+      const blob = await response.blob();
+      const bitmap = await createImageBitmap(blob);
+      const canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      ctx.drawImage(bitmap, 0, 0);
+      const imageData = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+      const pixels = new Uint32Array(bitmap.width * bitmap.height);
+      for (let i = 0; i < pixels.length; i += 1) {
+        const base = i * 4;
+        pixels[i] = rgbaToUint32({
+          r: imageData.data[base],
+          g: imageData.data[base + 1],
+          b: imageData.data[base + 2],
+          a: imageData.data[base + 3]
+        });
+      }
+      return { width: bitmap.width, height: bitmap.height, pixels };
+    } catch {
+      return null;
     }
   }
 
