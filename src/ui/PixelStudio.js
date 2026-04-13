@@ -5531,6 +5531,85 @@ export default class PixelStudio {
     this.downloadDataUrl(URL.createObjectURL(blob), `${this.currentPalette.name}-palette.txt`);
   }
 
+  setPaletteFromCurrentImage(maxColors = 24) {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const composite = compositeLayers(this.canvasState.layers, width, height);
+    const bins = new Map();
+    for (let i = 0; i < composite.length; i += 1) {
+      const rgba = uint32ToRgba(composite[i] || 0);
+      if (rgba.a < 16) continue;
+      const key = `${rgba.r >> 3},${rgba.g >> 3},${rgba.b >> 3}`;
+      let entry = bins.get(key);
+      if (!entry) {
+        entry = { count: 0, sumR: 0, sumG: 0, sumB: 0 };
+        bins.set(key, entry);
+      }
+      entry.count += 1;
+      entry.sumR += rgba.r;
+      entry.sumG += rgba.g;
+      entry.sumB += rgba.b;
+    }
+    const candidates = Array.from(bins.values()).map((entry) => {
+      const r = Math.round(entry.sumR / Math.max(1, entry.count));
+      const g = Math.round(entry.sumG / Math.max(1, entry.count));
+      const b = Math.round(entry.sumB / Math.max(1, entry.count));
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      const delta = max - min;
+      const sat = max <= 0 ? 0 : delta / max;
+      let hue = 0;
+      if (delta > 0) {
+        if (max === r) hue = ((g - b) / delta + (g < b ? 6 : 0)) / 6;
+        else if (max === g) hue = ((b - r) / delta + 2) / 6;
+        else hue = ((r - g) / delta + 4) / 6;
+      }
+      const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      return { r, g, b, sat, hue, luminance, count: entry.count };
+    }).sort((a, b) => b.count - a.count);
+    if (!candidates.length) return;
+    const selected = [];
+    const addDistinct = (candidate) => {
+      if (!candidate) return;
+      const tooClose = selected.some((entry) => {
+        const dist = Math.hypot(entry.r - candidate.r, entry.g - candidate.g, entry.b - candidate.b);
+        return dist < 18;
+      });
+      if (!tooClose) selected.push(candidate);
+    };
+    addDistinct(candidates.find((entry) => entry.luminance < 50));
+    addDistinct(candidates.find((entry) => entry.luminance > 210));
+    addDistinct(candidates.find((entry) => entry.sat < 0.15 && entry.luminance >= 70 && entry.luminance <= 180));
+    for (let sector = 0; sector < 8; sector += 1) {
+      const start = sector / 8;
+      const end = (sector + 1) / 8;
+      addDistinct(candidates.find((entry) => entry.sat >= 0.18 && entry.hue >= start && entry.hue < end));
+    }
+    while (selected.length < maxColors && selected.length < candidates.length) {
+      let best = null;
+      let bestScore = -1;
+      candidates.forEach((candidate) => {
+        if (selected.includes(candidate)) return;
+        const minDist = selected.length
+          ? Math.min(...selected.map((entry) => Math.hypot(entry.r - candidate.r, entry.g - candidate.g, entry.b - candidate.b)))
+          : 255;
+        const score = minDist * 0.75 + Math.log2(candidate.count + 1) * 10;
+        if (score > bestScore) {
+          bestScore = score;
+          best = candidate;
+        }
+      });
+      if (!best) break;
+      selected.push(best);
+    }
+    const colors = selected
+      .slice(0, maxColors)
+      .map((entry) => `#${[entry.r, entry.g, entry.b].map((v) => v.toString(16).padStart(2, '0')).join('')}`);
+    if (!colors.length) return;
+    this.currentPalette = buildPalette(colors, `${this.currentPalette.name || 'Palette'} Image`);
+    this.paletteIndex = 0;
+  }
+
   downloadDataUrl(url, filename) {
     this.exportLink.href = url;
     this.exportLink.download = filename;
@@ -6953,11 +7032,14 @@ export default class PixelStudio {
 
     const addBounds = { x: sheetX + 12, y: sheetY + sheetH - 44, w: 54, h: 32 };
     const removeBounds = { x: sheetX + 72, y: sheetY + sheetH - 44, w: 54, h: 32 };
+    const setFromImageBounds = { x: sheetX + 132, y: sheetY + sheetH - 44, w: 148, h: 32 };
     if (!this.paletteRemoveMode) {
       this.drawButton(ctx, addBounds, '+', false, { fontSize: 12 });
       this.drawButton(ctx, removeBounds, '-', false, { fontSize: 12 });
+      this.drawButton(ctx, setFromImageBounds, 'Set From Image', false, { fontSize: 12 });
       this.uiButtons.push({ bounds: addBounds, onClick: () => this.openPaletteColorPicker() });
       this.uiButtons.push({ bounds: removeBounds, onClick: () => { this.paletteRemoveMode = true; this.paletteRemoveMarked.clear(); } });
+      this.uiButtons.push({ bounds: setFromImageBounds, onClick: () => this.setPaletteFromCurrentImage(24) });
     }
 
     const swatchSize = 38;
