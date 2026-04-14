@@ -6412,11 +6412,11 @@ export default class PixelStudio {
                   { id: 'abandon-decal-session', label: 'Abandon Changes', onClick: () => this.abandonDecalSessionAndReturn() }
                 ])
           : []),
+        { id: 'copy-image', label: 'Copy', onClick: () => this.copySelection() },
+        { id: 'paste-image', label: 'Paste', onClick: () => this.pasteClipboard() },
         { id: 'import-image', label: 'Import Image', onClick: () => this.imageFileInput.click() },
         { id: 'sprite-sheet', label: 'Sprite Sheet', onClick: () => this.exportSpriteSheet('horizontal') },
         { id: 'export-gif', label: 'Export GIF', onClick: () => this.exportGif() },
-        { id: 'copy-image', label: 'Copy', onClick: () => this.copySelection() },
-        { id: 'paste-image', label: 'Paste', onClick: () => this.pasteClipboard() },
         { id: 'controls', label: 'Controls', onClick: () => { this.controlsOverlayOpen = true; } }
       ]
     });
