@@ -7314,8 +7314,15 @@ export default class PixelStudio {
   }
 
   drawMenuOverlay(ctx, width, height, isMobile) {
+    const items = [
+      { label: 'Controls', action: () => { this.controlsOverlayOpen = true; this.menuOpen = false; } },
+      { label: 'Export PNG', action: () => { this.exportPng(); this.menuOpen = false; } },
+      { label: 'Copy', action: () => { this.copySelection(); this.menuOpen = false; } },
+      { label: 'Paste', action: () => { this.pasteClipboard(); this.menuOpen = false; } },
+      { label: 'Exit', action: () => { this.game.exitPixelStudio({ toTitle: true }); } }
+    ];
     const boxW = Math.min(280, width - 40);
-    const boxH = 180;
+    const boxH = Math.max(180, 56 + items.length * 52);
     const boxX = width / 2 - boxW / 2;
     const boxY = height / 2 - boxH / 2;
     ctx.fillStyle = 'rgba(0,0,0,0.88)';
@@ -7325,12 +7332,6 @@ export default class PixelStudio {
     ctx.fillStyle = '#fff';
     ctx.font = '16px Courier New';
     ctx.fillText('Menu', boxX + 16, boxY + 28);
-
-    const items = [
-      { label: 'Controls', action: () => { this.controlsOverlayOpen = true; this.menuOpen = false; } },
-      { label: 'Export PNG', action: () => { this.exportPng(); this.menuOpen = false; } },
-      { label: 'Exit', action: () => { this.game.exitPixelStudio({ toTitle: true }); } }
-    ];
     items.forEach((entry, index) => {
       const bounds = { x: boxX + 20, y: boxY + 50 + index * 52, w: boxW - 40, h: 44 };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: 13 });
