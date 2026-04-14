@@ -39,6 +39,7 @@ export function createDocumentLifecycle(adapter) {
     context.currentDocumentRef = { folder: adapter.folder, name };
     adapter.afterSave?.(context, { name, data });
     markSavedSnapshot(context);
+    context.game?.showSystemToast?.(adapter?.strings?.saved || 'Saved changes');
     return { id: name, name };
   };
 

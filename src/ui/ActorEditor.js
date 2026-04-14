@@ -265,7 +265,7 @@ export default class ActorEditor {
     const payload = ensureActorDefinition(this.actor);
     vfsSave(ACTOR_FOLDER, name, payload);
     this.currentDocumentRef = { folder: ACTOR_FOLDER, name };
-    this.game.showSystemToast?.(`Saved actor ${name}`);
+    this.game.showSystemToast?.('Saved changes');
     this.render();
   }
 
