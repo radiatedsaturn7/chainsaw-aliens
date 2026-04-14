@@ -4605,15 +4605,14 @@ export default class PixelStudio {
     const srcW = Number(clipboard?.width || 0);
     const srcH = Number(clipboard?.height || 0);
     if (!srcW || !srcH || !clipboard?.pixels) return clipboard;
-    const ratio = Math.min(maxW / srcW, maxH / srcH);
-    const targetW = Math.max(1, Math.floor(srcW * ratio));
-    const targetH = Math.max(1, Math.floor(srcH * ratio));
+    const targetW = Math.max(1, Math.floor(maxW || srcW));
+    const targetH = Math.max(1, Math.floor(maxH || srcH));
     if (targetW === srcW && targetH === srcH) return clipboard;
     const pixels = new Uint32Array(targetW * targetH);
     for (let y = 0; y < targetH; y += 1) {
       for (let x = 0; x < targetW; x += 1) {
-        const srcX = Math.min(srcW - 1, Math.floor((x / targetW) * srcW));
-        const srcY = Math.min(srcH - 1, Math.floor((y / targetH) * srcH));
+        const srcX = Math.min(srcW - 1, Math.floor(((x + 0.5) / targetW) * srcW));
+        const srcY = Math.min(srcH - 1, Math.floor(((y + 0.5) / targetH) * srcH));
         pixels[y * targetW + x] = clipboard.pixels[srcY * srcW + srcX];
       }
     }
