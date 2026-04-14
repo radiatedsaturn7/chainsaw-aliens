@@ -4623,6 +4623,7 @@ export default class PixelStudio {
     const srcW = Number(clipboard?.width || 0);
     const srcH = Number(clipboard?.height || 0);
     if (!srcW || !srcH || !clipboard?.pixels) return clipboard;
+    const alphaThreshold = 10;
     let minX = srcW;
     let minY = srcH;
     let maxX = -1;
@@ -4630,7 +4631,7 @@ export default class PixelStudio {
     for (let y = 0; y < srcH; y += 1) {
       for (let x = 0; x < srcW; x += 1) {
         const value = clipboard.pixels[y * srcW + x];
-        if (!value || uint32ToRgba(value).a === 0) continue;
+        if (!value || uint32ToRgba(value).a <= alphaThreshold) continue;
         minX = Math.min(minX, x);
         minY = Math.min(minY, y);
         maxX = Math.max(maxX, x);
