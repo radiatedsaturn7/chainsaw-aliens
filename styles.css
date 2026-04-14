@@ -267,6 +267,8 @@ body.mobile .hint {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex: 1;
+  min-width: 200px;
 }
 
 .project-browser-meta strong {
@@ -332,6 +334,28 @@ body.mobile .hint {
   border-radius: 999px;
   padding: 2px 8px;
   color: var(--ui-muted);
+}
+
+.project-browser-art-preview {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  overflow: hidden;
+}
+
+.project-browser-art-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
 .shared-text-input-overlay {

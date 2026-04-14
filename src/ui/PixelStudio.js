@@ -6397,7 +6397,7 @@ export default class PixelStudio {
       },
       actions: {
         new: () => this.newArtDocument(),
-        save: () => this.saveArtDocument(),
+        save: () => (this.decalEditSession ? this.saveDecalSessionAndReturn() : this.saveArtDocument()),
         'save-as': () => this.saveArtDocument({ forceSaveAs: true }),
         open: () => this.loadArtDocument(),
         export: () => this.exportPng(),
