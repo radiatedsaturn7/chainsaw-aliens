@@ -6404,11 +6404,14 @@ export default class PixelStudio {
         import: () => this.paletteFileInput.click()
       },
       editorSpecific: [
-        ...(this.decalEditSession ? [
-          { id: 'save-decal-session', label: 'Save Changes', onClick: () => this.saveDecalSessionAndReturn() },
-          { id: 'abandon-decal-session', label: 'Abandon Changes', onClick: () => this.abandonDecalSessionAndReturn() },
-          ...(this.decalEditSession.type === 'actor-state' ? [{ id: 'test-actor-session', label: 'Test Actor', onClick: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) }] : [])
-        ] : []),
+        ...(this.decalEditSession
+          ? (this.decalEditSession.type === 'actor-state'
+              ? [{ id: 'test-actor-session', label: 'Test Actor', onClick: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) }]
+              : [
+                  { id: 'save-decal-session', label: 'Save Changes', onClick: () => this.saveDecalSessionAndReturn() },
+                  { id: 'abandon-decal-session', label: 'Abandon Changes', onClick: () => this.abandonDecalSessionAndReturn() }
+                ])
+          : []),
         { id: 'import-image', label: 'Import Image', onClick: () => this.imageFileInput.click() },
         { id: 'sprite-sheet', label: 'Sprite Sheet', onClick: () => this.exportSpriteSheet('horizontal') },
         { id: 'export-gif', label: 'Export GIF', onClick: () => this.exportGif() },
