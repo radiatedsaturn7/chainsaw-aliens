@@ -94,6 +94,53 @@ function listEntries(folder) {
   }
 }
 
+function parseHexColorToRgba(hex) {
+  if (typeof hex !== 'string') return null;
+  const value = hex.trim();
+  if (!/^#?[0-9a-fA-F]{6}$/.test(value)) return null;
+  const clean = value.startsWith('#') ? value.slice(1) : value;
+  return {
+    r: parseInt(clean.slice(0, 2), 16),
+    g: parseInt(clean.slice(2, 4), 16),
+    b: parseInt(clean.slice(4, 6), 16),
+    a: 255
+  };
+}
+
+function createArtPreviewDataUrl(data) {
+  if (!data) return null;
+  let tileData = data;
+  if (data?.tiles && typeof data.tiles === 'object') {
+    const first = Object.values(data.tiles).find((entry) => entry);
+    if (first) tileData = first;
+  }
+  const frame = Array.isArray(tileData?.frames) ? tileData.frames[0] : null;
+  if (!Array.isArray(frame) || !frame.length) return null;
+  const size = Number.isFinite(tileData?.size) ? tileData.size : Math.round(Math.sqrt(frame.length));
+  const width = Math.max(1, Number.isFinite(size) ? Math.round(size) : 1);
+  const height = Math.max(1, Math.round(frame.length / width));
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  const imageData = ctx.createImageData(width, height);
+  for (let index = 0; index < width * height; index += 1) {
+    const rgba = parseHexColorToRgba(frame[index]);
+    const base = index * 4;
+    if (!rgba) {
+      imageData.data[base + 3] = 0;
+      continue;
+    }
+    imageData.data[base] = rgba.r;
+    imageData.data[base + 1] = rgba.g;
+    imageData.data[base + 2] = rgba.b;
+    imageData.data[base + 3] = rgba.a;
+  }
+  ctx.putImageData(imageData, 0, 0);
+  return canvas.toDataURL('image/png');
+}
+
 export function openProjectBrowser({
   initialFolder = 'levels',
   mode = 'open',
@@ -122,6 +169,7 @@ export function openProjectBrowser({
 
     let pendingDelete = null;
     let renameTarget = null;
+    const artPreviewCache = new Map();
 
     const overlay = document.createElement('div');
     overlay.className = 'project-browser-overlay';
@@ -273,6 +321,28 @@ export function openProjectBrowser({
       entries.forEach((entry) => {
         const row = document.createElement('div');
         row.className = 'project-browser-row';
+
+        if (folder === 'art') {
+          const preview = document.createElement('div');
+          preview.className = 'project-browser-art-preview';
+          const cached = artPreviewCache.get(entry.name);
+          let previewUrl = cached || null;
+          if (!previewUrl) {
+            const payload = vfsLoad(folder, entry.name);
+            previewUrl = createArtPreviewDataUrl(payload?.data);
+            if (previewUrl) artPreviewCache.set(entry.name, previewUrl);
+          }
+          if (previewUrl) {
+            const img = document.createElement('img');
+            img.className = 'project-browser-art-preview-image';
+            img.src = previewUrl;
+            img.alt = `${entry.name} preview`;
+            preview.appendChild(img);
+          } else {
+            preview.textContent = '∅';
+          }
+          row.appendChild(preview);
+        }
 
         const meta = document.createElement('div');
         meta.className = 'project-browser-meta';
