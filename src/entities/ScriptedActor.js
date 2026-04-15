@@ -69,12 +69,19 @@ export default class ScriptedActor extends EnemyBase {
 
   evaluateCondition(condition, player, context = {}) {
     const params = condition?.params || {};
+    const stateAggroRange = Number(this.currentState?.movement?.params?.aggroRange || 220);
+    const visibilityRange = Number(params.range || params.distance || stateAggroRange || 220);
+    const visibilityPadding = Number(params.padding || 80);
     switch (condition?.type) {
       case 'always': return true;
       case 'timer-elapsed': return this.stateTimer >= Number(params.seconds || 0);
       case 'actor-health-below': return this.maxHealth > 0 && (this.health / this.maxHealth) <= Number(params.ratio ?? 0.5);
-      case 'can-see-player': return !!context.isVisible?.(this, Number(params.padding || 80));
-      case 'cannot-see-player': return !context.isVisible?.(this, Number(params.padding || 80));
+      case 'can-see-player':
+        if (context.canShoot) return !!context.canShoot(this, visibilityRange, visibilityPadding);
+        return Math.hypot(player.x - this.x, player.y - this.y) <= visibilityRange;
+      case 'cannot-see-player':
+        if (context.canShoot) return !context.canShoot(this, visibilityRange, visibilityPadding);
+        return Math.hypot(player.x - this.x, player.y - this.y) > visibilityRange;
       case 'player-within': return Math.abs(player.x - this.x) <= Number(params.distance || 160);
       case 'player-farther-than': return Math.abs(player.x - this.x) >= Number(params.distance || 200);
       case 'took-damage': return this.tookDamageThisFrame;
