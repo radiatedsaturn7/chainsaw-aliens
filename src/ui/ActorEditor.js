@@ -82,6 +82,7 @@ export default class ActorEditor {
     this.activeMenuSection = 'states';
     this.fileMenuOpen = false;
     this.stateGraphOpen = false;
+    this.hideMobileSectionHeaders = false;
   }
 
   captureFocusedInputState() {
@@ -378,6 +379,8 @@ export default class ActorEditor {
     const viewportW = Number(window.innerWidth || 0);
     const viewportH = Number(window.innerHeight || 0);
     const isMobileViewport = Math.min(viewportW, viewportH) <= 900;
+    const isMobileLandscape = isMobileViewport && viewportW > viewportH;
+    this.hideMobileSectionHeaders = isMobileLandscape;
     const railWidth = isMobileViewport
       ? getSharedMobileRailWidth(viewportW, viewportH)
       : SHARED_EDITOR_LEFT_MENU.width();
@@ -388,6 +391,7 @@ export default class ActorEditor {
     body.style.gap = `${SHARED_EDITOR_LEFT_MENU.desktopContentGap}px`;
     body.style.flex = '1';
     body.style.minHeight = '0';
+    body.style.overflowX = 'hidden';
     left.style.width = `${railWidth}px`;
     left.style.flex = `0 0 ${railWidth}px`;
     left.style.display = 'flex';
@@ -398,6 +402,7 @@ export default class ActorEditor {
     center.style.flex = '1';
     center.style.minWidth = '0';
     center.style.overflow = 'auto';
+    center.style.overflowX = 'hidden';
     rightRail.style.width = `${railWidth}px`;
     rightRail.style.flex = `0 0 ${railWidth}px`;
     rightRail.style.display = 'flex';
@@ -452,6 +457,11 @@ export default class ActorEditor {
     };
     menu.appendChild(graphBtn);
     return menu;
+  }
+
+  appendSectionHeading(section, label) {
+    if (this.hideMobileSectionHeaders) return;
+    section.appendChild(el('h2', '', label));
   }
 
   renderFileMenuRail() {
@@ -544,7 +554,7 @@ export default class ActorEditor {
 
   renderActorSettings(actor) {
     const section = el('section', 'actor-editor-card');
-    section.appendChild(el('h2', '', '1. Actor-level settings'));
+    this.appendSectionHeading(section, 'Actor settings');
     const grid = el('div', 'actor-editor-grid');
     section.appendChild(grid);
     const addField = (label, input) => {
@@ -644,7 +654,7 @@ export default class ActorEditor {
 
   renderStateList(actor) {
     const section = el('section', 'actor-editor-card');
-    section.appendChild(el('h2', '', '2. States'));
+    this.appendSectionHeading(section, 'States');
     const controls = el('div', 'actor-editor-toolbar');
     [['Add state', () => this.addState()], ['Duplicate selected', () => this.duplicateState(this.selectedState)]].forEach(([label, handler]) => {
       const btn = el('button', 'actor-editor-btn', label); btn.onclick = handler; controls.appendChild(btn);
@@ -671,7 +681,7 @@ export default class ActorEditor {
 
   renderStateEditor(state) {
     const section = el('section', 'actor-editor-card');
-    section.appendChild(el('h2', '', '3–6. State editor / conditions / actions / animation'));
+    this.appendSectionHeading(section, 'State editor');
     if (!state) return section;
     const name = el('input'); name.value = state.name; name.oninput = (event) => this.updateSelectedState((draft) => { draft.name = event.target.value; });
     section.appendChild(name);
@@ -880,7 +890,7 @@ export default class ActorEditor {
 
   renderLinkedParts(actor) {
     const section = el('section', 'actor-editor-card');
-    section.appendChild(el('h2', '', '7–9. Linked parts / multipart composition / Level Editor placement'));
+    this.appendSectionHeading(section, 'Linked parts');
     section.appendChild(el('div', 'actor-editor-note', 'Only root actors are placeable in Level Editor. Linked child parts spawn with the root.'));
     const list = el('div', 'actor-editor-list');
     actor.linkedParts.forEach((part, index) => {
