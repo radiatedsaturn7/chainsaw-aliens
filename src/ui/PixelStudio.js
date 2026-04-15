@@ -3588,12 +3588,12 @@ export default class PixelStudio {
     else if (nextHue < 240) [nr, ng, nb] = [0, x, chroma];
     else if (nextHue < 300) [nr, ng, nb] = [x, 0, chroma];
     else [nr, ng, nb] = [chroma, 0, x];
-    return rgbaToUint32(
-      Math.round((nr + m) * 255),
-      Math.round((ng + m) * 255),
-      Math.round((nb + m) * 255),
-      alpha
-    ) >>> 0;
+    return rgbaToUint32({
+      r: Math.round((nr + m) * 255),
+      g: Math.round((ng + m) * 255),
+      b: Math.round((nb + m) * 255),
+      a: alpha
+    }) >>> 0;
   }
 
   applyHueShift() {
