@@ -102,7 +102,8 @@ export default class PixelStudio {
       wrapDraw: false,
       ditherPattern: 'bayer2',
       ditherStrength: 2,
-      replaceScope: 'layer'
+      replaceScope: 'layer',
+      hueShiftDegrees: 0
     };
     this.brushProfiles = {
       [TOOL_IDS.PENCIL]: {
@@ -2119,7 +2120,8 @@ export default class PixelStudio {
       { id: TOOL_IDS.MOVE, label: 'Move' },
       { id: TOOL_IDS.CLONE, label: 'Clone' },
       { id: TOOL_IDS.DITHER, label: 'Dither' },
-      { id: TOOL_IDS.COLOR_REPLACE, label: 'Replace' }
+      { id: TOOL_IDS.COLOR_REPLACE, label: 'Replace' },
+      { id: TOOL_IDS.HUE_SHIFT, label: 'Hue' }
     ];
   }
 
@@ -3550,6 +3552,61 @@ export default class PixelStudio {
       this.activeLayer.pixels[i] = replacement;
     }
     this.commitHistory();
+  }
+
+  shiftPixelHue(pixel, hueShiftDegrees = 0) {
+    const rgba = uint32ToRgba(pixel || 0);
+    const alpha = Number(rgba.a ?? 255);
+    if (alpha <= 0) return pixel;
+    const r = (rgba.r || 0) / 255;
+    const g = (rgba.g || 0) / 255;
+    const b = (rgba.b || 0) / 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+    let hue = 0;
+    if (delta !== 0) {
+      if (max === r) hue = ((g - b) / delta) % 6;
+      else if (max === g) hue = (b - r) / delta + 2;
+      else hue = (r - g) / delta + 4;
+      hue *= 60;
+      if (hue < 0) hue += 360;
+    }
+    const lightness = (max + min) / 2;
+    const saturation = delta === 0 ? 0 : delta / (1 - Math.abs(2 * lightness - 1));
+    const nextHue = ((hue + hueShiftDegrees) % 360 + 360) % 360;
+    const chroma = (1 - Math.abs(2 * lightness - 1)) * saturation;
+    const x = chroma * (1 - Math.abs(((nextHue / 60) % 2) - 1));
+    const m = lightness - chroma / 2;
+    let nr = 0; let ng = 0; let nb = 0;
+    if (nextHue < 60) [nr, ng, nb] = [chroma, x, 0];
+    else if (nextHue < 120) [nr, ng, nb] = [x, chroma, 0];
+    else if (nextHue < 180) [nr, ng, nb] = [0, chroma, x];
+    else if (nextHue < 240) [nr, ng, nb] = [0, x, chroma];
+    else if (nextHue < 300) [nr, ng, nb] = [x, 0, chroma];
+    else [nr, ng, nb] = [chroma, 0, x];
+    return rgbaToUint32(
+      Math.round((nr + m) * 255),
+      Math.round((ng + m) * 255),
+      Math.round((nb + m) * 255),
+      alpha
+    ) >>> 0;
+  }
+
+  applyHueShift() {
+    if (!this.activeLayer || this.activeLayer.locked) return;
+    const shift = Number(this.toolOptions.hueShiftDegrees || 0);
+    if (!Number.isFinite(shift) || Math.abs(shift) < 0.001) {
+      this.statusMessage = 'Hue shift is 0°.';
+      return;
+    }
+    this.startHistory('hue shift');
+    for (let i = 0; i < this.activeLayer.pixels.length; i += 1) {
+      if (this.toolOptions.replaceScope === 'selection' && this.selection.mask && !this.selection.mask[i]) continue;
+      this.activeLayer.pixels[i] = this.shiftPixelHue(this.activeLayer.pixels[i], shift);
+    }
+    this.commitHistory();
+    this.statusMessage = `Hue shifted ${Math.round(shift)}° (${this.toolOptions.replaceScope}).`;
   }
 
   startSelection(point, mode) {
@@ -7692,7 +7749,25 @@ export default class PixelStudio {
       this.registerFocusable('menu', bounds, () => { this.toolOptions.magicThreshold += 8; if (this.toolOptions.magicThreshold > 255) this.toolOptions.magicThreshold = 0; });
       offsetY += lineHeight;
     }
-    if (this.activeToolId === TOOL_IDS.COLOR_REPLACE) {
+    if (this.activeToolId === TOOL_IDS.HUE_SHIFT) {
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fillText(`Hue Shift: ${Math.round(this.toolOptions.hueShiftDegrees || 0)}°`, x, offsetY);
+      const minus = { x: x + 120, y: offsetY - (isMobile ? 28 : 14), w: 36, h: isMobile ? 44 : 18 };
+      const plus = { x: x + 160, y: offsetY - (isMobile ? 28 : 14), w: 36, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, minus, '-', false, { fontSize: isMobile ? 12 : 12 });
+      this.drawButton(ctx, plus, '+', false, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({ bounds: minus, onClick: () => { this.toolOptions.hueShiftDegrees = clamp(Math.round((this.toolOptions.hueShiftDegrees || 0) - 15), -180, 180); } });
+      this.uiButtons.push({ bounds: plus, onClick: () => { this.toolOptions.hueShiftDegrees = clamp(Math.round((this.toolOptions.hueShiftDegrees || 0) + 15), -180, 180); } });
+      this.registerFocusable('menu', minus, () => { this.toolOptions.hueShiftDegrees = clamp(Math.round((this.toolOptions.hueShiftDegrees || 0) - 15), -180, 180); });
+      this.registerFocusable('menu', plus, () => { this.toolOptions.hueShiftDegrees = clamp(Math.round((this.toolOptions.hueShiftDegrees || 0) + 15), -180, 180); });
+      offsetY += rowHeight;
+      const applyBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: Math.min(panelWidth, isMobile ? 180 : 150), h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, applyBounds, 'Apply Hue Shift', false, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({ bounds: applyBounds, onClick: () => this.applyHueShift() });
+      this.registerFocusable('menu', applyBounds, () => this.applyHueShift());
+      offsetY += lineHeight;
+    }
+    if ([TOOL_IDS.COLOR_REPLACE, TOOL_IDS.HUE_SHIFT].includes(this.activeToolId)) {
       const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
       this.drawButton(ctx, bounds, `Scope: ${this.toolOptions.replaceScope}`, false, { fontSize: isMobile ? 12 : 12 });
       this.uiButtons.push({

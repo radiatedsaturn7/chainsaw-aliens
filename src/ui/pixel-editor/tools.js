@@ -17,7 +17,8 @@ export const TOOL_IDS = {
   MOVE: 'move',
   CLONE: 'clone',
   DITHER: 'dither',
-  COLOR_REPLACE: 'color-replace'
+  COLOR_REPLACE: 'color-replace',
+  HUE_SHIFT: 'hue-shift'
 };
 
 export const createToolRegistry = (editor) => ([
@@ -212,5 +213,15 @@ export const createToolRegistry = (editor) => ([
     onPointerMove: null,
     onPointerUp: null,
     optionsUI: ['replaceScope']
+  },
+  {
+    id: TOOL_IDS.HUE_SHIFT,
+    name: 'Hue Shift',
+    category: 'tools',
+    cursor: 'crosshair',
+    onPointerDown: null,
+    onPointerMove: null,
+    onPointerUp: null,
+    optionsUI: ['hueShift', 'replaceScope']
   }
 ]);
