@@ -165,7 +165,7 @@ export default class ScriptedActor extends EnemyBase {
     }
   }
 
-  applyMovement(dt, player) {
+  applyMovement(dt, player, context = {}) {
     const state = this.currentState;
     const movement = state?.movement || { type: 'none', params: {} };
     const params = movement.params || {};
@@ -178,7 +178,10 @@ export default class ScriptedActor extends EnemyBase {
       case 'random-walk-pause': {
         const cycle = Number(params.walkDuration || 1) + Number(params.pauseDuration || 1);
         const phase = this.stateTimer % cycle;
-        this.vx = phase < Number(params.walkDuration || 1) ? this.facing * Number(params.speed || 80) : 0;
+        const walking = phase < Number(params.walkDuration || 1);
+        if (walking && context.isWallAhead?.(this)) this.facing *= -1;
+        if (walking && context.hasGroundAhead && !context.hasGroundAhead(this)) this.facing *= -1;
+        this.vx = walking ? this.facing * Number(params.speed || 80) : 0;
         if (phase < dt) this.facing *= Math.random() < 0.5 ? -1 : 1;
         this.x += this.vx * dt;
         break;
@@ -228,7 +231,7 @@ export default class ScriptedActor extends EnemyBase {
       return;
     }
     this.stateTimer += dt;
-    this.applyMovement(dt, player);
+    this.applyMovement(dt, player, context);
     this.checkStateTransition(player, context);
     const overrides = this.currentState?.overrides || {};
     this.bodyDamageEnabled = overrides.bodyDamageEnabled == null ? this.definition.bodyDamageEnabled : !!overrides.bodyDamageEnabled;

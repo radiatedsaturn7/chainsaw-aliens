@@ -9,7 +9,7 @@ export const ACTOR_ATTACK_TARGETS = [
 export const MOVEMENT_BEHAVIORS = [
   { id: 'none', label: 'None', description: 'Hold position.' },
   { id: 'patrol-platform', label: 'Patrol platform', description: 'Walk left/right and turn on walls or edges.', params: ['speed', 'turnOnWall', 'edgeHandling'] },
-  { id: 'random-walk-pause', label: 'Random walk then pause', description: 'Alternate short walks and idle pauses.', params: ['speed', 'walkDuration', 'pauseDuration'] },
+  { id: 'random-walk-pause', label: 'Random walk', description: 'Alternate short walks and idle pauses; turn around at walls or ledges.', params: ['speed', 'walkDuration', 'pauseDuration'] },
   { id: 'avoid-player', label: 'Avoid player', description: 'Back away when the player gets too close.', params: ['speed', 'fleeDistance'] },
   { id: 'approach-player', label: 'Approach player', description: 'Move toward the player inside aggro range.', params: ['speed', 'aggroRange'] },
   { id: 'pause-bounce', label: 'Pause and bounce', description: 'Pause, then spring forward / upward.', params: ['speed', 'pauseDuration', 'jumpSpeed'] },
