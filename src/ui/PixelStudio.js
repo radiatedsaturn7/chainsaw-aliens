@@ -3463,7 +3463,10 @@ export default class PixelStudio {
     const height = this.canvasState.height;
     const contiguous = options.contiguous !== false;
     const threshold = clamp(Number(this.toolOptions.magicThreshold) || 0, 0, 255);
-    const composite = compositeLayers(this.canvasState.layers, width, height);
+    let composite = compositeLayers(this.canvasState.layers, width, height);
+    if (this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral()) {
+      composite = this.buildHueShiftPreview(composite);
+    }
     const startIdx = point.row * width + point.col;
     const targetRgba = uint32ToRgba(composite[startIdx] || 0);
     const mask = new Uint8Array(width * height);
@@ -3617,6 +3620,24 @@ export default class PixelStudio {
     }
     this.commitHistory();
     this.statusMessage = `Hue ${Math.round(shift)}°, Saturation ${Math.round(saturation)}% (${this.toolOptions.replaceScope}).`;
+  }
+
+  isHueShiftNeutral() {
+    const shift = Number(this.toolOptions.hueShiftDegrees || 0);
+    const saturation = Number(this.toolOptions.hueShiftSaturation || 100);
+    return Math.abs(shift) < 0.001 && Math.abs(saturation - 100) < 0.001;
+  }
+
+  buildHueShiftPreview(composite) {
+    if (!(composite instanceof Uint32Array)) return composite;
+    if (this.isHueShiftNeutral()) return composite;
+    const shifted = new Uint32Array(composite.length);
+    const shift = Number(this.toolOptions.hueShiftDegrees || 0);
+    const saturation = Number(this.toolOptions.hueShiftSaturation || 100);
+    for (let i = 0; i < composite.length; i += 1) {
+      shifted[i] = this.shiftPixelHue(composite[i], shift, saturation);
+    }
+    return shifted;
   }
 
   startSelection(point, mode) {
@@ -3798,7 +3819,10 @@ export default class PixelStudio {
   buildMagicLassoEdgeMap() {
     const width = this.canvasState.width;
     const height = this.canvasState.height;
-    const composite = compositeLayers(this.canvasState.layers, width, height);
+    let composite = compositeLayers(this.canvasState.layers, width, height);
+    if (this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral()) {
+      composite = this.buildHueShiftPreview(composite);
+    }
     const rgba = Array.from(composite, (value) => uint32ToRgba(value || 0));
     const edge = new Float32Array(width * height);
     this.magicLassoRgbaMap = rgba;
@@ -5601,7 +5625,10 @@ export default class PixelStudio {
   setPaletteFromCurrentImage(maxColors = 24) {
     const width = this.canvasState.width;
     const height = this.canvasState.height;
-    const composite = compositeLayers(this.canvasState.layers, width, height);
+    let composite = compositeLayers(this.canvasState.layers, width, height);
+    if (this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral()) {
+      composite = this.buildHueShiftPreview(composite);
+    }
     const bins = new Map();
     for (let i = 0; i < composite.length; i += 1) {
       const rgba = uint32ToRgba(composite[i] || 0);
@@ -7763,6 +7790,38 @@ export default class PixelStudio {
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.fillText('Use bottom rail hue/saturation sliders', x, offsetY);
       offsetY += lineHeight;
+      const buttonW = Math.min(panelWidth, isMobile ? 180 : 150);
+      const applyBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: buttonW, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, applyBounds, 'Apply Hue/Sat', false, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({ bounds: applyBounds, onClick: () => this.applyHueShift() });
+      this.registerFocusable('menu', applyBounds, () => this.applyHueShift());
+      offsetY += lineHeight;
+      const scopeBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: buttonW, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, scopeBounds, `Scope: ${this.toolOptions.replaceScope}`, false, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({
+        bounds: scopeBounds,
+        onClick: () => {
+          this.toolOptions.replaceScope = this.toolOptions.replaceScope === 'layer' ? 'selection' : 'layer';
+        }
+      });
+      this.registerFocusable('menu', scopeBounds, () => {
+        this.toolOptions.replaceScope = this.toolOptions.replaceScope === 'layer' ? 'selection' : 'layer';
+      });
+      offsetY += lineHeight;
+      const resetBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: buttonW, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, resetBounds, 'Reset Hue/Sat', false, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({
+        bounds: resetBounds,
+        onClick: () => {
+          this.toolOptions.hueShiftDegrees = 0;
+          this.toolOptions.hueShiftSaturation = 100;
+        }
+      });
+      this.registerFocusable('menu', resetBounds, () => {
+        this.toolOptions.hueShiftDegrees = 0;
+        this.toolOptions.hueShiftSaturation = 100;
+      });
+      offsetY += lineHeight;
     }
     if (this.activeToolId === TOOL_IDS.COLOR_REPLACE) {
       const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
@@ -7813,13 +7872,13 @@ export default class PixelStudio {
     ctx.font = '12px Courier New';
     ctx.fillText('Hue / Saturation', x + 10, y + 16);
 
-    const sliderX = x + 74;
-    const sliderW = Math.max(80, w - 260);
-    const hueY = y + 12;
-    const satY = y + 36;
-    const sliderH = 10;
-    const hueTrack = { x: sliderX, y: hueY, w: sliderW, h: sliderH };
-    const satTrack = { x: sliderX, y: satY, w: sliderW, h: sliderH };
+    const sliderGap = 10;
+    const sliderX = x + 10;
+    const sliderW = Math.max(44, Math.floor((w - 20 - sliderGap) / 2));
+    const sliderY = y + 24;
+    const sliderH = Math.max(20, h - 30);
+    const hueTrack = { x: sliderX, y: sliderY, w: sliderW, h: sliderH };
+    const satTrack = { x: sliderX + sliderW + sliderGap, y: sliderY, w: sliderW, h: sliderH };
 
     const hueGradient = ctx.createLinearGradient(hueTrack.x, 0, hueTrack.x + hueTrack.w, 0);
     hueGradient.addColorStop(0, '#ff0000');
@@ -7845,7 +7904,7 @@ export default class PixelStudio {
     ctx.stroke();
     ctx.fillStyle = '#fff';
     ctx.font = '11px Courier New';
-    ctx.fillText(`Hue ${Math.round(hueShift)}°`, x + 10, hueTrack.y + hueTrack.h - 1);
+    ctx.fillText(`${Math.round(hueShift)}°`, hueTrack.x + 4, hueTrack.y + hueTrack.h - 6);
 
     const hueColor = `hsl(${((hueShift % 360) + 360) % 360} 100% 50%)`;
     const satGradient = ctx.createLinearGradient(satTrack.x, 0, satTrack.x + satTrack.w, 0);
@@ -7864,7 +7923,7 @@ export default class PixelStudio {
     ctx.lineTo(satKnobX, satTrack.y + satTrack.h + 3);
     ctx.stroke();
     ctx.fillStyle = '#fff';
-    ctx.fillText(`Sat ${Math.round(satValue)}%`, x + 10, satTrack.y + satTrack.h - 1);
+    ctx.fillText(`${Math.round(satValue)}%`, satTrack.x + 4, satTrack.y + satTrack.h - 6);
 
     const updateHueFromX = (pointerX) => {
       const t = clamp((pointerX - hueTrack.x) / Math.max(1, hueTrack.w), 0, 1);
@@ -7877,26 +7936,6 @@ export default class PixelStudio {
     this.uiButtons.push({ bounds: { ...hueTrack, h: 18, y: hueTrack.y - 4 }, onClick: ({ x: pointerX }) => updateHueFromX(pointerX), onDrag: ({ x: pointerX }) => updateHueFromX(pointerX) });
     this.uiButtons.push({ bounds: { ...satTrack, h: 18, y: satTrack.y - 4 }, onClick: ({ x: pointerX }) => updateSatFromX(pointerX), onDrag: ({ x: pointerX }) => updateSatFromX(pointerX) });
 
-    const applyBounds = { x: x + w - 172, y: y + 8, w: 78, h: 20 };
-    const scopeBounds = { x: x + w - 172, y: y + 34, w: 78, h: 20 };
-    const resetBounds = { x: x + w - 88, y: y + 8, w: 78, h: 20 };
-    this.drawButton(ctx, applyBounds, 'Apply', false, { fontSize: 11 });
-    this.drawButton(ctx, scopeBounds, this.toolOptions.replaceScope === 'selection' ? 'Scope: Sel' : 'Scope: All', false, { fontSize: 10 });
-    this.drawButton(ctx, resetBounds, 'Reset', false, { fontSize: 11 });
-    this.uiButtons.push({ bounds: applyBounds, onClick: () => this.applyHueShift() });
-    this.uiButtons.push({
-      bounds: scopeBounds,
-      onClick: () => {
-        this.toolOptions.replaceScope = this.toolOptions.replaceScope === 'layer' ? 'selection' : 'layer';
-      }
-    });
-    this.uiButtons.push({
-      bounds: resetBounds,
-      onClick: () => {
-        this.toolOptions.hueShiftDegrees = 0;
-        this.toolOptions.hueShiftSaturation = 100;
-      }
-    });
   }
 
   drawSelectionActions(ctx, x, y, options = {}) {
@@ -8068,7 +8107,10 @@ export default class PixelStudio {
 
     this.offscreen.width = width;
     this.offscreen.height = height;
-    const composite = compositeLayers(this.canvasState.layers, width, height);
+    let composite = compositeLayers(this.canvasState.layers, width, height);
+    if (this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral()) {
+      composite = this.buildHueShiftPreview(composite);
+    }
     const imageData = this.offscreenCtx.createImageData(width, height);
     const bytes = new Uint32Array(imageData.data.buffer);
     bytes.set(composite);
