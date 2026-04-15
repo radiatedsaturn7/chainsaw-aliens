@@ -67,12 +67,14 @@ export default class ScriptedActor extends EnemyBase {
     this.damagedPlayerThisFrame = true;
   }
 
-  evaluateCondition(condition, player) {
+  evaluateCondition(condition, player, context = {}) {
     const params = condition?.params || {};
     switch (condition?.type) {
       case 'always': return true;
       case 'timer-elapsed': return this.stateTimer >= Number(params.seconds || 0);
       case 'actor-health-below': return this.maxHealth > 0 && (this.health / this.maxHealth) <= Number(params.ratio ?? 0.5);
+      case 'can-see-player': return !!context.isVisible?.(this, Number(params.padding || 80));
+      case 'cannot-see-player': return !context.isVisible?.(this, Number(params.padding || 80));
       case 'player-within': return Math.abs(player.x - this.x) <= Number(params.distance || 160);
       case 'player-farther-than': return Math.abs(player.x - this.x) >= Number(params.distance || 200);
       case 'took-damage': return this.tookDamageThisFrame;

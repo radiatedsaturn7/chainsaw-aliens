@@ -81,6 +81,7 @@ export default class ActorEditor {
     this.previewTimers = [];
     this.activeMenuSection = 'states';
     this.fileMenuOpen = false;
+    this.stateGraphOpen = false;
   }
 
   captureFocusedInputState() {
@@ -406,6 +407,9 @@ export default class ActorEditor {
     left.appendChild(this.renderSidebarMenu());
     center.appendChild(this.renderMainPanel(actor, state));
     rightRail.appendChild(this.renderRightRail());
+    if (this.stateGraphOpen) {
+      this.overlay.appendChild(this.renderStateGraphModal());
+    }
     this.restoreFocusedInputState(focusState);
   }
 
@@ -869,6 +873,12 @@ export default class ActorEditor {
     const section = el('section', 'actor-editor-card');
     section.appendChild(el('h2', '', '7–9. Linked parts / multipart composition / Level Editor placement'));
     section.appendChild(el('div', 'actor-editor-note', 'Only root actors are placeable in Level Editor. Linked child parts spawn with the root.'));
+    const graphBtn = el('button', 'actor-editor-btn', 'State graph');
+    graphBtn.onclick = () => {
+      this.stateGraphOpen = true;
+      this.render();
+    };
+    section.appendChild(graphBtn);
     const list = el('div', 'actor-editor-list');
     actor.linkedParts.forEach((part, index) => {
       const row = el('div', 'actor-editor-list-row');
@@ -894,6 +904,101 @@ export default class ActorEditor {
     };
     section.append(list, add);
     return section;
+  }
+
+  describeCondition(condition) {
+    const spec = this.getConditionSpec(condition?.type);
+    const base = spec?.label || toTitleLabel(condition?.type || 'condition');
+    const fields = Array.isArray(spec?.fields) ? spec.fields : [];
+    if (!fields.length) return base;
+    const parts = fields.map((field) => {
+      const rawValue = condition?.params?.[field.key];
+      const value = field.toDisplay ? field.toDisplay(rawValue) : rawValue;
+      return `${field.label}: ${value ?? field.defaultValue ?? ''}`;
+    }).filter(Boolean);
+    return parts.length ? `${base} (${parts.join(', ')})` : base;
+  }
+
+  renderStateGraphModal() {
+    const scrim = el('div', 'actor-editor-overlay-scrim');
+    Object.assign(scrim.style, {
+      position: 'absolute',
+      inset: '0',
+      background: 'rgba(0, 0, 0, 0.72)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: '50'
+    });
+    const card = el('div', 'actor-editor-card');
+    Object.assign(card.style, {
+      width: 'min(980px, 92vw)',
+      maxHeight: '85vh',
+      overflow: 'auto',
+      padding: '16px'
+    });
+    const head = el('div', 'actor-editor-toolbar');
+    head.append(el('h2', '', 'State graph preview'));
+    const close = el('button', 'actor-editor-btn', 'Close');
+    close.onclick = () => {
+      this.stateGraphOpen = false;
+      this.render();
+    };
+    head.appendChild(close);
+    card.appendChild(head);
+    const note = el('div', 'actor-editor-note', 'Transitions are shown in evaluation order (top to bottom).');
+    card.appendChild(note);
+
+    this.actor.states.forEach((state) => {
+      const stateSection = el('div', 'actor-editor-subsection');
+      const title = el('h3', '', state.name || state.id);
+      stateSection.appendChild(title);
+      const previewRow = el('div', 'actor-editor-inline-actions');
+      const frame = Array.isArray(state.animation?.frames) && state.animation.frames.length
+        ? state.animation.frames.find((entry) => entry?.imageDataUrl)
+        : (state.animation?.imageDataUrl ? { imageDataUrl: state.animation.imageDataUrl } : null);
+      if (frame?.imageDataUrl) {
+        const preview = el('img');
+        preview.src = frame.imageDataUrl;
+        preview.alt = `${state.name || state.id} preview`;
+        Object.assign(preview.style, {
+          width: '48px',
+          height: '48px',
+          imageRendering: 'pixelated',
+          border: '1px solid rgba(255,255,255,0.25)',
+          background: 'rgba(0,0,0,0.35)'
+        });
+        previewRow.appendChild(preview);
+      }
+      const transitions = Array.isArray(state.transitions) ? state.transitions : [];
+      if (!transitions.length) {
+        previewRow.appendChild(el('div', 'actor-editor-note', 'No transitions.'));
+      }
+      stateSection.appendChild(previewRow);
+      transitions.forEach((transition, index) => {
+        const conditions = Array.isArray(transition.conditions) ? transition.conditions : [];
+        const actions = Array.isArray(transition.actions) ? transition.actions : [];
+        const switchAction = actions.find((action) => action?.type === 'switch-state');
+        const targetState = this.actor.states.find((entry) => entry.id === switchAction?.params?.stateId);
+        const targetLabel = targetState?.name || switchAction?.params?.stateId || '(no state target)';
+        const conditionLabel = conditions.length
+          ? conditions.map((condition) => this.describeCondition(condition)).join(transition.conditionMode === 'any' ? ' OR ' : ' AND ')
+          : 'Always';
+        const line = el('div', 'actor-editor-note', `${state.name || state.id} → ${conditionLabel} → ${targetLabel}`);
+        line.style.padding = '4px 0';
+        line.dataset.transitionIndex = String(index);
+        stateSection.appendChild(line);
+      });
+      card.appendChild(stateSection);
+    });
+
+    scrim.onclick = (event) => {
+      if (event.target !== scrim) return;
+      this.stateGraphOpen = false;
+      this.render();
+    };
+    scrim.appendChild(card);
+    return scrim;
   }
 
 }
