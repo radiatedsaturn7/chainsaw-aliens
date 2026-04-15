@@ -442,6 +442,15 @@ export default class ActorEditor {
     menu.appendChild(makeMenuBtn('Actor', 'actor'));
     menu.appendChild(makeMenuBtn('States', 'states'));
     menu.appendChild(makeMenuBtn('Linked Parts', 'linked-parts'));
+    const graphBtn = el('button', 'actor-editor-btn', 'State graph');
+    this.styleRailButton(graphBtn, false);
+    graphBtn.style.marginTop = 'auto';
+    graphBtn.onclick = () => {
+      this.stateGraphOpen = true;
+      this.fileMenuOpen = false;
+      this.render();
+    };
+    menu.appendChild(graphBtn);
     return menu;
   }
 
@@ -873,12 +882,6 @@ export default class ActorEditor {
     const section = el('section', 'actor-editor-card');
     section.appendChild(el('h2', '', '7–9. Linked parts / multipart composition / Level Editor placement'));
     section.appendChild(el('div', 'actor-editor-note', 'Only root actors are placeable in Level Editor. Linked child parts spawn with the root.'));
-    const graphBtn = el('button', 'actor-editor-btn', 'State graph');
-    graphBtn.onclick = () => {
-      this.stateGraphOpen = true;
-      this.render();
-    };
-    section.appendChild(graphBtn);
     const list = el('div', 'actor-editor-list');
     actor.linkedParts.forEach((part, index) => {
       const row = el('div', 'actor-editor-list-row');
