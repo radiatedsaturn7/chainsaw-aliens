@@ -34,7 +34,9 @@ const CONDITION_SPECS = {
   'touched-wall': { label: 'Touched wall', fields: [] },
   'touched-floor': { label: 'Touched floor', fields: [] },
   'touched-ceiling': { label: 'Touched ceiling', fields: [] },
-  'took-damage': { label: 'Took damage', fields: [] },
+  'took-damage': { label: 'I took damage', fields: [] },
+  'damaged-player': { label: 'I damaged player', fields: [] },
+  'is-dead': { label: 'I am dead', fields: [] },
   'random-chance': { label: 'Random chance succeeds', fields: [{ key: 'chance', label: 'Chance %', type: 'number', min: 0, max: 100, step: 1, defaultValue: 25, toDisplay: (v) => Math.round(Number(v || 0) * 100), fromDisplay: (v) => Number(v || 0) / 100 }] },
   'cooldown-ready': { label: 'Cooldown is ready', fields: [{ key: 'key', label: 'Cooldown key', type: 'text', defaultValue: 'default' }] },
   'linked-part-destroyed': { label: 'Linked part destroyed', fields: [{ key: 'partId', label: 'Part ID / Role', type: 'text', defaultValue: '' }] },
@@ -494,7 +496,7 @@ export default class ActorEditor {
     controls.style.display = 'flex';
     controls.style.flexDirection = 'column';
     controls.style.gap = '6px';
-    [['Add', () => this.addState()], ['Paste', () => this.pasteState()]].forEach(([label, handler]) => {
+    [['Add', () => this.addState()], ['Duplicate', () => this.duplicateState(this.selectedState)]].forEach(([label, handler]) => {
       const btn = el('button', 'actor-editor-btn small', label);
       this.styleRailButton(btn, false);
       btn.onclick = handler;
@@ -631,7 +633,7 @@ export default class ActorEditor {
     const section = el('section', 'actor-editor-card');
     section.appendChild(el('h2', '', '2. States'));
     const controls = el('div', 'actor-editor-toolbar');
-    [['Add state', () => this.addState()], ['Paste state', () => this.pasteState()]].forEach(([label, handler]) => {
+    [['Add state', () => this.addState()], ['Duplicate selected', () => this.duplicateState(this.selectedState)]].forEach(([label, handler]) => {
       const btn = el('button', 'actor-editor-btn', label); btn.onclick = handler; controls.appendChild(btn);
     });
     section.appendChild(controls);

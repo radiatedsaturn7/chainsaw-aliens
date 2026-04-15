@@ -32,7 +32,7 @@ export const MOVEMENT_PRESET_TEMPLATES = {
 export const CONDITION_TYPES = [
   'always', 'timer-elapsed', 'actor-health-below', 'player-health-below', 'can-see-player', 'cannot-see-player',
   'player-within', 'player-farther-than', 'player-has-item', 'player-presses-action', 'touched-wall', 'touched-floor',
-  'touched-ceiling', 'took-damage', 'random-chance', 'cooldown-ready', 'linked-part-destroyed', 'root-entered-state', 'child-entered-state'
+  'touched-ceiling', 'took-damage', 'damaged-player', 'is-dead', 'random-chance', 'cooldown-ready', 'linked-part-destroyed', 'root-entered-state', 'child-entered-state'
 ];
 
 export const ACTION_TYPES = [
