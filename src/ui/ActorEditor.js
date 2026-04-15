@@ -1,6 +1,6 @@
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsLoad, vfsSave } from './vfs.js';
-import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
+import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, DEFAULT_TAXONOMIES, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
 import { getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 
 const ACTOR_FOLDER = 'actors';
@@ -25,8 +25,8 @@ const CONDITION_SPECS = {
   'timer-elapsed': { label: 'After X milliseconds', fields: [{ key: 'seconds', label: 'Milliseconds', type: 'number', min: 0, step: 10, defaultValue: 1000, toDisplay: (v) => Math.round(Number(v || 0) * 1000), fromDisplay: (v) => Number(v || 0) / 1000 }] },
   'actor-health-below': { label: 'My health is below', fields: [{ key: 'ratio', label: 'Health %', type: 'number', min: 0, max: 100, step: 1, defaultValue: 50, toDisplay: (v) => Math.round(Number(v ?? 0.5) * 100), fromDisplay: (v) => Number(v || 0) / 100 }] },
   'player-health-below': { label: 'Player health is below', fields: [{ key: 'ratio', label: 'Health %', type: 'number', min: 0, max: 100, step: 1, defaultValue: 50, toDisplay: (v) => Math.round(Number(v ?? 0.5) * 100), fromDisplay: (v) => Number(v || 0) / 100 }] },
-  'can-see-player': { label: 'Can see player', fields: [] },
-  'cannot-see-player': { label: 'Cannot see player', fields: [] },
+  'can-see-player': { label: 'Can see player (aggro range)', fields: [] },
+  'cannot-see-player': { label: 'Cannot see player (aggro range)', fields: [] },
   'player-within': { label: 'Player within distance', fields: [{ key: 'distance', label: 'Distance (px)', type: 'number', min: 0, step: 1, defaultValue: 160 }] },
   'player-farther-than': { label: 'Player farther than distance', fields: [{ key: 'distance', label: 'Distance (px)', type: 'number', min: 0, step: 1, defaultValue: 200 }] },
   'player-has-item': { label: 'Player has item', fields: [{ key: 'itemId', label: 'Item', type: LOOT_OPTION_TYPE, defaultValue: 'health' }] },
@@ -34,7 +34,9 @@ const CONDITION_SPECS = {
   'touched-wall': { label: 'Touched wall', fields: [] },
   'touched-floor': { label: 'Touched floor', fields: [] },
   'touched-ceiling': { label: 'Touched ceiling', fields: [] },
-  'took-damage': { label: 'Took damage', fields: [] },
+  'took-damage': { label: 'I took damage', fields: [] },
+  'damaged-player': { label: 'I damaged player', fields: [] },
+  'is-dead': { label: 'I am dead', fields: [] },
   'random-chance': { label: 'Random chance succeeds', fields: [{ key: 'chance', label: 'Chance %', type: 'number', min: 0, max: 100, step: 1, defaultValue: 25, toDisplay: (v) => Math.round(Number(v || 0) * 100), fromDisplay: (v) => Number(v || 0) / 100 }] },
   'cooldown-ready': { label: 'Cooldown is ready', fields: [{ key: 'key', label: 'Cooldown key', type: 'text', defaultValue: 'default' }] },
   'linked-part-destroyed': { label: 'Linked part destroyed', fields: [{ key: 'partId', label: 'Part ID / Role', type: 'text', defaultValue: '' }] },
@@ -79,6 +81,8 @@ export default class ActorEditor {
     this.previewTimers = [];
     this.activeMenuSection = 'states';
     this.fileMenuOpen = false;
+    this.stateGraphOpen = false;
+    this.hideMobileSectionHeaders = false;
   }
 
   captureFocusedInputState() {
@@ -375,6 +379,8 @@ export default class ActorEditor {
     const viewportW = Number(window.innerWidth || 0);
     const viewportH = Number(window.innerHeight || 0);
     const isMobileViewport = Math.min(viewportW, viewportH) <= 900;
+    const isMobileLandscape = isMobileViewport && viewportW > viewportH;
+    this.hideMobileSectionHeaders = isMobileLandscape;
     const railWidth = isMobileViewport
       ? getSharedMobileRailWidth(viewportW, viewportH)
       : SHARED_EDITOR_LEFT_MENU.width();
@@ -385,6 +391,7 @@ export default class ActorEditor {
     body.style.gap = `${SHARED_EDITOR_LEFT_MENU.desktopContentGap}px`;
     body.style.flex = '1';
     body.style.minHeight = '0';
+    body.style.overflowX = 'hidden';
     left.style.width = `${railWidth}px`;
     left.style.flex = `0 0 ${railWidth}px`;
     left.style.display = 'flex';
@@ -395,6 +402,7 @@ export default class ActorEditor {
     center.style.flex = '1';
     center.style.minWidth = '0';
     center.style.overflow = 'auto';
+    center.style.overflowX = 'hidden';
     rightRail.style.width = `${railWidth}px`;
     rightRail.style.flex = `0 0 ${railWidth}px`;
     rightRail.style.display = 'flex';
@@ -404,6 +412,9 @@ export default class ActorEditor {
     left.appendChild(this.renderSidebarMenu());
     center.appendChild(this.renderMainPanel(actor, state));
     rightRail.appendChild(this.renderRightRail());
+    if (this.stateGraphOpen) {
+      this.overlay.appendChild(this.renderStateGraphModal());
+    }
     this.restoreFocusedInputState(focusState);
   }
 
@@ -436,7 +447,92 @@ export default class ActorEditor {
     menu.appendChild(makeMenuBtn('Actor', 'actor'));
     menu.appendChild(makeMenuBtn('States', 'states'));
     menu.appendChild(makeMenuBtn('Linked Parts', 'linked-parts'));
+    const graphBtn = el('button', 'actor-editor-btn', 'State graph');
+    this.styleRailButton(graphBtn, false);
+    graphBtn.style.marginTop = 'auto';
+    graphBtn.onclick = () => {
+      this.stateGraphOpen = true;
+      this.fileMenuOpen = false;
+      this.render();
+    };
+    menu.appendChild(graphBtn);
     return menu;
+  }
+
+  appendSectionHeading(section, label) {
+    if (this.hideMobileSectionHeaders) return;
+    section.appendChild(el('h2', '', label));
+  }
+
+  getKnownTaxonomyOptions(actor) {
+    const options = new Set(DEFAULT_TAXONOMIES);
+    (actor?.taxonomies || []).forEach((entry) => options.add(String(entry)));
+    (actor?.aggressiveTo || []).forEach((entry) => options.add(String(entry)));
+    if (typeof window !== 'undefined') {
+      try {
+        const index = JSON.parse(window.localStorage.getItem('robter:vfs:index') || 'null');
+        const actorNames = Object.keys(index?.actors || {});
+        actorNames.forEach((name) => {
+          const payload = JSON.parse(window.localStorage.getItem(`robter:vfs:actors:${name}`) || 'null');
+          const definition = ensureActorDefinition(payload?.data || null);
+          (definition.taxonomies || []).forEach((entry) => options.add(String(entry)));
+          (definition.aggressiveTo || []).forEach((entry) => options.add(String(entry)));
+        });
+      } catch (error) {
+        console.warn('Failed to load taxonomy options', error);
+      }
+    }
+    return Array.from(options).filter(Boolean).sort((a, b) => a.localeCompare(b));
+  }
+
+  renderTaxonomyEditor(actor, {
+    key,
+    label,
+    helperText,
+    addLabel = 'Add taxonomy'
+  }) {
+    const section = el('div', 'actor-editor-subsection');
+    section.appendChild(el('h3', '', label));
+    if (helperText) section.appendChild(el('div', 'actor-editor-note', helperText));
+    const list = actor[key] || [];
+    const options = this.getKnownTaxonomyOptions(actor);
+    const checkGrid = el('div', 'actor-editor-grid');
+    options.forEach((taxonomy) => {
+      const toggle = el('label', 'actor-editor-toggle');
+      const box = el('input');
+      box.type = 'checkbox';
+      box.checked = list.includes(taxonomy);
+      box.oninput = (event) => {
+        const next = clone(actor);
+        const current = new Set(next[key] || []);
+        if (event.target.checked) current.add(taxonomy);
+        else current.delete(taxonomy);
+        next[key] = Array.from(current);
+        this.setActor(next);
+      };
+      toggle.append(box, taxonomy);
+      checkGrid.appendChild(toggle);
+    });
+    section.appendChild(checkGrid);
+
+    const addRow = el('div', 'actor-editor-inline-actions');
+    const input = el('input');
+    input.type = 'text';
+    input.placeholder = 'custom taxonomy';
+    const addBtn = el('button', 'actor-editor-btn', addLabel);
+    addBtn.onclick = () => {
+      const value = String(input.value || '').trim();
+      if (!value) return;
+      const next = clone(actor);
+      const current = new Set(next[key] || []);
+      current.add(value);
+      next[key] = Array.from(current);
+      this.setActor(next);
+      input.value = '';
+    };
+    addRow.append(input, addBtn);
+    section.appendChild(addRow);
+    return section;
   }
 
   renderFileMenuRail() {
@@ -494,7 +590,7 @@ export default class ActorEditor {
     controls.style.display = 'flex';
     controls.style.flexDirection = 'column';
     controls.style.gap = '6px';
-    [['Add', () => this.addState()], ['Paste', () => this.pasteState()]].forEach(([label, handler]) => {
+    [['Add', () => this.addState()], ['Duplicate', () => this.duplicateState(this.selectedState)]].forEach(([label, handler]) => {
       const btn = el('button', 'actor-editor-btn small', label);
       this.styleRailButton(btn, false);
       btn.onclick = handler;
@@ -529,7 +625,7 @@ export default class ActorEditor {
 
   renderActorSettings(actor) {
     const section = el('section', 'actor-editor-card');
-    section.appendChild(el('h2', '', '1. Actor-level settings'));
+    this.appendSectionHeading(section, 'Actor settings');
     const grid = el('div', 'actor-editor-grid');
     section.appendChild(grid);
     const addField = (label, input) => {
@@ -551,7 +647,7 @@ export default class ActorEditor {
       input.oninput = onInput; return input;
     };
     addField('Name', text(actor.name, (event) => this.setActor({ ...actor, name: event.target.value })));
-    addField('Attack who', select(actor.attackTarget, ACTOR_ATTACK_TARGETS, (event) => this.setActor({ ...actor, attackTarget: event.target.value })));
+    addField('Attack who (legacy)', select(actor.attackTarget, ACTOR_ATTACK_TARGETS, (event) => this.setActor({ ...actor, attackTarget: event.target.value })));
     addField('Health', text(actor.health, (event) => this.setActor({ ...actor, health: Number(event.target.value || 0) || 1 })));
     addField('Gravity', checkbox(actor.gravity, (event) => this.setActor({ ...actor, gravity: event.target.checked }), 'On'));
     addField('Body contact damage', checkbox(actor.bodyDamageEnabled, (event) => this.setActor({ ...actor, bodyDamageEnabled: event.target.checked }), 'Enabled'));
@@ -562,6 +658,18 @@ export default class ActorEditor {
     addField('Size (w × h)', text(`${actor.size.width} × ${actor.size.height}`, (event) => {
       const [width, height] = String(event.target.value).split('x').map((part) => Number.parseInt(part, 10));
       this.setActor({ ...actor, size: { width: width || actor.size.width, height: height || actor.size.height } });
+    }));
+    section.appendChild(this.renderTaxonomyEditor(actor, {
+      key: 'taxonomies',
+      label: 'I belong to taxonomy',
+      helperText: 'Pick one or more taxonomy tags that describe this actor.',
+      addLabel: 'Add taxonomy'
+    }));
+    section.appendChild(this.renderTaxonomyEditor(actor, {
+      key: 'aggressiveTo',
+      label: 'I am aggressive to taxonomy',
+      helperText: 'This actor considers these taxonomies hostile.',
+      addLabel: 'Add hostile taxonomy'
     }));
 
     const lootSection = el('div', 'actor-editor-subsection');
@@ -629,9 +737,9 @@ export default class ActorEditor {
 
   renderStateList(actor) {
     const section = el('section', 'actor-editor-card');
-    section.appendChild(el('h2', '', '2. States'));
+    this.appendSectionHeading(section, 'States');
     const controls = el('div', 'actor-editor-toolbar');
-    [['Add state', () => this.addState()], ['Paste state', () => this.pasteState()]].forEach(([label, handler]) => {
+    [['Add state', () => this.addState()], ['Duplicate selected', () => this.duplicateState(this.selectedState)]].forEach(([label, handler]) => {
       const btn = el('button', 'actor-editor-btn', label); btn.onclick = handler; controls.appendChild(btn);
     });
     section.appendChild(controls);
@@ -641,7 +749,7 @@ export default class ActorEditor {
       row.onclick = () => { this.selectedStateId = state.id; this.render(); };
       const preview = this.buildStatePreviewButton(state);
       const meta = el('div', 'actor-editor-state-meta');
-      meta.append(el('strong', '', state.name), el('span', '', `${state.movement.type} • ${state.actions.length} action(s)`));
+      meta.append(el('strong', '', state.name), el('span', '', `${state.movement.type} • ${(state.transitions || []).length} transition(s)`));
       const rowBtns = el('div', 'actor-editor-inline-actions');
       [['↑', () => this.moveState(state, -1)], ['↓', () => this.moveState(state, 1)], ['Copy', () => this.copyState(state)], ['Duplicate', () => this.duplicateState(state)], ['Delete', () => this.deleteState(state)]].forEach(([label, handler]) => {
         const btn = el('button', 'actor-editor-btn small', label); btn.onclick = (event) => { event.stopPropagation(); handler(); }; rowBtns.appendChild(btn);
@@ -656,7 +764,7 @@ export default class ActorEditor {
 
   renderStateEditor(state) {
     const section = el('section', 'actor-editor-card');
-    section.appendChild(el('h2', '', '3–6. State editor / conditions / actions / animation'));
+    this.appendSectionHeading(section, 'State editor');
     if (!state) return section;
     const name = el('input'); name.value = state.name; name.oninput = (event) => this.updateSelectedState((draft) => { draft.name = event.target.value; });
     section.appendChild(name);
@@ -689,20 +797,59 @@ export default class ActorEditor {
     });
     section.appendChild(overrides);
 
-    section.appendChild(this.renderConditionEditor(state));
-    section.appendChild(this.renderActionEditor(state));
+    section.appendChild(this.renderTransitionEditor(state));
     return section;
   }
 
-  renderConditionEditor(state) {
+  renderTransitionEditor(state) {
+    const section = el('div', 'actor-editor-subsection');
+    const stateOptions = this.actor.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
+    section.appendChild(el('h3', '', 'Transitions (edges)'));
+    section.appendChild(el('div', 'actor-editor-note', 'Transitions are checked top-to-bottom. The first matching transition runs.'));
+    const list = el('div', 'actor-editor-list');
+    state.transitions.forEach((transition, transitionIndex) => {
+      const card = el('div', 'actor-editor-subsection');
+      const heading = el('h3', '', `Transition ${transitionIndex + 1}`);
+      const name = el('input');
+      name.value = transition.name || '';
+      name.placeholder = `Transition ${transitionIndex + 1}`;
+      name.oninput = (event) => this.updateSelectedState((draft) => {
+        draft.transitions[transitionIndex].name = event.target.value;
+      });
+      const toolbar = el('div', 'actor-editor-inline-actions');
+      [['↑', () => this.moveTransition(transitionIndex, -1)], ['↓', () => this.moveTransition(transitionIndex, 1)], ['Remove', () => this.removeTransition(transitionIndex)]].forEach(([label, handler]) => {
+        const btn = el('button', 'actor-editor-btn small', label);
+        btn.onclick = handler;
+        toolbar.appendChild(btn);
+      });
+      const mode = el('select');
+      ['all', 'any'].forEach((entry) => {
+        const option = el('option');
+        option.value = entry;
+        option.textContent = entry.toUpperCase();
+        if (entry === transition.conditionMode) option.selected = true;
+        mode.appendChild(option);
+      });
+      mode.oninput = (event) => this.updateSelectedState((draft) => {
+        draft.transitions[transitionIndex].conditionMode = event.target.value;
+      });
+      card.append(heading, name, mode, toolbar);
+      card.appendChild(this.renderConditionEditor(state, transitionIndex, stateOptions));
+      card.appendChild(this.renderActionEditor(state, transitionIndex, stateOptions));
+      list.appendChild(card);
+    });
+    const add = el('button', 'actor-editor-btn', 'Add transition');
+    add.onclick = () => this.addTransition();
+    section.append(list, add);
+    return section;
+  }
+
+  renderConditionEditor(state, transitionIndex, stateOptions) {
     const section = el('div', 'actor-editor-subsection');
     section.appendChild(el('h3', '', 'Conditions'));
-    const mode = el('select'); ['all', 'any'].forEach((entry) => { const option = el('option'); option.value = entry; option.textContent = entry.toUpperCase(); if (entry === state.conditionMode) option.selected = true; mode.appendChild(option); });
-    mode.oninput = (event) => this.updateSelectedState((draft) => { draft.conditionMode = event.target.value; });
-    section.appendChild(mode);
+    const transition = state.transitions[transitionIndex];
     const list = el('div', 'actor-editor-list');
-    const stateOptions = this.actor.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
-    state.conditions.forEach((condition, index) => {
+    transition.conditions.forEach((condition, index) => {
       const row = el('div', 'actor-editor-list-row');
       const spec = this.getConditionSpec(condition.type);
       const type = el('select');
@@ -715,8 +862,8 @@ export default class ActorEditor {
       });
       type.oninput = (event) => this.updateSelectedState((draft) => {
         const nextType = event.target.value;
-        draft.conditions[index].type = nextType;
-        draft.conditions[index].params = this.createParamsFromSpec(this.getConditionSpec(nextType), stateOptions);
+        draft.transitions[transitionIndex].conditions[index].type = nextType;
+        draft.transitions[transitionIndex].conditions[index].params = this.createParamsFromSpec(this.getConditionSpec(nextType), stateOptions);
       });
       const params = this.renderParamFields({
         fields: spec.fields,
@@ -724,24 +871,31 @@ export default class ActorEditor {
         stateOptions,
         onParamInput: (field, value) => this.updateSelectedState((draft) => {
           const nextValue = field.fromDisplay ? field.fromDisplay(value) : value;
-          draft.conditions[index].params = draft.conditions[index].params || {};
-          draft.conditions[index].params[field.key] = nextValue;
+          draft.transitions[transitionIndex].conditions[index].params = draft.transitions[transitionIndex].conditions[index].params || {};
+          draft.transitions[transitionIndex].conditions[index].params[field.key] = nextValue;
         })
       });
-      const remove = el('button', 'actor-editor-btn small', 'Remove'); remove.onclick = () => this.updateSelectedState((draft) => { draft.conditions.splice(index, 1); if (!draft.conditions.length) draft.conditions.push({ id: 'always', type: 'always', params: {} }); });
+      const remove = el('button', 'actor-editor-btn small', 'Remove');
+      remove.onclick = () => this.updateSelectedState((draft) => {
+        draft.transitions[transitionIndex].conditions.splice(index, 1);
+        if (!draft.transitions[transitionIndex].conditions.length) draft.transitions[transitionIndex].conditions.push({ id: 'always', type: 'always', params: {} });
+      });
       row.append(type, params, remove); list.appendChild(row);
     });
-    const add = el('button', 'actor-editor-btn', 'Add condition'); add.onclick = () => this.updateSelectedState((draft) => { draft.conditions.push({ id: `cond-${Date.now()}`, type: 'timer-elapsed', params: this.createParamsFromSpec(this.getConditionSpec('timer-elapsed'), stateOptions) }); });
+    const add = el('button', 'actor-editor-btn', 'Add condition');
+    add.onclick = () => this.updateSelectedState((draft) => {
+      draft.transitions[transitionIndex].conditions.push({ id: `cond-${Date.now()}`, type: 'timer-elapsed', params: this.createParamsFromSpec(this.getConditionSpec('timer-elapsed'), stateOptions) });
+    });
     section.append(list, add);
     return section;
   }
 
-  renderActionEditor(state) {
+  renderActionEditor(state, transitionIndex, stateOptions) {
     const section = el('div', 'actor-editor-subsection');
     section.appendChild(el('h3', '', 'Actions'));
+    const transition = state.transitions[transitionIndex];
     const list = el('div', 'actor-editor-list');
-    const stateOptions = this.actor.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
-    state.actions.forEach((action, index) => {
+    transition.actions.forEach((action, index) => {
       const row = el('div', 'actor-editor-list-row');
       const spec = this.getActionSpec(action.type);
       const type = el('select');
@@ -754,8 +908,8 @@ export default class ActorEditor {
       });
       type.oninput = (event) => this.updateSelectedState((draft) => {
         const nextType = event.target.value;
-        draft.actions[index].type = nextType;
-        draft.actions[index].params = this.createParamsFromSpec(this.getActionSpec(nextType), stateOptions);
+        draft.transitions[transitionIndex].actions[index].type = nextType;
+        draft.transitions[transitionIndex].actions[index].params = this.createParamsFromSpec(this.getActionSpec(nextType), stateOptions);
       });
       const params = this.renderParamFields({
         fields: spec.fields,
@@ -763,24 +917,63 @@ export default class ActorEditor {
         stateOptions,
         onParamInput: (field, value) => this.updateSelectedState((draft) => {
           const nextValue = field.fromDisplay ? field.fromDisplay(value) : value;
-          draft.actions[index].params = draft.actions[index].params || {};
-          draft.actions[index].params[field.key] = nextValue;
+          draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
+          draft.transitions[transitionIndex].actions[index].params[field.key] = nextValue;
         })
       });
-      const remove = el('button', 'actor-editor-btn small', 'Remove'); remove.onclick = () => this.updateSelectedState((draft) => { draft.actions.splice(index, 1); });
+      const remove = el('button', 'actor-editor-btn small', 'Remove');
+      remove.onclick = () => this.updateSelectedState((draft) => { draft.transitions[transitionIndex].actions.splice(index, 1); });
       row.append(type, params, remove); list.appendChild(row);
     });
     const add = el('button', 'actor-editor-btn', 'Add action'); add.onclick = () => this.updateSelectedState((draft, actorDraft) => {
       const actorStateOptions = actorDraft.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
-      draft.actions.push({ id: `action-${Date.now()}`, type: 'switch-state', params: this.createParamsFromSpec(this.getActionSpec('switch-state'), actorStateOptions) });
+      draft.transitions[transitionIndex].actions.push({ id: `action-${Date.now()}`, type: 'switch-state', params: this.createParamsFromSpec(this.getActionSpec('switch-state'), actorStateOptions) });
     });
     section.append(list, add);
     return section;
   }
 
+  addTransition() {
+    this.updateSelectedState((draft, actorDraft) => {
+      const actorStateOptions = actorDraft.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
+      const transitionIndex = draft.transitions.length + 1;
+      draft.transitions.push({
+        id: `transition-${Date.now()}`,
+        name: `Transition ${transitionIndex}`,
+        conditionMode: 'all',
+        conditions: [{ id: `cond-${Date.now()}`, type: 'timer-elapsed', params: this.createParamsFromSpec(this.getConditionSpec('timer-elapsed'), actorStateOptions) }],
+        actions: [{ id: `action-${Date.now()}`, type: 'switch-state', params: this.createParamsFromSpec(this.getActionSpec('switch-state'), actorStateOptions) }]
+      });
+    });
+  }
+
+  moveTransition(index, delta) {
+    this.updateSelectedState((draft) => {
+      const next = index + delta;
+      if (next < 0 || next >= draft.transitions.length) return;
+      const [entry] = draft.transitions.splice(index, 1);
+      draft.transitions.splice(next, 0, entry);
+    });
+  }
+
+  removeTransition(index) {
+    this.updateSelectedState((draft, actorDraft) => {
+      draft.transitions.splice(index, 1);
+      if (draft.transitions.length) return;
+      const actorStateOptions = actorDraft.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
+      draft.transitions.push({
+        id: `transition-${Date.now()}`,
+        name: 'Transition 1',
+        conditionMode: 'all',
+        conditions: [{ id: 'always', type: 'always', params: {} }],
+        actions: [{ id: `action-${Date.now()}`, type: 'switch-state', params: this.createParamsFromSpec(this.getActionSpec('switch-state'), actorStateOptions) }]
+      });
+    });
+  }
+
   renderLinkedParts(actor) {
     const section = el('section', 'actor-editor-card');
-    section.appendChild(el('h2', '', '7–9. Linked parts / multipart composition / Level Editor placement'));
+    this.appendSectionHeading(section, 'Linked parts');
     section.appendChild(el('div', 'actor-editor-note', 'Only root actors are placeable in Level Editor. Linked child parts spawn with the root.'));
     const list = el('div', 'actor-editor-list');
     actor.linkedParts.forEach((part, index) => {
@@ -807,6 +1000,101 @@ export default class ActorEditor {
     };
     section.append(list, add);
     return section;
+  }
+
+  describeCondition(condition) {
+    const spec = this.getConditionSpec(condition?.type);
+    const base = spec?.label || toTitleLabel(condition?.type || 'condition');
+    const fields = Array.isArray(spec?.fields) ? spec.fields : [];
+    if (!fields.length) return base;
+    const parts = fields.map((field) => {
+      const rawValue = condition?.params?.[field.key];
+      const value = field.toDisplay ? field.toDisplay(rawValue) : rawValue;
+      return `${field.label}: ${value ?? field.defaultValue ?? ''}`;
+    }).filter(Boolean);
+    return parts.length ? `${base} (${parts.join(', ')})` : base;
+  }
+
+  renderStateGraphModal() {
+    const scrim = el('div', 'actor-editor-overlay-scrim');
+    Object.assign(scrim.style, {
+      position: 'absolute',
+      inset: '0',
+      background: 'rgba(0, 0, 0, 0.72)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: '50'
+    });
+    const card = el('div', 'actor-editor-card');
+    Object.assign(card.style, {
+      width: 'min(980px, 92vw)',
+      maxHeight: '85vh',
+      overflow: 'auto',
+      padding: '16px'
+    });
+    const head = el('div', 'actor-editor-toolbar');
+    head.append(el('h2', '', 'State graph preview'));
+    const close = el('button', 'actor-editor-btn', 'Close');
+    close.onclick = () => {
+      this.stateGraphOpen = false;
+      this.render();
+    };
+    head.appendChild(close);
+    card.appendChild(head);
+    const note = el('div', 'actor-editor-note', 'Transitions are shown in evaluation order (top to bottom).');
+    card.appendChild(note);
+
+    this.actor.states.forEach((state) => {
+      const stateSection = el('div', 'actor-editor-subsection');
+      const title = el('h3', '', state.name || state.id);
+      stateSection.appendChild(title);
+      const previewRow = el('div', 'actor-editor-inline-actions');
+      const frame = Array.isArray(state.animation?.frames) && state.animation.frames.length
+        ? state.animation.frames.find((entry) => entry?.imageDataUrl)
+        : (state.animation?.imageDataUrl ? { imageDataUrl: state.animation.imageDataUrl } : null);
+      if (frame?.imageDataUrl) {
+        const preview = el('img');
+        preview.src = frame.imageDataUrl;
+        preview.alt = `${state.name || state.id} preview`;
+        Object.assign(preview.style, {
+          width: '48px',
+          height: '48px',
+          imageRendering: 'pixelated',
+          border: '1px solid rgba(255,255,255,0.25)',
+          background: 'rgba(0,0,0,0.35)'
+        });
+        previewRow.appendChild(preview);
+      }
+      const transitions = Array.isArray(state.transitions) ? state.transitions : [];
+      if (!transitions.length) {
+        previewRow.appendChild(el('div', 'actor-editor-note', 'No transitions.'));
+      }
+      stateSection.appendChild(previewRow);
+      transitions.forEach((transition, index) => {
+        const conditions = Array.isArray(transition.conditions) ? transition.conditions : [];
+        const actions = Array.isArray(transition.actions) ? transition.actions : [];
+        const switchAction = actions.find((action) => action?.type === 'switch-state');
+        const targetState = this.actor.states.find((entry) => entry.id === switchAction?.params?.stateId);
+        const targetLabel = targetState?.name || switchAction?.params?.stateId || '(no state target)';
+        const conditionLabel = conditions.length
+          ? conditions.map((condition) => this.describeCondition(condition)).join(transition.conditionMode === 'any' ? ' OR ' : ' AND ')
+          : 'Always';
+        const line = el('div', 'actor-editor-note', `${state.name || state.id} → ${conditionLabel} → ${targetLabel}`);
+        line.style.padding = '4px 0';
+        line.dataset.transitionIndex = String(index);
+        stateSection.appendChild(line);
+      });
+      card.appendChild(stateSection);
+    });
+
+    scrim.onclick = (event) => {
+      if (event.target !== scrim) return;
+      this.stateGraphOpen = false;
+      this.render();
+    };
+    scrim.appendChild(card);
+    return scrim;
   }
 
 }

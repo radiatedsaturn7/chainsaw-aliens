@@ -38,6 +38,8 @@ export default class ScriptedActor extends EnemyBase {
     this.bodyDamageEnabled = this.definition.bodyDamageEnabled;
     this.destructible = this.definition.destructible;
     this.attackTarget = this.definition.attackTarget;
+    this.taxonomies = Array.isArray(this.definition.taxonomies) ? [...this.definition.taxonomies] : [];
+    this.aggressiveTo = Array.isArray(this.definition.aggressiveTo) ? [...this.definition.aggressiveTo] : [];
     this.stateId = this.definition.initialStateId;
     this.stateTimer = 0;
     this.cooldowns = new Map();
@@ -46,6 +48,8 @@ export default class ScriptedActor extends EnemyBase {
     this.linkedChildren = [];
     this.lootTable = this.definition.loot || [];
     this._imageCache = new Map();
+    this.tookDamageThisFrame = false;
+    this.damagedPlayerThisFrame = false;
   }
 
   get currentState() {
@@ -54,30 +58,66 @@ export default class ScriptedActor extends EnemyBase {
 
   damage(amount) {
     if (this.invulnerable || !this.destructible) return;
+    const beforeHealth = this.health;
     super.damage(amount);
+    if (this.health < beforeHealth) {
+      this.tookDamageThisFrame = true;
+    }
   }
 
-  evaluateCondition(condition, player) {
+  onDamagedPlayer() {
+    this.damagedPlayerThisFrame = true;
+  }
+
+  evaluateCondition(condition, player, _context = {}) {
     const params = condition?.params || {};
+    const stateAggroRange = Number(this.currentState?.movement?.params?.aggroRange || 220);
+    const visibilityRange = Number(params.range || params.distance || stateAggroRange || 220);
+    const playerDistance = Math.hypot(player.x - this.x, player.y - this.y);
     switch (condition?.type) {
       case 'always': return true;
       case 'timer-elapsed': return this.stateTimer >= Number(params.seconds || 0);
       case 'actor-health-below': return this.maxHealth > 0 && (this.health / this.maxHealth) <= Number(params.ratio ?? 0.5);
+      case 'can-see-player': return playerDistance <= visibilityRange;
+      case 'cannot-see-player': return playerDistance > visibilityRange;
       case 'player-within': return Math.abs(player.x - this.x) <= Number(params.distance || 160);
       case 'player-farther-than': return Math.abs(player.x - this.x) >= Number(params.distance || 200);
+      case 'took-damage': return this.tookDamageThisFrame;
+      case 'damaged-player': return this.damagedPlayerThisFrame;
+      case 'is-dead': return this.dead;
       case 'random-chance': return Math.random() <= Number(params.chance || 0);
       case 'cooldown-ready': return !this.cooldowns.get(params.key || 'default');
       default: return false;
     }
   }
 
+  getStateTransitions(state) {
+    if (!state) return [];
+    if (Array.isArray(state.transitions) && state.transitions.length) {
+      return state.transitions;
+    }
+    return [{
+      conditionMode: state.conditionMode || 'all',
+      conditions: Array.isArray(state.conditions) && state.conditions.length ? state.conditions : [{ id: 'always', type: 'always', params: {} }],
+      actions: Array.isArray(state.actions) ? state.actions : []
+    }];
+  }
+
   checkStateTransition(player, context) {
     const state = this.currentState;
     if (!state) return;
-    const results = state.conditions.map((condition) => this.evaluateCondition(condition, player, context));
-    const passed = state.conditionMode === 'any' ? results.some(Boolean) : results.every(Boolean);
-    if (!passed) return;
-    state.actions.forEach((action) => this.runAction(action, player, context));
+    const transitions = this.getStateTransitions(state);
+    for (const transition of transitions) {
+      const conditions = Array.isArray(transition.conditions) ? transition.conditions : [];
+      const results = conditions.map((condition) => this.evaluateCondition(condition, player, context));
+      const passed = transition.conditionMode === 'any' ? results.some(Boolean) : results.every(Boolean);
+      if (!passed) continue;
+      const beforeStateId = this.stateId;
+      const actions = Array.isArray(transition.actions) ? transition.actions : [];
+      actions.forEach((action) => this.runAction(action, player, context));
+      if (this.stateId !== beforeStateId) return;
+      return;
+    }
   }
 
   runAction(action, player, context) {
@@ -127,7 +167,7 @@ export default class ScriptedActor extends EnemyBase {
     }
   }
 
-  applyMovement(dt, player) {
+  applyMovement(dt, player, context = {}) {
     const state = this.currentState;
     const movement = state?.movement || { type: 'none', params: {} };
     const params = movement.params || {};
@@ -140,7 +180,10 @@ export default class ScriptedActor extends EnemyBase {
       case 'random-walk-pause': {
         const cycle = Number(params.walkDuration || 1) + Number(params.pauseDuration || 1);
         const phase = this.stateTimer % cycle;
-        this.vx = phase < Number(params.walkDuration || 1) ? this.facing * Number(params.speed || 80) : 0;
+        const walking = phase < Number(params.walkDuration || 1);
+        if (walking && context.isWallAhead?.(this)) this.facing *= -1;
+        if (walking && context.hasGroundAhead && !context.hasGroundAhead(this)) this.facing *= -1;
+        this.vx = walking ? this.facing * Number(params.speed || 80) : 0;
         if (phase < dt) this.facing *= Math.random() < 0.5 ? -1 : 1;
         this.x += this.vx * dt;
         break;
@@ -184,15 +227,21 @@ export default class ScriptedActor extends EnemyBase {
   }
 
   update(dt, player, context = {}) {
-    if (this.dead) return;
+    if (this.dead) {
+      this.tookDamageThisFrame = false;
+      this.damagedPlayerThisFrame = false;
+      return;
+    }
     this.stateTimer += dt;
-    this.applyMovement(dt, player);
+    this.applyMovement(dt, player, context);
     this.checkStateTransition(player, context);
     const overrides = this.currentState?.overrides || {};
     this.bodyDamageEnabled = overrides.bodyDamageEnabled == null ? this.definition.bodyDamageEnabled : !!overrides.bodyDamageEnabled;
     this.contactDamage = overrides.contactDamage == null ? this.definition.contactDamage : Number(overrides.contactDamage || 0);
     this.invulnerable = overrides.invulnerable == null ? this.definition.invulnerable : !!overrides.invulnerable;
     this.stagger = Math.max(0, this.stagger - dt * 0.5);
+    this.tookDamageThisFrame = false;
+    this.damagedPlayerThisFrame = false;
   }
 
   getAnimationFrames() {

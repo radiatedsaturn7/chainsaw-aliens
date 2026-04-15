@@ -6,10 +6,12 @@ export const ACTOR_ATTACK_TARGETS = [
   { id: 'impartial', label: 'Impartial actors' }
 ];
 
+export const DEFAULT_TAXONOMIES = ['Player', 'Player and Allies', 'Neutral', 'Enemies'];
+
 export const MOVEMENT_BEHAVIORS = [
   { id: 'none', label: 'None', description: 'Hold position.' },
   { id: 'patrol-platform', label: 'Patrol platform', description: 'Walk left/right and turn on walls or edges.', params: ['speed', 'turnOnWall', 'edgeHandling'] },
-  { id: 'random-walk-pause', label: 'Random walk then pause', description: 'Alternate short walks and idle pauses.', params: ['speed', 'walkDuration', 'pauseDuration'] },
+  { id: 'random-walk-pause', label: 'Random walk', description: 'Alternate short walks and idle pauses; turn around at walls or ledges.', params: ['speed', 'walkDuration', 'pauseDuration'] },
   { id: 'avoid-player', label: 'Avoid player', description: 'Back away when the player gets too close.', params: ['speed', 'fleeDistance'] },
   { id: 'approach-player', label: 'Approach player', description: 'Move toward the player inside aggro range.', params: ['speed', 'aggroRange'] },
   { id: 'pause-bounce', label: 'Pause and bounce', description: 'Pause, then spring forward / upward.', params: ['speed', 'pauseDuration', 'jumpSpeed'] },
@@ -32,7 +34,7 @@ export const MOVEMENT_PRESET_TEMPLATES = {
 export const CONDITION_TYPES = [
   'always', 'timer-elapsed', 'actor-health-below', 'player-health-below', 'can-see-player', 'cannot-see-player',
   'player-within', 'player-farther-than', 'player-has-item', 'player-presses-action', 'touched-wall', 'touched-floor',
-  'touched-ceiling', 'took-damage', 'random-chance', 'cooldown-ready', 'linked-part-destroyed', 'root-entered-state', 'child-entered-state'
+  'touched-ceiling', 'took-damage', 'damaged-player', 'is-dead', 'random-chance', 'cooldown-ready', 'linked-part-destroyed', 'root-entered-state', 'child-entered-state'
 ];
 
 export const ACTION_TYPES = [
@@ -67,9 +69,13 @@ export function createDefaultState(name = 'Idle') {
     animation: { imageDataUrl: '', frames: [], fps: 8, updatedAt: 0 },
     movement: { type: 'none', params: {} },
     overrides: { bodyDamageEnabled: null, contactDamage: null, invulnerable: null },
-    conditions: [{ id: 'always', type: 'always', params: {} }],
-    conditionMode: 'all',
-    actions: []
+    transitions: [{
+      id: 'transition-1',
+      name: 'Transition 1',
+      conditionMode: 'all',
+      conditions: [{ id: 'always', type: 'always', params: {} }],
+      actions: []
+    }]
   };
 }
 
@@ -81,6 +87,8 @@ export function createDefaultActor(name = 'New Actor') {
     id: slug,
     name,
     attackTarget: 'none',
+    taxonomies: ['Enemies'],
+    aggressiveTo: ['Player and Allies'],
     gravity: true,
     bodyDamageEnabled: false,
     contactDamage: 1,
@@ -106,7 +114,16 @@ export function ensureActorDefinition(actor) {
     size: { ...base.size, ...(actor?.size || {}) },
     advanced: { ...base.advanced, ...(actor?.advanced || {}) }
   };
+  const normalizeTaxonomyList = (value, fallback = []) => {
+    if (!Array.isArray(value)) return [...fallback];
+    const list = value
+      .map((entry) => String(entry || '').trim())
+      .filter(Boolean);
+    return Array.from(new Set(list));
+  };
   merged.id = slugify(merged.name || merged.id);
+  merged.taxonomies = normalizeTaxonomyList(actor?.taxonomies, base.taxonomies);
+  merged.aggressiveTo = normalizeTaxonomyList(actor?.aggressiveTo, base.aggressiveTo);
   merged.states = Array.isArray(actor?.states) && actor.states.length
     ? actor.states.map((state, index) => ({
       ...createDefaultState(state?.name || `State ${index + 1}`),
@@ -125,8 +142,30 @@ export function ensureActorDefinition(actor) {
         params: { ...(MOVEMENT_PRESET_TEMPLATES[state?.movement?.type || 'none'] || {}), ...(state?.movement?.params || {}) }
       },
       overrides: { bodyDamageEnabled: null, contactDamage: null, invulnerable: null, ...(state?.overrides || {}) },
-      conditions: Array.isArray(state?.conditions) && state.conditions.length ? state.conditions : [{ id: 'always', type: 'always', params: {} }],
-      actions: Array.isArray(state?.actions) ? state.actions : []
+      transitions: (() => {
+        if (Array.isArray(state?.transitions) && state.transitions.length) {
+          return state.transitions.map((transition, transitionIndex) => ({
+            id: transition?.id || `transition-${transitionIndex + 1}`,
+            name: transition?.name || `Transition ${transitionIndex + 1}`,
+            conditionMode: transition?.conditionMode === 'any' ? 'any' : 'all',
+            conditions: Array.isArray(transition?.conditions) && transition.conditions.length
+              ? transition.conditions
+              : [{ id: 'always', type: 'always', params: {} }],
+            actions: Array.isArray(transition?.actions) ? transition.actions : []
+          }));
+        }
+        const legacyConditions = Array.isArray(state?.conditions) && state.conditions.length
+          ? state.conditions
+          : [{ id: 'always', type: 'always', params: {} }];
+        const legacyActions = Array.isArray(state?.actions) ? state.actions : [];
+        return [{
+          id: 'transition-1',
+          name: 'Transition 1',
+          conditionMode: state?.conditionMode === 'any' ? 'any' : 'all',
+          conditions: legacyConditions,
+          actions: legacyActions
+        }];
+      })()
     }))
     : [createDefaultState('Idle')];
   if (!merged.states.some((state) => state.id === merged.initialStateId)) {
