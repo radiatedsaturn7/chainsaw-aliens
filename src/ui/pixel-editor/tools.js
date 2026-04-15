@@ -216,7 +216,7 @@ export const createToolRegistry = (editor) => ([
   },
   {
     id: TOOL_IDS.HUE_SHIFT,
-    name: 'Hue Shift',
+    name: 'Hue Shifter',
     category: 'tools',
     cursor: 'crosshair',
     onPointerDown: null,

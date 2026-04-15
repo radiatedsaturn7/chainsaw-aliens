@@ -2121,7 +2121,7 @@ export default class PixelStudio {
       { id: TOOL_IDS.CLONE, label: 'Clone' },
       { id: TOOL_IDS.DITHER, label: 'Dither' },
       { id: TOOL_IDS.COLOR_REPLACE, label: 'Replace' },
-      { id: TOOL_IDS.HUE_SHIFT, label: 'Hue' }
+      { id: TOOL_IDS.HUE_SHIFT, label: 'Hue Shift' }
     ];
   }
 
@@ -7450,7 +7450,7 @@ export default class PixelStudio {
     const list = this.tools.filter((tool) => (tool.category || 'tools') === category)
       .filter((tool) => !(category === 'select' && tool.id === TOOL_IDS.MOVE));
     const toolsTop = y + (isMobile ? 60 : 56);
-    const toolsBottomPadding = isMobile ? 116 : 132;
+    const toolsBottomPadding = isMobile ? (category === 'tools' ? 72 : 116) : 132;
     const maxVisible = Math.max(1, Math.floor((h - toolsBottomPadding) / lineHeight));
     this.focusGroupMeta.tools = { maxVisible };
     const start = this.focusScroll.tools || 0;
