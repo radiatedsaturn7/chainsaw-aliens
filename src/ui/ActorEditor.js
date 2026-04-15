@@ -641,7 +641,7 @@ export default class ActorEditor {
       row.onclick = () => { this.selectedStateId = state.id; this.render(); };
       const preview = this.buildStatePreviewButton(state);
       const meta = el('div', 'actor-editor-state-meta');
-      meta.append(el('strong', '', state.name), el('span', '', `${state.movement.type} • ${state.actions.length} action(s)`));
+      meta.append(el('strong', '', state.name), el('span', '', `${state.movement.type} • ${(state.transitions || []).length} transition(s)`));
       const rowBtns = el('div', 'actor-editor-inline-actions');
       [['↑', () => this.moveState(state, -1)], ['↓', () => this.moveState(state, 1)], ['Copy', () => this.copyState(state)], ['Duplicate', () => this.duplicateState(state)], ['Delete', () => this.deleteState(state)]].forEach(([label, handler]) => {
         const btn = el('button', 'actor-editor-btn small', label); btn.onclick = (event) => { event.stopPropagation(); handler(); }; rowBtns.appendChild(btn);
@@ -689,20 +689,59 @@ export default class ActorEditor {
     });
     section.appendChild(overrides);
 
-    section.appendChild(this.renderConditionEditor(state));
-    section.appendChild(this.renderActionEditor(state));
+    section.appendChild(this.renderTransitionEditor(state));
     return section;
   }
 
-  renderConditionEditor(state) {
+  renderTransitionEditor(state) {
+    const section = el('div', 'actor-editor-subsection');
+    const stateOptions = this.actor.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
+    section.appendChild(el('h3', '', 'Transitions (edges)'));
+    section.appendChild(el('div', 'actor-editor-note', 'Transitions are checked top-to-bottom. The first matching transition runs.'));
+    const list = el('div', 'actor-editor-list');
+    state.transitions.forEach((transition, transitionIndex) => {
+      const card = el('div', 'actor-editor-subsection');
+      const heading = el('h3', '', `Transition ${transitionIndex + 1}`);
+      const name = el('input');
+      name.value = transition.name || '';
+      name.placeholder = `Transition ${transitionIndex + 1}`;
+      name.oninput = (event) => this.updateSelectedState((draft) => {
+        draft.transitions[transitionIndex].name = event.target.value;
+      });
+      const toolbar = el('div', 'actor-editor-inline-actions');
+      [['↑', () => this.moveTransition(transitionIndex, -1)], ['↓', () => this.moveTransition(transitionIndex, 1)], ['Remove', () => this.removeTransition(transitionIndex)]].forEach(([label, handler]) => {
+        const btn = el('button', 'actor-editor-btn small', label);
+        btn.onclick = handler;
+        toolbar.appendChild(btn);
+      });
+      const mode = el('select');
+      ['all', 'any'].forEach((entry) => {
+        const option = el('option');
+        option.value = entry;
+        option.textContent = entry.toUpperCase();
+        if (entry === transition.conditionMode) option.selected = true;
+        mode.appendChild(option);
+      });
+      mode.oninput = (event) => this.updateSelectedState((draft) => {
+        draft.transitions[transitionIndex].conditionMode = event.target.value;
+      });
+      card.append(heading, name, mode, toolbar);
+      card.appendChild(this.renderConditionEditor(state, transitionIndex, stateOptions));
+      card.appendChild(this.renderActionEditor(state, transitionIndex, stateOptions));
+      list.appendChild(card);
+    });
+    const add = el('button', 'actor-editor-btn', 'Add transition');
+    add.onclick = () => this.addTransition();
+    section.append(list, add);
+    return section;
+  }
+
+  renderConditionEditor(state, transitionIndex, stateOptions) {
     const section = el('div', 'actor-editor-subsection');
     section.appendChild(el('h3', '', 'Conditions'));
-    const mode = el('select'); ['all', 'any'].forEach((entry) => { const option = el('option'); option.value = entry; option.textContent = entry.toUpperCase(); if (entry === state.conditionMode) option.selected = true; mode.appendChild(option); });
-    mode.oninput = (event) => this.updateSelectedState((draft) => { draft.conditionMode = event.target.value; });
-    section.appendChild(mode);
+    const transition = state.transitions[transitionIndex];
     const list = el('div', 'actor-editor-list');
-    const stateOptions = this.actor.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
-    state.conditions.forEach((condition, index) => {
+    transition.conditions.forEach((condition, index) => {
       const row = el('div', 'actor-editor-list-row');
       const spec = this.getConditionSpec(condition.type);
       const type = el('select');
@@ -715,8 +754,8 @@ export default class ActorEditor {
       });
       type.oninput = (event) => this.updateSelectedState((draft) => {
         const nextType = event.target.value;
-        draft.conditions[index].type = nextType;
-        draft.conditions[index].params = this.createParamsFromSpec(this.getConditionSpec(nextType), stateOptions);
+        draft.transitions[transitionIndex].conditions[index].type = nextType;
+        draft.transitions[transitionIndex].conditions[index].params = this.createParamsFromSpec(this.getConditionSpec(nextType), stateOptions);
       });
       const params = this.renderParamFields({
         fields: spec.fields,
@@ -724,24 +763,31 @@ export default class ActorEditor {
         stateOptions,
         onParamInput: (field, value) => this.updateSelectedState((draft) => {
           const nextValue = field.fromDisplay ? field.fromDisplay(value) : value;
-          draft.conditions[index].params = draft.conditions[index].params || {};
-          draft.conditions[index].params[field.key] = nextValue;
+          draft.transitions[transitionIndex].conditions[index].params = draft.transitions[transitionIndex].conditions[index].params || {};
+          draft.transitions[transitionIndex].conditions[index].params[field.key] = nextValue;
         })
       });
-      const remove = el('button', 'actor-editor-btn small', 'Remove'); remove.onclick = () => this.updateSelectedState((draft) => { draft.conditions.splice(index, 1); if (!draft.conditions.length) draft.conditions.push({ id: 'always', type: 'always', params: {} }); });
+      const remove = el('button', 'actor-editor-btn small', 'Remove');
+      remove.onclick = () => this.updateSelectedState((draft) => {
+        draft.transitions[transitionIndex].conditions.splice(index, 1);
+        if (!draft.transitions[transitionIndex].conditions.length) draft.transitions[transitionIndex].conditions.push({ id: 'always', type: 'always', params: {} });
+      });
       row.append(type, params, remove); list.appendChild(row);
     });
-    const add = el('button', 'actor-editor-btn', 'Add condition'); add.onclick = () => this.updateSelectedState((draft) => { draft.conditions.push({ id: `cond-${Date.now()}`, type: 'timer-elapsed', params: this.createParamsFromSpec(this.getConditionSpec('timer-elapsed'), stateOptions) }); });
+    const add = el('button', 'actor-editor-btn', 'Add condition');
+    add.onclick = () => this.updateSelectedState((draft) => {
+      draft.transitions[transitionIndex].conditions.push({ id: `cond-${Date.now()}`, type: 'timer-elapsed', params: this.createParamsFromSpec(this.getConditionSpec('timer-elapsed'), stateOptions) });
+    });
     section.append(list, add);
     return section;
   }
 
-  renderActionEditor(state) {
+  renderActionEditor(state, transitionIndex, stateOptions) {
     const section = el('div', 'actor-editor-subsection');
     section.appendChild(el('h3', '', 'Actions'));
+    const transition = state.transitions[transitionIndex];
     const list = el('div', 'actor-editor-list');
-    const stateOptions = this.actor.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
-    state.actions.forEach((action, index) => {
+    transition.actions.forEach((action, index) => {
       const row = el('div', 'actor-editor-list-row');
       const spec = this.getActionSpec(action.type);
       const type = el('select');
@@ -754,8 +800,8 @@ export default class ActorEditor {
       });
       type.oninput = (event) => this.updateSelectedState((draft) => {
         const nextType = event.target.value;
-        draft.actions[index].type = nextType;
-        draft.actions[index].params = this.createParamsFromSpec(this.getActionSpec(nextType), stateOptions);
+        draft.transitions[transitionIndex].actions[index].type = nextType;
+        draft.transitions[transitionIndex].actions[index].params = this.createParamsFromSpec(this.getActionSpec(nextType), stateOptions);
       });
       const params = this.renderParamFields({
         fields: spec.fields,
@@ -763,19 +809,58 @@ export default class ActorEditor {
         stateOptions,
         onParamInput: (field, value) => this.updateSelectedState((draft) => {
           const nextValue = field.fromDisplay ? field.fromDisplay(value) : value;
-          draft.actions[index].params = draft.actions[index].params || {};
-          draft.actions[index].params[field.key] = nextValue;
+          draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
+          draft.transitions[transitionIndex].actions[index].params[field.key] = nextValue;
         })
       });
-      const remove = el('button', 'actor-editor-btn small', 'Remove'); remove.onclick = () => this.updateSelectedState((draft) => { draft.actions.splice(index, 1); });
+      const remove = el('button', 'actor-editor-btn small', 'Remove');
+      remove.onclick = () => this.updateSelectedState((draft) => { draft.transitions[transitionIndex].actions.splice(index, 1); });
       row.append(type, params, remove); list.appendChild(row);
     });
     const add = el('button', 'actor-editor-btn', 'Add action'); add.onclick = () => this.updateSelectedState((draft, actorDraft) => {
       const actorStateOptions = actorDraft.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
-      draft.actions.push({ id: `action-${Date.now()}`, type: 'switch-state', params: this.createParamsFromSpec(this.getActionSpec('switch-state'), actorStateOptions) });
+      draft.transitions[transitionIndex].actions.push({ id: `action-${Date.now()}`, type: 'switch-state', params: this.createParamsFromSpec(this.getActionSpec('switch-state'), actorStateOptions) });
     });
     section.append(list, add);
     return section;
+  }
+
+  addTransition() {
+    this.updateSelectedState((draft, actorDraft) => {
+      const actorStateOptions = actorDraft.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
+      const transitionIndex = draft.transitions.length + 1;
+      draft.transitions.push({
+        id: `transition-${Date.now()}`,
+        name: `Transition ${transitionIndex}`,
+        conditionMode: 'all',
+        conditions: [{ id: `cond-${Date.now()}`, type: 'timer-elapsed', params: this.createParamsFromSpec(this.getConditionSpec('timer-elapsed'), actorStateOptions) }],
+        actions: [{ id: `action-${Date.now()}`, type: 'switch-state', params: this.createParamsFromSpec(this.getActionSpec('switch-state'), actorStateOptions) }]
+      });
+    });
+  }
+
+  moveTransition(index, delta) {
+    this.updateSelectedState((draft) => {
+      const next = index + delta;
+      if (next < 0 || next >= draft.transitions.length) return;
+      const [entry] = draft.transitions.splice(index, 1);
+      draft.transitions.splice(next, 0, entry);
+    });
+  }
+
+  removeTransition(index) {
+    this.updateSelectedState((draft, actorDraft) => {
+      draft.transitions.splice(index, 1);
+      if (draft.transitions.length) return;
+      const actorStateOptions = actorDraft.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
+      draft.transitions.push({
+        id: `transition-${Date.now()}`,
+        name: 'Transition 1',
+        conditionMode: 'all',
+        conditions: [{ id: 'always', type: 'always', params: {} }],
+        actions: [{ id: `action-${Date.now()}`, type: 'switch-state', params: this.createParamsFromSpec(this.getActionSpec('switch-state'), actorStateOptions) }]
+      });
+    });
   }
 
   renderLinkedParts(actor) {

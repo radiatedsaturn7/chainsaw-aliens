@@ -71,13 +71,33 @@ export default class ScriptedActor extends EnemyBase {
     }
   }
 
+  getStateTransitions(state) {
+    if (!state) return [];
+    if (Array.isArray(state.transitions) && state.transitions.length) {
+      return state.transitions;
+    }
+    return [{
+      conditionMode: state.conditionMode || 'all',
+      conditions: Array.isArray(state.conditions) && state.conditions.length ? state.conditions : [{ id: 'always', type: 'always', params: {} }],
+      actions: Array.isArray(state.actions) ? state.actions : []
+    }];
+  }
+
   checkStateTransition(player, context) {
     const state = this.currentState;
     if (!state) return;
-    const results = state.conditions.map((condition) => this.evaluateCondition(condition, player, context));
-    const passed = state.conditionMode === 'any' ? results.some(Boolean) : results.every(Boolean);
-    if (!passed) return;
-    state.actions.forEach((action) => this.runAction(action, player, context));
+    const transitions = this.getStateTransitions(state);
+    for (const transition of transitions) {
+      const conditions = Array.isArray(transition.conditions) ? transition.conditions : [];
+      const results = conditions.map((condition) => this.evaluateCondition(condition, player, context));
+      const passed = transition.conditionMode === 'any' ? results.some(Boolean) : results.every(Boolean);
+      if (!passed) continue;
+      const beforeStateId = this.stateId;
+      const actions = Array.isArray(transition.actions) ? transition.actions : [];
+      actions.forEach((action) => this.runAction(action, player, context));
+      if (this.stateId !== beforeStateId) return;
+      return;
+    }
   }
 
   runAction(action, player, context) {

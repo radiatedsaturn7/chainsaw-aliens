@@ -67,9 +67,13 @@ export function createDefaultState(name = 'Idle') {
     animation: { imageDataUrl: '', frames: [], fps: 8, updatedAt: 0 },
     movement: { type: 'none', params: {} },
     overrides: { bodyDamageEnabled: null, contactDamage: null, invulnerable: null },
-    conditions: [{ id: 'always', type: 'always', params: {} }],
-    conditionMode: 'all',
-    actions: []
+    transitions: [{
+      id: 'transition-1',
+      name: 'Transition 1',
+      conditionMode: 'all',
+      conditions: [{ id: 'always', type: 'always', params: {} }],
+      actions: []
+    }]
   };
 }
 
@@ -125,8 +129,30 @@ export function ensureActorDefinition(actor) {
         params: { ...(MOVEMENT_PRESET_TEMPLATES[state?.movement?.type || 'none'] || {}), ...(state?.movement?.params || {}) }
       },
       overrides: { bodyDamageEnabled: null, contactDamage: null, invulnerable: null, ...(state?.overrides || {}) },
-      conditions: Array.isArray(state?.conditions) && state.conditions.length ? state.conditions : [{ id: 'always', type: 'always', params: {} }],
-      actions: Array.isArray(state?.actions) ? state.actions : []
+      transitions: (() => {
+        if (Array.isArray(state?.transitions) && state.transitions.length) {
+          return state.transitions.map((transition, transitionIndex) => ({
+            id: transition?.id || `transition-${transitionIndex + 1}`,
+            name: transition?.name || `Transition ${transitionIndex + 1}`,
+            conditionMode: transition?.conditionMode === 'any' ? 'any' : 'all',
+            conditions: Array.isArray(transition?.conditions) && transition.conditions.length
+              ? transition.conditions
+              : [{ id: 'always', type: 'always', params: {} }],
+            actions: Array.isArray(transition?.actions) ? transition.actions : []
+          }));
+        }
+        const legacyConditions = Array.isArray(state?.conditions) && state.conditions.length
+          ? state.conditions
+          : [{ id: 'always', type: 'always', params: {} }];
+        const legacyActions = Array.isArray(state?.actions) ? state.actions : [];
+        return [{
+          id: 'transition-1',
+          name: 'Transition 1',
+          conditionMode: state?.conditionMode === 'any' ? 'any' : 'all',
+          conditions: legacyConditions,
+          actions: legacyActions
+        }];
+      })()
     }))
     : [createDefaultState('Idle')];
   if (!merged.states.some((state) => state.id === merged.initialStateId)) {
