@@ -83,6 +83,8 @@ export default class ActorEditor {
     this.fileMenuOpen = false;
     this.stateGraphOpen = false;
     this.hideMobileSectionHeaders = false;
+    this.actorArtHueShiftDegrees = 0;
+    this.actorArtHueShiftSaturation = 100;
   }
 
   captureFocusedInputState() {
@@ -672,6 +674,40 @@ export default class ActorEditor {
       addLabel: 'Add hostile taxonomy'
     }));
 
+    const artAdjustments = el('div', 'actor-editor-subsection');
+    artAdjustments.appendChild(el('h3', '', 'Art hue/saturation'));
+    artAdjustments.appendChild(el('div', 'actor-editor-note', 'Copies and hue-shifts all state art + animation frames for quick enemy variants.'));
+    const controls = el('div', 'actor-editor-inline-actions');
+    const hueInput = el('input');
+    hueInput.type = 'number';
+    hueInput.step = '1';
+    hueInput.min = '-180';
+    hueInput.max = '180';
+    hueInput.placeholder = 'Hue°';
+    hueInput.value = String(this.actorArtHueShiftDegrees);
+    hueInput.oninput = (event) => {
+      this.actorArtHueShiftDegrees = Number(event.target.value || 0);
+    };
+    const satInput = el('input');
+    satInput.type = 'number';
+    satInput.step = '1';
+    satInput.min = '0';
+    satInput.max = '200';
+    satInput.placeholder = 'Sat %';
+    satInput.value = String(this.actorArtHueShiftSaturation);
+    satInput.oninput = (event) => {
+      this.actorArtHueShiftSaturation = Number(event.target.value || 100);
+    };
+    const applyHue = el('button', 'actor-editor-btn', 'Apply to all art');
+    applyHue.onclick = async () => {
+      const degrees = Number(this.actorArtHueShiftDegrees || 0);
+      const saturation = Number(this.actorArtHueShiftSaturation || 100);
+      await this.applyHueShiftToActorArt(degrees, saturation);
+    };
+    controls.append(hueInput, satInput, applyHue);
+    artAdjustments.appendChild(controls);
+    section.appendChild(artAdjustments);
+
     const lootSection = el('div', 'actor-editor-subsection');
     lootSection.appendChild(el('h3', '', 'Loot on death'));
     const lootList = el('div', 'actor-editor-list');
@@ -701,6 +737,99 @@ export default class ActorEditor {
     advanced.appendChild(el('div', 'actor-editor-note', `Internal ID auto-generated from name: ${actor.id}`));
     section.appendChild(advanced);
     return section;
+  }
+
+  shiftRgbaHue(r, g, b, hueShiftDegrees = 0, saturationPercent = 100) {
+    const nr = r / 255;
+    const ng = g / 255;
+    const nb = b / 255;
+    const max = Math.max(nr, ng, nb);
+    const min = Math.min(nr, ng, nb);
+    const delta = max - min;
+    let hue = 0;
+    if (delta !== 0) {
+      if (max === nr) hue = ((ng - nb) / delta) % 6;
+      else if (max === ng) hue = (nb - nr) / delta + 2;
+      else hue = (nr - ng) / delta + 4;
+      hue *= 60;
+      if (hue < 0) hue += 360;
+    }
+    const lightness = (max + min) / 2;
+    const saturation = delta === 0 ? 0 : delta / (1 - Math.abs(2 * lightness - 1));
+    const saturationScale = Math.max(0, Math.min(2, (Number(saturationPercent || 100) || 100) / 100));
+    const adjustedSaturation = Math.max(0, Math.min(1, saturation * saturationScale));
+    const nextHue = ((hue + hueShiftDegrees) % 360 + 360) % 360;
+    const chroma = (1 - Math.abs(2 * lightness - 1)) * adjustedSaturation;
+    const x = chroma * (1 - Math.abs(((nextHue / 60) % 2) - 1));
+    const m = lightness - chroma / 2;
+    let rr = 0; let gg = 0; let bb = 0;
+    if (nextHue < 60) [rr, gg, bb] = [chroma, x, 0];
+    else if (nextHue < 120) [rr, gg, bb] = [x, chroma, 0];
+    else if (nextHue < 180) [rr, gg, bb] = [0, chroma, x];
+    else if (nextHue < 240) [rr, gg, bb] = [0, x, chroma];
+    else if (nextHue < 300) [rr, gg, bb] = [x, 0, chroma];
+    else [rr, gg, bb] = [chroma, 0, x];
+    return {
+      r: Math.round((rr + m) * 255),
+      g: Math.round((gg + m) * 255),
+      b: Math.round((bb + m) * 255)
+    };
+  }
+
+  async hueShiftImageDataUrl(imageDataUrl, hueShiftDegrees = 0, saturationPercent = 100) {
+    if (!imageDataUrl) return imageDataUrl;
+    const image = await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = imageDataUrl;
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = Number(image.naturalWidth || image.width || 0);
+    canvas.height = Number(image.naturalHeight || image.height || 0);
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx || !canvas.width || !canvas.height) return imageDataUrl;
+    ctx.drawImage(image, 0, 0);
+    const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const bytes = data.data;
+    for (let i = 0; i < bytes.length; i += 4) {
+      const alpha = bytes[i + 3];
+      if (alpha <= 0) continue;
+      const shifted = this.shiftRgbaHue(bytes[i], bytes[i + 1], bytes[i + 2], hueShiftDegrees, saturationPercent);
+      bytes[i] = shifted.r;
+      bytes[i + 1] = shifted.g;
+      bytes[i + 2] = shifted.b;
+    }
+    ctx.putImageData(data, 0, 0);
+    return canvas.toDataURL('image/png');
+  }
+
+  async applyHueShiftToActorArt(hueShiftDegrees = 0, saturationPercent = 100) {
+    const degrees = Number(hueShiftDegrees || 0);
+    const saturation = Number(saturationPercent || 100);
+    if (Math.abs(degrees) < 0.001 && Math.abs(saturation - 100) < 0.001) return;
+    const copy = clone(this.actor);
+    const cache = new Map();
+    const shiftUrl = async (url) => {
+      if (!url) return url;
+      if (cache.has(url)) return cache.get(url);
+      const shifted = await this.hueShiftImageDataUrl(url, degrees, saturation);
+      cache.set(url, shifted);
+      return shifted;
+    };
+    for (const state of copy.states || []) {
+      if (state?.animation?.imageDataUrl) {
+        state.animation.imageDataUrl = await shiftUrl(state.animation.imageDataUrl);
+      }
+      if (Array.isArray(state?.animation?.frames)) {
+        for (const frame of state.animation.frames) {
+          if (frame?.imageDataUrl) {
+            frame.imageDataUrl = await shiftUrl(frame.imageDataUrl);
+          }
+        }
+      }
+    }
+    this.setActor(copy);
   }
 
 
