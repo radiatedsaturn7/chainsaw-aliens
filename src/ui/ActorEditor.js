@@ -247,6 +247,7 @@ export default class ActorEditor {
 
   async newActor() {
     this.currentDocumentRef = null;
+    this.resetActorArtHuePreview();
     this.setActor(createDefaultActor());
   }
 
@@ -257,6 +258,7 @@ export default class ActorEditor {
       title: 'Open Actor',
       onOpen: ({ payload, name }) => {
         this.currentDocumentRef = { folder: ACTOR_FOLDER, name };
+        this.resetActorArtHuePreview();
         this.setActor(ensureActorDefinition(payload?.data || createDefaultActor(name)));
       }
     });
@@ -268,11 +270,31 @@ export default class ActorEditor {
       ? (window.prompt('Save actor as', fallback) || '').trim()
       : fallback;
     if (!name) return;
-    const payload = ensureActorDefinition(this.actor);
+    let payload = ensureActorDefinition(this.actor);
+    if (!this.isActorHueShiftNeutral()) {
+      payload = await this.buildActorHueShiftedCopy(payload, this.actorArtHueShiftDegrees, this.actorArtHueShiftSaturation);
+      this.resetActorArtHuePreview();
+      this.setActor(payload);
+    }
     vfsSave(ACTOR_FOLDER, name, payload);
     this.currentDocumentRef = { folder: ACTOR_FOLDER, name };
     this.game.showSystemToast?.('Saved changes');
     this.render();
+  }
+
+  resetActorArtHuePreview() {
+    this.actorArtHueShiftDegrees = 0;
+    this.actorArtHueShiftSaturation = 100;
+  }
+
+  isActorHueShiftNeutral() {
+    return Math.abs(Number(this.actorArtHueShiftDegrees || 0)) < 0.001
+      && Math.abs(Number(this.actorArtHueShiftSaturation || 100) - 100) < 0.001;
+  }
+
+  getActorHuePreviewFilter() {
+    if (this.isActorHueShiftNeutral()) return '';
+    return `hue-rotate(${Number(this.actorArtHueShiftDegrees || 0)}deg) saturate(${Math.max(0, Number(this.actorArtHueShiftSaturation || 100)) / 100})`;
   }
 
   exitToMenu() {
@@ -599,6 +621,25 @@ export default class ActorEditor {
       controls.appendChild(btn);
     });
     wrap.appendChild(controls);
+    const firstState = this.actor.states?.[0];
+    const firstFrame = Array.isArray(firstState?.animation?.frames) && firstState.animation.frames.length
+      ? firstState.animation.frames.find((frame) => frame?.imageDataUrl)
+      : (firstState?.animation?.imageDataUrl ? { imageDataUrl: firstState.animation.imageDataUrl } : null);
+    if (firstFrame?.imageDataUrl) {
+      const previewWrap = el('div', 'actor-editor-subsection');
+      previewWrap.appendChild(el('span', 'actor-editor-note', 'Variant preview (state 1)'));
+      const preview = el('img');
+      preview.src = firstFrame.imageDataUrl;
+      preview.alt = 'First state preview';
+      preview.style.width = '100%';
+      preview.style.imageRendering = 'pixelated';
+      preview.style.border = '1px solid rgba(255,255,255,0.24)';
+      preview.style.background = 'rgba(0,0,0,0.25)';
+      const filter = this.getActorHuePreviewFilter();
+      if (filter) preview.style.filter = filter;
+      previewWrap.appendChild(preview);
+      wrap.appendChild(previewWrap);
+    }
     this.actor.states.forEach((state) => {
       const btn = el('button', `actor-editor-btn small${this.selectedStateId === state.id ? ' active' : ''}`, state.name || state.id);
       this.styleRailButton(btn, this.selectedStateId === state.id);
@@ -676,35 +717,39 @@ export default class ActorEditor {
 
     const artAdjustments = el('div', 'actor-editor-subsection');
     artAdjustments.appendChild(el('h3', '', 'Art hue/saturation'));
-    artAdjustments.appendChild(el('div', 'actor-editor-note', 'Copies and hue-shifts all state art + animation frames for quick enemy variants.'));
+    artAdjustments.appendChild(el('div', 'actor-editor-note', 'Preview hue/saturation here. Changes are applied to all state art when you Save / Save As.'));
     const controls = el('div', 'actor-editor-inline-actions');
     const hueInput = el('input');
-    hueInput.type = 'number';
-    hueInput.step = '1';
+    hueInput.type = 'range';
     hueInput.min = '-180';
     hueInput.max = '180';
-    hueInput.placeholder = 'Hue°';
+    hueInput.step = '1';
     hueInput.value = String(this.actorArtHueShiftDegrees);
+    hueInput.style.minWidth = '180px';
+    hueInput.style.background = 'linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)';
     hueInput.oninput = (event) => {
       this.actorArtHueShiftDegrees = Number(event.target.value || 0);
+      this.render();
     };
     const satInput = el('input');
-    satInput.type = 'number';
-    satInput.step = '1';
+    satInput.type = 'range';
     satInput.min = '0';
     satInput.max = '200';
-    satInput.placeholder = 'Sat %';
+    satInput.step = '1';
     satInput.value = String(this.actorArtHueShiftSaturation);
+    satInput.style.minWidth = '180px';
+    const hueColor = `hsl(${((Number(this.actorArtHueShiftDegrees || 0) % 360) + 360) % 360} 100% 50%)`;
+    satInput.style.background = `linear-gradient(90deg, #808080, ${hueColor})`;
     satInput.oninput = (event) => {
       this.actorArtHueShiftSaturation = Number(event.target.value || 100);
+      this.render();
     };
-    const applyHue = el('button', 'actor-editor-btn', 'Apply to all art');
-    applyHue.onclick = async () => {
-      const degrees = Number(this.actorArtHueShiftDegrees || 0);
-      const saturation = Number(this.actorArtHueShiftSaturation || 100);
-      await this.applyHueShiftToActorArt(degrees, saturation);
+    const resetHue = el('button', 'actor-editor-btn', 'Reset preview');
+    resetHue.onclick = () => {
+      this.resetActorArtHuePreview();
+      this.render();
     };
-    controls.append(hueInput, satInput, applyHue);
+    controls.append(hueInput, satInput, resetHue);
     artAdjustments.appendChild(controls);
     section.appendChild(artAdjustments);
 
@@ -804,11 +849,11 @@ export default class ActorEditor {
     return canvas.toDataURL('image/png');
   }
 
-  async applyHueShiftToActorArt(hueShiftDegrees = 0, saturationPercent = 100) {
+  async buildActorHueShiftedCopy(sourceActor, hueShiftDegrees = 0, saturationPercent = 100) {
     const degrees = Number(hueShiftDegrees || 0);
     const saturation = Number(saturationPercent || 100);
-    if (Math.abs(degrees) < 0.001 && Math.abs(saturation - 100) < 0.001) return;
-    const copy = clone(this.actor);
+    if (Math.abs(degrees) < 0.001 && Math.abs(saturation - 100) < 0.001) return ensureActorDefinition(sourceActor);
+    const copy = clone(ensureActorDefinition(sourceActor));
     const cache = new Map();
     const shiftUrl = async (url) => {
       if (!url) return url;
@@ -829,7 +874,7 @@ export default class ActorEditor {
         }
       }
     }
-    this.setActor(copy);
+    return ensureActorDefinition(copy);
   }
 
 
@@ -847,6 +892,8 @@ export default class ActorEditor {
       const image = el('img', 'actor-editor-preview-image');
       image.src = frames[0].imageDataUrl;
       image.alt = `${state.name} preview`;
+      const previewFilter = this.getActorHuePreviewFilter();
+      if (previewFilter) image.style.filter = previewFilter;
       preview.appendChild(image);
       if (frames.length > 1) {
         let frameIndex = 0;
