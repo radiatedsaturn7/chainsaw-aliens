@@ -586,11 +586,42 @@ export default class ActorEditor {
   renderRightRail() {
     if (this.fileMenuOpen) return this.renderFileMenuRail();
     if (this.activeMenuSection === 'states') return this.renderStateRailSection();
+    if (this.activeMenuSection === 'actor') return this.renderActorRailSection();
     const rail = el('div', 'actor-editor-menu-rail');
     rail.style.background = 'rgba(4, 10, 22, 0.92)';
     rail.style.border = '1px solid rgba(255,255,255,0.18)';
     rail.style.padding = '8px';
     rail.style.minHeight = '120px';
+    return rail;
+  }
+
+  renderActorRailSection() {
+    const rail = el('div', 'actor-editor-menu-rail');
+    rail.style.background = 'rgba(4, 10, 22, 0.92)';
+    rail.style.border = '1px solid rgba(255,255,255,0.18)';
+    rail.style.padding = '8px';
+    rail.style.display = 'flex';
+    rail.style.flexDirection = 'column';
+    rail.style.gap = '8px';
+    const firstState = this.actor.states?.[0];
+    const firstFrame = Array.isArray(firstState?.animation?.frames) && firstState.animation.frames.length
+      ? firstState.animation.frames.find((frame) => frame?.imageDataUrl)
+      : (firstState?.animation?.imageDataUrl ? { imageDataUrl: firstState.animation.imageDataUrl } : null);
+    if (!firstFrame?.imageDataUrl) {
+      rail.appendChild(el('div', 'actor-editor-note', 'Variant preview appears here once state 1 has art.'));
+      return rail;
+    }
+    rail.appendChild(el('div', 'actor-editor-note', 'Variant preview (state 1)'));
+    const preview = el('img');
+    preview.src = firstFrame.imageDataUrl;
+    preview.alt = 'First state preview';
+    preview.style.width = '100%';
+    preview.style.imageRendering = 'pixelated';
+    preview.style.border = '1px solid rgba(255,255,255,0.24)';
+    preview.style.background = 'rgba(0,0,0,0.25)';
+    const filter = this.getActorHuePreviewFilter();
+    if (filter) preview.style.filter = filter;
+    rail.appendChild(preview);
     return rail;
   }
 
@@ -621,25 +652,6 @@ export default class ActorEditor {
       controls.appendChild(btn);
     });
     wrap.appendChild(controls);
-    const firstState = this.actor.states?.[0];
-    const firstFrame = Array.isArray(firstState?.animation?.frames) && firstState.animation.frames.length
-      ? firstState.animation.frames.find((frame) => frame?.imageDataUrl)
-      : (firstState?.animation?.imageDataUrl ? { imageDataUrl: firstState.animation.imageDataUrl } : null);
-    if (firstFrame?.imageDataUrl) {
-      const previewWrap = el('div', 'actor-editor-subsection');
-      previewWrap.appendChild(el('span', 'actor-editor-note', 'Variant preview (state 1)'));
-      const preview = el('img');
-      preview.src = firstFrame.imageDataUrl;
-      preview.alt = 'First state preview';
-      preview.style.width = '100%';
-      preview.style.imageRendering = 'pixelated';
-      preview.style.border = '1px solid rgba(255,255,255,0.24)';
-      preview.style.background = 'rgba(0,0,0,0.25)';
-      const filter = this.getActorHuePreviewFilter();
-      if (filter) preview.style.filter = filter;
-      previewWrap.appendChild(preview);
-      wrap.appendChild(previewWrap);
-    }
     this.actor.states.forEach((state) => {
       const btn = el('button', `actor-editor-btn small${this.selectedStateId === state.id ? ' active' : ''}`, state.name || state.id);
       this.styleRailButton(btn, this.selectedStateId === state.id);
