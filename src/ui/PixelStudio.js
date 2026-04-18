@@ -102,7 +102,9 @@ export default class PixelStudio {
       wrapDraw: false,
       ditherPattern: 'bayer2',
       ditherStrength: 2,
-      replaceScope: 'layer'
+      replaceScope: 'layer',
+      hueShiftDegrees: 0,
+      hueShiftSaturation: 100
     };
     this.brushProfiles = {
       [TOOL_IDS.PENCIL]: {
@@ -2119,7 +2121,8 @@ export default class PixelStudio {
       { id: TOOL_IDS.MOVE, label: 'Move' },
       { id: TOOL_IDS.CLONE, label: 'Clone' },
       { id: TOOL_IDS.DITHER, label: 'Dither' },
-      { id: TOOL_IDS.COLOR_REPLACE, label: 'Replace' }
+      { id: TOOL_IDS.COLOR_REPLACE, label: 'Replace' },
+      { id: TOOL_IDS.HUE_SHIFT, label: 'Hue Shift' }
     ];
   }
 
@@ -3460,7 +3463,10 @@ export default class PixelStudio {
     const height = this.canvasState.height;
     const contiguous = options.contiguous !== false;
     const threshold = clamp(Number(this.toolOptions.magicThreshold) || 0, 0, 255);
-    const composite = compositeLayers(this.canvasState.layers, width, height);
+    let composite = compositeLayers(this.canvasState.layers, width, height);
+    if (this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral()) {
+      composite = this.buildHueShiftPreview(composite);
+    }
     const startIdx = point.row * width + point.col;
     const targetRgba = uint32ToRgba(composite[startIdx] || 0);
     const mask = new Uint8Array(width * height);
@@ -3550,6 +3556,88 @@ export default class PixelStudio {
       this.activeLayer.pixels[i] = replacement;
     }
     this.commitHistory();
+  }
+
+  shiftPixelHue(pixel, hueShiftDegrees = 0, saturationPercent = 100) {
+    const rgba = uint32ToRgba(pixel || 0);
+    const alpha = Number(rgba.a ?? 255);
+    if (alpha <= 0) return pixel;
+    const r = (rgba.r || 0) / 255;
+    const g = (rgba.g || 0) / 255;
+    const b = (rgba.b || 0) / 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+    let hue = 0;
+    if (delta !== 0) {
+      if (max === r) hue = ((g - b) / delta) % 6;
+      else if (max === g) hue = (b - r) / delta + 2;
+      else hue = (r - g) / delta + 4;
+      hue *= 60;
+      if (hue < 0) hue += 360;
+    }
+    const lightness = (max + min) / 2;
+    const saturation = delta === 0 ? 0 : delta / (1 - Math.abs(2 * lightness - 1));
+    const saturationScale = clamp((Number(saturationPercent) || 100) / 100, 0, 2);
+    const adjustedSaturation = clamp(saturation * saturationScale, 0, 1);
+    const nextHue = ((hue + hueShiftDegrees) % 360 + 360) % 360;
+    const chroma = (1 - Math.abs(2 * lightness - 1)) * adjustedSaturation;
+    const x = chroma * (1 - Math.abs(((nextHue / 60) % 2) - 1));
+    const m = lightness - chroma / 2;
+    let nr = 0; let ng = 0; let nb = 0;
+    if (nextHue < 60) [nr, ng, nb] = [chroma, x, 0];
+    else if (nextHue < 120) [nr, ng, nb] = [x, chroma, 0];
+    else if (nextHue < 180) [nr, ng, nb] = [0, chroma, x];
+    else if (nextHue < 240) [nr, ng, nb] = [0, x, chroma];
+    else if (nextHue < 300) [nr, ng, nb] = [x, 0, chroma];
+    else [nr, ng, nb] = [chroma, 0, x];
+    return rgbaToUint32({
+      r: Math.round((nr + m) * 255),
+      g: Math.round((ng + m) * 255),
+      b: Math.round((nb + m) * 255),
+      a: alpha
+    }) >>> 0;
+  }
+
+  applyHueShift() {
+    if (!this.activeLayer || this.activeLayer.locked) return;
+    const shift = Number(this.toolOptions.hueShiftDegrees || 0);
+    const saturation = Number(this.toolOptions.hueShiftSaturation || 100);
+    if (!Number.isFinite(shift) || Math.abs(shift) < 0.001) {
+      if (Math.round(saturation) === 100) {
+        this.statusMessage = 'Hue/Saturation adjustment is neutral.';
+        return;
+      }
+    }
+    if (!Number.isFinite(saturation)) {
+      this.statusMessage = 'Saturation value is invalid.';
+      return;
+    }
+    this.startHistory('hue shift');
+    for (let i = 0; i < this.activeLayer.pixels.length; i += 1) {
+      if (this.toolOptions.replaceScope === 'selection' && this.selection.mask && !this.selection.mask[i]) continue;
+      this.activeLayer.pixels[i] = this.shiftPixelHue(this.activeLayer.pixels[i], shift, saturation);
+    }
+    this.commitHistory();
+    this.statusMessage = `Hue ${Math.round(shift)}°, Saturation ${Math.round(saturation)}% (${this.toolOptions.replaceScope}).`;
+  }
+
+  isHueShiftNeutral() {
+    const shift = Number(this.toolOptions.hueShiftDegrees || 0);
+    const saturation = Number(this.toolOptions.hueShiftSaturation || 100);
+    return Math.abs(shift) < 0.001 && Math.abs(saturation - 100) < 0.001;
+  }
+
+  buildHueShiftPreview(composite) {
+    if (!(composite instanceof Uint32Array)) return composite;
+    if (this.isHueShiftNeutral()) return composite;
+    const shifted = new Uint32Array(composite.length);
+    const shift = Number(this.toolOptions.hueShiftDegrees || 0);
+    const saturation = Number(this.toolOptions.hueShiftSaturation || 100);
+    for (let i = 0; i < composite.length; i += 1) {
+      shifted[i] = this.shiftPixelHue(composite[i], shift, saturation);
+    }
+    return shifted;
   }
 
   startSelection(point, mode) {
@@ -3731,7 +3819,10 @@ export default class PixelStudio {
   buildMagicLassoEdgeMap() {
     const width = this.canvasState.width;
     const height = this.canvasState.height;
-    const composite = compositeLayers(this.canvasState.layers, width, height);
+    let composite = compositeLayers(this.canvasState.layers, width, height);
+    if (this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral()) {
+      composite = this.buildHueShiftPreview(composite);
+    }
     const rgba = Array.from(composite, (value) => uint32ToRgba(value || 0));
     const edge = new Float32Array(width * height);
     this.magicLassoRgbaMap = rgba;
@@ -5534,7 +5625,10 @@ export default class PixelStudio {
   setPaletteFromCurrentImage(maxColors = 24) {
     const width = this.canvasState.width;
     const height = this.canvasState.height;
-    const composite = compositeLayers(this.canvasState.layers, width, height);
+    let composite = compositeLayers(this.canvasState.layers, width, height);
+    if (this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral()) {
+      composite = this.buildHueShiftPreview(composite);
+    }
     const bins = new Map();
     for (let i = 0; i < composite.length; i += 1) {
       const rgba = uint32ToRgba(composite[i] || 0);
@@ -7393,7 +7487,7 @@ export default class PixelStudio {
     const list = this.tools.filter((tool) => (tool.category || 'tools') === category)
       .filter((tool) => !(category === 'select' && tool.id === TOOL_IDS.MOVE));
     const toolsTop = y + (isMobile ? 60 : 56);
-    const toolsBottomPadding = isMobile ? 116 : 132;
+    const toolsBottomPadding = isMobile ? (category === 'tools' ? 72 : 116) : 132;
     const maxVisible = Math.max(1, Math.floor((h - toolsBottomPadding) / lineHeight));
     this.focusGroupMeta.tools = { maxVisible };
     const start = this.focusScroll.tools || 0;
@@ -7692,6 +7786,43 @@ export default class PixelStudio {
       this.registerFocusable('menu', bounds, () => { this.toolOptions.magicThreshold += 8; if (this.toolOptions.magicThreshold > 255) this.toolOptions.magicThreshold = 0; });
       offsetY += lineHeight;
     }
+    if (this.activeToolId === TOOL_IDS.HUE_SHIFT) {
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fillText('Use bottom rail hue/saturation sliders', x, offsetY);
+      offsetY += lineHeight;
+      const buttonW = Math.min(panelWidth, isMobile ? 180 : 150);
+      const applyBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: buttonW, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, applyBounds, 'Apply Hue/Sat', false, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({ bounds: applyBounds, onClick: () => this.applyHueShift() });
+      this.registerFocusable('menu', applyBounds, () => this.applyHueShift());
+      offsetY += lineHeight;
+      const scopeBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: buttonW, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, scopeBounds, `Scope: ${this.toolOptions.replaceScope}`, false, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({
+        bounds: scopeBounds,
+        onClick: () => {
+          this.toolOptions.replaceScope = this.toolOptions.replaceScope === 'layer' ? 'selection' : 'layer';
+        }
+      });
+      this.registerFocusable('menu', scopeBounds, () => {
+        this.toolOptions.replaceScope = this.toolOptions.replaceScope === 'layer' ? 'selection' : 'layer';
+      });
+      offsetY += lineHeight;
+      const resetBounds = { x, y: offsetY - (isMobile ? 24 : 12), w: buttonW, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, resetBounds, 'Reset Hue/Sat', false, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({
+        bounds: resetBounds,
+        onClick: () => {
+          this.toolOptions.hueShiftDegrees = 0;
+          this.toolOptions.hueShiftSaturation = 100;
+        }
+      });
+      this.registerFocusable('menu', resetBounds, () => {
+        this.toolOptions.hueShiftDegrees = 0;
+        this.toolOptions.hueShiftSaturation = 100;
+      });
+      offsetY += lineHeight;
+    }
     if (this.activeToolId === TOOL_IDS.COLOR_REPLACE) {
       const bounds = { x, y: offsetY - (isMobile ? 24 : 12), w: isMobile ? 180 : 120, h: isMobile ? 44 : 18 };
       this.drawButton(ctx, bounds, `Scope: ${this.toolOptions.replaceScope}`, false, { fontSize: isMobile ? 12 : 12 });
@@ -7730,6 +7861,81 @@ export default class PixelStudio {
       ctx.fillText(`Scroll ${this.focusScroll.toolOptions + 1}/${maxScroll + 1}`, x + 2, y + panelHeight + 10);
     }
     return offsetY;
+  }
+
+  drawHueSaturationMobileRail(ctx, x, y, w, h) {
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(x, y, w, h);
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px Courier New';
+    ctx.fillText('Hue / Saturation', x + 10, y + 16);
+
+    const sliderGap = 10;
+    const sliderX = x + 10;
+    const sliderW = Math.max(44, Math.floor((w - 20 - sliderGap) / 2));
+    const sliderY = y + 24;
+    const sliderH = Math.max(20, h - 30);
+    const hueTrack = { x: sliderX, y: sliderY, w: sliderW, h: sliderH };
+    const satTrack = { x: sliderX + sliderW + sliderGap, y: sliderY, w: sliderW, h: sliderH };
+
+    const hueGradient = ctx.createLinearGradient(hueTrack.x, 0, hueTrack.x + hueTrack.w, 0);
+    hueGradient.addColorStop(0, '#ff0000');
+    hueGradient.addColorStop(0.17, '#ffff00');
+    hueGradient.addColorStop(0.33, '#00ff00');
+    hueGradient.addColorStop(0.5, '#00ffff');
+    hueGradient.addColorStop(0.67, '#0000ff');
+    hueGradient.addColorStop(0.83, '#ff00ff');
+    hueGradient.addColorStop(1, '#ff0000');
+    ctx.fillStyle = hueGradient;
+    ctx.fillRect(hueTrack.x, hueTrack.y, hueTrack.w, hueTrack.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.strokeRect(hueTrack.x, hueTrack.y, hueTrack.w, hueTrack.h);
+
+    const hueShift = clamp(Number(this.toolOptions.hueShiftDegrees || 0), -180, 180);
+    const hueT = (hueShift + 180) / 360;
+    const hueKnobX = hueTrack.x + hueT * hueTrack.w;
+    ctx.strokeStyle = '#101114';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(hueKnobX, hueTrack.y - 3);
+    ctx.lineTo(hueKnobX, hueTrack.y + hueTrack.h + 3);
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = '11px Courier New';
+    ctx.fillText(`${Math.round(hueShift)}°`, hueTrack.x + 4, hueTrack.y + hueTrack.h - 6);
+
+    const hueColor = `hsl(${((hueShift % 360) + 360) % 360} 100% 50%)`;
+    const satGradient = ctx.createLinearGradient(satTrack.x, 0, satTrack.x + satTrack.w, 0);
+    satGradient.addColorStop(0, '#808080');
+    satGradient.addColorStop(1, hueColor);
+    ctx.fillStyle = satGradient;
+    ctx.fillRect(satTrack.x, satTrack.y, satTrack.w, satTrack.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.strokeRect(satTrack.x, satTrack.y, satTrack.w, satTrack.h);
+    const satValue = clamp(Number(this.toolOptions.hueShiftSaturation || 100), 0, 200);
+    const satKnobX = satTrack.x + (satValue / 200) * satTrack.w;
+    ctx.strokeStyle = '#101114';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(satKnobX, satTrack.y - 3);
+    ctx.lineTo(satKnobX, satTrack.y + satTrack.h + 3);
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.fillText(`${Math.round(satValue)}%`, satTrack.x + 4, satTrack.y + satTrack.h - 6);
+
+    const updateHueFromX = (pointerX) => {
+      const t = clamp((pointerX - hueTrack.x) / Math.max(1, hueTrack.w), 0, 1);
+      this.toolOptions.hueShiftDegrees = Math.round(t * 360 - 180);
+    };
+    const updateSatFromX = (pointerX) => {
+      const t = clamp((pointerX - satTrack.x) / Math.max(1, satTrack.w), 0, 1);
+      this.toolOptions.hueShiftSaturation = Math.round(t * 200);
+    };
+    this.uiButtons.push({ bounds: { ...hueTrack, h: 18, y: hueTrack.y - 4 }, onClick: ({ x: pointerX }) => updateHueFromX(pointerX), onDrag: ({ x: pointerX }) => updateHueFromX(pointerX) });
+    this.uiButtons.push({ bounds: { ...satTrack, h: 18, y: satTrack.y - 4 }, onClick: ({ x: pointerX }) => updateSatFromX(pointerX), onDrag: ({ x: pointerX }) => updateSatFromX(pointerX) });
+
   }
 
   drawSelectionActions(ctx, x, y, options = {}) {
@@ -7901,7 +8107,10 @@ export default class PixelStudio {
 
     this.offscreen.width = width;
     this.offscreen.height = height;
-    const composite = compositeLayers(this.canvasState.layers, width, height);
+    let composite = compositeLayers(this.canvasState.layers, width, height);
+    if (this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral()) {
+      composite = this.buildHueShiftPreview(composite);
+    }
     const imageData = this.offscreenCtx.createImageData(width, height);
     const bytes = new Uint32Array(imageData.data.buffer);
     bytes.set(composite);
@@ -8226,6 +8435,10 @@ export default class PixelStudio {
 
   drawPaletteBar(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
+    if (isMobile && this.activeToolId === TOOL_IDS.HUE_SHIFT && this.leftPanelTab !== 'select') {
+      this.drawHueSaturationMobileRail(ctx, x, y, w, h);
+      return;
+    }
     ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;

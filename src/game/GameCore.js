@@ -4396,7 +4396,32 @@ export default class Game {
       spawnProjectile: this.spawnProjectile.bind(this),
       spawnMinion: (x, y) => this.requestSpawn('skitter', x, y),
       canShoot: (enemy, range = 320, padding = 80) => this.canEnemyShoot(enemy, range, padding),
-      isVisible: (enemy, padding = 80) => this.isEnemyVisible(enemy, padding)
+      isVisible: (enemy, padding = 80) => this.isEnemyVisible(enemy, padding),
+      isWallAhead: (enemy, lookAhead = 6) => {
+        if (!enemy) return false;
+        const tileSize = this.world.tileSize;
+        const dir = Math.sign(enemy.facing || 1) || 1;
+        const probeX = enemy.x + dir * (enemy.width / 2 + lookAhead);
+        const probeY = enemy.y;
+        return this.world.isEnemySolid(
+          Math.floor(probeX / tileSize),
+          Math.floor(probeY / tileSize),
+          this.abilities
+        );
+      },
+      hasGroundAhead: (enemy, forward = 6, down = 4) => {
+        if (!enemy) return true;
+        const tileSize = this.world.tileSize;
+        const dir = Math.sign(enemy.facing || 1) || 1;
+        const probeX = enemy.x + dir * (enemy.width / 2 + forward);
+        const probeY = enemy.y + enemy.height / 2 + down;
+        return this.world.isEnemySolid(
+          Math.floor(probeX / tileSize),
+          Math.floor(probeY / tileSize),
+          this.abilities
+        );
+      },
+      notifyDamagedPlayer: (enemy) => enemy?.onDamagedPlayer?.()
     };
     const revHeld = this.isRevHeld(this.input) && this.player.canRev();
     const revRange = this.world.tileSize * 2.5;
@@ -4437,6 +4462,7 @@ export default class Game {
           const bodyDamage = enemy.bodyDamageEnabled === false ? 0 : (enemy.contactDamage || 1);
           const tookDamage = bodyDamage > 0 ? this.player.takeDamage(bodyDamage) : false;
           if (tookDamage) {
+            context.notifyDamagedPlayer(enemy);
             this.applyPlayerKnockback(enemy);
             enemy.hitPause = 0.2;
           }
