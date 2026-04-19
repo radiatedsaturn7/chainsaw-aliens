@@ -9,7 +9,7 @@ async function waitForGameReady(page) {
 test('actor editor pixel art saves to art doc and reopens with drawn pixels', async ({ page }) => {
   await waitForGameReady(page);
 
-  const result = await page.evaluate(async () => {
+  const setupResult = await page.evaluate(async () => {
     const game = window.__game;
     await game.enterActorEditor();
     const actorEditor = game.actorEditor;
@@ -81,17 +81,57 @@ test('actor editor pixel art saves to art doc and reopens with drawn pixels', as
       tick();
     });
 
-    game.enterPixelStudio({ returnState: 'title', tilePicker: true });
-    const reopenedStudio = game.pixelStudio;
-    const reopenedPayload = JSON.parse(window.localStorage.getItem(`robter:vfs:art:${savedName}`) || 'null');
-    reopenedStudio.game.world.pixelArt = reopenedStudio.normalizeLoadedArtDocument(reopenedPayload?.data || null);
-    reopenedStudio.loadTileData({ skipRestore: true });
+    window.localStorage.setItem('robter:vfs:art:Tile Art Autosave', JSON.stringify({
+      id: 'Tile Art Autosave',
+      folder: 'art',
+      savedAt: Date.now(),
+      data: {
+        tiles: {
+          '#': {
+            frames: [['#00ff00']],
+            editor: {
+              width: 1,
+              height: 1,
+              frames: [{ durationMs: 33, layers: [] }]
+            }
+          }
+        }
+      }
+    }));
 
-    const reopenedPixel = reopenedStudio.activeLayer?.pixels?.[0] ?? 0;
-    return { savedName, savedPixel, reopenedPixel };
+    game.openProjectBrowserFromTitle();
+    return { savedName, savedPixel };
   });
 
-  expect(result.savedName).toBeTruthy();
-  expect(result.savedPixel).toBe('#ff0000');
-  expect(result.reopenedPixel >>> 0).toBe(((255 << 24) | 255) >>> 0);
+  expect(setupResult.savedName).toBeTruthy();
+  expect(setupResult.savedPixel).toBe('#ff0000');
+
+  await page.getByRole('button', { name: 'Art' }).click();
+  await page.locator('.project-browser-row', { hasText: setupResult.savedName }).getByRole('button', { name: 'Open' }).click();
+
+  const reopenResult = await page.evaluate(async () => {
+    const game = window.__game;
+    await new Promise((resolve, reject) => {
+      const started = Date.now();
+      const tick = () => {
+        if (game.state === 'pixel-editor') {
+          resolve();
+          return;
+        }
+        if (Date.now() - started > 8000) {
+          reject(new Error('Timed out entering pixel editor from project browser'));
+          return;
+        }
+        requestAnimationFrame(tick);
+      };
+      tick();
+    });
+    return {
+      reopenedPixel: game.pixelStudio?.activeLayer?.pixels?.[0] ?? 0,
+      currentDocumentRef: game.pixelStudio?.currentDocumentRef || null
+    };
+  });
+
+  expect(reopenResult.currentDocumentRef?.name).toBe(setupResult.savedName);
+  expect(reopenResult.reopenedPixel >>> 0).toBe(((255 << 24) | 255) >>> 0);
 });
