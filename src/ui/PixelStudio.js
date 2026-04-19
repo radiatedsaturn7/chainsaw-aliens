@@ -30,6 +30,7 @@ import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, cre
 import { createViewportController } from './shared/viewportController.js';
 import { vfsList, vfsLoad, vfsSave } from './vfs.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
+import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
@@ -69,6 +70,9 @@ export default class PixelStudio {
         },
         confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
         serialize: (ctx) => {
+          if (ctx.decalEditSession?.type === 'actor-state') {
+            return ctx.serializeCurrentAnimationAsArtDocument();
+          }
           ctx.syncTileData({ persist: false });
           return ctx.game.world.pixelArt || { tiles: {} };
         },
@@ -587,6 +591,35 @@ export default class PixelStudio {
     }
   }
 
+  serializeCurrentAnimationAsArtDocument() {
+    const width = Math.max(1, this.canvasState.width | 0);
+    const height = Math.max(1, this.canvasState.height | 0);
+    const size = width === height ? width : undefined;
+    const frames = this.animation.frames.map((frame) => {
+      const composite = compositeLayers(frame.layers, width, height);
+      return Array.from(composite).map((value) => {
+        if (!value) return null;
+        const rgba = uint32ToRgba(value);
+        if (rgba.a === 0) return null;
+        return `#${[rgba.r, rgba.g, rgba.b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
+      });
+    });
+    return {
+      kind: 'actor-state-animation',
+      width,
+      height,
+      ...(Number.isFinite(size) ? { size } : {}),
+      fps: Math.max(1, Math.round(1000 / Math.max(1, Number(this.animation.frames[0]?.durationMs || DEFAULT_FRAME_DURATION_MS)))),
+      frames,
+      editor: {
+        width,
+        height,
+        frames: this.animation.frames,
+        activeLayerIndex: this.canvasState.activeLayerIndex
+      }
+    };
+  }
+
   persistTileArtAutosave(force = false) {
     const now = Date.now();
     if (!force && now - this.lastTileArtAutosaveAt < 1000) return;
@@ -784,9 +817,38 @@ export default class PixelStudio {
   async loadActorStateImageForEditing({ actorId, stateId, animation = {}, onCommit = null } = {}) {
     const fallbackWidth = 32;
     const fallbackHeight = 32;
+    const artRefDoc = typeof animation?.artRef === 'string' && animation.artRef
+      ? vfsLoad('art', animation.artRef)
+      : null;
+    const sourceFramesFromArtDoc = Array.isArray(artRefDoc?.data?.frames)
+      ? artRefDoc.data.frames
+      : [];
     const sources = Array.isArray(animation?.frames) && animation.frames.length
       ? animation.frames.filter((frame) => frame?.imageDataUrl)
-      : (animation?.imageDataUrl ? [{ imageDataUrl: animation.imageDataUrl, durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || 8))) }] : []);
+      : (animation?.imageDataUrl
+          ? [{ imageDataUrl: animation.imageDataUrl, durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || 8))) }]
+          : sourceFramesFromArtDoc.map((frame, frameIndex) => {
+              const width = Math.max(1, Number(artRefDoc?.data?.width || artRefDoc?.data?.size || fallbackWidth));
+              const height = Math.max(1, Number(artRefDoc?.data?.height || artRefDoc?.data?.size || fallbackHeight));
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              const drawCtx = canvas.getContext('2d');
+              const imageData = drawCtx.createImageData(width, height);
+              for (let i = 0; i < width * height; i += 1) {
+                const rgba = hexToRgba(frame?.[i] || '#000000');
+                const base = i * 4;
+                imageData.data[base] = rgba.r;
+                imageData.data[base + 1] = rgba.g;
+                imageData.data[base + 2] = rgba.b;
+                imageData.data[base + 3] = frame?.[i] ? 255 : 0;
+              }
+              drawCtx.putImageData(imageData, 0, 0);
+              return {
+                imageDataUrl: canvas.toDataURL('image/png'),
+                durationMs: Number(animation?.frames?.[frameIndex]?.durationMs || Math.round(1000 / Math.max(1, Number(animation?.fps || artRefDoc?.data?.fps || 8))))
+              };
+            }));
     const loadedFrames = [];
     for (const source of sources) {
       const image = await new Promise((resolve, reject) => {
@@ -824,6 +886,9 @@ export default class PixelStudio {
       this.artSizeDraft.height = fallbackHeight;
       loadedFrames.push(createFrame([createLayer(fallbackWidth, fallbackHeight, 'Actor State Layer')], DEFAULT_FRAME_DURATION_MS));
     }
+    this.currentDocumentRef = animation?.artRef
+      ? { folder: 'art', name: animation.artRef }
+      : null;
     this.decalEditSession = { type: 'actor-state', actorId, stateId, onCommit };
     this.animation.frames = loadedFrames;
     this.animation.currentFrameIndex = 0;
@@ -1023,7 +1088,8 @@ export default class PixelStudio {
       this.decalEditSession.onCommit?.({
         imageDataUrl: frames[0]?.imageDataUrl || '',
         frames,
-        fps: Math.max(1, Math.round(1000 / Math.max(1, Number(frames[0]?.durationMs || DEFAULT_FRAME_DURATION_MS))))
+        fps: Math.max(1, Math.round(1000 / Math.max(1, Number(frames[0]?.durationMs || DEFAULT_FRAME_DURATION_MS)))),
+        artRef: this.currentDocumentRef?.folder === 'art' ? this.currentDocumentRef.name : ''
       });
       this.decalEditSession = null;
       return;
@@ -1078,6 +1144,16 @@ export default class PixelStudio {
 
 
   async saveArtDocument(options = {}) {
+    if (this.decalEditSession?.type === 'actor-state' && (options.forceSaveAs || !this.currentDocumentRef?.name)) {
+      const picked = await openProjectBrowser({
+        mode: 'saveAs',
+        fixedFolder: 'art',
+        initialFolder: 'art',
+        title: 'Save Actor Art As'
+      });
+      if (!picked?.name) return null;
+      this.currentDocumentRef = { folder: 'art', name: picked.name };
+    }
     const result = await this.runtime.saveAsOrCurrent(options);
     this.persistTileArtAutosave(true);
     return result;
@@ -6516,7 +6592,9 @@ export default class PixelStudio {
       },
       actions: {
         new: () => this.newArtDocument(),
-        save: () => (this.decalEditSession ? this.saveDecalSessionAndReturn() : this.saveArtDocument()),
+        save: () => (this.decalEditSession && this.decalEditSession.type !== 'actor-state'
+          ? this.saveDecalSessionAndReturn()
+          : this.saveArtDocument()),
         'save-as': () => this.saveArtDocument({ forceSaveAs: true }),
         open: () => this.loadArtDocument(),
         export: () => this.exportPng(),
