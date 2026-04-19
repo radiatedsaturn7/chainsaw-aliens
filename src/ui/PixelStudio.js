@@ -2418,7 +2418,9 @@ export default class PixelStudio {
         this.panStart = this.viewportController.beginPan(payload, { x: this.view.panX, y: this.view.panY });
         return;
       }
-      const point = this.getGridCellFromScreen(payload.x, payload.y);
+      const point = this.shouldUseUnboundedWrapPointer()
+        ? this.getGridCellFromScreenUnbounded(payload.x, payload.y)
+        : this.getGridCellFromScreen(payload.x, payload.y);
       if (point) {
         this.handleToolPointerDown(point, { altKey: this.altDown, fromTouch: payload.touchCount });
       }
@@ -2534,9 +2536,26 @@ export default class PixelStudio {
       this.view.panY = pan.y;
       return;
     }
-    const point = this.moveTransformDrag
+    const dragActive = Boolean(
+      this.strokeState
+      || this.selection.start
+      || this.linePreview
+      || this.curvePreview
+      || this.shapePreview
+      || this.gradientPreview
+      || this.polygonPreview
+    );
+    const wrapDragActive = this.toolOptions.wrapDraw && Boolean(
+      this.strokeState
+      || this.linePreview
+      || this.curvePreview
+      || this.shapePreview
+      || this.gradientPreview
+      || this.polygonPreview
+    );
+    const point = this.moveTransformDrag || wrapDragActive
       ? this.getGridCellFromScreenUnbounded(payload.x, payload.y)
-      : this.getGridCellFromScreen(payload.x, payload.y);
+      : this.getGridCellFromScreen(payload.x, payload.y, { clampToCanvas: dragActive });
     if (point) {
       this.handleToolPointerMove(point);
     }
@@ -2685,6 +2704,22 @@ export default class PixelStudio {
     if (tool?.onPointerUp) {
       tool.onPointerUp();
     }
+  }
+
+  shouldUseUnboundedWrapPointer() {
+    if (!this.toolOptions.wrapDraw) return false;
+    return [
+      TOOL_IDS.PENCIL,
+      TOOL_IDS.ERASER,
+      TOOL_IDS.LINE,
+      TOOL_IDS.CURVE,
+      TOOL_IDS.RECT,
+      TOOL_IDS.ELLIPSE,
+      TOOL_IDS.POLYGON,
+      TOOL_IDS.GRADIENT,
+      TOOL_IDS.CLONE,
+      TOOL_IDS.DITHER
+    ].includes(this.getEffectiveToolId());
   }
 
   setActiveTool(toolId) {
@@ -2882,24 +2917,7 @@ export default class PixelStudio {
 
   continueStroke(point) {
     if (!this.strokeState) return;
-    let targetPoint = point;
-    if (this.toolOptions.wrapDraw) {
-      const last = this.strokeState.lastPoint;
-      const width = this.canvasState.width;
-      const height = this.canvasState.height;
-      const deltaCol = point.col - last.col;
-      const deltaRow = point.row - last.row;
-      const wrappedDeltaCol = Math.abs(deltaCol) > width / 2
-        ? deltaCol - Math.sign(deltaCol) * width
-        : deltaCol;
-      const wrappedDeltaRow = Math.abs(deltaRow) > height / 2
-        ? deltaRow - Math.sign(deltaRow) * height
-        : deltaRow;
-      targetPoint = {
-        row: last.row + wrappedDeltaRow,
-        col: last.col + wrappedDeltaCol
-      };
-    }
+    const targetPoint = point;
     const line = bresenhamLine(this.strokeState.pathPoint || this.strokeState.lastPoint, targetPoint);
     let strokeDistance = this.strokeState.strokeDistance || 0;
     let prevPoint = this.strokeState.pathPoint || this.strokeState.lastPoint;
@@ -5721,8 +5739,9 @@ export default class PixelStudio {
       && point.y >= bounds.y && point.y <= bounds.y + bounds.h;
   }
 
-  getGridCellFromScreen(x, y) {
+  getGridCellFromScreen(x, y, options = {}) {
     if (!this.canvasBounds) return null;
+    const { clampToCanvas = false } = options;
     const { x: startX, y: startY, cellSize } = this.canvasBounds;
     let col = Math.floor((x - startX) / cellSize);
     let row = Math.floor((y - startY) / cellSize);
@@ -5730,6 +5749,12 @@ export default class PixelStudio {
       col = ((col % this.canvasState.width) + this.canvasState.width) % this.canvasState.width;
       row = ((row % this.canvasState.height) + this.canvasState.height) % this.canvasState.height;
       return { row, col };
+    }
+    if (clampToCanvas) {
+      return {
+        row: clamp(row, 0, this.canvasState.height - 1),
+        col: clamp(col, 0, this.canvasState.width - 1)
+      };
     }
     if (col < 0 || row < 0 || col >= this.canvasState.width || row >= this.canvasState.height) return null;
     return { row, col };
