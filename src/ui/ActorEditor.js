@@ -78,6 +78,7 @@ export default class ActorEditor {
     this.stateClipboard = null;
     this.overlay = null;
     this.partRefreshToken = 0;
+    this.artPreviewCache = new Map();
     this.previewTimers = [];
     this.activeMenuSection = 'states';
     this.fileMenuOpen = false;
@@ -85,6 +86,59 @@ export default class ActorEditor {
     this.hideMobileSectionHeaders = false;
     this.actorArtHueShiftDegrees = 0;
     this.actorArtHueShiftSaturation = 100;
+  }
+
+  buildArtPreviewFrameUrl(frame, width, height, cacheKey) {
+    if (!Array.isArray(frame) || !frame.length) return '';
+    if (this.artPreviewCache.has(cacheKey)) return this.artPreviewCache.get(cacheKey);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(width || 16));
+    canvas.height = Math.max(1, Math.round(height || 16));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return '';
+    const imageData = ctx.createImageData(canvas.width, canvas.height);
+    for (let i = 0; i < canvas.width * canvas.height; i += 1) {
+      const color = frame[i];
+      const base = i * 4;
+      if (typeof color !== 'string' || !/^#?[0-9a-fA-F]{6}$/.test(color)) {
+        imageData.data[base + 3] = 0;
+        continue;
+      }
+      const hex = color.startsWith('#') ? color.slice(1) : color;
+      imageData.data[base] = parseInt(hex.slice(0, 2), 16);
+      imageData.data[base + 1] = parseInt(hex.slice(2, 4), 16);
+      imageData.data[base + 2] = parseInt(hex.slice(4, 6), 16);
+      imageData.data[base + 3] = 255;
+    }
+    ctx.putImageData(imageData, 0, 0);
+    const url = canvas.toDataURL('image/png');
+    this.artPreviewCache.set(cacheKey, url);
+    return url;
+  }
+
+  getAnimationPreviewFrames(animation = {}) {
+    const artRef = typeof animation?.artRef === 'string' ? animation.artRef : '';
+    if (artRef) {
+      const artDoc = vfsLoad('art', artRef);
+      const savedAt = Number(artDoc?.savedAt || 0);
+      const frames = Array.isArray(artDoc?.data?.frames) ? artDoc.data.frames : [];
+      if (frames.length) {
+        const width = Number(artDoc?.data?.width || artDoc?.data?.size || 16);
+        const height = Number(artDoc?.data?.height || artDoc?.data?.size || width || 16);
+        return frames.map((frame, index) => ({
+          imageDataUrl: this.buildArtPreviewFrameUrl(frame, width, height, `${artRef}:${savedAt}:${index}:${width}x${height}`),
+          durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || artDoc?.data?.fps || 8)))
+        })).filter((frame) => frame.imageDataUrl);
+      }
+    }
+    const fromFrames = Array.isArray(animation?.frames) && animation.frames.length
+      ? animation.frames.filter((frame) => frame?.imageDataUrl)
+      : [];
+    if (fromFrames.length) return fromFrames;
+    if (animation?.imageDataUrl) {
+      return [{ imageDataUrl: animation.imageDataUrl, durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || 8))) }];
+    }
+    return [];
   }
 
   captureFocusedInputState() {
@@ -318,7 +372,14 @@ export default class ActorEditor {
         const next = clone(this.actor);
         const target = next.states.find((entry) => entry.id === state.id);
         if (!target) return;
-        target.animation = { ...animation, updatedAt: Date.now() };
+        target.animation = {
+          imageDataUrl: '',
+          frames: [],
+          fps: Math.max(1, Number(animation?.fps || target.animation?.fps || 8)),
+          artRef: String(animation?.artRef || target.animation?.artRef || ''),
+          updatedAt: Date.now()
+        };
+        this.artPreviewCache.clear();
         this.actor = ensureActorDefinition(next);
         this.render();
       }
@@ -604,9 +665,7 @@ export default class ActorEditor {
     rail.style.flexDirection = 'column';
     rail.style.gap = '8px';
     const firstState = this.actor.states?.[0];
-    const firstFrame = Array.isArray(firstState?.animation?.frames) && firstState.animation.frames.length
-      ? firstState.animation.frames.find((frame) => frame?.imageDataUrl)
-      : (firstState?.animation?.imageDataUrl ? { imageDataUrl: firstState.animation.imageDataUrl } : null);
+    const firstFrame = this.getAnimationPreviewFrames(firstState?.animation || {})[0] || null;
     if (!firstFrame?.imageDataUrl) {
       rail.appendChild(el('div', 'actor-editor-note', 'Variant preview appears here once state 1 has art.'));
       return rail;
@@ -897,9 +956,7 @@ export default class ActorEditor {
       event.stopPropagation();
       this.openStateAnimation(state);
     };
-    const frames = Array.isArray(state.animation?.frames) && state.animation.frames.length
-      ? state.animation.frames.filter((frame) => frame?.imageDataUrl)
-      : (state.animation?.imageDataUrl ? [{ imageDataUrl: state.animation.imageDataUrl, durationMs: Math.round(1000 / Math.max(1, Number(state.animation?.fps || 8))) }] : []);
+    const frames = this.getAnimationPreviewFrames(state.animation || {});
     if (frames.length) {
       const image = el('img', 'actor-editor-preview-image');
       image.src = frames[0].imageDataUrl;
@@ -1238,9 +1295,7 @@ export default class ActorEditor {
       const title = el('h3', '', state.name || state.id);
       stateSection.appendChild(title);
       const previewRow = el('div', 'actor-editor-inline-actions');
-      const frame = Array.isArray(state.animation?.frames) && state.animation.frames.length
-        ? state.animation.frames.find((entry) => entry?.imageDataUrl)
-        : (state.animation?.imageDataUrl ? { imageDataUrl: state.animation.imageDataUrl } : null);
+      const frame = this.getAnimationPreviewFrames(state.animation || {})[0] || null;
       if (frame?.imageDataUrl) {
         const preview = el('img');
         preview.src = frame.imageDataUrl;

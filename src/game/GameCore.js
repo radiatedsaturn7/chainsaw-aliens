@@ -1142,7 +1142,11 @@ export default class Game {
   }
 
   exitPixelStudio({ toTitle = false } = {}) {
-    this.pixelStudio?.persistTileArtAutosave?.(true);
+    if (this.pixelStudio?.decalEditSession?.type === 'actor-state') {
+      this.pixelStudio.commitDecalEditIfNeeded?.();
+    } else {
+      this.pixelStudio?.persistTileArtAutosave?.(true);
+    }
     this.playtestActive = false;
     const destination = toTitle ? 'title' : (this.pixelStudioReturnState || 'title');
     this.transitionTo(destination, { forceCleanup: true });
@@ -1290,10 +1294,10 @@ export default class Game {
     if (!latest?.name) return false;
     const payload = vfsLoad('art', latest.name);
     if (!payload?.data) return false;
-    this.world.pixelArt = payload.data;
+    this.world.pixelArt = this.pixelStudio.normalizeLoadedArtDocument(payload.data);
     this.pixelStudio.hydrateTileArtRefs?.();
     this.pixelStudio.currentDocumentRef = { folder: 'art', name: latest.name };
-    this.pixelStudio.loadTileData();
+    this.pixelStudio.loadTileData({ skipRestore: true });
     return true;
   }
 
@@ -1658,10 +1662,10 @@ export default class Game {
           this.enterEditor({ tab: 'tiles' });
           this.editor.currentDocumentRef = { folder: 'levels', name: name || 'Level' };
         } else if (folder === 'art') {
-          this.world.pixelArt = payload.data;
-          this.enterPixelStudio();
+          this.world.pixelArt = this.pixelStudio.normalizeLoadedArtDocument(payload.data);
           this.pixelStudio.currentDocumentRef = { folder: 'art', name: name || 'Art' };
-          this.pixelStudio.loadTileData();
+          this.enterPixelStudio();
+          this.pixelStudio.loadTileData({ skipRestore: true });
         } else if (folder === 'music') {
           this.enterMidiComposer();
           this.midiComposer.applyImportedSong(payload.data);
