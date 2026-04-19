@@ -33,7 +33,7 @@ test('actor editor pixel art saves to art doc and reopens with drawn pixels', as
     });
 
     const studio = game.pixelStudio;
-    const packedRed = ((255 << 24) | (255 << 16)) >>> 0;
+    const packedRed = ((255 << 24) | 255) >>> 0;
     studio.activeLayer.pixels[0] = packedRed;
     studio.activeLayer.pixels[1] = packedRed;
 
@@ -93,6 +93,5 @@ test('actor editor pixel art saves to art doc and reopens with drawn pixels', as
 
   expect(result.savedName).toBeTruthy();
   expect(result.savedPixel).toBe('#ff0000');
-  expect(result.reopenedPixel >>> 0).toBe(((255 << 24) | (255 << 16)) >>> 0);
+  expect(result.reopenedPixel >>> 0).toBe(((255 << 24) | 255) >>> 0);
 });
-
