@@ -1142,7 +1142,11 @@ export default class Game {
   }
 
   exitPixelStudio({ toTitle = false } = {}) {
-    this.pixelStudio?.persistTileArtAutosave?.(true);
+    if (this.pixelStudio?.decalEditSession?.type === 'actor-state') {
+      this.pixelStudio.commitDecalEditIfNeeded?.();
+    } else {
+      this.pixelStudio?.persistTileArtAutosave?.(true);
+    }
     this.playtestActive = false;
     const destination = toTitle ? 'title' : (this.pixelStudioReturnState || 'title');
     this.transitionTo(destination, { forceCleanup: true });

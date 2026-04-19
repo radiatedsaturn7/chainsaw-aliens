@@ -47,7 +47,7 @@ test('actor editor pixel art saves to art doc and reopens with drawn pixels', as
     const savedFrame = parsed?.data?.frames?.[0] || [];
     const savedPixel = savedFrame[0] || null;
 
-    studio.saveDecalSessionAndReturn();
+    game.exitPixelStudio();
     await new Promise((resolve, reject) => {
       const started = Date.now();
       const tick = () => {
