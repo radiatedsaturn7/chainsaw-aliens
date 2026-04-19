@@ -79,7 +79,7 @@ export default class PixelStudio {
         },
         applyLoadedData: (ctx, data) => {
           ctx.game.world.pixelArt = ctx.normalizeLoadedArtDocument(data);
-          ctx.loadTileData();
+          ctx.loadTileData({ skipRestore: true });
         }
       },
       history: {
@@ -486,8 +486,10 @@ export default class PixelStudio {
     return hydrated;
   }
 
-  loadTileData() {
-    this.restoreStoredTileArtIfNeeded();
+  loadTileData(options = {}) {
+    if (!options.skipRestore) {
+      this.restoreStoredTileArtIfNeeded();
+    }
     ensurePixelArtStore(this.game.world);
     const tileChar = this.activeTile?.char;
     if (!tileChar) return;
