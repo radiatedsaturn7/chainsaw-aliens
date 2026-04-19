@@ -858,11 +858,12 @@ export default class PixelStudio {
     const sourceFramesFromArtDoc = Array.isArray(artRefDoc?.data?.frames)
       ? artRefDoc.data.frames
       : [];
-    const sources = Array.isArray(animation?.frames) && animation.frames.length
+    const inlineSources = Array.isArray(animation?.frames) && animation.frames.length
       ? animation.frames.filter((frame) => frame?.imageDataUrl)
       : (animation?.imageDataUrl
           ? [{ imageDataUrl: animation.imageDataUrl, durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || 8))) }]
-          : sourceFramesFromArtDoc.map((frame, frameIndex) => {
+          : []);
+    const artRefSources = sourceFramesFromArtDoc.map((frame, frameIndex) => {
               const width = Math.max(1, Number(artRefDoc?.data?.width || artRefDoc?.data?.size || fallbackWidth));
               const height = Math.max(1, Number(artRefDoc?.data?.height || artRefDoc?.data?.size || fallbackHeight));
               const canvas = document.createElement('canvas');
@@ -883,7 +884,8 @@ export default class PixelStudio {
                 imageDataUrl: canvas.toDataURL('image/png'),
                 durationMs: Number(animation?.frames?.[frameIndex]?.durationMs || Math.round(1000 / Math.max(1, Number(animation?.fps || artRefDoc?.data?.fps || 8))))
               };
-            }));
+            });
+    const sources = artRefSources.length ? artRefSources : inlineSources;
     const loadedFrames = [];
     for (const source of sources) {
       const image = await new Promise((resolve, reject) => {
@@ -1112,6 +1114,10 @@ export default class PixelStudio {
       return;
     }
     if (this.decalEditSession.type === 'actor-state') {
+      if (this.currentDocumentRef?.folder === 'art' && this.currentDocumentRef?.name) {
+        const artPayload = this.serializeCurrentAnimationAsArtDocument();
+        vfsSave('art', this.currentDocumentRef.name, artPayload);
+      }
       const frames = this.animation.frames.map((frame) => {
         const previousIndex = this.animation.currentFrameIndex;
         this.animation.currentFrameIndex = this.animation.frames.indexOf(frame);
@@ -1122,8 +1128,8 @@ export default class PixelStudio {
         return { imageDataUrl, durationMs: Number(frame.durationMs || DEFAULT_FRAME_DURATION_MS) };
       });
       this.decalEditSession.onCommit?.({
-        imageDataUrl: frames[0]?.imageDataUrl || '',
-        frames,
+        imageDataUrl: '',
+        frames: [],
         fps: Math.max(1, Math.round(1000 / Math.max(1, Number(frames[0]?.durationMs || DEFAULT_FRAME_DURATION_MS)))),
         artRef: this.currentDocumentRef?.folder === 'art' ? this.currentDocumentRef.name : ''
       });
