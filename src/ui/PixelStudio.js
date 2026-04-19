@@ -418,6 +418,10 @@ export default class PixelStudio {
     if (Object.keys(store.tiles || {}).length) {
       this.hydrateTileArtRefs();
     }
+    const currentFolder = this.currentDocumentRef?.folder || null;
+    if (hadLoadedInMemory && !this.tilePickerMode && currentFolder !== 'levels') {
+      return;
+    }
     const autosave = vfsLoad('art', 'Tile Art Autosave');
     const autosaveHasTiles = Object.keys(autosave?.data?.tiles || {}).length > 0;
     if (autosave?.data && autosaveHasTiles) {
