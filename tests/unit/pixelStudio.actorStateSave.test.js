@@ -75,6 +75,9 @@ test('normalizeLoadedArtDocument maps actor-state art payloads into tile data', 
   assert.equal(normalized.tiles['@'].size, 32);
   assert.equal(normalized.tiles['@'].fps, 10);
   assert.equal(normalized.tiles['@'].frames.length, 1);
+  assert.equal(normalized.tiles['@'].editor.width, 32);
+  assert.equal(normalized.tiles['@'].editor.height, 32);
+  assert.equal(normalized.tiles['@'].editor.frames.length, 1);
 });
 
 test('saveArtDocument does not rewrite tile autosave during actor-state saves', async () => {

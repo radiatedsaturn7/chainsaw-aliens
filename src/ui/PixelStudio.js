@@ -631,15 +631,34 @@ export default class PixelStudio {
     }
     const tileChar = this.activeTile?.char || this.tileLibrary?.[0]?.char || '#';
     const inferredWidth = Number.isFinite(data?.width) ? Math.max(1, Math.round(data.width)) : null;
+    const inferredHeight = Number.isFinite(data?.height) ? Math.max(1, Math.round(data.height)) : null;
     const inferredSize = Number.isFinite(data?.size) ? Math.max(1, Math.round(data.size)) : null;
-    const size = inferredWidth || inferredSize || 16;
+    const width = inferredWidth || inferredSize || 16;
+    const height = inferredHeight || inferredSize || width;
+    const size = inferredSize || width;
+    const editor = data?.editor && typeof data.editor === 'object'
+      ? data.editor
+      : {
+          width,
+          height,
+          frames: data.frames.map((frame) => {
+            const layer = createLayer(width, height, 'Layer 1');
+            for (let i = 0; i < width * height; i += 1) {
+              const color = frame?.[i];
+              if (!color) continue;
+              layer.pixels[i] = rgbaToUint32(hexToRgba(color));
+            }
+            return createFrame([layer], Math.round(1000 / Math.max(1, Number(data?.fps || 8))));
+          }),
+          activeLayerIndex: 0
+        };
     return {
       tiles: {
         [tileChar]: {
           size,
           fps: Math.max(1, Number(data?.fps || 8)),
           frames: data.frames,
-          ...(data?.editor && typeof data.editor === 'object' ? { editor: data.editor } : {})
+          editor
         }
       }
     };
