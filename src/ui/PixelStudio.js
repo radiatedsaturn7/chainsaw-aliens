@@ -629,6 +629,19 @@ export default class PixelStudio {
 
   normalizeLoadedArtDocument(data) {
     if (data?.tiles && typeof data.tiles === 'object') {
+      const tileChar = this.activeTile?.char || this.tileLibrary?.[0]?.char || '#';
+      if (tileChar && !data.tiles[tileChar]) {
+        const firstEntry = Object.values(data.tiles).find((entry) => entry && typeof entry === 'object');
+        if (firstEntry) {
+          return {
+            ...data,
+            tiles: {
+              ...data.tiles,
+              [tileChar]: firstEntry
+            }
+          };
+        }
+      }
       return data;
     }
     const hasFrameArray = Array.isArray(data?.frames) && data.frames.length > 0;

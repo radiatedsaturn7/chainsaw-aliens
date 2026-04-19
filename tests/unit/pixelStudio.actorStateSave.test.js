@@ -80,6 +80,23 @@ test('normalizeLoadedArtDocument maps actor-state art payloads into tile data', 
   assert.equal(normalized.tiles['@'].editor.frames.length, 1);
 });
 
+test('normalizeLoadedArtDocument mirrors first tile onto active tile when needed', () => {
+  const normalized = normalizeLoadedArtDocument.call({
+    activeTile: { char: '@' },
+    tileLibrary: [{ char: '@' }]
+  }, {
+    tiles: {
+      '#': {
+        size: 1,
+        fps: 8,
+        frames: [['#ff00ff']]
+      }
+    }
+  });
+  assert.ok(normalized.tiles['@']);
+  assert.deepEqual(normalized.tiles['@'].frames, [['#ff00ff']]);
+});
+
 test('saveArtDocument does not rewrite tile autosave during actor-state saves', async () => {
   let persisted = false;
   const editor = {
