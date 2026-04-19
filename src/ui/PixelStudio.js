@@ -738,6 +738,13 @@ export default class PixelStudio {
     this.game.exitPixelStudio();
   }
 
+  async saveActorSessionAndReturn(forceSaveAs = false) {
+    if (!this.decalEditSession || this.decalEditSession.type !== 'actor-state') return;
+    this.commitDecalEditIfNeeded();
+    await this.game.actorEditor?.saveActor?.(forceSaveAs);
+    this.game.exitPixelStudio();
+  }
+
   abandonDecalSessionAndReturn() {
     if (!this.decalEditSession) return;
     this.decalEditSession = null;
@@ -6516,8 +6523,15 @@ export default class PixelStudio {
       },
       actions: {
         new: () => this.newArtDocument(),
-        save: () => (this.decalEditSession ? this.saveDecalSessionAndReturn() : this.saveArtDocument()),
-        'save-as': () => this.saveArtDocument({ forceSaveAs: true }),
+        save: () => {
+          if (!this.decalEditSession) return this.saveArtDocument();
+          if (this.decalEditSession.type === 'actor-state') return this.saveActorSessionAndReturn(false);
+          return this.saveDecalSessionAndReturn();
+        },
+        'save-as': () => {
+          if (this.decalEditSession?.type === 'actor-state') return this.saveActorSessionAndReturn(true);
+          return this.saveArtDocument({ forceSaveAs: true });
+        },
         open: () => this.loadArtDocument(),
         export: () => this.exportPng(),
         import: () => this.paletteFileInput.click()
