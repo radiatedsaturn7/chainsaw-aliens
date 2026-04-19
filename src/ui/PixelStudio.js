@@ -30,7 +30,6 @@ import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, cre
 import { createViewportController } from './shared/viewportController.js';
 import { vfsList, vfsLoad, vfsSave } from './vfs.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
-import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
@@ -620,6 +619,16 @@ export default class PixelStudio {
     };
   }
 
+  buildActorStateArtDocName(actorId, stateId) {
+    const slugifyPart = (value, fallback) => String(value || fallback || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || fallback;
+    const actor = slugifyPart(actorId, 'actor');
+    const state = slugifyPart(stateId, 'state');
+    return `${actor}-${state}-art`;
+  }
+
   persistTileArtAutosave(force = false) {
     const now = Date.now();
     if (!force && now - this.lastTileArtAutosaveAt < 1000) return;
@@ -886,9 +895,10 @@ export default class PixelStudio {
       this.artSizeDraft.height = fallbackHeight;
       loadedFrames.push(createFrame([createLayer(fallbackWidth, fallbackHeight, 'Actor State Layer')], DEFAULT_FRAME_DURATION_MS));
     }
-    this.currentDocumentRef = animation?.artRef
-      ? { folder: 'art', name: animation.artRef }
-      : null;
+    const actorStateArtRef = typeof animation?.artRef === 'string' && animation.artRef
+      ? animation.artRef
+      : this.buildActorStateArtDocName(actorId, stateId);
+    this.currentDocumentRef = { folder: 'art', name: actorStateArtRef };
     this.decalEditSession = { type: 'actor-state', actorId, stateId, onCommit };
     this.animation.frames = loadedFrames;
     this.animation.currentFrameIndex = 0;
@@ -1144,18 +1154,10 @@ export default class PixelStudio {
 
 
   async saveArtDocument(options = {}) {
-    if (this.decalEditSession?.type === 'actor-state' && (options.forceSaveAs || !this.currentDocumentRef?.name)) {
-      const picked = await openProjectBrowser({
-        mode: 'saveAs',
-        fixedFolder: 'art',
-        initialFolder: 'art',
-        title: 'Save Actor Art As'
-      });
-      if (!picked?.name) return null;
-      this.currentDocumentRef = { folder: 'art', name: picked.name };
-    }
     const result = await this.runtime.saveAsOrCurrent(options);
-    this.persistTileArtAutosave(true);
+    if (this.decalEditSession?.type !== 'actor-state') {
+      this.persistTileArtAutosave(true);
+    }
     return result;
   }
 

@@ -5,6 +5,8 @@ import PixelStudio from '../../src/ui/PixelStudio.js';
 import { ensureActorDefinition } from '../../src/content/actorEditorData.js';
 
 const serializeCurrentAnimationAsArtDocument = PixelStudio.prototype.serializeCurrentAnimationAsArtDocument;
+const buildActorStateArtDocName = PixelStudio.prototype.buildActorStateArtDocName;
+const saveArtDocument = PixelStudio.prototype.saveArtDocument;
 
 test('serializeCurrentAnimationAsArtDocument exports composited frames for actor-state saves', () => {
   const editor = {
@@ -50,4 +52,27 @@ test('ensureActorDefinition preserves animation artRef metadata', () => {
   });
 
   assert.equal(actor.states[0].animation.artRef, 'test-bot-idle-art');
+});
+
+test('buildActorStateArtDocName creates a stable art filename', () => {
+  const name = buildActorStateArtDocName.call({}, 'Boss Prime', 'Idle / Loop');
+  assert.equal(name, 'boss-prime-idle-loop-art');
+});
+
+test('saveArtDocument does not rewrite tile autosave during actor-state saves', async () => {
+  let persisted = false;
+  const editor = {
+    decalEditSession: { type: 'actor-state' },
+    runtime: {
+      async saveAsOrCurrent() {
+        return { name: 'boss-idle-art' };
+      }
+    },
+    persistTileArtAutosave() {
+      persisted = true;
+    }
+  };
+  const result = await saveArtDocument.call(editor);
+  assert.equal(result?.name, 'boss-idle-art');
+  assert.equal(persisted, false);
 });
