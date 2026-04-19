@@ -76,7 +76,7 @@ export default class PixelStudio {
           return ctx.game.world.pixelArt || { tiles: {} };
         },
         applyLoadedData: (ctx, data) => {
-          ctx.game.world.pixelArt = data;
+          ctx.game.world.pixelArt = ctx.normalizeLoadedArtDocument(data);
           ctx.loadTileData();
         }
       },
@@ -615,6 +615,30 @@ export default class PixelStudio {
         height,
         frames: this.animation.frames,
         activeLayerIndex: this.canvasState.activeLayerIndex
+      }
+    };
+  }
+
+  normalizeLoadedArtDocument(data) {
+    if (data?.tiles && typeof data.tiles === 'object') {
+      return data;
+    }
+    const hasFrameArray = Array.isArray(data?.frames) && data.frames.length > 0;
+    if (!hasFrameArray) {
+      return { tiles: {} };
+    }
+    const tileChar = this.activeTile?.char || this.tileLibrary?.[0]?.char || '#';
+    const inferredWidth = Number.isFinite(data?.width) ? Math.max(1, Math.round(data.width)) : null;
+    const inferredSize = Number.isFinite(data?.size) ? Math.max(1, Math.round(data.size)) : null;
+    const size = inferredWidth || inferredSize || 16;
+    return {
+      tiles: {
+        [tileChar]: {
+          size,
+          fps: Math.max(1, Number(data?.fps || 8)),
+          frames: data.frames,
+          ...(data?.editor && typeof data.editor === 'object' ? { editor: data.editor } : {})
+        }
       }
     };
   }

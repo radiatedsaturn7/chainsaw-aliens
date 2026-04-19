@@ -5,6 +5,7 @@ import PixelStudio from '../../src/ui/PixelStudio.js';
 import { ensureActorDefinition } from '../../src/content/actorEditorData.js';
 
 const serializeCurrentAnimationAsArtDocument = PixelStudio.prototype.serializeCurrentAnimationAsArtDocument;
+const normalizeLoadedArtDocument = PixelStudio.prototype.normalizeLoadedArtDocument;
 const buildActorStateArtDocName = PixelStudio.prototype.buildActorStateArtDocName;
 const saveArtDocument = PixelStudio.prototype.saveArtDocument;
 
@@ -57,6 +58,23 @@ test('ensureActorDefinition preserves animation artRef metadata', () => {
 test('buildActorStateArtDocName creates a stable art filename', () => {
   const name = buildActorStateArtDocName.call({}, 'Boss Prime', 'Idle / Loop');
   assert.equal(name, 'boss-prime-idle-loop-art');
+});
+
+test('normalizeLoadedArtDocument maps actor-state art payloads into tile data', () => {
+  const payload = {
+    kind: 'actor-state-animation',
+    width: 32,
+    fps: 10,
+    frames: [Array(32 * 32).fill(null)]
+  };
+  const normalized = normalizeLoadedArtDocument.call({
+    activeTile: { char: '@' },
+    tileLibrary: [{ char: '#' }]
+  }, payload);
+  assert.ok(normalized.tiles?.['@']);
+  assert.equal(normalized.tiles['@'].size, 32);
+  assert.equal(normalized.tiles['@'].fps, 10);
+  assert.equal(normalized.tiles['@'].frames.length, 1);
 });
 
 test('saveArtDocument does not rewrite tile autosave during actor-state saves', async () => {
