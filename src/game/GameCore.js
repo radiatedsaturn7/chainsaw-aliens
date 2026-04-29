@@ -1263,7 +1263,7 @@ export default class Game {
     this.applyWorldData(this.buildActorTestWorldData(actorId));
     this.playtestActive = true;
     this.playtestPauseLock = 0.35;
-    this.resetRun({ playtest: false, startWithEverything: true });
+    this.resetRun({ playtest: true, startWithEverything: true });
     this.transitionTo('playing', { forceCleanup: true });
     this.startSpawnPause();
   }
@@ -4169,7 +4169,9 @@ export default class Game {
         if (enemy.dead) return;
         const dx = Math.abs(enemy.x - this.player.x);
         const dy = enemy.y - this.player.y;
-        if (dx < range && dy > 0 && dy < 60) {
+        const enemyHalfW = Math.max(1, Number(enemy?.width || 24)) * 0.5;
+        const enemyHalfH = Math.max(1, Number(enemy?.height || 24)) * 0.5;
+        if (dx < range + enemyHalfW && dy > -enemyHalfH && dy < 60 + enemyHalfH) {
           if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
             return;
           }
@@ -4248,7 +4250,9 @@ export default class Game {
       if (enemy.dead) return;
       const dx = enemy.x - this.player.x;
       const dy = Math.abs(enemy.y - this.player.y);
-      if (Math.abs(dx) < range && dy < 40) {
+      const enemyHalfW = Math.max(1, Number(enemy?.width || 24)) * 0.5;
+      const enemyHalfH = Math.max(1, Number(enemy?.height || 24)) * 0.5;
+      if (Math.abs(dx) < range + enemyHalfW && dy < 40 + enemyHalfH) {
         if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
           return;
         }
@@ -4294,7 +4298,9 @@ export default class Game {
       if (enemy.dead) return false;
       const dx = enemy.x - this.player.x;
       const dy = Math.abs(enemy.y - this.player.y);
-      return Math.abs(dx) < range && dy < verticalRange && enemy.health <= 1;
+      const enemyHalfW = Math.max(1, Number(enemy?.width || 24)) * 0.5;
+      const enemyHalfH = Math.max(1, Number(enemy?.height || 24)) * 0.5;
+      return Math.abs(dx) < range + enemyHalfW && dy < verticalRange + enemyHalfH && enemy.health <= 1;
     });
     if (candidates.length === 0) return;
     const enemy = candidates[0];
