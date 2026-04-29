@@ -773,10 +773,36 @@ export default class ActorEditor {
     addField('Invulnerable by default', checkbox(actor.invulnerable, (event) => this.setActor({ ...actor, invulnerable: event.target.checked }), 'Enabled'));
     addField('Destructible', checkbox(actor.destructible, (event) => this.setActor({ ...actor, destructible: event.target.checked }), 'Enabled'));
     addField('Root actor', checkbox(actor.isRoot, (event) => this.setActor({ ...actor, isRoot: event.target.checked }), 'Placeable in Level Editor'));
-    addField('Size (w × h)', text(`${actor.size.width} × ${actor.size.height}`, (event) => {
-      const [width, height] = String(event.target.value).split('x').map((part) => Number.parseInt(part, 10));
-      this.setActor({ ...actor, size: { width: width || actor.size.width, height: height || actor.size.height } });
-    }));
+    const sizeWrap = el('div', 'actor-editor-inline-actions');
+    sizeWrap.style.display = 'flex';
+    sizeWrap.style.alignItems = 'center';
+    sizeWrap.style.gap = '8px';
+    const widthInput = el('input');
+    widthInput.type = 'number';
+    widthInput.min = '1';
+    widthInput.step = '1';
+    widthInput.value = String(actor.size.width || 24);
+    widthInput.oninput = (event) => {
+      const width = Number.parseInt(event.target.value, 10);
+      if (!Number.isFinite(width) || width <= 0) return;
+      this.setActor({ ...actor, size: { width, height: actor.size.height } });
+    };
+    const heightInput = el('input');
+    heightInput.type = 'number';
+    heightInput.min = '1';
+    heightInput.step = '1';
+    heightInput.value = String(actor.size.height || 24);
+    heightInput.oninput = (event) => {
+      const height = Number.parseInt(event.target.value, 10);
+      if (!Number.isFinite(height) || height <= 0) return;
+      this.setActor({ ...actor, size: { width: actor.size.width, height } });
+    };
+    widthInput.style.width = '76px';
+    heightInput.style.width = '76px';
+    sizeWrap.appendChild(widthInput);
+    sizeWrap.appendChild(el('span', 'actor-editor-note', '×'));
+    sizeWrap.appendChild(heightInput);
+    addField('Size (w × h)', sizeWrap);
     section.appendChild(this.renderTaxonomyEditor(actor, {
       key: 'taxonomies',
       label: 'I belong to taxonomy',

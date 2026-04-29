@@ -1370,8 +1370,32 @@ export default class PixelStudio {
     const parsed = Number.isFinite(value) ? value : Number(value);
     if (!Number.isFinite(parsed)) return;
     const isScaleField = key === 'scaleX' || key === 'scaleY';
-    const precision = isScaleField ? 10 : 1;
-    this.transformModal.values[key] = clamp(Math.round(parsed * precision) / precision, min, max);
+    if (isScaleField) {
+      const clamped = clamp(parsed, 0.1, 10);
+      this.transformModal.values[key] = clamped <= 1
+        ? Math.round(clamped * 10) / 10
+        : Math.round(clamped);
+      return;
+    }
+    this.transformModal.values[key] = clamp(Math.round(parsed), min, max);
+  }
+
+  transformScaleValueToSliderT(value) {
+    const clamped = clamp(Number(value) || 1, 0.1, 10);
+    if (clamped <= 1) {
+      return ((clamped - 0.1) / 0.9) * 0.5;
+    }
+    return 0.5 + ((clamped - 1) / 9) * 0.5;
+  }
+
+  transformSliderTToScaleValue(t) {
+    const clamped = clamp(Number(t) || 0, 0, 1);
+    if (clamped <= 0.5) {
+      const normalized = clamped / 0.5;
+      return Math.round((0.1 + normalized * 0.9) * 10) / 10;
+    }
+    const normalized = (clamped - 0.5) / 0.5;
+    return clamp(Math.round(1 + normalized * 9), 1, 10);
   }
 
   async editTransformValue(field) {
@@ -2608,7 +2632,9 @@ export default class PixelStudio {
         const field = this.transformModal.fields?.find((entry) => entry.key === this.transformModal.drag.key);
         if (field) {
           const ratio = clamp((payload.x - field.slider.x) / Math.max(1, field.slider.w), 0, 1);
-          const next = field.min + ratio * (field.max - field.min);
+          const next = (field.key === 'scaleX' || field.key === 'scaleY')
+            ? this.transformSliderTToScaleValue(ratio)
+            : field.min + ratio * (field.max - field.min);
           this.setTransformValue(field.key, next, field.min, field.max);
         }
       }
@@ -5955,7 +5981,9 @@ export default class PixelStudio {
       const sliderHit = (this.transformModal.fields || []).find((field) => this.isPointInBounds({ x, y }, field.sliderHitBounds || field.slider));
       if (sliderHit) {
         const ratio = clamp((x - sliderHit.slider.x) / Math.max(1, sliderHit.slider.w), 0, 1);
-        const next = sliderHit.min + ratio * (sliderHit.max - sliderHit.min);
+        const next = (sliderHit.key === 'scaleX' || sliderHit.key === 'scaleY')
+          ? this.transformSliderTToScaleValue(ratio)
+          : sliderHit.min + ratio * (sliderHit.max - sliderHit.min);
         this.setTransformValue(sliderHit.key, next, sliderHit.min, sliderHit.max);
         this.transformModal.drag = { key: sliderHit.key, id: payload.id ?? null };
         return true;
@@ -6337,7 +6365,9 @@ export default class PixelStudio {
       const sliderHitBounds = { x: slider.x - 6, y: slider.y - 10, w: slider.w + 12, h: slider.h + 20 };
       const valueBounds = { x: slider.x + slider.w + 8, y: rowY - 12, w: valueW, h: 18 };
       const value = this.transformModal.values[row.key] ?? row.min;
-      const t = clamp((value - row.min) / Math.max(1, row.max - row.min), 0, 1);
+      const t = (row.key === 'scaleX' || row.key === 'scaleY')
+        ? this.transformScaleValueToSliderT(value)
+        : clamp((value - row.min) / Math.max(1, row.max - row.min), 0, 1);
       const knobX = slider.x + t * slider.w;
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = '12px Courier New';
