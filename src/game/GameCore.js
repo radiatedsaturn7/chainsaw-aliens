@@ -4460,8 +4460,13 @@ export default class Game {
 
       const dx = enemy.x - this.player.x;
       const dy = enemy.y - this.player.y;
-      const dist = Math.hypot(dx, dy);
-      if (dist < 24) {
+      const playerContactW = Math.max(1, Number(this.player?.width || this.world.tileSize * 0.5));
+      const playerContactH = Math.max(1, Number(this.player?.height || this.world.tileSize * 0.5));
+      const enemyContactW = Math.max(1, Number(enemy?.width || this.world.tileSize * 0.5));
+      const enemyContactH = Math.max(1, Number(enemy?.height || this.world.tileSize * 0.5));
+      const contactX = (playerContactW + enemyContactW) * 0.5;
+      const contactY = (playerContactH + enemyContactH) * 0.5;
+      if (Math.abs(dx) <= contactX && Math.abs(dy) <= contactY) {
         if (!enemy.training) {
           const bodyDamage = enemy.bodyDamageEnabled === false ? 0 : (enemy.contactDamage || 1);
           const tookDamage = bodyDamage > 0 ? this.player.takeDamage(bodyDamage) : false;
