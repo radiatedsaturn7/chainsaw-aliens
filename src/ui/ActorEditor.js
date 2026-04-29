@@ -704,9 +704,13 @@ export default class ActorEditor {
     controls.style.display = 'flex';
     controls.style.flexDirection = 'column';
     controls.style.gap = '6px';
-    [['Add', () => this.addState()], ['Duplicate', () => this.duplicateState(this.selectedState)]].forEach(([label, handler]) => {
+    [['Add', () => this.addState()], ['Duplicate', () => this.duplicateState(this.selectedState)], ['Remove', () => this.deleteState(this.selectedState)]].forEach(([label, handler]) => {
       const btn = el('button', 'actor-editor-btn small', label);
       this.styleRailButton(btn, false);
+      if (label === 'Remove' && this.actor.states.length <= 1) {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+      }
       btn.onclick = handler;
       controls.appendChild(btn);
     });

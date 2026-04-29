@@ -1330,7 +1330,7 @@ export default class PixelStudio {
     const height = this.canvasState.height;
     const defaults = {
       resize: { width, height },
-      scale: { scaleX: 2, scaleY: 2 },
+      scale: { scaleX: 1, scaleY: 1 },
       crop: { borderX: 1, borderY: 1 },
       offset: { dx: 0, dy: 0, wrap: true }
     };
@@ -1369,7 +1369,9 @@ export default class PixelStudio {
     if (!this.transformModal?.values) return;
     const parsed = Number.isFinite(value) ? value : Number(value);
     if (!Number.isFinite(parsed)) return;
-    this.transformModal.values[key] = clamp(Math.round(parsed), min, max);
+    const isScaleField = key === 'scaleX' || key === 'scaleY';
+    const precision = isScaleField ? 10 : 1;
+    this.transformModal.values[key] = clamp(Math.round(parsed * precision) / precision, min, max);
   }
 
   async editTransformValue(field) {
@@ -1379,32 +1381,32 @@ export default class PixelStudio {
       title: `Set ${field.label}`,
       label: `${field.label} (${field.min}-${field.max})`,
       initialValue: String(Math.round(current)),
-      inputType: 'int',
+      inputType: field.key === 'scaleX' || field.key === 'scaleY' ? 'float' : 'int',
       min: field.min,
       max: field.max
     });
     if (raw == null) return;
-    const parsed = Number.parseInt(raw, 10);
+    const parsed = Number(raw);
     if (!Number.isFinite(parsed)) return;
     this.setTransformValue(field.key, parsed, field.min, field.max);
   }
 
   applyScaleCanvas(scaleX, scaleY) {
-    const sx = clamp(Math.round(scaleX), 1, 16);
-    const sy = clamp(Math.round(scaleY), 1, 16);
+    const sx = clamp(Number(scaleX) || 1, 0.1, 10);
+    const sy = clamp(Number(scaleY) || 1, 0.1, 10);
     if (sx === 1 && sy === 1) return;
     const srcW = this.canvasState.width;
     const srcH = this.canvasState.height;
-    const nextW = clamp(srcW * sx, ART_DIMENSION_MIN, ART_DIMENSION_MAX);
-    const nextH = clamp(srcH * sy, ART_DIMENSION_MIN, ART_DIMENSION_MAX);
+    const nextW = clamp(Math.round(srcW * sx), ART_DIMENSION_MIN, ART_DIMENSION_MAX);
+    const nextH = clamp(Math.round(srcH * sy), ART_DIMENSION_MIN, ART_DIMENSION_MAX);
     this.animation.frames = this.animation.frames.map((frame) => ({
       ...frame,
       layers: frame.layers.map((layer) => {
         const next = createLayer(nextW, nextH, layer.name);
         for (let row = 0; row < nextH; row += 1) {
           for (let col = 0; col < nextW; col += 1) {
-            const srcRow = Math.floor(row / sy);
-            const srcCol = Math.floor(col / sx);
+            const srcRow = clamp(Math.floor(row / sy), 0, srcH - 1);
+            const srcCol = clamp(Math.floor(col / sx), 0, srcW - 1);
             next.pixels[row * nextW + col] = layer.pixels[srcRow * srcW + srcCol] || 0;
           }
         }
@@ -6302,8 +6304,8 @@ export default class PixelStudio {
         { key: 'height', label: 'Height', min: ART_DIMENSION_MIN, max: ART_DIMENSION_MAX }
       ],
       scale: [
-        { key: 'scaleX', label: 'Scale X', min: 1, max: 16 },
-        { key: 'scaleY', label: 'Scale Y', min: 1, max: 16 }
+        { key: 'scaleX', label: 'Scale X', min: 0.1, max: 10 },
+        { key: 'scaleY', label: 'Scale Y', min: 0.1, max: 10 }
       ],
       crop: [
         { key: 'borderX', label: 'Border X', min: 0, max: Math.max(0, Math.floor((this.canvasState.width - 1) / 2)) },
@@ -6344,6 +6346,23 @@ export default class PixelStudio {
       ctx.fillRect(slider.x, slider.y, slider.w, slider.h);
       ctx.strokeStyle = 'rgba(255,255,255,0.45)';
       ctx.strokeRect(slider.x, slider.y, slider.w, slider.h);
+      if (row.key === 'scaleX' || row.key === 'scaleY') {
+        const centerT = clamp((1 - row.min) / Math.max(0.00001, row.max - row.min), 0, 1);
+        const centerX = slider.x + centerT * slider.w;
+        ctx.strokeStyle = 'rgba(160,220,255,0.9)';
+        ctx.beginPath();
+        ctx.moveTo(centerX, slider.y - 3);
+        ctx.lineTo(centerX, slider.y + slider.h + 3);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.72)';
+        ctx.font = '10px Courier New';
+        ctx.textAlign = 'left';
+        ctx.fillText('0.1', slider.x, slider.y - 5);
+        ctx.textAlign = 'center';
+        ctx.fillText('1', centerX, slider.y - 5);
+        ctx.textAlign = 'right';
+        ctx.fillText('10', slider.x + slider.w, slider.y - 5);
+      }
       ctx.fillStyle = '#ffe16a';
       ctx.fillRect(knobX - 2, slider.y - 2, 4, slider.h + 4);
       ctx.fillStyle = 'rgba(255,255,255,0.08)';
@@ -6352,7 +6371,10 @@ export default class PixelStudio {
       ctx.strokeRect(valueBounds.x, valueBounds.y, valueBounds.w, valueBounds.h);
       ctx.fillStyle = '#fff';
       ctx.textAlign = 'right';
-      ctx.fillText(String(Math.round(value)), valueBounds.x + valueBounds.w - 6, rowY + 1);
+      const displayValue = (row.key === 'scaleX' || row.key === 'scaleY')
+        ? Number(value).toFixed(1)
+        : String(Math.round(value));
+      ctx.fillText(displayValue, valueBounds.x + valueBounds.w - 6, rowY + 1);
       ctx.textAlign = 'left';
       this.transformModal.fields.push({ ...row, slider, sliderHitBounds, valueBounds });
       rowY += 38;
