@@ -122,6 +122,12 @@ export function ensureActorDefinition(actor) {
     return Array.from(new Set(list));
   };
   merged.id = slugify(merged.name || merged.id);
+  const parsedWidth = Number(merged?.size?.width);
+  const parsedHeight = Number(merged?.size?.height);
+  merged.size = {
+    width: Number.isFinite(parsedWidth) && parsedWidth > 0 ? parsedWidth : base.size.width,
+    height: Number.isFinite(parsedHeight) && parsedHeight > 0 ? parsedHeight : base.size.height
+  };
   merged.taxonomies = normalizeTaxonomyList(actor?.taxonomies, base.taxonomies);
   merged.aggressiveTo = normalizeTaxonomyList(actor?.aggressiveTo, base.aggressiveTo);
   merged.states = Array.isArray(actor?.states) && actor.states.length

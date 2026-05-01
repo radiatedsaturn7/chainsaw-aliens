@@ -7702,7 +7702,9 @@ export default class Game {
       ctx.fillStyle = 'rgba(255, 80, 80, 0.9)';
       ctx.font = '12px Courier New';
       ctx.textAlign = 'left';
-      ctx.fillText(`${Math.round(width)}x${Math.round(height)}`, left, top - 6);
+      const defW = Number(enemy?.definition?.size?.width || width);
+      const defH = Number(enemy?.definition?.size?.height || height);
+      ctx.fillText(`${Math.round(width)}x${Math.round(height)} (def ${Math.round(defW)}x${Math.round(defH)})`, left, top - 6);
     });
     ctx.restore();
   }
