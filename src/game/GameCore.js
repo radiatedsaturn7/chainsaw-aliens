@@ -6382,6 +6382,9 @@ export default class Game {
         this.drawIgnitirDissolve(ctx, enemy);
       }
     });
+    if (this.playtestActive && this.actorEditorTestSnapshot) {
+      this.drawActorPlaytestEnemyBounds(ctx);
+    }
     if (this.friendlyCompanion) {
       this.friendlyCompanion.draw(ctx);
       if (this.showCompanionPathDebug) {
@@ -7682,6 +7685,26 @@ export default class Game {
       }
       ctx.restore();
     });
+  }
+
+  drawActorPlaytestEnemyBounds(ctx) {
+    ctx.save();
+    this.enemies.forEach((enemy) => {
+      if (!enemy || enemy.dead) return;
+      const width = Math.max(1, Number(enemy.width || 0));
+      const height = Math.max(1, Number(enemy.height || 0));
+      if (!width || !height) return;
+      const left = enemy.x - width / 2;
+      const top = enemy.y - height / 2;
+      ctx.strokeStyle = 'rgba(255, 80, 80, 0.95)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(left, top, width, height);
+      ctx.fillStyle = 'rgba(255, 80, 80, 0.9)';
+      ctx.font = '12px Courier New';
+      ctx.textAlign = 'left';
+      ctx.fillText(`${Math.round(width)}x${Math.round(height)}`, left, top - 6);
+    });
+    ctx.restore();
   }
 
   drawInteractables(ctx) {
