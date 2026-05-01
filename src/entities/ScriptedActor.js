@@ -252,12 +252,6 @@ export default class ScriptedActor extends EnemyBase {
     const artRef = typeof state.animation.artRef === 'string' ? state.animation.artRef : '';
     if (artRef) {
       const doc = vfsLoad('art', artRef);
-      const docWidth = Number(doc?.data?.width || doc?.data?.size || 0);
-      const docHeight = Number(doc?.data?.height || doc?.data?.size || 0);
-      if (docWidth > 0 && docHeight > 0) {
-        this.width = docWidth;
-        this.height = docHeight;
-      }
       const savedAt = Number(doc?.savedAt || 0);
       const cacheKey = `${artRef}:${savedAt}`;
       if (this._artAnimationCache.has(cacheKey)) {

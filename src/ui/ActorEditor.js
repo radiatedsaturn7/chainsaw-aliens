@@ -373,14 +373,6 @@ export default class ActorEditor {
         const target = next.states.find((entry) => entry.id === state.id);
         if (!target) return;
         const artRef = String(animation?.artRef || target.animation?.artRef || '');
-        if (artRef) {
-          const artDoc = vfsLoad('art', artRef);
-          const width = Number(artDoc?.data?.width || artDoc?.data?.size || 0);
-          const height = Number(artDoc?.data?.height || artDoc?.data?.size || 0);
-          if (width > 0 && height > 0) {
-            next.size = { width, height };
-          }
-        }
         target.animation = {
           imageDataUrl: '',
           frames: [],
