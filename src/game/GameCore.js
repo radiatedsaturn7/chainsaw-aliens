@@ -4186,9 +4186,13 @@ export default class Game {
       this.audio.bite();
       this.recordFeedback('chainsaw bite', 'audio');
       this.recordFeedback('chainsaw bite', 'visual');
+      const downAttackCenterX = this.player.x;
+      const downAttackCenterY = this.player.y + 34;
+      const downAttackRangeX = range + 18;
+      const downAttackRangeY = 54;
       this.enemies.forEach((enemy) => {
         if (enemy.dead) return;
-        if (this.doesEntityOverlapAttackBox(enemy, this.player.x, this.player.y + 30, range, 30)) {
+        if (this.doesEntityOverlapAttackBox(enemy, downAttackCenterX, downAttackCenterY, downAttackRangeX, downAttackRangeY)) {
           if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
             return;
           }
@@ -4263,9 +4267,13 @@ export default class Game {
     this.audio.bite();
     this.recordFeedback('chainsaw bite', 'audio');
     this.recordFeedback('chainsaw bite', 'visual');
+    const forwardAttackCenterX = this.player.x + this.player.facing * Math.max(16, range * 0.55);
+    const forwardAttackCenterY = this.player.y - 6;
+    const forwardAttackRangeX = range * 0.75;
+    const forwardAttackRangeY = 54;
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
-      if (this.doesEntityOverlapAttackBox(enemy, this.player.x, this.player.y - 6, range, 40)) {
+      if (this.doesEntityOverlapAttackBox(enemy, forwardAttackCenterX, forwardAttackCenterY, forwardAttackRangeX, forwardAttackRangeY)) {
         if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
           return;
         }
