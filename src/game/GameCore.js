@@ -4153,6 +4153,24 @@ export default class Game {
     this.player.onGround = false;
   }
 
+  doesEntityOverlapAttackBox(entity, centerX, centerY, rangeX, rangeY) {
+    if (!entity) return false;
+    const halfW = Math.max(1, Number(entity.width || 24)) * 0.5;
+    const halfH = Math.max(1, Number(entity.height || 24)) * 0.5;
+    const entityLeft = entity.x - halfW;
+    const entityRight = entity.x + halfW;
+    const entityTop = entity.y - halfH;
+    const entityBottom = entity.y + halfH;
+    const boxLeft = centerX - rangeX;
+    const boxRight = centerX + rangeX;
+    const boxTop = centerY - rangeY;
+    const boxBottom = centerY + rangeY;
+    return entityLeft <= boxRight
+      && entityRight >= boxLeft
+      && entityTop <= boxBottom
+      && entityBottom >= boxTop;
+  }
+
   handleAttack() {
     if (this.sawAnchor.active) return;
     if (this.tryObstacleInteraction('attack')) return;
@@ -4170,11 +4188,7 @@ export default class Game {
       this.recordFeedback('chainsaw bite', 'visual');
       this.enemies.forEach((enemy) => {
         if (enemy.dead) return;
-        const dx = Math.abs(enemy.x - this.player.x);
-        const dy = enemy.y - this.player.y;
-        const enemyHalfW = Math.max(1, Number(enemy?.width || 24)) * 0.5;
-        const enemyHalfH = Math.max(1, Number(enemy?.height || 24)) * 0.5;
-        if (dx < range + enemyHalfW && dy > -enemyHalfH && dy < 60 + enemyHalfH) {
+        if (this.doesEntityOverlapAttackBox(enemy, this.player.x, this.player.y + 30, range, 30)) {
           if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
             return;
           }
@@ -4251,11 +4265,7 @@ export default class Game {
     this.recordFeedback('chainsaw bite', 'visual');
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
-      const dx = enemy.x - this.player.x;
-      const dy = Math.abs(enemy.y - this.player.y);
-      const enemyHalfW = Math.max(1, Number(enemy?.width || 24)) * 0.5;
-      const enemyHalfH = Math.max(1, Number(enemy?.height || 24)) * 0.5;
-      if (Math.abs(dx) < range + enemyHalfW && dy < 40 + enemyHalfH) {
+      if (this.doesEntityOverlapAttackBox(enemy, this.player.x, this.player.y - 6, range, 40)) {
         if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
           return;
         }
