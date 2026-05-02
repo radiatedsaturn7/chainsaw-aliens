@@ -3637,10 +3637,13 @@ export default class Game {
     const applyDamage = (entity) => {
       if (!entity || entity.dead) return;
       if (!this.isInRoomBounds(entity.x, entity.y, roomBounds)) return;
+      const halfW = Math.max(1, Number(entity.width || 24)) * 0.5;
+      const halfH = Math.max(1, Number(entity.height || 24)) * 0.5;
+      const hitboxRadius = Math.hypot(halfW, halfH);
       const dx = entity.x - originX;
       const dy = entity.y - originY;
       const dist = Math.hypot(dx, dy);
-      if (dist > maxRange || dist <= 0.01) return;
+      if (dist > maxRange + hitboxRadius || dist <= 0.01) return;
       const dot = (dx / dist) * dirX + (dy / dist) * dirY;
       if (dot <= 0) return;
       let closest = Infinity;
@@ -3659,7 +3662,7 @@ export default class Game {
           closest = distance;
         }
       }
-      if (closest > streamRadius) return;
+      if (closest > streamRadius + hitboxRadius) return;
       if (this.flamethrowerDamageCooldowns.has(entity)) return;
       entity.damage?.(1);
       this.spawnEffect('flamethrower-impact', entity.x, entity.y, {
