@@ -4215,12 +4215,12 @@ export default class Game {
     ctx.save();
     this.chainsawAttackDebugBoxes.forEach((box) => {
       const alpha = Math.max(0.2, Math.min(1, box.ttl / 0.35));
-      ctx.strokeStyle = `rgba(90, 220, 255, ${alpha.toFixed(3)})`;
-      ctx.fillStyle = `rgba(90, 220, 255, ${(alpha * 0.15).toFixed(3)})`;
+      ctx.strokeStyle = `rgba(255, 235, 59, ${alpha.toFixed(3)})`;
+      ctx.fillStyle = `rgba(255, 235, 59, ${(alpha * 0.22).toFixed(3)})`;
       ctx.lineWidth = 2;
       ctx.fillRect(box.x, box.y, box.w, box.h);
       ctx.strokeRect(box.x, box.y, box.w, box.h);
-      ctx.fillStyle = `rgba(200, 245, 255, ${alpha.toFixed(3)})`;
+      ctx.fillStyle = `rgba(255, 255, 180, ${alpha.toFixed(3)})`;
       ctx.font = '11px Courier New';
       ctx.textAlign = 'left';
       ctx.fillText(box.label, box.x, box.y - 4);
