@@ -4301,7 +4301,9 @@ export default class Game {
         forwardAttackBackRange,
         forwardAttackRangeY
       );
-      const overlapsPlayerBody = this.doesEntityOverlapPlayerBody(enemy, 8, 8);
+      const enemyHalfW = Math.max(1, Number(enemy?.width || this.world.tileSize * 0.5)) * 0.5;
+      const closeQuartersPaddingX = Math.max(8, enemyHalfW * 0.5);
+      const overlapsPlayerBody = this.doesEntityOverlapPlayerBody(enemy, closeQuartersPaddingX, 8);
       if (overlapsDirectionalAttack || overlapsPlayerBody) {
         if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
           return;
