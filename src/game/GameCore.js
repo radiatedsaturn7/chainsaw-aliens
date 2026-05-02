@@ -4192,7 +4192,7 @@ export default class Game {
   }
 
   recordChainsawAttackDebugBox(centerX, centerY, rangeX, rangeY, label = 'chainsaw') {
-    if (!this.playtestActive || !this.actorEditorTestSnapshot) return;
+    if (!this.debugMode) return;
     this.chainsawAttackDebugBoxes.push({
       x: centerX - rangeX,
       y: centerY - rangeY,
@@ -6479,6 +6479,8 @@ export default class Game {
     });
     if (this.playtestActive && this.actorEditorTestSnapshot) {
       this.drawActorPlaytestEnemyBounds(ctx);
+    }
+    if (this.debugMode) {
       this.drawChainsawAttackDebugBoxes(ctx);
     }
     if (this.friendlyCompanion) {
