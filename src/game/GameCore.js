@@ -215,6 +215,7 @@ export default class Game {
     this.lootDrops = [];
     this.healthDrops = [];
     this.effects = [];
+    this.chainsawAttackDebugBoxes = [];
     this.clock = 0;
     this.worldTime = 0;
     this.abilities = {
@@ -3798,6 +3799,7 @@ export default class Game {
   updateEffects(dt) {
     this.effects.forEach((effect) => effect.update(dt));
     this.effects = this.effects.filter((effect) => effect.alive);
+    this.updateChainsawAttackDebugBoxes(dt);
   }
 
   checkPlayerDamage() {
@@ -4189,6 +4191,43 @@ export default class Game {
     return Math.abs(entity.x - this.player.x) <= overlapX && Math.abs(entity.y - this.player.y) <= overlapY;
   }
 
+  recordChainsawAttackDebugBox(centerX, centerY, rangeX, rangeY, label = 'chainsaw') {
+    if (!this.playtestActive || !this.actorEditorTestSnapshot) return;
+    this.chainsawAttackDebugBoxes.push({
+      x: centerX - rangeX,
+      y: centerY - rangeY,
+      w: rangeX * 2,
+      h: rangeY * 2,
+      ttl: 0.35,
+      label
+    });
+  }
+
+  updateChainsawAttackDebugBoxes(dt) {
+    if (!this.chainsawAttackDebugBoxes.length) return;
+    this.chainsawAttackDebugBoxes = this.chainsawAttackDebugBoxes
+      .map((box) => ({ ...box, ttl: box.ttl - dt }))
+      .filter((box) => box.ttl > 0);
+  }
+
+  drawChainsawAttackDebugBoxes(ctx) {
+    if (!this.chainsawAttackDebugBoxes.length) return;
+    ctx.save();
+    this.chainsawAttackDebugBoxes.forEach((box) => {
+      const alpha = Math.max(0.2, Math.min(1, box.ttl / 0.35));
+      ctx.strokeStyle = `rgba(90, 220, 255, ${alpha.toFixed(3)})`;
+      ctx.fillStyle = `rgba(90, 220, 255, ${(alpha * 0.15).toFixed(3)})`;
+      ctx.lineWidth = 2;
+      ctx.fillRect(box.x, box.y, box.w, box.h);
+      ctx.strokeRect(box.x, box.y, box.w, box.h);
+      ctx.fillStyle = `rgba(200, 245, 255, ${alpha.toFixed(3)})`;
+      ctx.font = '11px Courier New';
+      ctx.textAlign = 'left';
+      ctx.fillText(box.label, box.x, box.y - 4);
+    });
+    ctx.restore();
+  }
+
   handleAttack() {
     if (this.sawAnchor.active) return;
     if (this.tryObstacleInteraction('attack')) return;
@@ -4208,6 +4247,7 @@ export default class Game {
       const downAttackCenterY = this.player.y + 34;
       const downAttackRangeX = range + 18;
       const downAttackRangeY = 54;
+      this.recordChainsawAttackDebugBox(downAttackCenterX, downAttackCenterY, downAttackRangeX, downAttackRangeY, 'chainsaw down');
       this.enemies.forEach((enemy) => {
         if (enemy.dead) return;
         if (this.doesEntityOverlapAttackBox(enemy, downAttackCenterX, downAttackCenterY, downAttackRangeX, downAttackRangeY)) {
@@ -4290,6 +4330,9 @@ export default class Game {
     const forwardAttackForwardRange = Math.max(52, range + 20);
     const forwardAttackBackRange = 30;
     const forwardAttackRangeY = 58;
+    const forwardAttackCenterX = forwardAttackOriginX + this.player.facing * ((forwardAttackForwardRange - forwardAttackBackRange) * 0.5);
+    const forwardAttackRangeX = (forwardAttackForwardRange + forwardAttackBackRange) * 0.5;
+    this.recordChainsawAttackDebugBox(forwardAttackCenterX, forwardAttackOriginY, forwardAttackRangeX, forwardAttackRangeY, 'chainsaw forward');
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
       const overlapsDirectionalAttack = this.doesEntityOverlapDirectionalAttackBox(
@@ -6436,6 +6479,7 @@ export default class Game {
     });
     if (this.playtestActive && this.actorEditorTestSnapshot) {
       this.drawActorPlaytestEnemyBounds(ctx);
+      this.drawChainsawAttackDebugBoxes(ctx);
     }
     if (this.friendlyCompanion) {
       this.friendlyCompanion.draw(ctx);
