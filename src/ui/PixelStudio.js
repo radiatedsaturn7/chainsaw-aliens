@@ -39,6 +39,8 @@ const BRUSH_SIZE_MIN = 1;
 const BRUSH_SIZE_MAX = 64;
 const DEFAULT_BRUSH_SIZE = 1;
 const DEFAULT_FRAME_DURATION_MS = Math.round(1000 / 32);
+const ART_DIMENSION_MIN = 8;
+const ART_DIMENSION_MAX = 4096;
 const BRUSH_SHAPES = ['circle', 'square', 'diamond', 'cross', 'x', 'hline', 'vline'];
 
 
@@ -69,12 +71,15 @@ export default class PixelStudio {
         },
         confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
         serialize: (ctx) => {
+          if (ctx.decalEditSession?.type === 'actor-state') {
+            return ctx.serializeCurrentAnimationAsArtDocument();
+          }
           ctx.syncTileData({ persist: false });
           return ctx.game.world.pixelArt || { tiles: {} };
         },
         applyLoadedData: (ctx, data) => {
-          ctx.game.world.pixelArt = data;
-          ctx.loadTileData();
+          ctx.game.world.pixelArt = ctx.normalizeLoadedArtDocument(data);
+          ctx.loadTileData({ skipRestore: true });
         }
       },
       history: {
@@ -359,8 +364,8 @@ export default class PixelStudio {
       next.onerror = reject;
       next.src = URL.createObjectURL(file);
     });
-    const width = clamp(Math.round(image.width || 16), 1, 512);
-    const height = clamp(Math.round(image.height || 16), 1, 512);
+    const width = clamp(Math.round(image.width || 16), 1, ART_DIMENSION_MAX);
+    const height = clamp(Math.round(image.height || 16), 1, ART_DIMENSION_MAX);
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -412,6 +417,10 @@ export default class PixelStudio {
     const hadLoadedInMemory = this.hasLoadedPixelArtData(store);
     if (Object.keys(store.tiles || {}).length) {
       this.hydrateTileArtRefs();
+    }
+    const currentFolder = this.currentDocumentRef?.folder || null;
+    if (hadLoadedInMemory && !this.tilePickerMode && currentFolder !== 'levels') {
+      return;
     }
     const autosave = vfsLoad('art', 'Tile Art Autosave');
     const autosaveHasTiles = Object.keys(autosave?.data?.tiles || {}).length > 0;
@@ -477,8 +486,10 @@ export default class PixelStudio {
     return hydrated;
   }
 
-  loadTileData() {
-    this.restoreStoredTileArtIfNeeded();
+  loadTileData(options = {}) {
+    if (!options.skipRestore) {
+      this.restoreStoredTileArtIfNeeded();
+    }
     ensurePixelArtStore(this.game.world);
     const tileChar = this.activeTile?.char;
     if (!tileChar) return;
@@ -585,6 +596,101 @@ export default class PixelStudio {
       }
       this.persistTileArtAutosave();
     }
+  }
+
+  serializeCurrentAnimationAsArtDocument() {
+    const width = Math.max(1, this.canvasState.width | 0);
+    const height = Math.max(1, this.canvasState.height | 0);
+    const size = width === height ? width : undefined;
+    const frames = this.animation.frames.map((frame) => {
+      const composite = compositeLayers(frame.layers, width, height);
+      return Array.from(composite).map((value) => {
+        if (!value) return null;
+        const rgba = uint32ToRgba(value);
+        if (rgba.a === 0) return null;
+        return `#${[rgba.r, rgba.g, rgba.b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
+      });
+    });
+    return {
+      kind: 'actor-state-animation',
+      width,
+      height,
+      ...(Number.isFinite(size) ? { size } : {}),
+      fps: Math.max(1, Math.round(1000 / Math.max(1, Number(this.animation.frames[0]?.durationMs || DEFAULT_FRAME_DURATION_MS)))),
+      frames,
+      editor: {
+        width,
+        height,
+        frames: this.animation.frames,
+        activeLayerIndex: this.canvasState.activeLayerIndex
+      }
+    };
+  }
+
+  normalizeLoadedArtDocument(data) {
+    if (data?.tiles && typeof data.tiles === 'object') {
+      const tileChar = this.activeTile?.char || this.tileLibrary?.[0]?.char || '#';
+      if (tileChar && !data.tiles[tileChar]) {
+        const firstEntry = Object.values(data.tiles).find((entry) => entry && typeof entry === 'object');
+        if (firstEntry) {
+          return {
+            ...data,
+            tiles: {
+              ...data.tiles,
+              [tileChar]: firstEntry
+            }
+          };
+        }
+      }
+      return data;
+    }
+    const hasFrameArray = Array.isArray(data?.frames) && data.frames.length > 0;
+    if (!hasFrameArray) {
+      return { tiles: {} };
+    }
+    const tileChar = this.activeTile?.char || this.tileLibrary?.[0]?.char || '#';
+    const inferredWidth = Number.isFinite(data?.width) ? Math.max(1, Math.round(data.width)) : null;
+    const inferredHeight = Number.isFinite(data?.height) ? Math.max(1, Math.round(data.height)) : null;
+    const inferredSize = Number.isFinite(data?.size) ? Math.max(1, Math.round(data.size)) : null;
+    const width = inferredWidth || inferredSize || 16;
+    const height = inferredHeight || inferredSize || width;
+    const size = inferredSize || width;
+    const editor = data?.editor && typeof data.editor === 'object'
+      ? data.editor
+      : {
+          width,
+          height,
+          frames: data.frames.map((frame) => {
+            const layer = createLayer(width, height, 'Layer 1');
+            for (let i = 0; i < width * height; i += 1) {
+              const color = frame?.[i];
+              if (!color) continue;
+              layer.pixels[i] = rgbaToUint32(hexToRgba(color));
+            }
+            return createFrame([layer], Math.round(1000 / Math.max(1, Number(data?.fps || 8))));
+          }),
+          activeLayerIndex: 0
+        };
+    return {
+      tiles: {
+        [tileChar]: {
+          size,
+          fps: Math.max(1, Number(data?.fps || 8)),
+          frames: data.frames,
+          editor
+        }
+      }
+    };
+  }
+
+  buildActorStateArtDocName(actorId, stateId) {
+    const slugifyPart = (value, fallback) => String(value || fallback || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || fallback;
+    const actor = slugifyPart(actorId, 'actor');
+    const state = slugifyPart(stateId, 'state');
+    return `${actor}-${state}-art`;
   }
 
   persistTileArtAutosave(force = false) {
@@ -752,8 +858,8 @@ export default class PixelStudio {
       next.onerror = reject;
       next.src = imageDataUrl;
     });
-    const width = clamp(Math.round(image.width || 16), 8, 512);
-    const height = clamp(Math.round(image.height || 16), 8, 512);
+    const width = clamp(Math.round(image.width || 16), ART_DIMENSION_MIN, ART_DIMENSION_MAX);
+    const height = clamp(Math.round(image.height || 16), ART_DIMENSION_MIN, ART_DIMENSION_MAX);
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -784,9 +890,40 @@ export default class PixelStudio {
   async loadActorStateImageForEditing({ actorId, stateId, animation = {}, onCommit = null } = {}) {
     const fallbackWidth = 32;
     const fallbackHeight = 32;
-    const sources = Array.isArray(animation?.frames) && animation.frames.length
+    const artRefDoc = typeof animation?.artRef === 'string' && animation.artRef
+      ? vfsLoad('art', animation.artRef)
+      : null;
+    const sourceFramesFromArtDoc = Array.isArray(artRefDoc?.data?.frames)
+      ? artRefDoc.data.frames
+      : [];
+    const inlineSources = Array.isArray(animation?.frames) && animation.frames.length
       ? animation.frames.filter((frame) => frame?.imageDataUrl)
-      : (animation?.imageDataUrl ? [{ imageDataUrl: animation.imageDataUrl, durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || 8))) }] : []);
+      : (animation?.imageDataUrl
+          ? [{ imageDataUrl: animation.imageDataUrl, durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || 8))) }]
+          : []);
+    const artRefSources = sourceFramesFromArtDoc.map((frame, frameIndex) => {
+              const width = Math.max(1, Number(artRefDoc?.data?.width || artRefDoc?.data?.size || fallbackWidth));
+              const height = Math.max(1, Number(artRefDoc?.data?.height || artRefDoc?.data?.size || fallbackHeight));
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              const drawCtx = canvas.getContext('2d');
+              const imageData = drawCtx.createImageData(width, height);
+              for (let i = 0; i < width * height; i += 1) {
+                const rgba = hexToRgba(frame?.[i] || '#000000');
+                const base = i * 4;
+                imageData.data[base] = rgba.r;
+                imageData.data[base + 1] = rgba.g;
+                imageData.data[base + 2] = rgba.b;
+                imageData.data[base + 3] = frame?.[i] ? 255 : 0;
+              }
+              drawCtx.putImageData(imageData, 0, 0);
+              return {
+                imageDataUrl: canvas.toDataURL('image/png'),
+                durationMs: Number(animation?.frames?.[frameIndex]?.durationMs || Math.round(1000 / Math.max(1, Number(animation?.fps || artRefDoc?.data?.fps || 8))))
+              };
+            });
+    const sources = artRefSources.length ? artRefSources : inlineSources;
     const loadedFrames = [];
     for (const source of sources) {
       const image = await new Promise((resolve, reject) => {
@@ -795,8 +932,8 @@ export default class PixelStudio {
         next.onerror = reject;
         next.src = source.imageDataUrl;
       });
-      const safeWidth = clamp(Math.round(image.width || fallbackWidth), 8, 512);
-      const safeHeight = clamp(Math.round(image.height || fallbackHeight), 8, 512);
+      const safeWidth = clamp(Math.round(image.width || fallbackWidth), ART_DIMENSION_MIN, ART_DIMENSION_MAX);
+      const safeHeight = clamp(Math.round(image.height || fallbackHeight), ART_DIMENSION_MIN, ART_DIMENSION_MAX);
       const layer = createLayer(safeWidth, safeHeight, 'Actor State Layer');
       const canvas = document.createElement('canvas');
       canvas.width = safeWidth;
@@ -824,6 +961,10 @@ export default class PixelStudio {
       this.artSizeDraft.height = fallbackHeight;
       loadedFrames.push(createFrame([createLayer(fallbackWidth, fallbackHeight, 'Actor State Layer')], DEFAULT_FRAME_DURATION_MS));
     }
+    const actorStateArtRef = typeof animation?.artRef === 'string' && animation.artRef
+      ? animation.artRef
+      : this.buildActorStateArtDocName(actorId, stateId);
+    this.currentDocumentRef = { folder: 'art', name: actorStateArtRef };
     this.decalEditSession = { type: 'actor-state', actorId, stateId, onCommit };
     this.animation.frames = loadedFrames;
     this.animation.currentFrameIndex = 0;
@@ -848,8 +989,8 @@ export default class PixelStudio {
       : Math.max(...decals.map((decal) => (Number.isFinite(decal.y) ? decal.y : 0) + Math.max(1, Number.isFinite(decal.h) ? decal.h : 1)));
     const worldW = Math.max(1, maxX - minX);
     const worldH = Math.max(1, maxY - minY);
-    const width = clamp(Math.round(worldW), 8, 512);
-    const height = clamp(Math.round(worldH), 8, 512);
+    const width = clamp(Math.round(worldW), ART_DIMENSION_MIN, ART_DIMENSION_MAX);
+    const height = clamp(Math.round(worldH), ART_DIMENSION_MIN, ART_DIMENSION_MAX);
     const scaleX = width / worldW;
     const scaleY = height / worldH;
 
@@ -1011,6 +1152,10 @@ export default class PixelStudio {
       return;
     }
     if (this.decalEditSession.type === 'actor-state') {
+      if (this.currentDocumentRef?.folder === 'art' && this.currentDocumentRef?.name) {
+        const artPayload = this.serializeCurrentAnimationAsArtDocument();
+        vfsSave('art', this.currentDocumentRef.name, artPayload);
+      }
       const frames = this.animation.frames.map((frame) => {
         const previousIndex = this.animation.currentFrameIndex;
         this.animation.currentFrameIndex = this.animation.frames.indexOf(frame);
@@ -1021,9 +1166,10 @@ export default class PixelStudio {
         return { imageDataUrl, durationMs: Number(frame.durationMs || DEFAULT_FRAME_DURATION_MS) };
       });
       this.decalEditSession.onCommit?.({
-        imageDataUrl: frames[0]?.imageDataUrl || '',
-        frames,
-        fps: Math.max(1, Math.round(1000 / Math.max(1, Number(frames[0]?.durationMs || DEFAULT_FRAME_DURATION_MS))))
+        imageDataUrl: '',
+        frames: [],
+        fps: Math.max(1, Math.round(1000 / Math.max(1, Number(frames[0]?.durationMs || DEFAULT_FRAME_DURATION_MS)))),
+        artRef: this.currentDocumentRef?.folder === 'art' ? this.currentDocumentRef.name : ''
       });
       this.decalEditSession = null;
       return;
@@ -1079,7 +1225,9 @@ export default class PixelStudio {
 
   async saveArtDocument(options = {}) {
     const result = await this.runtime.saveAsOrCurrent(options);
-    this.persistTileArtAutosave(true);
+    if (this.decalEditSession?.type !== 'actor-state') {
+      this.persistTileArtAutosave(true);
+    }
     return result;
   }
 
@@ -1104,8 +1252,8 @@ export default class PixelStudio {
   }
 
   resizeArtCanvas(width, height) {
-    const nextW = clamp(Math.round(width), 8, 512);
-    const nextH = clamp(Math.round(height), 8, 512);
+    const nextW = clamp(Math.round(width), ART_DIMENSION_MIN, ART_DIMENSION_MAX);
+    const nextH = clamp(Math.round(height), ART_DIMENSION_MIN, ART_DIMENSION_MAX);
     if (nextW === this.canvasState.width && nextH === this.canvasState.height) return;
     const resizeLayer = (layer) => {
       const next = createLayer(nextW, nextH, layer.name);
@@ -1138,16 +1286,16 @@ export default class PixelStudio {
     const current = kind === 'width' ? this.artSizeDraft.width : this.artSizeDraft.height;
     const raw = await openTextInputOverlay({
       title: kind === 'width' ? 'Canvas Width' : 'Canvas Height',
-      label: `${kind === 'width' ? 'Pixel width' : 'Pixel height'} (8-512):`,
+      label: `${kind === 'width' ? 'Pixel width' : 'Pixel height'} (${ART_DIMENSION_MIN}-${ART_DIMENSION_MAX}):`,
       initialValue: String(current),
       inputType: 'int',
-      min: 8,
-      max: 512
+      min: ART_DIMENSION_MIN,
+      max: ART_DIMENSION_MAX
     });
     if (raw == null) return;
     const parsed = Number.parseInt(raw, 10);
     if (!Number.isFinite(parsed)) return;
-    const next = clamp(parsed, 8, 512);
+    const next = clamp(parsed, ART_DIMENSION_MIN, ART_DIMENSION_MAX);
     if (kind === 'width') this.artSizeDraft.width = next;
     else this.artSizeDraft.height = next;
   }
@@ -1164,8 +1312,8 @@ export default class PixelStudio {
     const match = String(raw).toLowerCase().match(/(\d+)\s*[x,]\s*(\d+)/);
     if (!match) return null;
     return {
-      width: clamp(parseInt(match[1], 10), 8, 512),
-      height: clamp(parseInt(match[2], 10), 8, 512)
+      width: clamp(parseInt(match[1], 10), ART_DIMENSION_MIN, ART_DIMENSION_MAX),
+      height: clamp(parseInt(match[2], 10), ART_DIMENSION_MIN, ART_DIMENSION_MAX)
     };
   }
 
@@ -1182,7 +1330,7 @@ export default class PixelStudio {
     const height = this.canvasState.height;
     const defaults = {
       resize: { width, height },
-      scale: { scaleX: 2, scaleY: 2 },
+      scale: { scaleX: 1, scaleY: 1 },
       crop: { borderX: 1, borderY: 1 },
       offset: { dx: 0, dy: 0, wrap: true }
     };
@@ -1221,7 +1369,33 @@ export default class PixelStudio {
     if (!this.transformModal?.values) return;
     const parsed = Number.isFinite(value) ? value : Number(value);
     if (!Number.isFinite(parsed)) return;
+    const isScaleField = key === 'scaleX' || key === 'scaleY';
+    if (isScaleField) {
+      const clamped = clamp(parsed, 0.1, 10);
+      this.transformModal.values[key] = clamped <= 1
+        ? Math.round(clamped * 10) / 10
+        : Math.round(clamped);
+      return;
+    }
     this.transformModal.values[key] = clamp(Math.round(parsed), min, max);
+  }
+
+  transformScaleValueToSliderT(value) {
+    const clamped = clamp(Number(value) || 1, 0.1, 10);
+    if (clamped <= 1) {
+      return ((clamped - 0.1) / 0.9) * 0.5;
+    }
+    return 0.5 + ((clamped - 1) / 9) * 0.5;
+  }
+
+  transformSliderTToScaleValue(t) {
+    const clamped = clamp(Number(t) || 0, 0, 1);
+    if (clamped <= 0.5) {
+      const normalized = clamped / 0.5;
+      return Math.round((0.1 + normalized * 0.9) * 10) / 10;
+    }
+    const normalized = (clamped - 0.5) / 0.5;
+    return clamp(Math.round(1 + normalized * 9), 1, 10);
   }
 
   async editTransformValue(field) {
@@ -1231,32 +1405,32 @@ export default class PixelStudio {
       title: `Set ${field.label}`,
       label: `${field.label} (${field.min}-${field.max})`,
       initialValue: String(Math.round(current)),
-      inputType: 'int',
+      inputType: field.key === 'scaleX' || field.key === 'scaleY' ? 'float' : 'int',
       min: field.min,
       max: field.max
     });
     if (raw == null) return;
-    const parsed = Number.parseInt(raw, 10);
+    const parsed = Number(raw);
     if (!Number.isFinite(parsed)) return;
     this.setTransformValue(field.key, parsed, field.min, field.max);
   }
 
   applyScaleCanvas(scaleX, scaleY) {
-    const sx = clamp(Math.round(scaleX), 1, 16);
-    const sy = clamp(Math.round(scaleY), 1, 16);
+    const sx = clamp(Number(scaleX) || 1, 0.1, 10);
+    const sy = clamp(Number(scaleY) || 1, 0.1, 10);
     if (sx === 1 && sy === 1) return;
     const srcW = this.canvasState.width;
     const srcH = this.canvasState.height;
-    const nextW = clamp(srcW * sx, 8, 512);
-    const nextH = clamp(srcH * sy, 8, 512);
+    const nextW = clamp(Math.round(srcW * sx), ART_DIMENSION_MIN, ART_DIMENSION_MAX);
+    const nextH = clamp(Math.round(srcH * sy), ART_DIMENSION_MIN, ART_DIMENSION_MAX);
     this.animation.frames = this.animation.frames.map((frame) => ({
       ...frame,
       layers: frame.layers.map((layer) => {
         const next = createLayer(nextW, nextH, layer.name);
         for (let row = 0; row < nextH; row += 1) {
           for (let col = 0; col < nextW; col += 1) {
-            const srcRow = Math.floor(row / sy);
-            const srcCol = Math.floor(col / sx);
+            const srcRow = clamp(Math.floor(row / sy), 0, srcH - 1);
+            const srcCol = clamp(Math.floor(col / sx), 0, srcW - 1);
             next.pixels[row * nextW + col] = layer.pixels[srcRow * srcW + srcCol] || 0;
           }
         }
@@ -1278,8 +1452,8 @@ export default class PixelStudio {
     const by = clamp(Math.round(borderY), 0, 255);
     const srcW = this.canvasState.width;
     const srcH = this.canvasState.height;
-    const nextW = clamp(srcW - bx * 2, 1, 512);
-    const nextH = clamp(srcH - by * 2, 1, 512);
+    const nextW = clamp(srcW - bx * 2, 1, ART_DIMENSION_MAX);
+    const nextH = clamp(srcH - by * 2, 1, ART_DIMENSION_MAX);
     if (nextW === srcW && nextH === srcH) return;
     this.animation.frames = this.animation.frames.map((frame) => ({
       ...frame,
@@ -2458,7 +2632,9 @@ export default class PixelStudio {
         const field = this.transformModal.fields?.find((entry) => entry.key === this.transformModal.drag.key);
         if (field) {
           const ratio = clamp((payload.x - field.slider.x) / Math.max(1, field.slider.w), 0, 1);
-          const next = field.min + ratio * (field.max - field.min);
+          const next = (field.key === 'scaleX' || field.key === 'scaleY')
+            ? this.transformSliderTToScaleValue(ratio)
+            : field.min + ratio * (field.max - field.min);
           this.setTransformValue(field.key, next, field.min, field.max);
         }
       }
@@ -5805,7 +5981,9 @@ export default class PixelStudio {
       const sliderHit = (this.transformModal.fields || []).find((field) => this.isPointInBounds({ x, y }, field.sliderHitBounds || field.slider));
       if (sliderHit) {
         const ratio = clamp((x - sliderHit.slider.x) / Math.max(1, sliderHit.slider.w), 0, 1);
-        const next = sliderHit.min + ratio * (sliderHit.max - sliderHit.min);
+        const next = (sliderHit.key === 'scaleX' || sliderHit.key === 'scaleY')
+          ? this.transformSliderTToScaleValue(ratio)
+          : sliderHit.min + ratio * (sliderHit.max - sliderHit.min);
         this.setTransformValue(sliderHit.key, next, sliderHit.min, sliderHit.max);
         this.transformModal.drag = { key: sliderHit.key, id: payload.id ?? null };
         return true;
@@ -6150,12 +6328,12 @@ export default class PixelStudio {
 
     const rowsByType = {
       resize: [
-        { key: 'width', label: 'Width', min: 8, max: 512 },
-        { key: 'height', label: 'Height', min: 8, max: 512 }
+        { key: 'width', label: 'Width', min: ART_DIMENSION_MIN, max: ART_DIMENSION_MAX },
+        { key: 'height', label: 'Height', min: ART_DIMENSION_MIN, max: ART_DIMENSION_MAX }
       ],
       scale: [
-        { key: 'scaleX', label: 'Scale X', min: 1, max: 16 },
-        { key: 'scaleY', label: 'Scale Y', min: 1, max: 16 }
+        { key: 'scaleX', label: 'Scale X', min: 0.1, max: 10 },
+        { key: 'scaleY', label: 'Scale Y', min: 0.1, max: 10 }
       ],
       crop: [
         { key: 'borderX', label: 'Border X', min: 0, max: Math.max(0, Math.floor((this.canvasState.width - 1) / 2)) },
@@ -6187,7 +6365,9 @@ export default class PixelStudio {
       const sliderHitBounds = { x: slider.x - 6, y: slider.y - 10, w: slider.w + 12, h: slider.h + 20 };
       const valueBounds = { x: slider.x + slider.w + 8, y: rowY - 12, w: valueW, h: 18 };
       const value = this.transformModal.values[row.key] ?? row.min;
-      const t = clamp((value - row.min) / Math.max(1, row.max - row.min), 0, 1);
+      const t = (row.key === 'scaleX' || row.key === 'scaleY')
+        ? this.transformScaleValueToSliderT(value)
+        : clamp((value - row.min) / Math.max(1, row.max - row.min), 0, 1);
       const knobX = slider.x + t * slider.w;
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = '12px Courier New';
@@ -6196,6 +6376,23 @@ export default class PixelStudio {
       ctx.fillRect(slider.x, slider.y, slider.w, slider.h);
       ctx.strokeStyle = 'rgba(255,255,255,0.45)';
       ctx.strokeRect(slider.x, slider.y, slider.w, slider.h);
+      if (row.key === 'scaleX' || row.key === 'scaleY') {
+        const centerT = clamp((1 - row.min) / Math.max(0.00001, row.max - row.min), 0, 1);
+        const centerX = slider.x + centerT * slider.w;
+        ctx.strokeStyle = 'rgba(160,220,255,0.9)';
+        ctx.beginPath();
+        ctx.moveTo(centerX, slider.y - 3);
+        ctx.lineTo(centerX, slider.y + slider.h + 3);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.72)';
+        ctx.font = '10px Courier New';
+        ctx.textAlign = 'left';
+        ctx.fillText('0.1', slider.x, slider.y - 5);
+        ctx.textAlign = 'center';
+        ctx.fillText('1', centerX, slider.y - 5);
+        ctx.textAlign = 'right';
+        ctx.fillText('10', slider.x + slider.w, slider.y - 5);
+      }
       ctx.fillStyle = '#ffe16a';
       ctx.fillRect(knobX - 2, slider.y - 2, 4, slider.h + 4);
       ctx.fillStyle = 'rgba(255,255,255,0.08)';
@@ -6204,7 +6401,10 @@ export default class PixelStudio {
       ctx.strokeRect(valueBounds.x, valueBounds.y, valueBounds.w, valueBounds.h);
       ctx.fillStyle = '#fff';
       ctx.textAlign = 'right';
-      ctx.fillText(String(Math.round(value)), valueBounds.x + valueBounds.w - 6, rowY + 1);
+      const displayValue = (row.key === 'scaleX' || row.key === 'scaleY')
+        ? Number(value).toFixed(1)
+        : String(Math.round(value));
+      ctx.fillText(displayValue, valueBounds.x + valueBounds.w - 6, rowY + 1);
       ctx.textAlign = 'left';
       this.transformModal.fields.push({ ...row, slider, sliderHitBounds, valueBounds });
       rowY += 38;
@@ -6516,7 +6716,9 @@ export default class PixelStudio {
       },
       actions: {
         new: () => this.newArtDocument(),
-        save: () => (this.decalEditSession ? this.saveDecalSessionAndReturn() : this.saveArtDocument()),
+        save: () => (this.decalEditSession && this.decalEditSession.type !== 'actor-state'
+          ? this.saveDecalSessionAndReturn()
+          : this.saveArtDocument()),
         'save-as': () => this.saveArtDocument({ forceSaveAs: true }),
         open: () => this.loadArtDocument(),
         export: () => this.exportPng(),

@@ -66,7 +66,7 @@ export function createDefaultState(name = 'Idle') {
   return {
     id: slugify(name),
     name,
-    animation: { imageDataUrl: '', frames: [], fps: 8, updatedAt: 0 },
+    animation: { imageDataUrl: '', frames: [], fps: 8, updatedAt: 0, artRef: '' },
     movement: { type: 'none', params: {} },
     overrides: { bodyDamageEnabled: null, contactDamage: null, invulnerable: null },
     transitions: [{
@@ -122,6 +122,12 @@ export function ensureActorDefinition(actor) {
     return Array.from(new Set(list));
   };
   merged.id = slugify(merged.name || merged.id);
+  const parsedWidth = Number(merged?.size?.width);
+  const parsedHeight = Number(merged?.size?.height);
+  merged.size = {
+    width: Number.isFinite(parsedWidth) && parsedWidth > 0 ? parsedWidth : base.size.width,
+    height: Number.isFinite(parsedHeight) && parsedHeight > 0 ? parsedHeight : base.size.height
+  };
   merged.taxonomies = normalizeTaxonomyList(actor?.taxonomies, base.taxonomies);
   merged.aggressiveTo = normalizeTaxonomyList(actor?.aggressiveTo, base.aggressiveTo);
   merged.states = Array.isArray(actor?.states) && actor.states.length
@@ -135,7 +141,8 @@ export function ensureActorDefinition(actor) {
           durationMs: Number(frame?.durationMs || Math.round(1000 / Number(state?.animation?.fps || 8)))
         })).filter((frame) => frame.imageDataUrl) : [],
         fps: Number(state?.animation?.fps || 8),
-        updatedAt: Number(state?.animation?.updatedAt || 0)
+        updatedAt: Number(state?.animation?.updatedAt || 0),
+        artRef: typeof state?.animation?.artRef === 'string' ? state.animation.artRef : ''
       },
       movement: {
         type: state?.movement?.type || 'none',

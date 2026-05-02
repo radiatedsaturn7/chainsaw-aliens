@@ -1142,7 +1142,11 @@ export default class Game {
   }
 
   exitPixelStudio({ toTitle = false } = {}) {
-    this.pixelStudio?.persistTileArtAutosave?.(true);
+    if (this.pixelStudio?.decalEditSession?.type === 'actor-state') {
+      this.pixelStudio.commitDecalEditIfNeeded?.();
+    } else {
+      this.pixelStudio?.persistTileArtAutosave?.(true);
+    }
     this.playtestActive = false;
     const destination = toTitle ? 'title' : (this.pixelStudioReturnState || 'title');
     this.transitionTo(destination, { forceCleanup: true });
@@ -1259,7 +1263,7 @@ export default class Game {
     this.applyWorldData(this.buildActorTestWorldData(actorId));
     this.playtestActive = true;
     this.playtestPauseLock = 0.35;
-    this.resetRun({ playtest: false, startWithEverything: true });
+    this.resetRun({ playtest: true, startWithEverything: true });
     this.transitionTo('playing', { forceCleanup: true });
     this.startSpawnPause();
   }
@@ -1290,10 +1294,10 @@ export default class Game {
     if (!latest?.name) return false;
     const payload = vfsLoad('art', latest.name);
     if (!payload?.data) return false;
-    this.world.pixelArt = payload.data;
+    this.world.pixelArt = this.pixelStudio.normalizeLoadedArtDocument(payload.data);
     this.pixelStudio.hydrateTileArtRefs?.();
     this.pixelStudio.currentDocumentRef = { folder: 'art', name: latest.name };
-    this.pixelStudio.loadTileData();
+    this.pixelStudio.loadTileData({ skipRestore: true });
     return true;
   }
 
@@ -1658,10 +1662,10 @@ export default class Game {
           this.enterEditor({ tab: 'tiles' });
           this.editor.currentDocumentRef = { folder: 'levels', name: name || 'Level' };
         } else if (folder === 'art') {
-          this.world.pixelArt = payload.data;
-          this.enterPixelStudio();
+          this.world.pixelArt = this.pixelStudio.normalizeLoadedArtDocument(payload.data);
           this.pixelStudio.currentDocumentRef = { folder: 'art', name: name || 'Art' };
-          this.pixelStudio.loadTileData();
+          this.enterPixelStudio();
+          this.pixelStudio.loadTileData({ skipRestore: true });
         } else if (folder === 'music') {
           this.enterMidiComposer();
           this.midiComposer.applyImportedSong(payload.data);
@@ -3633,10 +3637,13 @@ export default class Game {
     const applyDamage = (entity) => {
       if (!entity || entity.dead) return;
       if (!this.isInRoomBounds(entity.x, entity.y, roomBounds)) return;
+      const halfW = Math.max(1, Number(entity.width || 24)) * 0.5;
+      const halfH = Math.max(1, Number(entity.height || 24)) * 0.5;
+      const hitboxRadius = Math.hypot(halfW, halfH);
       const dx = entity.x - originX;
       const dy = entity.y - originY;
       const dist = Math.hypot(dx, dy);
-      if (dist > maxRange || dist <= 0.01) return;
+      if (dist > maxRange + hitboxRadius || dist <= 0.01) return;
       const dot = (dx / dist) * dirX + (dy / dist) * dirY;
       if (dot <= 0) return;
       let closest = Infinity;
@@ -3655,7 +3662,7 @@ export default class Game {
           closest = distance;
         }
       }
-      if (closest > streamRadius) return;
+      if (closest > streamRadius + hitboxRadius) return;
       if (this.flamethrowerDamageCooldowns.has(entity)) return;
       entity.damage?.(1);
       this.spawnEffect('flamethrower-impact', entity.x, entity.y, {
@@ -4146,6 +4153,42 @@ export default class Game {
     this.player.onGround = false;
   }
 
+  doesEntityOverlapAttackBox(entity, centerX, centerY, rangeX, rangeY) {
+    if (!entity) return false;
+    const halfW = Math.max(1, Number(entity.width || 24)) * 0.5;
+    const halfH = Math.max(1, Number(entity.height || 24)) * 0.5;
+    const entityLeft = entity.x - halfW;
+    const entityRight = entity.x + halfW;
+    const entityTop = entity.y - halfH;
+    const entityBottom = entity.y + halfH;
+    const boxLeft = centerX - rangeX;
+    const boxRight = centerX + rangeX;
+    const boxTop = centerY - rangeY;
+    const boxBottom = centerY + rangeY;
+    return entityLeft <= boxRight
+      && entityRight >= boxLeft
+      && entityTop <= boxBottom
+      && entityBottom >= boxTop;
+  }
+
+  doesEntityOverlapDirectionalAttackBox(entity, originX, originY, facing, forwardRange, backRange, rangeY) {
+    const safeFacing = facing >= 0 ? 1 : -1;
+    const centerX = originX + safeFacing * ((forwardRange - backRange) * 0.5);
+    const rangeX = (forwardRange + backRange) * 0.5;
+    return this.doesEntityOverlapAttackBox(entity, centerX, originY, rangeX, rangeY);
+  }
+
+  doesEntityOverlapPlayerBody(entity, paddingX = 0, paddingY = 0) {
+    if (!entity || !this.player) return false;
+    const playerHalfW = Math.max(1, Number(this.player.width || this.world.tileSize * 0.5)) * 0.5;
+    const playerHalfH = Math.max(1, Number(this.player.height || this.world.tileSize * 0.5)) * 0.5;
+    const enemyHalfW = Math.max(1, Number(entity.width || this.world.tileSize * 0.5)) * 0.5;
+    const enemyHalfH = Math.max(1, Number(entity.height || this.world.tileSize * 0.5)) * 0.5;
+    const overlapX = playerHalfW + enemyHalfW + Math.max(0, Number(paddingX || 0));
+    const overlapY = playerHalfH + enemyHalfH + Math.max(0, Number(paddingY || 0));
+    return Math.abs(entity.x - this.player.x) <= overlapX && Math.abs(entity.y - this.player.y) <= overlapY;
+  }
+
   handleAttack() {
     if (this.sawAnchor.active) return;
     if (this.tryObstacleInteraction('attack')) return;
@@ -4161,11 +4204,13 @@ export default class Game {
       this.audio.bite();
       this.recordFeedback('chainsaw bite', 'audio');
       this.recordFeedback('chainsaw bite', 'visual');
+      const downAttackCenterX = this.player.x;
+      const downAttackCenterY = this.player.y + 34;
+      const downAttackRangeX = range + 18;
+      const downAttackRangeY = 54;
       this.enemies.forEach((enemy) => {
         if (enemy.dead) return;
-        const dx = Math.abs(enemy.x - this.player.x);
-        const dy = enemy.y - this.player.y;
-        if (dx < range && dy > 0 && dy < 60) {
+        if (this.doesEntityOverlapAttackBox(enemy, downAttackCenterX, downAttackCenterY, downAttackRangeX, downAttackRangeY)) {
           if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
             return;
           }
@@ -4240,11 +4285,24 @@ export default class Game {
     this.audio.bite();
     this.recordFeedback('chainsaw bite', 'audio');
     this.recordFeedback('chainsaw bite', 'visual');
+    const forwardAttackOriginX = this.player.x;
+    const forwardAttackOriginY = this.player.y - 6;
+    const forwardAttackForwardRange = Math.max(52, range + 20);
+    const forwardAttackBackRange = 30;
+    const forwardAttackRangeY = 58;
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
-      const dx = enemy.x - this.player.x;
-      const dy = Math.abs(enemy.y - this.player.y);
-      if (Math.abs(dx) < range && dy < 40) {
+      const overlapsDirectionalAttack = this.doesEntityOverlapDirectionalAttackBox(
+        enemy,
+        forwardAttackOriginX,
+        forwardAttackOriginY,
+        this.player.facing,
+        forwardAttackForwardRange,
+        forwardAttackBackRange,
+        forwardAttackRangeY
+      );
+      const overlapsPlayerBody = this.doesEntityOverlapPlayerBody(enemy, 8, 8);
+      if (overlapsDirectionalAttack || overlapsPlayerBody) {
         if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
           return;
         }
@@ -4290,7 +4348,9 @@ export default class Game {
       if (enemy.dead) return false;
       const dx = enemy.x - this.player.x;
       const dy = Math.abs(enemy.y - this.player.y);
-      return Math.abs(dx) < range && dy < verticalRange && enemy.health <= 1;
+      const enemyHalfW = Math.max(1, Number(enemy?.width || 24)) * 0.5;
+      const enemyHalfH = Math.max(1, Number(enemy?.height || 24)) * 0.5;
+      return Math.abs(dx) < range + enemyHalfW && dy < verticalRange + enemyHalfH && enemy.health <= 1;
     });
     if (candidates.length === 0) return;
     const enemy = candidates[0];
@@ -4456,8 +4516,13 @@ export default class Game {
 
       const dx = enemy.x - this.player.x;
       const dy = enemy.y - this.player.y;
-      const dist = Math.hypot(dx, dy);
-      if (dist < 24) {
+      const playerContactW = Math.max(1, Number(this.player?.width || this.world.tileSize * 0.5));
+      const playerContactH = Math.max(1, Number(this.player?.height || this.world.tileSize * 0.5));
+      const enemyContactW = Math.max(1, Number(enemy?.width || this.world.tileSize * 0.5));
+      const enemyContactH = Math.max(1, Number(enemy?.height || this.world.tileSize * 0.5));
+      const contactX = (playerContactW + enemyContactW) * 0.5;
+      const contactY = (playerContactH + enemyContactH) * 0.5;
+      if (Math.abs(dx) <= contactX && Math.abs(dy) <= contactY) {
         if (!enemy.training) {
           const bodyDamage = enemy.bodyDamageEnabled === false ? 0 : (enemy.contactDamage || 1);
           const tookDamage = bodyDamage > 0 ? this.player.takeDamage(bodyDamage) : false;
@@ -6367,6 +6432,9 @@ export default class Game {
         this.drawIgnitirDissolve(ctx, enemy);
       }
     });
+    if (this.playtestActive && this.actorEditorTestSnapshot) {
+      this.drawActorPlaytestEnemyBounds(ctx);
+    }
     if (this.friendlyCompanion) {
       this.friendlyCompanion.draw(ctx);
       if (this.showCompanionPathDebug) {
@@ -7667,6 +7735,28 @@ export default class Game {
       }
       ctx.restore();
     });
+  }
+
+  drawActorPlaytestEnemyBounds(ctx) {
+    ctx.save();
+    this.enemies.forEach((enemy) => {
+      if (!enemy || enemy.dead) return;
+      const width = Math.max(1, Number(enemy.width || 0));
+      const height = Math.max(1, Number(enemy.height || 0));
+      if (!width || !height) return;
+      const left = enemy.x - width / 2;
+      const top = enemy.y - height / 2;
+      ctx.strokeStyle = 'rgba(255, 80, 80, 0.95)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(left, top, width, height);
+      ctx.fillStyle = 'rgba(255, 80, 80, 0.9)';
+      ctx.font = '12px Courier New';
+      ctx.textAlign = 'left';
+      const defW = Number(enemy?.definition?.size?.width || width);
+      const defH = Number(enemy?.definition?.size?.height || height);
+      ctx.fillText(`${Math.round(width)}x${Math.round(height)} (def ${Math.round(defW)}x${Math.round(defH)})`, left, top - 6);
+    });
+    ctx.restore();
   }
 
   drawInteractables(ctx) {

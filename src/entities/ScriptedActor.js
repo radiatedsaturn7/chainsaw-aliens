@@ -1,5 +1,6 @@
 import EnemyBase from './EnemyBase.js';
 import { ensureActorDefinition } from '../content/actorEditorData.js';
+import { vfsLoad } from '../ui/vfs.js';
 
 const actorCache = new Map();
 
@@ -48,6 +49,7 @@ export default class ScriptedActor extends EnemyBase {
     this.linkedChildren = [];
     this.lootTable = this.definition.loot || [];
     this._imageCache = new Map();
+    this._artAnimationCache = new Map();
     this.tookDamageThisFrame = false;
     this.damagedPlayerThisFrame = false;
   }
@@ -247,6 +249,47 @@ export default class ScriptedActor extends EnemyBase {
   getAnimationFrames() {
     const state = this.currentState;
     if (!state?.animation) return [];
+    const artRef = typeof state.animation.artRef === 'string' ? state.animation.artRef : '';
+    if (artRef) {
+      const doc = vfsLoad('art', artRef);
+      const savedAt = Number(doc?.savedAt || 0);
+      const cacheKey = `${artRef}:${savedAt}`;
+      if (this._artAnimationCache.has(cacheKey)) {
+        return this._artAnimationCache.get(cacheKey);
+      }
+      const frames = Array.isArray(doc?.data?.frames) ? doc.data.frames : [];
+      if (frames.length && typeof document !== 'undefined') {
+        const width = Math.max(1, Number(doc?.data?.width || doc?.data?.size || 16));
+        const height = Math.max(1, Number(doc?.data?.height || doc?.data?.size || width || 16));
+        const durationMs = Math.round(1000 / Math.max(1, Number(state.animation.fps || doc?.data?.fps || 8)));
+        const resolved = frames.map((frame) => {
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return null;
+          const imageData = ctx.createImageData(width, height);
+          for (let i = 0; i < width * height; i += 1) {
+            const color = frame?.[i];
+            const base = i * 4;
+            if (typeof color !== 'string' || !/^#?[0-9a-fA-F]{6}$/.test(color)) {
+              imageData.data[base + 3] = 0;
+              continue;
+            }
+            const hex = color.startsWith('#') ? color.slice(1) : color;
+            imageData.data[base] = parseInt(hex.slice(0, 2), 16);
+            imageData.data[base + 1] = parseInt(hex.slice(2, 4), 16);
+            imageData.data[base + 2] = parseInt(hex.slice(4, 6), 16);
+            imageData.data[base + 3] = 255;
+          }
+          ctx.putImageData(imageData, 0, 0);
+          return { imageDataUrl: canvas.toDataURL('image/png'), durationMs };
+        }).filter(Boolean);
+        this._artAnimationCache.clear();
+        this._artAnimationCache.set(cacheKey, resolved);
+        if (resolved.length) return resolved;
+      }
+    }
     const fromFrames = Array.isArray(state.animation.frames)
       ? state.animation.frames.filter((frame) => frame?.imageDataUrl)
       : [];
