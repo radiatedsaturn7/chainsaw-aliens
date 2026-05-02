@@ -4178,6 +4178,17 @@ export default class Game {
     return this.doesEntityOverlapAttackBox(entity, centerX, originY, rangeX, rangeY);
   }
 
+  doesEntityOverlapPlayerBody(entity, paddingX = 0, paddingY = 0) {
+    if (!entity || !this.player) return false;
+    const playerHalfW = Math.max(1, Number(this.player.width || this.world.tileSize * 0.5)) * 0.5;
+    const playerHalfH = Math.max(1, Number(this.player.height || this.world.tileSize * 0.5)) * 0.5;
+    const enemyHalfW = Math.max(1, Number(entity.width || this.world.tileSize * 0.5)) * 0.5;
+    const enemyHalfH = Math.max(1, Number(entity.height || this.world.tileSize * 0.5)) * 0.5;
+    const overlapX = playerHalfW + enemyHalfW + Math.max(0, Number(paddingX || 0));
+    const overlapY = playerHalfH + enemyHalfH + Math.max(0, Number(paddingY || 0));
+    return Math.abs(entity.x - this.player.x) <= overlapX && Math.abs(entity.y - this.player.y) <= overlapY;
+  }
+
   handleAttack() {
     if (this.sawAnchor.active) return;
     if (this.tryObstacleInteraction('attack')) return;
@@ -4281,7 +4292,7 @@ export default class Game {
     const forwardAttackRangeY = 58;
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
-      if (this.doesEntityOverlapDirectionalAttackBox(
+      const overlapsDirectionalAttack = this.doesEntityOverlapDirectionalAttackBox(
         enemy,
         forwardAttackOriginX,
         forwardAttackOriginY,
@@ -4289,7 +4300,9 @@ export default class Game {
         forwardAttackForwardRange,
         forwardAttackBackRange,
         forwardAttackRangeY
-      )) {
+      );
+      const overlapsPlayerBody = this.doesEntityOverlapPlayerBody(enemy, 8, 8);
+      if (overlapsDirectionalAttack || overlapsPlayerBody) {
         if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
           return;
         }
