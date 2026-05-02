@@ -216,6 +216,7 @@ export default class Game {
     this.healthDrops = [];
     this.effects = [];
     this.chainsawAttackDebugBoxes = [];
+    this.weaponDamageDebugShapes = [];
     this.clock = 0;
     this.worldTime = 0;
     this.abilities = {
@@ -3256,6 +3257,7 @@ export default class Game {
       targetY
     });
     this.player.invulnTimer = Math.max(this.player.invulnTimer, 0.9);
+    this.recordWeaponDamageDebugShape({ type: 'circle', x: targetX, y: targetY, r: this.world.tileSize * 5 });
   }
 
   collectIgnitirTargets(roomBounds, targetX, targetY) {
@@ -3546,6 +3548,7 @@ export default class Game {
       this.flamethrowerSoundTimer += 0.2;
     }
 
+    this.recordWeaponDamageDebugShape({ type: 'polyline', points: streamPoints });
     const relativeStreamPoints = streamPoints.map((point) => ({
       x: point.x - originX,
       y: point.y - originY
@@ -3800,6 +3803,7 @@ export default class Game {
     this.effects.forEach((effect) => effect.update(dt));
     this.effects = this.effects.filter((effect) => effect.alive);
     this.updateChainsawAttackDebugBoxes(dt);
+    this.updateWeaponDamageDebugShapes(dt);
   }
 
   checkPlayerDamage() {
@@ -4228,6 +4232,46 @@ export default class Game {
     ctx.restore();
   }
 
+
+  recordWeaponDamageDebugShape(shape) {
+    if (!this.debugMode || !shape) return;
+    this.weaponDamageDebugShapes.push({ ttl: 0.25, ...shape });
+  }
+
+  updateWeaponDamageDebugShapes(dt) {
+    if (!this.weaponDamageDebugShapes.length) return;
+    this.weaponDamageDebugShapes = this.weaponDamageDebugShapes
+      .map((shape) => ({ ...shape, ttl: shape.ttl - dt }))
+      .filter((shape) => shape.ttl > 0);
+  }
+
+  drawWeaponDamageDebugShapes(ctx) {
+    if (!this.weaponDamageDebugShapes.length) return;
+    ctx.save();
+    ctx.lineWidth = 2;
+    this.weaponDamageDebugShapes.forEach((shape) => {
+      const alpha = Math.max(0.12, Math.min(1, shape.ttl / 0.25));
+      const fillAlpha = Math.max(0.1, alpha * 0.2);
+      ctx.strokeStyle = `rgba(255, 235, 59, ${alpha.toFixed(3)})`;
+      ctx.fillStyle = `rgba(255, 235, 59, ${fillAlpha.toFixed(3)})`;
+      if (shape.type === 'rect') {
+        ctx.fillRect(shape.x, shape.y, shape.w, shape.h);
+        ctx.strokeRect(shape.x, shape.y, shape.w, shape.h);
+      } else if (shape.type === 'circle') {
+        ctx.beginPath();
+        ctx.arc(shape.x, shape.y, shape.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      } else if (shape.type === 'polyline' && Array.isArray(shape.points) && shape.points.length > 1) {
+        ctx.beginPath();
+        ctx.moveTo(shape.points[0].x, shape.points[0].y);
+        for (let i = 1; i < shape.points.length; i += 1) ctx.lineTo(shape.points[i].x, shape.points[i].y);
+        ctx.stroke();
+      }
+    });
+    ctx.restore();
+  }
+
   handleAttack() {
     if (this.sawAnchor.active) return;
     if (this.tryObstacleInteraction('attack')) return;
@@ -4248,6 +4292,7 @@ export default class Game {
       const downAttackRangeX = range + 18;
       const downAttackRangeY = 54;
       this.recordChainsawAttackDebugBox(downAttackCenterX, downAttackCenterY, downAttackRangeX, downAttackRangeY, 'chainsaw down');
+      this.recordWeaponDamageDebugShape({ type: 'rect', x: downAttackCenterX - downAttackRangeX, y: downAttackCenterY - downAttackRangeY, w: downAttackRangeX * 2, h: downAttackRangeY * 2 });
       this.enemies.forEach((enemy) => {
         if (enemy.dead) return;
         if (this.doesEntityOverlapAttackBox(enemy, downAttackCenterX, downAttackCenterY, downAttackRangeX, downAttackRangeY)) {
@@ -4333,6 +4378,7 @@ export default class Game {
     const forwardAttackCenterX = forwardAttackOriginX + this.player.facing * ((forwardAttackForwardRange - forwardAttackBackRange) * 0.5);
     const forwardAttackRangeX = (forwardAttackForwardRange + forwardAttackBackRange) * 0.5;
     this.recordChainsawAttackDebugBox(forwardAttackCenterX, forwardAttackOriginY, forwardAttackRangeX, forwardAttackRangeY, 'chainsaw forward');
+    this.recordWeaponDamageDebugShape({ type: 'rect', x: forwardAttackCenterX - forwardAttackRangeX, y: forwardAttackOriginY - forwardAttackRangeY, w: forwardAttackRangeX * 2, h: forwardAttackRangeY * 2 });
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
       const overlapsDirectionalAttack = this.doesEntityOverlapDirectionalAttackBox(
@@ -6482,6 +6528,7 @@ export default class Game {
     }
     if (this.debugMode) {
       this.drawChainsawAttackDebugBoxes(ctx);
+      this.drawWeaponDamageDebugShapes(ctx);
     }
     if (this.friendlyCompanion) {
       this.friendlyCompanion.draw(ctx);
