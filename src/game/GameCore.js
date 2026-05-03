@@ -2524,7 +2524,7 @@ export default class Game {
       if (!usingIgnitir && !usingFlamethrower && !this.sawAnchor.active && this.attackHoldTimer >= this.attackHoldThreshold) {
         this.attackHoldDamageTimer = Math.max(0, this.attackHoldDamageTimer - dt * timeScale);
         if (this.attackHoldDamageTimer <= 0) {
-          this.handleAttack();
+          this.handleAttack({ allowDash: false });
           this.attackPressConsumed = true;
           this.attackHoldDamageTimer = 0.18;
         }
@@ -4309,7 +4309,7 @@ export default class Game {
     this.recordWeaponDamageDebugShape({ type: 'rect', x: centerX - rangeX, y: originY - rangeY, w: rangeX * 2, h: rangeY * 2 });
   }
 
-  handleAttack() {
+  handleAttack({ allowDash = true } = {}) {
     if (this.sawAnchor.active) return;
     if (this.tryObstacleInteraction('attack')) return;
     const attackRange = this.world.tileSize * 2.5;
@@ -4394,7 +4394,7 @@ export default class Game {
         lungeTarget = this.boss;
       }
     }
-    if (this.player.dashTimer <= 0) {
+    if (allowDash && this.player.dashTimer <= 0) {
       const targetX = lungeTarget ? lungeTarget.x : this.player.x + this.player.facing * 60;
       const lungeDistance = this.world.tileSize * 5;
       const lungeDuration = lungeDistance / MOVEMENT_MODEL.dashSpeed;
