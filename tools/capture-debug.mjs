@@ -1,0 +1,16 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch({headless:true});
+const page = await browser.newPage({ viewport: { width: 1400, height: 900 }});
+await page.goto('http://127.0.0.1:8080', {waitUntil:'networkidle'});
+await page.keyboard.press('Enter');
+await page.waitForTimeout(1500);
+await page.keyboard.down('KeyD'); await page.waitForTimeout(1200); await page.keyboard.up('KeyD');
+await page.keyboard.press('Digit2'); await page.keyboard.press('KeyJ'); await page.waitForTimeout(120);
+await page.screenshot({path:'artifacts/chainsaw.png'});
+await page.keyboard.press('Digit1'); await page.waitForTimeout(120); await page.keyboard.press('KeyJ'); await page.waitForTimeout(140);
+await page.screenshot({path:'artifacts/ignitir.png'});
+await page.keyboard.press('Digit2'); await page.keyboard.down('KeyK'); await page.waitForTimeout(160); await page.keyboard.up('KeyK');
+await page.screenshot({path:'artifacts/chainsaw_rig.png'});
+await page.keyboard.press('Digit3'); await page.keyboard.down('KeyJ'); await page.waitForTimeout(220); await page.keyboard.up('KeyJ');
+await page.screenshot({path:'artifacts/flamethrower.png'});
+await browser.close();
