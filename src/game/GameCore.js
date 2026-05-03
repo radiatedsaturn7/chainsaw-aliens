@@ -2601,16 +2601,16 @@ export default class Game {
       if (this.attackPressConsumed) {
         this.attackPressConsumed = false;
       } else if (usingIgnitir) {
-        if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold && this.ignitirReady) {
+        if (heldDuration >= 0 && heldDuration <= this.attackHoldThreshold && this.ignitirReady) {
           this.fireIgnitir();
-        } else if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold && !this.ignitirReady) {
+        } else if (heldDuration >= 0 && heldDuration <= this.attackHoldThreshold && !this.ignitirReady) {
           this.audio.ignitirDud();
           this.recordFeedback('ignitir dud', 'audio');
           this.spawnIgnitirSpark();
         }
       } else if (usingFlamethrower) {
         // Flamethrower pours while held; no tap action on release.
-      } else if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold) {
+      } else if (heldDuration >= 0 && heldDuration <= this.attackHoldThreshold) {
         const doubleTap = this.attackTapTimer > 0;
         const allowAnchorShot = !this.gamepadConnected || !this.lastAttackFromGamepad;
         this.attackTapTimer = doubleTap ? 0 : this.attackTapWindow;
