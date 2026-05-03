@@ -297,6 +297,7 @@ export default class Game {
     this.attackTapWindow = 0.28;
     this.attackHoldTimer = 0;
     this.attackHoldThreshold = 0.22;
+    this.attackHoldDamageTimer = 0;
     this.lastAttackFromGamepad = false;
     this.attackPressConsumed = false;
     this.obstacleDamage = new Map();
@@ -1504,6 +1505,7 @@ export default class Game {
     this.noiseCooldown = 0;
     this.attackTapTimer = 0;
     this.attackHoldTimer = 0;
+    this.attackHoldDamageTimer = 0;
     this.lastAttackFromGamepad = false;
     this.attackPressConsumed = false;
     this.prevHealth = this.player.health;
@@ -2510,6 +2512,7 @@ export default class Game {
     this.updateIgnitirSequence(dt * timeScale);
     if (this.input.wasPressed('attack')) {
       this.attackHoldTimer = 0;
+      this.attackHoldDamageTimer = 0;
       this.lastAttackFromGamepad = this.gamepadConnected && this.input.wasGamepadPressed('attack');
       this.attackPressConsumed = false;
       if (!usingIgnitir && !usingFlamethrower && !this.sawAnchor.active && this.tryObstacleInteraction('attack')) {
@@ -2518,6 +2521,14 @@ export default class Game {
     }
     if (this.input.isDown('attack')) {
       this.attackHoldTimer += dt * timeScale;
+      if (!usingIgnitir && !usingFlamethrower && !this.sawAnchor.active && this.attackHoldTimer >= this.attackHoldThreshold) {
+        this.attackHoldDamageTimer = Math.max(0, this.attackHoldDamageTimer - dt * timeScale);
+        if (this.attackHoldDamageTimer <= 0) {
+          this.handleAttack();
+          this.attackPressConsumed = true;
+          this.attackHoldDamageTimer = 0.18;
+        }
+      }
     }
     if (!this.abilities.flame) {
       this.player.flameMode = false;
@@ -2608,15 +2619,9 @@ export default class Game {
       } else if (usingFlamethrower) {
         // Flamethrower pours while held; no tap action on release.
       } else if (heldDuration >= 0 && heldDuration <= this.attackHoldThreshold) {
-        const doubleTap = this.attackTapTimer > 0;
         const allowAnchorShot = !this.gamepadConnected || !this.lastAttackFromGamepad;
-        this.attackTapTimer = doubleTap ? 0 : this.attackTapWindow;
         if (this.sawAnchor.active) {
           this.startAnchorRetract(0.2);
-        } else if (doubleTap) {
-          if (!this.tryObstacleInteraction('attack')) {
-            this.handleAttack();
-          }
         } else if (!this.tryObstacleInteraction('attack')) {
           if (this.abilities.anchor && allowAnchorShot) {
             this.handleAnchorShot();
@@ -2627,6 +2632,7 @@ export default class Game {
       }
     } else if (!this.input.isDown('attack')) {
       this.attackHoldTimer = 0;
+      this.attackHoldDamageTimer = 0;
       this.attackPressConsumed = false;
     }
     if (this.sawAnchor.embedded && this.input.wasPressed('jump')) {
