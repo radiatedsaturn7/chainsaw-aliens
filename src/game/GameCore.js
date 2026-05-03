@@ -2591,6 +2591,10 @@ export default class Game {
       return;
     }
 
+    if (this.input.isDown('attack') && !usingIgnitir && !usingFlamethrower) {
+      this.recordHeldChainsawDebugShape();
+    }
+
     if (this.input.wasReleased('attack')) {
       const heldDuration = this.attackHoldTimer;
       this.attackHoldTimer = 0;
@@ -4285,6 +4289,21 @@ export default class Game {
       }
     });
     ctx.restore();
+  }
+
+
+  recordHeldChainsawDebugShape() {
+    if (!(this.debugMode || this.playtestActive)) return;
+    if (!this.player || this.getActiveWeapon()?.id !== 'chainsaw') return;
+    const attackRange = this.world.tileSize * 2.5;
+    const forwardRange = Math.max(52, attackRange + 20);
+    const backRange = 30;
+    const rangeY = 58;
+    const originX = this.player.x;
+    const originY = this.player.y - 6;
+    const centerX = originX + this.player.facing * ((forwardRange - backRange) * 0.5);
+    const rangeX = (forwardRange + backRange) * 0.5;
+    this.recordWeaponDamageDebugShape({ type: 'rect', x: centerX - rangeX, y: originY - rangeY, w: rangeX * 2, h: rangeY * 2 });
   }
 
   handleAttack() {
