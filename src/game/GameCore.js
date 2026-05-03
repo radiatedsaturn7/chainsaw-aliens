@@ -4211,13 +4211,13 @@ export default class Game {
   }
 
   recordChainsawAttackDebugBox(centerX, centerY, rangeX, rangeY, label = 'chainsaw') {
-    if (!this.debugMode) return;
+    if (!(this.debugMode || this.playtestActive)) return;
     this.chainsawAttackDebugBoxes.push({
       x: centerX - rangeX,
       y: centerY - rangeY,
       w: rangeX * 2,
       h: rangeY * 2,
-      ttl: 0.35,
+      ttl: 0.9,
       label
     });
   }
@@ -4249,8 +4249,8 @@ export default class Game {
 
 
   recordWeaponDamageDebugShape(shape) {
-    if (!this.debugMode || !shape) return;
-    this.weaponDamageDebugShapes.push({ ttl: 0.25, ...shape });
+    if ((!(this.debugMode || this.playtestActive)) || !shape) return;
+    this.weaponDamageDebugShapes.push({ ttl: 0.9, ...shape });
   }
 
   updateWeaponDamageDebugShapes(dt) {
@@ -4265,7 +4265,7 @@ export default class Game {
     ctx.save();
     ctx.lineWidth = 2;
     this.weaponDamageDebugShapes.forEach((shape) => {
-      const alpha = Math.max(0.12, Math.min(1, shape.ttl / 0.25));
+      const alpha = Math.max(0.12, Math.min(1, shape.ttl / 0.9));
       const fillAlpha = Math.max(0.1, alpha * 0.2);
       ctx.strokeStyle = `rgba(255, 235, 59, ${alpha.toFixed(3)})`;
       ctx.fillStyle = `rgba(255, 235, 59, ${fillAlpha.toFixed(3)})`;
@@ -6531,7 +6531,7 @@ export default class Game {
     if (this.playtestActive && this.actorEditorTestSnapshot) {
       this.drawActorPlaytestEnemyBounds(ctx);
     }
-    if (this.debugMode) {
+    if (this.debugMode || this.playtestActive) {
       this.drawChainsawAttackDebugBoxes(ctx);
       this.drawWeaponDamageDebugShapes(ctx);
     }
