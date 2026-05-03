@@ -2595,21 +2595,6 @@ export default class Game {
       this.recordHeldChainsawDebugShape();
     }
 
-    if (this.isMobile && this.input.wasPressed('attack') && !usingIgnitir && !usingFlamethrower) {
-      const allowAnchorShot = !this.gamepadConnected || !this.lastAttackFromGamepad;
-      if (this.sawAnchor.active) {
-        this.startAnchorRetract(0.2);
-      } else if (!this.tryObstacleInteraction('attack')) {
-        if (this.abilities.anchor && allowAnchorShot) {
-          this.handleAnchorShot();
-        } else {
-          this.handleAttack();
-        }
-      }
-      this.attackPressConsumed = true;
-      this.attackHoldTimer = 0;
-    }
-
     if (this.input.wasReleased('attack')) {
       const heldDuration = this.attackHoldTimer;
       this.attackHoldTimer = 0;
