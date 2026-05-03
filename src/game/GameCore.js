@@ -297,6 +297,7 @@ export default class Game {
     this.attackTapWindow = 0.28;
     this.attackHoldTimer = 0;
     this.attackHoldThreshold = 0.22;
+    this.chainsawHoldDamageTimer = 0;
     this.lastAttackFromGamepad = false;
     this.attackPressConsumed = false;
     this.obstacleDamage = new Map();
@@ -1504,6 +1505,7 @@ export default class Game {
     this.noiseCooldown = 0;
     this.attackTapTimer = 0;
     this.attackHoldTimer = 0;
+    this.chainsawHoldDamageTimer = 0;
     this.lastAttackFromGamepad = false;
     this.attackPressConsumed = false;
     this.prevHealth = this.player.health;
@@ -2518,6 +2520,16 @@ export default class Game {
     }
     if (this.input.isDown('attack')) {
       this.attackHoldTimer += dt * timeScale;
+      if (this.isMobile && !usingIgnitir && !usingFlamethrower && !this.sawAnchor.active) {
+        this.chainsawHoldDamageTimer = Math.max(0, this.chainsawHoldDamageTimer - dt * timeScale);
+        if (this.attackHoldTimer >= this.attackHoldThreshold && this.chainsawHoldDamageTimer <= 0) {
+          this.handleAttack();
+          this.attackPressConsumed = true;
+          this.chainsawHoldDamageTimer = 0.2;
+        }
+      }
+    } else {
+      this.chainsawHoldDamageTimer = 0;
     }
     if (!this.abilities.flame) {
       this.player.flameMode = false;
