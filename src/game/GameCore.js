@@ -215,6 +215,8 @@ export default class Game {
     this.lootDrops = [];
     this.healthDrops = [];
     this.effects = [];
+    this.chainsawAttackDebugBoxes = [];
+    this.weaponDamageDebugShapes = [];
     this.clock = 0;
     this.worldTime = 0;
     this.abilities = {
@@ -295,6 +297,7 @@ export default class Game {
     this.attackTapWindow = 0.28;
     this.attackHoldTimer = 0;
     this.attackHoldThreshold = 0.22;
+    this.attackHoldDamageTimer = 0;
     this.lastAttackFromGamepad = false;
     this.attackPressConsumed = false;
     this.obstacleDamage = new Map();
@@ -1502,6 +1505,7 @@ export default class Game {
     this.noiseCooldown = 0;
     this.attackTapTimer = 0;
     this.attackHoldTimer = 0;
+    this.attackHoldDamageTimer = 0;
     this.lastAttackFromGamepad = false;
     this.attackPressConsumed = false;
     this.prevHealth = this.player.health;
@@ -2508,6 +2512,7 @@ export default class Game {
     this.updateIgnitirSequence(dt * timeScale);
     if (this.input.wasPressed('attack')) {
       this.attackHoldTimer = 0;
+      this.attackHoldDamageTimer = 0;
       this.lastAttackFromGamepad = this.gamepadConnected && this.input.wasGamepadPressed('attack');
       this.attackPressConsumed = false;
       if (!usingIgnitir && !usingFlamethrower && !this.sawAnchor.active && this.tryObstacleInteraction('attack')) {
@@ -2516,6 +2521,14 @@ export default class Game {
     }
     if (this.input.isDown('attack')) {
       this.attackHoldTimer += dt * timeScale;
+      if (!usingIgnitir && !usingFlamethrower && !this.sawAnchor.active && this.attackHoldTimer >= this.attackHoldThreshold) {
+        this.attackHoldDamageTimer = Math.max(0, this.attackHoldDamageTimer - dt * timeScale);
+        if (this.attackHoldDamageTimer <= 0) {
+          this.handleAttack();
+          this.attackPressConsumed = true;
+          this.attackHoldDamageTimer = 0.18;
+        }
+      }
     }
     if (!this.abilities.flame) {
       this.player.flameMode = false;
@@ -2589,31 +2602,26 @@ export default class Game {
       return;
     }
 
+
     if (this.input.wasReleased('attack')) {
       const heldDuration = this.attackHoldTimer;
       this.attackHoldTimer = 0;
       if (this.attackPressConsumed) {
         this.attackPressConsumed = false;
       } else if (usingIgnitir) {
-        if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold && this.ignitirReady) {
+        if (heldDuration >= 0 && heldDuration <= this.attackHoldThreshold && this.ignitirReady) {
           this.fireIgnitir();
-        } else if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold && !this.ignitirReady) {
+        } else if (heldDuration >= 0 && heldDuration <= this.attackHoldThreshold && !this.ignitirReady) {
           this.audio.ignitirDud();
           this.recordFeedback('ignitir dud', 'audio');
           this.spawnIgnitirSpark();
         }
       } else if (usingFlamethrower) {
         // Flamethrower pours while held; no tap action on release.
-      } else if (heldDuration > 0 && heldDuration <= this.attackHoldThreshold) {
-        const doubleTap = this.attackTapTimer > 0;
+      } else if (heldDuration >= 0 && heldDuration <= this.attackHoldThreshold) {
         const allowAnchorShot = !this.gamepadConnected || !this.lastAttackFromGamepad;
-        this.attackTapTimer = doubleTap ? 0 : this.attackTapWindow;
         if (this.sawAnchor.active) {
           this.startAnchorRetract(0.2);
-        } else if (doubleTap) {
-          if (!this.tryObstacleInteraction('attack')) {
-            this.handleAttack();
-          }
         } else if (!this.tryObstacleInteraction('attack')) {
           if (this.abilities.anchor && allowAnchorShot) {
             this.handleAnchorShot();
@@ -2624,6 +2632,7 @@ export default class Game {
       }
     } else if (!this.input.isDown('attack')) {
       this.attackHoldTimer = 0;
+      this.attackHoldDamageTimer = 0;
       this.attackPressConsumed = false;
     }
     if (this.sawAnchor.embedded && this.input.wasPressed('jump')) {
@@ -3255,6 +3264,7 @@ export default class Game {
       targetY
     });
     this.player.invulnTimer = Math.max(this.player.invulnTimer, 0.9);
+    this.recordWeaponDamageDebugShape({ type: 'circle', x: targetX, y: targetY, r: this.world.tileSize * 5 });
   }
 
   collectIgnitirTargets(roomBounds, targetX, targetY) {
@@ -3545,6 +3555,7 @@ export default class Game {
       this.flamethrowerSoundTimer += 0.2;
     }
 
+    this.recordWeaponDamageDebugShape({ type: 'polyline', points: streamPoints });
     const relativeStreamPoints = streamPoints.map((point) => ({
       x: point.x - originX,
       y: point.y - originY
@@ -3798,6 +3809,8 @@ export default class Game {
   updateEffects(dt) {
     this.effects.forEach((effect) => effect.update(dt));
     this.effects = this.effects.filter((effect) => effect.alive);
+    this.updateChainsawAttackDebugBoxes(dt);
+    this.updateWeaponDamageDebugShapes(dt);
   }
 
   checkPlayerDamage() {
@@ -4178,6 +4191,21 @@ export default class Game {
     return this.doesEntityOverlapAttackBox(entity, centerX, originY, rangeX, rangeY);
   }
 
+
+  doesEntityOverlapRect(entity, rect) {
+    if (!entity || !rect) return false;
+    const halfW = Math.max(1, Number(entity.width || this.world.tileSize * 0.5)) * 0.5;
+    const halfH = Math.max(1, Number(entity.height || this.world.tileSize * 0.5)) * 0.5;
+    const left = entity.x - halfW;
+    const right = entity.x + halfW;
+    const top = entity.y - halfH;
+    const bottom = entity.y + halfH;
+    return left <= rect.x + rect.w
+      && right >= rect.x
+      && top <= rect.y + rect.h
+      && bottom >= rect.y;
+  }
+
   doesEntityOverlapPlayerBody(entity, paddingX = 0, paddingY = 0) {
     if (!entity || !this.player) return false;
     const playerHalfW = Math.max(1, Number(this.player.width || this.world.tileSize * 0.5)) * 0.5;
@@ -4187,6 +4215,98 @@ export default class Game {
     const overlapX = playerHalfW + enemyHalfW + Math.max(0, Number(paddingX || 0));
     const overlapY = playerHalfH + enemyHalfH + Math.max(0, Number(paddingY || 0));
     return Math.abs(entity.x - this.player.x) <= overlapX && Math.abs(entity.y - this.player.y) <= overlapY;
+  }
+
+  recordChainsawAttackDebugBox(centerX, centerY, rangeX, rangeY, label = 'chainsaw') {
+    if (!(this.debugMode || this.playtestActive)) return;
+    this.chainsawAttackDebugBoxes.push({
+      x: centerX - rangeX,
+      y: centerY - rangeY,
+      w: rangeX * 2,
+      h: rangeY * 2,
+      ttl: 0.9,
+      label
+    });
+  }
+
+  updateChainsawAttackDebugBoxes(dt) {
+    if (!this.chainsawAttackDebugBoxes.length) return;
+    this.chainsawAttackDebugBoxes = this.chainsawAttackDebugBoxes
+      .map((box) => ({ ...box, ttl: box.ttl - dt }))
+      .filter((box) => box.ttl > 0);
+  }
+
+  drawChainsawAttackDebugBoxes(ctx) {
+    if (!this.chainsawAttackDebugBoxes.length) return;
+    ctx.save();
+    this.chainsawAttackDebugBoxes.forEach((box) => {
+      const alpha = Math.max(0.2, Math.min(1, box.ttl / 0.35));
+      ctx.strokeStyle = `rgba(255, 235, 59, ${alpha.toFixed(3)})`;
+      ctx.fillStyle = `rgba(255, 235, 59, ${(alpha * 0.22).toFixed(3)})`;
+      ctx.lineWidth = 2;
+      ctx.fillRect(box.x, box.y, box.w, box.h);
+      ctx.strokeRect(box.x, box.y, box.w, box.h);
+      ctx.fillStyle = `rgba(255, 255, 180, ${alpha.toFixed(3)})`;
+      ctx.font = '11px Courier New';
+      ctx.textAlign = 'left';
+      ctx.fillText(box.label, box.x, box.y - 4);
+    });
+    ctx.restore();
+  }
+
+
+  recordWeaponDamageDebugShape(shape) {
+    if ((!(this.debugMode || this.playtestActive)) || !shape) return;
+    this.weaponDamageDebugShapes.push({ ttl: 0.9, ...shape });
+  }
+
+  updateWeaponDamageDebugShapes(dt) {
+    if (!this.weaponDamageDebugShapes.length) return;
+    this.weaponDamageDebugShapes = this.weaponDamageDebugShapes
+      .map((shape) => ({ ...shape, ttl: shape.ttl - dt }))
+      .filter((shape) => shape.ttl > 0);
+  }
+
+  drawWeaponDamageDebugShapes(ctx) {
+    if (!this.weaponDamageDebugShapes.length) return;
+    ctx.save();
+    ctx.lineWidth = 2;
+    this.weaponDamageDebugShapes.forEach((shape) => {
+      const alpha = Math.max(0.12, Math.min(1, shape.ttl / 0.9));
+      const fillAlpha = Math.max(0.1, alpha * 0.2);
+      ctx.strokeStyle = `rgba(255, 235, 59, ${alpha.toFixed(3)})`;
+      ctx.fillStyle = `rgba(255, 235, 59, ${fillAlpha.toFixed(3)})`;
+      if (shape.type === 'rect') {
+        ctx.fillRect(shape.x, shape.y, shape.w, shape.h);
+        ctx.strokeRect(shape.x, shape.y, shape.w, shape.h);
+      } else if (shape.type === 'circle') {
+        ctx.beginPath();
+        ctx.arc(shape.x, shape.y, shape.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      } else if (shape.type === 'polyline' && Array.isArray(shape.points) && shape.points.length > 1) {
+        ctx.beginPath();
+        ctx.moveTo(shape.points[0].x, shape.points[0].y);
+        for (let i = 1; i < shape.points.length; i += 1) ctx.lineTo(shape.points[i].x, shape.points[i].y);
+        ctx.stroke();
+      }
+    });
+    ctx.restore();
+  }
+
+
+  recordHeldChainsawDebugShape() {
+    if (!(this.debugMode || this.playtestActive)) return;
+    if (!this.player || this.getActiveWeapon()?.id !== 'chainsaw') return;
+    const attackRange = this.world.tileSize * 2.5;
+    const forwardRange = Math.max(52, attackRange + 20);
+    const backRange = 30;
+    const rangeY = 58;
+    const originX = this.player.x;
+    const originY = this.player.y - 6;
+    const centerX = originX + this.player.facing * ((forwardRange - backRange) * 0.5);
+    const rangeX = (forwardRange + backRange) * 0.5;
+    this.recordWeaponDamageDebugShape({ type: 'rect', x: centerX - rangeX, y: originY - rangeY, w: rangeX * 2, h: rangeY * 2 });
   }
 
   handleAttack() {
@@ -4208,9 +4328,12 @@ export default class Game {
       const downAttackCenterY = this.player.y + 34;
       const downAttackRangeX = range + 18;
       const downAttackRangeY = 54;
+      const downAttackRect = { x: downAttackCenterX - downAttackRangeX, y: downAttackCenterY - downAttackRangeY, w: downAttackRangeX * 2, h: downAttackRangeY * 2 };
+      this.recordChainsawAttackDebugBox(downAttackCenterX, downAttackCenterY, downAttackRangeX, downAttackRangeY, 'chainsaw down');
+      this.recordWeaponDamageDebugShape({ type: 'rect', ...downAttackRect });
       this.enemies.forEach((enemy) => {
         if (enemy.dead) return;
-        if (this.doesEntityOverlapAttackBox(enemy, downAttackCenterX, downAttackCenterY, downAttackRangeX, downAttackRangeY)) {
+        if (this.doesEntityOverlapRect(enemy, downAttackRect)) {
           if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
             return;
           }
@@ -4290,19 +4413,14 @@ export default class Game {
     const forwardAttackForwardRange = Math.max(52, range + 20);
     const forwardAttackBackRange = 30;
     const forwardAttackRangeY = 58;
+    const forwardAttackCenterX = forwardAttackOriginX + this.player.facing * ((forwardAttackForwardRange - forwardAttackBackRange) * 0.5);
+    const forwardAttackRangeX = (forwardAttackForwardRange + forwardAttackBackRange) * 0.5;
+    const forwardAttackRect = { x: forwardAttackCenterX - forwardAttackRangeX, y: forwardAttackOriginY - forwardAttackRangeY, w: forwardAttackRangeX * 2, h: forwardAttackRangeY * 2 };
+    this.recordChainsawAttackDebugBox(forwardAttackCenterX, forwardAttackOriginY, forwardAttackRangeX, forwardAttackRangeY, 'chainsaw forward');
+    this.recordWeaponDamageDebugShape({ type: 'rect', ...forwardAttackRect });
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
-      const overlapsDirectionalAttack = this.doesEntityOverlapDirectionalAttackBox(
-        enemy,
-        forwardAttackOriginX,
-        forwardAttackOriginY,
-        this.player.facing,
-        forwardAttackForwardRange,
-        forwardAttackBackRange,
-        forwardAttackRangeY
-      );
-      const overlapsPlayerBody = this.doesEntityOverlapPlayerBody(enemy, 8, 8);
-      if (overlapsDirectionalAttack || overlapsPlayerBody) {
+      if (this.doesEntityOverlapRect(enemy, forwardAttackRect)) {
         if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
           return;
         }
@@ -6435,6 +6553,10 @@ export default class Game {
     if (this.playtestActive && this.actorEditorTestSnapshot) {
       this.drawActorPlaytestEnemyBounds(ctx);
     }
+    if (this.debugMode || this.playtestActive) {
+      this.drawChainsawAttackDebugBoxes(ctx);
+      this.drawWeaponDamageDebugShapes(ctx);
+    }
     if (this.friendlyCompanion) {
       this.friendlyCompanion.draw(ctx);
       if (this.showCompanionPathDebug) {
@@ -6583,22 +6705,22 @@ export default class Game {
     } else {
       this.playtestButtonBounds = null;
     }
-    if (this.debugMode && this.friendlyCompanion && (this.state === 'playing' || this.state === 'pause')) {
-      const buttonWidth = 110;
+    if (this.playtestActive && (this.state === 'playing' || this.state === 'pause')) {
+      const buttonWidth = 120;
       const buttonHeight = 28;
-      const buttonX = canvas.width - 180;
+      const buttonX = canvas.width - 190;
       const buttonY = 152;
       this.companionDebugButtonBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
       ctx.save();
-      ctx.fillStyle = this.showCompanionPathDebug ? '#174f2a' : '#2a2a2a';
-      ctx.strokeStyle = this.showCompanionPathDebug ? '#4aff86' : '#bbbbbb';
+      ctx.fillStyle = this.debugMode ? '#174f2a' : '#2a2a2a';
+      ctx.strokeStyle = this.debugMode ? '#4aff86' : '#bbbbbb';
       ctx.lineWidth = 2;
       ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
       ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
       ctx.fillStyle = '#ffffff';
       ctx.font = '12px Courier New';
       ctx.textAlign = 'center';
-      ctx.fillText(`PATH ${this.showCompanionPathDebug ? 'ON' : 'OFF'}`, buttonX + buttonWidth / 2, buttonY + 18);
+      ctx.fillText(`DEBUG ${this.debugMode ? 'ON' : 'OFF'}`, buttonX + buttonWidth / 2, buttonY + 18);
       ctx.restore();
     } else {
       this.companionDebugButtonBounds = null;
@@ -8469,14 +8591,15 @@ export default class Game {
       return;
     }
     if (
-      this.debugMode
+      this.playtestActive
       && this.companionDebugButtonBounds
       && payload.x >= this.companionDebugButtonBounds.x
       && payload.x <= this.companionDebugButtonBounds.x + this.companionDebugButtonBounds.w
       && payload.y >= this.companionDebugButtonBounds.y
       && payload.y <= this.companionDebugButtonBounds.y + this.companionDebugButtonBounds.h
     ) {
-      this.showCompanionPathDebug = !this.showCompanionPathDebug;
+      this.debugMode = !this.debugMode;
+      this.showCompanionPathDebug = this.debugMode;
       this.audio.ui();
       this.recordFeedback('menu navigate', 'audio');
       return;
