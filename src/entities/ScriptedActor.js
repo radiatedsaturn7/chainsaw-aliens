@@ -145,11 +145,13 @@ export default class ScriptedActor extends EnemyBase {
         this.vx = 0;
         break;
       case 'spawn-bullets': {
-        const dx = player.x - this.x;
-        const dy = player.y - this.y;
+        const spawnX = this.x + Number(params.offsetX || 0);
+        const spawnY = this.y + Number(params.offsetY || 0);
+        const dx = player.x - spawnX;
+        const dy = player.y - spawnY;
         const angle = params.aimAtPlayer ? Math.atan2(dy, dx) : Number(params.angle || 0);
         const speed = Number(params.speed || 220);
-        context.spawnProjectile?.(this.x, this.y, Math.cos(angle) * speed, Math.sin(angle) * speed, 1);
+        context.spawnProjectile?.(spawnX, spawnY, Math.cos(angle) * speed, Math.sin(angle) * speed, 1);
         break;
       }
       case 'become-invulnerable':
