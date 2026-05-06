@@ -65,6 +65,11 @@ export const mergeDown = (layers, index) => {
   return nextLayers;
 };
 
+export const mergeUp = (layers, index) => {
+  if (index < 0 || index >= layers.length - 1) return layers;
+  return mergeDown(layers, index + 1);
+};
+
 export const flattenLayers = (layers, width, height) => {
   const merged = createLayer(width, height, 'Flattened');
   merged.pixels = compositeLayers(layers, width, height);

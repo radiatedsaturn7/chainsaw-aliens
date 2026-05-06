@@ -16,6 +16,7 @@ import {
   cloneLayer,
   compositeLayers,
   mergeDown,
+  mergeUp,
   flattenLayers,
   reorderLayer
 } from './pixel-editor/layers.js';
@@ -2465,7 +2466,7 @@ export default class PixelStudio {
   handlePointerDown(payload) {
     const button = payload.button ?? 0;
     if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen || this.selectionContextMenu || this.brushPickerOpen || this.transformModal || this.pasteImportModal) {
-      this.handleButtonClick(payload.x, payload.y, payload);
+      this.pointerDownOnUi = this.handleButtonClick(payload.x, payload.y, payload);
       return;
     }
     this.cursor.x = payload.x;
@@ -2585,7 +2586,10 @@ export default class PixelStudio {
       this.finishPolygon();
       return;
     }
-    if (this.handleButtonClick(payload.x, payload.y, payload)) return;
+    if (this.handleButtonClick(payload.x, payload.y, payload)) {
+      this.pointerDownOnUi = true;
+      return;
+    }
     if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
       this.setInputMode('canvas');
       if (this.spaceDown || button === 1 || button === 2) {
@@ -2603,7 +2607,7 @@ export default class PixelStudio {
       }
       return;
     }
-    if (this.activeToolId === TOOL_IDS.MOVE && this.selection.active) {
+    if (this.activeToolId === TOOL_IDS.MOVE && this.selection.active && this.isPointNearCanvas(payload, 48)) {
       const freePoint = this.getGridCellFromScreenUnbounded(payload.x, payload.y);
       const hit = freePoint ? this.getSelectionTransformHit(freePoint) : null;
       if (hit?.type === 'rotate' || hit?.type === 'scale') {
@@ -2772,6 +2776,11 @@ export default class PixelStudio {
     if (this.panStart) {
       this.panStart = null;
       this.viewportController.endPan();
+    }
+    if (this.pointerDownOnUi) {
+      this.pointerDownOnUi = false;
+      this.cancelLongPress();
+      return;
     }
     this.cancelLongPress();
     this.handleToolPointerUp();
@@ -4687,46 +4696,54 @@ export default class PixelStudio {
     this.commitHistory();
   }
 
-  pasteClipboard() {
-    this.readClipboardFromSystem().finally(() => {
-      if (!this.clipboard) return;
-      const source = this.clipboard;
-      const srcW = Number(source.width || 0);
-      const srcH = Number(source.height || 0);
-      if (!srcW || !srcH || !this.clipboard.pixels) return;
-      const maxW = this.canvasState.width;
-      const maxH = this.canvasState.height;
-      if (srcW > maxW || srcH > maxH) {
-        this.openPasteImportModal(source);
-        return;
-      }
-      this.applyClipboardPaste(source);
-    });
+  async pasteClipboard() {
+    await this.readClipboardFromSystem();
+    if (!this.clipboard) return;
+    const source = this.clipboard;
+    const srcW = Number(source.width || 0);
+    const srcH = Number(source.height || 0);
+    if (!srcW || !srcH || !this.clipboard.pixels) return;
+    const maxW = this.canvasState.width;
+    const maxH = this.canvasState.height;
+    if (srcW > maxW || srcH > maxH) {
+      this.openPasteImportModal(source, { pasteToNewLayer: true });
+      return;
+    }
+    this.applyClipboardPaste(source, { pasteToNewLayer: true });
   }
 
-  applyClipboardPaste(source) {
+  applyClipboardPaste(source, options = {}) {
     const srcW = Number(source?.width || 0);
     const srcH = Number(source?.height || 0);
     if (!srcW || !srcH || !source?.pixels) return;
     const maxW = this.canvasState.width;
     const maxH = this.canvasState.height;
+    const pasteToNewLayer = options.pasteToNewLayer === true;
+    if (pasteToNewLayer) {
+      this.addLayer();
+    }
     this.startHistory('paste');
+    const mask = new Uint8Array(maxW * maxH);
     for (let y = 0; y < srcH; y += 1) {
       for (let x = 0; x < srcW; x += 1) {
         if (x >= maxW || y >= maxH) continue;
         const value = source.pixels[y * srcW + x];
         if (!value) continue;
+        mask[y * maxW + x] = 1;
         this.activeLayer.pixels[y * maxW + x] = value;
       }
     }
     this.commitHistory();
+    this.setSelectionMask(mask);
+    this.setActiveTool(TOOL_IDS.MOVE);
   }
 
-  openPasteImportModal(source) {
+  openPasteImportModal(source, options = {}) {
     this.pasteImportModal = {
       source,
       mode: 'scale',
       crop: true,
+      pasteToNewLayer: options.pasteToNewLayer === true,
       buttons: []
     };
   }
@@ -5679,6 +5696,13 @@ export default class PixelStudio {
     this.syncTileData();
   }
 
+  mergeLayerUp(index) {
+    this.canvasState.layers = mergeUp(this.canvasState.layers, index);
+    this.canvasState.activeLayerIndex = clamp(index, 0, this.canvasState.layers.length - 1);
+    this.currentFrame.layers = this.canvasState.layers;
+    this.syncTileData();
+  }
+
   flattenAllLayers() {
     this.canvasState.layers = flattenLayers(this.canvasState.layers, this.canvasState.width, this.canvasState.height);
     this.canvasState.activeLayerIndex = 0;
@@ -5913,6 +5937,16 @@ export default class PixelStudio {
   isPointInBounds(point, bounds) {
     return point.x >= bounds.x && point.x <= bounds.x + bounds.w
       && point.y >= bounds.y && point.y <= bounds.y + bounds.h;
+  }
+
+  isPointNearCanvas(point, padding = 40) {
+    if (!this.canvasBounds) return false;
+    return this.isPointInBounds(point, {
+      x: this.canvasBounds.x - padding,
+      y: this.canvasBounds.y - padding,
+      w: this.canvasBounds.w + padding * 2,
+      h: this.canvasBounds.h + padding * 2
+    });
   }
 
   getGridCellFromScreen(x, y, options = {}) {
@@ -6509,11 +6543,15 @@ export default class PixelStudio {
         const working = this.pasteImportModal.crop
           ? this.cropClipboardToOpaqueBounds(this.pasteImportModal.source)
           : this.pasteImportModal.source;
+        const pasteOptions = { pasteToNewLayer: this.pasteImportModal.pasteToNewLayer === true };
         if (this.pasteImportModal.mode === 'resize') {
           this.resizeArtCanvas(working.width, working.height);
-          this.applyClipboardPaste(working);
+          this.applyClipboardPaste(working, pasteOptions);
         } else {
-          this.applyClipboardPaste(this.scaleClipboardToFit(working, this.canvasState.width, this.canvasState.height));
+          this.applyClipboardPaste(
+            this.scaleClipboardToFit(working, this.canvasState.width, this.canvasState.height),
+            pasteOptions
+          );
         }
         this.pasteImportModal = null;
       }
@@ -8175,14 +8213,8 @@ export default class PixelStudio {
       ? Math.max(120, Math.min(panelWidth, panelWidth - 6))
       : (isMobile ? 180 : 120);
 
-    if (!this.selection.active || !this.selection.mask) {
-      ctx.fillStyle = 'rgba(255,255,255,0.65)';
-      ctx.font = `${isMobile ? 12 : 11}px ${UI_SUITE.font.family}`;
-      ctx.fillText('Make a selection to enable actions', x, y + (isMobile ? 12 : 10));
-      return y + rowStep;
-    }
-
     const actions = [
+      { label: 'Paste', action: () => this.pasteClipboard() },
       { label: 'Copy', action: () => this.copySelection() },
       { label: 'Cut', action: () => this.cutSelection() },
       { label: 'Delete', action: () => this.deleteSelection() },
@@ -8190,6 +8222,9 @@ export default class PixelStudio {
       { label: 'Grow', action: () => this.expandSelection(1) },
       { label: 'Contract', action: () => this.expandSelection(-1) }
     ];
+    if (!this.selection.active || !this.selection.mask) {
+      actions.splice(1);
+    }
     let offsetY = y;
     actions.forEach((entry) => {
       const bounds = { x, y: offsetY, w: buttonWidth, h: rowHeight };
@@ -8288,7 +8323,8 @@ export default class PixelStudio {
       { label: '+', action: () => this.addLayer() },
       { label: 'Dup', action: () => this.duplicateLayer(this.canvasState.activeLayerIndex) },
       { label: '-', action: () => this.deleteLayer(this.canvasState.activeLayerIndex) },
-      { label: 'Merge', action: () => this.mergeLayerDown(this.canvasState.activeLayerIndex) },
+      { label: 'M↑', action: () => this.mergeLayerUp(this.canvasState.activeLayerIndex) },
+      { label: 'M↓', action: () => this.mergeLayerDown(this.canvasState.activeLayerIndex) },
       { label: 'Flatten', action: () => this.flattenAllLayers() }
     ];
     if (showControls) {
@@ -8607,6 +8643,9 @@ export default class PixelStudio {
       return [
         { label: '+Layer', action: () => this.addLayer() },
         { label: '-Layer', action: () => this.deleteLayer(this.canvasState.activeLayerIndex) },
+        { label: 'Merge↑', action: () => this.mergeLayerUp(this.canvasState.activeLayerIndex) },
+        { label: 'Merge↓', action: () => this.mergeLayerDown(this.canvasState.activeLayerIndex) },
+        { label: 'Flatten', action: () => this.flattenAllLayers() },
         { label: 'Rename', action: () => this.renameLayer(this.canvasState.activeLayerIndex) },
         {
           label: this.activeLayer?.visible === false ? 'Show' : 'Hide',
