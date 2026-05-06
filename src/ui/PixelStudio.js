@@ -2604,7 +2604,7 @@ export default class PixelStudio {
       }
       return;
     }
-    if (this.activeToolId === TOOL_IDS.MOVE && this.selection.active) {
+    if (this.activeToolId === TOOL_IDS.MOVE && this.selection.active && this.isPointNearCanvas(payload, 48)) {
       const freePoint = this.getGridCellFromScreenUnbounded(payload.x, payload.y);
       const hit = freePoint ? this.getSelectionTransformHit(freePoint) : null;
       if (hit?.type === 'rotate' || hit?.type === 'scale') {
@@ -5931,6 +5931,16 @@ export default class PixelStudio {
   isPointInBounds(point, bounds) {
     return point.x >= bounds.x && point.x <= bounds.x + bounds.w
       && point.y >= bounds.y && point.y <= bounds.y + bounds.h;
+  }
+
+  isPointNearCanvas(point, padding = 40) {
+    if (!this.canvasBounds) return false;
+    return this.isPointInBounds(point, {
+      x: this.canvasBounds.x - padding,
+      y: this.canvasBounds.y - padding,
+      w: this.canvasBounds.w + padding * 2,
+      h: this.canvasBounds.h + padding * 2
+    });
   }
 
   getGridCellFromScreen(x, y, options = {}) {
