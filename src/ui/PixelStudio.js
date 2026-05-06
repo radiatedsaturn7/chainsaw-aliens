@@ -4696,22 +4696,20 @@ export default class PixelStudio {
     this.commitHistory();
   }
 
-  pasteClipboard() {
-    this.readClipboardFromSystem().finally(async () => {
-      if (!this.clipboard) return;
-      const source = this.clipboard;
-      const srcW = Number(source.width || 0);
-      const srcH = Number(source.height || 0);
-      if (!srcW || !srcH || !this.clipboard.pixels) return;
-      const pasteToNewLayer = await this.runtime.confirm('Paste into a new layer? (Cancel = paste into current layer)');
-      const maxW = this.canvasState.width;
-      const maxH = this.canvasState.height;
-      if (srcW > maxW || srcH > maxH) {
-        this.openPasteImportModal(source, { pasteToNewLayer });
-        return;
-      }
-      this.applyClipboardPaste(source, { pasteToNewLayer });
-    });
+  async pasteClipboard() {
+    await this.readClipboardFromSystem();
+    if (!this.clipboard) return;
+    const source = this.clipboard;
+    const srcW = Number(source.width || 0);
+    const srcH = Number(source.height || 0);
+    if (!srcW || !srcH || !this.clipboard.pixels) return;
+    const maxW = this.canvasState.width;
+    const maxH = this.canvasState.height;
+    if (srcW > maxW || srcH > maxH) {
+      this.openPasteImportModal(source, { pasteToNewLayer: true });
+      return;
+    }
+    this.applyClipboardPaste(source, { pasteToNewLayer: true });
   }
 
   applyClipboardPaste(source, options = {}) {
