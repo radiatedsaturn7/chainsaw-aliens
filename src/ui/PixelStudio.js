@@ -2466,7 +2466,7 @@ export default class PixelStudio {
   handlePointerDown(payload) {
     const button = payload.button ?? 0;
     if (this.menuOpen || this.controlsOverlayOpen || this.paletteGridOpen || this.selectionContextMenu || this.brushPickerOpen || this.transformModal || this.pasteImportModal) {
-      this.handleButtonClick(payload.x, payload.y, payload);
+      this.pointerDownOnUi = this.handleButtonClick(payload.x, payload.y, payload);
       return;
     }
     this.cursor.x = payload.x;
@@ -2586,7 +2586,10 @@ export default class PixelStudio {
       this.finishPolygon();
       return;
     }
-    if (this.handleButtonClick(payload.x, payload.y, payload)) return;
+    if (this.handleButtonClick(payload.x, payload.y, payload)) {
+      this.pointerDownOnUi = true;
+      return;
+    }
     if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
       this.setInputMode('canvas');
       if (this.spaceDown || button === 1 || button === 2) {
@@ -2773,6 +2776,11 @@ export default class PixelStudio {
     if (this.panStart) {
       this.panStart = null;
       this.viewportController.endPan();
+    }
+    if (this.pointerDownOnUi) {
+      this.pointerDownOnUi = false;
+      this.cancelLongPress();
+      return;
     }
     this.cancelLongPress();
     this.handleToolPointerUp();
