@@ -8627,6 +8627,9 @@ export default class PixelStudio {
       return [
         { label: '+Layer', action: () => this.addLayer() },
         { label: '-Layer', action: () => this.deleteLayer(this.canvasState.activeLayerIndex) },
+        { label: 'Merge↑', action: () => this.mergeLayerUp(this.canvasState.activeLayerIndex) },
+        { label: 'Merge↓', action: () => this.mergeLayerDown(this.canvasState.activeLayerIndex) },
+        { label: 'Flatten', action: () => this.flattenAllLayers() },
         { label: 'Rename', action: () => this.renameLayer(this.canvasState.activeLayerIndex) },
         {
           label: this.activeLayer?.visible === false ? 'Show' : 'Hide',
