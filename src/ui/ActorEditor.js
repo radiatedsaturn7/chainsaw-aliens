@@ -332,7 +332,7 @@ export default class ActorEditor {
     }
     vfsSave(ACTOR_FOLDER, name, payload);
     this.currentDocumentRef = { folder: ACTOR_FOLDER, name };
-    this.game.showSystemToast?.('Saved changes');
+    this.game.showSystemToast?.('saved');
     this.render();
   }
 
@@ -400,6 +400,18 @@ export default class ActorEditor {
     const next = clone(state);
     next.id = `${state.id}-${copy.states.length + 1}`;
     next.name = `${state.name} Copy`;
+    const sourceArtRef = String(state?.animation?.artRef || '').trim();
+    if (sourceArtRef) {
+      const sourceDoc = vfsLoad('art', sourceArtRef);
+      const duplicateName = `${sourceArtRef} copy ${Date.now()}`;
+      const saved = vfsSave('art', duplicateName, sourceDoc?.data || sourceDoc || {});
+      if (saved?.name) {
+        next.animation = {
+          ...(next.animation || {}),
+          artRef: saved.name
+        };
+      }
+    }
     copy.states.push(next);
     this.selectedStateId = next.id;
     this.setActor(copy);
