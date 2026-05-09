@@ -1311,6 +1311,8 @@ export default class ActorEditor {
       actions.style.display = 'flex';
       actions.style.alignItems = 'center';
       actions.style.justifyContent = 'space-between';
+      actions.style.flexWrap = 'nowrap';
+      actions.style.width = '100%';
       actions.style.gap = '8px';
       actions.style.height = '72px';
       actions.style.paddingTop = '2px';
@@ -1334,9 +1336,12 @@ export default class ActorEditor {
       leftControls.style.display = 'flex';
       leftControls.style.alignItems = 'center';
       leftControls.style.gap = '8px';
+      leftControls.style.flex = '1 1 auto';
       const rightControls = el('div', 'actor-editor-inline-actions');
       rightControls.style.display = 'flex';
       rightControls.style.alignItems = 'center';
+      rightControls.style.flex = '0 0 auto';
+      rightControls.style.whiteSpace = 'nowrap';
       rightControls.style.gap = '8px';
       rightControls.style.marginLeft = 'auto';
       const joystick = el('div');
@@ -1440,6 +1445,7 @@ export default class ActorEditor {
       let joystickDrag = false;
       let joystickVector = { x: 0, y: 0 };
       let joystickTimer = null;
+      let lastTick = 0;
       const updateJoystick = (clientX, clientY) => {
         const rect = joystick.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
@@ -1457,10 +1463,19 @@ export default class ActorEditor {
       };
       const startJoystickPan = () => {
         if (joystickTimer) return;
+        lastTick = performance.now();
         joystickTimer = window.setInterval(() => {
           if (!joystickDrag) return;
-          panX += joystickVector.x * Math.max(4, 12 * zoom);
-          panY += joystickVector.y * Math.max(4, 12 * zoom);
+          const now = performance.now();
+          const dt = Math.max(0.5, Math.min(2.2, (now - lastTick) / 16));
+          lastTick = now;
+          const deadzone = 0.07;
+          const mag = Math.hypot(joystickVector.x, joystickVector.y);
+          if (mag < deadzone) return;
+          const scaled = (mag - deadzone) / (1 - deadzone);
+          const speed = Math.max(1.5, 9 * zoom) * scaled * dt;
+          panX += (joystickVector.x / Math.max(0.001, mag)) * speed;
+          panY += (joystickVector.y / Math.max(0.001, mag)) * speed;
           applyZoom();
           updateCrosshairFromPicked();
         }, 16);
