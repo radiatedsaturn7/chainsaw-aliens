@@ -1248,8 +1248,8 @@ export default class ActorEditor {
       modal.style.justifyContent = 'center';
       modal.style.zIndex = '2147483647';
       const card = el('div', 'actor-editor-card');
-      card.style.width = '96vw';
-      card.style.height = '92vh';
+      card.style.width = '90vw';
+      card.style.height = '82vh';
       card.style.display = 'flex';
       card.style.flexDirection = 'column';
       card.style.gap = '10px';
@@ -1335,15 +1335,36 @@ export default class ActorEditor {
       panUp.onclick = () => { stage.scrollTop -= panStep(); };
       panDown.onclick = () => { stage.scrollTop += panStep(); };
       actions.append(panLeft, panRight, panUp, panDown);
+      const joystick = el('div');
+      joystick.style.width = '92px';
+      joystick.style.height = '92px';
+      joystick.style.borderRadius = '50%';
+      joystick.style.border = '1px solid rgba(255,255,255,0.35)';
+      joystick.style.position = 'relative';
+      joystick.style.background = 'rgba(0,0,0,0.25)';
+      const knob = el('div');
+      knob.style.width = '34px';
+      knob.style.height = '34px';
+      knob.style.borderRadius = '50%';
+      knob.style.background = 'rgba(255,255,255,0.7)';
+      knob.style.position = 'absolute';
+      knob.style.left = '29px';
+      knob.style.top = '29px';
+      joystick.appendChild(knob);
+      actions.appendChild(joystick);
       card.appendChild(actions);
       const updateCrosshairFromPicked = () => {
         if (!picked) return;
         const rect = img.getBoundingClientRect();
         const stageRect = stage.getBoundingClientRect();
-        const width = Math.max(1, img.naturalWidth || Number(state?.animation?.width || 32));
-        const height = Math.max(1, img.naturalHeight || Number(state?.animation?.height || 32));
-        const relX = (picked.x + width / 2) / width;
-        const relY = (picked.y + height / 2) / height;
+        const nativeW = Math.max(1, img.naturalWidth || Number(state?.animation?.width || 32));
+        const nativeH = Math.max(1, img.naturalHeight || Number(state?.animation?.height || 32));
+        const imageScaledW = nativeW > 0 ? (nativeW / 16) * 32 : nativeW;
+        const imageScaledH = nativeH > 0 ? (nativeH / 16) * 32 : nativeH;
+        const drawW = Math.max(Number(this.actor?.size?.width || 32), imageScaledW || 0);
+        const drawH = Math.max(Number(this.actor?.size?.height || 32), imageScaledH || 0);
+        const relX = (picked.x + drawW / 2) / drawW;
+        const relY = (picked.y + drawH / 2) / drawH;
         crosshair.style.left = `${rect.left - stageRect.left + relX * rect.width}px`;
         crosshair.style.top = `${rect.top - stageRect.top + relY * rect.height}px`;
         crosshair.style.display = 'block';
@@ -1352,8 +1373,12 @@ export default class ActorEditor {
         const rect = img.getBoundingClientRect();
         const relX = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(1, rect.width)));
         const relY = Math.max(0, Math.min(1, (clientY - rect.top) / Math.max(1, rect.height)));
-        const width = Math.max(1, img.naturalWidth || Number(state?.animation?.width || 32));
-        const height = Math.max(1, img.naturalHeight || Number(state?.animation?.height || 32));
+        const nativeW = Math.max(1, img.naturalWidth || Number(state?.animation?.width || 32));
+        const nativeH = Math.max(1, img.naturalHeight || Number(state?.animation?.height || 32));
+        const imageScaledW = nativeW > 0 ? (nativeW / 16) * 32 : nativeW;
+        const imageScaledH = nativeH > 0 ? (nativeH / 16) * 32 : nativeH;
+        const width = Math.max(Number(this.actor?.size?.width || 32), imageScaledW || 0);
+        const height = Math.max(Number(this.actor?.size?.height || 32), imageScaledH || 0);
         picked = {
           x: Math.round(relX * width - width / 2),
           y: Math.round(relY * height - height / 2)
@@ -1362,8 +1387,12 @@ export default class ActorEditor {
         ok.disabled = false;
         ok.style.opacity = '1';
       };
-      const width = Math.max(1, img.naturalWidth || Number(state?.animation?.width || 32));
-      const height = Math.max(1, img.naturalHeight || Number(state?.animation?.height || 32));
+      const nativeW = Math.max(1, img.naturalWidth || Number(state?.animation?.width || 32));
+      const nativeH = Math.max(1, img.naturalHeight || Number(state?.animation?.height || 32));
+      const imageScaledW = nativeW > 0 ? (nativeW / 16) * 32 : nativeW;
+      const imageScaledH = nativeH > 0 ? (nativeH / 16) * 32 : nativeH;
+      const width = Math.max(Number(this.actor?.size?.width || 32), imageScaledW || 0);
+      const height = Math.max(Number(this.actor?.size?.height || 32), imageScaledH || 0);
       picked = {
         x: Number.isFinite(Number(params?.offsetX)) ? Number(params.offsetX) : 0,
         y: Number.isFinite(Number(params?.offsetY)) ? Number(params.offsetY) : 0
@@ -1386,6 +1415,7 @@ export default class ActorEditor {
       stage.addEventListener('touchstart', (event) => {
         pinchDistance = getTouchDistance(event.touches);
       }, { passive: true });
+      let panTouch = null;
       stage.addEventListener('touchmove', (event) => {
         const nextDistance = getTouchDistance(event.touches);
         if (!nextDistance || !pinchDistance) return;
@@ -1396,7 +1426,44 @@ export default class ActorEditor {
         applyZoom();
         updateCrosshairFromPicked();
       }, { passive: true });
+      stage.addEventListener('touchstart', (event) => {
+        if (event.touches.length !== 1) return;
+        const t = event.touches[0];
+        panTouch = { x: t.clientX, y: t.clientY };
+      }, { passive: true });
+      stage.addEventListener('touchmove', (event) => {
+        if (event.touches.length !== 1 || !panTouch) return;
+        const t = event.touches[0];
+        stage.scrollLeft -= (t.clientX - panTouch.x);
+        stage.scrollTop -= (t.clientY - panTouch.y);
+        panTouch = { x: t.clientX, y: t.clientY };
+      }, { passive: true });
       stage.addEventListener('touchend', () => { pinchDistance = null; }, { passive: true });
+      stage.addEventListener('touchend', () => { panTouch = null; }, { passive: true });
+      let joystickDrag = false;
+      const updateJoystick = (clientX, clientY) => {
+        const rect = joystick.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = clientX - cx;
+        const dy = clientY - cy;
+        const radius = rect.width * 0.35;
+        const mag = Math.hypot(dx, dy) || 1;
+        const k = Math.min(1, radius / mag);
+        const ndx = dx * k;
+        const ndy = dy * k;
+        knob.style.left = `${rect.width / 2 + ndx - 17}px`;
+        knob.style.top = `${rect.height / 2 + ndy - 17}px`;
+        stage.scrollLeft += ndx * 0.35;
+        stage.scrollTop += ndy * 0.35;
+      };
+      joystick.addEventListener('pointerdown', (event) => { joystickDrag = true; updateJoystick(event.clientX, event.clientY); });
+      window.addEventListener('pointermove', (event) => { if (joystickDrag) updateJoystick(event.clientX, event.clientY); });
+      window.addEventListener('pointerup', () => {
+        joystickDrag = false;
+        knob.style.left = '29px';
+        knob.style.top = '29px';
+      });
       modal.appendChild(card);
       document.body.appendChild(modal);
     });
