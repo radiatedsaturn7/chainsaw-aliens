@@ -1273,8 +1273,10 @@ export default class ActorEditor {
       img.style.touchAction = 'none';
       stage.appendChild(img);
       let zoom = 1;
+      let panX = 0;
+      let panY = 0;
       const applyZoom = () => {
-        img.style.transform = `scale(${zoom})`;
+        img.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
         img.style.transformOrigin = 'center center';
       };
       applyZoom();
@@ -1336,6 +1338,7 @@ export default class ActorEditor {
       rightControls.style.display = 'flex';
       rightControls.style.alignItems = 'center';
       rightControls.style.gap = '8px';
+      rightControls.style.marginLeft = 'auto';
       const joystick = el('div');
       joystick.style.width = '92px';
       joystick.style.height = '92px';
@@ -1433,20 +1436,7 @@ export default class ActorEditor {
         applyZoom();
         updateCrosshairFromPicked();
       }, { passive: true });
-      stage.addEventListener('touchstart', (event) => {
-        if (event.touches.length !== 1) return;
-        const t = event.touches[0];
-        panTouch = { x: t.clientX, y: t.clientY };
-      }, { passive: true });
-      stage.addEventListener('touchmove', (event) => {
-        if (event.touches.length !== 1 || !panTouch) return;
-        const t = event.touches[0];
-        stage.scrollLeft -= (t.clientX - panTouch.x);
-        stage.scrollTop -= (t.clientY - panTouch.y);
-        panTouch = { x: t.clientX, y: t.clientY };
-      }, { passive: true });
       stage.addEventListener('touchend', () => { pinchDistance = null; }, { passive: true });
-      stage.addEventListener('touchend', () => { panTouch = null; }, { passive: true });
       let joystickDrag = false;
       let joystickVector = { x: 0, y: 0 };
       let joystickTimer = null;
@@ -1469,8 +1459,10 @@ export default class ActorEditor {
         if (joystickTimer) return;
         joystickTimer = window.setInterval(() => {
           if (!joystickDrag) return;
-          stage.scrollLeft += joystickVector.x * Math.max(8, 22 * zoom);
-          stage.scrollTop += joystickVector.y * Math.max(8, 22 * zoom);
+          panX += joystickVector.x * Math.max(4, 12 * zoom);
+          panY += joystickVector.y * Math.max(4, 12 * zoom);
+          applyZoom();
+          updateCrosshairFromPicked();
         }, 16);
       };
       const stopJoystickPan = () => {
@@ -1478,18 +1470,38 @@ export default class ActorEditor {
         joystickTimer = null;
       };
       joystick.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
         joystickDrag = true;
         updateJoystick(event.clientX, event.clientY);
         startJoystickPan();
+        joystick.setPointerCapture?.(event.pointerId);
       });
-      window.addEventListener('pointermove', (event) => { if (joystickDrag) updateJoystick(event.clientX, event.clientY); });
-      window.addEventListener('pointerup', () => {
+      const onPointerMove = (event) => { if (joystickDrag) updateJoystick(event.clientX, event.clientY); };
+      const onPointerUp = () => {
         joystickDrag = false;
         joystickVector = { x: 0, y: 0 };
         stopJoystickPan();
         knob.style.left = '29px';
         knob.style.top = '29px';
+      };
+      joystick.addEventListener('pointermove', onPointerMove);
+      joystick.addEventListener('pointerup', onPointerUp);
+      joystick.addEventListener('pointercancel', onPointerUp);
+      stage.addEventListener('pointerdown', (event) => {
+        if (event.pointerType !== 'touch') return;
+        event.preventDefault();
+        panTouch = { x: event.clientX, y: event.clientY };
       });
+      stage.addEventListener('pointermove', (event) => {
+        if (!panTouch || event.pointerType !== 'touch') return;
+        event.preventDefault();
+        panX += (event.clientX - panTouch.x);
+        panY += (event.clientY - panTouch.y);
+        panTouch = { x: event.clientX, y: event.clientY };
+        applyZoom();
+        updateCrosshairFromPicked();
+      });
+      stage.addEventListener('pointerup', () => { panTouch = null; });
       modal.appendChild(card);
       document.body.appendChild(modal);
     });
