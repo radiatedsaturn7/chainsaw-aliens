@@ -1307,6 +1307,7 @@ export default class ActorEditor {
       card.appendChild(stage);
       const actions = el('div', 'actor-editor-inline-actions');
       actions.style.display = 'flex';
+      actions.style.flexWrap = 'wrap';
       actions.style.gap = '8px';
       const zoomIn = el('button', 'actor-editor-btn small', 'Zoom +');
       const zoomOut = el('button', 'actor-editor-btn small', 'Zoom -');
@@ -1324,13 +1325,23 @@ export default class ActorEditor {
       const cancel = el('button', 'actor-editor-btn', 'Cancel');
       cancel.onclick = () => { modal.remove(); resolve(null); };
       actions.append(zoomOut, zoomIn, ok, cancel);
+      const panLeft = el('button', 'actor-editor-btn small', '◀');
+      const panRight = el('button', 'actor-editor-btn small', '▶');
+      const panUp = el('button', 'actor-editor-btn small', '▲');
+      const panDown = el('button', 'actor-editor-btn small', '▼');
+      const panStep = () => Math.max(20, Math.round(36 * zoom));
+      panLeft.onclick = () => { stage.scrollLeft -= panStep(); };
+      panRight.onclick = () => { stage.scrollLeft += panStep(); };
+      panUp.onclick = () => { stage.scrollTop -= panStep(); };
+      panDown.onclick = () => { stage.scrollTop += panStep(); };
+      actions.append(panLeft, panRight, panUp, panDown);
       card.appendChild(actions);
       const updateCrosshairFromPicked = () => {
         if (!picked) return;
         const rect = img.getBoundingClientRect();
         const stageRect = stage.getBoundingClientRect();
-        const width = Math.max(1, Number(state?.animation?.width || 32));
-        const height = Math.max(1, Number(state?.animation?.height || 32));
+        const width = Math.max(1, img.naturalWidth || Number(state?.animation?.width || 32));
+        const height = Math.max(1, img.naturalHeight || Number(state?.animation?.height || 32));
         const relX = (picked.x + width / 2) / width;
         const relY = (picked.y + height / 2) / height;
         crosshair.style.left = `${rect.left - stageRect.left + relX * rect.width}px`;
@@ -1341,8 +1352,8 @@ export default class ActorEditor {
         const rect = img.getBoundingClientRect();
         const relX = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(1, rect.width)));
         const relY = Math.max(0, Math.min(1, (clientY - rect.top) / Math.max(1, rect.height)));
-        const width = Math.max(1, Number(state?.animation?.width || 32));
-        const height = Math.max(1, Number(state?.animation?.height || 32));
+        const width = Math.max(1, img.naturalWidth || Number(state?.animation?.width || 32));
+        const height = Math.max(1, img.naturalHeight || Number(state?.animation?.height || 32));
         picked = {
           x: Math.round(relX * width - width / 2),
           y: Math.round(relY * height - height / 2)
@@ -1351,8 +1362,8 @@ export default class ActorEditor {
         ok.disabled = false;
         ok.style.opacity = '1';
       };
-      const width = Math.max(1, Number(state?.animation?.width || 32));
-      const height = Math.max(1, Number(state?.animation?.height || 32));
+      const width = Math.max(1, img.naturalWidth || Number(state?.animation?.width || 32));
+      const height = Math.max(1, img.naturalHeight || Number(state?.animation?.height || 32));
       picked = {
         x: Number.isFinite(Number(params?.offsetX)) ? Number(params.offsetX) : 0,
         y: Number.isFinite(Number(params?.offsetY)) ? Number(params.offsetY) : 0
@@ -1365,6 +1376,27 @@ export default class ActorEditor {
       img.onclick = (event) => {
         setPickFromClient(event.clientX, event.clientY);
       };
+      let pinchDistance = null;
+      const getTouchDistance = (touches) => {
+        if (!touches || touches.length < 2) return null;
+        const a = touches[0];
+        const b = touches[1];
+        return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+      };
+      stage.addEventListener('touchstart', (event) => {
+        pinchDistance = getTouchDistance(event.touches);
+      }, { passive: true });
+      stage.addEventListener('touchmove', (event) => {
+        const nextDistance = getTouchDistance(event.touches);
+        if (!nextDistance || !pinchDistance) return;
+        const ratio = nextDistance / Math.max(1, pinchDistance);
+        if (Math.abs(ratio - 1) < 0.04) return;
+        zoom = Math.max(1, Math.min(16, zoom * ratio));
+        pinchDistance = nextDistance;
+        applyZoom();
+        updateCrosshairFromPicked();
+      }, { passive: true });
+      stage.addEventListener('touchend', () => { pinchDistance = null; }, { passive: true });
       modal.appendChild(card);
       document.body.appendChild(modal);
     });
