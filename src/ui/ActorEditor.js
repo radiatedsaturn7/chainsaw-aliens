@@ -1279,6 +1279,19 @@ export default class ActorEditor {
         img.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
         img.style.transformOrigin = 'center center';
       };
+      const clampPan = () => {
+        const stageRect = stage.getBoundingClientRect();
+        const baseW = Math.max(1, img.offsetWidth || img.clientWidth || 1);
+        const baseH = Math.max(1, img.offsetHeight || img.clientHeight || 1);
+        const scaledW = baseW * zoom;
+        const scaledH = baseH * zoom;
+        const maxPanX = (stageRect.width / 2) + (scaledW / 2) - 1;
+        const maxPanY = (stageRect.height / 2) + (scaledH / 2) - 1;
+        const minPanX = -maxPanX;
+        const minPanY = -maxPanY;
+        panX = Math.max(minPanX, Math.min(maxPanX, panX));
+        panY = Math.max(minPanY, Math.min(maxPanY, panY));
+      };
       applyZoom();
       const crosshair = el('div');
       crosshair.style.position = 'absolute';
@@ -1319,8 +1332,10 @@ export default class ActorEditor {
       actions.style.paddingBottom = '2px';
       const zoomIn = el('button', 'actor-editor-btn small', 'Zoom +');
       const zoomOut = el('button', 'actor-editor-btn small', 'Zoom -');
-      zoomIn.onclick = () => { zoom = Math.min(16, zoom * 1.25); applyZoom(); updateCrosshairFromPicked(); };
-      zoomOut.onclick = () => { zoom = Math.max(1, zoom / 1.25); applyZoom(); updateCrosshairFromPicked(); };
+      const resetView = el('button', 'actor-editor-btn small', 'Reset');
+      zoomIn.onclick = () => { zoom = Math.min(16, zoom * 1.25); clampPan(); applyZoom(); updateCrosshairFromPicked(); };
+      zoomOut.onclick = () => { zoom = Math.max(1, zoom / 1.25); clampPan(); applyZoom(); updateCrosshairFromPicked(); };
+      resetView.onclick = () => { zoom = 1; panX = 0; panY = 0; applyZoom(); updateCrosshairFromPicked(); };
       let picked = null;
       const ok = el('button', 'actor-editor-btn', 'OK');
       ok.disabled = true;
@@ -1359,8 +1374,8 @@ export default class ActorEditor {
       joystick.appendChild(knob);
       const spacer = el('div');
       spacer.style.flex = '1 1 auto';
-      actions.append(joystick, zoomIn, zoomOut, spacer, ok, cancel);
-      [zoomOut, zoomIn, ok, cancel].forEach((btn) => {
+      actions.append(joystick, zoomIn, zoomOut, resetView, spacer, ok, cancel);
+      [zoomOut, zoomIn, resetView, ok, cancel].forEach((btn) => {
         btn.style.padding = '8px 12px';
         btn.style.minHeight = '44px';
       });
@@ -1436,6 +1451,7 @@ export default class ActorEditor {
         if (Math.abs(ratio - 1) < 0.04) return;
         zoom = Math.max(1, Math.min(16, zoom * ratio));
         pinchDistance = nextDistance;
+        clampPan();
         applyZoom();
         updateCrosshairFromPicked();
       }, { passive: true });
@@ -1479,9 +1495,10 @@ export default class ActorEditor {
           const strength = analog * analog;
           const nx = rawX / mag;
           const ny = rawY / mag;
-          const speed = 14 * zoom * strength * dt;
+          const speed = 5 * zoom * strength * dt;
           panX += nx * speed;
           panY += ny * speed;
+          clampPan();
           applyZoom();
           updateCrosshairFromPicked();
         }, 16);
@@ -1523,6 +1540,7 @@ export default class ActorEditor {
         panX += (event.clientX - panTouch.x);
         panY += (event.clientY - panTouch.y);
         panTouch = { x: event.clientX, y: event.clientY };
+        clampPan();
         applyZoom();
         updateCrosshairFromPicked();
       });
