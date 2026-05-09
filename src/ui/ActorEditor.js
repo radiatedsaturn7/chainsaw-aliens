@@ -1336,15 +1336,6 @@ export default class ActorEditor {
       rightControls.style.display = 'flex';
       rightControls.style.alignItems = 'center';
       rightControls.style.gap = '8px';
-      const panLeft = el('button', 'actor-editor-btn small', '◀');
-      const panRight = el('button', 'actor-editor-btn small', '▶');
-      const panUp = el('button', 'actor-editor-btn small', '▲');
-      const panDown = el('button', 'actor-editor-btn small', '▼');
-      const panStep = () => Math.max(20, Math.round(36 * zoom));
-      panLeft.onclick = () => { stage.scrollLeft -= panStep(); };
-      panRight.onclick = () => { stage.scrollLeft += panStep(); };
-      panUp.onclick = () => { stage.scrollTop -= panStep(); };
-      panDown.onclick = () => { stage.scrollTop += panStep(); };
       const joystick = el('div');
       joystick.style.width = '92px';
       joystick.style.height = '92px';
@@ -1361,10 +1352,10 @@ export default class ActorEditor {
       knob.style.left = '29px';
       knob.style.top = '29px';
       joystick.appendChild(knob);
-      leftControls.append(joystick, panLeft, panRight, panUp, panDown, zoomOut, zoomIn);
+      leftControls.append(joystick, zoomOut, zoomIn);
       rightControls.append(ok, cancel);
       actions.append(leftControls, rightControls);
-      [panLeft, panRight, panUp, panDown, zoomOut, zoomIn, ok, cancel].forEach((btn) => {
+      [zoomOut, zoomIn, ok, cancel].forEach((btn) => {
         btn.style.padding = '8px 12px';
         btn.style.minHeight = '44px';
       });
@@ -1457,6 +1448,8 @@ export default class ActorEditor {
       stage.addEventListener('touchend', () => { pinchDistance = null; }, { passive: true });
       stage.addEventListener('touchend', () => { panTouch = null; }, { passive: true });
       let joystickDrag = false;
+      let joystickVector = { x: 0, y: 0 };
+      let joystickTimer = null;
       const updateJoystick = (clientX, clientY) => {
         const rect = joystick.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
@@ -1470,13 +1463,30 @@ export default class ActorEditor {
         const ndy = dy * k;
         knob.style.left = `${rect.width / 2 + ndx - 17}px`;
         knob.style.top = `${rect.height / 2 + ndy - 17}px`;
-        stage.scrollLeft += ndx * 0.35;
-        stage.scrollTop += ndy * 0.35;
+        joystickVector = { x: ndx / Math.max(1, radius), y: ndy / Math.max(1, radius) };
       };
-      joystick.addEventListener('pointerdown', (event) => { joystickDrag = true; updateJoystick(event.clientX, event.clientY); });
+      const startJoystickPan = () => {
+        if (joystickTimer) return;
+        joystickTimer = window.setInterval(() => {
+          if (!joystickDrag) return;
+          stage.scrollLeft += joystickVector.x * Math.max(8, 22 * zoom);
+          stage.scrollTop += joystickVector.y * Math.max(8, 22 * zoom);
+        }, 16);
+      };
+      const stopJoystickPan = () => {
+        if (joystickTimer) window.clearInterval(joystickTimer);
+        joystickTimer = null;
+      };
+      joystick.addEventListener('pointerdown', (event) => {
+        joystickDrag = true;
+        updateJoystick(event.clientX, event.clientY);
+        startJoystickPan();
+      });
       window.addEventListener('pointermove', (event) => { if (joystickDrag) updateJoystick(event.clientX, event.clientY); });
       window.addEventListener('pointerup', () => {
         joystickDrag = false;
+        joystickVector = { x: 0, y: 0 };
+        stopJoystickPan();
         knob.style.left = '29px';
         knob.style.top = '29px';
       });

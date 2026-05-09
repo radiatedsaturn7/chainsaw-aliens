@@ -4218,7 +4218,7 @@ export default class Game {
   }
 
   recordChainsawAttackDebugBox(centerX, centerY, rangeX, rangeY, label = 'chainsaw') {
-    if (!(this.debugMode || this.playtestActive)) return;
+    if (!this.debugMode) return;
     this.chainsawAttackDebugBoxes.push({
       x: centerX - rangeX,
       y: centerY - rangeY,
@@ -4256,7 +4256,7 @@ export default class Game {
 
 
   recordWeaponDamageDebugShape(shape) {
-    if ((!(this.debugMode || this.playtestActive)) || !shape) return;
+    if ((!this.debugMode) || !shape) return;
     this.weaponDamageDebugShapes.push({ ttl: 0.9, ...shape });
   }
 
@@ -4296,7 +4296,7 @@ export default class Game {
 
 
   recordHeldChainsawDebugShape() {
-    if (!(this.debugMode || this.playtestActive)) return;
+    if (!this.debugMode) return;
     if (!this.player || this.getActiveWeapon()?.id !== 'chainsaw') return;
     const attackRange = this.world.tileSize * 2.5;
     const forwardRange = Math.max(52, attackRange + 20);

@@ -145,7 +145,7 @@ export default class ScriptedActor extends EnemyBase {
         this.vx = 0;
         break;
       case 'spawn-bullets': {
-        const spawnX = this.x + Number(params.offsetX || 0);
+        const spawnX = this.x + Number(params.offsetX || 0) * (this.facing < 0 ? -1 : 1);
         const spawnY = this.y + Number(params.offsetY || 0);
         const dx = player.x - spawnX;
         const dy = player.y - spawnY;
