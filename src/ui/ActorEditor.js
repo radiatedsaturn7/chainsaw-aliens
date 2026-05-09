@@ -1330,6 +1330,7 @@ export default class ActorEditor {
         window.removeEventListener('pointermove', onPointerMove);
         window.removeEventListener('pointerup', onPointerUp);
         window.removeEventListener('pointercancel', onPointerUp);
+        window.removeEventListener('blur', onWindowBlur);
         modal.remove();
         resolve(result);
       };
@@ -1346,6 +1347,7 @@ export default class ActorEditor {
       joystick.style.border = '1px solid rgba(255,255,255,0.35)';
       joystick.style.position = 'relative';
       joystick.style.background = 'rgba(0,0,0,0.25)';
+      joystick.style.touchAction = 'none';
       const knob = el('div');
       knob.style.width = '34px';
       knob.style.height = '34px';
@@ -1427,6 +1429,7 @@ export default class ActorEditor {
       }, { passive: true });
       let panTouch = null;
       stage.addEventListener('touchmove', (event) => {
+        if (joystickDrag) return;
         const nextDistance = getTouchDistance(event.touches);
         if (!nextDistance || !pinchDistance) return;
         const ratio = nextDistance / Math.max(1, pinchDistance);
@@ -1502,15 +1505,19 @@ export default class ActorEditor {
         knob.style.left = '29px';
         knob.style.top = '29px';
       };
+      const onWindowBlur = () => onPointerUp();
       window.addEventListener('pointermove', onPointerMove);
       window.addEventListener('pointerup', onPointerUp);
       window.addEventListener('pointercancel', onPointerUp);
+      window.addEventListener('blur', onWindowBlur);
       stage.addEventListener('pointerdown', (event) => {
+        if (joystickDrag) return;
         if (event.pointerType !== 'touch') return;
         event.preventDefault();
         panTouch = { x: event.clientX, y: event.clientY };
       });
       stage.addEventListener('pointermove', (event) => {
+        if (joystickDrag) return;
         if (!panTouch || event.pointerType !== 'touch') return;
         event.preventDefault();
         panX += (event.clientX - panTouch.x);
