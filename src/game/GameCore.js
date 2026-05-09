@@ -4799,8 +4799,8 @@ export default class Game {
     });
   }
 
-  spawnProjectile(x, y, vx, vy, damage) {
-    this.projectiles.push(new Projectile(x, y, vx, vy, damage));
+  spawnProjectile(x, y, vx, vy, damage, options = {}) {
+    this.projectiles.push(new Projectile(x, y, vx, vy, damage, options));
   }
 
   showAbilityDialog(ability) {
