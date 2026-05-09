@@ -1447,7 +1447,10 @@ export default class ActorEditor {
         const ndy = dy * k;
         knob.style.left = `${rect.width / 2 + ndx - 17}px`;
         knob.style.top = `${rect.height / 2 + ndy - 17}px`;
-        joystickVector = { x: ndx / Math.max(1, radius), y: ndy / Math.max(1, radius) };
+        joystickVector = {
+          x: Math.max(-1, Math.min(1, ndx / Math.max(1, radius))),
+          y: Math.max(-1, Math.min(1, ndy / Math.max(1, radius)))
+        };
       };
       const startJoystickPan = () => {
         if (joystickTimer) return;
@@ -1457,13 +1460,13 @@ export default class ActorEditor {
           const now = performance.now();
           const dt = Math.max(0.5, Math.min(2.2, (now - lastTick) / 16));
           lastTick = now;
-          const deadzone = 0.07;
-          const mag = Math.hypot(joystickVector.x, joystickVector.y);
-          if (mag < deadzone) return;
-          const scaled = (mag - deadzone) / (1 - deadzone);
-          const speed = Math.max(1.5, 9 * zoom) * scaled * dt;
-          panX += (joystickVector.x / Math.max(0.001, mag)) * speed;
-          panY += (joystickVector.y / Math.max(0.001, mag)) * speed;
+          const deadzone = 0.04;
+          const dx = Math.abs(joystickVector.x) < deadzone ? 0 : joystickVector.x;
+          const dy = Math.abs(joystickVector.y) < deadzone ? 0 : joystickVector.y;
+          if (!dx && !dy) return;
+          const speed = Math.max(1.25, 8 * zoom) * dt;
+          panX -= dx * speed;
+          panY -= dy * speed;
           applyZoom();
           updateCrosshairFromPicked();
         }, 16);
