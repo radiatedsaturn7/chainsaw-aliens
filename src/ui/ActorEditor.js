@@ -1325,13 +1325,20 @@ export default class ActorEditor {
       const ok = el('button', 'actor-editor-btn', 'OK');
       ok.disabled = true;
       ok.style.opacity = '0.6';
+      const closePicker = (result = null) => {
+        stopJoystickPan();
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
+        window.removeEventListener('pointercancel', onPointerUp);
+        modal.remove();
+        resolve(result);
+      };
       ok.onclick = () => {
         if (!picked) return;
-        modal.remove();
-        resolve(picked);
+        closePicker(picked);
       };
       const cancel = el('button', 'actor-editor-btn', 'Cancel');
-      cancel.onclick = () => { modal.remove(); resolve(null); };
+      cancel.onclick = () => closePicker(null);
       const joystick = el('div');
       joystick.style.width = '92px';
       joystick.style.height = '92px';
@@ -1495,9 +1502,9 @@ export default class ActorEditor {
         knob.style.left = '29px';
         knob.style.top = '29px';
       };
-      joystick.addEventListener('pointermove', onPointerMove);
-      joystick.addEventListener('pointerup', onPointerUp);
-      joystick.addEventListener('pointercancel', onPointerUp);
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+      window.addEventListener('pointercancel', onPointerUp);
       stage.addEventListener('pointerdown', (event) => {
         if (event.pointerType !== 'touch') return;
         event.preventDefault();
