@@ -1332,18 +1332,6 @@ export default class ActorEditor {
       };
       const cancel = el('button', 'actor-editor-btn', 'Cancel');
       cancel.onclick = () => { modal.remove(); resolve(null); };
-      const leftControls = el('div', 'actor-editor-inline-actions');
-      leftControls.style.display = 'flex';
-      leftControls.style.alignItems = 'center';
-      leftControls.style.gap = '8px';
-      leftControls.style.flex = '1 1 auto';
-      const rightControls = el('div', 'actor-editor-inline-actions');
-      rightControls.style.display = 'flex';
-      rightControls.style.alignItems = 'center';
-      rightControls.style.flex = '0 0 auto';
-      rightControls.style.whiteSpace = 'nowrap';
-      rightControls.style.gap = '8px';
-      rightControls.style.marginLeft = 'auto';
       const joystick = el('div');
       joystick.style.width = '92px';
       joystick.style.height = '92px';
@@ -1360,9 +1348,9 @@ export default class ActorEditor {
       knob.style.left = '29px';
       knob.style.top = '29px';
       joystick.appendChild(knob);
-      leftControls.append(joystick, zoomOut, zoomIn);
-      rightControls.append(ok, cancel);
-      actions.append(leftControls, rightControls);
+      const spacer = el('div');
+      spacer.style.flex = '1 1 auto';
+      actions.append(joystick, zoomIn, zoomOut, spacer, ok, cancel);
       [zoomOut, zoomIn, ok, cancel].forEach((btn) => {
         btn.style.padding = '8px 12px';
         btn.style.minHeight = '44px';
