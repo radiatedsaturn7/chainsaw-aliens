@@ -40,6 +40,7 @@ export function createDocumentLifecycle(adapter) {
     adapter.afterSave?.(context, { name, data });
     markSavedSnapshot(context);
     context.game?.showSystemToast?.('saved');
+    context.statusMessage = 'saved';
     return { id: name, name };
   };
 

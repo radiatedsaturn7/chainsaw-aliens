@@ -50,7 +50,7 @@ const ACTION_SPECS = {
   jump: { label: 'Jump', fields: [{ key: 'speed', label: 'Jump speed', type: 'number', min: 0, step: 1, defaultValue: 220 }] },
   'stop-moving': { label: 'Stop moving', fields: [] },
   'emit-damage': { label: 'Emit area damage', fields: [{ key: 'amount', label: 'Damage amount', type: 'number', min: 0, step: 1, defaultValue: 1 }, { key: 'radius', label: 'Radius (px)', type: 'number', min: 0, step: 1, defaultValue: 32 }] },
-  'spawn-bullets': { label: 'Spawn bullet', fields: [{ key: 'aimAtPlayer', label: 'Aim at player', type: 'checkbox', defaultValue: true }, { key: 'angle', label: 'Angle (degrees)', type: 'number', step: 1, defaultValue: 0, toDisplay: (v) => Math.round(Number(v || 0) * (180 / Math.PI)), fromDisplay: (v) => Number(v || 0) * (Math.PI / 180) }, { key: 'speed', label: 'Bullet speed', type: 'number', min: 0, step: 1, defaultValue: 220 }, { key: 'offsetX', label: 'Spawn offset X', type: 'number', step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Spawn offset Y', type: 'number', step: 1, defaultValue: 0 }] },
+  'spawn-bullets': { label: 'Spawn bullet', fields: [{ key: 'aimAtPlayer', label: 'Aim at player', type: 'checkbox', defaultValue: true }, { key: 'angle', label: 'Angle (degrees)', type: 'number', step: 1, defaultValue: 0, toDisplay: (v) => Math.round(Number(v || 0) * (180 / Math.PI)), fromDisplay: (v) => Number(v || 0) * (Math.PI / 180) }, { key: 'speed', label: 'Bullet speed', type: 'number', min: 0, step: 1, defaultValue: 220 }, { key: 'offsetX', label: 'Spawn offset X', type: 'number', min: -9999, max: 9999, step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Spawn offset Y', type: 'number', min: -9999, max: 9999, step: 1, defaultValue: 0 }] },
   'spawn-actor': { label: 'Spawn actor', fields: [{ key: 'actorId', label: 'Actor ID', type: 'text', defaultValue: '' }, { key: 'offsetX', label: 'Offset X', type: 'number', step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Offset Y', type: 'number', step: 1, defaultValue: 0 }] },
   'delete-actor': { label: 'Delete actor', fields: [] },
   'play-sound': { label: 'Play sound', fields: [{ key: 'soundId', label: 'Sound ID', type: 'text', defaultValue: '' }] },
@@ -1096,8 +1096,9 @@ export default class ActorEditor {
     section.appendChild(el('div', 'actor-editor-note', 'Transitions are checked top-to-bottom. The first matching transition runs.'));
     const list = el('div', 'actor-editor-list');
     state.transitions.forEach((transition, transitionIndex) => {
-      const card = el('div', 'actor-editor-subsection');
-      const heading = el('h3', '', `Transition ${transitionIndex + 1}`);
+      const card = el('details', 'actor-editor-subsection');
+      card.open = true;
+      const heading = el('summary', '', transition.name || `Transition ${transitionIndex + 1}`);
       const name = el('input');
       name.value = transition.name || '';
       name.placeholder = `Transition ${transitionIndex + 1}`;
@@ -1209,6 +1210,19 @@ export default class ActorEditor {
           draft.transitions[transitionIndex].actions[index].params[field.key] = nextValue;
         })
       });
+      if (action.type === 'spawn-bullets') {
+        const pick = el('button', 'actor-editor-btn small', 'Set gun location');
+        pick.onclick = async () => {
+          const point = await this.openBulletSpawnPicker(state, action.params || {});
+          if (!point) return;
+          this.updateSelectedState((draft) => {
+            draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
+            draft.transitions[transitionIndex].actions[index].params.offsetX = point.x;
+            draft.transitions[transitionIndex].actions[index].params.offsetY = point.y;
+          });
+        };
+        row.appendChild(pick);
+      }
       const remove = el('button', 'actor-editor-btn small', 'Remove');
       remove.onclick = () => this.updateSelectedState((draft) => { draft.transitions[transitionIndex].actions.splice(index, 1); });
       row.append(type, params, remove); list.appendChild(row);
@@ -1219,6 +1233,40 @@ export default class ActorEditor {
     });
     section.append(list, add);
     return section;
+  }
+
+  async openBulletSpawnPicker(state, params = {}) {
+    const frame = this.getAnimationPreviewFrames(state?.animation || {})[0];
+    if (!frame?.imageDataUrl) return null;
+    return new Promise((resolve) => {
+      const modal = el('div', 'actor-editor-overlay');
+      modal.style.background = 'rgba(0,0,0,0.75)';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      const card = el('div', 'actor-editor-card');
+      card.appendChild(el('div', '', 'Tap gun spawn location'));
+      const img = el('img');
+      img.src = frame.imageDataUrl;
+      img.style.maxWidth = '80vw';
+      img.style.maxHeight = '60vh';
+      img.style.imageRendering = 'pixelated';
+      card.appendChild(img);
+      const cancel = el('button', 'actor-editor-btn', 'Cancel');
+      cancel.onclick = () => { modal.remove(); resolve(null); };
+      card.appendChild(cancel);
+      img.onclick = (event) => {
+        const rect = img.getBoundingClientRect();
+        const relX = (event.clientX - rect.left) / Math.max(1, rect.width);
+        const relY = (event.clientY - rect.top) / Math.max(1, rect.height);
+        const width = Math.max(1, Number(state?.animation?.width || 32));
+        const height = Math.max(1, Number(state?.animation?.height || 32));
+        modal.remove();
+        resolve({ x: Math.round(relX * width - width / 2), y: Math.round(relY * height - height / 2) });
+      };
+      modal.appendChild(card);
+      document.body.appendChild(modal);
+    });
   }
 
   addTransition() {
