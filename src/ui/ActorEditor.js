@@ -1272,7 +1272,7 @@ export default class ActorEditor {
       img.style.display = 'block';
       img.style.touchAction = 'none';
       stage.appendChild(img);
-      let zoom = 1;
+      let zoom = 1.25;
       let panX = 0;
       let panY = 0;
       const applyZoom = () => {
@@ -1492,12 +1492,12 @@ export default class ActorEditor {
           const mag = Math.hypot(rawX, rawY);
           if (mag <= deadzone) return;
           const analog = Math.min(1, (mag - deadzone) / (1 - deadzone));
-          const strength = analog * analog;
           const nx = rawX / mag;
           const ny = rawY / mag;
-          const speed = 5 * zoom * strength * dt;
-          panX += nx * speed;
-          panY += ny * speed;
+          const frameScale = dt;
+          const speed = 8;
+          panX -= nx * analog * speed * frameScale;
+          panY -= ny * analog * speed * frameScale;
           clampPan();
           applyZoom();
           updateCrosshairFromPicked();
