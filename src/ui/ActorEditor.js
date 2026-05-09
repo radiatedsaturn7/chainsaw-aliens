@@ -1240,11 +1240,13 @@ export default class ActorEditor {
     if (!frame?.imageDataUrl) return null;
     return new Promise((resolve) => {
       const modal = el('div', 'actor-editor-overlay');
+      modal.style.position = 'fixed';
+      modal.style.inset = '0';
       modal.style.background = 'rgba(0,0,0,0.75)';
       modal.style.display = 'flex';
       modal.style.alignItems = 'center';
       modal.style.justifyContent = 'center';
-      modal.style.zIndex = '20000';
+      modal.style.zIndex = '2147483647';
       const card = el('div', 'actor-editor-card');
       card.style.width = '96vw';
       card.style.height = '92vh';
@@ -1260,6 +1262,7 @@ export default class ActorEditor {
       stage.style.background = 'rgba(0,0,0,0.35)';
       stage.style.border = '1px solid rgba(255,255,255,0.2)';
       stage.style.position = 'relative';
+      stage.style.overflow = 'auto';
       const img = el('img');
       img.src = frame.imageDataUrl;
       img.style.maxWidth = '94vw';
@@ -1269,6 +1272,12 @@ export default class ActorEditor {
       img.style.display = 'block';
       img.style.touchAction = 'none';
       stage.appendChild(img);
+      let zoom = 1;
+      const applyZoom = () => {
+        img.style.transform = `scale(${zoom})`;
+        img.style.transformOrigin = 'center center';
+      };
+      applyZoom();
       const crosshair = el('div');
       crosshair.style.position = 'absolute';
       crosshair.style.width = '28px';
@@ -1299,6 +1308,10 @@ export default class ActorEditor {
       const actions = el('div', 'actor-editor-inline-actions');
       actions.style.display = 'flex';
       actions.style.gap = '8px';
+      const zoomIn = el('button', 'actor-editor-btn small', 'Zoom +');
+      const zoomOut = el('button', 'actor-editor-btn small', 'Zoom -');
+      zoomIn.onclick = () => { zoom = Math.min(16, zoom * 1.25); applyZoom(); updateCrosshairFromPicked(); };
+      zoomOut.onclick = () => { zoom = Math.max(1, zoom / 1.25); applyZoom(); updateCrosshairFromPicked(); };
       let picked = null;
       const ok = el('button', 'actor-editor-btn', 'OK');
       ok.disabled = true;
@@ -1310,8 +1323,20 @@ export default class ActorEditor {
       };
       const cancel = el('button', 'actor-editor-btn', 'Cancel');
       cancel.onclick = () => { modal.remove(); resolve(null); };
-      actions.append(ok, cancel);
+      actions.append(zoomOut, zoomIn, ok, cancel);
       card.appendChild(actions);
+      const updateCrosshairFromPicked = () => {
+        if (!picked) return;
+        const rect = img.getBoundingClientRect();
+        const stageRect = stage.getBoundingClientRect();
+        const width = Math.max(1, Number(state?.animation?.width || 32));
+        const height = Math.max(1, Number(state?.animation?.height || 32));
+        const relX = (picked.x + width / 2) / width;
+        const relY = (picked.y + height / 2) / height;
+        crosshair.style.left = `${rect.left - stageRect.left + relX * rect.width}px`;
+        crosshair.style.top = `${rect.top - stageRect.top + relY * rect.height}px`;
+        crosshair.style.display = 'block';
+      };
       const setPickFromClient = (clientX, clientY) => {
         const rect = img.getBoundingClientRect();
         const relX = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(1, rect.width)));
@@ -1322,12 +1347,21 @@ export default class ActorEditor {
           x: Math.round(relX * width - width / 2),
           y: Math.round(relY * height - height / 2)
         };
-        crosshair.style.left = `${rect.left - stage.getBoundingClientRect().left + relX * rect.width}px`;
-        crosshair.style.top = `${rect.top - stage.getBoundingClientRect().top + relY * rect.height}px`;
-        crosshair.style.display = 'block';
+        updateCrosshairFromPicked();
         ok.disabled = false;
         ok.style.opacity = '1';
       };
+      const width = Math.max(1, Number(state?.animation?.width || 32));
+      const height = Math.max(1, Number(state?.animation?.height || 32));
+      picked = {
+        x: Number.isFinite(Number(params?.offsetX)) ? Number(params.offsetX) : 0,
+        y: Number.isFinite(Number(params?.offsetY)) ? Number(params.offsetY) : 0
+      };
+      picked.x = Math.max(-Math.floor(width / 2), Math.min(Math.ceil(width / 2), picked.x));
+      picked.y = Math.max(-Math.floor(height / 2), Math.min(Math.ceil(height / 2), picked.y));
+      ok.disabled = false;
+      ok.style.opacity = '1';
+      requestAnimationFrame(() => updateCrosshairFromPicked());
       img.onclick = (event) => {
         setPickFromClient(event.clientX, event.clientY);
       };
