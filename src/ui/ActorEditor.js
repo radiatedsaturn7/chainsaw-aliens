@@ -1248,7 +1248,7 @@ export default class ActorEditor {
       modal.style.justifyContent = 'center';
       modal.style.zIndex = '2147483647';
       const card = el('div', 'actor-editor-card');
-      card.style.width = '90vw';
+      card.style.width = 'min(90vw, 1280px)';
       card.style.height = '82vh';
       card.style.display = 'flex';
       card.style.flexDirection = 'column';
@@ -1307,8 +1307,12 @@ export default class ActorEditor {
       card.appendChild(stage);
       const actions = el('div', 'actor-editor-inline-actions');
       actions.style.display = 'flex';
-      actions.style.flexWrap = 'wrap';
+      actions.style.alignItems = 'center';
+      actions.style.justifyContent = 'space-between';
       actions.style.gap = '8px';
+      actions.style.height = '72px';
+      actions.style.paddingTop = '2px';
+      actions.style.paddingBottom = '2px';
       const zoomIn = el('button', 'actor-editor-btn small', 'Zoom +');
       const zoomOut = el('button', 'actor-editor-btn small', 'Zoom -');
       zoomIn.onclick = () => { zoom = Math.min(16, zoom * 1.25); applyZoom(); updateCrosshairFromPicked(); };
@@ -1324,7 +1328,14 @@ export default class ActorEditor {
       };
       const cancel = el('button', 'actor-editor-btn', 'Cancel');
       cancel.onclick = () => { modal.remove(); resolve(null); };
-      actions.append(zoomOut, zoomIn, ok, cancel);
+      const leftControls = el('div', 'actor-editor-inline-actions');
+      leftControls.style.display = 'flex';
+      leftControls.style.alignItems = 'center';
+      leftControls.style.gap = '8px';
+      const rightControls = el('div', 'actor-editor-inline-actions');
+      rightControls.style.display = 'flex';
+      rightControls.style.alignItems = 'center';
+      rightControls.style.gap = '8px';
       const panLeft = el('button', 'actor-editor-btn small', '◀');
       const panRight = el('button', 'actor-editor-btn small', '▶');
       const panUp = el('button', 'actor-editor-btn small', '▲');
@@ -1334,7 +1345,6 @@ export default class ActorEditor {
       panRight.onclick = () => { stage.scrollLeft += panStep(); };
       panUp.onclick = () => { stage.scrollTop -= panStep(); };
       panDown.onclick = () => { stage.scrollTop += panStep(); };
-      actions.append(panLeft, panRight, panUp, panDown);
       const joystick = el('div');
       joystick.style.width = '92px';
       joystick.style.height = '92px';
@@ -1351,7 +1361,13 @@ export default class ActorEditor {
       knob.style.left = '29px';
       knob.style.top = '29px';
       joystick.appendChild(knob);
-      actions.appendChild(joystick);
+      leftControls.append(joystick, panLeft, panRight, panUp, panDown, zoomOut, zoomIn);
+      rightControls.append(ok, cancel);
+      actions.append(leftControls, rightControls);
+      [panLeft, panRight, panUp, panDown, zoomOut, zoomIn, ok, cancel].forEach((btn) => {
+        btn.style.padding = '8px 12px';
+        btn.style.minHeight = '44px';
+      });
       card.appendChild(actions);
       const updateCrosshairFromPicked = () => {
         if (!picked) return;
