@@ -1243,8 +1243,11 @@ export default class ActorEditor {
         draft.transitions[transitionIndex].actions[index].type = nextType;
         draft.transitions[transitionIndex].actions[index].params = this.createParamsFromSpec(this.getActionSpec(nextType), stateOptions);
       });
+      const actionFields = action.type === 'spawn-bullets'
+        ? (spec.fields || []).filter((field) => field.key !== 'projectileArtRef')
+        : spec.fields;
       const params = this.renderParamFields({
-        fields: spec.fields,
+        fields: actionFields,
         params: action.params || {},
         stateOptions,
         onParamInput: (field, value) => this.updateSelectedState((draft) => {
