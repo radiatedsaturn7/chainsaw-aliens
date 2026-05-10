@@ -40,7 +40,7 @@ const BRUSH_SIZE_MIN = 1;
 const BRUSH_SIZE_MAX = 64;
 const DEFAULT_BRUSH_SIZE = 1;
 const DEFAULT_FRAME_DURATION_MS = Math.round(1000 / 32);
-const ART_DIMENSION_MIN = 8;
+const ART_DIMENSION_MIN = 4;
 const ART_DIMENSION_MAX = 4096;
 const BRUSH_SHAPES = ['circle', 'square', 'diamond', 'cross', 'x', 'hline', 'vline'];
 
