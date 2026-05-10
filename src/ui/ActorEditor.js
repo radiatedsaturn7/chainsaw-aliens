@@ -389,6 +389,47 @@ export default class ActorEditor {
     }).catch((error) => console.warn('Failed to open actor animation in Pixel Studio', error));
   }
 
+  getProjectileArtPreviewFrames(artRef) {
+    const ref = String(artRef || '').trim();
+    if (!ref) return [];
+    return this.getAnimationPreviewFrames({ artRef: ref, frames: [], fps: 8 });
+  }
+
+  openProjectileArtEditor(initialArtRef, onCommit) {
+    this.game.enterPixelStudio({ returnState: 'actor-editor', resetFocus: false });
+    this.game.pixelStudio.loadActorStateImageForEditing({
+      actorId: this.actor.id,
+      stateId: `${this.selectedStateId || 'state'}-projectile`,
+      animation: { artRef: String(initialArtRef || '').trim(), frames: [], fps: 8 },
+      onCommit: (animation) => {
+        const nextArtRef = String(animation?.artRef || initialArtRef || '').trim();
+        if (!nextArtRef) return;
+        onCommit?.(nextArtRef);
+      }
+    }).catch((error) => console.warn('Failed to open projectile art in Pixel Studio', error));
+  }
+
+  buildProjectileArtControl(params, onCommit) {
+    const wrap = el('div', 'actor-editor-inline-actions');
+    const button = el('button', 'actor-editor-btn small');
+    button.type = 'button';
+    const artRef = String(params?.projectileArtRef || '').trim();
+    const frames = this.getProjectileArtPreviewFrames(artRef);
+    const preview = frames[0];
+    if (preview?.imageDataUrl) {
+      const image = el('img', 'actor-editor-thumb');
+      image.src = preview.imageDataUrl;
+      image.alt = 'Projectile art preview';
+      button.appendChild(image);
+      button.appendChild(el('span', '', artRef || 'Edit projectile art'));
+    } else {
+      button.textContent = artRef ? `Edit ${artRef}` : 'Create projectile art';
+    }
+    button.onclick = () => this.openProjectileArtEditor(artRef, onCommit);
+    wrap.appendChild(button);
+    return wrap;
+  }
+
   addState() {
     const copy = clone(this.actor);
     const next = createDefaultState(`State ${copy.states.length + 1}`);
@@ -1213,6 +1254,13 @@ export default class ActorEditor {
         })
       });
       if (action.type === 'spawn-bullets') {
+        const projectileArt = this.buildProjectileArtControl(action.params || {}, (nextArtRef) => {
+          this.updateSelectedState((draft) => {
+            draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
+            draft.transitions[transitionIndex].actions[index].params.projectileArtRef = nextArtRef;
+          });
+        });
+        row.appendChild(projectileArt);
         const pick = el('button', 'actor-editor-btn small', 'Set gun location');
         pick.onclick = async () => {
           const point = await this.openBulletSpawnPicker(state, action.params || {});
