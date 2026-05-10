@@ -6546,6 +6546,7 @@ export default class Game {
 
     this.enemies.forEach((enemy) => {
       if (!enemy.dead || enemy.deathTimer > 0) {
+        enemy.debugMode = this.debugMode;
         enemy.draw(ctx);
         this.drawIgnitirDissolve(ctx, enemy);
       }
@@ -6880,6 +6881,7 @@ export default class Game {
     ctx.globalAlpha = 0.25;
     ctx.lineWidth = 4;
     this.enemies.forEach((enemy) => {
+      enemy.debugMode = this.debugMode;
       if (!enemy.dead || enemy.deathTimer > 0) enemy.draw(ctx);
     });
     if (this.boss && !this.boss.dead) {
