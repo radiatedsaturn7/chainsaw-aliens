@@ -6551,7 +6551,7 @@ export default class Game {
         this.drawIgnitirDissolve(ctx, enemy);
       }
     });
-    if (this.playtestActive && this.actorEditorTestSnapshot) {
+    if (this.debugMode && this.playtestActive && this.actorEditorTestSnapshot) {
       this.drawActorPlaytestEnemyBounds(ctx);
     }
     if (this.debugMode || this.playtestActive) {
@@ -7862,6 +7862,7 @@ export default class Game {
   }
 
   drawActorPlaytestEnemyBounds(ctx) {
+    if (!this.debugMode) return;
     ctx.save();
     this.enemies.forEach((enemy) => {
       if (!enemy || enemy.dead) return;
