@@ -8118,6 +8118,7 @@ export default class Game {
   }
 
   drawCollisionBoxes(ctx) {
+    if (!this.debugMode) return;
     ctx.save();
     ctx.strokeStyle = 'rgba(255,255,255,0.6)';
     ctx.strokeRect(this.player.rect.x, this.player.rect.y, this.player.rect.w, this.player.rect.h);
