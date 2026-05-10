@@ -54,6 +54,7 @@ export default class ScriptedActor extends EnemyBase {
     this.damagedPlayerThisFrame = false;
     this.transitionDelayRemaining = 0;
     this.pendingShots = [];
+    this.pendingStateSwitch = null;
   }
 
   get currentState() {
@@ -129,8 +130,12 @@ export default class ScriptedActor extends EnemyBase {
     switch (action?.type) {
       case 'switch-state':
         if (params.stateId && params.stateId !== this.stateId) {
-          this.stateId = params.stateId;
-          this.stateTimer = 0;
+          if (this.transitionDelayRemaining > 0 || this.pendingShots.length > 0) {
+            this.pendingStateSwitch = params.stateId;
+          } else {
+            this.stateId = params.stateId;
+            this.stateTimer = 0;
+          }
         }
         break;
       case 'reverse-direction':
@@ -248,6 +253,11 @@ export default class ScriptedActor extends EnemyBase {
     this.stateTimer += dt;
     this.applyMovement(dt, player, context);
     this.tickPendingShots(dt, player, context);
+    if (this.pendingStateSwitch && this.transitionDelayRemaining <= 0 && this.pendingShots.length === 0) {
+      this.stateId = this.pendingStateSwitch;
+      this.stateTimer = 0;
+      this.pendingStateSwitch = null;
+    }
     if (this.transitionDelayRemaining <= 0) {
       this.checkStateTransition(player, context);
     }
