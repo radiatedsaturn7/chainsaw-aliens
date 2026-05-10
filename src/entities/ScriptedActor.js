@@ -55,6 +55,7 @@ export default class ScriptedActor extends EnemyBase {
     this.transitionDelayRemaining = 0;
     this.pendingShots = [];
     this.pendingStateSwitch = null;
+    this._lastFrameImage = null;
   }
 
   get currentState() {
@@ -381,13 +382,18 @@ export default class ScriptedActor extends EnemyBase {
   draw(ctx) {
     const frame = this.getCurrentAnimationFrame();
     const image = this.getFrameImage(frame?.imageDataUrl || '');
-    if (!image) {
+    const drawImage = image || this._lastFrameImage;
+    if (image) {
+      this._lastFrameImage = image;
+    }
+    if (!drawImage) {
+      if (frame?.imageDataUrl) return;
       super.draw(ctx);
       return;
     }
     const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
-    const nativeW = Number(image?.naturalWidth || image?.width || 0);
-    const nativeH = Number(image?.naturalHeight || image?.height || 0);
+    const nativeW = Number(drawImage?.naturalWidth || drawImage?.width || 0);
+    const nativeH = Number(drawImage?.naturalHeight || drawImage?.height || 0);
     const imageScaledW = nativeW > 0 ? (nativeW / 16) * 32 : 0;
     const imageScaledH = nativeH > 0 ? (nativeH / 16) * 32 : 0;
     const drawW = Math.max(this.width, imageScaledW || 0);
@@ -398,7 +404,7 @@ export default class ScriptedActor extends EnemyBase {
     if (this.facing < 0) {
       ctx.scale(-1, 1);
     }
-    ctx.drawImage(image, -drawW / 2, -drawH / 2, drawW, drawH);
+    ctx.drawImage(drawImage, -drawW / 2, -drawH / 2, drawW, drawH);
     if (flash) {
       ctx.globalCompositeOperation = 'screen';
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
