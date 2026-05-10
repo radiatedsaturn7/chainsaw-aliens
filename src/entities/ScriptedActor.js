@@ -161,6 +161,10 @@ export default class ScriptedActor extends EnemyBase {
             params: { ...params }
           });
         }
+        if (params.restartAnimationEachShot && shotCount > 1) {
+          const sequenceDuration = Math.max(0, (shotCount - 1) * shotDelay);
+          this.transitionDelayRemaining = Math.max(this.transitionDelayRemaining, sequenceDuration);
+        }
         break;
       }
       case 'become-invulnerable':
