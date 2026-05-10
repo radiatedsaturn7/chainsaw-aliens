@@ -247,6 +247,7 @@ export default class ScriptedActor extends EnemyBase {
     }
     this.stateTimer += dt;
     this.applyMovement(dt, player, context);
+    this.tickPendingShots(dt, player, context);
     if (this.transitionDelayRemaining <= 0) {
       this.checkStateTransition(player, context);
     }
@@ -257,6 +258,27 @@ export default class ScriptedActor extends EnemyBase {
     this.stagger = Math.max(0, this.stagger - dt * 0.5);
     this.tookDamageThisFrame = false;
     this.damagedPlayerThisFrame = false;
+  }
+
+  tickPendingShots(dt, player, context = {}) {
+    if (this.transitionDelayRemaining > 0) {
+      this.transitionDelayRemaining = Math.max(0, this.transitionDelayRemaining - dt);
+    }
+    for (let i = this.pendingShots.length - 1; i >= 0; i -= 1) {
+      const shot = this.pendingShots[i];
+      shot.timer -= dt;
+      if (shot.timer > 0) continue;
+      const p = shot.params || {};
+      const spawnX = this.x + Number(p.offsetX || 0) * (this.facing < 0 ? -1 : 1);
+      const spawnY = this.y + Number(p.offsetY || 0);
+      const dx = player.x - spawnX;
+      const dy = player.y - spawnY;
+      const angle = p.aimAtPlayer ? Math.atan2(dy, dx) : Number(p.angle || 0);
+      const speed = Number(p.speed || 220);
+      if (p.restartAnimationEachShot) this.stateTimer = 0;
+      context.spawnProjectile?.(spawnX, spawnY, Math.cos(angle) * speed, Math.sin(angle) * speed, 1, { artRef: p.projectileArtRef || '' });
+      this.pendingShots.splice(i, 1);
+    }
   }
 
   getAnimationFrames() {
@@ -375,21 +397,3 @@ export default class ScriptedActor extends EnemyBase {
     ctx.restore();
   }
 }
-    if (this.transitionDelayRemaining > 0) {
-      this.transitionDelayRemaining = Math.max(0, this.transitionDelayRemaining - dt);
-    }
-    for (let i = this.pendingShots.length - 1; i >= 0; i -= 1) {
-      const shot = this.pendingShots[i];
-      shot.timer -= dt;
-      if (shot.timer > 0) continue;
-      const p = shot.params || {};
-      const spawnX = this.x + Number(p.offsetX || 0) * (this.facing < 0 ? -1 : 1);
-      const spawnY = this.y + Number(p.offsetY || 0);
-      const dx = player.x - spawnX;
-      const dy = player.y - spawnY;
-      const angle = p.aimAtPlayer ? Math.atan2(dy, dx) : Number(p.angle || 0);
-      const speed = Number(p.speed || 220);
-      if (p.restartAnimationEachShot) this.stateTimer = 0;
-      context.spawnProjectile?.(spawnX, spawnY, Math.cos(angle) * speed, Math.sin(angle) * speed, 1, { artRef: p.projectileArtRef || '' });
-      this.pendingShots.splice(i, 1);
-    }
