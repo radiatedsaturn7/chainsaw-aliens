@@ -52,6 +52,10 @@ export default class ScriptedActor extends EnemyBase {
     this._artAnimationCache = new Map();
     this.tookDamageThisFrame = false;
     this.damagedPlayerThisFrame = false;
+    this.transitionDelayRemaining = 0;
+    this.pendingShots = [];
+    this.pendingStateSwitch = null;
+    this._lastFrameImage = null;
   }
 
   get currentState() {
@@ -127,8 +131,12 @@ export default class ScriptedActor extends EnemyBase {
     switch (action?.type) {
       case 'switch-state':
         if (params.stateId && params.stateId !== this.stateId) {
-          this.stateId = params.stateId;
-          this.stateTimer = 0;
+          if (this.transitionDelayRemaining > 0 || this.pendingShots.length > 0) {
+            this.pendingStateSwitch = params.stateId;
+          } else {
+            this.stateId = params.stateId;
+            this.stateTimer = 0;
+          }
         }
         break;
       case 'reverse-direction':
@@ -144,14 +152,21 @@ export default class ScriptedActor extends EnemyBase {
       case 'stop-moving':
         this.vx = 0;
         break;
+      case 'delay':
+        this.transitionDelayRemaining = Math.max(this.transitionDelayRemaining, Math.max(0, Number(params.ms || 0)) / 1000);
+        break;
+      case 'rewind-animation':
+        this.stateTimer = 0;
+        break;
       case 'spawn-bullets': {
-        const spawnX = this.x + Number(params.offsetX || 0);
-        const spawnY = this.y + Number(params.offsetY || 0);
-        const dx = player.x - spawnX;
-        const dy = player.y - spawnY;
-        const angle = params.aimAtPlayer ? Math.atan2(dy, dx) : Number(params.angle || 0);
-        const speed = Number(params.speed || 220);
-        context.spawnProjectile?.(spawnX, spawnY, Math.cos(angle) * speed, Math.sin(angle) * speed, 1);
+        const shotCount = Math.max(1, Math.floor(Number(params.shots || 1)));
+        const shotDelay = Math.max(0, Number(params.shotDelayMs || 0)) / 1000;
+        for (let i = 0; i < shotCount; i += 1) {
+          this.pendingShots.push({
+            timer: i * shotDelay,
+            params: { ...params }
+          });
+        }
         break;
       }
       case 'become-invulnerable':
@@ -238,7 +253,15 @@ export default class ScriptedActor extends EnemyBase {
     }
     this.stateTimer += dt;
     this.applyMovement(dt, player, context);
-    this.checkStateTransition(player, context);
+    this.tickPendingShots(dt, player, context);
+    if (this.pendingStateSwitch && this.transitionDelayRemaining <= 0 && this.pendingShots.length === 0) {
+      this.stateId = this.pendingStateSwitch;
+      this.stateTimer = 0;
+      this.pendingStateSwitch = null;
+    }
+    if (this.transitionDelayRemaining <= 0) {
+      this.checkStateTransition(player, context);
+    }
     const overrides = this.currentState?.overrides || {};
     this.bodyDamageEnabled = overrides.bodyDamageEnabled == null ? this.definition.bodyDamageEnabled : !!overrides.bodyDamageEnabled;
     this.contactDamage = overrides.contactDamage == null ? this.definition.contactDamage : Number(overrides.contactDamage || 0);
@@ -246,6 +269,27 @@ export default class ScriptedActor extends EnemyBase {
     this.stagger = Math.max(0, this.stagger - dt * 0.5);
     this.tookDamageThisFrame = false;
     this.damagedPlayerThisFrame = false;
+  }
+
+  tickPendingShots(dt, player, context = {}) {
+    if (this.transitionDelayRemaining > 0) {
+      this.transitionDelayRemaining = Math.max(0, this.transitionDelayRemaining - dt);
+    }
+    for (let i = this.pendingShots.length - 1; i >= 0; i -= 1) {
+      const shot = this.pendingShots[i];
+      shot.timer -= dt;
+      if (shot.timer > 0) continue;
+      const p = shot.params || {};
+      const spawnX = this.x + Number(p.offsetX || 0) * (this.facing < 0 ? -1 : 1);
+      const spawnY = this.y + Number(p.offsetY || 0);
+      const dx = player.x - spawnX;
+      const dy = player.y - spawnY;
+      const angle = p.aimAtPlayer ? Math.atan2(dy, dx) : Number(p.angle || 0);
+      const speed = Number(p.speed || 220);
+      if (p.restartAnimationEachShot) this.stateTimer = 0;
+      context.spawnProjectile?.(spawnX, spawnY, Math.cos(angle) * speed, Math.sin(angle) * speed, 1, { artRef: p.projectileArtRef || '' });
+      this.pendingShots.splice(i, 1);
+    }
   }
 
   getAnimationFrames() {
@@ -338,13 +382,18 @@ export default class ScriptedActor extends EnemyBase {
   draw(ctx) {
     const frame = this.getCurrentAnimationFrame();
     const image = this.getFrameImage(frame?.imageDataUrl || '');
-    if (!image) {
+    const drawImage = image || this._lastFrameImage;
+    if (image) {
+      this._lastFrameImage = image;
+    }
+    if (!drawImage) {
+      if (frame?.imageDataUrl) return;
       super.draw(ctx);
       return;
     }
     const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
-    const nativeW = Number(image?.naturalWidth || image?.width || 0);
-    const nativeH = Number(image?.naturalHeight || image?.height || 0);
+    const nativeW = Number(drawImage?.naturalWidth || drawImage?.width || 0);
+    const nativeH = Number(drawImage?.naturalHeight || drawImage?.height || 0);
     const imageScaledW = nativeW > 0 ? (nativeW / 16) * 32 : 0;
     const imageScaledH = nativeH > 0 ? (nativeH / 16) * 32 : 0;
     const drawW = Math.max(this.width, imageScaledW || 0);
@@ -355,7 +404,7 @@ export default class ScriptedActor extends EnemyBase {
     if (this.facing < 0) {
       ctx.scale(-1, 1);
     }
-    ctx.drawImage(image, -drawW / 2, -drawH / 2, drawW, drawH);
+    ctx.drawImage(drawImage, -drawW / 2, -drawH / 2, drawW, drawH);
     if (flash) {
       ctx.globalCompositeOperation = 'screen';
       ctx.fillStyle = 'rgba(255,255,255,0.5)';

@@ -49,8 +49,10 @@ const ACTION_SPECS = {
   'set-velocity': { label: 'Set velocity', fields: [{ key: 'vx', label: 'X speed', type: 'number', step: 1, defaultValue: 0 }, { key: 'vy', label: 'Y speed', type: 'number', step: 1, defaultValue: 0 }] },
   jump: { label: 'Jump', fields: [{ key: 'speed', label: 'Jump speed', type: 'number', min: 0, step: 1, defaultValue: 220 }] },
   'stop-moving': { label: 'Stop moving', fields: [] },
+  delay: { label: 'Delay', fields: [{ key: 'ms', label: 'Milliseconds', type: 'number', min: 0, step: 10, defaultValue: 100 }] },
+  'rewind-animation': { label: 'Rewind Animation', fields: [] },
   'emit-damage': { label: 'Emit area damage', fields: [{ key: 'amount', label: 'Damage amount', type: 'number', min: 0, step: 1, defaultValue: 1 }, { key: 'radius', label: 'Radius (px)', type: 'number', min: 0, step: 1, defaultValue: 32 }] },
-  'spawn-bullets': { label: 'Spawn bullet', fields: [{ key: 'aimAtPlayer', label: 'Aim at player', type: 'checkbox', defaultValue: true }, { key: 'angle', label: 'Angle (degrees)', type: 'number', step: 1, defaultValue: 0, toDisplay: (v) => Math.round(Number(v || 0) * (180 / Math.PI)), fromDisplay: (v) => Number(v || 0) * (Math.PI / 180) }, { key: 'speed', label: 'Bullet speed', type: 'number', min: 0, step: 1, defaultValue: 220 }, { key: 'offsetX', label: 'Spawn offset X', type: 'number', step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Spawn offset Y', type: 'number', step: 1, defaultValue: 0 }] },
+  'spawn-bullets': { label: 'Spawn bullet', fields: [{ key: 'aimAtPlayer', label: 'Aim at player', type: 'checkbox', defaultValue: true }, { key: 'angle', label: 'Angle (degrees)', type: 'number', step: 1, defaultValue: 0, toDisplay: (v) => Math.round(Number(v || 0) * (180 / Math.PI)), fromDisplay: (v) => Number(v || 0) * (Math.PI / 180) }, { key: 'speed', label: 'Bullet speed', type: 'number', min: 0, step: 1, defaultValue: 220 }, { key: 'shots', label: 'Shots', type: 'number', min: 1, max: 32, step: 1, defaultValue: 1 }, { key: 'shotDelayMs', label: 'Shot Delay ms', type: 'number', min: 0, step: 10, defaultValue: 0 }, { key: 'restartAnimationEachShot', label: 'Restart anim each shot', type: 'checkbox', defaultValue: false }, { key: 'offsetX', label: 'Spawn offset X', type: 'number', min: -9999, max: 9999, step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Spawn offset Y', type: 'number', min: -9999, max: 9999, step: 1, defaultValue: 0 }, { key: 'projectileArtRef', label: 'Projectile Art Ref', type: 'text', defaultValue: '' }] },
   'spawn-actor': { label: 'Spawn actor', fields: [{ key: 'actorId', label: 'Actor ID', type: 'text', defaultValue: '' }, { key: 'offsetX', label: 'Offset X', type: 'number', step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Offset Y', type: 'number', step: 1, defaultValue: 0 }] },
   'delete-actor': { label: 'Delete actor', fields: [] },
   'play-sound': { label: 'Play sound', fields: [{ key: 'soundId', label: 'Sound ID', type: 'text', defaultValue: '' }] },
@@ -332,7 +334,7 @@ export default class ActorEditor {
     }
     vfsSave(ACTOR_FOLDER, name, payload);
     this.currentDocumentRef = { folder: ACTOR_FOLDER, name };
-    this.game.showSystemToast?.('Saved changes');
+    this.game.showSystemToast?.('saved');
     this.render();
   }
 
@@ -387,6 +389,47 @@ export default class ActorEditor {
     }).catch((error) => console.warn('Failed to open actor animation in Pixel Studio', error));
   }
 
+  getProjectileArtPreviewFrames(artRef) {
+    const ref = String(artRef || '').trim();
+    if (!ref) return [];
+    return this.getAnimationPreviewFrames({ artRef: ref, frames: [], fps: 8 });
+  }
+
+  openProjectileArtEditor(initialArtRef, onCommit) {
+    this.game.enterPixelStudio({ returnState: 'actor-editor', resetFocus: false });
+    this.game.pixelStudio.loadActorStateImageForEditing({
+      actorId: this.actor.id,
+      stateId: `${this.selectedStateId || 'state'}-projectile`,
+      animation: { artRef: String(initialArtRef || '').trim(), frames: [], fps: 8 },
+      onCommit: (animation) => {
+        const nextArtRef = String(animation?.artRef || initialArtRef || '').trim();
+        if (!nextArtRef) return;
+        onCommit?.(nextArtRef);
+      }
+    }).catch((error) => console.warn('Failed to open projectile art in Pixel Studio', error));
+  }
+
+  buildProjectileArtControl(params, onCommit) {
+    const wrap = el('div', 'actor-editor-inline-actions');
+    const button = el('button', 'actor-editor-btn small');
+    button.type = 'button';
+    const artRef = String(params?.projectileArtRef || '').trim();
+    const frames = this.getProjectileArtPreviewFrames(artRef);
+    const preview = frames[0];
+    if (preview?.imageDataUrl) {
+      const image = el('img', 'actor-editor-thumb');
+      image.src = preview.imageDataUrl;
+      image.alt = 'Projectile art preview';
+      button.appendChild(image);
+      button.appendChild(el('span', '', artRef || 'Edit projectile art'));
+    } else {
+      button.textContent = artRef ? `Edit ${artRef}` : 'Create projectile art';
+    }
+    button.onclick = () => this.openProjectileArtEditor(artRef, onCommit);
+    wrap.appendChild(button);
+    return wrap;
+  }
+
   addState() {
     const copy = clone(this.actor);
     const next = createDefaultState(`State ${copy.states.length + 1}`);
@@ -400,6 +443,18 @@ export default class ActorEditor {
     const next = clone(state);
     next.id = `${state.id}-${copy.states.length + 1}`;
     next.name = `${state.name} Copy`;
+    const sourceArtRef = String(state?.animation?.artRef || '').trim();
+    if (sourceArtRef) {
+      const sourceDoc = vfsLoad('art', sourceArtRef);
+      const duplicateName = `${sourceArtRef} copy ${Date.now()}`;
+      const saved = vfsSave('art', duplicateName, sourceDoc?.data || sourceDoc || {});
+      if (saved?.name) {
+        next.animation = {
+          ...(next.animation || {}),
+          artRef: saved.name
+        };
+      }
+    }
     copy.states.push(next);
     this.selectedStateId = next.id;
     this.setActor(copy);
@@ -1084,8 +1139,9 @@ export default class ActorEditor {
     section.appendChild(el('div', 'actor-editor-note', 'Transitions are checked top-to-bottom. The first matching transition runs.'));
     const list = el('div', 'actor-editor-list');
     state.transitions.forEach((transition, transitionIndex) => {
-      const card = el('div', 'actor-editor-subsection');
-      const heading = el('h3', '', `Transition ${transitionIndex + 1}`);
+      const card = el('details', 'actor-editor-subsection');
+      card.open = true;
+      const heading = el('summary', '', transition.name || `Transition ${transitionIndex + 1}`);
       const name = el('input');
       name.value = transition.name || '';
       name.placeholder = `Transition ${transitionIndex + 1}`;
@@ -1187,8 +1243,11 @@ export default class ActorEditor {
         draft.transitions[transitionIndex].actions[index].type = nextType;
         draft.transitions[transitionIndex].actions[index].params = this.createParamsFromSpec(this.getActionSpec(nextType), stateOptions);
       });
+      const actionFields = action.type === 'spawn-bullets'
+        ? (spec.fields || []).filter((field) => field.key !== 'projectileArtRef')
+        : spec.fields;
       const params = this.renderParamFields({
-        fields: spec.fields,
+        fields: actionFields,
         params: action.params || {},
         stateOptions,
         onParamInput: (field, value) => this.updateSelectedState((draft) => {
@@ -1197,6 +1256,26 @@ export default class ActorEditor {
           draft.transitions[transitionIndex].actions[index].params[field.key] = nextValue;
         })
       });
+      if (action.type === 'spawn-bullets') {
+        const projectileArt = this.buildProjectileArtControl(action.params || {}, (nextArtRef) => {
+          this.updateSelectedState((draft) => {
+            draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
+            draft.transitions[transitionIndex].actions[index].params.projectileArtRef = nextArtRef;
+          });
+        });
+        row.appendChild(projectileArt);
+        const pick = el('button', 'actor-editor-btn small', 'Set gun location');
+        pick.onclick = async () => {
+          const point = await this.openBulletSpawnPicker(state, action.params || {});
+          if (!point) return;
+          this.updateSelectedState((draft) => {
+            draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
+            draft.transitions[transitionIndex].actions[index].params.offsetX = point.x;
+            draft.transitions[transitionIndex].actions[index].params.offsetY = point.y;
+          });
+        };
+        row.appendChild(pick);
+      }
       const remove = el('button', 'actor-editor-btn small', 'Remove');
       remove.onclick = () => this.updateSelectedState((draft) => { draft.transitions[transitionIndex].actions.splice(index, 1); });
       row.append(type, params, remove); list.appendChild(row);
@@ -1207,6 +1286,321 @@ export default class ActorEditor {
     });
     section.append(list, add);
     return section;
+  }
+
+  async openBulletSpawnPicker(state, params = {}) {
+    const frame = this.getAnimationPreviewFrames(state?.animation || {})[0];
+    if (!frame?.imageDataUrl) return null;
+    return new Promise((resolve) => {
+      const modal = el('div', 'actor-editor-overlay');
+      modal.style.position = 'fixed';
+      modal.style.inset = '0';
+      modal.style.background = 'rgba(0,0,0,0.75)';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = '2147483647';
+      const card = el('div', 'actor-editor-card');
+      card.style.width = 'min(90vw, 1280px)';
+      card.style.height = '82vh';
+      card.style.display = 'flex';
+      card.style.flexDirection = 'column';
+      card.style.gap = '10px';
+      card.appendChild(el('div', '', 'Tap gun spawn location, then press OK'));
+      const stage = el('div');
+      stage.style.flex = '1';
+      stage.style.display = 'flex';
+      stage.style.alignItems = 'center';
+      stage.style.justifyContent = 'center';
+      stage.style.background = 'rgba(0,0,0,0.35)';
+      stage.style.border = '1px solid rgba(255,255,255,0.2)';
+      stage.style.position = 'relative';
+      stage.style.overflow = 'auto';
+      const img = el('img');
+      img.src = frame.imageDataUrl;
+      img.style.maxWidth = '94vw';
+      img.style.maxHeight = '78vh';
+      img.style.imageRendering = 'pixelated';
+      img.style.cursor = 'crosshair';
+      img.style.display = 'block';
+      img.style.touchAction = 'none';
+      stage.appendChild(img);
+      let zoom = 1.25;
+      let panX = 0;
+      let panY = 0;
+      const applyZoom = () => {
+        img.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+        img.style.transformOrigin = 'center center';
+      };
+      const clampPan = () => {
+        const stageRect = stage.getBoundingClientRect();
+        const baseW = Math.max(1, img.offsetWidth || img.clientWidth || 1);
+        const baseH = Math.max(1, img.offsetHeight || img.clientHeight || 1);
+        const scaledW = baseW * zoom;
+        const scaledH = baseH * zoom;
+        const maxPanX = (stageRect.width / 2) + (scaledW / 2) - 1;
+        const maxPanY = (stageRect.height / 2) + (scaledH / 2) - 1;
+        const minPanX = -maxPanX;
+        const minPanY = -maxPanY;
+        panX = Math.max(minPanX, Math.min(maxPanX, panX));
+        panY = Math.max(minPanY, Math.min(maxPanY, panY));
+      };
+      applyZoom();
+      const crosshair = el('div');
+      crosshair.style.position = 'absolute';
+      crosshair.style.width = '28px';
+      crosshair.style.height = '28px';
+      crosshair.style.marginLeft = '-14px';
+      crosshair.style.marginTop = '-14px';
+      crosshair.style.border = '2px solid #ff5555';
+      crosshair.style.borderRadius = '50%';
+      crosshair.style.pointerEvents = 'none';
+      crosshair.style.display = 'none';
+      const hLine = el('div');
+      hLine.style.position = 'absolute';
+      hLine.style.left = '-10px';
+      hLine.style.top = '12px';
+      hLine.style.width = '48px';
+      hLine.style.height = '2px';
+      hLine.style.background = '#ff5555';
+      const vLine = el('div');
+      vLine.style.position = 'absolute';
+      vLine.style.left = '12px';
+      vLine.style.top = '-10px';
+      vLine.style.width = '2px';
+      vLine.style.height = '48px';
+      vLine.style.background = '#ff5555';
+      crosshair.append(hLine, vLine);
+      stage.appendChild(crosshair);
+      card.appendChild(stage);
+      const actions = el('div', 'actor-editor-inline-actions');
+      actions.style.display = 'flex';
+      actions.style.alignItems = 'center';
+      actions.style.justifyContent = 'space-between';
+      actions.style.flexWrap = 'nowrap';
+      actions.style.width = '100%';
+      actions.style.gap = '8px';
+      actions.style.height = '72px';
+      actions.style.paddingTop = '2px';
+      actions.style.paddingBottom = '2px';
+      const zoomIn = el('button', 'actor-editor-btn small', 'Zoom +');
+      const zoomOut = el('button', 'actor-editor-btn small', 'Zoom -');
+      const resetView = el('button', 'actor-editor-btn small', 'Reset');
+      zoomIn.onclick = () => { zoom = Math.min(16, zoom * 1.25); clampPan(); applyZoom(); updateCrosshairFromPicked(); };
+      zoomOut.onclick = () => { zoom = Math.max(1, zoom / 1.25); clampPan(); applyZoom(); updateCrosshairFromPicked(); };
+      resetView.onclick = () => { zoom = 1; panX = 0; panY = 0; applyZoom(); updateCrosshairFromPicked(); };
+      let picked = null;
+      const ok = el('button', 'actor-editor-btn', 'OK');
+      ok.disabled = true;
+      ok.style.opacity = '0.6';
+      const closePicker = (result = null) => {
+        stopJoystickPan();
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
+        window.removeEventListener('pointercancel', onPointerUp);
+        window.removeEventListener('blur', onWindowBlur);
+        modal.remove();
+        resolve(result);
+      };
+      ok.onclick = () => {
+        if (!picked) return;
+        closePicker(picked);
+      };
+      const cancel = el('button', 'actor-editor-btn', 'Cancel');
+      cancel.onclick = () => closePicker(null);
+      const joystick = el('div');
+      joystick.style.width = '92px';
+      joystick.style.height = '92px';
+      joystick.style.borderRadius = '50%';
+      joystick.style.border = '1px solid rgba(255,255,255,0.35)';
+      joystick.style.position = 'relative';
+      joystick.style.background = 'rgba(0,0,0,0.25)';
+      joystick.style.touchAction = 'none';
+      const knob = el('div');
+      knob.style.width = '34px';
+      knob.style.height = '34px';
+      knob.style.borderRadius = '50%';
+      knob.style.background = 'rgba(255,255,255,0.7)';
+      knob.style.position = 'absolute';
+      knob.style.left = '29px';
+      knob.style.top = '29px';
+      joystick.appendChild(knob);
+      const spacer = el('div');
+      spacer.style.flex = '1 1 auto';
+      actions.append(joystick, zoomIn, zoomOut, resetView, spacer, ok, cancel);
+      [zoomOut, zoomIn, resetView, ok, cancel].forEach((btn) => {
+        btn.style.padding = '8px 12px';
+        btn.style.minHeight = '44px';
+      });
+      card.appendChild(actions);
+      const updateCrosshairFromPicked = () => {
+        if (!picked) return;
+        const rect = img.getBoundingClientRect();
+        const stageRect = stage.getBoundingClientRect();
+        const nativeW = Math.max(1, img.naturalWidth || Number(state?.animation?.width || 32));
+        const nativeH = Math.max(1, img.naturalHeight || Number(state?.animation?.height || 32));
+        const imageScaledW = nativeW > 0 ? (nativeW / 16) * 32 : nativeW;
+        const imageScaledH = nativeH > 0 ? (nativeH / 16) * 32 : nativeH;
+        const drawW = Math.max(Number(this.actor?.size?.width || 32), imageScaledW || 0);
+        const drawH = Math.max(Number(this.actor?.size?.height || 32), imageScaledH || 0);
+        const relX = (picked.x + drawW / 2) / drawW;
+        const relY = (picked.y + drawH / 2) / drawH;
+        crosshair.style.left = `${rect.left - stageRect.left + relX * rect.width}px`;
+        crosshair.style.top = `${rect.top - stageRect.top + relY * rect.height}px`;
+        crosshair.style.display = 'block';
+      };
+      const setPickFromClient = (clientX, clientY) => {
+        const rect = img.getBoundingClientRect();
+        const relX = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(1, rect.width)));
+        const relY = Math.max(0, Math.min(1, (clientY - rect.top) / Math.max(1, rect.height)));
+        const nativeW = Math.max(1, img.naturalWidth || Number(state?.animation?.width || 32));
+        const nativeH = Math.max(1, img.naturalHeight || Number(state?.animation?.height || 32));
+        const imageScaledW = nativeW > 0 ? (nativeW / 16) * 32 : nativeW;
+        const imageScaledH = nativeH > 0 ? (nativeH / 16) * 32 : nativeH;
+        const width = Math.max(Number(this.actor?.size?.width || 32), imageScaledW || 0);
+        const height = Math.max(Number(this.actor?.size?.height || 32), imageScaledH || 0);
+        picked = {
+          x: Math.round(relX * width - width / 2),
+          y: Math.round(relY * height - height / 2)
+        };
+        updateCrosshairFromPicked();
+        ok.disabled = false;
+        ok.style.opacity = '1';
+      };
+      const nativeW = Math.max(1, img.naturalWidth || Number(state?.animation?.width || 32));
+      const nativeH = Math.max(1, img.naturalHeight || Number(state?.animation?.height || 32));
+      const imageScaledW = nativeW > 0 ? (nativeW / 16) * 32 : nativeW;
+      const imageScaledH = nativeH > 0 ? (nativeH / 16) * 32 : nativeH;
+      const width = Math.max(Number(this.actor?.size?.width || 32), imageScaledW || 0);
+      const height = Math.max(Number(this.actor?.size?.height || 32), imageScaledH || 0);
+      picked = {
+        x: Number.isFinite(Number(params?.offsetX)) ? Number(params.offsetX) : 0,
+        y: Number.isFinite(Number(params?.offsetY)) ? Number(params.offsetY) : 0
+      };
+      picked.x = Math.max(-Math.floor(width / 2), Math.min(Math.ceil(width / 2), picked.x));
+      picked.y = Math.max(-Math.floor(height / 2), Math.min(Math.ceil(height / 2), picked.y));
+      ok.disabled = false;
+      ok.style.opacity = '1';
+      requestAnimationFrame(() => updateCrosshairFromPicked());
+      img.onclick = (event) => {
+        setPickFromClient(event.clientX, event.clientY);
+      };
+      let pinchDistance = null;
+      const getTouchDistance = (touches) => {
+        if (!touches || touches.length < 2) return null;
+        const a = touches[0];
+        const b = touches[1];
+        return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+      };
+      stage.addEventListener('touchstart', (event) => {
+        pinchDistance = getTouchDistance(event.touches);
+      }, { passive: true });
+      let panTouch = null;
+      stage.addEventListener('touchmove', (event) => {
+        if (joystickDrag) return;
+        const nextDistance = getTouchDistance(event.touches);
+        if (!nextDistance || !pinchDistance) return;
+        const ratio = nextDistance / Math.max(1, pinchDistance);
+        if (Math.abs(ratio - 1) < 0.04) return;
+        zoom = Math.max(1, Math.min(16, zoom * ratio));
+        pinchDistance = nextDistance;
+        clampPan();
+        applyZoom();
+        updateCrosshairFromPicked();
+      }, { passive: true });
+      stage.addEventListener('touchend', () => { pinchDistance = null; }, { passive: true });
+      let joystickDrag = false;
+      let joystickVector = { x: 0, y: 0 };
+      let joystickTimer = null;
+      let lastTick = 0;
+      const updateJoystick = (clientX, clientY) => {
+        const rect = joystick.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = clientX - cx;
+        const dy = clientY - cy;
+        const radius = rect.width * 0.35;
+        const mag = Math.hypot(dx, dy) || 1;
+        const k = Math.min(1, radius / mag);
+        const ndx = dx * k;
+        const ndy = dy * k;
+        knob.style.left = `${rect.width / 2 + ndx - 17}px`;
+        knob.style.top = `${rect.height / 2 + ndy - 17}px`;
+        joystickVector = {
+          x: Math.max(-1, Math.min(1, ndx / Math.max(1, radius))),
+          y: Math.max(-1, Math.min(1, ndy / Math.max(1, radius)))
+        };
+      };
+      const startJoystickPan = () => {
+        if (joystickTimer) return;
+        lastTick = performance.now();
+        joystickTimer = window.setInterval(() => {
+          if (!joystickDrag) return;
+          const now = performance.now();
+          const dt = Math.max(0.5, Math.min(2.2, (now - lastTick) / 16));
+          lastTick = now;
+          const deadzone = 0.03;
+          const rawX = joystickVector.x;
+          const rawY = joystickVector.y;
+          const mag = Math.hypot(rawX, rawY);
+          if (mag <= deadzone) return;
+          const analog = Math.min(1, (mag - deadzone) / (1 - deadzone));
+          const nx = rawX / mag;
+          const ny = rawY / mag;
+          const frameScale = dt;
+          const speed = 8;
+          panX -= nx * analog * speed * frameScale;
+          panY -= ny * analog * speed * frameScale;
+          clampPan();
+          applyZoom();
+          updateCrosshairFromPicked();
+        }, 16);
+      };
+      const stopJoystickPan = () => {
+        if (joystickTimer) window.clearInterval(joystickTimer);
+        joystickTimer = null;
+      };
+      joystick.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
+        joystickDrag = true;
+        updateJoystick(event.clientX, event.clientY);
+        startJoystickPan();
+        joystick.setPointerCapture?.(event.pointerId);
+      });
+      const onPointerMove = (event) => { if (joystickDrag) updateJoystick(event.clientX, event.clientY); };
+      const onPointerUp = () => {
+        joystickDrag = false;
+        joystickVector = { x: 0, y: 0 };
+        stopJoystickPan();
+        knob.style.left = '29px';
+        knob.style.top = '29px';
+      };
+      const onWindowBlur = () => onPointerUp();
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+      window.addEventListener('pointercancel', onPointerUp);
+      window.addEventListener('blur', onWindowBlur);
+      stage.addEventListener('pointerdown', (event) => {
+        if (joystickDrag) return;
+        if (event.pointerType !== 'touch') return;
+        event.preventDefault();
+        panTouch = { x: event.clientX, y: event.clientY };
+      });
+      stage.addEventListener('pointermove', (event) => {
+        if (joystickDrag) return;
+        if (!panTouch || event.pointerType !== 'touch') return;
+        event.preventDefault();
+        panX += (event.clientX - panTouch.x);
+        panY += (event.clientY - panTouch.y);
+        panTouch = { x: event.clientX, y: event.clientY };
+        clampPan();
+        applyZoom();
+        updateCrosshairFromPicked();
+      });
+      stage.addEventListener('pointerup', () => { panTouch = null; });
+      modal.appendChild(card);
+      document.body.appendChild(modal);
+    });
   }
 
   addTransition() {

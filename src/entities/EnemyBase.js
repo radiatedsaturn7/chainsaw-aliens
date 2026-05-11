@@ -73,7 +73,9 @@ export default class EnemyBase {
     ctx.beginPath();
     ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
     ctx.fill();
-    ctx.stroke();
+    if (this.debugMode) {
+      ctx.stroke();
+    }
     ctx.restore();
   }
 }

@@ -4218,7 +4218,7 @@ export default class Game {
   }
 
   recordChainsawAttackDebugBox(centerX, centerY, rangeX, rangeY, label = 'chainsaw') {
-    if (!(this.debugMode || this.playtestActive)) return;
+    if (!this.debugMode) return;
     this.chainsawAttackDebugBoxes.push({
       x: centerX - rangeX,
       y: centerY - rangeY,
@@ -4256,7 +4256,7 @@ export default class Game {
 
 
   recordWeaponDamageDebugShape(shape) {
-    if ((!(this.debugMode || this.playtestActive)) || !shape) return;
+    if ((!this.debugMode) || !shape) return;
     this.weaponDamageDebugShapes.push({ ttl: 0.9, ...shape });
   }
 
@@ -4296,7 +4296,7 @@ export default class Game {
 
 
   recordHeldChainsawDebugShape() {
-    if (!(this.debugMode || this.playtestActive)) return;
+    if (!this.debugMode) return;
     if (!this.player || this.getActiveWeapon()?.id !== 'chainsaw') return;
     const attackRange = this.world.tileSize * 2.5;
     const forwardRange = Math.max(52, attackRange + 20);
@@ -4799,8 +4799,8 @@ export default class Game {
     });
   }
 
-  spawnProjectile(x, y, vx, vy, damage) {
-    this.projectiles.push(new Projectile(x, y, vx, vy, damage));
+  spawnProjectile(x, y, vx, vy, damage, options = {}) {
+    this.projectiles.push(new Projectile(x, y, vx, vy, damage, options));
   }
 
   showAbilityDialog(ability) {
@@ -6546,11 +6546,12 @@ export default class Game {
 
     this.enemies.forEach((enemy) => {
       if (!enemy.dead || enemy.deathTimer > 0) {
+        enemy.debugMode = this.debugMode;
         enemy.draw(ctx);
         this.drawIgnitirDissolve(ctx, enemy);
       }
     });
-    if (this.playtestActive && this.actorEditorTestSnapshot) {
+    if (this.debugMode && this.playtestActive && this.actorEditorTestSnapshot) {
       this.drawActorPlaytestEnemyBounds(ctx);
     }
     if (this.debugMode || this.playtestActive) {
@@ -6880,6 +6881,7 @@ export default class Game {
     ctx.globalAlpha = 0.25;
     ctx.lineWidth = 4;
     this.enemies.forEach((enemy) => {
+      enemy.debugMode = this.debugMode;
       if (!enemy.dead || enemy.deathTimer > 0) enemy.draw(ctx);
     });
     if (this.boss && !this.boss.dead) {
@@ -7860,6 +7862,7 @@ export default class Game {
   }
 
   drawActorPlaytestEnemyBounds(ctx) {
+    if (!this.debugMode) return;
     ctx.save();
     this.enemies.forEach((enemy) => {
       if (!enemy || enemy.dead) return;
@@ -8118,6 +8121,7 @@ export default class Game {
   }
 
   drawCollisionBoxes(ctx) {
+    if (!this.debugMode) return;
     ctx.save();
     ctx.strokeStyle = 'rgba(255,255,255,0.6)';
     ctx.strokeRect(this.player.rect.x, this.player.rect.y, this.player.rect.w, this.player.rect.h);

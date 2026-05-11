@@ -7,10 +7,12 @@ A static, browser-only 2D metroidvania prototype. Open `index.html` directly in 
 2. Press **Space** to start and advance dialog.
 
 ### Optional local server
-If you prefer a local server:
+If you prefer a local server, use either launcher script:
 
 ```bash
 ./run.sh
+# or
+./launch.sh
 ```
 
 Then visit `http://localhost:8000/index.html`.
