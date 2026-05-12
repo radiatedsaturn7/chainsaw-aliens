@@ -453,8 +453,7 @@ export function openProjectBrowser({
       actionRow.innerHTML = '';
       if (mode === 'saveAs' && state.view === 'folder') {
         actionRow.appendChild(makeButton('Save', 'project-browser-btn primary', () => {
-          const name = vfsSanitizeName(saveInput.value);
-          if (!name) return;
+          const name = vfsSanitizeName(saveInput.value) || vfsSanitizeName(initialName) || 'untitled';
           onPick?.({ action: 'saveAs', folder: state.folder, name, overwrite: vfsExists(state.folder, name) });
           cleanup({ action: 'saveAs', folder: state.folder, name, overwrite: vfsExists(state.folder, name) });
         }));
@@ -494,8 +493,7 @@ export function openProjectBrowser({
       }
       if (mode === 'saveAs' && event.key === 'Enter') {
         event.preventDefault();
-        const name = vfsSanitizeName(saveInput.value);
-        if (!name) return;
+        const name = vfsSanitizeName(saveInput.value) || vfsSanitizeName(initialName) || 'untitled';
         cleanup({ action: 'saveAs', folder: state.folder, name, overwrite: vfsExists(state.folder, name) });
       }
     });
