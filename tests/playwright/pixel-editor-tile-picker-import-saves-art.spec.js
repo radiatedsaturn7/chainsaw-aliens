@@ -23,9 +23,8 @@ test('importing image from tile-picker session still saves an art doc', async ({
     const blob = await new Promise((resolve) => c.toBlob(resolve, 'image/png'));
     await studio.importImageFromFile(new File([blob], 'black.png', { type: 'image/png' }));
 
-    studio.currentDocumentRef = { folder: 'art', name: 'black-from-tile-picker' };
     await studio.saveArtDocument();
-    const payload = localStorage.getItem('robter:vfs:art:black-from-tile-picker');
+    const payload = localStorage.getItem('robter:vfs:art:black');
     const parsed = payload ? JSON.parse(payload) : null;
     return { hasPayload: Boolean(payload), hasFrames: Array.isArray(parsed?.data?.frames) };
   });

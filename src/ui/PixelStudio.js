@@ -29,7 +29,7 @@ import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
 import { createViewportController } from './shared/viewportController.js';
-import { vfsList, vfsLoad, vfsSave } from './vfs.js';
+import { vfsList, vfsLoad, vfsSave, vfsSanitizeName } from './vfs.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
@@ -397,6 +397,11 @@ export default class PixelStudio {
     this.zoomToFitCanvas();
     this.forceArtDocumentSave = true;
     this.tilePickerMode = false;
+    if (!this.currentDocumentRef?.name) {
+      const rawName = String(file.name || 'imported-art').replace(/\.[^.]+$/, '');
+      const suggested = vfsSanitizeName(rawName) || 'imported-art';
+      this.currentDocumentRef = { folder: 'art', name: suggested };
+    }
     this.statusMessage = `Imported ${file.name}`;
   }
 
