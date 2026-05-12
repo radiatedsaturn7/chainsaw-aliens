@@ -1,6 +1,13 @@
 import { openProjectBrowser } from '../ProjectBrowserModal.js';
 import { vfsSave } from '../vfs.js';
 
+
+const isAutosaveDocumentName = (name) => {
+  const value = String(name || '').trim().toLowerCase();
+  if (!value) return false;
+  return value.includes('autosave');
+};
+
 export function createDocumentLifecycle(adapter) {
   const captureSnapshot = (context) => JSON.stringify(adapter.serialize(context));
 
@@ -23,6 +30,9 @@ export function createDocumentLifecycle(adapter) {
   const saveAsOrCurrent = async (context, options = {}) => {
     const { forceSaveAs = false } = options;
     let name = context.currentDocumentRef?.name;
+    if (!forceSaveAs && isAutosaveDocumentName(name)) {
+      name = null;
+    }
     if (forceSaveAs || !name) {
       const result = await openProjectBrowser({
         mode: 'saveAs',

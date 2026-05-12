@@ -322,9 +322,17 @@ export default class ActorEditor {
 
   async saveActor(forceSaveAs = false) {
     const fallback = this.currentDocumentRef?.name || `${this.actor.name || 'actor'}.json`;
-    const name = forceSaveAs
-      ? (window.prompt('Save actor as', fallback) || '').trim()
-      : fallback;
+    let name = this.currentDocumentRef?.name || '';
+    const shouldSaveAs = forceSaveAs || !name || String(name).toLowerCase().includes('autosave');
+    if (shouldSaveAs) {
+      const result = await openProjectBrowser({
+        mode: 'saveAs',
+        fixedFolder: ACTOR_FOLDER,
+        initialFolder: ACTOR_FOLDER,
+        title: 'Save Actor As'
+      });
+      name = String(result?.name || '').trim();
+    }
     if (!name) return;
     let payload = ensureActorDefinition(this.actor);
     if (!this.isActorHueShiftNeutral()) {
