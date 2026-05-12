@@ -397,7 +397,7 @@ export default class PixelStudio {
     this.zoomToFitCanvas();
     this.forceArtDocumentSave = true;
     this.tilePickerMode = false;
-    if (!this.currentDocumentRef?.name) {
+    if (this.decalEditSession?.type !== 'actor-state') {
       const rawName = String(file.name || 'imported-art').replace(/\.[^.]+$/, '');
       const suggested = vfsSanitizeName(rawName) || 'imported-art';
       this.currentDocumentRef = { folder: 'art', name: suggested };
