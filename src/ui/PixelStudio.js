@@ -571,8 +571,8 @@ export default class PixelStudio {
     const tileChar = this.activeTile?.char;
     if (!tileChar || !this.game?.world?.pixelArt?.tiles) return;
     const tiles = this.game.world.pixelArt.tiles;
-    if (!tiles[tileChar]) return;
-    const pixelData = tiles[tileChar];
+    const pixelData = ensurePixelTileData(this.game.world, tileChar);
+    if (!pixelData) return;
     pixelData.editor = {
       width: this.canvasState.width,
       height: this.canvasState.height,
@@ -728,10 +728,7 @@ export default class PixelStudio {
     if (!Object.keys(refs).length) {
       return;
     }
-    const saved = vfsSave('art', 'Tile Art Autosave', { tiles: refs });
-    if (saved) {
-      this.currentDocumentRef = { folder: 'art', name: saved.name };
-    }
+    vfsSave('art', 'Tile Art Autosave', { tiles: refs });
   }
 
   resetActiveTileArt() {
