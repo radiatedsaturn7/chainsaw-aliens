@@ -360,12 +360,13 @@ export default class PixelStudio {
   async importImageFromFile(file) {
     if (!file) return;
     const objectUrl = URL.createObjectURL(file);
-    const image = await new Promise((resolve, reject) => {
-      const next = new Image();
-      next.onload = () => resolve(next);
-      next.onerror = reject;
-      next.src = objectUrl;
-    });
+    try {
+      const image = await new Promise((resolve, reject) => {
+        const next = new Image();
+        next.onload = () => resolve(next);
+        next.onerror = reject;
+        next.src = objectUrl;
+      });
     const width = clamp(Math.round(image.width || 16), 1, ART_DIMENSION_MAX);
     const height = clamp(Math.round(image.height || 16), 1, ART_DIMENSION_MAX);
     const canvas = document.createElement('canvas');
@@ -398,7 +399,9 @@ export default class PixelStudio {
     this.runtime.scheduleHistoryCommit?.();
     if (!this.decalEditSession) this.syncTileData({ persist: false });
     this.statusMessage = `Imported ${file.name}`;
-    URL.revokeObjectURL(objectUrl);
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
   }
 
   get activeLayer() {
