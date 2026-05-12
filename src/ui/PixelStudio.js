@@ -72,7 +72,7 @@ export default class PixelStudio {
         },
         confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
         serialize: (ctx) => {
-          if (ctx.decalEditSession?.type === 'actor-state') {
+          if (ctx.decalEditSession?.type === 'actor-state' || !ctx.tilePickerMode) {
             return ctx.serializeCurrentAnimationAsArtDocument();
           }
           ctx.syncTileData({ persist: false });
@@ -548,6 +548,22 @@ export default class PixelStudio {
       };
     } else {
       pixelData.editor = normalizeEditorData(pixelData.editor, pixelData.size || 16);
+      const firstLayerPixels = pixelData.editor.frames?.[0]?.layers?.[0]?.pixels;
+      const hasEditorPixels = firstLayerPixels && Array.from(firstLayerPixels).some((value) => (value >>> 24) > 0);
+      const frameSource = Array.isArray(pixelData.frames) ? pixelData.frames[0] : null;
+      const hasFrameColors = Array.isArray(frameSource) && frameSource.some((color) => typeof color === 'string');
+      if (!hasEditorPixels && hasFrameColors) {
+        const width = pixelData.editor.width;
+        const height = pixelData.editor.height;
+        const rebuilt = createLayer(width, height, 'Layer 1');
+        for (let i = 0; i < width * height; i += 1) {
+          const color = frameSource[i];
+          if (!color) continue;
+          rebuilt.pixels[i] = rgbaToUint32(hexToRgba(color));
+        }
+        pixelData.editor.frames = [createFrame([rebuilt], DEFAULT_FRAME_DURATION_MS)];
+        pixelData.editor.activeLayerIndex = 0;
+      }
     }
     this.canvasState.width = pixelData.editor.width;
     this.canvasState.height = pixelData.editor.height;
@@ -631,19 +647,12 @@ export default class PixelStudio {
   normalizeLoadedArtDocument(data) {
     if (data?.tiles && typeof data.tiles === 'object') {
       const tileChar = this.activeTile?.char || this.tileLibrary?.[0]?.char || '#';
-      if (tileChar && !data.tiles[tileChar]) {
-        const firstEntry = Object.values(data.tiles).find((entry) => entry && typeof entry === 'object');
-        if (firstEntry) {
-          return {
-            ...data,
-            tiles: {
-              ...data.tiles,
-              [tileChar]: firstEntry
-            }
-          };
-        }
-      }
-      return data;
+      const firstEntry = Object.values(data.tiles).find((entry) => entry && typeof entry === 'object');
+      if (!firstEntry) return data;
+      const nextTiles = { ...data.tiles };
+      if (tileChar && !nextTiles[tileChar]) nextTiles[tileChar] = firstEntry;
+      if (!nextTiles['#']) nextTiles['#'] = firstEntry;
+      return { ...data, tiles: nextTiles };
     }
     const hasFrameArray = Array.isArray(data?.frames) && data.frames.length > 0;
     if (!hasFrameArray) {
@@ -672,14 +681,16 @@ export default class PixelStudio {
           }),
           activeLayerIndex: 0
         };
+    const tileEntry = {
+      size,
+      fps: Math.max(1, Number(data?.fps || 8)),
+      frames: data.frames,
+      editor
+    };
     return {
       tiles: {
-        [tileChar]: {
-          size,
-          fps: Math.max(1, Number(data?.fps || 8)),
-          frames: data.frames,
-          editor
-        }
+        [tileChar]: tileEntry,
+        '#': tileEntry
       }
     };
   }
