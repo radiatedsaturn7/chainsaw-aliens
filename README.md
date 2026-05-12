@@ -332,3 +332,9 @@ node tools/test-runner/run.js
 ```
 
 The harness will start a local static server, open `index.html`, run the tests, and write artifacts to `tools/test-runner/output/` (console logs, JSON report, and final screenshot). If Playwright is not installed, run `npm install --prefix tools/test-runner` first.
+
+On Linux containers/CI, install browser system dependencies before running Chromium-based specs:
+
+```bash
+npx playwright install --with-deps chromium
+```
