@@ -60,6 +60,7 @@ export default class PixelStudio {
     this.tilePickerScroll = 0;
     this.tilePickerScrollBounds = null;
     this.tilePickerMaxScroll = 0;
+    this.forceArtDocumentSave = false;
     this.runtime = createEditorRuntime({
       context: this,
       document: {
@@ -72,7 +73,7 @@ export default class PixelStudio {
         },
         confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
         serialize: (ctx) => {
-          if (ctx.decalEditSession?.type === 'actor-state' || !ctx.tilePickerMode) {
+          if (ctx.decalEditSession?.type === 'actor-state' || !ctx.tilePickerMode || ctx.forceArtDocumentSave) {
             return ctx.serializeCurrentAnimationAsArtDocument();
           }
           ctx.syncTileData({ persist: false });
@@ -394,6 +395,8 @@ export default class PixelStudio {
     this.setFrameLayers(this.animation.frames[0].layers);
     this.clearSelection();
     this.zoomToFitCanvas();
+    this.forceArtDocumentSave = true;
+    this.tilePickerMode = false;
     this.statusMessage = `Imported ${file.name}`;
   }
 
@@ -565,6 +568,7 @@ export default class PixelStudio {
         pixelData.editor.activeLayerIndex = 0;
       }
     }
+    this.forceArtDocumentSave = false;
     this.canvasState.width = pixelData.editor.width;
     this.canvasState.height = pixelData.editor.height;
     this.animation.frames = pixelData.editor.frames;
