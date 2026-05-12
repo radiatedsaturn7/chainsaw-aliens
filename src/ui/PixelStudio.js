@@ -359,11 +359,12 @@ export default class PixelStudio {
 
   async importImageFromFile(file) {
     if (!file) return;
+    const objectUrl = URL.createObjectURL(file);
     const image = await new Promise((resolve, reject) => {
       const next = new Image();
       next.onload = () => resolve(next);
       next.onerror = reject;
-      next.src = URL.createObjectURL(file);
+      next.src = objectUrl;
     });
     const width = clamp(Math.round(image.width || 16), 1, ART_DIMENSION_MAX);
     const height = clamp(Math.round(image.height || 16), 1, ART_DIMENSION_MAX);
@@ -394,7 +395,10 @@ export default class PixelStudio {
     this.setFrameLayers(this.animation.frames[0].layers);
     this.clearSelection();
     this.zoomToFitCanvas();
+    this.runtime.scheduleHistoryCommit?.();
+    if (!this.decalEditSession) this.syncTileData({ persist: false });
     this.statusMessage = `Imported ${file.name}`;
+    URL.revokeObjectURL(objectUrl);
   }
 
   get activeLayer() {
@@ -6754,7 +6758,7 @@ export default class PixelStudio {
       },
       actions: {
         new: () => this.newArtDocument(),
-        save: () => (this.decalEditSession && this.decalEditSession.type !== 'actor-state'
+        save: () => (this.decalEditSession
           ? this.saveDecalSessionAndReturn()
           : this.saveArtDocument()),
         'save-as': () => this.saveArtDocument({ forceSaveAs: true }),
@@ -6765,7 +6769,10 @@ export default class PixelStudio {
       editorSpecific: [
         ...(this.decalEditSession
           ? (this.decalEditSession.type === 'actor-state'
-              ? [{ id: 'test-actor-session', label: 'Test Actor', onClick: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) }]
+              ? [
+                  { id: 'save-decal-session', label: 'Save & Return', onClick: () => this.saveDecalSessionAndReturn() },
+                  { id: 'test-actor-session', label: 'Test Actor', onClick: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) }
+                ]
               : [
                   { id: 'save-decal-session', label: 'Save Changes', onClick: () => this.saveDecalSessionAndReturn() },
                   { id: 'abandon-decal-session', label: 'Abandon Changes', onClick: () => this.abandonDecalSessionAndReturn() }
