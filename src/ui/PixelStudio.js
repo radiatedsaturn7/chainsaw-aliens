@@ -61,6 +61,7 @@ export default class PixelStudio {
     this.tilePickerScrollBounds = null;
     this.tilePickerMaxScroll = 0;
     this.forceArtDocumentSave = false;
+    this.pendingSavePromise = null;
     this.runtime = createEditorRuntime({
       context: this,
       document: {
@@ -574,6 +575,7 @@ export default class PixelStudio {
       }
     }
     this.forceArtDocumentSave = false;
+    this.pendingSavePromise = null;
     this.canvasState.width = pixelData.editor.width;
     this.canvasState.height = pixelData.editor.height;
     this.animation.frames = pixelData.editor.frames;
@@ -1245,16 +1247,31 @@ export default class PixelStudio {
 
 
   async saveArtDocument(options = {}) {
-    const result = await this.runtime.saveAsOrCurrent(options);
-    if (!result) return result;
-    if (this.decalEditSession?.type !== 'actor-state') {
-      this.persistTileArtAutosave(true);
-      this.runtime.markSavedSnapshot();
+    if (this.pendingSavePromise) return this.pendingSavePromise;
+    this.pendingSavePromise = (async () => {
+      const result = await this.runtime.saveAsOrCurrent(options);
+      if (!result) return result;
+      if (this.decalEditSession?.type !== 'actor-state') {
+        this.persistTileArtAutosave(true);
+        this.runtime.markSavedSnapshot();
+      }
+      return result;
+    })();
+    try {
+      return await this.pendingSavePromise;
+    } finally {
+      this.pendingSavePromise = null;
     }
-    return result;
   }
 
   async loadArtDocument() {
+    if (this.pendingSavePromise) {
+      try {
+        await this.pendingSavePromise;
+      } catch (_error) {
+        // no-op: open flow below will handle current state
+      }
+    }
     await this.runtime.open();
   }
 
