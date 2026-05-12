@@ -744,7 +744,7 @@ export default class PixelStudio {
       return;
     }
     const saved = vfsSave('art', 'Tile Art Autosave', { tiles: refs });
-    if (saved) {
+    if (saved && this.tilePickerMode && !this.forceArtDocumentSave) {
       this.currentDocumentRef = { folder: 'art', name: saved.name };
     }
   }
@@ -1251,10 +1251,10 @@ export default class PixelStudio {
     this.pendingSavePromise = (async () => {
       const result = await this.runtime.saveAsOrCurrent(options);
       if (!result) return result;
-      if (this.decalEditSession?.type !== 'actor-state') {
+      if (this.decalEditSession?.type !== 'actor-state' && this.tilePickerMode && !this.forceArtDocumentSave) {
         this.persistTileArtAutosave(true);
-        this.runtime.markSavedSnapshot();
       }
+      this.runtime.markSavedSnapshot();
       return result;
     })();
     try {
