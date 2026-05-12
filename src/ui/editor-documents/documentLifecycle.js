@@ -28,6 +28,7 @@ export function createDocumentLifecycle(adapter) {
         mode: 'saveAs',
         fixedFolder: adapter.folder,
         initialFolder: adapter.folder,
+        initialName: context.currentDocumentRef?.name || '',
         title: adapter.strings.saveAsTitle
       });
       if (!result?.name) return null;

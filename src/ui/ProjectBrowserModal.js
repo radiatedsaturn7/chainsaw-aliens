@@ -146,6 +146,7 @@ export function openProjectBrowser({
   mode = 'open',
   fixedFolder = null,
   title = 'Project Browser',
+  initialName = '',
   onOpen = null,
   onNew = null,
   onImport = null,
@@ -239,6 +240,7 @@ export function openProjectBrowser({
     const saveInput = document.createElement('input');
     saveInput.className = 'project-browser-search';
     saveInput.placeholder = 'Filename';
+    saveInput.value = vfsSanitizeName(initialName) || '';
     saveBox.appendChild(saveInput);
 
     const message = document.createElement('div');
