@@ -14,6 +14,7 @@
   },
   "scripts": {
     "prepare:playwright": "npx playwright install",
+    "prepare:playwright:deps": "npx playwright install --with-deps chromium",
     "test:dashboard": "npm run prepare:playwright && node tools/test-runner/run.cjs",
     "test:robtersession-songs": "node tools/robtersession/song-generator-harness.js",
     "test:robtersession-midi": "node tools/robtersession-midi-tests.cjs",
