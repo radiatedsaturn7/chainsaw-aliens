@@ -1246,8 +1246,10 @@ export default class PixelStudio {
 
   async saveArtDocument(options = {}) {
     const result = await this.runtime.saveAsOrCurrent(options);
+    if (!result) return result;
     if (this.decalEditSession?.type !== 'actor-state') {
       this.persistTileArtAutosave(true);
+      this.runtime.markSavedSnapshot();
     }
     return result;
   }
