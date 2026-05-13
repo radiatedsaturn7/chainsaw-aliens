@@ -145,24 +145,25 @@ function createArtPreviewDataUrl(data) {
 }
 
 function getArtFrames(data) {
-  if (!data) return [];
-  if (Array.isArray(data?.frames) && data.frames.length) return data.frames;
+  if (!data) return { frames: [], source: null };
+  if (Array.isArray(data?.frames) && data.frames.length) return { frames: data.frames, source: data };
   if (data?.tiles && typeof data.tiles === 'object') {
     const first = Object.values(data.tiles).find((entry) => Array.isArray(entry?.frames) && entry.frames.length);
-    if (first) return first.frames;
+    if (first) return { frames: first.frames, source: first };
   }
-  return [];
+  return { frames: [], source: null };
 }
 
 function createArtAnimationPreviewUrls(data, maxFrames = 8) {
-  const frames = getArtFrames(data).slice(0, maxFrames);
+  const { frames: allFrames, source } = getArtFrames(data);
+  const frames = allFrames.slice(0, maxFrames);
   if (!frames.length) return [];
   const firstFrame = frames[0];
   if (Array.isArray(firstFrame) && firstFrame.length > 4096) {
-    const single = createArtPreviewDataUrl({ ...data, frames: [firstFrame] });
+    const single = createArtPreviewDataUrl({ ...(source || data), frames: [firstFrame] });
     return single ? [single] : [];
   }
-  return frames.map((frame) => createArtPreviewDataUrl({ ...data, frames: [frame] })).filter(Boolean);
+  return frames.map((frame) => createArtPreviewDataUrl({ ...(source || data), frames: [frame] })).filter(Boolean);
 }
 
 function createActorPreviewDataUrl(actorData) {
