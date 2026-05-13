@@ -101,23 +101,32 @@ function createArtPreviewDataUrl(data) {
   const size = Number.isFinite(tileData?.size) ? tileData.size : Math.round(Math.sqrt(frame.length));
   const width = Math.max(1, Number.isFinite(size) ? Math.round(size) : 1);
   const height = Math.max(1, Math.round(frame.length / width));
+  const MAX_PREVIEW_DIMENSION = 64;
+  const scale = Math.max(1, Math.ceil(Math.max(width, height) / MAX_PREVIEW_DIMENSION));
+  const previewWidth = Math.max(1, Math.floor(width / scale));
+  const previewHeight = Math.max(1, Math.floor(height / scale));
   const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = previewWidth;
+  canvas.height = previewHeight;
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
-  const imageData = ctx.createImageData(width, height);
-  for (let index = 0; index < width * height; index += 1) {
-    const rgba = parseHexColorToRgba(frame[index]);
-    const base = index * 4;
-    if (!rgba) {
-      imageData.data[base + 3] = 0;
-      continue;
+  const imageData = ctx.createImageData(previewWidth, previewHeight);
+  for (let py = 0; py < previewHeight; py += 1) {
+    for (let px = 0; px < previewWidth; px += 1) {
+      const sourceX = Math.min(width - 1, px * scale);
+      const sourceY = Math.min(height - 1, py * scale);
+      const sourceIndex = sourceY * width + sourceX;
+      const rgba = parseHexColorToRgba(frame[sourceIndex]);
+      const base = (py * previewWidth + px) * 4;
+      if (!rgba) {
+        imageData.data[base + 3] = 0;
+        continue;
+      }
+      imageData.data[base] = rgba.r;
+      imageData.data[base + 1] = rgba.g;
+      imageData.data[base + 2] = rgba.b;
+      imageData.data[base + 3] = rgba.a;
     }
-    imageData.data[base] = rgba.r;
-    imageData.data[base + 1] = rgba.g;
-    imageData.data[base + 2] = rgba.b;
-    imageData.data[base + 3] = rgba.a;
   }
   ctx.putImageData(imageData, 0, 0);
   return canvas.toDataURL('image/png');
@@ -136,6 +145,11 @@ function getArtFrames(data) {
 function createArtAnimationPreviewUrls(data, maxFrames = 8) {
   const frames = getArtFrames(data).slice(0, maxFrames);
   if (!frames.length) return [];
+  const firstFrame = frames[0];
+  if (Array.isArray(firstFrame) && firstFrame.length > 4096) {
+    const single = createArtPreviewDataUrl({ ...data, frames: [firstFrame] });
+    return single ? [single] : [];
+  }
   return frames.map((frame) => createArtPreviewDataUrl({ ...data, frames: [frame] })).filter(Boolean);
 }
 
