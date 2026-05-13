@@ -107,9 +107,12 @@ function createArtPreviewDataUrl(data) {
   };
   const frame = Array.isArray(tileData?.frames) ? normalizeFramePixels(tileData.frames[0]) : null;
   if (!Array.isArray(frame) || !frame.length) return null;
-  const size = Number.isFinite(tileData?.size) ? tileData.size : Math.round(Math.sqrt(frame.length));
-  const width = Math.max(1, Number.isFinite(size) ? Math.round(size) : 1);
-  const height = Math.max(1, Math.round(frame.length / width));
+  const parsedWidth = Number(tileData?.width);
+  const parsedHeight = Number(tileData?.height);
+  const size = Number.isFinite(tileData?.size) ? Number(tileData.size) : Math.round(Math.sqrt(frame.length));
+  const width = Math.max(1, Number.isFinite(parsedWidth) && parsedWidth > 0 ? Math.round(parsedWidth) : (Number.isFinite(size) ? Math.round(size) : 1));
+  const inferredHeight = Math.max(1, Math.round(frame.length / width));
+  const height = Math.max(1, Number.isFinite(parsedHeight) && parsedHeight > 0 ? Math.round(parsedHeight) : inferredHeight);
   const MAX_PREVIEW_DIMENSION = 64;
   const scale = Math.max(1, Math.ceil(Math.max(width, height) / MAX_PREVIEW_DIMENSION));
   const previewWidth = Math.max(1, Math.floor(width / scale));

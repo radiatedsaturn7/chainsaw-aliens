@@ -1200,9 +1200,15 @@ export default class Game {
   }
 
 
-  buildActorTestWorldData(actorId) {
+  buildActorTestWorldData(actorId, actorDefinition = null) {
     const size = 50;
     const floorY = 26;
+    const tileSize = 32;
+    const actorHeightPx = Number(actorDefinition?.size?.height);
+    const actorHeightTiles = Number.isFinite(actorHeightPx) && actorHeightPx > 0
+      ? Math.max(1, Math.ceil(actorHeightPx / tileSize))
+      : 1;
+    const actorSpawnY = floorY - actorHeightTiles;
     const rows = Array.from({ length: size }, (_, y) => {
       if (y === 0 || y === size - 1) return '#'.repeat(size);
       const cells = Array.from({ length: size }, (_, x) => (x === 0 || x === size - 1 ? '#' : '.'));
@@ -1215,13 +1221,13 @@ export default class Game {
     });
     return {
       schemaVersion: 1,
-      tileSize: 32,
+      tileSize,
       width: size,
       height: size,
       spawn: { x: 25, y: 25 },
       tiles: rows,
       regions: [],
-      enemies: [{ x: 31, y: 25, type: `custom:${actorId}` }],
+      enemies: [{ x: 31, y: actorSpawnY, type: `custom:${actorId}` }],
       elevatorPaths: [],
       elevators: [],
       pixelArt: { tiles: {} },
@@ -1263,7 +1269,7 @@ export default class Game {
       pixelReturnState: this.pixelStudioReturnState,
       actorReturnState: this.actorEditorReturnState
     };
-    this.applyWorldData(this.buildActorTestWorldData(actorId));
+    this.applyWorldData(this.buildActorTestWorldData(actorId, sourceDefinition));
     this.playtestActive = true;
     this.playtestPauseLock = 0.35;
     this.resetRun({ playtest: true, startWithEverything: true });
