@@ -80,8 +80,17 @@ export function vfsList(folder) {
       name,
       updatedAt: Number(meta?.updatedAt || 0),
       size: Number(meta?.size || 0)
-    }))
-    .sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
+    }));
+  listVolatileVfsFiles(folder).forEach(({ name, raw }) => {
+    const existing = listed.find((entry) => entry.name === name);
+    if (existing) {
+      existing.updatedAt = Math.max(existing.updatedAt || 0, Date.now());
+      existing.size = Math.max(existing.size || 0, typeof raw === 'string' ? raw.length : 0);
+    } else {
+      listed.push({ name, updatedAt: Date.now(), size: typeof raw === 'string' ? raw.length : 0 });
+    }
+  });
+  listed.sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
   if (listed.length) return listed;
   const storage = getStorage();
   if (!storage) {
@@ -111,9 +120,9 @@ export function vfsList(folder) {
     }
   }
   listVolatileVfsFiles(folder).forEach(({ name, raw }) => {
-    if (!index[folder][name]) {
-      index[folder][name] = { updatedAt: Date.now(), size: typeof raw === 'string' ? raw.length : 0 };
-    }
+    if (!index[folder][name]) index[folder][name] = {};
+    index[folder][name].updatedAt = Date.now();
+    index[folder][name].size = typeof raw === 'string' ? raw.length : 0;
   });
   saveIndex(index);
   return Object.entries(index[folder] || {})
@@ -128,6 +137,7 @@ export function vfsList(folder) {
 export function vfsExists(folder, name) {
   const clean = vfsSanitizeName(name);
   if (!clean) return false;
+  if (readVolatileVfsFile(folder, clean)) return true;
   const index = vfsEnsureIndex();
   return Boolean(index?.[folder]?.[clean]);
 }
