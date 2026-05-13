@@ -5,5 +5,8 @@
   "description": "Dev-only Playwright harness for Chainsaw Aliens",
   "dependencies": {
     "playwright": "^1.46.0"
+  },
+  "scripts": {
+    "prepare": "playwright install --with-deps chromium"
   }
 }

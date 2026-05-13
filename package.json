@@ -13,7 +13,7 @@
     "playwright": "^1.46.0"
   },
   "scripts": {
-    "prepare:playwright": "npx playwright install",
+    "prepare:playwright": "npx playwright install --with-deps chromium",
     "prepare:playwright:deps": "npx playwright install --with-deps chromium",
     "test:dashboard": "npm run prepare:playwright && node tools/test-runner/run.cjs",
     "test:robtersession-songs": "node tools/robtersession/song-generator-harness.js",
