@@ -53,43 +53,8 @@ function readTimestamp(meta, raw) {
 }
 
 function readLocalSnapshot() {
-  const storage = getStorage();
-  if (!storage) return null;
-  let parsed = null;
-  try {
-    parsed = JSON.parse(storage.getItem(INDEX_KEY) || 'null');
-  } catch (error) {
-    parsed = null;
-  }
-  const index = normalizeIndex(parsed);
+  const index = emptyIndex();
   const files = {};
-  getFolderNames(index).forEach((folder) => {
-    Object.keys(index[folder] || {}).forEach((name) => {
-      const key = fileKey(folder, name);
-      const raw = storage.getItem(key);
-      if (typeof raw === 'string') files[key] = raw;
-    });
-  });
-
-  // Backfill snapshot from any VFS keys that exist in localStorage but are missing
-  // from the index (e.g. legacy/stale index state before new folders were added).
-  const prefix = `${VFS_PREFIX}`;
-  for (let i = 0; i < storage.length; i += 1) {
-    const key = storage.key(i);
-    if (!key || !key.startsWith(prefix) || key === INDEX_KEY) continue;
-    const raw = storage.getItem(key);
-    if (typeof raw !== 'string') continue;
-    const match = key.slice(prefix.length).match(/^([^:]+):(.+)$/);
-    if (!match) continue;
-    const [, folder, name] = match;
-    if (!folder || !name) continue;
-    if (!index[folder] || typeof index[folder] !== 'object') index[folder] = {};
-    if (!index[folder][name]) {
-      index[folder][name] = { updatedAt: readTimestamp(null, raw) || Date.now(), size: raw.length };
-    }
-    files[key] = raw;
-  }
-
   volatileFiles.forEach((raw, key) => {
     if (typeof raw !== 'string') return;
     const match = key.slice(VFS_PREFIX.length).match(/^([^:]+):(.+)$/);
@@ -126,21 +91,16 @@ export function listVolatileVfsFiles(folder) {
 }
 
 function writeLocalSnapshot(snapshot) {
-  const storage = getStorage();
-  if (!storage) return false;
   const index = normalizeIndex(snapshot?.index);
   const files = snapshot?.files && typeof snapshot.files === 'object' ? snapshot.files : {};
-
+  volatileFiles.clear();
   getFolderNames(index).forEach((folder) => {
     Object.keys(index[folder] || {}).forEach((name) => {
       const key = fileKey(folder, name);
-      if (typeof files[key] === 'string') {
-        storage.setItem(key, files[key]);
-      }
+      const raw = files[key];
+      if (typeof raw === 'string') volatileFiles.set(key, raw);
     });
   });
-
-  storage.setItem(INDEX_KEY, JSON.stringify(index));
   return true;
 }
 
@@ -310,7 +270,14 @@ export async function bootstrapServerStorage(options = {}) {
     const mergeChoice = conflicts.length > 0 ? duplicatePreference : 'local';
     const merged = mergeSnapshots(local, remote.snapshot, mergeChoice);
     const wrote = writeLocalSnapshot(merged.snapshot);
-    if (!wrote) return { ok: false, reason: 'storage-unavailable' };
+    if (!wrote) {
+      Object.entries(merged.snapshot.files || {}).forEach(([key, raw]) => {
+        const match = key.slice(VFS_PREFIX.length).match(/^([^:]+):(.+)$/);
+        if (!match || typeof raw !== 'string') return;
+        const [, folder, name] = match;
+        upsertVolatileVfsFile(folder, name, raw);
+      });
+    }
     const pushed = await pushServerSnapshot(merged.snapshot);
     if (!pushed.ok) return pushed;
     return { ok: true, stats: merged.stats, conflicts: conflicts.length, preference: mergeChoice };

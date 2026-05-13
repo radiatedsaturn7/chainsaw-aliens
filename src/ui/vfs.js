@@ -49,7 +49,6 @@ export function vfsEnsureIndex() {
   } catch (error) {
     index = emptyIndex();
   }
-  storage.setItem(INDEX_KEY, JSON.stringify(index));
   return index;
 }
 
@@ -62,9 +61,7 @@ function fileKey(folder, name) {
 }
 
 function saveIndex(index) {
-  const storage = getStorage();
-  if (!storage) return;
-  storage.setItem(INDEX_KEY, JSON.stringify(index));
+  void index;
 }
 
 export function vfsSanitizeName(name) {
@@ -87,7 +84,15 @@ export function vfsList(folder) {
     .sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
   if (listed.length) return listed;
   const storage = getStorage();
-  if (!storage) return listed;
+  if (!storage) {
+    const withVolatile = [...listed];
+    listVolatileVfsFiles(folder).forEach(({ name, raw }) => {
+      if (!withVolatile.some((entry) => entry.name === name)) {
+        withVolatile.push({ name, updatedAt: Date.now(), size: typeof raw === 'string' ? raw.length : 0 });
+      }
+    });
+    return withVolatile.sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
+  }
   const folderPrefix = `${VFS_PREFIX}${folder}:`;
   for (let i = 0; i < storage.length; i += 1) {
     const key = storage.key(i);
@@ -131,7 +136,16 @@ export function vfsLoad(folder, name) {
   assertFolder(folder);
   const clean = vfsSanitizeName(name);
   const storage = getStorage();
-  if (!storage || !clean) return null;
+  if (!clean) return null;
+  if (!storage) {
+    const raw = readVolatileVfsFile(folder, clean);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch (error) {
+      return null;
+    }
+  }
   try {
     const raw = storage.getItem(fileKey(folder, clean)) || readVolatileVfsFile(folder, clean);
     if (!raw) return null;
@@ -144,8 +158,7 @@ export function vfsLoad(folder, name) {
 export function vfsSave(folder, name, dataObj) {
   assertFolder(folder);
   const clean = vfsSanitizeName(name);
-  const storage = getStorage();
-  if (!storage || !clean) return null;
+  if (!clean) return null;
   const savedAt = Date.now();
   const payload = {
     version: 1,
@@ -155,19 +168,10 @@ export function vfsSave(folder, name, dataObj) {
     data: dataObj
   };
   const raw = JSON.stringify(payload);
-  try {
-    storage.setItem(fileKey(folder, clean), raw);
-    deleteVolatileVfsFile(folder, clean);
-  } catch (error) {
-    upsertVolatileVfsFile(folder, clean, raw);
-  }
+  upsertVolatileVfsFile(folder, clean, raw);
   const index = vfsEnsureIndex();
   index[folder][clean] = { updatedAt: savedAt, size: raw.length };
-  try {
-    saveIndex(index);
-  } catch (error) {
-    // ignore index persistence issues and rely on volatile snapshot push
-  }
+  saveIndex(index);
   queueServerSnapshotPush();
   return payload;
 }
@@ -175,13 +179,7 @@ export function vfsSave(folder, name, dataObj) {
 export function vfsDelete(folder, name) {
   assertFolder(folder);
   const clean = vfsSanitizeName(name);
-  const storage = getStorage();
-  if (!storage || !clean) return;
-  try {
-    storage.removeItem(fileKey(folder, clean));
-  } catch (error) {
-    // ignore storage removal failures
-  }
+  if (!clean) return;
   deleteVolatileVfsFile(folder, clean);
   const index = vfsEnsureIndex();
   if (index[folder]) delete index[folder][clean];
