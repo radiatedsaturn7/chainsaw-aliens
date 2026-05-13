@@ -56,6 +56,7 @@ export default class PixelStudio {
     this.currentDocumentRef = null;
     this.savedSnapshot = null;
     this.tilePickerMode = false;
+    this.tileEditSession = false;
     this.lastTileArtAutosaveAt = 0;
     this.tilePickerScroll = 0;
     this.tilePickerScrollBounds = null;
@@ -74,7 +75,7 @@ export default class PixelStudio {
         },
         confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
         serialize: (ctx) => {
-          if (ctx.decalEditSession?.type === 'actor-state' || !ctx.tilePickerMode || ctx.forceArtDocumentSave) {
+          if (ctx.decalEditSession?.type === 'actor-state' || !ctx.tileEditSession || ctx.forceArtDocumentSave) {
             return ctx.serializeCurrentAnimationAsArtDocument();
           }
           ctx.syncTileData({ persist: false });
@@ -397,6 +398,7 @@ export default class PixelStudio {
     this.clearSelection();
     this.zoomToFitCanvas();
     this.forceArtDocumentSave = true;
+    this.tileEditSession = false;
     this.tilePickerMode = false;
     if (this.decalEditSession?.type !== 'actor-state') {
       const rawName = String(file.name || 'imported-art').replace(/\.[^.]+$/, '');
@@ -738,7 +740,13 @@ export default class PixelStudio {
           tileData.ref = savedTileDoc.name;
         }
       }
-      refs[tileChar] = { ref: tileData.ref || docName };
+      refs[tileChar] = {
+        ref: tileData.ref || docName,
+        size: tileData.size,
+        fps: tileData.fps,
+        frames: tileData.frames,
+        editor: tileData.editor
+      };
     });
     if (!Object.keys(refs).length) {
       return;
@@ -761,6 +769,7 @@ export default class PixelStudio {
 
   setTilePickerMode(enabled) {
     this.tilePickerMode = Boolean(enabled);
+    this.tileEditSession = this.tilePickerMode;
     if (this.tilePickerMode) {
       this.restoreStoredTileArtIfNeeded();
       this.hydrateTileArtRefs();
@@ -1251,7 +1260,7 @@ export default class PixelStudio {
     this.pendingSavePromise = (async () => {
       const result = await this.runtime.saveAsOrCurrent(options);
       if (!result) return result;
-      if (this.decalEditSession?.type !== 'actor-state' && this.tilePickerMode && !this.forceArtDocumentSave) {
+      if (this.decalEditSession?.type !== 'actor-state' && !this.forceArtDocumentSave) {
         this.persistTileArtAutosave(true);
       }
       this.runtime.markSavedSnapshot();
