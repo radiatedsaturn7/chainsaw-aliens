@@ -1,25 +1,23 @@
 import EnemyBase from './EnemyBase.js';
 import { ensureActorDefinition } from '../content/actorEditorData.js';
-import { vfsLoad } from '../ui/vfs.js';
+import { vfsList, vfsLoad } from '../ui/vfs.js';
 
 const actorCache = new Map();
 
 export function loadActorDefinitionById(actorId) {
   if (!actorId || typeof window === 'undefined') return null;
   if (actorCache.has(actorId)) return actorCache.get(actorId);
-  try {
-    const index = JSON.parse(window.localStorage.getItem('robter:vfs:index') || 'null');
-    const actors = Object.keys(index?.actors || {});
-    for (const name of actors) {
-      const payload = JSON.parse(window.localStorage.getItem(`robter:vfs:actors:${name}`) || 'null');
-      const data = ensureActorDefinition(payload?.data || null);
+  const actors = vfsList('actors');
+  for (const { name } of actors) {
+    const payload = vfsLoad('actors', name);
+    const entries = Array.isArray(payload?.data) ? payload.data : [payload?.data].filter(Boolean);
+    for (const entry of entries) {
+      const data = ensureActorDefinition(entry || null);
       if (data.id === actorId) {
         actorCache.set(actorId, data);
         return data;
       }
     }
-  } catch (error) {
-    console.warn('Failed to load actor definition', error);
   }
   return null;
 }

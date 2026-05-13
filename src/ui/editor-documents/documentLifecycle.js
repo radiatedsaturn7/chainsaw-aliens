@@ -36,7 +36,10 @@ export function createDocumentLifecycle(adapter) {
     }
 
     const data = adapter.serialize(context);
-    vfsSave(adapter.folder, name, data);
+    context.game?.showSystemToast?.('saving...');
+    context.statusMessage = 'saving...';
+    const saved = vfsSave(adapter.folder, name, data);
+    await saved?.syncPromise;
     context.currentDocumentRef = { folder: adapter.folder, name };
     adapter.afterSave?.(context, { name, data });
     markSavedSnapshot(context);
