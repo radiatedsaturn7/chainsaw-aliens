@@ -4,6 +4,7 @@ const VFS_PREFIX = 'robter:vfs:';
 const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors'];
 
 let syncQueue = Promise.resolve();
+const volatileFiles = new Map();
 
 function getStorage() {
   try {
@@ -89,7 +90,39 @@ function readLocalSnapshot() {
     files[key] = raw;
   }
 
+  volatileFiles.forEach((raw, key) => {
+    if (typeof raw !== 'string') return;
+    const match = key.slice(VFS_PREFIX.length).match(/^([^:]+):(.+)$/);
+    if (!match) return;
+    const [, folder, name] = match;
+    if (!index[folder] || typeof index[folder] !== 'object') index[folder] = {};
+    index[folder][name] = { updatedAt: readTimestamp(index[folder][name], raw) || Date.now(), size: raw.length };
+    files[key] = raw;
+  });
+
   return { index, files, generatedAt: Date.now() };
+}
+
+export function upsertVolatileVfsFile(folder, name, raw) {
+  if (!folder || !name || typeof raw !== 'string') return;
+  volatileFiles.set(fileKey(folder, name), raw);
+}
+
+export function deleteVolatileVfsFile(folder, name) {
+  if (!folder || !name) return;
+  volatileFiles.delete(fileKey(folder, name));
+}
+
+export function readVolatileVfsFile(folder, name) {
+  if (!folder || !name) return null;
+  return volatileFiles.get(fileKey(folder, name)) || null;
+}
+
+export function listVolatileVfsFiles(folder) {
+  const prefix = `${VFS_PREFIX}${folder}:`;
+  return Array.from(volatileFiles.entries())
+    .filter(([key]) => key.startsWith(prefix))
+    .map(([key, raw]) => ({ name: key.slice(prefix.length), raw }));
 }
 
 function writeLocalSnapshot(snapshot) {

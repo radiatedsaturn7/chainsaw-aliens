@@ -10,7 +10,13 @@
  *   is the editor-specific JSON object already used by the app.
  */
 
-import { queueServerSnapshotPush } from './serverStorage.js';
+import {
+  deleteVolatileVfsFile,
+  listVolatileVfsFiles,
+  queueServerSnapshotPush,
+  readVolatileVfsFile,
+  upsertVolatileVfsFile
+} from './serverStorage.js';
 
 const VFS_PREFIX = 'robter:vfs:';
 const INDEX_KEY = `${VFS_PREFIX}index`;
@@ -99,6 +105,11 @@ export function vfsList(folder) {
       // ignore malformed entries and continue rebuilding index
     }
   }
+  listVolatileVfsFiles(folder).forEach(({ name, raw }) => {
+    if (!index[folder][name]) {
+      index[folder][name] = { updatedAt: Date.now(), size: typeof raw === 'string' ? raw.length : 0 };
+    }
+  });
   saveIndex(index);
   return Object.entries(index[folder] || {})
     .map(([name, meta]) => ({
@@ -122,7 +133,7 @@ export function vfsLoad(folder, name) {
   const storage = getStorage();
   if (!storage || !clean) return null;
   try {
-    const raw = storage.getItem(fileKey(folder, clean));
+    const raw = storage.getItem(fileKey(folder, clean)) || readVolatileVfsFile(folder, clean);
     if (!raw) return null;
     return JSON.parse(raw);
   } catch (error) {
@@ -144,10 +155,19 @@ export function vfsSave(folder, name, dataObj) {
     data: dataObj
   };
   const raw = JSON.stringify(payload);
-  storage.setItem(fileKey(folder, clean), raw);
+  try {
+    storage.setItem(fileKey(folder, clean), raw);
+    deleteVolatileVfsFile(folder, clean);
+  } catch (error) {
+    upsertVolatileVfsFile(folder, clean, raw);
+  }
   const index = vfsEnsureIndex();
   index[folder][clean] = { updatedAt: savedAt, size: raw.length };
-  saveIndex(index);
+  try {
+    saveIndex(index);
+  } catch (error) {
+    // ignore index persistence issues and rely on volatile snapshot push
+  }
   queueServerSnapshotPush();
   return payload;
 }
@@ -157,7 +177,12 @@ export function vfsDelete(folder, name) {
   const clean = vfsSanitizeName(name);
   const storage = getStorage();
   if (!storage || !clean) return;
-  storage.removeItem(fileKey(folder, clean));
+  try {
+    storage.removeItem(fileKey(folder, clean));
+  } catch (error) {
+    // ignore storage removal failures
+  }
+  deleteVolatileVfsFile(folder, clean);
   const index = vfsEnsureIndex();
   if (index[folder]) delete index[folder][clean];
   saveIndex(index);
