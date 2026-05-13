@@ -202,17 +202,11 @@ async function fetchServerSnapshot() {
 }
 
 export function isServerStorageEnabled() {
-  const storage = getStorage();
-  if (!storage) return false;
-  const setting = storage.getItem(SETTINGS_KEY);
-  if (setting == null) return true;
-  return setting === '1';
+  return true;
 }
 
 export function setServerStorageEnabled(enabled) {
-  const storage = getStorage();
-  if (!storage) return;
-  storage.setItem(SETTINGS_KEY, enabled ? '1' : '0');
+  void enabled;
 }
 
 export async function pullServerSnapshot(duplicatePreference = 'server') {
@@ -259,15 +253,9 @@ export async function bootstrapServerStorage(options = {}) {
     const remote = await fetchServerSnapshot();
     if (!remote.ok) return remote;
     const conflicts = getConflicts(local, remote.snapshot);
-    if (conflicts.length > 0 && duplicatePreference !== 'local' && duplicatePreference !== 'server') {
-      return {
-        ok: false,
-        requiresResolution: true,
-        conflicts: conflicts.length,
-        sample: conflicts.slice(0, 5)
-      };
-    }
-    const mergeChoice = conflicts.length > 0 ? duplicatePreference : 'local';
+    const mergeChoice = conflicts.length > 0
+      ? (duplicatePreference === 'local' || duplicatePreference === 'server' ? duplicatePreference : 'server')
+      : 'local';
     const merged = mergeSnapshots(local, remote.snapshot, mergeChoice);
     const wrote = writeLocalSnapshot(merged.snapshot);
     if (!wrote) {
