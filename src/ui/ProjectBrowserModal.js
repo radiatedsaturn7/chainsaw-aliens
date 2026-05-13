@@ -66,32 +66,12 @@ function isAllowedFile(folder, name) {
 
 function readAvailableFolders(fixedFolder) {
   if (fixedFolder && DEFAULT_FOLDERS.includes(fixedFolder)) return [fixedFolder];
-  const ordered = [...DEFAULT_FOLDERS];
-  const storage = window.localStorage;
-  try {
-    const index = JSON.parse(storage.getItem('robter:vfs:index') || 'null');
-    const extras = Object.keys(index || {}).filter((folder) => !ordered.includes(folder));
-    return [...ordered, ...extras];
-  } catch (error) {
-    return ordered;
-  }
+  return [...DEFAULT_FOLDERS];
 }
 
 function listEntries(folder) {
-  if (VFS_FOLDERS.includes(folder)) {
-    return vfsList(folder).filter((entry) => isAllowedFile(folder, entry.name));
-  }
-  try {
-    const index = JSON.parse(window.localStorage.getItem('robter:vfs:index') || 'null');
-    const entries = Object.entries(index?.[folder] || {}).map(([name, meta]) => ({
-      name,
-      updatedAt: Number(meta?.updatedAt || 0),
-      size: Number(meta?.size || 0)
-    }));
-    return entries.sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
-  } catch (error) {
-    return [];
-  }
+  if (!VFS_FOLDERS.includes(folder)) return [];
+  return vfsList(folder).filter((entry) => isAllowedFile(folder, entry.name));
 }
 
 function parseHexColorToRgba(hex) {

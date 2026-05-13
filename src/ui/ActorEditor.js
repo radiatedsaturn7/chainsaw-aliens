@@ -609,20 +609,13 @@ export default class ActorEditor {
     const options = new Set(DEFAULT_TAXONOMIES);
     (actor?.taxonomies || []).forEach((entry) => options.add(String(entry)));
     (actor?.aggressiveTo || []).forEach((entry) => options.add(String(entry)));
-    if (typeof window !== 'undefined') {
-      try {
-        const index = JSON.parse(window.localStorage.getItem('robter:vfs:index') || 'null');
-        const actorNames = Object.keys(index?.actors || {});
-        actorNames.forEach((name) => {
-          const payload = JSON.parse(window.localStorage.getItem(`robter:vfs:actors:${name}`) || 'null');
-          const definition = ensureActorDefinition(payload?.data || null);
-          (definition.taxonomies || []).forEach((entry) => options.add(String(entry)));
-          (definition.aggressiveTo || []).forEach((entry) => options.add(String(entry)));
-        });
-      } catch (error) {
-        console.warn('Failed to load taxonomy options', error);
-      }
-    }
+    const payload = vfsLoad(ACTOR_FOLDER, ACTOR_DOC_NAME);
+    const definitions = Array.isArray(payload?.data) ? payload.data : [];
+    definitions.forEach((definition) => {
+      const normalized = ensureActorDefinition(definition || null);
+      (normalized.taxonomies || []).forEach((entry) => options.add(String(entry)));
+      (normalized.aggressiveTo || []).forEach((entry) => options.add(String(entry)));
+    });
     return Array.from(options).filter(Boolean).sort((a, b) => a.localeCompare(b));
   }
 

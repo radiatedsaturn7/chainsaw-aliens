@@ -133,24 +133,19 @@ const BOSS_ROOM_PREFS = {
 const ENEMY_TYPES = [...AMBIENT_ENEMY_TYPES, ...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
 
 function getCustomActorEnemyTypes() {
-  if (typeof window === 'undefined') return [];
-  try {
-    const index = JSON.parse(window.localStorage.getItem('robter:vfs:index') || 'null');
-    return Object.keys(index?.actors || {}).map((name) => {
-      const payload = JSON.parse(window.localStorage.getItem(`robter:vfs:actors:${name}`) || 'null');
-      const actor = payload?.data || {};
-      if (!actor?.isRoot) return null;
-      const id = actor?.id || String(name).replace(/\.json$/i, '');
-      return {
-        id: `custom:${id}`,
-        label: actor?.name || id,
-        glyph: 'CA',
-        description: 'Custom actor root from Actor Editor.'
-      };
-    }).filter(Boolean);
-  } catch (error) {
-    return [];
-  }
+  const payload = vfsLoad('actors', 'actors.json');
+  const actors = Array.isArray(payload?.data) ? payload.data : [];
+  return actors.map((actor) => {
+    if (!actor?.isRoot) return null;
+    const id = actor?.id || String(actor?.name || '').trim().replace(/\s+/g, '-').toLowerCase();
+    if (!id) return null;
+    return {
+      id: `custom:${id}`,
+      label: actor?.name || id,
+      glyph: 'CA',
+      description: 'Custom actor root from Actor Editor.'
+    };
+  }).filter(Boolean);
 }
 
 function getEnemyTypes() {
