@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 2,
+  "tempo": 100,
+  "loopBars": 16,
+  "loopStartTick": 0,
+  "loopEndTick": 128,
+  "loopEnabled": true,
+  "timeSignature": {
+    "beats": 4,
+    "unit": 4
+  },
+  "highContrast": false,
+  "reverseStrings": false,
+  "staccatoEnabled": false,
+  "key": 0,
+  "scale": "major",
+  "chordMode": false,
+  "tracks": [
+    {
+      "id": "track-lead",
+      "name": "Lead",
+      "channel": 0,
+      "program": 0,
+      "instrumentFamily": "Piano",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.9546111144948278,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#4fb7ff",
+      "automation": {
+        "pan": [
+          {
+            "tick": 48,
+            "value": 0
+          },
+          {
+            "tick": 56,
+            "value": 0
+          },
+          {
+            "tick": 88,
+            "value": 0
+          }
+        ],
+        "padding": [
+          {
+            "tick": 48,
+            "value": 0.8
+          },
+          {
+            "tick": 56,
+            "value": 0.8
+          },
+          {
+            "tick": 88,
+            "value": 0.8
+          }
+        ]
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_muripw9",
+          "type": "overdrive",
+          "name": "Ghost Drive",
+          "color": "red",
+          "enabled": true,
+          "knobs": {
+            "drive": 0.7,
+            "bite": 0.65,
+            "tone": 0.55
+          }
+        },
+        {
+          "id": "pedal_9q220kl",
+          "type": "wah",
+          "name": "Toad Funk",
+          "color": "green",
+          "enabled": true,
+          "knobs": {
+            "sweep": 0,
+            "rate": 0,
+            "mix": 0.8
+          }
+        },
+        null,
+        {
+          "id": "pedal_ab2ntt1",
+          "type": "echo",
+          "name": "Grave Echo",
+          "color": "orange",
+          "enabled": true,
+          "knobs": {
+            "time": 1,
+            "feedback": 0.33349609375,
+            "mix": 1
+          }
+        }
+      ],
+      "patterns": [
+        {
+          "id": "pattern-lead",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-420225",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 55,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-240662",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 55,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-436879",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 54,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-504262",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 46,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-bass",
+      "name": "Bass",
+      "channel": 1,
+      "program": 33,
+      "instrumentFamily": "Bass",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#ff9c42",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-bass",
+          "bars": 16,
+          "notes": []
+        }
+      ]
+    },
+    {
+      "id": "track-drums",
+      "name": "Drums",
+      "instrument": "drums",
+      "channel": 9,
+      "program": 0,
+      "instrumentFamily": "Drums",
+      "bankMSB": 127,
+      "bankLSB": 0,
+      "volume": 0.9,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#55d68a",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-drums",
+          "bars": 16,
+          "notes": []
+        }
+      ]
+    }
+  ],
+  "progression": [
+    {
+      "root": 0,
+      "quality": "min",
+      "startBar": 1,
+      "lengthBars": 1
+    },
+    {
+      "root": 5,
+      "quality": "min",
+      "startBar": 2,
+      "lengthBars": 1
+    },
+    {
+      "root": 7,
+      "quality": "maj",
+      "startBar": 3,
+      "lengthBars": 1
+    },
+    {
+      "root": 3,
+      "quality": "maj",
+      "startBar": 4,
+      "lengthBars": 1
+    }
+  ],
+  "name": "1"
+}

@@ -1,0 +1,58 @@
+{
+  "folders": {
+    "levels": {
+      "new-level": "levels/new-level/document.json",
+      "new-level-1771217621465": "levels/new-level-1771217621465/document.json",
+      "Leevel0": "levels/Leevel0/document.json",
+      "new-level-1773282688371": "levels/new-level-1773282688371/document.json",
+      "level1": "levels/level1/document.json",
+      "new-level-1773427091431": "levels/new-level-1773427091431/document.json",
+      "level0": "levels/level0/document.json",
+      "level01": "levels/level01/document.json",
+      "m": "levels/m/document.json",
+      "m2": "levels/m2/document.json",
+      "Level Editor Autosave": "levels/Level Editor Autosave/document.json"
+    },
+    "art": {
+      "zombie-idle": "art/zombie-idle/document.json",
+      "zombie-walk": "art/zombie-walk/document.json",
+      "zombie-attack": "art/zombie-attack/document.json",
+      "robot-1-idle-art": "art/robot-1-idle-art/document.json",
+      "r13": "art/r13/document.json",
+      "r14": "art/r14/document.json",
+      "new-actor-idle-art": "art/new-actor-idle-art/document.json",
+      "r16": "art/r16/document.json",
+      "r17": "art/r17/document.json",
+      "r19": "art/r19/document.json",
+      "r1": "art/r1/document.json",
+      "r4": "art/r4/document.json",
+      "robot-idle-2": "art/robot-idle-2/document.json",
+      "robot": "art/robot/document.json",
+      "couchRobotWalk": "art/couchRobotWalk/document.json",
+      "couchRobotIdle": "art/couchRobotIdle/document.json",
+      "r1 copy 1778293995122": "art/r1 copy 1778293995122/document.json",
+      "Tile Art 23": "art/Tile Art 23/document.json",
+      "Tile Art Autosave": "art/Tile Art Autosave/document.json",
+      "couchRobotIdle copy 1778295789105": "art/couchRobotIdle copy 1778295789105/document.json",
+      "couchRobotShoot": "art/couchRobotShoot/document.json",
+      "couchrobot-idle-3-projectile-art": "art/couchrobot-idle-3-projectile-art/document.json",
+      "h2": "art/h2/document.json"
+    },
+    "music": {
+      "1": "music/1/document.json",
+      "Creepy1": "music/Creepy1/document.json",
+      "MIDI Composer Autosave": "music/MIDI Composer Autosave/document.json"
+    },
+    "actors": {
+      "r3": "actors/r3/document.json",
+      "Boss.json": "actors/Boss.json/document.json",
+      "New Actor.json": "actors/New Actor.json/document.json",
+      "Husk2.json": "actors/Husk2.json/document.json",
+      "Robot1.json": "actors/Robot1.json/document.json",
+      "Husk1.json": "actors/Husk1.json/document.json",
+      "bh2.json": "actors/bh2.json/document.json",
+      "Bh1.json": "actors/Bh1.json/document.json",
+      "Head.json": "actors/Head.json/document.json"
+    }
+  }
+}
