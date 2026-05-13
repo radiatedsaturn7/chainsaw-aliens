@@ -2,12 +2,14 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
 import subprocess
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import quote
 
 NO_CACHE_HEADERS = {
     "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
@@ -16,6 +18,7 @@ NO_CACHE_HEADERS = {
 }
 
 SNAPSHOT_PATH = Path("data/server-storage/vfs-snapshot.json")
+EXPORT_ROOT = Path("data/server-storage/vfs")
 
 
 def run_git_command(args: list[str]) -> subprocess.CompletedProcess[str]:
@@ -55,6 +58,75 @@ class DevHandler(SimpleHTTPRequestHandler):
                 "index": {"levels": {}, "art": {}, "music": {}},
                 "files": {},
             }
+
+    def _materialize_snapshot(self, snapshot: dict) -> None:
+        index = snapshot.get("index") if isinstance(snapshot, dict) else {}
+        files = snapshot.get("files") if isinstance(snapshot, dict) else {}
+        if not isinstance(index, dict) or not isinstance(files, dict):
+            return
+
+        EXPORT_ROOT.mkdir(parents=True, exist_ok=True)
+
+        manifest: dict[str, dict[str, str]] = {"folders": {}}
+        for folder, entries in index.items():
+            if not isinstance(folder, str) or not isinstance(entries, dict):
+                continue
+            folder_dir = EXPORT_ROOT / folder
+            folder_dir.mkdir(parents=True, exist_ok=True)
+            manifest["folders"][folder] = {}
+            for name in entries.keys():
+                if not isinstance(name, str):
+                    continue
+                storage_key = f"robter:vfs:{folder}:{name}"
+                raw = files.get(storage_key)
+                if not isinstance(raw, str):
+                    continue
+                try:
+                    payload = json.loads(raw)
+                except Exception:
+                    continue
+                data = payload.get("data", payload)
+                safe = quote(name, safe="-_.() ")
+                doc_dir = folder_dir / safe
+                doc_dir.mkdir(parents=True, exist_ok=True)
+                self._extract_data_urls(data, doc_dir)
+                (doc_dir / "document.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+                (doc_dir / "metadata.json").write_text(
+                    json.dumps({
+                        "name": name,
+                        "folder": folder,
+                        "savedAt": payload.get("savedAt"),
+                        "version": payload.get("version", 1),
+                    }, ensure_ascii=False, indent=2),
+                    encoding="utf-8",
+                )
+                manifest["folders"][folder][name] = f"{folder}/{safe}/document.json"
+
+        (EXPORT_ROOT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    def _extract_data_urls(self, value: object, doc_dir: Path, counter: list[int] | None = None) -> None:
+        if counter is None:
+            counter = [0]
+        if isinstance(value, dict):
+            for inner in value.values():
+                self._extract_data_urls(inner, doc_dir, counter)
+            return
+        if isinstance(value, list):
+            for inner in value:
+                self._extract_data_urls(inner, doc_dir, counter)
+            return
+        if not isinstance(value, str):
+            return
+        if value.startswith("data:image/png;base64,"):
+            b64 = value.split(",", 1)[1]
+            try:
+                data = base64.b64decode(b64)
+            except Exception:
+                return
+            path = doc_dir / "assets"
+            path.mkdir(parents=True, exist_ok=True)
+            counter[0] += 1
+            (path / f"image-{counter[0]}.png").write_bytes(data)
 
     def do_GET(self) -> None:  # noqa: N802
         if self.path == "/__storage/snapshot":
@@ -101,6 +173,7 @@ class DevHandler(SimpleHTTPRequestHandler):
                 return
             SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
             SNAPSHOT_PATH.write_text(json.dumps(snapshot, ensure_ascii=False), encoding="utf-8")
+            self._materialize_snapshot(snapshot)
             self._write_json(HTTPStatus.OK, {"ok": True})
             return
 
