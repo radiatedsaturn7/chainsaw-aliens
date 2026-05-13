@@ -322,7 +322,10 @@ export default class ActorEditor {
 
   async saveActor(forceSaveAs = false) {
     const fallback = this.currentDocumentRef?.name || `${this.actor.name || 'actor'}.json`;
-    const name = forceSaveAs
+    const shouldForceSaveAs = forceSaveAs
+      || !this.currentDocumentRef?.name
+      || /^actor(\.json)?$/i.test(String(fallback || '').trim());
+    const name = shouldForceSaveAs
       ? (window.prompt('Save actor as', fallback) || '').trim()
       : fallback;
     if (!name) return;
