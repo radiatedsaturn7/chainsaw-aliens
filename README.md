@@ -338,3 +338,11 @@ On Linux containers/CI, install browser system dependencies before running Chrom
 ```bash
 npx playwright install --with-deps chromium
 ```
+
+If Chromium launch fails with missing shared libraries (for example `libatk-1.0.so.0`), install the distro packages that provide those libraries, then rerun the command above. On Debian/Ubuntu this is typically:
+
+```bash
+sudo apt-get update && sudo apt-get install -y libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0
+```
+
+If you cannot install system packages in the current environment, treat browser-based UI verification as blocked and run non-browser checks only until a dependency-complete runner is available.
