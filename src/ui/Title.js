@@ -15,7 +15,7 @@ export default class Title {
       'back'
     ];
     this.controlsOrder = ['mobile', 'gamepad', 'keyboard', 'back'];
-    this.storageOrder = ['toggle-server-storage', 'sync-github', 'back'];
+    this.storageOrder = ['toggle-server-storage', 'sync-server', 'sync-github', 'back'];
     this.menuSelection = 0;
     this.toolsSelection = 0;
     this.controlsSelection = 0;
@@ -280,9 +280,11 @@ export default class Title {
       const enabled = Boolean(inputHints?.serverStorageEnabled);
       const label = action === 'toggle-server-storage'
         ? `Server Storage: ${enabled ? 'ON' : 'OFF'}`
-        : action === 'sync-github'
-          ? 'Sync Snapshot to GitHub'
-          : 'Back';
+        : action === 'sync-server'
+          ? 'Sync Snapshot to Server'
+          : action === 'sync-github'
+            ? 'Sync Snapshot to GitHub'
+            : 'Back';
       ctx.fillText(label, width / 2, y + 22);
       if (selected) {
         ctx.fillStyle = '#fff';

@@ -70,42 +70,17 @@ test('imports PNG, JPEG, and GIF files and persists them to project browser', as
   await importAndSaveAs(page, { format: 'gif', name: 'black-gif', width: 1, height: 1 });
 });
 
-test('large 4096x4096 PNG reports save failure instead of silently pretending to save', async ({ page }) => {
+
+test('large 4096x4096 PNG imports with scaling and saves successfully', async ({ page }) => {
   test.setTimeout(180000);
   await waitForGameReady(page);
 
-  await page.evaluate(async () => {
-    const game = window.__game;
-    game.transitionTo('title');
-    game.enterPixelStudio({ returnState: 'title' });
-    const studio = game.pixelStudio;
-    const c = document.createElement('canvas');
-    c.width = 4096;
-    c.height = 4096;
-    const ctx = c.getContext('2d');
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, 4096, 4096);
-    const blob = await new Promise((resolve) => c.toBlob(resolve, 'image/png'));
-    const file = new File([blob], 'black-4096.png', { type: 'image/png' });
-    await studio.importImageFromFile(file);
-    window.__saveFlow = studio.saveArtDocument({ forceSaveAs: true });
-  });
+  await importAndSaveAs(page, { format: 'png', name: 'black-4096', width: 4096, height: 4096 });
 
-  await expect(page.locator('.project-browser-savebox input.project-browser-search')).toHaveValue('black-4096');
-  await page.evaluate(() => {
-    const saveBtn = Array.from(document.querySelectorAll('button')).find((btn) => btn.textContent?.trim() === 'Save');
-    if (!saveBtn) throw new Error('Save button not found');
-    saveBtn.click();
-  });
-
-  const outcome = await page.evaluate(async () => {
-    try {
-      await window.__saveFlow;
-      return { ok: true, message: null };
-    } catch (error) {
-      return { ok: false, message: String(error?.message || error) };
-    }
-  });
-  expect(outcome.ok).toBeFalsy();
-  expect(outcome.message.toLowerCase()).toContain('quota');
+  const dims = await page.evaluate(() => ({
+    w: window.__game.pixelStudio.canvasState.width,
+    h: window.__game.pixelStudio.canvasState.height
+  }));
+  expect(dims.w).toBeLessThanOrEqual(512);
+  expect(dims.h).toBeLessThanOrEqual(512);
 });

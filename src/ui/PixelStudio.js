@@ -42,6 +42,7 @@ const DEFAULT_BRUSH_SIZE = 1;
 const DEFAULT_FRAME_DURATION_MS = Math.round(1000 / 32);
 const ART_DIMENSION_MIN = 4;
 const ART_DIMENSION_MAX = 4096;
+const IMPORT_DIMENSION_MAX = 512;
 const BRUSH_SHAPES = ['circle', 'square', 'diamond', 'cross', 'x', 'hline', 'vline'];
 
 
@@ -368,8 +369,11 @@ export default class PixelStudio {
       next.onerror = reject;
       next.src = URL.createObjectURL(file);
     });
-    const width = clamp(Math.round(image.width || 16), 1, ART_DIMENSION_MAX);
-    const height = clamp(Math.round(image.height || 16), 1, ART_DIMENSION_MAX);
+    const sourceWidth = clamp(Math.round(image.width || 16), 1, ART_DIMENSION_MAX);
+    const sourceHeight = clamp(Math.round(image.height || 16), 1, ART_DIMENSION_MAX);
+    const scale = Math.min(1, IMPORT_DIMENSION_MAX / Math.max(sourceWidth, sourceHeight));
+    const width = Math.max(1, Math.round(sourceWidth * scale));
+    const height = Math.max(1, Math.round(sourceHeight * scale));
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -405,7 +409,9 @@ export default class PixelStudio {
       const suggested = vfsSanitizeName(rawName) || 'imported-art';
       this.currentDocumentRef = { folder: 'art', name: suggested };
     }
-    this.statusMessage = `Imported ${file.name}`;
+    this.statusMessage = scale < 1
+      ? `Imported ${file.name} (scaled to ${width}x${height})`
+      : `Imported ${file.name}`;
   }
 
   get activeLayer() {
