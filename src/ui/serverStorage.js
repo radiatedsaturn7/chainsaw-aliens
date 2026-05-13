@@ -69,6 +69,26 @@ function readLocalSnapshot() {
       if (typeof raw === 'string') files[key] = raw;
     });
   });
+
+  // Backfill snapshot from any VFS keys that exist in localStorage but are missing
+  // from the index (e.g. legacy/stale index state before new folders were added).
+  const prefix = `${VFS_PREFIX}`;
+  for (let i = 0; i < storage.length; i += 1) {
+    const key = storage.key(i);
+    if (!key || !key.startsWith(prefix) || key === INDEX_KEY) continue;
+    const raw = storage.getItem(key);
+    if (typeof raw !== 'string') continue;
+    const match = key.slice(prefix.length).match(/^([^:]+):(.+)$/);
+    if (!match) continue;
+    const [, folder, name] = match;
+    if (!folder || !name) continue;
+    if (!index[folder] || typeof index[folder] !== 'object') index[folder] = {};
+    if (!index[folder][name]) {
+      index[folder][name] = { updatedAt: readTimestamp(null, raw) || Date.now(), size: raw.length };
+    }
+    files[key] = raw;
+  }
+
   return { index, files, generatedAt: Date.now() };
 }
 
