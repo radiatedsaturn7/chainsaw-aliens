@@ -1,25 +1,23 @@
 import EnemyBase from './EnemyBase.js';
 import { ensureActorDefinition } from '../content/actorEditorData.js';
-import { vfsLoad } from '../ui/vfs.js';
+import { vfsList, vfsLoad } from '../ui/vfs.js';
 
 const actorCache = new Map();
 
 export function loadActorDefinitionById(actorId) {
   if (!actorId || typeof window === 'undefined') return null;
   if (actorCache.has(actorId)) return actorCache.get(actorId);
-  try {
-    const index = JSON.parse(window.localStorage.getItem('robter:vfs:index') || 'null');
-    const actors = Object.keys(index?.actors || {});
-    for (const name of actors) {
-      const payload = JSON.parse(window.localStorage.getItem(`robter:vfs:actors:${name}`) || 'null');
-      const data = ensureActorDefinition(payload?.data || null);
+  const actors = vfsList('actors');
+  for (const { name } of actors) {
+    const payload = vfsLoad('actors', name);
+    const entries = Array.isArray(payload?.data) ? payload.data : [payload?.data].filter(Boolean);
+    for (const entry of entries) {
+      const data = ensureActorDefinition(entry || null);
       if (data.id === actorId) {
         actorCache.set(actorId, data);
         return data;
       }
     }
-  } catch (error) {
-    console.warn('Failed to load actor definition', error);
   }
   return null;
 }
@@ -394,10 +392,13 @@ export default class ScriptedActor extends EnemyBase {
     const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
     const nativeW = Number(drawImage?.naturalWidth || drawImage?.width || 0);
     const nativeH = Number(drawImage?.naturalHeight || drawImage?.height || 0);
-    const imageScaledW = nativeW > 0 ? (nativeW / 16) * 32 : 0;
-    const imageScaledH = nativeH > 0 ? (nativeH / 16) * 32 : 0;
-    const drawW = Math.max(this.width, imageScaledW || 0);
-    const drawH = Math.max(this.height, imageScaledH || 0);
+    let drawW = Math.max(8, Number(this.width || 32));
+    let drawH = Math.max(8, Number(this.height || 32));
+    if (nativeW > 0 && nativeH > 0) {
+      const aspect = nativeW / nativeH;
+      if (aspect > 1) drawH = drawW / aspect;
+      else drawW = drawH * aspect;
+    }
     ctx.save();
     ctx.translate(this.x + offsetX, this.y + offsetY);
     ctx.imageSmoothingEnabled = false;
