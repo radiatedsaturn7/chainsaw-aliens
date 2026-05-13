@@ -14,6 +14,7 @@ import { fileTypeBadge } from './uiSuite.js';
 
 const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors' };
 const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors'];
+let activePreviewTrackId = null;
 
 function formatDate(ts) {
   if (!ts) return '—';
@@ -122,6 +123,31 @@ function createArtPreviewDataUrl(data) {
   return canvas.toDataURL('image/png');
 }
 
+function getArtFrames(data) {
+  if (!data) return [];
+  if (Array.isArray(data?.frames) && data.frames.length) return data.frames;
+  if (data?.tiles && typeof data.tiles === 'object') {
+    const first = Object.values(data.tiles).find((entry) => Array.isArray(entry?.frames) && entry.frames.length);
+    if (first) return first.frames;
+  }
+  return [];
+}
+
+function createArtAnimationPreviewUrls(data, maxFrames = 8) {
+  const frames = getArtFrames(data).slice(0, maxFrames);
+  if (!frames.length) return [];
+  return frames.map((frame) => createArtPreviewDataUrl({ ...data, frames: [frame] })).filter(Boolean);
+}
+
+function createActorPreviewDataUrl(actorData) {
+  const states = Array.isArray(actorData?.states) ? actorData.states : [];
+  const firstState = states[0];
+  const artRef = String(firstState?.animation?.artRef || '').trim();
+  if (!artRef) return null;
+  const artPayload = vfsLoad('art', artRef);
+  return createArtPreviewDataUrl(artPayload?.data || null);
+}
+
 export function openProjectBrowser({
   initialFolder = 'levels',
   mode = 'open',
@@ -153,6 +179,8 @@ export function openProjectBrowser({
     let pendingDelete = null;
     let renameTarget = null;
     const artPreviewCache = new Map();
+    const actorPreviewCache = new Map();
+    const previewTimers = new Set();
 
     const overlay = document.createElement('div');
     overlay.className = 'project-browser-overlay';
@@ -240,6 +268,8 @@ export function openProjectBrowser({
     body.style.touchAction = 'none';
 
     function cleanup(result) {
+      previewTimers.forEach((timer) => clearInterval(timer));
+      previewTimers.clear();
       overlay.remove();
       body.style.overflow = previousOverflow;
       body.style.touchAction = previousTouchAction;
@@ -306,22 +336,44 @@ export function openProjectBrowser({
         const row = document.createElement('div');
         row.className = 'project-browser-row';
 
-        if (folder === 'art') {
+        if (folder === 'art' || folder === 'actors') {
           const preview = document.createElement('div');
           preview.className = 'project-browser-art-preview';
-          const cached = artPreviewCache.get(entry.name);
-          let previewUrl = cached || null;
-          if (!previewUrl) {
-            const payload = vfsLoad(folder, entry.name);
-            previewUrl = createArtPreviewDataUrl(payload?.data);
-            if (previewUrl) artPreviewCache.set(entry.name, previewUrl);
+          let previewUrls = [];
+          if (folder === 'art') {
+            const cached = artPreviewCache.get(entry.name);
+            if (Array.isArray(cached) && cached.length) previewUrls = cached;
+            if (!previewUrls.length) {
+              const payload = vfsLoad(folder, entry.name);
+              previewUrls = createArtAnimationPreviewUrls(payload?.data);
+              if (previewUrls.length) artPreviewCache.set(entry.name, previewUrls);
+            }
+          } else {
+            const cached = actorPreviewCache.get(entry.name);
+            if (cached) previewUrls = [cached];
+            if (!previewUrls.length) {
+              const payload = vfsLoad(folder, entry.name);
+              const actorPreview = createActorPreviewDataUrl(payload?.data);
+              if (actorPreview) {
+                actorPreviewCache.set(entry.name, actorPreview);
+                previewUrls = [actorPreview];
+              }
+            }
           }
-          if (previewUrl) {
+          if (previewUrls.length) {
             const img = document.createElement('img');
             img.className = 'project-browser-art-preview-image';
-            img.src = previewUrl;
+            img.src = previewUrls[0];
             img.alt = `${entry.name} preview`;
             preview.appendChild(img);
+            if (previewUrls.length > 1) {
+              let frameIndex = 0;
+              const timer = setInterval(() => {
+                frameIndex = (frameIndex + 1) % previewUrls.length;
+                img.src = previewUrls[frameIndex];
+              }, 180);
+              previewTimers.add(timer);
+            }
           } else {
             preview.textContent = '∅';
           }
@@ -355,6 +407,21 @@ export function openProjectBrowser({
           const openBtn = makeButton('Open', 'project-browser-btn primary', () => openFile(folder, entry.name));
           openBtn.disabled = !VFS_FOLDERS.includes(folder);
           actions.appendChild(openBtn);
+          if (folder === 'music') {
+            const toggleBtn = makeButton(activePreviewTrackId === entry.name ? 'Pause' : 'Play', 'project-browser-btn', () => {
+              const game = window.__game;
+              if (!game?.setActiveMusicTrack) return;
+              if (activePreviewTrackId === entry.name) {
+                game.setActiveMusicTrack(null);
+                activePreviewTrackId = null;
+              } else {
+                game.setActiveMusicTrack(entry.name);
+                activePreviewTrackId = entry.name;
+              }
+              refresh();
+            });
+            actions.appendChild(toggleBtn);
+          }
 
           actions.appendChild(makeButton('Rename', 'project-browser-btn', () => {
             if (!VFS_FOLDERS.includes(folder)) return;
