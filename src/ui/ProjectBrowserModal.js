@@ -9,6 +9,7 @@ import {
   vfsRename,
   vfsSanitizeName
 } from './vfs.js';
+import { pullServerSnapshot } from './serverStorage.js';
 import { fileTypeBadge } from './uiSuite.js';
 
 const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors' };
@@ -134,6 +135,7 @@ export function openProjectBrowser({
   onCancel = null,
   onPick = null
 } = {}) {
+  void pullServerSnapshot('server').catch(() => null);
   vfsEnsureIndex();
   const previousActive = document.activeElement;
 
@@ -480,6 +482,9 @@ export function openProjectBrowser({
 
     getOverlayRoot().appendChild(overlay);
     refresh();
+    void pullServerSnapshot('server').then((result) => {
+      if (result?.ok) refresh();
+    }).catch(() => null);
     overlay.focus({ preventScroll: true });
     if (mode === 'saveAs') {
       saveInput.focus({ preventScroll: true });
