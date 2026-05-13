@@ -15,7 +15,13 @@ print(f"server-snapshot: {p}")
 for folder in sorted(index.keys()):
     print(folder+"/")
     names=sorted((index.get(folder) or {}).keys())
+    folder_meta = index.get(folder) or {}
     for i,name in enumerate(names):
         branch="└── " if i==len(names)-1 else "├── "
-        print(f"{branch}{name}")
+        meta = folder_meta.get(name) or {}
+        size = meta.get('size')
+        if isinstance(size, (int, float)):
+            print(f"{branch}{name} ({int(size)} bytes)")
+        else:
+            print(f"{branch}{name}")
 PY2
