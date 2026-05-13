@@ -96,7 +96,16 @@ function createArtPreviewDataUrl(data) {
     const first = Object.values(data.tiles).find((entry) => entry);
     if (first) tileData = first;
   }
-  const frame = Array.isArray(tileData?.frames) ? tileData.frames[0] : null;
+  const normalizeFramePixels = (frame) => {
+    if (Array.isArray(frame) && typeof frame[0] === 'string') return frame;
+    if (Array.isArray(frame) && Array.isArray(frame[0]) && typeof frame[0][0] === 'string') return frame[0];
+    if (frame && typeof frame === 'object') {
+      if (Array.isArray(frame.pixels) && typeof frame.pixels[0] === 'string') return frame.pixels;
+      if (Array.isArray(frame.data) && typeof frame.data[0] === 'string') return frame.data;
+    }
+    return null;
+  };
+  const frame = Array.isArray(tileData?.frames) ? normalizeFramePixels(tileData.frames[0]) : null;
   if (!Array.isArray(frame) || !frame.length) return null;
   const size = Number.isFinite(tileData?.size) ? tileData.size : Math.round(Math.sqrt(frame.length));
   const width = Math.max(1, Number.isFinite(size) ? Math.round(size) : 1);

@@ -295,12 +295,10 @@ export default class ScriptedActor extends EnemyBase {
     if (!state?.animation) return [];
     const artRef = typeof state.animation.artRef === 'string' ? state.animation.artRef : '';
     if (artRef) {
-      const doc = vfsLoad('art', artRef);
-      const savedAt = Number(doc?.savedAt || 0);
-      const cacheKey = `${artRef}:${savedAt}`;
-      if (this._artAnimationCache.has(cacheKey)) {
-        return this._artAnimationCache.get(cacheKey);
+      if (this._artAnimationCache.has(artRef)) {
+        return this._artAnimationCache.get(artRef);
       }
+      const doc = vfsLoad('art', artRef);
       const frames = Array.isArray(doc?.data?.frames) ? doc.data.frames : [];
       if (frames.length && typeof document !== 'undefined') {
         const width = Math.max(1, Number(doc?.data?.width || doc?.data?.size || 16));
@@ -329,8 +327,7 @@ export default class ScriptedActor extends EnemyBase {
           ctx.putImageData(imageData, 0, 0);
           return { imageDataUrl: canvas.toDataURL('image/png'), durationMs };
         }).filter(Boolean);
-        this._artAnimationCache.clear();
-        this._artAnimationCache.set(cacheKey, resolved);
+        this._artAnimationCache.set(artRef, resolved);
         if (resolved.length) return resolved;
       }
     }
@@ -392,13 +389,10 @@ export default class ScriptedActor extends EnemyBase {
     const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
     const nativeW = Number(drawImage?.naturalWidth || drawImage?.width || 0);
     const nativeH = Number(drawImage?.naturalHeight || drawImage?.height || 0);
-    let drawW = Math.max(8, Number(this.width || 32));
-    let drawH = Math.max(8, Number(this.height || 32));
-    if (nativeW > 0 && nativeH > 0) {
-      const aspect = nativeW / nativeH;
-      if (aspect > 1) drawH = drawW / aspect;
-      else drawW = drawH * aspect;
-    }
+    const imageScaledW = nativeW > 0 ? (nativeW / 16) * 32 : 0;
+    const imageScaledH = nativeH > 0 ? (nativeH / 16) * 32 : 0;
+    const drawW = Math.max(this.width, imageScaledW || 0);
+    const drawH = Math.max(this.height, imageScaledH || 0);
     ctx.save();
     ctx.translate(this.x + offsetX, this.y + offsetY);
     ctx.imageSmoothingEnabled = false;
