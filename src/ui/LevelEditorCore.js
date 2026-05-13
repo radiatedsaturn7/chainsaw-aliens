@@ -133,12 +133,11 @@ const BOSS_ROOM_PREFS = {
 const ENEMY_TYPES = [...AMBIENT_ENEMY_TYPES, ...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
 
 function getCustomActorEnemyTypes() {
-  const payload = vfsLoad('actors', 'actors.json');
-  const actors = Array.isArray(payload?.data) ? payload.data : [];
-  return actors.map((actor) => {
+  return vfsList('actors').map(({ name }) => {
+    const payload = vfsLoad('actors', name);
+    const actor = payload?.data || {};
     if (!actor?.isRoot) return null;
-    const id = actor?.id || String(actor?.name || '').trim().replace(/\s+/g, '-').toLowerCase();
-    if (!id) return null;
+    const id = actor?.id || String(name).replace(/\.json$/i, '');
     return {
       id: `custom:${id}`,
       label: actor?.name || id,

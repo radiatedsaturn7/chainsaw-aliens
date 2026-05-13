@@ -210,7 +210,10 @@ async function fetchServerSnapshot() {
 
 export function isServerStorageEnabled() {
   const storage = getStorage();
-  return storage?.getItem(SETTINGS_KEY) === '1';
+  if (!storage) return false;
+  const setting = storage.getItem(SETTINGS_KEY);
+  if (setting == null) return true;
+  return setting === '1';
 }
 
 export function setServerStorageEnabled(enabled) {

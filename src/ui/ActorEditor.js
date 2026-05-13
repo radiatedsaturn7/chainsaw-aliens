@@ -1,5 +1,5 @@
 import { openProjectBrowser } from './ProjectBrowserModal.js';
-import { vfsEnsureIndex, vfsLoad, vfsSave } from './vfs.js';
+import { vfsEnsureIndex, vfsList, vfsLoad, vfsSave } from './vfs.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, DEFAULT_TAXONOMIES, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
 import { getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 
@@ -609,9 +609,10 @@ export default class ActorEditor {
     const options = new Set(DEFAULT_TAXONOMIES);
     (actor?.taxonomies || []).forEach((entry) => options.add(String(entry)));
     (actor?.aggressiveTo || []).forEach((entry) => options.add(String(entry)));
-    const payload = vfsLoad(ACTOR_FOLDER, ACTOR_DOC_NAME);
-    const definitions = Array.isArray(payload?.data) ? payload.data : [];
-    definitions.forEach((definition) => {
+    const actorDocs = vfsList(ACTOR_FOLDER);
+    actorDocs.forEach(({ name }) => {
+      const payload = vfsLoad(ACTOR_FOLDER, name);
+      const definition = payload?.data || null;
       const normalized = ensureActorDefinition(definition || null);
       (normalized.taxonomies || []).forEach((entry) => options.add(String(entry)));
       (normalized.aggressiveTo || []).forEach((entry) => options.add(String(entry)));

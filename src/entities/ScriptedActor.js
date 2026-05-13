@@ -1,14 +1,14 @@
 import EnemyBase from './EnemyBase.js';
 import { ensureActorDefinition } from '../content/actorEditorData.js';
-import { vfsLoad } from '../ui/vfs.js';
+import { vfsList, vfsLoad } from '../ui/vfs.js';
 
 const actorCache = new Map();
 
 export function loadActorDefinitionById(actorId) {
   if (!actorId || typeof window === 'undefined') return null;
   if (actorCache.has(actorId)) return actorCache.get(actorId);
-  const actors = ['actors.json'];
-  for (const name of actors) {
+  const actors = vfsList('actors');
+  for (const { name } of actors) {
     const payload = vfsLoad('actors', name);
     const entries = Array.isArray(payload?.data) ? payload.data : [payload?.data].filter(Boolean);
     for (const entry of entries) {
