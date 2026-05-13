@@ -29,7 +29,7 @@ import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
 import { createViewportController } from './shared/viewportController.js';
-import { vfsList, vfsLoad, vfsSave } from './vfs.js';
+import { vfsList, vfsLoad, vfsSave, vfsSanitizeName } from './vfs.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
@@ -42,6 +42,7 @@ const DEFAULT_BRUSH_SIZE = 1;
 const DEFAULT_FRAME_DURATION_MS = Math.round(1000 / 32);
 const ART_DIMENSION_MIN = 4;
 const ART_DIMENSION_MAX = 4096;
+const IMPORT_DIMENSION_MAX = 512;
 const BRUSH_SHAPES = ['circle', 'square', 'diamond', 'cross', 'x', 'hline', 'vline'];
 
 
@@ -56,10 +57,13 @@ export default class PixelStudio {
     this.currentDocumentRef = null;
     this.savedSnapshot = null;
     this.tilePickerMode = false;
+    this.tileEditSession = false;
     this.lastTileArtAutosaveAt = 0;
     this.tilePickerScroll = 0;
     this.tilePickerScrollBounds = null;
     this.tilePickerMaxScroll = 0;
+    this.forceArtDocumentSave = false;
+    this.pendingSavePromise = null;
     this.runtime = createEditorRuntime({
       context: this,
       document: {
@@ -72,7 +76,7 @@ export default class PixelStudio {
         },
         confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
         serialize: (ctx) => {
-          if (ctx.decalEditSession?.type === 'actor-state') {
+          if (ctx.decalEditSession?.type === 'actor-state' || !ctx.tileEditSession || ctx.forceArtDocumentSave) {
             return ctx.serializeCurrentAnimationAsArtDocument();
           }
           ctx.syncTileData({ persist: false });
@@ -365,8 +369,11 @@ export default class PixelStudio {
       next.onerror = reject;
       next.src = URL.createObjectURL(file);
     });
-    const width = clamp(Math.round(image.width || 16), 1, ART_DIMENSION_MAX);
-    const height = clamp(Math.round(image.height || 16), 1, ART_DIMENSION_MAX);
+    const sourceWidth = clamp(Math.round(image.width || 16), 1, ART_DIMENSION_MAX);
+    const sourceHeight = clamp(Math.round(image.height || 16), 1, ART_DIMENSION_MAX);
+    const scale = Math.min(1, IMPORT_DIMENSION_MAX / Math.max(sourceWidth, sourceHeight));
+    const width = Math.max(1, Math.round(sourceWidth * scale));
+    const height = Math.max(1, Math.round(sourceHeight * scale));
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -394,7 +401,17 @@ export default class PixelStudio {
     this.setFrameLayers(this.animation.frames[0].layers);
     this.clearSelection();
     this.zoomToFitCanvas();
-    this.statusMessage = `Imported ${file.name}`;
+    this.forceArtDocumentSave = true;
+    this.tileEditSession = false;
+    this.tilePickerMode = false;
+    if (this.decalEditSession?.type !== 'actor-state') {
+      const rawName = String(file.name || 'imported-art').replace(/\.[^.]+$/, '');
+      const suggested = vfsSanitizeName(rawName) || 'imported-art';
+      this.currentDocumentRef = { folder: 'art', name: suggested };
+    }
+    this.statusMessage = scale < 1
+      ? `Imported ${file.name} (scaled to ${width}x${height})`
+      : `Imported ${file.name}`;
   }
 
   get activeLayer() {
@@ -548,7 +565,25 @@ export default class PixelStudio {
       };
     } else {
       pixelData.editor = normalizeEditorData(pixelData.editor, pixelData.size || 16);
+      const firstLayerPixels = pixelData.editor.frames?.[0]?.layers?.[0]?.pixels;
+      const hasEditorPixels = firstLayerPixels && Array.from(firstLayerPixels).some((value) => (value >>> 24) > 0);
+      const frameSource = Array.isArray(pixelData.frames) ? pixelData.frames[0] : null;
+      const hasFrameColors = Array.isArray(frameSource) && frameSource.some((color) => typeof color === 'string');
+      if (!hasEditorPixels && hasFrameColors) {
+        const width = pixelData.editor.width;
+        const height = pixelData.editor.height;
+        const rebuilt = createLayer(width, height, 'Layer 1');
+        for (let i = 0; i < width * height; i += 1) {
+          const color = frameSource[i];
+          if (!color) continue;
+          rebuilt.pixels[i] = rgbaToUint32(hexToRgba(color));
+        }
+        pixelData.editor.frames = [createFrame([rebuilt], DEFAULT_FRAME_DURATION_MS)];
+        pixelData.editor.activeLayerIndex = 0;
+      }
     }
+    this.forceArtDocumentSave = false;
+    this.pendingSavePromise = null;
     this.canvasState.width = pixelData.editor.width;
     this.canvasState.height = pixelData.editor.height;
     this.animation.frames = pixelData.editor.frames;
@@ -631,19 +666,12 @@ export default class PixelStudio {
   normalizeLoadedArtDocument(data) {
     if (data?.tiles && typeof data.tiles === 'object') {
       const tileChar = this.activeTile?.char || this.tileLibrary?.[0]?.char || '#';
-      if (tileChar && !data.tiles[tileChar]) {
-        const firstEntry = Object.values(data.tiles).find((entry) => entry && typeof entry === 'object');
-        if (firstEntry) {
-          return {
-            ...data,
-            tiles: {
-              ...data.tiles,
-              [tileChar]: firstEntry
-            }
-          };
-        }
-      }
-      return data;
+      const firstEntry = Object.values(data.tiles).find((entry) => entry && typeof entry === 'object');
+      if (!firstEntry) return data;
+      const nextTiles = { ...data.tiles };
+      if (tileChar && !nextTiles[tileChar]) nextTiles[tileChar] = firstEntry;
+      if (!nextTiles['#']) nextTiles['#'] = firstEntry;
+      return { ...data, tiles: nextTiles };
     }
     const hasFrameArray = Array.isArray(data?.frames) && data.frames.length > 0;
     if (!hasFrameArray) {
@@ -672,14 +700,16 @@ export default class PixelStudio {
           }),
           activeLayerIndex: 0
         };
+    const tileEntry = {
+      size,
+      fps: Math.max(1, Number(data?.fps || 8)),
+      frames: data.frames,
+      editor
+    };
     return {
       tiles: {
-        [tileChar]: {
-          size,
-          fps: Math.max(1, Number(data?.fps || 8)),
-          frames: data.frames,
-          editor
-        }
+        [tileChar]: tileEntry,
+        '#': tileEntry
       }
     };
   }
@@ -716,13 +746,19 @@ export default class PixelStudio {
           tileData.ref = savedTileDoc.name;
         }
       }
-      refs[tileChar] = { ref: tileData.ref || docName };
+      refs[tileChar] = {
+        ref: tileData.ref || docName,
+        size: tileData.size,
+        fps: tileData.fps,
+        frames: tileData.frames,
+        editor: tileData.editor
+      };
     });
     if (!Object.keys(refs).length) {
       return;
     }
     const saved = vfsSave('art', 'Tile Art Autosave', { tiles: refs });
-    if (saved) {
+    if (saved && this.tilePickerMode && !this.forceArtDocumentSave) {
       this.currentDocumentRef = { folder: 'art', name: saved.name };
     }
   }
@@ -739,6 +775,7 @@ export default class PixelStudio {
 
   setTilePickerMode(enabled) {
     this.tilePickerMode = Boolean(enabled);
+    this.tileEditSession = this.tilePickerMode;
     if (this.tilePickerMode) {
       this.restoreStoredTileArtIfNeeded();
       this.hydrateTileArtRefs();
@@ -1225,14 +1262,31 @@ export default class PixelStudio {
 
 
   async saveArtDocument(options = {}) {
-    const result = await this.runtime.saveAsOrCurrent(options);
-    if (this.decalEditSession?.type !== 'actor-state') {
-      this.persistTileArtAutosave(true);
+    if (this.pendingSavePromise) return this.pendingSavePromise;
+    this.pendingSavePromise = (async () => {
+      const result = await this.runtime.saveAsOrCurrent(options);
+      if (!result) return result;
+      if (this.decalEditSession?.type !== 'actor-state' && !this.forceArtDocumentSave) {
+        this.persistTileArtAutosave(true);
+      }
+      this.runtime.markSavedSnapshot();
+      return result;
+    })();
+    try {
+      return await this.pendingSavePromise;
+    } finally {
+      this.pendingSavePromise = null;
     }
-    return result;
   }
 
   async loadArtDocument() {
+    if (this.pendingSavePromise) {
+      try {
+        await this.pendingSavePromise;
+      } catch (_error) {
+        // no-op: open flow below will handle current state
+      }
+    }
     await this.runtime.open();
   }
 

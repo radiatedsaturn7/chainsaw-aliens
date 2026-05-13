@@ -1,7 +1,7 @@
 const SETTINGS_KEY = 'chainsaw:server-storage:enabled';
 const INDEX_KEY = 'robter:vfs:index';
 const VFS_PREFIX = 'robter:vfs:';
-const FOLDERS = ['levels', 'art', 'music'];
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors'];
 
 let syncQueue = Promise.resolve();
 
@@ -13,17 +13,23 @@ function getStorage() {
   }
 }
 
+function getFolderNames(index = null) {
+  const extra = index && typeof index === 'object'
+    ? Object.keys(index).filter((name) => name && typeof name === 'string')
+    : [];
+  return Array.from(new Set([...DEFAULT_FOLDERS, ...extra]));
+}
+
 function emptyIndex() {
-  return { levels: {}, art: {}, music: {} };
+  return DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
 }
 
 function normalizeIndex(index) {
-  if (!index || typeof index !== 'object') return emptyIndex();
-  return {
-    levels: index.levels && typeof index.levels === 'object' ? index.levels : {},
-    art: index.art && typeof index.art === 'object' ? index.art : {},
-    music: index.music && typeof index.music === 'object' ? index.music : {}
-  };
+  const folders = getFolderNames(index);
+  return folders.reduce((acc, folder) => {
+    acc[folder] = index && typeof index[folder] === 'object' && index[folder] ? index[folder] : {};
+    return acc;
+  }, {});
 }
 
 function fileKey(folder, name) {
@@ -56,13 +62,33 @@ function readLocalSnapshot() {
   }
   const index = normalizeIndex(parsed);
   const files = {};
-  FOLDERS.forEach((folder) => {
+  getFolderNames(index).forEach((folder) => {
     Object.keys(index[folder] || {}).forEach((name) => {
       const key = fileKey(folder, name);
       const raw = storage.getItem(key);
       if (typeof raw === 'string') files[key] = raw;
     });
   });
+
+  // Backfill snapshot from any VFS keys that exist in localStorage but are missing
+  // from the index (e.g. legacy/stale index state before new folders were added).
+  const prefix = `${VFS_PREFIX}`;
+  for (let i = 0; i < storage.length; i += 1) {
+    const key = storage.key(i);
+    if (!key || !key.startsWith(prefix) || key === INDEX_KEY) continue;
+    const raw = storage.getItem(key);
+    if (typeof raw !== 'string') continue;
+    const match = key.slice(prefix.length).match(/^([^:]+):(.+)$/);
+    if (!match) continue;
+    const [, folder, name] = match;
+    if (!folder || !name) continue;
+    if (!index[folder] || typeof index[folder] !== 'object') index[folder] = {};
+    if (!index[folder][name]) {
+      index[folder][name] = { updatedAt: readTimestamp(null, raw) || Date.now(), size: raw.length };
+    }
+    files[key] = raw;
+  }
+
   return { index, files, generatedAt: Date.now() };
 }
 
@@ -72,7 +98,7 @@ function writeLocalSnapshot(snapshot) {
   const index = normalizeIndex(snapshot?.index);
   const files = snapshot?.files && typeof snapshot.files === 'object' ? snapshot.files : {};
 
-  FOLDERS.forEach((folder) => {
+  getFolderNames(index).forEach((folder) => {
     Object.keys(index[folder] || {}).forEach((name) => {
       const key = fileKey(folder, name);
       if (typeof files[key] === 'string') {
@@ -96,7 +122,7 @@ function getConflicts(localSnapshot, serverSnapshot) {
   };
 
   const conflicts = [];
-  FOLDERS.forEach((folder) => {
+  getFolderNames(local.index).forEach((folder) => {
     const localNames = Object.keys(local.index[folder] || {});
     localNames.forEach((name) => {
       const key = fileKey(folder, name);
@@ -124,7 +150,7 @@ function mergeSnapshots(localSnapshot, serverSnapshot, duplicatePreference = 'lo
   const mergedFiles = {};
   const stats = { keptLocal: 0, pulledServer: 0, merged: 0, conflictsResolved: 0 };
 
-  FOLDERS.forEach((folder) => {
+  getFolderNames(local.index).forEach((folder) => {
     const names = new Set([
       ...Object.keys(local.index[folder] || {}),
       ...Object.keys(server.index[folder] || {})

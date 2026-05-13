@@ -72,7 +72,7 @@ import { OBSTACLES } from '../world/Obstacles.js';
 import { MOVEMENT_MODEL } from './MovementModel.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { vfsEnsureIndex, vfsList, vfsLoad } from '../ui/vfs.js';
-import { bootstrapServerStorage, isServerStorageEnabled, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
+import { bootstrapServerStorage, isServerStorageEnabled, pushServerSnapshot, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
 import { drawSharedPlayStopButton } from '../ui/uiSuite.js';
 import { createDefaultActor, ensureActorDefinition } from '../content/actorEditorData.js';
 
@@ -1640,6 +1640,16 @@ export default class Game {
         return;
       }
       this.showSystemToast('Server storage disabled.');
+      return;
+    }
+    if (action === 'sync-server') {
+      this.showSystemToast('Syncing local snapshot to server...');
+      const result = await pushServerSnapshot();
+      if (!result.ok) {
+        this.showSystemToast(`Server sync failed: ${String(result.reason || 'unknown').slice(0, 80)}`);
+        return;
+      }
+      this.showSystemToast('Server sync complete.');
       return;
     }
     if (action === 'sync-github') {
