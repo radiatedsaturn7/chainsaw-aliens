@@ -1,25 +1,23 @@
 import EnemyBase from './EnemyBase.js';
 import { ensureActorDefinition } from '../content/actorEditorData.js';
-import { vfsLoad } from '../ui/vfs.js';
+import { vfsList, vfsLoad } from '../ui/vfs.js';
 
 const actorCache = new Map();
 
 export function loadActorDefinitionById(actorId) {
   if (!actorId || typeof window === 'undefined') return null;
   if (actorCache.has(actorId)) return actorCache.get(actorId);
-  try {
-    const index = JSON.parse(window.localStorage.getItem('robter:vfs:index') || 'null');
-    const actors = Object.keys(index?.actors || {});
-    for (const name of actors) {
-      const payload = JSON.parse(window.localStorage.getItem(`robter:vfs:actors:${name}`) || 'null');
-      const data = ensureActorDefinition(payload?.data || null);
+  const actors = vfsList('actors');
+  for (const { name } of actors) {
+    const payload = vfsLoad('actors', name);
+    const entries = Array.isArray(payload?.data) ? payload.data : [payload?.data].filter(Boolean);
+    for (const entry of entries) {
+      const data = ensureActorDefinition(entry || null);
       if (data.id === actorId) {
         actorCache.set(actorId, data);
         return data;
       }
     }
-  } catch (error) {
-    console.warn('Failed to load actor definition', error);
   }
   return null;
 }
@@ -297,12 +295,10 @@ export default class ScriptedActor extends EnemyBase {
     if (!state?.animation) return [];
     const artRef = typeof state.animation.artRef === 'string' ? state.animation.artRef : '';
     if (artRef) {
-      const doc = vfsLoad('art', artRef);
-      const savedAt = Number(doc?.savedAt || 0);
-      const cacheKey = `${artRef}:${savedAt}`;
-      if (this._artAnimationCache.has(cacheKey)) {
-        return this._artAnimationCache.get(cacheKey);
+      if (this._artAnimationCache.has(artRef)) {
+        return this._artAnimationCache.get(artRef);
       }
+      const doc = vfsLoad('art', artRef);
       const frames = Array.isArray(doc?.data?.frames) ? doc.data.frames : [];
       if (frames.length && typeof document !== 'undefined') {
         const width = Math.max(1, Number(doc?.data?.width || doc?.data?.size || 16));
@@ -331,8 +327,7 @@ export default class ScriptedActor extends EnemyBase {
           ctx.putImageData(imageData, 0, 0);
           return { imageDataUrl: canvas.toDataURL('image/png'), durationMs };
         }).filter(Boolean);
-        this._artAnimationCache.clear();
-        this._artAnimationCache.set(cacheKey, resolved);
+        this._artAnimationCache.set(artRef, resolved);
         if (resolved.length) return resolved;
       }
     }
