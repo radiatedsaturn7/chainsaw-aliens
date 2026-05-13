@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 2,
+  "id": "boss",
+  "name": "Boss",
+  "attackTarget": "player",
+  "gravity": true,
+  "bodyDamageEnabled": false,
+  "contactDamage": 1,
+  "invulnerable": false,
+  "destructible": true,
+  "isRoot": true,
+  "tags": [],
+  "health": 3,
+  "size": {
+    "width": 24,
+    "height": 24
+  },
+  "loot": [],
+  "linkedParts": [
+    {
+      "actorId": "bh1",
+      "actorName": "Bh1",
+      "offsetX": 0,
+      "offsetY": 0,
+      "role": "part",
+      "sync": "state"
+    },
+    {
+      "actorId": "bh2",
+      "actorName": "bh2",
+      "offsetX": 0,
+      "offsetY": 0,
+      "role": "part",
+      "sync": "state"
+    }
+  ],
+  "states": [
+    {
+      "id": "idle",
+      "name": "Idle",
+      "animation": {
+        "imageDataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4AeyQUQoAIAhDrfvfudzHIHJl4G+CaKRvw27F+AAzeYPh8XpbCWgeJcBp2Y2N/U862If4dmONPWsKUKpcRk0BShWLzACA4pocPNUAwCBUkeizDIB1ET3c3CABcBtWf2XABAAA//86ZNWRAAAABklEQVQDAFg7IB1mZw4pAAAAAElFTkSuQmCC",
+        "frames": [
+          {
+            "imageDataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4AeyQUQoAIAhDrfvfudzHIHJl4G+CaKRvw27F+AAzeYPh8XpbCWgeJcBp2Y2N/U862If4dmONPWsKUKpcRk0BShWLzACA4pocPNUAwCBUkeizDIB1ET3c3CABcBtWf2XABAAA//86ZNWRAAAABklEQVQDAFg7IB1mZw4pAAAAAElFTkSuQmCC",
+            "durationMs": 31
+          }
+        ],
+        "fps": 32,
+        "updatedAt": 1774568014122
+      },
+      "movement": {
+        "type": "patrol-platform",
+        "params": {
+          "speed": 110,
+          "turnOnWall": true,
+          "edgeHandling": "turn"
+        }
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "conditions": [
+        {
+          "id": "always",
+          "type": "always",
+          "params": {}
+        }
+      ],
+      "conditionMode": "all",
+      "actions": []
+    }
+  ],
+  "initialStateId": "idle",
+  "advanced": {
+    "assetRefs": {},
+    "notes": ""
+  }
+}

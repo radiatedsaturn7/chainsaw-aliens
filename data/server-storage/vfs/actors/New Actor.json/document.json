@@ -1,0 +1,255 @@
+{
+  "schemaVersion": 2,
+  "id": "couchrobot",
+  "name": "CouchRobot",
+  "attackTarget": "player",
+  "taxonomies": [
+    "Enemies"
+  ],
+  "aggressiveTo": [
+    "Player and Allies"
+  ],
+  "gravity": true,
+  "bodyDamageEnabled": true,
+  "contactDamage": 1,
+  "invulnerable": false,
+  "destructible": true,
+  "isRoot": false,
+  "tags": [],
+  "health": 5,
+  "size": {
+    "width": 150,
+    "height": 90
+  },
+  "loot": [],
+  "linkedParts": [],
+  "states": [
+    {
+      "id": "idle",
+      "name": "Idle",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 2,
+        "updatedAt": 1778296285058,
+        "artRef": "couchRobotIdle"
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "random-chance",
+              "params": {
+                "chance": 0.25
+              }
+            },
+            {
+              "id": "cond-1778296456377",
+              "type": "timer-elapsed",
+              "params": {
+                "seconds": 1
+              }
+            }
+          ],
+          "actions": [
+            {
+              "id": "action-1777778473887",
+              "type": "switch-state",
+              "params": {
+                "stateId": "idle-2"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "idle-2",
+      "name": "Walk",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 3,
+        "updatedAt": 1778296537204,
+        "artRef": "r1"
+      },
+      "movement": {
+        "type": "random-walk-pause",
+        "params": {
+          "speed": 80,
+          "walkDuration": 1.2,
+          "pauseDuration": 0.9
+        }
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "random-chance",
+              "params": {
+                "chance": 0.25
+              }
+            },
+            {
+              "id": "cond-1778296468019",
+              "type": "timer-elapsed",
+              "params": {
+                "seconds": 1
+              }
+            }
+          ],
+          "actions": [
+            {
+              "id": "action-1777778473887",
+              "type": "switch-state",
+              "params": {
+                "stateId": "idle"
+              }
+            }
+          ]
+        },
+        {
+          "id": "transition-1778295941497",
+          "name": "Transition 2",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "cond-1778295941497",
+              "type": "can-see-player",
+              "params": {}
+            },
+            {
+              "id": "cond-1778296374079",
+              "type": "timer-elapsed",
+              "params": {
+                "seconds": 1
+              }
+            }
+          ],
+          "actions": [
+            {
+              "id": "action-1778295941497",
+              "type": "switch-state",
+              "params": {
+                "stateId": "idle-3"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "idle-3",
+      "name": "Shoot",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 16,
+        "updatedAt": 1778447998976,
+        "artRef": "couchRobotShoot"
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": [
+            {
+              "id": "action-1777778473887",
+              "type": "spawn-bullets",
+              "params": {
+                "aimAtPlayer": true,
+                "angle": 0,
+                "speed": 220,
+                "offsetX": 15,
+                "offsetY": -46,
+                "projectileArtRef": "couchrobot-idle-3-projectile-art",
+                "shots": 3,
+                "restartAnimationEachShot": true,
+                "shotDelayMs": 200
+              }
+            },
+            {
+              "id": "action-1778385941166",
+              "type": "delay",
+              "params": {
+                "ms": 600
+              }
+            },
+            {
+              "id": "action-1778447957811",
+              "type": "switch-state",
+              "params": {
+                "stateId": "idle"
+              }
+            }
+          ]
+        },
+        {
+          "id": "transition-1778296076796",
+          "name": "Transition 2",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "cannot-see-player",
+              "params": {}
+            }
+          ],
+          "actions": [
+            {
+              "id": "action-1778296076796",
+              "type": "switch-state",
+              "params": {
+                "stateId": "idle-2"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "initialStateId": "idle",
+  "advanced": {
+    "assetRefs": {},
+    "notes": ""
+  }
+}
