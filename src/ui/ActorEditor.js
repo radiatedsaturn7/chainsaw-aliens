@@ -1,5 +1,5 @@
 import { openProjectBrowser } from './ProjectBrowserModal.js';
-import { vfsEnsureIndex, vfsLoad, vfsSave } from './vfs.js';
+import { vfsEnsureIndex, vfsList, vfsLoad, vfsSave } from './vfs.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, DEFAULT_TAXONOMIES, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
 import { getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 
@@ -321,8 +321,12 @@ export default class ActorEditor {
   }
 
   async saveActor(forceSaveAs = false) {
+    const MIN_SAVING_TOAST_MS = 350;
     const fallback = this.currentDocumentRef?.name || `${this.actor.name || 'actor'}.json`;
-    const name = forceSaveAs
+    const shouldForceSaveAs = forceSaveAs
+      || !this.currentDocumentRef?.name
+      || /^actor(\.json)?$/i.test(String(fallback || '').trim());
+    const name = shouldForceSaveAs
       ? (window.prompt('Save actor as', fallback) || '').trim()
       : fallback;
     if (!name) return;
@@ -332,7 +336,14 @@ export default class ActorEditor {
       this.resetActorArtHuePreview();
       this.setActor(payload);
     }
-    vfsSave(ACTOR_FOLDER, name, payload);
+    const savingStartedAt = Date.now();
+    this.game.showSystemToast?.('saving...');
+    const saved = vfsSave(ACTOR_FOLDER, name, payload);
+    await saved?.syncPromise;
+    const elapsed = Date.now() - savingStartedAt;
+    if (elapsed < MIN_SAVING_TOAST_MS) {
+      await new Promise((resolve) => setTimeout(resolve, MIN_SAVING_TOAST_MS - elapsed));
+    }
     this.currentDocumentRef = { folder: ACTOR_FOLDER, name };
     this.game.showSystemToast?.('saved');
     this.render();
@@ -609,20 +620,14 @@ export default class ActorEditor {
     const options = new Set(DEFAULT_TAXONOMIES);
     (actor?.taxonomies || []).forEach((entry) => options.add(String(entry)));
     (actor?.aggressiveTo || []).forEach((entry) => options.add(String(entry)));
-    if (typeof window !== 'undefined') {
-      try {
-        const index = JSON.parse(window.localStorage.getItem('robter:vfs:index') || 'null');
-        const actorNames = Object.keys(index?.actors || {});
-        actorNames.forEach((name) => {
-          const payload = JSON.parse(window.localStorage.getItem(`robter:vfs:actors:${name}`) || 'null');
-          const definition = ensureActorDefinition(payload?.data || null);
-          (definition.taxonomies || []).forEach((entry) => options.add(String(entry)));
-          (definition.aggressiveTo || []).forEach((entry) => options.add(String(entry)));
-        });
-      } catch (error) {
-        console.warn('Failed to load taxonomy options', error);
-      }
-    }
+    const actorDocs = vfsList(ACTOR_FOLDER);
+    actorDocs.forEach(({ name }) => {
+      const payload = vfsLoad(ACTOR_FOLDER, name);
+      const definition = payload?.data || null;
+      const normalized = ensureActorDefinition(definition || null);
+      (normalized.taxonomies || []).forEach((entry) => options.add(String(entry)));
+      (normalized.aggressiveTo || []).forEach((entry) => options.add(String(entry)));
+    });
     return Array.from(options).filter(Boolean).sort((a, b) => a.localeCompare(b));
   }
 

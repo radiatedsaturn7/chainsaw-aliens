@@ -2,6 +2,15 @@ import { openProjectBrowser } from '../ProjectBrowserModal.js';
 import { vfsSave } from '../vfs.js';
 
 export function createDocumentLifecycle(adapter) {
+  const MIN_SAVING_TOAST_MS = 350;
+  const isDefaultDocumentName = (name) => {
+    const value = String(name || '').trim().toLowerCase();
+    if (!value) return true;
+    if (value === 'untitled' || value === 'untitled.json') return true;
+    if (value.startsWith('new-')) return true;
+    if (value.includes('autosave')) return true;
+    return false;
+  };
   const captureSnapshot = (context) => JSON.stringify(adapter.serialize(context));
 
   const markSavedSnapshot = (context) => {
@@ -23,7 +32,7 @@ export function createDocumentLifecycle(adapter) {
   const saveAsOrCurrent = async (context, options = {}) => {
     const { forceSaveAs = false } = options;
     let name = context.currentDocumentRef?.name;
-    if (forceSaveAs || !name) {
+    if (forceSaveAs || !name || isDefaultDocumentName(name)) {
       const result = await openProjectBrowser({
         mode: 'saveAs',
         fixedFolder: adapter.folder,
@@ -36,7 +45,15 @@ export function createDocumentLifecycle(adapter) {
     }
 
     const data = adapter.serialize(context);
-    vfsSave(adapter.folder, name, data);
+    const savingStartedAt = Date.now();
+    context.game?.showSystemToast?.('saving...');
+    context.statusMessage = 'saving...';
+    const saved = vfsSave(adapter.folder, name, data);
+    await saved?.syncPromise;
+    const elapsed = Date.now() - savingStartedAt;
+    if (elapsed < MIN_SAVING_TOAST_MS) {
+      await new Promise((resolve) => setTimeout(resolve, MIN_SAVING_TOAST_MS - elapsed));
+    }
     context.currentDocumentRef = { folder: adapter.folder, name };
     adapter.afterSave?.(context, { name, data });
     markSavedSnapshot(context);
