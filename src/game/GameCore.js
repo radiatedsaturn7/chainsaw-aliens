@@ -5049,10 +5049,29 @@ export default class Game {
     this.musicPlayers.push(player);
   }
 
+  stopProjectBrowserMusicPreview() {
+    if (!this.projectBrowserMusicPreviewPlayer) return;
+    this.projectBrowserMusicPreviewPlayer.setFade(0, 0.25);
+    this.musicPlayers.push(this.projectBrowserMusicPreviewPlayer);
+    this.projectBrowserMusicPreviewPlayer = null;
+  }
+
+  playProjectBrowserMusicPreview(trackId, songData) {
+    if (!songData || typeof songData !== 'object') return;
+    this.stopProjectBrowserMusicPreview();
+    const player = new MidiSongPlayer(this.audio);
+    player.setSong(songData, trackId || 'preview-track');
+    player.setFade(1, 0.12);
+    this.projectBrowserMusicPreviewPlayer = player;
+  }
+
   updateMusicZones(dt, tileX, tileY) {
     const zone = this.getMusicZoneAt(tileX, tileY);
     this.setActiveMusicTrack(zone?.track || null);
     this.musicPlayers.forEach((player) => player.update(dt));
+    if (this.projectBrowserMusicPreviewPlayer) {
+      this.projectBrowserMusicPreviewPlayer.update(dt);
+    }
     this.musicPlayers = this.musicPlayers.filter((player) => !(player.volume <= 0 && player.targetVolume === 0));
   }
 

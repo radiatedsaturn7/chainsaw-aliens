@@ -100,35 +100,32 @@ export default class ActorEditor {
     return null;
   }
 
-  buildArtPreviewFrameUrl(frame, width, height, cacheKey, maxDimension = 64) {
+  buildArtPreviewFrameUrl(frame, width, height, cacheKey) {
     const pixels = this.normalizeArtFramePixels(frame);
     if (!Array.isArray(pixels) || !pixels.length) return '';
     if (this.artPreviewCache.has(cacheKey)) return this.artPreviewCache.get(cacheKey);
-    const scale = Math.max(1, Math.ceil(Math.max(width, height) / Math.max(1, Math.round(maxDimension))));
-    const previewWidth = Math.max(1, Math.floor(width / scale));
-    const previewHeight = Math.max(1, Math.floor(height / scale));
     const canvas = document.createElement('canvas');
-    canvas.width = previewWidth;
-    canvas.height = previewHeight;
+    canvas.width = Math.max(1, width);
+    canvas.height = Math.max(1, height);
     const ctx = canvas.getContext('2d');
     if (!ctx) return '';
     const imageData = ctx.createImageData(canvas.width, canvas.height);
-    for (let py = 0; py < previewHeight; py += 1) {
-      for (let px = 0; px < previewWidth; px += 1) {
-        const sourceX = Math.min(width - 1, px * scale);
-        const sourceY = Math.min(height - 1, py * scale);
-        const sourceIndex = sourceY * width + sourceX;
+    for (let py = 0; py < height; py += 1) {
+      for (let px = 0; px < width; px += 1) {
+        const sourceIndex = py * width + px;
         const color = pixels[sourceIndex];
-        const base = (py * previewWidth + px) * 4;
+        const base = (py * width + px) * 4;
         if (typeof color !== 'string' || !/^#?[0-9a-fA-F]{6}$/.test(color)) {
-          imageData.data[base + 3] = 0;
+          if (base + 3 < imageData.data.length) imageData.data[base + 3] = 0;
           continue;
         }
         const hex = color.startsWith('#') ? color.slice(1) : color;
-        imageData.data[base] = parseInt(hex.slice(0, 2), 16);
-        imageData.data[base + 1] = parseInt(hex.slice(2, 4), 16);
-        imageData.data[base + 2] = parseInt(hex.slice(4, 6), 16);
-        imageData.data[base + 3] = 255;
+        if (base + 3 < imageData.data.length) {
+          imageData.data[base] = parseInt(hex.slice(0, 2), 16);
+          imageData.data[base + 1] = parseInt(hex.slice(2, 4), 16);
+          imageData.data[base + 2] = parseInt(hex.slice(4, 6), 16);
+          imageData.data[base + 3] = 255;
+        }
       }
     }
     ctx.putImageData(imageData, 0, 0);
@@ -147,7 +144,7 @@ export default class ActorEditor {
         const width = Math.max(1, Math.round(Number(artDoc?.data?.width || artDoc?.data?.size || 16)));
         const height = Math.max(1, Math.round(Number(artDoc?.data?.height || artDoc?.data?.size || width || 16)));
         return frames.map((frame, index) => ({
-          imageDataUrl: this.buildArtPreviewFrameUrl(frame, width, height, `${artRef}:${savedAt}:${index}:${width}x${height}:64`, 64),
+          imageDataUrl: this.buildArtPreviewFrameUrl(frame, width, height, `${artRef}:${savedAt}:${index}:${width}x${height}`),
           durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || artDoc?.data?.fps || 8)))
         })).filter((frame) => frame.imageDataUrl);
       }

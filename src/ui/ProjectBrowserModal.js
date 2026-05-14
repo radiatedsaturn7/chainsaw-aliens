@@ -154,9 +154,9 @@ function getArtFrames(data) {
   return { frames: [], source: null };
 }
 
-function createArtAnimationPreviewUrls(data, maxFrames = 8) {
+function createArtAnimationPreviewUrls(data, maxFrames = null) {
   const { frames: allFrames, source } = getArtFrames(data);
-  const frames = allFrames.slice(0, maxFrames);
+  const frames = Number.isFinite(maxFrames) && maxFrames > 0 ? allFrames.slice(0, maxFrames) : allFrames;
   if (!frames.length) return [];
   const firstFrame = frames[0];
   if (Array.isArray(firstFrame) && firstFrame.length > 4096) {
@@ -168,11 +168,14 @@ function createArtAnimationPreviewUrls(data, maxFrames = 8) {
 
 function createActorPreviewDataUrl(actorData) {
   const states = Array.isArray(actorData?.states) ? actorData.states : [];
-  const firstState = states[0];
-  const artRef = String(firstState?.animation?.artRef || '').trim();
-  if (!artRef) return null;
-  const artPayload = vfsLoad('art', artRef);
-  return createArtPreviewDataUrl(artPayload?.data || null);
+  for (const state of states) {
+    const artRef = String(state?.animation?.artRef || '').trim();
+    if (!artRef) continue;
+    const artPayload = vfsLoad('art', artRef);
+    const preview = createArtPreviewDataUrl(artPayload?.data || null);
+    if (preview) return preview;
+  }
+  return null;
 }
 
 export function openProjectBrowser({
@@ -437,12 +440,12 @@ export function openProjectBrowser({
           if (folder === 'music') {
             const toggleBtn = makeButton(activePreviewTrackId === entry.name ? 'Pause' : 'Play', 'project-browser-btn', () => {
               const game = window.__game;
-              if (!game?.setActiveMusicTrack) return;
               if (activePreviewTrackId === entry.name) {
-                game.setActiveMusicTrack(null);
+                game?.stopProjectBrowserMusicPreview?.();
                 activePreviewTrackId = null;
               } else {
-                game.setActiveMusicTrack(entry.name);
+                const payload = vfsLoad('music', entry.name);
+                game?.playProjectBrowserMusicPreview?.(entry.name, payload?.data || null);
                 activePreviewTrackId = entry.name;
               }
               refresh();
