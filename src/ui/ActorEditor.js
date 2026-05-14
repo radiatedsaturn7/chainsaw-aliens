@@ -436,6 +436,118 @@ export default class ActorEditor {
     }).catch((error) => console.warn('Failed to open projectile art in Pixel Studio', error));
   }
 
+  openCollisionZoneEditor(actor) {
+    const modal = el('div', 'actor-editor-overlay');
+    Object.assign(modal.style, { position: 'fixed', inset: '0', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: '2147483647' });
+    const card = el('div', 'actor-editor-card');
+    Object.assign(card.style, { width: 'min(960px, 96vw)', maxHeight: '92vh', overflow: 'auto' });
+    card.appendChild(el('h3', '', 'Collision / Damage Zones'));
+    card.appendChild(el('div', 'actor-editor-note', 'Drag to draw rectangles over the actor preview. Select zone type before drawing.'));
+    const controls = el('div', 'actor-editor-inline-actions');
+    const zoneType = el('select');
+    [
+      { id: 'solid', label: 'Yellow: Collidable' },
+      { id: 'solid-damage-player', label: 'Red: Collidable + damages player' },
+      { id: 'damage-player', label: 'Pink: Damage player (not collidable)' },
+      { id: 'solid-hurtbox', label: 'Blue: Collidable + actor takes damage' },
+      { id: 'hurtbox', label: 'Green: Actor takes damage (not collidable)' }
+    ].forEach((option) => { const node = el('option'); node.value = option.id; node.textContent = option.label; zoneType.appendChild(node); });
+    const clearBtn = el('button', 'actor-editor-btn small', 'Clear all');
+    controls.appendChild(zoneType);
+    controls.appendChild(clearBtn);
+    card.appendChild(controls);
+    const canvas = document.createElement('canvas');
+    canvas.width = 640;
+    canvas.height = 420;
+    canvas.style.width = '100%';
+    canvas.style.border = '1px solid rgba(255,255,255,0.25)';
+    canvas.style.background = '#080d17';
+    card.appendChild(canvas);
+    const actionRow = el('div', 'actor-editor-inline-actions');
+    const ok = el('button', 'actor-editor-btn', 'OK');
+    const cancel = el('button', 'actor-editor-btn', 'Cancel');
+    actionRow.append(ok, cancel);
+    card.appendChild(actionRow);
+    modal.appendChild(card);
+    document.body.appendChild(modal);
+    const zones = Array.isArray(actor.collisionZones) ? clone(actor.collisionZones) : [];
+    const preview = this.getAnimationPreviewFrames(actor.states?.[0]?.animation || {})[0]?.imageDataUrl || '';
+    const image = new Image();
+    if (preview) image.src = preview;
+    const colors = { solid: 'rgba(255,220,0,0.35)', 'solid-damage-player': 'rgba(255,0,0,0.35)', 'damage-player': 'rgba(255,90,160,0.35)', 'solid-hurtbox': 'rgba(70,140,255,0.35)', hurtbox: 'rgba(80,255,120,0.35)' };
+    let drag = null;
+    const actorW = Math.max(1, Number(actor?.size?.width || 32));
+    const actorH = Math.max(1, Number(actor?.size?.height || 32));
+    const pad = 24;
+    const scale = Math.min((canvas.width - pad * 2) / actorW, (canvas.height - pad * 2) / actorH);
+    const box = { x: (canvas.width - actorW * scale) / 2, y: (canvas.height - actorH * scale) / 2, w: actorW * scale, h: actorH * scale };
+    const toActorRect = (x0, y0, x1, y1) => {
+      const left = Math.min(x0, x1);
+      const top = Math.min(y0, y1);
+      const right = Math.max(x0, x1);
+      const bottom = Math.max(y0, y1);
+      return {
+        x: Math.max(0, Math.round((left - box.x) / scale)),
+        y: Math.max(0, Math.round((top - box.y) / scale)),
+        width: Math.max(1, Math.round((right - left) / scale)),
+        height: Math.max(1, Math.round((bottom - top) / scale)),
+        type: zoneType.value
+      };
+    };
+    const render = () => {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#0f1726';
+      ctx.fillRect(box.x, box.y, box.w, box.h);
+      if (image.complete && image.naturalWidth > 0) ctx.drawImage(image, box.x, box.y, box.w, box.h);
+      zones.forEach((zone) => {
+        const x = box.x + zone.x * scale;
+        const y = box.y + zone.y * scale;
+        const w = zone.width * scale;
+        const h = zone.height * scale;
+        ctx.fillStyle = colors[zone.type] || colors.solid;
+        ctx.fillRect(x, y, w, h);
+        ctx.strokeStyle = '#fff';
+        ctx.strokeRect(x, y, w, h);
+      });
+      if (drag) {
+        const temp = toActorRect(drag.startX, drag.startY, drag.endX, drag.endY);
+        ctx.fillStyle = colors[temp.type] || colors.solid;
+        ctx.fillRect(box.x + temp.x * scale, box.y + temp.y * scale, temp.width * scale, temp.height * scale);
+      }
+    };
+    const pointer = (event) => {
+      const rect = canvas.getBoundingClientRect();
+      return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    };
+    canvas.onpointerdown = (event) => {
+      const p = pointer(event);
+      drag = { startX: p.x, startY: p.y, endX: p.x, endY: p.y };
+      render();
+    };
+    canvas.onpointermove = (event) => {
+      if (!drag) return;
+      const p = pointer(event);
+      drag.endX = p.x; drag.endY = p.y;
+      render();
+    };
+    canvas.onpointerup = () => {
+      if (!drag) return;
+      zones.push(toActorRect(drag.startX, drag.startY, drag.endX, drag.endY));
+      drag = null;
+      render();
+    };
+    clearBtn.onclick = () => { zones.length = 0; render(); };
+    cancel.onclick = () => modal.remove();
+    ok.onclick = () => {
+      this.setActor({ ...actor, collisionZones: zones });
+      modal.remove();
+    };
+    image.onload = () => render();
+    render();
+  }
+
   buildProjectileArtControl(params, onCommit) {
     const wrap = el('div', 'actor-editor-inline-actions');
     const button = el('button', 'actor-editor-btn small');
@@ -850,6 +962,23 @@ export default class ActorEditor {
     addField('Invulnerable by default', checkbox(actor.invulnerable, (event) => this.setActor({ ...actor, invulnerable: event.target.checked }), 'Enabled'));
     addField('Destructible', checkbox(actor.destructible, (event) => this.setActor({ ...actor, destructible: event.target.checked }), 'Enabled'));
     addField('Root actor', checkbox(actor.isRoot, (event) => this.setActor({ ...actor, isRoot: event.target.checked }), 'Placeable in Level Editor'));
+    const facingWrap = el('div', 'actor-editor-inline-actions');
+    [
+      { id: 'face-player', label: 'Face player' },
+      { id: 'face-left', label: 'Face left' },
+      { id: 'face-right', label: 'Face right' }
+    ].forEach((option) => {
+      const label = el('label', 'actor-editor-toggle');
+      const input = el('input');
+      input.type = 'radio';
+      input.name = 'actor-facing-mode';
+      input.checked = (actor.facingMode || 'face-player') === option.id;
+      input.oninput = () => this.setActor({ ...actor, facingMode: option.id });
+      label.appendChild(input);
+      label.append(option.label);
+      facingWrap.appendChild(label);
+    });
+    addField('Facing', facingWrap);
     const sizeWrap = el('div', 'actor-editor-inline-actions');
     sizeWrap.style.display = 'flex';
     sizeWrap.style.alignItems = 'center';
@@ -880,6 +1009,10 @@ export default class ActorEditor {
     sizeWrap.appendChild(el('span', 'actor-editor-note', '×'));
     sizeWrap.appendChild(heightInput);
     addField('Size (w × h)', sizeWrap);
+    const zoneBtn = el('button', 'actor-editor-btn', 'Collision / Hitbox Zones');
+    zoneBtn.type = 'button';
+    zoneBtn.onclick = () => this.openCollisionZoneEditor(actor);
+    addField('Collision editor', zoneBtn);
     section.appendChild(this.renderTaxonomyEditor(actor, {
       key: 'taxonomies',
       label: 'I belong to taxonomy',

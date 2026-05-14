@@ -54,6 +54,8 @@ export default class ScriptedActor extends EnemyBase {
     this.pendingShots = [];
     this.pendingStateSwitch = null;
     this._lastFrameImage = null;
+    if (this.definition.facingMode === 'face-left') this.facing = -1;
+    if (this.definition.facingMode === 'face-right') this.facing = 1;
   }
 
   get currentState() {
