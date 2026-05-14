@@ -97,11 +97,11 @@ function createArtPreviewDataUrl(data) {
     if (first) tileData = first;
   }
   const normalizeFramePixels = (frame) => {
-    if (Array.isArray(frame) && typeof frame[0] === 'string') return frame;
-    if (Array.isArray(frame) && Array.isArray(frame[0]) && typeof frame[0][0] === 'string') return frame[0];
+    if (Array.isArray(frame) && frame.some((value) => typeof value === 'string')) return frame;
+    if (Array.isArray(frame) && Array.isArray(frame[0]) && frame[0].some((value) => typeof value === 'string')) return frame[0];
     if (frame && typeof frame === 'object') {
-      if (Array.isArray(frame.pixels) && typeof frame.pixels[0] === 'string') return frame.pixels;
-      if (Array.isArray(frame.data) && typeof frame.data[0] === 'string') return frame.data;
+      if (Array.isArray(frame.pixels) && frame.pixels.some((value) => typeof value === 'string')) return frame.pixels;
+      if (Array.isArray(frame.data) && frame.data.some((value) => typeof value === 'string')) return frame.data;
     }
     return null;
   };
