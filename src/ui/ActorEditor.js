@@ -453,7 +453,18 @@ export default class ActorEditor {
       { id: 'hurtbox', label: 'Green: Actor takes damage (not collidable)' }
     ].forEach((option) => { const node = el('option'); node.value = option.id; node.textContent = option.label; zoneType.appendChild(node); });
     const clearBtn = el('button', 'actor-editor-btn small', 'Clear all');
+    const eraseToggle = el('button', 'actor-editor-btn small', 'Mode: Paint');
+    const brushSize = el('input');
+    brushSize.type = 'number';
+    brushSize.min = '1';
+    brushSize.max = '12';
+    brushSize.step = '1';
+    brushSize.value = '1';
+    brushSize.style.width = '72px';
     controls.appendChild(zoneType);
+    controls.appendChild(eraseToggle);
+    controls.appendChild(el('span', 'actor-editor-note', 'Brush'));
+    controls.appendChild(brushSize);
     controls.appendChild(clearBtn);
     card.appendChild(controls);
     const canvas = document.createElement('canvas');
@@ -475,24 +486,62 @@ export default class ActorEditor {
     const image = new Image();
     if (preview) image.src = preview;
     const colors = { solid: 'rgba(255,220,0,0.35)', 'solid-damage-player': 'rgba(255,0,0,0.35)', 'damage-player': 'rgba(255,90,160,0.35)', 'solid-hurtbox': 'rgba(70,140,255,0.35)', hurtbox: 'rgba(80,255,120,0.35)' };
-    let drag = null;
+    let eraseMode = false;
+    let painting = false;
     const actorW = Math.max(1, Number(actor?.size?.width || 32));
     const actorH = Math.max(1, Number(actor?.size?.height || 32));
+    const zoneGrid = Array.from({ length: actorH }, () => Array.from({ length: actorW }, () => null));
+    zones.forEach((zone) => {
+      const startX = Math.max(0, Math.floor(zone.x));
+      const startY = Math.max(0, Math.floor(zone.y));
+      const endX = Math.min(actorW, startX + Math.max(1, Math.floor(zone.width)));
+      const endY = Math.min(actorH, startY + Math.max(1, Math.floor(zone.height)));
+      for (let y = startY; y < endY; y += 1) {
+        for (let x = startX; x < endX; x += 1) zoneGrid[y][x] = zone.type || 'solid';
+      }
+    });
     const pad = 24;
     const scale = Math.min((canvas.width - pad * 2) / actorW, (canvas.height - pad * 2) / actorH);
     const box = { x: (canvas.width - actorW * scale) / 2, y: (canvas.height - actorH * scale) / 2, w: actorW * scale, h: actorH * scale };
-    const toActorRect = (x0, y0, x1, y1) => {
-      const left = Math.min(x0, x1);
-      const top = Math.min(y0, y1);
-      const right = Math.max(x0, x1);
-      const bottom = Math.max(y0, y1);
-      return {
-        x: Math.max(0, Math.round((left - box.x) / scale)),
-        y: Math.max(0, Math.round((top - box.y) / scale)),
-        width: Math.max(1, Math.round((right - left) / scale)),
-        height: Math.max(1, Math.round((bottom - top) / scale)),
-        type: zoneType.value
-      };
+    const toActorPoint = (screenX, screenY) => ({
+      x: Math.max(0, Math.min(actorW - 1, Math.floor((screenX - box.x) / scale))),
+      y: Math.max(0, Math.min(actorH - 1, Math.floor((screenY - box.y) / scale)))
+    });
+    const applyBrush = (screenX, screenY) => {
+      const point = toActorPoint(screenX, screenY);
+      const radius = Math.max(1, Math.min(12, Math.floor(Number(brushSize.value) || 1)));
+      const half = Math.floor(radius / 2);
+      for (let y = point.y - half; y <= point.y + half; y += 1) {
+        for (let x = point.x - half; x <= point.x + half; x += 1) {
+          if (x < 0 || y < 0 || x >= actorW || y >= actorH) continue;
+          zoneGrid[y][x] = eraseMode ? null : zoneType.value;
+        }
+      }
+    };
+    const rebuildZonesFromGrid = () => {
+      const consumed = Array.from({ length: actorH }, () => Array.from({ length: actorW }, () => false));
+      const next = [];
+      for (let y = 0; y < actorH; y += 1) {
+        for (let x = 0; x < actorW; x += 1) {
+          const type = zoneGrid[y][x];
+          if (!type || consumed[y][x]) continue;
+          let width = 1;
+          while (x + width < actorW && zoneGrid[y][x + width] === type && !consumed[y][x + width]) width += 1;
+          let height = 1;
+          outer: while (y + height < actorH) {
+            for (let xx = x; xx < x + width; xx += 1) {
+              if (zoneGrid[y + height][xx] !== type || consumed[y + height][xx]) break outer;
+            }
+            height += 1;
+          }
+          for (let yy = y; yy < y + height; yy += 1) {
+            for (let xx = x; xx < x + width; xx += 1) consumed[yy][xx] = true;
+          }
+          next.push({ type, x, y, width, height });
+        }
+      }
+      zones.length = 0;
+      zones.push(...next);
     };
     const render = () => {
       const ctx = canvas.getContext('2d');
@@ -511,11 +560,6 @@ export default class ActorEditor {
         ctx.strokeStyle = '#fff';
         ctx.strokeRect(x, y, w, h);
       });
-      if (drag) {
-        const temp = toActorRect(drag.startX, drag.startY, drag.endX, drag.endY);
-        ctx.fillStyle = colors[temp.type] || colors.solid;
-        ctx.fillRect(box.x + temp.x * scale, box.y + temp.y * scale, temp.width * scale, temp.height * scale);
-      }
     };
     const pointer = (event) => {
       const rect = canvas.getBoundingClientRect();
@@ -523,22 +567,33 @@ export default class ActorEditor {
     };
     canvas.onpointerdown = (event) => {
       const p = pointer(event);
-      drag = { startX: p.x, startY: p.y, endX: p.x, endY: p.y };
+      painting = true;
+      applyBrush(p.x, p.y);
+      rebuildZonesFromGrid();
       render();
     };
     canvas.onpointermove = (event) => {
-      if (!drag) return;
+      if (!painting) return;
       const p = pointer(event);
-      drag.endX = p.x; drag.endY = p.y;
+      applyBrush(p.x, p.y);
+      rebuildZonesFromGrid();
       render();
     };
     canvas.onpointerup = () => {
-      if (!drag) return;
-      zones.push(toActorRect(drag.startX, drag.startY, drag.endX, drag.endY));
-      drag = null;
+      if (!painting) return;
+      painting = false;
       render();
     };
-    clearBtn.onclick = () => { zones.length = 0; render(); };
+    canvas.onpointerleave = () => { painting = false; };
+    clearBtn.onclick = () => {
+      for (let y = 0; y < actorH; y += 1) for (let x = 0; x < actorW; x += 1) zoneGrid[y][x] = null;
+      zones.length = 0;
+      render();
+    };
+    eraseToggle.onclick = () => {
+      eraseMode = !eraseMode;
+      eraseToggle.textContent = eraseMode ? 'Mode: Erase' : 'Mode: Paint';
+    };
     cancel.onclick = () => modal.remove();
     ok.onclick = () => {
       this.setActor({ ...actor, collisionZones: zones });
