@@ -342,9 +342,20 @@ export default class ActorEditor {
     const shouldForceSaveAs = forceSaveAs
       || !this.currentDocumentRef?.name
       || /^actor(\.json)?$/i.test(String(fallback || '').trim());
-    const name = shouldForceSaveAs
-      ? (window.prompt('Save actor as', fallback) || '').trim()
-      : fallback;
+    let name = fallback;
+    if (shouldForceSaveAs) {
+      const picked = await openProjectBrowser({
+        mode: 'saveAs',
+        fixedFolder: ACTOR_FOLDER,
+        initialFolder: ACTOR_FOLDER,
+        title: 'Save Actor As',
+        initialName: fallback,
+        onPick: ({ action, name: pickedName }) => {
+          if (action === 'saveAs') name = String(pickedName || '').trim();
+        }
+      });
+      if (!picked || picked.action !== 'saveAs') return;
+    }
     if (!name) return;
     let payload = ensureActorDefinition(this.actor);
     if (!this.isActorHueShiftNeutral()) {

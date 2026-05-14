@@ -154,9 +154,13 @@ function getArtFrames(data) {
   return { frames: [], source: null };
 }
 
-function createArtAnimationPreviewUrls(data, maxFrames = null) {
+function createArtAnimationPreviewUrls(data, maxFrames = 24) {
   const { frames: allFrames, source } = getArtFrames(data);
-  const frames = Number.isFinite(maxFrames) && maxFrames > 0 ? allFrames.slice(0, maxFrames) : allFrames;
+  let frames = allFrames;
+  if (Number.isFinite(maxFrames) && maxFrames > 0 && allFrames.length > maxFrames) {
+    const step = allFrames.length / maxFrames;
+    frames = Array.from({ length: maxFrames }, (_, i) => allFrames[Math.floor(i * step)]).filter(Boolean);
+  }
   if (!frames.length) return [];
   const firstFrame = frames[0];
   if (Array.isArray(firstFrame) && firstFrame.length > 4096) {
