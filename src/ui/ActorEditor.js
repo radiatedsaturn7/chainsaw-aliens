@@ -495,8 +495,10 @@ export default class ActorEditor {
     const toolbarRow1 = el('div', 'actor-editor-inline-actions');
     const toolbarRow2 = el('div', 'actor-editor-inline-actions');
     toolbarRow2.style.alignItems = 'center';
+    toolbarRow2.style.justifyContent = 'space-between';
     const zoomOutBtn = el('button', 'actor-editor-btn small', 'Zoom -');
     const zoomInBtn = el('button', 'actor-editor-btn small', 'Zoom +');
+    const zoomRow = el('div', 'actor-editor-inline-actions');
     const thumbstick = el('div');
     thumbstick.className = 'actor-editor-thumbstick';
     Object.assign(thumbstick.style, {
@@ -512,7 +514,6 @@ export default class ActorEditor {
     const actionRow = el('div', 'actor-editor-inline-actions');
     const ok = el('button', 'actor-editor-btn', 'OK');
     const cancel = el('button', 'actor-editor-btn', 'Cancel');
-    actionRow.style.marginLeft = 'auto';
     controls.appendChild(zoneType);
     controls.appendChild(paintBtn);
     controls.appendChild(eraseBtn);
@@ -521,11 +522,12 @@ export default class ActorEditor {
     controls.appendChild(clearBtn);
     toolbarRow1.appendChild(controls);
     actionRow.style.marginLeft = 'auto';
-    toolbarRow2.append(zoomOutBtn, zoomInBtn, actionRow);
     thumbCol.appendChild(thumbstick);
     controlsCol.append(toolbarRow1, toolbarRow2);
     bottomTools.append(thumbCol, controlsCol);
     actionRow.append(ok, cancel);
+    zoomRow.append(zoomOutBtn, zoomInBtn);
+    toolbarRow2.append(zoomRow, actionRow);
     card.appendChild(bottomTools);
     modal.appendChild(card);
     document.body.appendChild(modal);
@@ -609,9 +611,8 @@ export default class ActorEditor {
       ctx.fillStyle = '#0f1726';
       ctx.fillRect(box.x, box.y, box.w, box.h);
       if (image.complete && image.naturalWidth > 0) {
-        const imageScale = Math.min(box.w / image.naturalWidth, box.h / image.naturalHeight);
-        const drawW = image.naturalWidth * imageScale;
-        const drawH = image.naturalHeight * imageScale;
+        const drawW = image.naturalWidth * box.scale;
+        const drawH = image.naturalHeight * box.scale;
         const drawX = box.x + (box.w - drawW) * 0.5;
         const drawY = box.y + (box.h - drawH) * 0.5;
         ctx.drawImage(image, drawX, drawY, drawW, drawH);
