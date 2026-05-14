@@ -438,7 +438,7 @@ export default class ActorEditor {
 
   openCollisionZoneEditor(actor) {
     const modal = el('div', 'actor-editor-overlay');
-    Object.assign(modal.style, { position: 'fixed', inset: '0', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: '2147483647' });
+    Object.assign(modal.style, { position: 'fixed', inset: '0', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: '2147483647', touchAction: 'none' });
     const card = el('div', 'actor-editor-card');
     Object.assign(card.style, { width: 'min(960px, 96vw)', maxHeight: '92vh', overflow: 'auto' });
     card.appendChild(el('h3', '', 'Collision / Damage Zones'));
@@ -453,7 +453,8 @@ export default class ActorEditor {
       { id: 'hurtbox', label: 'Green: Actor takes damage (not collidable)' }
     ].forEach((option) => { const node = el('option'); node.value = option.id; node.textContent = option.label; zoneType.appendChild(node); });
     const clearBtn = el('button', 'actor-editor-btn small', 'Clear all');
-    const eraseToggle = el('button', 'actor-editor-btn small', 'Mode: Paint');
+    const paintBtn = el('button', 'actor-editor-btn small active', 'Paint');
+    const eraseBtn = el('button', 'actor-editor-btn small', 'Erase');
     const brushSize = el('input');
     brushSize.type = 'number';
     brushSize.min = '1';
@@ -462,7 +463,8 @@ export default class ActorEditor {
     brushSize.value = '1';
     brushSize.style.width = '72px';
     controls.appendChild(zoneType);
-    controls.appendChild(eraseToggle);
+    controls.appendChild(paintBtn);
+    controls.appendChild(eraseBtn);
     controls.appendChild(el('span', 'actor-editor-note', 'Brush'));
     controls.appendChild(brushSize);
     controls.appendChild(clearBtn);
@@ -473,7 +475,25 @@ export default class ActorEditor {
     canvas.style.width = '100%';
     canvas.style.border = '1px solid rgba(255,255,255,0.25)';
     canvas.style.background = '#080d17';
+    canvas.style.touchAction = 'none';
     card.appendChild(canvas);
+    const bottomTools = el('div', 'actor-editor-inline-actions');
+    const zoomOutBtn = el('button', 'actor-editor-btn small', 'Zoom -');
+    const zoomInBtn = el('button', 'actor-editor-btn small', 'Zoom +');
+    const thumbstick = el('div');
+    thumbstick.className = 'actor-editor-thumbstick';
+    Object.assign(thumbstick.style, {
+      width: '88px', height: '88px', borderRadius: '999px', border: '2px solid rgba(255,255,255,0.25)',
+      position: 'relative', background: 'rgba(0,0,0,0.35)', touchAction: 'none'
+    });
+    const stickKnob = el('div');
+    Object.assign(stickKnob.style, {
+      width: '34px', height: '34px', borderRadius: '999px', background: 'rgba(255,255,255,0.7)',
+      position: 'absolute', left: '27px', top: '27px'
+    });
+    thumbstick.appendChild(stickKnob);
+    bottomTools.append(thumbstick, zoomOutBtn, zoomInBtn);
+    card.appendChild(bottomTools);
     const actionRow = el('div', 'actor-editor-inline-actions');
     const ok = el('button', 'actor-editor-btn', 'OK');
     const cancel = el('button', 'actor-editor-btn', 'Cancel');
@@ -501,11 +521,17 @@ export default class ActorEditor {
       }
     });
     const pad = 24;
-    const scale = Math.min((canvas.width - pad * 2) / actorW, (canvas.height - pad * 2) / actorH);
-    const box = { x: (canvas.width - actorW * scale) / 2, y: (canvas.height - actorH * scale) / 2, w: actorW * scale, h: actorH * scale };
+    let zoom = 1;
+    let panX = 0;
+    let panY = 0;
+    const getScale = () => Math.min((canvas.width - pad * 2) / actorW, (canvas.height - pad * 2) / actorH) * zoom;
+    const getBox = () => {
+      const scale = getScale();
+      return { x: (canvas.width - actorW * scale) / 2 + panX, y: (canvas.height - actorH * scale) / 2 + panY, w: actorW * scale, h: actorH * scale, scale };
+    };
     const toActorPoint = (screenX, screenY) => ({
-      x: Math.max(0, Math.min(actorW - 1, Math.floor((screenX - box.x) / scale))),
-      y: Math.max(0, Math.min(actorH - 1, Math.floor((screenY - box.y) / scale)))
+      x: Math.max(0, Math.min(actorW - 1, Math.floor((screenX - getBox().x) / getBox().scale))),
+      y: Math.max(0, Math.min(actorH - 1, Math.floor((screenY - getBox().y) / getBox().scale)))
     });
     const applyBrush = (screenX, screenY) => {
       const point = toActorPoint(screenX, screenY);
@@ -546,15 +572,16 @@ export default class ActorEditor {
     const render = () => {
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
+      const box = getBox();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#0f1726';
       ctx.fillRect(box.x, box.y, box.w, box.h);
       if (image.complete && image.naturalWidth > 0) ctx.drawImage(image, box.x, box.y, box.w, box.h);
       zones.forEach((zone) => {
-        const x = box.x + zone.x * scale;
-        const y = box.y + zone.y * scale;
-        const w = zone.width * scale;
-        const h = zone.height * scale;
+        const x = box.x + zone.x * box.scale;
+        const y = box.y + zone.y * box.scale;
+        const w = zone.width * box.scale;
+        const h = zone.height * box.scale;
         ctx.fillStyle = colors[zone.type] || colors.solid;
         ctx.fillRect(x, y, w, h);
         ctx.strokeStyle = '#fff';
@@ -566,6 +593,8 @@ export default class ActorEditor {
       return { x: event.clientX - rect.left, y: event.clientY - rect.top };
     };
     canvas.onpointerdown = (event) => {
+      event.preventDefault();
+      canvas.setPointerCapture?.(event.pointerId);
       const p = pointer(event);
       painting = true;
       applyBrush(p.x, p.y);
@@ -573,6 +602,7 @@ export default class ActorEditor {
       render();
     };
     canvas.onpointermove = (event) => {
+      event.preventDefault();
       if (!painting) return;
       const p = pointer(event);
       applyBrush(p.x, p.y);
@@ -590,10 +620,32 @@ export default class ActorEditor {
       zones.length = 0;
       render();
     };
-    eraseToggle.onclick = () => {
-      eraseMode = !eraseMode;
-      eraseToggle.textContent = eraseMode ? 'Mode: Erase' : 'Mode: Paint';
+    paintBtn.onclick = () => { eraseMode = false; paintBtn.classList.add('active'); eraseBtn.classList.remove('active'); };
+    eraseBtn.onclick = () => { eraseMode = true; eraseBtn.classList.add('active'); paintBtn.classList.remove('active'); };
+    zoomOutBtn.onclick = () => { zoom = Math.max(0.5, zoom - 0.2); render(); };
+    zoomInBtn.onclick = () => { zoom = Math.min(6, zoom + 0.2); render(); };
+    let stickDrag = null;
+    const centerKnob = () => { stickKnob.style.left = '27px'; stickKnob.style.top = '27px'; };
+    thumbstick.onpointerdown = (event) => {
+      event.preventDefault();
+      stickDrag = { id: event.pointerId };
+      thumbstick.setPointerCapture?.(event.pointerId);
     };
+    thumbstick.onpointermove = (event) => {
+      if (!stickDrag || stickDrag.id !== event.pointerId) return;
+      event.preventDefault();
+      const rect = thumbstick.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = Math.max(-24, Math.min(24, event.clientX - cx));
+      const dy = Math.max(-24, Math.min(24, event.clientY - cy));
+      stickKnob.style.left = `${27 + dx}px`;
+      stickKnob.style.top = `${27 + dy}px`;
+      panX += dx * 0.15;
+      panY += dy * 0.15;
+      render();
+    };
+    thumbstick.onpointerup = () => { stickDrag = null; centerKnob(); };
     cancel.onclick = () => modal.remove();
     ok.onclick = () => {
       this.setActor({ ...actor, collisionZones: zones });
