@@ -466,12 +466,6 @@ export default class ActorEditor {
     brushSize.step = '1';
     brushSize.value = '1';
     brushSize.style.width = '72px';
-    controls.appendChild(zoneType);
-    controls.appendChild(paintBtn);
-    controls.appendChild(eraseBtn);
-    controls.appendChild(el('span', 'actor-editor-note', 'Brush'));
-    controls.appendChild(brushSize);
-    controls.appendChild(clearBtn);
     const canvas = document.createElement('canvas');
     canvas.width = 640;
     canvas.height = 560;
@@ -484,9 +478,13 @@ export default class ActorEditor {
     Object.assign(canvasWrap.style, { flex: '1', minHeight: '0', overflow: 'hidden', position: 'relative' });
     canvasWrap.appendChild(canvas);
     viewportWrap.appendChild(canvasWrap);
-    const bottomTools = el('div', 'actor-editor-inline-actions');
-    const zoomOutBtn = el('button', 'actor-editor-btn small', 'Zoom -');
-    const zoomInBtn = el('button', 'actor-editor-btn small', 'Zoom +');
+    const bottomTools = el('div');
+    Object.assign(bottomTools.style, { display: 'flex', flexDirection: 'column', gap: '8px' });
+    const toolbarRow1 = el('div', 'actor-editor-inline-actions');
+    const toolbarRow2 = el('div', 'actor-editor-inline-actions');
+    toolbarRow2.style.alignItems = 'center';
+    const zoomOutBtn = el('button', 'actor-editor-btn small', '1/2');
+    const zoomInBtn = el('button', 'actor-editor-btn small', '2x');
     const thumbstick = el('div');
     thumbstick.className = 'actor-editor-thumbstick';
     Object.assign(thumbstick.style, {
@@ -503,7 +501,16 @@ export default class ActorEditor {
     const ok = el('button', 'actor-editor-btn', 'OK');
     const cancel = el('button', 'actor-editor-btn', 'Cancel');
     actionRow.style.marginLeft = 'auto';
-    bottomTools.append(thumbstick, zoomOutBtn, zoomInBtn, controls, actionRow);
+    controls.appendChild(zoneType);
+    controls.appendChild(paintBtn);
+    controls.appendChild(eraseBtn);
+    controls.appendChild(el('span', 'actor-editor-note', 'Brush'));
+    controls.appendChild(brushSize);
+    controls.appendChild(clearBtn);
+    toolbarRow1.appendChild(controls);
+    actionRow.style.marginLeft = 'auto';
+    toolbarRow2.append(thumbstick, zoomOutBtn, zoomInBtn, actionRow);
+    bottomTools.append(toolbarRow1, toolbarRow2);
     actionRow.append(ok, cancel);
     card.appendChild(bottomTools);
     modal.appendChild(card);
@@ -658,8 +665,8 @@ export default class ActorEditor {
     };
     paintBtn.onclick = () => { eraseMode = false; paintBtn.classList.add('active'); eraseBtn.classList.remove('active'); };
     eraseBtn.onclick = () => { eraseMode = true; eraseBtn.classList.add('active'); paintBtn.classList.remove('active'); };
-    zoomOutBtn.onclick = () => { zoom = Math.max(0.5, zoom - 0.2); render(); };
-    zoomInBtn.onclick = () => { zoom = Math.min(6, zoom + 0.2); render(); };
+    zoomOutBtn.onclick = () => { zoom = Math.max(0.25, zoom * 0.5); render(); };
+    zoomInBtn.onclick = () => { zoom = Math.min(8, zoom * 2); render(); };
     let stickDrag = null;
     const centerKnob = () => { stickKnob.style.left = '27px'; stickKnob.style.top = '27px'; };
     thumbstick.onpointerdown = (event) => {
