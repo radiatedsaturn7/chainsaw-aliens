@@ -441,8 +441,12 @@ export default class ActorEditor {
     Object.assign(modal.style, { position: 'fixed', inset: '0', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: '2147483647', touchAction: 'none' });
     const card = el('div', 'actor-editor-card');
     Object.assign(card.style, { width: 'min(960px, 96vw)', height: 'min(92dvh, 760px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' });
-    card.appendChild(el('h3', '', 'Collision / Damage Zones'));
-    card.appendChild(el('div', 'actor-editor-note', 'Drag to draw rectangles over the actor preview. Select zone type before drawing.'));
+    const title = el('h3', '', 'Collision / Damage Zones');
+    title.style.margin = '0 0 8px';
+    card.appendChild(title);
+    const viewportWrap = el('div');
+    Object.assign(viewportWrap.style, { flex: '1', minHeight: '0', display: 'flex', flexDirection: 'column' });
+    card.appendChild(viewportWrap);
     const controls = el('div', 'actor-editor-inline-actions');
     const zoneType = el('select');
     [
@@ -468,18 +472,18 @@ export default class ActorEditor {
     controls.appendChild(el('span', 'actor-editor-note', 'Brush'));
     controls.appendChild(brushSize);
     controls.appendChild(clearBtn);
-    card.appendChild(controls);
     const canvas = document.createElement('canvas');
     canvas.width = 640;
-    canvas.height = 420;
+    canvas.height = 560;
     canvas.style.width = '100%';
+    canvas.style.height = '100%';
     canvas.style.border = '1px solid rgba(255,255,255,0.25)';
     canvas.style.background = '#080d17';
     canvas.style.touchAction = 'none';
     const canvasWrap = el('div');
-    Object.assign(canvasWrap.style, { flex: '1', minHeight: '0', overflow: 'hidden' });
+    Object.assign(canvasWrap.style, { flex: '1', minHeight: '0', overflow: 'hidden', position: 'relative' });
     canvasWrap.appendChild(canvas);
-    card.appendChild(canvasWrap);
+    viewportWrap.appendChild(canvasWrap);
     const bottomTools = el('div', 'actor-editor-inline-actions');
     const zoomOutBtn = el('button', 'actor-editor-btn small', 'Zoom -');
     const zoomInBtn = el('button', 'actor-editor-btn small', 'Zoom +');
@@ -495,13 +499,13 @@ export default class ActorEditor {
       position: 'absolute', left: '27px', top: '27px'
     });
     thumbstick.appendChild(stickKnob);
-    bottomTools.append(thumbstick, zoomOutBtn, zoomInBtn);
-    card.appendChild(bottomTools);
     const actionRow = el('div', 'actor-editor-inline-actions');
     const ok = el('button', 'actor-editor-btn', 'OK');
     const cancel = el('button', 'actor-editor-btn', 'Cancel');
+    actionRow.style.marginLeft = 'auto';
+    bottomTools.append(thumbstick, zoomOutBtn, zoomInBtn, controls, actionRow);
     actionRow.append(ok, cancel);
-    card.appendChild(actionRow);
+    card.appendChild(bottomTools);
     modal.appendChild(card);
     document.body.appendChild(modal);
     const zones = Array.isArray(actor.collisionZones) ? clone(actor.collisionZones) : [];
@@ -597,7 +601,9 @@ export default class ActorEditor {
     };
     const pointer = (event) => {
       const rect = canvas.getBoundingClientRect();
-      return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      const scaleX = canvas.width / Math.max(1, rect.width);
+      const scaleY = canvas.height / Math.max(1, rect.height);
+      return { x: (event.clientX - rect.left) * scaleX, y: (event.clientY - rect.top) * scaleY };
     };
     canvas.onpointerdown = (event) => {
       if (!event.isPrimary) return;
@@ -618,6 +624,19 @@ export default class ActorEditor {
       if (!painting) return;
       const p = pointer(event);
       applyBrush(p.x, p.y);
+      // Fill gaps when pointer events skip on mobile by interpolating.
+      if (typeof canvas._lastPaintX === 'number' && typeof canvas._lastPaintY === 'number') {
+        const dx = p.x - canvas._lastPaintX;
+        const dy = p.y - canvas._lastPaintY;
+        const steps = Math.max(1, Math.ceil(Math.hypot(dx, dy) / 4));
+        for (let i = 1; i <= steps; i += 1) {
+          const ix = canvas._lastPaintX + (dx * i) / steps;
+          const iy = canvas._lastPaintY + (dy * i) / steps;
+          applyBrush(ix, iy);
+        }
+      }
+      canvas._lastPaintX = p.x;
+      canvas._lastPaintY = p.y;
       rebuildZonesFromGrid();
       render();
     };
@@ -626,6 +645,8 @@ export default class ActorEditor {
       if (!painting) return;
       painting = false;
       paintPointerId = null;
+      canvas._lastPaintX = null;
+      canvas._lastPaintY = null;
       render();
     };
     canvas.onpointercancel = () => { painting = false; paintPointerId = null; };
