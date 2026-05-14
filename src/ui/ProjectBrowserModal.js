@@ -175,6 +175,11 @@ function createActorPreviewDataUrl(actorData) {
     const preview = createArtPreviewDataUrl(artPayload?.data || null);
     if (preview) return preview;
   }
+  for (const state of states) {
+    const frameUrl = state?.animation?.frames?.find?.((frame) => typeof frame?.imageDataUrl === 'string' && frame.imageDataUrl)?.imageDataUrl;
+    if (frameUrl) return frameUrl;
+    if (typeof state?.animation?.imageDataUrl === 'string' && state.animation.imageDataUrl) return state.animation.imageDataUrl;
+  }
   return null;
 }
 
@@ -191,6 +196,7 @@ export function openProjectBrowser({
   onCancel = null,
   onPick = null
 } = {}) {
+  activePreviewTrackId = null;
   void pullServerSnapshot('server').catch(() => null);
   vfsEnsureIndex();
   const previousActive = document.activeElement;

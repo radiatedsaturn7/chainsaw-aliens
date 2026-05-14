@@ -5069,10 +5069,15 @@ export default class Game {
     const zone = this.getMusicZoneAt(tileX, tileY);
     this.setActiveMusicTrack(zone?.track || null);
     this.musicPlayers.forEach((player) => player.update(dt));
-    if (this.projectBrowserMusicPreviewPlayer) {
-      this.projectBrowserMusicPreviewPlayer.update(dt);
-    }
     this.musicPlayers = this.musicPlayers.filter((player) => !(player.volume <= 0 && player.targetVolume === 0));
+  }
+
+  updateProjectBrowserMusicPreview(dt) {
+    if (!this.projectBrowserMusicPreviewPlayer) return;
+    this.projectBrowserMusicPreviewPlayer.update(dt);
+    if (this.projectBrowserMusicPreviewPlayer.volume <= 0 && this.projectBrowserMusicPreviewPlayer.targetVolume === 0) {
+      this.projectBrowserMusicPreviewPlayer = null;
+    }
   }
 
 
@@ -8835,6 +8840,7 @@ export default class Game {
 
   update(dt) {
     this.stateManager.update(dt);
+    this.updateProjectBrowserMusicPreview(dt);
   }
 
   draw() {
