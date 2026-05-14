@@ -441,9 +441,6 @@ export default class ActorEditor {
     Object.assign(modal.style, { position: 'fixed', inset: '0', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: '2147483647', touchAction: 'none' });
     const card = el('div', 'actor-editor-card');
     Object.assign(card.style, { width: 'min(960px, 96vw)', height: 'min(92dvh, 760px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' });
-    const title = el('h3', '', 'Collision / Damage Zones');
-    title.style.margin = '0 0 8px';
-    card.appendChild(title);
     const viewportWrap = el('div');
     Object.assign(viewportWrap.style, { flex: '1', minHeight: '0', display: 'flex', flexDirection: 'column' });
     card.appendChild(viewportWrap);
@@ -479,12 +476,16 @@ export default class ActorEditor {
     canvasWrap.appendChild(canvas);
     viewportWrap.appendChild(canvasWrap);
     const bottomTools = el('div');
-    Object.assign(bottomTools.style, { display: 'flex', flexDirection: 'column', gap: '8px' });
+    Object.assign(bottomTools.style, { display: 'grid', gridTemplateColumns: '96px 1fr', gap: '8px', alignItems: 'stretch' });
+    const thumbCol = el('div');
+    Object.assign(thumbCol.style, { display: 'flex', alignItems: 'stretch', justifyContent: 'center' });
+    const controlsCol = el('div');
+    Object.assign(controlsCol.style, { display: 'flex', flexDirection: 'column', gap: '8px' });
     const toolbarRow1 = el('div', 'actor-editor-inline-actions');
     const toolbarRow2 = el('div', 'actor-editor-inline-actions');
     toolbarRow2.style.alignItems = 'center';
-    const zoomOutBtn = el('button', 'actor-editor-btn small', '1/2');
-    const zoomInBtn = el('button', 'actor-editor-btn small', '2x');
+    const zoomOutBtn = el('button', 'actor-editor-btn small', 'Zoom -');
+    const zoomInBtn = el('button', 'actor-editor-btn small', 'Zoom +');
     const thumbstick = el('div');
     thumbstick.className = 'actor-editor-thumbstick';
     Object.assign(thumbstick.style, {
@@ -509,8 +510,10 @@ export default class ActorEditor {
     controls.appendChild(clearBtn);
     toolbarRow1.appendChild(controls);
     actionRow.style.marginLeft = 'auto';
-    toolbarRow2.append(thumbstick, zoomOutBtn, zoomInBtn, actionRow);
-    bottomTools.append(toolbarRow1, toolbarRow2);
+    toolbarRow2.append(zoomOutBtn, zoomInBtn, actionRow);
+    thumbCol.appendChild(thumbstick);
+    controlsCol.append(toolbarRow1, toolbarRow2);
+    bottomTools.append(thumbCol, controlsCol);
     actionRow.append(ok, cancel);
     card.appendChild(bottomTools);
     modal.appendChild(card);
@@ -594,7 +597,14 @@ export default class ActorEditor {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#0f1726';
       ctx.fillRect(box.x, box.y, box.w, box.h);
-      if (image.complete && image.naturalWidth > 0) ctx.drawImage(image, box.x, box.y, box.w, box.h);
+      if (image.complete && image.naturalWidth > 0) {
+        const imageScale = Math.min(box.w / image.naturalWidth, box.h / image.naturalHeight);
+        const drawW = image.naturalWidth * imageScale;
+        const drawH = image.naturalHeight * imageScale;
+        const drawX = box.x + (box.w - drawW) * 0.5;
+        const drawY = box.y + (box.h - drawH) * 0.5;
+        ctx.drawImage(image, drawX, drawY, drawW, drawH);
+      }
       zones.forEach((zone) => {
         const x = box.x + zone.x * box.scale;
         const y = box.y + zone.y * box.scale;
@@ -665,8 +675,8 @@ export default class ActorEditor {
     };
     paintBtn.onclick = () => { eraseMode = false; paintBtn.classList.add('active'); eraseBtn.classList.remove('active'); };
     eraseBtn.onclick = () => { eraseMode = true; eraseBtn.classList.add('active'); paintBtn.classList.remove('active'); };
-    zoomOutBtn.onclick = () => { zoom = Math.max(0.25, zoom * 0.5); render(); };
-    zoomInBtn.onclick = () => { zoom = Math.min(8, zoom * 2); render(); };
+    zoomOutBtn.onclick = () => { zoom = Math.max(0.5, zoom - 0.2); render(); };
+    zoomInBtn.onclick = () => { zoom = Math.min(6, zoom + 0.2); render(); };
     let stickDrag = null;
     const centerKnob = () => { stickKnob.style.left = '27px'; stickKnob.style.top = '27px'; };
     thumbstick.onpointerdown = (event) => {
