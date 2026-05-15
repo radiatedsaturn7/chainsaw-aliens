@@ -4353,6 +4353,7 @@ export default class Game {
       this.enemies.forEach((enemy) => {
         if (enemy.dead) return;
         if (this.doesEntityOverlapRect(enemy, downAttackRect)) {
+          if (!this.canPlayerDamageEnemyByZones(enemy, downAttackRect)) return;
           if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
             return;
           }
@@ -4440,6 +4441,7 @@ export default class Game {
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
       if (this.doesEntityOverlapRect(enemy, forwardAttackRect)) {
+        if (!this.canPlayerDamageEnemyByZones(enemy, forwardAttackRect)) return;
         if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
           return;
         }
@@ -4781,6 +4783,22 @@ export default class Game {
       }
       this.handleBossInteractions();
     }
+  }
+
+  canPlayerDamageEnemyByZones(enemy, hitRect = null) {
+    if (!enemy?.getCollisionZoneRects) return true;
+    const zones = enemy.getCollisionZoneRects(['solid-hurtbox', 'hurtbox']);
+    if (!zones.length) return true;
+    if (hitRect && typeof hitRect === 'object') {
+      return zones.some((zone) => zone.x < hitRect.x + hitRect.w && zone.x + zone.w > hitRect.x && zone.y < hitRect.y + hitRect.h && zone.y + zone.h > hitRect.y);
+    }
+    const playerRect = {
+      x: this.player.x - this.player.width / 2,
+      y: this.player.y - this.player.height / 2,
+      w: this.player.width,
+      h: this.player.height
+    };
+    return zones.some((zone) => zone.x < playerRect.x + playerRect.w && zone.x + zone.w > playerRect.x && zone.y < playerRect.y + playerRect.h && zone.y + zone.h > playerRect.y);
   }
 
   handleBossInteractions() {
@@ -6039,6 +6057,8 @@ export default class Game {
       const dx = Math.abs(enemy.x - this.sawAnchor.x);
       const dy = Math.abs(enemy.y - this.sawAnchor.y);
       if (dx < range && dy < range) {
+        const anchorRect = { x: this.sawAnchor.x - range, y: this.sawAnchor.y - range, w: range * 2, h: range * 2 };
+        if (!this.canPlayerDamageEnemyByZones(enemy, anchorRect)) return;
         if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
           return;
         }
@@ -6075,6 +6095,10 @@ export default class Game {
 
   applyAnchorImpactDamage(target, isBoss) {
     if (!target || target.dead) return;
+    if (!isBoss) {
+      const hitRect = { x: target.x - target.width / 2, y: target.y - target.height / 2, w: target.width, h: target.height };
+      if (!this.canPlayerDamageEnemyByZones(target, hitRect)) return;
+    }
     if (!isBoss && target.type === 'bulwark' && !target.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
       return;
     }
