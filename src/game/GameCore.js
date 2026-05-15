@@ -1211,7 +1211,7 @@ export default class Game {
     const actorHeightTiles = Number.isFinite(actorHeightPx) && actorHeightPx > 0
       ? Math.max(1, Math.ceil(actorHeightPx / tileSize))
       : 1;
-    const actorSpawnY = Math.max(2, floorY - actorHeightTiles);
+    const actorSpawnY = Math.max(2, floorY - actorHeightTiles - 1);
     const playerSpawnX = 20;
     const enemySpawnX = 38;
     const rows = Array.from({ length: size }, (_, y) => {
@@ -4606,7 +4606,7 @@ export default class Game {
       if (!zones.length) return false;
       let pushed = false;
       let guard = 0;
-      while (guard < 6) {
+      while (guard < 10) {
         guard += 1;
         const pRect = playerRect();
         const hitZone = zones.find((zone) => rectsOverlap(pRect, zone));
@@ -4630,6 +4630,10 @@ export default class Game {
         pushed = true;
       }
       return pushed;
+    };
+    const enemyHasSolidZones = (enemy) => {
+      if (!enemy?.getCollisionZoneRects) return false;
+      return enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'solid-hurtbox']).length > 0;
     };
     const enemyDamagesPlayerInZones = (enemy) => {
       if (!enemy?.getCollisionZoneRects) return enemy.bodyDamageEnabled !== false;
@@ -4758,8 +4762,13 @@ export default class Game {
       }
       const canPushEnemy = revHeld && Math.abs(dx) < revRange && Math.abs(dy) < revVerticalRange;
       const zoneBlocked = resolveEnemyPlayerZoneCollision(enemy);
-      if (!zoneBlocked) {
+      const solidByZones = enemyHasSolidZones(enemy);
+      if (!zoneBlocked && !solidByZones) {
         this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: canPushEnemy });
+      } else if (!zoneBlocked && solidByZones) {
+        // Fallback: if zone contact math misses on a frame, keep classic body overlap
+        // blocked so player cannot walk through zone-authored actors.
+        this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: false });
       }
       if (this.isPlayerBlockedAt(this.player.x, this.player.y, { ignoreOneWay: true })) {
         this.resolvePlayerTileOverlap({ ignoreOneWay: true });
