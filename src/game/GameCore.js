@@ -1204,14 +1204,16 @@ export default class Game {
 
 
   buildActorTestWorldData(actorId, actorDefinition = null) {
-    const size = 50;
-    const floorY = 26;
+    const size = 56;
+    const floorY = 30;
     const tileSize = 32;
     const actorHeightPx = Number(actorDefinition?.size?.height);
     const actorHeightTiles = Number.isFinite(actorHeightPx) && actorHeightPx > 0
       ? Math.max(1, Math.ceil(actorHeightPx / tileSize))
       : 1;
-    const actorSpawnY = floorY - actorHeightTiles;
+    const actorSpawnY = Math.max(2, floorY - actorHeightTiles);
+    const playerSpawnX = 20;
+    const enemySpawnX = 38;
     const rows = Array.from({ length: size }, (_, y) => {
       if (y === 0 || y === size - 1) return '#'.repeat(size);
       const cells = Array.from({ length: size }, (_, x) => (x === 0 || x === size - 1 ? '#' : '.'));
@@ -1227,10 +1229,10 @@ export default class Game {
       tileSize,
       width: size,
       height: size,
-      spawn: { x: 25, y: 25 },
+      spawn: { x: playerSpawnX, y: actorSpawnY },
       tiles: rows,
       regions: [],
-      enemies: [{ x: 31, y: actorSpawnY, type: `custom:${actorId}` }],
+      enemies: [{ x: enemySpawnX, y: actorSpawnY, type: `custom:${actorId}` }],
       elevatorPaths: [],
       elevators: [],
       pixelArt: { tiles: {} },
@@ -4602,22 +4604,32 @@ export default class Game {
       if (!enemy?.getCollisionZoneRects) return false;
       const zones = enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'solid-hurtbox']);
       if (!zones.length) return false;
-      const pRect = playerRect();
-      const hitZone = zones.find((zone) => rectsOverlap(pRect, zone));
-      if (!hitZone) return false;
-      const overlapLeft = (pRect.x + pRect.w) - hitZone.x;
-      const overlapRight = (hitZone.x + hitZone.w) - pRect.x;
-      const overlapTop = (pRect.y + pRect.h) - hitZone.y;
-      const overlapBottom = (hitZone.y + hitZone.h) - pRect.y;
-      const minX = Math.min(overlapLeft, overlapRight);
-      const minY = Math.min(overlapTop, overlapBottom);
-      if (!Number.isFinite(minX) || !Number.isFinite(minY) || minX <= 0 || minY <= 0) return false;
-      if (minX < minY) {
-        this.player.x += overlapLeft < overlapRight ? -minX : minX;
-      } else {
-        this.player.y += overlapTop < overlapBottom ? -minY : minY;
+      let pushed = false;
+      let guard = 0;
+      while (guard < 6) {
+        guard += 1;
+        const pRect = playerRect();
+        const hitZone = zones.find((zone) => rectsOverlap(pRect, zone));
+        if (!hitZone) break;
+        const overlapLeft = (pRect.x + pRect.w) - hitZone.x;
+        const overlapRight = (hitZone.x + hitZone.w) - pRect.x;
+        const overlapTop = (pRect.y + pRect.h) - hitZone.y;
+        const overlapBottom = (hitZone.y + hitZone.h) - pRect.y;
+        const minX = Math.min(overlapLeft, overlapRight);
+        const minY = Math.min(overlapTop, overlapBottom);
+        if (!Number.isFinite(minX) || !Number.isFinite(minY) || minX <= 0 || minY <= 0) break;
+        if (minX < minY) {
+          this.player.x += overlapLeft < overlapRight ? -(minX + 0.5) : (minX + 0.5);
+        } else {
+          this.player.y += overlapTop < overlapBottom ? -(minY + 0.5) : (minY + 0.5);
+          if (overlapTop < overlapBottom) {
+            this.player.vy = Math.min(0, this.player.vy);
+            this.player.onGround = true;
+          }
+        }
+        pushed = true;
       }
-      return true;
+      return pushed;
     };
     const enemyDamagesPlayerInZones = (enemy) => {
       if (!enemy?.getCollisionZoneRects) return enemy.bodyDamageEnabled !== false;
@@ -4706,7 +4718,9 @@ export default class Game {
       const inZoneContact = enemyDamagesPlayerInZones(enemy);
       if (inBodyContact || inZoneContact) {
         if (!enemy.training) {
-          const bodyDamage = enemy.bodyDamageEnabled === false ? 0 : (enemy.contactDamage || 1);
+          const bodyDamage = inZoneContact
+            ? (enemy.contactDamage || 1)
+            : (enemy.bodyDamageEnabled === false ? 0 : (enemy.contactDamage || 1));
           const tookDamage = bodyDamage > 0 ? this.player.takeDamage(bodyDamage) : false;
           if (tookDamage) {
             context.notifyDamagedPlayer(enemy);
