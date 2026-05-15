@@ -4869,8 +4869,8 @@ export default class Game {
         pointerEvents: 'none'
       });
       this._saveStatusModalEl = panel;
-      root.appendChild(panel);
     }
+    root.appendChild(this._saveStatusModalEl);
     this._saveStatusModalEl.textContent = String(message);
     this._saveStatusModalEl.style.display = 'block';
   }

@@ -567,12 +567,7 @@ export default class ActorEditor {
     const getPreviewDimensions = () => {
       const imageW = image?.naturalWidth > 0 ? image.naturalWidth : actorW;
       const imageH = image?.naturalHeight > 0 ? image.naturalHeight : actorH;
-      return {
-        width: Math.max(actorW, imageW),
-        height: Math.max(actorH, imageH),
-        imageW,
-        imageH
-      };
+      return { width: imageW, height: imageH, imageW, imageH };
     };
     const getScale = () => {
       const dims = getPreviewDimensions();
@@ -585,9 +580,11 @@ export default class ActorEditor {
     };
     const toActorPoint = (screenX, screenY) => {
       const box = getBox();
+      const imagePxX = Math.max(0, Math.min(box.imageW - 1, Math.floor((screenX - box.x) / box.scale)));
+      const imagePxY = Math.max(0, Math.min(box.imageH - 1, Math.floor((screenY - box.y) / box.scale)));
       return {
-        x: Math.max(0, Math.min(actorW - 1, Math.floor((screenX - box.x) / box.scale))),
-        y: Math.max(0, Math.min(actorH - 1, Math.floor((screenY - box.y) / box.scale)))
+        x: Math.max(0, Math.min(actorW - 1, Math.floor(imagePxX * (actorW / Math.max(1, box.imageW))))),
+        y: Math.max(0, Math.min(actorH - 1, Math.floor(imagePxY * (actorH / Math.max(1, box.imageH)))))
       };
     };
     const applyBrush = (screenX, screenY) => {
@@ -642,10 +639,14 @@ export default class ActorEditor {
         ctx.drawImage(image, drawX, drawY, drawW, drawH);
       }
       zones.forEach((zone) => {
-        const x = box.x + zone.x * box.scale;
-        const y = box.y + zone.y * box.scale;
-        const w = zone.width * box.scale;
-        const h = zone.height * box.scale;
+        const ix = zone.x * (box.imageW / Math.max(1, actorW));
+        const iy = zone.y * (box.imageH / Math.max(1, actorH));
+        const iw = zone.width * (box.imageW / Math.max(1, actorW));
+        const ih = zone.height * (box.imageH / Math.max(1, actorH));
+        const x = box.x + ix * box.scale;
+        const y = box.y + iy * box.scale;
+        const w = iw * box.scale;
+        const h = ih * box.scale;
         ctx.fillStyle = colors[zone.type] || colors.solid;
         ctx.fillRect(x, y, w, h);
         ctx.strokeStyle = '#fff';
