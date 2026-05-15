@@ -391,7 +391,18 @@ export default class ActorEditor {
     if (elapsed < MIN_SAVING_TOAST_MS) {
       await new Promise((resolve) => setTimeout(resolve, MIN_SAVING_TOAST_MS - elapsed));
     }
-    this.currentDocumentRef = { folder: ACTOR_FOLDER, name };
+    const persistedName = String(saved?.name || name);
+    const persistedPayload = vfsLoad(ACTOR_FOLDER, persistedName);
+    if (!persistedPayload?.data) {
+      this.showInlineSaveStatus?.('Save failed');
+      this.game.showSaveStatusModal?.('Save failed');
+      setTimeout(() => {
+        this.game.hideSaveStatusModal?.();
+        this.showInlineSaveStatus?.('');
+      }, 3000);
+      return;
+    }
+    this.currentDocumentRef = { folder: ACTOR_FOLDER, name: persistedName };
     this.render();
     this.showInlineSaveStatus?.('Saved');
     this.game.showSaveStatusModal?.('Saved');
