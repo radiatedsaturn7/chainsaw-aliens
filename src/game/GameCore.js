@@ -4609,6 +4609,7 @@ export default class Game {
       const overlapBottom = (hitZone.y + hitZone.h) - pRect.y;
       const minX = Math.min(overlapLeft, overlapRight);
       const minY = Math.min(overlapTop, overlapBottom);
+      if (!Number.isFinite(minX) || !Number.isFinite(minY) || minX <= 0 || minY <= 0) return false;
       if (minX < minY) {
         this.player.x += overlapLeft < overlapRight ? -minX : minX;
       } else {
@@ -4716,6 +4717,7 @@ export default class Game {
         if (Math.abs(dx) < revRange && Math.abs(dy) < revVerticalRange) {
           if (!playerCanDamageEnemyInZones(enemy)) {
             this.resolveEnemyPlayerZoneCollision(enemy);
+            enemy.hitPause = Math.max(enemy.hitPause || 0, 0.03);
             return;
           }
           if (!(enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce')))) {

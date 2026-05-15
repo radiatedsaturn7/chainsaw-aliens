@@ -63,15 +63,21 @@ export default class ScriptedActor extends EnemyBase {
     const allow = new Set(types);
     const cx = this.x - this.width / 2;
     const cy = this.y - this.height / 2;
+    const facing = this.facing < 0 ? -1 : 1;
     return zones
       .filter((zone) => allow.has(zone?.type))
-      .map((zone) => ({
-        x: cx + Number(zone.x || 0),
+      .map((zone) => {
+        const zoneX = Number(zone.x || 0);
+        const zoneW = Math.max(1, Number(zone.width || 1));
+        const mirroredX = facing < 0 ? (this.width - zoneX - zoneW) : zoneX;
+        return {
+          x: cx + mirroredX,
         y: cy + Number(zone.y || 0),
-        w: Math.max(1, Number(zone.width || 1)),
+          w: zoneW,
         h: Math.max(1, Number(zone.height || 1)),
         type: zone.type
-      }));
+        };
+      });
   }
 
   get currentState() {
