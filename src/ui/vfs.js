@@ -61,7 +61,13 @@ function fileKey(folder, name) {
 }
 
 function saveIndex(index) {
-  void index;
+  const storage = getStorage();
+  if (!storage) return;
+  try {
+    storage.setItem(INDEX_KEY, JSON.stringify(index || emptyIndex()));
+  } catch (error) {
+    // ignore storage write failures; volatile layer still tracks latest state
+  }
 }
 
 export function vfsSanitizeName(name) {
@@ -179,6 +185,14 @@ export function vfsSave(folder, name, dataObj) {
   };
   const raw = JSON.stringify(payload);
   upsertVolatileVfsFile(folder, clean, raw);
+  const storage = getStorage();
+  if (storage) {
+    try {
+      storage.setItem(fileKey(folder, clean), raw);
+    } catch (error) {
+      // ignore storage write failures; volatile layer still tracks latest state
+    }
+  }
   const index = vfsEnsureIndex();
   index[folder][clean] = { updatedAt: savedAt, size: raw.length };
   saveIndex(index);
