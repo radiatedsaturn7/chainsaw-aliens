@@ -350,12 +350,10 @@ export default class ActorEditor {
         fixedFolder: ACTOR_FOLDER,
         initialFolder: ACTOR_FOLDER,
         title: 'Save Actor As',
-        initialName: fallback,
-        onPick: ({ action, name: pickedName }) => {
-          if (action === 'saveAs') name = String(pickedName || '').trim();
-        }
+        initialName: fallback
       });
       if (!picked || picked.action !== 'saveAs') return;
+      name = String(picked.name || '').trim();
     }
     if (!name) return;
     let payload = ensureActorDefinition(this.actor);
@@ -403,6 +401,7 @@ export default class ActorEditor {
       return;
     }
     this.currentDocumentRef = { folder: ACTOR_FOLDER, name: persistedName };
+    this.actor = ensureActorDefinition(persistedPayload.data);
     this.render();
     this.showInlineSaveStatus?.('Saved');
     this.game.showSaveStatusModal?.('Saved');
