@@ -157,7 +157,7 @@ export function vfsLoad(folder, name) {
     }
   }
   try {
-    const raw = storage.getItem(fileKey(folder, clean)) || readVolatileVfsFile(folder, clean);
+    const raw = readVolatileVfsFile(folder, clean) || storage.getItem(fileKey(folder, clean));
     if (!raw) return null;
     return JSON.parse(raw);
   } catch (error) {
