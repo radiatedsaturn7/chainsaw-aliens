@@ -66,7 +66,7 @@ export function createDocumentLifecycle(adapter) {
     adapter.afterSave?.(context, { name, data });
     markSavedSnapshot(context);
     context.game?.showSaveStatusModal?.('Saved');
-    setTimeout(() => context.game?.hideSaveStatusModal?.(), 900);
+    setTimeout(() => context.game?.hideSaveStatusModal?.(), 1400);
     context.game?.showSystemToast?.('saved');
     context.statusMessage = 'saved';
     return { id: name, name };

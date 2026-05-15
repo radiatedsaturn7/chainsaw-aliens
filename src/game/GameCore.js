@@ -4855,8 +4855,9 @@ export default class Game {
       const panel = document.createElement('div');
       Object.assign(panel.style, {
         position: 'fixed',
-        right: '16px',
-        bottom: '16px',
+        left: '50%',
+        top: '20px',
+        transform: 'translateX(-50%)',
         padding: '10px 14px',
         borderRadius: '10px',
         border: '1px solid rgba(255,255,255,0.25)',

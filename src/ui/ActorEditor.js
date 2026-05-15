@@ -375,7 +375,7 @@ export default class ActorEditor {
     }
     this.currentDocumentRef = { folder: ACTOR_FOLDER, name };
     this.game.showSaveStatusModal?.('Saved');
-    setTimeout(() => this.game.hideSaveStatusModal?.(), 900);
+    setTimeout(() => this.game.hideSaveStatusModal?.(), 1400);
     this.game.showSystemToast?.('saved');
     this.render();
   }
@@ -520,20 +520,23 @@ export default class ActorEditor {
     actionRow.style.flexWrap = 'nowrap';
     const ok = el('button', 'actor-editor-btn', 'OK');
     const cancel = el('button', 'actor-editor-btn', 'Cancel');
+    controls.appendChild(el('span', 'actor-editor-note', 'Brush'));
+    controls.appendChild(brushSize);
     controls.appendChild(zoneType);
     controls.appendChild(paintBtn);
     controls.appendChild(eraseBtn);
-    controls.appendChild(el('span', 'actor-editor-note', 'Brush'));
-    controls.appendChild(brushSize);
     controls.appendChild(clearBtn);
     toolbarRow1.appendChild(controls);
-    actionRow.style.marginLeft = 'auto';
     thumbCol.appendChild(thumbstick);
     controlsCol.append(toolbarRow1, toolbarRow2);
     bottomTools.append(thumbCol, controlsCol);
     actionRow.append(ok, cancel);
     zoomRow.append(zoomOutBtn, zoomInBtn);
-    toolbarRow2.append(zoomRow, actionRow);
+    const rightRow = el('div', 'actor-editor-inline-actions');
+    rightRow.style.marginLeft = 'auto';
+    rightRow.style.flexWrap = 'nowrap';
+    rightRow.appendChild(actionRow);
+    toolbarRow2.append(zoomRow, rightRow);
     card.appendChild(bottomTools);
     modal.appendChild(card);
     document.body.appendChild(modal);
@@ -561,10 +564,24 @@ export default class ActorEditor {
     let zoom = 1;
     let panX = 0;
     let panY = 0;
-    const getScale = () => Math.min((canvas.width - pad * 2) / actorW, (canvas.height - pad * 2) / actorH) * zoom;
+    const getPreviewDimensions = () => {
+      const imageW = image?.naturalWidth > 0 ? image.naturalWidth : actorW;
+      const imageH = image?.naturalHeight > 0 ? image.naturalHeight : actorH;
+      return {
+        width: Math.max(actorW, imageW),
+        height: Math.max(actorH, imageH),
+        imageW,
+        imageH
+      };
+    };
+    const getScale = () => {
+      const dims = getPreviewDimensions();
+      return Math.min((canvas.width - pad * 2) / dims.width, (canvas.height - pad * 2) / dims.height) * zoom;
+    };
     const getBox = () => {
       const scale = getScale();
-      return { x: (canvas.width - actorW * scale) / 2 + panX, y: (canvas.height - actorH * scale) / 2 + panY, w: actorW * scale, h: actorH * scale, scale };
+      const dims = getPreviewDimensions();
+      return { x: (canvas.width - dims.width * scale) / 2 + panX, y: (canvas.height - dims.height * scale) / 2 + panY, w: dims.width * scale, h: dims.height * scale, scale, ...dims };
     };
     const toActorPoint = (screenX, screenY) => {
       const box = getBox();
@@ -620,8 +637,8 @@ export default class ActorEditor {
         const baseScale = box.scale;
         const drawW = image.naturalWidth * baseScale;
         const drawH = image.naturalHeight * baseScale;
-        const drawX = box.x + ((actorW * baseScale) - drawW) * 0.5;
-        const drawY = box.y + ((actorH * baseScale) - drawH) * 0.5;
+        const drawX = box.x + ((box.w - drawW) * 0.5);
+        const drawY = box.y + ((box.h - drawH) * 0.5);
         ctx.drawImage(image, drawX, drawY, drawW, drawH);
       }
       zones.forEach((zone) => {
