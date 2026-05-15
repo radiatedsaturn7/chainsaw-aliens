@@ -371,7 +371,12 @@ export default class ActorEditor {
     let saved = null;
     try {
       saved = vfsSave(ACTOR_FOLDER, name, payload);
-      await saved?.syncPromise;
+      if (saved?.syncPromise) {
+        await Promise.race([
+          saved.syncPromise,
+          new Promise((resolve) => setTimeout(resolve, 1500))
+        ]);
+      }
     } catch (error) {
       console.error('Actor save failed', error);
       this.showInlineSaveStatus?.('Save failed');
@@ -390,8 +395,8 @@ export default class ActorEditor {
     this.render();
     this.showInlineSaveStatus?.('Saved');
     this.game.showSaveStatusModal?.('Saved');
-    setTimeout(() => this.game.hideSaveStatusModal?.(), 1400);
-    setTimeout(() => this.showInlineSaveStatus?.(''), 1400);
+    setTimeout(() => this.game.hideSaveStatusModal?.(), 3000);
+    setTimeout(() => this.showInlineSaveStatus?.(''), 3000);
     this.game.showSystemToast?.('saved');
   }
 

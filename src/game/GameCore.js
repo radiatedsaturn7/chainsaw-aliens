@@ -4600,15 +4600,21 @@ export default class Game {
       if (!enemy?.getCollisionZoneRects) return false;
       const zones = enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'solid-hurtbox']);
       if (!zones.length) return false;
-      const pre = { x: this.player.x, y: this.player.y };
       const pRect = playerRect();
-      const hit = zones.some((zone) => rectsOverlap(pRect, zone));
-      if (!hit) return false;
-      this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: false });
-      if (this.isPlayerBlockedAt(this.player.x, this.player.y, { ignoreOneWay: true })) {
-        this.resolvePlayerTileOverlap({ ignoreOneWay: true });
+      const hitZone = zones.find((zone) => rectsOverlap(pRect, zone));
+      if (!hitZone) return false;
+      const overlapLeft = (pRect.x + pRect.w) - hitZone.x;
+      const overlapRight = (hitZone.x + hitZone.w) - pRect.x;
+      const overlapTop = (pRect.y + pRect.h) - hitZone.y;
+      const overlapBottom = (hitZone.y + hitZone.h) - pRect.y;
+      const minX = Math.min(overlapLeft, overlapRight);
+      const minY = Math.min(overlapTop, overlapBottom);
+      if (minX < minY) {
+        this.player.x += overlapLeft < overlapRight ? -minX : minX;
+      } else {
+        this.player.y += overlapTop < overlapBottom ? -minY : minY;
       }
-      return pre.x !== this.player.x || pre.y !== this.player.y;
+      return true;
     };
     const enemyDamagesPlayerInZones = (enemy) => {
       if (!enemy?.getCollisionZoneRects) return enemy.bodyDamageEnabled !== false;
@@ -4697,7 +4703,7 @@ export default class Game {
       const inZoneContact = enemyDamagesPlayerInZones(enemy);
       if (inBodyContact || inZoneContact) {
         if (!enemy.training) {
-          const bodyDamage = (enemy.bodyDamageEnabled === false || !inZoneContact) ? 0 : (enemy.contactDamage || 1);
+          const bodyDamage = enemy.bodyDamageEnabled === false ? 0 : (enemy.contactDamage || 1);
           const tookDamage = bodyDamage > 0 ? this.player.takeDamage(bodyDamage) : false;
           if (tookDamage) {
             context.notifyDamagedPlayer(enemy);
