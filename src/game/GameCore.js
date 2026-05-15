@@ -4837,6 +4837,47 @@ export default class Game {
     this.systemPrompts.push(new SystemPrompt(message, { mode: 'toast', duration: 2 }));
   }
 
+  showSaveStatusModal(message) {
+    if (!message) return;
+    let root = document.getElementById('global-overlay-root');
+    if (!root) {
+      root = document.createElement('div');
+      root.id = 'global-overlay-root';
+      Object.assign(root.style, {
+        position: 'fixed',
+        inset: '0',
+        zIndex: '2147483647',
+        pointerEvents: 'none'
+      });
+      document.body.appendChild(root);
+    }
+    if (!this._saveStatusModalEl) {
+      const panel = document.createElement('div');
+      Object.assign(panel.style, {
+        position: 'fixed',
+        right: '16px',
+        bottom: '16px',
+        padding: '10px 14px',
+        borderRadius: '10px',
+        border: '1px solid rgba(255,255,255,0.25)',
+        background: 'rgba(5,10,20,0.92)',
+        color: '#fff',
+        fontFamily: 'Courier New, monospace',
+        fontSize: '16px',
+        boxShadow: '0 10px 26px rgba(0,0,0,0.45)',
+        pointerEvents: 'none'
+      });
+      this._saveStatusModalEl = panel;
+      root.appendChild(panel);
+    }
+    this._saveStatusModalEl.textContent = String(message);
+    this._saveStatusModalEl.style.display = 'block';
+  }
+
+  hideSaveStatusModal() {
+    if (this._saveStatusModalEl) this._saveStatusModalEl.style.display = 'none';
+  }
+
   async requestDebugRestartPull() {
     if (this.debugRestartInFlight) return;
     this.debugRestartInFlight = true;

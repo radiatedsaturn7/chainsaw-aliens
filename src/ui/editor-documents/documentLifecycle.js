@@ -53,6 +53,7 @@ export function createDocumentLifecycle(adapter) {
 
     const data = adapter.serialize(context);
     const savingStartedAt = Date.now();
+    context.game?.showSaveStatusModal?.('Saving...');
     context.game?.showSystemToast?.('saving...');
     context.statusMessage = 'saving...';
     const saved = vfsSave(adapter.folder, name, data);
@@ -64,6 +65,8 @@ export function createDocumentLifecycle(adapter) {
     context.currentDocumentRef = { folder: adapter.folder, name };
     adapter.afterSave?.(context, { name, data });
     markSavedSnapshot(context);
+    context.game?.showSaveStatusModal?.('Saved');
+    setTimeout(() => context.game?.hideSaveStatusModal?.(), 900);
     context.game?.showSystemToast?.('saved');
     context.statusMessage = 'saved';
     return { id: name, name };

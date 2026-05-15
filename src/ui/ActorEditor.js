@@ -365,6 +365,7 @@ export default class ActorEditor {
       this.setActor(payload);
     }
     const savingStartedAt = Date.now();
+    this.game.showSaveStatusModal?.('Saving...');
     this.game.showSystemToast?.('saving...');
     const saved = vfsSave(ACTOR_FOLDER, name, payload);
     await saved?.syncPromise;
@@ -373,6 +374,8 @@ export default class ActorEditor {
       await new Promise((resolve) => setTimeout(resolve, MIN_SAVING_TOAST_MS - elapsed));
     }
     this.currentDocumentRef = { folder: ACTOR_FOLDER, name };
+    this.game.showSaveStatusModal?.('Saved');
+    setTimeout(() => this.game.hideSaveStatusModal?.(), 900);
     this.game.showSystemToast?.('saved');
     this.render();
   }
