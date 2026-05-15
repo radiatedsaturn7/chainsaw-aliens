@@ -4589,6 +4589,40 @@ export default class Game {
   }
 
   updateEnemies(dt) {
+    const rectsOverlap = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    const playerRect = () => ({
+      x: this.player.x - this.player.width / 2,
+      y: this.player.y - this.player.height / 2,
+      w: this.player.width,
+      h: this.player.height
+    });
+    const resolveEnemyPlayerZoneCollision = (enemy) => {
+      if (!enemy?.getCollisionZoneRects) return false;
+      const zones = enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'solid-hurtbox']);
+      if (!zones.length) return false;
+      const pre = { x: this.player.x, y: this.player.y };
+      const pRect = playerRect();
+      const hit = zones.some((zone) => rectsOverlap(pRect, zone));
+      if (!hit) return false;
+      this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: false });
+      if (this.isPlayerBlockedAt(this.player.x, this.player.y, { ignoreOneWay: true })) {
+        this.resolvePlayerTileOverlap({ ignoreOneWay: true });
+      }
+      return pre.x !== this.player.x || pre.y !== this.player.y;
+    };
+    const enemyDamagesPlayerInZones = (enemy) => {
+      if (!enemy?.getCollisionZoneRects) return enemy.bodyDamageEnabled !== false;
+      const pRect = playerRect();
+      const zones = enemy.getCollisionZoneRects(['solid-damage-player', 'damage-player']);
+      return zones.some((zone) => rectsOverlap(pRect, zone));
+    };
+    const playerCanDamageEnemyInZones = (enemy) => {
+      if (!enemy?.getCollisionZoneRects) return true;
+      const pRect = playerRect();
+      const zones = enemy.getCollisionZoneRects(['solid-hurtbox', 'hurtbox']);
+      if (!zones.length) return true;
+      return zones.some((zone) => rectsOverlap(pRect, zone));
+    };
     const context = {
       spawnProjectile: this.spawnProjectile.bind(this),
       spawnMinion: (x, y) => this.requestSpawn('skitter', x, y),
@@ -4659,9 +4693,11 @@ export default class Game {
       const enemyContactH = Math.max(1, Number(enemy?.height || this.world.tileSize * 0.5));
       const contactX = (playerContactW + enemyContactW) * 0.5;
       const contactY = (playerContactH + enemyContactH) * 0.5;
-      if (Math.abs(dx) <= contactX && Math.abs(dy) <= contactY) {
+      const inBodyContact = Math.abs(dx) <= contactX && Math.abs(dy) <= contactY;
+      const inZoneContact = enemyDamagesPlayerInZones(enemy);
+      if (inBodyContact || inZoneContact) {
         if (!enemy.training) {
-          const bodyDamage = enemy.bodyDamageEnabled === false ? 0 : (enemy.contactDamage || 1);
+          const bodyDamage = (enemy.bodyDamageEnabled === false || !inZoneContact) ? 0 : (enemy.contactDamage || 1);
           const tookDamage = bodyDamage > 0 ? this.player.takeDamage(bodyDamage) : false;
           if (tookDamage) {
             context.notifyDamagedPlayer(enemy);
@@ -4672,6 +4708,10 @@ export default class Game {
       }
       if (revHeld && this.player.revDamageTimer <= 0) {
         if (Math.abs(dx) < revRange && Math.abs(dy) < revVerticalRange) {
+          if (!playerCanDamageEnemyInZones(enemy)) {
+            this.resolveEnemyPlayerZoneCollision(enemy);
+            return;
+          }
           if (!(enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce')))) {
             enemy.damage(1);
             this.applyChainsawSlow(enemy);
@@ -4693,7 +4733,10 @@ export default class Game {
         }
       }
       const canPushEnemy = revHeld && Math.abs(dx) < revRange && Math.abs(dy) < revVerticalRange;
-      this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: canPushEnemy });
+      const zoneBlocked = resolveEnemyPlayerZoneCollision(enemy);
+      if (!zoneBlocked) {
+        this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: canPushEnemy });
+      }
       if (this.isPlayerBlockedAt(this.player.x, this.player.y, { ignoreOneWay: true })) {
         this.resolvePlayerTileOverlap({ ignoreOneWay: true });
       }

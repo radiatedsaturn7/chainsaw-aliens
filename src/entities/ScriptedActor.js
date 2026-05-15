@@ -58,6 +58,22 @@ export default class ScriptedActor extends EnemyBase {
     if (this.definition.facingMode === 'face-right') this.facing = 1;
   }
 
+  getCollisionZoneRects(types = []) {
+    const zones = Array.isArray(this.definition?.collisionZones) ? this.definition.collisionZones : [];
+    const allow = new Set(types);
+    const cx = this.x - this.width / 2;
+    const cy = this.y - this.height / 2;
+    return zones
+      .filter((zone) => allow.has(zone?.type))
+      .map((zone) => ({
+        x: cx + Number(zone.x || 0),
+        y: cy + Number(zone.y || 0),
+        w: Math.max(1, Number(zone.width || 1)),
+        h: Math.max(1, Number(zone.height || 1)),
+        type: zone.type
+      }));
+  }
+
   get currentState() {
     return this.definition.states.find((state) => state.id === this.stateId) || this.definition.states[0];
   }
@@ -242,7 +258,9 @@ export default class ScriptedActor extends EnemyBase {
       default:
         break;
     }
-    this.facing = Math.sign(dx) || this.facing;
+    if (this.definition.facingMode === 'face-player') {
+      this.facing = Math.sign(dx) || this.facing;
+    }
   }
 
   update(dt, player, context = {}) {
