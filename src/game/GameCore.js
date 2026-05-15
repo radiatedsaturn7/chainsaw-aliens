@@ -446,7 +446,10 @@ export default class Game {
   async init() {
     try {
       if (isServerStorageEnabled()) {
-        await bootstrapServerStorage();
+        await Promise.race([
+          bootstrapServerStorage(),
+          new Promise((resolve) => setTimeout(resolve, 1200))
+        ]);
       }
       await this.world.load();
       await this.autoRepair.load();
