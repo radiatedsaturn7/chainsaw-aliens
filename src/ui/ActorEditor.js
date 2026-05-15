@@ -365,6 +365,7 @@ export default class ActorEditor {
       this.setActor(payload);
     }
     const savingStartedAt = Date.now();
+    this.showInlineSaveStatus?.('Saving...');
     this.game.showSaveStatusModal?.('Saving...');
     this.game.showSystemToast?.('saving...');
     const saved = vfsSave(ACTOR_FOLDER, name, payload);
@@ -374,10 +375,36 @@ export default class ActorEditor {
       await new Promise((resolve) => setTimeout(resolve, MIN_SAVING_TOAST_MS - elapsed));
     }
     this.currentDocumentRef = { folder: ACTOR_FOLDER, name };
+    this.showInlineSaveStatus?.('Saved');
     this.game.showSaveStatusModal?.('Saved');
     setTimeout(() => this.game.hideSaveStatusModal?.(), 1400);
+    setTimeout(() => this.showInlineSaveStatus?.(''), 1400);
     this.game.showSystemToast?.('saved');
     this.render();
+  }
+
+  showInlineSaveStatus(message = '') {
+    if (!this.overlay) return;
+    let badge = this.overlay.querySelector('.actor-editor-save-status');
+    if (!badge) {
+      badge = el('div', 'actor-editor-save-status');
+      Object.assign(badge.style, {
+        position: 'fixed',
+        top: '14px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: '2147483647',
+        padding: '8px 12px',
+        borderRadius: '10px',
+        border: '1px solid rgba(255,255,255,0.25)',
+        background: 'rgba(5,10,20,0.92)',
+        color: '#fff',
+        fontFamily: 'Courier New, monospace'
+      });
+      this.overlay.appendChild(badge);
+    }
+    badge.textContent = String(message || '');
+    badge.style.display = message ? 'block' : 'none';
   }
 
   resetActorArtHuePreview() {
@@ -482,7 +509,8 @@ export default class ActorEditor {
     canvas.width = 640;
     canvas.height = 560;
     canvas.style.width = '100%';
-    canvas.style.height = '100%';
+    canvas.style.height = 'auto';
+    canvas.style.maxHeight = '100%';
     canvas.style.border = '1px solid rgba(255,255,255,0.25)';
     canvas.style.background = '#080d17';
     canvas.style.touchAction = 'none';
@@ -561,6 +589,13 @@ export default class ActorEditor {
       }
     });
     const pad = 24;
+    const resizeCanvasToViewport = () => {
+      const rect = canvasWrap.getBoundingClientRect();
+      const w = Math.max(320, Math.floor(rect.width || 640));
+      const h = Math.max(220, Math.floor(rect.height || 560));
+      canvas.width = w;
+      canvas.height = h;
+    };
     let zoom = 1;
     let panX = 0;
     let panY = 0;
@@ -737,12 +772,21 @@ export default class ActorEditor {
     };
     thumbstick.onpointerup = () => { stickDrag = null; centerKnob(); };
     thumbstick.onpointercancel = () => { stickDrag = null; centerKnob(); };
-    cancel.onclick = () => modal.remove();
-    ok.onclick = () => {
-      this.setActor({ ...actor, collisionZones: zones });
+    const cleanup = () => {
+      window.removeEventListener('resize', resizeCanvasToViewport);
       modal.remove();
     };
+    cancel.onclick = () => cleanup();
+    ok.onclick = () => {
+      this.setActor({ ...actor, collisionZones: zones });
+      cleanup();
+    };
     image.onload = () => render();
+    requestAnimationFrame(() => {
+      resizeCanvasToViewport();
+      render();
+    });
+    window.addEventListener('resize', resizeCanvasToViewport);
     render();
   }
 
