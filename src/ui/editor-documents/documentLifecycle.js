@@ -23,8 +23,15 @@ export function createDocumentLifecycle(adapter) {
     return captureSnapshot(context) !== context.savedSnapshot;
   };
 
+  const isEffectivelyEmptyDocument = (context) => {
+    const currentData = adapter.serialize(context);
+    if (adapter.isEmptyDocument) return !!adapter.isEmptyDocument(context, currentData);
+    return false;
+  };
+
   const confirmDiscardChanges = async (context) => {
     if (!hasUnsavedChanges(context)) return true;
+    if (isEffectivelyEmptyDocument(context)) return true;
     const result = adapter.confirm?.(context, adapter.strings.discardChanges);
     return (await Promise.resolve(result)) ?? false;
   };
