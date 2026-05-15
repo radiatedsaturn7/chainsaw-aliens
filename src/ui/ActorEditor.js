@@ -293,6 +293,7 @@ export default class ActorEditor {
     vfsEnsureIndex();
     const root = document.getElementById('global-overlay-root') || document.body;
     const overlay = el('div', 'actor-editor-overlay');
+    overlay.style.pointerEvents = 'auto';
     overlay.innerHTML = '';
     this.overlay = overlay;
     root.appendChild(overlay);
@@ -496,6 +497,7 @@ export default class ActorEditor {
     const toolbarRow2 = el('div', 'actor-editor-inline-actions');
     toolbarRow2.style.alignItems = 'center';
     toolbarRow2.style.justifyContent = 'space-between';
+    toolbarRow2.style.flexWrap = 'nowrap';
     const zoomOutBtn = el('button', 'actor-editor-btn small', 'Zoom -');
     const zoomInBtn = el('button', 'actor-editor-btn small', 'Zoom +');
     const zoomRow = el('div', 'actor-editor-inline-actions');
@@ -512,6 +514,7 @@ export default class ActorEditor {
     });
     thumbstick.appendChild(stickKnob);
     const actionRow = el('div', 'actor-editor-inline-actions');
+    actionRow.style.flexWrap = 'nowrap';
     const ok = el('button', 'actor-editor-btn', 'OK');
     const cancel = el('button', 'actor-editor-btn', 'Cancel');
     controls.appendChild(zoneType);
@@ -611,10 +614,11 @@ export default class ActorEditor {
       ctx.fillStyle = '#0f1726';
       ctx.fillRect(box.x, box.y, box.w, box.h);
       if (image.complete && image.naturalWidth > 0) {
-        const drawW = image.naturalWidth * box.scale;
-        const drawH = image.naturalHeight * box.scale;
-        const drawX = box.x + (box.w - drawW) * 0.5;
-        const drawY = box.y + (box.h - drawH) * 0.5;
+        const baseScale = box.scale;
+        const drawW = image.naturalWidth * baseScale;
+        const drawH = image.naturalHeight * baseScale;
+        const drawX = box.x + ((actorW * baseScale) - drawW) * 0.5;
+        const drawY = box.y + ((actorH * baseScale) - drawH) * 0.5;
         ctx.drawImage(image, drawX, drawY, drawW, drawH);
       }
       zones.forEach((zone) => {

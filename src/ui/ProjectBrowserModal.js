@@ -52,6 +52,12 @@ function getOverlayRoot() {
   if (!root) {
     root = document.createElement('div');
     root.id = 'global-overlay-root';
+    Object.assign(root.style, {
+      position: 'fixed',
+      inset: '0',
+      zIndex: '2147483647',
+      pointerEvents: 'none'
+    });
     document.body.appendChild(root);
   }
   return root;
@@ -224,6 +230,7 @@ export function openProjectBrowser({
 
     const overlay = document.createElement('div');
     overlay.className = 'project-browser-overlay';
+    overlay.style.pointerEvents = 'auto';
     overlay.tabIndex = -1;
 
     const panel = document.createElement('div');
