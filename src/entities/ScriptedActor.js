@@ -69,15 +69,35 @@ export default class ScriptedActor extends EnemyBase {
       .map((zone) => {
         const zoneX = Number(zone.x || 0);
         const zoneW = Math.max(1, Number(zone.width || 1));
+        const zoneY = Number(zone.y || 0);
+        const zoneH = Math.max(1, Number(zone.height || 1));
+        if (!Number.isFinite(zoneX) || !Number.isFinite(zoneY) || !Number.isFinite(zoneW) || !Number.isFinite(zoneH)) return null;
         const mirroredX = facing < 0 ? (this.width - zoneX - zoneW) : zoneX;
         return {
           x: cx + mirroredX,
-        y: cy + Number(zone.y || 0),
+          y: cy + zoneY,
           w: zoneW,
-        h: Math.max(1, Number(zone.height || 1)),
-        type: zone.type
+          h: zoneH,
+          type: zone.type
         };
-      });
+      })
+      .filter(Boolean);
+  }
+
+  getCollisionZoneBounds(types = []) {
+    const zones = this.getCollisionZoneRects(types);
+    if (!zones.length) return null;
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    zones.forEach((z) => {
+      minX = Math.min(minX, z.x);
+      minY = Math.min(minY, z.y);
+      maxX = Math.max(maxX, z.x + z.w);
+      maxY = Math.max(maxY, z.y + z.h);
+    });
+    return { x: minX, y: minY, w: Math.max(1, maxX - minX), h: Math.max(1, maxY - minY) };
   }
 
   get currentState() {
