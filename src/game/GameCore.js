@@ -4730,13 +4730,9 @@ export default class Game {
 
       const dx = enemy.x - this.player.x;
       const dy = enemy.y - this.player.y;
-      const playerContactW = Math.max(1, Number(this.player?.width || this.world.tileSize * 0.5));
-      const playerContactH = Math.max(1, Number(this.player?.height || this.world.tileSize * 0.5));
-      const enemyContactW = Math.max(1, Number(enemy?.width || this.world.tileSize * 0.5));
-      const enemyContactH = Math.max(1, Number(enemy?.height || this.world.tileSize * 0.5));
-      const contactX = (playerContactW + enemyContactW) * 0.5;
-      const contactY = (playerContactH + enemyContactH) * 0.5;
-      const inBodyContact = Math.abs(dx) <= contactX && Math.abs(dy) <= contactY;
+      const pRect = playerRect();
+      const enemyRect = enemy?.rect || { x: enemy.x - enemy.width / 2, y: enemy.y - enemy.height / 2, w: enemy.width, h: enemy.height };
+      const inBodyContact = rectsOverlap(pRect, enemyRect);
       const inZoneContact = enemyDamagesPlayerInZones(enemy);
       if (inBodyContact || inZoneContact) {
         if (!enemy.training) {
