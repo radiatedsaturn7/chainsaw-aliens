@@ -54,6 +54,8 @@ export default class ScriptedActor extends EnemyBase {
     this.pendingShots = [];
     this.pendingStateSwitch = null;
     this._lastFrameImage = null;
+    this._collisionBodyOffsetX = 0;
+    this._collisionBodyOffsetY = 0;
     if (this.definition.facingMode === 'face-left') this.facing = -1;
     if (this.definition.facingMode === 'face-right') this.facing = 1;
     this.applyCollisionBodyFromZones();
@@ -106,13 +108,30 @@ export default class ScriptedActor extends EnemyBase {
 
   applyCollisionBodyFromZones() {
     const solidBounds = this.getCollisionZoneBounds(['solid', 'solid-damage-player', 'solid-hurtbox']);
+    const defW = Math.max(1, Number(this.definition?.size?.width || this.width || 1));
+    const defH = Math.max(1, Number(this.definition?.size?.height || this.height || 1));
     if (solidBounds) {
       this.width = Math.max(1, Math.round(solidBounds.w));
       this.height = Math.max(1, Math.round(solidBounds.h));
+      const boundsCenterX = solidBounds.x + solidBounds.w / 2;
+      const boundsCenterY = solidBounds.y + solidBounds.h / 2;
+      this._collisionBodyOffsetX = boundsCenterX - this.x;
+      this._collisionBodyOffsetY = boundsCenterY - this.y;
     } else {
-      this.width = Math.max(1, Number(this.definition?.size?.width || this.width || 1));
-      this.height = Math.max(1, Number(this.definition?.size?.height || this.height || 1));
+      this.width = defW;
+      this.height = defH;
+      this._collisionBodyOffsetX = 0;
+      this._collisionBodyOffsetY = 0;
     }
+  }
+
+  get rect() {
+    return {
+      x: this.x - this.width / 2 + this._collisionBodyOffsetX,
+      y: this.y - this.height / 2 + this._collisionBodyOffsetY,
+      w: this.width,
+      h: this.height
+    };
   }
 
   get currentState() {
