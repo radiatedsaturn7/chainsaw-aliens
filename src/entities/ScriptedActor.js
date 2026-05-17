@@ -56,13 +56,16 @@ export default class ScriptedActor extends EnemyBase {
     this._lastFrameImage = null;
     if (this.definition.facingMode === 'face-left') this.facing = -1;
     if (this.definition.facingMode === 'face-right') this.facing = 1;
+    this.applyCollisionBodyFromZones();
   }
 
   getCollisionZoneRects(types = []) {
     const zones = Array.isArray(this.definition?.collisionZones) ? this.definition.collisionZones : [];
     const allow = new Set(types);
-    const cx = this.x - this.width / 2;
-    const cy = this.y - this.height / 2;
+    const defW = Math.max(1, Number(this.definition?.size?.width || this.width || 1));
+    const defH = Math.max(1, Number(this.definition?.size?.height || this.height || 1));
+    const cx = this.x - defW / 2;
+    const cy = this.y - defH / 2;
     const facing = this.facing < 0 ? -1 : 1;
     return zones
       .filter((zone) => allow.has(zone?.type))
@@ -72,7 +75,7 @@ export default class ScriptedActor extends EnemyBase {
         const zoneY = Number(zone.y || 0);
         const zoneH = Math.max(1, Number(zone.height || 1));
         if (!Number.isFinite(zoneX) || !Number.isFinite(zoneY) || !Number.isFinite(zoneW) || !Number.isFinite(zoneH)) return null;
-        const mirroredX = facing < 0 ? (this.width - zoneX - zoneW) : zoneX;
+        const mirroredX = facing < 0 ? (defW - zoneX - zoneW) : zoneX;
         return {
           x: cx + mirroredX,
           y: cy + zoneY,
@@ -98,6 +101,18 @@ export default class ScriptedActor extends EnemyBase {
       maxY = Math.max(maxY, z.y + z.h);
     });
     return { x: minX, y: minY, w: Math.max(1, maxX - minX), h: Math.max(1, maxY - minY) };
+  }
+
+
+  applyCollisionBodyFromZones() {
+    const solidBounds = this.getCollisionZoneBounds(['solid', 'solid-damage-player', 'solid-hurtbox']);
+    if (solidBounds) {
+      this.width = Math.max(1, Math.round(solidBounds.w));
+      this.height = Math.max(1, Math.round(solidBounds.h));
+    } else {
+      this.width = Math.max(1, Number(this.definition?.size?.width || this.width || 1));
+      this.height = Math.max(1, Number(this.definition?.size?.height || this.height || 1));
+    }
   }
 
   get currentState() {

@@ -1207,13 +1207,19 @@ export default class Game {
     const size = 56;
     const floorY = 30;
     const tileSize = 32;
-    const actorHeightPx = Number(actorDefinition?.size?.height);
-    const actorHeightTiles = Number.isFinite(actorHeightPx) && actorHeightPx > 0
-      ? Math.max(1, Math.ceil(actorHeightPx / tileSize))
-      : 1;
-    const actorSpawnY = Math.max(2, floorY - actorHeightTiles - 1);
-    const playerSpawnX = 20;
-    const enemySpawnX = 38;
+    const zoneDefs = Array.isArray(actorDefinition?.collisionZones) ? actorDefinition.collisionZones : [];
+    const solidZones = zoneDefs.filter((zone) => ['solid', 'solid-damage-player', 'solid-hurtbox'].includes(zone?.type));
+    const bodyHeightPx = solidZones.length
+      ? solidZones.reduce((max, zone) => Math.max(max, Number(zone?.y || 0) + Math.max(1, Number(zone?.height || 1))), 0)
+      : Number(actorDefinition?.size?.height || tileSize);
+    const bodyWidthPx = solidZones.length
+      ? solidZones.reduce((max, zone) => Math.max(max, Number(zone?.x || 0) + Math.max(1, Number(zone?.width || 1))), 0)
+      : Number(actorDefinition?.size?.width || tileSize);
+    const actorHeightTiles = Math.max(1, Math.ceil(Math.max(1, bodyHeightPx) / tileSize));
+    const actorWidthTiles = Math.max(1, Math.ceil(Math.max(1, bodyWidthPx) / tileSize));
+    const actorSpawnY = Math.max(2, floorY - actorHeightTiles - 2);
+    const playerSpawnX = Math.max(4, 18 - actorWidthTiles);
+    const enemySpawnX = Math.min(size - 5, Math.max(playerSpawnX + actorWidthTiles + 8, 34));
     const rows = Array.from({ length: size }, (_, y) => {
       if (y === 0 || y === size - 1) return '#'.repeat(size);
       const cells = Array.from({ length: size }, (_, x) => (x === 0 || x === size - 1 ? '#' : '.'));
