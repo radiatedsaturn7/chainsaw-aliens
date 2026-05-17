@@ -1209,15 +1209,36 @@ export default class Game {
     const tileSize = 32;
     const zoneDefs = Array.isArray(actorDefinition?.collisionZones) ? actorDefinition.collisionZones : [];
     const solidZones = zoneDefs.filter((zone) => ['solid', 'solid-damage-player', 'solid-hurtbox'].includes(zone?.type));
-    const bodyHeightPx = solidZones.length
-      ? solidZones.reduce((max, zone) => Math.max(max, Number(zone?.y || 0) + Math.max(1, Number(zone?.height || 1))), 0)
-      : Number(actorDefinition?.size?.height || tileSize);
-    const bodyWidthPx = solidZones.length
-      ? solidZones.reduce((max, zone) => Math.max(max, Number(zone?.x || 0) + Math.max(1, Number(zone?.width || 1))), 0)
+    const zoneBounds = solidZones.length
+      ? solidZones.reduce((acc, zone) => {
+        const x = Number(zone?.x || 0);
+        const y = Number(zone?.y || 0);
+        const w = Math.max(1, Number(zone?.width || 1));
+        const h = Math.max(1, Number(zone?.height || 1));
+        if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(w) || !Number.isFinite(h)) return acc;
+        return {
+          minX: Math.min(acc.minX, x),
+          minY: Math.min(acc.minY, y),
+          maxX: Math.max(acc.maxX, x + w),
+          maxY: Math.max(acc.maxY, y + h)
+        };
+      }, { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity })
+      : null;
+    const hasZoneBounds = zoneBounds && Number.isFinite(zoneBounds.minX) && Number.isFinite(zoneBounds.minY)
+      && Number.isFinite(zoneBounds.maxX) && Number.isFinite(zoneBounds.maxY);
+    const bodyWidthPx = hasZoneBounds
+      ? Math.max(1, zoneBounds.maxX - zoneBounds.minX)
       : Number(actorDefinition?.size?.width || tileSize);
+    const bodyHeightPx = hasZoneBounds
+      ? Math.max(1, zoneBounds.maxY - zoneBounds.minY)
+      : Number(actorDefinition?.size?.height || tileSize);
+    const zoneTopOffsetPx = hasZoneBounds
+      ? ((zoneBounds.minY + zoneBounds.maxY) * 0.5 - Number(actorDefinition?.size?.height || bodyHeightPx) * 0.5)
+      : 0;
     const actorHeightTiles = Math.max(1, Math.ceil(Math.max(1, bodyHeightPx) / tileSize));
     const actorWidthTiles = Math.max(1, Math.ceil(Math.max(1, bodyWidthPx) / tileSize));
-    const actorSpawnY = Math.max(2, floorY - actorHeightTiles - 2);
+    const actorTopOffsetTiles = Math.max(0, Math.ceil(Math.max(0, zoneTopOffsetPx) / tileSize));
+    const actorSpawnY = Math.max(2, floorY - actorHeightTiles - actorTopOffsetTiles - 2);
     const playerSpawnX = Math.max(4, 18 - actorWidthTiles);
     const enemySpawnX = Math.min(size - 5, Math.max(playerSpawnX + actorWidthTiles + 8, 34));
     const rows = Array.from({ length: size }, (_, y) => {
