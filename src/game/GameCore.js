@@ -4219,18 +4219,25 @@ export default class Game {
   }
 
 
+
+  getEntityZoneRects(entity, types = []) {
+    if (!entity?.getCollisionZoneRects) return [];
+    const zones = entity.getCollisionZoneRects(types);
+    if (!Array.isArray(zones)) return [];
+    return zones.filter((z) => Number.isFinite(z?.x) && Number.isFinite(z?.y) && Number.isFinite(z?.w) && Number.isFinite(z?.h) && z.w > 0 && z.h > 0);
+  }
+
   doesEntityOverlapRect(entity, rect) {
     if (!entity || !rect) return false;
+    const overlaps = (a, b) => a.x <= b.x + b.w && a.x + a.w >= b.x && a.y <= b.y + b.h && a.y + a.h >= b.y;
+    const hurtZones = this.getEntityZoneRects(entity, ['solid-hurtbox', 'hurtbox']);
+    if (hurtZones.length) {
+      return hurtZones.some((zone) => overlaps(zone, rect));
+    }
     const halfW = Math.max(1, Number(entity.width || this.world.tileSize * 0.5)) * 0.5;
     const halfH = Math.max(1, Number(entity.height || this.world.tileSize * 0.5)) * 0.5;
-    const left = entity.x - halfW;
-    const right = entity.x + halfW;
-    const top = entity.y - halfH;
-    const bottom = entity.y + halfH;
-    return left <= rect.x + rect.w
-      && right >= rect.x
-      && top <= rect.y + rect.h
-      && bottom >= rect.y;
+    const body = { x: entity.x - halfW, y: entity.y - halfH, w: halfW * 2, h: halfH * 2 };
+    return overlaps(body, rect);
   }
 
   doesEntityOverlapPlayerBody(entity, paddingX = 0, paddingY = 0) {
