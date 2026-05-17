@@ -4638,37 +4638,41 @@ export default class Game {
       if (!enemy?.getCollisionZoneRects) return false;
       const zones = enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'solid-hurtbox']);
       if (!zones.length) return false;
-      const pRect = playerRect();
-      let best = null;
-      zones.forEach((zone) => {
-        if (!rectsOverlap(pRect, zone)) return;
-        const overlapLeft = (pRect.x + pRect.w) - zone.x;
-        const overlapRight = (zone.x + zone.w) - pRect.x;
-        const overlapTop = (pRect.y + pRect.h) - zone.y;
-        const overlapBottom = (zone.y + zone.h) - pRect.y;
-        const minX = Math.min(overlapLeft, overlapRight);
-        const minY = Math.min(overlapTop, overlapBottom);
-        if (!Number.isFinite(minX) || !Number.isFinite(minY) || minX <= 0 || minY <= 0) return;
-        const axis = minX < minY ? 'x' : 'y';
-        const depth = axis === 'x' ? minX : minY;
-        const signed = axis === 'x'
-          ? (overlapLeft < overlapRight ? -(depth + 0.5) : (depth + 0.5))
-          : (overlapTop < overlapBottom ? -(depth + 0.5) : (depth + 0.5));
-        if (!best || depth < best.depth) {
-          best = { axis, depth, signed, fromTop: axis === 'y' ? overlapTop < overlapBottom : false };
-        }
-      });
-      if (!best) return false;
-      if (best.axis === 'x') {
-        this.player.x += best.signed;
-      } else {
-        this.player.y += best.signed;
-        if (best.fromTop) {
-          this.player.vy = Math.min(0, this.player.vy);
-          this.player.onGround = true;
+      let pushed = false;
+      for (let i = 0; i < 4; i += 1) {
+        const pRect = playerRect();
+        let best = null;
+        zones.forEach((zone) => {
+          if (!rectsOverlap(pRect, zone)) return;
+          const overlapLeft = (pRect.x + pRect.w) - zone.x;
+          const overlapRight = (zone.x + zone.w) - pRect.x;
+          const overlapTop = (pRect.y + pRect.h) - zone.y;
+          const overlapBottom = (zone.y + zone.h) - pRect.y;
+          const minX = Math.min(overlapLeft, overlapRight);
+          const minY = Math.min(overlapTop, overlapBottom);
+          if (!Number.isFinite(minX) || !Number.isFinite(minY) || minX <= 0 || minY <= 0) return;
+          const axis = minX < minY ? 'x' : 'y';
+          const depth = axis === 'x' ? minX : minY;
+          const signed = axis === 'x'
+            ? (overlapLeft < overlapRight ? -(depth + 0.5) : (depth + 0.5))
+            : (overlapTop < overlapBottom ? -(depth + 0.5) : (depth + 0.5));
+          if (!best || depth < best.depth) {
+            best = { axis, depth, signed, fromTop: axis === 'y' ? overlapTop < overlapBottom : false };
+          }
+        });
+        if (!best) break;
+        pushed = true;
+        if (best.axis === 'x') {
+          this.player.x += best.signed;
+        } else {
+          this.player.y += best.signed;
+          if (best.fromTop) {
+            this.player.vy = Math.min(0, this.player.vy);
+            this.player.onGround = true;
+          }
         }
       }
-      return true;
+      return pushed;
     };
     const enemyHasSolidZones = (enemy) => {
       if (!enemy?.getCollisionZoneRects) return false;
