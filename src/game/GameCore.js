@@ -4754,7 +4754,7 @@ export default class Game {
       if (revHeld && this.player.revDamageTimer <= 0) {
         if (Math.abs(dx) < revRange && Math.abs(dy) < revVerticalRange) {
           if (!playerCanDamageEnemyInZones(enemy)) {
-            this.resolveEnemyPlayerZoneCollision(enemy);
+            resolveEnemyPlayerZoneCollision(enemy);
             enemy.hitPause = Math.max(enemy.hitPause || 0, 0.03);
             return;
           }
