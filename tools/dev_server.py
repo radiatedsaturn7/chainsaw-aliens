@@ -48,14 +48,14 @@ class DevHandler(SimpleHTTPRequestHandler):
     def _load_snapshot(self) -> dict:
         if not SNAPSHOT_PATH.exists():
             return {
-                "index": {"levels": {}, "art": {}, "music": {}},
+                "index": {"levels": {}, "art": {}, "music": {}, "actors": {}},
                 "files": {},
             }
         try:
             return json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
         except Exception:
             return {
-                "index": {"levels": {}, "art": {}, "music": {}},
+                "index": {"levels": {}, "art": {}, "music": {}, "actors": {}},
                 "files": {},
             }
 
@@ -182,7 +182,7 @@ class DevHandler(SimpleHTTPRequestHandler):
                 SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
                 if not SNAPSHOT_PATH.exists():
                     SNAPSHOT_PATH.write_text(
-                        json.dumps({"index": {"levels": {}, "art": {}, "music": {}}, "files": {}}),
+                        json.dumps({"index": {"levels": {}, "art": {}, "music": {}, "actors": {}}, "files": {}}),
                         encoding="utf-8",
                     )
                 add_result = run_git_command(["git", "add", str(SNAPSHOT_PATH)])
