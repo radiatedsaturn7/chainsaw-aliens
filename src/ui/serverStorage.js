@@ -55,12 +55,38 @@ function readTimestamp(meta, raw) {
 function readLocalSnapshot() {
   const index = emptyIndex();
   const files = {};
+  const storage = getStorage();
+
+  if (storage) {
+    try {
+      const parsed = JSON.parse(storage.getItem(INDEX_KEY) || 'null');
+      const normalized = normalizeIndex(parsed && typeof parsed === 'object' ? parsed : emptyIndex());
+      getFolderNames(normalized).forEach((folder) => {
+        Object.keys(normalized[folder] || {}).forEach((name) => {
+          const key = fileKey(folder, name);
+          const raw = storage.getItem(key);
+          if (typeof raw !== 'string') return;
+          index[folder][name] = { updatedAt: readTimestamp(normalized[folder][name], raw) || Date.now(), size: raw.length };
+          files[key] = raw;
+        });
+      });
+    } catch (error) {
+      // ignore localStorage read failures
+    }
+  }
+
   volatileFiles.forEach((raw, key) => {
     if (typeof raw !== 'string') return;
     const match = key.slice(VFS_PREFIX.length).match(/^([^:]+):(.+)$/);
     if (!match) return;
     const [, folder, name] = match;
     if (!index[folder] || typeof index[folder] !== 'object') index[folder] = {};
+    const existingRaw = files[key];
+    if (typeof existingRaw === 'string' && existingRaw !== raw) {
+      const existingTs = readTimestamp(index[folder][name], existingRaw);
+      const volatileTs = readTimestamp(null, raw);
+      if (existingTs > volatileTs) return;
+    }
     index[folder][name] = { updatedAt: readTimestamp(index[folder][name], raw) || Date.now(), size: raw.length };
     files[key] = raw;
   });
@@ -101,6 +127,22 @@ function writeLocalSnapshot(snapshot) {
       if (typeof raw === 'string') volatileFiles.set(key, raw);
     });
   });
+
+  const storage = getStorage();
+  if (storage) {
+    try {
+      storage.setItem(INDEX_KEY, JSON.stringify(index));
+      getFolderNames(index).forEach((folder) => {
+        Object.keys(index[folder] || {}).forEach((name) => {
+          const key = fileKey(folder, name);
+          const raw = files[key];
+          if (typeof raw === 'string') storage.setItem(key, raw);
+        });
+      });
+    } catch (error) {
+      // ignore localStorage write failures
+    }
+  }
   return true;
 }
 
