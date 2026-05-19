@@ -1,18 +1,8 @@
-const SETTINGS_KEY = 'chainsaw:server-storage:enabled';
-const INDEX_KEY = 'robter:vfs:index';
 const VFS_PREFIX = 'robter:vfs:';
 const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors'];
 
 let syncQueue = Promise.resolve();
 const volatileFiles = new Map();
-
-function getStorage() {
-  try {
-    return window.localStorage;
-  } catch (error) {
-    return null;
-  }
-}
 
 function getFolderNames(index = null) {
   const extra = index && typeof index === 'object'
@@ -55,25 +45,6 @@ function readTimestamp(meta, raw) {
 function readLocalSnapshot() {
   const index = emptyIndex();
   const files = {};
-  const storage = getStorage();
-
-  if (storage) {
-    try {
-      const parsed = JSON.parse(storage.getItem(INDEX_KEY) || 'null');
-      const normalized = normalizeIndex(parsed && typeof parsed === 'object' ? parsed : emptyIndex());
-      getFolderNames(normalized).forEach((folder) => {
-        Object.keys(normalized[folder] || {}).forEach((name) => {
-          const key = fileKey(folder, name);
-          const raw = storage.getItem(key);
-          if (typeof raw !== 'string') return;
-          index[folder][name] = { updatedAt: readTimestamp(normalized[folder][name], raw) || Date.now(), size: raw.length };
-          files[key] = raw;
-        });
-      });
-    } catch (error) {
-      // ignore localStorage read failures
-    }
-  }
 
   volatileFiles.forEach((raw, key) => {
     if (typeof raw !== 'string') return;
@@ -110,6 +81,15 @@ export function readVolatileVfsFile(folder, name) {
 }
 
 export function listVolatileVfsFiles(folder) {
+  if (folder === '*') {
+    return Array.from(volatileFiles.entries())
+      .map(([key, raw]) => {
+        const match = key.slice(VFS_PREFIX.length).match(/^([^:]+):(.+)$/);
+        if (!match) return null;
+        return { folder: match[1], name: match[2], raw };
+      })
+      .filter(Boolean);
+  }
   const prefix = `${VFS_PREFIX}${folder}:`;
   return Array.from(volatileFiles.entries())
     .filter(([key]) => key.startsWith(prefix))
@@ -127,22 +107,6 @@ function writeLocalSnapshot(snapshot) {
       if (typeof raw === 'string') volatileFiles.set(key, raw);
     });
   });
-
-  const storage = getStorage();
-  if (storage) {
-    try {
-      storage.setItem(INDEX_KEY, JSON.stringify(index));
-      getFolderNames(index).forEach((folder) => {
-        Object.keys(index[folder] || {}).forEach((name) => {
-          const key = fileKey(folder, name);
-          const raw = files[key];
-          if (typeof raw === 'string') storage.setItem(key, raw);
-        });
-      });
-    } catch (error) {
-      // ignore localStorage write failures
-    }
-  }
   return true;
 }
 
@@ -205,7 +169,13 @@ function mergeSnapshots(localSnapshot, serverSnapshot, duplicatePreference = 'lo
       if (!hasLocal) winner = 'server';
       else if (!hasServer) winner = 'local';
       else if (localRaw !== serverRaw) {
-        winner = duplicatePreference === 'server' ? 'server' : 'local';
+        const localTs = readTimestamp(localMeta, localRaw);
+        const serverTs = readTimestamp(serverMeta, serverRaw);
+        if (localTs !== serverTs) {
+          winner = serverTs > localTs ? 'server' : 'local';
+        } else {
+          winner = duplicatePreference === 'server' ? 'server' : 'local';
+        }
         stats.conflictsResolved += 1;
       } else {
         const localTs = readTimestamp(localMeta, localRaw);

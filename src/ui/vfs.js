@@ -1,11 +1,10 @@
 /**
- * Virtual filesystem (VFS) backed by localStorage.
+ * Virtual filesystem (VFS) backed by server storage.
  *
  * How it works:
- * - Files are grouped into three fixed folders: levels, art, music.
- * - File payloads are stored under keys: robter:vfs:<folder>:<name>
- * - A single index key (robter:vfs:index) stores metadata per file
- *   (updatedAt + serialized size) so listing is fast.
+ * - Files are grouped into fixed folders: levels, art, music, actors.
+ * - File payloads are kept in memory while the app is running and synced to
+ *   the dev server snapshot.
  * - Each payload includes version/folder/name/savedAt/data, where `data`
  *   is the editor-specific JSON object already used by the app.
  */
@@ -18,37 +17,23 @@ import {
   upsertVolatileVfsFile
 } from './serverStorage.js';
 
-const VFS_PREFIX = 'robter:vfs:';
-const INDEX_KEY = `${VFS_PREFIX}index`;
 const FOLDERS = ['levels', 'art', 'music', 'actors'];
-
-const getStorage = () => {
-  try {
-    return window.localStorage;
-  } catch (error) {
-    return null;
-  }
-};
 
 const emptyIndex = () => ({ levels: {}, art: {}, music: {}, actors: {} });
 
 export function vfsEnsureIndex() {
-  const storage = getStorage();
-  if (!storage) return emptyIndex();
   let index = emptyIndex();
-  try {
-    const parsed = JSON.parse(storage.getItem(INDEX_KEY) || 'null');
-    if (parsed && typeof parsed === 'object') {
-      index = {
-        levels: parsed.levels && typeof parsed.levels === 'object' ? parsed.levels : {},
-        art: parsed.art && typeof parsed.art === 'object' ? parsed.art : {},
-        music: parsed.music && typeof parsed.music === 'object' ? parsed.music : {},
-        actors: parsed.actors && typeof parsed.actors === 'object' ? parsed.actors : {}
-      };
+  listVolatileVfsFiles('*').forEach(({ folder, name, raw }) => {
+    if (!FOLDERS.includes(folder) || !name || typeof raw !== 'string') return;
+    let updatedAt = Date.now();
+    try {
+      const payload = JSON.parse(raw);
+      updatedAt = Number(payload?.savedAt || updatedAt);
+    } catch (error) {
+      // ignore malformed volatile payload metadata
     }
-  } catch (error) {
-    index = emptyIndex();
-  }
+    index[folder][name] = { updatedAt, size: raw.length };
+  });
   return index;
 }
 
@@ -56,18 +41,8 @@ function assertFolder(folder) {
   if (!FOLDERS.includes(folder)) throw new Error(`Invalid VFS folder: ${folder}`);
 }
 
-function fileKey(folder, name) {
-  return `${VFS_PREFIX}${folder}:${name}`;
-}
-
 function saveIndex(index) {
-  const storage = getStorage();
-  if (!storage) return;
-  try {
-    storage.setItem(INDEX_KEY, JSON.stringify(index || emptyIndex()));
-  } catch (error) {
-    // ignore storage write failures; volatile layer still tracks latest state
-  }
+  void index;
 }
 
 export function vfsSanitizeName(name) {
@@ -97,47 +72,7 @@ export function vfsList(folder) {
     }
   });
   listed.sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
-  if (listed.length) return listed;
-  const storage = getStorage();
-  if (!storage) {
-    const withVolatile = [...listed];
-    listVolatileVfsFiles(folder).forEach(({ name, raw }) => {
-      if (!withVolatile.some((entry) => entry.name === name)) {
-        withVolatile.push({ name, updatedAt: Date.now(), size: typeof raw === 'string' ? raw.length : 0 });
-      }
-    });
-    return withVolatile.sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
-  }
-  const folderPrefix = `${VFS_PREFIX}${folder}:`;
-  for (let i = 0; i < storage.length; i += 1) {
-    const key = storage.key(i);
-    if (!key || !key.startsWith(folderPrefix)) continue;
-    const name = key.slice(folderPrefix.length);
-    try {
-      const raw = storage.getItem(key);
-      if (!raw) continue;
-      const payload = JSON.parse(raw);
-      index[folder][name] = {
-        updatedAt: Number(payload?.savedAt || Date.now()),
-        size: raw.length
-      };
-    } catch (error) {
-      // ignore malformed entries and continue rebuilding index
-    }
-  }
-  listVolatileVfsFiles(folder).forEach(({ name, raw }) => {
-    if (!index[folder][name]) index[folder][name] = {};
-    index[folder][name].updatedAt = Date.now();
-    index[folder][name].size = typeof raw === 'string' ? raw.length : 0;
-  });
-  saveIndex(index);
-  return Object.entries(index[folder] || {})
-    .map(([name, meta]) => ({
-      name,
-      updatedAt: Number(meta?.updatedAt || 0),
-      size: Number(meta?.size || 0)
-    }))
-    .sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
+  return listed;
 }
 
 export function vfsExists(folder, name) {
@@ -151,19 +86,9 @@ export function vfsExists(folder, name) {
 export function vfsLoad(folder, name) {
   assertFolder(folder);
   const clean = vfsSanitizeName(name);
-  const storage = getStorage();
   if (!clean) return null;
-  if (!storage) {
-    const raw = readVolatileVfsFile(folder, clean);
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw);
-    } catch (error) {
-      return null;
-    }
-  }
   try {
-    const raw = readVolatileVfsFile(folder, clean) || storage.getItem(fileKey(folder, clean));
+    const raw = readVolatileVfsFile(folder, clean);
     if (!raw) return null;
     return JSON.parse(raw);
   } catch (error) {
@@ -185,14 +110,6 @@ export function vfsSave(folder, name, dataObj) {
   };
   const raw = JSON.stringify(payload);
   upsertVolatileVfsFile(folder, clean, raw);
-  const storage = getStorage();
-  if (storage) {
-    try {
-      storage.setItem(fileKey(folder, clean), raw);
-    } catch (error) {
-      // ignore storage write failures; volatile layer still tracks latest state
-    }
-  }
   const index = vfsEnsureIndex();
   index[folder][clean] = { updatedAt: savedAt, size: raw.length };
   saveIndex(index);

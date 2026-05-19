@@ -1207,23 +1207,40 @@ export default class Game {
     const size = 56;
     const floorY = 30;
     const tileSize = 32;
-    const zoneDefs = Array.isArray(actorDefinition?.collisionZones) ? actorDefinition.collisionZones : [];
-    const solidZones = zoneDefs.filter((zone) => ['solid', 'solid-damage-player', 'solid-hurtbox'].includes(zone?.type));
-    const zoneBounds = solidZones.length
-      ? solidZones.reduce((acc, zone) => {
-        const x = Number(zone?.x || 0);
-        const y = Number(zone?.y || 0);
-        const w = Math.max(1, Number(zone?.width || 1));
-        const h = Math.max(1, Number(zone?.height || 1));
-        if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(w) || !Number.isFinite(h)) return acc;
-        return {
-          minX: Math.min(acc.minX, x),
-          minY: Math.min(acc.minY, y),
-          maxX: Math.max(acc.maxX, x + w),
-          maxY: Math.max(acc.maxY, y + h)
+    let zoneBounds = null;
+    try {
+      const probe = actorDefinition ? new ScriptedActor(0, 0, actorDefinition, { type: `custom:${actorId}` }) : null;
+      const bounds = probe?.getCollisionZoneBounds?.(['solid', 'solid-damage-player', 'solid-hurtbox']);
+      if (bounds) {
+        zoneBounds = {
+          minX: bounds.x,
+          minY: bounds.y,
+          maxX: bounds.x + bounds.w,
+          maxY: bounds.y + bounds.h
         };
-      }, { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity })
-      : null;
+      }
+    } catch (error) {
+      zoneBounds = null;
+    }
+    if (!zoneBounds) {
+      const zoneDefs = Array.isArray(actorDefinition?.collisionZones) ? actorDefinition.collisionZones : [];
+      const solidZones = zoneDefs.filter((zone) => ['solid', 'solid-damage-player', 'solid-hurtbox'].includes(zone?.type));
+      zoneBounds = solidZones.length
+        ? solidZones.reduce((acc, zone) => {
+          const x = Number(zone?.x || 0);
+          const y = Number(zone?.y || 0);
+          const w = Math.max(1, Number(zone?.width || 1));
+          const h = Math.max(1, Number(zone?.height || 1));
+          if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(w) || !Number.isFinite(h)) return acc;
+          return {
+            minX: Math.min(acc.minX, x),
+            minY: Math.min(acc.minY, y),
+            maxX: Math.max(acc.maxX, x + w),
+            maxY: Math.max(acc.maxY, y + h)
+          };
+        }, { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity })
+        : null;
+    }
     const hasZoneBounds = zoneBounds && Number.isFinite(zoneBounds.minX) && Number.isFinite(zoneBounds.minY)
       && Number.isFinite(zoneBounds.maxX) && Number.isFinite(zoneBounds.maxY);
     const bodyWidthPx = hasZoneBounds
@@ -1233,7 +1250,7 @@ export default class Game {
       ? Math.max(1, zoneBounds.maxY - zoneBounds.minY)
       : Number(actorDefinition?.size?.height || tileSize);
     const zoneTopOffsetPx = hasZoneBounds
-      ? ((zoneBounds.minY + zoneBounds.maxY) * 0.5 - Number(actorDefinition?.size?.height || bodyHeightPx) * 0.5)
+      ? ((zoneBounds.minY + zoneBounds.maxY) * 0.5)
       : 0;
     const actorHeightTiles = Math.max(1, Math.ceil(Math.max(1, bodyHeightPx) / tileSize));
     const actorWidthTiles = Math.max(1, Math.ceil(Math.max(1, bodyWidthPx) / tileSize));
@@ -2591,6 +2608,7 @@ export default class Game {
       this.applyIgnitirPlayerImpulse();
     }
     const prevPlayer = { x: this.player.x, y: this.player.y };
+    this.previousPlayerPosition = prevPlayer;
     const prevCompanion = this.friendlyCompanion ? { x: this.friendlyCompanion.x, y: this.friendlyCompanion.y } : null;
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
     if (this.friendlyCompanion) {
@@ -4638,12 +4656,62 @@ export default class Game {
       if (!enemy?.getCollisionZoneRects) return false;
       const zones = enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'solid-hurtbox']);
       if (!zones.length) return false;
+      const sweptZoneHit = (zone, currentRect) => {
+        const prev = this.previousPlayerPosition;
+        if (!prev || !currentRect) return null;
+        const halfW = currentRect.w / 2;
+        const halfH = currentRect.h / 2;
+        const startX = prev.x;
+        const startY = prev.y;
+        const endX = this.player.x;
+        const endY = this.player.y;
+        const dx = endX - startX;
+        const dy = endY - startY;
+        if (dx === 0 && dy === 0) return null;
+        const speedSq = dx * dx + dy * dy;
+        const minDimension = Math.max(1, Math.min(currentRect.w, currentRect.h, zone.w, zone.h));
+        if (speedSq < minDimension * minDimension) return null;
+        const expanded = {
+          x: zone.x - halfW,
+          y: zone.y - halfH,
+          w: zone.w + halfW * 2,
+          h: zone.h + halfH * 2
+        };
+        if (startX >= expanded.x && startX <= expanded.x + expanded.w && startY >= expanded.y && startY <= expanded.y + expanded.h) {
+          return null;
+        }
+        const invEntryX = dx > 0 ? expanded.x - startX : expanded.x + expanded.w - startX;
+        const invExitX = dx > 0 ? expanded.x + expanded.w - startX : expanded.x - startX;
+        const invEntryY = dy > 0 ? expanded.y - startY : expanded.y + expanded.h - startY;
+        const invExitY = dy > 0 ? expanded.y + expanded.h - startY : expanded.y - startY;
+        const entryX = dx === 0 ? -Infinity : invEntryX / dx;
+        const exitX = dx === 0 ? Infinity : invExitX / dx;
+        const entryY = dy === 0 ? -Infinity : invEntryY / dy;
+        const exitY = dy === 0 ? Infinity : invExitY / dy;
+        const entryTime = Math.max(entryX, entryY);
+        const exitTime = Math.min(exitX, exitY);
+        if (entryTime > exitTime || entryTime < 0 || entryTime > 1) return null;
+        const axis = entryX > entryY ? 'x' : 'y';
+        const signed = axis === 'x'
+          ? (dx > 0 ? (expanded.x - endX - 0.5) : (expanded.x + expanded.w - endX + 0.5))
+          : (dy > 0 ? (expanded.y - endY - 0.5) : (expanded.y + expanded.h - endY + 0.5));
+        return {
+          axis,
+          signed,
+          depth: 1000 + entryTime,
+          fromTop: axis === 'y' && dy > 0
+        };
+      };
       let pushed = false;
       for (let i = 0; i < 4; i += 1) {
         const pRect = playerRect();
         let best = null;
         zones.forEach((zone) => {
-          if (!rectsOverlap(pRect, zone)) return;
+          if (!rectsOverlap(pRect, zone)) {
+            const swept = sweptZoneHit(zone, pRect);
+            if (swept && (!best || swept.depth < best.depth)) best = swept;
+            return;
+          }
           const overlapLeft = (pRect.x + pRect.w) - zone.x;
           const overlapRight = (zone.x + zone.w) - pRect.x;
           const overlapTop = (pRect.y + pRect.h) - zone.y;
@@ -4664,11 +4732,14 @@ export default class Game {
         pushed = true;
         if (best.axis === 'x') {
           this.player.x += best.signed;
+          this.player.vx = best.signed < 0 ? Math.min(0, this.player.vx) : Math.max(0, this.player.vx);
         } else {
           this.player.y += best.signed;
           if (best.fromTop) {
             this.player.vy = Math.min(0, this.player.vy);
             this.player.onGround = true;
+          } else {
+            this.player.vy = Math.max(0, this.player.vy);
           }
         }
       }
@@ -4804,10 +4875,6 @@ export default class Game {
       const solidByZones = enemyHasSolidZones(enemy);
       if (!zoneBlocked && !solidByZones) {
         this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: canPushEnemy });
-      } else if (!zoneBlocked && solidByZones) {
-        // Fallback: if zone contact math misses on a frame, keep classic body overlap
-        // blocked so player cannot walk through zone-authored actors.
-        this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: false });
       }
       if (this.isPlayerBlockedAt(this.player.x, this.player.y, { ignoreOneWay: true })) {
         this.resolvePlayerTileOverlap({ ignoreOneWay: true });
@@ -6841,7 +6908,7 @@ export default class Game {
       }
     }
     this.drawDoorForegroundOverlays(ctx);
-    if (this.testHarness.active && this.testHarness.showCollision) {
+    if (this.debugMode || (this.testHarness.active && this.testHarness.showCollision)) {
       this.drawCollisionBoxes(ctx);
     }
     this.playability.drawWorld(ctx, this);
@@ -8343,13 +8410,54 @@ export default class Game {
   }
 
   drawCollisionBoxes(ctx) {
-    if (!this.debugMode) return;
+    if (!this.debugMode && !(this.testHarness.active && this.testHarness.showCollision)) return;
+    const zoneStyles = {
+      solid: { stroke: 'rgba(255,220,0,0.95)', fill: 'rgba(255,220,0,0.12)' },
+      'solid-damage-player': { stroke: 'rgba(255,70,70,0.95)', fill: 'rgba(255,70,70,0.12)' },
+      'damage-player': { stroke: 'rgba(255,90,180,0.95)', fill: 'rgba(255,90,180,0.12)' },
+      'solid-hurtbox': { stroke: 'rgba(70,150,255,0.95)', fill: 'rgba(70,150,255,0.12)' },
+      hurtbox: { stroke: 'rgba(80,255,130,0.95)', fill: 'rgba(80,255,130,0.12)' }
+    };
     ctx.save();
-    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255,255,255,0.85)';
     ctx.strokeRect(this.player.rect.x, this.player.rect.y, this.player.rect.w, this.player.rect.h);
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.font = '11px Courier New';
+    ctx.fillText('PLAYER', this.player.rect.x, this.player.rect.y - 4);
+
+    const dynamicZones = this.world?.dynamicState?.solidZones || [];
+    dynamicZones.forEach(({ rect, key }) => {
+      if (!Array.isArray(rect) || rect.length < 4) return;
+      const [tileX, tileY, tileW, tileH] = rect;
+      const x = tileX * this.world.tileSize;
+      const y = tileY * this.world.tileSize;
+      const w = tileW * this.world.tileSize;
+      const h = tileH * this.world.tileSize;
+      ctx.fillStyle = 'rgba(255,165,0,0.10)';
+      ctx.strokeStyle = 'rgba(255,165,0,0.95)';
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeRect(x, y, w, h);
+      if (key) ctx.fillText(String(key).slice(0, 24), x + 2, y - 4);
+    });
+
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
+      ctx.strokeStyle = 'rgba(255,255,255,0.65)';
       ctx.strokeRect(enemy.rect.x, enemy.rect.y, enemy.rect.w, enemy.rect.h);
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.fillText(String(enemy.type || 'enemy').slice(0, 28), enemy.rect.x, enemy.rect.y - 4);
+      if (!enemy.getCollisionZoneRects) return;
+      const zones = enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'damage-player', 'solid-hurtbox', 'hurtbox']);
+      zones.forEach((zone) => {
+        const style = zoneStyles[zone.type] || zoneStyles.solid;
+        ctx.fillStyle = style.fill;
+        ctx.strokeStyle = style.stroke;
+        ctx.fillRect(zone.x, zone.y, zone.w, zone.h);
+        ctx.strokeRect(zone.x, zone.y, zone.w, zone.h);
+        ctx.fillStyle = style.stroke;
+        ctx.fillText(zone.type, zone.x + 2, zone.y + 11);
+      });
     });
     ctx.restore();
   }

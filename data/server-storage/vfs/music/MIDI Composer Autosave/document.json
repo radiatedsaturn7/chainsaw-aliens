@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "tempo": 100,
+  "tempo": 120,
   "loopBars": 16,
   "loopStartTick": 0,
   "loopEndTick": 128,
@@ -24,77 +24,62 @@
       "instrumentFamily": "Piano",
       "bankMSB": 0,
       "bankLSB": 0,
-      "volume": 0.9546111144948278,
+      "volume": 0.8,
       "pan": 0,
       "mute": false,
       "solo": false,
       "color": "#4fb7ff",
       "automation": {
-        "pan": [
-          {
-            "tick": 48,
-            "value": 0
-          },
-          {
-            "tick": 56,
-            "value": 0
-          },
-          {
-            "tick": 88,
-            "value": 0
-          }
-        ],
-        "padding": [
-          {
-            "tick": 48,
-            "value": 0.8
-          },
-          {
-            "tick": 56,
-            "value": 0.8
-          },
-          {
-            "tick": 88,
-            "value": 0.8
-          }
-        ]
+        "pan": [],
+        "padding": []
       },
       "midiPedals": [
         {
-          "id": "pedal_muripw9",
+          "id": "pedal_qmmqlvf",
+          "type": "compressor",
+          "name": "Neck Snapper",
+          "color": "blue",
+          "enabled": true,
+          "knobs": {
+            "threshold": 0,
+            "ratio": 0.65,
+            "makeup": 0.45
+          }
+        },
+        {
+          "id": "pedal_5rlmcwc",
           "type": "overdrive",
           "name": "Ghost Drive",
           "color": "red",
           "enabled": true,
           "knobs": {
-            "drive": 0.7,
-            "bite": 0.65,
-            "tone": 0.55
+            "drive": 1,
+            "bite": 0,
+            "tone": 1
           }
         },
         {
-          "id": "pedal_9q220kl",
+          "id": "pedal_idij167",
           "type": "wah",
           "name": "Toad Funk",
           "color": "green",
           "enabled": true,
           "knobs": {
-            "sweep": 0,
+            "sweep": 1,
             "rate": 0,
-            "mix": 0.8
+            "mix": 1
           }
         },
-        null,
         {
-          "id": "pedal_ab2ntt1",
+          "id": "pedal_g765f7e",
           "type": "echo",
           "name": "Grave Echo",
           "color": "orange",
           "enabled": true,
           "knobs": {
-            "time": 1,
-            "feedback": 0.33349609375,
-            "mix": 1
+            "time": 0.45,
+            "feedback": 0.35,
+            "mix": 0.65
           }
         }
       ],
@@ -104,31 +89,31 @@
           "bars": 16,
           "notes": [
             {
-              "id": "note-420225",
+              "id": "note-882149",
               "startTick": 0,
-              "durationTicks": 8,
-              "pitch": 55,
+              "durationTicks": 16,
+              "pitch": 36,
               "velocity": 0.9
             },
             {
-              "id": "note-240662",
+              "id": "note-73820",
               "startTick": 32,
-              "durationTicks": 8,
-              "pitch": 55,
+              "durationTicks": 16,
+              "pitch": 37,
               "velocity": 0.9
             },
             {
-              "id": "note-436879",
+              "id": "note-618252",
               "startTick": 64,
-              "durationTicks": 8,
-              "pitch": 54,
+              "durationTicks": 16,
+              "pitch": 36,
               "velocity": 0.9
             },
             {
-              "id": "note-504262",
+              "id": "note-930721",
               "startTick": 96,
-              "durationTicks": 8,
-              "pitch": 46,
+              "durationTicks": 16,
+              "pitch": 39,
               "velocity": 0.9
             }
           ]
@@ -194,7 +179,57 @@
         {
           "id": "pattern-drums",
           "bars": 16,
-          "notes": []
+          "notes": [
+            {
+              "id": "note-44450",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-92966",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-634681",
+              "startTick": 40,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-133926",
+              "startTick": 48,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-329499",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-713387",
+              "startTick": 72,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-745175",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            }
+          ]
         }
       ]
     }
@@ -225,5 +260,5 @@
       "lengthBars": 1
     }
   ],
-  "name": "1"
+  "name": "test"
 }

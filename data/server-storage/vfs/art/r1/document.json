@@ -29278,8 +29278,7 @@
             }
           }
         ],
-        "durationMs": 333,
-        "elapsed": 150.10000000009313
+        "durationMs": 333
       },
       {
         "layers": [
@@ -35142,8 +35141,7 @@
             }
           }
         ],
-        "durationMs": 333,
-        "elapsed": 0
+        "durationMs": 333
       },
       {
         "layers": [
@@ -41006,8 +41004,7 @@
             }
           }
         ],
-        "durationMs": 333,
-        "elapsed": 0
+        "durationMs": 333
       },
       {
         "layers": [
@@ -46870,8 +46867,7 @@
             }
           }
         ],
-        "durationMs": 333,
-        "elapsed": 0
+        "durationMs": 333
       }
     ],
     "activeLayerIndex": 0

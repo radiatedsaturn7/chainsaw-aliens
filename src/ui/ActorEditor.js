@@ -5,6 +5,23 @@ import { getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './u
 
 const ACTOR_FOLDER = 'actors';
 const clone = (value) => JSON.parse(JSON.stringify(value));
+const DEFAULT_ACTOR_SIZE = { width: 24, height: 24 };
+const readPngDataUrlDimensions = (dataUrl) => {
+  if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/png;base64,')) return null;
+  try {
+    const binary = atob(dataUrl.split(',', 2)[1] || '');
+    if (binary.length < 24) return null;
+    const readUint32 = (offset) => (
+      ((binary.charCodeAt(offset) & 0xff) << 24)
+      | ((binary.charCodeAt(offset + 1) & 0xff) << 16)
+      | ((binary.charCodeAt(offset + 2) & 0xff) << 8)
+      | (binary.charCodeAt(offset + 3) & 0xff)
+    ) >>> 0;
+    return { width: readUint32(16), height: readUint32(20) };
+  } catch (error) {
+    return null;
+  }
+};
 const el = (tag, className, text) => {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -157,6 +174,58 @@ export default class ActorEditor {
       return [{ imageDataUrl: animation.imageDataUrl, durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || 8))) }];
     }
     return [];
+  }
+
+  getAnimationDimensions(animation = {}) {
+    const artRef = typeof animation?.artRef === 'string' ? animation.artRef.trim() : '';
+    if (artRef) {
+      const artDoc = vfsLoad('art', artRef);
+      const width = Number(artDoc?.data?.width || artDoc?.data?.size || 0);
+      const height = Number(artDoc?.data?.height || artDoc?.data?.size || width || 0);
+      if (Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0) {
+        return { width: Math.round(width), height: Math.round(height) };
+      }
+    }
+    const frame = Array.isArray(animation?.frames) ? animation.frames.find((entry) => entry?.imageDataUrl) : null;
+    const parsed = readPngDataUrlDimensions(frame?.imageDataUrl || animation?.imageDataUrl || '');
+    if (parsed?.width > 0 && parsed?.height > 0) return parsed;
+    return null;
+  }
+
+  getActorDefaultArtDimensions(actor) {
+    const states = Array.isArray(actor?.states) ? actor.states : [];
+    const state = states.find((entry) => entry?.animation?.artRef || entry?.animation?.imageDataUrl || entry?.animation?.frames?.length)
+      || states[0];
+    return this.getAnimationDimensions(state?.animation || {});
+  }
+
+  shouldAutoSizeActor(actor) {
+    if (actor?.sizeMode === 'manual') return false;
+    const width = Number(actor?.size?.width || 0);
+    const height = Number(actor?.size?.height || 0);
+    return !Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0
+      || (Math.round(width) === DEFAULT_ACTOR_SIZE.width && Math.round(height) === DEFAULT_ACTOR_SIZE.height);
+  }
+
+  applyDefaultArtSize(actor) {
+    const next = ensureActorDefinition(actor);
+    if (!this.shouldAutoSizeActor(next)) return next;
+    const dims = this.getActorDefaultArtDimensions(next);
+    if (!dims || dims.width <= 0 || dims.height <= 0) return next;
+    const oldWidth = Math.max(1, Number(next?.size?.width || DEFAULT_ACTOR_SIZE.width));
+    const oldHeight = Math.max(1, Number(next?.size?.height || DEFAULT_ACTOR_SIZE.height));
+    const scaleX = dims.width / oldWidth;
+    const scaleY = dims.height / oldHeight;
+    const collisionZones = Array.isArray(next.collisionZones)
+      ? next.collisionZones.map((zone) => ({
+        ...zone,
+        x: Number(zone.x || 0) * scaleX,
+        y: Number(zone.y || 0) * scaleY,
+        width: Math.max(1, Number(zone.width || 1) * scaleX),
+        height: Math.max(1, Number(zone.height || 1) * scaleY)
+      }))
+      : [];
+    return { ...next, size: { width: dims.width, height: dims.height }, sizeMode: 'auto', collisionZones };
   }
 
   captureFocusedInputState() {
@@ -312,7 +381,7 @@ export default class ActorEditor {
   }
 
   setActor(next) {
-    this.actor = ensureActorDefinition(next);
+    this.actor = this.applyDefaultArtSize(next);
     this.game.registerRuntimeActorDefinition?.(this.actor);
     this.ensureStateSelection();
     this.render();
@@ -479,7 +548,7 @@ export default class ActorEditor {
           updatedAt: Date.now()
         };
         this.artPreviewCache.clear();
-        this.actor = ensureActorDefinition(next);
+        this.actor = this.applyDefaultArtSize(next);
         this.render();
       }
     }).catch((error) => console.warn('Failed to open actor animation in Pixel Studio', error));
@@ -1260,7 +1329,7 @@ export default class ActorEditor {
     widthInput.oninput = (event) => {
       const width = Number.parseInt(event.target.value, 10);
       if (!Number.isFinite(width) || width <= 0) return;
-      this.setActor({ ...actor, size: { width, height: actor.size.height } });
+      this.setActor({ ...actor, size: { width, height: actor.size.height }, sizeMode: 'manual' });
     };
     const heightInput = el('input');
     heightInput.type = 'number';
@@ -1270,7 +1339,7 @@ export default class ActorEditor {
     heightInput.oninput = (event) => {
       const height = Number.parseInt(event.target.value, 10);
       if (!Number.isFinite(height) || height <= 0) return;
-      this.setActor({ ...actor, size: { width: actor.size.width, height } });
+      this.setActor({ ...actor, size: { width: actor.size.width, height }, sizeMode: 'manual' });
     };
     widthInput.style.width = '76px';
     heightInput.style.width = '76px';
