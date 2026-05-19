@@ -3,6 +3,24 @@ import { ensureActorDefinition } from '../content/actorEditorData.js';
 import { vfsList, vfsLoad } from '../ui/vfs.js';
 
 const actorCache = new Map();
+const DEFAULT_ACTOR_SIZE = { width: 24, height: 24 };
+
+function readPngDataUrlDimensions(dataUrl) {
+  if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/png;base64,') || typeof atob !== 'function') return null;
+  try {
+    const binary = atob(dataUrl.split(',', 2)[1] || '');
+    if (binary.length < 24) return null;
+    const readUint32 = (offset) => (
+      ((binary.charCodeAt(offset) & 0xff) << 24)
+      | ((binary.charCodeAt(offset + 1) & 0xff) << 16)
+      | ((binary.charCodeAt(offset + 2) & 0xff) << 8)
+      | (binary.charCodeAt(offset + 3) & 0xff)
+    ) >>> 0;
+    return { width: readUint32(16), height: readUint32(20) };
+  } catch (error) {
+    return null;
+  }
+}
 
 export function loadActorDefinitionById(actorId) {
   if (!actorId || typeof window === 'undefined') return null;
@@ -48,12 +66,158 @@ export default class ScriptedActor extends EnemyBase {
     this.lootTable = this.definition.loot || [];
     this._imageCache = new Map();
     this._artAnimationCache = new Map();
+    this._artDimensionsCache = new Map();
+    this._definitionArtDimensions = undefined;
     this.tookDamageThisFrame = false;
     this.damagedPlayerThisFrame = false;
     this.transitionDelayRemaining = 0;
     this.pendingShots = [];
     this.pendingStateSwitch = null;
     this._lastFrameImage = null;
+    this._collisionBodyOffsetX = 0;
+    this._collisionBodyOffsetY = 0;
+    if (this.definition.facingMode === 'face-left') this.facing = -1;
+    if (this.definition.facingMode === 'face-right') this.facing = 1;
+    this.applyCollisionBodyFromZones();
+  }
+
+  getAuthoredSize() {
+    const base = this.getZoneCoordinateSize();
+    const art = this.getDefinitionArtDimensions();
+    if (this.definition?.sizeMode !== 'manual'
+      && Math.round(base.width) === DEFAULT_ACTOR_SIZE.width
+      && Math.round(base.height) === DEFAULT_ACTOR_SIZE.height
+      && art) {
+      return art;
+    }
+    return base;
+  }
+
+  getZoneCoordinateSize() {
+    return {
+      width: Math.max(1, Number(this.definition?.size?.width || this.width || 1)),
+      height: Math.max(1, Number(this.definition?.size?.height || this.height || 1))
+    };
+  }
+
+  getDefinitionArtDimensions() {
+    if (this._definitionArtDimensions !== undefined) return this._definitionArtDimensions;
+    const states = Array.isArray(this.definition?.states) ? this.definition.states : [];
+    const state = states.find((entry) => entry?.animation?.artRef || entry?.animation?.imageDataUrl || entry?.animation?.frames?.length)
+      || this.currentState;
+    const animation = state?.animation || {};
+    const artRef = typeof animation.artRef === 'string' ? animation.artRef.trim() : '';
+    if (artRef) {
+      const doc = vfsLoad('art', artRef);
+      const cacheKey = `${artRef}:${Number(doc?.savedAt || doc?.data?.updatedAt || 0)}:${doc?.data?.frames?.length || 0}`;
+      if (this._artDimensionsCache.has(cacheKey)) {
+        this._definitionArtDimensions = this._artDimensionsCache.get(cacheKey);
+        return this._definitionArtDimensions;
+      }
+      const width = Number(doc?.data?.width || doc?.data?.size || 0);
+      const height = Number(doc?.data?.height || doc?.data?.size || width || 0);
+      if (Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0) {
+        const roundedWidth = Math.round(width);
+        const roundedHeight = Math.round(height);
+        const dims = { width: roundedWidth, height: roundedHeight };
+        this._artDimensionsCache.set(cacheKey, dims);
+        this._definitionArtDimensions = dims;
+        return dims;
+      }
+    }
+    const frame = Array.isArray(animation.frames) ? animation.frames.find((entry) => entry?.imageDataUrl) : null;
+    const cacheKey = `inline:${Number(animation.updatedAt || 0)}:${frame?.imageDataUrl || animation.imageDataUrl || ''}`;
+    if (this._artDimensionsCache.has(cacheKey)) {
+      this._definitionArtDimensions = this._artDimensionsCache.get(cacheKey);
+      return this._definitionArtDimensions;
+    }
+    const parsed = readPngDataUrlDimensions(frame?.imageDataUrl || animation.imageDataUrl || '');
+    if (parsed?.width > 0 && parsed?.height > 0) {
+      this._artDimensionsCache.set(cacheKey, parsed);
+      this._definitionArtDimensions = parsed;
+      return parsed;
+    }
+    this._definitionArtDimensions = null;
+    return null;
+  }
+
+  getVisualDimensions(image = null) {
+    void image;
+    return this.getAuthoredSize();
+  }
+
+  getCollisionZoneRects(types = []) {
+    const zones = Array.isArray(this.definition?.collisionZones) ? this.definition.collisionZones : [];
+    const allow = new Set(types);
+    const authored = this.getZoneCoordinateSize();
+    const visual = this.getVisualDimensions();
+    const scaleX = visual.width / authored.width;
+    const scaleY = visual.height / authored.height;
+    const cx = this.x - visual.width / 2;
+    const cy = this.y - visual.height / 2;
+    const facing = this.facing < 0 ? -1 : 1;
+    return zones
+      .filter((zone) => allow.has(zone?.type))
+      .map((zone) => {
+        const zoneX = Number(zone.x || 0);
+        const zoneW = Math.max(1, Number(zone.width || 1));
+        const zoneY = Number(zone.y || 0);
+        const zoneH = Math.max(1, Number(zone.height || 1));
+        if (!Number.isFinite(zoneX) || !Number.isFinite(zoneY) || !Number.isFinite(zoneW) || !Number.isFinite(zoneH)) return null;
+        const mirroredX = facing < 0 ? (authored.width - zoneX - zoneW) : zoneX;
+        return {
+          x: cx + mirroredX * scaleX,
+          y: cy + zoneY * scaleY,
+          w: zoneW * scaleX,
+          h: zoneH * scaleY,
+          type: zone.type
+        };
+      })
+      .filter(Boolean);
+  }
+
+  getCollisionZoneBounds(types = []) {
+    const zones = this.getCollisionZoneRects(types);
+    if (!zones.length) return null;
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    zones.forEach((z) => {
+      minX = Math.min(minX, z.x);
+      minY = Math.min(minY, z.y);
+      maxX = Math.max(maxX, z.x + z.w);
+      maxY = Math.max(maxY, z.y + z.h);
+    });
+    return { x: minX, y: minY, w: Math.max(1, maxX - minX), h: Math.max(1, maxY - minY) };
+  }
+
+
+  applyCollisionBodyFromZones() {
+    const solidBounds = this.getCollisionZoneBounds(['solid', 'solid-damage-player', 'solid-hurtbox']);
+    const fallback = this.getAuthoredSize();
+    if (solidBounds) {
+      this.width = Math.max(1, Math.round(solidBounds.w));
+      this.height = Math.max(1, Math.round(solidBounds.h));
+      const boundsCenterX = solidBounds.x + solidBounds.w / 2;
+      const boundsCenterY = solidBounds.y + solidBounds.h / 2;
+      this._collisionBodyOffsetX = boundsCenterX - this.x;
+      this._collisionBodyOffsetY = boundsCenterY - this.y;
+    } else {
+      this.width = fallback.width;
+      this.height = fallback.height;
+      this._collisionBodyOffsetX = 0;
+      this._collisionBodyOffsetY = 0;
+    }
+  }
+
+  get rect() {
+    return {
+      x: this.x - this.width / 2 + this._collisionBodyOffsetX,
+      y: this.y - this.height / 2 + this._collisionBodyOffsetY,
+      w: this.width,
+      h: this.height
+    };
   }
 
   get currentState() {
@@ -240,7 +404,9 @@ export default class ScriptedActor extends EnemyBase {
       default:
         break;
     }
-    this.facing = Math.sign(dx) || this.facing;
+    if (this.definition.facingMode === 'face-player') {
+      this.facing = Math.sign(dx) || this.facing;
+    }
   }
 
   update(dt, player, context = {}) {
@@ -387,12 +553,9 @@ export default class ScriptedActor extends EnemyBase {
       return;
     }
     const { x: offsetX, y: offsetY, flash } = this.getDamageOffset();
-    const nativeW = Number(drawImage?.naturalWidth || drawImage?.width || 0);
-    const nativeH = Number(drawImage?.naturalHeight || drawImage?.height || 0);
-    const imageScaledW = nativeW > 0 ? (nativeW / 16) * 32 : 0;
-    const imageScaledH = nativeH > 0 ? (nativeH / 16) * 32 : 0;
-    const drawW = Math.max(this.width, imageScaledW || 0);
-    const drawH = Math.max(this.height, imageScaledH || 0);
+    const visual = this.getVisualDimensions(drawImage);
+    const drawW = visual.width;
+    const drawH = visual.height;
     ctx.save();
     ctx.translate(this.x + offsetX, this.y + offsetY);
     ctx.imageSmoothingEnabled = false;

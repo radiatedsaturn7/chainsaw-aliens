@@ -614,6 +614,11 @@ export default class MidiComposer {
         },
         confirm: (ctx, message) => ctx.confirmDiscardChangesModal(message),
         serialize: (ctx) => JSON.parse(JSON.stringify(ctx.song)),
+        isEmptyDocument: (_ctx, data) => {
+          if (!data || typeof data !== 'object') return true;
+          const tracks = Array.isArray(data.tracks) ? data.tracks : [];
+          return !tracks.some((track) => Array.isArray(track?.notes) && track.notes.length > 0);
+        },
         applyLoadedData: (ctx, data, meta) => {
           ctx.applyImportedSong(data);
           ctx.song.name = meta.name;

@@ -1,18 +1,8 @@
-const SETTINGS_KEY = 'chainsaw:server-storage:enabled';
-const INDEX_KEY = 'robter:vfs:index';
 const VFS_PREFIX = 'robter:vfs:';
 const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors'];
 
 let syncQueue = Promise.resolve();
 const volatileFiles = new Map();
-
-function getStorage() {
-  try {
-    return window.localStorage;
-  } catch (error) {
-    return null;
-  }
-}
 
 function getFolderNames(index = null) {
   const extra = index && typeof index === 'object'
@@ -55,12 +45,19 @@ function readTimestamp(meta, raw) {
 function readLocalSnapshot() {
   const index = emptyIndex();
   const files = {};
+
   volatileFiles.forEach((raw, key) => {
     if (typeof raw !== 'string') return;
     const match = key.slice(VFS_PREFIX.length).match(/^([^:]+):(.+)$/);
     if (!match) return;
     const [, folder, name] = match;
     if (!index[folder] || typeof index[folder] !== 'object') index[folder] = {};
+    const existingRaw = files[key];
+    if (typeof existingRaw === 'string' && existingRaw !== raw) {
+      const existingTs = readTimestamp(index[folder][name], existingRaw);
+      const volatileTs = readTimestamp(null, raw);
+      if (existingTs > volatileTs) return;
+    }
     index[folder][name] = { updatedAt: readTimestamp(index[folder][name], raw) || Date.now(), size: raw.length };
     files[key] = raw;
   });
@@ -84,6 +81,15 @@ export function readVolatileVfsFile(folder, name) {
 }
 
 export function listVolatileVfsFiles(folder) {
+  if (folder === '*') {
+    return Array.from(volatileFiles.entries())
+      .map(([key, raw]) => {
+        const match = key.slice(VFS_PREFIX.length).match(/^([^:]+):(.+)$/);
+        if (!match) return null;
+        return { folder: match[1], name: match[2], raw };
+      })
+      .filter(Boolean);
+  }
   const prefix = `${VFS_PREFIX}${folder}:`;
   return Array.from(volatileFiles.entries())
     .filter(([key]) => key.startsWith(prefix))
@@ -163,7 +169,13 @@ function mergeSnapshots(localSnapshot, serverSnapshot, duplicatePreference = 'lo
       if (!hasLocal) winner = 'server';
       else if (!hasServer) winner = 'local';
       else if (localRaw !== serverRaw) {
-        winner = duplicatePreference === 'server' ? 'server' : 'local';
+        const localTs = readTimestamp(localMeta, localRaw);
+        const serverTs = readTimestamp(serverMeta, serverRaw);
+        if (localTs !== serverTs) {
+          winner = serverTs > localTs ? 'server' : 'local';
+        } else {
+          winner = duplicatePreference === 'server' ? 'server' : 'local';
+        }
         stats.conflictsResolved += 1;
       } else {
         const localTs = readTimestamp(localMeta, localRaw);

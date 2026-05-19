@@ -82,6 +82,15 @@ export default class PixelStudio {
           ctx.syncTileData({ persist: false });
           return ctx.game.world.pixelArt || { tiles: {} };
         },
+        isEmptyDocument: (_ctx, data) => {
+          if (!data || typeof data !== 'object') return true;
+          const frames = Array.isArray(data.frames) ? data.frames : [];
+          const hasFramePixels = frames.some((frame) => Array.isArray(frame) && frame.some((value) => typeof value === 'string' && value.trim()));
+          if (hasFramePixels) return false;
+          const tiles = data.tiles && typeof data.tiles === 'object' ? Object.values(data.tiles) : [];
+          const hasTilePixels = tiles.some((tile) => Array.isArray(tile?.frames) && tile.frames.some((frame) => Array.isArray(frame) && frame.some((value) => typeof value === 'string' && value.trim())));
+          return !hasTilePixels;
+        },
         applyLoadedData: (ctx, data) => {
           ctx.game.world.pixelArt = ctx.normalizeLoadedArtDocument(data);
           ctx.loadTileData({ skipRestore: true });

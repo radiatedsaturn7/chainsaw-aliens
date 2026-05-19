@@ -446,7 +446,10 @@ export default class Game {
   async init() {
     try {
       if (isServerStorageEnabled()) {
-        await bootstrapServerStorage();
+        await Promise.race([
+          bootstrapServerStorage(),
+          new Promise((resolve) => setTimeout(resolve, 1200))
+        ]);
       }
       await this.world.load();
       await this.autoRepair.load();
@@ -1200,9 +1203,61 @@ export default class Game {
   }
 
 
-  buildActorTestWorldData(actorId) {
-    const size = 50;
-    const floorY = 26;
+  buildActorTestWorldData(actorId, actorDefinition = null) {
+    const size = 56;
+    const floorY = 30;
+    const tileSize = 32;
+    let zoneBounds = null;
+    try {
+      const probe = actorDefinition ? new ScriptedActor(0, 0, actorDefinition, { type: `custom:${actorId}` }) : null;
+      const bounds = probe?.getCollisionZoneBounds?.(['solid', 'solid-damage-player', 'solid-hurtbox']);
+      if (bounds) {
+        zoneBounds = {
+          minX: bounds.x,
+          minY: bounds.y,
+          maxX: bounds.x + bounds.w,
+          maxY: bounds.y + bounds.h
+        };
+      }
+    } catch (error) {
+      zoneBounds = null;
+    }
+    if (!zoneBounds) {
+      const zoneDefs = Array.isArray(actorDefinition?.collisionZones) ? actorDefinition.collisionZones : [];
+      const solidZones = zoneDefs.filter((zone) => ['solid', 'solid-damage-player', 'solid-hurtbox'].includes(zone?.type));
+      zoneBounds = solidZones.length
+        ? solidZones.reduce((acc, zone) => {
+          const x = Number(zone?.x || 0);
+          const y = Number(zone?.y || 0);
+          const w = Math.max(1, Number(zone?.width || 1));
+          const h = Math.max(1, Number(zone?.height || 1));
+          if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(w) || !Number.isFinite(h)) return acc;
+          return {
+            minX: Math.min(acc.minX, x),
+            minY: Math.min(acc.minY, y),
+            maxX: Math.max(acc.maxX, x + w),
+            maxY: Math.max(acc.maxY, y + h)
+          };
+        }, { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity })
+        : null;
+    }
+    const hasZoneBounds = zoneBounds && Number.isFinite(zoneBounds.minX) && Number.isFinite(zoneBounds.minY)
+      && Number.isFinite(zoneBounds.maxX) && Number.isFinite(zoneBounds.maxY);
+    const bodyWidthPx = hasZoneBounds
+      ? Math.max(1, zoneBounds.maxX - zoneBounds.minX)
+      : Number(actorDefinition?.size?.width || tileSize);
+    const bodyHeightPx = hasZoneBounds
+      ? Math.max(1, zoneBounds.maxY - zoneBounds.minY)
+      : Number(actorDefinition?.size?.height || tileSize);
+    const zoneTopOffsetPx = hasZoneBounds
+      ? ((zoneBounds.minY + zoneBounds.maxY) * 0.5)
+      : 0;
+    const actorHeightTiles = Math.max(1, Math.ceil(Math.max(1, bodyHeightPx) / tileSize));
+    const actorWidthTiles = Math.max(1, Math.ceil(Math.max(1, bodyWidthPx) / tileSize));
+    const actorTopOffsetTiles = Math.max(0, Math.ceil(Math.max(0, zoneTopOffsetPx) / tileSize));
+    const actorSpawnY = Math.max(2, floorY - actorHeightTiles - actorTopOffsetTiles - 2);
+    const playerSpawnX = Math.max(4, 18 - actorWidthTiles);
+    const enemySpawnX = Math.min(size - 5, Math.max(playerSpawnX + actorWidthTiles + 8, 34));
     const rows = Array.from({ length: size }, (_, y) => {
       if (y === 0 || y === size - 1) return '#'.repeat(size);
       const cells = Array.from({ length: size }, (_, x) => (x === 0 || x === size - 1 ? '#' : '.'));
@@ -1215,13 +1270,13 @@ export default class Game {
     });
     return {
       schemaVersion: 1,
-      tileSize: 32,
+      tileSize,
       width: size,
       height: size,
-      spawn: { x: 25, y: 25 },
+      spawn: { x: playerSpawnX, y: actorSpawnY },
       tiles: rows,
       regions: [],
-      enemies: [{ x: 31, y: 25, type: `custom:${actorId}` }],
+      enemies: [{ x: enemySpawnX, y: actorSpawnY, type: `custom:${actorId}` }],
       elevatorPaths: [],
       elevators: [],
       pixelArt: { tiles: {} },
@@ -1263,7 +1318,7 @@ export default class Game {
       pixelReturnState: this.pixelStudioReturnState,
       actorReturnState: this.actorEditorReturnState
     };
-    this.applyWorldData(this.buildActorTestWorldData(actorId));
+    this.applyWorldData(this.buildActorTestWorldData(actorId, sourceDefinition));
     this.playtestActive = true;
     this.playtestPauseLock = 0.35;
     this.resetRun({ playtest: true, startWithEverything: true });
@@ -2553,6 +2608,7 @@ export default class Game {
       this.applyIgnitirPlayerImpulse();
     }
     const prevPlayer = { x: this.player.x, y: this.player.y };
+    this.previousPlayerPosition = prevPlayer;
     const prevCompanion = this.friendlyCompanion ? { x: this.friendlyCompanion.x, y: this.friendlyCompanion.y } : null;
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
     if (this.friendlyCompanion) {
@@ -4202,18 +4258,25 @@ export default class Game {
   }
 
 
+
+  getEntityZoneRects(entity, types = []) {
+    if (!entity?.getCollisionZoneRects) return [];
+    const zones = entity.getCollisionZoneRects(types);
+    if (!Array.isArray(zones)) return [];
+    return zones.filter((z) => Number.isFinite(z?.x) && Number.isFinite(z?.y) && Number.isFinite(z?.w) && Number.isFinite(z?.h) && z.w > 0 && z.h > 0);
+  }
+
   doesEntityOverlapRect(entity, rect) {
     if (!entity || !rect) return false;
+    const overlaps = (a, b) => a.x <= b.x + b.w && a.x + a.w >= b.x && a.y <= b.y + b.h && a.y + a.h >= b.y;
+    const hurtZones = this.getEntityZoneRects(entity, ['solid-hurtbox', 'hurtbox']);
+    if (hurtZones.length) {
+      return hurtZones.some((zone) => overlaps(zone, rect));
+    }
     const halfW = Math.max(1, Number(entity.width || this.world.tileSize * 0.5)) * 0.5;
     const halfH = Math.max(1, Number(entity.height || this.world.tileSize * 0.5)) * 0.5;
-    const left = entity.x - halfW;
-    const right = entity.x + halfW;
-    const top = entity.y - halfH;
-    const bottom = entity.y + halfH;
-    return left <= rect.x + rect.w
-      && right >= rect.x
-      && top <= rect.y + rect.h
-      && bottom >= rect.y;
+    const body = { x: entity.x - halfW, y: entity.y - halfH, w: halfW * 2, h: halfH * 2 };
+    return overlaps(body, rect);
   }
 
   doesEntityOverlapPlayerBody(entity, paddingX = 0, paddingY = 0) {
@@ -4344,6 +4407,7 @@ export default class Game {
       this.enemies.forEach((enemy) => {
         if (enemy.dead) return;
         if (this.doesEntityOverlapRect(enemy, downAttackRect)) {
+          if (!this.canPlayerDamageEnemyByZones(enemy, downAttackRect)) return;
           if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
             return;
           }
@@ -4431,6 +4495,7 @@ export default class Game {
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
       if (this.doesEntityOverlapRect(enemy, forwardAttackRect)) {
+        if (!this.canPlayerDamageEnemyByZones(enemy, forwardAttackRect)) return;
         if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
           return;
         }
@@ -4580,6 +4645,123 @@ export default class Game {
   }
 
   updateEnemies(dt) {
+    const rectsOverlap = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    const playerRect = () => ({
+      x: this.player.x - this.player.width / 2,
+      y: this.player.y - this.player.height / 2,
+      w: this.player.width,
+      h: this.player.height
+    });
+    const resolveEnemyPlayerZoneCollision = (enemy) => {
+      if (!enemy?.getCollisionZoneRects) return false;
+      const zones = enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'solid-hurtbox']);
+      if (!zones.length) return false;
+      const sweptZoneHit = (zone, currentRect) => {
+        const prev = this.previousPlayerPosition;
+        if (!prev || !currentRect) return null;
+        const halfW = currentRect.w / 2;
+        const halfH = currentRect.h / 2;
+        const startX = prev.x;
+        const startY = prev.y;
+        const endX = this.player.x;
+        const endY = this.player.y;
+        const dx = endX - startX;
+        const dy = endY - startY;
+        if (dx === 0 && dy === 0) return null;
+        const speedSq = dx * dx + dy * dy;
+        const minDimension = Math.max(1, Math.min(currentRect.w, currentRect.h, zone.w, zone.h));
+        if (speedSq < minDimension * minDimension) return null;
+        const expanded = {
+          x: zone.x - halfW,
+          y: zone.y - halfH,
+          w: zone.w + halfW * 2,
+          h: zone.h + halfH * 2
+        };
+        if (startX >= expanded.x && startX <= expanded.x + expanded.w && startY >= expanded.y && startY <= expanded.y + expanded.h) {
+          return null;
+        }
+        const invEntryX = dx > 0 ? expanded.x - startX : expanded.x + expanded.w - startX;
+        const invExitX = dx > 0 ? expanded.x + expanded.w - startX : expanded.x - startX;
+        const invEntryY = dy > 0 ? expanded.y - startY : expanded.y + expanded.h - startY;
+        const invExitY = dy > 0 ? expanded.y + expanded.h - startY : expanded.y - startY;
+        const entryX = dx === 0 ? -Infinity : invEntryX / dx;
+        const exitX = dx === 0 ? Infinity : invExitX / dx;
+        const entryY = dy === 0 ? -Infinity : invEntryY / dy;
+        const exitY = dy === 0 ? Infinity : invExitY / dy;
+        const entryTime = Math.max(entryX, entryY);
+        const exitTime = Math.min(exitX, exitY);
+        if (entryTime > exitTime || entryTime < 0 || entryTime > 1) return null;
+        const axis = entryX > entryY ? 'x' : 'y';
+        const signed = axis === 'x'
+          ? (dx > 0 ? (expanded.x - endX - 0.5) : (expanded.x + expanded.w - endX + 0.5))
+          : (dy > 0 ? (expanded.y - endY - 0.5) : (expanded.y + expanded.h - endY + 0.5));
+        return {
+          axis,
+          signed,
+          depth: 1000 + entryTime,
+          fromTop: axis === 'y' && dy > 0
+        };
+      };
+      let pushed = false;
+      for (let i = 0; i < 4; i += 1) {
+        const pRect = playerRect();
+        let best = null;
+        zones.forEach((zone) => {
+          if (!rectsOverlap(pRect, zone)) {
+            const swept = sweptZoneHit(zone, pRect);
+            if (swept && (!best || swept.depth < best.depth)) best = swept;
+            return;
+          }
+          const overlapLeft = (pRect.x + pRect.w) - zone.x;
+          const overlapRight = (zone.x + zone.w) - pRect.x;
+          const overlapTop = (pRect.y + pRect.h) - zone.y;
+          const overlapBottom = (zone.y + zone.h) - pRect.y;
+          const minX = Math.min(overlapLeft, overlapRight);
+          const minY = Math.min(overlapTop, overlapBottom);
+          if (!Number.isFinite(minX) || !Number.isFinite(minY) || minX <= 0 || minY <= 0) return;
+          const axis = minX < minY ? 'x' : 'y';
+          const depth = axis === 'x' ? minX : minY;
+          const signed = axis === 'x'
+            ? (overlapLeft < overlapRight ? -(depth + 0.5) : (depth + 0.5))
+            : (overlapTop < overlapBottom ? -(depth + 0.5) : (depth + 0.5));
+          if (!best || depth < best.depth) {
+            best = { axis, depth, signed, fromTop: axis === 'y' ? overlapTop < overlapBottom : false };
+          }
+        });
+        if (!best) break;
+        pushed = true;
+        if (best.axis === 'x') {
+          this.player.x += best.signed;
+          this.player.vx = best.signed < 0 ? Math.min(0, this.player.vx) : Math.max(0, this.player.vx);
+        } else {
+          this.player.y += best.signed;
+          if (best.fromTop) {
+            this.player.vy = Math.min(0, this.player.vy);
+            this.player.onGround = true;
+          } else {
+            this.player.vy = Math.max(0, this.player.vy);
+          }
+        }
+      }
+      return pushed;
+    };
+    const enemyHasSolidZones = (enemy) => {
+      if (!enemy?.getCollisionZoneRects) return false;
+      return enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'solid-hurtbox']).length > 0;
+    };
+    const enemyDamagesPlayerInZones = (enemy) => {
+      if (!enemy?.getCollisionZoneRects) return enemy.bodyDamageEnabled !== false;
+      const pRect = playerRect();
+      const zones = enemy.getCollisionZoneRects(['solid-damage-player', 'damage-player']);
+      return zones.some((zone) => rectsOverlap(pRect, zone));
+    };
+    const playerCanDamageEnemyInZones = (enemy) => {
+      if (!enemy?.getCollisionZoneRects) return true;
+      const pRect = playerRect();
+      const zones = enemy.getCollisionZoneRects(['solid-hurtbox', 'hurtbox']);
+      if (!zones.length) return true;
+      return zones.some((zone) => rectsOverlap(pRect, zone));
+    };
     const context = {
       spawnProjectile: this.spawnProjectile.bind(this),
       spawnMinion: (x, y) => this.requestSpawn('skitter', x, y),
@@ -4644,15 +4826,15 @@ export default class Game {
 
       const dx = enemy.x - this.player.x;
       const dy = enemy.y - this.player.y;
-      const playerContactW = Math.max(1, Number(this.player?.width || this.world.tileSize * 0.5));
-      const playerContactH = Math.max(1, Number(this.player?.height || this.world.tileSize * 0.5));
-      const enemyContactW = Math.max(1, Number(enemy?.width || this.world.tileSize * 0.5));
-      const enemyContactH = Math.max(1, Number(enemy?.height || this.world.tileSize * 0.5));
-      const contactX = (playerContactW + enemyContactW) * 0.5;
-      const contactY = (playerContactH + enemyContactH) * 0.5;
-      if (Math.abs(dx) <= contactX && Math.abs(dy) <= contactY) {
+      const pRect = playerRect();
+      const enemyRect = enemy?.rect || { x: enemy.x - enemy.width / 2, y: enemy.y - enemy.height / 2, w: enemy.width, h: enemy.height };
+      const inBodyContact = rectsOverlap(pRect, enemyRect);
+      const inZoneContact = enemyDamagesPlayerInZones(enemy);
+      if (inBodyContact || inZoneContact) {
         if (!enemy.training) {
-          const bodyDamage = enemy.bodyDamageEnabled === false ? 0 : (enemy.contactDamage || 1);
+          const bodyDamage = inZoneContact
+            ? (enemy.contactDamage || 1)
+            : (enemy.bodyDamageEnabled === false ? 0 : (enemy.contactDamage || 1));
           const tookDamage = bodyDamage > 0 ? this.player.takeDamage(bodyDamage) : false;
           if (tookDamage) {
             context.notifyDamagedPlayer(enemy);
@@ -4663,6 +4845,11 @@ export default class Game {
       }
       if (revHeld && this.player.revDamageTimer <= 0) {
         if (Math.abs(dx) < revRange && Math.abs(dy) < revVerticalRange) {
+          if (!playerCanDamageEnemyInZones(enemy)) {
+            resolveEnemyPlayerZoneCollision(enemy);
+            enemy.hitPause = Math.max(enemy.hitPause || 0, 0.03);
+            return;
+          }
           if (!(enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce')))) {
             enemy.damage(1);
             this.applyChainsawSlow(enemy);
@@ -4684,7 +4871,11 @@ export default class Game {
         }
       }
       const canPushEnemy = revHeld && Math.abs(dx) < revRange && Math.abs(dy) < revVerticalRange;
-      this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: canPushEnemy });
+      const zoneBlocked = resolveEnemyPlayerZoneCollision(enemy);
+      const solidByZones = enemyHasSolidZones(enemy);
+      if (!zoneBlocked && !solidByZones) {
+        this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: canPushEnemy });
+      }
       if (this.isPlayerBlockedAt(this.player.x, this.player.y, { ignoreOneWay: true })) {
         this.resolvePlayerTileOverlap({ ignoreOneWay: true });
       }
@@ -4721,6 +4912,22 @@ export default class Game {
       }
       this.handleBossInteractions();
     }
+  }
+
+  canPlayerDamageEnemyByZones(enemy, hitRect = null) {
+    if (!enemy?.getCollisionZoneRects) return true;
+    const zones = enemy.getCollisionZoneRects(['solid-hurtbox', 'hurtbox']);
+    if (!zones.length) return true;
+    if (hitRect && typeof hitRect === 'object') {
+      return zones.some((zone) => zone.x < hitRect.x + hitRect.w && zone.x + zone.w > hitRect.x && zone.y < hitRect.y + hitRect.h && zone.y + zone.h > hitRect.y);
+    }
+    const playerRect = {
+      x: this.player.x - this.player.width / 2,
+      y: this.player.y - this.player.height / 2,
+      w: this.player.width,
+      h: this.player.height
+    };
+    return zones.some((zone) => zone.x < playerRect.x + playerRect.w && zone.x + zone.w > playerRect.x && zone.y < playerRect.y + playerRect.h && zone.y + zone.h > playerRect.y);
   }
 
   handleBossInteractions() {
@@ -4826,6 +5033,48 @@ export default class Game {
   showSystemToast(message) {
     if (!message) return;
     this.systemPrompts.push(new SystemPrompt(message, { mode: 'toast', duration: 2 }));
+  }
+
+  showSaveStatusModal(message) {
+    if (!message) return;
+    let root = document.getElementById('global-overlay-root');
+    if (!root) {
+      root = document.createElement('div');
+      root.id = 'global-overlay-root';
+      Object.assign(root.style, {
+        position: 'fixed',
+        inset: '0',
+        zIndex: '2147483647',
+        pointerEvents: 'none'
+      });
+      document.body.appendChild(root);
+    }
+    if (!this._saveStatusModalEl) {
+      const panel = document.createElement('div');
+      Object.assign(panel.style, {
+        position: 'fixed',
+        left: '50%',
+        top: '20px',
+        transform: 'translateX(-50%)',
+        padding: '10px 14px',
+        borderRadius: '10px',
+        border: '1px solid rgba(255,255,255,0.25)',
+        background: 'rgba(5,10,20,0.92)',
+        color: '#fff',
+        fontFamily: 'Courier New, monospace',
+        fontSize: '16px',
+        boxShadow: '0 10px 26px rgba(0,0,0,0.45)',
+        pointerEvents: 'none'
+      });
+      this._saveStatusModalEl = panel;
+    }
+    root.appendChild(this._saveStatusModalEl);
+    this._saveStatusModalEl.textContent = String(message);
+    this._saveStatusModalEl.style.display = 'block';
+  }
+
+  hideSaveStatusModal() {
+    if (this._saveStatusModalEl) this._saveStatusModalEl.style.display = 'none';
   }
 
   async requestDebugRestartPull() {
@@ -5043,11 +5292,35 @@ export default class Game {
     this.musicPlayers.push(player);
   }
 
+  stopProjectBrowserMusicPreview() {
+    if (!this.projectBrowserMusicPreviewPlayer) return;
+    this.projectBrowserMusicPreviewPlayer.setFade(0, 0.25);
+    this.musicPlayers.push(this.projectBrowserMusicPreviewPlayer);
+    this.projectBrowserMusicPreviewPlayer = null;
+  }
+
+  playProjectBrowserMusicPreview(trackId, songData) {
+    if (!songData || typeof songData !== 'object') return;
+    this.stopProjectBrowserMusicPreview();
+    const player = new MidiSongPlayer(this.audio);
+    player.setSong(songData, trackId || 'preview-track');
+    player.setFade(1, 0.12);
+    this.projectBrowserMusicPreviewPlayer = player;
+  }
+
   updateMusicZones(dt, tileX, tileY) {
     const zone = this.getMusicZoneAt(tileX, tileY);
     this.setActiveMusicTrack(zone?.track || null);
     this.musicPlayers.forEach((player) => player.update(dt));
     this.musicPlayers = this.musicPlayers.filter((player) => !(player.volume <= 0 && player.targetVolume === 0));
+  }
+
+  updateProjectBrowserMusicPreview(dt) {
+    if (!this.projectBrowserMusicPreviewPlayer) return;
+    this.projectBrowserMusicPreviewPlayer.update(dt);
+    if (this.projectBrowserMusicPreviewPlayer.volume <= 0 && this.projectBrowserMusicPreviewPlayer.targetVolume === 0) {
+      this.projectBrowserMusicPreviewPlayer = null;
+    }
   }
 
 
@@ -5913,6 +6186,8 @@ export default class Game {
       const dx = Math.abs(enemy.x - this.sawAnchor.x);
       const dy = Math.abs(enemy.y - this.sawAnchor.y);
       if (dx < range && dy < range) {
+        const anchorRect = { x: this.sawAnchor.x - range, y: this.sawAnchor.y - range, w: range * 2, h: range * 2 };
+        if (!this.canPlayerDamageEnemyByZones(enemy, anchorRect)) return;
         if (enemy.type === 'bulwark' && !enemy.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
           return;
         }
@@ -5949,6 +6224,10 @@ export default class Game {
 
   applyAnchorImpactDamage(target, isBoss) {
     if (!target || target.dead) return;
+    if (!isBoss) {
+      const hitRect = { x: target.x - target.width / 2, y: target.y - target.height / 2, w: target.width, h: target.height };
+      if (!this.canPlayerDamageEnemyByZones(target, hitRect)) return;
+    }
     if (!isBoss && target.type === 'bulwark' && !target.isOpen() && !this.player.equippedUpgrades.some((u) => u.tags?.includes('pierce'))) {
       return;
     }
@@ -6629,7 +6908,7 @@ export default class Game {
       }
     }
     this.drawDoorForegroundOverlays(ctx);
-    if (this.testHarness.active && this.testHarness.showCollision) {
+    if (this.debugMode || (this.testHarness.active && this.testHarness.showCollision)) {
       this.drawCollisionBoxes(ctx);
     }
     this.playability.drawWorld(ctx, this);
@@ -8131,13 +8410,54 @@ export default class Game {
   }
 
   drawCollisionBoxes(ctx) {
-    if (!this.debugMode) return;
+    if (!this.debugMode && !(this.testHarness.active && this.testHarness.showCollision)) return;
+    const zoneStyles = {
+      solid: { stroke: 'rgba(255,220,0,0.95)', fill: 'rgba(255,220,0,0.12)' },
+      'solid-damage-player': { stroke: 'rgba(255,70,70,0.95)', fill: 'rgba(255,70,70,0.12)' },
+      'damage-player': { stroke: 'rgba(255,90,180,0.95)', fill: 'rgba(255,90,180,0.12)' },
+      'solid-hurtbox': { stroke: 'rgba(70,150,255,0.95)', fill: 'rgba(70,150,255,0.12)' },
+      hurtbox: { stroke: 'rgba(80,255,130,0.95)', fill: 'rgba(80,255,130,0.12)' }
+    };
     ctx.save();
-    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255,255,255,0.85)';
     ctx.strokeRect(this.player.rect.x, this.player.rect.y, this.player.rect.w, this.player.rect.h);
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.font = '11px Courier New';
+    ctx.fillText('PLAYER', this.player.rect.x, this.player.rect.y - 4);
+
+    const dynamicZones = this.world?.dynamicState?.solidZones || [];
+    dynamicZones.forEach(({ rect, key }) => {
+      if (!Array.isArray(rect) || rect.length < 4) return;
+      const [tileX, tileY, tileW, tileH] = rect;
+      const x = tileX * this.world.tileSize;
+      const y = tileY * this.world.tileSize;
+      const w = tileW * this.world.tileSize;
+      const h = tileH * this.world.tileSize;
+      ctx.fillStyle = 'rgba(255,165,0,0.10)';
+      ctx.strokeStyle = 'rgba(255,165,0,0.95)';
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeRect(x, y, w, h);
+      if (key) ctx.fillText(String(key).slice(0, 24), x + 2, y - 4);
+    });
+
     this.enemies.forEach((enemy) => {
       if (enemy.dead) return;
+      ctx.strokeStyle = 'rgba(255,255,255,0.65)';
       ctx.strokeRect(enemy.rect.x, enemy.rect.y, enemy.rect.w, enemy.rect.h);
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.fillText(String(enemy.type || 'enemy').slice(0, 28), enemy.rect.x, enemy.rect.y - 4);
+      if (!enemy.getCollisionZoneRects) return;
+      const zones = enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'damage-player', 'solid-hurtbox', 'hurtbox']);
+      zones.forEach((zone) => {
+        const style = zoneStyles[zone.type] || zoneStyles.solid;
+        ctx.fillStyle = style.fill;
+        ctx.strokeStyle = style.stroke;
+        ctx.fillRect(zone.x, zone.y, zone.w, zone.h);
+        ctx.strokeRect(zone.x, zone.y, zone.w, zone.h);
+        ctx.fillStyle = style.stroke;
+        ctx.fillText(zone.type, zone.x + 2, zone.y + 11);
+      });
     });
     ctx.restore();
   }
@@ -8810,6 +9130,7 @@ export default class Game {
 
   update(dt) {
     this.stateManager.update(dt);
+    this.updateProjectBrowserMusicPreview(dt);
   }
 
   draw() {

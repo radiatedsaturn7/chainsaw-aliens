@@ -5,6 +5,23 @@ import { getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './u
 
 const ACTOR_FOLDER = 'actors';
 const clone = (value) => JSON.parse(JSON.stringify(value));
+const DEFAULT_ACTOR_SIZE = { width: 24, height: 24 };
+const readPngDataUrlDimensions = (dataUrl) => {
+  if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/png;base64,')) return null;
+  try {
+    const binary = atob(dataUrl.split(',', 2)[1] || '');
+    if (binary.length < 24) return null;
+    const readUint32 = (offset) => (
+      ((binary.charCodeAt(offset) & 0xff) << 24)
+      | ((binary.charCodeAt(offset + 1) & 0xff) << 16)
+      | ((binary.charCodeAt(offset + 2) & 0xff) << 8)
+      | (binary.charCodeAt(offset + 3) & 0xff)
+    ) >>> 0;
+    return { width: readUint32(16), height: readUint32(20) };
+  } catch (error) {
+    return null;
+  }
+};
 const el = (tag, className, text) => {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -90,27 +107,43 @@ export default class ActorEditor {
     this.actorArtHueShiftSaturation = 100;
   }
 
+  normalizeArtFramePixels(frame) {
+    if (Array.isArray(frame) && frame.some((value) => typeof value === 'string')) return frame;
+    if (Array.isArray(frame) && Array.isArray(frame[0]) && frame[0].some((value) => typeof value === 'string')) return frame[0];
+    if (frame && typeof frame === 'object') {
+      if (Array.isArray(frame.pixels) && frame.pixels.some((value) => typeof value === 'string')) return frame.pixels;
+      if (Array.isArray(frame.data) && frame.data.some((value) => typeof value === 'string')) return frame.data;
+    }
+    return null;
+  }
+
   buildArtPreviewFrameUrl(frame, width, height, cacheKey) {
-    if (!Array.isArray(frame) || !frame.length) return '';
+    const pixels = this.normalizeArtFramePixels(frame);
+    if (!Array.isArray(pixels) || !pixels.length) return '';
     if (this.artPreviewCache.has(cacheKey)) return this.artPreviewCache.get(cacheKey);
     const canvas = document.createElement('canvas');
-    canvas.width = Math.max(1, Math.round(width || 16));
-    canvas.height = Math.max(1, Math.round(height || 16));
+    canvas.width = Math.max(1, width);
+    canvas.height = Math.max(1, height);
     const ctx = canvas.getContext('2d');
     if (!ctx) return '';
     const imageData = ctx.createImageData(canvas.width, canvas.height);
-    for (let i = 0; i < canvas.width * canvas.height; i += 1) {
-      const color = frame[i];
-      const base = i * 4;
-      if (typeof color !== 'string' || !/^#?[0-9a-fA-F]{6}$/.test(color)) {
-        imageData.data[base + 3] = 0;
-        continue;
+    for (let py = 0; py < height; py += 1) {
+      for (let px = 0; px < width; px += 1) {
+        const sourceIndex = py * width + px;
+        const color = pixels[sourceIndex];
+        const base = (py * width + px) * 4;
+        if (typeof color !== 'string' || !/^#?[0-9a-fA-F]{6}$/.test(color)) {
+          if (base + 3 < imageData.data.length) imageData.data[base + 3] = 0;
+          continue;
+        }
+        const hex = color.startsWith('#') ? color.slice(1) : color;
+        if (base + 3 < imageData.data.length) {
+          imageData.data[base] = parseInt(hex.slice(0, 2), 16);
+          imageData.data[base + 1] = parseInt(hex.slice(2, 4), 16);
+          imageData.data[base + 2] = parseInt(hex.slice(4, 6), 16);
+          imageData.data[base + 3] = 255;
+        }
       }
-      const hex = color.startsWith('#') ? color.slice(1) : color;
-      imageData.data[base] = parseInt(hex.slice(0, 2), 16);
-      imageData.data[base + 1] = parseInt(hex.slice(2, 4), 16);
-      imageData.data[base + 2] = parseInt(hex.slice(4, 6), 16);
-      imageData.data[base + 3] = 255;
     }
     ctx.putImageData(imageData, 0, 0);
     const url = canvas.toDataURL('image/png');
@@ -125,8 +158,8 @@ export default class ActorEditor {
       const savedAt = Number(artDoc?.savedAt || 0);
       const frames = Array.isArray(artDoc?.data?.frames) ? artDoc.data.frames : [];
       if (frames.length) {
-        const width = Number(artDoc?.data?.width || artDoc?.data?.size || 16);
-        const height = Number(artDoc?.data?.height || artDoc?.data?.size || width || 16);
+        const width = Math.max(1, Math.round(Number(artDoc?.data?.width || artDoc?.data?.size || 16)));
+        const height = Math.max(1, Math.round(Number(artDoc?.data?.height || artDoc?.data?.size || width || 16)));
         return frames.map((frame, index) => ({
           imageDataUrl: this.buildArtPreviewFrameUrl(frame, width, height, `${artRef}:${savedAt}:${index}:${width}x${height}`),
           durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || artDoc?.data?.fps || 8)))
@@ -141,6 +174,58 @@ export default class ActorEditor {
       return [{ imageDataUrl: animation.imageDataUrl, durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || 8))) }];
     }
     return [];
+  }
+
+  getAnimationDimensions(animation = {}) {
+    const artRef = typeof animation?.artRef === 'string' ? animation.artRef.trim() : '';
+    if (artRef) {
+      const artDoc = vfsLoad('art', artRef);
+      const width = Number(artDoc?.data?.width || artDoc?.data?.size || 0);
+      const height = Number(artDoc?.data?.height || artDoc?.data?.size || width || 0);
+      if (Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0) {
+        return { width: Math.round(width), height: Math.round(height) };
+      }
+    }
+    const frame = Array.isArray(animation?.frames) ? animation.frames.find((entry) => entry?.imageDataUrl) : null;
+    const parsed = readPngDataUrlDimensions(frame?.imageDataUrl || animation?.imageDataUrl || '');
+    if (parsed?.width > 0 && parsed?.height > 0) return parsed;
+    return null;
+  }
+
+  getActorDefaultArtDimensions(actor) {
+    const states = Array.isArray(actor?.states) ? actor.states : [];
+    const state = states.find((entry) => entry?.animation?.artRef || entry?.animation?.imageDataUrl || entry?.animation?.frames?.length)
+      || states[0];
+    return this.getAnimationDimensions(state?.animation || {});
+  }
+
+  shouldAutoSizeActor(actor) {
+    if (actor?.sizeMode === 'manual') return false;
+    const width = Number(actor?.size?.width || 0);
+    const height = Number(actor?.size?.height || 0);
+    return !Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0
+      || (Math.round(width) === DEFAULT_ACTOR_SIZE.width && Math.round(height) === DEFAULT_ACTOR_SIZE.height);
+  }
+
+  applyDefaultArtSize(actor) {
+    const next = ensureActorDefinition(actor);
+    if (!this.shouldAutoSizeActor(next)) return next;
+    const dims = this.getActorDefaultArtDimensions(next);
+    if (!dims || dims.width <= 0 || dims.height <= 0) return next;
+    const oldWidth = Math.max(1, Number(next?.size?.width || DEFAULT_ACTOR_SIZE.width));
+    const oldHeight = Math.max(1, Number(next?.size?.height || DEFAULT_ACTOR_SIZE.height));
+    const scaleX = dims.width / oldWidth;
+    const scaleY = dims.height / oldHeight;
+    const collisionZones = Array.isArray(next.collisionZones)
+      ? next.collisionZones.map((zone) => ({
+        ...zone,
+        x: Number(zone.x || 0) * scaleX,
+        y: Number(zone.y || 0) * scaleY,
+        width: Math.max(1, Number(zone.width || 1) * scaleX),
+        height: Math.max(1, Number(zone.height || 1) * scaleY)
+      }))
+      : [];
+    return { ...next, size: { width: dims.width, height: dims.height }, sizeMode: 'auto', collisionZones };
   }
 
   captureFocusedInputState() {
@@ -277,6 +362,7 @@ export default class ActorEditor {
     vfsEnsureIndex();
     const root = document.getElementById('global-overlay-root') || document.body;
     const overlay = el('div', 'actor-editor-overlay');
+    overlay.style.pointerEvents = 'auto';
     overlay.innerHTML = '';
     this.overlay = overlay;
     root.appendChild(overlay);
@@ -295,7 +381,7 @@ export default class ActorEditor {
   }
 
   setActor(next) {
-    this.actor = ensureActorDefinition(next);
+    this.actor = this.applyDefaultArtSize(next);
     this.game.registerRuntimeActorDefinition?.(this.actor);
     this.ensureStateSelection();
     this.render();
@@ -326,9 +412,18 @@ export default class ActorEditor {
     const shouldForceSaveAs = forceSaveAs
       || !this.currentDocumentRef?.name
       || /^actor(\.json)?$/i.test(String(fallback || '').trim());
-    const name = shouldForceSaveAs
-      ? (window.prompt('Save actor as', fallback) || '').trim()
-      : fallback;
+    let name = fallback;
+    if (shouldForceSaveAs) {
+      const picked = await openProjectBrowser({
+        mode: 'saveAs',
+        fixedFolder: ACTOR_FOLDER,
+        initialFolder: ACTOR_FOLDER,
+        title: 'Save Actor As',
+        initialName: fallback
+      });
+      if (!picked || picked.action !== 'saveAs') return;
+      name = String(picked.name || '').trim();
+    }
     if (!name) return;
     let payload = ensureActorDefinition(this.actor);
     if (!this.isActorHueShiftNeutral()) {
@@ -337,16 +432,75 @@ export default class ActorEditor {
       this.setActor(payload);
     }
     const savingStartedAt = Date.now();
+    this.showInlineSaveStatus?.('Saving...');
+    this.game.showSaveStatusModal?.('Saving...');
     this.game.showSystemToast?.('saving...');
-    const saved = vfsSave(ACTOR_FOLDER, name, payload);
-    await saved?.syncPromise;
+    let saved = null;
+    try {
+      saved = vfsSave(ACTOR_FOLDER, name, payload);
+      if (saved?.syncPromise) {
+        await Promise.race([
+          saved.syncPromise,
+          new Promise((resolve) => setTimeout(resolve, 1500))
+        ]);
+      }
+    } catch (error) {
+      console.error('Actor save failed', error);
+      this.showInlineSaveStatus?.('Save failed');
+      this.game.showSaveStatusModal?.('Save failed');
+      setTimeout(() => {
+        this.game.hideSaveStatusModal?.();
+        this.showInlineSaveStatus?.('');
+      }, 1800);
+      return;
+    }
     const elapsed = Date.now() - savingStartedAt;
     if (elapsed < MIN_SAVING_TOAST_MS) {
       await new Promise((resolve) => setTimeout(resolve, MIN_SAVING_TOAST_MS - elapsed));
     }
-    this.currentDocumentRef = { folder: ACTOR_FOLDER, name };
-    this.game.showSystemToast?.('saved');
+    const persistedName = String(saved?.name || name);
+    const persistedPayload = vfsLoad(ACTOR_FOLDER, persistedName);
+    if (!persistedPayload?.data) {
+      this.showInlineSaveStatus?.('Save failed');
+      this.game.showSaveStatusModal?.('Save failed');
+      setTimeout(() => {
+        this.game.hideSaveStatusModal?.();
+        this.showInlineSaveStatus?.('');
+      }, 3000);
+      return;
+    }
+    this.currentDocumentRef = { folder: ACTOR_FOLDER, name: persistedName };
+    this.actor = ensureActorDefinition(persistedPayload.data);
     this.render();
+    this.showInlineSaveStatus?.('Saved');
+    this.game.showSaveStatusModal?.('Saved');
+    setTimeout(() => this.game.hideSaveStatusModal?.(), 3000);
+    setTimeout(() => this.showInlineSaveStatus?.(''), 3000);
+    this.game.showSystemToast?.('saved');
+  }
+
+  showInlineSaveStatus(message = '') {
+    if (!this.overlay) return;
+    let badge = this.overlay.querySelector('.actor-editor-save-status');
+    if (!badge) {
+      badge = el('div', 'actor-editor-save-status');
+      Object.assign(badge.style, {
+        position: 'fixed',
+        top: '14px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: '2147483647',
+        padding: '8px 12px',
+        borderRadius: '10px',
+        border: '1px solid rgba(255,255,255,0.25)',
+        background: 'rgba(5,10,20,0.92)',
+        color: '#fff',
+        fontFamily: 'Courier New, monospace'
+      });
+      this.overlay.appendChild(badge);
+    }
+    badge.textContent = String(message || '');
+    badge.style.display = message ? 'block' : 'none';
   }
 
   resetActorArtHuePreview() {
@@ -394,7 +548,7 @@ export default class ActorEditor {
           updatedAt: Date.now()
         };
         this.artPreviewCache.clear();
-        this.actor = ensureActorDefinition(next);
+        this.actor = this.applyDefaultArtSize(next);
         this.render();
       }
     }).catch((error) => console.warn('Failed to open actor animation in Pixel Studio', error));
@@ -418,6 +572,318 @@ export default class ActorEditor {
         onCommit?.(nextArtRef);
       }
     }).catch((error) => console.warn('Failed to open projectile art in Pixel Studio', error));
+  }
+
+  openCollisionZoneEditor(actor) {
+    const modal = el('div', 'actor-editor-overlay');
+    Object.assign(modal.style, { position: 'fixed', inset: '0', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: '2147483647', touchAction: 'none' });
+    const card = el('div', 'actor-editor-card');
+    Object.assign(card.style, { width: 'min(960px, 96vw)', height: 'min(92dvh, 760px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' });
+    const viewportWrap = el('div');
+    Object.assign(viewportWrap.style, { flex: '1', minHeight: '0', display: 'flex', flexDirection: 'column' });
+    card.appendChild(viewportWrap);
+    const controls = el('div', 'actor-editor-inline-actions');
+    const zoneType = el('select');
+    [
+      { id: 'solid', label: 'Yellow: Collidable' },
+      { id: 'solid-damage-player', label: 'Red: Collidable + damages player' },
+      { id: 'damage-player', label: 'Pink: Damage player (not collidable)' },
+      { id: 'solid-hurtbox', label: 'Blue: Collidable + actor takes damage' },
+      { id: 'hurtbox', label: 'Green: Actor takes damage (not collidable)' }
+    ].forEach((option) => { const node = el('option'); node.value = option.id; node.textContent = option.label; zoneType.appendChild(node); });
+    const clearBtn = el('button', 'actor-editor-btn small', 'Clear all');
+    const paintBtn = el('button', 'actor-editor-btn small active', 'Paint');
+    const eraseBtn = el('button', 'actor-editor-btn small', 'Erase');
+    const brushSize = el('input');
+    brushSize.type = 'number';
+    brushSize.min = '1';
+    brushSize.max = '12';
+    brushSize.step = '1';
+    brushSize.value = '1';
+    brushSize.style.width = '72px';
+    const canvas = document.createElement('canvas');
+    canvas.width = 640;
+    canvas.height = 560;
+    canvas.style.width = '100%';
+    canvas.style.height = 'auto';
+    canvas.style.maxHeight = '100%';
+    canvas.style.border = '1px solid rgba(255,255,255,0.25)';
+    canvas.style.background = '#080d17';
+    canvas.style.touchAction = 'none';
+    const canvasWrap = el('div');
+    Object.assign(canvasWrap.style, { flex: '1', minHeight: '0', overflow: 'hidden', position: 'relative' });
+    canvasWrap.appendChild(canvas);
+    viewportWrap.appendChild(canvasWrap);
+    const bottomTools = el('div');
+    Object.assign(bottomTools.style, { display: 'grid', gridTemplateColumns: '96px 1fr', gap: '8px', alignItems: 'stretch' });
+    const thumbCol = el('div');
+    Object.assign(thumbCol.style, { display: 'flex', alignItems: 'stretch', justifyContent: 'center' });
+    const controlsCol = el('div');
+    Object.assign(controlsCol.style, { display: 'flex', flexDirection: 'column', gap: '8px' });
+    const toolbarRow1 = el('div', 'actor-editor-inline-actions');
+    const toolbarRow2 = el('div', 'actor-editor-inline-actions');
+    toolbarRow2.style.alignItems = 'center';
+    toolbarRow2.style.justifyContent = 'space-between';
+    toolbarRow2.style.flexWrap = 'nowrap';
+    const zoomOutBtn = el('button', 'actor-editor-btn small', 'Zoom -');
+    const zoomInBtn = el('button', 'actor-editor-btn small', 'Zoom +');
+    const zoomRow = el('div', 'actor-editor-inline-actions');
+    const thumbstick = el('div');
+    thumbstick.className = 'actor-editor-thumbstick';
+    Object.assign(thumbstick.style, {
+      width: '88px', height: '88px', borderRadius: '999px', border: '2px solid rgba(255,255,255,0.25)',
+      position: 'relative', background: 'rgba(0,0,0,0.35)', touchAction: 'none'
+    });
+    const stickKnob = el('div');
+    Object.assign(stickKnob.style, {
+      width: '34px', height: '34px', borderRadius: '999px', background: 'rgba(255,255,255,0.7)',
+      position: 'absolute', left: '27px', top: '27px'
+    });
+    thumbstick.appendChild(stickKnob);
+    const actionRow = el('div', 'actor-editor-inline-actions');
+    actionRow.style.flexWrap = 'nowrap';
+    const ok = el('button', 'actor-editor-btn', 'OK');
+    const cancel = el('button', 'actor-editor-btn', 'Cancel');
+    controls.appendChild(el('span', 'actor-editor-note', 'Brush'));
+    controls.appendChild(brushSize);
+    controls.appendChild(zoneType);
+    controls.appendChild(paintBtn);
+    controls.appendChild(eraseBtn);
+    controls.appendChild(clearBtn);
+    toolbarRow1.appendChild(controls);
+    thumbCol.appendChild(thumbstick);
+    controlsCol.append(toolbarRow1, toolbarRow2);
+    bottomTools.append(thumbCol, controlsCol);
+    actionRow.append(ok, cancel);
+    zoomRow.append(zoomOutBtn, zoomInBtn);
+    const rightRow = el('div', 'actor-editor-inline-actions');
+    rightRow.style.marginLeft = 'auto';
+    rightRow.style.flexWrap = 'nowrap';
+    rightRow.appendChild(actionRow);
+    toolbarRow2.append(zoomRow, rightRow);
+    card.appendChild(bottomTools);
+    modal.appendChild(card);
+    document.body.appendChild(modal);
+    const zones = Array.isArray(actor.collisionZones) ? clone(actor.collisionZones) : [];
+    const preview = this.getAnimationPreviewFrames(actor.states?.[0]?.animation || {})[0]?.imageDataUrl || '';
+    const image = new Image();
+    if (preview) image.src = preview;
+    const colors = { solid: 'rgba(255,220,0,0.35)', 'solid-damage-player': 'rgba(255,0,0,0.35)', 'damage-player': 'rgba(255,90,160,0.35)', 'solid-hurtbox': 'rgba(70,140,255,0.35)', hurtbox: 'rgba(80,255,120,0.35)' };
+    let eraseMode = false;
+    let painting = false;
+    let paintPointerId = null;
+    const actorW = Math.max(1, Number(actor?.size?.width || 32));
+    const actorH = Math.max(1, Number(actor?.size?.height || 32));
+    const zoneGrid = Array.from({ length: actorH }, () => Array.from({ length: actorW }, () => null));
+    zones.forEach((zone) => {
+      const startX = Math.max(0, Math.floor(zone.x));
+      const startY = Math.max(0, Math.floor(zone.y));
+      const endX = Math.min(actorW, startX + Math.max(1, Math.floor(zone.width)));
+      const endY = Math.min(actorH, startY + Math.max(1, Math.floor(zone.height)));
+      for (let y = startY; y < endY; y += 1) {
+        for (let x = startX; x < endX; x += 1) zoneGrid[y][x] = zone.type || 'solid';
+      }
+    });
+    const pad = 24;
+    const resizeCanvasToViewport = () => {
+      const rect = canvasWrap.getBoundingClientRect();
+      const w = Math.max(320, Math.floor(rect.width || 640));
+      const h = Math.max(220, Math.floor(rect.height || 560));
+      canvas.width = w;
+      canvas.height = h;
+    };
+    let zoom = 1;
+    let panX = 0;
+    let panY = 0;
+    const getPreviewDimensions = () => {
+      const imageW = image?.naturalWidth > 0 ? image.naturalWidth : actorW;
+      const imageH = image?.naturalHeight > 0 ? image.naturalHeight : actorH;
+      return { width: imageW, height: imageH, imageW, imageH };
+    };
+    const getScale = () => {
+      const dims = getPreviewDimensions();
+      return Math.min((canvas.width - pad * 2) / dims.width, (canvas.height - pad * 2) / dims.height) * zoom;
+    };
+    const getBox = () => {
+      const scale = getScale();
+      const dims = getPreviewDimensions();
+      return { x: (canvas.width - dims.width * scale) / 2 + panX, y: (canvas.height - dims.height * scale) / 2 + panY, w: dims.width * scale, h: dims.height * scale, scale, ...dims };
+    };
+    const toActorPoint = (screenX, screenY) => {
+      const box = getBox();
+      const imagePxX = Math.max(0, Math.min(box.imageW - 1, Math.floor((screenX - box.x) / box.scale)));
+      const imagePxY = Math.max(0, Math.min(box.imageH - 1, Math.floor((screenY - box.y) / box.scale)));
+      return {
+        x: Math.max(0, Math.min(actorW - 1, Math.floor(imagePxX * (actorW / Math.max(1, box.imageW))))),
+        y: Math.max(0, Math.min(actorH - 1, Math.floor(imagePxY * (actorH / Math.max(1, box.imageH)))))
+      };
+    };
+    const applyBrush = (screenX, screenY) => {
+      const point = toActorPoint(screenX, screenY);
+      const radius = Math.max(1, Math.min(12, Math.floor(Number(brushSize.value) || 1)));
+      const half = Math.floor(radius / 2);
+      for (let y = point.y - half; y <= point.y + half; y += 1) {
+        for (let x = point.x - half; x <= point.x + half; x += 1) {
+          if (x < 0 || y < 0 || x >= actorW || y >= actorH) continue;
+          zoneGrid[y][x] = eraseMode ? null : zoneType.value;
+        }
+      }
+    };
+    const rebuildZonesFromGrid = () => {
+      const consumed = Array.from({ length: actorH }, () => Array.from({ length: actorW }, () => false));
+      const next = [];
+      for (let y = 0; y < actorH; y += 1) {
+        for (let x = 0; x < actorW; x += 1) {
+          const type = zoneGrid[y][x];
+          if (!type || consumed[y][x]) continue;
+          let width = 1;
+          while (x + width < actorW && zoneGrid[y][x + width] === type && !consumed[y][x + width]) width += 1;
+          let height = 1;
+          outer: while (y + height < actorH) {
+            for (let xx = x; xx < x + width; xx += 1) {
+              if (zoneGrid[y + height][xx] !== type || consumed[y + height][xx]) break outer;
+            }
+            height += 1;
+          }
+          for (let yy = y; yy < y + height; yy += 1) {
+            for (let xx = x; xx < x + width; xx += 1) consumed[yy][xx] = true;
+          }
+          next.push({ type, x, y, width, height });
+        }
+      }
+      zones.length = 0;
+      zones.push(...next);
+    };
+    const render = () => {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const box = getBox();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#0f1726';
+      ctx.fillRect(box.x, box.y, box.w, box.h);
+      if (image.complete && image.naturalWidth > 0) {
+        const baseScale = box.scale;
+        const drawW = image.naturalWidth * baseScale;
+        const drawH = image.naturalHeight * baseScale;
+        const drawX = box.x + ((box.w - drawW) * 0.5);
+        const drawY = box.y + ((box.h - drawH) * 0.5);
+        ctx.drawImage(image, drawX, drawY, drawW, drawH);
+      }
+      zones.forEach((zone) => {
+        const ix = zone.x * (box.imageW / Math.max(1, actorW));
+        const iy = zone.y * (box.imageH / Math.max(1, actorH));
+        const iw = zone.width * (box.imageW / Math.max(1, actorW));
+        const ih = zone.height * (box.imageH / Math.max(1, actorH));
+        const x = box.x + ix * box.scale;
+        const y = box.y + iy * box.scale;
+        const w = iw * box.scale;
+        const h = ih * box.scale;
+        ctx.fillStyle = colors[zone.type] || colors.solid;
+        ctx.fillRect(x, y, w, h);
+        ctx.strokeStyle = '#fff';
+        ctx.strokeRect(x, y, w, h);
+      });
+    };
+    const pointer = (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / Math.max(1, rect.width);
+      const scaleY = canvas.height / Math.max(1, rect.height);
+      return { x: (event.clientX - rect.left) * scaleX, y: (event.clientY - rect.top) * scaleY };
+    };
+    canvas.onpointerdown = (event) => {
+      if (!event.isPrimary) return;
+      event.preventDefault();
+      event.stopPropagation();
+      canvas.setPointerCapture?.(event.pointerId);
+      paintPointerId = event.pointerId;
+      const p = pointer(event);
+      painting = true;
+      applyBrush(p.x, p.y);
+      rebuildZonesFromGrid();
+      render();
+    };
+    canvas.onpointermove = (event) => {
+      if (paintPointerId != null && event.pointerId !== paintPointerId) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (!painting) return;
+      const p = pointer(event);
+      applyBrush(p.x, p.y);
+      // Fill gaps when pointer events skip on mobile by interpolating.
+      if (typeof canvas._lastPaintX === 'number' && typeof canvas._lastPaintY === 'number') {
+        const dx = p.x - canvas._lastPaintX;
+        const dy = p.y - canvas._lastPaintY;
+        const steps = Math.max(1, Math.ceil(Math.hypot(dx, dy) / 4));
+        for (let i = 1; i <= steps; i += 1) {
+          const ix = canvas._lastPaintX + (dx * i) / steps;
+          const iy = canvas._lastPaintY + (dy * i) / steps;
+          applyBrush(ix, iy);
+        }
+      }
+      canvas._lastPaintX = p.x;
+      canvas._lastPaintY = p.y;
+      rebuildZonesFromGrid();
+      render();
+    };
+    canvas.onpointerup = (event) => {
+      if (paintPointerId != null && event.pointerId !== paintPointerId) return;
+      if (!painting) return;
+      painting = false;
+      paintPointerId = null;
+      canvas._lastPaintX = null;
+      canvas._lastPaintY = null;
+      render();
+    };
+    canvas.onpointercancel = () => { painting = false; paintPointerId = null; };
+    canvas.onpointerleave = () => {};
+    clearBtn.onclick = () => {
+      for (let y = 0; y < actorH; y += 1) for (let x = 0; x < actorW; x += 1) zoneGrid[y][x] = null;
+      zones.length = 0;
+      render();
+    };
+    paintBtn.onclick = () => { eraseMode = false; paintBtn.classList.add('active'); eraseBtn.classList.remove('active'); };
+    eraseBtn.onclick = () => { eraseMode = true; eraseBtn.classList.add('active'); paintBtn.classList.remove('active'); };
+    zoomOutBtn.onclick = () => { zoom = Math.max(0.5, zoom - 0.2); render(); };
+    zoomInBtn.onclick = () => { zoom = Math.min(6, zoom + 0.2); render(); };
+    let stickDrag = null;
+    const centerKnob = () => { stickKnob.style.left = '27px'; stickKnob.style.top = '27px'; };
+    thumbstick.onpointerdown = (event) => {
+      event.preventDefault();
+      stickDrag = { id: event.pointerId };
+      thumbstick.setPointerCapture?.(event.pointerId);
+    };
+    thumbstick.onpointermove = (event) => {
+      if (!stickDrag || stickDrag.id !== event.pointerId) return;
+      event.preventDefault();
+      const rect = thumbstick.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = Math.max(-24, Math.min(24, event.clientX - cx));
+      const dy = Math.max(-24, Math.min(24, event.clientY - cy));
+      stickKnob.style.left = `${27 + dx}px`;
+      stickKnob.style.top = `${27 + dy}px`;
+      panX -= dx * 0.15;
+      panY -= dy * 0.15;
+      render();
+    };
+    thumbstick.onpointerup = () => { stickDrag = null; centerKnob(); };
+    thumbstick.onpointercancel = () => { stickDrag = null; centerKnob(); };
+    const cleanup = () => {
+      window.removeEventListener('resize', resizeCanvasToViewport);
+      modal.remove();
+    };
+    cancel.onclick = () => cleanup();
+    ok.onclick = () => {
+      this.setActor({ ...actor, collisionZones: zones });
+      cleanup();
+    };
+    image.onload = () => render();
+    requestAnimationFrame(() => {
+      resizeCanvasToViewport();
+      render();
+    });
+    window.addEventListener('resize', resizeCanvasToViewport);
+    render();
   }
 
   buildProjectileArtControl(params, onCommit) {
@@ -834,6 +1300,23 @@ export default class ActorEditor {
     addField('Invulnerable by default', checkbox(actor.invulnerable, (event) => this.setActor({ ...actor, invulnerable: event.target.checked }), 'Enabled'));
     addField('Destructible', checkbox(actor.destructible, (event) => this.setActor({ ...actor, destructible: event.target.checked }), 'Enabled'));
     addField('Root actor', checkbox(actor.isRoot, (event) => this.setActor({ ...actor, isRoot: event.target.checked }), 'Placeable in Level Editor'));
+    const facingWrap = el('div', 'actor-editor-inline-actions');
+    [
+      { id: 'face-player', label: 'Face player' },
+      { id: 'face-left', label: 'Face left' },
+      { id: 'face-right', label: 'Face right' }
+    ].forEach((option) => {
+      const label = el('label', 'actor-editor-toggle');
+      const input = el('input');
+      input.type = 'radio';
+      input.name = 'actor-facing-mode';
+      input.checked = (actor.facingMode || 'face-player') === option.id;
+      input.oninput = () => this.setActor({ ...actor, facingMode: option.id });
+      label.appendChild(input);
+      label.append(option.label);
+      facingWrap.appendChild(label);
+    });
+    addField('Facing', facingWrap);
     const sizeWrap = el('div', 'actor-editor-inline-actions');
     sizeWrap.style.display = 'flex';
     sizeWrap.style.alignItems = 'center';
@@ -846,7 +1329,7 @@ export default class ActorEditor {
     widthInput.oninput = (event) => {
       const width = Number.parseInt(event.target.value, 10);
       if (!Number.isFinite(width) || width <= 0) return;
-      this.setActor({ ...actor, size: { width, height: actor.size.height } });
+      this.setActor({ ...actor, size: { width, height: actor.size.height }, sizeMode: 'manual' });
     };
     const heightInput = el('input');
     heightInput.type = 'number';
@@ -856,7 +1339,7 @@ export default class ActorEditor {
     heightInput.oninput = (event) => {
       const height = Number.parseInt(event.target.value, 10);
       if (!Number.isFinite(height) || height <= 0) return;
-      this.setActor({ ...actor, size: { width: actor.size.width, height } });
+      this.setActor({ ...actor, size: { width: actor.size.width, height }, sizeMode: 'manual' });
     };
     widthInput.style.width = '76px';
     heightInput.style.width = '76px';
@@ -864,6 +1347,10 @@ export default class ActorEditor {
     sizeWrap.appendChild(el('span', 'actor-editor-note', '×'));
     sizeWrap.appendChild(heightInput);
     addField('Size (w × h)', sizeWrap);
+    const zoneBtn = el('button', 'actor-editor-btn', 'Collision / Hitbox Zones');
+    zoneBtn.type = 'button';
+    zoneBtn.onclick = () => this.openCollisionZoneEditor(actor);
+    addField('Collision editor', zoneBtn);
     section.appendChild(this.renderTaxonomyEditor(actor, {
       key: 'taxonomies',
       label: 'I belong to taxonomy',

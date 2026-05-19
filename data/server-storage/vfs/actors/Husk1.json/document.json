@@ -48,7 +48,8 @@
           }
         ],
         "fps": 2,
-        "updatedAt": 1776219185541
+        "updatedAt": 1776219185541,
+        "artRef": ""
       },
       "movement": {
         "type": "none",
@@ -167,7 +168,8 @@
           }
         ],
         "fps": 5,
-        "updatedAt": 1776210066359
+        "updatedAt": 1776210066359,
+        "artRef": ""
       },
       "movement": {
         "type": "approach-player",
@@ -284,7 +286,8 @@
           }
         ],
         "fps": 5,
-        "updatedAt": 1776218338418
+        "updatedAt": 1776218338418,
+        "artRef": ""
       },
       "movement": {
         "type": "random-walk-pause",
@@ -378,7 +381,8 @@
           }
         ],
         "fps": 5,
-        "updatedAt": 1776219204249
+        "updatedAt": 1776219204249,
+        "artRef": ""
       },
       "movement": {
         "type": "none",

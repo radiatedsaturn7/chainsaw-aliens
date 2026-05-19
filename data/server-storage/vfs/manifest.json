@@ -1,13 +1,13 @@
 {
   "folders": {
     "levels": {
+      "level0": "levels/level0/document.json",
       "new-level": "levels/new-level/document.json",
       "new-level-1771217621465": "levels/new-level-1771217621465/document.json",
       "Leevel0": "levels/Leevel0/document.json",
       "new-level-1773282688371": "levels/new-level-1773282688371/document.json",
       "level1": "levels/level1/document.json",
       "new-level-1773427091431": "levels/new-level-1773427091431/document.json",
-      "level0": "levels/level0/document.json",
       "level01": "levels/level01/document.json",
       "m": "levels/m/document.json",
       "m2": "levels/m2/document.json",
@@ -36,10 +36,17 @@
       "couchRobotIdle copy 1778295789105": "art/couchRobotIdle copy 1778295789105/document.json",
       "couchRobotShoot": "art/couchRobotShoot/document.json",
       "couchrobot-idle-3-projectile-art": "art/couchrobot-idle-3-projectile-art/document.json",
-      "h2": "art/h2/document.json"
+      "h2": "art/h2/document.json",
+      "head": "art/head/document.json",
+      "Head2": "art/Head2/document.json",
+      "husk-idle-art": "art/husk-idle-art/document.json",
+      "head copy 1778779839932": "art/head copy 1778779839932/document.json"
     },
     "music": {
       "1": "music/1/document.json",
+      "bunnies": "music/bunnies/document.json",
+      "Horror": "music/Horror/document.json",
+      "test": "music/test/document.json",
       "Creepy1": "music/Creepy1/document.json",
       "MIDI Composer Autosave": "music/MIDI Composer Autosave/document.json"
     },

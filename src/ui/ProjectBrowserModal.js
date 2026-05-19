@@ -52,6 +52,12 @@ function getOverlayRoot() {
   if (!root) {
     root = document.createElement('div');
     root.id = 'global-overlay-root';
+    Object.assign(root.style, {
+      position: 'fixed',
+      inset: '0',
+      zIndex: '2147483647',
+      pointerEvents: 'none'
+    });
     document.body.appendChild(root);
   }
   return root;
@@ -97,19 +103,22 @@ function createArtPreviewDataUrl(data) {
     if (first) tileData = first;
   }
   const normalizeFramePixels = (frame) => {
-    if (Array.isArray(frame) && typeof frame[0] === 'string') return frame;
-    if (Array.isArray(frame) && Array.isArray(frame[0]) && typeof frame[0][0] === 'string') return frame[0];
+    if (Array.isArray(frame) && frame.some((value) => typeof value === 'string')) return frame;
+    if (Array.isArray(frame) && Array.isArray(frame[0]) && frame[0].some((value) => typeof value === 'string')) return frame[0];
     if (frame && typeof frame === 'object') {
-      if (Array.isArray(frame.pixels) && typeof frame.pixels[0] === 'string') return frame.pixels;
-      if (Array.isArray(frame.data) && typeof frame.data[0] === 'string') return frame.data;
+      if (Array.isArray(frame.pixels) && frame.pixels.some((value) => typeof value === 'string')) return frame.pixels;
+      if (Array.isArray(frame.data) && frame.data.some((value) => typeof value === 'string')) return frame.data;
     }
     return null;
   };
   const frame = Array.isArray(tileData?.frames) ? normalizeFramePixels(tileData.frames[0]) : null;
   if (!Array.isArray(frame) || !frame.length) return null;
-  const size = Number.isFinite(tileData?.size) ? tileData.size : Math.round(Math.sqrt(frame.length));
-  const width = Math.max(1, Number.isFinite(size) ? Math.round(size) : 1);
-  const height = Math.max(1, Math.round(frame.length / width));
+  const parsedWidth = Number(tileData?.width);
+  const parsedHeight = Number(tileData?.height);
+  const size = Number.isFinite(tileData?.size) ? Number(tileData.size) : Math.round(Math.sqrt(frame.length));
+  const width = Math.max(1, Number.isFinite(parsedWidth) && parsedWidth > 0 ? Math.round(parsedWidth) : (Number.isFinite(size) ? Math.round(size) : 1));
+  const inferredHeight = Math.max(1, Math.round(frame.length / width));
+  const height = Math.max(1, Number.isFinite(parsedHeight) && parsedHeight > 0 ? Math.round(parsedHeight) : inferredHeight);
   const MAX_PREVIEW_DIMENSION = 64;
   const scale = Math.max(1, Math.ceil(Math.max(width, height) / MAX_PREVIEW_DIMENSION));
   const previewWidth = Math.max(1, Math.floor(width / scale));
@@ -142,33 +151,46 @@ function createArtPreviewDataUrl(data) {
 }
 
 function getArtFrames(data) {
-  if (!data) return [];
-  if (Array.isArray(data?.frames) && data.frames.length) return data.frames;
+  if (!data) return { frames: [], source: null };
+  if (Array.isArray(data?.frames) && data.frames.length) return { frames: data.frames, source: data };
   if (data?.tiles && typeof data.tiles === 'object') {
     const first = Object.values(data.tiles).find((entry) => Array.isArray(entry?.frames) && entry.frames.length);
-    if (first) return first.frames;
+    if (first) return { frames: first.frames, source: first };
   }
-  return [];
+  return { frames: [], source: null };
 }
 
-function createArtAnimationPreviewUrls(data, maxFrames = 8) {
-  const frames = getArtFrames(data).slice(0, maxFrames);
+function createArtAnimationPreviewUrls(data, maxFrames = 24) {
+  const { frames: allFrames, source } = getArtFrames(data);
+  let frames = allFrames;
+  if (Number.isFinite(maxFrames) && maxFrames > 0 && allFrames.length > maxFrames) {
+    const step = allFrames.length / maxFrames;
+    frames = Array.from({ length: maxFrames }, (_, i) => allFrames[Math.floor(i * step)]).filter(Boolean);
+  }
   if (!frames.length) return [];
   const firstFrame = frames[0];
   if (Array.isArray(firstFrame) && firstFrame.length > 4096) {
-    const single = createArtPreviewDataUrl({ ...data, frames: [firstFrame] });
+    const single = createArtPreviewDataUrl({ ...(source || data), frames: [firstFrame] });
     return single ? [single] : [];
   }
-  return frames.map((frame) => createArtPreviewDataUrl({ ...data, frames: [frame] })).filter(Boolean);
+  return frames.map((frame) => createArtPreviewDataUrl({ ...(source || data), frames: [frame] })).filter(Boolean);
 }
 
 function createActorPreviewDataUrl(actorData) {
   const states = Array.isArray(actorData?.states) ? actorData.states : [];
-  const firstState = states[0];
-  const artRef = String(firstState?.animation?.artRef || '').trim();
-  if (!artRef) return null;
-  const artPayload = vfsLoad('art', artRef);
-  return createArtPreviewDataUrl(artPayload?.data || null);
+  for (const state of states) {
+    const artRef = String(state?.animation?.artRef || '').trim();
+    if (!artRef) continue;
+    const artPayload = vfsLoad('art', artRef);
+    const preview = createArtPreviewDataUrl(artPayload?.data || null);
+    if (preview) return preview;
+  }
+  for (const state of states) {
+    const frameUrl = state?.animation?.frames?.find?.((frame) => typeof frame?.imageDataUrl === 'string' && frame.imageDataUrl)?.imageDataUrl;
+    if (frameUrl) return frameUrl;
+    if (typeof state?.animation?.imageDataUrl === 'string' && state.animation.imageDataUrl) return state.animation.imageDataUrl;
+  }
+  return null;
 }
 
 export function openProjectBrowser({
@@ -184,6 +206,7 @@ export function openProjectBrowser({
   onCancel = null,
   onPick = null
 } = {}) {
+  activePreviewTrackId = null;
   void pullServerSnapshot('server').catch(() => null);
   vfsEnsureIndex();
   const previousActive = document.activeElement;
@@ -207,6 +230,7 @@ export function openProjectBrowser({
 
     const overlay = document.createElement('div');
     overlay.className = 'project-browser-overlay';
+    overlay.style.pointerEvents = 'auto';
     overlay.tabIndex = -1;
 
     const panel = document.createElement('div');
@@ -433,12 +457,12 @@ export function openProjectBrowser({
           if (folder === 'music') {
             const toggleBtn = makeButton(activePreviewTrackId === entry.name ? 'Pause' : 'Play', 'project-browser-btn', () => {
               const game = window.__game;
-              if (!game?.setActiveMusicTrack) return;
               if (activePreviewTrackId === entry.name) {
-                game.setActiveMusicTrack(null);
+                game?.stopProjectBrowserMusicPreview?.();
                 activePreviewTrackId = null;
               } else {
-                game.setActiveMusicTrack(entry.name);
+                const payload = vfsLoad('music', entry.name);
+                game?.playProjectBrowserMusicPreview?.(entry.name, payload?.data || null);
                 activePreviewTrackId = entry.name;
               }
               refresh();

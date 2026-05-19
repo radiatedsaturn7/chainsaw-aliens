@@ -9,7 +9,7 @@ import subprocess
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 NO_CACHE_HEADERS = {
     "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
@@ -46,18 +46,85 @@ class DevHandler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def _load_snapshot(self) -> dict:
+        fallback = {
+            "index": {"levels": {}, "art": {}, "music": {}, "actors": {}},
+            "files": {},
+        }
         if not SNAPSHOT_PATH.exists():
-            return {
-                "index": {"levels": {}, "art": {}, "music": {}},
-                "files": {},
-            }
+            return self._merge_exported_documents(fallback)
         try:
-            return json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
+            snapshot = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
         except Exception:
-            return {
-                "index": {"levels": {}, "art": {}, "music": {}},
-                "files": {},
-            }
+            snapshot = fallback
+        return self._merge_exported_documents(snapshot)
+
+    def _merge_exported_documents(self, snapshot: dict) -> dict:
+        index = snapshot.get("index") if isinstance(snapshot, dict) else {}
+        files = snapshot.get("files") if isinstance(snapshot, dict) else {}
+        if not isinstance(index, dict):
+            index = {}
+        if not isinstance(files, dict):
+            files = {}
+        merged_index = {
+            "levels": {},
+            "art": {},
+            "music": {},
+            "actors": {},
+            **{folder: dict(entries) for folder, entries in index.items() if isinstance(entries, dict)},
+        }
+        merged_files = dict(files)
+
+        if not EXPORT_ROOT.exists():
+            return {"index": merged_index, "files": merged_files, "generatedAt": snapshot.get("generatedAt")}
+
+        for folder_dir in EXPORT_ROOT.iterdir():
+            if not folder_dir.is_dir():
+                continue
+            folder = folder_dir.name
+            if folder not in merged_index or not isinstance(merged_index[folder], dict):
+                merged_index[folder] = {}
+            for doc_dir in folder_dir.iterdir():
+                if not doc_dir.is_dir():
+                    continue
+                document_path = doc_dir / "document.json"
+                if not document_path.exists():
+                    continue
+                try:
+                    data = json.loads(document_path.read_text(encoding="utf-8"))
+                except Exception:
+                    continue
+                metadata = {}
+                metadata_path = doc_dir / "metadata.json"
+                if metadata_path.exists():
+                    try:
+                        loaded_metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+                        if isinstance(loaded_metadata, dict):
+                            metadata = loaded_metadata
+                    except Exception:
+                        metadata = {}
+                name = metadata.get("name") if isinstance(metadata.get("name"), str) else unquote(doc_dir.name)
+                if not name:
+                    continue
+                saved_at = metadata.get("savedAt")
+                if not isinstance(saved_at, (int, float)):
+                    saved_at = int(document_path.stat().st_mtime * 1000)
+                payload = {
+                    "version": metadata.get("version", 1),
+                    "folder": folder,
+                    "name": name,
+                    "savedAt": saved_at,
+                    "data": data,
+                }
+                raw = json.dumps(payload, ensure_ascii=False)
+                key = f"robter:vfs:{folder}:{name}"
+                merged_files[key] = raw
+                merged_index[folder][name] = {"updatedAt": saved_at, "size": len(raw)}
+
+        return {
+            "index": merged_index,
+            "files": merged_files,
+            "generatedAt": snapshot.get("generatedAt"),
+        }
 
     def _materialize_snapshot(self, snapshot: dict) -> None:
         index = snapshot.get("index") if isinstance(snapshot, dict) else {}
@@ -182,7 +249,7 @@ class DevHandler(SimpleHTTPRequestHandler):
                 SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
                 if not SNAPSHOT_PATH.exists():
                     SNAPSHOT_PATH.write_text(
-                        json.dumps({"index": {"levels": {}, "art": {}, "music": {}}, "files": {}}),
+                        json.dumps({"index": {"levels": {}, "art": {}, "music": {}, "actors": {}}, "files": {}}),
                         encoding="utf-8",
                     )
                 add_result = run_git_command(["git", "add", str(SNAPSHOT_PATH)])

@@ -424,6 +424,15 @@ export default class Editor {
         },
         confirm: (ctx, message) => ctx.game?.showInlineConfirm?.(message),
         serialize: (ctx) => ctx.serializeLevelDocument(),
+        isEmptyDocument: (_ctx, data) => {
+          if (!data || typeof data !== 'object') return true;
+          const hasEnemies = Array.isArray(data.enemies) && data.enemies.length > 0;
+          const hasTriggers = Array.isArray(data.triggers) && data.triggers.length > 0;
+          const hasDecals = Array.isArray(data.decals) && data.decals.length > 0;
+          const hasMusicZones = Array.isArray(data.musicZones) && data.musicZones.length > 0;
+          const hasMidi = Array.isArray(data.midiTracks) && data.midiTracks.length > 0;
+          return !(hasEnemies || hasTriggers || hasDecals || hasMusicZones || hasMidi);
+        },
         applyLoadedData: (ctx, data) => {
           ctx.game.applyWorldData(data);
           ctx.game.restoreBestTileArtFromAutosaves?.();

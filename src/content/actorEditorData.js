@@ -97,7 +97,9 @@ export function createDefaultActor(name = 'New Actor') {
     isRoot: true,
     tags: [],
     health: 3,
+    facingMode: 'face-player',
     size: { width: 24, height: 24 },
+    collisionZones: [],
     loot: [],
     linkedParts: [],
     states: [idle],
@@ -128,6 +130,17 @@ export function ensureActorDefinition(actor) {
     width: Number.isFinite(parsedWidth) && parsedWidth > 0 ? parsedWidth : base.size.width,
     height: Number.isFinite(parsedHeight) && parsedHeight > 0 ? parsedHeight : base.size.height
   };
+  const allowedFacingModes = new Set(['face-player', 'face-left', 'face-right']);
+  merged.facingMode = allowedFacingModes.has(actor?.facingMode) ? actor.facingMode : base.facingMode;
+  merged.collisionZones = Array.isArray(actor?.collisionZones)
+    ? actor.collisionZones.map((zone) => ({
+      type: ['solid', 'solid-damage-player', 'damage-player', 'solid-hurtbox', 'hurtbox'].includes(zone?.type) ? zone.type : 'solid',
+      x: Number(zone?.x) || 0,
+      y: Number(zone?.y) || 0,
+      width: Math.max(1, Number(zone?.width) || 1),
+      height: Math.max(1, Number(zone?.height) || 1)
+    }))
+    : [];
   merged.taxonomies = normalizeTaxonomyList(actor?.taxonomies, base.taxonomies);
   merged.aggressiveTo = normalizeTaxonomyList(actor?.aggressiveTo, base.aggressiveTo);
   merged.states = Array.isArray(actor?.states) && actor.states.length
