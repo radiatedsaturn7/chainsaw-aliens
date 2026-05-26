@@ -7,30 +7,38 @@ export default class Minimap {
     this.scale = 2;
     this.showLegend = false;
     this.doorClusters = null;
+    this.roomRenderCache = null;
+    this.roomRenderSignature = '';
+    this.lastUpdateTileKey = '';
   }
 
   update(player) {
     const tileX = Math.floor(player.x / this.world.tileSize);
     const tileY = Math.floor(player.y / this.world.tileSize);
-    this.explored.add(`${tileX},${tileY}`);
+    const tileKey = `${tileX},${tileY}`;
+    if (tileKey === this.lastUpdateTileKey) return;
+    this.lastUpdateTileKey = tileKey;
+    this.explored.add(tileKey);
     const roomIndex = this.world.roomAtTile?.(tileX, tileY);
+    let changed = false;
     if (roomIndex !== null && roomIndex !== undefined) {
-      this.knownRooms.add(roomIndex);
-    }
-    if (roomIndex !== null && roomIndex !== undefined && !this.exploredRooms.has(roomIndex)) {
-      const room = this.world.getRoomBounds?.(roomIndex);
-      if (room && this.world.roomIndexByTile) {
-        for (let y = room.minY; y <= room.maxY; y += 1) {
-          for (let x = room.minX; x <= room.maxX; x += 1) {
-            if (this.world.roomIndexByTile[y]?.[x] !== roomIndex) continue;
-            const tile = this.world.getTile(x, y);
-            if (!this.isRoomTile(tile)) continue;
-            this.explored.add(`${x},${y}`);
-          }
-        }
-        this.exploredRooms.add(roomIndex);
+      if (!this.knownRooms.has(roomIndex)) {
+        this.knownRooms.add(roomIndex);
+        changed = true;
       }
     }
+    if (roomIndex !== null && roomIndex !== undefined && !this.exploredRooms.has(roomIndex)) {
+      this.exploredRooms.add(roomIndex);
+      changed = true;
+    }
+    if (changed) {
+      this.invalidateRenderCache();
+    }
+  }
+
+  invalidateRenderCache() {
+    this.roomRenderCache = null;
+    this.roomRenderSignature = '';
   }
 
   revealNearbyRooms(roomIndex, count = 7) {
@@ -60,6 +68,7 @@ export default class Minimap {
       revealed += 1;
       if (revealed >= count) break;
     }
+    if (revealed > 0) this.invalidateRenderCache();
   }
 
   draw(ctx, x, y, width, height, player, options = {}) {
@@ -117,23 +126,64 @@ export default class Minimap {
   drawRooms(ctx, pixel, currentRoom) {
     const blink = 0.65 + 0.35 * Math.sin(performance.now() * 0.006);
     if (!this.world.roomIndexByTile) return;
-    for (let y = 0; y < this.world.height; y += 1) {
-      for (let x = 0; x < this.world.width; x += 1) {
-        const roomIndex = this.world.roomIndexByTile[y][x];
-        if (roomIndex === -1) continue;
-        const isExplored = this.exploredRooms.has(roomIndex);
-        const isKnown = this.knownRooms.has(roomIndex);
-        if (!isExplored && !isKnown) continue;
-        if (roomIndex === currentRoom) {
-          ctx.fillStyle = `rgba(255,222,77,${blink})`;
-        } else if (isExplored) {
-          ctx.fillStyle = 'rgba(255,255,255,0.9)';
-        } else {
-          ctx.fillStyle = 'rgba(160,160,160,0.6)';
+    const signature = this.getRoomRenderSignature(pixel);
+    if (!this.roomRenderCache || this.roomRenderSignature !== signature) {
+      this.roomRenderCache = this.buildRoomRenderCache(pixel);
+      this.roomRenderSignature = signature;
+    }
+    if (this.roomRenderCache) {
+      ctx.drawImage(this.roomRenderCache, 0, 0);
+    }
+    const room = this.world.getRoomBounds?.(currentRoom);
+    if (!room || !this.knownRooms.has(currentRoom)) return;
+    ctx.fillStyle = `rgba(255,222,77,${blink})`;
+    const roomArea = (room.maxX - room.minX + 1) * (room.maxY - room.minY + 1);
+    if (roomArea <= 2000) {
+      for (let y = room.minY; y <= room.maxY; y += 1) {
+        for (let x = room.minX; x <= room.maxX; x += 1) {
+          if (this.world.roomIndexByTile[y]?.[x] !== currentRoom) continue;
+          ctx.fillRect(x * pixel, y * pixel, pixel, pixel);
         }
-        ctx.fillRect(x * pixel, y * pixel, pixel, pixel);
+      }
+    } else {
+      ctx.fillRect(
+        room.minX * pixel,
+        room.minY * pixel,
+        Math.max(pixel, (room.maxX - room.minX + 1) * pixel),
+        Math.max(pixel, (room.maxY - room.minY + 1) * pixel)
+      );
+    }
+  }
+
+  getRoomRenderSignature(pixel) {
+    const known = Array.from(this.knownRooms).sort((a, b) => a - b).join(',');
+    const explored = Array.from(this.exploredRooms).sort((a, b) => a - b).join(',');
+    return `${this.world.width}x${this.world.height}:${pixel.toFixed(4)}:${known}:${explored}`;
+  }
+
+  buildRoomRenderCache(pixel) {
+    if (typeof document === 'undefined') return null;
+    const width = Math.max(1, Math.ceil(this.world.width * pixel));
+    const height = Math.max(1, Math.ceil(this.world.height * pixel));
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    ctx.imageSmoothingEnabled = false;
+    for (const [roomIndex, room] of (this.world.rooms || []).entries()) {
+      const isExplored = this.exploredRooms.has(roomIndex);
+      const isKnown = this.knownRooms.has(roomIndex);
+      if (!isExplored && !isKnown) continue;
+      ctx.fillStyle = isExplored ? 'rgba(255,255,255,0.9)' : 'rgba(160,160,160,0.6)';
+      for (let y = room.minY; y <= room.maxY; y += 1) {
+        for (let x = room.minX; x <= room.maxX; x += 1) {
+          if (this.world.roomIndexByTile[y]?.[x] !== roomIndex) continue;
+          ctx.fillRect(x * pixel, y * pixel, pixel, pixel);
+        }
       }
     }
+    return canvas;
   }
 
   drawDoors(ctx, pixel) {

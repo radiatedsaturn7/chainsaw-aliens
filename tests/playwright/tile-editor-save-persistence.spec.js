@@ -25,11 +25,11 @@ test('tile editor save keeps Solid Block blue after reopening the app page', asy
     await studio.saveArtDocument();
   });
 
-  await expect.poll(async () => page.evaluate(() => {
-    const payload = window.localStorage.getItem('robter:vfs:art:solid-blue-persistence');
-    if (!payload) return null;
-    const parsed = JSON.parse(payload);
-    return parsed?.data?.tiles?.['#']?.frames?.[0]?.[0] || null;
+  await expect.poll(async () => page.evaluate(async () => {
+    const response = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent('solid-blue-persistence')}`);
+    if (!response.ok) return null;
+    const payload = await response.json();
+    return payload?.file?.data?.tiles?.['#']?.frames?.[0]?.[0] || null;
   })).toBe('#0000ff');
 
   await page.screenshot({ path: 'artifacts/tile-editor-solid-blue-saved.png', fullPage: false });
@@ -49,11 +49,11 @@ test('tile editor save keeps Solid Block blue after reopening the app page', asy
     studio.loadTileData();
   });
 
-  const persistedStorageColor = await reopenedPage.evaluate(() => {
-    const payload = window.localStorage.getItem('robter:vfs:art:solid-blue-persistence');
-    if (!payload) return null;
-    const parsed = JSON.parse(payload);
-    return parsed?.data?.tiles?.['#']?.frames?.[0]?.[0] || null;
+  const persistedStorageColor = await reopenedPage.evaluate(async () => {
+    const response = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent('solid-blue-persistence')}`);
+    if (!response.ok) return null;
+    const payload = await response.json();
+    return payload?.file?.data?.tiles?.['#']?.frames?.[0]?.[0] || null;
   });
   expect(persistedStorageColor).toBe('#0000ff');
 

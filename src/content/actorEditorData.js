@@ -38,8 +38,8 @@ export const CONDITION_TYPES = [
 ];
 
 export const ACTION_TYPES = [
-  'switch-state', 'reverse-direction', 'set-velocity', 'jump', 'stop-moving', 'delay', 'rewind-animation', 'emit-damage', 'spawn-bullets', 'spawn-actor',
-  'delete-actor', 'play-sound', 'play-fx', 'become-invulnerable', 'become-vulnerable', 'enable-body-damage', 'disable-body-damage',
+  'switch-state', 'reverse-direction', 'set-velocity', 'jump', 'stop-moving', 'delay', 'rewind-animation', 'emit-damage', 'emit-particles', 'spawn-bullets', 'spawn-beam', 'spawn-homing-missile', 'spawn-actor',
+  'delete-actor', 'play-sound', 'play-fx', 'play-midi', 'stop-midi', 'become-invulnerable', 'become-vulnerable', 'enable-body-damage', 'disable-body-damage',
   'drop-loot', 'face-player', 'signal-root', 'signal-children', 'destroy-linked-part', 'open-weak-point', 'close-weak-point'
 ];
 
@@ -69,6 +69,7 @@ export function createDefaultState(name = 'Idle') {
     animation: { imageDataUrl: '', frames: [], fps: 8, updatedAt: 0, artRef: '' },
     movement: { type: 'none', params: {} },
     overrides: { bodyDamageEnabled: null, contactDamage: null, invulnerable: null },
+    disableHealthTint: false,
     transitions: [{
       id: 'transition-1',
       name: 'Transition 1',
@@ -97,6 +98,7 @@ export function createDefaultActor(name = 'New Actor') {
     isRoot: true,
     tags: [],
     health: 3,
+    healthTint: { enabled: false, color: '#ff3333', maxIntensity: 0.1, keepAfterDeath: false },
     facingMode: 'face-player',
     size: { width: 24, height: 24 },
     collisionZones: [],
@@ -104,6 +106,10 @@ export function createDefaultActor(name = 'New Actor') {
     linkedParts: [],
     states: [idle],
     initialStateId: idle.id,
+    deathStateId: '',
+    destroyAfterDeath: true,
+    collidableAfterDeath: false,
+    respawnOnRoomEntry: true,
     advanced: { assetRefs: {}, notes: '' }
   };
 }
@@ -162,6 +168,16 @@ export function ensureActorDefinition(actor) {
         params: { ...(MOVEMENT_PRESET_TEMPLATES[state?.movement?.type || 'none'] || {}), ...(state?.movement?.params || {}) }
       },
       overrides: { bodyDamageEnabled: null, contactDamage: null, invulnerable: null, ...(state?.overrides || {}) },
+      disableHealthTint: state?.disableHealthTint === true,
+      collisionZones: Array.isArray(state?.collisionZones)
+        ? state.collisionZones.map((zone) => ({
+          type: ['solid', 'solid-damage-player', 'damage-player', 'solid-hurtbox', 'hurtbox'].includes(zone?.type) ? zone.type : 'solid',
+          x: Number(zone?.x) || 0,
+          y: Number(zone?.y) || 0,
+          width: Math.max(1, Number(zone?.width) || 1),
+          height: Math.max(1, Number(zone?.height) || 1)
+        }))
+        : null,
       transitions: (() => {
         if (Array.isArray(state?.transitions) && state.transitions.length) {
           return state.transitions.map((transition, transitionIndex) => ({
@@ -191,6 +207,18 @@ export function ensureActorDefinition(actor) {
   if (!merged.states.some((state) => state.id === merged.initialStateId)) {
     merged.initialStateId = merged.states[0].id;
   }
+  merged.deathStateId = merged.states.some((state) => state.id === actor?.deathStateId) ? actor.deathStateId : '';
+  merged.destroyAfterDeath = actor?.destroyAfterDeath !== false;
+  merged.collidableAfterDeath = actor?.collidableAfterDeath === true;
+  merged.respawnOnRoomEntry = actor?.respawnOnRoomEntry !== false;
+  const rawTint = actor?.healthTint || {};
+  const rawIntensity = Number(rawTint.maxIntensity ?? 0.1);
+  merged.healthTint = {
+    enabled: rawTint.enabled === true,
+    color: typeof rawTint.color === 'string' && rawTint.color.trim() ? rawTint.color.trim() : '#ff3333',
+    maxIntensity: Number.isFinite(rawIntensity) ? Math.max(0, Math.min(1, rawIntensity)) : 0.1,
+    keepAfterDeath: rawTint.keepAfterDeath === true
+  };
   return merged;
 }
 

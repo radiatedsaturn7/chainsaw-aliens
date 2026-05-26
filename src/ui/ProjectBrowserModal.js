@@ -1,15 +1,15 @@
 import {
-  VFS_FOLDERS,
-  vfsDelete,
-  vfsDuplicate,
-  vfsEnsureIndex,
-  vfsExists,
-  vfsList,
-  vfsLoad,
-  vfsRename,
-  vfsSanitizeName
-} from './vfs.js';
-import { pullServerSnapshot } from './serverStorage.js';
+  PROJECT_FOLDERS,
+  deleteProjectFile,
+  duplicateProjectFile,
+  ensureProjectFileIndex,
+  projectFileExists,
+  listProjectFiles,
+  loadProjectFile,
+  renameProjectFile,
+  sanitizeProjectFileName
+} from './projectFiles.js';
+import { hydrateServerStorage } from './serverStorage.js';
 import { fileTypeBadge } from './uiSuite.js';
 
 const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors' };
@@ -78,8 +78,8 @@ function readAvailableFolders(fixedFolder) {
 }
 
 function listEntries(folder) {
-  if (!VFS_FOLDERS.includes(folder)) return [];
-  return vfsList(folder).filter((entry) => isAllowedFile(folder, entry.name));
+  if (!PROJECT_FOLDERS.includes(folder)) return [];
+  return listProjectFiles(folder).filter((entry) => isAllowedFile(folder, entry.name));
 }
 
 function parseHexColorToRgba(hex) {
@@ -181,7 +181,7 @@ function createActorPreviewDataUrl(actorData) {
   for (const state of states) {
     const artRef = String(state?.animation?.artRef || '').trim();
     if (!artRef) continue;
-    const artPayload = vfsLoad('art', artRef);
+    const artPayload = loadProjectFile('art', artRef);
     const preview = createArtPreviewDataUrl(artPayload?.data || null);
     if (preview) return preview;
   }
@@ -207,8 +207,7 @@ export function openProjectBrowser({
   onPick = null
 } = {}) {
   activePreviewTrackId = null;
-  void pullServerSnapshot('server').catch(() => null);
-  vfsEnsureIndex();
+  ensureProjectFileIndex();
   const previousActive = document.activeElement;
 
   return new Promise((resolve) => {
@@ -218,7 +217,9 @@ export function openProjectBrowser({
       view: fixedFolder ? 'folder' : (mode === 'saveAs' ? 'folder' : (initialFolder ? 'folder' : 'home')),
       folder: fixedFolder || defaultFolder,
       searchOpen: false,
-      query: ''
+      query: '',
+      loading: !availableFolders.some((folder) => listEntries(folder).length > 0),
+      loadError: ''
     };
     if (!fixedFolder && mode === 'open') state.view = 'home';
 
@@ -297,7 +298,7 @@ export function openProjectBrowser({
     const saveInput = document.createElement('input');
     saveInput.className = 'project-browser-search';
     saveInput.placeholder = 'Filename';
-    saveInput.value = vfsSanitizeName(initialName) || '';
+    saveInput.value = sanitizeProjectFileName(initialName) || '';
     saveBox.appendChild(saveInput);
 
     const message = document.createElement('div');
@@ -348,8 +349,8 @@ export function openProjectBrowser({
     }
 
     function openFile(folder, name) {
-      if (!VFS_FOLDERS.includes(folder)) return;
-      const payload = vfsLoad(folder, name);
+      if (!PROJECT_FOLDERS.includes(folder)) return;
+      const payload = loadProjectFile(folder, name);
       onOpen?.({ folder, name, payload });
       onPick?.({ action: 'open', folder, name, payload });
       cleanup({ action: 'open', folder, name, payload });
@@ -376,8 +377,24 @@ export function openProjectBrowser({
       const folder = state.folder;
       const query = state.query.trim().toLowerCase();
       const entries = listEntries(folder).filter((entry) => !query || entry.name.toLowerCase().includes(query));
-      info.textContent = `${entries.length} file${entries.length === 1 ? '' : 's'} in ${FOLDER_LABELS[folder] || folder}`;
+      info.textContent = state.loading
+        ? `Loading ${FOLDER_LABELS[folder] || folder} from server...`
+        : `${entries.length} file${entries.length === 1 ? '' : 's'} in ${FOLDER_LABELS[folder] || folder}`;
       fileList.innerHTML = '';
+      if (state.loading) {
+        const row = document.createElement('div');
+        row.className = 'project-browser-empty';
+        row.textContent = 'Loading files from server...';
+        fileList.appendChild(row);
+        return;
+      }
+      if (state.loadError && !entries.length) {
+        const row = document.createElement('div');
+        row.className = 'project-browser-empty';
+        row.textContent = `Could not load server files: ${state.loadError}`;
+        fileList.appendChild(row);
+        return;
+      }
 
       entries.forEach((entry) => {
         const row = document.createElement('div');
@@ -391,7 +408,7 @@ export function openProjectBrowser({
             const cached = artPreviewCache.get(entry.name);
             if (Array.isArray(cached) && cached.length) previewUrls = cached;
             if (!previewUrls.length) {
-              const payload = vfsLoad(folder, entry.name);
+              const payload = loadProjectFile(folder, entry.name);
               previewUrls = createArtAnimationPreviewUrls(payload?.data);
               if (previewUrls.length) artPreviewCache.set(entry.name, previewUrls);
             }
@@ -399,7 +416,7 @@ export function openProjectBrowser({
             const cached = actorPreviewCache.get(entry.name);
             if (cached) previewUrls = [cached];
             if (!previewUrls.length) {
-              const payload = vfsLoad(folder, entry.name);
+              const payload = loadProjectFile(folder, entry.name);
               const actorPreview = createActorPreviewDataUrl(payload?.data);
               if (actorPreview) {
                 actorPreviewCache.set(entry.name, actorPreview);
@@ -452,7 +469,7 @@ export function openProjectBrowser({
           }));
         } else {
           const openBtn = makeButton('Open', 'project-browser-btn primary', () => openFile(folder, entry.name));
-          openBtn.disabled = !VFS_FOLDERS.includes(folder);
+          openBtn.disabled = !PROJECT_FOLDERS.includes(folder);
           actions.appendChild(openBtn);
           if (folder === 'music') {
             const toggleBtn = makeButton(activePreviewTrackId === entry.name ? 'Pause' : 'Play', 'project-browser-btn', () => {
@@ -461,7 +478,7 @@ export function openProjectBrowser({
                 game?.stopProjectBrowserMusicPreview?.();
                 activePreviewTrackId = null;
               } else {
-                const payload = vfsLoad('music', entry.name);
+                const payload = loadProjectFile('music', entry.name);
                 game?.playProjectBrowserMusicPreview?.(entry.name, payload?.data || null);
                 activePreviewTrackId = entry.name;
               }
@@ -471,20 +488,20 @@ export function openProjectBrowser({
           }
 
           actions.appendChild(makeButton('Rename', 'project-browser-btn', () => {
-            if (!VFS_FOLDERS.includes(folder)) return;
+            if (!PROJECT_FOLDERS.includes(folder)) return;
             renameTarget = entry.name;
             pendingDelete = null;
             refresh();
           }));
           actions.appendChild(makeButton('Duplicate', 'project-browser-btn', () => {
-            if (!VFS_FOLDERS.includes(folder)) return;
-            const candidate = vfsSanitizeName(`${entry.name} Copy`);
-            if (!candidate || vfsExists(folder, candidate)) return;
-            vfsDuplicate(folder, entry.name, candidate);
+            if (!PROJECT_FOLDERS.includes(folder)) return;
+            const candidate = sanitizeProjectFileName(`${entry.name} Copy`);
+            if (!candidate || projectFileExists(folder, candidate)) return;
+            duplicateProjectFile(folder, entry.name, candidate);
             refresh();
           }));
           actions.appendChild(makeButton('Delete', 'project-browser-btn danger', () => {
-            if (!VFS_FOLDERS.includes(folder)) return;
+            if (!PROJECT_FOLDERS.includes(folder)) return;
             pendingDelete = entry.name;
             renameTarget = null;
             refresh();
@@ -500,9 +517,9 @@ export function openProjectBrowser({
           input.value = entry.name;
           renameRow.appendChild(input);
           renameRow.appendChild(makeButton('Apply', 'project-browser-btn', () => {
-            const next = vfsSanitizeName(input.value);
-            if (!next || vfsExists(folder, next)) return;
-            vfsRename(folder, entry.name, next);
+            const next = sanitizeProjectFileName(input.value);
+            if (!next || projectFileExists(folder, next)) return;
+            renameProjectFile(folder, entry.name, next);
             renameTarget = null;
             refresh();
           }));
@@ -517,7 +534,7 @@ export function openProjectBrowser({
           const delRow = document.createElement('div');
           delRow.className = 'project-browser-inline';
           delRow.appendChild(makeButton('Confirm Delete', 'project-browser-btn danger', () => {
-            vfsDelete(folder, entry.name);
+            deleteProjectFile(folder, entry.name);
             pendingDelete = null;
             refresh();
           }));
@@ -549,9 +566,9 @@ export function openProjectBrowser({
       actionRow.innerHTML = '';
       if (mode === 'saveAs' && state.view === 'folder') {
         actionRow.appendChild(makeButton('Save', 'project-browser-btn primary', () => {
-          const name = vfsSanitizeName(saveInput.value) || vfsSanitizeName(initialName) || 'untitled';
-          onPick?.({ action: 'saveAs', folder: state.folder, name, overwrite: vfsExists(state.folder, name) });
-          cleanup({ action: 'saveAs', folder: state.folder, name, overwrite: vfsExists(state.folder, name) });
+          const name = sanitizeProjectFileName(saveInput.value) || sanitizeProjectFileName(initialName) || 'untitled';
+          onPick?.({ action: 'saveAs', folder: state.folder, name, overwrite: projectFileExists(state.folder, name) });
+          cleanup({ action: 'saveAs', folder: state.folder, name, overwrite: projectFileExists(state.folder, name) });
         }));
       }
       if (mode !== 'saveAs' && state.view === 'folder') {
@@ -573,8 +590,8 @@ export function openProjectBrowser({
     });
 
     saveInput.addEventListener('input', () => {
-      const saveName = vfsSanitizeName(saveInput.value);
-      const exists = saveName && vfsExists(state.folder, saveName);
+      const saveName = sanitizeProjectFileName(saveInput.value);
+      const exists = saveName && projectFileExists(state.folder, saveName);
       message.textContent = exists ? 'Name already exists. Use Overwrite on that file row, or choose a different name.' : '';
     });
 
@@ -589,16 +606,22 @@ export function openProjectBrowser({
       }
       if (mode === 'saveAs' && event.key === 'Enter') {
         event.preventDefault();
-        const name = vfsSanitizeName(saveInput.value) || vfsSanitizeName(initialName) || 'untitled';
-        cleanup({ action: 'saveAs', folder: state.folder, name, overwrite: vfsExists(state.folder, name) });
+        const name = sanitizeProjectFileName(saveInput.value) || sanitizeProjectFileName(initialName) || 'untitled';
+        cleanup({ action: 'saveAs', folder: state.folder, name, overwrite: projectFileExists(state.folder, name) });
       }
     });
 
     getOverlayRoot().appendChild(overlay);
     refresh();
-    void pullServerSnapshot('server').then((result) => {
-      if (result?.ok) refresh();
-    }).catch(() => null);
+    void hydrateServerStorage().then((result) => {
+      state.loading = false;
+      state.loadError = result?.ok ? '' : (result?.reason || 'unknown error');
+      refresh();
+    }).catch((error) => {
+      state.loading = false;
+      state.loadError = String(error || 'unknown error');
+      refresh();
+    });
     overlay.focus({ preventScroll: true });
     if (mode === 'saveAs') {
       saveInput.focus({ preventScroll: true });

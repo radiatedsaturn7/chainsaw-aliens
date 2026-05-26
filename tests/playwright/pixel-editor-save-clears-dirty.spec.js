@@ -24,10 +24,11 @@ test('saving imported art clears dirty state and is listed in art browser', asyn
     await studio.importImageFromFile(new File([blob], 'black.png', { type: 'image/png' }));
 
     await studio.saveArtDocument();
+    const savedResponse = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent('black')}`);
 
     return {
       hasUnsavedChanges: studio.runtime.hasUnsavedChanges(),
-      hasSavedDoc: Boolean(localStorage.getItem('robter:vfs:art:black'))
+      hasSavedDoc: savedResponse.ok
     };
   });
 

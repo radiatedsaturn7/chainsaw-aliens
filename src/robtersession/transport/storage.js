@@ -1,9 +1,10 @@
+import { loadServerPreference, saveServerPreference } from '../../ui/serverPreferences.js';
+
 export const defaultProgress = () => ({ unlockedSets: 1, bestScores: {}, bestAccuracy: {}, bestGrades: {} });
 export const loadProgress = (key) => {
   try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return defaultProgress();
-    const parsed = JSON.parse(raw);
+    const parsed = loadServerPreference(key, null);
+    if (!parsed) return defaultProgress();
     return {
       unlockedSets: parsed.unlockedSets ?? 1,
       bestScores: parsed.bestScores ?? {},
@@ -14,4 +15,6 @@ export const loadProgress = (key) => {
     return defaultProgress();
   }
 };
-export const saveProgress = (key, progress) => localStorage.setItem(key, JSON.stringify(progress));
+export const saveProgress = (key, progress) => {
+  void saveServerPreference(key, progress);
+};

@@ -9,7 +9,7 @@ import subprocess
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import quote, unquote
+from urllib.parse import parse_qs, quote, unquote, urlparse
 
 NO_CACHE_HEADERS = {
     "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
@@ -17,8 +17,7 @@ NO_CACHE_HEADERS = {
     "Expires": "0",
 }
 
-SNAPSHOT_PATH = Path("data/server-storage/vfs-snapshot.json")
-EXPORT_ROOT = Path("data/server-storage/vfs")
+EXPORT_ROOT = Path("data/server-storage/files")
 
 
 def run_git_command(args: list[str]) -> subprocess.CompletedProcess[str]:
@@ -45,53 +44,58 @@ class DevHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _load_snapshot(self) -> dict:
-        fallback = {
-            "index": {"levels": {}, "art": {}, "music": {}, "actors": {}},
-            "files": {},
-        }
-        if not SNAPSHOT_PATH.exists():
-            return self._merge_exported_documents(fallback)
+    def _empty_index(self) -> dict:
+        return {"levels": {}, "art": {}, "music": {}, "actors": {}}
+
+    def _safe_doc_dir(self, folder: str, name: str) -> Path:
+        return EXPORT_ROOT / folder / quote(name, safe="-_.() ")
+
+    def _read_exported_payload(self, folder: str, name: str) -> dict | None:
+        doc_dir = self._safe_doc_dir(folder, name)
+        document_path = doc_dir / "document.json"
+        if not document_path.exists():
+            return None
         try:
-            snapshot = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
+            data = json.loads(document_path.read_text(encoding="utf-8"))
         except Exception:
-            snapshot = fallback
-        return self._merge_exported_documents(snapshot)
-
-    def _merge_exported_documents(self, snapshot: dict) -> dict:
-        index = snapshot.get("index") if isinstance(snapshot, dict) else {}
-        files = snapshot.get("files") if isinstance(snapshot, dict) else {}
-        if not isinstance(index, dict):
-            index = {}
-        if not isinstance(files, dict):
-            files = {}
-        merged_index = {
-            "levels": {},
-            "art": {},
-            "music": {},
-            "actors": {},
-            **{folder: dict(entries) for folder, entries in index.items() if isinstance(entries, dict)},
+            return None
+        metadata: dict = {}
+        metadata_path = doc_dir / "metadata.json"
+        if metadata_path.exists():
+            try:
+                loaded_metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+                if isinstance(loaded_metadata, dict):
+                    metadata = loaded_metadata
+            except Exception:
+                metadata = {}
+        saved_at = metadata.get("savedAt")
+        if not isinstance(saved_at, (int, float)):
+            saved_at = int(document_path.stat().st_mtime * 1000)
+        return {
+            "version": metadata.get("version", 1),
+            "folder": folder,
+            "name": metadata.get("name") if isinstance(metadata.get("name"), str) else name,
+            "savedAt": saved_at,
+            "data": data,
         }
-        merged_files = dict(files)
 
+    def _list_exported_files(self, folder_filter: str | None = None) -> dict:
+        index = self._empty_index()
         if not EXPORT_ROOT.exists():
-            return {"index": merged_index, "files": merged_files, "generatedAt": snapshot.get("generatedAt")}
-
+            return index
         for folder_dir in EXPORT_ROOT.iterdir():
             if not folder_dir.is_dir():
                 continue
             folder = folder_dir.name
-            if folder not in merged_index or not isinstance(merged_index[folder], dict):
-                merged_index[folder] = {}
+            if folder_filter and folder != folder_filter:
+                continue
+            if folder not in index:
+                index[folder] = {}
             for doc_dir in folder_dir.iterdir():
                 if not doc_dir.is_dir():
                     continue
                 document_path = doc_dir / "document.json"
                 if not document_path.exists():
-                    continue
-                try:
-                    data = json.loads(document_path.read_text(encoding="utf-8"))
-                except Exception:
                     continue
                 metadata = {}
                 metadata_path = doc_dir / "metadata.json"
@@ -108,68 +112,31 @@ class DevHandler(SimpleHTTPRequestHandler):
                 saved_at = metadata.get("savedAt")
                 if not isinstance(saved_at, (int, float)):
                     saved_at = int(document_path.stat().st_mtime * 1000)
-                payload = {
-                    "version": metadata.get("version", 1),
-                    "folder": folder,
-                    "name": name,
-                    "savedAt": saved_at,
-                    "data": data,
-                }
-                raw = json.dumps(payload, ensure_ascii=False)
-                key = f"robter:vfs:{folder}:{name}"
-                merged_files[key] = raw
-                merged_index[folder][name] = {"updatedAt": saved_at, "size": len(raw)}
+                index[folder][name] = {"updatedAt": saved_at, "size": document_path.stat().st_size}
+        return index
 
-        return {
-            "index": merged_index,
-            "files": merged_files,
-            "generatedAt": snapshot.get("generatedAt"),
-        }
-
-    def _materialize_snapshot(self, snapshot: dict) -> None:
-        index = snapshot.get("index") if isinstance(snapshot, dict) else {}
-        files = snapshot.get("files") if isinstance(snapshot, dict) else {}
-        if not isinstance(index, dict) or not isinstance(files, dict):
-            return
-
-        EXPORT_ROOT.mkdir(parents=True, exist_ok=True)
-
+    def _write_manifest(self) -> None:
         manifest: dict[str, dict[str, str]] = {"folders": {}}
+        index = self._list_exported_files()
         for folder, entries in index.items():
-            if not isinstance(folder, str) or not isinstance(entries, dict):
-                continue
-            folder_dir = EXPORT_ROOT / folder
-            folder_dir.mkdir(parents=True, exist_ok=True)
             manifest["folders"][folder] = {}
             for name in entries.keys():
-                if not isinstance(name, str):
-                    continue
-                storage_key = f"robter:vfs:{folder}:{name}"
-                raw = files.get(storage_key)
-                if not isinstance(raw, str):
-                    continue
-                try:
-                    payload = json.loads(raw)
-                except Exception:
-                    continue
-                data = payload.get("data", payload)
-                safe = quote(name, safe="-_.() ")
-                doc_dir = folder_dir / safe
-                doc_dir.mkdir(parents=True, exist_ok=True)
-                self._extract_data_urls(data, doc_dir)
-                (doc_dir / "document.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-                (doc_dir / "metadata.json").write_text(
-                    json.dumps({
-                        "name": name,
-                        "folder": folder,
-                        "savedAt": payload.get("savedAt"),
-                        "version": payload.get("version", 1),
-                    }, ensure_ascii=False, indent=2),
-                    encoding="utf-8",
-                )
-                manifest["folders"][folder][name] = f"{folder}/{safe}/document.json"
-
+                manifest["folders"][folder][name] = f"{folder}/{quote(name, safe='-_.() ')}/document.json"
+        EXPORT_ROOT.mkdir(parents=True, exist_ok=True)
         (EXPORT_ROOT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    def _write_exported_payload(self, folder: str, name: str, data: object, saved_at: int | None = None, version: int = 1) -> dict:
+        saved = int(saved_at or 0) or int(__import__("time").time() * 1000)
+        doc_dir = self._safe_doc_dir(folder, name)
+        doc_dir.mkdir(parents=True, exist_ok=True)
+        self._extract_data_urls(data, doc_dir)
+        (doc_dir / "document.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        (doc_dir / "metadata.json").write_text(
+            json.dumps({"name": name, "folder": folder, "savedAt": saved, "version": version}, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        self._write_manifest()
+        return {"version": version, "folder": folder, "name": name, "savedAt": saved, "data": data}
 
     def _extract_data_urls(self, value: object, doc_dir: Path, counter: list[int] | None = None) -> None:
         if counter is None:
@@ -196,13 +163,70 @@ class DevHandler(SimpleHTTPRequestHandler):
             (path / f"image-{counter[0]}.png").write_bytes(data)
 
     def do_GET(self) -> None:  # noqa: N802
-        if self.path == "/__storage/snapshot":
-            snapshot = self._load_snapshot()
-            self._write_json(HTTPStatus.OK, {"ok": True, "snapshot": snapshot})
+        parsed = urlparse(self.path)
+        if parsed.path == "/__storage/index":
+            query = parse_qs(parsed.query)
+            folder = (query.get("folder") or [None])[0]
+            self._write_json(HTTPStatus.OK, {"ok": True, "index": self._list_exported_files(folder)})
+            return
+        if parsed.path == "/__storage/file":
+            query = parse_qs(parsed.query)
+            folder = (query.get("folder") or [""])[0]
+            name = (query.get("name") or [""])[0]
+            payload = self._read_exported_payload(folder, name)
+            if payload is None:
+                self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "File not found"})
+                return
+            self._write_json(HTTPStatus.OK, {"ok": True, "file": payload})
             return
         super().do_GET()
 
     def do_POST(self) -> None:  # noqa: N802
+        parsed = urlparse(self.path)
+        if parsed.path == "/__storage/file":
+            length = int(self.headers.get("Content-Length", "0") or "0")
+            raw = self.rfile.read(length)
+            try:
+                payload = json.loads(raw.decode("utf-8") or "{}")
+            except Exception:
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Invalid JSON"})
+                return
+            folder = payload.get("folder")
+            name = payload.get("name")
+            if not isinstance(folder, str) or not isinstance(name, str) or not name:
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Missing folder or name"})
+                return
+            saved = self._write_exported_payload(folder, name, payload.get("data"), payload.get("savedAt"), int(payload.get("version") or 1))
+            self._write_json(HTTPStatus.OK, {"ok": True, "file": saved})
+            return
+
+        if parsed.path == "/__storage/rename":
+            length = int(self.headers.get("Content-Length", "0") or "0")
+            raw = self.rfile.read(length)
+            try:
+                payload = json.loads(raw.decode("utf-8") or "{}")
+            except Exception:
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Invalid JSON"})
+                return
+            folder = payload.get("folder")
+            old_name = payload.get("oldName")
+            new_name = payload.get("newName")
+            if not all(isinstance(value, str) and value for value in (folder, old_name, new_name)):
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Missing folder or name"})
+                return
+            existing = self._read_exported_payload(folder, old_name)
+            if existing is None:
+                self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "File not found"})
+                return
+            saved = self._write_exported_payload(folder, new_name, existing.get("data"), int(__import__("time").time() * 1000), int(existing.get("version") or 1))
+            old_dir = self._safe_doc_dir(folder, old_name)
+            if old_dir.exists() and old_dir != self._safe_doc_dir(folder, new_name):
+                import shutil
+                shutil.rmtree(old_dir)
+            self._write_manifest()
+            self._write_json(HTTPStatus.OK, {"ok": True, "file": saved})
+            return
+
         if self.path == "/__debug/restart":
             try:
                 result = run_git_command(["git", "pull", "--ff-only"])
@@ -226,33 +250,11 @@ class DevHandler(SimpleHTTPRequestHandler):
                 self._write_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": str(exc)})
             return
 
-        if self.path == "/__storage/snapshot":
-            length = int(self.headers.get("Content-Length", "0") or "0")
-            raw = self.rfile.read(length)
-            try:
-                payload = json.loads(raw.decode("utf-8") or "{}")
-            except Exception:
-                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Invalid JSON"})
-                return
-            snapshot = payload.get("snapshot")
-            if not isinstance(snapshot, dict):
-                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Missing snapshot"})
-                return
-            SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
-            SNAPSHOT_PATH.write_text(json.dumps(snapshot, ensure_ascii=False), encoding="utf-8")
-            self._materialize_snapshot(snapshot)
-            self._write_json(HTTPStatus.OK, {"ok": True})
-            return
-
         if self.path == "/__storage/sync-github":
             try:
-                SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
-                if not SNAPSHOT_PATH.exists():
-                    SNAPSHOT_PATH.write_text(
-                        json.dumps({"index": {"levels": {}, "art": {}, "music": {}, "actors": {}}, "files": {}}),
-                        encoding="utf-8",
-                    )
-                add_result = run_git_command(["git", "add", str(SNAPSHOT_PATH)])
+                EXPORT_ROOT.mkdir(parents=True, exist_ok=True)
+                self._write_manifest()
+                add_result = run_git_command(["git", "add", str(EXPORT_ROOT)])
                 if add_result.returncode != 0:
                     self._write_json(
                         HTTPStatus.BAD_REQUEST,
@@ -263,7 +265,7 @@ class DevHandler(SimpleHTTPRequestHandler):
                     "git",
                     "commit",
                     "-m",
-                    "chore: update server VFS snapshot",
+                    "chore: update server project files",
                 ])
                 # no-op commit is acceptable.
                 if commit_result.returncode != 0 and "nothing to commit" not in (commit_result.stdout + commit_result.stderr).lower():
@@ -285,6 +287,21 @@ class DevHandler(SimpleHTTPRequestHandler):
                 self._write_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": str(exc)})
             return
 
+        self.send_error(HTTPStatus.NOT_FOUND, "Not Found")
+
+    def do_DELETE(self) -> None:  # noqa: N802
+        parsed = urlparse(self.path)
+        if parsed.path == "/__storage/file":
+            query = parse_qs(parsed.query)
+            folder = (query.get("folder") or [""])[0]
+            name = (query.get("name") or [""])[0]
+            doc_dir = self._safe_doc_dir(folder, name)
+            if doc_dir.exists():
+                import shutil
+                shutil.rmtree(doc_dir)
+            self._write_manifest()
+            self._write_json(HTTPStatus.OK, {"ok": True})
+            return
         self.send_error(HTTPStatus.NOT_FOUND, "Not Found")
 
 

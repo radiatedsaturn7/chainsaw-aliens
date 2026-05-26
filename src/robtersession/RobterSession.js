@@ -18,6 +18,7 @@ import FeedbackSystem from './renderers/FeedbackSystem.js';
 import SongPreviewScreen from './renderers/SongPreviewScreen.js';
 import RobterSessionMobileControls from './RobterSessionMobileControls.js';
 import SongSelectView from '../ui/SongSelectView.js';
+import { loadServerPreference, saveServerPreference } from '../ui/serverPreferences.js';
 import InstrumentSelectView from '../ui/InstrumentSelectView.js';
 import {
   describeInputDebug,
@@ -163,9 +164,8 @@ const defaultHudSettings = () => ({
 
 const loadHudSettings = () => {
   try {
-    const raw = localStorage.getItem(HUD_SETTINGS_KEY);
-    if (!raw) return defaultHudSettings();
-    const parsed = JSON.parse(raw);
+    const parsed = loadServerPreference(HUD_SETTINGS_KEY, null);
+    if (!parsed) return defaultHudSettings();
     return {
       noteSize: MAX_NOTE_SIZE,
       highwayZoom: MAX_HIGHWAY_ZOOM,
@@ -180,7 +180,7 @@ const loadHudSettings = () => {
 };
 
 const saveHudSettings = (settings) => {
-  localStorage.setItem(HUD_SETTINGS_KEY, JSON.stringify(settings));
+  void saveServerPreference(HUD_SETTINGS_KEY, settings);
 };
 
 const defaultCalibration = () => ({
@@ -190,9 +190,8 @@ const defaultCalibration = () => ({
 
 const loadCalibration = () => {
   try {
-    const raw = localStorage.getItem(CALIBRATION_KEY);
-    if (!raw) return defaultCalibration();
-    const parsed = JSON.parse(raw);
+    const parsed = loadServerPreference(CALIBRATION_KEY, null);
+    if (!parsed) return defaultCalibration();
     return {
       audioOffsetMs: parsed.audioOffsetMs ?? 0,
       videoOffsetMs: parsed.videoOffsetMs ?? 0
@@ -203,14 +202,12 @@ const loadCalibration = () => {
 };
 
 const saveCalibration = (calibration) => {
-  localStorage.setItem(CALIBRATION_KEY, JSON.stringify(calibration));
+  void saveServerPreference(CALIBRATION_KEY, calibration);
 };
 
 const loadTuning = () => {
   try {
-    const raw = localStorage.getItem(TUNING_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
+    const parsed = loadServerPreference(TUNING_KEY, null);
     if (!parsed) return null;
     return {
       rootIndex: parsed.rootIndex ?? 0,
@@ -224,7 +221,7 @@ const loadTuning = () => {
 
 const saveTuning = (tuning) => {
   if (!tuning) return;
-  localStorage.setItem(TUNING_KEY, JSON.stringify(tuning));
+  void saveServerPreference(TUNING_KEY, tuning);
 };
 
 const getGrade = (accuracy) => {
@@ -591,13 +588,12 @@ export default class RobterSession {
   }
 
   loadRandomSeed() {
-    const raw = localStorage.getItem(RANDOM_SEED_KEY);
-    const seed = raw ? Number(raw) : Date.now();
+    const seed = Number(loadServerPreference(RANDOM_SEED_KEY, Date.now()));
     return Number.isFinite(seed) ? seed : Date.now();
   }
 
   saveRandomSeed() {
-    localStorage.setItem(RANDOM_SEED_KEY, String(this.randomSeed));
+    void saveServerPreference(RANDOM_SEED_KEY, this.randomSeed);
   }
 
   async loadSelectedSong(entry) {

@@ -12,6 +12,7 @@ import DrumKitManager from '../audio/DrumKitManager.js';
 import SoundfontEngine from '../audio/SoundfontEngine.js';
 import SoundfontLoader from '../audio/soundfontLoader.js';
 import { AUDIO_CONFIG } from '../audio/config.js';
+import { loadServerPreference, saveServerPreference } from '../ui/serverPreferences.js';
 
 const DEFAULT_GM_SOUND_FONT_URL = 'vendor/soundfonts/FluidR3_GM/';
 const FALLBACK_GM_SOUND_FONT_URL = 'vendor/soundfonts/FluidR3_GM/';
@@ -329,25 +330,13 @@ export default class AudioSystem {
   }
 
   loadStoredSoundfontUrl() {
-    try {
-      const stored = localStorage.getItem('chainsaw-gm-soundfont-url');
-      if (!stored) {
-        return DEFAULT_GM_SOUND_FONT_URL;
-      }
-      return stored;
-    } catch (error) {
-      return DEFAULT_GM_SOUND_FONT_URL;
-    }
+    return loadServerPreference('chainsaw-gm-soundfont-url', DEFAULT_GM_SOUND_FONT_URL) || DEFAULT_GM_SOUND_FONT_URL;
   }
 
   setSoundfontUrl(url) {
     if (!url) return;
     const nextUrl = url.endsWith('/') ? url : `${url}/`;
-    try {
-      localStorage.setItem('chainsaw-gm-soundfont-url', nextUrl);
-    } catch (error) {
-      // ignore
-    }
+    void saveServerPreference('chainsaw-gm-soundfont-url', nextUrl);
     this.soundfont.setBaseUrl(nextUrl);
     this.gmError = null;
   }

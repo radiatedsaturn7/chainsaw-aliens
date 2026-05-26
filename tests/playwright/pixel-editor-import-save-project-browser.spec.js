@@ -52,9 +52,9 @@ test('import black.png in pixel editor, save, exit to main menu, and reopen from
 
     game.openProjectBrowserFromTitle();
 
-    const payload = window.localStorage.getItem('robter:vfs:art:black-import-save-check');
-    const parsed = payload ? JSON.parse(payload) : null;
-    const firstPixel = parsed?.data?.frames?.[0]?.[0] ?? parsed?.data?.tiles?.['#']?.frames?.[0]?.[0] ?? null;
+    const response = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent('black-import-save-check')}`);
+    const payload = response.ok ? await response.json() : null;
+    const firstPixel = payload?.file?.data?.frames?.[0]?.[0] ?? payload?.file?.data?.tiles?.['#']?.frames?.[0]?.[0] ?? null;
 
     return { firstPixel, hasPayload: Boolean(payload) };
   });

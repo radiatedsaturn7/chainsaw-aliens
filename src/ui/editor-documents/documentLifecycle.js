@@ -1,5 +1,5 @@
 import { openProjectBrowser } from '../ProjectBrowserModal.js';
-import { vfsSave } from '../vfs.js';
+import { saveProjectFile } from '../projectFiles.js';
 
 export function createDocumentLifecycle(adapter) {
   const MIN_SAVING_TOAST_MS = 350;
@@ -56,8 +56,10 @@ export function createDocumentLifecycle(adapter) {
     context.game?.showSaveStatusModal?.('Saving...');
     context.game?.showSystemToast?.('saving...');
     context.statusMessage = 'saving...';
-    const saved = vfsSave(adapter.folder, name, data);
-    await saved?.syncPromise;
+    const saved = saveProjectFile(adapter.folder, name, data);
+    if (adapter.waitForSync !== false) {
+      await saved?.syncPromise;
+    }
     const elapsed = Date.now() - savingStartedAt;
     if (elapsed < MIN_SAVING_TOAST_MS) {
       await new Promise((resolve) => setTimeout(resolve, MIN_SAVING_TOAST_MS - elapsed));

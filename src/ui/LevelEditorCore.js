@@ -1,5 +1,5 @@
 import Minimap from '../world/Minimap.js';
-import { vfsDelete, vfsList, vfsLoad, vfsSave } from './vfs.js';
+import { deleteProjectFile, listProjectFiles, loadProjectFile, saveProjectFile } from './projectFiles.js';
 import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPlayStopButton, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { clamp, randInt, pickOne } from '../editor/input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from '../editor/playtest/transitions.js';
@@ -131,10 +131,16 @@ const BOSS_ROOM_PREFS = {
 };
 
 const ENEMY_TYPES = [...AMBIENT_ENEMY_TYPES, ...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
+let customActorEnemyTypesCache = { signature: '', types: [] };
 
 function getCustomActorEnemyTypes() {
-  return vfsList('actors').map(({ name }) => {
-    const payload = vfsLoad('actors', name);
+  const actorFiles = listProjectFiles('actors');
+  const signature = actorFiles.map((entry) => `${entry.name}:${entry.updatedAt}:${entry.size}`).join('|');
+  if (customActorEnemyTypesCache.signature === signature) {
+    return customActorEnemyTypesCache.types;
+  }
+  const types = actorFiles.map(({ name }) => {
+    const payload = loadProjectFile('actors', name);
     const actor = payload?.data || {};
     if (!actor?.isRoot) return null;
     const id = actor?.id || String(name).replace(/\.json$/i, '');
@@ -145,6 +151,8 @@ function getCustomActorEnemyTypes() {
       description: 'Custom actor root from Actor Editor.'
     };
   }).filter(Boolean);
+  customActorEnemyTypesCache = { signature, types };
+  return types;
 }
 
 function getEnemyTypes() {
@@ -983,58 +991,25 @@ export default class Editor {
   }
 
   clearAutosave() {
-    vfsDelete('levels', LEVEL_EDITOR_AUTOSAVE_DOC);
-    const storage = this.getStorage();
-    if (storage) storage.removeItem(this.autosaveKey);
+    deleteProjectFile('levels', LEVEL_EDITOR_AUTOSAVE_DOC);
     this.autosaveLoaded = false;
   }
 
-  getStorage() {
-    if (typeof window === 'undefined') return null;
-    try {
-      return window.localStorage;
-    } catch (error) {
-      return null;
-    }
-  }
-
   loadAutosave() {
-    const vfsPayload = vfsLoad('levels', LEVEL_EDITOR_AUTOSAVE_DOC);
-    if (vfsPayload?.data?.tiles && vfsPayload?.data?.width && vfsPayload?.data?.height) {
-      this.game.applyWorldData(vfsPayload.data);
+    const projectFilePayload = loadProjectFile('levels', LEVEL_EDITOR_AUTOSAVE_DOC);
+    if (projectFilePayload?.data?.tiles && projectFilePayload?.data?.width && projectFilePayload?.data?.height) {
+      this.game.applyWorldData(projectFilePayload.data);
       this.game.restoreBestTileArtFromAutosaves?.();
       this.syncPreviewMinimap();
       return true;
     }
-    const storage = this.getStorage();
-    if (!storage) return false;
-    const raw = storage.getItem(this.autosaveKey);
-    if (!raw) return false;
-    try {
-      const data = JSON.parse(raw);
-      if (!data || !data.tiles || !data.width || !data.height) {
-        storage.removeItem(this.autosaveKey);
-        return false;
-      }
-      this.game.applyWorldData(data);
-      this.game.restoreBestTileArtFromAutosaves?.();
-      this.syncPreviewMinimap();
-      vfsSave('levels', LEVEL_EDITOR_AUTOSAVE_DOC, this.serializeLevelDocument(data));
-      return true;
-    } catch (error) {
-      storage.removeItem(this.autosaveKey);
-      return false;
-    }
+    return false;
   }
 
   persistAutosave() {
     try {
       const data = this.serializeLevelDocument();
-      vfsSave('levels', LEVEL_EDITOR_AUTOSAVE_DOC, data);
-      const storage = this.getStorage();
-      if (storage) {
-        storage.setItem(this.autosaveKey, JSON.stringify(data));
-      }
+      saveProjectFile('levels', LEVEL_EDITOR_AUTOSAVE_DOC, data);
     } catch (error) {
       console.warn('Unable to save editor autosave:', error);
     }
@@ -1099,7 +1074,7 @@ export default class Editor {
   startLoadLevelSpawnPlacement(draft) {
     if (!draft?.params) return;
     const levelName = draft.params.levelName || this.getTriggerLevelNames()[0];
-    const payload = vfsLoad('levels', levelName);
+    const payload = loadProjectFile('levels', levelName);
     if (!payload?.data) return;
     this.triggerLoadLevelPlacement = {
       originalWorldData: this.game.buildWorldData(),
@@ -2741,7 +2716,7 @@ export default class Editor {
   }
 
   getTriggerLevelNames() {
-    const levels = vfsList('levels').map((entry) => entry.name);
+    const levels = listProjectFiles('levels').map((entry) => entry.name);
     return levels.length ? levels : ['Level 1'];
   }
 
@@ -3211,7 +3186,7 @@ export default class Editor {
   }
 
   loadSavedSongLibrary() {
-    return vfsList('music').map((entry) => ({
+    return listProjectFiles('music').map((entry) => ({
       id: entry.name,
       name: entry.name
     }));
@@ -7049,6 +7024,15 @@ export default class Editor {
     const { canvas } = this.game;
     this.updateLayoutBounds(canvas.width, canvas.height);
     this.sanitizeView('draw');
+    const panJoystickActive = Boolean(this.panJoystick?.active)
+      || Math.abs(Number(this.panJoystick?.dx) || 0) > 0.01
+      || Math.abs(Number(this.panJoystick?.dy) || 0) > 0.01;
+    const previousDrawCamera = this.previousDrawCamera || null;
+    const cameraMovedSinceLastDraw = previousDrawCamera
+      && (Math.abs(previousDrawCamera.x - this.camera.x) > 0.5
+        || Math.abs(previousDrawCamera.y - this.camera.y) > 0.5
+        || Math.abs(previousDrawCamera.zoom - this.zoom) > 0.001);
+    const fastEditorRender = this.dragMode === 'pan' || panJoystickActive || cameraMovedSinceLastDraw;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -7062,7 +7046,8 @@ export default class Editor {
         x: this.camera.x,
         y: this.camera.y,
         width: canvas.width / this.zoom,
-        height: canvas.height / this.zoom
+        height: canvas.height / this.zoom,
+        fastEditorRender
       }
     });
     this.drawEditorMarkers(ctx);
@@ -7072,15 +7057,27 @@ export default class Editor {
     if (!this.captureWithoutUiRequested) {
       this.drawHUD(ctx, canvas.width, canvas.height);
     }
+    this.previousDrawCamera = { x: this.camera.x, y: this.camera.y, zoom: this.zoom };
   }
 
   drawEditorMarkers(ctx) {
     const { tileSize } = this.game.world;
+    const visibleMinX = Math.max(0, Math.floor(this.camera.x / tileSize) - 1);
+    const visibleMinY = Math.max(0, Math.floor(this.camera.y / tileSize) - 1);
+    const visibleMaxX = Math.min(this.game.world.width - 1, Math.ceil((this.camera.x + this.game.canvas.width / this.zoom) / tileSize) + 1);
+    const visibleMaxY = Math.min(this.game.world.height - 1, Math.ceil((this.camera.y + this.game.canvas.height / this.zoom) / tileSize) + 1);
+    const isRectVisible = (x, y, w = 1, h = 1) => (
+      x + w >= visibleMinX
+      && x <= visibleMaxX
+      && y + h >= visibleMinY
+      && y <= visibleMaxY
+    );
     if (this.game.world.elevatorPaths?.length) {
       ctx.save();
       ctx.strokeStyle = 'rgba(120,220,255,0.7)';
       ctx.lineWidth = 2;
       this.game.world.elevatorPaths.forEach((path) => {
+        if (!isRectVisible(path.x, path.y)) return;
         const cx = path.x * tileSize + tileSize / 2;
         const cy = path.y * tileSize + tileSize / 2;
         ctx.beginPath();
@@ -7097,6 +7094,7 @@ export default class Editor {
       ctx.strokeStyle = '#ffd36a';
       ctx.lineWidth = 2;
       this.game.world.elevators.forEach((platform) => {
+        if (!isRectVisible(platform.x, platform.y, platform.w || 1, platform.h || 1)) return;
         const x = platform.x * tileSize + 6;
         const y = platform.y * tileSize + tileSize / 2 - 6;
         ctx.strokeRect(x, y, tileSize - 12, 12);
@@ -7115,6 +7113,7 @@ export default class Editor {
       ctx.textBaseline = 'top';
       zones.forEach((zone) => {
         const [x, y, w, h] = zone.rect;
+        if (!isRectVisible(x, y, w, h)) return;
         const px = x * tileSize;
         const py = y * tileSize;
         const pw = w * tileSize;
@@ -7138,6 +7137,7 @@ export default class Editor {
       ctx.lineWidth = 2;
       triggers.forEach((trigger, index) => {
         const [x, y, w, h] = trigger.rect;
+        if (!isRectVisible(x, y, w, h)) return;
         const px = x * tileSize;
         const py = y * tileSize;
         const pw = w * tileSize;
@@ -7230,8 +7230,8 @@ export default class Editor {
         }
       }
     }
-    for (let y = 0; y < this.game.world.height; y += 1) {
-      for (let x = 0; x < this.game.world.width; x += 1) {
+    for (let y = visibleMinY; y <= visibleMaxY; y += 1) {
+      for (let x = visibleMinX; x <= visibleMaxX; x += 1) {
         const tile = this.game.world.getTile(x, y);
         const cx = x * tileSize + tileSize / 2;
         const cy = y * tileSize + tileSize / 2;
@@ -7276,10 +7276,12 @@ export default class Editor {
       }
     }
 
+    const enemyTypes = getEnemyTypes();
     this.game.world.enemies.forEach((enemy) => {
+      if (enemy.x < visibleMinX - 1 || enemy.x > visibleMaxX + 1 || enemy.y < visibleMinY - 1 || enemy.y > visibleMaxY + 1) return;
       const cx = enemy.x * tileSize + tileSize / 2;
       const cy = enemy.y * tileSize + tileSize / 2;
-      const marker = getEnemyTypes().find((entry) => entry.id === enemy.type);
+      const marker = enemyTypes.find((entry) => entry.id === enemy.type);
       const isBoss = BOSS_ENEMY_TYPES.some((entry) => entry.id === enemy.type);
       const color = isBoss ? '#ffb3d6' : '#f66';
       ctx.save();
@@ -7293,7 +7295,7 @@ export default class Editor {
     });
 
     const spawn = this.game.world.spawn;
-    if (spawn) {
+    if (spawn && spawn.x >= visibleMinX - 1 && spawn.x <= visibleMaxX + 1 && spawn.y >= visibleMinY - 1 && spawn.y <= visibleMaxY + 1) {
       ctx.save();
       ctx.strokeStyle = '#ff6';
       ctx.lineWidth = 2;
@@ -7310,6 +7312,10 @@ export default class Editor {
     const tileSize = this.game.world.tileSize;
     const worldWidth = this.game.world.width;
     const worldHeight = this.game.world.height;
+    const viewLeft = Math.max(0, Math.floor(this.camera.x / tileSize));
+    const viewRight = Math.min(worldWidth, Math.ceil((this.camera.x + this.game.canvas.width / this.zoom) / tileSize));
+    const viewTop = Math.max(0, Math.floor(this.camera.y / tileSize));
+    const viewBottom = Math.min(worldHeight, Math.ceil((this.camera.y + this.game.canvas.height / this.zoom) / tileSize));
     ctx.save();
     const glow = this.dragging || this.radialMenu.active;
     const baseStroke = glow ? 'rgba(120,200,255,0.2)' : 'rgba(255,255,255,0.08)';
@@ -7325,41 +7331,41 @@ export default class Editor {
     const majorAnchorX = gridAnchorX + EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL;
     const majorAnchorY = gridAnchorY + EDITOR_DOTTED_GRID_VERTICAL_INTERVAL;
     const isAlignedToAnchor = (value, anchor, interval) => ((value - anchor) % interval + interval) % interval === 0;
-    for (let x = 0; x <= worldWidth; x += 1) {
+    for (let x = viewLeft; x <= viewRight; x += 1) {
       const isMajorLine = isAlignedToAnchor(x, majorAnchorX, EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL);
       ctx.strokeStyle = isMajorLine ? majorStroke : baseStroke;
       ctx.lineWidth = isMajorLine ? (glow ? 2 : 1.6) : (glow ? 1.4 : 1);
       ctx.beginPath();
-      ctx.moveTo(x * tileSize, 0);
-      ctx.lineTo(x * tileSize, worldHeight * tileSize);
+      ctx.moveTo(x * tileSize, viewTop * tileSize);
+      ctx.lineTo(x * tileSize, viewBottom * tileSize);
       ctx.stroke();
     }
-    for (let y = 0; y <= worldHeight; y += 1) {
+    for (let y = viewTop; y <= viewBottom; y += 1) {
       const isMajorLine = isAlignedToAnchor(y, majorAnchorY, EDITOR_MAJOR_GRID_VERTICAL_INTERVAL);
       ctx.strokeStyle = isMajorLine ? majorStroke : baseStroke;
       ctx.lineWidth = isMajorLine ? (glow ? 2 : 1.6) : (glow ? 1.4 : 1);
       ctx.beginPath();
-      ctx.moveTo(0, y * tileSize);
-      ctx.lineTo(worldWidth * tileSize, y * tileSize);
+      ctx.moveTo(viewLeft * tileSize, y * tileSize);
+      ctx.lineTo(viewRight * tileSize, y * tileSize);
       ctx.stroke();
     }
     ctx.setLineDash([2, 6]);
     ctx.strokeStyle = dottedStroke;
     ctx.lineWidth = glow ? 1.6 : 1;
-    for (let x = 0; x <= worldWidth; x += 1) {
+    for (let x = viewLeft; x <= viewRight; x += 1) {
       const isMajorLine = isAlignedToAnchor(x, majorAnchorX, EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL);
       if (isMajorLine || !isAlignedToAnchor(x, gridAnchorX, EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL)) continue;
       ctx.beginPath();
-      ctx.moveTo(x * tileSize, 0);
-      ctx.lineTo(x * tileSize, worldHeight * tileSize);
+      ctx.moveTo(x * tileSize, viewTop * tileSize);
+      ctx.lineTo(x * tileSize, viewBottom * tileSize);
       ctx.stroke();
     }
-    for (let y = 0; y <= worldHeight; y += 1) {
+    for (let y = viewTop; y <= viewBottom; y += 1) {
       const isMajorLine = isAlignedToAnchor(y, majorAnchorY, EDITOR_MAJOR_GRID_VERTICAL_INTERVAL);
       if (isMajorLine || !isAlignedToAnchor(y, gridAnchorY, EDITOR_DOTTED_GRID_VERTICAL_INTERVAL)) continue;
       ctx.beginPath();
-      ctx.moveTo(0, y * tileSize);
-      ctx.lineTo(worldWidth * tileSize, y * tileSize);
+      ctx.moveTo(viewLeft * tileSize, y * tileSize);
+      ctx.lineTo(viewRight * tileSize, y * tileSize);
       ctx.stroke();
     }
     ctx.setLineDash([]);

@@ -33,8 +33,10 @@ test('save-as with empty filename still persists using fallback name', async ({ 
     return Boolean(res?.name);
   });
 
-  const hasAny = await page.evaluate(() => {
-    return Boolean(localStorage.getItem('robter:vfs:art:black') || localStorage.getItem('robter:vfs:art:untitled'));
+  const hasAny = await page.evaluate(async () => {
+    const black = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent('black')}`);
+    const untitled = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent('untitled')}`);
+    return black.ok || untitled.ok;
   });
   expect(hasAny).toBeTruthy();
 });

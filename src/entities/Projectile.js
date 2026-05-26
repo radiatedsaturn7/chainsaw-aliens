@@ -1,4 +1,24 @@
-import { vfsLoad } from '../ui/vfs.js';
+import { loadProjectFile } from '../ui/projectFiles.js';
+
+const ART_FRAME_CACHE = new Map();
+const MAX_ART_FRAME_CACHE_ENTRIES = 64;
+
+function rememberArtFrames(cacheKey, frames) {
+  ART_FRAME_CACHE.set(cacheKey, frames);
+  while (ART_FRAME_CACHE.size > MAX_ART_FRAME_CACHE_ENTRIES) {
+    ART_FRAME_CACHE.delete(ART_FRAME_CACHE.keys().next().value);
+  }
+  return frames;
+}
+
+function applyUprightTrajectoryTransform(ctx, angle = 0) {
+  if (Math.cos(angle) < 0) {
+    ctx.rotate(angle + Math.PI);
+    ctx.scale(-1, 1);
+    return;
+  }
+  ctx.rotate(angle);
+}
 
 export default class Projectile {
   constructor(x, y, vx, vy, damage = 1, options = {}) {
@@ -21,11 +41,15 @@ export default class Projectile {
 
   buildFramesFromArtRef(artRef) {
     if (typeof document === 'undefined') return null;
-    const doc = vfsLoad('art', artRef);
+    const ref = String(artRef || '').trim();
+    if (!ref) return null;
+    const doc = loadProjectFile('art', ref);
     const frames = Array.isArray(doc?.data?.frames) ? doc.data.frames : [];
     if (!frames.length) return null;
     const width = Math.max(1, Number(doc?.data?.width || doc?.data?.size || 16));
     const height = Math.max(1, Number(doc?.data?.height || doc?.data?.size || width));
+    const cacheKey = `${ref}:${Number(doc?.savedAt || doc?.data?.updatedAt || 0)}:${width}x${height}:${frames.length}`;
+    if (ART_FRAME_CACHE.has(cacheKey)) return ART_FRAME_CACHE.get(cacheKey);
     const converted = [];
     for (const frame of frames) {
       const canvas = document.createElement('canvas');
@@ -50,7 +74,7 @@ export default class Projectile {
       ctx.putImageData(imageData, 0, 0);
       converted.push(canvas);
     }
-    return converted.length ? converted : null;
+    return rememberArtFrames(cacheKey, converted.length ? converted : null);
   }
 
   update(dt) {
@@ -66,8 +90,10 @@ export default class Projectile {
       const frameIndex = Math.floor((this.time * 1000) / this.frameDuration) % this.frames.length;
       const frame = this.frames[frameIndex];
       ctx.save();
+      ctx.translate(this.x, this.y);
+      applyUprightTrajectoryTransform(ctx, Math.atan2(this.vy, this.vx));
       ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(frame, this.x - frame.width / 2, this.y - frame.height / 2);
+      ctx.drawImage(frame, -frame.width / 2, -frame.height / 2);
       ctx.restore();
       return;
     }

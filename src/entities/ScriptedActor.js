@@ -1,6 +1,6 @@
 import EnemyBase from './EnemyBase.js';
 import { ensureActorDefinition } from '../content/actorEditorData.js';
-import { vfsList, vfsLoad } from '../ui/vfs.js';
+import { listProjectFiles, loadProjectFile } from '../ui/projectFiles.js';
 
 const actorCache = new Map();
 const DEFAULT_ACTOR_SIZE = { width: 24, height: 24 };
@@ -22,12 +22,37 @@ function readPngDataUrlDimensions(dataUrl) {
   }
 }
 
+function normalizeAngle(angle) {
+  let result = Number(angle || 0);
+  while (result > Math.PI) result -= Math.PI * 2;
+  while (result < -Math.PI) result += Math.PI * 2;
+  return result;
+}
+
+function clampAngle(angle, minAngle, maxAngle) {
+  const value = normalizeAngle(angle);
+  const min = normalizeAngle(minAngle);
+  const max = normalizeAngle(maxAngle);
+  if (min <= max) return Math.max(min, Math.min(max, value));
+  return value >= min || value <= max
+    ? value
+    : (Math.abs(normalizeAngle(value - min)) < Math.abs(normalizeAngle(value - max)) ? min : max);
+}
+
+function actorLocalAngleToWorld(localAngle, facing = 1) {
+  return normalizeAngle(facing < 0 ? Math.PI - localAngle : localAngle);
+}
+
+function worldAngleToActorLocal(worldAngle, facing = 1) {
+  return normalizeAngle(facing < 0 ? Math.PI - worldAngle : worldAngle);
+}
+
 export function loadActorDefinitionById(actorId) {
   if (!actorId || typeof window === 'undefined') return null;
   if (actorCache.has(actorId)) return actorCache.get(actorId);
-  const actors = vfsList('actors');
+  const actors = listProjectFiles('actors');
   for (const { name } of actors) {
-    const payload = vfsLoad('actors', name);
+    const payload = loadProjectFile('actors', name);
     const entries = Array.isArray(payload?.data) ? payload.data : [payload?.data].filter(Boolean);
     for (const entry of entries) {
       const data = ensureActorDefinition(entry || null);
@@ -49,6 +74,7 @@ export default class ScriptedActor extends EnemyBase {
     this.height = this.definition.size.height;
     this.health = this.definition.health;
     this.maxHealth = this.health;
+    this.healthTint = this.definition.healthTint || { enabled: false, color: '#ff3333', maxIntensity: 0.1, keepAfterDeath: false };
     this.gravity = this.definition.gravity;
     this.invulnerable = this.definition.invulnerable;
     this.contactDamage = this.definition.contactDamage;
@@ -58,6 +84,12 @@ export default class ScriptedActor extends EnemyBase {
     this.taxonomies = Array.isArray(this.definition.taxonomies) ? [...this.definition.taxonomies] : [];
     this.aggressiveTo = Array.isArray(this.definition.aggressiveTo) ? [...this.definition.aggressiveTo] : [];
     this.stateId = this.definition.initialStateId;
+    this.deathStateId = this.definition.deathStateId || '';
+    this.destroyAfterDeath = this.definition.destroyAfterDeath !== false;
+    this.collidableAfterDeath = this.definition.collidableAfterDeath === true;
+    this.respawnOnRoomEntry = this.definition.respawnOnRoomEntry !== false;
+    this.deathStarted = false;
+    this.deathAnimationDuration = 0;
     this.stateTimer = 0;
     this.cooldowns = new Map();
     this.baseX = x;
@@ -72,6 +104,10 @@ export default class ScriptedActor extends EnemyBase {
     this.damagedPlayerThisFrame = false;
     this.transitionDelayRemaining = 0;
     this.pendingShots = [];
+    this.pendingBeams = [];
+    this.pendingHomingMissiles = [];
+    this.activeParticleEmitters = [];
+    this.actionCooldowns = new Map();
     this.pendingStateSwitch = null;
     this._lastFrameImage = null;
     this._collisionBodyOffsetX = 0;
@@ -108,7 +144,7 @@ export default class ScriptedActor extends EnemyBase {
     const animation = state?.animation || {};
     const artRef = typeof animation.artRef === 'string' ? animation.artRef.trim() : '';
     if (artRef) {
-      const doc = vfsLoad('art', artRef);
+      const doc = loadProjectFile('art', artRef);
       const cacheKey = `${artRef}:${Number(doc?.savedAt || doc?.data?.updatedAt || 0)}:${doc?.data?.frames?.length || 0}`;
       if (this._artDimensionsCache.has(cacheKey)) {
         this._definitionArtDimensions = this._artDimensionsCache.get(cacheKey);
@@ -147,7 +183,8 @@ export default class ScriptedActor extends EnemyBase {
   }
 
   getCollisionZoneRects(types = []) {
-    const zones = Array.isArray(this.definition?.collisionZones) ? this.definition.collisionZones : [];
+    const stateZones = this.currentState && Array.isArray(this.currentState.collisionZones) ? this.currentState.collisionZones : null;
+    const zones = stateZones || (Array.isArray(this.definition?.collisionZones) ? this.definition.collisionZones : []);
     const allow = new Set(types);
     const authored = this.getZoneCoordinateSize();
     const visual = this.getVisualDimensions();
@@ -225,12 +262,100 @@ export default class ScriptedActor extends EnemyBase {
   }
 
   damage(amount) {
-    if (this.invulnerable || !this.destructible) return;
+    if (this.deathStarted || this.invulnerable || !this.destructible) return;
     const beforeHealth = this.health;
+    const nextHealth = beforeHealth - Number(amount || 0);
+    const hasDeathState = this.definition.states.some((state) => state.id === this.deathStateId);
+    if (nextHealth <= 0 && hasDeathState) {
+      this.health = 0;
+      this.hurtTimer = 0.25;
+      this.shakePhase = 0;
+      this.tookDamageThisFrame = true;
+      this.startDeathState();
+      return;
+    }
     super.damage(amount);
     if (this.health < beforeHealth) {
       this.tookDamageThisFrame = true;
     }
+  }
+
+  getStateAnimationDurationSeconds(state = this.currentState) {
+    const animation = state?.animation || {};
+    if (Array.isArray(animation.frames) && animation.frames.length) {
+      const totalMs = animation.frames.reduce((sum, frame) => sum + Math.max(16, Number(frame?.durationMs || 0) || Math.round(1000 / Math.max(1, Number(animation.fps || 8)))), 0);
+      return Math.max(0.05, totalMs / 1000);
+    }
+    const artRef = typeof animation.artRef === 'string' ? animation.artRef.trim() : '';
+    if (artRef) {
+      const doc = loadProjectFile('art', artRef);
+      const frameCount = Array.isArray(doc?.data?.frames) ? doc.data.frames.length : 0;
+      if (frameCount > 0) return Math.max(0.05, frameCount / Math.max(1, Number(animation.fps || doc?.data?.fps || 8)));
+    }
+    if (animation.imageDataUrl) return Math.max(0.05, 1 / Math.max(1, Number(animation.fps || 8)));
+    return 0.5;
+  }
+
+  startDeathState() {
+    this.deathStarted = true;
+    this.dead = true;
+    this.solid = this.collidableAfterDeath;
+    this.destructible = false;
+    this.invulnerable = true;
+    this.bodyDamageEnabled = false;
+    this.contactDamage = 0;
+    this.stateId = this.deathStateId;
+    this.stateTimer = 0;
+    this.applyCollisionBodyFromZones();
+    this.transitionDelayRemaining = 0;
+    this.pendingShots = [];
+    this.pendingBeams = [];
+    this.pendingHomingMissiles = [];
+    this.activeParticleEmitters = [];
+    this.pendingStateSwitch = null;
+    this.actionCooldowns.clear();
+    this.deathAnimationDuration = this.getStateAnimationDurationSeconds(this.currentState);
+    this.deathElapsed = 0;
+    this.deathTimer = this.destroyAfterDeath ? this.deathAnimationDuration : Number.POSITIVE_INFINITY;
+  }
+
+  isDeadCollidable() {
+    return this.deathStarted && this.collidableAfterDeath;
+  }
+
+  tickActionCooldowns(dt) {
+    this.actionCooldowns.forEach((value, key) => {
+      const next = Math.max(0, Number(value || 0) - dt);
+      if (next > 0) this.actionCooldowns.set(key, next);
+      else this.actionCooldowns.delete(key);
+    });
+  }
+
+  updateDeath(dt, player = null, context = {}) {
+    if (!this.deathStarted) return;
+    this.stateTimer += dt;
+    this.deathElapsed = Math.max(0, Number(this.deathElapsed || 0) + dt);
+    this.tickActionCooldowns(dt);
+    if (this.transitionDelayRemaining > 0) {
+      this.transitionDelayRemaining = Math.max(0, this.transitionDelayRemaining - dt);
+    }
+    this.tickActiveParticleEmitters(dt, player || { x: this.x, y: this.y }, context);
+    if (this.pendingStateSwitch && this.transitionDelayRemaining <= 0) {
+      this.stateId = this.pendingStateSwitch;
+      this.stateTimer = 0;
+      this.applyCollisionBodyFromZones();
+      this.pendingStateSwitch = null;
+      this.activeParticleEmitters = [];
+    }
+    if (this.transitionDelayRemaining <= 0) {
+      this.checkStateTransition(player || { x: this.x, y: this.y }, context);
+    }
+    this.tickDamage?.(dt);
+    if (!this.destroyAfterDeath) {
+      this.deathTimer = Number.POSITIVE_INFINITY;
+      return;
+    }
+    this.deathTimer = Math.max(0, this.deathAnimationDuration - this.deathElapsed);
   }
 
   onDamagedPlayer() {
@@ -282,7 +407,20 @@ export default class ScriptedActor extends EnemyBase {
       if (!passed) continue;
       const beforeStateId = this.stateId;
       const actions = Array.isArray(transition.actions) ? transition.actions : [];
-      actions.forEach((action) => this.runAction(action, player, context));
+      actions.forEach((action, index) => {
+        let preparedAction = action;
+        if (action?.type === 'emit-particles' && !Number(action?.params?.durationMs)) {
+          const nextDelay = actions.slice(index + 1).find((entry) => entry?.type === 'delay');
+          const repeatDurationMs = Number(nextDelay?.params?.ms || 0);
+          if (repeatDurationMs > 0) {
+            preparedAction = {
+              ...action,
+              params: { ...(action.params || {}), _repeatDurationMs: repeatDurationMs }
+            };
+          }
+        }
+        this.runAction(preparedAction, player, context);
+      });
       if (this.stateId !== beforeStateId) return;
       return;
     }
@@ -293,11 +431,12 @@ export default class ScriptedActor extends EnemyBase {
     switch (action?.type) {
       case 'switch-state':
         if (params.stateId && params.stateId !== this.stateId) {
-          if (this.transitionDelayRemaining > 0 || this.pendingShots.length > 0) {
+          if (this.transitionDelayRemaining > 0 || this.pendingShots.length > 0 || this.pendingBeams.length > 0 || this.pendingHomingMissiles.length > 0) {
             this.pendingStateSwitch = params.stateId;
           } else {
             this.stateId = params.stateId;
             this.stateTimer = 0;
+            this.applyCollisionBodyFromZones();
           }
         }
         break;
@@ -320,6 +459,25 @@ export default class ScriptedActor extends EnemyBase {
       case 'rewind-animation':
         this.stateTimer = 0;
         break;
+      case 'emit-particles': {
+        const key = action?.id || 'emit-particles';
+        const cooldown = Math.max(0, Number(params.cooldownMs ?? 100) / 1000);
+        if (cooldown > 0 && this.actionCooldowns.get(key) > 0) break;
+        const spawn = this.getActionSpawnPoint(params);
+        const angle = this.getActionAngle({ ...params, targetPlayer: false }, player, spawn.x, spawn.y);
+        context.emitParticles?.(spawn.x, spawn.y, angle, { ...params, facing: this.facing });
+        if (cooldown > 0) this.actionCooldowns.set(key, cooldown);
+        const repeatDuration = Math.max(0, Number(params.durationMs || params._repeatDurationMs || 0) / 1000);
+        if (repeatDuration > 0) {
+          this.activeParticleEmitters.push({
+            key,
+            params: { ...params, durationMs: 0, _repeatDurationMs: 0 },
+            remaining: repeatDuration,
+            timer: Math.max(0.016, cooldown || 0.016)
+          });
+        }
+        break;
+      }
       case 'spawn-bullets': {
         const shotCount = Math.max(1, Math.floor(Number(params.shots || 1)));
         const shotDelay = Math.max(0, Number(params.shotDelayMs || 0)) / 1000;
@@ -328,6 +486,22 @@ export default class ScriptedActor extends EnemyBase {
             timer: i * shotDelay,
             params: { ...params }
           });
+        }
+        break;
+      }
+      case 'spawn-beam': {
+        const key = action?.id || 'spawn-beam';
+        if (this.actionCooldowns.get(key) > 0) break;
+        const duration = Math.max(0.05, Number(params.durationMs || 1000) / 1000);
+        this.pendingBeams.push({ timer: Math.max(0, Number(params.delayMs || 0)) / 1000, params: { ...params } });
+        this.actionCooldowns.set(key, duration + Math.max(0, Number(params.delayMs || 0)) / 1000);
+        break;
+      }
+      case 'spawn-homing-missile': {
+        const shotCount = Math.max(1, Math.floor(Number(params.shots || 1)));
+        const shotDelay = Math.max(0, Number(params.shotDelayMs || 0)) / 1000;
+        for (let i = 0; i < shotCount; i += 1) {
+          this.pendingHomingMissiles.push({ timer: i * shotDelay, params: { ...params } });
         }
         break;
       }
@@ -342,6 +516,16 @@ export default class ScriptedActor extends EnemyBase {
         break;
       case 'disable-body-damage':
         this.bodyDamageEnabled = false;
+        break;
+      case 'play-midi':
+        context.playMidi?.(String(params.trackId || '').trim(), {
+          fadeMs: Math.max(0, Number(params.fadeMs || 0))
+        });
+        break;
+      case 'stop-midi':
+        context.stopMidi?.(String(params.trackId || '').trim(), {
+          fadeMs: Math.max(0, Number(params.fadeMs || 0))
+        });
         break;
       default:
         break;
@@ -415,13 +599,20 @@ export default class ScriptedActor extends EnemyBase {
       this.damagedPlayerThisFrame = false;
       return;
     }
-    this.stateTimer += dt;
+    const timerDt = Number.isFinite(Number(context.actorTimerDt)) ? Number(context.actorTimerDt) : dt;
+    this.stateTimer += timerDt;
+    this.tickActionCooldowns(timerDt);
     this.applyMovement(dt, player, context);
-    this.tickPendingShots(dt, player, context);
-    if (this.pendingStateSwitch && this.transitionDelayRemaining <= 0 && this.pendingShots.length === 0) {
+    this.tickPendingShots(timerDt, player, context);
+    this.tickPendingBeams(timerDt, player, context);
+    this.tickPendingHomingMissiles(timerDt, player, context);
+    this.tickActiveParticleEmitters(timerDt, player, context);
+    if (this.pendingStateSwitch && this.transitionDelayRemaining <= 0 && this.pendingShots.length === 0 && this.pendingBeams.length === 0 && this.pendingHomingMissiles.length === 0) {
       this.stateId = this.pendingStateSwitch;
       this.stateTimer = 0;
+      this.applyCollisionBodyFromZones();
       this.pendingStateSwitch = null;
+      this.activeParticleEmitters = [];
     }
     if (this.transitionDelayRemaining <= 0) {
       this.checkStateTransition(player, context);
@@ -430,9 +621,13 @@ export default class ScriptedActor extends EnemyBase {
     this.bodyDamageEnabled = overrides.bodyDamageEnabled == null ? this.definition.bodyDamageEnabled : !!overrides.bodyDamageEnabled;
     this.contactDamage = overrides.contactDamage == null ? this.definition.contactDamage : Number(overrides.contactDamage || 0);
     this.invulnerable = overrides.invulnerable == null ? this.definition.invulnerable : !!overrides.invulnerable;
-    this.stagger = Math.max(0, this.stagger - dt * 0.5);
+    this.stagger = Math.max(0, this.stagger - timerDt * 0.5);
     this.tookDamageThisFrame = false;
     this.damagedPlayerThisFrame = false;
+  }
+
+  updateDuringHitPause(dt, player, context = {}) {
+    this.update(0, player, { ...context, actorTimerDt: dt });
   }
 
   tickPendingShots(dt, player, context = {}) {
@@ -444,15 +639,124 @@ export default class ScriptedActor extends EnemyBase {
       shot.timer -= dt;
       if (shot.timer > 0) continue;
       const p = shot.params || {};
-      const spawnX = this.x + Number(p.offsetX || 0) * (this.facing < 0 ? -1 : 1);
-      const spawnY = this.y + Number(p.offsetY || 0);
-      const dx = player.x - spawnX;
-      const dy = player.y - spawnY;
-      const angle = p.aimAtPlayer ? Math.atan2(dy, dx) : Number(p.angle || 0);
+      const spawn = this.getActionSpawnPoint(p);
+      const angle = this.getActionAngle({ ...p, targetPlayer: !!p.aimAtPlayer }, player, spawn.x, spawn.y);
       const speed = Number(p.speed || 220);
       if (p.restartAnimationEachShot) this.stateTimer = 0;
-      context.spawnProjectile?.(spawnX, spawnY, Math.cos(angle) * speed, Math.sin(angle) * speed, 1, { artRef: p.projectileArtRef || '' });
+      context.spawnProjectile?.(spawn.x, spawn.y, Math.cos(angle) * speed, Math.sin(angle) * speed, 1, { artRef: p.projectileArtRef || '', owner: this });
       this.pendingShots.splice(i, 1);
+    }
+  }
+
+  tickActiveParticleEmitters(dt, player, context = {}) {
+    for (let i = this.activeParticleEmitters.length - 1; i >= 0; i -= 1) {
+      const emitter = this.activeParticleEmitters[i];
+      emitter.remaining -= dt;
+      emitter.timer -= dt;
+      const interval = Math.max(0.016, Number(emitter.params?.cooldownMs ?? 100) / 1000);
+      while (emitter.remaining > 0 && emitter.timer <= 0) {
+        const spawn = this.getActionSpawnPoint(emitter.params);
+        const angle = this.getActionAngle({ ...emitter.params, targetPlayer: false }, player, spawn.x, spawn.y);
+        context.emitParticles?.(spawn.x, spawn.y, angle, { ...emitter.params, facing: this.facing });
+        emitter.timer += interval;
+      }
+      if (emitter.remaining <= 0) {
+        this.activeParticleEmitters.splice(i, 1);
+      }
+    }
+  }
+
+  getActionSpawnPoint(params = {}) {
+    const authored = this.getZoneCoordinateSize();
+    const art = this.getDefinitionArtDimensions();
+    const pickerSpace = {
+      width: Math.max(authored.width, art?.width > 0 ? (art.width / 16) * 32 : 0),
+      height: Math.max(authored.height, art?.height > 0 ? (art.height / 16) * 32 : 0)
+    };
+    const visual = this.getVisualDimensions();
+    const scaleX = visual.width / Math.max(1, pickerSpace.width || authored.width);
+    const scaleY = visual.height / Math.max(1, pickerSpace.height || authored.height);
+    return {
+      x: this.x + Number(params.offsetX || 0) * scaleX * (this.facing < 0 ? -1 : 1),
+      y: this.y + Number(params.offsetY || 0) * scaleY
+    };
+  }
+
+  getActionAngle(params = {}, player = null, spawnX = this.x, spawnY = this.y) {
+    const angleOffset = Number(params.angle || 0);
+    let localAngle = angleOffset;
+    if (params.targetPlayer && player) {
+      const worldAngle = Math.atan2((player.y + Number(params.targetOffsetY || 0)) - spawnY, (player.x + Number(params.targetOffsetX || 0)) - spawnX);
+      localAngle = worldAngleToActorLocal(worldAngle, this.facing) + angleOffset;
+    }
+    if (Number.isFinite(Number(params.minAngle)) && Number.isFinite(Number(params.maxAngle))) {
+      localAngle = clampAngle(localAngle, Number(params.minAngle), Number(params.maxAngle));
+    }
+    return actorLocalAngleToWorld(localAngle, this.facing);
+  }
+
+  tickPendingBeams(dt, player, context = {}) {
+    for (let i = this.pendingBeams.length - 1; i >= 0; i -= 1) {
+      const beam = this.pendingBeams[i];
+      beam.timer -= dt;
+      if (beam.timer > 0) continue;
+      const p = beam.params || {};
+      const spawn = this.getActionSpawnPoint(p);
+      const accuracy = Math.max(0, Number(p.accuracy || 0)) * (Math.PI / 180);
+      const localMinAngle = Number.isFinite(Number(p.minAngle)) ? Number(p.minAngle) : -Math.PI;
+      const localMaxAngle = Number.isFinite(Number(p.maxAngle)) ? Number(p.maxAngle) : Math.PI;
+      const baseAngle = this.getActionAngle(p, player, spawn.x, spawn.y);
+      const localAngle = clampAngle(
+        worldAngleToActorLocal(baseAngle, this.facing) + (accuracy > 0 ? (Math.random() * 2 - 1) * accuracy : 0),
+        localMinAngle,
+        localMaxAngle
+      );
+      const angle = actorLocalAngleToWorld(localAngle, this.facing);
+      context.spawnBeam?.(spawn.x, spawn.y, angle, {
+        targetPlayer: p.targetPlayer !== false,
+        targetOffsetX: Number(p.targetOffsetX || 0),
+        targetOffsetY: Number(p.targetOffsetY || 0),
+        facing: this.facing,
+        minAngle: localMinAngle,
+        maxAngle: localMaxAngle,
+        duration: Math.max(0.05, Number(p.durationMs || 1000) / 1000),
+        maxDistance: Number(p.maxDistance || 640),
+        rotationSpeed: Number(p.rotationSpeed || 180) * (Math.PI / 180),
+        trailLife: Math.max(0, Number(p.trailLifeMs || 0) / 1000),
+        damage: Number(p.damage || 1),
+        width: Number(p.width || 10),
+        startArtRef: p.startArtRef || '',
+        repeatArtRef: p.repeatArtRef || '',
+        impactArtRef: p.impactArtRef || ''
+      });
+      this.pendingBeams.splice(i, 1);
+    }
+  }
+
+  tickPendingHomingMissiles(dt, player, context = {}) {
+    for (let i = this.pendingHomingMissiles.length - 1; i >= 0; i -= 1) {
+      const shot = this.pendingHomingMissiles[i];
+      shot.timer -= dt;
+      if (shot.timer > 0) continue;
+      const p = shot.params || {};
+      const spawn = this.getActionSpawnPoint(p);
+      const angle = this.getActionAngle({ ...p, targetPlayer: false }, player, spawn.x, spawn.y);
+      context.spawnHomingMissile?.(spawn.x, spawn.y, angle, {
+        targetPlayer: p.targetPlayer !== false,
+        targetOffsetX: Number(p.targetOffsetX || 0),
+        targetOffsetY: Number(p.targetOffsetY || 0),
+        initialSpeed: Number(p.initialSpeed || 80),
+        acceleration: Number(p.acceleration || 260),
+        maxSpeed: Number(p.maxSpeed || 260),
+        turnSpeed: Number(p.turnSpeed || 180) * (Math.PI / 180),
+        duration: Math.max(0.1, Number(p.durationMs || 4000) / 1000),
+        damage: Number(p.damage || 1),
+        radius: Number(p.radius || 10),
+        missileArtRef: p.missileArtRef || '',
+        explosionArtRef: p.explosionArtRef || '',
+        smokeArtRef: p.smokeArtRef || ''
+      });
+      this.pendingHomingMissiles.splice(i, 1);
     }
   }
 
@@ -464,7 +768,7 @@ export default class ScriptedActor extends EnemyBase {
       if (this._artAnimationCache.has(artRef)) {
         return this._artAnimationCache.get(artRef);
       }
-      const doc = vfsLoad('art', artRef);
+      const doc = loadProjectFile('art', artRef);
       const frames = Array.isArray(doc?.data?.frames) ? doc.data.frames : [];
       if (frames.length && typeof document !== 'undefined') {
         const width = Math.max(1, Number(doc?.data?.width || doc?.data?.size || 16));
@@ -540,6 +844,16 @@ export default class ScriptedActor extends EnemyBase {
     return entry.ready ? entry.image : null;
   }
 
+  getHealthTintAlpha() {
+    const tint = this.healthTint || {};
+    if (!tint.enabled || this.maxHealth <= 0) return 0;
+    if (this.currentState?.disableHealthTint === true) return 0;
+    if (this.dead && tint.keepAfterDeath !== true) return 0;
+    const missingRatio = Math.max(0, Math.min(1, 1 - (Math.max(0, Number(this.health || 0)) / this.maxHealth)));
+    const maxIntensity = Math.max(0, Math.min(1, Number(tint.maxIntensity ?? 0.1)));
+    return missingRatio * maxIntensity;
+  }
+
   draw(ctx) {
     const frame = this.getCurrentAnimationFrame();
     const image = this.getFrameImage(frame?.imageDataUrl || '');
@@ -563,8 +877,17 @@ export default class ScriptedActor extends EnemyBase {
       ctx.scale(-1, 1);
     }
     ctx.drawImage(drawImage, -drawW / 2, -drawH / 2, drawW, drawH);
+    const tintAlpha = this.getHealthTintAlpha();
+    if (tintAlpha > 0) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-atop';
+      ctx.globalAlpha = tintAlpha;
+      ctx.fillStyle = String(this.healthTint?.color || '#ff3333');
+      ctx.fillRect(-drawW / 2, -drawH / 2, drawW, drawH);
+      ctx.restore();
+    }
     if (flash) {
-      ctx.globalCompositeOperation = 'screen';
+      ctx.globalCompositeOperation = 'source-atop';
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.fillRect(-drawW / 2, -drawH / 2, drawW, drawH);
     }

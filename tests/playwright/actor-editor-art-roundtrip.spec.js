@@ -39,12 +39,12 @@ test('actor editor pixel art saves to art doc and reopens with drawn pixels', as
 
     await studio.saveArtDocument();
     const savedName = studio.currentDocumentRef?.name || '';
-    const savedPayload = window.localStorage.getItem(`robter:vfs:art:${savedName}`);
-    if (!savedPayload) {
+    const savedResponse = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent(savedName)}`);
+    if (!savedResponse.ok) {
       throw new Error(`Expected saved art payload for ${savedName}`);
     }
-    const parsed = JSON.parse(savedPayload);
-    const savedFrame = parsed?.data?.frames?.[0] || [];
+    const savedPayload = await savedResponse.json();
+    const savedFrame = savedPayload?.file?.data?.frames?.[0] || [];
     const savedPixel = savedFrame[0] || null;
 
     game.exitPixelStudio();
@@ -81,10 +81,14 @@ test('actor editor pixel art saves to art doc and reopens with drawn pixels', as
       tick();
     });
 
-    window.localStorage.setItem('robter:vfs:art:Tile Art Autosave', JSON.stringify({
-      id: 'Tile Art Autosave',
+    await fetch('/__storage/file', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+      name: 'Tile Art Autosave',
       folder: 'art',
       savedAt: Date.now(),
+      version: 1,
       data: {
         tiles: {
           '#': {
@@ -97,7 +101,8 @@ test('actor editor pixel art saves to art doc and reopens with drawn pixels', as
           }
         }
       }
-    }));
+      })
+    });
 
     game.openProjectBrowserFromTitle();
     return { savedName, savedPixel };

@@ -34,9 +34,9 @@ test('save-as is prefilled after import so clicking Save persists document', asy
     return Boolean(result?.name);
   });
 
-  const saved = await page.evaluate(() => {
-    const payload = localStorage.getItem('robter:vfs:art:black');
-    return Boolean(payload);
+  const saved = await page.evaluate(async () => {
+    const response = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent('black')}`);
+    return response.ok;
   });
   expect(saved).toBeTruthy();
 });

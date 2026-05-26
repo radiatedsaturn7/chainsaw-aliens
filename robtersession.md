@@ -8,7 +8,7 @@ Main Menu → RobterSESSION → Setlist → Song Detail → Set Scale → Play �
 ## Setlist & Progress
 - 7 sets × 5 songs, each with a themed “band” set title.
 - Sets unlock sequentially.
-- Best score, accuracy, and grade are saved in localStorage.
+- Best score, accuracy, and grade are saved through the server-backed settings store.
 - A **Random Song** entry creates a deterministic song from a stored random seed.
 
 ## Controls

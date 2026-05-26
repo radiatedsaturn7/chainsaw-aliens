@@ -1,5 +1,5 @@
 import { openProjectBrowser } from './ProjectBrowserModal.js';
-import { vfsEnsureIndex, vfsList, vfsLoad, vfsSave } from './vfs.js';
+import { ensureProjectFileIndex, listProjectFiles, loadProjectFile, saveProjectFile } from './projectFiles.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, DEFAULT_TAXONOMIES, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
 import { getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 
@@ -31,6 +31,7 @@ const el = (tag, className, text) => {
 const toTitleLabel = (value) => String(value || '').split('-').map((part) => part ? `${part[0].toUpperCase()}${part.slice(1)}` : '').join(' ');
 const STATE_OPTION_TYPE = 'state-option';
 const LOOT_OPTION_TYPE = 'loot-option';
+const MUSIC_OPTION_TYPE = 'music-option';
 const PLAYER_INPUT_OPTIONS = [
   { id: 'attack', label: 'Attack' },
   { id: 'jump', label: 'Jump' },
@@ -69,11 +70,16 @@ const ACTION_SPECS = {
   delay: { label: 'Delay', fields: [{ key: 'ms', label: 'Milliseconds', type: 'number', min: 0, step: 10, defaultValue: 100 }] },
   'rewind-animation': { label: 'Rewind Animation', fields: [] },
   'emit-damage': { label: 'Emit area damage', fields: [{ key: 'amount', label: 'Damage amount', type: 'number', min: 0, step: 1, defaultValue: 1 }, { key: 'radius', label: 'Radius (px)', type: 'number', min: 0, step: 1, defaultValue: 32 }] },
+  'emit-particles': { label: 'Emit particles', fields: [{ key: 'count', label: 'Count', type: 'number', min: 1, max: 256, step: 1, defaultValue: 12 }, { key: 'color', label: 'Color', type: 'text', defaultValue: 'rgba(255,95,46,0.9)' }, { key: 'size', label: 'Size', type: 'number', min: 1, step: 1, defaultValue: 5 }, { key: 'sizeRandomness', label: 'Size randomness', type: 'number', min: 0, step: 1, defaultValue: 3 }, { key: 'lifeMs', label: 'Lifetime ms', type: 'number', min: 16, step: 16, defaultValue: 450 }, { key: 'lifeRandomnessMs', label: 'Life randomness ms', type: 'number', min: 0, step: 16, defaultValue: 250 }, { key: 'radius', label: 'Spawn radius', type: 'number', min: 0, step: 1, defaultValue: 12 }, { key: 'speed', label: 'Speed', type: 'number', min: 0, step: 1, defaultValue: 120 }, { key: 'speedRandomness', label: 'Speed randomness', type: 'number', min: 0, step: 1, defaultValue: 80 }, { key: 'angle', label: 'Direction', type: 'number', step: 1, defaultValue: 0, toDisplay: (v) => Math.round(Number(v || 0) * (180 / Math.PI)), fromDisplay: (v) => Number(v || 0) * (Math.PI / 180) }, { key: 'spread', label: 'Spread degrees', type: 'number', min: 0, step: 1, defaultValue: Math.PI * 2, toDisplay: (v) => Math.round(Number(v ?? Math.PI * 2) * (180 / Math.PI)), fromDisplay: (v) => Number(v || 0) * (Math.PI / 180) }, { key: 'gravity', label: 'Gravity', type: 'checkbox', defaultValue: false }, { key: 'gravityScale', label: 'Gravity scale', type: 'number', min: 0, step: 0.1, defaultValue: 1 }, { key: 'spin', label: 'Spin rad/sec', type: 'number', step: 0.1, defaultValue: 0 }, { key: 'frameDurationMs', label: 'Frame ms', type: 'number', min: 16, step: 16, defaultValue: 120 }, { key: 'offsetX', label: 'Offset X', type: 'number', min: -9999, max: 9999, step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Offset Y', type: 'number', min: -9999, max: 9999, step: 1, defaultValue: 0 }, { key: 'particleArtRef', label: 'Particle sprite', type: 'text', defaultValue: '' }, { key: 'cooldownMs', label: 'Cooldown ms', type: 'number', min: 0, step: 10, defaultValue: 100 }] },
   'spawn-bullets': { label: 'Spawn bullet', fields: [{ key: 'aimAtPlayer', label: 'Aim at player', type: 'checkbox', defaultValue: true }, { key: 'angle', label: 'Angle (degrees)', type: 'number', step: 1, defaultValue: 0, toDisplay: (v) => Math.round(Number(v || 0) * (180 / Math.PI)), fromDisplay: (v) => Number(v || 0) * (Math.PI / 180) }, { key: 'speed', label: 'Bullet speed', type: 'number', min: 0, step: 1, defaultValue: 220 }, { key: 'shots', label: 'Shots', type: 'number', min: 1, max: 32, step: 1, defaultValue: 1 }, { key: 'shotDelayMs', label: 'Shot Delay ms', type: 'number', min: 0, step: 10, defaultValue: 0 }, { key: 'restartAnimationEachShot', label: 'Restart anim each shot', type: 'checkbox', defaultValue: false }, { key: 'offsetX', label: 'Spawn offset X', type: 'number', min: -9999, max: 9999, step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Spawn offset Y', type: 'number', min: -9999, max: 9999, step: 1, defaultValue: 0 }, { key: 'projectileArtRef', label: 'Projectile Art Ref', type: 'text', defaultValue: '' }] },
+  'spawn-beam': { label: 'Fire beam', fields: [{ key: 'targetPlayer', label: 'Target player', type: 'checkbox', defaultValue: true }, { key: 'angle', label: 'Initial angle', type: 'number', step: 1, defaultValue: 0, toDisplay: (v) => Math.round(Number(v || 0) * (180 / Math.PI)), fromDisplay: (v) => Number(v || 0) * (Math.PI / 180) }, { key: 'minAngle', label: 'Min angle', type: 'number', step: 1, defaultValue: -Math.PI, toDisplay: (v) => Math.round(Number(v ?? -Math.PI) * (180 / Math.PI)), fromDisplay: (v) => Number(v || 0) * (Math.PI / 180) }, { key: 'maxAngle', label: 'Max angle', type: 'number', step: 1, defaultValue: Math.PI, toDisplay: (v) => Math.round(Number(v ?? Math.PI) * (180 / Math.PI)), fromDisplay: (v) => Number(v || 0) * (Math.PI / 180) }, { key: 'targetOffsetX', label: 'Target offset X', type: 'number', step: 1, defaultValue: 0 }, { key: 'targetOffsetY', label: 'Target offset Y', type: 'number', step: 1, defaultValue: 0 }, { key: 'rotationSpeed', label: 'Turret deg/sec', type: 'number', min: 0, step: 1, defaultValue: 180 }, { key: 'accuracy', label: 'Miss degrees', type: 'number', min: 0, step: 1, defaultValue: 15 }, { key: 'trailLifeMs', label: 'Trail life ms', type: 'number', min: 0, step: 10, defaultValue: 0 }, { key: 'durationMs', label: 'Duration ms', type: 'number', min: 50, step: 50, defaultValue: 1000 }, { key: 'maxDistance', label: 'Max distance', type: 'number', min: 16, step: 8, defaultValue: 640 }, { key: 'damage', label: 'Damage', type: 'number', min: 0, step: 1, defaultValue: 1 }, { key: 'width', label: 'Beam width', type: 'number', min: 2, step: 1, defaultValue: 10 }, { key: 'offsetX', label: 'Muzzle offset X', type: 'number', min: -9999, max: 9999, step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Muzzle offset Y', type: 'number', min: -9999, max: 9999, step: 1, defaultValue: 0 }, { key: 'startArtRef', label: 'Start sprite', type: 'text', defaultValue: '' }, { key: 'repeatArtRef', label: 'Repeat sprite', type: 'text', defaultValue: '' }, { key: 'impactArtRef', label: 'Impact sprite', type: 'text', defaultValue: '' }] },
+  'spawn-homing-missile': { label: 'Homing missile', fields: [{ key: 'targetPlayer', label: 'Target player', type: 'checkbox', defaultValue: true }, { key: 'angle', label: 'Launch angle', type: 'number', step: 1, defaultValue: -Math.PI / 2, toDisplay: (v) => Math.round(Number(v || 0) * (180 / Math.PI)), fromDisplay: (v) => Number(v || 0) * (Math.PI / 180) }, { key: 'targetOffsetX', label: 'Target offset X', type: 'number', step: 1, defaultValue: 0 }, { key: 'targetOffsetY', label: 'Target offset Y', type: 'number', step: 1, defaultValue: 0 }, { key: 'initialSpeed', label: 'Initial speed', type: 'number', min: 0, step: 1, defaultValue: 80 }, { key: 'acceleration', label: 'Acceleration', type: 'number', min: 0, step: 1, defaultValue: 260 }, { key: 'maxSpeed', label: 'Max speed', type: 'number', min: 1, step: 1, defaultValue: 260 }, { key: 'turnSpeed', label: 'Turn deg/sec', type: 'number', min: 0, step: 1, defaultValue: 180 }, { key: 'durationMs', label: 'Lifetime ms', type: 'number', min: 100, step: 100, defaultValue: 4000 }, { key: 'damage', label: 'Damage', type: 'number', min: 0, step: 1, defaultValue: 1 }, { key: 'radius', label: 'Hit radius', type: 'number', min: 4, step: 1, defaultValue: 10 }, { key: 'shots', label: 'Shots', type: 'number', min: 1, max: 32, step: 1, defaultValue: 1 }, { key: 'shotDelayMs', label: 'Shot Delay ms', type: 'number', min: 0, step: 10, defaultValue: 0 }, { key: 'offsetX', label: 'Muzzle offset X', type: 'number', min: -9999, max: 9999, step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Muzzle offset Y', type: 'number', min: -9999, max: 9999, step: 1, defaultValue: 0 }, { key: 'missileArtRef', label: 'Missile sprite', type: 'text', defaultValue: '' }, { key: 'explosionArtRef', label: 'Explosion sprite', type: 'text', defaultValue: '' }, { key: 'smokeArtRef', label: 'Smoke trail sprite', type: 'text', defaultValue: '' }] },
   'spawn-actor': { label: 'Spawn actor', fields: [{ key: 'actorId', label: 'Actor ID', type: 'text', defaultValue: '' }, { key: 'offsetX', label: 'Offset X', type: 'number', step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Offset Y', type: 'number', step: 1, defaultValue: 0 }] },
   'delete-actor': { label: 'Delete actor', fields: [] },
   'play-sound': { label: 'Play sound', fields: [{ key: 'soundId', label: 'Sound ID', type: 'text', defaultValue: '' }] },
   'play-fx': { label: 'Play FX', fields: [{ key: 'fxId', label: 'FX ID', type: 'text', defaultValue: '' }] },
+  'play-midi': { label: 'Play MIDI', fields: [{ key: 'trackId', label: 'MIDI track', type: MUSIC_OPTION_TYPE, defaultValue: '', emptyLabel: 'Select MIDI track' }, { key: 'fadeMs', label: 'Fade ms', type: 'number', min: 0, step: 50, defaultValue: 250 }] },
+  'stop-midi': { label: 'Stop MIDI', fields: [{ key: 'trackId', label: 'MIDI track', type: MUSIC_OPTION_TYPE, defaultValue: '', emptyLabel: 'Current MIDI' }, { key: 'fadeMs', label: 'Fade ms', type: 'number', min: 0, step: 50, defaultValue: 250 }] },
   'become-invulnerable': { label: 'Become invulnerable', fields: [] },
   'become-vulnerable': { label: 'Become vulnerable', fields: [] },
   'enable-body-damage': { label: 'Enable body damage', fields: [] },
@@ -154,7 +160,7 @@ export default class ActorEditor {
   getAnimationPreviewFrames(animation = {}) {
     const artRef = typeof animation?.artRef === 'string' ? animation.artRef : '';
     if (artRef) {
-      const artDoc = vfsLoad('art', artRef);
+      const artDoc = loadProjectFile('art', artRef);
       const savedAt = Number(artDoc?.savedAt || 0);
       const frames = Array.isArray(artDoc?.data?.frames) ? artDoc.data.frames : [];
       if (frames.length) {
@@ -179,7 +185,7 @@ export default class ActorEditor {
   getAnimationDimensions(animation = {}) {
     const artRef = typeof animation?.artRef === 'string' ? animation.artRef.trim() : '';
     if (artRef) {
-      const artDoc = vfsLoad('art', artRef);
+      const artDoc = loadProjectFile('art', artRef);
       const width = Number(artDoc?.data?.width || artDoc?.data?.size || 0);
       const height = Number(artDoc?.data?.height || artDoc?.data?.size || width || 0);
       if (Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0) {
@@ -296,13 +302,15 @@ export default class ActorEditor {
         input.type = 'checkbox';
         input.checked = !!params?.[field.key];
         input.oninput = (event) => onParamInput(field, event.target.checked);
-      } else if (field.type === 'select' || field.type === STATE_OPTION_TYPE || field.type === LOOT_OPTION_TYPE) {
+      } else if (field.type === 'select' || field.type === STATE_OPTION_TYPE || field.type === LOOT_OPTION_TYPE || field.type === MUSIC_OPTION_TYPE) {
         input = el('select');
         const options = field.type === STATE_OPTION_TYPE
           ? stateOptions
           : field.type === LOOT_OPTION_TYPE
             ? LOOT_ITEM_OPTIONS
-            : (field.options || []);
+            : field.type === MUSIC_OPTION_TYPE
+              ? [{ id: '', label: field.emptyLabel || 'None' }, ...listProjectFiles('music').map((entry) => ({ id: entry.name, label: entry.name }))]
+              : (field.options || []);
         options.forEach((option) => {
           const node = el('option');
           node.value = option.id;
@@ -315,20 +323,36 @@ export default class ActorEditor {
       } else {
         input = el('input');
         if (field.type === 'number') {
-          input.type = 'number';
-          if (field.min != null) input.min = String(field.min);
-          if (field.max != null) input.max = String(field.max);
-          if (field.step != null) input.step = String(field.step);
+          input.type = 'text';
+          const allowsNegative = field.min == null || Number(field.min) < 0;
+          input.inputMode = allowsNegative ? 'text' : 'decimal';
+          input.pattern = allowsNegative ? '-?[0-9]*[.]?[0-9]*' : '[0-9]*[.]?[0-9]*';
         } else {
           input.type = 'text';
         }
         const storedValue = params?.[field.key];
         const displayValue = field.toDisplay ? field.toDisplay(storedValue) : (storedValue ?? field.defaultValue ?? '');
         input.value = displayValue;
-        input.oninput = (event) => {
-          const raw = field.type === 'number' ? Number(event.target.value || 0) : event.target.value;
+        const commitInputValue = (event) => {
+          const rawText = String(event.target.value ?? '').trim();
+          const raw = field.type === 'number'
+            ? (rawText === '' ? '' : Number(rawText))
+            : event.target.value;
+          if (field.type === 'number' && rawText !== '' && !Number.isFinite(raw)) return;
           onParamInput(field, raw);
         };
+        if (field.type === 'number') {
+          input.onchange = commitInputValue;
+          input.onblur = commitInputValue;
+          input.onkeydown = (event) => {
+            if (event.key !== 'Enter') return;
+            event.preventDefault();
+            commitInputValue(event);
+            input.blur();
+          };
+        } else {
+          input.oninput = commitInputValue;
+        }
       }
       fieldWrap.appendChild(input);
       wrap.appendChild(fieldWrap);
@@ -359,7 +383,7 @@ export default class ActorEditor {
 
   mount() {
     if (this.overlay) this.overlay.remove();
-    vfsEnsureIndex();
+    ensureProjectFileIndex();
     const root = document.getElementById('global-overlay-root') || document.body;
     const overlay = el('div', 'actor-editor-overlay');
     overlay.style.pointerEvents = 'auto';
@@ -380,11 +404,11 @@ export default class ActorEditor {
     return this.actor.states.find((state) => state.id === this.selectedStateId) || this.actor.states[0];
   }
 
-  setActor(next) {
+  setActor(next, { render = true } = {}) {
     this.actor = this.applyDefaultArtSize(next);
     this.game.registerRuntimeActorDefinition?.(this.actor);
     this.ensureStateSelection();
-    this.render();
+    if (render) this.render();
   }
 
   async newActor() {
@@ -437,12 +461,9 @@ export default class ActorEditor {
     this.game.showSystemToast?.('saving...');
     let saved = null;
     try {
-      saved = vfsSave(ACTOR_FOLDER, name, payload);
+      saved = saveProjectFile(ACTOR_FOLDER, name, payload);
       if (saved?.syncPromise) {
-        await Promise.race([
-          saved.syncPromise,
-          new Promise((resolve) => setTimeout(resolve, 1500))
-        ]);
+        await saved.syncPromise;
       }
     } catch (error) {
       console.error('Actor save failed', error);
@@ -459,7 +480,7 @@ export default class ActorEditor {
       await new Promise((resolve) => setTimeout(resolve, MIN_SAVING_TOAST_MS - elapsed));
     }
     const persistedName = String(saved?.name || name);
-    const persistedPayload = vfsLoad(ACTOR_FOLDER, persistedName);
+    const persistedPayload = loadProjectFile(ACTOR_FOLDER, persistedName);
     if (!persistedPayload?.data) {
       this.showInlineSaveStatus?.('Save failed');
       this.game.showSaveStatusModal?.('Save failed');
@@ -561,11 +582,16 @@ export default class ActorEditor {
   }
 
   openProjectileArtEditor(initialArtRef, onCommit) {
+    return this.openActionArtEditor(initialArtRef, onCommit, 'projectile');
+  }
+
+  openActionArtEditor(initialArtRef, onCommit, slotId = 'action', documentName = '') {
     this.game.enterPixelStudio({ returnState: 'actor-editor', resetFocus: false });
     this.game.pixelStudio.loadActorStateImageForEditing({
       actorId: this.actor.id,
-      stateId: `${this.selectedStateId || 'state'}-projectile`,
+      stateId: `${this.selectedStateId || 'state'}-${slotId}`,
       animation: { artRef: String(initialArtRef || '').trim(), frames: [], fps: 8 },
+      documentName,
       onCommit: (animation) => {
         const nextArtRef = String(animation?.artRef || initialArtRef || '').trim();
         if (!nextArtRef) return;
@@ -574,7 +600,7 @@ export default class ActorEditor {
     }).catch((error) => console.warn('Failed to open projectile art in Pixel Studio', error));
   }
 
-  openCollisionZoneEditor(actor) {
+  openCollisionZoneEditor(actor, { state = null } = {}) {
     const modal = el('div', 'actor-editor-overlay');
     Object.assign(modal.style, { position: 'fixed', inset: '0', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: '2147483647', touchAction: 'none' });
     const card = el('div', 'actor-editor-card');
@@ -664,8 +690,13 @@ export default class ActorEditor {
     card.appendChild(bottomTools);
     modal.appendChild(card);
     document.body.appendChild(modal);
-    const zones = Array.isArray(actor.collisionZones) ? clone(actor.collisionZones) : [];
-    const preview = this.getAnimationPreviewFrames(actor.states?.[0]?.animation || {})[0]?.imageDataUrl || '';
+    const editingState = state ? clone(state) : null;
+    const sourceZones = editingState
+      ? (Array.isArray(editingState.collisionZones) ? editingState.collisionZones : actor.collisionZones)
+      : actor.collisionZones;
+    const zones = Array.isArray(sourceZones) ? clone(sourceZones) : [];
+    const previewState = editingState || actor.states?.find((entry) => entry.id === actor.initialStateId) || actor.states?.[0];
+    const preview = this.getAnimationPreviewFrames(previewState?.animation || {})[0]?.imageDataUrl || '';
     const image = new Image();
     if (preview) image.src = preview;
     const colors = { solid: 'rgba(255,220,0,0.35)', 'solid-damage-player': 'rgba(255,0,0,0.35)', 'damage-player': 'rgba(255,90,160,0.35)', 'solid-hurtbox': 'rgba(70,140,255,0.35)', hurtbox: 'rgba(80,255,120,0.35)' };
@@ -874,7 +905,14 @@ export default class ActorEditor {
     };
     cancel.onclick = () => cleanup();
     ok.onclick = () => {
-      this.setActor({ ...actor, collisionZones: zones });
+      if (editingState) {
+        const next = clone(this.actor);
+        const target = next.states.find((entry) => entry.id === editingState.id);
+        if (target) target.collisionZones = zones;
+        this.setActor(next);
+      } else {
+        this.setActor({ ...actor, collisionZones: zones });
+      }
       cleanup();
     };
     image.onload = () => render();
@@ -887,22 +925,47 @@ export default class ActorEditor {
   }
 
   buildProjectileArtControl(params, onCommit) {
+    return this.buildActionArtControl(params, {
+      artKey: 'projectileArtRef',
+      emptyLabel: 'Create projectile art',
+      editPrefix: 'Edit',
+      alt: 'Projectile art preview',
+      slotId: 'projectile',
+      onCommit
+    });
+  }
+
+  buildActionSlotArtDocName(action, artKey) {
+    const slugifyPart = (value, fallback) => String(value || fallback || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || fallback;
+    return [
+      slugifyPart(this.actor?.id || this.actor?.name, 'actor'),
+      slugifyPart(this.selectedStateId, 'state'),
+      slugifyPart(action?.id || action?.type, 'action'),
+      slugifyPart(artKey, 'sprite'),
+      'art'
+    ].join('-');
+  }
+
+  buildActionArtControl(params, { artKey, label, emptyLabel, editPrefix = 'Edit', alt = 'Action art preview', slotId = 'action', documentName = '', onCommit }) {
     const wrap = el('div', 'actor-editor-inline-actions');
     const button = el('button', 'actor-editor-btn small');
     button.type = 'button';
-    const artRef = String(params?.projectileArtRef || '').trim();
+    const artRef = String(params?.[artKey] || '').trim();
     const frames = this.getProjectileArtPreviewFrames(artRef);
     const preview = frames[0];
     if (preview?.imageDataUrl) {
       const image = el('img', 'actor-editor-thumb');
       image.src = preview.imageDataUrl;
-      image.alt = 'Projectile art preview';
+      image.alt = alt;
       button.appendChild(image);
-      button.appendChild(el('span', '', artRef || 'Edit projectile art'));
+      button.appendChild(el('span', '', label ? `${label}: ${artRef}` : (artRef || emptyLabel)));
     } else {
-      button.textContent = artRef ? `Edit ${artRef}` : 'Create projectile art';
+      button.textContent = artRef ? `${editPrefix} ${artRef}` : emptyLabel;
     }
-    button.onclick = () => this.openProjectileArtEditor(artRef, onCommit);
+    button.onclick = () => this.openActionArtEditor(artRef, onCommit, slotId, documentName);
     wrap.appendChild(button);
     return wrap;
   }
@@ -922,9 +985,9 @@ export default class ActorEditor {
     next.name = `${state.name} Copy`;
     const sourceArtRef = String(state?.animation?.artRef || '').trim();
     if (sourceArtRef) {
-      const sourceDoc = vfsLoad('art', sourceArtRef);
+      const sourceDoc = loadProjectFile('art', sourceArtRef);
       const duplicateName = `${sourceArtRef} copy ${Date.now()}`;
-      const saved = vfsSave('art', duplicateName, sourceDoc?.data || sourceDoc || {});
+      const saved = saveProjectFile('art', duplicateName, sourceDoc?.data || sourceDoc || {});
       if (saved?.name) {
         next.animation = {
           ...(next.animation || {}),
@@ -942,6 +1005,7 @@ export default class ActorEditor {
     const copy = clone(this.actor);
     copy.states = copy.states.filter((entry) => entry.id !== state.id);
     if (copy.initialStateId === state.id) copy.initialStateId = copy.states[0].id;
+    if (copy.deathStateId === state.id) copy.deathStateId = '';
     this.selectedStateId = copy.states[0].id;
     this.setActor(copy);
   }
@@ -969,17 +1033,32 @@ export default class ActorEditor {
     this.setActor(copy);
   }
 
-  updateSelectedState(mutator) {
+  updateSelectedState(mutator, options = {}) {
     const copy = clone(this.actor);
     const state = copy.states.find((entry) => entry.id === this.selectedStateId);
     if (!state) return;
     mutator(state, copy);
-    this.setActor(copy);
+    this.setActor(copy, options);
+  }
+
+  captureScrollState() {
+    if (!this.overlay) return null;
+    const center = this.overlay.querySelector('.actor-editor-center');
+    return center ? { top: center.scrollTop, left: center.scrollLeft } : null;
+  }
+
+  restoreScrollState(scrollState) {
+    if (!scrollState || !this.overlay) return;
+    const center = this.overlay.querySelector('.actor-editor-center');
+    if (!center) return;
+    center.scrollTop = scrollState.top || 0;
+    center.scrollLeft = scrollState.left || 0;
   }
 
   render() {
     if (!this.overlay) return;
     const focusState = this.captureFocusedInputState();
+    const scrollState = this.captureScrollState();
     this.clearPreviewTimers();
     this.ensureStateSelection();
     const actor = this.actor;
@@ -1033,6 +1112,7 @@ export default class ActorEditor {
     if (this.stateGraphOpen) {
       this.overlay.appendChild(this.renderStateGraphModal());
     }
+    this.restoreScrollState(scrollState);
     this.restoreFocusedInputState(focusState);
   }
 
@@ -1086,9 +1166,9 @@ export default class ActorEditor {
     const options = new Set(DEFAULT_TAXONOMIES);
     (actor?.taxonomies || []).forEach((entry) => options.add(String(entry)));
     (actor?.aggressiveTo || []).forEach((entry) => options.add(String(entry)));
-    const actorDocs = vfsList(ACTOR_FOLDER);
+    const actorDocs = listProjectFiles(ACTOR_FOLDER);
     actorDocs.forEach(({ name }) => {
-      const payload = vfsLoad(ACTOR_FOLDER, name);
+      const payload = loadProjectFile(ACTOR_FOLDER, name);
       const definition = payload?.data || null;
       const normalized = ensureActorDefinition(definition || null);
       (normalized.taxonomies || []).forEach((entry) => options.add(String(entry)));
@@ -1191,13 +1271,13 @@ export default class ActorEditor {
     rail.style.display = 'flex';
     rail.style.flexDirection = 'column';
     rail.style.gap = '8px';
-    const firstState = this.actor.states?.[0];
+    const firstState = this.actor.states?.find((state) => state.id === this.actor.initialStateId) || this.actor.states?.[0];
     const firstFrame = this.getAnimationPreviewFrames(firstState?.animation || {})[0] || null;
     if (!firstFrame?.imageDataUrl) {
-      rail.appendChild(el('div', 'actor-editor-note', 'Variant preview appears here once state 1 has art.'));
+      rail.appendChild(el('div', 'actor-editor-note', 'Variant preview appears here once the first state has art.'));
       return rail;
     }
-    rail.appendChild(el('div', 'actor-editor-note', 'Variant preview (state 1)'));
+    rail.appendChild(el('div', 'actor-editor-note', 'Variant preview (first state)'));
     const preview = el('img');
     preview.src = firstFrame.imageDataUrl;
     preview.alt = 'First state preview';
@@ -1243,7 +1323,12 @@ export default class ActorEditor {
     });
     wrap.appendChild(controls);
     this.actor.states.forEach((state) => {
-      const btn = el('button', `actor-editor-btn small${this.selectedStateId === state.id ? ' active' : ''}`, state.name || state.id);
+      const badges = [
+        state.id === this.actor.initialStateId ? 'start' : '',
+        state.id === this.actor.deathStateId ? 'death' : ''
+      ].filter(Boolean);
+      const label = badges.length ? `${state.name || state.id} (${badges.join(', ')})` : (state.name || state.id);
+      const btn = el('button', `actor-editor-btn small${this.selectedStateId === state.id ? ' active' : ''}`, label);
       this.styleRailButton(btn, this.selectedStateId === state.id);
       btn.onclick = () => {
         this.selectedStateId = state.id;
@@ -1279,8 +1364,34 @@ export default class ActorEditor {
       wrap.appendChild(input);
       grid.appendChild(wrap);
     };
-    const text = (value, onInput) => {
-      const input = el('input'); input.value = value || ''; input.oninput = onInput; return input;
+    const text = (value, onInput, { deferred = false, numeric = false, type = 'text' } = {}) => {
+      const input = el('input');
+      input.type = type;
+      input.value = value ?? '';
+      if (numeric) {
+        input.inputMode = 'text';
+        input.pattern = '-?[0-9]*[.]?[0-9]*';
+      }
+      if (!deferred) {
+        input.oninput = onInput;
+        return input;
+      }
+      const commit = (event) => {
+        if (numeric) {
+          const raw = String(event.target.value ?? '').trim();
+          if (raw === '' || !Number.isFinite(Number(raw))) return;
+        }
+        onInput(event);
+      };
+      input.onchange = commit;
+      input.onblur = commit;
+      input.onkeydown = (event) => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        commit(event);
+        input.blur();
+      };
+      return input;
     };
     const checkbox = (checked, onInput, labelText = null) => {
       const wrap = el('label', 'actor-editor-toggle');
@@ -1291,12 +1402,38 @@ export default class ActorEditor {
       options.forEach((option) => { const o = el('option'); o.value = option.id; o.textContent = option.label; if (option.id === value) o.selected = true; input.appendChild(o); });
       input.oninput = onInput; return input;
     };
-    addField('Name', text(actor.name, (event) => this.setActor({ ...actor, name: event.target.value })));
+    addField('Name', text(actor.name, (event) => this.setActor({ ...actor, name: event.target.value }), { deferred: true }));
     addField('Attack who (legacy)', select(actor.attackTarget, ACTOR_ATTACK_TARGETS, (event) => this.setActor({ ...actor, attackTarget: event.target.value })));
-    addField('Health', text(actor.health, (event) => this.setActor({ ...actor, health: Number(event.target.value || 0) || 1 })));
+    addField('Health', text(actor.health, (event) => this.setActor({ ...actor, health: Number(event.target.value || 0) || 1 }), { deferred: true, numeric: true }));
+    const healthTint = actor.healthTint || { enabled: false, color: '#ff3333', maxIntensity: 0.1, keepAfterDeath: false };
+    addField('Health tint', checkbox(healthTint.enabled, (event) => this.setActor({
+      ...actor,
+      healthTint: { ...healthTint, enabled: event.target.checked }
+    }), 'Enabled'));
+    addField('Health tint color', text(healthTint.color || '#ff3333', (event) => this.setActor({
+      ...actor,
+      healthTint: { ...healthTint, color: event.target.value || '#ff3333' }
+    }), { type: 'color' }));
+    addField('Health tint max %', text(Math.round(Number(healthTint.maxIntensity ?? 0.1) * 100), (event) => this.setActor({
+      ...actor,
+      healthTint: {
+        ...healthTint,
+        maxIntensity: Math.max(0, Math.min(1, Number(event.target.value || 0) / 100))
+      }
+    }), { deferred: true, numeric: true }));
+    addField('Keep tint after death', checkbox(healthTint.keepAfterDeath, (event) => this.setActor({
+      ...actor,
+      healthTint: { ...healthTint, keepAfterDeath: event.target.checked }
+    }), 'Enabled'));
+    const stateOptions = (actor.states || []).map((state) => ({ id: state.id, label: state.name || state.id }));
+    addField('First state', select(actor.initialStateId, stateOptions, (event) => this.setActor({ ...actor, initialStateId: event.target.value })));
+    addField('Death state', select(actor.deathStateId || '', [{ id: '', label: 'None' }, ...stateOptions], (event) => this.setActor({ ...actor, deathStateId: event.target.value })));
+    addField('Destroy after death', checkbox(actor.destroyAfterDeath !== false, (event) => this.setActor({ ...actor, destroyAfterDeath: event.target.checked }), 'Enabled'));
+    addField('Collidable after death', checkbox(actor.collidableAfterDeath, (event) => this.setActor({ ...actor, collidableAfterDeath: event.target.checked }), 'Enabled'));
+    addField('Respawn on room re-entry', checkbox(actor.respawnOnRoomEntry !== false, (event) => this.setActor({ ...actor, respawnOnRoomEntry: event.target.checked }), 'Enabled'));
     addField('Gravity', checkbox(actor.gravity, (event) => this.setActor({ ...actor, gravity: event.target.checked }), 'On'));
     addField('Body contact damage', checkbox(actor.bodyDamageEnabled, (event) => this.setActor({ ...actor, bodyDamageEnabled: event.target.checked }), 'Enabled'));
-    addField('Contact damage amount', text(actor.contactDamage, (event) => this.setActor({ ...actor, contactDamage: Number(event.target.value || 0) || 0 })));
+    addField('Contact damage amount', text(actor.contactDamage, (event) => this.setActor({ ...actor, contactDamage: Number(event.target.value || 0) || 0 }), { deferred: true, numeric: true }));
     addField('Invulnerable by default', checkbox(actor.invulnerable, (event) => this.setActor({ ...actor, invulnerable: event.target.checked }), 'Enabled'));
     addField('Destructible', checkbox(actor.destructible, (event) => this.setActor({ ...actor, destructible: event.target.checked }), 'Enabled'));
     addField('Root actor', checkbox(actor.isRoot, (event) => this.setActor({ ...actor, isRoot: event.target.checked }), 'Placeable in Level Editor'));
@@ -1322,25 +1459,27 @@ export default class ActorEditor {
     sizeWrap.style.alignItems = 'center';
     sizeWrap.style.gap = '8px';
     const widthInput = el('input');
-    widthInput.type = 'number';
-    widthInput.min = '1';
-    widthInput.step = '1';
+    widthInput.type = 'text';
+    widthInput.inputMode = 'numeric';
     widthInput.value = String(actor.size.width || 24);
-    widthInput.oninput = (event) => {
+    const commitWidth = (event) => {
       const width = Number.parseInt(event.target.value, 10);
       if (!Number.isFinite(width) || width <= 0) return;
       this.setActor({ ...actor, size: { width, height: actor.size.height }, sizeMode: 'manual' });
     };
+    widthInput.onchange = commitWidth;
+    widthInput.onblur = commitWidth;
     const heightInput = el('input');
-    heightInput.type = 'number';
-    heightInput.min = '1';
-    heightInput.step = '1';
+    heightInput.type = 'text';
+    heightInput.inputMode = 'numeric';
     heightInput.value = String(actor.size.height || 24);
-    heightInput.oninput = (event) => {
+    const commitHeight = (event) => {
       const height = Number.parseInt(event.target.value, 10);
       if (!Number.isFinite(height) || height <= 0) return;
       this.setActor({ ...actor, size: { width: actor.size.width, height }, sizeMode: 'manual' });
     };
+    heightInput.onchange = commitHeight;
+    heightInput.onblur = commitHeight;
     widthInput.style.width = '76px';
     heightInput.style.width = '76px';
     sizeWrap.appendChild(widthInput);
@@ -1410,11 +1549,11 @@ export default class ActorEditor {
       const itemSelect = select(loot.itemId, LOOT_ITEM_OPTIONS, (event) => {
         const next = clone(actor); next.loot[index].itemId = event.target.value; this.setActor(next);
       });
-      const chance = text(loot.probability ?? 1, (event) => { const next = clone(actor); next.loot[index].probability = Number(event.target.value || 0) || 0; this.setActor(next); });
+      const chance = text(loot.probability ?? 1, (event) => { const next = clone(actor); next.loot[index].probability = Number(event.target.value || 0) || 0; this.setActor(next); }, { deferred: true, numeric: true });
       const qty = text(`${loot.minQty ?? 1}-${loot.maxQty ?? 1}`, (event) => {
         const [minQty, maxQty] = String(event.target.value).split('-').map((part) => Number(part));
         const next = clone(actor); next.loot[index].minQty = minQty || 1; next.loot[index].maxQty = maxQty || next.loot[index].minQty; this.setActor(next);
-      });
+      }, { deferred: true });
       const guaranteed = checkbox(loot.guaranteed, (event) => { const next = clone(actor); next.loot[index].guaranteed = event.target.checked; this.setActor(next); }, 'Guaranteed');
       const remove = el('button', 'actor-editor-btn small', 'Remove');
       remove.onclick = () => { const next = clone(actor); next.loot.splice(index, 1); this.setActor(next); };
@@ -1542,7 +1681,7 @@ export default class ActorEditor {
       const previewFilter = this.getActorHuePreviewFilter();
       if (previewFilter) image.style.filter = previewFilter;
       preview.appendChild(image);
-      if (frames.length > 1) {
+      if (large && frames.length > 1) {
         let frameIndex = 0;
         const timer = setInterval(() => {
           frameIndex = (frameIndex + 1) % frames.length;
@@ -1572,7 +1711,14 @@ export default class ActorEditor {
       row.onclick = () => { this.selectedStateId = state.id; this.render(); };
       const preview = this.buildStatePreviewButton(state);
       const meta = el('div', 'actor-editor-state-meta');
-      meta.append(el('strong', '', state.name), el('span', '', `${state.movement.type} • ${(state.transitions || []).length} transition(s)`));
+      const badges = [
+        state.id === actor.initialStateId ? 'start' : '',
+        state.id === actor.deathStateId ? 'death' : ''
+      ].filter(Boolean);
+      meta.append(
+        el('strong', '', badges.length ? `${state.name} (${badges.join(', ')})` : state.name),
+        el('span', '', `${state.movement.type} • ${(state.transitions || []).length} transition(s)`)
+      );
       const rowBtns = el('div', 'actor-editor-inline-actions');
       [['↑', () => this.moveState(state, -1)], ['↓', () => this.moveState(state, 1)], ['Copy', () => this.copyState(state)], ['Duplicate', () => this.duplicateState(state)], ['Delete', () => this.deleteState(state)]].forEach(([label, handler]) => {
         const btn = el('button', 'actor-editor-btn small', label); btn.onclick = (event) => { event.stopPropagation(); handler(); }; rowBtns.appendChild(btn);
@@ -1589,9 +1735,35 @@ export default class ActorEditor {
     const section = el('section', 'actor-editor-card');
     this.appendSectionHeading(section, 'State editor');
     if (!state) return section;
-    const name = el('input'); name.value = state.name; name.oninput = (event) => this.updateSelectedState((draft) => { draft.name = event.target.value; });
+    const name = el('input');
+    name.value = state.name;
+    const commitStateName = (event) => this.updateSelectedState((draft) => { draft.name = event.target.value; });
+    name.onchange = commitStateName;
+    name.onblur = commitStateName;
+    name.onkeydown = (event) => {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      commitStateName(event);
+      name.blur();
+    };
     section.appendChild(name);
     section.appendChild(this.buildStatePreviewButton(state, { large: true }));
+    const zoneRow = el('div', 'actor-editor-inline-actions');
+    const inheritedZones = !Array.isArray(state.collisionZones);
+    const inheritToggle = el('label', 'actor-editor-toggle');
+    const inheritInput = el('input');
+    inheritInput.type = 'checkbox';
+    inheritInput.checked = inheritedZones;
+    inheritInput.oninput = (event) => this.updateSelectedState((draft) => {
+      draft.collisionZones = event.target.checked ? null : clone(this.actor.collisionZones || []);
+    });
+    inheritToggle.append(inheritInput, 'Inherit actor zones');
+    const editStateZones = el('button', 'actor-editor-btn small', 'Edit state zones');
+    editStateZones.disabled = inheritedZones;
+    editStateZones.style.opacity = inheritedZones ? '0.55' : '1';
+    editStateZones.onclick = () => this.openCollisionZoneEditor(this.actor, { state });
+    zoneRow.append(inheritToggle, editStateZones);
+    section.appendChild(zoneRow);
 
     const movementWrap = el('div', 'actor-editor-subsection');
     movementWrap.appendChild(el('h3', '', 'Movement behavior'));
@@ -1605,17 +1777,69 @@ export default class ActorEditor {
     behaviorParams.forEach((param) => {
       const field = el('label', 'actor-editor-field');
       field.appendChild(el('span', 'actor-editor-field-label', param));
-      const input = el('input'); input.value = state.movement.params?.[param] ?? ''; input.oninput = (event) => this.updateSelectedState((draft) => { draft.movement.params[param] = event.target.value === 'true' ? true : event.target.value === 'false' ? false : (Number(event.target.value) || event.target.value); });
+      const input = el('input');
+      input.value = state.movement.params?.[param] ?? '';
+      input.inputMode = 'text';
+      input.pattern = '-?[0-9]*[.]?[0-9]*';
+      const commit = (event) => this.updateSelectedState((draft) => {
+        const value = String(event.target.value ?? '').trim();
+        draft.movement.params[param] = value === 'true'
+          ? true
+          : value === 'false'
+            ? false
+            : value === ''
+              ? ''
+              : (Number.isFinite(Number(value)) ? Number(value) : event.target.value);
+      });
+      input.onchange = commit;
+      input.onblur = commit;
+      input.onkeydown = (event) => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        commit(event);
+        input.blur();
+      };
       field.appendChild(input); movementWrap.appendChild(field);
     });
     section.appendChild(movementWrap);
 
     const overrides = el('div', 'actor-editor-subsection');
     overrides.appendChild(el('h3', '', 'State overrides'));
+    const disableTint = el('label', 'actor-editor-toggle');
+    const disableTintInput = el('input');
+    disableTintInput.type = 'checkbox';
+    disableTintInput.checked = state.disableHealthTint === true;
+    disableTintInput.oninput = (event) => this.updateSelectedState((draft) => {
+      draft.disableHealthTint = event.target.checked;
+    });
+    disableTint.append(disableTintInput, 'Disable health tint in this state');
+    overrides.appendChild(disableTint);
     ['bodyDamageEnabled', 'contactDamage', 'invulnerable'].forEach((key) => {
       const field = el('label', 'actor-editor-field');
       field.appendChild(el('span', 'actor-editor-field-label', key));
-      const input = el('input'); input.value = state.overrides?.[key] ?? ''; input.placeholder = 'inherit'; input.oninput = (event) => this.updateSelectedState((draft) => { draft.overrides[key] = event.target.value === '' ? null : (Number(event.target.value) || event.target.value === 'true' ? true : event.target.value === 'false' ? false : event.target.value); });
+      const input = el('input');
+      input.value = state.overrides?.[key] ?? '';
+      input.placeholder = 'inherit';
+      input.inputMode = 'text';
+      if (key === 'contactDamage') input.pattern = '-?[0-9]*[.]?[0-9]*';
+      const commit = (event) => this.updateSelectedState((draft) => {
+        const value = String(event.target.value ?? '').trim();
+        draft.overrides[key] = value === ''
+          ? null
+          : value === 'true'
+            ? true
+            : value === 'false'
+              ? false
+              : (Number.isFinite(Number(value)) ? Number(value) : event.target.value);
+      });
+      input.onchange = commit;
+      input.onblur = commit;
+      input.onkeydown = (event) => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        commit(event);
+        input.blur();
+      };
       field.appendChild(input); overrides.appendChild(field);
     });
     section.appendChild(overrides);
@@ -1637,9 +1861,17 @@ export default class ActorEditor {
       const name = el('input');
       name.value = transition.name || '';
       name.placeholder = `Transition ${transitionIndex + 1}`;
-      name.oninput = (event) => this.updateSelectedState((draft) => {
+      const commitTransitionName = (event) => this.updateSelectedState((draft) => {
         draft.transitions[transitionIndex].name = event.target.value;
       });
+      name.onchange = commitTransitionName;
+      name.onblur = commitTransitionName;
+      name.onkeydown = (event) => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        commitTransitionName(event);
+        name.blur();
+      };
       const toolbar = el('div', 'actor-editor-inline-actions');
       [['↑', () => this.moveTransition(transitionIndex, -1)], ['↓', () => this.moveTransition(transitionIndex, 1)], ['Remove', () => this.removeTransition(transitionIndex)]].forEach(([label, handler]) => {
         const btn = el('button', 'actor-editor-btn small', label);
@@ -1694,7 +1926,7 @@ export default class ActorEditor {
         params: condition.params || {},
         stateOptions,
         onParamInput: (field, value) => this.updateSelectedState((draft) => {
-          const nextValue = field.fromDisplay ? field.fromDisplay(value) : value;
+          const nextValue = value === '' ? '' : (field.fromDisplay ? field.fromDisplay(value) : value);
           draft.transitions[transitionIndex].conditions[index].params = draft.transitions[transitionIndex].conditions[index].params || {};
           draft.transitions[transitionIndex].conditions[index].params[field.key] = nextValue;
         })
@@ -1735,15 +1967,21 @@ export default class ActorEditor {
         draft.transitions[transitionIndex].actions[index].type = nextType;
         draft.transitions[transitionIndex].actions[index].params = this.createParamsFromSpec(this.getActionSpec(nextType), stateOptions);
       });
-      const actionFields = action.type === 'spawn-bullets'
-        ? (spec.fields || []).filter((field) => field.key !== 'projectileArtRef')
+      const hiddenArtKeys = {
+        'emit-particles': new Set(['particleArtRef']),
+        'spawn-bullets': new Set(['projectileArtRef']),
+        'spawn-beam': new Set(['startArtRef', 'repeatArtRef', 'impactArtRef']),
+        'spawn-homing-missile': new Set(['missileArtRef', 'explosionArtRef', 'smokeArtRef'])
+      }[action.type];
+      const actionFields = hiddenArtKeys
+        ? (spec.fields || []).filter((field) => !hiddenArtKeys.has(field.key))
         : spec.fields;
       const params = this.renderParamFields({
         fields: actionFields,
         params: action.params || {},
         stateOptions,
         onParamInput: (field, value) => this.updateSelectedState((draft) => {
-          const nextValue = field.fromDisplay ? field.fromDisplay(value) : value;
+          const nextValue = value === '' ? '' : (field.fromDisplay ? field.fromDisplay(value) : value);
           draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
           draft.transitions[transitionIndex].actions[index].params[field.key] = nextValue;
         })
@@ -1768,9 +2006,131 @@ export default class ActorEditor {
         };
         row.appendChild(pick);
       }
+      if (action.type === 'emit-particles') {
+        row.appendChild(this.buildActionArtControl(action.params || {}, {
+          artKey: 'particleArtRef',
+          label: 'Particle sprite',
+          emptyLabel: 'Create particle sprite',
+          alt: 'Particle sprite preview',
+          slotId: `${action.id || 'particles'}-particleArtRef`,
+          documentName: String(action.params?.particleArtRef || '').trim() ? '' : this.buildActionSlotArtDocName(action, 'particleArtRef'),
+          onCommit: (nextArtRef) => {
+            this.updateSelectedState((draft) => {
+              draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
+              draft.transitions[transitionIndex].actions[index].params.particleArtRef = nextArtRef;
+            });
+          }
+        }));
+        const preview = el('button', 'actor-editor-btn small', 'Preview particles');
+        preview.onclick = () => this.openParticlePreview(state, action.params || {});
+        row.appendChild(preview);
+        const pick = el('button', 'actor-editor-btn small', 'Set particle origin');
+        pick.onclick = async () => {
+          const point = await this.openBulletSpawnPicker(state, action.params || {});
+          if (!point) return;
+          this.updateSelectedState((draft) => {
+            draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
+            draft.transitions[transitionIndex].actions[index].params.offsetX = point.x;
+            draft.transitions[transitionIndex].actions[index].params.offsetY = point.y;
+          });
+        };
+        row.appendChild(pick);
+      }
+      if (action.type === 'spawn-beam') {
+        const artKeys = ['startArtRef', 'repeatArtRef', 'impactArtRef'];
+        const artRefs = artKeys.map((key) => String(action.params?.[key] || '').trim()).filter(Boolean);
+        [
+          ['startArtRef', 'Start sprite', 'Create start sprite'],
+          ['repeatArtRef', 'Repeat sprite', 'Create repeat sprite'],
+          ['impactArtRef', 'Impact sprite', 'Create impact sprite']
+        ].forEach(([artKey, label, emptyLabel]) => {
+          const artRef = String(action.params?.[artKey] || '').trim();
+          const isSharedRef = !!artRef && artRefs.filter((ref) => ref === artRef).length > 1;
+          row.appendChild(this.buildActionArtControl(action.params || {}, {
+            artKey,
+            label,
+            emptyLabel,
+            alt: `${label} preview`,
+            slotId: `${action.id || 'beam'}-${artKey}`,
+            documentName: (!artRef || isSharedRef) ? this.buildActionSlotArtDocName(action, artKey) : '',
+            onCommit: (nextArtRef) => {
+              this.updateSelectedState((draft) => {
+                draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
+                draft.transitions[transitionIndex].actions[index].params[artKey] = nextArtRef;
+              });
+            }
+          }));
+        });
+        const pick = el('button', 'actor-editor-btn small', 'Set muzzle location');
+        pick.onclick = async () => {
+          const point = await this.openBulletSpawnPicker(state, action.params || {});
+          if (!point) return;
+          this.updateSelectedState((draft) => {
+            draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
+            draft.transitions[transitionIndex].actions[index].params.offsetX = point.x;
+            draft.transitions[transitionIndex].actions[index].params.offsetY = point.y;
+          });
+        };
+        row.appendChild(pick);
+      }
+      if (action.type === 'spawn-homing-missile') {
+        const artKeys = ['missileArtRef', 'explosionArtRef', 'smokeArtRef'];
+        const artRefs = artKeys.map((key) => String(action.params?.[key] || '').trim()).filter(Boolean);
+        [
+          ['missileArtRef', 'Missile sprite', 'Create missile sprite'],
+          ['explosionArtRef', 'Explosion sprite', 'Create explosion sprite'],
+          ['smokeArtRef', 'Smoke trail sprite', 'Create smoke trail sprite']
+        ].forEach(([artKey, label, emptyLabel]) => {
+          const artRef = String(action.params?.[artKey] || '').trim();
+          const isSharedRef = !!artRef && artRefs.filter((ref) => ref === artRef).length > 1;
+          row.appendChild(this.buildActionArtControl(action.params || {}, {
+            artKey,
+            label,
+            emptyLabel,
+            alt: `${label} preview`,
+            slotId: `${action.id || 'missile'}-${artKey}`,
+            documentName: (!artRef || isSharedRef) ? this.buildActionSlotArtDocName(action, artKey) : '',
+            onCommit: (nextArtRef) => {
+              this.updateSelectedState((draft) => {
+                draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
+                draft.transitions[transitionIndex].actions[index].params[artKey] = nextArtRef;
+              });
+            }
+          }));
+        });
+        const pick = el('button', 'actor-editor-btn small', 'Set muzzle location');
+        pick.onclick = async () => {
+          const point = await this.openBulletSpawnPicker(state, action.params || {});
+          if (!point) return;
+          this.updateSelectedState((draft) => {
+            draft.transitions[transitionIndex].actions[index].params = draft.transitions[transitionIndex].actions[index].params || {};
+            draft.transitions[transitionIndex].actions[index].params.offsetX = point.x;
+            draft.transitions[transitionIndex].actions[index].params.offsetY = point.y;
+          });
+        };
+        row.appendChild(pick);
+      }
+      const moveUp = el('button', 'actor-editor-btn small', '↑');
+      moveUp.type = 'button';
+      moveUp.title = 'Move action up';
+      moveUp.disabled = index === 0;
+      moveUp.onclick = () => this.updateSelectedState((draft) => {
+        const actions = draft.transitions[transitionIndex].actions;
+        if (!Array.isArray(actions) || index <= 0 || index >= actions.length) return;
+        [actions[index - 1], actions[index]] = [actions[index], actions[index - 1]];
+      });
+      const moveDown = el('button', 'actor-editor-btn small', '↓');
+      moveDown.type = 'button';
+      moveDown.title = 'Move action down';
+      moveDown.disabled = index >= transition.actions.length - 1;
+      moveDown.onclick = () => this.updateSelectedState((draft) => {
+        const actions = draft.transitions[transitionIndex].actions;
+        if (!Array.isArray(actions) || index < 0 || index >= actions.length - 1) return;
+        [actions[index], actions[index + 1]] = [actions[index + 1], actions[index]];
+      });
       const remove = el('button', 'actor-editor-btn small', 'Remove');
       remove.onclick = () => this.updateSelectedState((draft) => { draft.transitions[transitionIndex].actions.splice(index, 1); });
-      row.append(type, params, remove); list.appendChild(row);
+      row.append(type, params, moveUp, moveDown, remove); list.appendChild(row);
     });
     const add = el('button', 'actor-editor-btn', 'Add action'); add.onclick = () => this.updateSelectedState((draft, actorDraft) => {
       const actorStateOptions = actorDraft.states.map((entry) => ({ id: entry.id, label: entry.name || entry.id }));
@@ -1778,6 +2138,224 @@ export default class ActorEditor {
     });
     section.append(list, add);
     return section;
+  }
+
+  openParticlePreview(state, params = {}) {
+    const actorFrame = this.getAnimationPreviewFrames(state?.animation || {})[0] || null;
+    const particleFrames = this.getProjectileArtPreviewFrames(params.particleArtRef || '');
+    const modal = el('div', 'actor-editor-overlay');
+    Object.assign(modal.style, {
+      position: 'fixed',
+      inset: '0',
+      background: 'rgba(0,0,0,0.78)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: '2147483647'
+    });
+    const card = el('div', 'actor-editor-card');
+    Object.assign(card.style, {
+      width: 'min(96vw, 920px)',
+      height: 'min(88dvh, 720px)',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '10px'
+    });
+    const title = el('div', '', 'Particle preview');
+    const canvas = el('canvas');
+    canvas.width = 800;
+    canvas.height = 520;
+    Object.assign(canvas.style, {
+      width: '100%',
+      flex: '1',
+      minHeight: '0',
+      background: '#07111f',
+      border: '1px solid rgba(255,255,255,0.22)',
+      imageRendering: 'pixelated'
+    });
+    const actions = el('div', 'actor-editor-inline-actions');
+    const restart = el('button', 'actor-editor-btn small', 'Restart');
+    const close = el('button', 'actor-editor-btn small', 'Close');
+    actions.append(restart, close);
+    card.append(title, canvas, actions);
+    modal.appendChild(card);
+    document.body.appendChild(modal);
+
+    const loadImage = (src) => new Promise((resolve) => {
+      if (!src) {
+        resolve(null);
+        return;
+      }
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => resolve(null);
+      image.src = src;
+    });
+
+    let raf = 0;
+    let closed = false;
+    let lastTime = 0;
+    let emitTimer = 0;
+    let particles = [];
+    let actorImage = null;
+    let particleImages = [];
+    const count = Math.max(1, Math.min(256, Math.floor(Number(params.count || 1))));
+    const radius = Math.max(0, Number(params.radius || 0));
+    const speed = Math.max(0, Number(params.speed || 0));
+    const speedRandomness = Math.max(0, Number(params.speedRandomness || 0));
+    const spread = Math.max(0, Number(params.spread ?? Math.PI * 2));
+    const size = Math.max(1, Number(params.size || 4));
+    const sizeRandomness = Math.max(0, Number(params.sizeRandomness || 0));
+    const lifeMs = Math.max(16, Number(params.lifeMs || 450));
+    const lifeRandomnessMs = Math.max(0, Number(params.lifeRandomnessMs || 0));
+    const cooldown = Math.max(0.016, Number(params.cooldownMs ?? 100) / 1000);
+    const color = String(params.color || 'rgba(255,95,46,0.9)');
+    const gravity = params.gravity === true || params.gravity === 'true';
+    const gravityScale = Math.max(0, Number(params.gravityScale ?? 1));
+    const spin = Number(params.spin || 0);
+    const frameDuration = Math.max(16, Number(params.frameDurationMs || 120)) / 1000;
+    const baseAngle = Number(params.angle || 0);
+
+    const getActorDraw = () => {
+      const frameDims = readPngDataUrlDimensions(actorFrame?.imageDataUrl || '') || { width: 32, height: 32 };
+      const imageScaledW = frameDims.width > 0 ? (frameDims.width / 16) * 32 : frameDims.width;
+      const imageScaledH = frameDims.height > 0 ? (frameDims.height / 16) * 32 : frameDims.height;
+      const actorW = Math.max(Number(this.actor?.size?.width || 32), imageScaledW || 0);
+      const actorH = Math.max(Number(this.actor?.size?.height || 32), imageScaledH || 0);
+      const scale = Math.min(
+        (canvas.width - 160) / Math.max(1, actorW),
+        (canvas.height - 120) / Math.max(1, actorH),
+        1.4
+      );
+      return {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        w: actorW * scale,
+        h: actorH * scale,
+        scale
+      };
+    };
+
+    const spawnBurst = () => {
+      const draw = getActorDraw();
+      const originX = draw.x + Number(params.offsetX || 0) * draw.scale;
+      const originY = draw.y + Number(params.offsetY || 0) * draw.scale;
+      for (let i = 0; i < count; i += 1) {
+        const spawnAngle = Math.random() * Math.PI * 2;
+        const spawnRadius = Math.sqrt(Math.random()) * radius * draw.scale;
+        const particleAngle = baseAngle + (Math.random() - 0.5) * spread;
+        const particleSpeed = Math.max(0, speed + (Math.random() * 2 - 1) * speedRandomness) * draw.scale;
+        const particleSize = Math.max(1, size + (Math.random() * 2 - 1) * sizeRandomness) * draw.scale;
+        const life = Math.max(0.016, (lifeMs + (Math.random() * 2 - 1) * lifeRandomnessMs) / 1000);
+        particles.push({
+          x: originX + Math.cos(spawnAngle) * spawnRadius,
+          y: originY + Math.sin(spawnAngle) * spawnRadius,
+          vx: Math.cos(particleAngle) * particleSpeed,
+          vy: Math.sin(particleAngle) * particleSpeed,
+          life,
+          maxLife: life,
+          size: particleSize,
+          angle: particleAngle,
+          spin: spin + (Math.random() * 2 - 1) * Math.abs(spin),
+          frameOffset: Math.random()
+        });
+      }
+      if (particles.length > 900) particles.splice(0, particles.length - 900);
+    };
+
+    const reset = () => {
+      particles = [];
+      emitTimer = 0;
+      lastTime = performance.now();
+      spawnBurst();
+    };
+
+    const render = (time) => {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const dt = Math.min(0.05, Math.max(0, (time - lastTime) / 1000 || 0));
+      lastTime = time;
+      emitTimer -= dt;
+      while (emitTimer <= 0) {
+        spawnBurst();
+        emitTimer += cooldown;
+      }
+      particles.forEach((particle) => {
+        particle.life -= dt;
+        particle.x += particle.vx * dt;
+        particle.y += particle.vy * dt;
+        particle.angle += particle.spin * dt;
+        if (gravity) particle.vy += 900 * gravityScale * dt * getActorDraw().scale;
+      });
+      particles = particles.filter((particle) => particle.life > 0);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#07111f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const draw = getActorDraw();
+      if (actorImage) {
+        ctx.save();
+        ctx.globalAlpha = 0.72;
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(actorImage, draw.x - draw.w / 2, draw.y - draw.h / 2, draw.w, draw.h);
+        ctx.restore();
+      }
+      const originX = draw.x + Number(params.offsetX || 0) * draw.scale;
+      const originY = draw.y + Number(params.offsetY || 0) * draw.scale;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(originX - 10, originY);
+      ctx.lineTo(originX + 10, originY);
+      ctx.moveTo(originX, originY - 10);
+      ctx.lineTo(originX, originY + 10);
+      ctx.stroke();
+      ctx.restore();
+      particles.forEach((particle) => {
+        const alpha = Math.max(0, Math.min(1, particle.life / Math.max(0.0001, particle.maxLife)));
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        if (particleImages.length) {
+          const frameIndex = Math.floor(((particle.maxLife - particle.life) / frameDuration + particle.frameOffset * particleImages.length)) % particleImages.length;
+          const image = particleImages[frameIndex];
+          const scale = Math.max(0.05, particle.size / Math.max(1, Math.max(image.width, image.height)));
+          ctx.translate(particle.x, particle.y);
+          ctx.rotate(particle.angle || 0);
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(image, -image.width * scale / 2, -image.height * scale / 2, image.width * scale, image.height * scale);
+        } else {
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, Math.max(1.5, particle.size * 0.5), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      });
+      raf = requestAnimationFrame(render);
+    };
+
+    const cleanup = () => {
+      closed = true;
+      cancelAnimationFrame(raf);
+      modal.remove();
+    };
+    restart.onclick = reset;
+    close.onclick = cleanup;
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) cleanup();
+    });
+
+    Promise.all([
+      loadImage(actorFrame?.imageDataUrl || ''),
+      Promise.all(particleFrames.map((frame) => loadImage(frame.imageDataUrl)))
+    ]).then(([nextActorImage, nextParticleImages]) => {
+      if (closed) return;
+      actorImage = nextActorImage;
+      particleImages = nextParticleImages.filter(Boolean);
+      reset();
+      raf = requestAnimationFrame(render);
+    });
   }
 
   async openBulletSpawnPicker(state, params = {}) {

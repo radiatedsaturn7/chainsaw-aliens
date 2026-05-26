@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 2,
+  "tempo": 180,
+  "loopBars": 16,
+  "loopStartTick": 0,
+  "loopEndTick": 128,
+  "loopEnabled": true,
+  "timeSignature": {
+    "beats": 4,
+    "unit": 4
+  },
+  "highContrast": false,
+  "reverseStrings": false,
+  "staccatoEnabled": false,
+  "key": 0,
+  "scale": "major",
+  "chordMode": false,
+  "tracks": [
+    {
+      "id": "track-piano",
+      "name": "Piano",
+      "channel": 0,
+      "program": 25,
+      "instrumentFamily": "Guitar",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#4fb7ff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_5znbqg8",
+          "type": "octave",
+          "name": "Bone Twin",
+          "color": "yellow",
+          "enabled": true,
+          "knobs": {
+            "up": 1,
+            "down": 0,
+            "mix": 0.75
+          }
+        },
+        {
+          "id": "pedal_s1lpgh3",
+          "type": "overdrive",
+          "name": "Ghost Drive",
+          "color": "red",
+          "enabled": true,
+          "knobs": {
+            "drive": 1,
+            "bite": 0,
+            "tone": 0
+          }
+        },
+        {
+          "id": "pedal_7eff2cb",
+          "type": "eq",
+          "name": "Rust Dial",
+          "color": "orange",
+          "enabled": true,
+          "knobs": {
+            "low": 0.55,
+            "mid": 0.45,
+            "high": 0.65,
+            "presence": 0
+          }
+        },
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-piano",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-870195",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-10987",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-608637",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 37,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-235229",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-777585",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-394483",
+              "startTick": 48,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-955681",
+              "startTick": 80,
+              "durationTicks": 8,
+              "pitch": 37,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-481205",
+              "startTick": 112,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-guitar",
+      "name": "Guitar",
+      "channel": 1,
+      "program": 0,
+      "instrumentFamily": "Piano",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.06993614800644897,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#ff9c42",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_wp6tqld",
+          "type": "reverb",
+          "name": "Coffin Air",
+          "color": "blue",
+          "enabled": true,
+          "knobs": {
+            "room": 0.55,
+            "decay": 1,
+            "mix": 0.11660156249999998
+          }
+        },
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-guitar",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-412348",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 60,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-767955",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-954493",
+              "startTick": 80,
+              "durationTicks": 8,
+              "pitch": 64,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-370394",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 60,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-bass",
+      "name": "Bass",
+      "channel": 2,
+      "program": 33,
+      "instrumentFamily": "Bass",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#55d68a",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-bass",
+          "bars": 16,
+          "notes": []
+        }
+      ]
+    },
+    {
+      "id": "track-drums",
+      "name": "Drums",
+      "instrument": "drums",
+      "channel": 9,
+      "program": 0,
+      "instrumentFamily": "Drums",
+      "bankMSB": 127,
+      "bankLSB": 0,
+      "volume": 0.9,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#b48dff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-drums",
+          "bars": 16,
+          "notes": []
+        }
+      ]
+    }
+  ],
+  "progression": [
+    {
+      "root": 0,
+      "quality": "min",
+      "startBar": 1,
+      "lengthBars": 1
+    },
+    {
+      "root": 5,
+      "quality": "min",
+      "startBar": 2,
+      "lengthBars": 1
+    },
+    {
+      "root": 7,
+      "quality": "maj",
+      "startBar": 3,
+      "lengthBars": 1
+    },
+    {
+      "root": 3,
+      "quality": "maj",
+      "startBar": 4,
+      "lengthBars": 1
+    }
+  ],
+  "name": "Boss1"
+}

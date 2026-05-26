@@ -1,3 +1,5 @@
+import { loadServerPreference, saveServerPreference } from '../serverPreferences.js';
+
 const STORAGE_KEY = 'pixelStudioCustomPalettes';
 
 const BUILTIN_PRESETS = [
@@ -125,9 +127,7 @@ export const loadPalettePresets = async () => {
 
 export const loadCustomPalettes = () => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const data = JSON.parse(raw);
+    const data = loadServerPreference(STORAGE_KEY, []);
     if (!Array.isArray(data)) return [];
     return data.map((palette) => buildPalette(palette.colors || [], palette.name || 'Custom'));
   } catch (error) {
@@ -142,7 +142,7 @@ export const saveCustomPalettes = (palettes) => {
       name: palette.name,
       colors: palette.colors.map((entry) => entry.hex)
     }));
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    void saveServerPreference(STORAGE_KEY, payload);
   } catch (error) {
     console.warn('[PixelStudio] Failed to save custom palettes.', error);
   }

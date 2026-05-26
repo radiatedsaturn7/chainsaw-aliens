@@ -24,9 +24,9 @@ test('importing image from tile-picker session still saves an art doc', async ({
     await studio.importImageFromFile(new File([blob], 'black.png', { type: 'image/png' }));
 
     await studio.saveArtDocument();
-    const payload = localStorage.getItem('robter:vfs:art:black');
-    const parsed = payload ? JSON.parse(payload) : null;
-    return { hasPayload: Boolean(payload), hasFrames: Array.isArray(parsed?.data?.frames) };
+    const response = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent('black')}`);
+    const payload = response.ok ? await response.json() : null;
+    return { hasPayload: Boolean(payload), hasFrames: Array.isArray(payload?.file?.data?.frames) };
   });
 
   expect(saved.hasPayload).toBeTruthy();

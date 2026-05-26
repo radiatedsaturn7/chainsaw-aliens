@@ -1,0 +1,661 @@
+{
+  "schemaVersion": 2,
+  "id": "head",
+  "name": "Head",
+  "attackTarget": "none",
+  "taxonomies": [
+    "Enemies"
+  ],
+  "aggressiveTo": [
+    "Player and Allies"
+  ],
+  "gravity": true,
+  "bodyDamageEnabled": false,
+  "contactDamage": 1,
+  "invulnerable": false,
+  "destructible": true,
+  "isRoot": true,
+  "tags": [],
+  "health": 50,
+  "healthTint": {
+    "enabled": true,
+    "color": "#ff3333",
+    "maxIntensity": 0.2,
+    "keepAfterDeath": false
+  },
+  "facingMode": "face-right",
+  "size": {
+    "width": 512,
+    "height": 512
+  },
+  "collisionZones": [
+    {
+      "type": "solid",
+      "x": 149.33333333333331,
+      "y": 64,
+      "width": 21.333333333333332,
+      "height": 85.33333333333333
+    },
+    {
+      "type": "solid",
+      "x": 85.33333333333333,
+      "y": 85.33333333333333,
+      "width": 42.666666666666664,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid",
+      "x": 106.66666666666666,
+      "y": 106.66666666666666,
+      "width": 42.666666666666664,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid",
+      "x": 64,
+      "y": 128,
+      "width": 42.666666666666664,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid",
+      "x": 128,
+      "y": 128,
+      "width": 21.333333333333332,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid",
+      "x": 170.66666666666666,
+      "y": 128,
+      "width": 21.333333333333332,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid",
+      "x": 320,
+      "y": 128,
+      "width": 21.333333333333332,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid",
+      "x": 85.33333333333333,
+      "y": 149.33333333333331,
+      "width": 42.666666666666664,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid-damage-player",
+      "x": 192,
+      "y": 149.33333333333331,
+      "width": 21.333333333333332,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid",
+      "x": 341.3333333333333,
+      "y": 149.33333333333331,
+      "width": 42.666666666666664,
+      "height": 277.3333333333333
+    },
+    {
+      "type": "solid",
+      "x": 106.66666666666666,
+      "y": 170.66666666666666,
+      "width": 42.666666666666664,
+      "height": 85.33333333333333
+    },
+    {
+      "type": "solid-damage-player",
+      "x": 170.66666666666666,
+      "y": 170.66666666666666,
+      "width": 21.333333333333332,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "hurtbox",
+      "x": 192,
+      "y": 170.66666666666666,
+      "width": 85.33333333333333,
+      "height": 42.666666666666664
+    },
+    {
+      "type": "solid-damage-player",
+      "x": 149.33333333333331,
+      "y": 192,
+      "width": 21.333333333333332,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "hurtbox",
+      "x": 170.66666666666666,
+      "y": 192,
+      "width": 21.333333333333332,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid",
+      "x": 320,
+      "y": 192,
+      "width": 21.333333333333332,
+      "height": 213.33333333333331
+    },
+    {
+      "type": "solid",
+      "x": 384,
+      "y": 192,
+      "width": 21.333333333333332,
+      "height": 213.33333333333331
+    },
+    {
+      "type": "solid",
+      "x": 298.66666666666663,
+      "y": 213.33333333333331,
+      "width": 21.333333333333332,
+      "height": 192
+    },
+    {
+      "type": "solid",
+      "x": 149.33333333333331,
+      "y": 234.66666666666666,
+      "width": 149.33333333333331,
+      "height": 64
+    },
+    {
+      "type": "solid",
+      "x": 405.3333333333333,
+      "y": 234.66666666666666,
+      "width": 21.333333333333332,
+      "height": 64
+    },
+    {
+      "type": "solid",
+      "x": 128,
+      "y": 256,
+      "width": 21.333333333333332,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid",
+      "x": 170.66666666666666,
+      "y": 298.66666666666663,
+      "width": 128,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid",
+      "x": 213.33333333333331,
+      "y": 320,
+      "width": 85.33333333333333,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid",
+      "x": 234.66666666666666,
+      "y": 341.3333333333333,
+      "width": 64,
+      "height": 21.333333333333332
+    },
+    {
+      "type": "solid",
+      "x": 256,
+      "y": 362.66666666666663,
+      "width": 42.666666666666664,
+      "height": 21.333333333333332
+    }
+  ],
+  "loot": [],
+  "linkedParts": [],
+  "states": [
+    {
+      "id": "idle",
+      "name": "Idle",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 2,
+        "updatedAt": 1778871142293,
+        "artRef": "head"
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "timer-elapsed",
+              "params": {
+                "seconds": 1
+              }
+            }
+          ],
+          "actions": [
+            {
+              "id": "action-1779197914649",
+              "type": "switch-state",
+              "params": {
+                "stateId": "idle-2"
+              }
+            }
+          ]
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "idle-2",
+      "name": "LaserEyes",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 2,
+        "updatedAt": 1779653411798,
+        "artRef": "head copy 1779196981168"
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": [
+            {
+              "id": "action-1779196991244",
+              "type": "spawn-beam",
+              "params": {
+                "targetPlayer": true,
+                "angle": 0.7853981633974483,
+                "targetOffsetX": 0,
+                "targetOffsetY": 0,
+                "rotationSpeed": 45,
+                "accuracy": 0,
+                "durationMs": 1000,
+                "maxDistance": 640,
+                "damage": 1,
+                "width": 10,
+                "offsetX": 186,
+                "offsetY": 39,
+                "startArtRef": "new-actor-idle-2-beam-startartref-art",
+                "repeatArtRef": "new-actor-idle-repeat-ref-art",
+                "impactArtRef": "new-actor-idle-2-beam-endartref-art"
+              }
+            },
+            {
+              "id": "action-1779245209917",
+              "type": "delay",
+              "params": {
+                "ms": 1000
+              }
+            },
+            {
+              "id": "action-1779245226548",
+              "type": "switch-state",
+              "params": {
+                "stateId": "idle-2-3"
+              }
+            }
+          ]
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "idle-2-3",
+      "name": "FireBreath",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 8,
+        "updatedAt": 1779653752648,
+        "artRef": "head copy 1779196981168 copy 1779245505966"
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": [
+            {
+              "id": "action-1779196991244",
+              "type": "spawn-bullets",
+              "params": {
+                "aimAtPlayer": true,
+                "angle": 0,
+                "speed": 220,
+                "shots": 1,
+                "shotDelayMs": 0,
+                "restartAnimationEachShot": false,
+                "offsetX": 219,
+                "offsetY": 208,
+                "projectileArtRef": "new-actor-idle-2-3-projectile-art"
+              }
+            },
+            {
+              "id": "action-1779248141018",
+              "type": "spawn-bullets",
+              "params": {
+                "aimAtPlayer": true,
+                "angle": -0.2617993877991494,
+                "speed": 220,
+                "shots": 1,
+                "shotDelayMs": 0,
+                "restartAnimationEachShot": false,
+                "offsetX": 216,
+                "offsetY": 200,
+                "projectileArtRef": "new-actor-idle-2-3-projectile-art"
+              }
+            },
+            {
+              "id": "action-1779248143730",
+              "type": "spawn-bullets",
+              "params": {
+                "aimAtPlayer": true,
+                "angle": 0.2617993877991494,
+                "speed": 220,
+                "shots": 1,
+                "shotDelayMs": 0,
+                "restartAnimationEachShot": false,
+                "offsetX": 209,
+                "offsetY": 214,
+                "projectileArtRef": "new-actor-idle-2-3-projectile-art"
+              }
+            },
+            {
+              "id": "action-1779248224577",
+              "type": "delay",
+              "params": {
+                "ms": 1000
+              }
+            },
+            {
+              "id": "action-1779248234929",
+              "type": "switch-state",
+              "params": {
+                "stateId": "idle"
+              }
+            }
+          ]
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "idle-4",
+      "name": "Death",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 32,
+        "updatedAt": 1779670310938,
+        "artRef": "headDead2"
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": [
+            {
+              "id": "action-1779197914649",
+              "type": "emit-particles",
+              "params": {
+                "count": 1,
+                "color": "rgba(255,95,46,0.9)",
+                "size": 64,
+                "sizeRandomness": 0,
+                "lifeMs": 450,
+                "lifeRandomnessMs": 250,
+                "radius": 400,
+                "speed": 0,
+                "speedRandomness": 0,
+                "angle": 0,
+                "spread": 0,
+                "gravity": false,
+                "gravityScale": 1,
+                "spin": 0,
+                "frameDurationMs": 120,
+                "offsetX": -65,
+                "offsetY": -107,
+                "particleArtRef": "new-actor-idle-4-action-1779197914649-particleartref-art",
+                "cooldownMs": 100
+              }
+            },
+            {
+              "id": "action-1779659879279",
+              "type": "delay",
+              "params": {
+                "ms": 2000
+              }
+            },
+            {
+              "id": "action-1779828265186",
+              "type": "stop-midi",
+              "params": {
+                "trackId": "",
+                "fadeMs": 250
+              }
+            },
+            {
+              "id": "action-1779659893618",
+              "type": "switch-state",
+              "params": {
+                "stateId": "idle-4-5"
+              }
+            }
+          ]
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "idle-4-5",
+      "name": "Dead",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 32,
+        "updatedAt": 1779670310938,
+        "artRef": "headDead2 copy 1779670322761"
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": true,
+      "transitions": [
+        {
+          "id": "transition-1779670417611",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": []
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "idle-2-3-6",
+      "name": "Roar",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 8,
+        "updatedAt": 1779653752648,
+        "artRef": "head copy 1779196981168 copy 1779245505966 copy 1779827316131"
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "timer-elapsed",
+              "params": {
+                "seconds": 0.5
+              }
+            }
+          ],
+          "actions": [
+            {
+              "id": "action-1779828281341",
+              "type": "play-midi",
+              "params": {
+                "trackId": "Boss1",
+                "fadeMs": 250
+              }
+            },
+            {
+              "id": "action-1779827694803",
+              "type": "switch-state",
+              "params": {
+                "stateId": "idle"
+              }
+            }
+          ]
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "idle-7",
+      "name": "Wait",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 2,
+        "updatedAt": 1778871142293,
+        "artRef": "head copy 1779827610020"
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "can-see-player",
+              "params": {}
+            }
+          ],
+          "actions": [
+            {
+              "id": "action-1779197914649",
+              "type": "switch-state",
+              "params": {
+                "stateId": "idle-2-3-6"
+              }
+            }
+          ]
+        }
+      ],
+      "collisionZones": null
+    }
+  ],
+  "initialStateId": "idle-7",
+  "deathStateId": "idle-4",
+  "destroyAfterDeath": false,
+  "collidableAfterDeath": true,
+  "respawnOnRoomEntry": true,
+  "advanced": {
+    "assetRefs": {},
+    "notes": ""
+  },
+  "sizeMode": "auto"
+}

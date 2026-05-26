@@ -35,6 +35,8 @@ import ObsidianCrown from '../entities/ObsidianCrown.js';
 import CataclysmColossus from '../entities/CataclysmColossus.js';
 import ScriptedActor, { loadActorDefinitionById } from '../entities/ScriptedActor.js';
 import Projectile from '../entities/Projectile.js';
+import Beam from '../entities/Beam.js';
+import HomingMissile from '../entities/HomingMissile.js';
 import { DebrisPiece, Shard } from '../entities/Debris.js';
 import LootDrop from '../entities/LootDrop.js';
 import HealthDrop from '../entities/HealthDrop.js';
@@ -71,8 +73,8 @@ import ObstacleTestMap from '../debug/ObstacleTestMap.js';
 import { OBSTACLES } from '../world/Obstacles.js';
 import { MOVEMENT_MODEL } from './MovementModel.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
-import { vfsEnsureIndex, vfsList, vfsLoad } from '../ui/vfs.js';
-import { bootstrapServerStorage, isServerStorageEnabled, pushServerSnapshot, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
+import { ensureProjectFileIndex, listProjectFiles, loadProjectFile } from '../ui/projectFiles.js';
+import { bootstrapServerStorage, flushServerStorage, isServerStorageEnabled, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
 import { drawSharedPlayStopButton } from '../ui/uiSuite.js';
 import { createDefaultActor, ensureActorDefinition } from '../content/actorEditorData.js';
 
@@ -87,6 +89,18 @@ const BOSS_TYPES = new Set([
   'obsidiancrown',
   'cataclysmcolossus'
 ]);
+
+const MAX_PARTICLE_ART_CACHE_ENTRIES = 64;
+
+function normalizeParticleFramePixels(frame) {
+  if (Array.isArray(frame) && frame.some((value) => typeof value === 'string')) return frame;
+  if (Array.isArray(frame) && Array.isArray(frame[0]) && frame[0].some((value) => typeof value === 'string')) return frame[0];
+  if (frame && typeof frame === 'object') {
+    if (Array.isArray(frame.pixels) && frame.pixels.some((value) => typeof value === 'string')) return frame.pixels;
+    if (Array.isArray(frame.data) && frame.data.some((value) => typeof value === 'string')) return frame.data;
+  }
+  return null;
+}
 
 const AMBIENT_SPAWN_TYPES = new Set([
   'water-drip',
@@ -181,6 +195,7 @@ export default class Game {
     this.audio = new AudioSystem();
     this.musicPlayers = [];
     this.activeMusicTrackId = null;
+    this.actorMusicOverrideTrackId = null;
     this.musicFadeDuration = 1.2;
     this.world = new World();
     this.camera = new Camera(canvas.width, canvas.height);
@@ -193,7 +208,7 @@ export default class Game {
     this.title = new Title();
     this.debugMode = true;
     this.debugRestartInFlight = false;
-    vfsEnsureIndex();
+    ensureProjectFileIndex();
     this.dialog = new Dialog(INTRO_LINES);
     this.hud = new HUD();
     this.pauseMenu = new Pause();
@@ -210,6 +225,9 @@ export default class Game {
     this.activeTriggerText = null;
     this.enemies = [];
     this.projectiles = [];
+    this.beams = [];
+    this.homingMissiles = [];
+    this.actorMusicOverrideTrackId = null;
     this.debris = [];
     this.shards = [];
     this.lootDrops = [];
@@ -257,8 +275,10 @@ export default class Game {
     this.roomVisited = new Set();
     this.roomExitTimes = new Map();
     this.roomRespawnTimers = new Map();
+    this.permanentlyDeadRoomEnemyKeys = new Set();
     this.cameraBounds = null;
     this.pixelFrameCanvasCache = new Map();
+    this.particleArtFrameCache = new Map();
     this.ambientParticles = [];
     this.activeRoomAmbient = [];
     this.activeRoomWeather = null;
@@ -526,6 +546,8 @@ export default class Game {
     this.roomVisited.clear();
     this.roomExitTimes.clear();
     this.roomRespawnTimers.clear();
+    this.permanentlyDeadRoomEnemyKeys.clear();
+    this.permanentlyDeadRoomEnemyKeys.clear();
     this.cameraBounds = null;
     this.ambientParticles = [];
     this.activeRoomAmbient = [];
@@ -615,7 +637,114 @@ export default class Game {
   }
 
   emitAmbientParticle(x, y, vx, vy, life, style) {
-    this.ambientParticles.push({ x, y, vx, vy, life, maxLife: life, style, size: style.size || 4, sway: Math.random() * Math.PI * 2 });
+    this.ambientParticles.push({
+      x,
+      y,
+      vx,
+      vy,
+      life,
+      maxLife: life,
+      style,
+      size: style.size || 4,
+      sway: Math.random() * Math.PI * 2,
+      angle: Number(style.angle || 0),
+      spin: Number(style.spin || 0),
+      frameOffset: Number(style.frameOffset || 0)
+    });
+    if (this.ambientParticles.length > 900) {
+      this.ambientParticles.splice(0, this.ambientParticles.length - 900);
+    }
+  }
+
+  getParticleArtFrames(artRef) {
+    if (typeof document === 'undefined') return null;
+    const ref = String(artRef || '').trim();
+    if (!ref) return null;
+    const doc = loadProjectFile('art', ref);
+    const frames = Array.isArray(doc?.data?.frames) ? doc.data.frames : [];
+    if (!frames.length) return null;
+    const width = Math.max(1, Number(doc?.data?.width || doc?.data?.size || 16));
+    const height = Math.max(1, Number(doc?.data?.height || doc?.data?.size || width));
+    const cacheKey = `${ref}:${Number(doc?.savedAt || doc?.data?.updatedAt || 0)}:${width}x${height}:${frames.length}`;
+    if (this.particleArtFrameCache.has(cacheKey)) return this.particleArtFrameCache.get(cacheKey);
+    const converted = [];
+    for (const frame of frames) {
+      const pixels = normalizeParticleFramePixels(frame);
+      if (!pixels?.length) continue;
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) continue;
+      const imageData = ctx.createImageData(width, height);
+      for (let i = 0; i < width * height; i += 1) {
+        const color = pixels[i];
+        const base = i * 4;
+        if (typeof color !== 'string' || !/^#?[0-9a-fA-F]{6}$/.test(color)) {
+          imageData.data[base + 3] = 0;
+          continue;
+        }
+        const hex = color.startsWith('#') ? color.slice(1) : color;
+        imageData.data[base] = parseInt(hex.slice(0, 2), 16);
+        imageData.data[base + 1] = parseInt(hex.slice(2, 4), 16);
+        imageData.data[base + 2] = parseInt(hex.slice(4, 6), 16);
+        imageData.data[base + 3] = 255;
+      }
+      ctx.putImageData(imageData, 0, 0);
+      converted.push(canvas);
+    }
+    const result = converted.length ? converted : null;
+    this.particleArtFrameCache.set(cacheKey, result);
+    while (this.particleArtFrameCache.size > MAX_PARTICLE_ART_CACHE_ENTRIES) {
+      this.particleArtFrameCache.delete(this.particleArtFrameCache.keys().next().value);
+    }
+    return result;
+  }
+
+  emitActionParticles(x, y, angle = 0, options = {}) {
+    const count = Math.max(1, Math.min(256, Math.floor(Number(options.count || 1))));
+    const radius = Math.max(0, Number(options.radius || 0));
+    const speed = Math.max(0, Number(options.speed || 0));
+    const speedRandomness = Math.max(0, Number(options.speedRandomness || 0));
+    const spread = Math.max(0, Number(options.spread ?? Math.PI * 2));
+    const size = Math.max(1, Number(options.size || 4));
+    const sizeRandomness = Math.max(0, Number(options.sizeRandomness || 0));
+    const lifeMs = Math.max(16, Number(options.lifeMs || 450));
+    const lifeRandomnessMs = Math.max(0, Number(options.lifeRandomnessMs || 0));
+    const color = String(options.color || 'rgba(255,95,46,0.9)');
+    const gravity = options.gravity === true || options.gravity === 'true';
+    const gravityScale = Math.max(0, Number(options.gravityScale ?? 1));
+    const particleArtRef = String(options.particleArtRef || '').trim();
+    const particleFrames = this.getParticleArtFrames(particleArtRef);
+    const frameDuration = Math.max(16, Number(options.frameDurationMs || 120));
+    const spin = Number(options.spin || 0);
+    for (let i = 0; i < count; i += 1) {
+      const spawnAngle = Math.random() * Math.PI * 2;
+      const spawnRadius = Math.sqrt(Math.random()) * radius;
+      const particleAngle = angle + (Math.random() - 0.5) * spread;
+      const particleSpeed = Math.max(0, speed + (Math.random() * 2 - 1) * speedRandomness);
+      const particleSize = Math.max(1, size + (Math.random() * 2 - 1) * sizeRandomness);
+      const particleLife = Math.max(0.016, (lifeMs + (Math.random() * 2 - 1) * lifeRandomnessMs) / 1000);
+      this.emitAmbientParticle(
+        x + Math.cos(spawnAngle) * spawnRadius,
+        y + Math.sin(spawnAngle) * spawnRadius,
+        Math.cos(particleAngle) * particleSpeed,
+        Math.sin(particleAngle) * particleSpeed,
+        particleLife,
+        {
+          color,
+          size: particleSize,
+          gravity,
+          gravityScale,
+          kind: 'actor-particle',
+          frames: particleFrames,
+          frameDuration,
+          angle: particleAngle,
+          spin: spin + (Math.random() * 2 - 1) * Math.abs(spin),
+          frameOffset: Math.random()
+        }
+      );
+    }
   }
 
   applyAmbientDamage(column, radius, damage = 1) {
@@ -668,8 +797,12 @@ export default class Game {
       particle.life -= dt;
       particle.x += particle.vx * dt;
       particle.y += particle.vy * dt;
+      particle.angle += particle.spin * dt;
       if (particle.style.kind === 'weather') {
         particle.x += this.weatherWind.value * dt;
+      }
+      if (particle.style.gravity) {
+        particle.vy += 900 * Math.max(0, Number(particle.style.gravityScale ?? 1)) * dt;
       }
       if (particle.style.swayAmplitude) {
         particle.sway += dt * (particle.style.swaySpeed || 3);
@@ -1205,24 +1338,23 @@ export default class Game {
 
   buildActorTestWorldData(actorId, actorDefinition = null) {
     const size = 56;
-    const floorY = 30;
+    const floorY = size - 6;
     const tileSize = 32;
-    let zoneBounds = null;
+    let actorBody = null;
     try {
       const probe = actorDefinition ? new ScriptedActor(0, 0, actorDefinition, { type: `custom:${actorId}` }) : null;
-      const bounds = probe?.getCollisionZoneBounds?.(['solid', 'solid-damage-player', 'solid-hurtbox']);
-      if (bounds) {
-        zoneBounds = {
-          minX: bounds.x,
-          minY: bounds.y,
-          maxX: bounds.x + bounds.w,
-          maxY: bounds.y + bounds.h
+      if (probe) {
+        actorBody = {
+          width: Math.max(1, Number(probe.width || actorDefinition?.size?.width || tileSize)),
+          height: Math.max(1, Number(probe.height || actorDefinition?.size?.height || tileSize)),
+          offsetY: Number(probe._collisionBodyOffsetY || 0)
         };
       }
     } catch (error) {
-      zoneBounds = null;
+      actorBody = null;
     }
-    if (!zoneBounds) {
+    if (!actorBody) {
+      let zoneBounds = null;
       const zoneDefs = Array.isArray(actorDefinition?.collisionZones) ? actorDefinition.collisionZones : [];
       const solidZones = zoneDefs.filter((zone) => ['solid', 'solid-damage-player', 'solid-hurtbox'].includes(zone?.type));
       zoneBounds = solidZones.length
@@ -1240,29 +1372,38 @@ export default class Game {
           };
         }, { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity })
         : null;
+      const hasZoneBounds = zoneBounds && Number.isFinite(zoneBounds.minX) && Number.isFinite(zoneBounds.minY)
+        && Number.isFinite(zoneBounds.maxX) && Number.isFinite(zoneBounds.maxY);
+      actorBody = {
+        width: hasZoneBounds
+          ? Math.max(1, zoneBounds.maxX - zoneBounds.minX)
+          : Math.max(1, Number(actorDefinition?.size?.width || tileSize)),
+        height: hasZoneBounds
+          ? Math.max(1, zoneBounds.maxY - zoneBounds.minY)
+          : Math.max(1, Number(actorDefinition?.size?.height || tileSize)),
+        offsetY: hasZoneBounds
+          ? (((zoneBounds.minY + zoneBounds.maxY) * 0.5) - (Math.max(1, Number(actorDefinition?.size?.height || tileSize)) * 0.5))
+          : 0
+      };
     }
-    const hasZoneBounds = zoneBounds && Number.isFinite(zoneBounds.minX) && Number.isFinite(zoneBounds.minY)
-      && Number.isFinite(zoneBounds.maxX) && Number.isFinite(zoneBounds.maxY);
-    const bodyWidthPx = hasZoneBounds
-      ? Math.max(1, zoneBounds.maxX - zoneBounds.minX)
-      : Number(actorDefinition?.size?.width || tileSize);
-    const bodyHeightPx = hasZoneBounds
-      ? Math.max(1, zoneBounds.maxY - zoneBounds.minY)
-      : Number(actorDefinition?.size?.height || tileSize);
-    const zoneTopOffsetPx = hasZoneBounds
-      ? ((zoneBounds.minY + zoneBounds.maxY) * 0.5)
-      : 0;
-    const actorHeightTiles = Math.max(1, Math.ceil(Math.max(1, bodyHeightPx) / tileSize));
-    const actorWidthTiles = Math.max(1, Math.ceil(Math.max(1, bodyWidthPx) / tileSize));
-    const actorTopOffsetTiles = Math.max(0, Math.ceil(Math.max(0, zoneTopOffsetPx) / tileSize));
-    const actorSpawnY = Math.max(2, floorY - actorHeightTiles - actorTopOffsetTiles - 2);
-    const playerSpawnX = Math.max(4, 18 - actorWidthTiles);
-    const enemySpawnX = Math.min(size - 5, Math.max(playerSpawnX + actorWidthTiles + 8, 34));
+    const clearancePx = tileSize * 4;
+    const floorTopPx = floorY * tileSize;
+    const centerYToSpawnTileY = (centerY) => (centerY / tileSize) - 0.5;
+    const playerCenterY = floorTopPx - clearancePx - (34 / 2);
+    const actorCenterY = floorTopPx - clearancePx - (actorBody.height / 2) - actorBody.offsetY;
+    const playerSpawnY = Math.max(2, centerYToSpawnTileY(playerCenterY));
+    const actorSpawnY = Math.max(2, centerYToSpawnTileY(actorCenterY));
+    const actorWidthTiles = Math.max(1, Math.ceil(Math.max(1, actorBody.width) / tileSize));
+    const actorFacesRightOnly = actorDefinition?.facingMode === 'face-right';
+    const leftSpawnX = Math.max(4, 18 - actorWidthTiles);
+    const rightSpawnX = Math.min(size - 5, Math.max(leftSpawnX + actorWidthTiles + 8, 34));
+    const playerSpawnX = actorFacesRightOnly ? rightSpawnX : leftSpawnX;
+    const enemySpawnX = actorFacesRightOnly ? leftSpawnX : rightSpawnX;
     const rows = Array.from({ length: size }, (_, y) => {
       if (y === 0 || y === size - 1) return '#'.repeat(size);
       const cells = Array.from({ length: size }, (_, x) => (x === 0 || x === size - 1 ? '#' : '.'));
       if (y === floorY) {
-        for (let x = 16; x <= 44; x += 1) {
+        for (let x = 1; x < size - 1; x += 1) {
           cells[x] = '#';
         }
       }
@@ -1273,9 +1414,9 @@ export default class Game {
       tileSize,
       width: size,
       height: size,
-      spawn: { x: playerSpawnX, y: actorSpawnY },
+      spawn: { x: playerSpawnX, y: playerSpawnY },
       tiles: rows,
-      regions: [],
+      regions: [{ id: 'actor-test-room', name: 'Actor Test Room', rect: [1, 1, size - 3, size - 3] }],
       enemies: [{ x: enemySpawnX, y: actorSpawnY, type: `custom:${actorId}` }],
       elevatorPaths: [],
       elevators: [],
@@ -1322,6 +1463,11 @@ export default class Game {
     this.playtestActive = true;
     this.playtestPauseLock = 0.35;
     this.resetRun({ playtest: true, startWithEverything: true });
+    const tileSize = this.world.tileSize;
+    this.world.enemies?.forEach((spawn) => {
+      if (!spawn || AMBIENT_SPAWN_TYPES.has(spawn.type)) return;
+      this.spawnEnemyByType(spawn.type, (spawn.x + 0.5) * tileSize, (spawn.y + 0.5) * tileSize, { spawnLinkedParts: true });
+    });
     this.transitionTo('playing', { forceCleanup: true });
     this.startSpawnPause();
   }
@@ -1338,9 +1484,9 @@ export default class Game {
   }
 
   restoreMostRecentActorDocument() {
-    const latest = vfsList('actors')[0];
+    const latest = listProjectFiles('actors')[0];
     if (!latest?.name) return false;
-    const payload = vfsLoad('actors', latest.name);
+    const payload = loadProjectFile('actors', latest.name);
     if (!payload?.data) return false;
     this.actorEditor.currentDocumentRef = { folder: 'actors', name: latest.name };
     this.actorEditor.setActor(payload.data);
@@ -1348,9 +1494,9 @@ export default class Game {
   }
 
   restoreMostRecentArtDocument() {
-    const latest = vfsList('art')[0];
+    const latest = listProjectFiles('art')[0];
     if (!latest?.name) return false;
-    const payload = vfsLoad('art', latest.name);
+    const payload = loadProjectFile('art', latest.name);
     if (!payload?.data) return false;
     this.world.pixelArt = this.pixelStudio.normalizeLoadedArtDocument(payload.data);
     this.pixelStudio.hydrateTileArtRefs?.();
@@ -1360,7 +1506,7 @@ export default class Game {
   }
 
   restoreTileArtAutosaveDocument() {
-    const payload = vfsLoad('art', 'Tile Art Autosave');
+    const payload = loadProjectFile('art', 'Tile Art Autosave');
     if (!payload?.data) return false;
     this.world.pixelArt = payload.data;
     this.pixelStudio.hydrateTileArtRefs?.();
@@ -1371,7 +1517,7 @@ export default class Game {
 
   restoreBestTileArtFromAutosaves() {
     const hasTileEntries = (data) => Boolean(data?.tiles && Object.keys(data.tiles).length > 0);
-    const artPayload = vfsLoad('art', 'Tile Art Autosave');
+    const artPayload = loadProjectFile('art', 'Tile Art Autosave');
     if (artPayload?.data && hasTileEntries(artPayload.data)) {
       this.world.pixelArt = artPayload.data;
       this.pixelStudio.hydrateTileArtRefs?.();
@@ -1379,7 +1525,7 @@ export default class Game {
       this.pixelStudio.loadTileData();
       return true;
     }
-    const levelPayload = vfsLoad('levels', 'Level Editor Autosave');
+    const levelPayload = loadProjectFile('levels', 'Level Editor Autosave');
     const levelPixelArt = levelPayload?.data?.pixelArt;
     if (hasTileEntries(levelPixelArt)) {
       this.world.pixelArt = levelPixelArt;
@@ -1392,9 +1538,9 @@ export default class Game {
   }
 
   restoreMostRecentMusicDocument() {
-    const latest = vfsList('music')[0];
+    const latest = listProjectFiles('music')[0];
     if (!latest?.name) return false;
-    const payload = vfsLoad('music', latest.name);
+    const payload = loadProjectFile('music', latest.name);
     if (!payload?.data) return false;
     this.midiComposer.applyImportedSong(payload.data);
     this.midiComposer.currentDocumentRef = { folder: 'music', name: latest.name };
@@ -1483,7 +1629,7 @@ export default class Game {
     this.world.reset();
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
     this.friendlyCompanion = null;
-    const startLoaded = this.gameMode === 'endless' || (playtest && startWithEverything);
+    const startLoaded = this.gameMode === 'endless' || startWithEverything === true;
     if (startLoaded) {
       this.player.equippedUpgrades = [...UPGRADE_LIST];
       this.player.upgradeSlots = UPGRADE_LIST.length;
@@ -1516,6 +1662,8 @@ export default class Game {
     this.victory = false;
     this.enemies = [];
     this.projectiles = [];
+    this.beams = [];
+    this.homingMissiles = [];
     this.debris = [];
     this.shards = [];
     this.lootDrops = [];
@@ -1636,23 +1784,25 @@ export default class Game {
       this.storyData = this.buildWorldData();
       this.playtestActive = false;
       this.simulationActive = false;
-      this.resetRun({ playtest: false, startWithEverything: false });
+      this.resetRun({ playtest: false, startWithEverything: true });
       this.transitionTo('playing');
+      this.startSpawnPause();
       this.showSystemToast('Playing latest edited level from autosave.');
       return;
     }
-    const levels = vfsList('levels');
+    const levels = listProjectFiles('levels');
     const latest = levels[0];
     if (latest) {
-      const payload = vfsLoad('levels', latest.name);
+      const payload = loadProjectFile('levels', latest.name);
       if (payload?.data) {
         this.applyWorldData(payload.data);
         this.gameMode = 'story';
         this.storyData = this.buildWorldData();
         this.playtestActive = false;
         this.simulationActive = false;
-        this.resetRun({ playtest: false, startWithEverything: false });
+        this.resetRun({ playtest: false, startWithEverything: true });
         this.transitionTo('playing');
+        this.startSpawnPause();
         this.showSystemToast(`Playing latest level: ${latest.name}`);
         return;
       }
@@ -1698,8 +1848,8 @@ export default class Game {
       return;
     }
     if (action === 'sync-server') {
-      this.showSystemToast('Syncing local snapshot to server...');
-      const result = await pushServerSnapshot();
+      this.showSystemToast('Syncing project files to server...');
+      const result = await flushServerStorage();
       if (!result.ok) {
         this.showSystemToast(`Server sync failed: ${String(result.reason || 'unknown').slice(0, 80)}`);
         return;
@@ -1708,7 +1858,7 @@ export default class Game {
       return;
     }
     if (action === 'sync-github') {
-      this.showSystemToast('Syncing server snapshot to GitHub...');
+      this.showSystemToast('Syncing server project files to GitHub...');
       const result = await syncServerSnapshotToGitHub();
       if (!result.ok) {
         this.showSystemToast(`GitHub sync failed: ${String(result.reason || 'unknown').slice(0, 80)}`);
@@ -2743,6 +2893,8 @@ export default class Game {
     this.updateEnemies(dt * timeScale);
     this.applyIgnitirEnemyPull(dt * timeScale);
     this.updateProjectiles(dt * timeScale);
+    this.updateBeams(dt * timeScale);
+    this.updateHomingMissiles(dt * timeScale);
     this.updateDebris(dt * timeScale);
     this.updateEffects(dt * timeScale);
     this.updateLootDrops(dt * timeScale);
@@ -2918,12 +3070,27 @@ export default class Game {
     const spawns = this.roomEnemySpawns.get(roomIndex) || [];
     if (!spawns.length) return false;
     const tileSize = this.world.tileSize;
-    const activeKeys = new Set(this.enemies.filter((enemy) => !enemy.dead).map((enemy) => {
+    const activeKeys = new Set(this.enemies.filter((enemy) => !enemy.dead || enemy.destroyAfterDeath === false).map((enemy) => {
       const tx = Math.floor(enemy.x / tileSize);
       const ty = Math.floor(enemy.y / tileSize);
       return `${tx},${ty}`;
     }));
-    return spawns.some((spawn) => !activeKeys.has(`${spawn.x},${spawn.y}`));
+    return spawns.some((spawn) => !this.permanentlyDeadRoomEnemyKeys.has(this.getRoomEnemySpawnKey(roomIndex, spawn)) && !activeKeys.has(`${spawn.x},${spawn.y}`));
+  }
+
+  getRoomEnemySpawnKey(roomIndex, spawn) {
+    return `${roomIndex}:${spawn?.x},${spawn?.y}:${spawn?.type || ''}`;
+  }
+
+  recordPermanentEnemyDeath(enemy) {
+    if (!enemy || enemy._permanentDeathRecorded || enemy.respawnOnRoomEntry !== false || !enemy.roomSpawnKey) return;
+    this.permanentlyDeadRoomEnemyKeys.add(enemy.roomSpawnKey);
+    enemy._permanentDeathRecorded = true;
+  }
+
+  shouldKeepDeadEnemyVisible(enemy) {
+    if (!enemy?.dead) return true;
+    return enemy.deathTimer > 0 || enemy.destroyAfterDeath === false || enemy.isDeadCollidable?.();
   }
 
   handleRoomEntry(roomIndex) {
@@ -2956,17 +3123,22 @@ export default class Game {
     const spawns = this.roomEnemySpawns.get(roomIndex) || [];
     if (!spawns.length) return;
     const tileSize = this.world.tileSize;
-    const activeKeys = new Set(this.enemies.filter((enemy) => !enemy.dead).map((enemy) => {
+    const activeKeys = new Set(this.enemies.filter((enemy) => !enemy.dead || enemy.destroyAfterDeath === false).map((enemy) => {
       const tx = Math.floor(enemy.x / tileSize);
       const ty = Math.floor(enemy.y / tileSize);
       return `${tx},${ty}`;
     }));
     spawns.forEach((spawn) => {
+      if (this.permanentlyDeadRoomEnemyKeys.has(this.getRoomEnemySpawnKey(roomIndex, spawn))) return;
       const key = `${spawn.x},${spawn.y}`;
       if (activeKeys.has(key)) return;
       const worldX = (spawn.x + 0.5) * tileSize;
       const worldY = (spawn.y + 0.5) * tileSize;
-      this.spawnEnemyByType(spawn.type, worldX, worldY);
+      const enemy = this.spawnEnemyByType(spawn.type, worldX, worldY);
+      if (enemy) {
+        enemy.roomSpawnKey = this.getRoomEnemySpawnKey(roomIndex, spawn);
+        enemy.respawnOnRoomEntry = enemy.respawnOnRoomEntry !== false;
+      }
     });
   }
 
@@ -4158,7 +4330,7 @@ export default class Game {
       if (this.isPlayerPositionClear(targetX, this.player.y)) {
         this.player.x = targetX;
         this.player.vx = 0;
-      } else {
+      } else if (pushEnemy) {
         const enemyTargetX = enemy.x - overlapX * dir;
         if (this.isEnemyPositionClear(enemy, enemyTargetX, enemy.y)) {
           enemy.x = enemyTargetX;
@@ -4173,7 +4345,7 @@ export default class Game {
         if (dir < 0) {
           this.player.onGround = true;
         }
-      } else {
+      } else if (pushEnemy) {
         const enemyTargetY = enemy.y - overlapY * dir;
         if (this.isEnemyPositionClear(enemy, enemy.x, enemyTargetY)) {
           enemy.y = enemyTargetY;
@@ -4571,9 +4743,15 @@ export default class Game {
   executeEnemy(enemy, variant) {
     this.testHarness.recordExecution(variant);
     if (!enemy.training) {
-      enemy.dead = true;
+      if (this.enemyUsesCustomDeathState(enemy)) {
+        enemy.damage(Math.max(1, Number(enemy.health || 1)));
+      } else {
+        enemy.dead = true;
+      }
       this.awardLoot(enemy, true);
-      this.spawnExecutionDebris(enemy, variant);
+      if (!this.enemyUsesCustomDeathState(enemy)) {
+        this.spawnExecutionDebris(enemy, variant);
+      }
     }
     this.slowTimer = 0.12;
     if (this.pauseMenu.shake) {
@@ -4597,7 +4775,17 @@ export default class Game {
     }
   }
 
+  enemyUsesCustomDeathState(enemy) {
+    if (!enemy) return false;
+    if (enemy.deathStarted) return true;
+    const deathStateId = typeof enemy.deathStateId === 'string' ? enemy.deathStateId : '';
+    if (!deathStateId) return false;
+    return Array.isArray(enemy.definition?.states)
+      && enemy.definition.states.some((state) => state?.id === deathStateId);
+  }
+
   spawnExecutionDebris(enemy, variant) {
+    if (this.enemyUsesCustomDeathState(enemy)) return;
     const base = this.getEnemyPolygon(enemy);
     let normal = [1, 0];
     if (variant === 'front') normal = [0, 1];
@@ -4616,6 +4804,7 @@ export default class Game {
   }
 
   spawnDeathDebris(enemy) {
+    if (this.enemyUsesCustomDeathState(enemy)) return;
     this.spawnEffect('splat', enemy.x, enemy.y);
     this.spawnEffect('splat', enemy.x + (Math.random() - 0.5) * 30, enemy.y + (Math.random() - 0.5) * 20);
     this.spawnEffect('splat', enemy.x + (Math.random() - 0.5) * 20, enemy.y + (Math.random() - 0.5) * 30);
@@ -4750,7 +4939,7 @@ export default class Game {
       return enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'solid-hurtbox']).length > 0;
     };
     const enemyDamagesPlayerInZones = (enemy) => {
-      if (!enemy?.getCollisionZoneRects) return enemy.bodyDamageEnabled !== false;
+      if (!enemy?.getCollisionZoneRects) return false;
       const pRect = playerRect();
       const zones = enemy.getCollisionZoneRects(['solid-damage-player', 'damage-player']);
       return zones.some((zone) => rectsOverlap(pRect, zone));
@@ -4764,6 +4953,11 @@ export default class Game {
     };
     const context = {
       spawnProjectile: this.spawnProjectile.bind(this),
+      spawnBeam: this.spawnBeam.bind(this),
+      spawnHomingMissile: this.spawnHomingMissile.bind(this),
+      emitParticles: this.emitActionParticles.bind(this),
+      playMidi: this.playActorMidi.bind(this),
+      stopMidi: this.stopActorMidi.bind(this),
       spawnMinion: (x, y) => this.requestSpawn('skitter', x, y),
       canShoot: (enemy, range = 320, padding = 80) => this.canEnemyShoot(enemy, range, padding),
       isVisible: (enemy, padding = 80) => this.isEnemyVisible(enemy, padding),
@@ -4791,7 +4985,8 @@ export default class Game {
           this.abilities
         );
       },
-      notifyDamagedPlayer: (enemy) => enemy?.onDamagedPlayer?.()
+      notifyDamagedPlayer: (enemy) => enemy?.onDamagedPlayer?.(),
+      actorTimerDt: dt
     };
     const revHeld = this.isRevHeld(this.input) && this.player.canRev();
     const revRange = this.world.tileSize * 2.5;
@@ -4801,8 +4996,17 @@ export default class Game {
         enemy.ignitirDissolveTimer = Math.max(0, enemy.ignitirDissolveTimer - dt);
       }
       if (enemy.dead) {
-        if (enemy.deathTimer > 0 && enemy.updateDeath) {
-          enemy.updateDeath(dt);
+        this.recordPermanentEnemyDeath(enemy);
+        if (this.shouldKeepDeadEnemyVisible(enemy) && enemy.updateDeath) {
+          enemy.updateDeath(dt, this.player, context);
+        }
+        if (enemy.solid || enemy.isDeadCollidable?.()) {
+          const hasSolidZones = enemyHasSolidZones(enemy);
+          const zoneBlocked = resolveEnemyPlayerZoneCollision(enemy);
+          if (!hasSolidZones && !zoneBlocked) this.resolvePlayerEnemyOverlap(enemy, { pushEnemy: false });
+          if (this.isPlayerBlockedAt(this.player.x, this.player.y, { ignoreOneWay: true })) {
+            this.resolvePlayerTileOverlap({ ignoreOneWay: true });
+          }
         }
         return;
       }
@@ -4811,8 +5015,13 @@ export default class Game {
       }
       if (enemy.hitPause > 0) {
         enemy.hitPause = Math.max(0, enemy.hitPause - dt);
+        enemy.updateDuringHitPause?.(dt, this.player, context);
         if (enemy.tickDamage) {
           enemy.tickDamage(dt);
+        }
+        resolveEnemyPlayerZoneCollision(enemy);
+        if (this.isPlayerBlockedAt(this.player.x, this.player.y, { ignoreOneWay: true })) {
+          this.resolvePlayerTileOverlap({ ignoreOneWay: true });
         }
         return;
       }
@@ -4974,6 +5183,16 @@ export default class Game {
     });
   }
 
+  updateBeams(dt) {
+    this.beams.forEach((beam) => beam.update(dt, this.world, this.player, this.abilities));
+    this.beams = this.beams.filter((beam) => !beam.dead);
+  }
+
+  updateHomingMissiles(dt) {
+    this.homingMissiles.forEach((missile) => missile.update(dt, this.world, this.player, this.abilities));
+    this.homingMissiles = this.homingMissiles.filter((missile) => !missile.dead);
+  }
+
   updateDebris(dt) {
     this.debris.forEach((piece) => piece.update(dt));
     this.debris = this.debris.filter((piece) => piece.life > 0);
@@ -5018,6 +5237,14 @@ export default class Game {
 
   spawnProjectile(x, y, vx, vy, damage, options = {}) {
     this.projectiles.push(new Projectile(x, y, vx, vy, damage, options));
+  }
+
+  spawnBeam(x, y, angle, options = {}) {
+    this.beams.push(new Beam(x, y, angle, options));
+  }
+
+  spawnHomingMissile(x, y, angle, options = {}) {
+    this.homingMissiles.push(new HomingMissile(x, y, angle, options));
   }
 
   showAbilityDialog(ability) {
@@ -5252,8 +5479,8 @@ export default class Game {
   }
 
   loadSongLibrary() {
-    return vfsList('music').map((entry) => {
-      const payload = vfsLoad('music', entry.name);
+    return listProjectFiles('music').map((entry) => {
+      const payload = loadProjectFile('music', entry.name);
       return {
         id: entry.name,
         name: entry.name,
@@ -5264,7 +5491,7 @@ export default class Game {
 
   getLibrarySong(trackId) {
     if (!trackId) return null;
-    const payload = vfsLoad('music', trackId);
+    const payload = loadProjectFile('music', trackId);
     if (!payload?.data) return null;
     return { id: trackId, name: trackId, song: payload.data };
   }
@@ -5292,6 +5519,27 @@ export default class Game {
     this.musicPlayers.push(player);
   }
 
+  playActorMidi(trackId, { fadeMs = 250 } = {}) {
+    const resolvedTrackId = String(trackId || '').trim();
+    if (!resolvedTrackId) return;
+    if (!this.getLibrarySong(resolvedTrackId)) return;
+    this.actorMusicOverrideTrackId = resolvedTrackId;
+    const previousFadeDuration = this.musicFadeDuration;
+    this.musicFadeDuration = Math.max(0, Number(fadeMs || 0)) / 1000;
+    this.setActiveMusicTrack(resolvedTrackId);
+    this.musicFadeDuration = previousFadeDuration;
+  }
+
+  stopActorMidi(trackId = '', { fadeMs = 250 } = {}) {
+    const resolvedTrackId = String(trackId || '').trim();
+    if (resolvedTrackId && resolvedTrackId !== this.actorMusicOverrideTrackId && resolvedTrackId !== this.activeMusicTrackId) return;
+    this.actorMusicOverrideTrackId = null;
+    const previousFadeDuration = this.musicFadeDuration;
+    this.musicFadeDuration = Math.max(0, Number(fadeMs || 0)) / 1000;
+    this.setActiveMusicTrack(null);
+    this.musicFadeDuration = previousFadeDuration;
+  }
+
   stopProjectBrowserMusicPreview() {
     if (!this.projectBrowserMusicPreviewPlayer) return;
     this.projectBrowserMusicPreviewPlayer.setFade(0, 0.25);
@@ -5309,8 +5557,10 @@ export default class Game {
   }
 
   updateMusicZones(dt, tileX, tileY) {
-    const zone = this.getMusicZoneAt(tileX, tileY);
-    this.setActiveMusicTrack(zone?.track || null);
+    if (!this.actorMusicOverrideTrackId) {
+      const zone = this.getMusicZoneAt(tileX, tileY);
+      this.setActiveMusicTrack(zone?.track || null);
+    }
     this.musicPlayers.forEach((player) => player.update(dt));
     this.musicPlayers = this.musicPlayers.filter((player) => !(player.volume <= 0 && player.targetVolume === 0));
   }
@@ -5581,14 +5831,14 @@ export default class Game {
       const levelName = params.levelName;
       const completeLoad = () => {
         if (levelName) {
-          const payload = vfsLoad('levels', levelName);
+          const payload = loadProjectFile('levels', levelName);
           if (payload?.data) {
             this.applyWorldData(payload.data);
             if (Number.isFinite(params.spawnX) && Number.isFinite(params.spawnY)) {
               this.world.spawn = { x: Math.floor(params.spawnX), y: Math.floor(params.spawnY) };
               this.world.spawnPoint = {
                 x: (Math.floor(params.spawnX) + 0.5) * this.world.tileSize,
-                y: Math.floor(params.spawnY) * this.world.tileSize
+                y: (Math.floor(params.spawnY) + 0.5) * this.world.tileSize
               };
             }
             this.resetRun({ playtest: false, startWithEverything: true });
@@ -6834,7 +7084,7 @@ export default class Game {
     this.drawTutorialHints(ctx);
 
     this.enemies.forEach((enemy) => {
-      if (!enemy.dead || enemy.deathTimer > 0) {
+      if (this.shouldKeepDeadEnemyVisible(enemy)) {
         enemy.debugMode = this.debugMode;
         enemy.draw(ctx);
         this.drawIgnitirDissolve(ctx, enemy);
@@ -6860,6 +7110,8 @@ export default class Game {
     }
 
     this.projectiles.forEach((projectile) => projectile.draw(ctx));
+    this.beams.forEach((beam) => beam.draw(ctx));
+    this.homingMissiles.forEach((missile) => missile.draw(ctx));
     this.debris.forEach((piece) => piece.draw(ctx));
     this.shards.forEach((shard) => shard.draw(ctx));
     this.effects.forEach((effect) => effect.draw(ctx));
@@ -7171,7 +7423,7 @@ export default class Game {
     ctx.lineWidth = 4;
     this.enemies.forEach((enemy) => {
       enemy.debugMode = this.debugMode;
-      if (!enemy.dead || enemy.deathTimer > 0) enemy.draw(ctx);
+      if (this.shouldKeepDeadEnemyVisible(enemy)) enemy.draw(ctx);
     });
     if (this.boss && !this.boss.dead) {
       this.boss.draw(ctx);
@@ -7263,7 +7515,19 @@ export default class Game {
       const alpha = clamp01(particle.life / Math.max(0.0001, particle.maxLife));
       ctx.globalAlpha = alpha;
       ctx.fillStyle = particle.style.color;
-      if (particle.style.kind === 'gust') {
+      if (particle.style.frames?.length) {
+        const elapsed = Math.max(0, particle.maxLife - particle.life);
+        const frameDuration = Math.max(16, Number(particle.style.frameDuration || 120));
+        const frameIndex = Math.floor(((elapsed * 1000) / frameDuration + particle.frameOffset * particle.style.frames.length)) % particle.style.frames.length;
+        const frame = particle.style.frames[frameIndex];
+        const scale = Math.max(0.05, particle.size / Math.max(1, Math.max(frame.width, frame.height)));
+        ctx.save();
+        ctx.translate(particle.x, particle.y);
+        ctx.rotate(particle.angle || 0);
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(frame, -frame.width * scale / 2, -frame.height * scale / 2, frame.width * scale, frame.height * scale);
+        ctx.restore();
+      } else if (particle.style.kind === 'gust') {
         ctx.strokeStyle = particle.style.color;
         ctx.lineWidth = Math.max(2, particle.size * 0.08);
         ctx.beginPath();
@@ -7371,6 +7635,110 @@ export default class Game {
     });
   }
 
+  drawWorldFastForEditor(ctx, {
+    showDoors = true,
+    tileSize,
+    minTileX,
+    maxTileX,
+    minTileY,
+    maxTileY
+  } = {}) {
+    const colors = {
+      '#': '#3a3a3a',
+      F: '#bfe9ff',
+      R: '#8a5a2b',
+      E: '#d6b06d',
+      Q: '#6b2bbd',
+      J: '#4fb7ff',
+      G: '#4bd47e',
+      V: '#b35cff',
+      N: '#dff2ff',
+      P: '#8a8f9f',
+      I: '#8fd6ff',
+      W: '#7a4b25',
+      X: '#555',
+      U: '#4b4b4b',
+      C: '#7b4a26',
+      B: '#3b1848',
+      D: '#17485c',
+      '~': '#1f66aa',
+      A: '#1c7a46',
+      L: '#ff5a2f',
+      e: '#48c4ff',
+      '<': '#2b2b2b',
+      '>': '#2b2b2b',
+      T: '#bbbbbb',
+      O: '#ffd36a',
+      H: '#f4f4f4',
+      Z: '#3a3a3a',
+      a: '#66ccff',
+      g: '#ffffff',
+      p: '#ffffff',
+      m: '#ffffff',
+      r: '#ffffff',
+      i: '#ffffff',
+      f: '#ffffff',
+      S: '#66ccff',
+      '$': '#99ff66',
+      K: '#996633'
+    };
+
+    this.doorForegroundOverlays = [];
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    for (let y = minTileY; y <= maxTileY; y += 1) {
+      for (let x = minTileX; x <= maxTileX; x += 1) {
+        const tile = this.world.getTile(x, y);
+        if (!tile || tile === '.') continue;
+        const baseX = x * tileSize;
+        const baseY = y * tileSize;
+        if (tile === '=' || tile === 's') {
+          ctx.strokeStyle = tile === 's' ? '#d9b267' : '#ffffff';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(baseX + 4, baseY + tileSize / 2);
+          ctx.lineTo(baseX + tileSize - 4, baseY + tileSize / 2);
+          ctx.stroke();
+          continue;
+        }
+        if (tile === '^' || tile === 'v') {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          if (tile === '^') {
+            ctx.moveTo(baseX, baseY + tileSize);
+            ctx.lineTo(baseX + tileSize, baseY + tileSize);
+            ctx.lineTo(baseX + tileSize, baseY);
+          } else {
+            ctx.moveTo(baseX, baseY);
+            ctx.lineTo(baseX, baseY + tileSize);
+            ctx.lineTo(baseX + tileSize, baseY + tileSize);
+          }
+          ctx.closePath();
+          ctx.fill();
+          continue;
+        }
+        if ((tile === '*' || tile === '!')) {
+          ctx.fillStyle = tile === '!' ? '#c98bff' : '#ffffff';
+          const toothWidth = tileSize / 4;
+          for (let i = 0; i < 4; i += 1) {
+            const toothX = baseX + i * toothWidth;
+            ctx.beginPath();
+            ctx.moveTo(toothX, baseY + tileSize);
+            ctx.lineTo(toothX + toothWidth, baseY + tileSize);
+            ctx.lineTo(toothX + toothWidth / 2, baseY + tileSize * 0.35);
+            ctx.closePath();
+            ctx.fill();
+          }
+          continue;
+        }
+        if (tile === 'D' && !showDoors) continue;
+        ctx.fillStyle = colors[tile] || '#777777';
+        ctx.fillRect(baseX, baseY, tileSize, tileSize);
+      }
+    }
+    ctx.restore();
+  }
+
   drawWorld(ctx, { showDoors = true, decalAlphaMultiplier = 1, cameraOverride = null } = {}) {
     const tileSize = this.world.tileSize;
     const time = this.worldTime;
@@ -7389,6 +7757,17 @@ export default class Game {
     const maxTileX = Math.min(this.world.width - 1, Math.ceil((cameraX + cameraWidth) / tileSize) + viewMarginTiles);
     const minTileY = Math.max(0, Math.floor(cameraY / tileSize) - viewMarginTiles);
     const maxTileY = Math.min(this.world.height - 1, Math.ceil((cameraY + cameraHeight) / tileSize) + viewMarginTiles);
+    if (activeCamera?.fastEditorRender) {
+      this.drawWorldFastForEditor(ctx, {
+        showDoors,
+        tileSize,
+        minTileX,
+        maxTileX,
+        minTileY,
+        maxTileY
+      });
+      return;
+    }
     const isSolidTile = (tx, ty) => this.world.isSolid(tx, ty, this.abilities);
     const drawLiquid = (x, y, fill, highlight, surfaceActive = true) => {
       const baseX = x * tileSize;
@@ -8154,7 +8533,7 @@ export default class Game {
     if (!this.debugMode) return;
     ctx.save();
     this.enemies.forEach((enemy) => {
-      if (!enemy || enemy.dead) return;
+      if (!enemy || !this.shouldKeepDeadEnemyVisible(enemy)) return;
       const width = Math.max(1, Number(enemy.width || 0));
       const height = Math.max(1, Number(enemy.height || 0));
       if (!width || !height) return;
@@ -8308,8 +8687,8 @@ export default class Game {
   }
 
   getMinimapOverlayMetrics(width, height, zoom = 1) {
-    const mapWidth = Math.min(width * 0.72, 540);
-    const mapHeight = Math.min(height * 0.6, 360);
+    const mapWidth = Math.min(width * 0.72, 480);
+    const mapHeight = Math.min(height * 0.6, 300);
     const pixel = Math.min(mapWidth / this.world.width, mapHeight / this.world.height) * zoom;
     const mapPixelWidth = this.world.width * pixel;
     const mapPixelHeight = this.world.height * pixel;
@@ -8442,7 +8821,7 @@ export default class Game {
     });
 
     this.enemies.forEach((enemy) => {
-      if (enemy.dead) return;
+      if (!this.shouldKeepDeadEnemyVisible(enemy)) return;
       ctx.strokeStyle = 'rgba(255,255,255,0.65)';
       ctx.strokeRect(enemy.rect.x, enemy.rect.y, enemy.rect.w, enemy.rect.h);
       ctx.fillStyle = 'rgba(255,255,255,0.9)';

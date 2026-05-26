@@ -739,7 +739,7 @@ export function fileTypeBadge(filename = '') {
   return 'FILE';
 }
 
-const MENU_LABEL_ACRONYMS = new Set(['JSON', 'MIDI', 'ZIP', 'PNG', 'GIF', 'GM', 'QA', 'UI', 'VFS']);
+const MENU_LABEL_ACRONYMS = new Set(['JSON', 'MIDI', 'ZIP', 'PNG', 'GIF', 'GM', 'QA', 'UI']);
 
 export function formatMenuLabel(label = '') {
   const value = String(label ?? '');

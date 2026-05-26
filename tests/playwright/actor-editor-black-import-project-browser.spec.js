@@ -41,7 +41,7 @@ test('actor editor animation can import black.png, save as black, preview, and a
     studio.currentDocumentRef = { folder: 'art', name: 'black' };
     await studio.saveArtDocument();
 
-    const saved = window.localStorage.getItem('robter:vfs:art:black');
+    const saved = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent('black')}`).then((response) => response.ok);
 
     game.exitPixelStudio();
     await new Promise((resolve, reject) => {

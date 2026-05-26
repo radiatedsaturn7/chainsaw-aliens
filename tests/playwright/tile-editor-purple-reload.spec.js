@@ -33,11 +33,11 @@ test('tile editor solid block stays purple after full browser reopen from editor
     game.exitPixelStudio();
   });
 
-  await expect.poll(async () => page1.evaluate(() => {
-    const payload = window.localStorage.getItem('robter:vfs:art:Tile Art Autosave');
-    if (!payload) return null;
-    const parsed = JSON.parse(payload);
-    return parsed?.data?.tiles?.['#']?.ref || null;
+  await expect.poll(async () => page1.evaluate(async () => {
+    const response = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent('Tile Art Autosave')}`);
+    if (!response.ok) return null;
+    const payload = await response.json();
+    return payload?.file?.data?.tiles?.['#']?.ref || null;
   })).toBe('Tile Art 23');
 
   await context1.close();

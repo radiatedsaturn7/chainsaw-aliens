@@ -5,7 +5,8 @@ import PixelStudio from '../../src/ui/PixelStudio.js';
 import { ensureActorDefinition } from '../../src/content/actorEditorData.js';
 
 const serializeCurrentAnimationAsArtDocument = PixelStudio.prototype.serializeCurrentAnimationAsArtDocument;
-const normalizeLoadedArtDocument = PixelStudio.prototype.normalizeLoadedArtDocument;
+const shouldLoadArtAsAnimationDocument = PixelStudio.prototype.shouldLoadArtAsAnimationDocument;
+const loadAnimationArtDocument = PixelStudio.prototype.loadAnimationArtDocument;
 const buildActorStateArtDocName = PixelStudio.prototype.buildActorStateArtDocName;
 const saveArtDocument = PixelStudio.prototype.saveArtDocument;
 
@@ -60,41 +61,58 @@ test('buildActorStateArtDocName creates a stable art filename', () => {
   assert.equal(name, 'boss-prime-idle-loop-art');
 });
 
-test('normalizeLoadedArtDocument maps actor-state art payloads into tile data', () => {
+test('actor-state art payloads load as animation documents, not tile art', () => {
   const payload = {
     kind: 'actor-state-animation',
-    width: 32,
+    width: 2,
+    height: 1,
     fps: 10,
-    frames: [Array(32 * 32).fill(null)]
+    frames: [['#ff0000', null]]
   };
-  const normalized = normalizeLoadedArtDocument.call({
-    activeTile: { char: '@' },
-    tileLibrary: [{ char: '#' }]
-  }, payload);
-  assert.ok(normalized.tiles?.['@']);
-  assert.equal(normalized.tiles['@'].size, 32);
-  assert.equal(normalized.tiles['@'].fps, 10);
-  assert.equal(normalized.tiles['@'].frames.length, 1);
-  assert.equal(normalized.tiles['@'].editor.width, 32);
-  assert.equal(normalized.tiles['@'].editor.height, 32);
-  assert.equal(normalized.tiles['@'].editor.frames.length, 1);
+
+  assert.equal(shouldLoadArtAsAnimationDocument.call({
+    decalEditSession: { type: 'actor-state' },
+    tileEditSession: true,
+    forceArtDocumentSave: false
+  }, payload), true);
+
+  const editor = {
+    tileEditSession: true,
+    tilePickerMode: true,
+    forceArtDocumentSave: false,
+    canvasState: {},
+    animation: {},
+    artSizeDraft: {},
+    setFrameLayers(layers) {
+      this.canvasState.layers = layers;
+    },
+    clearSelection() {},
+    zoomToFitCanvas() {}
+  };
+
+  loadAnimationArtDocument.call(editor, payload);
+
+  assert.equal(editor.tileEditSession, false);
+  assert.equal(editor.tilePickerMode, false);
+  assert.equal(editor.forceArtDocumentSave, true);
+  assert.equal(editor.canvasState.width, 4);
+  assert.equal(editor.canvasState.height, 4);
+  assert.equal(editor.animation.frames.length, 1);
+  assert.equal(editor.animation.frames[0].layers[0].pixels[0], 0xff0000ff >>> 0);
 });
 
-test('normalizeLoadedArtDocument mirrors first tile onto active tile when needed', () => {
-  const normalized = normalizeLoadedArtDocument.call({
-    activeTile: { char: '@' },
-    tileLibrary: [{ char: '@' }]
-  }, {
-    tiles: {
-      '#': {
-        size: 1,
-        fps: 8,
-        frames: [['#ff00ff']]
-      }
-    }
-  });
-  assert.ok(normalized.tiles['@']);
-  assert.deepEqual(normalized.tiles['@'].frames, [['#ff00ff']]);
+test('tile documents still load through the tile-art path during tile editing', () => {
+  const payload = {
+    size: 1,
+    fps: 8,
+    frames: [['#ff00ff']]
+  };
+
+  assert.equal(shouldLoadArtAsAnimationDocument.call({
+    decalEditSession: null,
+    tileEditSession: true,
+    forceArtDocumentSave: false
+  }, payload), false);
 });
 
 test('saveArtDocument does not rewrite tile autosave during actor-state saves', async () => {

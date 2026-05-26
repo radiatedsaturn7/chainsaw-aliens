@@ -45,15 +45,17 @@ test('pink solid tile persists in tile editor preview and level editor room acro
   });
   await page1.waitForFunction(() => window.__game.state === 'editor');
 
-  await expect.poll(async () => page1.evaluate(() => {
-    const manual = window.localStorage.getItem('robter:vfs:art:pink-room-test');
-    const autosave = window.localStorage.getItem('robter:vfs:art:Tile Art Autosave');
-    const parseFirst = (raw) => {
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      return parsed?.data?.tiles?.['#']?.frames?.[0]?.[0] || null;
+  await expect.poll(async () => page1.evaluate(async () => {
+    const readFirst = async (name) => {
+      const response = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent(name)}`);
+      if (!response.ok) return null;
+      const payload = await response.json();
+      return payload?.file?.data?.tiles?.['#']?.frames?.[0]?.[0] || null;
     };
-    return { manual: parseFirst(manual), autosave: parseFirst(autosave) };
+    return {
+      manual: await readFirst('pink-room-test'),
+      autosave: await readFirst('Tile Art Autosave')
+    };
   })).toMatchObject({ manual: '#ff69ff', autosave: '#ff69ff' });
 
   const firstState = await page1.evaluate(() => {
@@ -85,11 +87,11 @@ test('pink solid tile persists in tile editor preview and level editor room acro
     const frame = game.world.pixelArt?.tiles?.['#']?.frames?.[0] || [];
     return frame.filter((entry) => entry === '#ff69ff').length;
   });
-  const reopenedStored = await page2.evaluate(() => {
-    const autosave = window.localStorage.getItem('robter:vfs:art:Tile Art Autosave');
-    if (!autosave) return null;
-    const parsed = JSON.parse(autosave);
-    return parsed?.data?.tiles?.['#']?.frames?.[0]?.[0] || null;
+  const reopenedStored = await page2.evaluate(async () => {
+    const response = await fetch(`/__storage/file?folder=art&name=${encodeURIComponent('Tile Art Autosave')}`);
+    if (!response.ok) return null;
+    const payload = await response.json();
+    return payload?.file?.data?.tiles?.['#']?.frames?.[0]?.[0] || null;
   });
   expect(reopenedStored).toBe('#ff69ff');
   expect(tilePreview).toBeGreaterThan(24);

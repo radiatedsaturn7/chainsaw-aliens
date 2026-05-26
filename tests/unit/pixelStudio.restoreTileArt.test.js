@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import PixelStudio from '../../src/ui/PixelStudio.js';
-import { vfsSave } from '../../src/ui/vfs.js';
+import { loadProjectFile, resetProjectFilesForTests, saveProjectFile } from '../../src/ui/projectFiles.js';
 
 const restoreStoredTileArtIfNeeded = PixelStudio.prototype.restoreStoredTileArtIfNeeded;
 const hasLoadedPixelArtData = PixelStudio.prototype.hasLoadedPixelArtData;
@@ -11,36 +11,6 @@ const hydrateTileArtRef = PixelStudio.prototype.hydrateTileArtRef;
 const persistTileArtAutosave = PixelStudio.prototype.persistTileArtAutosave;
 const syncTileData = PixelStudio.prototype.syncTileData;
 const setTilePickerMode = PixelStudio.prototype.setTilePickerMode;
-
-class MemoryStorage {
-  constructor() {
-    this.map = new Map();
-  }
-
-  get length() {
-    return this.map.size;
-  }
-
-  key(index) {
-    return Array.from(this.map.keys())[index] ?? null;
-  }
-
-  getItem(key) {
-    return this.map.has(key) ? this.map.get(key) : null;
-  }
-
-  setItem(key, value) {
-    this.map.set(key, String(value));
-  }
-
-  removeItem(key) {
-    this.map.delete(key);
-  }
-
-  clear() {
-    this.map.clear();
-  }
-}
 
 function createEditor(world = {}) {
   return {
@@ -55,15 +25,15 @@ function createEditor(world = {}) {
 }
 
 test.beforeEach(() => {
-  global.window = { localStorage: new MemoryStorage() };
+  resetProjectFilesForTests();
 });
 
 test.afterEach(() => {
-  delete global.window;
+  resetProjectFilesForTests();
 });
 
 test('restores autosave tile art even when not returning from title', () => {
-  vfsSave('art', 'Tile Art Autosave', {
+  saveProjectFile('art', 'Tile Art Autosave', {
     tiles: {
       '#': { frames: [['#ff69ff']] }
     }
@@ -77,7 +47,7 @@ test('restores autosave tile art even when not returning from title', () => {
 });
 
 test('does not overwrite already loaded art document data', () => {
-  vfsSave('art', 'Tile Art Autosave', {
+  saveProjectFile('art', 'Tile Art Autosave', {
     tiles: {
       '#': { frames: [['#00ff00']] }
     }
@@ -102,7 +72,7 @@ test('does not overwrite already loaded art document data', () => {
 });
 
 test('tile picker mode can restore autosave even with an existing art currentDocumentRef', () => {
-  vfsSave('art', 'Tile Art Autosave', {
+  saveProjectFile('art', 'Tile Art Autosave', {
     tiles: {
       '#': { frames: [['#55aaff']], editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] } }
     }
@@ -125,7 +95,7 @@ test('tile picker mode can restore autosave even with an existing art currentDoc
 });
 
 test('restores autosave over plain frame-only in-memory tile data', () => {
-  vfsSave('art', 'Tile Art Autosave', {
+  saveProjectFile('art', 'Tile Art Autosave', {
     tiles: {
       '#': { frames: [['#00ff00']], editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] } }
     }
@@ -146,7 +116,7 @@ test('restores autosave over plain frame-only in-memory tile data', () => {
 });
 
 test('hydrates ref-only in-memory tiles before attempting fallback restore', () => {
-  vfsSave('art', 'Tile Art 23', {
+  saveProjectFile('art', 'Tile Art 23', {
     frames: [['#123456']],
     editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] }
   });
@@ -166,7 +136,7 @@ test('hydrates ref-only in-memory tiles before attempting fallback restore', () 
 });
 
 test('restores autosave even when current document ref points at a level doc', () => {
-  vfsSave('art', 'Tile Art Autosave', {
+  saveProjectFile('art', 'Tile Art Autosave', {
     tiles: {
       '#': { frames: [['#aa00ff']], editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] } }
     }
@@ -182,7 +152,7 @@ test('restores autosave even when current document ref points at a level doc', (
 });
 
 test('prefers tile autosave over loaded non-art world data', () => {
-  vfsSave('art', 'Tile Art Autosave', {
+  saveProjectFile('art', 'Tile Art Autosave', {
     tiles: {
       '#': { frames: [['#a000ff']], editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] } }
     }
@@ -203,7 +173,7 @@ test('prefers tile autosave over loaded non-art world data', () => {
 });
 
 test('falls back to level autosave pixel art when tile autosave is absent', () => {
-  vfsSave('levels', 'Level Editor Autosave', {
+  saveProjectFile('levels', 'Level Editor Autosave', {
     pixelArt: {
       tiles: {
         '#': { frames: [['#44ccff']], editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] } }
@@ -219,12 +189,12 @@ test('falls back to level autosave pixel art when tile autosave is absent', () =
 });
 
 test('does not overwrite existing tile autosave with an empty store', () => {
-  vfsSave('art', 'Tile Art Autosave', {
+  saveProjectFile('art', 'Tile Art Autosave', {
     tiles: {
       '#': { ref: 'Tile Art 23' }
     }
   });
-  const before = window.localStorage.getItem('robter:vfs:art:Tile Art Autosave');
+  const before = loadProjectFile('art', 'Tile Art Autosave');
   const editor = {
     game: { world: { pixelArt: { tiles: {} } } },
     lastTileArtAutosaveAt: 0,
@@ -236,8 +206,8 @@ test('does not overwrite existing tile autosave with an empty store', () => {
 
   persistTileArtAutosave.call(editor, true);
 
-  const after = window.localStorage.getItem('robter:vfs:art:Tile Art Autosave');
-  assert.equal(after, before);
+  const after = loadProjectFile('art', 'Tile Art Autosave');
+  assert.deepEqual(after, before);
 });
 
 test('syncTileData updates in-memory tile state without persisting when persist=false', () => {
@@ -270,12 +240,12 @@ test('syncTileData updates in-memory tile state without persisting when persist=
 
   const tile = editor.game.world.pixelArt.tiles['#'];
   assert.equal(tile.frames[0][0], '#ffff00');
-  assert.equal(window.localStorage.getItem('robter:vfs:art:Tile Art 23'), null);
-  assert.equal(window.localStorage.getItem('robter:vfs:art:Tile Art Autosave'), null);
+  assert.equal(loadProjectFile('art', 'Tile Art 23'), null);
+  assert.equal(loadProjectFile('art', 'Tile Art Autosave'), null);
 });
 
 test('hydrateTileArtRef hydrates a single ref-only tile for preview use', () => {
-  vfsSave('art', 'Tile Art 23', {
+  saveProjectFile('art', 'Tile Art 23', {
     size: 1,
     frames: [['#ff00ff']],
     editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] }

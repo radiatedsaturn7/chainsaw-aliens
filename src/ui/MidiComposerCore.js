@@ -14,7 +14,8 @@ import {
 import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/midiParser.js';
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
-import { vfsLoad, vfsSave } from './vfs.js';
+import { loadProjectFile, saveProjectFile } from './projectFiles.js';
+import { loadServerPreference, saveServerPreference } from './serverPreferences.js';
 import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedTransportIconButton, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
 import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
@@ -893,28 +894,19 @@ export default class MidiComposer {
   }
 
   loadSong() {
-    const vfsPayload = vfsLoad('music', MIDI_COMPOSER_AUTOSAVE_DOC);
-    if (vfsPayload?.data) {
-      const validation = this.validateSong(vfsPayload.data);
+    const projectFilePayload = loadProjectFile('music', MIDI_COMPOSER_AUTOSAVE_DOC);
+    if (projectFilePayload?.data) {
+      const validation = this.validateSong(projectFilePayload.data);
       if (validation.valid) {
-        return this.migrateSong(vfsPayload.data);
+        return this.migrateSong(projectFilePayload.data);
       }
     }
-    const stored = localStorage.getItem(this.storageKey);
-    if (!stored) return createDefaultSong();
-    try {
-      const parsed = JSON.parse(stored);
-      const validation = this.validateSong(parsed);
-      if (!validation.valid) return createDefaultSong();
-      return this.migrateSong(parsed);
-    } catch (error) {
-      return createDefaultSong();
-    }
+    return createDefaultSong();
   }
 
   loadCachedPrograms() {
     try {
-      const stored = JSON.parse(localStorage.getItem(CACHED_SOUND_FONT_KEY));
+      const stored = loadServerPreference(CACHED_SOUND_FONT_KEY, []);
       return Array.isArray(stored) ? stored : [];
     } catch (error) {
       return [];
@@ -922,7 +914,7 @@ export default class MidiComposer {
   }
 
   saveCachedPrograms() {
-    localStorage.setItem(CACHED_SOUND_FONT_KEY, JSON.stringify(Array.from(this.cachedPrograms)));
+    void saveServerPreference(CACHED_SOUND_FONT_KEY, Array.from(this.cachedPrograms));
   }
 
   preloadDefaultInstruments() {
@@ -993,8 +985,7 @@ export default class MidiComposer {
       const snapshot = JSON.stringify(this.song);
       if (snapshot !== this.lastPersistedSnapshot) {
         this.lastPersistedSnapshot = snapshot;
-        localStorage.setItem(this.storageKey, snapshot);
-        vfsSave('music', MIDI_COMPOSER_AUTOSAVE_DOC, JSON.parse(snapshot));
+        saveProjectFile('music', MIDI_COMPOSER_AUTOSAVE_DOC, JSON.parse(snapshot));
       }
     } catch (error) {
       console.warn('persist failed', error);
@@ -1136,7 +1127,7 @@ export default class MidiComposer {
 
   loadInstrumentList(key, fallback) {
     try {
-      const stored = JSON.parse(localStorage.getItem(key));
+      const stored = loadServerPreference(key, fallback);
       if (Array.isArray(stored)) return stored.filter((entry) => Number.isInteger(entry));
       return fallback;
     } catch (error) {
@@ -1146,7 +1137,7 @@ export default class MidiComposer {
 
   saveInstrumentList(key, list) {
     try {
-      localStorage.setItem(key, JSON.stringify(list));
+      void saveServerPreference(key, list);
     } catch (error) {
       // ignore
     }
@@ -1171,7 +1162,7 @@ export default class MidiComposer {
 
   loadControllerMapping() {
     try {
-      const stored = JSON.parse(localStorage.getItem('chainsaw-midi-controller-map'));
+      const stored = loadServerPreference('chainsaw-midi-controller-map', null);
       if (!stored || typeof stored !== 'object') throw new Error('invalid');
       return {
         place: stored.place || 'A',
@@ -1199,7 +1190,7 @@ export default class MidiComposer {
 
   saveControllerMapping() {
     try {
-      localStorage.setItem('chainsaw-midi-controller-map', JSON.stringify(this.controllerMapping));
+      void saveServerPreference('chainsaw-midi-controller-map', this.controllerMapping);
     } catch (error) {
       // ignore
     }
@@ -1217,7 +1208,7 @@ export default class MidiComposer {
       drumKitId: this.game?.audio?.getDrumKit?.()?.id || 'standard'
     };
     try {
-      const stored = JSON.parse(localStorage.getItem('chainsaw-midi-audio'));
+      const stored = loadServerPreference('chainsaw-midi-audio', null);
       if (!stored || typeof stored !== 'object') return defaults;
       return {
         masterVolume: typeof stored.masterVolume === 'number' ? stored.masterVolume : defaults.masterVolume,
@@ -1236,7 +1227,7 @@ export default class MidiComposer {
 
   saveAudioSettings() {
     try {
-      localStorage.setItem('chainsaw-midi-audio', JSON.stringify(this.audioSettings));
+      void saveServerPreference('chainsaw-midi-audio', this.audioSettings);
     } catch (error) {
       // ignore
     }
@@ -7957,7 +7948,7 @@ export default class MidiComposer {
       this.playheadTick = 0;
       this.lastPlaybackTick = 0;
       this.currentDocumentRef = { folder: 'music', name: newName };
-      vfsSave('music', newName, JSON.parse(JSON.stringify(this.song)));
+      saveProjectFile('music', newName, JSON.parse(JSON.stringify(this.song)));
       this.persist({ commitHistory: true });
       this.markSavedSnapshot();
       return;
