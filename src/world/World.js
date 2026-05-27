@@ -85,6 +85,7 @@ export default class World {
     this.bossGate = null;
     this.objectives = [];
     this.enemies = [];
+    this.enemyTileMap = new Map();
     this.boxes = [];
     this.elevatorPaths = [];
     this.elevatorPathSet = new Set();
@@ -137,6 +138,7 @@ export default class World {
     this.bossGate = null;
     this.objectives = [];
     this.enemies = (data.enemies || []).map((enemy) => ({ ...enemy }));
+    this.rebuildEnemyTileMap();
     this.elevatorPaths = (data.elevatorPaths || []).map((path) => ({ ...path }));
     this.elevatorPathSet = new Set(this.elevatorPaths.map((path) => `${path.x},${path.y}`));
     this.elevators = (data.elevators || []).map((elevator) => ({ ...elevator }));
@@ -286,6 +288,17 @@ export default class World {
 
     this.rooms = rooms;
     this.roomIndexByTile = roomIndexByTile;
+  }
+
+  getEnemyTileKey(tileX, tileY) {
+    return `${tileX},${tileY}`;
+  }
+
+  rebuildEnemyTileMap() {
+    this.enemyTileMap = new Map();
+    this.enemies.forEach((enemy) => {
+      this.enemyTileMap.set(this.getEnemyTileKey(enemy.x, enemy.y), enemy);
+    });
   }
 
   reset() {
@@ -439,15 +452,18 @@ export default class World {
   }
 
   enemyAt(tileX, tileY) {
-    return this.enemies.find((enemy) => enemy.x === tileX && enemy.y === tileY) || null;
+    return this.enemyTileMap.get(this.getEnemyTileKey(tileX, tileY)) || null;
   }
 
   setEnemy(tileX, tileY, type) {
+    const key = this.getEnemyTileKey(tileX, tileY);
     const existing = this.enemyAt(tileX, tileY);
     if (existing) {
       existing.type = type;
     } else {
-      this.enemies.push({ x: tileX, y: tileY, type });
+      const enemy = { x: tileX, y: tileY, type };
+      this.enemies.push(enemy);
+      this.enemyTileMap.set(key, enemy);
     }
     if (this.data) {
       this.data.enemies = this.enemies;
@@ -455,9 +471,18 @@ export default class World {
   }
 
   removeEnemy(tileX, tileY) {
-    const before = this.enemies.length;
-    this.enemies = this.enemies.filter((enemy) => !(enemy.x === tileX && enemy.y === tileY));
-    if (this.enemies.length !== before && this.data) {
+    const key = this.getEnemyTileKey(tileX, tileY);
+    const existing = this.enemyTileMap.get(key);
+    if (!existing) return;
+    this.enemyTileMap.delete(key);
+    const index = this.enemies.indexOf(existing);
+    if (index >= 0) {
+      this.enemies.splice(index, 1);
+    } else {
+      this.enemies = this.enemies.filter((enemy) => !(enemy.x === tileX && enemy.y === tileY));
+      this.rebuildEnemyTileMap();
+    }
+    if (this.data) {
       this.data.enemies = this.enemies;
     }
   }
@@ -507,6 +532,7 @@ export default class World {
         enemy.x += left;
         enemy.y += top;
       });
+      this.rebuildEnemyTileMap();
       this.elevatorPaths.forEach((path) => {
         path.x += left;
         path.y += top;

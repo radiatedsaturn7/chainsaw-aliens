@@ -132,8 +132,14 @@ const BOSS_ROOM_PREFS = {
 
 const ENEMY_TYPES = [...AMBIENT_ENEMY_TYPES, ...STANDARD_ENEMY_TYPES, ...BOSS_ENEMY_TYPES];
 let customActorEnemyTypesCache = { signature: '', types: [] };
+let customActorEnemyTypesDirty = true;
+let enemyTypesCache = null;
 
 function getCustomActorEnemyTypes() {
+  if (!customActorEnemyTypesDirty) {
+    return customActorEnemyTypesCache.types;
+  }
+  customActorEnemyTypesDirty = false;
   const actorFiles = listProjectFiles('actors');
   const signature = actorFiles.map((entry) => `${entry.name}:${entry.updatedAt}:${entry.size}`).join('|');
   if (customActorEnemyTypesCache.signature === signature) {
@@ -152,11 +158,34 @@ function getCustomActorEnemyTypes() {
     };
   }).filter(Boolean);
   customActorEnemyTypesCache = { signature, types };
+  enemyTypesCache = null;
   return types;
 }
 
 function getEnemyTypes() {
-  return [...AMBIENT_ENEMY_TYPES, ...STANDARD_ENEMY_TYPES, ...getCustomActorEnemyTypes(), ...BOSS_ENEMY_TYPES];
+  const custom = getCustomActorEnemyTypes();
+  const signature = customActorEnemyTypesCache.signature;
+  if (enemyTypesCache?.signature === signature) {
+    return enemyTypesCache.types;
+  }
+  const types = [...AMBIENT_ENEMY_TYPES, ...STANDARD_ENEMY_TYPES, ...custom, ...BOSS_ENEMY_TYPES];
+  const byId = new Map(types.map((entry) => [entry.id, entry]));
+  const bossIds = new Set(BOSS_ENEMY_TYPES.map((entry) => entry.id));
+  enemyTypesCache = { signature, types, byId, bossIds };
+  return types;
+}
+
+function getEnemyTypeLookup() {
+  getEnemyTypes();
+  return {
+    byId: enemyTypesCache?.byId || new Map(),
+    bossIds: enemyTypesCache?.bossIds || new Set()
+  };
+}
+
+function invalidateCustomActorEnemyTypes() {
+  customActorEnemyTypesDirty = true;
+  enemyTypesCache = null;
 }
 
 
@@ -578,6 +607,10 @@ export default class Editor {
     this.randomLevelFocusRepeat = 0;
     this.autosaveKey = EDITOR_AUTOSAVE_KEY;
     this.autosaveLoaded = false;
+    this.pendingAutosave = null;
+    this.autosaveDirty = false;
+    this.autosaveDelayMs = 750;
+    this.lastHapticAt = 0;
     this.gamepadCursor = {
       x: 0,
       y: 0,
@@ -898,6 +931,7 @@ export default class Editor {
   activate() {
     this.bindGlobalListeners();
     this.active = true;
+    invalidateCustomActorEnemyTypes();
     this.resetTransientInputState();
     this.loadAutosaveOrSeed();
     this.restorePlaytestSpawn();
@@ -910,6 +944,7 @@ export default class Editor {
   }
 
   deactivate() {
+    this.flushPendingAutosave();
     this.active = false;
     this.resetTransientInputState();
     this.dragging = false;
@@ -931,6 +966,10 @@ export default class Editor {
     if (this.pendingWorldRefresh) {
       window.clearTimeout(this.pendingWorldRefresh);
       this.pendingWorldRefresh = null;
+    }
+    if (this.pendingAutosave) {
+      window.clearTimeout(this.pendingAutosave);
+      this.pendingAutosave = null;
     }
     this.unbindGlobalListeners();
   }
@@ -1007,9 +1046,26 @@ export default class Editor {
   }
 
   persistAutosave() {
+    this.autosaveDirty = true;
+    if (this.pendingAutosave) {
+      window.clearTimeout(this.pendingAutosave);
+    }
+    this.pendingAutosave = window.setTimeout(() => {
+      this.pendingAutosave = null;
+      this.flushPendingAutosave();
+    }, this.autosaveDelayMs);
+  }
+
+  flushPendingAutosave() {
+    if (this.pendingAutosave) {
+      window.clearTimeout(this.pendingAutosave);
+      this.pendingAutosave = null;
+    }
+    if (!this.autosaveDirty) return;
     try {
       const data = this.serializeLevelDocument();
       saveProjectFile('levels', LEVEL_EDITOR_AUTOSAVE_DOC, data);
+      this.autosaveDirty = false;
     } catch (error) {
       console.warn('Unable to save editor autosave:', error);
     }
@@ -6239,8 +6295,11 @@ export default class Editor {
 
   triggerHaptic() {
     if (!this.isMobileLayout()) return;
+    const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    if (now - this.lastHapticAt < 60) return;
+    this.lastHapticAt = now;
     if (navigator?.vibrate) {
-      navigator.vibrate(12);
+      navigator.vibrate(8);
     }
   }
 
@@ -7024,15 +7083,7 @@ export default class Editor {
     const { canvas } = this.game;
     this.updateLayoutBounds(canvas.width, canvas.height);
     this.sanitizeView('draw');
-    const panJoystickActive = Boolean(this.panJoystick?.active)
-      || Math.abs(Number(this.panJoystick?.dx) || 0) > 0.01
-      || Math.abs(Number(this.panJoystick?.dy) || 0) > 0.01;
-    const previousDrawCamera = this.previousDrawCamera || null;
-    const cameraMovedSinceLastDraw = previousDrawCamera
-      && (Math.abs(previousDrawCamera.x - this.camera.x) > 0.5
-        || Math.abs(previousDrawCamera.y - this.camera.y) > 0.5
-        || Math.abs(previousDrawCamera.zoom - this.zoom) > 0.001);
-    const fastEditorRender = this.dragMode === 'pan' || panJoystickActive || cameraMovedSinceLastDraw;
+    const fastEditorRender = false;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -7276,13 +7327,13 @@ export default class Editor {
       }
     }
 
-    const enemyTypes = getEnemyTypes();
+    const { byId: enemyTypesById, bossIds } = getEnemyTypeLookup();
     this.game.world.enemies.forEach((enemy) => {
       if (enemy.x < visibleMinX - 1 || enemy.x > visibleMaxX + 1 || enemy.y < visibleMinY - 1 || enemy.y > visibleMaxY + 1) return;
       const cx = enemy.x * tileSize + tileSize / 2;
       const cy = enemy.y * tileSize + tileSize / 2;
-      const marker = enemyTypes.find((entry) => entry.id === enemy.type);
-      const isBoss = BOSS_ENEMY_TYPES.some((entry) => entry.id === enemy.type);
+      const marker = enemyTypesById.get(enemy.type);
+      const isBoss = bossIds.has(enemy.type);
       const color = isBoss ? '#ffb3d6' : '#f66';
       ctx.save();
       ctx.strokeStyle = color;
@@ -7331,43 +7382,54 @@ export default class Editor {
     const majorAnchorX = gridAnchorX + EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL;
     const majorAnchorY = gridAnchorY + EDITOR_DOTTED_GRID_VERTICAL_INTERVAL;
     const isAlignedToAnchor = (value, anchor, interval) => ((value - anchor) % interval + interval) % interval === 0;
+
+    ctx.strokeStyle = baseStroke;
+    ctx.lineWidth = glow ? 1.4 : 1;
+    ctx.beginPath();
     for (let x = viewLeft; x <= viewRight; x += 1) {
-      const isMajorLine = isAlignedToAnchor(x, majorAnchorX, EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL);
-      ctx.strokeStyle = isMajorLine ? majorStroke : baseStroke;
-      ctx.lineWidth = isMajorLine ? (glow ? 2 : 1.6) : (glow ? 1.4 : 1);
-      ctx.beginPath();
+      if (isAlignedToAnchor(x, majorAnchorX, EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL)) continue;
       ctx.moveTo(x * tileSize, viewTop * tileSize);
       ctx.lineTo(x * tileSize, viewBottom * tileSize);
-      ctx.stroke();
     }
     for (let y = viewTop; y <= viewBottom; y += 1) {
-      const isMajorLine = isAlignedToAnchor(y, majorAnchorY, EDITOR_MAJOR_GRID_VERTICAL_INTERVAL);
-      ctx.strokeStyle = isMajorLine ? majorStroke : baseStroke;
-      ctx.lineWidth = isMajorLine ? (glow ? 2 : 1.6) : (glow ? 1.4 : 1);
-      ctx.beginPath();
+      if (isAlignedToAnchor(y, majorAnchorY, EDITOR_MAJOR_GRID_VERTICAL_INTERVAL)) continue;
       ctx.moveTo(viewLeft * tileSize, y * tileSize);
       ctx.lineTo(viewRight * tileSize, y * tileSize);
-      ctx.stroke();
     }
+    ctx.stroke();
+
+    ctx.strokeStyle = majorStroke;
+    ctx.lineWidth = glow ? 2 : 1.6;
+    ctx.beginPath();
+    for (let x = viewLeft; x <= viewRight; x += 1) {
+      if (!isAlignedToAnchor(x, majorAnchorX, EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL)) continue;
+      ctx.moveTo(x * tileSize, viewTop * tileSize);
+      ctx.lineTo(x * tileSize, viewBottom * tileSize);
+    }
+    for (let y = viewTop; y <= viewBottom; y += 1) {
+      if (!isAlignedToAnchor(y, majorAnchorY, EDITOR_MAJOR_GRID_VERTICAL_INTERVAL)) continue;
+      ctx.moveTo(viewLeft * tileSize, y * tileSize);
+      ctx.lineTo(viewRight * tileSize, y * tileSize);
+    }
+    ctx.stroke();
+
     ctx.setLineDash([2, 6]);
     ctx.strokeStyle = dottedStroke;
     ctx.lineWidth = glow ? 1.6 : 1;
+    ctx.beginPath();
     for (let x = viewLeft; x <= viewRight; x += 1) {
       const isMajorLine = isAlignedToAnchor(x, majorAnchorX, EDITOR_MAJOR_GRID_HORIZONTAL_INTERVAL);
       if (isMajorLine || !isAlignedToAnchor(x, gridAnchorX, EDITOR_DOTTED_GRID_HORIZONTAL_INTERVAL)) continue;
-      ctx.beginPath();
       ctx.moveTo(x * tileSize, viewTop * tileSize);
       ctx.lineTo(x * tileSize, viewBottom * tileSize);
-      ctx.stroke();
     }
     for (let y = viewTop; y <= viewBottom; y += 1) {
       const isMajorLine = isAlignedToAnchor(y, majorAnchorY, EDITOR_MAJOR_GRID_VERTICAL_INTERVAL);
       if (isMajorLine || !isAlignedToAnchor(y, gridAnchorY, EDITOR_DOTTED_GRID_VERTICAL_INTERVAL)) continue;
-      ctx.beginPath();
       ctx.moveTo(viewLeft * tileSize, y * tileSize);
       ctx.lineTo(viewRight * tileSize, y * tileSize);
-      ctx.stroke();
     }
+    ctx.stroke();
     ctx.setLineDash([]);
     ctx.restore();
   }

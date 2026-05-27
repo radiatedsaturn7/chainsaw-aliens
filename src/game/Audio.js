@@ -697,35 +697,40 @@ export default class AudioSystem {
     this.ensure();
     const enabled = Array.isArray(pedals) ? pedals.filter((pedal) => pedal && pedal.enabled !== false) : [];
     let current = inputNode;
+    const createdNodes = [];
     const stopFns = [];
+    const trackNode = (node) => {
+      if (node) createdNodes.push(node);
+      return node;
+    };
     enabled.forEach((pedal) => {
       const knobs = pedal.knobs || {};
       if (pedal.type === 'compressor') {
-        const comp = this.ctx.createDynamicsCompressor();
+        const comp = trackNode(this.ctx.createDynamicsCompressor());
         comp.threshold.value = -44 + clamp(knobs.threshold ?? 0.5, 0, 1) * 42;
         comp.ratio.value = 1.5 + clamp(knobs.ratio ?? 0.5, 0, 1) * 16;
         comp.attack.value = 0.002 + (1 - clamp(knobs.ratio ?? 0.5, 0, 1)) * 0.03;
         comp.release.value = 0.06 + clamp(knobs.makeup ?? 0.4, 0, 1) * 0.32;
-        const makeup = this.ctx.createGain();
+        const makeup = trackNode(this.ctx.createGain());
         makeup.gain.value = 0.85 + clamp(knobs.makeup ?? 0.4, 0, 1) * 1.1;
         current.connect(comp);
         comp.connect(makeup);
         current = makeup;
       } else if (pedal.type === 'eq') {
-        const low = this.ctx.createBiquadFilter();
+        const low = trackNode(this.ctx.createBiquadFilter());
         low.type = 'lowshelf';
         low.frequency.value = 180;
         low.gain.value = (clamp(knobs.low ?? 0.5, 0, 1) - 0.5) * 24;
-        const mid = this.ctx.createBiquadFilter();
+        const mid = trackNode(this.ctx.createBiquadFilter());
         mid.type = 'peaking';
         mid.frequency.value = 1150;
         mid.Q.value = 0.9;
         mid.gain.value = (clamp(knobs.mid ?? 0.5, 0, 1) - 0.5) * 20;
-        const high = this.ctx.createBiquadFilter();
+        const high = trackNode(this.ctx.createBiquadFilter());
         high.type = 'highshelf';
         high.frequency.value = 3400;
         high.gain.value = (clamp(knobs.high ?? 0.5, 0, 1) - 0.5) * 24;
-        const presence = this.ctx.createBiquadFilter();
+        const presence = trackNode(this.ctx.createBiquadFilter());
         presence.type = 'peaking';
         presence.frequency.value = 4200;
         presence.Q.value = 1.2;
@@ -733,27 +738,27 @@ export default class AudioSystem {
         current.connect(low); low.connect(mid); mid.connect(high); high.connect(presence);
         current = presence;
       } else if (pedal.type === 'overdrive') {
-        const pre = this.ctx.createGain();
+        const pre = trackNode(this.ctx.createGain());
         pre.gain.value = 1 + clamp(knobs.drive ?? 0.6, 0, 1) * 6;
-        const shape = this.ctx.createWaveShaper();
+        const shape = trackNode(this.ctx.createWaveShaper());
         shape.curve = this.buildDistortionCurve(clamp(knobs.drive ?? 0.6, 0, 1));
         shape.oversample = '4x';
-        const tone = this.ctx.createBiquadFilter();
+        const tone = trackNode(this.ctx.createBiquadFilter());
         tone.type = 'lowpass';
         tone.frequency.value = 900 + clamp(knobs.tone ?? 0.5, 0, 1) * 7000;
-        const bite = this.ctx.createBiquadFilter();
+        const bite = trackNode(this.ctx.createBiquadFilter());
         bite.type = 'highpass';
         bite.frequency.value = 40 + clamp(knobs.bite ?? 0.5, 0, 1) * 650;
-        const out = this.ctx.createGain();
+        const out = trackNode(this.ctx.createGain());
         out.gain.value = 0.65;
         current.connect(pre); pre.connect(shape); shape.connect(tone); tone.connect(bite); bite.connect(out);
         current = out;
       } else if (pedal.type === 'wah') {
-        const filter = this.ctx.createBiquadFilter();
+        const filter = trackNode(this.ctx.createBiquadFilter());
         filter.type = 'bandpass';
         filter.Q.value = 1 + clamp(knobs.mix ?? 0.7, 0, 1) * 10;
-        const lfo = this.ctx.createOscillator();
-        const lfoGain = this.ctx.createGain();
+        const lfo = trackNode(this.ctx.createOscillator());
+        const lfoGain = trackNode(this.ctx.createGain());
         lfo.frequency.value = 0.4 + clamp(knobs.rate ?? 0.5, 0, 1) * 5;
         lfoGain.gain.value = 320 + clamp(knobs.sweep ?? 0.6, 0, 1) * 3400;
         filter.frequency.value = 380;
@@ -768,14 +773,14 @@ export default class AudioSystem {
         const mix = clamp(knobs.mix ?? 0.7, 0, 1);
         const depth = clamp(knobs.depth ?? 0.5, 0, 1);
         const spread = clamp(knobs.spread ?? 0.4, 0, 1);
-        const dry = this.ctx.createGain();
+        const dry = trackNode(this.ctx.createGain());
         dry.gain.value = 1 - mix * 0.55;
-        const wet = this.ctx.createGain();
+        const wet = trackNode(this.ctx.createGain());
         wet.gain.value = mix * 0.5;
-        const delay = this.ctx.createDelay(0.06);
+        const delay = trackNode(this.ctx.createDelay(0.06));
         delay.delayTime.value = 0.012 + spread * 0.016;
-        const lfo = this.ctx.createOscillator();
-        const lfoGain = this.ctx.createGain();
+        const lfo = trackNode(this.ctx.createOscillator());
+        const lfoGain = trackNode(this.ctx.createGain());
         lfo.frequency.value = 0.15 + depth * 2.4;
         lfoGain.gain.value = 0.001 + depth * 0.004;
         lfo.connect(lfoGain);
@@ -783,7 +788,7 @@ export default class AudioSystem {
         lfo.start(when);
         lfo.stop(when + duration + 0.2);
         stopFns.push(() => lfo.disconnect());
-        const sum = this.ctx.createGain();
+        const sum = trackNode(this.ctx.createGain());
         current.connect(dry);
         current.connect(delay);
         delay.connect(wet);
@@ -794,18 +799,18 @@ export default class AudioSystem {
         const rate = clamp(knobs.rate ?? 0.6, 0, 1);
         const depth = clamp(knobs.depth ?? 0.6, 0, 1);
         const mix = clamp(knobs.mix ?? 0.6, 0, 1);
-        const dry = this.ctx.createGain();
+        const dry = trackNode(this.ctx.createGain());
         dry.gain.value = 1 - mix * 0.5;
-        const wet = this.ctx.createGain();
+        const wet = trackNode(this.ctx.createGain());
         wet.gain.value = mix * 0.6;
-        const stages = Array.from({ length: 4 }, () => this.ctx.createBiquadFilter());
+        const stages = Array.from({ length: 4 }, () => trackNode(this.ctx.createBiquadFilter()));
         stages.forEach((stage) => {
           stage.type = 'allpass';
           stage.frequency.value = 400;
           stage.Q.value = 0.8;
         });
-        const lfo = this.ctx.createOscillator();
-        const lfoGain = this.ctx.createGain();
+        const lfo = trackNode(this.ctx.createOscillator());
+        const lfoGain = trackNode(this.ctx.createGain());
         lfo.frequency.value = 0.2 + rate * 4.2;
         lfoGain.gain.value = 180 + depth * 1400;
         lfo.connect(lfoGain);
@@ -813,7 +818,7 @@ export default class AudioSystem {
         lfo.start(when);
         lfo.stop(when + duration + 0.2);
         stopFns.push(() => lfo.disconnect());
-        const sum = this.ctx.createGain();
+        const sum = trackNode(this.ctx.createGain());
         current.connect(dry);
         current.connect(stages[0]);
         stages.reduce((prev, next) => { prev.connect(next); return next; });
@@ -825,13 +830,13 @@ export default class AudioSystem {
         const mix = clamp(knobs.mix ?? 0.6, 0, 1);
         const room = clamp(knobs.room ?? 0.5, 0, 1);
         const decay = clamp(knobs.decay ?? 0.6, 0, 1);
-        const dry = this.ctx.createGain();
-        const wet = this.ctx.createGain();
+        const dry = trackNode(this.ctx.createGain());
+        const wet = trackNode(this.ctx.createGain());
         dry.gain.value = 1 - mix * 0.6;
         wet.gain.value = mix * 0.8;
-        const convolver = this.ctx.createConvolver();
+        const convolver = trackNode(this.ctx.createConvolver());
         convolver.buffer = this.getPedalImpulse(room, decay);
-        const sum = this.ctx.createGain();
+        const sum = trackNode(this.ctx.createGain());
         current.connect(dry);
         current.connect(convolver);
         convolver.connect(wet);
@@ -842,18 +847,18 @@ export default class AudioSystem {
         const time = clamp(knobs.time ?? 0.45, 0, 1);
         const feedback = clamp(knobs.feedback ?? 0.35, 0, 0.95);
         const mix = clamp(knobs.mix ?? 0.65, 0, 1);
-        const delay = this.ctx.createDelay(1.5);
+        const delay = trackNode(this.ctx.createDelay(1.5));
         delay.delayTime.value = 0.06 + time * 0.64;
-        const fb = this.ctx.createGain();
+        const fb = trackNode(this.ctx.createGain());
         fb.gain.value = 0.15 + feedback * 0.72;
-        const tone = this.ctx.createBiquadFilter();
+        const tone = trackNode(this.ctx.createBiquadFilter());
         tone.type = 'lowpass';
         tone.frequency.value = 1300 + (1 - feedback) * 5200;
-        const dry = this.ctx.createGain();
+        const dry = trackNode(this.ctx.createGain());
         dry.gain.value = 1 - mix * 0.55;
-        const wet = this.ctx.createGain();
+        const wet = trackNode(this.ctx.createGain());
         wet.gain.value = mix * 0.65;
-        const sum = this.ctx.createGain();
+        const sum = trackNode(this.ctx.createGain());
         current.connect(dry);
         current.connect(delay);
         delay.connect(tone);
@@ -867,10 +872,10 @@ export default class AudioSystem {
         const minV = clamp(knobs.down ?? 0.35, 0.02, 1);
         const maxV = clamp(knobs.up ?? 0.95, 0.02, 1);
         const phase = clamp(knobs.phase ?? 0.55, 0, 1);
-        const gain = this.ctx.createGain();
+        const gain = trackNode(this.ctx.createGain());
         gain.gain.value = (minV + maxV) * 0.45;
-        const lfo = this.ctx.createOscillator();
-        const lfoGain = this.ctx.createGain();
+        const lfo = trackNode(this.ctx.createOscillator());
+        const lfoGain = trackNode(this.ctx.createGain());
         lfo.frequency.value = 0.2 + phase * 4;
         lfoGain.gain.value = Math.max(0.0001, (maxV - minV) * 0.5);
         lfo.connect(lfoGain);
@@ -884,10 +889,10 @@ export default class AudioSystem {
         const maxL = clamp(knobs.left ?? 0.85, 0, 1);
         const maxR = clamp(knobs.right ?? 0.85, 0, 1);
         const phase = clamp(knobs.phase ?? 0.6, 0, 1);
-        const panner = this.ctx.createStereoPanner();
+        const panner = trackNode(this.ctx.createStereoPanner());
         panner.pan.value = 0;
-        const lfo = this.ctx.createOscillator();
-        const lfoGain = this.ctx.createGain();
+        const lfo = trackNode(this.ctx.createOscillator());
+        const lfoGain = trackNode(this.ctx.createGain());
         lfo.frequency.value = 0.2 + phase * 4.4;
         lfoGain.gain.value = Math.max(0.05, Math.min(1, (maxL + maxR) * 0.5));
         lfo.connect(lfoGain);
@@ -902,9 +907,14 @@ export default class AudioSystem {
 
     return {
       output: current,
-      cleanup: () => stopFns.forEach((fn) => {
-        try { fn(); } catch (error) { /* ignore */ }
-      })
+      cleanup: () => {
+        stopFns.forEach((fn) => {
+          try { fn(); } catch (error) { /* ignore */ }
+        });
+        createdNodes.forEach((node) => {
+          try { node.disconnect(); } catch (error) { /* ignore */ }
+        });
+      }
     };
   }
 
@@ -1405,6 +1415,14 @@ export default class AudioSystem {
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration + release);
     osc.start(now);
     osc.stop(now + duration + release + 0.02);
+    const cleanup = () => {
+      [osc, output, gain, panNode].forEach((node) => {
+        if (!node) return;
+        try { node.disconnect(); } catch (error) { /* ignore */ }
+      });
+    };
+    osc.onended = cleanup;
+    window.setTimeout(cleanup, Math.max(0.2, duration + release + 0.5) * 1000);
   }
 
   playSampledNote({
@@ -1449,9 +1467,22 @@ export default class AudioSystem {
     source.start(now);
     source.stop(now + duration + 0.1);
     this.registerMidiVoice({ source, gain, stopTime: now + duration + 0.12 });
-    source.onended = () => {
-      chain.cleanup?.();
+    const cleanupInput = () => {
+      [source, filter].forEach((node) => {
+        if (!node) return;
+        try { node.disconnect(); } catch (error) { /* ignore */ }
+      });
     };
+    const cleanupGraph = () => {
+      cleanupInput();
+      chain.cleanup?.();
+      [gain, panNode, reverbSend].forEach((node) => {
+        if (!node) return;
+        try { node.disconnect(); } catch (error) { /* ignore */ }
+      });
+    };
+    source.onended = cleanupInput;
+    window.setTimeout(cleanupGraph, Math.max(0.2, duration + 2.5) * 1000);
   }
 
   getFallbackInstrument(program) {

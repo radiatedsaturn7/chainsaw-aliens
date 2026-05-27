@@ -1193,7 +1193,7 @@ export default class Game {
 
   enterEditor({ tab = null } = {}) {
     const fromState = this.state;
-    if (fromState === 'title' && !this.hasCustomTileArtInWorld()) {
+    if (fromState === 'title' && (!this.hasCustomTileArtInWorld() || !this.hasTileCompatibleCurrentArtDocument())) {
       this.restoreMostRecentArtDocument();
     }
     this.editorReturnState = this.state;
@@ -1215,6 +1215,7 @@ export default class Game {
     if (!tiles || typeof tiles !== 'object') return false;
     return Object.values(tiles).some((tileData) => {
       if (!tileData) return false;
+      if (this.pixelStudio?.isTileArtEntry && !this.pixelStudio.isTileArtEntry(tileData)) return false;
       if (Array.isArray(tileData.frames) && tileData.frames.some((frame) => Array.isArray(frame) && frame.some((value) => Boolean(value)))) {
         return true;
       }
@@ -1228,6 +1229,13 @@ export default class Game {
         return false;
       }));
     });
+  }
+
+  hasTileCompatibleCurrentArtDocument() {
+    const ref = this.pixelStudio?.currentDocumentRef;
+    if (!ref || ref.folder !== 'art' || !ref.name) return true;
+    const payload = loadProjectFile('art', ref.name);
+    return this.pixelStudio?.isTileArtDocument?.(payload?.data) !== false;
   }
 
   enterActorEditor() {
@@ -1494,13 +1502,13 @@ export default class Game {
   }
 
   restoreMostRecentArtDocument() {
-    const latest = listProjectFiles('art')[0];
-    if (!latest?.name) return false;
-    const payload = loadProjectFile('art', latest.name);
+    const latest = this.pixelStudio.findLatestTileArtDocument?.();
+    if (!latest?.entry?.name) return false;
+    const payload = latest.payload || loadProjectFile('art', latest.entry.name);
     if (!payload?.data) return false;
     this.world.pixelArt = this.pixelStudio.normalizeLoadedArtDocument(payload.data);
     this.pixelStudio.hydrateTileArtRefs?.();
-    this.pixelStudio.currentDocumentRef = { folder: 'art', name: latest.name };
+    this.pixelStudio.currentDocumentRef = { folder: 'art', name: latest.entry.name };
     this.pixelStudio.loadTileData({ skipRestore: true });
     return true;
   }
@@ -1508,7 +1516,9 @@ export default class Game {
   restoreTileArtAutosaveDocument() {
     const payload = loadProjectFile('art', 'Tile Art Autosave');
     if (!payload?.data) return false;
-    this.world.pixelArt = payload.data;
+    const normalized = this.pixelStudio.normalizeLoadedArtDocument(payload.data);
+    if (!this.hasCustomTileArtData(normalized)) return false;
+    this.world.pixelArt = normalized;
     this.pixelStudio.hydrateTileArtRefs?.();
     this.pixelStudio.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
     this.pixelStudio.loadTileData();
@@ -1519,22 +1529,34 @@ export default class Game {
     const hasTileEntries = (data) => Boolean(data?.tiles && Object.keys(data.tiles).length > 0);
     const artPayload = loadProjectFile('art', 'Tile Art Autosave');
     if (artPayload?.data && hasTileEntries(artPayload.data)) {
-      this.world.pixelArt = artPayload.data;
-      this.pixelStudio.hydrateTileArtRefs?.();
-      this.pixelStudio.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
-      this.pixelStudio.loadTileData();
-      return true;
+      const normalized = this.pixelStudio.normalizeLoadedArtDocument(artPayload.data);
+      if (this.hasCustomTileArtData(normalized)) {
+        this.world.pixelArt = normalized;
+        this.pixelStudio.hydrateTileArtRefs?.();
+        this.pixelStudio.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
+        this.pixelStudio.loadTileData();
+        return true;
+      }
     }
     const levelPayload = loadProjectFile('levels', 'Level Editor Autosave');
     const levelPixelArt = levelPayload?.data?.pixelArt;
     if (hasTileEntries(levelPixelArt)) {
-      this.world.pixelArt = levelPixelArt;
-      this.pixelStudio.hydrateTileArtRefs?.();
-      this.pixelStudio.currentDocumentRef = { folder: 'levels', name: 'Level Editor Autosave' };
-      this.pixelStudio.loadTileData();
-      return true;
+      const normalized = this.pixelStudio.normalizeLoadedArtDocument(levelPixelArt);
+      if (this.hasCustomTileArtData(normalized)) {
+        this.world.pixelArt = normalized;
+        this.pixelStudio.hydrateTileArtRefs?.();
+        this.pixelStudio.currentDocumentRef = { folder: 'levels', name: 'Level Editor Autosave' };
+        this.pixelStudio.loadTileData();
+        return true;
+      }
     }
     return false;
+  }
+
+  hasCustomTileArtData(pixelArt) {
+    const tiles = pixelArt?.tiles;
+    if (!tiles || typeof tiles !== 'object') return false;
+    return Object.keys(tiles).length > 0;
   }
 
   restoreMostRecentMusicDocument() {
@@ -7820,6 +7842,19 @@ export default class Game {
       ctx.restore();
     };
     const pixelTiles = this.world.pixelArt?.tiles || {};
+    if (this.pixelTileValidityCacheSource !== pixelTiles) {
+      this.pixelTileValidityCacheSource = pixelTiles;
+      this.pixelTileValidityCache = new Map();
+    }
+    const isRenderablePixelTile = (tile, pixelData) => {
+      if (!pixelData) return false;
+      if (!this.pixelStudio?.isTileArtEntry) return true;
+      const cached = this.pixelTileValidityCache?.get(tile);
+      if (cached !== undefined) return cached;
+      const valid = this.pixelStudio.isTileArtEntry(pixelData, { resolveRef: false });
+      this.pixelTileValidityCache?.set(tile, valid);
+      return valid;
+    };
     const drawPixelTile = (x, y, tile) => {
       const normalizePixelColor = (value) => {
         if (!value) return null;
@@ -7846,7 +7881,7 @@ export default class Game {
         return null;
       };
       const pixelData = pixelTiles[tile];
-      if (!pixelData) return false;
+      if (!isRenderablePixelTile(tile, pixelData)) return false;
       const buildCompositeFrameFromEditor = (source, targetSize, targetFrameIndex = 0) => {
         const editorFrames = source?.editor?.frames;
         if (!Array.isArray(editorFrames) || editorFrames.length === 0) return null;

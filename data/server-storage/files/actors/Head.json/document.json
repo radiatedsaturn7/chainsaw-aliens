@@ -652,7 +652,7 @@
   "deathStateId": "idle-4",
   "destroyAfterDeath": false,
   "collidableAfterDeath": true,
-  "respawnOnRoomEntry": true,
+  "respawnOnRoomEntry": false,
   "advanced": {
     "assetRefs": {},
     "notes": ""

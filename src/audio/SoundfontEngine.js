@@ -16,7 +16,7 @@ export default class SoundfontEngine {
     baseUrl = PRIMARY_SOUNDFONT_BASE,
     fallbackUrl = FALLBACK_SOUNDFONT_BASE,
     format = 'mp3',
-    debug = true
+    debug = false
   } = {}) {
     this.baseUrl = normalizeBaseUrl(baseUrl);
     this.fallbackUrl = normalizeBaseUrl(fallbackUrl);

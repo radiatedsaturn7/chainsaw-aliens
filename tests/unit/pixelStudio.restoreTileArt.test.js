@@ -11,6 +11,10 @@ const hydrateTileArtRef = PixelStudio.prototype.hydrateTileArtRef;
 const persistTileArtAutosave = PixelStudio.prototype.persistTileArtAutosave;
 const syncTileData = PixelStudio.prototype.syncTileData;
 const setTilePickerMode = PixelStudio.prototype.setTilePickerMode;
+const isTileArtDocument = PixelStudio.prototype.isTileArtDocument;
+const isTileArtEntry = PixelStudio.prototype.isTileArtEntry;
+const findLatestTileArtDocument = PixelStudio.prototype.findLatestTileArtDocument;
+const normalizeLoadedArtDocument = PixelStudio.prototype.normalizeLoadedArtDocument;
 
 function createEditor(world = {}) {
   return {
@@ -20,6 +24,10 @@ function createEditor(world = {}) {
     hasLoadedPixelArtData,
     hydrateTileArtRef,
     hydrateTileArtRefs,
+    isTileArtDocument,
+    isTileArtEntry,
+    findLatestTileArtDocument,
+    normalizeLoadedArtDocument,
     restoreStoredTileArtIfNeeded
   };
 }
@@ -188,6 +196,76 @@ test('falls back to level autosave pixel art when tile autosave is absent', () =
   assert.deepEqual(editor.currentDocumentRef, { folder: 'levels', name: 'Level Editor Autosave' });
 });
 
+test('fallback latest art ignores newer actor animation documents', async () => {
+  saveProjectFile('art', 'Tile Art 23', {
+    size: 1,
+    frames: [['#123456']],
+    editor: { width: 1, height: 1, frames: [{ durationMs: 33, layers: [] }] }
+  });
+  await new Promise((resolve) => setTimeout(resolve, 2));
+  saveProjectFile('art', 'head-idle-art', {
+    kind: 'actor-state-animation',
+    width: 1,
+    height: 1,
+    frames: [['#ff0000']]
+  });
+  const editor = createEditor({});
+
+  restoreStoredTileArtIfNeeded.call(editor);
+
+  assert.equal(editor.game.world.pixelArt.tiles['#'].frames[0][0], '#123456');
+  assert.deepEqual(editor.currentDocumentRef, { folder: 'art', name: 'Tile Art 23' });
+});
+
+test('actor animation art is never normalized into solid tile art', () => {
+  const normalized = normalizeLoadedArtDocument.call({
+    isTileArtDocument,
+    isTileArtEntry,
+    activeTile: { char: '#' },
+    tileLibrary: [{ char: '#' }]
+  }, {
+    kind: 'actor-state-animation',
+    width: 1,
+    height: 1,
+    frames: [['#ff0000']]
+  });
+
+  assert.deepEqual(normalized, { tiles: {} });
+});
+
+test('actor-sized tile autosave entries are rejected for map tile rendering', () => {
+  saveProjectFile('art', 'Tile Art 23', {
+    size: 512,
+    frames: [Array.from({ length: 512 * 512 }, (_, index) => (index % 100 === 0 ? '#ff0000' : null))]
+  });
+  saveProjectFile('art', 'Tile Art Autosave', {
+    tiles: {
+      '#': { ref: 'Tile Art 23' }
+    }
+  });
+  const editor = createEditor({});
+
+  restoreStoredTileArtIfNeeded.call(editor);
+
+  assert.deepEqual(editor.game.world.pixelArt, { tiles: {} });
+  assert.equal(editor.currentDocumentRef, null);
+});
+
+test('already-hydrated actor-sized tile entries do not count as loaded tile art', () => {
+  const editor = createEditor({
+    pixelArt: {
+      tiles: {
+        '#': {
+          size: 512,
+          frames: [Array.from({ length: 512 * 512 }, (_, index) => (index % 100 === 0 ? '#ff0000' : null))]
+        }
+      }
+    }
+  });
+
+  assert.equal(hasLoadedPixelArtData.call(editor, editor.game.world.pixelArt), false);
+});
+
 test('does not overwrite existing tile autosave with an empty store', () => {
   saveProjectFile('art', 'Tile Art Autosave', {
     tiles: {
@@ -252,7 +330,8 @@ test('hydrateTileArtRef hydrates a single ref-only tile for preview use', () => 
   });
   const store = { tiles: { '#': { ref: 'Tile Art 23' } } };
   const editor = {
-    game: { world: { pixelArt: store } }
+    game: { world: { pixelArt: store } },
+    isTileArtEntry
   };
 
   const hydrated = hydrateTileArtRef.call(editor, '#', store.tiles['#']);

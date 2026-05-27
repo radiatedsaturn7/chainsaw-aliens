@@ -43,6 +43,7 @@ const DEFAULT_FRAME_DURATION_MS = Math.round(1000 / 32);
 const ART_DIMENSION_MIN = 4;
 const ART_DIMENSION_MAX = 4096;
 const IMPORT_DIMENSION_MAX = 512;
+const MAX_TILE_ART_DIMENSION = 128;
 const BRUSH_SHAPES = ['circle', 'square', 'diamond', 'cross', 'x', 'hline', 'vline'];
 
 
@@ -456,27 +457,33 @@ export default class PixelStudio {
     const autosave = loadProjectFile('art', 'Tile Art Autosave');
     const autosaveHasTiles = Object.keys(autosave?.data?.tiles || {}).length > 0;
     if (autosave?.data && autosaveHasTiles) {
-      this.game.world.pixelArt = autosave.data;
-      this.hydrateTileArtRefs();
-      this.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
-      return;
+      const normalized = this.normalizeLoadedArtDocument(autosave.data);
+      if (this.hasLoadedPixelArtData(normalized)) {
+        this.game.world.pixelArt = normalized;
+        this.hydrateTileArtRefs();
+        this.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
+        return;
+      }
     }
     const levelAutosave = loadProjectFile('levels', 'Level Editor Autosave');
     const levelPixelArt = levelAutosave?.data?.pixelArt;
     const levelAutosaveHasTiles = Object.keys(levelPixelArt?.tiles || {}).length > 0;
     if (levelAutosaveHasTiles) {
-      this.game.world.pixelArt = levelPixelArt;
-      this.hydrateTileArtRefs();
-      this.currentDocumentRef = { folder: 'levels', name: 'Level Editor Autosave' };
-      return;
+      const normalized = this.normalizeLoadedArtDocument(levelPixelArt);
+      if (this.hasLoadedPixelArtData(normalized)) {
+        this.game.world.pixelArt = normalized;
+        this.hydrateTileArtRefs();
+        this.currentDocumentRef = { folder: 'levels', name: 'Level Editor Autosave' };
+        return;
+      }
     }
     if (hadLoadedInMemory || this.hasLoadedPixelArtData(store)) return;
-    const latest = listProjectFiles('art')[0];
-    const payload = latest?.name ? loadProjectFile('art', latest.name) : null;
+    const latestTileArt = this.findLatestTileArtDocument();
+    const payload = latestTileArt?.payload || null;
     if (payload?.data) {
-      this.game.world.pixelArt = payload.data;
+      this.game.world.pixelArt = this.normalizeLoadedArtDocument(payload.data);
       this.hydrateTileArtRefs();
-      this.currentDocumentRef = { folder: 'art', name: latest.name };
+      this.currentDocumentRef = { folder: 'art', name: latestTileArt.entry.name };
     }
   }
 
@@ -485,11 +492,48 @@ export default class PixelStudio {
     if (!tiles || typeof tiles !== 'object') return false;
     return Object.values(tiles).some((tileData) => {
       if (!tileData || typeof tileData !== 'object') return false;
+      if (!this.isTileArtEntry(tileData)) return false;
       const hasRef = typeof tileData.ref === 'string' && tileData.ref.length > 0;
       const frameCount = Array.isArray(tileData.frames) ? tileData.frames.length : 0;
       const editorFrameCount = Array.isArray(tileData.editor?.frames) ? tileData.editor.frames.length : 0;
       return editorFrameCount > 0 || (hasRef && frameCount > 0);
     });
+  }
+
+  isTileArtDocument(data, options = {}) {
+    if (!data || typeof data !== 'object') return false;
+    if (data.kind === 'actor-state-animation') return false;
+    if (data.tiles && typeof data.tiles === 'object') {
+      return Object.values(data.tiles).some((entry) => this.isTileArtEntry(entry, options));
+    }
+    return this.isTileArtEntry(data, options) && !data.kind;
+  }
+
+  isTileArtEntry(entry, { resolveRef = false } = {}) {
+    if (!entry || typeof entry !== 'object') return false;
+    if (entry.kind === 'actor-state-animation') return false;
+    const frameLength = Array.isArray(entry.frames?.[0]) ? entry.frames[0].length : 0;
+    const inferredFrameSize = frameLength > 0 ? Math.sqrt(frameLength) : 0;
+    const width = Number(entry.width || entry.editor?.width || entry.size || inferredFrameSize || 0);
+    const height = Number(entry.height || entry.editor?.height || entry.size || width || 0);
+    if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+      if (!resolveRef || !entry.ref) return false;
+      const payload = loadProjectFile('art', entry.ref);
+      return payload?.data ? this.isTileArtEntry(payload.data, { resolveRef: false }) : false;
+    }
+    return width <= MAX_TILE_ART_DIMENSION && height <= MAX_TILE_ART_DIMENSION;
+  }
+
+  findLatestTileArtDocument() {
+    const files = listProjectFiles('art');
+    for (const entry of files) {
+      if (!entry?.name) continue;
+      const payload = loadProjectFile('art', entry.name);
+      if (this.isTileArtDocument(payload?.data, { resolveRef: true })) {
+        return { entry, payload };
+      }
+    }
+    return null;
   }
 
   getTileArtDocName(tileChar) {
@@ -510,7 +554,7 @@ export default class PixelStudio {
     if ((tileData.frames && tileData.frames.length) || (tileData.editor && tileData.editor.frames)) return tileData;
     if (!tileData.ref) return tileData;
     const payload = loadProjectFile('art', tileData.ref);
-    if (!payload?.data) return tileData;
+    if (!payload?.data || !this.isTileArtEntry(payload.data, { resolveRef: false })) return tileData;
     const hydrated = { ...payload.data, ref: tileData.ref };
     const store = storeOverride || ensurePixelArtStore(this.game.world);
     store.tiles[tileChar] = hydrated;
@@ -734,11 +778,16 @@ export default class PixelStudio {
   }
 
   normalizeLoadedArtDocument(data) {
+    if (!this.isTileArtDocument(data, { resolveRef: true })) {
+      return { tiles: {} };
+    }
     if (data?.tiles && typeof data.tiles === 'object') {
       const tileChar = this.activeTile?.char || this.tileLibrary?.[0]?.char || '#';
-      const firstEntry = Object.values(data.tiles).find((entry) => entry && typeof entry === 'object');
-      if (!firstEntry) return data;
-      const nextTiles = { ...data.tiles };
+      const nextTiles = Object.fromEntries(
+        Object.entries(data.tiles).filter(([, entry]) => this.isTileArtEntry(entry, { resolveRef: true }))
+      );
+      const firstEntry = Object.values(nextTiles).find((entry) => entry && typeof entry === 'object');
+      if (!firstEntry) return { tiles: {} };
       if (tileChar && !nextTiles[tileChar]) nextTiles[tileChar] = firstEntry;
       if (!nextTiles['#']) nextTiles['#'] = firstEntry;
       return { ...data, tiles: nextTiles };
