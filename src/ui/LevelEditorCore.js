@@ -2479,6 +2479,7 @@ export default class Editor {
       id: `trigger-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
       rect,
       condition: TRIGGER_CONDITIONS[0],
+      fireOnce: false,
       actions: []
     };
     triggers.push(trigger);
@@ -2710,6 +2711,7 @@ export default class Editor {
     if (!TRIGGER_CONDITIONS.includes(trigger.condition)) {
       trigger.condition = TRIGGER_CONDITIONS[0];
     }
+    trigger.fireOnce = Boolean(trigger.fireOnce);
     if (!Array.isArray(trigger.actions)) {
       trigger.actions = [];
       return;
@@ -8811,6 +8813,7 @@ export default class Editor {
         const measureMainContent = () => {
           let local = contentPadding;
           local += sectionButtonH + rowGap;
+          local += sectionButtonH + rowGap;
           local += sectionButtonH + rowGap + 4;
           local += 16;
           local += 14;
@@ -8894,6 +8897,20 @@ export default class Editor {
         let y = baseY;
         if (this.triggerEditorView === 'main') {
           drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Add Condition', false, () => { this.triggerEditorView = 'pick-condition'; this.triggerEditorScroll = 0; }, 'Choose trigger condition');
+          y += sectionButtonH + rowGap;
+          drawButton(
+            panelX + 12,
+            y,
+            panelWidth - 24,
+            sectionButtonH,
+            `Fire once: ${selected.fireOnce ? 'On' : 'Off'}`,
+            Boolean(selected.fireOnce),
+            () => {
+              selected.fireOnce = !selected.fireOnce;
+              this.persistAutosave();
+            },
+            'Only allow this trigger to fire one time'
+          );
           y += sectionButtonH + rowGap;
           drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Add Action', false, () => { this.triggerEditorView = 'pick-action'; this.triggerEditorScroll = 0; }, 'Add action to trigger');
           y += sectionButtonH + rowGap + 4;

@@ -5605,6 +5605,7 @@ export default class Game {
         roomInside: false,
         roomClear: false,
         firedStartup: false,
+        fired: false,
         active: false,
         queue: []
       });
@@ -5635,7 +5636,7 @@ export default class Game {
     const playerRoomIndex = this.world.roomAtTile?.(tileX, tileY);
     (this.world.triggers || []).forEach((trigger, index) => {
       const id = trigger.id || `trigger-${index}`;
-      const state = this.triggerState.byId.get(id) || { inside: false, roomInside: false, roomClear: false, active: false, queue: [] };
+      const state = this.triggerState.byId.get(id) || { inside: false, roomInside: false, roomClear: false, fired: false, active: false, queue: [] };
       const [x, y, w, h] = trigger.rect || [0, 0, 0, 0];
       const isInside = tileX >= x && tileX < x + w && tileY >= y && tileY < y + h;
       const triggerRoomIndex = this.world.roomAtTile?.(x, y);
@@ -5789,8 +5790,12 @@ export default class Game {
   }
 
   fireTrigger(trigger, triggerId) {
-    const state = this.triggerState.byId.get(triggerId) || { inside: false, active: false, queue: [] };
+    const state = this.triggerState.byId.get(triggerId) || { inside: false, active: false, fired: false, queue: [] };
+    if (trigger?.fireOnce && state.fired) return;
     if (state.active) return;
+    if (trigger?.fireOnce) {
+      state.fired = true;
+    }
     state.active = true;
     state.queue = Array.isArray(trigger.actions) ? trigger.actions.map((action) => ({ ...action, params: { ...(action.params || {}) } })) : [];
     this.triggerState.byId.set(triggerId, state);
