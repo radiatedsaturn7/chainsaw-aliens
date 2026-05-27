@@ -24,8 +24,8 @@
       "instrumentFamily": "Guitar",
       "bankMSB": 0,
       "bankLSB": 0,
-      "volume": 0.8,
-      "pan": 0,
+      "volume": 0.4301903506681347,
+      "pan": 0.44978411610149327,
       "mute": false,
       "solo": false,
       "color": "#4fb7ff",
@@ -146,8 +146,8 @@
       "instrumentFamily": "Piano",
       "bankMSB": 0,
       "bankLSB": 0,
-      "volume": 0.06993614800644897,
-      "pan": 0,
+      "volume": 0.6559193388702657,
+      "pan": -0.6058976812226846,
       "mute": false,
       "solo": false,
       "color": "#ff9c42",
@@ -156,6 +156,18 @@
         "padding": []
       },
       "midiPedals": [
+        {
+          "id": "pedal_u7ao26j",
+          "type": "compressor",
+          "name": "Neck Snapper",
+          "color": "blue",
+          "enabled": true,
+          "knobs": {
+            "threshold": 0.55,
+            "ratio": 0.65,
+            "makeup": 0.45
+          }
+        },
         {
           "id": "pedal_wp6tqld",
           "type": "reverb",
@@ -168,7 +180,6 @@
             "mix": 0.11660156249999998
           }
         },
-        null,
         null,
         null
       ],

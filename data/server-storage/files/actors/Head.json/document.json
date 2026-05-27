@@ -9,7 +9,7 @@
   "aggressiveTo": [
     "Player and Allies"
   ],
-  "gravity": true,
+  "gravity": false,
   "bodyDamageEnabled": false,
   "contactDamage": 1,
   "invulnerable": false,
@@ -299,7 +299,7 @@
                 "rotationSpeed": 45,
                 "accuracy": 0,
                 "durationMs": 1000,
-                "maxDistance": 640,
+                "maxDistance": 1000,
                 "damage": 1,
                 "width": 10,
                 "offsetX": 186,
