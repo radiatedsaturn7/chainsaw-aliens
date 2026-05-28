@@ -2,6 +2,7 @@ import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { ensureProjectFileIndex, listProjectFiles, loadProjectFile, saveProjectFile } from './projectFiles.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, DEFAULT_TAXONOMIES, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
 import { getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
+import { invalidateActorDefinitionCache } from '../entities/ScriptedActor.js';
 
 const ACTOR_FOLDER = 'actors';
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -492,6 +493,8 @@ export default class ActorEditor {
     }
     this.currentDocumentRef = { folder: ACTOR_FOLDER, name: persistedName };
     this.actor = ensureActorDefinition(persistedPayload.data);
+    invalidateActorDefinitionCache(this.actor.id);
+    this.game.registerRuntimeActorDefinition?.(this.actor);
     this.render();
     this.showInlineSaveStatus?.('Saved');
     this.game.showSaveStatusModal?.('Saved');

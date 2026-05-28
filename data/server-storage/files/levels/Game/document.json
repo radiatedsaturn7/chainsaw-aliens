@@ -237,6 +237,16 @@
       "x": 67,
       "y": 116,
       "type": "custom:head"
+    },
+    {
+      "x": 241,
+      "y": 110,
+      "type": "friendly-companion"
+    },
+    {
+      "x": 235,
+      "y": 109,
+      "type": "friendly-companion"
     }
   ],
   "elevatorPaths": [
@@ -861,7 +871,11 @@
           "params": {}
         }
       ],
-      "fireOnce": true
+      "fireOnce": true,
+      "stopMusicOnLeave": false,
+      "musicTrigger": false,
+      "stopAllMusicOnLeave": false,
+      "stopAllMusicOnEnter": false
     },
     {
       "id": "trigger-1773894363792-3283",
@@ -879,7 +893,70 @@
           "params": {}
         }
       ],
-      "fireOnce": true
+      "fireOnce": true,
+      "stopMusicOnLeave": false,
+      "musicTrigger": false,
+      "stopAllMusicOnLeave": false,
+      "stopAllMusicOnEnter": false
+    },
+    {
+      "id": "trigger-1779909510985-2762",
+      "rect": [
+        113,
+        133,
+        1,
+        1
+      ],
+      "condition": "When player enters this room",
+      "fireOnce": false,
+      "stopMusicOnLeave": false,
+      "actions": [
+        {
+          "id": "action-1779909510985-4219",
+          "type": "play-midi",
+          "params": {
+            "trackId": "Creepy1",
+            "fadeMs": 250,
+            "volume": 1,
+            "falloffRangeTiles": 0
+          }
+        }
+      ],
+      "musicTrigger": false,
+      "stopAllMusicOnLeave": false,
+      "stopAllMusicOnEnter": false
+    },
+    {
+      "id": "trigger-1779911884153-8080",
+      "rect": [
+        78,
+        131,
+        1,
+        1
+      ],
+      "condition": "When player enters this room",
+      "musicTrigger": true,
+      "fireOnce": false,
+      "stopMusicOnLeave": false,
+      "stopAllMusicOnLeave": false,
+      "actions": [],
+      "stopAllMusicOnEnter": true
+    },
+    {
+      "id": "trigger-1779935060199-1722",
+      "rect": [
+        237,
+        106,
+        1,
+        2
+      ],
+      "condition": "On level start",
+      "fireOnce": false,
+      "actions": [],
+      "musicTrigger": false,
+      "stopMusicOnLeave": false,
+      "stopAllMusicOnLeave": false,
+      "stopAllMusicOnEnter": false
     }
   ],
   "decals": [],

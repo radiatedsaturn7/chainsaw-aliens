@@ -280,6 +280,8 @@ const TRIGGER_ACTION_TYPES = [
   { id: 'display-text', label: 'Display Text' },
   { id: 'display-image', label: 'Display Image' },
   { id: 'wait', label: 'Wait (ms)' },
+  { id: 'play-midi', label: 'Play MIDI' },
+  { id: 'stop-midi', label: 'Stop MIDI' },
   { id: 'fade-out-music', label: 'Fade Out Music' },
   { id: 'fade-in-music', label: 'Fade In Music' }
 ];
@@ -423,9 +425,16 @@ export default class Editor {
     this.triggerEditorScrollBounds = null;
     this.triggerEditorScrollDrag = null;
     this.triggerEditorScrollTapCandidate = null;
+    this.triggerEditorOptionCache = {
+      levelNames: null,
+      levelNamesAt: 0,
+      musicOptions: null,
+      musicOptionsAt: 0
+    };
     this.startWithEverything = true;
     this.currentDocumentRef = null;
     this.savedSnapshot = null;
+    this.musicTrackCache = { signature: '', tracks: [] };
     this.camera = { x: 0, y: 0 };
     this.previewMinimap = new Minimap(this.game.world);
     this.pendingWorldRefresh = null;
@@ -936,7 +945,6 @@ export default class Editor {
     this.loadAutosaveOrSeed();
     this.restorePlaytestSpawn();
     this.resetView();
-    this.getMusicTracks();
     this.syncPreviewMinimap();
     this.updateLayoutBounds();
     this.sanitizeView('activate');
@@ -1285,9 +1293,6 @@ export default class Editor {
     if (tabId === 'npcs') {
       this.enemyCategory = this.enemyCategory === 'boss' ? 'boss' : 'standard';
     }
-    if (tabId === 'music') {
-      this.getMusicTracks();
-    }
   }
 
   cyclePanelTab(direction) {
@@ -1299,9 +1304,6 @@ export default class Editor {
     const drawerIndex = this.drawer.tabs.indexOf(nextTab);
     if (drawerIndex >= 0) {
       this.drawer.tabIndex = drawerIndex;
-    }
-    if (nextTab === 'music') {
-      this.getMusicTracks();
     }
   }
 
@@ -1615,8 +1617,17 @@ export default class Editor {
       })));
       columns = 2;
     } else if (tabId === 'music') {
-      const tracks = this.getMusicTracks();
+      const tracks = this.musicTrackCache?.tracks?.length ? this.musicTrackCache.tracks : this.getMusicTracks();
       items = [
+        {
+          id: 'music-trigger',
+          label: 'Music Trigger',
+          tooltip: 'Paint a room trigger that plays MIDI',
+          onClick: () => {
+            this.mode = 'music';
+            this.musicTool = 'trigger';
+          }
+        },
         {
           id: 'music-paint',
           label: 'Zone Paint',
@@ -2460,6 +2471,7 @@ export default class Editor {
       return;
     }
     delete store.tiles[tileChar];
+    this.game.pixelStudio?.persistTileArtAutosave?.(true);
     this.persistAutosave();
     this.setGraphicsStatus(`Reverted tile ${tile.label} [${tileChar}] to default art`);
   }
@@ -2489,6 +2501,38 @@ export default class Editor {
     this.triggerActionDraft = null;
     this.triggerEditingActionId = null;
     this.triggerEditorScroll = 0;
+    this.persistAutosave();
+  }
+
+  addMusicTriggerZone(rect) {
+    const tracks = this.getMusicTracks();
+    const trackId = this.musicTrack?.id || tracks[0]?.id || '';
+    const triggers = this.ensureTriggers();
+    const trigger = {
+      id: `trigger-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
+      rect,
+      condition: 'When player enters this room',
+      musicTrigger: true,
+      fireOnce: false,
+      stopMusicOnLeave: false,
+      stopAllMusicOnLeave: false,
+      stopAllMusicOnEnter: false,
+      actions: [{
+        id: `action-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
+        type: 'play-midi',
+        params: { trackId, fadeMs: 250, volume: 1, falloffRangeTiles: 0 }
+      }]
+    };
+    triggers.push(trigger);
+    this.selectedTriggerId = trigger.id;
+    this.triggerEditorOpen = true;
+    this.triggerEditorView = 'main';
+    this.triggerActionDraft = null;
+    this.triggerEditingActionId = null;
+    this.triggerEditorScroll = 0;
+    this.mode = 'trigger';
+    this.setPanelTab('triggers');
+    this.focusCameraOnTrigger(trigger);
     this.persistAutosave();
   }
 
@@ -2606,6 +2650,14 @@ export default class Editor {
       case 'fade-in-music':
         base.params = { musicId: MUSIC_TRACKS[0]?.id || 'ambient-rift', durationMs: 1000 };
         break;
+      case 'play-midi': {
+        const trackId = this.getTriggerMusicOptions()[0] || '';
+        base.params = { trackId, fadeMs: 250, volume: 1, falloffRangeTiles: 0 };
+        break;
+      }
+      case 'stop-midi':
+        base.params = { trackId: '', fadeMs: 250 };
+        break;
       case 'display-text':
         base.params = {
           text: TRIGGER_TEXT_OPTIONS[0],
@@ -2711,7 +2763,11 @@ export default class Editor {
     if (!TRIGGER_CONDITIONS.includes(trigger.condition)) {
       trigger.condition = TRIGGER_CONDITIONS[0];
     }
+    trigger.musicTrigger = trigger.musicTrigger === true;
     trigger.fireOnce = Boolean(trigger.fireOnce);
+    trigger.stopMusicOnLeave = Boolean(trigger.stopMusicOnLeave);
+    trigger.stopAllMusicOnLeave = Boolean(trigger.stopAllMusicOnLeave);
+    trigger.stopAllMusicOnEnter = Boolean(trigger.stopAllMusicOnEnter);
     if (!Array.isArray(trigger.actions)) {
       trigger.actions = [];
       return;
@@ -2729,6 +2785,15 @@ export default class Editor {
       }
       if (!action.params || typeof action.params !== 'object') {
         action.params = {};
+      }
+      if (action.type === 'play-midi' || action.type === 'stop-midi') {
+        if (typeof action.params.trackId !== 'string') action.params.trackId = '';
+        if (!Number.isFinite(action.params.fadeMs) || action.params.fadeMs < 0) action.params.fadeMs = 250;
+        if (action.type === 'play-midi') {
+          if (!Number.isFinite(action.params.volume)) action.params.volume = 1;
+          action.params.volume = Math.max(0, Math.min(1, Number(action.params.volume)));
+          if (!Number.isFinite(action.params.falloffRangeTiles) || action.params.falloffRangeTiles < 0) action.params.falloffRangeTiles = 0;
+        }
       }
       if (action.type === 'display-text') {
         if (!TRIGGER_TEXT_POSITIONS.includes(action.params.position)) action.params.position = TRIGGER_TEXT_POSITIONS[1];
@@ -2774,8 +2839,14 @@ export default class Editor {
   }
 
   getTriggerLevelNames() {
+    if (this.triggerEditorOptionCache.levelNames) {
+      return this.triggerEditorOptionCache.levelNames;
+    }
     const levels = listProjectFiles('levels').map((entry) => entry.name);
-    return levels.length ? levels : ['Level 1'];
+    const levelNames = levels.length ? levels : ['Level 1'];
+    this.triggerEditorOptionCache.levelNames = levelNames;
+    this.triggerEditorOptionCache.levelNamesAt = Date.now();
+    return levelNames;
   }
 
   getTriggerDecalOptions() {
@@ -3196,6 +3267,10 @@ export default class Editor {
         return `Duration: ${params.durationMs || 0}ms`;
       case 'fade-in-music':
         return `${params.musicId || 'ambient-rift'} (${params.durationMs || 0}ms)`;
+      case 'play-midi':
+        return `${params.trackId || '(none)'} vol ${Math.round(Number(params.volume ?? 1) * 100)}% falloff ${params.falloffRangeTiles || 0} tiles`;
+      case 'stop-midi':
+        return `${params.trackId || '(active)'} fade ${params.fadeMs ?? 250}ms`;
       default:
         return 'No params';
     }
@@ -3260,21 +3335,44 @@ export default class Editor {
   }
 
   getMusicTracks() {
+    const files = listProjectFiles('music');
     const tracks = this.ensureMidiTracks();
-    const libraryTracks = this.getLibraryTracks();
+    const signature = [
+      files.map((entry) => `${entry.name}:${entry.updatedAt}:${entry.size}`).join('|'),
+      tracks.map((track) => `${track.id}:${track.name || track.label || ''}`).join('|')
+    ].join('::');
+    if (this.musicTrackCache?.signature === signature) {
+      return this.musicTrackCache.tracks;
+    }
+    const libraryTracks = files.map((entry) => ({
+      id: entry.name,
+      name: entry.name,
+      source: 'library'
+    }));
     const merged = [...libraryTracks, ...tracks.filter((track) => !libraryTracks.some((entry) => entry.id === track.id))];
     if (!merged.length) return merged;
     if (!this.musicTrack || !merged.some((entry) => entry.id === this.musicTrack.id)) {
       this.musicTrack = merged[0];
     }
+    this.musicTrackCache = { signature, tracks: merged };
     return merged;
   }
 
   getMusicTrackLabel(trackId) {
     if (!trackId) return '';
-    const tracks = this.getMusicTracks();
+    const tracks = this.musicTrackCache?.tracks?.length ? this.musicTrackCache.tracks : this.getMusicTracks();
     const match = tracks.find((track) => track.id === trackId);
     return match?.name || match?.label || trackId;
+  }
+
+  getTriggerMusicOptions() {
+    if (this.triggerEditorOptionCache.musicOptions) {
+      return this.triggerEditorOptionCache.musicOptions;
+    }
+    const options = this.getMusicTracks().map((track) => track.id).filter(Boolean);
+    this.triggerEditorOptionCache.musicOptions = options;
+    this.triggerEditorOptionCache.musicOptionsAt = Date.now();
+    return options;
   }
 
   normalizeMidiTracks(rawTracks) {
@@ -5476,7 +5574,7 @@ export default class Editor {
       }
       this.musicDragStart = { x: tileX, y: tileY };
       this.musicDragTarget = { x: tileX, y: tileY };
-      if (this.musicTrack?.id) this.game.audio?.playSong?.(this.musicTrack.id);
+      if (this.musicTool !== 'trigger' && this.musicTrack?.id) this.game.audio?.playSong?.(this.musicTrack.id);
       return;
     }
 
@@ -5843,9 +5941,13 @@ export default class Editor {
       const maxY = Math.max(start.y, end.y);
       const width = Math.max(1, maxX - minX + 1);
       const height = Math.max(1, maxY - minY + 1);
-      const tracks = this.getMusicTracks();
-      const trackId = this.musicTrack?.id || tracks[0]?.id;
-      this.addMusicZone([minX, minY, width, height], trackId);
+      if (this.musicTool === 'trigger') {
+        this.addMusicTriggerZone([minX, minY, width, height]);
+      } else {
+        const tracks = this.getMusicTracks();
+        const trackId = this.musicTrack?.id || tracks[0]?.id;
+        this.addMusicZone([minX, minY, width, height], trackId);
+      }
       this.musicDragStart = null;
       this.musicDragTarget = null;
       return;
@@ -8258,7 +8360,7 @@ export default class Editor {
           })));
           columns = 1;
         } else if (activeTab === 'music') {
-          const tracks = this.getMusicTracks();
+          const tracks = this.musicTrackCache?.tracks?.length ? this.musicTrackCache.tracks : this.getMusicTracks();
           items = [
             {
               id: 'music-paint',
@@ -8268,6 +8370,16 @@ export default class Editor {
               onClick: () => {
                 this.mode = 'music';
                 this.musicTool = 'paint';
+              }
+            },
+            {
+              id: 'music-trigger',
+              label: 'MUSIC TRIGGER',
+              active: this.mode === 'music' && this.musicTool === 'trigger',
+              tooltip: 'Paint a room trigger that plays MIDI',
+              onClick: () => {
+                this.mode = 'music';
+                this.musicTool = 'trigger';
               }
             },
             {
@@ -8652,6 +8764,7 @@ export default class Editor {
         if (activeTab === 'music') {
           if (item.id === 'music-paint') return this.mode === 'music' && this.musicTool === 'paint';
           if (item.id === 'music-erase') return this.mode === 'music' && this.musicTool === 'erase';
+          if (item.id === 'music-trigger') return this.mode === 'music' && this.musicTool === 'trigger';
           if (item.track) return this.musicTrack?.id === item.track.id;
           return false;
         }
@@ -8814,6 +8927,11 @@ export default class Editor {
           let local = contentPadding;
           local += sectionButtonH + rowGap;
           local += sectionButtonH + rowGap;
+          if (selected.musicTrigger) {
+            local += sectionButtonH + rowGap;
+            local += sectionButtonH + rowGap;
+            local += sectionButtonH + rowGap;
+          }
           local += sectionButtonH + rowGap + 4;
           local += 16;
           local += 14;
@@ -8865,6 +8983,10 @@ export default class Editor {
             local += numericAdvance + numericAdvance + numericAdvance + numericAdvance + numericAdvance;
           } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {
             local += numericAdvance;
+          } else if (draft.type === 'play-midi') {
+            local += sectionButtonH + 4 + numericAdvance + numericAdvance + numericAdvance;
+          } else if (draft.type === 'stop-midi') {
+            local += sectionButtonH + 4 + numericAdvance;
           } else if (draft.type === 'fade-in-music') {
             local += sectionButtonH + 4 + numericAdvance;
           }
@@ -8912,6 +9034,50 @@ export default class Editor {
             'Only allow this trigger to fire one time'
           );
           y += sectionButtonH + rowGap;
+          if (selected.musicTrigger) {
+            drawButton(
+              panelX + 12,
+              y,
+              panelWidth - 24,
+              sectionButtonH,
+              `Stop track on room leave: ${selected.stopMusicOnLeave ? 'On' : 'Off'}`,
+              Boolean(selected.stopMusicOnLeave),
+              () => {
+                selected.stopMusicOnLeave = !selected.stopMusicOnLeave;
+                this.persistAutosave();
+              },
+              'Stop this trigger MIDI track when the player leaves this room'
+            );
+            y += sectionButtonH + rowGap;
+            drawButton(
+              panelX + 12,
+              y,
+              panelWidth - 24,
+              sectionButtonH,
+              `Stop all music on leave: ${selected.stopAllMusicOnLeave ? 'On' : 'Off'}`,
+              Boolean(selected.stopAllMusicOnLeave),
+              () => {
+                selected.stopAllMusicOnLeave = !selected.stopAllMusicOnLeave;
+                this.persistAutosave();
+              },
+              'Stop all active MIDI on room leave instead of only this trigger track'
+            );
+            y += sectionButtonH + rowGap;
+            drawButton(
+              panelX + 12,
+              y,
+              panelWidth - 24,
+              sectionButtonH,
+              `Stop all music on enter: ${selected.stopAllMusicOnEnter ? 'On' : 'Off'}`,
+              Boolean(selected.stopAllMusicOnEnter),
+              () => {
+                selected.stopAllMusicOnEnter = !selected.stopAllMusicOnEnter;
+                this.persistAutosave();
+              },
+              'Stop all active MIDI before this music trigger fires on room enter'
+            );
+            y += sectionButtonH + rowGap;
+          }
           drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, 'Add Action', false, () => { this.triggerEditorView = 'pick-action'; this.triggerEditorScroll = 0; }, 'Add action to trigger');
           y += sectionButtonH + rowGap + 4;
           ctx.font = UI_SUITE.editorPanel.bodyFont;
@@ -9098,6 +9264,28 @@ export default class Editor {
             numericRow('Duration (ms)', 'durationMs', 100, 0, 15000);
           } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {
             numericRow('Duration (ms)', 'durationMs', 100, 0, 15000);
+          } else if (draft.type === 'play-midi' || draft.type === 'stop-midi') {
+            const musicOptions = this.getTriggerMusicOptions();
+            const selectedTrack = draft.params.trackId || musicOptions[0] || '';
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `MIDI: ${selectedTrack || '(active)'}`, false, () => {
+              const options = draft.type === 'stop-midi' ? ['(active)', ...musicOptions] : musicOptions;
+              this.openTriggerOptionPicker({
+                title: 'Choose MIDI',
+                options,
+                selectedValue: selectedTrack || '(active)',
+                onPick: (value) => { draft.params.trackId = value === '(active)' ? '' : value; }
+              });
+            }, 'Pick MIDI track');
+            y += sectionButtonH + 4;
+            numericRow('Fade (ms)', 'fadeMs', 50, 0, 15000);
+            if (draft.type === 'play-midi') {
+              const volumePercent = Math.round(Math.max(0, Math.min(1, Number(draft.params.volume ?? 1))) * 100);
+              drawButton(panelX + 12, y, 54, sectionButtonH, '-', false, () => { draft.params.volume = Math.max(0, Math.min(1, Number(draft.params.volume ?? 1) - 0.05)); }, 'Volume down');
+              drawButton(panelX + 70, y, panelWidth - 140, sectionButtonH, `Volume: ${volumePercent}%`, false, () => {}, 'Volume');
+              drawButton(panelX + panelWidth - 66, y, 54, sectionButtonH, '+', false, () => { draft.params.volume = Math.max(0, Math.min(1, Number(draft.params.volume ?? 1) + 0.05)); }, 'Volume up');
+              y += sectionButtonH + 4;
+              numericRow('Falloff tiles', 'falloffRangeTiles', 1, 0, 200);
+            }
           } else if (draft.type === 'fade-in-music') {
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Music: ${draft.params.musicId || MUSIC_TRACKS[0]?.id || 'ambient-rift'}`, false, () => { draft.params.musicId = this.cycleOption(draft.params.musicId, MUSIC_TRACKS.map((track) => track.id), 1); }, 'Cycle music track');
             y += sectionButtonH + 4;
@@ -9743,7 +9931,7 @@ export default class Editor {
       ctx.restore();
     }
 
-    if (['pixel', 'music', 'midi'].includes(this.mode)) {
+    if (['pixel', 'midi'].includes(this.mode)) {
       const mapSize = this.isMobileLayout() ? 140 : 180;
       const mapX = this.editorBounds.x + this.editorBounds.w - mapSize - 16;
       const mapY = this.editorBounds.y + 16;

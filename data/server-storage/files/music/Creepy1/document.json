@@ -67,36 +67,36 @@
           "color": "red",
           "enabled": true,
           "knobs": {
-            "drive": 0.7,
-            "bite": 0.65,
-            "tone": 0.55
+            "drive": 1,
+            "bite": 1,
+            "tone": 1
           }
         },
         {
-          "id": "pedal_9q220kl",
+          "id": "pedal_vxlzz5w",
           "type": "wah",
           "name": "Toad Funk",
           "color": "green",
           "enabled": true,
           "knobs": {
-            "sweep": 0,
+            "sweep": 1,
             "rate": 0,
-            "mix": 0.8
-          }
-        },
-        null,
-        {
-          "id": "pedal_ab2ntt1",
-          "type": "echo",
-          "name": "Grave Echo",
-          "color": "orange",
-          "enabled": true,
-          "knobs": {
-            "time": 1,
-            "feedback": 0.33349609375,
             "mix": 1
           }
-        }
+        },
+        {
+          "id": "pedal_5fzqjga",
+          "type": "reverb",
+          "name": "Coffin Air",
+          "color": "blue",
+          "enabled": true,
+          "knobs": {
+            "room": 1,
+            "decay": 1,
+            "mix": 0.6
+          }
+        },
+        null
       ],
       "patterns": [
         {
@@ -106,28 +106,28 @@
             {
               "id": "note-420225",
               "startTick": 0,
-              "durationTicks": 8,
+              "durationTicks": 16,
               "pitch": 55,
               "velocity": 0.9
             },
             {
               "id": "note-240662",
               "startTick": 32,
-              "durationTicks": 8,
+              "durationTicks": 16,
               "pitch": 55,
               "velocity": 0.9
             },
             {
               "id": "note-436879",
               "startTick": 64,
-              "durationTicks": 8,
+              "durationTicks": 16,
               "pitch": 54,
               "velocity": 0.9
             },
             {
               "id": "note-504262",
               "startTick": 96,
-              "durationTicks": 8,
+              "durationTicks": 16,
               "pitch": 46,
               "velocity": 0.9
             }

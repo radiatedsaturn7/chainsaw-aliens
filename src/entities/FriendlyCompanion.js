@@ -79,12 +79,13 @@ export default class FriendlyCompanion extends Player {
     this.debugStandableTiles = [];
     this.debugCandidateTiles = [];
     this.jumpOffsetCache = new Map();
-    this.maxAStarExpansions = 600;
-    this.maxAStarMs = 4;
+    this.fallOffsetCache = new Map();
+    this.maxAStarExpansions = 1600;
+    this.maxAStarMs = 8;
     this.pathPlanQueued = false;
     this.pathPlanRequest = null;
     this.aStarSearchCache = new Map();
-    this.maxPathCandidatesPerPlan = 6;
+    this.maxPathCandidatesPerPlan = 12;
     this.pathCandidateScanOffset = 0;
     this.noPathStreak = 0;
     this.goalFailureCounts = new Map();
@@ -318,6 +319,12 @@ export default class FriendlyCompanion extends Player {
     });
   }
 
+  isMovementProbeBlocked(tileX, tileY, world, abilities, context, options = {}) {
+    if (tileX < 0 || tileX >= world.width || tileY < 0 || tileY >= world.height - 1) return true;
+    if (world.isSolid(tileX, tileY, abilities, { ignoreOneWay: Boolean(options.ignoreOneWay) })) return true;
+    return this.isElevatorSupportTile(tileX, tileY, world, context);
+  }
+
   isWalkableTile(tileX, tileY, world, abilities, context) {
     return this.getCachedPathValue('walkable', tileX, tileY, () => {
       if (tileX < 0 || tileX >= world.width || tileY < 1 || tileY >= world.height - 1) return false;
@@ -347,6 +354,8 @@ export default class FriendlyCompanion extends Player {
 
   getPriorityTilesAroundPlayer(player, world) {
     const tileSize = world.tileSize;
+    const playerTileX = Math.floor(player.x / tileSize);
+    const playerTileY = Math.floor((player.y + player.height / 2 - 1) / tileSize);
     const facingRight = (player.facing || 1) >= 0;
     const ranked = [];
     for (let row = 0; row < 5; row += 1) {
@@ -450,7 +459,7 @@ export default class FriendlyCompanion extends Player {
           }
           path.reverse();
           this.aStarSearchCache.delete(searchKey);
-          return this.expandPathWithJumpIntermediates(path, world);
+          return this.expandPathWithJumpIntermediates(path, world, abilities, context);
         }
 
         const neighbors = (neighborResolver || this.getTraversalNeighbors.bind(this))(current, world, abilities, context);
@@ -537,8 +546,61 @@ export default class FriendlyCompanion extends Player {
     offsets.forEach((offset) => {
       const jump = { x: tile.x + offset.dx, y: tile.y + offset.dy };
       if (!this.isWalkableTile(jump.x, jump.y, world, abilities, context)) return;
-      if (!this.isJumpTrajectoryClear(tile, offset.samples, world, abilities, context)) return;
+      const clearSamples = this.isJumpTrajectoryClear(tile, offset.samples, world, abilities, context)
+        ? offset.samples
+        : this.getCeilingLimitedJumpSamples(tile, offset.samples, world, abilities, context);
+      if (!clearSamples || !this.isJumpTrajectoryClear(tile, clearSamples, world, abilities, context)) return;
       pushNeighbor(jump);
+    });
+    return neighbors;
+  }
+
+  getCeilingLimitedJumpSamples(startTile, samples, world, abilities, context) {
+    if (!Array.isArray(samples) || samples.length === 0) return null;
+    const tileSize = world.tileSize;
+    const startWorldY = (startTile.y + 0.5) * tileSize;
+    const halfH = Math.max(2, this.height / 2 - 2);
+    let ceilingY = null;
+    for (let y = startTile.y - 1; y >= 0; y -= 1) {
+      const blocked = this.isMovementProbeBlocked(startTile.x, y, world, abilities, context, { ignoreOneWay: true })
+        || this.isMovementProbeBlocked(startTile.x - 1, y, world, abilities, context, { ignoreOneWay: true })
+        || this.isMovementProbeBlocked(startTile.x + 1, y, world, abilities, context, { ignoreOneWay: true });
+      if (blocked) {
+        ceilingY = y;
+        break;
+      }
+    }
+    if (ceilingY === null) return null;
+    const minCenterOffsetY = ((ceilingY + 1) * tileSize + halfH + 1) - startWorldY;
+    if (minCenterOffsetY > -tileSize * 0.75) return null;
+    let touchedCeiling = false;
+    const adjustedSamples = samples.map((sample) => {
+      let y = sample.y;
+      if (y < minCenterOffsetY) {
+        y = minCenterOffsetY;
+        touchedCeiling = true;
+      }
+      return { x: sample.x, y };
+    });
+    return touchedCeiling ? adjustedSamples : null;
+  }
+
+  getFallingNeighbors(tile, world, abilities, context) {
+    const neighbors = [];
+    const neighborSet = new Set();
+    const pushNeighbor = (candidate) => {
+      if (!candidate) return;
+      const key = this.tileKey(candidate);
+      if (neighborSet.has(key)) return;
+      neighborSet.add(key);
+      neighbors.push(candidate);
+    };
+    const offsets = this.getSimulatedFallOffsets(world);
+    offsets.forEach((offset) => {
+      const landing = { x: tile.x + offset.dx, y: tile.y + offset.dy };
+      if (!this.isWalkableTile(landing.x, landing.y, world, abilities, context)) return;
+      if (!this.isFallTrajectoryClear(tile, offset.samples, world, abilities, context)) return;
+      pushNeighbor(landing);
     });
     return neighbors;
   }
@@ -551,23 +613,25 @@ export default class FriendlyCompanion extends Player {
     const halfW = Math.max(2, this.width / 2 - 3);
     const halfH = Math.max(2, this.height / 2 - 2);
     const probeOffsets = [
-      { x: -halfW, y: -halfH },
-      { x: halfW, y: -halfH },
-      { x: -halfW, y: halfH },
-      { x: halfW, y: halfH },
-      { x: 0, y: -halfH },
-      { x: 0, y: halfH }
+      { x: -halfW, y: -halfH, role: 'top' },
+      { x: halfW, y: -halfH, role: 'top' },
+      { x: -halfW, y: halfH, role: 'bottom' },
+      { x: halfW, y: halfH, role: 'bottom' },
+      { x: 0, y: -halfH, role: 'top' },
+      { x: 0, y: halfH, role: 'bottom' }
     ];
 
-    const isBlockedAtWorldPoint = (worldX, worldY) => {
+    const isBlockedAtWorldPoint = (worldX, worldY, ascending) => {
       for (let p = 0; p < probeOffsets.length; p += 1) {
         const probe = probeOffsets[p];
         const probeX = worldX + probe.x;
         const probeY = worldY + probe.y;
         const tileX = Math.floor(probeX / tileSize);
         const tileY = Math.floor(probeY / tileSize);
-        if (tileX < 0 || tileX >= world.width || tileY < 1 || tileY >= world.height - 1) return true;
-        if (this.isCollidable(tileX, tileY, world, abilities, context)) return true;
+        const blocked = this.isMovementProbeBlocked(tileX, tileY, world, abilities, context, { ignoreOneWay: true });
+        if (!blocked) continue;
+        if (ascending && probe.role === 'top') continue;
+        return true;
       }
       return false;
     };
@@ -585,7 +649,52 @@ export default class FriendlyCompanion extends Player {
         const t = step / subSteps;
         const testX = prevWorldX + (worldX - prevWorldX) * t;
         const testY = prevWorldY + (worldY - prevWorldY) * t;
-        if (isBlockedAtWorldPoint(testX, testY)) return false;
+        if (isBlockedAtWorldPoint(testX, testY, worldY < prevWorldY)) return false;
+        const centerTile = { x: Math.floor(testX / tileSize), y: Math.floor(testY / tileSize) };
+        if (this.hasDiagonalCornerBlock(prevCenterTile, centerTile, world, abilities, context)) return false;
+        prevCenterTile = centerTile;
+      }
+      prevWorldX = worldX;
+      prevWorldY = worldY;
+    }
+    return true;
+  }
+
+  isFallTrajectoryClear(startTile, samples, world, abilities, context) {
+    if (!Array.isArray(samples) || samples.length === 0) return false;
+    const tileSize = world.tileSize;
+    const startWorldX = (startTile.x + 0.5) * tileSize;
+    const startWorldY = (startTile.y + 0.5) * tileSize;
+    const halfW = Math.max(2, this.width / 2 - 3);
+    const halfH = Math.max(2, this.height / 2 - 2);
+    const probeOffsets = [
+      { x: -halfW, y: -halfH },
+      { x: halfW, y: -halfH },
+      { x: -halfW, y: halfH },
+      { x: halfW, y: halfH },
+      { x: 0, y: -halfH },
+      { x: 0, y: halfH }
+    ];
+    let prevWorldX = startWorldX;
+    let prevWorldY = startWorldY;
+    let prevCenterTile = { x: Math.floor(startWorldX / tileSize), y: Math.floor(startWorldY / tileSize) };
+    for (let i = 0; i < samples.length; i += 1) {
+      const sample = samples[i];
+      const worldX = startWorldX + sample.x;
+      const worldY = startWorldY + sample.y;
+      const segmentLength = Math.hypot(worldX - prevWorldX, worldY - prevWorldY);
+      const subSteps = Math.max(1, Math.ceil(segmentLength / (tileSize * 0.2)));
+      for (let step = 1; step <= subSteps; step += 1) {
+        const t = step / subSteps;
+        const testX = prevWorldX + (worldX - prevWorldX) * t;
+        const testY = prevWorldY + (worldY - prevWorldY) * t;
+        for (let p = 0; p < probeOffsets.length; p += 1) {
+          const probe = probeOffsets[p];
+          const tileX = Math.floor((testX + probe.x) / tileSize);
+          const tileY = Math.floor((testY + probe.y) / tileSize);
+          if (tileX === startTile.x && tileY === startTile.y + 1) continue;
+          if (this.isMovementProbeBlocked(tileX, tileY, world, abilities, context, { ignoreOneWay: true })) return false;
+        }
         const centerTile = { x: Math.floor(testX / tileSize), y: Math.floor(testY / tileSize) };
         if (this.hasDiagonalCornerBlock(prevCenterTile, centerTile, world, abilities, context)) return false;
         prevCenterTile = centerTile;
@@ -613,9 +722,12 @@ export default class FriendlyCompanion extends Player {
       if (dx === 0 && dy === 0) return;
       if (Math.abs(dx) > 10 || dy > 2 || dy < -10) return;
       const key = `${dx},${dy}`;
-      const entry = { dx, dy, samples: trajectory.map((sample) => ({ ...sample })) };
+      const score = Math.abs(x - dx * tileSize)
+        + Math.abs(y - dy * tileSize)
+        + trajectory.length * 0.001;
+      const entry = { dx, dy, score, samples: trajectory.map((sample) => ({ ...sample })) };
       const existing = offsetMap.get(key);
-      if (!existing || entry.samples.length < existing.samples.length) {
+      if (!existing || entry.score < existing.score) {
         offsetMap.set(key, entry);
       }
     };
@@ -661,9 +773,67 @@ export default class FriendlyCompanion extends Player {
       });
     });
 
+    Array.from(offsetMap.values()).forEach((entry) => {
+      if (Math.abs(entry.dx) <= 1) return;
+      const targetDx = entry.dx - Math.sign(entry.dx);
+      const key = `${targetDx},${entry.dy}`;
+      if (offsetMap.has(key)) return;
+      const scale = targetDx / entry.dx;
+      offsetMap.set(key, {
+        dx: targetDx,
+        dy: entry.dy,
+        score: entry.score,
+        samples: entry.samples.map((sample) => ({ x: sample.x * scale, y: sample.y }))
+      });
+    });
+
     const parsed = Array.from(offsetMap.values());
     parsed.sort((a, b) => Math.abs(a.dx) + Math.abs(a.dy) - (Math.abs(b.dx) + Math.abs(b.dy)));
     this.jumpOffsetCache.set(cacheKey, parsed);
+    return parsed;
+  }
+
+  getSimulatedFallOffsets(world) {
+    const tileSize = world.tileSize;
+    const cacheKey = `${tileSize}|${this.speed}`;
+    if (this.fallOffsetCache.has(cacheKey)) return this.fallOffsetCache.get(cacheKey);
+
+    const offsetMap = new Map();
+    const dt = 1 / 60;
+    const gravity = MOVEMENT_MODEL.gravity;
+    const speed = this.speed;
+    const maxFrames = 120;
+    const addOffset = (x, y, trajectory) => {
+      const dx = Math.floor((x + tileSize * 0.5) / tileSize);
+      const dy = Math.floor((y + tileSize * 0.5) / tileSize);
+      if (dy <= 0 || Math.abs(dx) > 12 || dy > 16) return;
+      const key = `${dx},${dy}`;
+      const entry = { dx, dy, samples: trajectory.map((sample) => ({ ...sample })) };
+      const existing = offsetMap.get(key);
+      if (!existing || entry.samples.length < existing.samples.length) {
+        offsetMap.set(key, entry);
+      }
+    };
+    [-1, 1].forEach((dir) => {
+      let x = 0;
+      let y = 0;
+      let vx = dir * speed;
+      let vy = 0;
+      const trajectory = [];
+      for (let frame = 0; frame < maxFrames; frame += 1) {
+        vx += ((dir * speed) - vx) * 0.12;
+        vy += gravity * dt;
+        x += vx * dt;
+        y += vy * dt;
+        trajectory.push({ x, y });
+        addOffset(x, y, trajectory);
+        if (y > tileSize * 16) break;
+      }
+    });
+
+    const parsed = Array.from(offsetMap.values());
+    parsed.sort((a, b) => Math.abs(a.dx) + Math.abs(a.dy) - (Math.abs(b.dx) + Math.abs(b.dy)));
+    this.fallOffsetCache.set(cacheKey, parsed);
     return parsed;
   }
 
@@ -678,6 +848,7 @@ export default class FriendlyCompanion extends Player {
       neighbors.push(candidate);
     };
     this.getWalkingNeighbors(tile, world, abilities, context).forEach(pushUnique);
+    this.getFallingNeighbors(tile, world, abilities, context).forEach(pushUnique);
     this.getJumpingNeighbors(tile, world, abilities, context).forEach(pushUnique);
     return neighbors;
   }
@@ -751,7 +922,7 @@ export default class FriendlyCompanion extends Player {
     return null;
   }
 
-  expandPathWithJumpIntermediates(path, world) {
+  expandPathWithJumpIntermediates(path, world, abilities = {}, context = {}) {
     if (!Array.isArray(path) || path.length < 2) return path || [];
     const tileSize = world.tileSize;
     const expanded = [{ ...path[0] }];
@@ -766,7 +937,13 @@ export default class FriendlyCompanion extends Player {
         if (jumpOffset?.samples?.length) {
           const startWorldX = (from.x + 0.5) * tileSize;
           const startWorldY = (from.y + 0.5) * tileSize;
-          jumpOffset.samples.forEach((sample) => {
+          const adjustedSamples = this.getCeilingLimitedJumpSamples(from, jumpOffset.samples, world, abilities, context);
+          const samples = this.isJumpTrajectoryClear(from, jumpOffset.samples, world, abilities, context)
+            ? jumpOffset.samples
+            : (adjustedSamples && this.isJumpTrajectoryClear(from, adjustedSamples, world, abilities, context)
+              ? adjustedSamples
+              : jumpOffset.samples);
+          (samples || jumpOffset.samples).forEach((sample) => {
             const tile = {
               x: Math.floor((startWorldX + sample.x) / tileSize),
               y: Math.floor((startWorldY + sample.y) / tileSize)
@@ -850,20 +1027,6 @@ export default class FriendlyCompanion extends Player {
       const nearestDx = Math.abs(nearestTile.x - playerTile.x);
       return nearestDx + 1 < dropDx ? nearestTile : dropTile;
     })();
-    const directChasePath = this.getDirectChasePath(startTile, playerTile, world, abilities, context);
-    if (directChasePath?.length > 1) {
-      this.currentPathTiles = directChasePath;
-      this.currentGoalTile = directChasePath[directChasePath.length - 1];
-      this.walkingPathTiles = directChasePath.slice();
-      this.jumpingPathTiles = [];
-      this.jumpTargetTile = null;
-      this.noPathStreak = 0;
-      this.clearGoalFailure(this.currentGoalTile);
-      this.debugPenalizedTiles = [];
-      this.debugStandableTiles = [];
-      this.debugCandidateTiles = [];
-      return;
-    }
     if (this.shouldHoldPositionOnSharedElevator(player, world, context)) {
       this.currentPathTiles = [];
       this.currentGoalTile = null;
@@ -934,7 +1097,7 @@ export default class FriendlyCompanion extends Player {
       if (playerAirborne && directToPlayerPath?.length) {
         const directDistance = this.estimatePathDistance(directToPlayerPath);
         const mergedDistance = this.estimatePathDistance(mergedPath);
-        if (!mergedPath.length || directDistance <= mergedDistance + 1) {
+        if (!mergedPath.length || directDistance + 2 < mergedDistance) {
           selectedPath = directToPlayerPath;
           selectedWalkingPath = [];
           selectedJumpingPath = directToPlayerPath;

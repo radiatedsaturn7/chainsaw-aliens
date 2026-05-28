@@ -36,7 +36,10 @@ const server = http.createServer((req, res) => {
   }
 
   const ext = path.extname(safePath).toLowerCase();
-  res.writeHead(200, { 'Content-Type': contentTypes[ext] || 'application/octet-stream' });
+  res.writeHead(200, {
+    'Content-Type': contentTypes[ext] || 'application/octet-stream',
+    'Cache-Control': 'no-store, max-age=0'
+  });
   fs.createReadStream(safePath).pipe(res);
 });
 

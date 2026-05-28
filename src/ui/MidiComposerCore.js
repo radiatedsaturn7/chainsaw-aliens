@@ -34,7 +34,7 @@ import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as draw
 import { createViewportController } from './shared/viewportController.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
-import { openTextInputOverlay } from './shared/textInputOverlay.js';
+import { openMultiNumberInputOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
 import { PEDAL_DEFINITIONS, PEDAL_DEFINITION_BY_TYPE, PEDAL_COLORS, PEDAL_FONTS } from './midi/pedals/pedalDefinitions.js';
 import { createDefaultPedal } from './midi/pedals/pedalDefaults.js';
@@ -191,6 +191,10 @@ const DEFAULT_RULER_HEIGHT = 80;
 const LOOP_HANDLE_MIN_WIDTH = 70;
 const LOOP_HANDLE_MIN_HEIGHT = 38;
 const DEFAULT_LOOP_BARS = 4;
+const STANDARD_GUITAR_TUNING = [40, 45, 50, 55, 59, 64];
+const STANDARD_BASS_TUNING = [28, 33, 38, 43];
+const DEFAULT_KEYBOARD_START_OCTAVE = 4;
+const MAX_KEYBOARD_START_OCTAVE = 7;
 const GENRE_OPTIONS = [
   { id: 'random', label: 'Random' },
   { id: 'ambient', label: 'Ambient' },
@@ -239,6 +243,13 @@ const isBlackKey = (pitchClass) => [1, 3, 6, 8, 10].includes(pitchClass);
 
 const isDrumTrack = (track) => Boolean(track) && (track.instrument === 'drums' || isDrumChannel(track.channel));
 const coerceDrumPitch = (pitch, rows = GM_DRUM_ROWS) => mapPitchToDrumRow(clampDrumPitch(pitch), rows);
+const normalizeMidiTuning = (value, fallback) => {
+  if (!Array.isArray(value)) return [...fallback];
+  return fallback.map((fallbackPitch, index) => {
+    const pitch = Number(value[index]);
+    return Number.isFinite(pitch) ? clamp(Math.round(pitch), 0, 127) : fallbackPitch;
+  });
+};
 
 const createDefaultSong = () => ({
   schemaVersion: GM_SCHEMA_VERSION,
@@ -250,6 +261,9 @@ const createDefaultSong = () => ({
   timeSignature: { beats: 4, unit: 4 },
   highContrast: false,
   reverseStrings: false,
+  keyboardStartOctave: DEFAULT_KEYBOARD_START_OCTAVE,
+  guitarTuning: [...STANDARD_GUITAR_TUNING],
+  bassTuning: [...STANDARD_BASS_TUNING],
   staccatoEnabled: false,
   key: 0,
   scale: 'major',
@@ -335,6 +349,9 @@ const createDemoSong = () => ({
   timeSignature: { beats: 4, unit: 4 },
   highContrast: false,
   reverseStrings: false,
+  keyboardStartOctave: DEFAULT_KEYBOARD_START_OCTAVE,
+  guitarTuning: [...STANDARD_GUITAR_TUNING],
+  bassTuning: [...STANDARD_BASS_TUNING],
   key: 0,
   scale: 'major',
   tracks: [
@@ -557,6 +574,11 @@ export default class MidiComposer {
     this.touchInput = new TouchInput(this.inputBus);
     this.reverseStrings = Boolean(this.song?.reverseStrings);
     this.touchInput.setReverseStrings(this.reverseStrings);
+    this.touchInput.setKeyboardStartOctave(this.song?.keyboardStartOctave ?? DEFAULT_KEYBOARD_START_OCTAVE);
+    this.touchInput.setStringTunings({
+      guitar: normalizeMidiTuning(this.song?.guitarTuning, STANDARD_GUITAR_TUNING),
+      bass: normalizeMidiTuning(this.song?.bassTuning, STANDARD_BASS_TUNING)
+    });
     this.recordLayout = new RecordModeLayout({ touchInput: this.touchInput });
     this.recorder = new MidiRecorder({ getTime: () => this.getRecordingTime() });
     this.recordGridSnapshot = null;
@@ -603,6 +625,8 @@ export default class MidiComposer {
     this._persistTimer = null;
     this._persistDelayMs = 300;
     this._historyCommitDelayMs = 500;
+    this.trackPreloadPromises = new Map();
+    this.pendingPlaybackAfterPreload = false;
     this.runtime = createEditorRuntime({
       context: this,
       document: {
@@ -1336,6 +1360,13 @@ export default class MidiComposer {
     if (typeof this.song.reverseStrings !== 'boolean') {
       this.song.reverseStrings = false;
     }
+    this.song.keyboardStartOctave = clamp(
+      Math.round(Number.isFinite(Number(this.song.keyboardStartOctave)) ? Number(this.song.keyboardStartOctave) : DEFAULT_KEYBOARD_START_OCTAVE),
+      0,
+      MAX_KEYBOARD_START_OCTAVE
+    );
+    this.song.guitarTuning = normalizeMidiTuning(this.song.guitarTuning, STANDARD_GUITAR_TUNING);
+    this.song.bassTuning = normalizeMidiTuning(this.song.bassTuning, STANDARD_BASS_TUNING);
     if (typeof this.song.staccatoEnabled !== 'boolean') {
       this.song.staccatoEnabled = false;
     }
@@ -1356,6 +1387,11 @@ export default class MidiComposer {
     this.reverseStrings = Boolean(this.song.reverseStrings);
     this.staccatoEnabled = Boolean(this.song.staccatoEnabled);
     this.touchInput.setReverseStrings(this.reverseStrings);
+    this.touchInput.setKeyboardStartOctave(this.song.keyboardStartOctave);
+    this.touchInput.setStringTunings({
+      guitar: this.song.guitarTuning,
+      bass: this.song.bassTuning
+    });
     this.beatsPerBar = this.song.timeSignature.beats;
     this.ensureDefaultLoopRegion();
     this.selectedTrackIndex = clamp(this.selectedTrackIndex, 0, this.song.tracks.length - 1);
@@ -1386,17 +1422,39 @@ export default class MidiComposer {
 
   preloadTrackPrograms() {
     const audio = this.game?.audio;
-    if (!audio?.ensureGmPlayer) return;
-    if (audio.getGmStatus?.().enabled === false) return;
-    audio.ensureGmPlayer()
+    if (!audio?.ensureGmPlayer) return Promise.resolve([]);
+    if (audio.getGmStatus?.().enabled === false) return Promise.resolve([]);
+    return audio.ensureGmPlayer()
       .then(() => {
-        this.song.tracks.forEach((track) => {
-          audio.preloadSoundfontProgram?.(track.program, track.channel, track.bankMSB, track.bankLSB);
-        });
+        const loads = this.song.tracks.map((track) => this.preloadTrackProgram(track));
+        return Promise.allSettled(loads);
       })
       .catch(() => {
-        // ignore preload errors
+        // ignore preload errors; playback will fall back if needed
+        return [];
       });
+  }
+
+  preloadTrackProgram(track) {
+    const audio = this.game?.audio;
+    if (!track || !audio?.preloadSoundfontProgram) return Promise.resolve(null);
+    audio.preloadPedalResources?.(this.getPlaybackPedalsForTrack(track));
+    const drumTrack = isDrumTrack(track);
+    const program = Number.isFinite(track.program) ? track.program : 0;
+    const channel = drumTrack ? GM_DRUM_CHANNEL : track.channel;
+    const bankMSB = drumTrack ? DRUM_BANK_MSB : track.bankMSB;
+    const bankLSB = drumTrack ? DRUM_BANK_LSB : track.bankLSB;
+    const key = `${channel ?? 0}:${bankMSB ?? 0}:${bankLSB ?? 0}:${program}`;
+    if (this.trackPreloadPromises.has(key)) return this.trackPreloadPromises.get(key);
+    const promise = Promise.resolve(audio.preloadSoundfontProgram(program, channel, bankMSB, bankLSB))
+      .catch(() => null)
+      .finally(() => {
+        window.setTimeout(() => {
+          this.trackPreloadPromises.delete(key);
+        }, 5000);
+      });
+    this.trackPreloadPromises.set(key, promise);
+    return promise;
   }
 
   normalizeTrack(track, index, loopBars = DEFAULT_GRID_BARS) {
@@ -1970,6 +2028,14 @@ export default class MidiComposer {
     return Math.max(ticksPerBar, this.getSongLastNoteTick() + ticksPerBar);
   }
 
+  getPlaybackEndTick() {
+    if (this.song.loopEnabled && typeof this.song.loopEndTick === 'number') {
+      return this.getLoopTicks();
+    }
+    const ticksPerBar = this.getTicksPerBar();
+    return Math.max(this.getGridTicks(), this.getSongLastNoteTick() + ticksPerBar);
+  }
+
   getQuantizeTicks() {
     if (!this.quantizeEnabled) return 1;
     const ticksPerBar = this.getTicksPerBar();
@@ -2327,6 +2393,62 @@ export default class MidiComposer {
     this.persist({ commitHistory: true });
   }
 
+  setKeyboardStartOctave(octave) {
+    const nextOctave = clamp(Math.round(Number(octave)), 0, MAX_KEYBOARD_START_OCTAVE);
+    if (!Number.isFinite(nextOctave)) return;
+    this.song.keyboardStartOctave = nextOctave;
+    this.touchInput.setKeyboardStartOctave(nextOctave);
+    this.persist({ commitHistory: true });
+  }
+
+  setStringTuning(instrument, tuning) {
+    const key = instrument === 'bass' ? 'bassTuning' : 'guitarTuning';
+    const fallback = instrument === 'bass' ? STANDARD_BASS_TUNING : STANDARD_GUITAR_TUNING;
+    this.song[key] = normalizeMidiTuning(tuning, fallback);
+    this.touchInput.setStringTunings({
+      guitar: this.song.guitarTuning,
+      bass: this.song.bassTuning
+    });
+    this.persist({ commitHistory: true });
+  }
+
+  resetStringTuning(instrument) {
+    const fallback = instrument === 'bass' ? STANDARD_BASS_TUNING : STANDARD_GUITAR_TUNING;
+    this.setStringTuning(instrument, fallback);
+  }
+
+  formatTuningSummary(tuning) {
+    return normalizeMidiTuning(tuning, tuning?.length === 4 ? STANDARD_BASS_TUNING : STANDARD_GUITAR_TUNING)
+      .map((pitch) => this.formatPitchLabel(pitch))
+      .join(' ');
+  }
+
+  async promptStringTuning(instrument) {
+    const isBass = instrument === 'bass';
+    const title = isBass ? 'Bass Tuning' : 'Guitar Tuning';
+    const current = normalizeMidiTuning(
+      isBass ? this.song.bassTuning : this.song.guitarTuning,
+      isBass ? STANDARD_BASS_TUNING : STANDARD_GUITAR_TUNING
+    );
+    const fields = current.map((pitch, index) => ({
+      id: `string${index}`,
+      label: `String ${index + 1} (${this.formatPitchLabel(pitch)})`,
+      initialValue: pitch,
+      min: 0,
+      max: 127,
+      step: 1,
+      integer: true
+    }));
+    const values = await openMultiNumberInputOverlay({
+      title,
+      fields,
+      confirmText: 'Apply',
+      maxWidth: 520
+    });
+    if (!values) return;
+    this.setStringTuning(instrument, current.map((pitch, index) => values[`string${index}`] ?? pitch));
+  }
+
   async promptChordProgression() {
     const loopBars = Math.max(1, this.song.loopBars || DEFAULT_GRID_BARS);
     const perBar = [];
@@ -2396,6 +2518,7 @@ export default class MidiComposer {
     if (this.singleNoteRecordMode.active) {
       this.exitSingleNoteRecordMode();
     }
+    this.touchInput?.releaseAllNotes?.();
     this.stopLivePreviewNotes();
     this.recordModeActive = false;
     if (this.recordGridSnapshot) {
@@ -2903,6 +3026,11 @@ export default class MidiComposer {
     this.recordLayout.setAvailableInstruments(recordInstruments);
     this.recordLayout.setDevice(preferred);
     this.recordLayout.setInstrument(this.recordInstrument);
+    this.recordLayout.setInstrumentSettings({
+      guitarTuning: this.song.guitarTuning,
+      bassTuning: this.song.bassTuning,
+      keyboardStartOctave: this.song.keyboardStartOctave
+    });
     this.recordLayout.quantizeEnabled = this.recordQuantizeEnabled;
     this.recordLayout.quantizeLabel = `1/${this.recordQuantizeDivisor}`;
     this.recordLayout.countInEnabled = this.recordCountInEnabled;
@@ -3426,7 +3554,11 @@ export default class MidiComposer {
       if (beatTick >= startTick && beatTick < endTick) {
         const pitch = beat % this.beatsPerBar === 0 ? 84 : 72;
         if (this.game?.audio?.playMidiNote) {
-          this.game.audio.playMidiNote(pitch, 'sine', 0.15, 0.4);
+          try {
+            this.game.audio.playMidiNote(pitch, 'sine', 0.15, 0.4);
+          } catch (error) {
+            console.warn('MIDI metronome playback failed', error);
+          }
         }
       }
     }
@@ -3526,21 +3658,31 @@ export default class MidiComposer {
       if (drumTrack) {
         this.ensureDrumTrackSettings(track);
       }
-      this.game.audio.playGmNote({
-        pitch: resolvedPitch,
-        duration: resolvedDuration,
-        volume,
-        program: track.program,
-        channel: drumTrack ? GM_DRUM_CHANNEL : track.channel,
-        bankMSB: drumTrack ? (track.bankMSB ?? DRUM_BANK_MSB) : track.bankMSB,
-        bankLSB: drumTrack ? DRUM_BANK_LSB : track.bankLSB,
-        pedals: this.getPlaybackPedalsForTrack(track),
-        pan
-      });
+      try {
+        this.game.audio.playGmNote({
+          pitch: resolvedPitch,
+          duration: resolvedDuration,
+          volume,
+          program: track.program,
+          channel: drumTrack ? GM_DRUM_CHANNEL : track.channel,
+          bankMSB: drumTrack ? (track.bankMSB ?? DRUM_BANK_MSB) : track.bankMSB,
+          bankLSB: drumTrack ? DRUM_BANK_LSB : track.bankLSB,
+          pedals: this.getPlaybackPedalsForTrack(track),
+          pan
+        });
+      } catch (error) {
+        console.error('MIDI audio playback failed', error);
+        this.showEditorMessage?.(`MIDI audio failed: ${error?.message || error}`);
+      }
       return;
     }
     if (this.game?.audio?.playMidiNote) {
-      this.game.audio.playMidiNote(pitch, 'sine', duration, volume, null, pan);
+      try {
+        this.game.audio.playMidiNote(pitch, 'sine', duration, volume, null, pan);
+      } catch (error) {
+        console.error('MIDI audio playback failed', error);
+        this.showEditorMessage?.(`MIDI audio failed: ${error?.message || error}`);
+      }
     }
   }
 
@@ -3553,15 +3695,18 @@ export default class MidiComposer {
     });
   }
 
+  cancelLongPressTimer() {
+    if (!this.longPressTimer) return;
+    clearTimeout(this.longPressTimer);
+    this.longPressTimer = null;
+  }
+
   handlePointerDown(payload) {
     this.lastPointer = { x: payload.x, y: payload.y };
+    this.cancelLongPressTimer();
     if (!this.recordModeActive && this.dragState) {
       this.dragState = null;
       this.draggingTrackControl = null;
-      if (this.longPressTimer) {
-        clearTimeout(this.longPressTimer);
-        this.longPressTimer = null;
-      }
     }
     const { x, y } = payload;
     if (this.isMobileLandscapeThumbZoomMode() && payload.touchCount > 0 && this.panJoystick.radius > 0) {
@@ -3586,6 +3731,22 @@ export default class MidiComposer {
         if (recordInstruments.includes(action.value)) {
           this.recordInstrument = action.value;
         }
+        return;
+      }
+      if (action?.type === 'keyboard-octave') {
+        this.setKeyboardStartOctave(action.value);
+        return;
+      }
+      if (action?.type === 'string-tuning') {
+        const key = action.instrument === 'bass' ? 'bassTuning' : 'guitarTuning';
+        const fallback = action.instrument === 'bass' ? STANDARD_BASS_TUNING : STANDARD_GUITAR_TUNING;
+        const tuning = normalizeMidiTuning(this.song[key], fallback);
+        tuning[action.stringIndex] = action.pitch;
+        this.setStringTuning(action.instrument, tuning);
+        return;
+      }
+      if (action?.type === 'standard-tuning') {
+        this.resetStringTuning(action.instrument);
         return;
       }
       if (action?.type === 'quantize') {
@@ -3926,87 +4087,89 @@ export default class MidiComposer {
       return;
     }
 
-    const pedalPickerHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds) && bounds.control === 'pedal-picker-item');
-    const pedalPickerScrollAreaHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds) && bounds.control === 'pedal-picker-scroll-area');
-    if (pedalPickerScrollAreaHit) {
-      this.dragState = {
-        mode: 'pedal-picker-scroll',
-        startY: y,
-        startScroll: this.pedalUiState.pickerScroll || 0,
-        moved: false,
-        pendingPick: pedalPickerHit ? { ...pedalPickerHit } : null
-      };
-      return;
-    }
-    if (pedalPickerHit) {
-      this.insertPedalIntoSlot(this.pedalUiState.pickerSlot ?? 0, pedalPickerHit.pedalType);
-      return;
-    }
-    if (this.pedalUiState.pickerOpen) {
-      this.pedalUiState.pickerOpen = false;
-      this.pedalUiState.pickerSlot = null;
-      this.pedalUiState.pickerScroll = 0;
-      return;
-    }
-    const pedalInspectorHit = this.pedalInspectorBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
-    if (pedalInspectorHit) {
-      const slot = this.pedalUiState.selectedSlot;
-      const track = this.getActiveTrack();
-      if (!track || !Number.isInteger(slot)) return;
-      const pedals = normalizeMidiPedals(track.midiPedals);
-      const sourcePedal = this.pedalUiState.editorOpen
-        ? this.pedalUiState.draftPedal
-        : pedals[slot];
-      if (pedalInspectorHit.control === 'pedal-delete') {
-        this.deletePedalFromEditor();
-      } else if (pedalInspectorHit.control === 'pedal-ok') {
-        this.commitPedalEditor();
-      } else if (pedalInspectorHit.control === 'pedal-cancel') {
-        this.cancelPedalEditor();
-      } else if (pedalInspectorHit.control === 'pedal-stomp-toggle' && sourcePedal) {
-        if (this.pedalUiState.editorOpen) {
-          this.pedalUiState.draftPedal = { ...sourcePedal, enabled: !sourcePedal.enabled };
-        } else {
-          pedals[slot] = { ...sourcePedal, enabled: !sourcePedal.enabled };
-          track.midiPedals = pedals;
-          this.persist({ commitHistory: true });
-        }
-      } else if (pedalInspectorHit.control === 'pedal-knob') {
-        const current = Number(sourcePedal?.knobs?.[pedalInspectorHit.knobKey]);
+    if (this.activeTab === 'instruments') {
+      const pedalPickerHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds) && bounds.control === 'pedal-picker-item');
+      const pedalPickerScrollAreaHit = this.pedalPickerBounds?.find((bounds) => this.pointInBounds(x, y, bounds) && bounds.control === 'pedal-picker-scroll-area');
+      if (pedalPickerScrollAreaHit) {
         this.dragState = {
-          mode: 'pedal-knob-turn',
-          bounds: pedalInspectorHit,
+          mode: 'pedal-picker-scroll',
           startY: y,
-          startValue: Number.isFinite(current) ? current : pedalInspectorHit.min
+          startScroll: this.pedalUiState.pickerScroll || 0,
+          moved: false,
+          pendingPick: pedalPickerHit ? { ...pedalPickerHit } : null
         };
         return;
       }
-      return;
-    }
-    if (this.pedalUiState.editorOpen && this.pedalEditorOverlayBounds && this.pointInBounds(x, y, this.pedalEditorOverlayBounds)) {
-      return;
-    }
-    const pedalSlotHit = this.pedalSlotBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
-    if (pedalSlotHit) {
-      const track = this.getActiveTrack();
-      const pedals = normalizeMidiPedals(track?.midiPedals);
-      if (pedals[pedalSlotHit.slotIndex]) {
-        this.openPedalEditorForSlot(pedalSlotHit.slotIndex);
-      } else {
-        this.pedalUiState.pickerSlot = pedalSlotHit.slotIndex;
-        this.pedalUiState.pickerOpen = true;
-        this.pedalUiState.pickerPage = 0;
-        this.pedalUiState.pickerScroll = 0;
-        this.pedalUiState.editorOpen = false;
-        this.pedalUiState.draftPedal = null;
+      if (pedalPickerHit) {
+        this.insertPedalIntoSlot(this.pedalUiState.pickerSlot ?? 0, pedalPickerHit.pedalType);
+        return;
       }
-      return;
-    }
-
-    const quickMixHit = this.bounds.instrumentSettingsControls?.find((bounds) => this.pointInBounds(x, y, bounds));
-    if (quickMixHit) {
-      this.handleTrackControl(quickMixHit);
-      return;
+      if (this.pedalUiState.pickerOpen) {
+        this.pedalUiState.pickerOpen = false;
+        this.pedalUiState.pickerSlot = null;
+        this.pedalUiState.pickerScroll = 0;
+        return;
+      }
+      const pedalInspectorHit = this.pedalInspectorBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (pedalInspectorHit) {
+        const slot = this.pedalUiState.selectedSlot;
+        const track = this.getActiveTrack();
+        if (!track || !Number.isInteger(slot)) return;
+        const pedals = normalizeMidiPedals(track.midiPedals);
+        const sourcePedal = this.pedalUiState.editorOpen
+          ? this.pedalUiState.draftPedal
+          : pedals[slot];
+        if (pedalInspectorHit.control === 'pedal-delete') {
+          this.deletePedalFromEditor();
+        } else if (pedalInspectorHit.control === 'pedal-ok') {
+          this.commitPedalEditor();
+        } else if (pedalInspectorHit.control === 'pedal-cancel') {
+          this.cancelPedalEditor();
+        } else if (pedalInspectorHit.control === 'pedal-stomp-toggle' && sourcePedal) {
+          if (this.pedalUiState.editorOpen) {
+            this.pedalUiState.draftPedal = { ...sourcePedal, enabled: !sourcePedal.enabled };
+          } else {
+            pedals[slot] = { ...sourcePedal, enabled: !sourcePedal.enabled };
+            track.midiPedals = pedals;
+            this.persist({ commitHistory: true });
+          }
+        } else if (pedalInspectorHit.control === 'pedal-knob') {
+          const current = Number(sourcePedal?.knobs?.[pedalInspectorHit.knobKey]);
+          this.dragState = {
+            mode: 'pedal-knob-turn',
+            bounds: pedalInspectorHit,
+            startY: y,
+            startValue: Number.isFinite(current) ? current : pedalInspectorHit.min
+          };
+          return;
+        }
+        return;
+      }
+      if (this.pedalUiState.editorOpen && this.pedalEditorOverlayBounds && this.pointInBounds(x, y, this.pedalEditorOverlayBounds)) {
+        return;
+      }
+      const pedalSlotHit = this.pedalSlotBounds?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (pedalSlotHit) {
+        const track = this.getActiveTrack();
+        const pedals = normalizeMidiPedals(track?.midiPedals);
+        if (pedals[pedalSlotHit.slotIndex]) {
+          this.openPedalEditorForSlot(pedalSlotHit.slotIndex);
+        } else {
+          this.pedalUiState.pickerSlot = pedalSlotHit.slotIndex;
+          this.pedalUiState.pickerOpen = true;
+          this.pedalUiState.pickerPage = 0;
+          this.pedalUiState.pickerScroll = 0;
+          this.pedalUiState.editorOpen = false;
+          this.pedalUiState.draftPedal = null;
+        }
+        return;
+      }
+    } else if (this.pedalUiState.pickerOpen || this.pedalUiState.editorOpen) {
+      this.pedalUiState.pickerOpen = false;
+      this.pedalUiState.pickerSlot = null;
+      this.pedalUiState.pickerScroll = 0;
+      this.pedalUiState.editorOpen = false;
+      this.pedalUiState.draftPedal = null;
     }
 
     const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
@@ -4016,6 +4179,12 @@ export default class MidiComposer {
       this.pastePreview = null;
       this.noteLengthMenu.open = false;
       this.tempoSliderOpen = false;
+      return;
+    }
+
+    const quickMixHit = this.bounds.instrumentSettingsControls?.find((bounds) => this.pointInBounds(x, y, bounds));
+    if (quickMixHit) {
+      this.handleTrackControl(quickMixHit);
       return;
     }
 
@@ -4737,6 +4906,7 @@ export default class MidiComposer {
         if (payload.touchCount) {
           this.longPressTimer = window.setTimeout(() => {
             this.setLoopStartTick(tick);
+            this.longPressTimer = null;
           }, 450);
         }
         this.playheadTick = clamp(tick, 0, this.getEditableGridTick());
@@ -5111,6 +5281,7 @@ export default class MidiComposer {
       const threshold = 6;
       if (!this.dragState.moved && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) {
         this.dragState.moved = true;
+        this.cancelLongPressTimer();
       }
       if (this.dragState.moved) {
         this.gridOffset.x = this.dragState.startOffsetX + dx;
@@ -5143,6 +5314,7 @@ export default class MidiComposer {
   handlePointerUp(payload) {
     this.lastPointer = { x: payload.x, y: payload.y };
     if (this.recordModeActive) {
+      this.cancelLongPressTimer();
       this.recordLayout.handlePointerUp(payload);
       return;
     }
@@ -5154,24 +5326,20 @@ export default class MidiComposer {
       this.panJoystick.dy = 0;
       return;
     }
-    if (this.longPressTimer) {
-      clearTimeout(this.longPressTimer);
-      this.longPressTimer = null;
-    }
+    this.cancelLongPressTimer();
     if (this.suppressNextGridTap) {
       this.suppressNextGridTap = false;
       this.dragState = null;
       return;
     }
     if (this.dragState?.mode === 'touch-pan' || this.dragState?.mode === 'pan') {
-      if (!this.dragState.moved) {
-        const { cell } = this.dragState;
-        if (this.dragState.mode === 'touch-pan' && cell) {
-          this.selection.clear();
-          this.toggleNoteAt(cell.tick, cell.pitch);
-        }
-      }
+      const shouldToggle = !this.dragState.moved && this.dragState.mode === 'touch-pan' && this.dragState.cell;
+      const cell = this.dragState.cell;
       this.dragState = null;
+      if (shouldToggle) {
+        this.selection.clear();
+        this.toggleNoteAt(cell.tick, cell.pitch);
+      }
       return;
     }
     if (this.dragState?.mode === 'song-track-scroll') {
@@ -5346,10 +5514,12 @@ export default class MidiComposer {
       return;
     }
     if (this.dragState?.mode === 'pan-or-tap') {
-      if (!this.dragState.moved && this.dragState.cell) {
-        this.toggleNoteAt(this.dragState.cell.tick, this.dragState.cell.pitch);
-      }
+      const shouldToggle = !this.dragState.moved && this.dragState.cell;
+      const cell = this.dragState.cell;
       this.dragState = null;
+      if (shouldToggle) {
+        this.toggleNoteAt(cell.tick, cell.pitch);
+      }
       return;
     }
     if (this.dragState?.mode === 'select') {
@@ -5540,8 +5710,10 @@ export default class MidiComposer {
     if (!cell && !hit) return;
     if ((payload.touchCount && !hit) || modifiers.alt || payload.button === 1 || payload.button === 2) {
       if (!cell) return;
+      const pointerId = payload.id;
       this.dragState = {
         mode: payload.touchCount ? 'touch-pan' : 'pan',
+        id: pointerId,
         startX: x,
         startY: y,
         startOffsetX: this.gridOffset.x,
@@ -5552,23 +5724,27 @@ export default class MidiComposer {
       };
       if (payload.touchCount) {
         this.longPressTimer = window.setTimeout(() => {
-          const heldCell = this.getGridCell(this.lastPointer.x, this.lastPointer.y);
-          if (!heldCell) return;
-          const heldNote = this.getNoteHitAt(this.lastPointer.x, this.lastPointer.y);
-          if (heldNote) {
-            this.selection.add(heldNote.note.id);
+          if (!this.dragState || this.dragState.mode !== 'touch-pan') {
+            this.longPressTimer = null;
+            return;
           }
-          if (navigator?.vibrate) {
+          if (this.dragState.id !== undefined && this.dragState.id !== pointerId) {
+            this.longPressTimer = null;
+            return;
+          }
+          if (typeof navigator !== 'undefined' && navigator?.vibrate) {
             navigator.vibrate(20);
           }
           this.dragState = {
             mode: 'select',
-            startX: this.lastPointer.x,
-            startY: this.lastPointer.y,
+            id: pointerId,
+            startX: this.dragState.startX,
+            startY: this.dragState.startY,
             currentX: this.lastPointer.x,
             currentY: this.lastPointer.y,
-            appendSelection: this.selection.size > 0 || Boolean(heldNote)
+            appendSelection: false
           };
+          this.longPressTimer = null;
         }, 450);
       }
       return;
@@ -5580,6 +5756,36 @@ export default class MidiComposer {
       return;
     }
     if (hit) {
+      if (payload.touchCount) {
+        const pointerId = payload.id;
+        this.longPressTimer = window.setTimeout(() => {
+          if (!this.dragState || (this.dragState.id !== undefined && this.dragState.id !== pointerId)) {
+            this.longPressTimer = null;
+            return;
+          }
+          if (this.dragState.mode !== 'move' && this.dragState.mode !== 'resize') {
+            this.longPressTimer = null;
+            return;
+          }
+          const heldNote = this.getNoteHitAt(this.lastPointer.x, this.lastPointer.y);
+          if (heldNote) {
+            this.selection.add(heldNote.note.id);
+          }
+          if (typeof navigator !== 'undefined' && navigator?.vibrate) {
+            navigator.vibrate(20);
+          }
+          this.dragState = {
+            mode: 'select',
+            id: pointerId,
+            startX: this.lastPointer.x,
+            startY: this.lastPointer.y,
+            currentX: this.lastPointer.x,
+            currentY: this.lastPointer.y,
+            appendSelection: true
+          };
+          this.longPressTimer = null;
+        }, 450);
+      }
       if (modifiers.meta) {
         this.toggleSelection(hit.note.id);
         return;
@@ -5592,6 +5798,7 @@ export default class MidiComposer {
       if (hit.edge && !drumTrack) {
         this.dragState = {
           mode: 'resize',
+          id: payload.id,
           edge: hit.edge,
           resizeNoteId: hit.note.id,
           originalNotes: this.getSelectedNotes().map((note) => ({ ...note }))
@@ -5604,6 +5811,7 @@ export default class MidiComposer {
       }
       this.dragState = {
         mode: 'move',
+        id: payload.id,
         startTick: this.snapTick(cell.tick),
         startPitch: cell.pitch,
         startX: x,
@@ -5636,6 +5844,7 @@ export default class MidiComposer {
   }
 
   toggleNoteAt(tick, pitch) {
+    this.cancelLongPressTimer();
     if (this.selectionMenu.open) {
       this.closeSelectionMenu();
     }
@@ -5672,8 +5881,12 @@ export default class MidiComposer {
     this.defaultNoteDurationTicks = note.durationTicks;
     this.cursor = { tick: snappedTick, pitch: snappedPitch };
     this.ensureGridCapacity(snappedTick + duration);
-    this.previewNote(note, snappedPitch);
     this.persist({ commitHistory: true });
+    this.previewNote(note, snappedPitch);
+    this.panJoystick.active = false;
+    this.panJoystick.id = null;
+    this.gridGesture = null;
+    this.viewportController.endPinch();
   }
 
   paintNoteAt(tick, pitch, continuous) {
@@ -5711,8 +5924,8 @@ export default class MidiComposer {
     this.defaultNoteDurationTicks = note.durationTicks;
     this.cursor = { tick: snappedTick, pitch: snappedPitch };
     this.ensureGridCapacity(snappedTick + duration);
-    this.previewNote(note, snappedPitch);
     this.persist({ commitHistory: true });
+    this.previewNote(note, snappedPitch);
   }
 
   eraseNoteAt(tick, pitch) {
@@ -7734,6 +7947,30 @@ export default class MidiComposer {
       this.setReverseStrings(!this.reverseStrings);
       return;
     }
+    if (control.id === 'touch-keyboard-octave-down') {
+      this.setKeyboardStartOctave((this.song.keyboardStartOctave ?? DEFAULT_KEYBOARD_START_OCTAVE) - 1);
+      return;
+    }
+    if (control.id === 'touch-keyboard-octave-up') {
+      this.setKeyboardStartOctave((this.song.keyboardStartOctave ?? DEFAULT_KEYBOARD_START_OCTAVE) + 1);
+      return;
+    }
+    if (control.id === 'touch-guitar-tuning') {
+      this.promptStringTuning('guitar');
+      return;
+    }
+    if (control.id === 'touch-guitar-tuning-reset') {
+      this.resetStringTuning('guitar');
+      return;
+    }
+    if (control.id === 'touch-bass-tuning') {
+      this.promptStringTuning('bass');
+      return;
+    }
+    if (control.id === 'touch-bass-tuning-reset') {
+      this.resetStringTuning('bass');
+      return;
+    }
     if (control.id === 'virtual-device-gamepad') {
       if (this.gamepadInput.connected) {
         this.recordDevicePreference = 'gamepad';
@@ -7878,6 +8115,9 @@ export default class MidiComposer {
     if (action === 'export-midi-zip') {
       this.exportSongMidiZip();
     }
+    if (action === 'export-wav') {
+      await this.exportSongWav();
+    }
     if (action === 'import') {
       await this.importSong();
     }
@@ -7979,6 +8219,10 @@ export default class MidiComposer {
     }
     if (action === 'export-midi-zip') {
       this.exportSongMidiZip();
+      return;
+    }
+    if (action === 'export-wav') {
+      await this.exportSongWav();
       return;
     }
     if (action === 'import') {
@@ -8340,13 +8584,180 @@ export default class MidiComposer {
     return buildZipFromStems(stems);
   }
 
+  prepareForDownload() {
+    window.dispatchEvent(new CustomEvent('chainsaw-download-start'));
+  }
+
   downloadBlob(blob, filename) {
+    this.prepareForDownload();
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
     link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 0);
+    setTimeout(() => {
+      link.remove();
+      URL.revokeObjectURL(url);
+      window.dispatchEvent(new CustomEvent('chainsaw-download-complete'));
+    }, 60000);
+  }
+
+  openDownloadReadyOverlay(blob, filename) {
+    const previousActive = document.activeElement;
+    const body = document.body;
+    const previousOverflow = body.style.overflow;
+    const previousTouchAction = body.style.touchAction;
+    const url = URL.createObjectURL(blob);
+    body.style.overflow = 'hidden';
+    body.style.touchAction = 'none';
+
+    return new Promise((resolve) => {
+      const overlay = document.createElement('div');
+      overlay.className = 'shared-text-input-overlay';
+      overlay.tabIndex = -1;
+
+      const panel = document.createElement('div');
+      panel.className = 'shared-text-input-panel';
+      panel.classList.add('multi-field');
+      overlay.appendChild(panel);
+
+      const title = document.createElement('h3');
+      title.className = 'shared-text-input-title';
+      title.textContent = 'WAV Ready';
+      panel.appendChild(title);
+
+      const label = document.createElement('div');
+      label.className = 'shared-text-input-label';
+      label.textContent = filename;
+      panel.appendChild(label);
+
+      const buttonRow = document.createElement('div');
+      buttonRow.className = 'shared-text-input-actions';
+      panel.appendChild(buttonRow);
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.type = 'button';
+      cancelBtn.className = 'shared-text-input-btn';
+      cancelBtn.textContent = 'Cancel';
+      buttonRow.appendChild(cancelBtn);
+
+      const downloadBtn = document.createElement('a');
+      downloadBtn.href = url;
+      downloadBtn.download = filename;
+      downloadBtn.target = '_blank';
+      downloadBtn.rel = 'noopener';
+      downloadBtn.className = 'shared-text-input-btn primary';
+      downloadBtn.textContent = 'Download';
+      buttonRow.appendChild(downloadBtn);
+
+      const cleanup = (downloaded) => {
+        overlay.remove();
+        body.style.overflow = previousOverflow;
+        body.style.touchAction = previousTouchAction;
+        previousActive?.focus?.();
+        resolve(downloaded);
+      };
+
+      const cleanupDownloadUrl = () => {
+        window.setTimeout(() => {
+          URL.revokeObjectURL(url);
+          window.dispatchEvent(new CustomEvent('chainsaw-download-complete'));
+        }, 60000);
+      };
+
+      cancelBtn.addEventListener('click', () => {
+        URL.revokeObjectURL(url);
+        cleanup(false);
+      });
+      downloadBtn.addEventListener('click', () => {
+        this.prepareForDownload();
+        cleanupDownloadUrl();
+        window.setTimeout(() => cleanup(true), 500);
+      });
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+          URL.revokeObjectURL(url);
+          cleanup(false);
+        }
+      });
+      overlay.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          URL.revokeObjectURL(url);
+          cleanup(false);
+        }
+        if (event.key === 'Enter') {
+          downloadBtn.click();
+        }
+      });
+
+      document.body.appendChild(overlay);
+      overlay.focus({ preventScroll: true });
+      downloadBtn.focus({ preventScroll: true });
+    });
+  }
+
+  openWavExportProgressOverlay() {
+    const overlay = document.createElement('div');
+    overlay.className = 'shared-text-input-overlay';
+    overlay.tabIndex = -1;
+
+    const panel = document.createElement('div');
+    panel.className = 'shared-text-input-panel';
+    panel.classList.add('multi-field');
+    overlay.appendChild(panel);
+
+    const title = document.createElement('h3');
+    title.className = 'shared-text-input-title';
+    title.textContent = 'Processing WAV';
+    panel.appendChild(title);
+
+    const label = document.createElement('div');
+    label.className = 'shared-text-input-label';
+    label.textContent = 'Preparing export...';
+    panel.appendChild(label);
+
+    const meter = document.createElement('div');
+    meter.className = 'shared-progress-meter';
+    const fill = document.createElement('div');
+    fill.className = 'shared-progress-fill';
+    meter.appendChild(fill);
+    panel.appendChild(meter);
+
+    document.body.appendChild(overlay);
+    overlay.focus({ preventScroll: true });
+
+    let current = 0;
+    let target = 0;
+    const render = () => {
+      current += (target - current) * 0.18;
+      fill.style.width = `${Math.max(0, Math.min(100, current))}%`;
+    };
+    const timer = window.setInterval(render, 80);
+
+    return {
+      update(nextTarget, message) {
+        target = Math.max(target, clamp(nextTarget, 0, 100));
+        if (message) label.textContent = message;
+        render();
+      },
+      close() {
+        window.clearInterval(timer);
+        fill.style.width = '100%';
+        overlay.remove();
+      }
+    };
+  }
+
+  getTimestampedExportFilename(extension) {
+    const stamp = new Date()
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+$/, '')
+      .replace('T', '-');
+    return `${this.getExportBaseName()}-${stamp}.${extension}`;
   }
 
   exportSongJson() {
@@ -8398,6 +8809,643 @@ export default class MidiComposer {
     if (!stems.length) return;
     const blob = await buildZipFromStems(stems);
     this.downloadBlob(blob, `${this.getExportBaseName()}-stems.zip`);
+  }
+
+  getWavProgramWaveform(program = 0) {
+    const family = GM_PROGRAMS[Math.round(clamp(program, 0, GM_PROGRAMS.length - 1))]?.family || '';
+    if (family === 'Bass' || family === 'Organ') return 'square';
+    if (family === 'Guitar' || family === 'Strings' || family === 'Brass' || family === 'Synth Lead') return 'sawtooth';
+    if (family === 'Chromatic Percussion' || family === 'Piano' || family === 'Synth Pad') return 'triangle';
+    return 'sine';
+  }
+
+  createWavImpulse(ctx, duration = 1.4, decay = 2.5) {
+    const length = Math.max(1, Math.floor(ctx.sampleRate * duration));
+    const impulse = ctx.createBuffer(2, length, ctx.sampleRate);
+    for (let channel = 0; channel < 2; channel += 1) {
+      const data = impulse.getChannelData(channel);
+      for (let i = 0; i < length; i += 1) {
+        data[i] = (Math.random() * 2 - 1) * ((1 - i / length) ** decay);
+      }
+    }
+    return impulse;
+  }
+
+  buildWavDistortionCurve(amount = 0.6, samples = 1024) {
+    const curve = new Float32Array(samples);
+    const k = 5 + amount * 80;
+    const deg = Math.PI / 180;
+    for (let i = 0; i < samples; i += 1) {
+      const x = (i * 2) / samples - 1;
+      curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+    }
+    return curve;
+  }
+
+  createWavNoiseBuffer(ctx, duration = 0.3, type = 'noise') {
+    const length = Math.max(1, Math.floor(ctx.sampleRate * duration));
+    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < length; i += 1) {
+      const t = i / ctx.sampleRate;
+      const p = t / Math.max(duration, 0.001);
+      const noise = (Math.random() * 2 - 1) * (1 - p);
+      if (type === 'kick') {
+        const freq = 120 * (1 - p) + 42;
+        data[i] = Math.sin(2 * Math.PI * freq * t) * ((1 - p) ** 2);
+      } else if (type === 'tom') {
+        const freq = 220 * (1 - p) + 80;
+        data[i] = Math.sin(2 * Math.PI * freq * t) * (1 - p) * 0.7 + noise * 0.18;
+      } else if (type === 'hat') {
+        data[i] = noise * 0.45;
+      } else if (type === 'crash') {
+        data[i] = noise * 0.62;
+      } else {
+        data[i] = noise * 0.8;
+      }
+    }
+    return buffer;
+  }
+
+  getWavDrumType(pitch) {
+    if (pitch === 35 || pitch === 36) return 'kick';
+    if (pitch === 38 || pitch === 40) return 'snare';
+    if (pitch >= 42 && pitch <= 46) return 'hat';
+    if (pitch >= 47 && pitch <= 50) return 'tom';
+    if (pitch >= 49 && pitch <= 57) return 'crash';
+    return 'snare';
+  }
+
+  applyWavPedalChain(ctx, inputNode, pedals = [], when = 0, duration = 0.4) {
+    let current = inputNode;
+    const enabled = normalizeMidiPedals(pedals).filter((pedal) => pedal && pedal.enabled !== false);
+    enabled.forEach((pedal) => {
+      const knobs = pedal.knobs || {};
+      if (pedal.type === 'compressor') {
+        const comp = ctx.createDynamicsCompressor();
+        comp.threshold.value = -44 + clamp(knobs.threshold ?? 0.5, 0, 1) * 42;
+        comp.ratio.value = 1.5 + clamp(knobs.ratio ?? 0.5, 0, 1) * 16;
+        const makeup = ctx.createGain();
+        makeup.gain.value = 0.7 + clamp(knobs.makeup ?? 0.4, 0, 1) * 0.75;
+        current.connect(comp);
+        comp.connect(makeup);
+        current = makeup;
+      } else if (pedal.type === 'eq') {
+        const low = ctx.createBiquadFilter();
+        const mid = ctx.createBiquadFilter();
+        const high = ctx.createBiquadFilter();
+        low.type = 'lowshelf'; low.frequency.value = 180; low.gain.value = (clamp(knobs.low ?? 0.5, 0, 1) - 0.5) * 24;
+        mid.type = 'peaking'; mid.frequency.value = 1150; mid.Q.value = 0.9; mid.gain.value = (clamp(knobs.mid ?? 0.5, 0, 1) - 0.5) * 20;
+        high.type = 'highshelf'; high.frequency.value = 3400; high.gain.value = (clamp(knobs.high ?? 0.5, 0, 1) - 0.5) * 24;
+        current.connect(low); low.connect(mid); mid.connect(high);
+        current = high;
+      } else if (pedal.type === 'overdrive') {
+        const pre = ctx.createGain();
+        const shape = ctx.createWaveShaper();
+        const tone = ctx.createBiquadFilter();
+        const bite = ctx.createBiquadFilter();
+        const out = ctx.createGain();
+        pre.gain.value = 1 + clamp(knobs.drive ?? 0.6, 0, 1) * 6;
+        shape.curve = this.buildWavDistortionCurve(clamp(knobs.drive ?? 0.6, 0, 1));
+        shape.oversample = '4x';
+        tone.type = 'lowpass';
+        tone.frequency.value = 900 + clamp(knobs.tone ?? 0.5, 0, 1) * 7000;
+        bite.type = 'highpass';
+        bite.frequency.value = 40 + clamp(knobs.bite ?? 0.5, 0, 1) * 650;
+        out.gain.value = 0.45;
+        current.connect(pre); pre.connect(shape); shape.connect(tone); tone.connect(bite); bite.connect(out);
+        current = out;
+      } else if (pedal.type === 'reverb') {
+        const dry = ctx.createGain();
+        const wet = ctx.createGain();
+        const convolver = ctx.createConvolver();
+        const sum = ctx.createGain();
+        const mix = clamp(knobs.mix ?? 0.6, 0, 1);
+        dry.gain.value = 1 - mix * 0.6;
+        wet.gain.value = mix * 0.8;
+        convolver.buffer = this.createWavImpulse(ctx, 0.25 + clamp(knobs.room ?? 0.5, 0, 1) * 1.8, 1.2 + clamp(knobs.decay ?? 0.6, 0, 1) * 4);
+        current.connect(dry); current.connect(convolver); convolver.connect(wet); dry.connect(sum); wet.connect(sum);
+        current = sum;
+      } else if (pedal.type === 'echo') {
+        const dry = ctx.createGain();
+        const wet = ctx.createGain();
+        const delay = ctx.createDelay(1.5);
+        const feedback = ctx.createGain();
+        const tone = ctx.createBiquadFilter();
+        const sum = ctx.createGain();
+        const mix = clamp(knobs.mix ?? 0.65, 0, 1);
+        delay.delayTime.value = 0.06 + clamp(knobs.time ?? 0.45, 0, 1) * 0.64;
+        feedback.gain.value = 0.15 + clamp(knobs.feedback ?? 0.35, 0, 0.95) * 0.72;
+        tone.type = 'lowpass';
+        tone.frequency.value = 1300 + (1 - clamp(knobs.feedback ?? 0.35, 0, 1)) * 5200;
+        dry.gain.value = 1 - mix * 0.55;
+        wet.gain.value = mix * 0.65;
+        current.connect(dry); current.connect(delay); delay.connect(tone); tone.connect(feedback); feedback.connect(delay); delay.connect(wet); dry.connect(sum); wet.connect(sum);
+        current = sum;
+      } else if ((pedal.type === 'chorus' || pedal.type === 'phaser' || pedal.type === 'wah' || pedal.type === 'volumePhaser') && ctx.createOscillator) {
+        const filter = ctx.createBiquadFilter();
+        const lfo = ctx.createOscillator();
+        const lfoGain = ctx.createGain();
+        filter.type = pedal.type === 'wah' ? 'bandpass' : 'allpass';
+        filter.frequency.value = pedal.type === 'wah' ? 380 : 600;
+        filter.Q.value = 1 + clamp(knobs.mix ?? knobs.depth ?? 0.5, 0, 1) * 8;
+        lfo.frequency.value = 0.2 + clamp(knobs.rate ?? knobs.phase ?? 0.5, 0, 1) * 4;
+        lfoGain.gain.value = 180 + clamp(knobs.sweep ?? knobs.depth ?? 0.5, 0, 1) * 1800;
+        lfo.connect(lfoGain);
+        lfoGain.connect(filter.frequency);
+        lfo.start(when);
+        lfo.stop(when + duration + 0.5);
+        current.connect(filter);
+        current = filter;
+      }
+    });
+    return current;
+  }
+
+  cloneAudioBufferToContext(ctx, sourceBuffer) {
+    if (!sourceBuffer) return null;
+    if (!this.wavCloneCache) this.wavCloneCache = new WeakMap();
+    let ctxCache = this.wavCloneCache.get(ctx);
+    if (!ctxCache) {
+      ctxCache = new WeakMap();
+      this.wavCloneCache.set(ctx, ctxCache);
+    }
+    const cached = ctxCache.get(sourceBuffer);
+    if (cached) return cached;
+    const targetLength = Math.max(1, Math.round(sourceBuffer.duration * ctx.sampleRate));
+    const buffer = ctx.createBuffer(sourceBuffer.numberOfChannels, targetLength, ctx.sampleRate);
+    const ratio = sourceBuffer.sampleRate / ctx.sampleRate;
+    for (let channel = 0; channel < sourceBuffer.numberOfChannels; channel += 1) {
+      const sourceData = sourceBuffer.getChannelData(channel);
+      const destData = buffer.getChannelData(channel);
+      for (let i = 0; i < destData.length; i += 1) {
+        const sourceIndex = i * ratio;
+        const leftIndex = Math.min(sourceData.length - 1, Math.floor(sourceIndex));
+        const rightIndex = Math.min(sourceData.length - 1, leftIndex + 1);
+        const mix = sourceIndex - leftIndex;
+        const left = sourceData[leftIndex] || 0;
+        const right = sourceData[rightIndex] || 0;
+        destData[i] = left + (right - left) * mix;
+      }
+    }
+    ctxCache.set(sourceBuffer, buffer);
+    return buffer;
+  }
+
+  scheduleWavNote(ctx, destination, event) {
+    const when = Math.max(0, event.startSec);
+    const duration = Math.max(0.04, event.durationSec);
+    const pedals = event.pedals || [];
+    const dryDestination = destination?.dry || destination;
+    const reverbDestination = destination?.reverb || null;
+    const audio = this.game?.audio || null;
+    const fallbackInstrument = event.isDrum
+      ? audio?.getFallbackDrum?.(event.pitch)
+      : audio?.getFallbackInstrument?.(event.program);
+    const sample = event.soundfontSample?.buffer
+      ? event.soundfontSample
+      : fallbackInstrument
+      ? (audio?.midiSamples?.[fallbackInstrument] || audio?.midiSamples?.lead || null)
+      : (audio?.midiSamples?.lead || null);
+    let source;
+    let input;
+    let sampled = false;
+    if (sample?.buffer) {
+      source = ctx.createBufferSource();
+      source.buffer = this.cloneAudioBufferToContext(ctx, sample.buffer);
+      source.playbackRate.value = (event.isDrum || sample.isDrums) ? 1 : 2 ** ((event.pitch - sample.baseNote) / 12);
+      input = source;
+      sampled = true;
+    } else if (event.isDrum) {
+      source = ctx.createBufferSource();
+      source.buffer = this.createWavNoiseBuffer(ctx, Math.min(1.2, duration + 0.2), this.getWavDrumType(event.pitch));
+      input = source;
+    } else {
+      source = ctx.createOscillator();
+      source.type = this.getWavProgramWaveform(event.program);
+      source.frequency.value = 440 * (2 ** ((event.pitch - 69) / 12));
+      input = source;
+    }
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = sampled ? 9000 : (event.isDrum ? 9000 : 1800 + clamp(event.program ?? 0, 0, 127) * 45);
+    const gain = ctx.createGain();
+    const panNode = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+    input.connect(filter);
+    audio?.applyPitchPhaserToSource?.(source, pedals, when, duration);
+    const chainOutput = this.applyWavPedalChain(ctx, filter, pedals, when, duration);
+    chainOutput.connect(gain);
+    if (panNode) {
+      panNode.pan.value = clamp(event.pan ?? 0, -1, 1);
+      gain.connect(panNode);
+      panNode.connect(dryDestination);
+    } else {
+      gain.connect(dryDestination);
+    }
+    if (reverbDestination) {
+      const reverbSend = ctx.createGain();
+      reverbSend.gain.value = 0.2;
+      gain.connect(reverbSend);
+      reverbSend.connect(reverbDestination);
+    }
+    const level = sampled
+      ? clamp(event.volume ?? 0.7, 0, 1)
+      : clamp(event.volume ?? 0.7, 0, 1) * (event.isDrum ? 0.42 : 0.26);
+    const soundfontSample = Boolean(event.soundfontSample?.buffer || sample?.isSoundfont);
+    const release = soundfontSample
+      ? (sample?.isDrums ? 0.06 : 0.16)
+      : sampled
+      ? ((event.isDrum || sample?.isDrums) ? 0.06 : 0.14)
+      : (event.isDrum ? 0.12 : 0.28);
+    const attack = soundfontSample
+      ? (sample?.isDrums ? 0.002 : 0.006)
+      : sampled
+      ? ((event.isDrum || sample?.isDrums) ? 0.002 : 0.006)
+      : (event.isDrum ? 0.004 : 0.012);
+    const sustainUntil = when + Math.max(attack, duration);
+    gain.gain.setValueAtTime(0, when);
+    gain.gain.linearRampToValueAtTime(Math.max(0.0001, level), when + attack);
+    gain.gain.setValueAtTime(Math.max(0.0001, level), sustainUntil);
+    gain.gain.linearRampToValueAtTime(0, sustainUntil + release);
+    source.start(when);
+    source.stop(sustainUntil + release + 0.08);
+  }
+
+  buildWavRenderEvents(options = {}) {
+    const tempo = this.song?.tempo || 120;
+    const ticksPerSecond = (tempo / 60) * this.ticksPerBeat;
+    const loopEnabled = this.song?.loopEnabled
+      && typeof this.song?.loopStartTick === 'number'
+      && typeof this.song?.loopEndTick === 'number'
+      && this.song.loopEndTick > this.song.loopStartTick;
+    const loopCount = Math.max(1, Math.floor(options.loopCount || 1));
+    const renderStartTick = loopEnabled ? this.song.loopStartTick : 0;
+    const renderEndTick = loopEnabled ? this.song.loopEndTick : Infinity;
+    const loopTicks = loopEnabled ? Math.max(1, this.song.loopEndTick - this.song.loopStartTick) : 0;
+    const loopSeconds = loopEnabled ? loopTicks / ticksPerSecond : 0;
+    const events = [];
+    this.song.tracks.forEach((track) => {
+      if (this.isTrackMuted(track)) return;
+      const pattern = track.patterns?.[this.selectedPatternIndex];
+      if (!pattern?.notes?.length) return;
+      const processed = this.getTrackPedalProcessing(track, pattern);
+      const isDrums = isDrumTrack(track);
+      if (isDrums) this.ensureDrumTrackSettings(track);
+      processed.notes.forEach((note) => {
+        const startTick = Math.max(0, this.getSwingedTick(note.startTick ?? 0));
+        if (startTick < renderStartTick || startTick >= renderEndTick) return;
+        if (this.shouldSlurNote(track, pattern, note)) return;
+        const durationTicks = isDrums ? this.getDrumHitDurationTicks() : this.getEffectiveDurationTicks(note, track);
+        const mix = this.getTrackPlaybackMix(track, startTick);
+        const pitch = isDrums ? this.coercePitchForTrack(note.pitch, track, GM_DRUM_ROWS) : note.pitch;
+        const pedals = this.getPlaybackPedalsForTrack(track);
+        const baseEvent = {
+          startSec: (startTick - renderStartTick) / ticksPerSecond,
+          durationSec: Math.max(1, durationTicks) / this.ticksPerBeat,
+          pitch,
+          volume: clamp((note.velocity ?? 0.8) * mix.volume, 0, 1),
+          pan: clamp(mix.pan + clamp(track?._pedalPanOffset ?? 0, -1, 1), -1, 1),
+          program: Number.isFinite(track.program) ? track.program : 0,
+          channel: Number.isFinite(track.channel) ? track.channel : 0,
+          bankMSB: Number.isFinite(track.bankMSB) ? track.bankMSB : 0,
+          bankLSB: Number.isFinite(track.bankLSB) ? track.bankLSB : 0,
+          isDrum: isDrums || isDrumChannel(track.channel),
+          pedals
+        };
+        const octave = pedals.find((pedal) => pedal && pedal.enabled !== false && pedal.type === 'octave') || null;
+        if (!octave) {
+          events.push(baseEvent);
+          return;
+        }
+        const up = Math.round(clamp(octave.knobs?.up ?? 0, 0, 2));
+        const down = Math.round(clamp(octave.knobs?.down ?? 0, 0, 2));
+        const octaveMix = clamp(octave.knobs?.mix ?? 0.75, 0, 1);
+        events.push(baseEvent);
+        if (up > 0) events.push({ ...baseEvent, pitch: clamp(baseEvent.pitch + up * 12, 0, 127), volume: baseEvent.volume * octaveMix * 0.75 });
+        if (down > 0) events.push({ ...baseEvent, pitch: clamp(baseEvent.pitch - down * 12, 0, 127), volume: baseEvent.volume * octaveMix * 0.75 });
+      });
+    });
+    if (loopCount <= 1) {
+      return events.sort((a, b) => a.startSec - b.startSec);
+    }
+    const repeatSeconds = loopEnabled
+      ? loopSeconds
+      : Math.max(0.1, ...events.map((event) => event.startSec + event.durationSec));
+    const loopedEvents = [];
+    for (let repeat = 0; repeat < loopCount; repeat += 1) {
+      const offset = repeat * repeatSeconds;
+      events.forEach((event) => {
+        loopedEvents.push({ ...event, startSec: event.startSec + offset });
+      });
+    }
+    return loopedEvents.sort((a, b) => a.startSec - b.startSec);
+  }
+
+  prepareWavChannelData(audioBuffer, channels, options = {}) {
+    const length = audioBuffer.length;
+    const safetyFadeSamples = Math.min(Math.floor(audioBuffer.sampleRate * 0.006), Math.floor(length / 2));
+    const fadeInSamples = Math.min(Math.max(0, Math.floor((options.fadeInSeconds || 0) * audioBuffer.sampleRate)), length);
+    const fadeOutSamples = Math.min(Math.max(0, Math.floor((options.fadeOutSeconds || 0) * audioBuffer.sampleRate)), length);
+    const data = Array.from({ length: channels }, (_, channel) => new Float32Array(audioBuffer.getChannelData(channel)));
+    data.forEach((channelData) => {
+      let sum = 0;
+      for (let i = 0; i < length; i += 1) sum += channelData[i] || 0;
+      const dc = sum / Math.max(1, length);
+      for (let i = 0; i < length; i += 1) {
+        let sample = (channelData[i] || 0) - dc;
+        const inFade = Math.max(safetyFadeSamples, fadeInSamples);
+        const outFade = Math.max(safetyFadeSamples, fadeOutSamples);
+        if (inFade > 0 && i < inFade) sample *= i / inFade;
+        if (outFade > 0 && i >= length - outFade) sample *= (length - i - 1) / outFade;
+        channelData[i] = sample;
+      }
+    });
+    let peak = 0;
+    data.forEach((channelData) => {
+      for (let i = 0; i < length; i += 1) {
+        peak = Math.max(peak, Math.abs(channelData[i] || 0));
+      }
+    });
+    const scale = peak > 0.98 ? 0.98 / peak : 1;
+    if (scale < 1) {
+      data.forEach((channelData) => {
+        for (let i = 0; i < length; i += 1) {
+          channelData[i] *= scale;
+        }
+      });
+    }
+    return data;
+  }
+
+  encodeWav(audioBuffer, options = {}) {
+    const channels = Math.min(2, audioBuffer.numberOfChannels || 1);
+    const sampleRate = audioBuffer.sampleRate;
+    const length = audioBuffer.length;
+    const bytesPerSample = 2;
+    const blockAlign = channels * bytesPerSample;
+    const dataSize = length * blockAlign;
+    const buffer = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(buffer);
+    const writeString = (offset, value) => {
+      for (let i = 0; i < value.length; i += 1) view.setUint8(offset + i, value.charCodeAt(i));
+    };
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + dataSize, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, channels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * blockAlign, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, 16, true);
+    writeString(36, 'data');
+    view.setUint32(40, dataSize, true);
+    const channelData = this.prepareWavChannelData(audioBuffer, channels, options);
+    let offset = 44;
+    for (let i = 0; i < length; i += 1) {
+      for (let channel = 0; channel < channels; channel += 1) {
+        const sample = clamp(channelData[channel][i] || 0, -1, 1);
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+        offset += 2;
+      }
+    }
+    return new Blob([buffer], { type: 'audio/wav' });
+  }
+
+  createRepeatedLoopAudioBuffer(rendered, loopSeconds, loopCount, tailSeconds = 3) {
+    const channels = rendered.numberOfChannels || 1;
+    const sampleRate = rendered.sampleRate;
+    const loopSamples = Math.max(1, Math.round(loopSeconds * sampleRate));
+    const tailSamples = Math.max(0, Math.round(tailSeconds * sampleRate));
+    const sourceLoopStart = loopSamples;
+    const sourceTailStart = loopSamples * 2;
+    const repeatedSamples = loopSamples * Math.max(1, Math.floor(loopCount || 1));
+    const totalSamples = repeatedSamples + tailSamples;
+    const output = this.game?.audio?.ctx?.createBuffer
+      ? this.game.audio.ctx.createBuffer(channels, totalSamples, sampleRate)
+      : new AudioBuffer({ length: totalSamples, numberOfChannels: channels, sampleRate });
+    for (let channel = 0; channel < channels; channel += 1) {
+      const sourceData = rendered.getChannelData(channel);
+      const outputData = output.getChannelData(channel);
+      for (let i = 0; i < repeatedSamples; i += 1) {
+        const sourceIndex = sourceLoopStart + (i % loopSamples);
+        outputData[i] = sourceData[sourceIndex] || 0;
+      }
+      for (let i = 0; i < tailSamples; i += 1) {
+        outputData[repeatedSamples + i] = sourceData[sourceTailStart + i] || 0;
+      }
+    }
+    return output;
+  }
+
+  getWavLoopRenderInfo(options = {}) {
+    const tempo = this.song?.tempo || 120;
+    const ticksPerSecond = (tempo / 60) * this.ticksPerBeat;
+    const loopEnabled = this.song?.loopEnabled
+      && typeof this.song?.loopStartTick === 'number'
+      && typeof this.song?.loopEndTick === 'number'
+      && this.song.loopEndTick > this.song.loopStartTick;
+    const loopCount = Math.max(1, Math.floor(options.loopCount || 1));
+    if (!loopEnabled || loopCount <= 1) {
+      return { useFastLoop: false, loopSeconds: 0, loopCount };
+    }
+    return {
+      useFastLoop: true,
+      loopSeconds: (this.song.loopEndTick - this.song.loopStartTick) / ticksPerSecond,
+      loopCount
+    };
+  }
+
+  async attachSoundfontSamplesToWavEvents(events) {
+    const audio = this.game?.audio;
+    if (!audio?.getSoundfontBufferForNote) return events;
+    const samplePromises = new Map();
+    const getSampleKey = (event) => [
+      event.pitch,
+      event.program,
+      event.channel,
+      event.bankMSB,
+      event.bankLSB
+    ].join(':');
+    await Promise.all(events.map(async (event) => {
+      const key = getSampleKey(event);
+      try {
+        if (!samplePromises.has(key)) {
+          samplePromises.set(key, audio.getSoundfontBufferForNote({
+            pitch: event.pitch,
+            program: event.program,
+            channel: event.channel,
+            bankMSB: event.bankMSB,
+            bankLSB: event.bankLSB
+          }).catch(() => null));
+        }
+        const sample = await samplePromises.get(key);
+        if (sample?.buffer) event.soundfontSample = sample;
+      } catch (error) {
+        // Fallback synth path remains available per note.
+      }
+    }));
+    return events;
+  }
+
+  parseWavExportOptionsInput(input, loopEnabled) {
+    const parts = String(input || '')
+      .split(',')
+      .map((part) => Number(part.trim()))
+      .filter((value) => Number.isFinite(value));
+    if (loopEnabled) {
+      return {
+        loopCount: clamp(Math.floor(parts[0] || 1), 1, 64),
+        fadeInSeconds: clamp(parts[1] || 0, 0, 120),
+        fadeOutSeconds: clamp(parts[2] || 0, 0, 120)
+      };
+    }
+    return {
+      loopCount: 1,
+      fadeInSeconds: clamp(parts[0] || 0, 0, 120),
+      fadeOutSeconds: clamp(parts[1] || 0, 0, 120)
+    };
+  }
+
+  async promptWavExportOptions() {
+    const loopEnabled = this.song?.loopEnabled
+      && typeof this.song?.loopStartTick === 'number'
+      && typeof this.song?.loopEndTick === 'number'
+      && this.song.loopEndTick > this.song.loopStartTick;
+    const fields = [
+      {
+        id: 'loopCount',
+        label: 'Repeat',
+        initialValue: 1,
+        min: 1,
+        max: 64,
+        step: 1,
+        integer: true
+      },
+      {
+        id: 'fadeInSeconds',
+        label: 'Fade in seconds',
+        initialValue: 0,
+        min: 0,
+        max: 120,
+        step: 0.1
+      },
+      {
+        id: 'fadeOutSeconds',
+        label: 'Fade out seconds',
+        initialValue: 0,
+        min: 0,
+        max: 120,
+        step: 0.1
+      }
+    ];
+    const values = await openMultiNumberInputOverlay({
+      title: 'Export WAV',
+      fields,
+      confirmText: 'Export',
+      maxWidth: 460
+    });
+    if (values === null) return null;
+    return {
+      loopCount: clamp(Math.floor(values.loopCount || 1), 1, 64),
+      fadeInSeconds: clamp(values.fadeInSeconds || 0, 0, 120),
+      fadeOutSeconds: clamp(values.fadeOutSeconds || 0, 0, 120)
+    };
+  }
+
+  async exportSongWav() {
+    let progress = null;
+    try {
+      const OfflineCtor = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+      if (!OfflineCtor) {
+        this.showEditorMessage('WAV export is not supported by this browser.');
+        return;
+      }
+      const exportOptions = await this.promptWavExportOptions();
+      if (!exportOptions) return;
+      const loopRender = this.getWavLoopRenderInfo(exportOptions);
+      const renderOptions = loopRender.useFastLoop
+        ? { ...exportOptions, loopCount: 2 }
+        : exportOptions;
+      progress = this.openWavExportProgressOverlay();
+      progress.update(8, 'Collecting notes...');
+      const events = this.buildWavRenderEvents(renderOptions);
+      if (!events.length) {
+        progress.close();
+        progress = null;
+        this.showEditorMessage('No notes available to export.');
+        return;
+      }
+      this.showEditorMessage('Rendering WAV...');
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      this.game?.audio?.ensureMidiSampler?.();
+      progress.update(22, 'Loading instruments...');
+      await this.attachSoundfontSamplesToWavEvents(events);
+      progress.update(38, 'Building audio graph...');
+      const tailSeconds = 3;
+      const duration = loopRender.useFastLoop
+        ? loopRender.loopSeconds * 2 + tailSeconds
+        : Math.max(...events.map((event) => event.startSec + event.durationSec)) + tailSeconds;
+      const sampleRate = Math.max(22050, Math.min(96000, Math.round(this.game?.audio?.ctx?.sampleRate || 44100)));
+      const ctx = new OfflineCtor(2, Math.ceil(duration * sampleRate), sampleRate);
+      const settings = this.audioSettings || {};
+      const masterVolume = clamp(settings.masterVolume ?? this.game?.audio?.volume ?? 0.4, 0, 1);
+      const masterPan = clamp(settings.masterPan ?? this.game?.audio?.masterPan ?? 0, -1, 1);
+      const midiBusVolume = 0.8;
+      const reverbEnabled = settings.reverbEnabled !== false;
+      const reverbLevel = reverbEnabled ? clamp(settings.reverbLevel ?? this.game?.audio?.midiReverbLevel ?? 0.18, 0, 1) : 0;
+      const master = ctx.createGain();
+      master.gain.value = midiBusVolume;
+      const globalReverbSend = ctx.createGain();
+      globalReverbSend.gain.value = reverbLevel;
+      const reverb = ctx.createConvolver();
+      reverb.buffer = this.createWavImpulse(ctx, 1.4, 2.5);
+      const limiter = ctx.createDynamicsCompressor();
+      limiter.threshold.value = -12;
+      limiter.knee.value = 8;
+      limiter.ratio.value = 6;
+      limiter.attack.value = 0.002;
+      limiter.release.value = 0.12;
+      const outputGain = ctx.createGain();
+      const exportPlaybackTrim = 0.7;
+      outputGain.gain.value = masterVolume * exportPlaybackTrim;
+      const outputPan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+      if (outputPan) outputPan.pan.value = masterPan;
+      master.connect(limiter);
+      master.connect(globalReverbSend);
+      globalReverbSend.connect(reverb);
+      reverb.connect(limiter);
+      limiter.connect(outputGain);
+      if (outputPan) {
+        outputGain.connect(outputPan);
+        outputPan.connect(ctx.destination);
+      } else {
+        outputGain.connect(ctx.destination);
+      }
+      events.forEach((event) => this.scheduleWavNote(ctx, { dry: master, reverb }, event));
+      progress.update(60, 'Rendering audio...');
+      const renderPulse = window.setInterval(() => progress?.update(88, 'Rendering audio...'), 300);
+      const rendered = await ctx.startRendering();
+      window.clearInterval(renderPulse);
+      progress.update(92, 'Encoding WAV...');
+      const filename = this.getTimestampedExportFilename('wav');
+      const exportBuffer = loopRender.useFastLoop
+        ? this.createRepeatedLoopAudioBuffer(rendered, loopRender.loopSeconds, loopRender.loopCount, tailSeconds)
+        : rendered;
+      const blob = this.encodeWav(exportBuffer, exportOptions);
+      progress.update(100, 'WAV ready.');
+      await new Promise((resolve) => setTimeout(resolve, 120));
+      progress.close();
+      progress = null;
+      const downloaded = await this.openDownloadReadyOverlay(blob, filename);
+      this.showEditorMessage(downloaded ? 'WAV exported.' : 'WAV export canceled.');
+    } catch (error) {
+      progress?.close();
+      console.error('WAV export failed', error);
+      this.showEditorMessage(`WAV export failed: ${error?.message || error}`);
+    }
   }
 
   async importSong() {
@@ -8674,7 +9722,7 @@ export default class MidiComposer {
       const pitches = this.getDrumRows().map((row) => row.pitch);
       return { min: Math.min(...pitches), max: Math.max(...pitches) };
     }
-    return { min: 36, max: 83 };
+    return { min: 24, max: 83 };
   }
 
   getGridCell(x, y) {
@@ -8859,6 +9907,7 @@ export default class MidiComposer {
   }
 
   pointInBounds(x, y, bounds) {
+    if (!bounds) return false;
     return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
   }
 
@@ -13247,6 +14296,7 @@ export default class MidiComposer {
       { id: 'export-json', label: 'Export JSON' },
       { id: 'export-midi', label: 'Export MIDI' },
       { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
+      { id: 'export-wav', label: 'Export WAV' },
       { id: 'import', label: 'Import MIDI/ZIP/JSON' },
       { id: 'demo', label: 'Play Demo' },
       { id: 'soundfont', label: 'SoundFont CDN' },
@@ -13297,6 +14347,7 @@ export default class MidiComposer {
       editorSpecific: [
         { id: 'export-midi', label: 'Export MIDI' },
         { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
+        { id: 'export-wav', label: 'Export WAV' },
         { id: 'save-paint', label: 'Save and Paint' },
         { id: 'play-robtersession', label: 'Play in RobterSession' },
         { id: 'theme', label: 'Generate Theme' },

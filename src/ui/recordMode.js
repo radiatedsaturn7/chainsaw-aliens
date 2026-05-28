@@ -1,4 +1,14 @@
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const NOTE_CHOICES = Array.from({ length: 72 }, (_, index) => index + 24);
+const OCTAVE_CHOICES = Array.from({ length: 8 }, (_, index) => index);
+
+const formatPitchLabel = (pitch) => {
+  const normalized = Math.round(Number(pitch) || 0);
+  const note = NOTE_NAMES[((normalized % 12) + 12) % 12];
+  const octave = Math.floor(normalized / 12) - 1;
+  return `${note}${octave}`;
+};
 
 export default class RecordModeLayout {
   constructor({ touchInput }) {
@@ -9,6 +19,8 @@ export default class RecordModeLayout {
       controlRail: null,
       performanceArea: null,
       instrumentButtons: [],
+      instrumentConfigButtons: [],
+      instrumentDropdownItems: [],
       settingsButtons: []
     };
     this.header = {
@@ -29,6 +41,12 @@ export default class RecordModeLayout {
     this.instrumentMenuOpen = false;
     this.instrumentModalBounds = null;
     this.availableInstruments = ['guitar', 'bass', 'keyboard', 'drums'];
+    this.instrumentSettings = {
+      guitarTuning: [40, 45, 50, 55, 59, 64],
+      bassTuning: [28, 33, 38, 43],
+      keyboardStartOctave: 4
+    };
+    this.instrumentDropdown = null;
   }
 
   setDevice(device) {
@@ -48,6 +66,20 @@ export default class RecordModeLayout {
     if (!this.availableInstruments.includes(this.instrument)) {
       this.setInstrument(this.availableInstruments[0]);
     }
+  }
+
+  setInstrumentSettings(settings = {}) {
+    const sanitizeTuning = (value, fallback) => fallback.map((fallbackPitch, index) => {
+      const pitch = Number(value?.[index]);
+      return Number.isFinite(pitch) ? clamp(Math.round(pitch), 0, 127) : fallbackPitch;
+    });
+    this.instrumentSettings = {
+      guitarTuning: sanitizeTuning(settings.guitarTuning, [40, 45, 50, 55, 59, 64]),
+      bassTuning: sanitizeTuning(settings.bassTuning, [28, 33, 38, 43]),
+      keyboardStartOctave: Number.isFinite(Number(settings.keyboardStartOctave))
+        ? clamp(Math.round(Number(settings.keyboardStartOctave)), 0, 7)
+        : 4
+    };
   }
 
   layout(width, height, originX = 0, originY = 0, config = {}) {
@@ -220,6 +252,144 @@ export default class RecordModeLayout {
     });
   }
 
+  drawInstrumentConfig(ctx, modalX, modalY, modalW, startY) {
+    this.bounds.instrumentConfigButtons = [];
+    this.bounds.instrumentDropdownItems = [];
+    const configX = modalX + 16;
+    const configW = modalW - 32;
+    const rowH = Math.max(30, Math.min(38, this.header.rowH));
+    const gap = 8;
+    let y = startY;
+    ctx.fillStyle = 'rgba(255,255,255,0.78)';
+    ctx.font = '12px Courier New';
+    ctx.fillText('Setup', configX, y + 13);
+    y += 20;
+
+    const drawConfigButton = (id, label, value, x, buttonY, w, options = {}) => {
+      const bounds = { id, x, y: buttonY, w, h: rowH, ...options };
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(x, buttonY, w, rowH);
+      ctx.strokeStyle = this.instrumentDropdown?.id === id ? '#ffe16a' : 'rgba(255,255,255,0.25)';
+      ctx.strokeRect(x, buttonY, w, rowH);
+      ctx.fillStyle = 'rgba(255,255,255,0.72)';
+      ctx.font = '10px Courier New';
+      ctx.textAlign = 'left';
+      ctx.fillText(label, x + 8, buttonY + 11);
+      ctx.fillStyle = '#fff';
+      ctx.font = '13px Courier New';
+      ctx.fillText(value, x + 8, buttonY + rowH - 8);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.textAlign = 'right';
+      ctx.fillText('v', x + w - 8, buttonY + rowH - 11);
+      ctx.textAlign = 'left';
+      this.bounds.instrumentConfigButtons.push(bounds);
+    };
+
+    if (this.instrument === 'keyboard') {
+      drawConfigButton(
+        'keyboard-octave',
+        'Start Octave',
+        `C${this.instrumentSettings.keyboardStartOctave}`,
+        configX,
+        y,
+        Math.min(180, configW),
+        { kind: 'keyboard-octave' }
+      );
+      y += rowH + gap;
+    }
+
+    if (this.instrument === 'guitar' || this.instrument === 'bass') {
+      const tuning = this.instrument === 'bass'
+        ? this.instrumentSettings.bassTuning
+        : this.instrumentSettings.guitarTuning;
+      const columns = this.instrument === 'bass' ? 4 : 3;
+      const buttonW = (configW - gap * (columns - 1)) / columns;
+      tuning.forEach((pitch, index) => {
+        const row = Math.floor(index / columns);
+        const col = index % columns;
+        drawConfigButton(
+          `string-${index}`,
+          `String ${index + 1}`,
+          formatPitchLabel(pitch),
+          configX + col * (buttonW + gap),
+          y + row * (rowH + gap),
+          buttonW,
+          {
+            kind: 'string-tuning',
+            instrument: this.instrument,
+            stringIndex: index
+          }
+        );
+      });
+      y += Math.ceil(tuning.length / columns) * (rowH + gap);
+      const resetBounds = {
+        id: 'standard-tuning',
+        x: configX,
+        y,
+        w: Math.min(180, configW),
+        h: rowH,
+        kind: 'standard-tuning',
+        instrument: this.instrument
+      };
+      this.drawButton(ctx, resetBounds, 'Reset Standard', false);
+      this.bounds.instrumentConfigButtons.push(resetBounds);
+      y += rowH + gap;
+    }
+
+    this.drawInstrumentDropdown(ctx);
+  }
+
+  drawInstrumentDropdown(ctx) {
+    if (!this.instrumentDropdown) return;
+    const source = this.instrumentDropdown;
+    const anchor = this.bounds.instrumentConfigButtons.find((button) => button.id === source.id);
+    if (!anchor || !this.instrumentModalBounds) return;
+    const choices = source.kind === 'keyboard-octave' ? OCTAVE_CHOICES : NOTE_CHOICES;
+    const itemH = source.kind === 'keyboard-octave' ? 28 : 26;
+    const itemW = source.kind === 'keyboard-octave' ? 58 : 48;
+    const maxColumns = source.kind === 'keyboard-octave' ? 4 : 8;
+    const availableW = Math.max(itemW, (this.instrumentModalBounds?.w || 0) - 32);
+    const columns = Math.max(1, Math.min(maxColumns, Math.floor(availableW / itemW)));
+    const listW = columns * itemW;
+    const rows = Math.ceil(choices.length / columns);
+    const listH = rows * itemH;
+    const modal = this.instrumentModalBounds;
+    const x = clamp(anchor.x, modal.x + 10, modal.x + modal.w - listW - 10);
+    const y = clamp(anchor.y + anchor.h + 4, modal.y + 44, modal.y + modal.h - listH - 10);
+    ctx.save();
+    ctx.fillStyle = 'rgba(7,8,10,0.98)';
+    ctx.fillRect(x, y, listW, listH);
+    ctx.strokeStyle = '#ffe16a';
+    ctx.strokeRect(x, y, listW, listH);
+    this.bounds.instrumentDropdownItems = choices.map((choice, index) => {
+      const col = index % columns;
+      const row = Math.floor(index / columns);
+      const bounds = {
+        x: x + col * itemW,
+        y: y + row * itemH,
+        w: itemW,
+        h: itemH,
+        value: choice,
+        dropdown: source
+      };
+      const label = source.kind === 'keyboard-octave' ? `C${choice}` : formatPitchLabel(choice);
+      const active = source.kind === 'keyboard-octave'
+        ? choice === this.instrumentSettings.keyboardStartOctave
+        : choice === this.instrumentSettings[`${source.instrument}Tuning`]?.[source.stringIndex];
+      ctx.fillStyle = active ? '#ffe16a' : 'rgba(255,255,255,0.04)';
+      ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+      ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+      ctx.fillStyle = active ? '#111' : '#fff';
+      ctx.font = '11px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + 18);
+      return bounds;
+    });
+    ctx.textAlign = 'left';
+    ctx.restore();
+  }
+
   drawInstrumentModal(ctx) {
     this.instrumentModalBounds = null;
     if (!this.instrumentMenuOpen) return;
@@ -236,7 +406,9 @@ export default class RecordModeLayout {
     const columns = Math.max(1, Math.floor((modalW - 32 + gap) / (minButtonW + gap)));
     const rows = Math.ceil(instruments.length / columns);
     const titleH = 34;
-    const modalContentH = titleH + rows * this.header.rowH + Math.max(0, rows - 1) * gap + 16;
+    const configRows = this.instrument === 'guitar' ? 4 : this.instrument === 'bass' ? 3 : this.instrument === 'keyboard' ? 2 : 0;
+    const configH = configRows ? 22 + configRows * (this.header.rowH + gap) + 8 : 0;
+    const modalContentH = titleH + rows * this.header.rowH + Math.max(0, rows - 1) * gap + configH + 24;
     const modalH = Math.min(instrument.h - 24, Math.max(150, modalContentH));
     const modalX = instrument.x + (instrument.w - modalW) / 2;
     const modalY = instrument.y + (instrument.h - modalH) / 2;
@@ -250,6 +422,8 @@ export default class RecordModeLayout {
     ctx.fillText('Virtual Instruments', modalX + 16, modalY + 28);
 
     this.drawInstrumentButtons(ctx);
+    const configStartY = modalY + 54 + rows * this.header.rowH + Math.max(0, rows - 1) * gap + 18;
+    this.drawInstrumentConfig(ctx, modalX, modalY, modalW, configStartY);
     ctx.restore();
   }
 
@@ -547,19 +721,37 @@ export default class RecordModeLayout {
 
   handlePointerDown(payload) {
     const { x, y } = payload;
+    const hitDropdown = this.bounds.instrumentDropdownItems.find((item) => this.pointInBounds(x, y, item));
+    if (hitDropdown) {
+      const dropdown = hitDropdown.dropdown;
+      this.instrumentDropdown = null;
+      this.bounds.instrumentDropdownItems = [];
+      if (dropdown.kind === 'keyboard-octave') {
+        return { type: 'keyboard-octave', value: hitDropdown.value };
+      }
+      if (dropdown.kind === 'string-tuning') {
+        return {
+          type: 'string-tuning',
+          instrument: dropdown.instrument,
+          stringIndex: dropdown.stringIndex,
+          pitch: hitDropdown.value
+        };
+      }
+    }
+    const hitConfig = this.bounds.instrumentConfigButtons.find((btn) => this.pointInBounds(x, y, btn));
+    if (hitConfig) {
+      if (hitConfig.kind === 'standard-tuning') {
+        this.instrumentDropdown = null;
+        return { type: 'standard-tuning', instrument: hitConfig.instrument };
+      }
+      this.instrumentDropdown = this.instrumentDropdown?.id === hitConfig.id ? null : { ...hitConfig };
+      return { type: 'instrument-config-open' };
+    }
     const hitInstrument = this.bounds.instrumentButtons.find((btn) => this.pointInBounds(x, y, btn));
     if (hitInstrument) {
       this.setInstrument(hitInstrument.id);
-      this.instrumentMenuOpen = false;
-      this.instrumentModalBounds = null;
-      this.bounds.instrumentButtons = [];
+      this.instrumentDropdown = null;
       return { type: 'instrument', value: hitInstrument.id };
-    }
-    if (this.instrumentMenuOpen && this.instrumentModalBounds && !this.pointInBounds(x, y, this.instrumentModalBounds)) {
-      this.instrumentMenuOpen = false;
-      this.instrumentModalBounds = null;
-      this.bounds.instrumentButtons = [];
-      return { type: 'instrument-dismiss' };
     }
     const hitSetting = this.bounds.settingsButtons.find((btn) => this.pointInBounds(x, y, btn));
     if (hitSetting) {
@@ -589,6 +781,24 @@ export default class RecordModeLayout {
         return { type: 'record-toggle' };
       }
       return { type: hitSetting.id, value: hitSetting.active };
+    }
+    if (this.instrumentMenuOpen && this.instrumentModalBounds && !this.pointInBounds(x, y, this.instrumentModalBounds)) {
+      this.instrumentMenuOpen = false;
+      this.instrumentModalBounds = null;
+      this.bounds.instrumentButtons = [];
+      this.bounds.instrumentConfigButtons = [];
+      this.bounds.instrumentDropdownItems = [];
+      this.instrumentDropdown = null;
+      return null;
+    }
+    if (this.instrumentMenuOpen && !this.instrumentModalBounds) {
+      this.instrumentMenuOpen = false;
+      this.instrumentDropdown = null;
+      return null;
+    }
+    if (this.instrumentMenuOpen) {
+      this.instrumentDropdown = null;
+      return { type: 'instrument-config-open' };
     }
 
     if (this.touchInput && this.device !== 'gamepad'

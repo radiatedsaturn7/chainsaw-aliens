@@ -69,7 +69,8 @@
       "Horror": "music/Horror/document.json",
       "MIDI Composer Autosave": "music/MIDI Composer Autosave/document.json",
       "bunnies": "music/bunnies/document.json",
-      "test": "music/test/document.json"
+      "test": "music/test/document.json",
+      "R1": "music/R1/document.json"
     },
     "actors": {
       "Head.json": "actors/Head.json/document.json",

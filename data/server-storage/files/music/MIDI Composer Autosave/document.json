@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "tempo": 180,
+  "tempo": 120,
   "loopBars": 16,
   "loopStartTick": 0,
   "loopEndTick": 128,
@@ -20,12 +20,12 @@
       "id": "track-piano",
       "name": "Piano",
       "channel": 0,
-      "program": 25,
-      "instrumentFamily": "Guitar",
+      "program": 0,
+      "instrumentFamily": "Piano",
       "bankMSB": 0,
       "bankLSB": 0,
-      "volume": 0.4301903506681347,
-      "pan": 0.44978411610149327,
+      "volume": 1,
+      "pan": 0,
       "mute": false,
       "solo": false,
       "color": "#4fb7ff",
@@ -35,42 +35,30 @@
       },
       "midiPedals": [
         {
-          "id": "pedal_5znbqg8",
-          "type": "octave",
-          "name": "Bone Twin",
-          "color": "yellow",
-          "enabled": true,
-          "knobs": {
-            "up": 1,
-            "down": 0,
-            "mix": 0.75
-          }
-        },
-        {
-          "id": "pedal_s1lpgh3",
+          "id": "pedal_h6shrtj",
           "type": "overdrive",
           "name": "Ghost Drive",
           "color": "red",
           "enabled": true,
           "knobs": {
             "drive": 1,
-            "bite": 0,
-            "tone": 0
+            "bite": 1,
+            "tone": 1
           }
         },
         {
-          "id": "pedal_7eff2cb",
-          "type": "eq",
-          "name": "Rust Dial",
-          "color": "orange",
+          "id": "pedal_l2d49sk",
+          "type": "pitchPhaser",
+          "name": "Pitch Phaser",
+          "color": "yellow",
           "enabled": true,
           "knobs": {
-            "low": 0.55,
-            "mid": 0.45,
-            "high": 0.65,
-            "presence": 0
+            "down": 0.6,
+            "up": 0.6,
+            "phase": 0.5
           }
         },
+        null,
         null
       ],
       "patterns": [
@@ -79,62 +67,152 @@
           "bars": 16,
           "notes": [
             {
-              "id": "note-870195",
-              "startTick": 0,
-              "durationTicks": 8,
-              "pitch": 36,
-              "velocity": 0.9
-            },
-            {
-              "id": "note-10987",
-              "startTick": 32,
-              "durationTicks": 8,
-              "pitch": 36,
-              "velocity": 0.9
-            },
-            {
-              "id": "note-608637",
-              "startTick": 64,
-              "durationTicks": 8,
-              "pitch": 37,
-              "velocity": 0.9
-            },
-            {
-              "id": "note-235229",
-              "startTick": 96,
-              "durationTicks": 8,
-              "pitch": 36,
-              "velocity": 0.9
-            },
-            {
-              "id": "note-777585",
-              "startTick": 16,
-              "durationTicks": 8,
-              "pitch": 36,
-              "velocity": 0.9
-            },
-            {
-              "id": "note-394483",
-              "startTick": 48,
-              "durationTicks": 8,
-              "pitch": 36,
-              "velocity": 0.9
-            },
-            {
-              "id": "note-955681",
+              "id": "note-921788",
               "startTick": 80,
               "durationTicks": 8,
-              "pitch": 37,
+              "pitch": 57,
               "velocity": 0.9
             },
             {
-              "id": "note-481205",
+              "id": "note-514394",
+              "startTick": 88,
+              "durationTicks": 8,
+              "pitch": 51,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-895759",
               "startTick": 112,
               "durationTicks": 8,
-              "pitch": 36,
+              "pitch": 58,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-440272",
+              "startTick": 40,
+              "durationTicks": 8,
+              "pitch": 54,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-262795",
+              "startTick": 40,
+              "durationTicks": 8,
+              "pitch": 47,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-151061",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 71,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-157175",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 71,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-969815",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 71,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-318251",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 71,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-599582",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-865361",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-907842",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-638570",
+              "startTick": 48,
+              "durationTicks": 8,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-919561",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-90302",
+              "startTick": 80,
+              "durationTicks": 8,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-362626",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-64407",
+              "startTick": 112,
+              "durationTicks": 8,
+              "pitch": 61,
               "velocity": 0.9
             }
-          ]
+          ],
+          "automation": [
+            {
+              "type": "pitchbend",
+              "value": 6144,
+              "time": 142.68,
+              "channel": 0,
+              "trackId": "track-piano",
+              "tick": 124
+            },
+            {
+              "type": "pitchbend",
+              "value": 8192,
+              "time": 142.896,
+              "channel": 0,
+              "trackId": "track-piano",
+              "tick": 126
+            }
+          ],
+          "partRanges": [
+            {
+              "startTick": 0,
+              "endTick": 88
+            }
+          ],
+          "partBoundaries": [],
+          "partRangeStart": null,
+          "partRangeEnd": null
         }
       ]
     },
@@ -142,12 +220,12 @@
       "id": "track-guitar",
       "name": "Guitar",
       "channel": 1,
-      "program": 0,
-      "instrumentFamily": "Piano",
+      "program": 24,
+      "instrumentFamily": "Guitar",
       "bankMSB": 0,
       "bankLSB": 0,
-      "volume": 0.3743281483566708,
-      "pan": -0.6058976812226846,
+      "volume": 0.8,
+      "pan": 0,
       "mute": false,
       "solo": false,
       "color": "#ff9c42",
@@ -156,30 +234,8 @@
         "padding": []
       },
       "midiPedals": [
-        {
-          "id": "pedal_u7ao26j",
-          "type": "compressor",
-          "name": "Neck Snapper",
-          "color": "blue",
-          "enabled": true,
-          "knobs": {
-            "threshold": 0.55,
-            "ratio": 0.65,
-            "makeup": 0.45
-          }
-        },
-        {
-          "id": "pedal_xxdenrk",
-          "type": "overdrive",
-          "name": "Ghost Drive",
-          "color": "red",
-          "enabled": true,
-          "knobs": {
-            "drive": 0.7,
-            "bite": 0.65,
-            "tone": 0.55
-          }
-        },
+        null,
+        null,
         null,
         null
       ],
@@ -187,36 +243,7 @@
         {
           "id": "pattern-guitar",
           "bars": 16,
-          "notes": [
-            {
-              "id": "note-412348",
-              "startTick": 0,
-              "durationTicks": 8,
-              "pitch": 60,
-              "velocity": 0.9
-            },
-            {
-              "id": "note-767955",
-              "startTick": 64,
-              "durationTicks": 8,
-              "pitch": 61,
-              "velocity": 0.9
-            },
-            {
-              "id": "note-954493",
-              "startTick": 80,
-              "durationTicks": 8,
-              "pitch": 64,
-              "velocity": 0.9
-            },
-            {
-              "id": "note-370394",
-              "startTick": 96,
-              "durationTicks": 8,
-              "pitch": 60,
-              "velocity": 0.9
-            }
-          ]
+          "notes": []
         }
       ]
     },
@@ -310,5 +337,20 @@
       "lengthBars": 1
     }
   ],
-  "name": "Boss1"
+  "name": "R1",
+  "keyboardStartOctave": 3,
+  "guitarTuning": [
+    40,
+    45,
+    50,
+    55,
+    59,
+    64
+  ],
+  "bassTuning": [
+    26,
+    33,
+    38,
+    43
+  ]
 }
