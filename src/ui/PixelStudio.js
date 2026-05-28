@@ -512,6 +512,12 @@ export default class PixelStudio {
   isTileArtEntry(entry, { resolveRef = false } = {}) {
     if (!entry || typeof entry !== 'object') return false;
     if (entry.kind === 'actor-state-animation') return false;
+    if (resolveRef && entry.ref) {
+      const payload = loadProjectFile('art', entry.ref);
+      if (!payload?.data || !this.isTileArtEntry(payload.data, { resolveRef: false })) {
+        return false;
+      }
+    }
     const frameLength = Array.isArray(entry.frames?.[0]) ? entry.frames[0].length : 0;
     const inferredFrameSize = frameLength > 0 ? Math.sqrt(frameLength) : 0;
     const width = Number(entry.width || entry.editor?.width || entry.size || inferredFrameSize || 0);
@@ -851,6 +857,7 @@ export default class PixelStudio {
     const refs = {};
     Object.entries(store.tiles).forEach(([tileChar, tileData]) => {
       if (!tileData) return;
+      if (!this.isTileArtEntry(tileData, { resolveRef: true })) return;
       const existingRef = typeof tileData.ref === 'string' ? tileData.ref : null;
       const docName = existingRef || this.getTileArtDocName(tileChar);
       if (!existingRef) {
@@ -874,6 +881,9 @@ export default class PixelStudio {
       };
     });
     if (!Object.keys(refs).length) {
+      if (force) {
+        saveProjectFile('art', 'Tile Art Autosave', { tiles: {} });
+      }
       return;
     }
     const saved = saveProjectFile('art', 'Tile Art Autosave', { tiles: refs });
@@ -887,9 +897,9 @@ export default class PixelStudio {
     const tileChar = this.activeTile?.char;
     if (!tileChar || !this.game?.world?.pixelArt?.tiles) return;
     delete this.game.world.pixelArt.tiles[tileChar];
-    this.loadTileData();
+    this.persistTileArtAutosave(true);
+    this.loadTileData({ skipRestore: true });
     this.game.editor?.persistAutosave?.();
-    this.persistTileArtAutosave();
   }
 
   setTilePickerMode(enabled) {

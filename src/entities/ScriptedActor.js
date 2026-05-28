@@ -47,9 +47,9 @@ function worldAngleToActorLocal(worldAngle, facing = 1) {
   return normalizeAngle(facing < 0 ? Math.PI - worldAngle : worldAngle);
 }
 
-export function loadActorDefinitionById(actorId) {
+export function loadActorDefinitionById(actorId, options = {}) {
   if (!actorId || typeof window === 'undefined') return null;
-  if (actorCache.has(actorId)) return actorCache.get(actorId);
+  if (!options.refresh && actorCache.has(actorId)) return actorCache.get(actorId);
   const actors = listProjectFiles('actors');
   for (const { name } of actors) {
     const payload = loadProjectFile('actors', name);
@@ -63,6 +63,14 @@ export function loadActorDefinitionById(actorId) {
     }
   }
   return null;
+}
+
+export function invalidateActorDefinitionCache(actorId = null) {
+  if (actorId) {
+    actorCache.delete(actorId);
+    return;
+  }
+  actorCache.clear();
 }
 
 export default class ScriptedActor extends EnemyBase {
@@ -362,17 +370,23 @@ export default class ScriptedActor extends EnemyBase {
     this.damagedPlayerThisFrame = true;
   }
 
-  evaluateCondition(condition, player, _context = {}) {
+  evaluateCondition(condition, player, context = {}) {
     const params = condition?.params || {};
     const stateAggroRange = Number(this.currentState?.movement?.params?.aggroRange || 220);
     const visibilityRange = Number(params.range || params.distance || stateAggroRange || 220);
     const playerDistance = Math.hypot(player.x - this.x, player.y - this.y);
+    const hasSightCheck = typeof context.canSeePlayer === 'function';
+    const canSeePlayer = () => (
+      hasSightCheck
+        ? context.canSeePlayer(this, visibilityRange)
+        : playerDistance <= visibilityRange
+    );
     switch (condition?.type) {
       case 'always': return true;
       case 'timer-elapsed': return this.stateTimer >= Number(params.seconds || 0);
       case 'actor-health-below': return this.maxHealth > 0 && (this.health / this.maxHealth) <= Number(params.ratio ?? 0.5);
-      case 'can-see-player': return playerDistance <= visibilityRange;
-      case 'cannot-see-player': return playerDistance > visibilityRange;
+      case 'can-see-player': return canSeePlayer();
+      case 'cannot-see-player': return !canSeePlayer();
       case 'player-within': return Math.abs(player.x - this.x) <= Number(params.distance || 160);
       case 'player-farther-than': return Math.abs(player.x - this.x) >= Number(params.distance || 200);
       case 'took-damage': return this.tookDamageThisFrame;

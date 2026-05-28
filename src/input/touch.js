@@ -10,8 +10,20 @@ const SLIDE_HORIZONTAL_MIN_PX = 8;
 const PULLOFF_VERTICAL_MIN_PX = 10;
 const HORIZONTAL_DOMINANCE_RATIO = 1.25;
 const VERTICAL_DOMINANCE_RATIO = 1.1;
+const STANDARD_GUITAR_TUNING = [40, 45, 50, 55, 59, 64];
+const STANDARD_BASS_TUNING = [28, 33, 38, 43];
+const DEFAULT_KEYBOARD_START_OCTAVE = 4;
+const MAX_KEYBOARD_START_OCTAVE = 7;
 
 const DRUM_MAP = GM_DRUM_PAD_LAYOUT;
+
+const sanitizeTuning = (value, fallback) => {
+  if (!Array.isArray(value)) return [...fallback];
+  return fallback.map((fallbackPitch, index) => {
+    const pitch = Number(value[index]);
+    return Number.isFinite(pitch) ? clamp(Math.round(pitch), 0, 127) : fallbackPitch;
+  });
+};
 
 export default class TouchInput {
   constructor(bus) {
@@ -27,6 +39,11 @@ export default class TouchInput {
     this.drumPads = [];
     this.stringRects = [];
     this.reverseStrings = false;
+    this.keyboardStartOctave = DEFAULT_KEYBOARD_START_OCTAVE;
+    this.stringTunings = {
+      guitar: [...STANDARD_GUITAR_TUNING],
+      bass: [...STANDARD_BASS_TUNING]
+    };
     this.stringLayout = null;
     this.stringVibrations = new Map();
     this.lastPitchBendValue = 8192;
@@ -54,6 +71,27 @@ export default class TouchInput {
     }
   }
 
+  setKeyboardStartOctave(value) {
+    const octave = Number(value);
+    this.keyboardStartOctave = Number.isFinite(octave)
+      ? clamp(Math.round(octave), 0, MAX_KEYBOARD_START_OCTAVE)
+      : DEFAULT_KEYBOARD_START_OCTAVE;
+    if (this.bounds && this.instrument === 'keyboard') {
+      this.computeLayout(this.bounds);
+    }
+  }
+
+  setStringTunings(value = {}) {
+    this.stringTunings = {
+      guitar: sanitizeTuning(value.guitar, STANDARD_GUITAR_TUNING),
+      bass: sanitizeTuning(value.bass, STANDARD_BASS_TUNING)
+    };
+    if (this.bounds && (this.instrument === 'guitar' || this.instrument === 'bass')) {
+      this.releaseAllNotes();
+      this.computeLayout(this.bounds);
+    }
+  }
+
   computeLayout(bounds) {
     if (!bounds) return;
     if (this.instrument === 'drums') {
@@ -71,7 +109,7 @@ export default class TouchInput {
     const keyH = bounds.h * 0.98;
     const blackKeyW = keyW * 0.6;
     const blackKeyH = bounds.h * 0.6;
-    const basePitch = 60;
+    const basePitch = clamp((this.keyboardStartOctave + 1) * 12, 0, 127);
     const whiteOffsets = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23];
     const blackLayout = [
       { index: 0.7, pitch: 1 },
@@ -140,8 +178,8 @@ export default class TouchInput {
     const headX = bounds.x + labelW;
     const headW = Math.max(12, boardX - headX);
     const tuningLowToHigh = this.instrument === 'bass'
-      ? [28, 33, 38, 43]
-      : [40, 45, 50, 55, 59, 64];
+      ? this.stringTunings.bass
+      : this.stringTunings.guitar;
     const tuning = this.reverseStrings ? tuningLowToHigh : [...tuningLowToHigh].reverse();
     this.stringRects = [];
     this.stringLayout = {

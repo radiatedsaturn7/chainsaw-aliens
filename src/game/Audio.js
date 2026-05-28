@@ -103,6 +103,8 @@ export default class AudioSystem {
       lastChannel: null,
       lastChannelType: null
     };
+    this.soundfontSampleCache = new Map();
+    this.midiPedalBusCache = new Map();
     this.pedalImpulseCache = new Map();
     this.drumFont = {
       baseUrl: WEB_AUDIOFONT_BASE_URL,
@@ -338,6 +340,8 @@ export default class AudioSystem {
     const nextUrl = url.endsWith('/') ? url : `${url}/`;
     void saveServerPreference('chainsaw-gm-soundfont-url', nextUrl);
     this.soundfont.setBaseUrl(nextUrl);
+    this.soundfontSampleCache.clear();
+    this.clearMidiPedalBuses();
     this.gmError = null;
   }
 
@@ -361,6 +365,8 @@ export default class AudioSystem {
   resetGmBank() {
     this.soundfont.reset();
     this.soundfontLoader.reset();
+    this.soundfontSampleCache.clear();
+    this.clearMidiPedalBuses();
     this.gmError = null;
     this.drumKitManager.setDrumKit('standard');
   }
@@ -417,13 +423,16 @@ export default class AudioSystem {
   }
 
   preloadSoundfontProgram(program, channel = 0, bankMSB = 0, bankLSB = 0) {
-    if (!this.gmEnabled) return;
+    if (!this.gmEnabled) return Promise.resolve(null);
     if (isDrumChannel(channel)) {
       const kit = this.drumKitManager.resolveKitFromBankProgram(bankMSB, bankLSB, program);
-      this.soundfont.loadDrumKit(kit?.soundfont).catch(() => {});
-      return;
+      return this.soundfont.loadDrumKit(kit?.soundfont, {
+        bankMSB: GM_DRUM_BANK_MSB,
+        bankLSB: Number.isInteger(bankLSB) ? bankLSB : GM_DRUM_BANK_LSB,
+        preset: clamp(program ?? 0, 0, GM_PROGRAMS.length - 1)
+      }).catch(() => null);
     }
-    this.loadGmProgram(program).catch(() => {});
+    return this.loadGmProgram(program).catch(() => null);
   }
 
   setDrumKit(nameOrId) {
@@ -533,8 +542,12 @@ export default class AudioSystem {
   }
 
   buildImpulseResponse(duration, decay) {
-    const length = Math.floor(this.ctx.sampleRate * duration);
-    const impulse = this.ctx.createBuffer(2, length, this.ctx.sampleRate);
+    return this.buildImpulseResponseForContext(this.ctx, duration, decay);
+  }
+
+  buildImpulseResponseForContext(ctx, duration, decay) {
+    const length = Math.floor(ctx.sampleRate * duration);
+    const impulse = ctx.createBuffer(2, length, ctx.sampleRate);
     for (let channel = 0; channel < 2; channel += 1) {
       const data = impulse.getChannelData(channel);
       for (let i = 0; i < length; i += 1) {
@@ -675,22 +688,58 @@ export default class AudioSystem {
     return impulse;
   }
 
+  getPedalImpulseForContext(ctx, room = 0.5, decay = 0.5) {
+    if (!ctx || ctx === this.ctx) return this.getPedalImpulse(room, decay);
+    const duration = 0.25 + room * 1.8;
+    const sharpness = 1.2 + decay * 4;
+    return this.buildImpulseResponseForContext(ctx, duration, sharpness);
+  }
+
+  preloadPedalResources(pedals = []) {
+    if (!Array.isArray(pedals) || !pedals.length) return;
+    this.ensureMidiSampler();
+    pedals.forEach((pedal) => {
+      if (!pedal || pedal.enabled === false) return;
+      if (pedal.type === 'reverb') {
+        const knobs = pedal.knobs || {};
+        this.getPedalImpulse(
+          clamp(knobs.room ?? 0.5, 0, 1),
+          clamp(knobs.decay ?? 0.6, 0, 1)
+        );
+      }
+    });
+  }
+
   applyPitchPhaserToSource(source, pedals = [], when = 0, duration = 0.4) {
     const pedal = this.getPedalByType(pedals, 'pitchPhaser');
     if (!pedal || !source?.playbackRate) return;
+    const param = source.playbackRate;
+    const baseRate = Number.isFinite(param.value) && param.value > 0 ? param.value : 1;
     const up = clamp(Number(pedal.knobs?.up) || 0, 0, 1);
     const down = clamp(Number(pedal.knobs?.down) || 0, 0, 1);
     const phase = clamp(Number(pedal.knobs?.phase) || 0.5, 0, 1);
-    const depthSemis = 0.5 + ((up + down) * 1.25);
-    const hz = 0.2 + phase * 3.2;
-    const points = 48;
-    const curve = new Float32Array(points);
-    for (let i = 0; i < points; i += 1) {
-      const t = i / (points - 1);
-      const semitoneShift = Math.sin(t * Math.PI * 2 * hz * Math.max(0.2, duration)) * depthSemis;
-      curve[i] = 2 ** (semitoneShift / 12);
+    const depthSemis = 0.35 + ((up + down) * 1.15);
+    const cycles = 0.5 + phase * 2.5;
+    const safeWhen = Math.max(this.ctx?.currentTime || 0, Number.isFinite(when) ? when : 0);
+    const safeDuration = Math.max(0.08, Number.isFinite(duration) ? duration : 0.4);
+    const steps = Math.max(4, Math.min(16, Math.round(safeDuration * 16)));
+    try {
+      param.cancelScheduledValues(safeWhen);
+      param.setValueAtTime(baseRate, safeWhen);
+      for (let i = 1; i <= steps; i += 1) {
+        const t = i / steps;
+        const semitoneShift = Math.sin(t * Math.PI * 2 * cycles) * depthSemis;
+        const rate = baseRate * (2 ** (semitoneShift / 12));
+        param.linearRampToValueAtTime(rate, safeWhen + t * safeDuration);
+      }
+      param.linearRampToValueAtTime(baseRate, safeWhen + safeDuration + 0.03);
+    } catch (error) {
+      try {
+        param.value = baseRate;
+      } catch (innerError) {
+        // ignore unsupported playbackRate automation
+      }
     }
-    source.playbackRate.setValueCurveAtTime(curve, when, Math.max(0.08, duration));
   }
 
   applyPedalChainToNote(inputNode, pedals = [], when = 0, duration = 0.4) {
@@ -742,7 +791,11 @@ export default class AudioSystem {
         pre.gain.value = 1 + clamp(knobs.drive ?? 0.6, 0, 1) * 6;
         const shape = trackNode(this.ctx.createWaveShaper());
         shape.curve = this.buildDistortionCurve(clamp(knobs.drive ?? 0.6, 0, 1));
-        shape.oversample = '4x';
+        try {
+          shape.oversample = '4x';
+        } catch (error) {
+          shape.oversample = 'none';
+        }
         const tone = trackNode(this.ctx.createBiquadFilter());
         tone.type = 'lowpass';
         tone.frequency.value = 900 + clamp(knobs.tone ?? 0.5, 0, 1) * 7000;
@@ -944,6 +997,205 @@ export default class AudioSystem {
     });
   }
 
+  async getSoundfontBufferForNote({
+    pitch = 60,
+    program = 0,
+    channel = 0,
+    bankMSB = 0,
+    bankLSB = 0
+  } = {}) {
+    if (!this.gmEnabled) return null;
+    this.ensureMidiSampler();
+    const isDrums = isDrumChannel(channel);
+    const resolvedPitch = isDrums ? clampDrumPitch(Math.round(pitch)) : clamp(Math.round(pitch), 0, 127);
+    const clampedProgram = clamp(program ?? 0, 0, GM_PROGRAMS.length - 1);
+    let instrument = null;
+    let sampleCacheKey = null;
+    if (isDrums) {
+      const kit = this.drumKitManager.resolveKitFromBankProgram(GM_DRUM_BANK_MSB, bankLSB, clampedProgram)
+        || this.drumKitManager.getDrumKit();
+      sampleCacheKey = [
+        this.soundfont.baseUrl,
+        'drums',
+        kit?.soundfont || this.soundfont.getDrumKitName?.() || 'standard_kit',
+        GM_DRUM_BANK_MSB,
+        bankLSB ?? GM_DRUM_BANK_LSB,
+        clampedProgram,
+        resolvedPitch
+      ].join(':');
+      if (this.soundfontSampleCache.has(sampleCacheKey)) {
+        return this.soundfontSampleCache.get(sampleCacheKey);
+      }
+      if (kit?.soundfont) {
+        this.soundfont.setDrumKitName(kit.soundfont);
+        this.drumKitManager.setDrumKit(kit.id);
+      }
+      instrument = await this.soundfont.loadDrumKit(kit?.soundfont, {
+        bankMSB: GM_DRUM_BANK_MSB,
+        bankLSB: Number.isInteger(bankLSB) ? bankLSB : GM_DRUM_BANK_LSB,
+        preset: clampedProgram
+      });
+    } else {
+      sampleCacheKey = [
+        this.soundfont.baseUrl,
+        'inst',
+        bankMSB ?? 0,
+        bankLSB ?? 0,
+        clampedProgram,
+        resolvedPitch
+      ].join(':');
+      if (this.soundfontSampleCache.has(sampleCacheKey)) {
+        return this.soundfontSampleCache.get(sampleCacheKey);
+      }
+      this.soundfont.setProgram(clampedProgram, clamp(channel ?? 0, 0, 15));
+      instrument = await this.soundfont.loadInstrument(clampedProgram);
+    }
+    if (!instrument?.buffers) return null;
+    const exact = instrument.buffers[String(resolvedPitch)];
+    if (exact) {
+      const sample = { buffer: exact, baseNote: resolvedPitch, isDrums, isSoundfont: true };
+      this.soundfontSampleCache.set(sampleCacheKey, sample);
+      return sample;
+    }
+    const notes = this.soundfont.getInstrumentNotes(instrument);
+    if (!notes.length) return null;
+    const baseNote = notes.reduce((best, note) => (
+      Math.abs(note - resolvedPitch) < Math.abs(best - resolvedPitch) ? note : best
+    ), notes[0]);
+    const buffer = instrument.buffers[String(baseNote)];
+    if (!buffer) return null;
+    const sample = { buffer, baseNote, isDrums, isSoundfont: true };
+    this.soundfontSampleCache.set(sampleCacheKey, sample);
+    return sample;
+  }
+
+  getMidiPedalBus({ pedals = [], pan = 0, channel = 0, trackId = null } = {}) {
+    const enabled = Array.isArray(pedals) ? pedals.filter((pedal) => pedal && pedal.enabled !== false) : [];
+    if (!enabled.length) return null;
+    const key = JSON.stringify({
+      trackId: trackId ?? channel ?? 0,
+      pan: Math.round(clamp(pan ?? 0, -1, 1) * 1000) / 1000,
+      pedals: enabled
+    });
+    const cached = this.midiPedalBusCache.get(key);
+    if (cached) return cached;
+
+    const input = this.ctx.createGain();
+    const chain = this.applyPedalChainToNote(input, enabled, this.ctx.currentTime, 3600);
+    const panNode = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
+    const reverbSend = this.ctx.createGain();
+    reverbSend.gain.value = 0.2;
+    if (panNode) {
+      panNode.pan.value = clamp(pan ?? 0, -1, 1);
+      chain.output.connect(panNode);
+      panNode.connect(this.midiBus);
+    } else {
+      chain.output.connect(this.midiBus);
+    }
+    chain.output.connect(reverbSend);
+    reverbSend.connect(this.midiReverb);
+    const bus = {
+      input,
+      cleanup: () => {
+        chain.cleanup?.();
+        [input, panNode, reverbSend].forEach((node) => {
+          if (!node) return;
+          try { node.disconnect(); } catch (error) { /* ignore */ }
+        });
+      }
+    };
+    this.midiPedalBusCache.set(key, bus);
+    return bus;
+  }
+
+  clearMidiPedalBuses() {
+    this.midiPedalBusCache.forEach((bus) => {
+      try { bus.cleanup?.(); } catch (error) { /* ignore */ }
+    });
+    this.midiPedalBusCache.clear();
+  }
+
+  playSoundfontPedalGmNote({
+    pitch,
+    duration,
+    volume,
+    program,
+    channel = 0,
+    bankMSB = 0,
+    bankLSB = 0,
+    pan,
+    isDrums,
+    when,
+    pedals = [],
+    trackId = null
+  }) {
+    this.getSoundfontBufferForNote({ pitch, program, channel, bankMSB, bankLSB })
+      .then((sample) => {
+        if (!sample?.buffer) {
+          this.playDspPedalGmNote({ pitch, duration, volume, program, pan, isDrums, when, pedals });
+          return;
+        }
+        const now = Math.max(when ?? this.ctx.currentTime, this.ctx.currentTime);
+        const source = this.ctx.createBufferSource();
+        source.buffer = sample.buffer;
+        source.playbackRate.value = sample.isDrums ? 1 : 2 ** ((pitch - sample.baseNote) / 12);
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 9000;
+        const gain = this.ctx.createGain();
+        const level = clamp(volume ?? 1, 0, 1);
+        const attack = sample.isDrums ? 0.002 : 0.006;
+        const release = sample.isDrums ? 0.06 : 0.16;
+        const sustainUntil = now + Math.max(attack, duration);
+        const stopAt = sustainUntil + release;
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(Math.max(0.0001, level), now + attack);
+        gain.gain.setValueAtTime(Math.max(0.0001, level), sustainUntil);
+        gain.gain.linearRampToValueAtTime(0, stopAt);
+        source.connect(filter);
+        this.applyPitchPhaserToSource(source, pedals, now, duration);
+        filter.connect(gain);
+        const bus = this.getMidiPedalBus({ pedals, pan, channel, trackId });
+        const panNode = !bus && this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
+        if (bus) {
+          gain.connect(bus.input);
+        } else if (panNode) {
+          panNode.pan.value = clamp(pan ?? 0, -1, 1);
+          gain.connect(panNode);
+          panNode.connect(this.midiBus);
+        } else {
+          gain.connect(this.midiBus);
+        }
+        const reverbSend = bus ? null : this.ctx.createGain();
+        if (reverbSend) {
+          reverbSend.gain.value = 0.2;
+          gain.connect(reverbSend);
+          reverbSend.connect(this.midiReverb);
+        }
+        source.start(now);
+        source.stop(stopAt + 0.03);
+        this.registerMidiVoice({ source, gain, stopTime: stopAt + 0.05, channel });
+        const cleanupInput = () => {
+          [source, filter].forEach((node) => {
+            if (!node) return;
+            try { node.disconnect(); } catch (error) { /* ignore */ }
+          });
+        };
+        const cleanupGraph = () => {
+          cleanupInput();
+          [gain, panNode, reverbSend].forEach((node) => {
+            if (!node) return;
+            try { node.disconnect(); } catch (error) { /* ignore */ }
+          });
+        };
+        source.onended = cleanupInput;
+        window.setTimeout(cleanupGraph, Math.max(0.2, duration + 2.5) * 1000);
+      })
+      .catch(() => {
+        this.playDspPedalGmNote({ pitch, duration, volume, program, pan, isDrums, when, pedals });
+      });
+  }
+
   /**
    * GM channel 10 (index 9) is percussion: note numbers map directly to drum sounds,
    * and kit selection is driven by Bank Select (CC0/CC32) plus Program Change.
@@ -1010,15 +1262,32 @@ export default class AudioSystem {
     const when = this.ctx.currentTime + this.midiLatency;
     const enabledPedals = Array.isArray(pedals) ? pedals.filter((pedal) => pedal && pedal.enabled !== false) : [];
     if (enabledPedals.length) {
-      this.playDspPedalGmNote({
+      if (!this.gmEnabled) {
+        this.playDspPedalGmNote({
+          pitch: resolvedPitch,
+          duration,
+          volume: clampedVolume,
+          program: clampedProgram,
+          pan: clampedPan,
+          isDrums,
+          when,
+          pedals: enabledPedals
+        });
+        return;
+      }
+      this.playSoundfontPedalGmNote({
         pitch: resolvedPitch,
         duration,
         volume: clampedVolume,
         program: clampedProgram,
+        channel: resolvedChannel,
+        bankMSB: resolvedBankMSB,
+        bankLSB: resolvedBankLSB,
         pan: clampedPan,
         isDrums,
         when,
-        pedals: enabledPedals
+        pedals: enabledPedals,
+        trackId
       });
       return;
     }
@@ -1073,7 +1342,6 @@ export default class AudioSystem {
       this.ensureWebAudioFontAvailability();
     }
     if (preferWebAudioFont && this.isWebAudioFontReady()) {
-      const when = this.ctx.currentTime + this.midiLatency;
       const used = this.playWebAudioFontDrum({
         note: resolvedPitch,
         when,
@@ -1569,6 +1837,25 @@ export default class AudioSystem {
     }
     this.midiVoices = this.midiVoices.filter((voice) => voice.stopTime > this.ctx.currentTime);
     return entry;
+  }
+
+  fadeOutMidiVoices(release = 0.04) {
+    if (!this.ctx) return;
+    this.clearMidiPedalBuses();
+    if (!this.midiVoices.length) return;
+    const voices = this.midiVoices.splice(0);
+    voices.forEach((entry) => {
+      try {
+        if (entry.gain?.gain) {
+          entry.gain.gain.setTargetAtTime(0.0001, this.ctx.currentTime, Math.max(0.005, release * 0.5));
+        }
+        window.setTimeout(() => {
+          try { entry.stop?.(); } catch (error) { /* ignore */ }
+        }, Math.max(20, release * 1000));
+      } catch (error) {
+        // ignore
+      }
+    });
   }
 
   noise(duration = 0.12, gainValue = 0.12) {

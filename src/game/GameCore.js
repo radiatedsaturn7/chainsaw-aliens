@@ -1474,7 +1474,10 @@ export default class Game {
     const tileSize = this.world.tileSize;
     this.world.enemies?.forEach((spawn) => {
       if (!spawn || AMBIENT_SPAWN_TYPES.has(spawn.type)) return;
-      this.spawnEnemyByType(spawn.type, (spawn.x + 0.5) * tileSize, (spawn.y + 0.5) * tileSize, { spawnLinkedParts: true });
+      this.spawnEnemyByType(spawn.type, (spawn.x + 0.5) * tileSize, (spawn.y + 0.5) * tileSize, {
+        spawnLinkedParts: true,
+        preferRuntimeDefinition: true
+      });
     });
     this.transitionTo('playing', { forceCleanup: true });
     this.startSpawnPause();
@@ -2088,7 +2091,13 @@ export default class Game {
     }
     if (String(type || '').startsWith('custom:')) {
       const actorId = String(type).slice('custom:'.length);
-      let definition = this.getRuntimeActorDefinition(actorId) || loadActorDefinitionById(actorId);
+      const runtimeDefinition = this.getRuntimeActorDefinition(actorId);
+      let definition = options.preferRuntimeDefinition
+        ? (runtimeDefinition || loadActorDefinitionById(actorId, { refresh: true }))
+        : (loadActorDefinitionById(actorId, { refresh: true }) || runtimeDefinition);
+      if (definition) {
+        this.registerRuntimeActorDefinition(definition);
+      }
       if (!definition) {
         definition = ensureActorDefinition(createDefaultActor(actorId));
         definition.gravity = false;
@@ -2102,7 +2111,10 @@ export default class Game {
       this.enemies.push(actor);
       if (options.spawnLinkedParts !== false) {
         (definition.linkedParts || []).forEach((part) => {
-          const partDef = this.getRuntimeActorDefinition(part.actorId) || loadActorDefinitionById(part.actorId);
+          const runtimePartDef = this.getRuntimeActorDefinition(part.actorId);
+          const partDef = options.preferRuntimeDefinition
+            ? (runtimePartDef || loadActorDefinitionById(part.actorId, { refresh: true }))
+            : (loadActorDefinitionById(part.actorId, { refresh: true }) || runtimePartDef);
           if (!partDef) return;
           const child = new ScriptedActor(worldX + Number(part.offsetX || 0), worldY + Number(part.offsetY || 0), partDef, { type: `custom:${partDef.id}` });
           child.noLootDrops = true;
@@ -4172,6 +4184,28 @@ export default class Game {
     return !this.isPlayerBlockedAt(x, y, { ignoreOneWay: true });
   }
 
+  canEnemySeePlayer(enemy, range = 220) {
+    if (!enemy || !this.player || !this.world) return false;
+    const dx = this.player.x - enemy.x;
+    const dy = this.player.y - enemy.y;
+    const distance = Math.hypot(dx, dy);
+    if (distance > Number(range || 0)) return false;
+    const tileSize = Math.max(1, Number(this.world.tileSize || 32));
+    const stepSize = Math.max(4, tileSize / 2);
+    const steps = Math.max(1, Math.ceil(distance / stepSize));
+    for (let i = 1; i < steps; i += 1) {
+      const t = i / steps;
+      const x = enemy.x + dx * t;
+      const y = enemy.y + dy * t;
+      const tileX = Math.floor(x / tileSize);
+      const tileY = Math.floor(y / tileSize);
+      if (this.world.isEnemySolid(tileX, tileY, this.abilities, { ignoreOneWay: true })) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   hasCeilingAbovePlayer(maxTiles = 1) {
     const tileSize = this.world.tileSize;
     const headY = this.player.y - this.player.height / 2;
@@ -4865,7 +4899,17 @@ export default class Game {
     });
     const resolveEnemyPlayerZoneCollision = (enemy) => {
       if (!enemy?.getCollisionZoneRects) return false;
-      const zones = enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'solid-hurtbox']);
+      const zones = enemy.getCollisionZoneRects(['solid', 'solid-damage-player', 'solid-hurtbox'])
+        .map((zone) => {
+          const pad = 0.75;
+          return {
+            ...zone,
+            x: zone.x - pad,
+            y: zone.y - pad,
+            w: zone.w + pad * 2,
+            h: zone.h + pad * 2
+          };
+        });
       if (!zones.length) return false;
       const sweptZoneHit = (zone, currentRect) => {
         const prev = this.previousPlayerPosition;
@@ -4982,6 +5026,7 @@ export default class Game {
       stopMidi: this.stopActorMidi.bind(this),
       spawnMinion: (x, y) => this.requestSpawn('skitter', x, y),
       canShoot: (enemy, range = 320, padding = 80) => this.canEnemyShoot(enemy, range, padding),
+      canSeePlayer: (enemy, range = 220) => this.canEnemySeePlayer(enemy, range),
       isVisible: (enemy, padding = 80) => this.isEnemyVisible(enemy, padding),
       isWallAhead: (enemy, lookAhead = 6) => {
         if (!enemy) return false;
@@ -5526,8 +5571,14 @@ export default class Game {
     });
   }
 
-  setActiveMusicTrack(trackId) {
-    if (trackId === this.activeMusicTrackId) return;
+  setActiveMusicTrack(trackId, { volume = 1 } = {}) {
+    const targetVolume = Math.max(0, Math.min(1, Number(volume ?? 1)));
+    if (trackId === this.activeMusicTrackId) {
+      this.musicPlayers
+        .filter((player) => player.trackId === trackId)
+        .forEach((player) => player.setFade(targetVolume, this.musicFadeDuration));
+      return;
+    }
     this.musicPlayers.forEach((player) => {
       player.setFade(0, this.musicFadeDuration);
     });
@@ -5537,18 +5588,18 @@ export default class Game {
     if (!libraryEntry) return;
     const player = new MidiSongPlayer(this.audio);
     player.setSong(libraryEntry.song, trackId);
-    player.setFade(1, this.musicFadeDuration);
+    player.setFade(targetVolume, this.musicFadeDuration);
     this.musicPlayers.push(player);
   }
 
-  playActorMidi(trackId, { fadeMs = 250 } = {}) {
+  playActorMidi(trackId, { fadeMs = 250, volume = 1 } = {}) {
     const resolvedTrackId = String(trackId || '').trim();
     if (!resolvedTrackId) return;
     if (!this.getLibrarySong(resolvedTrackId)) return;
     this.actorMusicOverrideTrackId = resolvedTrackId;
     const previousFadeDuration = this.musicFadeDuration;
     this.musicFadeDuration = Math.max(0, Number(fadeMs || 0)) / 1000;
-    this.setActiveMusicTrack(resolvedTrackId);
+    this.setActiveMusicTrack(resolvedTrackId, { volume });
     this.musicFadeDuration = previousFadeDuration;
   }
 
@@ -5605,6 +5656,7 @@ export default class Game {
         roomInside: false,
         roomClear: false,
         firedStartup: false,
+        fired: false,
         active: false,
         queue: []
       });
@@ -5635,12 +5687,20 @@ export default class Game {
     const playerRoomIndex = this.world.roomAtTile?.(tileX, tileY);
     (this.world.triggers || []).forEach((trigger, index) => {
       const id = trigger.id || `trigger-${index}`;
-      const state = this.triggerState.byId.get(id) || { inside: false, roomInside: false, roomClear: false, active: false, queue: [] };
+      const state = this.triggerState.byId.get(id) || { inside: false, roomInside: false, roomClear: false, fired: false, active: false, queue: [] };
       const [x, y, w, h] = trigger.rect || [0, 0, 0, 0];
       const isInside = tileX >= x && tileX < x + w && tileY >= y && tileY < y + h;
       const triggerRoomIndex = this.world.roomAtTile?.(x, y);
       const isInTriggerRoom = triggerRoomIndex != null && playerRoomIndex != null && triggerRoomIndex === playerRoomIndex;
-      const roomClear = triggerRoomIndex != null ? this.isRoomCleared(triggerRoomIndex) : false;
+      const roomClear = isInTriggerRoom && this.isRoomCleared(triggerRoomIndex);
+      if (trigger.musicTrigger === true && trigger.stopAllMusicOnEnter && isInTriggerRoom && !state.roomInside) {
+        const musicAction = Array.isArray(trigger.actions)
+          ? trigger.actions.find((action) => action?.type === 'play-midi')
+          : null;
+        this.stopActorMidi('', {
+          fadeMs: Math.max(0, Number(musicAction?.params?.fadeMs ?? 250))
+        });
+      }
       if (trigger.condition === 'When player enters this location' && isInside && !state.inside) {
         this.fireTrigger(trigger, id);
       } else if (trigger.condition === 'When player enters this room' && isInTriggerRoom && !state.roomInside) {
@@ -5655,6 +5715,41 @@ export default class Game {
         this.fireTrigger(trigger, id);
       } else if (trigger.condition === 'When player holds attack' && isInside && this.input.isDown('attack')) {
         this.fireTrigger(trigger, id);
+      }
+      if (trigger.musicTrigger === true && (trigger.stopMusicOnLeave || trigger.stopAllMusicOnLeave) && state.roomInside && !isInTriggerRoom) {
+        const musicAction = Array.isArray(trigger.actions)
+          ? trigger.actions.find((action) => action?.type === 'play-midi')
+          : null;
+        const stopTrackId = trigger.stopAllMusicOnLeave ? '' : (musicAction?.params?.trackId || '');
+        this.stopActorMidi(stopTrackId, {
+          fadeMs: Math.max(0, Number(musicAction?.params?.fadeMs ?? 250))
+        });
+      }
+      if (trigger.musicTrigger === true && Array.isArray(trigger.actions)) {
+        const musicAction = trigger.actions.find((action) => action?.type === 'play-midi');
+        const falloffTiles = Math.max(0, Number(musicAction?.params?.falloffRangeTiles || 0));
+        if (musicAction && falloffTiles > 0) {
+          const centerX = (x + w / 2) * this.world.tileSize;
+          const centerY = (y + h / 2) * this.world.tileSize;
+          const distance = Math.hypot(this.player.x - centerX, this.player.y - centerY);
+          const falloffPx = falloffTiles * this.world.tileSize;
+          const maxVolume = Math.max(0, Math.min(1, Number(musicAction.params.volume ?? 1)));
+          const volume = isInTriggerRoom
+            ? Math.max(0, Math.min(maxVolume, maxVolume * (1 - distance / Math.max(1, falloffPx))))
+            : 0;
+          if (volume > 0.001) {
+            this.playActorMidi(musicAction.params.trackId || '', {
+              fadeMs: Math.max(0, Number(musicAction.params.fadeMs ?? 250)),
+              volume
+            });
+            state.falloffMusicActive = true;
+          } else if (state.falloffMusicActive) {
+            this.stopActorMidi(musicAction.params.trackId || '', {
+              fadeMs: Math.max(0, Number(musicAction.params.fadeMs ?? 250))
+            });
+            state.falloffMusicActive = false;
+          }
+        }
       }
       state.inside = isInside;
       state.roomInside = isInTriggerRoom;
@@ -5789,10 +5884,21 @@ export default class Game {
   }
 
   fireTrigger(trigger, triggerId) {
-    const state = this.triggerState.byId.get(triggerId) || { inside: false, active: false, queue: [] };
+    const state = this.triggerState.byId.get(triggerId) || { inside: false, active: false, fired: false, queue: [] };
+    if (trigger?.fireOnce && state.fired) return;
     if (state.active) return;
+    const queue = Array.isArray(trigger.actions) ? trigger.actions.map((action) => ({ ...action, params: { ...(action.params || {}) } })) : [];
+    if (!queue.length) {
+      state.queue = [];
+      state.active = false;
+      this.triggerState.byId.set(triggerId, state);
+      return;
+    }
     state.active = true;
-    state.queue = Array.isArray(trigger.actions) ? trigger.actions.map((action) => ({ ...action, params: { ...(action.params || {}) } })) : [];
+    state.queue = queue;
+    if (trigger?.fireOnce) {
+      state.fired = true;
+    }
     this.triggerState.byId.set(triggerId, state);
     this.processNextTriggerAction(triggerId, trigger);
   }
@@ -5937,6 +6043,21 @@ export default class Game {
         }
       }
       this.world.rebuildCaches();
+      onDone();
+      return;
+    }
+    if (action.type === 'play-midi') {
+      this.playActorMidi(params.trackId || '', {
+        fadeMs: Math.max(0, Number(params.fadeMs ?? 250)),
+        volume: Math.max(0, Math.min(1, Number(params.volume ?? 1)))
+      });
+      onDone();
+      return;
+    }
+    if (action.type === 'stop-midi') {
+      this.stopActorMidi(params.trackId || '', {
+        fadeMs: Math.max(0, Number(params.fadeMs ?? 250))
+      });
       onDone();
       return;
     }
@@ -7115,7 +7236,7 @@ export default class Game {
     if (this.debugMode && this.playtestActive && this.actorEditorTestSnapshot) {
       this.drawActorPlaytestEnemyBounds(ctx);
     }
-    if (this.debugMode || this.playtestActive) {
+    if (this.debugMode) {
       this.drawChainsawAttackDebugBoxes(ctx);
       this.drawWeaponDamageDebugShapes(ctx);
     }

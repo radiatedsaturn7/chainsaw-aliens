@@ -91,6 +91,20 @@ function resize() {
   updateFullscreenButtons();
 }
 
+function syncViewportSoon() {
+  fullscreenPending = false;
+  updateFullscreenButtons();
+  resize();
+  requestAnimationFrame(() => {
+    updateFullscreenButtons();
+    resize();
+  });
+  window.setTimeout(() => {
+    updateFullscreenButtons();
+    resize();
+  }, 250);
+}
+
 function getTouchGesture(touches) {
   const [first, second] = touches;
   const firstPos = getCanvasPosition(first);
@@ -130,9 +144,20 @@ function resetTouchSession(reason = 'unknown') {
 
 function bindInputListeners() {
   listenerDisposer.add(addDOMListener(window, 'resize', resize));
+  if (window.visualViewport) {
+    listenerDisposer.add(addDOMListener(window.visualViewport, 'resize', syncViewportSoon));
+    listenerDisposer.add(addDOMListener(window.visualViewport, 'scroll', syncViewportSoon));
+  }
+  listenerDisposer.add(addDOMListener(window, 'chainsaw-download-start', () => {
+    fullscreenPending = false;
+    resetTouchSession('download-start');
+    syncViewportSoon();
+  }));
+  listenerDisposer.add(addDOMListener(window, 'chainsaw-download-complete', syncViewportSoon));
+  listenerDisposer.add(addDOMListener(document, 'visibilitychange', syncViewportSoon));
   listenerDisposer.add(addDOMListener(document, 'fullscreenchange', () => {
     fullscreenPending = false;
-    updateFullscreenButtons();
+    syncViewportSoon();
   }));
 
   listenerDisposer.add(addDOMListener(canvas, 'click', (event) => {

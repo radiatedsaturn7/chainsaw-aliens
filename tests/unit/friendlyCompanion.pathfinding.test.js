@@ -281,6 +281,84 @@ test('jump neighbors reject arcs that intersect solid ceiling tiles', () => {
   assert.equal(Boolean(straightUp), false);
 });
 
+test('A* traversal can jump across wide gaps under low ceilings', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  companion.speed = MOVEMENT_MODEL.baseSpeed;
+  companion.jumpPower = MOVEMENT_MODEL.baseJumpPower;
+  companion.jumpOffsetCache.clear();
+  companion.maxAStarMs = 120;
+  companion.maxAStarExpansions = 10000;
+  const abilities = {};
+  const context = {};
+  const solids = new Set(['1,11', '8,11']);
+  for (let x = 0; x < 14; x += 1) solids.add(`${x},6`);
+  const world = {
+    width: 14,
+    height: 16,
+    tileSize: 32,
+    isSolid(x, y) {
+      return solids.has(`${x},${y}`);
+    }
+  };
+
+  const path = companion.getAStarPath({ x: 1, y: 10 }, { x: 8, y: 10 }, world, abilities, context);
+
+  assert.ok(path);
+  assert.deepEqual(path.at(-1), { x: 8, y: 10 });
+  assert.ok(path.every((tile) => tile.y >= 7));
+});
+
+test('jump trajectories ignore one-way platforms while still landing on them', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  companion.speed = MOVEMENT_MODEL.baseSpeed;
+  companion.jumpPower = MOVEMENT_MODEL.baseJumpPower;
+  companion.jumpOffsetCache.clear();
+  companion.maxAStarMs = 120;
+  companion.maxAStarExpansions = 10000;
+  const abilities = {};
+  const context = {};
+  const oneWay = new Set();
+  for (let x = 0; x < 12; x += 1) oneWay.add(`${x},8`);
+  const world = {
+    width: 12,
+    height: 14,
+    tileSize: 32,
+    isSolid(x, y, _abilities, options = {}) {
+      if (options.ignoreOneWay) return false;
+      return oneWay.has(`${x},${y}`);
+    }
+  };
+
+  const path = companion.getAStarPath({ x: 1, y: 7 }, { x: 8, y: 7 }, world, abilities, context);
+
+  assert.ok(path);
+  assert.deepEqual(path.at(-1), { x: 8, y: 7 });
+});
+
+test('A* traversal can plan ledge falls to lower platforms', () => {
+  const companion = new FriendlyCompanion(0, 0);
+  companion.speed = MOVEMENT_MODEL.baseSpeed;
+  companion.fallOffsetCache.clear();
+  companion.maxAStarMs = 120;
+  companion.maxAStarExpansions = 10000;
+  const abilities = {};
+  const context = {};
+  const solids = new Set(['1,4', '4,9']);
+  const world = {
+    width: 12,
+    height: 14,
+    tileSize: 32,
+    isSolid(x, y) {
+      return solids.has(`${x},${y}`);
+    }
+  };
+
+  const path = companion.getAStarPath({ x: 1, y: 3 }, { x: 4, y: 8 }, world, abilities, context);
+
+  assert.ok(path);
+  assert.deepEqual(path.at(-1), { x: 4, y: 8 });
+});
+
 test('airborne planning prefers straight-down drop landing as start tile over lateral nearest walkable', () => {
   const companion = new FriendlyCompanion(0, 0);
   const world = createWorld();
