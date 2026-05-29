@@ -45,7 +45,7 @@ class DevHandler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def _empty_index(self) -> dict:
-        return {"levels": {}, "art": {}, "music": {}, "actors": {}}
+        return {"levels": {}, "art": {}, "music": {}, "actors": {}, "sfx": {}}
 
     def _safe_doc_dir(self, folder: str, name: str) -> Path:
         return EXPORT_ROOT / folder / quote(name, safe="-_.() ")
@@ -151,7 +151,7 @@ class DevHandler(SimpleHTTPRequestHandler):
             return
         if not isinstance(value, str):
             return
-        if value.startswith("data:image/png;base64,"):
+        if value.startswith("data:image/png;base64,") or value.startswith("data:audio/wav;base64,"):
             b64 = value.split(",", 1)[1]
             try:
                 data = base64.b64decode(b64)
@@ -160,7 +160,9 @@ class DevHandler(SimpleHTTPRequestHandler):
             path = doc_dir / "assets"
             path.mkdir(parents=True, exist_ok=True)
             counter[0] += 1
-            (path / f"image-{counter[0]}.png").write_bytes(data)
+            suffix = "png" if value.startswith("data:image/png;base64,") else "wav"
+            prefix = "image" if suffix == "png" else "audio"
+            (path / f"{prefix}-{counter[0]}.{suffix}").write_bytes(data)
 
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)

@@ -51,6 +51,7 @@ import Pause from '../ui/Pause.js';
 import MobileControls from '../ui/MobileControls.js';
 import PixelStudio from '../ui/PixelStudio.js';
 import MidiComposer from '../ui/MidiComposer.js';
+import SfxEditor from '../ui/SfxEditor.js';
 import ActorEditor from '../ui/ActorEditor.js';
 import MidiSongPlayer from './MidiSongPlayer.js';
 import RobterSession from '../robtersession/RobterSession.js';
@@ -196,6 +197,7 @@ export default class Game {
     this.musicPlayers = [];
     this.activeMusicTrackId = null;
     this.actorMusicOverrideTrackId = null;
+    this.sfxDocumentCache = new Map();
     this.musicFadeDuration = 1.2;
     this.world = new World();
     this.camera = new Camera(canvas.width, canvas.height);
@@ -377,23 +379,27 @@ export default class Game {
     this.editor = new Editor(this);
     this.pixelStudio = new PixelStudio(this);
     this.midiComposer = new MidiComposer(this);
+    this.sfxEditor = new SfxEditor(this);
     this.actorEditor = new ActorEditor(this);
     this.editorStateTargetKeys = {
       editor: 'editor',
       'pixel-editor': 'pixelStudio',
       'midi-editor': 'midiComposer',
+      'sfx-editor': 'sfxEditor',
       'actor-editor': 'actorEditor'
     };
     this.editorStateDrawArgs = {
       editor: () => [this.ctx],
       'pixel-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
       'midi-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
+      'sfx-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
       'actor-editor': () => [this.ctx, this.canvas.width, this.canvas.height]
     };
     this.robterSession = new RobterSession({ input: this.input, audio: this.audio, isMobile: this.deviceIsMobile });
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
     this.midiComposerReturnState = 'title';
+    this.sfxEditorReturnState = 'title';
     this.actorEditorReturnState = 'title';
     this.robterSessionReturnState = 'title';
     this.robterSessionAutoReturn = false;
@@ -1154,7 +1160,7 @@ export default class Game {
 
 
   handleSharedStateTransitionCleanup({ from, to, forceCleanup = false } = {}) {
-    const editorStates = new Set(['editor', 'pixel-editor', 'midi-editor', 'actor-editor', 'pixel-preview']);
+    const editorStates = new Set(['editor', 'pixel-editor', 'midi-editor', 'sfx-editor', 'actor-editor', 'pixel-preview']);
     const shouldCleanup = forceCleanup
       || this.playtestActive
       || editorStates.has(from)
@@ -1166,6 +1172,7 @@ export default class Game {
     this.editor?.resetTransientInputState?.();
     this.pixelStudio?.resetTransientInteractionState?.();
     this.midiComposer?.resetTransientInteractionState?.();
+    this.sfxEditor?.resetTransientInteractionState?.();
 
     this.playtestPauseLock = 0;
     this.spawnPauseTimer = 0;
@@ -1178,7 +1185,7 @@ export default class Game {
           document.body.classList.remove(className);
         }
       });
-      if (to === 'editor' || to === 'pixel-editor' || to === 'midi-editor' || to === 'actor-editor') {
+      if (to === 'editor' || to === 'pixel-editor' || to === 'midi-editor' || to === 'sfx-editor' || to === 'actor-editor') {
         document.body.classList.add('editor-active');
       }
     }
@@ -1494,6 +1501,17 @@ export default class Game {
     this.playtestActive = false;
   }
 
+  enterSfxEditor() {
+    const fromState = this.state;
+    this.sfxEditorReturnState = this.state;
+    this.transitionTo('sfx-editor');
+    this.setRevAudio(false);
+    if (fromState === 'title' && !this.sfxEditor.currentDocumentRef) {
+      this.restoreMostRecentSfxDocument();
+    }
+    this.playtestActive = false;
+  }
+
   restoreMostRecentActorDocument() {
     const latest = listProjectFiles('actors')[0];
     if (!latest?.name) return false;
@@ -1572,9 +1590,25 @@ export default class Game {
     return true;
   }
 
+  restoreMostRecentSfxDocument() {
+    const latest = listProjectFiles('sfx')[0];
+    if (!latest?.name) return false;
+    const payload = loadProjectFile('sfx', latest.name);
+    if (!payload?.data) return false;
+    this.sfxEditor.applyDocument(payload.data, latest.name);
+    this.sfxEditor.currentDocumentRef = { folder: 'sfx', name: latest.name };
+    return true;
+  }
+
   exitMidiComposer() {
     this.playtestActive = false;
     this.transitionTo(this.midiComposerReturnState || 'title', { forceCleanup: true });
+  }
+
+  exitSfxEditor() {
+    this.playtestActive = false;
+    this.sfxEditor?.stop?.();
+    this.transitionTo(this.sfxEditorReturnState || 'title', { forceCleanup: true });
   }
 
   exitEditor({ playtest = false, toTitle = false } = {}) {
@@ -2350,7 +2384,7 @@ export default class Game {
     this.input.updateGamepad();
     this.gamepadConnected = this.input.isGamepadConnected();
     this.updateControlScheme();
-    if (this.state === 'editor' || this.state === 'pixel-editor' || this.state === 'midi-editor') {
+    if (this.state === 'editor' || this.state === 'pixel-editor' || this.state === 'midi-editor' || this.state === 'sfx-editor') {
       this.input.clearVirtual();
     } else {
       const activeWeaponId = this.getActiveWeapon()?.id;
@@ -2372,6 +2406,8 @@ export default class Game {
         this.exitPixelStudio();
       } else if (this.state === 'midi-editor') {
         this.exitMidiComposer();
+      } else if (this.state === 'sfx-editor') {
+        this.exitSfxEditor();
       } else if (this.playtestActive && this.state === 'playing') {
         this.returnToEditorFromPlaytest();
       } else {
@@ -2410,6 +2446,17 @@ export default class Game {
         return;
       }
       this.midiComposer.update(this.input, dt);
+      this.input.flush();
+      return;
+    }
+
+    if (this.state === 'sfx-editor') {
+      if (this.input.wasPressed('cancel')) {
+        this.exitSfxEditor();
+        this.input.flush();
+        return;
+      }
+      this.sfxEditor.update(this.input, dt);
       this.input.flush();
       return;
     }
@@ -2590,8 +2637,12 @@ export default class Game {
             this.enterPixelStudio({ tilePicker: true });
           } else if (action === 'pixel-editor') {
             this.enterPixelStudio();
+          } else if (action === 'actor-editor') {
+            this.enterActorEditor();
           } else if (action === 'midi-editor') {
             this.enterMidiComposer();
+          } else if (action === 'sfx-editor') {
+            this.enterSfxEditor();
           } else if (action === 'reset-all') {
             this.resetAllContent();
           }
@@ -5024,6 +5075,8 @@ export default class Game {
       emitParticles: this.emitActionParticles.bind(this),
       playMidi: this.playActorMidi.bind(this),
       stopMidi: this.stopActorMidi.bind(this),
+      playFx: this.playSfxById.bind(this),
+      stopFx: this.stopSfxById.bind(this),
       spawnMinion: (x, y) => this.requestSpawn('skitter', x, y),
       canShoot: (enemy, range = 320, padding = 80) => this.canEnemyShoot(enemy, range, padding),
       canSeePlayer: (enemy, range = 220) => this.canEnemySeePlayer(enemy, range),
@@ -5613,6 +5666,41 @@ export default class Game {
     this.musicFadeDuration = previousFadeDuration;
   }
 
+  getSfxDocument(fxId) {
+    const resolvedFxId = String(fxId || '').trim();
+    if (!resolvedFxId) return null;
+    if (this.sfxDocumentCache.has(resolvedFxId)) return this.sfxDocumentCache.get(resolvedFxId);
+    const payload = loadProjectFile('sfx', resolvedFxId);
+    const data = payload?.data && typeof payload.data === 'object' ? payload.data : null;
+    this.sfxDocumentCache.set(resolvedFxId, data);
+    return data;
+  }
+
+  playSfxById(fxId, options = {}) {
+    const resolvedFxId = String(fxId || '').trim();
+    const document = this.getSfxDocument(resolvedFxId);
+    if (!document) return;
+    const key = options.key ? `${resolvedFxId}:${options.key}` : '';
+    this.audio.playSfxDocument(document, {
+      id: options.loop ? (key || resolvedFxId) : '',
+      volume: Math.max(0, Number(options.volume ?? 1)),
+      pitchCents: Number(options.pitchCents || 0),
+      pan: Number(options.pan || 0),
+      loop: Boolean(options.loop)
+    }).catch(() => {});
+  }
+
+  stopSfxById(fxId = '') {
+    const resolvedFxId = String(fxId || '').trim();
+    if (!resolvedFxId) {
+      this.audio.stopSfx('');
+      return;
+    }
+    Array.from(this.audio.activeSfxSources?.keys?.() || [])
+      .filter((key) => key === resolvedFxId || key.startsWith(`${resolvedFxId}:`))
+      .forEach((key) => this.audio.stopSfx(key));
+  }
+
   stopProjectBrowserMusicPreview() {
     if (!this.projectBrowserMusicPreviewPlayer) return;
     this.projectBrowserMusicPreviewPlayer.setFade(0, 0.25);
@@ -6058,6 +6146,29 @@ export default class Game {
       this.stopActorMidi(params.trackId || '', {
         fadeMs: Math.max(0, Number(params.fadeMs ?? 250))
       });
+      onDone();
+      return;
+    }
+    if (action.type === 'play-fx') {
+      const falloffTiles = Math.max(0, Number(params.falloffRangeTiles || 0));
+      const maxVolume = Math.max(0, Number(params.volume ?? 1));
+      let volume = maxVolume;
+      if (falloffTiles > 0) {
+        const distance = Math.hypot(this.player.x - centerX, this.player.y - centerY);
+        const falloffPx = falloffTiles * this.world.tileSize;
+        volume = Math.max(0, Math.min(maxVolume, maxVolume * (1 - distance / Math.max(1, falloffPx))));
+      }
+      if (volume > 0.001) {
+        this.playSfxById(params.fxId || '', {
+          volume,
+          pitchCents: Number(params.pitchCents || 0)
+        });
+      }
+      onDone();
+      return;
+    }
+    if (action.type === 'stop-fx') {
+      this.stopSfxById(params.fxId || '');
       onDone();
       return;
     }
@@ -9335,6 +9446,8 @@ export default class Game {
           this.enterActorEditor();
         } else if (action === 'midi-editor') {
           this.enterMidiComposer();
+        } else if (action === 'sfx-editor') {
+          this.enterSfxEditor();
         } else if (action === 'reset-all') {
           this.resetAllContent();
         }
@@ -9539,6 +9652,8 @@ export default class Game {
           this.enterActorEditor();
         } else if (action === 'midi-editor') {
           this.enterMidiComposer();
+        } else if (action === 'sfx-editor') {
+          this.enterSfxEditor();
         } else if (action === 'reset-all') {
           this.resetAllContent();
         }
@@ -9725,6 +9840,7 @@ export default class Game {
     this.stateManager.register('editor', createDelegatedState(this, 'editor'));
     this.stateManager.register('pixel-editor', createDelegatedState(this, 'pixelStudio'));
     this.stateManager.register('midi-editor', createDelegatedState(this, 'midiComposer'));
+    this.stateManager.register('sfx-editor', createDelegatedState(this, 'sfxEditor'));
     this.stateManager.register('actor-editor', createDelegatedState(this, 'actorEditor'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }

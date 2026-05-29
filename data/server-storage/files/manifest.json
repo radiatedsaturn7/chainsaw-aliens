@@ -84,6 +84,9 @@
       "chainsaw-gm-soundfont-url": "settings/chainsaw-gm-soundfont-url/document.json",
       "chainsaw-midi-audio": "settings/chainsaw-midi-audio/document.json",
       "chainsaw-midi-recent": "settings/chainsaw-midi-recent/document.json"
+    },
+    "sfx": {
+      "Alarm": "sfx/Alarm/document.json"
     }
   }
 }

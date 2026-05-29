@@ -23,6 +23,90 @@ const WEB_AUDIOFONT_BASE_URL = 'vendor/webaudiofont/';
 const WEB_AUDIOFONT_KIT = 'Chaos_sf2_file';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const decodeDataUrlBytes = (dataUrl) => {
+  const base64 = String(dataUrl || '').split(',')[1] || '';
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return bytes.buffer;
+};
+const SFX_ENVELOPE_SPECS = {
+  volume: { min: 0, max: 2, defaultValue: 1 },
+  pitch: { min: -2400, max: 2400, defaultValue: 0 },
+  pan: { min: -1, max: 1, defaultValue: 0 }
+};
+const normalizeSfxEnvelope = (type = 'pitch', envelope = {}) => {
+  const spec = SFX_ENVELOPE_SPECS[type] || SFX_ENVELOPE_SPECS.pitch;
+  const legacyStart = type === 'pitch' ? Number(envelope?.startCents || 0) : spec.defaultValue;
+  const legacyEnd = type === 'pitch' ? Number(envelope?.endCents || 0) : spec.defaultValue;
+  const readValue = (point, fallback) => point?.value ?? point?.cents ?? fallback;
+  const rawPoints = Array.isArray(envelope?.points) && envelope.points.length
+    ? envelope.points
+    : [
+      { time: 0, value: legacyStart },
+      { time: 1, value: legacyEnd }
+    ];
+  const points = rawPoints
+    .map((point, index) => ({
+      time: clamp(Number(point?.time ?? 0), 0, 1),
+      value: clamp(Number(readValue(point, index === 0 ? legacyStart : legacyEnd)), spec.min, spec.max)
+    }))
+    .sort((a, b) => a.time - b.time);
+  if (!points.some((point) => point.time === 0)) points.unshift({ time: 0, value: points[0]?.value ?? spec.defaultValue });
+  if (!points.some((point) => point.time === 1)) points.push({ time: 1, value: points[points.length - 1]?.value ?? spec.defaultValue });
+  return {
+    enabled: Boolean(envelope?.enabled || (type === 'pitch' && (legacyStart || legacyEnd))),
+    points
+  };
+};
+
+const normalizeSfxEnvelopes = (source = {}) => ({
+  volume: normalizeSfxEnvelope('volume', source?.envelopes?.volume),
+  pitch: normalizeSfxEnvelope('pitch', source?.envelopes?.pitch || source?.pitchEnvelope),
+  pan: normalizeSfxEnvelope('pan', source?.envelopes?.pan)
+});
+
+const scheduleSfxEnvelopeParam = (audioParam, type, envelope, now, duration, transform = (value) => value) => {
+  const spec = SFX_ENVELOPE_SPECS[type] || SFX_ENVELOPE_SPECS.pitch;
+  const normalized = normalizeSfxEnvelope(type, envelope);
+  const points = normalized.enabled ? normalized.points : [{ time: 0, value: spec.defaultValue }];
+  points.forEach((point, index) => {
+    const value = transform(Number(point.value ?? spec.defaultValue));
+    const time = now + clamp(Number(point.time || 0), 0, 1) * Math.max(0.02, duration);
+    if (index === 0) audioParam.setValueAtTime(value, now);
+    else audioParam.linearRampToValueAtTime(value, time);
+  });
+};
+
+const getAverageSfxPlaybackRate = (pitchEnvelope, baseOctaves = 0) => {
+  const envelope = normalizeSfxEnvelope('pitch', pitchEnvelope);
+  const points = envelope.enabled ? envelope.points : [{ time: 0, value: 0 }, { time: 1, value: 0 }];
+  if (!points.length) return 2 ** baseOctaves;
+  let area = 0;
+  const sorted = [...points].sort((a, b) => a.time - b.time);
+  for (let i = 0; i < sorted.length - 1; i += 1) {
+    const a = sorted[i];
+    const b = sorted[i + 1];
+    const dt = Math.max(0, Number(b.time || 0) - Number(a.time || 0));
+    const rateA = 2 ** (baseOctaves + Number(a.value || 0) / 1200);
+    const rateB = 2 ** (baseOctaves + Number(b.value || 0) / 1200);
+    area += dt * (rateA + rateB) * 0.5;
+  }
+  if (sorted[0].time > 0) {
+    area += sorted[0].time * (2 ** (baseOctaves + Number(sorted[0].value || 0) / 1200));
+  }
+  const last = sorted[sorted.length - 1];
+  if (last.time < 1) {
+    area += (1 - last.time) * (2 ** (baseOctaves + Number(last.value || 0) / 1200));
+  }
+  return Math.max(0.0001, area);
+};
+
+const getEffectiveSfxLayerPlaybackDuration = (layer, pitchEnvelope, pitchBase = 0) => {
+  const nominal = Math.max(0, Number(layer?.duration || 0));
+  if (nominal <= 0) return 0;
+  return nominal / getAverageSfxPlaybackRate(pitchEnvelope, pitchBase);
+};
 const LEGACY_INSTRUMENT_TO_PROGRAM = {
   piano: 0,
   'electric-piano': 4,
@@ -117,6 +201,8 @@ export default class AudioSystem {
       availabilityPromise: null,
       missingLogged: false
     };
+    this.sfxBufferCache = new Map();
+    this.activeSfxSources = new Map();
   }
 
   ensure() {
@@ -135,6 +221,151 @@ export default class AudioSystem {
     } else if (this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
+  }
+
+  async decodeSfxLayer(layer) {
+    if (!layer?.wavDataUrl) return null;
+    const key = layer.id || layer.wavDataUrl.slice(0, 80);
+    if (this.sfxBufferCache.has(key)) return this.sfxBufferCache.get(key);
+    this.ensure();
+    const bytes = decodeDataUrlBytes(layer.wavDataUrl);
+    const buffer = await this.ctx.decodeAudioData(bytes.slice(0));
+    this.sfxBufferCache.set(key, buffer);
+    return buffer;
+  }
+
+  pickSfxFrame(sfx, forcedFrameIndex = null) {
+    const frames = Array.isArray(sfx?.frames) ? sfx.frames : [];
+    const playable = frames
+      .map((frame, index) => ({ frame, index }))
+      .filter(({ frame, index }) => {
+        const enabled = sfx?.settings?.enabledFrames;
+        if (Array.isArray(enabled) && enabled.length && !enabled.includes(index)) return false;
+        const layers = Array.isArray(frame?.layers) && frame.layers.length
+          ? frame.layers
+          : (frame?.wavDataUrl ? [{ ...frame, id: `${frame.id || 'legacy'}:layer` }] : []);
+        return layers.some((layer) => layer?.wavDataUrl && !layer.muted);
+      });
+    if (!playable.length) return null;
+    if (Number.isFinite(forcedFrameIndex)) {
+      return playable.find((entry) => entry.index === forcedFrameIndex)?.frame || playable[0].frame;
+    }
+    if (sfx?.settings?.frameMode === 'current') return playable[0].frame;
+    return playable[Math.floor(Math.random() * playable.length)].frame;
+  }
+
+  async playSfxDocument(sfx, {
+    id = '',
+    frameIndex = null,
+    volume = 1,
+    pitchCents = 0,
+    pan = 0,
+    loop = false
+  } = {}) {
+    const frame = this.pickSfxFrame(sfx, frameIndex);
+    if (!frame) return null;
+    this.ensure();
+    const settings = sfx?.settings || {};
+    const frameEnvelopes = normalizeSfxEnvelopes(frame);
+    const pitchRand = ((Math.random() * 2 - 1) * Number(settings.pitchVarianceCents || 0)) / 1200;
+    const pitchBase = pitchRand + Number(pitchCents || 0) / 1200;
+    const volumeRand = 1 - Math.random() * clamp(Number(settings.volumeVariance || 0), 0, 1);
+    const master = this.ctx.createGain();
+    master.gain.value = clamp(Number(settings.baseVolume ?? 1) * Number(volume ?? 1) * volumeRand, 0, 3);
+    const panNode = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
+    if (panNode) {
+      panNode.pan.value = clamp(Number(pan || 0), -1, 1);
+      master.connect(panNode);
+      panNode.connect(this.master);
+    } else {
+      master.connect(this.master);
+    }
+    const sources = [];
+    const frameLayers = Array.isArray(frame.layers) && frame.layers.length
+      ? frame.layers
+      : (frame.wavDataUrl ? [{ ...frame, id: `${frame.id || 'legacy'}:layer`, volume: 1, muted: false }] : []);
+    const layers = frameLayers.filter((layer) => layer?.wavDataUrl && !layer.muted);
+    const scheduled = [];
+    for (const layer of layers) {
+      const buffer = await this.decodeSfxLayer(layer);
+      if (!buffer) continue;
+      const source = this.ctx.createBufferSource();
+      const gain = this.ctx.createGain();
+      const layerPan = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
+      source.buffer = buffer;
+      source.loop = Boolean(loop || settings.loop);
+      if (source.loop && frame.loopEnd > frame.loopStart) {
+        source.loopStart = clamp(frame.loopStart, 0, buffer.duration);
+        source.loopEnd = clamp(frame.loopEnd, source.loopStart + 0.01, buffer.duration);
+      }
+      gain.gain.value = clamp(Number(layer.volume ?? 1), 0, 2);
+      source.connect(gain);
+      if (layerPan) {
+        layerPan.pan.value = clamp(Number(layer.pan || 0), -1, 1);
+        gain.connect(layerPan);
+        layerPan.connect(master);
+      } else {
+        gain.connect(master);
+      }
+      sources.push(source);
+      scheduled.push({ source, gain, layerPan, layer, buffer, envelopes: layer.envelopes ? normalizeSfxEnvelopes(layer) : frameEnvelopes });
+    }
+    if (!sources.length) {
+      try { master.disconnect(); } catch (_error) {}
+      try { panNode?.disconnect?.(); } catch (_error) {}
+      return null;
+    }
+    const handle = {
+      id,
+      sources,
+      stop: () => {
+        sources.forEach((source) => {
+          try { source.stop(); } catch (_error) {}
+          try { source.disconnect(); } catch (_error) {}
+        });
+        try { master.disconnect(); } catch (_error) {}
+        try { panNode?.disconnect?.(); } catch (_error) {}
+      }
+    };
+    if (id) {
+      this.stopSfx(id);
+      this.activeSfxSources.set(id, handle);
+    }
+    let remaining = sources.length;
+    const startAt = this.ctx.currentTime + 0.005;
+    scheduled.forEach(({ source, gain, layerPan, layer, buffer, envelopes }) => {
+      const layerStart = startAt + Math.max(0, Number(layer.startTime || 0));
+      const playbackDuration = getEffectiveSfxLayerPlaybackDuration({ ...layer, duration: buffer.duration }, envelopes.pitch, pitchBase) || buffer.duration;
+      scheduleSfxEnvelopeParam(source.playbackRate, 'pitch', envelopes.pitch, layerStart, playbackDuration, (value) => 2 ** (pitchBase + value / 1200));
+      scheduleSfxEnvelopeParam(gain.gain, 'volume', envelopes.volume, layerStart, playbackDuration, (value) => clamp(Number(layer.volume ?? 1) * value, 0, 3));
+      if (layerPan) {
+        scheduleSfxEnvelopeParam(layerPan.pan, 'pan', envelopes.pan, layerStart, playbackDuration, (value) => clamp(Number(layer.pan || 0) + value, -1, 1));
+      }
+    });
+    scheduled.forEach(({ source, layer }) => {
+      source.onended = () => {
+        remaining -= 1;
+        if (remaining <= 0) {
+          if (id && this.activeSfxSources.get(id) === handle) this.activeSfxSources.delete(id);
+          try { master.disconnect(); } catch (_error) {}
+          try { panNode?.disconnect?.(); } catch (_error) {}
+        }
+      };
+      source.start(startAt + Math.max(0, Number(layer?.startTime || 0)));
+    });
+    return handle;
+  }
+
+  stopSfx(id = '') {
+    if (!id) {
+      Array.from(this.activeSfxSources.values()).forEach((handle) => handle.stop?.());
+      this.activeSfxSources.clear();
+      return;
+    }
+    const handle = this.activeSfxSources.get(id);
+    if (!handle) return;
+    handle.stop?.();
+    this.activeSfxSources.delete(id);
   }
 
   ensureMidiSampler() {

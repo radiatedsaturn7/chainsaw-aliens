@@ -541,6 +541,17 @@ export default class ScriptedActor extends EnemyBase {
           fadeMs: Math.max(0, Number(params.fadeMs || 0))
         });
         break;
+      case 'play-fx':
+        context.playFx?.(String(params.fxId || '').trim(), {
+          volume: Math.max(0, Number(params.volume ?? 1)),
+          pitchCents: Number(params.pitchCents || 0),
+          loop: Boolean(params.loop),
+          key: action?.id || String(params.fxId || '').trim()
+        });
+        break;
+      case 'stop-fx':
+        context.stopFx?.(String(params.fxId || '').trim());
+        break;
       default:
         break;
     }

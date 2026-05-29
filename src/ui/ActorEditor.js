@@ -33,6 +33,7 @@ const toTitleLabel = (value) => String(value || '').split('-').map((part) => par
 const STATE_OPTION_TYPE = 'state-option';
 const LOOT_OPTION_TYPE = 'loot-option';
 const MUSIC_OPTION_TYPE = 'music-option';
+const SFX_OPTION_TYPE = 'sfx-option';
 const PLAYER_INPUT_OPTIONS = [
   { id: 'attack', label: 'Attack' },
   { id: 'jump', label: 'Jump' },
@@ -78,7 +79,8 @@ const ACTION_SPECS = {
   'spawn-actor': { label: 'Spawn actor', fields: [{ key: 'actorId', label: 'Actor ID', type: 'text', defaultValue: '' }, { key: 'offsetX', label: 'Offset X', type: 'number', step: 1, defaultValue: 0 }, { key: 'offsetY', label: 'Offset Y', type: 'number', step: 1, defaultValue: 0 }] },
   'delete-actor': { label: 'Delete actor', fields: [] },
   'play-sound': { label: 'Play sound', fields: [{ key: 'soundId', label: 'Sound ID', type: 'text', defaultValue: '' }] },
-  'play-fx': { label: 'Play FX', fields: [{ key: 'fxId', label: 'FX ID', type: 'text', defaultValue: '' }] },
+  'play-fx': { label: 'Play FX', fields: [{ key: 'fxId', label: 'SFX', type: SFX_OPTION_TYPE, defaultValue: '', emptyLabel: 'Select SFX' }, { key: 'volume', label: 'Volume', type: 'number', min: 0, step: 0.05, defaultValue: 1 }, { key: 'pitchCents', label: 'Pitch cents', type: 'number', step: 10, defaultValue: 0 }, { key: 'loop', label: 'Loop', type: 'checkbox', defaultValue: false }] },
+  'stop-fx': { label: 'Stop FX', fields: [{ key: 'fxId', label: 'SFX', type: SFX_OPTION_TYPE, defaultValue: '', emptyLabel: 'All SFX' }] },
   'play-midi': { label: 'Play MIDI', fields: [{ key: 'trackId', label: 'MIDI track', type: MUSIC_OPTION_TYPE, defaultValue: '', emptyLabel: 'Select MIDI track' }, { key: 'fadeMs', label: 'Fade ms', type: 'number', min: 0, step: 50, defaultValue: 250 }] },
   'stop-midi': { label: 'Stop MIDI', fields: [{ key: 'trackId', label: 'MIDI track', type: MUSIC_OPTION_TYPE, defaultValue: '', emptyLabel: 'Current MIDI' }, { key: 'fadeMs', label: 'Fade ms', type: 'number', min: 0, step: 50, defaultValue: 250 }] },
   'become-invulnerable': { label: 'Become invulnerable', fields: [] },
@@ -303,7 +305,7 @@ export default class ActorEditor {
         input.type = 'checkbox';
         input.checked = !!params?.[field.key];
         input.oninput = (event) => onParamInput(field, event.target.checked);
-      } else if (field.type === 'select' || field.type === STATE_OPTION_TYPE || field.type === LOOT_OPTION_TYPE || field.type === MUSIC_OPTION_TYPE) {
+      } else if (field.type === 'select' || field.type === STATE_OPTION_TYPE || field.type === LOOT_OPTION_TYPE || field.type === MUSIC_OPTION_TYPE || field.type === SFX_OPTION_TYPE) {
         input = el('select');
         const options = field.type === STATE_OPTION_TYPE
           ? stateOptions
@@ -311,6 +313,8 @@ export default class ActorEditor {
             ? LOOT_ITEM_OPTIONS
             : field.type === MUSIC_OPTION_TYPE
               ? [{ id: '', label: field.emptyLabel || 'None' }, ...listProjectFiles('music').map((entry) => ({ id: entry.name, label: entry.name }))]
+              : field.type === SFX_OPTION_TYPE
+                ? [{ id: '', label: field.emptyLabel || 'None' }, ...listProjectFiles('sfx').map((entry) => ({ id: entry.name, label: entry.name }))]
               : (field.options || []);
         options.forEach((option) => {
           const node = el('option');

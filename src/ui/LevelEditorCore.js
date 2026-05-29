@@ -282,6 +282,8 @@ const TRIGGER_ACTION_TYPES = [
   { id: 'wait', label: 'Wait (ms)' },
   { id: 'play-midi', label: 'Play MIDI' },
   { id: 'stop-midi', label: 'Stop MIDI' },
+  { id: 'play-fx', label: 'Play FX' },
+  { id: 'stop-fx', label: 'Stop FX' },
   { id: 'fade-out-music', label: 'Fade Out Music' },
   { id: 'fade-in-music', label: 'Fade In Music' }
 ];
@@ -2658,6 +2660,14 @@ export default class Editor {
       case 'stop-midi':
         base.params = { trackId: '', fadeMs: 250 };
         break;
+      case 'play-fx': {
+        const fxId = this.getTriggerSfxOptions()[0] || '';
+        base.params = { fxId, volume: 1, pitchCents: 0, falloffRangeTiles: 0 };
+        break;
+      }
+      case 'stop-fx':
+        base.params = { fxId: '' };
+        break;
       case 'display-text':
         base.params = {
           text: TRIGGER_TEXT_OPTIONS[0],
@@ -2792,6 +2802,15 @@ export default class Editor {
         if (action.type === 'play-midi') {
           if (!Number.isFinite(action.params.volume)) action.params.volume = 1;
           action.params.volume = Math.max(0, Math.min(1, Number(action.params.volume)));
+          if (!Number.isFinite(action.params.falloffRangeTiles) || action.params.falloffRangeTiles < 0) action.params.falloffRangeTiles = 0;
+        }
+      }
+      if (action.type === 'play-fx' || action.type === 'stop-fx') {
+        if (typeof action.params.fxId !== 'string') action.params.fxId = '';
+        if (action.type === 'play-fx') {
+          if (!Number.isFinite(action.params.volume)) action.params.volume = 1;
+          action.params.volume = Math.max(0, Math.min(3, Number(action.params.volume)));
+          if (!Number.isFinite(action.params.pitchCents)) action.params.pitchCents = 0;
           if (!Number.isFinite(action.params.falloffRangeTiles) || action.params.falloffRangeTiles < 0) action.params.falloffRangeTiles = 0;
         }
       }
@@ -3271,6 +3290,10 @@ export default class Editor {
         return `${params.trackId || '(none)'} vol ${Math.round(Number(params.volume ?? 1) * 100)}% falloff ${params.falloffRangeTiles || 0} tiles`;
       case 'stop-midi':
         return `${params.trackId || '(active)'} fade ${params.fadeMs ?? 250}ms`;
+      case 'play-fx':
+        return `${params.fxId || '(none)'} vol ${Math.round(Number(params.volume ?? 1) * 100)}% pitch ${params.pitchCents || 0} falloff ${params.falloffRangeTiles || 0} tiles`;
+      case 'stop-fx':
+        return params.fxId || '(all)';
       default:
         return 'No params';
     }
@@ -3372,6 +3395,16 @@ export default class Editor {
     const options = this.getMusicTracks().map((track) => track.id).filter(Boolean);
     this.triggerEditorOptionCache.musicOptions = options;
     this.triggerEditorOptionCache.musicOptionsAt = Date.now();
+    return options;
+  }
+
+  getTriggerSfxOptions() {
+    if (this.triggerEditorOptionCache.sfxOptions) {
+      return this.triggerEditorOptionCache.sfxOptions;
+    }
+    const options = listProjectFiles('sfx').map((entry) => entry.name).filter(Boolean);
+    this.triggerEditorOptionCache.sfxOptions = options;
+    this.triggerEditorOptionCache.sfxOptionsAt = Date.now();
     return options;
   }
 
@@ -8987,6 +9020,10 @@ export default class Editor {
             local += sectionButtonH + 4 + numericAdvance + numericAdvance + numericAdvance;
           } else if (draft.type === 'stop-midi') {
             local += sectionButtonH + 4 + numericAdvance;
+          } else if (draft.type === 'play-fx') {
+            local += sectionButtonH + 4 + numericAdvance + numericAdvance + numericAdvance;
+          } else if (draft.type === 'stop-fx') {
+            local += sectionButtonH + 4;
           } else if (draft.type === 'fade-in-music') {
             local += sectionButtonH + 4 + numericAdvance;
           }
@@ -9284,6 +9321,28 @@ export default class Editor {
               drawButton(panelX + 70, y, panelWidth - 140, sectionButtonH, `Volume: ${volumePercent}%`, false, () => {}, 'Volume');
               drawButton(panelX + panelWidth - 66, y, 54, sectionButtonH, '+', false, () => { draft.params.volume = Math.max(0, Math.min(1, Number(draft.params.volume ?? 1) + 0.05)); }, 'Volume up');
               y += sectionButtonH + 4;
+              numericRow('Falloff tiles', 'falloffRangeTiles', 1, 0, 200);
+            }
+          } else if (draft.type === 'play-fx' || draft.type === 'stop-fx') {
+            const sfxOptions = this.getTriggerSfxOptions();
+            const selectedFx = draft.params.fxId || sfxOptions[0] || '';
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `SFX: ${selectedFx || '(all)'}`, false, () => {
+              const options = draft.type === 'stop-fx' ? ['(all)', ...sfxOptions] : sfxOptions;
+              this.openTriggerOptionPicker({
+                title: 'Choose SFX',
+                options,
+                selectedValue: selectedFx || '(all)',
+                onPick: (value) => { draft.params.fxId = value === '(all)' ? '' : value; }
+              });
+            }, 'Pick SFX');
+            y += sectionButtonH + 4;
+            if (draft.type === 'play-fx') {
+              const volumePercent = Math.round(Math.max(0, Math.min(3, Number(draft.params.volume ?? 1))) * 100);
+              drawButton(panelX + 12, y, 54, sectionButtonH, '-', false, () => { draft.params.volume = Math.max(0, Math.min(3, Number(draft.params.volume ?? 1) - 0.05)); }, 'Volume down');
+              drawButton(panelX + 70, y, panelWidth - 140, sectionButtonH, `Volume: ${volumePercent}%`, false, () => {}, 'Volume');
+              drawButton(panelX + panelWidth - 66, y, 54, sectionButtonH, '+', false, () => { draft.params.volume = Math.max(0, Math.min(3, Number(draft.params.volume ?? 1) + 0.05)); }, 'Volume up');
+              y += sectionButtonH + 4;
+              numericRow('Pitch cents', 'pitchCents', 25, -2400, 2400);
               numericRow('Falloff tiles', 'falloffRangeTiles', 1, 0, 200);
             }
           } else if (draft.type === 'fade-in-music') {

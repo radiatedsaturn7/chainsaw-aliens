@@ -12,8 +12,8 @@ import {
 import { hydrateServerStorage } from './serverStorage.js';
 import { fileTypeBadge } from './uiSuite.js';
 
-const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors' };
-const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors'];
+const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX' };
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx'];
 let activePreviewTrackId = null;
 
 function formatDate(ts) {
@@ -69,6 +69,7 @@ function isAllowedFile(folder, name) {
   if (folder === 'levels') return value.endsWith('.json') || !value.includes('.');
   if (folder === 'music') return value.endsWith('.json') || value.endsWith('.mid') || !value.includes('.');
   if (folder === 'actors') return value.endsWith('.json') || !value.includes('.');
+  if (folder === 'sfx') return value.endsWith('.json') || value.endsWith('.wav') || !value.includes('.');
   return true;
 }
 

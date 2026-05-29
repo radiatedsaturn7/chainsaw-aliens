@@ -1,5 +1,5 @@
 const PROJECT_FILE_PREFIX = 'server-project-file:';
-const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors'];
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx'];
 
 let syncQueue = Promise.resolve();
 const volatileFiles = new Map();

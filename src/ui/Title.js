@@ -11,6 +11,7 @@ export default class Title {
       'pixel-editor',
       'actor-editor',
       'midi-editor',
+      'sfx-editor',
       'reset-all',
       'back'
     ];
@@ -339,6 +340,8 @@ export default class Title {
               ? 'Actor Editor'
               : action === 'midi-editor'
               ? 'MIDI Editor'
+              : action === 'sfx-editor'
+              ? 'SFX Editor'
               : action === 'reset-all'
                 ? 'Reset All'
                 : 'Back';

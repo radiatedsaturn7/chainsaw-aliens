@@ -2,7 +2,7 @@
  * Project file facade backed by per-file server storage.
  *
  * How it works:
- * - Files are grouped into fixed folders: levels, art, music, actors.
+ * - Files are grouped into fixed folders: levels, art, music, actors, sfx.
  * - File payloads are cached in memory while the app is running.
  * - Saves are written directly to individual server files.
  * - Each payload includes version/folder/name/savedAt/data, where `data`
@@ -21,10 +21,10 @@ import {
   clearCachedProjectFilesForTests
 } from './serverStorage.js';
 
-const FOLDERS = ['levels', 'art', 'music', 'actors'];
+const FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx'];
 const parsedPayloadCache = new Map();
 
-const emptyIndex = () => ({ levels: {}, art: {}, music: {}, actors: {} });
+const emptyIndex = () => ({ levels: {}, art: {}, music: {}, actors: {}, sfx: {} });
 
 export function ensureProjectFileIndex() {
   let index = emptyIndex();

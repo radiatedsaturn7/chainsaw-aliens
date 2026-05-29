@@ -39,7 +39,7 @@ export const CONDITION_TYPES = [
 
 export const ACTION_TYPES = [
   'switch-state', 'reverse-direction', 'set-velocity', 'jump', 'stop-moving', 'delay', 'rewind-animation', 'emit-damage', 'emit-particles', 'spawn-bullets', 'spawn-beam', 'spawn-homing-missile', 'spawn-actor',
-  'delete-actor', 'play-sound', 'play-fx', 'play-midi', 'stop-midi', 'become-invulnerable', 'become-vulnerable', 'enable-body-damage', 'disable-body-damage',
+  'delete-actor', 'play-sound', 'play-fx', 'stop-fx', 'play-midi', 'stop-midi', 'become-invulnerable', 'become-vulnerable', 'enable-body-damage', 'disable-body-damage',
   'drop-loot', 'face-player', 'signal-root', 'signal-children', 'destroy-linked-part', 'open-weak-point', 'close-weak-point'
 ];
 

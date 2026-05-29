@@ -736,10 +736,11 @@ export function fileTypeBadge(filename = '') {
   if (value.endsWith('.png')) return 'PNG';
   if (value.endsWith('.gif')) return 'GIF';
   if (value.endsWith('.zip')) return 'ZIP';
+  if (value.endsWith('.wav')) return 'WAV';
   return 'FILE';
 }
 
-const MENU_LABEL_ACRONYMS = new Set(['JSON', 'MIDI', 'ZIP', 'PNG', 'GIF', 'GM', 'QA', 'UI']);
+const MENU_LABEL_ACRONYMS = new Set(['JSON', 'MIDI', 'SFX', 'WAV', 'ZIP', 'PNG', 'GIF', 'GM', 'QA', 'UI']);
 
 export function formatMenuLabel(label = '') {
   const value = String(label ?? '');
