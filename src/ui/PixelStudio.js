@@ -180,6 +180,8 @@ export default class PixelStudio {
       mask: null,
       bounds: null,
       mode: null,
+      combineMode: 'replace',
+      baseMask: null,
       start: null,
       end: null,
       lassoPoints: [],
@@ -201,7 +203,9 @@ export default class PixelStudio {
       zoomIndex: 8,
       panX: 0,
       panY: 0,
-      showGrid: false
+      showGrid: false,
+      backgroundMode: 'checker',
+      backgroundColor: '#2f3640'
     };
     this.viewportController = createViewportController({
       minZoom: 0,
@@ -278,6 +282,7 @@ export default class PixelStudio {
     this.paletteColorPickerBounds = null;
     this.brushPickerBounds = null;
     this.brushPickerSliders = null;
+    this.canvasViewportBounds = null;
     this.panJoystick = {
       active: false,
       id: null,
@@ -349,6 +354,17 @@ export default class PixelStudio {
       };
       reader.readAsText(file);
       event.target.value = '';
+    });
+    this.backgroundColorInput = document.createElement('input');
+    this.backgroundColorInput.type = 'color';
+    this.backgroundColorInput.value = this.view.backgroundColor;
+    this.backgroundColorInput.style.display = 'none';
+    document.body.appendChild(this.backgroundColorInput);
+    this.backgroundColorInput.addEventListener('input', (event) => {
+      const next = typeof event.target.value === 'string' ? event.target.value : '';
+      if (!/^#[0-9a-fA-F]{6}$/.test(next)) return;
+      this.view.backgroundMode = 'color';
+      this.view.backgroundColor = next;
     });
     this.imageFileInput = document.createElement('input');
     this.imageFileInput.type = 'file';
@@ -2792,6 +2808,16 @@ export default class PixelStudio {
       }
       return;
     }
+    if (this.isSelectionToolActive()
+      && this.canvasViewportBounds
+      && this.isPointInBounds(payload, this.canvasViewportBounds)) {
+      this.setInputMode('canvas');
+      const point = this.getGridCellFromScreen(payload.x, payload.y, { clampToCanvas: true });
+      if (point) {
+        this.handleToolPointerDown(point, { altKey: this.altDown, fromTouch: payload.touchCount });
+      }
+      return;
+    }
     if (this.activeToolId === TOOL_IDS.MOVE && this.selection.active && this.isPointNearCanvas(payload, 48)) {
       const freePoint = this.getGridCellFromScreenUnbounded(payload.x, payload.y);
       const hit = freePoint ? this.getSelectionTransformHit(freePoint) : null;
@@ -3089,6 +3115,16 @@ export default class PixelStudio {
       TOOL_IDS.GRADIENT,
       TOOL_IDS.CLONE,
       TOOL_IDS.DITHER
+    ].includes(this.getEffectiveToolId());
+  }
+
+  isSelectionToolActive() {
+    return [
+      TOOL_IDS.SELECT_RECT,
+      TOOL_IDS.SELECT_ELLIPSE,
+      TOOL_IDS.SELECT_LASSO,
+      TOOL_IDS.SELECT_MAGIC_LASSO,
+      TOOL_IDS.SELECT_MAGIC_COLOR
     ].includes(this.getEffectiveToolId());
   }
 
@@ -3847,6 +3883,7 @@ export default class PixelStudio {
   }
 
   applyMagicSelection(point, options = {}) {
+    this.prepareSelectionCombineBase();
     const width = this.canvasState.width;
     const height = this.canvasState.height;
     const contiguous = options.contiguous !== false;
@@ -3885,9 +3922,7 @@ export default class PixelStudio {
       }
     }
 
-    this.selection.mask = mask;
-    this.selection.bounds = this.getMaskBounds(mask);
-    this.selection.active = Boolean(this.selection.bounds);
+    this.applySelectionMask(mask);
     this.selection.mode = contiguous ? 'magic-lasso' : 'magic-color';
   }
 
@@ -4029,6 +4064,7 @@ export default class PixelStudio {
   }
 
   startSelection(point, mode) {
+    this.prepareSelectionCombineBase();
     this.selection.active = false;
     this.selection.mode = mode;
     this.selection.start = point;
@@ -4043,14 +4079,53 @@ export default class PixelStudio {
   commitSelection() {
     if (!this.selection.start || !this.selection.end) return;
     const bounds = this.getBoundsFromPoints(this.selection.start, this.selection.end);
-    this.selection.bounds = bounds;
-    this.selection.mask = this.selection.mode === 'ellipse'
+    const mask = this.selection.mode === 'ellipse'
       ? generateEllipseMask(this.canvasState.width, this.canvasState.height, bounds)
       : createRectMask(this.canvasState.width, this.canvasState.height, bounds);
-    this.selection.active = true;
+    this.applySelectionMask(mask);
+    this.selection.start = null;
+    this.selection.end = null;
     if (this.selection.active && this.gamepadCursor.active) {
       this.openSelectionContextMenu();
     }
+  }
+
+  prepareSelectionCombineBase() {
+    this.selection.baseMask = this.selection.mask
+      ? new Uint8Array(this.selection.mask)
+      : null;
+  }
+
+  applySelectionMask(mask) {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const size = width * height;
+    const combineMode = this.selection.combineMode || 'replace';
+    let nextMask = mask;
+    if (combineMode !== 'replace') {
+      nextMask = this.selection.baseMask
+        ? new Uint8Array(this.selection.baseMask)
+        : new Uint8Array(size);
+      mask.forEach((value, index) => {
+        if (!value) return;
+        nextMask[index] = combineMode === 'subtract' ? 0 : 1;
+      });
+    }
+    this.selection.mask = nextMask;
+    this.selection.bounds = this.getMaskBounds(nextMask);
+    this.selection.active = Boolean(this.selection.bounds);
+    this.selection.baseMask = null;
+    if (!this.selection.active) {
+      this.selection.mask = null;
+      this.selection.bounds = null;
+    }
+  }
+
+  cycleSelectionCombineMode(delta = 1) {
+    const modes = ['replace', 'add', 'subtract'];
+    const current = modes.indexOf(this.selection.combineMode || 'replace');
+    const next = (current + delta + modes.length) % modes.length;
+    this.selection.combineMode = modes[next];
   }
 
   getSelectionPixels() {
@@ -4109,6 +4184,7 @@ export default class PixelStudio {
   }
 
   startLasso(point, options = {}) {
+    this.prepareSelectionCombineBase();
     let snapped = point;
     if (options.magic) {
       this.magicLassoEdgeMap = this.buildMagicLassoEdgeMap();
@@ -4118,8 +4194,10 @@ export default class PixelStudio {
       this.magicLassoAnchorRgba = this.magicLassoRgbaMap?.[idx] || null;
     }
     this.selection.active = false;
-    this.selection.mask = null;
-    this.selection.bounds = null;
+    if ((this.selection.combineMode || 'replace') === 'replace') {
+      this.selection.mask = null;
+      this.selection.bounds = null;
+    }
     this.selection.mode = options.magic ? 'magic-lasso' : 'lasso';
     this.selection.start = snapped;
     this.selection.end = snapped;
@@ -4453,6 +4531,12 @@ export default class PixelStudio {
 
   commitLasso() {
     if (this.selection.lassoPoints.length < 3) {
+      if (this.selection.baseMask) {
+        this.selection.mask = new Uint8Array(this.selection.baseMask);
+        this.selection.bounds = this.getMaskBounds(this.selection.mask);
+        this.selection.active = Boolean(this.selection.bounds);
+      }
+      this.selection.baseMask = null;
       this.selection.lassoPoints = [];
       this.magicLassoEdgeMap = null;
       this.magicLassoLastVector = null;
@@ -4461,9 +4545,8 @@ export default class PixelStudio {
       this.magicLassoAnchorRgba = null;
       return;
     }
-    this.selection.mask = createPolygonMask(this.canvasState.width, this.canvasState.height, this.selection.lassoPoints);
-    this.selection.bounds = this.getMaskBounds(this.selection.mask);
-    this.selection.active = Boolean(this.selection.bounds);
+    const mask = createPolygonMask(this.canvasState.width, this.canvasState.height, this.selection.lassoPoints);
+    this.applySelectionMask(mask);
     this.selection.lassoPoints = [];
     this.magicLassoEdgeMap = null;
     this.magicLassoLastVector = null;
@@ -5235,6 +5318,7 @@ export default class PixelStudio {
     this.selection.mask = null;
     this.selection.bounds = null;
     this.selection.mode = null;
+    this.selection.baseMask = null;
     this.selection.start = null;
     this.selection.end = null;
     this.selection.lassoPoints = [];
@@ -6729,7 +6813,9 @@ export default class PixelStudio {
           ? this.cropClipboardToOpaqueBounds(this.pasteImportModal.source)
           : this.pasteImportModal.source;
         const pasteOptions = { pasteToNewLayer: this.pasteImportModal.pasteToNewLayer === true };
-        if (this.pasteImportModal.mode === 'resize') {
+        const mode = this.pasteImportModal.mode;
+        this.pasteImportModal = null;
+        if (mode === 'resize') {
           this.resizeArtCanvas(working.width, working.height);
           this.applyClipboardPaste(working, pasteOptions);
         } else {
@@ -6738,7 +6824,6 @@ export default class PixelStudio {
             pasteOptions
           );
         }
-        this.pasteImportModal = null;
       }
     });
   }
@@ -6806,7 +6891,10 @@ export default class PixelStudio {
     bytes.set(composite);
     this.offscreenCtx.putImageData(imageData, 0, 0);
     const size = Math.min(w, h);
-    ctx.drawImage(this.offscreen, x + (w - size) / 2, y + (h - size) / 2, size, size);
+    const previewX = x + (w - size) / 2;
+    const previewY = y + (h - size) / 2;
+    this.drawPixelBackground(ctx, previewX, previewY, size, size, Math.max(4, Math.floor(size / 16)));
+    ctx.drawImage(this.offscreen, previewX, previewY, size, size);
     ctx.fillStyle = '#fff';
     ctx.font = '12px Courier New';
     ctx.fillText('Preview', x + 4, y + h + 14);
@@ -7544,6 +7632,46 @@ export default class PixelStudio {
     ctx.restore();
   }
 
+  drawPixelBackground(ctx, x, y, w, h, cellSize = 16) {
+    const mode = this.view.backgroundMode || 'checker';
+    if (mode === 'white' || mode === 'black' || mode === 'color') {
+      ctx.fillStyle = mode === 'white'
+        ? '#ffffff'
+        : (mode === 'black' ? '#000000' : (this.view.backgroundColor || '#2f3640'));
+      ctx.fillRect(x, y, w, h);
+      return;
+    }
+
+    const size = clamp(Math.round(cellSize), 4, 32);
+    const visibleX = Math.max(0, x);
+    const visibleY = Math.max(0, y);
+    const visibleEndX = Math.min(ctx.canvas.width, x + w);
+    const visibleEndY = Math.min(ctx.canvas.height, y + h);
+    if (visibleEndX <= visibleX || visibleEndY <= visibleY) return;
+
+    const originRight = x + w;
+    const originTop = y;
+    const firstColFromRight = Math.floor((originRight - visibleEndX) / size);
+    const firstRow = Math.floor((visibleY - originTop) / size);
+    const maxColFromRight = Math.ceil((originRight - visibleX) / size);
+    const maxRow = Math.ceil((visibleEndY - originTop) / size);
+    for (let row = firstRow; row < maxRow; row += 1) {
+      const cellY = originTop + row * size;
+      const drawY = Math.max(visibleY, cellY);
+      const drawH = Math.min(visibleEndY, cellY + size) - drawY;
+      if (drawH <= 0) continue;
+      for (let colFromRight = firstColFromRight; colFromRight < maxColFromRight; colFromRight += 1) {
+        const cellRight = originRight - colFromRight * size;
+        const cellX = cellRight - size;
+        const drawX = Math.max(visibleX, cellX);
+        const drawW = Math.min(visibleEndX, cellRight) - drawX;
+        if (drawW <= 0) continue;
+        ctx.fillStyle = ((colFromRight + row) % 2 === 0) ? '#747b86' : '#3a414a';
+        ctx.fillRect(drawX, drawY, drawW, drawH);
+      }
+    }
+  }
+
   drawMobileDrawer(ctx, x, y, w, h, type) {
     this.mobileDrawerBounds = { x, y, w, h };
     ctx.fillStyle = UI_SUITE.colors.panel;
@@ -8074,6 +8202,8 @@ export default class PixelStudio {
       this.view.showGrid = this.view.showGrid === false;
     }, { isMobile });
     offsetY += lineHeight;
+    this.drawBackgroundControls(ctx, x + 12, offsetY, Math.max(120, w - 24), { isMobile });
+    offsetY += lineHeight;
     this.drawOptionToggle(ctx, x + 12, offsetY, 'Tiled Preview', this.tiledPreview.enabled, () => {
       this.tiledPreview.enabled = !this.tiledPreview.enabled;
     }, { isMobile });
@@ -8109,6 +8239,54 @@ export default class PixelStudio {
     this.drawButton(ctx, bounds, label, active, { fontSize: isMobile ? 12 : 12 });
     this.uiButtons.push({ bounds, onClick });
     this.registerFocusable('menu', bounds, onClick);
+  }
+
+  drawBackgroundControls(ctx, x, y, w, options = {}) {
+    const isMobile = options.isMobile;
+    const buttonH = isMobile ? 44 : 18;
+    const buttonY = y - (isMobile ? 24 : 12);
+    const gap = isMobile ? 6 : 5;
+    const labelW = isMobile ? 34 : 24;
+    const labels = [
+      { mode: 'white', label: 'White' },
+      { mode: 'black', label: 'Black' },
+      { mode: 'checker', label: 'Check' },
+      { mode: 'color', label: 'Color' }
+    ];
+    const buttonW = Math.max(isMobile ? 44 : 38, Math.floor((w - labelW - gap * labels.length) / labels.length));
+
+    ctx.fillStyle = 'rgba(255,255,255,0.72)';
+    ctx.font = `${isMobile ? 12 : 11}px ${UI_SUITE.font.family}`;
+    ctx.fillText('BG', x, y + (isMobile ? 4 : 5));
+
+    let bx = x + labelW;
+    labels.forEach((entry) => {
+      const bounds = { x: bx, y: buttonY, w: buttonW, h: buttonH };
+      this.drawButton(ctx, bounds, entry.label, this.view.backgroundMode === entry.mode, { fontSize: isMobile ? 11 : 10 });
+      if (entry.mode === 'color') {
+        const swatch = {
+          x: bounds.x + 4,
+          y: bounds.y + Math.max(4, Math.floor(bounds.h * 0.22)),
+          w: Math.min(14, Math.max(10, bounds.w * 0.22)),
+          h: Math.min(14, Math.max(10, bounds.h * 0.5))
+        };
+        ctx.fillStyle = this.view.backgroundColor || '#2f3640';
+        ctx.fillRect(swatch.x, swatch.y, swatch.w, swatch.h);
+        ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+        ctx.strokeRect(swatch.x, swatch.y, swatch.w, swatch.h);
+      }
+      const onClick = () => {
+        if (entry.mode === 'color') {
+          this.backgroundColorInput.value = this.view.backgroundColor || '#2f3640';
+          this.backgroundColorInput.click();
+          return;
+        }
+        this.view.backgroundMode = entry.mode;
+      };
+      this.uiButtons.push({ bounds, onClick });
+      this.registerFocusable('menu', bounds, onClick);
+      bx += buttonW + gap;
+    });
   }
 
   drawToolOptions(ctx, x, y, options = {}) {
@@ -8397,6 +8575,23 @@ export default class PixelStudio {
     const buttonWidth = fromToolOptions
       ? Math.max(120, Math.min(panelWidth, panelWidth - 6))
       : (isMobile ? 180 : 120);
+    const modeEntries = [
+      { label: 'None', mode: 'replace' },
+      { label: 'Add', mode: 'add' },
+      { label: 'Subtract', mode: 'subtract' }
+    ];
+    const modeGap = 6;
+    const modeW = Math.max(42, Math.floor((buttonWidth - modeGap * 2) / 3));
+    let offsetY = y;
+    modeEntries.forEach((entry, index) => {
+      const bounds = { x: x + index * (modeW + modeGap), y: offsetY, w: modeW, h: rowHeight };
+      const active = (this.selection.combineMode || 'replace') === entry.mode;
+      this.drawButton(ctx, bounds, entry.label, active, { fontSize: isMobile ? 11 : 10 });
+      const onClick = () => { this.selection.combineMode = entry.mode; };
+      this.uiButtons.push({ bounds, onClick });
+      this.registerFocusable('menu', bounds, onClick);
+    });
+    offsetY += rowStep;
 
     const actions = [
       { label: 'Paste', action: () => this.pasteClipboard() },
@@ -8410,7 +8605,6 @@ export default class PixelStudio {
     if (!this.selection.active || !this.selection.mask) {
       actions.splice(1);
     }
-    let offsetY = y;
     actions.forEach((entry) => {
       const bounds = { x, y: offsetY, w: buttonWidth, h: rowHeight };
       this.drawButton(ctx, bounds, entry.label, false, { fontSize: isMobile ? 12 : 12 });
@@ -8543,6 +8737,7 @@ export default class PixelStudio {
 
   drawCanvasArea(ctx, x, y, w, h) {
     const { width, height } = this.canvasState;
+    this.canvasViewportBounds = { x, y, w, h };
     const zoom = this.view.zoomLevels[this.view.zoomIndex];
     const gridW = width * zoom;
     const gridH = height * zoom;
@@ -8574,22 +8769,39 @@ export default class PixelStudio {
     ctx.rect(x, y, w, h);
     ctx.clip();
 
+    const drawTileBackground = (tileX, tileY) => {
+      this.drawPixelBackground(ctx, tileX, tileY, gridW, gridH, zoom);
+    };
+    const drawTileImage = (tileX, tileY, alpha = 1) => {
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(this.offscreen, tileX, tileY, gridW, gridH);
+      ctx.globalAlpha = 1;
+    };
+
     if (this.tiledPreview.enabled || wrapActive) {
       for (let row = -1; row <= 1; row += 1) {
         for (let col = -1; col <= 1; col += 1) {
-          const isCenter = row === 0 && col === 0;
-          ctx.globalAlpha = isCenter ? 1 : (wrapActive ? 0.7 : 0.2);
-          ctx.drawImage(this.offscreen, offsetX + col * gridW, offsetY + row * gridH, gridW, gridH);
+          drawTileBackground(offsetX + col * gridW, offsetY + row * gridH);
         }
       }
-      ctx.globalAlpha = 1;
+    } else {
+      drawTileBackground(offsetX, offsetY);
     }
 
     if (this.animation.onion.enabled) {
       this.drawOnionSkin(ctx, offsetX, offsetY, gridW, gridH);
     }
 
-    ctx.drawImage(this.offscreen, offsetX, offsetY, gridW, gridH);
+    if (this.tiledPreview.enabled || wrapActive) {
+      for (let row = -1; row <= 1; row += 1) {
+        for (let col = -1; col <= 1; col += 1) {
+          const isCenter = row === 0 && col === 0;
+          drawTileImage(offsetX + col * gridW, offsetY + row * gridH, isCenter ? 1 : (wrapActive ? 0.7 : 0.2));
+        }
+      }
+    } else {
+      drawTileImage(offsetX, offsetY, 1);
+    }
 
 
     const drawGridAt = (tileX, tileY, alpha = 0.15) => {
@@ -8981,6 +9193,9 @@ export default class PixelStudio {
     const itemAreaW = Math.max(itemW, prevBounds.x - controlGap - startX);
     const entries = showSelectActionRail
       ? [
+        { label: 'None', active: (this.selection.combineMode || 'replace') === 'replace', action: () => { this.selection.combineMode = 'replace'; } },
+        { label: 'Add', active: this.selection.combineMode === 'add', action: () => { this.selection.combineMode = 'add'; } },
+        { label: 'Subtract', active: this.selection.combineMode === 'subtract', action: () => { this.selection.combineMode = 'subtract'; } },
         { label: 'Select All', action: () => this.selectAllSelection() },
         { label: 'Select None', action: () => this.clearSelection() },
         { label: 'Transform', action: () => { this.setActiveTool(TOOL_IDS.MOVE); this.setInputMode('canvas'); } },
@@ -9013,7 +9228,7 @@ export default class PixelStudio {
       if (showSelectActionRail) {
         const entry = entries[i];
         const bounds = { x: itemX, y: itemY, w: itemW, h: 44, action: entry.action };
-        this.drawButton(ctx, bounds, entry.label, false, { fontSize: 12 });
+        this.drawButton(ctx, bounds, entry.label, Boolean(entry.active), { fontSize: 12 });
         this.paletteBounds.push(bounds);
         this.registerFocusable('menu', bounds, entry.action);
       } else {
