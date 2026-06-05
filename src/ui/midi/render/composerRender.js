@@ -39,11 +39,17 @@ export function drawRecordModeSidebar(composer, ctx, x, y, w, h, tabOptions) {
     w: tabColumn.w,
     h: rowH
   };
-  composer.drawButton(ctx, composer.bounds.undoButton, 'Undo / Redo', false, false);
-  composer.bounds.redoButton = null;
-  composer.bounds.settings = {
+  composer.drawButton(ctx, composer.bounds.undoButton, 'Undo', false, false);
+  composer.bounds.redoButton = {
     x: tabColumn.x,
     y: composer.bounds.undoButton.y + composer.bounds.undoButton.h + SHARED_EDITOR_LEFT_MENU.buttonGap,
+    w: tabColumn.w,
+    h: rowH
+  };
+  composer.drawButton(ctx, composer.bounds.redoButton, 'Redo', false, false);
+  composer.bounds.settings = {
+    x: tabColumn.x,
+    y: composer.bounds.redoButton.y + composer.bounds.redoButton.h + SHARED_EDITOR_LEFT_MENU.buttonGap,
     w: tabColumn.w,
     h: rowH
   };

@@ -1,3 +1,9 @@
+import {
+  DISPLAY_MODE_OPTIONS,
+  getDisplayModeForAction,
+  getDisplayModeLabelForAction
+} from './shared/displayModes.js';
+
 export default class Title {
   constructor() {
     this.timer = 0;
@@ -7,15 +13,21 @@ export default class Title {
     this.toolsOrder = [
       'project-browser',
       'level-editor',
-      'tile-editor',
       'pixel-editor',
       'actor-editor',
       'midi-editor',
       'sfx-editor',
+      'cutscene-editor',
       'reset-all',
       'back'
     ];
-    this.controlsOrder = ['mobile', 'gamepad', 'keyboard', 'back'];
+    this.controlsOrder = [
+      'mobile',
+      'gamepad',
+      'keyboard',
+      ...DISPLAY_MODE_OPTIONS.map((option) => option.action),
+      'back'
+    ];
     this.storageOrder = ['toggle-server-storage', 'sync-server', 'sync-github', 'back'];
     this.menuSelection = 0;
     this.toolsSelection = 0;
@@ -32,6 +44,140 @@ export default class Title {
       y: -Math.random() * 400,
       speed: 20 + Math.random() * 40
     }));
+  }
+
+  clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  isPortraitPhone(width, height) {
+    return height > width && Math.min(width, height) <= 900;
+  }
+
+  getScreenLayout(width, height, {
+    screen = 'main',
+    count = 1,
+    preferredWidth = 360,
+    defaultStartY = 245,
+    defaultGap = 42
+  } = {}) {
+    const portrait = this.isPortraitPhone(width, height);
+    const horizontalPad = portrait ? 24 : 40;
+    const buttonWidth = Math.min(preferredWidth, Math.max(260, width - horizontalPad * 2));
+    if (portrait) {
+      const dense = count > 5;
+      const shortViewport = height < 700;
+      let buttonHeight = shortViewport ? 44 : dense ? 44 : 54;
+      let gap = shortViewport ? 7 : dense ? 7 : 12;
+      const topReserve = shortViewport ? (screen === 'main' ? 128 : 104) : (screen === 'main' ? 220 : 158);
+      const bottomPad = shortViewport ? 20 : screen === 'main' ? 72 : 34;
+      const available = Math.max(1, height - topReserve - bottomPad);
+      const idealListHeight = count * buttonHeight + Math.max(0, count - 1) * gap;
+      if (idealListHeight > available) {
+        gap = count > 1 ? this.clamp(Math.floor((available - count * buttonHeight) / (count - 1)), 2, gap) : 0;
+        const listWithCompactGap = count * buttonHeight + Math.max(0, count - 1) * gap;
+        if (listWithCompactGap > available) {
+          buttonHeight = this.clamp(Math.floor((available - Math.max(0, count - 1) * gap) / Math.max(1, count)), 32, buttonHeight);
+        }
+      }
+      const listHeight = count * buttonHeight + Math.max(0, count - 1) * gap;
+      const minStart = shortViewport ? (screen === 'main' ? 160 : 132) : (screen === 'main' ? 260 : 188);
+      const fittedTop = Math.max(12, height - listHeight - bottomPad);
+      const startY = Math.min(Math.max(minStart, fittedTop), fittedTop);
+      const titleY = Math.max(shortViewport ? 42 : 86, Math.min(startY - 20, startY - (screen === 'main' ? (shortViewport ? 42 : 64) : 58)));
+      return {
+        portrait,
+        buttonWidth,
+        buttonHeight,
+        buttonX: width / 2 - buttonWidth / 2,
+        startY,
+        gap,
+        titleY,
+        subtitleY: titleY + 26,
+        titleFont: shortViewport ? '19px Courier New' : '22px Courier New',
+        subtitleFont: shortViewport ? '12px Courier New' : '14px Courier New',
+        labelFont: shortViewport ? '15px Courier New' : dense ? '16px Courier New' : '18px Courier New'
+      };
+    }
+
+    const compactLandscape = height <= 430 && width > height;
+    const dense = count > 5;
+    let buttonHeight = compactLandscape && dense ? 24 : height < 520 ? 32 : 34;
+    const minButtonHeight = compactLandscape ? 24 : 30;
+    const minGap = compactLandscape ? 3 : 8;
+    const maxGap = compactLandscape && dense ? Math.min(defaultGap, 8) : defaultGap;
+    const topLimit = compactLandscape ? (dense ? 108 : 136) : screen === 'main' ? 220 : 228;
+    const minTopLimit = compactLandscape ? (screen === 'main' ? 62 : 50) : 120;
+    const bottomPad = compactLandscape ? 10 : 42;
+    const available = Math.max(1, height - minTopLimit - bottomPad);
+    let fittedGap = count > 1
+      ? Math.floor((available - count * buttonHeight) / (count - 1))
+      : defaultGap;
+    let gap = this.clamp(Math.min(maxGap, fittedGap), minGap, maxGap);
+    let listHeight = count * buttonHeight + Math.max(0, count - 1) * gap;
+    if (listHeight > available) {
+      buttonHeight = this.clamp(
+        Math.floor((available - Math.max(0, count - 1) * minGap) / Math.max(1, count)),
+        minButtonHeight,
+        buttonHeight
+      );
+      fittedGap = count > 1
+        ? Math.floor((available - count * buttonHeight) / (count - 1))
+        : defaultGap;
+      gap = this.clamp(Math.min(maxGap, fittedGap), minGap, maxGap);
+      listHeight = count * buttonHeight + Math.max(0, count - 1) * gap;
+    }
+    const minStartY = compactLandscape ? topLimit : 180;
+    const fittedTop = Math.max(8, height - listHeight - bottomPad);
+    const startY = Math.min(defaultStartY, Math.min(Math.max(minStartY, fittedTop), fittedTop));
+    return {
+      portrait,
+      buttonWidth,
+      buttonHeight,
+      buttonX: width / 2 - buttonWidth / 2,
+      startY,
+      gap,
+      titleY: compactLandscape ? Math.max(24, Math.min(dense ? 82 : 98, startY - 16)) : 180,
+      subtitleY: compactLandscape ? Math.max(40, Math.min(dense ? 100 : 118, startY - 2)) : 206,
+      titleFont: compactLandscape ? '18px Courier New' : '22px Courier New',
+      subtitleFont: compactLandscape ? '12px Courier New' : '14px Courier New',
+      labelFont: compactLandscape && dense ? '14px Courier New' : '18px Courier New'
+    };
+  }
+
+  drawTitleText(ctx, width, text, layout, subtitle = '') {
+    ctx.fillStyle = '#fff';
+    ctx.font = layout.titleFont;
+    ctx.textAlign = 'center';
+    ctx.fillText(text, width / 2, layout.titleY);
+    if (subtitle) {
+      ctx.font = layout.subtitleFont;
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.fillText(subtitle, width / 2, layout.subtitleY);
+    }
+  }
+
+  drawMenuButton(ctx, bounds, label, { selected = false, active = false, danger = false } = {}) {
+    ctx.fillStyle = selected
+      ? (danger ? 'rgba(255,120,120,0.25)' : 'rgba(255,255,255,0.3)')
+      : (danger ? 'rgba(255,120,120,0.12)' : 'rgba(255,255,255,0.12)');
+    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.strokeStyle = active ? '#ffe16a' : danger ? 'rgba(255,140,140,0.9)' : '#fff';
+    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
+    ctx.textBaseline = 'alphabetic';
+    if (selected) {
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.moveTo(bounds.x - 14, bounds.y + bounds.h / 2);
+      ctx.lineTo(bounds.x - 6, bounds.y + bounds.h / 2 - 6);
+      ctx.lineTo(bounds.x - 6, bounds.y + bounds.h / 2 + 6);
+      ctx.closePath();
+      ctx.fill();
+    }
   }
 
   update(dt) {
@@ -69,10 +215,11 @@ export default class Title {
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 2;
 
+    const portrait = this.isPortraitPhone(width, height);
     // Earth
     const earthX = width / 2;
-    const earthY = height / 2 + 120;
-    const earthRadius = 120;
+    const earthY = portrait ? height * 0.34 : height / 2 + 120;
+    const earthRadius = portrait ? Math.max(72, Math.min(108, width * 0.23)) : 120;
     const oceanGradient = ctx.createRadialGradient(
       earthX - 40,
       earthY - 60,
@@ -146,10 +293,15 @@ export default class Title {
       this.drawExplosions(ctx, earthX, earthY, earthRadius);
     }
 
-    ctx.font = 'bold 48px Courier New';
+    const compactLandscape = !portrait && height <= 430;
+    ctx.font = portrait
+      ? 'bold 34px Courier New'
+      : compactLandscape
+        ? 'bold 30px Courier New'
+        : 'bold 48px Courier New';
     ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
-    ctx.fillText('Chainsaw Aliens', width / 2, 120);
+    ctx.fillText('Chainsaw Aliens', width / 2, portrait ? 82 : compactLandscape ? 46 : 120);
 
     if (this.transition) {
       const t = Math.min(1, this.transition.progress);
@@ -171,7 +323,7 @@ export default class Title {
     } else if (screen === 'tools') {
       this.drawTools(ctx, width, height);
     } else if (screen === 'controls') {
-      this.drawControls(ctx, width, height, inputMode);
+      this.drawControls(ctx, width, height, inputMode, inputHints);
     } else if (screen === 'storage') {
       this.drawStorage(ctx, width, height, inputHints);
     } else {
@@ -182,7 +334,7 @@ export default class Title {
 
   drawIntro(ctx, width, height, { isMobile = false, gamepadConnected = false } = {}) {
     ctx.fillStyle = '#fff';
-    ctx.font = '20px Courier New';
+    ctx.font = this.isPortraitPhone(width, height) ? '22px Courier New' : '20px Courier New';
     ctx.textAlign = 'center';
     const pulse = Math.sin(this.timer * 4) * 6;
     const message = gamepadConnected
@@ -194,27 +346,19 @@ export default class Title {
   }
 
   drawMainMenu(ctx, width, height, options = {}) {
-    ctx.fillStyle = '#fff';
-    ctx.font = '22px Courier New';
-    ctx.textAlign = 'center';
-    ctx.fillText('Main Menu', width / 2, 180);
-
-    const buttonWidth = 320;
-    const buttonHeight = 34;
-    const buttonX = width / 2 - buttonWidth / 2;
-    const startY = 240;
-    const gap = 48;
+    const layout = this.getScreenLayout(width, height, {
+      screen: 'main',
+      count: this.menuOrder.length,
+      preferredWidth: 360,
+      defaultStartY: 240,
+      defaultGap: 48
+    });
+    this.drawTitleText(ctx, width, 'Main Menu', layout);
 
     this.menuBounds.clear();
     this.menuOrder.forEach((action, index) => {
-      const y = startY + index * gap;
+      const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = this.menuOrder[this.menuSelection] === action;
-      ctx.fillStyle = selected ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)';
-      ctx.fillRect(buttonX, y, buttonWidth, buttonHeight);
-      ctx.strokeStyle = '#fff';
-      ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
-      ctx.fillStyle = '#fff';
-      ctx.font = '18px Courier New';
       const label = action === 'recent-level'
         ? 'Recent Level'
         : action === 'robtersession'
@@ -224,17 +368,10 @@ export default class Title {
             : action === 'tools'
               ? 'Tools'
               : 'Options';
-      ctx.fillText(label, width / 2, y + 22);
-      if (selected) {
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.moveTo(buttonX - 14, y + buttonHeight / 2);
-        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 - 6);
-        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 + 6);
-        ctx.closePath();
-        ctx.fill();
-      }
-      this.menuBounds.set(action, { x: buttonX, y, w: buttonWidth, h: buttonHeight });
+      const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
+      ctx.font = layout.labelFont;
+      this.drawMenuButton(ctx, bounds, label, { selected });
+      this.menuBounds.set(action, bounds);
     });
 
     this.debugRestartBounds = null;
@@ -254,30 +391,19 @@ export default class Title {
 
 
   drawStorage(ctx, width, height, inputHints = {}) {
-    ctx.fillStyle = '#fff';
-    ctx.font = '22px Courier New';
-    ctx.textAlign = 'center';
-    ctx.fillText('Server Storage', width / 2, 180);
-    ctx.font = '14px Courier New';
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.fillText('Persist projects on server + GitHub sync', width / 2, 206);
-
-    const buttonWidth = 420;
-    const buttonHeight = 34;
-    const buttonX = width / 2 - buttonWidth / 2;
-    const startY = 245;
-    const gap = 42;
+    const layout = this.getScreenLayout(width, height, {
+      screen: 'storage',
+      count: this.storageOrder.length,
+      preferredWidth: 420,
+      defaultStartY: 245,
+      defaultGap: 42
+    });
+    this.drawTitleText(ctx, width, 'Server Storage', layout, 'Persist projects on server + GitHub sync');
 
     this.storageBounds.clear();
     this.storageOrder.forEach((action, index) => {
-      const y = startY + index * gap;
+      const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = this.storageOrder[this.controlsSelection] === action;
-      ctx.fillStyle = selected ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)';
-      ctx.fillRect(buttonX, y, buttonWidth, buttonHeight);
-      ctx.strokeStyle = '#fff';
-      ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
-      ctx.fillStyle = '#fff';
-      ctx.font = '18px Courier New';
       const enabled = Boolean(inputHints?.serverStorageEnabled);
       const label = action === 'toggle-server-storage'
         ? `Server Storage: ${enabled ? 'ON' : 'OFF'}`
@@ -286,52 +412,30 @@ export default class Title {
           : action === 'sync-github'
             ? 'Sync Snapshot to GitHub'
             : 'Back';
-      ctx.fillText(label, width / 2, y + 22);
-      if (selected) {
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.moveTo(buttonX - 14, y + buttonHeight / 2);
-        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 - 6);
-        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 + 6);
-        ctx.closePath();
-        ctx.fill();
-      }
-      this.storageBounds.set(action, { x: buttonX, y, w: buttonWidth, h: buttonHeight });
+      const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
+      ctx.font = layout.labelFont;
+      this.drawMenuButton(ctx, bounds, label, { selected });
+      this.storageBounds.set(action, bounds);
     });
   }
 
   drawTools(ctx, width, height) {
-    ctx.fillStyle = '#fff';
-    ctx.font = '22px Courier New';
-    ctx.textAlign = 'center';
-    ctx.fillText('Tools', width / 2, 180);
-    ctx.font = '14px Courier New';
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.fillText('Editors & Reset', width / 2, 206);
-
-    const buttonWidth = 360;
-    const buttonHeight = 34;
-    const buttonX = width / 2 - buttonWidth / 2;
-    const startY = 245;
-    const gap = 42;
+    const layout = this.getScreenLayout(width, height, {
+      screen: 'tools',
+      count: this.toolsOrder.length,
+      preferredWidth: 360,
+      defaultStartY: 245,
+      defaultGap: 42
+    });
+    this.drawTitleText(ctx, width, 'Tools', layout, 'Editors & Reset');
 
     this.toolsBounds.clear();
     this.toolsOrder.forEach((action, index) => {
-      const y = startY + index * gap;
+      const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = this.toolsOrder[this.toolsSelection] === action;
       const isReset = action === 'reset-all';
-      ctx.fillStyle = selected
-        ? (isReset ? 'rgba(255,120,120,0.25)' : 'rgba(255,255,255,0.3)')
-        : (isReset ? 'rgba(255,120,120,0.12)' : 'rgba(255,255,255,0.12)');
-      ctx.fillRect(buttonX, y, buttonWidth, buttonHeight);
-      ctx.strokeStyle = isReset ? 'rgba(255,140,140,0.9)' : '#fff';
-      ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
-      ctx.fillStyle = '#fff';
-      ctx.font = '18px Courier New';
       const label = action === 'level-editor'
         ? 'Level Editor'
-        : action === 'tile-editor'
-          ? 'Tile Editor'
         : action === 'project-browser'
           ? 'Project Browser'
           : action === 'pixel-editor'
@@ -342,72 +446,48 @@ export default class Title {
               ? 'MIDI Editor'
               : action === 'sfx-editor'
               ? 'SFX Editor'
+              : action === 'cutscene-editor'
+              ? 'Cutscene Editor'
               : action === 'reset-all'
                 ? 'Reset All'
                 : 'Back';
-      ctx.fillText(label, width / 2, y + 22);
-      if (selected) {
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.moveTo(buttonX - 14, y + buttonHeight / 2);
-        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 - 6);
-        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 + 6);
-        ctx.closePath();
-        ctx.fill();
-      }
-      this.toolsBounds.set(action, { x: buttonX, y, w: buttonWidth, h: buttonHeight });
+      const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
+      ctx.font = layout.labelFont;
+      this.drawMenuButton(ctx, bounds, label, { selected, danger: isReset });
+      this.toolsBounds.set(action, bounds);
     });
   }
 
-  drawControls(ctx, width, height, inputMode) {
-    ctx.fillStyle = '#fff';
-    ctx.font = '22px Courier New';
-    ctx.textAlign = 'center';
-    ctx.fillText('Controls', width / 2, 180);
-    ctx.font = '14px Courier New';
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.fillText('Select an input mode', width / 2, 206);
-
-    const buttonWidth = 360;
-    const buttonHeight = 34;
-    const buttonX = width / 2 - buttonWidth / 2;
-    const startY = 250;
-    const gap = 46;
+  drawControls(ctx, width, height, inputMode, inputHints = {}) {
+    const layout = this.getScreenLayout(width, height, {
+      screen: 'controls',
+      count: this.controlsOrder.length,
+      preferredWidth: 360,
+      defaultStartY: 250,
+      defaultGap: 46
+    });
+    this.drawTitleText(ctx, width, 'Options', layout, 'Controls & display');
 
     this.controlsBounds.clear();
     this.controlsOrder.forEach((action, index) => {
-      const y = startY + index * gap;
+      const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = this.controlsOrder[this.controlsSelection] === action;
-      const active = inputMode === action;
-      ctx.fillStyle = selected ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)';
-      ctx.fillRect(buttonX, y, buttonWidth, buttonHeight);
-      ctx.strokeStyle = active ? '#ffe16a' : '#fff';
-      ctx.strokeRect(buttonX, y, buttonWidth, buttonHeight);
-      ctx.fillStyle = '#fff';
-      ctx.font = '18px Courier New';
+      const displayMode = inputHints?.displayMode || 'sepia';
+      const displayModeForAction = getDisplayModeForAction(action);
+      const active = displayModeForAction ? displayMode === displayModeForAction : inputMode === action;
       const label = action === 'mobile'
         ? 'Mobile Touch'
         : action === 'gamepad'
           ? 'Controller / Gamepad'
           : action === 'keyboard'
             ? 'Keyboard'
-            : 'Back';
-      ctx.fillText(label, width / 2, y + 22);
-      if (active && action !== 'back') {
-        ctx.font = '12px Courier New';
-        ctx.fillStyle = '#ffe16a';
-        ctx.fillText('Active', width / 2, y + 40);
-      }
-      if (selected) {
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.moveTo(buttonX - 14, y + buttonHeight / 2);
-        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 - 6);
-        ctx.lineTo(buttonX - 6, y + buttonHeight / 2 + 6);
-        ctx.closePath();
-        ctx.fill();
-      }
-      this.controlsBounds.set(action, { x: buttonX, y, w: buttonWidth, h: buttonHeight });
+            : displayModeForAction
+              ? getDisplayModeLabelForAction(action)
+              : 'Back';
+      const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
+      ctx.font = layout.labelFont;
+      this.drawMenuButton(ctx, bounds, label, { selected, active });
+      this.controlsBounds.set(action, bounds);
     });
   }
 

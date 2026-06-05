@@ -1,10 +1,10 @@
 import Game from './game/Game.js';
 import { addDOMListener, createDisposer } from './input/disposables.js';
+import { getBrowserViewportSize, getCanvasViewportLayout, shouldShowMobileFullscreenButton } from './ui/shared/canvasViewportLayout.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 const enterFullscreenButton = document.getElementById('enter-fullscreen');
-const exitFullscreenButton = document.getElementById('exit-fullscreen');
 const hint = document.querySelector('.hint');
 
 const game = new Game(canvas, ctx);
@@ -13,6 +13,8 @@ window.__gameReady = true;
 let isMobile = false;
 let fullscreenPending = false;
 const hideFullscreenControlsForTesting = new URLSearchParams(window.location.search).has('hideFullscreenForTesting');
+const DEFAULT_CANVAS_WIDTH = canvas.width;
+const DEFAULT_CANVAS_HEIGHT = canvas.height;
 
 const listenerDisposer = createDisposer();
 
@@ -42,30 +44,26 @@ function requestFullscreen() {
   updateFullscreenButtons();
 }
 
-function exitFullscreen() {
-  if (!document.fullscreenElement) return;
-  if (document.exitFullscreen) {
-    document.exitFullscreen().catch(() => {});
-  }
-  fullscreenPending = false;
-  updateFullscreenButtons();
-}
-
 function updateFullscreenButtons() {
-  const showControls = Boolean(isMobile) && !hideFullscreenControlsForTesting;
-  const isFullscreen = Boolean(document.fullscreenElement);
+  const showControls = shouldShowMobileFullscreenButton({
+    isMobile,
+    hiddenForTesting: hideFullscreenControlsForTesting,
+    isFullscreen: Boolean(document.fullscreenElement),
+    fullscreenPending,
+    gameState: game?.state,
+    titleScreen: game?.title?.screen
+  });
   if (enterFullscreenButton) {
-    enterFullscreenButton.classList.toggle('is-hidden', !showControls || isFullscreen || fullscreenPending);
-  }
-  if (exitFullscreenButton) {
-    exitFullscreenButton.classList.toggle('is-hidden', !showControls || !isFullscreen);
+    enterFullscreenButton.classList.toggle('is-hidden', !showControls);
   }
 }
 
 function getCanvasPosition(event) {
   const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
+  const logicalWidth = game?.viewport?.width || canvas.width;
+  const logicalHeight = game?.viewport?.height || canvas.height;
+  const scaleX = logicalWidth / rect.width;
+  const scaleY = logicalHeight / rect.height;
   return {
     x: (event.clientX - rect.left) * scaleX,
     y: (event.clientY - rect.top) * scaleY
@@ -73,18 +71,38 @@ function getCanvasPosition(event) {
 }
 
 function resize() {
-  const scale = Math.min(window.innerWidth / canvas.width, window.innerHeight / canvas.height);
-  canvas.style.transform = `scale(${scale})`;
+  isMobile = detectMobile();
+  const { width: viewportWidth, height: viewportHeight } = getBrowserViewportSize(window, {
+    defaultWidth: DEFAULT_CANVAS_WIDTH,
+    defaultHeight: DEFAULT_CANVAS_HEIGHT
+  });
+  const layout = getCanvasViewportLayout({
+    isMobile,
+    viewportWidth,
+    viewportHeight,
+    defaultCanvasWidth: DEFAULT_CANVAS_WIDTH,
+    defaultCanvasHeight: DEFAULT_CANVAS_HEIGHT,
+    devicePixelRatio: window.devicePixelRatio || 1
+  });
+  if (canvas.width !== layout.targetCanvasWidth || canvas.height !== layout.targetCanvasHeight) {
+    canvas.width = layout.targetCanvasWidth;
+    canvas.height = layout.targetCanvasHeight;
+  }
+  canvas.style.width = `${layout.styleWidth}px`;
+  canvas.style.height = `${layout.styleHeight}px`;
+  canvas.style.transform = `scale(${layout.scale})`;
   if (game.setViewport) {
-    isMobile = detectMobile();
     document.body.classList.toggle('mobile', isMobile);
+    document.body.classList.toggle('mobile-portrait', layout.isPortrait);
+    document.body.classList.toggle('mobile-landscape', layout.isLandscape);
     if (hint) {
       hint.textContent = isMobile ? 'Tap to continue' : 'Press SPACE for dialog / confirm';
     }
     game.setViewport({
-      width: window.innerWidth,
-      height: window.innerHeight,
-      scale,
+      width: layout.viewportWidth,
+      height: layout.viewportHeight,
+      scale: layout.scale,
+      dpr: layout.dpr,
       isMobile
     });
   }
@@ -144,6 +162,9 @@ function resetTouchSession(reason = 'unknown') {
 
 function bindInputListeners() {
   listenerDisposer.add(addDOMListener(window, 'resize', resize));
+  listenerDisposer.add(addDOMListener(window, 'load', syncViewportSoon));
+  listenerDisposer.add(addDOMListener(window, 'pageshow', syncViewportSoon));
+  listenerDisposer.add(addDOMListener(window, 'orientationchange', syncViewportSoon));
   if (window.visualViewport) {
     listenerDisposer.add(addDOMListener(window.visualViewport, 'resize', syncViewportSoon));
     listenerDisposer.add(addDOMListener(window.visualViewport, 'scroll', syncViewportSoon));
@@ -287,22 +308,23 @@ function bindInputListeners() {
     }));
   }
 
-  if (exitFullscreenButton) {
-    listenerDisposer.add(addDOMListener(exitFullscreenButton, 'click', () => {
-      exitFullscreen();
-    }));
-  }
 }
 
 bindInputListeners();
-resize();
+syncViewportSoon();
 
 let last = performance.now();
 let lastState = game.state;
+let lastTitleScreen = game.title?.screen;
 function loop(now) {
+  const titleScreen = game.title?.screen;
   if (game.state !== lastState) {
     resetTouchSession(`state:${lastState}->${game.state}`);
     lastState = game.state;
+    updateFullscreenButtons();
+  }
+  if (titleScreen !== lastTitleScreen) {
+    lastTitleScreen = titleScreen;
     updateFullscreenButtons();
   }
   const dt = Math.min((now - last) / 1000, 0.033);

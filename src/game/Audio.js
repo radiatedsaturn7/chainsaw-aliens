@@ -151,6 +151,7 @@ export default class AudioSystem {
     this.midiSamples = null;
     this.midiVoices = [];
     this.midiVoiceLimit = 48;
+    this.midiPreviewVoiceLimit = 12;
     this.midiLatency = 0.03;
     this.midiReverbEnabled = true;
     this.midiReverbLevel = 0.18;
@@ -189,6 +190,8 @@ export default class AudioSystem {
     };
     this.soundfontSampleCache = new Map();
     this.midiPedalBusCache = new Map();
+    this.midiPedalBusLimit = 12;
+    this.midiPedalBusMaxAgeSeconds = 45;
     this.pedalImpulseCache = new Map();
     this.drumFont = {
       baseUrl: WEB_AUDIOFONT_BASE_URL,
@@ -220,6 +223,41 @@ export default class AudioSystem {
       }
     } else if (this.ctx.state === 'suspended') {
       this.ctx.resume();
+    }
+  }
+
+  beginMasterCapture({ monitor = true } = {}) {
+    this.ensure();
+    if (!this.ctx?.createMediaStreamDestination) return null;
+    const destination = this.ctx.createMediaStreamDestination();
+    const source = this.masterPanNode || this.master;
+    if (!source) return null;
+    source.connect(destination);
+    let monitorMuted = false;
+    if (monitor === false && this.ctx.destination) {
+      try {
+        source.disconnect(this.ctx.destination);
+        monitorMuted = true;
+      } catch (_error) {
+        monitorMuted = false;
+      }
+    }
+    return { destination, source, stream: destination.stream, monitor, monitorMuted, output: this.ctx.destination };
+  }
+
+  endMasterCapture(capture) {
+    if (!capture?.source || !capture?.destination) return;
+    try {
+      capture.source.disconnect(capture.destination);
+    } catch (_error) {
+      // Capture cleanup must not interrupt game audio.
+    }
+    if (capture.monitor === false && capture.monitorMuted && capture.output) {
+      try {
+        capture.source.connect(capture.output);
+      } catch (_error) {
+        // Restore best-effort audio monitoring after silent capture.
+      }
     }
   }
 
@@ -666,6 +704,70 @@ export default class AudioSystem {
     return this.loadGmProgram(program).catch(() => null);
   }
 
+  preloadWebAudioFontDrumNotes(notes = [], preset = 0) {
+    if (!Array.isArray(notes) || !notes.length) return Promise.resolve([]);
+    this.ensureMidiSampler();
+    return this.ensureWebAudioFontAvailability()
+      .then((available) => {
+        if (!available) return [];
+        return this.ensureDrumFontPlayer()
+          .then((player) => {
+            if (!player) return [];
+            const uniqueNotes = Array.from(new Set(notes
+              .map((note) => clampDrumPitch(Math.round(Number(note) || GM_DRUM_NOTE_MIN)))));
+            return Promise.all(uniqueNotes.map((note) => this.loadDrumFontNote(note, preset).catch(() => null)));
+          });
+      })
+      .catch(() => []);
+  }
+
+  collectSongResourceRequests(song = {}) {
+    const programs = new Map();
+    const drumNotesByPreset = new Map();
+    const pedals = [];
+    const tracks = Array.isArray(song?.tracks) ? song.tracks : [];
+    tracks.forEach((track) => {
+      if (!track) return;
+      const program = clamp(track.program ?? 0, 0, GM_PROGRAMS.length - 1);
+      const isDrums = track.instrument === 'drums' || track.isPercussion === true || isDrumChannel(track.channel);
+      const channel = isDrums ? GM_DRUM_CHANNEL : clamp(track.channel ?? 0, 0, 15);
+      const bankMSB = isDrums ? GM_DRUM_BANK_MSB : (Number.isInteger(track.bankMSB) ? track.bankMSB : 0);
+      const bankLSB = isDrums
+        ? (Number.isInteger(track.bankLSB) ? track.bankLSB : GM_DRUM_BANK_LSB)
+        : (Number.isInteger(track.bankLSB) ? track.bankLSB : 0);
+      const key = `${channel}:${program}:${bankMSB}:${bankLSB}`;
+      if (!programs.has(key)) programs.set(key, { program, channel, bankMSB, bankLSB });
+      if (Array.isArray(track.midiPedals)) pedals.push(...track.midiPedals);
+      if (isDrums) {
+        const presetKey = String(program);
+        const noteSet = drumNotesByPreset.get(presetKey) || new Set();
+        const patterns = Array.isArray(track.patterns) ? track.patterns : [];
+        patterns.forEach((pattern) => {
+          const notes = Array.isArray(pattern?.notes) ? pattern.notes : [];
+          notes.forEach((note) => noteSet.add(clampDrumPitch(Math.round(Number(note?.pitch) || GM_DRUM_NOTE_MIN))));
+        });
+        drumNotesByPreset.set(presetKey, noteSet);
+      }
+    });
+    return {
+      programs: Array.from(programs.values()),
+      pedals,
+      drumNotesByPreset
+    };
+  }
+
+  preloadSongResources(song = {}) {
+    const requests = this.collectSongResourceRequests(song);
+    this.preloadPedalResources(requests.pedals);
+    const loads = requests.programs.map(({ program, channel, bankMSB, bankLSB }) => (
+      this.preloadSoundfontProgram(program, channel, bankMSB, bankLSB)
+    ));
+    requests.drumNotesByPreset.forEach((notes, presetKey) => {
+      loads.push(this.preloadWebAudioFontDrumNotes(Array.from(notes), Number(presetKey) || 0));
+    });
+    return Promise.all(loads.map((load) => Promise.resolve(load).catch(() => null)));
+  }
+
   setDrumKit(nameOrId) {
     const kit = this.drumKitManager.setDrumKit(nameOrId);
     this.channelState[9].drumKitId = kit?.id || null;
@@ -992,7 +1094,7 @@ export default class AudioSystem {
         comp.attack.value = 0.002 + (1 - clamp(knobs.ratio ?? 0.5, 0, 1)) * 0.03;
         comp.release.value = 0.06 + clamp(knobs.makeup ?? 0.4, 0, 1) * 0.32;
         const makeup = trackNode(this.ctx.createGain());
-        makeup.gain.value = 0.85 + clamp(knobs.makeup ?? 0.4, 0, 1) * 1.1;
+        makeup.gain.value = 0.7 + clamp(knobs.makeup ?? 0.4, 0, 1) * 0.75;
         current.connect(comp);
         comp.connect(makeup);
         current = makeup;
@@ -1018,10 +1120,13 @@ export default class AudioSystem {
         current.connect(low); low.connect(mid); mid.connect(high); high.connect(presence);
         current = presence;
       } else if (pedal.type === 'overdrive') {
+        const drive = clamp(knobs.drive ?? 0.6, 0, 1);
+        const toneValue = clamp(knobs.tone ?? 0.5, 0, 1);
+        const biteValue = clamp(knobs.bite ?? 0.5, 0, 1);
         const pre = trackNode(this.ctx.createGain());
-        pre.gain.value = 1 + clamp(knobs.drive ?? 0.6, 0, 1) * 6;
+        pre.gain.value = 1 + drive * 3.8;
         const shape = trackNode(this.ctx.createWaveShaper());
-        shape.curve = this.buildDistortionCurve(clamp(knobs.drive ?? 0.6, 0, 1));
+        shape.curve = this.buildDistortionCurve(drive * 0.72);
         try {
           shape.oversample = '4x';
         } catch (error) {
@@ -1029,23 +1134,23 @@ export default class AudioSystem {
         }
         const tone = trackNode(this.ctx.createBiquadFilter());
         tone.type = 'lowpass';
-        tone.frequency.value = 900 + clamp(knobs.tone ?? 0.5, 0, 1) * 7000;
+        tone.frequency.value = 1200 + toneValue * 5200;
         const bite = trackNode(this.ctx.createBiquadFilter());
         bite.type = 'highpass';
-        bite.frequency.value = 40 + clamp(knobs.bite ?? 0.5, 0, 1) * 650;
+        bite.frequency.value = 55 + biteValue * 420;
         const out = trackNode(this.ctx.createGain());
-        out.gain.value = 0.65;
+        out.gain.value = 0.42 + (1 - drive) * 0.18;
         current.connect(pre); pre.connect(shape); shape.connect(tone); tone.connect(bite); bite.connect(out);
         current = out;
       } else if (pedal.type === 'wah') {
         const filter = trackNode(this.ctx.createBiquadFilter());
         filter.type = 'bandpass';
-        filter.Q.value = 1 + clamp(knobs.mix ?? 0.7, 0, 1) * 10;
+        filter.Q.value = 0.7 + clamp(knobs.mix ?? 0.7, 0, 1) * 2.6;
         const lfo = trackNode(this.ctx.createOscillator());
         const lfoGain = trackNode(this.ctx.createGain());
-        lfo.frequency.value = 0.4 + clamp(knobs.rate ?? 0.5, 0, 1) * 5;
-        lfoGain.gain.value = 320 + clamp(knobs.sweep ?? 0.6, 0, 1) * 3400;
-        filter.frequency.value = 380;
+        lfo.frequency.value = 0.18 + clamp(knobs.rate ?? 0.5, 0, 1) * 2.3;
+        lfoGain.gain.value = 160 + clamp(knobs.sweep ?? 0.6, 0, 1) * 1150;
+        filter.frequency.setValueAtTime(520, Math.max(this.ctx.currentTime, when));
         lfo.connect(lfoGain);
         lfoGain.connect(filter.frequency);
         lfo.start(when);
@@ -1058,9 +1163,9 @@ export default class AudioSystem {
         const depth = clamp(knobs.depth ?? 0.5, 0, 1);
         const spread = clamp(knobs.spread ?? 0.4, 0, 1);
         const dry = trackNode(this.ctx.createGain());
-        dry.gain.value = 1 - mix * 0.55;
+        dry.gain.value = 1 - mix * 0.42;
         const wet = trackNode(this.ctx.createGain());
-        wet.gain.value = mix * 0.5;
+        wet.gain.value = mix * 0.38;
         const delay = trackNode(this.ctx.createDelay(0.06));
         delay.delayTime.value = 0.012 + spread * 0.016;
         const lfo = trackNode(this.ctx.createOscillator());
@@ -1084,9 +1189,9 @@ export default class AudioSystem {
         const depth = clamp(knobs.depth ?? 0.6, 0, 1);
         const mix = clamp(knobs.mix ?? 0.6, 0, 1);
         const dry = trackNode(this.ctx.createGain());
-        dry.gain.value = 1 - mix * 0.5;
+        dry.gain.value = 1 - mix * 0.42;
         const wet = trackNode(this.ctx.createGain());
-        wet.gain.value = mix * 0.6;
+        wet.gain.value = mix * 0.46;
         const stages = Array.from({ length: 4 }, () => trackNode(this.ctx.createBiquadFilter()));
         stages.forEach((stage) => {
           stage.type = 'allpass';
@@ -1095,8 +1200,8 @@ export default class AudioSystem {
         });
         const lfo = trackNode(this.ctx.createOscillator());
         const lfoGain = trackNode(this.ctx.createGain());
-        lfo.frequency.value = 0.2 + rate * 4.2;
-        lfoGain.gain.value = 180 + depth * 1400;
+        lfo.frequency.value = 0.16 + rate * 2.8;
+        lfoGain.gain.value = 120 + depth * 900;
         lfo.connect(lfoGain);
         stages.forEach((stage) => lfoGain.connect(stage.frequency));
         lfo.start(when);
@@ -1116,8 +1221,8 @@ export default class AudioSystem {
         const decay = clamp(knobs.decay ?? 0.6, 0, 1);
         const dry = trackNode(this.ctx.createGain());
         const wet = trackNode(this.ctx.createGain());
-        dry.gain.value = 1 - mix * 0.6;
-        wet.gain.value = mix * 0.8;
+        dry.gain.value = 1 - mix * 0.45;
+        wet.gain.value = mix * 0.58;
         const convolver = trackNode(this.ctx.createConvolver());
         convolver.buffer = this.getPedalImpulse(room, decay);
         const sum = trackNode(this.ctx.createGain());
@@ -1129,19 +1234,19 @@ export default class AudioSystem {
         current = sum;
       } else if (pedal.type === 'echo') {
         const time = clamp(knobs.time ?? 0.45, 0, 1);
-        const feedback = clamp(knobs.feedback ?? 0.35, 0, 0.95);
+        const feedback = clamp(knobs.feedback ?? 0.35, 0, 0.78);
         const mix = clamp(knobs.mix ?? 0.65, 0, 1);
         const delay = trackNode(this.ctx.createDelay(1.5));
-        delay.delayTime.value = 0.06 + time * 0.64;
+        delay.delayTime.value = 0.08 + time * 0.52;
         const fb = trackNode(this.ctx.createGain());
-        fb.gain.value = 0.15 + feedback * 0.72;
+        fb.gain.value = 0.12 + feedback * 0.58;
         const tone = trackNode(this.ctx.createBiquadFilter());
         tone.type = 'lowpass';
         tone.frequency.value = 1300 + (1 - feedback) * 5200;
         const dry = trackNode(this.ctx.createGain());
-        dry.gain.value = 1 - mix * 0.55;
+        dry.gain.value = 1 - mix * 0.42;
         const wet = trackNode(this.ctx.createGain());
-        wet.gain.value = mix * 0.65;
+        wet.gain.value = mix * 0.48;
         const sum = trackNode(this.ctx.createGain());
         current.connect(dry);
         current.connect(delay);
@@ -1189,8 +1294,11 @@ export default class AudioSystem {
       }
     });
 
+    const outputTrim = trackNode(this.ctx.createGain());
+    outputTrim.gain.value = enabled.length ? 0.82 : 1;
+    current.connect(outputTrim);
     return {
-      output: current,
+      output: outputTrim,
       cleanup: () => {
         stopFns.forEach((fn) => {
           try { fn(); } catch (error) { /* ignore */ }
@@ -1202,7 +1310,7 @@ export default class AudioSystem {
     };
   }
 
-  playDspPedalGmNote({ pitch, duration, volume, program, pan, isDrums, when, pedals = [] }) {
+  playDspPedalGmNote({ pitch, duration, volume, program, pan, isDrums, when, pedals = [], voiceGroup = 'timeline' }) {
     const instrument = isDrums
       ? this.getFallbackDrum(pitch)
       : this.getFallbackInstrument(program);
@@ -1223,7 +1331,8 @@ export default class AudioSystem {
         instrument,
         when,
         pan,
-        pedals
+        pedals,
+        voiceGroup
       });
     });
   }
@@ -1303,13 +1412,17 @@ export default class AudioSystem {
   getMidiPedalBus({ pedals = [], pan = 0, channel = 0, trackId = null } = {}) {
     const enabled = Array.isArray(pedals) ? pedals.filter((pedal) => pedal && pedal.enabled !== false) : [];
     if (!enabled.length) return null;
+    this.pruneMidiPedalBusCache();
     const key = JSON.stringify({
       trackId: trackId ?? channel ?? 0,
       pan: Math.round(clamp(pan ?? 0, -1, 1) * 1000) / 1000,
       pedals: enabled
     });
     const cached = this.midiPedalBusCache.get(key);
-    if (cached) return cached;
+    if (cached) {
+      cached.lastUsed = this.ctx.currentTime;
+      return cached;
+    }
 
     const input = this.ctx.createGain();
     const chain = this.applyPedalChainToNote(input, enabled, this.ctx.currentTime, 3600);
@@ -1327,6 +1440,7 @@ export default class AudioSystem {
     reverbSend.connect(this.midiReverb);
     const bus = {
       input,
+      lastUsed: this.ctx.currentTime,
       cleanup: () => {
         chain.cleanup?.();
         [input, panNode, reverbSend].forEach((node) => {
@@ -1336,7 +1450,33 @@ export default class AudioSystem {
       }
     };
     this.midiPedalBusCache.set(key, bus);
+    this.pruneMidiPedalBusCache();
     return bus;
+  }
+
+  pruneMidiPedalBusCache() {
+    if (!this.ctx || !this.midiPedalBusCache?.size) return;
+    const now = this.ctx.currentTime;
+    this.midiPedalBusCache.forEach((bus, key) => {
+      if (now - (bus.lastUsed ?? now) <= this.midiPedalBusMaxAgeSeconds) return;
+      try { bus.cleanup?.(); } catch (error) { /* ignore */ }
+      this.midiPedalBusCache.delete(key);
+    });
+    while (this.midiPedalBusCache.size > this.midiPedalBusLimit) {
+      let oldestKey = null;
+      let oldestTime = Infinity;
+      this.midiPedalBusCache.forEach((bus, key) => {
+        const lastUsed = bus.lastUsed ?? 0;
+        if (lastUsed < oldestTime) {
+          oldestTime = lastUsed;
+          oldestKey = key;
+        }
+      });
+      if (oldestKey === null) break;
+      const oldest = this.midiPedalBusCache.get(oldestKey);
+      try { oldest?.cleanup?.(); } catch (error) { /* ignore */ }
+      this.midiPedalBusCache.delete(oldestKey);
+    }
   }
 
   clearMidiPedalBuses() {
@@ -1358,12 +1498,13 @@ export default class AudioSystem {
     isDrums,
     when,
     pedals = [],
-    trackId = null
+    trackId = null,
+    voiceGroup = 'timeline'
   }) {
     this.getSoundfontBufferForNote({ pitch, program, channel, bankMSB, bankLSB })
       .then((sample) => {
         if (!sample?.buffer) {
-          this.playDspPedalGmNote({ pitch, duration, volume, program, pan, isDrums, when, pedals });
+          this.playDspPedalGmNote({ pitch, duration, volume, program, pan, isDrums, when, pedals, voiceGroup });
           return;
         }
         const now = Math.max(when ?? this.ctx.currentTime, this.ctx.currentTime);
@@ -1405,7 +1546,7 @@ export default class AudioSystem {
         }
         source.start(now);
         source.stop(stopAt + 0.03);
-        this.registerMidiVoice({ source, gain, stopTime: stopAt + 0.05, channel });
+        this.registerMidiVoice({ source, gain, stopTime: stopAt + 0.05, channel, group: voiceGroup });
         const cleanupInput = () => {
           [source, filter].forEach((node) => {
             if (!node) return;
@@ -1423,7 +1564,7 @@ export default class AudioSystem {
         window.setTimeout(cleanupGraph, Math.max(0.2, duration + 2.5) * 1000);
       })
       .catch(() => {
-        this.playDspPedalGmNote({ pitch, duration, volume, program, pan, isDrums, when, pedals });
+        this.playDspPedalGmNote({ pitch, duration, volume, program, pan, isDrums, when, pedals, voiceGroup });
       });
   }
 
@@ -1441,11 +1582,14 @@ export default class AudioSystem {
     bankLSB = 0,
     pan = 0,
     pedals = [],
-    trackId = null
+    trackId = null,
+    preview = false,
+    voiceGroup = preview ? 'preview' : 'timeline'
   }) {
     this.ensureMidiSampler();
     const clampedProgram = clamp(program ?? 0, 0, GM_PROGRAMS.length - 1);
-    const clampedVolume = clamp(volume ?? 1, 0, 1);
+    const hasPedals = Array.isArray(pedals) && pedals.some((pedal) => pedal && pedal.enabled !== false);
+    const clampedVolume = clamp(volume ?? 1, 0, hasPedals ? 0.82 : 1);
     const clampedPan = clamp(pan ?? 0, -1, 1);
     const isDrums = isDrumChannel(channel);
     const resolvedChannel = isDrums ? GM_DRUM_CHANNEL : clamp(channel ?? 0, 0, 15);
@@ -1502,7 +1646,8 @@ export default class AudioSystem {
           pan: clampedPan,
           isDrums,
           when,
-          pedals: enabledPedals
+          pedals: enabledPedals,
+          voiceGroup
         });
         return;
       }
@@ -1518,7 +1663,8 @@ export default class AudioSystem {
         isDrums,
         when,
         pedals: enabledPedals,
-        trackId
+        trackId,
+        voiceGroup
       });
       return;
     }
@@ -1552,7 +1698,8 @@ export default class AudioSystem {
           volume: clampedVolume,
           instrument: this.getFallbackDrum(resolvedPitch),
           when,
-          pan: clampedPan
+          pan: clampedPan,
+          voiceGroup
         });
         return;
       }
@@ -1603,7 +1750,7 @@ export default class AudioSystem {
       .then((voice) => {
         if (!voice) return;
         const stopTime = when + duration + 0.2;
-        this.registerMidiVoice({ voice, stopTime, channel: resolvedChannel });
+        this.registerMidiVoice({ voice, stopTime, channel: resolvedChannel, group: voiceGroup });
         this.gmError = null;
       })
       .catch((error) => {
@@ -1931,7 +2078,8 @@ export default class AudioSystem {
     instrument = 'lead',
     when = null,
     pan = 0,
-    pedals = []
+    pedals = [],
+    voiceGroup = 'timeline'
   }) {
     this.ensureMidiSampler();
     const sample = this.midiSamples[instrument] || this.midiSamples.lead;
@@ -1965,7 +2113,7 @@ export default class AudioSystem {
     reverbSend.connect(this.midiReverb);
     source.start(now);
     source.stop(now + duration + 0.1);
-    this.registerMidiVoice({ source, gain, stopTime: now + duration + 0.12 });
+    this.registerMidiVoice({ source, gain, stopTime: now + duration + 0.12, group: voiceGroup });
     const cleanupInput = () => {
       [source, filter].forEach((node) => {
         if (!node) return;
@@ -2035,7 +2183,37 @@ export default class AudioSystem {
     return 'hat';
   }
 
-  registerMidiVoice({ source, gain, stopTime, voice, channel = null }) {
+  stopMidiVoiceEntry(entry, release = 0.02) {
+    if (!entry) return;
+    try {
+      if (entry.gain?.gain) {
+        entry.gain.gain.setTargetAtTime(0.0001, this.ctx.currentTime, release);
+      }
+      entry.stop?.();
+    } catch (error) {
+      // ignore
+    }
+  }
+
+  enforceMidiVoiceLimits() {
+    if (!this.ctx) return;
+    this.midiVoices = this.midiVoices.filter((voice) => voice.stopTime > this.ctx.currentTime);
+    const previewVoices = this.midiVoices.filter((voice) => voice.group === 'preview');
+    while (previewVoices.length > this.midiPreviewVoiceLimit) {
+      const oldestPreview = previewVoices.shift();
+      const index = this.midiVoices.indexOf(oldestPreview);
+      if (index >= 0) this.midiVoices.splice(index, 1);
+      this.stopMidiVoiceEntry(oldestPreview);
+    }
+    while (this.midiVoices.length > this.midiVoiceLimit) {
+      const previewIndex = this.midiVoices.findIndex((voice) => voice.group === 'preview');
+      const index = previewIndex >= 0 ? previewIndex : 0;
+      const [entry] = this.midiVoices.splice(index, 1);
+      this.stopMidiVoiceEntry(entry);
+    }
+  }
+
+  registerMidiVoice({ source, gain, stopTime, voice, channel = null, group = 'timeline' }) {
     const resolveStop = () => {
       if (voice?.stop) return () => voice.stop();
       if (voice?.audioBufferSourceNode?.stop) return () => voice.audioBufferSourceNode.stop();
@@ -2044,29 +2222,14 @@ export default class AudioSystem {
     };
     const audioNode = voice?.audioBufferSourceNode || voice?.source || source || null;
     const basePlaybackRate = audioNode?.playbackRate?.value ?? 1;
-    const entry = { source, gain, stopTime, stop: resolveStop(), voice, audioNode, basePlaybackRate, channel };
+    const entry = { source, gain, stopTime, stop: resolveStop(), voice, audioNode, basePlaybackRate, channel, group };
     const channelBend = Number.isFinite(channel) ? this.channelPitchBendSemitones[channel] ?? 0 : 0;
     const bend = channelBend || this.midiPitchBendSemitones;
     if (audioNode?.playbackRate && bend) {
       audioNode.playbackRate.value = basePlaybackRate * (2 ** (bend / 12));
     }
     this.midiVoices.push(entry);
-    if (this.midiVoices.length > this.midiVoiceLimit) {
-      const oldest = this.midiVoices.shift();
-      if (oldest) {
-        try {
-          if (oldest.gain) {
-            oldest.gain.gain.setTargetAtTime(0.0001, this.ctx.currentTime, 0.02);
-          }
-          if (oldest.stop) {
-            oldest.stop();
-          }
-        } catch (error) {
-          // ignore
-        }
-      }
-    }
-    this.midiVoices = this.midiVoices.filter((voice) => voice.stopTime > this.ctx.currentTime);
+    this.enforceMidiVoiceLimits();
     return entry;
   }
 

@@ -8,12 +8,14 @@ export const UI_SUITE = {
     muted: 'rgba(255,255,255,0.7)',
     accent: '#ffe16a',
     accent2: '#9ddcff',
+    danger: '#ff8484',
     shadow: 'rgba(0,0,0,0.45)'
   },
   spacing: {
     gap: 8,
     radius: 8,
-    tap: 44
+    tap: 44,
+    compact: 40
   },
   layout: {
     railWidthMobile: 216,
@@ -22,7 +24,7 @@ export const UI_SUITE = {
     drawerWidth: 292
   },
   font: {
-    family: 'Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
+    family: '"Courier New", monospace',
     size: 12
   },
   editorPanel: {
@@ -34,6 +36,125 @@ export const UI_SUITE = {
     bodyFont: '12px Courier New'
   }
 };
+
+export function drawSharedPanel(ctx, bounds, {
+  fill = UI_SUITE.colors.panel,
+  border = UI_SUITE.colors.border,
+  alpha = 1,
+  title = '',
+  titleX = null,
+  titleY = null,
+  titleSize = 15
+} = {}) {
+  if (!bounds) return;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = fill;
+  ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  ctx.strokeStyle = border;
+  ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  ctx.restore();
+  if (title) {
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `${titleSize}px ${UI_SUITE.font.family}`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(title, titleX ?? bounds.x + 12, titleY ?? bounds.y + 24);
+    ctx.restore();
+  }
+}
+
+export function drawSharedBottomRail(ctx, bounds, options = {}) {
+  drawSharedPanel(ctx, bounds, {
+    fill: options.fill ?? UI_SUITE.colors.panel,
+    border: options.border ?? UI_SUITE.colors.border,
+    alpha: options.alpha ?? 1
+  });
+}
+
+export function drawSharedStatusToast(ctx, bounds, message, {
+  fill = 'rgba(0,0,0,0.78)',
+  color = UI_SUITE.colors.accent,
+  border = UI_SUITE.colors.border
+} = {}) {
+  if (!message || !bounds) return;
+  ctx.save();
+  ctx.fillStyle = fill;
+  ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  ctx.strokeStyle = border;
+  ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  ctx.fillStyle = color;
+  ctx.font = `13px ${UI_SUITE.font.family}`;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(String(message), bounds.x + 12, bounds.y + bounds.h / 2);
+  ctx.restore();
+}
+
+export function drawSharedTimeLabel(ctx, bounds, label, {
+  color = UI_SUITE.colors.muted,
+  fontSize = 12,
+  align = 'left'
+} = {}) {
+  if (!bounds) return;
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
+  ctx.textAlign = align;
+  ctx.textBaseline = 'middle';
+  const x = align === 'center' ? bounds.x + bounds.w / 2 : bounds.x;
+  ctx.fillText(String(label ?? ''), x, bounds.y + bounds.h / 2);
+  ctx.restore();
+}
+
+export function drawSharedSlider(ctx, bounds, {
+  label = '',
+  value = 0,
+  min = 0,
+  max = 1,
+  accent = UI_SUITE.colors.accent2,
+  decimals = null
+} = {}) {
+  if (!bounds) return { track: null, nextY: 0 };
+  const t = clampValue((Number(value) - min) / Math.max(0.0001, max - min), 0, 1);
+  const valueText = Number(value).toFixed(decimals ?? (Math.abs(max - min) > 10 ? 0 : 2));
+  const track = { x: bounds.x, y: bounds.y + 18, w: bounds.w, h: 12 };
+  ctx.save();
+  ctx.fillStyle = UI_SUITE.colors.muted;
+  ctx.font = `11px ${UI_SUITE.font.family}`;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`${label}: ${valueText}`, bounds.x, bounds.y + 8);
+  ctx.fillStyle = 'rgba(255,255,255,0.16)';
+  ctx.fillRect(track.x, track.y, track.w, track.h);
+  ctx.fillStyle = accent;
+  ctx.fillRect(track.x, track.y, track.w * t, track.h);
+  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+  ctx.strokeRect(track.x, track.y, track.w, track.h);
+  ctx.restore();
+  return { track, nextY: bounds.y + Math.max(38, bounds.h) + UI_SUITE.spacing.gap };
+}
+
+export function drawSharedSegmentedControl(ctx, bounds, segments = [], {
+  activeId = null,
+  gap = 4,
+  drawButton = null
+} = {}) {
+  const count = Math.max(1, segments.length);
+  const buttonW = Math.floor((bounds.w - gap * (count - 1)) / count);
+  return segments.map((segment, index) => {
+    const buttonBounds = {
+      x: bounds.x + index * (buttonW + gap),
+      y: bounds.y,
+      w: index === count - 1 ? Math.max(0, bounds.x + bounds.w - (bounds.x + index * (buttonW + gap))) : buttonW,
+      h: bounds.h,
+      id: segment.id
+    };
+    if (drawButton) drawButton(buttonBounds, segment, segment.id === activeId);
+    return { ...segment, bounds: buttonBounds, active: segment.id === activeId };
+  });
+}
 
 export const SHARED_EDITOR_LEFT_MENU = {
   width: () => UI_SUITE.layout.leftMenuWidthDesktop,
@@ -47,7 +168,7 @@ export const SHARED_EDITOR_LEFT_MENU = {
   panelGap: 8,
   desktopOuterPadding: 16,
   desktopContentGap: 12,
-  fileLabel: 'FILE',
+  fileLabel: 'File',
   closeLabel: 'Close Drawer',
   exitLabel: 'Exit to Main Menu'
 };
@@ -114,6 +235,11 @@ export class SharedEditorMenu {
     items = [],
     scroll = 0,
     showTitle = true,
+    footerMode = 'stacked',
+    footerItem = null,
+    layoutMode = isMobile ? 'auto-grid' : 'list',
+    minColumnWidth = 120,
+    maxColumns = 2,
     drawButton
   }) {
     const rowHeight = this.getButtonHeight(isMobile);
@@ -126,8 +252,12 @@ export class SharedEditorMenu {
       rowGap: this.options.buttonGap,
       buttonHeight: rowHeight,
       isMobile,
-      footerMode: 'stacked',
+      footerMode,
+      footerItem,
       showTitle,
+      layoutMode,
+      minColumnWidth,
+      maxColumns,
       layout: {
         padding: this.options.panelPadding,
         headerHeight: showTitle
@@ -161,6 +291,25 @@ export function drawSharedMenuButtonChrome(ctx, bounds, {
   ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
   ctx.globalAlpha = prevAlpha;
   return active ? '#0b0b0b' : '#fff';
+}
+
+export function normalizeSharedControlBounds(bounds, {
+  minWidth = UI_SUITE.spacing.compact,
+  minHeight = UI_SUITE.spacing.compact
+} = {}) {
+  if (!bounds) return bounds;
+  const next = { ...bounds };
+  if (Number.isFinite(minWidth) && next.w < minWidth) {
+    const delta = minWidth - next.w;
+    next.x -= delta / 2;
+    next.w = minWidth;
+  }
+  if (Number.isFinite(minHeight) && next.h < minHeight) {
+    const delta = minHeight - next.h;
+    next.y -= delta / 2;
+    next.h = minHeight;
+  }
+  return next;
 }
 
 export function drawSharedFocusRing(ctx, bounds, {
@@ -248,40 +397,28 @@ export function drawSharedTransportIconButton(ctx, bounds, {
   role = 'default'
 } = {}) {
   if (!bounds) return;
-  const radius = Math.min(14, bounds.h / 2);
-  const drawRoundedRect = (bx, by, bw, bh) => {
-    ctx.beginPath();
-    ctx.moveTo(bx + radius, by);
-    ctx.arcTo(bx + bw, by, bx + bw, by + bh, radius);
-    ctx.arcTo(bx + bw, by + bh, bx, by + bh, radius);
-    ctx.arcTo(bx, by + bh, bx, by, radius);
-    ctx.arcTo(bx, by, bx + bw, by, radius);
-    ctx.closePath();
-  };
-
   const isRecord = role === 'record';
-  const baseFill = isRecord ? '#ff6a6a' : active ? '#ffe16a' : (subtle ? 'rgba(18,18,18,0.68)' : 'rgba(10,10,10,0.78)');
-  const highlight = emphasis ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.12)';
-
+  const fill = isRecord
+    ? 'rgba(255,106,106,0.86)'
+    : active
+      ? 'rgba(255,225,106,0.7)'
+      : subtle
+        ? 'rgba(255,255,255,0.12)'
+        : 'rgba(0,0,0,0.6)';
   ctx.save();
   ctx.globalAlpha = alpha;
-  ctx.shadowColor = 'rgba(0,0,0,0.4)';
-  ctx.shadowBlur = 6;
-  drawRoundedRect(bounds.x, bounds.y, bounds.w, bounds.h);
-  ctx.fillStyle = baseFill;
-  ctx.fill();
-  ctx.shadowBlur = 0;
-  drawRoundedRect(bounds.x, bounds.y, bounds.w, bounds.h);
-  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-  ctx.stroke();
-  ctx.globalAlpha = Math.min(1, alpha * 0.74);
-  drawRoundedRect(bounds.x + 1, bounds.y + 1, bounds.w - 2, bounds.h / 2);
-  ctx.fillStyle = highlight;
-  ctx.fill();
+  ctx.fillStyle = fill;
+  ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  if (emphasis) {
+    ctx.fillStyle = 'rgba(255,255,255,0.14)';
+    ctx.fillRect(bounds.x + 1, bounds.y + 1, Math.max(0, bounds.w - 2), Math.max(0, Math.floor(bounds.h * 0.38)));
+  }
+  ctx.strokeStyle = UI_SUITE.colors.border;
+  ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
   ctx.restore();
 
   ctx.save();
-  ctx.fillStyle = active ? '#0b0b0b' : '#fff';
+  ctx.fillStyle = active && !isRecord ? '#0b0b0b' : '#fff';
   const baseSize = Math.max(12, Math.min(20, Math.round(bounds.h * 0.45)));
   const fontSize = emphasis ? baseSize + 2 : baseSize;
   ctx.font = `${fontSize}px Courier New`;
@@ -289,6 +426,206 @@ export function drawSharedTransportIconButton(ctx, bounds, {
   ctx.textBaseline = 'middle';
   ctx.fillText(icon ?? '', bounds.x + bounds.w / 2, bounds.y + bounds.h / 2 + 1);
   ctx.restore();
+}
+
+export const drawSharedTransportButton = drawSharedTransportIconButton;
+
+export function getSharedThumbstickLayout(width, height, {
+  controlMargin = null,
+  maxRadius = 78,
+  radiusScale = 0.14,
+  knobScale = 0.45,
+  minKnobRadius = 22
+} = {}) {
+  const controlBase = Math.min(width || 0, height || 0);
+  const margin = Number.isFinite(controlMargin) ? controlMargin : Math.max(16, controlBase * 0.04);
+  const radius = Math.min(maxRadius, controlBase * radiusScale);
+  const knobRadius = Math.max(minKnobRadius, radius * knobScale);
+  return {
+    center: {
+      x: margin + radius,
+      y: height - margin - radius
+    },
+    radius,
+    knobRadius,
+    controlMargin: margin
+  };
+}
+
+export function drawSharedThumbstick(ctx, {
+  center = { x: 0, y: 0 },
+  radius = 0,
+  knobRadius = 0,
+  dx = 0,
+  dy = 0
+} = {}, {
+  fill = 'rgba(0,0,0,0.42)',
+  border = 'rgba(255,255,255,0.35)',
+  knob = 'rgba(255,255,255,0.85)'
+} = {}) {
+  if (!ctx || !center || radius <= 0) return;
+  const knobX = center.x + dx * radius;
+  const knobY = center.y + dy * radius;
+  ctx.save();
+  ctx.fillStyle = fill;
+  ctx.beginPath();
+  ctx.arc(center.x, center.y, radius, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = border;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(center.x, center.y, radius, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = knob;
+  ctx.beginPath();
+  ctx.arc(knobX, knobY, knobRadius, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+export function resetSharedThumbstickState(thumbstick) {
+  if (!thumbstick) return;
+  thumbstick.center = { x: 0, y: 0 };
+  thumbstick.radius = 0;
+  thumbstick.knobRadius = 0;
+  thumbstick.active = false;
+  thumbstick.id = null;
+  thumbstick.dx = 0;
+  thumbstick.dy = 0;
+}
+
+export function getSharedPortraitActionRailLayout(actionRail, {
+  padding = SHARED_EDITOR_LEFT_MENU.panelPadding,
+  gap = SHARED_EDITOR_LEFT_MENU.panelGap,
+  maxThumbstickSize = 72,
+  minThumbstickSize = 56
+} = {}) {
+  const rail = actionRail || { x: 0, y: 0, w: 0, h: 0 };
+  const safePadding = Math.max(0, padding);
+  const safeGap = Math.max(0, gap);
+  const thumbstickSize = clampValue(
+    Math.min(maxThumbstickSize, Math.max(0, rail.h - safePadding * 2)),
+    Math.min(minThumbstickSize, Math.max(0, rail.h - safePadding * 2)),
+    maxThumbstickSize
+  );
+  const thumbstickBounds = {
+    x: rail.x + safePadding,
+    y: rail.y + Math.max(0, Math.floor((rail.h - thumbstickSize) / 2)),
+    w: thumbstickSize,
+    h: thumbstickSize
+  };
+  const thumbstickRadius = Math.max(1, Math.floor(thumbstickSize / 2));
+  const thumbstickCenter = {
+    x: thumbstickBounds.x + thumbstickBounds.w / 2,
+    y: thumbstickBounds.y + thumbstickBounds.h / 2
+  };
+  const actionX = thumbstickBounds.x + thumbstickBounds.w + safeGap;
+  const actionArea = {
+    x: actionX,
+    y: rail.y + safePadding,
+    w: Math.max(1, rail.x + rail.w - safePadding - actionX),
+    h: Math.max(1, rail.h - safePadding * 2)
+  };
+  return {
+    actionRail: rail,
+    thumbstickBounds,
+    thumbstickCenter,
+    thumbstickRadius,
+    knobRadius: Math.max(18, Math.floor(thumbstickRadius * 0.45)),
+    actionArea
+  };
+}
+
+export function getSharedPortraitRailActionButtons(actionRail, actions = [], {
+  buttonHeight = UI_SUITE.spacing.tap,
+  minButtonWidth = UI_SUITE.spacing.tap,
+  maxButtonWidth = 58,
+  gap = SHARED_EDITOR_LEFT_MENU.buttonGap,
+  menuWidth = 54,
+  reserveThumbstick = true
+} = {}) {
+  const railLayout = reserveThumbstick
+    ? getSharedPortraitActionRailLayout(actionRail)
+    : {
+      actionRail,
+      thumbstickBounds: { x: 0, y: 0, w: 0, h: 0 },
+      thumbstickCenter: { x: 0, y: 0 },
+      thumbstickRadius: 0,
+      knobRadius: 0,
+      actionArea: actionRail || { x: 0, y: 0, w: 0, h: 0 }
+    };
+  const safeActions = Array.isArray(actions) ? actions.filter(Boolean) : [];
+  const actionArea = railLayout.actionArea;
+  const safeGap = Math.max(0, gap);
+  const safeButtonH = Math.min(buttonHeight, Math.max(1, actionArea.h));
+  const y = actionArea.y + Math.floor((actionArea.h - safeButtonH) / 2);
+  const slots = safeActions.length;
+  if (!slots) return { ...railLayout, buttons: [] };
+  const preferredWidths = safeActions.map((action, index) => {
+    if (Number.isFinite(action.width)) return action.width;
+    if (index === 0 && action.id === 'menu') return menuWidth;
+    if (action.primary) return Math.max(minButtonWidth, Math.min(96, actionArea.w * 0.34));
+    return maxButtonWidth;
+  });
+  const preferredTotal = preferredWidths.reduce((sum, width) => sum + width, 0) + safeGap * Math.max(0, slots - 1);
+  const scale = preferredTotal > actionArea.w
+    ? Math.max(0.1, (actionArea.w - safeGap * Math.max(0, slots - 1)) / Math.max(1, preferredWidths.reduce((sum, width) => sum + width, 0)))
+    : 1;
+  const buttons = [];
+  let x = actionArea.x;
+  safeActions.forEach((action, index) => {
+    const remaining = slots - index;
+    const remainingGap = safeGap * Math.max(0, remaining - 1);
+    const maxRemainingW = actionArea.x + actionArea.w - x - remainingGap;
+    const width = index === slots - 1
+      ? Math.max(minButtonWidth, maxRemainingW)
+      : clampValue(Math.floor(preferredWidths[index] * scale), minButtonWidth, Math.max(minButtonWidth, maxButtonWidth));
+    buttons.push({
+      ...action,
+      bounds: { x, y, w: width, h: safeButtonH }
+    });
+    x += width + safeGap;
+  });
+  return { ...railLayout, buttons };
+}
+
+export const SHARED_PORTRAIT_RAIL_ACTION_COUNT = 4;
+
+export function getSharedPortraitRailActionIds(actions = []) {
+  return (Array.isArray(actions) ? actions : [])
+    .filter(Boolean)
+    .map((action) => action.id);
+}
+
+export function assertSharedPortraitRailActionCount(actions = [], {
+  editor = 'editor',
+  expected = SHARED_PORTRAIT_RAIL_ACTION_COUNT
+} = {}) {
+  const ids = getSharedPortraitRailActionIds(actions);
+  if (ids.length !== expected) {
+    throw new Error(`${editor} portrait action rail must expose exactly ${expected} actions; received ${ids.length}: ${ids.join(', ')}`);
+  }
+  return ids;
+}
+
+export function drawSharedPortraitActionRail(ctx, actionRail, thumbstick, actions = [], {
+  drawButton,
+  drawPanel = true,
+  reserveThumbstick = true
+} = {}) {
+  if (!ctx || !actionRail) return { buttons: [] };
+  if (drawPanel) drawSharedBottomRail(ctx, actionRail);
+  const layout = getSharedPortraitRailActionButtons(actionRail, actions, { reserveThumbstick });
+  if (thumbstick && reserveThumbstick) {
+    thumbstick.center = layout.thumbstickCenter;
+    thumbstick.radius = layout.thumbstickRadius;
+    thumbstick.knobRadius = layout.knobRadius;
+    drawSharedThumbstick(ctx, thumbstick);
+  }
+  if (typeof drawButton === 'function') {
+    layout.buttons.forEach((button) => drawButton(button.bounds, button));
+  }
+  return layout;
 }
 
 
@@ -321,6 +658,335 @@ export function getSharedMobileDrawerWidth(viewportWidth, viewportHeight, railWi
     ? Math.max(minWidth, Math.floor(viewportWidth - railWidth - minContent - edgePadding * 2))
     : preferred;
   return clampValue(preferred, minWidth, maxWidth);
+}
+
+export function isMobilePortraitLayout({
+  isMobile = false,
+  viewportWidth = 0,
+  viewportHeight = 0
+} = {}) {
+  return Boolean(isMobile && Number(viewportHeight) > Number(viewportWidth));
+}
+
+export function getSharedMobilePortraitEditorLayout(viewportWidth, viewportHeight, {
+  padding = SHARED_EDITOR_LEFT_MENU.panelPadding,
+  gap = SHARED_EDITOR_LEFT_MENU.panelGap,
+  middleRailHeight = 104,
+  maxBottomRailHeight = 96,
+  minTopHeight = 220,
+  minMainHeight = 220,
+  topRatio = 0.5,
+  sheetRatio = 0.68
+} = {}) {
+  const width = Math.max(1, Number(viewportWidth) || 1);
+  const height = Math.max(1, Number(viewportHeight) || 1);
+  const safePadding = Math.max(0, padding);
+  const safeGap = Math.max(0, gap);
+  const preferredMiddleH = clampValue(
+    middleRailHeight,
+    72,
+    Math.max(72, Math.min(maxBottomRailHeight, Math.floor(height * 0.14)))
+  );
+  const contentX = safePadding;
+  const contentW = Math.max(1, width - safePadding * 2);
+  const actionRail = {
+    x: contentX,
+    y: Math.max(safePadding, height - safePadding - preferredMiddleH),
+    w: contentW,
+    h: preferredMiddleH
+  };
+  const workSurface = {
+    x: contentX,
+    y: safePadding,
+    w: contentW,
+    h: Math.max(1, actionRail.y - safeGap - safePadding)
+  };
+  const sheetH = clampValue(
+    Math.round(height * clampValue(sheetRatio, 0.45, 0.82)),
+    Math.min(minTopHeight, Math.max(1, height - safePadding * 2)),
+    Math.max(1, height - safePadding * 2 - Math.min(96, preferredMiddleH))
+  );
+  const menuSheet = {
+    x: contentX,
+    y: Math.max(safePadding, actionRail.y - safeGap - sheetH),
+    w: contentW,
+    h: sheetH
+  };
+  const rootRailH = Math.min(52, Math.max(44, Math.floor(sheetH * 0.16)));
+  const rootRail = {
+    x: menuSheet.x,
+    y: menuSheet.y + menuSheet.h - rootRailH,
+    w: menuSheet.w,
+    h: rootRailH
+  };
+  const subRail = {
+    x: menuSheet.x,
+    y: menuSheet.y + safeGap,
+    w: menuSheet.w,
+    h: Math.max(1, rootRail.y - safeGap - (menuSheet.y + safeGap))
+  };
+  const bottomRail = actionRail;
+  const rootTabs = rootRail;
+  const sheetContent = subRail;
+  return {
+    isPortrait: height > width,
+    topMenus: menuSheet,
+    menuPanel: menuSheet,
+    menuSheet,
+    leftRail: rootRail,
+    rightRail: subRail,
+    middleRail: actionRail,
+    mainEditor: workSurface,
+    bottomRail,
+    rootTabs,
+    sheetContent,
+    rootRail,
+    subRail,
+    actionRail,
+    workSurface,
+    padding: safePadding,
+    gap: safeGap,
+    rowHeight: UI_SUITE.spacing.compact,
+    touchRowHeight: UI_SUITE.spacing.tap,
+    workSurfaceRatio: workSurface.h / height
+  };
+}
+
+export function drawSharedPortraitSheet(ctx, bounds, {
+  fill = UI_SUITE.colors.panel,
+  border = UI_SUITE.colors.border,
+  scrim = true
+} = {}) {
+  if (!ctx || !bounds) return;
+  ctx.save();
+  if (scrim) {
+    ctx.fillStyle = 'rgba(0,0,0,0.52)';
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  }
+  drawSharedPanel(ctx, bounds, { fill, border });
+  ctx.restore();
+}
+
+export function drawSharedPortraitTabStrip(ctx, bounds, tabs = [], {
+  activeId = null,
+  focusedId = null,
+  rowHeight = UI_SUITE.spacing.compact,
+  gap = SHARED_EDITOR_LEFT_MENU.buttonGap,
+  padding = SHARED_EDITOR_LEFT_MENU.panelPadding,
+  maxButtonWidth = 116,
+  minButtonWidth = 72,
+  drawButton
+} = {}) {
+  if (!ctx || !bounds || !tabs.length || !drawButton) return { firstIndex: 0, visibleCount: 0 };
+  const innerX = bounds.x + padding;
+  const innerY = bounds.y + Math.max(0, Math.floor((bounds.h - rowHeight) / 2));
+  const innerW = Math.max(1, bounds.w - padding * 2);
+  const visibleCount = Math.max(1, Math.floor((innerW + gap) / Math.max(1, minButtonWidth + gap)));
+  const activeIndex = Math.max(0, tabs.findIndex((tab) => tab.id === (focusedId || activeId)));
+  const firstIndex = clampValue(activeIndex - Math.floor(visibleCount / 2), 0, Math.max(0, tabs.length - visibleCount));
+  const shown = tabs.slice(firstIndex, firstIndex + visibleCount);
+  const buttonW = clampValue(Math.floor((innerW - gap * Math.max(0, shown.length - 1)) / Math.max(1, shown.length)), minButtonWidth, maxButtonWidth);
+  shown.forEach((tab, index) => {
+    drawButton({
+      x: innerX + index * (buttonW + gap),
+      y: innerY,
+      w: buttonW,
+      h: rowHeight
+    }, tab, {
+      active: tab.id === activeId,
+      focused: tab.id === focusedId
+    });
+  });
+  drawSharedPortraitScrollHints(ctx, bounds, {
+    scroll: firstIndex,
+    scrollMax: Math.max(0, tabs.length - visibleCount)
+  });
+  return { firstIndex, visibleCount };
+}
+
+export function getSharedPortraitMultiRowTabLayout(bounds, tabs = [], {
+  rowHeight = UI_SUITE.spacing.compact,
+  gap = SHARED_EDITOR_LEFT_MENU.buttonGap,
+  padding = SHARED_EDITOR_LEFT_MENU.panelPadding,
+  minButtonWidth = 68,
+  maxButtonWidth = 116,
+  maxRows = 2,
+  maxColumns = null,
+  balanceLastRow = false
+} = {}) {
+  if (!bounds || !Array.isArray(tabs) || tabs.length === 0) {
+    return { buttons: [], rows: 0, columns: 0, rowHeight, totalHeight: 0, fits: true };
+  }
+  const innerW = Math.max(1, bounds.w - padding * 2);
+  const safeRows = Math.max(1, maxRows);
+  const maxColumnsByWidth = Math.max(1, Math.floor((innerW + gap) / Math.max(1, minButtonWidth + gap)));
+  const columnCap = Number.isFinite(maxColumns) ? Math.max(1, Math.floor(maxColumns)) : maxColumnsByWidth;
+  const allowedColumns = Math.min(maxColumnsByWidth, columnCap);
+  const rows = Math.min(safeRows, Math.max(1, Math.ceil(tabs.length / allowedColumns)));
+  const columns = Math.max(1, Math.min(columnCap, Math.ceil(tabs.length / rows), allowedColumns));
+  const totalHeight = rows * rowHeight + Math.max(0, rows - 1) * gap;
+  const startX = bounds.x + padding;
+  const startY = bounds.y + Math.max(padding, Math.floor((bounds.h - totalHeight) / 2));
+  const buttons = tabs.map((tab, index) => {
+    const row = Math.floor(index / columns);
+    const rowStart = row * columns;
+    const remaining = Math.max(1, tabs.length - rowStart);
+    const rowColumns = balanceLastRow ? Math.min(columns, remaining) : columns;
+    const col = index - rowStart;
+    const rawButtonW = Math.floor((innerW - gap * Math.max(0, rowColumns - 1)) / rowColumns);
+    const buttonW = Math.min(Math.max(1, rawButtonW), Math.min(maxButtonWidth, innerW));
+    return {
+      ...tab,
+      bounds: {
+        x: startX + col * (buttonW + gap),
+        y: startY + row * (rowHeight + gap),
+        w: buttonW,
+        h: rowHeight
+      },
+      row,
+      col
+    };
+  });
+  const minWidthMet = buttons.every((button) => button.bounds.w >= minButtonWidth);
+  return {
+    buttons,
+    rows,
+    columns,
+    rowHeight,
+    totalHeight,
+    fits: minWidthMet && totalHeight <= Math.max(1, bounds.h - padding * 2)
+  };
+}
+
+export function drawSharedPortraitMultiRowTabStrip(ctx, bounds, tabs = [], {
+  activeId = null,
+  focusedId = null,
+  drawButton,
+  ...layoutOptions
+} = {}) {
+  const layout = getSharedPortraitMultiRowTabLayout(bounds, tabs, layoutOptions);
+  if (!ctx || !drawButton) return layout;
+  layout.buttons.forEach((entry) => {
+    drawButton(entry.bounds, entry, {
+      active: entry.id === activeId,
+      focused: entry.id === focusedId
+    });
+  });
+  return layout;
+}
+
+export function getSharedPortraitMenuMetrics(bounds, {
+  padding = SHARED_EDITOR_LEFT_MENU.panelPadding,
+  rowHeight = UI_SUITE.spacing.compact,
+  rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap
+} = {}) {
+  const safePadding = Math.max(0, padding);
+  const safeRowH = Math.max(32, rowHeight);
+  const safeGap = Math.max(0, rowGap);
+  const listBounds = {
+    x: bounds.x + safePadding,
+    y: bounds.y + safePadding,
+    w: Math.max(1, bounds.w - safePadding * 2),
+    h: Math.max(1, bounds.h - safePadding * 2)
+  };
+  return {
+    listBounds,
+    rowHeight: safeRowH,
+    rowGap: safeGap,
+    visibleRows: Math.max(1, Math.floor((listBounds.h + safeGap) / Math.max(1, safeRowH + safeGap)))
+  };
+}
+
+export function drawSharedPortraitScrollHints(ctx, bounds, {
+  scroll = 0,
+  scrollMax = 0,
+  color = UI_SUITE.colors.accent,
+  trackColor = 'rgba(255,255,255,0.14)',
+  minThumbHeight = 24
+} = {}) {
+  if (!ctx || !bounds || scrollMax <= 0) return;
+  const trackW = 4;
+  const trackPad = 8;
+  const track = {
+    x: bounds.x + bounds.w - trackPad - trackW,
+    y: bounds.y + trackPad,
+    w: trackW,
+    h: Math.max(1, bounds.h - trackPad * 2)
+  };
+  const maxScroll = Math.max(1, Number(scrollMax) || 1);
+  const current = clampValue(Number(scroll) || 0, 0, maxScroll);
+  const visibleRatio = clampValue(1 / (maxScroll + 1), 0.18, 1);
+  const thumbH = Math.max(Math.min(track.h, minThumbHeight), Math.round(track.h * visibleRatio));
+  const travel = Math.max(0, track.h - thumbH);
+  const thumbY = track.y + Math.round(travel * (current / maxScroll));
+  ctx.save();
+  ctx.fillStyle = trackColor;
+  ctx.fillRect(track.x, track.y, track.w, track.h);
+  ctx.fillStyle = color;
+  ctx.globalAlpha = 0.85;
+  ctx.fillRect(track.x - 1, thumbY, track.w + 2, thumbH);
+  ctx.restore();
+  return { track, thumb: { x: track.x - 1, y: thumbY, w: track.w + 2, h: thumbH } };
+}
+
+export function drawSharedContextRibbon(ctx, bounds, actions = [], {
+  title = '',
+  padding = 8,
+  gap = 6,
+  minButtonWidth = 54,
+  maxButtonWidth = 132,
+  drawButton,
+  registerAction
+} = {}) {
+  if (!ctx || !bounds) return { bounds, buttons: [] };
+  const visible = (Array.isArray(actions) ? actions : []).filter((action) => action && !action.hidden);
+  if (!visible.length) return { bounds, buttons: [] };
+  drawSharedPanel(ctx, bounds, {
+    fill: UI_SUITE.colors.panel,
+    border: UI_SUITE.colors.border,
+    alpha: 0.96
+  });
+  const titleW = title ? Math.min(96, Math.max(54, Math.floor(bounds.w * 0.24))) : 0;
+  if (title) {
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(title, bounds.x + padding, bounds.y + bounds.h / 2);
+    ctx.restore();
+  }
+  const listX = bounds.x + padding + titleW + (titleW ? gap : 0);
+  const listW = Math.max(1, bounds.x + bounds.w - padding - listX);
+  const buttonH = Math.max(32, Math.min(44, bounds.h - padding * 2));
+  const buttonY = bounds.y + Math.max(0, Math.floor((bounds.h - buttonH) / 2));
+  const count = Math.max(1, visible.length);
+  const buttonW = clampValue(Math.floor((listW - gap * (count - 1)) / count), minButtonWidth, maxButtonWidth);
+  const buttons = [];
+  visible.forEach((action, index) => {
+    const buttonBounds = {
+      x: listX + index * (buttonW + gap),
+      y: buttonY,
+      w: Math.min(buttonW, Math.max(1, bounds.x + bounds.w - padding - (listX + index * (buttonW + gap)))),
+      h: buttonH,
+      id: action.id
+    };
+    if (buttonBounds.w < minButtonWidth * 0.66) return;
+    if (typeof drawButton === 'function') {
+      drawButton(buttonBounds, action);
+    } else {
+      const textColor = drawSharedMenuButtonChrome(ctx, buttonBounds, { active: Boolean(action.active), subtle: Boolean(action.disabled) });
+      drawSharedMenuButtonLabel(ctx, buttonBounds, action.label || action.icon || action.id, {
+        color: action.disabled ? UI_SUITE.colors.muted : textColor,
+        fontSize: 11
+      });
+    }
+    if (typeof registerAction === 'function' && !action.disabled) {
+      registerAction(buttonBounds, action);
+    }
+    buttons.push({ ...action, bounds: buttonBounds });
+  });
+  return { bounds, buttons };
 }
 
 export function getSharedEditorDrawerWidth(viewportWidth, {
@@ -429,6 +1095,93 @@ export function buildSharedFileDrawerLayout({
   };
 }
 
+export function isMobileLandscapeLayout({
+  isMobile = false,
+  viewportWidth = 0,
+  viewportHeight = 0
+} = {}) {
+  return Boolean(isMobile && Number(viewportWidth) > Number(viewportHeight));
+}
+
+export function getSharedMobileLandscapeEditorLayout(viewportWidth, viewportHeight, {
+  padding = SHARED_EDITOR_LEFT_MENU.panelPadding,
+  gap = SHARED_EDITOR_LEFT_MENU.panelGap,
+  leftRailWidth = null,
+  rightRailWidth = null,
+  bottomRailHeight = 0,
+  reserveRightRail = true,
+  thumbstick = null
+} = {}) {
+  const width = Math.max(1, Number(viewportWidth) || 1);
+  const height = Math.max(1, Number(viewportHeight) || 1);
+  const safePadding = Math.max(0, padding);
+  const safeGap = Math.max(0, gap);
+  const stick = thumbstick || getSharedThumbstickLayout(width, height, {
+    maxRadius: 72,
+    radiusScale: 0.16
+  });
+  const thumbstickBounds = {
+    x: Math.max(0, Math.round(stick.center.x - stick.radius - safeGap)),
+    y: Math.max(0, Math.round(stick.center.y - stick.radius - safeGap)),
+    w: Math.round((stick.radius + safeGap) * 2),
+    h: Math.round((stick.radius + safeGap) * 2)
+  };
+  const railW = Math.round(leftRailWidth || getSharedMobileRailWidth(width, height));
+  const rightW = reserveRightRail
+    ? Math.round(rightRailWidth || getSharedMobileDrawerWidth(width, height, railW, {
+      landscapePreferred: railW,
+      minContentLandscape: 300
+    }))
+    : 0;
+  const bottomH = clampValue(Math.round(bottomRailHeight || 0), 0, Math.max(0, Math.floor(height * 0.34)));
+  const leftRail = {
+    x: 0,
+    y: 0,
+    w: railW,
+    h: Math.max(1, thumbstickBounds.y - safeGap)
+  };
+  const rightRail = reserveRightRail
+    ? { x: Math.max(0, width - rightW), y: 0, w: rightW, h: height }
+    : { x: width, y: 0, w: 0, h: height };
+  const workX = railW + safeGap;
+  const workRight = reserveRightRail ? rightRail.x - safeGap : width - safePadding;
+  const workBottom = height - safePadding - bottomH;
+  const workSurface = {
+    x: workX,
+    y: safePadding,
+    w: Math.max(1, workRight - workX),
+    h: Math.max(1, workBottom - safePadding)
+  };
+  const bottomRail = {
+    x: workSurface.x,
+    y: workSurface.y + workSurface.h + safeGap,
+    w: workSurface.w,
+    h: Math.max(0, bottomH - safeGap)
+  };
+  return {
+    isLandscape: width > height,
+    leftRail,
+    rightRail,
+    workSurface,
+    mainEditor: workSurface,
+    bottomRail,
+    thumbstick: stick,
+    thumbstickBounds,
+    padding: safePadding,
+    gap: safeGap
+  };
+}
+
+export function splitFileDrawerStickyExitItems(items = [], exitId = 'exit-main') {
+  const source = Array.isArray(items) ? items : [];
+  const exitItem = source.find((item) => item?.id === exitId) || null;
+  const listItems = source.filter((item) => item?.id !== exitId);
+  while (listItems.length && (listItems[listItems.length - 1]?.divider || listItems[listItems.length - 1]?.separator)) {
+    listItems.pop();
+  }
+  return { listItems, exitItem };
+}
+
 
 
 
@@ -448,10 +1201,14 @@ export function renderSharedFileDrawer(ctx, {
   showTitle = true,
   footerMode = 'split',
   footerRowGap = null,
+  footerItem = null,
   drawPanel = true,
   panelFill = UI_SUITE.colors.panel,
   panelBorder = UI_SUITE.colors.border,
-  panelAlpha = 1
+  panelAlpha = 1,
+  layoutMode = 'list',
+  minColumnWidth = 120,
+  maxColumns = 3
 } = {}) {
   const drawerLayout = buildSharedFileDrawerLayout({
     x: panel.x,
@@ -487,15 +1244,37 @@ export function renderSharedFileDrawer(ctx, {
     h: drawerLayout.listH + 8
   };
   const stride = rowHeight + rowGap;
+  const canGrid = layoutMode === 'auto-grid' && items.length > 1;
+  const maxGridColumns = Math.max(1, Math.floor(maxColumns || 1));
+  const gridColumns = canGrid
+    ? clampValue(
+      Math.floor((drawerLayout.listW + rowGap) / Math.max(1, minColumnWidth + rowGap)),
+      1,
+      maxGridColumns
+    )
+    : 1;
+  const columns = gridColumns > 1 ? gridColumns : 1;
+  const cellW = columns > 1
+    ? Math.floor((drawerLayout.listW - rowGap * (columns - 1)) / columns)
+    : drawerLayout.listW;
   const visibleRows = Math.max(1, Math.floor(drawerLayout.listH / Math.max(1, stride)));
-  const scrollMax = Math.max(0, items.length - visibleRows);
+  const visibleCapacity = Math.max(1, visibleRows * columns);
+  const scrollMax = Math.max(0, items.length - visibleCapacity);
   const nextScroll = Math.max(0, Math.min(scrollMax, Math.round(scroll || 0)));
-  const visibleItems = items.slice(nextScroll, nextScroll + visibleRows);
+  const visibleItems = items.slice(nextScroll, nextScroll + visibleCapacity);
   let cursorY = drawerLayout.listY;
+  let gridSlot = 0;
   const itemBounds = [];
   visibleItems.forEach((item) => {
     if (item?.divider) {
-      const dividerY = cursorY + 8;
+      if (columns > 1) return;
+      if (columns > 1 && gridSlot % columns !== 0) {
+        gridSlot += columns - (gridSlot % columns);
+      }
+      const dividerRow = columns > 1 ? Math.floor(gridSlot / columns) : 0;
+      const dividerY = columns > 1
+        ? drawerLayout.listY + dividerRow * stride + Math.max(8, Math.round(Math.max(16, rowHeight) * 0.4))
+        : cursorY + 8;
       if (typeof drawDivider === 'function') {
         drawDivider({ x: drawerLayout.listX, y: dividerY, w: drawerLayout.listW, h: 0 }, item);
       } else {
@@ -505,22 +1284,66 @@ export function renderSharedFileDrawer(ctx, {
         ctx.lineTo(drawerLayout.listX + drawerLayout.listW, dividerY);
         ctx.stroke();
       }
-      cursorY += Math.max(14, Math.round(Math.max(16, rowHeight) * 0.4));
+      if (columns > 1) {
+        gridSlot += columns;
+        cursorY = drawerLayout.listY + Math.floor(gridSlot / columns) * stride;
+      } else {
+        cursorY += Math.max(14, Math.round(Math.max(16, rowHeight) * 0.4));
+      }
       return;
     }
+    const col = columns > 1 ? gridSlot % columns : 0;
+    const row = columns > 1 ? Math.floor(gridSlot / columns) : itemBounds.length;
     const bounds = {
-      x: drawerLayout.listX,
-      y: cursorY,
-      w: drawerLayout.listW,
+      x: drawerLayout.listX + col * (cellW + rowGap),
+      y: columns > 1 ? drawerLayout.listY + row * stride : cursorY,
+      w: columns > 1 ? cellW : drawerLayout.listW,
       h: buttonHeight ?? Math.max(18, rowHeight),
       id: item?.id
     };
     drawButton(bounds, item);
     itemBounds.push(bounds);
-    cursorY += stride;
+    if (columns > 1) {
+      gridSlot += 1;
+      cursorY = drawerLayout.listY + (row + 1) * stride;
+    } else {
+      cursorY += stride;
+    }
   });
 
   let { closeBounds, exitBounds } = drawerLayout;
+  if (footerMode === 'none') {
+    return {
+      layout: drawerLayout,
+      listBounds: scrollMax > 0 ? listBounds : null,
+      itemBounds,
+      closeBounds: null,
+      exitBounds: null,
+      scroll: nextScroll,
+      scrollMax,
+      columns,
+      visibleRows,
+      visibleCapacity
+    };
+  }
+  if (footerMode === 'exit-only') {
+    const footerButtonH = buttonHeight ?? Math.max(18, rowHeight);
+    const exitY = panel.y + panel.h - drawerLayout.footerBottomPadding - footerButtonH;
+    exitBounds = { x: drawerLayout.listX, y: exitY, w: drawerLayout.listW, h: footerButtonH, id: drawerLayout.exitBounds.id };
+    drawButton(exitBounds, footerItem || { id: exitBounds.id, label: SHARED_EDITOR_LEFT_MENU.exitLabel, footer: true });
+    return {
+      layout: drawerLayout,
+      listBounds: scrollMax > 0 ? listBounds : null,
+      itemBounds,
+      closeBounds: null,
+      exitBounds,
+      scroll: nextScroll,
+      scrollMax,
+      columns,
+      visibleRows,
+      visibleCapacity
+    };
+  }
   if (footerMode === 'stacked') {
     const footerButtonH = buttonHeight ?? Math.max(18, rowHeight);
     const gap = Number.isFinite(footerRowGap) ? footerRowGap : rowGap;
@@ -539,7 +1362,10 @@ export function renderSharedFileDrawer(ctx, {
     closeBounds,
     exitBounds,
     scroll: nextScroll,
-    scrollMax
+    scrollMax,
+    columns,
+    visibleRows,
+    visibleCapacity
   };
 }
 
@@ -737,7 +1563,7 @@ export function fileTypeBadge(filename = '') {
   if (value.endsWith('.gif')) return 'GIF';
   if (value.endsWith('.zip')) return 'ZIP';
   if (value.endsWith('.wav')) return 'WAV';
-  return 'FILE';
+  return 'File';
 }
 
 const MENU_LABEL_ACRONYMS = new Set(['JSON', 'MIDI', 'SFX', 'WAV', 'ZIP', 'PNG', 'GIF', 'GM', 'QA', 'UI']);

@@ -6,6 +6,7 @@ import base64
 import json
 import os
 import subprocess
+import tempfile
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -18,6 +19,21 @@ NO_CACHE_HEADERS = {
 }
 
 EXPORT_ROOT = Path("data/server-storage/files")
+TERMUX_LIB_DIR = Path("/data/data/com.termux/files/usr/lib")
+
+
+def build_ffmpeg_env() -> dict[str, str]:
+    env = os.environ.copy()
+    preload_parts = [
+        str(TERMUX_LIB_DIR / "libc++_shared.so"),
+        str(TERMUX_LIB_DIR / "libtermux-exec.so"),
+    ]
+    existing_preload = env.get("LD_PRELOAD", "")
+    for item in existing_preload.split(":"):
+        if item and item not in preload_parts:
+            preload_parts.append(item)
+    env["LD_PRELOAD"] = ":".join(preload_parts)
+    return env
 
 
 def run_git_command(args: list[str]) -> subprocess.CompletedProcess[str]:
@@ -45,7 +61,7 @@ class DevHandler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def _empty_index(self) -> dict:
-        return {"levels": {}, "art": {}, "music": {}, "actors": {}, "sfx": {}}
+        return {"levels": {}, "art": {}, "music": {}, "actors": {}, "sfx": {}, "cutscenes": {}}
 
     def _safe_doc_dir(self, folder: str, name: str) -> Path:
         return EXPORT_ROOT / folder / quote(name, safe="-_.() ")
@@ -185,6 +201,74 @@ class DevHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
+        if parsed.path == "/__export/mp4":
+            length = int(self.headers.get("Content-Length", "0") or "0")
+            if length <= 0:
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Missing movie data"})
+                return
+            raw = self.rfile.read(length)
+            try:
+                with tempfile.TemporaryDirectory(prefix="chainsaw-mp4-") as tmp:
+                    input_path = Path(tmp) / "input.webm"
+                    output_path = Path(tmp) / "output.mp4"
+                    input_path.write_bytes(raw)
+                    result = subprocess.run(
+                        [
+                            "ffmpeg",
+                            "-y",
+                            "-hide_banner",
+                            "-loglevel",
+                            "error",
+                            "-i",
+                            str(input_path),
+                            "-c:v",
+                            "libx264",
+                            "-pix_fmt",
+                            "yuv420p",
+                            "-preset",
+                            "veryfast",
+                            "-movflags",
+                            "+faststart",
+                            "-c:a",
+                            "aac",
+                            "-b:a",
+                            "192k",
+                            str(output_path),
+                        ],
+                        check=False,
+                        text=True,
+                        capture_output=True,
+                        env=build_ffmpeg_env(),
+                    )
+                    if result.returncode != 0 or not output_path.exists():
+                        self._write_json(
+                            HTTPStatus.BAD_REQUEST,
+                            {"ok": False, "error": f"FFmpeg MP4 encode failed: {result.stderr or result.stdout}"},
+                        )
+                        return
+                    data = output_path.read_bytes()
+                    self.send_response(HTTPStatus.OK)
+                    self.send_header("Content-Type", "video/mp4")
+                    self.send_header("Content-Length", str(len(data)))
+                    self.end_headers()
+                    self.wfile.write(data)
+            except FileNotFoundError:
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "FFmpeg is not installed on this server"})
+            except Exception as exc:  # pragma: no cover - defensive
+                self._write_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": str(exc)})
+            return
+
+        if parsed.path == "/__debug/cutscene":
+            length = int(self.headers.get("Content-Length", "0") or "0")
+            raw = self.rfile.read(length)
+            try:
+                payload = json.loads(raw.decode("utf-8") or "{}")
+            except Exception:
+                payload = {"raw": raw.decode("utf-8", errors="replace")}
+            print(f"[cutscene-debug] {json.dumps(payload, ensure_ascii=False)}", flush=True)
+            self._write_json(HTTPStatus.OK, {"ok": True})
+            return
+
         if parsed.path == "/__storage/file":
             length = int(self.headers.get("Content-Length", "0") or "0")
             raw = self.rfile.read(length)

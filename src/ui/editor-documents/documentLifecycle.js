@@ -54,8 +54,8 @@ export function createDocumentLifecycle(adapter) {
     const data = adapter.serialize(context);
     const savingStartedAt = Date.now();
     context.game?.showSaveStatusModal?.('Saving...');
-    context.game?.showSystemToast?.('saving...');
-    context.statusMessage = 'saving...';
+    context.game?.showSystemToast?.('Saving...');
+    context.statusMessage = 'Saving...';
     const saved = saveProjectFile(adapter.folder, name, data);
     if (adapter.waitForSync !== false) {
       await saved?.syncPromise;
@@ -69,8 +69,8 @@ export function createDocumentLifecycle(adapter) {
     markSavedSnapshot(context);
     context.game?.showSaveStatusModal?.('Saved');
     setTimeout(() => context.game?.hideSaveStatusModal?.(), 1400);
-    context.game?.showSystemToast?.('saved');
-    context.statusMessage = 'saved';
+    context.game?.showSystemToast?.('Saved');
+    context.statusMessage = 'Saved';
     return { id: name, name };
   };
 
@@ -87,6 +87,7 @@ export function createDocumentLifecycle(adapter) {
         adapter.applyLoadedData(context, data, { name, payload });
         context.currentDocumentRef = { folder: adapter.folder, name };
         markSavedSnapshot(context);
+        adapter.afterOpen?.(context, { name, payload, data });
       }
     });
     return true;

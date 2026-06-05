@@ -1,9 +1,11 @@
 const PROJECT_FILE_PREFIX = 'server-project-file:';
-const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx'];
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes'];
+const STATIC_STORAGE_ROOT = '/data/server-storage/files';
 
 let syncQueue = Promise.resolve();
 const volatileFiles = new Map();
 let serverIndex = DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
+let storageApiAvailable = true;
 
 function fileKey(folder, name) {
   return `${PROJECT_FILE_PREFIX}${folder}:${name}`;
@@ -36,9 +38,22 @@ async function requestJson(url, options = {}) {
   const response = await fetch(url, options);
   const payload = await response.json().catch(() => ({}));
   if (!response.ok || !payload?.ok) {
-    throw new Error(payload?.error || payload?.reason || `HTTP ${response.status}`);
+    const error = new Error(payload?.error || payload?.reason || `HTTP ${response.status}`);
+    error.status = response.status;
+    error.url = url;
+    throw error;
   }
   return payload;
+}
+
+function isStorageApiUnavailable(error) {
+  const message = String(error?.message || error || '');
+  return error?.status === 404
+    || error?.status === 405
+    || message.includes('HTTP 404')
+    || message.includes('HTTP 405')
+    || message.toLowerCase().includes('failed to parse url')
+    || message.toLowerCase().includes('failed to fetch');
 }
 
 function enqueueServerMutation(task) {
@@ -51,9 +66,17 @@ function enqueueServerMutation(task) {
 }
 
 async function fetchServerIndex() {
-  const payload = await requestJson('/__storage/index');
-  serverIndex = normalizeIndex(payload.index);
-  return serverIndex;
+  if (storageApiAvailable) {
+    try {
+      const payload = await requestJson('/__storage/index');
+      serverIndex = normalizeIndex(payload.index);
+      return serverIndex;
+    } catch (error) {
+      if (!isStorageApiUnavailable(error)) throw error;
+      storageApiAvailable = false;
+    }
+  }
+  return hydrateStaticStorageFiles();
 }
 
 async function fetchServerFile(folder, name) {
@@ -65,7 +88,58 @@ async function fetchServerFile(folder, name) {
 async function hydrateServerFiles() {
   const index = await fetchServerIndex();
   const count = Object.values(index).reduce((sum, files) => sum + Object.keys(files || {}).length, 0);
-  return { ok: true, stats: { pulledServer: 0, indexedServer: count, keptLocal: 0, merged: count, conflictsResolved: 0 } };
+  return {
+    ok: true,
+    storageApiAvailable,
+    stats: { pulledServer: 0, indexedServer: count, keptLocal: 0, merged: count, conflictsResolved: 0 }
+  };
+}
+
+async function hydrateStaticStorageFiles() {
+  const response = await fetch(`${STATIC_STORAGE_ROOT}/manifest.json`);
+  if (!response.ok) {
+    serverIndex = normalizeIndex(serverIndex);
+    return serverIndex;
+  }
+  const manifest = await response.json().catch(() => null);
+  const folders = manifest?.folders && typeof manifest.folders === 'object' ? manifest.folders : {};
+  const nextIndex = normalizeIndex({});
+  await Promise.all(DEFAULT_FOLDERS.flatMap((folder) => {
+    const entries = folders[folder] && typeof folders[folder] === 'object' ? folders[folder] : {};
+    return Object.entries(entries).map(async ([name, path]) => {
+      if (!name || typeof path !== 'string') return;
+      try {
+        const cleanPath = path.split('/').map((part) => encodeURIComponent(decodeURIComponent(part))).join('/');
+        const documentUrl = `${STATIC_STORAGE_ROOT}/${cleanPath}`;
+        const metadataUrl = documentUrl.replace(/\/document\.json$/, '/metadata.json');
+        const [documentResponse, metadataResponse] = await Promise.all([
+          fetch(documentUrl),
+          fetch(metadataUrl).catch(() => null)
+        ]);
+        if (!documentResponse.ok) return;
+        const data = await documentResponse.json().catch(() => null);
+        if (!data) return;
+        const metadata = metadataResponse?.ok ? await metadataResponse.json().catch(() => ({})) : {};
+        const savedAt = Number(metadata?.savedAt || Date.now());
+        const payload = {
+          version: Number(metadata?.version || 1),
+          folder,
+          name: typeof metadata?.name === 'string' && metadata.name ? metadata.name : name,
+          savedAt,
+          data
+        };
+        updateCachedPayload(payload);
+        nextIndex[folder][payload.name] = {
+          updatedAt: savedAt,
+          size: JSON.stringify(payload).length
+        };
+      } catch (error) {
+        // Static fallback is best-effort; keep loading any other readable files.
+      }
+    });
+  }));
+  serverIndex = normalizeIndex(nextIndex);
+  return serverIndex;
 }
 
 function fetchServerFileSync(folder, name) {
@@ -143,6 +217,7 @@ export function listCachedProjectFiles(folder) {
 export function clearCachedProjectFilesForTests() {
   volatileFiles.clear();
   serverIndex = DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
+  storageApiAvailable = true;
 }
 
 export function listServerIndexedFiles(folder = null) {
@@ -154,13 +229,22 @@ export function listServerIndexedFiles(folder = null) {
 export async function saveServerFile(folder, name, data, options = {}) {
   const savedAt = Number(options.savedAt || Date.now());
   const version = Number(options.version || 1);
-  const payload = await requestJson('/__storage/file', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ folder, name, savedAt, version, data })
-  });
-  updateCachedPayload(payload.file);
-  return payload.file;
+  if (!storageApiAvailable) {
+    return { version, folder, name, savedAt, data, persisted: false, reason: 'Storage API unavailable' };
+  }
+  try {
+    const payload = await requestJson('/__storage/file', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folder, name, savedAt, version, data })
+    });
+    updateCachedPayload(payload.file);
+    return { ...payload.file, persisted: true };
+  } catch (error) {
+    if (!isStorageApiUnavailable(error)) throw error;
+    storageApiAvailable = false;
+    return { version, folder, name, savedAt, data, persisted: false, reason: error?.message || 'Storage API unavailable' };
+  }
 }
 
 export function queueServerFileSave(folder, name, data, options = {}) {
@@ -168,7 +252,16 @@ export function queueServerFileSave(folder, name, data, options = {}) {
 }
 
 export async function deleteServerFile(folder, name) {
-  await requestJson(`/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`, { method: 'DELETE' });
+  if (!storageApiAvailable) {
+    deleteCachedProjectFile(folder, name);
+    return { ok: true, storageApiAvailable: false };
+  }
+  try {
+    await requestJson(`/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`, { method: 'DELETE' });
+  } catch (error) {
+    if (!isStorageApiUnavailable(error)) throw error;
+    storageApiAvailable = false;
+  }
   deleteCachedProjectFile(folder, name);
   return { ok: true };
 }
@@ -178,14 +271,30 @@ export function queueServerFileDelete(folder, name) {
 }
 
 export async function renameServerFile(folder, oldName, newName) {
-  const payload = await requestJson('/__storage/rename', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ folder, oldName, newName })
-  });
-  deleteCachedProjectFile(folder, oldName);
-  updateCachedPayload(payload.file);
-  return payload.file;
+  if (!storageApiAvailable) {
+    const raw = readCachedProjectFile(folder, oldName);
+    deleteCachedProjectFile(folder, oldName);
+    if (!raw) return null;
+    const payload = JSON.parse(raw);
+    const savedAt = Date.now();
+    const renamed = { version: Number(payload?.version || 1), folder, name: newName, savedAt, data: payload.data };
+    updateCachedPayload(renamed);
+    return renamed;
+  }
+  try {
+    const payload = await requestJson('/__storage/rename', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folder, oldName, newName })
+    });
+    deleteCachedProjectFile(folder, oldName);
+    updateCachedPayload(payload.file);
+    return payload.file;
+  } catch (error) {
+    if (!isStorageApiUnavailable(error)) throw error;
+    storageApiAvailable = false;
+    return renameServerFile(folder, oldName, newName);
+  }
 }
 
 export function queueServerFileRename(folder, oldName, newName) {

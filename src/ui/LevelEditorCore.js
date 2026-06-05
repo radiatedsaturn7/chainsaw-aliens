@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { deleteProjectFile, listProjectFiles, loadProjectFile, saveProjectFile } from './projectFiles.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPlayStopButton, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileRailWidth, renderSharedFileDrawer, SharedEditorMenu } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPlayStopButton, drawSharedPortraitActionRail, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedPortraitTabStrip, drawSharedThumbstick, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { clamp, randInt, pickOne } from '../editor/input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from '../editor/playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -10,7 +10,8 @@ import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { createPixelEditorAdapter } from '../editor/adapters/pixelEditorAdapter.js';
 import { createMidiEditorAdapter } from '../editor/adapters/midiEditorAdapter.js';
 import { ensurePixelPreviewFrame, normalizeMidiTracks } from '../editor/adapters/editorDataContracts.js';
-import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from './shared/input/editorInputActions.js';
+import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
+import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
 
@@ -277,6 +278,7 @@ const TRIGGER_ACTION_TYPES = [
   { id: 'become-tile', label: 'Become Tile' },
   { id: 'fade-in', label: 'Fade In' },
   { id: 'fade-out', label: 'Fade Out' },
+  { id: 'play-cutscene', label: 'Play Cutscene' },
   { id: 'display-text', label: 'Display Text' },
   { id: 'display-image', label: 'Display Image' },
   { id: 'wait', label: 'Wait (ms)' },
@@ -368,21 +370,69 @@ const EDITOR_AUTOSAVE_KEY = 'chainsaw-editor-autosave';
 const LEVEL_EDITOR_AUTOSAVE_DOC = 'Level Editor Autosave';
 
 const EDITOR_GAMEPAD_BINDINGS = {
-  [EDITOR_INPUT_ACTIONS.CONFIRM]: 'jump',
-  [EDITOR_INPUT_ACTIONS.CANCEL]: 'cancel',
-  [EDITOR_INPUT_ACTIONS.MENU]: 'pause',
-  [EDITOR_INPUT_ACTIONS.TOGGLE_MODE]: 'throw',
-  [EDITOR_INPUT_ACTIONS.UNDO]: 'dash',
-  [EDITOR_INPUT_ACTIONS.PANEL_PREV]: 'aimUp',
-  [EDITOR_INPUT_ACTIONS.PANEL_NEXT]: 'aimDown',
-  SECONDARY: 'attack'
+  ...SHARED_EDITOR_GAMEPAD_BINDINGS
 };
 
+const LEVEL_PORTRAIT_ASSET_TABS = ['tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'music', 'graphics'];
+const LEVEL_PORTRAIT_SETTINGS_TABS = ['level-settings', 'midi'];
+
+export function buildLevelMobileLandscapeRootTabs() {
+  return [
+    { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
+    { id: 'toolbox', label: 'Toolbox' },
+    { id: 'tiles', label: 'Tiles' },
+    { id: 'npcs', label: 'NPCs' },
+    { id: 'triggers', label: 'Triggers' },
+    { id: 'powerups', label: 'Powerups' },
+    { id: 'prefabs', label: 'Structures' },
+    { id: 'graphics', label: 'Graphics' },
+    { id: 'music', label: 'Music' },
+    { id: 'level-settings', label: 'Settings' },
+    { id: 'undo', label: 'Undo' },
+    { id: 'redo', label: 'Redo' }
+  ];
+}
+
+export function buildLevelPortraitMenuModel() {
+  return {
+    rootTabs: [
+      { id: 'file', panel: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
+      { id: 'tools', panel: 'toolbox', label: 'Tools' },
+      { id: 'assets', panel: 'tiles', label: 'Assets' },
+      { id: 'settings', panel: 'level-settings', label: 'Settings' }
+    ],
+    assetTabs: [
+      { id: 'tiles', label: 'Tiles' },
+      { id: 'npcs', label: 'NPCs' },
+      { id: 'triggers', label: 'Triggers' },
+      { id: 'powerups', label: 'Powerups' },
+      { id: 'prefabs', label: 'Structures' },
+      { id: 'music', label: 'Music' },
+      { id: 'graphics', label: 'Decals' }
+    ],
+    settingsTabs: [
+      { id: 'level-settings', label: 'Level' },
+      { id: 'midi', label: 'MIDI' }
+    ],
+    bottomRailActions: ['menu', 'undo', 'redo', 'playtest']
+  };
+}
+
+export function shouldShowLevelEditorTopPlaytestButton({
+  isMobile = false,
+  viewportWidth = 0,
+  viewportHeight = 0
+} = {}) {
+  return !isMobilePortraitLayout({ isMobile, viewportWidth, viewportHeight });
+}
 
 export default class Editor {
   constructor(game) {
     this.game = game;
     this.sharedMenu = new SharedEditorMenu();
+    this.controllerMenu = new ControllerMenuStack({
+      siblingOrder: ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'level-settings', 'playtest']
+    });
     this.active = false;
     this.mode = 'tile';
     this.previousNonTriggerMode = 'tile';
@@ -483,7 +533,9 @@ export default class Editor {
         },
         applyLoadedData: (ctx, data) => {
           ctx.game.applyWorldData(data);
-          ctx.game.restoreBestTileArtFromAutosaves?.();
+          if (!data.pixelArt?.tiles || !Object.keys(data.pixelArt.tiles).length) {
+            ctx.game.restoreBestTileArtFromAutosaves?.();
+          }
           ctx.flushWorldRefresh();
         }
       },
@@ -510,6 +562,7 @@ export default class Editor {
     this.panelTabs = ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'];
     this.panelTabIndex = 0;
     this.panelScroll = {
+      root: 0,
       file: 0,
       toolbox: 0,
       tiles: 0,
@@ -523,6 +576,7 @@ export default class Editor {
       midi: 0
     };
     this.panelScrollMax = {
+      root: 0,
       file: 0,
       toolbox: 0,
       tiles: 0,
@@ -536,6 +590,8 @@ export default class Editor {
       midi: 0
     };
     this.panelScrollBounds = null;
+    this.panelScrollHitBounds = null;
+    this.rootPanelScrollBounds = null;
     this.panelScrollView = null;
     this.panelScrollDrag = null;
     this.panelScrollTapCandidate = null;
@@ -734,6 +790,7 @@ export default class Editor {
           this.resetView();
           this.syncPreviewMinimap();
           this.runtime.markSavedSnapshot();
+          this.closeFileMenu();
         } catch (error) {
           console.error('Failed to load world data:', error);
         }
@@ -853,39 +910,68 @@ export default class Editor {
     if (!Number.isFinite(this.camera.y)) this.camera.y = 0;
   }
 
-  updateLayoutBounds(width = this.game.canvas?.width || 0, height = this.game.canvas?.height || 0) {
+  updateLayoutBounds(
+    width = this.game?.viewport?.width || this.game.canvas?.width || 0,
+    height = this.game?.viewport?.height || this.game.canvas?.height || 0
+  ) {
     if (!width || !height) return;
     const controlMargin = 18;
-    const controlBase = Math.min(width, height);
     if (this.isMobileLayout()) {
-      const joystickRadius = Math.min(78, controlBase * 0.14);
-      const knobRadius = Math.max(22, joystickRadius * 0.45);
-      const center = {
-        x: controlMargin + joystickRadius,
-        y: height - controlMargin - joystickRadius
-      };
-      this.panJoystick.center = center;
-      this.panJoystick.radius = joystickRadius;
-      this.panJoystick.knobRadius = knobRadius;
-      const sliderHeight = 10;
-      let sliderX = center.x + joystickRadius + 24;
-      const sliderRightPadding = Math.max(controlMargin + 132, width * 0.2);
-      let sliderWidth = width - sliderX - sliderRightPadding;
-      const sliderY = height - controlMargin - sliderHeight;
-      if (sliderWidth < 140) {
-        sliderX = controlMargin;
-        sliderWidth = Math.max(140, width - controlMargin * 2 - 132);
+      const portraitLayout = isMobilePortraitLayout({
+        isMobile: true,
+        viewportWidth: width,
+        viewportHeight: height
+      })
+        ? getSharedMobilePortraitEditorLayout(width, height, {
+          middleRailHeight: 88,
+          minTopHeight: 230,
+          minMainHeight: 220
+        })
+        : null;
+      if (portraitLayout) {
+        const railLayout = getSharedPortraitActionRailLayout(portraitLayout.middleRail);
+        this.panJoystick.center = railLayout.thumbstickCenter;
+        this.panJoystick.radius = railLayout.thumbstickRadius;
+        this.panJoystick.knobRadius = railLayout.knobRadius;
+        this.zoomSlider.bounds = { x: 0, y: 0, w: 0, h: 0 };
+        this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
+        this.zoomSlider.active = false;
+        this.zoomSlider.id = null;
+      } else {
+        const landscapeLayout = getSharedMobileLandscapeEditorLayout(width, height, {
+          reserveRightRail: this.drawer.open
+        });
+        const { center, radius: joystickRadius, knobRadius } = landscapeLayout.thumbstick;
+        this.panJoystick.center = center;
+        this.panJoystick.radius = joystickRadius;
+        this.panJoystick.knobRadius = knobRadius;
+        const sliderHeight = 10;
+        let sliderX = center.x + joystickRadius + 24;
+        const sliderRightPadding = Math.max(controlMargin + 132, width * 0.2);
+        let sliderWidth = width - sliderX - sliderRightPadding;
+        const sliderY = height - controlMargin - sliderHeight;
+        if (sliderWidth < 140) {
+          sliderX = controlMargin;
+          sliderWidth = Math.max(140, width - controlMargin * 2 - 132);
+        }
+        this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
       }
-      this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
 
-      const railWidth = getSharedMobileRailWidth(width, height);
-      const drawerWidth = this.drawer.open
-        ? getSharedMobileDrawerWidth(width, height, railWidth, { edgePadding: 0 })
-        : 0;
-      this.editorBounds = { x: railWidth, y: 0, w: width - railWidth - drawerWidth, h: height };
-      this.drawerBounds = this.drawer.open
-        ? { x: width - drawerWidth, y: 0, w: drawerWidth, h: height }
-        : { x: 0, y: 0, w: railWidth, h: height };
+      if (portraitLayout) {
+        this.editorBounds = { ...portraitLayout.mainEditor };
+        this.drawerBounds = this.drawer.open
+          ? { ...portraitLayout.menuSheet }
+          : { ...portraitLayout.middleRail };
+      } else {
+        const landscapeLayout = getSharedMobileLandscapeEditorLayout(width, height, {
+          reserveRightRail: this.drawer.open
+        });
+        const drawerWidth = this.drawer.open ? landscapeLayout.rightRail.w : 0;
+        this.editorBounds = { ...landscapeLayout.mainEditor };
+        this.drawerBounds = this.drawer.open
+          ? { ...landscapeLayout.rightRail, w: drawerWidth }
+          : { ...landscapeLayout.leftRail };
+      }
     } else {
       this.panJoystick.center = { x: 0, y: 0 };
       this.panJoystick.radius = 0;
@@ -894,6 +980,38 @@ export default class Editor {
       this.editorBounds = { x: 0, y: 0, w: width, h: height };
       this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
     }
+    if (shouldShowLevelEditorTopPlaytestButton({
+      isMobile: this.isMobileLayout(),
+      viewportWidth: width,
+      viewportHeight: height
+    })) {
+      const playButtonW = this.isMobileLayout() ? 112 : 96;
+      const playButtonH = this.isMobileLayout() ? 40 : 36;
+      this.playButtonBounds = {
+        x: Math.round((width - playButtonW) / 2),
+        y: this.editorBounds.y + 16,
+        w: playButtonW,
+        h: playButtonH
+      };
+    } else {
+      this.playButtonBounds = null;
+    }
+  }
+
+  getViewportSize() {
+    const viewport = this.game?.viewport || {};
+    return {
+      width: Math.max(1, Math.round(Number(viewport.width) || this.game.canvas?.width || 1)),
+      height: Math.max(1, Math.round(Number(viewport.height) || this.game.canvas?.height || 1))
+    };
+  }
+
+  resetMobilePanZoomControls() {
+    resetSharedThumbstickState(this.panJoystick);
+    this.zoomSlider.bounds = { x: 0, y: 0, w: 0, h: 0 };
+    this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
+    this.zoomSlider.active = false;
+    this.zoomSlider.id = null;
   }
 
   clearTransientPointers(reason = 'unknown') {
@@ -919,10 +1037,13 @@ export default class Editor {
     }
     this.panelScrollDrag = null;
     this.panelScrollTapCandidate = null;
+    this.panelScrollHitBounds = null;
+    this.rootPanelScrollBounds = null;
     this.drawer.swipeStart = null;
     this.triggerZoneStart = null;
     this.triggerZoneTarget = null;
     this.inputActionNormalizer = new EditorInputActionNormalizer();
+    this.controllerMenu.resetFocus();
     this.musicDragStart = null;
     this.musicDragTarget = null;
     this.panJoystick.active = false;
@@ -1048,7 +1169,9 @@ export default class Editor {
     const projectFilePayload = loadProjectFile('levels', LEVEL_EDITOR_AUTOSAVE_DOC);
     if (projectFilePayload?.data?.tiles && projectFilePayload?.data?.width && projectFilePayload?.data?.height) {
       this.game.applyWorldData(projectFilePayload.data);
-      this.game.restoreBestTileArtFromAutosaves?.();
+      if (!projectFilePayload.data.pixelArt?.tiles || !Object.keys(projectFilePayload.data.pixelArt.tiles).length) {
+        this.game.restoreBestTileArtFromAutosaves?.();
+      }
       this.syncPreviewMinimap();
       return true;
     }
@@ -1085,13 +1208,12 @@ export default class Editor {
     const worldData = sourceData || this.game.buildWorldData();
     return {
       ...worldData,
-      pixelArt: { tiles: {} },
-      pixelArtRef: 'Tile Art Autosave'
+      pixelArt: worldData.pixelArt || { tiles: {} }
     };
   }
 
   resetView() {
-    const { canvas } = this.game;
+    const { width, height } = this.getViewportSize();
     const candidates = [
       this.focusOverride,
       this.game.world?.spawnPoint,
@@ -1107,10 +1229,10 @@ export default class Editor {
     ];
     const focus = candidates.find((point) => this.isFinitePoint(point)) || { x: 0, y: 0 };
     this.zoom = 1;
-    this.updateLayoutBounds(canvas.width, canvas.height);
+    this.updateLayoutBounds(width, height);
     const bounds = this.getCameraBounds();
-    this.camera.x = clamp(focus.x - canvas.width / 2, bounds.minX, bounds.maxX);
-    this.camera.y = clamp(focus.y - canvas.height / 2, bounds.minY, bounds.maxY);
+    this.camera.x = clamp(focus.x - width / 2, bounds.minX, bounds.maxX);
+    this.camera.y = clamp(focus.y - height / 2, bounds.minY, bounds.maxY);
     this.focusOverride = null;
     this.sanitizeView('resetView');
   }
@@ -1121,11 +1243,11 @@ export default class Editor {
 
   centerCameraOnWorld(worldX, worldY) {
     if (!Number.isFinite(worldX) || !Number.isFinite(worldY)) return;
-    const { canvas } = this.game;
-    this.updateLayoutBounds(canvas.width, canvas.height);
+    const { width, height } = this.getViewportSize();
+    this.updateLayoutBounds(width, height);
     const bounds = this.getCameraBounds();
-    this.camera.x = clamp(worldX - canvas.width / 2, bounds.minX, bounds.maxX);
-    this.camera.y = clamp(worldY - canvas.height / 2, bounds.minY, bounds.maxY);
+    this.camera.x = clamp(worldX - width / 2, bounds.minX, bounds.maxX);
+    this.camera.y = clamp(worldY - height / 2, bounds.minY, bounds.maxY);
     this.sanitizeView('centerCameraOnWorld');
   }
 
@@ -1272,8 +1394,9 @@ export default class Editor {
       if (input.isDownCode('ArrowDown')) this.camera.y += panSpeed;
       this.clampCamera();
     } else {
-      if (input.isDownCode('ArrowUp')) this.adjustZoom(0.8, this.game.canvas.width / 2, this.game.canvas.height / 2);
-      if (input.isDownCode('ArrowDown')) this.adjustZoom(-0.8, this.game.canvas.width / 2, this.game.canvas.height / 2);
+      const { width, height } = this.getViewportSize();
+      if (input.isDownCode('ArrowUp')) this.adjustZoom(0.8, width / 2, height / 2);
+      if (input.isDownCode('ArrowDown')) this.adjustZoom(-0.8, width / 2, height / 2);
     }
   }
 
@@ -1314,6 +1437,14 @@ export default class Editor {
     if (this.isMobileLayout()) {
       this.drawer.open = false;
     }
+  }
+
+  resetToFileMenu() {
+    this.setPanelTab('file');
+    if (this.isMobileLayout()) {
+      this.drawer.open = false;
+    }
+    this.controllerMenu.resetFocus();
   }
 
   exitToMainMenu() {
@@ -1367,40 +1498,17 @@ export default class Editor {
           redo: () => this.redo()
         },
         extras: [
-          { id: 'resize-level', label: 'Resize', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
-          { id: 'crop-level', label: 'Crop', tooltip: 'Crop level to smallest bounds containing placed content', onClick: () => this.cropLevelToContent() },
-          { divider: true },
           {
             id: 'playtest',
             label: 'Playtest',
             tooltip: 'Start playtest from spawn',
             onClick: () => this.game.exitEditor({ playtest: true })
           },
-          ...(spawnTile
-            ? [{
-              id: 'spawn-point',
-              label: 'Spawn Point',
-              tooltip: 'Place the player spawn point',
-              onClick: () => {
-                this.setTileType(spawnTile);
-                this.mode = 'tile';
-                this.tileTool = 'paint';
-              }
-            }]
-            : []),
           {
-            id: 'start-everything',
-            label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
-            tooltip: 'Toggle playtest loadout',
-            onClick: () => {
-              this.startWithEverything = !this.startWithEverything;
-            }
-          },
-          {
-            id: 'random-level',
-            label: 'Random Level',
-            tooltip: 'Create a random level layout',
-            onClick: () => this.promptRandomLevel()
+            id: 'exit-main',
+            label: 'Exit to Main Menu',
+            tooltip: 'Exit editor to title',
+            onClick: () => this.exitToMainMenu()
           }
         ],
         includeFooter: false
@@ -1409,6 +1517,38 @@ export default class Editor {
         onClick: entry.onClick || entry.action || (() => {})
       }));
       columns = 1;
+    } else if (tabId === 'level-settings') {
+      items = [
+        { id: 'resize-level', label: 'Resize Level', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
+        { id: 'crop-level', label: 'Crop Level', tooltip: 'Crop level to smallest bounds containing placed content', onClick: () => this.cropLevelToContent() },
+        ...(spawnTile
+          ? [{
+            id: 'spawn-point',
+            label: 'Spawn Point',
+            tooltip: 'Place the player spawn point',
+            onClick: () => {
+              this.setTileType(spawnTile);
+              this.mode = 'tile';
+              this.tileTool = 'paint';
+            }
+          }]
+          : []),
+        {
+          id: 'start-everything',
+          label: `Start with everything: ${this.startWithEverything ? 'ON' : 'OFF'}`,
+          tooltip: 'Toggle playtest loadout',
+          onClick: () => {
+            this.startWithEverything = !this.startWithEverything;
+          }
+        },
+        {
+          id: 'random-level',
+          label: 'Random Level',
+          tooltip: 'Create a random level layout',
+          onClick: () => this.promptRandomLevel()
+        }
+      ];
+      columns = 2;
     } else if (tabId === 'tiles') {
       items = DEFAULT_TILE_TYPES.map((tile) => ({
         id: tile.id,
@@ -1537,12 +1677,13 @@ export default class Editor {
         }
       }))
       ];
+      columns = 2;
     } else if (tabId === 'pixels') {
       items = [
         {
           id: 'pixel-open-selected',
-          label: `Open ${this.tileType?.label || 'tile'} in Pixel Editor`,
-          tooltip: 'Open currently selected tile from Tiles tab in the pixel editor',
+          label: `Tile Editor: ${this.tileType?.label || 'Tile'}`,
+          tooltip: 'Edit the selected level tile art inside the Level Editor',
           onClick: () => this.openTileInPixelEditor(this.tileType)
         },
         {
@@ -1663,8 +1804,7 @@ export default class Editor {
       columns = 2;
     } else if (tabId === 'graphics') {
       const decals = this.ensureDecals();
-      const selected = decals.find((decal) => decal.id === this.selectedDecalId) || decals[0] || null;
-      if (selected) this.selectedDecalId = selected.id;
+      const selected = decals.find((decal) => decal.id === this.selectedDecalId) || null;
       items = [
         {
           id: 'graphics-take-screenshot',
@@ -1681,6 +1821,7 @@ export default class Editor {
         {
           id: 'graphics-replace-decal',
           label: 'Replace Decal',
+          hidden: !selected,
           tooltip: 'Replace image of selected decal',
           onClick: () => { this.replaceSelectedDecalImage(); }
         },
@@ -1697,6 +1838,7 @@ export default class Editor {
         {
           id: 'graphics-edit-decal',
           label: 'Edit Open In Pixel Studio',
+          hidden: !selected,
           tooltip: 'Open selected decal in Pixel Studio for editing',
           onClick: () => { this.editSelectedDecal(); }
         },
@@ -1709,40 +1851,46 @@ export default class Editor {
         {
           id: 'graphics-reset-decal-orientation',
           label: 'Reset Transform',
+          hidden: !selected,
           tooltip: 'Reset selected decal orientation',
           onClick: () => { this.resetSelectedDecalOrientation(); }
         },
         {
           id: 'graphics-decal-bring-forward',
           label: 'Bring Forward',
+          hidden: !selected,
           tooltip: 'Move selected decal one layer up',
           onClick: () => { this.reorderSelectedDecal('forward'); }
         },
         {
           id: 'graphics-decal-bring-front',
           label: 'Bring to Front',
+          hidden: !selected,
           tooltip: 'Move selected decal to top layer',
           onClick: () => { this.reorderSelectedDecal('front'); }
         },
         {
           id: 'graphics-decal-send-backward',
           label: 'Send Backward',
+          hidden: !selected,
           tooltip: 'Move selected decal one layer down',
           onClick: () => { this.reorderSelectedDecal('backward'); }
         },
         {
           id: 'graphics-decal-send-back',
           label: 'Send to Back',
+          hidden: !selected,
           tooltip: 'Move selected decal to bottom layer',
           onClick: () => { this.reorderSelectedDecal('back'); }
         },
         {
           id: 'graphics-delete-decal',
           label: 'Delete Decal',
+          hidden: !selected,
           tooltip: 'Remove selected decal',
           onClick: () => { this.deleteSelectedDecal(); }
         }
-      ];
+      ].filter((item) => !item.hidden);
       columns = 1;
     } else if (tabId === 'midi') {
       const tracks = this.ensureMidiTracks();
@@ -1794,12 +1942,6 @@ export default class Editor {
           label: 'Open',
           tooltip: 'Open level from browser storage',
           onClick: () => this.loadLevelFromStorage()
-        },
-        {
-          id: 'exit',
-          label: 'Close',
-          tooltip: 'Close editor',
-          onClick: () => this.exitToMainMenu()
         }
       );
     }
@@ -1840,7 +1982,7 @@ export default class Editor {
       }
       this.panelScroll[activeTab] = clamp(scrollY, 0, this.panelScrollMax[activeTab] || 0);
     }
-    if (nextItem.tooltip) {
+    if (nextItem.tooltip && !this.isMobileLayout()) {
       this.activeTooltip = nextItem.tooltip;
       this.tooltipTimer = 2;
     }
@@ -1855,7 +1997,7 @@ export default class Editor {
     const nextItem = items[index];
     if (!nextItem) return false;
     if (typeof nextItem.onClick === 'function') nextItem.onClick();
-    if (nextItem.tooltip) {
+    if (nextItem.tooltip && !this.isMobileLayout()) {
       this.activeTooltip = nextItem.tooltip;
       this.tooltipTimer = 2;
     }
@@ -1879,9 +2021,21 @@ export default class Editor {
       return;
     }
 
+    const dialogOpen = this.randomLevelDialog.open;
+    if (!dialogOpen) {
+      this.controllerMenu.setMenus(this.buildControllerMenus(), {
+        siblingOrder: ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'playtest']
+      });
+      this.controllerMenu.ensureInitialFocus();
+      if (this.controllerMenu.handleActions(semanticActions, axes, dt, this)) {
+        return;
+      }
+    }
+
     if (!this.gamepadCursor.active) {
-      const centerX = this.game.canvas.width / 2;
-      const centerY = this.game.canvas.height / 2;
+      const { width, height } = this.getViewportSize();
+      const centerX = width / 2;
+      const centerY = height / 2;
       const worldCenter = this.screenToWorld(centerX, centerY);
       this.gamepadCursor = { x: worldCenter.x, y: worldCenter.y, active: true };
       this.lastPointer = { x: centerX, y: centerY };
@@ -1895,8 +2049,6 @@ export default class Editor {
     const stickY = Math.abs(axes.leftY) > deadzone ? axes.leftY : 0;
     const lookX = Math.abs(axes.rightX) > deadzone ? axes.rightX : 0;
     const lookY = Math.abs(axes.rightY) > deadzone ? axes.rightY : 0;
-    const dialogOpen = this.randomLevelDialog.open;
-
     if (dialogOpen) {
       this.randomLevelSliderRepeat = Math.max(0, this.randomLevelSliderRepeat - dt);
       this.randomLevelFocusRepeat = Math.max(0, this.randomLevelFocusRepeat - dt);
@@ -1993,11 +2145,8 @@ export default class Editor {
     const screenPos = this.worldToScreen(this.gamepadCursor.x, this.gamepadCursor.y);
     this.lastPointer = { x: screenPos.x, y: screenPos.y };
 
-    if (hasSemanticAction(EDITOR_INPUT_ACTIONS.TOGGLE_MODE)) {
-      this.cycleMode(1);
-    }
-    if (Boolean(pressed.dash)) {
-      this.cycleTileTool();
+    if (hasSemanticAction(EDITOR_INPUT_ACTIONS.FOCUS_TOGGLE)) {
+      this.panelMenuFocused = !this.panelMenuFocused;
     }
     if (hasSemanticAction(EDITOR_INPUT_ACTIONS.PANEL_PREV)) {
       this.cyclePanelTab(-1);
@@ -2015,13 +2164,21 @@ export default class Editor {
         this.confirmRandomLevel();
       }
       return;
-    } else if (dialogOpen && Boolean(pressed.dash)) {
+    } else if (dialogOpen && hasSemanticAction(EDITOR_INPUT_ACTIONS.CANCEL)) {
       this.cancelRandomLevel();
       return;
     }
 
     if (hasSemanticAction(EDITOR_INPUT_ACTIONS.UNDO)) {
       this.undo();
+    }
+    if (hasSemanticAction(EDITOR_INPUT_ACTIONS.REDO)) {
+      this.redo();
+    }
+    if (hasSemanticAction(EDITOR_INPUT_ACTIONS.TOOL_OPTIONS)) {
+      this.setPanelTab('toolbox');
+      this.panelMenuFocused = true;
+      return;
     }
     if (hasSemanticAction(EDITOR_INPUT_ACTIONS.MENU)) {
       this.startPlaytestFromCursor();
@@ -2033,9 +2190,9 @@ export default class Editor {
     }
 
     const primaryDown = Boolean(down.jump);
-    const secondaryDown = Boolean(down.attack);
+    const secondaryDown = Boolean(down.rev);
     const pressPrimary = hasSemanticAction(EDITOR_INPUT_ACTIONS.CONFIRM);
-    const pressSecondary = Boolean(pressed.attack);
+    const pressSecondary = hasSemanticAction(EDITOR_INPUT_ACTIONS.SECONDARY);
 
     if (pressPrimary || pressSecondary) {
       if (this.panelMenuFocused && pressPrimary && this.activatePanelSelection()) {
@@ -2083,10 +2240,126 @@ export default class Editor {
     }
   }
 
+  buildControllerMenus() {
+    const action = (id, label, onSelect, options = {}) => ({ id, label, onSelect, ...options });
+    const rootItem = (id, label, submenu = id) => ({
+      id,
+      label,
+      submenu,
+      onEnter: () => {
+        this.setPanelTab(id);
+        this.panelMenuFocused = true;
+      }
+    });
+    const surfaceAction = (id, label, onSelect, options = {}) => action(id, label, () => {
+      onSelect();
+      this.panelMenuFocused = false;
+    }, options);
+    const panelAction = (id, label) => action(id, label, () => {
+      this.setPanelTab(id);
+      this.panelMenuFocused = true;
+    });
+    const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
+    return {
+      root: {
+        id: 'root',
+        title: 'Level Editor',
+        items: [
+          rootItem('file', 'File'),
+          rootItem('toolbox', 'Toolbox'),
+          rootItem('tiles', 'Tiles'),
+          rootItem('npcs', 'Actors / NPCs'),
+          rootItem('triggers', 'Triggers'),
+          rootItem('powerups', 'Powerups'),
+          rootItem('prefabs', 'Structures'),
+          rootItem('graphics', 'Graphics'),
+          rootItem('music', 'Music'),
+          rootItem('level-settings', 'Settings'),
+          rootItem('playtest', 'Playtest'),
+          action('undo', 'Undo', () => this.undo()),
+          action('redo', 'Redo', () => this.redo())
+        ]
+      },
+      toolbox: {
+        id: 'toolbox',
+        title: 'Toolbox',
+        items: [
+          panelAction('toolbox', 'Open Toolbox'),
+          surfaceAction('tile-mode', 'Tile Mode', () => { this.mode = 'tile'; this.tileTool = 'paint'; }),
+          surfaceAction('enemy-mode', 'Actor Mode', () => { this.mode = 'enemy'; }),
+          surfaceAction('prefab-mode', 'Structure Mode', () => { this.mode = 'prefab'; }),
+          surfaceAction('shape-mode', 'Shape Mode', () => { this.mode = 'shape'; }),
+          surfaceAction('erase', 'Eraser', () => { this.mode = 'tile'; this.tileTool = 'erase'; })
+        ]
+      },
+      tiles: {
+        id: 'tiles',
+        title: 'Tiles',
+        items: DEFAULT_TILE_TYPES.slice(0, 28).map((tile) => surfaceAction(tile.id, tile.label, () => {
+          this.mode = 'tile';
+          this.tileTool = 'paint';
+          this.tileType = tile;
+        }))
+      },
+      npcs: {
+        id: 'npcs',
+        title: 'Actors / NPCs',
+        items: [...STANDARD_ENEMY_TYPES, ...getCustomActorEnemyTypes()].slice(0, 28).map((enemy) => surfaceAction(enemy.id, enemy.label, () => {
+          this.mode = 'enemy';
+          this.enemyType = enemy;
+        }))
+      },
+      triggers: {
+        id: 'triggers',
+        title: 'Triggers',
+        items: [panelAction('triggers', 'Open Triggers'), ...(spawnTile ? [surfaceAction('spawn', 'Spawn Point', () => { this.mode = 'tile'; this.tileType = spawnTile; })] : [])]
+      },
+      powerups: {
+        id: 'powerups',
+        title: 'Powerups',
+        items: POWERUP_TYPES.map((powerup) => surfaceAction(powerup.id, powerup.label, () => {
+          this.mode = 'tile';
+          this.tileType = powerup;
+        }))
+      },
+      prefabs: {
+        id: 'prefabs',
+        title: 'Structures',
+        items: PREFAB_TYPES.map((prefab) => surfaceAction(prefab.id, prefab.label, () => { this.mode = 'prefab'; this.prefabType = prefab; }))
+      },
+      graphics: { id: 'graphics', title: 'Graphics', items: [panelAction('graphics', 'Open Graphics'), action('pixel', 'Open Pixel Art', () => { this.mode = 'pixel'; })] },
+      'level-settings': { id: 'level-settings', title: 'Settings', items: this.getPanelConfig('level-settings').items.map((item) => action(item.id, item.label, item.onClick)) },
+      music: { id: 'music', title: 'Music', items: [panelAction('music', 'Open Music'), action('midi', 'Open MIDI Composer', () => { this.mode = 'midi'; })] },
+      playtest: { id: 'playtest', title: 'Playtest', items: [action('playtest', 'Start Playtest', () => this.game.exitEditor({ playtest: true }))] },
+      file: {
+        id: 'file',
+        title: 'File',
+        items: [
+          action('new', 'New', () => this.newLevelDocument()),
+          action('save', 'Save', () => this.saveLevelToStorage()),
+          action('save-as', 'Save As', () => this.saveLevelToStorage({ forceSaveAs: true })),
+          action('open', 'Open', () => this.loadLevelFromStorage()),
+          action('import', 'Import', () => this.openFileDialog()),
+          action('export', 'Export', () => this.saveToFile()),
+          action('exit-main', 'Exit to Main Menu', () => this.exitToMainMenu())
+        ]
+      },
+      system: buildControllerSystemMenu({
+        fileMenuId: 'file',
+        toolsMenuId: 'toolbox',
+        onExit: () => this.exitToMainMenu()
+      }),
+      'exit-confirm': buildControllerExitConfirmMenu({
+        onExit: () => this.exitToMainMenu(),
+        message: 'Exit Level Editor and return to the main menu.'
+      }),
+      help: buildControllerHelpMenu(['LS moves cursor', 'RS pans level'])
+    };
+  }
+
   keepCursorInView() {
     const margin = 80;
-    const viewW = this.game.canvas.width;
-    const viewH = this.game.canvas.height;
+    const { width: viewW, height: viewH } = this.getViewportSize();
     const minX = this.camera.x + margin / this.zoom;
     const maxX = this.camera.x + viewW / this.zoom - margin / this.zoom;
     const minY = this.camera.y + margin / this.zoom;
@@ -2473,7 +2746,6 @@ export default class Editor {
       return;
     }
     delete store.tiles[tileChar];
-    this.game.pixelStudio?.persistTileArtAutosave?.(true);
     this.persistAutosave();
     this.setGraphicsStatus(`Reverted tile ${tile.label} [${tileChar}] to default art`);
   }
@@ -2652,6 +2924,11 @@ export default class Editor {
       case 'fade-in-music':
         base.params = { musicId: MUSIC_TRACKS[0]?.id || 'ambient-rift', durationMs: 1000 };
         break;
+      case 'play-cutscene': {
+        const cutsceneId = this.getTriggerCutsceneOptions()[0] || '';
+        base.params = { cutsceneId, pauseGameplay: true, skippable: true };
+        break;
+      }
       case 'play-midi': {
         const trackId = this.getTriggerMusicOptions()[0] || '';
         base.params = { trackId, fadeMs: 250, volume: 1, falloffRangeTiles: 0 };
@@ -2813,6 +3090,11 @@ export default class Editor {
           if (!Number.isFinite(action.params.pitchCents)) action.params.pitchCents = 0;
           if (!Number.isFinite(action.params.falloffRangeTiles) || action.params.falloffRangeTiles < 0) action.params.falloffRangeTiles = 0;
         }
+      }
+      if (action.type === 'play-cutscene') {
+        if (typeof action.params.cutsceneId !== 'string') action.params.cutsceneId = '';
+        action.params.pauseGameplay = action.params.pauseGameplay !== false;
+        action.params.skippable = action.params.skippable !== false;
       }
       if (action.type === 'display-text') {
         if (!TRIGGER_TEXT_POSITIONS.includes(action.params.position)) action.params.position = TRIGGER_TEXT_POSITIONS[1];
@@ -3286,6 +3568,8 @@ export default class Editor {
         return `Duration: ${params.durationMs || 0}ms`;
       case 'fade-in-music':
         return `${params.musicId || 'ambient-rift'} (${params.durationMs || 0}ms)`;
+      case 'play-cutscene':
+        return `${params.cutsceneId || '(none)'}${params.skippable !== false ? ' [skip]' : ''}`;
       case 'play-midi':
         return `${params.trackId || '(none)'} vol ${Math.round(Number(params.volume ?? 1) * 100)}% falloff ${params.falloffRangeTiles || 0} tiles`;
       case 'stop-midi':
@@ -3405,6 +3689,16 @@ export default class Editor {
     const options = listProjectFiles('sfx').map((entry) => entry.name).filter(Boolean);
     this.triggerEditorOptionCache.sfxOptions = options;
     this.triggerEditorOptionCache.sfxOptionsAt = Date.now();
+    return options;
+  }
+
+  getTriggerCutsceneOptions() {
+    if (this.triggerEditorOptionCache.cutsceneOptions) {
+      return this.triggerEditorOptionCache.cutsceneOptions;
+    }
+    const options = listProjectFiles('cutscenes').map((entry) => entry.name).filter(Boolean);
+    this.triggerEditorOptionCache.cutsceneOptions = options;
+    this.triggerEditorOptionCache.cutsceneOptionsAt = Date.now();
     return options;
   }
 
@@ -5418,6 +5712,43 @@ export default class Editor {
       this.startPlaytestFromCursor();
       return;
     }
+    if (this.isMobileLayout()) {
+      const drawerScrollHitBounds = this.panelScrollHitBounds || this.panelScrollBounds;
+      const rootScrollHitBounds = this.rootPanelScrollBounds;
+      const isDrawerScrollHit = this.drawer.open && drawerScrollHitBounds
+        && this.isPointInBounds(payload.x, payload.y, this.drawerBounds)
+        && this.isPointInBounds(payload.x, payload.y, drawerScrollHitBounds);
+      const isRootScrollHit = !this.drawer.open && rootScrollHitBounds
+        && this.isPointInBounds(payload.x, payload.y, rootScrollHitBounds);
+      if (isDrawerScrollHit || isRootScrollHit) {
+        const scrollKey = isRootScrollHit ? 'root' : this.getActivePanelTab();
+        const scrollUnit = scrollKey === 'root'
+          ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile + SHARED_EDITOR_LEFT_MENU.buttonGap
+          : (scrollKey === 'file' ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile + SHARED_EDITOR_LEFT_MENU.buttonGap : 1);
+        this.panelScrollDrag = {
+          id: payload.id ?? null,
+          startY: payload.y,
+          startScroll: this.panelScroll[scrollKey] || 0,
+          moved: false,
+          scrollKey,
+          scrollScale: 1 / Math.max(1, scrollUnit)
+        };
+        this.panelScrollTapCandidate = { x: payload.x, y: payload.y, id: payload.id ?? null };
+        return;
+      }
+    }
+    if (this.triggerEditorOpen && this.triggerEditorScrollBounds
+      && this.isPointInBounds(payload.x, payload.y, this.triggerEditorScrollBounds)) {
+      this.triggerEditorScrollDrag = {
+        id: payload.id ?? null,
+        startY: payload.y,
+        startScroll: this.triggerEditorScroll || 0,
+        moved: false
+      };
+      this.triggerEditorScrollTapCandidate = { x: payload.x, y: payload.y, id: payload.id ?? null };
+      return;
+    }
+    if (this.handleUIClick(payload.x, payload.y)) return;
 
     if (this.isMobileLayout()) {
       if (this.isPointInCircle(payload.x, payload.y, this.panJoystick.center, this.panJoystick.radius * 1.2)) {
@@ -5445,28 +5776,18 @@ export default class Editor {
       return;
     }
 
-    if (this.isMobileLayout() && this.drawer.open && this.panelScrollBounds
+    const panelScrollHitBounds = this.panelScrollHitBounds || this.panelScrollBounds;
+    if (this.isMobileLayout() && this.drawer.open && panelScrollHitBounds
       && this.isPointInBounds(payload.x, payload.y, this.drawerBounds)
-      && this.isPointInBounds(payload.x, payload.y, this.panelScrollBounds)) {
+      && this.isPointInBounds(payload.x, payload.y, panelScrollHitBounds)) {
       this.panelScrollDrag = {
         id: payload.id ?? null,
         startY: payload.y,
         startScroll: this.panelScroll[this.getActivePanelTab()] || 0,
-        moved: false
+        moved: false,
+        scrollKey: this.getActivePanelTab()
       };
       this.panelScrollTapCandidate = { x: payload.x, y: payload.y, id: payload.id ?? null };
-      return;
-    }
-
-    if (this.triggerEditorOpen && this.triggerEditorScrollBounds
-      && this.isPointInBounds(payload.x, payload.y, this.triggerEditorScrollBounds)) {
-      this.triggerEditorScrollDrag = {
-        id: payload.id ?? null,
-        startY: payload.y,
-        startScroll: this.triggerEditorScroll || 0,
-        moved: false
-      };
-      this.triggerEditorScrollTapCandidate = { x: payload.x, y: payload.y, id: payload.id ?? null };
       return;
     }
 
@@ -5492,7 +5813,12 @@ export default class Editor {
       return;
     }
 
-    if (this.handleUIClick(payload.x, payload.y)) return;
+    if (this.isMobileLayout() && this.drawer.open) {
+      if (!this.isPointInBounds(payload.x, payload.y, this.drawerBounds)) {
+        this.drawer.open = false;
+      }
+      return;
+    }
 
     if (this.getActivePanelTab() === 'graphics' && this.isPointerInEditorArea(payload.x, payload.y)) {
       if ((payload.button ?? 0) === 0) {
@@ -5570,7 +5896,7 @@ export default class Editor {
 
     if (this.isMobileLayout()
       && this.isPointInBounds(payload.x, payload.y, this.drawerBounds)
-      && !(this.panelScrollBounds && this.isPointInBounds(payload.x, payload.y, this.panelScrollBounds))) {
+      && !(panelScrollHitBounds && this.isPointInBounds(payload.x, payload.y, panelScrollHitBounds))) {
       this.drawer.swipeStart = { x: payload.x, y: payload.y };
       return;
     }
@@ -5789,13 +6115,14 @@ export default class Editor {
 
     if (this.isMobileLayout() && this.panelScrollDrag
       && (payload.id === undefined || this.panelScrollDrag.id === payload.id)) {
-      const activeTab = this.getActivePanelTab();
+      const activeTab = this.panelScrollDrag.scrollKey || this.getActivePanelTab();
       const maxScroll = this.panelScrollMax[activeTab] || 0;
       const delta = this.panelScrollDrag.startY - payload.y;
       if (Math.abs(delta) > 6) {
         this.panelScrollDrag.moved = true;
       }
-      this.panelScroll[activeTab] = clamp(this.panelScrollDrag.startScroll + delta, 0, maxScroll);
+      const scrollScale = Number.isFinite(this.panelScrollDrag.scrollScale) ? this.panelScrollDrag.scrollScale : 1;
+      this.panelScroll[activeTab] = clamp(this.panelScrollDrag.startScroll + delta * scrollScale, 0, maxScroll);
       if (this.panelScrollDrag.moved) {
         if (this.drawer.swipeStart) this.drawer.swipeStart = null;
         if (this.longPressTimer) {
@@ -6031,6 +6358,7 @@ export default class Editor {
 
     if (this.triggerEditorScrollDrag && (payload.id === undefined || this.triggerEditorScrollDrag.id === payload.id)) {
       this.triggerEditorScrollDrag = null;
+      this.triggerEditorScrollTapCandidate = null;
       return;
     }
 
@@ -6148,7 +6476,7 @@ export default class Editor {
       const button = this.uiButtons[index];
       if (x >= button.x && x <= button.x + button.w && y >= button.y && y <= button.y + button.h) {
         button.onClick();
-        if (button.tooltip) {
+        if (button.tooltip && !this.isMobileLayout()) {
           this.activeTooltip = button.tooltip;
           this.tooltipTimer = 3;
         }
@@ -6167,6 +6495,48 @@ export default class Editor {
     const dx = x - center.x;
     const dy = y - center.y;
     return Math.hypot(dx, dy) <= radius;
+  }
+
+  buildContextRibbonActions() {
+    if (this.drawer?.open) return [];
+    if (this.mode === 'tile') {
+      return [
+        { id: 'tile-paint', label: 'Paint', active: this.tileTool === 'paint', onClick: () => { this.tileTool = 'paint'; } },
+        { id: 'tile-erase', label: 'Erase', active: this.tileTool === 'erase', onClick: () => { this.tileTool = 'erase'; } },
+        { id: 'tile-move', label: 'Move', active: this.tileTool === 'move', onClick: () => { this.tileTool = 'move'; } }
+      ];
+    }
+    if (this.mode === 'trigger') {
+      const selected = this.getSelectedTrigger?.();
+      return [
+        { id: 'trigger-draw', label: 'Draw', active: true, onClick: () => { this.mode = 'trigger'; } },
+        { id: 'trigger-edit', label: 'Edit', hidden: !selected, onClick: () => { this.triggerEditorOpen = true; this.triggerEditorView = 'main'; } },
+        { id: 'trigger-delete', label: 'Delete', hidden: !selected, onClick: () => this.deleteSelectedTrigger?.() }
+      ];
+    }
+    if (this.mode === 'music') {
+      return [
+        { id: 'music-paint', label: 'Paint', active: this.musicTool === 'paint', onClick: () => { this.musicTool = 'paint'; } },
+        { id: 'music-trigger', label: 'Trigger', active: this.musicTool === 'trigger', onClick: () => { this.musicTool = 'trigger'; } },
+        { id: 'music-erase', label: 'Erase', active: this.musicTool === 'erase', onClick: () => { this.musicTool = 'erase'; } }
+      ];
+    }
+    if (this.mode === 'enemy' || this.mode === 'prefab' || this.mode === 'shape') {
+      return [
+        { id: 'rotate-left', label: 'Rot -', onClick: () => { this.rotation = (this.rotation + 270) % 360; } },
+        { id: 'rotate-right', label: 'Rot +', onClick: () => { this.rotation = (this.rotation + 90) % 360; } },
+        { id: 'tile-erase', label: 'Erase', onClick: () => { this.mode = 'tile'; this.tileTool = 'erase'; } }
+      ];
+    }
+    if (this.getActivePanelTab() === 'graphics') {
+      const selected = this.getSelectedDecal?.();
+      return [
+        { id: 'apply-decal', label: 'Apply', onClick: () => this.openDecalUploadDialog() },
+        { id: 'edit-decal', label: 'Edit', hidden: !selected, onClick: () => this.editSelectedDecal() },
+        { id: 'delete-decal', label: 'Delete', hidden: !selected, onClick: () => this.deleteSelectedDecal() }
+      ];
+    }
+    return [];
   }
 
   getPixelCellAt(x, y) {
@@ -6223,7 +6593,8 @@ export default class Editor {
     if (!bounds || bounds.w <= 0) return;
     const t = Math.min(1, Math.max(0, (x - bounds.x) / bounds.w));
     const nextZoom = this.sliderTToZoom(t);
-    this.setZoom(nextZoom, this.game.canvas.width / 2, this.game.canvas.height / 2);
+    const { width, height } = this.getViewportSize();
+    this.setZoom(nextZoom, width / 2, height / 2);
   }
 
   updateRandomLevelSlider(kind, x) {
@@ -6288,8 +6659,7 @@ export default class Editor {
     const worldW = this.game.world.width * tileSize;
     const worldH = this.game.world.height * tileSize;
     const panBuffer = tileSize * EDITOR_PAN_BUFFER_TILES;
-    const canvasW = this.game.canvas.width;
-    const canvasH = this.game.canvas.height;
+    const { width: canvasW, height: canvasH } = this.getViewportSize();
     const editorX = Number.isFinite(this.editorBounds?.x) ? this.editorBounds.x : 0;
     const editorY = Number.isFinite(this.editorBounds?.y) ? this.editorBounds.y : 0;
     const editorW = Number.isFinite(this.editorBounds?.w) && this.editorBounds.w > 0
@@ -7216,14 +7586,15 @@ export default class Editor {
     return 1;
   }
 
-  draw(ctx) {
-    const { canvas } = this.game;
-    this.updateLayoutBounds(canvas.width, canvas.height);
+  draw(ctx, width = this.getViewportSize().width, height = this.getViewportSize().height) {
+    width = Math.max(1, Math.round(Number(width) || this.getViewportSize().width));
+    height = Math.max(1, Math.round(Number(height) || this.getViewportSize().height));
+    this.updateLayoutBounds(width, height);
     this.sanitizeView('draw');
     const fastEditorRender = false;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, width, height);
     ctx.save();
     ctx.scale(this.zoom, this.zoom);
     ctx.translate(-this.camera.x, -this.camera.y);
@@ -7233,8 +7604,8 @@ export default class Editor {
       cameraOverride: {
         x: this.camera.x,
         y: this.camera.y,
-        width: canvas.width / this.zoom,
-        height: canvas.height / this.zoom,
+        width: width / this.zoom,
+        height: height / this.zoom,
         fastEditorRender
       }
     });
@@ -7243,17 +7614,47 @@ export default class Editor {
     this.drawCursor(ctx);
     ctx.restore();
     if (!this.captureWithoutUiRequested) {
-      this.drawHUD(ctx, canvas.width, canvas.height);
+      this.drawHUD(ctx, width, height);
+      if (this.game?.input?.isGamepadConnected?.()) {
+        this.drawGamepadHintBar(ctx, {
+          x: 92,
+          y: height - 34,
+          w: Math.max(240, width - 112),
+          h: 28
+        }, this.panelMenuFocused ? 'Level Chrome' : 'Level Canvas');
+      }
+      drawCanvasControllerMenu(ctx, this.controllerMenu, {
+        width,
+        height,
+        contextLabel: this.panelMenuFocused ? 'Level Chrome' : 'Level Canvas'
+      });
     }
     this.previousDrawCamera = { x: this.camera.x, y: this.camera.y, zoom: this.zoom };
   }
 
+  drawGamepadHintBar(ctx, bounds, contextLabel) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.78)';
+    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = '12px Courier New';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(contextLabel, bounds.x + 10, bounds.y + bounds.h / 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.82)';
+    ctx.textAlign = 'right';
+    ctx.fillText(SHARED_EDITOR_GAMEPAD_HINTS.slice(0, 6).join('  |  '), bounds.x + bounds.w - 10, bounds.y + bounds.h / 2);
+    ctx.restore();
+  }
+
   drawEditorMarkers(ctx) {
     const { tileSize } = this.game.world;
+    const { width, height } = this.getViewportSize();
     const visibleMinX = Math.max(0, Math.floor(this.camera.x / tileSize) - 1);
     const visibleMinY = Math.max(0, Math.floor(this.camera.y / tileSize) - 1);
-    const visibleMaxX = Math.min(this.game.world.width - 1, Math.ceil((this.camera.x + this.game.canvas.width / this.zoom) / tileSize) + 1);
-    const visibleMaxY = Math.min(this.game.world.height - 1, Math.ceil((this.camera.y + this.game.canvas.height / this.zoom) / tileSize) + 1);
+    const visibleMaxX = Math.min(this.game.world.width - 1, Math.ceil((this.camera.x + width / this.zoom) / tileSize) + 1);
+    const visibleMaxY = Math.min(this.game.world.height - 1, Math.ceil((this.camera.y + height / this.zoom) / tileSize) + 1);
     const isRectVisible = (x, y, w = 1, h = 1) => (
       x + w >= visibleMinX
       && x <= visibleMaxX
@@ -7500,10 +7901,11 @@ export default class Editor {
     const tileSize = this.game.world.tileSize;
     const worldWidth = this.game.world.width;
     const worldHeight = this.game.world.height;
+    const { width, height } = this.getViewportSize();
     const viewLeft = Math.max(0, Math.floor(this.camera.x / tileSize));
-    const viewRight = Math.min(worldWidth, Math.ceil((this.camera.x + this.game.canvas.width / this.zoom) / tileSize));
+    const viewRight = Math.min(worldWidth, Math.ceil((this.camera.x + width / this.zoom) / tileSize));
     const viewTop = Math.max(0, Math.floor(this.camera.y / tileSize));
-    const viewBottom = Math.min(worldHeight, Math.ceil((this.camera.y + this.game.canvas.height / this.zoom) / tileSize));
+    const viewBottom = Math.min(worldHeight, Math.ceil((this.camera.y + height / this.zoom) / tileSize));
     ctx.save();
     const glow = this.dragging || this.radialMenu.active;
     const baseStroke = glow ? 'rgba(120,200,255,0.2)' : 'rgba(255,255,255,0.08)';
@@ -7884,9 +8286,14 @@ export default class Editor {
     };
 
     const drawButton = (x, y, w, h, label, active, onClick, tooltip = '', preview = null, focused = false) => {
-      ctx.fillStyle = drawSharedMenuButtonChrome(ctx, { x, y, w, h }, { active, alpha: 0.9 });
+      const bounds = normalizeSharedControlBounds({ x, y, w, h });
+      x = bounds.x;
+      y = bounds.y;
+      w = bounds.w;
+      h = bounds.h;
+      ctx.fillStyle = drawSharedMenuButtonChrome(ctx, bounds, { active, alpha: 0.9 });
       if (focused) {
-        drawSharedFocusRing(ctx, { x, y, w, h });
+        drawSharedFocusRing(ctx, bounds);
       }
       ctx.save();
       const fontSize = Math.max(10, Math.min(12, Math.round(h * 0.3)));
@@ -7904,7 +8311,7 @@ export default class Editor {
       }
       const textX = preview ? (x + previewSize + 14) : (x + w / 2);
       const textAlign = preview ? 'left' : 'center';
-      drawSharedMenuButtonLabel(ctx, { x, y, w, h }, label, {
+      drawSharedMenuButtonLabel(ctx, bounds, label, {
         fontSize,
         color: active ? '#0b0b0b' : '#fff',
         align: textAlign,
@@ -7913,7 +8320,7 @@ export default class Editor {
         maxWidth: preview ? Math.max(0, w - previewSize - 18) : Math.max(0, w - 12)
       });
       ctx.restore();
-      this.addUIButton({ x, y, w, h }, onClick, tooltip);
+      this.addUIButton(bounds, onClick, tooltip);
       if (tooltip && !this.isMobileLayout() && isHovered(x, y, w, h)) {
         hoverTooltip = tooltip;
       }
@@ -7961,7 +8368,6 @@ export default class Editor {
     };
 
     const controlMargin = 18;
-    const controlBase = Math.min(width, height);
     let joystickRadius = 0;
     let knobRadius = 0;
     let joystickCenter = { x: 0, y: 0 };
@@ -7969,14 +8375,31 @@ export default class Editor {
     let sliderWidth = 0;
     const sliderHeight = 10;
     let sliderY = height;
+    const mobilePortraitLayout = this.isMobileLayout() && isMobilePortraitLayout({ isMobile: true, viewportWidth: width, viewportHeight: height })
+      ? getSharedMobilePortraitEditorLayout(width, height, {
+        middleRailHeight: 88,
+        minTopHeight: 230,
+        minMainHeight: 220
+      })
+      : null;
 
-    if (this.isMobileLayout()) {
-      joystickRadius = Math.min(78, controlBase * 0.14);
-      knobRadius = Math.max(22, joystickRadius * 0.45);
-      joystickCenter = {
-        x: controlMargin + joystickRadius,
-        y: height - controlMargin - joystickRadius
-      };
+    if (mobilePortraitLayout) {
+      const railLayout = getSharedPortraitActionRailLayout(mobilePortraitLayout.middleRail);
+      joystickRadius = railLayout.thumbstickRadius;
+      knobRadius = railLayout.knobRadius;
+      joystickCenter = railLayout.thumbstickCenter;
+      this.panJoystick.center = joystickCenter;
+      this.panJoystick.radius = joystickRadius;
+      this.panJoystick.knobRadius = knobRadius;
+      this.zoomSlider.bounds = { x: 0, y: 0, w: 0, h: 0 };
+      this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
+      this.zoomSlider.active = false;
+      this.zoomSlider.id = null;
+    } else if (this.isMobileLayout()) {
+      const joystickLayout = getSharedThumbstickLayout(width, height, { controlMargin });
+      joystickRadius = joystickLayout.radius;
+      knobRadius = joystickLayout.knobRadius;
+      joystickCenter = joystickLayout.center;
       this.panJoystick.center = joystickCenter;
       this.panJoystick.radius = joystickRadius;
       this.panJoystick.knobRadius = knobRadius;
@@ -7995,89 +8418,191 @@ export default class Editor {
       this.zoomSlider.bounds = hitBounds;
       this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
     } else {
-      this.panJoystick.center = { x: 0, y: 0 };
-      this.panJoystick.radius = 0;
-      this.panJoystick.knobRadius = 0;
-      this.zoomSlider.bounds = { x: 0, y: 0, w: 0, h: 0 };
-      this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
+      this.resetMobilePanZoomControls();
     }
 
     if (this.isMobileLayout()) {
-      const railWidth = getSharedMobileRailWidth(width, height);
+      const portraitLayout = mobilePortraitLayout;
+      const landscapeLayout = portraitLayout ? null : getSharedMobileLandscapeEditorLayout(width, height, {
+        reserveRightRail: this.drawer.open
+      });
+      const railWidth = portraitLayout ? portraitLayout.leftRail.w : landscapeLayout.leftRail.w;
       const drawerWidth = this.drawer.open
-        ? getSharedMobileDrawerWidth(width, height, railWidth, { edgePadding: 0 })
+        ? (portraitLayout ? portraitLayout.rightRail.w : landscapeLayout.rightRail.w)
         : 0;
-      const panelX = 0;
-      const panelY = 0;
+      const panelX = portraitLayout ? portraitLayout.leftRail.x : landscapeLayout.leftRail.x;
+      const panelY = portraitLayout ? portraitLayout.leftRail.y : landscapeLayout.leftRail.y;
       const panelW = railWidth;
-      const panelH = height;
-      const drawerX = width - drawerWidth;
-      this.editorBounds = { x: railWidth, y: 0, w: width - railWidth - drawerWidth, h: height };
+      const panelH = portraitLayout ? portraitLayout.leftRail.h : landscapeLayout.leftRail.h;
+      const drawerX = portraitLayout ? portraitLayout.rightRail.x : landscapeLayout.rightRail.x;
+      const drawerY = portraitLayout ? portraitLayout.rightRail.y : landscapeLayout.rightRail.y;
+      const drawerH = portraitLayout ? portraitLayout.rightRail.h : landscapeLayout.rightRail.h;
+      this.editorBounds = portraitLayout
+        ? { ...portraitLayout.mainEditor }
+        : { ...landscapeLayout.mainEditor };
+      this.rootPanelScrollBounds = portraitLayout
+        ? null
+        : { x: panelX, y: panelY, w: panelW, h: panelH };
       this.drawerBounds = this.drawer.open
-        ? { x: drawerX, y: panelY, w: drawerWidth, h: panelH }
+        ? { x: drawerX, y: drawerY, w: drawerWidth, h: drawerH }
         : { x: panelX, y: panelY, w: panelW, h: panelH };
       ctx.globalAlpha = 1;
-      ctx.fillStyle = UI_SUITE.colors.panel;
-      ctx.fillRect(panelX, panelY, panelW, panelH);
-      ctx.strokeStyle = UI_SUITE.colors.border;
-      ctx.strokeRect(panelX, panelY, panelW, panelH);
+      if (!portraitLayout) {
+        drawSharedPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH });
+      }
 
       const handleAreaH = 0;
 
-      const tabs = [
-        { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
-        { id: 'toolbox', label: 'Toolbox' },
-        { id: 'tiles', label: 'Tiles' },
-        { id: 'npcs', label: 'NPCs' },
-        { id: 'triggers', label: 'Triggers' },
-        { id: 'powerups', label: 'Powerups' },
-        { id: 'prefabs', label: 'Structures' },
-        { id: 'graphics', label: 'Graphics' },
-        { id: 'music', label: 'Music' },
-        { id: 'undo-redo', label: 'Undo / Redo' }
-      ];
+      const tabs = portraitLayout ? buildLevelPortraitMenuModel().rootTabs : buildLevelMobileLandscapeRootTabs();
 
       const activeTab = this.getActivePanelTab();
-      const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
-      const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
-      const tabButtonW = Math.min(panelW - 12, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
-      const startY = panelY + handleAreaH + 8;
-      tabs.forEach((tab, index) => {
-        const y = startY + index * (tabButtonH + tabGap);
-        if (y + tabButtonH > panelY + panelH - 8) return;
-        drawButton(
-          panelX + (panelW - tabButtonW) * 0.5,
-          y,
-          tabButtonW,
-          tabButtonH,
-          tab.label,
-          activeTab === tab.id,
-          () => {
-            if (tab.id === 'undo-redo') {
+      const portraitRootId = activeTab === 'toolbox'
+        ? 'tools'
+        : LEVEL_PORTRAIT_ASSET_TABS.includes(activeTab)
+          ? 'assets'
+          : LEVEL_PORTRAIT_SETTINGS_TABS.includes(activeTab)
+            ? 'settings'
+            : activeTab;
+      if (portraitLayout && this.drawer.open) {
+        drawSharedPortraitSheet(ctx, portraitLayout.menuSheet);
+        drawSharedPortraitTabStrip(ctx, { x: panelX, y: panelY, w: panelW, h: panelH }, tabs, {
+          activeId: portraitRootId,
+          focusedId: this.controllerMenu.getFocusedItem('root')?.id,
+          drawButton: (bounds, tab, state) => {
+            drawButton(
+              bounds.x,
+              bounds.y,
+              bounds.w,
+              bounds.h,
+              tab.label,
+              state.active,
+              () => {
+                const panel = tab.panel || tab.id;
+                if (panel === 'undo') {
+                  this.undo();
+                } else if (panel === 'redo') {
+                  this.redo();
+                } else {
+                  this.setPanelTab(panel);
+                  this.drawer.open = true;
+                }
+              },
+              '',
+              null,
+              state.focused
+            );
+          }
+        });
+      } else if (!portraitLayout) {
+        const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
+        const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+        const metrics = getSharedPortraitMenuMetrics(
+          { x: panelX, y: panelY + handleAreaH, w: panelW, h: Math.max(0, panelH - handleAreaH) },
+          { rowHeight: tabButtonH, rowGap: tabGap, minRows: 1 }
+        );
+        const visibleRows = Math.max(1, Math.min(tabs.length, metrics.visibleRows));
+        this.panelScroll.root = this.controllerMenu.syncScrollToItem(
+          'root',
+          this.controllerMenu.getFocusedItem('root')?.id,
+          tabs,
+          visibleRows,
+          this.panelScroll.root || 0
+        );
+        this.panelScrollMax.root = Math.max(0, tabs.length - visibleRows);
+        const rootScroll = Math.round(clamp(this.panelScroll.root || 0, 0, this.panelScrollMax.root));
+        this.panelScroll.root = rootScroll;
+        const tabButtonW = Math.min(metrics.listBounds.w, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
+        tabs.slice(rootScroll, rootScroll + visibleRows).forEach((tab, index) => {
+          const y = metrics.listBounds.y + index * (tabButtonH + tabGap);
+          drawButton(
+            metrics.listBounds.x + (metrics.listBounds.w - tabButtonW) * 0.5,
+            y,
+            tabButtonW,
+            tabButtonH,
+            tab.label,
+            tab.id === 'undo' || tab.id === 'redo' ? false : activeTab === tab.id,
+            () => {
+            if (tab.id === 'undo') {
               this.undo();
+            } else if (tab.id === 'redo') {
+              this.redo();
             } else {
               this.setPanelTab(tab.id);
               this.drawer.open = true;
             }
-          },
-          ''
-        );
-      });
+            },
+            '',
+            null,
+            this.controllerMenu.isFocusedItem('root', tab.id)
+          );
+        });
+        drawSharedPortraitScrollHints(ctx, { x: panelX, y: panelY, w: panelW, h: panelH }, {
+          scroll: rootScroll,
+          scrollMax: this.panelScrollMax.root
+        });
+      }
+
+      if (portraitLayout) {
+        const railLayout = drawSharedPortraitActionRail(ctx, portraitLayout.middleRail, this.panJoystick, [
+          { id: 'menu', label: '☰', onClick: () => { this.drawer.open = !this.drawer.open; } },
+          { id: 'undo', label: '↶', tooltip: 'Undo', onClick: () => this.undo() },
+          { id: 'redo', label: '↷', tooltip: 'Redo', onClick: () => this.redo() },
+          { id: 'playtest', label: '▶', tooltip: 'Start playtest from spawn', primary: true, onClick: () => this.startPlaytestFromCursor() }
+        ], {
+          drawButton: (bounds, action) => drawButton(
+            bounds.x,
+            bounds.y,
+            bounds.w,
+            bounds.h,
+            action.label,
+            false,
+            action.onClick,
+            action.tooltip || ''
+          )
+        });
+        const zoomLabelY = Math.min(portraitLayout.middleRail.y + portraitLayout.middleRail.h - 14, railLayout.actionArea.y + railLayout.actionArea.h + 22);
+        ctx.fillStyle = UI_SUITE.colors.muted;
+        ctx.font = `12px ${UI_SUITE.font.family}`;
+        ctx.fillText(`Zoom ${Math.round(this.zoom * 100)}%`, railLayout.actionArea.x, zoomLabelY);
+      }
 
       if (this.drawer.open) {
         const panelPadding = 10;
         ctx.fillStyle = UI_SUITE.colors.panel;
-        ctx.fillRect(drawerX, panelY, drawerWidth, panelH);
+        ctx.fillRect(drawerX, drawerY, drawerWidth, drawerH);
         ctx.strokeStyle = UI_SUITE.colors.border;
-        ctx.strokeRect(drawerX, panelY, drawerWidth, panelH);
-        const tabY = panelY + 8;
+        ctx.strokeRect(drawerX, drawerY, drawerWidth, drawerH);
+        const tabY = drawerY + 8;
         const contentX = drawerX + panelPadding;
         const contentW = drawerWidth - panelPadding * 2;
         const baseContentY = tabY;
         let contentY = baseContentY;
-        const reservedBottom = activeTab === 'file' ? 12 : (joystickRadius * 2 + 32);
+        if (portraitLayout && ['assets', 'settings'].includes(portraitRootId)) {
+          const groupTabs = portraitRootId === 'assets'
+            ? buildLevelPortraitMenuModel().assetTabs
+            : buildLevelPortraitMenuModel().settingsTabs;
+          const chipH = UI_SUITE.spacing.tap;
+          const chipGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+          const chipW = Math.max(72, Math.floor((contentW - chipGap * Math.max(0, Math.min(3, groupTabs.length) - 1)) / Math.min(3, groupTabs.length)));
+          groupTabs.forEach((entry, index) => {
+            const row = Math.floor(index / 3);
+            const col = index % 3;
+            const bounds = {
+              x: contentX + col * (chipW + chipGap),
+              y: contentY + row * (chipH + chipGap),
+              w: chipW,
+              h: chipH
+            };
+            drawButton(bounds.x, bounds.y, bounds.w, bounds.h, entry.label, activeTab === entry.id, () => {
+              this.setPanelTab(entry.id);
+              this.drawer.open = true;
+            });
+          });
+          contentY += Math.ceil(groupTabs.length / 3) * (chipH + chipGap) + 6;
+        }
+        const reservedBottom = 12;
         const fileFooterReserved = 0;
-        let contentHeight = Math.max(0, panelY + panelH - contentY - reservedBottom - fileFooterReserved);
+        let contentHeight = Math.max(0, drawerY + drawerH - contentY - reservedBottom - fileFooterReserved);
         const isPreviewTab = activeTab === 'tiles'
           || activeTab === 'prefabs'
           || activeTab === 'powerups'
@@ -8091,16 +8616,7 @@ export default class Editor {
         let columns = 1;
         const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
 
-        if (activeTab === 'playtest') {
-          items = [{
-            id: 'playtest',
-            label: 'Playtest',
-            active: false,
-            tooltip: 'Start playtest from spawn',
-            onClick: () => this.game.exitEditor({ playtest: true })
-          }];
-          columns = 1;
-        } else if (activeTab === 'file') {
+        if (activeTab === 'file') {
           items = buildSharedEditorFileMenu({
             labels: {
               new: 'New',
@@ -8129,45 +8645,51 @@ export default class Editor {
               redo: () => this.redo()
             },
             extras: [
-              { id: 'resize-level', label: 'Resize', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
-              { id: 'crop-level', label: 'Crop', tooltip: 'Crop level to smallest bounds containing placed content', onClick: () => this.cropLevelToContent() },
-              { divider: true },
-              {
+              ...(portraitLayout ? [] : [{
                 id: 'playtest',
                 label: 'Playtest',
                 tooltip: 'Start playtest from spawn',
                 onClick: () => this.game.exitEditor({ playtest: true })
-              },
-              ...(spawnTile
-                ? [{
-                  id: 'spawn-point',
-                  label: 'Spawn point',
-                  tooltip: 'Place the player spawn point',
-                  onClick: () => {
-                    this.setTileType(spawnTile);
-                    this.mode = 'tile';
-                    this.tileTool = 'paint';
-                  }
-                }]
-                : []),
+              }]),
               {
-                id: 'start-everything',
-                label: `Start with everything: ${this.startWithEverything ? 'On' : 'Off'}`,
-                tooltip: 'Toggle playtest loadout',
-                onClick: () => {
-                  this.startWithEverything = !this.startWithEverything;
-                }
-              },
-              {
-                id: 'random-level',
-                label: 'Random level',
-                tooltip: 'Create a random level layout',
-                onClick: () => this.promptRandomLevel()
+                id: 'exit-main',
+                label: 'Exit to Main Menu',
+                tooltip: 'Exit editor to title',
+                onClick: () => this.exitToMainMenu()
               }
             ],
             includeFooter: false
           }).map((entry) => ({ ...entry, active: false }));
           columns = 1;
+        } else if (activeTab === 'level-settings') {
+          items = [
+            { id: 'resize-level', label: 'Resize Level', active: false, tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
+            { id: 'crop-level', label: 'Crop Level', active: false, tooltip: 'Crop level to placed content', onClick: () => this.cropLevelToContent() },
+            ...(spawnTile
+              ? [{
+                id: 'spawn-point',
+                label: 'Spawn Point',
+                active: false,
+                tooltip: 'Place the player spawn point',
+                onClick: () => {
+                  this.setTileType(spawnTile);
+                  this.mode = 'tile';
+                  this.tileTool = 'paint';
+                }
+              }]
+              : []),
+            {
+              id: 'start-everything',
+              label: `Start With Everything: ${this.startWithEverything ? 'On' : 'Off'}`,
+              active: this.startWithEverything,
+              tooltip: 'Toggle playtest loadout',
+              onClick: () => {
+                this.startWithEverything = !this.startWithEverything;
+              }
+            },
+            { id: 'random-level', label: 'Random Level', active: false, tooltip: 'Create a random level layout', onClick: () => this.promptRandomLevel() }
+          ];
+          columns = portraitLayout ? 2 : 1;
         } else if (activeTab === 'tiles') {
           items = DEFAULT_TILE_TYPES.map((tile) => ({
             id: tile.id,
@@ -8179,7 +8701,7 @@ export default class Editor {
               this.setTileType(tile);
             }
           }));
-          columns = 1;
+          columns = portraitLayout ? 2 : 1;
         } else if (activeTab === 'toolbox') {
           items = [
             ...tileToolButtons.map((tool) => ({
@@ -8203,7 +8725,7 @@ export default class Editor {
               }
             }))
           ];
-          columns = 1;
+          columns = portraitLayout ? 2 : 1;
         } else if (activeTab === 'triggers') {
           const triggers = this.ensureTriggers();
           items = [
@@ -8232,7 +8754,7 @@ export default class Editor {
               }
             }))
           ];
-          columns = 1;
+          columns = portraitLayout ? 2 : 1;
         } else if (activeTab === 'npcs') {
           items = [
             { id: 'npc-sep-ambience', label: '──────── AMBIENCE ────────', separator: true, active: false, tooltip: 'Ambient weather and spawners', onClick: () => {} },
@@ -8288,7 +8810,7 @@ export default class Editor {
               }
             }))
           ];
-          columns = 1;
+          columns = portraitLayout ? 2 : 1;
         } else if (activeTab === 'powerups') {
           items = POWERUP_TYPES.map((powerup) => ({
             id: powerup.id,
@@ -8300,7 +8822,7 @@ export default class Editor {
               this.setTileType(powerup);
             }
           }));
-          columns = 1;
+          columns = portraitLayout ? 2 : 1;
         } else if (activeTab === 'prefabs') {
           items = PREFAB_TYPES.map((prefab) => ({
             id: prefab.id,
@@ -8313,7 +8835,7 @@ export default class Editor {
               this.mode = 'prefab';
             }
           }));
-          columns = 1;
+          columns = portraitLayout ? 2 : 1;
         } else if (activeTab === 'pixels') {
           items = [
             {
@@ -8391,7 +8913,7 @@ export default class Editor {
               this.setGraphicsStatus(`Tile target: ${tile.label} [${tile.char}]`);
             }
           })));
-          columns = 1;
+          columns = portraitLayout ? 2 : 1;
         } else if (activeTab === 'music') {
           const tracks = this.musicTrackCache?.tracks?.length ? this.musicTrackCache.tracks : this.getMusicTracks();
           items = [
@@ -8436,11 +8958,10 @@ export default class Editor {
               this.mode = 'music';
             }
           })));
-          columns = 1;
+          columns = portraitLayout ? 2 : 1;
         } else if (activeTab === 'graphics') {
           const decals = this.ensureDecals();
-          const selected = decals.find((decal) => decal.id === this.selectedDecalId) || decals[0] || null;
-          if (selected) this.selectedDecalId = selected.id;
+          const selected = decals.find((decal) => decal.id === this.selectedDecalId) || null;
           items = [
             {
               id: 'graphics-take-screenshot',
@@ -8460,6 +8981,7 @@ export default class Editor {
               id: 'graphics-replace-decal',
               label: 'REPLACE DECAL',
               active: false,
+              hidden: !selected,
               tooltip: 'Replace image of selected decal',
               onClick: () => { this.replaceSelectedDecalImage(); }
             },
@@ -8478,6 +9000,7 @@ export default class Editor {
               id: 'graphics-edit-decal',
               label: 'EDIT OPEN IN PIXEL STUDIO',
               active: false,
+              hidden: !selected,
               tooltip: 'Open selected decal in Pixel Studio for editing',
               onClick: () => { this.editSelectedDecal(); }
             },
@@ -8492,6 +9015,7 @@ export default class Editor {
               id: 'graphics-reset-decal-orientation',
               label: 'RESET TRANSFORM',
               active: false,
+              hidden: !selected,
               tooltip: 'Reset selected decal orientation',
               onClick: () => { this.resetSelectedDecalOrientation(); }
             },
@@ -8499,6 +9023,7 @@ export default class Editor {
               id: 'graphics-decal-bring-forward',
               label: 'BRING FORWARD',
               active: false,
+              hidden: !selected,
               tooltip: 'Move selected decal one layer up',
               onClick: () => { this.reorderSelectedDecal('forward'); }
             },
@@ -8506,6 +9031,7 @@ export default class Editor {
               id: 'graphics-decal-bring-front',
               label: 'BRING TO FRONT',
               active: false,
+              hidden: !selected,
               tooltip: 'Move selected decal to top layer',
               onClick: () => { this.reorderSelectedDecal('front'); }
             },
@@ -8513,6 +9039,7 @@ export default class Editor {
               id: 'graphics-decal-send-backward',
               label: 'SEND BACKWARD',
               active: false,
+              hidden: !selected,
               tooltip: 'Move selected decal one layer down',
               onClick: () => { this.reorderSelectedDecal('backward'); }
             },
@@ -8520,6 +9047,7 @@ export default class Editor {
               id: 'graphics-decal-send-back',
               label: 'SEND TO BACK',
               active: false,
+              hidden: !selected,
               tooltip: 'Move selected decal to bottom layer',
               onClick: () => { this.reorderSelectedDecal('back'); }
             },
@@ -8527,11 +9055,12 @@ export default class Editor {
               id: 'graphics-delete-decal',
               label: 'DELETE DECAL',
               active: false,
+              hidden: !selected,
               tooltip: 'Remove selected decal',
               onClick: () => { this.deleteSelectedDecal(); }
             }
-          ];
-          columns = 1;
+          ].filter((item) => !item.hidden);
+          columns = portraitLayout ? 2 : 1;
         } else if (activeTab === 'midi') {
           const tracks = this.ensureMidiTracks();
           items = [
@@ -8560,7 +9089,7 @@ export default class Editor {
               this.mode = 'midi';
             }
           })));
-          columns = 1;
+          columns = portraitLayout ? 2 : 1;
         } else {
           items = SHAPE_TOOLS.map((shape) => ({
             id: shape.id,
@@ -8572,7 +9101,7 @@ export default class Editor {
               this.mode = 'shape';
             }
           }));
-          columns = 1;
+          columns = portraitLayout ? 2 : 1;
         }
 
         ctx.globalAlpha = 1;
@@ -8581,15 +9110,59 @@ export default class Editor {
         ctx.strokeStyle = UI_SUITE.colors.border;
         ctx.strokeRect(contentX, contentY, contentW, contentHeight);
 
-        const fileHeaderOffset = activeTab === 'file' ? 0 : 0;
+        const helperLines = portraitLayout && activeTab === 'music'
+          ? [
+            this.musicTool === 'trigger'
+              ? 'Music Trigger: tap a room to start this song there.'
+              : this.musicTool === 'erase'
+                ? 'Zone Erase: drag across music zones to remove them.'
+                : 'Zone Paint: choose a track, then drag a music area.'
+          ]
+          : portraitLayout && activeTab === 'triggers'
+            ? ['Triggers: Draw Trigger Zone, then drag a rectangle on the map.']
+            : [];
+        const helperH = helperLines.length ? helperLines.length * 16 + 14 : 0;
+        if (helperLines.length) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(255,255,255,0.08)';
+          ctx.fillRect(contentX + 8, contentY + 8, contentW - 16, helperH);
+          ctx.strokeStyle = UI_SUITE.colors.border;
+          ctx.strokeRect(contentX + 8, contentY + 8, contentW - 16, helperH);
+          ctx.fillStyle = UI_SUITE.colors.text;
+          ctx.font = `11px ${UI_SUITE.font.family}`;
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'top';
+          helperLines.forEach((line, index) => {
+            ctx.fillText(line, contentX + 16, contentY + 15 + index * 16);
+          });
+          ctx.restore();
+        }
+
+        const fileHeaderOffset = helperH ? helperH + 14 : 0;
         const listY = contentY + fileHeaderOffset;
         const listH = Math.max(0, contentHeight - fileHeaderOffset);
         if (activeTab === 'file') {
+          const stickyExit = portraitLayout || isMobileLandscapeLayout({
+            isMobile: true,
+            viewportWidth: width,
+            viewportHeight: height
+          });
+          const { listItems: fileItems, exitItem } = stickyExit
+            ? splitFileDrawerStickyExitItems(items)
+            : { listItems: items, exitItem: null };
           const rowHeight = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
           const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+          const visibleRows = Math.max(1, Math.floor(Math.max(0, contentHeight - 24) / Math.max(1, rowHeight + rowGap)));
+          this.panelScroll[activeTab] = this.controllerMenu.syncScrollToItem(
+            activeTab,
+            this.controllerMenu.getFocusedItem(activeTab)?.id,
+            fileItems,
+            visibleRows,
+            this.panelScroll[activeTab] || 0
+          );
           const result = renderSharedFileDrawer(ctx, {
             panel: { x: contentX, y: contentY, w: contentW, h: contentHeight },
-            items,
+            items: fileItems,
             title: '',
             scroll: this.panelScroll[activeTab] || 0,
             rowHeight,
@@ -8597,7 +9170,11 @@ export default class Editor {
             buttonHeight: rowHeight,
             isMobile: true,
             showTitle: false,
-            footerMode: 'stacked',
+            footerMode: stickyExit && exitItem ? 'exit-only' : 'none',
+            footerItem: exitItem,
+            layoutMode: 'auto-grid',
+            minColumnWidth: 118,
+            maxColumns: 2,
             layout: {
               padding: contentPadding,
               headerHeight: 12,
@@ -8606,34 +9183,58 @@ export default class Editor {
               footerGap: rowGap
             },
             drawButton: (bounds, item) => {
-              const onClick = item.footer
-                ? (item.id === 'close-menu' ? () => this.closeFileMenu() : () => this.exitToMainMenu())
-                : item.onClick;
-              const tooltip = item.footer
-                ? (item.id === 'close-menu' ? 'Close file menu' : 'Exit editor to title')
-                : item.tooltip;
-              drawButton(bounds.x, bounds.y, bounds.w, bounds.h, item.label, false, onClick, tooltip);
+              const onClick = item.onClick;
+              const tooltip = item.tooltip;
+              drawButton(
+                bounds.x,
+                bounds.y,
+                bounds.w,
+                bounds.h,
+                item.label,
+                false,
+                onClick,
+                tooltip,
+                null,
+                this.controllerMenu.isFocusedItem('file', item.id)
+              );
             }
           });
           this.panelScrollMax[activeTab] = result.scrollMax;
           this.panelScroll[activeTab] = result.scroll;
           this.panelScrollBounds = result.listBounds;
+          this.panelScrollHitBounds = result.layout
+            ? {
+              x: result.layout.listX - 4,
+              y: result.layout.listY - 6,
+              w: result.layout.listW + 8,
+              h: result.layout.listH + 12
+            }
+            : result.listBounds;
           this.panelScrollView = {
             contentHeight: result.layout.listH,
             buttonHeight: rowHeight,
             buttonGap: rowGap,
-            columns: 1,
+            columns: result.columns || 1,
             padding: contentPadding
           };
+          drawSharedPortraitScrollHints(ctx, { x: contentX, y: contentY, w: contentW, h: contentHeight }, {
+            scroll: result.scroll,
+            scrollMax: result.scrollMax
+          });
         } else {
           const columnWidth = (contentW - contentPadding * 2 - buttonGap * (columns - 1)) / columns;
           const rows = Math.ceil(items.length / columns);
           const totalHeight = rows * (buttonHeight + buttonGap) - buttonGap + contentPadding * 2;
           const maxScroll = Math.max(0, totalHeight - listH);
           this.panelScrollMax[activeTab] = maxScroll;
+          const visibleRows = Math.max(1, Math.floor(listH / Math.max(1, buttonHeight + buttonGap)));
+          if (this.controllerMenu.isMenuActive(activeTab)) {
+            this.panelScroll[activeTab] = this.controllerMenu.syncScrollToSelection(activeTab, visibleRows, this.panelScroll[activeTab] || 0);
+          }
           const scrollY = clamp(this.panelScroll[activeTab] || 0, 0, maxScroll);
           this.panelScroll[activeTab] = scrollY;
           this.panelScrollBounds = { x: contentX, y: listY, w: contentW, h: listH };
+          this.panelScrollHitBounds = { x: contentX, y: contentY, w: contentW, h: contentHeight };
           this.panelScrollView = {
             contentHeight: listH,
             buttonHeight,
@@ -8641,8 +9242,6 @@ export default class Editor {
             columns,
             padding: contentPadding
           };
-          const gamepadActive = this.game.input?.isGamepadConnected?.() ?? false;
-          const focusedIndex = this.panelMenuIndex[activeTab] ?? 0;
           items.forEach((item, index) => {
             const col = index % columns;
             const row = Math.floor(index / columns);
@@ -8674,17 +9273,23 @@ export default class Editor {
               item.onClick,
               item.tooltip,
               item.preview,
-              gamepadActive && index === focusedIndex
+              this.controllerMenu.isFocusedItem(activeTab, item.id, index)
             );
+          });
+          drawSharedPortraitScrollHints(ctx, { x: contentX, y: listY, w: contentW, h: listH }, {
+            scroll: scrollY,
+            scrollMax: maxScroll
           });
         }
 
       }
       if (!this.drawer.open) {
         this.panelScrollBounds = null;
+        this.panelScrollHitBounds = null;
         this.panelScrollView = null;
       }
     } else {
+      this.rootPanelScrollBounds = null;
       const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
       const activeTab = this.getActivePanelTab();
       this.editorBounds = { x: leftFrame.contentX, y: 0, w: leftFrame.contentW, h: height };
@@ -8712,8 +9317,25 @@ export default class Editor {
         { id: 'prefabs', label: 'STRUCTURES' },
         { id: 'graphics', label: 'GRAPHICS' },
         { id: 'music', label: 'MUSIC' },
-        { id: 'undo-redo', label: 'UNDO / REDO' }
-      ].map((entry) => ({ ...entry, action: () => (entry.id === 'undo-redo' ? this.undo() : this.setPanelTab(entry.id)), active: activeTab === entry.id }));
+        { id: 'level-settings', label: 'SETTINGS' },
+        { id: 'playtest', label: 'PLAYTEST' },
+        { id: 'undo', label: 'Undo' },
+        { id: 'redo', label: 'Redo' }
+      ].map((entry) => ({
+        ...entry,
+        action: () => {
+          if (entry.id === 'undo') {
+            this.undo();
+          } else if (entry.id === 'redo') {
+            this.redo();
+          } else if (entry.id === 'playtest') {
+            this.game.exitEditor({ playtest: true });
+          } else {
+            this.setPanelTab(entry.id);
+          }
+        },
+        active: activeTab === entry.id
+      }));
       const topButtons = buildSharedLeftMenuButtons({
         x: tabColumn.x,
         y: tabColumn.y,
@@ -8726,7 +9348,18 @@ export default class Editor {
       });
       topButtons.forEach((entry, index) => {
         const def = topButtonDefs[index];
-        drawButton(entry.bounds.x, entry.bounds.y, entry.bounds.w, entry.bounds.h, def.label, Boolean(def.active), def.action, '');
+        drawButton(
+          entry.bounds.x,
+          entry.bounds.y,
+          entry.bounds.w,
+          entry.bounds.h,
+          def.label,
+          Boolean(def.active),
+          def.action,
+          '',
+          null,
+          this.controllerMenu.isFocusedItem('root', def.id)
+        );
       });
 
       let contentY = content.y;
@@ -8757,6 +9390,16 @@ export default class Editor {
       const totalHeight = rows * (buttonHeight + buttonGap) - buttonGap + contentPadding * 2;
       const maxScroll = Math.max(0, totalHeight - listH);
       this.panelScrollMax[activeTab] = maxScroll;
+      const visibleRows = Math.max(1, Math.floor(listH / Math.max(1, buttonHeight + buttonGap)));
+      if (this.controllerMenu.isMenuActive(activeTab)) {
+        this.panelScroll[activeTab] = this.controllerMenu.syncScrollToItem(
+          activeTab,
+          this.controllerMenu.getFocusedItem(activeTab)?.id,
+          items,
+          visibleRows,
+          this.panelScroll[activeTab] || 0
+        );
+      }
       const scrollY = clamp(this.panelScroll[activeTab] || 0, 0, maxScroll);
       this.panelScroll[activeTab] = scrollY;
       this.panelScrollBounds = { x: contentX, y: listY, w: contentW, h: listH };
@@ -8810,8 +9453,10 @@ export default class Editor {
       };
 
       if (activeTab === 'file') {
-        const rowHeight = 24;
+        const rowHeight = portraitLayout ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : 24;
         const rowGap = 6;
+        const visibleRows = Math.max(1, Math.floor(Math.max(0, contentHeight - 24) / Math.max(1, rowHeight + rowGap)));
+        this.panelScroll[activeTab] = this.controllerMenu.syncScrollToSelection(activeTab, visibleRows, this.panelScroll[activeTab] || 0);
         const result = renderSharedFileDrawer(ctx, {
           panel: { x: contentX, y: contentY, w: contentW, h: contentHeight },
           items,
@@ -8822,7 +9467,10 @@ export default class Editor {
           buttonHeight: rowHeight,
           isMobile: false,
           showTitle: false,
-          footerMode: 'stacked',
+          footerMode: 'none',
+          layoutMode: portraitLayout ? 'auto-grid' : 'list',
+          minColumnWidth: 118,
+          maxColumns: 2,
           layout: {
             padding: contentPadding,
             headerHeight: 12,
@@ -8831,13 +9479,20 @@ export default class Editor {
             footerGap: 8
           },
           drawButton: (bounds, item) => {
-            const onClick = item.footer
-              ? (item.id === 'close-menu' ? () => this.closeFileMenu() : () => this.exitToMainMenu())
-              : item.onClick;
-            const tooltip = item.footer
-              ? (item.id === 'close-menu' ? 'Close file menu' : 'Exit editor to title')
-              : item.tooltip;
-            drawButton(bounds.x, bounds.y, bounds.w, bounds.h, item.label, false, onClick, tooltip);
+            const onClick = item.onClick;
+            const tooltip = item.tooltip;
+            drawButton(
+              bounds.x,
+              bounds.y,
+              bounds.w,
+              bounds.h,
+              item.label,
+              false,
+              onClick,
+              tooltip,
+              null,
+              this.controllerMenu.isFocusedItem('file', item.id)
+            );
           }
         });
         this.panelScrollMax[activeTab] = result.scrollMax;
@@ -8847,12 +9502,10 @@ export default class Editor {
           contentHeight: result.layout.listH,
           buttonHeight: rowHeight,
           buttonGap: rowGap,
-          columns: 1,
+          columns: result.columns || 1,
           padding: contentPadding
         };
       } else {
-        const gamepadActive = this.game.input?.isGamepadConnected?.() ?? false;
-        const focusedIndex = this.panelMenuIndex[activeTab] ?? 0;
         items.forEach((item, index) => {
           const col = index % columns;
           const row = Math.floor(index / columns);
@@ -8889,7 +9542,7 @@ export default class Editor {
             item.onClick,
             item.tooltip,
             preview,
-            gamepadActive && index === focusedIndex
+            this.controllerMenu.isFocusedItem(activeTab, item.id, index)
           );
         });
       }
@@ -9301,6 +9954,22 @@ export default class Editor {
             numericRow('Duration (ms)', 'durationMs', 100, 0, 15000);
           } else if (draft.type === 'wait' || draft.type === 'fade-in' || draft.type === 'fade-out' || draft.type === 'fade-out-music') {
             numericRow('Duration (ms)', 'durationMs', 100, 0, 15000);
+          } else if (draft.type === 'play-cutscene') {
+            const cutsceneOptions = this.getTriggerCutsceneOptions();
+            const selectedCutscene = draft.params.cutsceneId || cutsceneOptions[0] || '';
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Cutscene: ${selectedCutscene || '(none)'}`, false, () => {
+              this.openTriggerOptionPicker({
+                title: 'Choose Cutscene',
+                options: cutsceneOptions,
+                selectedValue: selectedCutscene,
+                onPick: (value) => { draft.params.cutsceneId = value; }
+              });
+            }, 'Pick cutscene');
+            y += sectionButtonH + 4;
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Skippable: ${draft.params.skippable !== false ? 'Yes' : 'No'}`, false, () => {
+              draft.params.skippable = draft.params.skippable === false;
+            }, 'Toggle whether player can skip');
+            y += sectionButtonH + 4;
           } else if (draft.type === 'play-midi' || draft.type === 'stop-midi') {
             const musicOptions = this.getTriggerMusicOptions();
             const selectedTrack = draft.params.trackId || musicOptions[0] || '';
@@ -9778,7 +10447,7 @@ export default class Editor {
       ctx.restore();
     }
 
-    if (this.isMobileLayout()) {
+    if (this.isMobileLayout() && !mobilePortraitLayout) {
       const zoomT = this.zoomToSliderT(this.zoom);
       const sliderCenterY = sliderY + sliderHeight / 2;
       ctx.save();
@@ -9807,23 +10476,7 @@ export default class Editor {
       };
       ctx.restore();
 
-      const joystickKnobX = joystickCenter.x + this.panJoystick.dx * joystickRadius;
-      const joystickKnobY = joystickCenter.y + this.panJoystick.dy * joystickRadius;
-      ctx.save();
-      ctx.globalAlpha = 0.85;
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      ctx.beginPath();
-      ctx.arc(joystickCenter.x, joystickCenter.y, joystickRadius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-      ctx.stroke();
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
-      ctx.beginPath();
-      ctx.arc(joystickKnobX, joystickKnobY, knobRadius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-      ctx.stroke();
-      ctx.restore();
+      drawSharedThumbstick(ctx, this.panJoystick);
     }
 
     if (this.randomLevelDialog.open) {
@@ -10007,15 +10660,42 @@ export default class Editor {
       ctx.restore();
     }
 
-    const playButtonW = this.isMobileLayout() ? 112 : 96;
-    const playButtonH = this.isMobileLayout() ? 40 : 36;
-    const playX = Math.round((width - playButtonW) / 2);
-    const playY = this.editorBounds.y + 16;
-    this.playButtonBounds = { x: playX, y: playY, w: playButtonW, h: playButtonH };
-    drawSharedPlayStopButton(ctx, this.playButtonBounds, {
-      isActive: false,
-      stopWhenActive: true
-    });
+    if (!shouldShowLevelEditorTopPlaytestButton({
+      isMobile: this.isMobileLayout(),
+      viewportWidth: width,
+      viewportHeight: height
+    })) {
+      this.playButtonBounds = null;
+    } else {
+      const playButtonW = this.isMobileLayout() ? 112 : 96;
+      const playButtonH = this.isMobileLayout() ? 40 : 36;
+      const playX = Math.round((width - playButtonW) / 2);
+      const playY = this.editorBounds.y + 16;
+      this.playButtonBounds = { x: playX, y: playY, w: playButtonW, h: playButtonH };
+      drawSharedPlayStopButton(ctx, this.playButtonBounds, {
+        isActive: false,
+        stopWhenActive: true
+      });
+    }
+
+    if (this.isMobileLayout() && !this.drawer.open && this.editorBounds) {
+      const ribbonActions = this.buildContextRibbonActions();
+      if (ribbonActions.length) {
+        const ribbonH = 46;
+        const ribbonBounds = {
+          x: this.editorBounds.x + 8,
+          y: Math.max(this.editorBounds.y + 8, this.editorBounds.y + this.editorBounds.h - ribbonH - 8),
+          w: Math.max(1, this.editorBounds.w - 16),
+          h: ribbonH
+        };
+        drawSharedContextRibbon(ctx, ribbonBounds, ribbonActions, {
+          title: this.mode === 'tile' ? (this.tileType?.label || 'Tile') : this.mode,
+          drawButton: (bounds, action) => {
+            drawButton(bounds.x, bounds.y, bounds.w, bounds.h, action.label, Boolean(action.active), action.onClick);
+          }
+        });
+      }
+    }
 
     const enemyInfo = this.enemyType?.description;
     const showEnemyInfo = enemyInfo && (this.getActivePanelTab() === 'npcs' || this.mode === 'enemy');
@@ -10049,7 +10729,9 @@ export default class Editor {
       ctx.restore();
     }
 
-    const tooltip = hoverTooltip || this.graphicsStatusMessage || (this.tooltipTimer > 0 ? this.activeTooltip : '');
+    const tooltip = hoverTooltip
+      || this.graphicsStatusMessage
+      || (!this.isMobileLayout() && this.tooltipTimer > 0 ? this.activeTooltip : '');
     if (tooltip) {
       const tooltipHeight = this.isMobileLayout() ? 22 : 24;
       const baseTooltipY = this.isMobileLayout()

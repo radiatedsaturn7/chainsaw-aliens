@@ -16,6 +16,7 @@ export const KEYMAP = {
   throw: ['KeyL'],
   pause: ['Escape'],
   cancel: ['Backspace'],
+  nextWeapon: [],
   interact: ['Space', 'Enter', 'NumpadEnter'],
   endless: ['KeyN'],
   test: ['KeyT'],
@@ -117,15 +118,15 @@ export default class Input {
 
 
   isDown(action) {
-    return KEYMAP[action].some((code) => this.keys.get(code)) || this.virtualDown.get(action);
+    return (KEYMAP[action] || []).some((code) => this.keys.get(code)) || this.virtualDown.get(action);
   }
 
   wasPressed(action) {
-    return KEYMAP[action].some((code) => this.pressed.has(code)) || this.virtualPressed.has(action);
+    return (KEYMAP[action] || []).some((code) => this.pressed.has(code)) || this.virtualPressed.has(action);
   }
 
   wasReleased(action) {
-    return KEYMAP[action].some((code) => this.released.has(code)) || this.virtualReleased.has(action);
+    return (KEYMAP[action] || []).some((code) => this.released.has(code)) || this.virtualReleased.has(action);
   }
 
   wasPressedCode(code) {
@@ -299,11 +300,14 @@ export default class Input {
   }
 
   getGamepadActions() {
-    return this.gamepadActions;
+    return {
+      ...this.gamepadActions,
+      ...this.virtualGamepadActions
+    };
   }
 
   isGamepadConnected() {
-    return this.gamepadConnected;
+    return this.gamepadConnected || this.virtualGamepadActive;
   }
 
   isGamepadDown(action) {
@@ -330,7 +334,11 @@ export default class Input {
   }
 
   setVirtual(actions = {}) {
-    Object.keys(KEYMAP).forEach((action) => {
+    const allActions = new Set([
+      ...Object.keys(KEYMAP),
+      ...Object.keys(actions)
+    ]);
+    allActions.forEach((action) => {
       const prev = this.virtualDown.get(action) || false;
       const next = Boolean(actions[action]);
       if (next && !prev) {

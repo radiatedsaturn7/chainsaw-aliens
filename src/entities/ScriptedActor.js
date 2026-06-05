@@ -3,6 +3,8 @@ import { ensureActorDefinition } from '../content/actorEditorData.js';
 import { listProjectFiles, loadProjectFile } from '../ui/projectFiles.js';
 
 const actorCache = new Map();
+const actorArtAnimationCache = new Map();
+const actorFrameImageCache = new Map();
 const DEFAULT_ACTOR_SIZE = { width: 24, height: 24 };
 
 function readPngDataUrlDimensions(dataUrl) {
@@ -71,6 +73,108 @@ export function invalidateActorDefinitionCache(actorId = null) {
     return;
   }
   actorCache.clear();
+}
+
+function resolveArtAnimationFrames(artRef = '', animation = {}) {
+  if (!artRef || typeof document === 'undefined') return [];
+  const fps = Math.max(1, Number(animation?.fps || 8));
+  const cacheKey = `${artRef}:${fps}`;
+  if (actorArtAnimationCache.has(cacheKey)) return actorArtAnimationCache.get(cacheKey);
+  const doc = loadProjectFile('art', artRef);
+  const frames = Array.isArray(doc?.data?.frames) ? doc.data.frames : [];
+  if (!frames.length) return [];
+  const width = Math.max(1, Number(doc?.data?.width || doc?.data?.size || 16));
+  const height = Math.max(1, Number(doc?.data?.height || doc?.data?.size || width || 16));
+  const durationMs = Math.round(1000 / Math.max(1, Number(animation?.fps || doc?.data?.fps || 8)));
+  const resolved = frames.map((frame) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    const imageData = ctx.createImageData(width, height);
+    for (let i = 0; i < width * height; i += 1) {
+      const color = frame?.[i];
+      const base = i * 4;
+      if (typeof color !== 'string' || !/^#?[0-9a-fA-F]{6}$/.test(color)) {
+        imageData.data[base + 3] = 0;
+        continue;
+      }
+      const hex = color.startsWith('#') ? color.slice(1) : color;
+      imageData.data[base] = parseInt(hex.slice(0, 2), 16);
+      imageData.data[base + 1] = parseInt(hex.slice(2, 4), 16);
+      imageData.data[base + 2] = parseInt(hex.slice(4, 6), 16);
+      imageData.data[base + 3] = 255;
+    }
+    ctx.putImageData(imageData, 0, 0);
+    return { imageDataUrl: canvas.toDataURL('image/png'), durationMs };
+  }).filter(Boolean);
+  actorArtAnimationCache.set(cacheKey, resolved);
+  return resolved;
+}
+
+function resolveAnimationFrames(animation = {}) {
+  if (!animation) return [];
+  const artRef = typeof animation.artRef === 'string' ? animation.artRef : '';
+  if (artRef) {
+    const frames = resolveArtAnimationFrames(artRef, animation);
+    if (frames.length) return frames;
+  }
+  const fromFrames = Array.isArray(animation.frames)
+    ? animation.frames.filter((frame) => frame?.imageDataUrl)
+    : [];
+  if (fromFrames.length) return fromFrames;
+  if (animation.imageDataUrl) {
+    return [{
+      imageDataUrl: animation.imageDataUrl,
+      durationMs: Math.round(1000 / Math.max(1, Number(animation.fps || 8)))
+    }];
+  }
+  return [];
+}
+
+function getSharedFrameImageEntry(imageDataUrl) {
+  if (!imageDataUrl || typeof Image === 'undefined') return null;
+  let entry = actorFrameImageCache.get(imageDataUrl);
+  if (entry) return entry;
+  const image = new Image();
+  entry = { image, ready: false, promise: null };
+  const loadPromise = new Promise((resolve) => {
+    image.onload = () => {
+      entry.ready = true;
+      resolve(entry.image);
+    };
+    image.onerror = () => {
+      actorFrameImageCache.delete(imageDataUrl);
+      resolve(null);
+    };
+  });
+  image.src = imageDataUrl;
+  entry.promise = loadPromise;
+  if (typeof image.decode === 'function') {
+    entry.promise = image.decode()
+      .then(() => {
+        entry.ready = true;
+        return entry.image;
+      })
+      .catch(() => loadPromise);
+  }
+  actorFrameImageCache.set(imageDataUrl, entry);
+  return entry;
+}
+
+export function preloadActorDefinitionAssets(definition) {
+  const normalized = ensureActorDefinition(definition || null);
+  const states = Array.isArray(normalized?.states) ? normalized.states : [];
+  const urls = new Set();
+  states.forEach((state) => {
+    resolveAnimationFrames(state?.animation).forEach((frame) => {
+      if (frame?.imageDataUrl) urls.add(frame.imageDataUrl);
+    });
+  });
+  if (typeof Image === 'undefined') return Promise.resolve([]);
+  const loads = Array.from(urls).map((url) => getSharedFrameImageEntry(url)?.promise || Promise.resolve(null));
+  return Promise.all(loads.map((load) => Promise.resolve(load).catch(() => null)));
 }
 
 export default class ScriptedActor extends EnemyBase {
@@ -788,55 +892,7 @@ export default class ScriptedActor extends EnemyBase {
   getAnimationFrames() {
     const state = this.currentState;
     if (!state?.animation) return [];
-    const artRef = typeof state.animation.artRef === 'string' ? state.animation.artRef : '';
-    if (artRef) {
-      if (this._artAnimationCache.has(artRef)) {
-        return this._artAnimationCache.get(artRef);
-      }
-      const doc = loadProjectFile('art', artRef);
-      const frames = Array.isArray(doc?.data?.frames) ? doc.data.frames : [];
-      if (frames.length && typeof document !== 'undefined') {
-        const width = Math.max(1, Number(doc?.data?.width || doc?.data?.size || 16));
-        const height = Math.max(1, Number(doc?.data?.height || doc?.data?.size || width || 16));
-        const durationMs = Math.round(1000 / Math.max(1, Number(state.animation.fps || doc?.data?.fps || 8)));
-        const resolved = frames.map((frame) => {
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          if (!ctx) return null;
-          const imageData = ctx.createImageData(width, height);
-          for (let i = 0; i < width * height; i += 1) {
-            const color = frame?.[i];
-            const base = i * 4;
-            if (typeof color !== 'string' || !/^#?[0-9a-fA-F]{6}$/.test(color)) {
-              imageData.data[base + 3] = 0;
-              continue;
-            }
-            const hex = color.startsWith('#') ? color.slice(1) : color;
-            imageData.data[base] = parseInt(hex.slice(0, 2), 16);
-            imageData.data[base + 1] = parseInt(hex.slice(2, 4), 16);
-            imageData.data[base + 2] = parseInt(hex.slice(4, 6), 16);
-            imageData.data[base + 3] = 255;
-          }
-          ctx.putImageData(imageData, 0, 0);
-          return { imageDataUrl: canvas.toDataURL('image/png'), durationMs };
-        }).filter(Boolean);
-        this._artAnimationCache.set(artRef, resolved);
-        if (resolved.length) return resolved;
-      }
-    }
-    const fromFrames = Array.isArray(state.animation.frames)
-      ? state.animation.frames.filter((frame) => frame?.imageDataUrl)
-      : [];
-    if (fromFrames.length) return fromFrames;
-    if (state.animation.imageDataUrl) {
-      return [{
-        imageDataUrl: state.animation.imageDataUrl,
-        durationMs: Math.round(1000 / Math.max(1, Number(state.animation.fps || 8)))
-      }];
-    }
-    return [];
+    return resolveAnimationFrames(state.animation);
   }
 
   getCurrentAnimationFrame() {
@@ -855,17 +911,7 @@ export default class ScriptedActor extends EnemyBase {
 
   getFrameImage(imageDataUrl) {
     if (!imageDataUrl || typeof Image === 'undefined') return null;
-    let entry = this._imageCache.get(imageDataUrl);
-    if (!entry) {
-      const image = new Image();
-      entry = { image, ready: false };
-      image.onload = () => { entry.ready = true; };
-      image.onerror = () => {
-        this._imageCache.delete(imageDataUrl);
-      };
-      image.src = imageDataUrl;
-      this._imageCache.set(imageDataUrl, entry);
-    }
+    const entry = getSharedFrameImageEntry(imageDataUrl);
     return entry.ready ? entry.image : null;
   }
 

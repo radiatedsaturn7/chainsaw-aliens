@@ -12,8 +12,8 @@ import {
 import { hydrateServerStorage } from './serverStorage.js';
 import { fileTypeBadge } from './uiSuite.js';
 
-const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX' };
-const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx'];
+const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX', cutscenes: 'Cutscenes' };
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes'];
 let activePreviewTrackId = null;
 
 function formatDate(ts) {
@@ -70,6 +70,7 @@ function isAllowedFile(folder, name) {
   if (folder === 'music') return value.endsWith('.json') || value.endsWith('.mid') || !value.includes('.');
   if (folder === 'actors') return value.endsWith('.json') || !value.includes('.');
   if (folder === 'sfx') return value.endsWith('.json') || value.endsWith('.wav') || !value.includes('.');
+  if (folder === 'cutscenes') return value.endsWith('.json') || !value.includes('.');
   return true;
 }
 
@@ -565,6 +566,7 @@ export function openProjectBrowser({
       }
 
       actionRow.innerHTML = '';
+      actionRow.appendChild(makeButton('Close', 'project-browser-btn', () => cleanup(null)));
       if (mode === 'saveAs' && state.view === 'folder') {
         actionRow.appendChild(makeButton('Save', 'project-browser-btn primary', () => {
           const name = sanitizeProjectFileName(saveInput.value) || sanitizeProjectFileName(initialName) || 'untitled';
@@ -580,7 +582,6 @@ export function openProjectBrowser({
         actionRow.appendChild(makeButton('Import', 'project-browser-btn', () => onImport?.(state.folder)));
         actionRow.appendChild(makeButton('Export ZIP', 'project-browser-btn', () => onExportZip?.(state.folder)));
       }
-      actionRow.appendChild(makeButton('Close', 'project-browser-btn', () => cleanup(null)));
 
       if (mode === 'saveAs') message.textContent = '';
     }

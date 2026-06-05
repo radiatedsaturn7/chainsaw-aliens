@@ -1,22 +1,14 @@
 import { INPUT_ACTIONS, NAV_REPEAT_DELAY, TRIGGER_THRESHOLD } from './inputBindings.js';
-import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer } from '../shared/input/editorInputActions.js';
+import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS } from '../shared/input/editorInputActions.js';
 
 const PIXEL_GAMEPAD_BINDINGS = {
-  [EDITOR_INPUT_ACTIONS.UNDO]: 'dash',
-  [EDITOR_INPUT_ACTIONS.REDO]: 'throw',
-  [EDITOR_INPUT_ACTIONS.CONFIRM]: 'jump',
-  [EDITOR_INPUT_ACTIONS.CANCEL]: 'cancel',
-  [EDITOR_INPUT_ACTIONS.TOGGLE_MODE]: 'cancel',
-  [EDITOR_INPUT_ACTIONS.MENU]: 'pause',
-  [EDITOR_INPUT_ACTIONS.PANEL_PREV]: 'aimUp',
-  [EDITOR_INPUT_ACTIONS.PANEL_NEXT]: 'aimDown'
+  ...SHARED_EDITOR_GAMEPAD_BINDINGS
 };
 
 const PIXEL_DIRECT_BINDINGS = {
   draw: 'jump',
-  erase: 'rev',
-  quickColor: 'l3',
-  quickTool: 'r3'
+  quickTool: 'l3',
+  quickColor: 'r3'
 };
 
 export default class PixelEditorGamepadInput {
@@ -66,7 +58,9 @@ export default class PixelEditorGamepadInput {
       if (action.type === EDITOR_INPUT_ACTIONS.UNDO) actions.push({ type: INPUT_ACTIONS.UNDO });
       if (action.type === EDITOR_INPUT_ACTIONS.REDO) actions.push({ type: INPUT_ACTIONS.REDO });
       if (action.type === EDITOR_INPUT_ACTIONS.MENU) actions.push({ type: INPUT_ACTIONS.MENU });
-      if (action.type === EDITOR_INPUT_ACTIONS.TOGGLE_MODE) actions.push({ type: INPUT_ACTIONS.TOGGLE_UI_MODE });
+      if (action.type === EDITOR_INPUT_ACTIONS.CANCEL) actions.push({ type: INPUT_ACTIONS.CANCEL });
+      if (action.type === EDITOR_INPUT_ACTIONS.CONFIRM) actions.push({ type: INPUT_ACTIONS.CONFIRM });
+      if (action.type === EDITOR_INPUT_ACTIONS.FOCUS_TOGGLE || action.type === EDITOR_INPUT_ACTIONS.TOGGLE_MODE) actions.push({ type: INPUT_ACTIONS.TOGGLE_UI_MODE });
       if (action.type === EDITOR_INPUT_ACTIONS.PANEL_PREV) actions.push({ type: INPUT_ACTIONS.PANEL_PREV });
       if (action.type === EDITOR_INPUT_ACTIONS.PANEL_NEXT) actions.push({ type: INPUT_ACTIONS.PANEL_NEXT });
       if (action.type === EDITOR_INPUT_ACTIONS.NAV_UP) actions.push({ type: INPUT_ACTIONS.NAV_UP, repeat: Boolean(action.repeat) });
@@ -84,10 +78,8 @@ export default class PixelEditorGamepadInput {
     }
     if (released.jump) actions.push({ type: INPUT_ACTIONS.DRAW_RELEASE });
 
-    if (pressed.rev) actions.push({ type: INPUT_ACTIONS.ERASE_PRESS });
-    if (released.rev) actions.push({ type: INPUT_ACTIONS.ERASE_RELEASE });
-    if (pressed.l3) actions.push({ type: INPUT_ACTIONS.QUICK_COLOR });
-    if (pressed.r3) actions.push({ type: INPUT_ACTIONS.QUICK_TOOL });
+    if (pressed.l3) actions.push({ type: INPUT_ACTIONS.QUICK_TOOL });
+    if (pressed.r3) actions.push({ type: INPUT_ACTIONS.QUICK_COLOR });
 
     return {
       actions,

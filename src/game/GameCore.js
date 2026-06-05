@@ -33,7 +33,7 @@ import HexMatron from '../entities/HexMatron.js';
 import GraveWarden from '../entities/GraveWarden.js';
 import ObsidianCrown from '../entities/ObsidianCrown.js';
 import CataclysmColossus from '../entities/CataclysmColossus.js';
-import ScriptedActor, { loadActorDefinitionById } from '../entities/ScriptedActor.js';
+import ScriptedActor, { loadActorDefinitionById, preloadActorDefinitionAssets } from '../entities/ScriptedActor.js';
 import Projectile from '../entities/Projectile.js';
 import Beam from '../entities/Beam.js';
 import HomingMissile from '../entities/HomingMissile.js';
@@ -53,6 +53,14 @@ import PixelStudio from '../ui/PixelStudio.js';
 import MidiComposer from '../ui/MidiComposer.js';
 import SfxEditor from '../ui/SfxEditor.js';
 import ActorEditor from '../ui/ActorEditor.js';
+import CutsceneEditor, { CutscenePlayer } from '../ui/CutsceneEditor.js';
+import {
+  WEATHER_PRIORITY,
+  createWeatherRuntimeState,
+  drawWeatherParticles,
+  updateWeatherParticleMotion,
+  updateWeatherSystem
+} from '../shared/weatherEffects.js';
 import MidiSongPlayer from './MidiSongPlayer.js';
 import RobterSession from '../robtersession/RobterSession.js';
 import TestHarness from '../debug/TestHarness.js';
@@ -77,6 +85,10 @@ import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
 import { ensureProjectFileIndex, listProjectFiles, loadProjectFile } from '../ui/projectFiles.js';
 import { bootstrapServerStorage, flushServerStorage, isServerStorageEnabled, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
 import { drawSharedPlayStopButton } from '../ui/uiSuite.js';
+import { getLandscapeHandheldLayout, getPortraitHandheldLayout, mapPortraitHandheldPoint } from '../ui/shared/canvasViewportLayout.js';
+import { DEFAULT_DISPLAY_MODE, getDisplayModeForAction, normalizeDisplayMode } from '../ui/shared/displayModes.js';
+import { createMenuRepeatState, getMenuRepeatDirection, resetMenuRepeatState } from '../ui/shared/menuRepeat.js';
+import { openChoiceOverlay, openConfirmOverlay } from '../ui/shared/textInputOverlay.js';
 import { createDefaultActor, ensureActorDefinition } from '../content/actorEditorData.js';
 
 const BOSS_TYPES = new Set([
@@ -90,6 +102,8 @@ const BOSS_TYPES = new Set([
   'obsidiancrown',
   'cataclysmcolossus'
 ]);
+
+const DISPLAY_MODE_STORAGE_KEY = 'chainsaw-aliens-display-mode';
 
 const MAX_PARTICLE_ART_CACHE_ENTRIES = 64;
 
@@ -197,6 +211,10 @@ export default class Game {
     this.musicPlayers = [];
     this.activeMusicTrackId = null;
     this.actorMusicOverrideTrackId = null;
+    this.cutsceneMusicTrackId = null;
+    this.musicPreloadToken = 0;
+    this.projectBrowserMusicPreviewToken = 0;
+    this.actorPreloadPromises = new Map();
     this.sfxDocumentCache = new Map();
     this.musicFadeDuration = 1.2;
     this.world = new World();
@@ -223,13 +241,14 @@ export default class Game {
     this.systemPrompts = [];
     this.modalPrompt = null;
     this.promptReturnState = 'playing';
-    this.triggerState = { byId: new Map(), startupPending: new Set() };
+    this.triggerState = { byId: new Map(), startupPending: new Set(), pending: [], pendingIds: new Set() };
     this.activeTriggerText = null;
     this.enemies = [];
     this.projectiles = [];
     this.beams = [];
     this.homingMissiles = [];
     this.actorMusicOverrideTrackId = null;
+    this.cutsceneMusicTrackId = null;
     this.debris = [];
     this.shards = [];
     this.lootDrops = [];
@@ -284,6 +303,7 @@ export default class Game {
     this.ambientParticles = [];
     this.activeRoomAmbient = [];
     this.activeRoomWeather = null;
+    this.weatherRuntime = createWeatherRuntimeState();
     this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
     this.weatherWind = { value: 0, target: 0, timer: 0 };
     this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
@@ -347,10 +367,12 @@ export default class Game {
     };
     this.menuFlashTimer = 0;
     this.minimapSelected = false;
+    this.pauseExitConfirmOpen = false;
+    this.pauseMenuRepeatState = createMenuRepeatState();
     this.minimapBounds = null;
     this.minimapBackBounds = null;
     this.minimapExitBounds = null;
-    this.minimapExitBounds = null;
+    this.minimapActionSelection = 0;
     this.spawnRules = {
       globalMax: 12,
       perRegion: 6,
@@ -381,25 +403,30 @@ export default class Game {
     this.midiComposer = new MidiComposer(this);
     this.sfxEditor = new SfxEditor(this);
     this.actorEditor = new ActorEditor(this);
+    this.cutsceneEditor = new CutsceneEditor(this);
+    this.cutscenePlayer = new CutscenePlayer(this);
     this.editorStateTargetKeys = {
       editor: 'editor',
       'pixel-editor': 'pixelStudio',
       'midi-editor': 'midiComposer',
       'sfx-editor': 'sfxEditor',
-      'actor-editor': 'actorEditor'
+      'actor-editor': 'actorEditor',
+      'cutscene-editor': 'cutsceneEditor'
     };
     this.editorStateDrawArgs = {
-      editor: () => [this.ctx],
-      'pixel-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
-      'midi-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
-      'sfx-editor': () => [this.ctx, this.canvas.width, this.canvas.height],
-      'actor-editor': () => [this.ctx, this.canvas.width, this.canvas.height]
+      editor: () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'pixel-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'midi-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'sfx-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'actor-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'cutscene-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
     };
     this.robterSession = new RobterSession({ input: this.input, audio: this.audio, isMobile: this.deviceIsMobile });
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
     this.midiComposerReturnState = 'title';
     this.sfxEditorReturnState = 'title';
+    this.cutsceneEditorReturnState = 'title';
     this.actorEditorReturnState = 'title';
     this.robterSessionReturnState = 'title';
     this.robterSessionAutoReturn = false;
@@ -422,9 +449,12 @@ export default class Game {
     this.inputMode = 'keyboard';
     this.inputModeInitialized = false;
     this.effectiveInputMode = 'keyboard';
+    this.displayMode = this.loadDisplayModePreference();
     this.gamepadConnected = false;
     this.viewport = { width: window.innerWidth, height: window.innerHeight, scale: 1 };
     this.mobileControls = new MobileControls();
+    this.mobileControlsViewportKey = '';
+    this.cachedMobileGameplayHandheldLayout = null;
     this.boxes = [];
     this.boxSize = 26;
     this.loading = true;
@@ -432,19 +462,257 @@ export default class Game {
     this.init();
   }
 
-  setViewport({ width, height, scale, isMobile }) {
-    this.viewport = { width, height, scale };
+  setViewport({ width, height, scale, dpr = 1, isMobile }) {
+    const previousCameraWidth = this.camera?.width;
+    const previousCameraHeight = this.camera?.height;
+    this.viewport = { width, height, scale, dpr };
     this.deviceIsMobile = Boolean(isMobile);
+    if (this.camera) {
+      this.camera.width = width || this.canvas.width;
+      this.camera.height = height || this.canvas.height;
+    }
     if (!this.inputModeInitialized) {
       this.inputMode = this.deviceIsMobile ? 'mobile' : 'keyboard';
       this.inputModeInitialized = true;
     }
     this.updateControlScheme();
+    this.syncMobileControlsViewport();
+    this.recenterCameraAfterViewportChange(previousCameraWidth, previousCameraHeight);
+  }
+
+  syncMobileControlsViewport() {
+    const viewportWidth = this.viewport?.width || this.canvas.width;
+    const viewportHeight = this.viewport?.height || this.canvas.height;
+    const orientation = viewportHeight > viewportWidth ? 'portrait' : (viewportWidth > viewportHeight ? 'landscape' : 'square');
+    const key = [
+      viewportWidth,
+      viewportHeight,
+      this.viewport?.dpr || 1,
+      this.state,
+      this.isMobile ? 1 : 0,
+      this.deviceIsMobile ? 1 : 0,
+      orientation
+    ].join(':');
+    if (key === this.mobileControlsViewportKey) return this.cachedMobileGameplayHandheldLayout;
+    const handheldLayout = this.getMobileGameplayHandheldLayout();
+    this.mobileControlsViewportKey = key;
+    this.cachedMobileGameplayHandheldLayout = handheldLayout;
     this.mobileControls.setViewport({
-      width: this.canvas.width,
-      height: this.canvas.height,
-      isMobile: this.isMobile
+      width: viewportWidth,
+      height: viewportHeight,
+      isMobile: this.isMobile,
+      controlsBounds: handheldLayout?.controlsDeck || null,
+      controlsLayout: handheldLayout || null
     });
+    if (this.camera) {
+      const renderViewport = handheldLayout?.renderViewport;
+      const previousCameraWidth = this.camera.width;
+      const previousCameraHeight = this.camera.height;
+      this.camera.width = renderViewport?.w || viewportWidth;
+      this.camera.height = renderViewport?.h || viewportHeight;
+      this.recenterCameraAfterViewportChange(previousCameraWidth, previousCameraHeight);
+    }
+    return handheldLayout;
+  }
+
+  recenterCameraAfterViewportChange(previousCameraWidth, previousCameraHeight) {
+    if (!this.camera || !this.player || !this.world) return;
+    if (!['playing', 'pause', 'dialog', 'shop', 'pixel-preview'].includes(this.state)) return;
+    if (previousCameraWidth === this.camera.width && previousCameraHeight === this.camera.height) return;
+    this.snapCameraToPlayer();
+  }
+
+  getPortraitHandheldLayout() {
+    const width = this.viewport?.width || this.canvas.width;
+    const height = this.viewport?.height || this.canvas.height;
+    if (!this.deviceIsMobile || height <= width) return null;
+    if (!['playing', 'pause', 'dialog', 'shop', 'pixel-preview'].includes(this.state)) return null;
+    return getPortraitHandheldLayout(width, height);
+  }
+
+  getLandscapeHandheldLayout() {
+    const width = this.viewport?.width || this.canvas.width;
+    const height = this.viewport?.height || this.canvas.height;
+    if (!this.deviceIsMobile || width <= height) return null;
+    if (!['playing', 'pause', 'dialog', 'shop', 'pixel-preview'].includes(this.state)) return null;
+    return getLandscapeHandheldLayout(width, height);
+  }
+
+  getMobileGameplayHandheldLayout() {
+    return this.getPortraitHandheldLayout() || this.getLandscapeHandheldLayout();
+  }
+
+  getPauseMenuRepeatDirection(dt) {
+    return getMenuRepeatDirection(this.pauseMenuRepeatState, {
+      up: this.input.isDown('up') || this.input.isGamepadDown('dpadUp'),
+      down: this.input.isDown('down') || this.input.isGamepadDown('dpadDown'),
+      left: this.input.isDown('left') || this.input.isGamepadDown('dpadLeft'),
+      right: this.input.isDown('right') || this.input.isGamepadDown('dpadRight')
+    }, dt);
+  }
+
+  mapPortraitHandheldPointerPayload(payload) {
+    const layout = this.getMobileGameplayHandheldLayout();
+    if (!layout) return payload;
+    const point = mapPortraitHandheldPoint(layout, payload?.x, payload?.y);
+    return point ? { ...payload, ...point } : null;
+  }
+
+  drawPortraitHandheldShell(ctx, layout) {
+    const { device, screenOuter, screenSlot, screen, controlsDeck } = layout;
+    ctx.save();
+    const grd = ctx.createLinearGradient(0, 0, 0, device.h);
+    grd.addColorStop(0, '#4b524d');
+    grd.addColorStop(0.48, '#2b332f');
+    grd.addColorStop(1, '#171c1b');
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.roundRect?.(device.x + 3, device.y + 3, device.w - 6, device.h - 6, 26);
+    if (!ctx.roundRect) ctx.rect(device.x + 3, device.y + 3, device.w - 6, device.h - 6);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(190,210,185,0.28)';
+    ctx.stroke();
+    ctx.fillStyle = '#151a18';
+    ctx.beginPath();
+    ctx.roundRect?.(screenOuter.x, screenOuter.y, screenOuter.w, screenOuter.h, 14);
+    if (!ctx.roundRect) ctx.rect(screenOuter.x, screenOuter.y, screenOuter.w, screenOuter.h);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(150,176,160,0.32)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = '#101416';
+    ctx.fillRect(screenSlot.x, screenSlot.y, screenSlot.w, screenSlot.h);
+    ctx.fillStyle = '#9fb586';
+    ctx.fillRect(screen.x, screen.y, screen.w, screen.h);
+    ctx.globalAlpha = 0.16;
+    ctx.fillRect(screen.x, screen.y, screen.w, screen.h);
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = 'rgba(0,0,0,0.45)';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(screenOuter.x + 1.5, screenOuter.y + 1.5, screenOuter.w - 3, screenOuter.h - 3);
+    ctx.fillStyle = '#07100d';
+    ctx.beginPath();
+    ctx.roundRect?.(screen.x, screen.y, screen.w, screen.h, 8);
+    if (!ctx.roundRect) ctx.rect(screen.x, screen.y, screen.w, screen.h);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(150,176,160,0.36)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect?.(screen.x + 0.5, screen.y + 0.5, screen.w - 1, screen.h - 1, 8);
+    if (!ctx.roundRect) ctx.rect(screen.x + 0.5, screen.y + 0.5, screen.w - 1, screen.h - 1);
+    ctx.stroke();
+    ctx.fillStyle = '#d94a3a';
+    ctx.beginPath();
+    ctx.arc(screenOuter.x + screenOuter.w - 16, screenOuter.y + 16, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(5,8,7,0.78)';
+    layout.speakerSlots?.forEach((slot) => {
+      ctx.save();
+      ctx.translate(slot.x + slot.w / 2, slot.y + slot.h / 2);
+      ctx.rotate(-0.18);
+      ctx.fillRect(-slot.w / 2, -slot.h / 2, slot.w, slot.h);
+      ctx.restore();
+    });
+    ctx.restore();
+  }
+
+  drawDisplayModeFilter(ctx, width, height) {
+    const mode = normalizeDisplayMode(this.displayMode);
+    if (mode === 'color') return;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'color';
+    ctx.fillStyle = mode === 'night-vision' ? '#00d060' : '#b68a4f';
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = mode === 'night-vision' ? 0.22 : 0.12;
+    ctx.fillStyle = mode === 'night-vision' ? '#003814' : '#f0d19a';
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = mode === 'night-vision' ? 0.2 : 0.12;
+    ctx.fillStyle = mode === 'night-vision' ? '#001b0a' : '#24170c';
+    for (let y = 0; y < height; y += 4) {
+      ctx.fillRect(0, y, width, 1);
+    }
+
+    if (mode === 'night-vision') {
+      ctx.globalAlpha = 0.08;
+      ctx.fillStyle = '#5cff94';
+      for (let x = 0; x < width; x += 7) {
+        ctx.fillRect(x, 0, 1, height);
+      }
+    }
+
+    const vignette = ctx.createRadialGradient(
+      width / 2,
+      height / 2,
+      Math.min(width, height) * 0.25,
+      width / 2,
+      height / 2,
+      Math.max(width, height) * 0.72
+    );
+    vignette.addColorStop(0, mode === 'night-vision' ? 'rgba(0, 80, 28, 0.02)' : 'rgba(210, 168, 92, 0.02)');
+    vignette.addColorStop(1, mode === 'night-vision' ? 'rgba(0, 0, 0, 0.36)' : 'rgba(0, 0, 0, 0.24)');
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = vignette;
+    ctx.fillRect(0, 0, width, height);
+    ctx.restore();
+  }
+
+  drawLandscapeHandheldShell(ctx, layout) {
+    const { device, leftRail, rightRail, screenSlot, screen } = layout;
+    ctx.save();
+    const body = ctx.createLinearGradient(0, 0, 0, device.h);
+    body.addColorStop(0, '#26302d');
+    body.addColorStop(0.52, '#101615');
+    body.addColorStop(1, '#070a0a');
+    ctx.fillStyle = body;
+    ctx.fillRect(device.x, device.y, device.w, device.h);
+
+    ctx.fillStyle = '#111816';
+    ctx.fillRect(leftRail.x, leftRail.y, leftRail.w, leftRail.h);
+    ctx.fillRect(rightRail.x, rightRail.y, rightRail.w, rightRail.h);
+    ctx.strokeStyle = 'rgba(150,176,160,0.28)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(leftRail.x + 1, leftRail.y + 1, leftRail.w - 2, leftRail.h - 2);
+    ctx.strokeRect(rightRail.x + 1, rightRail.y + 1, rightRail.w - 2, rightRail.h - 2);
+
+    ctx.fillStyle = '#050706';
+    ctx.beginPath();
+    ctx.roundRect?.(screenSlot.x - 6, screenSlot.y - 6, screenSlot.w + 12, screenSlot.h + 12, 12);
+    if (!ctx.roundRect) ctx.rect(screenSlot.x - 6, screenSlot.y - 6, screenSlot.w + 12, screenSlot.h + 12);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(150,176,160,0.3)';
+    ctx.beginPath();
+    ctx.roundRect?.(screenSlot.x - 5.5, screenSlot.y - 5.5, screenSlot.w + 11, screenSlot.h + 11, 12);
+    if (!ctx.roundRect) ctx.rect(screenSlot.x - 5.5, screenSlot.y - 5.5, screenSlot.w + 11, screenSlot.h + 11);
+    ctx.stroke();
+    ctx.fillStyle = '#050807';
+    ctx.beginPath();
+    ctx.roundRect?.(screen.x, screen.y, screen.w, screen.h, 8);
+    if (!ctx.roundRect) ctx.rect(screen.x, screen.y, screen.w, screen.h);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(150,176,160,0.36)';
+    ctx.beginPath();
+    ctx.roundRect?.(screen.x + 0.5, screen.y + 0.5, screen.w - 1, screen.h - 1, 8);
+    if (!ctx.roundRect) ctx.rect(screen.x + 0.5, screen.y + 0.5, screen.w - 1, screen.h - 1);
+    ctx.stroke();
+
+    ctx.fillStyle = '#d94a3a';
+    ctx.beginPath();
+    ctx.arc(rightRail.x + rightRail.w - 18, rightRail.y + 18, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(5,8,7,0.82)';
+    layout.speakerSlots?.forEach((slot) => {
+      ctx.save();
+      ctx.translate(slot.x + slot.w / 2, slot.y + slot.h / 2);
+      ctx.rotate(-0.14);
+      ctx.fillRect(-slot.w / 2, -slot.h / 2, slot.w, slot.h);
+      ctx.restore();
+    });
+    ctx.restore();
   }
 
   updateControlScheme() {
@@ -467,6 +735,41 @@ export default class Game {
     if (!['mobile', 'gamepad', 'keyboard'].includes(mode)) return;
     this.inputMode = mode;
     this.updateControlScheme();
+  }
+
+  loadDisplayModePreference() {
+    try {
+      if (typeof window === 'undefined' || !window.localStorage) return DEFAULT_DISPLAY_MODE;
+      return normalizeDisplayMode(window.localStorage.getItem(DISPLAY_MODE_STORAGE_KEY));
+    } catch {
+      return DEFAULT_DISPLAY_MODE;
+    }
+  }
+
+  setDisplayMode(mode) {
+    const normalized = normalizeDisplayMode(mode);
+    this.displayMode = normalized;
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(DISPLAY_MODE_STORAGE_KEY, normalized);
+      }
+    } catch {
+      // Display mode is still applied for the current session when storage is unavailable.
+    }
+  }
+
+  handleTitleControlsAction(action) {
+    if (action === 'back') {
+      this.title.setScreen('main');
+      return;
+    }
+    const displayMode = getDisplayModeForAction(action);
+    if (displayMode) {
+      this.setDisplayMode(displayMode);
+      return;
+    }
+    this.setInputMode(action);
+    this.title.setControlsSelectionByMode(this.inputMode);
   }
 
   async init() {
@@ -558,6 +861,7 @@ export default class Game {
     this.ambientParticles = [];
     this.activeRoomAmbient = [];
     this.activeRoomWeather = null;
+    this.weatherRuntime = createWeatherRuntimeState();
     this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
     this.weatherWind = { value: 0, target: 0, timer: 0 };
     this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
@@ -604,20 +908,27 @@ export default class Game {
     if (!this.weatherWind) {
       this.weatherWind = { value: 0, target: 0, timer: 0 };
     }
+    if (!this.weatherRuntime) {
+      this.weatherRuntime = createWeatherRuntimeState();
+    }
+    this.weatherRuntime.particles = this.ambientParticles;
+    this.weatherRuntime.lightning = this.weatherLightning;
+    this.weatherRuntime.wind = this.weatherWind;
     if (!this.roomLightFlicker) {
       this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
     }
     this.activeRoomAmbient = roomIndex === null || roomIndex === undefined
       ? []
       : (this.roomAmbientSpawns.get(roomIndex) || []).map((spawn) => ({ ...spawn }));
-    const weatherPriority = ['weather-hurricane', 'weather-blizzard', 'weather-storm', 'weather-rain', 'weather-snow'];
-    this.activeRoomWeather = weatherPriority.find((type) => this.activeRoomAmbient.some((spawn) => spawn.type === type)) || null;
+    this.activeRoomWeather = WEATHER_PRIORITY.find((type) => this.activeRoomAmbient.some((spawn) => spawn.type === type)) || null;
     if (this.weatherLightning.roomIndex !== roomIndex) {
       this.weatherLightning.roomIndex = roomIndex ?? null;
       this.weatherLightning.timer = 0;
       this.weatherLightning.flash = 0;
       this.weatherWind.target = 0;
       this.weatherWind.timer = 0;
+      this.weatherRuntime.lightning = this.weatherLightning;
+      this.weatherRuntime.wind = this.weatherWind;
       this.roomLightFlicker.target = 0;
       this.roomLightFlicker.timer = 0;
     }
@@ -762,23 +1073,19 @@ export default class Game {
   }
 
   updateAmbientSystems(dt) {
-    this.weatherLightning.flash = Math.max(0, this.weatherLightning.flash - dt * 2.6);
-    const windyWeather = new Set(['weather-storm', 'weather-hurricane', 'weather-blizzard']);
+    if (!this.weatherRuntime) {
+      this.weatherRuntime = createWeatherRuntimeState();
+    }
+    this.weatherRuntime.particles = this.ambientParticles;
+    this.weatherRuntime.lightning = this.weatherLightning;
+    this.weatherRuntime.wind = this.weatherWind;
     if (!this.weatherWind) {
       this.weatherWind = { value: 0, target: 0, timer: 0 };
+      this.weatherRuntime.wind = this.weatherWind;
     }
-    if (windyWeather.has(this.activeRoomWeather)) {
-      this.weatherWind.timer -= dt;
-      if (this.weatherWind.timer <= 0) {
-        const gustSpread = this.activeRoomWeather === 'weather-hurricane' ? 180 : this.activeRoomWeather === 'weather-blizzard' ? 140 : 110;
-        this.weatherWind.target = (Math.random() * 2 - 1) * gustSpread;
-        this.weatherWind.timer = 0.28 + Math.random() * 0.5;
-      }
-      this.weatherWind.value += (this.weatherWind.target - this.weatherWind.value) * Math.min(1, dt * 2.4);
-    } else {
-      this.weatherWind.target = 0;
-      this.weatherWind.value += (0 - this.weatherWind.value) * Math.min(1, dt * 2.8);
-      this.weatherWind.timer = 0;
+    if (!this.weatherLightning) {
+      this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
+      this.weatherRuntime.lightning = this.weatherLightning;
     }
 
     const hasLightFlicker = this.activeRoomAmbient.some((spawn) => spawn.type === 'light-flicker');
@@ -799,23 +1106,8 @@ export default class Game {
       this.roomLightFlicker.timer = 0;
     }
 
-    this.ambientParticles.forEach((particle) => {
-      particle.life -= dt;
-      particle.x += particle.vx * dt;
-      particle.y += particle.vy * dt;
-      particle.angle += particle.spin * dt;
-      if (particle.style.kind === 'weather') {
-        particle.x += this.weatherWind.value * dt;
-      }
-      if (particle.style.gravity) {
-        particle.vy += 900 * Math.max(0, Number(particle.style.gravityScale ?? 1)) * dt;
-      }
-      if (particle.style.swayAmplitude) {
-        particle.sway += dt * (particle.style.swaySpeed || 3);
-        particle.x += Math.sin(particle.sway) * particle.style.swayAmplitude * dt;
-      }
-    });
-    this.ambientParticles = this.ambientParticles.filter((particle) => particle.life > 0);
+    this.ambientParticles = updateWeatherParticleMotion(this.ambientParticles, dt, this.weatherWind.value);
+    this.weatherRuntime.particles = this.ambientParticles;
 
     this.activeRoomAmbient.forEach((spawn) => {
       if (DRIP_TYPES.has(spawn.type)) {
@@ -861,122 +1153,35 @@ export default class Game {
     });
 
     const room = this.activeRoomIndex === null || this.activeRoomIndex === undefined ? null : this.world.getRoomBounds(this.activeRoomIndex);
-    if (!room || !this.activeRoomWeather) return;
+    if (!room || !this.activeRoomWeather) {
+      updateWeatherSystem({
+        state: this.weatherRuntime,
+        particles: this.ambientParticles,
+        weatherType: this.activeRoomWeather,
+        dt,
+        applyMotion: false
+      });
+      return;
+    }
     const tileSize = this.world.tileSize;
     const left = room.minX * tileSize;
     const right = (room.maxX + 1) * tileSize;
     const top = room.minY * tileSize;
     const bottom = (room.maxY + 1) * tileSize;
-    const weatherProfile = {
-      'weather-rain': { kind: 'weather', rate: 24, vy: 320, vx: -20, color: 'rgba(120,180,255,0.45)', size: 8 },
-      'weather-storm': {
-        kind: 'weather',
-        screenFill: true,
-        rate: 72,
-        vy: 450,
-        vx: -48,
-        color: 'rgba(132,190,255,0.68)',
-        size: 12,
-        gustRate: 10,
-        gustVx: -240,
-        gustVy: -18,
-        gustColor: 'rgba(210,220,235,0.18)',
-        gustLength: 34,
-        fogColor: 'rgba(120,130,145,0.18)',
-        fogAlpha: 0.18
-      },
-      'weather-hurricane': {
-        kind: 'weather',
-        screenFill: true,
-        rate: 96,
-        vy: 540,
-        vx: -86,
-        color: 'rgba(150,205,255,0.78)',
-        size: 14,
-        gustRate: 18,
-        gustVx: -340,
-        gustVy: -28,
-        gustColor: 'rgba(205,215,228,0.24)',
-        gustLength: 46,
-        fogColor: 'rgba(102,112,125,0.24)',
-        fogAlpha: 0.24
-      },
-      'weather-snow': { kind: 'weather', rate: 16, vy: 48, vx: -8, color: 'rgba(255,255,255,0.75)', size: 4, swayAmplitude: 16, swaySpeed: 2 },
-      'weather-blizzard': {
-        kind: 'weather',
-        screenFill: true,
-        rate: 92,
-        vy: 128,
-        vx: -72,
-        color: 'rgba(255,255,255,0.92)',
-        size: 6,
-        swayAmplitude: 30,
-        swaySpeed: 5,
-        gustRate: 20,
-        gustVx: -300,
-        gustVy: -20,
-        gustColor: 'rgba(255,255,255,0.3)',
-        gustLength: 42,
-        fogColor: 'rgba(245,248,255,0.2)',
-        fogAlpha: 0.2
-      }
-    }[this.activeRoomWeather];
-    const count = Math.max(1, Math.ceil(dt * weatherProfile.rate));
-    const precipitationWind = weatherProfile.vx + this.weatherWind.value;
-    const precipitationOverscan = weatherProfile.screenFill ? Math.max(64, Math.abs(precipitationWind) * 0.45) : 0;
-    for (let i = 0; i < count; i += 1) {
-      const spawnX = weatherProfile.screenFill
-        ? left - precipitationOverscan + Math.random() * ((right - left) + precipitationOverscan * 2)
-        : left + Math.random() * (right - left);
-      const spawnY = weatherProfile.screenFill
-        ? top - 16 + Math.random() * ((bottom - top) + 32)
-        : top - 8;
-      this.emitAmbientParticle(
-        spawnX,
-        spawnY,
-        precipitationWind + (Math.random() - 0.5) * 22,
-        weatherProfile.vy * (0.8 + Math.random() * 0.4),
-        Math.max(0.5, (bottom - top + precipitationOverscan) / weatherProfile.vy),
-        weatherProfile
-      );
-    }
-    if (weatherProfile.gustRate) {
-      const gustCount = Math.max(1, Math.ceil(dt * weatherProfile.gustRate));
-      for (let i = 0; i < gustCount; i += 1) {
-        this.emitAmbientParticle(
-          left + Math.random() * (right - left),
-          top + Math.random() * (bottom - top),
-          weatherProfile.gustVx * (0.75 + Math.random() * 0.45),
-          weatherProfile.gustVy + (Math.random() - 0.5) * 26,
-          0.28 + Math.random() * 0.2,
-          {
-            kind: 'gust',
-            color: weatherProfile.gustColor,
-            size: weatherProfile.gustLength,
-            fogColor: weatherProfile.fogColor,
-            fogAlpha: weatherProfile.fogAlpha
-          }
-        );
-      }
-    }
-    this.ambientParticles = this.ambientParticles.filter((particle) => {
-      if (particle.style === weatherProfile) {
-        return particle.y <= bottom + 24 && particle.x >= left - 64 && particle.x <= right + 64 && particle.life > 0;
-      }
-      return true;
-    });
-
-    if (this.activeRoomWeather === 'weather-hurricane') {
-      this.weatherLightning.timer -= dt;
-      if (this.weatherLightning.timer <= 0) {
-        this.weatherLightning.timer = 1.8 + Math.random() * 2.4;
-        this.weatherLightning.flash = 1;
-        this.weatherLightning.x = left + Math.random() * (right - left);
+    updateWeatherSystem({
+      state: this.weatherRuntime,
+      particles: this.ambientParticles,
+      weatherType: this.activeRoomWeather,
+      bounds: { left, top, right, bottom },
+      dt,
+      applyMotion: false,
+      onLightningStrike: (x) => {
         if (Math.abs(this.player.x - this.weatherLightning.x) < tileSize * 1.25 && this.player.y >= top && this.player.y <= bottom) {
           this.player.takeDamage(1);
         }
       }
-    }
+    });
+    this.ambientParticles = this.weatherRuntime.particles;
   }
 
   buildElevatorGraph() {
@@ -1133,6 +1338,13 @@ export default class Game {
   }
 
   applyWorldData(data) {
+    const embeddedPixelArt = data.pixelArt && typeof data.pixelArt === 'object'
+      ? data.pixelArt
+      : null;
+    const legacyPixelArtRef = typeof data.pixelArtRef === 'string' ? data.pixelArtRef : '';
+    const referencedPixelArt = !embeddedPixelArt?.tiles && legacyPixelArtRef
+      ? loadProjectFile('art', legacyPixelArtRef)?.data
+      : null;
     const migrated = {
       schemaVersion: data.schemaVersion ?? 1,
       tileSize: data.tileSize,
@@ -1144,7 +1356,7 @@ export default class Game {
       enemies: data.enemies || [],
       elevatorPaths: data.elevatorPaths || [],
       elevators: data.elevators || [],
-      pixelArt: data.pixelArt || { tiles: {} },
+      pixelArt: embeddedPixelArt || referencedPixelArt || { tiles: {} },
       musicZones: data.musicZones || [],
       midiTracks: data.midiTracks || [],
       triggers: data.triggers || [],
@@ -1173,6 +1385,7 @@ export default class Game {
     this.pixelStudio?.resetTransientInteractionState?.();
     this.midiComposer?.resetTransientInteractionState?.();
     this.sfxEditor?.resetTransientInteractionState?.();
+    this.actorEditor?.resetTransientInteractionState?.();
 
     this.playtestPauseLock = 0;
     this.spawnPauseTimer = 0;
@@ -1192,8 +1405,8 @@ export default class Game {
 
     this.mobileControls.reset();
     this.mobileControls.setViewport({
-      width: this.canvas.width,
-      height: this.canvas.height,
+      width: this.viewport.width || this.canvas.width,
+      height: this.viewport.height || this.canvas.height,
       isMobile: this.isMobile
     });
   }
@@ -1213,6 +1426,8 @@ export default class Game {
     this.editor.activate();
     if (tab) {
       this.editor.setPanelTab(tab);
+    } else if (fromState === 'title') {
+      this.editor.resetToFileMenu?.();
     }
     this.playtestActive = false;
   }
@@ -1250,6 +1465,9 @@ export default class Game {
     this.actorEditorReturnState = this.state;
     this.transitionTo('actor-editor');
     this.setRevAudio(false);
+    if (fromState === 'title') {
+      this.actorEditor.resetToFileMenu?.();
+    }
     this.actorEditor.activate();
     if (fromState === 'title' && !this.actorEditor.currentDocumentRef) {
       this.restoreMostRecentActorDocument();
@@ -1268,6 +1486,9 @@ export default class Game {
     this.pixelStudio.setTilePickerMode(tilePicker);
     if (resetFocus) {
       this.pixelStudio.resetFocus();
+    }
+    if (fromState === 'title' && returnState === 'title' && !tilePicker) {
+      this.pixelStudio.resetToFileMenu?.();
     }
     if (tilePicker && returnState === 'title' && !this.pixelStudio.currentDocumentRef) {
       if (!this.restoreBestTileArtFromAutosaves()) {
@@ -1448,12 +1669,28 @@ export default class Game {
     const normalized = ensureActorDefinition(actorDefinition || null);
     if (!normalized?.id) return null;
     this.runtimeActorDefinitions.set(normalized.id, normalized);
+    this.preloadRuntimeActorDefinition(normalized);
     return normalized;
   }
 
   getRuntimeActorDefinition(actorId) {
     if (!actorId) return null;
     return this.runtimeActorDefinitions.get(actorId) || null;
+  }
+
+  preloadRuntimeActorDefinition(actorDefinition) {
+    const normalized = ensureActorDefinition(actorDefinition || null);
+    if (!normalized?.id) return Promise.resolve([]);
+    if (this.actorPreloadPromises.has(normalized.id)) {
+      return this.actorPreloadPromises.get(normalized.id);
+    }
+    const preload = preloadActorDefinitionAssets(normalized)
+      .catch(() => [])
+      .finally(() => {
+        this.actorPreloadPromises.delete(normalized.id);
+      });
+    this.actorPreloadPromises.set(normalized.id, preload);
+    return preload;
   }
 
   startActorEditorPlaytest(actorId, actorDefinition = null) {
@@ -1495,10 +1732,26 @@ export default class Game {
     this.midiComposerReturnState = this.state;
     this.transitionTo('midi-editor');
     this.setRevAudio(false);
+    if (fromState === 'title') {
+      this.midiComposer.resetToFileMenu?.();
+    }
     if (fromState === 'title' && !this.midiComposer.currentDocumentRef) {
       this.restoreMostRecentMusicDocument();
     }
     this.playtestActive = false;
+  }
+
+  applyRobterSessionReturnContext() {
+    const context = this.robterSessionReturnContext || null;
+    this.robterSessionReturnContext = null;
+    if (!context || this.state !== 'midi-editor' || !this.midiComposer) return;
+    if (context.recordModeActive) {
+      this.midiComposer.enterRecordMode();
+    }
+    if (context.tab) {
+      this.midiComposer.activeTab = context.tab;
+    }
+    this.midiComposer.controllerMenu?.resetFocus?.();
   }
 
   enterSfxEditor() {
@@ -1506,8 +1759,25 @@ export default class Game {
     this.sfxEditorReturnState = this.state;
     this.transitionTo('sfx-editor');
     this.setRevAudio(false);
+    if (fromState === 'title') {
+      this.sfxEditor.resetToFileMenu?.();
+    }
     if (fromState === 'title' && !this.sfxEditor.currentDocumentRef) {
       this.restoreMostRecentSfxDocument();
+    }
+    this.playtestActive = false;
+  }
+
+  enterCutsceneEditor() {
+    const fromState = this.state;
+    this.cutsceneEditorReturnState = this.state;
+    this.transitionTo('cutscene-editor');
+    this.setRevAudio(false);
+    if (fromState === 'title') {
+      this.cutsceneEditor.resetToFileMenu?.();
+    }
+    if (fromState === 'title' && !this.cutsceneEditor.currentDocumentRef) {
+      this.restoreMostRecentCutsceneDocument();
     }
     this.playtestActive = false;
   }
@@ -1600,6 +1870,16 @@ export default class Game {
     return true;
   }
 
+  restoreMostRecentCutsceneDocument() {
+    const latest = listProjectFiles('cutscenes')[0];
+    if (!latest?.name) return false;
+    const payload = loadProjectFile('cutscenes', latest.name);
+    if (!payload?.data) return false;
+    this.cutsceneEditor.applyDocument(payload.data, latest.name);
+    this.cutsceneEditor.currentDocumentRef = { folder: 'cutscenes', name: latest.name };
+    return true;
+  }
+
   exitMidiComposer() {
     this.playtestActive = false;
     this.transitionTo(this.midiComposerReturnState || 'title', { forceCleanup: true });
@@ -1611,6 +1891,12 @@ export default class Game {
     this.transitionTo(this.sfxEditorReturnState || 'title', { forceCleanup: true });
   }
 
+  exitCutsceneEditor() {
+    this.playtestActive = false;
+    this.cutsceneEditor?.stop?.();
+    this.transitionTo(this.cutsceneEditorReturnState || 'title', { forceCleanup: true });
+  }
+
   exitEditor({ playtest = false, toTitle = false } = {}) {
     this.editor.deactivate();
     this.editor.flushWorldRefresh();
@@ -1619,6 +1905,8 @@ export default class Game {
         worldData: this.buildWorldData()
       };
       this.syncSpawnPoint();
+      this.debugMode = false;
+      this.showCompanionPathDebug = false;
       this.transitionTo('playing', { forceCleanup: true });
       this.playtestActive = true;
       this.playtestPauseLock = 0.35;
@@ -1731,6 +2019,7 @@ export default class Game {
     this.ambientParticles = [];
     this.activeRoomAmbient = [];
     this.activeRoomWeather = null;
+    this.weatherRuntime = createWeatherRuntimeState();
     this.weatherLightning = { timer: 0, flash: 0, x: 0, roomIndex: null };
     this.weatherWind = { value: 0, target: 0, timer: 0 };
     this.roomLightFlicker = { value: 0, target: 0, timer: 0 };
@@ -1871,14 +2160,16 @@ export default class Game {
 
 
   async promptServerStorageConflictPreference(conflictCount = 0) {
-    const message = `Found ${conflictCount} duplicate project file${conflictCount === 1 ? '' : 's'} with different content. Type "local" to keep browser versions, "server" to keep server versions, or cancel.`;
-    if (typeof window !== 'undefined' && typeof window.prompt === 'function') {
-      const input = window.prompt(message, 'local');
-      const value = String(input || '').trim().toLowerCase();
-      if (value === 'local' || value === 'server') return value;
-      return null;
-    }
-    return null;
+    if (typeof document === 'undefined') return null;
+    return openChoiceOverlay({
+      title: 'Project File Conflict',
+      message: `Found ${conflictCount} duplicate project file${conflictCount === 1 ? '' : 's'} with different content. Choose which version to keep.`,
+      choices: [
+        { label: 'Keep Browser Versions', value: 'local', primary: true },
+        { label: 'Keep Server Versions', value: 'server' }
+      ],
+      cancelText: 'Cancel'
+    });
   }
 
   async handleServerStorageAction(action) {
@@ -1937,7 +2228,7 @@ export default class Game {
         if (!payload?.data) return;
         if (folder === 'levels') {
           this.applyWorldData(payload.data);
-          this.enterEditor({ tab: 'tiles' });
+          this.enterEditor();
           this.editor.currentDocumentRef = { folder: 'levels', name: name || 'Level' };
         } else if (folder === 'art') {
           this.world.pixelArt = this.pixelStudio.normalizeLoadedArtDocument(payload.data);
@@ -1952,10 +2243,14 @@ export default class Game {
           this.enterActorEditor();
           this.actorEditor.currentDocumentRef = { folder: 'actors', name: name || 'Actor' };
           this.actorEditor.setActor(payload.data);
+        } else if (folder === 'cutscenes') {
+          this.enterCutsceneEditor();
+          this.cutsceneEditor.applyDocument(payload.data, name || 'Cutscene');
+          this.cutsceneEditor.currentDocumentRef = { folder: 'cutscenes', name: name || 'Cutscene' };
         }
       },
       onNew: (folder) => {
-        if (folder === 'levels') this.enterEditor({ tab: 'tiles' });
+        if (folder === 'levels') this.enterEditor();
         if (folder === 'art') {
           this.enterPixelStudio();
           this.pixelStudio.newArtDocument();
@@ -1968,6 +2263,10 @@ export default class Game {
         if (folder === 'actors') {
           this.enterActorEditor();
           this.actorEditor.newActor();
+        }
+        if (folder === 'cutscenes') {
+          this.enterCutsceneEditor();
+          this.cutsceneEditor.newDocument();
         }
       },
       onExportZip: () => {
@@ -1996,58 +2295,13 @@ export default class Game {
       this.showSystemToast?.(text);
       return Promise.resolve(true);
     }
-    return new Promise((resolve) => {
-      const overlay = document.createElement('div');
-      overlay.className = 'chainsaw-confirm-overlay';
-      Object.assign(overlay.style, {
-        position: 'fixed',
-        inset: '0',
-        background: 'rgba(0,0,0,0.62)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: '99999'
-      });
-      const modal = document.createElement('div');
-      Object.assign(modal.style, {
-        width: 'min(560px, calc(100vw - 32px))',
-        background: '#121212',
-        border: '2px solid rgba(255,255,255,0.35)',
-        color: '#fff',
-        padding: '18px',
-        fontFamily: 'Courier New, monospace'
-      });
-      const title = document.createElement('div');
-      title.textContent = 'Unsaved Changes';
-      Object.assign(title.style, { fontWeight: '700', fontSize: '20px', marginBottom: '10px' });
-      const body = document.createElement('div');
-      body.textContent = text;
-      Object.assign(body.style, { fontSize: '14px', lineHeight: '1.4', marginBottom: '16px' });
-      const row = document.createElement('div');
-      Object.assign(row.style, { display: 'flex', justifyContent: 'flex-end', gap: '10px' });
-      const cancel = document.createElement('button');
-      cancel.textContent = 'Cancel';
-      const confirm = document.createElement('button');
-      confirm.textContent = 'Continue';
-      Object.assign(cancel.style, {
-        padding: '8px 14px', border: '1px solid rgba(255,255,255,0.6)', background: '#1f1f1f', color: '#fff', cursor: 'pointer'
-      });
-      Object.assign(confirm.style, {
-        padding: '8px 14px', border: '1px solid #ff8b8b', background: '#7e2222', color: '#fff', cursor: 'pointer'
-      });
-      const close = (value) => {
-        overlay.remove();
-        resolve(value);
-      };
-      overlay.addEventListener('click', (event) => {
-        if (event.target === overlay) close(false);
-      });
-      cancel.addEventListener('click', () => close(false));
-      confirm.addEventListener('click', () => close(true));
-      row.append(cancel, confirm);
-      modal.append(title, body, row);
-      overlay.appendChild(modal);
-      document.body.appendChild(overlay);
+    return openConfirmOverlay({
+      title: 'Unsaved Changes',
+      message: text,
+      confirmText: 'Continue',
+      cancelText: 'Cancel',
+      danger: true,
+      maxWidth: 560
     });
   }
 
@@ -2150,6 +2404,7 @@ export default class Game {
             ? (runtimePartDef || loadActorDefinitionById(part.actorId, { refresh: true }))
             : (loadActorDefinitionById(part.actorId, { refresh: true }) || runtimePartDef);
           if (!partDef) return;
+          this.preloadRuntimeActorDefinition(partDef);
           const child = new ScriptedActor(worldX + Number(part.offsetX || 0), worldY + Number(part.offsetY || 0), partDef, { type: `custom:${partDef.id}` });
           child.noLootDrops = true;
           actor.linkedChildren.push(child);
@@ -2384,7 +2639,8 @@ export default class Game {
     this.input.updateGamepad();
     this.gamepadConnected = this.input.isGamepadConnected();
     this.updateControlScheme();
-    if (this.state === 'editor' || this.state === 'pixel-editor' || this.state === 'midi-editor' || this.state === 'sfx-editor') {
+    this.syncMobileControlsViewport();
+    if (this.state === 'editor' || this.state === 'pixel-editor' || this.state === 'midi-editor' || this.state === 'sfx-editor' || this.state === 'actor-editor' || this.state === 'cutscene-editor') {
       this.input.clearVirtual();
     } else {
       const activeWeaponId = this.getActiveWeapon()?.id;
@@ -2408,6 +2664,8 @@ export default class Game {
         this.exitMidiComposer();
       } else if (this.state === 'sfx-editor') {
         this.exitSfxEditor();
+      } else if (this.state === 'cutscene-editor') {
+        this.exitCutsceneEditor();
       } else if (this.playtestActive && this.state === 'playing') {
         this.returnToEditorFromPlaytest();
       } else {
@@ -2472,7 +2730,29 @@ export default class Game {
       return;
     }
 
+    if (this.state === 'cutscene-editor') {
+      if (this.input.wasPressed('cancel')) {
+        this.exitCutsceneEditor();
+        this.input.flush();
+        return;
+      }
+      this.cutsceneEditor.update(this.input, dt);
+      this.updateActiveMusicPlayers(dt);
+      this.input.flush();
+      return;
+    }
+
     if (this.state === 'robtersession') {
+      if (this.input.wasGamepadPressed('cancel') && this.robterSessionReturnContext?.recordModeActive) {
+        this.robterSession.enter();
+        this.robterSessionAutoReturn = false;
+        this.robterSessionReturnState = 'title';
+        this.enterMidiComposer();
+        this.midiComposerReturnState = 'title';
+        this.applyRobterSessionReturnContext();
+        this.input.flush();
+        return;
+      }
       this.robterSession.update(dt);
       if (this.robterSessionAutoReturn && this.robterSession.state === 'results') {
         this.robterSessionAutoReturn = false;
@@ -2482,7 +2762,9 @@ export default class Game {
         if (returnState === 'midi-editor') {
           this.enterMidiComposer();
           this.midiComposerReturnState = 'title';
+          this.applyRobterSessionReturnContext();
         } else {
+          this.robterSessionReturnContext = null;
           this.transitionTo(returnState);
         }
         this.input.flush();
@@ -2496,7 +2778,9 @@ export default class Game {
         if (returnState === 'midi-editor') {
           this.enterMidiComposer();
           this.midiComposerReturnState = 'title';
+          this.applyRobterSessionReturnContext();
         } else {
+          this.robterSessionReturnContext = null;
           this.transitionTo(returnState);
         }
       }
@@ -2505,11 +2789,19 @@ export default class Game {
     }
 
     if (this.state === 'pixel-preview') {
-      if (this.input.wasPressed('attack') || this.input.wasPressed('interact')) {
+      if (this.input.wasPressed('attack') || this.input.wasPressed('jump') || this.input.wasPressed('interact')) {
         this.exitPixelPreview();
         this.input.flush();
         return;
       }
+      this.input.flush();
+      return;
+    }
+
+    if (this.state === 'playing' && this.cutscenePlayer?.active) {
+      this.cutscenePlayer.handleInput(this.input);
+      this.cutscenePlayer.update(dt);
+      this.updateActiveMusicPlayers(dt);
       this.input.flush();
       return;
     }
@@ -2528,26 +2820,35 @@ export default class Game {
 
     if (this.input.wasPressed('pause') && this.state === 'playing') {
       this.transitionTo('pause');
-      this.minimapSelected = true;
-      this.minimapPan = { x: 0, y: 0 };
+      this.minimapSelected = false;
+      this.pauseExitConfirmOpen = false;
+      resetMenuRepeatState(this.pauseMenuRepeatState);
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
     } else if (this.input.wasPressed('pause') && this.state === 'pause') {
-      this.minimapSelected = !this.minimapSelected;
-      if (this.minimapSelected) {
-        this.minimapPan = { x: 0, y: 0 };
-      }
+      this.transitionTo('playing');
+      this.minimapSelected = false;
+      this.pauseExitConfirmOpen = false;
+      resetMenuRepeatState(this.pauseMenuRepeatState);
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
+      this.input.flush();
+      return;
     }
     const cancelPressed = this.input.wasPressed('cancel') || this.input.wasGamepadPressed('dash');
     if (cancelPressed && this.state === 'pause') {
-      if (this.minimapSelected) {
+      if (this.pauseExitConfirmOpen) {
+        this.pauseExitConfirmOpen = false;
+        this.pauseMenu.resetConfirm?.();
+        resetMenuRepeatState(this.pauseMenuRepeatState);
+      } else if (this.minimapSelected) {
         this.minimapSelected = false;
+        resetMenuRepeatState(this.pauseMenuRepeatState);
       } else {
         this.transitionTo('playing');
+        resetMenuRepeatState(this.pauseMenuRepeatState);
       }
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
@@ -2596,7 +2897,12 @@ export default class Game {
         return;
       }
       if (this.title.screen === 'intro') {
-        if (this.input.wasPressed('interact') || (this.gamepadConnected && this.input.wasPressed('pause'))) {
+        if (
+          this.input.wasPressed('interact')
+          || this.input.wasPressed('attack')
+          || this.input.wasPressed('jump')
+          || (this.gamepadConnected && this.input.wasPressed('pause'))
+        ) {
           this.title.setScreen('main');
           this.audio.ui();
           this.recordFeedback('menu navigate', 'audio');
@@ -2617,24 +2923,17 @@ export default class Game {
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
       }
-      if (this.input.wasPressed('interact')) {
+      if (this.input.wasPressed('interact') || this.input.wasPressed('attack') || this.input.wasPressed('jump')) {
         const action = this.title.getSelectedAction();
         if (this.title.screen === 'controls') {
-          if (action === 'back') {
-            this.title.setScreen('main');
-          } else {
-            this.setInputMode(action);
-            this.title.setControlsSelectionByMode(this.inputMode);
-          }
+          this.handleTitleControlsAction(action);
         } else if (this.title.screen === 'tools') {
           if (action === 'back') {
             this.title.setScreen('main');
           } else if (action === 'project-browser') {
             this.openProjectBrowserFromTitle();
           } else if (action === 'level-editor') {
-            this.enterEditor({ tab: 'tiles' });
-          } else if (action === 'tile-editor') {
-            this.enterPixelStudio({ tilePicker: true });
+            this.enterEditor();
           } else if (action === 'pixel-editor') {
             this.enterPixelStudio();
           } else if (action === 'actor-editor') {
@@ -2643,6 +2942,8 @@ export default class Game {
             this.enterMidiComposer();
           } else if (action === 'sfx-editor') {
             this.enterSfxEditor();
+          } else if (action === 'cutscene-editor') {
+            this.enterCutsceneEditor();
           } else if (action === 'reset-all') {
             this.resetAllContent();
           }
@@ -2680,7 +2981,7 @@ export default class Game {
     }
 
     if (this.state === 'dialog') {
-      if (this.input.wasPressed('interact')) {
+      if (this.input.wasPressed('interact') || this.input.wasPressed('attack') || this.input.wasPressed('jump')) {
         const finished = this.dialog.next();
         if (finished) {
           this.transitionTo('playing');
@@ -2711,7 +3012,7 @@ export default class Game {
         this.recordFeedback('menu navigate', 'visual');
         this.triggerMenuFlash();
       }
-      if (this.input.wasPressed('interact')) {
+      if (this.input.wasPressed('interact') || this.input.wasPressed('attack') || this.input.wasPressed('jump')) {
         if (this.player.loot > 0 && this.shopUI.selection === this.shopUI.upgrades.length) {
           this.player.credits += this.player.loot * 5;
           this.player.loot = 0;
@@ -2743,24 +3044,78 @@ export default class Game {
     }
 
     if (this.state === 'pause') {
+      const menuDirection = this.getPauseMenuRepeatDirection(dt);
       if (this.minimapSelected) {
+        const leftPressed = menuDirection === 'left';
+        const rightPressed = menuDirection === 'right';
+        const confirmPressed = this.input.wasPressed('attack') || this.input.wasPressed('jump') || this.input.wasPressed('interact');
+        if (leftPressed || rightPressed) {
+          this.minimapActionSelection = this.minimapActionSelection === 0 ? 1 : 0;
+          this.audio.menu();
+          this.recordFeedback('menu navigate', 'audio');
+          this.recordFeedback('menu navigate', 'visual');
+        }
+        if (confirmPressed) {
+          if (this.minimapActionSelection === 0) {
+            this.minimapSelected = false;
+            resetMenuRepeatState(this.pauseMenuRepeatState);
+          } else {
+            this.transitionTo('title');
+            this.minimapSelected = false;
+            resetMenuRepeatState(this.pauseMenuRepeatState);
+          }
+          this.audio.menu();
+          this.recordFeedback('menu navigate', 'audio');
+          this.recordFeedback('menu navigate', 'visual');
+          this.input.flush();
+          return;
+        }
         this.updateMinimapPan(dt);
       } else {
-        const upPressed = this.input.wasPressed('up') || this.input.wasGamepadPressed('dpadUp');
-        const downPressed = this.input.wasPressed('down') || this.input.wasGamepadPressed('dpadDown');
-        const leftPressed = this.input.wasPressed('left') || this.input.wasGamepadPressed('dpadLeft');
-        const rightPressed = this.input.wasPressed('right') || this.input.wasGamepadPressed('dpadRight');
-        if (upPressed) this.pauseMenu.move(-1);
-        if (downPressed) this.pauseMenu.move(1);
-        if (leftPressed) this.pauseMenu.adjust(-1);
-        if (rightPressed) this.pauseMenu.adjust(1);
-        if (upPressed || downPressed || leftPressed || rightPressed) {
+        const upPressed = menuDirection === 'up';
+        const downPressed = menuDirection === 'down';
+        const leftPressed = menuDirection === 'left';
+        const rightPressed = menuDirection === 'right';
+        const confirmPressed = this.input.wasPressed('attack') || this.input.wasPressed('jump') || this.input.wasPressed('interact');
+        if (this.pauseExitConfirmOpen) {
+          if (leftPressed || upPressed) this.pauseMenu.moveConfirm(-1);
+          if (rightPressed || downPressed) this.pauseMenu.moveConfirm(1);
+          if (confirmPressed) {
+            const choice = this.pauseMenu.confirmExitChoice();
+            if (choice === 'yes') {
+              this.pauseExitConfirmOpen = false;
+              this.transitionTo('title');
+              this.minimapSelected = false;
+              resetMenuRepeatState(this.pauseMenuRepeatState);
+            } else {
+              this.pauseExitConfirmOpen = false;
+              resetMenuRepeatState(this.pauseMenuRepeatState);
+            }
+          }
+        } else {
+          if (upPressed) this.pauseMenu.move(-1);
+          if (downPressed) this.pauseMenu.move(1);
+          if (leftPressed) this.pauseMenu.move(-1);
+          if (rightPressed) this.pauseMenu.move(1);
+          if (confirmPressed) {
+            const action = this.pauseMenu.confirm();
+            if (action === 'resume') {
+              this.transitionTo('playing');
+              this.minimapSelected = false;
+              resetMenuRepeatState(this.pauseMenuRepeatState);
+            } else if (action === 'exit') {
+              this.pauseExitConfirmOpen = true;
+              this.pauseMenu.resetConfirm?.();
+              resetMenuRepeatState(this.pauseMenuRepeatState);
+            }
+          }
+        }
+        if (upPressed || downPressed || leftPressed || rightPressed || confirmPressed) {
           this.audio.menu();
           this.recordFeedback('menu navigate', 'audio');
           this.recordFeedback('menu navigate', 'visual');
           this.triggerMenuFlash();
         }
-        this.audio.setVolume(this.pauseMenu.volume);
       }
       this.input.flush();
       return;
@@ -3061,9 +3416,8 @@ export default class Game {
 
   startSpawnPause() {
     if (this.simulationActive) return;
-    this.spawnPauseTimer = 3;
-    this.player.invulnTimer = Math.max(this.player.invulnTimer, this.spawnPauseTimer);
-    this.audio.spawnTune();
+    this.spawnPauseTimer = 0;
+    this.player.invulnTimer = Math.max(this.player.invulnTimer, 0.75);
   }
 
   snapCameraToPlayer() {
@@ -3429,6 +3783,21 @@ export default class Game {
     this.activeWeaponIndex = index;
   }
 
+  selectNextAvailableWeapon() {
+    const total = this.weaponSlots.length;
+    if (!total) return;
+    for (let step = 1; step <= total; step += 1) {
+      const index = (this.activeWeaponIndex + step) % total;
+      if (this.isWeaponAvailable(this.weaponSlots[index])) {
+        this.selectWeapon(index);
+        this.audio.ui();
+        this.recordFeedback('weapon select', 'audio');
+        this.recordFeedback('weapon select', 'visual');
+        return;
+      }
+    }
+  }
+
   updateWeaponSelection(input) {
     let nextIndex = null;
     if (input.wasPressedCode('Digit1')) nextIndex = 0;
@@ -3439,6 +3808,10 @@ export default class Game {
     if (input.wasGamepadPressed('dpadRight')) nextIndex = this.activeWeaponIndex + 1;
     if (input.wasGamepadPressed('aimUp')) nextIndex = this.activeWeaponIndex - 1;
     if (input.wasGamepadPressed('aimDown')) nextIndex = this.activeWeaponIndex + 1;
+    if (input.wasPressed('nextWeapon')) {
+      this.selectNextAvailableWeapon();
+      return;
+    }
     if (nextIndex !== null) {
       const total = this.weaponSlots.length;
       const clamped = ((nextIndex % total) + total) % total;
@@ -5624,9 +5997,9 @@ export default class Game {
     });
   }
 
-  setActiveMusicTrack(trackId, { volume = 1 } = {}) {
+  setActiveMusicTrack(trackId, { volume = 1, loop = true, restart = false } = {}) {
     const targetVolume = Math.max(0, Math.min(1, Number(volume ?? 1)));
-    if (trackId === this.activeMusicTrackId) {
+    if (trackId === this.activeMusicTrackId && !restart) {
       this.musicPlayers
         .filter((player) => player.trackId === trackId)
         .forEach((player) => player.setFade(targetVolume, this.musicFadeDuration));
@@ -5636,16 +6009,24 @@ export default class Game {
       player.setFade(0, this.musicFadeDuration);
     });
     this.activeMusicTrackId = trackId || null;
+    const preloadToken = ++this.musicPreloadToken;
     if (!trackId) return;
     const libraryEntry = this.getLibrarySong(trackId);
     if (!libraryEntry) return;
-    const player = new MidiSongPlayer(this.audio);
-    player.setSong(libraryEntry.song, trackId);
-    player.setFade(targetVolume, this.musicFadeDuration);
-    this.musicPlayers.push(player);
+    Promise.resolve(this.audio?.preloadSongResources?.(libraryEntry.song))
+      .catch(() => null)
+      .then(() => {
+        if (preloadToken !== this.musicPreloadToken) return;
+        if (trackId !== this.activeMusicTrackId) return;
+        const player = new MidiSongPlayer(this.audio);
+        player.setSong(libraryEntry.song, trackId, { loop });
+        player.setFade(targetVolume, this.musicFadeDuration);
+        this.musicPlayers.push(player);
+      });
   }
 
   playActorMidi(trackId, { fadeMs = 250, volume = 1 } = {}) {
+    if (this.cutsceneMusicTrackId || this.cutscenePlayer?.active) return;
     const resolvedTrackId = String(trackId || '').trim();
     if (!resolvedTrackId) return;
     if (!this.getLibrarySong(resolvedTrackId)) return;
@@ -5657,9 +6038,32 @@ export default class Game {
   }
 
   stopActorMidi(trackId = '', { fadeMs = 250 } = {}) {
+    if (this.cutsceneMusicTrackId || this.cutscenePlayer?.active) return;
     const resolvedTrackId = String(trackId || '').trim();
     if (resolvedTrackId && resolvedTrackId !== this.actorMusicOverrideTrackId && resolvedTrackId !== this.activeMusicTrackId) return;
     this.actorMusicOverrideTrackId = null;
+    const previousFadeDuration = this.musicFadeDuration;
+    this.musicFadeDuration = Math.max(0, Number(fadeMs || 0)) / 1000;
+    this.setActiveMusicTrack(null);
+    this.musicFadeDuration = previousFadeDuration;
+  }
+
+  playCutsceneMidi(trackId, { fadeMs = 120, volume = 1 } = {}) {
+    const resolvedTrackId = String(trackId || '').trim();
+    if (!resolvedTrackId) return;
+    if (!this.getLibrarySong(resolvedTrackId)) return;
+    this.cutsceneMusicTrackId = resolvedTrackId;
+    const previousFadeDuration = this.musicFadeDuration;
+    this.musicFadeDuration = Math.max(0, Number(fadeMs || 0)) / 1000;
+    this.setActiveMusicTrack(resolvedTrackId, { volume, loop: false, restart: true });
+    this.musicFadeDuration = previousFadeDuration;
+  }
+
+  stopCutsceneMidi(trackId = '', { fadeMs = 120 } = {}) {
+    const resolvedTrackId = String(trackId || '').trim();
+    if (resolvedTrackId && resolvedTrackId !== this.cutsceneMusicTrackId && resolvedTrackId !== this.activeMusicTrackId) return;
+    if (!this.cutsceneMusicTrackId && resolvedTrackId && resolvedTrackId !== this.activeMusicTrackId) return;
+    this.cutsceneMusicTrackId = null;
     const previousFadeDuration = this.musicFadeDuration;
     this.musicFadeDuration = Math.max(0, Number(fadeMs || 0)) / 1000;
     this.setActiveMusicTrack(null);
@@ -5702,6 +6106,7 @@ export default class Game {
   }
 
   stopProjectBrowserMusicPreview() {
+    this.projectBrowserMusicPreviewToken += 1;
     if (!this.projectBrowserMusicPreviewPlayer) return;
     this.projectBrowserMusicPreviewPlayer.setFade(0, 0.25);
     this.musicPlayers.push(this.projectBrowserMusicPreviewPlayer);
@@ -5711,17 +6116,31 @@ export default class Game {
   playProjectBrowserMusicPreview(trackId, songData) {
     if (!songData || typeof songData !== 'object') return;
     this.stopProjectBrowserMusicPreview();
-    const player = new MidiSongPlayer(this.audio);
-    player.setSong(songData, trackId || 'preview-track');
-    player.setFade(1, 0.12);
-    this.projectBrowserMusicPreviewPlayer = player;
+    const previewToken = ++this.projectBrowserMusicPreviewToken;
+    Promise.resolve(this.audio?.preloadSongResources?.(songData))
+      .catch(() => null)
+      .then(() => {
+        if (previewToken !== this.projectBrowserMusicPreviewToken) return;
+        const player = new MidiSongPlayer(this.audio);
+        player.setSong(songData, trackId || 'preview-track');
+        player.setFade(1, 0.12);
+        this.projectBrowserMusicPreviewPlayer = player;
+      });
   }
 
   updateMusicZones(dt, tileX, tileY) {
+    if (this.cutsceneMusicTrackId || this.cutscenePlayer?.active) {
+      this.updateActiveMusicPlayers(dt);
+      return;
+    }
     if (!this.actorMusicOverrideTrackId) {
       const zone = this.getMusicZoneAt(tileX, tileY);
       this.setActiveMusicTrack(zone?.track || null);
     }
+    this.updateActiveMusicPlayers(dt);
+  }
+
+  updateActiveMusicPlayers(dt) {
     this.musicPlayers.forEach((player) => player.update(dt));
     this.musicPlayers = this.musicPlayers.filter((player) => !(player.volume <= 0 && player.targetVolume === 0));
   }
@@ -5736,7 +6155,7 @@ export default class Game {
 
 
   resetTriggerState() {
-    this.triggerState = { byId: new Map(), startupPending: new Set() };
+    this.triggerState = { byId: new Map(), startupPending: new Set(), pending: [], pendingIds: new Set() };
     (this.world.triggers || []).forEach((trigger, index) => {
       const id = trigger.id || `trigger-${index}`;
       this.triggerState.byId.set(id, {
@@ -5756,12 +6175,20 @@ export default class Game {
   }
 
   runStartupTriggers() {
+    const candidates = [];
+    this.ensureTriggerSchedulerState();
     (this.world.triggers || []).forEach((trigger, index) => {
       const id = trigger.id || `trigger-${index}`;
-      if (trigger.condition === 'On level start') {
-        this.fireTrigger(trigger, id);
-      }
+      if (trigger.condition !== 'On level start') return;
+      if (!this.triggerState.startupPending.has(id)) return;
+      this.triggerState.startupPending.delete(id);
+      const state = this.getTriggerRuntimeState(id);
+      if (state.firedStartup) return;
+      state.firedStartup = true;
+      this.triggerState.byId.set(id, state);
+      candidates.push({ trigger, triggerId: id });
     });
+    this.dispatchTriggerCandidates(candidates);
   }
 
   getTriggerAtTile(tileX, tileY) {
@@ -5773,9 +6200,10 @@ export default class Game {
 
   updateWorldTriggers(tileX, tileY) {
     const playerRoomIndex = this.world.roomAtTile?.(tileX, tileY);
+    const candidates = [];
     (this.world.triggers || []).forEach((trigger, index) => {
       const id = trigger.id || `trigger-${index}`;
-      const state = this.triggerState.byId.get(id) || { inside: false, roomInside: false, roomClear: false, fired: false, active: false, queue: [] };
+      const state = this.getTriggerRuntimeState(id);
       const [x, y, w, h] = trigger.rect || [0, 0, 0, 0];
       const isInside = tileX >= x && tileX < x + w && tileY >= y && tileY < y + h;
       const triggerRoomIndex = this.world.roomAtTile?.(x, y);
@@ -5790,19 +6218,19 @@ export default class Game {
         });
       }
       if (trigger.condition === 'When player enters this location' && isInside && !state.inside) {
-        this.fireTrigger(trigger, id);
+        candidates.push({ trigger, triggerId: id });
       } else if (trigger.condition === 'When player enters this room' && isInTriggerRoom && !state.roomInside) {
-        this.fireTrigger(trigger, id);
+        candidates.push({ trigger, triggerId: id });
       } else if (trigger.condition === 'When all enemies in this room are dead' && roomClear && !state.roomClear) {
-        this.fireTrigger(trigger, id);
+        candidates.push({ trigger, triggerId: id });
       } else if (trigger.condition === 'When player presses attack' && isInside && this.input.wasPressed('attack')) {
-        this.fireTrigger(trigger, id);
+        candidates.push({ trigger, triggerId: id });
       } else if (trigger.condition === 'When player presses jump' && isInside && this.input.wasPressed('jump')) {
-        this.fireTrigger(trigger, id);
+        candidates.push({ trigger, triggerId: id });
       } else if (trigger.condition === 'When player ducks' && isInside && this.input.wasPressed('down')) {
-        this.fireTrigger(trigger, id);
+        candidates.push({ trigger, triggerId: id });
       } else if (trigger.condition === 'When player holds attack' && isInside && this.input.isDown('attack')) {
-        this.fireTrigger(trigger, id);
+        candidates.push({ trigger, triggerId: id });
       }
       if (trigger.musicTrigger === true && (trigger.stopMusicOnLeave || trigger.stopAllMusicOnLeave) && state.roomInside && !isInTriggerRoom) {
         const musicAction = Array.isArray(trigger.actions)
@@ -5844,6 +6272,7 @@ export default class Game {
       state.roomClear = roomClear;
       this.triggerState.byId.set(id, state);
     });
+    this.dispatchTriggerCandidates(candidates);
   }
 
   isRoomCleared(roomIndex) {
@@ -5971,8 +6400,92 @@ export default class Game {
     });
   }
 
+  ensureTriggerSchedulerState() {
+    if (!this.triggerState) {
+      this.triggerState = { byId: new Map(), startupPending: new Set(), pending: [], pendingIds: new Set() };
+    }
+    if (!this.triggerState.byId) this.triggerState.byId = new Map();
+    if (!this.triggerState.startupPending) this.triggerState.startupPending = new Set();
+    if (!Array.isArray(this.triggerState.pending)) this.triggerState.pending = [];
+    if (!this.triggerState.pendingIds) this.triggerState.pendingIds = new Set();
+  }
+
+  createTriggerRuntimeState() {
+    return {
+      inside: false,
+      roomInside: false,
+      roomClear: false,
+      firedStartup: false,
+      fired: false,
+      active: false,
+      queue: []
+    };
+  }
+
+  getTriggerRuntimeState(triggerId) {
+    this.ensureTriggerSchedulerState();
+    let state = this.triggerState.byId.get(triggerId);
+    if (!state) {
+      state = this.createTriggerRuntimeState();
+      this.triggerState.byId.set(triggerId, state);
+    }
+    return state;
+  }
+
+  triggerHasCutsceneAction(trigger) {
+    return Array.isArray(trigger?.actions) && trigger.actions.some((action) => action?.type === 'play-cutscene');
+  }
+
+  canScheduleTrigger(trigger, triggerId) {
+    const state = this.getTriggerRuntimeState(triggerId);
+    if (trigger?.fireOnce && state.fired) return false;
+    if (state.active) return false;
+    if (this.triggerState.pendingIds.has(triggerId)) return false;
+    return true;
+  }
+
+  queuePendingTrigger(trigger, triggerId) {
+    if (!this.canScheduleTrigger(trigger, triggerId)) return false;
+    this.triggerState.pending.push({ trigger, triggerId });
+    this.triggerState.pendingIds.add(triggerId);
+    return true;
+  }
+
+  dispatchTriggerCandidates(candidates = []) {
+    this.ensureTriggerSchedulerState();
+    const eligible = candidates.filter(({ trigger, triggerId }) => this.canScheduleTrigger(trigger, triggerId));
+    if (!eligible.length) return;
+    const cutscenes = eligible.filter(({ trigger }) => this.triggerHasCutsceneAction(trigger));
+    const others = eligible.filter(({ trigger }) => !this.triggerHasCutsceneAction(trigger));
+    const ordered = [...cutscenes, ...others];
+    if (this.cutscenePlayer?.active) {
+      ordered.forEach(({ trigger, triggerId }) => this.queuePendingTrigger(trigger, triggerId));
+      return;
+    }
+    if (cutscenes.length) {
+      ordered.slice(1).forEach(({ trigger, triggerId }) => this.queuePendingTrigger(trigger, triggerId));
+      this.fireTrigger(cutscenes[0].trigger, cutscenes[0].triggerId);
+      return;
+    }
+    ordered.forEach(({ trigger, triggerId }) => this.fireTrigger(trigger, triggerId));
+  }
+
+  drainPendingTriggers() {
+    this.ensureTriggerSchedulerState();
+    if (this.cutscenePlayer?.active) return;
+    while (this.triggerState.pending.length && !this.cutscenePlayer?.active) {
+      const nextCutsceneIndex = this.triggerState.pending.findIndex(({ trigger }) => this.triggerHasCutsceneAction(trigger));
+      const index = nextCutsceneIndex >= 0 ? nextCutsceneIndex : 0;
+      const [next] = this.triggerState.pending.splice(index, 1);
+      if (!next) return;
+      this.triggerState.pendingIds.delete(next.triggerId);
+      if (!this.canScheduleTrigger(next.trigger, next.triggerId)) continue;
+      this.fireTrigger(next.trigger, next.triggerId);
+    }
+  }
+
   fireTrigger(trigger, triggerId) {
-    const state = this.triggerState.byId.get(triggerId) || { inside: false, active: false, fired: false, queue: [] };
+    const state = this.getTriggerRuntimeState(triggerId);
     if (trigger?.fireOnce && state.fired) return;
     if (state.active) return;
     const queue = Array.isArray(trigger.actions) ? trigger.actions.map((action) => ({ ...action, params: { ...(action.params || {}) } })) : [];
@@ -5997,13 +6510,14 @@ export default class Game {
     if (!state.queue.length) {
       state.active = false;
       this.triggerState.byId.set(triggerId, state);
+      this.drainPendingTriggers();
       return;
     }
     const action = state.queue.shift();
-    this.executeTriggerAction(action, trigger, () => this.processNextTriggerAction(triggerId, trigger));
+    this.executeTriggerAction(action, trigger, () => this.processNextTriggerAction(triggerId, trigger), triggerId);
   }
 
-  executeTriggerAction(action, trigger, onDone) {
+  executeTriggerAction(action, trigger, onDone, triggerId = '') {
     const params = action?.params || {};
     const [x, y, w, h] = trigger?.rect || [0, 0, 1, 1];
     const centerX = (x + Math.floor(w / 2) + 0.5) * this.world.tileSize;
@@ -6110,6 +6624,33 @@ export default class Game {
         onDone
       };
       this.resolveTriggerOverlayImage(this.activeTriggerText.imageDecalId);
+      return;
+    }
+    if (action.type === 'play-cutscene') {
+      const cutsceneId = params.cutsceneId || '';
+      const payload = cutsceneId ? loadProjectFile('cutscenes', cutsceneId) : null;
+      if (!payload?.data) {
+        onDone();
+        return;
+      }
+      let cutsceneFinished = false;
+      const finishCutscene = () => {
+        if (cutsceneFinished) return;
+        cutsceneFinished = true;
+        if (triggerId && this.triggerState?.pendingIds?.has(triggerId)) {
+          this.triggerState.pending = this.triggerState.pending.filter((entry) => entry.triggerId !== triggerId);
+          this.triggerState.pendingIds.delete(triggerId);
+        }
+        this.stopCutsceneMidi('', { fadeMs: params.fadeMs ?? 120 });
+        if (this.state !== 'playing') {
+          this.transitionTo('playing');
+        }
+        onDone();
+      };
+      this.cutscenePlayer.play(payload.data, {
+        skippable: params.skippable !== false,
+        onDone: finishCutscene
+      });
       return;
     }
     if (action.type === 'lock-all-doors' || action.type === 'unlock-all-doors') {
@@ -7271,34 +7812,56 @@ export default class Game {
   }
 
 
+  drawLogicalViewport(ctx, draw) {
+    const width = this.viewport?.width || this.canvas.width;
+    const height = this.viewport?.height || this.canvas.height;
+    const scaleX = this.canvas.width / Math.max(1, width);
+    const scaleY = this.canvas.height / Math.max(1, height);
+    ctx.save();
+    ctx.scale(scaleX, scaleY);
+    draw();
+    ctx.restore();
+  }
+
   _drawByState(delegate = null) {
     const { ctx, canvas } = this;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const handheldLayoutForControls = this.syncMobileControlsViewport();
 
     if (this.state === 'loading') {
-      this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode, {
-        isMobile: this.deviceIsMobile,
-        gamepadConnected: this.gamepadConnected,
-        debugRestartEnabled: false,
-        serverStorageEnabled: isServerStorageEnabled()
+      this.drawLogicalViewport(ctx, () => {
+        const width = this.viewport?.width || canvas.width;
+        const height = this.viewport?.height || canvas.height;
+        this.title.draw(ctx, width, height, this.effectiveInputMode, {
+          isMobile: this.deviceIsMobile,
+          gamepadConnected: this.gamepadConnected,
+          debugRestartEnabled: false,
+          serverStorageEnabled: isServerStorageEnabled(),
+          displayMode: this.displayMode
+        });
+        ctx.save();
+        ctx.fillStyle = '#fff';
+        ctx.font = '16px Courier New';
+        ctx.textAlign = 'center';
+        ctx.fillText('Loading...', width / 2, height - 180);
+        ctx.restore();
       });
-      ctx.save();
-      ctx.fillStyle = '#fff';
-      ctx.font = '16px Courier New';
-      ctx.textAlign = 'center';
-      ctx.fillText('Loading...', canvas.width / 2, canvas.height - 180);
-      ctx.restore();
       return;
     }
 
     if (this.state === 'title') {
-      this.title.draw(ctx, canvas.width, canvas.height, this.effectiveInputMode, {
-        isMobile: this.deviceIsMobile,
-        gamepadConnected: this.gamepadConnected,
-        debugRestartEnabled: this.debugMode,
-        serverStorageEnabled: isServerStorageEnabled()
+      this.drawLogicalViewport(ctx, () => {
+        const width = this.viewport?.width || canvas.width;
+        const height = this.viewport?.height || canvas.height;
+        this.title.draw(ctx, width, height, this.effectiveInputMode, {
+          isMobile: this.deviceIsMobile,
+          gamepadConnected: this.gamepadConnected,
+          debugRestartEnabled: this.debugMode,
+          serverStorageEnabled: isServerStorageEnabled(),
+          displayMode: this.displayMode
+        });
+        this.mobileControls.draw(ctx, this.state);
       });
-      this.mobileControls.draw(ctx, this.state);
       return;
     }
 
@@ -7310,14 +7873,62 @@ export default class Game {
 
     const editorTarget = this._getEditorStateTarget(delegate);
     if (editorTarget) {
+      const dpr = Math.max(1, Number(this.viewport?.dpr || 1));
+      if (dpr !== 1) {
+        ctx.save();
+        ctx.scale(dpr, dpr);
+      }
       const drawArgs = this.editorStateDrawArgs[this.state]?.() ?? [ctx];
       editorTarget.draw?.(...drawArgs);
+      if (dpr !== 1) ctx.restore();
       return;
     }
 
     if (this.state === 'robtersession') {
       this.robterSession.draw(ctx, canvas.width, canvas.height);
       return;
+    }
+
+    const viewportWidth = this.viewport?.width || canvas.width;
+    const viewportHeight = this.viewport?.height || canvas.height;
+    const portraitHandheldLayout = handheldLayoutForControls && viewportHeight > viewportWidth ? handheldLayoutForControls : null;
+    const landscapeHandheldLayout = portraitHandheldLayout ? null : (handheldLayoutForControls && viewportWidth > viewportHeight ? handheldLayoutForControls : null);
+    const handheldLayout = portraitHandheldLayout || landscapeHandheldLayout;
+    const handheldDrawLayout = handheldLayout;
+    const handheldViewportScaled = Boolean(handheldDrawLayout && this.deviceIsMobile);
+    if (handheldViewportScaled) {
+      ctx.save();
+      ctx.scale(
+        canvas.width / Math.max(1, viewportWidth),
+        canvas.height / Math.max(1, viewportHeight)
+      );
+    }
+    const renderWidth = handheldDrawLayout?.renderViewport?.w || (this.deviceIsMobile ? viewportWidth : canvas.width);
+    const renderHeight = handheldDrawLayout?.renderViewport?.h || (this.deviceIsMobile ? viewportHeight : canvas.height);
+    const scaledMobileGameplay = !handheldDrawLayout
+      && this.deviceIsMobile
+      && (canvas.width !== renderWidth || canvas.height !== renderHeight);
+    if (handheldDrawLayout) {
+      if (portraitHandheldLayout) {
+        this.drawPortraitHandheldShell(ctx, handheldDrawLayout);
+      } else {
+        this.drawLandscapeHandheldShell(ctx, handheldDrawLayout);
+      }
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(handheldDrawLayout.screen.x, handheldDrawLayout.screen.y, handheldDrawLayout.screen.w, handheldDrawLayout.screen.h);
+      ctx.clip();
+      ctx.translate(handheldDrawLayout.screen.x, handheldDrawLayout.screen.y);
+      ctx.scale(
+        handheldDrawLayout.screen.w / Math.max(1, renderWidth),
+        handheldDrawLayout.screen.h / Math.max(1, renderHeight)
+      );
+    } else if (scaledMobileGameplay) {
+      ctx.save();
+      ctx.scale(
+        canvas.width / Math.max(1, renderWidth),
+        canvas.height / Math.max(1, renderHeight)
+      );
     }
 
     const shakeX = this.shakeTimer > 0 ? (Math.random() - 0.5) * this.shakeMagnitude : 0;
@@ -7436,7 +8047,7 @@ export default class Game {
       ctx.save();
       ctx.globalAlpha = fade;
       ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, renderWidth, renderHeight);
       ctx.restore();
     }
 
@@ -7445,7 +8056,7 @@ export default class Game {
       ctx.save();
       ctx.globalAlpha = 0.2 + pulse * 0.35;
       ctx.fillStyle = '#ff4b4b';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, renderWidth, renderHeight);
       ctx.restore();
     }
     if (this.ignitirFlashTimer > 0) {
@@ -7453,7 +8064,7 @@ export default class Game {
       ctx.save();
       ctx.globalAlpha = 0.25 + pulse * 0.4;
       ctx.fillStyle = 'rgba(80, 180, 255, 0.9)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, renderWidth, renderHeight);
       ctx.restore();
     }
 
@@ -7469,10 +8080,11 @@ export default class Game {
       weapons: this.getWeaponSlots(),
       activeWeaponIndex: this.activeWeaponIndex,
       ignitirCharge: this.ignitirCharge,
-      ignitirReady: this.ignitirReady
+      ignitirReady: this.ignitirReady,
+      showObjective: false
     });
     const objectiveTarget = this.getObjectiveTarget();
-    const minimapX = canvas.width - 180;
+    const minimapX = renderWidth - 180;
     const minimapY = 20;
     const minimapW = 160;
     const minimapH = 90;
@@ -7481,16 +8093,10 @@ export default class Game {
       showLegend: this.checklist.active
     });
     this.minimapBounds = { x: minimapX, y: minimapY, w: minimapW, h: minimapH };
-    ctx.save();
-    ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
-    ctx.textAlign = 'left';
-    ctx.fillText(`Credits: ${this.player.credits}`, canvas.width - 180, 130);
-    ctx.restore();
     if (this.playtestActive && this.state === 'playing') {
       const buttonWidth = 92;
       const buttonHeight = 36;
-      const buttonX = Math.round((canvas.width - buttonWidth) / 2);
+      const buttonX = Math.round((renderWidth - buttonWidth) / 2);
       const buttonY = 34;
       this.playtestButtonBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
       drawSharedPlayStopButton(ctx, this.playtestButtonBounds, {
@@ -7504,7 +8110,7 @@ export default class Game {
     if (this.playtestActive && (this.state === 'playing' || this.state === 'pause')) {
       const buttonWidth = 120;
       const buttonHeight = 28;
-      const buttonX = canvas.width - 190;
+      const buttonX = renderWidth - 190;
       const buttonY = 152;
       this.companionDebugButtonBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
       ctx.save();
@@ -7521,44 +8127,46 @@ export default class Game {
     } else {
       this.companionDebugButtonBounds = null;
     }
-    this.drawWaypoint(ctx, canvas.width, canvas.height, objectiveTarget);
+    this.drawWaypoint(ctx, renderWidth, renderHeight, objectiveTarget);
 
     if (this.state === 'pixel-preview') {
       ctx.save();
       ctx.fillStyle = 'rgba(0,0,0,0.55)';
-      ctx.fillRect(0, canvas.height - 48, canvas.width, 48);
+      ctx.fillRect(0, renderHeight - 48, renderWidth, 48);
       ctx.fillStyle = '#fff';
       ctx.font = '16px Courier New';
       ctx.textAlign = 'center';
-      ctx.fillText('Preview Mode • Press Attack/Space or Tap to Close', canvas.width / 2, canvas.height - 18);
+      ctx.fillText('Preview Mode • Press Attack/Space or Tap to Close', renderWidth / 2, renderHeight - 18);
       ctx.restore();
     }
 
     if (this.state === 'shop') {
-      this.shopUI.draw(ctx, canvas.width, canvas.height, this.player);
+      this.shopUI.draw(ctx, renderWidth, renderHeight, this.player);
     }
 
     this.minimapBackBounds = null;
     if (this.state === 'pause' && this.minimapSelected) {
-      this.drawMinimapOverlay(ctx, canvas.width, canvas.height, objectiveTarget);
+      this.drawMinimapOverlay(ctx, renderWidth, renderHeight, objectiveTarget);
     } else if (this.state === 'pause') {
-      this.pauseMenu.draw(ctx, canvas.width, canvas.height, this.objective);
+      this.pauseMenu.draw(ctx, renderWidth, renderHeight, this.objective, {
+        confirmExit: this.pauseExitConfirmOpen
+      });
     }
 
 
     if (this.activeTriggerText) {
       const yByPosition = {
-        top: Math.round(canvas.height * 0.18),
-        middle: Math.round(canvas.height * 0.5),
-        bottom: Math.round(canvas.height * 0.82)
+        top: Math.round(renderHeight * 0.18),
+        middle: Math.round(renderHeight * 0.5),
+        bottom: Math.round(renderHeight * 0.82)
       };
       const textY = (yByPosition[this.activeTriggerText.position] || yByPosition.middle) + Number(this.activeTriggerText.offsetY || 0);
-      const centerX = Math.round(canvas.width * 0.5) + Number(this.activeTriggerText.offsetX || 0);
+      const centerX = Math.round(renderWidth * 0.5) + Number(this.activeTriggerText.offsetX || 0);
       ctx.save();
       if (this.activeTriggerText.type === 'image') {
         if (this.activeTriggerText.backgroundColor) {
           ctx.fillStyle = this.activeTriggerText.backgroundColor;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fillRect(0, 0, renderWidth, renderHeight);
         }
         const image = this.resolveTriggerOverlayImage(this.activeTriggerText.imageDecalId);
         const boxW = Math.max(40, Number(this.activeTriggerText.width || 480));
@@ -7576,7 +8184,7 @@ export default class Game {
           ? this.activeTriggerText.revealCount
           : text.length;
         const displayText = text.slice(0, Math.max(0, revealCount));
-        const boxW = Math.min(canvas.width - 40, Math.max(120, Number(this.activeTriggerText.width || Math.max(240, text.length * 11))));
+      const boxW = Math.min(renderWidth - 40, Math.max(120, Number(this.activeTriggerText.width || Math.max(240, text.length * 11))));
         const boxH = Math.max(24, Number(this.activeTriggerText.height || 88));
         const boxX = Math.round(centerX - boxW / 2);
         const boxY = Math.round(textY - boxH / 2);
@@ -7604,9 +8212,9 @@ export default class Game {
       ctx.restore();
     }
 
-    this.systemPrompts.forEach((prompt) => prompt.draw(ctx, canvas.width, canvas.height));
+    this.systemPrompts.forEach((prompt) => prompt.draw(ctx, renderWidth, renderHeight));
     if (this.modalPrompt) {
-      this.modalPrompt.draw(ctx, canvas.width, canvas.height);
+      this.modalPrompt.draw(ctx, renderWidth, renderHeight);
     }
 
     if (this.menuFlashTimer > 0) {
@@ -7614,11 +8222,32 @@ export default class Game {
       ctx.globalAlpha = 0.2;
       ctx.strokeStyle = '#fff';
       ctx.lineWidth = 3;
-      ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+      ctx.strokeRect(10, 10, renderWidth - 20, renderHeight - 20);
       ctx.restore();
     }
 
-    this.mobileControls.draw(ctx, this.state);
+    if (this.cutscenePlayer?.active) {
+      this.cutscenePlayer.draw(ctx, renderWidth, renderHeight);
+    }
+
+    this.drawDisplayModeFilter(ctx, renderWidth, renderHeight);
+    if (handheldDrawLayout || scaledMobileGameplay) ctx.restore();
+    if (this.cutscenePlayer?.active) {
+      // Cutscenes are modal and own the screen until finished or skipped.
+    } else if (handheldLayout) {
+      this.mobileControls.draw(ctx, this.state);
+    } else if (scaledMobileGameplay) {
+      ctx.save();
+      ctx.scale(
+        canvas.width / Math.max(1, renderWidth),
+        canvas.height / Math.max(1, renderHeight)
+      );
+      this.mobileControls.draw(ctx, this.state);
+      ctx.restore();
+    } else {
+      this.mobileControls.draw(ctx, this.state);
+    }
+    if (handheldViewportScaled) ctx.restore();
     this.consoleOverlay.draw(ctx, canvas.width, canvas.height);
     this.checklist.draw(ctx, this, canvas.width, canvas.height);
     this.testHarness.draw(ctx, this, canvas.width, canvas.height);
@@ -7753,73 +8382,22 @@ export default class Game {
       ctx.fillStyle = 'rgba(6, 8, 12, 0.98)';
       ctx.fillRect(this.camera.x, this.camera.y, this.camera.width, this.camera.height);
     }
-    if (this.activeRoomWeather && this.activeRoomIndex !== null && this.activeRoomIndex !== undefined) {
-      const fogProfile = {
-        'weather-storm': { color: 'rgba(120,130,145,0.24)', alpha: 0.24 },
-        'weather-hurricane': { color: 'rgba(102,112,125,0.32)', alpha: 0.32 },
-        'weather-blizzard': { color: 'rgba(245,248,255,0.26)', alpha: 0.26 }
-      }[this.activeRoomWeather];
-      if (fogProfile) {
-        ctx.globalAlpha = fogProfile.alpha * (0.8 + Math.sin(this.worldTime * 0.7) * 0.08);
-        ctx.fillStyle = fogProfile.color;
-        ctx.fillRect(this.camera.x, this.camera.y, this.camera.width, this.camera.height);
-      }
-    }
-    this.ambientParticles.forEach((particle) => {
-      const alpha = clamp01(particle.life / Math.max(0.0001, particle.maxLife));
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = particle.style.color;
-      if (particle.style.frames?.length) {
-        const elapsed = Math.max(0, particle.maxLife - particle.life);
-        const frameDuration = Math.max(16, Number(particle.style.frameDuration || 120));
-        const frameIndex = Math.floor(((elapsed * 1000) / frameDuration + particle.frameOffset * particle.style.frames.length)) % particle.style.frames.length;
-        const frame = particle.style.frames[frameIndex];
-        const scale = Math.max(0.05, particle.size / Math.max(1, Math.max(frame.width, frame.height)));
-        ctx.save();
-        ctx.translate(particle.x, particle.y);
-        ctx.rotate(particle.angle || 0);
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(frame, -frame.width * scale / 2, -frame.height * scale / 2, frame.width * scale, frame.height * scale);
-        ctx.restore();
-      } else if (particle.style.kind === 'gust') {
-        ctx.strokeStyle = particle.style.color;
-        ctx.lineWidth = Math.max(2, particle.size * 0.08);
-        ctx.beginPath();
-        ctx.moveTo(particle.x + particle.size * 0.5, particle.y - particle.size * 0.08);
-        ctx.lineTo(particle.x - particle.size * 0.5, particle.y + particle.size * 0.08);
-        ctx.stroke();
-      } else if (particle.style.vy > 200) {
-        ctx.fillRect(particle.x - 1, particle.y - particle.size, 2, particle.size + 2);
-      } else {
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, Math.max(1.5, particle.size * 0.5), 0, Math.PI * 2);
-        ctx.fill();
-      }
+    const room = this.activeRoomIndex === null || this.activeRoomIndex === undefined ? null : this.world.getRoomBounds(this.activeRoomIndex);
+    const tileSize = this.world.tileSize;
+    const bounds = room
+      ? {
+          x: room.minX * tileSize,
+          y: room.minY * tileSize,
+          w: (room.maxX - room.minX + 1) * tileSize,
+          h: (room.maxY - room.minY + 1) * tileSize
+        }
+      : { x: this.camera.x, y: this.camera.y, w: this.camera.width, h: this.camera.height };
+    drawWeatherParticles(ctx, this.ambientParticles, {
+      weatherType: this.activeRoomWeather,
+      lightning: this.weatherLightning,
+      fogPhase: this.worldTime,
+      bounds
     });
-    if (this.weatherLightning.flash > 0 && this.activeRoomIndex !== null && this.activeRoomIndex !== undefined) {
-      const room = this.world.getRoomBounds(this.activeRoomIndex);
-      if (room) {
-        const tileSize = this.world.tileSize;
-        const left = room.minX * tileSize;
-        const top = room.minY * tileSize;
-        const width = (room.maxX - room.minX + 1) * tileSize;
-        const height = (room.maxY - room.minY + 1) * tileSize;
-        ctx.globalAlpha = this.weatherLightning.flash * 0.2;
-        ctx.fillStyle = '#dff6ff';
-        ctx.fillRect(left, top, width, height);
-        ctx.globalAlpha = this.weatherLightning.flash * 0.95;
-        ctx.strokeStyle = 'rgba(255,255,255,0.95)';
-        ctx.lineWidth = 3;
-        const x = this.weatherLightning.x;
-        ctx.beginPath();
-        ctx.moveTo(x, top);
-        ctx.lineTo(x - 12, top + height * 0.25);
-        ctx.lineTo(x + 6, top + height * 0.45);
-        ctx.lineTo(x - 10, top + height * 0.7);
-        ctx.lineTo(x + 12, top + height * 0.92);
-        ctx.stroke();
-      }
-    }
     ctx.restore();
   }
 
@@ -9012,17 +9590,19 @@ export default class Game {
     ctx.textAlign = 'center';
     ctx.fillText('MAP', width / 2, mapY - 14);
     ctx.font = '12px Courier New';
-    ctx.fillText('Back closes map • Esc resumes', width / 2, mapY + mapHeight + 18);
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillText('D-pad: choose action • R/G: select', width / 2, mapY + mapHeight + 18);
+    ctx.fillStyle = this.minimapActionSelection === 0 ? 'rgba(214,193,96,0.35)' : 'rgba(0,0,0,0.7)';
     ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+    ctx.fillStyle = this.minimapActionSelection === 1 ? 'rgba(170,45,35,0.42)' : 'rgba(0,0,0,0.7)';
     ctx.fillRect(buttonX + buttonWidth + buttonGap, buttonY, buttonWidth, buttonHeight);
-    ctx.strokeStyle = '#fff';
+    ctx.strokeStyle = this.minimapActionSelection === 0 ? '#d6c160' : '#fff';
     ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
+    ctx.strokeStyle = this.minimapActionSelection === 1 ? '#d6c160' : '#fff';
     ctx.strokeRect(buttonX + buttonWidth + buttonGap, buttonY, buttonWidth, buttonHeight);
     ctx.fillStyle = '#fff';
     ctx.font = '14px Courier New';
     ctx.fillText('BACK', buttonX + buttonWidth / 2, buttonY + 21);
-    ctx.fillText('EXIT', buttonX + buttonWidth + buttonGap + buttonWidth / 2, buttonY + 21);
+    ctx.fillText('EXIT TO TITLE', buttonX + buttonWidth + buttonGap + buttonWidth / 2, buttonY + 21);
     ctx.restore();
     this.minimapBackBounds = { x: buttonX, y: buttonY, w: buttonWidth, h: buttonHeight };
     this.minimapExitBounds = {
@@ -9422,12 +10002,7 @@ export default class Game {
       const action = this.title.getActionAt(x, y);
       if (!action) return;
       if (this.title.screen === 'controls') {
-        if (action === 'back') {
-          this.title.setScreen('main');
-        } else {
-          this.setInputMode(action);
-          this.title.setControlsSelectionByMode(this.inputMode);
-        }
+        this.handleTitleControlsAction(action);
         this.audio.ui();
         return;
       }
@@ -9437,9 +10012,7 @@ export default class Game {
         } else if (action === 'project-browser') {
           this.openProjectBrowserFromTitle();
         } else if (action === 'level-editor') {
-          this.enterEditor({ tab: 'tiles' });
-        } else if (action === 'tile-editor') {
-          this.enterPixelStudio({ tilePicker: true });
+          this.enterEditor();
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
         } else if (action === 'actor-editor') {
@@ -9448,6 +10021,8 @@ export default class Game {
           this.enterMidiComposer();
         } else if (action === 'sfx-editor') {
           this.enterSfxEditor();
+        } else if (action === 'cutscene-editor') {
+          this.enterCutsceneEditor();
         } else if (action === 'reset-all') {
           this.resetAllContent();
         }
@@ -9509,9 +10084,13 @@ export default class Game {
     if (this._callEditorStateTarget('handlePointerDown', delegate, payload)) {
       return;
     }
+    const hitPayload = this.mapPortraitHandheldPointerPayload(payload);
+    if (!hitPayload && this.mobileControls.handlePointerDown(payload, this.state)) {
+      return;
+    }
     if (this.state === 'prompt' && this.modalPrompt?.okBounds) {
       const { x, y, w, h } = this.modalPrompt.okBounds;
-      if (payload.x >= x && payload.x <= x + w && payload.y >= y && payload.y <= y + h) {
+      if (hitPayload && hitPayload.x >= x && hitPayload.x <= x + w && hitPayload.y >= y && hitPayload.y <= y + h) {
         this.modalPrompt.dismiss();
         this.transitionTo(this.promptReturnState || 'playing');
         this.audio.ui();
@@ -9524,12 +10103,12 @@ export default class Game {
       this.state === 'pause'
       && this.minimapSelected
       && this.minimapBackBounds
-      && payload.x >= this.minimapBackBounds.x
-      && payload.x <= this.minimapBackBounds.x + this.minimapBackBounds.w
-      && payload.y >= this.minimapBackBounds.y
-      && payload.y <= this.minimapBackBounds.y + this.minimapBackBounds.h
+      && hitPayload
+      && hitPayload.x >= this.minimapBackBounds.x
+      && hitPayload.x <= this.minimapBackBounds.x + this.minimapBackBounds.w
+      && hitPayload.y >= this.minimapBackBounds.y
+      && hitPayload.y <= this.minimapBackBounds.y + this.minimapBackBounds.h
     ) {
-      this.transitionTo('playing');
       this.minimapSelected = false;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
@@ -9540,10 +10119,11 @@ export default class Game {
       this.state === 'pause'
       && this.minimapSelected
       && this.minimapExitBounds
-      && payload.x >= this.minimapExitBounds.x
-      && payload.x <= this.minimapExitBounds.x + this.minimapExitBounds.w
-      && payload.y >= this.minimapExitBounds.y
-      && payload.y <= this.minimapExitBounds.y + this.minimapExitBounds.h
+      && hitPayload
+      && hitPayload.x >= this.minimapExitBounds.x
+      && hitPayload.x <= this.minimapExitBounds.x + this.minimapExitBounds.w
+      && hitPayload.y >= this.minimapExitBounds.y
+      && hitPayload.y <= this.minimapExitBounds.y + this.minimapExitBounds.h
     ) {
       this.transitionTo('title');
       this.minimapSelected = false;
@@ -9555,30 +10135,93 @@ export default class Game {
     if (
       this.state === 'pause'
       && !this.minimapSelected
-      && this.pauseMenu?.exitBounds
-      && payload.x >= this.pauseMenu.exitBounds.x
-      && payload.x <= this.pauseMenu.exitBounds.x + this.pauseMenu.exitBounds.w
-      && payload.y >= this.pauseMenu.exitBounds.y
-      && payload.y <= this.pauseMenu.exitBounds.y + this.pauseMenu.exitBounds.h
+      && this.pauseExitConfirmOpen
+      && Array.isArray(this.pauseMenu?.confirmBounds)
+      && hitPayload
     ) {
-      this.transitionTo('title');
+      const confirmHit = this.pauseMenu.confirmBounds.find((bounds) => (
+        hitPayload.x >= bounds.x
+        && hitPayload.x <= bounds.x + bounds.w
+        && hitPayload.y >= bounds.y
+        && hitPayload.y <= bounds.y + bounds.h
+      ));
+      if (confirmHit) {
+        if (confirmHit.id === 'yes') {
+          this.pauseExitConfirmOpen = false;
+          this.minimapSelected = false;
+          resetMenuRepeatState(this.pauseMenuRepeatState);
+          this.transitionTo('title');
+        } else {
+          this.pauseExitConfirmOpen = false;
+          this.pauseMenu.resetConfirm?.();
+          resetMenuRepeatState(this.pauseMenuRepeatState);
+        }
+        this.audio.menu();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
+    }
+    if (
+      this.state === 'pause'
+      && !this.minimapSelected
+      && !this.pauseExitConfirmOpen
+      && Array.isArray(this.pauseMenu?.itemBounds)
+      && hitPayload
+    ) {
+      const itemHit = this.pauseMenu.itemBounds.find((bounds) => (
+        hitPayload.x >= bounds.x
+        && hitPayload.x <= bounds.x + bounds.w
+        && hitPayload.y >= bounds.y
+        && hitPayload.y <= bounds.y + bounds.h
+      ));
+      if (itemHit) {
+        if (itemHit.id === 'resume') {
+          this.transitionTo('playing');
+          this.minimapSelected = false;
+          resetMenuRepeatState(this.pauseMenuRepeatState);
+        } else if (itemHit.id === 'exit') {
+          this.pauseExitConfirmOpen = true;
+          this.pauseMenu.resetConfirm?.();
+          resetMenuRepeatState(this.pauseMenuRepeatState);
+        }
+        this.audio.menu();
+        this.recordFeedback('menu navigate', 'audio');
+        this.recordFeedback('menu navigate', 'visual');
+        return;
+      }
+    }
+    if (
+      this.state === 'pause'
+      && !this.minimapSelected
+      && !this.pauseExitConfirmOpen
+      && this.pauseMenu?.exitBounds
+      && hitPayload
+      && hitPayload.x >= this.pauseMenu.exitBounds.x
+      && hitPayload.x <= this.pauseMenu.exitBounds.x + this.pauseMenu.exitBounds.w
+      && hitPayload.y >= this.pauseMenu.exitBounds.y
+      && hitPayload.y <= this.pauseMenu.exitBounds.y + this.pauseMenu.exitBounds.h
+    ) {
+      this.pauseExitConfirmOpen = true;
+      this.pauseMenu.resetConfirm?.();
       this.minimapSelected = false;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
       return;
     }
-    if (this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(payload.x, payload.y)) {
+    if (hitPayload && this.playtestActive && this.state === 'playing' && this.isPlaytestButtonHit(hitPayload.x, hitPayload.y)) {
       this.returnToEditorFromPlaytest();
       return;
     }
     if (
       this.playtestActive
       && this.companionDebugButtonBounds
-      && payload.x >= this.companionDebugButtonBounds.x
-      && payload.x <= this.companionDebugButtonBounds.x + this.companionDebugButtonBounds.w
-      && payload.y >= this.companionDebugButtonBounds.y
-      && payload.y <= this.companionDebugButtonBounds.y + this.companionDebugButtonBounds.h
+      && hitPayload
+      && hitPayload.x >= this.companionDebugButtonBounds.x
+      && hitPayload.x <= this.companionDebugButtonBounds.x + this.companionDebugButtonBounds.w
+      && hitPayload.y >= this.companionDebugButtonBounds.y
+      && hitPayload.y <= this.companionDebugButtonBounds.y + this.companionDebugButtonBounds.h
     ) {
       this.debugMode = !this.debugMode;
       this.showCompanionPathDebug = this.debugMode;
@@ -9587,7 +10230,7 @@ export default class Game {
       return;
     }
     if (this.state === 'playing') {
-      const weaponIndex = this.hud.getWeaponButtonAt(payload.x, payload.y);
+      const weaponIndex = hitPayload ? this.hud.getWeaponButtonAt(hitPayload.x, hitPayload.y) : null;
       if (weaponIndex !== null && weaponIndex !== undefined) {
         this.selectWeapon(weaponIndex);
         this.audio.ui();
@@ -9599,14 +10242,16 @@ export default class Game {
     if (
       (this.state === 'playing' || this.state === 'pause')
       && this.minimapBounds
-      && payload.x >= this.minimapBounds.x
-      && payload.x <= this.minimapBounds.x + this.minimapBounds.w
-      && payload.y >= this.minimapBounds.y
-      && payload.y <= this.minimapBounds.y + this.minimapBounds.h
+      && hitPayload
+      && hitPayload.x >= this.minimapBounds.x
+      && hitPayload.x <= this.minimapBounds.x + this.minimapBounds.w
+      && hitPayload.y >= this.minimapBounds.y
+      && hitPayload.y <= this.minimapBounds.y + this.minimapBounds.h
     ) {
       this.transitionTo('pause');
       this.minimapSelected = true;
       this.minimapPan = { x: 0, y: 0 };
+      this.minimapActionSelection = 0;
       this.audio.menu();
       this.recordFeedback('menu navigate', 'audio');
       this.recordFeedback('menu navigate', 'visual');
@@ -9626,12 +10271,7 @@ export default class Game {
         return;
       }
       if (this.title.screen === 'controls') {
-        if (action === 'back') {
-          this.title.setScreen('main');
-        } else {
-          this.setInputMode(action);
-          this.title.setControlsSelectionByMode(this.inputMode);
-        }
+        this.handleTitleControlsAction(action);
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
@@ -9643,9 +10283,7 @@ export default class Game {
         } else if (action === 'project-browser') {
           this.openProjectBrowserFromTitle();
         } else if (action === 'level-editor') {
-          this.enterEditor({ tab: 'tiles' });
-        } else if (action === 'tile-editor') {
-          this.enterPixelStudio({ tilePicker: true });
+          this.enterEditor();
         } else if (action === 'pixel-editor') {
           this.enterPixelStudio();
         } else if (action === 'actor-editor') {
@@ -9654,6 +10292,8 @@ export default class Game {
           this.enterMidiComposer();
         } else if (action === 'sfx-editor') {
           this.enterSfxEditor();
+        } else if (action === 'cutscene-editor') {
+          this.enterCutsceneEditor();
         } else if (action === 'reset-all') {
           this.resetAllContent();
         }
@@ -9842,6 +10482,7 @@ export default class Game {
     this.stateManager.register('midi-editor', createDelegatedState(this, 'midiComposer'));
     this.stateManager.register('sfx-editor', createDelegatedState(this, 'sfxEditor'));
     this.stateManager.register('actor-editor', createDelegatedState(this, 'actorEditor'));
+    this.stateManager.register('cutscene-editor', createDelegatedState(this, 'cutsceneEditor'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }
 

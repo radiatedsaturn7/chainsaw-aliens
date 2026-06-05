@@ -20,6 +20,232 @@ function buildInputAttributes(input, options) {
   }
 }
 
+function lockPageForOverlay() {
+  const previousActive = document.activeElement;
+  const body = document.body;
+  const previousOverflow = body.style.overflow;
+  const previousTouchAction = body.style.touchAction;
+  body.style.overflow = 'hidden';
+  return () => {
+    body.style.overflow = previousOverflow;
+    body.style.touchAction = previousTouchAction;
+    previousActive?.focus?.();
+  };
+}
+
+const OVERLAY_PANEL_SHIELDED_EVENTS = [
+  'pointerdown',
+  'pointerup',
+  'click',
+  'touchstart',
+  'touchend',
+  'touchmove',
+  'mousedown',
+  'mouseup',
+  'pointermove'
+];
+
+function shieldOverlayPanelEvents(panel) {
+  OVERLAY_PANEL_SHIELDED_EVENTS.forEach((type) => {
+    panel.addEventListener(type, (event) => {
+      event.stopPropagation();
+    });
+  });
+}
+
+function createOverlayPanel({
+  title = '',
+  message = '',
+  width = null,
+  maxWidth = 420,
+  className = ''
+} = {}) {
+  const overlay = document.createElement('div');
+  overlay.className = 'shared-text-input-overlay';
+  overlay.tabIndex = -1;
+
+  const panel = document.createElement('div');
+  panel.className = `shared-text-input-panel${className ? ` ${className}` : ''}`;
+  if (Number.isFinite(width) && width > 0) panel.style.width = `${width}px`;
+  if (Number.isFinite(maxWidth) && maxWidth > 0) panel.style.maxWidth = `${maxWidth}px`;
+  shieldOverlayPanelEvents(panel);
+  overlay.appendChild(panel);
+
+  if (title) {
+    const titleEl = document.createElement('h3');
+    titleEl.className = 'shared-text-input-title';
+    titleEl.textContent = title;
+    panel.appendChild(titleEl);
+  }
+
+  if (message) {
+    const bodyEl = document.createElement('div');
+    bodyEl.className = 'shared-text-input-label';
+    bodyEl.textContent = message;
+    panel.appendChild(bodyEl);
+  }
+
+  return { overlay, panel };
+}
+
+function appendActionButton(row, label, className = '') {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `shared-text-input-btn${className ? ` ${className}` : ''}`;
+  button.textContent = label;
+  row.appendChild(button);
+  return button;
+}
+
+export function openProgressOverlay(options = {}) {
+  const {
+    title = 'Processing',
+    message = 'Preparing...',
+    width = null,
+    maxWidth = 460
+  } = options;
+  if (typeof document === 'undefined') {
+    return {
+      update() {},
+      close() {}
+    };
+  }
+
+  const unlock = lockPageForOverlay();
+  const { overlay, panel } = createOverlayPanel({ title, message, width, maxWidth, className: 'multi-field' });
+  const label = panel.querySelector('.shared-text-input-label');
+  const meter = document.createElement('div');
+  meter.className = 'shared-progress-meter';
+  const fill = document.createElement('div');
+  fill.className = 'shared-progress-fill';
+  meter.appendChild(fill);
+  panel.appendChild(meter);
+  getOverlayRoot().appendChild(overlay);
+  overlay.focus({ preventScroll: true });
+
+  let current = 0;
+  let target = 0;
+  let closed = false;
+  const render = () => {
+    current += (target - current) * 0.18;
+    fill.style.width = `${Math.max(0, Math.min(100, current))}%`;
+  };
+  const timer = window.setInterval(render, 80);
+
+  return {
+    update(nextTarget, nextMessage) {
+      if (closed) return;
+      target = Math.max(target, Math.max(0, Math.min(100, Number(nextTarget) || 0)));
+      if (nextMessage && label) label.textContent = nextMessage;
+      render();
+    },
+    close() {
+      if (closed) return;
+      closed = true;
+      window.clearInterval(timer);
+      fill.style.width = '100%';
+      overlay.remove();
+      unlock();
+    }
+  };
+}
+
+export function openChoiceOverlay(options = {}) {
+  const {
+    title = 'Choose an option',
+    message = '',
+    choices = [],
+    cancelText = 'Cancel',
+    width = null,
+    maxWidth = 460
+  } = options;
+  if (typeof document === 'undefined') return Promise.resolve(null);
+  const unlock = lockPageForOverlay();
+  return new Promise((resolve) => {
+    const { overlay, panel } = createOverlayPanel({ title, message, width, maxWidth, className: 'choice' });
+    const list = document.createElement('div');
+    list.className = 'shared-choice-list';
+    panel.appendChild(list);
+
+    const cleanup = (value) => {
+      overlay.remove();
+      unlock();
+      resolve(value);
+    };
+
+    choices.forEach((choice) => {
+      const button = appendActionButton(list, choice.label || choice.value || 'Option', choice.primary ? 'primary' : '');
+      button.addEventListener('click', () => cleanup(choice.value ?? choice.id ?? choice.label));
+    });
+
+    const row = document.createElement('div');
+    row.className = 'shared-text-input-actions';
+    panel.appendChild(row);
+    const cancelBtn = appendActionButton(row, cancelText);
+    cancelBtn.addEventListener('click', () => cleanup(null));
+
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) cleanup(null);
+    });
+    overlay.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        cleanup(null);
+      }
+    });
+
+    getOverlayRoot().appendChild(overlay);
+    overlay.focus({ preventScroll: true });
+  });
+}
+
+export function openConfirmOverlay(options = {}) {
+  const {
+    title = 'Are you sure?',
+    message = '',
+    confirmText = 'Continue',
+    cancelText = 'Cancel',
+    danger = false,
+    width = null,
+    maxWidth = 460
+  } = options;
+  if (typeof document === 'undefined') return Promise.resolve(false);
+  const unlock = lockPageForOverlay();
+  return new Promise((resolve) => {
+    const { overlay, panel } = createOverlayPanel({ title, message, width, maxWidth, className: 'confirm' });
+    const row = document.createElement('div');
+    row.className = 'shared-text-input-actions';
+    panel.appendChild(row);
+    const cancelBtn = appendActionButton(row, cancelText);
+    const okBtn = appendActionButton(row, confirmText, danger ? 'danger' : 'primary');
+
+    const cleanup = (value) => {
+      overlay.remove();
+      unlock();
+      resolve(value);
+    };
+
+    cancelBtn.addEventListener('click', () => cleanup(false));
+    okBtn.addEventListener('click', () => cleanup(true));
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) cleanup(false);
+    });
+    overlay.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        cleanup(false);
+      }
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        cleanup(true);
+      }
+    });
+
+    getOverlayRoot().appendChild(overlay);
+    overlay.focus({ preventScroll: true });
+  });
+}
+
 export function openTextInputOverlay(options = {}) {
   const {
     title = 'Enter value',
@@ -29,28 +255,19 @@ export function openTextInputOverlay(options = {}) {
     confirmText = 'Apply',
     cancelText = 'Cancel',
     inputType = 'text',
+    multiline = false,
+    rows = 6,
     width = null,
     maxWidth = 420,
     top = null,
     left = null
   } = options;
 
-  const previousActive = document.activeElement;
-  const body = document.body;
-  const previousOverflow = body.style.overflow;
-  const previousTouchAction = body.style.touchAction;
-  body.style.overflow = 'hidden';
-  body.style.touchAction = 'none';
+  const unlock = lockPageForOverlay();
 
   return new Promise((resolve) => {
-    const overlay = document.createElement('div');
-    overlay.className = 'shared-text-input-overlay';
-    overlay.tabIndex = -1;
-
-    const panel = document.createElement('div');
-    panel.className = 'shared-text-input-panel';
+    const { overlay, panel } = createOverlayPanel({ title, maxWidth });
     if (Number.isFinite(width) && width > 0) panel.style.width = `${width}px`;
-    if (Number.isFinite(maxWidth) && maxWidth > 0) panel.style.maxWidth = `${maxWidth}px`;
     if (Number.isFinite(top)) {
       panel.style.position = 'fixed';
       panel.style.top = `${top}px`;
@@ -61,12 +278,6 @@ export function openTextInputOverlay(options = {}) {
       panel.style.left = `${left}px`;
       panel.style.transform = 'translateX(-50%)';
     }
-    overlay.appendChild(panel);
-
-    const titleEl = document.createElement('h3');
-    titleEl.className = 'shared-text-input-title';
-    titleEl.textContent = title;
-    panel.appendChild(titleEl);
 
     if (label) {
       const labelEl = document.createElement('div');
@@ -75,34 +286,29 @@ export function openTextInputOverlay(options = {}) {
       panel.appendChild(labelEl);
     }
 
-    const input = document.createElement('input');
+    const useTextarea = multiline || inputType === 'textarea' || inputType === 'multiline';
+    const input = document.createElement(useTextarea ? 'textarea' : 'input');
     input.className = 'shared-text-input-field';
     input.value = String(initialValue ?? '');
     input.placeholder = placeholder;
-    buildInputAttributes(input, { inputType, ...options });
+    if (useTextarea) {
+      input.rows = Math.max(3, Math.round(Number(rows) || 6));
+      input.spellcheck = false;
+    } else {
+      buildInputAttributes(input, { inputType, ...options });
+    }
     panel.appendChild(input);
 
     const buttonRow = document.createElement('div');
     buttonRow.className = 'shared-text-input-actions';
     panel.appendChild(buttonRow);
 
-    const cancelBtn = document.createElement('button');
-    cancelBtn.type = 'button';
-    cancelBtn.className = 'shared-text-input-btn';
-    cancelBtn.textContent = cancelText;
-    buttonRow.appendChild(cancelBtn);
-
-    const okBtn = document.createElement('button');
-    okBtn.type = 'button';
-    okBtn.className = 'shared-text-input-btn primary';
-    okBtn.textContent = confirmText;
-    buttonRow.appendChild(okBtn);
+    const cancelBtn = appendActionButton(buttonRow, cancelText);
+    const okBtn = appendActionButton(buttonRow, confirmText, 'primary');
 
     const cleanup = (value) => {
       overlay.remove();
-      body.style.overflow = previousOverflow;
-      body.style.touchAction = previousTouchAction;
-      previousActive?.focus?.();
+      unlock();
       resolve(value);
     };
 
@@ -118,7 +324,7 @@ export function openTextInputOverlay(options = {}) {
         event.preventDefault();
         cleanup(null);
       }
-      if (event.key === 'Enter') {
+      if (event.key === 'Enter' && (!useTextarea || event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         cleanup(input.value);
       }
@@ -141,29 +347,11 @@ export function openMultiNumberInputOverlay(options = {}) {
     maxWidth = 460
   } = options;
 
-  const previousActive = document.activeElement;
-  const body = document.body;
-  const previousOverflow = body.style.overflow;
-  const previousTouchAction = body.style.touchAction;
-  body.style.overflow = 'hidden';
-  body.style.touchAction = 'none';
+  const unlock = lockPageForOverlay();
 
   return new Promise((resolve) => {
-    const overlay = document.createElement('div');
-    overlay.className = 'shared-text-input-overlay';
-    overlay.tabIndex = -1;
-
-    const panel = document.createElement('div');
-    panel.className = 'shared-text-input-panel';
-    panel.classList.add('multi-field');
+    const { overlay, panel } = createOverlayPanel({ title, maxWidth, className: 'multi-field' });
     if (Number.isFinite(width) && width > 0) panel.style.width = `${width}px`;
-    if (Number.isFinite(maxWidth) && maxWidth > 0) panel.style.maxWidth = `${maxWidth}px`;
-    overlay.appendChild(panel);
-
-    const titleEl = document.createElement('h3');
-    titleEl.className = 'shared-text-input-title';
-    titleEl.textContent = title;
-    panel.appendChild(titleEl);
 
     const inputMap = new Map();
     fields.forEach((field) => {
@@ -178,11 +366,11 @@ export function openMultiNumberInputOverlay(options = {}) {
       const input = document.createElement('input');
       input.className = 'shared-text-input-field';
       input.type = 'text';
-      input.inputMode = field.integer ? 'numeric' : 'decimal';
+      input.inputMode = 'decimal';
       input.value = String(field.initialValue ?? '');
       input.autocomplete = 'off';
       if (field.integer) {
-        input.pattern = '[0-9]*';
+        input.pattern = '-?[0-9]*';
       }
       row.appendChild(input);
 
@@ -194,23 +382,12 @@ export function openMultiNumberInputOverlay(options = {}) {
     buttonRow.className = 'shared-text-input-actions';
     panel.appendChild(buttonRow);
 
-    const cancelBtn = document.createElement('button');
-    cancelBtn.type = 'button';
-    cancelBtn.className = 'shared-text-input-btn';
-    cancelBtn.textContent = cancelText;
-    buttonRow.appendChild(cancelBtn);
-
-    const okBtn = document.createElement('button');
-    okBtn.type = 'button';
-    okBtn.className = 'shared-text-input-btn primary';
-    okBtn.textContent = confirmText;
-    buttonRow.appendChild(okBtn);
+    const cancelBtn = appendActionButton(buttonRow, cancelText);
+    const okBtn = appendActionButton(buttonRow, confirmText, 'primary');
 
     const cleanup = (value) => {
       overlay.remove();
-      body.style.overflow = previousOverflow;
-      body.style.touchAction = previousTouchAction;
-      previousActive?.focus?.();
+      unlock();
       resolve(value);
     };
 

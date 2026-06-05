@@ -47,6 +47,7 @@ export default class RecordModeLayout {
       keyboardStartOctave: 4
     };
     this.instrumentDropdown = null;
+    this.hideInstrumentConfig = false;
   }
 
   setDevice(device) {
@@ -152,7 +153,7 @@ export default class RecordModeLayout {
         y: touchY,
         w: touchW,
         h: touchH
-      });
+      }, config.touchDensity || {});
     }
     return this.bounds;
   }
@@ -164,7 +165,9 @@ export default class RecordModeLayout {
     selector,
     stickIndicators,
     nowPlaying,
-    nowPlayingPlacement = 'instrument'
+    nowPlayingPlacement = 'instrument',
+    showSettingsRail = true,
+    hideInstrumentConfig = false
   }) {
     const { instrument } = this.bounds;
     if (!instrument) return;
@@ -175,7 +178,11 @@ export default class RecordModeLayout {
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.strokeRect(instrument.x, instrument.y, instrument.w, instrument.h);
 
-    this.drawSettingButtons(ctx, isPlaying, isRecording);
+    if (showSettingsRail) {
+      this.drawSettingButtons(ctx, isPlaying, isRecording);
+    } else {
+      this.bounds.settingsButtons = [];
+    }
 
     if (showGamepadHints) {
       this.drawGamepadHints(ctx);
@@ -187,6 +194,7 @@ export default class RecordModeLayout {
       this.drawRadialSelector(ctx, selector);
     }
 
+    this.hideInstrumentConfig = hideInstrumentConfig;
     this.drawStickIndicators(ctx, stickIndicators);
     this.drawNowPlayingModal(ctx, nowPlaying, nowPlayingPlacement);
     this.drawInstrumentModal(ctx);
@@ -255,6 +263,10 @@ export default class RecordModeLayout {
   drawInstrumentConfig(ctx, modalX, modalY, modalW, startY) {
     this.bounds.instrumentConfigButtons = [];
     this.bounds.instrumentDropdownItems = [];
+    if (this.hideInstrumentConfig) {
+      this.instrumentDropdown = null;
+      return;
+    }
     const configX = modalX + 16;
     const configW = modalW - 32;
     const rowH = Math.max(30, Math.min(38, this.header.rowH));
@@ -406,7 +418,7 @@ export default class RecordModeLayout {
     const columns = Math.max(1, Math.floor((modalW - 32 + gap) / (minButtonW + gap)));
     const rows = Math.ceil(instruments.length / columns);
     const titleH = 34;
-    const configRows = this.instrument === 'guitar' ? 4 : this.instrument === 'bass' ? 3 : this.instrument === 'keyboard' ? 2 : 0;
+    const configRows = this.hideInstrumentConfig ? 0 : this.instrument === 'guitar' ? 4 : this.instrument === 'bass' ? 3 : this.instrument === 'keyboard' ? 2 : 0;
     const configH = configRows ? 22 + configRows * (this.header.rowH + gap) + 8 : 0;
     const modalContentH = titleH + rows * this.header.rowH + Math.max(0, rows - 1) * gap + configH + 24;
     const modalH = Math.min(instrument.h - 24, Math.max(150, modalContentH));

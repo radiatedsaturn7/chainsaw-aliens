@@ -1,0 +1,497 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+
+import ActorEditor, { buildActorPortraitMenuModel } from '../../src/ui/ActorEditor.js';
+import { buildLevelMobileLandscapeRootTabs, buildLevelPortraitMenuModel, shouldShowLevelEditorTopPlaytestButton } from '../../src/ui/LevelEditorCore.js';
+import { buildMidiPortraitMenuModel } from '../../src/ui/MidiComposerCore.js';
+import {
+  buildPixelPortraitCanvasActionGroups,
+  buildPixelMobileEditorLayout,
+  buildPixelPortraitCanvasActions,
+  buildPixelPortraitFrameActionGroups,
+  buildPixelPortraitFrameActions,
+  buildPixelPortraitLayerActionGroups,
+  buildPixelPortraitLayerActions,
+  buildPixelPortraitMenuModel,
+  buildPixelPortraitPaletteRailEntries,
+  buildPixelPortraitSelectionActionGroups,
+  buildPixelPortraitSelectionActions,
+  buildPixelQuantizedHueSamples,
+  buildPixelQuantizedSvSamples,
+  getPixelQuantizedHueSampleAt,
+  getPixelQuantizedSvSampleAt,
+  getPixelPortraitActionGridMetrics,
+  getPixelPortraitToolGridMetrics,
+  getPixelPortraitToolLabel,
+  quantizePixelPaletteRgb
+} from '../../src/ui/PixelStudio.js';
+import PixelStudio from '../../src/ui/PixelStudio.js';
+import { buildSfxPortraitMenuModel } from '../../src/ui/SfxEditor.js';
+import {
+  assertSharedPortraitRailActionCount,
+  getSharedPortraitRailActionButtons,
+  getSharedPortraitMultiRowTabLayout,
+  SHARED_PORTRAIT_RAIL_ACTION_COUNT
+} from '../../src/ui/uiSuite.js';
+import { readFileSync } from 'node:fs';
+
+const pixelStudioSource = readFileSync(new URL('../../src/ui/PixelStudio.js', import.meta.url), 'utf8');
+
+test('Pixel portrait root menu exposes every major panel and file utility', () => {
+  const model = buildPixelPortraitMenuModel();
+
+  assert.deepEqual(model.rootTabs.map((tab) => tab.id), ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames']);
+  assert.deepEqual(model.toolTabs.map((tab) => tab.id), ['draw', 'select', 'tools']);
+  assert.deepEqual(model.fileHiddenIds, []);
+  assert.ok(model.canvasUtilityIds.includes('copy-image'));
+  assert.ok(model.canvasUtilityIds.includes('paste-image'));
+  assert.ok(model.canvasUtilityIds.includes('import-image'));
+  assert.ok(model.canvasUtilityIds.includes('canvas-export'));
+  assert.equal(model.canvasUtilityIds.includes('sprite-sheet'), false);
+  assert.equal(model.canvasUtilityIds.includes('export-gif'), false);
+  assert.equal(model.canvasUtilityIds.includes('controls'), false);
+  assert.deepEqual(model.bottomRailActions, ['menu', 'undo', 'redo', 'brush']);
+  assertSharedPortraitRailActionCount(model.bottomRailActions.map((id) => ({ id })), { editor: 'pixel' });
+});
+
+test('Pixel portrait menu root has enough height for a two-row full-feature tab strip', () => {
+  const tabs = buildPixelPortraitMenuModel().rootTabs;
+
+  for (const [width, height] of [[360, 740], [390, 844], [414, 896]]) {
+    const open = buildPixelMobileEditorLayout(width, height, {
+      isMobile: true,
+      menuSheetOpen: true
+    });
+    const layout = getSharedPortraitMultiRowTabLayout(open.rootRail, tabs, {
+      minButtonWidth: 64,
+      maxButtonWidth: 112,
+      maxRows: 2,
+      balanceLastRow: true
+    });
+
+    assert.equal(open.orientation, 'portrait');
+    assert.equal(layout.buttons.length, tabs.length);
+    assert.equal(layout.rows, 2);
+    assert.equal(layout.fits, true);
+    assert.ok(open.subRail.y + open.subRail.h <= open.rootRail.y);
+  }
+});
+
+test('Pixel portrait tool menus use compact labels and multi-column grids', () => {
+  assert.equal(getPixelPortraitToolLabel({ id: 'select-rect', name: 'Rect Select' }), 'Rect');
+  assert.equal(getPixelPortraitToolLabel({ id: 'select-ellipse', name: 'Oval Select' }), 'Oval');
+  assert.equal(getPixelPortraitToolLabel({ id: 'color-replace', name: 'Color Replace' }), 'Replace');
+  assert.equal(getPixelPortraitToolLabel({ id: 'pencil', name: 'Pencil' }), 'Pencil');
+
+  const narrow = getPixelPortraitToolGridMetrics(344, 260, 7, { minColumnWidth: 82 });
+  assert.equal(narrow.columns, 3);
+  assert.ok(narrow.cellWidth >= 82);
+  assert.ok(narrow.visibleRows >= 4);
+  assert.equal(narrow.maxScroll, 0);
+
+  const cramped = getPixelPortraitToolGridMetrics(188, 112, 7, { minColumnWidth: 82 });
+  assert.equal(cramped.columns, 2);
+  assert.ok(cramped.maxScroll > 0);
+});
+
+test('Pixel portrait menu touch scroll starts before drawer button taps', () => {
+  const pointerDownIndex = pixelStudioSource.indexOf('  handlePointerDown(payload)');
+  const pointerDownBody = pixelStudioSource.slice(pointerDownIndex, pixelStudioSource.indexOf('  handlePointerMove(payload)', pointerDownIndex));
+  const scrollStartIndex = pointerDownBody.indexOf('this.startMenuScrollDrag(payload)');
+  const menuOpenIndex = pointerDownBody.indexOf('this.menuOpen || this.controlsOverlayOpen');
+  const drawerIndex = pointerDownBody.indexOf('this.mobileDrawerBounds');
+
+  assert.ok(scrollStartIndex > 0);
+  assert.ok(scrollStartIndex < menuOpenIndex);
+  assert.ok(scrollStartIndex < drawerIndex);
+  assert.equal(pixelStudioSource.includes("if (!drag.moved && drag.hitAction) drag.hitAction();"), true);
+  assert.equal(pixelStudioSource.includes("'tilePicker'].includes(this.menuScrollDrag.scrollGroup)"), true);
+});
+
+test('Pixel portrait canvas, layer, and frame menus use drill-down action groups', () => {
+  const canvasActions = buildPixelPortraitCanvasActions().map((entry) => entry.id);
+  const layerActions = buildPixelPortraitLayerActions().map((entry) => entry.id);
+  const frameActions = buildPixelPortraitFrameActions().map((entry) => entry.id);
+  const canvasGroups = buildPixelPortraitCanvasActionGroups();
+  const layerGroups = buildPixelPortraitLayerActionGroups();
+  const frameGroups = buildPixelPortraitFrameActionGroups();
+
+  assert.deepEqual(canvasActions, [
+    'canvas-view',
+    'canvas-bg',
+    'canvas-transform',
+    'canvas-export'
+  ]);
+  assert.deepEqual(layerActions, ['layer-add', 'layers-manage', 'layers-order']);
+  assert.deepEqual(frameActions, ['frame-add', 'frames-manage', 'frames-playback']);
+  assert.deepEqual(canvasGroups['canvas-view'].actions.map((entry) => entry.id), ['grid', 'wrap', 'sym-h', 'sym-v', 'tile-preview']);
+  assert.deepEqual(canvasGroups['canvas-transform'].actions.map((entry) => entry.id), ['resize', 'scale', 'crop', 'offset']);
+  assert.deepEqual(layerGroups['layers-manage'].actions.map((entry) => entry.id), ['layer-duplicate', 'layer-delete', 'layer-rename', 'layer-visibility']);
+  assert.deepEqual(layerGroups['layers-order'].actions.map((entry) => entry.id), ['layer-up', 'layer-down', 'layer-merge-up', 'layer-merge-down', 'layer-flatten']);
+  assert.deepEqual(frameGroups['frames-manage'].actions.map((entry) => entry.id), ['frame-duplicate', 'frame-delete', 'frame-delay', 'frame-loop', 'frame-up', 'frame-down']);
+  assert.deepEqual(frameGroups['frames-playback'].actions.map((entry) => entry.id), ['frame-play', 'frame-step', 'frame-rewind']);
+
+  const metrics = getPixelPortraitActionGridMetrics(344, canvasActions.length, { minColumnWidth: 82 });
+  assert.equal(metrics.columns, 3);
+  assert.ok(metrics.cellWidth >= 82);
+  assert.equal(metrics.rows, 2);
+});
+
+test('Pixel portrait tool options and management panels avoid false scrollbars and hidden actions', () => {
+  const toolOptionsIndex = pixelStudioSource.indexOf('  drawToolOptions(ctx, x, y, options = {})');
+  const toolOptionsBody = pixelStudioSource.slice(toolOptionsIndex, pixelStudioSource.indexOf('  drawHueSaturationMobileRail', toolOptionsIndex));
+  const layersIndex = pixelStudioSource.indexOf('  drawLayersPanel(ctx, x, y, w, h, options = {})');
+  const layersBody = pixelStudioSource.slice(layersIndex, pixelStudioSource.indexOf('  drawCanvasArea', layersIndex));
+  const framesIndex = pixelStudioSource.indexOf('  drawFramesPanel(ctx, x, y, w, h, options = {})');
+  const framesBody = pixelStudioSource.slice(framesIndex, pixelStudioSource.indexOf('  drawGamepadHints', framesIndex));
+  const brushPreviewIndex = pixelStudioSource.indexOf('  drawBrushPreviewChip(ctx, bounds)');
+  const brushPreviewBody = pixelStudioSource.slice(brushPreviewIndex, pixelStudioSource.indexOf('  updateBrushPickerSliderFromX', brushPreviewIndex));
+
+  assert.equal(toolOptionsBody.includes('const bodyH = Math.max(28, y + panelHeight - bodyY - 8);'), true);
+  assert.equal(toolOptionsBody.includes('const startY = offsetY;'), true);
+  assert.equal(pixelStudioSource.includes('drawPortraitToolOptionButton'), true);
+  assert.equal(pixelStudioSource.includes('drawPortraitToolOptionStepper'), true);
+  assert.equal(toolOptionsBody.includes('drawPortraitToolOptionButton(ctx, x, offsetY, this.toolOptions.shapeFill'), true);
+  assert.equal(toolOptionsBody.includes("drawPortraitToolOptionStepper(ctx, x, offsetY, 'Tolerance'"), true);
+  assert.equal(toolOptionsBody.includes("drawPortraitToolOptionStepper(ctx, x, offsetY, 'Strength'"), true);
+  assert.equal(toolOptionsBody.includes('const bodyY = y + (isMobile ? 8 : 14);'), true);
+  assert.equal(pixelStudioSource.includes('isBrushAdjustableTool'), true);
+  assert.equal(pixelStudioSource.includes("actions.push({ id: 'brush', label: '', primary: true, onClick: () => this.openBrushPicker('size') });"), true);
+  assert.equal(pixelStudioSource.includes("this.drawBrushPreviewChip(ctx, {"), true);
+  assert.equal(pixelStudioSource.includes("focusLabels[this.brushPickerFocus]"), true);
+  assert.equal(pixelStudioSource.includes("Brushes / ${focusLabel}"), true);
+  assert.equal(pixelStudioSource.includes('const DEFAULT_BRUSH_SIZE = 7;'), true);
+  assert.equal(pixelStudioSource.includes('brushSize: DEFAULT_BRUSH_SIZE'), true);
+  assert.equal(pixelStudioSource.includes('brushHardness: 1'), true);
+  assert.equal(pixelStudioSource.includes('refreshDefaultBrushProfiles({ onlyStale: true })'), true);
+  assert.equal(pixelStudioSource.includes('Brush Settings'), true);
+  assert.equal(pixelStudioSource.includes("this.openBrushPicker('size')"), true);
+  assert.equal(pixelStudioSource.includes('Shape: ${this.toolOptions.brushShape}'), false);
+  assert.equal(pixelStudioSource.includes('Size: ${Math.round(this.toolOptions.brushSize)}px'), false);
+  assert.equal(pixelStudioSource.includes('Opacity ${Math.round((this.toolOptions.brushOpacity ?? 1) * 100)}%'), false);
+  assert.equal(pixelStudioSource.includes('Hardness ${Math.round((this.toolOptions.brushHardness ?? 0) * 100)}%'), false);
+  assert.equal(pixelStudioSource.includes('Falloff ${Math.round((this.toolOptions.brushFalloff ?? 0) * 100)}%'), false);
+  assert.equal(brushPreviewBody.includes('${Math.round(this.toolOptions.brushSize)}px'), false);
+  assert.equal(pixelStudioSource.includes("this.pixelPortraitSubpanel === 'tool-options'"), true);
+  assert.equal(pixelStudioSource.includes("this.openPixelPortraitSubpanel('tool-options')"), true);
+  assert.equal(pixelStudioSource.includes('brushOpacity: this.toolOptions.brushOpacity'), true);
+  assert.equal(pixelStudioSource.includes('brushHardness: this.toolOptions.brushHardness'), true);
+  assert.equal(pixelStudioSource.includes('brushFalloff: this.toolOptions.brushFalloff'), true);
+  assert.equal(layersBody.includes('buildPixelPortraitLayerActionGroups()'), true);
+  assert.equal(layersBody.includes('this.layerListMeta = portrait'), true);
+  assert.equal(framesBody.includes('buildPixelPortraitFrameActionGroups()'), true);
+  assert.equal(framesBody.includes('this.frameListMeta = portrait'), true);
+  assert.equal(framesBody.includes('playbackRailH'), true);
+  assert.equal(framesBody.includes('drawPortraitFramePlaybackRail'), true);
+  assert.equal(pixelStudioSource.includes('stepAnimationFrame()'), true);
+  assert.equal(pixelStudioSource.includes('rewindAnimationFrames()'), true);
+  assert.equal(pixelStudioSource.includes("scrollGroup: 'layers'"), true);
+  assert.equal(pixelStudioSource.includes("scrollGroup: 'frames'"), true);
+});
+
+test('Pixel portrait selection actions drill down and keep paste visible', () => {
+  const rootActions = buildPixelPortraitSelectionActions().map((entry) => entry.id);
+  const groups = buildPixelPortraitSelectionActionGroups();
+
+  assert.deepEqual(rootActions, ['selection-mode', 'selection-clipboard', 'selection-select', 'selection-transform-tools']);
+  assert.equal(buildPixelPortraitSelectionActions().find((entry) => entry.id === 'selection-transform-tools')?.label, 'Tools');
+  assert.deepEqual(groups['selection-mode'].actions.map((entry) => entry.id), ['selection-replace', 'selection-add', 'selection-subtract']);
+  assert.deepEqual(groups['selection-clipboard'].actions.map((entry) => entry.id), ['selection-paste', 'selection-copy', 'selection-cut', 'selection-delete']);
+  assert.deepEqual(groups['selection-transform-tools'].actions.map((entry) => entry.id), ['selection-transform', 'selection-flip', 'selection-rotate', 'selection-skew', 'selection-stretch']);
+  assert.equal(pixelStudioSource.includes("title: 'Selection'"), false);
+  assert.equal(pixelStudioSource.includes("disabled: !hasOptions"), true);
+  assert.equal(pixelStudioSource.includes('drawMobileSelectionActionRail'), true);
+  assert.equal(pixelStudioSource.includes('drawMobileSelectionOptionsSheet'), true);
+  assert.equal(pixelStudioSource.includes("ctx.fillText('Selection Actions'"), false);
+  assert.equal(pixelStudioSource.includes("ctx.fillText(`Palette: ${this.currentPalette.name}`"), true);
+  assert.equal(pixelStudioSource.includes("if (!isMobile) {\n      ctx.fillText(`Palette: ${this.currentPalette.name}`"), true);
+  assert.equal(pixelStudioSource.includes('Mode: Eyedropper'), false);
+  assert.equal(pixelStudioSource.includes("label: entry.id === 'selection-transform' ? 'Trans' : entry.label"), true);
+  assert.equal(pixelStudioSource.includes("this.leftPanelTab === 'select' || this.isSelectionToolActive()"), true);
+  assert.equal(pixelStudioSource.includes('buildPixelPortraitSelectionActions()'), true);
+  assert.equal(pixelStudioSource.includes("this.drawButton(ctx, closeBounds, 'Close'"), true);
+});
+
+test('Pixel portrait palette rail uses recent swatches and palette button', () => {
+  const entries = buildPixelPortraitPaletteRailEntries([7, 2, 7, 1, 8, 0], 8);
+
+  assert.deepEqual(entries, [
+    { id: 'recent-7', type: 'swatch', index: 7 },
+    { id: 'recent-2', type: 'swatch', index: 2 },
+    { id: 'recent-1', type: 'swatch', index: 1 },
+    { id: 'recent-0', type: 'swatch', index: 0 },
+    { id: 'palette', type: 'button', label: 'Palette' }
+  ]);
+  assert.equal(pixelStudioSource.includes('buildPixelPortraitPaletteRailEntries(this.recentPaletteIndices'), true);
+  assert.equal(pixelStudioSource.includes("this.drawButton(ctx, moreBounds, 'Palette'"), true);
+});
+
+test('Pixel palette quantization snaps exact RGB values', () => {
+  assert.deepEqual(quantizePixelPaletteRgb({ r: 255, g: 0, b: 1 }, 32), { r: 255, g: 0, b: 0 });
+  assert.deepEqual(quantizePixelPaletteRgb({ r: 250, g: 10, b: 10 }, 8), { r: 255, g: 0, b: 0 });
+  assert.equal(pixelStudioSource.includes('this.applyPaletteDraftQuantization();'), true);
+  assert.equal(pixelStudioSource.includes('const hex = this.rgbToHex(this.paletteColorDraft.r, this.paletteColorDraft.g, this.paletteColorDraft.b);'), true);
+});
+
+test('Pixel palette picker persists quantization and renders quantized samples', () => {
+  const validChannel = (value) => value === quantizePixelPaletteRgb({ r: value, g: value, b: value }, 8).r;
+  const hueSamples = buildPixelQuantizedHueSamples(8);
+  const svSamples = buildPixelQuantizedSvSamples(0, 8);
+
+  assert.equal(hueSamples.length, 8);
+  assert.equal(svSamples.size, 8);
+  for (const sample of hueSamples) {
+    assert.equal(validChannel(sample.rgb.r), true);
+    assert.equal(validChannel(sample.rgb.g), true);
+    assert.equal(validChannel(sample.rgb.b), true);
+  }
+  for (const sample of svSamples.samples) {
+    assert.equal(validChannel(sample.rgb.r), true);
+    assert.equal(validChannel(sample.rgb.g), true);
+    assert.equal(validChannel(sample.rgb.b), true);
+  }
+  assert.equal(pixelStudioSource.includes('this.paletteQuantization = 32;'), true);
+  assert.equal(pixelStudioSource.includes('quantization: this.paletteQuantization || 32'), true);
+  assert.equal(pixelStudioSource.includes('this.paletteQuantization = next;'), true);
+  assert.equal(pixelStudioSource.includes('buildPixelQuantizedHueSamples(quantizationLevels)'), true);
+  assert.equal(pixelStudioSource.includes('buildPixelQuantizedSvSamples(displayHue, quantizationLevels)'), true);
+  assert.equal(pixelStudioSource.includes('setPaletteDraftFromSvPointer'), true);
+  assert.equal(pixelStudioSource.includes('setPaletteDraftFromHuePointer'), true);
+  assert.equal(pixelStudioSource.includes('previewBounds'), true);
+});
+
+test('Pixel palette picker selects from the same quantized samples it renders', () => {
+  const validChannel = (value) => value === quantizePixelPaletteRgb({ r: value, g: value, b: value }, 8).r;
+  const hueSample = getPixelQuantizedHueSampleAt(0.51, 8);
+  const svSample = getPixelQuantizedSvSampleAt(hueSample.h, 0.49, 0.72, 8);
+
+  assert.equal(validChannel(hueSample.rgb.r), true);
+  assert.equal(validChannel(hueSample.rgb.g), true);
+  assert.equal(validChannel(hueSample.rgb.b), true);
+  assert.equal(validChannel(svSample.rgb.r), true);
+  assert.equal(validChannel(svSample.rgb.g), true);
+  assert.equal(validChannel(svSample.rgb.b), true);
+  assert.equal(Number.isInteger(svSample.sx), true);
+  assert.equal(Number.isInteger(svSample.vy), true);
+  assert.equal(pixelStudioSource.includes('const sample = getPixelQuantizedSvSampleAt'), true);
+  assert.equal(pixelStudioSource.includes('const sample = getPixelQuantizedHueSampleAt'), true);
+});
+
+test('Pixel palette picker preserves selected hue when choosing neutral gradient colors', () => {
+  const studio = Object.create(PixelStudio.prototype);
+  studio.paletteColorDraft = {
+    h: 225,
+    displayHue: 225,
+    s: 1,
+    v: 1,
+    r: 0,
+    g: 73,
+    b: 255,
+    quantization: 8
+  };
+
+  studio.setPaletteDraftFromSvPointer(0, 0, { x: 0, y: 0, w: 100, h: 100 });
+  assert.deepEqual(
+    { r: studio.paletteColorDraft.r, g: studio.paletteColorDraft.g, b: studio.paletteColorDraft.b },
+    { r: 255, g: 255, b: 255 }
+  );
+  assert.equal(Math.round(studio.paletteColorDraft.displayHue), 225);
+  assert.equal(Math.round(studio.paletteColorDraft.h), 225);
+
+  studio.paletteColorDraft.r = 0;
+  studio.paletteColorDraft.g = 73;
+  studio.paletteColorDraft.b = 255;
+  studio.syncPaletteDraftFromRgb();
+  assert.notEqual(Math.round(studio.paletteColorDraft.displayHue), 225);
+  assert.ok(studio.paletteColorDraft.s > 0);
+});
+
+function intersects(a, b) {
+  if (!a || !b) return false;
+  return a.x < b.x + b.w
+    && a.x + a.w > b.x
+    && a.y < b.y + b.h
+    && a.y + a.h > b.y;
+}
+
+test('Pixel mobile landscape keeps palette and toolbar off the canvas', () => {
+  for (const [width, height] of [[740, 360], [844, 390], [932, 430]]) {
+    const layout = buildPixelMobileEditorLayout(width, height, {
+      isMobile: true,
+      drawerOpen: false
+    });
+
+    assert.equal(layout.orientation, 'landscape');
+    assert.equal(layout.paletteStrip, null);
+    assert.equal(layout.toolbarStrip, null);
+    assert.ok(layout.workSurface.x >= layout.leftRail.x + layout.leftRail.w);
+    assert.ok(layout.workSurface.y >= 0);
+    assert.ok(layout.workSurface.x + layout.workSurface.w <= width);
+    assert.ok(layout.workSurface.y + layout.workSurface.h <= height);
+    assert.equal(intersects(layout.workSurface, layout.paletteStrip), false);
+    assert.equal(intersects(layout.workSurface, layout.toolbarStrip), false);
+  }
+});
+
+test('Pixel portrait reserves a compact swatch strip only when the sheet is closed', () => {
+  for (const [width, height] of [[360, 740], [390, 844], [414, 896]]) {
+    const closed = buildPixelMobileEditorLayout(width, height, {
+      isMobile: true,
+      menuSheetOpen: false
+    });
+    const open = buildPixelMobileEditorLayout(width, height, {
+      isMobile: true,
+      menuSheetOpen: true
+    });
+
+    assert.equal(closed.orientation, 'portrait');
+    assert.ok(closed.paletteStrip);
+    assert.ok(closed.paletteStrip.y >= closed.workSurface.y + closed.workSurface.h);
+    assert.ok(closed.paletteStrip.y + closed.paletteStrip.h <= closed.actionRail.y);
+    assert.ok(closed.paletteStrip.x >= 0);
+    assert.ok(closed.paletteStrip.x + closed.paletteStrip.w <= width);
+    assert.equal(intersects(closed.workSurface, closed.paletteStrip), false);
+    assert.equal(open.paletteStrip, null);
+    assert.ok(open.workSurface.h > closed.workSurface.h);
+  }
+});
+
+test('Level portrait menu exposes compact roots and keeps playtest on bottom rail only', () => {
+  const model = buildLevelPortraitMenuModel();
+
+  assert.deepEqual(model.rootTabs.map((tab) => tab.id), ['file', 'tools', 'assets', 'settings']);
+  assert.deepEqual(model.assetTabs.map((tab) => tab.id), ['tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'music', 'graphics']);
+  assert.deepEqual(model.assetTabs.find((tab) => tab.id === 'graphics')?.label, 'Decals');
+  assert.deepEqual(model.settingsTabs.map((tab) => tab.id), ['level-settings', 'midi']);
+  assert.deepEqual(model.bottomRailActions, ['menu', 'undo', 'redo', 'playtest']);
+  assert.equal(model.rootTabs.some((tab) => tab.id === 'playtest' || tab.panel === 'playtest'), false);
+  assert.equal(model.assetTabs.some((tab) => tab.id === 'playtest'), false);
+  assert.equal(model.settingsTabs.some((tab) => tab.id === 'playtest'), false);
+});
+
+test('Level top playtest button is hidden only in mobile portrait', () => {
+  assert.equal(shouldShowLevelEditorTopPlaytestButton({
+    isMobile: true,
+    viewportWidth: 390,
+    viewportHeight: 844
+  }), false);
+  assert.equal(shouldShowLevelEditorTopPlaytestButton({
+    isMobile: true,
+    viewportWidth: 844,
+    viewportHeight: 390
+  }), true);
+  assert.equal(shouldShowLevelEditorTopPlaytestButton({
+    isMobile: false,
+    viewportWidth: 390,
+    viewportHeight: 844
+  }), true);
+});
+
+test('Level mobile landscape rail exposes every root action for scrolling', () => {
+  const tabs = buildLevelMobileLandscapeRootTabs();
+
+  assert.deepEqual(tabs.map((tab) => tab.id), [
+    'file',
+    'toolbox',
+    'tiles',
+    'npcs',
+    'triggers',
+    'powerups',
+    'prefabs',
+    'graphics',
+    'music',
+    'level-settings',
+    'undo',
+    'redo'
+  ]);
+  assert.equal(new Set(tabs.map((tab) => tab.id)).size, tabs.length);
+  assert.ok(tabs.length > 7);
+});
+
+test('shared portrait action rail keeps canonical controls visible on phone widths', () => {
+  for (const [width, height] of [[360, 740], [390, 844], [414, 896]]) {
+    const rail = { x: 8, y: height - 96, w: width - 16, h: 88 };
+    const layout = getSharedPortraitRailActionButtons(rail, [
+      { id: 'menu', label: '☰' },
+      { id: 'undo', label: '↶' },
+      { id: 'redo', label: '↷' },
+      { id: 'primary', label: '▶', primary: true }
+    ]);
+
+    assert.deepEqual(layout.buttons.map((button) => button.id), ['menu', 'undo', 'redo', 'primary']);
+    assert.ok(layout.thumbstickBounds.w >= 56);
+    layout.buttons.forEach((button) => {
+      assert.ok(button.bounds.w >= 44);
+      assert.ok(button.bounds.h >= 44);
+      assert.ok(button.bounds.x >= layout.actionArea.x);
+      assert.ok(button.bounds.x + button.bounds.w <= rail.x + rail.w);
+    });
+  }
+});
+
+test('shared portrait action rail accepts exactly four visible actions', () => {
+  const canonicalActions = [
+    { id: 'menu' },
+    { id: 'undo' },
+    { id: 'redo' },
+    { id: 'primary' }
+  ];
+
+  assert.equal(assertSharedPortraitRailActionCount(canonicalActions, { editor: 'test' }).length, SHARED_PORTRAIT_RAIL_ACTION_COUNT);
+  assert.throws(
+    () => assertSharedPortraitRailActionCount(canonicalActions.slice(0, 3), { editor: 'test' }),
+    /exactly 4 actions/
+  );
+  assert.throws(
+    () => assertSharedPortraitRailActionCount([...canonicalActions, { id: 'loop' }], { editor: 'test' }),
+    /exactly 4 actions/
+  );
+});
+
+test('audio editor portrait rails keep loop in menus instead of the rail', () => {
+  const midiModel = buildMidiPortraitMenuModel();
+  const sfxModel = buildSfxPortraitMenuModel();
+
+  assert.deepEqual(midiModel.rootTabs.map((tab) => tab.id), ['file', 'grid', 'song', 'instruments', 'virtual-instruments', 'pedals', 'settings']);
+  assert.deepEqual(sfxModel.rootTabs.map((tab) => tab.id), ['file', 'generate', 'timeline', 'layers', 'envelopes', 'tools', 'settings']);
+  assert.deepEqual(midiModel.bottomRailActions, ['fileButton', 'undoButton', 'redoButton', 'play']);
+  assert.deepEqual(sfxModel.bottomRailActions, ['menu', 'undo', 'redo', 'play']);
+  assertSharedPortraitRailActionCount(midiModel.bottomRailActions.map((id) => ({ id })), { editor: 'midi' });
+  assertSharedPortraitRailActionCount(sfxModel.bottomRailActions.map((id) => ({ id })), { editor: 'sfx' });
+  assert.equal(midiModel.bottomRailActions.some((id) => id.toLowerCase().includes('loop')), false);
+  assert.equal(sfxModel.bottomRailActions.some((id) => id.toLowerCase().includes('loop')), false);
+  assert.ok(midiModel.menuLoopIds.length > 0);
+  assert.ok(sfxModel.menuLoopIds.length > 0);
+});
+
+test('Actor portrait menu matches compact shared rail contract', () => {
+  const model = buildActorPortraitMenuModel();
+
+  assert.deepEqual(model.rootTabs.map((tab) => tab.id), ['file', 'actor', 'states', 'tools']);
+  assert.deepEqual(model.bottomRailActions, ['menu', 'undo', 'redo', 'playtest']);
+  assert.equal(model.primaryActionLabel, 'Play Scene');
+  assertSharedPortraitRailActionCount(model.bottomRailActions.map((id) => ({ id })), { editor: 'actor' });
+  assert.equal(model.rootTabs.some((tab) => tab.id === 'undo' || tab.id === 'redo'), false);
+  assert.equal(model.rootTabs.some((tab) => tab.id === 'linked-parts'), false);
+});
+
+test('Actor editor bottom play action launches the full actor scene playtest', () => {
+  const calls = [];
+  const game = {
+    registerRuntimeActorDefinition(actor) { calls.push(['register', actor.id, actor.name]); },
+    startActorEditorPlaytest(id, actor) { calls.push(['start-scene', id, actor.name]); }
+  };
+  const editor = new ActorEditor(game);
+  editor.actor = {
+    name: 'Scene Runner',
+    states: [{ id: 'idle', name: 'Idle', animation: { frames: [] } }],
+    initialStateId: 'idle'
+  };
+
+  editor.playActorScene();
+
+  assert.deepEqual(calls, [
+    ['register', 'scene-runner', 'Scene Runner'],
+    ['start-scene', 'scene-runner', 'Scene Runner']
+  ]);
+});

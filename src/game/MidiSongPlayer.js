@@ -20,15 +20,19 @@ export default class MidiSongPlayer {
     this.volume = 0;
     this.targetVolume = 0;
     this.fadeSpeed = 0;
+    this.loop = true;
+    this.finished = false;
   }
 
-  setSong(song, trackId) {
+  setSong(song, trackId, { loop = true } = {}) {
     this.song = song;
     this.trackId = trackId;
     this.playheadTick = 0;
     this.volume = 0;
     this.targetVolume = 1;
     this.fadeSpeed = 0;
+    this.loop = loop !== false;
+    this.finished = false;
   }
 
   setFade(target, duration) {
@@ -56,7 +60,7 @@ export default class MidiSongPlayer {
   }
 
   update(dt) {
-    if (!this.song) return;
+    if (!this.song || this.finished) return;
     if (this.volume !== this.targetVolume && this.fadeSpeed !== 0) {
       const next = this.volume + this.fadeSpeed * dt;
       if ((this.fadeSpeed > 0 && next >= this.targetVolume) || (this.fadeSpeed < 0 && next <= this.targetVolume)) {
@@ -78,6 +82,14 @@ export default class MidiSongPlayer {
 
     if (nextTick >= loopTicks) {
       this.triggerPlayback(prevTick, loopTicks, loopTicks);
+      if (!this.loop) {
+        this.playheadTick = loopTicks;
+        this.volume = 0;
+        this.targetVolume = 0;
+        this.fadeSpeed = 0;
+        this.finished = true;
+        return;
+      }
       this.playheadTick = loopStart + (nextTick - loopTicks);
       this.triggerPlayback(loopStart, this.playheadTick, loopTicks);
       return;

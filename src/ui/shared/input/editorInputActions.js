@@ -3,10 +3,13 @@ export const EDITOR_INPUT_ACTIONS = {
   NAV_DOWN: 'NAV_DOWN',
   NAV_LEFT: 'NAV_LEFT',
   NAV_RIGHT: 'NAV_RIGHT',
+  SECONDARY: 'SECONDARY',
   UNDO: 'UNDO',
   REDO: 'REDO',
+  TOOL_OPTIONS: 'TOOL_OPTIONS',
   CONFIRM: 'CONFIRM',
   CANCEL: 'CANCEL',
+  FOCUS_TOGGLE: 'FOCUS_TOGGLE',
   TOGGLE_MODE: 'TOGGLE_MODE',
   MENU: 'MENU',
   PANEL_PREV: 'PANEL_PREV',
@@ -38,8 +41,61 @@ const DEFAULT_DPAD_BINDINGS = {
   right: 'dpadRight'
 };
 
+export const SHARED_EDITOR_GAMEPAD_BINDINGS = {
+  [EDITOR_INPUT_ACTIONS.CONFIRM]: 'jump',
+  [EDITOR_INPUT_ACTIONS.CANCEL]: 'dash',
+  [EDITOR_INPUT_ACTIONS.UNDO]: 'rev',
+  [EDITOR_INPUT_ACTIONS.REDO]: 'throw',
+  [EDITOR_INPUT_ACTIONS.MENU]: 'pause',
+  [EDITOR_INPUT_ACTIONS.FOCUS_TOGGLE]: 'cancel',
+  [EDITOR_INPUT_ACTIONS.PANEL_PREV]: 'aimUp',
+  [EDITOR_INPUT_ACTIONS.PANEL_NEXT]: 'aimDown',
+  [EDITOR_INPUT_ACTIONS.TOOL_OPTIONS]: 'l3'
+};
+
+export const SHARED_EDITOR_GAMEPAD_CHORDS = [];
+
+export const SHARED_EDITOR_GAMEPAD_LABELS = {
+  jump: 'A',
+  dash: 'B',
+  rev: 'X',
+  throw: 'Y',
+  aimUp: 'LB',
+  aimDown: 'RB',
+  pause: 'Start',
+  cancel: 'Back',
+  dpadUp: 'D-pad',
+  dpadDown: 'D-pad',
+  dpadLeft: 'D-pad',
+  dpadRight: 'D-pad',
+  leftStick: 'LS',
+  rightStick: 'RS',
+  leftTrigger: 'LT',
+  rightTrigger: 'RT'
+};
+
+export const SHARED_EDITOR_GAMEPAD_HINTS = [
+  'A Select',
+  'B Back',
+  'X Undo',
+  'Y Redo',
+  'LS Cursor',
+  'RS Pan',
+  'LT/RT Zoom',
+  'LB/RB Step',
+  'L3 Options',
+  'Start System',
+  'Back Focus'
+];
+
+export const DEFAULT_EDITOR_GAMEPAD_DEADZONES = {
+  stick: 0.18,
+  pan: 0.12,
+  trigger: 0.6
+};
+
 export class EditorInputActionNormalizer {
-  constructor({ dpadRepeatDelay = 0.18, triggerThreshold = 0.6, panDeadzone = 0.12 } = {}) {
+  constructor({ dpadRepeatDelay = 0.18, triggerThreshold = DEFAULT_EDITOR_GAMEPAD_DEADZONES.trigger, panDeadzone = DEFAULT_EDITOR_GAMEPAD_DEADZONES.pan } = {}) {
     this.dpadRepeatDelay = dpadRepeatDelay;
     this.triggerThreshold = triggerThreshold;
     this.panDeadzone = panDeadzone;
@@ -62,8 +118,9 @@ export class EditorInputActionNormalizer {
     const released = {};
     const down = {};
     const gamepadActions = input?.getGamepadActions?.() || {};
-    const semanticBindings = config.semanticBindings || {};
+    const semanticBindings = config.semanticBindings || SHARED_EDITOR_GAMEPAD_BINDINGS;
     const dpadBindings = { ...DEFAULT_DPAD_BINDINGS, ...(config.dpadBindings || {}) };
+    const chordBindings = config.chordBindings || SHARED_EDITOR_GAMEPAD_CHORDS;
 
     if (!connected) {
       this.reset();
@@ -72,6 +129,7 @@ export class EditorInputActionNormalizer {
 
     const trackRawAction = (rawAction) => {
       if (!rawAction) return;
+      if (Object.hasOwn(down, rawAction)) return;
       const isDown = this.isRawActionDown(input, gamepadActions, rawAction);
       down[rawAction] = isDown;
       const wasDown = this.buttonState.get(rawAction) || false;
@@ -82,8 +140,21 @@ export class EditorInputActionNormalizer {
 
     Object.values(semanticBindings).forEach(trackRawAction);
     Object.values(dpadBindings).forEach(trackRawAction);
+    chordBindings.forEach((chord) => {
+      trackRawAction(chord.button);
+      trackRawAction(chord.modifier);
+    });
+
+    const suppressedSemanticTypes = new Set();
+    chordBindings.forEach((chord) => {
+      if (pressed[chord.button] && down[chord.modifier]) {
+        actions.push({ type: chord.type, source: 'gamepad', chord: true });
+        (chord.suppress || []).forEach((type) => suppressedSemanticTypes.add(type));
+      }
+    });
 
     Object.entries(semanticBindings).forEach(([semanticType, rawAction]) => {
+      if (suppressedSemanticTypes.has(semanticType)) return;
       if (pressed[rawAction]) {
         actions.push({ type: semanticType, source: 'gamepad' });
       }

@@ -47,6 +47,10 @@ export default class TouchInput {
     this.stringLayout = null;
     this.stringVibrations = new Map();
     this.lastPitchBendValue = 8192;
+    this.layoutDensity = {
+      keyboardWhiteKeys: 14,
+      stringFrets: 12
+    };
   }
 
   setInstrument(instrument) {
@@ -59,8 +63,12 @@ export default class TouchInput {
     }
   }
 
-  setBounds(bounds) {
+  setBounds(bounds, options = {}) {
     this.bounds = bounds;
+    this.layoutDensity = {
+      keyboardWhiteKeys: clamp(Math.round(Number(options.keyboardWhiteKeys) || 14), 4, 14),
+      stringFrets: clamp(Math.round(Number(options.stringFrets) || 12), 3, 12)
+    };
     this.computeLayout(bounds);
   }
 
@@ -104,14 +112,15 @@ export default class TouchInput {
   }
 
   computeKeyboardLayout(bounds) {
-    const whiteKeys = 14;
+    const whiteKeys = this.layoutDensity.keyboardWhiteKeys;
     const keyW = bounds.w / whiteKeys;
     const keyH = bounds.h * 0.98;
     const blackKeyW = keyW * 0.6;
     const blackKeyH = bounds.h * 0.6;
     const basePitch = clamp((this.keyboardStartOctave + 1) * 12, 0, 127);
-    const whiteOffsets = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23];
-    const blackLayout = [
+    const allWhiteOffsets = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23];
+    const whiteOffsets = allWhiteOffsets.slice(0, whiteKeys);
+    const allBlackLayout = [
       { index: 0.7, pitch: 1 },
       { index: 1.7, pitch: 3 },
       { index: 3.7, pitch: 6 },
@@ -123,6 +132,7 @@ export default class TouchInput {
       { index: 11.7, pitch: 20 },
       { index: 12.7, pitch: 22 }
     ];
+    const blackLayout = allBlackLayout.filter((entry) => entry.index < whiteKeys - 0.3);
 
     this.keyRects = [];
     whiteOffsets.forEach((offset, i) => {
@@ -168,7 +178,7 @@ export default class TouchInput {
 
   computeStringLayout(bounds) {
     const stringCount = this.instrument === 'bass' ? 4 : 6;
-    const fretCount = 12;
+    const fretCount = this.layoutDensity.stringFrets;
     const stringGap = bounds.h / (stringCount + 1);
     const labelW = Math.min(44, bounds.w * 0.12);
     const boardPadding = 8;
@@ -712,7 +722,9 @@ export default class TouchInput {
       id: noteId,
       pitch,
       velocity: 112,
-      source: 'touch'
+      source: 'touch',
+      instrument: this.instrument,
+      channel: this.instrument === 'drums' ? 9 : undefined
     });
     const durationMs = this.instrument === 'bass' ? 900 : 1100;
     const timer = setTimeout(() => {

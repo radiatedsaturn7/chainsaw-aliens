@@ -88,12 +88,14 @@ export default class HUD {
       infoStartY = 72;
     }
 
-    ctx.fillStyle = panelColor;
-    ctx.fillRect(14, infoStartY + 8, 420, 32);
-    ctx.fillStyle = '#fff';
-    ctx.fillText(`Objective: ${safeObjective}`, 20, infoStartY + 28);
-    ctx.strokeStyle = '#fff';
-    ctx.strokeRect(14, infoStartY + 8, 420, 32);
+    if (safeOptions.showObjective !== false) {
+      ctx.fillStyle = panelColor;
+      ctx.fillRect(14, infoStartY + 8, 420, 32);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(`Objective: ${safeObjective}`, 20, infoStartY + 28);
+      ctx.strokeStyle = '#fff';
+      ctx.strokeRect(14, infoStartY + 8, 420, 32);
+    }
 
     const statusLines = [];
     if (safeOptions.flameMode) {
