@@ -130,16 +130,20 @@ class DevHandler(SimpleHTTPRequestHandler):
             except Exception:
                 metadata = {}
         document_path = version_dir / "document.json"
+        assets_path = version_dir / "assets"
         saved_at = metadata.get("savedAt")
         if not isinstance(saved_at, (int, float)):
             saved_at = int(document_path.stat().st_mtime * 1000) if document_path.exists() else 0
+        size = document_path.stat().st_size if document_path.exists() else 0
+        if assets_path.exists():
+            size += self._directory_size(assets_path)
         return {
             "id": metadata.get("id") if isinstance(metadata.get("id"), str) else version_dir.name,
             "folder": folder,
             "name": name,
             "savedAt": saved_at,
             "reason": metadata.get("reason") if isinstance(metadata.get("reason"), str) else "",
-            "size": document_path.stat().st_size if document_path.exists() else 0,
+            "size": size,
         }
 
     def _list_exported_versions(self, folder: str, name: str) -> list[dict]:
@@ -266,6 +270,9 @@ class DevHandler(SimpleHTTPRequestHandler):
         metadata_path = doc_dir / "metadata.json"
         if metadata_path.exists():
             shutil.copy2(metadata_path, version_dir / "metadata.json")
+        assets_path = doc_dir / "assets"
+        if assets_path.exists():
+            shutil.copytree(assets_path, version_dir / "assets")
         version_metadata = {
             "id": version_dir.name,
             "folder": folder,
@@ -286,6 +293,12 @@ class DevHandler(SimpleHTTPRequestHandler):
         doc_dir = self._safe_doc_dir(folder, name)
         doc_dir.mkdir(parents=True, exist_ok=True)
         shutil.copy2(document_path, doc_dir / "document.json")
+        current_assets = doc_dir / "assets"
+        if current_assets.exists():
+            shutil.rmtree(current_assets)
+        version_assets = version_dir / "assets"
+        if version_assets.exists():
+            shutil.copytree(version_assets, current_assets)
         saved = int(time.time() * 1000)
         with (doc_dir / "metadata.json").open("w", encoding="utf-8") as handle:
             json.dump({"name": name, "folder": folder, "savedAt": saved, "version": 1}, handle, ensure_ascii=False, indent=2)
