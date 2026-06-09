@@ -137,6 +137,82 @@ const LEGACY_INSTRUMENT_TO_PROGRAM = {
   sawtooth: 81
 };
 
+export const getGmSustainProfile = ({ program = 0, channel = 0, isDrums = false } = {}) => {
+  if (isDrums || isDrumChannel(channel)) {
+    return {
+      mode: 'oneshot',
+      attack: 0.002,
+      decay: 0.04,
+      sustain: 0.0001,
+      tail: 0.0001,
+      release: 0.06,
+      maxDuration: 0.9,
+      loopSample: false
+    };
+  }
+  const entry = GM_PROGRAMS[clamp(program ?? 0, 0, GM_PROGRAMS.length - 1)] || {};
+  const family = entry.family || '';
+  const name = String(entry.name || '').toLowerCase();
+  if (family === 'Organ' || family === 'Strings' || family === 'Ensemble' || family === 'Synth Pad') {
+    return {
+      mode: 'sustain',
+      attack: family === 'Synth Pad' ? 0.03 : 0.01,
+      decay: 0.18,
+      sustain: family === 'Synth Pad' ? 0.9 : 0.82,
+      tail: 0.7,
+      release: family === 'Synth Pad' ? 0.55 : 0.34,
+      maxDuration: Infinity,
+      loopSample: true
+    };
+  }
+  if (family === 'Synth Lead' || family === 'Brass' || family === 'Reed' || family === 'Pipe') {
+    return {
+      mode: 'sustain',
+      attack: 0.012,
+      decay: 0.16,
+      sustain: 0.74,
+      tail: 0.58,
+      release: 0.28,
+      maxDuration: Infinity,
+      loopSample: true
+    };
+  }
+  if (family === 'Guitar' || family === 'Bass' || name.includes('pluck')) {
+    return {
+      mode: 'decay',
+      attack: 0.006,
+      decay: family === 'Bass' ? 0.7 : 0.95,
+      sustain: family === 'Bass' ? 0.38 : 0.28,
+      tail: family === 'Bass' ? 0.16 : 0.08,
+      release: 0.22,
+      maxDuration: family === 'Bass' ? 8 : 6,
+      loopSample: true
+    };
+  }
+  if (family === 'Piano' || family === 'Chromatic Percussion' || family === 'Percussive' || family === 'Ethnic') {
+    return {
+      mode: 'decay',
+      attack: 0.006,
+      decay: family === 'Piano' ? 1.2 : 0.75,
+      sustain: family === 'Piano' ? 0.22 : 0.18,
+      tail: 0.04,
+      release: 0.2,
+      maxDuration: family === 'Piano' ? 7 : 4,
+      loopSample: true
+    };
+  }
+  return {
+    mode: 'sustain',
+    attack: 0.01,
+    decay: 0.18,
+    sustain: 0.65,
+    tail: 0.42,
+    release: 0.28,
+    maxDuration: Infinity,
+    loopSample: true
+  };
+};
+
 export default class AudioSystem {
   constructor() {
     this.ctx = null;
@@ -152,7 +228,9 @@ export default class AudioSystem {
     this.midiVoices = [];
     this.midiVoiceLimit = 48;
     this.midiPreviewVoiceLimit = 12;
-    this.midiLatency = 0.03;
+    this.midiLatency = 0.04;
+    this.midiBusVolume = 0.9;
+    this.midiBusHeadroom = 0.78;
     this.midiReverbEnabled = true;
     this.midiReverbLevel = 0.18;
     this.midiReverbSend = null;
@@ -410,13 +488,13 @@ export default class AudioSystem {
     this.ensure();
     if (this.midiBus) return;
     this.midiBus = this.ctx.createGain();
-    this.midiBus.gain.value = 0.8;
+    this.midiBus.gain.value = this.midiBusVolume * this.midiBusHeadroom;
     this.midiLimiter = this.ctx.createDynamicsCompressor();
-    this.midiLimiter.threshold.value = -12;
-    this.midiLimiter.knee.value = 8;
-    this.midiLimiter.ratio.value = 6;
+    this.midiLimiter.threshold.value = -16;
+    this.midiLimiter.knee.value = 6;
+    this.midiLimiter.ratio.value = 10;
     this.midiLimiter.attack.value = 0.002;
-    this.midiLimiter.release.value = 0.12;
+    this.midiLimiter.release.value = 0.16;
     this.midiBus.connect(this.midiLimiter);
     this.midiLimiter.connect(this.master);
     this.midiReverb = this.ctx.createConvolver();
@@ -594,9 +672,10 @@ export default class AudioSystem {
 
   setMidiVolume(value = 1) {
     const nextValue = clamp(Number(value) || 0, 0, 1);
+    this.midiBusVolume = nextValue;
     this.ensureMidiSampler();
     if (this.midiBus?.gain) {
-      this.midiBus.gain.value = nextValue;
+      this.midiBus.gain.value = nextValue * this.midiBusHeadroom;
     }
   }
 
@@ -1089,12 +1168,12 @@ export default class AudioSystem {
       const knobs = pedal.knobs || {};
       if (pedal.type === 'compressor') {
         const comp = trackNode(this.ctx.createDynamicsCompressor());
-        comp.threshold.value = -44 + clamp(knobs.threshold ?? 0.5, 0, 1) * 42;
-        comp.ratio.value = 1.5 + clamp(knobs.ratio ?? 0.5, 0, 1) * 16;
+        comp.threshold.value = -38 + clamp(knobs.threshold ?? 0.42, 0, 1) * 30;
+        comp.ratio.value = 1.4 + clamp(knobs.ratio ?? 0.45, 0, 1) * 9;
         comp.attack.value = 0.002 + (1 - clamp(knobs.ratio ?? 0.5, 0, 1)) * 0.03;
-        comp.release.value = 0.06 + clamp(knobs.makeup ?? 0.4, 0, 1) * 0.32;
+        comp.release.value = 0.08 + clamp(knobs.makeup ?? 0.32, 0, 1) * 0.26;
         const makeup = trackNode(this.ctx.createGain());
-        makeup.gain.value = 0.7 + clamp(knobs.makeup ?? 0.4, 0, 1) * 0.75;
+        makeup.gain.value = 0.72 + clamp(knobs.makeup ?? 0.32, 0, 1) * 0.45;
         current.connect(comp);
         comp.connect(makeup);
         current = makeup;
@@ -1139,18 +1218,49 @@ export default class AudioSystem {
         bite.type = 'highpass';
         bite.frequency.value = 55 + biteValue * 420;
         const out = trackNode(this.ctx.createGain());
-        out.gain.value = 0.42 + (1 - drive) * 0.18;
+        out.gain.value = 0.34 + (1 - drive) * 0.28;
         current.connect(pre); pre.connect(shape); shape.connect(tone); tone.connect(bite); bite.connect(out);
+        current = out;
+      } else if (pedal.type === 'tape') {
+        const drive = clamp(knobs.drive ?? 0.34, 0, 1);
+        const toneValue = clamp(knobs.tone ?? 0.52, 0, 1);
+        const wow = clamp(knobs.wow ?? 0.18, 0, 1);
+        const pre = trackNode(this.ctx.createGain());
+        pre.gain.value = 1 + drive * 1.6;
+        const shape = trackNode(this.ctx.createWaveShaper());
+        shape.curve = this.buildDistortionCurve(drive * 0.22, 2048);
+        try {
+          shape.oversample = '2x';
+        } catch (error) {
+          shape.oversample = 'none';
+        }
+        const tone = trackNode(this.ctx.createBiquadFilter());
+        tone.type = 'lowpass';
+        tone.frequency.value = 3600 + toneValue * 5200;
+        const delay = trackNode(this.ctx.createDelay(0.05));
+        delay.delayTime.value = 0.012;
+        const lfo = trackNode(this.ctx.createOscillator());
+        const lfoGain = trackNode(this.ctx.createGain());
+        lfo.frequency.value = 0.18 + wow * 1.2;
+        lfoGain.gain.value = wow * 0.0028;
+        lfo.connect(lfoGain);
+        lfoGain.connect(delay.delayTime);
+        lfo.start(when);
+        lfo.stop(when + duration + 0.2);
+        stopFns.push(() => lfo.disconnect());
+        const out = trackNode(this.ctx.createGain());
+        out.gain.value = 0.64 + (1 - drive) * 0.12;
+        current.connect(pre); pre.connect(shape); shape.connect(tone); tone.connect(delay); delay.connect(out);
         current = out;
       } else if (pedal.type === 'wah') {
         const filter = trackNode(this.ctx.createBiquadFilter());
         filter.type = 'bandpass';
-        filter.Q.value = 0.7 + clamp(knobs.mix ?? 0.7, 0, 1) * 2.6;
+        filter.Q.value = 0.55 + clamp(knobs.mix ?? 0.48, 0, 1) * 1.8;
         const lfo = trackNode(this.ctx.createOscillator());
         const lfoGain = trackNode(this.ctx.createGain());
-        lfo.frequency.value = 0.18 + clamp(knobs.rate ?? 0.5, 0, 1) * 2.3;
-        lfoGain.gain.value = 160 + clamp(knobs.sweep ?? 0.6, 0, 1) * 1150;
-        filter.frequency.setValueAtTime(520, Math.max(this.ctx.currentTime, when));
+        lfo.frequency.value = 0.12 + clamp(knobs.rate ?? 0.38, 0, 1) * 1.65;
+        lfoGain.gain.value = 120 + clamp(knobs.sweep ?? 0.48, 0, 1) * 760;
+        filter.frequency.setTargetAtTime(560, Math.max(this.ctx.currentTime, when), 0.015);
         lfo.connect(lfoGain);
         lfoGain.connect(filter.frequency);
         lfo.start(when);
@@ -1159,13 +1269,13 @@ export default class AudioSystem {
         current.connect(filter);
         current = filter;
       } else if (pedal.type === 'chorus') {
-        const mix = clamp(knobs.mix ?? 0.7, 0, 1);
-        const depth = clamp(knobs.depth ?? 0.5, 0, 1);
-        const spread = clamp(knobs.spread ?? 0.4, 0, 1);
+        const mix = clamp(knobs.mix ?? 0.42, 0, 1);
+        const depth = clamp(knobs.depth ?? 0.38, 0, 1);
+        const spread = clamp(knobs.spread ?? 0.36, 0, 1);
         const dry = trackNode(this.ctx.createGain());
-        dry.gain.value = 1 - mix * 0.42;
+        dry.gain.value = 1 - mix * 0.24;
         const wet = trackNode(this.ctx.createGain());
-        wet.gain.value = mix * 0.38;
+        wet.gain.value = mix * 0.28;
         const delay = trackNode(this.ctx.createDelay(0.06));
         delay.delayTime.value = 0.012 + spread * 0.016;
         const lfo = trackNode(this.ctx.createOscillator());
@@ -1185,13 +1295,13 @@ export default class AudioSystem {
         wet.connect(sum);
         current = sum;
       } else if (pedal.type === 'phaser') {
-        const rate = clamp(knobs.rate ?? 0.6, 0, 1);
-        const depth = clamp(knobs.depth ?? 0.6, 0, 1);
-        const mix = clamp(knobs.mix ?? 0.6, 0, 1);
+        const rate = clamp(knobs.rate ?? 0.42, 0, 1);
+        const depth = clamp(knobs.depth ?? 0.42, 0, 1);
+        const mix = clamp(knobs.mix ?? 0.38, 0, 1);
         const dry = trackNode(this.ctx.createGain());
-        dry.gain.value = 1 - mix * 0.42;
+        dry.gain.value = 1 - mix * 0.26;
         const wet = trackNode(this.ctx.createGain());
-        wet.gain.value = mix * 0.46;
+        wet.gain.value = mix * 0.32;
         const stages = Array.from({ length: 4 }, () => trackNode(this.ctx.createBiquadFilter()));
         stages.forEach((stage) => {
           stage.type = 'allpass';
@@ -1216,47 +1326,84 @@ export default class AudioSystem {
         wet.connect(sum);
         current = sum;
       } else if (pedal.type === 'reverb') {
-        const mix = clamp(knobs.mix ?? 0.6, 0, 1);
-        const room = clamp(knobs.room ?? 0.5, 0, 1);
-        const decay = clamp(knobs.decay ?? 0.6, 0, 1);
+        const mix = clamp(knobs.mix ?? 0.34, 0, 1);
+        const room = clamp(knobs.room ?? 0.45, 0, 1);
+        const decay = clamp(knobs.decay ?? 0.44, 0, 1);
         const dry = trackNode(this.ctx.createGain());
         const wet = trackNode(this.ctx.createGain());
-        dry.gain.value = 1 - mix * 0.45;
-        wet.gain.value = mix * 0.58;
+        dry.gain.value = 1 - mix * 0.3;
+        wet.gain.value = mix * 0.42;
         const convolver = trackNode(this.ctx.createConvolver());
         convolver.buffer = this.getPedalImpulse(room, decay);
+        const wetLowpass = trackNode(this.ctx.createBiquadFilter());
+        wetLowpass.type = 'lowpass';
+        wetLowpass.frequency.value = 2800 + (1 - decay) * 2400;
+        const wetHighpass = trackNode(this.ctx.createBiquadFilter());
+        wetHighpass.type = 'highpass';
+        wetHighpass.frequency.value = 90;
         const sum = trackNode(this.ctx.createGain());
         current.connect(dry);
         current.connect(convolver);
-        convolver.connect(wet);
+        convolver.connect(wetHighpass);
+        wetHighpass.connect(wetLowpass);
+        wetLowpass.connect(wet);
         dry.connect(sum);
         wet.connect(sum);
         current = sum;
       } else if (pedal.type === 'echo') {
-        const time = clamp(knobs.time ?? 0.45, 0, 1);
-        const feedback = clamp(knobs.feedback ?? 0.35, 0, 0.78);
-        const mix = clamp(knobs.mix ?? 0.65, 0, 1);
+        const time = clamp(knobs.time ?? 0.32, 0, 1);
+        const feedback = clamp(knobs.feedback ?? 0.24, 0, 0.62);
+        const mix = clamp(knobs.mix ?? 0.34, 0, 1);
         const delay = trackNode(this.ctx.createDelay(1.5));
-        delay.delayTime.value = 0.08 + time * 0.52;
+        delay.delayTime.value = 0.07 + time * 0.46;
         const fb = trackNode(this.ctx.createGain());
-        fb.gain.value = 0.12 + feedback * 0.58;
-        const tone = trackNode(this.ctx.createBiquadFilter());
-        tone.type = 'lowpass';
-        tone.frequency.value = 1300 + (1 - feedback) * 5200;
+        fb.gain.value = 0.1 + feedback * 0.5;
+        const toneLow = trackNode(this.ctx.createBiquadFilter());
+        toneLow.type = 'lowpass';
+        toneLow.frequency.value = 1700 + (1 - feedback) * 3600;
+        const toneHigh = trackNode(this.ctx.createBiquadFilter());
+        toneHigh.type = 'highpass';
+        toneHigh.frequency.value = 90 + feedback * 120;
         const dry = trackNode(this.ctx.createGain());
-        dry.gain.value = 1 - mix * 0.42;
+        dry.gain.value = 1 - mix * 0.24;
         const wet = trackNode(this.ctx.createGain());
-        wet.gain.value = mix * 0.48;
+        wet.gain.value = mix * 0.36;
         const sum = trackNode(this.ctx.createGain());
         current.connect(dry);
         current.connect(delay);
-        delay.connect(tone);
-        tone.connect(fb);
+        delay.connect(toneHigh);
+        toneHigh.connect(toneLow);
+        toneLow.connect(fb);
         fb.connect(delay);
         delay.connect(wet);
         dry.connect(sum);
         wet.connect(sum);
         current = sum;
+      } else if (pedal.type === 'studioEq') {
+        const lowCut = clamp(knobs.lowCut ?? 0.32, 0, 1);
+        const warmth = clamp(knobs.warmth ?? 0.52, 0, 1);
+        const presenceValue = clamp(knobs.presence ?? 0.54, 0, 1);
+        const airValue = clamp(knobs.air ?? 0.5, 0, 1);
+        const highpass = trackNode(this.ctx.createBiquadFilter());
+        highpass.type = 'highpass';
+        highpass.frequency.value = 30 + lowCut * 170;
+        const warm = trackNode(this.ctx.createBiquadFilter());
+        warm.type = 'lowshelf';
+        warm.frequency.value = 220;
+        warm.gain.value = (warmth - 0.5) * 7;
+        const presence = trackNode(this.ctx.createBiquadFilter());
+        presence.type = 'peaking';
+        presence.frequency.value = 2800;
+        presence.Q.value = 0.85;
+        presence.gain.value = (presenceValue - 0.5) * 6;
+        const air = trackNode(this.ctx.createBiquadFilter());
+        air.type = 'highshelf';
+        air.frequency.value = 7600;
+        air.gain.value = (airValue - 0.5) * 5;
+        const out = trackNode(this.ctx.createGain());
+        out.gain.value = 0.96;
+        current.connect(highpass); highpass.connect(warm); warm.connect(presence); presence.connect(air); air.connect(out);
+        current = out;
       } else if (pedal.type === 'volumePhaser') {
         const minV = clamp(knobs.down ?? 0.35, 0.02, 1);
         const maxV = clamp(knobs.up ?? 0.95, 0.02, 1);
@@ -1291,11 +1438,26 @@ export default class AudioSystem {
         stopFns.push(() => lfo.disconnect());
         current.connect(panner);
         current = panner;
+      } else if (pedal.type === 'limiter') {
+        const threshold = clamp(knobs.threshold ?? 0.58, 0, 1);
+        const ceiling = clamp(knobs.ceiling ?? 0.72, 0, 1);
+        const release = clamp(knobs.release ?? 0.34, 0, 1);
+        const limiter = trackNode(this.ctx.createDynamicsCompressor());
+        limiter.threshold.value = -22 + threshold * 14;
+        limiter.knee.value = 1.5;
+        limiter.ratio.value = 12 + threshold * 8;
+        limiter.attack.value = 0.001;
+        limiter.release.value = 0.04 + release * 0.22;
+        const ceilingGain = trackNode(this.ctx.createGain());
+        ceilingGain.gain.value = 0.72 + ceiling * 0.22;
+        current.connect(limiter);
+        limiter.connect(ceilingGain);
+        current = ceilingGain;
       }
     });
 
     const outputTrim = trackNode(this.ctx.createGain());
-    outputTrim.gain.value = enabled.length ? 0.82 : 1;
+    outputTrim.gain.value = enabled.length ? 0.76 : 1;
     current.connect(outputTrim);
     return {
       output: outputTrim,
@@ -1486,6 +1648,61 @@ export default class AudioSystem {
     this.midiPedalBusCache.clear();
   }
 
+  getGmSustainProfile(options = {}) {
+    return getGmSustainProfile(options);
+  }
+
+  getProfiledMidiDuration(duration = 0.5, profile = {}) {
+    const requested = Math.max(0.03, Number(duration) || 0.03);
+    if (profile.mode === 'oneshot') {
+      return Math.min(requested, profile.maxDuration ?? requested);
+    }
+    return Math.min(requested, profile.maxDuration ?? requested);
+  }
+
+  configureSampleSustainLoop(source, sample, pitch, profile, duration, release) {
+    if (!source || !sample?.buffer || sample.isDrums || profile.loopSample === false) return;
+    const rate = Math.max(0.0001, source.playbackRate?.value || (2 ** ((pitch - sample.baseNote) / 12)));
+    const audibleBufferDuration = sample.buffer.duration / rate;
+    if (audibleBufferDuration >= duration + release + 0.04) return;
+    const bufferDuration = sample.buffer.duration;
+    if (!Number.isFinite(bufferDuration) || bufferDuration < 0.18) return;
+    source.loop = true;
+    source.loopStart = clamp(bufferDuration * 0.45, 0.04, Math.max(0.05, bufferDuration - 0.08));
+    source.loopEnd = clamp(bufferDuration * 0.88, source.loopStart + 0.04, bufferDuration);
+  }
+
+  scheduleGmSustainEnvelope(gainParam, now, level, duration, profile = {}) {
+    const attack = Math.max(0.001, profile.attack ?? 0.006);
+    const decay = Math.max(0.001, profile.decay ?? 0.12);
+    const release = Math.max(0.01, profile.release ?? 0.16);
+    const effectiveDuration = this.getProfiledMidiDuration(duration, profile);
+    const attackAt = now + Math.min(attack, Math.max(0.001, effectiveDuration * 0.45));
+    const decayAt = Math.min(now + effectiveDuration, attackAt + decay);
+    const sustainUntil = now + Math.max(attack, effectiveDuration);
+    const peak = Math.max(0.0001, level);
+    const sustainLevel = Math.max(0.0001, peak * clamp(profile.sustain ?? 0.7, 0.0001, 1));
+    const tailLevel = Math.max(0.0001, peak * clamp(profile.tail ?? profile.sustain ?? 0.4, 0.0001, 1));
+    gainParam.cancelScheduledValues?.(now);
+    gainParam.setValueAtTime(0.0001, now);
+    gainParam.exponentialRampToValueAtTime(peak, attackAt);
+    if (profile.mode === 'oneshot') {
+      gainParam.exponentialRampToValueAtTime(0.0001, sustainUntil + release);
+      return { sustainUntil, stopAt: sustainUntil + release, release, effectiveDuration };
+    }
+    if (profile.mode === 'decay') {
+      gainParam.exponentialRampToValueAtTime(sustainLevel, decayAt);
+      if (sustainUntil > decayAt + 0.01) {
+        gainParam.exponentialRampToValueAtTime(tailLevel, sustainUntil);
+      }
+    } else {
+      gainParam.exponentialRampToValueAtTime(sustainLevel, decayAt);
+      gainParam.setValueAtTime(sustainLevel, sustainUntil);
+    }
+    gainParam.exponentialRampToValueAtTime(0.0001, sustainUntil + release);
+    return { sustainUntil, stopAt: sustainUntil + release, release, effectiveDuration };
+  }
+
   playSoundfontPedalGmNote({
     pitch,
     duration,
@@ -1499,33 +1716,39 @@ export default class AudioSystem {
     when,
     pedals = [],
     trackId = null,
-    voiceGroup = 'timeline'
+    voiceGroup = 'timeline',
+    maxScheduleLatenessSeconds = 0.12,
+    liveNoteId = null,
+    onMissing = null
   }) {
+    const scheduledWhen = Math.max(when ?? this.ctx.currentTime, this.ctx.currentTime);
     this.getSoundfontBufferForNote({ pitch, program, channel, bankMSB, bankLSB })
       .then((sample) => {
+        if (this.ctx.currentTime > scheduledWhen + Math.max(0, Number(maxScheduleLatenessSeconds) || 0)) {
+          return;
+        }
         if (!sample?.buffer) {
+          if (typeof onMissing === 'function') {
+            onMissing();
+            return;
+          }
           this.playDspPedalGmNote({ pitch, duration, volume, program, pan, isDrums, when, pedals, voiceGroup });
           return;
         }
-        const now = Math.max(when ?? this.ctx.currentTime, this.ctx.currentTime);
+        const now = Math.max(scheduledWhen, this.ctx.currentTime);
         const source = this.ctx.createBufferSource();
         source.buffer = sample.buffer;
         source.playbackRate.value = sample.isDrums ? 1 : 2 ** ((pitch - sample.baseNote) / 12);
+        const profile = this.getGmSustainProfile({ program, channel, isDrums: isDrums || sample.isDrums });
         const filter = this.ctx.createBiquadFilter();
         filter.type = 'lowpass';
         filter.frequency.value = 9000;
         const gain = this.ctx.createGain();
         const level = clamp(volume ?? 1, 0, 1);
-        const attack = sample.isDrums ? 0.002 : 0.006;
-        const release = sample.isDrums ? 0.06 : 0.16;
-        const sustainUntil = now + Math.max(attack, duration);
-        const stopAt = sustainUntil + release;
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(Math.max(0.0001, level), now + attack);
-        gain.gain.setValueAtTime(Math.max(0.0001, level), sustainUntil);
-        gain.gain.linearRampToValueAtTime(0, stopAt);
+        const envelope = this.scheduleGmSustainEnvelope(gain.gain, now, level, duration, profile);
+        this.configureSampleSustainLoop(source, sample, pitch, profile, envelope.effectiveDuration, envelope.release);
         source.connect(filter);
-        this.applyPitchPhaserToSource(source, pedals, now, duration);
+        this.applyPitchPhaserToSource(source, pedals, now, envelope.effectiveDuration);
         filter.connect(gain);
         const bus = this.getMidiPedalBus({ pedals, pan, channel, trackId });
         const panNode = !bus && this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
@@ -1545,8 +1768,12 @@ export default class AudioSystem {
           reverbSend.connect(this.midiReverb);
         }
         source.start(now);
-        source.stop(stopAt + 0.03);
-        this.registerMidiVoice({ source, gain, stopTime: stopAt + 0.05, channel, group: voiceGroup });
+        source.stop(envelope.stopAt + 0.03);
+        const entry = this.registerMidiVoice({ source, gain, stopTime: envelope.stopAt + 0.05, channel, group: voiceGroup });
+        if (liveNoteId && entry) {
+          entry.release = envelope.release;
+          this.liveMidiNotes.set(liveNoteId, entry);
+        }
         const cleanupInput = () => {
           [source, filter].forEach((node) => {
             if (!node) return;
@@ -1561,9 +1788,16 @@ export default class AudioSystem {
           });
         };
         source.onended = cleanupInput;
-        window.setTimeout(cleanupGraph, Math.max(0.2, duration + 2.5) * 1000);
+        window.setTimeout(cleanupGraph, Math.max(0.2, envelope.effectiveDuration + envelope.release + 2.5) * 1000);
       })
       .catch(() => {
+        if (this.ctx.currentTime > scheduledWhen + Math.max(0, Number(maxScheduleLatenessSeconds) || 0)) {
+          return;
+        }
+        if (typeof onMissing === 'function') {
+          onMissing();
+          return;
+        }
         this.playDspPedalGmNote({ pitch, duration, volume, program, pan, isDrums, when, pedals, voiceGroup });
       });
   }
@@ -1584,12 +1818,14 @@ export default class AudioSystem {
     pedals = [],
     trackId = null,
     preview = false,
-    voiceGroup = preview ? 'preview' : 'timeline'
+    voiceGroup = preview ? 'preview' : 'timeline',
+    when = null,
+    maxScheduleLatenessSeconds = 0.12
   }) {
     this.ensureMidiSampler();
     const clampedProgram = clamp(program ?? 0, 0, GM_PROGRAMS.length - 1);
     const hasPedals = Array.isArray(pedals) && pedals.some((pedal) => pedal && pedal.enabled !== false);
-    const clampedVolume = clamp(volume ?? 1, 0, hasPedals ? 0.82 : 1);
+    const clampedVolume = clamp(volume ?? 1, 0, hasPedals ? 0.78 : 1);
     const clampedPan = clamp(pan ?? 0, -1, 1);
     const isDrums = isDrumChannel(channel);
     const resolvedChannel = isDrums ? GM_DRUM_CHANNEL : clamp(channel ?? 0, 0, 15);
@@ -1634,7 +1870,11 @@ export default class AudioSystem {
         bankLSB: resolvedBankLSB
       });
     }
-    const when = this.ctx.currentTime + this.midiLatency;
+    const resolvedWhen = Math.max(
+      this.ctx.currentTime,
+      Number.isFinite(when) ? when : this.ctx.currentTime + this.midiLatency
+    );
+    const isTooLate = () => this.ctx.currentTime > resolvedWhen + Math.max(0, Number(maxScheduleLatenessSeconds) || 0);
     const enabledPedals = Array.isArray(pedals) ? pedals.filter((pedal) => pedal && pedal.enabled !== false) : [];
     if (enabledPedals.length) {
       if (!this.gmEnabled) {
@@ -1645,7 +1885,7 @@ export default class AudioSystem {
           program: clampedProgram,
           pan: clampedPan,
           isDrums,
-          when,
+          when: resolvedWhen,
           pedals: enabledPedals,
           voiceGroup
         });
@@ -1661,14 +1901,16 @@ export default class AudioSystem {
         bankLSB: resolvedBankLSB,
         pan: clampedPan,
         isDrums,
-        when,
+        when: resolvedWhen,
         pedals: enabledPedals,
         trackId,
-        voiceGroup
+        voiceGroup,
+        maxScheduleLatenessSeconds
       });
       return;
     }
     const fallback = () => {
+      if (isTooLate()) return;
       this.gmError = 'SoundFont failed; using fallback synth.';
       if (isDrums) {
         const resolvedPresetName = this.soundfont.getDrumKitName?.() || 'synth_drum';
@@ -1697,14 +1939,14 @@ export default class AudioSystem {
           duration,
           volume: clampedVolume,
           instrument: this.getFallbackDrum(resolvedPitch),
-          when,
+          when: resolvedWhen,
           pan: clampedPan,
           voiceGroup
         });
         return;
       }
       const fallbackInstrument = this.getFallbackInstrument(clampedProgram);
-      this.playMidiNote(resolvedPitch, fallbackInstrument, duration, clampedVolume, this.ctx.currentTime + this.midiLatency, clampedPan);
+      this.playMidiNote(resolvedPitch, fallbackInstrument, duration, clampedVolume, resolvedWhen, clampedPan);
     };
     if (!this.gmEnabled) {
       fallback();
@@ -1722,68 +1964,32 @@ export default class AudioSystem {
     if (preferWebAudioFont && this.isWebAudioFontReady()) {
       const used = this.playWebAudioFontDrum({
         note: resolvedPitch,
-        when,
+        when: resolvedWhen,
         duration,
         volume: clampedVolume,
         preset: clampedProgram
       });
       if (used) return;
     }
-    this.gmNoteOnWithLoader({
+    this.playSoundfontPedalGmNote({
       pitch: resolvedPitch,
-      volume: clampedVolume,
-      when,
       duration,
-      resolvedChannel,
+      volume: clampedVolume,
+      program: clampedProgram,
+      channel: resolvedChannel,
+      bankMSB: resolvedBankMSB,
+      bankLSB: resolvedBankLSB,
+      pan: clampedPan,
       isDrums,
-      meta: {
-        trackId: trackId ?? resolvedChannel,
-        isDrum: isDrums,
-        sourceNote: pitch,
-        resolvedNote: resolvedPitch,
-        bankMSB: resolvedBankMSB,
-        bankLSB: resolvedBankLSB,
-        program: clampedProgram,
-        preset: isDrums ? clampedProgram : undefined
+      when: resolvedWhen,
+      pedals: [],
+      trackId,
+      voiceGroup,
+      maxScheduleLatenessSeconds,
+      onMissing: () => {
+        if (!isTooLate()) fallback();
       }
-    })
-      .then((voice) => {
-        if (!voice) return;
-        const stopTime = when + duration + 0.2;
-        this.registerMidiVoice({ voice, stopTime, channel: resolvedChannel, group: voiceGroup });
-        this.gmError = null;
-      })
-      .catch((error) => {
-        if (isDrums) {
-          const resolvedPresetName = this.soundfont.getDrumKitName?.() || 'synth_drum';
-          const cacheKey = this.soundfont.getCacheKey?.({
-            soundfontUrl: this.soundfont.baseUrl,
-            name: resolvedPresetName,
-            bankMSB: resolvedBankMSB,
-            bankLSB: resolvedBankLSB,
-            preset: clampedProgram,
-            percussion: true
-          });
-          const message = `Drum SoundFont missing preset (bankMSB=${resolvedBankMSB}, bankLSB=${resolvedBankLSB}, preset=${clampedProgram}).`;
-          this.gmError = message;
-          this.logDrumNote({
-            backend: 'soundfont',
-            bankMSB: resolvedBankMSB,
-            bankLSB: resolvedBankLSB,
-            program: clampedProgram,
-            preset: clampedProgram,
-            cacheKey,
-            resolvedPresetName,
-            note: resolvedPitch,
-            containsNote: false,
-            keyRange: null,
-            error
-          });
-          fallback();
-          return;
-        }
-        fallback();
-      });
+    });
   }
 
   startLiveGmNote({
@@ -1796,7 +2002,8 @@ export default class AudioSystem {
     bankMSB = 0,
     bankLSB = 0,
     pan = 0,
-    trackId = null
+    trackId = null,
+    pedals = []
   }) {
     if (!id) return;
     this.stopLiveGmNote(id);
@@ -1847,6 +2054,7 @@ export default class AudioSystem {
         bankLSB: resolvedBankLSB
       });
     }
+    const enabledPedals = Array.isArray(pedals) ? pedals.filter((pedal) => pedal && pedal.enabled !== false) : [];
     if (!this.gmEnabled) {
       this.playMidiNote(resolvedPitch, this.getFallbackInstrument(clampedProgram), duration, clampedVolume, null, clampedPan);
       return;
@@ -1872,71 +2080,37 @@ export default class AudioSystem {
       if (used) return;
     }
     const when = this.ctx.currentTime + this.midiLatency;
-    this.gmNoteOnWithLoader({
+    this.playSoundfontPedalGmNote({
       pitch: resolvedPitch,
-      volume: clampedVolume,
-      when,
       duration,
-      resolvedChannel,
+      volume: clampedVolume,
+      program: clampedProgram,
+      channel: resolvedChannel,
+      bankMSB: resolvedBankMSB,
+      bankLSB: resolvedBankLSB,
+      pan: clampedPan,
       isDrums,
-      meta: {
-        trackId: trackId ?? resolvedChannel,
-        isDrum: isDrums,
-        sourceNote: pitch,
-        resolvedNote: resolvedPitch,
-        bankMSB: resolvedBankMSB,
-        bankLSB: resolvedBankLSB,
-        program: clampedProgram,
-        preset: isDrums ? clampedProgram : undefined
-      }
-    })
-      .then((voice) => {
-        if (!voice) return;
-        const stopTime = when + duration + 0.2;
-        const entry = this.registerMidiVoice({ voice, stopTime, channel: resolvedChannel });
-        if (entry) {
-          this.liveMidiNotes.set(id, entry);
-        }
-        this.gmError = null;
-      })
-      .catch((error) => {
+      when,
+      pedals: enabledPedals,
+      trackId,
+      voiceGroup: 'preview',
+      liveNoteId: id,
+      onMissing: () => {
         if (isDrums) {
-          const resolvedPresetName = this.soundfont.getDrumKitName?.() || 'synth_drum';
-          const cacheKey = this.soundfont.getCacheKey?.({
-            soundfontUrl: this.soundfont.baseUrl,
-            name: resolvedPresetName,
-            bankMSB: resolvedBankMSB,
-            bankLSB: resolvedBankLSB,
-            preset: clampedProgram,
-            percussion: true
-          });
-          const message = `Drum SoundFont missing preset (bankMSB=${resolvedBankMSB}, bankLSB=${resolvedBankLSB}, preset=${clampedProgram}).`;
-          this.gmError = message;
-          this.logDrumNote({
-            backend: 'soundfont',
-            bankMSB: resolvedBankMSB,
-            bankLSB: resolvedBankLSB,
-            program: clampedProgram,
-            preset: clampedProgram,
-            cacheKey,
-            resolvedPresetName,
-            note: resolvedPitch,
-            containsNote: false,
-            keyRange: null,
-            error
-          });
           this.playSampledNote({
             pitch: resolvedPitch,
             duration,
             volume: clampedVolume,
             instrument: this.getFallbackDrum(resolvedPitch),
             when: this.ctx.currentTime + this.midiLatency,
-            pan: clampedPan
+            pan: clampedPan,
+            voiceGroup: 'preview'
           });
           return;
         }
         this.playMidiNote(resolvedPitch, this.getFallbackInstrument(clampedProgram), duration, clampedVolume, null, clampedPan);
-      });
+      }
+    });
   }
 
   gmNoteOnWithLoader({
@@ -1946,9 +2120,15 @@ export default class AudioSystem {
     duration,
     resolvedChannel,
     isDrums,
-    meta
+    meta,
+    maxScheduleLatenessSeconds = 0.12
   }) {
-    const runNoteOn = () => this.soundfont.noteOn(pitch, volume, when, duration, resolvedChannel, meta);
+    const runNoteOn = () => {
+      if (this.ctx.currentTime > when + Math.max(0, Number(maxScheduleLatenessSeconds) || 0)) {
+        return null;
+      }
+      return this.soundfont.noteOn(pitch, volume, Math.max(when, this.ctx.currentTime), duration, resolvedChannel, meta);
+    };
     if (!this.soundfontLoader.enabled) {
       return runNoteOn();
     }
@@ -2000,10 +2180,14 @@ export default class AudioSystem {
     if (!entry) return;
     try {
       if (entry.gain) {
-        entry.gain.gain.setTargetAtTime(0.0001, this.ctx.currentTime, 0.02);
+        const release = Math.max(0.02, entry.release ?? 0.08);
+        entry.gain.gain.setTargetAtTime(0.0001, this.ctx.currentTime, release * 0.45);
       }
       if (entry.stop) {
-        entry.stop();
+        const release = Math.max(0.02, entry.release ?? 0.08);
+        window.setTimeout(() => {
+          try { entry.stop?.(); } catch (error) { /* ignore */ }
+        }, Math.max(20, release * 1000));
       }
     } catch (error) {
       // ignore
@@ -2111,9 +2295,17 @@ export default class AudioSystem {
     reverbSend.gain.value = 0.2;
     gain.connect(reverbSend);
     reverbSend.connect(this.midiReverb);
+    const profile = this.getGmSustainProfile({
+      program: LEGACY_INSTRUMENT_TO_PROGRAM[instrument] ?? 0,
+      channel: isDrum ? GM_DRUM_CHANNEL : 0,
+      isDrums: isDrum || sample.isDrums
+    });
+    const level = Math.max(0.0001, clamp(volume ?? 1, 0, 1));
+    const envelope = this.scheduleGmSustainEnvelope(gain.gain, now, level, duration, profile);
+    this.configureSampleSustainLoop(source, sample, pitch, profile, envelope.effectiveDuration, envelope.release);
     source.start(now);
-    source.stop(now + duration + 0.1);
-    this.registerMidiVoice({ source, gain, stopTime: now + duration + 0.12, group: voiceGroup });
+    source.stop(envelope.stopAt + 0.03);
+    this.registerMidiVoice({ source, gain, stopTime: envelope.stopAt + 0.05, group: voiceGroup });
     const cleanupInput = () => {
       [source, filter].forEach((node) => {
         if (!node) return;
@@ -2129,7 +2321,7 @@ export default class AudioSystem {
       });
     };
     source.onended = cleanupInput;
-    window.setTimeout(cleanupGraph, Math.max(0.2, duration + 2.5) * 1000);
+    window.setTimeout(cleanupGraph, Math.max(0.2, envelope.effectiveDuration + envelope.release + 2.5) * 1000);
   }
 
   getFallbackInstrument(program) {

@@ -14,6 +14,7 @@ import {
   drawSharedStatusToast,
   drawSharedTimeLabel,
   drawSharedThumbstick,
+  drawSharedTransportPopover,
   drawSharedTransportIconButton,
   drawSharedPortraitSheet,
   drawSharedPortraitTabStrip,
@@ -323,6 +324,8 @@ export default class SfxEditor {
     this.buttons = [];
     this.frameButtons = [];
     this.sliderDrag = null;
+    this.transportHold = null;
+    this.transportPopover = null;
     this.isPlaying = false;
     this.playSource = null;
     this.playGain = null;
@@ -1544,7 +1547,23 @@ export default class SfxEditor {
     }
     const hit = this.findHit(payload.x, payload.y);
     if (insidePortraitSheet && (!hit || !['button', 'slider', 'custom-wave-area', 'custom-wave-point'].includes(hit.kind))) return;
-    if (!hit) return;
+    if (!hit) {
+      if (this.transportPopover) this.closeTransportPopover();
+      return;
+    }
+    if (hit.kind === 'transport-popover') {
+      hit.action?.();
+      this.closeTransportPopover();
+      return;
+    }
+    if (this.transportPopover) {
+      this.closeTransportPopover();
+      return;
+    }
+    if (hit.kind === 'button' && hit.onHold) {
+      this.startTransportHold(hit, payload);
+      return;
+    }
     if (hit.kind === 'button') hit.action?.();
     if (hit.kind === 'slider') {
       this.sliderDrag = hit;
@@ -1564,6 +1583,11 @@ export default class SfxEditor {
   }
 
   handlePointerMove(payload) {
+    if (this.transportHold) {
+      const dx = payload.x - this.transportHold.x;
+      const dy = payload.y - this.transportHold.y;
+      if (Math.hypot(dx, dy) > 12) this.cancelTransportHold();
+    }
     if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id || this.panJoystick.id === 'touch')) {
       this.updatePanJoystick(payload.x, payload.y);
       return;
@@ -1575,6 +1599,12 @@ export default class SfxEditor {
   }
 
   handlePointerUp() {
+    if (this.transportHold) {
+      const hold = this.transportHold;
+      this.cancelTransportHold();
+      if (!hold.fired) hold.action?.();
+      return;
+    }
     if (this.panJoystick.active) {
       this.panJoystick.active = false;
       this.panJoystick.id = null;
@@ -1586,6 +1616,47 @@ export default class SfxEditor {
       this.pendingHistorySnapshot = null;
     }
     this.sliderDrag = null;
+  }
+
+  startTransportHold(hit, payload) {
+    this.cancelTransportHold();
+    this.transportHold = {
+      x: payload.x,
+      y: payload.y,
+      action: hit.action,
+      fired: false,
+      timer: window.setTimeout(() => {
+        if (!this.transportHold) return;
+        this.transportHold.fired = true;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(20);
+        hit.onHold?.(hit);
+      }, 500)
+    };
+  }
+
+  cancelTransportHold() {
+    if (this.transportHold?.timer) window.clearTimeout(this.transportHold.timer);
+    this.transportHold = null;
+  }
+
+  closeTransportPopover() {
+    this.transportPopover = null;
+  }
+
+  getTransportActions() {
+    const duration = Math.max(0, Number(this.selectedFrame?.duration || 0));
+    return [
+      { id: 'start', label: '⏮', col: 0, row: 0, action: () => { this.playheadTime = 0; this.timelineScrollTime = 0; } },
+      { id: 'back', label: '⏪', col: 0, row: 1, action: () => { this.playheadTime = Math.max(0, Number(this.playheadTime || 0) - 0.25); } },
+      { id: 'forward', label: '⏩', col: 0, row: 2, action: () => { this.playheadTime = Math.min(duration, Number(this.playheadTime || 0) + 0.25); } },
+      { id: 'end', label: '⏭', col: 0, row: 3, action: () => { this.playheadTime = duration; } },
+      { id: 'play', label: this.isPlaying ? '❚❚' : '▶', col: 1, row: 1, primary: true, active: this.isPlaying, action: () => (this.isPlaying ? this.stop() : this.play()) },
+      { id: 'stop', label: '⏹', col: 1, row: 2, action: () => this.stop() }
+    ];
+  }
+
+  openTransportPopover(anchor) {
+    this.transportPopover = { anchor: { x: anchor.x, y: anchor.y, w: anchor.w, h: anchor.h } };
   }
 
   findHit(x, y) {
@@ -2495,10 +2566,10 @@ export default class SfxEditor {
       : null;
     if (this.isMobilePortrait) {
       drawSharedPortraitActionRail(ctx, bounds, this.panJoystick, [
-        { id: 'menu', label: '☰', onClick: () => { this.leftTab = 'file'; } },
+        { id: 'menu', label: '☰', onClick: () => { this.leftTab = this.leftTab === 'timeline' ? 'file' : 'timeline'; } },
         { id: 'undo', label: '↶', onClick: () => this.undo() },
         { id: 'redo', label: '↷', onClick: () => this.redo() },
-        { id: 'play', label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying, primary: true, onClick: () => (this.isPlaying ? this.stop() : this.play()) }
+        { id: 'play', label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying, primary: true, onClick: () => (this.isPlaying ? this.stop() : this.play()), onHold: (hit) => this.openTransportPopover(hit) }
       ], {
         drawPanel: false,
         drawButton: (buttonBounds, button) => {
@@ -2507,9 +2578,10 @@ export default class SfxEditor {
             active: Boolean(button.active),
             emphasis: button.primary
           });
-          this.buttons.push({ ...buttonBounds, kind: 'button', action: button.onClick });
+          this.buttons.push({ ...buttonBounds, kind: 'button', action: button.onClick, onHold: button.onHold });
         }
       });
+      if (this.transportPopover) this.drawTransportPopover(ctx);
       return;
     }
     const actionArea = portraitRailLayout?.actionArea || {
@@ -2519,7 +2591,7 @@ export default class SfxEditor {
       h: bounds.h
     };
     const transport = [
-      { label: '☰', action: () => { this.leftTab = 'file'; } },
+      { label: '☰', action: () => { this.leftTab = this.leftTab === 'timeline' ? 'file' : 'timeline'; } },
       { label: '⏮', action: () => { this.playheadTime = 0; this.timelineScrollTime = 0; } },
       { label: '⏪', action: () => { this.playheadTime = Math.max(0, Number(this.playheadTime || 0) - 0.25); } },
       { label: this.isPlaying ? '❚❚' : '▶', action: () => (this.isPlaying ? this.stop() : this.play()), active: this.isPlaying, emphasis: true },
@@ -2561,6 +2633,18 @@ export default class SfxEditor {
     ctx.font = '12px Courier New';
     ctx.fillText(`Frames ${this.sfx.frames.length} | Frame ${this.selectedFrameIndex + 1} | Layer ${this.selectedLayerIndex + 1}`, bounds.x + 14, bounds.y + 76);
     drawSharedTimeLabel(ctx, { x: bounds.x + 14, y: bounds.y + 94, w: bounds.w - 28, h: 16 }, `View ${this.timelineScrollTime.toFixed(2)}s | Playhead ${Number(this.playheadTime || 0).toFixed(2)}s`, { fontSize: 11 });
+  }
+
+  drawTransportPopover(ctx) {
+    const viewport = { x: 0, y: 0, w: ctx.canvas.width, h: ctx.canvas.height };
+    const layout = drawSharedTransportPopover(ctx, this.transportPopover.anchor, viewport, this.getTransportActions(), {
+      columns: 2,
+      columnWidth: 54,
+      rowHeight: 42
+    });
+    layout.buttons.forEach((button) => {
+      this.buttons.push({ ...button.bounds, kind: 'transport-popover', action: button.action });
+    });
   }
 
   drawSlider(ctx, x, y, w, label, value, min, max, set) {

@@ -2803,29 +2803,18 @@ export default class RobterSession {
       } else {
         const sound = this.resolveInstrumentSound(instrument, sectionName);
         const channel = INSTRUMENT_CHANNELS[instrument] ?? 0;
-        if (hasPedals) {
-          this.playSessionGmNote({
-            pitch,
-            duration: 0.45,
-            volume: velocity,
-            program: sound.program,
-            channel,
-            bankMSB: sound.bankMSB,
-            bankLSB: sound.bankLSB
-          }, instrument);
-        } else {
-          this.audio.startLiveGmNote?.({
-            id: event.id,
-            pitch,
-            duration: 1.4,
-            volume: velocity,
-            program: sound.program,
-            channel,
-            bankMSB: sound.bankMSB,
-            bankLSB: sound.bankLSB
-          });
-          this.robterspielNotes.add(event.id);
-        }
+        this.audio.startLiveGmNote?.({
+          id: event.id,
+          pitch,
+          duration: 8,
+          volume: velocity,
+          program: sound.program,
+          channel,
+          bankMSB: sound.bankMSB,
+          bankLSB: sound.bankLSB,
+          pedals
+        });
+        this.robterspielNotes.add(event.id);
       }
     });
     this.inputBus.on('noteoff', (event) => {

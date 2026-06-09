@@ -7,7 +7,9 @@ export const PEDAL_SIGNAL_CHAIN_ORDER = Object.freeze([
   'compressor',
   'octave',
   'overdrive',
+  'tape',
   'eq',
+  'studioEq',
   'wah',
   'phaser',
   'chorus',
@@ -15,7 +17,8 @@ export const PEDAL_SIGNAL_CHAIN_ORDER = Object.freeze([
   'panPhaser',
   'volumePhaser',
   'echo',
-  'reverb'
+  'reverb',
+  'limiter'
 ]);
 
 const pedalSignalOrderIndex = (type) => {

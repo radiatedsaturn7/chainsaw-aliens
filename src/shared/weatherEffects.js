@@ -197,7 +197,8 @@ export function updateWeatherSystem({
 
   const safeBounds = normalizeBounds(bounds);
   const safeScale = Math.max(0.05, safeNumber(scale, 1));
-  const safeIntensity = Math.max(0.1, Math.min(4, safeNumber(intensity, 1)));
+  const safeIntensity = Math.max(0, Math.min(4, safeNumber(intensity, 1)));
+  if (safeIntensity <= 0) return profile;
   const precipitationWind = (profile.vx + state.wind.value + windBias) * safeScale;
   const precipitationOverscan = profile.screenFill ? Math.max(64 * safeScale, Math.abs(precipitationWind) * 0.45) : 0;
   const style = {

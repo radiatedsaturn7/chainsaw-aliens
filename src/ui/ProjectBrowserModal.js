@@ -3,10 +3,13 @@ import {
   deleteProjectFile,
   duplicateProjectFile,
   ensureProjectFileIndex,
+  deleteProjectFileVersion,
   projectFileExists,
   listProjectFiles,
+  listProjectFileVersions,
   loadProjectFile,
   renameProjectFile,
+  restoreProjectFileVersion,
   sanitizeProjectFileName
 } from './projectFiles.js';
 import { hydrateServerStorage } from './serverStorage.js';
@@ -227,6 +230,10 @@ export function openProjectBrowser({
 
     let pendingDelete = null;
     let renameTarget = null;
+    let versionsTarget = null;
+    let versionEntries = [];
+    let versionLoading = false;
+    let versionError = '';
     const artPreviewCache = new Map();
     const actorPreviewCache = new Map();
     const previewTimers = new Set();
@@ -358,6 +365,56 @@ export function openProjectBrowser({
       cleanup({ action: 'open', folder, name, payload });
     }
 
+    async function openVersions(folder, name) {
+      versionsTarget = name;
+      pendingDelete = null;
+      renameTarget = null;
+      versionEntries = [];
+      versionError = '';
+      versionLoading = true;
+      refresh();
+      try {
+        versionEntries = await listProjectFileVersions(folder, name);
+      } catch (error) {
+        versionError = String(error?.message || error || 'Could not load versions');
+      } finally {
+        versionLoading = false;
+        refresh();
+      }
+    }
+
+    async function restoreVersion(folder, name, versionId) {
+      versionLoading = true;
+      versionError = '';
+      refresh();
+      try {
+        const restored = await restoreProjectFileVersion(folder, name, versionId);
+        if (restored?.data === undefined) throw new Error('Version restore failed');
+        versionsTarget = null;
+        versionEntries = [];
+        refresh();
+      } catch (error) {
+        versionError = String(error?.message || error || 'Could not restore version');
+        versionLoading = false;
+        refresh();
+      }
+    }
+
+    async function deleteVersion(folder, name, versionId) {
+      versionLoading = true;
+      versionError = '';
+      refresh();
+      try {
+        await deleteProjectFileVersion(folder, name, versionId);
+        versionEntries = await listProjectFileVersions(folder, name);
+      } catch (error) {
+        versionError = String(error?.message || error || 'Could not delete version');
+      } finally {
+        versionLoading = false;
+        refresh();
+      }
+    }
+
     function renderHome() {
       fileList.innerHTML = '';
       const grid = document.createElement('div');
@@ -456,7 +513,9 @@ export function openProjectBrowser({
         nameRow.innerHTML = `<strong>📄 ${entry.name}</strong>`;
         nameRow.appendChild(typeBadge);
         const detail = document.createElement('span');
-        detail.textContent = `Updated ${formatDate(entry.updatedAt)} · ${formatSize(entry.size)}`;
+        detail.textContent = entry.deleted
+          ? `Deleted · ${entry.versionCount || 0} version${entry.versionCount === 1 ? '' : 's'} available`
+          : `Updated ${formatDate(entry.updatedAt)} · ${formatSize(entry.size)}`;
         meta.appendChild(nameRow);
         meta.appendChild(detail);
         row.appendChild(meta);
@@ -471,9 +530,9 @@ export function openProjectBrowser({
           }));
         } else {
           const openBtn = makeButton('Open', 'project-browser-btn primary', () => openFile(folder, entry.name));
-          openBtn.disabled = !PROJECT_FOLDERS.includes(folder);
+          openBtn.disabled = !PROJECT_FOLDERS.includes(folder) || entry.deleted;
           actions.appendChild(openBtn);
-          if (folder === 'music') {
+          if (folder === 'music' && !entry.deleted) {
             const toggleBtn = makeButton(activePreviewTrackId === entry.name ? 'Pause' : 'Play', 'project-browser-btn', () => {
               const game = window.__game;
               if (activePreviewTrackId === entry.name) {
@@ -489,23 +548,35 @@ export function openProjectBrowser({
             actions.appendChild(toggleBtn);
           }
 
-          actions.appendChild(makeButton('Rename', 'project-browser-btn', () => {
+          const renameBtn = makeButton('Rename', 'project-browser-btn', () => {
             if (!PROJECT_FOLDERS.includes(folder)) return;
             renameTarget = entry.name;
             pendingDelete = null;
+            versionsTarget = null;
             refresh();
-          }));
-          actions.appendChild(makeButton('Duplicate', 'project-browser-btn', () => {
+          });
+          renameBtn.disabled = Boolean(entry.deleted);
+          actions.appendChild(renameBtn);
+
+          const duplicateBtn = makeButton('Duplicate', 'project-browser-btn', () => {
             if (!PROJECT_FOLDERS.includes(folder)) return;
             const candidate = sanitizeProjectFileName(`${entry.name} Copy`);
             if (!candidate || projectFileExists(folder, candidate)) return;
             duplicateProjectFile(folder, entry.name, candidate);
             refresh();
+          });
+          duplicateBtn.disabled = Boolean(entry.deleted);
+          actions.appendChild(duplicateBtn);
+
+          actions.appendChild(makeButton('Versions', 'project-browser-btn', () => {
+            if (!PROJECT_FOLDERS.includes(folder)) return;
+            void openVersions(folder, entry.name);
           }));
           actions.appendChild(makeButton('Delete', 'project-browser-btn danger', () => {
             if (!PROJECT_FOLDERS.includes(folder)) return;
             pendingDelete = entry.name;
             renameTarget = null;
+            versionsTarget = null;
             refresh();
           }));
         }
@@ -530,6 +601,49 @@ export function openProjectBrowser({
             refresh();
           }));
           row.appendChild(renameRow);
+        }
+
+        if (mode !== 'saveAs' && versionsTarget === entry.name) {
+          const versionsRow = document.createElement('div');
+          versionsRow.className = 'project-browser-inline';
+          if (versionLoading) {
+            const loading = document.createElement('span');
+            loading.textContent = 'Loading versions...';
+            versionsRow.appendChild(loading);
+          } else if (versionError) {
+            const error = document.createElement('span');
+            error.textContent = versionError;
+            versionsRow.appendChild(error);
+          } else if (!versionEntries.length) {
+            const empty = document.createElement('span');
+            empty.textContent = 'No saved versions yet';
+            versionsRow.appendChild(empty);
+          } else {
+            const list = document.createElement('div');
+            list.className = 'project-browser-version-list';
+            versionEntries.slice(0, 24).forEach((version) => {
+              const versionItem = document.createElement('div');
+              versionItem.className = 'project-browser-version-row';
+              const label = document.createElement('span');
+              label.textContent = `${formatDate(version.savedAt)} · ${formatSize(version.size)}${version.reason ? ` · ${version.reason}` : ''}`;
+              versionItem.appendChild(label);
+              versionItem.appendChild(makeButton('Restore', 'project-browser-btn primary', () => {
+                void restoreVersion(folder, entry.name, version.id);
+              }));
+              versionItem.appendChild(makeButton('Delete', 'project-browser-btn danger', () => {
+                void deleteVersion(folder, entry.name, version.id);
+              }));
+              list.appendChild(versionItem);
+            });
+            versionsRow.appendChild(list);
+          }
+          versionsRow.appendChild(makeButton('Close', 'project-browser-btn', () => {
+            versionsTarget = null;
+            versionEntries = [];
+            versionError = '';
+            refresh();
+          }));
+          row.appendChild(versionsRow);
         }
 
         if (mode !== 'saveAs' && pendingDelete === entry.name) {

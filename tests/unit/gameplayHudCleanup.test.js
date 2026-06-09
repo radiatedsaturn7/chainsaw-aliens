@@ -245,9 +245,9 @@ test('midi portrait paths use real mixer and portrait record layout', () => {
 
 test('midi live wah pedal path is trimmed to avoid crackling', () => {
   const audioSource = readFileSync(new URL('../../src/game/Audio.js', import.meta.url), 'utf8');
-  assert.equal(audioSource.includes('outputTrim.gain.value = enabled.length ? 0.82 : 1'), true);
+  assert.equal(audioSource.includes('outputTrim.gain.value = enabled.length ? 0.76 : 1'), true);
   assert.equal(audioSource.includes('const hasPedals = Array.isArray(pedals) && pedals.some'), true);
-  assert.equal(audioSource.includes('const clampedVolume = clamp(volume ?? 1, 0, hasPedals ? 0.82 : 1)'), true);
-  assert.equal(audioSource.includes('filter.Q.value = 0.7 + clamp(knobs.mix ?? 0.7, 0, 1) * 2.6'), true);
-  assert.equal(audioSource.includes('lfoGain.gain.value = 160 + clamp(knobs.sweep ?? 0.6, 0, 1) * 1150'), true);
+  assert.equal(audioSource.includes('const clampedVolume = clamp(volume ?? 1, 0, hasPedals ? 0.78 : 1)'), true);
+  assert.equal(audioSource.includes('filter.Q.value = 0.55 + clamp(knobs.mix ?? 0.48, 0, 1) * 1.8'), true);
+  assert.equal(audioSource.includes('lfoGain.gain.value = 120 + clamp(knobs.sweep ?? 0.48, 0, 1) * 760'), true);
 });

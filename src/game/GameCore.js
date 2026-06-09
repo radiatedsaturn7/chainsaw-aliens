@@ -5997,7 +5997,7 @@ export default class Game {
     });
   }
 
-  setActiveMusicTrack(trackId, { volume = 1, loop = true, restart = false } = {}) {
+  setActiveMusicTrack(trackId, { volume = 1, loop = true, restart = false, offsetMs = 0 } = {}) {
     const targetVolume = Math.max(0, Math.min(1, Number(volume ?? 1)));
     if (trackId === this.activeMusicTrackId && !restart) {
       this.musicPlayers
@@ -6019,13 +6019,13 @@ export default class Game {
         if (preloadToken !== this.musicPreloadToken) return;
         if (trackId !== this.activeMusicTrackId) return;
         const player = new MidiSongPlayer(this.audio);
-        player.setSong(libraryEntry.song, trackId, { loop });
+        player.setSong(libraryEntry.song, trackId, { loop, offsetMs });
         player.setFade(targetVolume, this.musicFadeDuration);
         this.musicPlayers.push(player);
       });
   }
 
-  playActorMidi(trackId, { fadeMs = 250, volume = 1 } = {}) {
+  playActorMidi(trackId, { fadeMs = 250, volume = 1, offsetMs = 0 } = {}) {
     if (this.cutsceneMusicTrackId || this.cutscenePlayer?.active) return;
     const resolvedTrackId = String(trackId || '').trim();
     if (!resolvedTrackId) return;
@@ -6033,7 +6033,7 @@ export default class Game {
     this.actorMusicOverrideTrackId = resolvedTrackId;
     const previousFadeDuration = this.musicFadeDuration;
     this.musicFadeDuration = Math.max(0, Number(fadeMs || 0)) / 1000;
-    this.setActiveMusicTrack(resolvedTrackId, { volume });
+    this.setActiveMusicTrack(resolvedTrackId, { volume, offsetMs });
     this.musicFadeDuration = previousFadeDuration;
   }
 
@@ -6048,14 +6048,14 @@ export default class Game {
     this.musicFadeDuration = previousFadeDuration;
   }
 
-  playCutsceneMidi(trackId, { fadeMs = 120, volume = 1 } = {}) {
+  playCutsceneMidi(trackId, { fadeMs = 120, volume = 1, offsetMs = 0 } = {}) {
     const resolvedTrackId = String(trackId || '').trim();
     if (!resolvedTrackId) return;
     if (!this.getLibrarySong(resolvedTrackId)) return;
     this.cutsceneMusicTrackId = resolvedTrackId;
     const previousFadeDuration = this.musicFadeDuration;
     this.musicFadeDuration = Math.max(0, Number(fadeMs || 0)) / 1000;
-    this.setActiveMusicTrack(resolvedTrackId, { volume, loop: false, restart: true });
+    this.setActiveMusicTrack(resolvedTrackId, { volume, loop: false, restart: true, offsetMs });
     this.musicFadeDuration = previousFadeDuration;
   }
 

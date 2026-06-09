@@ -1,18 +1,10 @@
 {
   "folders": {
-    "levels": {
-      "Game": "levels/Game/document.json",
-      "Leevel0": "levels/Leevel0/document.json",
-      "Level Editor Autosave": "levels/Level Editor Autosave/document.json",
-      "level0": "levels/level0/document.json",
-      "level01": "levels/level01/document.json",
-      "level1": "levels/level1/document.json",
-      "m": "levels/m/document.json",
-      "m2": "levels/m2/document.json",
-      "new-level-1771217621465": "levels/new-level-1771217621465/document.json",
-      "new-level-1773282688371": "levels/new-level-1773282688371/document.json",
-      "new-level-1773427091431": "levels/new-level-1773427091431/document.json",
-      "new-level": "levels/new-level/document.json"
+    "actors": {
+      "Head.json": "actors/Head.json/document.json",
+      "Husk1.json": "actors/Husk1.json/document.json",
+      "Husk2.json": "actors/Husk2.json/document.json",
+      "New Actor.json": "actors/New Actor.json/document.json"
     },
     "art": {
       "Head2": "art/Head2/document.json",
@@ -62,6 +54,20 @@
       "zombie-idle": "art/zombie-idle/document.json",
       "zombie-walk": "art/zombie-walk/document.json"
     },
+    "levels": {
+      "Game": "levels/Game/document.json",
+      "Leevel0": "levels/Leevel0/document.json",
+      "Level Editor Autosave": "levels/Level Editor Autosave/document.json",
+      "level0": "levels/level0/document.json",
+      "level01": "levels/level01/document.json",
+      "level1": "levels/level1/document.json",
+      "m": "levels/m/document.json",
+      "m2": "levels/m2/document.json",
+      "new-level-1771217621465": "levels/new-level-1771217621465/document.json",
+      "new-level-1773282688371": "levels/new-level-1773282688371/document.json",
+      "new-level-1773427091431": "levels/new-level-1773427091431/document.json",
+      "new-level": "levels/new-level/document.json"
+    },
     "music": {
       "1": "music/1/document.json",
       "Boss1": "music/Boss1/document.json",
@@ -69,16 +75,14 @@
       "Horror": "music/Horror/document.json",
       "MIDI Composer Autosave": "music/MIDI Composer Autosave/document.json",
       "bunnies": "music/bunnies/document.json",
-      "test": "music/test/document.json",
-      "R1": "music/R1/document.json"
-    },
-    "actors": {
-      "Head.json": "actors/Head.json/document.json",
-      "Husk1.json": "actors/Husk1.json/document.json",
-      "Husk2.json": "actors/Husk2.json/document.json",
-      "New Actor.json": "actors/New Actor.json/document.json",
-      "Robot1.json": "actors/Robot1.json/document.json",
-      "r3": "actors/r3/document.json"
+      "intro2": "music/intro2/document.json",
+      "R1": "music/R1/document.json",
+      "Other": "music/Other/document.json",
+      "rock": "music/rock/document.json",
+      "Boss2": "music/Boss2/document.json",
+      "intro3": "music/intro3/document.json",
+      "r2": "music/r2/document.json",
+      "Intro": "music/Intro/document.json"
     },
     "settings": {
       "chainsaw-gm-soundfont-url": "settings/chainsaw-gm-soundfont-url/document.json",
@@ -87,6 +91,11 @@
     },
     "sfx": {
       "Alarm": "sfx/Alarm/document.json"
+    },
+    "cutscenes": {
+      "c1": "cutscenes/c1/document.json",
+      "c2": "cutscenes/c2/document.json",
+      "c3": "cutscenes/c3/document.json"
     }
   }
 }

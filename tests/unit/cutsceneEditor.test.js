@@ -17,6 +17,7 @@ import {
   normalizeCutsceneDocument,
   resolveActorStateEvent,
   resolveCutsceneActorVisualDimensions,
+  sampleCutsceneEffectClip,
   sampleCutsceneClip,
   screenToCutscenePoint,
   selectCutsceneMovieRecordingMimeType,
@@ -142,8 +143,13 @@ test('cutscene documents normalize to schema v2 with safe arrays and new clip fi
     }, {
       type: 'effect',
       effectType: 'blizzard',
-      intensity: 1.5,
-      wind: -2
+      intensity: 0,
+      wind: -2,
+      opacity: 0.75,
+      keyframes: [
+        { timeMs: 500, intensity: 4, opacity: 1, wind: -1, manual: true },
+        { timeMs: 1500, intensity: 0, opacity: 0, wind: 0, manual: true }
+      ]
     }]
   });
 
@@ -162,8 +168,11 @@ test('cutscene documents normalize to schema v2 with safe arrays and new clip fi
   assert.equal(doc.clips[2].stateEvents[0].stateId, 'attack');
   assert.equal(doc.clips[3].type, 'effect');
   assert.equal(doc.clips[3].effectType, 'blizzard');
-  assert.equal(doc.clips[3].intensity, 1.5);
+  assert.equal(doc.clips[3].intensity, 0);
   assert.equal(doc.clips[3].wind, -2);
+  assert.equal(doc.clips[3].opacity, 0.75);
+  assert.equal(doc.clips[3].keyframes.length, 2);
+  assert.equal(doc.clips[3].keyframes[1].intensity, 0);
 });
 
 test('cutscene clip sampler holds base pose before first explicit key', () => {
@@ -283,6 +292,66 @@ test('cutscene color boards normalize and render with sampled opacity', () => {
   assert.equal(boardDraw.globalAlpha, 0.5);
 });
 
+test('cutscene draw order uses top timeline tracks as top visual layers', () => {
+  const doc = normalizeCutsceneDocument({
+    width: 256,
+    height: 144,
+    tracks: [
+      { id: 'top', name: 'Top Board' },
+      { id: 'bottom', name: 'Bottom Board' }
+    ],
+    clips: [{
+      id: 'top-board',
+      type: 'color-board',
+      color: '#000000',
+      trackId: 'top',
+      startMs: 0,
+      durationMs: 1000,
+      opacity: 1
+    }, {
+      id: 'bottom-board',
+      type: 'color-board',
+      color: '#ffffff',
+      trackId: 'bottom',
+      startMs: 0,
+      durationMs: 1000,
+      opacity: 1
+    }]
+  });
+  const ctx = createRecordingContext();
+
+  drawCutsceneDocument(ctx, doc, 500, { x: 0, y: 0, w: 256, h: 144 });
+
+  const bottomIndex = ctx.calls.findIndex((call) => call.fillStyle === '#ffffff');
+  const topIndex = ctx.calls.findIndex((call) => call.fillStyle === '#000000');
+  assert.equal(bottomIndex >= 0, true);
+  assert.equal(topIndex >= 0, true);
+  assert.equal(topIndex > bottomIndex, true);
+});
+
+test('cutscene color board opacity keyframes use local clip time', () => {
+  const doc = normalizeCutsceneDocument({
+    width: 256,
+    height: 144,
+    clips: [{
+      id: 'fade-board',
+      type: 'color-board',
+      color: '#000000',
+      startMs: 1000,
+      durationMs: 1000,
+      opacity: 0,
+      keyframes: [
+        { timeMs: 0, x: 128, y: 72, scale: 1, rotation: 0, opacity: 0, w: 256, h: 144, manual: true },
+        { timeMs: 1000, x: 128, y: 72, scale: 1, rotation: 0, opacity: 1, w: 256, h: 144, manual: true }
+      ]
+    }]
+  });
+
+  assert.equal(sampleCutsceneClip(doc.clips[0], 1000).opacity, 0);
+  assert.equal(sampleCutsceneClip(doc.clips[0], 1500).opacity, 0.5);
+  assert.equal(sampleCutsceneClip(doc.clips[0], 2000).opacity, 1);
+});
+
 test('cutscene scene transitions fade the full stage from and to black', () => {
   const doc = normalizeCutsceneDocument({
     durationMs: 2000,
@@ -339,16 +408,36 @@ test('cutscene timeline viewport zoom maps visible time range', () => {
   assert.equal(Math.round(timelineXToMs(timelineMsToX(1800, layout), layout)), 1800);
 });
 
-test('cutscene editor timeline zoom buttons preserve visible center', () => {
+test('cutscene editor timeline zoom buttons preserve selected clip focus', () => {
   const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
-  editor.document = normalizeCutsceneDocument({ durationMs: 6000 });
+  editor.document = normalizeCutsceneDocument({
+    durationMs: 6000,
+    clips: [{ id: 'clip-1', type: 'text', startMs: 1500, durationMs: 1000, text: 'Focus' }]
+  });
+  editor.selectedClipId = 'clip-1';
   editor.timelineZoomX = 2;
   editor.timelineScrollMs = 1000;
 
   editor.adjustTimelineZoom(2);
 
   assert.equal(editor.timelineZoomX, 4);
-  assert.equal(editor.timelineScrollMs, 1750);
+  assert.equal(editor.timelineScrollMs, 1500);
+});
+
+test('cutscene editor open focuses first clip content instead of empty timeline origin', () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+
+  editor.applyDocument({
+    durationMs: 6000,
+    clips: [
+      { id: 'late', type: 'text', startMs: 3000, durationMs: 500, text: 'Late' },
+      { id: 'early', type: 'text', startMs: 1200, durationMs: 600, text: 'Early' }
+    ]
+  }, 'focus-test');
+
+  assert.equal(editor.selectedClipId, 'early');
+  assert.equal(editor.playheadMs, 1200);
+  assert.equal(editor.timelineScrollTrack, 1);
 });
 
 test('cutscene timeline viewport exposes only scrolled visible tracks', () => {
@@ -507,11 +596,51 @@ test('cutscene player fires zero-time MIDI before waiting for input', () => {
     ]
   });
 
+  assert.deepEqual(events, [['play', 'Intro', 0.75]]);
   player.update(0.2);
 
   assert.deepEqual(events, [['play', 'Intro', 0.75]]);
   assert.equal(player.timeMs, 100);
   assert.equal(player.waitingPauseClipId, 'pause-1');
+});
+
+test('cutscene player starts overlapping music at trackhead offset and skips prior one-shot sfx', () => {
+  const events = [];
+  const player = new CutscenePlayer({
+    playCutsceneMidi(ref, options) { events.push(['music', ref, options.offsetMs]); },
+    playSfxById(ref) { events.push(['sfx', ref]); }
+  });
+  player.play({
+    durationMs: 2000,
+    assets: [
+      { id: 'music-asset', type: 'music', ref: 'Theme' },
+      { id: 'sfx-asset', type: 'sfx', ref: 'Boom' }
+    ],
+    clips: [
+      { id: 'music-1', type: 'music', assetId: 'music-asset', startMs: 0, durationMs: 1200, volume: 1 },
+      { id: 'sfx-1', type: 'sfx', assetId: 'sfx-asset', startMs: 200, durationMs: 100, loop: false }
+    ]
+  }, { startMs: 500 });
+
+  player.update(0.01);
+
+  assert.deepEqual(events, [['music', 'Theme', 500]]);
+});
+
+test('cutscene player starts overlapping looped sfx when preview starts inside it', () => {
+  const events = [];
+  const player = new CutscenePlayer({
+    playSfxById(ref, options) { events.push(['sfx', ref, options.loop]); }
+  });
+  player.play({
+    durationMs: 2000,
+    assets: [{ id: 'sfx-asset', type: 'sfx', ref: 'Wind' }],
+    clips: [{ id: 'sfx-1', type: 'sfx', assetId: 'sfx-asset', startMs: 200, durationMs: 1000, loop: true }]
+  }, { startMs: 500 });
+
+  player.update(0.01);
+
+  assert.deepEqual(events, [['sfx', 'Wind', true]]);
 });
 
 test('cutscene player does not fire audio scheduled after a pause before input resumes', () => {
@@ -646,7 +775,7 @@ test('cutscene editor empty timeline drag pans zoomed time and tracks', () => {
   const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
   editor.document = normalizeCutsceneDocument({
     durationMs: 6000,
-    clips: Array.from({ length: 8 }, (_, index) => ({
+    clips: Array.from({ length: 20 }, (_, index) => ({
       id: `clip-${index}`,
       type: 'text',
       text: `Clip ${index}`,
@@ -661,12 +790,52 @@ test('cutscene editor empty timeline drag pans zoomed time and tracks', () => {
   const beforeMs = editor.timelineScrollMs;
   const beforeTrack = editor.timelineScrollTrack;
 
-  editor.handlePointerDown({ x: track.x + track.w - 8, y: track.y + track.h - 8 });
-  editor.handlePointerMove({ x: track.x + 20, y: track.y + 20 });
+  editor.handlePointerDown({ x: track.x + track.w - 8, y: track.y + 80 });
+  editor.handlePointerMove({ x: track.x + 20, y: track.y + 62 });
   editor.handlePointerUp();
 
   assert.equal(editor.timelineScrollMs > beforeMs, true);
   assert.equal(editor.timelineScrollTrack >= beforeTrack, true);
+  assert.equal(Number.isInteger(editor.timelineScrollTrack), false);
+});
+
+test('cutscene timeline layout supports fractional vertical track scroll', () => {
+  const clips = Array.from({ length: 8 }, (_, index) => ({ id: `clip-${index}`, type: 'text', text: `Clip ${index}` }));
+  const layout = getCutsceneTimelineLayout({ x: 0, y: 0, w: 320, h: 180 }, 6000, clips, {
+    zoomX: 1,
+    scrollTrack: 1.5,
+    minLaneHeight: 30
+  });
+
+  assert.equal(layout.scrollTrack, 1.5);
+  assert.equal(layout.scrollTrackIndex, 1);
+  assert.equal(layout.scrollTrackOffset, 0.5);
+  assert.equal(layout.laneBounds[0].index, 1);
+  assert.equal(layout.laneBounds[0].bounds.y < layout.track.y, true);
+});
+
+test('cutscene editor thumbstick down pans down through tracks smoothly', () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  editor.document = normalizeCutsceneDocument({
+    durationMs: 6000,
+    clips: Array.from({ length: 10 }, (_, index) => ({
+      id: `clip-${index}`,
+      type: 'text',
+      text: `Clip ${index}`,
+      durationMs: 1000
+    }))
+  });
+  editor.workspaceMode = 'timeline';
+  editor.bounds.timeline = { x: 0, y: 0, w: 320, h: 150 };
+  editor.panJoystick.active = true;
+  editor.panJoystick.dx = 0;
+  editor.panJoystick.dy = 1;
+  const before = editor.timelineScrollTrack;
+
+  editor.update({}, 0.25);
+
+  assert.equal(editor.timelineScrollTrack > before, true);
+  assert.equal(Number.isInteger(editor.timelineScrollTrack), false);
 });
 
 test('cutscene editor playhead key mode creates a local keyframe', () => {
@@ -1107,18 +1276,21 @@ test('cutscene editor track controls reorder object tracks', () => {
     ]
   });
   editor.selectedClipId = 'text-1';
+  const artTrackId = editor.document.clips.find((clip) => clip.id === 'art-1').trackId;
+  const textTrackId = editor.document.clips.find((clip) => clip.id === 'text-1').trackId;
 
   editor.moveSelectedTrack(-1);
-  assert.deepEqual(editor.document.clips.map((clip) => clip.id), ['text-1', 'art-1']);
+  assert.deepEqual(editor.document.clips.map((clip) => clip.id), ['art-1', 'text-1']);
+  assert.deepEqual(editor.document.tracks.map((track) => track.id), [textTrackId, artTrackId]);
 
   editor.moveSelectedTrackTo('bottom');
   assert.deepEqual(editor.document.clips.map((clip) => clip.id), ['art-1', 'text-1']);
+  assert.deepEqual(editor.document.tracks.map((track) => track.id), [artTrackId, textTrackId]);
 
-  editor.activeMenuTab = 'layers';
+  editor.clipOptionsTab = 'edit';
   const items = editor.getMenuItems().map((item) => item.id);
-  assert.equal(items.includes('track-up'), true);
-  assert.equal(items.includes('track-down'), true);
-  assert.equal(items.includes('select-track:art-1'), true);
+  assert.equal(items.includes('copy'), false);
+  assert.equal(editor.getClipOptionItems(editor.getSelectedClip(), 'edit').some((item) => item.id === 'move-to-track'), true);
 });
 
 test('cutscene editor timeline vertical drag reorders object tracks', () => {
@@ -1131,13 +1303,102 @@ test('cutscene editor timeline vertical drag reorders object tracks', () => {
   });
   editor.draw(createMockContext(), 390, 844);
   const textClip = editor.bounds.clips.find((entry) => entry.id === 'text-1');
-  const artLane = editor.bounds.trackLabels.find((entry) => entry.id === 'art-1');
+  const artTrackId = editor.document.clips.find((entry) => entry.id === 'art-1').trackId;
+  const artLane = editor.bounds.trackLabels.find((entry) => entry.trackId === artTrackId);
 
   editor.handlePointerDown({ x: textClip.x + 8, y: textClip.y + textClip.h / 2 });
   editor.handlePointerMove({ x: textClip.x + 8, y: artLane.y + artLane.h / 2 });
   editor.handlePointerUp();
 
-  assert.deepEqual(editor.document.clips.map((clip) => clip.id), ['text-1', 'art-1']);
+  assert.deepEqual(editor.document.clips.map((clip) => clip.id), ['art-1', 'text-1']);
+  assert.equal(editor.document.clips.find((clip) => clip.id === 'text-1').trackId, artTrackId);
+  assert.equal(editor.document.tracks.length, 2);
+});
+
+test('cutscene editor supports multiple clips on one timeline track', () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  editor.document = normalizeCutsceneDocument({
+    tracks: [{ id: 'dialogue', name: 'Dialogue' }],
+    clips: [
+      { id: 'text-1', type: 'text', text: '2994 AD', trackId: 'dialogue', durationMs: 1000 },
+      { id: 'text-2', type: 'text', text: 'THE LAST MESSAGE', trackId: 'dialogue', startMs: 1200, durationMs: 1000 }
+    ]
+  });
+
+  editor.draw(createMockContext(), 390, 844);
+
+  assert.equal(editor.document.tracks.length, 1);
+  assert.deepEqual(editor.document.clips.map((clip) => clip.trackId), ['dialogue', 'dialogue']);
+  assert.equal(editor.bounds.trackLabels.length, 1);
+  assert.equal(editor.bounds.clips.filter((clip) => clip.trackId === 'dialogue').length, 2);
+  assert.equal(editor.getClipOptionItems(editor.document.clips[0], 'edit').some((item) => item.id === 'move-to-track'), true);
+  assert.equal(editor.bounds.clips[0].y, editor.bounds.clips[1].y);
+});
+
+test('cutscene editor stacks only overlapping clips on the same timeline track', () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  editor.document = normalizeCutsceneDocument({
+    tracks: [{ id: 'dialogue', name: 'Dialogue' }],
+    clips: [
+      { id: 'text-1', type: 'text', text: 'A', trackId: 'dialogue', startMs: 0, durationMs: 1200 },
+      { id: 'text-2', type: 'text', text: 'B', trackId: 'dialogue', startMs: 600, durationMs: 1200 }
+    ]
+  });
+
+  editor.draw(createMockContext(), 390, 844);
+
+  const first = editor.bounds.clips.find((clip) => clip.id === 'text-1');
+  const second = editor.bounds.clips.find((clip) => clip.id === 'text-2');
+  assert.notEqual(first.y, second.y);
+});
+
+test('cutscene editor timeline uses purple text clips and board clip colors', () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  editor.document = normalizeCutsceneDocument({
+    tracks: [{ id: 'track-1', name: 'Track 1' }, { id: 'track-2', name: 'Track 2' }],
+    clips: [
+      { id: 'text-1', type: 'text', text: 'A', trackId: 'track-1', durationMs: 1000 },
+      { id: 'board-1', type: 'color-board', color: '#123456', trackId: 'track-2', durationMs: 1000 }
+    ]
+  });
+  const ctx = createRecordingContext();
+
+  editor.draw(ctx, 390, 844);
+
+  assert.equal(ctx.calls.some((call) => call.type === 'fillRect' && call.fillStyle === '#b46aff'), true);
+  assert.equal(ctx.calls.some((call) => call.type === 'fillRect' && call.fillStyle === '#123456'), true);
+});
+
+test('cutscene editor main drawer exposes file add and stage tabs only', () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  editor.menuOpen = true;
+  editor.draw(createMockContext(), 390, 844);
+
+  const tabIds = editor.bounds.menuButtons.map((button) => button.id).filter((id) => String(id).startsWith('tab:'));
+
+  assert.deepEqual(tabIds, ['tab:file', 'tab:add', 'tab:stage']);
+});
+
+test('cutscene editor track tap selects track and edit panel shows track options', async () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  editor.document = normalizeCutsceneDocument({
+    tracks: [{ id: 'dialogue', name: 'Dialogue' }],
+    clips: [{ id: 'text-1', type: 'text', text: 'A', trackId: 'dialogue', durationMs: 1000 }]
+  });
+  editor.selectedClipId = null;
+  editor.draw(createMockContext(), 390, 844);
+  const lane = editor.bounds.trackLabels.find((entry) => entry.trackId === 'dialogue');
+
+  editor.handlePointerDown({ x: lane.x + 8, y: lane.y + lane.h / 2 });
+  editor.handlePointerUp();
+
+  assert.equal(editor.selectedTrackId, 'dialogue');
+  assert.equal(editor.selectedClipId, null);
+  editor.handleButton('clip-options');
+  await editor.pendingAction;
+  editor.draw(createMockContext(), 390, 844);
+  assert.equal(editor.bounds.clipOptionButtons.some((button) => button.id === 'rename-track'), true);
+  assert.equal(editor.bounds.clipOptionButtons.some((button) => button.id === 'clip-options-tab:track'), false);
 });
 
 test('cutscene editor draws timeline and stage keyframe markers', () => {
@@ -1379,6 +1640,33 @@ test('cutscene editor visual preview continues if audio preview update throws', 
   assert.equal(editor.playheadMs, 6000);
 });
 
+test('cutscene editor trims huge undo snapshots by memory budget', () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  editor.historyByteLimit = 1200;
+  editor.document = {
+    ...createDefaultCutscene(),
+    clips: [
+      {
+        id: 'big-text',
+        type: 'text',
+        startMs: 0,
+        durationMs: 1000,
+        text: 'x'.repeat(900)
+      }
+    ]
+  };
+
+  editor.captureHistory('one');
+  editor.document.clips[0].durationMs = 1200;
+  editor.captureHistory('two');
+  editor.document.clips[0].durationMs = 1400;
+  editor.captureHistory('three');
+
+  assert.equal(editor.history.length, 1);
+  assert.equal(editor.history[0].label, 'three');
+  assert.ok(editor.history[0].byteSize > 900);
+});
+
 test('cutscene editor preview fires scheduled music and sfx audio', async () => {
   const events = [];
   const editor = new CutsceneEditor({
@@ -1613,8 +1901,9 @@ test('cutscene editor separates scene length from selected clip length', async (
 
   assert.equal(editor.document.durationMs, 1800);
   assert.equal(editor.playheadMs, 1800);
-  assert.equal(editor.getSelectedClip().durationMs, 800);
-  assert.equal(editor.getSelectedClip().keyframes.at(-1).timeMs, 800);
+  assert.equal(editor.getSelectedClip().durationMs, 2000);
+  assert.equal(editor.getSelectedClip().keyframes.at(-1).timeMs, 1500);
+  assert.equal(editor.statusText, 'Scene 1800ms; later clips preserved');
 
   await editor.editSelectedDuration();
 
@@ -1639,7 +1928,9 @@ test('cutscene editor menus expose scene length and clip length distinctly', () 
   assert.equal(stageItems.some((item) => item.id === 'scene-fade-out' && item.label === 'Fade Out 0ms'), true);
   assert.equal(stageItems.some((item) => item.id === 'snap-toggle' && item.label === 'Snap On'), true);
   assert.equal(stageItems.some((item) => item.id === 'snap-size' && item.label === 'Grid 8'), true);
-  assert.equal(clipItems.some((item) => item.id === 'clip-duration' && item.label === 'Clip Length'), true);
+  assert.equal(stageItems.some((item) => item.id === 'master-volume' && item.label === 'Master 100'), true);
+  assert.equal(clipItems.some((item) => item.id === 'clip-duration'), false);
+  assert.equal(editor.getSelectedVisualContextActions(editor.getSelectedClip()).some((item) => item.id === 'set-key'), true);
 });
 
 test('cutscene editor edits scene transition durations', async () => {
@@ -1740,9 +2031,12 @@ test('cutscene editor adds full-stage color boards and edits color and opacity',
 
   editor.activeMenuTab = 'clip';
   const itemIds = editor.getMenuItems().map((item) => item.id);
+  const contextIds = editor.getSelectedVisualContextActions(clip).map((item) => item.id);
   const actionValues = editor.getSelectedClipActionChoices().map((choice) => choice.value);
-  assert.equal(itemIds.includes('board-color'), true);
-  assert.equal(itemIds.includes('opacity'), true);
+  assert.equal(itemIds.includes('board-color'), false);
+  assert.equal(itemIds.includes('opacity'), false);
+  assert.equal(contextIds.includes('board-color'), true);
+  assert.equal(contextIds.includes('opacity'), true);
   assert.equal(actionValues.includes('board-color'), true);
   assert.equal(actionValues.includes('opacity'), true);
 
@@ -1790,16 +2084,14 @@ test('cutscene editor exposes text justification and axis scale controls', () =>
   editor.selectedClipId = 'text';
   editor.activeMenuTab = 'clip';
   const itemIds = editor.getMenuItems().map((item) => item.id);
+  const contextIds = editor.getSelectedVisualContextActions(editor.getSelectedClip()).map((item) => item.id);
   const actionValues = editor.getSelectedClipActionChoices().map((choice) => choice.value);
 
-  assert.equal(itemIds.includes('edit-text'), true);
-  assert.equal(itemIds.includes('text-align'), true);
-  assert.equal(itemIds.includes('text-border'), true);
-  assert.equal(itemIds.includes('text-border-color'), true);
-  assert.equal(itemIds.includes('text-border-size'), true);
-  assert.equal(itemIds.includes('scale-x'), true);
-  assert.equal(itemIds.includes('scale-y'), true);
-  assert.equal(itemIds.includes('aspect-lock'), true);
+  assert.equal(itemIds.includes('edit-text'), false);
+  assert.equal(contextIds.includes('edit-text'), true);
+  assert.equal(contextIds.includes('text-color'), true);
+  assert.equal(contextIds.includes('font-size'), true);
+  assert.equal(contextIds.includes('actions'), true);
   assert.equal(actionValues.includes('edit-text'), true);
   assert.equal(actionValues.includes('text-align'), true);
   assert.equal(actionValues.includes('text-border'), true);
@@ -1866,8 +2158,11 @@ TO THE OLD WORLD.`;
   assert.equal(prompts.every((options) => options.inputType === 'textarea'), true);
 
   editor.selectedClipId = textClips[1].id;
+  const firstTrackId = textClips[0].trackId;
+  const secondTrackId = textClips[1].trackId;
   editor.moveSelectedTrack(-1);
-  assert.deepEqual(editor.document.clips.map((clip) => clip.id), [textClips[1].id, textClips[0].id]);
+  assert.deepEqual(editor.document.clips.map((clip) => clip.id), [textClips[0].id, textClips[1].id]);
+  assert.deepEqual(editor.document.tracks.map((track) => track.id), [secondTrackId, firstTrackId]);
   assert.equal(editor.document.clips.every((clip) => clip.layerId === 'text'), true);
 });
 
@@ -2057,6 +2352,78 @@ test('cutscene editor selected clip actions expose actor keyframe and state choi
   assert.equal(actions.includes('delete'), true);
 });
 
+test('cutscene editor selected clip ribbon exposes only options and draws tabbed options panel', async () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  editor.document = normalizeCutsceneDocument({
+    clips: [{ id: 'text', type: 'text', text: 'Readout', durationMs: 1000 }]
+  });
+  editor.selectedClipId = 'text';
+  editor.draw(createMockContext(), 390, 844);
+
+  assert.deepEqual(editor.bounds.contextButtons.map((button) => button.id), ['clip-options']);
+
+  editor.handleButton('clip-options');
+  await editor.pendingAction;
+  assert.equal(editor.clipOptionsOpen, true);
+  editor.draw(createMockContext(), 390, 844);
+  assert.equal(editor.bounds.clipOptionButtons.some((button) => button.id === 'clip-options-tab:keys'), true);
+  assert.equal(editor.bounds.clipOptionButtons.some((button) => button.id === 'clip-options-tab:edit'), true);
+  assert.equal(editor.bounds.clipOptionButtons.some((button) => button.id === 'clip-options-tab:track'), false);
+  assert.equal(editor.bounds.clipOptionButtons.some((button) => button.id === 'set-key'), true);
+  assert.equal(editor.bounds.clipOptionButtons.some((button) => button.id === 'delete-key'), false);
+
+  editor.handleButton('clip-options-tab:settings');
+  await editor.pendingAction;
+  assert.equal(editor.clipOptionsTab, 'settings');
+  editor.draw(createMockContext(), 390, 844);
+  assert.equal(editor.bounds.clipOptionButtons.some((button) => button.id === 'edit-text'), true);
+  assert.equal(editor.bounds.clipOptionButtons.some((button) => button.id === 'opacity'), true);
+
+  editor.handleButton('clip-options-tab:edit');
+  await editor.pendingAction;
+  editor.draw(createMockContext(), 390, 844);
+  assert.equal(editor.bounds.clipOptionButtons.some((button) => button.id === 'copy'), true);
+  assert.equal(editor.bounds.clipOptionButtons.some((button) => button.id === 'duplicate'), true);
+
+  editor.handleButton('menu');
+  await editor.pendingAction;
+  assert.equal(editor.clipOptionsOpen, false);
+  assert.equal(editor.menuOpen, false);
+});
+
+test('cutscene editor open menu outside tap closes without changing selection', () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  editor.document = normalizeCutsceneDocument({
+    clips: [{ id: 'text', type: 'text', text: 'Readout', durationMs: 1000 }]
+  });
+  editor.selectedClipId = 'text';
+  editor.menuOpen = true;
+  editor.draw(createMockContext(), 390, 844);
+
+  editor.handlePointerDown({ x: 12, y: 12 });
+
+  assert.equal(editor.menuOpen, false);
+  assert.equal(editor.selectedClipId, 'text');
+});
+
+test('cutscene editor bottom menu opens root after closing clip options', async () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  editor.document = normalizeCutsceneDocument({
+    clips: [{ id: 'text', type: 'text', text: 'Readout', durationMs: 1000 }]
+  });
+  editor.selectedClipId = 'text';
+  editor.clipOptionsOpen = true;
+
+  editor.handleButton('menu');
+  await editor.pendingAction;
+  assert.equal(editor.clipOptionsOpen, false);
+  assert.equal(editor.menuOpen, false);
+
+  editor.handleButton('menu');
+  await editor.pendingAction;
+  assert.equal(editor.menuOpen, true);
+});
+
 test('cutscene editor groups selected clip actions for mobile-friendly menus', () => {
   const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
   editor.document = normalizeCutsceneDocument({
@@ -2139,7 +2506,7 @@ test('level triggers and gameplay runtime support play-cutscene', () => {
   assert.equal(gameCoreSource.includes('onDone: finishCutscene'), true);
   assert.equal(gameCoreSource.includes('playCutsceneMidi(trackId'), true);
   assert.equal(gameCoreSource.includes('stopCutsceneMidi(trackId'), true);
-  assert.equal(gameCoreSource.includes('this.setActiveMusicTrack(resolvedTrackId, { volume, loop: false, restart: true });'), true);
+  assert.equal(gameCoreSource.includes('this.setActiveMusicTrack(resolvedTrackId, { volume, loop: false, restart: true, offsetMs });'), true);
   assert.equal(gameCoreSource.includes('if (this.cutsceneMusicTrackId || this.cutscenePlayer?.active) return;'), true);
   assert.equal(gameCoreSource.includes('if (this.cutsceneMusicTrackId || this.cutscenePlayer?.active) {'), true);
   assert.equal(cutsceneEditorSource.includes('this.game.playCutsceneMidi(ref'), true);
@@ -2200,11 +2567,27 @@ test('shared weather system emits gameplay-style blizzard particles and gusts', 
   assert.notEqual(state.wind.value, 0);
 });
 
+test('shared weather system allows zero intensity without spawning particles', () => {
+  const state = createWeatherRuntimeState();
+  updateWeatherSystem({
+    state,
+    particles: state.particles,
+    weatherType: 'weather-snow',
+    bounds: { left: 0, top: 0, right: 320, bottom: 180 },
+    dt: 1,
+    intensity: 0,
+    windBias: 0,
+    scale: 1
+  });
+
+  assert.equal(state.particles.length, 0);
+});
+
 test('cutscene editor exposes pixelated typewriter text controls and main menu exit', () => {
   assert.equal(cutsceneEditorSource.includes('drawBitmapText'), true);
   assert.equal(cutsceneEditorSource.includes("animation === 'typewriter'"), true);
-  assert.equal(cutsceneEditorSource.includes("{ id: 'font-size'"), true);
-  assert.equal(cutsceneEditorSource.includes("{ id: 'reveal-speed'"), true);
+  assert.equal(cutsceneEditorSource.includes("'font-size'"), true);
+  assert.equal(cutsceneEditorSource.includes("'reveal-speed'"), true);
   assert.equal(cutsceneEditorSource.includes("{ id: 'back', label: 'Main Menu' }"), true);
 });
 
@@ -2228,6 +2611,61 @@ test('cutscene effects use shared weather runtime state instead of seeded partic
   assert.equal(state.particles.some((particle) => particle.style.weatherType === 'weather-blizzard'), true);
   assert.equal(cutsceneEditorSource.includes('seededNoise'), false);
   assert.equal(cutsceneEditorSource.includes('updateWeatherSystem'), true);
+});
+
+test('cutscene effect keyframes interpolate opacity intensity and wind', () => {
+  const doc = normalizeCutsceneDocument({
+    durationMs: 3000,
+    clips: [{
+      id: 'fx-fade',
+      type: 'effect',
+      effectType: 'snow',
+      startMs: 0,
+      durationMs: 2000,
+      opacity: 1,
+      intensity: 4,
+      wind: -2,
+      keyframes: [
+        { timeMs: 0, opacity: 1, intensity: 4, wind: -2, manual: true },
+        { timeMs: 2000, opacity: 0, intensity: 0, wind: 0, manual: true }
+      ]
+    }]
+  });
+
+  const sample = sampleCutsceneEffectClip(doc.clips[0], 1000);
+  assert.equal(sample.opacity, 0.5);
+  assert.equal(sample.intensity, 2);
+  assert.equal(sample.wind, -1);
+});
+
+test('cutscene effect opacity fades rendered weather particles', () => {
+  const alphaValues = [];
+  const ctx = createMockContext();
+  ctx.save = () => {};
+  ctx.restore = () => {};
+  Object.defineProperty(ctx, 'globalAlpha', {
+    get() { return alphaValues.length ? alphaValues[alphaValues.length - 1] : 1; },
+    set(value) { alphaValues.push(value); }
+  });
+  const runtime = { weatherStates: new Map() };
+  const doc = createDefaultCutscene('Weather Fade');
+  doc.clips.push({
+    id: 'fx-fade',
+    type: 'effect',
+    layerId: 'effects',
+    effectType: 'snow',
+    startMs: 0,
+    durationMs: 2000,
+    intensity: 4,
+    keyframes: [
+      { timeMs: 0, opacity: 1, intensity: 4, wind: 0, manual: true },
+      { timeMs: 2000, opacity: 0, intensity: 0, wind: 0, manual: true }
+    ]
+  });
+
+  drawCutsceneDocument(ctx, doc, 1000, { x: 0, y: 0, w: 320, h: 180 }, runtime);
+
+  assert.equal(alphaValues.some((value) => Math.abs(value - 0.5) < 0.001), true);
 });
 
 test('cutscene weather changes do not reuse stale rain particles in fullscreen export scale', () => {

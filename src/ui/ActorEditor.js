@@ -1287,8 +1287,13 @@ export default class ActorEditor {
     rail.appendChild(this.renderPortraitRailThumbstick());
     [
       ['☰', () => {
-        this.actorPortraitMenuOpen = true;
-        this.fileMenuOpen = true;
+        if (this.actorPortraitMenuOpen || this.fileMenuOpen) {
+          this.actorPortraitMenuOpen = false;
+          this.fileMenuOpen = false;
+        } else {
+          this.actorPortraitMenuOpen = true;
+          this.fileMenuOpen = true;
+        }
         this.render();
       }],
       ['↶', () => this.undo()],

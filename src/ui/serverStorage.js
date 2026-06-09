@@ -7,6 +7,10 @@ const volatileFiles = new Map();
 let serverIndex = DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
 let storageApiAvailable = true;
 
+function hasOwn(object, key) {
+  return Object.prototype.hasOwnProperty.call(object || {}, key);
+}
+
 function fileKey(folder, name) {
   return `${PROJECT_FILE_PREFIX}${folder}:${name}`;
 }
@@ -238,8 +242,17 @@ export async function saveServerFile(folder, name, data, options = {}) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ folder, name, savedAt, version, data })
     });
-    updateCachedPayload(payload.file);
-    return { ...payload.file, persisted: true };
+    const responseFile = payload.file && typeof payload.file === 'object' ? payload.file : {};
+    const savedFile = {
+      version,
+      folder,
+      name,
+      savedAt,
+      ...responseFile,
+      data: hasOwn(responseFile, 'data') ? responseFile.data : data
+    };
+    updateCachedPayload(savedFile);
+    return { ...savedFile, persisted: true };
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
     storageApiAvailable = false;
@@ -270,6 +283,63 @@ export function queueServerFileDelete(folder, name) {
   return enqueueServerMutation(() => deleteServerFile(folder, name));
 }
 
+export async function listServerFileVersions(folder, name) {
+  if (!storageApiAvailable) return [];
+  try {
+    const payload = await requestJson(`/__storage/versions?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`);
+    return Array.isArray(payload.versions) ? payload.versions : [];
+  } catch (error) {
+    if (!isStorageApiUnavailable(error)) throw error;
+    storageApiAvailable = false;
+    return [];
+  }
+}
+
+export async function loadServerFileVersion(folder, name, versionId) {
+  if (!storageApiAvailable || !versionId) return null;
+  try {
+    const payload = await requestJson(`/__storage/version?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}&versionId=${encodeURIComponent(versionId)}`);
+    return payload.file || null;
+  } catch (error) {
+    if (!isStorageApiUnavailable(error)) throw error;
+    storageApiAvailable = false;
+    return null;
+  }
+}
+
+export async function restoreServerFileVersion(folder, name, versionId) {
+  if (!storageApiAvailable || !versionId) return null;
+  try {
+    const payload = await requestJson('/__storage/restore-version', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folder, name, versionId })
+    });
+    const responseFile = payload.file && typeof payload.file === 'object' ? payload.file : {};
+    const restored = hasOwn(responseFile, 'data')
+      ? responseFile
+      : await fetchServerFile(folder, name);
+    if (restored) updateCachedPayload(restored);
+    return restored;
+  } catch (error) {
+    if (!isStorageApiUnavailable(error)) throw error;
+    storageApiAvailable = false;
+    return null;
+  }
+}
+
+export async function deleteServerFileVersion(folder, name, versionId) {
+  if (!storageApiAvailable || !versionId) return { ok: false };
+  try {
+    await requestJson(`/__storage/version?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}&versionId=${encodeURIComponent(versionId)}`, { method: 'DELETE' });
+    return { ok: true };
+  } catch (error) {
+    if (!isStorageApiUnavailable(error)) throw error;
+    storageApiAvailable = false;
+    return { ok: false };
+  }
+}
+
 export async function renameServerFile(folder, oldName, newName) {
   if (!storageApiAvailable) {
     const raw = readCachedProjectFile(folder, oldName);
@@ -282,14 +352,35 @@ export async function renameServerFile(folder, oldName, newName) {
     return renamed;
   }
   try {
+    const oldRaw = readCachedProjectFile(folder, oldName);
+    let oldPayload = null;
+    if (oldRaw) {
+      try {
+        oldPayload = JSON.parse(oldRaw);
+      } catch (error) {
+        oldPayload = null;
+      }
+    }
     const payload = await requestJson('/__storage/rename', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ folder, oldName, newName })
     });
+    const responseFile = payload.file && typeof payload.file === 'object' ? payload.file : {};
     deleteCachedProjectFile(folder, oldName);
-    updateCachedPayload(payload.file);
-    return payload.file;
+    if (!hasOwn(responseFile, 'data') && oldPayload?.data === undefined) {
+      return fetchServerFile(folder, newName);
+    }
+    const renamed = {
+      version: Number(oldPayload?.version || 1),
+      folder,
+      name: newName,
+      savedAt: Date.now(),
+      ...responseFile,
+      data: hasOwn(responseFile, 'data') ? responseFile.data : oldPayload.data
+    };
+    updateCachedPayload(renamed);
+    return renamed;
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
     storageApiAvailable = false;

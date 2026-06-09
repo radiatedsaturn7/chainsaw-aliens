@@ -17,10 +17,18 @@
   "isRoot": true,
   "tags": [],
   "health": 3,
-  "size": {
-    "width": 24,
-    "height": 24
+  "healthTint": {
+    "enabled": false,
+    "color": "#ff3333",
+    "maxIntensity": 0.1,
+    "keepAfterDeath": false
   },
+  "facingMode": "face-player",
+  "size": {
+    "width": 64,
+    "height": 64
+  },
+  "collisionZones": [],
   "loot": [
     {
       "itemId": "health",
@@ -60,6 +68,7 @@
         "contactDamage": null,
         "invulnerable": null
       },
+      "disableHealthTint": false,
       "transitions": [
         {
           "id": "transition-1",
@@ -150,7 +159,8 @@
             "stateId": "idle-2"
           }
         }
-      ]
+      ],
+      "collisionZones": null
     },
     {
       "id": "idle-2",
@@ -183,6 +193,7 @@
         "contactDamage": null,
         "invulnerable": null
       },
+      "disableHealthTint": false,
       "transitions": [
         {
           "id": "transition-1",
@@ -268,7 +279,8 @@
             "stateId": "idle"
           }
         }
-      ]
+      ],
+      "collisionZones": null
     },
     {
       "id": "state-3",
@@ -302,6 +314,7 @@
         "contactDamage": null,
         "invulnerable": null
       },
+      "disableHealthTint": false,
       "transitions": [
         {
           "id": "transition-1",
@@ -347,7 +360,8 @@
             }
           ]
         }
-      ]
+      ],
+      "collisionZones": null
     },
     {
       "id": "state-4",
@@ -393,6 +407,7 @@
         "contactDamage": null,
         "invulnerable": null
       },
+      "disableHealthTint": false,
       "transitions": [
         {
           "id": "transition-1",
@@ -417,12 +432,18 @@
             }
           ]
         }
-      ]
+      ],
+      "collisionZones": null
     }
   ],
   "initialStateId": "idle",
+  "deathStateId": "",
+  "destroyAfterDeath": true,
+  "collidableAfterDeath": false,
+  "respawnOnRoomEntry": true,
   "advanced": {
     "assetRefs": {},
     "notes": ""
-  }
+  },
+  "sizeMode": "manual"
 }

@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 2,
+  "tempo": 166,
+  "loopBars": 16,
+  "loopStartTick": 0,
+  "loopEndTick": 128,
+  "loopEnabled": false,
+  "timeSignature": {
+    "beats": 4,
+    "unit": 4
+  },
+  "highContrast": false,
+  "reverseStrings": false,
+  "keyboardStartOctave": 4,
+  "guitarTuning": [
+    40,
+    45,
+    50,
+    55,
+    59,
+    64
+  ],
+  "bassTuning": [
+    28,
+    33,
+    38,
+    43
+  ],
+  "staccatoEnabled": false,
+  "key": 0,
+  "scale": "major",
+  "chordMode": false,
+  "tracks": [
+    {
+      "id": "track-piano",
+      "name": "Piano",
+      "channel": 0,
+      "program": 0,
+      "instrumentFamily": "Piano",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#4fb7ff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-piano",
+          "bars": 16,
+          "notes": []
+        }
+      ]
+    },
+    {
+      "id": "track-guitar",
+      "name": "Guitar",
+      "channel": 1,
+      "program": 29,
+      "instrumentFamily": "Guitar",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#ff9c42",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_jtry1vb",
+          "type": "overdrive",
+          "name": "Ghost Drive",
+          "color": "red",
+          "enabled": true,
+          "knobs": {
+            "drive": 0.7,
+            "bite": 0.65,
+            "tone": 0.55
+          }
+        },
+        {
+          "id": "pedal_b5ihctg",
+          "type": "eq",
+          "name": "Rust Dial",
+          "color": "orange",
+          "enabled": true,
+          "knobs": {
+            "low": 0,
+            "mid": 1,
+            "high": 0,
+            "presence": 1
+          }
+        },
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-guitar",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-415888",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 55,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-270416",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 55,
+              "velocity": 0.9
+            },
+            {
+              "id": "touch-string-3-28-1780420199400",
+              "startTick": 196,
+              "durationTicks": 20,
+              "pitch": 28,
+              "velocity": 0.8818897637795275
+            },
+            {
+              "id": "touch-string-1-38-1780420200243",
+              "startTick": 214,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.8818897637795275
+            },
+            {
+              "id": "touch-string-1-40-1780420200611",
+              "startTick": 222,
+              "durationTicks": 2,
+              "pitch": 40,
+              "velocity": 0.8818897637795275
+            },
+            {
+              "id": "touch-string-1-40-1780420200635",
+              "startTick": 224,
+              "durationTicks": 20,
+              "pitch": 40,
+              "velocity": 0.8818897637795275
+            },
+            {
+              "id": "note-797307",
+              "startTick": 64,
+              "durationTicks": 4,
+              "pitch": 28,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-440393",
+              "startTick": 96,
+              "durationTicks": 16,
+              "pitch": 40,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-848356",
+              "startTick": 84,
+              "durationTicks": 4,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-116180",
+              "startTick": 48,
+              "durationTicks": 4,
+              "pitch": 35,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-201774",
+              "startTick": 24,
+              "durationTicks": 4,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-468775",
+              "startTick": 32,
+              "durationTicks": 4,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-729224",
+              "startTick": 40,
+              "durationTicks": 4,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-489876",
+              "startTick": 20,
+              "durationTicks": 4,
+              "pitch": 34,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-280891",
+              "startTick": 72,
+              "durationTicks": 4,
+              "pitch": 28,
+              "velocity": 0.9
+            }
+          ],
+          "automation": [
+            {
+              "type": "pitchbend",
+              "value": 6144,
+              "time": 1199.7786666666666,
+              "channel": 1,
+              "trackId": "track-guitar",
+              "tick": 162
+            },
+            {
+              "type": "pitchbend",
+              "value": 8192,
+              "time": 1199.912,
+              "channel": 1,
+              "trackId": "track-guitar",
+              "tick": 164
+            },
+            {
+              "type": "pitchbend",
+              "value": 6144,
+              "time": 1200.6613333333332,
+              "channel": 1,
+              "trackId": "track-guitar",
+              "tick": 182
+            },
+            {
+              "type": "pitchbend",
+              "value": 8192,
+              "time": 1200.9466666666667,
+              "channel": 1,
+              "trackId": "track-guitar",
+              "tick": 188
+            },
+            {
+              "type": "pitchbend",
+              "value": 6144,
+              "time": 1200.9546666666668,
+              "channel": 1,
+              "trackId": "track-guitar",
+              "tick": 188
+            },
+            {
+              "type": "pitchbend",
+              "value": 8192,
+              "time": 1201.2266666666667,
+              "channel": 1,
+              "trackId": "track-guitar",
+              "tick": 194
+            },
+            {
+              "type": "pitchbend",
+              "value": 6144,
+              "time": 1202.5306666666668,
+              "channel": 1,
+              "trackId": "track-guitar",
+              "tick": 222
+            },
+            {
+              "type": "pitchbend",
+              "value": 8192,
+              "time": 1202.96,
+              "channel": 1,
+              "trackId": "track-guitar",
+              "tick": 232
+            }
+          ],
+          "partRanges": [
+            {
+              "startTick": 0,
+              "endTick": 128
+            },
+            {
+              "startTick": 128,
+              "endTick": 256
+            }
+          ],
+          "partBoundaries": [],
+          "partRangeStart": null,
+          "partRangeEnd": null
+        }
+      ]
+    },
+    {
+      "id": "track-bass",
+      "name": "Bass",
+      "channel": 2,
+      "program": 33,
+      "instrumentFamily": "Bass",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#55d68a",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-bass",
+          "bars": 16,
+          "notes": []
+        }
+      ]
+    },
+    {
+      "id": "track-drums",
+      "name": "Drums",
+      "instrument": "drums",
+      "channel": 9,
+      "program": 0,
+      "instrumentFamily": "Drums",
+      "bankMSB": 127,
+      "bankLSB": 0,
+      "volume": 0.9,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#b48dff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-drums",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-549216",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-428060",
+              "startTick": 24,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-98017",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-680454",
+              "startTick": 80,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-817574",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-88454",
+              "startTick": 112,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-258752",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-149252",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-697842",
+              "startTick": 8,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-980182",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-13492",
+              "startTick": 24,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-412036",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-562955",
+              "startTick": 40,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-705093",
+              "startTick": 48,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-591731",
+              "startTick": 56,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-583040",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-851648",
+              "startTick": 72,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-104106",
+              "startTick": 80,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-485577",
+              "startTick": 88,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-439951",
+              "startTick": 104,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-6140",
+              "startTick": 112,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-849179",
+              "startTick": 120,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-607815",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-254940",
+              "startTick": 8,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-650582",
+              "startTick": 48,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-658470",
+              "startTick": 56,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-506851",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 49,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-233069",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 46,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "progression": [
+    {
+      "root": 0,
+      "quality": "min",
+      "startBar": 1,
+      "lengthBars": 1
+    },
+    {
+      "root": 5,
+      "quality": "min",
+      "startBar": 2,
+      "lengthBars": 1
+    },
+    {
+      "root": 7,
+      "quality": "maj",
+      "startBar": 3,
+      "lengthBars": 1
+    },
+    {
+      "root": 3,
+      "quality": "maj",
+      "startBar": 4,
+      "lengthBars": 1
+    }
+  ],
+  "name": "r2"
+}

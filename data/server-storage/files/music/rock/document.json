@@ -1,0 +1,490 @@
+{
+  "schemaVersion": 2,
+  "tempo": 232,
+  "loopBars": 16,
+  "loopStartTick": 0,
+  "loopEndTick": 128,
+  "loopEnabled": true,
+  "timeSignature": {
+    "beats": 4,
+    "unit": 4
+  },
+  "highContrast": false,
+  "reverseStrings": false,
+  "keyboardStartOctave": 4,
+  "guitarTuning": [
+    40,
+    45,
+    50,
+    55,
+    59,
+    64
+  ],
+  "bassTuning": [
+    28,
+    33,
+    38,
+    43
+  ],
+  "staccatoEnabled": false,
+  "key": 0,
+  "scale": "major",
+  "chordMode": false,
+  "tracks": [
+    {
+      "id": "track-piano",
+      "name": "Piano",
+      "channel": 0,
+      "program": 40,
+      "instrumentFamily": "Strings",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.977980522260274,
+      "pan": -0.31122913099315064,
+      "mute": false,
+      "solo": false,
+      "color": "#4fb7ff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_si1kl9i",
+          "type": "overdrive",
+          "name": "Ghost Drive",
+          "color": "red",
+          "enabled": true,
+          "knobs": {
+            "drive": 0.4134114583333333,
+            "bite": 0.65,
+            "tone": 0
+          }
+        },
+        {
+          "id": "pedal_dl7s30f",
+          "type": "reverb",
+          "name": "Coffin Air",
+          "color": "blue",
+          "enabled": true,
+          "knobs": {
+            "room": 1,
+            "decay": 1,
+            "mix": 1
+          }
+        },
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-piano",
+          "bars": 16,
+          "notes": []
+        }
+      ]
+    },
+    {
+      "id": "track-guitar",
+      "name": "Guitar",
+      "channel": 1,
+      "program": 29,
+      "instrumentFamily": "Guitar",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 1,
+      "pan": 0.48099047517123283,
+      "mute": false,
+      "solo": false,
+      "color": "#ff9c42",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_kaknpiv",
+          "type": "overdrive",
+          "name": "Ghost Drive",
+          "color": "red",
+          "enabled": true,
+          "knobs": {
+            "drive": 0.2979817708333333,
+            "bite": 0.3375,
+            "tone": 0.20332031250000004
+          }
+        },
+        {
+          "id": "pedal_yfrxx6h",
+          "type": "wah",
+          "name": "Toad Funk",
+          "color": "green",
+          "enabled": true,
+          "knobs": {
+            "sweep": 1,
+            "rate": 0,
+            "mix": 1
+          }
+        },
+        {
+          "id": "pedal_kbhppy7",
+          "type": "chorus",
+          "name": "Ghost Choir",
+          "color": "purple",
+          "enabled": true,
+          "knobs": {
+            "depth": 0.55,
+            "spread": 0.45,
+            "mix": 0.75
+          }
+        },
+        {
+          "id": "pedal_9v5rcik",
+          "type": "pitchPhaser",
+          "name": "Pitch Phaser",
+          "color": "yellow",
+          "enabled": true,
+          "knobs": {
+            "down": 1,
+            "up": 1,
+            "phase": 1
+          }
+        }
+      ],
+      "patterns": [
+        {
+          "id": "pattern-guitar",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-957284",
+              "startTick": 32,
+              "durationTicks": 48,
+              "pitch": 60,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-445969",
+              "startTick": 0,
+              "durationTicks": 40,
+              "pitch": 58,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-466325",
+              "startTick": 56,
+              "durationTicks": 40,
+              "pitch": 68,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-bass",
+      "name": "Bass",
+      "channel": 2,
+      "program": 37,
+      "instrumentFamily": "Bass",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 1,
+      "pan": -0.13544788099315064,
+      "mute": false,
+      "solo": false,
+      "color": "#55d68a",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_n5w0t09",
+          "type": "overdrive",
+          "name": "Ghost Drive",
+          "color": "red",
+          "enabled": false,
+          "knobs": {
+            "drive": 1,
+            "bite": 0,
+            "tone": 0
+          }
+        },
+        {
+          "id": "pedal_gcc8yih",
+          "type": "eq",
+          "name": "Rust Dial",
+          "color": "orange",
+          "enabled": false,
+          "knobs": {
+            "low": 1,
+            "mid": 1,
+            "high": 0,
+            "presence": 1
+          }
+        },
+        {
+          "id": "pedal_4x6snr1",
+          "type": "chorus",
+          "name": "Ghost Choir",
+          "color": "purple",
+          "enabled": false,
+          "knobs": {
+            "depth": 0.55,
+            "spread": 0.45,
+            "mix": 0.75
+          }
+        },
+        {
+          "id": "pedal_blji4cq",
+          "type": "echo",
+          "name": "Grave Echo",
+          "color": "orange",
+          "enabled": false,
+          "knobs": {
+            "time": 0.45,
+            "feedback": 0.35,
+            "mix": 0.65
+          }
+        }
+      ],
+      "patterns": [
+        {
+          "id": "pattern-bass",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-379567",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 48,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-895642",
+              "startTick": 80,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-182690",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-105296",
+              "startTick": 8,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-742378",
+              "startTick": 24,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-631078",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-806250",
+              "startTick": 40,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-130724",
+              "startTick": 48,
+              "durationTicks": 8,
+              "pitch": 39,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-70989",
+              "startTick": 56,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-320131",
+              "startTick": 72,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-12630",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-811277",
+              "startTick": 88,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-684778",
+              "startTick": 112,
+              "durationTicks": 16,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-507958",
+              "startTick": 120,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-75474",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-775133",
+              "startTick": 104,
+              "durationTicks": 8,
+              "pitch": 39,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-drums",
+      "name": "Drums",
+      "instrument": "drums",
+      "channel": 9,
+      "program": 0,
+      "instrumentFamily": "Drums",
+      "bankMSB": 127,
+      "bankLSB": 0,
+      "volume": 0.296828178510274,
+      "pan": 0.19384096746575352,
+      "mute": false,
+      "solo": false,
+      "color": "#b48dff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-drums",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-405145",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-900507",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-477271",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-39045",
+              "startTick": 48,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-548332",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-431254",
+              "startTick": 80,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-926985",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-167845",
+              "startTick": 112,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "progression": [
+    {
+      "root": 0,
+      "quality": "min",
+      "startBar": 1,
+      "lengthBars": 1
+    },
+    {
+      "root": 5,
+      "quality": "min",
+      "startBar": 2,
+      "lengthBars": 1
+    },
+    {
+      "root": 7,
+      "quality": "maj",
+      "startBar": 3,
+      "lengthBars": 1
+    },
+    {
+      "root": 3,
+      "quality": "maj",
+      "startBar": 4,
+      "lengthBars": 1
+    }
+  ],
+  "name": "rock"
+}

@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 2,
+  "tempo": 129,
+  "loopBars": 16,
+  "loopStartTick": 0,
+  "loopEndTick": 128,
+  "loopEnabled": true,
+  "timeSignature": {
+    "beats": 4,
+    "unit": 4
+  },
+  "highContrast": false,
+  "reverseStrings": false,
+  "keyboardStartOctave": 4,
+  "guitarTuning": [
+    40,
+    45,
+    50,
+    55,
+    59,
+    64
+  ],
+  "bassTuning": [
+    28,
+    33,
+    38,
+    43
+  ],
+  "staccatoEnabled": false,
+  "key": 0,
+  "scale": "major",
+  "chordMode": false,
+  "tracks": [
+    {
+      "id": "track-guitar",
+      "name": "Guitar",
+      "channel": 1,
+      "program": 24,
+      "instrumentFamily": "Guitar",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.933811497043919,
+      "pan": 0.3028663429054055,
+      "mute": false,
+      "solo": false,
+      "color": "#ff9c42",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_7qbi6kj",
+          "type": "overdrive",
+          "name": "Ghost Drive",
+          "color": "red",
+          "enabled": true,
+          "knobs": {
+            "drive": 0.7,
+            "bite": 0.65,
+            "tone": 0.55
+          }
+        },
+        {
+          "id": "pedal_5ap4mp2",
+          "type": "echo",
+          "name": "Grave Echo",
+          "color": "orange",
+          "enabled": true,
+          "knobs": {
+            "time": 0.45,
+            "feedback": 0.35,
+            "mix": 0.65
+          }
+        },
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-guitar",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-688687",
+              "startTick": 0,
+              "durationTicks": 16,
+              "pitch": 48,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-bass",
+      "name": "Bass",
+      "channel": 2,
+      "program": 36,
+      "instrumentFamily": "Bass",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.2826488597972973,
+      "pan": 0.8777185388513513,
+      "mute": false,
+      "solo": false,
+      "color": "#55d68a",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_tkr3df7",
+          "type": "overdrive",
+          "name": "Ghost Drive",
+          "color": "red",
+          "enabled": true,
+          "knobs": {
+            "drive": 1,
+            "bite": 0,
+            "tone": 1
+          }
+        },
+        null,
+        {
+          "id": "pedal_gc3el5t",
+          "type": "chorus",
+          "name": "Ghost Choir",
+          "color": "purple",
+          "enabled": true,
+          "knobs": {
+            "depth": 0.55,
+            "spread": 0.45,
+            "mix": 0.75
+          }
+        },
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-bass",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-787542",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 40,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-52241",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 40,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-134723",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-834130",
+              "startTick": 48,
+              "durationTicks": 8,
+              "pitch": 39,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-756723",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 39,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-220233",
+              "startTick": 80,
+              "durationTicks": 8,
+              "pitch": 43,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-911089",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 39,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-300686",
+              "startTick": 112,
+              "durationTicks": 8,
+              "pitch": 37,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-drums",
+      "name": "Drums",
+      "instrument": "drums",
+      "channel": 9,
+      "program": 0,
+      "instrumentFamily": "Drums",
+      "bankMSB": 127,
+      "bankLSB": 0,
+      "volume": 0.9,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#b48dff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-drums",
+          "bars": 16,
+          "notes": []
+        }
+      ]
+    }
+  ],
+  "progression": [
+    {
+      "root": 0,
+      "quality": "min",
+      "startBar": 1,
+      "lengthBars": 1
+    },
+    {
+      "root": 5,
+      "quality": "min",
+      "startBar": 2,
+      "lengthBars": 1
+    },
+    {
+      "root": 7,
+      "quality": "maj",
+      "startBar": 3,
+      "lengthBars": 1
+    },
+    {
+      "root": 3,
+      "quality": "maj",
+      "startBar": 4,
+      "lengthBars": 1
+    }
+  ],
+  "name": "rock"
+}

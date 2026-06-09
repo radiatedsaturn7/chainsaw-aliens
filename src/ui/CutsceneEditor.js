@@ -11,10 +11,12 @@ import {
   drawSharedPortraitActionRail,
   drawSharedPortraitScrollHints,
   drawSharedPortraitSheet,
+  drawSharedTransportPopover,
   getSharedMobilePortraitEditorLayout,
   isMobilePortraitLayout,
   normalizeSharedControlBounds
 } from './uiSuite.js';
+import { drawSharedMobileZoomSlider } from './shared/mobileZoomSlider.js';
 import { openChoiceOverlay, openProgressOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { openColorPickerOverlay } from './shared/colorPickerOverlay.js';
 import {
@@ -35,9 +37,6 @@ const DEFAULT_FPS = 30;
 const CUTSCENE_MENU_TABS = [
   { id: 'file', label: 'File' },
   { id: 'add', label: 'Add' },
-  { id: 'layers', label: 'Tracks' },
-  { id: 'clip', label: 'Clip' },
-  { id: 'audio', label: 'Audio' },
   { id: 'stage', label: 'Stage' }
 ];
 const KEYFRAME_EASING = ['linear', 'ease-in', 'ease-out', 'ease-in-out'];
@@ -51,6 +50,8 @@ const CUTSCENE_EXPORT_HEIGHT = 1080;
 const CUTSCENE_TIMELINE_MIN_ZOOM = 0.5;
 const CUTSCENE_TIMELINE_MAX_ZOOM = 12;
 const CUTSCENE_TIMELINE_MIN_LANE_H = 30;
+const CUTSCENE_HISTORY_ENTRY_LIMIT = 80;
+const CUTSCENE_HISTORY_BYTE_LIMIT = 48 * 1024 * 1024;
 const CUTSCENE_MOVIE_RECORDING_MIME_TYPES = [
   'video/webm;codecs=vp9,opus',
   'video/webm;codecs=vp8,opus',
@@ -108,6 +109,7 @@ export function getCutsceneMovieExportLayout(doc = createDefaultCutscene(), targ
 const isVisualClip = (clip) => clip?.type === 'art' || clip?.type === 'actor' || clip?.type === 'image' || clip?.type === 'text' || clip?.type === 'color-board';
 const isAudioClip = (clip) => clip?.type === 'music' || clip?.type === 'sfx';
 const isEffectClip = (clip) => clip?.type === 'effect';
+const isKeyframeClip = (clip) => isVisualClip(clip) || isEffectClip(clip);
 const makeId = (prefix) => `${prefix}-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 const getFrameStepMs = (doc) => 1000 / clamp(Math.floor(safeNumber(doc?.fps, DEFAULT_FPS)), 1, 120);
 const getScaleX = (source = {}) => Math.max(0.05, safeNumber(source.scaleX, 1));
@@ -148,6 +150,36 @@ const getFullPreviewDurationMs = (doc) => Math.max(
   ...(Array.isArray(doc?.clips) ? doc.clips.map((clip) => getClipEndMs(clip)) : [0])
 );
 
+function getCutsceneTimelineClipColor(clip = {}) {
+  if (clip.type === 'text') return '#b46aff';
+  if (clip.type === 'color-board') return normalizeHexColor(clip.color) || '#d88cff';
+  if (clip.type === 'music' || clip.type === 'sfx') return '#8aff9a';
+  if (clip.type === 'effect') return '#45f0ff';
+  if (clip.type === 'actor') return '#7898ff';
+  if (clip.type === 'art' || clip.type === 'image') return '#6ab8ff';
+  if (clip.type === 'pause') return '#ffb36a';
+  return '#d88cff';
+}
+
+function assignTimelineClipSlots(clips = []) {
+  const sorted = [...clips].sort((a, b) => safeNumber(a.startMs) - safeNumber(b.startMs) || getClipEndMs(a) - getClipEndMs(b) || String(a.id).localeCompare(String(b.id)));
+  const slotEnds = [];
+  const slots = new Map();
+  sorted.forEach((clip) => {
+    const start = safeNumber(clip.startMs);
+    const end = Math.max(start + 1, getClipEndMs(clip));
+    let slot = slotEnds.findIndex((lastEnd) => lastEnd <= start);
+    if (slot < 0) {
+      slot = slotEnds.length;
+      slotEnds.push(end);
+    } else {
+      slotEnds[slot] = end;
+    }
+    slots.set(clip.id, slot);
+  });
+  return { slots, slotCount: Math.max(1, slotEnds.length) };
+}
+
 export function createDefaultCutscene(name = DEFAULT_CUTSCENE_NAME) {
   return {
     schemaVersion: CUTSCENE_SCHEMA_VERSION,
@@ -160,6 +192,7 @@ export function createDefaultCutscene(name = DEFAULT_CUTSCENE_NAME) {
     snapSize: 8,
     sceneFadeInMs: 0,
     sceneFadeOutMs: 0,
+    masterVolume: 1,
     assets: [],
     layers: [
       { id: 'background', name: 'Background', type: 'visual', visible: true, locked: false },
@@ -168,6 +201,7 @@ export function createDefaultCutscene(name = DEFAULT_CUTSCENE_NAME) {
       { id: 'effects', name: 'Effects', type: 'effect', visible: true, locked: false },
       { id: 'audio', name: 'Audio', type: 'audio', visible: true, locked: false }
     ],
+    tracks: [],
     clips: []
   };
 }
@@ -188,6 +222,7 @@ export function normalizeCutsceneDocument(source = {}, fallbackName = DEFAULT_CU
     snapSize: clamp(Math.round(safeNumber(doc.snapSize, 8)), 1, 64),
     sceneFadeInMs: clamp(Math.round(safeNumber(doc.sceneFadeInMs, 0)), 0, Math.max(0, Math.floor(Number(doc.durationMs || DEFAULT_DURATION_MS)))),
     sceneFadeOutMs: clamp(Math.round(safeNumber(doc.sceneFadeOutMs, 0)), 0, Math.max(0, Math.floor(Number(doc.durationMs || DEFAULT_DURATION_MS)))),
+    masterVolume: clamp(safeNumber(doc.masterVolume, 1), 0, 1),
     assets: Array.isArray(doc.assets) ? doc.assets.filter(Boolean).map((asset, index) => ({
       id: asset.id || `asset-${index}`,
       type: asset.type || 'image',
@@ -210,7 +245,53 @@ export function normalizeCutsceneDocument(source = {}, fallbackName = DEFAULT_CU
     clips: []
   };
   normalized.clips = Array.isArray(doc.clips) ? doc.clips.filter(Boolean).map((clip, index) => normalizeCutsceneClip(clip, normalized, index)) : [];
+  normalized.tracks = normalizeCutsceneTracks(doc.tracks, normalized.clips);
+  reconcileCutsceneClipTracks(normalized);
   return normalized;
+}
+
+function normalizeCutsceneTracks(sourceTracks = [], clips = []) {
+  const tracks = [];
+  const seen = new Set();
+  if (Array.isArray(sourceTracks) && sourceTracks.length) {
+    sourceTracks.filter(Boolean).forEach((track, index) => {
+      const id = String(track.id || `track-${index + 1}`);
+      if (!id || seen.has(id)) return;
+      seen.add(id);
+      tracks.push({
+        id,
+        name: String(track.name || `Track ${tracks.length + 1}`)
+      });
+    });
+  }
+  if (!tracks.length) {
+    (clips || []).forEach((clip, index) => {
+      const id = String(clip.trackId || `track-${clip.id || index + 1}`);
+      if (seen.has(id)) return;
+      seen.add(id);
+      tracks.push({ id, name: `Track ${tracks.length + 1}` });
+    });
+  }
+  if (!tracks.length) tracks.push({ id: 'track-1', name: 'Track 1' });
+  return tracks;
+}
+
+function reconcileCutsceneClipTracks(doc) {
+  const tracks = Array.isArray(doc?.tracks) ? doc.tracks : [];
+  const clips = Array.isArray(doc?.clips) ? doc.clips : [];
+  const trackIds = new Set(tracks.map((track) => track.id));
+  clips.forEach((clip, index) => {
+    if (clip.trackId && trackIds.has(clip.trackId)) return;
+    const fallback = tracks[index] || tracks[0];
+    if (fallback) {
+      clip.trackId = fallback.id;
+      return;
+    }
+    const track = { id: `track-${clip.id || index + 1}`, name: `Track ${tracks.length + 1}` };
+    tracks.push(track);
+    trackIds.add(track.id);
+    clip.trackId = track.id;
+  });
 }
 
 export function normalizeCutsceneClip(clip = {}, doc = createDefaultCutscene(), index = 0) {
@@ -223,6 +304,7 @@ export function normalizeCutsceneClip(clip = {}, doc = createDefaultCutscene(), 
     id: clip.id || `clip-${index}`,
     type,
     layerId,
+    trackId: clip.trackId || '',
     assetId: clip.assetId || '',
     assetRef: clip.assetRef || '',
     actorRef: clip.actorRef || '',
@@ -235,8 +317,9 @@ export function normalizeCutsceneClip(clip = {}, doc = createDefaultCutscene(), 
     volume: clamp(safeNumber(clip.volume, 1), 0, 1),
     fadeMs: Math.max(0, Math.floor(safeNumber(clip.fadeMs, 250))),
     effectType: CUTSCENE_EFFECT_TYPES.includes(clip.effectType) ? clip.effectType : 'rain',
-    intensity: clamp(safeNumber(clip.intensity, 1), 0.1, 4),
+    intensity: clamp(safeNumber(clip.intensity, 1), 0, 4),
     wind: clamp(safeNumber(clip.wind, 0), -4, 4),
+    opacity: clamp(safeNumber(clip.opacity, 1), 0, 1),
     prompt: clip.prompt || 'Press a button',
     waitForInput: clip.waitForInput !== false,
     color: clip.color || '#ffffff',
@@ -332,15 +415,28 @@ export function resolveActorStateEvent(clip = {}, localTime = 0) {
 }
 
 function normalizeKeyframes(keyframes, doc, type, clipDurationMs = DEFAULT_DURATION_MS) {
-  if (!isVisualClip({ type })) return [];
+  if (!isKeyframeClip({ type })) return [];
   const durationMs = Math.max(1, Math.floor(safeNumber(clipDurationMs, DEFAULT_DURATION_MS)));
   const list = Array.isArray(keyframes) ? keyframes : [];
-  const normalized = list.map((keyframe, index) => ({
-    timeMs: clamp(Math.floor(Number(keyframe.timeMs ?? (index === 0 ? 0 : durationMs))), 0, durationMs),
-    ...normalizeTransformLike(keyframe, doc, type),
-    manual: keyframe.manual === true,
-    autoHold: keyframe.autoHold === true
-  })).sort((a, b) => a.timeMs - b.timeMs);
+  const normalized = list.map((keyframe, index) => {
+    const base = {
+      timeMs: clamp(Math.floor(Number(keyframe.timeMs ?? (index === 0 ? 0 : durationMs))), 0, durationMs),
+      manual: keyframe.manual === true,
+      autoHold: keyframe.autoHold === true
+    };
+    if (isEffectClip({ type })) {
+      return {
+        ...base,
+        opacity: clamp(safeNumber(keyframe.opacity, 1), 0, 1),
+        intensity: clamp(safeNumber(keyframe.intensity, 1), 0, 4),
+        wind: clamp(safeNumber(keyframe.wind, 0), -4, 4)
+      };
+    }
+    return {
+      ...base,
+      ...normalizeTransformLike(keyframe, doc, type)
+    };
+  }).sort((a, b) => a.timeMs - b.timeMs);
   const byTime = new Map();
   normalized.forEach((keyframe) => {
     if (!keyframe.manual) return;
@@ -396,6 +492,41 @@ export function sampleCutsceneClip(clip, timeMs) {
   };
 }
 
+export function sampleCutsceneEffectClip(clip, timeMs) {
+  if (!isEffectClip(clip) || timeMs < clip.startMs || timeMs > clip.startMs + clip.durationMs) return null;
+  const localTime = clamp(timeMs - clip.startMs, 0, clip.durationMs);
+  const base = {
+    timeMs: 0,
+    opacity: clamp(safeNumber(clip.opacity, 1), 0, 1),
+    intensity: clamp(safeNumber(clip.intensity, 1), 0, 4),
+    wind: clamp(safeNumber(clip.wind, 0), -4, 4)
+  };
+  const keyframes = Array.isArray(clip.keyframes)
+    ? clip.keyframes.filter((entry) => entry?.manual === true).sort((a, b) => safeNumber(a.timeMs) - safeNumber(b.timeMs))
+    : [];
+  let left = base;
+  let right = base;
+  if (keyframes.length && localTime >= safeNumber(keyframes[0].timeMs)) {
+    left = keyframes[keyframes.length - 1];
+    right = left;
+    for (let index = 0; index < keyframes.length - 1; index += 1) {
+      if (localTime >= safeNumber(keyframes[index].timeMs) && localTime <= safeNumber(keyframes[index + 1].timeMs)) {
+        left = keyframes[index];
+        right = keyframes[index + 1];
+        break;
+      }
+    }
+  }
+  const span = Math.max(1, safeNumber(right.timeMs) - safeNumber(left.timeMs));
+  const t = applyEasing(clamp((localTime - safeNumber(left.timeMs)) / span, 0, 1), clip.easing);
+  return {
+    timeMs: localTime,
+    opacity: lerp(clamp(safeNumber(left.opacity, base.opacity), 0, 1), clamp(safeNumber(right.opacity, base.opacity), 0, 1), t),
+    intensity: lerp(clamp(safeNumber(left.intensity, base.intensity), 0, 4), clamp(safeNumber(right.intensity, base.intensity), 0, 4), t),
+    wind: lerp(clamp(safeNumber(left.wind, base.wind), -4, 4), clamp(safeNumber(right.wind, base.wind), -4, 4), t)
+  };
+}
+
 function applyEasing(t, easing = 'linear') {
   if (easing === 'ease-in') return t * t;
   if (easing === 'ease-out') return 1 - ((1 - t) * (1 - t));
@@ -415,14 +546,25 @@ export function getCutsceneTimelineLayout(bounds, durationMs = DEFAULT_DURATION_
     h: Math.max(1, safeNumber(bounds?.h, 1))
   };
   const sourceClips = Array.isArray(clips) && clips.length ? clips : [];
-  const lanes = sourceClips.length
-    ? sourceClips.map((clip, index) => ({
-        id: clip.id || `track-${index}`,
-        label: clip.name || clip.text || clip.assetRef || clip.actorRef || clip.assetId || clip.effectType || clip.type || `Track ${index + 1}`,
-        clipId: clip.id,
-        type: clip.type,
+  const sourceTracks = Array.isArray(options.tracks) && options.tracks.length ? options.tracks : [];
+  const lanes = sourceTracks.length
+    ? sourceTracks.map((track, index) => ({
+        id: track.id || `track-${index}`,
+        trackId: track.id || `track-${index}`,
+        label: track.name || `Track ${index + 1}`,
+        clipId: null,
+        type: 'track',
         index
       }))
+    : sourceClips.length
+      ? sourceClips.map((clip, index) => ({
+          id: clip.id || `track-${index}`,
+          trackId: clip.trackId || clip.id || `track-${index}`,
+          label: clip.name || clip.text || clip.assetRef || clip.actorRef || clip.assetId || clip.effectType || clip.type || `Track ${index + 1}`,
+          clipId: clip.id,
+          type: clip.type,
+          index
+        }))
     : [{ id: 'empty', label: 'Track', clipId: null, index: 0 }];
   const labelW = Math.min(96, Math.max(58, safeBounds.w * 0.22));
   const laneGap = 6;
@@ -439,10 +581,12 @@ export function getCutsceneTimelineLayout(bounds, durationMs = DEFAULT_DURATION_
     ? clamp(Math.max(1, Math.floor((trackH + laneGap) / (minLaneH + laneGap))), 1, Math.max(1, lanes.length))
     : lanes.length;
   const maxScrollTrack = Math.max(0, lanes.length - visibleTrackCount);
-  const scrollTrack = clamp(Math.round(safeNumber(options.scrollTrack, 0)), 0, maxScrollTrack);
-  const visibleLanes = lanes.slice(scrollTrack, scrollTrack + visibleTrackCount);
+  const scrollTrack = clamp(safeNumber(options.scrollTrack, 0), 0, maxScrollTrack);
+  const scrollTrackIndex = Math.floor(scrollTrack);
+  const scrollTrackOffset = scrollTrack - scrollTrackIndex;
+  const visibleLanes = lanes.slice(scrollTrackIndex, scrollTrackIndex + visibleTrackCount + (scrollTrackOffset > 0.001 ? 1 : 0));
   const laneH = hasViewport
-    ? Math.max(22, Math.floor((trackH - laneGap * Math.max(0, visibleLanes.length - 1)) / Math.max(1, visibleLanes.length)))
+    ? Math.max(22, Math.floor((trackH - laneGap * Math.max(0, visibleTrackCount - 1)) / Math.max(1, visibleTrackCount)))
     : Math.max(22, Math.floor((safeBounds.h - 40 - laneGap * (lanes.length - 1)) / Math.max(1, lanes.length)));
   const track = {
     x: safeBounds.x + labelW,
@@ -454,11 +598,11 @@ export function getCutsceneTimelineLayout(bounds, durationMs = DEFAULT_DURATION_
     ...lane,
     bounds: {
       x: track.x,
-      y: laneTop + index * (laneH + laneGap),
+      y: laneTop + (index - scrollTrackOffset) * (laneH + laneGap),
       w: track.w,
       h: laneH
     }
-  }));
+  })).filter((lane) => lane.bounds.y + lane.bounds.h >= track.y && lane.bounds.y <= track.y + track.h);
   return {
     bounds: safeBounds,
     lanes,
@@ -470,6 +614,8 @@ export function getCutsceneTimelineLayout(bounds, durationMs = DEFAULT_DURATION_
     duration,
     zoomX,
     scrollMs,
+    scrollTrackIndex,
+    scrollTrackOffset,
     visibleStartMs: scrollMs,
     visibleEndMs: scrollMs + visibleDuration,
     visibleDuration,
@@ -596,6 +742,7 @@ export class CutscenePlayer {
     this.active = false;
     this.doc = null;
     this.timeMs = 0;
+    this.startTimeMs = 0;
     this.onDone = null;
     this.skippable = true;
     this.ignorePauseMarkers = false;
@@ -610,6 +757,7 @@ export class CutscenePlayer {
   play(doc, { onDone = null, skippable = true, ignorePauseMarkers = false, startMs = 0 } = {}) {
     this.doc = normalizeCutsceneDocument(doc);
     this.timeMs = clamp(Math.round(safeNumber(startMs)), 0, this.doc.durationMs);
+    this.startTimeMs = this.timeMs;
     this.onDone = onDone;
     this.skippable = skippable !== false;
     this.ignorePauseMarkers = Boolean(ignorePauseMarkers);
@@ -618,6 +766,7 @@ export class CutscenePlayer {
     this.weatherStates.clear();
     this.waitingPauseClipId = null;
     this.active = true;
+    this.fireDueAudio();
   }
 
   stop() {
@@ -625,6 +774,7 @@ export class CutscenePlayer {
     const done = this.onDone;
     this.active = false;
     this.doc = null;
+    this.startTimeMs = 0;
     this.onDone = null;
     this.firedAudio.clear();
     this.waitingPauseClipId = null;
@@ -674,20 +824,31 @@ export class CutscenePlayer {
 
   fireDueAudio() {
     const clips = this.doc?.clips || [];
+    const masterVolume = clamp(safeNumber(this.doc?.masterVolume, 1), 0, 1);
     clips.forEach((clip) => {
       if (clip.type !== 'music' && clip.type !== 'sfx') return;
       if (this.timeMs < clip.startMs || this.firedAudio.has(clip.id)) return;
+      if (this.startTimeMs > clip.startMs && this.startTimeMs >= getClipEndMs(clip)) return;
+      if (this.startTimeMs > clip.startMs && clip.type === 'sfx' && !clip.loop) {
+        this.firedAudio.add(clip.id);
+        return;
+      }
       this.firedAudio.add(clip.id);
       const asset = (this.doc.assets || []).find((entry) => entry.id === clip.assetId) || null;
       const ref = asset?.ref || clip.assetId;
+      const volume = clamp(safeNumber(clip.volume, 1) * masterVolume, 0, 1);
       if (clip.type === 'music') {
+        const offsetMs = Math.max(
+          0,
+          (this.startTimeMs > clip.startMs ? this.startTimeMs : this.timeMs) - safeNumber(clip.startMs)
+        );
         if (typeof this.game.playCutsceneMidi === 'function') {
-          this.game.playCutsceneMidi(ref, { fadeMs: clip.fadeMs, volume: clip.volume });
+          this.game.playCutsceneMidi(ref, { fadeMs: clip.fadeMs, volume, offsetMs });
         } else {
-          this.game.playActorMidi?.(ref, { fadeMs: clip.fadeMs, volume: clip.volume });
+          this.game.playActorMidi?.(ref, { fadeMs: clip.fadeMs, volume, offsetMs });
         }
       } else {
-        this.game.playSfxById?.(ref, { volume: clip.volume, loop: clip.loop, key: clip.id });
+        this.game.playSfxById?.(ref, { volume, loop: clip.loop, key: clip.id });
       }
       if (clip.loop || clip.type === 'music') {
         this.loopingAudio.set(clip.id, { type: clip.type, ref });
@@ -776,9 +937,17 @@ export function drawCutsceneDocument(ctx, doc, timeMs, bounds, runtime = null, o
   ctx.rect(stageX, stageY, stageW, stageH);
   ctx.clip();
   const visibleLayers = new Set((safeDoc.layers || []).filter((layer) => layer.visible !== false).map((layer) => layer.id));
+  const trackOrder = new Map((safeDoc.tracks || []).map((track, index) => [track.id, index]));
+  const getClipTrackOrder = (clip, fallbackIndex) => {
+    if (trackOrder.has(clip?.trackId)) return trackOrder.get(clip.trackId);
+    return trackOrder.size + fallbackIndex;
+  };
   (safeDoc.clips || [])
     .map((clip, index) => ({ clip, index }))
-    .sort((a, b) => b.index - a.index)
+    .sort((a, b) => {
+      const trackDelta = getClipTrackOrder(b.clip, b.index) - getClipTrackOrder(a.clip, a.index);
+      return trackDelta || b.index - a.index;
+    })
     .forEach(({ clip }) => {
     if (!visibleLayers.has(clip.layerId)) return;
     if (isEffectClip(clip)) {
@@ -1050,9 +1219,7 @@ function getCutsceneWeatherState(runtime, clip, weatherType, stage) {
     Math.round(stage.y),
     Math.round(stage.w),
     Math.round(stage.h),
-    Math.round(weatherScale * 1000),
-    Math.round(safeNumber(clip.intensity, 1) * 100),
-    Math.round(safeNumber(clip.wind, 0) * 100)
+    Math.round(weatherScale * 1000)
   ].join(':');
   if (!state) {
     state = createWeatherRuntimeState();
@@ -1074,10 +1241,10 @@ function getCutsceneWeatherRenderScale(stage, weatherType) {
   return Math.min(stageScale, 2);
 }
 
-function advanceCutsceneWeatherState(state, clip, localMs, stage, weatherType) {
-  const intensity = clamp(safeNumber(clip.intensity, 1), 0.1, 4);
+function advanceCutsceneWeatherState(state, clip, localMs, stage, weatherType, effectSample = null) {
+  const intensity = clamp(safeNumber(effectSample?.intensity, clip.intensity ?? 1), 0, 4);
   const weatherScale = getCutsceneWeatherRenderScale(stage, weatherType);
-  const windBias = safeNumber(clip.wind, 0) * 48 * weatherScale;
+  const windBias = safeNumber(effectSample?.wind, clip.wind ?? 0) * 48 * weatherScale;
   const bounds = {
     left: stage.x,
     top: stage.y,
@@ -1133,14 +1300,21 @@ function drawCutsceneEffect(ctx, doc, clip, timeMs, stage, runtime = null) {
   if (!isEffectClip(clip) || timeMs < clip.startMs || timeMs > clip.startMs + clip.durationMs) return;
   const localMs = Math.max(0, timeMs - clip.startMs);
   const weatherType = cutsceneEffectToWeather(clip.effectType);
+  const sample = sampleCutsceneEffectClip(clip, timeMs);
+  if (!sample) return;
   const state = getCutsceneWeatherState(runtime, clip, weatherType, stage);
-  advanceCutsceneWeatherState(state, clip, localMs, stage, weatherType);
+  advanceCutsceneWeatherState(state, clip, localMs, stage, weatherType, sample);
+  const alpha = clamp(safeNumber(sample.opacity, 1), 0, 1);
+  if (alpha <= 0) return;
+  ctx.save();
+  ctx.globalAlpha *= alpha;
   drawWeatherParticles(ctx, state.particles, {
     weatherType,
     fogPhase: state.time,
     bounds: { x: stage.x, y: stage.y, w: stage.w, h: stage.h },
     lightning: state.lightning
   });
+  ctx.restore();
 }
 
 function renderClipToFxCanvas(doc, clip, sample, w, h, stage, runtime) {
@@ -1424,6 +1598,7 @@ export default class CutsceneEditor {
     this.previewPlaybackTargetMs = DEFAULT_DURATION_MS;
     this.ignorePreviewDone = false;
     this.selectedClipId = null;
+    this.selectedTrackId = null;
     this.selectedKeyframe = null;
     this.bounds = {};
     this.drag = null;
@@ -1435,15 +1610,22 @@ export default class CutsceneEditor {
     this.menuOpen = false;
     this.activeMenuTab = 'add';
     this.menuScroll = 0;
+    this.menuScrollDrag = null;
+    this.clipOptionsOpen = false;
+    this.clipOptionsTab = 'keys';
     this.keyframeMode = 'playhead';
     this.workspaceMode = 'split';
     this.timelineZoomX = 1;
     this.timelineScrollMs = 0;
     this.timelineScrollTrack = 0;
-    this.panJoystick = { center: { x: 0, y: 0 }, radius: 0, knobRadius: 0, dx: 0, dy: 0 };
+    this.panJoystick = { center: { x: 0, y: 0 }, radius: 0, knobRadius: 0, dx: 0, dy: 0, active: false, id: null };
+    this.timelineZoomSlider = { active: false, id: null, bounds: null, railBounds: null };
+    this.transportHold = null;
+    this.transportPopover = null;
     this.history = [];
     this.redoStack = [];
-    this.historyLimit = 80;
+    this.historyLimit = CUTSCENE_HISTORY_ENTRY_LIMIT;
+    this.historyByteLimit = CUTSCENE_HISTORY_BYTE_LIMIT;
     this.previewRuntime = {
       imageCache: new Map(),
       artCache: new Map(),
@@ -1466,11 +1648,13 @@ export default class CutsceneEditor {
     this.document = normalizeCutsceneDocument(data, name);
     this.playheadMs = 0;
     this.selectedClipId = this.document.clips[0]?.id || null;
+    this.selectedTrackId = null;
     this.selectedKeyframe = null;
     this.statusText = `Loaded ${this.document.name}`;
     this.timelineScrollMs = 0;
     this.timelineScrollTrack = 0;
     this.timelineZoomX = 1;
+    this.focusInitialDocumentContent();
     this.history = [];
     this.redoStack = [];
     this.previewRuntime.weatherStates?.clear?.();
@@ -1513,6 +1697,7 @@ export default class CutsceneEditor {
       this.playheadMs = clamp(this.playheadMs, 0, Math.max(1, this.document.durationMs || DEFAULT_DURATION_MS));
       if (input?.wasPressed?.('undo')) this.undo();
       if (input?.wasPressed?.('redo')) this.redo();
+      this.updateThumbstickPan(dt);
     } catch (error) {
       debugCutscenePlayback('update-failed', {
         playheadMs: this.playheadMs,
@@ -1531,7 +1716,7 @@ export default class CutsceneEditor {
   }
 
   draw(ctx, width, height) {
-    this.bounds = { buttons: [], clips: [], clipHandles: [], visualClips: [], menuButtons: [], contextButtons: [], keyframes: [], stateEvents: [], stageKeyframes: [], trackLabels: [], stageSelection: [] };
+    this.bounds = { buttons: [], clips: [], clipHandles: [], visualClips: [], menuButtons: [], contextButtons: [], clipOptionButtons: [], keyframes: [], stateEvents: [], stageKeyframes: [], trackLabels: [], trackLanes: [], stageSelection: [] };
     const safeW = Math.max(1, Math.floor(Number(width) || 1));
     const safeH = Math.max(1, Math.floor(Number(height) || 1));
     try {
@@ -1540,16 +1725,19 @@ export default class CutsceneEditor {
       ctx.fillStyle = '#071015';
       ctx.fillRect(0, 0, safeW, safeH);
       const layout = this.computeLayout(safeW, safeH);
-      const { stageBounds, timelineBounds, railBounds, contextBounds } = layout;
+      const { stageBounds, timelineBounds, railBounds, contextBounds, zoomBounds } = layout;
       this.bounds.stage = stageBounds;
       this.bounds.timeline = timelineBounds;
+      this.bounds.timelineZoom = null;
       drawCutsceneDocument(ctx, this.document, this.playheadMs, stageBounds, this.previewRuntime);
       this.updateVisualClipBounds(stageBounds);
       this.drawSelectedClipOutline(ctx, stageBounds);
       this.drawStageKeyframeMarkers(ctx, stageBounds);
       this.drawTimeline(ctx, timelineBounds);
       this.drawContextRibbon(ctx, contextBounds);
+      this.drawTimelineZoomSlider(ctx, zoomBounds);
       this.drawActionRail(ctx, railBounds, layout.isPortrait);
+      if (this.clipOptionsOpen && (this.getSelectedClip() || this.getSelectedTrack())) this.drawClipOptionsPanel(ctx, layout.menuBounds, layout.isPortrait);
       if (this.menuOpen) this.drawMenu(ctx, layout.menuBounds, layout.isPortrait);
       ctx.restore();
     } catch (error) {
@@ -1653,20 +1841,24 @@ export default class CutsceneEditor {
       });
       const work = shared.mainEditor;
       const contextH = 48;
+      const zoomH = 24;
+      const gap = 6;
       const timelineH = mode === 'timeline'
-        ? Math.max(120, work.h - contextH - 80)
+        ? Math.max(120, work.h - contextH - zoomH - 80)
         : mode === 'canvas'
           ? clamp(Math.round(work.h * 0.16), 64, 92)
           : clamp(Math.round(work.h * 0.28), 112, Math.max(112, work.h - 96));
-      const contextBounds = { x: work.x, y: Math.max(work.y, work.y + work.h - timelineH - contextH - 8), w: work.w, h: contextH };
-      const timelineBounds = { x: work.x, y: contextBounds.y + contextBounds.h + 8, w: work.w, h: timelineH };
-      const stageBounds = { x: work.x, y: work.y, w: work.w, h: Math.max(64, contextBounds.y - work.y - 8) };
+      const zoomBounds = { x: work.x, y: Math.max(work.y, work.y + work.h - zoomH), w: work.w, h: zoomH };
+      const contextBounds = { x: work.x, y: Math.max(work.y, zoomBounds.y - contextH - gap), w: work.w, h: contextH };
+      const timelineBounds = { x: work.x, y: contextBounds.y - timelineH - gap, w: work.w, h: timelineH };
+      const stageBounds = { x: work.x, y: work.y, w: work.w, h: Math.max(64, timelineBounds.y - work.y - gap) };
       return {
         isPortrait,
         mode,
         stageBounds,
         timelineBounds,
         contextBounds,
+        zoomBounds,
         railBounds: shared.middleRail,
         menuBounds: shared.menuSheet
       };
@@ -1689,9 +1881,50 @@ export default class CutsceneEditor {
       stageBounds,
       timelineBounds,
       contextBounds,
+      zoomBounds: null,
       railBounds,
       menuBounds: { x: margin, y: Math.max(margin, railBounds.y - 260), w: menuW, h: Math.max(180, railBounds.y - margin * 2) }
     };
+  }
+
+  updateThumbstickPan(dt) {
+    if (!this.panJoystick?.active || !this.bounds.timeline) return;
+    const dx = clamp(safeNumber(this.panJoystick.dx, 0), -1, 1);
+    const dy = clamp(safeNumber(this.panJoystick.dy, 0), -1, 1);
+    if (Math.abs(dx) < 0.04 && Math.abs(dy) < 0.04) return;
+    const seconds = Math.max(0.001, safeNumber(dt, 0.016));
+    const layout = this.getTimelineLayout(this.bounds.timeline);
+    const pxPerSecond = Math.max(120, layout.track.w * 0.9);
+    this.panTimeline(dx * pxPerSecond * seconds, dy * pxPerSecond * seconds, this.bounds.timeline);
+  }
+
+  drawTimelineZoomSlider(ctx, bounds) {
+    if (!bounds || bounds.w <= 0 || bounds.h <= 0) {
+      this.timelineZoomSlider.bounds = null;
+      this.timelineZoomSlider.railBounds = null;
+      return;
+    }
+    const padX = 16;
+    const railH = 10;
+    const rail = {
+      x: bounds.x + padX,
+      y: bounds.y + Math.max(3, Math.floor((bounds.h - railH) / 2)),
+      w: Math.max(1, bounds.w - padX * 2),
+      h: railH
+    };
+    const ratio = clamp((safeNumber(this.timelineZoomX, 1) - CUTSCENE_TIMELINE_MIN_ZOOM) / Math.max(0.001, CUTSCENE_TIMELINE_MAX_ZOOM - CUTSCENE_TIMELINE_MIN_ZOOM), 0, 1);
+    this.timelineZoomSlider.railBounds = rail;
+    this.timelineZoomSlider.bounds = { x: rail.x, y: rail.y - 10, w: rail.w, h: rail.h + 20 };
+    this.bounds.timelineZoom = this.timelineZoomSlider.bounds;
+    drawSharedMobileZoomSlider(ctx, rail, ratio, { knobColor: '#45f0ff', railColor: 'rgba(7,16,21,0.72)' });
+  }
+
+  setTimelineZoomFromScreen(x) {
+    const rail = this.timelineZoomSlider.railBounds;
+    if (!rail || !this.bounds.timeline) return;
+    const t = clamp((safeNumber(x, rail.x) - rail.x) / Math.max(1, rail.w), 0, 1);
+    const nextZoom = CUTSCENE_TIMELINE_MIN_ZOOM + t * (CUTSCENE_TIMELINE_MAX_ZOOM - CUTSCENE_TIMELINE_MIN_ZOOM);
+    this.adjustTimelineZoom(nextZoom / Math.max(0.001, safeNumber(this.timelineZoomX, 1)));
   }
 
   drawError(ctx, width, height, error) {
@@ -1711,7 +1944,8 @@ export default class CutsceneEditor {
       zoomX: this.timelineZoomX,
       scrollMs: this.timelineScrollMs,
       scrollTrack: this.timelineScrollTrack,
-      minLaneHeight: this.workspaceMode === 'timeline' ? CUTSCENE_TIMELINE_MIN_LANE_H + 4 : CUTSCENE_TIMELINE_MIN_LANE_H
+      minLaneHeight: this.workspaceMode === 'timeline' ? CUTSCENE_TIMELINE_MIN_LANE_H + 4 : CUTSCENE_TIMELINE_MIN_LANE_H,
+      tracks: this.document?.tracks || []
     };
   }
 
@@ -1746,13 +1980,40 @@ export default class CutsceneEditor {
     const oldVisible = oldZoom > 1 ? duration / oldZoom : duration;
     const oldStart = clamp(safeNumber(this.timelineScrollMs, 0), 0, Math.max(0, duration - oldVisible));
     const defaultAnchor = oldStart + oldVisible / 2;
-    const anchor = clamp(Number.isFinite(anchorMs) ? safeNumber(anchorMs, defaultAnchor) : defaultAnchor, 0, duration);
+    const selectedAnchor = this.getSelectedTimelineFocusMs();
+    const anchor = clamp(Number.isFinite(anchorMs)
+      ? safeNumber(anchorMs, defaultAnchor)
+      : safeNumber(selectedAnchor, defaultAnchor), 0, duration);
     const ratio = oldVisible > 0 ? clamp((anchor - oldStart) / oldVisible, 0, 1) : 0.5;
     const nextZoom = clamp(oldZoom * safeNumber(multiplier, 1), CUTSCENE_TIMELINE_MIN_ZOOM, CUTSCENE_TIMELINE_MAX_ZOOM);
     const nextVisible = nextZoom > 1 ? duration / nextZoom : duration;
     this.timelineZoomX = nextZoom;
     this.timelineScrollMs = clamp(anchor - ratio * nextVisible, 0, Math.max(0, duration - nextVisible));
     this.statusText = `Timeline ${nextZoom.toFixed(nextZoom >= 10 ? 0 : 1)}x`;
+  }
+
+  getSelectedTimelineFocusMs() {
+    const selected = this.getSelectedClip();
+    if (selected) {
+      return safeNumber(selected.startMs) + Math.max(1, safeNumber(selected.durationMs, 1)) / 2;
+    }
+    return this.playheadMs;
+  }
+
+  focusInitialDocumentContent() {
+    const clips = Array.isArray(this.document?.clips) ? this.document.clips : [];
+    if (!clips.length) return;
+    const first = [...clips].sort((a, b) => safeNumber(a.startMs) - safeNumber(b.startMs))[0];
+    if (!first) return;
+    this.selectedClipId = first.id || this.selectedClipId;
+    this.selectedTrackId = null;
+    this.playheadMs = clamp(safeNumber(first.startMs), 0, this.document.durationMs);
+    const focusMs = safeNumber(first.startMs) + Math.max(1, safeNumber(first.durationMs, 1)) / 2;
+    const duration = Math.max(1, safeNumber(this.document?.durationMs, DEFAULT_DURATION_MS));
+    const visible = this.timelineZoomX > 1 ? duration / this.timelineZoomX : duration;
+    this.timelineScrollMs = clamp(focusMs - visible / 2, 0, Math.max(0, duration - visible));
+    const trackIndex = this.getTrackIndexById(first.trackId);
+    if (trackIndex >= 0) this.timelineScrollTrack = trackIndex;
   }
 
   panTimeline(deltaX = 0, deltaY = 0, bounds = this.bounds.timeline) {
@@ -1763,7 +2024,7 @@ export default class CutsceneEditor {
     }
     if (deltaY) {
       const laneStep = Math.max(1, layout.laneH + layout.laneGap);
-      this.timelineScrollTrack = clamp(Math.round(layout.scrollTrack + safeNumber(deltaY) / laneStep), 0, layout.maxScrollTrack);
+      this.timelineScrollTrack = clamp(layout.scrollTrack + safeNumber(deltaY) / laneStep, 0, layout.maxScrollTrack);
     }
     this.clampTimelineViewport(bounds);
   }
@@ -1778,14 +2039,21 @@ export default class CutsceneEditor {
     ctx.fillStyle = UI_SUITE.colors.muted;
     ctx.font = `11px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'left';
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(layout.bounds.x, layout.track.y, layout.bounds.w, layout.track.h);
+    ctx.clip();
     layout.laneBounds.forEach((lane) => {
       const { y, h } = lane.bounds;
-      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      const selectedTrack = lane.trackId && lane.trackId === this.selectedTrackId;
+      ctx.fillStyle = selectedTrack ? 'rgba(255,225,106,0.18)' : 'rgba(255,255,255,0.08)';
       ctx.fillRect(lane.bounds.x, y, lane.bounds.w, h);
-      ctx.fillStyle = UI_SUITE.colors.muted;
+      ctx.fillStyle = selectedTrack ? '#ffe16a' : UI_SUITE.colors.muted;
       ctx.fillText(lane.label, bounds.x + 8, y + h / 2 + 4, layout.labelW - 12);
-      this.bounds.trackLabels.push({ x: bounds.x, y, w: layout.labelW, h, id: lane.clipId, trackIndex: lane.index });
+      this.bounds.trackLabels.push({ x: bounds.x, y, w: layout.labelW, h, id: lane.trackId, trackId: lane.trackId, trackIndex: lane.index });
+      this.bounds.trackLanes.push({ x: bounds.x, y, w: bounds.w, h, id: lane.trackId, trackId: lane.trackId, trackIndex: lane.index });
     });
+    ctx.restore();
     const tickCount = Math.max(2, Math.min(8, Math.floor(layout.track.w / 80)));
     for (let i = 0; i <= tickCount; i += 1) {
       const tickMs = layout.visibleStartMs + (layout.visibleDuration / tickCount) * i;
@@ -1807,27 +2075,42 @@ export default class CutsceneEditor {
     ctx.beginPath();
     ctx.rect(layout.track.x, layout.track.y, layout.track.w, layout.track.h);
     ctx.clip();
-    clips.forEach((clip, index) => {
-      const lane = layout.laneBounds.find((entry) => entry.clipId === clip.id);
+    const trackSlots = new Map();
+    (this.document.tracks || []).forEach((track) => {
+      const trackClips = clips.filter((entry) => (entry.trackId || '') === track.id);
+      trackSlots.set(track.id, assignTimelineClipSlots(trackClips));
+    });
+    clips.forEach((clip) => {
+      const lane = layout.laneBounds.find((entry) => entry.trackId === clip.trackId);
       if (!lane) return;
-      const y = lane.bounds.y + 3;
+      const packing = trackSlots.get(clip.trackId) || assignTimelineClipSlots([clip]);
+      const stackedCount = Math.min(3, Math.max(1, packing.slotCount));
+      const slot = Math.min(safeNumber(packing.slots.get(clip.id), 0), stackedCount - 1);
+      const slotH = Math.max(14, Math.floor((lane.bounds.h - 6) / stackedCount));
+      const y = lane.bounds.y + 3 + slot * slotH;
       const x = timelineMsToX(clip.startMs, layout);
       const endX = timelineMsToX(clip.startMs + Math.max(120, clip.durationMs || 120), layout);
       if (endX < layout.track.x || x > layout.track.x + layout.track.w) return;
       const visibleX = Math.max(layout.track.x, x);
       const visibleEndX = Math.min(layout.track.x + layout.track.w, Math.max(endX, x + (clip.type === 'pause' ? 16 : 22)));
       const w = Math.max(clip.type === 'pause' ? 16 : 22, visibleEndX - visibleX);
-      const clipBounds = { x: visibleX, y, w, h: lane.bounds.h, id: clip.id, laneId: lane.id, trackIndex: index, startMs: clip.startMs, endMs: getClipEndMs(clip) };
-      ctx.fillStyle = clip.id === this.selectedClipId ? '#ffe16a' : clip.type === 'text' ? '#7ed7ff' : clip.type === 'color-board' ? (normalizeHexColor(clip.color) || '#d88cff') : isAudioClip(clip) ? '#8aff9a' : clip.type === 'pause' ? '#ffb36a' : '#d88cff';
-      ctx.fillRect(visibleX, y, w, Math.max(1, lane.bounds.h - 6));
+      const h = Math.max(12, slotH - 4);
+      const clipBounds = { x: visibleX, y, w, h, id: clip.id, laneId: lane.id, trackId: lane.trackId, trackIndex: lane.index, startMs: clip.startMs, endMs: getClipEndMs(clip) };
+      ctx.fillStyle = getCutsceneTimelineClipColor(clip);
+      ctx.fillRect(visibleX, y, w, h);
+      if (clip.id === this.selectedClipId) {
+        ctx.strokeStyle = '#ffe16a';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(visibleX + 1, y + 1, Math.max(1, w - 2), Math.max(1, h - 2));
+      }
       ctx.fillStyle = '#071015';
       ctx.font = `11px ${UI_SUITE.font.family}`;
-      ctx.fillText(this.getClipLabel(clip), visibleX + 5, y + Math.max(14, lane.bounds.h / 2 + 2), Math.max(10, w - 10));
+      ctx.fillText(this.getClipLabel(clip), visibleX + 5, y + Math.max(12, h / 2 + 4), Math.max(10, w - 10));
       this.bounds.clips.push(clipBounds);
       if (clip.id === this.selectedClipId && clip.type !== 'pause') {
         const handleX = timelineMsToX(clip.startMs + Math.max(120, clip.durationMs || 120), layout) - 8;
         if (handleX >= layout.track.x - 16 && handleX <= layout.track.x + layout.track.w) {
-          const handle = { x: clamp(handleX, layout.track.x, layout.track.x + layout.track.w - 16), y, w: 16, h: Math.max(1, lane.bounds.h - 6), id: clip.id, edge: 'end' };
+          const handle = { x: clamp(handleX, layout.track.x, layout.track.x + layout.track.w - 16), y, w: 16, h, id: clip.id, edge: 'end' };
           this.bounds.clipHandles.push(handle);
           ctx.fillStyle = 'rgba(7,16,21,0.75)';
           ctx.fillRect(handle.x + 5, handle.y + 3, 6, Math.max(4, handle.h - 6));
@@ -1835,7 +2118,7 @@ export default class CutsceneEditor {
           ctx.fillRect(handle.x + 7, handle.y + 5, 2, Math.max(2, handle.h - 10));
         }
       }
-      if (isVisualClip(clip) && Array.isArray(clip.keyframes)) {
+      if (isKeyframeClip(clip) && Array.isArray(clip.keyframes)) {
         clip.keyframes.filter((keyframe) => keyframe?.manual === true).forEach((keyframe) => {
           const keyX = timelineMsToX(clip.startMs + keyframe.timeMs, layout);
           if (keyX < layout.track.x || keyX > layout.track.x + layout.track.w) return;
@@ -1902,10 +2185,10 @@ export default class CutsceneEditor {
   drawActionRail(ctx, bounds, isPortrait) {
     ctx.save();
     const actions = [
-      { id: 'menu', label: '☰', onClick: () => { this.menuOpen = !this.menuOpen; } },
+      { id: 'menu', label: '☰', onClick: () => this.toggleBottomMenu() },
       { id: 'undo', label: '↶', onClick: () => this.undo() },
       { id: 'redo', label: '↷', onClick: () => this.redo() },
-      { id: 'play', label: this.isPlaying ? '❚❚' : '▶', primary: true, active: this.isPlaying, onClick: () => this.togglePlayback() }
+      { id: 'play', label: this.isPlaying ? '❚❚' : '▶', primary: true, active: this.isPlaying, onClick: () => this.togglePlayback(), onHold: true }
     ];
     if (isPortrait) {
       drawSharedPortraitActionRail(ctx, bounds, this.panJoystick, actions, {
@@ -1937,6 +2220,7 @@ export default class CutsceneEditor {
         ctx.fillText(this.statusText, bounds.x + 12, bounds.y + bounds.h - 12, titleW - 16);
       }
     }
+    if (this.transportPopover) this.drawTransportPopover(ctx);
     ctx.restore();
   }
 
@@ -1948,7 +2232,58 @@ export default class CutsceneEditor {
       fontSize: 17,
       maxWidth: Math.max(10, normalized.w - 10)
     });
-    this.bounds.buttons.push({ ...normalized, id: action.id, onClick: action.onClick });
+    this.bounds.buttons.push({ ...normalized, id: action.id, onClick: action.onClick, onHold: action.onHold });
+  }
+
+  getTransportActions() {
+    const duration = Math.max(1, safeNumber(this.document?.durationMs, DEFAULT_DURATION_MS));
+    const step = getFrameStepMs(this.document);
+    return [
+      { id: 'start', label: '⏮', col: 0, row: 0, action: () => { this.pausePlayback(); this.playheadMs = 0; } },
+      { id: 'back', label: '⏪', col: 0, row: 1, action: () => { this.pausePlayback(); this.playheadMs = clamp(this.playheadMs - step, 0, duration); } },
+      { id: 'forward', label: '⏩', col: 0, row: 2, action: () => { this.pausePlayback(); this.playheadMs = clamp(this.playheadMs + step, 0, duration); } },
+      { id: 'end', label: '⏭', col: 0, row: 3, action: () => { this.pausePlayback(); this.playheadMs = duration; } },
+      { id: 'play', label: this.isPlaying ? '❚❚' : '▶', col: 1, row: 1, primary: true, active: this.isPlaying, action: () => this.togglePlayback() }
+    ];
+  }
+
+  drawTransportPopover(ctx) {
+    const layout = drawSharedTransportPopover(ctx, this.transportPopover.anchor, { x: 0, y: 0, w: ctx.canvas.width, h: ctx.canvas.height }, this.getTransportActions(), {
+      columns: 2,
+      columnWidth: 54,
+      rowHeight: 42
+    });
+    this.bounds.transportPopoverButtons = layout.buttons.map((button) => ({ ...button.bounds, id: button.id, action: button.action }));
+  }
+
+  openTransportPopover(anchor) {
+    this.transportPopover = { anchor: { x: anchor.x, y: anchor.y, w: anchor.w, h: anchor.h } };
+  }
+
+  closeTransportPopover() {
+    this.transportPopover = null;
+    this.bounds.transportPopoverButtons = [];
+  }
+
+  startTransportHold(button, x, y) {
+    this.cancelTransportHold();
+    this.transportHold = {
+      x,
+      y,
+      button,
+      fired: false,
+      timer: window.setTimeout(() => {
+        if (!this.transportHold) return;
+        this.transportHold.fired = true;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(20);
+        this.openTransportPopover(button);
+      }, 500)
+    };
+  }
+
+  cancelTransportHold() {
+    if (this.transportHold?.timer) window.clearTimeout(this.transportHold.timer);
+    this.transportHold = null;
   }
 
   getTimelineViewActions() {
@@ -1956,45 +2291,20 @@ export default class CutsceneEditor {
       { id: 'view-canvas', label: 'Canvas', active: this.workspaceMode === 'canvas' },
       { id: 'view-split', label: 'Split', active: this.workspaceMode === 'split' },
       { id: 'view-timeline', label: 'Time', active: this.workspaceMode === 'timeline' },
-      { id: 'timeline-zoom-out', label: '-' },
-      { id: 'timeline-zoom-in', label: '+' },
       { id: 'timeline-fit', label: 'Fit' }
     ];
   }
 
   drawContextRibbon(ctx, bounds) {
     const selected = this.getSelectedClip();
+    const selectedTrack = this.getSelectedTrack();
     if (!bounds) return;
-    const actions = !selected
+    const actions = !selected && !selectedTrack
       ? this.getTimelineViewActions()
-      : isVisualClip(selected)
-      ? [
-        { id: 'actions', label: 'Actions' },
-        { id: 'key-mode', label: this.getSelectedKeyframeLabel(selected) },
-        { id: 'set-key', label: 'Set Key' },
-        { id: 'step-frame', label: 'Step' }
-      ]
-      : isAudioClip(selected)
-        ? [
-          { id: 'loop', label: selected.loop ? 'Loop On' : 'Loop Off' },
-          { id: 'volume', label: `Vol ${Math.round(selected.volume * 100)}` },
-          { id: 'fade', label: `Fade ${selected.fadeMs}` },
-          { id: 'delete', label: 'Delete' }
-        ]
-        : isEffectClip(selected)
-          ? [
-            { id: 'effect-type', label: selected.effectType || 'Effect' },
-            { id: 'effect-intensity', label: `Power ${selected.intensity || 1}` },
-            { id: 'effect-wind', label: `Wind ${selected.wind || 0}` },
-            { id: 'delete', label: 'Delete' }
-          ]
-          : [
-            { id: 'pause-label', label: 'Pause' },
-            { id: 'delete', label: 'Delete' }
-          ];
+      : [{ id: 'clip-options', label: 'Edit', active: this.clipOptionsOpen, primary: true }];
     drawSharedContextRibbon(ctx, bounds, actions, {
-      title: selected ? 'Clip' : 'View',
-      minButtonWidth: selected ? 58 : 42,
+      title: selected ? 'Clip' : selectedTrack ? 'Track' : 'View',
+      minButtonWidth: selected || selectedTrack ? 54 : 58,
       registerAction: (buttonBounds, action) => this.bounds.contextButtons.push({ ...buttonBounds, id: action.id }),
       drawButton: (buttonBounds, action) => {
         const color = drawSharedMenuButtonChrome(ctx, buttonBounds, { active: Boolean(action.active) || (action.id === 'loop' && selected?.loop) });
@@ -2003,8 +2313,203 @@ export default class CutsceneEditor {
     });
   }
 
+  getSelectedVisualContextActions(selected) {
+    if (selected?.type === 'text') {
+      return [
+        { id: 'edit-text', label: 'Edit' },
+        { id: 'text-color', label: 'Color' },
+        { id: 'font-size', label: `Size ${selected.fontSize}` },
+        { id: 'set-key', label: 'Set Key' },
+        { id: 'actions', label: 'More' }
+      ];
+    }
+    if (selected?.type === 'actor') {
+      return [
+        { id: 'actor-state', label: 'State' },
+        { id: 'next-state', label: 'Next' },
+        { id: 'play-animation', label: selected.playAnimation ? 'Anim On' : 'Anim Off' },
+        { id: 'set-key', label: 'Set Key' },
+        { id: 'actions', label: 'More' }
+      ];
+    }
+    if (selected?.type === 'color-board') {
+      return [
+        { id: 'board-color', label: 'Color' },
+        { id: 'opacity', label: `Opacity ${Math.round(safeNumber(selected.opacity, 1) * 100)}%` },
+        { id: 'clip-duration', label: 'Length' },
+        { id: 'set-key', label: 'Set Key' },
+        { id: 'actions', label: 'More' }
+      ];
+    }
+    return [
+      { id: 'scale', label: 'Scale' },
+      { id: 'rotate', label: 'Rotate' },
+      { id: 'fx', label: 'FX' },
+      { id: 'set-key', label: 'Set Key' },
+      { id: 'actions', label: 'More' }
+    ];
+  }
+
+  getClipOptionItems(clip = this.getSelectedClip(), tab = this.clipOptionsTab) {
+    const selectedTrack = this.getSelectedTrack();
+    if (!clip && selectedTrack) {
+      const trackIndex = this.getSelectedTrackIndex();
+      const trackCount = (this.document.tracks || []).length;
+      return [
+        { id: 'rename-track', label: 'Rename' },
+        { id: 'track-up', label: 'Move Up', disabled: trackIndex <= 0 },
+        { id: 'track-down', label: 'Move Down', disabled: trackIndex < 0 || trackIndex >= trackCount - 1 },
+        { id: 'track-top', label: 'To Top', disabled: trackIndex <= 0 },
+        { id: 'track-bottom', label: 'To Bottom', disabled: trackIndex < 0 || trackIndex >= trackCount - 1 },
+        { id: 'delete-track', label: 'Delete Track', disabled: trackCount <= 1 }
+      ];
+    }
+    if (!clip) return [];
+    if (tab === 'edit') {
+      return [
+        { id: 'copy', label: 'Copy' },
+        { id: 'cut', label: 'Cut' },
+        { id: 'paste', label: 'Paste', disabled: !this.clipboardClip },
+        { id: 'duplicate', label: 'Duplicate' },
+        { id: 'delete', label: 'Delete' },
+        { id: 'move-to-track', label: 'Move To Track', disabled: (this.document.tracks || []).length <= 1 },
+        { id: 'new-track', label: 'New Track' }
+      ];
+    }
+    if (tab === 'keys') {
+      const selectedKey = this.getSelectedKeyframe(clip);
+      return isKeyframeClip(clip) ? [
+        { id: 'set-key', label: 'Set Key Frame' },
+        { id: 'delete-key', label: 'Remove Key Frame', disabled: !selectedKey || this.isProtectedKeyframe(clip, selectedKey) },
+        { id: 'prev-key', label: 'Previous Key Frame', disabled: !(clip.keyframes || []).some((entry) => entry?.manual === true) },
+        { id: 'next-key', label: 'Next Key Frame', disabled: !(clip.keyframes || []).some((entry) => entry?.manual === true) },
+        { id: 'key-mode', label: this.getSelectedKeyframeLabel(clip) },
+        { id: 'ease', label: this.getEasingLabel(clip.easing) }
+      ] : [
+        { id: 'clip-duration', label: 'Clip Length', disabled: clip.type === 'pause' },
+        { id: 'delete', label: 'Delete' }
+      ];
+    }
+    if (isAudioClip(clip)) {
+      return [
+        { id: 'loop', label: clip.loop ? 'Loop On' : 'Loop Off' },
+        { id: 'volume', label: `Volume ${Math.round((clip.volume ?? 1) * 100)}` },
+        { id: 'fade', label: `Fade ${clip.fadeMs ?? 250}` },
+        { id: 'clip-duration', label: 'Clip Length' },
+        { id: 'delete', label: 'Delete' }
+      ];
+    }
+    if (isEffectClip(clip)) {
+      const editable = this.getEditableEffectState(clip) || clip;
+      return [
+        { id: 'effect-type', label: clip.effectType || 'Effect Type' },
+        { id: 'effect-intensity', label: `Power ${safeNumber(editable.intensity, clip.intensity ?? 1)}` },
+        { id: 'opacity', label: `Opacity ${Math.round(safeNumber(editable.opacity, 1) * 100)}%` },
+        { id: 'effect-wind', label: `Wind ${safeNumber(editable.wind, clip.wind ?? 0)}` },
+        { id: 'clip-duration', label: 'Clip Length' },
+        { id: 'delete', label: 'Delete' }
+      ];
+    }
+    if (clip.type === 'text') {
+      return [
+        { id: 'edit-text', label: 'Edit Text' },
+        { id: 'text-color', label: 'Text Color' },
+        { id: 'text-border', label: clip.textBorderEnabled === false ? 'Border Off' : 'Border On' },
+        { id: 'font-size', label: `Font Size ${clip.fontSize}` },
+        { id: 'font-family', label: 'Font' },
+        { id: 'text-align', label: `Justify ${clip.textAlign}` },
+        { id: 'reveal-speed', label: `Reveal ${clip.revealSpeed}` },
+        { id: 'opacity', label: `Opacity ${Math.round(safeNumber((this.getEditableTransform(clip) || clip).opacity, 1) * 100)}%` },
+        { id: 'fade-in', label: `Fade In ${clip.fadeInMs || 0}` },
+        { id: 'fade-out', label: `Fade Out ${clip.fadeOutMs || 0}` },
+        { id: 'clip-duration', label: 'Clip Length' }
+      ];
+    }
+    if (clip.type === 'actor') {
+      return [
+        { id: 'actor-state', label: 'Actor State' },
+        { id: 'add-state', label: 'Add State Key' },
+        { id: 'next-state', label: 'Next State' },
+        { id: 'play-animation', label: clip.playAnimation ? 'Anim On' : 'Anim Off' },
+        { id: 'anim-speed', label: `Anim Speed ${clip.animationSpeed || 1}` },
+        { id: 'anim-loop', label: clip.loopAnimation ? 'Loop Anim' : 'Once Anim' },
+        { id: 'scale', label: 'Scale' },
+        { id: 'rotate', label: 'Rotate' },
+        { id: 'opacity', label: `Opacity ${Math.round(safeNumber((this.getEditableTransform(clip) || clip).opacity, 1) * 100)}%` },
+        { id: 'clip-duration', label: 'Clip Length' }
+      ];
+    }
+    return [
+      ...(clip.type === 'color-board' ? [{ id: 'board-color', label: 'Board Color' }] : []),
+      { id: 'scale', label: 'Scale' },
+      { id: 'scale-x', label: `Scale X ${Math.round(getScaleX(this.getEditableTransform(clip) || clip) * 100)}%` },
+      { id: 'scale-y', label: `Scale Y ${Math.round(getScaleY(this.getEditableTransform(clip) || clip) * 100)}%` },
+      { id: 'aspect-lock', label: clip.aspectLocked === false ? 'Ratio Free' : 'Ratio Lock' },
+      { id: 'rotate', label: 'Rotate' },
+      { id: 'opacity', label: `Opacity ${Math.round(safeNumber((this.getEditableTransform(clip) || clip).opacity, 1) * 100)}%` },
+      { id: 'fx', label: 'FX' },
+      { id: 'fade-in', label: `Fade In ${clip.fadeInMs || 0}` },
+      { id: 'fade-out', label: `Fade Out ${clip.fadeOutMs || 0}` },
+      { id: 'clip-duration', label: 'Clip Length' },
+      { id: 'delete', label: 'Delete' }
+    ];
+  }
+
+  drawClipOptionsPanel(ctx, bounds, isPortrait) {
+    const clip = this.getSelectedClip();
+    const track = this.getSelectedTrack();
+    if ((!clip && !track) || !bounds) return;
+    const panel = isPortrait
+      ? bounds
+      : { x: bounds.x, y: Math.max(10, bounds.y), w: Math.min(420, bounds.w), h: Math.min(bounds.h, 320) };
+    this.bounds.clipOptionsPanel = panel;
+    if (isPortrait) drawSharedPortraitSheet(ctx, panel);
+    else drawSharedPanel(ctx, panel, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    const pad = 10;
+    const gap = 8;
+    const tabs = track && !clip ? [] : ['keys', 'settings', 'edit'];
+    const tabH = tabs.length ? 40 : 0;
+    if (tabs.length && !tabs.includes(this.clipOptionsTab)) this.clipOptionsTab = 'settings';
+    if (tabs.length) {
+      const tabW = Math.floor((panel.w - pad * 2 - gap * (tabs.length - 1)) / tabs.length);
+      tabs.forEach((tab, index) => {
+        const button = { x: panel.x + pad + index * (tabW + gap), y: panel.y + pad, w: tabW, h: tabH, id: `clip-options-tab:${tab}` };
+        const label = tab === 'keys' ? 'Keys' : tab === 'settings' ? 'Settings' : 'Edit';
+        const color = drawSharedMenuButtonChrome(ctx, button, { active: this.clipOptionsTab === tab });
+        drawSharedMenuButtonLabel(ctx, button, label, { color, fontSize: 13, maxWidth: button.w - 8 });
+        this.bounds.clipOptionButtons.push(button);
+      });
+    } else {
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `13px ${UI_SUITE.font.family}`;
+      ctx.textAlign = 'left';
+      ctx.fillText(track?.name || 'Track', panel.x + pad, panel.y + pad + 18, panel.w - pad * 2);
+    }
+    const items = this.getClipOptionItems(clip, this.clipOptionsTab);
+    const contentTop = panel.y + pad + (tabs.length ? tabH + gap : 30);
+    const content = { x: panel.x + pad, y: contentTop, w: panel.w - pad * 2, h: panel.y + panel.h - pad - contentTop };
+    const cols = isPortrait ? 2 : 1;
+    const rowH = 42;
+    const itemGap = 8;
+    const buttonW = Math.floor((content.w - itemGap * (cols - 1)) / cols);
+    items.forEach((item, index) => {
+      const col = index % cols;
+      const row = Math.floor(index / cols);
+      const y = content.y + row * (rowH + itemGap);
+      if (y + rowH > content.y + content.h) return;
+      const button = { x: content.x + col * (buttonW + itemGap), y, w: buttonW, h: rowH, id: item.id };
+      const color = drawSharedMenuButtonChrome(ctx, button, { subtle: Boolean(item.disabled) });
+      drawSharedMenuButtonLabel(ctx, button, item.label, { color, fontSize: 12, maxWidth: button.w - 10 });
+      if (!item.disabled) this.bounds.clipOptionButtons.push(button);
+    });
+  }
+
   drawMenu(ctx, bounds, isPortrait) {
     if (!bounds) return;
+    if (!CUTSCENE_MENU_TABS.some((tab) => tab.id === this.activeMenuTab)) {
+      this.activeMenuTab = 'add';
+      this.menuScroll = 0;
+    }
     this.bounds.menuPanel = bounds;
     if (isPortrait) drawSharedPortraitSheet(ctx, bounds);
     else drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
@@ -2020,12 +2525,15 @@ export default class CutsceneEditor {
     });
     const items = this.getMenuItems();
     const content = { x: bounds.x + pad, y: bounds.y + pad + tabH + gap, w: bounds.w - pad * 2, h: bounds.h - pad * 2 - tabH - gap };
+    this.bounds.menuContent = content;
     const rowH = 42;
     const cols = isPortrait ? 2 : 1;
     const itemGap = 8;
     const buttonW = Math.floor((content.w - itemGap * (cols - 1)) / cols);
     const visibleRows = Math.max(1, Math.floor((content.h + itemGap) / (rowH + itemGap)));
     const maxScroll = Math.max(0, Math.ceil(items.length / cols) - visibleRows);
+    this.bounds.menuScrollMax = maxScroll;
+    this.bounds.menuScrollCols = cols;
     this.menuScroll = clamp(Math.round(this.menuScroll || 0), 0, maxScroll);
     items.slice(this.menuScroll * cols, (this.menuScroll + visibleRows) * cols).forEach((item, index) => {
       const col = index % cols;
@@ -2048,12 +2556,46 @@ export default class CutsceneEditor {
     if (!payload) return;
     const x = safeNumber(payload.x);
     const y = safeNumber(payload.y);
-    if (this.menuOpen && this.bounds.menuPanel && this.pointIn(this.bounds.menuPanel, x, y)) {
-      const menuButton = this.bounds.menuButtons?.find((entry) => this.pointIn(entry, x, y));
-      if (menuButton) {
-        this.handleButton(menuButton.id);
+    if (this.transportPopover) {
+      const hit = this.bounds.transportPopoverButtons?.find((entry) => this.pointIn(entry, x, y));
+      if (hit) {
+        hit.action?.();
+        this.closeTransportPopover();
         return;
       }
+      this.closeTransportPopover();
+      return;
+    }
+    if (this.menuOpen && this.bounds.menuPanel && this.pointIn(this.bounds.menuPanel, x, y)) {
+      const menuButton = this.bounds.menuButtons?.find((entry) => this.pointIn(entry, x, y));
+      this.menuScrollDrag = {
+        startX: x,
+        startY: y,
+        lastY: y,
+        buttonId: menuButton?.id || null,
+        moved: false
+      };
+      return;
+    }
+    if (this.menuOpen) {
+      this.menuOpen = false;
+      this.menuScroll = 0;
+      this.menuScrollDrag = null;
+      return;
+    }
+    if (this.clipOptionsOpen && this.bounds.clipOptionsPanel && this.pointIn(this.bounds.clipOptionsPanel, x, y)) {
+      const optionButton = this.bounds.clipOptionButtons?.find((entry) => this.pointIn(entry, x, y));
+      if (optionButton) this.handleButton(optionButton.id);
+      return;
+    }
+    if (this.clipOptionsOpen) {
+      this.clipOptionsOpen = false;
+      return;
+    }
+    if (this.timelineZoomSlider.bounds && this.pointIn(this.timelineZoomSlider.bounds, x, y)) {
+      this.timelineZoomSlider.active = true;
+      this.timelineZoomSlider.id = payload.id ?? 'pointer';
+      this.setTimelineZoomFromScreen(x);
       return;
     }
     const contextButton = this.bounds.contextButtons?.find((entry) => this.pointIn(entry, x, y));
@@ -2063,7 +2605,17 @@ export default class CutsceneEditor {
     }
     const button = this.bounds.buttons?.find((entry) => this.pointIn(entry, x, y));
     if (button) {
+      if (button.onHold) {
+        this.startTransportHold(button, x, y);
+        return;
+      }
       this.handleButton(button.id);
+      return;
+    }
+    if (this.panJoystick?.radius > 0 && this.pointInThumbstick(x, y)) {
+      this.panJoystick.active = true;
+      this.panJoystick.id = payload.id ?? 'pointer';
+      this.updateThumbstickFromPoint(x, y);
       return;
     }
     const handle = this.bounds.clipHandles?.find((entry) => this.pointIn(entry, x, y));
@@ -2071,12 +2623,14 @@ export default class CutsceneEditor {
       const clip = (this.document.clips || []).find((entry) => entry.id === handle.id);
       if (!clip) return;
       this.selectedClipId = clip.id;
-      this.captureHistory('Resize clip');
+      this.selectedTrackId = null;
       this.drag = {
         type: 'clip-duration',
         id: clip.id,
         startX: x,
-        originalDuration: Math.max(1, safeNumber(clip.durationMs, 1))
+        originalDuration: Math.max(1, safeNumber(clip.durationMs, 1)),
+        historyCaptured: false,
+        moved: false
       };
       return;
     }
@@ -2085,23 +2639,25 @@ export default class CutsceneEditor {
       const clip = (this.document.clips || []).find((entry) => entry.id === keyMarker.id);
       if (!clip) return;
       this.selectedClipId = clip.id;
+      this.selectedTrackId = null;
       this.selectKeyframe(clip, keyMarker.timeMs);
       this.playheadMs = clamp(clip.startMs + safeNumber(keyMarker.timeMs), 0, this.document.durationMs);
       this.statusText = this.getSelectedKeyframeLabel(clip);
       return;
     }
     const trackLabel = this.bounds.trackLabels?.find((entry) => this.pointIn(entry, x, y));
-    if (trackLabel?.id) {
-      if (this.selectedClipId !== trackLabel.id) this.selectedKeyframe = null;
-      this.selectedClipId = trackLabel.id;
-      this.captureHistory('Reorder track');
+    if (trackLabel?.trackId) {
+      this.selectedTrackId = trackLabel.trackId;
+      this.selectedClipId = null;
+      this.selectedKeyframe = null;
       this.drag = {
         type: 'track-reorder',
-        id: trackLabel.id,
+        trackId: trackLabel.trackId,
         startX: x,
         startY: y,
-        originalIndex: this.getSelectedTrackIndex(),
-        currentIndex: this.getSelectedTrackIndex(),
+        originalIndex: this.getTrackIndexById(trackLabel.trackId),
+        currentIndex: this.getTrackIndexById(trackLabel.trackId),
+        historyCaptured: false,
         moved: false
       };
       return;
@@ -2110,15 +2666,16 @@ export default class CutsceneEditor {
     if (clip) {
       if (this.selectedClipId !== clip.id) this.selectedKeyframe = null;
       this.selectedClipId = clip.id;
-      this.captureHistory('Move clip time');
+      this.selectedTrackId = null;
       this.drag = {
         type: 'clip-timeline',
         id: clip.id,
         startX: x,
         startY: y,
         originalStart: this.getSelectedClip()?.startMs || 0,
-        originalIndex: this.getSelectedTrackIndex(),
-        currentIndex: this.getSelectedTrackIndex(),
+        originalIndex: this.getSelectedClipTrackIndex(),
+        currentIndex: this.getSelectedClipTrackIndex(),
+        historyCaptured: false,
         moved: false
       };
       return;
@@ -2131,6 +2688,7 @@ export default class CutsceneEditor {
       }
       const visualHit = this.bounds.visualClips?.find((entry) => this.pointIn(entry, x, y));
       if (visualHit) {
+        this.selectedTrackId = null;
         this.startStageMoveDrag(visualHit.id, x, y, this.selectedClipId === visualHit.id);
         return;
       }
@@ -2139,16 +2697,36 @@ export default class CutsceneEditor {
         const clip = (this.document.clips || []).find((entry) => entry.id === stageKey.id);
         if (!clip) return;
         this.selectedClipId = clip.id;
+        this.selectedTrackId = null;
         this.selectKeyframe(clip, stageKey.timeMs);
         this.playheadMs = clamp(clip.startMs + safeNumber(stageKey.timeMs), 0, this.document.durationMs);
         this.statusText = this.getSelectedKeyframeLabel(clip);
         return;
       }
-      if (this.selectedClipId || this.selectedKeyframe) {
+      if (this.selectedClipId || this.selectedKeyframe || this.selectedTrackId) {
         this.selectedClipId = null;
+        this.selectedTrackId = null;
         this.selectedKeyframe = null;
+        this.clipOptionsOpen = false;
         this.statusText = 'Deselected';
       }
+      return;
+    }
+    const trackLane = this.bounds.trackLanes?.find((entry) => this.pointIn(entry, x, y));
+    if (trackLane?.trackId) {
+      this.selectedTrackId = trackLane.trackId;
+      this.selectedClipId = null;
+      this.selectedKeyframe = null;
+      this.drag = {
+        type: 'track-reorder',
+        trackId: trackLane.trackId,
+        startX: x,
+        startY: y,
+        originalIndex: this.getTrackIndexById(trackLane.trackId),
+        currentIndex: this.getTrackIndexById(trackLane.trackId),
+        historyCaptured: false,
+        moved: false
+      };
       return;
     }
     if (this.bounds.timeline && this.pointIn(this.bounds.timeline, x, y)) {
@@ -2170,6 +2748,7 @@ export default class CutsceneEditor {
     if (!clipId || !this.bounds.stage) return;
     if (this.selectedClipId !== clipId) this.selectedKeyframe = null;
     this.selectedClipId = clipId;
+    this.selectedTrackId = null;
     const selected = this.getSelectedClip();
     const transformTarget = this.getSelectedKeyframe(selected) || selected;
     if (!selected || !transformTarget) return;
@@ -2189,13 +2768,44 @@ export default class CutsceneEditor {
   }
 
   handlePointerMove(payload) {
-    if (!this.drag || !payload) return;
+    if (!payload) return;
     const x = safeNumber(payload.x);
     const y = safeNumber(payload.y);
+    if (this.transportHold && Math.hypot(x - this.transportHold.x, y - this.transportHold.y) > 12) {
+      this.cancelTransportHold();
+    }
+    if (this.menuScrollDrag) {
+      const drag = this.menuScrollDrag;
+      const movedDistance = Math.hypot(x - safeNumber(drag.startX), y - safeNumber(drag.startY));
+      if (movedDistance >= 6) drag.moved = true;
+      if (drag.moved && this.bounds.menuScrollMax > 0) {
+        const content = this.bounds.menuContent || { h: 1 };
+        const visibleRows = Math.max(1, Math.floor((content.h + 8) / (42 + 8)));
+        const rowDelta = (safeNumber(drag.lastY) - y) / Math.max(1, content.h) * visibleRows;
+        this.menuScroll = clamp((this.menuScroll || 0) + rowDelta, 0, this.bounds.menuScrollMax || 0);
+        drag.lastY = y;
+      }
+      return;
+    }
+    if (this.timelineZoomSlider.active) {
+      this.setTimelineZoomFromScreen(x);
+      return;
+    }
+    if (this.panJoystick?.active) {
+      this.updateThumbstickFromPoint(x, y);
+      return;
+    }
+    if (!this.drag) return;
     if (!this.drag.moved && Math.hypot(x - safeNumber(this.drag.startX), y - safeNumber(this.drag.startY)) >= 7) {
       this.drag.moved = true;
       if (this.drag.type === 'stage-move' && !this.drag.historyCaptured) {
         this.captureHistory('Move clip');
+        this.drag.historyCaptured = true;
+      } else if (this.drag.type === 'clip-timeline' && !this.drag.historyCaptured) {
+        this.captureHistory('Move clip time');
+        this.drag.historyCaptured = true;
+      } else if (this.drag.type === 'clip-duration' && !this.drag.historyCaptured) {
+        this.captureHistory('Resize clip');
         this.drag.historyCaptured = true;
       }
     }
@@ -2208,8 +2818,8 @@ export default class CutsceneEditor {
       if (verticalIntent) {
         const nextIndex = this.getTimelineTrackIndexAtY(y);
         if (nextIndex >= 0 && nextIndex !== this.drag.currentIndex) {
-          this.moveSelectedTrackToIndex(nextIndex, { capture: false });
-          this.drag.currentIndex = this.getSelectedTrackIndex();
+          this.assignSelectedClipToTrackIndex(nextIndex, { capture: false });
+          this.drag.currentIndex = this.getSelectedClipTrackIndex();
         }
         return;
       }
@@ -2219,8 +2829,12 @@ export default class CutsceneEditor {
     } else if (this.drag.type === 'track-reorder') {
       const nextIndex = this.getTimelineTrackIndexAtY(y);
       if (nextIndex >= 0 && nextIndex !== this.drag.currentIndex) {
-        this.moveSelectedTrackToIndex(nextIndex, { capture: false });
-        this.drag.currentIndex = this.getSelectedTrackIndex();
+        if (!this.drag.historyCaptured) {
+          this.captureHistory('Move track');
+          this.drag.historyCaptured = true;
+        }
+        this.moveTrackToIndex(this.drag.trackId, nextIndex, { capture: false });
+        this.drag.currentIndex = this.getTrackIndexById(this.drag.trackId);
       }
     } else if (this.drag.type === 'clip-duration') {
       const clip = this.getSelectedClip();
@@ -2236,12 +2850,33 @@ export default class CutsceneEditor {
       const msPerPx = layout.visibleDuration / Math.max(1, layout.track.w);
       this.timelineScrollMs = clamp(safeNumber(this.drag.startScrollMs, 0) - (x - safeNumber(this.drag.startX)) * msPerPx, 0, layout.maxScrollMs);
       const laneStep = Math.max(1, layout.laneH + layout.laneGap);
-      this.timelineScrollTrack = clamp(Math.round(safeNumber(this.drag.startScrollTrack, 0) - (y - safeNumber(this.drag.startY)) / laneStep), 0, layout.maxScrollTrack);
+      this.timelineScrollTrack = clamp(safeNumber(this.drag.startScrollTrack, 0) - (y - safeNumber(this.drag.startY)) / laneStep, 0, layout.maxScrollTrack);
       this.clampTimelineViewport(this.bounds.timeline);
     }
   }
 
-  handlePointerUp() {
+  handlePointerUp(payload = {}) {
+    if (this.transportHold) {
+      const hold = this.transportHold;
+      this.cancelTransportHold();
+      if (!hold.fired) this.handleButton(hold.button.id);
+      return;
+    }
+    if (this.menuScrollDrag) {
+      const drag = this.menuScrollDrag;
+      this.menuScrollDrag = null;
+      if (!drag.moved && drag.buttonId) this.handleButton(drag.buttonId);
+    }
+    if (this.timelineZoomSlider.active) {
+      this.timelineZoomSlider.active = false;
+      this.timelineZoomSlider.id = null;
+    }
+    if (this.panJoystick?.active) {
+      this.panJoystick.active = false;
+      this.panJoystick.id = null;
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+    }
     this.drag = null;
   }
 
@@ -2270,8 +2905,47 @@ export default class CutsceneEditor {
     return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
   }
 
+  pointInThumbstick(x, y) {
+    const center = this.panJoystick?.center;
+    const radius = safeNumber(this.panJoystick?.radius, 0);
+    if (!center || radius <= 0) return false;
+    return Math.hypot(safeNumber(x) - safeNumber(center.x), safeNumber(y) - safeNumber(center.y)) <= radius + 12;
+  }
+
+  updateThumbstickFromPoint(x, y) {
+    const center = this.panJoystick?.center;
+    const radius = Math.max(1, safeNumber(this.panJoystick?.radius, 1));
+    if (!center) return;
+    const dx = safeNumber(x) - safeNumber(center.x);
+    const dy = safeNumber(y) - safeNumber(center.y);
+    const distance = Math.hypot(dx, dy);
+    const scale = distance > radius ? radius / Math.max(1, distance) : 1;
+    this.panJoystick.dx = clamp((dx * scale) / radius, -1, 1);
+    this.panJoystick.dy = clamp((dy * scale) / radius, -1, 1);
+  }
+
   getSelectedClip() {
     return (this.document.clips || []).find((clip) => clip.id === this.selectedClipId) || null;
+  }
+
+  getSelectedTrack() {
+    const tracks = this.document.tracks || [];
+    if (this.selectedTrackId) return tracks.find((track) => track.id === this.selectedTrackId) || null;
+    return this.getSelectedClipTrack();
+  }
+
+  ensureTrackForClip(clip, preferredName = '') {
+    if (!clip) return null;
+    const tracks = this.document.tracks || (this.document.tracks = []);
+    const existing = clip.trackId ? tracks.find((track) => track.id === clip.trackId) : null;
+    if (existing) return existing;
+    const track = {
+      id: makeId('track'),
+      name: preferredName || this.getClipLabel(clip) || `Track ${tracks.length + 1}`
+    };
+    tracks.push(track);
+    clip.trackId = track.id;
+    return track;
   }
 
   normalizeClipKeyframes(clip) {
@@ -2320,14 +2994,30 @@ export default class CutsceneEditor {
     this.statusText = `Layer order: ${layer.name || layer.id}`;
   }
 
+  getTrackIndexById(trackId) {
+    return (this.document.tracks || []).findIndex((track) => track.id === trackId);
+  }
+
+  getSelectedClipTrack() {
+    const clip = this.getSelectedClip();
+    if (!clip) return null;
+    return (this.document.tracks || []).find((track) => track.id === clip.trackId) || null;
+  }
+
   getSelectedTrackIndex() {
-    return (this.document.clips || []).findIndex((clip) => clip.id === this.selectedClipId);
+    const track = this.getSelectedTrack();
+    return track ? this.getTrackIndexById(track.id) : -1;
+  }
+
+  getSelectedClipTrackIndex() {
+    const track = this.getSelectedClipTrack();
+    return track ? this.getTrackIndexById(track.id) : -1;
   }
 
   getTimelineTrackIndexAtY(y) {
     const lane = this.bounds.trackLabels?.find((entry) => y >= entry.y && y <= entry.y + entry.h)
       || this.bounds.clips?.find((entry) => y >= entry.y && y <= entry.y + entry.h);
-    if (Number.isFinite(lane?.trackIndex)) return clamp(Math.round(lane.trackIndex), 0, Math.max(0, (this.document.clips || []).length - 1));
+    if (Number.isFinite(lane?.trackIndex)) return clamp(Math.round(lane.trackIndex), 0, Math.max(0, (this.document.tracks || []).length - 1));
     const lanes = this.bounds.trackLabels || [];
     if (!lanes.length) return -1;
     let nearest = lanes[0];
@@ -2343,34 +3033,117 @@ export default class CutsceneEditor {
     return Number.isFinite(nearest?.trackIndex) ? nearest.trackIndex : -1;
   }
 
-  moveSelectedTrackToIndex(nextIndex, options = {}) {
-    const clips = this.document.clips || [];
-    const index = this.getSelectedTrackIndex();
-    const target = clamp(Math.round(safeNumber(nextIndex, index)), 0, Math.max(0, clips.length - 1));
+  assignSelectedClipToTrackIndex(nextIndex, options = {}) {
+    const clip = this.getSelectedClip();
+    const tracks = this.document.tracks || [];
+    const index = this.getSelectedClipTrackIndex();
+    const target = clamp(Math.round(safeNumber(nextIndex, index)), 0, Math.max(0, tracks.length - 1));
+    if (!clip || !tracks[target] || target === index) return;
+    if (options.capture !== false) this.captureHistory('Move clip to track');
+    clip.trackId = tracks[target].id;
+    this.statusText = `${this.getClipLabel(clip)} -> ${tracks[target].name || `Track ${target + 1}`}`;
+  }
+
+  moveTrackToIndex(trackId, nextIndex, options = {}) {
+    const tracks = this.document.tracks || [];
+    const index = this.getTrackIndexById(trackId);
+    const target = clamp(Math.round(safeNumber(nextIndex, index)), 0, Math.max(0, tracks.length - 1));
     if (index < 0 || target === index) return;
     if (options.capture !== false) this.captureHistory('Move track');
-    const [clip] = clips.splice(index, 1);
-    clips.splice(target, 0, clip);
-    this.statusText = `Track ${target + 1}: ${this.getClipLabel(clip)}`;
+    const [track] = tracks.splice(index, 1);
+    tracks.splice(target, 0, track);
+    this.statusText = `${track.name || track.id} -> row ${target + 1}`;
+  }
+
+  moveSelectedTrackToIndex(nextIndex, options = {}) {
+    const track = this.getSelectedTrack();
+    if (!track) return;
+    this.moveTrackToIndex(track.id, nextIndex, options);
   }
 
   moveSelectedTrack(delta) {
-    const clips = this.document.clips || [];
     const index = this.getSelectedTrackIndex();
-    const nextIndex = clamp(index + delta, 0, Math.max(0, clips.length - 1));
+    const nextIndex = clamp(index + delta, 0, Math.max(0, (this.document.tracks || []).length - 1));
     this.moveSelectedTrackToIndex(nextIndex);
   }
 
   moveSelectedTrackTo(edge) {
-    const clips = this.document.clips || [];
+    const tracks = this.document.tracks || [];
     const index = this.getSelectedTrackIndex();
     if (index < 0) return;
-    const nextIndex = edge === 'top' ? 0 : clips.length - 1;
+    const nextIndex = edge === 'top' ? 0 : tracks.length - 1;
     this.moveSelectedTrackToIndex(nextIndex);
   }
 
+  async renameSelectedTrack() {
+    const track = this.getSelectedTrack();
+    if (!track) return;
+    const value = await this.requestText({
+      title: 'Rename Track',
+      label: 'Track Name',
+      initialValue: track.name || 'Track'
+    });
+    if (value == null) return;
+    const name = String(value).trim();
+    if (!name) return;
+    this.captureHistory('Rename track');
+    track.name = name;
+    this.statusText = `Track: ${name}`;
+  }
+
+  async moveSelectedClipToTrack() {
+    const clip = this.getSelectedClip();
+    const tracks = this.document.tracks || [];
+    if (!clip || !tracks.length) return;
+    const choice = await openChoiceOverlay({
+      title: 'Move To Track',
+      choices: tracks.map((track, index) => ({
+        id: track.id,
+        label: track.name || `Track ${index + 1}`,
+        description: clip.trackId === track.id ? 'Current track' : ''
+      }))
+    });
+    if (!choice) return;
+    const index = this.getTrackIndexById(choice);
+    this.assignSelectedClipToTrackIndex(index);
+  }
+
+  async createTrackForSelectedClip() {
+    const clip = this.getSelectedClip();
+    if (!clip) return;
+    const tracks = this.document.tracks || (this.document.tracks = []);
+    const value = await this.requestText({
+      title: 'New Track',
+      label: 'Track Name',
+      initialValue: `Track ${tracks.length + 1}`
+    });
+    if (value == null) return;
+    const name = String(value).trim() || `Track ${tracks.length + 1}`;
+    this.captureHistory('New track');
+    const track = { id: makeId('track'), name };
+    tracks.push(track);
+    clip.trackId = track.id;
+    this.statusText = `${this.getClipLabel(clip)} -> ${name}`;
+  }
+
+  deleteSelectedTrack() {
+    const track = this.getSelectedTrack();
+    const tracks = this.document.tracks || [];
+    const clips = this.document.clips || [];
+    const index = track ? this.getTrackIndexById(track.id) : -1;
+    if (!track || index < 0 || tracks.length <= 1) return;
+    this.captureHistory('Delete track');
+    const fallback = tracks[index + 1] || tracks[index - 1];
+    clips.forEach((clip) => {
+      if (clip.trackId === track.id) clip.trackId = fallback.id;
+    });
+    tracks.splice(index, 1);
+    this.selectedTrackId = fallback.id;
+    this.statusText = `Removed ${track.name || track.id}`;
+  }
+
   selectKeyframe(clip, timeMs) {
-    if (!isVisualClip(clip) || !Array.isArray(clip.keyframes)) {
+    if (!isKeyframeClip(clip) || !Array.isArray(clip.keyframes)) {
       this.selectedKeyframe = null;
       return null;
     }
@@ -2381,7 +3154,7 @@ export default class CutsceneEditor {
   }
 
   getSelectedKeyframe(clip = this.getSelectedClip()) {
-    if (!isVisualClip(clip) || !Array.isArray(clip.keyframes) || !this.selectedKeyframe) return null;
+    if (!isKeyframeClip(clip) || !Array.isArray(clip.keyframes) || !this.selectedKeyframe) return null;
     if (this.selectedKeyframe.clipId !== clip.id) return null;
     return clip.keyframes.find((entry) => entry?.manual === true && Math.round(safeNumber(entry.timeMs)) === Math.round(safeNumber(this.selectedKeyframe.timeMs))) || null;
   }
@@ -2399,7 +3172,7 @@ export default class CutsceneEditor {
 
   selectAdjacentKeyframe(direction) {
     const clip = this.getSelectedClip();
-    if (!isVisualClip(clip) || !Array.isArray(clip.keyframes) || !clip.keyframes.length) {
+    if (!isKeyframeClip(clip) || !Array.isArray(clip.keyframes) || !clip.keyframes.length) {
       this.statusText = 'No keyframes on selected clip';
       return;
     }
@@ -2476,6 +3249,12 @@ export default class CutsceneEditor {
       if (id?.startsWith?.('tab:')) {
         this.activeMenuTab = id.slice(4);
         this.menuScroll = 0;
+        this.clipOptionsOpen = false;
+        return;
+      }
+      if (id?.startsWith?.('clip-options-tab:')) {
+        const tab = id.slice('clip-options-tab:'.length);
+        this.clipOptionsTab = ['keys', 'settings', 'edit'].includes(tab) ? tab : 'settings';
         return;
       }
       if (id?.startsWith?.('layer:')) {
@@ -2484,11 +3263,12 @@ export default class CutsceneEditor {
       }
       if (id?.startsWith?.('select-track:')) {
         this.selectedClipId = id.slice('select-track:'.length);
+        this.selectedTrackId = null;
         this.selectedKeyframe = null;
         return;
       }
       if (id === 'menu') {
-        this.menuOpen = !this.menuOpen;
+        this.toggleBottomMenu();
         return;
       }
       if (id === 'undo') {
@@ -2516,6 +3296,12 @@ export default class CutsceneEditor {
       if (id === 'play') this.togglePlayback();
       if (id === 'step-frame') this.stepFrame();
       if (id === 'actions') await this.openSelectedClipActions();
+      if (id === 'clip-options') {
+        this.menuOpen = false;
+        this.clipOptionsOpen = !this.clipOptionsOpen;
+        if (!['keys', 'settings', 'edit'].includes(this.clipOptionsTab)) this.clipOptionsTab = 'settings';
+        return;
+      }
       if (id === 'set-start') this.setSelectedKeyframe('start');
       if (id === 'set-end') this.setSelectedKeyframe('end');
       if (id === 'set-key') this.setSelectedKeyframe(this.keyframeMode);
@@ -2562,6 +3348,7 @@ export default class CutsceneEditor {
       if (id === 'snap-size') await this.editStageSnapSize();
       if (id === 'scene-fade-in') await this.editSceneFade('in');
       if (id === 'scene-fade-out') await this.editSceneFade('out');
+      if (id === 'master-volume') await this.editMasterVolume();
       if (id === 'view-canvas') this.setWorkspaceMode('canvas');
       if (id === 'view-split') this.setWorkspaceMode('split');
       if (id === 'view-timeline') this.setWorkspaceMode('timeline');
@@ -2572,6 +3359,10 @@ export default class CutsceneEditor {
       if (id === 'track-down') this.moveSelectedTrack(1);
       if (id === 'track-top') this.moveSelectedTrackTo('top');
       if (id === 'track-bottom') this.moveSelectedTrackTo('bottom');
+      if (id === 'move-to-track') await this.moveSelectedClipToTrack();
+      if (id === 'new-track') await this.createTrackForSelectedClip();
+      if (id === 'rename-track') await this.renameSelectedTrack();
+      if (id === 'delete-track') this.deleteSelectedTrack();
       if (id === 'scene-duration') await this.editSceneDuration();
       if (id === 'clip-layer-up') this.moveSelectedClipLayer(1);
       if (id === 'clip-layer-down') this.moveSelectedClipLayer(-1);
@@ -2591,6 +3382,27 @@ export default class CutsceneEditor {
       .finally(() => {
         this.pendingAction = null;
       });
+  }
+
+  toggleBottomMenu() {
+    if (this.clipOptionsOpen) {
+      this.clipOptionsOpen = false;
+      return;
+    }
+    if (this.menuOpen || this.menuScrollDrag || this.timelineZoomSlider.active || this.panJoystick.active) {
+      this.menuOpen = false;
+      this.menuScroll = 0;
+      this.menuScrollDrag = null;
+      this.timelineZoomSlider.active = false;
+      this.panJoystick.active = false;
+      this.panJoystick.dx = 0;
+      this.panJoystick.dy = 0;
+      return;
+    }
+    this.activeMenuTab = CUTSCENE_MENU_TABS.some((tab) => tab.id === this.activeMenuTab) ? this.activeMenuTab : 'add';
+    this.clipOptionsOpen = false;
+    this.menuOpen = true;
+    this.menuScroll = 0;
   }
 
   getMenuItems() {
@@ -2618,90 +3430,13 @@ export default class CutsceneEditor {
         { id: 'pause', label: 'Pause' }
       ];
     }
-    if (this.activeMenuTab === 'layers') {
-      const trackIndex = this.getSelectedTrackIndex();
-      const trackItems = (this.document.clips || []).map((clip, index) => ({
-        id: `select-track:${clip.id}`,
-        label: `${index + 1}. ${this.getClipLabel(clip)}`,
-        active: clip.id === selected?.id
-      }));
-      return [
-        { id: 'track-up', label: 'Track Up', disabled: !selected || trackIndex <= 0 },
-        { id: 'track-down', label: 'Track Down', disabled: !selected || trackIndex < 0 || trackIndex >= (this.document.clips || []).length - 1 },
-        { id: 'track-top', label: 'To Top', disabled: !selected || trackIndex <= 0 },
-        { id: 'track-bottom', label: 'To Bottom', disabled: !selected || trackIndex < 0 || trackIndex >= (this.document.clips || []).length - 1 },
-        ...trackItems
-      ];
-    }
-    if (this.activeMenuTab === 'clip') {
-      const selectedKey = this.getSelectedKeyframe(selected);
-      return [
-        { id: 'set-start', label: 'Set Start', disabled: !isVisualClip(selected) },
-        { id: 'key-mode', label: this.getSelectedKeyframeLabel(selected), disabled: !isVisualClip(selected) },
-        { id: 'prev-key', label: 'Prev Key', disabled: !isVisualClip(selected) || !(selected?.keyframes || []).length },
-        { id: 'next-key', label: 'Next Key', disabled: !isVisualClip(selected) || !(selected?.keyframes || []).length },
-        { id: 'set-key', label: 'Set Key', disabled: !isVisualClip(selected) },
-        { id: 'delete-key', label: 'Delete Key', disabled: !isVisualClip(selected) || !selectedKey || this.isProtectedKeyframe(selected, selectedKey) },
-        { id: 'set-end', label: 'Set End', disabled: !isVisualClip(selected) },
-        { id: 'ease', label: selected ? this.getEasingLabel(selected.easing) : 'Ease', disabled: !isVisualClip(selected) },
-        { id: 'fade-in', label: selected ? `Fade In ${selected.fadeInMs || 0}` : 'Fade In', disabled: !isVisualClip(selected) },
-        { id: 'fade-out', label: selected ? `Fade Out ${selected.fadeOutMs || 0}` : 'Fade Out', disabled: !isVisualClip(selected) },
-        { id: 'edit-text', label: 'Edit Text', disabled: selected?.type !== 'text' },
-        { id: 'text-color', label: 'Text Color', disabled: selected?.type !== 'text' },
-        { id: 'text-border', label: selected?.type === 'text' ? (selected.textBorderEnabled === false ? 'Border Off' : 'Border On') : 'Border', disabled: selected?.type !== 'text' },
-        { id: 'text-border-color', label: 'Border Color', disabled: selected?.type !== 'text' },
-        { id: 'text-border-size', label: selected?.type === 'text' ? `Border ${selected.textBorderSize ?? 1}` : 'Border Size', disabled: selected?.type !== 'text' },
-        { id: 'font-size', label: selected?.type === 'text' ? `Size ${selected.fontSize}` : 'Font Size', disabled: selected?.type !== 'text' },
-        { id: 'font-family', label: selected?.type === 'text' ? selected.fontFamily : 'Font', disabled: selected?.type !== 'text' },
-        { id: 'text-align', label: selected?.type === 'text' ? `Align ${selected.textAlign}` : 'Align', disabled: selected?.type !== 'text' },
-        { id: 'reveal-speed', label: selected?.type === 'text' ? `CPS ${selected.revealSpeed}` : 'Reveal', disabled: selected?.type !== 'text' },
-        { id: 'board-color', label: 'Board Color', disabled: selected?.type !== 'color-board' },
-        { id: 'scale', label: 'Scale', disabled: !isVisualClip(selected) },
-        { id: 'scale-x', label: selected ? `X ${Math.round(getScaleX(this.getEditableTransform(selected) || selected) * 100)}%` : 'Scale X', disabled: !isVisualClip(selected) },
-        { id: 'scale-y', label: selected ? `Y ${Math.round(getScaleY(this.getEditableTransform(selected) || selected) * 100)}%` : 'Scale Y', disabled: !isVisualClip(selected) },
-        { id: 'aspect-lock', label: selected?.aspectLocked === false ? 'Ratio Free' : 'Ratio Lock', disabled: !isVisualClip(selected) },
-        { id: 'rotate', label: 'Rotate', disabled: !isVisualClip(selected) },
-        { id: 'opacity', label: selected ? `Opacity ${Math.round(safeNumber((this.getEditableTransform(selected) || selected).opacity, 1) * 100)}%` : 'Opacity', disabled: !isVisualClip(selected) },
-        { id: 'fx', label: 'FX', disabled: !isVisualClip(selected) },
-        { id: 'clip-duration', label: 'Clip Length', disabled: !selected || selected.type === 'pause' },
-        { id: 'actions', label: 'Actions', disabled: !isVisualClip(selected) },
-        { id: 'copy', label: 'Copy', disabled: !selected },
-        { id: 'cut', label: 'Cut', disabled: !selected },
-        { id: 'paste', label: 'Paste', disabled: !this.clipboardClip },
-        { id: 'duplicate', label: 'Duplicate', disabled: !selected },
-        { id: 'delete', label: 'Delete', disabled: !selected }
-      ];
-    }
-    if (this.activeMenuTab === 'audio') {
-      return [
-        { id: 'music', label: 'Add Music' },
-        { id: 'sfx', label: 'Add SFX' },
-        { id: 'loop', label: selected?.loop ? 'Loop On' : 'Loop Off', disabled: !isAudioClip(selected) },
-        { id: 'volume', label: selected ? `Vol ${Math.round((selected.volume ?? 1) * 100)}` : 'Volume', disabled: !isAudioClip(selected) },
-        { id: 'fade', label: selected ? `Fade ${selected.fadeMs ?? 250}` : 'Fade', disabled: !isAudioClip(selected) }
-      ];
-    }
     return [
-      ...this.getTimelineViewActions(),
       { id: 'scene-duration', label: 'Scene Length' },
       { id: 'scene-fade-in', label: `Fade In ${this.document.sceneFadeInMs || 0}ms` },
       { id: 'scene-fade-out', label: `Fade Out ${this.document.sceneFadeOutMs || 0}ms` },
       { id: 'snap-toggle', label: this.document.snapEnabled === false ? 'Snap Off' : 'Snap On' },
       { id: 'snap-size', label: `Grid ${clamp(Math.round(safeNumber(this.document.snapSize, 8)), 1, 64)}` },
-      { id: 'effect', label: 'Add Effect' },
-      { id: 'effect-type', label: selected?.effectType || 'Effect Type', disabled: !isEffectClip(selected) },
-      { id: 'effect-intensity', label: selected ? `Power ${selected.intensity || 1}` : 'Power', disabled: !isEffectClip(selected) },
-      { id: 'effect-wind', label: selected ? `Wind ${selected.wind || 0}` : 'Wind', disabled: !isEffectClip(selected) },
-      { id: 'actor-state', label: 'Actor State', disabled: selected?.type !== 'actor' },
-      { id: 'add-state', label: 'Add State', disabled: selected?.type !== 'actor' },
-      { id: 'next-state', label: 'Next State', disabled: selected?.type !== 'actor' },
-      { id: 'delete-state', label: 'Del State', disabled: selected?.type !== 'actor' || (selected?.stateEvents || []).length <= 1 },
-      { id: 'play-animation', label: selected?.playAnimation ? 'Anim On' : 'Anim Off', disabled: !isVisualClip(selected) },
-      { id: 'anim-speed', label: selected ? `Speed ${selected.animationSpeed || 1}` : 'Speed', disabled: !isVisualClip(selected) },
-      { id: 'anim-loop', label: selected?.loopAnimation ? 'Loop Anim' : 'Once Anim', disabled: !isVisualClip(selected) },
-      { id: 'pause', label: 'Add Pause' },
-      { id: 'step-frame', label: 'Step' },
-      { id: 'play', label: this.isPlaying ? 'Pause' : 'Play' }
+      { id: 'master-volume', label: `Master ${Math.round(clamp(safeNumber(this.document.masterVolume, 1), 0, 1) * 100)}` }
     ];
   }
 
@@ -3079,21 +3814,34 @@ export default class CutsceneEditor {
   }
 
   captureHistory(label = 'Edit') {
+    const document = JSON.stringify(this.document);
     this.history.push({
       label,
-      document: JSON.stringify(this.document),
+      document,
+      byteSize: document.length,
       selectedClipId: this.selectedClipId,
+      selectedTrackId: this.selectedTrackId,
       selectedKeyframe: this.selectedKeyframe ? { ...this.selectedKeyframe } : null,
       playheadMs: this.playheadMs
     });
-    if (this.history.length > this.historyLimit) this.history.shift();
+    this.trimHistoryMemory(this.history);
     this.redoStack = [];
+  }
+
+  trimHistoryMemory(stack = this.history) {
+    while (stack.length > this.historyLimit) stack.shift();
+    let total = stack.reduce((sum, entry) => sum + safeNumber(entry?.byteSize, String(entry?.document || '').length), 0);
+    while (stack.length > 1 && total > this.historyByteLimit) {
+      const removed = stack.shift();
+      total -= safeNumber(removed?.byteSize, String(removed?.document || '').length);
+    }
   }
 
   restoreSnapshot(snapshot) {
     if (!snapshot?.document) return;
     this.document = normalizeCutsceneDocument(JSON.parse(snapshot.document), this.document?.name);
     this.selectedClipId = snapshot.selectedClipId || this.document.clips[0]?.id || null;
+    this.selectedTrackId = snapshot.selectedTrackId || null;
     this.selectedKeyframe = snapshot.selectedKeyframe ? { ...snapshot.selectedKeyframe } : null;
     this.playheadMs = clamp(snapshot.playheadMs || 0, 0, this.document.durationMs);
   }
@@ -3104,12 +3852,16 @@ export default class CutsceneEditor {
       this.statusText = 'Nothing to undo';
       return;
     }
+    const document = JSON.stringify(this.document);
     this.redoStack.push({
-      document: JSON.stringify(this.document),
+      document,
+      byteSize: document.length,
       selectedClipId: this.selectedClipId,
+      selectedTrackId: this.selectedTrackId,
       selectedKeyframe: this.selectedKeyframe ? { ...this.selectedKeyframe } : null,
       playheadMs: this.playheadMs
     });
+    this.trimHistoryMemory(this.redoStack);
     this.restoreSnapshot(previous);
     this.statusText = `Undo ${previous.label || ''}`.trim();
   }
@@ -3120,12 +3872,16 @@ export default class CutsceneEditor {
       this.statusText = 'Nothing to redo';
       return;
     }
+    const document = JSON.stringify(this.document);
     this.history.push({
-      document: JSON.stringify(this.document),
+      document,
+      byteSize: document.length,
       selectedClipId: this.selectedClipId,
+      selectedTrackId: this.selectedTrackId,
       selectedKeyframe: this.selectedKeyframe ? { ...this.selectedKeyframe } : null,
       playheadMs: this.playheadMs
     });
+    this.trimHistoryMemory(this.history);
     this.restoreSnapshot(next);
     this.statusText = 'Redo';
   }
@@ -3240,8 +3996,10 @@ export default class CutsceneEditor {
       h: textBounds.h,
       fadeInMs: 250
     }, this.document, this.document.clips.length);
+    this.ensureTrackForClip(clip, 'Text');
     this.document.clips.push(clip);
     this.selectedClipId = clip.id;
+    this.selectedTrackId = null;
     this.statusText = 'Added text clip';
   }
 
@@ -3270,8 +4028,10 @@ export default class CutsceneEditor {
       w: this.document.width,
       h: this.document.height
     }, this.document, this.document.clips.length);
+    this.ensureTrackForClip(clip, 'Board');
     this.document.clips.push(clip);
     this.selectedClipId = clip.id;
+    this.selectedTrackId = null;
     this.menuOpen = false;
     this.statusText = `Added board ${color}`;
   }
@@ -3313,8 +4073,10 @@ export default class CutsceneEditor {
       w: fitted.width,
       h: fitted.height
     }, this.document, this.document.clips.length);
+    this.ensureTrackForClip(clip, ref);
     this.document.clips.push(clip);
     this.selectedClipId = clip.id;
+    this.selectedTrackId = null;
     this.menuOpen = false;
     this.statusText = `Added art ${ref}`;
   }
@@ -3380,8 +4142,10 @@ export default class CutsceneEditor {
       w: dims.width,
       h: dims.height
     }, this.document, this.document.clips.length);
+    this.ensureTrackForClip(clip, ref);
     this.document.clips.push(clip);
     this.selectedClipId = clip.id;
+    this.selectedTrackId = null;
     this.menuOpen = false;
     this.statusText = `Added actor ${ref}`;
   }
@@ -3423,8 +4187,10 @@ export default class CutsceneEditor {
           w: fitted.width,
           h: fitted.height
         }, this.document, this.document.clips.length);
+        this.ensureTrackForClip(clip, file.name);
         this.document.clips.push(clip);
         this.selectedClipId = clip.id;
+        this.selectedTrackId = null;
         this.menuOpen = false;
         this.statusText = `Imported ${file.name}`;
       };
@@ -3459,8 +4225,10 @@ export default class CutsceneEditor {
       volume: 1,
       fadeMs: type === 'music' ? 250 : 0
     }, this.document, this.document.clips.length);
+    this.ensureTrackForClip(clip, ref);
     this.document.clips.push(clip);
     this.selectedClipId = clip.id;
+    this.selectedTrackId = null;
     this.menuOpen = false;
     this.statusText = `Added ${type.toUpperCase()} cue`;
   }
@@ -3489,8 +4257,10 @@ export default class CutsceneEditor {
       intensity: 1,
       wind: effectType === 'hurricane' || effectType === 'blizzard' ? -1.5 : 0
     }, this.document, this.document.clips.length);
+    this.ensureTrackForClip(clip, effectType);
     this.document.clips.push(clip);
     this.selectedClipId = clip.id;
+    this.selectedTrackId = null;
     this.menuOpen = false;
     this.statusText = `Added ${effectType}`;
   }
@@ -3506,8 +4276,10 @@ export default class CutsceneEditor {
       prompt: 'Press a button',
       waitForInput: true
     }, this.document, this.document.clips.length);
+    this.ensureTrackForClip(clip, 'Pause');
     this.document.clips.push(clip);
     this.selectedClipId = clip.id;
+    this.selectedTrackId = null;
     this.menuOpen = false;
     this.statusText = 'Added pause marker';
   }
@@ -3536,21 +4308,22 @@ export default class CutsceneEditor {
   async editSelectedEffectNumber(field, title, fallback = 0) {
     const clip = this.getSelectedClip();
     if (!isEffectClip(clip)) return;
+    const target = this.getEditableEffectState(clip) || clip;
     const value = await this.requestText({
       title,
-      label: field === 'intensity' ? '0.1-4' : '-4 to 4',
-      initialValue: String(safeNumber(clip[field], fallback)),
+      label: field === 'intensity' ? '0-4' : '-4 to 4',
+      initialValue: String(safeNumber(target[field], fallback)),
       inputType: 'number'
     });
     if (value == null) return;
     this.captureHistory(title);
-    if (field === 'intensity') clip[field] = clamp(safeNumber(value, fallback), 0.1, 4);
-    else clip[field] = clamp(safeNumber(value, fallback), -4, 4);
-    this.statusText = `${title}: ${clip[field]}`;
+    if (field === 'intensity') target[field] = clamp(safeNumber(value, fallback), 0, 4);
+    else target[field] = clamp(safeNumber(value, fallback), -4, 4);
+    this.statusText = `${title}: ${target[field]}`;
   }
 
   getActiveKeyframe(clip) {
-    if (!isVisualClip(clip) || !Array.isArray(clip.keyframes) || !clip.keyframes.length) return null;
+    if (!isKeyframeClip(clip) || !Array.isArray(clip.keyframes) || !clip.keyframes.length) return null;
     const selected = this.getSelectedKeyframe(clip);
     if (selected) return selected;
     if (this.keyframeMode === 'start') return clip.keyframes[0];
@@ -3564,10 +4337,15 @@ export default class CutsceneEditor {
     return this.getSelectedKeyframe(clip) || clip;
   }
 
+  getEditableEffectState(clip = this.getSelectedClip()) {
+    if (!isEffectClip(clip)) return null;
+    return this.getSelectedKeyframe(clip) || clip;
+  }
+
   setSelectedKeyframe(which, options = {}) {
     const clip = this.getSelectedClip();
-    if (!isVisualClip(clip)) {
-      this.statusText = 'Select artwork or text first';
+    if (!isKeyframeClip(clip)) {
+      this.statusText = 'Select artwork, text, or FX first';
       return;
     }
     const { capture = true, closeMenu = true } = options;
@@ -3578,6 +4356,34 @@ export default class CutsceneEditor {
       : which === 'playhead'
         ? clamp(Math.round(this.playheadMs - clip.startMs), 0, Math.max(1, clip.durationMs))
         : 0;
+    if (isEffectClip(clip)) {
+      const current = sampleCutsceneEffectClip(clip, this.playheadMs) || clip;
+      const applyEffect = (target) => {
+        target.opacity = clamp(safeNumber(current.opacity, clip.opacity ?? 1), 0, 1);
+        target.intensity = clamp(safeNumber(current.intensity, clip.intensity ?? 1), 0, 4);
+        target.wind = clamp(safeNumber(current.wind, clip.wind ?? 0), -4, 4);
+      };
+      if (localTime <= 0) {
+        if (!Array.isArray(clip.keyframes)) clip.keyframes = [];
+        applyEffect(clip);
+        clip.keyframes = clip.keyframes.filter((keyframe) => Math.round(safeNumber(keyframe.timeMs)) !== 0);
+        this.selectedKeyframe = null;
+        this.playheadMs = clamp(clip.startMs, 0, this.document.durationMs);
+        this.statusText = 'Set hidden FX start';
+        return;
+      }
+      const next = { timeMs: localTime, manual: true };
+      applyEffect(next);
+      if (!Array.isArray(clip.keyframes)) clip.keyframes = [];
+      const index = clip.keyframes.findIndex((keyframe) => keyframe.timeMs === localTime);
+      if (index >= 0) clip.keyframes[index] = next;
+      else clip.keyframes.push(next);
+      clip.keyframes.sort((a, b) => a.timeMs - b.timeMs);
+      this.selectKeyframe(clip, localTime);
+      this.playheadMs = clamp(clip.startMs + localTime, 0, this.document.durationMs);
+      this.statusText = `Set ${which} FX keyframe`;
+      return;
+    }
     const current = sampleCutsceneClip(clip, this.playheadMs) || clip.keyframes[0] || {};
     const applyTransform = (target) => {
       target.x = safeNumber(current.x, this.document.width / 2);
@@ -3617,7 +4423,7 @@ export default class CutsceneEditor {
 
   deleteSelectedKeyframe() {
     const clip = this.getSelectedClip();
-    if (!isVisualClip(clip) || !Array.isArray(clip.keyframes)) {
+    if (!isKeyframeClip(clip) || !Array.isArray(clip.keyframes)) {
       this.statusText = 'Select a keyframe first';
       return;
     }
@@ -3636,7 +4442,7 @@ export default class CutsceneEditor {
     const index = KEYFRAME_MODES.indexOf(this.keyframeMode);
     this.keyframeMode = KEYFRAME_MODES[(index + 1) % KEYFRAME_MODES.length];
     const clip = this.getSelectedClip();
-    if (isVisualClip(clip)) {
+    if (isKeyframeClip(clip)) {
       if (this.keyframeMode === 'start') this.selectKeyframe(clip, 0);
       else if (this.keyframeMode === 'end') this.selectKeyframe(clip, clip.durationMs);
       else {
@@ -3649,7 +4455,7 @@ export default class CutsceneEditor {
 
   cycleSelectedEasing() {
     const clip = this.getSelectedClip();
-    if (!isVisualClip(clip)) return;
+    if (!isKeyframeClip(clip)) return;
     this.captureHistory('Change easing');
     const index = KEYFRAME_EASING.indexOf(clip.easing);
     clip.easing = KEYFRAME_EASING[(index + 1) % KEYFRAME_EASING.length];
@@ -3909,6 +4715,20 @@ export default class CutsceneEditor {
 
   async editSelectedOpacity() {
     const clip = this.getSelectedClip();
+    if (isEffectClip(clip)) {
+      const target = this.getEditableEffectState(clip) || clip;
+      const value = await this.requestText({
+        title: 'Opacity',
+        label: 'Percent',
+        initialValue: String(Math.round(clamp(safeNumber(target.opacity, 1), 0, 1) * 100)),
+        inputType: 'number'
+      });
+      if (value == null) return;
+      this.captureHistory('Opacity');
+      target.opacity = clamp(safeNumber(value, Math.round(clamp(safeNumber(target.opacity, 1), 0, 1) * 100)) / 100, 0, 1);
+      this.statusText = `Opacity ${Math.round(target.opacity * 100)}%`;
+      return;
+    }
     const keyframe = this.getEditableTransform(clip);
     if (!isVisualClip(clip) || !keyframe) return;
     const value = await this.requestText({
@@ -4197,9 +5017,11 @@ export default class CutsceneEditor {
     this.document.sceneFadeInMs = clamp(Math.round(safeNumber(this.document.sceneFadeInMs, 0)), 0, nextDuration);
     this.document.sceneFadeOutMs = clamp(Math.round(safeNumber(this.document.sceneFadeOutMs, 0)), 0, nextDuration);
     this.playheadMs = clamp(this.playheadMs, 0, nextDuration);
-    this.clampClipsToSceneDuration();
     if (this.isPlaying && this.playheadMs >= nextDuration) this.pausePlayback();
-    this.statusText = `Scene ${nextDuration}ms`;
+    const maxClipEnd = Math.max(0, ...(this.document.clips || []).map((entry) => getClipEndMs(entry)));
+    this.statusText = maxClipEnd > nextDuration
+      ? `Scene ${nextDuration}ms; later clips preserved`
+      : `Scene ${nextDuration}ms`;
   }
 
   async editSceneFade(which) {
@@ -4216,6 +5038,19 @@ export default class CutsceneEditor {
     const maxFade = Math.max(0, Math.round(safeNumber(this.document.durationMs, DEFAULT_DURATION_MS)));
     this.document[prop] = clamp(Math.round(safeNumber(value, this.document[prop] || 0)), 0, maxFade);
     this.statusText = `${title}: ${this.document[prop]}ms`;
+  }
+
+  async editMasterVolume() {
+    const value = await this.requestText({
+      title: 'Master Volume',
+      label: '0-100',
+      initialValue: String(Math.round(clamp(safeNumber(this.document.masterVolume, 1), 0, 1) * 100)),
+      inputType: 'number'
+    });
+    if (value == null) return;
+    this.captureHistory('Master volume');
+    this.document.masterVolume = clamp(safeNumber(value, 100) / 100, 0, 1);
+    this.statusText = `Master ${Math.round(this.document.masterVolume * 100)}%`;
   }
 
   clampClipsToSceneDuration() {
@@ -4389,6 +5224,7 @@ export default class CutsceneEditor {
     this.clipboardClip = this.cloneClipForClipboard(clip);
     this.document.clips = (this.document.clips || []).filter((entry) => entry.id !== clip.id);
     this.selectedClipId = this.document.clips[0]?.id || null;
+    this.selectedTrackId = null;
     this.statusText = 'Cut clip';
   }
 
@@ -4404,8 +5240,10 @@ export default class CutsceneEditor {
       id: makeId(`${source.type || 'clip'}-paste`),
       startMs: clamp(Math.round(this.playheadMs), 0, this.document.durationMs)
     }, this.document, this.document.clips.length);
+    this.ensureTrackForClip(clip);
     this.document.clips.push(clip);
     this.selectedClipId = clip.id;
+    this.selectedTrackId = null;
     this.document.durationMs = Math.max(this.document.durationMs, getClipEndMs(clip) + 500);
     this.statusText = 'Pasted clip';
   }
@@ -4419,8 +5257,10 @@ export default class CutsceneEditor {
       id: makeId(`${clip.type}-copy`),
       startMs: clamp(clip.startMs + 250, 0, this.document.durationMs)
     }, this.document, this.document.clips.length);
+    this.ensureTrackForClip(copy);
     this.document.clips.push(copy);
     this.selectedClipId = copy.id;
+    this.selectedTrackId = null;
   }
 
   deleteSelectedClip() {
@@ -4429,6 +5269,7 @@ export default class CutsceneEditor {
     this.captureHistory('Delete clip');
     this.document.clips = (this.document.clips || []).filter((entry) => entry.id !== clip.id);
     this.selectedClipId = this.document.clips[0]?.id || null;
+    this.selectedTrackId = null;
     this.statusText = 'Deleted clip';
   }
 

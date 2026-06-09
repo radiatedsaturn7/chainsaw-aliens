@@ -1,0 +1,908 @@
+{
+  "schemaVersion": 2,
+  "tempo": 120,
+  "loopBars": 69,
+  "loopStartTick": 0,
+  "loopEndTick": 128,
+  "loopEnabled": true,
+  "timeSignature": {
+    "beats": 4,
+    "unit": 4
+  },
+  "highContrast": false,
+  "reverseStrings": false,
+  "keyboardStartOctave": 4,
+  "guitarTuning": [
+    40,
+    45,
+    50,
+    55,
+    59,
+    64
+  ],
+  "bassTuning": [
+    28,
+    33,
+    38,
+    43
+  ],
+  "staccatoEnabled": false,
+  "key": 0,
+  "scale": "major",
+  "chordMode": false,
+  "tracks": [
+    {
+      "id": "track-piano",
+      "name": "Piano",
+      "channel": 0,
+      "program": 0,
+      "instrumentFamily": "Piano",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.2063240858475096,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#4fb7ff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_8va4o2z",
+          "type": "compressor",
+          "name": "Neck Snapper",
+          "color": "blue",
+          "enabled": true,
+          "knobs": {
+            "threshold": 0.55,
+            "ratio": 0.65,
+            "makeup": 0.45
+          }
+        },
+        {
+          "id": "pedal_2lay1dl",
+          "type": "overdrive",
+          "name": "Ghost Drive",
+          "color": "red",
+          "enabled": true,
+          "knobs": {
+            "drive": 0.7,
+            "bite": 0.65,
+            "tone": 0.55
+          }
+        },
+        {
+          "id": "pedal_0apm4s3",
+          "type": "eq",
+          "name": "Rust Dial",
+          "color": "orange",
+          "enabled": true,
+          "knobs": {
+            "low": 0,
+            "mid": 1,
+            "high": 0,
+            "presence": 0.6
+          }
+        },
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-piano",
+          "bars": 69,
+          "notes": [
+            {
+              "id": "note-428676",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-968063",
+              "startTick": 8,
+              "durationTicks": 8,
+              "pitch": 53,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-786971",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 45,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-106918",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 48,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-988037",
+              "startTick": 40,
+              "durationTicks": 8,
+              "pitch": 47,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-873617",
+              "startTick": 56,
+              "durationTicks": 8,
+              "pitch": 45,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-711056",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-230696",
+              "startTick": 104,
+              "durationTicks": 8,
+              "pitch": 40,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-658924",
+              "startTick": 88,
+              "durationTicks": 8,
+              "pitch": 39,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-438734",
+              "startTick": 120,
+              "durationTicks": 8,
+              "pitch": 41,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-guitar",
+      "name": "Guitar",
+      "channel": 1,
+      "program": 24,
+      "instrumentFamily": "Guitar",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#ff9c42",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_3t1jsfs",
+          "type": "compressor",
+          "name": "Neck Snapper",
+          "color": "blue",
+          "enabled": true,
+          "knobs": {
+            "threshold": 0.55,
+            "ratio": 0.65,
+            "makeup": 0.45
+          }
+        },
+        {
+          "id": "pedal_gfzqqwu",
+          "type": "octave",
+          "name": "Bone Twin",
+          "color": "yellow",
+          "enabled": true,
+          "knobs": {
+            "up": 2,
+            "down": 0,
+            "mix": 0.8401995340983073
+          }
+        },
+        {
+          "id": "pedal_r59n4te",
+          "type": "overdrive",
+          "name": "Ghost Drive",
+          "color": "red",
+          "enabled": true,
+          "knobs": {
+            "drive": 0.7,
+            "bite": 0.65,
+            "tone": 0.9527628580729167
+          }
+        },
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-guitar",
+          "bars": 69,
+          "notes": [
+            {
+              "id": "note-622160",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 77,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-507731",
+              "startTick": 24,
+              "durationTicks": 8,
+              "pitch": 77,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-431325",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 68,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-42310",
+              "startTick": 40,
+              "durationTicks": 8,
+              "pitch": 67,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-144215",
+              "startTick": 72,
+              "durationTicks": 8,
+              "pitch": 69,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-519785",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 69,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-516449",
+              "startTick": 112,
+              "durationTicks": 8,
+              "pitch": 72,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-218471",
+              "startTick": 8,
+              "durationTicks": 8,
+              "pitch": 74,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-bass",
+      "name": "Bass",
+      "channel": 2,
+      "program": 40,
+      "instrumentFamily": "Strings",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.43712613362907954,
+      "pan": -0.37638433150463946,
+      "mute": false,
+      "solo": false,
+      "color": "#55d68a",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_d8brnob",
+          "type": "compressor",
+          "name": "Neck Snapper",
+          "color": "blue",
+          "enabled": true,
+          "knobs": {
+            "threshold": 1,
+            "ratio": 1,
+            "makeup": 1
+          }
+        },
+        null,
+        {
+          "id": "pedal_d3pu8t2",
+          "type": "eq",
+          "name": "Rust Dial",
+          "color": "orange",
+          "enabled": true,
+          "knobs": {
+            "low": 0,
+            "mid": 1,
+            "high": 0,
+            "presence": 1
+          }
+        },
+        {
+          "id": "pedal_wx74qtf",
+          "type": "chorus",
+          "name": "Ghost Choir",
+          "color": "purple",
+          "enabled": true,
+          "knobs": {
+            "depth": 0.55,
+            "spread": 0.45,
+            "mix": 1
+          }
+        }
+      ],
+      "patterns": [
+        {
+          "id": "pattern-bass",
+          "bars": 69,
+          "notes": [
+            {
+              "id": "note-920584",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-437054",
+              "startTick": 8,
+              "durationTicks": 8,
+              "pitch": 45,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-270497",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-146501",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-95264",
+              "startTick": 40,
+              "durationTicks": 8,
+              "pitch": 45,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-895636",
+              "startTick": 48,
+              "durationTicks": 8,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-620593",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-455398",
+              "startTick": 72,
+              "durationTicks": 8,
+              "pitch": 45,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-164697",
+              "startTick": 80,
+              "durationTicks": 8,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-662487",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-771525",
+              "startTick": 104,
+              "durationTicks": 8,
+              "pitch": 45,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-871150",
+              "startTick": 112,
+              "durationTicks": 8,
+              "pitch": 45,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-drums",
+      "name": "Drums",
+      "instrument": "drums",
+      "channel": 9,
+      "program": 0,
+      "instrumentFamily": "Drums",
+      "bankMSB": 127,
+      "bankLSB": 0,
+      "volume": 0.2468947583091137,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#b48dff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-drums",
+          "bars": 69,
+          "notes": [
+            {
+              "id": "note-211180",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-822338",
+              "startTick": 16,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-152411",
+              "startTick": 48,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-930196",
+              "startTick": 80,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-550663",
+              "startTick": 0,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-517327",
+              "startTick": 4,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-353701",
+              "startTick": 8,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-72900",
+              "startTick": 12,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-892281",
+              "startTick": 16,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-208382",
+              "startTick": 20,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-145323",
+              "startTick": 24,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-305131",
+              "startTick": 28,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-138244",
+              "startTick": 32,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-262665",
+              "startTick": 36,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-716923",
+              "startTick": 40,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-347519",
+              "startTick": 44,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-345996",
+              "startTick": 48,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-743508",
+              "startTick": 52,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-805590",
+              "startTick": 56,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-195807",
+              "startTick": 60,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-443905",
+              "startTick": 64,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-307130",
+              "startTick": 68,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-934817",
+              "startTick": 72,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-674352",
+              "startTick": 76,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-959402",
+              "startTick": 80,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-100654",
+              "startTick": 84,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-834111",
+              "startTick": 88,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-85150",
+              "startTick": 92,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-468700",
+              "startTick": 96,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-935568",
+              "startTick": 100,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-835279",
+              "startTick": 104,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-975092",
+              "startTick": 108,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-602887",
+              "startTick": 124,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-139841",
+              "startTick": 32,
+              "durationTicks": 4,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-10859",
+              "startTick": 36,
+              "durationTicks": 4,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-309669",
+              "startTick": 40,
+              "durationTicks": 4,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-952489",
+              "startTick": 44,
+              "durationTicks": 4,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-174861",
+              "startTick": 64,
+              "durationTicks": 4,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-645159",
+              "startTick": 88,
+              "durationTicks": 4,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-557110",
+              "startTick": 92,
+              "durationTicks": 4,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-541248",
+              "startTick": 96,
+              "durationTicks": 4,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-48772",
+              "startTick": 112,
+              "durationTicks": 4,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-38869",
+              "startTick": 0,
+              "durationTicks": 4,
+              "pitch": 49,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-653829",
+              "startTick": 116,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-727",
+              "startTick": 120,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-43068",
+              "startTick": 112,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-32076",
+              "startTick": 8,
+              "durationTicks": 4,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-510531",
+              "startTick": 56,
+              "durationTicks": 4,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-682266",
+              "startTick": 104,
+              "durationTicks": 4,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-142361",
+              "startTick": 12,
+              "durationTicks": 4,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-64783",
+              "startTick": 60,
+              "durationTicks": 4,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-708935",
+              "startTick": 72,
+              "durationTicks": 4,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-900142",
+              "startTick": 76,
+              "durationTicks": 4,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-654179",
+              "startTick": 116,
+              "durationTicks": 4,
+              "pitch": 45,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-878153",
+              "startTick": 120,
+              "durationTicks": 4,
+              "pitch": 47,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-597516",
+              "startTick": 124,
+              "durationTicks": 4,
+              "pitch": 45,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-389580",
+              "startTick": 24,
+              "durationTicks": 4,
+              "pitch": 47,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-229198",
+              "startTick": 28,
+              "durationTicks": 4,
+              "pitch": 45,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "progression": [
+    {
+      "root": 0,
+      "quality": "min",
+      "startBar": 1,
+      "lengthBars": 1
+    },
+    {
+      "root": 5,
+      "quality": "min",
+      "startBar": 2,
+      "lengthBars": 1
+    },
+    {
+      "root": 7,
+      "quality": "maj",
+      "startBar": 3,
+      "lengthBars": 1
+    },
+    {
+      "root": 3,
+      "quality": "maj",
+      "startBar": 4,
+      "lengthBars": 1
+    }
+  ],
+  "name": "intro2"
+}

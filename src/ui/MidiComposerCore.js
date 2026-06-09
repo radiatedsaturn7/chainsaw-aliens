@@ -13,10 +13,11 @@ import {
 } from '../audio/gm.js';
 import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/midiParser.js';
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
+import { getGmSustainProfile } from '../game/Audio.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { loadProjectFile, saveProjectFile } from './projectFiles.js';
 import { loadServerPreference, saveServerPreference } from './serverPreferences.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportIconButton, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportIconButton, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -64,6 +65,11 @@ const QUANTIZE_OPTIONS = [
 ];
 
 const MIDI_COMPOSER_AUTOSAVE_DOC = 'MIDI Composer Autosave';
+export const MIDI_MAX_ZOOM_OUT_BARS = 12;
+export const MIDI_PLAYBACK_MAX_CATCHUP_SECONDS = 0.05;
+const MIDI_MAX_AUDIBLE_CATCHUP_SECONDS = 0.12;
+const MIDI_SCHEDULE_LOOKAHEAD_SECONDS = 0.16;
+const MIDI_MAX_PLAYBACK_EVENTS_PER_FRAME = 128;
 
 const NOTE_LENGTH_OPTIONS = [
   { id: '1', label: '1', icon: 'w', divisor: 1 },
@@ -622,10 +628,10 @@ export function getMidiSongMusicControlSpecs({ portrait = false, isPlaying = fal
   return [
     { key: 'songTransportStart', label: '⏮' },
     { key: 'songTransportBack', label: '⏪' },
-    { key: 'songTransportPlayPause', label: isPlaying ? '❚❚' : '▶', active: isPlaying },
-    { key: 'songTransportMetronome', label: 'M', active: metronomeEnabled },
     { key: 'songTransportForward', label: '⏩' },
     { key: 'songTransportEnd', label: '⏭' },
+    { key: 'songTransportMetronome', label: 'M', active: metronomeEnabled },
+    { key: 'songTransportPlayPause', label: isPlaying ? '❚❚' : '▶', active: isPlaying },
     { key: 'songTransportLoopThis', label: portrait ? MIDI_LOOP_ICON : 'Loop This', active: loopEnabled }
   ];
 }
@@ -644,8 +650,9 @@ export function buildMidiGridZoomButtonModel() {
 
 export function getMidiGridZoomLimitsXForBars(bars = DEFAULT_GRID_BARS) {
   const safeBars = Math.max(1, Number(bars) || DEFAULT_GRID_BARS);
+  const maxVisibleBars = Math.max(1, Math.min(MIDI_MAX_ZOOM_OUT_BARS, safeBars));
   return {
-    minZoom: Math.max(0.125, safeBars / 64),
+    minZoom: Math.max(1, safeBars / maxVisibleBars),
     maxZoom: Math.max(8, safeBars * 4)
   };
 }
@@ -1218,6 +1225,10 @@ export default class MidiComposer {
     this.instrumentListScroll = 0;
     this.instrumentListScrollMax = 0;
     this.pendingTrackFocusIndex = null;
+    this.pendingGridFocus = null;
+    this.pendingSongFocus = null;
+    this.gridViewportMemory = null;
+    this.songViewportMemory = null;
     this.lastPersistedSnapshot = null;
     this.lastSavedSnapshot = null;
     this._dirty = false;
@@ -1226,6 +1237,12 @@ export default class MidiComposer {
     this._historyCommitDelayMs = 500;
     this.trackPreloadPromises = new Map();
     this.pendingPlaybackAfterPreload = false;
+    this.playbackClockSeconds = 0;
+    this.playbackLastClockSeconds = null;
+    this.playbackStartTick = 0;
+    this.scheduledUntilTick = 0;
+    this.playbackEventCache = null;
+    this.droppedPlaybackEvents = 0;
     this.runtime = createEditorRuntime({
       context: this,
       document: {
@@ -1249,6 +1266,7 @@ export default class MidiComposer {
         },
         afterOpen: (ctx) => {
           ctx.activeTab = 'grid';
+          ctx.focusFirstSongContentAfterOpen();
           ctx.mobilePortraitFilePanelBounds = null;
           ctx.controllerMenu.resetFocus();
         },
@@ -1366,6 +1384,8 @@ export default class MidiComposer {
     this.midiPortraitTrackPickerScrollMax = 0;
     this.midiPortraitMasterVolumeOpen = false;
     this.midiPortraitRecordSettingsOpen = false;
+    this.transportHold = null;
+    this.transportPopover = null;
     this.viewportController = createViewportController();
     this.songTimelineBounds = null;
     this.songPlayheadBounds = null;
@@ -1464,6 +1484,7 @@ export default class MidiComposer {
       songMixPanTab: null,
       songRailEditTab: null,
       songMixRail: null,
+      transportPopoverButtons: [],
       pedalInspectorToggle: null
     };
     this.trackBounds = [];
@@ -1537,6 +1558,19 @@ export default class MidiComposer {
     return performance.now() / 1000;
   }
 
+  getPlaybackClockSeconds() {
+    return this.getRecordingTime();
+  }
+
+  resyncPlaybackClock(anchorTick = this.playheadTick) {
+    const now = this.getPlaybackClockSeconds();
+    this.playbackClockSeconds = now;
+    this.playbackLastClockSeconds = now;
+    this.playbackStartTick = anchorTick;
+    this.lastPlaybackTick = anchorTick;
+    this.scheduledUntilTick = anchorTick;
+  }
+
   registerInputHandlers() {
     registerComposerInputHandlers(this);
   }
@@ -1603,7 +1637,12 @@ export default class MidiComposer {
 
   markDirty() {
     this._dirty = true;
+    this.invalidatePlaybackEventCache();
     this.schedulePersist();
+  }
+
+  invalidatePlaybackEventCache() {
+    this.playbackEventCache = null;
   }
 
   schedulePersist() {
@@ -1654,6 +1693,7 @@ export default class MidiComposer {
     if (commitHistory) {
       this.commitHistorySnapshot();
     }
+    this.saveCurrentPersistentViewport();
     this.markDirty();
   }
 
@@ -1679,6 +1719,136 @@ export default class MidiComposer {
     this.runtime.scheduleHistoryCommit();
   }
 
+  getMidiComposerEditorState() {
+    if (!this.song || typeof this.song !== 'object') return null;
+    if (!this.song.editorState || typeof this.song.editorState !== 'object') {
+      this.song.editorState = {};
+    }
+    if (!this.song.editorState.midiComposer || typeof this.song.editorState.midiComposer !== 'object') {
+      this.song.editorState.midiComposer = {};
+    }
+    const state = this.song.editorState.midiComposer;
+    if (!state.trackViewports || typeof state.trackViewports !== 'object') {
+      state.trackViewports = {};
+    }
+    return state;
+  }
+
+  getTrackViewportKey(track = this.getActiveTrack()) {
+    if (!track) return null;
+    return track.id || track.name || `track-${this.selectedTrackIndex}`;
+  }
+
+  sanitizeGridViewportState(viewport, track = this.getActiveTrack()) {
+    if (!viewport || typeof viewport !== 'object') return null;
+    const range = isDrumTrack(track) ? null : this.getPitchRange();
+    const gridOffset = viewport.gridOffset && typeof viewport.gridOffset === 'object'
+      ? {
+        x: Number.isFinite(viewport.gridOffset.x) ? viewport.gridOffset.x : 0,
+        y: Number.isFinite(viewport.gridOffset.y) ? viewport.gridOffset.y : 0
+      }
+      : null;
+    const cursorTick = Number.isFinite(viewport.cursorTick) ? Math.max(0, Math.round(viewport.cursorTick)) : null;
+    let cursorPitch = Number.isFinite(viewport.cursorPitch) ? Math.round(viewport.cursorPitch) : null;
+    if (cursorPitch !== null && range) cursorPitch = clamp(cursorPitch, range.min, range.max);
+    return {
+      gridOffset,
+      timelineStartTick: Number.isFinite(viewport.timelineStartTick) ? Math.max(0, viewport.timelineStartTick) : null,
+      gridZoomX: Number.isFinite(viewport.gridZoomX) ? viewport.gridZoomX : null,
+      gridZoomY: Number.isFinite(viewport.gridZoomY) ? viewport.gridZoomY : null,
+      cursorTick,
+      cursorPitch,
+      selectedPatternIndex: Number.isInteger(viewport.selectedPatternIndex) ? Math.max(0, viewport.selectedPatternIndex) : null
+    };
+  }
+
+  saveCurrentPersistentViewport() {
+    const state = this.getMidiComposerEditorState();
+    if (!state) return false;
+    const track = this.getActiveTrack();
+    const key = this.getTrackViewportKey(track);
+    if (!state || !track || !key) return false;
+    state.lastTrackId = track.id || key;
+    state.lastTab = this.activeTab === 'song' ? 'song' : 'grid';
+    const entry = state.trackViewports[key] && typeof state.trackViewports[key] === 'object'
+      ? state.trackViewports[key]
+      : {};
+    entry.trackId = track.id || key;
+    entry.trackName = track.name || '';
+    entry.updatedAt = Date.now();
+    entry.grid = {
+      gridOffset: this.gridOffset ? { ...this.gridOffset } : { x: 0, y: 0 },
+      timelineStartTick: Number.isFinite(this.timelineStartTick) ? this.timelineStartTick : 0,
+      gridZoomX: Number.isFinite(this.gridZoomX) ? this.gridZoomX : this.getDefaultGridZoomX(),
+      gridZoomY: Number.isFinite(this.gridZoomY) ? this.gridZoomY : this.getDefaultGridZoomY(),
+      cursorTick: Number.isFinite(this.cursor?.tick) ? this.cursor.tick : this.playheadTick,
+      cursorPitch: Number.isFinite(this.cursor?.pitch) ? this.cursor.pitch : null,
+      selectedPatternIndex: this.selectedPatternIndex
+    };
+    entry.song = {
+      songTimelineOffsetX: Number.isFinite(this.songTimelineOffsetX) ? this.songTimelineOffsetX : 0,
+      songTrackScroll: Number.isFinite(this.songTrackScroll) ? this.songTrackScroll : 0,
+      timelineStartTick: Number.isFinite(this.timelineStartTick) ? this.timelineStartTick : 0,
+      gridZoomX: Number.isFinite(this.gridZoomX) ? this.gridZoomX : this.getDefaultGridZoomX(),
+      selectedTrackIndex: this.selectedTrackIndex
+    };
+    state.trackViewports[key] = entry;
+    return true;
+  }
+
+  persistViewportState() {
+    if (this.saveCurrentPersistentViewport()) {
+      this.markDirty();
+    }
+  }
+
+  getSavedViewportForTrack(trackIndex = this.selectedTrackIndex) {
+    const track = this.song?.tracks?.[trackIndex];
+    const key = this.getTrackViewportKey(track);
+    const state = this.song?.editorState?.midiComposer;
+    if (!track || !key || !state?.trackViewports) return null;
+    return state.trackViewports[key] || null;
+  }
+
+  restorePersistedViewportForTrack(trackIndex = this.selectedTrackIndex) {
+    const track = this.song?.tracks?.[trackIndex];
+    const saved = this.getSavedViewportForTrack(trackIndex);
+    const grid = this.sanitizeGridViewportState(saved?.grid, track);
+    if (!track || !grid) return false;
+    this.selectedTrackIndex = clamp(trackIndex, 0, Math.max(0, this.song.tracks.length - 1));
+    if (Number.isInteger(grid.selectedPatternIndex)) {
+      this.selectedPatternIndex = clamp(grid.selectedPatternIndex, 0, Math.max(0, (track.patterns?.length || 1) - 1));
+    }
+    if (grid.gridOffset) this.gridOffset = { ...grid.gridOffset };
+    if (Number.isFinite(grid.gridZoomX)) this.gridZoomX = grid.gridZoomX;
+    if (Number.isFinite(grid.gridZoomY)) this.gridZoomY = grid.gridZoomY;
+    if (Number.isFinite(grid.timelineStartTick)) this.timelineStartTick = grid.timelineStartTick;
+    if (Number.isFinite(grid.cursorTick)) this.cursor.tick = grid.cursorTick;
+    if (Number.isFinite(grid.cursorPitch)) this.cursor.pitch = this.coercePitchForTrack(grid.cursorPitch, track);
+    this.playheadTick = Number.isFinite(grid.cursorTick) ? grid.cursorTick : this.timelineStartTick;
+    this.resyncPlaybackClock(this.playheadTick);
+    this.gridViewportMemory = {
+      gridOffset: { ...this.gridOffset },
+      timelineStartTick: this.timelineStartTick,
+      gridZoomX: this.gridZoomX,
+      gridZoomY: this.gridZoomY,
+      selectedTrackIndex: this.selectedTrackIndex
+    };
+    if (saved.song && typeof saved.song === 'object') {
+      this.songViewportMemory = {
+        timelineStartTick: Number.isFinite(saved.song.timelineStartTick) ? saved.song.timelineStartTick : this.timelineStartTick,
+        songTimelineOffsetX: Number.isFinite(saved.song.songTimelineOffsetX) ? saved.song.songTimelineOffsetX : 0,
+        songTrackScroll: Number.isFinite(saved.song.songTrackScroll) ? saved.song.songTrackScroll : 0,
+        gridZoomX: Number.isFinite(saved.song.gridZoomX) ? saved.song.gridZoomX : this.gridZoomX,
+        selectedTrackIndex: this.selectedTrackIndex
+      };
+    }
+    this.pendingGridFocus = null;
+    this.pendingSongFocus = null;
+    this.pendingTrackFocusIndex = this.selectedTrackIndex;
+    this.timelineSource = 'grid';
+    return true;
+  }
 
   applySongSnapshot(snapshot, { updateHistory = true } = {}) {
     if (!snapshot) return;
@@ -1854,7 +2024,7 @@ export default class MidiComposer {
       masterPan: 0,
       reverbEnabled: true,
       reverbLevel: 0.18,
-      latencyMs: 30,
+      latencyMs: 40,
       useSoundfont: true,
       soundfontCdn: 'vendored',
       drumKitId: this.game?.audio?.getDrumKit?.()?.id || 'standard'
@@ -2188,10 +2358,7 @@ export default class MidiComposer {
   selectTrackDelta(delta) {
     const total = this.song.tracks.length;
     if (!total) return;
-    this.selectedTrackIndex = (this.selectedTrackIndex + delta + total) % total;
-    this.selection.clear();
-    this.closeSelectionMenu();
-    this.syncCursorToTrack();
+    this.selectTrackIndex((this.selectedTrackIndex + delta + total) % total);
   }
 
   isMobileLayout() {
@@ -2778,13 +2945,7 @@ export default class MidiComposer {
   ensureGridPanCapacity(desiredOffsetX) {
     if (!this.gridBounds) return;
     if (desiredOffsetX >= 0) return;
-    const viewW = this.gridBounds.w;
-    const cellWidth = this.gridBounds.cellWidth;
-    const requiredGridW = viewW - desiredOffsetX;
-    const requiredTicks = Math.ceil(requiredGridW / cellWidth);
-    if (requiredTicks > this.getGridTicks()) {
-      this.ensureGridCapacity(Math.max(0, requiredTicks - 1));
-    }
+    // Viewport panning must not create thousands of empty measures.
   }
 
   getEditableGridTick() {
@@ -2823,21 +2984,12 @@ export default class MidiComposer {
   }
 
   ensureTimelineCapacity() {
-    const timelineTicks = this.getGridTicks();
-    const visibleTicks = timelineTicks / (this.gridZoomX || 1);
-    const requiredTicks = Math.ceil(this.timelineStartTick + visibleTicks);
-    if (requiredTicks > timelineTicks) {
-      this.ensureGridCapacity(requiredTicks - 1);
-    }
+    // Viewport zooming must not expand authored song length.
   }
 
   ensureTimelinePanCapacity(desiredOffsetX, viewW, cellWidth) {
     if (desiredOffsetX >= 0) return;
-    const requiredGridW = viewW - desiredOffsetX;
-    const requiredTicks = Math.ceil(requiredGridW / cellWidth);
-    if (requiredTicks > this.getGridTicks()) {
-      this.ensureGridCapacity(Math.max(0, requiredTicks - 1));
-    }
+    // Viewport panning must not expand authored song length.
   }
 
   setSongTimelineZoom(nextZoom, anchorTick = this.playheadTick) {
@@ -2873,18 +3025,64 @@ export default class MidiComposer {
     return this.playheadTick;
   }
 
+  getSelectedGridFocus() {
+    const notes = this.getSelectedNotes?.() || [];
+    if (notes.length) {
+      const track = this.getActiveTrack();
+      const minTick = Math.min(...notes.map((note) => note.startTick));
+      const maxTick = Math.max(...notes.map((note) => note.startTick + this.getEffectiveDurationTicks(note, track)));
+      const avgPitch = notes.reduce((sum, note) => sum + note.pitch, 0) / notes.length;
+      return {
+        tick: (minTick + maxTick) / 2,
+        pitch: avgPitch,
+        trackIndex: this.selectedTrackIndex
+      };
+    }
+    if (this.cursor && Number.isFinite(this.cursor.tick) && Number.isFinite(this.cursor.pitch)) {
+      return {
+        tick: this.cursor.tick,
+        pitch: this.cursor.pitch,
+        trackIndex: this.selectedTrackIndex
+      };
+    }
+    return {
+      tick: this.playheadTick,
+      pitch: null,
+      trackIndex: this.selectedTrackIndex
+    };
+  }
+
+  getSelectedSongFocus() {
+    const range = this.getSongSelectionRange?.();
+    if (range) {
+      return {
+        tick: (range.startTick + range.endTick) / 2,
+        trackIndex: range.trackIndex ?? range.trackStartIndex ?? this.selectedTrackIndex
+      };
+    }
+    return {
+      tick: this.playheadTick,
+      trackIndex: this.selectedTrackIndex
+    };
+  }
+
+  getCurrentZoomFocus() {
+    return this.activeTab === 'song' ? this.getSelectedSongFocus() : this.getSelectedGridFocus();
+  }
+
   setHorizontalTimelineZoom(nextZoom, anchorTick = null, anchorScreenX = null) {
     const { minZoom, maxZoom } = this.getGridZoomLimitsX();
     const clampedZoom = clamp(nextZoom, minZoom, maxZoom);
+    const focus = this.getCurrentZoomFocus();
     if (this.activeTab === 'song') {
-      this.setSongTimelineZoom(clampedZoom, Number.isFinite(anchorTick) ? anchorTick : this.getVisibleCenterTick());
+      this.setSongTimelineZoom(clampedZoom, Number.isFinite(anchorTick) ? anchorTick : focus.tick);
       return;
     }
     if (!this.gridBounds) {
       this.gridZoomX = clampedZoom;
       return;
     }
-    const resolvedAnchorTick = Number.isFinite(anchorTick) ? anchorTick : this.getVisibleCenterTick();
+    const resolvedAnchorTick = Number.isFinite(anchorTick) ? anchorTick : focus.tick;
     const resolvedAnchorX = Number.isFinite(anchorScreenX)
       ? anchorScreenX
       : this.gridBounds.x + this.gridBounds.w / 2;
@@ -2901,6 +3099,183 @@ export default class MidiComposer {
       this.gridBounds.gridH
     );
     this.updateTimelineStartTickFromGrid();
+  }
+
+  saveCurrentViewportMemory() {
+    this.saveCurrentPersistentViewport();
+    if (this.activeTab === 'grid') {
+      this.gridViewportMemory = {
+        gridOffset: { ...this.gridOffset },
+        timelineStartTick: this.timelineStartTick,
+        gridZoomX: this.gridZoomX,
+        gridZoomY: this.gridZoomY,
+        selectedTrackIndex: this.selectedTrackIndex
+      };
+    } else if (this.activeTab === 'song') {
+      this.songViewportMemory = {
+        timelineStartTick: this.timelineStartTick,
+        songTimelineOffsetX: this.songTimelineOffsetX,
+        songTrackScroll: this.songTrackScroll,
+        gridZoomX: this.gridZoomX,
+        selectedTrackIndex: this.selectedTrackIndex
+      };
+    }
+  }
+
+  selectTrackIndex(trackIndex, { restoreViewport = true, clearSelection = true } = {}) {
+    if (!Number.isInteger(trackIndex) || !this.song?.tracks?.length) return;
+    this.saveCurrentViewportMemory();
+    const nextIndex = clamp(trackIndex, 0, Math.max(0, this.song.tracks.length - 1));
+    this.selectedTrackIndex = nextIndex;
+    if (clearSelection) {
+      this.selection.clear();
+      this.clearSongSelection?.();
+    }
+    this.closeSelectionMenu?.();
+    this.syncCursorToTrack();
+    if (restoreViewport && !this.restorePersistedViewportForTrack(nextIndex)) {
+      const track = this.getActiveTrack();
+      const pattern = track?.patterns?.[this.selectedPatternIndex] || track?.patterns?.[0];
+      const notes = Array.isArray(pattern?.notes) ? pattern.notes : [];
+      if (notes.length) {
+        const latest = notes.reduce((best, note) => (
+          !best || note.startTick > best.startTick ? note : best
+        ), null);
+        if (latest) {
+          this.cursor.tick = latest.startTick;
+          this.cursor.pitch = latest.pitch;
+          this.playheadTick = latest.startTick;
+          this.resyncPlaybackClock(this.playheadTick);
+          this.pendingGridFocus = { trackIndex: nextIndex, tick: latest.startTick, pitch: latest.pitch };
+          this.pendingSongFocus = { trackIndex: nextIndex, tick: latest.startTick };
+        }
+      }
+    }
+    this.persistViewportState();
+  }
+
+  restoreViewportMemory(tabId) {
+    if (tabId === 'grid' && this.gridViewportMemory) {
+      this.gridOffset = { ...this.gridViewportMemory.gridOffset };
+      this.timelineStartTick = this.gridViewportMemory.timelineStartTick;
+      this.gridZoomX = this.gridViewportMemory.gridZoomX;
+      this.gridZoomY = this.gridViewportMemory.gridZoomY;
+      this.timelineSource = 'grid';
+      this.pendingGridFocus = null;
+    } else if (tabId === 'song' && this.songViewportMemory) {
+      this.timelineStartTick = this.songViewportMemory.timelineStartTick;
+      this.songTimelineOffsetX = this.songViewportMemory.songTimelineOffsetX;
+      this.songTrackScroll = this.songViewportMemory.songTrackScroll;
+      this.gridZoomX = this.songViewportMemory.gridZoomX;
+      this.timelineSource = 'song';
+      this.pendingSongFocus = null;
+    }
+  }
+
+  focusGridViewportOn({ tick, pitch, trackIndex } = {}) {
+    const resolvedTick = Number.isFinite(tick) ? tick : this.playheadTick;
+    if (!this.gridBounds) {
+      this.pendingGridFocus = { tick: resolvedTick, pitch, trackIndex };
+      return;
+    }
+    const { x, y, w, h, cellWidth, cellHeight, rows } = this.gridBounds;
+    const row = Number.isFinite(pitch) ? this.getRowFromPitch(pitch) : -1;
+    this.gridOffset.x = x + w / 2 - resolvedTick * cellWidth - x;
+    if (row >= 0 && row < rows && !isDrumTrack(this.getActiveTrack())) {
+      this.gridOffset.y = y + h / 2 - row * cellHeight - y;
+    }
+    this.clampGridOffset(w, h, cellWidth * this.gridBounds.cols, cellHeight * rows);
+    this.updateTimelineStartTickFromGrid();
+    this.pendingGridFocus = null;
+  }
+
+  focusSongViewportOn({ tick, trackIndex } = {}) {
+    const resolvedTick = Number.isFinite(tick) ? tick : this.playheadTick;
+    if (!this.songTimelineBounds) {
+      this.pendingSongFocus = { tick: resolvedTick, trackIndex };
+      return;
+    }
+    this.setSongTimelineZoom(this.gridZoomX, resolvedTick);
+    if (Number.isInteger(trackIndex)) {
+      this.pendingTrackFocusIndex = trackIndex;
+    }
+    this.pendingSongFocus = null;
+  }
+
+  findFirstSongContentFocus() {
+    let best = null;
+    this.song?.tracks?.forEach((track, trackIndex) => {
+      const pattern = track.patterns?.[this.selectedPatternIndex] || track.patterns?.[0];
+      pattern?.notes?.forEach((note) => {
+        if (!best || note.startTick < best.tick) {
+          best = { trackIndex, tick: note.startTick, pitch: note.pitch };
+        }
+      });
+    });
+    return best;
+  }
+
+  findLatestSongContentFocus() {
+    let latestTick = -Infinity;
+    const notes = [];
+    this.song?.tracks?.forEach((track, trackIndex) => {
+      const pattern = track.patterns?.[this.selectedPatternIndex] || track.patterns?.[0];
+      pattern?.notes?.forEach((note) => {
+        if (!Number.isFinite(note?.startTick) || !Number.isFinite(note?.pitch)) return;
+        const startTick = Math.max(0, Math.round(note.startTick));
+        if (startTick > latestTick) {
+          latestTick = startTick;
+          notes.length = 0;
+        }
+        if (startTick === latestTick) {
+          notes.push({ trackIndex, tick: startTick, pitch: note.pitch });
+        }
+      });
+    });
+    if (!notes.length) return null;
+    const anchor = notes[0];
+    const clusterWindowTicks = this.getTicksPerBar();
+    const cluster = [];
+    this.song?.tracks?.forEach((track, trackIndex) => {
+      const pattern = track.patterns?.[this.selectedPatternIndex] || track.patterns?.[0];
+      pattern?.notes?.forEach((note) => {
+        if (!Number.isFinite(note?.startTick) || !Number.isFinite(note?.pitch)) return;
+        if (Math.abs(note.startTick - latestTick) <= clusterWindowTicks) {
+          cluster.push({ trackIndex, tick: note.startTick, pitch: note.pitch });
+        }
+      });
+    });
+    const pitchSamples = cluster.filter((entry) => entry.trackIndex === anchor.trackIndex);
+    const pitchSource = pitchSamples.length ? pitchSamples : cluster;
+    const avgPitch = pitchSource.reduce((sum, entry) => sum + entry.pitch, 0) / Math.max(1, pitchSource.length);
+    return {
+      trackIndex: anchor.trackIndex,
+      tick: latestTick,
+      pitch: Number.isFinite(avgPitch) ? avgPitch : anchor.pitch
+    };
+  }
+
+  focusFirstSongContentAfterOpen() {
+    this.gridViewportMemory = null;
+    this.songViewportMemory = null;
+    const state = this.song?.editorState?.midiComposer;
+    const lastTrackId = state?.lastTrackId;
+    let restoreTrackIndex = this.song?.tracks?.findIndex((track) => track?.id === lastTrackId);
+    if (!Number.isInteger(restoreTrackIndex) || restoreTrackIndex < 0) {
+      restoreTrackIndex = clamp(this.selectedTrackIndex, 0, Math.max(0, (this.song?.tracks?.length || 1) - 1));
+    }
+    if (this.restorePersistedViewportForTrack(restoreTrackIndex)) return;
+
+    const focus = this.findLatestSongContentFocus() || this.findFirstSongContentFocus();
+    if (!focus) return;
+    this.selectedTrackIndex = focus.trackIndex;
+    this.cursor.tick = focus.tick;
+    this.cursor.pitch = focus.pitch;
+    this.playheadTick = focus.tick;
+    this.resyncPlaybackClock(this.playheadTick);
+    this.pendingGridFocus = focus;
+    this.pendingSongFocus = focus;
+    this.pendingTrackFocusIndex = focus.trackIndex;
   }
 
   getSongTimelineX(tick) {
@@ -3246,6 +3621,11 @@ export default class MidiComposer {
   }
 
   activateLeftRailTab(tabId) {
+    const previousTab = this.activeTab;
+    if (previousTab === 'grid' || previousTab === 'song') {
+      this.saveCurrentViewportMemory();
+      this.persistViewportState();
+    }
     if (this.activeTab === 'instruments' && (tabId === 'grid' || tabId === 'song' || tabId === 'virtual-instruments' || tabId === 'pedals' || tabId === 'settings')) {
       this.confirmInstrumentSelection();
     }
@@ -3256,6 +3636,9 @@ export default class MidiComposer {
       return;
     }
     this.activeTab = tabId;
+    if (tabId === 'grid' || tabId === 'song') {
+      this.restoreViewportMemory(tabId);
+    }
   }
 
   handleMobileLandscapeRootMenuTap(id) {
@@ -3383,6 +3766,7 @@ export default class MidiComposer {
     this.singleNoteRecordMode.measureEnd = measureStart + ticksPerBar;
     this.cursor.tick = snappedTick;
     this.playheadTick = snappedTick;
+    this.resyncPlaybackClock(this.playheadTick);
   }
 
   advanceSingleNoteAnchor() {
@@ -3461,12 +3845,11 @@ export default class MidiComposer {
     if (!id || !track) return;
     const drumTrack = isDrumTrack(track);
     const pedals = this.getPlaybackPedalsForTrack(track);
-    const hasPedals = Array.isArray(pedals) && pedals.some((pedal) => pedal && pedal.enabled !== false);
     if (drumTrack) {
       this.playGmNote(pitch, 0.4, (velocity / 127) * track.volume, track, pan);
       return;
     }
-    if (!hasPedals && this.game?.audio?.startLiveGmNote) {
+    if (this.game?.audio?.startLiveGmNote) {
       this.game.audio.startLiveGmNote({
         id,
         pitch,
@@ -3476,7 +3859,8 @@ export default class MidiComposer {
         channel: track.channel,
         bankMSB: track.bankMSB,
         bankLSB: track.bankLSB,
-        pan
+        pan,
+        pedals
       });
       this.livePreviewNotes.add(id);
       return;
@@ -3532,6 +3916,7 @@ export default class MidiComposer {
       quantizeDivisor: this.recordQuantizeEnabled ? this.recordQuantizeDivisor : null
     });
     this.playheadTick = 0;
+    this.resyncPlaybackClock(this.playheadTick);
     this.recordStartTime = startTime;
   }
 
@@ -4180,6 +4565,7 @@ export default class MidiComposer {
             0,
             this.getEditableGridTick()
           );
+          this.resyncPlaybackClock(this.playheadTick);
           if (this.scrubAudition) {
             this.previewNotesAtTick(this.playheadTick);
           }
@@ -4190,6 +4576,7 @@ export default class MidiComposer {
             0,
             this.getEditableGridTick()
           );
+          this.resyncPlaybackClock(this.playheadTick);
           if (this.scrubAudition) {
             this.previewNotesAtTick(this.playheadTick);
           }
@@ -4400,21 +4787,42 @@ export default class MidiComposer {
   advancePlayhead(dt) {
     const tempo = this.song.tempo || 120;
     const ticksPerSecond = (tempo / 60) * this.ticksPerBeat;
+    const now = this.getPlaybackClockSeconds();
+    if (!Number.isFinite(this.playbackLastClockSeconds)) {
+      this.resyncPlaybackClock(this.playheadTick);
+    }
+    const fallbackElapsed = Number(dt) || 0;
+    const rawElapsed = Number.isFinite(now) && Number.isFinite(this.playbackLastClockSeconds)
+      ? now - this.playbackLastClockSeconds
+      : fallbackElapsed;
+    const elapsedSource = rawElapsed > 0 ? rawElapsed : fallbackElapsed;
+    const elapsedSeconds = clamp(Math.max(0, elapsedSource), 0, MIDI_PLAYBACK_MAX_CATCHUP_SECONDS);
+    this.playbackLastClockSeconds = Number.isFinite(now) ? now : this.playbackLastClockSeconds;
     const loopTicks = this.getLoopTicks();
     const loopStart = this.getLoopStartTick();
     const loopActive = this.song.loopEnabled && typeof this.song.loopEndTick === 'number';
-    const previous = this.playheadTick;
-    const nextTick = this.playheadTick + ticksPerSecond * dt;
+    const nextTick = this.playheadTick + ticksPerSecond * elapsedSeconds;
     if (loopActive) {
       const loopLength = Math.max(1, loopTicks - loopStart);
       const relative = nextTick - loopStart;
       const wrappedTick = loopStart + ((relative % loopLength) + loopLength) % loopLength;
       this.playheadTick = wrappedTick;
-      this.triggerPlayback(previous, this.playheadTick, loopTicks, true);
+      const lookaheadTicks = MIDI_SCHEDULE_LOOKAHEAD_SECONDS * ticksPerSecond;
+      if (this.scheduledUntilTick >= loopTicks || this.scheduledUntilTick < loopStart) {
+        this.scheduledUntilTick = loopStart;
+      }
+      const targetScheduleTick = Math.min(loopTicks, this.playheadTick + lookaheadTicks);
+      if (targetScheduleTick > this.scheduledUntilTick) {
+        this.triggerPlayback(this.scheduledUntilTick, targetScheduleTick, loopTicks, false, this.playheadTick);
+      }
     } else {
       this.playheadTick = nextTick;
       this.ensureGridCapacity(this.playheadTick);
-      this.triggerPlayback(previous, this.playheadTick, loopTicks, false);
+      const lookaheadTicks = MIDI_SCHEDULE_LOOKAHEAD_SECONDS * ticksPerSecond;
+      const targetScheduleTick = this.playheadTick + lookaheadTicks;
+      if (targetScheduleTick > this.scheduledUntilTick) {
+        this.triggerPlayback(this.scheduledUntilTick, targetScheduleTick, loopTicks, false, this.playheadTick);
+      }
     }
     if (this.isPlaying && !this.song.loopEnabled) {
       const playbackEndTick = this.getPlaybackEndTick();
@@ -4424,7 +4832,7 @@ export default class MidiComposer {
     }
   }
 
-  triggerPlayback(startTick, endTick, loopTicks, wrap) {
+  triggerPlayback(startTick, endTick, loopTicks, wrap, currentTick = startTick) {
     const loopStart = this.getLoopStartTick();
     const shouldWrap = wrap && endTick < startTick;
     const crossed = shouldWrap
@@ -4436,32 +4844,98 @@ export default class MidiComposer {
     const perfEnabled = this.debug?.perf;
     const perfStart = perfEnabled ? performance.now() : 0;
     let noteCount = 0;
+    let droppedCount = 0;
+    const tempo = this.song?.tempo || 120;
+    const ticksPerSecond = (tempo / 60) * this.ticksPerBeat;
+    const cache = this.getPlaybackEventCache();
     crossed.forEach((range) => {
-      this.song.tracks.forEach((track) => {
-        if (this.isTrackMuted(track)) return;
-        const pattern = track.patterns[this.selectedPatternIndex];
-        if (!pattern) return;
-        const processed = this.getTrackPedalProcessing(track, pattern);
-        processed.notes.forEach((note) => {
-          const noteStart = this.getSwingedTick(note.startTick);
-          if (noteStart >= range.start && noteStart < range.end) {
-            if (this.shouldSlurNote(track, pattern, note)) return;
-            this.playNote(track, note, noteStart);
-            noteCount += 1;
-          }
-        });
-      });
+      const audibleStart = Math.max(range.start, currentTick - MIDI_MAX_AUDIBLE_CATCHUP_SECONDS * Math.max(0.0001, ticksPerSecond));
+      if (audibleStart > range.start) {
+        droppedCount += this.countPlaybackEventsInRange(cache.events, range.start, audibleStart);
+      }
+      let emitted = 0;
+      for (let index = this.findPlaybackEventIndex(cache.events, audibleStart); index < cache.events.length; index += 1) {
+        const event = cache.events[index];
+        if (event.tick >= range.end) break;
+        if (emitted >= MIDI_MAX_PLAYBACK_EVENTS_PER_FRAME) {
+          droppedCount += 1;
+          continue;
+        }
+        const secondsFromPlayhead = Math.max(0, (event.tick - currentTick) / Math.max(0.0001, ticksPerSecond));
+        const when = this.game?.audio?.ctx?.currentTime != null
+          ? this.game.audio.ctx.currentTime + (this.game.audio.midiLatency || 0) + secondsFromPlayhead
+          : null;
+        this.playNote(event.track, event.note, event.tick, { when });
+        noteCount += 1;
+        emitted += 1;
+      }
       if (this.metronomeEnabled) {
         this.triggerMetronome(range.start, range.end, loopTicks);
       }
     });
+    this.scheduledUntilTick = Math.max(this.scheduledUntilTick, endTick);
+    this.droppedPlaybackEvents += droppedCount;
     if (perfEnabled) {
       const elapsed = performance.now() - perfStart;
-      if (elapsed > 12) {
+      if (elapsed > 12 || droppedCount > 0) {
         const sizeEstimate = this.lastPersistedSnapshot?.length || this.history.currentSnapshot?.length || 0;
-        console.warn(`[perf] triggerPlayback ${elapsed.toFixed(1)}ms (notes ${noteCount}, song ${sizeEstimate} chars)`);
+        console.warn(`[perf] triggerPlayback ${elapsed.toFixed(1)}ms (notes ${noteCount}, dropped ${droppedCount}, song ${sizeEstimate} chars)`);
       }
     }
+  }
+
+  getPlaybackEventCache() {
+    if (this.playbackEventCache?.patternIndex === this.selectedPatternIndex) {
+      return this.playbackEventCache;
+    }
+    const events = [];
+    this.song.tracks.forEach((track) => {
+      if (this.isTrackMuted(track)) return;
+      const pattern = track.patterns[this.selectedPatternIndex];
+      if (!pattern) return;
+      const processed = this.getTrackPedalProcessing(track, pattern);
+      processed.notes.forEach((note) => {
+        if (this.shouldSlurNote(track, pattern, note)) return;
+        events.push({
+          tick: this.getSwingedTick(note.startTick),
+          track,
+          note
+        });
+      });
+    });
+    events.sort((a, b) => a.tick - b.tick || (a.note.pitch ?? 0) - (b.note.pitch ?? 0));
+    this.playbackEventCache = {
+      patternIndex: this.selectedPatternIndex,
+      events
+    };
+    return this.playbackEventCache;
+  }
+
+  getAudiblePlaybackRangeStart(startTick, endTick, ticksPerSecond) {
+    const rangeTicks = endTick - startTick;
+    const catchupTicks = MIDI_MAX_AUDIBLE_CATCHUP_SECONDS * Math.max(0.0001, ticksPerSecond);
+    return rangeTicks > catchupTicks ? Math.max(startTick, endTick - catchupTicks) : startTick;
+  }
+
+  findPlaybackEventIndex(events, tick) {
+    let low = 0;
+    let high = events.length;
+    while (low < high) {
+      const mid = (low + high) >> 1;
+      if (events[mid].tick < tick) low = mid + 1;
+      else high = mid;
+    }
+    return low;
+  }
+
+  countPlaybackEventsInRange(events, startTick, endTick) {
+    if (!events?.length || endTick <= startTick) return 0;
+    let count = 0;
+    for (let index = this.findPlaybackEventIndex(events, startTick); index < events.length; index += 1) {
+      if (events[index].tick >= endTick) break;
+      count += 1;
+    }
+    return count;
   }
 
   triggerMetronome(startTick, endTick, loopTicks) {
@@ -4507,11 +4981,13 @@ export default class MidiComposer {
     });
   }
 
-  playNote(track, note, startTick) {
+  playNote(track, note, startTick, options = {}) {
     const drumTrack = isDrumTrack(track);
     if (this.activeNotes.size >= MAX_ACTIVE_NOTES) return;
     const durationTicks = this.getEffectiveDurationTicks(note, track);
-    const duration = durationTicks / this.ticksPerBeat;
+    const tempo = this.song?.tempo || 120;
+    const ticksPerSecond = (tempo / 60) * this.ticksPerBeat;
+    const duration = Math.max(0.03, durationTicks / Math.max(0.0001, ticksPerSecond));
     const velocity = note.velocity ?? 0.8;
     const pitch = drumTrack ? this.coercePitchForTrack(note.pitch, track, GM_DRUM_ROWS) : note.pitch;
     if (drumTrack) {
@@ -4520,7 +4996,7 @@ export default class MidiComposer {
     const mix = this.getTrackPlaybackMix(track, startTick);
     const pedalPanOffset = clamp(track?._pedalPanOffset ?? 0, -1, 1);
     const resolvedPan = clamp(mix.pan + pedalPanOffset, -1, 1);
-    this.playGmNote(pitch, duration, velocity * mix.volume, track, resolvedPan);
+    this.playGmNote(pitch, duration, velocity * mix.volume, track, resolvedPan, { when: options.when });
     const now = performance.now();
     this.activeNotes.set(note.id, { trackId: track.id, expires: now + duration * 1000 + 120 });
     this.lastPlaybackTick = startTick;
@@ -4589,7 +5065,8 @@ export default class MidiComposer {
           pedals: this.getPlaybackPedalsForTrack(track),
           pan,
           preview: options.preview === true,
-          trackId: track?.id ?? null
+          trackId: track?.id ?? null,
+          when: Number.isFinite(options.when) ? options.when : null
         });
       } catch (error) {
         console.error('MIDI audio playback failed', error);
@@ -4758,6 +5235,16 @@ export default class MidiComposer {
       this.draggingTrackControl = null;
     }
     const { x, y } = payload;
+    if (this.transportPopover) {
+      const hit = this.bounds.transportPopoverButtons?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (hit) {
+        hit.action?.();
+        this.closeTransportPopover();
+        return;
+      }
+      this.closeTransportPopover();
+      return;
+    }
     if (this.isMobileLandscapeThumbZoomMode() && payload.touchCount > 0 && this.panJoystick.radius > 0) {
       const dx = payload.x - this.panJoystick.center.x;
       const dy = payload.y - this.panJoystick.center.y;
@@ -5319,6 +5806,10 @@ export default class MidiComposer {
       this.runtime.redo();
       return;
     }
+    if (this.bounds.play && this.pointInBounds(x, y, this.bounds.play)) {
+      this.startTransportHold(this.bounds.play, payload);
+      return;
+    }
 
     const portraitSheetBlocksInput = this.mobilePortraitMenuSheetBounds
       && shouldMidiPortraitSheetOpen(this.activeTab, this.controllerMenu.active);
@@ -5330,7 +5821,7 @@ export default class MidiComposer {
 
     if (this.activeTab === 'grid') {
       if (this.bounds.play && this.pointInBounds(x, y, this.bounds.play)) {
-        this.togglePlayback();
+        this.startTransportHold(this.bounds.play, payload);
         return;
       }
       if (this.bounds.stop && this.pointInBounds(x, y, this.bounds.stop)) {
@@ -5601,6 +6092,7 @@ export default class MidiComposer {
       }
       if (this.songPlayheadBounds && this.pointInBounds(x, y, this.songPlayheadBounds)) {
         this.playheadTick = clamp(this.getSongTickFromX(x, this.songTimelineBounds), 0, this.getSongTimelineTicks());
+        this.resyncPlaybackClock(this.playheadTick);
         this.dragState = { mode: 'song-playhead', bounds: this.songTimelineBounds };
         return;
       }
@@ -5675,6 +6167,7 @@ export default class MidiComposer {
           && this.songClonePaintTool.baseEndTick === partHit.endTick;
         this.selectedTrackIndex = partHit.trackIndex;
         this.playheadTick = tappedTick;
+        this.resyncPlaybackClock(this.playheadTick);
         this.songSelection = {
           active: true,
           trackIndex: partHit.trackIndex,
@@ -5849,6 +6342,7 @@ export default class MidiComposer {
           return;
         }
         this.playheadTick = clamp(tick, 0, this.getSongTimelineTicks());
+        this.resyncPlaybackClock(this.playheadTick);
         this.clearSongSelection();
         this.dragState = {
           mode: 'song-scrub',
@@ -6018,6 +6512,7 @@ export default class MidiComposer {
           }, 450);
         }
         this.playheadTick = clamp(tick, 0, this.getEditableGridTick());
+        this.resyncPlaybackClock(this.playheadTick);
         if (this.scrubAudition) {
           this.previewNotesAtTick(this.playheadTick);
         }
@@ -6032,6 +6527,9 @@ export default class MidiComposer {
 
   handlePointerMove(payload) {
     this.lastPointer = { x: payload.x, y: payload.y };
+    if (this.transportHold && Math.hypot(payload.x - this.transportHold.x, payload.y - this.transportHold.y) > 12) {
+      this.cancelTransportHold();
+    }
     if (this.recordModeActive) {
       if (this.dragState?.mode === 'pedal-picker-scroll') {
         const dy = this.dragState.startY - payload.y;
@@ -6246,6 +6744,7 @@ export default class MidiComposer {
       if (bounds) {
         const tick = this.getSongTickFromX(payload.x, bounds);
         this.playheadTick = clamp(tick, 0, this.getSongTimelineTicks());
+        this.resyncPlaybackClock(this.playheadTick);
       }
       return;
     }
@@ -6310,6 +6809,7 @@ export default class MidiComposer {
       if (bounds) {
         const tick = this.getSongTickFromX(payload.x, bounds);
         this.playheadTick = clamp(tick, 0, this.getSongTimelineTicks());
+        this.resyncPlaybackClock(this.playheadTick);
       }
       return;
     }
@@ -6411,6 +6911,7 @@ export default class MidiComposer {
     if (this.dragState.mode === 'scrub') {
       const tick = this.getTickFromX(payload.x);
       this.playheadTick = clamp(tick, 0, this.getEditableGridTick());
+      this.resyncPlaybackClock(this.playheadTick);
       if (this.scrubAudition) {
         this.previewNotesAtTick(this.playheadTick);
       }
@@ -6467,6 +6968,12 @@ export default class MidiComposer {
 
   handlePointerUp(payload) {
     this.lastPointer = { x: payload.x, y: payload.y };
+    if (this.transportHold) {
+      const hold = this.transportHold;
+      this.cancelTransportHold();
+      if (!hold.fired) this.togglePlayback();
+      return;
+    }
     if (this.recordModeActive) {
       this.cancelLongPressTimer();
       if (this.dragState?.mode === 'pedal-picker-scroll') {
@@ -6509,17 +7016,20 @@ export default class MidiComposer {
     if (this.dragState?.mode === 'touch-pan' || this.dragState?.mode === 'pan') {
       const shouldToggle = !this.dragState.moved && this.dragState.mode === 'touch-pan' && this.dragState.cell;
       const cell = this.dragState.cell;
+      const moved = this.dragState.moved;
       this.dragState = null;
       if (shouldToggle) {
         this.selection.clear();
         this.toggleNoteAt(cell.tick, cell.pitch);
       }
+      if (moved) this.persistViewportState();
       return;
     }
     if (this.dragState?.mode === 'song-track-scroll') {
       if (!this.dragState.moved && this.dragState.pendingTrackHit && Number.isInteger(this.dragState.pendingTrackHit.trackIndex)) {
-        this.selectedTrackIndex = this.dragState.pendingTrackHit.trackIndex;
-        this.clearSongSelection();
+        this.selectTrackIndex(this.dragState.pendingTrackHit.trackIndex, { restoreViewport: false });
+      } else if (this.dragState.moved) {
+        this.persistViewportState();
       }
       this.dragState = null;
       return;
@@ -6546,8 +7056,9 @@ export default class MidiComposer {
     }
     if (this.dragState?.mode === 'song-pan-or-select') {
       if (!this.dragState.moved && Number.isInteger(this.dragState.trackIndex)) {
-        this.selectedTrackIndex = this.dragState.trackIndex;
-        this.clearSongSelection();
+        this.selectTrackIndex(this.dragState.trackIndex, { restoreViewport: false });
+      } else if (this.dragState.moved) {
+        this.persistViewportState();
       }
       this.dragState = null;
       return;
@@ -6574,6 +7085,9 @@ export default class MidiComposer {
       }
       if (this.dragState?.mode === 'slider' || (this.dragState?.mode === 'pedal-knob-turn' && !this.pedalUiState.editorOpen)) {
         this.commitHistorySnapshot();
+      }
+      if (this.dragState?.mode === 'slider' && (this.dragState.id === 'grid-zoom-x' || this.dragState.id === 'song-zoom-x')) {
+        this.persistViewportState();
       }
       if (this.dragState?.mode === 'pedal-picker-scroll' && !this.dragState.moved && this.dragState.pendingPick) {
         this.insertPedalIntoSlot(this.pedalUiState.pickerSlot ?? 0, this.dragState.pendingPick.pedalType);
@@ -6609,8 +7123,9 @@ export default class MidiComposer {
     }
     if (this.dragState?.mode === 'song-pan') {
       if (!this.dragState.moved && Number.isInteger(this.dragState.trackIndex)) {
-        this.selectedTrackIndex = this.dragState.trackIndex;
-        this.clearSongSelection();
+        this.selectTrackIndex(this.dragState.trackIndex, { restoreViewport: false });
+      } else if (this.dragState.moved) {
+        this.persistViewportState();
       }
       this.dragState = null;
       return;
@@ -6652,10 +7167,12 @@ export default class MidiComposer {
       return;
     }
     if (this.dragState?.mode === 'song-scrub') {
+      this.persistViewportState();
       this.dragState = null;
       return;
     }
     if (this.dragState?.mode === 'song-playhead') {
+      this.persistViewportState();
       this.dragState = null;
       return;
     }
@@ -6697,10 +7214,12 @@ export default class MidiComposer {
     if (this.dragState?.mode === 'pan-or-tap') {
       const shouldToggle = !this.dragState.moved && this.dragState.cell;
       const cell = this.dragState.cell;
+      const moved = this.dragState.moved;
       this.dragState = null;
       if (shouldToggle) {
         this.toggleNoteAt(cell.tick, cell.pitch);
       }
+      if (moved) this.persistViewportState();
       return;
     }
     if (this.dragState?.mode === 'select') {
@@ -6749,6 +7268,7 @@ export default class MidiComposer {
         this.gridBounds.gridH
       );
       this.updateTimelineStartTickFromGrid();
+      this.persistViewportState();
       return;
     }
     if (this.activeTab === 'song' && this.songTimelineBounds) {
@@ -6772,6 +7292,7 @@ export default class MidiComposer {
         this.updateTimelineStartTickFromSong();
         this.ensureTimelineCapacity();
       }
+      this.persistViewportState();
     }
   }
 
@@ -6880,6 +7401,9 @@ export default class MidiComposer {
   }
 
   handleGestureEnd() {
+    if (this.gridGesture || this.songGesture) {
+      this.persistViewportState();
+    }
     this.gridGesture = null;
     this.songGesture = null;
     this.viewportController.endPinch();
@@ -7532,15 +8056,16 @@ export default class MidiComposer {
     const ticksPerBar = this.getTicksPerBar();
     const next = this.playheadTick + ticksPerBar * delta;
     this.playheadTick = clamp(next, 0, this.getEditableGridTick());
+    this.resyncPlaybackClock(this.playheadTick);
   }
 
   togglePlayback() {
     if (this.isPlaying) {
       this.isPlaying = false;
-      this.lastPlaybackTick = this.playheadTick;
+      this.resyncPlaybackClock(this.playheadTick);
       return;
     }
-    this.lastPlaybackTick = this.playheadTick;
+    this.resyncPlaybackClock(this.playheadTick);
     this.isPlaying = true;
   }
 
@@ -7548,14 +8073,69 @@ export default class MidiComposer {
     this.isPlaying = false;
     this.game?.audio?.clearMidiPedalBuses?.();
     this.returnToStart();
+    this.resyncPlaybackClock(this.playheadTick);
   }
 
   returnToStart() {
     this.playheadTick = this.song.loopEnabled ? this.getLoopStartTick() : 0;
+    this.resyncPlaybackClock(this.playheadTick);
   }
 
   goToEnd() {
     this.playheadTick = this.getSongEndTick();
+    this.resyncPlaybackClock(this.playheadTick);
+  }
+
+  getTransportActions() {
+    return [
+      { id: 'start', label: '⏮', col: 0, row: 0, action: () => this.returnToStart() },
+      { id: 'back', label: '⏪', col: 0, row: 1, action: () => this.jumpPlayheadBars(-1) },
+      { id: 'forward', label: '⏩', col: 0, row: 2, action: () => this.jumpPlayheadBars(1) },
+      { id: 'end', label: '⏭', col: 0, row: 3, action: () => this.goToEnd() },
+      { id: 'metronome', label: 'M', col: 1, row: 0, active: this.metronomeEnabled, action: () => { this.metronomeEnabled = !this.metronomeEnabled; } },
+      { id: 'play', label: this.isPlaying ? '❚❚' : '▶', col: 1, row: 1, primary: true, active: this.isPlaying, action: () => this.togglePlayback() },
+      { id: 'loop', label: MIDI_LOOP_ICON, col: 1, row: 2, active: this.song.loopEnabled, action: () => this.toggleLoopEnabled() }
+    ];
+  }
+
+  openTransportPopover(anchor) {
+    this.transportPopover = { anchor: { x: anchor.x, y: anchor.y, w: anchor.w, h: anchor.h } };
+  }
+
+  closeTransportPopover() {
+    this.transportPopover = null;
+    this.bounds.transportPopoverButtons = [];
+  }
+
+  startTransportHold(anchor, payload) {
+    this.cancelTransportHold();
+    this.transportHold = {
+      x: payload.x,
+      y: payload.y,
+      anchor,
+      fired: false,
+      timer: window.setTimeout(() => {
+        if (!this.transportHold) return;
+        this.transportHold.fired = true;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(20);
+        this.openTransportPopover(anchor);
+      }, 500)
+    };
+  }
+
+  cancelTransportHold() {
+    if (this.transportHold?.timer) window.clearTimeout(this.transportHold.timer);
+    this.transportHold = null;
+  }
+
+  drawTransportPopover(ctx) {
+    if (!this.transportPopover) return;
+    const layout = drawSharedTransportPopover(ctx, this.transportPopover.anchor, { x: 0, y: 0, w: ctx.canvas.width, h: ctx.canvas.height }, this.getTransportActions(), {
+      columns: 2,
+      columnWidth: 54,
+      rowHeight: 42
+    });
+    this.bounds.transportPopoverButtons = layout.buttons.map((button) => ({ ...button.bounds, id: button.id, action: button.action }));
   }
 
   setLoopStartTick(tick) {
@@ -7572,6 +8152,7 @@ export default class MidiComposer {
       this.ensureGridCapacity(this.song.loopEndTick);
     }
     this.playheadTick = clamp(this.playheadTick, this.getLoopStartTick(), this.getLoopTicks());
+    this.resyncPlaybackClock(this.playheadTick);
     this.persist();
     this.scheduleHistoryCommit();
   }
@@ -7584,6 +8165,7 @@ export default class MidiComposer {
     this.song.loopEndTick = snapped;
     this.ensureGridCapacity(snapped);
     this.playheadTick = clamp(this.playheadTick, this.getLoopStartTick(), this.getLoopTicks());
+    this.resyncPlaybackClock(this.playheadTick);
     this.persist();
     this.scheduleHistoryCommit();
   }
@@ -7598,6 +8180,7 @@ export default class MidiComposer {
     this.song.loopEnabled = true;
     this.ensureGridCapacity(end);
     this.playheadTick = clamp(this.playheadTick, start, end);
+    this.resyncPlaybackClock(this.playheadTick);
     this.persist({ commitHistory: true });
   }
 
@@ -8094,6 +8677,7 @@ export default class MidiComposer {
     }
     if (!target) return;
     this.playheadTick = clamp(target.tick, 0, this.getSongTimelineTicks());
+    this.resyncPlaybackClock(this.playheadTick);
   }
 
   addSongAutomationKeyframe(track, type, tick, value, options = {}) {
@@ -8999,6 +9583,7 @@ export default class MidiComposer {
       && this.bounds.songTransportStart
       && this.pointInBounds(x, y, this.bounds.songTransportStart)) {
       this.playheadTick = 0;
+      this.resyncPlaybackClock(this.playheadTick);
       return true;
     }
     if (this.songBottomRailMode === 'music-controls'
@@ -9010,7 +9595,7 @@ export default class MidiComposer {
     if (this.songBottomRailMode === 'music-controls'
       && this.bounds.songTransportPlayPause
       && this.pointInBounds(x, y, this.bounds.songTransportPlayPause)) {
-      this.togglePlayback();
+      this.startTransportHold(this.bounds.songTransportPlayPause, { x, y });
       return true;
     }
     if (this.songBottomRailMode === 'music-controls'
@@ -9029,6 +9614,7 @@ export default class MidiComposer {
       && this.bounds.songTransportEnd
       && this.pointInBounds(x, y, this.bounds.songTransportEnd)) {
       this.playheadTick = this.getSongTimelineTicks();
+      this.resyncPlaybackClock(this.playheadTick);
       return true;
     }
     if (this.songBottomRailMode === 'music-controls'
@@ -9438,6 +10024,7 @@ export default class MidiComposer {
       saveProjectFile('music', newName, JSON.parse(JSON.stringify(this.song)));
       this.persist({ commitHistory: true });
       this.markSavedSnapshot();
+      this.resyncPlaybackClock(this.playheadTick);
       return;
     }
     if (action === 'save') {
@@ -10130,10 +10717,10 @@ export default class MidiComposer {
       const knobs = pedal.knobs || {};
       if (pedal.type === 'compressor') {
         const comp = ctx.createDynamicsCompressor();
-        comp.threshold.value = -44 + clamp(knobs.threshold ?? 0.5, 0, 1) * 42;
-        comp.ratio.value = 1.5 + clamp(knobs.ratio ?? 0.5, 0, 1) * 16;
+        comp.threshold.value = -38 + clamp(knobs.threshold ?? 0.42, 0, 1) * 30;
+        comp.ratio.value = 1.4 + clamp(knobs.ratio ?? 0.45, 0, 1) * 9;
         const makeup = ctx.createGain();
-        makeup.gain.value = 0.7 + clamp(knobs.makeup ?? 0.4, 0, 1) * 0.75;
+        makeup.gain.value = 0.72 + clamp(knobs.makeup ?? 0.32, 0, 1) * 0.45;
         current.connect(comp);
         comp.connect(makeup);
         current = makeup;
@@ -10152,58 +10739,116 @@ export default class MidiComposer {
         const tone = ctx.createBiquadFilter();
         const bite = ctx.createBiquadFilter();
         const out = ctx.createGain();
-        pre.gain.value = 1 + clamp(knobs.drive ?? 0.6, 0, 1) * 6;
-        shape.curve = this.buildWavDistortionCurve(clamp(knobs.drive ?? 0.6, 0, 1));
+        pre.gain.value = 1 + clamp(knobs.drive ?? 0.42, 0, 1) * 3.8;
+        shape.curve = this.buildWavDistortionCurve(clamp(knobs.drive ?? 0.42, 0, 1) * 0.72);
         shape.oversample = '4x';
         tone.type = 'lowpass';
-        tone.frequency.value = 900 + clamp(knobs.tone ?? 0.5, 0, 1) * 7000;
+        tone.frequency.value = 1200 + clamp(knobs.tone ?? 0.55, 0, 1) * 5200;
         bite.type = 'highpass';
-        bite.frequency.value = 40 + clamp(knobs.bite ?? 0.5, 0, 1) * 650;
-        out.gain.value = 0.45;
+        bite.frequency.value = 55 + clamp(knobs.bite ?? 0.4, 0, 1) * 420;
+        out.gain.value = 0.34 + (1 - clamp(knobs.drive ?? 0.42, 0, 1)) * 0.28;
         current.connect(pre); pre.connect(shape); shape.connect(tone); tone.connect(bite); bite.connect(out);
+        current = out;
+      } else if (pedal.type === 'tape') {
+        const drive = clamp(knobs.drive ?? 0.34, 0, 1);
+        const toneValue = clamp(knobs.tone ?? 0.52, 0, 1);
+        const wow = clamp(knobs.wow ?? 0.18, 0, 1);
+        const pre = ctx.createGain();
+        const shape = ctx.createWaveShaper();
+        const tone = ctx.createBiquadFilter();
+        const delay = ctx.createDelay(0.05);
+        const lfo = ctx.createOscillator();
+        const lfoGain = ctx.createGain();
+        const out = ctx.createGain();
+        pre.gain.value = 1 + drive * 1.6;
+        shape.curve = this.buildWavDistortionCurve(drive * 0.22);
+        shape.oversample = '2x';
+        tone.type = 'lowpass';
+        tone.frequency.value = 3600 + toneValue * 5200;
+        delay.delayTime.value = 0.012;
+        lfo.frequency.value = 0.18 + wow * 1.2;
+        lfoGain.gain.value = wow * 0.0028;
+        out.gain.value = 0.64 + (1 - drive) * 0.12;
+        lfo.connect(lfoGain);
+        lfoGain.connect(delay.delayTime);
+        lfo.start(when);
+        lfo.stop(when + duration + 0.5);
+        current.connect(pre); pre.connect(shape); shape.connect(tone); tone.connect(delay); delay.connect(out);
         current = out;
       } else if (pedal.type === 'reverb') {
         const dry = ctx.createGain();
         const wet = ctx.createGain();
         const convolver = ctx.createConvolver();
+        const wetLowpass = ctx.createBiquadFilter();
+        const wetHighpass = ctx.createBiquadFilter();
         const sum = ctx.createGain();
-        const mix = clamp(knobs.mix ?? 0.6, 0, 1);
-        dry.gain.value = 1 - mix * 0.6;
-        wet.gain.value = mix * 0.8;
-        convolver.buffer = this.createWavImpulse(ctx, 0.25 + clamp(knobs.room ?? 0.5, 0, 1) * 1.8, 1.2 + clamp(knobs.decay ?? 0.6, 0, 1) * 4);
-        current.connect(dry); current.connect(convolver); convolver.connect(wet); dry.connect(sum); wet.connect(sum);
+        const mix = clamp(knobs.mix ?? 0.34, 0, 1);
+        const decay = clamp(knobs.decay ?? 0.44, 0, 1);
+        dry.gain.value = 1 - mix * 0.3;
+        wet.gain.value = mix * 0.42;
+        wetLowpass.type = 'lowpass';
+        wetLowpass.frequency.value = 2800 + (1 - decay) * 2400;
+        wetHighpass.type = 'highpass';
+        wetHighpass.frequency.value = 90;
+        convolver.buffer = this.createWavImpulse(ctx, 0.25 + clamp(knobs.room ?? 0.45, 0, 1) * 1.8, 1.2 + decay * 4);
+        current.connect(dry); current.connect(convolver); convolver.connect(wetHighpass); wetHighpass.connect(wetLowpass); wetLowpass.connect(wet); dry.connect(sum); wet.connect(sum);
         current = sum;
       } else if (pedal.type === 'echo') {
         const dry = ctx.createGain();
         const wet = ctx.createGain();
         const delay = ctx.createDelay(1.5);
         const feedback = ctx.createGain();
-        const tone = ctx.createBiquadFilter();
+        const toneLow = ctx.createBiquadFilter();
+        const toneHigh = ctx.createBiquadFilter();
         const sum = ctx.createGain();
-        const mix = clamp(knobs.mix ?? 0.65, 0, 1);
-        delay.delayTime.value = 0.06 + clamp(knobs.time ?? 0.45, 0, 1) * 0.64;
-        feedback.gain.value = 0.15 + clamp(knobs.feedback ?? 0.35, 0, 0.95) * 0.72;
-        tone.type = 'lowpass';
-        tone.frequency.value = 1300 + (1 - clamp(knobs.feedback ?? 0.35, 0, 1)) * 5200;
-        dry.gain.value = 1 - mix * 0.55;
-        wet.gain.value = mix * 0.65;
-        current.connect(dry); current.connect(delay); delay.connect(tone); tone.connect(feedback); feedback.connect(delay); delay.connect(wet); dry.connect(sum); wet.connect(sum);
+        const mix = clamp(knobs.mix ?? 0.34, 0, 1);
+        const feedbackValue = clamp(knobs.feedback ?? 0.24, 0, 0.62);
+        delay.delayTime.value = 0.07 + clamp(knobs.time ?? 0.32, 0, 1) * 0.46;
+        feedback.gain.value = 0.1 + feedbackValue * 0.5;
+        toneLow.type = 'lowpass';
+        toneLow.frequency.value = 1700 + (1 - feedbackValue) * 3600;
+        toneHigh.type = 'highpass';
+        toneHigh.frequency.value = 90 + feedbackValue * 120;
+        dry.gain.value = 1 - mix * 0.24;
+        wet.gain.value = mix * 0.36;
+        current.connect(dry); current.connect(delay); delay.connect(toneHigh); toneHigh.connect(toneLow); toneLow.connect(feedback); feedback.connect(delay); delay.connect(wet); dry.connect(sum); wet.connect(sum);
         current = sum;
+      } else if (pedal.type === 'studioEq') {
+        const highpass = ctx.createBiquadFilter();
+        const warm = ctx.createBiquadFilter();
+        const presence = ctx.createBiquadFilter();
+        const air = ctx.createBiquadFilter();
+        const out = ctx.createGain();
+        highpass.type = 'highpass';
+        highpass.frequency.value = 30 + clamp(knobs.lowCut ?? 0.32, 0, 1) * 170;
+        warm.type = 'lowshelf';
+        warm.frequency.value = 220;
+        warm.gain.value = (clamp(knobs.warmth ?? 0.52, 0, 1) - 0.5) * 7;
+        presence.type = 'peaking';
+        presence.frequency.value = 2800;
+        presence.Q.value = 0.85;
+        presence.gain.value = (clamp(knobs.presence ?? 0.54, 0, 1) - 0.5) * 6;
+        air.type = 'highshelf';
+        air.frequency.value = 7600;
+        air.gain.value = (clamp(knobs.air ?? 0.5, 0, 1) - 0.5) * 5;
+        out.gain.value = 0.96;
+        current.connect(highpass); highpass.connect(warm); warm.connect(presence); presence.connect(air); air.connect(out);
+        current = out;
       } else if ((pedal.type === 'chorus' || pedal.type === 'phaser' || pedal.type === 'wah' || pedal.type === 'volumePhaser') && ctx.createOscillator) {
         const filter = ctx.createBiquadFilter();
         const lfo = ctx.createOscillator();
         const lfoGain = ctx.createGain();
         filter.type = pedal.type === 'wah' ? 'bandpass' : 'allpass';
-        filter.frequency.value = pedal.type === 'wah' ? 380 : 600;
+        filter.frequency.value = pedal.type === 'wah' ? 560 : 600;
         const wahLike = pedal.type === 'wah';
         filter.Q.value = wahLike
-          ? 0.75 + clamp(knobs.mix ?? 0.7, 0, 1) * 4.5
+          ? 0.55 + clamp(knobs.mix ?? 0.48, 0, 1) * 1.8
           : 1 + clamp(knobs.mix ?? knobs.depth ?? 0.5, 0, 1) * 8;
         lfo.frequency.value = wahLike
-          ? 0.25 + clamp(knobs.rate ?? 0.5, 0, 1) * 3.8
+          ? 0.12 + clamp(knobs.rate ?? 0.38, 0, 1) * 1.65
           : 0.2 + clamp(knobs.rate ?? knobs.phase ?? 0.5, 0, 1) * 4;
         lfoGain.gain.value = wahLike
-          ? 220 + clamp(knobs.sweep ?? 0.6, 0, 1) * 1800
+          ? 120 + clamp(knobs.sweep ?? 0.48, 0, 1) * 760
           : 180 + clamp(knobs.sweep ?? knobs.depth ?? 0.5, 0, 1) * 1800;
         lfo.connect(lfoGain);
         lfoGain.connect(filter.frequency);
@@ -10211,11 +10856,26 @@ export default class MidiComposer {
         lfo.stop(when + duration + 0.5);
         current.connect(filter);
         current = filter;
+      } else if (pedal.type === 'limiter') {
+        const threshold = clamp(knobs.threshold ?? 0.58, 0, 1);
+        const ceiling = clamp(knobs.ceiling ?? 0.72, 0, 1);
+        const release = clamp(knobs.release ?? 0.34, 0, 1);
+        const limiter = ctx.createDynamicsCompressor();
+        const ceilingGain = ctx.createGain();
+        limiter.threshold.value = -22 + threshold * 14;
+        limiter.knee.value = 1.5;
+        limiter.ratio.value = 12 + threshold * 8;
+        limiter.attack.value = 0.001;
+        limiter.release.value = 0.04 + release * 0.22;
+        ceilingGain.gain.value = 0.72 + ceiling * 0.22;
+        current.connect(limiter);
+        limiter.connect(ceilingGain);
+        current = ceilingGain;
       }
     });
     if (enabled.length && ctx.createGain) {
       const outputTrim = ctx.createGain();
-      outputTrim.gain.value = 0.82;
+      outputTrim.gain.value = 0.76;
       current.connect(outputTrim);
       return outputTrim;
     }
@@ -10312,21 +10972,48 @@ export default class MidiComposer {
       ? clamp(event.volume ?? 0.7, 0, 1)
       : clamp(event.volume ?? 0.7, 0, 1) * (event.isDrum ? 0.42 : 0.26);
     const soundfontSample = Boolean(event.soundfontSample?.buffer || sample?.isSoundfont);
-    const release = soundfontSample
-      ? (sample?.isDrums ? 0.06 : 0.16)
-      : sampled
-      ? ((event.isDrum || sample?.isDrums) ? 0.06 : 0.14)
-      : (event.isDrum ? 0.12 : 0.28);
-    const attack = soundfontSample
-      ? (sample?.isDrums ? 0.002 : 0.006)
-      : sampled
-      ? ((event.isDrum || sample?.isDrums) ? 0.002 : 0.006)
-      : (event.isDrum ? 0.004 : 0.012);
-    const sustainUntil = when + Math.max(attack, duration);
-    gain.gain.setValueAtTime(0, when);
-    gain.gain.linearRampToValueAtTime(Math.max(0.0001, level), when + attack);
-    gain.gain.setValueAtTime(Math.max(0.0001, level), sustainUntil);
-    gain.gain.linearRampToValueAtTime(0, sustainUntil + release);
+    const profile = getGmSustainProfile({
+      program: event.program,
+      channel: event.channel,
+      isDrums: event.isDrum || sample?.isDrums
+    });
+    const effectiveDuration = profile.mode === 'oneshot'
+      ? Math.min(duration, profile.maxDuration ?? duration)
+      : Math.min(duration, profile.maxDuration ?? duration);
+    const release = Math.max(0.01, profile.release ?? (event.isDrum ? 0.06 : 0.2));
+    const attack = Math.max(0.001, profile.attack ?? (event.isDrum ? 0.004 : 0.012));
+    const decay = Math.max(0.001, profile.decay ?? 0.12);
+    const sustainUntil = when + Math.max(attack, effectiveDuration);
+    const attackAt = when + Math.min(attack, Math.max(0.001, effectiveDuration * 0.45));
+    const decayAt = Math.min(sustainUntil, attackAt + decay);
+    const peak = Math.max(0.0001, level);
+    const sustainLevel = Math.max(0.0001, peak * clamp(profile.sustain ?? 0.7, 0.0001, 1));
+    const tailLevel = Math.max(0.0001, peak * clamp(profile.tail ?? profile.sustain ?? 0.4, 0.0001, 1));
+    if (sampled && profile.loopSample !== false && !event.isDrum && !sample?.isDrums) {
+      const rate = Math.max(0.0001, source.playbackRate?.value || 1);
+      const audibleBufferDuration = source.buffer?.duration ? source.buffer.duration / rate : Infinity;
+      if (audibleBufferDuration < effectiveDuration + release + 0.04 && source.buffer?.duration >= 0.18) {
+        const bufferDuration = source.buffer.duration;
+        source.loop = true;
+        source.loopStart = clamp(bufferDuration * 0.45, 0.04, Math.max(0.05, bufferDuration - 0.08));
+        source.loopEnd = clamp(bufferDuration * 0.88, source.loopStart + 0.04, bufferDuration);
+      }
+    }
+    gain.gain.setValueAtTime(0.0001, when);
+    gain.gain.exponentialRampToValueAtTime(peak, attackAt);
+    if (profile.mode === 'oneshot') {
+      gain.gain.exponentialRampToValueAtTime(0.0001, sustainUntil + release);
+    } else if (profile.mode === 'decay') {
+      gain.gain.exponentialRampToValueAtTime(sustainLevel, decayAt);
+      if (sustainUntil > decayAt + 0.01) {
+        gain.gain.exponentialRampToValueAtTime(tailLevel, sustainUntil);
+      }
+      gain.gain.exponentialRampToValueAtTime(0.0001, sustainUntil + release);
+    } else {
+      gain.gain.exponentialRampToValueAtTime(sustainLevel, decayAt);
+      gain.gain.setValueAtTime(sustainLevel, sustainUntil);
+      gain.gain.exponentialRampToValueAtTime(0.0001, sustainUntil + release);
+    }
     source.start(when);
     source.stop(sustainUntil + release + 0.08);
   }
@@ -10979,7 +11666,7 @@ export default class MidiComposer {
       const pitches = this.getDrumRows().map((row) => row.pitch);
       return { min: Math.min(...pitches), max: Math.max(...pitches) };
     }
-    return { min: 24, max: 83 };
+    return { min: 24, max: 108 };
   }
 
   getGridCell(x, y) {
@@ -11065,6 +11752,7 @@ export default class MidiComposer {
     this.song.loopStartTick = nextStart;
     this.song.loopEndTick = nextEnd;
     this.playheadTick = clamp(this.playheadTick, this.getLoopStartTick(), this.getLoopTicks());
+    this.resyncPlaybackClock(this.playheadTick);
     this.persist({ commitHistory: true });
   }
 
@@ -11979,8 +12667,7 @@ export default class MidiComposer {
 
   selectMidiPortraitTrack(trackIndex) {
     if (!Number.isInteger(trackIndex)) return;
-    this.selectedTrackIndex = clamp(trackIndex, 0, Math.max(0, this.song.tracks.length - 1));
-    this.syncCursorToTrack();
+    this.selectTrackIndex(trackIndex);
     this.closeMidiPortraitTrackPicker();
   }
 
@@ -12497,7 +13184,10 @@ export default class MidiComposer {
         viewportHeight: this.viewportHeight || h
       });
       drawSharedPortraitActionRail(ctx, { x, y, w, h }, this.panJoystick, [
-        { id: 'fileButton', label: MIDI_MENU_ICON, onClick: () => { this.activeTab = 'file'; } },
+        { id: 'fileButton', label: MIDI_MENU_ICON, onClick: () => {
+          if (this.activeTab === 'file') this.closeFileMenu();
+          else this.activeTab = 'file';
+        } },
         { id: 'undoButton', label: '↶', onClick: () => this.undo() },
         { id: 'redoButton', label: '↷', onClick: () => this.redo() },
         { id: 'play', label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying, primary: true, onClick: () => this.togglePlayback() }
@@ -12509,6 +13199,7 @@ export default class MidiComposer {
         },
         reserveThumbstick
       });
+      this.drawTransportPopover(ctx);
       return;
     }
     const row1Y = y + 8;
@@ -13125,7 +13816,7 @@ export default class MidiComposer {
       this.songTrackScroll = clamp(centered, 0, this.songTrackScrollMax);
       this.pendingTrackFocusIndex = null;
     }
-    const laneScrollY = this.songTrackScroll;
+    let laneScrollY = this.songTrackScroll;
     const labelW = isPortrait
       ? Math.min(96, Math.max(DEFAULT_LABEL_WIDTH_MOBILE_PORTRAIT, Math.round(w * 0.24)))
       : (isMobile ? DEFAULT_LABEL_WIDTH_MOBILE : DEFAULT_LABEL_WIDTH);
@@ -13170,6 +13861,20 @@ export default class MidiComposer {
       totalW,
       timelineTicks
     };
+    if (this.pendingSongFocus) {
+      const focusTick = Number.isFinite(this.pendingSongFocus.tick) ? this.pendingSongFocus.tick : this.playheadTick;
+      const focusOffset = laneW / 2 - focusTick * cellWidth;
+      this.songTimelineOffsetX = this.clampTimelineOffsetX(focusOffset, laneW, cellWidth);
+      this.timelineStartTick = Math.max(0, -this.songTimelineOffsetX / cellWidth);
+      this.songTimelineBounds.originX = laneX + this.songTimelineOffsetX;
+      if (Number.isInteger(this.pendingSongFocus.trackIndex)) {
+        const focusTop = this.pendingSongFocus.trackIndex * (laneBlockH + laneGap);
+        const centered = focusTop - (laneAreaH - laneBlockH) * 0.5;
+        this.songTrackScroll = clamp(centered, 0, this.songTrackScrollMax);
+        laneScrollY = this.songTrackScroll;
+      }
+      this.pendingSongFocus = null;
+    }
     this.songRulerBounds = {
       x: laneX,
       y: rulerY,
@@ -15676,6 +16381,11 @@ export default class MidiComposer {
       labelX: x,
       labelW
     };
+    if (this.pendingGridFocus) {
+      this.focusGridViewportOn(this.pendingGridFocus);
+      this.gridBounds.originX = x + labelW + this.gridOffset.x;
+      this.gridBounds.originY = y + rulerH + (drumGrid && !metrics.portrait ? 0 : this.gridOffset.y);
+    }
 
     ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, viewH + rulerH);

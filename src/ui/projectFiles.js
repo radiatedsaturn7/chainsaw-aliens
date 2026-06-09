@@ -18,11 +18,16 @@ import {
   queueServerFileSave,
   readCachedProjectFile,
   upsertCachedProjectFile,
-  clearCachedProjectFilesForTests
+  clearCachedProjectFilesForTests,
+  deleteServerFileVersion,
+  listServerFileVersions,
+  loadServerFileVersion,
+  restoreServerFileVersion
 } from './serverStorage.js';
 
 const FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes'];
 const parsedPayloadCache = new Map();
+const LARGE_PARSED_PAYLOAD_LIMIT = 8 * 1024 * 1024;
 
 const emptyIndex = () => ({ levels: {}, art: {}, music: {}, actors: {}, sfx: {}, cutscenes: {} });
 
@@ -54,6 +59,17 @@ function saveIndex(index) {
   void index;
 }
 
+function cacheParsedPayload(cacheKey, raw, payload) {
+  if (typeof raw === 'string' && raw.length > LARGE_PARSED_PAYLOAD_LIMIT) {
+    parsedPayloadCache.forEach((entry, key) => {
+      if (key !== cacheKey && typeof entry?.raw === 'string' && entry.raw.length > LARGE_PARSED_PAYLOAD_LIMIT) {
+        parsedPayloadCache.delete(key);
+      }
+    });
+  }
+  parsedPayloadCache.set(cacheKey, { raw, payload });
+}
+
 export function sanitizeProjectFileName(name) {
   return String(name || '')
     .trim()
@@ -69,7 +85,9 @@ export function listProjectFiles(folder) {
     .map(([name, meta]) => ({
       name,
       updatedAt: Number(meta?.updatedAt || 0),
-      size: Number(meta?.size || 0)
+      size: Number(meta?.size || 0),
+      deleted: Boolean(meta?.deleted),
+      versionCount: Number(meta?.versionCount || 0)
     }));
   listCachedProjectFiles(folder).forEach(({ name, raw }) => {
     const existing = listed.find((entry) => entry.name === name);
@@ -102,7 +120,7 @@ export function loadProjectFile(folder, name) {
     const cached = parsedPayloadCache.get(cacheKey);
     if (cached?.raw === raw) return cached.payload;
     const payload = JSON.parse(raw);
-    parsedPayloadCache.set(cacheKey, { raw, payload });
+    cacheParsedPayload(cacheKey, raw, payload);
     return payload;
   } catch (error) {
     return null;
@@ -122,7 +140,7 @@ export function saveProjectFile(folder, name, dataObj) {
     data: dataObj
   };
   const raw = JSON.stringify(payload);
-  parsedPayloadCache.set(`${folder}:${clean}`, { raw, payload });
+  cacheParsedPayload(`${folder}:${clean}`, raw, payload);
   upsertCachedProjectFile(folder, clean, raw);
   const index = ensureProjectFileIndex();
   index[folder][clean] = { updatedAt: savedAt, size: raw.length };
@@ -181,6 +199,40 @@ export function duplicateProjectFile(folder, name, newName) {
   if (!payload) return null;
   const saved = saveProjectFile(folder, nextClean, payload.data);
   return saved;
+}
+
+export async function listProjectFileVersions(folder, name) {
+  assertFolder(folder);
+  const clean = sanitizeProjectFileName(name);
+  if (!clean) return [];
+  return listServerFileVersions(folder, clean);
+}
+
+export async function loadProjectFileVersion(folder, name, versionId) {
+  assertFolder(folder);
+  const clean = sanitizeProjectFileName(name);
+  if (!clean || !versionId) return null;
+  return loadServerFileVersion(folder, clean, versionId);
+}
+
+export async function restoreProjectFileVersion(folder, name, versionId) {
+  assertFolder(folder);
+  const clean = sanitizeProjectFileName(name);
+  if (!clean || !versionId) return null;
+  const restored = await restoreServerFileVersion(folder, clean, versionId);
+  if (restored?.data !== undefined) {
+    const raw = JSON.stringify(restored);
+    cacheParsedPayload(`${folder}:${clean}`, raw, restored);
+    upsertCachedProjectFile(folder, clean, raw);
+  }
+  return restored;
+}
+
+export async function deleteProjectFileVersion(folder, name, versionId) {
+  assertFolder(folder);
+  const clean = sanitizeProjectFileName(name);
+  if (!clean || !versionId) return { ok: false };
+  return deleteServerFileVersion(folder, clean, versionId);
 }
 
 export function resetProjectFilesForTests() {

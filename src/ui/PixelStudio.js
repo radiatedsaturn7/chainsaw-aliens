@@ -24,7 +24,7 @@ import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -632,6 +632,9 @@ export default class PixelStudio {
     this.panStart = null;
     this.longPressTimer = null;
     this.longPressOrigin = null;
+    this.transportHold = null;
+    this.transportPopover = null;
+    this.transportPopoverButtons = [];
     this.cursor = { row: 0, col: 0, x: 0, y: 0 };
     this.gamepadCursor = { x: 0, y: 0, active: false, initialized: false };
     this.gamepadDrawing = false;
@@ -3395,6 +3398,18 @@ export default class PixelStudio {
 
   handlePointerDown(payload) {
     const button = payload.button ?? 0;
+    if (this.transportPopover) {
+      const hit = this.transportPopoverButtons.find((entry) => this.isPointInBounds(payload, entry.bounds));
+      if (hit) {
+        hit.onClick?.({ x: payload.x, y: payload.y, id: payload.id });
+        this.closeTransportPopover();
+        this.pointerDownOnUi = true;
+        return;
+      }
+      this.closeTransportPopover();
+      this.pointerDownOnUi = true;
+      return;
+    }
     if (this.uiSliderDrag && (payload.id === undefined || payload.id === this.uiSliderDrag.id)) {
       this.uiSliderDrag.onDrag?.({ x: payload.x, y: payload.y, id: payload.id });
       return;
@@ -3495,6 +3510,9 @@ export default class PixelStudio {
   }
 
   handlePointerMove(payload) {
+    if (this.transportHold && Math.hypot(payload.x - this.transportHold.x, payload.y - this.transportHold.y) > 12) {
+      this.cancelTransportHold();
+    }
     if (this.transformModal) {
       if (this.transformModal.drag && (payload.id === undefined || payload.id === this.transformModal.drag.id)) {
         const field = this.transformModal.fields?.find((entry) => entry.key === this.transformModal.drag.key);
@@ -3606,6 +3624,13 @@ export default class PixelStudio {
   }
 
   handlePointerUp(payload = {}) {
+    if (this.transportHold) {
+      const hold = this.transportHold;
+      this.cancelTransportHold();
+      if (!hold.fired) hold.button.onClick?.({ x: payload.x, y: payload.y, id: payload.id });
+      this.pointerDownOnUi = false;
+      return;
+    }
     if (this.transformModal?.drag && (payload.id === undefined || payload.id === this.transformModal.drag.id)) {
       this.transformModal.drag = null;
     }
@@ -7134,6 +7159,10 @@ export default class PixelStudio {
       }
     }
     if (hit) {
+      if (hit.onHold) {
+        this.startTransportHold(hit, payload);
+        return true;
+      }
       hit.onClick?.({ x, y, id: payload.id });
       if (hit.onDrag) {
         this.uiSliderDrag = { id: payload.id ?? null, onDrag: hit.onDrag };
@@ -8422,7 +8451,7 @@ export default class PixelStudio {
         { id: 'redo', label: '↷', onClick: () => this.runtime.redo() }
       ];
       if (this.leftPanelTab === 'animation') {
-        actions.push({ id: 'play', label: this.animation.playing ? '⏸' : '▶', active: this.animation.playing, primary: true, onClick: () => { this.animation.playing = !this.animation.playing; } });
+        actions.push({ id: 'play', label: this.animation.playing ? '⏸' : '▶', active: this.animation.playing, primary: true, onClick: () => { this.animation.playing = !this.animation.playing; }, onHold: true });
       } else if (this.decalEditSession?.type === 'actor-state') {
         actions.push({ id: 'test', label: '▶', primary: true, onClick: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) });
       } else {
@@ -8446,10 +8475,11 @@ export default class PixelStudio {
           } else {
             this.drawButton(ctx, bounds, action.label, Boolean(action.active), { fontSize: 14 });
           }
-          this.uiButtons.push({ bounds, onClick: action.onClick || action.action });
+          this.uiButtons.push({ bounds, onClick: action.onClick || action.action, onHold: action.onHold });
           this.registerFocusable('toolbar', bounds, action.onClick || action.action);
         }
       });
+      this.drawTransportPopover(ctx);
       return;
     }
     ctx.fillStyle = UI_SUITE.colors.panel;
@@ -9460,6 +9490,71 @@ export default class PixelStudio {
     this.animation.playing = false;
     this.animation.currentFrameIndex = 0;
     this.setFrameLayers(this.currentFrame.layers);
+  }
+
+  goToLastAnimationFrame() {
+    this.animation.playing = false;
+    this.animation.currentFrameIndex = Math.max(0, this.animation.frames.length - 1);
+    this.setFrameLayers(this.currentFrame.layers);
+  }
+
+  previousAnimationFrame() {
+    this.animation.playing = false;
+    const frameCount = Math.max(1, this.animation.frames.length);
+    this.animation.currentFrameIndex = clamp(this.animation.currentFrameIndex - 1, 0, frameCount - 1);
+    this.setFrameLayers(this.currentFrame.layers);
+  }
+
+  getTransportActions() {
+    return [
+      { id: 'start', label: '⏮', col: 0, row: 0, action: () => this.rewindAnimationFrames() },
+      { id: 'back', label: '⏪', col: 0, row: 1, action: () => this.previousAnimationFrame() },
+      { id: 'forward', label: '⏩', col: 0, row: 2, action: () => this.stepAnimationFrame() },
+      { id: 'end', label: '⏭', col: 0, row: 3, action: () => this.goToLastAnimationFrame() },
+      { id: 'play', label: this.animation.playing ? '⏸' : '▶', col: 1, row: 1, primary: true, active: this.animation.playing, action: () => { this.animation.playing = !this.animation.playing; } },
+      { id: 'loop', label: '∞', col: 1, row: 2, active: this.animation.loop, action: () => { this.animation.loop = !this.animation.loop; } }
+    ];
+  }
+
+  openTransportPopover(anchor) {
+    this.transportPopover = { anchor: { x: anchor.x, y: anchor.y, w: anchor.w, h: anchor.h } };
+  }
+
+  closeTransportPopover() {
+    this.transportPopover = null;
+    this.transportPopoverButtons = [];
+  }
+
+  startTransportHold(button, payload) {
+    this.cancelTransportHold();
+    this.transportHold = {
+      x: payload.x,
+      y: payload.y,
+      button,
+      fired: false,
+      timer: window.setTimeout(() => {
+        if (!this.transportHold) return;
+        this.transportHold.fired = true;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(20);
+        this.openTransportPopover(button.bounds);
+      }, 500)
+    };
+  }
+
+  cancelTransportHold() {
+    if (this.transportHold?.timer) window.clearTimeout(this.transportHold.timer);
+    this.transportHold = null;
+  }
+
+  drawTransportPopover(ctx) {
+    if (!this.transportPopover) return;
+    const layout = drawSharedTransportPopover(ctx, this.transportPopover.anchor, { x: 0, y: 0, w: ctx.canvas.width, h: ctx.canvas.height }, this.getTransportActions(), {
+      columns: 2,
+      columnWidth: 54,
+      rowHeight: 42
+    });
+    this.transportPopoverButtons = layout.buttons.map((button) => ({ bounds: button.bounds, onClick: button.action }));
+    this.transportPopoverButtons.forEach((button) => this.uiButtons.push(button));
   }
 
   hasPixelPortraitToolOptions() {

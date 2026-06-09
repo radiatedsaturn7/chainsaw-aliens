@@ -430,6 +430,61 @@ export function drawSharedTransportIconButton(ctx, bounds, {
 
 export const drawSharedTransportButton = drawSharedTransportIconButton;
 
+export function getSharedTransportPopoverLayout(anchorBounds, viewportBounds, items = [], {
+  columns = 2,
+  rowHeight = UI_SUITE.spacing.tap,
+  columnWidth = 64,
+  gap = UI_SUITE.spacing.gap,
+  padding = UI_SUITE.spacing.gap
+} = {}) {
+  const safeItems = Array.isArray(items) ? items.filter(Boolean) : [];
+  const safeColumns = Math.max(1, columns);
+  const maxRow = safeItems.reduce((max, item, index) => Math.max(max, Number.isInteger(item.row) ? item.row : Math.floor(index / safeColumns)), 0);
+  const rows = Math.max(1, maxRow + 1);
+  const panelW = padding * 2 + safeColumns * columnWidth + Math.max(0, safeColumns - 1) * gap;
+  const panelH = padding * 2 + rows * rowHeight + Math.max(0, rows - 1) * gap;
+  const viewport = viewportBounds || { x: 0, y: 0, w: 0, h: 0 };
+  const anchor = anchorBounds || { x: viewport.x + viewport.w / 2, y: viewport.y + viewport.h, w: 1, h: 1 };
+  const idealX = anchor.x + anchor.w - panelW;
+  const idealY = anchor.y - panelH - gap;
+  const panel = {
+    x: clampValue(idealX, viewport.x + padding, Math.max(viewport.x + padding, viewport.x + viewport.w - panelW - padding)),
+    y: clampValue(idealY, viewport.y + padding, Math.max(viewport.y + padding, viewport.y + viewport.h - panelH - padding)),
+    w: panelW,
+    h: panelH
+  };
+  const buttons = safeItems.map((item, index) => {
+    const col = clampValue(Number.isInteger(item.col) ? item.col : index % safeColumns, 0, safeColumns - 1);
+    const row = Math.max(0, Number.isInteger(item.row) ? item.row : Math.floor(index / safeColumns));
+    return {
+      ...item,
+      bounds: {
+        x: panel.x + padding + col * (columnWidth + gap),
+        y: panel.y + padding + row * (rowHeight + gap),
+        w: columnWidth,
+        h: rowHeight
+      }
+    };
+  });
+  return { panel, buttons, rows, columns: safeColumns };
+}
+
+export function drawSharedTransportPopover(ctx, anchorBounds, viewportBounds, items = [], options = {}) {
+  const layout = getSharedTransportPopoverLayout(anchorBounds, viewportBounds, items, options);
+  drawSharedPanel(ctx, layout.panel, {
+    fill: options.fill ?? UI_SUITE.colors.panel,
+    border: options.border ?? UI_SUITE.colors.accent
+  });
+  layout.buttons.forEach((button) => {
+    drawSharedTransportIconButton(ctx, button.bounds, {
+      icon: button.label,
+      active: Boolean(button.active),
+      emphasis: Boolean(button.primary)
+    });
+  });
+  return layout;
+}
+
 export function getSharedThumbstickLayout(width, height, {
   controlMargin = null,
   maxRadius = 78,

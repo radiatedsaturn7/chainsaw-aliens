@@ -19,7 +19,10 @@ export const PEDAL_FONTS = {
   pitchPhaser: 'bold 12px Garamond',
   volumePhaser: 'bold 12px Tahoma',
   panPhaser: 'bold 12px Lucida Console',
-  echo: 'bold 12px Comic Sans MS'
+  echo: 'bold 12px Comic Sans MS',
+  studioEq: 'bold 12px Arial',
+  tape: 'bold 12px Trebuchet MS',
+  limiter: 'bold 12px Verdana'
 };
 
 export const PEDAL_DEFINITIONS = [
@@ -42,9 +45,9 @@ export const PEDAL_DEFINITIONS = [
     color: 'blue',
     description: 'Tames peaks and boosts ghosts.',
     knobs: [
-      { key: 'threshold', label: 'Thresh', min: 0, max: 1, step: 0.01, defaultValue: 0.55 },
-      { key: 'ratio', label: 'Ratio', min: 0, max: 1, step: 0.01, defaultValue: 0.65 },
-      { key: 'makeup', label: 'Makeup', min: 0, max: 1, step: 0.01, defaultValue: 0.45 }
+      { key: 'threshold', label: 'Thresh', min: 0, max: 1, step: 0.01, defaultValue: 0.42 },
+      { key: 'ratio', label: 'Ratio', min: 0, max: 1, step: 0.01, defaultValue: 0.45 },
+      { key: 'makeup', label: 'Makeup', min: 0, max: 1, step: 0.01, defaultValue: 0.32 }
     ]
   },
   {
@@ -54,9 +57,9 @@ export const PEDAL_DEFINITIONS = [
     color: 'green',
     description: 'Animated filter sweeps via CC74.',
     knobs: [
-      { key: 'sweep', label: 'Sweep', min: 0, max: 1, step: 0.01, defaultValue: 0.65 },
-      { key: 'rate', label: 'Rate', min: 0, max: 1, step: 0.01, defaultValue: 0.55 },
-      { key: 'mix', label: 'Mix', min: 0, max: 1, step: 0.01, defaultValue: 0.8 }
+      { key: 'sweep', label: 'Sweep', min: 0, max: 1, step: 0.01, defaultValue: 0.48 },
+      { key: 'rate', label: 'Rate', min: 0, max: 1, step: 0.01, defaultValue: 0.38 },
+      { key: 'mix', label: 'Mix', min: 0, max: 1, step: 0.01, defaultValue: 0.48 }
     ]
   },
   {
@@ -66,9 +69,9 @@ export const PEDAL_DEFINITIONS = [
     color: 'purple',
     description: 'Subtle doubles and drift.',
     knobs: [
-      { key: 'depth', label: 'Depth', min: 0, max: 1, step: 0.01, defaultValue: 0.55 },
-      { key: 'spread', label: 'Spread', min: 0, max: 1, step: 0.01, defaultValue: 0.45 },
-      { key: 'mix', label: 'Mix', min: 0, max: 1, step: 0.01, defaultValue: 0.75 }
+      { key: 'depth', label: 'Depth', min: 0, max: 1, step: 0.01, defaultValue: 0.38 },
+      { key: 'spread', label: 'Spread', min: 0, max: 1, step: 0.01, defaultValue: 0.36 },
+      { key: 'mix', label: 'Mix', min: 0, max: 1, step: 0.01, defaultValue: 0.42 }
     ]
   },
   {
@@ -78,10 +81,10 @@ export const PEDAL_DEFINITIONS = [
     color: 'orange',
     description: 'MIDI tone-shaping with velocity and filter CC.',
     knobs: [
-      { key: 'low', label: 'Low', min: 0, max: 1, step: 0.01, defaultValue: 0.55 },
-      { key: 'mid', label: 'Mid', min: 0, max: 1, step: 0.01, defaultValue: 0.45 },
-      { key: 'high', label: 'High', min: 0, max: 1, step: 0.01, defaultValue: 0.65 },
-      { key: 'presence', label: 'Presence', min: 0, max: 1, step: 0.01, defaultValue: 0.6 }
+      { key: 'low', label: 'Low', min: 0, max: 1, step: 0.01, defaultValue: 0.52 },
+      { key: 'mid', label: 'Mid', min: 0, max: 1, step: 0.01, defaultValue: 0.5 },
+      { key: 'high', label: 'High', min: 0, max: 1, step: 0.01, defaultValue: 0.54 },
+      { key: 'presence', label: 'Presence', min: 0, max: 1, step: 0.01, defaultValue: 0.52 }
     ]
   },
   {
@@ -91,8 +94,8 @@ export const PEDAL_DEFINITIONS = [
     color: 'red',
     description: 'Aggressive velocity and bite shaping.',
     knobs: [
-      { key: 'drive', label: 'Drive', min: 0, max: 1, step: 0.01, defaultValue: 0.7 },
-      { key: 'bite', label: 'Bite', min: 0, max: 1, step: 0.01, defaultValue: 0.65 },
+      { key: 'drive', label: 'Drive', min: 0, max: 1, step: 0.01, defaultValue: 0.42 },
+      { key: 'bite', label: 'Bite', min: 0, max: 1, step: 0.01, defaultValue: 0.4 },
       { key: 'tone', label: 'Tone', min: 0, max: 1, step: 0.01, defaultValue: 0.55 }
     ]
   },
@@ -103,9 +106,9 @@ export const PEDAL_DEFINITIONS = [
     color: 'blue',
     description: 'Reverb/send style CC generation.',
     knobs: [
-      { key: 'room', label: 'Room', min: 0, max: 1, step: 0.01, defaultValue: 0.55 },
-      { key: 'decay', label: 'Decay', min: 0, max: 1, step: 0.01, defaultValue: 0.65 },
-      { key: 'mix', label: 'Mix', min: 0, max: 1, step: 0.01, defaultValue: 0.6 }
+      { key: 'room', label: 'Room', min: 0, max: 1, step: 0.01, defaultValue: 0.45 },
+      { key: 'decay', label: 'Decay', min: 0, max: 1, step: 0.01, defaultValue: 0.44 },
+      { key: 'mix', label: 'Mix', min: 0, max: 1, step: 0.01, defaultValue: 0.34 }
     ]
   },
   {
@@ -115,9 +118,9 @@ export const PEDAL_DEFINITIONS = [
     color: 'purple',
     description: 'Moving modulation CC curves.',
     knobs: [
-      { key: 'rate', label: 'Rate', min: 0, max: 1, step: 0.01, defaultValue: 0.62 },
-      { key: 'depth', label: 'Depth', min: 0, max: 1, step: 0.01, defaultValue: 0.7 },
-      { key: 'mix', label: 'Mix', min: 0, max: 1, step: 0.01, defaultValue: 0.72 }
+      { key: 'rate', label: 'Rate', min: 0, max: 1, step: 0.01, defaultValue: 0.42 },
+      { key: 'depth', label: 'Depth', min: 0, max: 1, step: 0.01, defaultValue: 0.42 },
+      { key: 'mix', label: 'Mix', min: 0, max: 1, step: 0.01, defaultValue: 0.38 }
     ]
   },
   {
@@ -163,9 +166,46 @@ export const PEDAL_DEFINITIONS = [
     color: 'orange',
     description: 'Creates note repeats with decay.',
     knobs: [
-      { key: 'time', label: 'Time', min: 0, max: 1, step: 0.01, defaultValue: 0.45 },
-      { key: 'feedback', label: 'Feedback', min: 0, max: 1, step: 0.01, defaultValue: 0.35 },
-      { key: 'mix', label: 'Mix', min: 0, max: 1, step: 0.01, defaultValue: 0.65 }
+      { key: 'time', label: 'Time', min: 0, max: 1, step: 0.01, defaultValue: 0.32 },
+      { key: 'feedback', label: 'Feedback', min: 0, max: 1, step: 0.01, defaultValue: 0.24 },
+      { key: 'mix', label: 'Mix', min: 0, max: 1, step: 0.01, defaultValue: 0.34 }
+    ]
+  },
+  {
+    type: 'studioEq',
+    name: 'Mix Polish',
+    effectLabel: 'Studio EQ',
+    color: 'blue',
+    description: 'Board-ready cleanup with low cut, warmth, presence, and air.',
+    knobs: [
+      { key: 'lowCut', label: 'Low Cut', min: 0, max: 1, step: 0.01, defaultValue: 0.32 },
+      { key: 'warmth', label: 'Warmth', min: 0, max: 1, step: 0.01, defaultValue: 0.52 },
+      { key: 'presence', label: 'Presence', min: 0, max: 1, step: 0.01, defaultValue: 0.54 },
+      { key: 'air', label: 'Air', min: 0, max: 1, step: 0.01, defaultValue: 0.5 }
+    ]
+  },
+  {
+    type: 'tape',
+    name: 'Tape Deck',
+    effectLabel: 'Tape',
+    color: 'orange',
+    description: 'Gentle saturation, glue, and tiny pitch movement.',
+    knobs: [
+      { key: 'drive', label: 'Drive', min: 0, max: 1, step: 0.01, defaultValue: 0.34 },
+      { key: 'tone', label: 'Tone', min: 0, max: 1, step: 0.01, defaultValue: 0.52 },
+      { key: 'wow', label: 'Wow', min: 0, max: 1, step: 0.01, defaultValue: 0.18 }
+    ]
+  },
+  {
+    type: 'limiter',
+    name: 'Final Guard',
+    effectLabel: 'Limiter',
+    color: 'red',
+    description: 'Final safety stage to catch peaks before output.',
+    knobs: [
+      { key: 'threshold', label: 'Thresh', min: 0, max: 1, step: 0.01, defaultValue: 0.58 },
+      { key: 'ceiling', label: 'Ceiling', min: 0, max: 1, step: 0.01, defaultValue: 0.72 },
+      { key: 'release', label: 'Release', min: 0, max: 1, step: 0.01, defaultValue: 0.34 }
     ]
   }
 ];

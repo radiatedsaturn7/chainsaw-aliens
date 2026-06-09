@@ -31,6 +31,7 @@ import {
   assertSharedPortraitRailActionCount,
   getSharedPortraitRailActionButtons,
   getSharedPortraitMultiRowTabLayout,
+  getSharedTransportPopoverLayout,
   SHARED_PORTRAIT_RAIL_ACTION_COUNT
 } from '../../src/ui/uiSuite.js';
 import { readFileSync } from 'node:fs';
@@ -446,6 +447,28 @@ test('shared portrait action rail accepts exactly four visible actions', () => {
     () => assertSharedPortraitRailActionCount([...canonicalActions, { id: 'loop' }], { editor: 'test' }),
     /exactly 4 actions/
   );
+});
+
+test('shared transport popover anchors above the bottom play button', () => {
+  const layout = getSharedTransportPopoverLayout(
+    { x: 312, y: 748, w: 64, h: 56 },
+    { x: 0, y: 0, w: 390, h: 844 },
+    [
+      { id: 'start', label: '⏮', col: 0, row: 0 },
+      { id: 'back', label: '⏪', col: 0, row: 1 },
+      { id: 'forward', label: '⏩', col: 0, row: 2 },
+      { id: 'end', label: '⏭', col: 0, row: 3 },
+      { id: 'play', label: '▶', col: 1, row: 1 },
+      { id: 'loop', label: '∞', col: 1, row: 2 }
+    ],
+    { columns: 2, columnWidth: 54, rowHeight: 42 }
+  );
+
+  assert.ok(layout.panel.y + layout.panel.h <= 748);
+  assert.ok(layout.panel.x >= 0);
+  assert.ok(layout.panel.x + layout.panel.w <= 390);
+  assert.deepEqual(layout.buttons.map((button) => button.id), ['start', 'back', 'forward', 'end', 'play', 'loop']);
+  assert.equal(layout.buttons.find((button) => button.id === 'play').bounds.x > layout.buttons[0].bounds.x, true);
 });
 
 test('audio editor portrait rails keep loop in menus instead of the rail', () => {

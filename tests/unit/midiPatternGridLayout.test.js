@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import MidiComposer, {
+  MIDI_MAX_ZOOM_OUT_BARS,
+  MIDI_PLAYBACK_MAX_CATCHUP_SECONDS,
   buildMidiPortraitGridQuickStripItems,
   buildMidiPortraitRootTabs,
   buildMidiGridZoomButtonModel,
@@ -71,12 +73,152 @@ test('MIDI song player can play cutscene tracks once without looping', () => {
   }, 'cutscene-song', { loop: false });
   player.setFade(1, 0);
 
-  player.update(1.5);
-  player.update(1.5);
+  player.update(0.1);
+  player.update(2.9);
 
   assert.equal(played.length, 1);
   assert.equal(player.finished, true);
   assert.equal(player.playheadTick, 8);
+});
+
+test('MIDI song player schedules notes ahead of the visual playhead', () => {
+  const played = [];
+  const player = new MidiSongPlayer({
+    ctx: { currentTime: 10 },
+    midiLatency: 0.08,
+    playGmNote(note) { played.push(note); }
+  });
+  player.setSong({
+    tempo: 60,
+    loopStartTick: 0,
+    loopEndTick: 16,
+    tracks: [{
+      id: 'track-1',
+      volume: 1,
+      pan: 0,
+      channel: 0,
+      program: 0,
+      patterns: [{ notes: [{ pitch: 60, startTick: 1, durationTicks: 4, velocity: 1 }] }]
+    }]
+  }, 'lookahead-song', { loop: false });
+  player.setFade(1, 0);
+
+  player.update(0.01);
+
+  assert.equal(played.length, 1);
+  assert.equal(played[0].pitch, 60);
+  assert.ok(played[0].when > 10.08);
+  assert.ok(played[0].when < 10.25);
+});
+
+test('MIDI song player lookahead does not drift ahead over many frames', () => {
+  const played = [];
+  const audio = {
+    ctx: { currentTime: 0 },
+    midiLatency: 0.04,
+    playGmNote(note) { played.push(note); }
+  };
+  const player = new MidiSongPlayer(audio);
+  player.setSong({
+    tempo: 120,
+    loopStartTick: 0,
+    loopEndTick: 128,
+    tracks: [{
+      id: 'track-1',
+      volume: 1,
+      pan: 0,
+      channel: 0,
+      program: 0,
+      patterns: [{
+        notes: Array.from({ length: 16 }, (_, index) => ({
+          pitch: 60 + (index % 4),
+          startTick: index * 2,
+          durationTicks: 1,
+          velocity: 1
+        }))
+      }]
+    }]
+  }, 'drift-song', { loop: false });
+  player.setFade(1, 0);
+
+  for (let frame = 0; frame < 60; frame += 1) {
+    audio.ctx.currentTime = frame / 60;
+    player.update(1 / 60);
+    const maxAheadTicks = 0.17 * player.getTicksPerSecond();
+    assert.ok(
+      player.scheduledUntilTick - player.playheadTick <= maxAheadTicks,
+      `scheduled cursor drifted too far ahead on frame ${frame}`
+    );
+  }
+
+  assert.ok(played.length > 4);
+  assert.ok(played.every((note) => note.when < 1.25));
+});
+
+test('MIDI song player starts at cutscene offset and uses tempo-based durations', () => {
+  const played = [];
+  const player = new MidiSongPlayer({
+    playGmNote(note) { played.push(note); }
+  });
+  player.setSong({
+    tempo: 120,
+    loopStartTick: 0,
+    loopEndTick: 64,
+    tracks: [{
+      id: 'track-1',
+      volume: 1,
+      pan: 0,
+      channel: 0,
+      program: 0,
+      patterns: [{
+        notes: [
+          { pitch: 60, startTick: 0, durationTicks: 8, velocity: 1 },
+          { pitch: 64, startTick: 16, durationTicks: 8, velocity: 1 }
+        ]
+      }]
+    }]
+  }, 'cutscene-song', { loop: false, offsetMs: 1000 });
+  player.setFade(1, 0);
+
+  player.update(0.05);
+
+  assert.equal(played.length, 1);
+  assert.equal(played[0].pitch, 64);
+  assert.equal(played[0].duration, 0.5);
+});
+
+test('MIDI song player drops stale backlog notes after a long frame', () => {
+  const played = [];
+  const player = new MidiSongPlayer({
+    playGmNote(note) { played.push(note); }
+  });
+  player.setSong({
+    tempo: 60,
+    loopStartTick: 0,
+    loopEndTick: 200,
+    tracks: [{
+      id: 'track-1',
+      volume: 1,
+      pan: 0,
+      channel: 0,
+      program: 0,
+      patterns: [{
+        notes: Array.from({ length: 20 }, (_, tick) => ({
+          pitch: 60 + (tick % 4),
+          startTick: tick,
+          durationTicks: 1,
+          velocity: 1
+        }))
+      }]
+    }]
+  }, 'dense-song', { loop: false });
+  player.setFade(1, 0);
+
+  player.update(1.2);
+
+  assert.ok(played.length < 4);
+  assert.ok(player.droppedEvents > 0);
+  assert.ok(played.every((note) => note.pitch >= 60));
 });
 
 test('MIDI portrait file and settings sheet uses full-height panel above root tabs', () => {
@@ -493,7 +635,7 @@ test('MIDI non-loop playback ignores loop end marker', () => {
   assert.equal(advanceBody.includes('if (this.playheadTick >= playbackEndTick)'), true);
   assert.equal(returnBody.includes('this.song.loopEnabled ? this.getLoopStartTick() : 0'), true);
   assert.equal(toggleBody.includes('this.returnToStart();'), false);
-  assert.equal(toggleBody.includes('this.lastPlaybackTick = this.playheadTick;'), true);
+  assert.equal(toggleBody.includes('this.resyncPlaybackClock(this.playheadTick);'), true);
 });
 
 test('MIDI grid zoom plus minus buttons are disabled', () => {
@@ -508,11 +650,12 @@ test('MIDI grid zoom plus minus buttons are disabled', () => {
   });
 });
 
-test('MIDI horizontal zoom can zoom out below 1x for 16 bar songs', () => {
+test('MIDI horizontal zoom caps zoom-out to twelve measures', () => {
   const limits = getMidiGridZoomLimitsXForBars(16);
 
-  assert.ok(limits.minZoom < 1);
-  assert.equal(limits.minZoom, 16 / 64);
+  assert.ok(limits.minZoom > 1);
+  assert.equal(limits.minZoom, 16 / MIDI_MAX_ZOOM_OUT_BARS);
+  assert.equal(getMidiGridZoomLimitsXForBars(8).minZoom, 1);
   assert.equal(limits.maxZoom, 64);
 });
 
@@ -526,16 +669,217 @@ test('MIDI horizontal zoom slider maps full left and right range', () => {
   assert.equal(getMidiZoomFromSliderRatio(0.5, limits), limits.minZoom + (limits.maxZoom - limits.minZoom) / 2);
 });
 
-test('MIDI zoom controls preserve visible center instead of assigning zoom directly', () => {
+test('MIDI zoom controls use selected content focus instead of assigning zoom directly', () => {
   const sliderBody = midiMethodBody('updateSliderValue', 'handleSelectionMenuAction');
   const helperBody = midiMethodBody('setHorizontalTimelineZoom', 'getSongTimelineX');
   const wheelBody = midiMethodBody('handleWheel', 'shouldHandleGestureStart');
 
   assert.equal(sliderBody.includes('this.setHorizontalTimelineZoom(getMidiZoomFromSliderRatio'), true);
   assert.equal(sliderBody.includes('this.gridZoomX = getMidiZoomFromSliderRatio'), false);
-  assert.equal(helperBody.includes('this.getVisibleCenterTick()'), true);
+  assert.equal(helperBody.includes('const focus = this.getCurrentZoomFocus();'), true);
+  assert.equal(helperBody.includes('focus.tick'), true);
   assert.equal(helperBody.includes('this.gridOffset.x = nextOriginX - this.gridBounds.x;'), true);
   assert.equal(wheelBody.includes('this.getSongTickFromX(payload.x, this.songTimelineBounds)'), true);
+});
+
+test('MIDI grid zoom centers selected note focus when no pointer anchor is provided', () => {
+  const composer = Object.create(MidiComposer.prototype);
+  composer.activeTab = 'grid';
+  composer.gridZoomX = 1;
+  composer.gridOffset = { x: 0, y: 0 };
+  composer.timelineStartTick = 0;
+  composer.gridBounds = {
+    x: 10,
+    y: 20,
+    w: 200,
+    h: 120,
+    cols: 100,
+    rows: 20,
+    cellWidth: 5,
+    cellHeight: 10,
+    originX: 10,
+    originY: 20,
+    gridH: 200
+  };
+  composer.getGridZoomLimitsX = () => ({ minZoom: 0.5, maxZoom: 4 });
+  composer.getCurrentZoomFocus = () => ({ tick: 20, pitch: 60, trackIndex: 0 });
+  composer.ensureGridPanCapacity = () => {};
+
+  composer.setHorizontalTimelineZoom(2);
+
+  assert.equal(composer.gridZoomX, 2);
+  assert.equal(composer.gridBounds.x + composer.gridBounds.w / 2, composer.gridBounds.x + composer.gridOffset.x + 20 * 10);
+});
+
+test('MIDI melodic grid spans C1 through C8 while drum rows stay unchanged', () => {
+  const composer = Object.create(MidiComposer.prototype);
+  composer.song = {
+    tracks: [
+      { instrument: 'piano' },
+      { instrument: 'drums', channel: 9 }
+    ]
+  };
+  composer.selectedTrackIndex = 0;
+
+  assert.deepEqual(composer.getPitchRange(), { min: 24, max: 108 });
+  assert.equal(composer.getPitchFromRow(0), 108);
+  assert.equal(composer.getRowFromPitch(108), 0);
+  assert.equal(composer.getOctaveLabel(24), 1);
+  assert.equal(composer.getOctaveLabel(108), 8);
+
+  composer.selectedTrackIndex = 1;
+  const drumRange = composer.getPitchRange();
+  assert.notDeepEqual(drumRange, { min: 24, max: 108 });
+  assert.equal(composer.getRowFromPitch(36) >= 0, true);
+});
+
+test('MIDI opening a song focuses the latest available note instead of empty measure one', () => {
+  const composer = Object.create(MidiComposer.prototype);
+  composer.song = {
+    tracks: [
+      { patterns: [{ notes: [{ startTick: 32, durationTicks: 4, pitch: 72 }] }] },
+      { patterns: [{ notes: [{ startTick: 112, durationTicks: 4, pitch: 40 }] }] },
+      { patterns: [{ notes: [{ startTick: 176, durationTicks: 4, pitch: 60 }, { startTick: 172, durationTicks: 4, pitch: 64 }] }] }
+    ]
+  };
+  composer.selectedPatternIndex = 0;
+  composer.selectedTrackIndex = 0;
+  composer.cursor = { tick: 0, pitch: 72 };
+  composer.playheadTick = 0;
+  composer.getTicksPerBar = () => 16;
+  composer.resyncPlaybackClock = (tick) => { composer.lastPlaybackTick = tick; };
+
+  composer.focusFirstSongContentAfterOpen();
+
+  assert.equal(composer.selectedTrackIndex, 2);
+  assert.equal(composer.cursor.tick, 176);
+  assert.equal(composer.cursor.pitch, 62);
+  assert.deepEqual(composer.pendingGridFocus, { trackIndex: 2, tick: 176, pitch: 62 });
+  assert.deepEqual(composer.pendingSongFocus, { trackIndex: 2, tick: 176, pitch: 62 });
+});
+
+test('MIDI opening a song restores saved per-track viewport before latest-note fallback', () => {
+  const composer = Object.create(MidiComposer.prototype);
+  composer.song = {
+    editorState: {
+      midiComposer: {
+        lastTrackId: 'track-b',
+        trackViewports: {
+          'track-b': {
+            grid: {
+              gridOffset: { x: -320, y: -640 },
+              timelineStartTick: 88,
+              gridZoomX: 2.5,
+              gridZoomY: 1.25,
+              cursorTick: 352,
+              cursorPitch: 108,
+              selectedPatternIndex: 0
+            },
+            song: {
+              songTimelineOffsetX: -144,
+              songTrackScroll: 36,
+              timelineStartTick: 80,
+              gridZoomX: 2.5
+            }
+          }
+        }
+      }
+    },
+    tracks: [
+      { id: 'track-a', instrument: 'piano', patterns: [{ notes: [{ startTick: 16, pitch: 60 }] }] },
+      { id: 'track-b', instrument: 'piano', patterns: [{ notes: [{ startTick: 40, pitch: 72 }] }] }
+    ]
+  };
+  composer.selectedPatternIndex = 0;
+  composer.selectedTrackIndex = 0;
+  composer.cursor = { tick: 0, pitch: 60 };
+  composer.playheadTick = 0;
+  composer.gridOffset = { x: 0, y: 0 };
+  composer.gridZoomX = 1;
+  composer.gridZoomY = 1;
+  composer.resyncPlaybackClock = (tick) => { composer.lastPlaybackTick = tick; };
+
+  composer.focusFirstSongContentAfterOpen();
+
+  assert.equal(composer.selectedTrackIndex, 1);
+  assert.deepEqual(composer.gridOffset, { x: -320, y: -640 });
+  assert.equal(composer.gridZoomX, 2.5);
+  assert.equal(composer.gridZoomY, 1.25);
+  assert.equal(composer.cursor.tick, 352);
+  assert.equal(composer.cursor.pitch, 108);
+  assert.equal(composer.playheadTick, 352);
+  assert.deepEqual(composer.pendingGridFocus, null);
+  assert.equal(composer.songViewportMemory.songTimelineOffsetX, -144);
+});
+
+test('MIDI per-track viewport persistence stores separate track positions without undo history', () => {
+  const composer = Object.create(MidiComposer.prototype);
+  composer.song = {
+    tracks: [
+      { id: 'track-a', instrument: 'piano', name: 'A', patterns: [{ notes: [] }] },
+      { id: 'track-b', instrument: 'piano', name: 'B', patterns: [{ notes: [] }] }
+    ]
+  };
+  composer.selectedTrackIndex = 0;
+  composer.selectedPatternIndex = 0;
+  composer.activeTab = 'grid';
+  composer.gridOffset = { x: -10, y: -20 };
+  composer.gridZoomX = 1.5;
+  composer.gridZoomY = 1.1;
+  composer.timelineStartTick = 12;
+  composer.songTimelineOffsetX = -30;
+  composer.songTrackScroll = 0;
+  composer.cursor = { tick: 12, pitch: 60 };
+  composer.playheadTick = 12;
+  composer.selection = { clear() {} };
+  composer.closeSelectionMenu = () => {};
+  composer.closeMidiPortraitTrackPicker = () => {};
+  composer.closeMidiPortraitMasterVolume = () => {};
+  composer.clearSongSelection = () => {};
+  composer.syncCursorToTrack = () => {};
+  composer.resyncPlaybackClock = (tick) => { composer.lastPlaybackTick = tick; };
+  composer.markDirty = () => { composer.dirtyMarked = true; };
+
+  composer.selectTrackIndex(1, { restoreViewport: false });
+  composer.gridOffset = { x: -200, y: -300 };
+  composer.gridZoomX = 2;
+  composer.gridZoomY = 1.4;
+  composer.timelineStartTick = 48;
+  composer.cursor = { tick: 48, pitch: 72 };
+  composer.persistViewportState();
+
+  const viewports = composer.song.editorState.midiComposer.trackViewports;
+  assert.equal(viewports['track-a'].grid.cursorTick, 12);
+  assert.equal(viewports['track-a'].grid.cursorPitch, 60);
+  assert.equal(viewports['track-b'].grid.cursorTick, 48);
+  assert.equal(viewports['track-b'].grid.cursorPitch, 72);
+  assert.equal(composer.song.editorState.midiComposer.lastTrackId, 'track-b');
+  assert.equal(composer.dirtyMarked, true);
+});
+
+test('MIDI grid and song tabs remember their session viewport when switching views', () => {
+  const composer = Object.create(MidiComposer.prototype);
+  composer.activeTab = 'grid';
+  composer.gridOffset = { x: -40, y: -80 };
+  composer.timelineStartTick = 12;
+  composer.gridZoomX = 3;
+  composer.gridZoomY = 1.5;
+  composer.selectedTrackIndex = 2;
+  composer.closeMidiPortraitTrackPicker = () => {};
+  composer.closeMidiPortraitMasterVolume = () => {};
+
+  composer.activateLeftRailTab('song');
+  composer.timelineStartTick = 64;
+  composer.songTimelineOffsetX = -120;
+  composer.songTrackScroll = 44;
+  composer.gridZoomX = 2;
+
+  composer.activateLeftRailTab('grid');
+
+  assert.deepEqual(composer.gridOffset, { x: -40, y: -80 });
+  assert.equal(composer.timelineStartTick, 12);
+  assert.equal(composer.gridZoomX, 3);
+  assert.equal(composer.gridZoomY, 1.5);
 });
 
 test('MIDI song timeline touch panning and thumbstick support horizontal and vertical movement', () => {
@@ -565,6 +909,7 @@ test('MIDI song ruler double tap loops exactly one measure', () => {
   assert.equal(loopMeasureBody.includes('const start = safeIndex * ticksPerBar;'), true);
   assert.equal(loopMeasureBody.includes('const end = start + ticksPerBar;'), true);
   assert.equal(loopMeasureBody.includes('this.song.loopEnabled = true;'), true);
+  assert.equal(loopMeasureBody.includes('this.resyncPlaybackClock(this.playheadTick);'), true);
   assert.equal(rulerTapBody.includes('now - this.songRulerTap.at <= 300'), true);
   assert.equal(rulerTapBody.includes('this.setLoopToMeasureIndex(barIndex);'), true);
 });
@@ -582,7 +927,7 @@ test('MIDI song ruler and playhead render above track lanes', () => {
   assert.equal(playheadBody.includes('ctx.fillRect(xPos - handleWidth / 2'), true);
 });
 
-test('MIDI portrait grid slider-left zoom can show the full 16 bar grid', () => {
+test('MIDI portrait grid slider-left zoom shows at most twelve measures', () => {
   const limits = getMidiGridZoomLimitsXForBars(16);
   const layout = getMidiPatternGridLayoutMetrics({
     x: 10,
@@ -603,8 +948,48 @@ test('MIDI portrait grid slider-left zoom can show the full 16 bar grid', () => 
   });
 
   assert.equal(layout.gridZoomX, limits.minZoom);
-  assert.ok(layout.cellWidth < 4);
-  assert.ok(layout.totalGridW < layout.viewW);
+  assert.ok(Math.abs((64 / layout.gridZoomX) - (MIDI_MAX_ZOOM_OUT_BARS * 4)) < 0.001);
+  assert.ok(layout.cellWidth > 4);
+});
+
+test('MIDI playback clock clamps stale-frame catch up', () => {
+  const composer = Object.create(MidiComposer.prototype);
+  composer.song = { tempo: 120, loopEnabled: false, tracks: [], loopBars: 4 };
+  composer.ticksPerBeat = 4;
+  composer.playheadTick = 0;
+  composer.lastPlaybackTick = 0;
+  composer.playbackLastClockSeconds = 0;
+  composer.getPlaybackClockSeconds = () => 10;
+  composer.getLoopTicks = () => 16;
+  composer.getLoopStartTick = () => 0;
+  composer.getPlaybackEndTick = () => 999;
+  composer.ensureGridCapacity = () => {};
+  composer.triggerPlayback = () => {};
+
+  composer.advancePlayhead(10);
+
+  assert.equal(composer.playheadTick, 8 * MIDI_PLAYBACK_MAX_CATCHUP_SECONDS);
+});
+
+test('MIDI viewport pan and zoom capacity do not expand authored song length', () => {
+  const composer = Object.create(MidiComposer.prototype);
+  composer.song = {
+    loopBars: 4,
+    tracks: [{ patterns: [{ bars: 4 }] }]
+  };
+  composer.getTicksPerBar = () => 4;
+  composer.getGridTicks = () => 16;
+  composer.getSongTimelineTicks = () => 16;
+  composer.gridBounds = { x: 0, w: 100, cellWidth: 1 };
+  composer.gridZoomX = 0.1;
+  composer.timelineStartTick = 999;
+
+  composer.ensureGridPanCapacity(-10000);
+  composer.ensureTimelinePanCapacity(-10000, 100, 1);
+  composer.ensureTimelineCapacity();
+
+  assert.equal(composer.song.loopBars, 4);
+  assert.equal(composer.song.tracks[0].patterns[0].bars, 4);
 });
 
 test('MIDI drum notes use editable note length instead of fixed quarter hits', () => {
@@ -797,10 +1182,10 @@ test('MIDI portrait song actions use compact labels', () => {
   assert.deepEqual(musicControls.map((control) => control.key), [
     'songTransportStart',
     'songTransportBack',
-    'songTransportPlayPause',
-    'songTransportMetronome',
     'songTransportForward',
     'songTransportEnd',
+    'songTransportMetronome',
+    'songTransportPlayPause',
     'songTransportLoopThis'
   ]);
   assert.equal(musicControls.find((control) => control.key === 'songTransportMetronome')?.label, 'M');

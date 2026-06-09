@@ -17,10 +17,18 @@
   "isRoot": true,
   "tags": [],
   "health": 3,
-  "size": {
-    "width": 24,
-    "height": 24
+  "healthTint": {
+    "enabled": false,
+    "color": "#ff3333",
+    "maxIntensity": 0.1,
+    "keepAfterDeath": false
   },
+  "facingMode": "face-player",
+  "size": {
+    "width": 64,
+    "height": 64
+  },
+  "collisionZones": [],
   "loot": [
     {
       "itemId": "health",
@@ -48,7 +56,8 @@
           }
         ],
         "fps": 2,
-        "updatedAt": 1776219185541
+        "updatedAt": 1776219185541,
+        "artRef": ""
       },
       "movement": {
         "type": "none",
@@ -59,6 +68,7 @@
         "contactDamage": null,
         "invulnerable": null
       },
+      "disableHealthTint": false,
       "transitions": [
         {
           "id": "transition-1",
@@ -149,7 +159,8 @@
             "stateId": "idle-2"
           }
         }
-      ]
+      ],
+      "collisionZones": null
     },
     {
       "id": "idle-2",
@@ -167,7 +178,8 @@
           }
         ],
         "fps": 5,
-        "updatedAt": 1776210066359
+        "updatedAt": 1776210066359,
+        "artRef": ""
       },
       "movement": {
         "type": "approach-player",
@@ -181,6 +193,7 @@
         "contactDamage": null,
         "invulnerable": null
       },
+      "disableHealthTint": false,
       "transitions": [
         {
           "id": "transition-1",
@@ -266,7 +279,8 @@
             "stateId": "idle"
           }
         }
-      ]
+      ],
+      "collisionZones": null
     },
     {
       "id": "state-3",
@@ -284,7 +298,8 @@
           }
         ],
         "fps": 5,
-        "updatedAt": 1776218338418
+        "updatedAt": 1776218338418,
+        "artRef": ""
       },
       "movement": {
         "type": "random-walk-pause",
@@ -299,6 +314,7 @@
         "contactDamage": null,
         "invulnerable": null
       },
+      "disableHealthTint": false,
       "transitions": [
         {
           "id": "transition-1",
@@ -344,7 +360,8 @@
             }
           ]
         }
-      ]
+      ],
+      "collisionZones": null
     },
     {
       "id": "state-4",
@@ -378,7 +395,8 @@
           }
         ],
         "fps": 5,
-        "updatedAt": 1776219204249
+        "updatedAt": 1776219204249,
+        "artRef": ""
       },
       "movement": {
         "type": "none",
@@ -389,6 +407,7 @@
         "contactDamage": null,
         "invulnerable": null
       },
+      "disableHealthTint": false,
       "transitions": [
         {
           "id": "transition-1",
@@ -413,12 +432,18 @@
             }
           ]
         }
-      ]
+      ],
+      "collisionZones": null
     }
   ],
   "initialStateId": "idle",
+  "deathStateId": "",
+  "destroyAfterDeath": true,
+  "collidableAfterDeath": false,
+  "respawnOnRoomEntry": true,
   "advanced": {
     "assetRefs": {},
     "notes": ""
-  }
+  },
+  "sizeMode": "manual"
 }

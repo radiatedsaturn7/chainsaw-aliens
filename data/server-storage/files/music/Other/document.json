@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 2,
+  "tempo": 120,
+  "loopBars": 16,
+  "loopStartTick": 0,
+  "loopEndTick": 128,
+  "loopEnabled": true,
+  "timeSignature": {
+    "beats": 4,
+    "unit": 4
+  },
+  "highContrast": false,
+  "reverseStrings": false,
+  "keyboardStartOctave": 4,
+  "guitarTuning": [
+    40,
+    45,
+    50,
+    55,
+    59,
+    64
+  ],
+  "bassTuning": [
+    28,
+    33,
+    38,
+    43
+  ],
+  "staccatoEnabled": false,
+  "key": 0,
+  "scale": "major",
+  "chordMode": false,
+  "tracks": [
+    {
+      "id": "track-piano",
+      "name": "Piano",
+      "channel": 0,
+      "program": 0,
+      "instrumentFamily": "Piano",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#4fb7ff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-piano",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-773563",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 24,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-983057",
+              "startTick": 24,
+              "durationTicks": 8,
+              "pitch": 25,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-637500",
+              "startTick": 48,
+              "durationTicks": 8,
+              "pitch": 29,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-guitar",
+      "name": "Guitar",
+      "channel": 1,
+      "program": 24,
+      "instrumentFamily": "Guitar",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#ff9c42",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-guitar",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-669376",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 60,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-335527",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 60,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-863026",
+              "startTick": 80,
+              "durationTicks": 8,
+              "pitch": 60,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-389584",
+              "startTick": 72,
+              "durationTicks": 8,
+              "pitch": 60,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-149723",
+              "startTick": 8,
+              "durationTicks": 8,
+              "pitch": 60,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-bass",
+      "name": "Bass",
+      "channel": 2,
+      "program": 33,
+      "instrumentFamily": "Bass",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#55d68a",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-bass",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-229792",
+              "startTick": 88,
+              "durationTicks": 8,
+              "pitch": 57,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-514732",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 58,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-545536",
+              "startTick": 104,
+              "durationTicks": 8,
+              "pitch": 49,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-271027",
+              "startTick": 112,
+              "durationTicks": 8,
+              "pitch": 48,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-drums",
+      "name": "Drums",
+      "instrument": "drums",
+      "channel": 9,
+      "program": 0,
+      "instrumentFamily": "Drums",
+      "bankMSB": 127,
+      "bankLSB": 0,
+      "volume": 0.9,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#b48dff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-drums",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-959028",
+              "startTick": 8,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-832612",
+              "startTick": 32,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-559332",
+              "startTick": 72,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-286583",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-829447",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-506089",
+              "startTick": 40,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-57484",
+              "startTick": 56,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-690007",
+              "startTick": 40,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-155159",
+              "startTick": 88,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "progression": [
+    {
+      "root": 0,
+      "quality": "min",
+      "startBar": 1,
+      "lengthBars": 1
+    },
+    {
+      "root": 5,
+      "quality": "min",
+      "startBar": 2,
+      "lengthBars": 1
+    },
+    {
+      "root": 7,
+      "quality": "maj",
+      "startBar": 3,
+      "lengthBars": 1
+    },
+    {
+      "root": 3,
+      "quality": "maj",
+      "startBar": 4,
+      "lengthBars": 1
+    }
+  ],
+  "name": "Other"
+}

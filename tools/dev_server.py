@@ -5,8 +5,10 @@ import argparse
 import base64
 import json
 import os
+import shutil
 import subprocess
 import tempfile
+import time
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -47,6 +49,12 @@ def run_git_command(args: list[str]) -> subprocess.CompletedProcess[str]:
 
 
 class DevHandler(SimpleHTTPRequestHandler):
+    debug_logs = False
+
+    def log_message(self, format: str, *args: object) -> None:
+        if self.debug_logs:
+            super().log_message(format, *args)
+
     def end_headers(self) -> None:
         for key, value in NO_CACHE_HEADERS.items():
             self.send_header(key, value)
@@ -66,14 +74,14 @@ class DevHandler(SimpleHTTPRequestHandler):
     def _safe_doc_dir(self, folder: str, name: str) -> Path:
         return EXPORT_ROOT / folder / quote(name, safe="-_.() ")
 
-    def _read_exported_payload(self, folder: str, name: str) -> dict | None:
+    def _safe_version_dir(self, folder: str, name: str, version_id: str) -> Path:
+        clean_id = quote(str(version_id or ""), safe="-_.() ")
+        return self._safe_doc_dir(folder, name) / "versions" / clean_id
+
+    def _read_exported_metadata(self, folder: str, name: str) -> dict | None:
         doc_dir = self._safe_doc_dir(folder, name)
         document_path = doc_dir / "document.json"
         if not document_path.exists():
-            return None
-        try:
-            data = json.loads(document_path.read_text(encoding="utf-8"))
-        except Exception:
             return None
         metadata: dict = {}
         metadata_path = doc_dir / "metadata.json"
@@ -92,8 +100,83 @@ class DevHandler(SimpleHTTPRequestHandler):
             "folder": folder,
             "name": metadata.get("name") if isinstance(metadata.get("name"), str) else name,
             "savedAt": saved_at,
-            "data": data,
         }
+
+    def _stream_exported_payload(self, folder: str, name: str) -> bool:
+        metadata = self._read_exported_metadata(folder, name)
+        if metadata is None:
+            return False
+        document_path = self._safe_doc_dir(folder, name) / "document.json"
+        file_json = json.dumps(metadata, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(b'{"ok":true,"file":')
+        self.wfile.write(file_json[:-1])
+        self.wfile.write(b',"data":')
+        with document_path.open("rb") as handle:
+            shutil.copyfileobj(handle, self.wfile, length=1024 * 256)
+        self.wfile.write(b"}}")
+        return True
+
+    def _read_version_metadata(self, version_dir: Path, folder: str, name: str) -> dict:
+        version_path = version_dir / "version.json"
+        metadata: dict = {}
+        if version_path.exists():
+            try:
+                loaded = json.loads(version_path.read_text(encoding="utf-8"))
+                if isinstance(loaded, dict):
+                    metadata = loaded
+            except Exception:
+                metadata = {}
+        document_path = version_dir / "document.json"
+        saved_at = metadata.get("savedAt")
+        if not isinstance(saved_at, (int, float)):
+            saved_at = int(document_path.stat().st_mtime * 1000) if document_path.exists() else 0
+        return {
+            "id": metadata.get("id") if isinstance(metadata.get("id"), str) else version_dir.name,
+            "folder": folder,
+            "name": name,
+            "savedAt": saved_at,
+            "reason": metadata.get("reason") if isinstance(metadata.get("reason"), str) else "",
+            "size": document_path.stat().st_size if document_path.exists() else 0,
+        }
+
+    def _list_exported_versions(self, folder: str, name: str) -> list[dict]:
+        versions_dir = self._safe_doc_dir(folder, name) / "versions"
+        if not versions_dir.exists():
+            return []
+        versions = []
+        for version_dir in versions_dir.iterdir():
+            if not version_dir.is_dir() or not (version_dir / "document.json").exists():
+                continue
+            versions.append(self._read_version_metadata(version_dir, folder, name))
+        versions.sort(key=lambda entry: entry.get("savedAt") or 0, reverse=True)
+        return versions
+
+    def _stream_exported_version(self, folder: str, name: str, version_id: str) -> bool:
+        version_dir = self._safe_version_dir(folder, name, version_id)
+        document_path = version_dir / "document.json"
+        if not document_path.exists():
+            return False
+        metadata = self._read_version_metadata(version_dir, folder, name)
+        file_json = json.dumps({
+            "version": 1,
+            "folder": folder,
+            "name": name,
+            "savedAt": metadata.get("savedAt") or int(document_path.stat().st_mtime * 1000),
+            "versionId": metadata.get("id") or version_id,
+        }, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(b'{"ok":true,"file":')
+        self.wfile.write(file_json[:-1])
+        self.wfile.write(b',"data":')
+        with document_path.open("rb") as handle:
+            shutil.copyfileobj(handle, self.wfile, length=1024 * 256)
+        self.wfile.write(b"}}")
+        return True
 
     def _list_exported_files(self, folder_filter: str | None = None) -> dict:
         index = self._empty_index()
@@ -111,7 +194,8 @@ class DevHandler(SimpleHTTPRequestHandler):
                 if not doc_dir.is_dir():
                     continue
                 document_path = doc_dir / "document.json"
-                if not document_path.exists():
+                versions_dir = doc_dir / "versions"
+                if not document_path.exists() and not versions_dir.exists():
                     continue
                 metadata = {}
                 metadata_path = doc_dir / "metadata.json"
@@ -126,9 +210,17 @@ class DevHandler(SimpleHTTPRequestHandler):
                 if not name:
                     continue
                 saved_at = metadata.get("savedAt")
-                if not isinstance(saved_at, (int, float)):
+                if not isinstance(saved_at, (int, float)) and document_path.exists():
                     saved_at = int(document_path.stat().st_mtime * 1000)
-                index[folder][name] = {"updatedAt": saved_at, "size": document_path.stat().st_size}
+                elif not isinstance(saved_at, (int, float)):
+                    versions = self._list_exported_versions(folder, name)
+                    saved_at = versions[0]["savedAt"] if versions else int(doc_dir.stat().st_mtime * 1000)
+                index[folder][name] = {
+                    "updatedAt": saved_at,
+                    "size": document_path.stat().st_size if document_path.exists() else 0,
+                    "deleted": not document_path.exists(),
+                    "versionCount": len(self._list_exported_versions(folder, name)),
+                }
         return index
 
     def _write_manifest(self) -> None:
@@ -136,23 +228,110 @@ class DevHandler(SimpleHTTPRequestHandler):
         index = self._list_exported_files()
         for folder, entries in index.items():
             manifest["folders"][folder] = {}
-            for name in entries.keys():
+            for name, meta in entries.items():
+                if meta.get("deleted"):
+                    continue
                 manifest["folders"][folder][name] = f"{folder}/{quote(name, safe='-_.() ')}/document.json"
         EXPORT_ROOT.mkdir(parents=True, exist_ok=True)
         (EXPORT_ROOT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
 
     def _write_exported_payload(self, folder: str, name: str, data: object, saved_at: int | None = None, version: int = 1) -> dict:
-        saved = int(saved_at or 0) or int(__import__("time").time() * 1000)
+        saved = int(saved_at or 0) or int(time.time() * 1000)
         doc_dir = self._safe_doc_dir(folder, name)
         doc_dir.mkdir(parents=True, exist_ok=True)
+        self._snapshot_exported_payload(folder, name, "before-save")
         self._extract_data_urls(data, doc_dir)
-        (doc_dir / "document.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-        (doc_dir / "metadata.json").write_text(
-            json.dumps({"name": name, "folder": folder, "savedAt": saved, "version": version}, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
+        with (doc_dir / "document.json").open("w", encoding="utf-8") as handle:
+            json.dump(data, handle, ensure_ascii=False, indent=2)
+        with (doc_dir / "metadata.json").open("w", encoding="utf-8") as handle:
+            json.dump({"name": name, "folder": folder, "savedAt": saved, "version": version}, handle, ensure_ascii=False, indent=2)
         self._write_manifest()
-        return {"version": version, "folder": folder, "name": name, "savedAt": saved, "data": data}
+        return {"version": version, "folder": folder, "name": name, "savedAt": saved, "dataOmitted": True}
+
+    def _snapshot_exported_payload(self, folder: str, name: str, reason: str = "before-save") -> dict | None:
+        doc_dir = self._safe_doc_dir(folder, name)
+        document_path = doc_dir / "document.json"
+        if not document_path.exists():
+            return None
+        metadata = self._read_exported_metadata(folder, name) or {}
+        source_saved = int(metadata.get("savedAt") or document_path.stat().st_mtime * 1000)
+        version_id = f"{int(time.time() * 1000)}-{source_saved}"
+        version_dir = doc_dir / "versions" / quote(version_id, safe="-_.() ")
+        suffix = 1
+        while version_dir.exists():
+            suffix += 1
+            version_dir = doc_dir / "versions" / quote(f"{version_id}-{suffix}", safe="-_.() ")
+        version_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(document_path, version_dir / "document.json")
+        metadata_path = doc_dir / "metadata.json"
+        if metadata_path.exists():
+            shutil.copy2(metadata_path, version_dir / "metadata.json")
+        version_metadata = {
+            "id": version_dir.name,
+            "folder": folder,
+            "name": name,
+            "savedAt": source_saved,
+            "createdAt": int(time.time() * 1000),
+            "reason": reason,
+        }
+        (version_dir / "version.json").write_text(json.dumps(version_metadata, ensure_ascii=False, indent=2), encoding="utf-8")
+        return self._read_version_metadata(version_dir, folder, name)
+
+    def _restore_exported_version(self, folder: str, name: str, version_id: str) -> dict | None:
+        version_dir = self._safe_version_dir(folder, name, version_id)
+        document_path = version_dir / "document.json"
+        if not document_path.exists():
+            return None
+        self._snapshot_exported_payload(folder, name, "before-version-restore")
+        doc_dir = self._safe_doc_dir(folder, name)
+        doc_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(document_path, doc_dir / "document.json")
+        saved = int(time.time() * 1000)
+        with (doc_dir / "metadata.json").open("w", encoding="utf-8") as handle:
+            json.dump({"name": name, "folder": folder, "savedAt": saved, "version": 1}, handle, ensure_ascii=False, indent=2)
+        self._write_manifest()
+        return {"version": 1, "folder": folder, "name": name, "savedAt": saved, "dataOmitted": True}
+
+    def _rename_exported_payload(self, folder: str, old_name: str, new_name: str) -> dict | None:
+        old_dir = self._safe_doc_dir(folder, old_name)
+        new_dir = self._safe_doc_dir(folder, new_name)
+        old_metadata = self._read_exported_metadata(folder, old_name)
+        if old_metadata is None:
+            return None
+        if old_dir != new_dir:
+            if new_dir.exists():
+                shutil.rmtree(new_dir)
+            new_dir.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(old_dir), str(new_dir))
+        saved = int(time.time() * 1000)
+        version = int(old_metadata.get("version") or 1)
+        with (new_dir / "metadata.json").open("w", encoding="utf-8") as handle:
+            json.dump({"name": new_name, "folder": folder, "savedAt": saved, "version": version}, handle, ensure_ascii=False, indent=2)
+        self._write_manifest()
+        return {"version": version, "folder": folder, "name": new_name, "savedAt": saved, "dataOmitted": True}
+
+    def _read_self_rss_kb(self) -> int | None:
+        try:
+            with Path("/proc/self/status").open("r", encoding="utf-8") as handle:
+                for line in handle:
+                    if line.startswith("VmRSS:"):
+                        parts = line.split()
+                        return int(parts[1]) if len(parts) > 1 else None
+        except Exception:
+            return None
+        return None
+
+    def _directory_size(self, root: Path) -> int:
+        total = 0
+        if not root.exists():
+            return total
+        for dirpath, _, filenames in os.walk(root):
+            for filename in filenames:
+                try:
+                    total += (Path(dirpath) / filename).stat().st_size
+                except OSError:
+                    pass
+        return total
 
     def _extract_data_urls(self, value: object, doc_dir: Path, counter: list[int] | None = None) -> None:
         if counter is None:
@@ -191,11 +370,35 @@ class DevHandler(SimpleHTTPRequestHandler):
             query = parse_qs(parsed.query)
             folder = (query.get("folder") or [""])[0]
             name = (query.get("name") or [""])[0]
-            payload = self._read_exported_payload(folder, name)
-            if payload is None:
+            if not self._stream_exported_payload(folder, name):
                 self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "File not found"})
-                return
-            self._write_json(HTTPStatus.OK, {"ok": True, "file": payload})
+            return
+        if parsed.path == "/__storage/versions":
+            query = parse_qs(parsed.query)
+            folder = (query.get("folder") or [""])[0]
+            name = (query.get("name") or [""])[0]
+            self._write_json(HTTPStatus.OK, {"ok": True, "versions": self._list_exported_versions(folder, name)})
+            return
+        if parsed.path == "/__storage/version":
+            query = parse_qs(parsed.query)
+            folder = (query.get("folder") or [""])[0]
+            name = (query.get("name") or [""])[0]
+            version_id = (query.get("versionId") or [""])[0]
+            if not self._stream_exported_version(folder, name, version_id):
+                self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Version not found"})
+            return
+        if parsed.path == "/__debug/health":
+            disk = shutil.disk_usage(Path.cwd())
+            self._write_json(
+                HTTPStatus.OK,
+                {
+                    "ok": True,
+                    "pid": os.getpid(),
+                    "rssKb": self._read_self_rss_kb(),
+                    "disk": {"total": disk.total, "used": disk.used, "free": disk.free},
+                    "storageBytes": self._directory_size(EXPORT_ROOT),
+                },
+            )
             return
         super().do_GET()
 
@@ -300,17 +503,32 @@ class DevHandler(SimpleHTTPRequestHandler):
             if not all(isinstance(value, str) and value for value in (folder, old_name, new_name)):
                 self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Missing folder or name"})
                 return
-            existing = self._read_exported_payload(folder, old_name)
-            if existing is None:
+            saved = self._rename_exported_payload(folder, old_name, new_name)
+            if saved is None:
                 self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "File not found"})
                 return
-            saved = self._write_exported_payload(folder, new_name, existing.get("data"), int(__import__("time").time() * 1000), int(existing.get("version") or 1))
-            old_dir = self._safe_doc_dir(folder, old_name)
-            if old_dir.exists() and old_dir != self._safe_doc_dir(folder, new_name):
-                import shutil
-                shutil.rmtree(old_dir)
-            self._write_manifest()
             self._write_json(HTTPStatus.OK, {"ok": True, "file": saved})
+            return
+
+        if parsed.path == "/__storage/restore-version":
+            length = int(self.headers.get("Content-Length", "0") or "0")
+            raw = self.rfile.read(length)
+            try:
+                payload = json.loads(raw.decode("utf-8") or "{}")
+            except Exception:
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Invalid JSON"})
+                return
+            folder = payload.get("folder")
+            name = payload.get("name")
+            version_id = payload.get("versionId")
+            if not all(isinstance(value, str) and value for value in (folder, name, version_id)):
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Missing folder, name, or version"})
+                return
+            restored = self._restore_exported_version(folder, name, version_id)
+            if restored is None:
+                self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Version not found"})
+                return
+            self._write_json(HTTPStatus.OK, {"ok": True, "file": restored})
             return
 
         if self.path == "/__debug/restart":
@@ -383,9 +601,25 @@ class DevHandler(SimpleHTTPRequestHandler):
             name = (query.get("name") or [""])[0]
             doc_dir = self._safe_doc_dir(folder, name)
             if doc_dir.exists():
-                import shutil
-                shutil.rmtree(doc_dir)
+                self._snapshot_exported_payload(folder, name, "before-delete")
+                for child in doc_dir.iterdir():
+                    if child.name == "versions":
+                        continue
+                    if child.is_dir():
+                        shutil.rmtree(child)
+                    else:
+                        child.unlink()
             self._write_manifest()
+            self._write_json(HTTPStatus.OK, {"ok": True})
+            return
+        if parsed.path == "/__storage/version":
+            query = parse_qs(parsed.query)
+            folder = (query.get("folder") or [""])[0]
+            name = (query.get("name") or [""])[0]
+            version_id = (query.get("versionId") or [""])[0]
+            version_dir = self._safe_version_dir(folder, name, version_id)
+            if version_dir.exists():
+                shutil.rmtree(version_dir)
             self._write_json(HTTPStatus.OK, {"ok": True})
             return
         self.send_error(HTTPStatus.NOT_FOUND, "Not Found")
@@ -394,10 +628,13 @@ class DevHandler(SimpleHTTPRequestHandler):
 def main() -> None:
     parser = argparse.ArgumentParser(description="Dev server with no-cache headers and debug git pull endpoint")
     parser.add_argument("port", nargs="?", type=int, default=8000)
+    parser.add_argument("--debug", action="store_true", help="Enable per-request access logs")
     args = parser.parse_args()
 
+    DevHandler.debug_logs = bool(args.debug)
     server = ThreadingHTTPServer(("0.0.0.0", args.port), DevHandler)
-    print(f"Serving on http://0.0.0.0:{args.port} (no-cache enabled)")
+    log_mode = "debug logs enabled" if args.debug else "access logs suppressed"
+    print(f"Serving on http://0.0.0.0:{args.port} (no-cache enabled, {log_mode})")
     server.serve_forever()
 
 
